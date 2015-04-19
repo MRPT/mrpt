@@ -94,18 +94,24 @@ void PbMapLocaliser::compareSubgraphNeighbors(SubgraphMatcher &matcher)
 cout << "PbMapLocaliser::compareSubgraphNeighbors\n";
   PbMap &matchedPbMap = previousPbMaps[bestMap];
 
+  set<unsigned> subgraphPlanes_src, subgraphPlanes_trg;
+  for(std::vector<unsigned>::iterator it = matcher.subgraphSrc->subgraphPlanesIdx.begin(); it != matcher.subgraphSrc->subgraphPlanesIdx.end(); it++)
+      subgraphPlanes_src.insert(*it);
+  for(std::vector<unsigned>::iterator it = matcher.subgraphTrg->subgraphPlanesIdx.begin(); it != matcher.subgraphTrg->subgraphPlanesIdx.end(); it++)
+      subgraphPlanes_trg.insert(*it);
+
   for(map<unsigned, unsigned>::iterator it = bestMatch.begin(); it != bestMatch.end(); it++)
   {
   // TODO: use the graph to grow
     if(matcher.configLocaliser.graph_mode == 0) // Nearby neighbors - Check the 2nd order neighbors of the matched planes
       for(set<unsigned>::iterator it1 = mPbMap.vPlanes[it->first].nearbyPlanes.begin(); it1 != mPbMap.vPlanes[it->first].nearbyPlanes.end(); it1++)
       {
-        if(matcher.subgraphSrc->subgraphPlanesIdx.count(*it1) )
+        if(subgraphPlanes_src.count(*it1) )
           continue;
 
         for(set<unsigned>::iterator it2 = matchedPbMap.vPlanes[it->second].nearbyPlanes.begin(); it2 != matchedPbMap.vPlanes[it->second].nearbyPlanes.end(); it2++)
         {
-          if(matcher.subgraphTrg->subgraphPlanesIdx.count(*it2) )
+          if(subgraphPlanes_trg.count(*it2) )
             continue;
 
           if( !matcher.evalUnaryConstraints(mPbMap.vPlanes[*it1], matchedPbMap.vPlanes[*it2], matchedPbMap, false ) )//(FloorPlane != -1 && FloorPlaneMap != -1) ? true : false ) )
@@ -121,12 +127,12 @@ cout << "PbMapLocaliser::compareSubgraphNeighbors\n";
     else //if(matcher.configLocaliser.graph_mode == 1)// Co-visible neighbors - Check the 2nd order neighbors of the matched planes
       for(map<unsigned, unsigned>::iterator it1 = mPbMap.vPlanes[it->first].neighborPlanes.begin(); it1 != mPbMap.vPlanes[it->first].neighborPlanes.end(); it1++)
       {
-        if(matcher.subgraphSrc->subgraphPlanesIdx.count(it1->first) )
+        if(subgraphPlanes_src.count(it1->first) )
           continue;
 
         for(map<unsigned, unsigned>::iterator it2 = matchedPbMap.vPlanes[it->second].neighborPlanes.begin(); it2 != matchedPbMap.vPlanes[it->second].neighborPlanes.end(); it2++)
         {
-          if(matcher.subgraphTrg->subgraphPlanesIdx.count(it2->first) )
+          if(subgraphPlanes_trg.count(it2->first) )
             continue;
 
           if( !matcher.evalUnaryConstraints(mPbMap.vPlanes[it1->first], matchedPbMap.vPlanes[it2->first], matchedPbMap, false ) )//(FloorPlane != -1 && FloorPlaneMap != -1) ? true : false ) )

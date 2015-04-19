@@ -67,6 +67,8 @@ namespace pbmap {
      */
     void forcePtsLayOnPlane();
 
+    void forcePtsLayOnPlane(pcl::PointCloud<pcl::PointXYZRGBA>::Ptr & inliers);
+
     /**!
      * Calculate the plane's convex hull with the monotone chain algorithm.
     */
@@ -90,6 +92,12 @@ namespace pbmap {
      */
     void calcElongationAndPpalDir();
 
+    /*!
+     * Compute the plane parameters from a set of noisy points (described in our RAS paper)
+     */
+    void computeInvariantParams (pcl::PointCloud<pcl::PointXYZRGBA>::Ptr & inliers);
+
+    void computeParamsConvexHull ();
 
     /*!Returns true when the closest distance between the patches "this" and "plane" is under distThreshold.*/
     bool isPlaneNearby(Plane &plane, const float distThreshold);
@@ -107,7 +115,9 @@ namespace pbmap {
      */
     void mergePlane(Plane &plane);
     void mergePlane2(Plane &plane);// Adaptation for RGBD360
+    void mergePlane_convexHull(Plane &plane);
 
+    /*! Transform the plane parameters into the given system of reference 'Rt'  */
     void transform(Eigen::Matrix4f &Rt);
 
 
@@ -132,6 +142,7 @@ namespace pbmap {
     Eigen::Vector3f v3normal;
     float d;
     Eigen::Matrix4f information; // Fisher information matrix (the inverse of the plane covariance)
+    float info_3rd_eigenval;
     float curvature;
     Eigen::Vector3f v3PpalDir;
     float elongation; // This is the reatio between the lengths of the plane in the two principal directions

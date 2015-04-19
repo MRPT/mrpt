@@ -610,6 +610,9 @@ void PbMapMaker::detectPlanesCloud( pcl::PointCloud<PointT>::Ptr &pointCloudPtr_
     plane.computeMassCenterAndArea();
     plane.areaVoxels= plane.planePointCloudPtr->size() * 0.0025;
 
+    //plane.computeParams( plane.planePointCloudPtr );
+    //cout << "\t computeParams \n";
+
     #ifdef _VERBOSE
       cout << "Area plane region " << plane.areaVoxels<< " of Chull " << plane.areaHull << " of polygon " << plane.compute2DPolygonalArea() << endl;
     #endif

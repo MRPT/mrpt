@@ -33,6 +33,27 @@ ConsistencyTest::ConsistencyTest(PbMap &PBM_source, PbMap &PBM_target) :
     PBMTarget(PBM_target)
 {}
 
+/*! Compute the scene information factors (the weights for each plane) following the RAS paper.*/
+void ConsistencyTest::computeMatchWeights(std::map<unsigned, unsigned> & matched_planes)
+{
+    //cout << "ConsistencyTest::computeMatchWeights \n";
+    Eigen::Matrix3f match_information_src = Eigen::Matrix3f::Zero();
+    for(map<unsigned, unsigned>::iterator it = matched_planes.begin(); it != matched_planes.end(); it++)
+    {
+        float info_plane = sqrt(PBMSource.vPlanes[it->first].info_3rd_eigenval * PBMSource.vPlanes[it->first].areaHull);
+        Eigen::Vector3f & vNormal = PBMSource.vPlanes[it->first].v3normal;
+        match_information_src += info_plane * vNormal * vNormal.transpose();
+    }
+
+    for(map<unsigned, unsigned>::iterator it = matched_planes.begin(); it != matched_planes.end(); it++)
+    {
+        float info_plane = sqrt(PBMSource.vPlanes[it->first].info_3rd_eigenval * PBMSource.vPlanes[it->first].areaHull);
+        Eigen::Vector3f & vNormal = PBMSource.vPlanes[it->first].v3normal;
+        weights_src[it->first] = info_plane / (vNormal.transpose() * match_information_src * vNormal);
+        //cout << "Plane " << it->first << " weight " << weights_src[it->first] << " vNormal " << vNormal.transpose() << " inliers " << PBMSource.vPlanes[it->first].planePointCloudPtr->size() << " areaHull " << PBMSource.vPlanes[it->first].areaHull << " info_3rd_eigenval " << PBMSource.vPlanes[it->first].info_3rd_eigenval << " info " << info_plane << endl;
+    }
+}
+
 double ConsistencyTest::calcAlignmentError( std::map<unsigned, unsigned> &matched_planes, Eigen::Matrix4f &rigidTransf )
 {
   double sum_depth_errors2 = 0;
@@ -58,11 +79,14 @@ Eigen::Matrix4f ConsistencyTest::initPose( std::map<unsigned, unsigned> &matched
     return Eigen::Matrix4f::Identity();
   }
 
+  // Compute the weights for each plane taking into account the covariance of each plane and also the directionality
+  computeMatchWeights(matched_planes);
+
   //Calculate rotation
   Matrix3f normalCovariances = Matrix3f::Zero();
   normalCovariances(0,0) = 1;  // Limit rotation on y/z (horizontal) axis
   for(map<unsigned, unsigned>::iterator it = matched_planes.begin(); it != matched_planes.end(); it++)
-    normalCovariances += PBMTarget.vPlanes[it->second].v3normal * PBMSource.vPlanes[it->first].v3normal.transpose();
+    normalCovariances += weights_src[it->first] * PBMTarget.vPlanes[it->second].v3normal * PBMSource.vPlanes[it->first].v3normal.transpose();
 
   JacobiSVD<MatrixXf> svd(normalCovariances, ComputeThinU | ComputeThinV);
   Matrix3f Rotation = svd.matrixV() * svd.matrixU().transpose();
@@ -158,11 +182,14 @@ Eigen::Matrix4f ConsistencyTest::estimatePose( std::map<unsigned, unsigned> &mat
     return Eigen::Matrix4f::Identity();
   }
 
+  // Compute the weights for each plane taking into account the covariance of each plane and also the directionality
+  computeMatchWeights(matched_planes);
+
   //Calculate rotation
   Matrix3f normalCovariances = Matrix3f::Zero();
 //  normalCovariances(0,0) = 1;  // Limit rotation on y/z (horizontal) axis
   for(map<unsigned, unsigned>::iterator it = matched_planes.begin(); it != matched_planes.end(); it++)
-    normalCovariances += (PBMTarget.vPlanes[it->second].areaHull/PBMTarget.vPlanes[it->second].d) * PBMTarget.vPlanes[it->second].v3normal * PBMSource.vPlanes[it->first].v3normal.transpose();
+    normalCovariances += weights_src[it->first] * PBMTarget.vPlanes[it->second].v3normal * PBMSource.vPlanes[it->first].v3normal.transpose();
 //    normalCovariances += PBMTarget.vPlanes[it->second].v3normal * PBMSource.vPlanes[it->first].v3normal.transpose();
 
   // Introduce the virtual matching of two vertical planes n=(1,0,0)
@@ -275,11 +302,14 @@ bool ConsistencyTest::estimatePoseWithCovariance( std::map<unsigned, unsigned> &
   if(svd_cond.singularValues()[0] / svd_cond.singularValues()[1] > 10)
     return false;
 
+  // Compute the weights for each plane taking into account the covariance of each plane and also the directionality
+  computeMatchWeights(matched_planes);
+
   //Calculate rotation
   Matrix3f normalCovariances = Matrix3f::Zero();
 //  normalCovariances(0,0) = 1;  // Limit rotation on y/z (horizontal) axis
   for(map<unsigned, unsigned>::iterator it = matched_planes.begin(); it != matched_planes.end(); it++)
-    normalCovariances += (PBMSource.vPlanes[it->first].areaHull / PBMSource.vPlanes[it->first].d) * PBMTarget.vPlanes[it->second].v3normal * PBMSource.vPlanes[it->first].v3normal.transpose();
+    normalCovariances += weights_src[it->first] * PBMTarget.vPlanes[it->second].v3normal * PBMSource.vPlanes[it->first].v3normal.transpose();
 
   // Limit the rotation to the X (vertical) axis by introducing the virtual matching of two large horizontal planes n=(1,0,0)
   for(unsigned r=0; r<3; r++)
@@ -331,10 +361,13 @@ bool ConsistencyTest::estimatePoseWithCovariance( std::map<unsigned, unsigned> &
 
 Eigen::Matrix4f ConsistencyTest::initPose2D( std::map<unsigned, unsigned> &matched_planes )
 {
+    // Compute the weights for each plane taking into account the covariance of each plane and also the directionality
+    computeMatchWeights(matched_planes);
+
   //Calculate rotation
   Matrix3f normalCovariances = Matrix3f::Zero();
   for(map<unsigned, unsigned>::iterator it = matched_planes.begin(); it != matched_planes.end(); it++)
-    normalCovariances += PBMTarget.vPlanes[it->second].v3normal * PBMSource.vPlanes[it->first].v3normal.transpose();
+    normalCovariances += weights_src[it->first] * PBMTarget.vPlanes[it->second].v3normal * PBMSource.vPlanes[it->first].v3normal.transpose();
   normalCovariances(1,1) += 100; // Rotation "restricted" to the y axis
 
   JacobiSVD<MatrixXf> svd(normalCovariances, ComputeThinU | ComputeThinV);

@@ -29,11 +29,83 @@
 #include <mrpt/pbmap/link_pragmas.h>
 #include <mrpt/math.h>
 
+/*! Sort a vector and retrieve the indexes of teh sorted values.*/
+template <typename T>
+std::vector<size_t> sort_indexes(const std::vector<T> & v)
+{
+  // initialize original index locations
+  std::vector<size_t> idx(v.size());
+  for (size_t i = 0; i != idx.size(); ++i) idx[i] = i;
+
+  // sort indexes based on comparing values in v
+  std::sort( idx.begin(), idx.end(), [&v](size_t i1, size_t i2) {return v[i1] > v[i2];} );
+
+  return idx;
+}
+
+template <typename T>
+std::vector<size_t> sort_vector(std::vector<T> & v)
+{
+  // initialize original index locations
+  std::vector<size_t> idx = sort_indexes(v);
+
+  std::vector<T> sorted_vector(v.size());
+  for (size_t i = 0; i != idx.size(); ++i)
+    sorted_vector[i] = v[idx[i]];
+  v = sorted_vector;
+
+  return idx;
+}
+
+/*! Sort a vector and retrieve the indexes of the sorted values.*/
+template <typename T>
+std::vector<size_t> sort_weights(const std::vector<T> & v)
+{
+  // initialize original index locations
+  std::vector<size_t> idx(v.size());
+  std::set<size_t> sorted;
+  for (size_t j = 0; j < v.size(); ++j)
+  {
+      T largest_element; // we assume that all the elements (weights) are positive
+      size_t largest_idx;
+      size_t i = 0;
+      for ( ; i < v.size(); ++i)
+      {
+          if(sorted.count(i))
+              continue;
+          else
+          {
+              largest_element = v[i];
+              largest_idx = i;
+              break;
+          }
+      }
+      for ( i++; i < v.size(); ++i)
+      {
+          if(sorted.count(i))
+              continue;
+          if(v[i] > largest_element)
+          {
+              largest_element = v[i];
+              largest_idx = i;
+          }
+      }
+      idx[j] = largest_idx;
+      sorted.insert(largest_idx);
+  }
+//  std::cout << "\n sort_indexes: ";
+//  for(size_t i = 0; i < idx.size(); i++)
+//      std::cout << idx[i] << " ";
+//  std::cout << "\n";
+
+  return idx;
+}
+
 namespace mrpt {
 namespace pbmap {
 	typedef pcl::PointXYZRGBA PointT;
 
-  /*!Transform the (x,y,z) coordinates of a PCL point into a Eigen::Vector3f.*/
+  /*! Transform the (x,y,z) coordinates of a PCL point into a Eigen::Vector3f.*/
   template<class pointPCL>
   Eigen::Vector3f getVector3fromPointXYZ(pointPCL &pt)
   {
@@ -50,7 +122,7 @@ namespace pbmap {
     return diff;
   }
 
-  /*!Compose a 3D-point with a pose.*/
+  /*! Compose a 3D-point with a pose.*/
   template<class dataType>
   Eigen::Matrix<dataType,3,1> compose(Eigen::Matrix<dataType,4,4> &pose, Eigen::Matrix<dataType,3,1> &point)
   {
@@ -58,7 +130,7 @@ namespace pbmap {
     return transformedPoint;
   }
 
-  /*!Compose two poses.*/
+  /*! Compose two poses.*/
   template<class dataType>
   Eigen::Matrix<dataType,4,4> compose(Eigen::Matrix<dataType,4,4> &pose1, Eigen::Matrix<dataType,4,4> &pose2)
   {
@@ -69,7 +141,7 @@ namespace pbmap {
     return transformedPose;
   }
 
-  /*!Get the pose's inverse.*/
+  /*! Get the pose's inverse.*/
   template<class dataType>
   Eigen::Matrix<dataType,4,4> inverse(Eigen::Matrix<dataType,4,4> &pose)
   {
@@ -89,10 +161,10 @@ namespace pbmap {
     PointT P0, P1;
   };
 
-  /*! Square of the distance between two segments */
+  /*!  Square of the distance between two segments */
   float PBMAP_IMPEXP dist3D_Segment_to_Segment2( Segment S1, Segment S2);
 
-  /*! Check if a point lays inside a convex hull */
+  /*!  Check if a point lays inside a convex hull */
   bool PBMAP_IMPEXP isInHull(PointT &point3D, pcl::PointCloud<PointT>::Ptr hull3D);
 
   template<typename dataType>
@@ -120,24 +192,6 @@ namespace pbmap {
 
     return (dataType)mode/normalizeConst;
   }
-
-//  Eigen::Matrix4f& getMoorePenroseInverse(Eigen::Matrix4f &input)
-//  {
-////    Eigen::Matrix4f generalizedInverse;
-////    Eigen::JacobiSVD<Eigen::Matrix3f> svd(input);
-////    stdDevHist = svd.singularValues().maxCoeff() / sqrt(size);
-//   void pinv( MatrixType& pinvmat) const
-//   {
-////     eigen_assert(m_isInitialized && "SVD is not initialized.");
-//     double pinvtoler=1.e-6; // choose your tolerance wisely!
-//     Eigen::SingularValuesType singularValues_inv = m_singularValues;
-//     for ( long i=0; i<m_workMatrix.cols(); ++i) {
-//        if ( m_singularValues(i) > pinvtoler )
-//           singularValues_inv(i)=1.0/m_singularValues(i);
-//       else singularValues_inv(i)=0;
-//     }
-//     pinvmat= (m_matrixV*singularValues_inv.asDiagonal()*m_matrixU.transpose());
-//   }
 
   // Gets the center of a single-mode distribution, it performs variable mean shift
   template<typename dataType>
