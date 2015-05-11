@@ -24,6 +24,10 @@
 		- \ref mrpt_nav_grp
 			- Removed old base class CPathPlanningMethod
 			- CPathPlanningCircularRobot => mrpt::nav::PlannerSimple2D: Class renamed (and better described) for consistency with other planners
+			- mrpt::nav::CReactiveNavigationSystem:
+				- Documentation has been added about all existing parameters, and template config files provided as starting points.
+				- The loadConfigFile() method with 2 config files has been deprecated favoring the newer, simpler single config file. 
+				- The "ROBOT_NAME" parameter is no longer employed. A minor side effect (probably affecting no one) is that PTG cache files are no longer named differently for different robots.
 		- BUG FIXES:
 			- Fix ocasional (false) failure of RANSAC unit tests due to their non-deterministic nature.
 			- Fix build error with MSVC 2010 in mrpt-hmtslam (Closes #127).
