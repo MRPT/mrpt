@@ -388,7 +388,7 @@ ReactiveNavigationDemoFrame::ReactiveNavigationDemoFrame(wxWindow* parent,wxWind
 	// Create dialogs:
 	iniEditoreactivenav = new CIniEditor(this);
 
-	wxString	auxStr = 
+	wxString	auxStr = wxT(
 "# ------------------------------------------------------------------------\n"
 "# Example configuration file for MRPT's Reactive Navigation engine.\n"
 "# See C++ documentation: http://reference.mrpt.org/svn/classmrpt_1_1nav_1_1_c_reactive_navigation_system.html\n"
@@ -489,7 +489,8 @@ ReactiveNavigationDemoFrame::ReactiveNavigationDemoFrame(wxWindow* parent,wxWind
 "RobotModel_shape2D_ys=0.3 0.3 -0.3 -0.3\n"
 "\n"
 "ROBOTMODEL_DELAY=0  # (un-used param, must be present for compat. with old mrpt versions)\n"
-"ROBOTMODEL_TAU=0 # (un-used param, must be present for compat. with old mrpt versions)\n";
+"ROBOTMODEL_TAU=0 # (un-used param, must be present for compat. with old mrpt versions)\n"
+);
 
 	iniEditoreactivenav->edText->SetValue( auxStr );
 
