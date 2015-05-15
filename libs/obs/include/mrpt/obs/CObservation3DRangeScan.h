@@ -315,6 +315,15 @@ namespace obs
 				return it->second;
 			}
 			void setLabelName(unsigned int label_idx, const std::string &name) { pixelLabelNames[label_idx]=name; }
+            /** Check the existence of a label by returning its associated index.
+              * -1 if it does not exist. */
+            int checkLabelNameExistence(const std::string &name) const {
+                std::map<uint32_t,std::string>::const_iterator it;
+                for ( it = pixelLabelNames.begin() ; it != pixelLabelNames.end(); it++ )
+                    if ( it->second == name )
+                        return it->first;
+                return -1;
+            }
 
 			/** Resizes the matrix pixelLabels to the given size, setting all bitfields to zero (that is, all pixels are assigned NONE category). */
 			virtual void setSize(const int NROWS, const int NCOLS) =0;
@@ -364,19 +373,19 @@ namespace obs
 			typedef Eigen::Matrix<bitmask_t,Eigen::Dynamic,Eigen::Dynamic>  TPixelLabelMatrix;
 			TPixelLabelMatrix   pixelLabels;
 
-			virtual void setSize(const int NROWS, const int NCOLS) {
+            void setSize(const int NROWS, const int NCOLS) {
 				pixelLabels = TPixelLabelMatrix::Zero(NROWS,NCOLS);
 			}
-			virtual void setLabel(const int row, const int col, uint8_t label_idx) {
+            void setLabel(const int row, const int col, uint8_t label_idx) {
 					pixelLabels(row,col) |= static_cast<bitmask_t>(1) << label_idx;
 			}
-			virtual void unsetLabel(const int row, const int col, uint8_t label_idx) {
+            void unsetLabel(const int row, const int col, uint8_t label_idx) {
 				pixelLabels(row,col) &= ~(static_cast<bitmask_t>(1) << label_idx);
 			}
-			virtual void unsetAll(const int row, const int col, uint8_t label_idx) {
+            void unsetAll(const int row, const int col, uint8_t label_idx) {
 				pixelLabels(row,col) = 0;
 			}
-			virtual bool checkLabel(const int row, const int col, uint8_t label_idx) const {
+            bool checkLabel(const int row, const int col, uint8_t label_idx) const {
 				return (pixelLabels(row,col) & (static_cast<bitmask_t>(1) << label_idx)) != 0;
 			}
 
