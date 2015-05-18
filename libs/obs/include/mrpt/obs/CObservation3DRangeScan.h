@@ -346,9 +346,6 @@ namespace obs
             /// std stream interface
             friend std::ostream& operator<<( std::ostream& out, const TPixelLabelInfoBase& obj )
             {
-                out << "Bytes per label index: ";
-                out << obj.BITFIELD_BYTES;
-                out << std::endl;
                 obj.Print( out );
                 return out;
             }

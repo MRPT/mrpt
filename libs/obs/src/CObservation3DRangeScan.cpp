@@ -967,7 +967,7 @@ void CObservation3DRangeScan::getDescriptionAsText(std::ostream &o) const
 		if (confidenceImage.isExternallyStored())
 			o << ". External file: " << confidenceImage.getExternalStorageFile() << endl;
 		else o << " (embedded)." << endl;
-	}
+    }
 
 	o << endl << "Has pixel labels? " << (hasPixelLabels()? "YES": "NO");
 	if (hasPixelLabels())
