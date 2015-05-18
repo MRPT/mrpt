@@ -330,6 +330,7 @@ namespace obs
 			/** Mark the pixel(row,col) as classified in the category \a label_idx, which may be in the range 0 to MAX_NUM_LABELS-1 
 			  * Note that 0 is a valid label index, it does not mean "no label" \sa unsetLabel, unsetAll */
 			virtual void setLabel(const int row, const int col, uint8_t label_idx) =0;
+            virtual void getLabels( const int row, const int col, uint8_t &labels ) =0;
 			/** For the pixel(row,col), removes its classification into the category \a label_idx, which may be in the range 0 to 7 
 			  * Note that 0 is a valid label index, it does not mean "no label" \sa setLabel, unsetAll */
 			virtual void unsetLabel(const int row, const int col, uint8_t label_idx)=0;
@@ -342,6 +343,16 @@ namespace obs
 			void writeToStream(mrpt::utils::CStream &out) const;
 			static TPixelLabelInfoBase* readAndBuildFromStream(mrpt::utils::CStream &in);
 
+            /// std stream interface
+            friend std::ostream& operator<<( std::ostream& out, const TPixelLabelInfoBase& obj )
+            {
+                out << "Bytes per label index: ";
+                out << obj.BITFIELD_BYTES;
+                out << std::endl;
+                obj.Print( out );
+                return out;
+            }
+
 			TPixelLabelInfoBase(unsigned int BITFIELD_BYTES_) : 
 				BITFIELD_BYTES (BITFIELD_BYTES_)
 			{
@@ -352,6 +363,7 @@ namespace obs
 		protected:
 			virtual void internal_readFromStream(mrpt::utils::CStream &in) = 0;
 			virtual void internal_writeToStream(mrpt::utils::CStream &out) const = 0;
+            virtual void Print( std::ostream& ) const =0;
 		};
 		typedef stlplus::smart_ptr<TPixelLabelInfoBase>  TPixelLabelInfoPtr;  //!< Used in CObservation3DRangeScan::pixelLabels
 
@@ -377,8 +389,13 @@ namespace obs
 				pixelLabels = TPixelLabelMatrix::Zero(NROWS,NCOLS);
 			}
             void setLabel(const int row, const int col, uint8_t label_idx) {
-					pixelLabels(row,col) |= static_cast<bitmask_t>(1) << label_idx;
+                pixelLabels(row,col) |= static_cast<bitmask_t>(1) << label_idx;
 			}
+            void getLabels( const int row, const int col, uint8_t &labels )
+            {
+                labels = pixelLabels(row,col);
+            }
+
             void unsetLabel(const int row, const int col, uint8_t label_idx) {
 				pixelLabels(row,col) &= ~(static_cast<bitmask_t>(1) << label_idx);
 			}
@@ -419,6 +436,28 @@ namespace obs
 				}
 				out << pixelLabelNames;
 			}
+            virtual void Print( std::ostream& out ) const
+            {
+                {
+                    const uint32_t nR=static_cast<uint32_t>(pixelLabels.rows());
+                    const uint32_t nC=static_cast<uint32_t>(pixelLabels.cols());
+                    out << "Number of rows: " << nR << std::endl;
+                    out << "Number of cols: " << nC << std::endl;
+                    out << "Matrix of labels: " << std::endl;
+                    for (uint32_t c=0;c<nC;c++)
+                    {
+                        for (uint32_t r=0;r<nR;r++)
+                            out << pixelLabels.coeff(r,c) << " ";
+
+                        out << std::endl;
+                    }
+                }
+                out << std::endl;
+                out << "Label indices and names: " << std::endl;
+                std::map<uint32_t,std::string>::const_iterator it;
+                for ( it = pixelLabelNames.begin(); it != pixelLabelNames.end(); it++)
+                    out << it->first << " " << it->second << std::endl;
+            }
 		}; // end TPixelLabelInfo
 
 		/** All information about pixel labeling is stored in this (smart pointer to) structure; refer to TPixelLabelInfo for details on the contents 

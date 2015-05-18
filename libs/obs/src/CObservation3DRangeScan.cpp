@@ -972,7 +972,7 @@ void CObservation3DRangeScan::getDescriptionAsText(std::ostream &o) const
 	o << endl << "Has pixel labels? " << (hasPixelLabels()? "YES": "NO");
 	if (hasPixelLabels())
 	{
-		o << "Human readable labels:" << endl;
+        o << " Human readable labels:" << endl;
 		for (TPixelLabelInfoBase::TMapLabelID2Name::const_iterator it=pixelLabels->pixelLabelNames.begin();it!=pixelLabels->pixelLabelNames.end();++it)
 			o << " label[" << it->first << "]: '" << it->second << "'" << endl;
 	}
