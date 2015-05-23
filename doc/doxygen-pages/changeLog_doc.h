@@ -35,6 +35,7 @@
 			- Fix build error with MSVC 2010 in mrpt-hmtslam (Closes #127).
 			- Fixed potential wrong bounding box results in mrpt::maps::CPointsMap::boundingBox() when SSE2 optimization is enabled.
 			- mrpt::obs::CObservation6DFeatures: Fixed random crashes related to non-aligned memory in 32bit builds (Fixes #141)
+			- Fix Debian bug [#786349](https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=786349) on Eigen2 support.
 
 <hr>
 <a name="1.3.0">
