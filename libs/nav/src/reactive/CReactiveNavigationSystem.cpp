@@ -12,6 +12,7 @@
 #include <mrpt/nav/reactive/CReactiveNavigationSystem.h>
 #include <mrpt/nav/tpspace/motion_planning_utils.h>
 #include <mrpt/system/filesystem.h>
+#include <mrpt/utils/CConfigFileMemory.h>
 #include <typeinfo>  // For typeid()
 
 using namespace mrpt;
@@ -61,6 +62,13 @@ void CReactiveNavigationSystem::changeRobotShape( const math::CPolygon &shape )
 }
 
 
+/** Reload the configuration from a file. See details in CReactiveNavigationSystem docs. */
+void CReactiveNavigationSystem::loadConfigFile(const mrpt::utils::CConfigFileBase &ini)
+{
+	mrpt::utils::CConfigFileMemory dummyRobotParams;
+	this->loadConfigFile(ini,dummyRobotParams);
+}
+
 /*---------------------------------------------------------------
 						loadConfigFile
   ---------------------------------------------------------------*/
@@ -72,7 +80,7 @@ void CReactiveNavigationSystem::loadConfigFile(const mrpt::utils::CConfigFileBas
 
 	// Load config from INI file:
 	// ------------------------------------------------------------
-	robotName = robotIni.read_string("ROBOT_NAME","Name", "", true );
+	robotName = robotIni.read_string("ROBOT_NAME","Name", "ReactiveParams" /* Default section for the rest of params */);
 
 	unsigned int PTG_COUNT = ini.read_int(robotName,"PTG_COUNT",0, true );
 
@@ -83,7 +91,7 @@ void CReactiveNavigationSystem::loadConfigFile(const mrpt::utils::CConfigFileBas
 
 	MRPT_LOAD_CONFIG_VAR_NO_DEFAULT(robotMax_V_mps,float,  ini,robotName);
 	MRPT_LOAD_CONFIG_VAR_NO_DEFAULT(robotMax_W_degps,float,  ini,robotName);
-
+	MRPT_LOAD_CONFIG_VAR(SPEEDFILTER_TAU,float,  ini,robotName);
 
 	ini.read_vector( robotName, "weights", vector<float>(0), weights, true );
 	ASSERT_(weights.size()==6);
@@ -92,7 +100,6 @@ void CReactiveNavigationSystem::loadConfigFile(const mrpt::utils::CConfigFileBas
 	MRPT_LOAD_CONFIG_VAR_NO_DEFAULT(maxObstaclesHeight,float,  ini,robotName);
 
 	MRPT_LOAD_CONFIG_VAR_NO_DEFAULT(DIST_TO_TARGET_FOR_SENDING_EVENT,float,  ini,robotName);
-
 
 	badNavAlarm_AlarmTimeout = ini.read_float("GLOBAL_CONFIG","ALARM_SEEMS_NOT_APPROACHING_TARGET_TIMEOUT", badNavAlarm_AlarmTimeout, true);
 
@@ -170,8 +177,6 @@ void CReactiveNavigationSystem::loadConfigFile(const mrpt::utils::CConfigFileBas
 	// --------------------------------------------------------
 	printf_debug("\tLOADED CONFIGURATION:\n");
 	printf_debug("-------------------------------------------------------------\n");
-
-	printf_debug("  Robot name \t\t\t=%s\n",robotName.c_str());
 
 	ASSERT_(!m_holonomicMethod.empty())
 	printf_debug("  Holonomic method \t\t= %s\n",typeid(m_holonomicMethod[0]).name());

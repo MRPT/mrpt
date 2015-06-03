@@ -10,7 +10,7 @@
 #define  CHISTOGRAM_H
 
 #include <mrpt/utils/core_defs.h>
-#include <mrpt/math/eigen_frwds.h>
+#include <mrpt/utils/types_math.h>
 #include <vector>
 
 namespace mrpt

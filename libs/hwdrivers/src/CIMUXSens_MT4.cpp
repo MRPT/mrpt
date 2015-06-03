@@ -58,7 +58,7 @@ using namespace std;
 	class DeviceClass
 	{
 	public:
-		DeviceClass() { }
+		DeviceClass() : m_streamInterface(NULL) { }
 		~DeviceClass()
 		{
 			if (m_streamInterface) {

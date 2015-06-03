@@ -20,20 +20,28 @@ namespace mrpt
 				std::vector<math::CPolygon>	polygons;		// The polygonal bases
 				std::vector<float>			heights;		// Heights of the prisms
 		};
-
+		
 		/** See base class CAbstractPTGBasedReactive for a description and instructions of use.
 		* This particular implementation assumes a 3D (or "2.5D") robot shape model, build as a vertical stack of "2D slices".
 		*
-		* Publications:
-		*  - "Reactive Navigation of a 3D-shape Robot in a 3D World" (Submitted)
+		*  Paper describing the method:
+		*  - M. Jaimez-Tarifa, J. Gonzalez-Jimenez, J.L. Blanco, 
+		*    "Efficient Reactive Navigation with Exact Collision Determination for 3D Robot Shapes", 
+		*     International Journal of Advanced Robotic Systems, 2015.
 		*
 		* Class history:
 		* - SEP/2012: First design.
 		* - JUL/2013: Integrated into MRPT library.
 		* - DEC/2013: Code refactoring between this class and CAbstractHolonomicReactiveMethod
 		*
+		* This class requires a number of parameters which are usually provided via an external config (".ini") file.
+		* Alternatively, a memory-only object can be used to avoid physical files, see mrpt::utils::CConfigFileMemory.
+		*
+		* Next we provide a self-documented template config file: 
+		* \verbinclude reactive3d_config.ini
+		*
 		*  \sa CAbstractReactiveNavigationSystem, CParameterizedTrajectoryGenerator, CAbstractHolonomicReactiveMethod
-	    *  \ingroup nav_reactive
+		*  \ingroup nav_reactive
 		*/
 		class NAV_IMPEXP CReactiveNavigationSystem3D : public CAbstractPTGBasedReactive
 		{
@@ -49,7 +57,7 @@ namespace mrpt
 			/** Destructor */
 			virtual ~CReactiveNavigationSystem3D();
 
-			/** Reload the configuration from a file */
+			/** Reload the configuration from a file. See CReactiveNavigationSystem3D for details. */
 			void loadConfigFile(const mrpt::utils::CConfigFileBase &ini);
 
 			/** Change the robot shape, which is taken into account for collision grid building. */

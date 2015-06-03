@@ -24,10 +24,19 @@
 		- \ref mrpt_nav_grp
 			- Removed old base class CPathPlanningMethod
 			- CPathPlanningCircularRobot => mrpt::nav::PlannerSimple2D: Class renamed (and better described) for consistency with other planners
+			- mrpt::nav::CReactiveNavigationSystem:
+				- Documentation has been added about all existing parameters, and template config files provided as starting points.
+				- The loadConfigFile() method with 2 config files has been deprecated favoring the newer, simpler single config file. 
+				- The "ROBOT_NAME" parameter is no longer employed. A minor side effect (probably affecting no one) is that PTG cache files are no longer named differently for different robots.
+		- \ref mrpt_vision_grp
+			- mrpt::vision::CImageGrabber_dc1394: Changed default Bayer filter from NEAREST to HQLINEAR
 		- BUG FIXES:
 			- Fix ocasional (false) failure of RANSAC unit tests due to their non-deterministic nature.
 			- Fix build error with MSVC 2010 in mrpt-hmtslam (Closes #127).
 			- Fixed potential wrong bounding box results in mrpt::maps::CPointsMap::boundingBox() when SSE2 optimization is enabled.
+			- mrpt::obs::CObservation6DFeatures: Fixed random crashes related to non-aligned memory in 32bit builds (Fixes #141)
+			- Fix Debian bug [#786349](https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=786349) on Eigen2 support.
+			- mrpt::hwdrivers::CIMUXSens_MT4: Fix crash in destructor of objects not attached to a physical device.
 
 <hr>
 <a name="1.3.0">

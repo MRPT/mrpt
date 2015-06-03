@@ -11,26 +11,10 @@
 // Eigen forward declarations:
 #include <mrpt/config.h>
 
-#include <Eigen/src/Core/util/DisableStupidWarnings.h>
-#include <Eigen/src/Core/util/Macros.h>
-#include <complex> // Needed by hdrs below
-
-#define STAGE99_NO_EIGEN2_SUPPORT           99
-#define EIGEN2_SUPPORT_STAGE STAGE99_NO_EIGEN2_SUPPORT
-
-#if !EIGEN_VERSION_AT_LEAST(3,0,93)
+// Minimum Eigen fwrd-decls:
 namespace Eigen {
-#endif
-// These headers were assumed to lie inside namespace Eigen{} in Eigen <=3.1.0
-#	include <Eigen/src/Core/util/Constants.h>
-#	include <Eigen/src/Core/util/ForwardDeclarations.h>
-
-#if !EIGEN_VERSION_AT_LEAST(3,0,93)
+	template<typename Derived> struct EigenBase;
 }
-#endif
-
-#undef STAGE99_NO_EIGEN2_SUPPORT
-#undef EIGEN2_SUPPORT_STAGE
 
 namespace mrpt
 {

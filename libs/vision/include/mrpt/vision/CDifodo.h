@@ -66,8 +66,6 @@ namespace mrpt
 			std::vector<Eigen::MatrixXf> yy_old;
 			std::vector<Eigen::MatrixXf> yy_warped;
 
-
-
 			/** Matrices that store the depth derivatives */
 			Eigen::MatrixXf du;
 			Eigen::MatrixXf dv;
@@ -160,9 +158,6 @@ namespace mrpt
 
 
 		public:
-
-			/** Lateral displacement of the lens with respect to the center of the camera (meters) */
-			float lens_disp;
 
 			/** Frames per second (Hz) */
 			float fps;
