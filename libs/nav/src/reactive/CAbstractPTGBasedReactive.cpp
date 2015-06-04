@@ -721,10 +721,6 @@ void CAbstractPTGBasedReactive::STEP7_GenerateSpeedCommands( const THolonomicMov
 {
 	try
 	{
-
-		last_cmd_v = new_cmd_v;
-		last_cmd_w = new_cmd_w;
-
 		if (in_movement.speed == 0)
 		{
 			// The robot will stop:
@@ -771,6 +767,8 @@ void CAbstractPTGBasedReactive::STEP7_GenerateSpeedCommands( const THolonomicMov
 			new_cmd_w = alfa*new_cmd_w + (1-alfa)*last_cmd_w;
 
 		}
+		last_cmd_v = new_cmd_v;
+		last_cmd_w = new_cmd_w;
 		m_timelogger.leave("navigationStep.STEP7_NonHolonomicMovement");
 	}
 	catch (std::exception &e)
