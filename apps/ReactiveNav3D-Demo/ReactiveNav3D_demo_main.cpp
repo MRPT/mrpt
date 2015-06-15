@@ -23,14 +23,12 @@ const char *default_cfg_txt =
 	"; ---------------------------------------------------------------\n\n\n"
 
 	"[ROBOT_CONFIG]\n"
-
-	"Name = MyRobot\n\n"
+	";Name = MyRobot\n\n"
 
 	"HEIGHT_LEVELS = 3 \n\n"
 
-	";Indicate the geometry of each level \n\n"
-
-	";Type: Polyhedric 	(LEVELX_HEIGHT, LEVELX_VECTORX, LEVELX_VECTORY) \n\n"
+	";Indicate the geometry of the robot as a set of prisms\n"
+	";Format - (LEVELX_HEIGHT, LEVELX_VECTORX, LEVELX_VECTORY) \n\n"
 
 	"LEVEL1_HEIGHT = 0.6 \n"
 	"LEVEL1_VECTORX = 0.3 0.3 -0.3 -0.3 \n"
@@ -45,16 +43,15 @@ const char *default_cfg_txt =
 	"LEVEL3_VECTORY = 0 0.2 -0.2 \n\n\n"
 
 
-	"[LASER_CONFIG] \n\n"
-
+	"[LASER_CONFIG] \n"
 	";Lasers declaration \n"
 	";Indicate the number of lasers \n\n"
 
 	"N_LASERS = 3 \n\n"
 
-	";Indicate the lasers parameters. This information must be consistent with that included before \n"
+	";Indicate the lasers parameters. This information must be consistent with the robot shape (height sections). \n"
 	";Laser pose is relative to the robot coordinate system. \n"
-	";Information required: 	LASERX_POSE, LASERY_POSE, LASERX_MAX_RANGE, LASERX_APERTURE \n"
+	";Information required: 	LASERX_POSE, LASERX_MAX_RANGE, LASERX_APERTURE \n"
 	";							LASERX_STD_ERROR, LASERX_LEVEL, LASERX_SEGMENTS \n\n"
 
 	"LASER1_POSE = 0 0 0.4 0 0 0 \n"
@@ -79,53 +76,45 @@ const char *default_cfg_txt =
 	"LASER3_SEGMENTS = 181 \n\n\n"
 
 
-	"[KINECT_CONFIG] \n\n"
-
+	"[KINECT_CONFIG] \n"
 	";Kinects declaration \n"
 	";Indicate the number of kinects \n\n"
 
 	"N_KINECTS = 1 \n"
 
-	";Indicate the kinect parameters. This information must be consistent with that included before \n"
+	";Indicate the kinect parameters. This information must be consistent with the robot shape (height sections). \n"
 	";Kinect pose is relative to the robot coordinate system. \n"
-	";Information required: 	KINECTX_LEVEL, KINECTX_X, KINECTX_Y, KINECTX_Z, KINECTX_PHI (DEGREES) \n"
-	";				KINECTX_MINRANGE, KINECTX_MAXRANGE (METERS), KINECTX_PITCH_ANGLE (DEGREES), \n"
-	";				KINECTX_ROWS, KINECTX_COLUMNS, KINECTX_STD_ERROR \n\n"
+	";Information required: KINECTX_LEVEL, KINECTX_X, KINECTX_Y, KINECTX_Z, KINECTX_PHI (DEGREES), KINECTX_PITCH_ANGLE (DEGREES),  \n"
+	";						KINECTX_MINRANGE, KINECTX_MAXRANGE (METERS), KINECTX_ROWS, KINECTX_COLUMNS, KINECTX_STD_ERROR  \n\n"
 
 	"KINECT1_LEVEL = 2 \n"
 	"KINECT1_X = 0 \n"
 	"KINECT1_Y = 0 \n"
 	"KINECT1_Z = 1 \n"
 	"KINECT1_PHI = 0 \n"
+	"KINECT1_PITCH = 0 \n"
 	"KINECT1_MINRANGE = 0.3 \n"
 	"KINECT1_MAXRANGE = 5 \n"
 	"KINECT1_FOV_V = 45 \n"
 	"KINECT1_FOV_H = 58 \n"
-	"KINECT1_PITCH_ANGLE = 0 \n"
 	"KINECT1_ROWS = 21 \n"
 	"KINECT1_COLUMNS = 21 \n"
 	"KINECT1_STD_ERROR = 0.0 \n\n\n"
 
 
 	"[MAP_CONFIG] \n\n"
-
-	"FAMILY = 2		//Not used now. See method 'loadMaps' of class 'CMyReactInterface' \n"
-	"NUM_MAPS = 3	//Not used now. See method 'loadMaps' of class 'CMyReactInterface' \n"
+	"; The maps are included in the ReactiveNav3D_demo.h file as .xpm files. \n"
+	"; To modify them change this included files, and the method CMyReactInterface::loadmaps() if necessary \n"
 	"MAP_RESOLUTION = 0.02 \n\n\n"
 
 
-
-	"[NAVIGATION_CONFIG] \n\n"
-
+	"[NAVIGATION_CONFIG] \n"
 	"; 0: VFF,  1: ND \n"
 	"HOLONOMIC_METHOD = 1 \n\n"
 
-
 	";	Parameters for the navigation \n"
-	"; ---------------------------------------------------- \n\n"
-
-	"weights = 0.5 0.05 0.5 2.0 0.5 0.3 \n\n"
-
+	"; ---------------------------------------------------- \n"
+	"weights = 0.5 0.05 0.5 2.0 0.5 0.3 \n"
 	"; 1: Free space \n"
 	"; 2: Dist. in sectors \n"
 	"; 3: Heading toward target \n"
@@ -141,8 +130,8 @@ const char *default_cfg_txt =
 	"VMAX_MPS = 0.70			; Speed limits - mps \n"
 	"WMAX_DEGPS = 60			; dps \n"
 	"SPEEDFILTER_TAU = 0.1		; The 'TAU' time constant of a first order lowpass filter for speed commands (s) \n"
-	"ROBOTMODEL_DELAY = 0		; The delay until motor reaction (s) \n"
-	"ROBOTMODEL_TAU = 0.2		; The 'TAU' time constant of a first order robot model (s) \n"
+	"ROBOTMODEL_DELAY = 0		; un-used param, must be present for compat. with old mrpt versions \n"
+	"ROBOTMODEL_TAU = 0			; un-used param, must be present for compat. with old mrpt versions \n"
 	"MAX_DISTANCE_PTG = 2		; Marks the maximum distance regarded by the reactive navigator (m) \n"
 	"GRID_RESOLUTION = 0.02 	; Resolutions used to build the collision_grid \n\n\n"
 
@@ -157,7 +146,6 @@ const char *default_cfg_txt =
 	";			5 - CS, Trajectories with a minimum turning radius \n"
 	";			6 - alpha - SP, Trajectories built upon a spiral segment \n"
 	";			7 - \n\n"
-
 
 	"PTG_COUNT = 3			;Number of path models used \n\n"
 
@@ -188,8 +176,7 @@ const char *default_cfg_txt =
 
 
 	";	Parameters for the 'Nearness diagram' Holonomic method \n"
-	"; ------------------------------------------------------------ \n\n"
-
+	"; ------------------------------------------------------------ \n"
 	"[ND_CONFIG] \n"
 	"factorWeights = 1.0 2.0 0.5 1.0 \n"
 	"; 1: Free space \n"
@@ -209,19 +196,15 @@ const char *default_cfg_txt =
 
 
 	";	Parameters for the VFF Holonomic method \n"
-	"; ------------------------------------------------------------ \n\n"
-
-	"[VFF_CONFIG] \n\n"
-
+	"; ------------------------------------------------------------ \n"
+	"[VFF_CONFIG] \n"
 	"TARGET_SLOW_APPROACHING_DISTANCE = 0.8	; Used to decrease speed gradually when the target is going to be reached \n"
 	"TARGET_ATTRACTIVE_FORCE = 7.5			; Use it to control the relative weight of the target respect to the obstacles \n\n\n"
 
 
 	";	Parameters for the Obstacles grid (short term memory) \n"
-	"; ------------------------------------------------------------ \n\n"
-
-	"[STM_CONFIG] \n\n"
-
+	"; ------------------------------------------------------------ \n"
+	"[STM_CONFIG] \n"
 	"Stm_active = 1 \n			; Utilize it(1) or not(0) \n"
 	"Obs_grid_length = 2		; (lenght/resolution) has to be integer \n"
 	"Obs_grid_resolution = 0.04	\n"
@@ -229,7 +212,6 @@ const char *default_cfg_txt =
 	"Pos_likelihood_incr = 0.8	; Range: 0.51 - 1 \n"
 	"Neg_likelihood_incr = 0.4	; Range: 0 - 0.49 \n"
 	"Occupancy_threshold = 0.8	; Threshold used to include or not a virtual obstacle \n";
-
 
 
 // ------------------------------------------------------

@@ -85,7 +85,7 @@ void CReactiveNavigationSystem3D::loadConfigFile(const mrpt::utils::CConfigFileB
 
 	// Load config from INI file:
 	// ------------------------------------------------------------
-	robotName = ini.read_string("ROBOT_CONFIG","Name", "", true );
+	robotName = ini.read_string("ROBOT_CONFIG","Name", "MyRobot", false );
 
 	unsigned int num_levels;
 	vector <float> xaux,yaux;
