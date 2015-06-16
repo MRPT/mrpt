@@ -174,6 +174,11 @@ ${CMAKE_MRPT_BUILD_SHARED_LIB}
 /** Whether to include the xSens MTi device interface: */
 #define MRPT_HAS_xSENS_MT3 ${CMAKE_MRPT_HAS_xSENS_MT3}
 #define MRPT_HAS_xSENS_MT4 ${CMAKE_MRPT_HAS_xSENS_MT4}
+/** Whether to include the Intersense device interface: */
+#define MRPT_HAS_INTERSENSE ${CMAKE_MRPT_HAS_INTERSENSE}
+
+/** Whether to include the NITE2 library: */
+#define MRPT_HAS_NITE2 ${CMAKE_MRPT_HAS_NITE2}
 
 /** Whether to compile support for .gz compressed I/O streams: */
 #define MRPT_HAS_GZ_STREAMS ${CMAKE_MRPT_HAS_GZ_STREAMS}

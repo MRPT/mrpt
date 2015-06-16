@@ -33,6 +33,16 @@ IF(CMAKE_MRPT_HAS_xSENS_MT4)
 		)
 ENDIF(CMAKE_MRPT_HAS_xSENS_MT4)
 
+# Build Intersense devices?
+IF(CMAKE_MRPT_HAS_INTERSENSE)
+   LIST(APPEND hwdrivers_EXTRA_SRCS
+      "${MRPT_LIBS_ROOT}/hwdrivers/src/isense/*.c"
+      "${MRPT_LIBS_ROOT}/hwdrivers/src/isense/*.h"
+      )
+
+   LIST(APPEND hwdrivers_EXTRA_SRCS_NAME "isense" "isense" )
+ENDIF(CMAKE_MRPT_HAS_INTERSENSE)
+
 # Build Kinect support via libfreenect?
 IF(CMAKE_MRPT_HAS_FREENECT)
 	IF (CMAKE_MRPT_HAS_FREENECT_SYSTEM)
@@ -152,6 +162,20 @@ define_mrpt_lib(
 	)
 
 IF(BUILD_mrpt-hwdrivers) 
+	# Ignore precompiled headers in intersense sources:
+	IF(CMAKE_MRPT_HAS_INTERSENSE)
+		IF(MRPT_ENABLE_PRECOMPILED_HDRS AND MSVC)
+			set_source_files_properties(${isense_FILES} PROPERTIES COMPILE_FLAGS "/Y-")
+		ENDIF(MRPT_ENABLE_PRECOMPILED_HDRS AND MSVC)
+	ENDIF(CMAKE_MRPT_HAS_INTERSENSE)
+	
+	# Link to NITE2 libraries:
+	IF(CMAKE_MRPT_HAS_NITE2)
+		# link_directories() was added in the configuration script under /cmakemodules/*_ni.cmake
+		INCLUDE_DIRECTORIES(${NITE2_INCLUDE_DIR})
+		TARGET_LINK_LIBRARIES(mrpt-hwdrivers ${NITE2_LIB_FILE_RELEASE})
+	ENDIF(CMAKE_MRPT_HAS_NITE2)
+
 	# Ignore precompiled headers in xSens sources:
 	IF(CMAKE_MRPT_HAS_xSENS_MT3 OR CMAKE_MRPT_HAS_xSENS_MT4)
 		IF(MRPT_ENABLE_PRECOMPILED_HDRS AND MSVC)

@@ -273,6 +273,8 @@ include(cmakemodules/script_flycapture2.cmake REQUIRED)# Check for PointGreyRese
 include(cmakemodules/script_triclops.cmake REQUIRED)	# Check for PointGreyResearch (PGR) Triclops library
 include(cmakemodules/script_duo3d.cmake REQUIRED)		# Support for DUO3D Camera
 include(cmakemodules/script_matlab.cmake REQUIRED)	# Support for Matlab MEX functions generation
+include(cmakemodules/script_isense.cmake REQUIRED)		# Support for INTERSENSE Sensors
+include(cmakemodules/script_nite2.cmake REQUIRED)		# Check for NITE2 library
 
 # ---------------------------------------------------------------------------
 #			OPTIONS

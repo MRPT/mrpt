@@ -129,6 +129,7 @@ SHOW_CONFIG_LINE("SuiteSparse                         " CMAKE_MRPT_HAS_SUITESPAR
 SHOW_CONFIG_LINE_SYSTEM("wxWidgets                           " CMAKE_MRPT_HAS_WXWIDGETS)
 SHOW_CONFIG_LINE_SYSTEM("zlib (compression)                  " CMAKE_MRPT_HAS_ZLIB)
 SHOW_CONFIG_LINE("mexplus                             " CMAKE_MRPT_HAS_MATLAB)
+SHOW_CONFIG_LINE_SYSTEM("NITE2 library                  	" CMAKE_MRPT_HAS_NITE2)
 MESSAGE(STATUS  "")
 
 MESSAGE(STATUS " _______________________ WRAPPERS/BINDINGS ______________________")
@@ -158,7 +159,7 @@ SHOW_CONFIG_LINE_SYSTEM("libudev (requisite for XSensMT4)    " CMAKE_MRPT_HAS_LI
 ENDIF(UNIX)
 SHOW_CONFIG_LINE_SYSTEM("xSENS MT 3rd generation             " CMAKE_MRPT_HAS_xSENS_MT3)
 SHOW_CONFIG_LINE_SYSTEM("xSENS MT 4th generation             " CMAKE_MRPT_HAS_xSENS_MT4)
-
+SHOW_CONFIG_LINE_SYSTEM("Intersense sensors                  " CMAKE_MRPT_HAS_INTERSENSE)
 MESSAGE(STATUS  "")
 
 

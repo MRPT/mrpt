@@ -42,6 +42,7 @@ MRPT_WARNING("Including <mrpt/obs.h> makes compilation much slower, consider inc
 #include <mrpt/obs/CObservationWindSensor.h>
 #include <mrpt/obs/CObservationCANBusJ1939.h>
 #include <mrpt/obs/CObservationRawDAQ.h>
+#include <mrpt/obs/CObservationSkeleton.h>
 
 
 // Observations:

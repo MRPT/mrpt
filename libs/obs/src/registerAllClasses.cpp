@@ -69,6 +69,7 @@ void registerAllClasses_mrpt_obs()
 	registerClass( CLASS_ID( CActionRobotMovement2D ) );
 	registerClass( CLASS_ID( CActionRobotMovement3D ) );
 
+	registerClass( CLASS_ID( CObservationSkeleton ) );
 
 	registerClass( CLASS_ID( TMapGenericParams ) );
 

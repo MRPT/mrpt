@@ -73,5 +73,7 @@ MRPT_WARNING("Including <mrpt/hwdrivers.h> makes compilation much slower, consid
 #include <mrpt/hwdrivers/CNationalInstrumentsDAQ.h>
 #include <mrpt/hwdrivers/CDUO3DCamera.h>
 #include <mrpt/hwdrivers/CGPS_NTRIP.h>
+#include <mrpt/hwdrivers/CIMUIntersense.h>
+#include <mrpt/hwdrivers/CSkeletonTracker.h>
 
 #endif
