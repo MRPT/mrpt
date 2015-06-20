@@ -18,6 +18,9 @@
 		- (none yet)
 	- <b>Detailed list of changes:</b>
 		- \ref mrpt_hwdrivers_grp
+			- New sensors supported:
+				- mrpt::hwdrivers::CIMUIntersense
+				- mrpt::hwdrivers::CSkeletonTracker
 			- New parameter mrpt::hwdrivers::CHokuyoURG::m_disable_firmware_timestamp to override faulty Hokuyo timestamps with PC time.
 		- \ref mrpt_maps_grp
 			- New method mrpt::maps::COccupancyGridMap2D::getAsPointCloud() 
@@ -28,6 +31,8 @@
 				- Documentation has been added about all existing parameters, and template config files provided as starting points.
 				- The loadConfigFile() method with 2 config files has been deprecated favoring the newer, simpler single config file. 
 				- The "ROBOT_NAME" parameter is no longer employed. A minor side effect (probably affecting no one) is that PTG cache files are no longer named differently for different robots.
+		- \ref mrpt_obs_grp
+			- New class mrpt::obs::CObservationSkeleton to hold body tracking information (by Francisco Angel Moreno)
 		- \ref mrpt_vision_grp
 			- mrpt::vision::CImageGrabber_dc1394: Changed default Bayer filter from NEAREST to HQLINEAR
 		- BUG FIXES:
