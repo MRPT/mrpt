@@ -203,7 +203,7 @@ void CGillAnemometer::doProcess()
 		}
 		else
 		{
-			printf("ERROR: Windsonic reading incorrect format: %s [%u]\n", wind_reading.c_str(),list.size());
+			printf("ERROR: Windsonic reading incorrect format: %s [%u]\n", wind_reading.c_str(),static_cast<unsigned int>(list.size()) );
 		}
 
 	}

@@ -1,5 +1,6 @@
 # Support for NITE2 Library (only for windows -- by now --)
 # ==========================================================================================
+SET(CMAKE_MRPT_HAS_NITE2 0)
 IF(UNIX)
 	SET( MRPT_HAS_NITE2 OFF CACHE INTERNAL "Has NITE2 Windows libraries?" FORCE)
 ELSE(UNIX)
