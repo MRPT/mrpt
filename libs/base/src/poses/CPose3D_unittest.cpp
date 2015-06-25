@@ -79,6 +79,25 @@ protected:
 			<< "p1_i_p2     : " << p1_i_p2 << endl
 			<< "p1_i_p2 matrix: " << endl << p1_i_p2.getHomogeneousMatrixVal() << endl
 			<< "p2_c_p1_i_p2: " << p2_c_p1_i_p2 << endl;
+
+		// Test + operator: trg new var
+		{
+			CPose3D C = p1;
+			CPose3D A = C + p2;
+			EXPECT_NEAR(0, (A.getAsVectorVal()-p1_c_p2.getAsVectorVal()).array().abs().sum(), 1e-6);
+		}
+		// Test + operator: trg same var
+		{
+			CPose3D A = p1;
+			A = A + p2;
+			EXPECT_NEAR(0, (A.getAsVectorVal()-p1_c_p2.getAsVectorVal()).array().abs().sum(), 1e-6);
+		}
+		// Test =+ operator
+		{
+			CPose3D A = p1;
+			A += p2;
+			EXPECT_NEAR(0, (A.getAsVectorVal()-p1_c_p2.getAsVectorVal()).array().abs().sum(), 1e-6);
+		}
 	}
 
 	void test_to_from_2d(double x,double y, double phi)
@@ -652,7 +671,6 @@ TEST_F(Pose3DTests,Compose)
 				ptc[i][0],ptc[i][1],ptc[i][2], DEG2RAD(ptc[i][3]),DEG2RAD(ptc[i][4]),DEG2RAD(ptc[i][5]),
 				ptc[j][0],ptc[j][1],ptc[j][2], DEG2RAD(ptc[j][3]),DEG2RAD(ptc[j][4]),DEG2RAD(ptc[j][5]) );
 }
-
 TEST_F(Pose3DTests,composeFrom)
 {
 	for (size_t i=0;i<num_ptc;i++)
