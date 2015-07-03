@@ -363,7 +363,12 @@ void Test_Kinect()
 					params.ransac_minSetSize = 3;
 
 					mrpt::tfest::TSE3RobustResult results;
-					const bool register_ok = mrpt::tfest::se3_l2_robust(corrs, params, results);
+					bool register_ok = false; 
+					try {
+						mrpt::tfest::se3_l2_robust(corrs, params, results);
+					} catch (std::exception &) {  
+						/* Cannot find a minimum number of matches, inconsistent parameters due to very reduced numberof matches,etc. */ 
+					}
 
 					const CPose3D relativePose = results.transformation;
 
