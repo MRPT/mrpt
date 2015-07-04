@@ -16,13 +16,13 @@
 #define SIMULATION_TIME_STEPS   100
 
 //(*InternalHeaders(ReactiveNavigationDemoFrame)
-#include <wx/string.h>
-#include <wx/intl.h>
-#include <wx/font.h>
+#include <wx/artprov.h>
 #include <wx/bitmap.h>
 #include <wx/icon.h>
+#include <wx/font.h>
+#include <wx/intl.h>
 #include <wx/image.h>
-#include <wx/artprov.h>
+#include <wx/string.h>
 //*)
 
 #include <mrpt/gui/WxUtils.h>
@@ -31,7 +31,7 @@
 std::string EDIT_internalCfgReactive;
 std::string EDIT_internalCfgRobot;
 
-CIniEditor    *iniEditorRobot=NULL, *iniEditoreactivenav=NULL;
+CIniEditor    *iniEditoreactivenav=NULL;
 
 #include "imgs/main_icon.xpm"
 #include "../wx-common/mrpt_logo.xpm"
@@ -165,11 +165,8 @@ const long ReactiveNavigationDemoFrame::ID_BUTTON3 = wxNewId();
 const long ReactiveNavigationDemoFrame::ID_CHECKBOX1 = wxNewId();
 const long ReactiveNavigationDemoFrame::ID_STATICTEXT1 = wxNewId();
 const long ReactiveNavigationDemoFrame::ID_TEXTCTRL2 = wxNewId();
-const long ReactiveNavigationDemoFrame::ID_BUTTON6 = wxNewId();
 const long ReactiveNavigationDemoFrame::ID_BUTTON7 = wxNewId();
 const long ReactiveNavigationDemoFrame::ID_CHECKBOX2 = wxNewId();
-const long ReactiveNavigationDemoFrame::ID_STATICTEXT5 = wxNewId();
-const long ReactiveNavigationDemoFrame::ID_TEXTCTRL5 = wxNewId();
 const long ReactiveNavigationDemoFrame::ID_STATICTEXT6 = wxNewId();
 const long ReactiveNavigationDemoFrame::ID_TEXTCTRL6 = wxNewId();
 const long ReactiveNavigationDemoFrame::ID_STATICTEXT2 = wxNewId();
@@ -211,23 +208,23 @@ ReactiveNavigationDemoFrame::ReactiveNavigationDemoFrame(wxWindow* parent,wxWind
 
     //(*Initialize(ReactiveNavigationDemoFrame)
     wxStaticBoxSizer* StaticBoxSizer2;
-    wxFlexGridSizer* FlexGridSizer8;
-    wxFlexGridSizer* FlexGridSizer1;
-    wxFlexGridSizer* FlexGridSizer2;
-    wxFlexGridSizer* FlexGridSizer7;
     wxFlexGridSizer* FlexGridSizer4;
-    wxStaticText* StaticText1;
-    wxStaticBoxSizer* StaticBoxSizer3;
-    wxFlexGridSizer* FlexGridSizer6;
     wxFlexGridSizer* FlexGridSizer3;
     wxFlexGridSizer* FlexGridSizer5;
+    wxFlexGridSizer* FlexGridSizer2;
+    wxStaticText* StaticText1;
+    wxFlexGridSizer* FlexGridSizer7;
+    wxStaticBoxSizer* StaticBoxSizer3;
+    wxFlexGridSizer* FlexGridSizer8;
+    wxFlexGridSizer* FlexGridSizer6;
     wxStaticBoxSizer* StaticBoxSizer1;
+    wxFlexGridSizer* FlexGridSizer1;
 
     Create(parent, id, _("Reactive Navigation Demo - Part of the MRPT project"), wxDefaultPosition, wxDefaultSize, wxDEFAULT_FRAME_STYLE, _T("id"));
     {
-    wxIcon FrameIcon;
-    FrameIcon.CopyFromBitmap(wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("MAIN_ICON")),wxART_FRAME_ICON));
-    SetIcon(FrameIcon);
+    	wxIcon FrameIcon;
+    	FrameIcon.CopyFromBitmap(wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("MAIN_ICON")),wxART_FRAME_ICON));
+    	SetIcon(FrameIcon);
     }
     FlexGridSizer1 = new wxFlexGridSizer(3, 1, 0, 0);
     FlexGridSizer1->AddGrowableCol(0);
@@ -266,22 +263,16 @@ ReactiveNavigationDemoFrame::ReactiveNavigationDemoFrame(wxWindow* parent,wxWind
     FlexGridSizer4->Add(StaticBoxSizer1, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     StaticBoxSizer3 = new wxStaticBoxSizer(wxVERTICAL, Panel1, _("Navigation parameters"));
     FlexGridSizer7 = new wxFlexGridSizer(0, 2, 0, 0);
-    btnEditRobotParams = new wxButton(Panel1, ID_BUTTON6, _("Edit robot parameters..."), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON6"));
-    FlexGridSizer7->Add(btnEditRobotParams, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     btnEditNavParams = new wxButton(Panel1, ID_BUTTON7, _("Edit navig. parameters..."), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON7"));
     FlexGridSizer7->Add(btnEditNavParams, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    FlexGridSizer7->Add(-1,-1,1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     cbInternalParams = new wxCheckBox(Panel1, ID_CHECKBOX2, _("Use external config files:"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX2"));
     cbInternalParams->SetValue(false);
     FlexGridSizer7->Add(cbInternalParams, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     FlexGridSizer7->Add(-1,-1,1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     StaticBoxSizer3->Add(FlexGridSizer7, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
-    FlexGridSizer8 = new wxFlexGridSizer(2, 2, 0, 0);
+    FlexGridSizer8 = new wxFlexGridSizer(1, 2, 0, 0);
     FlexGridSizer8->AddGrowableCol(1);
-    StaticText5 = new wxStaticText(Panel1, ID_STATICTEXT5, _("Robot parameters:"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT5"));
-    FlexGridSizer8->Add(StaticText5, 1, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5);
-    edRobotCfgFile = new wxTextCtrl(Panel1, ID_TEXTCTRL5, _("./CONFIG_RobotDescription.ini"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_TEXTCTRL5"));
-    edRobotCfgFile->Disable();
-    FlexGridSizer8->Add(edRobotCfgFile, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     StaticText6 = new wxStaticText(Panel1, ID_STATICTEXT6, _("Navigation parameters:"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT6"));
     FlexGridSizer8->Add(StaticText6, 1, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5);
     edNavCfgFile = new wxTextCtrl(Panel1, ID_TEXTCTRL6, _("./CONFIG_ReactiveNavigator.ini"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_TEXTCTRL6"));
@@ -325,7 +316,7 @@ ReactiveNavigationDemoFrame::ReactiveNavigationDemoFrame(wxWindow* parent,wxWind
     StatusBar1->SetStatusStyles(2,__wxStatusBarStyles_1);
     SetStatusBar(StatusBar1);
     timSimulate.SetOwner(this, ID_TIMER1);
-    timSimulate.Start(20, true);
+    timSimulate.Start(20, false);
     FlexGridSizer1->Fit(this);
     FlexGridSizer1->SetSizeHints(this);
     Center();
@@ -334,7 +325,6 @@ ReactiveNavigationDemoFrame::ReactiveNavigationDemoFrame(wxWindow* parent,wxWind
     Connect(ID_BUTTON2,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&ReactiveNavigationDemoFrame::OnbtnPauseClick);
     Connect(ID_BUTTON3,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&ReactiveNavigationDemoFrame::OnbtnExitClick);
     Connect(ID_CHECKBOX1,wxEVT_COMMAND_CHECKBOX_CLICKED,(wxObjectEventFunction)&ReactiveNavigationDemoFrame::OnrbExtMapSelect);
-    Connect(ID_BUTTON6,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&ReactiveNavigationDemoFrame::OnbtnEditRobotParamsClick);
     Connect(ID_BUTTON7,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&ReactiveNavigationDemoFrame::OnbtnEditNavParamsClick);
     Connect(ID_CHECKBOX2,wxEVT_COMMAND_CHECKBOX_CLICKED,(wxObjectEventFunction)&ReactiveNavigationDemoFrame::OncbInternalParamsClick);
     Connect(ID_BUTTON4,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&ReactiveNavigationDemoFrame::OnbtnNavigateClick);
@@ -396,27 +386,123 @@ ReactiveNavigationDemoFrame::ReactiveNavigationDemoFrame(wxWindow* parent,wxWind
 	myRedirector = new CMyRedirector( edLog, true, 10 );
 
 	// Create dialogs:
-	iniEditorRobot = new CIniEditor(this);
 	iniEditoreactivenav = new CIniEditor(this);
 
-	iniEditorRobot->edText->SetValue( wxT("; ---------------------------------------------------------------\n; FILE: CONFIG_RobotDescription.ini\n;\n;  All robot dependent modules should look here to determine\n;   the actual running platform. The posibilities are:\n;\t-> \"Sancho\"\n;\t-> \"Sena\"\n;  Some physical description parameters are stored for each \n;    robot.\n;\n;  JLBC @ OCT-2005\n; ---------------------------------------------------------------\n[ROBOT_NAME]\nName=SYMCAR\n\n; -------------------------------\n;\t       SYMCAR\n; -------------------------------\n[SYMCAR]\nPLS_Pose_x=0 ; Laser range scaner 3D position in the robot\nPLS_Pose_y=0\nPLS_Pose_z=0.31\nPLS_Pose_yaw=0\t\t; Angles in degrees\nPLS_Pose_pitch=0\nPLS_Pose_roll=0\n\n") );
-
-	// VC2003 complains about the too big string:
-	wxString	auxStr = wxT("; ---------------------------------------------------------------\n; FILE: CONFIG_ReactiveNavigator.ini\n;\n;  In this file there are parameters to the reactive navigation\n;   module.\n;\n;  JLBC @ OCT-2005\n; ---------------------------------------------------------------\n\n\n[GLOBAL_CONFIG]\n; 0: VFF,  1: ND\nHOLONOMIC_METHOD=1\nALARM_SEEMS_NOT_APPROACHING_TARGET_TIMEOUT=100\n\n; ----------------------------------------------------\n;\tParameters for the \"Nearness diagram\" Holonomic method\n; ----------------------------------------------------\n[ND_CONFIG]\nfactorWeights=1.0 0.5 2.0 0.4\n; 1: Free space\n; 2: Dist. in sectors\n; 3: Closer to target (euclidean)\n; 4: Hysteresis\nWIDE_GAP_SIZE_PERCENT=0.50\nMAX_SECTOR_DIST_FOR_D2_PERCENT=0.25\n");
-	auxStr << wxT("RISK_EVALUATION_SECTORS_PERCENT=0.25\nRISK_EVALUATION_DISTANCE=0.15\t\t; In normalized ps-meters [0,1]\nTARGET_SLOW_APPROACHING_DISTANCE=1.00\t; For stop gradually\nTOO_CLOSE_OBSTACLE=0.02\t\t\t; In normalized ps-meters\n\n\n; ----------------------------------------------------\n;\tParameters for the navigation on ROBOT: \"SYM_CAR\"\n; ----------------------------------------------------\n[SYMCAR]\nweights=0.5 0.05 0.5 2.0 0.5 0.1\n; 1: Free space\n; 2: Dist. in sectors\t\t\t\n; 3: Heading toward target\n; 4: Closer to target (euclidean)\n; 5: Hysteresis\n; 6: Security Distance\n\nDIST_TO_TARGET_FOR_SENDING_EVENT=1.25\t; Minimum. distance to target for sending the end event. Set to 0 to send it just on navigation end\n\nMinObstaclesHeight=0.0 \t\t; Minimum coordinate in the \"z\" axis for an obstacle to be taken into account.\nMaxObstaclesHeight=1.40 \t\t; Maximum coordinate in the \"z\" axis for an obstacle to be taken into account.\n\nrobotMax_V_mps=2.00\t\t\t; Speed limits\nrobotMax_W_degps=120\n\nMAX_REFERENCE_DISTANCE=3.50\nWIDE_GAP_SIZE_PERCENT=0.40\nRISK_EVALUATION_DISTANCE=0.5\nRISK_EVALUATION_SECTORS_PERCENT=0.20\nMAX_SECTOR_DIST_FOR_D2_PERCENT=0.25\nRESOLUCION_REJILLA_X=0.03\nRESOLUCION_REJILLA_Y=0.03\n\nPTG_COUNT=3\n\n; \t\tC-PTGs:\n; ------------------------------------\nPTG0_Type=1\nPTG0_nAlfas=300\nPTG0_v_max_mps=2.0\nPTG0_w_max_gps=120\nPTG0_K=1.0\n\nPTG1_Type=1\nPTG1_nAlfas=300\nPTG1_v_max_mps=2.0\nPTG1_w_max_gps=120\nPTG1_K=-1.0\n\n\n; \t     a-A type PTGs:\n; ------------------------------------\nPTG2_Type=2\nPTG2_nAlfas=300\nPTG2_v_max_mps=2.0\nPTG2_w_max_gps=120\nPTG2_cte_a0v_deg=40\nPTG2_cte_a0w_deg=50\n\n\nRobotModel_shape2D_xs=-0.2 0.5 0.5 -0.2\nRobotModel_shape2D_ys=0.3 0.3 -0.3 -0.3\n");
+	const std::string sAux = 
+"# ----------------------------------------------------------------------\n"
+"# Example configuration file for MRPTs Reactive Navigation engine.\n"
+"# See C++ documentation: http://reference.mrpt.org/svn/classmrpt_1_1nav_1_1_c_reactive_navigation_system.html\n"
+"# See ROS node documentation: http://wiki.ros.org/mrpt_reactivenav2d\n"
+"# ------------------------------------------------------------------------\n"
+"\n"
+"[GLOBAL_CONFIG]\n"
+"# 0: Virtual Force Field\n"
+"# 1: Nearness Diagram (ND)\n"
+"HOLONOMIC_METHOD=1\n"
+"\n"
+"ALARM_SEEMS_NOT_APPROACHING_TARGET_TIMEOUT=100    # (ms)\n"
+"\n"
+"#    Parameters for the \"Nearness diagram\" Holonomic method\n"
+"# ----------------------------------------------------\n"
+"[ND_CONFIG]\n"
+"factorWeights=1.0 0.5 2.0 0.5\n"
+"# 1: Free space\n"
+"# 2: Dist. in sectors\n"
+"# 3: Closer to target (euclidean)\n"
+"# 4: Hysteresis\n"
+"WIDE_GAP_SIZE_PERCENT            = 0.25\n"
+"MAX_SECTOR_DIST_FOR_D2_PERCENT   = 0.25\n"
+"RISK_EVALUATION_SECTORS_PERCENT  = 0.25\n"
+"RISK_EVALUATION_DISTANCE         = 0.5  # In normalized ps-meters [0,1]\n"
+"TARGET_SLOW_APPROACHING_DISTANCE = 0.8    # For stop gradually\n"
+"TOO_CLOSE_OBSTACLE               = 0.03 # In normalized ps-meters\n"
+"\n"
+"#    Parameters for the \"VFF\" Holonomic method\n"
+"# ----------------------------------------------------\n"
+"[VFF_CONFIG]\n"
+"# Used to decrease speed gradually when the target is going to be reached\n"
+"TARGET_SLOW_APPROACHING_DISTANCE = 0.8    \n"
+"# Use it to control the relative weight of the target respect to the obstacles\n"
+"TARGET_ATTRACTIVE_FORCE = 7.5\n"
+"\n"
+"# ----------------------------------------------------\n"
+"#    Parameters for navigation\n"
+"# ----------------------------------------------------\n"
+"[ReactiveParams]\n"
+"weights=0.5 0.05 0.5 2.0 0.2 0.1\n"
+"# 1: Free space\n"
+"# 2: Dist. in sectors            \n"
+"# 3: Heading toward target\n"
+"# 4: Closer to target (euclidean)\n"
+"# 5: Hysteresis\n"
+"# 6: Security Distance\n"
+"\n"
+"DIST_TO_TARGET_FOR_SENDING_EVENT=0.6    # Minimum. distance to target for sending the end event. Set to 0 to send it just on navigation end\n"
+"\n"
+"MinObstaclesHeight=0.0         # Minimum coordinate in the \"z\" axis for an obstacle to be taken into account.\n"
+"MaxObstaclesHeight=1.40     # Maximum coordinate in the \"z\" axis for an obstacle to be taken into account.\n"
+"\n"
+"robotMax_V_mps   = 1.0        # Speed limits\n"
+"robotMax_W_degps = 60\n"
+"\n"
+"MAX_REFERENCE_DISTANCE  = 8.0       # Maximum distance to build PTGs (in meters), i.e. the visibility \"range\" of tentative paths\n"
+"LUT_CELL_SIZE           = 0.05      # Look-up-table cell size, or resolution (in meters)\n"
+"\n"
+"# The constant time of a first-order low-pass filter of outgoing speed commands, \n"
+"# i.e. can be used to impose a maximum acceleration.\n"
+"SPEEDFILTER_TAU         = 0         \n"
+"\n"
+"# PTGs: See classes derived from mrpt::nav::CParameterizedTrajectoryGenerator ( http://reference.mrpt.org/svn/classmrpt_1_1nav_1_1_c_parameterized_trajectory_generator.html)# refer to papers for details.\n"
+"#------------------------------------------------------------------------------\n"
+"# Types:\n"
+"# 1 - Circular arcs \n\"\n"
+"# 2 - alpha - A, Trajectories with asymptotical heading\n"
+"# 3 - C|C,S, R = vmax/wmax, Trajectories to move backward and then forward\n"
+"# 4 - C|C,s, like PTG 3, but if t > threshold -> v = w = 0\n"
+"# 5 - CS, Trajectories with a minimum turning radius\n"
+"# 6 - alpha - SP, Trajectories built upon a spiral segment\n"
+"\n"
+"PTG_COUNT      = 3\n"
+"\n"
+"PTG0_Type      = 1\n"
+"PTG0_nAlfas    = 121\n"
+"PTG0_v_max_mps = 1.0\n"
+"PTG0_w_max_gps = 60\n"
+"PTG0_K         = 1.0\n"
+"\n"
+"PTG1_Type        = 2\n"
+"PTG1_nAlfas      = 121\n"
+"PTG1_v_max_mps   = 1.0\n"
+"PTG1_w_max_gps   = 60\n"
+"PTG1_cte_a0v_deg = 57\n"
+"PTG1_cte_a0w_deg = 57\n"
+"\n"
+"PTG2_Type      = 1\n"
+"PTG2_nAlfas    = 121\n"
+"PTG2_v_max_mps = 1.0\n"
+"PTG2_w_max_gps = 60\n"
+"PTG2_K         = -1.0\n"
+"\n"
+"\n"
+"# Default 2D robot shape for collision checks: (ignored in ROS, superseded by node parameters)\n"
+"RobotModel_shape2D_xs=-0.2 0.5 0.5 -0.2\n"
+"RobotModel_shape2D_ys=0.3 0.3 -0.3 -0.3\n"
+"\n"
+"ROBOTMODEL_DELAY=0  # (un-used param, must be present for compat. with old mrpt versions)\n"
+"ROBOTMODEL_TAU=0 # (un-used param, must be present for compat. with old mrpt versions)\n"
+;
+	const wxString	auxStr = _U(sAux.c_str());
 
 	iniEditoreactivenav->edText->SetValue( auxStr );
 
-	EDIT_internalCfgRobot = string( iniEditorRobot->edText->GetValue().mb_str() );
 	EDIT_internalCfgReactive = string( iniEditoreactivenav->edText->GetValue().mb_str() );
-
 
 	// Try to load the map:
 	reloadMap();
 	reloadRobotShape();
 
 	// Set simulator params:
-    plot->Fit();
+	plot->Fit();
 }
 
 ReactiveNavigationDemoFrame::~ReactiveNavigationDemoFrame()
@@ -427,7 +513,6 @@ ReactiveNavigationDemoFrame::~ReactiveNavigationDemoFrame()
     delete reacNavObj; reacNavObj = NULL;
 	delete myRedirector; myRedirector = NULL;
 
-	delete iniEditorRobot;
 	delete iniEditoreactivenav;
 }
 
@@ -475,38 +560,28 @@ void ReactiveNavigationDemoFrame::OnbtnExitClick(wxCommandEvent& event)
     Close();
 }
 
-// both objects must be DELETED by the caller!
+// objects must be DELETED by the caller!
 void createConfigSources(
 	ReactiveNavigationDemoFrame *frame,
-	CConfigFileBase    *& iniReactive,
-	CConfigFileBase    *& configRobotIni )
+	CConfigFileBase    *& iniReactive)
 {
 	// Set config files/internal data:
 	if ( frame->cbInternalParams->GetValue() )
 	{
 		// Use external files:
 		string filReac( frame->edNavCfgFile->GetValue().mb_str()  );
-		string filRobot( frame->edRobotCfgFile->GetValue().mb_str() );
 
 		if ( !mrpt::system::fileExists( filReac ))
 		{
 			wxMessageBox( _U( format("Cannot open file : '%s'",filReac.c_str()).c_str()), wxT("Error"), wxOK, frame);
 			return;
 		}
-		if ( !mrpt::system::fileExists( filRobot ))
-		{
-			wxMessageBox( _U( format("Cannot open file : '%s'",filRobot.c_str()).c_str()), wxT("Error"), wxOK, frame);
-			return;
-		}
-
 		iniReactive = new CConfigFile( filReac );
-		configRobotIni = new CConfigFile( filRobot );
 	}
 	else
 	{
 		// Use internal strings:
 		iniReactive = new CConfigFileMemory( EDIT_internalCfgReactive );
-		configRobotIni = new CConfigFileMemory( EDIT_internalCfgRobot );
 	}
 }
 
@@ -516,11 +591,11 @@ void ReactiveNavigationDemoFrame::tryConstructReactiveNavigator()
 	{
 		myReactiveInterface.the_frame = this;
 
-		CConfigFileBase    *iniReactive=NULL, *configRobotIni=NULL;
+		CConfigFileBase    *iniReactive=NULL;
 
 		// Get ini-data:
-		createConfigSources(this, iniReactive, configRobotIni );
-		if (!iniReactive || !configRobotIni) return;
+		createConfigSources(this, iniReactive);
+		if (!iniReactive) return;
 
 		if (!reacNavObj)
 		{
@@ -536,12 +611,9 @@ void ReactiveNavigationDemoFrame::tryConstructReactiveNavigator()
 		}
 
 		// Reload config:
-		reacNavObj->loadConfigFile(
-			*iniReactive,
-			*configRobotIni );
+		reacNavObj->loadConfigFile(*iniReactive);
 
 		delete iniReactive;
-		delete configRobotIni;
 
 		// load robot shape:
 		reloadRobotShape();
@@ -679,16 +751,11 @@ void ReactiveNavigationDemoFrame::OnreactivenavTargetMenu(wxCommandEvent& event)
 
 void ReactiveNavigationDemoFrame::OntimSimulateTrigger(wxTimerEvent& event)
 {
-	WX_START_TRY
-
 	static bool IamIN = false;
-
-	if (IamIN)
-		return;
-
-
+	if (IamIN) return;
 	IamIN=true;
 
+	WX_START_TRY
 
 	if ( btnStart->IsEnabled() )
 	{
@@ -699,7 +766,11 @@ void ReactiveNavigationDemoFrame::OntimSimulateTrigger(wxTimerEvent& event)
 		return; // We are paused!
 	}
 
-	ASSERT_(reacNavObj!=NULL);
+	if (reacNavObj==NULL)
+	{
+		IamIN=false;
+		return;
+	}
 
 	// Enable/disable log files on-the-fly:
 	reacNavObj->enableLogFile( cbLog->GetValue() );
@@ -750,10 +821,8 @@ void ReactiveNavigationDemoFrame::OntimSimulateTrigger(wxTimerEvent& event)
 	// Set timer to continue simulation:
     //timSimulate.Start(SIMULATION_TIME_STEPS, true); // One-shot
 
-
-	IamIN=false;
-
 	WX_END_TRY
+	IamIN=false;
 }
 
 void ReactiveNavigationDemoFrame::reloadRobotShape()
@@ -761,18 +830,17 @@ void ReactiveNavigationDemoFrame::reloadRobotShape()
 	try
 	{
 		// Get ini-data:
-		CConfigFileBase    *iniReactive=NULL, *configRobotIni=NULL;
-		createConfigSources(this, iniReactive, configRobotIni );
-		if (!iniReactive || !configRobotIni) return;
+		CConfigFileBase    *iniReactive=NULL;
+		createConfigSources(this, iniReactive);
+		if (!iniReactive) return;
 
-		string robotName = configRobotIni->read_string("ROBOT_NAME","Name","SENA");
+		const string sectName = "ReactiveParams";
 		vector<float> xs,ys;
 
-		iniReactive->read_vector(robotName,"RobotModel_shape2D_xs",vector<float>(0), xs, true );
-		iniReactive->read_vector(robotName,"RobotModel_shape2D_ys",vector<float>(0), ys, true );
+		iniReactive->read_vector(sectName,"RobotModel_shape2D_xs",vector<float>(0), xs, true );
+		iniReactive->read_vector(sectName,"RobotModel_shape2D_ys",vector<float>(0), ys, true );
 
 		delete iniReactive; iniReactive=NULL;
-		delete configRobotIni; configRobotIni=NULL;
 
 		lyVehicle->setPoints(xs,ys,true);
 	}
@@ -785,13 +853,6 @@ void ReactiveNavigationDemoFrame::reloadRobotShape()
 
 void ReactiveNavigationDemoFrame::OnbtnResetClick(wxCommandEvent& event)
 {
-}
-
-void ReactiveNavigationDemoFrame::OnbtnEditRobotParamsClick(wxCommandEvent& event)
-{
-	iniEditorRobot->Center();
-    if (iniEditorRobot->ShowModal())
-		EDIT_internalCfgRobot = string( iniEditorRobot->edText->GetValue().mb_str() );
 }
 
 void ReactiveNavigationDemoFrame::OnbtnEditNavParamsClick(wxCommandEvent& event)
@@ -808,10 +869,7 @@ void ReactiveNavigationDemoFrame::OnrbExtMapSelect(wxCommandEvent& event)
 
 void ReactiveNavigationDemoFrame::OncbInternalParamsClick(wxCommandEvent& event)
 {
-    btnEditRobotParams->Enable( ! cbInternalParams->GetValue() );
     btnEditNavParams->Enable( ! cbInternalParams->GetValue() );
-
-    edRobotCfgFile->Enable( cbInternalParams->GetValue() );
     edNavCfgFile->Enable( cbInternalParams->GetValue() );
 }
 

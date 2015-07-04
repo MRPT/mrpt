@@ -309,6 +309,7 @@ IF(BUILD_EXAMPLES)
 			openNI2_RGBD_demo
 			openNI2_proximity_demo
 			openNI2_driver_demo
+			openNI2_2d-icp-slam
 			openNI2_to_rawlog)
 			
 		SET(CMAKE_EXAMPLE_DEPS mrpt-base mrpt-hwdrivers mrpt-gui mrpt-opengl mrpt-maps)

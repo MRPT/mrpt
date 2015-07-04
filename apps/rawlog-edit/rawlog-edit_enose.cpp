@@ -74,15 +74,21 @@ DECLARE_OP_FUNCTION(op_export_enose_txt)
 					THROW_EXCEPTION_CUSTOM_MSG1("Cannot open output file for write: %s", fileName.c_str() );
 
 				// The first line is a description of the columns:
-				::fprintf(f_this,
-					"%% "
-					"%14s "				// TIMESTAMP					
-					"%100s "			// SENSOR READINGS
-					"\n"
-					,
-					"TimeStamp",					
-					"E-nose(1)_Temp  E-nose(1)_Readings(1..N) # .. # E-nose(M)_Temp  E-nose(M)_Readings(1..N)"
-					);
+				//------------------------------------------------
+				// Time:
+				::fprintf(f_this, "%% %13s ", "Time");
+
+				//For each E-nose (if more than one)
+				for (size_t j = 0; j<obs->m_readings.size(); j++)
+				{
+					//Temperature
+					::fprintf(f_this, " Temp%u ", j);
+
+					//For each sensor on the E-nose					
+					for (size_t k = 0; k<obs->m_readings[j].readingsVoltage.size(); k++)
+						::fprintf(f_this, " S%u_%u ", j,k);
+				}
+				::fprintf(f_this,"\n");
 			}
 			else
 				f_this = it->second;
@@ -110,7 +116,7 @@ DECLARE_OP_FUNCTION(op_export_enose_txt)
 					::fprintf(f_this, "%5.5f ", *it);
 
 				//Separation between different e-noses in the observation
-				::fprintf(f_this, "# ");
+				//::fprintf(f_this, "# ");
 			}
 			
 			::fprintf(f_this, "\n");

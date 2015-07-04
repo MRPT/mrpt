@@ -59,5 +59,7 @@ void registerAllClasses_mrpt_hwdrivers()
 	CCANBusReader::doRegister();
 	CNationalInstrumentsDAQ::doRegister();
 	CGPS_NTRIP::doRegister();
+	CIMUIntersense::doRegister();
+	CSkeletonTracker::doRegister();
 }
 

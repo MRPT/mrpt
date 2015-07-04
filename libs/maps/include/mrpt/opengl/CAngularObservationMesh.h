@@ -382,7 +382,7 @@ namespace opengl	{
 		template<class T> static void trace1DSetOfRays(const T &e,const mrpt::poses::CPose3D &initial,mrpt::obs::CObservation2DRangeScan &obs,const TDoubleRange &yaws)	{
 			std::vector<double> yValues;
 			yaws.values(yValues);
-			std::vector<double> scanValues;
+			std::vector<float> scanValues;
 			std::vector<char> valid;
 			size_t nV=yaws.amount();
 			scanValues.reserve(nV);

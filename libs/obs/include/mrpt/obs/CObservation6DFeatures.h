@@ -12,6 +12,7 @@
 #include <mrpt/utils/CSerializable.h>
 #include <mrpt/obs/CObservation.h>
 #include <mrpt/poses/CPose3D.h>
+#include <mrpt/utils/aligned_containers.h>
 
 namespace mrpt
 {
@@ -44,7 +45,7 @@ namespace obs
 
 			MRPT_MAKE_ALIGNED_OPERATOR_NEW  // Required because we contain Eigen matrices
 		};
-		std::deque<TMeasurement> sensedFeatures; //!< The list of observed features
+		mrpt::aligned_containers<TMeasurement>::deque_t sensedFeatures; //!< The list of observed features
 
 		mrpt::poses::CPose3D sensorPose; //!< The pose of the sensor on the robot/vehicle
 

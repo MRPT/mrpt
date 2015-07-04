@@ -1,7 +1,7 @@
 # This file is a parsed version for mrpt_pkgconfig_LIBNAME= @mrpt_pkgconfig_LIBNAME@
 prefix=@mrpt_pkgconfig_INSTALL_PREFIX@
 exec_prefix=${prefix}
-libdir=${exec_prefix}@CMAKE_INSTALL_LIBDIR@
+libdir=${exec_prefix}/@CMAKE_INSTALL_LIBDIR@
 includedir=${prefix}/include
 
 Name: The mrpt-@mrpt_pkgconfig_LIBNAME@ library

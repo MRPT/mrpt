@@ -178,10 +178,12 @@ namespace mrpt
 		  */
 		inline void  crossProduct(const CQuaternion &q1, const CQuaternion &q2)
 		{
-			this->r(  q1.r()*q2.r() - q1.x()*q2.x() - q1.y()*q2.y() - q1.z()*q2.z() );
-			this->x(  q1.r()*q2.x() + q2.r()*q1.x() + q1.y()*q2.z() - q2.y()*q1.z() );
-            this->y(  q1.r()*q2.y() + q2.r()*q1.y() + q1.z()*q2.x() - q2.z()*q1.x() );
-			this->z(  q1.r()*q2.z() + q2.r()*q1.z() + q1.x()*q2.y() - q2.x()*q1.y() );
+			// First: compute result, then save in this object. In this way we avoid problems when q1 or q2 == *this !!
+			const T new_r = q1.r()*q2.r() - q1.x()*q2.x() - q1.y()*q2.y() - q1.z()*q2.z();
+			const T new_x = q1.r()*q2.x() + q2.r()*q1.x() + q1.y()*q2.z() - q2.y()*q1.z();
+			const T new_y = q1.r()*q2.y() + q2.r()*q1.y() + q1.z()*q2.x() - q2.z()*q1.x();
+			const T new_z = q1.r()*q2.z() + q2.r()*q1.z() + q1.x()*q2.y() - q2.x()*q1.y();
+			this->r(new_r); this->x(new_x); this->y(new_y); this->z(new_z);
 			this->normalize();
 		}
 

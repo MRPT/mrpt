@@ -571,7 +571,7 @@ namespace mrpt
 			  * \param x0  The X coordinate of the query.
 			  * \param y0  The Y coordinate of the query.
 			  * \param z0  The Z coordinate of the query.
-			  * \param maxRadius The search radius.
+			  * \param maxRadiusSqr The square of the desired search radius.
 			  * \param out_indices_dist The output list, with pairs of indeces/squared distances for the found correspondences.
 			  * \return Number of found points.
 			  *
@@ -579,7 +579,7 @@ namespace mrpt
 			  */
 			inline size_t kdTreeRadiusSearch3D(
 				const num_t x0, const num_t y0, const num_t z0,
-				const num_t maxRadius,
+				const num_t maxRadiusSqr,
 				std::vector<std::pair<size_t,num_t> >& out_indices_dist ) const
 			{
 				MRPT_START
@@ -588,7 +588,7 @@ namespace mrpt
 				if ( m_kdtree3d_data.m_num_points!=0 )
 				{
 					const num_t xyz[3] = {x0,y0,z0};
-					m_kdtree3d_data.index->radiusSearch(&xyz[0], maxRadius, out_indices_dist, nanoflann::SearchParams(kdtree_search_params.nChecks) );
+					m_kdtree3d_data.index->radiusSearch(&xyz[0], maxRadiusSqr, out_indices_dist, nanoflann::SearchParams(kdtree_search_params.nChecks) );
 				}
 				return out_indices_dist.size();
 				MRPT_END
@@ -602,7 +602,7 @@ namespace mrpt
 			  *
 			  * \param x0  The X coordinate of the query.
 			  * \param y0  The Y coordinate of the query.
-			  * \param maxRadius The search radius.
+			  * \param maxRadiusSqr The square of the desired search radius.
 			  * \param out_indices_dist The output list, with pairs of indeces/squared distances for the found correspondences.
 			  * \return Number of found points.
 			  *
@@ -610,7 +610,7 @@ namespace mrpt
 			  */
 			inline size_t kdTreeRadiusSearch2D(
 				const num_t x0, const num_t y0,
-				const num_t maxRadius,
+				const num_t maxRadiusSqr,
 				std::vector<std::pair<size_t,num_t> >& out_indices_dist ) const
 			{
 				MRPT_START
@@ -619,7 +619,7 @@ namespace mrpt
 				if ( m_kdtree2d_data.m_num_points!=0 )
 				{
 					const num_t xyz[2] = {x0,y0};
-					m_kdtree2d_data.index->radiusSearch(&xyz[0], maxRadius, out_indices_dist, nanoflann::SearchParams(kdtree_search_params.nChecks) );
+					m_kdtree2d_data.index->radiusSearch(&xyz[0], maxRadiusSqr, out_indices_dist, nanoflann::SearchParams(kdtree_search_params.nChecks) );
 				}
 				return out_indices_dist.size();
 				MRPT_END

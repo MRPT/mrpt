@@ -377,14 +377,34 @@ void navlog_viewer_GUI_designDialog::UpdateInfoFromLoadedLog()
 		this->slidLog->SetValue(0);
 		wxScrollEvent d;
 		OnslidLogCmdScroll(d);
+
+		CDisplayWindowPlotsPtr &win = m_mywins["VW"];
+		if (!win)  {
+			win= CDisplayWindowPlots::Create("Commanded v (red)/w (blue)",400,200);
+			win->setPos(900,20);
+			win->axis(-5,5,-5,5, true);
+		}
+
+		std::vector<double> vs(N),ws(N);
+		for (size_t i=0;i<N;i++)
+		{
+			CLogFileRecordPtr logptr = CLogFileRecordPtr(m_logdata[i]);
+			const CLogFileRecord &log = *logptr;
+			vs[i] = log.v;
+			ws[i] = log.w;
+		}
+		win->clf();
+		win->plot(vs,"r-","v1"); win->plot(vs,"r2.","v2");
+		win->plot(ws,"b-","w1"); win->plot(ws,"b2.","w2");
+		win->axis_fit();
 	}
 
-    std::string sDuration("???");
+	std::string sDuration("???");
 	if (m_log_first_tim != INVALID_TIMESTAMP && m_log_last_tim!=INVALID_TIMESTAMP)
 	{
-	    sDuration = mrpt::system::intervalFormat( mrpt::system::timeDifference(m_log_first_tim,m_log_last_tim) );
+		sDuration = mrpt::system::intervalFormat( mrpt::system::timeDifference(m_log_first_tim,m_log_last_tim) );
 	}
-    this->txtLogDuration->SetLabel( _U(sDuration.c_str()));;
+	this->txtLogDuration->SetLabel( _U(sDuration.c_str()));;
 
     flexGridRightHand->RecalcSizes();
     this->Fit();
@@ -492,6 +512,19 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 
 
 	} // end for each PTG
+
+	// Draw time cursor in v/w plots:
+	{
+		CDisplayWindowPlotsPtr &win = m_mywins["VW"];
+		if (win)
+		{
+			std::vector<double> xs(2),ys(2);
+			xs[0] = i; xs[1] = i; 
+			ys[0] = -2.0; ys[1] = 2.0; 
+			win->plot(xs,ys,"k-3","cursor_time");
+		}
+	}
+
 
 	WX_END_TRY
 }

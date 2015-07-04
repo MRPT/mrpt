@@ -85,8 +85,7 @@ void CReactiveNavigationSystem3D::loadConfigFile(const mrpt::utils::CConfigFileB
 
 	// Load config from INI file:
 	// ------------------------------------------------------------
-
-	robotName = ini.read_string("ROBOT_CONFIG","Name", "", true );
+	robotName = ini.read_string("ROBOT_CONFIG","Name", "MyRobot", false );
 
 	unsigned int num_levels;
 	vector <float> xaux,yaux;
@@ -184,7 +183,6 @@ void CReactiveNavigationSystem3D::loadConfigFile(const mrpt::utils::CConfigFileB
 	printf_debug("\tLOADED CONFIGURATION:\n");
 	printf_debug("-------------------------------------------------------------\n");
 
-	printf_debug("  Robot name \t\t\t=%s\n",robotName.c_str());
 	ASSERT_(!m_holonomicMethod.empty())
 	printf_debug("  Holonomic method \t\t= %s\n",typeid(m_holonomicMethod[0]).name());
 	printf_debug("  PTG Count\t\t\t= %u\n", num_ptgs );
