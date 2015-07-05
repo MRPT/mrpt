@@ -14,9 +14,10 @@
 
 <a name="1.3.1">
   <h2>Version 1.3.1: (Under development) </h2></a>
-	- <b>Most important changes:</b>
-		- (none yet)
-	- <b>Detailed list of changes:</b>
+	- Changes in apps:
+		- [navlog-viewer](http://www.mrpt.org/list-of-mrpt-apps/application-navlog-viewer/):
+			- Now shows more information on navigation logs.
+	- Changes in libraries:
 		- \ref mrpt_base_grp
 			- New helper templates: mrpt::utils::int_select_by_bytecount<>, mrpt::utils::uint_select_by_bytecount<>
 		- \ref mrpt_hwdrivers_grp
@@ -38,7 +39,7 @@
 			- New class mrpt::obs::CObservationSkeleton to hold body tracking information (by Francisco Angel Moreno)
 		- \ref mrpt_vision_grp
 			- mrpt::vision::CImageGrabber_dc1394: Changed default Bayer filter from NEAREST to HQLINEAR
-		- BUG FIXES:
+	- BUG FIXES:
 			- Fix ocasional (false) failure of RANSAC unit tests due to their non-deterministic nature.
 			- Fix build error with MSVC 2010 in mrpt-hmtslam (Closes #127).
 			- Fixed potential wrong bounding box results in mrpt::maps::CPointsMap::boundingBox() when SSE2 optimization is enabled.

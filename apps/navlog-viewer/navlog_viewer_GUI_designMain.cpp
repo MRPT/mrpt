@@ -33,6 +33,7 @@
 #include <mrpt/system.h>
 #include <mrpt/utils/CFileInputStream.h>
 #include <mrpt/math/utils.h>
+#include <mrpt/utils/printf_vector.h>
 #include <mrpt/opengl/CSetOfLines.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/CPointCloud.h>
@@ -251,6 +252,10 @@ navlog_viewer_GUI_designDialog::~navlog_viewer_GUI_designDialog()
 {
     //(*Destroy(navlog_viewer_GUI_designDialog)
     //*)
+	// Clean all windows:
+	this->m_mywins.clear();
+	this->m_mywins3D.clear();
+	mrpt::system::sleep(100);
 }
 
 // ---------------------------------------------------------
@@ -478,6 +483,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 					gl_obs = mrpt::opengl::CPointCloud::Create();
 					gl_obs->setName("obs");
 					gl_obs->setPointSize(3.0);
+					gl_obs->setColor_u8( mrpt::utils::TColor(0x00,0x00,0xff));
 					scene->insert(gl_obs);
 				} else {
 					gl_obs = mrpt::opengl::CPointCloudPtr(gl_obs_r);
@@ -546,6 +552,29 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 			}
 
 			win1->unlockAccess3DScene();
+		}
+
+		// Show extra info as text msgs:
+		// ---------------------------------
+		const double fy = 10, Ay = 15;   // Font size & line spaces
+
+		win1->addTextMessage(5.0, 5+0*Ay, mrpt::format("Timestamp: %s",mrpt::system::dateTimeLocalToString( log.timestamp ).c_str()),
+				mrpt::utils::TColorf(1,1,1), "mono", fy, mrpt::opengl::NICE,  0 /*unique txt index*/ );
+		win1->addTextMessage(5.0, 5+1*Ay, mrpt::format("cmd_{v,w}={%5.02f m/s,%5.02f deg/s} current_{v,w}={%5.02f m/s,%5.02f deg/s}",log.v, RAD2DEG(log.w), log.actual_v,RAD2DEG(log.actual_w) ),
+				mrpt::utils::TColorf(1,1,1), "mono", fy, mrpt::opengl::NICE,  1 /*unique txt index*/ );
+		for (unsigned int nPTG=0;nPTG<log.nPTGs;nPTG++)
+		{
+			const CLogFileRecord::TInfoPerPTG &pI = log.infoPerPTG[nPTG];
+
+			mrpt::utils::TColorf col; 
+			if (nPTG==log.nSelectedPTG)
+			     col = mrpt::utils::TColorf(1,1,1);
+			else col = mrpt::utils::TColorf(.8,.8,.8);
+
+			win1->addTextMessage(5.0, 5+ Ay*(2+nPTG),
+				mrpt::format("PTG#%u: Eval=%5.03f factors=%s", nPTG, pI.evaluation, sprintf_vector("%5.02f ", pI.evalFactors).c_str() ),
+				col, "mono", fy, mrpt::opengl::NICE,  10+nPTG /*unique txt index*/ );
+
 		}
 
 		win1->repaint();
