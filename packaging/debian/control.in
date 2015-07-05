@@ -74,7 +74,7 @@ Description: Mobile Robot Programming Toolkit - base library
  (obstacle avoidance).
  .
  This package includes the mrpt-base library. 
- . 
+ .
  More about MRPT libraries in: http://www.mrpt.org/Libraries
 
 Package: libmrpt-opengl@MRPT_VER_MM@
@@ -92,7 +92,7 @@ Description: Mobile Robot Programming Toolkit - opengl library
  (obstacle avoidance).
  .
  This package includes the mrpt-opengl library. 
- . 
+ .
  More about MRPT libraries in: http://www.mrpt.org/Libraries
 
 
@@ -111,7 +111,7 @@ Description: Mobile Robot Programming Toolkit - gui library
  (obstacle avoidance).
  .
  This package includes the mrpt-gui library. 
- . 
+ .
  More about MRPT libraries in: http://www.mrpt.org/Libraries
 
 Package: libmrpt-obs@MRPT_VER_MM@
@@ -129,7 +129,7 @@ Description: Mobile Robot Programming Toolkit - obs library
  (obstacle avoidance).
  .
  This package includes the mrpt-obs library. 
- . 
+ .
  More about MRPT libraries in: http://www.mrpt.org/Libraries
 
 Package: libmrpt-maps@MRPT_VER_MM@
@@ -147,7 +147,7 @@ Description: Mobile Robot Programming Toolkit - maps library
  (obstacle avoidance).
  .
  This package includes the mrpt-maps library. 
- . 
+ .
  More about MRPT libraries in: http://www.mrpt.org/Libraries
 
 
@@ -167,7 +167,7 @@ Description: Mobile Robot Programming Toolkit - hwdrivers library
  (obstacle avoidance).
  .
  This package includes the mrpt-hwdrivers library. 
- . 
+ .
  More about MRPT libraries in: http://www.mrpt.org/Libraries
 
 
@@ -186,7 +186,7 @@ Description: Mobile Robot Programming Toolkit - vision library
  (obstacle avoidance).
  .
  This package includes the mrpt-vision library. 
- . 
+ .
  More about MRPT libraries in: http://www.mrpt.org/Libraries
 
 Package: libmrpt-tfest@MRPT_VER_MM@
@@ -224,7 +224,7 @@ Description: Mobile Robot Programming Toolkit - topography library
  (obstacle avoidance).
  .
  This package includes the mrpt-topography library. 
- . 
+ .
  More about MRPT libraries in: http://www.mrpt.org/Libraries
 
 
@@ -245,7 +245,7 @@ Description: Mobile Robot Programming Toolkit - detectors library
  (obstacle avoidance).
  .
  This package includes the mrpt-detectors library. 
- . 
+ .
  More about MRPT libraries in: http://www.mrpt.org/Libraries
 
 
@@ -266,7 +266,7 @@ Description: Mobile Robot Programming Toolkit - slam library
  (obstacle avoidance).
  .
  This package includes the mrpt-slam library. 
- . 
+ .
  More about MRPT libraries in: http://www.mrpt.org/Libraries
 
 
@@ -285,7 +285,7 @@ Description: Mobile Robot Programming Toolkit - nav library
  (obstacle avoidance).
  .
  This package includes the mrpt-nav library. 
- . 
+ .
  More about MRPT libraries in: http://www.mrpt.org/Libraries
 
 
@@ -304,7 +304,7 @@ Description: Mobile Robot Programming Toolkit - hmtslam library
  (obstacle avoidance).
  .
  This package includes the mrpt-hmtslam library. 
- . 
+ .
  More about MRPT libraries in: http://www.mrpt.org/Libraries
 
 
@@ -323,7 +323,7 @@ Description: Mobile Robot Programming Toolkit - kinematics library
  (obstacle avoidance).
  .
  This package includes the mrpt-kinematics library. 
- . 
+ .
  More about MRPT libraries in: http://www.mrpt.org/Libraries
 
 

@@ -17,6 +17,8 @@
 	- <b>Most important changes:</b>
 		- (none yet)
 	- <b>Detailed list of changes:</b>
+		- \ref mrpt_base_grp
+			- New helper templates: mrpt::utils::int_select_by_bytecount<>, mrpt::utils::uint_select_by_bytecount<>
 		- \ref mrpt_hwdrivers_grp
 			- New sensors supported:
 				- mrpt::hwdrivers::CIMUIntersense
@@ -32,6 +34,7 @@
 				- The loadConfigFile() method with 2 config files has been deprecated favoring the newer, simpler single config file. 
 				- The "ROBOT_NAME" parameter is no longer employed. A minor side effect (probably affecting no one) is that PTG cache files are no longer named differently for different robots.
 		- \ref mrpt_obs_grp
+			- mrpt::obs::CObservation3DRangeScan now supports pixel labels (semantic mapping, etc.)
 			- New class mrpt::obs::CObservationSkeleton to hold body tracking information (by Francisco Angel Moreno)
 		- \ref mrpt_vision_grp
 			- mrpt::vision::CImageGrabber_dc1394: Changed default Bayer filter from NEAREST to HQLINEAR
