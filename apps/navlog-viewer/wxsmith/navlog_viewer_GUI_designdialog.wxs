@@ -214,6 +214,36 @@
 																<border>5</border>
 																<option>1</option>
 															</object>
+															<object class="sizeritem">
+																<object class="wxCheckBox" name="ID_CHECKBOX1" variable="cbDrawShapePath" member="yes">
+																	<label>Draw shape along path</label>
+																	<checked>1</checked>
+																</object>
+																<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+																<border>5</border>
+																<option>1</option>
+															</object>
+															<object class="spacer">
+																<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+																<border>5</border>
+																<option>1</option>
+															</object>
+															<object class="sizeritem">
+																<object class="wxStaticText" name="ID_STATICTEXT8" variable="StaticText5" member="yes">
+																	<label>Shape draw min. dist:</label>
+																</object>
+																<flag>wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL</flag>
+																<border>5</border>
+																<option>1</option>
+															</object>
+															<object class="sizeritem">
+																<object class="wxTextCtrl" name="ID_TEXTCTRL2" variable="edShapeMinDist" member="yes">
+																	<value>1.0</value>
+																</object>
+																<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+																<border>5</border>
+																<option>1</option>
+															</object>
 														</object>
 													</object>
 													<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
@@ -248,12 +278,10 @@
 			</object>
 		</object>
 		<object class="wxTimer" name="ID_TIMER1" variable="timPlay" member="yes">
-			<oneshoot>1</oneshoot>
 			<handler function="OntimPlayTrigger" entry="EVT_TIMER" />
 		</object>
 		<object class="wxTimer" name="ID_TIMER2" variable="timAutoload" member="yes">
 			<interval>20</interval>
-			<oneshoot>1</oneshoot>
 			<handler function="OntimAutoloadTrigger" entry="EVT_TIMER" />
 		</object>
 		<object class="wxMenu" variable="mnuMoreOps" member="yes">

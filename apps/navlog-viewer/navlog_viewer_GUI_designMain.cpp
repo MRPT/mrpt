@@ -33,6 +33,10 @@
 #include <mrpt/system.h>
 #include <mrpt/utils/CFileInputStream.h>
 #include <mrpt/math/utils.h>
+#include <mrpt/opengl/CSetOfLines.h>
+#include <mrpt/opengl/CGridPlaneXY.h>
+#include <mrpt/opengl/CPointCloud.h>
+#include <mrpt/opengl/stock_objects.h>
 
 extern std::string global_fileToOpen;
 
@@ -62,6 +66,9 @@ const long navlog_viewer_GUI_designDialog::ID_STATICTEXT4 = wxNewId();
 const long navlog_viewer_GUI_designDialog::ID_STATICTEXT5 = wxNewId();
 const long navlog_viewer_GUI_designDialog::ID_STATICTEXT6 = wxNewId();
 const long navlog_viewer_GUI_designDialog::ID_STATICTEXT7 = wxNewId();
+const long navlog_viewer_GUI_designDialog::ID_CHECKBOX1 = wxNewId();
+const long navlog_viewer_GUI_designDialog::ID_STATICTEXT8 = wxNewId();
+const long navlog_viewer_GUI_designDialog::ID_TEXTCTRL2 = wxNewId();
 const long navlog_viewer_GUI_designDialog::ID_PANEL3 = wxNewId();
 const long navlog_viewer_GUI_designDialog::ID_BUTTON6 = wxNewId();
 const long navlog_viewer_GUI_designDialog::ID_PANEL1 = wxNewId();
@@ -185,6 +192,14 @@ navlog_viewer_GUI_designDialog::navlog_viewer_GUI_designDialog(wxWindow* parent,
     FlexGridSizer9->Add(StaticText4, 1, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5);
     txtSelectedPTG = new wxStaticText(Panel3, ID_STATICTEXT7, _("-"), wxDefaultPosition, wxSize(80,-1), 0, _T("ID_STATICTEXT7"));
     FlexGridSizer9->Add(txtSelectedPTG, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    cbDrawShapePath = new wxCheckBox(Panel3, ID_CHECKBOX1, _("Draw shape along path"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX1"));
+    cbDrawShapePath->SetValue(true);
+    FlexGridSizer9->Add(cbDrawShapePath, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    FlexGridSizer9->Add(0,0,1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    StaticText5 = new wxStaticText(Panel3, ID_STATICTEXT8, _("Shape draw min. dist:"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT8"));
+    FlexGridSizer9->Add(StaticText5, 1, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5);
+    edShapeMinDist = new wxTextCtrl(Panel3, ID_TEXTCTRL2, _("1.0"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_TEXTCTRL2"));
+    FlexGridSizer9->Add(edShapeMinDist, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     Panel3->SetSizer(FlexGridSizer9);
     FlexGridSizer9->Fit(Panel3);
     FlexGridSizer9->SetSizeHints(Panel3);
@@ -201,7 +216,7 @@ navlog_viewer_GUI_designDialog::navlog_viewer_GUI_designDialog(wxWindow* parent,
     SetSizer(FlexGridSizer1);
     timPlay.SetOwner(this, ID_TIMER1);
     timAutoload.SetOwner(this, ID_TIMER2);
-    timAutoload.Start(20, true);
+    timAutoload.Start(20, false);
     mnuMatlabPlots = new wxMenuItem((&mnuMoreOps), ID_MENUITEM1, _("Export map plot to MATLAB..."), wxEmptyString, wxITEM_NORMAL);
     mnuMoreOps.Append(mnuMatlabPlots);
     FlexGridSizer1->Fit(this);
@@ -429,28 +444,111 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 	// Draw WS-obstacles
 	// --------------------------------
 	{
-		CDisplayWindowPlotsPtr &win1 = m_mywins["WS_obs"];
+		CDisplayWindow3DPtr &win1 = m_mywins3D["WS_obs"];
 		if (!win1)  {
-			win1= CDisplayWindowPlots::Create("Sensed obstacles",300,270);
+			win1= CDisplayWindow3D::Create("Sensed obstacles",300,270);
 			win1->setPos(600,20);
-			win1->axis(-5,5,-5,5, true);
+			win1->setCameraAzimuthDeg(-90);
+			win1->setCameraElevationDeg(90);
+			
+			{
+				mrpt::opengl::COpenGLScenePtr &scene = win1->get3DSceneAndLock();
+
+				// XY ground plane:
+				mrpt::opengl::CGridPlaneXYPtr gl_grid = mrpt::opengl::CGridPlaneXY::Create(-20,20, -20,20, 0, 1, 0.75f);
+				gl_grid->setColor_u8( mrpt::utils::TColor(0xa0a0a0, 0x90) );
+				scene->insert( gl_grid );
+
+				// XYZ corner at origin:
+				scene->insert( mrpt::opengl::stock_objects::CornerXYZSimple(1.0, 2.0) );
+
+				win1->unlockAccess3DScene();
+			}
 		}
 
-		win1->clf();
-		win1->hold_on();
+		// Update 3D view:
+		{
+			mrpt::opengl::COpenGLScenePtr &scene = win1->get3DSceneAndLock();
 
-		// Obstacles:
-		win1->plot(log.WS_Obstacles.getPointsBufferRef_x(),log.WS_Obstacles.getPointsBufferRef_y(),"b.4");
+			{
+				// Obstacles:  Was: win1->plot(log.WS_Obstacles.getPointsBufferRef_x(),log.WS_Obstacles.getPointsBufferRef_y(),"b.4");
+				mrpt::opengl::CPointCloudPtr gl_obs;
+				mrpt::opengl::CRenderizablePtr gl_obs_r = scene->getByName("obs");  // Get or create if new
+				if (!gl_obs_r) {
+					gl_obs = mrpt::opengl::CPointCloud::Create();
+					gl_obs->setName("obs");
+					gl_obs->setPointSize(3.0);
+					scene->insert(gl_obs);
+				} else {
+					gl_obs = mrpt::opengl::CPointCloudPtr(gl_obs_r);
+				}
+				gl_obs->loadFromPointsMap(&log.WS_Obstacles);
+			}
 
-		// Robot shape:
-		CVectorFloat shap_x = log.robotShape_x;
-		CVectorFloat shap_y = log.robotShape_y;
-		if (!shap_x.empty()) shap_x.push_back(shap_x[0]);
-		if (!shap_y.empty()) shap_y.push_back(shap_y[0]);
-		win1->plot(shap_x,shap_y,"r3");
+			{
+				// Target:
+				mrpt::opengl::CSetOfLinesPtr   gl_path;
+				mrpt::opengl::CRenderizablePtr gl_path_r = scene->getByName("path");  // Get or create if new
+				if (!gl_path_r) {
+					gl_path = mrpt::opengl::CSetOfLines::Create();
+					gl_path->setName("path");
+					gl_path->setLineWidth(2.0);
+					gl_path->setColor_u8( mrpt::utils::TColor(0x00,0x00,0xff) );
+					scene->insert(gl_path);
+				} else {
+					gl_path = mrpt::opengl::CSetOfLinesPtr(gl_path_r);
+				}
+				MRPT_TODO("Show ptg path");
+				//log.infoPerPTG[0].
+			}
+			{
+				// Robot shape:
+				const CVectorFloat shap_x = log.robotShape_x, shap_y = log.robotShape_y;
+				mrpt::opengl::CSetOfLinesPtr   gl_shape;
+				mrpt::opengl::CRenderizablePtr gl_shape_r = scene->getByName("shape");  // Get or create if new
+				if (!gl_shape_r) {
+					gl_shape = mrpt::opengl::CSetOfLines::Create();
+					gl_shape->setName("shape");
+					gl_shape->setLineWidth(4.0);
+					gl_shape->setColor_u8( mrpt::utils::TColor(0xff,0x00,0x00) );
+					scene->insert(gl_shape);
+				} else {
+					gl_shape = mrpt::opengl::CSetOfLinesPtr(gl_shape_r);
+				}
+				if (shap_x.size()>=2 &&  shap_x.size()==shap_y.size() )
+				{
+					gl_shape->clear();
+					gl_shape->appendLine( shap_x[0], shap_y[0], 0, shap_x[1],shap_y[1],0 );
+					for (int i=0;i<=shap_x.size();i++) {
+						const int idx = i % shap_x.size();
+						gl_shape->appendLineStrip( shap_x[idx],shap_y[idx], 0);
+					}
+				}
+			}
+			{
+				// Target:
+				mrpt::opengl::CPointCloudPtr   gl_trg;
+				mrpt::opengl::CRenderizablePtr gl_trg_r = scene->getByName("target");  // Get or create if new
+				if (!gl_trg_r) {
+					gl_trg = mrpt::opengl::CPointCloud::Create();
+					gl_trg->setName("target");
+					gl_trg->enableShowName(true);
+					gl_trg->setPointSize(9.0);
+					gl_trg->setColor_u8( mrpt::utils::TColor(0x00,0x00,0x00) );
+					scene->insert(gl_trg);
+				} else {
+					gl_trg = mrpt::opengl::CPointCloudPtr(gl_trg_r);
+				}
+				// Move the map & add a point at (0,0,0) so the name label appears at the target:
+				gl_trg->clear();
+				gl_trg->setLocation(log.WS_target_relative.x,log.WS_target_relative.y,0);
+				gl_trg->insertPoint(0,0,0);
+			}
 
-		// Target:
-		win1->plot(make_vector<1,double>(log.WS_target_relative.x),make_vector<1,double>(log.WS_target_relative.y),"k.9");
+			win1->unlockAccess3DScene();
+		}
+
+		win1->repaint();
 	}
 
 	// Draw PTG-obstacles

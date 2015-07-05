@@ -16,6 +16,7 @@
 #include <wx/stattext.h>
 #include <wx/menu.h>
 #include <wx/textctrl.h>
+#include <wx/checkbox.h>
 #include <wx/things/toggle.h>
 #include <wx/slider.h>
 #include <wx/panel.h>
@@ -34,6 +35,7 @@ class navlog_viewer_GUI_designDialog: public wxFrame //wxDialog
 		// App data:
 		std::vector<mrpt::utils::CSerializablePtr>  m_logdata;
 		std::map<std::string, mrpt::gui::CDisplayWindowPlotsPtr> m_mywins;
+		std::map<std::string, mrpt::gui::CDisplayWindow3DPtr>    m_mywins3D;
 
         mrpt::system::TTimeStamp m_log_first_tim, m_log_last_tim;
 
@@ -73,6 +75,9 @@ class navlog_viewer_GUI_designDialog: public wxFrame //wxDialog
         static const long ID_STATICTEXT5;
         static const long ID_STATICTEXT6;
         static const long ID_STATICTEXT7;
+        static const long ID_CHECKBOX1;
+        static const long ID_STATICTEXT8;
+        static const long ID_TEXTCTRL2;
         static const long ID_PANEL3;
         static const long ID_BUTTON6;
         static const long ID_PANEL1;
@@ -83,10 +88,12 @@ class navlog_viewer_GUI_designDialog: public wxFrame //wxDialog
 
         //(*Declarations(navlog_viewer_GUI_designDialog)
         wxButton* btnStop;
+        wxTextCtrl* edShapeMinDist;
         wxButton* btnMoreOps;
         wxPanel* Panel_AUX;
         wxStaticText* txtLogDuration;
         wxStaticText* StaticText2;
+        wxCheckBox* cbDrawShapePath;
         wxTimer timAutoload;
         wxFlexGridSizer* FlexGridSizer9;
         wxCustomButton* btnQuit;
@@ -97,6 +104,7 @@ class navlog_viewer_GUI_designDialog: public wxFrame //wxDialog
         wxPanel* Panel3;
         wxSlider* slidLog;
         wxTimer timPlay;
+        wxStaticText* StaticText5;
         wxStaticText* txtLogEntries;
         wxMenuItem* mnuMatlabPlots;
         wxFlexGridSizer* flexGridRightHand;
