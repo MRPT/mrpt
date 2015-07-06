@@ -34,6 +34,7 @@
 				- Documentation has been added about all existing parameters, and template config files provided as starting points.
 				- The loadConfigFile() method with 2 config files has been deprecated favoring the newer, simpler single config file. 
 				- The "ROBOT_NAME" parameter is no longer employed. A minor side effect (probably affecting no one) is that PTG cache files are no longer named differently for different robots.
+			- mrpt::nav::CParameterizedTrajectoryGenerator: New methods to save and load trajectories to binary streams. Used to debug in navlog-viewer.
 		- \ref mrpt_obs_grp
 			- mrpt::obs::CObservation3DRangeScan now supports pixel labels (semantic mapping, etc.)
 			- New class mrpt::obs::CObservationSkeleton to hold body tracking information (by Francisco Angel Moreno)

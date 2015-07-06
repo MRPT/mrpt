@@ -66,7 +66,6 @@ void CLogFileRecord::operator =( CLogFileRecord &o)
 
     timestamp = o.timestamp;
 	nPTGs = o.nPTGs;
-	securityDistances = o.securityDistances;
 
 	navigatorBehavior = o.navigatorBehavior;
 }
@@ -105,7 +104,7 @@ CLogFileRecord::~CLogFileRecord()
 void  CLogFileRecord::writeToStream(mrpt::utils::CStream &out,int *version) const
 {
 	if (version)
-		*version = 8;
+		*version = 9;
 	else
 	{
 		uint32_t	i,n;
@@ -125,8 +124,15 @@ void  CLogFileRecord::writeToStream(mrpt::utils::CStream &out,int *version) cons
 			out << infoPerPTG[i].timeForTPObsTransformation << infoPerPTG[i].timeForHolonomicMethod;
 			out << infoPerPTG[i].desiredDirection << infoPerPTG[i].desiredSpeed << infoPerPTG[i].evaluation;
 			out << *infoPerPTG[i].HLFR;
-		}
 
+			// Version 9: Removed security distances. Added optional field with PTG info.
+			const bool there_is_ptg_data = infoPerPTG[i].ptg_trajectory.present();
+			out << there_is_ptg_data;
+			if (there_is_ptg_data)
+			{
+				infoPerPTG[i].ptg_trajectory->saveTrajectories( out );
+			}
+		}
 		out << nSelectedPTG << WS_Obstacles << robotOdometryPose << WS_target_relative /*v8*/ << v << w << executionTime;
 
 		// Previous values: REMOVED IN VERSION #6
@@ -156,9 +162,6 @@ void  CLogFileRecord::writeToStream(mrpt::utils::CStream &out,int *version) cons
 
 		// Version 4 ----------
 		out << nPTGs;
-		n = securityDistances.size();
-		out << n;
-		for (i=0;i<n;i++) out << securityDistances[i];
 
 		// Version 5 -----------
 		out << navigatorBehavior; // Removed in version 6: << doorCrossing_P1 << doorCrossing_P2;
@@ -217,6 +220,17 @@ void  CLogFileRecord::readFromStream(mrpt::utils::CStream &in,int version)
 				in >> infoPerPTG[i].timeForTPObsTransformation >> infoPerPTG[i].timeForHolonomicMethod;
 				in >> infoPerPTG[i].desiredDirection >> infoPerPTG[i].desiredSpeed >> infoPerPTG[i].evaluation;
 				in >> infoPerPTG[i].HLFR;
+
+				if (version>9) // Extra PTG info
+				{
+					bool there_is_ptg_data;
+					in >> there_is_ptg_data;
+					if (there_is_ptg_data) 
+					{
+						infoPerPTG[i].ptg_trajectory = CParameterizedTrajectoryGeneratorPtr( new CPTG_Dummy );
+						infoPerPTG[i].ptg_trajectory->loadTrajectories(in);
+					}
+				}
 			}
 
 			in >> nSelectedPTG >> WS_Obstacles >> robotOdometryPose; 
@@ -300,15 +314,17 @@ void  CLogFileRecord::readFromStream(mrpt::utils::CStream &in,int version)
 			{
 				// Version 4 ----------
 				in >> nPTGs;
-				in >> n;
-				securityDistances.resize(n);
-				for (i=0;i<n;i++)
-					in >> securityDistances[i];
+				if (version <9)  // Old "securityDistances", now unused.
+				{
+					in >> n;
+					float dummy;
+					for (i=0;i<n;i++)
+						in >> dummy;
+				}
 			}
 			else
 			{
 				nPTGs = infoPerPTG.size();
-				securityDistances.resize(1,0.0f);
 			}
 
 			if (version > 4)

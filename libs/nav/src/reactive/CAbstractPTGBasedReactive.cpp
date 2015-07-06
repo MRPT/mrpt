@@ -16,6 +16,7 @@
 #include <mrpt/utils/printf_vector.h>
 #include <mrpt/utils/metaprogramming.h>
 #include <mrpt/utils/CFileOutputStream.h>
+#include <mrpt/utils/CMemoryStream.h>
 
 using namespace mrpt;
 using namespace mrpt::poses;
@@ -254,6 +255,27 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 	const bool fill_log_record = (m_logFile!=NULL || m_enableKeepLogRecords);
 	CLogFileRecord newLogRec;
 	newLogRec.infoPerPTG.resize(nPTGs);
+
+	// At the beginning of each log file, add an introductory block explaining which PTGs are we using:
+	{
+		static mrpt::utils::CStream  *prev_logfile = NULL;
+		if (m_logFile && m_logFile!=prev_logfile)  // Only the first time
+		{
+			prev_logfile=m_logFile;
+			for (size_t i=0;i<nPTGs;i++)
+			{
+				const mrpt::nav::CParameterizedTrajectoryGenerator* ptg = this->getPTG(i);
+				mrpt::utils::CMemoryStream memstr;
+				ptg->saveTrajectories(memstr);
+				memstr.Seek(0);
+				mrpt::nav::CParameterizedTrajectoryGeneratorPtr ptg_data = mrpt::nav::CParameterizedTrajectoryGeneratorPtr( new CPTG_Dummy );
+				ptg_data->loadTrajectories(memstr);
+
+				newLogRec.infoPerPTG[i].ptg_trajectory = ptg_data;
+			}
+		}
+	}
+
 
 	// Lock
 	mrpt::synch::CCriticalSectionLocker lock( &m_critZoneNavigating );

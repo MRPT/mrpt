@@ -30,6 +30,7 @@ const int dumm = mrpt_reactivenav_class_reg.do_nothing(); // Avoid compiler remo
 #include <mrpt/system/os.h>
 #include <mrpt/math/geometry.h>
 #include <mrpt/opengl/CSetOfLines.h>
+#include <mrpt/utils/stl_serialization.h>
 
 using namespace mrpt;
 using namespace mrpt::utils;
@@ -100,6 +101,53 @@ void CParameterizedTrajectoryGenerator::FreeMemory()
 	}
 }
 
+/** Saves the simulated trajectories and other parameters to a target stream */
+void CParameterizedTrajectoryGenerator::saveTrajectories( mrpt::utils::CStream &out ) const
+{
+	const uint8_t serial_version = 1;
+	out << serial_version;
+	out << this->getDescription();
+	out << m_alphaValuesCount << V_MAX << W_MAX << turningRadiusReference;
+	out << CPoints;
+}
+
+/** Loads the simulated trajectories and other parameters from a target stream */
+std::string CParameterizedTrajectoryGenerator::loadTrajectories( mrpt::utils::CStream &in )
+{
+	FreeMemory(); // Free previous paths
+	uint8_t serial_version;
+	in >> serial_version;
+
+	std::string desc;
+	in >> desc;
+
+	switch (serial_version)
+	{
+	case 1:
+		in >> m_alphaValuesCount;
+		in >> CPoints;
+		break;
+
+	default:
+		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(serial_version);
+	};
+
+	return desc;
+}
+
+mrpt::utils::CStream & mrpt::nav::operator << (mrpt::utils::CStream& o, const mrpt::nav::TCPoint & p)
+{
+	o << p.x<< p.y<< p.phi<< p.t<< p.dist<< p.v<< p.w;
+	return o;
+}
+mrpt::utils::CStream & mrpt::nav::operator >> (mrpt::utils::CStream& i, mrpt::nav::TCPoint & p)
+{
+	i >> p.x>> p.y>> p.phi>> p.t>> p.dist>> p.v>> p.w;
+	return i;
+}
+
+
+
 /*---------------------------------------------------------------
 					simulateTrajectories
 	Solve trajectories and fill cells.
@@ -114,8 +162,7 @@ void CParameterizedTrajectoryGenerator::simulateTrajectories(
 		float			*out_max_acc_v,
 		float			*out_max_acc_w)
 {
-		// Primero, liberar memoria:
-		FreeMemory();
+		FreeMemory(); // Free previous paths
 
 		// The number of discreet values for ALPHA:
 		this->m_alphaValuesCount = alphaValuesCount;
