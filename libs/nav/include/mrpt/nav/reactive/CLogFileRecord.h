@@ -14,7 +14,7 @@
 #include <mrpt/maps/CSimplePointsMap.h>
 
 #include <mrpt/nav/holonomic/CHolonomicLogFileRecord.h>
-
+#include <mrpt/nav/tpspace/CParameterizedTrajectoryGenerator.h>
 
 namespace mrpt
 {
