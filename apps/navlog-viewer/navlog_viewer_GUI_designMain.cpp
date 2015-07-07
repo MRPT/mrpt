@@ -217,7 +217,7 @@ navlog_viewer_GUI_designDialog::navlog_viewer_GUI_designDialog(wxWindow* parent,
     SetSizer(FlexGridSizer1);
     timPlay.SetOwner(this, ID_TIMER1);
     timAutoload.SetOwner(this, ID_TIMER2);
-    timAutoload.Start(20, false);
+    timAutoload.Start(900, false);
     mnuMatlabPlots = new wxMenuItem((&mnuMoreOps), ID_MENUITEM1, _("Export map plot to MATLAB..."), wxEmptyString, wxITEM_NORMAL);
     mnuMoreOps.Append(mnuMatlabPlots);
     FlexGridSizer1->Fit(this);
