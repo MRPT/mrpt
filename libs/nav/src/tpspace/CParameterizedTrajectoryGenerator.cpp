@@ -327,35 +327,29 @@ void CParameterizedTrajectoryGenerator::directionToMotionCommand( uint16_t k, fl
 					getCPointWhen_d_Is
   ---------------------------------------------------------------*/
 void CParameterizedTrajectoryGenerator::getCPointWhen_d_Is (
-		float		d,
-		uint16_t k,
-		float		&x,
-		float		&y,
-		float		&phi,
-		float		&t,
-				float *v,
-				float *w)
+	float d, uint16_t k,
+	float &x, float &y, float &phi, float &t,
+	float *v, float *w)
 {
-		if (k>=m_alphaValuesCount)
-		{
-			x=y=phi=0;
-			return;  // Por si acaso
-		}
+	if (k>=m_alphaValuesCount) {
+		x=y=phi=0;
+		return;  // Just in case...
+	}
 
-		unsigned int n=0;
-		const unsigned int numPoints = CPoints[k].size();
-		for ( ; (n+1) < numPoints ; n++)
-		{
-			if (CPoints[k][n+1].dist>=d)
-				break;
-		}
+	unsigned int n=0;
+	const unsigned int numPoints = CPoints[k].size();
+	for ( ; (n+1) < numPoints ; n++)
+	{
+		if (CPoints[k][n+1].dist>=d)
+			break;
+	}
 
-		x=CPoints[k][n].x;
-		y=CPoints[k][n].y;
-		phi=CPoints[k][n].phi;
-		t=CPoints[k][n].t;
-		if (v) *v =CPoints[k][n].v;
-		if (w) *w =CPoints[k][n].w;
+	x=CPoints[k][n].x;
+	y=CPoints[k][n].y;
+	phi=CPoints[k][n].phi;
+	t=CPoints[k][n].t;
+	if (v) *v =CPoints[k][n].v;
+	if (w) *w =CPoints[k][n].w;
 }
 
 /*---------------------------------------------------------------

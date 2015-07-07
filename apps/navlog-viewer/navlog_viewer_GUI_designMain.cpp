@@ -196,7 +196,7 @@ navlog_viewer_GUI_designDialog::navlog_viewer_GUI_designDialog(wxWindow* parent,
     cbDrawShapePath = new wxCheckBox(Panel3, ID_CHECKBOX1, _("Draw shape along path"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX1"));
     cbDrawShapePath->SetValue(true);
     FlexGridSizer9->Add(cbDrawShapePath, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-    FlexGridSizer9->Add(0,0,1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    FlexGridSizer9->Add(-1,-1,1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     StaticText5 = new wxStaticText(Panel3, ID_STATICTEXT8, _("Shape draw min. dist:"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT8"));
     FlexGridSizer9->Add(StaticText5, 1, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5);
     edShapeMinDist = new wxTextCtrl(Panel3, ID_TEXTCTRL2, _("1.0"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_TEXTCTRL2"));
@@ -437,9 +437,34 @@ void navlog_viewer_GUI_designDialog::UpdateInfoFromLoadedLog()
 	}
 	this->txtLogDuration->SetLabel( _U(sDuration.c_str()));;
 
-    flexGridRightHand->RecalcSizes();
-    this->Fit();
+	flexGridRightHand->RecalcSizes();
+	this->Fit();
+}
 
+// Aux function
+void add_robotShape_to_setOfLines(
+	const CVectorFloat &shap_x_,
+	const CVectorFloat &shap_y_, 
+	mrpt::opengl::CSetOfLines &gl_shape, 
+	const mrpt::poses::CPose2D &origin = mrpt::poses::CPose2D () )
+{
+	const int N = shap_x_.size();
+	if (N>=2 && N==shap_y_.size() )
+	{
+		// Transform coordinates:
+		CVectorDouble shap_x(N), shap_y(N),shap_z(N);
+		for (int i=0;i<N;i++) {
+			origin.composePoint(
+				shap_x_[i], shap_y_[i], 0,
+				shap_x[i],  shap_y[i],  shap_z[i]);
+		}
+
+		gl_shape.appendLine( shap_x[0], shap_y[0], shap_z[0], shap_x[1],shap_y[1],shap_z[1] );
+		for (int i=0;i<=shap_x.size();i++) {
+			const int idx = i % shap_x.size();
+			gl_shape.appendLineStrip( shap_x[idx],shap_y[idx], shap_z[idx]);
+		}
+	}
 }
 
 // ---------------------------------------------
@@ -486,6 +511,8 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 		{
 			mrpt::opengl::COpenGLScenePtr &scene = win1->get3DSceneAndLock();
 
+			const CVectorFloat shap_x = log.robotShape_x, shap_y = log.robotShape_y;
+
 			{
 				// Obstacles:  Was: win1->plot(log.WS_Obstacles.getPointsBufferRef_x(),log.WS_Obstacles.getPointsBufferRef_y(),"b.4");
 				mrpt::opengl::CPointCloudPtr gl_obs;
@@ -503,7 +530,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 			}
 
 			{
-				// Target:
+				// Selected PTG path:
 				mrpt::opengl::CSetOfLinesPtr   gl_path;
 				mrpt::opengl::CRenderizablePtr gl_path_r = scene->getByName("path");  // Get or create if new
 				if (!gl_path_r) {
@@ -515,12 +542,37 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 				} else {
 					gl_path = mrpt::opengl::CSetOfLinesPtr(gl_path_r);
 				}
-				MRPT_TODO("Show ptg path");
-				//log.infoPerPTG[0].
+				if (m_logdata_ptg_paths.size()>log.nSelectedPTG)
+				{
+					mrpt::nav::CParameterizedTrajectoryGeneratorPtr ptg = m_logdata_ptg_paths[log.nSelectedPTG];
+					if (ptg)
+					{
+						// Draw path:
+						const int selected_k = ptg->alpha2index( log.infoPerPTG[log.nSelectedPTG].desiredDirection );
+						float max_dist = ptg->refDistance;
+						gl_path->clear();
+						ptg->renderPathAsSimpleLine(selected_k,*gl_path,0.10, max_dist);
+						gl_path->setColor_u8( mrpt::utils::TColor(0xff,0x00,0x00) );
+
+						// Overlay a sequence of robot shapes:
+						if (cbDrawShapePath->IsChecked())
+						{
+							double min_shape_dists = 1.0;
+							edShapeMinDist->GetValue().ToDouble(&min_shape_dists);
+
+							for (double d=min_shape_dists;d<max_dist;d+=min_shape_dists)
+							{
+								float x,y,phi,t;
+								ptg->getCPointWhen_d_Is(d,selected_k,x,y,phi,t);
+								mrpt::poses::CPose2D pose(x,y,phi);
+								add_robotShape_to_setOfLines(shap_x,shap_y, *gl_path, pose);
+							}
+						}
+					}
+				}
 			}
 			{
 				// Robot shape:
-				const CVectorFloat shap_x = log.robotShape_x, shap_y = log.robotShape_y;
 				mrpt::opengl::CSetOfLinesPtr   gl_shape;
 				mrpt::opengl::CRenderizablePtr gl_shape_r = scene->getByName("shape");  // Get or create if new
 				if (!gl_shape_r) {
@@ -532,15 +584,8 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 				} else {
 					gl_shape = mrpt::opengl::CSetOfLinesPtr(gl_shape_r);
 				}
-				if (shap_x.size()>=2 &&  shap_x.size()==shap_y.size() )
-				{
-					gl_shape->clear();
-					gl_shape->appendLine( shap_x[0], shap_y[0], 0, shap_x[1],shap_y[1],0 );
-					for (int i=0;i<=shap_x.size();i++) {
-						const int idx = i % shap_x.size();
-						gl_shape->appendLineStrip( shap_x[idx],shap_y[idx], 0);
-					}
-				}
+				gl_shape->clear();
+				add_robotShape_to_setOfLines(shap_x,shap_y, *gl_shape);
 			}
 			{
 				// Target:

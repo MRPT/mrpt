@@ -128,6 +128,7 @@ namespace mrpt
 		uint16_t getAlfaValuesCount() const { return m_alphaValuesCount; };
 		size_t getPointsCountInCPath_k(uint16_t k)  const { return CPoints[k].size(); };
 
+		/** Returns the C-Space coordinates (pose) when the robot has transversed a distance \a d along trajectory index \k. Returns (0,0,0) if out of bounds. */
 		void   getCPointWhen_d_Is ( float d, uint16_t k, float &x, float &y, float &phi, float &t, float *v = NULL, float *w = NULL );
 
 		float  GetCPathPoint_x( uint16_t k, int n ) const { return CPoints[k][n].x; }
