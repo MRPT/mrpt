@@ -238,6 +238,9 @@ namespace mrpt
 		virtual bool PTG_IsIntoDomain( float x, float y ) = 0;
 
 protected:
+		/** Protected constructor for CPTG_Dummy; does not init collision grid. Not for normal usage */
+		CParameterizedTrajectoryGenerator() : m_collisionGrid(-1,1,-1,1,0.5,this) { }
+
 		float			V_MAX, W_MAX;
 		float			turningRadiusReference;
 		std::vector<TCPointVector>	CPoints;
@@ -290,7 +293,7 @@ protected:
 	{
 	public:
 		// See base class docs
-		CPTG_Dummy() : CParameterizedTrajectoryGenerator(mrpt::utils::TParameters<double>()) {}
+		CPTG_Dummy() : CParameterizedTrajectoryGenerator() {}
 		virtual ~CPTG_Dummy() { }
 		virtual std::string getDescription() const { return m_text_description; }
 		virtual std::string loadTrajectories( mrpt::utils::CStream &in ) 

@@ -107,7 +107,7 @@ void CParameterizedTrajectoryGenerator::saveTrajectories( mrpt::utils::CStream &
 	const uint8_t serial_version = 1;
 	out << serial_version;
 	out << this->getDescription();
-	out << m_alphaValuesCount << V_MAX << W_MAX << turningRadiusReference;
+	out << m_alphaValuesCount << V_MAX << W_MAX << turningRadiusReference << refDistance;
 	out << CPoints;
 }
 
@@ -124,7 +124,7 @@ std::string CParameterizedTrajectoryGenerator::loadTrajectories( mrpt::utils::CS
 	switch (serial_version)
 	{
 	case 1:
-		in >> m_alphaValuesCount;
+		in >> m_alphaValuesCount >>  V_MAX >> W_MAX >> turningRadiusReference >> refDistance;
 		in >> CPoints;
 		break;
 

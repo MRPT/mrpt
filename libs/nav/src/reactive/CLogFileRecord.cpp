@@ -187,6 +187,7 @@ void  CLogFileRecord::readFromStream(mrpt::utils::CStream &in,int version)
 	case 6:
 	case 7:
 	case 8:
+	case 9:
 		{
 			// Version 0 --------------
 			uint32_t  i,n;
@@ -221,7 +222,7 @@ void  CLogFileRecord::readFromStream(mrpt::utils::CStream &in,int version)
 				in >> infoPerPTG[i].desiredDirection >> infoPerPTG[i].desiredSpeed >> infoPerPTG[i].evaluation;
 				in >> infoPerPTG[i].HLFR;
 
-				if (version>9) // Extra PTG info
+				if (version>=9) // Extra PTG info
 				{
 					bool there_is_ptg_data;
 					in >> there_is_ptg_data;

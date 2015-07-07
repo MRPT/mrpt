@@ -289,6 +289,7 @@ void navlog_viewer_GUI_designDialog::loadLogfile(const std::string &filName)
 	CFileInputStream f(filName);
 
 	m_logdata.clear();
+	m_logdata_ptg_paths.clear();
 
 	wxBusyCursor busy;
 
@@ -313,21 +314,31 @@ void navlog_viewer_GUI_designDialog::loadLogfile(const std::string &filName)
 			// generate time stats:
 			if (IS_CLASS(obj,CLogFileRecord))
 			{
-                const CLogFileRecordPtr logptr = CLogFileRecordPtr(obj);
-                if (logptr->timestamp!=INVALID_TIMESTAMP)
-                    m_log_last_tim = logptr->timestamp;
+				const CLogFileRecordPtr logptr = CLogFileRecordPtr(obj);
+				if (logptr->timestamp!=INVALID_TIMESTAMP)
+					m_log_last_tim = logptr->timestamp;
+
+				if (!logptr->infoPerPTG.empty())
+				{
+					size_t nPTGs = logptr->infoPerPTG.size();
+					m_logdata_ptg_paths.resize(nPTGs);
+					for (size_t i=0;i<nPTGs;i++)
+						if (logptr->infoPerPTG[i].ptg_trajectory)
+							m_logdata_ptg_paths[i] = logptr->infoPerPTG[i].ptg_trajectory;
+				}
 			}
 
 			if (m_log_first_tim == INVALID_TIMESTAMP && m_log_last_tim!=INVALID_TIMESTAMP)
-                m_log_first_tim = m_log_last_tim;
+				m_log_first_tim = m_log_last_tim;
 		}
 		catch (CExceptionEOF &)
 		{
 			break;
 		}
-		catch (std::exception &)
+		catch (std::exception &e)
 		{
 			// EOF in the middle of an object... It may be usual if the logger is shut down not cleanly.
+			wxMessageBox( wxString(e.what(),wxConvUTF8), wxT("Loading ended with an exception"), wxOK, this);
 			break;
 		}
 	}
