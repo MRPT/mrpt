@@ -26,7 +26,20 @@ namespace mrpt
 	/** \defgroup nav_tpspace TP-Space and PTG classes
 	  * \ingroup mrpt_nav_grp
 	  */
-	  
+
+	/** Trajectory points in C-Space \sa CParameterizedTrajectoryGenerator */
+	struct NAV_IMPEXP TCPoint
+	{
+		TCPoint() {}
+		TCPoint(const float	x_,const float	y_,const float	phi_,
+				const float	t_,const float	dist_,
+				const float	v_,const float	w_) :
+			x(x_), y(y_), phi(phi_), t(t_), dist(dist_), v(v_), w(w_)
+		{}
+		float x, y, phi,t, dist,v,w;
+	};
+	typedef std::vector<TCPoint> TCPointVector;
+
 	/** This is the base class for any user-defined PTG.
 	 *   The class factory interface in CParameterizedTrajectoryGenerator::CreatePTG.
 	 *
@@ -68,8 +81,7 @@ namespace mrpt
 		  */
 		static CParameterizedTrajectoryGenerator * CreatePTG(const mrpt::utils::TParameters<double> &params);
 
-		/** Gets a short textual description of the PTG and its parameters.
-		  */
+		/** Gets a short textual description of the PTG and its parameters */
 		virtual std::string getDescription() const = 0 ;
 
 		/** Destructor */
@@ -87,6 +99,10 @@ namespace mrpt
 				float			*out_max_acc_v = NULL,
 				float			*out_max_acc_w = NULL);
 
+		/** Saves the simulated trajectories and other parameters to a target stream */
+		void saveTrajectories( mrpt::utils::CStream &out ) const;
+		/** Loads the simulated trajectories and other parameters from a target stream. \return The PTG textual description */
+		virtual std::string loadTrajectories( mrpt::utils::CStream &in );
 
 		/** Computes the closest (alpha,d) TP coordinates of the trajectory point closest to the Workspace (WS) Cartesian coordinates (x,y).
 		  * \param[in] x X coordinate of the query point.
@@ -102,8 +118,8 @@ namespace mrpt
 		/** The "lambda" function, see paper for info. It takes the (a,d) pair that is closest to a given location. */
 		MRPT_DECLARE_DEPRECATED_FUNCTION( \
 			"Use inverseMap_WS2TP() instead", \
-			void lambdaFunction( float x, float y, int &out_k, float &out_d ); \
-		)
+			void lambdaFunction( float x, float y, int &out_k, float &out_d ) \
+		);
 
 		/** Converts an "alpha" value (into the discrete set) into a feasible motion command.
 			*/
@@ -112,6 +128,7 @@ namespace mrpt
 		uint16_t getAlfaValuesCount() const { return m_alphaValuesCount; };
 		size_t getPointsCountInCPath_k(uint16_t k)  const { return CPoints[k].size(); };
 
+		/** Returns the C-Space coordinates (pose) when the robot has transversed a distance \a d along trajectory index \k. Returns (0,0,0) if out of bounds. */
 		void   getCPointWhen_d_Is ( float d, uint16_t k, float &x, float &y, float &phi, float &t, float *v = NULL, float *w = NULL );
 
 		float  GetCPathPoint_x( uint16_t k, int n ) const { return CPoints[k][n].x; }
@@ -215,17 +232,19 @@ namespace mrpt
 
 		float	refDistance;
 
-		/** The main method to be implemented in derived classes.
-		 */
+		/** The main method to be implemented in derived classes */
 		virtual void PTG_Generator( float alpha, float t, float x, float y, float phi, float &v, float &w) = 0;
 
-		/** To be implemented in derived classes:
-		  */
+		/** To be implemented in derived classes */
 		virtual bool PTG_IsIntoDomain( float x, float y ) = 0;
 
 protected:
-        float			V_MAX, W_MAX;
+		/** Protected constructor for CPTG_Dummy; does not init collision grid. Not for normal usage */
+		CParameterizedTrajectoryGenerator() : m_collisionGrid(-1,1,-1,1,0.5,this) { }
+
+		float			V_MAX, W_MAX;
 		float			turningRadiusReference;
+		std::vector<TCPointVector>	CPoints;
 
 		/** Specifies the min/max values for "k" and "n", respectively.
 		  * \sa m_lambdaFunctionOptimizer
@@ -256,21 +275,6 @@ protected:
 		  */
 		uint16_t  m_alphaValuesCount;
 
-		/** The trajectories in the C-Space:
-		  */
-		struct TCPoint
-		{
-			TCPoint(const float	x_,const float	y_,const float	phi_,
-					const float	t_,const float	dist_,
-					const float	v_,const float	w_) :
-				x(x_), y(y_), phi(phi_), t(t_), dist(dist_), v(v_), w(w_)
-			{}
-
-			float x, y, phi,t, dist,v,w;
-		};
-		typedef std::vector<TCPoint> TCPointVector;
-		std::vector<TCPointVector>	CPoints;
-
 		/** Free all the memory buffers */
 		void    FreeMemory();
 
@@ -280,7 +284,38 @@ protected:
 	typedef std::vector<mrpt::nav::CParameterizedTrajectoryGenerator*>  TListPTGs;      //!< A list of PTGs (bare pointers)
 	typedef std::vector<mrpt::nav::CParameterizedTrajectoryGeneratorPtr>  TListPTGPtr;  //!< A list of PTGs (smart pointers)
 
+
+	mrpt::utils::CStream NAV_IMPEXP & operator << (mrpt::utils::CStream& o, const mrpt::nav::TCPoint & p);
+	mrpt::utils::CStream NAV_IMPEXP & operator >> (mrpt::utils::CStream& i, mrpt::nav::TCPoint & p);
+
+
+	/** A dummy PTG, used mainly to call loadTrajectories() without knowing the exact derived PTG class and still be able to analyze the trajectories. */
+	class NAV_IMPEXP  CPTG_Dummy : public CParameterizedTrajectoryGenerator
+	{
+	public:
+		// See base class docs
+		CPTG_Dummy() : CParameterizedTrajectoryGenerator() {}
+		virtual ~CPTG_Dummy() { }
+		virtual std::string getDescription() const { return m_text_description; }
+		virtual std::string loadTrajectories( mrpt::utils::CStream &in ) 
+		{
+			m_text_description = CParameterizedTrajectoryGenerator::loadTrajectories(in);
+			return m_text_description;
+		}
+		virtual void PTG_Generator( float alpha, float t, float x, float y, float phi, float &v, float &w) { throw std::runtime_error("Should not call this method in a dummy PTG!");  }
+		virtual bool PTG_IsIntoDomain( float x, float y )  { throw std::runtime_error("Should not call this method in a dummy PTG!");  }
+
+	private:
+		std::string m_text_description;
+	};
+
   }
+	namespace utils
+	{
+		// Specialization must occur in the same namespace
+		MRPT_DECLARE_TTYPENAME_NAMESPACE(TCPoint,mrpt::nav)
+	}
+
 }
 
 

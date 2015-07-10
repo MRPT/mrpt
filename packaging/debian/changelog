@@ -1,4 +1,5 @@
   * Fix Debian bug on Eigen2 support (Closes: #786349).
+  * Made lintian clean.
 
 mrpt (1:1.3.0-1) unstable; urgency=medium
 

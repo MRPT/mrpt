@@ -14,7 +14,7 @@
 #include <mrpt/maps/CSimplePointsMap.h>
 
 #include <mrpt/nav/holonomic/CHolonomicLogFileRecord.h>
-
+#include <mrpt/nav/tpspace/CParameterizedTrajectoryGenerator.h>
 
 namespace mrpt
 {
@@ -50,11 +50,13 @@ namespace nav
 			float						desiredDirection,desiredSpeed, evaluation;          //!< The results from the holonomic method.
 			mrpt::math::CVectorFloat				evalFactors;   //!< Evaluation factors
 			CHolonomicLogFileRecordPtr	HLFR;          //!< Other useful info about holonomic method execution.
+
+			/** This will point to a CPTG_Dummy object with trajectory data, but only for the FIRST entry in a log file to save wasted space.*/
+			mrpt::nav::CParameterizedTrajectoryGeneratorPtr ptg_trajectory;
 		};
 
 		mrpt::system::TTimeStamp   timestamp;  //!< The timestamp of when this log was processed by the reactive algorithm (It can be INVALID_TIMESTAMP for navigation logs in MRPT <0.9.5)
 		uint32_t       nPTGs;  //!< The number of PTGS:
-		mrpt::math::CVectorFloat   securityDistances;  //!< The security distances:
 
 		 /** The info for each applied PTG: must contain "nPTGs·nSecDistances" elements
 		   */

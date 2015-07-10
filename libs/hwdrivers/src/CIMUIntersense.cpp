@@ -11,12 +11,12 @@
 
 #include <mrpt/system/threads.h>
 #include <mrpt/hwdrivers/CIMUIntersense.h>
-#include <mrpt/slam/CObservationIMU.h>
+#include <mrpt/obs/CObservationIMU.h>
 
 IMPLEMENTS_GENERIC_SENSOR(CIMUIntersense,mrpt::hwdrivers)
 
 using namespace mrpt::utils;
-using namespace mrpt::slam;
+using namespace mrpt::obs;
 using namespace mrpt::hwdrivers;
 using namespace std;
 

@@ -9,6 +9,5 @@ X-MultipleArgs=false
 Type=Application
 Categories=Science;Robotics;ArtificialIntelligence;
 StartupNotify=true
-MimeType=
 Keywords=mrpt;SLAM;robotics;simulator;
 
