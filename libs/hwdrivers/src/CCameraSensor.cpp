@@ -1049,6 +1049,7 @@ void CCameraSensor::getNextFrame( vector<CSerializablePtr> & out_obs )
 			}
 		} // end else
 	}
+
 	// Show preview??
 	if (m_preview_decimation>0)
 	{	// Yes
@@ -1130,9 +1131,11 @@ void CCameraSensor::getNextFrame( vector<CSerializablePtr> & out_obs )
 			}
 		}
 	} // end show preview
+
 	if (delayed_insertion_in_obs_queue)
 	{
-		if( m_cap_duo3d && m_cap_duo3d->captureIMUIsSet() && obsIMU )	out_obs.push_back( CObservationPtr(obsIMU) );
+		if( m_cap_duo3d && m_cap_duo3d->captureIMUIsSet() && obsIMU )	
+			out_obs.push_back( CObservationPtr(obsIMU) );
 	}
 	else
 	{

@@ -41,10 +41,6 @@ using namespace std;
 	#pragma comment (lib,"NiTE2.lib")
 #endif
 
-// TODO: 
-// - create visualization window
-// - display info messages
-
 string jointNames[] = {
 	"head","neck","torso",
 	"left_shoulder", "left_elbow", "left_hand", "left_hip", "left_knee", "left_foot", 
@@ -95,11 +91,14 @@ CSkeletonTracker::~CSkeletonTracker()
 	if(m_win) m_win.clear();
 }
 
+/*-------------------------------------------------------------
+					processPreviewNone
+-------------------------------------------------------------*/
 void CSkeletonTracker::processPreviewNone()
 {
-		using namespace mrpt::opengl;
+	using namespace mrpt::opengl;
 
-	// show laser scan
+	// show skeleton data
 	if( m_showPreview )
 	{
 		if( !m_win )
@@ -169,12 +168,14 @@ void CSkeletonTracker::processPreviewNone()
 	} // end if
 } // end-processPreviewNone
 
-
+/*-------------------------------------------------------------
+					processPreview
+-------------------------------------------------------------*/
 void CSkeletonTracker::processPreview(const mrpt::obs::CObservationSkeletonPtr & obs)
 {
 	using namespace mrpt::opengl;
 
-	// show laser scan
+	// show skeleton data
 	if( m_showPreview )
 	{
 		if( !m_win )

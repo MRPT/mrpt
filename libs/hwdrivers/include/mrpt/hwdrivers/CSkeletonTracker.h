@@ -21,26 +21,25 @@ namespace mrpt
 	namespace hwdrivers
 	{
 
-		/** A class for interfacing Intersense Inertial Measuring Units (IMUs).
-		  *  It uses a serial port or USB-to-serial adapter to communicate to the device, so no special drivers are needed.
-		  *  For the more recent 4th generation devices, see the class mrpt::hwdrivers::CIMUXSens_MT4
+		/** A class for grabbing mrpt::obs::CObservationSkeleton from a PrimeSense camera.
+		  *  It connects to a PrimeSense camera and tries to detect users while recording the positions of their skeletons' joints along time.
 		  *
-		  *  See also the application "rawlog-grabber" for a ready-to-use application to gather data from the scanner.
+		  *  See also the application "rawlog-grabber" for a ready-to-use application to gather data from this sensor.
 		  *
 		  *  \code
 		  *  PARAMETERS IN THE ".INI"-LIKE CONFIGURATION STRINGS:
 		  * -------------------------------------------------------
 		  *   [supplied_section_name]
-		  *    pose_x=0	    ; Sensor 3D position relative to the robot (meters)
-		  *    pose_y=0
-		  *    pose_z=0
-		  *    pose_yaw=0	; Angles in degrees
-		  *    pose_pitch=0
-		  *    pose_roll=0
-		  *	   sensorLabel = <label> ; Label of the sensor
-		  *	   sensitivity	= 10 ; Sensor sensitivity (see dll documentation)
-		  *	   enhancement	= 2  ; Enhancement mode (see dll documentation)
-		  *	   prediction = 0    ; Prediction mode (see dll documentation)
+		  *	   driver			= CSkeletonTracker
+		  *	   sensorLabel		= <label>			; Label of the sensor
+		  *	   grab_decimation	= 1					; [int] Grab skeletons in 1 out of 'grab_decimation' frames.
+		  *    show_preview		= 1					; [bool] {0,1} Opens a display window to show the recorded skeleton.
+		  *    pose_x			= 0					; [double] Sensor 3D position relative to the robot (meters)
+		  *    pose_y			= 0
+		  *    pose_z			= 0
+		  *    pose_yaw			= 0					; [double] Angles in degrees
+		  *    pose_pitch		= 0
+		  *    pose_roll		= 0
 		  *						                  
 		  *  \endcode
 		  * \ingroup mrpt_hwdrivers_grp
@@ -58,33 +57,33 @@ enum JOINT {HEAD = 0, NECK, TORSO,
 			DEFINE_GENERIC_SENSOR(CSkeletonTracker)
 		protected:
 
+			/** Opaque pointers to specific NITE data */
 			void * /* nite::SkeletonState* */	m_skeletons_ptr;
 			void * /* nite::userTracker* */		m_userTracker_ptr;
 
-			/** This serial port will be attempted to be opened automatically when this class is first used to request data from the device.
-			  * \sa hwdrivers::CSerialPort
-			  */
-			uint32_t					m_timeStartUI;
-			mrpt::system::TTimeStamp	m_timeStartTT;
-			mrpt::poses::CPose3D		m_sensorPose;
-			int							m_nUsers;
-
-			bool						m_showPreview;
+			/** Timestamp management */
+			uint32_t							m_timeStartUI;
+			mrpt::system::TTimeStamp			m_timeStartTT;
 			
-			mrpt::gui::CDisplayWindow3DPtr m_win;
+			mrpt::poses::CPose3D				m_sensorPose;				//!< Sensor pose
+			int									m_nUsers;					//!< Number of detected users
 
-			// config
+			/** Preview window management */
+			bool									m_showPreview;
+			mrpt::gui::CDisplayWindow3DPtr			m_win;
+			std::vector< std::pair<JOINT,JOINT> >	m_linesToPlot;			//!< Lines between joints
+			std::vector<double>						m_joint_theta;			//!< Joint angles when no skeleton has been detected
 
-			/** Search the port where the sensor is located and connect to it
-			  */
-			// bool	searchPortAndConnect();
-
-			unsigned int				m_toutCounter;				//!< Timeout counter (for internal use only)
+			unsigned int						m_toutCounter;				//!< Timeout counter (for internal use only)
 
 			/** See the class documentation at the top for expected parameters */
 			void  loadConfig_sensorSpecific(
 				const mrpt::utils::CConfigFileBase	& configSource,
 				const std::string					& iniSection );
+
+			/** Displays real-time info for the captured skeleton */
+			void processPreview(const mrpt::obs::CObservationSkeletonPtr & obs);
+			void processPreviewNone();
 
 		public:
 			/** Constructor
@@ -100,17 +99,11 @@ enum JOINT {HEAD = 0, NECK, TORSO,
 			  */
 			void doProcess();
 
-			/** Turns on the xSens device and configure it for getting orientation data */
+			/** Connects to the PrimeSense camera and prepares it to get skeleton data */
 			void initialize();
 
-			/** Displays real-time info for the captured skeleton */
-			void processPreview(const mrpt::obs::CObservationSkeletonPtr & obs);
-			void processPreviewNone();
-
-		private:
-			std::vector< std::pair<JOINT,JOINT> > m_linesToPlot;
-			std::vector<double> m_joint_theta;
-
+			/** Set/unset preview */
+			inline void setPreview( const bool setPreview = true ) { m_showPreview = setPreview; }
 		}; // end of class
 
 	} // end of namespace

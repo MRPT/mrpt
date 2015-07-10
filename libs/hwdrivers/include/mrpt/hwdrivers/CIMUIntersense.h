@@ -21,25 +21,41 @@ namespace mrpt
 	{
 
 		/** A class for interfacing Intersense Inertial Measuring Units (IMUs).
-		  *  It uses a serial port or USB-to-serial adapter to communicate to the device, so no special drivers are needed.
-		  *  For the more recent 4th generation devices, see the class mrpt::hwdrivers::CIMUXSens_MT4
+		  *  It connects to a InterSense inertiaCube 3 sensor and records inertial data.
+		  *  NOTE: This device provides:
+		  *		- Euler angles, 
+		  *		- 2 angular velocties (body-frame and navigation-frame)
+		  *		- X,Y,Z velocity
+		  *		- 2 accelerations (body-frame and navigation-frame)
 		  *
-		  *  See also the application "rawlog-grabber" for a ready-to-use application to gather data from the scanner.
+		  *		In order to record all this information within the 'rawMeasurements' vector in mrpt::obs::CObservationIMU, some of it had to be stored in positions which weren't intended for the stored data (marked with *):
+		  *		- Euler angles --> rawMeasurements[IMU_YAW], rawMeasurements[IMU_PITCH], rawMeasurements[IMU_ROLL]
+		  *		- Body-frame angular velocity --> rawMeasurements[IMU_YAW_VEL], rawMeasurements[IMU_PITCH_VEL], rawMeasurements[IMU_ROLL_VEL]
+		  *		- * Nav-frame angular velocity --> rawMeasurements[IMU_MAG_X], rawMeasurements[IMU_MAG_Y], rawMeasurements[IMU_MAG_Z]
+		  *		- XYZ velocity --> rawMeasurements[IMU_X_VEL], rawMeasurements[IMU_Y_VEL], rawMeasurements[IMU_Z_VEL]
+		  *		- Body-frame acceleration --> rawMeasurements[IMU_X_ACC], rawMeasurements[IMU_Y_ACC], rawMeasurements[IMU_Z_ACC]
+		  *		- * Nav-frame acceleration --> rawMeasurements[IMU_X], rawMeasurements[IMU_Y], rawMeasurements[IMU_Z]
+		  *		Be careful with this when using the grabbed mrpt::obs::CObservationIMU data.
+		  *
+		  *  See also the application "rawlog-grabber" for a ready-to-use application to gather data from this sensor.
 		  *
 		  *  \code
 		  *  PARAMETERS IN THE ".INI"-LIKE CONFIGURATION STRINGS:
 		  * -------------------------------------------------------
 		  *   [supplied_section_name]
-		  *    pose_x=0	    ; Sensor 3D position relative to the robot (meters)
-		  *    pose_y=0
-		  *    pose_z=0
-		  *    pose_yaw=0	; Angles in degrees
-		  *    pose_pitch=0
-		  *    pose_roll=0
-		  *	   sensorLabel = <label> ; Label of the sensor
-		  *	   sensitivity	= 10 ; Sensor sensitivity (see dll documentation)
-		  *	   enhancement	= 2  ; Enhancement mode (see dll documentation)
-		  *	   prediction = 0    ; Prediction mode (see dll documentation)
+		  *    driver		= CIMUIntersense
+		  *	   sensorLabel	= <label>			; Label of the sensor
+		  *    pose_x		= 0					; [double] Sensor 3D position relative to the robot (meters)
+		  *    pose_y		= 0
+		  *    pose_z		= 0
+		  *    pose_yaw		= 0					; [double] Angles in degrees
+		  *    pose_pitch	= 0
+		  *    pose_roll	= 0
+		  *
+		  *	   sensitivity	= 10				; [int] Sensor sensitivity (see API documentation)
+		  *	   enhancement	= 2					; [int] Enhancement mode (see API documentation)
+		  *	   prediction	= 0					; [int] Prediction mode (see API documentation)
+		  *	   useBuffer	= 0					; [bool] {0,1} (unused by now) Whether or not use a buffer for storing old data (see API documentation) 
 		  *						                  
 		  *  \endcode
 		  * \ingroup mrpt_hwdrivers_grp
@@ -49,24 +65,21 @@ namespace mrpt
 			DEFINE_GENERIC_SENSOR(CIMUIntersense)
 		protected:
 
+			/** Opaque pointer to specifid iSense IMU structure */
 			void * /* ISD_TRACKER_HANDLE* */	m_handles_ptr;
 
-			/** This serial port will be attempted to be opened automatically when this class is first used to request data from the device.
-			  * \sa hwdrivers::CSerialPort
-			  */
+			/** Timestamp management */
 			uint32_t					m_timeStartUI;
 			mrpt::system::TTimeStamp	m_timeStartTT;
+			
 			mrpt::poses::CPose3D		m_sensorPose;
 			int							m_nSensors;
 
-			// config
+			/* Configurable parameters */
 			uint32_t					m_sensitivity;
 			uint32_t					m_enhancement;
 			uint32_t					m_prediction;
 			bool						m_useBuffer;
-			/** Search the port where the sensor is located and connect to it
-			  */
-			// bool	searchPortAndConnect();
 
 			unsigned int				m_toutCounter;				//!< Timeout counter (for internal use only)
 
@@ -89,7 +102,7 @@ namespace mrpt
 			  */
 			void doProcess();
 
-			/** Turns on the xSens device and configure it for getting orientation data */
+			/** Turns on the iSense device and configure it for getting orientation data */
 			void initialize();
 
 		}; // end of class
