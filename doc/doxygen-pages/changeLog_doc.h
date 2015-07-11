@@ -38,6 +38,7 @@
 		- \ref mrpt_obs_grp
 			- mrpt::obs::CObservation3DRangeScan now supports pixel labels (semantic mapping, etc.)
 			- New class mrpt::obs::CObservationSkeleton to hold body tracking information (by Francisco Angel Moreno)
+			- mrpt::obs::CObservationIMU has new data fields and fields are better documented to reflect whether they refer to local/global coordinate frames
 		- \ref mrpt_vision_grp
 			- mrpt::vision::CImageGrabber_dc1394: Changed default Bayer filter from NEAREST to HQLINEAR
 	- BUG FIXES:

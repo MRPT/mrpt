@@ -145,7 +145,13 @@ void CObservationIMU::getDescriptionAsText(std::ostream &o) const
 		"qx", // IMU_ORI_QUAT_X,
 		"qy", // IMU_ORI_QUAT_Y,
 		"qz", // IMU_ORI_QUAT_Z,
-		"qw" // IMU_ORI_QUAT_W,
+		"qw", // IMU_ORI_QUAT_W,
+		"rad/s", //	IMU_YAW_VEL_GLOBAL
+		"rad/s", //	IMU_PITCH_VEL_GLOBAL
+		"rad/s", //	IMU_ROLL_VEL_GLOBAL
+		"m/s^2", //	IMU_X_ACC_GLOBAL
+		"m/s^2", //	IMU_Y_ACC_GLOBAL
+		"m/s^2"  //	IMU_Z_ACC_GLOBAL
 	};
 
 #define DUMP_IMU_DATA(x)  \
@@ -179,4 +185,12 @@ void CObservationIMU::getDescriptionAsText(std::ostream &o) const
 	DUMP_IMU_DATA(IMU_ORI_QUAT_Y)
 	DUMP_IMU_DATA(IMU_ORI_QUAT_Z)
 	DUMP_IMU_DATA(IMU_ORI_QUAT_W)
+	DUMP_IMU_DATA(IMU_YAW_VEL_GLOBAL)
+	DUMP_IMU_DATA(IMU_PITCH_VEL_GLOBAL)
+	DUMP_IMU_DATA(IMU_ROLL_VEL_GLOBAL)
+	DUMP_IMU_DATA(IMU_X_ACC_GLOBAL)
+	DUMP_IMU_DATA(IMU_Y_ACC_GLOBAL)
+	DUMP_IMU_DATA(IMU_Z_ACC_GLOBAL)
+
+
 }

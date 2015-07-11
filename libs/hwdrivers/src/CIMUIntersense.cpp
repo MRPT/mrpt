@@ -123,13 +123,13 @@ void CIMUIntersense::doProcess()
 		obs->rawMeasurements[IMU_ROLL_VEL]	= data.Station[0].AngularVelBodyFrame[2];	// rad/s
 		obs->dataIsPresent[IMU_ROLL_VEL]	= true;
 
-		// angular velocity	2 --> to magnetometer data
-		obs->rawMeasurements[IMU_MAG_X]	= data.Station[0].AngularVelNavFrame[0];	// rad/s
-		obs->dataIsPresent[IMU_MAG_X]	= true;
-		obs->rawMeasurements[IMU_MAG_Y]	= data.Station[0].AngularVelNavFrame[1];	// rad/s
-		obs->dataIsPresent[IMU_MAG_Y]	= true;
-		obs->rawMeasurements[IMU_MAG_Z]	= data.Station[0].AngularVelNavFrame[2];	// rad/s
-		obs->dataIsPresent[IMU_MAG_Z]	= true;
+		// angular velocity	2
+		obs->rawMeasurements[IMU_YAW_VEL_GLOBAL]	= data.Station[0].AngularVelNavFrame[0];	// rad/s
+		obs->dataIsPresent[IMU_YAW_VEL_GLOBAL]	= true;
+		obs->rawMeasurements[IMU_PITCH_VEL_GLOBAL]	= data.Station[0].AngularVelNavFrame[1];	// rad/s
+		obs->dataIsPresent[IMU_PITCH_VEL_GLOBAL]	= true;
+		obs->rawMeasurements[IMU_ROLL_VEL_GLOBAL]	= data.Station[0].AngularVelNavFrame[2];	// rad/s
+		obs->dataIsPresent[IMU_ROLL_VEL_GLOBAL]	= true;
 
 		// angular velocity 3 --> x,y,z velocity
 		obs->rawMeasurements[IMU_X_VEL]	= data.Station[0].VelocityNavFrame[0];	// m/s
@@ -139,21 +139,21 @@ void CIMUIntersense::doProcess()
 		obs->rawMeasurements[IMU_Z_VEL]	= data.Station[0].VelocityNavFrame[2];	// m/s
 		obs->dataIsPresent[IMU_Z_VEL]	= true;
 
-		// angular acceleration
-		obs->rawMeasurements[IMU_X_ACC]		= data.Station[0].AccelNavFrame[0];	// m/s w/o gravity
-		obs->dataIsPresent[IMU_X_ACC]		= true;
-		obs->rawMeasurements[IMU_Y_ACC]		= data.Station[0].AccelNavFrame[1];	// m/s w/o gravity
-		obs->dataIsPresent[IMU_Y_ACC]		= true;
-		obs->rawMeasurements[IMU_Z_ACC]		= data.Station[0].AccelNavFrame[2];	// m/s w/o gravity
-		obs->dataIsPresent[IMU_Z_ACC]		= true;
+		// angular acceleration: global coords
+		obs->rawMeasurements[IMU_X_ACC_GLOBAL]		= data.Station[0].AccelNavFrame[0];	// m/s w/o gravity
+		obs->dataIsPresent[IMU_X_ACC_GLOBAL]		= true;
+		obs->rawMeasurements[IMU_Y_ACC_GLOBAL]		= data.Station[0].AccelNavFrame[1];	// m/s w/o gravity
+		obs->dataIsPresent[IMU_Y_ACC_GLOBAL]		= true;
+		obs->rawMeasurements[IMU_Z_ACC_GLOBAL]		= data.Station[0].AccelNavFrame[2];	// m/s w/o gravity
+		obs->dataIsPresent[IMU_Z_ACC_GLOBAL]		= true;
 
-		// angular acceleration 2 --> to position data
-		obs->rawMeasurements[IMU_X]		= data.Station[0].AccelBodyFrame[0];
-		obs->dataIsPresent[IMU_X]		= true;
-		obs->rawMeasurements[IMU_Y]		= data.Station[0].AccelBodyFrame[1];
-		obs->dataIsPresent[IMU_Y]		= true;
-		obs->rawMeasurements[IMU_Z]		= data.Station[0].AccelBodyFrame[2];
-		obs->dataIsPresent[IMU_Z]		= true;
+		// angular acceleration 2: local coords
+		obs->rawMeasurements[IMU_X_ACC]		= data.Station[0].AccelBodyFrame[0];
+		obs->dataIsPresent[IMU_X_ACC]		= true;
+		obs->rawMeasurements[IMU_Y_ACC]		= data.Station[0].AccelBodyFrame[1];
+		obs->dataIsPresent[IMU_Y_ACC]		= true;
+		obs->rawMeasurements[IMU_Z_ACC]		= data.Station[0].AccelBodyFrame[2];
+		obs->dataIsPresent[IMU_Z_ACC]		= true;
 
 		// position
 		//obs->rawMeasurements[IMU_X]		= DEG2RAD(data.Station[0].Position[0]);
