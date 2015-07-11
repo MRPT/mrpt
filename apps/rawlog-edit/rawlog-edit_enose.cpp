@@ -82,11 +82,11 @@ DECLARE_OP_FUNCTION(op_export_enose_txt)
 				for (size_t j = 0; j<obs->m_readings.size(); j++)
 				{
 					//Temperature
-					::fprintf(f_this, " Temp%u ", j);
+					::fprintf(f_this, " Temp%u ", static_cast<unsigned int>(j));
 
 					//For each sensor on the E-nose					
 					for (size_t k = 0; k<obs->m_readings[j].readingsVoltage.size(); k++)
-						::fprintf(f_this, " S%u_%u ", j,k);
+						::fprintf(f_this, " S%u_%u ", static_cast<unsigned int>(j),static_cast<unsigned int>(k));
 				}
 				::fprintf(f_this,"\n");
 			}

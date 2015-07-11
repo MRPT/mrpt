@@ -56,8 +56,8 @@ CSkeletonTracker::CSkeletonTracker( ) :
 	m_timeStartUI		(0),
 	m_timeStartTT		(0),
 	m_sensorPose		(),
-	m_showPreview		(false),
 	m_nUsers			(0),
+	m_showPreview		(false),
 	m_toutCounter		(0)
 {
 	m_sensorLabel = "skeletonTracker";

@@ -267,7 +267,7 @@ void PlannerRRT_SE2_TPS::solve(
 
 			float d_rand; // Coordinates in TP-space
 			int   k_rand; // k_rand is the index of target_alpha in PTGs corresponding to a specific d_rand
-			bool tp_point_is_exact = 
+			//bool tp_point_is_exact =
 			m_PTGs[idxPTG]->inverseMap_WS2TP(
 				x_rand_rel.x(), x_rand_rel.y(),
 				k_rand, d_rand );

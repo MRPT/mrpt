@@ -354,7 +354,7 @@ SET(USER_EXTRA_CPP_FLAGS "" CACHE STRING "Put extra compiler options here if des
 # ----------------------------------------------------------------------------
 # 			Set the maximum level of warnings:
 # ----------------------------------------------------------------------------
-SET( MRPT_EXTRA_WARNINGS OFF CACHE BOOL "Enable extra warnings apart from -Wall")
+SET( MRPT_EXTRA_WARNINGS ON CACHE BOOL "Enable extra warnings apart from -Wall")
 MARK_AS_ADVANCED(MRPT_EXTRA_WARNINGS)
 
 # Should be set to true for development
@@ -367,12 +367,9 @@ MARK_AS_ADVANCED(MRPT_WHOLE_PROGRAM_OPTIMIZATION)
 
 # Even more warnings for different compilers
 IF(MRPT_EXTRA_WARNINGS)
-   #TODO - Add options for MSVC
-   IF (${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
-      SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wreturn-type -Wextra") # -Wold-style-cast  -Woverloaded-virtual
-   ELSEIF(${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
-		SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wextra")
-	ENDIF()
+   IF (${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU" OR ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
+      SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wreturn-type -Wextra -Wno-unused-parameter") # -Wold-style-cast  -Woverloaded-virtual
+   ENDIF(${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU" OR ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
 ENDIF(MRPT_EXTRA_WARNINGS)
 
 # Enable profiling?
@@ -424,14 +421,11 @@ ENDIF(MSVC)
 # GNU GCC options ================================
 IF(CMAKE_COMPILER_IS_GNUCXX)
 	# Wall & pedantic?
-	IF(APPLE)
+	#IF(APPLE)
 		SET(MRPT_BUILD_GCC_PEDANTIC_DEFAULT "OFF")
-	ELSE(APPLE)
-		SET(MRPT_BUILD_GCC_PEDANTIC_DEFAULT "ON")
-
-
-    
-	ENDIF(APPLE)
+	#ELSE(APPLE)
+	#	SET(MRPT_BUILD_GCC_PEDANTIC_DEFAULT "ON")
+	#ENDIF(APPLE)
 
 	SET( MRPT_BUILD_GCC_PEDANTIC ${MRPT_BUILD_GCC_PEDANTIC_DEFAULT} CACHE BOOL "Enable pedantic error detection (with GCC only)")
 	MARK_AS_ADVANCED(MRPT_BUILD_GCC_PEDANTIC)
@@ -452,7 +446,8 @@ IF(CMAKE_COMPILER_IS_GNUCXX)
 
 	IF(MRPT_BUILD_GCC_PEDANTIC)
 		SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pedantic")
- 		SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -pedantic")
+		# No need to be pendantic in old C files, most of them from 3rd parties anyway...
+ 		#SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -pedantic")
 	ENDIF(MRPT_BUILD_GCC_PEDANTIC)
 
 	# Enable C++11 features in GCC 4.7+

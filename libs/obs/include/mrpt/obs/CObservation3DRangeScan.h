@@ -355,6 +355,8 @@ namespace obs
 			{
 			}
 
+			virtual ~TPixelLabelInfoBase() {}
+
 			const uint8_t  BITFIELD_BYTES; //!< Minimum number of bytes required to hold MAX_NUM_DIFFERENT_LABELS bits.
 
 		protected:

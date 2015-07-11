@@ -356,7 +356,6 @@ void CFormEdit::OnbtnKeepClick(wxCommandEvent& event)
     size_t last = spinLast->GetValue();
 
     ASSERT_(last<n);
-    ASSERT_(first>=0);
     ASSERT_(last>=first);
 
     wxBusyCursor wait;
@@ -381,7 +380,6 @@ void CFormEdit::OnbtnDeleteClick(wxCommandEvent& event)
     size_t last = spinLast->GetValue();
 
     ASSERT_(last<n);
-    ASSERT_(first>=0);
     ASSERT_(last>=first);
 
     wxBusyCursor wait;
