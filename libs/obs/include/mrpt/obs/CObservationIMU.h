@@ -112,8 +112,8 @@ namespace obs
 		 */
 		CObservationIMU(  ) :
 			sensorPose(),
-			dataIsPresent(25,false),
-			rawMeasurements(25,0)
+			dataIsPresent(mrpt::obs::COUNT_IMU_DATA_FIELDS,false),
+			rawMeasurements(mrpt::obs::COUNT_IMU_DATA_FIELDS,0)
 		{ }
 
 		/** Destructor
