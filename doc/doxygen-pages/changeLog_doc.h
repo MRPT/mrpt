@@ -53,6 +53,7 @@
 			- Fix Debian bug [#786349](https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=786349) on Eigen2 support.
 			- mrpt::hwdrivers::CIMUXSens_MT4: Fix crash in destructor of objects not attached to a physical device.
 			- Fix wrong quaternion cross product when target variable is one of the operands. Also affected the += operator of mrpt::poses::CPose3DQuat (Fixes #148)
+			- mrpt::hwdrivers::CKinect with libfreenect driver: Fix potential memory corruption.
 
 <hr>
 <a name="1.3.0">

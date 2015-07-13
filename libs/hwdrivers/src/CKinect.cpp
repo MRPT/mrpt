@@ -263,8 +263,8 @@ void depth_cb(freenect_device *dev, void *v_depth, uint32_t timestamp)
 	CKinect *obj = reinterpret_cast<CKinect*>(freenect_get_user(dev));
 
 	// Update of the timestamps at the end:
-	CObservation3DRangeScan &obs = obj->internal_latest_obs();
 	mrpt::synch::CCriticalSectionLocker lock( &obj->internal_latest_obs_cs() );
+	CObservation3DRangeScan &obs = obj->internal_latest_obs();
 
 	obs.hasRangeImage  = true;
 	obs.range_is_depth = true;
@@ -298,8 +298,8 @@ void rgb_cb(freenect_device *dev, void *img_data, uint32_t timestamp)
 	const freenect_frame_mode frMode = freenect_get_current_video_mode(dev);
 
 	// Update of the timestamps at the end:
-	CObservation3DRangeScan &obs = obj->internal_latest_obs();
 	mrpt::synch::CCriticalSectionLocker lock( &obj->internal_latest_obs_cs() );
+	CObservation3DRangeScan &obs = obj->internal_latest_obs();
 
 #ifdef KINECT_PROFILE_MEM_ALLOC
 	alloc_tim.enter("depth_rgb loadFromMemoryBuffer");
