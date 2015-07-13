@@ -17,6 +17,7 @@
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/math/distributions.h>
 #include <mrpt/utils/CStream.h>
+#include <mrpt/poses/SO_SE_average.h>
 
 using namespace mrpt;
 using namespace mrpt::bayes;
@@ -136,59 +137,23 @@ void  CPosePDFParticles::clear( )
  ---------------------------------------------------------------*/
 void CPosePDFParticles::getMean(CPose2D &est_) const
 {
-	TPose2D est(0,0,0);
-
+	// Calc average on SE(2)
 	const size_t n = m_particles.size();
-	double			W=0;
-	double			W_phi_R=0,W_phi_L=0;
-	double			phi_R=0,phi_L=0;
-
-	if (!n) return;
-
-	// First: XY
-	// -----------------------------------
-	for (size_t i=0;i<n;i++)
+	if (n)
 	{
-		const CPose2D &p  = *m_particles[i].d;
-		double w  = exp(m_particles[i].log_w);
-		W += w;
-
-		est.x+= p.x() * w;
-		est.y+= p.y() * w;
-
-		// PHI is special:
-		double phi = p.phi();
-		if (fabs(phi)>1.5707963267948966192313216916398f)
+		mrpt::poses::SE_average<2> se_averager;
+		for (size_t i=0;i<n;i++)
 		{
-			// LEFT HALF: 0,2pi
-			if (phi<0) phi = (M_2PI + phi);
-
-			phi_L += phi * w;
-			W_phi_L += w;
+			const CPose2D &p  = *m_particles[i].d;
+			double w  = exp(m_particles[i].log_w);
+			se_averager.append(p,w);
 		}
-		else
-		{
-			// RIGHT HALF: -pi,pi
-			phi_R += phi * w;
-			W_phi_R += w;
-		}
+		se_averager.get_average(est_);
 	}
-
-	est_ = est;
-
-	est_ *= (1.0/W);
-
-	// Next: PHI
-	// -----------------------------------
-	// The mean value from each side:
-	if (W_phi_L>0)	phi_L /= W_phi_L;  // [0,2pi]
-	if (W_phi_R>0)	phi_R /= W_phi_R;  // [-pi,pi]
-
-	// Left side to [-pi,pi] again:
-	if (phi_L>M_PI) phi_L = phi_L - M_2PI;
-
-	// The total mean:
-	est_.phi(  ((phi_L * W_phi_L + phi_R * W_phi_R )/(W_phi_L+W_phi_R)) );
+	else
+	{
+		est_ = CPose2D();
+	}
 }
 
 /*---------------------------------------------------------------

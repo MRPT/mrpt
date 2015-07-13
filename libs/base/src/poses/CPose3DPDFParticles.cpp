@@ -14,6 +14,7 @@
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/utils/CStream.h>
+#include <mrpt/poses/SO_SE_average.h>
 
 using namespace mrpt;
 using namespace mrpt::poses;
@@ -86,28 +87,6 @@ void  CPose3DPDFParticles::copyFrom(const CPose3DPDF &o)
 	if (o.GetRuntimeClass()==CLASS_ID(CPose3DPDFGaussian))
 	{
 		THROW_EXCEPTION("TO DO!!");
-/*		CPose3DPDFGaussian	*pdf = (CPosePDFGaussian*) &o;
-		int					M = (int)m_particles.size();
-		std::vector<CVectorFloat>			parts;
-		std::vector<CVectorFloat>::iterator partsIt;
-
-		mrpt::random::randomNormalMultiDimensionalMany(pdf->cov,M,parts);
-
-		for ( itDest = m_particles.begin();itDest!=m_particles.end();itDest++ )
-				delete itDest->d;
-
-		m_particles.clear();
-		m_particles.resize(M);
-
-		for ( itDest = m_particles.begin(),partsIt=parts.begin();itDest!=m_particles.end();itDest++,partsIt++ )
-		{
-			itDest->log_w = 0;
-            itDest->d = new CPose3D( ( pdf->mean.x + (*partsIt)[0] ),
-									 ( pdf->mean.y + (*partsIt)[1] ),
-                                     ( pdf->mean.phi + (*partsIt)[2] ) );
-			itDest->d->normalizePhi();
-		}
-*/
 	}
 
 	MRPT_END
@@ -130,89 +109,19 @@ void CPose3DPDFParticles::getMean(CPose3D &p) const
 {
 	MRPT_START
 
-	double			X=0,Y=0,Z=0,YAW=0,PITCH=0,ROLL=0;
-	double			W=0;
+	// Default to (0,..,0)
+	p = CPose3D();
+	if (m_particles.empty()) 
+		return;
 
-	double			W_yaw_R=0,W_yaw_L=0;
-	double			yaw_R=0,yaw_L=0;
-	double			W_roll_R=0,W_roll_L=0;
-	double			roll_R=0,roll_L=0;
-
-	// First: XYZ
-	// -----------------------------------
+	// Calc average on SE(3)
+	mrpt::poses::SE_average<3> se_averager;
 	for (CPose3DPDFParticles::CParticleList::const_iterator it=m_particles.begin();it!=m_particles.end();++it)
 	{
 		const double w  = exp(it->log_w);
-		W += w;
-
-		X		+= w * it->d->x();
-		Y		+= w * it->d->y();
-		Z		+= w * it->d->z();
-		PITCH	+= w * it->d->pitch();
-
-		// Angles Yaw and Roll are especial!:
-		double ang = it->d->yaw();
-		if (fabs( ang )>0.5*M_PI)
-		{
-			// LEFT HALF: 0,2pi
-			if (ang<0) ang = (M_2PI + ang);
-			yaw_L += ang * w;
-			W_yaw_L += w;
-		}
-		else
-		{
-			// RIGHT HALF: -pi,pi
-			yaw_R += ang * w;
-			W_yaw_R += w;
-		}
-
-		// Angles Yaw and Roll are especial!:
-		ang = it->d->roll();
-		if (fabs( ang )>0.5*M_PI)
-		{
-			// LEFT HALF: 0,2pi
-			if (ang<0) ang = (M_2PI + ang);
-			roll_L += ang * w;
-			W_roll_L += w;
-		}
-		else
-		{
-			// RIGHT HALF: -pi,pi
-			roll_R += ang * w;
-			W_roll_R += w;
-		}
+		se_averager.append( *it->d,w );
 	}
-
-
-	if (W==0) {
-		p.setFromValues(0,0,0,0,0,0);
-		return;
-	}
-
-	X /= W;
-	Y /= W;
-	Z /= W;
-	PITCH /= W;
-
-	// Next: Yaw and Roll:
-	// -----------------------------------
-	// The mean value from each side:
-	if (W_yaw_L>0)	yaw_L /= W_yaw_L;  // [0,2pi]
-	if (W_yaw_R>0)	yaw_R /= W_yaw_R;  // [-pi,pi]
-	// Left side to [-pi,pi] again:
-	if (yaw_L>M_PI) yaw_L = yaw_L - M_2PI;
-
-	// The mean value from each side:
-	if (W_roll_L>0)	roll_L /= W_roll_L;  // [0,2pi]
-	if (W_roll_R>0)	roll_R /= W_roll_R;  // [-pi,pi]
-	// Left side to [-pi,pi] again:
-	if (roll_L>M_PI) roll_L = roll_L - M_2PI;
-
-	// The total means:
-	YAW = ((yaw_L * W_yaw_L + yaw_R * W_yaw_R )/(W_yaw_L+W_yaw_R));
-	ROLL = ((roll_L * W_roll_L + roll_R * W_roll_R )/(W_roll_L+W_roll_R));
-
-	p.setFromValues(X,Y,Z,YAW,PITCH,ROLL);
+	se_averager.get_average(p);
 
 	MRPT_END
 }

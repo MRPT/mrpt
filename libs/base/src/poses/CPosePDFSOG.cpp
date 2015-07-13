@@ -9,7 +9,6 @@
 
 #include "base-precomp.h"  // Precompiled headers
 
-
 #include <mrpt/poses/CPosePDFSOG.h>
 #include <mrpt/poses/CPosePDFParticles.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
@@ -18,6 +17,7 @@
 #include <mrpt/math/CMatrixD.h>
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/utils/CStream.h>
+#include <mrpt/poses/SO_SE_average.h>
 
 
 using namespace mrpt;
@@ -60,31 +60,18 @@ void CPosePDFSOG::resize(const size_t N)
  ---------------------------------------------------------------*/
 void CPosePDFSOG::getMean(CPose2D &p) const
 {
-	size_t		N = m_modes.size();
-
-	if (N)
+	if (!m_modes.empty())
 	{
-		// Use an auxiliary parts. set to manage the problematic computation of the mean "PHI":
-		//  See CPosePDFParticles::getEstimatedPose
-		CPosePDFParticles										auxParts( N );
-		CPosePDFParticles::CParticleList::iterator	itPart;
-		const_iterator				it;
-
-		for (it=m_modes.begin(),itPart=auxParts.m_particles.begin();it!=m_modes.end();++it,++itPart)
+		mrpt::poses::SE_average<2> se_averager;
+		for (const_iterator it=m_modes.begin();it!=m_modes.end();++it)
 		{
-			itPart->log_w = (it)->log_w;
-			*itPart->d = (it)->mean;
+			const double w = (it)->log_w;
+			se_averager.append( (it)->mean, w);
 		}
-
-		auxParts.getMean(p);
-		return;
+		se_averager.get_average(p);
 	}
-	else
-	{
-		p.x(0);
-		p.y(0);
-		p.phi(0);
-		return;
+	else {
+		p = CPose2D();
 	}
 }
 
