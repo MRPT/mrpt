@@ -49,6 +49,9 @@ using namespace mrpt::maps;
 using namespace mrpt::opengl;
 using namespace std;
 
+const double KEYFRAMES_MIN_DISTANCE = 0.10; // meters
+const double KEYFRAMES_MIN_ANG      = DEG2RAD(10);
+
 // Thread for grabbing: Do this is another thread so we divide rendering and grabbing
 //   and exploit multicore CPUs.
 struct TThreadParam
@@ -185,16 +188,15 @@ void Test_Kinect()
 	tracker->extra_params["add_new_feat_max_features"]    = 150;
 	tracker->extra_params["add_new_feat_patch_size"]      = 21;
 
-	tracker->extra_params["minimum_KLT_response_to_add"]      = 50;
+	tracker->extra_params["minimum_KLT_response_to_add"]      = 40;
 	tracker->extra_params["check_KLT_response_every"]	= 5;	// Re-check the KLT-response to assure features are in good points.
-	tracker->extra_params["minimum_KLT_response"]	= 20;	// Re-check the KLT-response to assure features are in good points.
+	tracker->extra_params["minimum_KLT_response"]	= 25;	// Re-check the KLT-response to assure features are in good points.
 
 	tracker->extra_params["update_patches_every"]		= 0;  // Update patches
 
-
 	// Specific params for "CFeatureTracker_KL"
-	tracker->extra_params["window_width"]  = 5;
-	tracker->extra_params["window_height"] = 5;
+	tracker->extra_params["window_width"]  = 25;
+	tracker->extra_params["window_height"] = 25;
 
 
 	// Global points map:
@@ -362,11 +364,13 @@ void Test_Kinect()
 					// Find matchings:
 					mrpt::tfest::TSE3RobustParams params;
 					params.ransac_minSetSize = 3;
+					params.ransac_maxSetSizePct = 6.0 / corrs.size();
 
 					mrpt::tfest::TSE3RobustResult results;
 					bool register_ok = false; 
 					try {
 						mrpt::tfest::se3_l2_robust(corrs, params, results);
+						register_ok = true;
 					} catch (std::exception &) {  
 						/* Cannot find a minimum number of matches, inconsistent parameters due to very reduced numberof matches,etc. */ 
 					}
@@ -379,10 +383,10 @@ void Test_Kinect()
 					if (register_ok && std::abs(results.scale-1.0)<0.1)
 					{
 						// Seems a good match:
-						if ( ( relativePose.norm() > 0.10 ||
-							std::abs(relativePose.yaw())>DEG2RAD(10) ||
-							std::abs(relativePose.pitch())>DEG2RAD(10) ||
-							std::abs(relativePose.roll())>DEG2RAD(10) ))
+						if ( ( relativePose.norm() > KEYFRAMES_MIN_DISTANCE ||
+							std::abs(relativePose.yaw())>KEYFRAMES_MIN_ANG ||
+							std::abs(relativePose.pitch())>KEYFRAMES_MIN_ANG ||
+							std::abs(relativePose.roll())>KEYFRAMES_MIN_ANG ))
 						{
 							// Accept this as a new key-frame pose ------------
 							// Append new global pose of this key-frame:

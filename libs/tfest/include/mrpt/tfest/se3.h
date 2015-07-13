@@ -59,9 +59,9 @@ namespace mrpt
 		/** Parameters for se3_l2_robust(). See function for more details */
 		struct TFEST_IMPEXP TSE3RobustParams
 		{
-			unsigned int  ransac_minSetSize; //!< (Default=5)  The minimum amount of points in a set to be accepted
+			unsigned int  ransac_minSetSize; //!< (Default=5)  The minimum amount of points in a set to start a consensus set. \sa ransac_maxSetSizePct
 			unsigned int  ransac_nmaxSimulations; //!< (Default=50) The maximum number of iterations of the RANSAC algorithm
-			double        ransac_maxSetSizePct; //!< (Default=0.5) The (minimum) assumed percent (0.0 - 1.0) of the input set to be considered as inliers
+			double        ransac_maxSetSizePct; //!< (Default=0.5) The minimum ratio (0.0 - 1.0) of the input set that is considered to be inliers. *Important*: The minimum size of a consensus set to be accepted will be "INPUT_CORRESPONDENCES*ransac_maxSetSizePct".
 			double        ransac_threshold_lin; //!< (Default=0.05) The maximum distance in X,Y,Z for a solution to be considered as matching a candidate solution (In meters)
 			double        ransac_threshold_ang; //!< (Default=1 deg) The maximum angle (yaw,pitch,roll) for a solution to be considered as matching a candidate solution (In radians)
 			double        ransac_threshold_scale; //!< (Default=0.03) The maximum difference in scale for a solution to be considered as matching a candidate solution (dimensionless)

@@ -61,7 +61,7 @@ bool tfest::se3_l2_robust(
 	const size_t d = mrpt::utils::round( N*params.ransac_maxSetSizePct ); // Minimum number of points to be considered a good set
 	const size_t max_it = params.ransac_nmaxSimulations; // Maximum number of iterations
 
-	ASSERTMSG_(d<n,"Minimum number of points to be considered a good set is < Minimum number of points to fit the model")
+	ASSERTMSG_(d>=n,"Minimum number of points to be considered a good set is < Minimum number of points to fit the model")
 
 	// -------------------------------------------
 	// MAIN loop
@@ -100,13 +100,13 @@ bool tfest::se3_l2_robust(
 		if (cSet.size()<n)
 		{
 			if (params.verbose)
-				std::cerr << "[tfest::se3_l2_robust] It was not possible to find the minimum number of (compatible) matching pairs.\n";
-			return false;
+				std::cerr << "[tfest::se3_l2_robust] Iter " << iterations <<": It was not possible to find the min no of (compatible) matching pairs.\n";
+			continue; // Try again
 		}
 
 		CPose3DQuat mbOutQuat;
 		const bool res = mrpt::tfest::se3_l2( mbInliers, mbOutQuat, scale, params.forceScaleToUnity );
-		ASSERTMSG_(res, "tfest::se3_l2() returned false for tentative subset during RANSAC iteration!")
+		if (!res) { std::cerr << "[tfest::se3_l2_robust] tfest::se3_l2() returned false for tentative subset during RANSAC iteration!\n"; continue; }
 
 		// Maybe inliers Output
 		const CPose3D mbOut = CPose3D(mbOutQuat);
@@ -142,7 +142,7 @@ bool tfest::se3_l2_robust(
 			const bool res = mrpt::tfest::se3_l2( mbInliers, csOutQuat, scale, params.forceScaleToUnity );
 			mbInliers.erase( mbInliers.end()-1 ); // Erase
 
-			ASSERTMSG_(res, "tfest::se3_l2() returned false for tentative subset during RANSAC iteration!")
+			if (!res) { std::cerr << "[tfest::se3_l2_robust] tfest::se3_l2() returned false for tentative subset during RANSAC iteration!\n"; continue; }
 
 			// Is this point a supporter of the initial inlier group?
 			const CPose3D csOut = CPose3D(csOutQuat);
@@ -162,7 +162,7 @@ bool tfest::se3_l2_robust(
 		} // end 'inner' for
 
 		// Test cSet size
-		if( cSet.size() > d )
+		if( cSet.size() >= d )
 		{
 			// Good set of points found
 			TMatchingPairList	cSetInliers;

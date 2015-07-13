@@ -54,6 +54,7 @@
 			- mrpt::hwdrivers::CIMUXSens_MT4: Fix crash in destructor of objects not attached to a physical device.
 			- Fix wrong quaternion cross product when target variable is one of the operands. Also affected the += operator of mrpt::poses::CPose3DQuat (Fixes #148)
 			- mrpt::hwdrivers::CKinect with libfreenect driver: Fix potential memory corruption.
+			- Fix a bug in mrpt::tfest::se3_l2_robust() that led to it returning without trying to find a good consensus solution. It affected the demo app kinect-3d-slam (Fixes #156)
 
 <hr>
 <a name="1.3.0">
