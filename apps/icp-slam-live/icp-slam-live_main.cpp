@@ -11,23 +11,25 @@
 	APPLICATION: ICP-based SLAM, live version
 	FILE: icp-slam-live_main.cpp
 	AUTHOR: Jose Luis Blanco Claraco <joseluisblancoc@gmail.com>
-	See README.txt for instructions or
-     http://www.mrpt.org/list-of-mrpt-apps/application-icp-slam-live/
+	See example config files in  
+	 https://github.com/jlblancoc/mrpt/tree/master/share/mrpt/config_files/icp-slam-live/
+	or docs in
+	 http://www.mrpt.org/list-of-mrpt-apps/application-icp-slam-live/
   ---------------------------------------------------------------*/
 
+#include <mrpt/hwdrivers/CGenericSensor.h>
+#include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/slam/CMetricMapBuilderICP.h>
-#include <mrpt/obs/CObservationOdometry.h>
-#include <mrpt/obs/CRawlog.h>
-#include <mrpt/opengl/COpenGLScene.h>
-#include <mrpt/opengl/CGridPlaneXY.h>
-#include <mrpt/opengl/stock_objects.h>
 #include <mrpt/utils/CConfigFile.h>
 #include <mrpt/utils/CFileGZInputStream.h>
 #include <mrpt/utils/CFileGZOutputStream.h>
 #include <mrpt/system/os.h>
 #include <mrpt/system/threads.h>
 #include <mrpt/system/filesystem.h>
-#include <mrpt/opengl/CPlanarLaserScan.h>  // This class lives in the lib [mrpt-maps] and must be included by hand
+#include <mrpt/opengl/COpenGLScene.h>
+#include <mrpt/opengl/CGridPlaneXY.h>
+#include <mrpt/opengl/stock_objects.h>
+#include <mrpt/opengl/CPlanarLaserScan.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
 
 using namespace mrpt;
@@ -43,7 +45,7 @@ using namespace mrpt::poses;
 using namespace std;
 
 // Forward declaration.
-void MapBuilding_ICP(const string &INI_FILENAME, const string &override_rawlog_file);
+void MapBuilding_ICP_Live(const string &INI_FILENAME);
 
 // ------------------------------------------------------
 //						MAIN
@@ -55,18 +57,15 @@ int main(int argc, char **argv)
 		bool showHelp    = argc>1 && !os::_strcmp(argv[1],"--help");
 		bool showVersion = argc>1 && !os::_strcmp(argv[1],"--version");
 
-		printf(" icp-slam - Part of the MRPT\n");
+		printf(" icp-slam-live - Part of the MRPT\n");
 		printf(" MRPT C++ Library: %s - BUILD DATE %s\n", MRPT_getVersion().c_str(), MRPT_getCompilationDate().c_str());
-
 		if (showVersion)
 			return 0;	// Program end
-
 		printf("-------------------------------------------------------------------\n");
-
 		// Process arguments:
 		if (argc<2 || showHelp )
 		{
-			printf("Usage: %s <config_file.ini> [<dataset.rawlog>]\n\n",argv[0]);
+			printf("Usage: %s <config_file.ini>\n\n",argv[0]);
 			if (!showHelp)
 			{
 				mrpt::system::pause();
@@ -78,12 +77,8 @@ int main(int argc, char **argv)
 		const string INI_FILENAME = string( argv[1] );
 		ASSERT_FILE_EXISTS_(INI_FILENAME)
 
-		string override_rawlog_file;
-		if (argc>=3)
-			override_rawlog_file = string(argv[2]);
-
 		// Run:
-		MapBuilding_ICP(INI_FILENAME,override_rawlog_file);
+		MapBuilding_ICP_Live(INI_FILENAME);
 
 		//pause();
 		return 0;
@@ -110,24 +105,15 @@ int main(int argc, char **argv)
 	}
 }
 
-
-
-// ------------------------------------------------------
-//				MapBuilding_ICP
-//  override_rawlog_file: If not empty, use that rawlog
-//  instead of that in the config file.
-// ------------------------------------------------------
-void MapBuilding_ICP(const string &INI_FILENAME, const string &override_rawlog_file)
+void MapBuilding_ICP_Live(const string &INI_FILENAME)
 {
 	MRPT_START
 
-	CConfigFile				iniFile(INI_FILENAME);
+	CConfigFile iniFile(INI_FILENAME);
 
 	// ------------------------------------------
 	//			Load config from file:
 	// ------------------------------------------
-	const string RAWLOG_FILE			 = !override_rawlog_file.empty() ? override_rawlog_file : iniFile.read_string("MappingApplication","rawlog_file","",  /*Force existence:*/ true);
-	const unsigned int rawlog_offset		 = iniFile.read_int("MappingApplication","rawlog_offset",0,  /*Force existence:*/ true);
 	const string OUT_DIR_STD			 = iniFile.read_string("MappingApplication","logOutput_dir","log_out",  /*Force existence:*/ true);
 	const int LOG_FREQUENCY		 = iniFile.read_int("MappingApplication","LOG_FREQUENCY",5,  /*Force existence:*/ true);
 	const bool  SAVE_POSE_LOG		 = iniFile.read_bool("MappingApplication","SAVE_POSE_LOG", false,  /*Force existence:*/ true);
@@ -141,8 +127,10 @@ void MapBuilding_ICP(const string &INI_FILENAME, const string &override_rawlog_f
 	MRPT_LOAD_CONFIG_VAR( SHOW_PROGRESS_3D_REAL_TIME, bool,  iniFile, "MappingApplication");
 	MRPT_LOAD_CONFIG_VAR( SHOW_LASER_SCANS_3D , bool,  iniFile, "MappingApplication");
 	MRPT_LOAD_CONFIG_VAR( SHOW_PROGRESS_3D_REAL_TIME_DELAY_MS, int, iniFile, "MappingApplication");
-
 	const char* OUT_DIR = OUT_DIR_STD.c_str();
+
+	// Load sensor params from section: "LIDAR_SENSOR"
+	MRPT_TODO("continue here")
 
 	// ------------------------------------
 	//		Constructor of ICP-SLAM object
