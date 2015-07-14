@@ -281,7 +281,9 @@ include(cmakemodules/script_nite2.cmake REQUIRED)		# Check for NITE2 library
 #The options for the user when using "cmakesetup" or "ccmake":
 # ---------------------------------------------------------------------------
 OPTION(MRPT_ALWAYS_CHECKS_DEBUG "Additional checks even in Release" "OFF")
+MARK_AS_ADVANCED(FORCE MRPT_ALWAYS_CHECKS_DEBUG)
 OPTION(MRPT_ALWAYS_CHECKS_DEBUG_MATRICES "Additional checks even in Release (Only in matrix classes)" "OFF")
+MARK_AS_ADVANCED(FORCE MRPT_ALWAYS_CHECKS_DEBUG_MATRICES)
 
 # ---------------------------------------------------------------------------
 # Create the minimum list of libraries required by an application that
