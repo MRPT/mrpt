@@ -316,14 +316,10 @@ bool  CRoboPeakLidar::checkCOMMs()
 -------------------------------------------------------------*/
 void CRoboPeakLidar::initialize()
 {
-	if (!checkCOMMs()) return;
-
+	if (!checkCOMMs())
+		throw std::runtime_error("[CRoboPeakLidar::initialize] Error initializing RPLIDAR scanner.");
 	if (!turnOn())
-	{
-		cerr << "[CRoboPeakLidar::initialize] Error initializing RPLIDAR scanner" << endl;
-		return;
-	}
-
+		throw std::runtime_error("[CRoboPeakLidar::initialize] Error initializing RPLIDAR scanner.");
 }
 
 
