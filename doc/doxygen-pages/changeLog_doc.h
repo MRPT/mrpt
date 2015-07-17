@@ -13,10 +13,9 @@
 <p> <b>Note:</b> <i>If you are displaying a local version of this page and you have not built the whole HTML documentation, the links above will be broken. Either build the documentation invoking <code>make documentation_html</code> or [browse it on-line](http://www.mrpt.org/).</i></p>
 
 <a name="1.3.1">
-  <h2>Version 1.3.1: (Under development) </h2></a>
+  <h2>Version 1.3.1: Released 18-JUL-2015 </h2></a>
 	- Changes in apps:
-		- [navlog-viewer](http://www.mrpt.org/list-of-mrpt-apps/application-navlog-viewer/):
-			- Now shows more information on navigation logs.
+		- [navlog-viewer](http://www.mrpt.org/list-of-mrpt-apps/application-navlog-viewer/): Now shows more information on navigation logs.
 	- Changes in libraries:
 		- \ref mrpt_base_grp
 			- New helper templates: mrpt::utils::int_select_by_bytecount<>, mrpt::utils::uint_select_by_bytecount<>
