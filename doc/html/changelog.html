@@ -26,7 +26,78 @@
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><p><b>Note:</b> <em>If you are displaying a local version of this page and you have not built the whole HTML documentation, the links above will be broken. Either build the documentation invoking <code>make documentation_html</code> or <a href="http://www.mrpt.org/">browse it on-line</a>.</em></p>
-<p><a class="anchor" id="1.3.0"></a> </p>
+<p><a class="anchor" id="1.3.1"></a> </p>
+<h2>Version 1.3.1: Released 18-JUL-2015 </h2>
+<ul>
+<li>Changes in apps:<ul>
+<li><a href="http://www.mrpt.org/list-of-mrpt-apps/application-navlog-viewer/">navlog-viewer</a>: Now shows more information on navigation logs.</li>
+</ul>
+</li>
+<li>Changes in libraries:<ul>
+<li><a class="el" href="group__mrpt__base__grp.html">[mrpt-base]</a><ul>
+<li>New helper templates: mrpt::utils::int_select_by_bytecount&lt;&gt;, mrpt::utils::uint_select_by_bytecount&lt;&gt;</li>
+<li>New methods to evaluate SO(2), SO(3), SE(2) and SE(3) averages and weighted averages. See:<ul>
+<li>Header &lt;<a class="el" href="_s_o___s_e__average_8h.html">mrpt/poses/SO_SE_average.h</a>&gt;</li>
+<li><a class="el" href="classmrpt_1_1poses_1_1_s_o__average_3_012_01_4.html" title="Computes weighted and un-weighted averages of SO(2) orientations. ">mrpt::poses::SO_average&lt;2&gt;</a>, <a class="el" href="classmrpt_1_1poses_1_1_s_o__average_3_013_01_4.html" title="Computes weighted and un-weighted averages of SO(3) orientations. ">mrpt::poses::SO_average&lt;3&gt;</a></li>
+<li><a class="el" href="classmrpt_1_1poses_1_1_s_e__average_3_012_01_4.html" title="Computes weighted and un-weighted averages of SE(2) poses. ">mrpt::poses::SE_average&lt;2&gt;</a>, <a class="el" href="classmrpt_1_1poses_1_1_s_e__average_3_013_01_4.html" title="Computes weighted and un-weighted averages of SE(3) poses. ">mrpt::poses::SE_average&lt;3&gt;</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="el" href="group__mrpt__hwdrivers__grp.html">[mrpt-hwdrivers]</a><ul>
+<li>New sensors supported:<ul>
+<li><a class="el" href="classmrpt_1_1hwdrivers_1_1_c_i_m_u_intersense.html" title="A class for interfacing Intersense Inertial Measuring Units (IMUs). ">mrpt::hwdrivers::CIMUIntersense</a></li>
+<li><a class="el" href="classmrpt_1_1hwdrivers_1_1_c_skeleton_tracker.html" title="A class for grabbing mrpt::obs::CObservationSkeleton from a PrimeSense camera. ">mrpt::hwdrivers::CSkeletonTracker</a></li>
+</ul>
+</li>
+<li>New parameter <a class="el" href="classmrpt_1_1hwdrivers_1_1_c_hokuyo_u_r_g.html#af764f6e9c6a2628efe0df058515ff341">mrpt::hwdrivers::CHokuyoURG::m_disable_firmware_timestamp</a> to override faulty Hokuyo timestamps with PC time.</li>
+<li><a class="el" href="classmrpt_1_1hwdrivers_1_1_c_robo_peak_lidar.html#ad5a37c764508f1b872988021eb61cb36" title="See base class docs. ">mrpt::hwdrivers::CRoboPeakLidar::turnOn()</a> and turnOff() now really implement turning on/off the RPLidar motor.</li>
+</ul>
+</li>
+<li><a class="el" href="group__mrpt__maps__grp.html">[mrpt-maps]</a><ul>
+<li>New method <a class="el" href="classmrpt_1_1maps_1_1_c_occupancy_grid_map2_d.html#accec5c5a9e799216d0d84c7c42985946" title="Get a point cloud with all (border) occupied cells as points. ">mrpt::maps::COccupancyGridMap2D::getAsPointCloud()</a></li>
+</ul>
+</li>
+<li><a class="el" href="group__mrpt__nav__grp.html">[mrpt-nav]</a><ul>
+<li>Removed old base class CPathPlanningMethod</li>
+<li>CPathPlanningCircularRobot =&gt; <a class="el" href="classmrpt_1_1nav_1_1_planner_simple2_d.html" title="Searches for collision-free path in 2D occupancy grids for holonomic circular robots. ">mrpt::nav::PlannerSimple2D</a>: Class renamed (and better described) for consistency with other planners</li>
+<li><a class="el" href="classmrpt_1_1nav_1_1_c_reactive_navigation_system.html" title="See base class CAbstractPTGBasedReactive for a description and instructions of use. ">mrpt::nav::CReactiveNavigationSystem</a>:<ul>
+<li>Documentation has been added about all existing parameters, and template config files provided as starting points.</li>
+<li>The loadConfigFile() method with 2 config files has been deprecated favoring the newer, simpler single config file.</li>
+<li>The "ROBOT_NAME" parameter is no longer employed. A minor side effect (probably affecting no one) is that PTG cache files are no longer named differently for different robots.</li>
+</ul>
+</li>
+<li><a class="el" href="classmrpt_1_1nav_1_1_c_parameterized_trajectory_generator.html" title="This is the base class for any user-defined PTG. ">mrpt::nav::CParameterizedTrajectoryGenerator</a>: New methods to save and load trajectories to binary streams. Used to debug in navlog-viewer.</li>
+</ul>
+</li>
+<li><a class="el" href="group__mrpt__obs__grp.html">[mrpt-obs]</a><ul>
+<li><a class="el" href="classmrpt_1_1obs_1_1_c_observation3_d_range_scan.html" title="Declares a class derived from &quot;CObservation&quot; that encapsules a 3D range scan measurement, as from a time-of-flight range camera or any other RGBD sensor. ">mrpt::obs::CObservation3DRangeScan</a> now supports pixel labels (semantic mapping, etc.)</li>
+<li>New class <a class="el" href="classmrpt_1_1obs_1_1_c_observation_skeleton.html" title="This class stores a skeleton as tracked by OPENNI2 &amp; NITE2 libraries from PrimeSense sensors...">mrpt::obs::CObservationSkeleton</a> to hold body tracking information (by Francisco Angel Moreno)</li>
+<li><a class="el" href="classmrpt_1_1obs_1_1_c_observation_i_m_u.html" title="This class stores measurements from an Inertial Measurement Unit (IMU) (attitude estimation, raw gyroscope and accelerometer values), altimeters or magnetometers. ">mrpt::obs::CObservationIMU</a> has new data fields and fields are better documented to reflect whether they refer to local/global coordinate frames</li>
+</ul>
+</li>
+<li><a class="el" href="group__mrpt__vision__grp.html">[mrpt-vision]</a><ul>
+<li>mrpt::vision::CImageGrabber_dc1394: Changed default Bayer filter from NEAREST to HQLINEAR</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>BUG FIXES:<ul>
+<li>Fix ocasional (false) failure of RANSAC unit tests due to their non-deterministic nature.</li>
+<li>Fix build error with MSVC 2010 in mrpt-hmtslam (Closes #127).</li>
+<li>Fixed potential wrong bounding box results in <a class="el" href="classmrpt_1_1maps_1_1_c_points_map.html#a9fb4276cd1086da40a170845ddb94457" title="Computes the bounding box of all the points, or (0,0 ,0,0, 0,0) if there are no points. ">mrpt::maps::CPointsMap::boundingBox()</a> when SSE2 optimization is enabled.</li>
+<li><a class="el" href="classmrpt_1_1obs_1_1_c_observation6_d_features.html" title="An observation of one or more &quot;features&quot; or &quot;objects&quot;, possibly identified with a unique ID...">mrpt::obs::CObservation6DFeatures</a>: Fixed random crashes related to non-aligned memory in 32bit builds (Fixes #141)</li>
+<li>Fix Debian bug <a href="https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=786349">#786349</a> on Eigen2 support.</li>
+<li><a class="el" href="classmrpt_1_1hwdrivers_1_1_c_i_m_u_x_sens___m_t4.html" title="A class for interfacing XSens 4th generation Inertial Measuring Units (IMUs): MTi 10-series...">mrpt::hwdrivers::CIMUXSens_MT4</a>: Fix crash in destructor of objects not attached to a physical device.</li>
+<li>Fix wrong quaternion cross product when target variable is one of the operands. Also affected the += operator of <a class="el" href="classmrpt_1_1poses_1_1_c_pose3_d_quat.html" title="A class used to store a 3D pose as a translation (x,y,z) and a quaternion (qr,qx,qy,qz). ">mrpt::poses::CPose3DQuat</a> (Fixes #148)</li>
+<li><a class="el" href="classmrpt_1_1hwdrivers_1_1_c_kinect.html" title="A class for grabing &quot;range images&quot;, intensity images (either RGB or IR) and other information from an...">mrpt::hwdrivers::CKinect</a> with libfreenect driver: Fix potential memory corruption.</li>
+<li>Fix a bug in <a class="el" href="group__mrpt__tfest__grp.html#gadf91fcd774fd4d010da70d4130786157" title="Least-squares (L2 norm) solution to finding the optimal SE(3) transform between two reference frames ...">mrpt::tfest::se3_l2_robust()</a> that led to it returning without trying to find a good consensus solution. It affected the demo app kinect-3d-slam (Fixes #156)</li>
+<li>Fix wrong feature points in CFeatureExtraction::extractFeaturesKLT() (Fixes #138)</li>
+</ul>
+</li>
+</ul>
+<hr/>
+<p> <a class="anchor" id="1.3.0"></a> </p>
 <h2>Version 1.3.0: Released 12-JAN-2015 </h2>
 <ul>
 <li><b>Most important changes:</b><ul>
@@ -399,7 +470,7 @@
 <li>mrpt::reactivenav::CParameterizedTrajectoryGenerator::renderPathAsSimpleLine() - <a href="https://github.com/jlblancoc/mrpt/commit/a224fc2489ad00b3ab116c84e8d4a48532a005df">(commit)</a></li>
 </ul>
 </li>
-<li>Changed the signature of <a class="el" href="group__mrpt__nav__grp.html#gaf90177a2f37004bc944fad7d4c40fb7c" title="Builds the collision grid for a given PTGs, or load it from a cache file. ">mrpt::reactivenav::build_PTG_collision_grids()</a> to become more generic for 2D &amp; 2.5D PTGs - <a href="https://github.com/jlblancoc/mrpt/commit/7bd68e49a4ba3bf08f194678787816c65de1d685">(commit)</a></li>
+<li>Changed the signature of <a class="el" href="group__nav__tpspace.html#gaf90177a2f37004bc944fad7d4c40fb7c" title="Builds the collision grid for a given PTGs, or load it from a cache file. ">mrpt::reactivenav::build_PTG_collision_grids()</a> to become more generic for 2D &amp; 2.5D PTGs - <a href="https://github.com/jlblancoc/mrpt/commit/7bd68e49a4ba3bf08f194678787816c65de1d685">(commit)</a></li>
 </ul>
 </li>
 <li>Deleted classes:<ul>
@@ -838,7 +909,7 @@
 <li>[mrpt-base] Wrong computation of normPDF() values for the multidimensional cases. Closes <a href="http://code.google.com/p/mrpt/issues/detail?id=46">#46</a> - <a href="http://code.google.com/p/mrpt/source/detail?r=3068">r3068</a></li>
 <li>[mrpt-base] <a class="el" href="classmrpt_1_1poses_1_1_c_point.html#a294b943622b3c6420511209d65e222ae" title="Returns a human-readable textual representation of the object (eg: &quot;[0.02 1.04]&quot; ) ...">mrpt::poses::CPoint::asString()</a> confused the 2D and 3D cases (Thanks Cipri!)</li>
 <li>[mrpt-base] Fixed errors in de-serialization of mrpt::utils::CPointPDFSOG and <a class="el" href="classmrpt_1_1maps_1_1_c_reflectivity_grid_map2_d.html" title="A 2D grid map representing the reflectivity of the environment (for example, measured with an IR prox...">mrpt::maps::CReflectivityGridMap2D</a></li>
-<li>[mrpt-base] <a class="el" href="classmrpt_1_1math_1_1_k_d_tree_capable.html#a763fbe9f7e56ebe2eae594261e7d2c40" title="KD Tree-based search for all the points within a given radius of some 2D point. ">mrpt::math::KDTreeCapable::kdTreeRadiusSearch2D()</a> always returned 0 matched.</li>
+<li>[mrpt-base] <a class="el" href="classmrpt_1_1math_1_1_k_d_tree_capable.html#ae94937af51a78d2608b672e9a14c1811" title="KD Tree-based search for all the points within a given radius of some 2D point. ">mrpt::math::KDTreeCapable::kdTreeRadiusSearch2D()</a> always returned 0 matched.</li>
 <li>[mrpt-graphs] Fixed bug in RecursiveSpectralPartition (Thanks to Edu!) - <a href="http://code.google.com/p/mrpt/source/detail?r=3026">r3026</a></li>
 <li>[mrpt-hwdrivers] Fixed potential SEGFAULT in <a class="el" href="classmrpt_1_1hwdrivers_1_1_c_g_p_s_interface.html" title="A parser of NMEA commands, for connecting to a GPS by a serial port. ">mrpt::hwdrivers::CGPSInterface</a> (Thanks K.Miyawaki for <a href="http://www.mrpt.org/node/2474">reporting</a>)</li>
 <li>[mrpt-hwdrivers] Fixed communications to LMS 1xx scanners (Thanks Henry! See <a href="http://code.google.com/p/mrpt/issues/detail?id=49">http://code.google.com/p/mrpt/issues/detail?id=49</a> )</li>
@@ -936,4 +1007,4 @@
 </li>
 </ul>
 </div></div><!-- contents -->
-<br><hr><br> <table border="0" width="100%"> <tr> <td> Page generated by <a href="http://www.doxygen.org" target="_blank">Doxygen 1.8.6</a> for MRPT 1.3.0 SVN:Unversioned directory at dom ene 11 17:34:05 CET 2015</td><td></td> <td width="150">  </td></tr> </table>  </body></html>
+<br><hr><br> <table border="0" width="100%"> <tr> <td> Page generated by <a href="http://www.doxygen.org" target="_blank">Doxygen 1.8.6</a> for MRPT 1.3.1 SVN:Unversioned directory at vie jul 17 20:50:34 CEST 2015</td><td></td> <td width="150">  </td></tr> </table>  </body></html>
