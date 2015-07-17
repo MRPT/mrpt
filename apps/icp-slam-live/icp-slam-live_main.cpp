@@ -198,6 +198,7 @@ void MapBuilding_ICP_Live(const string &INI_FILENAME)
 	const bool  SAVE_POSE_LOG		 = iniFile.read_bool("MappingApplication","SAVE_POSE_LOG", false,  /*Force existence:*/ true);
 	const bool  SAVE_3D_SCENE        = iniFile.read_bool("MappingApplication","SAVE_3D_SCENE", false,  /*Force existence:*/ true);
 	const bool  CAMERA_3DSCENE_FOLLOWS_ROBOT = iniFile.read_bool("MappingApplication","CAMERA_3DSCENE_FOLLOWS_ROBOT", true,  /*Force existence:*/ true);
+	const bool  SAVE_RAWLOG = iniFile.read_bool("MappingApplication","SAVE_RAWLOG", true,  /*Force existence:*/ false);
 
 	bool 	SHOW_PROGRESS_3D_REAL_TIME = false;
 	int		SHOW_PROGRESS_3D_REAL_TIME_DELAY_MS = 0;
@@ -207,6 +208,31 @@ void MapBuilding_ICP_Live(const string &INI_FILENAME)
 	MRPT_LOAD_CONFIG_VAR( SHOW_LASER_SCANS_3D , bool,  iniFile, "MappingApplication");
 	MRPT_LOAD_CONFIG_VAR( SHOW_PROGRESS_3D_REAL_TIME_DELAY_MS, int, iniFile, "MappingApplication");
 	const char* OUT_DIR = OUT_DIR_STD.c_str();
+
+	// Create output rawlog file?
+	CFileGZOutputStream out_rawlog;
+	if (SAVE_RAWLOG)
+	{
+		mrpt::system::TTimeParts parts;
+		mrpt::system::timestampToParts(mrpt::system::now(), parts, true);
+		string	rawlog_postfix = "_";
+		rawlog_postfix += format("%04u-%02u-%02u_%02uh%02um%02us",
+			(unsigned int)parts.year,
+			(unsigned int)parts.month,
+			(unsigned int)parts.day,
+			(unsigned int)parts.hour,
+			(unsigned int)parts.minute,
+			(unsigned int)parts.second );
+
+		rawlog_postfix += string(".rawlog");
+		rawlog_postfix = mrpt::system::fileNameStripInvalidChars( rawlog_postfix );
+		const string rawlog_filename = "icpslamlive_dataset_" + rawlog_postfix;
+
+		cout << endl ;
+		cout << "Output rawlog filename: " << rawlog_filename << endl;
+
+		out_rawlog.open( rawlog_filename );
+	}
 
 	// ------------------------------------
 	//		Constructor of ICP-SLAM object
@@ -289,6 +315,14 @@ void MapBuilding_ICP_Live(const string &INI_FILENAME)
 			for (mrpt::hwdrivers::CGenericSensor::TListObservations::reverse_iterator it = obs_copy.rbegin();!observation && it != obs_copy.rend();++it)
 				if (it->second.present() && IS_CLASS(it->second,CObservation2DRangeScan))
 					observation = CObservation2DRangeScanPtr(it->second);
+
+			// Save all of them to rawlog for optional post-processing:
+			if (out_rawlog.fileOpenCorrectly())
+			{
+				for (mrpt::hwdrivers::CGenericSensor::TListObservations::iterator it = obs_copy.begin();it != obs_copy.end();++it)
+					if (it->second.present() && IS_CLASS(it->second,CObservation2DRangeScan))
+						out_rawlog << *it->second;
+			}
 		}
 
 		// If we don't have a laser scan, wait for it:
