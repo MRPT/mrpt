@@ -98,8 +98,8 @@ void  CRoboPeakLidar::doProcessSimple(
 			rplidar_response_measurement_node_t angle_compensate_nodes[angle_compensate_nodes_count];
 			memset(angle_compensate_nodes, 0, angle_compensate_nodes_count*sizeof(rplidar_response_measurement_node_t));
 
-			outObservation.scan.assign(count, 0);
-			outObservation.validRange.resize(count, 0);
+			outObservation.scan.assign(angle_compensate_nodes_count, 0);
+			outObservation.validRange.resize(angle_compensate_nodes_count, 0);
 
 			for(size_t i=0 ; i < count; i++ )
 			{
@@ -115,7 +115,7 @@ void  CRoboPeakLidar::doProcessSimple(
 				}
 			}
 
-			for(size_t i=0 ; i < count; i++ )
+			for(size_t i=0 ; i < angle_compensate_nodes_count; i++ )
 			{
 				const float read_value = (float) angle_compensate_nodes[i].distance_q2/4.0f/1000;
 				outObservation.scan[i] = read_value;
