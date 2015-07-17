@@ -162,6 +162,9 @@ public:
     /// The interface will return RESULT_OPERATION_FAIL when all the scan data is invalid. 
     virtual u_result ascendScanData(rplidar_response_measurement_node_t * nodebuffer, size_t count) = 0;
 
+	virtual u_result stopMotor() = 0;
+	virtual u_result startMotor() = 0;
+	
 protected:
     RPlidarDriver() {}
     virtual ~RPlidarDriver() {}

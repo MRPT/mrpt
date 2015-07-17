@@ -407,6 +407,21 @@ u_result RPlidarDriverSerialImpl::ascendScanData(rplidar_response_measurement_no
     return RESULT_OK;
 }
 
+u_result RPlidarDriverSerialImpl::stopMotor()
+{
+  //stop();
+  _rxtx->setDTR();
+  return RESULT_OK;
+}
+
+u_result RPlidarDriverSerialImpl::startMotor()
+{
+  //startScan();
+  _rxtx->clearDTR();
+  return RESULT_OK;
+}
+
+
 u_result RPlidarDriverSerialImpl::_waitNode(rplidar_response_measurement_node_t * node, _u32 timeout)
 {
     int  recvPos = 0;

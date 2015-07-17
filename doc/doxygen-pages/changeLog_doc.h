@@ -29,6 +29,7 @@
 				- mrpt::hwdrivers::CIMUIntersense
 				- mrpt::hwdrivers::CSkeletonTracker
 			- New parameter mrpt::hwdrivers::CHokuyoURG::m_disable_firmware_timestamp to override faulty Hokuyo timestamps with PC time.
+			- mrpt::hwdrivers::CRoboPeakLidar::turnOn() and turnOff() now really implement turning on/off the RPLidar motor.
 		- \ref mrpt_maps_grp
 			- New method mrpt::maps::COccupancyGridMap2D::getAsPointCloud() 
 		- \ref mrpt_nav_grp

@@ -67,6 +67,8 @@ public:
 
     virtual size_t rxqueue_count();
 
+	virtual void setDTR();
+	virtual void clearDTR();
 
 protected:
     bool open(const char * portname, _u32 baudrate, _u32 flags);

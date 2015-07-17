@@ -324,6 +324,17 @@ void raw_serial::_init()
     _portName[0] = 0;
 }
 
+void raw_serial::setDTR()
+{
+	if (!isOpened()) return;
+	EscapeCommFunction(_serial_handle,SETDTR);
+}
+void raw_serial::clearDTR()
+{
+	if (!isOpened()) return;
+	EscapeCommFunction(_serial_handle,CLRDTR);
+}
+
 }}} //end rp::arch::net
 
 
