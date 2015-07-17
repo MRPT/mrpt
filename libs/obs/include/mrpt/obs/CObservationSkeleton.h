@@ -24,6 +24,7 @@ namespace obs
 	/** This class stores a skeleton as tracked by OPENNI2 & NITE2 libraries from PrimeSense sensors
 	 *
 	 * \sa CObservation
+	 * \note Class introduced in MRPT 1.3.1
 	 * \ingroup mrpt_obs_grp
 	 */
 	class OBS_IMPEXP CObservationSkeleton : public CObservation

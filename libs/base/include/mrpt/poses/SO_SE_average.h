@@ -33,6 +33,7 @@ namespace mrpt
 		  * Use \a clear() to reset the accumulator and start a new average computation.
 		  * Theoretical base: Average on SO(2) manifolds is computed by averaging the corresponding 2D points, then projecting the result back to the closest-point in the manifold.
 		  * Shortly explained in [these slides](http://ingmec.ual.es/~jlblanco/papers/blanco2013tutorial-manifolds-introduction-robotics.pdf)
+		  * \note Class introduced in MRPT 1.3.1
 		  * \sa SE_traits */
 		template <> class BASE_IMPEXP SO_average<2>
 		{
@@ -58,6 +59,7 @@ namespace mrpt
 		  * Theoretical base: Average on SO(3) manifolds is computed by averaging the corresponding matrices, then projecting the result back to the closest matrix in the manifold.
 		  * Shortly explained in [these slides](http://ingmec.ual.es/~jlblanco/papers/blanco2013tutorial-manifolds-introduction-robotics.pdf)
 		  * See also: eq. (3.7) in "MEANS AND AVERAGING IN THE GROUP OF ROTATIONS", MAHER MOAKHER, 2002.
+		  * \note Class introduced in MRPT 1.3.1
 		  * \sa SE_traits */
 		template <> class BASE_IMPEXP SO_average<3>
 		{
@@ -81,6 +83,7 @@ namespace mrpt
 		  * Add values to average with \a append(), when done call \a get_average(). 
 		  * Use \a clear() to reset the accumulator and start a new average computation.
 		  * Theoretical base: See SO_average<2> for the rotation part. The translation is a simple arithmetic mean in Euclidean space.
+		  * \note Class introduced in MRPT 1.3.1
 		  * \sa SE_traits */
 		template <> class BASE_IMPEXP SE_average<2>
 		{
@@ -105,6 +108,7 @@ namespace mrpt
 		  * Add values to average with \a append(), when done call \a get_average(). 
 		  * Use \a clear() to reset the accumulator and start a new average computation.
 		  * Theoretical base: See SO_average<3> for the rotation part. The translation is a simple arithmetic mean in Euclidean space.
+		  * \note Class introduced in MRPT 1.3.1
 		  * \sa SE_traits */
 		template <> class BASE_IMPEXP SE_average<3>
 		{

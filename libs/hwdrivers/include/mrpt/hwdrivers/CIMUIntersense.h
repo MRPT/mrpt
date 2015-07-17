@@ -58,6 +58,7 @@ namespace mrpt
 		  *	   useBuffer	= 0					; [bool] {0,1} (unused by now) Whether or not use a buffer for storing old data (see API documentation) 
 		  *						                  
 		  *  \endcode
+		  * \note Class introduced in MRPT 1.3.1
 		  * \ingroup mrpt_hwdrivers_grp
  		  */
 		class HWDRIVERS_IMPEXP CIMUIntersense : public hwdrivers::CGenericSensor
