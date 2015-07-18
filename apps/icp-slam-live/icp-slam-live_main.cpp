@@ -12,7 +12,7 @@
 	FILE: icp-slam-live_main.cpp
 	AUTHOR: Jose Luis Blanco Claraco <joseluisblancoc@gmail.com>
 	See example config files in  
-	 https://github.com/jlblancoc/mrpt/tree/master/share/mrpt/config_files/icp-slam-live/
+	 https://github.com/MRPT/mrpt/tree/master/share/mrpt/config_files/icp-slam-live/
 	or docs in
 	 http://www.mrpt.org/list-of-mrpt-apps/application-icp-slam-live/
   ---------------------------------------------------------------*/

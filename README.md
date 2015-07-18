@@ -1,9 +1,9 @@
 The MRPT project 
 ====================================================
 
-[![Build Status](https://travis-ci.org/jlblancoc/mrpt.png?branch=master)](https://travis-ci.org/jlblancoc/mrpt)
-[![GitHub release](https://img.shields.io/github/release/jlblancoc/mrpt.svg)](https://github.com/jlblancoc/mrpt/releases)
-[![BSD3 License](http://img.shields.io/badge/license-BSD3-brightgreen.svg)](https://github.com/jlblancoc/mrpt/blob/master/doc/LICENSE.txt) 
+[![Build Status](https://travis-ci.org/MRPT/mrpt.png?branch=master)](https://travis-ci.org/MRPT/mrpt)
+[![GitHub release](https://img.shields.io/github/release/MRPT/mrpt.svg)](https://github.com/MRPT/mrpt/releases)
+[![BSD3 License](http://img.shields.io/badge/license-BSD3-brightgreen.svg)](https://github.com/MRPT/mrpt/blob/master/doc/LICENSE.txt) 
 
 1. Introduction
 ------------------------------------------------------------------------------
@@ -21,16 +21,16 @@ and much more.
   * Main website [http://www.mrpt.org/](http://www.mrpt.org/)
   * C++ API reference: [http://reference.mrpt.org/](http://reference.mrpt.org/).
   * Google group for questions: [http://www.mrpt.org/forum/](http://www.mrpt.org/forum/)
-  * [Bindings documentation](https://github.com/jlblancoc/mrpt/wiki) (Python, Matlab)
+  * [Bindings documentation](https://github.com/MRPT/mrpt/wiki) (Python, Matlab)
   * Download the latest unstable code with: 
     
-            git clone https://github.com/jlblancoc/mrpt.git
+            git clone https://github.com/MRPT/mrpt.git
 
   * Example configuration files for  MRPT applications can be found at: 
-     [MRPT/share/mrpt/config_files](https://github.com/jlblancoc/mrpt/tree/master/share/mrpt/config_files)
+     [MRPT/share/mrpt/config_files](https://github.com/MRPT/mrpt/tree/master/share/mrpt/config_files)
 
   * Some sample datasets are stored in: 
-     [MRPT/share/mrpt/datasets](https://github.com/jlblancoc/mrpt/tree/master/share/mrpt/datasets). 
+     [MRPT/share/mrpt/datasets](https://github.com/MRPT/mrpt/tree/master/share/mrpt/datasets). 
     A more complete dataset repository is [available online](http://www.mrpt.org/robotics_datasets).
 
 

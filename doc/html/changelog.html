@@ -198,7 +198,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li><a class="el" href="classmrpt_1_1poses_1_1_c_robot2_d_pose_estimator.html" title="A simple filter to estimate and extrapolate the robot 2D (x,y,phi) pose from asynchronous odometry an...">mrpt::poses::CRobot2DPoseEstimator</a> could estimate wrong angular velocities for orientations near +-180deg.</li>
 <li><a class="el" href="classmrpt_1_1system_1_1_c_directory_explorer.html#af92547a7064c54417bde3266b37ecd8d" title="Sort the file entries by name, in ascending or descending order. ">mrpt::system::CDirectoryExplorer::sortByName()</a> didn't sort in descending order</li>
 <li>Fixed crashes from MATLAB .mex files: <a class="el" href="group__mrpt__system__os.html#ga1baf607addd84b6d35d38d4fd8baaf19" title="Since MRPT 1.3.0 this function does nothing. ">mrpt::system::registerFatalExceptionHandlers()</a> has no longer effect, and will be removed in future releases. (Thanks to Jesús Briales García for all the testing!)</li>
-<li>Fixed potential crash for <a class="el" href="namespace_eigen.html" title="Namespace containing all symbols from the Eigen library. ">Eigen</a> unaligned memory access in 32bit builds in <a class="el" href="classmrpt_1_1slam_1_1_c_grid_map_aligner.html" title="A class for aligning two multi-metric maps (with an occupancy grid maps and a points map...">mrpt::slam::CGridMapAligner</a> and other places (<a href="https://github.com/jlblancoc/mrpt/issues/94">Closes #94</a>)</li>
+<li>Fixed potential crash for <a class="el" href="namespace_eigen.html" title="Namespace containing all symbols from the Eigen library. ">Eigen</a> unaligned memory access in 32bit builds in <a class="el" href="classmrpt_1_1slam_1_1_c_grid_map_aligner.html" title="A class for aligning two multi-metric maps (with an occupancy grid maps and a points map...">mrpt::slam::CGridMapAligner</a> and other places (<a href="https://github.com/MRPT/mrpt/issues/94">Closes #94</a>)</li>
 </ul>
 </li>
 </ul>
@@ -398,7 +398,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li>All previous deprecated functions.</li>
 </ul>
 </li>
-<li>Embedded <a class="el" href="namespace_eigen.html" title="Namespace containing all symbols from the Eigen library. ">Eigen</a> updated to version 3.2.1 <a href="https://github.com/jlblancoc/mrpt/commit/47913da94a27e98a9115f85b2a530b6c14a10b8f">(commit)</a> <a href="https://github.com/jlblancoc/mrpt/commit/33258761d3b75bf133d38aecb257c64e4d76b21e">(commit)</a></li>
+<li>Embedded <a class="el" href="namespace_eigen.html" title="Namespace containing all symbols from the Eigen library. ">Eigen</a> updated to version 3.2.1 <a href="https://github.com/MRPT/mrpt/commit/47913da94a27e98a9115f85b2a530b6c14a10b8f">(commit)</a> <a href="https://github.com/MRPT/mrpt/commit/33258761d3b75bf133d38aecb257c64e4d76b21e">(commit)</a></li>
 </ul>
 </li>
 <li>BUG FIXES:<ul>
@@ -412,7 +412,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li>RawLogViewer: Operation "convert to SF format" didn't take into account odometry observations.</li>
 <li>Fix build errors with GCC 4.9</li>
 <li>Fix crash of <a class="el" href="classmrpt_1_1hwdrivers_1_1_c_i_m_u_x_sens___m_t4.html" title="A class for interfacing XSens 4th generation Inertial Measuring Units (IMUs): MTi 10-series...">mrpt::hwdrivers::CIMUXSens_MT4</a>'s destructor when it fails to scan and open a device.</li>
-<li>Fix potential crash in <a class="el" href="group__data__assoc__grp.html#gae98a41b16cbc015a8099b79ad1a5750e" title="Computes the data-association between the prediction of a set of landmarks and their observations...">mrpt::slam::data_association_full_covariance</a> with JCBB when no individually compatible matching exists <a href="https://github.com/jlblancoc/mrpt/commit/482472ebd80a3484dce63d294b1ac4e8f001e1eb">(commit)</a></li>
+<li>Fix potential crash in <a class="el" href="group__data__assoc__grp.html#gae98a41b16cbc015a8099b79ad1a5750e" title="Computes the data-association between the prediction of a set of landmarks and their observations...">mrpt::slam::data_association_full_covariance</a> with JCBB when no individually compatible matching exists <a href="https://github.com/MRPT/mrpt/commit/482472ebd80a3484dce63d294b1ac4e8f001e1eb">(commit)</a></li>
 </ul>
 </li>
 </ul>
@@ -434,8 +434,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </li>
 <li>[mrpt-hwdrivers]<ul>
 <li><a class="el" href="classmrpt_1_1hwdrivers_1_1_c_i_m_u_x_sens___m_t4.html" title="A class for interfacing XSens 4th generation Inertial Measuring Units (IMUs): MTi 10-series...">mrpt::hwdrivers::CIMUXSens_MT4</a> : Support for 4th generation xSens MT IMU devices.</li>
-<li><a class="el" href="classmrpt_1_1hwdrivers_1_1_c_national_instruments_d_a_q.html" title="An interface to read from data acquisition boards compatible with National Instruments &quot;DAQmx Base&quot; o...">mrpt::hwdrivers::CNationalInstrumentsDAQ</a>: Support for acquisition boards compatible with National Instruments DAQmx Base - <a href="https://github.com/jlblancoc/mrpt/commit/a82a7e37997cfb77e7ee9e903bdb2a55e3040b35">(commit)</a>.</li>
-<li><a class="el" href="classmrpt_1_1hwdrivers_1_1_c_image_grabber___fly_capture2.html" title="A wrapper for Point Gray Research (PGR) FlyCapture2 API for capturing images from Firewire...">mrpt::hwdrivers::CImageGrabber_FlyCapture2</a>: Support for Point Grey Research's cameras via the FlyCapture2 libray - <a href="https://github.com/jlblancoc/mrpt/pull/5/commits">(commits)</a>.</li>
+<li><a class="el" href="classmrpt_1_1hwdrivers_1_1_c_national_instruments_d_a_q.html" title="An interface to read from data acquisition boards compatible with National Instruments &quot;DAQmx Base&quot; o...">mrpt::hwdrivers::CNationalInstrumentsDAQ</a>: Support for acquisition boards compatible with National Instruments DAQmx Base - <a href="https://github.com/MRPT/mrpt/commit/a82a7e37997cfb77e7ee9e903bdb2a55e3040b35">(commit)</a>.</li>
+<li><a class="el" href="classmrpt_1_1hwdrivers_1_1_c_image_grabber___fly_capture2.html" title="A wrapper for Point Gray Research (PGR) FlyCapture2 API for capturing images from Firewire...">mrpt::hwdrivers::CImageGrabber_FlyCapture2</a>: Support for Point Grey Research's cameras via the FlyCapture2 libray - <a href="https://github.com/MRPT/mrpt/pull/5/commits">(commits)</a>.</li>
 </ul>
 </li>
 <li>[mrpt-maps]<ul>
@@ -451,12 +451,12 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </ul>
 </li>
 <li>[mrpt-opengl]<ul>
-<li><a class="el" href="classmrpt_1_1opengl_1_1_c_mesh_fast.html" title="A planar (XY) grid where each cell has an associated height and, optionally, a texture map...">mrpt::opengl::CMeshFast</a>, an open gl object that draws a "mesh" as a structured point cloud which is faster to render (by Mariano Jaimez Tarifa). -<a href="https://github.com/jlblancoc/mrpt/commit/9306bb4a585387d4c85b3f6e41dd2cbe5a354e80">(commit)</a></li>
+<li><a class="el" href="classmrpt_1_1opengl_1_1_c_mesh_fast.html" title="A planar (XY) grid where each cell has an associated height and, optionally, a texture map...">mrpt::opengl::CMeshFast</a>, an open gl object that draws a "mesh" as a structured point cloud which is faster to render (by Mariano Jaimez Tarifa). -<a href="https://github.com/MRPT/mrpt/commit/9306bb4a585387d4c85b3f6e41dd2cbe5a354e80">(commit)</a></li>
 <li><a class="el" href="classmrpt_1_1opengl_1_1_c_vector_field2_d.html" title="A 2D vector field representation, consisting of points and arrows drawn on a plane (invisible grid)...">mrpt::opengl::CVectorField2D</a>, an opengl object that shows a 2D Vector Field (by Mariano Jaimez Tarifa). - <a href="http://code.google.com/p/mrpt/source/detail?r=3461">(commit)</a></li>
 </ul>
 </li>
 <li>[mrpt-reactivenav]<ul>
-<li>mrpt::reactivenav::CAbstractPTGBasedReactive, as part of a large code refactoring of these classes: <a href="https://github.com/jlblancoc/mrpt/pull/4">(commit)</a><ul>
+<li>mrpt::reactivenav::CAbstractPTGBasedReactive, as part of a large code refactoring of these classes: <a href="https://github.com/MRPT/mrpt/pull/4">(commit)</a><ul>
 <li>mrpt::reactivenav::CReactiveNavigationSystem</li>
 <li>mrpt::reactivenav::CReactiveNavigationSystem3D</li>
 </ul>
@@ -464,7 +464,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </ul>
 </li>
 <li>[mrpt-vision]<ul>
-<li><a class="el" href="classmrpt_1_1vision_1_1_c_difodo.html" title="This abstract class implements a method called &quot;Difodo&quot; to perform Visual odometry with range cameras...">mrpt::vision::CDifodo</a>, a class which implements visual odometry based on depth images and the "range flow constraint equation". (by Mariano Jaimez Tarifa) - <a href="https://github.com/jlblancoc/mrpt/commit/e6ab5595f70cb889d07658c0b540c27e495a1cfb">(commit)</a></li>
+<li><a class="el" href="classmrpt_1_1vision_1_1_c_difodo.html" title="This abstract class implements a method called &quot;Difodo&quot; to perform Visual odometry with range cameras...">mrpt::vision::CDifodo</a>, a class which implements visual odometry based on depth images and the "range flow constraint equation". (by Mariano Jaimez Tarifa) - <a href="https://github.com/MRPT/mrpt/commit/e6ab5595f70cb889d07658c0b540c27e495a1cfb">(commit)</a></li>
 </ul>
 </li>
 </ul>
@@ -483,16 +483,16 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </li>
 </ul>
 </li>
-<li><a class="el" href="structmrpt_1_1maps_1_1_c_points_map_1_1_t_insertion_options.html" title="With this struct options are provided to the observation insertion process. ">mrpt::maps::CPointsMap::TInsertionOptions</a> now have methods to save/load from binary streams, making more maintainable the serialization of point maps - <a href="https://github.com/jlblancoc/mrpt/commit/544d439c3462228b07344142de68e5bc10c1a2e3">(commit)</a></li>
-<li>New options in point maps: <a class="el" href="structmrpt_1_1maps_1_1_c_points_map_1_1_t_insertion_options.html#a6e5e0153db5e3309b0ee1e039a1fe5c4" title="Points with x,y,z coordinates set to zero will also be inserted. ">mrpt::maps::CPointsMap::TInsertionOptions::insertInvalidPoints</a> - <a href="https://github.com/jlblancoc/mrpt/pull/8">(commit)</a></li>
+<li><a class="el" href="structmrpt_1_1maps_1_1_c_points_map_1_1_t_insertion_options.html" title="With this struct options are provided to the observation insertion process. ">mrpt::maps::CPointsMap::TInsertionOptions</a> now have methods to save/load from binary streams, making more maintainable the serialization of point maps - <a href="https://github.com/MRPT/mrpt/commit/544d439c3462228b07344142de68e5bc10c1a2e3">(commit)</a></li>
+<li>New options in point maps: <a class="el" href="structmrpt_1_1maps_1_1_c_points_map_1_1_t_insertion_options.html#a6e5e0153db5e3309b0ee1e039a1fe5c4" title="Points with x,y,z coordinates set to zero will also be inserted. ">mrpt::maps::CPointsMap::TInsertionOptions::insertInvalidPoints</a> - <a href="https://github.com/MRPT/mrpt/pull/8">(commit)</a></li>
 <li><a class="el" href="classmrpt_1_1obs_1_1_c_observation_i_m_u.html" title="This class stores measurements from an Inertial Measurement Unit (IMU) (attitude estimation, raw gyroscope and accelerometer values), altimeters or magnetometers. ">mrpt::obs::CObservationIMU</a> now includes data fields for 3D magnetometers and altimeters. - <a href="http://code.google.com/p/mrpt/source/detail?r=3451">(commit)</a></li>
 <li>Method renamed <a class="el" href="classmrpt_1_1utils_1_1_c_enhanced_meta_file.html#a1eb0660efd8c43d915b6935295d77c58" title="Select the current font used when drawing text. ">mrpt::utils::CEnhancedMetaFile::selectVectorTextFont()</a> to avoid shadowing <a class="el" href="classmrpt_1_1utils_1_1_c_canvas.html#a2928fa64fc68c1f74cbe9c2e4aed8285" title="Select the current font used when drawing text. ">mrpt::utils::CCanvas::selectTextFont()</a></li>
 <li>mrpt::reactivenav::CParameterizedTrajectoryGenerator: New methods:<ul>
-<li>mrpt::reactivenav::CParameterizedTrajectoryGenerator::inverseMap_WS2TP() for inverse look-up of WS to TP space - <a href="https://github.com/jlblancoc/mrpt/commit/4d04ef50e3dea581bed6287d4ea6593034c47da3">(commit)</a></li>
-<li>mrpt::reactivenav::CParameterizedTrajectoryGenerator::renderPathAsSimpleLine() - <a href="https://github.com/jlblancoc/mrpt/commit/a224fc2489ad00b3ab116c84e8d4a48532a005df">(commit)</a></li>
+<li>mrpt::reactivenav::CParameterizedTrajectoryGenerator::inverseMap_WS2TP() for inverse look-up of WS to TP space - <a href="https://github.com/MRPT/mrpt/commit/4d04ef50e3dea581bed6287d4ea6593034c47da3">(commit)</a></li>
+<li>mrpt::reactivenav::CParameterizedTrajectoryGenerator::renderPathAsSimpleLine() - <a href="https://github.com/MRPT/mrpt/commit/a224fc2489ad00b3ab116c84e8d4a48532a005df">(commit)</a></li>
 </ul>
 </li>
-<li>Changed the signature of <a class="el" href="group__nav__tpspace.html#gaf90177a2f37004bc944fad7d4c40fb7c" title="Builds the collision grid for a given PTGs, or load it from a cache file. ">mrpt::reactivenav::build_PTG_collision_grids()</a> to become more generic for 2D &amp; 2.5D PTGs - <a href="https://github.com/jlblancoc/mrpt/commit/7bd68e49a4ba3bf08f194678787816c65de1d685">(commit)</a></li>
+<li>Changed the signature of <a class="el" href="group__nav__tpspace.html#gaf90177a2f37004bc944fad7d4c40fb7c" title="Builds the collision grid for a given PTGs, or load it from a cache file. ">mrpt::reactivenav::build_PTG_collision_grids()</a> to become more generic for 2D &amp; 2.5D PTGs - <a href="https://github.com/MRPT/mrpt/commit/7bd68e49a4ba3bf08f194678787816c65de1d685">(commit)</a></li>
 </ul>
 </li>
 <li>Deleted classes:<ul>
@@ -522,8 +522,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li>Fixed potential mem alignment errors (<a class="el" href="namespace_eigen.html" title="Namespace containing all symbols from the Eigen library. ">Eigen</a>'s UnalignedArrayAssert) in SRBA for 32bit builds. <a href="http://code.google.com/p/mrpt/source/detail?r=3457">(commit)</a></li>
 <li><a class="el" href="group__mrpt__topography__grp.html#ga658ce589d36752f4a08060a8aca54460" title="Coordinates transformation from longitude/latitude/height to ENU (East-North-Up) X/Y/Z coordinates Th...">mrpt::topography::geodeticToENU_WGS84()</a> and related functions used a local +Z axis aligned to the line towards the Earth center; now the Z axis points normally to the ellipsoid surface. The difference with the previous behavior is small but may be of a few millimeters for each meter from the reference point. <a href="http://code.google.com/p/mrpt/source/detail?r=3473">(commit)</a></li>
 <li>Potential crash when setting <a class="el" href="classmp_polygon.html#a38ee78ba84193f9d6911e89ec345e829" title="Set the points in the polygon. ">mpPolygon::setPoints()</a> with empty vectors - <a href="http://code.google.com/p/mrpt/source/detail?r=3478">(commit)</a></li>
-<li>mrpt::reactivenav::CReactiveNavigationSystem and mrpt::reactivenav::CReactiveNavigationSystem3D didn't obey the "enableConsoleOutput" constructor flag - <a href="https://github.com/jlblancoc/mrpt/commit/db7b0e76506af2c24f119a28443a1e8f1a217861">(commit)</a></li>
-<li><a class="el" href="classmrpt_1_1synch_1_1_c_semaphore.html#ac7df910d79e935db246381e1d2361a52" title="Blocks until the count of the semaphore to be non-zero. ">mrpt::synch::CSemaphore::waitForSignal()</a> : Fixed error when thread got an external signal <a href="https://github.com/jlblancoc/mrpt/commit/511e95f03480537ff18ad2cad178c504b1cfbb53">(commit)</a></li>
+<li>mrpt::reactivenav::CReactiveNavigationSystem and mrpt::reactivenav::CReactiveNavigationSystem3D didn't obey the "enableConsoleOutput" constructor flag - <a href="https://github.com/MRPT/mrpt/commit/db7b0e76506af2c24f119a28443a1e8f1a217861">(commit)</a></li>
+<li><a class="el" href="classmrpt_1_1synch_1_1_c_semaphore.html#ac7df910d79e935db246381e1d2361a52" title="Blocks until the count of the semaphore to be non-zero. ">mrpt::synch::CSemaphore::waitForSignal()</a> : Fixed error when thread got an external signal <a href="https://github.com/MRPT/mrpt/commit/511e95f03480537ff18ad2cad178c504b1cfbb53">(commit)</a></li>
 </ul>
 </li>
 </ul>

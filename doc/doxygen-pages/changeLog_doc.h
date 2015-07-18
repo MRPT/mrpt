@@ -117,7 +117,7 @@
 			- mrpt::poses::CRobot2DPoseEstimator could estimate wrong angular velocities for orientations near +-180deg.
 			- mrpt::system::CDirectoryExplorer::sortByName() didn't sort in descending order
 			- Fixed crashes from MATLAB .mex files: mrpt::system::registerFatalExceptionHandlers() has no longer effect, and will be removed in future releases. (Thanks to Jesús Briales García for all the testing!)
-			- Fixed potential crash for Eigen unaligned memory access in 32bit builds in mrpt::slam::CGridMapAligner and other places ([Closes #94](https://github.com/jlblancoc/mrpt/issues/94))
+			- Fixed potential crash for Eigen unaligned memory access in 32bit builds in mrpt::slam::CGridMapAligner and other places ([Closes #94](https://github.com/MRPT/mrpt/issues/94))
 
 <hr>
 <a name="1.2.2">
@@ -249,7 +249,7 @@
 				- mrpt::maps::CPointsMap::getPoint() with mrpt::poses::CPoint3D arguments.
 				- mrpt::vision::correctDistortion() -> use CImage method instead
 				- All previous deprecated functions.
-			- Embedded Eigen updated to version 3.2.1 [(commit)](https://github.com/jlblancoc/mrpt/commit/47913da94a27e98a9115f85b2a530b6c14a10b8f) [(commit)](https://github.com/jlblancoc/mrpt/commit/33258761d3b75bf133d38aecb257c64e4d76b21e)
+			- Embedded Eigen updated to version 3.2.1 [(commit)](https://github.com/MRPT/mrpt/commit/47913da94a27e98a9115f85b2a530b6c14a10b8f) [(commit)](https://github.com/MRPT/mrpt/commit/33258761d3b75bf133d38aecb257c64e4d76b21e)
   		- BUG FIXES:
 			- RawlogViewer app: Fixed abort while converting SF->obs.only datasets when there is no odometry.
 			- mrpt::obs::CSensoryFrame: The cached point map is now invalidated with any change to the list of observations so it's rebuild upon next call.
@@ -261,7 +261,7 @@
 			- RawLogViewer: Operation "convert to SF format" didn't take into account odometry observations.
 			- Fix build errors with GCC 4.9
 			- Fix crash of mrpt::hwdrivers::CIMUXSens_MT4's destructor when it fails to scan and open a device.
-			- Fix potential crash in mrpt::slam::data_association_full_covariance with JCBB when no individually compatible matching exists [(commit)](https://github.com/jlblancoc/mrpt/commit/482472ebd80a3484dce63d294b1ac4e8f001e1eb)
+			- Fix potential crash in mrpt::slam::data_association_full_covariance with JCBB when no individually compatible matching exists [(commit)](https://github.com/MRPT/mrpt/commit/482472ebd80a3484dce63d294b1ac4e8f001e1eb)
 
 <hr>
  <a name="1.1.0">
@@ -274,8 +274,8 @@
 			- mrpt::synch::CPipe: OS-independent pipe support.
 		- [mrpt-hwdrivers]
 			- mrpt::hwdrivers::CIMUXSens_MT4 : Support for 4th generation xSens MT IMU devices.
-			- mrpt::hwdrivers::CNationalInstrumentsDAQ: Support for acquisition boards compatible with National Instruments DAQmx Base - [(commit)](https://github.com/jlblancoc/mrpt/commit/a82a7e37997cfb77e7ee9e903bdb2a55e3040b35).
-			- mrpt::hwdrivers::CImageGrabber_FlyCapture2: Support for Point Grey Research's cameras via the FlyCapture2 libray - [(commits)](https://github.com/jlblancoc/mrpt/pull/5/commits).
+			- mrpt::hwdrivers::CNationalInstrumentsDAQ: Support for acquisition boards compatible with National Instruments DAQmx Base - [(commit)](https://github.com/MRPT/mrpt/commit/a82a7e37997cfb77e7ee9e903bdb2a55e3040b35).
+			- mrpt::hwdrivers::CImageGrabber_FlyCapture2: Support for Point Grey Research's cameras via the FlyCapture2 libray - [(commits)](https://github.com/MRPT/mrpt/pull/5/commits).
 		- [mrpt-maps]
 			- There are now two versions of octomaps (by Mariano Jaimez Tarifa/Jose Luis Blanco) - [(commit)](http://code.google.com/p/mrpt/source/detail?r=3443)
 				- mrpt::maps::COctoMap (only occupancy)
@@ -283,14 +283,14 @@
 		- [mrpt-obs]
 			- mrpt::obs::CObservationRawDAQ, a placeholder for raw and generic measurements from data acquisition devices. - [(commit)](http://code.google.com/p/mrpt/source/detail?r=3459)
 		- [mrpt-opengl]
-			- mrpt::opengl::CMeshFast, an open gl object that draws a "mesh" as a structured point cloud which is faster to render (by Mariano Jaimez Tarifa). -[(commit)](https://github.com/jlblancoc/mrpt/commit/9306bb4a585387d4c85b3f6e41dd2cbe5a354e80)
+			- mrpt::opengl::CMeshFast, an open gl object that draws a "mesh" as a structured point cloud which is faster to render (by Mariano Jaimez Tarifa). -[(commit)](https://github.com/MRPT/mrpt/commit/9306bb4a585387d4c85b3f6e41dd2cbe5a354e80)
 			- mrpt::opengl::CVectorField2D, an opengl object that shows a 2D Vector Field (by Mariano Jaimez Tarifa). - [(commit)](http://code.google.com/p/mrpt/source/detail?r=3461)
 		- [mrpt-reactivenav]
-			- mrpt::reactivenav::CAbstractPTGBasedReactive, as part of a large code refactoring of these classes: [(commit)](https://github.com/jlblancoc/mrpt/pull/4)
+			- mrpt::reactivenav::CAbstractPTGBasedReactive, as part of a large code refactoring of these classes: [(commit)](https://github.com/MRPT/mrpt/pull/4)
 				- mrpt::reactivenav::CReactiveNavigationSystem
 				- mrpt::reactivenav::CReactiveNavigationSystem3D
 		- [mrpt-vision]
-			- mrpt::vision::CDifodo, a class which implements visual odometry based on depth images and the "range flow constraint equation". (by Mariano Jaimez Tarifa) - [(commit)](https://github.com/jlblancoc/mrpt/commit/e6ab5595f70cb889d07658c0b540c27e495a1cfb)
+			- mrpt::vision::CDifodo, a class which implements visual odometry based on depth images and the "range flow constraint equation". (by Mariano Jaimez Tarifa) - [(commit)](https://github.com/MRPT/mrpt/commit/e6ab5595f70cb889d07658c0b540c27e495a1cfb)
 	- Changes in classes:
 		- Clean up and slight optimization of metric map matching API: - [(commit)](http://code.google.com/p/mrpt/source/detail?r=3446)
 			- <b>Methods marked as deprecated: </b>
@@ -299,14 +299,14 @@
 			- New structures:
 				- mrpt::slam::TMatchingParams
 				- mrpt::slam::TMatchingExtraResults
-		- mrpt::maps::CPointsMap::TInsertionOptions now have methods to save/load from binary streams, making more maintainable the serialization of point maps - [(commit)](https://github.com/jlblancoc/mrpt/commit/544d439c3462228b07344142de68e5bc10c1a2e3)
-		- New options in point maps: mrpt::maps::CPointsMap::TInsertionOptions::insertInvalidPoints - [(commit)](https://github.com/jlblancoc/mrpt/pull/8)
+		- mrpt::maps::CPointsMap::TInsertionOptions now have methods to save/load from binary streams, making more maintainable the serialization of point maps - [(commit)](https://github.com/MRPT/mrpt/commit/544d439c3462228b07344142de68e5bc10c1a2e3)
+		- New options in point maps: mrpt::maps::CPointsMap::TInsertionOptions::insertInvalidPoints - [(commit)](https://github.com/MRPT/mrpt/pull/8)
 		- mrpt::obs::CObservationIMU now includes data fields for 3D magnetometers and altimeters. - [(commit)](http://code.google.com/p/mrpt/source/detail?r=3451)
 		- Method renamed mrpt::utils::CEnhancedMetaFile::selectVectorTextFont() to avoid shadowing mrpt::utils::CCanvas::selectTextFont()
 		- mrpt::reactivenav::CParameterizedTrajectoryGenerator: New methods:
-			- mrpt::reactivenav::CParameterizedTrajectoryGenerator::inverseMap_WS2TP() for inverse look-up of WS to TP space - [(commit)](https://github.com/jlblancoc/mrpt/commit/4d04ef50e3dea581bed6287d4ea6593034c47da3)
-			- mrpt::reactivenav::CParameterizedTrajectoryGenerator::renderPathAsSimpleLine() - [(commit)](https://github.com/jlblancoc/mrpt/commit/a224fc2489ad00b3ab116c84e8d4a48532a005df)
-		- Changed the signature of mrpt::reactivenav::build_PTG_collision_grids() to become more generic for 2D & 2.5D PTGs - [(commit)](https://github.com/jlblancoc/mrpt/commit/7bd68e49a4ba3bf08f194678787816c65de1d685)
+			- mrpt::reactivenav::CParameterizedTrajectoryGenerator::inverseMap_WS2TP() for inverse look-up of WS to TP space - [(commit)](https://github.com/MRPT/mrpt/commit/4d04ef50e3dea581bed6287d4ea6593034c47da3)
+			- mrpt::reactivenav::CParameterizedTrajectoryGenerator::renderPathAsSimpleLine() - [(commit)](https://github.com/MRPT/mrpt/commit/a224fc2489ad00b3ab116c84e8d4a48532a005df)
+		- Changed the signature of mrpt::reactivenav::build_PTG_collision_grids() to become more generic for 2D & 2.5D PTGs - [(commit)](https://github.com/MRPT/mrpt/commit/7bd68e49a4ba3bf08f194678787816c65de1d685)
 	- Deleted classes:
 		- mrpt::utils::CEvent, which was actually unimplemented (!)
 		- mrpt::hwdrivers::CInterfaceNI845x has been deleted. It didn't offer features enough to justify a class.
@@ -328,8 +328,8 @@
 		- Fixed potential mem alignment errors (Eigen's UnalignedArrayAssert) in SRBA for 32bit builds. [(commit)](http://code.google.com/p/mrpt/source/detail?r=3457)
 		- mrpt::topography::geodeticToENU_WGS84() and related functions used a local +Z axis aligned to the line towards the Earth center; now the Z axis points normally to the ellipsoid surface. The difference with the previous behavior is small but may be of a few millimeters for each meter from the reference point. [(commit)](http://code.google.com/p/mrpt/source/detail?r=3473)
 		- Potential crash when setting mpPolygon::setPoints() with empty vectors - [(commit)](http://code.google.com/p/mrpt/source/detail?r=3478)
-		- mrpt::reactivenav::CReactiveNavigationSystem and mrpt::reactivenav::CReactiveNavigationSystem3D didn't obey the "enableConsoleOutput" constructor flag - [(commit)](https://github.com/jlblancoc/mrpt/commit/db7b0e76506af2c24f119a28443a1e8f1a217861)
-		- mrpt::synch::CSemaphore::waitForSignal() : Fixed error when thread got an external signal [(commit)](https://github.com/jlblancoc/mrpt/commit/511e95f03480537ff18ad2cad178c504b1cfbb53)
+		- mrpt::reactivenav::CReactiveNavigationSystem and mrpt::reactivenav::CReactiveNavigationSystem3D didn't obey the "enableConsoleOutput" constructor flag - [(commit)](https://github.com/MRPT/mrpt/commit/db7b0e76506af2c24f119a28443a1e8f1a217861)
+		- mrpt::synch::CSemaphore::waitForSignal() : Fixed error when thread got an external signal [(commit)](https://github.com/MRPT/mrpt/commit/511e95f03480537ff18ad2cad178c504b1cfbb53)
 
  <hr>
  <a name="1.0.2">
