@@ -4,7 +4,8 @@
 # Project related configuration options
 #---------------------------------------------------------------------------
 #PROJECT_NAME           = \"$MRPT_COMPLETE_NAME\"
-PROJECT_NAME           = \"The MRPT project\"
+PROJECT_NAME           = MRPT
+PROJECT_NUMBER         = $MRPT_VERSION_STR
 LAYOUT_FILE            = DoxygenLayout_MRPT.xml
 OUTPUT_DIRECTORY       = .
 CREATE_SUBDIRS         = NO
