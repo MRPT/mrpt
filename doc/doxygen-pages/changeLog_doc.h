@@ -16,6 +16,7 @@
   <h2>Version 1.3.1: Released 18-JUL-2015 </h2></a>
 	- Changes in apps:
 		- [navlog-viewer](http://www.mrpt.org/list-of-mrpt-apps/application-navlog-viewer/): Now shows more information on navigation logs.
+		- New app [icp-slam-live](http://www.mrpt.org/list-of-mrpt-apps/application-icp-slam-live/): Real-time ICP-SLAM with a LIDAR sensor.
 	- Changes in libraries:
 		- \ref mrpt_base_grp
 			- New helper templates: mrpt::utils::int_select_by_bytecount<>, mrpt::utils::uint_select_by_bytecount<>
