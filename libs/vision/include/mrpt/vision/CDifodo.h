@@ -16,7 +16,6 @@
 #include <mrpt/vision/link_pragmas.h>
 #include <unsupported/Eigen/MatrixFunctions>
 
-//class CDeflodo Acronim for "Depth Flow odometry" -> otra opción de nombre...
 namespace mrpt
 {
 	namespace vision

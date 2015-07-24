@@ -144,7 +144,7 @@ namespace mrpt
 			return res;
 		}
 
-		/** v1·v2: The dot product of two containers (vectors/arrays/matrices) */
+		/** v1*v2: The dot product of two containers (vectors/arrays/matrices) */
 		template <class CONTAINER1,class CONTAINER2>
 		inline typename CONTAINER1::Scalar
 		dotProduct(const CONTAINER1 &v1,const CONTAINER1 &v2)
@@ -152,7 +152,7 @@ namespace mrpt
 			return v1.dot(v2);
 		}
 
-		/** v1·v2: The dot product of any two objects supporting []  */
+		/** v1*v2: The dot product of any two objects supporting []  */
 		template<size_t N,class T,class U,class V>
 		inline T dotProduct(const U &v1,const V &v2)	{
 			T res=0;

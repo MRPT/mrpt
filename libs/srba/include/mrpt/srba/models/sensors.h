@@ -123,7 +123,7 @@ namespace mrpt { namespace srba {
 			const observation_traits<OBS_T>::obs_data_t   & obs, 
 			const OBS_T::TObservationParams               & params)
 		{
-			//     ¬ +Z 
+			//     > +Z 
 			//    / 
 			//   / 
 			//  +----> +X
@@ -293,7 +293,7 @@ namespace mrpt { namespace srba {
 			const observation_traits<OBS_T>::obs_data_t   & obs, 
 			const OBS_T::TObservationParams               & params)
 		{
-			//     ¬ +Z 
+			//     > +Z 
 			//    / 
 			//   / 
 			//  +----> +X

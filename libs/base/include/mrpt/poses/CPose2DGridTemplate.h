@@ -31,7 +31,7 @@ namespace poses
 							m_phiMin, m_phiMax,
 							m_resolutionXY,m_resolutionPhi;
 
-		/** The size of "m_data" is m_sizeX ·m_sizeY ·m_sizePhi
+		/** The size of "m_data" is m_sizeX * m_sizeY * m_sizePhi
 		  */
 		size_t		m_sizeX,m_sizeY,m_sizePhi, m_sizeXY;
 

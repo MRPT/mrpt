@@ -321,7 +321,7 @@ namespace mrpt
 			  *
 			  * \param out_z N vectors, each for one "observation" of length OBS_SIZE, N being the number of "observations": how many observed landmarks for a map, or just one if not applicable.
 			  * \param out_data_association An empty vector or, where applicable, a vector where the i'th element corresponds to the position of the observation in the i'th row of out_z within the system state vector (in the range [0,getNumberOfLandmarksInTheMap()-1]), or -1 if it is a new map element and we want to insert it at the end of this KF iteration.
-			  * \param in_S The full covariance matrix of the observation predictions (i.e. the "innovation covariance matrix"). This is a M·O x M·O matrix with M=length of "in_lm_indices_in_S".
+			  * \param in_S The full covariance matrix of the observation predictions (i.e. the "innovation covariance matrix"). This is a M*O x M*O matrix with M=length of "in_lm_indices_in_S".
 			  * \param in_lm_indices_in_S The indices of the map landmarks (range [0,getNumberOfLandmarksInTheMap()-1]) that can be found in the matrix in_S.
 			  *
 			  *  This method will be called just once for each complete KF iteration.

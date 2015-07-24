@@ -451,7 +451,7 @@ namespace maps
 			{
 			}
 
-			/** The target variable for absolute entropy, computed as:<br><center>H(map)=Sum<sub>x,y</sub>{ -p(x,y)·ln(p(x,y)) -(1-p(x,y))·ln(1-p(x,y)) }</center><br><br>
+			/** The target variable for absolute entropy, computed as:<br><center>H(map)=Sum<sub>x,y</sub>{ -p(x,y)*ln(p(x,y)) -(1-p(x,y))*ln(1-p(x,y)) }</center><br><br>
 			  */
 			double		H;
 

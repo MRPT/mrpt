@@ -103,7 +103,7 @@ namespace mrpt
 		  *
 		  * \param Z_observations_mean [IN] An MxO matrix with the M observations, each row containing the observation "mean".
 		  * \param Y_predictions_mean [IN] An NxO matrix with the N predictions, each row containing the mean of one prediction.
-		  * \param Y_predictions_cov [IN] An N·OxN·O matrix with the full covariance matrix of all the N predictions.
+		  * \param Y_predictions_cov [IN] An N*OxN*O matrix with the full covariance matrix of all the N predictions.
 		  * \param results [OUT] The output data association hypothesis, and other useful information.
 		  * \param method [IN, optional] The selected method to make the associations.
 		  * \param chi2quantile [IN, optional] The threshold for considering a match between two close Gaussians for two landmarks, in the range [0,1]. It is used to call mrpt::math::chi2inv
@@ -136,7 +136,7 @@ namespace mrpt
 		  *
 		  * \param Z_observations_mean [IN] An MxO matrix with the M observations, each row containing the observation "mean".
 		  * \param Y_predictions_mean [IN] An NxO matrix with the N predictions, each row containing the mean of one prediction.
-		  * \param Y_predictions_cov [IN] An N·OxO matrix: A vertical stack of N covariance matrix, one for each of the N prediction.
+		  * \param Y_predictions_cov [IN] An N*OxO matrix: A vertical stack of N covariance matrix, one for each of the N prediction.
 		  * \param results [OUT] The output data association hypothesis, and other useful information.
 		  * \param method [IN, optional] The selected method to make the associations.
 		  * \param chi2quantile [IN, optional] The threshold for considering a match between two close Gaussians for two landmarks, in the range [0,1]. It is used to call mrpt::math::chi2inv

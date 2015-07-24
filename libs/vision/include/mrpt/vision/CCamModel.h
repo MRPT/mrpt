@@ -253,7 +253,7 @@ namespace mrpt
 				tmp1[2]=square(tmp1[0])+square(tmp1[1]);
 				double sK1=square(K1);
 				double K12=sK1-K2;
-				double K123=-K1*sK1+2*K1*K2-K3;	//-K1³+2K1K2-K3
+				double K123=-K1*sK1+2*K1*K2-K3;	//-K1^3+2K1K2-K3
 				//tmp1[3]=1-K1*tmp1[2]+K12*square(tmp1[2]);
 				tmp1[3]=1+tmp1[2]*(-K1+tmp1[2]*(K12+tmp1[2]*K123));
 				J2.set_unsafe(2,0,2*tmp1[0]);

@@ -272,7 +272,7 @@ namespace internal
 		}
 
 		// ----------------------------------------------------------------------
-		// Solve the H·Ax = -g system using the Schur complement to generate a
+		// Solve the H*Ax = -g system using the Schur complement to generate a
 		//   Ap-only reduced system.
 		// Return: always true (success).
 		// ----------------------------------------------------------------------
@@ -464,7 +464,7 @@ namespace internal
 		}
 
 		// ----------------------------------------------------------------------
-		// Solve the H·Ax = -g system using the Schur complement to generate a
+		// Solve the H*Ax = -g system using the Schur complement to generate a
 		//   Ap-only reduced system.
 		// Return: always true (success).
 		// ----------------------------------------------------------------------

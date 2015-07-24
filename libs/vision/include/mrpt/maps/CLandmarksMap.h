@@ -327,21 +327,13 @@ namespace maps
 			public:
 				TGPSOrigin();
 
-				/** Longitud del Origen del GPS (en grados)
-				  */
-				double	longitude;
-
-				/** Latitud del Origen del GPS (en grados)
-				  */
-				double	latitude;
-
-				/** Altitud del Origen del GPS (en metros)
-				  */
-				double	altitude;
+				double	longitude;   //!< degrees
+				double	latitude;    //!< degrees
+				double	altitude;    //!< meters
 
 				/** Estas tres opciones sirven para encajar mapas de GPS con posiciones absolutas con
 				  *  mapas de otros sensores (como laser :D) se obtienen facilmente con el programa matlab  map_matching
-				  *   ang : Rotación del mapa del GPS (para encajarlo en grados)
+				  *   ang : Map rotation (deg)
 				  *   x_shift: Desplazamiento en x relativo al robot (en metros)
 				  *   y_shift: Desplazamiento en y relativo al robot (en metros)
 			      */
@@ -349,9 +341,7 @@ namespace maps
 						x_shift,
 						y_shift;
 
-				/** Número mínimo de satelites para tener en cuenta los datos
-				  */
-				unsigned int min_sat;
+				unsigned int min_sat; //!< Minimum number of sats to take into account the data
 
 			} GPSOrigin;
 

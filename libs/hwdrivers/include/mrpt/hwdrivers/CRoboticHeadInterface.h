@@ -38,8 +38,8 @@ namespace mrpt
 		  *   [supplied_section_name]
 		  *   HEAD_serialNumber=OREJA001
 		  *   HEAD_gain=127,127,127
-		  *   HEAD_yaw=0		//orientación inicial
-		  *   HEAD_pitch=0		//elevación inicial
+		  *   HEAD_yaw=0		// initial yaw value
+		  *   HEAD_pitch=0		// initial tilt 
 		  *  \endcode
 		  * \ingroup mrpt_hwdrivers_grp
 		  */
@@ -83,7 +83,7 @@ namespace mrpt
 				void GetGain(int &_gain,int &channel);
 
 				/** Set the gain for the amplifier each ear. The value range is [0x00(min) .. 0x7F(max)]. The value 0x80 set the resistor
-				  * in high impedance state, ¡¡¡DON'T USE IT!!!
+				  * in high impedance state, DON'T USE IT!!!
 				  */
 				bool SetGain(int &new_gain,int &channel);
 
@@ -102,15 +102,12 @@ namespace mrpt
 				void Get3SoundBuffer(mrpt::math::CMatrixTemplate<int>	&buf);
 
 				/** Move the head in:
-				  * \code
+				   \code
 				  * elevation = 'yaw' degrees
 				  * orientation = 'pitch' degrees
 				  * \endcode
 				  */
 				void SetHeadPose(int &yaw, int &pitch);
-
-				//TO DO --> Funciones del acelerómetro
-				//			Movimientos faciales
 
 		};	// End of class
 

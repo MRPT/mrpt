@@ -340,7 +340,7 @@ namespace mrpt	{	namespace math	{
 		size_t insertElements(const std::set<T> &els)	{
 			if (els.empty()) return 0;
 			//This code is much more complex than it should! Trying, for efficiency, to avoid multiple calls to insertElement makes things a lot harder.
-			//It raises the complexity level to N², but alleviates it greatly by making a single memory allocation. Multiple calls to insertElement will be
+			//It raises the complexity level to N^2, but alleviates it greatly by making a single memory allocation. Multiple calls to insertElement will be
 			//faster only if the number of elements in the set is really large.
 			std::vector<size_t> added;
 			//std::vector<size_t> exist;

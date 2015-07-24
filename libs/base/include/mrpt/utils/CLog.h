@@ -10,7 +10,7 @@
 /***************************************************************
  * Name:      Log.h
  * Purpose:   Defines the Log class
- * Author:    Vicente Arévalo (varevalo@ctima.uma.es)
+ * Author:    Vicente Arevalo (varevalo@ctima.uma.es)
  * Created:   2009-09-23
  * Copyright: mapir (http://babel.isa.uma.es/mapir)
  * License:

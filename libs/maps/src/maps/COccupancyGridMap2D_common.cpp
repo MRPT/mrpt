@@ -328,10 +328,10 @@ void COccupancyGridMap2D::freeMap()
 
 /*---------------------------------------------------------------
   Computes the entropy and related values of this grid map.
-	out_H The target variable for absolute entropy, computed as:<br><center>H(map)=Sum<sub>x,y</sub>{ -p(x,y)·ln(p(x,y)) -(1-p(x,y))·ln(1-p(x,y)) }</center><br><br>
+	out_H The target variable for absolute entropy, computed as:<br><center>H(map)=Sum<sub>x,y</sub>{ -p(x,y)ln(p(x,y)) -(1-p(x,y))ln(1-p(x,y)) }</center><br><br>
 	out_I The target variable for absolute "information", defining I(x) = 1 - H(x)
-	out_mean_H The target variable for mean entropy, defined as entropy per square meter: mean_H(map) = H(map) / (Map length x (meters))·(Map length y (meters))
-	out_mean_I The target variable for mean information, defined as information per square meter: mean_I(map) = I(map) / (Map length x (meters))·(Map length y (meters))
+	out_mean_H The target variable for mean entropy, defined as entropy per square meter: mean_H(map) = H(map) / (Map length x (meters))(Map length y (meters))
+	out_mean_I The target variable for mean information, defined as information per square meter: mean_I(map) = I(map) / (Map length x (meters))(Map length y (meters))
  ---------------------------------------------------------------*/
 void  COccupancyGridMap2D::computeEntropy( TEntropyInfo &info ) const
 {

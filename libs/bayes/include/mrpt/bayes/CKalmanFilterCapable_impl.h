@@ -176,8 +176,8 @@ namespace mrpt
 			// , but: it's actually a subset of the full Jacobian, since the non-predicted
 			//  features do not appear.
 			//
-			//  dh_dx: O·M x V+M·F
-			//      S: O·M x O·M
+			//  dh_dx: O*M x V+M*F
+			//      S: O*M x O*M
 			//  M = |predictLMidxs|
 			//  O=size of each observation.
 			//  F=size of features in the map

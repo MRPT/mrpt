@@ -120,10 +120,10 @@ namespace mrpt
 		  *  This method implements optimal sampling with a rejection sampling-based approximation of the true posterior.
 		  *  For details, see the papers:
 		  *
-		  *  J.-L. Blanco, J. González, and J.-A. Fernández-Madrigal,
+		  *  J.-L. Blanco, J. Gonzalez, and J.-A. Fernandez-Madrigal,
 		  *    "An Optimal Filtering Algorithm for Non-Parametric Observation Models in
 		  *     Robot Localization," in Proc. IEEE International Conference on Robotics
-		  *     and Automation (ICRA'08), 2008, pp. 461–466.
+		  *     and Automation (ICRA'08), 2008, pp. 461466.
 		  */
 		template <class PARTICLE_TYPE,class MYSELF>
 		template <class BINTYPE>
@@ -307,7 +307,7 @@ namespace mrpt
 		  *
 		  *  This method is described in the paper:
 		  *   Pitt, M.K.; Shephard, N. (1999). "Filtering Via Simulation: Auxiliary Particle Filters".
-		  *    Journal of the American Statistical Association 94 (446): 590–591. doi:10.2307/2670179.
+		  *    Journal of the American Statistical Association 94 (446): 590-591. doi:10.2307/2670179.
 		  *
 		  */
 		template <class PARTICLE_TYPE,class MYSELF>
@@ -341,7 +341,7 @@ namespace mrpt
 			const MYSELF *me = static_cast<const MYSELF*>(obj);
 
 			// Compute the quantity:
-			//     w[i]·p(zt|z^{t-1},x^{[i],t-1})
+			//     w[i]*p(zt|z^{t-1},x^{[i],t-1})
 			// As the Monte-Carlo approximation of the integral over all posible $x_t$.
 			// --------------------------------------------
 			double  indivLik, maxLik= -1e300;
@@ -393,7 +393,7 @@ namespace mrpt
 		} // end of PF_SLAM_particlesEvaluator_AuxPFOptimal
 
 
-		/**  Compute w[i]·p(z_t | mu_t^i), with mu_t^i being
+		/**  Compute w[i]*p(z_t | mu_t^i), with mu_t^i being
 		  *    the mean of the new robot pose
 		  *
 		  * \param action MUST be a "const CPose3D*"
@@ -437,7 +437,7 @@ namespace mrpt
 			{
 				// Do something similar to in Optimal sampling:
 				// Compute the quantity:
-				//     w[i]·p(zt|z^{t-1},x^{[i],t-1})
+				//     w[i]*p(zt|z^{t-1},x^{[i],t-1})
 				// As the Monte-Carlo approximation of the integral over all posible $x_t$.
 				// --------------------------------------------
 				double  indivLik, maxLik= -1e300;
@@ -527,10 +527,8 @@ namespace mrpt
 
 			m_pfAuxiliaryPFOptimal_maxLikelihood.assign(M, INVALID_LIKELIHOOD_VALUE);
 			m_pfAuxiliaryPFOptimal_maxLikDrawnMovement.resize(M);
-//			if (USE_OPTIMAL_SAMPLING)
-				m_pfAuxiliaryPFOptimal_estimatedProb.resize(M);
-//			else
-				m_pfAuxiliaryPFStandard_estimatedProb.resize(M);
+			m_pfAuxiliaryPFOptimal_estimatedProb.resize(M);
+			m_pfAuxiliaryPFStandard_estimatedProb.resize(M);
 
 			// Pass the "mean" robot movement to the "weights" computing function:
 			CPose3D meanRobotMovement;
@@ -557,7 +555,7 @@ namespace mrpt
 			}
 
 			// Now we have the vector "m_fastDrawProbability" filled out with:
-			//               w[i]·p(zt|z^{t-1},x^{[i],t-1},X)
+			//               w[i]*p(zt|z^{t-1},x^{[i],t-1},X)
 			//  where,
 			//
 			//  =========== For USE_OPTIMAL_SAMPLING = true ====================

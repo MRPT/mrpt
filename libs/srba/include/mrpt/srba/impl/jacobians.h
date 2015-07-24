@@ -386,7 +386,7 @@ struct compute_jacobian_dAepsDx_deps<jacob_point_landmark /* Jacobian family: th
 		)
 	{
 		MRPT_UNUSED_PARAM(all_obs);
-		// See section 10.3.7 of technical report on SE(3) poses [http://mapir.isa.uma.es/~jlblanco/papers/jlblanco2010geometry3D_techrep.pdf]
+        // See section 10.3.7 of technical report on SE(3) poses [http://ingmec.ual.es/~jlblanco/papers/jlblanco2010geometry3D_techrep.pdf]
 		if (!is_inverse_edge_jacobian)
 		{	// Normal formulation: unknown is pose "d+1 -> d"
 
@@ -796,7 +796,7 @@ struct compute_jacobian_dAepsDx_deps<jacob_relpose_landmark /* Jacobian family: 
 		//                   6x6                 6x12                12x6
 		//
 		//                              ^: (1)              ^: (2)
-		// See section 10.3.7 of technical report on SE(3) poses [http://mapir.isa.uma.es/~jlblanco/papers/jlblanco2010geometry3D_techrep.pdf]
+        // See section 10.3.7 of technical report on SE(3) poses [http://ingmec.ual.es/~jlblanco/papers/jlblanco2010geometry3D_techrep.pdf]
 		mrpt::math::CMatrixDouble33 ROTA;  // A.rotationMatrix
 		typename RBA_ENGINE_T::pose_t  D(mrpt::poses::UNINITIALIZED_POSE);
 		typename RBA_ENGINE_T::pose_t  base_wrt_obs(mrpt::poses::UNINITIALIZED_POSE); // A(+)D
