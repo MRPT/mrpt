@@ -14,7 +14,9 @@
 
 <a name="1.3.2">
   <h2>Version 1.3.2: (Under development) </h2></a>
-	- (None yet!)
+	- Changes in libraries:
+		- \ref mrpt_base_grp
+			- mrpt::math::KDTreeCapable::TKDTreeSearchParams: Removed parameter nChecks, which was ignored by nanoflann anyway.
  
 
 <hr>

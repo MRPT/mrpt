@@ -24,7 +24,7 @@ namespace mrpt
 		  *  @{ */
 
 
-		/** A generic adaptor class for providing Approximate Nearest Neighbors (ANN) (via the nanoflann library) to MRPT classses.
+		/** A generic adaptor class for providing Nearest Neighbor (NN) lookup via the `nanoflann` library.
 		 *   This makes use of the CRTP design pattern.
 		 *
 		 *  Derived classes must be aware of the need to call "kdtree_mark_as_outdated()" when the data points
@@ -85,12 +85,9 @@ namespace mrpt
 			struct TKDTreeSearchParams
 			{
 				TKDTreeSearchParams() :
-					nChecks(32),
 					leaf_max_size(10)
 				{
 				}
-
-				int nChecks; //!< The number of checks for ANN (default: 32) - corresponds to FLANN's SearchParams::check
 				size_t leaf_max_size; //!< Max points per leaf
 			};
 
@@ -133,7 +130,7 @@ namespace mrpt
 
 				m_kdtree2d_data.query_point[0] = x0;
 				m_kdtree2d_data.query_point[1] = y0;
-		        m_kdtree2d_data.index->findNeighbors(resultSet, &m_kdtree2d_data.query_point[0], nanoflann::SearchParams(kdtree_search_params.nChecks));
+		        m_kdtree2d_data.index->findNeighbors(resultSet, &m_kdtree2d_data.query_point[0], nanoflann::SearchParams());
 
 				// Copy output to user vars:
 				out_x = derived().kdtree_get_pt(ret_index,0);
@@ -160,7 +157,7 @@ namespace mrpt
 
 				m_kdtree2d_data.query_point[0] = x0;
 				m_kdtree2d_data.query_point[1] = y0;
-		        m_kdtree2d_data.index->findNeighbors(resultSet, &m_kdtree2d_data.query_point[0], nanoflann::SearchParams(kdtree_search_params.nChecks));
+		        m_kdtree2d_data.index->findNeighbors(resultSet, &m_kdtree2d_data.query_point[0], nanoflann::SearchParams());
 
 				return ret_index;
 				MRPT_END
@@ -229,7 +226,7 @@ namespace mrpt
 
 				m_kdtree2d_data.query_point[0] = x0;
 				m_kdtree2d_data.query_point[1] = y0;
-		        m_kdtree2d_data.index->findNeighbors(resultSet, &m_kdtree2d_data.query_point[0], nanoflann::SearchParams(kdtree_search_params.nChecks));
+		        m_kdtree2d_data.index->findNeighbors(resultSet, &m_kdtree2d_data.query_point[0], nanoflann::SearchParams());
 
 				// Copy output to user vars:
 				out_x1 = derived().kdtree_get_pt(ret_indexes[0],0);
@@ -293,7 +290,7 @@ namespace mrpt
 
 				m_kdtree2d_data.query_point[0] = x0;
 				m_kdtree2d_data.query_point[1] = y0;
-		        m_kdtree2d_data.index->findNeighbors(resultSet, &m_kdtree2d_data.query_point[0], nanoflann::SearchParams(kdtree_search_params.nChecks));
+		        m_kdtree2d_data.index->findNeighbors(resultSet, &m_kdtree2d_data.query_point[0], nanoflann::SearchParams());
 
 				for (size_t i=0;i<knn;i++)
 				{
@@ -347,7 +344,7 @@ namespace mrpt
 
 				m_kdtree2d_data.query_point[0] = x0;
 				m_kdtree2d_data.query_point[1] = y0;
-		        m_kdtree2d_data.index->findNeighbors(resultSet, &m_kdtree2d_data.query_point[0], nanoflann::SearchParams(kdtree_search_params.nChecks));
+		        m_kdtree2d_data.index->findNeighbors(resultSet, &m_kdtree2d_data.query_point[0], nanoflann::SearchParams());
 				MRPT_END
 			}
 
@@ -394,7 +391,7 @@ namespace mrpt
 				m_kdtree3d_data.query_point[0] = x0;
 				m_kdtree3d_data.query_point[1] = y0;
 				m_kdtree3d_data.query_point[2] = z0;
-		        m_kdtree3d_data.index->findNeighbors(resultSet, &m_kdtree3d_data.query_point[0], nanoflann::SearchParams(kdtree_search_params.nChecks));
+		        m_kdtree3d_data.index->findNeighbors(resultSet, &m_kdtree3d_data.query_point[0], nanoflann::SearchParams());
 
 				// Copy output to user vars:
 				out_x = derived().kdtree_get_pt(ret_index,0);
@@ -425,7 +422,7 @@ namespace mrpt
 				m_kdtree3d_data.query_point[0] = x0;
 				m_kdtree3d_data.query_point[1] = y0;
 				m_kdtree3d_data.query_point[2] = z0;
-		        m_kdtree3d_data.index->findNeighbors(resultSet, &m_kdtree3d_data.query_point[0], nanoflann::SearchParams(kdtree_search_params.nChecks));
+		        m_kdtree3d_data.index->findNeighbors(resultSet, &m_kdtree3d_data.query_point[0], nanoflann::SearchParams());
 
 				return ret_index;
 				MRPT_END
@@ -484,7 +481,7 @@ namespace mrpt
 				m_kdtree3d_data.query_point[0] = x0;
 				m_kdtree3d_data.query_point[1] = y0;
 				m_kdtree3d_data.query_point[2] = z0;
-				m_kdtree3d_data.index->findNeighbors(resultSet, &m_kdtree3d_data.query_point[0], nanoflann::SearchParams(kdtree_search_params.nChecks));
+				m_kdtree3d_data.index->findNeighbors(resultSet, &m_kdtree3d_data.query_point[0], nanoflann::SearchParams());
 
 				for (size_t i=0;i<knn;i++)
 				{
@@ -540,7 +537,7 @@ namespace mrpt
 				m_kdtree3d_data.query_point[0] = x0;
 				m_kdtree3d_data.query_point[1] = y0;
 				m_kdtree3d_data.query_point[2] = z0;
-				m_kdtree3d_data.index->findNeighbors(resultSet, &m_kdtree3d_data.query_point[0], nanoflann::SearchParams(kdtree_search_params.nChecks));
+				m_kdtree3d_data.index->findNeighbors(resultSet, &m_kdtree3d_data.query_point[0], nanoflann::SearchParams());
 
 				for (size_t i=0;i<knn;i++)
 				{
@@ -588,7 +585,7 @@ namespace mrpt
 				if ( m_kdtree3d_data.m_num_points!=0 )
 				{
 					const num_t xyz[3] = {x0,y0,z0};
-					m_kdtree3d_data.index->radiusSearch(&xyz[0], maxRadiusSqr, out_indices_dist, nanoflann::SearchParams(kdtree_search_params.nChecks) );
+					m_kdtree3d_data.index->radiusSearch(&xyz[0], maxRadiusSqr, out_indices_dist, nanoflann::SearchParams() );
 				}
 				return out_indices_dist.size();
 				MRPT_END
@@ -619,7 +616,7 @@ namespace mrpt
 				if ( m_kdtree2d_data.m_num_points!=0 )
 				{
 					const num_t xyz[2] = {x0,y0};
-					m_kdtree2d_data.index->radiusSearch(&xyz[0], maxRadiusSqr, out_indices_dist, nanoflann::SearchParams(kdtree_search_params.nChecks) );
+					m_kdtree2d_data.index->radiusSearch(&xyz[0], maxRadiusSqr, out_indices_dist, nanoflann::SearchParams() );
 				}
 				return out_indices_dist.size();
 				MRPT_END
@@ -660,7 +657,7 @@ namespace mrpt
 				m_kdtree3d_data.query_point[0] = x0;
 				m_kdtree3d_data.query_point[1] = y0;
 				m_kdtree3d_data.query_point[2] = z0;
-				m_kdtree3d_data.index->findNeighbors(resultSet, &m_kdtree3d_data.query_point[0], nanoflann::SearchParams(kdtree_search_params.nChecks));
+				m_kdtree3d_data.index->findNeighbors(resultSet, &m_kdtree3d_data.query_point[0], nanoflann::SearchParams());
 				MRPT_END
 			}
 
