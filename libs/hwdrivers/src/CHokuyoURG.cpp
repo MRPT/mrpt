@@ -25,6 +25,7 @@ using namespace mrpt::system;
 using namespace mrpt::opengl;
 using namespace std;
 
+const int MINIMUM_PACKETS_TO_SET_TIMESTAMP_REFERENCE = 10;
 
 /*-------------------------------------------------------------
 						Constructor
@@ -43,6 +44,7 @@ CHokuyoURG::CHokuyoURG() :
 	m_port_dir(0),
 	m_I_am_owner_serial_port(false),
 	m_timeStartUI( 0 ),
+	m_timeStartSynchDelay(0),
 	m_disable_firmware_timestamp(false)
 {
 	m_sensorLabel = "Hokuyo";
@@ -81,6 +83,7 @@ void  CHokuyoURG::doProcessSimple(
 	if (!checkCOMisOpen())
 	{
 		m_timeStartUI = 0;
+		m_timeStartSynchDelay = 0;
 		hardwareError = true;
 		return;
 	}
@@ -118,8 +121,15 @@ void  CHokuyoURG::doProcessSimple(
 		hardwareError = true;
 		return;
 	}
+	// Delay the sync of timestamps due to instability in the constant rate during the first few packets.
+	bool do_timestamp_sync = !m_disable_firmware_timestamp;
+	if (do_timestamp_sync && m_timeStartSynchDelay<MINIMUM_PACKETS_TO_SET_TIMESTAMP_REFERENCE)
+	{
+		do_timestamp_sync=false;
+		m_timeStartSynchDelay++;
+	}
 
-	if (!m_disable_firmware_timestamp)
+	if (do_timestamp_sync)
 	{
 		// Extract the timestamp of the sensor:
 		uint32_t nowUI	=

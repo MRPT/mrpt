@@ -215,9 +215,10 @@ namespace mrpt
 
 			bool			m_I_am_owner_serial_port;
 
-			uint32_t		m_timeStartUI;	//!< Time of the first data packet, for synchronization purposes.
-			mrpt::system::TTimeStamp	m_timeStartTT;
-			bool            m_disable_firmware_timestamp;
+			uint32_t                 m_timeStartUI;	//!< Time of the first data packet, for synchronization purposes.
+			int                      m_timeStartSynchDelay;  //!< Counter to discard to first few packets before setting the correspondence between device and computer timestamps.
+			mrpt::system::TTimeStamp m_timeStartTT;
+			bool                     m_disable_firmware_timestamp;
 
 			/** See the class documentation at the top for expected parameters */
 			void  loadConfig_sensorSpecific(
