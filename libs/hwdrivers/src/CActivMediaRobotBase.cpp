@@ -47,8 +47,8 @@ CActivMediaRobotBase::CActivMediaRobotBase() :
 	m_simpleConnector	(NULL),
 	m_lastTimeSonars	(0),
 	m_enableJoyControl 	(false),
-	m_joy_max_v			(0.10),
-	m_joy_max_w			(DEG2RAD(10)),
+    m_joy_max_v			(0.20),
+    m_joy_max_w			(DEG2RAD(20)),
 	m_joystick			(),
 	m_last_do_process	(INVALID_TIMESTAMP),
 	m_capture_rate		(10.0)
@@ -399,7 +399,16 @@ void CActivMediaRobotBase::doProcess()
 		{
 			float des_v = - jy * m_joy_max_v;
 			float des_w = - jx * m_joy_max_w;
-			this->setVelocities(des_v,des_w);
+
+            bool deadman_switch = false;
+            for (int i = 0; i < joy_btns.size(); ++i)
+            {
+                deadman_switch |= joy_btns[i];
+            }
+            if (deadman_switch)
+            {
+                this->setVelocities(des_v,des_w);
+            }
 
 			static int cnt = 0;
 			if (cnt++ == 100)
