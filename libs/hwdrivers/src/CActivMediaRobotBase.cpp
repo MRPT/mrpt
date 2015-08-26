@@ -388,9 +388,9 @@ void CActivMediaRobotBase::doProcess()
 	}
 
 
-	// Control with a Joystick?
+    // Control with a Joystick?
 	// ----------------------------
-	if (m_enableJoyControl)
+    if (m_enableJoyControl)
 	{
 		float jx,jy,jz;
 		vector_bool joy_btns;
@@ -401,13 +401,17 @@ void CActivMediaRobotBase::doProcess()
 			float des_w = - jx * m_joy_max_w;
 
             bool deadman_switch = false;
-            for (int i = 0; i < joy_btns.size(); ++i)
+            for (uint i = 0; i < joy_btns.size(); ++i)
             {
                 deadman_switch |= joy_btns[i];
             }
             if (deadman_switch)
             {
                 this->setVelocities(des_v,des_w);
+            }
+            else
+            {
+                this->setVelocities(0,0);
             }
 
 			static int cnt = 0;
