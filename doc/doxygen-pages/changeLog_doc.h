@@ -17,7 +17,8 @@
 	- Changes in libraries:
 		- \ref mrpt_base_grp
 			- mrpt::math::KDTreeCapable::TKDTreeSearchParams: Removed parameter nChecks, which was ignored by nanoflann anyway.
- 
+		- \ref mrpt_hwdrivers_grp
+			- mrpt::hwdrivers::CCameraSensor: Implemented OpenNI2 support for CCameraSensor
 
 <hr>
 <a name="1.3.1">
