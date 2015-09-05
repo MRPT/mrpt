@@ -19,6 +19,8 @@
 			- mrpt::math::KDTreeCapable::TKDTreeSearchParams: Removed parameter nChecks, which was ignored by nanoflann anyway.
 		- \ref mrpt_hwdrivers_grp
 			- mrpt::hwdrivers::CCameraSensor: Implemented OpenNI2 support for CCameraSensor
+		- \ref mrpt_nav_grp
+			- mrpt::nav::CAbstractPTGBasedReactive: Maximum acceleration filter (SPEEDFILTER_TAU) now follows paths better (Thanks to Steven Butner, UCSB/ECE)
 
 <hr>
 <a name="1.3.1">

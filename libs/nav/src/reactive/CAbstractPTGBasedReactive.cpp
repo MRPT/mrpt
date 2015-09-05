@@ -739,6 +739,27 @@ void CAbstractPTGBasedReactive::STEP5_PTGEvaluator(
 	}
 }
 
+void filter_max_vw(float &v, float &w, const float max_v, const float max_w)
+{
+	// Assure maximum speeds:
+	if (fabs(v) > max_v)
+	{
+		// Scale:
+		float F = fabs(max_v / v);
+		v *= F;
+		w *= F;
+	}
+
+	if (fabs(w) > max_w)
+	{
+		// Scale:
+		float F = fabs(max_w / w);
+		v *= F;
+		w *= F;
+	}
+}
+
+
 void CAbstractPTGBasedReactive::STEP7_GenerateSpeedCommands( const THolonomicMovement &in_movement)
 {
 	try
@@ -766,28 +787,23 @@ void CAbstractPTGBasedReactive::STEP7_GenerateSpeedCommands( const THolonomicMov
 			new_cmd_v*=reduction;
 			new_cmd_w*=reduction;
 
-			// Assure maximum speeds:
-			if (fabs(new_cmd_v) > robotMax_V_mps)
-			{
-				// Scale:
-				float F = fabs(robotMax_V_mps / new_cmd_v);
-				new_cmd_v *= F;
-				new_cmd_w *= F;
-			}
-
-			if (fabs(new_cmd_w) > DEG2RAD(robotMax_W_degps))
-			{
-				// Scale:
-				float F = fabs((float)DEG2RAD(robotMax_W_degps) / new_cmd_w);
-				new_cmd_v *= F;
-				new_cmd_w *= F;
-			}
+			filter_max_vw(new_cmd_v, new_cmd_w,  robotMax_V_mps,DEG2RAD(robotMax_W_degps));
 
 			//First order low-pass filter
 			float alfa = meanExecutionPeriod/( meanExecutionPeriod + SPEEDFILTER_TAU);
-			new_cmd_v = alfa*new_cmd_v + (1-alfa)*last_cmd_v;
-			new_cmd_w = alfa*new_cmd_w + (1-alfa)*last_cmd_w;
+			if(fabs(new_cmd_v)<0.01) // i.e. new behavior is nearly a pure rotation
+			{                        // thus, it's OK to blend the rotational component
+				new_cmd_w = alfa*new_cmd_w + (1-alfa)*last_cmd_w;
+			}
+			else                     // there is a non-zero translational component
+			{
+				// must maintain the ratio of w to v (while filtering v)
+				float ratio = new_cmd_w / new_cmd_v;
+				new_cmd_v = alfa*new_cmd_v + (1-alfa)*last_cmd_v;   // blend new v value
+				new_cmd_w = ratio * new_cmd_v;  // ensure new w implements expected path curvature
 
+				filter_max_vw(new_cmd_v, new_cmd_w,  robotMax_V_mps,DEG2RAD(robotMax_W_degps));
+			}
 		}
 		last_cmd_v = new_cmd_v;
 		last_cmd_w = new_cmd_w;
