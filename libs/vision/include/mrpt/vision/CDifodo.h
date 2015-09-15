@@ -35,7 +35,14 @@ namespace mrpt
 		  *    - [DifOdometry-Camera](http://www.mrpt.org/list-of-mrpt-apps/application-difodometry-camera/)
 		  *    - [DifOdometry-Datasets](http://www.mrpt.org/list-of-mrpt-apps/application-difodometry-datasets/)
 		  *
-		  *	Please refer to the respective publication when using this method: *************************
+		  *	Please refer to the respective publication when using this method: 
+		  *		title = {Fast Visual Odometry for {3-D} Range Sensors},
+		  *		author = {Jaimez, Mariano and Gonzalez-Jimenez, Javier},
+		  *		journal = {IEEE Transactions on Robotics},
+		  *		volume = {31},
+		  *		number = {4},
+		  *		pages = {809 - 822},
+		  *		year = {2015}
 		  *
 		  * - JUN/2013: First design.
 		  * - JAN/2014: Integrated into MRPT library.
