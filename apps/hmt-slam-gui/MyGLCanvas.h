@@ -19,6 +19,12 @@ using namespace mrpt::gui;
 
 #if RAWLOGVIEWER_HAS_3D
 
+// To avoid conflicts between Eigen & X11 headers
+#ifdef Success 
+#	undef Success 
+#endif
+
+
 class CMyGLCanvas : public CMyGLCanvasBase
 {
 public:

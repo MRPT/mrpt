@@ -44,6 +44,10 @@
 #	undef Button6
 #	undef Button7
 #endif
+// To avoid conflicts between Eigen & X11 headers
+#ifdef Success 
+#	undef Success 
+#endif
 
 
 class holonomic_navigator_demoFrame: public wxFrame

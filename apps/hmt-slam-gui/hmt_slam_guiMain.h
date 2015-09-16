@@ -14,7 +14,6 @@
 #include <wx/log.h>
 #include "CDlgLog.h"
 
-
 //(*Headers(hmt_slam_guiFrame)
 #include <wx/sizer.h>
 #include <wx/notebook.h>
@@ -33,17 +32,16 @@
 #include <wx/things/toggle.h>
 //*)
 
-
-
-#include <mrpt/hmtslam.h>
-
-
 // JLBC: Unix X headers have these funny things...
 #ifdef Button1
 #	undef Button1
 #	undef Button2
 #	undef Button3
 #endif
+
+
+#include <mrpt/hmtslam.h>
+
 
 class CDlgLog;
 

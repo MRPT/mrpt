@@ -57,6 +57,10 @@
 #	undef Button6
 #	undef Button7
 #endif
+// To avoid conflicts between Eigen & X11 headers
+#ifdef Success 
+#	undef Success 
+#endif
 
 
 // A list of sensor labels (and the times they appear) in the currently loaded rawlog.
