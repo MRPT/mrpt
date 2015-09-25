@@ -23,6 +23,10 @@
 #ifdef Button1
 #undef Button1
 #endif
+// To avoid conflicts between Eigen & X11 headers
+#ifdef Success 
+#	undef Success 
+#endif
 
 class CAboutBox: public wxDialog
 {

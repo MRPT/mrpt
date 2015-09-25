@@ -42,6 +42,12 @@ namespace mrpt { namespace gui { } }  // At least declare the existence of the n
 #include <wx/glcanvas.h>
 #include <wx/dcclient.h>
 
+// To avoid conflicts between Eigen & X11 headers
+#ifdef Success 
+#	undef Success 
+#endif
+
+
 namespace mrpt
 {
 	namespace gui

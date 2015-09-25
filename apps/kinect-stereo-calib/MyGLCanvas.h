@@ -17,6 +17,10 @@
 #undef Button1
 #undef Button2
 #undef Button3
+// To avoid conflicts between Eigen & X11 headers
+#ifdef Success 
+#	undef Success 
+#endif
 
 using namespace mrpt::gui;
 

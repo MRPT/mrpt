@@ -20,11 +20,8 @@
 #include <mrpt/maps/COccupancyGridMap2D.h>
 
 #include <mrpt/maps/link_pragmas.h>
-
-#if EIGEN_VERSION_AT_LEAST(3,1,0)
-// #define EIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET  // No need to for this macro in Eigen 3.1+
-#	include <Eigen/Sparse>
-#endif
+#include <Eigen/SparseCore>
+#include <Eigen/SparseCholesky>
 
 namespace mrpt
 {
