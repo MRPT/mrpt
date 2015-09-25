@@ -10,6 +10,8 @@
 
 #include "hmt_slam_guiApp.h"
 
+#include <mrpt/math/math_frwds.h>
+
 //(*AppHeaders
 #include "hmt_slam_guiMain.h"
 #include <wx/image.h>

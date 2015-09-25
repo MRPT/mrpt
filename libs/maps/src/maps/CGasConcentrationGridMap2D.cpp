@@ -8,7 +8,6 @@
    +---------------------------------------------------------------------------+ */
 
 #include "maps-precomp.h" // Precomp header
-
 #include <mrpt/maps/CGasConcentrationGridMap2D.h>
 #include <mrpt/obs/CObservationGasSensors.h>
 #include <mrpt/math/CMatrix.h>

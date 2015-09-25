@@ -41,7 +41,7 @@ CMAKE_FLAGS = \
 
 
 %:
-	dh $@ --buildsystem=cmake
+	dh $@ --buildsystem=cmake --parallel
 
 override_dh_auto_build:
 	dh_auto_build -O--buildsystem=cmake -- # -j4

@@ -8,6 +8,7 @@
    +---------------------------------------------------------------------------+ */
 
 #include "base-precomp.h"  // Precompiled headers
+#include <mrpt/utils/types_math.h>
 
 #include <mrpt/math/CHistogram.h>
 #include <mrpt/math/utils.h>
