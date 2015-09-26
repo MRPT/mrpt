@@ -20,8 +20,10 @@
 #include <mrpt/maps/COccupancyGridMap2D.h>
 
 #include <mrpt/maps/link_pragmas.h>
-#include <Eigen/SparseCore>
-#include <Eigen/SparseCholesky>
+#if EIGEN_VERSION_AT_LEAST(3,1,0) // eigen 3.1+
+	#include <Eigen/SparseCore>
+	#include <Eigen/SparseCholesky>
+#endif
 
 namespace mrpt
 {
