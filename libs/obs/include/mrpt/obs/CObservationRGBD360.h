@@ -79,7 +79,7 @@ namespace obs
 		CObservationRGBD360( );				//!< Default constructor
 		virtual ~CObservationRGBD360( ); 	//!< Destructor
 
-		static const int NUM_SENSORS = 2;
+		static const unsigned int NUM_SENSORS = 2;
 
 		mrpt::system::TTimeStamp  timestamps[NUM_SENSORS];
 
