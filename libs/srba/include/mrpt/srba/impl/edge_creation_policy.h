@@ -251,7 +251,9 @@ void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::edge_creation_poli
 } // end of RbaEngine::determine_kf2kf_edges_to_create
 
 
-/** (Aux method) Make a list of base KFs of my new observations, ordered in descending order by # of shared observations: */
+/** (Aux method) Make a list of base KFs of my new observations, ordered in descending order by # of shared observations: 
+ * Cost: O(N_obs)
+*/
 template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE,class RBA_OPTIONS>
 void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::make_ordered_list_base_kfs(
 	const typename traits_t::new_kf_observations_t & obs,

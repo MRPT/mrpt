@@ -16,11 +16,12 @@ namespace mrpt
 {
 	namespace utils
 	{
-		/** \addtogroup stlext_grp STL extensions and metaprogramming
+		/** \addtogroup stlext_grp STL extensions and metaprogramming 
 		  * \ingroup mrpt_base_grp
 		  * @{ */
 
 		/** A case-insensitive comparator struct for usage within STL containers, eg: map<string,string,ci_less>
+		  * \note Defined in #include <mrpt/utils/ci_less.h>
 		  */
 		struct ci_less : std::binary_function<std::string,std::string,bool>
 		{

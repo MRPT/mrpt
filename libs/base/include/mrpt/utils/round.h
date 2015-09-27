@@ -17,6 +17,10 @@ namespace mrpt
 {
 	namespace utils
 	{
+		/** \addtogroup mrpt_round Round functions (in #include <mrpt/utils/round.h>)
+		  *  \ingroup mrpt_base_grp
+		  * @{ */
+
 		/** Returns the closer integer (int) to x */
 		template <typename T>
 		inline int round(const T value)
@@ -72,5 +76,6 @@ namespace mrpt
 			return T(t/F);
 		}
 
+		/** @} */
 	} // End of namespace
 } // end of namespace

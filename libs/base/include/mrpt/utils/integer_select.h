@@ -15,6 +15,10 @@ namespace mrpt
 {
 	namespace utils
 	{
+		/** \addtogroup mrpt_int_select Templates to declare integers by byte count (in #include <mrpt/utils/integer_select.h>)
+		  *  \ingroup mrpt_base_grp
+		  * @{ */
+
 		/** Usage: `int_select_by_bytecount<N>::type  var;` allows defining var as a signed integer with, at least, N bytes. */
 		template<unsigned int num_bytes> struct int_select_by_bytecount;
 		template<> struct int_select_by_bytecount<1> { typedef int8_t type; };
@@ -31,5 +35,6 @@ namespace mrpt
 		template<> struct uint_select_by_bytecount<4> { typedef uint32_t type; };
 		template<> struct uint_select_by_bytecount<8> { typedef uint64_t type; };
 
+		/** @} */
 	} // End of namespace
 } // end of namespace

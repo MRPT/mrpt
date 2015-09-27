@@ -15,7 +15,7 @@ namespace mrpt
 {
 	namespace utils
 	{
-		/** \defgroup mrpt_adapters_grp Adapter (wrapper) template classes
+		/** \defgroup mrpt_adapters_grp Adapter (wrapper) template classes (in #include <mrpt/utils/adapters.h>)
 			\addtogroup mrpt_base_grp
 		*/
 

@@ -15,12 +15,16 @@ namespace mrpt
 {
 	namespace utils
 	{
+		/** \addtogroup mrpt_md5 MD5 functions (in #include <mrpt/utils/md5.h>)
+		  *  \ingroup mrpt_base_grp
+		  * @{ */
 		/** Computes the md5 of a block of data. */
 		std::string BASE_IMPEXP md5(const std::string &str);
 		/** Computes the md5 of a block of data. */
 		std::string BASE_IMPEXP md5(const mrpt::vector_byte &str);
 		/** Computes the md5 of a block of data. */
 		std::string BASE_IMPEXP md5(const unsigned char * data, const size_t len);
+		/** @} */
 	}
 }
 

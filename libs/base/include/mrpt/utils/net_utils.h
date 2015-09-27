@@ -17,7 +17,7 @@ namespace mrpt
 {
 	namespace utils
 	{
-		/** A set of useful routines for networking.
+		/** A set of useful routines for networking. (in #include <mrpt/utils/net_utils.h>)
 		  * \ingroup network_grp
 		  */
 		namespace net

@@ -17,7 +17,8 @@ namespace mrpt
 	namespace utils
 	{
 		/** A circular buffer of fixed size (defined at construction-time), implemented with a std::vector as the underlying storage.
-		 * \ingroup stlext_grp
+		 * \ingroup stlext_grp 
+		  * \note Defined in #include <mrpt/utils/circular_buffer.h>
 		  */
 		template <typename T>
 		class circular_buffer

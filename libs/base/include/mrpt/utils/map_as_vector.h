@@ -36,6 +36,7 @@ namespace mrpt
 		  * The default underlying non-associative container is a "memory-aligned std::vector<>", but it can be changed to a
 		  *  standard vector<> or to a deque<> (to avoid memory reallocations) by changing the template parameter \a VECTOR_T.
 		  *
+		  * \note Defined in #include <mrpt/utils/map_as_vector.h>
 		  * \ingroup stlext_grp
 		  */
 		template <

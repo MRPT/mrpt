@@ -16,6 +16,10 @@ namespace mrpt
 {
 	namespace utils
 	{
+		/** \addtogroup mrpt_exceptions Exception base classes (in #include <mrpt/utils/exceptions.h>)
+		  *  \ingroup mrpt_base_grp
+		  * @{ */
+
 		/** The base for MRPT-especific exceptions \ingroup mrpt_base_grp */
 		class CMRPTException: public std::logic_error
 		{
@@ -37,6 +41,7 @@ namespace mrpt
 			CExceptionEOF(const std::string &s) : CMRPTException(s) {  }
 		};
 
+		/** @} */
 	} // End of namespace
 } // End of namespace
 #endif

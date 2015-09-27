@@ -20,7 +20,7 @@ namespace Eigen { template<class T> class aligned_allocator; }
 
 namespace mrpt
 {
-	/** Helper types for STL containers with Eigen memory allocators. */
+	/** Helper types for STL containers with Eigen memory allocators.  (in #include <mrpt/utils/aligned_containers.h>)  */
 	template <class TYPE1,class TYPE2=TYPE1>
 	struct aligned_containers
 	{

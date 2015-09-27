@@ -15,6 +15,10 @@ namespace mrpt
 {
 	namespace utils
 	{
+		/** \addtogroup mrpt_crc CRC functions (in #include <mrpt/utils/crc.h>)
+		  *  \ingroup mrpt_base_grp
+		  * @{ */
+
 		/** Computes the CRC16 checksum of a block of data.  */
 		uint16_t BASE_IMPEXP compute_CRC16( 
 			const std::vector<uint8_t> &data, 
@@ -25,8 +29,7 @@ namespace mrpt
 			const uint8_t *data, 
 			const size_t  len,
 			const uint16_t gen_pol = 0x8005 );
-
-
+		/** @} */
 	}
 }
 

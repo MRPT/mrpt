@@ -21,6 +21,7 @@ namespace mrpt
 		  *
 		  * \note This class can be accessed through iterators to the map KEY->VALUE only.
 		  * \note Both typenames KEY and VALUE must be suitable for being employed as keys in a std::map, i.e. they must be comparable through a "< operator".
+		  * \note Defined in #include <mrpt/utils/bimap.h>
 		  * \ingroup stlext_grp
 		  */
 		template <typename KEY,typename VALUE>

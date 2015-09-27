@@ -27,7 +27,7 @@ namespace mrpt
 	 */
 	namespace system
 	{
-		/** \defgroup mrpt_system_os OS and compiler abstraction
+		/** \defgroup mrpt_system_os OS and compiler abstraction (in #include <mrpt/system/os.h>)
 		  * \ingroup mrpt_base_grp */
 
 		/** This namespace provides a OS-independent interface to low-level functions.

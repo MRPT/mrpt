@@ -123,10 +123,7 @@ namespace mrpt
 			std::string *outErrStr = NULL,
 			bool copyAttribs = true );
 
-
 		/** @} */
-
-
 	} // End of namespace
 
 } // End of namespace
