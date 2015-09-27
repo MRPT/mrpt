@@ -38,7 +38,7 @@ typedef RbaEngine<
 	my_srba_t;
 
 // --------------------------------------------------------------------------------
-// A test dataset (generated with http://code.google.com/p/recursive-world-toolkit/ )
+// A test dataset (generated with https://github.com/jlblancoc/recursive-world-toolkit )
 // --------------------------------------------------------------------------------
 struct basic_stereo_dataset_entry_t
 {

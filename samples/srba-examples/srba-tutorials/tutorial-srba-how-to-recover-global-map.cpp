@@ -40,7 +40,7 @@ typedef RbaEngine<
 	my_srba_t;
 
 // --------------------------------------------------------------------------------
-// A test dataset (generated with http://code.google.com/p/recursive-world-toolkit/ )
+// A test dataset (generated with https://github.com/jlblancoc/recursive-world-toolkit )
 // --------------------------------------------------------------------------------
 const double STD_NOISE_XYZ = 0.05;
 const double STD_NOISE_ANGLES = mrpt::utils::DEG2RAD(1.0);

@@ -36,7 +36,7 @@ typedef RbaEngine<
 	my_srba_t;
 
 // --------------------------------------------------------------------------------
-// A test dataset. Generated with http://code.google.com/p/recursive-world-toolkit/ 
+// A test dataset. Generated with https://github.com/jlblancoc/recursive-world-toolkit 
 //  and the script: tutorials_dataset-range-bearing-3d.cfg
 // --------------------------------------------------------------------------------
 const double SENSOR_NOISE_STD = 1e-4;

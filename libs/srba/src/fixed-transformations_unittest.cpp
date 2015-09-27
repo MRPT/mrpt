@@ -29,7 +29,7 @@ typedef RbaEngine<
 	my_srba_t;
 
 // --------------------------------------------------------------------------------
-// A test dataset. Generated with http://code.google.com/p/recursive-world-toolkit/ 
+// A test dataset. Generated with https://github.com/jlblancoc/recursive-world-toolkit 
 //  and the script: tutorials_dataset-cartesian.cfg
 // --------------------------------------------------------------------------------
 struct basic_euclidean_dataset_entry_t 
