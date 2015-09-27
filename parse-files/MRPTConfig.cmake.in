@@ -10,7 +10,7 @@
 #     or
 #    FIND_PACKAGE( MRPT REQUIRED base vision hwdrivers ... )
 #
-#    TARGET_LINK_LIBRARIES(MY_TARGET_NAME ${MRPT_LIBS})
+#    TARGET_LINK_LIBRARIES(MY_TARGET_NAME ${MRPT_LIBRARIES})
 #
 #   
 #   The libraries or "modules" which can be included are
@@ -22,10 +22,11 @@
 #     - hmtslam        --> libmrpt-hmtslam
 #
 #   This file will define the following variables:
-#    - MRPT_LIBS: The list of libraries to links against.
-#    - MRPT_INCLUDE_DIRS: The list of include directories
-#    - MRTP_LINK_DIRECTORIES: The list of link directories
-#    - MRPT_VERSION: The MRPT version (e.g. "1.0.0"). 
+#    - MRPT_LIBRARIES        : The list of libraries to links against.
+#    - MRPT_LIBS             : Like MRPT_LIBRARIES, for backward compat.
+#    - MRPT_INCLUDE_DIRS     : The list of include directories
+#    - MRTP_LINK_DIRECTORIES : The list of link directories
+#    - MRPT_VERSION          : The MRPT version (e.g. "1.0.0"). 
 #    - MRPT_VERSION_{MAJOR,MINOR,PATCH}: 3 variables for the version parts
 #
 #   Optional input variables:
@@ -163,7 +164,7 @@ ENDFOREACH(MRPTLIB)
 # ======================================================
 #   MRPT list of libraries the user should link against:
 # ======================================================
-SET(MRPT_LIBS "@MRPT_LINKER_LIBS@")
+SET(MRPT_LIBRARIES "@MRPT_LINKER_LIBS@")
 
 SET(MRPT_COMP_HWDRIVERS 0  INTERNAL)
 # Process the list:
@@ -181,9 +182,9 @@ FOREACH(MRPTLIB ${MRPT_FIND_COMPONENTS})
 		get_property(_LIB_HDRONLY GLOBAL PROPERTY "mrpt-${MRPTLIB}_LIB_IS_HEADERS_ONLY")
 		IF(NOT _LIB_HDRONLY)
 			IF(NOT MRPT_DONT_USE_DBG_LIBS)
-				LIST(APPEND MRPT_LIBS  optimized mrpt-${MRPTLIB}@MRPT_DLL_VERSION_POSTFIX@ debug mrpt-${MRPTLIB}@MRPT_DLL_VERSION_POSTFIX@-dbg)
+				LIST(APPEND MRPT_LIBRARIES  optimized mrpt-${MRPTLIB}@MRPT_DLL_VERSION_POSTFIX@ debug mrpt-${MRPTLIB}@MRPT_DLL_VERSION_POSTFIX@-dbg)
 			ELSE(NOT MRPT_DONT_USE_DBG_LIBS)
-				LIST(APPEND MRPT_LIBS  mrpt-${MRPTLIB}@MRPT_DLL_VERSION_POSTFIX@)
+				LIST(APPEND MRPT_LIBRARIES  mrpt-${MRPTLIB}@MRPT_DLL_VERSION_POSTFIX@)
 			ENDIF(NOT MRPT_DONT_USE_DBG_LIBS)
 		ENDIF(NOT _LIB_HDRONLY)
 	ENDIF(NOT MSVC AND NOT BORLAND)
@@ -198,7 +199,7 @@ ENDFOREACH(MRPTLIB)
 IF(MRPT_COMP_HWDRIVERS AND NOT @CMAKE_MRPT_BUILD_SHARED_LIB_ONOFF@)
 	IF(@MRPT_HAS_FFMPEG_WIN32@ MATCHES "ON")  # MRPT_HAS_FFMPEG_WIN32
 		FOREACH(FFMPGLIB "@MRPT_FFMPEG_LIBS_TO_LINK@")
-			LIST(APPEND MRPT_LIBS general "${FFMPGLIB}")
+			LIST(APPEND MRPT_LIBRARIES general "${FFMPGLIB}")
 		ENDFOREACH(FFMPGLIB)
 	ENDIF(@MRPT_HAS_FFMPEG_WIN32@ MATCHES "ON")
 ENDIF(MRPT_COMP_HWDRIVERS AND NOT @CMAKE_MRPT_BUILD_SHARED_LIB_ONOFF@)
@@ -228,7 +229,7 @@ IF(@CMAKE_MRPT_HAS_WXWIDGETS@ AND NOT @CMAKE_MRPT_BUILD_SHARED_LIB_ONOFF@)  # CM
 			ADD_DEFINITIONS(-DwxUSE_NO_MANIFEST=1)
 		ENDIF(MSVC)
 
-		LIST(APPEND MRPT_LIBS ${wxWidgets_LIBRARIES})
+		LIST(APPEND MRPT_LIBRARIES ${wxWidgets_LIBRARIES})
 		IF(MSVC)
 			ADD_DEFINITIONS(-D_CRT_SECURE_NO_WARNINGS)
 		ENDIF(MSVC)
@@ -254,3 +255,5 @@ ENDIF(WIN32 AND NOT @CMAKE_MRPT_BUILD_SHARED_LIB_ONOFF@)
 # ======================================================
 LINK_DIRECTORIES(${MRPT_DIR}/lib)
 LIST(APPEND MRPT_LINK_DIRECTORIES ${MRPT_DIR}/lib)
+
+SET(MRPT_LIBS ${MRPT_LIBRARIES}) # For backward compatible code

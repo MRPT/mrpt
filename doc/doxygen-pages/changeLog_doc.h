@@ -21,6 +21,8 @@
 			- mrpt::hwdrivers::CCameraSensor: Implemented OpenNI2 support for CCameraSensor
 		- \ref mrpt_nav_grp
 			- mrpt::nav::CAbstractPTGBasedReactive: Maximum acceleration filter (SPEEDFILTER_TAU) now follows paths better (Thanks to Steven Butner, UCSB/ECE)
+	- Changes in build system:
+		- `FIND_PACKAGE(MRPT)` will return libraries in the var `MRPT_LIBRARIES`, following the CMake convention. The old variable name `MRPT_LIBS` will be also returned for backward compatibility.
 
 <hr>
 <a name="1.3.1">
