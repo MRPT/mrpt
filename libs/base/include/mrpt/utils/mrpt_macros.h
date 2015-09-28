@@ -241,7 +241,8 @@
 		}
 	}
 	#define MRPT_COMPILE_TIME_ASSERT(expression) \
-			typedef char BOOST_JOIN(MRPT_CTA, __LINE__)[::mrpt::utils::compile_time_assert<(bool)(expression)>::value];
+			typedef char BOOST_JOIN(MRPT_CTA, __LINE__)[::mrpt::utils::compile_time_assert<(bool)(expression)>::value]; extern BOOST_JOIN(MRPT_CTA, __LINE__) BOOST_JOIN(MRPT_DUMMYVAR_CTA, __LINE__);
+
 #endif
 
 	/** Assert comparing two values, reporting their actual values upon failure */
