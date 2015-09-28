@@ -22,16 +22,10 @@
 
 #include <mrpt/utils/traits_map.h>
 #include <mrpt/utils/stl_serialization.h>
+#include <mrpt/poses/poses_frwds.h>
 
 namespace mrpt
 {
-	// Fwd decls:
-	namespace poses {
-		class CPose2D; class CPose3D;
-		class CPosePDFGaussian;  class CPose3DPDFGaussian;
-		class CPosePDFGaussianInf; class CPose3DPDFGaussianInf;
-	}
-
 	namespace graphs
 	{
 		/** Internal functions for MRPT */

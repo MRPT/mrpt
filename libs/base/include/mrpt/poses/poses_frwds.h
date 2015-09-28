@@ -28,9 +28,11 @@ namespace mrpt
 		class CPose3DQuatPDF; struct CPose3DQuatPDFPtr;
 		class CPosePDFParticles; struct CPosePDFParticlesPtr;
 		class CPosePDFGaussian; struct CPosePDFGaussianPtr;
+		class CPosePDFGaussianInf; struct CPosePDFGaussianInfPtr;
 		class CPosePDFSOG; struct CPosePDFSOGPtr;
 		class CPose3DPDF; struct CPose3DPDFPtr;
 		class CPose3DPDFGaussian; struct CPose3DPDFGaussianPtr;
+		class CPose3DPDFGaussianInf; struct CPose3DPDFGaussianInfPtr;
 
 	}
 } 
