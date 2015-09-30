@@ -17,6 +17,7 @@
 #include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/graphs/CNetworkOfPoses.h>
+#include <mrpt/system/os.h>
 
 #include "srba_types.h"
 #include "srba_options.h"
