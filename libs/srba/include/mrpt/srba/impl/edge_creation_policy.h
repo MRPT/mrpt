@@ -49,166 +49,154 @@ void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::edge_creation_poli
 			const size_t SUBMAP_SIZE = parameters.srba.submap_size; // In # of KFs
 			const TKeyFrameID cur_localmap_center = SUBMAP_SIZE*((new_kf_id-1)/SUBMAP_SIZE);
 
-			// For normal KFs, just connect it to its local area central KF:
-			if (0!=(new_kf_id)%SUBMAP_SIZE)
+			// Go thru all observations and for those already-seen LMs, check the distance between their base KFs and (i_id):
+			// Make a list of base KFs of my new observations, ordered in descending order by # of shared observations:
+			base_sorted_lst_t         obs_for_each_base_sorted;
+			make_ordered_list_base_kfs(obs, obs_for_each_base_sorted);
+
+			// Make vote list for each central KF:
+			map<TKeyFrameID,size_t>  obs_for_each_area;
+			for (base_sorted_lst_t::const_iterator it=obs_for_each_base_sorted.begin();it!=obs_for_each_base_sorted.end();++it)
 			{
-				TNewEdgeInfo nei;
-				nei.has_aprox_init_val = false; // Filled in below
+				const size_t      num_obs_this_base = it->first;
+				const TKeyFrameID base_id = it->second;
 
-				nei.id = this->create_kf2kf_edge(new_kf_id, TPairKeyFrameID( cur_localmap_center, new_kf_id), obs );
+				const TKeyFrameID this_localmap_center = SUBMAP_SIZE*(base_id/SUBMAP_SIZE);
 
-				if (0==((new_kf_id-1)%SUBMAP_SIZE))
+				obs_for_each_area[this_localmap_center] += num_obs_this_base;
+			}
+
+			// Sort by votes:
+			base_sorted_lst_t   obs_for_each_area_sorted;
+			for (map<TKeyFrameID,size_t>::const_iterator it=obs_for_each_area.begin();it!=obs_for_each_area.end();++it)
+				obs_for_each_area_sorted.insert( make_pair(it->second,it->first) );
+
+			// Go thru candidate areas:
+			for (base_sorted_lst_t::const_iterator it=obs_for_each_area_sorted.begin();it!=obs_for_each_area_sorted.end();++it)
+			{
+				const size_t      num_obs_this_base = it->first;
+				const TKeyFrameID central_kf_id = it->second;
+				const bool        is_strongest_connected_edge =  (it==obs_for_each_area_sorted.begin()); // Is this the first one?
+
+				VERBOSE_LEVEL(2) << "[edge_creation_policy] Consider: area central kf#"<< central_kf_id << " with #obs:"<< num_obs_this_base << endl;
+
+				// Create edges to all these central KFs if they're too far:
+
+				// Find the distance between "central_kf_id" <=> "new_kf_id"
+				const TKeyFrameID from_id = new_kf_id;
+				const TKeyFrameID to_id   = central_kf_id;
+
+				typename rba_problem_state_t::TSpanningTree::next_edge_maps_t::const_iterator it_from = rba_state.spanning_tree.sym.next_edge.find(from_id);
+
+				topo_dist_t  found_distance = numeric_limits<topo_dist_t>::max();
+
+				if (it_from != rba_state.spanning_tree.sym.next_edge.end())
 				{
-					// This is the first KF after a new center, so if we add an edge to it we must be very close:
+					const map<TKeyFrameID,TSpanTreeEntry> &from_Ds = it_from->second;
+					map<TKeyFrameID,TSpanTreeEntry>::const_iterator it_to_dist = from_Ds.find(to_id);
 
-					this->rba_state.k2k_edges[nei.id]
-#ifdef SRBA_WORKAROUND_MSVC9_DEQUE_BUG
-					->
-#else
-					.
-#endif
-					inv_pose = pose_t();
+					if (it_to_dist != from_Ds.end())
+						found_distance = it_to_dist->second.distance;
 				}
 				else
-				if (nei.id>=1)
 				{
-					// Idea: the new KF should be close to the last one.
-#ifdef SRBA_WORKAROUND_MSVC9_DEQUE_BUG
-					this->rba_state.k2k_edges[nei.id]->inv_pose = this->rba_state.k2k_edges[nei.id-1]->inv_pose;
-#else
-					this->rba_state.k2k_edges[nei.id].inv_pose = this->rba_state.k2k_edges[nei.id-1].inv_pose;
-#endif
+					// The new KF doesn't still have any edge created to it, that's why we didn't found any spanning tree for it.
+					// Since this means that the KF is aisolated from the rest of the world, leave the topological distance to infinity.
 				}
 
-				new_k2k_edge_ids.push_back(nei);
-
-				VERBOSE_LEVEL(2) << "[edge_creation_policy] Created edge #"<< nei.id << ": "<< cur_localmap_center<<"->"<< new_kf_id << endl;
-			}
-			else
-			{
-				// Only for "submap centers", so we force the edges from the rest to the center to be optimizable, since
-				//  many obs from different areas become dependent on those edges
-
-				// Go thru all observations and for those already-seen LMs, check the distance between their base KFs and (i_id):
-				// Make a list of base KFs of my new observations, ordered in descending order by # of shared observations:
-				base_sorted_lst_t         obs_for_each_base_sorted;
-				make_ordered_list_base_kfs(obs, obs_for_each_base_sorted);
-
-				// Make vote list for each central KF:
-				map<TKeyFrameID,size_t>  obs_for_each_area;
-				for (base_sorted_lst_t::const_iterator it=obs_for_each_base_sorted.begin();it!=obs_for_each_base_sorted.end();++it)
+				if ( found_distance>=parameters.srba.max_optimize_depth)
 				{
-					const size_t      num_obs_this_base = it->first;
-					const TKeyFrameID base_id = it->second;
+					// Skip if there is already a topo connection between the two areas:
+					const std::pair<TKeyFrameID,TKeyFrameID> c2c_pair = make_pair( std::min(central_kf_id,cur_localmap_center), std::max(central_kf_id,cur_localmap_center) );
+					const bool already_connected = 
+						(is_strongest_connected_edge ? false : true) 
+						&& 
+						parameters.srba.central2central_connected_areas.find(c2c_pair)!=parameters.srba.central2central_connected_areas.end();
 
-					const TKeyFrameID this_localmap_center = SUBMAP_SIZE*(base_id/SUBMAP_SIZE);
-
-					obs_for_each_area[this_localmap_center] += num_obs_this_base;
-				}
-
-				// Sort by votes:
-				base_sorted_lst_t   obs_for_each_area_sorted;
-				for (map<TKeyFrameID,size_t>::const_iterator it=obs_for_each_area.begin();it!=obs_for_each_area.end();++it)
-					obs_for_each_area_sorted.insert( make_pair(it->second,it->first) );
-
-				// Go thru candidate areas:
-				for (base_sorted_lst_t::const_iterator it=obs_for_each_area_sorted.begin();it!=obs_for_each_area_sorted.end();++it)
-				{
-					const size_t      num_obs_this_base = it->first;
-					const TKeyFrameID central_kf_id = it->second;
-
-					VERBOSE_LEVEL(2) << "[edge_creation_policy] Consider: area central kf#"<< central_kf_id << " with #obs:"<< num_obs_this_base << endl;
-
-					// Create edges to all these central KFs if they're too far:
-
-					// Find the distance between "central_kf_id" <=> "new_kf_id"
-					const TKeyFrameID from_id = new_kf_id;
-					const TKeyFrameID to_id   = central_kf_id;
-
-					typename rba_problem_state_t::TSpanningTree::next_edge_maps_t::const_iterator it_from = rba_state.spanning_tree.sym.next_edge.find(from_id);
-
-					topo_dist_t  found_distance = numeric_limits<topo_dist_t>::max();
-
-					if (it_from != rba_state.spanning_tree.sym.next_edge.end())
+					if (num_obs_this_base>=MINIMUM_OBS_TO_LOOP_CLOSURE && !already_connected)
 					{
-						const map<TKeyFrameID,TSpanTreeEntry> &from_Ds = it_from->second;
-						map<TKeyFrameID,TSpanTreeEntry>::const_iterator it_to_dist = from_Ds.find(to_id);
+						// The KF is TOO FAR: We will need to create an additional edge:
+						TNewEdgeInfo nei;
 
-						if (it_to_dist != from_Ds.end())
-							found_distance = it_to_dist->second.distance;
-					}
-					else
-					{
-						// The new KF doesn't still have any edge created to it, that's why we didn't found any spanning tree for it.
-						// Since this means that the KF is aisolated from the rest of the world, leave the topological distance to infinity.
-					}
+						nei.id = this->create_kf2kf_edge(new_kf_id, TPairKeyFrameID( central_kf_id, new_kf_id), obs);
 
-					if ( found_distance>=parameters.srba.max_optimize_depth)
-					{
-						if (num_obs_this_base>=MINIMUM_OBS_TO_LOOP_CLOSURE)
+						// look at last kf's kf2kf edges for an initial guess to ease optimization:
+						std::set<size_t>::const_iterator it_lkf_ed = parameters.srba.last_kf_kf2kf_edges.find(central_kf_id);
+						if ( it_lkf_ed != parameters.srba.last_kf_kf2kf_edges.end() )
 						{
-							// The KF is TOO FAR: We will need to create an additional edge:
-							TNewEdgeInfo nei;
-
-							nei.id = this->create_kf2kf_edge(new_kf_id, TPairKeyFrameID( central_kf_id, new_kf_id), obs);
-							nei.has_aprox_init_val = false; // Will need to estimate this one
-
+							nei.has_aprox_init_val = true;
 #ifdef SRBA_WORKAROUND_MSVC9_DEQUE_BUG
-							this->rba_state.k2k_edges[nei.id]->inv_pose = this->rba_state.k2k_edges[nei.id-1]->inv_pose;
+							this->rba_state.k2k_edges[nei.id]->inv_pose = this->rba_state.k2k_edges[*it_lkf_ed]->inv_pose;
 #else
-							this->rba_state.k2k_edges[nei.id].inv_pose = this->rba_state.k2k_edges[nei.id-1].inv_pose;
+							this->rba_state.k2k_edges[nei.id].inv_pose = this->rba_state.k2k_edges[*it_lkf_ed].inv_pose;
 #endif
-							new_k2k_edge_ids.push_back(nei);
-
-							VERBOSE_LEVEL(2) << "[edge_creation_policy] Created extra edge #"<< nei.id << ": "<< central_kf_id <<"->"<<new_kf_id << " with #obs: "<< num_obs_this_base<< endl;
 						}
 						else
 						{
-							VERBOSE_LEVEL(1) << "[edge_creation_policy] Skipped extra edge " << central_kf_id <<"->"<<new_kf_id << " with #obs: "<< num_obs_this_base << " for too few shared obs!" << endl;
-						}
-					}
-				}
-
-				// At least we must create 1 edge!
-				if (new_k2k_edge_ids.empty())
-				{
-					// Try linking to a "non-central" KF but at least having the min. # of desired shared observations:
-					if (!obs_for_each_base_sorted.empty())
-					{
-						const size_t     most_connected_nObs  = obs_for_each_base_sorted.begin()->first;
-						const TKeyFrameID most_connected_kf_id = obs_for_each_base_sorted.begin()->second;
-						if (most_connected_nObs>=MINIMUM_OBS_TO_LOOP_CLOSURE)
-						{
-							TNewEdgeInfo nei;
-
-							nei.id = this->create_kf2kf_edge(new_kf_id, TPairKeyFrameID( most_connected_kf_id, new_kf_id), obs);
+						// Otherwise: estimate
+							MRPT_TODO("Important: provide a mech to estimate init rel poses on loop closures for each sensor impl");
 							nei.has_aprox_init_val = false; // Will need to estimate this one
-							new_k2k_edge_ids.push_back(nei);
-
-							VERBOSE_LEVEL(0) << "[edge_creation_policy] Created edge of last resort #"<< nei.id << ": "<< most_connected_kf_id <<"->"<<new_kf_id << " with #obs: "<< most_connected_nObs<< endl;
 						}
+
+						new_k2k_edge_ids.push_back(nei);
+						parameters.srba.central2central_connected_areas.insert(c2c_pair);
+
+						mrpt::system::setConsoleColor(mrpt::system::CONCOL_BLUE);
+						VERBOSE_LEVEL(2) << "[edge_creation_policy] Created edge #"<< nei.id << ": "<< central_kf_id <<"->"<<new_kf_id << " with #obs: "<< num_obs_this_base<< endl;
+						mrpt::system::setConsoleColor(mrpt::system::CONCOL_NORMAL);
 					}
-				}
-
-				// Recheck: if even with the last attempt we don't have any edge, it's bad:
-				ASSERTMSG_(new_k2k_edge_ids.size()>=1, mrpt::format("Error for new KF#%u: no suitable linking KF found with a minimum of %u common observation: the node becomes isolated of the graph!", static_cast<unsigned int>(new_kf_id),static_cast<unsigned int>(MINIMUM_OBS_TO_LOOP_CLOSURE) ))
-
-				// Debug:
-				if (new_k2k_edge_ids.size()>1 && m_verbose_level>=1)
-				{
-					cout << "\n[edge_creation_policy] Loop closure detected for KF#"<< new_kf_id << ", edges: ";
-					for (size_t j=0;j<new_k2k_edge_ids.size();j++)
+					else
 					{
-#ifdef SRBA_WORKAROUND_MSVC9_DEQUE_BUG
-						cout << rba_state.k2k_edges[new_k2k_edge_ids[j].id]->from <<"->"<<rba_state.k2k_edges[new_k2k_edge_ids[j].id]->to<<", ";
-#else
-						cout << rba_state.k2k_edges[new_k2k_edge_ids[j].id].from <<"->"<<rba_state.k2k_edges[new_k2k_edge_ids[j].id].to<<", ";
-#endif
+						VERBOSE_LEVEL(1) << "[edge_creation_policy] Skipped extra edge " << central_kf_id <<"->"<<new_kf_id << " with #obs: "<< num_obs_this_base << " and already_connected="<< (already_connected?"TRUE":"FALSE") << endl;
 					}
-					cout << endl;
 				}
+			}
 
-			} // for each obs.
+			// At least we must create 1 edge!
+			if (new_k2k_edge_ids.empty())
+			{
+				// Try linking to a "non-central" KF but at least having the min. # of desired shared observations:
+				if (!obs_for_each_base_sorted.empty())
+				{
+					const size_t     most_connected_nObs  = obs_for_each_base_sorted.begin()->first;
+					const TKeyFrameID most_connected_kf_id = obs_for_each_base_sorted.begin()->second;
+					if (most_connected_nObs>=MINIMUM_OBS_TO_LOOP_CLOSURE)
+					{
+						TNewEdgeInfo nei;
+
+						nei.id = this->create_kf2kf_edge(new_kf_id, TPairKeyFrameID( most_connected_kf_id, new_kf_id), obs);
+						nei.has_aprox_init_val = false; // Will need to estimate this one
+						new_k2k_edge_ids.push_back(nei);
+
+						VERBOSE_LEVEL(0) << "[edge_creation_policy] Created edge of last resort #"<< nei.id << ": "<< most_connected_kf_id <<"->"<<new_kf_id << " with #obs: "<< most_connected_nObs<< endl;
+					}
+				}
+			}
+
+			// Recheck: if even with the last attempt we don't have any edge, it's bad:
+			ASSERTMSG_(new_k2k_edge_ids.size()>=1, mrpt::format("Error for new KF#%u: no suitable linking KF found with a minimum of %u common observation: the node becomes isolated of the graph!", static_cast<unsigned int>(new_kf_id),static_cast<unsigned int>(MINIMUM_OBS_TO_LOOP_CLOSURE) ))
+
+			// save for the next timestep:
+			parameters.srba.last_kf_kf2kf_edges.clear();
+			for (size_t i=0;i<new_k2k_edge_ids.size();i++)
+				parameters.srba.last_kf_kf2kf_edges.insert( new_k2k_edge_ids[i].id );
+
+			// Debug:
+			if (new_k2k_edge_ids.size()>1 && m_verbose_level>=1)
+			{
+				mrpt::system::setConsoleColor(mrpt::system::CONCOL_BLUE);
+				cout << "\n[edge_creation_policy] Loop closure detected for KF#"<< new_kf_id << ", edges: ";
+				for (size_t j=0;j<new_k2k_edge_ids.size();j++)
+				{
+#ifdef SRBA_WORKAROUND_MSVC9_DEQUE_BUG
+					cout << rba_state.k2k_edges[new_k2k_edge_ids[j].id]->from <<"->"<<rba_state.k2k_edges[new_k2k_edge_ids[j].id]->to<<", ";
+#else
+					cout << rba_state.k2k_edges[new_k2k_edge_ids[j].id].from <<"->"<<rba_state.k2k_edges[new_k2k_edge_ids[j].id].to<<", ";
+#endif
+				}
+				cout << endl;
+				mrpt::system::setConsoleColor(mrpt::system::CONCOL_NORMAL);
+			}
 
 		}
 		break;

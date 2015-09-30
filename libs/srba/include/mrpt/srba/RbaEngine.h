@@ -389,6 +389,11 @@ namespace srba
 
 			size_t              submap_size;
 			size_t              min_obs_to_loop_closure; //!< Default:6, reduce to 1 for relative graph-slam
+
+			MRPT_TODO("refactor these vars")
+			std::set<std::pair<TKeyFrameID,TKeyFrameID> > central2central_connected_areas; // 1st the lowest id, to avoid duplicates
+			std::set<size_t> last_kf_kf2kf_edges;
+
 			// -------------------------------------------------------
 
 			// Parameters for optimize_*()

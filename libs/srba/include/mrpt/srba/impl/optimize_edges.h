@@ -114,7 +114,12 @@ void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 
 	const size_t idx_start_f = POSE_DIMS*nUnknowns_k2k; // In the vector of unknowns, the 0-based first index of the first feature variable (before that, all are SE(3) edges)
 	const size_t nUnknowns_scalars = POSE_DIMS*nUnknowns_k2k + LM_DIMS*nUnknowns_k2f;
-	ASSERT_(nUnknowns_scalars>=1)
+	if (!nUnknowns_scalars)
+	{
+		std::cerr << "[RbaEngine::optimize_edges] *Warning*: Skipping optimization since no observation depends on any of the given variables.\n";
+		out_info = TOptimizeExtraOutputInfo();
+		return;
+	}
 
 	// k2k edges:
 	std::vector<typename TSparseBlocksJacobians_dh_dAp::col_t*>  dh_dAp(nUnknowns_k2k);
@@ -315,8 +320,11 @@ void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 	nInvalidJacobs += sparse_hessian_update_numeric(HApf);
 	DETAILED_PROFILING_LEAVE("opt.sparse_hessian_update_numeric")
 
-	if (nInvalidJacobs)
+	if (nInvalidJacobs) {
+		mrpt::system::setConsoleColor(mrpt::system::CONCOL_RED);
 		VERBOSE_LEVEL(1) << "[OPT] " << nInvalidJacobs << " Jacobian blocks ignored for 'invalid'.\n";
+		mrpt::system::setConsoleColor(mrpt::system::CONCOL_NORMAL);
+	}
 
 	VERBOSE_LEVEL(2) << "[OPT] Individual Jacobs: " << count_jacobians << " #k2k_edges=" << nUnknowns_k2k << " #k2f_edges=" << nUnknowns_k2f << " #obs=" << nObs << std::endl;
 	VERBOSE_LEVEL(2) << "[OPT] k2k_edges to optimize: " << mrpt::system::sprintf_container("% u",run_k2k_edges) << std::endl;
