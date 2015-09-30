@@ -125,11 +125,15 @@ void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::edge_creation_poli
 						if ( it_lkf_ed != parameters.srba.last_kf_kf2kf_edges.end() )
 						{
 							nei.has_aprox_init_val = true;
+							// Get the relative post from the numeric spanning tree, which should be up-to-date:
 #ifdef SRBA_WORKAROUND_MSVC9_DEQUE_BUG
-							this->rba_state.k2k_edges[nei.id]->inv_pose = this->rba_state.k2k_edges[*it_lkf_ed]->inv_pose;
+							this->rba_state.k2k_edges[nei.id]->inv_pose
 #else
-							this->rba_state.k2k_edges[nei.id].inv_pose = this->rba_state.k2k_edges[*it_lkf_ed].inv_pose;
+							this->rba_state.k2k_edges[nei.id].inv_pose //this->rba_state.k2k_edges[*it_lkf_ed].inv_pose;
 #endif
+								= 
+							this->rba_state.spanning_tree.num[central_kf_id][nei.id-1].pose;
+							MRPT_TODO("check missing entry");
 						}
 						else
 						{
