@@ -145,7 +145,6 @@ int main(int argc, char **argv)
 		register_tests_feature_matching();
 		register_tests_graph();
 		register_tests_graphslam();
-		register_tests_srba();
 
 
 		if (doLog)

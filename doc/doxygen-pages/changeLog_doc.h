@@ -15,6 +15,7 @@
 <a name="1.3.2">
   <h2>Version 1.3.2: (Under development) </h2></a>
 	- Changes in libraries:
+		- The library mrpt-srba has been moved out of MRPT and now is an independent project: https://github.com/MRPT/srba
 		- \ref mrpt_base_grp
 			- mrpt::math::KDTreeCapable::TKDTreeSearchParams: Removed parameter nChecks, which was ignored by nanoflann anyway.
 		- \ref mrpt_hwdrivers_grp

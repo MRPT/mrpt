@@ -95,12 +95,6 @@ IF(LATEXMK_PROGRAM)
 	# The main (empty) target:
 	add_custom_target(documentation_psgz_guides)
 
-	add_custom_target(documentation_srba-guide
-		COMMAND 		make -C ${MRPT_SOURCE_DIR}/doc/srba-guide/ srba-guide.ps.gz
-		COMMENT 		"Generating srba-guide (ps.gz)"
-		)
-	add_dependencies(documentation_psgz_guides documentation_srba-guide)
-
 	add_custom_target(documentation_pbmap-guide
 		COMMAND 		make -C ${MRPT_SOURCE_DIR}/doc/pbmap-guide/ pbmap-guide.ps.gz
 		COMMENT 		"Generating pbmap-guide (ps.gz)"

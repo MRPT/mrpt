@@ -317,11 +317,6 @@ IF(BUILD_EXAMPLES)
 		GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
 	ENDIF(MRPT_HAS_OPENNI2)
 	
-	# === SRBA examples ===
-	IF(BUILD_mrpt-srba)
-		ADD_SAMPLES_DIRECTORY(srba-examples)
-	ENDIF(BUILD_mrpt-srba)
-
 	# === PbMap examples ===
 	IF(BUILD_mrpt-pbmap)
 		ADD_SAMPLES_DIRECTORY(pbmap-examples)
