@@ -25,7 +25,7 @@ using namespace std;
 								computeLogPolarImageDescriptors
 ************************************************************************************************/
 void  CFeatureExtraction::internal_computeLogPolarImageDescriptors(
-	const CImage	&in_img,
+	const mrpt::utils::CImage	&in_img,
 	CFeatureList		&in_features) const
 {
 	MRPT_START
@@ -40,7 +40,7 @@ void  CFeatureExtraction::internal_computeLogPolarImageDescriptors(
 	const double rho_scale = options.LogPolarImagesOptions.rho_scale;
 	const unsigned int patch_w = rho_scale * std::log(static_cast<double>(radius));
 
-	CImage	logpolar_frame( patch_w, patch_h, in_img.getChannelCount() );
+	mrpt::utils::CImage	logpolar_frame( patch_w, patch_h, in_img.getChannelCount() );
 
 	// Compute intensity-domain spin images
 	for (CFeatureList::iterator it=in_features.begin();it!=in_features.end();++it)

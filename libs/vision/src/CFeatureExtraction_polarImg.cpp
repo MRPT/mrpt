@@ -131,7 +131,7 @@ void my_cvLinearPolar( const CvArr* srcarr, CvArr* dstarr,
 								computePolarImageDescriptors
 ************************************************************************************************/
 void  CFeatureExtraction::internal_computePolarImageDescriptors(
-	const CImage	&in_img,
+	const mrpt::utils::CImage	&in_img,
 	CFeatureList		&in_features) const
 {
 	MRPT_START
