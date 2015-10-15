@@ -171,11 +171,6 @@ cp images/*.* html/
 cp html_postbuild/*.* html/
 
 # Build & copy PDF manuals:
-cd srba-guide
-make 2> /dev/null
-mv *.pdf ..
-cd ..
-
 cd pbmap-guide
 make 2> /dev/null
 mv *.pdf ..
