@@ -41,6 +41,7 @@ using namespace std;
 DECLARE_OP_FUNCTION(op_externalize);
 DECLARE_OP_FUNCTION(op_info);
 DECLARE_OP_FUNCTION(op_list_images);
+DECLARE_OP_FUNCTION(op_list_poses);
 DECLARE_OP_FUNCTION(op_list_rangebearing);
 DECLARE_OP_FUNCTION(op_remove_label);
 DECLARE_OP_FUNCTION(op_keep_label);
@@ -122,6 +123,12 @@ int main(int argc, char **argv)
 			"Optionally the output text file can be changed with --text-file-output."
 			,cmd, false) );
 		ops_functors["list-images"] = &op_list_images;
+
+		arg_ops.push_back(new TCLAP::SwitchArg("","list-poses",
+			"Op: dump a list of all the poses of the observations in the dataset.\n"
+			"Optionally the output text file can be changed with --text-file-output."
+			,cmd, false) );
+		ops_functors["list-poses"] = &op_list_poses;
 
 		arg_ops.push_back(new TCLAP::SwitchArg("","list-timestamps",
 			"Op: generates a list with all the observations' timestamp, sensor label and C++ class name.\n"
