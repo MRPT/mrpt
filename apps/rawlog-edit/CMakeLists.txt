@@ -13,6 +13,7 @@ ADD_EXECUTABLE(rawlog-edit
 	rawlog-edit-declarations.h
 	CRawlogProcessor.h
 	# Ops:
+	rawlog-edit_list-poses.cpp
 	rawlog-edit_gps.cpp
 	rawlog-edit_gps_gas.cpp
 	rawlog-edit_info.cpp
