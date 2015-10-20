@@ -14,6 +14,10 @@
 
 <a name="1.3.2">
   <h2>Version 1.3.2: (Under development) </h2></a>
+  	- Changes in Apps:
+		- [rawlog-edit](http://www.mrpt.org/Application%3Arawlog-edit):
+			- New operation: `--list-poses`
+			- `--list-images` now also works with 3D range scans
 	- Changes in libraries:
 		- The library mrpt-srba has been moved out of MRPT and now is an independent project: https://github.com/MRPT/srba
 		- \ref mrpt_base_grp
