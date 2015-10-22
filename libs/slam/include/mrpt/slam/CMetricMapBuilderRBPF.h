@@ -146,8 +146,7 @@ namespace slam
 		  */
 		void  saveCurrentEstimationToImage(const std::string &file, bool formatEMF_BMP = true);
 
-		/** A usefull method for debugging: draws the current map and path hypotheses to a CCanvas
-		  */
+		/** A useful method for debugging: draws the current map and path hypotheses to a CCanvas  */
 		void  drawCurrentEstimationToImage( utils::CCanvas *img );
 
 		/** A logging utility: saves the current path estimation for each particle in a text file (a row per particle, each 3-column-entry is a set [x,y,phi], respectively).
