@@ -140,7 +140,7 @@ void CAboutBox::OnInit(wxInitDialogEvent& event)
 
 		cout << "  Holonomic Navigator demo\n";
 		cout << "--------------------------------\n";
-		cout << "Jose Luis Blanco (C) 2005-2012\n";
+		cout << "Jose Luis Blanco\n";
 		cout << "\n";
 		cout << "For bug reports or to collaborate:\n";
 		cout << "    http://www.mrpt.org/    \n\n";

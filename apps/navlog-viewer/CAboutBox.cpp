@@ -144,7 +144,7 @@ void CAboutBox::OnInit(wxInitDialogEvent& event)
 
 		cout << "  navlog-viewer \n";
 		cout << "--------------------------------\n";
-		cout << "Jose Luis Blanco (C) 2005-2012\n";
+		cout << "Jose Luis Blanco\n";
 		cout << "For bug reports or to collaborate: <joseluisblancoc@gmail.com>\n";
 
 		cout << "Program version:        " << NAVLOGVIEWER_VERSION << endl;

@@ -141,7 +141,7 @@ void CAboutBox::OnInit(wxInitDialogEvent& event)
 
 		cout << "  Robotic Arm Kinematics GUI\n";
 		cout << "--------------------------------\n";
-		cout << "Jose Luis Blanco (C) 2005-2013\n";
+		cout << "Jose Luis Blanco\n";
 		cout << "\n";
 		cout << "For bug reports or to collaborate:\n";
 		cout << "    http://www.mrpt.org/    \n\n";

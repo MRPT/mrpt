@@ -268,7 +268,7 @@ void TestParticlesLocalization()
 			COpenGLScenePtr scene = COpenGLScene::Create();
 
 	#ifdef	SHOW_REAL_TIME_3D
-			CDisplayWindow3D		window("ro-localization - MRPT (C) 2005-2012");
+			CDisplayWindow3D		window("ro-localization - Part of MRPT");
 			window.setPos(50,50);
 			window.resize(800,500);
 			window.setCameraElevationDeg( 90 );

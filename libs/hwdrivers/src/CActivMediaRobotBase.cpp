@@ -401,7 +401,7 @@ void CActivMediaRobotBase::doProcess()
 			float des_w = - jx * m_joy_max_w;
 
             bool deadman_switch = false;
-            for (uint i = 0; i < joy_btns.size(); ++i)
+            for (unsigned int i = 0; i < joy_btns.size(); ++i)
             {
                 deadman_switch |= joy_btns[i];
             }
