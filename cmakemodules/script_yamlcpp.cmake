@@ -1,0 +1,30 @@
+# Check for yaml-cpp libray.
+# It has a *-config.cmake files, but they are not present in Ubuntu 12.04 LTS, 
+# so we use pkg-config there.
+# ===================================================
+SET(CMAKE_MRPT_HAS_YAMLCPP 0)
+SET(CMAKE_MRPT_HAS_YAMLCPP_SYSTEM 0)
+
+# DISABLE_YAMLCPP
+# ---------------------
+OPTION(DISABLE_YAMLCPP "Force not using yamlcpp" "OFF")
+MARK_AS_ADVANCED(DISABLE_YAMLCPP)
+IF(NOT DISABLE_YAMLCPP)
+	# Invoke pkg-config for getting the configuration:
+	IF(PKG_CONFIG_FOUND)
+		PKG_CHECK_MODULES(LIBYAMLCPP ${_QUIET} yaml-cpp)
+		IF (LIBYAMLCPP_FOUND)
+			SET(CMAKE_MRPT_HAS_YAMLCPP 1)
+			SET(CMAKE_MRPT_HAS_YAMLCPP_SYSTEM 1)
+
+			INCLUDE_DIRECTORIES(${LIBYAMLCPP_INCLUDE_DIRS})
+			IF($ENV{VERBOSE})
+				MESSAGE(STATUS "LIBYAMLCPP_LIBRARIES    : ${LIBYAMLCPP_LIBRARIES}")
+				MESSAGE(STATUS "LIBYAMLCPP_INCLUDE_DIRS : ${LIBYAMLCPP_INCLUDE_DIRS}")
+				MESSAGE(STATUS "LIBYAMLCPP_VERSION      : ${LIBYAMLCPP_VERSION}")
+			ENDIF()
+		ENDIF()
+	ENDIF()
+
+ENDIF()
+
