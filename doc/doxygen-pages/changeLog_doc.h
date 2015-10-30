@@ -30,6 +30,7 @@
 		- `FIND_PACKAGE(MRPT)` will return libraries in the var `MRPT_LIBRARIES`, following the CMake convention. The old variable name `MRPT_LIBS` will be also returned for backward compatibility.
 	- BUG FIXES: 
 		- Fix excessive width of paths drawn by CMetricMapBuilderRBPF::drawCurrentEstimationToImage()
+		- Fix image distortion: k3 may be ignored. (Thanks to CBaiz)
 
 <hr>
 <a name="1.3.1">
