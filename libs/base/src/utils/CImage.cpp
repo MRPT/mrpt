@@ -2066,17 +2066,17 @@ void CImage::rectifyImageInPlace( const mrpt::utils::TCamera &cameraParams  )
 	IplImage *outImg;												// Output Image
 	outImg = cvCreateImage( cvGetSize( srcImg ), srcImg->depth, srcImg->nChannels );
 
-	double aux1[3][3], aux2[1][4];
+	double aux1[3][3], aux2[1][5];
 	const CMatrixDouble33 &cameraMatrix = cameraParams.intrinsicParams;
 
 	for (int i=0;i<3;i++)
 		for (int j=0;j<3;j++)
 			aux1[i][j] = cameraMatrix(i,j);
-	for (int i=0;i<4;i++)
+	for (int i=0;i<5;i++)
 		aux2[0][i]=cameraParams.dist[i];
 
 	CvMat inMat =  cvMat( cameraMatrix.getRowCount(), cameraMatrix.getColCount(), CV_64F, aux1 );
-	CvMat distM =  cvMat( 1, 4, CV_64F, aux2 );
+	CvMat distM =  cvMat( 1, 5, CV_64F, aux2 );
 
 	// Remove distortion
 	cvUndistort2( srcImg, outImg, &inMat, &distM );
@@ -2102,17 +2102,17 @@ void CImage::rectifyImage(
 	IplImage *outImg;												// Output Image
 	outImg = cvCreateImage( cvGetSize( srcImg ), srcImg->depth, srcImg->nChannels );
 
-	double aux1[3][3], aux2[1][4];
+	double aux1[3][3], aux2[1][5];
 	const CMatrixDouble33 &cameraMatrix = cameraParams.intrinsicParams;
 
 	for (int i=0;i<3;i++)
 		for (int j=0;j<3;j++)
 			aux1[i][j] = cameraMatrix(i,j);
-	for (int i=0;i<4;i++)
+	for (int i=0;i<5;i++)
 		aux2[0][i]=cameraParams.dist[i];
 
 	CvMat inMat =  cvMat( cameraMatrix.getRowCount(), cameraMatrix.getColCount(), CV_64F, aux1 );
-	CvMat distM =  cvMat( 1, 4, CV_64F, aux2 );
+	CvMat distM =  cvMat( 1, 5, CV_64F, aux2 );
 
 	// Remove distortion
 	cvUndistort2( srcImg, outImg, &inMat, &distM );

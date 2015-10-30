@@ -107,7 +107,7 @@ void mrpt::vision::pinhole::projectPoints_with_distortion(
 
 	cv::Mat _translation_vector = cv::Mat( 3, 1, CV_64FC1, translation_vector );
 	cv::Mat camera_matrix = cv::Mat( 3, 3, CV_64FC1, &proj_matrix[0] );
-	cv::Mat dist_coeffs = cv::Mat( 4, 1, CV_64FC1, const_cast<double*>(&distortionParams[0]) );
+	cv::Mat dist_coeffs = cv::Mat( 5, 1, CV_64FC1, const_cast<double*>(&distortionParams[0]) );
 
 	vector<cv::Point2d> image_points;
 
