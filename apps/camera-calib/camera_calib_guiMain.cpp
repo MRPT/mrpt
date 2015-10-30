@@ -569,8 +569,8 @@ void camera_calib_guiDialog::OnbtnSaveClick(wxCommandEvent& event)
 
 		if (wxID_OK!=dlg.ShowModal()) return;
 
-		CMatrixDouble  M(1,4);
-		for (unsigned i=0;i<4;i++)
+		CMatrixDouble  M(1,5);
+		for (unsigned i=0;i<5;i++)
 			M(0,i) = camera_params.dist[i];
 
 		M.saveToTextFile( string(dlg.GetPath().mb_str()) );
