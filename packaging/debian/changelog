@@ -1,6 +1,7 @@
 mrpt (1:1.3.2-1) unstable; urgency=medium
 
   * New version of upstream sources.
+  * mrpt-apps package split in two. Added new arch-indep package "mrpt-common"
   * Fix FTBFS with FFmpeg 2.9 (Closes: #803845).
   * Fix test errors with Eigen 3.3 (Closes: #803700).
 
