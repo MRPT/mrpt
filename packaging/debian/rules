@@ -53,6 +53,10 @@ override_dh_auto_build:
 		man_pages_all \
 		documentation_psgz_guides
 
+	# clean useless doxygen files:
+	find $(CURDIR)/doc/ -name '*.md5' | xargs -I FIL rm FIL
+
+
 override_dh_auto_configure:
 	dh_auto_configure -- $(CMAKE_FLAGS)
 
