@@ -66,6 +66,8 @@ do
 	bash scripts/prepare_debian.sh -s -u -d ${DEBIAN_DIST} ${EMBED_EIGEN_FLAG} -c "${MRPT_PKG_CUSTOM_CMAKE_PARAMS}" 
 
 	MRPT_SNAPSHOT_VERSION=`date +%Y%m%d`
+	MRPT_SNAPSHOT_VERSION+="-git-"
+	MRPT_SNAPSHOT_VERSION+=`git rev-parse --short=8 HEAD`
 
 	echo "===== Distribution: ${DEBIAN_DIST}  ========="
 	cd ${MRPT_DEB_DIR}/mrpt-${MRPT_VER_MMP}~snapshot${MRPT_SNAPSHOT_VERSION}${DEBIAN_DIST}/debian

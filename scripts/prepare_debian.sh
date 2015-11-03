@@ -65,6 +65,9 @@ fi
 
 # Append snapshot?
 MRPT_SNAPSHOT_VERSION=`date +%Y%m%d`
+MRPT_SNAPSHOT_VERSION+="-git-"
+MRPT_SNAPSHOT_VERSION+=`git rev-parse --short=8 HEAD`
+
 if [ $APPEND_SNAPSHOT_NUM == "1" ];
 then
 	MRPT_VERSION_STR="${MRPT_VERSION_STR}~snapshot${MRPT_SNAPSHOT_VERSION}${APPEND_LINUX_DISTRO}"
