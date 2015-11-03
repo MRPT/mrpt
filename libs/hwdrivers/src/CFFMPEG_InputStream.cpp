@@ -226,7 +226,12 @@ bool CFFMPEG_InputStream::openURL( const std::string &url, bool grab_as_grayscal
 
     // Determine required buffer size and allocate buffer
     size_t numBytes=avpicture_get_size(
-		m_grab_as_grayscale ? AV_PIX_FMT_GRAY8 : AV_PIX_FMT_BGR24,   // BGR vs. RGB for OpenCV
+		m_grab_as_grayscale ?    // BGR vs. RGB for OpenCV
+#if LIBAVCODEC_VERSION_INT >= AV_VERSION_INT(55,00,0)
+			AV_PIX_FMT_GRAY8 : AV_PIX_FMT_BGR24,
+#else
+			PIX_FMT_GRAY8 : PIX_FMT_BGR24,
+#endif
 		ctx->pCodecCtx->width,
 		ctx->pCodecCtx->height);
 
@@ -236,7 +241,12 @@ bool CFFMPEG_InputStream::openURL( const std::string &url, bool grab_as_grayscal
     avpicture_fill(
 		(AVPicture *)ctx->pFrameRGB,
 		&ctx->buffer[0],
-		m_grab_as_grayscale ? AV_PIX_FMT_GRAY8 : AV_PIX_FMT_BGR24,   // BGR vs. RGB for OpenCV
+		m_grab_as_grayscale ?    // BGR vs. RGB for OpenCV
+#if LIBAVCODEC_VERSION_INT >= AV_VERSION_INT(55,00,0)
+			AV_PIX_FMT_GRAY8 : AV_PIX_FMT_BGR24,
+#else
+			PIX_FMT_GRAY8 : PIX_FMT_BGR24,
+#endif
 		ctx->pCodecCtx->width,
 		ctx->pCodecCtx->height);
 
@@ -350,7 +360,12 @@ bool CFFMPEG_InputStream::retrieveFrame( mrpt::utils::CImage &out_img )
 					ctx->pCodecCtx->pix_fmt,
 					ctx->pCodecCtx->width,
 					ctx->pCodecCtx->height,
-					m_grab_as_grayscale ? AV_PIX_FMT_GRAY8 : AV_PIX_FMT_BGR24,   // BGR vs. RGB for OpenCV
+					m_grab_as_grayscale ?    // BGR vs. RGB for OpenCV
+#if LIBAVCODEC_VERSION_INT >= AV_VERSION_INT(55,00,0)
+						AV_PIX_FMT_GRAY8 : AV_PIX_FMT_BGR24,
+#else
+						PIX_FMT_GRAY8 : PIX_FMT_BGR24,
+#endif
 					SWS_BICUBIC,
 					NULL, NULL, NULL);
 
