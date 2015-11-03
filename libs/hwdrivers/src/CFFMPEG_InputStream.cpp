@@ -293,7 +293,7 @@ void CFFMPEG_InputStream::close()
 #if LIBAVCODEC_VERSION_INT >= AV_VERSION_INT(55,46,0)
 		av_frame_free(&ctx->pFrameRGB);
 #else
-		avcodec_free_frame(&ctx->pFrameRGB);
+		av_free(ctx->pFrameRGB);
 #endif
 		ctx->pFrameRGB=NULL;
     }
@@ -302,7 +302,7 @@ void CFFMPEG_InputStream::close()
 #if LIBAVCODEC_VERSION_INT >= AV_VERSION_INT(55,46,0)
 		av_frame_free(&ctx->pFrame);
 #else
-		avcodec_free_frame(&ctx->pFrame);
+		av_free(ctx->pFrame);
 #endif
 		ctx->pFrame = NULL;
     }
