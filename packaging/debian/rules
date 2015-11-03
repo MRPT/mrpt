@@ -68,9 +68,6 @@ override_dh_install:
 	mkdir -p $(CURDIR)/debian/libmrpt-dev/usr/lib/$(DEB_HOST_MULTIARCH)
 	find $(CURDIR)/debian/ -name "*.so" | grep -v 'libmrpt-dev' | xargs -I FIL mv -f FIL $(CURDIR)/debian/libmrpt-dev/usr/lib/$(DEB_HOST_MULTIARCH)
 
-	# Fix permissions:
-	chmod a+x $(CURDIR)/debian/mrpt-apps/usr/share/mrpt/datasets/srba-demos/*.sh
-
 	# Fix Doxygen's embedded JQuery lib:
 	rm $(CURDIR)/debian/mrpt-doc/usr/share/doc/mrpt-doc/html/jquery.js
 	ln -s /usr/share/javascript/jquery/jquery.js $(CURDIR)/debian/mrpt-doc/usr/share/doc/mrpt-doc/html/jquery.js
