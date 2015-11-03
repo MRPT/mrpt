@@ -105,7 +105,7 @@ ELSE(WIN32)
 
 		# applications config files
 		INSTALL(DIRECTORY "${MRPT_SOURCE_DIR}/share/applications" DESTINATION ${mrpt_apps_INSTALL_PREFIX}share)
-		INSTALL(DIRECTORY "${MRPT_SOURCE_DIR}/share/mrpt" DESTINATION ${mrpt_apps_INSTALL_PREFIX}share)
+		INSTALL(DIRECTORY "${MRPT_SOURCE_DIR}/share/mrpt" DESTINATION ${mrpt_common_INSTALL_PREFIX}share)
 		INSTALL(DIRECTORY "${MRPT_SOURCE_DIR}/share/pixmaps" DESTINATION ${mrpt_apps_INSTALL_PREFIX}share)
 		INSTALL(DIRECTORY "${MRPT_SOURCE_DIR}/share/appdata" DESTINATION ${mrpt_apps_INSTALL_PREFIX}share)
 
