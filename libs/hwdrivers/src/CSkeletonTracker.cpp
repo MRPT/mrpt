@@ -35,6 +35,11 @@ using namespace std;
 #define skl_states  (static_cast<nite::SkeletonState*>(m_skeletons_ptr))
 #define user_tracker (static_cast<nite::UserTracker*>(m_userTracker_ptr))
 #define MAX_USERS 10
+#define FILL_JOINT_DATA(_J1,_J2) \
+	obs->_J1.x = user.getSkeleton().getJoint(_J2).getPosition().x;\
+	obs->_J1.y = user.getSkeleton().getJoint(_J2).getPosition().y;\
+	obs->_J1.z = user.getSkeleton().getJoint(_J2).getPosition().z;\
+	obs->_J1.conf = user.getSkeleton().getJoint(_J2).getPositionConfidence();
 
 #if MRPT_HAS_NITE2
 	#include "NiTE.h"
@@ -140,6 +145,91 @@ void CSkeletonTracker::processPreviewNone()
 		{
 			COpenGLScenePtr & scene = m_win->get3DSceneAndLock();
 			{
+				m_win->addTextMessage( 0.35, 0.9,
+					"Please, adopt this position",
+					TColorf(1,1,1),"mono",10, mrpt::opengl::FILL, 
+					0);
+
+				// insert translucid dummy and help text (it will go away when measurements are taken)
+				if( !scene->getByName("dummy") ) 
+				{
+					const double SCALE			= 0.8;
+					const double BODY_RADIUS	= 0.22*SCALE;
+					const double BODY_LENGTH	= 0.8*SCALE;
+					const double ARM_RADIUS		= 0.05*SCALE;
+					const double ARM_LENGTH		= 0.4*SCALE;
+					const double LEG_RADIUS		= 0.1*SCALE;
+					const double LEG_LENGTH		= 0.8*SCALE;
+					const double HEAD_RADIUS	= 0.15*SCALE;
+					const double ALPHA_CH		= 0.8;
+					
+					CSetOfObjectsPtr dummy = CSetOfObjects::Create();
+					dummy->setName("dummy");
+					dummy->setPose(math::TPose3D(0,0,0,0,0,DEG2RAD(-90)));
+					{
+						// head
+						CSpherePtr   part = CSphere::Create(HEAD_RADIUS);
+						part->setColor(1,1,1,ALPHA_CH);
+						part->setPose(math::TPose3D(0,0,0.5*BODY_LENGTH+HEAD_RADIUS,0,0,0));
+						dummy->insert(part);
+					}
+					{
+						// body
+						CCylinderPtr part = CCylinder::Create(BODY_RADIUS,BODY_RADIUS,BODY_LENGTH);
+						part->setColor(1,1,1,ALPHA_CH);
+						part->setPose(math::TPose3D(0,0,-BODY_LENGTH/2,0,0,0));
+						dummy->insert(part);
+					}
+					{
+						// left arm 0
+						CCylinderPtr part = CCylinder::Create(ARM_RADIUS,ARM_RADIUS,ARM_LENGTH);
+						part->setColor(1,1,1,ALPHA_CH);
+						part->setPose(math::TPose3D(-BODY_RADIUS,0,0.5*BODY_LENGTH-ARM_RADIUS,0,DEG2RAD(-90),0));
+						dummy->insert(part);
+					}
+					{
+						// left arm 1
+						CCylinderPtr part = CCylinder::Create(ARM_RADIUS,ARM_RADIUS,ARM_LENGTH);
+						part->setColor(1,1,1,ALPHA_CH);
+						part->setPose(math::TPose3D(-BODY_RADIUS-ARM_LENGTH+ARM_RADIUS,0,0.5*BODY_LENGTH-ARM_RADIUS,0,0,0));
+						dummy->insert(part);
+					}
+					{
+						// right arm 0
+						CCylinderPtr part = CCylinder::Create(ARM_RADIUS,ARM_RADIUS,ARM_LENGTH);
+						part->setColor(1,1,1,ALPHA_CH);
+						part->setPose(math::TPose3D(BODY_RADIUS,0,0.5*BODY_LENGTH-ARM_RADIUS,0,DEG2RAD(90),0));
+						dummy->insert(part);
+					}
+					{
+						// right arm 1
+						CCylinderPtr part = CCylinder::Create(ARM_RADIUS,ARM_RADIUS,ARM_LENGTH);
+						part->setColor(1,1,1,ALPHA_CH);
+						part->setPose(math::TPose3D(BODY_RADIUS+ARM_LENGTH-ARM_RADIUS,0,0.5*BODY_LENGTH-ARM_RADIUS,0,0,0));
+						dummy->insert(part);
+					}
+									{
+						// left leg
+						CCylinderPtr part = CCylinder::Create(LEG_RADIUS,LEG_RADIUS,LEG_LENGTH);
+						part->setColor(1,1,1,ALPHA_CH);
+						part->setPose(math::TPose3D(-BODY_RADIUS+LEG_RADIUS,0,-(0.5*BODY_LENGTH+LEG_LENGTH),0,0,0));
+						dummy->insert(part);
+					}
+					{
+						// right leg
+						CCylinderPtr part = CCylinder::Create(LEG_RADIUS,LEG_RADIUS,LEG_LENGTH);
+						part->setColor(1,1,1,ALPHA_CH);
+						part->setPose(math::TPose3D(BODY_RADIUS-LEG_RADIUS,0,-(0.5*BODY_LENGTH+LEG_LENGTH),0,0,0));
+						dummy->insert(part);
+					}
+					scene->insert(dummy);
+				} // end-if
+				else
+				{
+					CSetOfObjectsPtr dummy = static_cast<CSetOfObjectsPtr>( scene->getByName("dummy") );
+					dummy->setVisibility(true);
+				}
+
 				// update joints positions
 				CSetOfObjectsPtr body = static_cast<CSetOfObjectsPtr>( scene->getByName("body") );
 				ASSERT_( body )
@@ -216,6 +306,12 @@ void CSkeletonTracker::processPreview(const mrpt::obs::CObservationSkeletonPtr &
 		if( m_win && m_win->isOpen() )
 		{
 			COpenGLScenePtr & scene = m_win->get3DSceneAndLock();
+			
+			// remove help text and dummy
+			m_win->clearTextMessages();
+			CSetOfObjectsPtr dummy = static_cast<CSetOfObjectsPtr>( scene->getByName("dummy") );
+			if( dummy ) dummy->setVisibility(false);
+
 			{
 				// update joints positions
 				CSetOfObjectsPtr body = static_cast<CSetOfObjectsPtr>( scene->getByName("body") );
@@ -336,12 +432,6 @@ void CSkeletonTracker::doProcess()
 			mrpt::system::TTimeStamp ts = m_timeStartTT	+ AtDO;
 
 			// fill joint data
-#define FILL_JOINT_DATA(_J1,_J2) \
-	obs->_J1.x = user.getSkeleton().getJoint(_J2).getPosition().x;\
-	obs->_J1.y = user.getSkeleton().getJoint(_J2).getPosition().y;\
-	obs->_J1.z = user.getSkeleton().getJoint(_J2).getPosition().z;\
-	obs->_J1.conf = user.getSkeleton().getJoint(_J2).getPositionConfidence();
-
 			FILL_JOINT_DATA(head,nite::JOINT_HEAD)
 			FILL_JOINT_DATA(neck,nite::JOINT_NECK)
 			FILL_JOINT_DATA(torso,nite::JOINT_TORSO)
@@ -386,6 +476,7 @@ void CSkeletonTracker::doProcess()
 		m_toutCounter	= 0;
 		m_state			= ssError;
 		
+		cout << "	[Skeleton tracker] No user found after 2000 attempts ..." << endl;
 		nite::NiTE::shutdown();	// close tracker
 	}
 #else
@@ -400,6 +491,7 @@ void CSkeletonTracker::initialize()
 {
 #if MRPT_HAS_OPENNI2 && MRPT_HAS_NITE2
 	
+	// initialize tracker
 	nite::NiTE::initialize();
 	nite::Status niteRc = user_tracker->create();
 
@@ -414,6 +506,7 @@ void CSkeletonTracker::initialize()
 		printf("Start moving around to get detected...\n(PSI pose may be required for skeleton calibration, depending on the configuration)\n");
 		m_state = ssInitializing;
 	}
+	// initialize preview joints and lines
 	if( m_showPreview )
 	{
 		m_linesToPlot[0] = make_pair(NECK,HEAD);
