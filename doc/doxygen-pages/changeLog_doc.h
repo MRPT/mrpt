@@ -15,7 +15,12 @@
 <hr>
 <a name="1.3.3">
   <h2>Version 1.3.3: (Under development) </h2></a>
-	- BUG FIXES: 
+	- Changes in libraries:
+		- \ref mrpt_hwdrivers_grp
+			- New class mrpt::hwdrivers::CVelodyneScanner
+		- \ref mrpt_obs_grp
+			- New class mrpt::obs::CObservationVelodyneScan
+	- BUG FIXES:
 		- mrpt::math::CQuaternion<> did not check for unit norm in Release builds.
 
 <a name="1.3.2">
