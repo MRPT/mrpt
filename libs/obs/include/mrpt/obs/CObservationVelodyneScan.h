@@ -24,6 +24,7 @@ namespace obs
 	  * Methods to convert this RAW data into a point cloud:
 	  * - XXX
 	  *
+	  * \note New in MRPT 1.3.3
 	  * \sa CObservation, CPointsMap
 	  * \ingroup mrpt_obs_grp
 	  */

@@ -19,23 +19,30 @@ namespace mrpt
 	{
 		/** An interface to Velodyne laser scanners (HDL-32E, VLP-16)
 		  *
+		  *  <h2>Configuration and usage:</h2> <hr>
+		  * Data is returned as observations of type: 
+		  *  - mrpt::obs::CObservationVelodyneScan for one or more "data packets" (refer to Velodyne usage manual) 
+		  *  - mrpt::obs::CObservationGPS for GPS (GPRMC) packets, if available via the synchronization interface of the device.
+		  *  See those classes for documentation on their fields.
+		  *
+		  * <h2>Format of parameters for loading from a .ini file</h2><hr>
+		  *
 		  *  \code
 		  *  PARAMETERS IN THE ".INI"-LIKE CONFIGURATION STRINGS:
 		  * -------------------------------------------------------
 		  *   [supplied_section_name]
 		  *
-		  *    # 3D position (in meters) of the master +slave eNoses
-		  *    enose_poses_x=<MASTER X> <SLAVE#1 X> <SLAVE#2 X> <SLAVE#3 X>...
-		  *    enose_poses_y=<MASTER Y> <SLAVE#1 Y> <SLAVE#2 Y> <SLAVE#3 Y>...
-		  *    enose_poses_z=<MASTER Z> <SLAVE#1 Z> <SLAVE#2 Z> <SLAVE#3 Z>...
-		  *
-		  *    # 3D pose angles (in degrees) of the master +slave eNoses
-		  *    enose_poses_yaw=<MASTER YAW> <SLAVE#1 YAW> <SLAVE#2 YAW> <SLAVE#3 YAW>...
-		  *    enose_poses_pitch=<MASTER PITCH> <SLAVE#1 PITCH> <SLAVE#2 PITCH> <SLAVE#3 PITCH>...
-		  *    enose_poses_roll=<MASTER ROLL> <SLAVE#1 ROLL> <SLAVE#2 ROLL> <SLAVE#3 ROLL>...
+		  *    # 3D position of the sensor on the vehicle:
+		  *   pose_x     = 0      // 3D position (meters)
+		  *   pose_y     = 0
+		  *   pose_z     = 0
+		  *   pose_yaw   = 0    // 3D orientation (degrees)
+		  *   pose_pitch = 0
+		  *   pose_roll  = 0
 		  *
 		  *  \endcode
 		  *
+		  * \note New in MRPT 1.3.3
 		  * \ingroup mrpt_hwdrivers_grp
  		  */
 		class HWDRIVERS_IMPEXP CVelodyneScanner : public mrpt::hwdrivers::CGenericSensor
