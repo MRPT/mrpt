@@ -9,8 +9,7 @@
 #ifndef  MRPT_NET_UTILS_H
 #define  MRPT_NET_UTILS_H
 
-#include <mrpt/utils/CClientTCPSocket.h>
-#include <mrpt/utils/CServerTCPSocket.h>
+#include <mrpt/utils/core_defs.h>
 #include <mrpt/utils/TParameters.h>
 
 namespace mrpt
@@ -99,11 +98,14 @@ namespace mrpt
 			  *
 			  * \return true on success, false on timeout or other error.
 			  */
-			bool DNS_resolve_async(
+			bool BASE_IMPEXP DNS_resolve_async(
 				const std::string &server_name,
 				std::string	 &out_ip,
 				const unsigned int timeout_ms = 3000
 				);
+
+			/** Returns a description of the last Sockets error */
+			std::string BASE_IMPEXP getLastSocketErrorStr();
 
 			/** @} */  // end grouping
 
