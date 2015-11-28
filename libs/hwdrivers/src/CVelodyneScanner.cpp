@@ -17,7 +17,10 @@ using namespace std;
 
 IMPLEMENTS_GENERIC_SENSOR(CVelodyneScanner,mrpt::hwdrivers)
 
-CVelodyneScanner::CVelodyneScanner( )
+CVelodyneScanner::CVelodyneScanner( ) : 
+	m_model("VLP16"),
+	m_device_ip("192.168.51.70"),
+	m_rpm(600)
 {
 	m_sensorLabel = "Velodyne_";
 }
@@ -37,12 +40,20 @@ void  CVelodyneScanner::loadConfig_sensorSpecific(
 	MRPT_END
 }
 
-bool CVelodyneScanner::getObservation( mrpt::obs::CObservationVelodyneScan &obs )
+bool CVelodyneScanner::getNextObservation(
+	mrpt::obs::CObservationVelodyneScanPtr & outScan,
+	mrpt::obs::CObservationGPSPtr          & outGPS
+	)
 {
 	try
 	{
+		// Init with empty smart pointers:
+		outScan = mrpt::obs::CObservationVelodyneScanPtr();
+		outGPS  = mrpt::obs::CObservationGPSPtr();
+		
 
-		return false;
+		
+		return true;
 	}
 	catch(exception &e)
 	{
@@ -59,17 +70,19 @@ bool CVelodyneScanner::getObservation( mrpt::obs::CObservationVelodyneScan &obs 
 
 void CVelodyneScanner::doProcess()
 {
-	CObservationVelodyneScanPtr obs= CObservationVelodyneScan::Create();
+	CObservationVelodyneScanPtr obs;
+	CObservationGPSPtr          obs_gps;
 
-	if (getObservation(*obs))
+	if (getNextObservation(obs,obs_gps))
 	{
 		m_state = ssWorking;
-		appendObservation( obs );
+		if (obs)     appendObservation( obs );
+		if (obs_gps) appendObservation( obs_gps );
 	}
 	else
 	{
 		m_state = ssError;
-		cerr << "No observation received from the Velodyne!" << endl;
+		cerr << "ERROR receiving data from Velodyne devic!" << endl;
 	}
 }
 
