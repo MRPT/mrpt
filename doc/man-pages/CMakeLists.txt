@@ -65,6 +65,7 @@ IF (PROG_GZIP AND PROG_POD2MAN)
 	CREATE_MANPAGE_PROJECT(kinect-3d-view)
 	CREATE_MANPAGE_PROJECT(kinect-stereo-calib)
 	CREATE_MANPAGE_PROJECT(robotic-arm-kinematics)
+	CREATE_MANPAGE_PROJECT(velodyne-view)
 
 
 	CREATE_MANPAGE_PROJECT(rawlog-edit)

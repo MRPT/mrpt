@@ -15,6 +15,8 @@
 <hr>
 <a name="1.3.3">
   <h2>Version 1.3.3: (Under development) </h2></a>
+	- New apps:
+		- [velodyne-view](http://www.mrpt.org/list-of-mrpt-apps/application-velodyne-view/): Application to grab and visualize data from a live Velodyne sensor.
 	- Changes in libraries:
 		- \ref mrpt_hwdrivers_grp
 			- New class mrpt::hwdrivers::CVelodyneScanner
