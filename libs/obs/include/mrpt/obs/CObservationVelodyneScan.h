@@ -19,7 +19,7 @@ namespace obs
 	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CObservationVelodyneScan, CObservation, OBS_IMPEXP)
 
 	/** A "CObservation"-derived class representing the RAW DATA of a complete 360deg scan from a Velodyne scanner. 
-	  * A scan comprises multiple "velodyne packets".
+	  * A scan comprises one or more "velodyne packets" (refer to Velodyne user manual).
 	  *
 	  * Methods to convert this RAW data into a point cloud:
 	  * - XXX
@@ -37,10 +37,16 @@ namespace obs
 		CObservationVelodyneScan();
 		virtual ~CObservationVelodyneScan( );
 
+		struct OBS_IMPEXP TVelodynePacket
+		{
+			uint8_t data[1206];  //!< One unit of data from the scanner (the payload of one UDP packet)
+		};
+
 		/** @name Scan data
 		    @{ */
-		double               maxRange; //!< The maximum range allowed by the device, in meters (e.g. 100m). Stored here by the driver while capturing based on the sensor model.
-		mrpt::poses::CPose3D sensorPose; //!< The 6D pose of the sensor on the robot/vehicle frame of reference
+		double                       maxRange; //!< The maximum range allowed by the device, in meters (e.g. 100m). Stored here by the driver while capturing based on the sensor model.
+		mrpt::poses::CPose3D         sensorPose; //!< The 6D pose of the sensor on the robot/vehicle frame of reference
+		std::vector<TVelodynePacket> scan_packets;
 		/** @} */
 		
 		void getSensorPose( mrpt::poses::CPose3D &out_sensorPose ) const { out_sensorPose = sensorPose; } // See base class docs

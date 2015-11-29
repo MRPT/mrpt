@@ -55,7 +55,7 @@ void thread_grabbing(TThreadParam &p)
 		mrpt::hwdrivers::CVelodyneScanner velodyne;
 
 		// Set params:
-		//...
+		//velodyne.setDeviceIP("192.168.1.201"); // Default: from any IP
 
 		// Open:
 		cout << "Calling CVelodyneScanner::initialize()...";

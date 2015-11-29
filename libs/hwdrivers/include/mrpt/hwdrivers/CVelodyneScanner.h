@@ -44,7 +44,7 @@ namespace mrpt
 		  *   [supplied_section_name]
 		  *
 		  *   model      = VLP16          // Can be any of: 64E_S2, 64E_S2.1, 64E, 32E, VLP16
-		  *   device_ip  = 192.168.51.70  // IP address of the device. UDP packets from other IPs will be ignored.
+		  *   #device_ip  =  // IP address of the device. UDP packets from other IPs will be ignored. Left commented or blank if only one scanner is present (no IP filtering)
 		  *   rpm        = 600            // Device spinning speed
 		  *
 		  *    # 3D position of the sensor on the vehicle:
@@ -63,11 +63,15 @@ namespace mrpt
 		class HWDRIVERS_IMPEXP CVelodyneScanner : public mrpt::hwdrivers::CGenericSensor
 		{
 			DEFINE_GENERIC_SENSOR(CVelodyneScanner)
+		public:
+			static short int VELODYNE_DATA_UDP_PORT;  //!< Default: 2368
+			static short int VELODYNE_POSITION_UDP_PORT;  //!< Default: 8308
 
 		protected:
 			std::string   m_model;      //!< Default: "VLP16"
-			std::string   m_device_ip;  //!< Default: "192.168.51.70"
+			std::string   m_device_ip;  //!< Default: "" (no IP-based filtering)
 			int           m_rpm;        //!< Default: 600
+			mrpt::poses::CPose3D m_sensorPose;
 
 			/** See the class documentation at the top for expected parameters */
 			void  loadConfig_sensorSpecific(
@@ -105,10 +109,38 @@ namespace mrpt
 			// See docs in parent class
 			void  doProcess();
 
-			/** Tries to initialize the sensor, after setting all the parameters with a call to loadConfig.
+			/** Tries to initialize the sensor driver, after setting all the parameters with a call to loadConfig.
+			  * Velodyne specifics: this method sets up the UDP listening sockets, so all relevant params MUST BE SET BEFORE calling this.
 			  *  \exception This method must throw an exception with a descriptive message if some critical error is found.
 			  */
 			virtual void initialize();
+
+			/** Close the UDP sockets set-up in \a initialize(). This is called automatically upon destruction */
+			void close();
+
+			/** Users normally prefer calling \a getNextObservation() instead. 
+			  * This method polls the UDP data port and returns one Velodyne packet (1206 bytes). Refer to Velodyne users manual. 
+			  * \return The approximate timestamp (based on this computer clock) of the scan reception, or INVALID_TIMESTAMP if timeout ocurred waiting for a packet.
+			  */
+			mrpt::system::TTimeStamp receiveDataPacket(std::vector<uint8_t> &out_buffer);
+
+		private:
+		/** Handles for the UDP sockets, or INVALID_SOCKET (-1) */
+			typedef 
+#ifdef MRPT_OS_WINDOWS
+#	if MRPT_WORD_SIZE==64
+			uint64_t
+#	else
+			uint32_t
+#	endif
+#else
+			int
+#endif
+			platform_socket_t;
+
+		platform_socket_t m_hDataSock, m_hPositionSock;
+
+		static mrpt::system::TTimeStamp internal_receive_UDP_packet(platform_socket_t hSocket, std::vector<uint8_t> &out_buffer, const size_t expected_packet_size,const std::string &filter_only_from_IP);
 
 		}; // end of class
 	} // end of namespace
