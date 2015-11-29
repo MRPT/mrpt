@@ -9,8 +9,7 @@
 
 #include "base-precomp.h"  // Precompiled headers
 
-
-#include <MRPT/config.h>
+#include <mrpt/config.h>
 
 #ifdef MRPT_OS_WINDOWS
 

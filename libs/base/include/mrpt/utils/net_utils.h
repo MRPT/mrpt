@@ -10,6 +10,7 @@
 #define  MRPT_NET_UTILS_H
 
 #include <mrpt/utils/core_defs.h>
+#include <mrpt/utils/types_simple.h>
 #include <mrpt/utils/TParameters.h>
 
 namespace mrpt

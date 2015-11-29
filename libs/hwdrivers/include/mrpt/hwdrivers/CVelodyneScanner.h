@@ -19,8 +19,8 @@ namespace mrpt
 {
 	namespace hwdrivers
 	{
-		/** An interface to Velodyne laser scanners (HDL-32E, VLP-16)
-		  *
+		/** A C++ interface to Velodyne laser scanners (HDL-32E, VLP-16), working on Windows and Linux.
+		  * 
 		  *  <h2>Configuration and usage:</h2> <hr>
 		  * Data is returned as observations of type: 
 		  *  - mrpt::obs::CObservationVelodyneScan for one or more "data packets" (refer to Velodyne usage manual) 
@@ -57,6 +57,13 @@ namespace mrpt
 		  *
 		  *  \endcode
 		  *
+		  *
+		  * <h2>Copyright notice</h2><hr>
+		  * Portions of this class are based on code from velodyne ROS node in https://github.com/ros-drivers/velodyne
+		  *  Copyright (C) 2007 Austin Robot Technology, Patrick Beeson
+		  *  Copyright (C) 2009, 2010 Austin Robot Technology, Jack O'Quin
+		  *  License: Modified BSD Software License Agreement
+		  *
 		  * \note New in MRPT 1.3.3
 		  * \ingroup mrpt_hwdrivers_grp
  		  */
@@ -64,8 +71,8 @@ namespace mrpt
 		{
 			DEFINE_GENERIC_SENSOR(CVelodyneScanner)
 		public:
-			static short int VELODYNE_DATA_UDP_PORT;  //!< Default: 2368
-			static short int VELODYNE_POSITION_UDP_PORT;  //!< Default: 8308
+			static short int VELODYNE_DATA_UDP_PORT;  //!< Default: 2368. Change it if required.
+			static short int VELODYNE_POSITION_UDP_PORT;  //!< Default: 8308. Change it if required.
 
 		protected:
 			std::string   m_model;      //!< Default: "VLP16"
@@ -122,7 +129,7 @@ namespace mrpt
 			  * This method polls the UDP data port and returns one Velodyne packet (1206 bytes). Refer to Velodyne users manual. 
 			  * \return The approximate timestamp (based on this computer clock) of the scan reception, or INVALID_TIMESTAMP if timeout ocurred waiting for a packet.
 			  */
-			mrpt::system::TTimeStamp receiveDataPacket(std::vector<uint8_t> &out_buffer);
+			mrpt::system::TTimeStamp receiveDataPacket( mrpt::obs::CObservationVelodyneScan::TVelodyneRawPacket &out_pkt );
 
 		private:
 		/** Handles for the UDP sockets, or INVALID_SOCKET (-1) */
@@ -140,7 +147,7 @@ namespace mrpt
 
 		platform_socket_t m_hDataSock, m_hPositionSock;
 
-		static mrpt::system::TTimeStamp internal_receive_UDP_packet(platform_socket_t hSocket, std::vector<uint8_t> &out_buffer, const size_t expected_packet_size,const std::string &filter_only_from_IP);
+		static mrpt::system::TTimeStamp internal_receive_UDP_packet(platform_socket_t hSocket, uint8_t *out_buffer, const size_t expected_packet_size,const std::string &filter_only_from_IP);
 
 		}; // end of class
 	} // end of namespace

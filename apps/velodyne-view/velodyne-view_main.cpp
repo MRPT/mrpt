@@ -91,7 +91,7 @@ void thread_grabbing(TThreadParam &p)
 			}
 
 			nScans++;
-			if (nScans>10)
+			if (nScans>100)
 			{
 				p.Hz = nScans / tictac.Tac();
 				nScans=0;
@@ -183,7 +183,7 @@ void Test_Velodyne()
 
 			// Estimated grabbing rate:
 			win3D.get3DSceneAndLock();
-				win3D.addTextMessage(-100,-20, format("%.02f Hz", thrPar.Hz ), TColorf(1,1,1), 100, MRPT_GLUT_BITMAP_HELVETICA_18 );
+				win3D.addTextMessage(-150,-20, format("%.02f Hz", thrPar.Hz ), TColorf(1,1,1), 100, MRPT_GLUT_BITMAP_HELVETICA_18 );
 			win3D.unlockAccess3DScene();
 
 			// Do we have GPS data?
@@ -232,7 +232,7 @@ void Test_Velodyne()
 				TColorf(0,0,1), "mono", 10, mrpt::opengl::FILL, 110);
 		win3D.unlockAccess3DScene();
 
-		mrpt::system::sleep(1);
+		mrpt::system::sleep(50);
 	}
 
 	cout << "Waiting for grabbing thread to exit...\n";

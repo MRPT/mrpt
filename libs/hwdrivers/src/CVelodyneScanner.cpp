@@ -10,6 +10,7 @@
 #include "hwdrivers-precomp.h"   // Precompiled headers
 
 #include <mrpt/hwdrivers/CVelodyneScanner.h>
+#include <mrpt/utils/CStream.h>
 #include <mrpt/utils/net_utils.h>
 
 // socket's hdrs:
@@ -89,8 +90,8 @@ bool CVelodyneScanner::getNextObservation(
 		outGPS  = mrpt::obs::CObservationGPSPtr();
 		
 		// Try to get data packet:
-		std::vector<uint8_t> buf_data;
-		mrpt::system::TTimeStamp data_pkt_timestamp = receiveDataPacket(buf_data);
+		mrpt::obs::CObservationVelodyneScan::TVelodyneRawPacket  rx_pkt;
+		mrpt::system::TTimeStamp data_pkt_timestamp = receiveDataPacket(rx_pkt);
 		if (data_pkt_timestamp!=INVALID_TIMESTAMP)
 		{
 			outScan = mrpt::obs::CObservationVelodyneScan::Create();
@@ -99,9 +100,7 @@ bool CVelodyneScanner::getNextObservation(
 			outScan->sensorPose = m_sensorPose;
 			outScan->maxRange = 100.0; MRPT_TODO("Set from model");
 
-			outScan->scan_packets.resize(1);
-			ASSERT_EQUAL_( sizeof(outScan->scan_packets[0].data), buf_data.size() );
-			::memcpy( &outScan->scan_packets[0].data[0], &buf_data[0], buf_data.size() );
+			outScan->scan_packets.push_back(rx_pkt);
 		}
 		
 		return true;
@@ -183,8 +182,7 @@ void CVelodyneScanner::initialize()
 #else
 	oldflags=fcntl(m_hPositionSock, F_GETFL, 0);
 	if (oldflags == -1)  THROW_EXCEPTION( "Error retrieving fcntl() of socket." );
-	oldflags |= O_NONBLOCK;
-	oldflags |= FASYNC;
+	oldflags |= O_NONBLOCK | FASYNC;
 	if (-1==fcntl(m_hPositionSock, F_SETFL, oldflags))  THROW_EXCEPTION( "Error entering non-blocking mode with fcntl()." );
 #endif
 }
@@ -206,30 +204,23 @@ void CVelodyneScanner::close()
 	}
 }
 
-mrpt::system::TTimeStamp CVelodyneScanner::receiveDataPacket(std::vector<uint8_t> &out_buffer)
+mrpt::system::TTimeStamp CVelodyneScanner::receiveDataPacket(mrpt::obs::CObservationVelodyneScan::TVelodyneRawPacket &out_pkt)
 {
-	return internal_receive_UDP_packet(m_hDataSock,out_buffer,VELODYNE_DATA_PACKET_SIZE,m_device_ip);
+	return internal_receive_UDP_packet(m_hDataSock,(uint8_t*)&out_pkt,VELODYNE_DATA_PACKET_SIZE,m_device_ip);
 }
 
 mrpt::system::TTimeStamp CVelodyneScanner::internal_receive_UDP_packet(
-	platform_socket_t  hSocket, 
-	std::vector<uint8_t> &out_buffer, 
+	platform_socket_t   hSocket, 
+	uint8_t           * out_buffer, 
 	const size_t expected_packet_size,
 	const std::string &filter_only_from_IP)
 {
 	if (hSocket==INVALID_SOCKET)
 		THROW_EXCEPTION("Error: UDP socket is not open yet! Have you called initialize() first?");
 
-	out_buffer.resize(expected_packet_size);
-
 	unsigned long devip_addr = 0;
 	if (!filter_only_from_IP.empty())
 		devip_addr = inet_addr(filter_only_from_IP.c_str());
-
-	// NOTE: The following lines are a modified version of "input.cc" from velodyne ROS node:
-	// *  Copyright (C) 2007 Austin Robot Technology, Patrick Beeson
-	// *  Copyright (C) 2009, 2010 Austin Robot Technology, Jack O'Quin
-	// *  License: Modified BSD Software License Agreement
 
 	const mrpt::system::TTimeStamp time1 = mrpt::system::now();
 

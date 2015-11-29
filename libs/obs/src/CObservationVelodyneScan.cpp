@@ -17,7 +17,14 @@ using namespace mrpt::obs;
 // This must be added to any CSerializable class implementation file.
 IMPLEMENTS_SERIALIZABLE(CObservationVelodyneScan, CObservation,mrpt::obs)
 
+const float CObservationVelodyneScan::ROTATION_RESOLUTION = 0.01f; /**< degrees */
+const float CObservationVelodyneScan::DISTANCE_MAX = 130.0f;        /**< meters */
+const float CObservationVelodyneScan::DISTANCE_RESOLUTION = 0.002f; /**< meters */
+const float CObservationVelodyneScan::DISTANCE_MAX_UNITS = (CObservationVelodyneScan::DISTANCE_MAX / CObservationVelodyneScan::DISTANCE_RESOLUTION + 1.0f);
+
 CObservationVelodyneScan::CObservationVelodyneScan( ) :
+	minRange(1.0),
+	maxRange(130.0),
 	sensorPose()
 {
 }
