@@ -22,6 +22,7 @@
 			- New class mrpt::hwdrivers::CVelodyneScanner
 		- \ref mrpt_obs_grp
 			- New class mrpt::obs::CObservationVelodyneScan
+			- mrpt::obs::CSinCosLookUpTableFor2DScans now can build a table from a mrpt::obs::T2DScanProperties structure, which now also has its separate header file for better modularity.
 	- BUG FIXES:
 		- mrpt::math::CQuaternion<> did not check for unit norm in Release builds.
 

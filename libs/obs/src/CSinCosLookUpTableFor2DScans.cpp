@@ -10,11 +10,11 @@
 #include "obs-precomp.h"   // Precompiled headers
 
 #include <mrpt/obs/CSinCosLookUpTableFor2DScans.h>
+#include <mrpt/obs/CObservation2DRangeScan.h>
 
 using namespace std;
 using namespace mrpt::obs;
 using namespace mrpt::utils;
-
 
 /** Return two vectors with the cos and the sin of the angles for each of the
   * rays in a scan, computing them only the first time and returning a cached copy the rest.
@@ -23,6 +23,14 @@ const CSinCosLookUpTableFor2DScans::TSinCosValues & CSinCosLookUpTableFor2DScans
 {
 	T2DScanProperties scan_prop;
 	scan.getScanProperties(scan_prop);
+	return getSinCosForScan(scan_prop);
+}
+
+/** Return two vectors with the cos and the sin of the angles for each of the
+  * rays in a scan, computing them only the first time and returning a cached copy the rest.
+  */
+const CSinCosLookUpTableFor2DScans::TSinCosValues & CSinCosLookUpTableFor2DScans::getSinCosForScan(const T2DScanProperties &scan_prop)
+{
 	std::map<T2DScanProperties,TSinCosValues>::const_iterator it = m_cache.find(scan_prop);
 	if (it!=m_cache.end())
 	{ // Found in the cache:
