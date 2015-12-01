@@ -217,9 +217,16 @@ void CClientTCPSocket::connect(
 	if (-1==fcntl(m_hSock, F_SETFL, oldflags))  THROW_EXCEPTION( "Error entering non-blocking mode with fcntl()." );
 #endif
 
-	int r = ::connect( m_hSock , (struct sockaddr *)&otherAddress,sizeof(otherAddress));
 	// Try to connect:
-	if (r < 0 && errno != EINPROGRESS) THROW_EXCEPTION( format("Error connecting to %s:%hu. Error: %s", remotePartAddress.c_str(), remotePartTCPPort, strerror(errno)));
+	int r = ::connect( m_hSock , (struct sockaddr *)&otherAddress,sizeof(otherAddress));
+#ifdef MRPT_OS_WINDOWS
+	int er = WSAGetLastError();
+	if (r < 0 && er != WSAEINPROGRESS)
+#else
+	int er = errno;
+	if (r < 0 && er != EINPROGRESS)
+#endif
+		THROW_EXCEPTION( format("Error connecting to %s:%hu. Error: %s [%d]", remotePartAddress.c_str(), remotePartTCPPort, strerror(er),er));
 
 	// Wait for connect:
 	fd_set socket_set;
