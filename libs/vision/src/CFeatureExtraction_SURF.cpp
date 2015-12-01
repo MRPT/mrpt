@@ -22,6 +22,9 @@ using namespace mrpt::system;
 using namespace mrpt::utils;
 using namespace std;
 
+#define HAVE_OPENCV_WITH_SURF \
+	MRPT_HAS_OPENCV && MRPT_OPENCV_VERSION_NUM >= 0x240 && (MRPT_OPENCV_VERSION_NUM < 0x300 || defined(HAVE_OPENCV_XFEATURES2D) ) /*HAVE_OPENCV_XFEATURES2D: required in opencv 3.0.0+ */
+
 
 /************************************************************************************************
 *								extractFeaturesSURF  									        *
@@ -33,7 +36,7 @@ void  CFeatureExtraction::extractFeaturesSURF(
 	unsigned int			nDesiredFeatures,
 	const TImageROI			&ROI) const
 {
-#if MRPT_HAS_OPENCV && MRPT_OPENCV_VERSION_NUM >= 0x240
+#if HAVE_OPENCV_WITH_SURF
 	using namespace cv;
 
 	const CImage img_grayscale(inImg, FAST_REF_OR_CONVERT_TO_GRAY);
@@ -115,7 +118,7 @@ void  CFeatureExtraction::extractFeaturesSURF(
 	} // end for
 
 #else
-	THROW_EXCEPTION("Method not available since either MRPT has been compiled without OpenCV or OpenCV version is incorrect (Required 1.1.0)")
+	THROW_EXCEPTION("Method not available: MRPT compiled without OpenCV, or against a version of OpenCV without SURF")
 #endif //MRPT_HAS_OPENCV
 } // end extractFeaturesSURF
 
@@ -127,7 +130,7 @@ void  CFeatureExtraction::internal_computeSurfDescriptors(
 	const mrpt::utils::CImage	&inImg,
 	CFeatureList		&in_features) const
 {
-#if MRPT_HAS_OPENCV && MRPT_OPENCV_VERSION_NUM >= 0x240
+#if HAVE_OPENCV_WITH_SURF
 	using namespace cv;
 
 	if (in_features.empty()) return;
@@ -180,7 +183,7 @@ void  CFeatureExtraction::internal_computeSurfDescriptors(
 	} // end for
 
 #else
-			THROW_EXCEPTION("Method not available since either MRPT has been compiled without OpenCV or OpenCV version is incorrect (Required 1.1.0)")
+	THROW_EXCEPTION("Method not available: MRPT compiled without OpenCV, or against a version of OpenCV without SURF")
 #endif //MRPT_HAS_OPENCV
 }  // end internal_computeSurfDescriptors
 
