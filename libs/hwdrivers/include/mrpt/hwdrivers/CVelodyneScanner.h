@@ -36,6 +36,10 @@ namespace mrpt
 		  *
 		  * See the source code of the example application `[MRPT]/apps/velodyne-view` for more details.
 		  *
+		  * <h2>About timestamps:</h2><hr>
+		  *  Generated observations timestamp are, by default, set from the computer clock as UDP packets are received.
+		  *  *TODO* Set from sensor timestamp.
+		  *
 		  * <h2>Format of parameters for loading from a .ini file</h2><hr>
 		  *
 		  *  \code

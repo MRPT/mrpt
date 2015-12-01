@@ -170,6 +170,9 @@ void Test_Velodyne()
 
 			// Show 3D points:
 			{
+				CObservationVelodyneScan::TGeneratePointCloudParameters pc_params;
+				last_obs->generatePointCloud(pc_params);
+
 				CColouredPointsMap pntsMap;
 				pntsMap.colorScheme.scheme = CColouredPointsMap::cmFromIntensityImage;
 				//pntsMap.loadFromRangeScan(*last_obs);

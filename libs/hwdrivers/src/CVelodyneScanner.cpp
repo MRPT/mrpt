@@ -39,7 +39,6 @@ IMPLEMENTS_GENERIC_SENSOR(CVelodyneScanner,mrpt::hwdrivers)
 
 short int CVelodyneScanner::VELODYNE_DATA_UDP_PORT = 2368;
 short int CVelodyneScanner::VELODYNE_POSITION_UDP_PORT= 8308;
-#define VELODYNE_DATA_PACKET_SIZE   1206  // Payload size of each Velodyne data packet
 
 CVelodyneScanner::CVelodyneScanner() : 
 	m_model("VLP16"),
@@ -98,7 +97,7 @@ bool CVelodyneScanner::getNextObservation(
 			outScan->timestamp = data_pkt_timestamp;
 			outScan->sensorLabel = this->m_sensorLabel;
 			outScan->sensorPose = m_sensorPose;
-			outScan->maxRange = 100.0; MRPT_TODO("Set from model");
+			outScan->maxRange = 130.0; MRPT_TODO("Set from model");
 
 			outScan->scan_packets.push_back(rx_pkt);
 		}
@@ -206,7 +205,7 @@ void CVelodyneScanner::close()
 
 mrpt::system::TTimeStamp CVelodyneScanner::receiveDataPacket(mrpt::obs::CObservationVelodyneScan::TVelodyneRawPacket &out_pkt)
 {
-	return internal_receive_UDP_packet(m_hDataSock,(uint8_t*)&out_pkt,VELODYNE_DATA_PACKET_SIZE,m_device_ip);
+	return internal_receive_UDP_packet(m_hDataSock,(uint8_t*)&out_pkt, CObservationVelodyneScan::PACKET_SIZE,m_device_ip);
 }
 
 mrpt::system::TTimeStamp CVelodyneScanner::internal_receive_UDP_packet(
