@@ -18,27 +18,27 @@ namespace Eigen {
 
 namespace mrpt
 {
-    namespace math
-    {
-    	/** ContainerType<T>::element_t exposes the value of any STL or Eigen container */
-    	template <typename CONTAINER> struct ContainerType;
-    	/** Specialization for Eigen containers */
-    	template <typename Derived>
-    	struct ContainerType<Eigen::EigenBase<Derived> > {
-    		typedef typename Derived::Scalar element_t;
+	namespace math
+	{
+		/** ContainerType<T>::element_t exposes the value of any STL or Eigen container */
+		template <typename CONTAINER> struct ContainerType;
+		/** Specialization for Eigen containers */
+		template <typename Derived>
+		struct ContainerType<Eigen::EigenBase<Derived> > {
+			typedef typename Derived::Scalar element_t;
 		};
 
-        // Dynamic size:
-        template <class T> class CMatrixTemplateNumeric;
+		// Dynamic size:
+		template <class T> class CMatrixTemplateNumeric;
 		typedef CMatrixTemplateNumeric<float> CMatrixFloat;
-        typedef CMatrixTemplateNumeric<double> CMatrixDouble;
+		typedef CMatrixTemplateNumeric<double> CMatrixDouble;
 		template <typename T> class dynamic_vector;
 		typedef dynamic_vector<float>  CVectorFloat;
 		typedef dynamic_vector<double> CVectorDouble;
 
 
-        // Fixed size:
-        template <typename T,size_t NROWS,size_t NCOLS> class CMatrixFixedNumeric;
+		// Fixed size:
+		template <typename T,size_t NROWS,size_t NCOLS> class CMatrixFixedNumeric;
 
 		/** @name Typedefs for common sizes
 			@{ */
