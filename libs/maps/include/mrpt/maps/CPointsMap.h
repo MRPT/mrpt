@@ -16,6 +16,7 @@
 #include <mrpt/math/KDTreeCapable.h>
 #include <mrpt/obs/CSinCosLookUpTableFor2DScans.h>
 #include <mrpt/math/lightweight_geom_data.h>
+#include <mrpt/math/CMatrixFixedNumeric.h>
 #include <mrpt/utils/PLY_import_export.h>
 #include <mrpt/obs/obs_frwds.h>
 
