@@ -221,7 +221,7 @@ void CClientTCPSocket::connect(
 	int r = ::connect( m_hSock , (struct sockaddr *)&otherAddress,sizeof(otherAddress));
 #ifdef MRPT_OS_WINDOWS
 	int er = WSAGetLastError();
-	if (r < 0 && er != WSAEINPROGRESS)
+	if (r < 0 && er != WSAEINPROGRESS && er != WSAEWOULDBLOCK)
 #else
 	int er = errno;
 	if (r < 0 && er != EINPROGRESS)
