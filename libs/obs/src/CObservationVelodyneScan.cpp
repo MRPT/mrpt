@@ -97,6 +97,8 @@ void CObservationVelodyneScan::generatePointCloud(const TGeneratePointCloudParam
 	using mrpt::utils::round;
 	float last_azimuth_diff;
 
+MRPT_TODO("Repeat for each raw packet")
+
 	// Reset point cloud:
 	point_cloud.x.clear();
 	point_cloud.y.clear();
@@ -153,26 +155,30 @@ void CObservationVelodyneScan::generatePointCloud(const TGeneratePointCloudParam
 					{
 							/** Position Calculation */
 							float distance = raw->blocks[block].laser_returns[k].distance * DISTANCE_RESOLUTION;
+							MRPT_TODO("corrections!")
+#if 0
 							//distance += corrections.dist_correction;
-							MRPT_TODO("correct")
-
 							float cos_vert_angle = corrections.cos_vert_correction;
 							float sin_vert_angle = corrections.sin_vert_correction;
 							float cos_rot_correction = corrections.cos_rot_correction;
 							float sin_rot_correction = corrections.sin_rot_correction;
+#endif
+							float cos_vert_angle = 1.0f;
+							float sin_vert_angle = 0.0f;
 
 							// cos(a-b) = cos(a)*cos(b) + sin(a)*sin(b)
 							// sin(a-b) = sin(a)*cos(b) - cos(a)*sin(b)
-							float cos_rot_angle = cos_rot_table_[azimuth_corrected];
+							const float cos_rot_angle = lut_sincos.ccos(azimuth_corrected);
+							const float sin_rot_angle = lut_sincos.csin(azimuth_corrected);
 							MRPT_TODO("Integrate calibration corrections")
 								//cos_rot_table_[azimuth_corrected] * cos_rot_correction + 
 								//sin_rot_table_[azimuth_corrected] * sin_rot_correction;
-							float sin_rot_angle = sin_rot_table_[azimuth_corrected];
 								//sin_rot_table_[azimuth_corrected] * cos_rot_correction - 
 								//cos_rot_table_[azimuth_corrected] * sin_rot_correction;
-
-							float horiz_offset = corrections.horiz_offset_correction;
-							float vert_offset = corrections.vert_offset_correction;
+//							float horiz_offset = corrections.horiz_offset_correction;
+//							float vert_offset = corrections.vert_offset_correction;
+							const float horiz_offset = .0f; 
+							const float vert_offset =  .0f; 
 
 							// Compute the distance in the xy plane (w/o accounting for rotation)
 							/**the new term of 'vert_offset * sin_vert_angle'
@@ -193,6 +199,7 @@ void CObservationVelodyneScan::generatePointCloud(const TGeneratePointCloudParam
 							// different value at different distance
 							float distance_corr_x = 0;
 							float distance_corr_y = 0;
+#if 0
 							if (corrections.two_pt_correction_available) {
 								distance_corr_x = 
 									(corrections.dist_correction - corrections.dist_correction_x)
@@ -205,6 +212,7 @@ void CObservationVelodyneScan::generatePointCloud(const TGeneratePointCloudParam
 									+ corrections.dist_correction_y;
 								distance_corr_y -= corrections.dist_correction;
 							}
+#endif
 
 							float distance_x = distance + distance_corr_x;
 							/**the new term of 'vert_offset * sin_vert_angle'
@@ -238,11 +246,12 @@ void CObservationVelodyneScan::generatePointCloud(const TGeneratePointCloudParam
 
 							/** Intensity Calculation */
 
-							float min_intensity = corrections.min_intensity;
-							float max_intensity = corrections.max_intensity;
+							float min_intensity = 0; //corrections.min_intensity;
+							float max_intensity = 255; //corrections.max_intensity;
 
-							float intensity = raw->blocks[block].data[k+2];
+							float intensity = raw->blocks[block].laser_returns[k].intensity; //  raw->blocks[block].data[k+2];
 
+#if 0
 							float focal_offset = 256 
 								* (1 - corrections.focal_distance / 13100) 
 								* (1 - corrections.focal_distance / 13100);
@@ -251,20 +260,15 @@ void CObservationVelodyneScan::generatePointCloud(const TGeneratePointCloudParam
 								(1 - tmp.uint/65535)*(1 - tmp.uint/65535)));
 							intensity = (intensity < min_intensity) ? min_intensity : intensity;
 							intensity = (intensity > max_intensity) ? max_intensity : intensity;
+#endif
 
-							if (pointInRange(distance)) {
-
-								// convert polar coordinates to Euclidean XYZ
-								VPoint point;
-								point.ring = corrections.laser_ring;
-								point.x = x_coord;
-								point.y = y_coord;
-								point.z = z_coord;
-								point.intensity = (uint8_t) intensity;
-
-								// append this point to the cloud
-								pc.points.push_back(point);
-								++pc.width;
+							if (distance>=minRange && distance<=maxRange)
+							{
+								//point.ring = corrections.laser_ring;
+								point_cloud.x.push_back( x_coord );
+								point_cloud.y.push_back( y_coord );
+								point_cloud.z.push_back( z_coord );
+								point_cloud.intensity.push_back( static_cast<uint8_t>(intensity) );
 							}
 					}
 				}

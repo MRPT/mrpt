@@ -30,8 +30,7 @@ namespace obs
 	  * then this observation can be converted / loaded into the following other classes:
 	  *  - **TODO** mrpt::opengl::CPointCloud 
 	  *  - **TODO** mrpt::opengl::CPointCloudColoured
-	  *  - **TODO** mrpt::maps::CColouredPointsMap
-	  *  - **TODO** mrpt::maps::CSimplePointsMap
+	  *  - Maps of points: See mrpt::maps::CPointsMap::loadFromRangeScan() (available in all derived classes)
 	  *
 	  * Otherwise, the following API exists for accurate reconstruction of the sensor path in SE(3) over time: 
 	  *  - **TODO** XXXX
@@ -116,6 +115,22 @@ namespace obs
 		{
 			std::vector<float>   x,y,z;
 			std::vector<uint8_t> intensity; //!< Color [0,255]
+
+			inline size_t size() const {
+				return x.size();
+			}
+			inline void clear() {
+				x.clear();
+				y.clear();
+				z.clear();
+				intensity.clear();
+			}
+			inline void clear_deep() {
+				x.swap(std::vector<float>());
+				y.swap(std::vector<float>());
+				z.swap(std::vector<float>());
+				intensity.swap(std::vector<uint8_t>());
+			}
 		};
 
 		/** Optionally, raw data can be converted into a 3D point cloud (local coordinates wrt the vehicle, not sensor, according to sensorPose) with intensity (graylevel) information. \sa generatePointCloud() */
@@ -128,7 +143,9 @@ namespace obs
 		{
 		};
 
-		/** Generates the point cloud into  */
+		/** Generates the point cloud into the point cloud data fields in \a CObservationVelodyneScan::point_cloud
+		  * \note Points with ranges out of [minRange,maxRange] are discarded.
+		  */
 		void generatePointCloud(const TGeneratePointCloudParameters &params);
 
 		/** @} */

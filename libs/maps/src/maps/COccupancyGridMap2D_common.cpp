@@ -15,6 +15,7 @@
 #include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/utils/CStream.h>
+#include <mrpt/poses/CPose3D.h>
 
 using namespace mrpt;
 using namespace mrpt::math;

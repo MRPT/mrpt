@@ -33,7 +33,7 @@ void  CFeatureExtraction::extractFeaturesSURF(
 	unsigned int			nDesiredFeatures,
 	const TImageROI			&ROI) const
 {
-#if MRPT_HAS_OPENCV && MRPT_OPENCV_VERSION_NUM >= 0x240
+#if 0 &&MRPT_HAS_OPENCV && MRPT_OPENCV_VERSION_NUM >= 0x240
 	using namespace cv;
 
 	const CImage img_grayscale(inImg, FAST_REF_OR_CONVERT_TO_GRAY);
@@ -127,7 +127,7 @@ void  CFeatureExtraction::internal_computeSurfDescriptors(
 	const mrpt::utils::CImage	&inImg,
 	CFeatureList		&in_features) const
 {
-#if MRPT_HAS_OPENCV && MRPT_OPENCV_VERSION_NUM >= 0x240
+#if 0 && MRPT_HAS_OPENCV && MRPT_OPENCV_VERSION_NUM >= 0x240
 	using namespace cv;
 
 	if (in_features.empty()) return;

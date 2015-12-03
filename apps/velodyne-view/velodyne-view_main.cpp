@@ -174,8 +174,7 @@ void Test_Velodyne()
 				last_obs->generatePointCloud(pc_params);
 
 				CColouredPointsMap pntsMap;
-				pntsMap.colorScheme.scheme = CColouredPointsMap::cmFromIntensityImage;
-				//pntsMap.loadFromRangeScan(*last_obs);
+				pntsMap.loadFromVelodyneScan(*last_obs);
 
 				win3D.get3DSceneAndLock();
 					gl_points->loadFromPointsMap(&pntsMap);
