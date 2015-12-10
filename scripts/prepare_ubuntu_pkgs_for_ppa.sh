@@ -63,7 +63,7 @@ do
 	# Call the standard "prepare_debian.sh" script:
 	# -------------------------------------------------------------------
 	cd ${MRPTSRC}
-	bash scripts/prepare_debian.sh -s -u -d ${DEBIAN_DIST} ${EMBED_EIGEN_FLAG} -c "${MRPT_PKG_CUSTOM_CMAKE_PARAMS}" 
+	bash scripts/prepare_debian.sh -s -u -h -d ${DEBIAN_DIST} ${EMBED_EIGEN_FLAG} -c "${MRPT_PKG_CUSTOM_CMAKE_PARAMS}" 
 
 	MRPT_SNAPSHOT_VERSION=`date +%Y%m%d`
 	MRPT_SNAPSHOT_VERSION+="-git-"
