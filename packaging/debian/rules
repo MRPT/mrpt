@@ -66,6 +66,7 @@ override_dh_auto_install:
 
 override_dh_auto_test:
 	# Tests:
+	echo "[override_dh_auto_test]"
 	dh_auto_build -O--buildsystem=cmake -- test -j1
 
 override_dh_install:

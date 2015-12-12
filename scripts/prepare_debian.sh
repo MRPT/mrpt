@@ -172,6 +172,11 @@ then
 	sed -i "/documentation_psgz_guides/d" $RULES_FILE
 fi
 
+# To avoid timeout and errors in PPA build farms for ARMHF... may be fixed someday if it becomes stable at the farms.
+if [ ${IS_FOR_UBUNTU} == "1" ];
+then
+	sed -i "/dh_auto_build -O--buildsystem=cmake -- test/d" $RULES_FILE
+fi
 
 
 # Strip my custom files...
