@@ -1,5 +1,6 @@
 language: cpp
 sudo: true
+dist: trusty
 
 compiler: 
   - gcc
