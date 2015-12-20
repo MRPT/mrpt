@@ -30,18 +30,26 @@ namespace mrpt
 		  * Configuration includes setting the device IP, model and RPM rotation speed (for calculating how many packets form a scan).
 		  * These parameters can be set programatically (see methods of this class), or via a configuration file with CGenericSensor::loadConfig()
 		  *
-		  * Grabbing live data:
-		  *  - See CGenericSensor for a general overview of the sequence of methods to be called: loadConfig(), initialize(), doProcess(). 
-		  *  - Or use this class inside the application [rawlog-grabber](http://www.mrpt.org/list-of-mrpt-apps/application-rawlog-grabber/). See example config files: XXX
+		  * <h2>Grabbing live data (as a user)</h2> <hr>
+		  *  - Use the application [velodyne-view](http://www.mrpt.org/list-of-mrpt-apps/application-velodyne-view/)) to visualize the LIDAR output in real-time.
+		  *  - Use [rawlog-grabber](http://www.mrpt.org/list-of-mrpt-apps/application-rawlog-grabber/) to record a dataset in MRPT's format. See example config file: [MRPT\share\mrpt\config_files\rawlog-grabber\velodyne.ini](https://github.com/MRPT/mrpt/blob/master/share/mrpt/config_files/rawlog-grabber/velodyne.ini)
 		  *
-		  * See the source code of the example application `[MRPT]/apps/velodyne-view` for more details.
+		  * <h2>Grabbing live data (programmatically)</h2> <hr>
+		  *  - See CGenericSensor for a general overview of the sequence of methods to be called: loadConfig(), initialize(), doProcess(). 
+		  *  - Or use this class inside the application [rawlog-grabber](http://www.mrpt.org/list-of-mrpt-apps/application-rawlog-grabber/). See example config files:  [MRPT\share\mrpt\config_files\rawlog-grabber\velodyne.ini](https://github.com/MRPT/mrpt/blob/master/share/mrpt/config_files/rawlog-grabber/velodyne.ini)
+		  *
+		  * See the source code of the example application `[MRPT]/apps/velodyne-view` ([velodyne-view web page](http://www.mrpt.org/list-of-mrpt-apps/application-velodyne-view/)) for more details.
+		  *
+		  * <h2>Playing back a PCAP file:</h2><hr>
+		  *  It is common to save Velodyne datasets as Wireshark's PCAP files. 
+		  *  These files can be played back with tools like [bittwist](http://bittwist.sourceforge.net/), which emit all UDP packets in the PCAP log. 
+		  *  Then, use this class to receive the packets as if they come from the real sensor.
 		  *
 		  * <h2>About timestamps:</h2><hr>
 		  *  Generated observations timestamp are, by default, set from the computer clock as UDP packets are received.
 		  *  *TODO* Set from sensor timestamp.
 		  *
 		  * <h2>Format of parameters for loading from a .ini file</h2><hr>
-		  *
 		  *  \code
 		  *  PARAMETERS IN THE ".INI"-LIKE CONFIGURATION STRINGS:
 		  * -------------------------------------------------------
@@ -49,7 +57,7 @@ namespace mrpt
 		  *
 		  *   model      = VLP16          // Can be any of: 64E_S2, 64E_S2.1, 64E, 32E, VLP16
 		  *   #device_ip  =  // IP address of the device. UDP packets from other IPs will be ignored. Left commented or blank if only one scanner is present (no IP filtering)
-		  *   rpm        = 600            // Device spinning speed
+		  *   rpm        = 600            // Device spinning speed (this is NOT sent to the device, you must configure it in advance via the LIDAR web interface)
 		  *
 		  *    # 3D position of the sensor on the vehicle:
 		  *   pose_x     = 0      // 3D position (meters)

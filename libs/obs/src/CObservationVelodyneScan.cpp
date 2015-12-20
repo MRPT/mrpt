@@ -97,8 +97,6 @@ void CObservationVelodyneScan::generatePointCloud(const TGeneratePointCloudParam
 	using mrpt::utils::round;
 	float last_azimuth_diff;
 
-MRPT_TODO("Repeat for each raw packet")
-
 	// Reset point cloud:
 	point_cloud.x.clear();
 	point_cloud.y.clear();
@@ -112,6 +110,7 @@ MRPT_TODO("Repeat for each raw packet")
 	scan_props.rightToLeft = true;
 	const CSinCosLookUpTableFor2DScans::TSinCosValues & lut_sincos = velodyne_sincos_tables.getSinCosForScan(scan_props);
 
+MRPT_TODO("Repeat for each raw packet")
 	for (size_t iPkt = 0; iPkt<scan_packets.size();iPkt++)
 	{
 		const TVelodyneRawPacket *raw = &scan_packets[iPkt];
