@@ -24,7 +24,7 @@ and much more.
   * [Bindings documentation](https://github.com/MRPT/mrpt/wiki) (Python, Matlab)
   * Download the latest unstable code with: 
     
-            git clone https://github.com/MRPT/mrpt.git
+            git clone https://github.com/MRPT/mrpt.git --depth 1
 
   * Example configuration files for  MRPT applications can be found at: 
      [MRPT/share/mrpt/config_files](https://github.com/MRPT/mrpt/tree/master/share/mrpt/config_files)
