@@ -17,6 +17,33 @@
 namespace mrpt {
 namespace obs 
 {
+	/** Velodyne calibration data, for usage in mrpt::obs::CObservationVelodyneScan
+	  * \note New in MRPT 1.3.3
+	  * \sa CObservationVelodyneScan
+	  * \ingroup mrpt_obs_grp
+	  */
+	struct OBS_IMPEXP VelodyneCalibration
+	{
+		static const int MAX_NUM_LASERS = 64;
+
+		struct OBS_IMPEXP PerLaserCalib
+		{
+			double azimuthCorrection, verticalCorrection, distanceCorrection;
+			double verticalOffsetCorrection, horizontalOffsetCorrection;
+			double sinVertCorrection, cosVertCorrection;
+			double sinVertOffsetCorrection, cosVertOffsetCorrection;
+			
+			PerLaserCalib();
+		};
+
+		PerLaserCalib laser_corrections[MAX_NUM_LASERS];
+
+		VelodyneCalibration();
+		/** Loads calibration from file. \return false on any error, true on success */
+		bool loadFromXMLFile(const std::string & velodyne_calibration_xml_filename);
+	};
+
+
 	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CObservationVelodyneScan, CObservation, OBS_IMPEXP)
 
 	/** A `CObservation`-derived class for RAW DATA (and optionally, point cloud) of scans from 3D Velodyne LIDAR scanners.
@@ -62,8 +89,8 @@ namespace obs
 		static const float DISTANCE_RESOLUTION;  /**< meters */
 		static const float DISTANCE_MAX_UNITS;
 
-		static const uint16_t UPPER_BANK = 0xeeff;
-		static const uint16_t LOWER_BANK = 0xddff;
+		static const uint16_t UPPER_BANK = 0xeeff;  //!< Blocks 0-31
+		static const uint16_t LOWER_BANK = 0xddff;  //!< Blocks 32-63
 
 		/** Special Defines for VLP16 support **/
 		static const int VLP16_FIRINGS_PER_BLOCK = 2;
@@ -91,7 +118,7 @@ namespace obs
 		*  bank.  The device returns three times as many upper bank blocks. */
 		struct OBS_IMPEXP raw_block_t
 		{
-			uint16_t        header;        ///< UPPER_BANK or LOWER_BANK
+			uint16_t        header;        ///< Block id: UPPER_BANK or LOWER_BANK
 			uint16_t        rotation;      ///< 0-35999, divide by 100 to get degrees
 			laser_return_t  laser_returns[SCANS_PER_BLOCK];
 		} ;

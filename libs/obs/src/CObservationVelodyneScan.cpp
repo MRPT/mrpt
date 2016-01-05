@@ -93,9 +93,10 @@ void CObservationVelodyneScan::getDescriptionAsText(std::ostream &o) const
 
 void CObservationVelodyneScan::generatePointCloud(const TGeneratePointCloudParameters &params)
 {
+	// Initially based on code from ROS velodyne & from vtkVelodyneHDLReader::vtkInternal::ProcessHDLPacket(). 
 	// CODE FOR VLP-16 ====================
+
 	using mrpt::utils::round;
-	float last_azimuth_diff;
 
 	// Reset point cloud:
 	point_cloud.x.clear();
@@ -110,13 +111,29 @@ void CObservationVelodyneScan::generatePointCloud(const TGeneratePointCloudParam
 	scan_props.rightToLeft = true;
 	const CSinCosLookUpTableFor2DScans::TSinCosValues & lut_sincos = velodyne_sincos_tables.getSinCosForScan(scan_props);
 
-MRPT_TODO("Repeat for each raw packet")
+	MRPT_TODO("Support 64 LIDAR")
+	int hdl64offset = 0;
+
 	for (size_t iPkt = 0; iPkt<scan_packets.size();iPkt++)
 	{
 		const TVelodyneRawPacket *raw = &scan_packets[iPkt];
+//		const double timestamp = this->ComputeTimestamp(dataPacket->gpsTimestamp);
 
-		for (int block = 0; block < BLOCKS_PER_PACKET; block++) 
+		std::vector<int> diffs(BLOCKS_PER_PACKET - 1);
+		for(int i = 0; i < BLOCKS_PER_PACKET-1; ++i) {
+			int localDiff = (36000 + raw->blocks[i+1].rotation - raw->blocks[i].rotation) % 36000;
+			diffs[i] = localDiff;
+		}
+		std::nth_element(
+			diffs.begin(),
+			diffs.begin() + BLOCKS_PER_PACKET/2,
+			diffs.end());
+		const int median_azimuth_diff = diffs[BLOCKS_PER_PACKET/2];
+
+		for (int block = 0; block < BLOCKS_PER_PACKET; block++)  // Firings per packet
 		{
+			// ProcessFiring() in vtk's VeloView code:
+
 			// ignore packets with mangled or otherwise different contents
 			if (UPPER_BANK != raw->blocks[block].header) {
 				// Do not flood the log with messages, only issue at most one
@@ -124,28 +141,52 @@ MRPT_TODO("Repeat for each raw packet")
 				cerr << "[CObservationVelodyneScan] skipping invalid VLP-16 packet: block "
 					<< block << " header value is "
 					<< raw->blocks[block].header;
-				return;                         // bad packet: skip the rest
+				continue;                         // bad packet: skip the rest
 			}
 
-			float azimuth = (float)(raw->blocks[block].rotation);
-			float azimuth_diff;
-			if (block < (BLOCKS_PER_PACKET-1)){
-				azimuth_diff = (float)((36000 + raw->blocks[block+1].rotation - raw->blocks[block].rotation)%36000);
-				last_azimuth_diff = azimuth_diff;
-			}else{
-				azimuth_diff = last_azimuth_diff;
-			}
+			MRPT_TODO("Support LIDAR dual data")
+			
+			const float azimuth_raw_f = (float)(raw->blocks[block].rotation);
 
 			for (int firing=0, k=0; firing < VLP16_FIRINGS_PER_BLOCK; firing++)
 			{
 				for (int dsr=0; dsr < VLP16_SCANS_PER_FIRING; dsr++, k+=RAW_SCAN_SIZE)
 				{
+					const uint8_t rawLaserId = static_cast<uint8_t>(dsr + hdl64offset);
+					const uint8_t laserId = rawLaserId;
+
 					//velodyne_pointcloud::LaserCorrection &corrections = calibration_.laser_corrections[dsr];
 
 
-					/** correct for the laser rotation as a function of timing during the firings **/
-					float azimuth_corrected_f = azimuth + (azimuth_diff * ((dsr*VLP16_DSR_TOFFSET) + (firing*VLP16_FIRING_TOFFSET)) / VLP16_BLOCK_TDURATION);
-					int azimuth_corrected = ((int)round(azimuth_corrected_f)) % 36000;
+					// Azimuth correction: correct for the laser rotation as a function of timing during the firings
+					float azimuth_correction_f;
+					if (1)
+					{
+						// VLP 16
+						azimuth_correction_f = (median_azimuth_diff * ((dsr*VLP16_DSR_TOFFSET) + (firing*VLP16_FIRING_TOFFSET)) / VLP16_BLOCK_TDURATION);
+						//timestampadjustment = VLP16AdjustTimeStamp(firingBlock, laserId, firingWithinBlock);
+						//nextblockdsr0 = VLP16AdjustTimeStamp(firingBlock+1,0,0);
+						//blockdsr0 = VLP16AdjustTimeStamp(firingBlock,0,0);
+						//int azimuthadjustment = vtkMath::Round(azimuthDiff * ((timestampadjustment - blockdsr0) / (nextblockdsr0 - blockdsr0)));
+					}
+					else
+					{
+						// HDL-32:
+						MRPT_TODO("Impl")
+						//timestampadjustment = HDL32AdjustTimeStamp(firingBlock, dsr);
+						//nextblockdsr0 = HDL32AdjustTimeStamp(firingBlock+1,0);
+						//blockdsr0 = HDL32AdjustTimeStamp(firingBlock,0);
+						//int azimuthadjustment = vtkMath::Round(azimuthDiff * ((timestampadjustment - blockdsr0) / (nextblockdsr0 - blockdsr0)));
+					}
+					const float azimuth_corrected_f = azimuth_raw_f + azimuth_correction_f;
+					const int azimuth_corrected = ((int)round(azimuth_corrected_f)) % 36000;
+
+					// For the following code: See reference implementation in vtkVelodyneHDLReader::vtkInternal::PushFiringData()
+					// -----------------------------------------
+
+					// Azimuth correction:
+					//double azimuthInRadians = HDL_Grabber_toRadians((static_cast<double> (azimuth) / 100.0) - correction->azimuthCorrection);
+
 
 					/*condition added to avoid calculating points which are not
 					in the interesting defined area (min_angle < area < max_angle)*/
@@ -153,102 +194,51 @@ MRPT_TODO("Repeat for each raw packet")
 					//	||(config_.min_angle > config_.max_angle && (azimuth_corrected <= config_.max_angle || azimuth_corrected >= config_.min_angle)))
 					{
 							/** Position Calculation */
-							float distance = raw->blocks[block].laser_returns[k].distance * DISTANCE_RESOLUTION;
+							const float distance = raw->blocks[block].laser_returns[k].distance * DISTANCE_RESOLUTION
+								//+ correction->distanceCorrection;
+								;
 							MRPT_TODO("corrections!")
+
+							// Vertical axis mis-alignment calibration:
 #if 0
-							//distance += corrections.dist_correction;
 							float cos_vert_angle = corrections.cos_vert_correction;
 							float sin_vert_angle = corrections.sin_vert_correction;
 							float cos_rot_correction = corrections.cos_rot_correction;
 							float sin_rot_correction = corrections.sin_rot_correction;
 #endif
-							float cos_vert_angle = 1.0f;
-							float sin_vert_angle = 0.0f;
+							const float cos_vert_angle = 1.0f;
+							const float sin_vert_angle = 0.0f;
+							const float horz_offset = .0f;
+							const float vert_offset = .0f;
+
+							const float xy_distance = distance * cos_vert_angle + vert_offset * sin_vert_angle;
 
 							// cos(a-b) = cos(a)*cos(b) + sin(a)*sin(b)
 							// sin(a-b) = sin(a)*cos(b) - cos(a)*sin(b)
-							const float cos_rot_angle = lut_sincos.ccos(azimuth_corrected);
-							const float sin_rot_angle = lut_sincos.csin(azimuth_corrected);
+							const float cos_azimuth = lut_sincos.ccos(azimuth_corrected);
+							const float sin_azimuth = lut_sincos.csin(azimuth_corrected);
 							MRPT_TODO("Integrate calibration corrections")
-								//cos_rot_table_[azimuth_corrected] * cos_rot_correction + 
-								//sin_rot_table_[azimuth_corrected] * sin_rot_correction;
-								//sin_rot_table_[azimuth_corrected] * cos_rot_correction - 
-								//cos_rot_table_[azimuth_corrected] * sin_rot_correction;
-//							float horiz_offset = corrections.horiz_offset_correction;
-//							float vert_offset = corrections.vert_offset_correction;
-							const float horiz_offset = .0f; 
-							const float vert_offset =  .0f; 
 
-							// Compute the distance in the xy plane (w/o accounting for rotation)
-							/**the new term of 'vert_offset * sin_vert_angle'
-							* was added to the expression due to the mathemathical
-							* model we used.
-							*/
-							float xy_distance = distance * cos_vert_angle + vert_offset * sin_vert_angle;
+							// Compute raw position
+							const mrpt::math::TPoint3Df pt_raw(
+								xy_distance * sin_azimuth - horz_offset * cos_azimuth,
+								xy_distance * cos_azimuth + horz_offset * sin_azimuth,
+								distance * sin_vert_angle + vert_offset
+								);
 
-							// Calculate temporal X, use absolute value.
-							float xx = xy_distance * sin_rot_angle - horiz_offset * cos_rot_angle;
-							// Calculate temporal Y, use absolute value
-							float yy = xy_distance * cos_rot_angle + horiz_offset * sin_rot_angle;
-							if (xx < 0) xx=-xx;
-							if (yy < 0) yy=-yy;
+							MRPT_TODO("Process LIDAR dual mode here")
 
-							// Get 2points calibration values,Linear interpolation to get distance
-							// correction for X and Y, that means distance correction use
-							// different value at different distance
-							float distance_corr_x = 0;
-							float distance_corr_y = 0;
-#if 0
-							if (corrections.two_pt_correction_available) {
-								distance_corr_x = 
-									(corrections.dist_correction - corrections.dist_correction_x)
-									* (xx - 2.4) / (25.04 - 2.4) 
-									+ corrections.dist_correction_x;
-								distance_corr_x -= corrections.dist_correction;
-								distance_corr_y = 
-									(corrections.dist_correction - corrections.dist_correction_y)
-									* (yy - 1.93) / (25.04 - 1.93)
-									+ corrections.dist_correction_y;
-								distance_corr_y -= corrections.dist_correction;
-							}
-#endif
+							///** Use standard ROS coordinate system (right-hand rule) */
+							//float x_coord = y;
+							//float y_coord = -x;
+							//float z_coord = z;
 
-							float distance_x = distance + distance_corr_x;
-							/**the new term of 'vert_offset * sin_vert_angle'
-							* was added to the expression due to the mathemathical
-							* model we used.
-							*/
-							xy_distance = distance_x * cos_vert_angle + vert_offset * sin_vert_angle ;
-							float x = xy_distance * sin_rot_angle - horiz_offset * cos_rot_angle;
+							// Intensity Calculation
+							MRPT_TODO("corrections!")
+							const float min_intensity = 0; //corrections.min_intensity;
+							const float max_intensity = 255; //corrections.max_intensity;
 
-							float distance_y = distance + distance_corr_y;
-							/**the new term of 'vert_offset * sin_vert_angle'
-							* was added to the expression due to the mathemathical
-							* model we used.
-							*/
-							xy_distance = distance_y * cos_vert_angle + vert_offset * sin_vert_angle ;
-							float y = xy_distance * cos_rot_angle + horiz_offset * sin_rot_angle;
-
-							// Using distance_y is not symmetric, but the velodyne manual
-							// does this.
-							/**the new term of 'vert_offset * cos_vert_angle'
-							* was added to the expression due to the mathemathical
-							* model we used.
-							*/
-							float z = distance_y * sin_vert_angle + vert_offset*cos_vert_angle;
-
-
-							/** Use standard ROS coordinate system (right-hand rule) */
-							float x_coord = y;
-							float y_coord = -x;
-							float z_coord = z;
-
-							/** Intensity Calculation */
-
-							float min_intensity = 0; //corrections.min_intensity;
-							float max_intensity = 255; //corrections.max_intensity;
-
-							float intensity = raw->blocks[block].laser_returns[k].intensity; //  raw->blocks[block].data[k+2];
+							float intensity = raw->blocks[block].laser_returns[k].intensity;
 
 #if 0
 							float focal_offset = 256 
@@ -264,9 +254,9 @@ MRPT_TODO("Repeat for each raw packet")
 							if (distance>=minRange && distance<=maxRange)
 							{
 								//point.ring = corrections.laser_ring;
-								point_cloud.x.push_back( x_coord );
-								point_cloud.y.push_back( y_coord );
-								point_cloud.z.push_back( z_coord );
+								point_cloud.x.push_back( pt_raw.x );
+								point_cloud.y.push_back( pt_raw.y );
+								point_cloud.z.push_back( pt_raw.z );
 								point_cloud.intensity.push_back( static_cast<uint8_t>(intensity) );
 							}
 					}
@@ -274,5 +264,31 @@ MRPT_TODO("Repeat for each raw packet")
 			}
 		}
 	} // end for each data packet
+}
+
+// VelodyneCalibration --------
+#undef _UNICODE			// JLBC, for xmlParser
+#include "xmlparser/xmlParser.h"
+
+VelodyneCalibration::PerLaserCalib::PerLaserCalib() :
+	azimuthCorrection          (.0),
+	verticalCorrection         (.0),
+	distanceCorrection         (.0),
+	verticalOffsetCorrection   (.0),
+	horizontalOffsetCorrection (.0),
+	sinVertCorrection          (.0),
+	cosVertCorrection          (1.0),
+	sinVertOffsetCorrection    (.0),
+	cosVertOffsetCorrection    (1.0)
+{
+}
+
+/** Loads calibration from file. \return false on any error, true on success */
+// See reference code in:  vtkVelodyneHDLReader::vtkInternal::LoadCorrectionsFile()
+bool VelodyneCalibration::loadFromXMLFile(const std::string & velodyne_calibration_xml_filename)
+{
+
+
+	return true;
 }
 

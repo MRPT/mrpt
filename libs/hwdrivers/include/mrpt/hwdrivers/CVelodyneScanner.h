@@ -161,6 +161,8 @@ namespace mrpt
 
 		static mrpt::system::TTimeStamp internal_receive_UDP_packet(platform_socket_t hSocket, uint8_t *out_buffer, const size_t expected_packet_size,const std::string &filter_only_from_IP);
 
+		mrpt::obs::CObservationVelodyneScanPtr m_rx_scan; //!< In progress RX scan
+
 		}; // end of class
 	} // end of namespace
 } // end of namespace

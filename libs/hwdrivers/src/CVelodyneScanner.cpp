@@ -93,13 +93,26 @@ bool CVelodyneScanner::getNextObservation(
 		mrpt::system::TTimeStamp data_pkt_timestamp = receiveDataPacket(rx_pkt);
 		if (data_pkt_timestamp!=INVALID_TIMESTAMP)
 		{
-			outScan = mrpt::obs::CObservationVelodyneScan::Create();
-			outScan->timestamp = data_pkt_timestamp;
-			outScan->sensorLabel = this->m_sensorLabel;
-			outScan->sensorPose = m_sensorPose;
-			outScan->maxRange = 130.0; MRPT_TODO("Set from model");
+			// Break into a new observation object when the azimuth passes 360->0 deg:
+			if (m_rx_scan && 
+			    !m_rx_scan->scan_packets.empty() && 
+			    rx_pkt.blocks[0].rotation < m_rx_scan->scan_packets.rbegin()->blocks[0].rotation )
+			{
+				// Return the observation as done when a complete 360 deg scan is ready:
+				outScan = m_rx_scan;
+				m_rx_scan.clear_unique();
+			}
 
-			outScan->scan_packets.push_back(rx_pkt);
+			// Create smart ptr to new in-progress observation:
+			if (!m_rx_scan) {
+				m_rx_scan= mrpt::obs::CObservationVelodyneScan::Create();
+				m_rx_scan->timestamp = data_pkt_timestamp;
+				m_rx_scan->sensorLabel = this->m_sensorLabel;
+				m_rx_scan->sensorPose = m_sensorPose;
+				m_rx_scan->maxRange = 130.0; MRPT_TODO("Set from model");
+			}
+			// Accumulate pkts in the observation object:
+			m_rx_scan->scan_packets.push_back(rx_pkt);
 		}
 		
 		return true;
@@ -115,7 +128,6 @@ bool CVelodyneScanner::getNextObservation(
 		return false;
 	}
 }
-
 
 void CVelodyneScanner::doProcess()
 {
