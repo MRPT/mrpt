@@ -40,8 +40,10 @@ IMPLEMENTS_GENERIC_SENSOR(CVelodyneScanner,mrpt::hwdrivers)
 short int CVelodyneScanner::VELODYNE_DATA_UDP_PORT = 2368;
 short int CVelodyneScanner::VELODYNE_POSITION_UDP_PORT= 8308;
 
+MRPT_TODO("Load params from cfg file")
+
 CVelodyneScanner::CVelodyneScanner() : 
-	m_model("VLP16"),
+	m_model("VLP-16"),
 	m_device_ip(""),
 	m_rpm(600),
 	m_hDataSock(INVALID_SOCKET),
@@ -66,7 +68,12 @@ CVelodyneScanner::~CVelodyneScanner( )
 #endif
 }
 
-void  CVelodyneScanner::loadConfig_sensorSpecific(
+bool CVelodyneScanner::loadCalibrationFile(const std::string & velodyne_xml_calib_file_path )
+{
+	return m_velodyne_calib.loadFromXMLFile(velodyne_xml_calib_file_path);
+}
+
+void CVelodyneScanner::loadConfig_sensorSpecific(
 	const mrpt::utils::CConfigFileBase &configSource,
 	const std::string			&iniSection )
 {
@@ -152,6 +159,19 @@ void CVelodyneScanner::doProcess()
 void CVelodyneScanner::initialize()
 {
 	this->close();
+
+	// (0) Preparation:
+	// --------------------------------
+	// Make sure we have calibration data:
+	if (m_velodyne_calib.empty() && m_model.empty())
+		THROW_EXCEPTION("You must provide either a `model` name or load a valid XML configuration file first.");
+	if (m_velodyne_calib.empty()) {
+		// Try to load default data:
+		m_velodyne_calib = VelodyneCalibration::LoadDefaultCalibration(m_model);
+		if (m_velodyne_calib.empty())
+			THROW_EXCEPTION("Could not find default calibration data for the given LIDAR `model` name. Please, specify a valid `model` or load a valid XML configuration file first.");
+	}
+
 
 	// (1) Create LIDAR DATA socket
 	// --------------------------------

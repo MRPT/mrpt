@@ -56,6 +56,9 @@ void thread_grabbing(TThreadParam &p)
 
 		// Set params:
 		//velodyne.setDeviceIP("192.168.1.201"); // Default: from any IP
+		mrpt::obs::VelodyneCalibration calib;
+		calib.loadFromXMLFile("C:\\Users\\jlblanco\\code\\mrpt\\share\\mrpt\\config_files\\rawlog-grabber\\velodyne_default_calib_VLP-16.xml");
+		velodyne.setCalibration(calib);
 
 		// Open:
 		cout << "Calling CVelodyneScanner::initialize()...";

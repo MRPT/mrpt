@@ -13,37 +13,11 @@
 #include <mrpt/obs/CObservation.h>
 #include <mrpt/obs/CSinCosLookUpTableFor2DScans.h>
 #include <mrpt/poses/CPose3D.h>
+#include <mrpt/obs/VelodyneCalibration.h>
 
 namespace mrpt {
 namespace obs 
 {
-	/** Velodyne calibration data, for usage in mrpt::obs::CObservationVelodyneScan
-	  * \note New in MRPT 1.3.3
-	  * \sa CObservationVelodyneScan
-	  * \ingroup mrpt_obs_grp
-	  */
-	struct OBS_IMPEXP VelodyneCalibration
-	{
-		static const int MAX_NUM_LASERS = 64;
-
-		struct OBS_IMPEXP PerLaserCalib
-		{
-			double azimuthCorrection, verticalCorrection, distanceCorrection;
-			double verticalOffsetCorrection, horizontalOffsetCorrection;
-			double sinVertCorrection, cosVertCorrection;
-			double sinVertOffsetCorrection, cosVertOffsetCorrection;
-			
-			PerLaserCalib();
-		};
-
-		PerLaserCalib laser_corrections[MAX_NUM_LASERS];
-
-		VelodyneCalibration();
-		/** Loads calibration from file. \return false on any error, true on success */
-		bool loadFromXMLFile(const std::string & velodyne_calibration_xml_filename);
-	};
-
-
 	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CObservationVelodyneScan, CObservation, OBS_IMPEXP)
 
 	/** A `CObservation`-derived class for RAW DATA (and optionally, point cloud) of scans from 3D Velodyne LIDAR scanners.
@@ -63,7 +37,7 @@ namespace obs
 	  *  - **TODO** XXXX
 	  *
 	  * \note New in MRPT 1.3.3
-	  * \sa CObservation, CPointsMap
+	  * \sa CObservation, CPointsMap, CVelodyneScanner
 	  * \ingroup mrpt_obs_grp
 	  */
 	class OBS_IMPEXP CObservationVelodyneScan : public CObservation

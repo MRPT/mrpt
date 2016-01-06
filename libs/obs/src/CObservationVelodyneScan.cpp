@@ -265,30 +265,3 @@ void CObservationVelodyneScan::generatePointCloud(const TGeneratePointCloudParam
 		}
 	} // end for each data packet
 }
-
-// VelodyneCalibration --------
-#undef _UNICODE			// JLBC, for xmlParser
-#include "xmlparser/xmlParser.h"
-
-VelodyneCalibration::PerLaserCalib::PerLaserCalib() :
-	azimuthCorrection          (.0),
-	verticalCorrection         (.0),
-	distanceCorrection         (.0),
-	verticalOffsetCorrection   (.0),
-	horizontalOffsetCorrection (.0),
-	sinVertCorrection          (.0),
-	cosVertCorrection          (1.0),
-	sinVertOffsetCorrection    (.0),
-	cosVertOffsetCorrection    (1.0)
-{
-}
-
-/** Loads calibration from file. \return false on any error, true on success */
-// See reference code in:  vtkVelodyneHDLReader::vtkInternal::LoadCorrectionsFile()
-bool VelodyneCalibration::loadFromXMLFile(const std::string & velodyne_calibration_xml_filename)
-{
-
-
-	return true;
-}
-
