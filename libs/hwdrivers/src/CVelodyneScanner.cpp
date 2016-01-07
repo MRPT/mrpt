@@ -16,6 +16,7 @@
 // socket's hdrs:
 #ifdef MRPT_OS_WINDOWS
 	#include <winsock2.h>
+	typedef int socklen_t;
 #else
 	#define  INVALID_SOCKET  (-1)
 	#include <sys/socket.h>
@@ -28,6 +29,7 @@
 	#include <arpa/inet.h>
 	#include <netinet/in.h>
 	#include <netinet/tcp.h>
+	#include <poll.h>
 #endif
 
 using namespace mrpt;
@@ -224,14 +226,22 @@ void CVelodyneScanner::close()
 	if (m_hDataSock!=INVALID_SOCKET)
 	{
 		shutdown(m_hDataSock, 2 ); //SD_BOTH  );
+#ifdef MRPT_OS_WINDOWS
 		closesocket( m_hDataSock );
+#else
+		::close( m_hDataSock );
+#endif
 		m_hDataSock=INVALID_SOCKET;
 	}
 
 	if (m_hPositionSock!=INVALID_SOCKET)
 	{
 		shutdown(m_hPositionSock, 2 ); //SD_BOTH  );
-		closesocket( m_hPositionSock );
+#ifdef MRPT_OS_WINDOWS
+		closesocket( m_hDataSock );
+#else
+		::close( m_hDataSock );
+#endif
 		m_hPositionSock=INVALID_SOCKET;
 	}
 }
@@ -262,7 +272,7 @@ mrpt::system::TTimeStamp CVelodyneScanner::internal_receive_UDP_packet(
 	static const int POLL_TIMEOUT = 1000; // one second (in msec)
 
 	sockaddr_in sender_address;
-	int sender_address_len = sizeof(sender_address);
+	socklen_t sender_address_len = sizeof(sender_address);
 
 	while (true)
 	{

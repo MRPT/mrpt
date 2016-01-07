@@ -10,6 +10,7 @@
 #define T2DScanProperties_H
 
 #include <mrpt/utils/core_defs.h>
+#include <mrpt/obs/link_pragmas.h>
 
 namespace mrpt
 {

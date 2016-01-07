@@ -11,6 +11,7 @@
 
 #include <mrpt/obs/CObservationVelodyneScan.h>
 #include <mrpt/utils/round.h>
+#include <mrpt/utils/CStream.h>
 
 using namespace std;
 using namespace mrpt::obs;
@@ -86,7 +87,7 @@ void CObservationVelodyneScan::getDescriptionAsText(std::ostream &o) const
 	o << "Homogeneous matrix for the sensor 3D pose, relative to robot base:\n";
 	o << sensorPose.getHomogeneousMatrixVal() << sensorPose << endl;
 
-	o << format("Sensor min/max range: %.02f / %.02f m\n", minRange / maxRange );
+	o << format("Sensor min/max range: %.02f / %.02f m\n", minRange, maxRange );
 
 	o << "Raw packet count: " << scan_packets.size() << "\n";
 }

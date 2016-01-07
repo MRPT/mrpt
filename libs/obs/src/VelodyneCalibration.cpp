@@ -10,6 +10,9 @@
 #include "obs-precomp.h"   // Precompiled headers
 
 #include <mrpt/obs/VelodyneCalibration.h>
+#include <mrpt/utils/bits.h>
+#include <iostream>
+#include <map>
 
 #undef _UNICODE			// JLBC, for xmlParser
 #include "xmlparser/xmlParser.h"
@@ -45,8 +48,8 @@ bool VelodyneCalibration::loadFromXMLFile(const std::string & velodyne_calibrati
 		XMLNode 	root = XMLNode::parseFile( velodyne_calibration_xml_filename.c_str(), NULL, &results );
 
 		if (results.error != eXMLErrorNone) {
-			cerr << "[VelodyneCalibration::loadFromXMLFile] Error loading XML file: " <<
-					XMLNode::getError( results.error ) << " at line " << results.nLine << ":" << results.nColumn << endl;
+			std::cerr << "[VelodyneCalibration::loadFromXMLFile] Error loading XML file: " <<
+					XMLNode::getError( results.error ) << " at line " << results.nLine << ":" << results.nColumn << std::endl;
 			return false;
 		}
 
@@ -127,8 +130,8 @@ bool VelodyneCalibration::loadFromXMLFile(const std::string & velodyne_calibrati
 				plc->horizontalOffsetCorrection = 0.01f * atof( node.getText() );
 			}
 
-			plc->sinVertCorrection = std::sin( mrpt::utils::DEG2RAD( plc->verticalCorrection ) );
-			plc->cosVertCorrection = std::cos( mrpt::utils::DEG2RAD( plc->verticalCorrection ) );
+			plc->sinVertCorrection = sin( mrpt::utils::DEG2RAD( plc->verticalCorrection ) );
+			plc->cosVertCorrection = cos( mrpt::utils::DEG2RAD( plc->verticalCorrection ) );
 
 			plc->sinVertOffsetCorrection = plc->sinVertCorrection * plc->sinVertOffsetCorrection;
 			plc->cosVertOffsetCorrection = plc->cosVertCorrection * plc->sinVertOffsetCorrection;

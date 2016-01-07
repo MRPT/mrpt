@@ -14,6 +14,7 @@
 #include <mrpt/obs/CSinCosLookUpTableFor2DScans.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/obs/VelodyneCalibration.h>
+#include <vector>
 
 namespace mrpt {
 namespace obs 
@@ -130,10 +131,10 @@ namespace obs
 				intensity.clear();
 			}
 			inline void clear_deep() {
-				x.swap(std::vector<float>());
-				y.swap(std::vector<float>());
-				z.swap(std::vector<float>());
-				intensity.swap(std::vector<uint8_t>());
+				{ std::vector<float> dumm; x.swap(dumm); }
+				{ std::vector<float> dumm; y.swap(dumm); }
+				{ std::vector<float> dumm; z.swap(dumm); }
+				{ std::vector<uint8_t> dumm; intensity.swap(dumm); }
 			}
 		};
 
