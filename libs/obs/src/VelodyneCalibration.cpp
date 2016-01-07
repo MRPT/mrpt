@@ -61,46 +61,77 @@ bool VelodyneCalibration::loadFromXMLFile(const std::string & velodyne_calibrati
 		// Clear previous contents:
 		clear();
 
-#if 0
-		// Get tables:
-		size_t i,j, nTables = root.nChildNode("table");
-		for (i=0;i<nTables;i++)
+		XMLNode node_enabled_count = node_enabled_.getChildNode("count");
+		if (node_enabled_count.isEmpty()) throw std::runtime_error("Cannot find XML node: 'enabled_::count'");
+		const int nEnabled = atoi( node_enabled_count.getText() );
+		if (nEnabled<=0 || nEnabled>10000)
+			throw std::runtime_error("Senseless value found reading 'enabled_::count'");
+
+		size_t enabledCount = 0;
+		for (int i=0;i<nEnabled;i++)
 		{
-			XMLNode tabNod = root.getChildNode("table",(int)i);
-			ASSERT_(!tabNod.isEmpty())
+			XMLNode node_enabled_ith = node_enabled_.getChildNode("item",i);
+			if (node_enabled_ith.isEmpty()) throw std::runtime_error("Cannot find the expected number of XML nodes: 'enabled_::item'");
+			const int enable_val = atoi( node_enabled_ith.getText() );
+			if (enable_val)
+				++enabledCount;
+		}
 
-			// Create table:
-			CSimpleDatabaseTablePtr t = createTable( tabNod.getAttribute("name") );
+		// enabledCount = number of lasers in the LIDAR
+		this->laser_corrections.resize(enabledCount);
 
-			// Create fields:
-			XMLNode fNod = tabNod.getChildNode("fields");
-			ASSERT_(!fNod.isEmpty())
+		XMLNode node_points_ = node_DB.getChildNode("points_");
+		if (node_points_.isEmpty()) throw std::runtime_error("Cannot find XML node: 'points_'");
 
-			size_t  nFields = fNod.nChildNode();
-			for (j=0;j<nFields;j++)
+		for (int i=0; ; ++i)
+		{
+			XMLNode node_points_item = node_points_.getChildNode("item",i);
+			if (node_points_item.isEmpty()) break;
+
+			XMLNode node_px = node_points_item.getChildNode("px");
+			if (node_px.isEmpty()) throw std::runtime_error("Cannot find XML node: 'points_::item::px'");
+
+			XMLNode node_px_id = node_px.getChildNode("id_");
+			if (node_px_id.isEmpty()) throw std::runtime_error("Cannot find XML node: 'points_::item::px::id_'");
+			const int id = atoi( node_px_id.getText() );
+			ASSERT_ABOVEEQ_(id,0);
+			if (id>=enabledCount)
+				continue; // ignore
+
+			PerLaserCalib *plc = &laser_corrections[id];
+				
 			{
-				t->addField( fNod.getChildNode((int)j).getName() );
-			} // end for each field
-
-			// Add record data:
-			size_t nRecs = tabNod.nChildNode("record");
-			for (size_t k=0;k<nRecs;k++)
+				XMLNode node = node_px.getChildNode("rotCorrection_");
+				if (node.isEmpty()) throw std::runtime_error("Cannot find XML node: 'points_::item::px::rotCorrection_'");
+				plc->azimuthCorrection = atof( node.getText() );
+			}
 			{
-				size_t recIdx = t->appendRecord();
+				XMLNode node = node_px.getChildNode("vertCorrection_");
+				if (node.isEmpty()) throw std::runtime_error("Cannot find XML node: 'points_::item::px::vertCorrection_'");
+				plc->verticalCorrection = atof( node.getText() );
+			}
+			{
+				XMLNode node = node_px.getChildNode("distCorrection_");
+				if (node.isEmpty()) throw std::runtime_error("Cannot find XML node: 'points_::item::px::distCorrection_'");
+				plc->distanceCorrection = 0.01f * atof( node.getText() );
+			}
+			{
+				XMLNode node = node_px.getChildNode("vertOffsetCorrection_");
+				if (node.isEmpty()) throw std::runtime_error("Cannot find XML node: 'points_::item::px::vertOffsetCorrection_'");
+				plc->verticalOffsetCorrection = 0.01f * atof( node.getText() );
+			}
+			{
+				XMLNode node = node_px.getChildNode("horizOffsetCorrection_");
+				if (node.isEmpty()) throw std::runtime_error("Cannot find XML node: 'points_::item::px::horizOffsetCorrection_'");
+				plc->horizontalOffsetCorrection = 0.01f * atof( node.getText() );
+			}
 
-				XMLNode recNod = tabNod.getChildNode("record",(int)k);
-				ASSERT_(!recNod.isEmpty())
+			plc->sinVertCorrection = std::sin( mrpt::utils::DEG2RAD( plc->verticalCorrection ) );
+			plc->cosVertCorrection = std::cos( mrpt::utils::DEG2RAD( plc->verticalCorrection ) );
 
-				for (j=0;j<nFields;j++)
-				{
-					XMLCSTR  str=recNod.getChildNode(t->getFieldName(j).c_str() ).getText();
-					t->set(recIdx,j, str!=NULL ?  string(str) : string() );
-				}
-
-			} // end for each record
-
-		} // for each table
-#endif
+			plc->sinVertOffsetCorrection = plc->sinVertCorrection * plc->sinVertOffsetCorrection;
+			plc->cosVertOffsetCorrection = plc->cosVertCorrection * plc->sinVertOffsetCorrection;
+		}
 
 		return true; // Ok
 	}
