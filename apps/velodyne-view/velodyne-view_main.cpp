@@ -77,7 +77,7 @@ void thread_grabbing(TThreadParam &p)
 
 			hard_error = !velodyne.getNextObservation(obs,obs_gps);
 
-			if (obs)      p.new_obs.set(obs);
+			if (obs)      {p.new_obs.set(obs); nScans++;}
 			if (obs_gps)  p.new_obs_gps.set(obs_gps);
 
 			if (p.pushed_key!=0)
@@ -93,8 +93,7 @@ void thread_grabbing(TThreadParam &p)
 				p.pushed_key = 0;
 			}
 
-			nScans++;
-			if (nScans>100)
+			if (nScans>5)
 			{
 				p.Hz = nScans / tictac.Tac();
 				nScans=0;
@@ -167,6 +166,9 @@ void Test_Velodyne()
 			// It IS a new observation:
 			last_obs     = possiblyNewObs;
 			last_obs_gps = thrPar.new_obs_gps.get();
+
+			if (!last_obs->scan_packets.empty())
+				printf("[%.03f] RX LIDAR scan with %u packets.\n",  mrpt::system::timestampToDouble(last_obs->timestamp) , static_cast<unsigned int>(last_obs->scan_packets.size()));
 
 			// Update visualization ---------------------------------------
 			bool do_refresh = false;

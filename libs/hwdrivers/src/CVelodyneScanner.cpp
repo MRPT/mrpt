@@ -116,6 +116,7 @@ bool CVelodyneScanner::getNextObservation(
 				m_rx_scan->timestamp = data_pkt_timestamp;
 				m_rx_scan->sensorLabel = this->m_sensorLabel;
 				m_rx_scan->sensorPose = m_sensorPose;
+				m_rx_scan->calibration = m_velodyne_calib; // Embed a copy of the calibration info
 				m_rx_scan->maxRange = 130.0; MRPT_TODO("Set from model");
 			}
 			// Accumulate pkts in the observation object:

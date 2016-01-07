@@ -110,6 +110,7 @@ namespace obs
 		double                       minRange,maxRange; //!< The maximum range allowed by the device, in meters (e.g. 100m). Stored here by the driver while capturing based on the sensor model.
 		mrpt::poses::CPose3D         sensorPose; //!< The 6D pose of the sensor on the robot/vehicle frame of reference
 		std::vector<TVelodyneRawPacket> scan_packets;  //!< The main content of this object: raw data packet from the LIDAR. \sa point_cloud
+		mrpt::obs::VelodyneCalibration  calibration;   //!< The calibration data for the LIDAR device. See mrpt::hwdrivers::CVelodyneScanner and mrpt::obs::VelodyneCalibration for details.
 
 		/** See \a point_cloud and \a scan_packets */
 		struct OBS_IMPEXP TPointCloud

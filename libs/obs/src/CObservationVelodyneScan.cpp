@@ -155,8 +155,8 @@ void CObservationVelodyneScan::generatePointCloud(const TGeneratePointCloudParam
 					const uint8_t rawLaserId = static_cast<uint8_t>(dsr + hdl64offset);
 					const uint8_t laserId = rawLaserId;
 
-					//velodyne_pointcloud::LaserCorrection &corrections = calibration_.laser_corrections[dsr];
-
+					ASSERT_BELOW_(laserId,calibration.laser_corrections.size())
+					const mrpt::obs::VelodyneCalibration::PerLaserCalib &calib = calibration.laser_corrections[laserId];
 
 					// Azimuth correction: correct for the laser rotation as a function of timing during the firings
 					float azimuth_correction_f;
@@ -193,52 +193,38 @@ void CObservationVelodyneScan::generatePointCloud(const TGeneratePointCloudParam
 					//if ((azimuth_corrected >= config_.min_angle && azimuth_corrected <= config_.max_angle && config_.min_angle < config_.max_angle)
 					//	||(config_.min_angle > config_.max_angle && (azimuth_corrected <= config_.max_angle || azimuth_corrected >= config_.min_angle)))
 					{
-							/** Position Calculation */
-							const float distance = raw->blocks[block].laser_returns[k].distance * DISTANCE_RESOLUTION
-								//+ correction->distanceCorrection;
-								;
-							MRPT_TODO("corrections!")
+						/** Position Calculation */
+						const float distance = raw->blocks[block].laser_returns[k].distance * DISTANCE_RESOLUTION + calib.distanceCorrection;
 
-							// Vertical axis mis-alignment calibration:
-#if 0
-							float cos_vert_angle = corrections.cos_vert_correction;
-							float sin_vert_angle = corrections.sin_vert_correction;
-							float cos_rot_correction = corrections.cos_rot_correction;
-							float sin_rot_correction = corrections.sin_rot_correction;
-#endif
-							const float cos_vert_angle = 1.0f;
-							const float sin_vert_angle = 0.0f;
-							const float horz_offset = .0f;
-							const float vert_offset = .0f;
+						// Vertical axis mis-alignment calibration:
+						const float cos_vert_angle = calib.cosVertCorrection;
+						const float sin_vert_angle = calib.sinVertCorrection;
+						const float horz_offset = calib.horizontalOffsetCorrection;
+						const float vert_offset = calib.verticalOffsetCorrection;
 
-							const float xy_distance = distance * cos_vert_angle + vert_offset * sin_vert_angle;
+						const float xy_distance = distance * cos_vert_angle + vert_offset * sin_vert_angle;
 
-							// cos(a-b) = cos(a)*cos(b) + sin(a)*sin(b)
-							// sin(a-b) = sin(a)*cos(b) - cos(a)*sin(b)
-							const float cos_azimuth = lut_sincos.ccos(azimuth_corrected);
-							const float sin_azimuth = lut_sincos.csin(azimuth_corrected);
-							MRPT_TODO("Integrate calibration corrections")
+						// cos(a-b) = cos(a)*cos(b) + sin(a)*sin(b)
+						// sin(a-b) = sin(a)*cos(b) - cos(a)*sin(b)
+						const float cos_azimuth = lut_sincos.ccos(azimuth_corrected);
+						const float sin_azimuth = lut_sincos.csin(azimuth_corrected);
+						MRPT_TODO("Integrate calibration corrections")
 
-							// Compute raw position
-							const mrpt::math::TPoint3Df pt_raw(
-								xy_distance * sin_azimuth - horz_offset * cos_azimuth,
-								xy_distance * cos_azimuth + horz_offset * sin_azimuth,
-								distance * sin_vert_angle + vert_offset
-								);
+						// Compute raw position
+						const mrpt::math::TPoint3Df pt_raw(
+							xy_distance * sin_azimuth - horz_offset * cos_azimuth,
+							xy_distance * cos_azimuth + horz_offset * sin_azimuth,
+							distance * sin_vert_angle + vert_offset
+							);
 
-							MRPT_TODO("Process LIDAR dual mode here")
+						MRPT_TODO("Process LIDAR dual mode here")
 
-							///** Use standard ROS coordinate system (right-hand rule) */
-							//float x_coord = y;
-							//float y_coord = -x;
-							//float z_coord = z;
+						// Intensity Calculation
+						MRPT_TODO("corrections!")
+						const float min_intensity = 0; //corrections.min_intensity;
+						const float max_intensity = 255; //corrections.max_intensity;
 
-							// Intensity Calculation
-							MRPT_TODO("corrections!")
-							const float min_intensity = 0; //corrections.min_intensity;
-							const float max_intensity = 255; //corrections.max_intensity;
-
-							float intensity = raw->blocks[block].laser_returns[k].intensity;
+						float intensity = raw->blocks[block].laser_returns[k].intensity;
 
 #if 0
 							float focal_offset = 256 
@@ -251,14 +237,14 @@ void CObservationVelodyneScan::generatePointCloud(const TGeneratePointCloudParam
 							intensity = (intensity > max_intensity) ? max_intensity : intensity;
 #endif
 
-							if (distance>=minRange && distance<=maxRange)
-							{
-								//point.ring = corrections.laser_ring;
-								point_cloud.x.push_back( pt_raw.x );
-								point_cloud.y.push_back( pt_raw.y );
-								point_cloud.z.push_back( pt_raw.z );
-								point_cloud.intensity.push_back( static_cast<uint8_t>(intensity) );
-							}
+						if (distance>=minRange && distance<=maxRange)
+						{
+							//point.ring = corrections.laser_ring;
+							point_cloud.x.push_back( pt_raw.x );
+							point_cloud.y.push_back( pt_raw.y );
+							point_cloud.z.push_back( pt_raw.z );
+							point_cloud.intensity.push_back( static_cast<uint8_t>(intensity) );
+						}
 					}
 				}
 			}
