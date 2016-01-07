@@ -30,7 +30,8 @@ VelodyneCalibration::PerLaserCalib::PerLaserCalib() :
 {
 }
 
-VelodyneCalibration::VelodyneCalibration()
+VelodyneCalibration::VelodyneCalibration() :
+	laser_corrections(0)
 {
 }
 

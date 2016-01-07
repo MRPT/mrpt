@@ -91,6 +91,26 @@ void CObservationVelodyneScan::getDescriptionAsText(std::ostream &o) const
 	o << "Raw packet count: " << scan_packets.size() << "\n";
 }
 
+double HDL32AdjustTimeStamp(
+	int firingblock,
+	int dsr)
+{
+	return 
+		(firingblock * CObservationVelodyneScan::HDR32_FIRING_TOFFSET) + 
+		(dsr * CObservationVelodyneScan::HDR32_DSR_TOFFSET);
+}
+double VLP16AdjustTimeStamp(
+	int firingblock,
+	int dsr,
+	int firingwithinblock)
+{
+	return 
+		(firingblock * CObservationVelodyneScan::VLP16_BLOCK_TDURATION) + 
+		(dsr * CObservationVelodyneScan::VLP16_DSR_TOFFSET) + 
+		(firingwithinblock * CObservationVelodyneScan::VLP16_FIRING_TOFFSET);
+}
+
+
 void CObservationVelodyneScan::generatePointCloud(const TGeneratePointCloudParameters &params)
 {
 	// Initially based on code from ROS velodyne & from vtkVelodyneHDLReader::vtkInternal::ProcessHDLPacket(). 
@@ -153,32 +173,45 @@ void CObservationVelodyneScan::generatePointCloud(const TGeneratePointCloudParam
 				for (int dsr=0; dsr < VLP16_SCANS_PER_FIRING; dsr++, k+=RAW_SCAN_SIZE)
 				{
 					const uint8_t rawLaserId = static_cast<uint8_t>(dsr + hdl64offset);
-					const uint8_t laserId = rawLaserId;
+					uint8_t laserId = rawLaserId;
+
+					// Detect VLP-16 data and adjust laser id if necessary
+					bool firingWithinBlock = false;
+					if(calibration.laser_corrections.size()==16)
+					{
+						if(laserId >= 16)
+						{
+							laserId -= 16;
+							firingWithinBlock = true;
+						}
+					}
 
 					ASSERT_BELOW_(laserId,calibration.laser_corrections.size())
 					const mrpt::obs::VelodyneCalibration::PerLaserCalib &calib = calibration.laser_corrections[laserId];
 
 					// Azimuth correction: correct for the laser rotation as a function of timing during the firings
-					float azimuth_correction_f;
-					if (1)
+					double timestampadjustment = 0.0;
+					double blockdsr0 = 0.0;
+					double nextblockdsr0 = 1.0;
+					if(calibration.laser_corrections.size()==16)
 					{
-						// VLP 16
-						azimuth_correction_f = (median_azimuth_diff * ((dsr*VLP16_DSR_TOFFSET) + (firing*VLP16_FIRING_TOFFSET)) / VLP16_BLOCK_TDURATION);
-						//timestampadjustment = VLP16AdjustTimeStamp(firingBlock, laserId, firingWithinBlock);
-						//nextblockdsr0 = VLP16AdjustTimeStamp(firingBlock+1,0,0);
-						//blockdsr0 = VLP16AdjustTimeStamp(firingBlock,0,0);
-						//int azimuthadjustment = vtkMath::Round(azimuthDiff * ((timestampadjustment - blockdsr0) / (nextblockdsr0 - blockdsr0)));
+						// VLP-16
+						timestampadjustment = VLP16AdjustTimeStamp(block, laserId, firingWithinBlock);
+						nextblockdsr0 = VLP16AdjustTimeStamp(block+1,0,0);
+						blockdsr0 = VLP16AdjustTimeStamp(block,0,0);
 					}
 					else
 					{
 						// HDL-32:
-						MRPT_TODO("Impl")
-						//timestampadjustment = HDL32AdjustTimeStamp(firingBlock, dsr);
-						//nextblockdsr0 = HDL32AdjustTimeStamp(firingBlock+1,0);
-						//blockdsr0 = HDL32AdjustTimeStamp(firingBlock,0);
-						//int azimuthadjustment = vtkMath::Round(azimuthDiff * ((timestampadjustment - blockdsr0) / (nextblockdsr0 - blockdsr0)));
+						timestampadjustment = HDL32AdjustTimeStamp(block, dsr);
+						nextblockdsr0 = HDL32AdjustTimeStamp(block+1,0);
+						blockdsr0 = HDL32AdjustTimeStamp(block,0);
 					}
-					const float azimuth_corrected_f = azimuth_raw_f + azimuth_correction_f;
+					//Was: float azimuth_correction_f = (median_azimuth_diff * ((dsr*VLP16_DSR_TOFFSET) + (firing*VLP16_FIRING_TOFFSET)) / VLP16_BLOCK_TDURATION);
+					const int azimuthadjustment = mrpt::utils::round( median_azimuth_diff * ((timestampadjustment - blockdsr0) / (nextblockdsr0 - blockdsr0)));
+					timestampadjustment= mrpt::utils::round( timestampadjustment );
+
+					const float azimuth_corrected_f = azimuth_raw_f + azimuthadjustment;
 					const int azimuth_corrected = ((int)round(azimuth_corrected_f)) % 36000;
 
 					// For the following code: See reference implementation in vtkVelodyneHDLReader::vtkInternal::PushFiringData()
@@ -206,8 +239,8 @@ void CObservationVelodyneScan::generatePointCloud(const TGeneratePointCloudParam
 
 						// cos(a-b) = cos(a)*cos(b) + sin(a)*sin(b)
 						// sin(a-b) = sin(a)*cos(b) - cos(a)*sin(b)
-						const float cos_azimuth = lut_sincos.ccos(azimuth_corrected);
-						const float sin_azimuth = lut_sincos.csin(azimuth_corrected);
+						const float cos_azimuth = lut_sincos.ccos[azimuth_corrected];
+						const float sin_azimuth = lut_sincos.csin[azimuth_corrected];
 						MRPT_TODO("Integrate calibration corrections")
 
 						// Compute raw position
