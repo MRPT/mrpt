@@ -57,6 +57,9 @@ namespace obs
 		};
 
 		std::vector<PerLaserCalib> laser_corrections;
+	private:
+		bool internal_loadFromXMLNode(void *node);
+
 	};
 } // End of namespace
 } // End of namespace
