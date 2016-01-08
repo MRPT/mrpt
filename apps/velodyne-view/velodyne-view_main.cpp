@@ -70,6 +70,8 @@ void thread_grabbing(TThreadParam &p)
 		velodyne.initialize();
 		cout << "OK\n";
 
+		cout << "Waiting for first data packets (Press CTRL+C to abort)...\n";
+
 		CTicTac tictac;
 		int nScans = 0;
 		bool hard_error=false;

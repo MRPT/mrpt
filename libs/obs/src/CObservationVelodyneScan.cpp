@@ -153,16 +153,12 @@ void CObservationVelodyneScan::generatePointCloud(const TGeneratePointCloudParam
 
 		for (int block = 0; block < BLOCKS_PER_PACKET; block++)  // Firings per packet
 		{
-			// ProcessFiring() in vtk's VeloView code:
-
 			// ignore packets with mangled or otherwise different contents
 			if (UPPER_BANK != raw->blocks[block].header) {
-				// Do not flood the log with messages, only issue at most one
-				// of these warnings per minute.
 				cerr << "[CObservationVelodyneScan] skipping invalid VLP-16 packet: block "
 					<< block << " header value is "
 					<< raw->blocks[block].header;
-				continue;                         // bad packet: skip the rest
+				continue; // bad packet: skip the rest
 			}
 
 			MRPT_TODO("Support LIDAR dual data")
@@ -171,7 +167,7 @@ void CObservationVelodyneScan::generatePointCloud(const TGeneratePointCloudParam
 
 			for (int firing=0, k=0; firing < VLP16_FIRINGS_PER_BLOCK; firing++)
 			{
-				for (int dsr=0; dsr < VLP16_SCANS_PER_FIRING; dsr++, k+=RAW_SCAN_SIZE)
+				for (int dsr=0; dsr < VLP16_SCANS_PER_FIRING; dsr++, k++)
 				{
 					const uint8_t rawLaserId = static_cast<uint8_t>(dsr + hdl64offset);
 					uint8_t laserId = rawLaserId;
