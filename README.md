@@ -18,7 +18,7 @@ and much more.
 
 2. Resources
 ------------------------------------------------------------------------------
-  * Main website [http://www.mrpt.org/](http://www.mrpt.org/)
+  * Main website [http://www.mrpt.org/](http://www.mrpt.org/) ([Sources and Windows installer downloads](http://www.mrpt.org/download-mrpt/))
   * C++ API reference: [http://reference.mrpt.org/](http://reference.mrpt.org/).
   * Google group for questions: [http://www.mrpt.org/forum/](http://www.mrpt.org/forum/)
   * [Bindings documentation](https://github.com/MRPT/mrpt/wiki) (Python, Matlab)
