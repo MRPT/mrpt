@@ -19,16 +19,19 @@ namespace mrpt
 {
 	namespace hwdrivers
 	{
-		/** A C++ interface to Velodyne laser scanners (HDL-32E, VLP-16), working on Windows and Linux.
+		/** A C++ interface to Velodyne laser scanners (HDL-32, VLP-16), working on Windows and Linux.
+		  * It can receive data from real devices via an Ethernet connection or parse a WireShark PCAP file for offline processing.
+		  * The choice of online vs. offline operation is taken upon calling \a initialize(): if a PCAP input file has been defined,
+		  * offline operation takes place and network is not listened for incomming packets.
 		  * 
 		  *  <h2>Configuration and usage:</h2> <hr>
-		  * Data is returned as observations of type: 
+		  * Data is returned as observations of type:
 		  *  - mrpt::obs::CObservationVelodyneScan for one or more "data packets" (refer to Velodyne usage manual) 
 		  *  - mrpt::obs::CObservationGPS for GPS (GPRMC) packets, if available via the synchronization interface of the device.
 		  *  See those classes for documentation on their fields.
 		  *
 		  * Configuration includes setting the device IP, model and RPM rotation speed (for calculating how many packets form a scan).
-		  * These parameters can be set programatically (see methods of this class), or via a configuration file with CGenericSensor::loadConfig()
+		  * These parameters can be set programatically (see methods of this class), or via a configuration file with CGenericSensor::loadConfig() (see example config file section below).
 		  *
 		  * <h2>Grabbing live data (as a user)</h2> <hr>
 		  *  - Use the application [velodyne-view](http://www.mrpt.org/list-of-mrpt-apps/application-velodyne-view/)) to visualize the LIDAR output in real-time.
@@ -45,6 +48,9 @@ namespace mrpt
 		  *  These files can be played back with tools like [bittwist](http://bittwist.sourceforge.net/), which emit all UDP packets in the PCAP log. 
 		  *  Then, use this class to receive the packets as if they come from the real sensor.
 		  *
+		  *  Alternatively, if MRPT is linked against libpcap, this class can directly parse a PCAP file to simulate reading from a device offline.
+		  *  See method setPCAPInputFile() and config file parameter ``
+		  *
 		  * <h2>About timestamps:</h2><hr>
 		  *  Generated observations timestamp are, by default, set from the computer clock as UDP packets are received.
 		  *  *TODO* Set from sensor timestamp.
@@ -54,13 +60,18 @@ namespace mrpt
 		  *  PARAMETERS IN THE ".INI"-LIKE CONFIGURATION STRINGS:
 		  * -------------------------------------------------------
 		  *   [supplied_section_name]
-		  *
+		  *   # ---- Online operation ----
 		  *   #device_ip       =  // IP address of the device. UDP packets from other IPs will be ignored. Leave commented or blank if only one scanner is present (no IP filtering)
 		  *   rpm              = 600            // Device spinning speed (this is NOT sent to the device, you must configure it in advance via the LIDAR web interface)
 		  *   #calibration_file = PUT_HERE_FULL_PATH_TO_CALIB_FILE.xml      // Optional but recommended: put here your vendor-provided calibration file
 		  *   model            = VLP-16          // Can be any of: `VLP-16`, `HDL-32`  (It is used to load default calibration file. Parameter not required if `calibration_file` is provided.
+		  *   # ---- Offline operation ----
+		  *   # pcap_input     = PUT_FULL_PATH_TO_PCAP_LOG_FILE.pcap    // If uncommented, this class will read from the PCAP instead of connecting and listeling for online network packets.
+		  *   # pcap_read_once = false   // Do not loop
+		  *   # pcap_read_fast = false    // fast forward skipping non-velodyne packets
+		  *   # pcap_repeat_delay = 0.0   // seconds
 		  *
-		  *    # 3D position of the sensor on the vehicle:
+		  *   # 3D position of the sensor on the vehicle:
 		  *   pose_x     = 0      // 3D position (meters)
 		  *   pose_y     = 0
 		  *   pose_z     = 0
@@ -88,11 +99,21 @@ namespace mrpt
 			static short int VELODYNE_POSITION_UDP_PORT;  //!< Default: 8308. Change it if required.
 
 		protected:
+			bool          m_initialized;
 			std::string   m_model;      //!< Default: "VLP-16"
 			std::string   m_device_ip;  //!< Default: "" (no IP-based filtering)
+			std::string   m_pcap_input_file; //!< Default: "" (do not operate from an offline file)
 			int           m_rpm;        //!< Default: 600
 			mrpt::poses::CPose3D m_sensorPose;
 			mrpt::obs:: VelodyneCalibration  m_velodyne_calib; //!< Device calibration file (supplied by vendor in an XML file)
+
+			// offline operation:
+			void * m_pcap;             //!< opaque ptr: "pcap_t*"
+			void * m_pcap_bpf_program; //!< opaque ptr: bpf_program*
+			bool   m_pcap_file_empty;
+			bool   m_pcap_read_once;    //!< Default: false
+			bool   m_pcap_read_fast;    //!< Default: true
+			double m_pcap_repeat_delay; //!< Default: 0 (in seconds)
 
 			/** See the class documentation at the top for expected parameters */
 			void  loadConfig_sensorSpecific(
@@ -110,6 +131,9 @@ namespace mrpt
 
 			void setDeviceIP(const std::string & ip) { m_device_ip = ip; }
 			const std::string &getDeviceIP() const { return m_device_ip; }
+
+			void setPCAPInputFile(const std::string &pcap_file) { m_pcap_input_file = pcap_file; }
+			const std::string & getPCAPInputFile() const { return m_pcap_input_file; }
 
 			void setDeviceRPM(const int rpm) { m_rpm = rpm; }
 			int getDeviceRPM() const { return m_rpm; }
@@ -166,6 +190,8 @@ namespace mrpt
 		platform_socket_t m_hDataSock, m_hPositionSock;
 
 		static mrpt::system::TTimeStamp internal_receive_UDP_packet(platform_socket_t hSocket, uint8_t *out_buffer, const size_t expected_packet_size,const std::string &filter_only_from_IP);
+
+		mrpt::system::TTimeStamp internal_read_PCAP_packet(uint8_t *out_buffer,const size_t expected_packet_size);
 
 		mrpt::obs::CObservationVelodyneScanPtr m_rx_scan; //!< In progress RX scan
 

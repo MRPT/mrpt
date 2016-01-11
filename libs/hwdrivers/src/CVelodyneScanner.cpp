@@ -32,6 +32,10 @@
 	#include <poll.h>
 #endif
 
+#if MRPT_HAS_LIBPCAP
+#	include <pcap.h>
+#endif
+
 using namespace mrpt;
 using namespace mrpt::hwdrivers;
 using namespace mrpt::obs;
@@ -42,16 +46,24 @@ IMPLEMENTS_GENERIC_SENSOR(CVelodyneScanner,mrpt::hwdrivers)
 short int CVelodyneScanner::VELODYNE_DATA_UDP_PORT = 2368;
 short int CVelodyneScanner::VELODYNE_POSITION_UDP_PORT= 8308;
 
-MRPT_TODO("Load params from cfg file")
-
 CVelodyneScanner::CVelodyneScanner() : 
 	m_model("VLP-16"),
 	m_device_ip(""),
 	m_rpm(600),
+	m_pcap(NULL),
+	m_pcap_bpf_program(NULL),
+	m_pcap_file_empty(true),
+	m_pcap_read_once(false),
+	m_pcap_read_fast(false),
+	m_pcap_repeat_delay(0.0),
 	m_hDataSock(INVALID_SOCKET),
 	m_hPositionSock(INVALID_SOCKET)
 {
-	m_sensorLabel = "Velodyne_";
+	m_sensorLabel = "Velodyne";
+
+#if MRPT_HAS_LIBPCAP
+	m_pcap_bpf_program = new bpf_program[1];
+#endif
 
 #ifdef MRPT_OS_WINDOWS
 	// Init the WinSock Library:
@@ -68,6 +80,12 @@ CVelodyneScanner::~CVelodyneScanner( )
 #ifdef MRPT_OS_WINDOWS
 	WSACleanup();
 #endif
+
+#if MRPT_HAS_LIBPCAP
+	delete[] reinterpret_cast<bpf_program*>(m_pcap_bpf_program);
+	m_pcap_bpf_program=NULL;
+#endif
+
 }
 
 bool CVelodyneScanner::loadCalibrationFile(const std::string & velodyne_xml_calib_file_path )
@@ -81,6 +99,8 @@ void CVelodyneScanner::loadConfig_sensorSpecific(
 {
 	MRPT_START
 
+	MRPT_TODO("Load params from cfg file");
+
 //	m_usbSerialNumber = configSource.read_string(iniSection, "USB_serialname","",false);
 
 	MRPT_END
@@ -93,6 +113,8 @@ bool CVelodyneScanner::getNextObservation(
 {
 	try
 	{
+		ASSERTMSG_(m_initialized, "initialize() has not been called yet!");
+
 		// Init with empty smart pointers:
 		outScan = mrpt::obs::CObservationVelodyneScanPtr();
 		outGPS  = mrpt::obs::CObservationGPSPtr();
@@ -129,12 +151,8 @@ bool CVelodyneScanner::getNextObservation(
 	}
 	catch(exception &e)
 	{
-		cerr << "[CEnoseModular::getObservation] Returning false due to exception: " << endl;
+		cerr << "[CVelodyneScanner::getObservation] Returning false due to exception: " << endl;
 		cerr << e.what() << endl;
-		return false;
-	}
-	catch(...)
-	{
 		return false;
 	}
 }
@@ -175,50 +193,82 @@ void CVelodyneScanner::initialize()
 			THROW_EXCEPTION("Could not find default calibration data for the given LIDAR `model` name. Please, specify a valid `model` or load a valid XML configuration file first.");
 	}
 
+	// online vs off line operation??
+	// -------------------------------
+	if (m_pcap_input_file.empty())
+	{ // Online
 
-	// (1) Create LIDAR DATA socket
-	// --------------------------------
-	if ( INVALID_SOCKET == (m_hDataSock = socket(PF_INET, SOCK_DGRAM, 0)) )
-		THROW_EXCEPTION( format("Error creating UDP socket:\n%s", mrpt::utils::net::getLastSocketErrorStr().c_str() ));
+		// (1) Create LIDAR DATA socket
+		// --------------------------------
+		if ( INVALID_SOCKET == (m_hDataSock = socket(PF_INET, SOCK_DGRAM, 0)) )
+			THROW_EXCEPTION( format("Error creating UDP socket:\n%s", mrpt::utils::net::getLastSocketErrorStr().c_str() ));
 
-	struct sockaddr_in  bindAddr;
-	memset(&bindAddr,0,sizeof(bindAddr));
-	bindAddr.sin_family  = AF_INET;
-	bindAddr.sin_port    = htons(VELODYNE_DATA_UDP_PORT);
-	bindAddr.sin_addr.s_addr = INADDR_ANY;
-	
-	if( int(INVALID_SOCKET) == ::bind(m_hDataSock,(struct sockaddr *)(&bindAddr),sizeof(sockaddr)) )
-		THROW_EXCEPTION( mrpt::utils::net::getLastSocketErrorStr() );
+		struct sockaddr_in  bindAddr;
+		memset(&bindAddr,0,sizeof(bindAddr));
+		bindAddr.sin_family  = AF_INET;
+		bindAddr.sin_port    = htons(VELODYNE_DATA_UDP_PORT);
+		bindAddr.sin_addr.s_addr = INADDR_ANY;
 
-#ifdef MRPT_OS_WINDOWS
-	unsigned long non_block_mode = 1;
-	if (ioctlsocket(m_hDataSock, FIONBIO, &non_block_mode) ) THROW_EXCEPTION( "Error entering non-blocking mode with ioctlsocket()." );
-#else
-	int oldflags=fcntl(m_hDataSock, F_GETFL, 0);
-	if (oldflags == -1)  THROW_EXCEPTION( "Error retrieving fcntl() of socket." );
-	oldflags |= O_NONBLOCK | FASYNC;
-	if (-1==fcntl(m_hDataSock, F_SETFL, oldflags))  THROW_EXCEPTION( "Error entering non-blocking mode with fcntl()." );
-#endif
-
-
-	// (2) Create LIDAR POSITION socket
-	// --------------------------------
-	if ( INVALID_SOCKET == (m_hPositionSock = socket(PF_INET, SOCK_DGRAM, 0)) )
-		THROW_EXCEPTION( format("Error creating UDP socket:\n%s", mrpt::utils::net::getLastSocketErrorStr().c_str() ));
-
-	bindAddr.sin_port    = htons(VELODYNE_POSITION_UDP_PORT);
-	
-	if( int(INVALID_SOCKET) == ::bind(m_hPositionSock,(struct sockaddr *)(&bindAddr),sizeof(sockaddr)) )
-		THROW_EXCEPTION( mrpt::utils::net::getLastSocketErrorStr() );
+		if( int(INVALID_SOCKET) == ::bind(m_hDataSock,(struct sockaddr *)(&bindAddr),sizeof(sockaddr)) )
+			THROW_EXCEPTION( mrpt::utils::net::getLastSocketErrorStr() );
 
 #ifdef MRPT_OS_WINDOWS
-	if (ioctlsocket(m_hPositionSock, FIONBIO, &non_block_mode) ) THROW_EXCEPTION( "Error entering non-blocking mode with ioctlsocket()." );
+		unsigned long non_block_mode = 1;
+		if (ioctlsocket(m_hDataSock, FIONBIO, &non_block_mode) ) THROW_EXCEPTION( "Error entering non-blocking mode with ioctlsocket()." );
 #else
-	oldflags=fcntl(m_hPositionSock, F_GETFL, 0);
-	if (oldflags == -1)  THROW_EXCEPTION( "Error retrieving fcntl() of socket." );
-	oldflags |= O_NONBLOCK | FASYNC;
-	if (-1==fcntl(m_hPositionSock, F_SETFL, oldflags))  THROW_EXCEPTION( "Error entering non-blocking mode with fcntl()." );
+		int oldflags=fcntl(m_hDataSock, F_GETFL, 0);
+		if (oldflags == -1)  THROW_EXCEPTION( "Error retrieving fcntl() of socket." );
+		oldflags |= O_NONBLOCK | FASYNC;
+		if (-1==fcntl(m_hDataSock, F_SETFL, oldflags))  THROW_EXCEPTION( "Error entering non-blocking mode with fcntl()." );
 #endif
+
+		// (2) Create LIDAR POSITION socket
+		// --------------------------------
+		if ( INVALID_SOCKET == (m_hPositionSock = socket(PF_INET, SOCK_DGRAM, 0)) )
+			THROW_EXCEPTION( format("Error creating UDP socket:\n%s", mrpt::utils::net::getLastSocketErrorStr().c_str() ));
+
+		bindAddr.sin_port    = htons(VELODYNE_POSITION_UDP_PORT);
+
+		if( int(INVALID_SOCKET) == ::bind(m_hPositionSock,(struct sockaddr *)(&bindAddr),sizeof(sockaddr)) )
+			THROW_EXCEPTION( mrpt::utils::net::getLastSocketErrorStr() );
+
+#ifdef MRPT_OS_WINDOWS
+		if (ioctlsocket(m_hPositionSock, FIONBIO, &non_block_mode) ) THROW_EXCEPTION( "Error entering non-blocking mode with ioctlsocket()." );
+#else
+		oldflags=fcntl(m_hPositionSock, F_GETFL, 0);
+		if (oldflags == -1)  THROW_EXCEPTION( "Error retrieving fcntl() of socket." );
+		oldflags |= O_NONBLOCK | FASYNC;
+		if (-1==fcntl(m_hPositionSock, F_SETFL, oldflags))  THROW_EXCEPTION( "Error entering non-blocking mode with fcntl()." );
+#endif
+	}
+	else
+	{ // Offline:
+#if MRPT_HAS_LIBPCAP
+		char errbuf[PCAP_ERRBUF_SIZE];
+
+		printf("\n[CVelodyneScanner] Opening PCAP file \"%s\"\n", m_pcap_input_file.c_str());
+		if ((m_pcap = pcap_open_offline(m_pcap_input_file.c_str(), errbuf) ) == NULL) {
+			THROW_EXCEPTION_CUSTOM_MSG1("Error opening PCAP file: '%s'",errbuf);
+		}
+
+		// Build PCAP filter:
+		{
+			std::string filter_str = "udp dst port 2368";
+			if( !m_device_ip.empty() )
+				filter_str += "&& src host " + m_device_ip;
+
+			if (pcap_compile( reinterpret_cast<pcap_t*>(m_pcap), reinterpret_cast<bpf_program*>(m_pcap_bpf_program), filter_str.c_str(), 1, PCAP_NETMASK_UNKNOWN) <0)
+				pcap_perror(reinterpret_cast<pcap_t*>(m_pcap),"[CVelodyneScanner] Error calling pcap_compile: ");
+		}
+
+		m_pcap_file_empty = true;
+
+#else
+		THROW_EXCEPTION("Velodyne: Reading from PCAP requires building MRPT with libpcap support!");
+#endif
+	}
+
+	m_initialized=true;
 }
 
 void CVelodyneScanner::close()
@@ -244,11 +294,21 @@ void CVelodyneScanner::close()
 #endif
 		m_hPositionSock=INVALID_SOCKET;
 	}
+#if MRPT_HAS_LIBPCAP
+	if (m_pcap)
+	{
+		pcap_close( reinterpret_cast<pcap_t*>(m_pcap) );
+		m_pcap = NULL;
+	}
+#endif
+	m_initialized=false;
 }
 
 mrpt::system::TTimeStamp CVelodyneScanner::receiveDataPacket(mrpt::obs::CObservationVelodyneScan::TVelodyneRawPacket &out_pkt)
 {
-	return internal_receive_UDP_packet(m_hDataSock,(uint8_t*)&out_pkt, CObservationVelodyneScan::PACKET_SIZE,m_device_ip);
+	if (m_pcap)
+		 return internal_read_PCAP_packet((uint8_t*)&out_pkt,CObservationVelodyneScan::PACKET_SIZE);
+	else return internal_receive_UDP_packet(m_hDataSock,(uint8_t*)&out_pkt, CObservationVelodyneScan::PACKET_SIZE,m_device_ip);
 }
 
 mrpt::system::TTimeStamp CVelodyneScanner::internal_receive_UDP_packet(
@@ -351,4 +411,64 @@ mrpt::system::TTimeStamp CVelodyneScanner::internal_receive_UDP_packet(
 
 	return (time1/2+time2/2);
 }
+
+mrpt::system::TTimeStamp CVelodyneScanner::internal_read_PCAP_packet(uint8_t *out_buffer, const size_t expected_packet_size)
+{
+#if MRPT_HAS_LIBPCAP
+	ASSERT_(m_pcap);
+
+	char errbuf[PCAP_ERRBUF_SIZE];
+	struct pcap_pkthdr *header;
+	const u_char *pkt_data;
+
+	while (true)
+	{
+		int res;
+		if ((res = pcap_next_ex(reinterpret_cast<pcap_t*>(m_pcap), &header, &pkt_data)) >= 0)
+		{
+			// if packet is not from the lidar scanner we selected by IP, continue
+			if(pcap_offline_filter( reinterpret_cast<bpf_program*>(m_pcap_bpf_program), header, pkt_data ) == 0)
+			  continue;
+
+			// Keep the reader from blowing through the file.
+			if (!m_pcap_read_fast)
+				mrpt::system::sleep(1); //packet_rate_.sleep();
+
+			memcpy(out_buffer, pkt_data+42, expected_packet_size);
+			const mrpt::system::TTimeStamp tim = mrpt::system::now();
+			m_pcap_file_empty = false;
+			return tim;  // success
+		}
+
+		if (m_pcap_file_empty) // no data in file?
+		{
+			fprintf(stderr, "[CVelodyneScanner] Error %d reading Velodyne packet: %s", res, pcap_geterr(reinterpret_cast<pcap_t*>(m_pcap) ));
+			return INVALID_TIMESTAMP;
+		}
+
+		if (m_pcap_read_once)
+		{
+			printf("[CVelodyneScanner] end of file reached -- done reading.");
+			return INVALID_TIMESTAMP;
+		}
+
+		if (m_pcap_repeat_delay > 0.0)
+		{
+			printf("[CVelodyneScanner] end of file reached -- delaying %.3f seconds.", m_pcap_repeat_delay);
+			mrpt::system::sleep( m_pcap_repeat_delay * 1000.0);
+		}
+
+		printf("[CVelodyneScanner] replaying Velodyne dump file\n");
+
+		// rewind the file
+		pcap_close( reinterpret_cast<pcap_t*>(m_pcap) );
+		if ((m_pcap = pcap_open_offline(m_pcap_input_file.c_str(), errbuf) ) == NULL) {
+			THROW_EXCEPTION_CUSTOM_MSG1("Error opening PCAP file: '%s'",errbuf);
+		}
+		m_pcap_file_empty = true;              // maybe the file disappeared?
+	} // loop back and try again
+
+#endif
+}
+
 

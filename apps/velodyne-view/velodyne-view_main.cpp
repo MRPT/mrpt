@@ -56,6 +56,7 @@ void thread_grabbing(TThreadParam &p)
 
 		// Set params:
 		//velodyne.setDeviceIP("192.168.1.201"); // Default: from any IP
+		//velodyne.setPCAPInputFile("/media/ALMACENAMIENTO/Rawlogs/ual-datasets/Velodyne/2015-12-18_dataset_velodyne_despacho.pcap");
 
 		// Enable this block if you have a calibration file, better than default values:
 #if 0	
