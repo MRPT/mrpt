@@ -203,6 +203,12 @@ IF(BUILD_mrpt-hwdrivers)
 
 	IF(CMAKE_MRPT_HAS_LIBPCAP)
 		target_link_libraries(mrpt-hwdrivers ${PCAP_LIBRARY})
+
+		# Windows: 
+		# Set wpcap.dll as DELAYLOAD, so users without that driver can use binaries compiled with wpcap support:
+		IF (MSVC)
+			set_property(TARGET mrpt-hwdrivers APPEND_STRING PROPERTY LINK_FLAGS " /DELAYLOAD:\"wpcap.dll\"")
+		ENDIF (MSVC)
 	ENDIF()
 
 	# XSens MT4 required libs:

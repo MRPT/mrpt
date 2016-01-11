@@ -50,6 +50,8 @@ namespace mrpt
 		  *
 		  *  Alternatively, if MRPT is linked against libpcap, this class can directly parse a PCAP file to simulate reading from a device offline.
 		  *  See method setPCAPInputFile() and config file parameter ``
+		  * 
+		  *  To compile with PCAP support: In Debian/Ubuntu, install libpcap-dev. In Windows, install WinPCap developer packages + the regular WinPCap driver.
 		  *
 		  * <h2>About timestamps:</h2><hr>
 		  *  Generated observations timestamp are, by default, set from the computer clock as UDP packets are received.
