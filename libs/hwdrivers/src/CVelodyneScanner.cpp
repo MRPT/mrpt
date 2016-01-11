@@ -34,6 +34,9 @@
 
 #if MRPT_HAS_LIBPCAP
 #	include <pcap.h>
+#	if !defined(PCAP_NETMASK_UNKNOWN)  // for older pcap versions
+#	define PCAP_NETMASK_UNKNOWN    0xffffffff
+#	endif
 #endif
 
 using namespace mrpt;
