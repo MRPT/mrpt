@@ -11,6 +11,12 @@
 #include <mrpt/vision/tracking.h>
 #include <mrpt/gui.h>
 
+#include <opencv2/opencv.hpp>
+#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
+#include <opencv2/features2d/features2d.hpp>
+#include <opencv2/nonfree/features2d.hpp>
+
 using namespace mrpt::utils;
 using namespace mrpt::gui;
 using namespace mrpt::vision;
@@ -516,12 +522,72 @@ void TestExtractFeatures()
 	fExt.computeDescriptors( img, featsHarris, descSpinImages );
 	cout << format("  %.03fms",tictac.Tac()*1000) << endl << endl;
 	featsHarris.saveToTextFile("f_harris+spinimgs.txt");
-
-
+	
 	mrpt::system::pause();
 
 	return;
 }
+
+void TestORBTiled()
+{
+	using namespace cv;
+	using namespace std;
+
+	FILE *f = mrpt::system::os::fopen("keypoints.txt","wt");
+
+	const size_t num_kps_to_extract = 500;
+	Mat img = imread("test_img.png");
+	size_t img_h = img.rows, img_w = img.cols;
+
+	// N regions
+	const size_t n_reg_col = 3;
+	const size_t n_reg_row = 3;
+	const size_t num_rois = n_reg_col*n_reg_row;
+	const size_t roi_w = img_w/n_reg_col;
+	const size_t roi_h = img_h/n_reg_row;
+	const size_t num_kps_to_extract_per_region = num_kps_to_extract/num_rois;				
+	for(size_t row = 0; row < n_reg_row; ++row)	// rows
+	{
+		size_t	this_row = roi_h*row,
+				this_roi_h = min(img_h-1,this_row+roi_h);
+		
+		for(size_t col = 0; col < n_reg_col; ++col)
+		{
+			// set roi limits
+			size_t	this_col = roi_w*col,
+					this_roi_w = min(img_w-1,this_col+roi_w);
+
+			Rect ROI(this_col,this_row,this_roi_w,this_roi_h);
+
+			Mat mask(img.size(), CV_8UC1, Scalar::all(0));
+			mask(ROI).setTo(Scalar::all(255));
+		
+			// define detector
+			ORB orbDetector( 
+				num_kps_to_extract_per_region,	// number of ORB features to extract
+				1.2,							// scale difference
+				8,								// number of levels
+				31,								// edgeThreshold
+				0,								// firstLevel
+				2,								// WTA_K
+				cv::ORB::HARRIS_SCORE,			// scoreType
+				31,								// patchSize
+				20 );							// fast threshold
+
+			// detect orb points
+			Mat desc;
+			vector<KeyPoint> kps;
+			orbDetector( img, mask, kps, desc );  // all the scales in the same call
+			
+			// save to file
+			for(size_t k = 0; k < kps.size(); ++k)
+				mrpt::system::os::fprintf(f,"%.2f %.2f\n",kps[k].pt.x,kps[k].pt.y);
+
+		} // end-inner-for
+	} // end-outter-for
+
+	mrpt::system::os::fclose(f);
+} // end-orb-tiled
 
 // ------------------------------------------------------
 //				TestCapture
@@ -682,7 +748,8 @@ int main(int argc, char **argv)
 		//TestExtractFeatures();
 		//TestExtractFeaturesTile();
 		//TestTrackFeatures();
-		TestMatchingComparative();
+		// TestMatchingComparative();
+		TestORBTiled();
 
 
 //		CFeatureList  fs;
