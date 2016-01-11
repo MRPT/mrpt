@@ -62,6 +62,7 @@ wxBitmap MyArtProvider::CreateBitmap(const wxArtID& id,
 
 // General global variables:
 #include <mrpt/maps/COccupancyGridMap2D.h>
+#include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/utils/CRobotSimulator.h>
 #include <mrpt/utils/CFileGZInputStream.h>
 #include <mrpt/utils/CConfigFile.h>
