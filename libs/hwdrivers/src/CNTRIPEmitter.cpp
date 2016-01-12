@@ -60,6 +60,15 @@ void CNTRIPEmitter::doProcess()
 		m_out_COM.WriteBuffer(&buf[0],buf.size());
 	}
 
+	// Try to read a msg from the receiver -> NTRIP caster
+	char rxbuf[50];
+	const size_t nReadActual = m_out_COM.Read(rxbuf,sizeof(rxbuf)-1);
+	if (nReadActual)
+	{
+		rxbuf[nReadActual] = 0;
+		cout << format("[NTRIP %s] TX (%u bytes)\n", mrpt::system::timeLocalToString(mrpt::system::now()).c_str(), (unsigned int)nReadActual);
+	}
+
 	mrpt::system::sleep(1);
 }
 
@@ -73,6 +82,8 @@ void CNTRIPEmitter::initialize()
     cout << format("[NTRIP] Opening %s...\n",m_com_port.c_str() );
 	m_out_COM.open(m_com_port);
 	m_out_COM.setConfig(m_com_bauds);
+	m_out_COM.setTimeouts(0,0,10,0,1);
+	m_out_COM.purgeBuffers();
     cout << format("[NTRIP] Open %s Ok.\n",m_com_port.c_str() );
 
 	string errstr;
