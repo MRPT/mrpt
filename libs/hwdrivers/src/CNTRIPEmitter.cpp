@@ -31,7 +31,8 @@ CNTRIPEmitter::CNTRIPEmitter() :
 #else
 	m_com_port("ttyUSB0"),
 #endif
-	m_com_bauds(38400)
+	m_com_bauds(38400),
+	m_transmit_to_server(true)
 {
 
 }
@@ -61,12 +62,15 @@ void CNTRIPEmitter::doProcess()
 	}
 
 	// Try to read a msg from the receiver -> NTRIP caster
-	char rxbuf[50];
-	const size_t nReadActual = m_out_COM.Read(rxbuf,sizeof(rxbuf)-1);
-	if (nReadActual)
+	if (m_transmit_to_server)
 	{
-		rxbuf[nReadActual] = 0;
-		cout << format("[NTRIP %s] TX (%u bytes)\n", mrpt::system::timeLocalToString(mrpt::system::now()).c_str(), (unsigned int)nReadActual);
+		char rxbuf[50];
+		const size_t nReadActual = m_out_COM.Read(rxbuf,sizeof(rxbuf)-1);
+		if (nReadActual)
+		{
+			rxbuf[nReadActual] = 0;
+			if (m_verbose) cout << format("[NTRIP %s] TX (%u bytes)\n", mrpt::system::timeLocalToString(mrpt::system::now()).c_str(), (unsigned int)nReadActual);
+		}
 	}
 
 	mrpt::system::sleep(1);
@@ -79,12 +83,12 @@ void CNTRIPEmitter::initialize()
 {
 	if (m_out_COM.isOpen()) m_out_COM.close();
 
-    cout << format("[NTRIP] Opening %s...\n",m_com_port.c_str() );
+	cout << format("[NTRIP] Opening %s...\n",m_com_port.c_str() );
 	m_out_COM.open(m_com_port);
 	m_out_COM.setConfig(m_com_bauds);
 	m_out_COM.setTimeouts(0,0,10,0,1);
 	m_out_COM.purgeBuffers();
-    cout << format("[NTRIP] Open %s Ok.\n",m_com_port.c_str() );
+	cout << format("[NTRIP] Open %s Ok.\n",m_com_port.c_str() );
 
 	string errstr;
 	if (!m_client.open(m_ntrip_args,errstr))
@@ -106,6 +110,8 @@ void  CNTRIPEmitter::loadConfig_sensorSpecific(
 #endif
 
 	m_com_bauds = configSource.read_int( iniSection, "baudRate",m_com_bauds, true );
+
+	m_transmit_to_server = configSource.read_int( iniSection, "transmit_to_server",m_transmit_to_server);
 
 	m_ntrip_args.mountpoint = mrpt::system::trim( configSource.read_string(iniSection, "mountpoint","",true) );
 	m_ntrip_args.server     = mrpt::system::trim( configSource.read_string(iniSection, "server","",true) );

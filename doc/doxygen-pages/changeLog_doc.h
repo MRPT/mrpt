@@ -15,6 +15,9 @@
 <hr>
 <a name="1.3.3">
   <h2>Version 1.3.3: (Under development) </h2></a>
+	- Changes in libraries:
+		- \ref mrpt_hwdrivers_grp
+			- mrpt::hwdrivers::CNTRIPEmitter now has a parameter to enable/disable sending back the data from the serial port to the NTRIP caster.
 	- BUG FIXES:
 		- mrpt::math::CQuaternion<> did not check for unit norm in Release builds.
 		- Fix build errors against OpenCV 3.0.0+ without opencv_contrib modules.
