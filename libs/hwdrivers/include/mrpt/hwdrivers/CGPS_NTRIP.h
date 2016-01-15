@@ -53,9 +53,14 @@ namespace mrpt
 		  *
 		  *  \endcode
 		  *
+		  *  The next picture summarizes existing MRPT classes related to GPS / GNSS devices (CGPSInterface, CNTRIPEmitter, CGPS_NTRIP):
+		  *
+		  *  <div align=center> <img src="mrpt_gps_classes_usage.png"> </div>
+		  *
 		  *  \note Verbose debug info will be dumped to cout if the environment variable "MRPT_HWDRIVERS_VERBOSE" is set to "1", or if you call CGenericSensor::enableVerbose(true)
 		  *
 		  * \ingroup mrpt_hwdrivers_grp
+		  * \sa CGPSInterface, CNTRIPEmitter
 		  */
 		class HWDRIVERS_IMPEXP CGPS_NTRIP : public CGenericSensor
 		{

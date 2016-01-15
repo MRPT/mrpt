@@ -111,7 +111,7 @@ void  CNTRIPEmitter::loadConfig_sensorSpecific(
 
 	m_com_bauds = configSource.read_int( iniSection, "baudRate",m_com_bauds, true );
 
-	m_transmit_to_server = configSource.read_int( iniSection, "transmit_to_server",m_transmit_to_server);
+	m_transmit_to_server = configSource.read_bool( iniSection, "transmit_to_server",m_transmit_to_server);
 
 	m_ntrip_args.mountpoint = mrpt::system::trim( configSource.read_string(iniSection, "mountpoint","",true) );
 	m_ntrip_args.server     = mrpt::system::trim( configSource.read_string(iniSection, "server","",true) );

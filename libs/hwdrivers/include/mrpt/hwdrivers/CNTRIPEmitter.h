@@ -41,8 +41,12 @@ namespace mrpt
 		  *
 		  *  \endcode
 		  *
+		  *  The next picture summarizes existing MRPT classes related to GPS / GNSS devices (CGPSInterface, CNTRIPEmitter, CGPS_NTRIP):
+		  *
+		  *  <div align=center> <img src="mrpt_gps_classes_usage.png"> </div>
+		  *
 		  * \ingroup mrpt_hwdrivers_grp
-		  * \sa CGPSInterface, CNTRIPClient
+		  * \sa CGPSInterface, CGPS_NTRIP, CNTRIPClient
 		  */
 		class HWDRIVERS_IMPEXP CNTRIPEmitter : public CGenericSensor
 		{
