@@ -49,6 +49,33 @@ IMPLEMENTS_GENERIC_SENSOR(CVelodyneScanner,mrpt::hwdrivers)
 short int CVelodyneScanner::VELODYNE_DATA_UDP_PORT = 2368;
 short int CVelodyneScanner::VELODYNE_POSITION_UDP_PORT= 8308;
 
+// Hard-wired properties of LIDARs depending on the model:
+struct TModelProperties {
+	double maxRange;
+};
+struct TModelPropertiesFactory {
+	static const std::map<std::string,TModelProperties>  & get()
+	{
+		static std::map<std::string,TModelProperties>  modelProperties;
+		static bool init = false;
+		if (!init) {
+			init = true;
+			modelProperties["VLP-16"].maxRange = 120.0;
+			modelProperties["HDL-32"].maxRange = 70.0;
+		}
+		return modelProperties;
+	}
+	// Return human-readable string: "`VLP-16`,`XXX`,..."
+	static std::string getListKnownModels(){
+		const std::map<std::string,TModelProperties>  & lst = TModelPropertiesFactory::get();
+		std::string s;
+		for (std::map<std::string,TModelProperties>::const_iterator it=lst.begin();it!=lst.end();++it)
+			s+=mrpt::format("`%s`,",it->first.c_str());
+		return s;
+	}
+};
+
+
 CVelodyneScanner::CVelodyneScanner() : 
 	m_model("VLP-16"),
 	m_device_ip(""),
@@ -97,14 +124,29 @@ bool CVelodyneScanner::loadCalibrationFile(const std::string & velodyne_xml_cali
 }
 
 void CVelodyneScanner::loadConfig_sensorSpecific(
-	const mrpt::utils::CConfigFileBase &configSource,
-	const std::string			&iniSection )
+	const mrpt::utils::CConfigFileBase &cfg,
+	const std::string			&sect )
 {
 	MRPT_START
 
-	MRPT_TODO("Load params from cfg file");
+	MRPT_LOAD_HERE_CONFIG_VAR(device_ip,   string, m_device_ip       ,  cfg, sect);
+	MRPT_LOAD_HERE_CONFIG_VAR(rpm,            int, m_rpm             ,  cfg, sect);
+	MRPT_LOAD_HERE_CONFIG_VAR(model,       string, m_model           ,  cfg, sect);
+	MRPT_LOAD_HERE_CONFIG_VAR(pcap_input,  string, m_pcap_input_file ,  cfg, sect);
+	MRPT_LOAD_HERE_CONFIG_VAR(pcap_read_once,bool, m_pcap_read_once,  cfg, sect);
+	MRPT_LOAD_HERE_CONFIG_VAR(pcap_read_fast,bool, m_pcap_read_fast ,  cfg, sect);
+	MRPT_LOAD_HERE_CONFIG_VAR(pcap_repeat_delay,double, m_pcap_repeat_delay ,  cfg, sect);
 
-//	m_usbSerialNumber = configSource.read_string(iniSection, "USB_serialname","",false);
+	std::string calibration_file;
+	MRPT_LOAD_CONFIG_VAR(calibration_file,string,cfg, sect);
+	if (!calibration_file.empty())
+		this->loadCalibrationFile(calibration_file);
+
+	// Check validity:
+	const std::map<std::string,TModelProperties> &lstModels = TModelPropertiesFactory::get();
+	if (lstModels.find(m_model)==lstModels.end()) {
+		THROW_EXCEPTION(mrpt::format("Unrecognized `model` parameter: ´%s´ . Known values are: %s",m_model.c_str(),TModelPropertiesFactory::getListKnownModels().c_str()))
+	}
 
 	MRPT_END
 }
@@ -144,7 +186,7 @@ bool CVelodyneScanner::getNextObservation(
 				m_rx_scan->sensorLabel = this->m_sensorLabel;
 				m_rx_scan->sensorPose = m_sensorPose;
 				m_rx_scan->calibration = m_velodyne_calib; // Embed a copy of the calibration info
-				m_rx_scan->maxRange = 130.0; MRPT_TODO("Set from model");
+				m_rx_scan->maxRange = 120.0;
 			}
 			// Accumulate pkts in the observation object:
 			m_rx_scan->scan_packets.push_back(rx_pkt);
