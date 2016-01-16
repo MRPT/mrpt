@@ -169,11 +169,15 @@ namespace mrpt
 			/** Close the UDP sockets set-up in \a initialize(). This is called automatically upon destruction */
 			void close();
 
-			/** Users normally prefer calling \a getNextObservation() instead. 
-			  * This method polls the UDP data port and returns one Velodyne packet (1206 bytes). Refer to Velodyne users manual. 
-			  * \return The approximate timestamp (based on this computer clock) of the scan reception, or INVALID_TIMESTAMP if timeout ocurred waiting for a packet.
-			  */
-			mrpt::system::TTimeStamp receiveDataPacket( mrpt::obs::CObservationVelodyneScan::TVelodyneRawPacket &out_pkt );
+			/** Users normally would prefer calling \a getNextObservation() instead.
+			  * This method polls the UDP data port and returns one Velodyne DATA packet (1206 bytes) and/or one POSITION packet. Refer to Velodyne users manual. 
+			  * Approximate timestamps (based on this computer clock) are returned for each kind of packets, or INVALID_TIMESTAMP if timeout ocurred waiting for a packet. */
+			void receivePackets(
+				mrpt::system::TTimeStamp  &data_pkt_timestamp,
+				mrpt::obs::CObservationVelodyneScan::TVelodyneRawPacket &out_data_pkt,
+				mrpt::system::TTimeStamp  &pos_pkt_timestamp,
+				mrpt::obs::CObservationVelodyneScan::TVelodynePositionPacket &out_pos_pkt
+				);
 
 		private:
 		/** Handles for the UDP sockets, or INVALID_SOCKET (-1) */

@@ -163,10 +163,14 @@ bool CVelodyneScanner::getNextObservation(
 		// Init with empty smart pointers:
 		outScan = mrpt::obs::CObservationVelodyneScanPtr();
 		outGPS  = mrpt::obs::CObservationGPSPtr();
-		
-		// Try to get data packet:
+
+		// Try to get data & pos packets:
 		mrpt::obs::CObservationVelodyneScan::TVelodyneRawPacket  rx_pkt;
-		mrpt::system::TTimeStamp data_pkt_timestamp = receiveDataPacket(rx_pkt);
+		mrpt::obs::CObservationVelodyneScan::TVelodynePositionPacket rx_pos_pkt;
+		mrpt::system::TTimeStamp data_pkt_timestamp, pos_pkt_timestamp;
+		this->receivePackets(data_pkt_timestamp,rx_pkt, pos_pkt_timestamp,rx_pos_pkt);
+		MRPT_TODO("Process pos pkts")
+
 		if (data_pkt_timestamp!=INVALID_TIMESTAMP)
 		{
 			// Break into a new observation object when the azimuth passes 360->0 deg:
@@ -298,6 +302,7 @@ void CVelodyneScanner::initialize()
 
 		// Build PCAP filter:
 		{
+			MRPT_TODO("Add filter for gps pkts")
 			std::string filter_str = "udp dst port 2368";
 			if( !m_device_ip.empty() )
 				filter_str += "&& src host " + m_device_ip;
@@ -349,11 +354,27 @@ void CVelodyneScanner::close()
 	m_initialized=false;
 }
 
-mrpt::system::TTimeStamp CVelodyneScanner::receiveDataPacket(mrpt::obs::CObservationVelodyneScan::TVelodyneRawPacket &out_pkt)
+void CVelodyneScanner::receivePackets(
+	mrpt::system::TTimeStamp  &data_pkt_timestamp,
+	mrpt::obs::CObservationVelodyneScan::TVelodyneRawPacket &out_data_pkt,
+	mrpt::system::TTimeStamp  &pos_pkt_timestamp,
+	mrpt::obs::CObservationVelodyneScan::TVelodynePositionPacket &out_pos_pkt
+	)
 {
+	_STATIC_ASSERT(sizeof(mrpt::obs::CObservationVelodyneScan::TVelodynePositionPacket)== CObservationVelodyneScan::POS_PACKET_SIZE);
+	_STATIC_ASSERT(sizeof(mrpt::obs::CObservationVelodyneScan::TVelodyneRawPacket)== CObservationVelodyneScan::PACKET_SIZE);
+
 	if (m_pcap)
-		 return internal_read_PCAP_packet((uint8_t*)&out_pkt,CObservationVelodyneScan::PACKET_SIZE);
-	else return internal_receive_UDP_packet(m_hDataSock,(uint8_t*)&out_pkt, CObservationVelodyneScan::PACKET_SIZE,m_device_ip);
+	{
+		MRPT_TODO("Handle PCAP pos pkts")
+		data_pkt_timestamp = internal_read_PCAP_packet((uint8_t*)&out_data_pkt,CObservationVelodyneScan::PACKET_SIZE);
+		pos_pkt_timestamp = INVALID_TIMESTAMP;
+	}
+	else 
+	{
+		data_pkt_timestamp = internal_receive_UDP_packet(m_hDataSock     ,(uint8_t*)&out_data_pkt, CObservationVelodyneScan::PACKET_SIZE,m_device_ip);
+		pos_pkt_timestamp  = internal_receive_UDP_packet(m_hPositionSock ,(uint8_t*)&out_pos_pkt, CObservationVelodyneScan::POS_PACKET_SIZE,m_device_ip);
+	}
 }
 
 mrpt::system::TTimeStamp CVelodyneScanner::internal_receive_UDP_packet(
@@ -374,7 +395,7 @@ mrpt::system::TTimeStamp CVelodyneScanner::internal_receive_UDP_packet(
 	struct pollfd fds[1];
 	fds[0].fd = hSocket;
 	fds[0].events = POLLIN;
-	static const int POLL_TIMEOUT = 1000; // one second (in msec)
+	static const int POLL_TIMEOUT = 1; // (ms)
 
 	sockaddr_in sender_address;
 	socklen_t sender_address_len = sizeof(sender_address);

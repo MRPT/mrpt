@@ -26,6 +26,13 @@ const float CObservationVelodyneScan::DISTANCE_MAX = 130.0f;        /**< meters 
 const float CObservationVelodyneScan::DISTANCE_RESOLUTION = 0.002f; /**< meters */
 const float CObservationVelodyneScan::DISTANCE_MAX_UNITS = (CObservationVelodyneScan::DISTANCE_MAX / CObservationVelodyneScan::DISTANCE_RESOLUTION + 1.0f);
 
+
+CObservationVelodyneScan::TGeneratePointCloudParameters::TGeneratePointCloudParameters() :
+	minAzimuth_deg(0.0),
+	maxAzimuth_deg(360.0)
+{
+}
+
 CObservationVelodyneScan::CObservationVelodyneScan( ) :
 	minRange(1.0),
 	maxRange(130.0),
@@ -132,6 +139,9 @@ void CObservationVelodyneScan::generatePointCloud(const TGeneratePointCloudParam
 	scan_props.rightToLeft = true;
 	const CSinCosLookUpTableFor2DScans::TSinCosValues & lut_sincos = velodyne_sincos_tables.getSinCosForScan(scan_props);
 
+	const int minAzimuth_int = round( params.minAzimuth_deg * 100 );
+	const int maxAzimuth_int = round( params.maxAzimuth_deg * 100 );
+
 	MRPT_TODO("Support 64 LIDAR")
 	int hdl64offset = 0;
 
@@ -213,15 +223,8 @@ void CObservationVelodyneScan::generatePointCloud(const TGeneratePointCloudParam
 
 					// For the following code: See reference implementation in vtkVelodyneHDLReader::vtkInternal::PushFiringData()
 					// -----------------------------------------
-
-					// Azimuth correction:
-					//double azimuthInRadians = HDL_Grabber_toRadians((static_cast<double> (azimuth) / 100.0) - correction->azimuthCorrection);
-
-
-					/*condition added to avoid calculating points which are not
-					in the interesting defined area (min_angle < area < max_angle)*/
-					//if ((azimuth_corrected >= config_.min_angle && azimuth_corrected <= config_.max_angle && config_.min_angle < config_.max_angle)
-					//	||(config_.min_angle > config_.max_angle && (azimuth_corrected <= config_.max_angle || azimuth_corrected >= config_.min_angle)))
+					if ((minAzimuth_int < maxAzimuth_int && azimuth_corrected >= minAzimuth_int && azimuth_corrected <= maxAzimuth_int )
+					  ||(minAzimuth_int > maxAzimuth_int && (azimuth_corrected <= maxAzimuth_int || azimuth_corrected >= minAzimuth_int)))
 					{
 						/** Position Calculation */
 						const float distance = raw->blocks[block].laser_returns[k].distance * DISTANCE_RESOLUTION + calib.distanceCorrection;
@@ -234,11 +237,8 @@ void CObservationVelodyneScan::generatePointCloud(const TGeneratePointCloudParam
 
 						const float xy_distance = distance * cos_vert_angle + vert_offset * sin_vert_angle;
 
-						// cos(a-b) = cos(a)*cos(b) + sin(a)*sin(b)
-						// sin(a-b) = sin(a)*cos(b) - cos(a)*sin(b)
 						const float cos_azimuth = lut_sincos.ccos[azimuth_corrected];
 						const float sin_azimuth = lut_sincos.csin[azimuth_corrected];
-						MRPT_TODO("Integrate calibration corrections")
 
 						// Compute raw position
 						const mrpt::math::TPoint3Df pt_raw(

@@ -76,7 +76,8 @@ namespace obs
 		static const int HDR32_DSR_TOFFSET = 1.152;
 		static const int HDR32_FIRING_TOFFSET = 46.08;
 
-		static const int PACKET_SIZE = 1206;
+		static const int PACKET_SIZE     = 1206;
+		static const int POS_PACKET_SIZE = 512;
 		static const int BLOCKS_PER_PACKET = 12;
 		static const int PACKET_STATUS_SIZE = 4;
 		static const int SCANS_PER_PACKET = (SCANS_PER_BLOCK * BLOCKS_PER_PACKET);
@@ -100,13 +101,22 @@ namespace obs
 			laser_return_t  laser_returns[SCANS_PER_BLOCK];
 		} ;
 
-		/** One unit of data from the scanner (the payload of one UDP packet) */
+		/** One unit of data from the scanner (the payload of one UDP DATA packet) */
 		struct OBS_IMPEXP TVelodyneRawPacket
 		{
 			raw_block_t blocks[BLOCKS_PER_PACKET];
 			uint32_t gps_timestamp;
 			uint8_t  laser_return_mode;  //!< 0x37: strongest, 0x38: last, 0x39: dual return
 			uint8_t  velodyne_model_ID;  //!< 0x21: HDL-32E, 0x22: VLP-16
+		};
+
+		/** Payload of one POSITION packet */
+		struct OBS_IMPEXP TVelodynePositionPacket
+		{
+			char     unused1[198];
+			uint32_t gps_timestamp;
+			uint32_t unused2;
+			char  NMEA_GPRMC[72+234]; //!< the full $GPRMC message, as received by Velodyne, terminated with "\r\n\0"
 		};
 #pragma pack(pop)
 
@@ -146,12 +156,16 @@ namespace obs
 		  * @{ */
 		struct OBS_IMPEXP TGeneratePointCloudParameters
 		{
+			double minAzimuth_deg; //!< Minimum azimuth, in degrees (Default=0). Points will be generated only the the area of interest [minAzimuth, maxAzimuth]
+			double maxAzimuth_deg; //!< Minimum azimuth, in degrees (Default=360). Points will be generated only the the area of interest [minAzimuth, maxAzimuth]
+
+			TGeneratePointCloudParameters();
 		};
 
 		/** Generates the point cloud into the point cloud data fields in \a CObservationVelodyneScan::point_cloud
 		  * \note Points with ranges out of [minRange,maxRange] are discarded.
 		  */
-		void generatePointCloud(const TGeneratePointCloudParameters &params);
+		void generatePointCloud(const TGeneratePointCloudParameters &params = TGeneratePointCloudParameters() );
 
 		/** @} */
 		
