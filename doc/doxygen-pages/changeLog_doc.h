@@ -18,6 +18,8 @@
 	- Changes in libraries:
 		- \ref mrpt_hwdrivers_grp
 			- mrpt::hwdrivers::CNTRIPEmitter now has a parameter to enable/disable sending back the data from the serial port to the NTRIP caster.
+	- Changes in build system:
+		- Code ported to support the new libftdi1-dev (Fixes Debian bug #810368, GitHub issue #176)
 	- BUG FIXES:
 		- mrpt::math::CQuaternion<> did not check for unit norm in Release builds.
 		- Fix build errors against OpenCV 3.0.0+ without opencv_contrib modules.

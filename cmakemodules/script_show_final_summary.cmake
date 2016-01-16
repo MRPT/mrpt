@@ -140,7 +140,7 @@ MESSAGE(STATUS " _____________________ HARDWARE & SENSORS ______________________
 SHOW_CONFIG_LINE_SYSTEM("libdc1394-2 (FireWire capture)      " CMAKE_MRPT_HAS_LIBDC1394_2)
 SHOW_CONFIG_LINE("DUO3D Camera libs                   " CMAKE_MRPT_HAS_DUO3D)
 IF(UNIX)
-SHOW_CONFIG_LINE_SYSTEM("libftdi (USB)                       " CMAKE_MRPT_HAS_FTDI)
+SHOW_CONFIG_LINE_SYSTEM("libftdi (USB)                       " CMAKE_MRPT_HAS_FTDI "[Version: ${LIBFTDI_VERSION_STRING}]")
 ENDIF(UNIX)
 message(STATUS " National Instruments...")
 SHOW_CONFIG_LINE("...NIDAQmx?                         " CMAKE_MRPT_HAS_NIDAQMX)
