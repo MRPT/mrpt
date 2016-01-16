@@ -24,6 +24,9 @@ IMPLEMENTS_GENERIC_SENSOR(CGPSInterface,mrpt::hwdrivers)
 /** Auxiliary function: Tokenize a string "str" into commas separated tokens */
 void  getNextToken(const std::string &str,std::string &token, unsigned int &parserPos);
 
+MRPT_TODO("Make customInit more flexible");
+MRPT_TODO("Parse (some) novatel binary frames");
+
 /* -----------------------------------------------------
                 Constructor
    ----------------------------------------------------- */
