@@ -47,6 +47,10 @@
 	<td align="center" > Optional </td>
 </tr>
 <tr>
+	<td align="center" > \ref dep-libpcap "libpcap (or WinPCap)" </td>
+	<td align="center" > Optional </td>
+</tr>
+<tr>
 	<td align="center" > \ref dep-libusb "libfusb" </td>
 	<td align="center" > Optional (needed for Kinect) </td>
 </tr>
