@@ -18,6 +18,8 @@
 	- Changes in libraries:
 		- \ref mrpt_hwdrivers_grp
 			- mrpt::hwdrivers::CNTRIPEmitter now has a parameter to enable/disable sending back the data from the serial port to the NTRIP caster.
+		- \ref mrpt_vision_grp
+			- mrpt::vision::CDifOdo has been refactored and now does faster image pyramid computation (By Mariano Jaimez)
 	- Changes in build system:
 		- Code ported to support the new libftdi1-dev (Fixes Debian bug #810368, GitHub issue #176)
 	- BUG FIXES:
