@@ -11,11 +11,10 @@
 #include <mrpt/vision/tracking.h>
 #include <mrpt/gui.h>
 
-#include <opencv2/opencv.hpp>
-#include <opencv2/highgui/highgui.hpp>
-#include <opencv2/imgproc/imgproc.hpp>
-#include <opencv2/features2d/features2d.hpp>
-#include <opencv2/nonfree/features2d.hpp>
+#include <mrpt/otherlibs/do_opencv_includes.h>
+#if (MRPT_OPENCV_VERSION_NUM>=0x240) && MRPT_HAS_OPENCV_NONFREE
+#   include <opencv2/nonfree/features2d.hpp>
+#endif
 
 using namespace mrpt::utils;
 using namespace mrpt::gui;
@@ -528,6 +527,7 @@ void TestExtractFeatures()
 	return;
 }
 
+#if (MRPT_OPENCV_VERSION_NUM>=0x240) && MRPT_HAS_OPENCV_NONFREE
 void TestORBTiled()
 {
 	using namespace cv;
@@ -588,6 +588,7 @@ void TestORBTiled()
 
 	mrpt::system::os::fclose(f);
 } // end-orb-tiled
+#endif
 
 // ------------------------------------------------------
 //				TestCapture
@@ -744,12 +745,12 @@ int main(int argc, char **argv)
 {
 	try
 	{
-		//TestMatchFeatures();
+        TestMatchFeatures();
 		//TestExtractFeatures();
 		//TestExtractFeaturesTile();
 		//TestTrackFeatures();
 		// TestMatchingComparative();
-		TestORBTiled();
+        //TestORBTiled();
 
 
 //		CFeatureList  fs;
