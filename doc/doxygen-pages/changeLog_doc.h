@@ -15,16 +15,25 @@
 <hr>
 <a name="1.3.3">
   <h2>Version 1.3.3: (Under development) </h2></a>
-	- Changes in libraries:
-		- \ref mrpt_hwdrivers_grp
-			- mrpt::hwdrivers::CNTRIPEmitter now has a parameter to enable/disable sending back the data from the serial port to the NTRIP caster.
-		- \ref mrpt_vision_grp
-			- mrpt::vision::CDifOdo has been refactored and now does faster image pyramid computation (By Mariano Jaimez)
-	- Changes in build system:
-		- Code ported to support the new libftdi1-dev (Fixes Debian bug #810368, GitHub issue #176)
-	- BUG FIXES:
-		- mrpt::math::CQuaternion<> did not check for unit norm in Release builds.
-		- Fix build errors against OpenCV 3.0.0+ without opencv_contrib modules.
+	- <b>Most important changes:</b>
+		- Support for Velodyne LIDAR sensors.
+	- <b>Detailed list of changes:</b>
+		- New apps:
+			- [velodyne-view](http://www.mrpt.org/list-of-mrpt-apps/application-velodyne-view/): Application to test, visualize and grab data from a live Velodyne sensor or from a PCAP record.
+		- Changes in libraries:
+			- \ref mrpt_hwdrivers_grp
+				- New class mrpt::hwdrivers::CVelodyneScanner
+				- mrpt::hwdrivers::CNTRIPEmitter now has a parameter to enable/disable sending back the data from the serial port to the NTRIP caster.
+			- \ref mrpt_obs_grp
+				- New class mrpt::obs::CObservationVelodyneScan
+				- mrpt::obs::CSinCosLookUpTableFor2DScans now can build a table from a mrpt::obs::T2DScanProperties structure, which now also has its separate header file for better modularity.
+			- \ref mrpt_vision_grp
+				- mrpt::vision::CDifOdo has been refactored and now does faster image pyramid computation (By Mariano Jaimez)
+		- Changes in build system:
+			- Code ported to support the new libftdi1-dev (Fixes Debian bug #810368, GitHub issue #176)
+		- BUG FIXES:
+			- mrpt::math::CQuaternion<> did not check for unit norm in Release builds.
+			- Fix build errors against OpenCV 3.0.0+ without opencv_contrib modules.
 
 <a name="1.3.2">
   <h2>Version 1.3.2: Released 3-NOV-2015 </h2></a>

@@ -10,6 +10,8 @@
 #include "base-precomp.h"  // Precompiled headers
 
 #include <mrpt/utils/net_utils.h>
+#include <mrpt/utils/CClientTCPSocket.h>
+#include <mrpt/utils/CServerTCPSocket.h>
 #include <mrpt/utils/CTicTac.h>
 #include <mrpt/system/string_utils.h>
 #include <mrpt/system/threads.h>
@@ -483,3 +485,22 @@ void thread_DNS_solver_async(TDNSThreadData &param)
 	WSACleanup();
 #endif
 }
+
+/** Returns a description of the last Sockets error */
+std::string mrpt::utils::net::getLastSocketErrorStr()
+{
+#ifdef MRPT_OS_WINDOWS
+	const int errnum = WSAGetLastError();
+	char * s = NULL;
+	FormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, 
+		NULL, errnum,
+		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+		(LPSTR)&s, 0, NULL);
+	const std::string str = mrpt::format("%s [errno=%d]",s,errnum);
+	LocalFree(s);
+	return str;
+#else
+	return std::string(strerror(errno));
+#endif
+}
+

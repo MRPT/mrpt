@@ -50,15 +50,6 @@ CServerTCPSocket::CServerTCPSocket(
 	MRPT_TRY_END;
 }
 
-
-/*---------------------------------------------------------------
-					getLastErrorStr
- ---------------------------------------------------------------*/
-std::string CServerTCPSocket::getLastErrorStr()
-{
-	return std::string(strerror(errno));
-}
-
 /*---------------------------------------------------------------
 					Destructor
  ---------------------------------------------------------------*/

@@ -59,21 +59,11 @@ namespace mrpt
 
 		 /** @name Data common to any observation
 		     @{ */
-
-			/** The associated time-stamp.
-			*/
-			mrpt::system::TTimeStamp	timestamp;
-
-			/** An arbitrary label that can be used to identify the sensor.
-			*/
-			std::string			sensorLabel;
-
+			mrpt::system::TTimeStamp timestamp; //!< The associated time-stamp.
+			std::string              sensorLabel;//!< An arbitrary label that can be used to identify the sensor.
 		/** @} */
 
-		/** Constructor: It sets the initial timestamp to current time
-		*/
-		CObservation();
-
+		CObservation(); //!< Constructor: It sets the initial timestamp to current time
 
 		/** This method is equivalent to:
 		* \code

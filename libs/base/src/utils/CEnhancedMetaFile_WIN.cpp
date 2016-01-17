@@ -15,7 +15,7 @@
 
 #ifdef MRPT_OS_WINDOWS
 
-#include <MRPT/UTILS/CEnhancedMetaFile.h>
+#include <mrpt/utils/CEnhancedMetaFile.h>
 #include <mrpt/system/os.h>
 #include <mrpt/utils/CImage.h>
 

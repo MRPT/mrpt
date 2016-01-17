@@ -11,6 +11,7 @@
 
 #include <mrpt/slam/observations_overlap.h>
 #include <mrpt/maps/CPointsMap.h>
+#include <mrpt/obs/CObservation2DRangeScan.h>
 
 using namespace mrpt::slam;
 using namespace mrpt::maps;

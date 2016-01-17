@@ -56,15 +56,6 @@ CClientTCPSocket::~CClientTCPSocket( )
 }
 
 /*---------------------------------------------------------------
-					getLastErrorStr
- ---------------------------------------------------------------*/
-std::string CClientTCPSocket::getLastErrorStr()
-{
-	return std::string(strerror(errno));
-}
-
-
-/*---------------------------------------------------------------
 						close
  ---------------------------------------------------------------*/
 void  CClientTCPSocket::close()
