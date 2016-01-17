@@ -33,6 +33,8 @@ using namespace mrpt::utils;
 using namespace mrpt::opengl;
 using namespace std;
 
+MRPT_TODO("parse cmd args");
+
 // Thread for grabbing: Do this is another thread so we divide rendering and grabbing
 //   and exploit multicore CPUs.
 struct TThreadParam
@@ -56,7 +58,7 @@ void thread_grabbing(TThreadParam &p)
 
 		// Set params:
 		//velodyne.setDeviceIP("192.168.1.201"); // Default: from any IP
-		velodyne.setPCAPInputFile("d:/Rawlogs/ual-datasets/Velodyne/2015-12-18_dataset_velodyne_despacho.pcap");
+		//velodyne.setPCAPInputFile("d:/Rawlogs/ual-datasets/Velodyne/2015-12-18_dataset_velodyne_despacho.pcap");
 
 		// Enable this block if you have a calibration file, better than default values:
 #if 0	
@@ -187,7 +189,7 @@ void Test_Velodyne()
 
 			win3D.get3DSceneAndLock();
 			win3D.addTextMessage(5,25,
-				format("POS frame rx at %s, RMC=%s",mrpt::system::dateTimeLocalToString(last_obs_gps->timestamp).c_str(),rmc_datum.c_str()),
+				format("POS. frame rx at %s, RMC=%s",mrpt::system::dateTimeLocalToString(last_obs_gps->timestamp).c_str(),rmc_datum.c_str()),
 				TColorf(1,1,1),"mono",10.0, mrpt::opengl::NICE, 101 );
 			win3D.unlockAccess3DScene();
 			do_view_refresh=true;
@@ -200,7 +202,14 @@ void Test_Velodyne()
 			last_obs     = possiblyNewObs;
 
 			if (!last_obs->scan_packets.empty())
-				printf("[%.03f] RX LIDAR scan with %u packets.\n",  mrpt::system::timestampToDouble(last_obs->timestamp) , static_cast<unsigned int>(last_obs->scan_packets.size()));
+			{
+				win3D.get3DSceneAndLock();
+				win3D.addTextMessage(5,40,
+					format("LIDAR scan rx at %s with %u packets",mrpt::system::dateTimeLocalToString(last_obs->timestamp).c_str(), static_cast<unsigned int>(last_obs->scan_packets.size())),
+					TColorf(1,1,1),"mono",10.0, mrpt::opengl::NICE, 102 );
+				win3D.unlockAccess3DScene();
+				do_view_refresh=true;
+			}
 
 			// Update visualization ---------------------------------------
 

@@ -14,6 +14,8 @@
 #include <mrpt/utils/net_utils.h>
 #include <mrpt/hwdrivers/CGPSInterface.h>
 
+MRPT_TODO("Add unit tests")
+
 // socket's hdrs:
 #ifdef MRPT_OS_WINDOWS
 	#include <winsock2.h>
