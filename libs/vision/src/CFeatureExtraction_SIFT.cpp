@@ -75,7 +75,7 @@ void  CFeatureExtraction::extractFeaturesSIFT(
 	bool usingROI = false;
 	if( ROI.xMin != 0 || ROI.xMax != 0 || ROI.yMin != 0 || ROI.yMax != 0 )
 		usingROI = true;	// A ROI has been defined
-
+	
 	// ROI can not be managed properly (yet) with these method, so we extract a subimage
 
 	// use a smart pointer so we just copy the pointer if the image is grayscale, or we'll create a new one if it was RGB:
@@ -93,9 +93,11 @@ void  CFeatureExtraction::extractFeaturesSIFT(
 // --------------------------------------------------------------------------------------
 //		Binary in C# -> OPTIONAL: Feature position already computed
 // --------------------------------------------------------------------------------------
+		
 	case CSBinary:
 		{
 #ifdef MRPT_OS_WINDOWS
+		
 			char			filImg[2000],filOut[2000],filFeat[2000];
 			char			paramImg[2000];
 
@@ -174,6 +176,7 @@ void  CFeatureExtraction::extractFeaturesSIFT(
 		} // end case Binary in C#
 	case VedaldiBinary:
 		{
+		
 		// --------------------------------------------------------------------------------------
 		//		Binary by Vedaldi: NOT IMPLEMENTED YET. Input in PGM format
 		// --------------------------------------------------------------------------------------
@@ -189,6 +192,7 @@ void  CFeatureExtraction::extractFeaturesSIFT(
 // --------------------------------------------------------------------------------------
 	case LoweBinary:			// Binary by Lowe
 		{
+		
 #ifdef MRPT_OS_WINDOWS
 			char			filImg[2000],filOut[2000];
 			char			paramImg[2000];
@@ -271,6 +275,7 @@ void  CFeatureExtraction::extractFeaturesSIFT(
 // --------------------------------------------------------------------------------------
 		case Hess:			// Implementation by Robert Hess
 		{
+
 #if !MRPT_HAS_SIFT_HESS
 			THROW_EXCEPTION("Method not available since MRPT has been compiled without Hess' SIFT library")
 #elif MRPT_HAS_OPENCV	// OK, we have Hess' sift:
@@ -279,19 +284,23 @@ void  CFeatureExtraction::extractFeaturesSIFT(
 			CvMemStorage* storage;
 			CvSeq* features;
 			int octvs;
-
+			std::cout << "got to hess 1";//gb
 			/* check arguments */
 			ASSERT_(img_grayscale.getWidth() != 0 && img_grayscale.getHeight() != 0);
-
+			std::cout << "got to hess 2";//gb
 			/* build scale space pyramid; smallest dimension of top level is ~4 pixels */
 			const IplImage* ipl_im = img_grayscale.getAs<IplImage>();
-
+			std::cout << "got to hess 3"; //gb the program crashes in the next line 
 			init_img = create_init_img( ipl_im, SIFT_IMG_DBL, SIFT_SIGMA );
+			std::cout << "got to hess 3b";//gb
 			octvs = log( (float)(MIN( init_img->width, init_img->height )) ) / log((float)2) - 2;
+			std::cout << "got to hess 4";//gb
 			gauss_pyr = build_gauss_pyr( init_img, octvs, SIFT_INTVLS, SIFT_SIGMA );
+			std::cout << "got to hess 5";//gb
 			dog_pyr = build_dog_pyr( gauss_pyr, octvs, SIFT_INTVLS );
-
+			std::cout << "got to hess 6";//gb
 			storage = cvCreateMemStorage( 0 );
+			std::cout << "got to hess 7"; //gb
 			features = scale_space_extrema( dog_pyr, octvs, SIFT_INTVLS, 
 				options.SIFTOptions.threshold, // SIFT_CONTR_THR,
 				options.SIFTOptions.edgeThreshold, // SIFT_CURV_THR
@@ -333,7 +342,12 @@ void  CFeatureExtraction::extractFeaturesSIFT(
 //***********************************************************************************************
 		case OpenCV:
 		{
-#if MRPT_HAS_OPENCV && MRPT_OPENCV_VERSION_NUM >= 0x211 && MRPT_HAS_OPENCV_NONFREE
+			
+
+#if MRPT_HAS_OPENCV && MRPT_HAS_OPENCV_NONFREE
+
+	#if MRPT_OPENCV_VERSION_NUM >= 0x211 && MRPT_OPENCV_VERSION_NUM < 0x300 
+
 			SiftFeatureDetector SIFTDetector(
 				options.SIFTOptions.threshold, //SIFT::DetectorParams::GET_DEFAULT_THRESHOLD(),
 				options.SIFTOptions.edgeThreshold //SIFT::DetectorParams::GET_DEFAULT_EDGE_THRESHOLD() );
@@ -399,7 +413,74 @@ void  CFeatureExtraction::extractFeaturesSIFT(
 				++i;
 			}
 			feats.resize( cont );
+	#endif
 
+	#if MRPT_OPENCV_VERSION_NUM >= 0x300 
+			
+			using namespace cv;
+			vector<KeyPoint> cv_feats;
+
+			cv::Ptr<cv::xfeatures2d::SIFT>sift = cv::xfeatures2d::SIFT::create(nDesiredFeatures,3, options.SIFTOptions.threshold, options.SIFTOptions.edgeThreshold,1.6 ); //gb
+			const IplImage* cGrey = img_grayscale.getAs<IplImage>();
+			Mat theImg = cvarrToMat(cGrey);
+			//SIFTDetector.detect(theImg, cv_feats);
+			sift->detect(theImg, cv_feats); //gb
+			Mat desc;
+			//SIFTDescriptor.compute(theImg, cv_feats, desc);
+			sift->compute(theImg, cv_feats, desc);
+			
+			//fromOpenCVToMRPT( theImg, cv_feats, desc, nDesiredFeatures, outList );
+			const size_t	N = cv_feats.size();
+			unsigned int	nMax = nDesiredFeatures != 0 && N > nDesiredFeatures ? nDesiredFeatures : N;
+			const int 		offset = (int)this->options.patchSize / 2 + 1;
+			const size_t	size_2 = options.patchSize / 2;
+			const size_t 	imgH = img.getHeight();
+			const size_t 	imgW = img.getWidth();
+			unsigned int	i = 0;
+			unsigned int	cont = 0;
+			TFeatureID		nextID = init_ID;
+			feats.clear();
+
+
+			while (cont != nMax && i != N)
+			{
+				const int xBorderInf = (int)floor(cv_feats[i].pt.x - size_2);
+				const int xBorderSup = (int)floor(cv_feats[i].pt.x + size_2);
+				const int yBorderInf = (int)floor(cv_feats[i].pt.y - size_2);
+				const int yBorderSup = (int)floor(cv_feats[i].pt.y + size_2);
+
+				if (options.patchSize == 0 || ((xBorderSup < (int)imgW) && (xBorderInf > 0) && (yBorderSup < (int)imgH) && (yBorderInf > 0)))
+				{
+					CFeaturePtr ft = CFeature::Create();
+					ft->type = featSIFT;
+					ft->ID = nextID++;
+					ft->x = cv_feats[i].pt.x;
+					ft->y = cv_feats[i].pt.y;
+					ft->response = cv_feats[i].response;
+					ft->orientation = cv_feats[i].angle;
+					ft->scale = cv_feats[i].size;
+					ft->patchSize = options.patchSize;														// The size of the feature patch
+					ft->descriptors.SIFT.resize(128);
+					memcpy(&(ft->descriptors.SIFT[0]), &desc.data[128 * i], 128 * sizeof(ft->descriptors.SIFT[0]));	// The descriptor
+
+					if (options.patchSize > 0)
+					{
+						img.extract_patch(
+							ft->patch,
+							round(ft->x) - offset,
+							round(ft->y) - offset,
+							options.patchSize,
+							options.patchSize);						// Image patch surronding the feature
+					}
+					feats.push_back(ft);
+					++cont;
+				}
+				++i;
+			}
+			feats.resize(cont);
+
+
+	#endif
 #else
 	THROW_EXCEPTION("This method requires OpenCV >= 2.1.1 with nonfree module")
 #endif

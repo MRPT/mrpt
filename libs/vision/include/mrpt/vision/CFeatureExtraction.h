@@ -155,7 +155,7 @@ namespace mrpt
 				{
 					TSIFTOptions() : threshold(0.04), edgeThreshold(10) { }
 
-					TSIFTImplementation implementation;
+					TSIFTImplementation implementation;  //!< Default: Hess (OpenCV should be preferred, but its nonfree module is not always available by default in all systems)
 					double threshold;  //!< default= 0.04
 					double edgeThreshold; //!< default= 10
 				} SIFTOptions;

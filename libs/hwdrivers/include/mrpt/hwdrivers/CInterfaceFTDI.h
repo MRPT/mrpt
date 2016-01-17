@@ -37,7 +37,7 @@ namespace mrpt
 			uint8_t			usb_serialNumber;
 
 	#if defined(MRPT_OS_LINUX) || defined(MRPT_OS_APPLE)
-			/** Only for Linux: the corresponding libusb's  "usb_device*" */
+			/** Only for Linux: the corresponding libusb's `libusb_device*` (or `usb_device*` for libftdi <1.2) */
 			void 			*usb_device_struct;
 	#endif
 		};

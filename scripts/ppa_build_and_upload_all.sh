@@ -15,6 +15,8 @@ fi
 MRPTDIR=`pwd`
 
 # Build normal PPA:
+export MRPT_PKG_CUSTOM_CMAKE_PARAMS=""
+
 bash scripts/prepare_ubuntu_pkgs_for_ppa.sh
 cd $HOME/mrpt_ubuntu
 bash $MRPTDIR/scripts/upload_all_mrpt_ppa.sh

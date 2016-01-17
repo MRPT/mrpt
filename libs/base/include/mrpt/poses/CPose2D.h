@@ -29,7 +29,7 @@ namespace poses
 	 *   <img src="CPose2D.gif">
 	 *  </div>
 	 *
-	 * \note Read also: "A tutorial on SE(3) transformation parameterizations and on-manifold optimization", Jose-Luis Blanco. http://mapir.isa.uma.es/~jlblanco/papers/jlblanco2010geometry3D_techrep.pdf
+	 * \note Read also: "A tutorial on SE(3) transformation parameterizations and on-manifold optimization", Jose-Luis Blanco. http://ingmec.ual.es/~jlblanco/papers/jlblanco2010geometry3D_techrep.pdf
 	 * \sa CPoseOrPoint,CPoint2D
 	 * \ingroup poses_grp
 	 */

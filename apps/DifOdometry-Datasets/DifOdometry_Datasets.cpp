@@ -38,6 +38,7 @@ void CDifodoDatasets::loadConfiguration(const utils::CConfigFileBase &ini )
 	fovh = M_PI*62.5/180.0;	//Larger FOV because depth is registered with color
 	fovv = M_PI*48.5/180.0;
 	cam_mode = 1;
+	fast_pyramid = false;
 	downsample = ini.read_int("DIFODO_CONFIG", "downsample", 2, true);
 	rows = ini.read_int("DIFODO_CONFIG", "rows", 240, true);
 	cols = ini.read_int("DIFODO_CONFIG", "cols", 320, true);
@@ -347,19 +348,18 @@ void CDifodoDatasets::loadFrame()
 
 	CObservation3DRangeScanPtr obs3D = CObservation3DRangeScanPtr(alfa);
 	obs3D->load();
+	const CMatrix range = obs3D->rangeImage;
+	const unsigned int height = range.getRowCount();
+	const unsigned int width = range.getColCount();
 
-	const unsigned int height = obs3D->rangeImage.getRowCount();
-	const unsigned int width = obs3D->rangeImage.getColCount();
-	const unsigned int index_incr = downsample;
-
-	//Load depth image
-	for (unsigned int i=0; i<height; i+=index_incr)
-		for (unsigned int j=0; j<width; j+=index_incr)
+	for (unsigned int j = 0; j<cols; j++)
+		for (unsigned int i = 0; i<rows; i++)
 		{
-			depth_wf(i/index_incr,j/index_incr) = obs3D->rangeImage(height-i-1, width-j-1);
-				if (depth_wf(i/index_incr,j/index_incr) > 4.5f)
-				depth_wf(i/index_incr,j/index_incr) = 0.f;
+			const float z = range(height-downsample*i-1, width-downsample*j-1);
+			if (z < 4.5f)	depth_wf(i,j) = z;
+			else			depth_wf(i, j) = 0.f;
 		}
+
 
 	double timestamp_gt;
 	timestamp_obs = mrpt::system::timestampTotime_t(obs3D->timestamp);
@@ -496,7 +496,8 @@ void CDifodoDatasets::loadFrame()
 void CDifodoDatasets::reset()
 {
 	loadFrame();
-	buildImagePyramid();
+	if (fast_pyramid)	buildImagePyramidFast();
+	else				buildImagePyramid();
 
 	cam_oldpose = cam_pose;
 	gt_oldpose = gt_pose;

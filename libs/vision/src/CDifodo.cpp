@@ -33,6 +33,7 @@ CDifodo::CDifodo()
 	ctf_levels = 1;
 	width = 640/(cam_mode*downsample);
 	height = 480/(cam_mode*downsample);
+	fast_pyramid = true;
 
 	//Resize pyramid
     const unsigned int pyr_levels = round(log(float(width/cols))/log(2.f)) + ctf_levels;
@@ -89,15 +90,168 @@ CDifodo::CDifodo()
 	num_valid_points = 0;
 
 	//Compute gaussian mask
-	float v_mask[5] = {1,4,6,4,1};
-    for (unsigned int i=0; i<5; i++)
-        for (unsigned int j=0; j<5; j++)
-            g_mask[i][j] = v_mask[i]*v_mask[j]/256.f;
+	VectorXf v_mask(4);
+	v_mask(0) = 1.f; v_mask(1) = 2.f; v_mask(2) = 2.f; v_mask(3) = 1.f;
+	for (unsigned int i = 0; i<4; i++)
+		for (unsigned int j = 0; j<4; j++)
+			f_mask(i,j) = v_mask(i)*v_mask(j)/36.f;
+
+	//Compute gaussian mask
+	float v_mask2[5] = {1,4,6,4,1};
+	for (unsigned int i = 0; i<5; i++)
+		for (unsigned int j = 0; j<5; j++)
+			g_mask[i][j] = v_mask2[i]*v_mask2[j]/256.f;
 }
 
 void CDifodo::buildImagePyramid()
 {
-	const float max_depth_dif = 0.05f;
+	const float max_depth_dif = 0.1f;
+
+	//Push coordinates back
+	depth_old.swap(depth);
+	xx_old.swap(xx);
+	yy_old.swap(yy);
+
+	//The number of levels of the pyramid does not match the number of levels used
+	//in the odometry computation (because we might want to finish with lower resolutions)
+
+	unsigned int pyr_levels = round(log(float(width/cols))/log(2.f)) + ctf_levels;
+
+	//Generate levels
+	for (unsigned int i = 0; i<pyr_levels; i++)
+	{
+		unsigned int s = pow(2.f,int(i));
+		cols_i = width/s;
+		rows_i = height/s;
+		const int rows_i2 = 2*rows_i;
+		const int cols_i2 = 2*cols_i;
+		const int i_1 = i-1;
+
+		if (i == 0)
+			depth[i].swap(depth_wf);
+
+		//                              Downsampling
+		//-----------------------------------------------------------------------------
+		else
+		{
+			for (unsigned int u = 0; u < cols_i; u++)
+			for (unsigned int v = 0; v < rows_i; v++)
+			{
+				const int u2 = 2*u;
+				const int v2 = 2*v;
+				const float dcenter = depth[i_1](v2,u2);
+
+				//Inner pixels
+				if ((v>0)&&(v<rows_i-1)&&(u>0)&&(u<cols_i-1))
+				{
+					if (dcenter > 0.f)
+					{
+						float sum = 0.f;
+						float weight = 0.f;
+
+						for (int l = -2; l<3; l++)
+						for (int k = -2; k<3; k++)
+						{
+							const float abs_dif = abs(depth[i_1](v2+k,u2+l)-dcenter);
+							if (abs_dif < max_depth_dif)
+							{
+								const float aux_w = g_mask[2+k][2+l]*(max_depth_dif - abs_dif);
+								weight += aux_w;
+								sum += aux_w*depth[i_1](v2+k,u2+l);
+							}
+						}
+						depth[i](v,u) = sum/weight;
+					}
+					else
+					{
+						float min_depth = 10.f;
+						for (int l = -2; l<3; l++)
+						for (int k = -2; k<3; k++)
+						{
+							const float d = depth[i_1](v2+k,u2+l);
+							if ((d > 0.f)&&(d < min_depth))
+								min_depth = d;
+						}
+
+						if (min_depth < 10.f)
+							depth[i](v,u) = min_depth;
+						else
+							depth[i](v,u) = 0.f;
+					}
+				}
+
+				//Boundary
+				else
+				{
+					if (dcenter > 0.f)
+					{
+						float sum = 0.f;
+						float weight = 0.f;
+
+						for (int l = -2; l<3; l++)
+						for (int k = -2; k<3; k++)
+						{
+							const int indv = v2+k,indu = u2+l;
+							if ((indv>=0)&&(indv<rows_i2)&&(indu>=0)&&(indu<cols_i2))
+							{
+								const float abs_dif = abs(depth[i_1](indv,indu)-dcenter);
+								if (abs_dif < max_depth_dif)
+								{
+									const float aux_w = g_mask[2+k][2+l]*(max_depth_dif - abs_dif);
+									weight += aux_w;
+									sum += aux_w*depth[i_1](indv,indu);
+								}
+							}
+						}
+						depth[i](v,u) = sum/weight;
+					}
+					else
+					{
+						float min_depth = 10.f;
+						for (int l = -2; l<3; l++)
+						for (int k = -2; k<3; k++)
+						{
+							const int indv = v2+k,indu = u2+l;
+							if ((indv>=0)&&(indv<rows_i2)&&(indu>=0)&&(indu<cols_i2))
+							{
+								const float d = depth[i_1](indv,indu);
+								if ((d > 0.f)&&(d < min_depth))
+									min_depth = d;
+							}
+						}
+
+						if (min_depth < 10.f)
+							depth[i](v,u) = min_depth;
+						else
+							depth[i](v,u) = 0.f;
+					}
+				}
+			}
+		}
+
+		//Calculate coordinates "xy" of the points
+		const float inv_f_i = 2.f*tan(0.5f*fovh)/float(cols_i);
+		const float disp_u_i = 0.5f*(cols_i-1);
+		const float disp_v_i = 0.5f*(rows_i-1);
+
+		for (unsigned int u = 0; u < cols_i; u++)
+		for (unsigned int v = 0; v < rows_i; v++)
+		if (depth[i](v,u) > 0.f)
+		{
+			xx[i](v,u) = (u - disp_u_i)*depth[i](v,u)*inv_f_i;
+			yy[i](v,u) = (v - disp_v_i)*depth[i](v,u)*inv_f_i;
+		}
+		else
+		{
+			xx[i](v,u) = 0.f;
+			yy[i](v,u) = 0.f;
+		}
+	}
+}
+
+void CDifodo::buildImagePyramidFast()
+{
+	const float max_depth_dif = 0.1f;
 	
 	//Push coordinates back
 	depth_old.swap(depth);
@@ -130,95 +284,60 @@ void CDifodo::buildImagePyramid()
 				for (unsigned int v = 0; v < rows_i; v++)
                 {
                     const int u2 = 2*u;
-					const int v2 = 2*v;			
-					const float dcenter = depth[i_1](v2,u2);
+					const int v2 = 2*v;
 					
 					//Inner pixels
                     if ((v>0)&&(v<rows_i-1)&&(u>0)&&(u<cols_i-1))
                     {		
+						const Matrix4f d_block = depth[i_1].block<4,4>(v2-1,u2-1);
+						float depths[4] = {d_block(5),d_block(6),d_block(9),d_block(10)};
+						float dcenter;
+
+						//Sort the array (try to find a good/representative value)
+						for (signed char k = 2; k>=0; k--)
+						if (depths[k+1] < depths[k])
+							std::swap(depths[k+1],depths[k]);
+						for (unsigned char k = 1; k<3; k++)
+						if (depths[k] > depths[k+1])
+							std::swap(depths[k+1],depths[k]);
+						if (depths[2] < depths[1])
+							dcenter = depths[1];
+						else
+							dcenter = depths[2];
+						
 						if (dcenter > 0.f)
 						{	
 							float sum = 0.f;
 							float weight = 0.f;
 
-							for (int l=-2; l<3; l++)
-								for (int k=-2; k<3; k++)
+							for (unsigned char k = 0; k<16; k++)
 								{
-									const float abs_dif = abs(depth[i_1](v2+k,u2+l)-dcenter);
+									const float abs_dif = abs(d_block(k) - dcenter);
 									if (abs_dif < max_depth_dif)
 									{
-										const float aux_w = g_mask[2+k][2+l]*(max_depth_dif - abs_dif);
+										const float aux_w = f_mask(k)*(max_depth_dif - abs_dif);
 										weight += aux_w;
-										sum += aux_w*depth[i_1](v2+k,u2+l);
+										sum += aux_w*d_block(k);
 									}
 								}
 							depth[i](v,u) = sum/weight;
 						}
 						else
-						{
-							float min_depth = 10.f;
-							for (int l=-2; l<3; l++)
-								for (int k=-2; k<3; k++)
-								{
-									const float d = depth[i_1](v2+k,u2+l);
-									if ((d > 0.f)&&(d < min_depth))
-										min_depth = d;
-								}
+							depth[i](v,u) = 0.f;
 
-							if (min_depth < 10.f)
-								depth[i](v,u) = min_depth;
-							else
-								depth[i](v,u) = 0.f;
-						}
                     }
 
                     //Boundary
-                    else
-                    {
-                        if (dcenter > 0.f)
-						{						
-							float sum = 0.f;
-							float weight = 0.f;
-
-							for (int l=-2; l<3; l++)	
-								for (int k=-2; k<3; k++)
-								{
-									const int indv = v2+k, indu = u2+l;
-									if ((indv>=0)&&(indv<rows_i2)&&(indu>=0)&&(indu<cols_i2))
-									{
-										const float abs_dif = abs(depth[i_1](indv,indu)-dcenter);										
-										if (abs_dif < max_depth_dif)
-										{
-											const float aux_w = g_mask[2+k][2+l]*(max_depth_dif - abs_dif);
-											weight += aux_w;
-											sum += aux_w*depth[i_1](indv,indu);
-										}
-									}
-								}
-							depth[i](v,u) = sum/weight;
-						}
+					else
+					{
+						const Matrix2f d_block = depth[i_1].block<2,2>(v2,u2);
+						const float new_d = 0.25f*d_block.sumAll();
+						if (new_d < 0.4f)
+							depth[i](v,u) = 0.f;
 						else
-						{
-							float min_depth = 10.f;
-							for (int l=-2; l<3; l++)
-								for (int k=-2; k<3; k++)
-								{
-									const int indv = v2+k, indu = u2+l;
-									if ((indv>=0)&&(indv<rows_i2)&&(indu>=0)&&(indu<cols_i2))
-									{
-										const float d = depth[i_1](indv,indu);
-										if ((d > 0.f)&&(d < min_depth))
-											min_depth = d;
-									}
-								}
-
-							if (min_depth < 10.f)
-								depth[i](v,u) = min_depth;
-							else
-								depth[i](v,u) = 0.f;
-						}
-                    }
-                }
+							depth[i](v,u) = new_d;
+					}
+				}
         }
 
         //Calculate coordinates "xy" of the points
@@ -341,6 +460,10 @@ void CDifodo::performWarping()
 
 void CDifodo::calculateCoord()
 {	
+	null.resize(rows_i, cols_i);
+	null.assign(false);
+	num_valid_points = 0;
+	
 	for (unsigned int u = 0; u < cols_i; u++)
 		for (unsigned int v = 0; v < rows_i; v++)
 		{
@@ -349,21 +472,25 @@ void CDifodo::calculateCoord()
 				depth_inter[image_level](v,u) = 0.f;
 				xx_inter[image_level](v,u) = 0.f;
 				yy_inter[image_level](v,u) = 0.f;
+				null(v, u) = true;
 			}
 			else
 			{
 				depth_inter[image_level](v,u) = 0.5f*(depth_old[image_level](v,u) + depth_warped[image_level](v,u));
 				xx_inter[image_level](v,u) = 0.5f*(xx_old[image_level](v,u) + xx_warped[image_level](v,u));
 				yy_inter[image_level](v,u) = 0.5f*(yy_old[image_level](v,u) + yy_warped[image_level](v,u));
+				null(v, u) = false;
+				if ((u>0)&&(v>0)&&(u<cols_i-1)&&(v<rows_i-1))
+					num_valid_points++;
 			}
 		}
 }
 
 void CDifodo::calculateDepthDerivatives()
 {
-	dt.resize(rows_i,cols_i);
-	du.resize(rows_i,cols_i);
-	dv.resize(rows_i,cols_i);
+	dt.resize(rows_i,cols_i); dt.assign(0.f);
+	du.resize(rows_i,cols_i); du.assign(0.f);
+	dv.resize(rows_i,cols_i); dv.assign(0.f);
 
     //Compute connectivity
 	MatrixXf rx_ninv(rows_i,cols_i);
@@ -372,29 +499,27 @@ void CDifodo::calculateDepthDerivatives()
 
 	for (unsigned int u = 0; u < cols_i-1; u++)
         for (unsigned int v = 0; v < rows_i; v++)
-        {
-			const float norm_dx = square(xx_inter[image_level](v,u+1) - xx_inter[image_level](v,u))
-								+ square(depth_inter[image_level](v,u+1) - depth_inter[image_level](v,u));
-			if (norm_dx  > 0.f)
-				rx_ninv(v,u) = sqrt(norm_dx);
-		}
+			if (null(v,u) == false)
+			{
+				rx_ninv(v,u) = sqrtf(square(xx_inter[image_level](v,u+1) - xx_inter[image_level](v,u))
+									+ square(depth_inter[image_level](v,u+1) - depth_inter[image_level](v,u)));
+			}
 
 	for (unsigned int u = 0; u < cols_i; u++)
         for (unsigned int v = 0; v < rows_i-1; v++)
-        {
-			const float norm_dy = square(yy_inter[image_level](v+1,u) - yy_inter[image_level](v,u))
-								+ square(depth_inter[image_level](v+1,u) - depth_inter[image_level](v,u));
-
-            if (norm_dy > 0.f)
-				ry_ninv(v,u) = sqrt(norm_dy);
-        }
+			if (null(v,u) == false)
+			{
+				ry_ninv(v,u) = sqrtf(square(yy_inter[image_level](v+1,u) - yy_inter[image_level](v,u))
+									+ square(depth_inter[image_level](v+1,u) - depth_inter[image_level](v,u)));
+			}
 
 
     //Spatial derivatives
     for (unsigned int v = 0; v < rows_i; v++)
     {
         for (unsigned int u = 1; u < cols_i-1; u++)
-			du(v,u) = (rx_ninv(v,u-1)*(depth_inter[image_level](v,u+1)-depth_inter[image_level](v,u)) + rx_ninv(v,u)*(depth_inter[image_level](v,u) - depth_inter[image_level](v,u-1)))/(rx_ninv(v,u)+rx_ninv(v,u-1));
+			if (null(v,u) == false)
+				du(v,u) = (rx_ninv(v,u-1)*(depth_inter[image_level](v,u+1)-depth_inter[image_level](v,u)) + rx_ninv(v,u)*(depth_inter[image_level](v,u) - depth_inter[image_level](v,u-1)))/(rx_ninv(v,u)+rx_ninv(v,u-1));
 
 		du(v,0) = du(v,1);
 		du(v,cols_i-1) = du(v,cols_i-2);
@@ -403,7 +528,8 @@ void CDifodo::calculateDepthDerivatives()
     for (unsigned int u = 0; u < cols_i; u++)
     {
         for (unsigned int v = 1; v < rows_i-1; v++)
-			dv(v,u) = (ry_ninv(v-1,u)*(depth_inter[image_level](v+1,u)-depth_inter[image_level](v,u)) + ry_ninv(v,u)*(depth_inter[image_level](v,u) - depth_inter[image_level](v-1,u)))/(ry_ninv(v,u)+ry_ninv(v-1,u));
+			if (null(v,u) == false)
+				dv(v,u) = (ry_ninv(v-1,u)*(depth_inter[image_level](v+1,u)-depth_inter[image_level](v,u)) + ry_ninv(v,u)*(depth_inter[image_level](v,u) - depth_inter[image_level](v-1,u)))/(ry_ninv(v,u)+ry_ninv(v-1,u));
 
 		dv(0,u) = dv(1,u);
 		dv(rows_i-1,u) = dv(rows_i-2,u);
@@ -412,7 +538,8 @@ void CDifodo::calculateDepthDerivatives()
 	//Temporal derivative
 	for (unsigned int u = 0; u < cols_i; u++)
 		for (unsigned int v = 0; v < rows_i; v++)
-			dt(v,u) = fps*(depth_warped[image_level](v,u) - depth_old[image_level](v,u));
+			if (null(v,u) == false)
+				dt(v,u) = fps*(depth_warped[image_level](v,u) - depth_old[image_level](v,u));
 }
 
 void CDifodo::computeWeights()
@@ -445,7 +572,7 @@ void CDifodo::computeWeights()
 	
 	for (unsigned int u = 1; u < cols_i-1; u++)
 		for (unsigned int v = 1; v < rows_i-1; v++)
-			if (null(v,u) == 0)
+			if (null(v,u) == false)
 			{
 				//					Compute measurment error (simplified)
 				//-----------------------------------------------------------------------
@@ -511,25 +638,6 @@ void CDifodo::computeWeights()
 #endif
 }
 
-void CDifodo::findNullPoints()
-{
-	null.resize(rows_i, cols_i);
-	null.assign(0);
-	num_valid_points = 0;
-
-	for (unsigned int u = 1; u < cols_i-1; u++)
-		for (unsigned int v = 1; v < rows_i-1; v++)
-		{
-			if (depth_inter[image_level](v,u) == 0.f)
-				null(v,u) = 1;
-			else
-			{
-				num_valid_points++;
-				null(v,u) = 0;
-			}
-		}
-}
-
 void CDifodo::solveOneLevel()
 {
 	MatrixXf A(num_valid_points,6);
@@ -544,21 +652,24 @@ void CDifodo::solveOneLevel()
 
 	for (unsigned int u = 1; u < cols_i-1; u++)
 		for (unsigned int v = 1; v < rows_i-1; v++)
-			if (null(v,u) == 0)
+			if (null(v,u) == false)
 			{
 				// Precomputed expressions
-				const float inv_d = 1.f/depth_inter[image_level](v,u);
+				const float d = depth_inter[image_level](v,u);
+				const float inv_d = 1.f/d;
+				const float x = xx_inter[image_level](v,u);
+				const float y = yy_inter[image_level](v,u);
 				const float dycomp = du(v,u)*f_inv*inv_d;
 				const float dzcomp = dv(v,u)*f_inv*inv_d;
 				const float tw = weights(v,u);
 
 				//Fill the matrix A
-				A(cont, 0) = tw*(1.f + dycomp*xx_inter[image_level](v,u)*inv_d + dzcomp*yy_inter[image_level](v,u)*inv_d);
+				A(cont, 0) = tw*(1.f + dycomp*x*inv_d + dzcomp*y*inv_d);
 				A(cont, 1) = tw*(-dycomp);
 				A(cont, 2) = tw*(-dzcomp);
-				A(cont, 3) = tw*(dycomp*yy_inter[image_level](v,u) - dzcomp*xx_inter[image_level](v,u));
-				A(cont, 4) = tw*(yy_inter[image_level](v,u) + dycomp*inv_d*yy_inter[image_level](v,u)*xx_inter[image_level](v,u) + dzcomp*(yy_inter[image_level](v,u)*yy_inter[image_level](v,u)*inv_d + depth_inter[image_level](v,u)));
-				A(cont, 5) = tw*(-xx_inter[image_level](v,u) - dycomp*(xx_inter[image_level](v,u)*xx_inter[image_level](v,u)*inv_d + depth_inter[image_level](v,u)) - dzcomp*inv_d*yy_inter[image_level](v,u)*xx_inter[image_level](v,u));
+				A(cont, 3) = tw*(dycomp*y - dzcomp*x);
+				A(cont, 4) = tw*(y + dycomp*inv_d*y*x + dzcomp*(y*y*inv_d + d));
+				A(cont, 5) = tw*(-x - dycomp*(x*x*inv_d + d) - dzcomp*inv_d*y*x);
 				B(cont,0) = tw*(-dt(v,u));
 
 				cont++;
@@ -571,10 +682,13 @@ void CDifodo::solveOneLevel()
 	MatrixXf Var = AtA.ldlt().solve(AtB);
 
 	//Covariance matrix calculation 
-	MatrixXf res(num_valid_points,1);
-	res = A*Var - B;
+	MatrixXf res = -B;
+	for (unsigned int k = 0; k<6; k++)
+		res += Var(k)*A.col(k);
+
 	est_cov = (1.f/float(num_valid_points-6))*AtA.inverse()*res.squaredNorm();
 
+	//Update last velocity in local coordinates
 	kai_loc_level = Var;
 }
 
@@ -585,7 +699,8 @@ void CDifodo::odometryCalculation()
 	clock.Tic();
 
 	//Build the gaussian pyramid
-	buildImagePyramid();
+	if (fast_pyramid)	buildImagePyramidFast();
+	else				buildImagePyramid();
 
 	//Coarse-to-fines scheme
     for (unsigned int i=0; i<ctf_levels; i++)
@@ -608,23 +723,20 @@ void CDifodo::odometryCalculation()
 		else
 			performWarping();
 
-		//2. Calculate inter coords
+		//2. Calculate inter coords and find null measurements
 		calculateCoord();
 
-		//3. Find Null points
-		findNullPoints();
-
-		//4. Compute derivatives
+		//3. Compute derivatives
 		calculateDepthDerivatives();
 
-		//5. Compute weights
+		//4. Compute weights
 		computeWeights();
 
-		//6. Solve odometry
+		//5. Solve odometry
 		if (num_valid_points > 6)
 			solveOneLevel();
 
-		//7. Filter solution
+		//6. Filter solution
 		filterLevelSolution();
 	}
 

@@ -56,8 +56,13 @@ namespace mrpt
 		  *		-7/DEC/2012: Added public static method to parse NMEA strings.
 		  *		-17/JUN/2014: Added GGA feedback.
 		  *
+		  *  The next picture summarizes existing MRPT classes related to GPS / GNSS devices (CGPSInterface, CNTRIPEmitter, CGPS_NTRIP):
+		  *
+		  *  <div align=center> <img src="mrpt_gps_classes_usage.png"> </div>
+		  *
 		  *  \note Verbose debug info will be dumped to cout if the environment variable "MRPT_HWDRIVERS_VERBOSE" is set to "1", or if you call CGenericSensor::enableVerbose(true)
 		  *
+		  * \sa CGPS_NTRIP, CNTRIPEmitter
 		  * \ingroup mrpt_hwdrivers_grp
 		  */
 		class HWDRIVERS_IMPEXP CGPSInterface : public utils::CDebugOutputCapable, public CGenericSensor

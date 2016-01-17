@@ -30,6 +30,7 @@ void CDifodoCamera::loadConfiguration(const utils::CConfigFileBase &ini )
 	fovh = M_PI*58.6/180.0;
 	fovv = M_PI*45.6/180.0;
 	downsample = 1;
+	fast_pyramid = true;
 	cam_mode = ini.read_int("DIFODO_CONFIG", "cam_mode", 2, true);
 	rows = ini.read_int("DIFODO_CONFIG", "rows", 240, true);
 	cols = ini.read_int("DIFODO_CONFIG", "cols", 320, true);
@@ -356,7 +357,8 @@ void CDifodoCamera::reset()
 {
 	//Reset Difodo
 	loadFrame();
-	buildImagePyramid();
+	if (fast_pyramid)	buildImagePyramidFast();
+	else				buildImagePyramid();
 	loadFrame();
 	odometryCalculation();
 

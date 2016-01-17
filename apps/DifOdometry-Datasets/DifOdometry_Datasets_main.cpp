@@ -31,7 +31,7 @@ const char *default_cfg_txt =
 	"ctf_levels = 5 \n\n"
 
 	";Absolute path of the rawlog file \n"
-	"filename = C:/Users/Mariano/Desktop/rawlog_rgbd_dataset_freiburg1_desk2/rgbd_dataset_freiburg1_desk2.rawlog \n";
+	"filename = C:/Users/Mariano/Desktop/rawlog_rgbd_dataset_freiburg1_desk/rgbd_dataset_freiburg1_desk.rawlog \n";
 	//"filename = .../file.rawlog \n";
 
 

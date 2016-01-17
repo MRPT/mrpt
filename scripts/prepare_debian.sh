@@ -8,9 +8,10 @@ set +o verbose # echo off
 APPEND_SNAPSHOT_NUM=0
 IS_FOR_UBUNTU=0
 LEAVE_EMBEDDED_EIGEN=0
+SKIP_HEAVY_DOCS=0
 APPEND_LINUX_DISTRO=""
 VALUE_EXTRA_CMAKE_PARAMS=""
-while getopts "sued:c:" OPTION
+while getopts "suhed:c:" OPTION
 do
      case $OPTION in
          s)
@@ -27,6 +28,9 @@ do
              ;;
          c)
              VALUE_EXTRA_CMAKE_PARAMS=$OPTARG
+             ;;
+         h)
+             SKIP_HEAVY_DOCS=1
              ;;
          ?)
              echo "Unknown command line argument!"
@@ -64,9 +68,10 @@ else
 fi
 
 # Append snapshot?
-MRPT_SNAPSHOT_VERSION=`date +%Y%m%d`
+MRPT_SNAPSHOT_VERSION=`date +%Y%m%d-%H%M`
 MRPT_SNAPSHOT_VERSION+="-git-"
 MRPT_SNAPSHOT_VERSION+=`git rev-parse --short=8 HEAD`
+MRPT_SNAPSHOT_VERSION+="-"
 
 if [ $APPEND_SNAPSHOT_NUM == "1" ];
 then
@@ -101,15 +106,6 @@ then
 	echo "*ERROR*: Seems there was a problem copying sources to ${MRPT_DEBSRC_DIR}... aborting script."
 	exit 1
 fi
-
-# Copy the MRPT book:
-if [ -f /Work/MyBooks/mrpt-book/mrpt-book.ps ];
-then
-	cp  /Work/MyBooks/mrpt-book/mrpt-book.ps ${MRPT_DEBSRC_DIR}/doc/
-	ps2pdf ${MRPT_DEBSRC_DIR}/doc/mrpt-book.ps ${MRPT_DEBSRC_DIR}/doc/mrpt-book.pdf
-	gzip ${MRPT_DEBSRC_DIR}/doc/mrpt-book.ps
-fi
-
 
 cd ${MRPT_DEBSRC_DIR}
 echo "Deleting Windows-only and not required files for Debian packages..."
@@ -167,6 +163,20 @@ fi
 RULES_FILE=mrpt-${MRPT_VERSION_STR}/debian/rules
 sed -i -e "s/REPLACE_HERE_EXTRA_CMAKE_PARAMS/${VALUE_EXTRA_CMAKE_PARAMS}/g" $RULES_FILE
 echo "Using these extra parameters for CMake: '${VALUE_EXTRA_CMAKE_PARAMS}'"
+
+# To avoid timeout compiling in ARM build farms, skip building heavy docs:
+if [ ${SKIP_HEAVY_DOCS} == "1" ];
+then
+	sed -i "/documentation_html/d" $RULES_FILE
+	sed -i "/documentation_performance_html/d" $RULES_FILE
+	sed -i "/documentation_psgz_guides/d" $RULES_FILE
+fi
+
+# To avoid timeout and errors in PPA build farms for ARMHF... may be fixed someday if it becomes stable at the farms.
+if [ ${IS_FOR_UBUNTU} == "1" ];
+then
+	sed -i "/dh_auto_build -O--buildsystem=cmake -- test/d" $RULES_FILE
+fi
 
 
 # Strip my custom files...

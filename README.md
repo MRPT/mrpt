@@ -18,13 +18,13 @@ and much more.
 
 2. Resources
 ------------------------------------------------------------------------------
-  * Main website [http://www.mrpt.org/](http://www.mrpt.org/)
+  * Main website [http://www.mrpt.org/](http://www.mrpt.org/) ([Sources and Windows installer downloads](http://www.mrpt.org/download-mrpt/))
   * C++ API reference: [http://reference.mrpt.org/](http://reference.mrpt.org/).
   * Google group for questions: [http://www.mrpt.org/forum/](http://www.mrpt.org/forum/)
   * [Bindings documentation](https://github.com/MRPT/mrpt/wiki) (Python, Matlab)
   * Download the latest unstable code with: 
     
-            git clone https://github.com/MRPT/mrpt.git
+            git clone https://github.com/MRPT/mrpt.git --depth 1
 
   * Example configuration files for  MRPT applications can be found at: 
      [MRPT/share/mrpt/config_files](https://github.com/MRPT/mrpt/tree/master/share/mrpt/config_files)
