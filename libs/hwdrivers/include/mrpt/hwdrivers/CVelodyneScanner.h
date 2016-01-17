@@ -113,6 +113,7 @@ namespace mrpt
 			void * m_pcap;             //!< opaque ptr: "pcap_t*"
 			void * m_pcap_bpf_program; //!< opaque ptr: bpf_program*
 			bool   m_pcap_file_empty;
+			unsigned int m_pcap_read_count; //!< number of pkts read from the file so far (for debugging)
 			bool   m_pcap_read_once;    //!< Default: false
 			bool   m_pcap_read_fast;    //!< Default: true
 			double m_pcap_repeat_delay; //!< Default: 0 (in seconds)
@@ -197,7 +198,10 @@ namespace mrpt
 
 		static mrpt::system::TTimeStamp internal_receive_UDP_packet(platform_socket_t hSocket, uint8_t *out_buffer, const size_t expected_packet_size,const std::string &filter_only_from_IP);
 
-		mrpt::system::TTimeStamp internal_read_PCAP_packet(uint8_t *out_buffer,const size_t expected_packet_size);
+		void internal_read_PCAP_packet(
+			mrpt::system::TTimeStamp  & data_pkt_time, uint8_t *out_data_buffer,
+			mrpt::system::TTimeStamp  & pos_pkt_time, uint8_t  *out_pos_buffer
+			);
 
 		mrpt::obs::CObservationVelodyneScanPtr m_rx_scan; //!< In progress RX scan
 

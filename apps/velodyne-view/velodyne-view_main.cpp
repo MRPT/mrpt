@@ -56,7 +56,7 @@ void thread_grabbing(TThreadParam &p)
 
 		// Set params:
 		//velodyne.setDeviceIP("192.168.1.201"); // Default: from any IP
-		//velodyne.setPCAPInputFile("/media/ALMACENAMIENTO/Rawlogs/ual-datasets/Velodyne/2015-12-18_dataset_velodyne_despacho.pcap");
+		velodyne.setPCAPInputFile("d:/Rawlogs/ual-datasets/Velodyne/2015-12-18_dataset_velodyne_despacho.pcap");
 
 		// Enable this block if you have a calibration file, better than default values:
 #if 0	
@@ -139,7 +139,7 @@ void Test_Velodyne()
 
 	// Create window and prepare OpenGL object in the scene:
 	// --------------------------------------------------------
-	mrpt::gui::CDisplayWindow3D  win3D("Velodyne 3D view",1024,800);
+	mrpt::gui::CDisplayWindow3D  win3D("Velodyne 3D view",800,600);
 
 	win3D.setCameraAzimuthDeg(140);
 	win3D.setCameraElevationDeg(20);
@@ -166,19 +166,43 @@ void Test_Velodyne()
 
 	while (win3D.isOpen() && !thrPar.quit)
 	{
-		CObservationVelodyneScanPtr possiblyNewObs = thrPar.new_obs.get();
+		bool do_view_refresh = false;
+
+		CObservationVelodyneScanPtr possiblyNewObs    = thrPar.new_obs.get();
+		CObservationGPSPtr          possiblyNewObsGps = thrPar.new_obs_gps.get();
+
+		if (possiblyNewObsGps && possiblyNewObsGps->timestamp!=INVALID_TIMESTAMP &&
+			(!last_obs_gps  || possiblyNewObsGps->timestamp!=last_obs_gps->timestamp ) )
+		{
+			// It IS a new observation:
+			last_obs_gps = thrPar.new_obs_gps.get();
+
+			std::string rmc_datum;
+			if (last_obs_gps->has_RMC_datum)
+			     rmc_datum = mrpt::format("Lon=%.09f deg  Lat=%.09f deg  Valid?: '%c'\n",
+				last_obs_gps->RMC_datum.longitude_degrees,
+				last_obs_gps->RMC_datum.latitude_degrees,
+				last_obs_gps->RMC_datum.validity_char);
+			else rmc_datum = "NO";
+
+			win3D.get3DSceneAndLock();
+			win3D.addTextMessage(5,25,
+				format("POS frame rx at %s, RMC=%s",mrpt::system::dateTimeLocalToString(last_obs_gps->timestamp).c_str(),rmc_datum.c_str()),
+				TColorf(1,1,1),"mono",10.0, mrpt::opengl::NICE, 101 );
+			win3D.unlockAccess3DScene();
+			do_view_refresh=true;
+		}
+
 		if (possiblyNewObs && possiblyNewObs->timestamp!=INVALID_TIMESTAMP &&
 			(!last_obs  || possiblyNewObs->timestamp!=last_obs->timestamp ) )
 		{
 			// It IS a new observation:
 			last_obs     = possiblyNewObs;
-			last_obs_gps = thrPar.new_obs_gps.get();
 
 			if (!last_obs->scan_packets.empty())
 				printf("[%.03f] RX LIDAR scan with %u packets.\n",  mrpt::system::timestampToDouble(last_obs->timestamp) , static_cast<unsigned int>(last_obs->scan_packets.size()));
 
 			// Update visualization ---------------------------------------
-			bool do_refresh = false;
 
 			// Show 3D points:
 			{
@@ -191,30 +215,17 @@ void Test_Velodyne()
 				win3D.get3DSceneAndLock();
 					gl_points->loadFromPointsMap(&pntsMap);
 				win3D.unlockAccess3DScene();
-
-				do_refresh=true;
 			}
 
 			// Estimated grabbing rate:
 			win3D.get3DSceneAndLock();
 				win3D.addTextMessage(-150,-20, format("%.02f Hz", thrPar.Hz ), TColorf(1,1,1), 100, MRPT_GLUT_BITMAP_HELVETICA_18 );
 			win3D.unlockAccess3DScene();
-
-			// Do we have GPS data?
-			if (last_obs_gps)
-			{
-				//win3D.get3DSceneAndLock();
-				//	win3D.addTextMessage(10,60,
-				//		format("Acc: x=%.02f y=%.02f z=%.02f", last_obs_gps->rawMeasurements[IMU_X_ACC], last_obs_gps->rawMeasurements[IMU_Y_ACC], last_obs_gps->rawMeasurements[IMU_Z_ACC] ),
-				//		TColorf(0,0,1), "mono", 10, mrpt::opengl::FILL, 102);
-				//win3D.unlockAccess3DScene();
-				do_refresh=true;
-			}
-
-			// Force opengl repaint:
-			if (do_refresh) win3D.repaint();
-
+			do_view_refresh=true;
 		} // end update visualization:
+
+		// Force opengl repaint:
+		if (do_view_refresh) win3D.repaint();
 
 		// Process possible keyboard commands:
 		// --------------------------------------
@@ -241,9 +252,7 @@ void Test_Velodyne()
 		}
 
 		win3D.get3DSceneAndLock();
-		win3D.addTextMessage(10,10,
-			format("'o'/'i'-zoom out/in, mouse: orbit 3D,ESC: quit"),
-				TColorf(0,0,1), "mono", 10, mrpt::opengl::FILL, 110);
+		win3D.addTextMessage(5,10,"'o'/'i'-zoom out/in, mouse: orbit 3D,ESC: quit", TColorf(1,1,1),"mono",10.0, mrpt::opengl::NICE, 110 );
 		win3D.unlockAccess3DScene();
 
 		mrpt::system::sleep(50);

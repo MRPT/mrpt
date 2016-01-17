@@ -12,6 +12,7 @@
 #include <mrpt/hwdrivers/CVelodyneScanner.h>
 #include <mrpt/utils/CStream.h>
 #include <mrpt/utils/net_utils.h>
+#include <mrpt/hwdrivers/CGPSInterface.h>
 
 // socket's hdrs:
 #ifdef MRPT_OS_WINDOWS
@@ -169,7 +170,17 @@ bool CVelodyneScanner::getNextObservation(
 		mrpt::obs::CObservationVelodyneScan::TVelodynePositionPacket rx_pos_pkt;
 		mrpt::system::TTimeStamp data_pkt_timestamp, pos_pkt_timestamp;
 		this->receivePackets(data_pkt_timestamp,rx_pkt, pos_pkt_timestamp,rx_pos_pkt);
-		MRPT_TODO("Process pos pkts")
+
+		if (pos_pkt_timestamp!=INVALID_TIMESTAMP)
+		{
+			mrpt::obs::CObservationGPSPtr gps_obs = mrpt::obs::CObservationGPS::Create();
+			gps_obs->timestamp = pos_pkt_timestamp;
+			gps_obs->sensorLabel = this->m_sensorLabel + std::string("_GPS");
+			gps_obs->sensorPose = m_sensorPose;
+
+			CGPSInterface::parse_NMEA( std::string(rx_pos_pkt.NMEA_GPRMC), *gps_obs);
+			outGPS = gps_obs;
+		}
 
 		if (data_pkt_timestamp!=INVALID_TIMESTAMP)
 		{
@@ -187,10 +198,22 @@ bool CVelodyneScanner::getNextObservation(
 			if (!m_rx_scan) {
 				m_rx_scan= mrpt::obs::CObservationVelodyneScan::Create();
 				m_rx_scan->timestamp = data_pkt_timestamp;
-				m_rx_scan->sensorLabel = this->m_sensorLabel;
+				m_rx_scan->sensorLabel = this->m_sensorLabel + std::string("_SCAN");
 				m_rx_scan->sensorPose = m_sensorPose;
 				m_rx_scan->calibration = m_velodyne_calib; // Embed a copy of the calibration info
-				m_rx_scan->maxRange = 120.0;
+
+				{
+					const std::map<std::string,TModelProperties> &lstModels = TModelPropertiesFactory::get();
+					std::map<std::string,TModelProperties>::const_iterator it=lstModels.find(this->m_model);
+					if (it!=lstModels.end())
+					{ // Model params:
+						m_rx_scan->maxRange = it->second.maxRange;
+					}
+					else // default params:
+					{
+						m_rx_scan->maxRange = 120.0;
+					}
+				}
 			}
 			// Accumulate pkts in the observation object:
 			m_rx_scan->scan_packets.push_back(rx_pkt);
@@ -302,8 +325,10 @@ void CVelodyneScanner::initialize()
 
 		// Build PCAP filter:
 		{
-			MRPT_TODO("Add filter for gps pkts")
-			std::string filter_str = "udp dst port 2368";
+			std::string filter_str = 
+				mrpt::format("(udp dst port %d || udp dst port %d)",
+					static_cast<int>(CVelodyneScanner::VELODYNE_DATA_UDP_PORT),
+					static_cast<int>(CVelodyneScanner::VELODYNE_POSITION_UDP_PORT) );
 			if( !m_device_ip.empty() )
 				filter_str += "&& src host " + m_device_ip;
 
@@ -312,6 +337,7 @@ void CVelodyneScanner::initialize()
 		}
 
 		m_pcap_file_empty = true;
+		m_pcap_read_count = 0;
 
 #else
 		THROW_EXCEPTION("Velodyne: Reading from PCAP requires building MRPT with libpcap support!");
@@ -361,14 +387,14 @@ void CVelodyneScanner::receivePackets(
 	mrpt::obs::CObservationVelodyneScan::TVelodynePositionPacket &out_pos_pkt
 	)
 {
-	_STATIC_ASSERT(sizeof(mrpt::obs::CObservationVelodyneScan::TVelodynePositionPacket)== CObservationVelodyneScan::POS_PACKET_SIZE);
-	_STATIC_ASSERT(sizeof(mrpt::obs::CObservationVelodyneScan::TVelodyneRawPacket)== CObservationVelodyneScan::PACKET_SIZE);
+	MRPT_COMPILE_TIME_ASSERT(sizeof(mrpt::obs::CObservationVelodyneScan::TVelodynePositionPacket)== CObservationVelodyneScan::POS_PACKET_SIZE);
+	MRPT_COMPILE_TIME_ASSERT(sizeof(mrpt::obs::CObservationVelodyneScan::TVelodyneRawPacket)== CObservationVelodyneScan::PACKET_SIZE);
 
 	if (m_pcap)
 	{
-		MRPT_TODO("Handle PCAP pos pkts")
-		data_pkt_timestamp = internal_read_PCAP_packet((uint8_t*)&out_data_pkt,CObservationVelodyneScan::PACKET_SIZE);
-		pos_pkt_timestamp = INVALID_TIMESTAMP;
+		internal_read_PCAP_packet(
+			data_pkt_timestamp, (uint8_t*)&out_data_pkt,
+			pos_pkt_timestamp, (uint8_t*)&out_pos_pkt);
 	}
 	else 
 	{
@@ -377,6 +403,7 @@ void CVelodyneScanner::receivePackets(
 	}
 }
 
+// static method:
 mrpt::system::TTimeStamp CVelodyneScanner::internal_receive_UDP_packet(
 	platform_socket_t   hSocket, 
 	uint8_t           * out_buffer, 
@@ -478,10 +505,16 @@ mrpt::system::TTimeStamp CVelodyneScanner::internal_receive_UDP_packet(
 	return (time1/2+time2/2);
 }
 
-mrpt::system::TTimeStamp CVelodyneScanner::internal_read_PCAP_packet(uint8_t *out_buffer, const size_t expected_packet_size)
+void CVelodyneScanner::internal_read_PCAP_packet(
+	mrpt::system::TTimeStamp  & data_pkt_time, uint8_t *out_data_buffer,
+	mrpt::system::TTimeStamp  & pos_pkt_time, uint8_t  *out_pos_buffer
+	)
 {
 #if MRPT_HAS_LIBPCAP
 	ASSERT_(m_pcap);
+
+	data_pkt_time = INVALID_TIMESTAMP;
+	pos_pkt_time  = INVALID_TIMESTAMP;
 
 	char errbuf[PCAP_ERRBUF_SIZE];
 	struct pcap_pkthdr *header;
@@ -492,39 +525,60 @@ mrpt::system::TTimeStamp CVelodyneScanner::internal_read_PCAP_packet(uint8_t *ou
 		int res;
 		if ((res = pcap_next_ex(reinterpret_cast<pcap_t*>(m_pcap), &header, &pkt_data)) >= 0)
 		{
+			++m_pcap_read_count;
+
 			// if packet is not from the lidar scanner we selected by IP, continue
 			if(pcap_offline_filter( reinterpret_cast<bpf_program*>(m_pcap_bpf_program), header, pkt_data ) == 0)
-			  continue;
+			{
+				if (m_verbose) std::cout << "[CVelodyneScanner] DEBUG: Filtering out packet #"<< m_pcap_read_count <<" in PCAP file.\n";
+				continue;
+			}
 
 			// Keep the reader from blowing through the file.
 			if (!m_pcap_read_fast)
 				mrpt::system::sleep(1); //packet_rate_.sleep();
 
-			memcpy(out_buffer, pkt_data+42, expected_packet_size);
-			const mrpt::system::TTimeStamp tim = mrpt::system::now();
+			// Determine whether it is a DATA or POSITION packet:
 			m_pcap_file_empty = false;
-			return tim;  // success
+			const mrpt::system::TTimeStamp tim = mrpt::system::now();
+			const uint16_t udp_dst_port = ntohs( *reinterpret_cast<const uint16_t *>(pkt_data + 0x24) );
+			
+			if (udp_dst_port==CVelodyneScanner::VELODYNE_POSITION_UDP_PORT) {
+				if (m_verbose) std::cout << "[CVelodyneScanner] DEBUG: Packet #"<< m_pcap_read_count <<" in PCAP file is POSITION pkt.\n";
+				memcpy(out_pos_buffer, pkt_data+42, CObservationVelodyneScan::POS_PACKET_SIZE);
+				pos_pkt_time = tim;  // success
+				return;
+			}
+			else if (udp_dst_port==CVelodyneScanner::VELODYNE_DATA_UDP_PORT) {
+				if (m_verbose) std::cout << "[CVelodyneScanner] DEBUG: Packet #"<< m_pcap_read_count <<" in PCAP file is DATA pkt.\n";
+				memcpy(out_data_buffer, pkt_data+42, CObservationVelodyneScan::PACKET_SIZE);
+				data_pkt_time = tim;  // success
+				return;
+			}
+			else {
+				std::cerr << "[CVelodyneScanner] ERROR: Packet "<<m_pcap_read_count <<" in PCAP file passed the filter but does not match expected UDP port numbers! Skipping it.\n";
+			}
 		}
 
 		if (m_pcap_file_empty) // no data in file?
 		{
 			fprintf(stderr, "[CVelodyneScanner] Error %d reading Velodyne packet: %s", res, pcap_geterr(reinterpret_cast<pcap_t*>(m_pcap) ));
-			return INVALID_TIMESTAMP;
+			return;
 		}
 
 		if (m_pcap_read_once)
 		{
-			printf("[CVelodyneScanner] end of file reached -- done reading.");
-			return INVALID_TIMESTAMP;
+			printf("[CVelodyneScanner] INFO: end of file reached -- done reading.");
+			return;
 		}
 
 		if (m_pcap_repeat_delay > 0.0)
 		{
-			printf("[CVelodyneScanner] end of file reached -- delaying %.3f seconds.", m_pcap_repeat_delay);
+			printf("[CVelodyneScanner] INFO: end of file reached -- delaying %.3f seconds.", m_pcap_repeat_delay);
 			mrpt::system::sleep( m_pcap_repeat_delay * 1000.0);
 		}
 
-		printf("[CVelodyneScanner] replaying Velodyne dump file\n");
+		printf("[CVelodyneScanner] INFO: replaying Velodyne dump file\n");
 
 		// rewind the file
 		pcap_close( reinterpret_cast<pcap_t*>(m_pcap) );
@@ -533,7 +587,8 @@ mrpt::system::TTimeStamp CVelodyneScanner::internal_read_PCAP_packet(uint8_t *ou
 		}
 		m_pcap_file_empty = true;              // maybe the file disappeared?
 	} // loop back and try again
-
+#else
+	THROW_EXCEPTION("MRPT needs to be built against libpcap to enable this functionality")
 #endif
 }
 
