@@ -36,6 +36,7 @@ void registerAllClasses_mrpt_opengl()
 	registerClass( CLASS_ID( CDisk ) );
 	registerClass( CLASS_ID( CGridPlaneXY ) );
 	registerClass( CLASS_ID( CMesh ) );
+	registerClass( CLASS_ID( CMesh3D ) );
 	registerClass( CLASS_ID( CMeshFast ) );
 	registerClass( CLASS_ID( COpenGLViewport ) );
 	registerClass( CLASS_ID( CPointCloud ) );

@@ -86,7 +86,7 @@ CDifodo::CDifodo()
 
 	previous_speed_const_weight = 0.05f;
 	previous_speed_eig_weight = 0.5f;
-
+	kai_loc_old.assign(0.f);
 	num_valid_points = 0;
 
 	//Compute gaussian mask
@@ -103,7 +103,7 @@ CDifodo::CDifodo()
 			g_mask[i][j] = v_mask2[i]*v_mask2[j]/256.f;
 }
 
-void CDifodo::buildImagePyramid()
+void CDifodo::buildCoordinatesPyramid()
 {
 	const float max_depth_dif = 0.1f;
 
@@ -249,7 +249,7 @@ void CDifodo::buildImagePyramid()
 	}
 }
 
-void CDifodo::buildImagePyramidFast()
+void CDifodo::buildCoordinatesPyramidFast()
 {
 	const float max_depth_dif = 0.1f;
 	
@@ -549,7 +549,7 @@ void CDifodo::computeWeights()
 	weights.assign(0.f);
 
 	//Obtain the velocity associated to the rigid transformation estimated up to the present level
-	CMatrixFloat61 kai_level = kai_loc_old;
+	Matrix<float,6,1> kai_level = kai_loc_old;
 
 	Matrix4f acu_trans;
 	acu_trans.setIdentity();
@@ -557,8 +557,8 @@ void CDifodo::computeWeights()
 		acu_trans = transformations[i]*acu_trans;
 
 	Matrix<float, 4, 4> log_trans = fps*acu_trans.log();
-	kai_level[0] -= log_trans(0,3); kai_level[1] -= log_trans(1,3); kai_level[2] -= log_trans(2,3);
-	kai_level[3] += log_trans(1,2); kai_level[4] -= log_trans(0,2); kai_level[5] += log_trans(0,1);
+	kai_level(0) -= log_trans(0,3); kai_level(1) -= log_trans(1,3); kai_level(2) -= log_trans(2,3);
+	kai_level(3) += log_trans(1,2); kai_level(4) -= log_trans(0,2); kai_level(5) += log_trans(0,1);
 
 	//Parameters for the measurmente error
 	const float f_inv = float(cols_i)/(2.f*tan(0.5f*fovh));
@@ -699,8 +699,8 @@ void CDifodo::odometryCalculation()
 	clock.Tic();
 
 	//Build the gaussian pyramid
-	if (fast_pyramid)	buildImagePyramidFast();
-	else				buildImagePyramid();
+	if (fast_pyramid)	buildCoordinatesPyramidFast();
+	else				buildCoordinatesPyramid();
 
 	//Coarse-to-fines scheme
     for (unsigned int i=0; i<ctf_levels; i++)
@@ -755,7 +755,7 @@ void CDifodo::filterLevelSolution()
 	SelfAdjointEigenSolver<MatrixXf> eigensolver(est_cov);
 	if (eigensolver.info() != Success) 
 	{ 
-		printf("Eigensolver couldn't find a solution. Pose is not updated");
+		printf("\n Eigensolver couldn't find a solution. Pose is not updated");
 		return;
 	}
 	
@@ -768,8 +768,7 @@ void CDifodo::filterLevelSolution()
 
 	//Second, we have to describe both the old linear and angular velocities in the "eigenvector" basis
 	//-------------------------------------------------------------------------------------------------
-	CMatrixDouble33 inv_trans;
-	CMatrixFloat61 kai_loc_sub = kai_loc_old;
+	Matrix<float,6,1> kai_loc_sub = kai_loc_old;
 
 	//Important: we have to substract the previous levels' solutions from the old velocity.
 	Matrix4f acu_trans;
@@ -793,7 +792,7 @@ void CDifodo::filterLevelSolution()
 		kai_b_fil(i) = (kai_b(i) + (cf*eigensolver.eigenvalues()(i,0) + df)*kai_b_old(i))/(1.f + cf*eigensolver.eigenvalues()(i) + df);
 
 	//Transform filtered velocity to the local reference frame 
-	CMatrixFloat61 kai_loc_fil = Bii.inverse().colPivHouseholderQr().solve(kai_b_fil);
+	Matrix<float, 6, 1> kai_loc_fil = Bii.inverse().colPivHouseholderQr().solve(kai_b_fil);
 
 	//Compute the rigid transformation
 	Matrix<float,4,4> local_mat; local_mat.assign(0.f); 

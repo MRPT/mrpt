@@ -18,6 +18,10 @@
 	- Changes in libraries:
 		- \ref mrpt_hwdrivers_grp
 			- mrpt::hwdrivers::CNTRIPEmitter now has a parameter to enable/disable sending back the data from the serial port to the NTRIP caster.
+		- \ref mrpt_opengl_grp
+			- New class mrpt::opengl::CMesh3D to render 3D models/meshes
+		- \ref mrpt_vision_grp
+			- Slight improvement in DIFODO performance (now ~15% faster)
 	- BUG FIXES:
 		- mrpt::math::CQuaternion<> did not check for unit norm in Release builds.
 		- Fix build errors against OpenCV 3.0.0+ without opencv_contrib modules.

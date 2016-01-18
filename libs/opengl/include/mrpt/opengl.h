@@ -27,6 +27,7 @@
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/CGridPlaneXZ.h>
 #include <mrpt/opengl/CMesh.h>
+#include <mrpt/opengl/CMesh3D.h>
 #include <mrpt/opengl/CMeshFast.h>
 #include <mrpt/opengl/CPointCloud.h>
 #include <mrpt/opengl/CPointCloudColoured.h>
