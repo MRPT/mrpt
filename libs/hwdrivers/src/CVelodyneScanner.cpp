@@ -79,7 +79,7 @@ struct TModelPropertiesFactory {
 };
 
 
-CVelodyneScanner::CVelodyneScanner() : 
+CVelodyneScanner::CVelodyneScanner() :
 	m_model("VLP-16"),
 	m_device_ip(""),
 	m_rpm(600),
@@ -148,7 +148,7 @@ void CVelodyneScanner::loadConfig_sensorSpecific(
 	// Check validity:
 	const std::map<std::string,TModelProperties> &lstModels = TModelPropertiesFactory::get();
 	if (lstModels.find(m_model)==lstModels.end()) {
-		THROW_EXCEPTION(mrpt::format("Unrecognized `model` parameter: ´%s´ . Known values are: %s",m_model.c_str(),TModelPropertiesFactory::getListKnownModels().c_str()))
+		THROW_EXCEPTION(mrpt::format("Unrecognized `model` parameter: `%s` . Known values are: %s",m_model.c_str(),TModelPropertiesFactory::getListKnownModels().c_str()))
 	}
 
 	MRPT_END
@@ -187,8 +187,8 @@ bool CVelodyneScanner::getNextObservation(
 		if (data_pkt_timestamp!=INVALID_TIMESTAMP)
 		{
 			// Break into a new observation object when the azimuth passes 360->0 deg:
-			if (m_rx_scan && 
-			    !m_rx_scan->scan_packets.empty() && 
+			if (m_rx_scan &&
+			    !m_rx_scan->scan_packets.empty() &&
 			    rx_pkt.blocks[0].rotation < m_rx_scan->scan_packets.rbegin()->blocks[0].rotation )
 			{
 				// Return the observation as done when a complete 360 deg scan is ready:
@@ -220,7 +220,7 @@ bool CVelodyneScanner::getNextObservation(
 			// Accumulate pkts in the observation object:
 			m_rx_scan->scan_packets.push_back(rx_pkt);
 		}
-		
+
 		return true;
 	}
 	catch(exception &e)
@@ -327,7 +327,7 @@ void CVelodyneScanner::initialize()
 
 		// Build PCAP filter:
 		{
-			std::string filter_str = 
+			std::string filter_str =
 				mrpt::format("(udp dst port %d || udp dst port %d)",
 					static_cast<int>(CVelodyneScanner::VELODYNE_DATA_UDP_PORT),
 					static_cast<int>(CVelodyneScanner::VELODYNE_POSITION_UDP_PORT) );
@@ -398,7 +398,7 @@ void CVelodyneScanner::receivePackets(
 			data_pkt_timestamp, (uint8_t*)&out_data_pkt,
 			pos_pkt_timestamp, (uint8_t*)&out_pos_pkt);
 	}
-	else 
+	else
 	{
 		data_pkt_timestamp = internal_receive_UDP_packet(m_hDataSock     ,(uint8_t*)&out_data_pkt, CObservationVelodyneScan::PACKET_SIZE,m_device_ip);
 		pos_pkt_timestamp  = internal_receive_UDP_packet(m_hPositionSock ,(uint8_t*)&out_pos_pkt, CObservationVelodyneScan::POS_PACKET_SIZE,m_device_ip);
@@ -407,8 +407,8 @@ void CVelodyneScanner::receivePackets(
 
 // static method:
 mrpt::system::TTimeStamp CVelodyneScanner::internal_receive_UDP_packet(
-	platform_socket_t   hSocket, 
-	uint8_t           * out_buffer, 
+	platform_socket_t   hSocket,
+	uint8_t           * out_buffer,
 	const size_t expected_packet_size,
 	const std::string &filter_only_from_IP)
 {
@@ -451,7 +451,7 @@ mrpt::system::TTimeStamp CVelodyneScanner::internal_receive_UDP_packet(
 		// poll() until input available
 		do
 		{
-			int retval = 
+			int retval =
 #if !defined(MRPT_OS_WINDOWS)
 				poll
 #else
@@ -544,7 +544,7 @@ void CVelodyneScanner::internal_read_PCAP_packet(
 			m_pcap_file_empty = false;
 			const mrpt::system::TTimeStamp tim = mrpt::system::now();
 			const uint16_t udp_dst_port = ntohs( *reinterpret_cast<const uint16_t *>(pkt_data + 0x24) );
-			
+
 			if (udp_dst_port==CVelodyneScanner::VELODYNE_POSITION_UDP_PORT) {
 				if (m_verbose) std::cout << "[CVelodyneScanner] DEBUG: Packet #"<< m_pcap_read_count <<" in PCAP file is POSITION pkt.\n";
 				memcpy(out_pos_buffer, pkt_data+42, CObservationVelodyneScan::POS_PACKET_SIZE);
