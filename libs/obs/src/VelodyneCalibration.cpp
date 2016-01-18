@@ -66,7 +66,7 @@ bool VelodyneCalibration::internal_loadFromXMLNode(void *node)
 	if (nEnabled<=0 || nEnabled>10000)
 		throw std::runtime_error("Senseless value found reading 'enabled_::count'");
 
-	size_t enabledCount = 0;
+	int enabledCount = 0;
 	for (int i=0;i<nEnabled;i++)
 	{
 		XMLNode node_enabled_ith = node_enabled_.getChildNode("item",i);

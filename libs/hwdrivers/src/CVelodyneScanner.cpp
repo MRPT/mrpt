@@ -564,7 +564,7 @@ void CVelodyneScanner::internal_read_PCAP_packet(
 
 		if (m_pcap_file_empty) // no data in file?
 		{
-			fprintf(stderr, "[CVelodyneScanner] Error %d reading Velodyne packet: %s", res, pcap_geterr(reinterpret_cast<pcap_t*>(m_pcap) ));
+			fprintf(stderr, "[CVelodyneScanner] Maybe the PCAP file is empty? Error %d reading Velodyne packet: `%s`\n", res, pcap_geterr(reinterpret_cast<pcap_t*>(m_pcap) ));
 			return;
 		}
 

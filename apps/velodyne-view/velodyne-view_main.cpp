@@ -8,11 +8,11 @@
    +---------------------------------------------------------------------------+ */
 
 /*
-  Example app : velodyne-view
-  Web page : http://www.mrpt.org/list-of-mrpt-apps/application-velodyne-view/
+  Application: velodyne-view
+  Web page   : http://www.mrpt.org/list-of-mrpt-apps/application-velodyne-view/
 
-  Purpose  : Demonstrate grabbing from a live Velodyne scanner, multi-threading
-             and live 3D rendering.
+  Purpose  : Demonstrate grabbing from a live Velodyne scanner or a PCAP file,
+			 multi-threading and live 3D rendering.
 */
 
 #include <mrpt/hwdrivers/CVelodyneScanner.h>
@@ -23,6 +23,8 @@
 #include <mrpt/opengl/stock_objects.h>
 #include <mrpt/opengl/CPointCloudColoured.h>
 #include <mrpt/synch/CThreadSafeVariable.h>
+#include <mrpt/system/os.h>  // MRPT_getVersion()
+#include <mrpt/otherlibs/tclap/CmdLine.h>
 
 using namespace mrpt;
 using namespace mrpt::hwdrivers;
@@ -33,7 +35,17 @@ using namespace mrpt::utils;
 using namespace mrpt::opengl;
 using namespace std;
 
-MRPT_TODO("parse cmd args");
+
+// Declare the supported options.
+TCLAP::CmdLine cmd("velodyne-view", ' ', mrpt::system::MRPT_getVersion().c_str());
+
+TCLAP::ValueArg<std::string>	arg_out_rawlog("o","out-rawlog","Grab to an output rawlog",false,"","out.rawlog",cmd);
+TCLAP::ValueArg<std::string>	arg_in_pcap("i","in-pcap","Instead of listening to a live sensor, read data from a PCAP file",false,"","dataset.pcap",cmd);
+TCLAP::ValueArg<std::string>	arg_ip_filter("","ip-filter","Only listen to a LIDAR emitting commands from a given IP",false,"","192.168.1.201",cmd);
+TCLAP::ValueArg<std::string>	arg_calib_file("c","calib","Optionally, select the calibration XML file for the LIDAR",false,"","calib.xml",cmd);
+TCLAP::SwitchArg				arg_nologo("n","nologo","Skip the logo at startup",cmd, false);
+TCLAP::SwitchArg				arg_verbose("v","verbose","Verbose debug output",cmd, false);
+
 
 // Thread for grabbing: Do this is another thread so we divide rendering and grabbing
 //   and exploit multicore CPUs.
@@ -56,16 +68,21 @@ void thread_grabbing(TThreadParam &p)
 	{
 		mrpt::hwdrivers::CVelodyneScanner velodyne;
 
-		// Set params:
-		//velodyne.setDeviceIP("192.168.1.201"); // Default: from any IP
-		//velodyne.setPCAPInputFile("d:/Rawlogs/ual-datasets/Velodyne/2015-12-18_dataset_velodyne_despacho.pcap");
+		if (arg_verbose.isSet())
+			velodyne.enableVerbose(true);
 
-		// Enable this block if you have a calibration file, better than default values:
-#if 0	
-		mrpt::obs::VelodyneCalibration calib;
-		calib.loadFromXMLFile("my_sensor_calib_file.xml");
-		velodyne.setCalibration(calib);
-#endif
+		// Set params:
+		if (arg_ip_filter.isSet())  velodyne.setDeviceIP( arg_ip_filter.getValue() ); // Default: from any IP
+		if (arg_in_pcap.isSet())    velodyne.setPCAPInputFile(arg_in_pcap.getValue());
+
+		// If you have a calibration file, better than default values:
+		if (arg_calib_file.isSet())
+		{
+			mrpt::obs::VelodyneCalibration calib;
+			if (!calib.loadFromXMLFile(arg_calib_file.getValue()))
+				throw std::runtime_error("Aborting: error loading calibration file.");
+			velodyne.setCalibration(calib);
+		}
 
 		// Open:
 		cout << "Calling CVelodyneScanner::initialize()...";
@@ -118,10 +135,20 @@ void thread_grabbing(TThreadParam &p)
 }
 
 // ------------------------------------------------------
-//				Test_Velodyne
+//				VelodyneView main entry point
 // ------------------------------------------------------
-void Test_Velodyne()
+int VelodyneView(int argc, char **argv)
 {
+	// Parse arguments:
+	if (!cmd.parse( argc, argv ))
+		return 1; // should exit.
+
+	if (!arg_nologo.isSet())
+	{
+		printf(" velodyne-view - Part of the MRPT\n");
+		printf(" MRPT C++ Library: %s - BUILD DATE %s\n", mrpt::system::MRPT_getVersion().c_str(), mrpt::system::MRPT_getCompilationDate().c_str());
+	}
+
 	// Launch grabbing thread:
 	// --------------------------------------------------------
 	TThreadParam thrPar;
@@ -137,7 +164,7 @@ void Test_Velodyne()
 	} while (!thrPar.quit);
 
 	// Check error condition:
-	if (thrPar.quit) return;
+	if (thrPar.quit) return 0;
 
 	// Create window and prepare OpenGL object in the scene:
 	// --------------------------------------------------------
@@ -271,15 +298,16 @@ void Test_Velodyne()
 	thrPar.quit = true;
 	mrpt::system::joinThread(thHandle);
 	cout << "Bye!\n";
+	return 0;
 }
 
-int main()
+int main(int argc, char **argv)
 {
 	try
 	{
-		Test_Velodyne();
-		mrpt::system::sleep(50);
-		return 0;
+		int ret = VelodyneView(argc,argv);
+		mrpt::system::sleep(50);  // to allow GUI threads to end gracefully.
+		return ret;
 
 	} catch (std::exception &e)
 	{
