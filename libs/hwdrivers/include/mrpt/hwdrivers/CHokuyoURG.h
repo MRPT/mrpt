@@ -19,8 +19,8 @@ namespace mrpt
 	namespace hwdrivers
 	{
 		/** This software driver implements the protocol SCIP-2.0 for interfacing HOKUYO URG, UTM and UXM laser scanners (USB or Ethernet)
-		  *  Refer to the wiki page for more details:
-		  *    http://www.mrpt.org/Example:HOKUYO_URG/UTM_Laser_Scanner
+		  *  Refer to the example code [HOKUYO_laser_test](http://www.mrpt.org/tutorials/mrpt-examples/example_hokuyo_urgutm_laser_scanner/) 
+		  *  and to example rawlog-grabber [config files](https://github.com/MRPT/mrpt/tree/master/share/mrpt/config_files/rawlog-grabber)
 		  *
 		  *  See also the application "rawlog-grabber" for a ready-to-use application to gather data from the scanner.
 		  *
@@ -29,32 +29,35 @@ namespace mrpt
 		  * -------------------------------------------------------
 		  *   [supplied_section_name]
 		  *    HOKUYO_motorSpeed_rpm=600
-		  *    //HOKUYO_HS_mode   = false    // Optional (un-comment line if used): Set/unset the High-sensitivity mode (not on all models/firmwares!)
-		  *    COM_port_WIN = COM3
-		  *    COM_port_LIN = ttyS0
+		  *    #HOKUYO_HS_mode   = false    // Optional (un-comment line if used): Set/unset the High-sensitivity mode (not on all models/firmwares!)
+		  *
+		  *    # Uncomment serial port or IP address, depending on the Hokuyo model (serial/USB vs. Ethernet):
+		  *    COM_port_WIN = COM3       // Serial port name in Windows
+		  *    COM_port_LIN = ttyS0      // Serial port name in GNU/Linux
+		  *    #IP_DIR	=	192.168.0.10 // Uncommented this and "PORT_DIR" if the used HOKUYO is connected by Ethernet instead of USB
+		  *    #PORT_DIR = 10940         // Default value: 10940
+		  *
 		  *    pose_x=0.21	// Laser range scaner 3D position in the robot (meters)
 		  *    pose_y=0
 		  *    pose_z=0.34
 		  *    pose_yaw=0	// Angles in degrees
 		  *    pose_pitch=0
 		  *    pose_roll=0
-		  *    //IP_DIR	=	192.168.0.10 // Uncommented this and "PORT_DIR" if the used HOKUYO is connected by Ethernet instead of USB
-		  *    //PORT_DIR = 10940
 		  *    
-		  *    //disable_firmware_timestamp = true   // Uncomment to use PC time instead of laser time
+		  *    #disable_firmware_timestamp = true   // Uncomment to use PC time instead of laser time
 		  *
-		  *    // Optional: reduced FOV:
-		  *    // reduced_fov  = 25 // Deg
+		  *    # Optional: reduced FOV:
+		  *    # reduced_fov  = 25 // Deg
 		  *
-		  *    //preview = true // Enable GUI visualization of captured data
+		  *    #preview = true // Enable GUI visualization of captured data
 		  *
-		  *    // Optional: Exclusion zones to avoid the robot seeing itself:
-		  *    //exclusionZone1_x = 0.20 0.30 0.30 0.20
-		  *    //exclusionZone1_y = 0.20 0.30 0.30 0.20
+		  *    # Optional: Exclusion zones to avoid the robot seeing itself:
+		  *    #exclusionZone1_x = 0.20 0.30 0.30 0.20
+		  *    #exclusionZone1_y = 0.20 0.30 0.30 0.20
 		  *
-		  *    // Optional: Exclusion zones to avoid the robot seeing itself:
-		  *    //exclusionAngles1_ini = 20  // Deg
-		  *    //exclusionAngles1_end = 25  // Deg
+		  *    # Optional: Exclusion zones to avoid the robot seeing itself:
+		  *    #exclusionAngles1_ini = 20  // Deg
+		  *    #exclusionAngles1_end = 25  // Deg
 		  *
 		  *  \endcode
 		  * \ingroup mrpt_hwdrivers_grp
