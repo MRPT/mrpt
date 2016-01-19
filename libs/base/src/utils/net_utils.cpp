@@ -420,14 +420,18 @@ bool net::DNS_resolve_async(
 	TDNSThreadData param;
 	param.in_servername = server_name;
 
-	//TThreadHandle th =
+	TThreadHandle th =
 	mrpt::system::createThreadRef( thread_DNS_solver_async,param );
 
-	if (param.sem_solved.waitForSignal(timeout_ms))
+	bool res =(param.sem_solved.waitForSignal(timeout_ms));
+	// Let the thread now about me quitting:
+	param.sem_caller_quitted.release();
+	mrpt::system::joinThread(th);
+
+	if (res)
 	{
 		// Done: Anyway, it can still be an error result:
 		out_ip = param.out_solved_ip;
-		param.sem_caller_quitted.release();
 		return !out_ip.empty();
 	}
 	else
@@ -435,8 +439,6 @@ bool net::DNS_resolve_async(
 		// Timeout:
 		out_ip.clear();
 
-		// Let the thread now about me quitting:
-		param.sem_caller_quitted.release();
 		return false;
 	}
 }

@@ -201,6 +201,7 @@ void CClientTCPSocket::connect(
 	if (!net::DNS_resolve_async(remotePartAddress,solved_IP,DNS_LOOKUP_TIMEOUT_MS))
 		THROW_EXCEPTION_CUSTOM_MSG1("DNS lookup failed for '%s'",remotePartAddress.c_str());
 
+
 	// Fill out from IP address text:
 	otherAddress.sin_addr.s_addr = inet_addr(solved_IP.c_str());
 	if (INADDR_NONE==otherAddress.sin_addr.s_addr)

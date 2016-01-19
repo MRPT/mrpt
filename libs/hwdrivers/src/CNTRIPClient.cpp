@@ -172,7 +172,8 @@ void CNTRIPClient::private_ntrip_thread()
 				cout << format("[CNTRIPClient] Trying to connect to %s:%i\n",m_args.server.c_str(),m_args.port);
 
 				my_sock.connect(m_args.server, m_args.port );
-
+				if (m_thread_exit) break;
+			
 
 				// Prepare HTTP request:
 				// -------------------------------------------
@@ -196,7 +197,6 @@ void CNTRIPClient::private_ntrip_thread()
 					string encoded_str;
 					mrpt::system::encodeBase64(v,encoded_str);
 
-					//req+="Authorization: Basic bWpsYW1hcjpzYWN5cnNhdQ==\r\n";
 					req+="Authorization: Basic ";
 					req+=encoded_str;
 					req+="\r\n";
