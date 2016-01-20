@@ -387,60 +387,6 @@ void TestOpenGLObjects()
 	}
 	off_x+=STEP_X;
 
-	// CMesh3D
-	{
-		opengl::CMesh3DPtr obj = opengl::CMesh3D::Create();
-		obj->enableShowEdges(false);
-		obj->enableShowFaces(true);
-		obj->enableShowVertices(false);
-		obj->setLocation(off_x,0,0);
-
-		const unsigned int rows = 200, cols = 200;
-		const unsigned int num_verts = (rows+1)*(cols+1);
-		const unsigned int num_faces = rows*cols;
-		int *vert_per_face = new int[num_faces];
-		int *face_verts = new int[4*num_faces];
-		float *vert_coords = new float [3*num_verts];
-
-		//Assign vertices to faces and set them to be Quads
-		unsigned int first_ind = 0;
-		for (unsigned int u = 0; u<cols; u++)
-		{
-			for (unsigned int v = 0; v<rows; v++)
-			{
-				const unsigned int face_ind = v + u*rows;
-				vert_per_face[face_ind] = 4;
-				
-				face_verts[4*face_ind] = first_ind;
-				face_verts[4*face_ind + 1] = first_ind + 1;
-				face_verts[4*face_ind + 2] = first_ind + rows + 2;
-				face_verts[4*face_ind + 3] = first_ind + rows + 1;
-				first_ind++;
-			}
-			
-			first_ind++;
-		}
-
-		//Create vert coords
-		for (unsigned int u = 0; u<=cols; u++)
-			for (unsigned int v = 0; v<=rows; v++)
-			{
-				const unsigned int vert_ind = v + u*(rows+1);
-
-				vert_coords[3*vert_ind] = (2.f - 0.01f*u)*(2.f + cos(0.01f*M_PI*v))*cos(0.01f*M_PI*u);
-				vert_coords[3*vert_ind + 1] = (2.f - 0.01f*u)*(2.f + cos(0.01f*M_PI*v))*sin(0.01f*M_PI*u);
-				vert_coords[3*vert_ind + 2] = 3.f*0.01f*u + (2.f - 0.01f*u)*sin(0.01f*M_PI*v);
-			}
-
-		obj->loadMesh(num_verts, num_faces, vert_per_face, face_verts, vert_coords);
-		theScene->insert(obj);
-
-		opengl::CTextPtr gl_txt = opengl::CText::Create("CMesh3D");
-		gl_txt->setLocation(off_x,off_y_label,0);
-		theScene->insert(gl_txt);
-	}
-	off_x += STEP_X;
-
 
 	// CPointCloud
 	{

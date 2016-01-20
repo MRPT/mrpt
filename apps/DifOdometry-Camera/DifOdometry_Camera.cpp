@@ -357,8 +357,8 @@ void CDifodoCamera::reset()
 {
 	//Reset Difodo
 	loadFrame();
-	if (fast_pyramid)	buildCoordinatesPyramidFast();
-	else				buildCoordinatesPyramid();
+	if (fast_pyramid)	buildImagePyramidFast();
+	else				buildImagePyramid();
 	loadFrame();
 	odometryCalculation();
 

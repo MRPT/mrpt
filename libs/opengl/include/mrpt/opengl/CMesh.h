@@ -21,6 +21,7 @@ namespace mrpt
 	namespace opengl
 	{
 
+
 		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CMesh, CRenderizableDisplayList, OPENGL_IMPEXP )
 
