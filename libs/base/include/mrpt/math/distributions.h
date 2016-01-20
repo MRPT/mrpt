@@ -14,6 +14,7 @@
 #include <mrpt/math/CMatrixTemplateNumeric.h>
 
 #include <mrpt/math/ops_matrices.h>
+#include <mrpt/math/ops_vectors.h>
 
 /*---------------------------------------------------------------
 		Namespace

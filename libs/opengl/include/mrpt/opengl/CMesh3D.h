@@ -12,7 +12,7 @@
 
 #include <mrpt/opengl/CRenderizableDisplayList.h>
 #include <mrpt/utils/color_maps.h>
-#include <Eigen/dense>
+#include <Eigen/Dense>
 
 using Eigen::Array;
 using Eigen::Dynamic;
