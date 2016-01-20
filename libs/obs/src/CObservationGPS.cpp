@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -510,9 +510,9 @@ void CObservationGPS::getDescriptionAsText(std::ostream &o) const
 	CObservation::getDescriptionAsText(o);
 
 	if (has_GGA_datum)
-		std::cout << std::endl << "Satellite time: " << format("%02u:%02u:%02.3f",GGA_datum.UTCTime.hour,GGA_datum.UTCTime.minute,GGA_datum.UTCTime.sec) << std::endl;
+		o << std::endl << "Satellite time: " << format("%02u:%02u:%02.3f",GGA_datum.UTCTime.hour,GGA_datum.UTCTime.minute,GGA_datum.UTCTime.sec) << std::endl;
 
-	std::cout << "Sensor position on the robot: " << sensorPose << std::endl;
+	o << "Sensor position on the robot: " << sensorPose << std::endl;
 
-	this->dumpToConsole();
+	this->dumpToConsole(o);
 }

@@ -11,6 +11,7 @@
 
 #include <mrpt/utils/core_defs.h>
 #include <mrpt/utils/CDebugOutputCapable.h>
+#include <mrpt/utils/net_utils.h>
 #include <string>
 
 namespace mrpt
@@ -37,8 +38,8 @@ namespace utils
 		int				m_serverSock;
 #endif
 
-		/** Returns a description of the last error */
-		std::string  getLastErrorStr();
+		/** Returns a description of the last Sockets error */
+		std::string  getLastErrorStr() { return mrpt::utils::net::getLastSocketErrorStr(); }
 
 		bool		m_verbose;
 

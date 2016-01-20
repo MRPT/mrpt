@@ -18,6 +18,7 @@ namespace mrpt
 		class CSensoryFrame; struct CSensoryFramePtr;
 		class CObservation2DRangeScan;
 		class CObservation3DRangeScan;
+		class CObservationVelodyneScan;
 		class CObservationRange;
 		class CObservationBeaconRanges;
 		class CObservationBearingRange;

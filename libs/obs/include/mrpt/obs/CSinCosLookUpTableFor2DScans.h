@@ -10,7 +10,7 @@
 #define CSinCosLookUpTableFor2DScans_H
 
 #include <mrpt/utils/types_math.h>
-#include <mrpt/obs/CObservation2DRangeScan.h>
+#include <mrpt/obs/T2DScanProperties.h>
 #include <mrpt/obs/link_pragmas.h>
 #include <map>
 
@@ -18,6 +18,10 @@ namespace mrpt
 {
 namespace obs
 {
+	// Frwd decl:
+	class CObservation2DRangeScan;
+
+
 	/** A smart look-up-table (LUT) of sin/cos values for 2D laser scans.
 	  *  Refer to the main method CSinCosLookUpTableFor2DScans::getSinCosForScan()
 	  *
@@ -42,6 +46,8 @@ namespace obs
 		  * \endcode
 		  */
 		const TSinCosValues & getSinCosForScan(const CObservation2DRangeScan &scan);
+		/** \overload */
+		const TSinCosValues & getSinCosForScan(const T2DScanProperties &scan_prop);
 
 	private:
 		std::map<T2DScanProperties,TSinCosValues>  m_cache; //!< The cache of known scans and their sin/cos tables.

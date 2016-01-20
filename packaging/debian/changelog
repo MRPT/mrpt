@@ -1,5 +1,6 @@
   * Lintian clean again: fix not-binnmuable-any-depends-all error and warnings.
   * Fix mrpt-common package overwriting files in mrpt-apps (Closes: #807662)
+  * Fix building against libftdi1-dev (Closes: #810368)
 
 mrpt (1:1.3.2-1) unstable; urgency=medium
 

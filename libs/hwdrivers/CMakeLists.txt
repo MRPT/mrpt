@@ -144,7 +144,11 @@ ENDIF(CMAKE_MRPT_HAS_SWISSRANGE)
 
 IF(CMAKE_MRPT_HAS_OPENCV)
 	INCLUDE_DIRECTORIES(${OpenCV_INCLUDE_DIR} ${OpenCV_INCLUDE_DIRS} ${OPENCV_INCLUDE_DIRS} ${OPENCV_INCLUDEDIR})
-ENDIF(CMAKE_MRPT_HAS_OPENCV)
+ENDIF()
+
+IF(CMAKE_MRPT_HAS_LIBPCAP)
+	INCLUDE_DIRECTORIES(${PCAP_INCLUDE_DIR})
+ENDIF()
 
 
 # Macro declared in "DeclareMRPTLib.cmake":
@@ -195,7 +199,17 @@ IF(BUILD_mrpt-hwdrivers)
 
 	IF(CMAKE_MRPT_HAS_OPENCV)
 		target_link_libraries(mrpt-hwdrivers ${OpenCV_LIBRARIES})
-	ENDIF(CMAKE_MRPT_HAS_OPENCV)
+	ENDIF()
+
+	IF(CMAKE_MRPT_HAS_LIBPCAP)
+		target_link_libraries(mrpt-hwdrivers ${PCAP_LIBRARY})
+
+		# Windows: 
+		# Set wpcap.dll as DELAYLOAD, so users without that driver can use binaries compiled with wpcap support:
+		IF (MSVC)
+			set_property(TARGET mrpt-hwdrivers APPEND_STRING PROPERTY LINK_FLAGS " /DELAYLOAD:\"wpcap.dll\"")
+		ENDIF (MSVC)
+	ENDIF()
 
 	# XSens MT4 required libs:
 	IF (BUILD_XSENS_MT4)
@@ -365,4 +379,5 @@ IF(BUILD_mrpt-hwdrivers)
 	ENDIF(CMAKE_MRPT_HAS_WXWIDGETS)
 
 ENDIF(BUILD_mrpt-hwdrivers) 
+
 

@@ -96,6 +96,8 @@ ${CMAKE_MRPT_BUILD_SHARED_LIB}
 
 /** The file ftdi.h exists (Linux only) */
 #define MRPT_HAS_FTDI             ${CMAKE_MRPT_HAS_FTDI}
+#define MRPT_FTDI_VERSION         0x${LIBFTDI_VERSION_MAJOR}${LIBFTDI_VERSION_MINOR}0
+
 
 /** Support for the liblas library (A standard for LiDAR data format)  */
 #define MRPT_HAS_LIBLAS           ${CMAKE_MRPT_HAS_LIBLAS}
@@ -224,6 +226,9 @@ ${CMAKE_MRPT_BUILD_SHARED_LIB}
 /** Do we have yaml-cpp? */
 #define MRPT_HAS_YAMLCPP        ${CMAKE_MRPT_HAS_YAMLCPP}
 #define MRPT_HAS_YAMLCPP_SYSTEM ${CMAKE_MRPT_HAS_YAMLCPP_SYSTEM}
+
+/** Do we have PCAP? */
+#define MRPT_HAS_LIBPCAP        ${CMAKE_MRPT_HAS_LIBPCAP}
 
 
 /** Standard headers */

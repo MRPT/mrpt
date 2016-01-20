@@ -276,6 +276,7 @@ include(cmakemodules/script_matlab.cmake REQUIRED)	# Support for Matlab MEX func
 include(cmakemodules/script_isense.cmake REQUIRED)		# Support for INTERSENSE Sensors
 include(cmakemodules/script_nite2.cmake REQUIRED)		# Check for NITE2 library
 include(cmakemodules/script_yamlcpp.cmake REQUIRED)		# Check for YAMLCPP library
+include(cmakemodules/script_pcap.cmake REQUIRED)        # Check for the libpcap library
 
 # ---------------------------------------------------------------------------
 #			OPTIONS

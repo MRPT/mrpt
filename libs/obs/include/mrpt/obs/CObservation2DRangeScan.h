@@ -11,6 +11,7 @@
 
 #include <mrpt/utils/CSerializable.h>
 #include <mrpt/obs/CObservation.h>
+#include <mrpt/obs/T2DScanProperties.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/maps/CMetricMap.h>
 #include <mrpt/math/CPolygon.h>
@@ -22,19 +23,6 @@ namespace mrpt
 {
 namespace obs
 {
-	/** Auxiliary struct that holds all the relevant *geometry* information about a 2D scan.
-	  * This class is used in CSinCosLookUpTableFor2DScans
-	  * \ingroup mrpt_obs_grp
-	  * \sa CObservation2DRangeScan and CObservation2DRangeScan::getScanProperties */
-	struct OBS_IMPEXP T2DScanProperties {
-		size_t  nRays;
-		double  aperture;
-		bool    rightToLeft;
-	};
-	bool OBS_IMPEXP operator<(const T2DScanProperties&a, const T2DScanProperties&b);	//!< Order operator, so T2DScanProperties can appear in associative STL containers.
-
-
-
 	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CObservation2DRangeScan, CObservation, OBS_IMPEXP)
 
 	/** A "CObservation"-derived class that represents a 2D range scan measurement (typically from a laser scanner).
