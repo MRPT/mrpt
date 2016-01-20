@@ -496,8 +496,8 @@ void CDifodoDatasets::loadFrame()
 void CDifodoDatasets::reset()
 {
 	loadFrame();
-	if (fast_pyramid)	buildImagePyramidFast();
-	else				buildImagePyramid();
+	if (fast_pyramid)	buildCoordinatesPyramidFast();
+	else				buildCoordinatesPyramid();
 
 	cam_oldpose = cam_pose;
 	gt_oldpose = gt_pose;

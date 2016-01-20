@@ -84,11 +84,11 @@ namespace mrpt
 			Eigen::Matrix<bool, Eigen::Dynamic, Eigen::Dynamic> null;
 
 			/** Least squares covariance matrix */
-			math::CMatrixFloat66 est_cov;
+			Eigen::Matrix<float, 6, 6> est_cov;
 
 			/** Gaussian masks used to build the pyramid and flag to select accurate or fast pyramid*/
 			bool fast_pyramid;
-			Eigen::Array44f f_mask;
+			Eigen::Matrix4f f_mask;
 			float g_mask[5][5];
 
 			/** Camera properties: */
@@ -127,18 +127,18 @@ namespace mrpt
 			std::vector<Eigen::MatrixXf> transformations;
 			
 			/** Solution from the solver at a given level */
-			math::CMatrixFloat61 kai_loc_level;
+			Eigen::Matrix<float, 6, 1> kai_loc_level;
 
 			/** Last filtered velocity in absolute coordinates */
-			math::CMatrixFloat61 kai_abs;
+			Eigen::Matrix<float,6,1> kai_abs;
 
 			/** Filtered velocity in local coordinates */
-			math::CMatrixFloat61 kai_loc;
-			math::CMatrixFloat61 kai_loc_old;
+			Eigen::Matrix<float,6,1> kai_loc;
+			Eigen::Matrix<float,6,1> kai_loc_old;
 
 			/** Create the gaussian image pyramid according to the number of coarse-to-fine levels */
-			void buildImagePyramid();
-			void buildImagePyramidFast();
+			void buildCoordinatesPyramid();
+			void buildCoordinatesPyramidFast();
 
 			/** Warp the second depth image against the first one according to the 3D transformations accumulated up to a given level */
 			void performWarping();

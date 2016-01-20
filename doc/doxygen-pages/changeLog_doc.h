@@ -27,6 +27,8 @@
 			- \ref mrpt_obs_grp
 				- New class mrpt::obs::CObservationVelodyneScan
 				- mrpt::obs::CSinCosLookUpTableFor2DScans now can build a table from a mrpt::obs::T2DScanProperties structure, which now also has its separate header file for better modularity.
+			- \ref mrpt_opengl_grp
+				- New class mrpt::opengl::CMesh3D to render 3D models/meshes
 			- \ref mrpt_vision_grp
 				- mrpt::vision::CDifOdo has been refactored and now does faster image pyramid computation (By Mariano Jaimez)
 		- Changes in build system:
