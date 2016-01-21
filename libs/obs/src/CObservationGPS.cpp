@@ -10,7 +10,6 @@
 #include "obs-precomp.h"   // Precompiled headers
 
 #include <mrpt/obs/CObservationGPS.h>
-#include <mrpt/utils/CStdOutStream.h>
 #include <mrpt/utils/CStream.h>
 #include <mrpt/math/matrix_serialization.h> // for << of matrices
 #include <mrpt/utils/CMemoryStream.h>
@@ -24,10 +23,8 @@ using namespace mrpt::math;
 // This must be added to any CSerializable class implementation file.
 IMPLEMENTS_SERIALIZABLE(CObservationGPS, CObservation,mrpt::obs)
 
-CStdOutStream	gps_my_cout;
+MRPT_TODO("Export to RINEX")
 
-/** Constructor
- */
 CObservationGPS::CObservationGPS( ) :
 	sensorPose(),
 	has_GGA_datum (false),
