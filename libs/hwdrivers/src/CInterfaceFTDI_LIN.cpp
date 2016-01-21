@@ -159,8 +159,8 @@ void  CInterfaceFTDI::OpenBySerialNumber( const std::string &serialNumber )
 -------------------------------------------------------------*/
 void CInterfaceFTDI::ListAllDevices( TFTDIDeviceList &outList )
 {
-#if MRPT_HAS_FTDI
 	MRPT_TRY_START
+#if MRPT_HAS_FTDI
 
 	outList.clear();
 
