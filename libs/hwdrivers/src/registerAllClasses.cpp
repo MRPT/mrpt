@@ -61,5 +61,6 @@ void registerAllClasses_mrpt_hwdrivers()
 	CGPS_NTRIP::doRegister();
 	CIMUIntersense::doRegister();
 	CSkeletonTracker::doRegister();
+    CVelodyneScanner::doRegister();
 }
 
