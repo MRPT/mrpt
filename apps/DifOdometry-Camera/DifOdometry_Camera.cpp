@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -30,6 +30,7 @@ void CDifodoCamera::loadConfiguration(const utils::CConfigFileBase &ini )
 	fovh = M_PI*58.6/180.0;
 	fovv = M_PI*45.6/180.0;
 	downsample = 1;
+	fast_pyramid = true;
 	cam_mode = ini.read_int("DIFODO_CONFIG", "cam_mode", 2, true);
 	rows = ini.read_int("DIFODO_CONFIG", "rows", 240, true);
 	cols = ini.read_int("DIFODO_CONFIG", "cols", 320, true);
@@ -356,7 +357,8 @@ void CDifodoCamera::reset()
 {
 	//Reset Difodo
 	loadFrame();
-	buildImagePyramid();
+	if (fast_pyramid)	buildCoordinatesPyramidFast();
+	else				buildCoordinatesPyramid();
 	loadFrame();
 	odometryCalculation();
 

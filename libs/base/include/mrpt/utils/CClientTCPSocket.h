@@ -12,6 +12,7 @@
 #include <mrpt/utils/core_defs.h>
 #include <mrpt/utils/mrpt_stdint.h>
 #include <mrpt/utils/CStream.h>
+#include <mrpt/utils/net_utils.h>
 #include <string>
 
 namespace mrpt
@@ -77,8 +78,8 @@ namespace utils
 		 */
 		size_t  Write(const void *Buffer, size_t Count);
 
-		/** Returns a description of the last error */
-		std::string  getLastErrorStr();
+		/** Returns a description of the last Sockets error */
+		std::string  getLastErrorStr() { return mrpt::utils::net::getLastSocketErrorStr(); }
 
 	public:
 		/** Default constructor

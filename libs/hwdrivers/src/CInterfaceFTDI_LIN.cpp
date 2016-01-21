@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -19,7 +19,11 @@ using namespace mrpt::utils;
 
 #if MRPT_HAS_FTDI
 	#include <ftdi.h>
+#	if MRPT_FTDI_VERSION>=0x120
+	#include <libusb-1.0/libusb.h>
+#else
 	#include <usb.h>
+#	endif
 #endif
 
 #include <mrpt/hwdrivers/CInterfaceFTDI.h>
@@ -51,6 +55,10 @@ CInterfaceFTDI::CInterfaceFTDI() :
 #else
 	THROW_EXCEPTION("MRPT has been compiled without FTDI support. Please, reconfigure and recompile MRPT.")
 #endif
+
+#if MRPT_FTDI_VERSION>=0x120
+	libusb_init(NULL);
+#endif
 	MRPT_TRY_END;
 }
 
@@ -71,6 +79,9 @@ CInterfaceFTDI::~CInterfaceFTDI()
 	// Free mem:
 	delete[] ctx;
 	ctx = NULL;
+#endif
+#if MRPT_FTDI_VERSION>=0x120
+	libusb_exit(NULL);
 #endif
 }
 
@@ -114,7 +125,6 @@ void  CInterfaceFTDI::OpenBySerialNumber( const std::string &serialNumber )
 
 	for (TFTDIDeviceList::iterator it=lstDevs.begin();it!=lstDevs.end();++it)
 	{
-	    cout << "MF: " << it->ftdi_manufacturer << endl;
 		if (it->ftdi_serial == serialNumber)
 		{
 			myDev = it->usb_device_struct;
@@ -128,7 +138,13 @@ void  CInterfaceFTDI::OpenBySerialNumber( const std::string &serialNumber )
 	// Open it:
 	ftdi_context *ctx = static_cast<ftdi_context *>(m_ftdi_context);
 
-	int ret=ftdi_usb_open_dev( ctx, (struct usb_device*) myDev );
+	int ret=ftdi_usb_open_dev( ctx, 
+#	if MRPT_FTDI_VERSION>=0x120
+		(struct libusb_device*) myDev 
+#else
+		(struct usb_device*) myDev 
+#endif
+		);
 
 	if (ret) THROW_EXCEPTION( string(ftdi_get_error_string(ctx)) );
 
@@ -143,46 +159,98 @@ void  CInterfaceFTDI::OpenBySerialNumber( const std::string &serialNumber )
 -------------------------------------------------------------*/
 void CInterfaceFTDI::ListAllDevices( TFTDIDeviceList &outList )
 {
-#if MRPT_HAS_FTDI
 	MRPT_TRY_START
+#if MRPT_HAS_FTDI
 
 	outList.clear();
 
-    struct usb_bus *bus;
-    struct usb_device *dev;
+#if MRPT_FTDI_VERSION>=0x120
+	// For new libftdi1-dev
+	// Use libusb-1.0 
 
-    usb_init();
-    if (usb_find_busses() < 0)
-        THROW_EXCEPTION("usb_find_busses() failed");
-    if (usb_find_devices() < 0)
-        THROW_EXCEPTION("usb_find_devices() failed");
+	libusb_device **list;
+	ssize_t nDevices = libusb_get_device_list(NULL,&list);
 
-    for (bus = usb_busses; bus; bus = bus->next)
-    {
-        for (dev = bus->devices; dev; dev = dev->next)
-        {
-        	// Process this node and its children:
-			recursive_fill_list_devices( dev, outList );
-		}
-    }
+	for (unsigned int i = 0; i < nDevices; i++) {
+		libusb_device *device = list[i];
+		struct libusb_device_descriptor desc;
+		if (0!=libusb_get_device_descriptor(device,&desc))
+			continue;
+		if (!desc.idVendor) continue;
 
-//    if (getenv("VERBOSE")!=NULL)
-//    {
-//		printf("[CInterfaceFTDI::ListAllDevices] List: \n");
-//    	for (std::deque<TFTDIDevice>::const_iterator i=outList.begin();i!=outList.end();++i)
-//    		printf("USB DEV: V=%04X P=%04X S=%s\n",i->usb_idVendor,i->usb_idProduct, i->ftdi_serial.c_str());
-//    }
+		TFTDIDevice	newEntry;
+		newEntry.usb_device_struct = (void*)device;
+		newEntry.usb_idProduct = desc.idProduct;
+		newEntry.usb_idVendor  = desc.idVendor;
+		newEntry.usb_serialNumber  = desc.iSerialNumber;
 
-	MRPT_TRY_END
+		// Open the device temporally so we can get more info:
+		libusb_device_handle *handle;
+		if (0!=libusb_open(device,&handle))
+			continue;
+
+		char buf[1024];
+		int ret;
+		// manufacturer
+		ret=libusb_get_string_descriptor_ascii(handle,desc.iManufacturer,(unsigned char*)buf,sizeof(buf)-1);
+		if (ret<0) continue;
+		buf[ret]='\0';
+		newEntry.ftdi_manufacturer = buf;
+			
+		// description
+		ret=libusb_get_string_descriptor_ascii(handle,desc.iProduct,(unsigned char*)buf,sizeof(buf)-1);
+		if (ret<0) continue;
+		buf[ret]='\0';
+		newEntry.ftdi_description = buf;
+
+		// serial
+		ret=libusb_get_string_descriptor_ascii(handle,desc.iSerialNumber,(unsigned char*)buf,sizeof(buf)-1);
+		if (ret<0) continue;
+		buf[ret]='\0';
+		newEntry.ftdi_serial = buf;
+		
+		outList.push_back(newEntry);
+	}
+
+#else
+	// For old libftdi-dev
+	// Use old usb.h interface
+	struct usb_bus *bus;
+	struct usb_device *dev;
+
+	usb_init();
+	if (usb_find_busses() < 0)
+		THROW_EXCEPTION("usb_find_busses() failed");
+	if (usb_find_devices() < 0)
+		THROW_EXCEPTION("usb_find_devices() failed");
+
+	for (bus = usb_busses; bus; bus = bus->next)
+		for (dev = bus->devices; dev; dev = dev->next)
+			recursive_fill_list_devices( dev, outList ); // Process this node and its children:
+
+#endif
+	if (getenv("VERBOSE")!=NULL)
+	{
+		printf("[CInterfaceFTDI::ListAllDevices] List: \n");
+		for (std::deque<TFTDIDevice>::const_iterator i=outList.begin();i!=outList.end();++i)
+			printf("USB DEV: V=%04X P=%04X S=%s\n",i->usb_idVendor,i->usb_idProduct, i->ftdi_serial.c_str());
+	}
+
 #else
 	MRPT_UNUSED_PARAM(outList);
 #endif
+	MRPT_TRY_END
 }
 
 
 void CInterfaceFTDI::recursive_fill_list_devices( void *usb_device_structure , TFTDIDeviceList &outList )
 {
 #if MRPT_HAS_FTDI
+#if MRPT_FTDI_VERSION>=0x120
+	// For new libftdi1-dev
+	throw std::runtime_error("Should not have got to this function!");
+#else
+	// For old libftdi-dev
 	struct usb_device *dev = (struct usb_device *) usb_device_structure;
 
 	if (dev->descriptor.idProduct && dev->descriptor.idVendor)
@@ -252,6 +320,7 @@ void CInterfaceFTDI::recursive_fill_list_devices( void *usb_device_structure , T
 		for (unsigned char j=0;j<dev->num_children;j++)
 			recursive_fill_list_devices( (void*)dev->children[j], outList );
 	}
+#endif
 #else
 	MRPT_UNUSED_PARAM(usb_device_structure); MRPT_UNUSED_PARAM(outList);
 #endif

@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -10,6 +10,8 @@
 #include "base-precomp.h"  // Precompiled headers
 
 #include <mrpt/utils/net_utils.h>
+#include <mrpt/utils/CClientTCPSocket.h>
+#include <mrpt/utils/CServerTCPSocket.h>
 #include <mrpt/utils/CTicTac.h>
 #include <mrpt/system/string_utils.h>
 #include <mrpt/system/threads.h>
@@ -418,14 +420,18 @@ bool net::DNS_resolve_async(
 	TDNSThreadData param;
 	param.in_servername = server_name;
 
-	//TThreadHandle th =
+	TThreadHandle th =
 	mrpt::system::createThreadRef( thread_DNS_solver_async,param );
 
-	if (param.sem_solved.waitForSignal(timeout_ms))
+	bool res =(param.sem_solved.waitForSignal(timeout_ms));
+	// Let the thread now about me quitting:
+	param.sem_caller_quitted.release();
+	mrpt::system::joinThread(th);
+
+	if (res)
 	{
 		// Done: Anyway, it can still be an error result:
 		out_ip = param.out_solved_ip;
-		param.sem_caller_quitted.release();
 		return !out_ip.empty();
 	}
 	else
@@ -433,8 +439,6 @@ bool net::DNS_resolve_async(
 		// Timeout:
 		out_ip.clear();
 
-		// Let the thread now about me quitting:
-		param.sem_caller_quitted.release();
 		return false;
 	}
 }
@@ -483,3 +487,22 @@ void thread_DNS_solver_async(TDNSThreadData &param)
 	WSACleanup();
 #endif
 }
+
+/** Returns a description of the last Sockets error */
+std::string mrpt::utils::net::getLastSocketErrorStr()
+{
+#ifdef MRPT_OS_WINDOWS
+	const int errnum = WSAGetLastError();
+	char * s = NULL;
+	FormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, 
+		NULL, errnum,
+		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+		(LPSTR)&s, 0, NULL);
+	const std::string str = mrpt::format("%s [errno=%d]",s,errnum);
+	LocalFree(s);
+	return str;
+#else
+	return std::string(strerror(errno));
+#endif
+}
+

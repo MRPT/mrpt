@@ -81,12 +81,14 @@ namespace mrpt
 			Eigen::MatrixXf weights;
 
 			/** Matrix which indicates whether the depth of a pixel is zero (null = 1) or not (null = 00).*/
-			Eigen::MatrixXi null;
+			Eigen::Matrix<bool, Eigen::Dynamic, Eigen::Dynamic> null;
 
 			/** Least squares covariance matrix */
-			math::CMatrixFloat66 est_cov;
+			Eigen::Matrix<float, 6, 6> est_cov;
 
-			/** Gaussian mask used to build the pyramid */
+			/** Gaussian masks used to build the pyramid and flag to select accurate or fast pyramid*/
+			bool fast_pyramid;
+			Eigen::Matrix4f f_mask;
 			float g_mask[5][5];
 
 			/** Camera properties: */
@@ -125,29 +127,27 @@ namespace mrpt
 			std::vector<Eigen::MatrixXf> transformations;
 			
 			/** Solution from the solver at a given level */
-			math::CMatrixFloat61 kai_loc_level;
+			Eigen::Matrix<float, 6, 1> kai_loc_level;
 
 			/** Last filtered velocity in absolute coordinates */
-			math::CMatrixFloat61 kai_abs;
+			Eigen::Matrix<float,6,1> kai_abs;
 
 			/** Filtered velocity in local coordinates */
-			math::CMatrixFloat61 kai_loc;
-			math::CMatrixFloat61 kai_loc_old;
+			Eigen::Matrix<float,6,1> kai_loc;
+			Eigen::Matrix<float,6,1> kai_loc_old;
 
 			/** Create the gaussian image pyramid according to the number of coarse-to-fine levels */
-			void buildImagePyramid();
+			void buildCoordinatesPyramid();
+			void buildCoordinatesPyramidFast();
 
 			/** Warp the second depth image against the first one according to the 3D transformations accumulated up to a given level */
 			void performWarping();
 
-			/** Calculate the "average" coordinates of the points observed by the camera between two consecutive frames */
+			/** Calculate the "average" coordinates of the points observed by the camera between two consecutive frames and find the Null measurements */
 			void calculateCoord();
 
 			/** Calculates the depth derivatives respect to u,v (rows and cols) and t (time) */
 			void calculateDepthDerivatives();
-
-			/** This method finds pixels whose depth is zero to subsequently discard them */
-			void findNullPoints();
 
 			/** This method computes the weighting fuction associated to measurement and linearization errors */
 			void computeWeights();
