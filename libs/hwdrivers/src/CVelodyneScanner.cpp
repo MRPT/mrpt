@@ -15,6 +15,8 @@
 #include <mrpt/hwdrivers/CGPSInterface.h>
 
 MRPT_TODO("Add unit tests")
+MRPT_TODO("Optional save to PCAP")
+MRPT_TODO("rpm: document usage. Add automatic determination of rpm from number of pkts/scan")
 
 // socket's hdrs:
 #ifdef MRPT_OS_WINDOWS

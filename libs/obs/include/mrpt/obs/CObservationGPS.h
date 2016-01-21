@@ -20,7 +20,7 @@ namespace obs
 {
 	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CObservationGPS , CObservation, OBS_IMPEXP)
 
-	/** Declares a class derived from "CObservation" that represents a Global Positioning System (GPS) reading.
+	/** An observation (reading) from a GNSS or GNSS+IMU device, from consumer-grade inexpensive GPS receivers to Novatel/Topcon advanced RTK solutions.
 	 *
 	 * \sa CObservation
 	 * \ingroup mrpt_obs_grp
