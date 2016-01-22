@@ -23,7 +23,12 @@ using namespace mrpt::math;
 // This must be added to any CSerializable class implementation file.
 IMPLEMENTS_SERIALIZABLE(CObservationGPS, CObservation,mrpt::obs)
 
-MRPT_TODO("Export to RINEX")
+MRPT_TODO("Refactor so a much larger number of datums can be stored. Once once per observation object.")
+MRPT_TODO("Add two timestamps: GPS vs computer")
+MRPT_TODO("Export to binary file from rawlog-edit")
+MRPT_TODO("Import from ASCII/binary file with a new app: gps2rawlog")
+MRPT_TODO("Export to RINEX?")
+
 
 CObservationGPS::CObservationGPS( ) :
 	sensorPose(),
