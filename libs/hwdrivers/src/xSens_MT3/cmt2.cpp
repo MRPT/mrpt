@@ -202,9 +202,9 @@ XsensResultValue Cmt2s::readMessage(Message* rcv)
 	MessageHeader* hdr = (MessageHeader*) m_readBuffer;
 	uint16_t pre = 0;
 	uint32_t length = 0;
-	uint32_t target;
+	uint32_t target=0;
 	uint16_t i;
-	bool extended;
+	bool extended=false;
 
 	CMT2LOG("L2: readMessage started, bufferCount=%u\n",m_readBufferCount);
 

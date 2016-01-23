@@ -193,7 +193,7 @@ void COpenNI2_RGBD360::getNextObservation(
 
 
 	// preview in real-time?
-	for(unsigned sensor_id=0; sensor_id < (unsigned int)NUM_SENSORS; sensor_id++)
+	for(unsigned sensor_id=0; sensor_id < (unsigned int)NUM_SENSORS; sensor_id++) {
 		if (m_preview_window)
 		{
 			if ( out_obs.hasRangeImage )
@@ -225,7 +225,8 @@ void COpenNI2_RGBD360::getNextObservation(
 			if (m_win_range[sensor_id]) m_win_range[sensor_id].clear();
 			if (m_win_int[sensor_id]) m_win_int[sensor_id].clear();
 		}
-		cout << "getNextObservation took " << 1000*tictac.Tac() << "ms\n";
+	}
+	cout << "getNextObservation took " << 1000*tictac.Tac() << "ms\n";
 #else
 	MRPT_UNUSED_PARAM(out_obs); MRPT_UNUSED_PARAM(there_is_obs); MRPT_UNUSED_PARAM(hardware_error);
 	MRPT_UNUSED_PARAM(out_obs);

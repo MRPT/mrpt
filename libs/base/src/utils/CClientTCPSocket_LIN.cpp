@@ -47,12 +47,8 @@ CClientTCPSocket::CClientTCPSocket( )
  ---------------------------------------------------------------*/
 CClientTCPSocket::~CClientTCPSocket( )
 {
-	MRPT_TRY_START;
-
 	// Close socket:
 	close();
-
-	MRPT_TRY_END;
 }
 
 /*---------------------------------------------------------------

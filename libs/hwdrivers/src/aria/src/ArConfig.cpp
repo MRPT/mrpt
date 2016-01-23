@@ -1198,7 +1198,7 @@ AREXPORT void ArConfig::writeSection(ArConfigSection *section, FILE *file,
       }
       // now put in the values
       argList = param->getArgsWithFunctor();
-      if (argList != NULL)
+	  if (argList != NULL)
         for (argIt = argList->begin(); argIt != argList->end(); argIt++)
         {
           // if there's a space in the name then quote the param name
@@ -1211,8 +1211,8 @@ AREXPORT void ArConfig::writeSection(ArConfigSection *section, FILE *file,
             (*argIt)->getFullString());
         }
 
-        // okay, we did it all, now continue
-        continue;
+	  // okay, we did it all, now continue
+	  continue;
     }
 
     // if its a string holder just write the name without quotes

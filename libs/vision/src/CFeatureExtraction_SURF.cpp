@@ -22,11 +22,8 @@ using namespace mrpt::system;
 using namespace mrpt::utils;
 using namespace std;
 
-//#define HAVE_OPENCV_WITH_SURF \
-//	MRPT_HAS_OPENCV && MRPT_OPENCV_VERSION_NUM >= 0x240 && (MRPT_OPENCV_VERSION_NUM < 0x300 || defined(HAVE_OPENCV_XFEATURES2D) ) /*HAVE_OPENCV_XFEATURES2D: required in opencv 3.0.0+ */
-//#define HAVE_OPENCV_WITH_SURF \//gbnote: made the change below to replace HAVE_OPENCV_XFEATURES2D (that was not set) with MRPT_HAS_OPENCV_NONFREE (I merged the two opencv + contrib directories before compiling - maybe CMAKE cannot handle this)
-//#define HAVE_OPENCV_WITH_SURF \
-//	MRPT_HAS_OPENCV && MRPT_OPENCV_VERSION_NUM >= 0x240 && (MRPT_OPENCV_VERSION_NUM < 0x300 || defined(MRPT_HAS_OPENCV_NONFREE) ) /*MRPT_HAS_OPENCV_NONFREE: required in opencv 3.0.0+ */
+//#define HAVE_OPENCV_WITH_SURF MRPT_HAS_OPENCV && MRPT_OPENCV_VERSION_NUM >= 0x240 && (MRPT_OPENCV_VERSION_NUM < 0x300 || defined(HAVE_OPENCV_XFEATURES2D) ) /*HAVE_OPENCV_XFEATURES2D: required in opencv 3.0.0+ */
+//#define HAVE_OPENCV_WITH_SURF MRPT_HAS_OPENCV && MRPT_OPENCV_VERSION_NUM >= 0x240 && (MRPT_OPENCV_VERSION_NUM < 0x300 || defined(MRPT_HAS_OPENCV_NONFREE) ) /*MRPT_HAS_OPENCV_NONFREE: required in opencv 3.0.0+ */
 //gbnote: the definition above does no result in HAVE_OPENCV_WITH_SURF=1; I used the line below to force compiling to go into the surf part of the  code
 #define HAVE_OPENCV_WITH_SURF MRPT_HAS_OPENCV_NONFREE //gb modified because the versions above do not lead to HAVE_OPENCV_WITH_SURF = 1
 

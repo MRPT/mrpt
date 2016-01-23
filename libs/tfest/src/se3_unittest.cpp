@@ -171,7 +171,7 @@ TEST(tfest, se3_l2_robust)
 	params.ransac_maxSetSizePct = 3.0 / list.size();
 	mrpt::tfest::se3_l2_robust(list,params,estim_result);
 
-	EXPECT_GT( estim_result.inliers_idx.size(), 0);
+	EXPECT_GT( estim_result.inliers_idx.size(), 0u);
 	const CPose3DQuat & outQuat = estim_result.transformation;
 	double err = 0.0;
 	if( (qPose[3]*outQuat[3] > 0 && qPose[4]*outQuat[4] > 0 && qPose[5]*outQuat[5] > 0 && qPose[6]*outQuat[6] > 0) ||

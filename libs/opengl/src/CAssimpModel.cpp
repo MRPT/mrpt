@@ -445,13 +445,13 @@ void recursive_render (const aiScene *sc, const aiNode* nd,const std::vector<uns
 					Color4f(&mesh->mColors[0][vertexIndex]);
 				if(mesh->mNormals != NULL)
 
-					if(mesh->HasTextureCoords(0))		//HasTextureCoords(texture_coordinates_set)
-					{
-						glTexCoord2f(mesh->mTextureCoords[0][vertexIndex].x, 1 - mesh->mTextureCoords[0][vertexIndex].y); //mTextureCoords[channel][vertex]
-					}
+				if(mesh->HasTextureCoords(0))		//HasTextureCoords(texture_coordinates_set)
+				{
+					glTexCoord2f(mesh->mTextureCoords[0][vertexIndex].x, 1 - mesh->mTextureCoords[0][vertexIndex].y); //mTextureCoords[channel][vertex]
+				}
 
-					glNormal3fv(&mesh->mNormals[vertexIndex].x);
-					glVertex3fv(&mesh->mVertices[vertexIndex].x);
+				glNormal3fv(&mesh->mNormals[vertexIndex].x);
+				glVertex3fv(&mesh->mVertices[vertexIndex].x);
 			}
 			glEnd();
 		}

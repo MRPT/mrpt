@@ -391,7 +391,7 @@ AREXPORT int ArSerialConnection::read(const char *data, unsigned int size,
 
   if (myPort >= 0)
   {
-    if (msWait >= 0)
+	if (msWait > 0)
     {
       timeDone.setToNow();
       timeDone.addMSec(msWait);

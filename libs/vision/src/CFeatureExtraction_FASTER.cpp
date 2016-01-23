@@ -163,9 +163,8 @@ void  CFeatureExtraction::extractFeaturesFASTER_N(
 	unsigned int	cont		= 0;
 	TFeatureID		nextID		= init_ID;
 
-    if( !options.addNewFeatures )
-        feats.clear();
-
+	if( !options.addNewFeatures )
+		feats.clear();
 
 	while( cont != nMax && i!=N )
 	{

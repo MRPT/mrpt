@@ -55,15 +55,9 @@ CServerTCPSocket::CServerTCPSocket(
  ---------------------------------------------------------------*/
 CServerTCPSocket::~CServerTCPSocket( )
 {
-	MRPT_TRY_START;
-
 	// Delete socket:
 	if (m_serverSock != -1)
 		close( m_serverSock );
-
-	MRPT_TRY_END;
 }
-
-
 
 #endif // Linux

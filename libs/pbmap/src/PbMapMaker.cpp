@@ -1199,7 +1199,7 @@ void PbMapMaker::run()
     detectPlanesCloud( frameQueue.back().cloudPtr, frameQueue.back().pose,
                       configPbMap.dist_threshold, configPbMap.angle_threshold, configPbMap.minInliersRate);
 
-    if(configPbMap.makeClusters)
+	if(configPbMap.makeClusters) {
       if(mPbMap.vPlanes.size() > minGrowPlanes)
       {
         // Evaluate the partition of the current groups with minNcut
@@ -1209,8 +1209,9 @@ void PbMapMaker::run()
 
         minGrowPlanes += 2;
       }
+	}
 
-      ++numPrevKFs;
+	++numPrevKFs;
     }
   }
 

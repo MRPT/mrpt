@@ -123,9 +123,9 @@ namespace mrpt
 				m_showFaces(enableShowFaces),
 				m_showVertices(enableShowVertices),
 				m_computeNormals(true),
-				m_colorMap( mrpt::utils::cmJET ),
 				m_lineWidth( 2.f ),
-				m_pointSize( 6.f )
+				m_pointSize( 6.f ),
+				m_colorMap( mrpt::utils::cmJET )
 			{
 				m_color.R = 1.f; m_color.G = 0.f; m_color.B = 0.f; m_color.A = 1.f;
 				edge_color[0] = 0.9f; edge_color[1] = 0.9f; edge_color[2] = 0.9f; edge_color[3] = 1.f;

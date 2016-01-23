@@ -982,15 +982,9 @@ namespace maps
 			TCriticalPointsList() : x(),y(),clearance(),x_basis1(),y_basis1(),x_basis2(),y_basis2()
 			{}
 
-			/** The coordinates of critical point.
-			 */
-			std::vector<int>       x,y;
-			/** The clearance of critical points, in 1/100 of cells.
-			 */
-			std::vector<int>       clearance;
-			/** Their two first basis points coordinates.
-			 */
-			std::vector<int>       x_basis1,y_basis1, x_basis2,y_basis2;
+			std::vector<int>       x,y; //!< The coordinates of critical point.
+			std::vector<int>       clearance; //!< The clearance of critical points, in 1/100 of cells.
+			std::vector<int>       x_basis1,y_basis1, x_basis2,y_basis2; //!< Their two first basis points coordinates.
 		} CriticalPointsList;
 
 

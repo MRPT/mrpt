@@ -4,6 +4,8 @@
 
 # Build xSens MT3?
 IF(CMAKE_MRPT_HAS_xSENS_MT3)
+	SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -pthread")
+
 	LIST(APPEND hwdrivers_EXTRA_SRCS
 		"${MRPT_LIBS_ROOT}/hwdrivers/src/xSens_MT3/*.cpp"
 		"${MRPT_LIBS_ROOT}/hwdrivers/src/xSens_MT3/*.h"

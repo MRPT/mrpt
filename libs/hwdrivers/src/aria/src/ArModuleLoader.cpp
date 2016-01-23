@@ -117,7 +117,7 @@ AREXPORT ArModuleLoader::Status ArModuleLoader::load(const char *modName,
 
 #ifndef _MSC_VER
   #pragma GCC diagnostic push
-  #pragma GCC diagnostic ignored "-fstrict-aliasing"
+//  #pragma GCC diagnostic ignored "-fstrict-aliasing"
 #endif
   //func=(bool(*)(ArRobot*,void*))dlsym(handle, "ariaInitModule");
   func=reinterpret_cast<TFunc>( dlsym(handle, "ariaInitModule") );

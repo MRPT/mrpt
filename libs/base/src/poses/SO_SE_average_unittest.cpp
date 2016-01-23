@@ -46,7 +46,7 @@ TEST(SE2_SE3_avrg,SO2_average)
 	}
 	{
 		const double angs  [] = {-0.75*M_PI, 0.75*M_PI, 0.3*M_PI };
-		const double angs_w[] = {1.0, 1.0, 0.1 };
+		//const double angs_w[] = {1.0, 1.0, 0.1 };
 		const double ang_correct_avr = 2.3668403111754515;
 		run_test_so2_avrg(angs,sizeof(angs)/sizeof(angs[0]),ang_correct_avr);
 	}

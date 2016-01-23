@@ -1971,8 +1971,10 @@ bool mpWindow::UpdateBBox()
             }
             else
             {
-                if (f->GetMinX()<m_minX) m_minX=f->GetMinX(); if (f->GetMaxX()>m_maxX) m_maxX=f->GetMaxX();
-                if (f->GetMinY()<m_minY) m_minY=f->GetMinY(); if (f->GetMaxY()>m_maxY) m_maxY=f->GetMaxY();
+				if (f->GetMinX()<m_minX) m_minX=f->GetMinX();
+				if (f->GetMaxX()>m_maxX) m_maxX=f->GetMaxX();
+				if (f->GetMinY()<m_minY) m_minY=f->GetMinY();
+				if (f->GetMaxY()>m_maxY) m_maxY=f->GetMaxY();
             }
         }
         //node = node->GetNext();
@@ -2243,33 +2245,33 @@ bool mpWindow::SaveScreenshot(const wxString& filename, int type, wxSize imageSi
 		SetScr(sizeX, sizeY);
 	}
 
-    wxBitmap screenBuffer(sizeX,sizeY);
-    wxMemoryDC screenDC;
-    screenDC.SelectObject(screenBuffer);
-    screenDC.SetPen( *wxTRANSPARENT_PEN );
-    wxBrush brush( GetBackgroundColour() );
-    screenDC.SetBrush( brush );
-    screenDC.DrawRectangle(0,0,sizeX,sizeY);
+	wxBitmap screenBuffer(sizeX,sizeY);
+	wxMemoryDC screenDC;
+	screenDC.SelectObject(screenBuffer);
+	screenDC.SetPen( *wxTRANSPARENT_PEN );
+	wxBrush brush( GetBackgroundColour() );
+	screenDC.SetBrush( brush );
+	screenDC.DrawRectangle(0,0,sizeX,sizeY);
 
 	if (fit) {
 		Fit(m_minX, m_maxX, m_minY, m_maxY, &sizeX, &sizeY);
 	} else {
 		Fit(m_desiredXmin, m_desiredXmax, m_desiredYmin, m_desiredYmax, &sizeX, &sizeY);
 	}
-    // Draw all the layers:
-    wxLayerList::iterator li;
-    for (li = m_layers.begin(); li != m_layers.end(); ++li)
-    	(*li)->Plot(screenDC, *this);
+	// Draw all the layers:
+	wxLayerList::iterator li;
+	for (li = m_layers.begin(); li != m_layers.end(); ++li)
+		(*li)->Plot(screenDC, *this);
 
 	if (imageSize != wxDefaultSize) {
 		// Restore dimensions
 		SetScr(bk_scrX, bk_scrY);
-                Fit(m_desiredXmin, m_desiredXmax, m_desiredYmin, m_desiredYmax, &bk_scrX, &bk_scrY);
+				Fit(m_desiredXmin, m_desiredXmax, m_desiredYmin, m_desiredYmax, &bk_scrX, &bk_scrY);
 		UpdateAll();
 	}
-    // Once drawing is complete, actually save screen shot
-    wxImage screenImage = screenBuffer.ConvertToImage();
-    return screenImage.SaveFile(filename, (wxBitmapType)type);
+	// Once drawing is complete, actually save screen shot
+	wxImage screenImage = screenBuffer.ConvertToImage();
+	return screenImage.SaveFile(filename, (wxBitmapType)type);
 }
 
 void mpWindow::SetMargins(int top, int right, int bottom, int left)

@@ -523,15 +523,17 @@ namespace mrpt
 
 									// aux_K_dh_dx  <-- I-aux_K_dh_dx
 									const size_t stat_len = aux_K_dh_dx.getColCount();
-									for (size_t r=0;r<stat_len;r++)
-										for (size_t c=0;c<stat_len;c++)
+									for (size_t r=0;r<stat_len;r++) {
+										for (size_t c=0;c<stat_len;c++) {
 											if (r==c)
 												aux_K_dh_dx.get_unsafe(r,c)=-aux_K_dh_dx.get_unsafe(r,c) + kftype(1);
 											else aux_K_dh_dx.get_unsafe(r,c)=-aux_K_dh_dx.get_unsafe(r,c);
+										}
+									}
 
-											m_pkk.multiply_result_is_symmetric(aux_K_dh_dx, m_pkk );
+									m_pkk.multiply_result_is_symmetric(aux_K_dh_dx, m_pkk );
 
-											m_timLogger.leave("KF:8.update stage:3.FULLKF:update Pkk");
+									m_timLogger.leave("KF:8.update stage:3.FULLKF:update Pkk");
 								}
 							} // end for each IKF iteration
 						}

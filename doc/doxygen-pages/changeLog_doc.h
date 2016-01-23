@@ -33,6 +33,7 @@
 				- mrpt::vision::CDifOdo has been refactored and now does faster image pyramid computation (By Mariano Jaimez)
 		- Changes in build system:
 			- Code ported to support the new libftdi1-dev (Fixes Debian bug #810368, GitHub issue #176)
+			- Fix building with gcc 6.0 (Closes Debian bug #811812)
 		- BUG FIXES:
 			- mrpt::math::CQuaternion<> did not check for unit norm in Release builds.
 			- Fix build errors against OpenCV 3.0.0+ without opencv_contrib modules.

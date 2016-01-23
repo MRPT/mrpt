@@ -69,19 +69,19 @@ void CStereoRectifyMap::enableBothCentersCoincide(bool enable)
 void CStereoRectifyMap::setFromCamParams(const mrpt::utils::TStereoCamera & params)
 {
 	MRPT_START
-#if MRPT_HAS_OPENCV && MRPT_OPENCV_VERSION_NUM>=0x200
-	const mrpt::utils::TCamera &cam1 = params.leftCamera;
+		#if MRPT_HAS_OPENCV && MRPT_OPENCV_VERSION_NUM>=0x200
+			const mrpt::utils::TCamera &cam1 = params.leftCamera;
 	const mrpt::utils::TCamera &cam2 = params.rightCamera;
 
 	ASSERT_( cam1.ncols==cam2.ncols && cam1.nrows==cam2.nrows  )
 
-	const uint32_t ncols = cam1.ncols;
+			const uint32_t ncols = cam1.ncols;
 	const uint32_t nrows = cam1.nrows;
 
 	const cv::Size trg_size = m_resize_output ?
-		cv::Size(m_resize_output_value.x,m_resize_output_value.y)  // User requested image scaling
-		:
-		cv::Size();  // Default=don't scale
+				cv::Size(m_resize_output_value.x,m_resize_output_value.y)  // User requested image scaling
+			  :
+				cv::Size();  // Default=don't scale
 
 	const uint32_t ncols_out = m_resize_output ? m_resize_output_value.x : ncols;
 	const uint32_t nrows_out = m_resize_output ? m_resize_output_value.y : nrows;
@@ -108,46 +108,46 @@ void CStereoRectifyMap::setFromCamParams(const mrpt::utils::TStereoCamera & para
 
 
 	// right camera pose: Rotation
-    CMatrixDouble44 hMatrix;
+	CMatrixDouble44 hMatrix;
 	// NOTE!: OpenCV seems to expect the INVERSE of the pose we keep, so invert it:
 	params.rightCameraPose.getInverseHomogeneousMatrix( hMatrix );
 
-    double m1[3][3];
-    for(unsigned int i = 0; i < 3; ++i)
-        for(unsigned int j = 0; j < 3; ++j)
-            m1[i][j] = hMatrix(i,j);
+	double m1[3][3];
+	for(unsigned int i = 0; i < 3; ++i)
+		for(unsigned int j = 0; j < 3; ++j)
+			m1[i][j] = hMatrix(i,j);
 
 	// right camera pose: translation
 	double rcTrans[3] = { hMatrix(0,3), hMatrix(1,3), hMatrix(2,3) };
 
-    double ipl[3][3], ipr[3][3], dpl[5], dpr[5];
-    for( unsigned int i = 0; i < 3; ++i )
-        for( unsigned int j = 0; j < 3; ++j )
-        {
-            ipl[i][j] = cam1.intrinsicParams(i,j);
-            ipr[i][j] = cam2.intrinsicParams(i,j);
-        }
+	double ipl[3][3], ipr[3][3], dpl[5], dpr[5];
+	for( unsigned int i = 0; i < 3; ++i )
+		for( unsigned int j = 0; j < 3; ++j )
+		{
+			ipl[i][j] = cam1.intrinsicParams(i,j);
+			ipr[i][j] = cam2.intrinsicParams(i,j);
+		}
 
 	for( unsigned int i = 0; i < 5; ++i )
-    {
-        dpl[i] = cam1.dist[i];
-        dpr[i] = cam2.dist[i];
-    }
+	{
+		dpl[i] = cam1.dist[i];
+		dpr[i] = cam2.dist[i];
+	}
 
 	const cv::Mat R( 3, 3, CV_64F, &m1 );
-    const cv::Mat T( 3, 1, CV_64F, &rcTrans );
+	const cv::Mat T( 3, 1, CV_64F, &rcTrans );
 
-    const cv::Mat K1(3,3,CV_64F,ipl);
-    const cv::Mat K2(3,3,CV_64F,ipr);
-    const cv::Mat D1(1,5,CV_64F,dpl);
-    const cv::Mat D2(1,5,CV_64F,dpr);
+	const cv::Mat K1(3,3,CV_64F,ipl);
+	const cv::Mat K2(3,3,CV_64F,ipr);
+	const cv::Mat D1(1,5,CV_64F,dpl);
+	const cv::Mat D2(1,5,CV_64F,dpr);
 
-    double _R1[3][3], _R2[3][3], _P1[3][4], _P2[3][4], _Q[4][4];
-    cv::Mat R1(3,3,CV_64F,_R1);
-    cv::Mat R2(3,3,CV_64F,_R2);
-    cv::Mat P1(3,4,CV_64F,_P1);
-    cv::Mat P2(3,4,CV_64F,_P2);
-    cv::Mat Q(4,4,CV_64F,_Q);
+	double _R1[3][3], _R2[3][3], _P1[3][4], _P2[3][4], _Q[4][4];
+	cv::Mat R1(3,3,CV_64F,_R1);
+	cv::Mat R2(3,3,CV_64F,_R2);
+	cv::Mat P1(3,4,CV_64F,_P1);
+	cv::Mat P2(3,4,CV_64F,_P2);
+	cv::Mat Q(4,4,CV_64F,_Q);
 
 	const cv::Size img_size(ncols,nrows);
 	const cv::Size real_trg_size = m_resize_output ? trg_size : img_size; // Note: trg_size is Size() by default
@@ -182,49 +182,49 @@ void CStereoRectifyMap::setFromCamParams(const mrpt::utils::TStereoCamera & para
 	*/
 #if MRPT_OPENCV_VERSION_NUM<0x210
 	// OpenCV 2.0.X
-    cv::stereoRectify(
-        K1, D1,
-        K2, D2,
-        img_size,
-        R, T,
-        R1, R2, P1, P2, Q,
-		m_enable_both_centers_coincide ? cv::CALIB_ZERO_DISPARITY : 0
-		);
+	cv::stereoRectify(
+				K1, D1,
+				K2, D2,
+				img_size,
+				R, T,
+				R1, R2, P1, P2, Q,
+				m_enable_both_centers_coincide ? cv::CALIB_ZERO_DISPARITY : 0
+												 );
 #elif MRPT_OPENCV_VERSION_NUM<0x230
 	// OpenCV 2.1.X - 2.2.X
-    cv::stereoRectify(
-        K1, D1,
-        K2, D2,
-        img_size,
-        R, T,
-        R1, R2, P1, P2, Q,
-		m_alpha,
-		trg_size, // Size() by default=no resize
-		NULL,NULL, // Out ROIs
-		m_enable_both_centers_coincide ? cv::CALIB_ZERO_DISPARITY : 0
-		);
+	cv::stereoRectify(
+				K1, D1,
+				K2, D2,
+				img_size,
+				R, T,
+				R1, R2, P1, P2, Q,
+				m_alpha,
+				trg_size, // Size() by default=no resize
+				NULL,NULL, // Out ROIs
+				m_enable_both_centers_coincide ? cv::CALIB_ZERO_DISPARITY : 0
+												 );
 #else
 	// OpenCV 2.3+ has this signature:
-    cv::stereoRectify(
-        K1, D1,
-        K2, D2,
-        img_size,
-        R, T,
-        R1, R2, P1, P2, Q,
-		m_enable_both_centers_coincide ? cv::CALIB_ZERO_DISPARITY : 0,
-		m_alpha,
-		trg_size // Size() by default=no resize
-		);
-        // Rest of arguments -> default
+	cv::stereoRectify(
+				K1, D1,
+				K2, D2,
+				img_size,
+				R, T,
+				R1, R2, P1, P2, Q,
+				m_enable_both_centers_coincide ? cv::CALIB_ZERO_DISPARITY : 0,
+				m_alpha,
+				trg_size // Size() by default=no resize
+				);
+	// Rest of arguments -> default
 #endif
 
 	cv::initUndistortRectifyMap( K1, D1, R1, P1, real_trg_size, CV_16SC2, _mapx_left, _mapy_left );
 	cv::initUndistortRectifyMap( K2, D2, R2, P2, real_trg_size, CV_16SC2, _mapx_right, _mapy_right );
 
 	// Populate the parameter matrices of the output rectified images:
-    for( unsigned int i = 0; i < 3; ++i )
-        for( unsigned int j = 0; j < 3; ++j )
-        {
+	for( unsigned int i = 0; i < 3; ++i )
+		for( unsigned int j = 0; j < 3; ++j )
+		{
 			m_rectified_image_params.leftCamera.intrinsicParams(i,j) = _P1[i][j];
 			m_rectified_image_params.rightCamera.intrinsicParams(i,j) = _P2[i][j];
 		}
@@ -243,23 +243,23 @@ void CStereoRectifyMap::setFromCamParams(const mrpt::utils::TStereoCamera & para
 	m_rectified_image_params.leftCamera.focalLengthMeters = params.leftCamera.focalLengthMeters;
 	m_rectified_image_params.rightCamera.focalLengthMeters = params.rightCamera.focalLengthMeters;
 
-	// R1: Rotation of left camera after rectification: 
+	// R1: Rotation of left camera after rectification:
 	// R2: idem for right cam:
 	const Eigen::Map<Eigen::Matrix3d> R1e( R1.ptr<double>() );
 	const Eigen::Map<Eigen::Matrix3d> R2e( R2.ptr<double>() );
 
 	CPose3D RR1, RR2;
 	RR1.setRotationMatrix(R1e);
-	RR2.setRotationMatrix(R2e);	
+	RR2.setRotationMatrix(R2e);
 	m_rot_left  = CPose3DQuat(RR1);
 	m_rot_right = CPose3DQuat(RR2);
 
 	m_rectified_image_params.rightCameraPose = params.rightCameraPose;
 
 #else
-	THROW_EXCEPTION("MRPT built without OpenCV >=2.0.0!")
-#endif
-	MRPT_END
+			THROW_EXCEPTION("MRPT built without OpenCV >=2.0.0!")
+		#endif
+			MRPT_END
 }
 
 void CStereoRectifyMap::rectify(

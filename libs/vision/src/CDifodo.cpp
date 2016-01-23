@@ -258,37 +258,37 @@ void CDifodo::buildCoordinatesPyramidFast()
 	xx_old.swap(xx);
 	yy_old.swap(yy);
 
-    //The number of levels of the pyramid does not match the number of levels used
-    //in the odometry computation (because we might want to finish with lower resolutions)
+	//The number of levels of the pyramid does not match the number of levels used
+	//in the odometry computation (because we might want to finish with lower resolutions)
 
-    unsigned int pyr_levels = round(log(float(width/cols))/log(2.f)) + ctf_levels;
+	unsigned int pyr_levels = round(log(float(width/cols))/log(2.f)) + ctf_levels;
 
-    //Generate levels
-    for (unsigned int i = 0; i<pyr_levels; i++)
-    {
-        unsigned int s = pow(2.f,int(i));
-        cols_i = width/s;
-        rows_i = height/s;
-		const int rows_i2 = 2*rows_i;
-		const int cols_i2 = 2*cols_i;
+	//Generate levels
+	for (unsigned int i = 0; i<pyr_levels; i++)
+	{
+		unsigned int s = pow(2.f,int(i));
+		cols_i = width/s;
+		rows_i = height/s;
+		//const int rows_i2 = 2*rows_i;
+		//const int cols_i2 = 2*cols_i;
 		const int i_1 = i-1;
 
-        if (i == 0)
-            depth[i].swap(depth_wf);
+		if (i == 0)
+			depth[i].swap(depth_wf);
 
-        //                              Downsampling
-        //-----------------------------------------------------------------------------
-        else
-        {            
+		//                              Downsampling
+		//-----------------------------------------------------------------------------
+		else
+		{
 			for (unsigned int u = 0; u < cols_i; u++)
 				for (unsigned int v = 0; v < rows_i; v++)
-                {
-                    const int u2 = 2*u;
+				{
+					const int u2 = 2*u;
 					const int v2 = 2*v;
 					
 					//Inner pixels
-                    if ((v>0)&&(v<rows_i-1)&&(u>0)&&(u<cols_i-1))
-                    {		
+					if ((v>0)&&(v<rows_i-1)&&(u>0)&&(u<cols_i-1))
+					{
 						const Matrix4f d_block = depth[i_1].block<4,4>(v2-1,u2-1);
 						float depths[4] = {d_block(5),d_block(6),d_block(9),d_block(10)};
 						float dcenter;
