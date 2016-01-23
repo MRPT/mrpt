@@ -13,8 +13,8 @@
 <p> <b>Note:</b> <i>If you are displaying a local version of this page and you have not built the whole HTML documentation, the links above will be broken. Either build the documentation invoking <code>make documentation_html</code> or [browse it on-line](http://www.mrpt.org/).</i></p>
 
 <hr>
-<a name="1.3.3">
-  <h2>Version 1.3.3: (Under development) </h2></a>
+<a name="1.4.0">
+  <h2>Version 1.4.0: (Under development) </h2></a>
 	- <b>Most important changes:</b>
 		- Support for Velodyne LIDAR sensors.
 	- <b>Detailed list of changes:</b>
@@ -24,9 +24,11 @@
 			- \ref mrpt_hwdrivers_grp
 				- New class mrpt::hwdrivers::CVelodyneScanner
 				- mrpt::hwdrivers::CNTRIPEmitter now has a parameter to enable/disable sending back the data from the serial port to the NTRIP caster.
+				- <b>[API changed]</b> mrpt::hwdrivers::CGPSInterface API clean-up and made more generic so any stream can be used to parse GNSS messages, not only serial ports.
 			- \ref mrpt_obs_grp
 				- New class mrpt::obs::CObservationVelodyneScan
 				- mrpt::obs::CSinCosLookUpTableFor2DScans now can build a table from a mrpt::obs::T2DScanProperties structure, which now also has its separate header file for better modularity.
+				- <b>[API changed]</b> mrpt::obs::CObservationGPS now stores only one message per objects. API clean-up and extended so the number of GNSS message types is larger and more scalable.
 			- \ref mrpt_opengl_grp
 				- New class mrpt::opengl::CMesh3D to render 3D models/meshes
 			- \ref mrpt_vision_grp

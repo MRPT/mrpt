@@ -26,6 +26,8 @@ void  getNextToken(const std::string &str,std::string &token, unsigned int &pars
 
 MRPT_TODO("Make customInit more flexible");
 MRPT_TODO("Parse (some) novatel binary frames");
+MRPT_TODO("Optional dump raw to file");
+
 
 /* -----------------------------------------------------
                 Constructor
@@ -80,6 +82,7 @@ void  CGPSInterface::loadConfig_sensorSpecific(
 	m_sensorPose.x( configSource.read_float( iniSection, "pose_x",0, false ) );
 	m_sensorPose.y( configSource.read_float( iniSection, "pose_y",0, false ) );
 	m_sensorPose.z( configSource.read_float( iniSection, "pose_z",0, false ) );
+	MRPT_TODO("ORIENTATION");
 
 	m_JAVAD_rtk_src_port = configSource.read_string(iniSection, "JAVAD_rtk_src_port",m_JAVAD_rtk_src_port );
 	m_JAVAD_rtk_src_baud = configSource.read_int(iniSection, "JAVAD_rtk_src_baud",m_JAVAD_rtk_src_baud );
@@ -257,27 +260,27 @@ void  CGPSInterface::doProcess()
 
 		try
 		{
-		    if( useExternCOM() )
-		    {
-                CCriticalSectionLocker lock( m_cs_out_COM );
-                bytesRead = m_out_COM->Read(m_buffer + m_bufferWritePos, bytesToRead);
-            }
-            else
-                bytesRead = m_COM.Read(m_buffer + m_bufferWritePos, bytesToRead);
+			if( useExternCOM() )
+			{
+				CCriticalSectionLocker lock( m_cs_out_COM );
+				bytesRead = m_out_COM->Read(m_buffer + m_bufferWritePos, bytesToRead);
+			}
+			else
+				bytesRead = m_COM.Read(m_buffer + m_bufferWritePos, bytesToRead);
 		}
 		catch (...)
 		{
 			// ERROR:
 			printf_debug("[CGPSInterface::doProcess] Error reading COM port: Closing communications\n");
-		    if( useExternCOM() )
-		    {
-                CCriticalSectionLocker lock( m_cs_out_COM );
-                m_out_COM->close();
-		    }
-		    else
-                m_COM.close();
+			if( useExternCOM() )
+			{
+				CCriticalSectionLocker lock( m_cs_out_COM );
+				m_out_COM->close();
+			}
+			else
+				m_COM.close();
 
-            m_GPS_comsWork			= false;
+			m_GPS_comsWork			= false;
 			m_GPS_signalAcquired	= false;
 			return;
 		}

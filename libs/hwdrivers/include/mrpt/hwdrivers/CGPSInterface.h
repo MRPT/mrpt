@@ -21,8 +21,14 @@ namespace mrpt
 {
 	namespace hwdrivers
 	{
-		/** A parser of NMEA commands, for connecting to a GPS by a serial port.
-		  * This class also supports more advanced GPS equipped with RTK corrections. See the JAVAD/TopCon extra initialization parameters.
+		/** A class capable of reading GPS/GNSS/GNSS+IMU receiver data, from a serial port or from any input stream, 
+		  *  and \b parsing the ASCII/binary stream into indivual messages \b stored in mrpt::obs::CObservationGPS objects.
+		  *
+		  * Typical input streams are serial ports or raw GPS log files.
+		  *
+		  * The parser supports the following message types:
+		  * - NMEA 0183 (ASCII): GGA, RMC
+		  * - Novatel OEM6 (Binary): XXX
 		  *
 		  *  \code
 		  *  PARAMETERS IN THE ".INI"-LIKE CONFIGURATION STRINGS:
@@ -30,8 +36,10 @@ namespace mrpt
 		  *   [supplied_section_name]
 		  *    COM_port_WIN = COM3
 		  *    COM_port_LIN = ttyS0
-		  *    baudRate     = 4800   // The baudrate of the communications (typ. 4800 bauds)
-		  *    pose_x       = 0      // 3D position of the sensed point relative to the robot (meters)
+		  *    baudRate     = 4800   // The baudrate of the communications (typ. 4800 or 9600 bauds)
+		  *
+		  *    # 3D position (and orientation, for GNSS+IMUs) of the sensed point (antenna phase center) relative to the vehicle/robot frame:
+		  *    pose_x       = 0      // (meters)
 		  *    pose_y       = 0
 		  *    pose_z       = 0
 		  *    customInit   =       // See below for possible values
@@ -49,20 +57,23 @@ namespace mrpt
 		  *		- "JAVAD": JAVAD or TopCon devices. Extra initialization commands will be sent.
 		  *		- "TopCon": A synonymous with "JAVAD".
 		  *
-		  *  VERSIONS HISTORY:
+		  *  The next picture summarizes existing MRPT classes related to GPS / GNSS devices (CGPSInterface, CNTRIPEmitter, CGPS_NTRIP):
+		  *
+		  *  <div align=center> <img src="mrpt_gps_classes_usage.png"> </div>
+		  *
+		  *  <b>VERSIONS HISTORY:</b>
 		  *		-9/JUN/2006: First version (JLBC)
 		  *		-4/JUN/2008: Added virtual methods for device-specific initialization commands.
 		  *		-10/JUN/2008: Converted into CGenericSensor class (there are no inhirited classes anymore).
 		  *		-7/DEC/2012: Added public static method to parse NMEA strings.
 		  *		-17/JUN/2014: Added GGA feedback.
-		  *
-		  *  The next picture summarizes existing MRPT classes related to GPS / GNSS devices (CGPSInterface, CNTRIPEmitter, CGPS_NTRIP):
-		  *
-		  *  <div align=center> <img src="mrpt_gps_classes_usage.png"> </div>
+		  *		-24/JAN/2015: API changed for MTPT 1.4.0
 		  *
 		  *  \note Verbose debug info will be dumped to cout if the environment variable "MRPT_HWDRIVERS_VERBOSE" is set to "1", or if you call CGenericSensor::enableVerbose(true)
+		  *  \note 
+		  *  \note <b>[API changed in MRPT 1.4.0]</b> mrpt::hwdrivers::CGPSInterface API clean-up and made more generic so any stream can be used to parse GNSS messages, not only serial ports.
 		  *
-		  * \sa CGPS_NTRIP, CNTRIPEmitter
+		  * \sa CGPS_NTRIP, CNTRIPEmitter, mrpt::obs::CObservationGPS 
 		  * \ingroup mrpt_hwdrivers_grp
 		  */
 		class HWDRIVERS_IMPEXP CGPSInterface : public utils::CDebugOutputCapable, public CGenericSensor
@@ -117,9 +128,9 @@ namespace mrpt
 
 			CSerialPort		m_COM;
 
-            // MAR'11 -------------------------------------
+			// MAR'11 -------------------------------------
 			CSerialPort		                *m_out_COM;
-            mrpt::synch::CCriticalSection   *m_cs_out_COM;
+			mrpt::synch::CCriticalSection   *m_cs_out_COM;
 			// --------------------------------------------
 
 			poses::CPoint3D	m_sensorPose;
@@ -141,16 +152,16 @@ namespace mrpt
 			void setJAVAD_rtk_format(const std::string &s) {m_JAVAD_rtk_format=s;}
 
 			/** Set Advanced Input Mode for the primary port.
-                This can be used to send RTK corrections to the device using the same port that it's used for the commands.
-                The RTK correction stream must be re-packaged into a special frame with prefix ">>" */
-            bool setJAVAD_AIM_mode();
+				This can be used to send RTK corrections to the device using the same port that it's used for the commands.
+				The RTK correction stream must be re-packaged into a special frame with prefix ">>" */
+			bool setJAVAD_AIM_mode();
 
 			/** Unset Advanced Input Mode for the primary port and use it only as a command port. */
-            bool unsetJAVAD_AIM_mode();
+			bool unsetJAVAD_AIM_mode();
 
-            // MAR'11 -------------------------------------
-            inline bool useExternCOM() const { return (m_out_COM!=NULL); }
-            // --------------------------------------------
+			// MAR'11 -------------------------------------
+			inline bool useExternCOM() const { return (m_out_COM!=NULL); }
+			// --------------------------------------------
 
 		private:
 			std::string 	m_COMname;

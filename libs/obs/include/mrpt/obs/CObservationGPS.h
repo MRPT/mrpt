@@ -20,8 +20,21 @@ namespace obs
 {
 	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CObservationGPS , CObservation, OBS_IMPEXP)
 
-	/** An observation (reading) from a GNSS or GNSS+IMU device, from consumer-grade inexpensive GPS receivers to Novatel/Topcon advanced RTK solutions.
+	/** This class <b>stores messages</b> from GNSS or GNSS+IMU devices, from consumer-grade inexpensive GPS receivers to Novatel/Topcon advanced RTK solutions.
 	 *
+	 *  See mrpt::hwdrivers::CGPSInterface for a class capable of reading from a serial port or any input stream and \b parsing the ASCII/binary stream into 
+	 *  indivual messages \b stored in mrpt::obs::CObservationGPS objects.
+	 *
+	 *  Supported message types are:
+	 *  - NMEA 0183 (ASCII): GGA, RMC
+	 *  - Topcon GRIL (Binary): PZS, SATS
+	 *  - Novatel OEM6 (Binary): XXX
+	 * 
+	 *  Note that this object has \b two timestamp fields:
+	 *  - The standard CObservation::timestamp field in the base class, which should contain the accurate satellite-based UTC timestamp, and 
+	 *  - the field CObservationGPS::originalReceivedTimestamp, with the local computer-based timestamp based on the reception of the message in the computer.
+	 *
+	 * \note <b>[API changed in MRPT 1.4.0]</b> mrpt::obs::CObservationGPS now stores only one message per objects. API clean-up and extended so the number of GNSS message types is larger and more scalable.
 	 * \sa CObservation
 	 * \ingroup mrpt_obs_grp
 	 */
@@ -37,31 +50,23 @@ namespace obs
 		/** Dumps the contents of the observation in a human-readable form to the console */
 		void  dumpToConsole(std::ostream &o = std::cout) const;
 		
-		mrpt::poses::CPose3D  sensorPose;//!< The sensor pose on the robot.
+		mrpt::poses::CPose3D     sensorPose;//!< The sensor pose on the robot/vehicle
+		mrpt::system::TTimeStamp originalReceivedTimestamp; //!< The local computer-based timestamp based on the reception of the message in the computer. \sa CObservation::timestamp in the base class, which should contain the accurate satellite-based UTC timestamp.
 
 		/** A UTC time-stamp structure for GPS messages */
 		struct OBS_IMPEXP TUTCTime
 		{
-			TUTCTime();
-
 			uint8_t	hour;
 			uint8_t	minute;
 			double  sec;
 
-            mrpt::system::TTimeStamp getAsTimestamp(const mrpt::system::TTimeStamp &date) const; //!< Build an MRPT timestamp with the hour/minute/sec of this structure and the date from the given timestamp.
+			TUTCTime();
+			mrpt::system::TTimeStamp getAsTimestamp(const mrpt::system::TTimeStamp &date) const; //!< Build an MRPT timestamp with the hour/minute/sec of this structure and the date from the given timestamp.
 			bool operator == (const TUTCTime& o) const { return hour==o.hour && minute==o.minute && sec==o.sec; }
 			bool operator != (const TUTCTime& o) const { return hour!=o.hour || minute!=o.minute || sec!=o.sec; }
-			inline TUTCTime& operator = (const TUTCTime& o)
-			{
-			    this->hour = o.hour;
-			    this->minute = o.minute;
-			    this->sec = o.sec;
-			    return *this;
-            }
 		};
 
-		/** The GPS datum for GGA commands
-		  */
+		/** The GPS datum for GGA commands */
 		struct OBS_IMPEXP TGPSDatum_GGA
 		{
 			TGPSDatum_GGA();

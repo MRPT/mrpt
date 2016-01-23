@@ -32,6 +32,7 @@ MRPT_TODO("Export to RINEX?")
 
 CObservationGPS::CObservationGPS( ) :
 	sensorPose(),
+	originalReceivedTimestamp(INVALID_TIMESTAMP),
 	has_GGA_datum (false),
 	has_RMC_datum (false),
 	has_PZS_datum (false),

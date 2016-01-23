@@ -14,7 +14,7 @@
 	AUTHOR: Jose Luis Blanco Claraco <joseluisblancoc@gmail.com>
 
 	For instructions and details, see:
-	 http://www.mrpt.org/Application:rawlog-grabber
+	 http://www.mrpt.org/list-of-mrpt-apps/application-rawlog-grabber/
   -----------------------------------------------------------------------------*/
 
 #include <mrpt/hwdrivers/CGenericSensor.h>
