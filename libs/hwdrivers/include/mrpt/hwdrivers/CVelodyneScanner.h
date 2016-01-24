@@ -103,7 +103,7 @@ namespace mrpt
 		  *  Copyright (C) 2009, 2010 Austin Robot Technology, Jack O'Quin
 		  *  License: Modified BSD Software License Agreement
 		  *
-		  * \note New in MRPT 1.3.3
+		  * \note New in MRPT 1.4.0
 		  * \ingroup mrpt_hwdrivers_grp
  		  */
 		class HWDRIVERS_IMPEXP CVelodyneScanner : public mrpt::hwdrivers::CGenericSensor

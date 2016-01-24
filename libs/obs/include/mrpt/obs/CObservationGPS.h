@@ -13,6 +13,7 @@
 #include <mrpt/obs/CObservation.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPose2D.h>
+#include <mrpt/obs/gnss_messages.h>
 
 namespace mrpt
 {
@@ -20,7 +21,7 @@ namespace obs
 {
 	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CObservationGPS , CObservation, OBS_IMPEXP)
 
-	/** This class <b>stores messages</b> from GNSS or GNSS+IMU devices, from consumer-grade inexpensive GPS receivers to Novatel/Topcon advanced RTK solutions.
+	/** This class <b>stores messages</b> from GNSS or GNSS+IMU devices, from consumer-grade inexpensive GPS receivers to Novatel/Topcon/... advanced RTK solutions.
 	 *
 	 *  See mrpt::hwdrivers::CGPSInterface for a class capable of reading from a serial port or any input stream and \b parsing the ASCII/binary stream into 
 	 *  indivual messages \b stored in mrpt::obs::CObservationGPS objects.
@@ -46,9 +47,7 @@ namespace obs
 	 public:
 		CObservationGPS(  ); //!< ctor
 		void  dumpToStream( mrpt::utils::CStream &out ) const; //!< Dumps the contents of the observation in a human-readable form to a given output stream \sa dumpToConsole(), getDescriptionAsText()
-
-		/** Dumps the contents of the observation in a human-readable form to the console */
-		void  dumpToConsole(std::ostream &o = std::cout) const;
+		void  dumpToConsole(std::ostream &o = std::cout) const; //!< Dumps the contents of the observation in a human-readable form to an std::ostream (default=console)
 		
 		mrpt::poses::CPose3D     sensorPose;//!< The sensor pose on the robot/vehicle
 		mrpt::system::TTimeStamp originalReceivedTimestamp; //!< The local computer-based timestamp based on the reception of the message in the computer. \sa CObservation::timestamp in the base class, which should contain the accurate satellite-based UTC timestamp.

@@ -25,8 +25,10 @@ IMPLEMENTS_GENERIC_SENSOR(CGPSInterface,mrpt::hwdrivers)
 void  getNextToken(const std::string &str,std::string &token, unsigned int &parserPos);
 
 MRPT_TODO("Make customInit more flexible");
+MRPT_TODO("Offer method to write commands to the GPS");
 MRPT_TODO("Parse (some) novatel binary frames");
 MRPT_TODO("Optional dump raw to file");
+MRPT_TODO("store originalReceivedTimestamp");
 
 
 /* -----------------------------------------------------

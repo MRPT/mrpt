@@ -27,8 +27,8 @@ MRPT_TODO("Refactor so a much larger number of datums can be stored. Once once p
 MRPT_TODO("Add two timestamps: GPS vs computer")
 MRPT_TODO("Export to binary file from rawlog-edit")
 MRPT_TODO("Import from ASCII/binary file with a new app: gps2rawlog")
-MRPT_TODO("Export to RINEX?")
 
+MRPT_TODO("new parse unit tests") // Example cmds: https://www.sparkfun.com/datasheets/GPS/NMEA%20Reference%20Manual-Rev2.1-Dec07.pdf
 
 CObservationGPS::CObservationGPS( ) :
 	sensorPose(),
