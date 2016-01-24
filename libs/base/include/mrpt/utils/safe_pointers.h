@@ -13,9 +13,6 @@
 #include <mrpt/utils/boost_join.h>
 #include <mrpt/utils/mrpt_macros.h>  // ASSERT_()
 
-/*---------------------------------------------------------------
-	Class
-  ---------------------------------------------------------------*/
 namespace mrpt
 {
 namespace utils

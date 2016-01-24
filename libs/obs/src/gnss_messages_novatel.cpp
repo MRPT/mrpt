@@ -9,7 +9,7 @@
 
 #include "obs-precomp.h"   // Precompiled headers
 
-#include <mrpt/obs/gnss_messages.h>
+#include <mrpt/obs/gnss_messages_novatel.h>
 
 using namespace std;
 using namespace mrpt::obs::gnss;

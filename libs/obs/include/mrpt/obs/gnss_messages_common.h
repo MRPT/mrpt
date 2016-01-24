@@ -80,16 +80,47 @@ struct OBS_IMPEXP gnss_message {
 	gnss_message_type_t  message_type; //!< Type of GNSS message
 
 	gnss_message(gnss_message_type_t msg_type_id) : message_type(msg_type_id) {}
-	virtual void writeToStream(mrpt::utils::CStream &out) const = 0; //!< Save to binary stream. Launches an exception upon error
-	virtual void readFromStream(mrpt::utils::CStream &in) = 0; //!< Save to binary stream. Launches an exception upon error
+	void writeToStream(mrpt::utils::CStream &out) const; //!< Save to binary stream. Launches an exception upon error
+	void readFromStream(mrpt::utils::CStream &in); //!< Load from binary stream into this existing object. Launches an exception upon error.
+
+	static gnss_message* readAndBuildFromStream(mrpt::utils::CStream &in); //!< Load from binary stream and creates object detecting its type (class factory). Launches an exception upon error
+	static gnss_message* Factory(const gnss_message_type_t msg_id); //!< Creates message
+
 	virtual void dumpToStream( mrpt::utils::CStream &out ) const = 0; //!< Dumps the contents of the observation in a human-readable form to a given output stream \sa dumpToConsole()
 	void dumpToConsole(std::ostream &o = std::cout) const; //!< Dumps the contents of the observation in a human-readable form to an std::ostream (default=console)
+protected:
+	virtual void internal_writeToStream(mrpt::utils::CStream &out) const = 0; //!< Save to binary stream. Launches an exception upon error
+	virtual void internal_readFromStream(mrpt::utils::CStream &in) = 0; //!< Save to binary stream. Launches an exception upon error
 };
+
+/** A smart pointer to a GNSS message. \sa gnss_message, mrpt::obs::CObservationGPS  */
+struct OBS_IMPEXP gnss_message_ptr 
+{
+protected:
+	gnss_message *ptr;
+public:
+	gnss_message_ptr(); //!< Ctor (default: NULL pointer)
+	gnss_message_ptr(const gnss_message_ptr &o); //!< Makes a copy of the pointee
+	/** Assigns a pointer */
+	explicit gnss_message_ptr(const gnss_message* p);
+	gnss_message_ptr &operator =(const gnss_message_ptr&o); // Makes a copy of the pointee
+	virtual ~gnss_message_ptr();
+	bool operator == ( const gnss_message *o ) const { return o==ptr; }
+	bool operator == ( const gnss_message_ptr &o )const { return o.ptr==ptr; }
+	bool operator != ( const gnss_message *o )const { return o!=ptr; }
+	bool operator != ( const gnss_message_ptr &o )const { return o.ptr!=ptr; }
+	gnss_message*& get() { return ptr; }
+	const gnss_message* get()const { return ptr; }
+	gnss_message *& operator ->() { ASSERT_(ptr); return ptr; }
+	const gnss_message * operator ->() const  { ASSERT_(ptr); return ptr; }
+};
+
 
 struct OBS_IMPEXP gnss_message_binary_block : public gnss_message {
 	gnss_message_binary_block(gnss_message_type_t msg_type_id,uint32_t data_len, void* data_ptr) : gnss_message(msg_type_id),m_content_len(data_len),m_content_ptr(data_ptr) {}
-	void writeToStream(mrpt::utils::CStream &out) const MRPT_OVERRIDE;
-	void readFromStream(mrpt::utils::CStream &in) MRPT_OVERRIDE;
+protected:
+	void internal_writeToStream(mrpt::utils::CStream &out) const MRPT_OVERRIDE;
+	void internal_readFromStream(mrpt::utils::CStream &in) MRPT_OVERRIDE;
 private:
 	const uint32_t m_content_len;
 	void *         m_content_ptr;

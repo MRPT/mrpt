@@ -9,16 +9,101 @@
 
 #include "obs-precomp.h"   // Precompiled headers
 
-#include <mrpt/obs/gnss_messages_common.h>
+#include <mrpt/obs/gnss_messages.h> // Must include all message classes so we can implemente the class factory here
+#include <mrpt/utils/CMemoryStream.h>
 
 using namespace std;
 using namespace mrpt::obs::gnss;
 
-void gnss_message_binary_block::writeToStream(mrpt::utils::CStream &out) const {
+// Class factory:
+gnss_message*  gnss_message::Factory(const gnss_message_type_t msg_id)
+{
+	switch (msg_id)
+	{
+	// ====== NMEA ====== 
+	case NMEA_GGA: return new Message_NMEA_GGA();
+	case NMEA_RMC: return new Message_NMEA_RMC();
+	
+	// ====== TopCon mmGPS ====== 
+	case TOPCON_PZS:  return new Message_TopCon_PZS();
+	case TOPCON_SATS: return new Message_TopCon_SATS();
+
+	// ====== Novatel OEM6 ====== 
+
+	// ====== Novatel SPAN+OEM6 ====== 
+
+	default: 
+		return NULL;
+	};
+}
+
+// Save to binary stream. Launches an exception upon error
+void gnss_message::writeToStream(mrpt::utils::CStream &out) const
+{
+	const int32_t msg_id = message_type;
+	out << msg_id;
+	this->internal_writeToStream(out);
+}
+
+// Load from binary stream. Launches an exception upon error
+void gnss_message::readFromStream(mrpt::utils::CStream &in)
+{
+	int32_t msg_id;
+	in >> msg_id;
+	ASSERT_EQUAL_((int32_t)msg_id,this->message_type);
+	this->internal_readFromStream(in);
+}
+
+// Load from binary stream and creates object detecting its type (class factory). Launches an exception upon error
+gnss_message* gnss_message::readAndBuildFromStream(mrpt::utils::CStream &in)
+{
+	int32_t msg_id;
+	in >> msg_id;
+	gnss_message* msg = gnss_message::Factory(static_cast<gnss_message_type_t>(msg_id) );
+	if (!msg) 
+		THROW_EXCEPTION_CUSTOM_MSG1("Error deserializing gnss_message: unknown message type '%i'",static_cast<int>(msg_id));
+	msg->internal_readFromStream(in);
+	return msg;
+}
+
+
+// Ctor (default: NULL pointer)
+gnss_message_ptr::gnss_message_ptr() : ptr(NULL)
+{}
+// Ctor:Makes a copy of the pointee
+gnss_message_ptr::gnss_message_ptr(const gnss_message_ptr &o)
+{
+	if (!o.ptr) {
+		ptr=NULL;
+	}
+	else {
+		mrpt::utils::CMemoryStream buf;
+		o->writeToStream(buf);
+		buf.Seek(0);
+		ptr = gnss_message::readAndBuildFromStream(buf);
+	}
+}
+/** Assigns a pointer */
+gnss_message_ptr::gnss_message_ptr(const gnss_message* p) : 
+	ptr(const_cast<gnss_message*>(p)) 
+{ 
+}
+// Makes a copy of the pointee
+gnss_message_ptr &gnss_message_ptr::operator =(const gnss_message_ptr&o)
+{
+	MRPT_TODO("implement");
+	return *this;
+}
+gnss_message_ptr::~gnss_message_ptr()
+{
+	MRPT_TODO("implement");
+}
+
+void gnss_message_binary_block::internal_writeToStream(mrpt::utils::CStream &out) const {
 	out << m_content_len;
 	out.WriteBuffer(m_content_ptr,m_content_len);
 }
-void gnss_message_binary_block::readFromStream(mrpt::utils::CStream &in) {
+void gnss_message_binary_block::internal_readFromStream(mrpt::utils::CStream &in) {
 	uint32_t nBytesInStream; in >> nBytesInStream;
 	ASSERT_EQUAL_(nBytesInStream,m_content_len);
 	in.ReadBuffer(m_content_ptr,m_content_len);
