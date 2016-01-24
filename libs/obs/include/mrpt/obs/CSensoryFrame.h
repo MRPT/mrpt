@@ -22,7 +22,7 @@ namespace mrpt
 		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CSensoryFrame, mrpt::utils::CSerializable, OBS_IMPEXP )
 
 		/** Declares a class for storing a "sensory frame", a set of "observations" taken by the robot approximately at the same time as one "snapshot" of the environment.
-		  *	 It can contain "observations" of many different kinds.
+		  * It can contain "observations" of many different kinds.
 		  *
 		  *  New observations can be added using:
 		  *
