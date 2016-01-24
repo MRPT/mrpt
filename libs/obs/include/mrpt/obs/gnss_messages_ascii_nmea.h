@@ -81,7 +81,6 @@ struct OBS_IMPEXP Message_NMEA_RMC : public gnss_message_binary_block
 		double    longitude_degrees; //!< The measured longitude, in degrees (East:+ , West:-)
 		double    speed_knots; //!< Measured speed (in knots)
 		double    direction_degrees; //!< Measured speed direction (in degrees)
-
 		content_t();
 	};
 	content_t  fields; //!< Message content, accesible by individual fields

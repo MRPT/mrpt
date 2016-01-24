@@ -30,6 +30,10 @@ MRPT_TODO("Parse (some) novatel binary frames");
 MRPT_TODO("Optional dump raw to file");
 MRPT_TODO("store originalReceivedTimestamp");
 
+MRPT_TODO("Export to binary file from rawlog-edit")
+MRPT_TODO("Import from ASCII/binary file with a new app: gps2rawlog")
+
+MRPT_TODO("new parse unit tests") // Example cmds: https://www.sparkfun.com/datasheets/GPS/NMEA%20Reference%20Manual-Rev2.1-Dec07.pdf
 
 /* -----------------------------------------------------
                 Constructor

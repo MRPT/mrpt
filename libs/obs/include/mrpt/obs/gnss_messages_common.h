@@ -6,74 +6,18 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
-#ifndef GNSS_MESSAGES_COMMON_H
-#define GNSS_MESSAGES_COMMON_H
+#pragma once
 
 #include <mrpt/utils/CStream.h>
 #include <mrpt/system/datetime.h>
 #include <iostream>
 #include <mrpt/obs/link_pragmas.h>
+#include <mrpt/obs/gnss_messages_type_list.h>
 
 namespace mrpt {
 namespace obs {
 /** GNSS (GPS) data structures, mainly for use within mrpt::obs::CObservationGPS */
 namespace gnss {
-
-/** GNSS message types. \sa mrpt::obs::CObservationGPS */
-enum gnss_message_type_t
-{
-	NONE                   = 0,      //!< Empty message
-
-	// ====== NMEA ====== 
-	NMEA_GGA               = 10,
-	NMEA_GLL,
-	NMEA_GSA,
-	NMEA_GSV,
-	NMEA_MSS,
-	NMEA_RMC,
-	NMEA_VTG,
-	NMEA_ZDA,
-
-	// ====== TopCon mmGPS ====== 
-	TOPCON_PZS               = 30,
-	TOPCON_SATS,
-
-	// ====== Novatel OEM6 ====== 
-	// See "OEM6 Family Firmware Reference Manual"
-	NV_OEM6_MSG2ENUM         = 1000,
-
-	NV_OEM6_ALIGNBSLNENU     = 1315 + NV_OEM6_MSG2ENUM,
-	NV_OEM6_ALIGNBSLNXYZ     = 1314 + NV_OEM6_MSG2ENUM,
-	NV_OEM6_ALIGNDOP         = 1332 + NV_OEM6_MSG2ENUM,
-	NV_OEM6_BESTPOS          =   42 + NV_OEM6_MSG2ENUM,   // SPAN: Best available combined GNSS and INS position
-	NV_OEM6_BESTSATS         = 1194 + NV_OEM6_MSG2ENUM,
-	NV_OEM6_BESTUTM          =  726 + NV_OEM6_MSG2ENUM,
-	NV_OEM6_BESTVEL          =   99 + NV_OEM6_MSG2ENUM,
-	NV_OEM6_BESTXYZ          =  241 + NV_OEM6_MSG2ENUM,
-	NV_OEM6_CLOCKSTEERING    =   26 + NV_OEM6_MSG2ENUM,
-	NV_OEM6_GPGLL            =  219 + NV_OEM6_MSG2ENUM,
-	NV_OEM6_GPGSA            =  221 + NV_OEM6_MSG2ENUM,
-	NV_OEM6_GPGSV            =  223 + NV_OEM6_MSG2ENUM,
-	NV_OEM6_GPHDT            = 1045 + NV_OEM6_MSG2ENUM,
-	NV_OEM6_GPRMC            =  225 + NV_OEM6_MSG2ENUM,
-	NV_OEM6_GPVTG            =  226 + NV_OEM6_MSG2ENUM,
-	NV_OEM6_GPZDA            =  227  + NV_OEM6_MSG2ENUM,
-	NV_OEM6_MARKPOS          =  181  + NV_OEM6_MSG2ENUM,
-	NV_OEM6_MARK2POS         =  615  + NV_OEM6_MSG2ENUM,
-	NV_OEM6_MARKTIME         =  231  + NV_OEM6_MSG2ENUM,
-	NV_OEM6_MARK2TIME        =  616  + NV_OEM6_MSG2ENUM,
-	NV_OEM6_PPPPOS           = 1538  + NV_OEM6_MSG2ENUM,
-	NV_OEM6_VERSION          =   37  + NV_OEM6_MSG2ENUM,
-
-	// ====== Novatel SPAN+OEM6 ====== 
-	// See "SPAN on OEM6 firmware reference"
-
-	NV_OEM6_INSPVAS      =  1305  + NV_OEM6_MSG2ENUM, // Most recent position, velocity and attitude at full rate of IMU (short header)
-	NV_OEM6_INSATTS      =   319  + NV_OEM6_MSG2ENUM, // Most recent attitude (roll, pitch and azimuth) measurements (short header)
-	NV_OEM6_INSCOVS      =   320  + NV_OEM6_MSG2ENUM, // Position, attitude, and velocity matrices with respect to the local level frame (short header)
-	NV_OEM6_INSVELS      =   324  + NV_OEM6_MSG2ENUM, // Most recent North, East, and Up velocity vector values (short header)
-	NV_OEM6_RAWIMUS      =   325  + NV_OEM6_MSG2ENUM, // IMU status indicator and the measurements from the accelerometers and gyros (short header)
-};
 
 /** Pure virtual base for all message types. \sa mrpt::obs::CObservationGPS  */
 struct OBS_IMPEXP gnss_message {
@@ -151,4 +95,3 @@ struct OBS_IMPEXP UTC_time
 #pragma pack(pop) // End of pack = 1
 } } } // End of namespaces
 
-#endif

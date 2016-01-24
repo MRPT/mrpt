@@ -14,6 +14,7 @@
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/obs/gnss_messages.h>
+#include <typeinfo>
 
 namespace mrpt
 {
@@ -54,15 +55,46 @@ namespace obs
 		mrpt::poses::CPose3D     sensorPose;//!< The sensor pose on the robot/vehicle
 		mrpt::system::TTimeStamp originalReceivedTimestamp; //!< The local computer-based timestamp based on the reception of the message in the computer. \sa CObservation::timestamp in the base class, which should contain the accurate satellite-based UTC timestamp.
 		/** The main piece of data in this class: a list of GNNS messages.
-		  * Normally users might prefer to access the list via the methods XXXXXXXX
+		  * Normally users might prefer to access the list via the method CObservationGPS::getMsgByClass()
 		  * Typically only one message, may be multiple if all have the same timestamp. */
 		message_list_t           messages;
 		/** @} */
 
 		/** @name Main API to access to the data fields
 		  * @{ */
-		void  dumpToStream( mrpt::utils::CStream &out ) const; //!< Dumps the contents of the observation in a human-readable form to a given output stream \sa dumpToConsole(), getDescriptionAsText()
-		void  dumpToConsole(std::ostream &o = std::cout) const; //!< Dumps the contents of the observation in a human-readable form to an std::ostream (default=console)
+		/** Returns true if the list \a CObservationGPS::messages contains one of the requested type. \sa mrpt::obs::gnss::gnss_message_type_t, CObservationGPS::getMsgByType() */
+		bool hasMsgType(const gnss::gnss_message_type_t type_id) const;
+		/** Like \a hasMsgType() but allows querying for message classes, from any of those derived from mrpt::obs::gnss::gnss_message \sa CObservationGPS::hasMsgType(),  */
+		template <class MSG_CLASS> bool hasMsgClass() const { return isOfType(MSG_CLASS::msg_type); }
+		/** Returns a pointer to the message in the list CObservationGPS::messages of the requested type. Users normally would prefer using CObservationGPS::getMsgByClass() 
+		  * to avoid having to perform a dynamic_cast<>() on the returned pointer.
+		  * \exception std::runtime_error If there is no such a message in the list. Please, check existence before calling this method with CObservationGPS::hasMsgType()
+		  * \sa mrpt::obs::gnss::gnss_message_type_t, CObservationGPS::getMsgByClass(), CObservationGPS::hasMsgType() */
+		mrpt::obs::gnss::gnss_message* getMsgByType(const gnss::gnss_message_type_t type_id);
+		/** \overload */
+		const mrpt::obs::gnss::gnss_message* getMsgByType(const gnss::gnss_message_type_t type_id) const;
+
+		/** Returns a reference to the message in the list CObservationGPS::messages of the requested class.
+		  * \exception std::runtime_error If there is no such a message in the list. Please, check existence before calling this method with CObservationGPS::hasMsgClass()
+		  * \sa mrpt::obs::gnss::gnss_message_type_t, CObservationGPS::getMsgByType(), CObservationGPS::hasMsgType() */
+		template <class MSG_CLASS>
+		MSG_CLASS & getMsgByClass() {
+			message_list_t::iterator it = messages.find(MSG_CLASS::msg_type);
+			ASSERTMSG_(it!=messages.end(), mrpt::format("[CObservationGPS::getMsgByClass] Cannot find any observation of type `%s`",typeid(MSG_CLASS).name()));
+			ASSERT_(it->second.get());
+			return *it->second.get();
+		}
+		/** \overload */
+		template <class MSG_CLASS>
+		const MSG_CLASS & getMsgByClass() const {
+			message_list_t::const_iterator it = messages.find(MSG_CLASS::msg_type);
+			ASSERTMSG_(it!=messages.end(), mrpt::format("[CObservationGPS::getMsgByClass] Cannot find any observation of type `%s`",typeid(MSG_CLASS).name()));
+			ASSERT_(it->second.get());
+			return *it->second.get();
+		}
+
+		void dumpToStream( mrpt::utils::CStream &out ) const; //!< Dumps the contents of the observation in a human-readable form to a given output stream \sa dumpToConsole(), getDescriptionAsText()
+		void dumpToConsole(std::ostream &o = std::cout) const; //!< Dumps the contents of the observation in a human-readable form to an std::ostream (default=console)
 		void clear(); //!< Empties this observation, clearing the container \a messages
 
 		void getSensorPose( mrpt::poses::CPose3D &out_sensorPose ) const { out_sensorPose = sensorPose; } // See base class docs
