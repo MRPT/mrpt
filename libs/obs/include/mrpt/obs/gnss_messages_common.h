@@ -83,6 +83,10 @@ struct OBS_IMPEXP gnss_message {
 	void writeToStream(mrpt::utils::CStream &out) const; //!< Save to binary stream. Launches an exception upon error
 	void readFromStream(mrpt::utils::CStream &in); //!< Load from binary stream into this existing object. Launches an exception upon error.
 
+	bool isOfType(const gnss_message_type_t type_id) const;
+	template <class MSG_CLASS> 
+	bool isOfClass() const { return isOfType(MSG_CLASS::msg_type); }
+
 	static gnss_message* readAndBuildFromStream(mrpt::utils::CStream &in); //!< Load from binary stream and creates object detecting its type (class factory). Launches an exception upon error
 	static gnss_message* Factory(const gnss_message_type_t msg_id); //!< Creates message
 

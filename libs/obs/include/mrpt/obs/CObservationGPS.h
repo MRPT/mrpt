@@ -82,7 +82,7 @@ namespace obs
 		template <mrpt::obs::gnss::gnss_message_type_t MSG_TYPE>
 		struct internal_msg_test_proxy {
 			internal_msg_test_proxy(message_list_t &msgs_) : msgs(msgs_) {}
-			operator bool(void) { return msgs.find(MSG_TYPE)!=msgs.end(); }
+			operator bool(void) const { return msgs.find(MSG_TYPE)!=msgs.end(); }
 		private:
 			message_list_t           &msgs;
 		};

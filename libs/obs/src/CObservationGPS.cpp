@@ -13,6 +13,7 @@
 #include <mrpt/utils/CStream.h>
 #include <mrpt/math/matrix_serialization.h> // for << of matrices
 #include <mrpt/utils/CMemoryStream.h>
+#include <iomanip>
 
 using namespace std;
 using namespace mrpt;
@@ -214,141 +215,16 @@ void  CObservationGPS::readFromStream(mrpt::utils::CStream &in, int version)
  ---------------------------------------------------------------*/
 void  CObservationGPS::dumpToStream( CStream &out ) const 
 {
-	out.printf("\n--------------------- [CObservationGPS] Dump: -----------------------\n");
-
-	out.printf("\n[GGA datum: ");
-	if (has_GGA_datum)
-			out.printf("YES]\n");
-	else	out.printf("NO]\n");
-	if (has_GGA_datum)
-	{
-		out.printf("  Longitude: %.09f deg  Latitude: %.09f deg  Height: %.03f m\n",
-			GGA_datum.longitude_degrees,
-			GGA_datum.latitude_degrees,
-			GGA_datum.altitude_meters );
-
-        out.printf("  Geoidal distance: %.03f m  Orthometric alt.: %.03f m  Corrected ort. alt.: %.03f m\n",
-            GGA_datum.geoidal_distance,
-            GGA_datum.orthometric_altitude,
-            GGA_datum.corrected_orthometric_altitude );
-
-		out.printf("  UTC time-stamp: %02u:%02u:%02.03f  #sats=%2u  ",
-			GGA_datum.UTCTime.hour,
-			GGA_datum.UTCTime.minute,
-			GGA_datum.UTCTime.sec,
-			GGA_datum.satellitesUsed );
-
-		out.printf("Fix mode: %u ",GGA_datum.fix_quality);
-		switch( GGA_datum.fix_quality )
-		{
-			case 0: out.printf("(Invalid)\n"); break;
-			case 1: out.printf("(GPS fix)\n"); break;
-			case 2: out.printf("(DGPS fix)\n"); break;
-			case 3: out.printf("(PPS fix)\n"); break;
-			case 4: out.printf("(Real Time Kinematic/RTK Fixed)\n"); break;
-			case 5: out.printf("(Real Time Kinematic/RTK Float)\n"); break;
-			case 6: out.printf("(Dead Reckoning)\n"); break;
-			case 7: out.printf("(Manual)\n"); break;
-			case 8: out.printf("(Simulation)\n"); break;
-			case 9: out.printf("(mmGPS + RTK Fixed)\n"); break;
-			case 10: out.printf("(mmGPS + RTK Float)\n"); break;
-			default: out.printf("(UNKNOWN!)\n"); break;
-		};
-
-		out.printf(" HDOP (Horizontal Dilution of Precision): ");
-		if (GGA_datum.thereis_HDOP)
-				out.printf(" %f\n", GGA_datum.HDOP);
-		else 	out.printf(" N/A\n");
-
-	} // END GGA
-
-	out.printf("\n[RMC datum: ");
-	if (has_RMC_datum)
-			out.printf("YES]\n");
-	else	out.printf("NO]\n");
-	if (has_RMC_datum)
-	{
-		out.printf("  Longitude: %.09f deg  Latitude: %.09f deg  Valid?: '%c'\n",
-			RMC_datum.longitude_degrees,
-			RMC_datum.latitude_degrees,
-			RMC_datum.validity_char
-			);
-		out.printf("  UTC time-stamp: %02u:%02u:%02.03f  ",
-			RMC_datum.UTCTime.hour,
-			RMC_datum.UTCTime.minute,
-			RMC_datum.UTCTime.sec
-			);
-
-		out.printf(" Speed: %.05f knots  Direction:%.03f deg.\n ",
-			RMC_datum.speed_knots,
-			RMC_datum.direction_degrees
-			);
-
-	} // END RMC
-
-
-	// PZS datum:
-	if (has_PZS_datum)
-	{
-		out.printf("\n[PZS datum: YES]\n");
-		out.printf("  Longitude: %.09f deg  Latitude: %.09f deg Height: %.03f m (%.03f m without NBeam) \n",
-			PZS_datum.longitude_degrees,
-			PZS_datum.latitude_degrees,
-			PZS_datum.height_meters,
-			PZS_datum.RTK_height_meters);
-
-		out.printf(" PZL-ID: %i  Angle trans: %.05f deg\n ",
-			(int)PZS_datum.nId,
-			PZS_datum.angle_transmitter
-			);
-
-		out.printf(" Fix: %i  ",(int)PZS_datum.Fix);
-		out.printf(" Error: %i ",(int)PZS_datum.error);
-		out.printf(" Battery levels: TX=%i  RX=%i\n ",PZS_datum.TXBattery,PZS_datum.RXBattery);
-
-		out.printf(" hasCartesianPosVel= %s", PZS_datum.hasCartesianPosVel ? "YES -> ":"NO\n");
-		if (PZS_datum.hasCartesianPosVel)
-		{
-			out.printf(" x=%f  y=%f  z=%f\n",PZS_datum.cartesian_x,PZS_datum.cartesian_y,PZS_datum.cartesian_z);
-			out.printf(" vx=%f  vy=%f  vz=%f\n",PZS_datum.cartesian_vx,PZS_datum.cartesian_vy,PZS_datum.cartesian_vz);
-		}
-		out.printf("hasPosCov = %s", PZS_datum.hasPosCov ? "YES\n":"NO\n");
-		if (PZS_datum.hasPosCov)
-			out.printf("%s\n", PZS_datum.pos_covariance.inMatlabFormat().c_str() );
-
-		out.printf("hasVelCov = %s", PZS_datum.hasVelCov ? "YES\n":"NO\n");
-		if (PZS_datum.hasVelCov)
-			out.printf("%s\n", PZS_datum.vel_covariance.inMatlabFormat().c_str() );
-
-		out.printf("hasStats = %s", PZS_datum.hasStats? "YES: ":"NO\n");
-		if(PZS_datum.hasStats)
-			out.printf("GPS sats used: %i  GLONASS sats used: %i  RTK Fix progress:%i%%\n", (int)PZS_datum.stats_GPS_sats_used, (int)PZS_datum.stats_GLONASS_sats_used,(int)PZS_datum.stats_rtk_fix_progress);
-	} // END PZS
-
-	// Stats:
-	out.printf("\n[SATS datum: ");
-	if (has_SATS_datum)
-			out.printf("YES]\n");
-	else	out.printf("NO]\n");
-	if (has_SATS_datum)
-	{
-		out.printf("  USI   ELEV    AZIM \n");
-		out.printf("---------------------------\n");
-
-		ASSERT_(SATS_datum.USIs.size()==SATS_datum.AZs.size() && SATS_datum.USIs.size()==SATS_datum.ELs.size());
-		for (size_t i=0;i<SATS_datum.USIs.size();i++)
-			out.printf(" %03i   %02i    %03i\n", (int)SATS_datum.USIs[i], (int)SATS_datum.ELs[i], (int)SATS_datum.AZs[i] );
-
-	} // end SATS_datum
-
-	out.printf("---------------------------------------------------------------------\n\n");
+	out.printf("\n------------- [CObservationGPS] Dump of %u messages -----------------------\n",static_cast<unsigned int>(messages.size()));
+	for (message_list_t::const_iterator it=messages.begin();it!=messages.end();++it)
+		it->second->dumpToStream(out);
+	out.printf("-------------- [CObservationGPS] End of dump  ------------------------------\n\n");
 }
 
 void  CObservationGPS::dumpToConsole(std::ostream &o) const
 {
 	mrpt::utils::CMemoryStream memStr;
 	this->dumpToStream( memStr );
-	
 	if (memStr.getTotalBytesCount()) {
 		o.write((const char*)memStr.getRawBufferData(),memStr.getTotalBytesCount());
 	}
@@ -356,36 +232,17 @@ void  CObservationGPS::dumpToConsole(std::ostream &o) const
 
 void CObservationGPS::clear()
 {
-	has_GGA_datum = false;
-	has_RMC_datum = false;
-	has_PZS_datum = false;
-	has_SATS_datum = false;
+	messages.clear();
 }
-
-
-// Build an MRPT timestamp with the hour/minute/sec of this structure and the date from the given timestamp.
-mrpt::system::TTimeStamp CObservationGPS::TUTCTime::getAsTimestamp(const mrpt::system::TTimeStamp &date) const
-{
-    using namespace mrpt::system;
-
-    TTimeParts parts;
-    timestampToParts(date,parts, false /* UTC, not local */);
-
-    parts.hour   = this->hour;
-    parts.minute = this->minute;
-    parts.second = this->sec;
-
-    return buildTimestampFromParts(parts);
-}
-
 void CObservationGPS::getDescriptionAsText(std::ostream &o) const
 {
 	CObservation::getDescriptionAsText(o);
 
-	if (has_GGA_datum)
-		o << std::endl << "Satellite time: " << format("%02u:%02u:%02.3f",GGA_datum.UTCTime.hour,GGA_datum.UTCTime.minute,GGA_datum.UTCTime.sec) << std::endl;
+	o << "Timestamp (UTC) of reception at the computer: " << mrpt::system::dateTimeToString(originalReceivedTimestamp) << std::endl;
+	o << "  (as time_t): " <<  std::fixed << std::setprecision(5) << mrpt::system::timestampTotime_t(originalReceivedTimestamp) << std::endl;
+	o << "  (as TTimestamp): " << originalReceivedTimestamp << std::endl;
 
-	o << "Sensor position on the robot: " << sensorPose << std::endl;
+	o << "Sensor position on the robot/vehicle: " << sensorPose << std::endl;
 
 	this->dumpToConsole(o);
 }

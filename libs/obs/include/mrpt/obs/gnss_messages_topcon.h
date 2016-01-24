@@ -18,6 +18,8 @@ namespace gnss {
 /** GPS datum for TopCon's mmGPS devices: PZS. \sa mrpt::obs::CObservationGPS   */
 struct OBS_IMPEXP Message_TopCon_PZS : public gnss_message
 {
+	static const gnss_message_type_t  msg_type = TOPCON_PZS;  //!< Static msg type (member expected by templates)
+
 	double   latitude_degrees;	//!< The measured latitude, in degrees (North:+ , South:-)
 	double   longitude_degrees;	//!< The measured longitude, in degrees (East:+ , West:-)
 	double   height_meters;		//!< ellipsoidal height from N-beam [m] perhaps weighted with regular gps
@@ -60,6 +62,8 @@ protected:
 /** TopCon mmGPS devices: SATS, a generic structure for statistics about tracked satelites and their positions. \sa mrpt::obs::CObservationGPS   */
 struct OBS_IMPEXP Message_TopCon_SATS : public gnss_message
 {
+	static const gnss_message_type_t  msg_type = TOPCON_SATS;  //!< Static msg type (member expected by templates)
+
 	Message_TopCon_SATS();
 
 	mrpt::vector_byte  USIs;  //!< The list of USI (Universal Sat ID) for the detected sats (See GRIL Manual, pag 4-31).
