@@ -179,6 +179,7 @@ bool CVelodyneScanner::getNextObservation(
 		{
 			mrpt::obs::CObservationGPSPtr gps_obs = mrpt::obs::CObservationGPS::Create();
 			gps_obs->timestamp = pos_pkt_timestamp;
+			gps_obs->originalReceivedTimestamp = pos_pkt_timestamp;
 			gps_obs->sensorLabel = this->m_sensorLabel + std::string("_GPS");
 			gps_obs->sensorPose = m_sensorPose;
 

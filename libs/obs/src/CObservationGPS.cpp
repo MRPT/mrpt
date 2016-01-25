@@ -106,7 +106,6 @@ void  CObservationGPS::readFromStream(mrpt::utils::CStream &in, int version)
 			if (version>=3)
 					in >> timestamp;
 			else 	timestamp = INVALID_TIMESTAMP;
-			this->originalReceivedTimestamp = timestamp;
 
 			bool has_GGA_datum_;
 			in >> has_GGA_datum_;
@@ -197,11 +196,11 @@ void  CObservationGPS::readFromStream(mrpt::utils::CStream &in, int version)
 		} break;
 	default:
 		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
-
 	};
 
+	if (originalReceivedTimestamp==INVALID_TIMESTAMP)
+		originalReceivedTimestamp = timestamp;
 }
-
 
 /*---------------------------------------------------------------
 					dumpToStream
@@ -226,6 +225,8 @@ void  CObservationGPS::dumpToConsole(std::ostream &o) const
 void CObservationGPS::clear()
 {
 	messages.clear();
+	timestamp = INVALID_TIMESTAMP;
+	originalReceivedTimestamp = INVALID_TIMESTAMP;
 }
 void CObservationGPS::getDescriptionAsText(std::ostream &o) const
 {
