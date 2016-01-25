@@ -21,6 +21,9 @@ Message_NMEA_GGA::content_t::content_t() :
 	longitude_degrees(0),
 	fix_quality(0),
 	altitude_meters(0),
+	geoidal_distance(),
+	orthometric_altitude(),
+	corrected_orthometric_altitude(),
 	satellitesUsed(0),
 	thereis_HDOP(false),
 	HDOP(0)
@@ -62,7 +65,7 @@ void Message_NMEA_GGA::dumpToStream( mrpt::utils::CStream &out ) const
 		default: out.printf("(UNKNOWN!)\n"); break;
 	};
 
-	out.printf(" HDOP (Horizontal Dilution of Precision): ");
+	out.printf("  HDOP (Horizontal Dilution of Precision): ");
 	if (fields.thereis_HDOP)
 			out.printf(" %f\n", fields.HDOP);
 	else 	out.printf(" N/A\n");

@@ -157,7 +157,7 @@ void  mrpt::topography::path_from_rtk_gps(
 				{
 					CObservationGPSPtr obs = CObservationGPSPtr(o);
 
-					if (obs->has_GGA_datum && obs->GGA_datum.fix_quality==4)
+					if (obs->has_GGA_datum && obs->getMsgByClass<gnss::Message_NMEA_GGA>().fields.fix_quality==4)
 					{
 						// Add to the list:
 						list_gps_obs[obs->timestamp][obs->sensorLabel] = obs;
@@ -166,7 +166,7 @@ void  mrpt::topography::path_from_rtk_gps(
 					}
 
 					// Save to GPS paths:
-					if (obs->has_GGA_datum && (obs->GGA_datum.fix_quality==4 || obs->GGA_datum.fix_quality==5))
+					if (obs->has_GGA_datum && (obs->getMsgByClass<gnss::Message_NMEA_GGA>().fields.fix_quality==4 || obs->getMsgByClass<gnss::Message_NMEA_GGA>().fields.fix_quality==5))
 					{
 						GPS_RTK_reads[obs->sensorLabel]++;
 
@@ -176,9 +176,9 @@ void  mrpt::topography::path_from_rtk_gps(
 
 						//map<string, map<TTimeStamp,TPoint3D> >	gps_paths;	// label -> (time -> 3D local coords)
 						gps_paths[obs->sensorLabel][obs->timestamp] = TPoint3D(
-							obs->GGA_datum.longitude_degrees,
-							obs->GGA_datum.latitude_degrees,
-							obs->GGA_datum.altitude_meters );
+							obs->getMsgByClass<gnss::Message_NMEA_GGA>().fields.longitude_degrees,
+							obs->getMsgByClass<gnss::Message_NMEA_GGA>().fields.latitude_degrees,
+							obs->getMsgByClass<gnss::Message_NMEA_GGA>().fields.altitude_meters );
 					}
                 }
             }
@@ -334,9 +334,9 @@ void  mrpt::topography::path_from_rtk_gps(
 							//cout << mrpt::system::timeLocalToString(GPS_b1->timestamp) << " " << mrpt::system::timeLocalToString(GPS_a1->timestamp) << " " << *l;
 							//cout << endl;
 
-							new_gps->GGA_datum.longitude_degrees = 0.5 * ( GPS_a1->GGA_datum.longitude_degrees + GPS_b1->GGA_datum.longitude_degrees );
-							new_gps->GGA_datum.latitude_degrees  = 0.5 * ( GPS_a1->GGA_datum.latitude_degrees + GPS_b1->GGA_datum.latitude_degrees );
-							new_gps->GGA_datum.altitude_meters   = 0.5 * ( GPS_a1->GGA_datum.altitude_meters + GPS_b1->GGA_datum.altitude_meters );
+							new_gps->getMsgByClass<gnss::Message_NMEA_GGA>().fields.longitude_degrees = 0.5 * ( GPS_a1->getMsgByClass<gnss::Message_NMEA_GGA>().fields.longitude_degrees + GPS_b1->getMsgByClass<gnss::Message_NMEA_GGA>().fields.longitude_degrees );
+							new_gps->getMsgByClass<gnss::Message_NMEA_GGA>().fields.latitude_degrees  = 0.5 * ( GPS_a1->getMsgByClass<gnss::Message_NMEA_GGA>().fields.latitude_degrees + GPS_b1->getMsgByClass<gnss::Message_NMEA_GGA>().fields.latitude_degrees );
+							new_gps->getMsgByClass<gnss::Message_NMEA_GGA>().fields.altitude_meters   = 0.5 * ( GPS_a1->getMsgByClass<gnss::Message_NMEA_GGA>().fields.altitude_meters + GPS_b1->getMsgByClass<gnss::Message_NMEA_GGA>().fields.altitude_meters );
 
 							new_gps->timestamp = (GPS_a1->timestamp + GPS_b1->timestamp) / 2;
 
@@ -383,7 +383,7 @@ void  mrpt::topography::path_from_rtk_gps(
 				if (!ref_valid)	// get the reference lat/lon, if it's not set from rawlog configuration block.
 				{
 					ref_valid 	= true;
-					ref = GPS.begin()->second->GGA_datum.getAsStruct<TGeodeticCoords>();
+					ref = GPS.begin()->second->getMsgByClass<gnss::Message_NMEA_GGA>().getAsStruct<TGeodeticCoords>();
 				}
 
 				// Compute the XYZ coordinates of all sensors:
@@ -395,7 +395,7 @@ void  mrpt::topography::path_from_rtk_gps(
 				{
 					TPoint3D P;
 					mrpt::topography::geodeticToENU_WGS84(
-						g_it->second->GGA_datum.getAsStruct<TGeodeticCoords>(),
+						g_it->second->getMsgByClass<gnss::Message_NMEA_GGA>().getAsStruct<TGeodeticCoords>(),
 						P,
 						ref );
 

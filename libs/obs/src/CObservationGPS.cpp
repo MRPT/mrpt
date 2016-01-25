@@ -112,9 +112,8 @@ void  CObservationGPS::readFromStream(mrpt::utils::CStream &in, int version)
 			in >> has_GGA_datum_;
 			if (has_GGA_datum_)
 			{
-				gnss::Message_NMEA_GGA * datum = new gnss::Message_NMEA_GGA();
-				messages[gnss::NMEA_GGA] = gnss::gnss_message_ptr(datum);
-				gnss::Message_NMEA_GGA::content_t & GGA_datum = datum->fields;
+				gnss::Message_NMEA_GGA datum;
+				gnss::Message_NMEA_GGA::content_t & GGA_datum = datum.fields;
 
 				in  >> GGA_datum.UTCTime.hour >> GGA_datum.UTCTime.minute >> GGA_datum.UTCTime.sec >> GGA_datum.latitude_degrees
 					>> GGA_datum.longitude_degrees >> GGA_datum.fix_quality >> GGA_datum.altitude_meters;
@@ -130,19 +129,20 @@ void  CObservationGPS::readFromStream(mrpt::utils::CStream &in, int version)
 				}
 
 				in  >> GGA_datum.satellitesUsed >> GGA_datum.thereis_HDOP >> GGA_datum.HDOP;
+				this->setMsg(datum);
 			}
 
 			bool has_RMC_datum_;
 			in >> has_RMC_datum_;
 			if (has_RMC_datum_)
 			{
-				gnss::Message_NMEA_RMC * datum = new gnss::Message_NMEA_RMC();
-				messages[gnss::NMEA_RMC] = gnss::gnss_message_ptr(datum);
-				gnss::Message_NMEA_RMC::content_t & RMC_datum = datum->fields;
+				gnss::Message_NMEA_RMC datum;
+				gnss::Message_NMEA_RMC::content_t & RMC_datum = datum.fields;
 
 				in  >> RMC_datum.UTCTime.hour >> RMC_datum.UTCTime.minute >> RMC_datum.UTCTime.sec
 					>> RMC_datum.validity_char >> RMC_datum.latitude_degrees >> RMC_datum.longitude_degrees
 					>> RMC_datum.speed_knots >> RMC_datum.direction_degrees;
+				this->setMsg(datum);
 			}
 			if (version>1)
 					in >> sensorLabel;
@@ -239,3 +239,23 @@ void CObservationGPS::getDescriptionAsText(std::ostream &o) const
 
 	this->dumpToConsole(o);
 }
+
+bool CObservationGPS::hasMsgType(const gnss::gnss_message_type_t type_id) const 
+{
+	return messages.find(type_id)!=messages.end();
+}
+
+mrpt::obs::gnss::gnss_message* CObservationGPS::getMsgByType(const gnss::gnss_message_type_t type_id) 
+{
+	message_list_t::iterator it = messages.find(type_id);
+	ASSERTMSG_(it!=messages.end(), mrpt::format("[CObservationGPS::getMsgByType] Cannot find any observation of type `%u`",static_cast<unsigned int>(type_id) ));
+	return it->second.get();
+}
+/** \overload */
+const mrpt::obs::gnss::gnss_message* CObservationGPS::getMsgByType(const gnss::gnss_message_type_t type_id) const 
+{
+	message_list_t::const_iterator it = messages.find(type_id);
+	ASSERTMSG_(it!=messages.end(), mrpt::format("[CObservationGPS::getMsgByType] Cannot find any observation of type `%u`",static_cast<unsigned int>(type_id) ));
+	return it->second.get();
+}
+

@@ -88,15 +88,23 @@ gnss_message_ptr::gnss_message_ptr(const gnss_message* p) :
 	ptr(const_cast<gnss_message*>(p)) 
 { 
 }
+void gnss_message_ptr::set(gnss_message* p)
+{
+	if (ptr) { delete ptr; ptr=NULL; }
+	ptr = p;
+}
 // Makes a copy of the pointee
 gnss_message_ptr &gnss_message_ptr::operator =(const gnss_message_ptr&o)
 {
-	MRPT_TODO("implement");
+	mrpt::utils::CMemoryStream buf;
+	o->writeToStream(buf);
+	buf.Seek(0);
+	ptr = gnss_message::readAndBuildFromStream(buf);
 	return *this;
 }
 gnss_message_ptr::~gnss_message_ptr()
 {
-	MRPT_TODO("implement");
+	if (ptr) { delete ptr; ptr=NULL; }
 }
 
 void gnss_message_binary_block::internal_writeToStream(mrpt::utils::CStream &out) const {

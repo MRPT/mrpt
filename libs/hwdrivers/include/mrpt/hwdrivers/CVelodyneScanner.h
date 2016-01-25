@@ -25,8 +25,8 @@ namespace mrpt
 		  * offline operation takes place and network is not listened for incomming packets.
 		  * 
 		  * <h2>Grabbing live data (as a user)</h2> <hr>
-          *  - Use the application [velodyne-view](http://www.mrpt.org/list-of-mrpt-apps/application-velodyne-view/) to visualize the LIDAR output in real-time (optionally saving to a PCAP file) or to playback a PCAP file.
-          *  - Use [rawlog-grabber](http://www.mrpt.org/list-of-mrpt-apps/application-rawlog-grabber/) to record a dataset in MRPT's format together with any other set of sensors. See example config file: [MRPT\share\mrpt\config_files\rawlog-grabber\velodyne.ini](https://github.com/MRPT/mrpt/blob/master/share/mrpt/config_files/rawlog-grabber/velodyne.ini)
+		  *  - Use the application [velodyne-view](http://www.mrpt.org/list-of-mrpt-apps/application-velodyne-view/) to visualize the LIDAR output in real-time (optionally saving to a PCAP file) or to playback a PCAP file.
+		  *  - Use [rawlog-grabber](http://www.mrpt.org/list-of-mrpt-apps/application-rawlog-grabber/) to record a dataset in MRPT's format together with any other set of sensors. See example config file: [MRPT\share\mrpt\config_files\rawlog-grabber\velodyne.ini](https://github.com/MRPT/mrpt/blob/master/share/mrpt/config_files/rawlog-grabber/velodyne.ini)
 		  *
 		  * <h2>Grabbing live data (programmatically)</h2> <hr>
 		  *  - See CGenericSensor for a general overview of the sequence of methods to be called: loadConfig(), initialize(), doProcess(). 
@@ -39,22 +39,22 @@ namespace mrpt
 		  *  These files can be played back with tools like [bittwist](http://bittwist.sourceforge.net/), which emit all UDP packets in the PCAP log. 
 		  *  Then, use this class to receive the packets as if they come from the real sensor.
 		  *
-          *  Alternatively, if MRPT is linked against libpcap, this class can directly parse a PCAP file to simulate reading from a device offline.
+		  *  Alternatively, if MRPT is linked against libpcap, this class can directly parse a PCAP file to simulate reading from a device offline.
 		  *  See method setPCAPInputFile() and config file parameter ``
 		  * 
 		  *  To compile with PCAP support: In Debian/Ubuntu, install libpcap-dev. In Windows, install WinPCap developer packages + the regular WinPCap driver.
 		  *
-          *  <h2>Configuration and usage:</h2> <hr>
-          * Data is returned as observations of type:
-          *  - mrpt::obs::CObservationVelodyneScan for one or more "data packets" (refer to Velodyne usage manual)
-          *  - mrpt::obs::CObservationGPS for GPS (GPRMC) packets, if available via the synchronization interface of the device.
-          *  See those classes for documentation on their fields.
-          *
-          * Configuration includes setting the device IP (optional), model (mandatory only if a calibration file is not provided) and RPM rotation speed
-          * (for calculating how many packets form a scan).
-          * These parameters can be set programatically (see methods of this class), or via a configuration file with CGenericSensor::loadConfig() (see example config file section below).
-          *
-          * <h2>About timestamps:</h2><hr>
+		  *  <h2>Configuration and usage:</h2> <hr>
+		  * Data is returned as observations of type:
+		  *  - mrpt::obs::CObservationVelodyneScan for one or more "data packets" (refer to Velodyne usage manual)
+		  *  - mrpt::obs::CObservationGPS for GPS (GPRMC) packets, if available via the synchronization interface of the device.
+		  *  See those classes for documentation on their fields.
+		  *
+		  * Configuration includes setting the device IP (optional), model (mandatory only if a calibration file is not provided) and RPM rotation speed
+		  * (for calculating how many packets form a scan).
+		  * These parameters can be set programatically (see methods of this class), or via a configuration file with CGenericSensor::loadConfig() (see example config file section below).
+		  *
+		  * <h2>About timestamps:</h2><hr>
 		  *  Generated observations timestamp are, by default, set from the computer clock as UDP packets are received.
 		  *  *TODO* Set from sensor timestamp.
 		  *
@@ -63,31 +63,31 @@ namespace mrpt
 		  *  PARAMETERS IN THE ".INI"-LIKE CONFIGURATION STRINGS:
 		  * -------------------------------------------------------
 		  *   [supplied_section_name]
-          *   # ---- Sensor description ----
-          *   #calibration_file = PUT_HERE_FULL_PATH_TO_CALIB_FILE.xml      // Optional but recommended: put here your vendor-provided calibration file
-          *   model            = VLP-16          // Can be any of: `VLP-16`, `HDL-32`  (It is used to load default calibration file. Parameter not required if `calibration_file` is provided.
-          *   # ---- Online operation ----
-          *
-          *   # IP address of the device. UDP packets from other IPs will be ignored. Leave commented or blank
-          *   # if only one scanner is present (no IP filtering)
-          *   #device_ip       = XXX.XXX.XXX.XXX
-          *   rpm              = 600            // Device spinning speed (as set-up via the sensor Web Interface)
-          *
-          *   # ---- Offline operation ----
-          *   # If uncommented, this class will read from the PCAP instead of connecting and listeling
-          *   # for online network packets.
-          *   # pcap_input     = PUT_FULL_PATH_TO_PCAP_LOG_FILE.pcap
-          *   # pcap_read_once = false   // Do not loop
+		  *   # ---- Sensor description ----
+		  *   #calibration_file = PUT_HERE_FULL_PATH_TO_CALIB_FILE.xml      // Optional but recommended: put here your vendor-provided calibration file
+		  *   model            = VLP-16          // Can be any of: `VLP-16`, `HDL-32`  (It is used to load default calibration file. Parameter not required if `calibration_file` is provided.
+		  *   # ---- Online operation ----
+		  *
+		  *   # IP address of the device. UDP packets from other IPs will be ignored. Leave commented or blank
+		  *   # if only one scanner is present (no IP filtering)
+		  *   #device_ip       = XXX.XXX.XXX.XXX
+		  *   rpm              = 600            // Device spinning speed (as set-up via the sensor Web Interface)
+		  *
+		  *   # ---- Offline operation ----
+		  *   # If uncommented, this class will read from the PCAP instead of connecting and listeling
+		  *   # for online network packets.
+		  *   # pcap_input     = PUT_FULL_PATH_TO_PCAP_LOG_FILE.pcap
+		  *   # pcap_read_once = false   // Do not loop
 		  *   # pcap_read_fast = false    // fast forward skipping non-velodyne packets
 		  *   # pcap_repeat_delay = 0.0   // seconds
-          *
-          *   # ---- Save to PCAP file ----
-          *   # If uncommented, a PCAP file named `[pcap_output_prefix]_[DATE_TIME].pcap` will be
-          *   # written simultaneously to the normal operation of this class.
-          *   # pcap_output     = velodyne_log
-          *
+		  *
+		  *   # ---- Save to PCAP file ----
+		  *   # If uncommented, a PCAP file named `[pcap_output_prefix]_[DATE_TIME].pcap` will be
+		  *   # written simultaneously to the normal operation of this class.
+		  *   # pcap_output     = velodyne_log
+		  *
 		  *   # 3D position of the sensor on the vehicle:
-          *   pose_x     = 0    // 3D position (meters)
+		  *   pose_x     = 0    // 3D position (meters)
 		  *   pose_y     = 0
 		  *   pose_z     = 0
 		  *   pose_yaw   = 0    // 3D orientation (degrees)

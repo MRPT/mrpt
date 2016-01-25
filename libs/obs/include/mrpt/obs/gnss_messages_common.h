@@ -49,10 +49,10 @@ protected:
 public:
 	gnss_message_ptr(); //!< Ctor (default: NULL pointer)
 	gnss_message_ptr(const gnss_message_ptr &o); //!< Makes a copy of the pointee
-	/** Assigns a pointer */
+	/** Assigns a pointer. Memory now belongs to this class. */
 	explicit gnss_message_ptr(const gnss_message* p);
 	gnss_message_ptr &operator =(const gnss_message_ptr&o); // Makes a copy of the pointee
-	virtual ~gnss_message_ptr();
+	virtual ~gnss_message_ptr(); //!< Dtor: it frees the pointee memory
 	bool operator == ( const gnss_message *o ) const { return o==ptr; }
 	bool operator == ( const gnss_message_ptr &o )const { return o.ptr==ptr; }
 	bool operator != ( const gnss_message *o )const { return o!=ptr; }
@@ -61,6 +61,7 @@ public:
 	const gnss_message* get()const { return ptr; }
 	gnss_message *& operator ->() { ASSERT_(ptr); return ptr; }
 	const gnss_message * operator ->() const  { ASSERT_(ptr); return ptr; }
+	void set(gnss_message* p); //!< Replaces the pointee with a new pointer. Its memory now belongs to this object, do not free manually.
 };
 
 

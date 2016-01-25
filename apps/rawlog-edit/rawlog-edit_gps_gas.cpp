@@ -110,11 +110,11 @@ DECLARE_OP_FUNCTION(op_export_gps_gas_kml)
 			{
 				TDataPerGPSGAS   &D = m_gps_paths[obs->sensorLabel];
 				TGPSGASDataPoint &d = D.path[o->timestamp];
-
-				d.lon = obs->GGA_datum.longitude_degrees;
-				d.lat = obs->GGA_datum.latitude_degrees;
-				d.alt = obs->GGA_datum.altitude_meters;
-				d.fix = obs->GGA_datum.fix_quality;
+				const mrpt::obs::gnss::Message_NMEA_GGA & gga = obs->getMsgByClass<mrpt::obs::gnss::Message_NMEA_GGA>();
+				d.lon = gga.fields.longitude_degrees;
+				d.lat = gga.fields.latitude_degrees;
+				d.alt = gga.fields.altitude_meters;
+				d.fix = gga.fields.fix_quality;
 				d.color = gasConcentration;
 				
 				if( d.color > maxGasValue)

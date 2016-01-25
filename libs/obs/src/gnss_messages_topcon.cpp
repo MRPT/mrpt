@@ -114,8 +114,7 @@ Message_TopCon_SATS::Message_TopCon_SATS() :
 void Message_TopCon_SATS::dumpToStream( mrpt::utils::CStream &out ) const
 {
 	out.printf("\n[TopCon SATS datum]\n");
-	out.printf("  USI   ELEV    AZIM \n");
-	out.printf("---------------------------\n");
+	out.printf("  USI   ELEV    AZIM      (%u entries) \n",static_cast<unsigned int>(USIs.size()));
 
 	ASSERT_(USIs.size()==AZs.size() && USIs.size()==ELs.size());
 	for (size_t i=0;i<USIs.size();i++)
