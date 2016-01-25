@@ -82,23 +82,19 @@ void  CObservationIMU::readFromStream(mrpt::utils::CStream &in, int version)
 
 		in >> sensorLabel;
 
-		// Version 3: Added 6 new raw measurements (IMU_MAG_X=15 to IMU_TEMPERATURE=20)
-		if (version<3)
+		// Fill new entries with default values:
+		if (dataIsPresent.size()<COUNT_IMU_DATA_FIELDS)
 		{
-			// Fill the last 6 entries with default values:
 			const size_t nOld = dataIsPresent.size();
-			ASSERT_(nOld==15)
-			ASSERT_(rawMeasurements.size()==nOld)
+			ASSERT_(rawMeasurements.size()==dataIsPresent.size());
 
 			dataIsPresent.resize(COUNT_IMU_DATA_FIELDS);
 			rawMeasurements.resize(COUNT_IMU_DATA_FIELDS);
-			for (size_t i=nOld;i<COUNT_IMU_DATA_FIELDS;i++)
-			{
+			for (size_t i=nOld;i<COUNT_IMU_DATA_FIELDS;i++) {
 				dataIsPresent[i]=false;
 				rawMeasurements[i]=0;
 			}
 		}
-
 		break;
 	default:
 		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
