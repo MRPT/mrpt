@@ -482,18 +482,18 @@ bool CGPSInterface::parse_NMEA(const std::string &s, mrpt::obs::CObservationGPS 
 		}
 		else all_fields_ok = false;
 
-        // Check if there is already RMC datum within this observation.
-        // If so, check if the UTC time is the same in both cases
-        // If the times are different -> discard the previous RMC datum
-        if( out_obs.has_RMC_datum )
-        {
-            if( out_obs.GGA_datum.UTCTime.hour != out_obs.RMC_datum.UTCTime.hour ||
-                out_obs.GGA_datum.UTCTime.minute != out_obs.RMC_datum.UTCTime.minute ||
-                out_obs.GGA_datum.UTCTime.sec != out_obs.RMC_datum.UTCTime.sec )
-            {
-                out_obs.has_RMC_datum = false;
-            }
-        } // end-if
+		// Check if there is already RMC datum within this observation.
+		// If so, check if the UTC time is the same in both cases
+		// If the times are different -> discard the previous RMC datum
+		if( out_obs.has_RMC_datum )
+		{
+			if( out_obs.GGA_datum.UTCTime.hour != out_obs.RMC_datum.UTCTime.hour ||
+				out_obs.GGA_datum.UTCTime.minute != out_obs.RMC_datum.UTCTime.minute ||
+				out_obs.GGA_datum.UTCTime.sec != out_obs.RMC_datum.UTCTime.sec )
+			{
+				out_obs.has_RMC_datum = false;
+			}
+		} // end-if
 
 		// Latitude:
 		getNextToken(s,token,parserPos); //printf("TOKEN: %s\n",token.c_str());

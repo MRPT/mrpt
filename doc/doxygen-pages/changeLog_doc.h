@@ -21,6 +21,8 @@
 	- <b>Detailed list of changes:</b>
 		- New apps:
 			- [velodyne-view](http://www.mrpt.org/list-of-mrpt-apps/application-velodyne-view/): Application to test, visualize and grab data from a live Velodyne sensor or from a PCAP record.
+		- Changes in apps:
+			- [rawlog-grabber](http://www.mrpt.org/list-of-mrpt-apps/application-rawlog-grabber/): Now does not show GPS and IMU debug data in console, unless `MRPT_HWDRIVERS_VERBOSE` environment variable is set.
 		- Changes in libraries:
 			- \ref mrpt_hwdrivers_grp
 				- New class mrpt::hwdrivers::CVelodyneScanner
@@ -45,7 +47,7 @@
 <a name="1.3.2">
   <h2>Version 1.3.2: Released 3-NOV-2015 </h2></a>
   	- Changes in Apps:
-		- [rawlog-edit](http://www.mrpt.org/Application%3Arawlog-edit):
+		- [rawlog-edit](http://www.mrpt.org/list-of-mrpt-apps/application-rawlog-edit/):
 			- New operation: `--list-poses`
 			- `--list-images` now also works with 3D range scans
 	- Changes in libraries:
