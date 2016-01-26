@@ -22,14 +22,8 @@ using namespace std;
 
 IMPLEMENTS_GENERIC_SENSOR(CGPSInterface,mrpt::hwdrivers)
 
-/** Auxiliary function: Tokenize a string "str" into commas separated tokens */
-void  getNextToken(const std::string &str,std::string &token, unsigned int &parserPos);
-
-MRPT_TODO("Make customInit more flexible");
 MRPT_TODO("Offer method to write commands to the GPS");
 MRPT_TODO("Parse (some) novatel binary frames");
-MRPT_TODO("Optional dump raw to file");
-MRPT_TODO("store originalReceivedTimestamp");
 
 MRPT_TODO("Export to binary file from rawlog-edit")
 MRPT_TODO("Import from ASCII/binary file with a new app: gps2rawlog")
@@ -40,23 +34,27 @@ MRPT_TODO("new parse unit tests") // Example cmds: https://www.sparkfun.com/data
                 Constructor
    ----------------------------------------------------- */
 CGPSInterface::CGPSInterface() :
-	m_rx_buffer          (0x2000),
+	m_rx_buffer          (0x10000),
 	m_parser             (CGPSInterface::NMEA),
 	m_raw_dump_file_prefix(),
 	m_COM                (),
+	m_out_COM            (NULL),
+	m_cs_out_COM         (NULL),
 	m_customInit         (),
 	m_COMname            (),
 	m_COMbauds           (4800),
 	m_GPS_comsWork			(false),
 	m_GPS_signalAcquired	(false),
+	m_last_timestamp        ( INVALID_TIMESTAMP ),
+	m_setup_cmds_delay   (0.1),
+	m_setup_cmds_append_CRLF(true),
 
 	m_JAVAD_rtk_src_port	(),
 	m_JAVAD_rtk_src_baud	(0),
 	m_JAVAD_rtk_format		("cmr"),
-	m_useAIMMode            ( false ),
-	m_last_timestamp        ( INVALID_TIMESTAMP ),
-	m_AIMConfigured         ( false ),
-	m_data_period           ( 0.2 ) // 20 Hz
+	m_topcon_useAIMMode            ( false ),
+	m_topcon_AIMConfigured         ( false ),
+	m_topcon_data_period           ( 0.2 ) // 20 Hz
 {
 	m_sensorLabel = "GPS";
 }
@@ -79,7 +77,22 @@ void  CGPSInterface::loadConfig_sensorSpecific(
 
 	m_COMbauds		= configSource.read_int( iniSection, "baudRate",m_COMbauds, true );
 
+	// legacy custom cmds:
 	m_customInit	= configSource.read_string( iniSection, "customInit", m_customInit, false );
+
+	// new custom cmds:
+	m_setup_cmds_delay = configSource.read_float( iniSection, "setup_cmds_delay",m_setup_cmds_delay );
+	m_setup_cmds_append_CRLF = configSource.read_bool( iniSection, "m_setup_cmds_append_CRLF",m_setup_cmds_append_CRLF);
+	// Load as many strings as found on the way:
+	m_setup_cmds.clear();
+	for (int i=1; true; i++)
+	{
+		std::string sLine = configSource.read_string(iniSection, mrpt::format("setup_cmd%i",i),std::string() ); 
+		sLine = mrpt::system::trim( sLine );
+		if (sLine.empty()) 
+			break;
+		m_setup_cmds.push_back(sLine);
+	}
 
 	m_sensorPose.x( configSource.read_float( iniSection, "pose_x",0, false ) );
 	m_sensorPose.y( configSource.read_float( iniSection, "pose_y",0, false ) );
@@ -90,8 +103,8 @@ void  CGPSInterface::loadConfig_sensorSpecific(
 	m_JAVAD_rtk_src_baud = configSource.read_int(iniSection, "JAVAD_rtk_src_baud",m_JAVAD_rtk_src_baud );
 	m_JAVAD_rtk_format   = configSource.read_string(iniSection,"JAVAD_rtk_format", m_JAVAD_rtk_format );
 
-    m_useAIMMode = configSource.read_bool( iniSection,"JAVAD_useAIMMode", m_useAIMMode );
-    m_data_period = 1.0/configSource.read_double( iniSection,"outputRate", m_data_period );
+    m_topcon_useAIMMode = configSource.read_bool( iniSection,"JAVAD_useAIMMode", m_topcon_useAIMMode );
+    m_topcon_data_period = 1.0/configSource.read_double( iniSection,"outputRate", m_topcon_data_period );
 }
 
 CGPSInterface::~CGPSInterface()
@@ -103,6 +116,29 @@ void CGPSInterface::setParser(CGPSInterface::PARSERS parser) {
 }
 CGPSInterface::PARSERS CGPSInterface::getParser() const {
 	return m_parser;
+}
+void CGPSInterface::setExternCOM( CSerialPort *outPort, mrpt::synch::CCriticalSection *csOutPort )
+{ 
+	m_out_COM = outPort; 
+	m_cs_out_COM = csOutPort; 
+}
+void CGPSInterface::setSetupCommandsDelay(const double delay_secs) {
+	m_setup_cmds_delay = delay_secs;
+}
+double CGPSInterface::getSetupCommandsDelay() const {
+	return m_setup_cmds_delay;
+}
+void CGPSInterface::setSetupCommands(const std::vector<std::string> &cmds) {
+	m_setup_cmds = cmds;
+}
+const std::vector<std::string> & CGPSInterface::setSetupCommands() const {
+	return m_setup_cmds;
+}
+void CGPSInterface::enableSetupCommandsAppendCRLF(const bool enable) {
+	m_setup_cmds_append_CRLF = enable;
+}
+bool CGPSInterface::isEnabledSetupCommandsAppendCRLF() const {
+	return m_setup_cmds_append_CRLF;
 }
 
 /* -----------------------------------------------------
@@ -158,7 +194,7 @@ bool  CGPSInterface::tryToOpenTheCOM()
     if (m_verbose) cout << "[CGPSInterface] Opening " << m_COMname << " @ " << m_COMbauds << endl;
 
 	m_last_GGA.clear();  // On comms reset, empty this cache
-
+	m_just_parsed_messages.clear();
 
 	try
 	{
@@ -177,8 +213,6 @@ bool  CGPSInterface::tryToOpenTheCOM()
             m_COM.setConfig( m_COMbauds, 0, 8, 1 );
             m_COM.setTimeouts( 1, 0, 1, 1, 1 );
         }
-
-		m_latestGPS_data.clear();
 
 		// Do extra initialization?
 		if (! OnConnectionEstablished() )
@@ -199,18 +233,6 @@ bool  CGPSInterface::tryToOpenTheCOM()
 	{
 		std::cerr << "[CGPSInterface::tryToOpenTheCOM] Error opening or configuring the serial port:" << std::endl << e.what();
         if( useExternCOM() )
-        {
-            CCriticalSectionLocker lock( m_cs_out_COM );
-            m_out_COM->close();
-        }
-        else
-            m_COM.close();
-		return false;
-	}
-	catch (...)
-	{
-		std::cerr << "[CGPSInterface::tryToOpenTheCOM] Error opening or configuring the serial port." << std::endl;
-		if( useExternCOM() )
         {
             CCriticalSectionLocker lock( m_cs_out_COM );
             m_out_COM->close();
@@ -243,49 +265,47 @@ bool  CGPSInterface::isGPS_signalAcquired()
 void  CGPSInterface::doProcess()
 {
 	// Is the COM open?
-	if (!tryToOpenTheCOM())
-	{
+	if (!tryToOpenTheCOM()) {
 		m_state = ssError;
-		THROW_EXCEPTION("Cannot open the serial port");
+		THROW_EXCEPTION("Could not open the input stream");
 	}
 
 	// Read as many bytes as available:
-	// Try to read more bytes:
 	uint8_t       buf[0x1000];
-	const size_t  to_read=std::min(m_rx_buffer.available(),sizeof(buf));
+	const size_t  to_read=std::min(m_rx_buffer.available()-1,sizeof(buf)-1);
 	try
 	{
-		size_t nRead;
-		/*if ( dynamic_cast<>(XXX) ) {
-			CClientTCPSocket	*client = dynamic_cast<CClientTCPSocket*>(m_stream);
-			nRead = client->readAsync( buf, to_read, 100, 10 );
+		size_t nRead=0;
+		if (to_read>0)
+		{
+			MRPT_TODO("handle tcp/ip streams")
+			/*if ( dynamic_cast<>(XXX) ) {
+				CClientTCPSocket	*client = dynamic_cast<CClientTCPSocket*>(m_stream);
+				nRead = client->readAsync( buf, to_read, 100, 10 );
+			}
+			else {*/
+			nRead = m_COM.Read(buf,to_read);
+			//}
 		}
-		else {*/
-		nRead = m_COM.Read(buf,to_read);
-		//}
-		m_rx_buffer.push_many(buf,nRead);
 
+		if (nRead) {
+			m_rx_buffer.push_many(buf,nRead);
+			if (m_verbose) {
+				buf[nRead] = '\0';
+				printf("RX: %s",(char*)buf);
+			}
+		}
+		
 		// Also dump to raw file:
 		if (!m_raw_dump_file_prefix.empty() && !m_raw_output_file.fileOpenCorrectly()) {
 			// 1st time open:
-			string	sFilePostfix = "_";
-
-			//rawlog_postfix += dateTimeToString( now() );
 			mrpt::system::TTimeParts parts;
 			mrpt::system::timestampToParts(now(), parts, true);
-			sFilePostfix += format("%04u-%02u-%02u_%02uh%02um%02us",
-				(unsigned int)parts.year,
-				(unsigned int)parts.month,
-				(unsigned int)parts.day,
-				(unsigned int)parts.hour,
-				(unsigned int)parts.minute,
-				(unsigned int)parts.second );
-
-			sFilePostfix = mrpt::system::fileNameStripInvalidChars( sFilePostfix );
-			sFilePostfix += string(".gps");
-			const string sFileName = fileNameStripInvalidChars( m_raw_dump_file_prefix + sFilePostfix );
+			string	sFilePostfix = "_";
+			sFilePostfix += format("%04u-%02u-%02u_%02uh%02um%02us",(unsigned int)parts.year, (unsigned int)parts.month, (unsigned int)parts.day, (unsigned int)parts.hour, (unsigned int)parts.minute, (unsigned int)parts.second );
+			const string sFileName = m_raw_dump_file_prefix + mrpt::system::fileNameStripInvalidChars( sFilePostfix ) + string(".gps");
 			
-			if (m_verbose) std::cout << "[CGPSInterface] Creating RAW dump file: " << sFileName << endl;
+			if (m_verbose) std::cout << "[CGPSInterface] Creating RAW dump file: `" << sFileName << "`\n";
 			m_raw_output_file.open(sFileName);
 		}
 		if (nRead && m_raw_output_file.fileOpenCorrectly()) {
@@ -309,25 +329,16 @@ void  CGPSInterface::doProcess()
 	}
 
 	// Try to parse incomming data as messages:
-	processBuffer( );
+	parseBuffer( );
 	
+	// Decide whether to push out a new observation:
+	bool do_append_obs = false;
 	if (m_customInit.empty())
-	{ // "Normal" GPS device
-		// Write command to buffer:
-		if ( m_latestGPS_data.has_GGA_datum ||
-			 m_latestGPS_data.has_RMC_datum ||
-			 m_latestGPS_data.has_PZS_datum ||
-			 m_latestGPS_data.has_SATS_datum )
-		{
-			// Add observation to the output queue:
-			CObservationGPSPtr newObs = CObservationGPSPtr( new  CObservationGPS( m_latestGPS_data ) );
-			appendObservation( newObs );
-
-			m_latestGPS_data.clear();
-		}
+	{   // General case:
+		do_append_obs = ( !m_just_parsed_messages.messages.empty() );
 	}
 	else
-	{	// "Advanced" (RTK,mmGPS) device
+	{	// "Advanced" (RTK,mmGPS) device  (kept for backwards-compatibility)
 		// FAMD
 		// Append observation if:
 		// 0. the timestamp seems to be correct!
@@ -335,52 +346,45 @@ void  CGPSInterface::doProcess()
 		// 2. it contains only GGA or RMC but the next one is not synched with it
 		if( m_last_timestamp == INVALID_TIMESTAMP )
 		{
-			if (m_verbose) cout << "[CGPSInterface] Initial timestamp: " << mrpt::system::timeToString(m_latestGPS_data.timestamp) << endl;
+			if (m_verbose) cout << "[CGPSInterface] Initial timestamp: " << mrpt::system::timeToString(m_just_parsed_messages.timestamp) << endl;
 			// Check if the initial timestamp seems to be OK (not a spurio one)
 			TTimeStamp tmNow = mrpt::system::now();
-			const double tdif = mrpt::system::timeDifference( m_latestGPS_data.timestamp, tmNow );
+			const double tdif = mrpt::system::timeDifference( m_just_parsed_messages.timestamp, tmNow );
 			if( tdif >= 0 && tdif < 7500 /*Up to two hours*/)
-				m_last_timestamp = m_latestGPS_data.timestamp;
+				m_last_timestamp = m_just_parsed_messages.timestamp;
 			else
 				{  if (m_verbose) cout << "[CGPSInterface] Warning: The initial timestamp seems to be wrong! : " << tdif << endl;}
 		} // end-if
 		else
 		{
-			const double time_diff = mrpt::system::timeDifference( m_last_timestamp, m_latestGPS_data.timestamp );
+			const double time_diff = mrpt::system::timeDifference( m_last_timestamp, m_just_parsed_messages.timestamp );
 			if( time_diff < 0 || time_diff > 300 )     // Assert that the current timestamp is after the previous one and not more than 5 minutes later -> remove spurious
 				{ if (m_verbose) cout << "[CGPSInterface ] Bad timestamp difference" << endl; return; }
 
-			if( time_diff-m_data_period > 0.25*m_data_period )
+			if( time_diff-m_topcon_data_period > 0.25*m_topcon_data_period )
 				{ if (m_verbose) cout << "[CGPSInterface] WARNING: According to the timestamps, we probably skipped one frame!" << endl; }
-
-	//        TTimeStamp tnow = mrpt::system::now();
-	//        const double now_diff = mrpt::system::timeDifference( m_latestGPS_data.timestamp,tnow );
 
 			// a. These GPS data have both synched RMC and GGA data
 			// don't append observation until we have both data
-			if( m_latestGPS_data.has_GGA_datum && m_latestGPS_data.has_RMC_datum )
-			{
-				// Add observation to the output queue:
-				CObservationGPSPtr newObs = CObservationGPSPtr( new  CObservationGPS( m_latestGPS_data ) );
-				appendObservation( newObs );
-
-				// Reset for the next frame
-				m_latestGPS_data.clear();
-
-				m_last_timestamp = m_latestGPS_data.timestamp;
-
-	//            cout << "FAMD: [GPS_GPS____GR3]: " << int(m_latestGPS_data.GGA_datum.UTCTime.hour) << ":" << int(m_latestGPS_data.GGA_datum.UTCTime.minute) << ":" << double(m_latestGPS_data.GGA_datum.UTCTime.sec);
-	//            cout /*<< " -> Lat:" << m_latestGPS_data.GGA_datum.latitude_degrees << ", Lon:" << m_latestGPS_data.GGA_datum.longitude_degrees << ", Hei:" << m_latestGPS_data.GGA_datum.altitude_meters*/ << endl;
-			}
-
+			do_append_obs = ( m_just_parsed_messages.has_GGA_datum && m_just_parsed_messages.has_RMC_datum );
 		} // end-else
+	}
+
+	if (do_append_obs)
+	{
+		// Add observation to the output queue:
+		CObservationGPSPtr newObs = CObservationGPS::Create();
+		m_just_parsed_messages.swap(*newObs);
+		CGenericSensor::appendObservation( newObs );
+		m_just_parsed_messages.clear();
+		m_last_timestamp = m_just_parsed_messages.timestamp;
 	}
 }
 
 /* -----------------------------------------------------
-					processBuffer
+					parseBuffer
 ----------------------------------------------------- */
-void  CGPSInterface::processBuffer()
+void  CGPSInterface::parseBuffer()
 {
 	switch (m_parser)
 	{
@@ -396,272 +400,21 @@ void  CGPSInterface::processBuffer()
 ----------------------------------------------------- */
 void  CGPSInterface::processGPSstring(const std::string &s)
 {
-	const bool did_have_gga = m_latestGPS_data.has_GGA_datum;
+	const bool did_have_gga = m_just_parsed_messages.has_GGA_datum;
 	// Parse:
-	CGPSInterface::parse_NMEA(s,m_latestGPS_data, m_verbose);
+	CGPSInterface::parse_NMEA(s,m_just_parsed_messages, m_verbose);
 	
 	// Save GGA cache (useful for NTRIP,...)
-	const bool has_gga = m_latestGPS_data.has_GGA_datum;
+	const bool has_gga = m_just_parsed_messages.has_GGA_datum;
 	if (has_gga && !did_have_gga) {
 		m_last_GGA = s;
 	}
 
 	// Generic observation data:
-	m_latestGPS_data.sensorPose     = m_sensorPose;
-	m_latestGPS_data.sensorLabel    = m_sensorLabel;
+	m_just_parsed_messages.sensorPose     = m_sensorPose;
+	m_just_parsed_messages.sensorLabel    = m_sensorLabel;
 }
 
-/* -----------------------------------------------------
-					parse_NMEA
------------------------------------------------------ */
-bool CGPSInterface::parse_NMEA(const std::string &s, mrpt::obs::CObservationGPS &out_obs, const bool verbose)
-{
-	// XXX
-	if (verbose)
-		cout << "[CGPSInterface] GPS raw string: " << s << endl;
-
-	bool parsed_ok = false;
-
-	// Firstly! If the string does not start with "$GP" it is not valid:
-	if (s.size()<7) return parsed_ok;
-
-	if ( s[0]!='$' ||
-         s[1]!='G' ) return parsed_ok;
-
-	// Try to determine the kind of command:
-	if ( s[3]=='G' &&
-         s[4]=='G' &&
-	     s[5]=='A' &&
-	     s[6]==',')
-	{
-		// ---------------------------------------------
-		//					GGA
-		// ---------------------------------------------
-		bool all_fields_ok=true;
-		unsigned int	parserPos = 7;
-		std::string		token;
-
-		// Fill out the output structure:
-		gnss::Message_NMEA_GGA gga;
-
-		// Time:
-
-		getNextToken(s,token,parserPos); //printf("TOKEN: %s\n",token.c_str());
-		if (token.size()>=6)
-		{
-			gga.fields.UTCTime.hour		= 10 * (token[0]-'0') + token[1]-'0';
-			gga.fields.UTCTime.minute	= 10 * (token[2]-'0') + token[3]-'0';
-			gga.fields.UTCTime.sec		= atof( & (token.c_str()[4]) );
-		}
-		else all_fields_ok = false;
-
-		// Latitude:
-		getNextToken(s,token,parserPos); //printf("TOKEN: %s\n",token.c_str());
-		if (token.size()>=4)
-		{
-			double	lat = 10 * (token[0]-'0') + token[1]-'0';
-			lat += atof( & (token.c_str()[2]) ) / 60.0;
-			gga.fields.latitude_degrees = lat;
-		}
-		else all_fields_ok = false;
-
-		// N/S:
-		getNextToken(s,token,parserPos); //printf("TOKEN: %s\n",token.c_str());
-		if (token.empty())
-			all_fields_ok = false;
-		else if (token[0]=='S')
-			gga.fields.latitude_degrees = -gga.fields.latitude_degrees;
-
-		// Longitude:
-		getNextToken(s,token,parserPos); //printf("TOKEN: %s\n",token.c_str());
-		if (token.size()>=5)
-		{
-			double	lat = 100 * (token[0]-'0') + 10 * (token[1]-'0')+ token[2]-'0';
-			lat += atof( & (token.c_str()[3]) ) / 60.0;
-			gga.fields.longitude_degrees = lat;
-		}
-		else all_fields_ok = false;
-
-		// E_W:
-		getNextToken(s,token,parserPos); //printf("TOKEN: %s\n",token.c_str());
-		if (token.empty())
-			all_fields_ok = false;
-		else
-		if (token[0]=='W')
-			gga.fields.longitude_degrees = -gga.fields.longitude_degrees;
-
-		// fix quality:
-		getNextToken(s,token,parserPos); //printf("TOKEN: %s\n",token.c_str());
-		if (!token.empty())
-			gga.fields.fix_quality = (unsigned char)atoi(token.c_str());
-
-		// sats:
-		getNextToken(s,token,parserPos); //printf("TOKEN: %s\n",token.c_str());
-		if (!token.empty())
-			gga.fields.satellitesUsed = (unsigned char)atoi( token.c_str() );
-
-		// HDOP:
-		getNextToken(s,token,parserPos); //printf("TOKEN: %s\n",token.c_str());
-		if (!token.empty())
-		{
-			gga.fields.HDOP = (float)atof( token.c_str() );
-			gga.fields.thereis_HDOP = true;
-		}
-
-		// Altitude:
-		getNextToken(s,token,parserPos); //printf("TOKEN: %s\n",token.c_str());
-		if (token.empty()) all_fields_ok = false;
-		else gga.fields.altitude_meters = atof( token.c_str() );
-
-        // Units of the altitude:
-        getNextToken(s,token,parserPos); //printf("TOKEN: %s\n",token.c_str());
-//        ASSERT_(token == "M");
-
-        // Geoidal separation [B]:
-        getNextToken(s,token,parserPos); //printf("TOKEN: %s\n",token.c_str());
-		if (!token.empty())
-			gga.fields.geoidal_distance = atof( token.c_str() );
-
-        // Units of the geoidal separation:
-        getNextToken(s,token,parserPos); //printf("TOKEN: %s\n",token.c_str());
-//        ASSERT_(token == "M");
-
-        // Total altitude [A]+[B] and mmGPS Corrected total altitude Corr([A]+[B]):
-        gga.fields.orthometric_altitude =
-        gga.fields.corrected_orthometric_altitude =
-        gga.fields.altitude_meters + gga.fields.geoidal_distance;
-
-		if (all_fields_ok) {
-			out_obs.setMsg(gga);
-			out_obs.timestamp = gga.fields.UTCTime.getAsTimestamp( mrpt::system::now() );
-		}
-		parsed_ok = all_fields_ok;
-	}
-	else
-	{
-		// Try to determine the kind of command:
-		if ( s[3]=='R' &&
-             s[4]=='M' &&
-		     s[5]=='C' &&
-		     s[6]==',')
-		{
-
-			// ---------------------------------------------
-			//					GPRMC
-			//
-			// ---------------------------------------------
-			bool all_fields_ok = true;
-			unsigned int	parserPos = 7;
-			std::string		token;
-
-			// Rellenar la estructura de "ultimo dato RMC recibido"
-			// Fill out the output structure:
-			gnss::Message_NMEA_RMC rmc;
-
-			// Time:
-			getNextToken(s,token,parserPos); //printf("TOKEN: %s\n",token.c_str());
-			if (token.size()>=6)
-			{
-				rmc.fields.UTCTime.hour		= 10 * (token[0]-'0') + token[1]-'0';
-				rmc.fields.UTCTime.minute	= 10 * (token[2]-'0') + token[3]-'0';
-				rmc.fields.UTCTime.sec		= atof( & (token.c_str()[4]) );
-			}
-			else all_fields_ok = false;
-
-			// Valid?
-			getNextToken(s,token,parserPos); //printf("TOKEN: %s\n",token.c_str());
-			if (token.empty()) all_fields_ok = false;
-			else rmc.fields.validity_char = token.c_str()[0];
-
-			// Latitude:
-			getNextToken(s,token,parserPos); //printf("TOKEN: %s\n",token.c_str());
-			if (token.size()>=4)
-			{
-				double	lat = 10 * (token[0]-'0') + token[1]-'0';
-				lat += atof( & (token.c_str()[2]) ) / 60.0;
-				rmc.fields.latitude_degrees = lat;
-			}
-			else all_fields_ok = false;
-
-			// N/S:
-			getNextToken(s,token,parserPos); //printf("TOKEN: %s\n",token.c_str());
-			if (token.empty()) all_fields_ok = false;
-			else if (token[0]=='S')
-				rmc.fields.latitude_degrees = -rmc.fields.latitude_degrees;
-
-			// Longitude:
-			getNextToken(s,token,parserPos); //printf("TOKEN: %s\n",token.c_str());
-			if (token.size()>=5)
-			{
-				double	lat = 100 * (token[0]-'0') + 10 * (token[1]-'0')+ token[2]-'0';
-				lat += atof( & (token.c_str()[3]) ) / 60.0;
-				rmc.fields.longitude_degrees = lat;
-			}
-			else all_fields_ok = false;
-
-			// E/W:
-			getNextToken(s,token,parserPos); //printf("TOKEN: %s\n",token.c_str());
-			if (token.empty()) all_fields_ok = false;
-			else if (token[0]=='W')
-				rmc.fields.longitude_degrees = -rmc.fields.longitude_degrees;
-
-			// Speed:
-			getNextToken(s,token,parserPos); //printf("TOKEN: %s\n",token.c_str());
-			if (!token.empty()) rmc.fields.speed_knots = atof( token.c_str() );
-
-			// Direction:
-			getNextToken(s,token,parserPos); //printf("TOKEN: %s\n",token.c_str());
-			if (!token.empty()) rmc.fields.direction_degrees= atof( token.c_str() );
-
-			if (all_fields_ok) {
-				out_obs.setMsg(rmc);
-				out_obs.timestamp = rmc.fields.UTCTime.getAsTimestamp( mrpt::system::now() );
-			}
-			parsed_ok = all_fields_ok;
-		}
-		else
-		{
-			// ... parse other commands
-		}
-	}
-
-    return parsed_ok;
-}
-
-/* -----------------------------------------------------
-					processGPSstring
------------------------------------------------------ */
-void  getNextToken(
-    const std::string	&str,
-    std::string			&token,
-    unsigned int		&parserPos)
-{
-	unsigned int	start = parserPos;
-	char			c;
-
-	if (parserPos>=str.size())
-	{
-		token.resize(0);
-		return;
-	}
-
-	do
-	{
-		c = str[parserPos++];
-	} while (parserPos<str.size() && c!=',');
-
-	unsigned int	tokenSize = parserPos - 1 - start;
-	if (tokenSize<1)
-	{
-		token.resize(0);
-	}
-	else
-	{
-		token.resize( tokenSize );
-		memcpy( (void*)token.c_str(), str.c_str()+start, tokenSize );
-	}
-
-}
 
 /* -----------------------------------------------------
 					JAVAD_sendMessage
@@ -725,80 +478,34 @@ void CGPSInterface::JAVAD_sendMessage(const char *str, bool waitForAnswer )
 ----------------------------------------------------- */
 bool CGPSInterface::OnConnectionEstablished()
 {
-	if ( !os::_strcmpi( m_customInit.c_str(), "JAVAD" ) || !os::_strcmpi( m_customInit.c_str(), "TOPCON" ) )
-	{
-		// Stop messaging:
-		JAVAD_sendMessage("%%dm\r\n", false);
-		mrpt::system::sleep(500);
-		JAVAD_sendMessage("%%dm\r\n",false);
-		mrpt::system::sleep(1000);
-
-		// Purge input:
-		if( useExternCOM() )
-		{
-			CCriticalSectionLocker lock( m_cs_out_COM );
-			m_out_COM->purgeBuffers();
-		}
-		else
-			m_COM.purgeBuffers();
-
-		// Configure RTK mode and source:
-		if (m_verbose)
-			cout << "[CGPSInterface] Configure RTK options" << endl;
-
-		if (!m_JAVAD_rtk_src_port.empty())
-		{
-			const int elevation_mask = 5; // Degs
-
-			JAVAD_sendMessage(format("%%%%set,/par/lock/elm,%i\r\n", elevation_mask).c_str());  // Set elevation mask to track satellites
-			JAVAD_sendMessage("%%set,/par/base/mode/,off\r\n");  // Set Base Mode off
-			JAVAD_sendMessage("%%set,/par/pos/pd/period,1.0\r\n"); // Differential Correction Interval
-			//JAVAD_sendMessage("%%set,hd/mode,off\r\n");  // fixed distance to rtk base: Off
-			//JAVAD_sendMessage("%%set,/par/pos/pd/hd/mode,off\r\n");  // fixed distance to rtk base: Off  <-- Not working with TopCon GR3! (option disabled)
-			JAVAD_sendMessage("%%set,/par/pos/pd/qcheck,off\r\n"); // Set Quality Checks Off
-			JAVAD_sendMessage("%%set,/par/pos/mode/cur,pd\r\n");  // Pos Mode Phase Diff
-			JAVAD_sendMessage("%%set,/par/pos/pd/textr,10\r\n");  // RTK Extrapolation Limit
-			JAVAD_sendMessage("%%set,/par/pos/pd/inuse,-1\r\n");  // Set Rovers Reference Station
-			JAVAD_sendMessage("%%set,/par/pos/pd/nrs/mode,y\r\n");  // Enable Nearest Reference Station Mode
-			JAVAD_sendMessage("%%set,/par/pos/pd/mode,extrap\r\n");// Enable EXTRAPOLATED mode in RTK corrections
-
-			// Set Differential Correction Source
-			JAVAD_sendMessage(format("%%%%set,/par/pos/pd/port,%s\r\n",m_JAVAD_rtk_src_port.c_str()).c_str());
-
-			// Set port bauds:
-			if( ! m_useAIMMode && m_JAVAD_rtk_src_baud!=0 && !mrpt::system::strCmp(m_JAVAD_rtk_src_port,"/dev/usb/a") )
-				JAVAD_sendMessage(format("%%%%set,/par%s/rate,%u\r\n",m_JAVAD_rtk_src_port.c_str(), m_JAVAD_rtk_src_baud).c_str());
-
-			// Set Input Mode: CMR,RTCM,...
-			if( ! m_useAIMMode && !m_JAVAD_rtk_format.empty())
-				JAVAD_sendMessage(format("%%%%set,/par%s/imode,%s\r\n", m_JAVAD_rtk_src_port.c_str(), m_JAVAD_rtk_format.c_str()).c_str());
-		}
-
-		// Start NMEA messaging:
-//		JAVAD_sendMessage("%%em,,/msg/nmea/GGA:0.2\r\n");
-//		JAVAD_sendMessage("%%em,,/msg/nmea/RMC:0.2\r\n");
-		//JAVAD_sendMessage("%%em,,/msg/jps/PS:0.2\r\n");
-
-		if( m_useAIMMode )
-		{
-			if (m_verbose) cout << "[CGPSInterface] Using Advanced Input Mode";
-			m_AIMConfigured = setJAVAD_AIM_mode();
-			if (m_verbose) cout << "... done" << endl;
-		}
-		JAVAD_sendMessage(format("%%%%em,,/msg/nmea/GGA:%.1f\r\n", m_data_period ).c_str());
-		JAVAD_sendMessage(format("%%%%em,,/msg/nmea/RMC:%.1f\r\n", m_data_period ).c_str());       // FAMD: 10 Hz
-
-		if( m_useAIMMode )
-			{ if (m_verbose) cout << "[CGPSInterface::OnConnectionEstablished] JAVAD/TopCon commands sent successfully with AIM." << endl;}
-		else
-			{ if (m_verbose) cout << "[CGPSInterface::OnConnectionEstablished] JAVAD/TopCon commands sent successfully." << endl;}
-
-		return true;
+	// Legacy behavior: 
+	if ( !os::_strcmpi( m_customInit.c_str(), "JAVAD" ) || !os::_strcmpi( m_customInit.c_str(), "TOPCON" ) ) {
+		return legacy_topcon_setup_commands();
 	}
-	else
+
+	// New behavior: Send generic commands set-up by the user in the config file.
+
+	// Send commands:
+	for (size_t i=0;i<m_setup_cmds.size();i++)
 	{
-		return true; // Nothing extra
+		if (m_verbose) 
+			cout << "[CGPSInterface] TX setup command: `" << m_setup_cmds[i] << "`\n";
+
+		std::string sTx = m_setup_cmds[i];
+		if (m_setup_cmds_append_CRLF) 
+			sTx+=std::string("\r\n");
+		const size_t written = m_COM.Write(&sTx[0],sTx.size());
+		ASSERT_EQUAL_(written,sTx.size());
+
+		mrpt::system::sleep(m_setup_cmds_delay*1000);
 	}
+
+	// Purge input:
+	MRPT_TODO("Replace m_COM here and above by generic stream object")
+	m_COM.purgeBuffers();
+
+	mrpt::system::sleep(m_setup_cmds_delay*1000);
+	return true;
 }
 
 bool CGPSInterface::unsetJAVAD_AIM_mode()
@@ -819,36 +526,21 @@ bool CGPSInterface::unsetJAVAD_AIM_mode()
 		    m_out_COM->purgeBuffers();
 		}
 		else
-            m_COM.purgeBuffers();
+			m_COM.purgeBuffers();
 
-        JAVAD_sendMessage("%%set,/par/cur/term/imode,cmd\r\n");                // set the current port in command mode
-        return true;
+		JAVAD_sendMessage("%%set,/par/cur/term/imode,cmd\r\n");                // set the current port in command mode
+		return true;
 	}
 	else
-        return true;
-    MRPT_END
+		return true;
+	MRPT_END
 } // end-unsetJAVAD_AIM_mode
 
 bool CGPSInterface::setJAVAD_AIM_mode()
 {
-    MRPT_START
-    if ( !os::_strcmpi( m_customInit.c_str(), "JAVAD" ) || !os::_strcmpi( m_customInit.c_str(), "TOPCON" ) )
+	MRPT_START
+	if ( !os::_strcmpi( m_customInit.c_str(), "JAVAD" ) || !os::_strcmpi( m_customInit.c_str(), "TOPCON" ) )
 	{
-//		// Stop messaging:
-//		JAVAD_sendMessage("%%dm\r\n", false);
-//		mrpt::system::sleep(500);
-//		JAVAD_sendMessage("%%dm\r\n",false);
-//		mrpt::system::sleep(1000);
-//
-//		// Purge input:
-//		if( useExternCOM() )
-//		{
-//		    CCriticalSectionLocker lock( m_cs_out_COM );
-//		    m_out_COM->purgeBuffers();
-//		}
-//		else
-//            m_COM.purgeBuffers();
-
         JAVAD_sendMessage(format("%%%%set,/par%s/imode,cmd\r\n",m_JAVAD_rtk_src_port.c_str()).c_str());  // set the port in command mode
         JAVAD_sendMessage("%%set,/par/cur/term/jps/0,{nscmd,37,n,\"\"}\r\n");               // any command starting with % will be treated as normal
 
@@ -894,3 +586,75 @@ std::string CGPSInterface::getLastGGA(bool reset)
 	if (reset) m_last_GGA.clear();
 	return ret;
 }
+
+bool CGPSInterface::legacy_topcon_setup_commands()
+{
+	// Stop messaging:
+	JAVAD_sendMessage("%%dm\r\n", false);
+	mrpt::system::sleep(500);
+	JAVAD_sendMessage("%%dm\r\n",false);
+	mrpt::system::sleep(1000);
+
+	// Purge input:
+	if( useExternCOM() )
+	{
+		CCriticalSectionLocker lock( m_cs_out_COM );
+		m_out_COM->purgeBuffers();
+	}
+	else
+		m_COM.purgeBuffers();
+
+	// Configure RTK mode and source:
+	if (m_verbose)
+		cout << "[CGPSInterface] Configure RTK options" << endl;
+
+	if (!m_JAVAD_rtk_src_port.empty())
+	{
+		const int elevation_mask = 5; // Degs
+
+		JAVAD_sendMessage(format("%%%%set,/par/lock/elm,%i\r\n", elevation_mask).c_str());  // Set elevation mask to track satellites
+		JAVAD_sendMessage("%%set,/par/base/mode/,off\r\n");  // Set Base Mode off
+		JAVAD_sendMessage("%%set,/par/pos/pd/period,1.0\r\n"); // Differential Correction Interval
+		//JAVAD_sendMessage("%%set,hd/mode,off\r\n");  // fixed distance to rtk base: Off
+		//JAVAD_sendMessage("%%set,/par/pos/pd/hd/mode,off\r\n");  // fixed distance to rtk base: Off  <-- Not working with TopCon GR3! (option disabled)
+		JAVAD_sendMessage("%%set,/par/pos/pd/qcheck,off\r\n"); // Set Quality Checks Off
+		JAVAD_sendMessage("%%set,/par/pos/mode/cur,pd\r\n");  // Pos Mode Phase Diff
+		JAVAD_sendMessage("%%set,/par/pos/pd/textr,10\r\n");  // RTK Extrapolation Limit
+		JAVAD_sendMessage("%%set,/par/pos/pd/inuse,-1\r\n");  // Set Rovers Reference Station
+		JAVAD_sendMessage("%%set,/par/pos/pd/nrs/mode,y\r\n");  // Enable Nearest Reference Station Mode
+		JAVAD_sendMessage("%%set,/par/pos/pd/mode,extrap\r\n");// Enable EXTRAPOLATED mode in RTK corrections
+
+		// Set Differential Correction Source
+		JAVAD_sendMessage(format("%%%%set,/par/pos/pd/port,%s\r\n",m_JAVAD_rtk_src_port.c_str()).c_str());
+
+		// Set port bauds:
+		if( ! m_topcon_useAIMMode && m_JAVAD_rtk_src_baud!=0 && !mrpt::system::strCmp(m_JAVAD_rtk_src_port,"/dev/usb/a") )
+			JAVAD_sendMessage(format("%%%%set,/par%s/rate,%u\r\n",m_JAVAD_rtk_src_port.c_str(), m_JAVAD_rtk_src_baud).c_str());
+
+		// Set Input Mode: CMR,RTCM,...
+		if( ! m_topcon_useAIMMode && !m_JAVAD_rtk_format.empty())
+			JAVAD_sendMessage(format("%%%%set,/par%s/imode,%s\r\n", m_JAVAD_rtk_src_port.c_str(), m_JAVAD_rtk_format.c_str()).c_str());
+	}
+
+	// Start NMEA messaging:
+//		JAVAD_sendMessage("%%em,,/msg/nmea/GGA:0.2\r\n");
+//		JAVAD_sendMessage("%%em,,/msg/nmea/RMC:0.2\r\n");
+	//JAVAD_sendMessage("%%em,,/msg/jps/PS:0.2\r\n");
+
+	if( m_topcon_useAIMMode )
+	{
+		if (m_verbose) cout << "[CGPSInterface] Using Advanced Input Mode";
+		m_topcon_AIMConfigured = setJAVAD_AIM_mode();
+		if (m_verbose) cout << "... done" << endl;
+	}
+	JAVAD_sendMessage(format("%%%%em,,/msg/nmea/GGA:%.1f\r\n", m_topcon_data_period ).c_str());
+	JAVAD_sendMessage(format("%%%%em,,/msg/nmea/RMC:%.1f\r\n", m_topcon_data_period ).c_str());       // FAMD: 10 Hz
+
+	if( m_topcon_useAIMMode )
+		{ if (m_verbose) cout << "[CGPSInterface::OnConnectionEstablished] JAVAD/TopCon commands sent successfully with AIM." << endl;}
+	else
+		{ if (m_verbose) cout << "[CGPSInterface::OnConnectionEstablished] JAVAD/TopCon commands sent successfully." << endl;}
+
+	return true;
+}
+

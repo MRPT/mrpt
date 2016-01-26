@@ -35,6 +35,15 @@ CObservationGPS::CObservationGPS( ) :
 {
 }
 
+void CObservationGPS::swap(CObservationGPS &o)
+{
+	std::swap(timestamp, o.timestamp);
+	std::swap(originalReceivedTimestamp, o.originalReceivedTimestamp);
+	std::swap(sensorLabel, o.sensorLabel);
+	std::swap(sensorPose, o.sensorPose);
+	messages.swap( o.messages );
+}
+
 /*---------------------------------------------------------------
   Implements the writing to a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/

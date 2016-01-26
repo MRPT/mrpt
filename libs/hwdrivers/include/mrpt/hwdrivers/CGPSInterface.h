@@ -57,20 +57,19 @@ namespace mrpt
 		  *  pose_y       = 0
 		  *  pose_z       = 0
 		  *
-		  *  # Optional: initial commands to be sent to the GNSS receiver to set it up.
+		  *  # Optional: list of initial commands to be sent to the GNSS receiver to set it up.
+		  *  # An arbitrary number of commands can be defined, but their names must be "setup_cmd%d" starting at "1". 
+		  *  # Commands will be sent by index order. Binary commands instead of ASCII strings can be set programatically, not from a config file.
+		  *  # setup_cmds_delay   = 0.1   // (Default=0.1) Delay in seconds between consecutive set-up commands
+		  *  # setup_cmds_append_CRLF = true    // (Default:true) Append "\r\n" to each command
+		  *  # setup_cmd1 = XXXXX
+		  *  # setup_cmd2 = XXXXX
+		  *  # setup_cmd3 = XXXXX
 		  *
-		  *
-		  *  # The following parameters are *DEPRECATED, DO NOT USE*. They are kept for backwards-compatibility only.
-		  *  #customInit   = JAVAD
-		  *  #JAVAD_rtk_src_port=/dev/ser/b
-		  *  #JAVAD_rtk_src_baud=9600
-		  *  #JAVAD_rtk_format=cmr
 		  *  \endcode
 		  *
-		  * - customInit: Custom commands to send, depending on the sensor. Valid values are:
-		  *		- "": Empty string
-		  *		- "JAVAD": JAVAD or TopCon devices. Extra initialization commands will be sent.
-		  *		- "TopCon": A synonymous with "JAVAD".
+		  * Note that the `customInit` field, supported in MRPT <1.4.0 will be still parsed and obeyed, but since it has been superseded 
+		  * by the new mechanism to establish set-up commands, it is no further documented here.
 		  *
 		  *  The next picture summarizes existing MRPT classes related to GPS / GNSS devices (CGPSInterface, CNTRIPEmitter, CGPS_NTRIP):
 		  *
@@ -119,12 +118,19 @@ namespace mrpt
 			void  setParser(PARSERS parser);  //!< Select the parser for incomming data, among the options enumerated in \a CGPSInterface
 			PARSERS getParser() const;
 
-			inline void setExternCOM( CSerialPort *outPort, mrpt::synch::CCriticalSection *csOutPort )
-			{ m_out_COM = outPort; m_cs_out_COM = csOutPort; }
+			void setExternCOM( CSerialPort *outPort, mrpt::synch::CCriticalSection *csOutPort );
 
+			void setSetupCommandsDelay(const double delay_secs);
+			double getSetupCommandsDelay() const;
+
+			void setSetupCommands(const std::vector<std::string> &cmds);
+			const std::vector<std::string> & setSetupCommands() const;
+
+			void enableSetupCommandsAppendCRLF(const bool enable);
+			bool isEnabledSetupCommandsAppendCRLF() const;
 			/** @} */
 
-			inline bool isAIMConfigured() { return m_AIMConfigured; }
+			inline bool isAIMConfigured() { return m_topcon_AIMConfigured; }
 
 			/** Parses one line of NMEA data from a GPS receiver, and writes the recognized fields (if any) into an observation object.
 			  * Recognized frame types are: "GGA" and "RMC".
@@ -139,9 +145,10 @@ namespace mrpt
 
 		protected:
 			/** Implements custom messages to be sent to the GPS unit just after connection and before normal use.
-			  *  Returns false or raise an exception if something goes wrong.
-			  */
+			  *  Returns false or raise an exception if something goes wrong. */
 			bool OnConnectionEstablished();
+
+			bool legacy_topcon_setup_commands();
 
 			CSerialPort		m_COM;
 
@@ -150,8 +157,8 @@ namespace mrpt
 			mrpt::synch::CCriticalSection   *m_cs_out_COM;
 			// --------------------------------------------
 
-			poses::CPose3D m_sensorPose;
-			std::string		m_customInit;
+			poses::CPose3D  m_sensorPose;
+			std::string     m_customInit;
 
 			/** See the class documentation at the top for expected parameters */
 			void  loadConfig_sensorSpecific(
@@ -187,45 +194,40 @@ namespace mrpt
 			int          m_COMbauds;
 			bool         m_GPS_comsWork;
 			bool         m_GPS_signalAcquired;
-
+			mrpt::system::TTimeStamp        m_last_timestamp;
 			mrpt::utils::CFileOutputStream  m_raw_output_file;
+			double                   m_setup_cmds_delay;
+			bool                     m_setup_cmds_append_CRLF;
+			std::vector<std::string> m_setup_cmds;
 
+			/** \name Legacy support for TopCon RTK configuration
+			  * @{ */
 			std::string		m_JAVAD_rtk_src_port; 	//!< If not empty, will send a cmd "set,/par/pos/pd/port,...". Example value: "/dev/ser/b"
 			unsigned int	m_JAVAD_rtk_src_baud; 	//!< Only used when "m_JAVAD_rtk_src_port" is not empty
 			std::string		m_JAVAD_rtk_format; 	//!< Only used when "m_JAVAD_rtk_src_port" is not empty: format of RTK corrections: "cmr", "rtcm", "rtcm3", etc.
 
-			// MAR'11 -----------------------------------------
-			bool            m_useAIMMode;           //!< Use this mode for receive RTK corrections from a external source through the primary port
-			// ------------------------------------------------
-			mrpt::system::TTimeStamp      m_last_timestamp;
-
-			// MAR'11 -----------------------------------------
-			bool            m_AIMConfigured;        //!< Indicates if the AIM has been properly set up.
-			double          m_data_period;          //!< The period in seconds which the data should be provided by the GPS
-			// ------------------------------------------------
+			bool            m_topcon_useAIMMode;           //!< Use this mode for receive RTK corrections from a external source through the primary port
+			bool            m_topcon_AIMConfigured;        //!< Indicates if the AIM has been properly set up.
+			double          m_topcon_data_period;          //!< The period in seconds which the data should be provided by the GPS
+			void JAVAD_sendMessage(const char*str, bool waitForAnswer = true); //!< Private auxiliary method. Raises exception on error.
+			/** @} */
 
 			/** Returns true if the COM port is already open, or try to open it in other case.
-			  * \return true if everything goes OK, or false if there are problems opening the port.
-			  */
+			  * \return true if everything goes OK, or false if there are problems opening the port. */
 			bool  tryToOpenTheCOM();
 
-			void  processBuffer(); //!< Process data in "m_buffer" to extract GPS messages, and remove them from the buffer.
+			void  parseBuffer(); //!< Process data in "m_buffer" to extract GPS messages, and remove them from the buffer.
 
 			void  implement_parser_NMEA();
 			void  implement_parser_NOVATEL_OEM6();
 
 			void  processGPSstring( const std::string &s); //!< Process a complete string from the GPS:
 
-			/* A private copy of the last received gps datum */
-			mrpt::obs::CObservationGPS	            m_latestGPS_data;
-			mrpt::obs::CObservationGPS::TUTCTime   m_last_UTC_time;
-			
+			mrpt::obs::CObservationGPS  m_just_parsed_messages; //!< A private copy of the last received gps datum
 			std::string   m_last_GGA; //!< Used in getLastGGA()
-			
-			void JAVAD_sendMessage(const char*str, bool waitForAnswer = true); //!< Private auxiliary method. Raises exception on error.
-
 		}; // end class
 	} // end namespace
+
 	// Specializations MUST occur at the same namespace:
 	namespace utils
 	{

@@ -20,6 +20,9 @@ using namespace mrpt::system;
 using namespace mrpt::synch;
 using namespace std;
 
+MRPT_TODO("store originalReceivedTimestamp");
+
+
 void  CGPSInterface::implement_parser_NOVATEL_OEM6()
 {
 #if 0

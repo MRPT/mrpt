@@ -120,6 +120,7 @@ namespace obs
 		void dumpToStream( mrpt::utils::CStream &out ) const; //!< Dumps the contents of the observation in a human-readable form to a given output stream \sa dumpToConsole(), getDescriptionAsText()
 		void dumpToConsole(std::ostream &o = std::cout) const; //!< Dumps the contents of the observation in a human-readable form to an std::ostream (default=console)
 		void clear(); //!< Empties this observation, clearing the container \a messages
+		void swap(CObservationGPS &o);
 
 		void getSensorPose( mrpt::poses::CPose3D &out_sensorPose ) const { out_sensorPose = sensorPose; } // See base class docs
 		void setSensorPose( const mrpt::poses::CPose3D &newSensorPose ) { sensorPose = newSensorPose; } // See base class docs
@@ -139,6 +140,7 @@ namespace obs
 		struct internal_msg_test_proxy {
 			internal_msg_test_proxy(message_list_t &msgs_) : msgs(msgs_) {}
 			operator bool(void) const { return msgs.find(MSG_TYPE)!=msgs.end(); }
+			internal_msg_test_proxy<MSG_TYPE> & operator =( const internal_msg_test_proxy<MSG_TYPE> &) { return *this; }
 		private:
 			message_list_t           &msgs;
 		};
