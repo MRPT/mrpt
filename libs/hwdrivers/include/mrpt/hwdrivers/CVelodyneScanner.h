@@ -118,18 +118,21 @@ namespace mrpt
 			std::string   m_model;      //!< Default: "VLP-16"
 			std::string   m_device_ip;  //!< Default: "" (no IP-based filtering)
 			std::string   m_pcap_input_file; //!< Default: "" (do not operate from an offline file)
+			std::string   m_pcap_output_file; //!< Default: "" (do not dump to an offline file)
 			int           m_rpm;        //!< Default: 600
 			mrpt::poses::CPose3D m_sensorPose;
 			mrpt::obs:: VelodyneCalibration  m_velodyne_calib; //!< Device calibration file (supplied by vendor in an XML file)
 
 			// offline operation:
 			void * m_pcap;             //!< opaque ptr: "pcap_t*"
+			void * m_pcap_out;          //!< opaque ptr: "pcap_t*"
 			void * m_pcap_bpf_program; //!< opaque ptr: bpf_program*
 			bool   m_pcap_file_empty;
 			unsigned int m_pcap_read_count; //!< number of pkts read from the file so far (for debugging)
 			bool   m_pcap_read_once;    //!< Default: false
 			bool   m_pcap_read_fast;    //!< Default: true
 			double m_pcap_repeat_delay; //!< Default: 0 (in seconds)
+
 
 			/** See the class documentation at the top for expected parameters */
 			void  loadConfig_sensorSpecific(

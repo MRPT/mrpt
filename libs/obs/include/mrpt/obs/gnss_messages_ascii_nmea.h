@@ -65,7 +65,6 @@ struct OBS_IMPEXP Message_NMEA_GGA : public gnss_message_binary_block
 	}
 };
 
-
 /** NMEA datum: RMC. \sa mrpt::obs::CObservationGPS   */
 struct OBS_IMPEXP Message_NMEA_RMC : public gnss_message_binary_block
 {

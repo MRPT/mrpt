@@ -13,6 +13,7 @@
 #include <mrpt/utils/CStream.h>
 #include <mrpt/utils/net_utils.h>
 #include <mrpt/hwdrivers/CGPSInterface.h>
+#include <mrpt/system/filesystem.h>
 
 MRPT_TODO("Add unit tests")
 MRPT_TODO("Optional save to PCAP")
@@ -86,6 +87,7 @@ CVelodyneScanner::CVelodyneScanner() :
 	m_device_ip(""),
 	m_rpm(600),
 	m_pcap(NULL),
+	m_pcap_out(NULL),
 	m_pcap_bpf_program(NULL),
 	m_pcap_file_empty(true),
 	m_pcap_read_once(false),
@@ -138,6 +140,7 @@ void CVelodyneScanner::loadConfig_sensorSpecific(
 	MRPT_LOAD_HERE_CONFIG_VAR(rpm,            int, m_rpm             ,  cfg, sect);
 	MRPT_LOAD_HERE_CONFIG_VAR(model,       string, m_model           ,  cfg, sect);
 	MRPT_LOAD_HERE_CONFIG_VAR(pcap_input,  string, m_pcap_input_file ,  cfg, sect);
+	MRPT_LOAD_HERE_CONFIG_VAR(pcap_output, string, m_pcap_output_file,  cfg, sect);	
 	MRPT_LOAD_HERE_CONFIG_VAR(pcap_read_once,bool, m_pcap_read_once,  cfg, sect);
 	MRPT_LOAD_HERE_CONFIG_VAR(pcap_read_fast,bool, m_pcap_read_fast ,  cfg, sect);
 	MRPT_LOAD_HERE_CONFIG_VAR(pcap_repeat_delay,double, m_pcap_repeat_delay ,  cfg, sect);
@@ -349,6 +352,28 @@ void CVelodyneScanner::initialize()
 #endif
 	}
 
+	// Save to PCAP file?
+	if (!m_pcap_output_file.empty())
+	{
+#if MRPT_HAS_LIBPCAP
+		char errbuf[PCAP_ERRBUF_SIZE];
+
+		mrpt::system::TTimeParts parts;
+		mrpt::system::timestampToParts(mrpt::system::now(), parts, true);
+		string	sFilePostfix = "_";
+		sFilePostfix += format("%04u-%02u-%02u_%02uh%02um%02us",(unsigned int)parts.year, (unsigned int)parts.month, (unsigned int)parts.day, (unsigned int)parts.hour, (unsigned int)parts.minute, (unsigned int)parts.second );
+		const string sFileName = m_pcap_output_file + mrpt::system::fileNameStripInvalidChars( sFilePostfix ) + string(".pcap");
+
+		printf("\n[CVelodyneScanner] Writing to PCAP file \"%s\"\n", sFileName.c_str());
+		if ((m_pcap_out = pcap_open_offline(sFileName.c_str(), errbuf) ) == NULL) {
+			THROW_EXCEPTION_CUSTOM_MSG1("Error opening PCAP file for writing: '%s'",errbuf);
+		}
+#else
+		THROW_EXCEPTION("Velodyne: Writing PCAP files requires building MRPT with libpcap support!");
+#endif
+	}
+
+
 	m_initialized=true;
 }
 
@@ -376,10 +401,13 @@ void CVelodyneScanner::close()
 		m_hPositionSock=INVALID_SOCKET;
 	}
 #if MRPT_HAS_LIBPCAP
-	if (m_pcap)
-	{
+	if (m_pcap) {
 		pcap_close( reinterpret_cast<pcap_t*>(m_pcap) );
 		m_pcap = NULL;
+	}
+	if (m_pcap_out) {
+		pcap_close( reinterpret_cast<pcap_t*>(m_pcap_out) );
+		m_pcap_out = NULL;
 	}
 #endif
 	m_initialized=false;
