@@ -11,6 +11,7 @@
 
 #include <mrpt/system/os.h>
 #include <mrpt/synch/CCriticalSection.h>
+#include <mrpt/system/filesystem.h>
 #include <mrpt/hwdrivers/CGPSInterface.h>
 
 using namespace mrpt::hwdrivers;
@@ -38,17 +39,16 @@ MRPT_TODO("new parse unit tests") // Example cmds: https://www.sparkfun.com/data
 /* -----------------------------------------------------
                 Constructor
    ----------------------------------------------------- */
-CGPSInterface::CGPSInterface( int BUFFER_LENGTH, mrpt::hwdrivers::CSerialPort *outPort, mrpt::synch::CCriticalSection *csOutPort ) :
-	m_COM					(),
-	m_customInit			(),
-	m_COMname				(),
-	m_COMbauds				(4800),
+CGPSInterface::CGPSInterface() :
+	m_rx_buffer          (0x2000),
+	m_parser             (CGPSInterface::NMEA),
+	m_raw_dump_file_prefix(),
+	m_COM                (),
+	m_customInit         (),
+	m_COMname            (),
+	m_COMbauds           (4800),
 	m_GPS_comsWork			(false),
 	m_GPS_signalAcquired	(false),
-	m_BUFFER_LENGTH			(BUFFER_LENGTH),
-	m_buffer				( new char[m_BUFFER_LENGTH] ),
-	m_bufferLength			(0),
-	m_bufferWritePos		(0),
 
 	m_JAVAD_rtk_src_port	(),
 	m_JAVAD_rtk_src_baud	(0),
@@ -59,13 +59,6 @@ CGPSInterface::CGPSInterface( int BUFFER_LENGTH, mrpt::hwdrivers::CSerialPort *o
 	m_data_period           ( 0.2 ) // 20 Hz
 {
 	m_sensorLabel = "GPS";
-	m_latestGPS_data.clear();
-	m_last_UTC_time.hour = 0;
-	m_last_UTC_time.minute = 0;
-	m_last_UTC_time.sec = 0;
-
-	m_out_COM       = outPort;
-	m_cs_out_COM    = csOutPort;
 }
 
 /* -----------------------------------------------------
@@ -75,6 +68,9 @@ void  CGPSInterface::loadConfig_sensorSpecific(
 	const mrpt::utils::CConfigFileBase &configSource,
 	const std::string	  &iniSection )
 {
+	m_parser = configSource.read_enum<CGPSInterface::PARSERS>(iniSection,"parser",m_parser,false /*Allow default values*/);
+	m_raw_dump_file_prefix = configSource.read_string(iniSection,"raw_dump_file_prefix",m_raw_dump_file_prefix,false /*Allow default values*/);
+
 #ifdef MRPT_OS_WINDOWS
 	m_COMname = configSource.read_string(iniSection, "COM_port_WIN", m_COMname, true );
 #else
@@ -98,14 +94,15 @@ void  CGPSInterface::loadConfig_sensorSpecific(
     m_data_period = 1.0/configSource.read_double( iniSection,"outputRate", m_data_period );
 }
 
-
-
-/* -----------------------------------------------------
-                Destructor
-   ----------------------------------------------------- */
 CGPSInterface::~CGPSInterface()
 {
-	delete[] m_buffer;
+}
+
+void CGPSInterface::setParser(CGPSInterface::PARSERS parser) {
+	m_parser = parser;
+}
+CGPSInterface::PARSERS CGPSInterface::getParser() const {
+	return m_parser;
 }
 
 /* -----------------------------------------------------
@@ -129,12 +126,6 @@ void  CGPSInterface::setSerialPortName(const std::string &COM_port)
             THROW_EXCEPTION("Cannot change serial port name when it's already open")
 
 	m_COMname = COM_port;
-
-//    if (m_COM.isOpen())
-//        THROW_EXCEPTION("Cannot change serial port name when it's already open")
-//
-//	m_COMname = COM_port;
-
 }
 
 /* -----------------------------------------------------
@@ -259,46 +250,67 @@ void  CGPSInterface::doProcess()
 	}
 
 	// Read as many bytes as available:
-	size_t bytesRead = 1;
-	while (bytesRead)
+	// Try to read more bytes:
+	uint8_t       buf[0x1000];
+	const size_t  to_read=std::min(m_rx_buffer.available(),sizeof(buf));
+	try
 	{
-		size_t bytesToRead = (m_BUFFER_LENGTH-10) - m_bufferWritePos;
-
-		try
-		{
-			if( useExternCOM() )
-			{
-				CCriticalSectionLocker lock( m_cs_out_COM );
-				bytesRead = m_out_COM->Read(m_buffer + m_bufferWritePos, bytesToRead);
-			}
-			else
-				bytesRead = m_COM.Read(m_buffer + m_bufferWritePos, bytesToRead);
+		size_t nRead;
+		/*if ( dynamic_cast<>(XXX) ) {
+			CClientTCPSocket	*client = dynamic_cast<CClientTCPSocket*>(m_stream);
+			nRead = client->readAsync( buf, to_read, 100, 10 );
 		}
-		catch (...)
-		{
-			// ERROR:
-			printf_debug("[CGPSInterface::doProcess] Error reading COM port: Closing communications\n");
-			if( useExternCOM() )
-			{
-				CCriticalSectionLocker lock( m_cs_out_COM );
-				m_out_COM->close();
-			}
-			else
-				m_COM.close();
+		else {*/
+		nRead = m_COM.Read(buf,to_read);
+		//}
+		m_rx_buffer.push_many(buf,nRead);
 
-			m_GPS_comsWork			= false;
-			m_GPS_signalAcquired	= false;
-			return;
+		// Also dump to raw file:
+		if (!m_raw_dump_file_prefix.empty() && !m_raw_output_file.fileOpenCorrectly()) {
+			// 1st time open:
+			string	sFilePostfix = "_";
+
+			//rawlog_postfix += dateTimeToString( now() );
+			mrpt::system::TTimeParts parts;
+			mrpt::system::timestampToParts(now(), parts, true);
+			sFilePostfix += format("%04u-%02u-%02u_%02uh%02um%02us",
+				(unsigned int)parts.year,
+				(unsigned int)parts.month,
+				(unsigned int)parts.day,
+				(unsigned int)parts.hour,
+				(unsigned int)parts.minute,
+				(unsigned int)parts.second );
+
+			sFilePostfix = mrpt::system::fileNameStripInvalidChars( sFilePostfix );
+			sFilePostfix += string(".gps");
+			const string sFileName = fileNameStripInvalidChars( m_raw_dump_file_prefix + sFilePostfix );
+			
+			if (m_verbose) std::cout << "[CGPSInterface] Creating RAW dump file: " << sFileName << endl;
+			m_raw_output_file.open(sFileName);
 		}
-
-		// Process the data:
-		if (bytesRead)
-		{
-			m_bufferLength += bytesRead;
-			processBuffer( );
+		if (nRead && m_raw_output_file.fileOpenCorrectly()) {
+			m_raw_output_file.WriteBuffer(buf,nRead);
 		}
-	};
+	}
+	catch (std::exception &)
+	{
+		// ERROR:
+		printf_debug("[CGPSInterface::doProcess] Error reading COM port: Closing communications\n");
+		if( useExternCOM() ) {
+			CCriticalSectionLocker lock( m_cs_out_COM );
+			m_out_COM->close();
+		}
+		else {
+			m_COM.close();
+		}
+		m_GPS_comsWork			= false;
+		m_GPS_signalAcquired	= false;
+		return;
+	}
 
+	// Try to parse incomming data as messages:
+	processBuffer( );
+	
 	if (m_customInit.empty())
 	{ // "Normal" GPS device
 		// Write command to buffer:
@@ -370,54 +382,13 @@ void  CGPSInterface::doProcess()
 ----------------------------------------------------- */
 void  CGPSInterface::processBuffer()
 {
-	unsigned int	i=0, lineStart = 0;
-
-	while (i<m_bufferLength)
+	switch (m_parser)
 	{
-		// Loof for the first complete line of text:
-		while (i<m_bufferLength && m_buffer[i]!='\r' && m_buffer[i]!='\n')
-			i++;
+	case CGPSInterface::NMEA:           implement_parser_NMEA();           break;
+	case CGPSInterface::NOVATEL_OEM6:   implement_parser_NOVATEL_OEM6();   break;
 
-		// End of buffer or end of line?
-		if (i<m_bufferLength)
-		{
-			// It is the end of a line: Build the string:
-			std::string		str;
-			int				lenOfLine = i-1 - lineStart;
-			if (lenOfLine>0)
-			{
-				str.resize( lenOfLine );
-				memcpy( (void*)str.c_str(), m_buffer + lineStart, lenOfLine );
-
-				// Process it!:
-				processGPSstring(str);
-			}
-
-			// And this means the comms works!
-			m_GPS_comsWork			= true;
-
-            m_state = ssWorking;
-
-			// Pass over this end of line:
-			while (i<m_bufferLength && (m_buffer[i]=='\r' || m_buffer[i]=='\n'))
-				i++;
-
-			// And start a new line:
-			lineStart = i;
-		}
-
+	default: throw std::runtime_error("[CGPSInterface] Unknown parser!");
 	};
-
-	// Dejar en el buffer desde "lineStart" hasta "i-1", inclusive.
-	size_t	newBufLen = m_bufferLength - lineStart;
-
-	memcpy( m_buffer, m_buffer + lineStart, newBufLen);
-
-	m_bufferLength = newBufLen;
-
-	// Seguir escribiendo por aqui:
-	m_bufferWritePos = i - lineStart;
-
 }
 
 /* -----------------------------------------------------
@@ -445,7 +416,8 @@ void  CGPSInterface::processGPSstring(const std::string &s)
 ----------------------------------------------------- */
 bool CGPSInterface::parse_NMEA(const std::string &s, mrpt::obs::CObservationGPS &out_obs, const bool verbose)
 {
-    if (verbose)
+	// XXX
+	if (verbose)
 		cout << "[CGPSInterface] GPS raw string: " << s << endl;
 
 	bool parsed_ok = false;
@@ -764,11 +736,11 @@ bool CGPSInterface::OnConnectionEstablished()
 		// Purge input:
 		if( useExternCOM() )
 		{
-		    CCriticalSectionLocker lock( m_cs_out_COM );
-		    m_out_COM->purgeBuffers();
+			CCriticalSectionLocker lock( m_cs_out_COM );
+			m_out_COM->purgeBuffers();
 		}
 		else
-            m_COM.purgeBuffers();
+			m_COM.purgeBuffers();
 
 		// Configure RTK mode and source:
 		if (m_verbose)
@@ -809,17 +781,17 @@ bool CGPSInterface::OnConnectionEstablished()
 
 		if( m_useAIMMode )
 		{
-		    if (m_verbose) cout << "[CGPSInterface] Using Advanced Input Mode";
-            m_AIMConfigured = setJAVAD_AIM_mode();
-            if (m_verbose) cout << "... done" << endl;
+			if (m_verbose) cout << "[CGPSInterface] Using Advanced Input Mode";
+			m_AIMConfigured = setJAVAD_AIM_mode();
+			if (m_verbose) cout << "... done" << endl;
 		}
 		JAVAD_sendMessage(format("%%%%em,,/msg/nmea/GGA:%.1f\r\n", m_data_period ).c_str());
 		JAVAD_sendMessage(format("%%%%em,,/msg/nmea/RMC:%.1f\r\n", m_data_period ).c_str());       // FAMD: 10 Hz
 
 		if( m_useAIMMode )
-            { if (m_verbose) cout << "[CGPSInterface::OnConnectionEstablished] JAVAD/TopCon commands sent successfully with AIM." << endl;}
+			{ if (m_verbose) cout << "[CGPSInterface::OnConnectionEstablished] JAVAD/TopCon commands sent successfully with AIM." << endl;}
 		else
-            { if (m_verbose) cout << "[CGPSInterface::OnConnectionEstablished] JAVAD/TopCon commands sent successfully." << endl;}
+			{ if (m_verbose) cout << "[CGPSInterface::OnConnectionEstablished] JAVAD/TopCon commands sent successfully." << endl;}
 
 		return true;
 	}

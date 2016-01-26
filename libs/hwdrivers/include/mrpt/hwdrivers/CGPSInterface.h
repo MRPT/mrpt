@@ -14,7 +14,10 @@
 #include <mrpt/poses/CPoint3D.h>
 #include <mrpt/hwdrivers/CSerialPort.h>
 #include <mrpt/utils/CDebugOutputCapable.h>
+#include <mrpt/utils/CFileOutputStream.h>
+#include <mrpt/utils/TEnumType.h>
 #include <mrpt/hwdrivers/CGenericSensor.h>
+#include <mrpt/utils/circular_buffer.h>
 #include <mrpt/obs/obs_frwds.h>
 
 namespace mrpt
@@ -26,30 +29,42 @@ namespace mrpt
 		  *
 		  * Typical input streams are serial ports or raw GPS log files.
 		  *
-		  * The parser supports the following message types:
-		  * - NMEA 0183 (ASCII): GGA, RMC
-		  * - Novatel OEM6 (Binary): XXX
+		  * The parsers in the enum type CGPSInterface::PARSERS are supported as parameter `parser` in the 
+		  * configuration file below or in method CGPSInterface::setParser():
+		  *  - `NMEA` (NMEA 0183, ASCII messages): Default parser. Supported frames: GGA, RMC.
+		  *  - `NOVATEL_OEM6` (Novatel OEM6, binary frames): Supported frames: XXX
 		  *
 		  *  \code
 		  *  PARAMETERS IN THE ".INI"-LIKE CONFIGURATION STRINGS:
 		  * -------------------------------------------------------
-		  *   [supplied_section_name]
-		  *    COM_port_WIN = COM3
-		  *    COM_port_LIN = ttyS0
-		  *    baudRate     = 4800   // The baudrate of the communications (typ. 4800 or 9600 bauds)
+		  * [supplied_section_name]
 		  *
-		  *    # 3D position (and orientation, for GNSS+IMUs) of the sensed point (antenna phase center) relative to the vehicle/robot frame:
-		  *    pose_x       = 0      // (meters)
-		  *    pose_y       = 0
-		  *    pose_z       = 0
-		  *    customInit   =       // See below for possible values
+		  *  # Serial port configuration:
+		  *  COM_port_WIN = COM3
+		  *  COM_port_LIN = ttyUSB0
+		  *  baudRate     = 4800   // The baudrate of the communications (typ. 4800 or 9600 bauds)
 		  *
-		  *	   // The next parameters are optional and will be used only
-		  *    // if customInit=="JAVAD" to enable/configure the usage of RTK corrections:
-		  *    //JAVAD_rtk_src_port=/dev/ser/b
-		  *    //JAVAD_rtk_src_baud=9600
-		  *    //JAVAD_rtk_format=cmr
+		  *  # Select a parser for GNSS data:
+		  *  # Up-to-date list of supported parsers available in http://reference.mrpt.org/devel/classmrpt_1_1hwdrivers_1_1_c_g_p_s_interface.html
+		  *  parser =  NMEA
 		  *
+		  *  # If uncommented and non-empty, raw binary/ascii data received from the serial port will be also dumped 
+		  *  # into a file named after this prefix, plus date/time and extension `.gps`.
+		  *  #raw_dump_file_prefix = RAWGPS
+		  *
+		  *  # 3D position (and orientation, for GNSS+IMUs) of the sensed point (antenna phase center) relative to the vehicle/robot frame:
+		  *  pose_x       = 0      // (meters)
+		  *  pose_y       = 0
+		  *  pose_z       = 0
+		  *
+		  *  # Optional: initial commands to be sent to the GNSS receiver to set it up.
+		  *
+		  *
+		  *  # The following parameters are *DEPRECATED, DO NOT USE*. They are kept for backwards-compatibility only.
+		  *  #customInit   = JAVAD
+		  *  #JAVAD_rtk_src_port=/dev/ser/b
+		  *  #JAVAD_rtk_src_baud=9600
+		  *  #JAVAD_rtk_format=cmr
 		  *  \endcode
 		  *
 		  * - customInit: Custom commands to send, depending on the sensor. Valid values are:
@@ -61,13 +76,13 @@ namespace mrpt
 		  *
 		  *  <div align=center> <img src="mrpt_gps_classes_usage.png"> </div>
 		  *
-		  *  <b>VERSIONS HISTORY:</b>
-		  *		-9/JUN/2006: First version (JLBC)
-		  *		-4/JUN/2008: Added virtual methods for device-specific initialization commands.
-		  *		-10/JUN/2008: Converted into CGenericSensor class (there are no inhirited classes anymore).
-		  *		-7/DEC/2012: Added public static method to parse NMEA strings.
-		  *		-17/JUN/2014: Added GGA feedback.
-		  *		-24/JAN/2015: API changed for MTPT 1.4.0
+		  * <b>VERSIONS HISTORY:</b>
+		  * - 9/JUN/2006: First version (JLBC)
+		  * - 4/JUN/2008: Added virtual methods for device-specific initialization commands.
+		  * - 10/JUN/2008: Converted into CGenericSensor class (there are no inhirited classes anymore).
+		  * - 7/DEC/2012: Added public static method to parse NMEA strings.
+		  * - 17/JUN/2014: Added GGA feedback.
+		  * - 24/JAN/2015: API changed for MTPT 1.4.0
 		  *
 		  *  \note Verbose debug info will be dumped to cout if the environment variable "MRPT_HWDRIVERS_VERBOSE" is set to "1", or if you call CGenericSensor::enableVerbose(true)
 		  *  \note 
@@ -81,31 +96,33 @@ namespace mrpt
 			DEFINE_GENERIC_SENSOR(CGPSInterface)
 
 		public:
-			/** Constructor
-			  * \param BUFFER_LENGTH The size of the communications buffer (default value should be fine always)
-			  */
-			CGPSInterface( int BUFFER_LENGTH = 500, mrpt::hwdrivers::CSerialPort *outPort = NULL, mrpt::synch::CCriticalSection *csOutPort = NULL);
+			/** Read about parser selection in the documentation for CGPSInterface */
+			enum PARSERS
+			{
+				NMEA         = 0,
+				NOVATEL_OEM6
+			};
 
-			/** Destructor
-			  */
-			virtual ~CGPSInterface();
+			CGPSInterface(); //!< Default ctor
+			virtual ~CGPSInterface();  //!< Dtor
 
-			// See docs in parent class
-			void  doProcess();
+			void  doProcess(); // See docs in parent class
 
-			/** Returns true if communications work.
-			*/
-			bool  isGPS_connected();
+			bool  isGPS_connected(); //!< Returns true if communications work, i.e. if some message has been received.
+			bool  isGPS_signalAcquired(); //!< Returns true if the last message from the GPS indicates that the signal from sats has been acquired.
 
-			/** Returns true if the last message from the GPS indicates that the signal from sats has been acquired.
-			*/
-			bool  isGPS_signalAcquired();
-
+			/** \name Set-up and configuration 
+			  * @{ */
 			void  setSerialPortName(const std::string &COM_port);  //!< Set the serial port to use (COM1, ttyUSB0, etc).
 			std::string getSerialPortName() const;  //!< Get the serial port to use (COM1, ttyUSB0, etc).
 
+			void  setParser(PARSERS parser);  //!< Select the parser for incomming data, among the options enumerated in \a CGPSInterface
+			PARSERS getParser() const;
+
 			inline void setExternCOM( CSerialPort *outPort, mrpt::synch::CCriticalSection *csOutPort )
 			{ m_out_COM = outPort; m_cs_out_COM = csOutPort; }
+
+			/** @} */
 
 			inline bool isAIMConfigured() { return m_AIMConfigured; }
 
@@ -133,8 +150,7 @@ namespace mrpt
 			mrpt::synch::CCriticalSection   *m_cs_out_COM;
 			// --------------------------------------------
 
-			poses::CPoint3D	m_sensorPose;
-
+			poses::CPose3D m_sensorPose;
 			std::string		m_customInit;
 
 			/** See the class documentation at the top for expected parameters */
@@ -164,15 +180,15 @@ namespace mrpt
 			// --------------------------------------------
 
 		private:
-			std::string 	m_COMname;
-			int				m_COMbauds;
-			bool			m_GPS_comsWork;
-			bool			m_GPS_signalAcquired;
-			int				m_BUFFER_LENGTH;
+			mrpt::utils::circular_buffer<uint8_t> m_rx_buffer; //!< Auxiliary buffer for readings
+			PARSERS      m_parser;
+			std::string  m_raw_dump_file_prefix;
+			std::string  m_COMname;
+			int          m_COMbauds;
+			bool         m_GPS_comsWork;
+			bool         m_GPS_signalAcquired;
 
-			char			*m_buffer;
-			size_t			m_bufferLength;
-			size_t			m_bufferWritePos;
+			mrpt::utils::CFileOutputStream  m_raw_output_file;
 
 			std::string		m_JAVAD_rtk_src_port; 	//!< If not empty, will send a cmd "set,/par/pos/pd/port,...". Example value: "/dev/ser/b"
 			unsigned int	m_JAVAD_rtk_src_baud; 	//!< Only used when "m_JAVAD_rtk_src_port" is not empty
@@ -180,39 +196,50 @@ namespace mrpt
 
 			// MAR'11 -----------------------------------------
 			bool            m_useAIMMode;           //!< Use this mode for receive RTK corrections from a external source through the primary port
-            // ------------------------------------------------
+			// ------------------------------------------------
 			mrpt::system::TTimeStamp      m_last_timestamp;
 
 			// MAR'11 -----------------------------------------
 			bool            m_AIMConfigured;        //!< Indicates if the AIM has been properly set up.
 			double          m_data_period;          //!< The period in seconds which the data should be provided by the GPS
-            // ------------------------------------------------
+			// ------------------------------------------------
 
 			/** Returns true if the COM port is already open, or try to open it in other case.
 			  * \return true if everything goes OK, or false if there are problems opening the port.
 			  */
 			bool  tryToOpenTheCOM();
 
-			/** Process data in "m_buffer" to extract GPS messages, and remove them from the buffer.
-			  */
-			void  processBuffer();
+			void  processBuffer(); //!< Process data in "m_buffer" to extract GPS messages, and remove them from the buffer.
 
-			/** Process a complete string from the GPS:
-			  */
-			void  processGPSstring( const std::string &s);
+			void  implement_parser_NMEA();
+			void  implement_parser_NOVATEL_OEM6();
 
-			/* A private copy of the last received gps datum:
-			 */
+			void  processGPSstring( const std::string &s); //!< Process a complete string from the GPS:
+
+			/* A private copy of the last received gps datum */
 			mrpt::obs::CObservationGPS	            m_latestGPS_data;
 			mrpt::obs::CObservationGPS::TUTCTime   m_last_UTC_time;
-
+			
 			std::string   m_last_GGA; //!< Used in getLastGGA()
 			
 			void JAVAD_sendMessage(const char*str, bool waitForAnswer = true); //!< Private auxiliary method. Raises exception on error.
 
 		}; // end class
-
 	} // end namespace
+	// Specializations MUST occur at the same namespace:
+	namespace utils
+	{
+		template <>
+		struct TEnumTypeFiller<hwdrivers::CGPSInterface::PARSERS>
+		{
+			typedef hwdrivers::CGPSInterface::PARSERS enum_t;
+			static void fill(bimap<enum_t,std::string>  &m_map)
+			{
+				m_map.insert(hwdrivers::CGPSInterface::NMEA,          "NMEA");
+				m_map.insert(hwdrivers::CGPSInterface::NOVATEL_OEM6,  "NOVATEL_OEM6");
+			}
+		};
+	}
 } // end namespace
 
 #endif

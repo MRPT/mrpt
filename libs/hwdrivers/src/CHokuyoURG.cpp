@@ -34,11 +34,11 @@ CHokuyoURG::CHokuyoURG() :
 	m_firstRange(44),
 	m_lastRange(725),
 	m_motorSpeed_rpm(0),
-    m_sensorPose(0,0,0),
-    m_rx_buffer(40000),
+	m_sensorPose(0,0,0),
+	m_rx_buffer(40000),
 	m_verbose(true),
 	m_highSensMode(false),
-    m_reduced_fov(0),
+	m_reduced_fov(0),
 	m_com_port(""),
 	m_ip_dir(""),
 	m_port_dir(10940),
@@ -421,7 +421,7 @@ bool CHokuyoURG::assureBufferHasBytes(const size_t nDesiredBytes)
 			// 0 bytes read
 		}
 
-        return (m_rx_buffer.size()>=nDesiredBytes);
+		return (m_rx_buffer.size()>=nDesiredBytes);
 	}
 }
 
