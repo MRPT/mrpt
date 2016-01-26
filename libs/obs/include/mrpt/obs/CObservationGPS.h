@@ -71,12 +71,12 @@ namespace obs
 		  * Valid message classes are those derived from mrpt::obs::gnss::gnss_message. If another message of the same type exists, it is overwritten. */
 		template <class MSG_CLASS>
 		void setMsg(const MSG_CLASS &msg) {
-			messages[MSG_CLASS::msg_type].set(new MSG_CLASS(msg));
+            messages[static_cast<gnss::gnss_message_type_t>(MSG_CLASS::msg_type)].set(new MSG_CLASS(msg));
 		}
 		/** Returns true if the list \a CObservationGPS::messages contains one of the requested type. \sa mrpt::obs::gnss::gnss_message_type_t, CObservationGPS::getMsgByType() */
 		bool hasMsgType(const gnss::gnss_message_type_t type_id) const;
 		/** Like \a hasMsgType() but allows querying for message classes, from any of those derived from mrpt::obs::gnss::gnss_message \sa CObservationGPS::hasMsgType(),  */
-		template <class MSG_CLASS> bool hasMsgClass() const { return hasMsgType(MSG_CLASS::msg_type); }
+        template <class MSG_CLASS> bool hasMsgClass() const { return hasMsgType(static_cast<gnss::gnss_message_type_t>(MSG_CLASS::msg_type)); }
 		/** Returns a pointer to the message in the list CObservationGPS::messages of the requested type. Users normally would prefer using CObservationGPS::getMsgByClass() 
 		  * to avoid having to perform a dynamic_cast<>() on the returned pointer.
 		  * \exception std::runtime_error If there is no such a message in the list. Please, check existence before calling this method with CObservationGPS::hasMsgType()
@@ -90,7 +90,7 @@ namespace obs
 		  * \sa mrpt::obs::gnss::gnss_message_type_t, CObservationGPS::getMsgByType(), CObservationGPS::hasMsgType() */
 		template <class MSG_CLASS>
 		MSG_CLASS & getMsgByClass() {
-			message_list_t::iterator it = messages.find(MSG_CLASS::msg_type);
+            message_list_t::iterator it = messages.find(static_cast<gnss::gnss_message_type_t>(MSG_CLASS::msg_type));
 			ASSERTMSG_(it!=messages.end(), mrpt::format("[CObservationGPS::getMsgByClass] Cannot find any observation of type `%s`",typeid(MSG_CLASS).name()));
 			ASSERT_(it->second.get());
 			return *dynamic_cast<MSG_CLASS*>(it->second.get());
@@ -98,7 +98,7 @@ namespace obs
 		/** \overload */
 		template <class MSG_CLASS>
 		const MSG_CLASS & getMsgByClass() const {
-			message_list_t::const_iterator it = messages.find(MSG_CLASS::msg_type);
+            message_list_t::const_iterator it = messages.find(static_cast<gnss::gnss_message_type_t>(MSG_CLASS::msg_type));
 			ASSERTMSG_(it!=messages.end(), mrpt::format("[CObservationGPS::getMsgByClass] Cannot find any observation of type `%s`",typeid(MSG_CLASS).name()));
 			ASSERT_(it->second.get());
 			return *dynamic_cast<const MSG_CLASS*>(it->second.get());
@@ -107,13 +107,13 @@ namespace obs
 		/** Like CObservationGPS::getMsgByClass() but returns a NULL pointer if message is not found, instead of launching an exception */
 		template <class MSG_CLASS>
 		MSG_CLASS * getMsgByClassPtr() {
-			message_list_t::iterator it = messages.find(MSG_CLASS::msg_type);
+            message_list_t::iterator it = messages.find(static_cast<gnss::gnss_message_type_t>(MSG_CLASS::msg_type));
 			return it==messages.end() ? dynamic_cast<MSG_CLASS*>(NULL) : dynamic_cast<MSG_CLASS*>(it->second.get());
 		}
 		/** \overload */
 		template <class MSG_CLASS>
 		const MSG_CLASS * getMsgByClassPtr() const {
-			message_list_t::const_iterator it = messages.find(MSG_CLASS::msg_type);
+            message_list_t::const_iterator it = messages.find(static_cast<gnss::gnss_message_type_t>(MSG_CLASS::msg_type));
 			return it==messages.end() ? dynamic_cast<MSG_CLASS*>(NULL) : dynamic_cast<MSG_CLASS*>(it->second.get());
 		}
 
