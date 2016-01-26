@@ -2088,7 +2088,7 @@ void CPointsMap::loadFromVelodyneScan(
 
 	// Insert vs. load and replace:
 	if (!insertionOptions.addToExistingPointsMap)
-		resize(0); // Resize to 0 instead of clear() so the std::vector<> memory is not actually deadllocated and can be reused.
+		resize(0); // Resize to 0 instead of clear() so the std::vector<> memory is not actually deallocated and can be reused.
 
 	// Alloc space:
 	const size_t nOldPtsCount = this->size();
@@ -2099,10 +2099,13 @@ void CPointsMap::loadFromVelodyneScan(
 	const float K = 1.0f / 255;  // Intensity scale.
 
 	// global 3D pose:
-	CPose3D vehiclePose3D;
-	if (robotPose) vehiclePose3D = *robotPose;
+	CPose3D sensorGlobalPose;
+	if (robotPose) 
+	      sensorGlobalPose = *robotPose + scan.sensorPose;
+	else  sensorGlobalPose = scan.sensorPose;
+
 	mrpt::math::CMatrixDouble44 HM;
-	vehiclePose3D.getHomogeneousMatrix(HM);
+	sensorGlobalPose.getHomogeneousMatrix(HM);
 
 	// For quicker access to values as "float" instead of "doubles":
 	const float m00 = HM.get_unsafe(0,0), m01 = HM.get_unsafe(0,1), m02 = HM.get_unsafe(0,2), m03 = HM.get_unsafe(0,3);

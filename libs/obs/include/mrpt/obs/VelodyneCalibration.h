@@ -46,6 +46,8 @@ namespace obs
 		/** Loads calibration from a string containing an entire XML calibration file. \sa loadFromXMLFile \return false on any error, true on success */
 		bool loadFromXMLText(const std::string & xml_file_contents);
 
+// Pragma to ensure we can safely serialize some of these structures
+#pragma pack(push,1)
 		struct OBS_IMPEXP PerLaserCalib
 		{
 			double azimuthCorrection, verticalCorrection, distanceCorrection;
@@ -55,6 +57,7 @@ namespace obs
 			
 			PerLaserCalib();
 		};
+#pragma pack(pop)
 
 		std::vector<PerLaserCalib> laser_corrections;
 	private:
