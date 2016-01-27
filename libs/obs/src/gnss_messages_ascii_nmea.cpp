@@ -79,7 +79,12 @@ Message_NMEA_RMC::content_t::content_t() :
 	latitude_degrees(0),
 	longitude_degrees(0),
 	speed_knots(0),
-	direction_degrees(0)
+	direction_degrees(0),
+	date_day(0),
+	date_month(0),
+	date_year(0),
+	magnetic_dir(),
+	positioning_mode('N')
 { }
 
 void Message_NMEA_RMC::dumpToStream( mrpt::utils::CStream &out ) const

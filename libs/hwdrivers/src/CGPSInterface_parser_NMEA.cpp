@@ -23,9 +23,6 @@ using namespace std;
 MRPT_TODO("store originalReceivedTimestamp");
 
 
-/** Auxiliary function: Tokenize a string "str" into commas separated tokens */
-void  getNextToken(const std::string &str,std::string &token, unsigned int &parserPos);
-
 void  CGPSInterface::implement_parser_NMEA()
 {
 #if 0
@@ -84,37 +81,33 @@ void  CGPSInterface::implement_parser_NMEA()
 ----------------------------------------------------- */
 bool CGPSInterface::parse_NMEA(const std::string &s, mrpt::obs::CObservationGPS &out_obs, const bool verbose)
 {
-	// XXX
 	if (verbose)
 		cout << "[CGPSInterface] GPS raw string: " << s << endl;
 
-	bool parsed_ok = false;
-
 	// Firstly! If the string does not start with "$GP" it is not valid:
-	if (s.size()<7) return parsed_ok;
+	if (s.size()<7) return false;
+	if ( s[0]!='$' || s[1]!='G' ) return false;
 
-	if ( s[0]!='$' ||
-         s[1]!='G' ) return parsed_ok;
+	std::vector<std::string> lstTokens;
+	mrpt::system::tokenize(s," *,\t\r\n",lstTokens);
+	if (lstTokens.size()<3) return false;
 
+
+	bool parsed_ok = false;
 	// Try to determine the kind of command:
-	if ( s[3]=='G' &&
-         s[4]=='G' &&
-	     s[5]=='A' &&
-	     s[6]==',')
+	if (lstTokens[0]=="$GPGGA")
 	{
 		// ---------------------------------------------
 		//					GGA
 		// ---------------------------------------------
 		bool all_fields_ok=true;
-		unsigned int	parserPos = 7;
-		std::string		token;
+		std::string  token;
 
 		// Fill out the output structure:
 		gnss::Message_NMEA_GGA gga;
 
 		// Time:
-
-		getNextToken(s,token,parserPos); //printf("TOKEN: %s\n",token.c_str());
+		token = lstTokens[1];
 		if (token.size()>=6)
 		{
 			gga.fields.UTCTime.hour		= 10 * (token[0]-'0') + token[1]-'0';
@@ -124,7 +117,7 @@ bool CGPSInterface::parse_NMEA(const std::string &s, mrpt::obs::CObservationGPS 
 		else all_fields_ok = false;
 
 		// Latitude:
-		getNextToken(s,token,parserPos); //printf("TOKEN: %s\n",token.c_str());
+		token = lstTokens[2];
 		if (token.size()>=4)
 		{
 			double	lat = 10 * (token[0]-'0') + token[1]-'0';
@@ -134,14 +127,14 @@ bool CGPSInterface::parse_NMEA(const std::string &s, mrpt::obs::CObservationGPS 
 		else all_fields_ok = false;
 
 		// N/S:
-		getNextToken(s,token,parserPos); //printf("TOKEN: %s\n",token.c_str());
+		token = lstTokens[3];
 		if (token.empty())
 			all_fields_ok = false;
 		else if (token[0]=='S')
 			gga.fields.latitude_degrees = -gga.fields.latitude_degrees;
 
 		// Longitude:
-		getNextToken(s,token,parserPos); //printf("TOKEN: %s\n",token.c_str());
+		token = lstTokens[4];
 		if (token.size()>=5)
 		{
 			double	lat = 100 * (token[0]-'0') + 10 * (token[1]-'0')+ token[2]-'0';
@@ -151,7 +144,7 @@ bool CGPSInterface::parse_NMEA(const std::string &s, mrpt::obs::CObservationGPS 
 		else all_fields_ok = false;
 
 		// E_W:
-		getNextToken(s,token,parserPos); //printf("TOKEN: %s\n",token.c_str());
+		token = lstTokens[5];
 		if (token.empty())
 			all_fields_ok = false;
 		else
@@ -159,17 +152,17 @@ bool CGPSInterface::parse_NMEA(const std::string &s, mrpt::obs::CObservationGPS 
 			gga.fields.longitude_degrees = -gga.fields.longitude_degrees;
 
 		// fix quality:
-		getNextToken(s,token,parserPos); //printf("TOKEN: %s\n",token.c_str());
+		token = lstTokens[6];
 		if (!token.empty())
 			gga.fields.fix_quality = (unsigned char)atoi(token.c_str());
 
 		// sats:
-		getNextToken(s,token,parserPos); //printf("TOKEN: %s\n",token.c_str());
+		token = lstTokens[7];
 		if (!token.empty())
 			gga.fields.satellitesUsed = (unsigned char)atoi( token.c_str() );
 
 		// HDOP:
-		getNextToken(s,token,parserPos); //printf("TOKEN: %s\n",token.c_str());
+		token = lstTokens[8];
 		if (!token.empty())
 		{
 			gga.fields.HDOP = (float)atof( token.c_str() );
@@ -177,27 +170,27 @@ bool CGPSInterface::parse_NMEA(const std::string &s, mrpt::obs::CObservationGPS 
 		}
 
 		// Altitude:
-		getNextToken(s,token,parserPos); //printf("TOKEN: %s\n",token.c_str());
+		token = lstTokens[9];
 		if (token.empty()) all_fields_ok = false;
 		else gga.fields.altitude_meters = atof( token.c_str() );
 
-        // Units of the altitude:
-        getNextToken(s,token,parserPos); //printf("TOKEN: %s\n",token.c_str());
-//        ASSERT_(token == "M");
+		// Units of the altitude:
+//		token = lstTokens[10];
+//		ASSERT_(token == "M");
 
-        // Geoidal separation [B]:
-        getNextToken(s,token,parserPos); //printf("TOKEN: %s\n",token.c_str());
+		// Geoidal separation [B] (undulation)
+		token = lstTokens[11];
 		if (!token.empty())
 			gga.fields.geoidal_distance = atof( token.c_str() );
 
-        // Units of the geoidal separation:
-        getNextToken(s,token,parserPos); //printf("TOKEN: %s\n",token.c_str());
-//        ASSERT_(token == "M");
+		// Units of the geoidal separation:
+//		token = lstTokens[12];
+//		ASSERT_(token == "M");
 
-        // Total altitude [A]+[B] and mmGPS Corrected total altitude Corr([A]+[B]):
-        gga.fields.orthometric_altitude =
-        gga.fields.corrected_orthometric_altitude =
-        gga.fields.altitude_meters + gga.fields.geoidal_distance;
+		// Total altitude [A]+[B] and mmGPS Corrected total altitude Corr([A]+[B]):
+		gga.fields.orthometric_altitude =
+		gga.fields.corrected_orthometric_altitude =
+		gga.fields.altitude_meters + gga.fields.geoidal_distance;
 
 		if (all_fields_ok) {
 			out_obs.setMsg(gga);
@@ -208,26 +201,20 @@ bool CGPSInterface::parse_NMEA(const std::string &s, mrpt::obs::CObservationGPS 
 	else
 	{
 		// Try to determine the kind of command:
-		if ( s[3]=='R' &&
-             s[4]=='M' &&
-		     s[5]=='C' &&
-		     s[6]==',')
+		if ( lstTokens[0]=="$GPRMC")
 		{
-
 			// ---------------------------------------------
 			//					GPRMC
-			//
 			// ---------------------------------------------
 			bool all_fields_ok = true;
-			unsigned int	parserPos = 7;
-			std::string		token;
+			std::string token;
 
 			// Rellenar la estructura de "ultimo dato RMC recibido"
 			// Fill out the output structure:
 			gnss::Message_NMEA_RMC rmc;
 
 			// Time:
-			getNextToken(s,token,parserPos); //printf("TOKEN: %s\n",token.c_str());
+			token = lstTokens[1];
 			if (token.size()>=6)
 			{
 				rmc.fields.UTCTime.hour		= 10 * (token[0]-'0') + token[1]-'0';
@@ -237,12 +224,12 @@ bool CGPSInterface::parse_NMEA(const std::string &s, mrpt::obs::CObservationGPS 
 			else all_fields_ok = false;
 
 			// Valid?
-			getNextToken(s,token,parserPos); //printf("TOKEN: %s\n",token.c_str());
+			token = lstTokens[2];
 			if (token.empty()) all_fields_ok = false;
 			else rmc.fields.validity_char = token.c_str()[0];
 
 			// Latitude:
-			getNextToken(s,token,parserPos); //printf("TOKEN: %s\n",token.c_str());
+			token = lstTokens[3];
 			if (token.size()>=4)
 			{
 				double	lat = 10 * (token[0]-'0') + token[1]-'0';
@@ -252,13 +239,13 @@ bool CGPSInterface::parse_NMEA(const std::string &s, mrpt::obs::CObservationGPS 
 			else all_fields_ok = false;
 
 			// N/S:
-			getNextToken(s,token,parserPos); //printf("TOKEN: %s\n",token.c_str());
+			token = lstTokens[4];
 			if (token.empty()) all_fields_ok = false;
 			else if (token[0]=='S')
 				rmc.fields.latitude_degrees = -rmc.fields.latitude_degrees;
 
 			// Longitude:
-			getNextToken(s,token,parserPos); //printf("TOKEN: %s\n",token.c_str());
+			token = lstTokens[5];
 			if (token.size()>=5)
 			{
 				double	lat = 100 * (token[0]-'0') + 10 * (token[1]-'0')+ token[2]-'0';
@@ -268,18 +255,44 @@ bool CGPSInterface::parse_NMEA(const std::string &s, mrpt::obs::CObservationGPS 
 			else all_fields_ok = false;
 
 			// E/W:
-			getNextToken(s,token,parserPos); //printf("TOKEN: %s\n",token.c_str());
+			token = lstTokens[6];
 			if (token.empty()) all_fields_ok = false;
 			else if (token[0]=='W')
 				rmc.fields.longitude_degrees = -rmc.fields.longitude_degrees;
 
 			// Speed:
-			getNextToken(s,token,parserPos); //printf("TOKEN: %s\n",token.c_str());
+			token = lstTokens[7];
 			if (!token.empty()) rmc.fields.speed_knots = atof( token.c_str() );
 
 			// Direction:
-			getNextToken(s,token,parserPos); //printf("TOKEN: %s\n",token.c_str());
+			token = lstTokens[8];
 			if (!token.empty()) rmc.fields.direction_degrees= atof( token.c_str() );
+
+			// Date:
+			token = lstTokens[9];
+			if (token.size()>=6) {
+				rmc.fields.date_day   = 10 * (token[0]-'0') + token[1]-'0';
+				rmc.fields.date_month = 10 * (token[2]-'0') + token[3]-'0';
+				rmc.fields.date_year  = atoi( & (token.c_str()[4]) );
+			}
+			else all_fields_ok = false;
+
+			// Magnatic var
+			token = lstTokens[10];
+			if (token.size()>=2)
+				rmc.fields.magnetic_dir = atof(token.c_str());
+			else all_fields_ok = false;
+
+			// E/W:
+			token = lstTokens[11];
+			if (token.empty()) all_fields_ok = false;
+			else if (token[0]=='W')
+				rmc.fields.magnetic_dir = -rmc.fields.magnetic_dir;
+
+			// Mode ind.
+			token = lstTokens[12];
+			if (token.empty()) all_fields_ok = false;
+			else rmc.fields.positioning_mode = token.c_str()[0];
 
 			if (all_fields_ok) {
 				out_obs.setMsg(rmc);
@@ -293,41 +306,6 @@ bool CGPSInterface::parse_NMEA(const std::string &s, mrpt::obs::CObservationGPS 
 		}
 	}
 
-    return parsed_ok;
-}
-
-/* -----------------------------------------------------
-					processGPSstring
------------------------------------------------------ */
-void  getNextToken(
-    const std::string	&str,
-    std::string			&token,
-    unsigned int		&parserPos)
-{
-	unsigned int	start = parserPos;
-	char			c;
-
-	if (parserPos>=str.size())
-	{
-		token.resize(0);
-		return;
-	}
-
-	do
-	{
-		c = str[parserPos++];
-	} while (parserPos<str.size() && c!=',');
-
-	unsigned int	tokenSize = parserPos - 1 - start;
-	if (tokenSize<1)
-	{
-		token.resize(0);
-	}
-	else
-	{
-		token.resize( tokenSize );
-		memcpy( (void*)token.c_str(), str.c_str()+start, tokenSize );
-	}
-
+	return parsed_ok;
 }
 

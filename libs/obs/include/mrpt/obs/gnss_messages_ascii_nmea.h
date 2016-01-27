@@ -32,7 +32,7 @@ struct OBS_IMPEXP Message_NMEA_GGA : public gnss_message_binary_block
 		double   longitude_degrees; //!< The measured longitude, in degrees (East:+ , West:-)
 		uint8_t  fix_quality; //!< NMEA standard values: 0 = invalid, 1 = GPS fix (SPS), 2 = DGPS fix, 3 = PPS fix, 4 = Real Time Kinematic, 5 = Float RTK, 6 = estimated (dead reckoning) (2.3 feature), 7 = Manual input mode, 8 = Simulation mode */
 		double   altitude_meters; //!< The measured altitude, in meters (A).
-		double   geoidal_distance; //!< Difference between the measured altitude and the geoid, in meters (B).
+		double   geoidal_distance; //!< Undulation: Difference between the measured altitude and the geoid, in meters (B).
 		double   orthometric_altitude; //!< The measured orthometric altitude, in meters (A)+(B).
 		double   corrected_orthometric_altitude; //!< The corrected (only for TopCon mmGPS) orthometric altitude, in meters mmGPS(A+B).
 		uint32_t satellitesUsed; //!< The number of satelites used to compute this estimation.
@@ -80,6 +80,9 @@ struct OBS_IMPEXP Message_NMEA_RMC : public gnss_message_binary_block
 		double    longitude_degrees; //!< The measured longitude, in degrees (East:+ , West:-)
 		double    speed_knots; //!< Measured speed (in knots)
 		double    direction_degrees; //!< Measured speed direction (in degrees)
+		uint8_t   date_day, date_month,date_year; //!< Date: day (1-31), month (1-12), two-digits year (00-99)
+		double    magnetic_dir;      //!< Magnetic variation direction (East:+, West:-)
+		char      positioning_mode;  //!< 'A': Autonomous, 'D': Differential, 'N': Not valid, 'E': Estimated, 'M': Manual
 		content_t();
 	};
 	content_t  fields; //!< Message content, accesible by individual fields
