@@ -24,6 +24,8 @@
 		- Changes in apps:
 			- [rawlog-grabber](http://www.mrpt.org/list-of-mrpt-apps/application-rawlog-grabber/): Now does not show GPS and IMU debug data in console, unless `MRPT_HWDRIVERS_VERBOSE` environment variable is set.
 		- Changes in libraries:
+			- \ref mrpt_base_grp
+				- [ABI change] mrpt::system::tokenize() new parameter `skipBlankTokens`
 			- \ref mrpt_hwdrivers_grp
 				- New class mrpt::hwdrivers::CVelodyneScanner
 				- mrpt::hwdrivers::CNTRIPEmitter now has a parameter to enable/disable sending back the data from the serial port to the NTRIP caster.
