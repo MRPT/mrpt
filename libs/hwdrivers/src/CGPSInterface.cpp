@@ -23,7 +23,6 @@ using namespace std;
 
 IMPLEMENTS_GENERIC_SENSOR(CGPSInterface,mrpt::hwdrivers)
 
-MRPT_TODO("Offer method to write commands to the GPS");
 MRPT_TODO("Parse (some) novatel binary frames");
 
 MRPT_TODO("Export to binary file from rawlog-edit")
@@ -650,3 +649,15 @@ bool CGPSInterface::legacy_topcon_setup_commands()
 	return true;
 }
 
+/** Send a custom data block to the GNSS device right now. Can be used to change its behavior online as needed. */
+bool CGPSInterface::sendCustomCommand(const void* data, const size_t datalen)
+{
+	try {
+		MRPT_TODO("Replace m_COM here by generic stream object")
+		const size_t written = m_COM.Write(data,datalen);
+		return written == datalen;
+	}
+	catch(...) {
+		return false;
+	}
+}

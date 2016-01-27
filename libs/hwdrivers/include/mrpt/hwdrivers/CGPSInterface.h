@@ -131,6 +131,10 @@ namespace mrpt
 
 			void enableSetupCommandsAppendCRLF(const bool enable);
 			bool isEnabledSetupCommandsAppendCRLF() const;
+
+			/** Send a custom data block to the GNSS device right now. Can be used to change its behavior online as needed. 
+			  \return false on communication error */
+			bool sendCustomCommand(const void* data, const size_t datalen);
 			/** @} */
 
 			inline bool isAIMConfigured() { return m_topcon_AIMConfigured; }
