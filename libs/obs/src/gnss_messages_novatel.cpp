@@ -102,11 +102,73 @@ Message_NV_OEM6_BESTPOS::content_t::content_t() :
 	base_station_id[0]=0;
 }
 
+const char* nv_solution_status_t_str[] = {
+	"SOL_COMPUTED",
+	"INSUFFICIENT_OBS",
+	"NO_CONVERGENCE",
+	"SINGULARITY",
+	"COV_TRACE",
+	"TEST_DIST",
+	"COLD_START",
+	"V_H_LIMIT",
+	"VARIANCE",
+	"RESIDUALS",
+	"DELTA_POS",
+	"NEGATIVE_VAR",
+	"(UNKNOWN)",
+	"INTEGRITY_WARNING",
+	"INS_INACTIVE",
+	"INS_ALIGNING",
+	"INS_BAD",
+	"IMU_UNPLUGGED",
+	"PENDING",
+	"INVALID_FIX"
+};
+
 void Message_NV_OEM6_BESTPOS::dumpToStream( mrpt::utils::CStream &out ) const
 {
+	static bool init_map = false;
+	static std::map<int,const char*> nv_position_type_t_str;
+	if (!init_map) 
+	{
+		init_map = true;
+#define DEF_POS_TYPE_STR(_NAME) nv_position_type_t_str[nv_oem6_position_type::_NAME] = #_NAME;
+
+		DEF_POS_TYPE_STR(NONE)
+		DEF_POS_TYPE_STR(FIXEDPOS)
+		DEF_POS_TYPE_STR(FIXEDHEIGHT)
+		DEF_POS_TYPE_STR(Reserved)
+		DEF_POS_TYPE_STR(FLOATCONV)
+		DEF_POS_TYPE_STR(WIDELANE)
+		DEF_POS_TYPE_STR(NARROWLANE)
+		DEF_POS_TYPE_STR(DOPPLER_VELOCITY)
+		DEF_POS_TYPE_STR(SINGLE)
+		DEF_POS_TYPE_STR(PSRDIFF)
+		DEF_POS_TYPE_STR(WAAS)
+		DEF_POS_TYPE_STR(PROPOGATED)
+		DEF_POS_TYPE_STR(OMNISTAR)
+		DEF_POS_TYPE_STR(L1_FLOAT)
+		DEF_POS_TYPE_STR(IONOFREE_FLOAT)
+		DEF_POS_TYPE_STR(NARROW_FLOAT)
+		DEF_POS_TYPE_STR(L1_INT)
+		DEF_POS_TYPE_STR(WIDE_INT)
+		DEF_POS_TYPE_STR(NARROW_INT)
+		DEF_POS_TYPE_STR(RTK_DIRECT_INS)
+		DEF_POS_TYPE_STR(INS)
+		DEF_POS_TYPE_STR(INS_PSRSP)
+		DEF_POS_TYPE_STR(INS_PSRDIFF)
+		DEF_POS_TYPE_STR(INS_RTKFLOAT)
+		DEF_POS_TYPE_STR(INS_RTKFIXED)
+		DEF_POS_TYPE_STR(OMNISTAR_HP)
+		DEF_POS_TYPE_STR(OMNISTAR_XP)
+		DEF_POS_TYPE_STR(CDGPS)
+	}
+
 	out.printf("[Novatel OEM6 BESTPOS]\n");
-	out.printf(" Solution status: %u\n", (unsigned)fields.solution_stat);
-	out.printf(" Position type  : %u\n", (unsigned)fields.position_type);
+	out.printf(" Solution status: %u\n", 
+		((unsigned)fields.solution_stat<sizeof(nv_solution_status_t_str)/sizeof(nv_solution_status_t_str[0])) ? 
+			nv_solution_status_t_str[(unsigned)fields.solution_stat] : "???" );
+	out.printf(" Position type  : %u\n", nv_position_type_t_str[(unsigned)fields.position_type]);
 	out.printf(" Longitude: %.09f deg  Latitude: %.09f deg  Height: %.03f m\n",
 		fields.lon,
 		fields.lat,
