@@ -10,6 +10,7 @@
 #include "obs-precomp.h"   // Precompiled headers
 
 #include <mrpt/obs/gnss_messages_novatel.h>
+#include <map>
 
 using namespace std;
 using namespace mrpt::obs::gnss;
@@ -165,10 +166,10 @@ void Message_NV_OEM6_BESTPOS::dumpToStream( mrpt::utils::CStream &out ) const
 	}
 
 	out.printf("[Novatel OEM6 BESTPOS]\n");
-	out.printf(" Solution status: %u\n", 
+	out.printf(" Solution status: `%s`\n", 
 		((unsigned)fields.solution_stat<sizeof(nv_solution_status_t_str)/sizeof(nv_solution_status_t_str[0])) ? 
 			nv_solution_status_t_str[(unsigned)fields.solution_stat] : "???" );
-	out.printf(" Position type  : %u\n", nv_position_type_t_str[(unsigned)fields.position_type]);
+	out.printf(" Position type  : `%s`\n", nv_position_type_t_str[(unsigned)fields.position_type]);
 	out.printf(" Longitude: %.09f deg  Latitude: %.09f deg  Height: %.03f m\n",
 		fields.lon,
 		fields.lat,
