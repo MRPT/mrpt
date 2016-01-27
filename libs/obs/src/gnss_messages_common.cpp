@@ -29,8 +29,13 @@ gnss_message*  gnss_message::Factory(const gnss_message_type_t msg_id)
 	case TOPCON_SATS: return new Message_TopCon_SATS();
 
 	// ====== Novatel OEM6 ====== 
+	case NV_OEM6_GENERIC_FRAME: return new Message_NV_OEM6_GENERIC_FRAME();
+	case NV_OEM6_BESTPOS:       return new Message_NV_OEM6_BESTPOS();
 
 	// ====== Novatel SPAN+OEM6 ====== 
+	case NV_OEM6_GENERIC_SHORT_FRAME: return new Message_NV_OEM6_GENERIC_FRAME_SHORT();
+	case NV_OEM6_INSPVAS:             return new Message_NV_OEM6_INSPVAS();
+		
 
 	default: 
 		return NULL;

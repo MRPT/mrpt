@@ -38,6 +38,10 @@ enum gnss_message_type_t
 	// See "OEM6 Family Firmware Reference Manual"
 	NV_OEM6_MSG2ENUM         = 1000,
 
+	NV_OEM6_GENERIC_FRAME       = 3000 + NV_OEM6_MSG2ENUM,  // Generic container
+	NV_OEM6_GENERIC_SHORT_FRAME = 3001 + NV_OEM6_MSG2ENUM,  // Generic container (short header)
+
+
 	NV_OEM6_ALIGNBSLNENU     = 1315 + NV_OEM6_MSG2ENUM,
 	NV_OEM6_ALIGNBSLNXYZ     = 1314 + NV_OEM6_MSG2ENUM,
 	NV_OEM6_ALIGNDOP         = 1332 + NV_OEM6_MSG2ENUM,
@@ -66,7 +70,7 @@ enum gnss_message_type_t
 	// ====== Novatel SPAN+OEM6 ====== 
 	// See "SPAN on OEM6 firmware reference"
 
-	NV_OEM6_INSPVAS      =  1305  + NV_OEM6_MSG2ENUM, // Most recent position, velocity and attitude at full rate of IMU (short header)
+	NV_OEM6_INSPVAS      =   508  + NV_OEM6_MSG2ENUM, // Most recent position, velocity and attitude at full rate of IMU (short header)
 	NV_OEM6_INSATTS      =   319  + NV_OEM6_MSG2ENUM, // Most recent attitude (roll, pitch and azimuth) measurements (short header)
 	NV_OEM6_INSCOVS      =   320  + NV_OEM6_MSG2ENUM, // Position, attitude, and velocity matrices with respect to the local level frame (short header)
 	NV_OEM6_INSVELS      =   324  + NV_OEM6_MSG2ENUM, // Most recent North, East, and Up velocity vector values (short header)

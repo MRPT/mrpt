@@ -32,6 +32,61 @@ nv_oem6_header_t::nv_oem6_header_t() :
 	synch[0]=synch[1]=synch[2]=0;
 }
 
+nv_oem6_short_header_t::nv_oem6_short_header_t() :
+	msg_len(),
+	msg_id(),
+	week(),
+	ms_in_week()
+{
+	synch[0]=synch[1]=synch[2]=0;
+}
+
+
+// ------------
+void Message_NV_OEM6_GENERIC_FRAME::dumpToStream( mrpt::utils::CStream &out ) const
+{
+	out.printf("[Novatel OEM6 GENERIC FRAME]\n");
+	out.printf(" Message ID: %u\n", (unsigned)this->header.msg_id);
+}
+void Message_NV_OEM6_GENERIC_FRAME::internal_writeToStream(mrpt::utils::CStream &out) const
+{
+	out.WriteBuffer(&header,sizeof(header));
+	out << static_cast<uint32_t>(msg_body.size());
+	if (!msg_body.empty())
+		out.WriteBuffer(&msg_body[0],msg_body.size());
+}
+void Message_NV_OEM6_GENERIC_FRAME::internal_readFromStream(mrpt::utils::CStream &in)
+{
+	in.ReadBuffer(&header,sizeof(header));
+	uint32_t nBytesInStream;
+	in >> nBytesInStream;
+	msg_body.resize(nBytesInStream);
+	if (nBytesInStream)
+		in.ReadBuffer(&msg_body[0],sizeof(nBytesInStream));
+}
+// ------------
+void Message_NV_OEM6_GENERIC_FRAME_SHORT::dumpToStream( mrpt::utils::CStream &out ) const
+{
+	out.printf("[Novatel OEM6 GENERIC SHORT FRAME]\n");
+	out.printf(" Message ID: %u\n", (unsigned)this->header.msg_id);
+}
+void Message_NV_OEM6_GENERIC_FRAME_SHORT::internal_writeToStream(mrpt::utils::CStream &out) const
+{
+	out.WriteBuffer(&header,sizeof(header));
+	out << static_cast<uint32_t>(msg_body.size());
+	if (!msg_body.empty())
+		out.WriteBuffer(&msg_body[0],msg_body.size());
+}
+void Message_NV_OEM6_GENERIC_FRAME_SHORT::internal_readFromStream(mrpt::utils::CStream &in)
+{
+	in.ReadBuffer(&header,sizeof(header));
+	uint32_t nBytesInStream;
+	in >> nBytesInStream;
+	msg_body.resize(nBytesInStream);
+	if (nBytesInStream)
+		in.ReadBuffer(&msg_body[0],sizeof(nBytesInStream));
+}
+
 // ------------
 Message_NV_OEM6_BESTPOS::content_t::content_t() :
 	solution_stat(), position_type(),
@@ -57,4 +112,19 @@ void Message_NV_OEM6_BESTPOS::dumpToStream( mrpt::utils::CStream &out ) const
 		fields.lat,
 		fields.hgt );
 }
+
+// ------------
+Message_NV_OEM6_INSPVAS::content_t::content_t() 
+{
+}
+
+void Message_NV_OEM6_INSPVAS::dumpToStream( mrpt::utils::CStream &out ) const
+{
+	out.printf("[Novatel OEM6 INSPVAS]\n");
+	out.printf(" INS status: %u\n", (unsigned)fields.ins_status);
+	out.printf(" Longitude: %.09f deg  Latitude: %.09f deg  Height: %.03f m\n", fields.lon, fields.lat, fields.hgt );
+	out.printf(" Velocities: Nort: %.05f  East: %.05f  Up: %.05f\n", fields.vel_north, fields.vel_east, fields.vel_up);
+	out.printf(" Attitude: Roll: %.05f  Pitch: %.05f  Azimuth: %.05f\n", fields.roll, fields.pitch, fields.azimuth);
+}
+
 
