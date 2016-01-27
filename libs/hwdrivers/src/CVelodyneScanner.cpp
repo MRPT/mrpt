@@ -148,6 +148,16 @@ void CVelodyneScanner::loadConfig_sensorSpecific(
 	MRPT_LOAD_HERE_CONFIG_VAR(pcap_read_fast,bool, m_pcap_read_fast ,  cfg, sect);
 	MRPT_LOAD_HERE_CONFIG_VAR(pcap_repeat_delay,double, m_pcap_repeat_delay ,  cfg, sect);
 
+	using mrpt::utils::DEG2RAD;
+	m_sensorPose = mrpt::poses::CPose3D(
+		cfg.read_float(sect,"pose_x",0),
+		cfg.read_float(sect,"pose_y",0),
+		cfg.read_float(sect,"pose_z",0),
+		DEG2RAD( cfg.read_float(sect,"pose_yaw",0) ),
+		DEG2RAD( cfg.read_float(sect,"pose_pitch",0) ),
+		DEG2RAD( cfg.read_float(sect,"pose_roll",0) )
+		);
+
 	std::string calibration_file;
 	MRPT_LOAD_CONFIG_VAR(calibration_file,string,cfg, sect);
 	if (!calibration_file.empty())
