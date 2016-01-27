@@ -20,60 +20,51 @@ using namespace mrpt::system;
 using namespace mrpt::synch;
 using namespace std;
 
-MRPT_TODO("store originalReceivedTimestamp");
-
+const size_t MAX_NMEA_LINE_LENGTH = 1024;
 
 void  CGPSInterface::implement_parser_NMEA()
 {
-#if 0
-	unsigned int	i=0, lineStart = 0;
+	uint8_t peek_buffer[MAX_NMEA_LINE_LENGTH];
 
-	while (i<m_bufferLength)
+	while (m_rx_buffer.size()>=3)
 	{
-		// Loof for the first complete line of text:
-		while (i<m_bufferLength && m_buffer[i]!='\r' && m_buffer[i]!='\n')
-			i++;
+		const size_t nBytesAval = m_rx_buffer.size();  // Available for read
 
-		// End of buffer or end of line?
-		if (i<m_bufferLength)
-		{
-			// It is the end of a line: Build the string:
-			std::string		str;
-			int				lenOfLine = i-1 - lineStart;
-			if (lenOfLine>0)
-			{
-				str.resize( lenOfLine );
-				memcpy( (void*)str.c_str(), m_buffer + lineStart, lenOfLine );
-
-				// Process it!:
-				processGPSstring(str);
-			}
-
-			// And this means the comms works!
-			m_GPS_comsWork			= true;
-
-            m_state = ssWorking;
-
-			// Pass over this end of line:
-			while (i<m_bufferLength && (m_buffer[i]=='\r' || m_buffer[i]=='\n'))
-				i++;
-
-			// And start a new line:
-			lineStart = i;
+		// If the string does not start with "$GP" it is not valid:
+		m_rx_buffer.peek_many(&peek_buffer[0],3);
+		if (peek_buffer[0]!='$' || peek_buffer[1]!='G' || peek_buffer[2]!='P') {
+			// Not the start of a NMEA string, skip 1 char:
+			m_rx_buffer.pop();
+			continue;
 		}
-
-	};
-
-	// Dejar en el buffer desde "lineStart" hasta "i-1", inclusive.
-	size_t	newBufLen = m_bufferLength - lineStart;
-
-	memcpy( m_buffer, m_buffer + lineStart, newBufLen);
-
-	m_bufferLength = newBufLen;
-
-	// Seguir escribiendo por aqui:
-	m_bufferWritePos = i - lineStart;
-#endif
+		else 
+		{
+			// It starts OK: try to find the end of the line
+			std::string  line;
+			bool line_is_ended = false;
+			for (size_t i=0;i<nBytesAval;i++)
+			{
+				const char val = static_cast<char>(m_rx_buffer.peek(i));
+				if (val=='\r' || val=='\n') {
+					line_is_ended = true;
+					break;
+				}
+				line.push_back(val);
+			}
+			if (line_is_ended)
+			{ // Parse:
+				const bool did_have_gga = m_just_parsed_messages.has_GGA_datum;
+				if (CGPSInterface::parse_NMEA(line,m_just_parsed_messages, false /*verbose*/))
+				{
+					// Save GGA cache (useful for NTRIP,...)
+					const bool now_has_gga = m_just_parsed_messages.has_GGA_datum;
+					if (now_has_gga && !did_have_gga) {
+						m_last_GGA = line;
+					}
+				}
+			}
+		}
+	} // end while data in buffer
 }
 
 /* -----------------------------------------------------
@@ -194,6 +185,7 @@ bool CGPSInterface::parse_NMEA(const std::string &s, mrpt::obs::CObservationGPS 
 
 		if (all_fields_ok) {
 			out_obs.setMsg(gga);
+			out_obs.originalReceivedTimestamp = mrpt::system::now();
 			out_obs.timestamp = gga.fields.UTCTime.getAsTimestamp( mrpt::system::now() );
 		}
 		parsed_ok = all_fields_ok;
@@ -296,6 +288,7 @@ bool CGPSInterface::parse_NMEA(const std::string &s, mrpt::obs::CObservationGPS 
 
 			if (all_fields_ok) {
 				out_obs.setMsg(rmc);
+				out_obs.originalReceivedTimestamp = mrpt::system::now();
 				out_obs.timestamp = rmc.fields.UTCTime.getAsTimestamp( mrpt::system::now() );
 			}
 			parsed_ok = all_fields_ok;

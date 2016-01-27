@@ -56,6 +56,9 @@ namespace mrpt
 		  *  pose_x       = 0      // (meters)
 		  *  pose_y       = 0
 		  *  pose_z       = 0
+		  *  pose_yaw     = 0      // (deg)
+		  *  pose_pitch   = 0
+		  *  pose_roll    = 0
 		  *
 		  *  # Optional: list of initial commands to be sent to the GNSS receiver to set it up.
 		  *  # An arbitrary number of commands can be defined, but their names must be "setup_cmd%d" starting at "1". 
@@ -220,8 +223,6 @@ namespace mrpt
 
 			void  implement_parser_NMEA();
 			void  implement_parser_NOVATEL_OEM6();
-
-			void  processGPSstring( const std::string &s); //!< Process a complete string from the GPS:
 
 			mrpt::obs::CObservationGPS  m_just_parsed_messages; //!< A private copy of the last received gps datum
 			std::string   m_last_GGA; //!< Used in getLastGGA()

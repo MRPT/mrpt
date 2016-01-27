@@ -18,6 +18,7 @@ using namespace mrpt::hwdrivers;
 using namespace mrpt::obs;
 using namespace mrpt::system;
 using namespace mrpt::synch;
+using namespace mrpt::utils;
 using namespace std;
 
 IMPLEMENTS_GENERIC_SENSOR(CGPSInterface,mrpt::hwdrivers)
@@ -94,10 +95,14 @@ void  CGPSInterface::loadConfig_sensorSpecific(
 		m_setup_cmds.push_back(sLine);
 	}
 
-	m_sensorPose.x( configSource.read_float( iniSection, "pose_x",0, false ) );
-	m_sensorPose.y( configSource.read_float( iniSection, "pose_y",0, false ) );
-	m_sensorPose.z( configSource.read_float( iniSection, "pose_z",0, false ) );
-	MRPT_TODO("ORIENTATION");
+	m_sensorPose.setFromValues(
+		configSource.read_float(iniSection,"pose_x",0),
+		configSource.read_float(iniSection,"pose_y",0),
+		configSource.read_float(iniSection,"pose_z",0),
+		DEG2RAD( configSource.read_float(iniSection,"pose_yaw",0) ),
+		DEG2RAD( configSource.read_float(iniSection,"pose_pitch",0) ),
+		DEG2RAD( configSource.read_float(iniSection,"pose_roll",0) )
+		);
 
 	m_JAVAD_rtk_src_port = configSource.read_string(iniSection, "JAVAD_rtk_src_port",m_JAVAD_rtk_src_port );
 	m_JAVAD_rtk_src_baud = configSource.read_int(iniSection, "JAVAD_rtk_src_baud",m_JAVAD_rtk_src_baud );
@@ -372,12 +377,20 @@ void  CGPSInterface::doProcess()
 
 	if (do_append_obs)
 	{
+		// Generic observation data:
+		m_just_parsed_messages.sensorPose     = m_sensorPose;
+		m_just_parsed_messages.sensorLabel    = m_sensorLabel;
+
 		// Add observation to the output queue:
 		CObservationGPSPtr newObs = CObservationGPS::Create();
 		m_just_parsed_messages.swap(*newObs);
 		CGenericSensor::appendObservation( newObs );
 		m_just_parsed_messages.clear();
 		m_last_timestamp = m_just_parsed_messages.timestamp;
+
+		// And this means the comms works:
+		m_GPS_comsWork = true;
+		m_state = ssWorking;
 	}
 }
 
@@ -394,27 +407,6 @@ void  CGPSInterface::parseBuffer()
 	default: throw std::runtime_error("[CGPSInterface] Unknown parser!");
 	};
 }
-
-/* -----------------------------------------------------
-					processGPSstring
------------------------------------------------------ */
-void  CGPSInterface::processGPSstring(const std::string &s)
-{
-	const bool did_have_gga = m_just_parsed_messages.has_GGA_datum;
-	// Parse:
-	CGPSInterface::parse_NMEA(s,m_just_parsed_messages, m_verbose);
-	
-	// Save GGA cache (useful for NTRIP,...)
-	const bool has_gga = m_just_parsed_messages.has_GGA_datum;
-	if (has_gga && !did_have_gga) {
-		m_last_GGA = s;
-	}
-
-	// Generic observation data:
-	m_just_parsed_messages.sensorPose     = m_sensorPose;
-	m_just_parsed_messages.sensorLabel    = m_sensorLabel;
-}
-
 
 /* -----------------------------------------------------
 					JAVAD_sendMessage
