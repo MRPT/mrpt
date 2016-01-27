@@ -17,7 +17,6 @@
 using namespace mrpt::hwdrivers;
 using namespace mrpt::obs;
 using namespace mrpt::system;
-using namespace mrpt::synch;
 using namespace std;
 
 const size_t MAX_NMEA_LINE_LENGTH = 1024;
