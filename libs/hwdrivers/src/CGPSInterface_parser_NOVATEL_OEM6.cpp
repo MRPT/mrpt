@@ -91,6 +91,7 @@ void  CGPSInterface::implement_parser_NOVATEL_OEM6()
 				continue;
 			}
 			m_just_parsed_messages.messages[msg->message_type] = msg;
+			m_just_parsed_messages.originalReceivedTimestamp = mrpt::system::now();
 			continue;
 		} // end short hdr
 
