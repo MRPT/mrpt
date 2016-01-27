@@ -90,20 +90,23 @@ Message_NMEA_RMC::content_t::content_t() :
 void Message_NMEA_RMC::dumpToStream( mrpt::utils::CStream &out ) const
 {
 	out.printf("[NMEA RMC datum]\n");
+	out.printf(" Positioning mode: `%c`\n ", (char)fields.positioning_mode);
+	out.printf(" UTC time-stamp: %02u:%02u:%02.03f\n",
+		fields.UTCTime.hour,
+		fields.UTCTime.minute,
+		fields.UTCTime.sec
+		);
+	out.printf(" Date (DD/MM/YY): %02u/%02u/%02u\n ",
+		(unsigned)fields.date_day,(unsigned)fields.date_month, (unsigned)fields.date_year);
 	out.printf("  Longitude: %.09f deg  Latitude: %.09f deg  Valid?: '%c'\n",
 		fields.longitude_degrees,
 		fields.latitude_degrees,
 		fields.validity_char
 		);
-	out.printf("  UTC time-stamp: %02u:%02u:%02.03f  ",
-		fields.UTCTime.hour,
-		fields.UTCTime.minute,
-		fields.UTCTime.sec
-		);
-
 	out.printf(" Speed: %.05f knots  Direction:%.03f deg.\n ",
 		fields.speed_knots,
 		fields.direction_degrees
 		);
+	out.printf(" Magnetic variation direction: %.04f deg\n ", fields.magnetic_dir);
 	}
 
