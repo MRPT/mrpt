@@ -24,13 +24,12 @@ const size_t MAX_NMEA_LINE_LENGTH = 1024;
 
 void  CGPSInterface::implement_parser_NMEA()
 {
-	uint8_t peek_buffer[MAX_NMEA_LINE_LENGTH];
-
 	while (m_rx_buffer.size()>=3)
 	{
 		const size_t nBytesAval = m_rx_buffer.size();  // Available for read
 
 		// If the string does not start with "$GP" it is not valid:
+		uint8_t peek_buffer[3];
 		m_rx_buffer.peek_many(&peek_buffer[0],3);
 		if (peek_buffer[0]!='$' || peek_buffer[1]!='G' || peek_buffer[2]!='P') {
 			// Not the start of a NMEA string, skip 1 char:
@@ -42,7 +41,7 @@ void  CGPSInterface::implement_parser_NMEA()
 			// It starts OK: try to find the end of the line
 			std::string  line;
 			bool line_is_ended = false;
-			for (size_t i=0;i<nBytesAval;i++)
+			for (size_t i=0;i<nBytesAval && i<MAX_NMEA_LINE_LENGTH;i++)
 			{
 				const char val = static_cast<char>(m_rx_buffer.peek(i));
 				if (val=='\r' || val=='\n') {
@@ -52,7 +51,11 @@ void  CGPSInterface::implement_parser_NMEA()
 				line.push_back(val);
 			}
 			if (line_is_ended)
-			{ // Parse:
+			{ 
+				// Pop from buffer:
+				for (size_t i=0;i<line.size();i++) m_rx_buffer.pop();
+
+				// Parse:
 				const bool did_have_gga = m_just_parsed_messages.has_GGA_datum;
 				if (CGPSInterface::parse_NMEA(line,m_just_parsed_messages, false /*verbose*/))
 				{

@@ -20,8 +20,6 @@ namespace gnss {
   */
 enum gnss_message_type_t
 {
-	NONE                   = 0,      //!< Empty message
-
 	// ====== NMEA ====== 
 	NMEA_GGA               = 10,
 	NMEA_GLL,

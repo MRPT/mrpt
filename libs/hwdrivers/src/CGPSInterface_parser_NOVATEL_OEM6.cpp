@@ -22,9 +22,13 @@ using namespace std;
 
 MRPT_TODO("store originalReceivedTimestamp");
 
-
 void  CGPSInterface::implement_parser_NOVATEL_OEM6()
 {
 #if 0
+	while (m_rx_buffer.size()>=3)
+	{
+		const size_t nBytesAval = m_rx_buffer.size();  // Available for read
+
+	} // end while data in buffer
 #endif
 }
