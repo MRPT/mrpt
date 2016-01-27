@@ -94,6 +94,7 @@ enum nv_position_type_t {
 	OMNISTAR_XP = 65,
 	CDGPS = 66
 };
+	const std::string OBS_IMPEXP & enum2str(int val); //!< for nv_position_type_t
 }
 
 namespace nv_oem6_solution_status {
@@ -119,6 +120,7 @@ enum nv_solution_status_t {
 	PENDING = 18,		//!< when a fix position command is entered, the receiver computes its own position and determines if the fixed position is valid
 	INVALID_FIX			//!< the fixed position entered using the fix position command is not valid
 };
+	const std::string OBS_IMPEXP & enum2str(int val); //!< for nv_solution_status_t
 }
 namespace nv_oem6_ins_status_type {
 /** Novatel SPAN on OEM6 firmware reference, table 33 */
@@ -132,6 +134,7 @@ enum nv_ins_status_type_t {
 	DETERMINING_ORIENTATION = 8, // INS is determining the IMU axis aligned with gravity.
 	WAITING_INITIALPOS = 9 // The INS filter has determined the IMU orientation and is awaiting an initial position estimate to begin the alignment process.
 };
+	const std::string OBS_IMPEXP & enum2str(int val); //!< for nv_ins_status_type_t
 }
 
 /** Novatel generic frame (to store frames without a parser at the present time). \sa mrpt::obs::CObservationGPS  */
@@ -176,7 +179,7 @@ struct OBS_IMPEXP Message_NV_OEM6_BESTPOS : public gnss_message
 		nv_oem6_header_t   header;  //!< Frame header
 		uint32_t   solution_stat;   //!< nv_oem6_solution_status::nv_solution_status_t
 		uint32_t   position_type;   //!< nv_oem6_position_type::nv_position_type_t
-		double     lat,lon,hgt;
+		double     lat,lon,hgt;     //!< [deg], [deg], [m]
 		float      undulation;
 		uint32_t   datum_id;
 		float      lat_sigma, lon_sigma, hgt_sigma;

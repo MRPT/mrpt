@@ -103,77 +103,72 @@ Message_NV_OEM6_BESTPOS::content_t::content_t() :
 	base_station_id[0]=0;
 }
 
-const char* nv_solution_status_t_str[] = {
-	"SOL_COMPUTED",
-	"INSUFFICIENT_OBS",
-	"NO_CONVERGENCE",
-	"SINGULARITY",
-	"COV_TRACE",
-	"TEST_DIST",
-	"COLD_START",
-	"V_H_LIMIT",
-	"VARIANCE",
-	"RESIDUALS",
-	"DELTA_POS",
-	"NEGATIVE_VAR",
-	"(UNKNOWN)",
-	"INTEGRITY_WARNING",
-	"INS_INACTIVE",
-	"INS_ALIGNING",
-	"INS_BAD",
-	"IMU_UNPLUGGED",
-	"PENDING",
-	"INVALID_FIX"
-};
+const std::string OBS_IMPEXP & nv_oem6_solution_status::enum2str(int val)
+{
+	static bool init_map = false;
+	static std::map<int,std::string> val2str;
+	if (!init_map) {
+		init_map = true;
+#define DEF_TYPESTR(_NAME) val2str[nv_oem6_solution_status::_NAME] = #_NAME;
+	DEF_TYPESTR(SOL_COMPUTED)	DEF_TYPESTR(INSUFFICIENT_OBS)	DEF_TYPESTR(NO_CONVERGENCE)
+	DEF_TYPESTR(SINGULARITY)	DEF_TYPESTR(COV_TRACE)			DEF_TYPESTR(TEST_DIST)
+	DEF_TYPESTR(COLD_START)		DEF_TYPESTR(V_H_LIMIT)			DEF_TYPESTR(VARIANCE)
+	DEF_TYPESTR(RESIDUALS)		DEF_TYPESTR(DELTA_POS)			DEF_TYPESTR(NEGATIVE_VAR)
+	DEF_TYPESTR(INTEGRITY_WARNING) DEF_TYPESTR(INS_INACTIVE)	DEF_TYPESTR(INS_ALIGNING)
+	DEF_TYPESTR(INS_BAD)		DEF_TYPESTR(IMU_UNPLUGGED)		DEF_TYPESTR(PENDING) DEF_TYPESTR(INVALID_FIX)
+#undef DEF_TYPESTR
+	}
+	std::map<int,std::string>::const_iterator it = val2str.find(val);
+	static const std::string nullstr("???");
+	return (it == val2str.end()) ? nullstr : it->second;
+}
+
+const std::string OBS_IMPEXP & nv_oem6_position_type::enum2str(int val)
+{
+	static bool init_map = false;
+	static std::map<int,std::string> val2str;
+	if (!init_map) {
+		init_map = true;
+#define DEF_TYPESTR(_NAME) val2str[nv_oem6_position_type::_NAME] = #_NAME;
+		DEF_TYPESTR(NONE)			DEF_TYPESTR(FIXEDPOS)		DEF_TYPESTR(FIXEDHEIGHT)	DEF_TYPESTR(Reserved)
+		DEF_TYPESTR(FLOATCONV)		DEF_TYPESTR(WIDELANE)		DEF_TYPESTR(NARROWLANE)	DEF_TYPESTR(DOPPLER_VELOCITY)
+		DEF_TYPESTR(SINGLE)		DEF_TYPESTR(PSRDIFF)		DEF_TYPESTR(WAAS)			DEF_TYPESTR(PROPOGATED)
+		DEF_TYPESTR(OMNISTAR)		DEF_TYPESTR(L1_FLOAT)		DEF_TYPESTR(IONOFREE_FLOAT)	DEF_TYPESTR(NARROW_FLOAT)
+		DEF_TYPESTR(L1_INT)		DEF_TYPESTR(WIDE_INT)		DEF_TYPESTR(NARROW_INT)		DEF_TYPESTR(RTK_DIRECT_INS)
+		DEF_TYPESTR(INS)			DEF_TYPESTR(INS_PSRSP)		DEF_TYPESTR(INS_PSRDIFF)		DEF_TYPESTR(INS_RTKFLOAT)
+		DEF_TYPESTR(INS_RTKFIXED)	DEF_TYPESTR(OMNISTAR_HP)	DEF_TYPESTR(OMNISTAR_XP)		DEF_TYPESTR(CDGPS)
+#undef DEF_TYPESTR
+	}
+	std::map<int,std::string>::const_iterator it = val2str.find(val);
+	static const std::string nullstr("???");
+	return (it == val2str.end()) ? nullstr : it->second;
+}
+
+const std::string OBS_IMPEXP & nv_oem6_ins_status_type::enum2str(int val)
+{
+	static bool init_map = false;
+	static std::map<int,std::string> val2str;
+	if (!init_map) {
+		init_map = true;
+#define DEF_TYPESTR(_NAME) val2str[nv_oem6_ins_status_type::_NAME] = #_NAME;
+		DEF_TYPESTR(INS_INACTIVE)		DEF_TYPESTR(INS_ALIGNING)		DEF_TYPESTR(INS_HIGH_VARIANCE)
+		DEF_TYPESTR(INS_SOLUTION_GOOD)	DEF_TYPESTR(INS_SOLUTION_FREE)	DEF_TYPESTR(INS_ALIGNMENT_COMPLETE)
+		DEF_TYPESTR(DETERMINING_ORIENTATION)	DEF_TYPESTR(WAITING_INITIALPOS)
+#undef DEF_TYPESTR
+	}
+	std::map<int,std::string>::const_iterator it = val2str.find(val);
+	static const std::string nullstr("???");
+	return (it == val2str.end()) ? nullstr : it->second;
+}
+
+
 
 void Message_NV_OEM6_BESTPOS::dumpToStream( mrpt::utils::CStream &out ) const
 {
-	static bool init_map = false;
-	static std::map<int,const char*> nv_position_type_t_str;
-	if (!init_map) 
-	{
-		init_map = true;
-#define DEF_POS_TYPE_STR(_NAME) nv_position_type_t_str[nv_oem6_position_type::_NAME] = #_NAME;
-
-		DEF_POS_TYPE_STR(NONE)
-		DEF_POS_TYPE_STR(FIXEDPOS)
-		DEF_POS_TYPE_STR(FIXEDHEIGHT)
-		DEF_POS_TYPE_STR(Reserved)
-		DEF_POS_TYPE_STR(FLOATCONV)
-		DEF_POS_TYPE_STR(WIDELANE)
-		DEF_POS_TYPE_STR(NARROWLANE)
-		DEF_POS_TYPE_STR(DOPPLER_VELOCITY)
-		DEF_POS_TYPE_STR(SINGLE)
-		DEF_POS_TYPE_STR(PSRDIFF)
-		DEF_POS_TYPE_STR(WAAS)
-		DEF_POS_TYPE_STR(PROPOGATED)
-		DEF_POS_TYPE_STR(OMNISTAR)
-		DEF_POS_TYPE_STR(L1_FLOAT)
-		DEF_POS_TYPE_STR(IONOFREE_FLOAT)
-		DEF_POS_TYPE_STR(NARROW_FLOAT)
-		DEF_POS_TYPE_STR(L1_INT)
-		DEF_POS_TYPE_STR(WIDE_INT)
-		DEF_POS_TYPE_STR(NARROW_INT)
-		DEF_POS_TYPE_STR(RTK_DIRECT_INS)
-		DEF_POS_TYPE_STR(INS)
-		DEF_POS_TYPE_STR(INS_PSRSP)
-		DEF_POS_TYPE_STR(INS_PSRDIFF)
-		DEF_POS_TYPE_STR(INS_RTKFLOAT)
-		DEF_POS_TYPE_STR(INS_RTKFIXED)
-		DEF_POS_TYPE_STR(OMNISTAR_HP)
-		DEF_POS_TYPE_STR(OMNISTAR_XP)
-		DEF_POS_TYPE_STR(CDGPS)
-	}
-
 	out.printf("[Novatel OEM6 BESTPOS]\n");
-	out.printf(" Solution status: `%s`\n", 
-		((unsigned)fields.solution_stat<sizeof(nv_solution_status_t_str)/sizeof(nv_solution_status_t_str[0])) ? 
-			nv_solution_status_t_str[(unsigned)fields.solution_stat] : "???" );
-	out.printf(" Position type  : `%s`\n", nv_position_type_t_str[(unsigned)fields.position_type]);
-	out.printf(" Longitude: %.09f deg  Latitude: %.09f deg  Height: %.03f m\n",
-		fields.lon,
-		fields.lat,
-		fields.hgt );
+	out.printf(" Solution status: `%s`\n", nv_oem6_solution_status::enum2str(fields.solution_stat).c_str() );
+	out.printf(" Position type  : `%s`\n", nv_oem6_position_type::enum2str(fields.position_type).c_str() );
+	out.printf(" Longitude: %.09f deg  Latitude: %.09f deg  Height: %.03f m\n", fields.lon, fields.lat, fields.hgt );
 }
 
 // ------------
@@ -184,9 +179,9 @@ Message_NV_OEM6_INSPVAS::content_t::content_t()
 void Message_NV_OEM6_INSPVAS::dumpToStream( mrpt::utils::CStream &out ) const
 {
 	out.printf("[Novatel OEM6 INSPVAS]\n");
-	out.printf(" INS status: %u\n", (unsigned)fields.ins_status);
+	out.printf(" INS status: `%s`\n", nv_oem6_ins_status_type::enum2str(fields.ins_status).c_str());
 	out.printf(" Longitude: %.09f deg  Latitude: %.09f deg  Height: %.03f m\n", fields.lon, fields.lat, fields.hgt );
-	out.printf(" Velocities: Nort: %.05f  East: %.05f  Up: %.05f\n", fields.vel_north, fields.vel_east, fields.vel_up);
+	out.printf(" Velocities: North: %.05f  East: %.05f  Up: %.05f\n", fields.vel_north, fields.vel_east, fields.vel_up);
 	out.printf(" Attitude: Roll: %.05f  Pitch: %.05f  Azimuth: %.05f\n", fields.roll, fields.pitch, fields.azimuth);
 }
 

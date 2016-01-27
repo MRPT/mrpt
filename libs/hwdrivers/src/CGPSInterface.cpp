@@ -475,6 +475,10 @@ bool CGPSInterface::OnConnectionEstablished()
 		return legacy_topcon_setup_commands();
 	}
 
+	// Purge input:
+	MRPT_TODO("Replace m_COM here and above by generic stream object")
+	m_COM.purgeBuffers();
+
 	// New behavior: Send generic commands set-up by the user in the config file.
 
 	// Send commands:
@@ -491,10 +495,6 @@ bool CGPSInterface::OnConnectionEstablished()
 
 		mrpt::system::sleep(m_setup_cmds_delay*1000);
 	}
-
-	// Purge input:
-	MRPT_TODO("Replace m_COM here and above by generic stream object")
-	m_COM.purgeBuffers();
 
 	mrpt::system::sleep(m_setup_cmds_delay*1000);
 	return true;
