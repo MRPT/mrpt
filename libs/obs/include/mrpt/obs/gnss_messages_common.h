@@ -65,16 +65,15 @@ public:
 	void set(gnss_message* p); //!< Replaces the pointee with a new pointer. Its memory now belongs to this object, do not free manually.
 };
 
-
-struct OBS_IMPEXP gnss_message_binary_block : public gnss_message {
-	gnss_message_binary_block(gnss_message_type_t msg_type_id,uint32_t data_len, void* data_ptr) : gnss_message(msg_type_id),m_content_len(data_len),m_content_ptr(data_ptr) {}
-protected:
-	void internal_writeToStream(mrpt::utils::CStream &out) const MRPT_OVERRIDE;
-	void internal_readFromStream(mrpt::utils::CStream &in) MRPT_OVERRIDE;
-private:
-	const uint32_t m_content_len;
-	void *         m_content_ptr;
-};
+#define GNSS_MESSAGE_BINARY_BLOCK(DATA_PTR,DATA_LEN) \
+	protected: \
+		void internal_writeToStream(mrpt::utils::CStream &out) const MRPT_OVERRIDE { \
+			out << static_cast<uint32_t>(DATA_LEN); out.WriteBuffer(DATA_PTR,DATA_LEN); } \
+		void internal_readFromStream(mrpt::utils::CStream &in) MRPT_OVERRIDE { \
+			uint32_t nBytesInStream; in >> nBytesInStream; \
+			ASSERT_EQUAL_(nBytesInStream,DATA_LEN); \
+			in.ReadBuffer(DATA_PTR,DATA_LEN); } \
+	public:
 
 // Pragma to ensure we can safely serialize some of these structures
 #pragma pack(push,1)

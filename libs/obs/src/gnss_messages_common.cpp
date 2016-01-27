@@ -107,16 +107,6 @@ gnss_message_ptr::~gnss_message_ptr()
 	if (ptr) { delete ptr; ptr=NULL; }
 }
 
-void gnss_message_binary_block::internal_writeToStream(mrpt::utils::CStream &out) const {
-	out << m_content_len;
-	out.WriteBuffer(m_content_ptr,m_content_len);
-}
-void gnss_message_binary_block::internal_readFromStream(mrpt::utils::CStream &in) {
-	uint32_t nBytesInStream; in >> nBytesInStream;
-	ASSERT_EQUAL_(nBytesInStream,m_content_len);
-	in.ReadBuffer(m_content_ptr,m_content_len);
-}
-
 // ---------------------------------------
 UTC_time::UTC_time() :
 	hour(0), minute(0), sec(0)

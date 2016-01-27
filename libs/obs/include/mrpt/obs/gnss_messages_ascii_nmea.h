@@ -18,11 +18,11 @@ namespace gnss {
 #pragma pack(push,1)
 
 /** NMEA datum: GGA. \sa mrpt::obs::CObservationGPS  */
-struct OBS_IMPEXP Message_NMEA_GGA : public gnss_message_binary_block
+struct OBS_IMPEXP Message_NMEA_GGA : public gnss_message
 {
-    enum { msg_type = NMEA_GGA };  //!< Static msg type (member expected by templates)
-
-    Message_NMEA_GGA() : gnss_message_binary_block((gnss_message_type_t)msg_type,sizeof(fields),&fields)
+	GNSS_MESSAGE_BINARY_BLOCK(&fields,sizeof(fields))
+	enum { msg_type = NMEA_GGA };  //!< Static msg type (member expected by templates)
+	Message_NMEA_GGA() : gnss_message((gnss_message_type_t)msg_type)
 	{}
 
 	struct OBS_IMPEXP content_t
@@ -66,10 +66,11 @@ struct OBS_IMPEXP Message_NMEA_GGA : public gnss_message_binary_block
 };
 
 /** NMEA datum: RMC. \sa mrpt::obs::CObservationGPS   */
-struct OBS_IMPEXP Message_NMEA_RMC : public gnss_message_binary_block
+struct OBS_IMPEXP Message_NMEA_RMC : public gnss_message
 {
-    enum { msg_type = NMEA_RMC };  //!< Static msg type (member expected by templates)
-    Message_NMEA_RMC() : gnss_message_binary_block((gnss_message_type_t)msg_type,sizeof(fields),&fields)
+	GNSS_MESSAGE_BINARY_BLOCK(&fields,sizeof(fields))
+	enum { msg_type = NMEA_RMC };  //!< Static msg type (member expected by templates)
+	Message_NMEA_RMC() : gnss_message((gnss_message_type_t)msg_type)
 	{}
 
 	struct OBS_IMPEXP content_t
