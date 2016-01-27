@@ -54,10 +54,6 @@ void  CGPSInterface::implement_parser_NOVATEL_OEM6()
 				return; // we must wait for more data in the buffer
 			nv_oem6_short_header_t hdr;
 			m_rx_buffer.peek_many(reinterpret_cast<uint8_t*>(&hdr), sizeof(hdr));
-			if (hdr.msg_len!=sizeof(hdr)) {
-				m_rx_buffer.pop(); // Invalid header... or new version of the firmware??
-				continue;
-			}			
 			const uint32_t expected_total_msg_len = sizeof(hdr) + hdr.msg_len + 4 /*crc*/;
 			if (nBytesAval<expected_total_msg_len)
 				return; // we must wait for more data in the buffer
@@ -80,11 +76,11 @@ void  CGPSInterface::implement_parser_NOVATEL_OEM6()
 			//this->internal_writeToStream(out);  == >  out << static_cast<uint32_t>(DATA_LEN); out.WriteBuffer(DATA_PTR,DATA_LEN); }
 			// ------
 			mrpt::utils::CMemoryStream tmpStream;
-			const int32_t msg_id = use_generic_container ? 
+			const uint32_t msg_id = use_generic_container ? 
 				(uint32_t)NV_OEM6_GENERIC_SHORT_FRAME  
 				: 
 				(uint32_t) hdr.msg_id;
-			tmpStream << msg_id;
+			tmpStream << (uint32_t )(msg_id+NV_OEM6_MSG2ENUM);
 			tmpStream << (uint32_t)(expected_total_msg_len);
 			tmpStream.WriteBuffer(&buf[0],buf.size());
 

@@ -294,10 +294,7 @@ void  CGPSInterface::doProcess()
 
 		if (nRead) {
 			m_rx_buffer.push_many(buf,nRead);
-			if (m_verbose) {
-				buf[nRead] = '\0';
-				printf("RX: %s",(char*)buf);
-			}
+			//if (m_verbose) { buf[nRead] = '\0'; printf("RX: %s",(char*)buf); }
 		}
 		
 		// Also dump to raw file:
