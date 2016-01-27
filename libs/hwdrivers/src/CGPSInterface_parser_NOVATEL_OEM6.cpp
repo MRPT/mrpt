@@ -19,8 +19,6 @@ using namespace mrpt::hwdrivers;
 using namespace mrpt::obs;
 using namespace std;
 
-MRPT_TODO("generate valid UTC timestamp field");
-
 void  CGPSInterface::implement_parser_NOVATEL_OEM6()
 {
 	using namespace mrpt::obs::gnss;
@@ -92,6 +90,9 @@ void  CGPSInterface::implement_parser_NOVATEL_OEM6()
 			}
 			m_just_parsed_messages.messages[msg->message_type] = msg;
 			m_just_parsed_messages.originalReceivedTimestamp = mrpt::system::now();
+			if (!CObservationGPS::GPS_time_to_UTC(hdr.week,hdr.ms_in_week*1e-3,m_just_parsed_messages.timestamp))
+				m_just_parsed_messages.timestamp =  mrpt::system::now();
+			flushParsedMessagesNow();
 			continue;
 		} // end short hdr
 
@@ -127,7 +128,7 @@ void  CGPSInterface::implement_parser_NOVATEL_OEM6()
 				(uint32_t)NV_OEM6_GENERIC_FRAME  
 				: 
 				(uint32_t) hdr.msg_id;
-            tmpStream << msg_id+NV_OEM6_MSG2ENUM;
+			tmpStream << msg_id+NV_OEM6_MSG2ENUM;
 			tmpStream << (uint32_t)(expected_total_msg_len);
 			tmpStream.WriteBuffer(&buf[0],buf.size());
 
@@ -139,6 +140,9 @@ void  CGPSInterface::implement_parser_NOVATEL_OEM6()
 			}
 			m_just_parsed_messages.messages[msg->message_type] = msg;
 			m_just_parsed_messages.originalReceivedTimestamp = mrpt::system::now();
+			if (!CObservationGPS::GPS_time_to_UTC(hdr.week,hdr.ms_in_week*1e-3,m_just_parsed_messages.timestamp))
+				m_just_parsed_messages.timestamp =  mrpt::system::now();
+			flushParsedMessagesNow();
 			continue;
 		} // end regular hdr
 

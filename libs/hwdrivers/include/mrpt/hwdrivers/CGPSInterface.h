@@ -228,6 +228,7 @@ namespace mrpt
 			void  implement_parser_NMEA();
 			void  implement_parser_NOVATEL_OEM6();
 
+			void  flushParsedMessagesNow();  //!< Queue out now the messages in \a m_just_parsed_messages, leaving it empty
 			mrpt::obs::CObservationGPS  m_just_parsed_messages; //!< A private copy of the last received gps datum
 			std::string   m_last_GGA; //!< Used in getLastGGA()
 		}; // end class

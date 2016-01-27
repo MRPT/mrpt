@@ -372,22 +372,26 @@ void  CGPSInterface::doProcess()
 	}
 
 	if (do_append_obs)
-	{
-		// Generic observation data:
-		m_just_parsed_messages.sensorPose     = m_sensorPose;
-		m_just_parsed_messages.sensorLabel    = m_sensorLabel;
+		flushParsedMessagesNow();
+}
 
-		// Add observation to the output queue:
-		CObservationGPSPtr newObs = CObservationGPS::Create();
-		m_just_parsed_messages.swap(*newObs);
-		CGenericSensor::appendObservation( newObs );
-		m_just_parsed_messages.clear();
-		m_last_timestamp = m_just_parsed_messages.timestamp;
+//!< Queue out now the messages in \a m_just_parsed_messages, leaving it empty
+void  CGPSInterface::flushParsedMessagesNow()
+{
+	// Generic observation data:
+	m_just_parsed_messages.sensorPose     = m_sensorPose;
+	m_just_parsed_messages.sensorLabel    = m_sensorLabel;
 
-		// And this means the comms works:
-		m_GPS_comsWork = true;
-		m_state = ssWorking;
-	}
+	// Add observation to the output queue:
+	CObservationGPSPtr newObs = CObservationGPS::Create();
+	m_just_parsed_messages.swap(*newObs);
+	CGenericSensor::appendObservation( newObs );
+	m_just_parsed_messages.clear();
+	m_last_timestamp = m_just_parsed_messages.timestamp;
+
+	// And this means the comms works:
+	m_GPS_comsWork = true;
+	m_state = ssWorking;
 }
 
 /* -----------------------------------------------------

@@ -269,3 +269,196 @@ const mrpt::obs::gnss::gnss_message* CObservationGPS::getMsgByType(const gnss::g
 	return it->second.get();
 }
 
+
+// From: http://gnsstk.sourceforge.net/time__conversion_8c-source.html
+#define TIMECONV_JULIAN_DATE_START_OF_GPS_TIME (2444244.5)  // [days]
+bool TIMECONV_GetJulianDateFromGPSTime(	const unsigned short 	gps_week, const double 	gps_tow, const unsigned char 	utc_offset, double * 	julian_date)
+{
+	if( gps_tow < 0.0  || gps_tow > 604800.0 )
+		return false;
+	// GPS time is ahead of UTC time and Julian time by the UTC offset
+	*julian_date = (gps_week + (gps_tow-utc_offset)/604800.0)*7.0 + TIMECONV_JULIAN_DATE_START_OF_GPS_TIME;
+	return true;
+}
+
+bool TIMECONV_DetermineUTCOffset(
+	double julian_date,       //!< Number of days since noon Universal Time Jan 1, 4713 BCE (Julian calendar) [days]
+	unsigned char* utc_offset //!< Integer seconds that GPS is ahead of UTC time, always positive             [s], obtained from a look up table
+	)
+{
+	if( julian_date < 0.0 )
+		return false;
+	if(      julian_date < 2444786.5000 ) *utc_offset = 0;
+	else if( julian_date < 2445151.5000 ) *utc_offset = 1;
+	else if( julian_date < 2445516.5000 ) *utc_offset = 2;
+	else if( julian_date < 2446247.5000 ) *utc_offset = 3;
+	else if( julian_date < 2447161.5000 ) *utc_offset = 4;
+	else if( julian_date < 2447892.5000 ) *utc_offset = 5;
+	else if( julian_date < 2448257.5000 ) *utc_offset = 6;
+	else if( julian_date < 2448804.5000 ) *utc_offset = 7;
+	else if( julian_date < 2449169.5000 ) *utc_offset = 8;
+	else if( julian_date < 2449534.5000 ) *utc_offset = 9;
+	else if( julian_date < 2450083.5000 ) *utc_offset = 10;
+	else if( julian_date < 2450630.5000 ) *utc_offset = 11;
+	else if( julian_date < 2451179.5000 ) *utc_offset = 12;  
+	else if( julian_date < 2453736.5000 ) *utc_offset = 13;  
+	else                                  *utc_offset = 14;
+
+	return true;
+}
+
+bool TIMECONV_IsALeapYear( const unsigned short year )
+{
+	bool is_a_leap_year = false;
+	if( (year%4) == 0 ) 
+	{
+		is_a_leap_year = true;
+		if( (year%100) == 0 )
+		{
+			if( (year%400) == 0 )
+			     is_a_leap_year = true;
+			else is_a_leap_year = false;
+		}
+	}
+	return is_a_leap_year;
+}
+
+bool TIMECONV_GetNumberOfDaysInMonth(
+	const unsigned short year,        //!< Universal Time Coordinated    [year]
+	const unsigned char month,        //!< Universal Time Coordinated    [1-12 months] 
+	unsigned char* days_in_month      //!< Days in the specified month   [1-28|29|30|31 days]
+	)
+{
+	unsigned char utmp = 0;
+	bool is_a_leapyear = TIMECONV_IsALeapYear( year );
+
+	switch(month)
+	{
+	case  1: utmp = 31; break;
+	case  2: if( is_a_leapyear ){ utmp = 29; }else{ utmp = 28; }break;    
+	case  3: utmp = 31; break;
+	case  4: utmp = 30; break;
+	case  5: utmp = 31; break;
+	case  6: utmp = 30; break;
+	case  7: utmp = 31; break;
+	case  8: utmp = 31; break;
+	case  9: utmp = 30; break;
+	case 10: utmp = 31; break;
+	case 11: utmp = 30; break;
+	case 12: utmp = 31; break;
+	default: return false; break;    
+	}
+	*days_in_month = utmp;
+	return true;
+}
+bool TIMECONV_GetUTCTimeFromJulianDate(const double julian_date,  //!< Number of days since noon Universal Time Jan 1, 4713 BCE (Julian calendar) [days]
+	mrpt::system::TTimeParts &utc
+	)
+{
+	int a, b, c, d, e; // temporary values
+
+	unsigned short year;  
+	unsigned char month;
+	unsigned char day;
+	unsigned char hour;
+	unsigned char minute;        
+	unsigned char days_in_month = 0;  
+	double td; // temporary double
+	double seconds;
+	bool result;
+
+	// Check the input.
+	if( julian_date < 0.0 )
+		return false;
+
+	a = (int)(julian_date+0.5);
+	b = a + 1537;
+	c = (int)( ((double)b-122.1)/365.25 );
+	d = (int)(365.25*c);
+	e = (int)( ((double)(b-d))/30.6001 );
+
+	td      = b - d - (int)(30.6001*e) + fmod( julian_date+0.5, 1.0 );   // [days]
+	day     = (unsigned char)td;   
+	td     -= day;
+	td     *= 24.0;        // [hours]
+	hour    = (unsigned char)td;
+	td     -= hour;
+	td     *= 60.0;        // [minutes]
+	minute  = (unsigned char)td;
+	td     -= minute;
+	td     *= 60.0;        // [s]
+	seconds = td;
+	month   = (unsigned char)(e - 1 - 12*(int)(e/14));
+	year    = (unsigned short)(c - 4715 - (int)( (7.0+(double)month) / 10.0 ));
+	// check for rollover issues
+	if( seconds >= 60.0 )
+	{
+		seconds -= 60.0;
+		minute++;
+		if( minute >= 60 )
+		{
+			minute -= 60;
+			hour++;
+			if( hour >= 24 )
+			{
+				hour -= 24;
+				day++;
+				result = TIMECONV_GetNumberOfDaysInMonth( year, month, &days_in_month );
+				if( result == false )
+					return false;
+				if( day > days_in_month )
+				{
+					day = 1;
+					month++;
+					if( month > 12 )
+					{
+						month = 1;
+						year++;
+					}
+				}
+			}
+		}
+	}
+
+	utc.year   = year;
+	utc.month  = month;
+	utc.day    = day;
+	utc.hour   = hour;
+	utc.minute = minute;
+	utc.second = seconds;
+	return true;
+}
+
+bool CObservationGPS::GPS_time_to_UTC(uint16_t gps_week,double gps_sec, mrpt::system::TTimeStamp &utc_out)
+{
+	 mrpt::system::TTimeParts tim;
+	if (!GPS_time_to_UTC(gps_week,gps_sec,tim)) return false;
+	utc_out = mrpt::system::buildTimestampFromParts(tim);
+	return true;
+}
+
+bool CObservationGPS::GPS_time_to_UTC(uint16_t gps_week,double gps_sec, mrpt::system::TTimeParts &utc_out)
+{
+	double julian_date = 0.0; 
+	uint8_t utc_offset = 0;
+	if( gps_sec < 0.0  || gps_sec > 604800.0 )
+		return false;
+	// iterate to get the right utc offset
+	for(int i = 0; i < 4; i++ )
+	{
+		if (!TIMECONV_GetJulianDateFromGPSTime(
+			gps_week,
+			gps_sec,
+			utc_offset,
+			&julian_date ) ) 
+			return false;
+		if (!TIMECONV_DetermineUTCOffset( julian_date, &utc_offset ) )
+			return false;
+	}
+
+	if (!TIMECONV_GetUTCTimeFromJulianDate(julian_date,utc_out))
+	return false;
+
+	return true;
+}
+

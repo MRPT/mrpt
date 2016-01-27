@@ -152,6 +152,11 @@ namespace obs
 		internal_msg_test_proxy<gnss::TOPCON_SATS> has_SATS_datum; //!< Evaluates as a bool; true if the corresponding field exists in \a messages.
 		/** @} */
 
+		/** @name Utilities
+		  * @{ */
+		static bool GPS_time_to_UTC(uint16_t gps_week,double gps_sec, mrpt::system::TTimeParts &utc_out); //!< Return false on invalid input data
+		static bool GPS_time_to_UTC(uint16_t gps_week,double gps_sec, mrpt::system::TTimeStamp &utc_out); //!< Return false on invalid input data
+		/** @} */
 	}; // End of class def.
 	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CObservationGPS , CObservation, OBS_IMPEXP)
 
