@@ -195,7 +195,14 @@ struct OBS_IMPEXP Message_NV_OEM6_BESTPOS : public gnss_message
 		content_t();
 	};
 	content_t  fields; //!< Message content, accesible by individual fields
-	
+
+	/**  Return the geodetic coords as a mrpt::topography::TGeodeticCoords structure (requires linking against mrpt-topography)
+		*   Call as: getAsStruct<TGeodeticCoords>(); */
+	template <class TGEODETICCOORDS>
+	inline TGEODETICCOORDS getAsStruct() const {
+		return TGEODETICCOORDS(fields.lat,fields.lon,fields.hgt);
+	}
+
 	void dumpToStream( mrpt::utils::CStream &out ) const MRPT_OVERRIDE; // See docs in base
 };
 
@@ -223,6 +230,12 @@ struct OBS_IMPEXP Message_NV_OEM6_INSPVAS : public gnss_message
 	};
 	content_t  fields; //!< Message content, accesible by individual fields
 	
+	/**  Return the geodetic coords as a mrpt::topography::TGeodeticCoords structure (requires linking against mrpt-topography)
+		*   Call as: getAsStruct<TGeodeticCoords>(); */
+	template <class TGEODETICCOORDS>
+	inline TGEODETICCOORDS getAsStruct() const {
+		return TGEODETICCOORDS(fields.lat,fields.lon,fields.hgt);
+	}
 	void dumpToStream( mrpt::utils::CStream &out ) const MRPT_OVERRIDE; // See docs in base
 };
 
