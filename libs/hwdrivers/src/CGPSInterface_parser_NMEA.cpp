@@ -89,13 +89,13 @@ bool CGPSInterface::parse_NMEA(const std::string &s, mrpt::obs::CObservationGPS 
 	if ( s[0]!='$' || s[1]!='G' ) return false;
 
 	std::vector<std::string> lstTokens;
-	mrpt::system::tokenize(s," *,\t\r\n",lstTokens);
+	mrpt::system::tokenize(s," *,\t\r\n",lstTokens, false /* do not skip blank tokens */);
 	if (lstTokens.size()<3) return false;
 
 
 	bool parsed_ok = false;
 	// Try to determine the kind of command:
-	if (lstTokens[0]=="$GPGGA")
+	if (lstTokens[0]=="$GPGGA" && lstTokens.size()>=13)
 	{
 		// ---------------------------------------------
 		//					GGA
@@ -201,7 +201,7 @@ bool CGPSInterface::parse_NMEA(const std::string &s, mrpt::obs::CObservationGPS 
 	else
 	{
 		// Try to determine the kind of command:
-		if ( lstTokens[0]=="$GPRMC")
+		if ( lstTokens[0]=="$GPRMC" && lstTokens.size()>=13)
 		{
 			// ---------------------------------------------
 			//					GPRMC
