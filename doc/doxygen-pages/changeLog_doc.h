@@ -26,6 +26,7 @@
 		- Changes in libraries:
 			- \ref mrpt_base_grp
 				- [ABI change] mrpt::system::tokenize() new parameter `skipBlankTokens`
+				- mrpt::utils::circular_buffer now has peek() methods
 			- \ref mrpt_hwdrivers_grp
 				- New class mrpt::hwdrivers::CVelodyneScanner
 				- mrpt::hwdrivers::CNTRIPEmitter now has a parameter to enable/disable sending back the data from the serial port to the NTRIP caster.
