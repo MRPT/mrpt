@@ -85,6 +85,7 @@ struct TModelPropertiesFactory {
 
 CVelodyneScanner::CVelodyneScanner() :
 	m_model("VLP-16"),
+	m_pos_packets_min_period(0.5),
 	m_device_ip(""),
 	m_rpm(600),
 	m_pcap(NULL),
@@ -507,6 +508,17 @@ void CVelodyneScanner::receivePackets(
 	}
 #endif
 
+	// Position packet decimation:
+	if (pos_pkt_timestamp!=INVALID_TIMESTAMP) {
+		if (m_pos_packets_period_timewatch.Tac()< m_pos_packets_min_period) {
+			// Ignore this packet
+			pos_pkt_timestamp = INVALID_TIMESTAMP;
+		}
+		else {
+			// Reset time watch:
+			m_pos_packets_period_timewatch.Tic();
+		}
+	}
 }
 
 // static method:

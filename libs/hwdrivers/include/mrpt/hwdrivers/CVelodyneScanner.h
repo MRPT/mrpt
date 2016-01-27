@@ -14,6 +14,7 @@
 #include <mrpt/obs/CObservationVelodyneScan.h>
 #include <mrpt/obs/CObservationGPS.h>
 #include <mrpt/utils/CConfigFileBase.h>
+#include <mrpt/utils/CTicTac.h>
 
 namespace mrpt
 {
@@ -64,8 +65,9 @@ namespace mrpt
 		  * -------------------------------------------------------
 		  *   [supplied_section_name]
 		  *   # ---- Sensor description ----
-		  *   #calibration_file = PUT_HERE_FULL_PATH_TO_CALIB_FILE.xml      // Optional but recommended: put here your vendor-provided calibration file
-		  *   model            = VLP-16          // Can be any of: `VLP-16`, `HDL-32`  (It is used to load default calibration file. Parameter not required if `calibration_file` is provided.
+		  *   #calibration_file         = PUT_HERE_FULL_PATH_TO_CALIB_FILE.xml      // Optional but recommended: put here your vendor-provided calibration file
+		  *   model                    = VLP-16          // Can be any of: `VLP-16`, `HDL-32`  (It is used to load default calibration file. Parameter not required if `calibration_file` is provided.
+		  *   #pos_packets_min_period  = 0.5        // (Default=0.5 seconds) Minimum period between the reporting of position packets, used to decimate the large number of packets of this type.
 		  *   # ---- Online operation ----
 		  *
 		  *   # IP address of the device. UDP packets from other IPs will be ignored. Leave commented or blank
@@ -116,12 +118,15 @@ namespace mrpt
 		protected:
 			bool          m_initialized;
 			std::string   m_model;      //!< Default: "VLP-16"
+			double        m_pos_packets_min_period; //!< Default: 0.5
 			std::string   m_device_ip;  //!< Default: "" (no IP-based filtering)
 			std::string   m_pcap_input_file; //!< Default: "" (do not operate from an offline file)
 			std::string   m_pcap_output_file; //!< Default: "" (do not dump to an offline file)
 			int           m_rpm;        //!< Default: 600
 			mrpt::poses::CPose3D m_sensorPose;
 			mrpt::obs:: VelodyneCalibration  m_velodyne_calib; //!< Device calibration file (supplied by vendor in an XML file)
+			
+			mrpt::utils::CTicTac m_pos_packets_period_timewatch;
 
 			// offline operation:
 			void * m_pcap;             //!< opaque ptr: "pcap_t*"
@@ -148,6 +153,9 @@ namespace mrpt
 			  * @{ */
 			void setModelName(const std::string & model) { m_model = model; }
 			const std::string &getModelName() const { return m_model; }
+
+			void setPosPacketsMinPeriod(double period) { m_pos_packets_min_period = period; }
+			double getPosPacketsMinPeriod() const { return m_pos_packets_min_period; }
 
 			void setDeviceIP(const std::string & ip) { m_device_ip = ip; }
 			const std::string &getDeviceIP() const { return m_device_ip; }
