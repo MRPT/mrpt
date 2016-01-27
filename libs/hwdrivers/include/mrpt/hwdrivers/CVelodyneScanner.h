@@ -125,7 +125,8 @@ namespace mrpt
 
 			// offline operation:
 			void * m_pcap;             //!< opaque ptr: "pcap_t*"
-			void * m_pcap_out;          //!< opaque ptr: "pcap_t*"
+			void * m_pcap_out;         //!< opaque ptr: "pcap_t*"
+			void * m_pcap_dumper;      //!< opaque ptr: "pcap_dumper_t *"
 			void * m_pcap_bpf_program; //!< opaque ptr: bpf_program*
 			bool   m_pcap_file_empty;
 			unsigned int m_pcap_read_count; //!< number of pkts read from the file so far (for debugging)
