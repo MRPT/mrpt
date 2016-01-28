@@ -34,6 +34,8 @@ namespace mrpt
 		  *  - `NMEA` (NMEA 0183, ASCII messages): Default parser. Supported frames: GGA, RMC.
 		  *  - `NOVATEL_OEM6` (Novatel OEM6, binary frames): Supported frames: XXX
 		  *
+		  * See available parameters below, and an example config file for rawlog-grabber [here](https://github.com/MRPT/mrpt/blob/master/share/mrpt/config_files/rawlog-grabber/gps.ini)
+		  *
 		  *  \code
 		  *  PARAMETERS IN THE ".INI"-LIKE CONFIGURATION STRINGS:
 		  * -------------------------------------------------------
@@ -60,14 +62,18 @@ namespace mrpt
 		  *  pose_pitch   = 0
 		  *  pose_roll    = 0
 		  *
-		  *  # Optional: list of initial commands to be sent to the GNSS receiver to set it up.
+		  *  # Optional: list of custom commands to be sent to the GNSS receiver to set it up.
 		  *  # An arbitrary number of commands can be defined, but their names must be "setup_cmd%d" starting at "1". 
 		  *  # Commands will be sent by index order. Binary commands instead of ASCII strings can be set programatically, not from a config file.
-		  *  # setup_cmds_delay   = 0.1   // (Default=0.1) Delay in seconds between consecutive set-up commands
-		  *  # setup_cmds_append_CRLF = true    // (Default:true) Append "\r\n" to each command
+		  *  # custom_cmds_delay   = 0.1   // (Default=0.1) Delay in seconds between consecutive set-up commands
+		  *  # custom_cmds_append_CRLF = true    // (Default:true) Append "\r\n" to each command
 		  *  # setup_cmd1 = XXXXX
 		  *  # setup_cmd2 = XXXXX
 		  *  # setup_cmd3 = XXXXX
+		  *
+		  *  # Optional: list of commands to be sent upon disconnection (e.g. object destructor)
+		  *  # shutdown_cmd1 = XXXX
+		  *  # shutdown_cmd2 = XXXX
 		  *
 		  *  \endcode
 		  *
@@ -127,7 +133,10 @@ namespace mrpt
 			double getSetupCommandsDelay() const;
 
 			void setSetupCommands(const std::vector<std::string> &cmds);
-			const std::vector<std::string> & setSetupCommands() const;
+			const std::vector<std::string> & getSetupCommands() const;
+
+			void setShutdownCommands(const std::vector<std::string> &cmds);
+			const std::vector<std::string> & getShutdownCommands() const;
 
 			void enableSetupCommandsAppendCRLF(const bool enable);
 			bool isEnabledSetupCommandsAppendCRLF() const;
@@ -140,7 +149,7 @@ namespace mrpt
 			inline bool isAIMConfigured() { return m_topcon_AIMConfigured; }
 
 			/** Parses one line of NMEA data from a GPS receiver, and writes the recognized fields (if any) into an observation object.
-			  * Recognized frame types are: "GGA" and "RMC".
+			  * Recognized frame types are those listed for the `NMEA` parser in the documentation of CGPSInterface
 			  * \return true if some new data field has been correctly parsed and inserted into out_obs
 			  */
 			static bool parse_NMEA(const std::string &cmd_line, mrpt::obs::CObservationGPS &out_obs, const bool verbose=false);
@@ -154,6 +163,7 @@ namespace mrpt
 			/** Implements custom messages to be sent to the GPS unit just after connection and before normal use.
 			  *  Returns false or raise an exception if something goes wrong. */
 			bool OnConnectionEstablished();
+			bool OnConnectionShutdown(); //!< Like OnConnectionEstablished() for sending optional shutdown commands
 
 			bool legacy_topcon_setup_commands();
 
@@ -200,12 +210,12 @@ namespace mrpt
 			std::string  m_COMname;
 			int          m_COMbauds;
 			bool         m_GPS_comsWork;
-			bool         m_GPS_signalAcquired;
 			mrpt::system::TTimeStamp        m_last_timestamp;
 			mrpt::utils::CFileOutputStream  m_raw_output_file;
-			double                   m_setup_cmds_delay;
-			bool                     m_setup_cmds_append_CRLF;
+			double                   m_custom_cmds_delay;
+			bool                     m_custom_cmds_append_CRLF;
 			std::vector<std::string> m_setup_cmds;
+			std::vector<std::string> m_shutdown_cmds;
 
 			/** \name Legacy support for TopCon RTK configuration
 			  * @{ */

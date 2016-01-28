@@ -23,8 +23,6 @@ using namespace std;
 
 IMPLEMENTS_GENERIC_SENSOR(CGPSInterface,mrpt::hwdrivers)
 
-MRPT_TODO("Parse (some) novatel binary frames");
-
 MRPT_TODO("Export to binary file from rawlog-edit")
 MRPT_TODO("Import from ASCII/binary file with a new app: gps2rawlog")
 
@@ -44,10 +42,9 @@ CGPSInterface::CGPSInterface() :
 	m_COMname            (),
 	m_COMbauds           (4800),
 	m_GPS_comsWork			(false),
-	m_GPS_signalAcquired	(false),
 	m_last_timestamp        ( INVALID_TIMESTAMP ),
-	m_setup_cmds_delay   (0.1),
-	m_setup_cmds_append_CRLF(true),
+	m_custom_cmds_delay   (0.1),
+	m_custom_cmds_append_CRLF(true),
 
 	m_JAVAD_rtk_src_port	(),
 	m_JAVAD_rtk_src_baud	(0),
@@ -81,8 +78,8 @@ void  CGPSInterface::loadConfig_sensorSpecific(
 	m_customInit	= configSource.read_string( iniSection, "customInit", m_customInit, false );
 
 	// new custom cmds:
-	m_setup_cmds_delay = configSource.read_float( iniSection, "setup_cmds_delay",m_setup_cmds_delay );
-	m_setup_cmds_append_CRLF = configSource.read_bool( iniSection, "m_setup_cmds_append_CRLF",m_setup_cmds_append_CRLF);
+	m_custom_cmds_delay = configSource.read_float( iniSection, "custom_cmds_delay",m_custom_cmds_delay );
+	m_custom_cmds_append_CRLF = configSource.read_bool( iniSection, "custom_cmds_append_CRLF",m_custom_cmds_append_CRLF);
 	// Load as many strings as found on the way:
 	m_setup_cmds.clear();
 	for (int i=1; true; i++)
@@ -92,6 +89,16 @@ void  CGPSInterface::loadConfig_sensorSpecific(
 		if (sLine.empty()) 
 			break;
 		m_setup_cmds.push_back(sLine);
+	}
+
+	m_shutdown_cmds.clear();
+	for (int i=1; true; i++)
+	{
+		std::string sLine = configSource.read_string(iniSection, mrpt::format("shutdown_cmd%i",i),std::string() ); 
+		sLine = mrpt::system::trim( sLine );
+		if (sLine.empty()) 
+			break;
+		m_shutdown_cmds.push_back(sLine);
 	}
 
 	m_sensorPose.setFromValues(
@@ -113,6 +120,7 @@ void  CGPSInterface::loadConfig_sensorSpecific(
 
 CGPSInterface::~CGPSInterface()
 {
+	OnConnectionShutdown();
 }
 
 void CGPSInterface::setParser(CGPSInterface::PARSERS parser) {
@@ -127,22 +135,28 @@ void CGPSInterface::setExternCOM( CSerialPort *outPort, mrpt::synch::CCriticalSe
 	m_cs_out_COM = csOutPort; 
 }
 void CGPSInterface::setSetupCommandsDelay(const double delay_secs) {
-	m_setup_cmds_delay = delay_secs;
+	m_custom_cmds_delay = delay_secs;
 }
 double CGPSInterface::getSetupCommandsDelay() const {
-	return m_setup_cmds_delay;
+	return m_custom_cmds_delay;
 }
 void CGPSInterface::setSetupCommands(const std::vector<std::string> &cmds) {
 	m_setup_cmds = cmds;
 }
-const std::vector<std::string> & CGPSInterface::setSetupCommands() const {
+const std::vector<std::string> & CGPSInterface::getSetupCommands() const {
 	return m_setup_cmds;
 }
+void CGPSInterface::setShutdownCommands(const std::vector<std::string> &cmds) {
+	m_shutdown_cmds = cmds;
+}
+const std::vector<std::string> & CGPSInterface::getShutdownCommands() const {
+	return m_shutdown_cmds;
+}
 void CGPSInterface::enableSetupCommandsAppendCRLF(const bool enable) {
-	m_setup_cmds_append_CRLF = enable;
+	m_custom_cmds_append_CRLF = enable;
 }
 bool CGPSInterface::isEnabledSetupCommandsAppendCRLF() const {
-	return m_setup_cmds_append_CRLF;
+	return m_custom_cmds_append_CRLF;
 }
 
 /* -----------------------------------------------------
@@ -181,53 +195,50 @@ std::string CGPSInterface::getSerialPortName() const
 ----------------------------------------------------- */
 bool  CGPSInterface::tryToOpenTheCOM()
 {
-    if( useExternCOM() )
-    {
-        bool res = false;
-        {
-            CCriticalSectionLocker loc( m_cs_out_COM );
-            res = m_out_COM->isOpen();
-        }
-        if( res )
-            return true;	// Already open
-    }
-    else
-        if (m_COM.isOpen())
-            return true;	// Already open
+	if( useExternCOM() )
+	{
+		bool res = false;
+		{
+			CCriticalSectionLocker loc( m_cs_out_COM );
+			res = m_out_COM->isOpen();
+		}
+		if( res )
+			return true;	// Already open
+	}
+	else
+		if (m_COM.isOpen())
+			return true;	// Already open
 
-    if (m_verbose) cout << "[CGPSInterface] Opening " << m_COMname << " @ " << m_COMbauds << endl;
-
-	m_last_GGA.clear();  // On comms reset, empty this cache
-	m_just_parsed_messages.clear();
+	if (m_verbose) cout << "[CGPSInterface] Opening " << m_COMname << " @ " << m_COMbauds << endl;
 
 	try
 	{
-        if( useExternCOM() )
-        {
-            CCriticalSectionLocker lock( m_cs_out_COM );
-            m_out_COM->open(m_COMname);
-            // Config:
-            m_out_COM->setConfig( m_COMbauds, 0, 8, 1 );
-            m_out_COM->setTimeouts( 1, 0, 1, 1, 1 );
-        }
-        else
-        {
-            m_COM.open(m_COMname);
-            // Config:
-            m_COM.setConfig( m_COMbauds, 0, 8, 1 );
-            m_COM.setTimeouts( 1, 0, 1, 1, 1 );
-        }
+		if( useExternCOM() )
+		{
+			CCriticalSectionLocker lock( m_cs_out_COM );
+			m_out_COM->open(m_COMname);
+			// Config:
+			m_out_COM->setConfig( m_COMbauds, 0, 8, 1 );
+			m_out_COM->setTimeouts( 1, 0, 1, 1, 1 );
+		}
+		else
+		{
+			m_COM.open(m_COMname);
+			// Config:
+			m_COM.setConfig( m_COMbauds, 0, 8, 1 );
+			m_COM.setTimeouts( 1, 0, 1, 1, 1 );
+		}
 
 		// Do extra initialization?
 		if (! OnConnectionEstablished() )
 		{
-		    if( useExternCOM() )
-		    {
-		        CCriticalSectionLocker lock( m_cs_out_COM );
-                m_out_COM->close();
-            }
-            else
-                m_COM.close();
+			if( useExternCOM() )
+			{
+				CCriticalSectionLocker lock( m_cs_out_COM );
+				m_out_COM->close();
+			}
+			else
+				m_COM.close();
 			return false;
 		}
 
@@ -236,13 +247,13 @@ bool  CGPSInterface::tryToOpenTheCOM()
 	catch (std::exception &e)
 	{
 		std::cerr << "[CGPSInterface::tryToOpenTheCOM] Error opening or configuring the serial port:" << std::endl << e.what();
-        if( useExternCOM() )
-        {
-            CCriticalSectionLocker lock( m_cs_out_COM );
-            m_out_COM->close();
-        }
-        else
-            m_COM.close();
+		if( useExternCOM() )
+		{
+			CCriticalSectionLocker lock( m_cs_out_COM );
+			m_out_COM->close();
+		}
+		else
+			m_COM.close();
 		return false;
 	}
 }
@@ -253,14 +264,6 @@ bool  CGPSInterface::tryToOpenTheCOM()
 bool  CGPSInterface::isGPS_connected()
 {
 	return m_GPS_comsWork;
-}
-
-/* -----------------------------------------------------
-				isGPS_signalAcquired
------------------------------------------------------ */
-bool  CGPSInterface::isGPS_signalAcquired()
-{
-	return m_GPS_signalAcquired;
 }
 
 /* -----------------------------------------------------
@@ -325,7 +328,6 @@ void  CGPSInterface::doProcess()
 			m_COM.close();
 		}
 		m_GPS_comsWork			= false;
-		m_GPS_signalAcquired	= false;
 		return;
 	}
 
@@ -465,11 +467,37 @@ void CGPSInterface::JAVAD_sendMessage(const char *str, bool waitForAnswer )
     throw std::runtime_error(format("ERROR: Invalid response '%s' for command '%s'",buf,str));
 }
 
+bool CGPSInterface::OnConnectionShutdown()
+{
+	if (!m_COM.isOpen())
+		return false;
+
+	// Send commands:
+	for (size_t i=0;i<m_shutdown_cmds.size();i++)
+	{
+		if (m_verbose) 
+			cout << "[CGPSInterface] TX shutdown command: `" << m_shutdown_cmds[i] << "`\n";
+
+		std::string sTx = m_shutdown_cmds[i];
+		if (m_custom_cmds_append_CRLF)
+			sTx+=std::string("\r\n");
+		const size_t written = m_COM.Write(&sTx[0],sTx.size());
+		if (written!=sTx.size())
+			return false;
+
+		mrpt::system::sleep(m_custom_cmds_delay*1000);
+	}
+	return true;
+}
+
 /* -----------------------------------------------------
 					OnConnectionEstablished
 ----------------------------------------------------- */
 bool CGPSInterface::OnConnectionEstablished()
 {
+	m_last_GGA.clear();  // On comms reset, empty this cache
+	m_just_parsed_messages.clear();
+
 	// Legacy behavior: 
 	if ( !os::_strcmpi( m_customInit.c_str(), "JAVAD" ) || !os::_strcmpi( m_customInit.c_str(), "TOPCON" ) ) {
 		return legacy_topcon_setup_commands();
@@ -488,15 +516,15 @@ bool CGPSInterface::OnConnectionEstablished()
 			cout << "[CGPSInterface] TX setup command: `" << m_setup_cmds[i] << "`\n";
 
 		std::string sTx = m_setup_cmds[i];
-		if (m_setup_cmds_append_CRLF) 
+		if (m_custom_cmds_append_CRLF) 
 			sTx+=std::string("\r\n");
 		const size_t written = m_COM.Write(&sTx[0],sTx.size());
 		ASSERT_EQUAL_(written,sTx.size());
 
-		mrpt::system::sleep(m_setup_cmds_delay*1000);
+		mrpt::system::sleep(m_custom_cmds_delay*1000);
 	}
 
-	mrpt::system::sleep(m_setup_cmds_delay*1000);
+	mrpt::system::sleep(m_custom_cmds_delay*1000);
 	return true;
 }
 
