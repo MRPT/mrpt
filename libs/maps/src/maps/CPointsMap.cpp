@@ -2107,22 +2107,21 @@ void CPointsMap::loadFromVelodyneScan(
 	mrpt::math::CMatrixDouble44 HM;
 	sensorGlobalPose.getHomogeneousMatrix(HM);
 
-	// For quicker access to values as "float" instead of "doubles":
-	const float m00 = HM.get_unsafe(0,0), m01 = HM.get_unsafe(0,1), m02 = HM.get_unsafe(0,2), m03 = HM.get_unsafe(0,3);
-	const float m10 = HM.get_unsafe(1,0), m11 = HM.get_unsafe(1,1), m12 = HM.get_unsafe(1,2), m13 = HM.get_unsafe(1,3);
-	const float m20 = HM.get_unsafe(2,0), m21 = HM.get_unsafe(2,1), m22 = HM.get_unsafe(2,2), m23 = HM.get_unsafe(2,3);
+	const double m00 = HM.get_unsafe(0,0), m01 = HM.get_unsafe(0,1), m02 = HM.get_unsafe(0,2), m03 = HM.get_unsafe(0,3);
+	const double m10 = HM.get_unsafe(1,0), m11 = HM.get_unsafe(1,1), m12 = HM.get_unsafe(1,2), m13 = HM.get_unsafe(1,3);
+	const double m20 = HM.get_unsafe(2,0), m21 = HM.get_unsafe(2,1), m22 = HM.get_unsafe(2,2), m23 = HM.get_unsafe(2,3);
 
 	// Copy points:
 	for (size_t i=0;i<nScanPts;i++)
 	{
 		const float inten = scan.point_cloud.intensity[i] * K;
-		const float lx = scan.point_cloud.x[i];
-		const float ly = scan.point_cloud.y[i];
-		const float lz = scan.point_cloud.z[i];
+		const double lx = scan.point_cloud.x[i];
+		const double ly = scan.point_cloud.y[i];
+		const double lz = scan.point_cloud.z[i];
 
-		const float gx = m00*lx + m01*ly + m02*lz + m03;
-		const float gy = m10*lx + m11*ly + m12*lz + m13;
-		const float gz = m20*lx + m21*ly + m22*lz + m23;
+		const double gx = m00*lx + m01*ly + m02*lz + m03;
+		const double gy = m10*lx + m11*ly + m12*lz + m13;
+		const double gz = m20*lx + m21*ly + m22*lz + m23;
 
 		this->setPoint(nOldPtsCount+i,
 			gx,gy,gz,  // XYZ
