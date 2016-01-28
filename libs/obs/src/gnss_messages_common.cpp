@@ -65,7 +65,8 @@ gnss_message* gnss_message::readAndBuildFromStream(mrpt::utils::CStream &in)
 	int32_t msg_id;
 	in >> msg_id;
 	gnss_message* msg = gnss_message::Factory(static_cast<gnss_message_type_t>(msg_id) );
-	if (!msg) 
+	MRPT_TODO("Attemp to recognize generic frames implemented in a newer version of mrpt:")
+	if (!msg)
 		THROW_EXCEPTION_CUSTOM_MSG1("Error deserializing gnss_message: unknown message type '%i'",static_cast<int>(msg_id));
 	msg->internal_readFromStream(in);
 	return msg;
