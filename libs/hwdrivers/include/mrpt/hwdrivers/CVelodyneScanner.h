@@ -14,6 +14,7 @@
 #include <mrpt/obs/CObservationVelodyneScan.h>
 #include <mrpt/obs/CObservationGPS.h>
 #include <mrpt/utils/CConfigFileBase.h>
+#include <mrpt/utils/CTicTac.h>
 
 namespace mrpt
 {
@@ -24,18 +25,9 @@ namespace mrpt
 		  * The choice of online vs. offline operation is taken upon calling \a initialize(): if a PCAP input file has been defined,
 		  * offline operation takes place and network is not listened for incomming packets.
 		  * 
-		  *  <h2>Configuration and usage:</h2> <hr>
-		  * Data is returned as observations of type:
-		  *  - mrpt::obs::CObservationVelodyneScan for one or more "data packets" (refer to Velodyne usage manual) 
-		  *  - mrpt::obs::CObservationGPS for GPS (GPRMC) packets, if available via the synchronization interface of the device.
-		  *  See those classes for documentation on their fields.
-		  *
-		  * Configuration includes setting the device IP, model and RPM rotation speed (for calculating how many packets form a scan).
-		  * These parameters can be set programatically (see methods of this class), or via a configuration file with CGenericSensor::loadConfig() (see example config file section below).
-		  *
 		  * <h2>Grabbing live data (as a user)</h2> <hr>
-		  *  - Use the application [velodyne-view](http://www.mrpt.org/list-of-mrpt-apps/application-velodyne-view/)) to visualize the LIDAR output in real-time.
-		  *  - Use [rawlog-grabber](http://www.mrpt.org/list-of-mrpt-apps/application-rawlog-grabber/) to record a dataset in MRPT's format. See example config file: [MRPT\share\mrpt\config_files\rawlog-grabber\velodyne.ini](https://github.com/MRPT/mrpt/blob/master/share/mrpt/config_files/rawlog-grabber/velodyne.ini)
+		  *  - Use the application [velodyne-view](http://www.mrpt.org/list-of-mrpt-apps/application-velodyne-view/) to visualize the LIDAR output in real-time (optionally saving to a PCAP file) or to playback a PCAP file.
+		  *  - Use [rawlog-grabber](http://www.mrpt.org/list-of-mrpt-apps/application-rawlog-grabber/) to record a dataset in MRPT's format together with any other set of sensors. See example config file: [MRPT\share\mrpt\config_files\rawlog-grabber\velodyne.ini](https://github.com/MRPT/mrpt/blob/master/share/mrpt/config_files/rawlog-grabber/velodyne.ini)
 		  *
 		  * <h2>Grabbing live data (programmatically)</h2> <hr>
 		  *  - See CGenericSensor for a general overview of the sequence of methods to be called: loadConfig(), initialize(), doProcess(). 
@@ -53,6 +45,16 @@ namespace mrpt
 		  * 
 		  *  To compile with PCAP support: In Debian/Ubuntu, install libpcap-dev. In Windows, install WinPCap developer packages + the regular WinPCap driver.
 		  *
+		  *  <h2>Configuration and usage:</h2> <hr>
+		  * Data is returned as observations of type:
+		  *  - mrpt::obs::CObservationVelodyneScan for one or more "data packets" (refer to Velodyne usage manual)
+		  *  - mrpt::obs::CObservationGPS for GPS (GPRMC) packets, if available via the synchronization interface of the device.
+		  *  See those classes for documentation on their fields.
+		  *
+		  * Configuration includes setting the device IP (optional), model (mandatory only if a calibration file is not provided) and RPM rotation speed
+		  * (for calculating how many packets form a scan).
+		  * These parameters can be set programatically (see methods of this class), or via a configuration file with CGenericSensor::loadConfig() (see example config file section below).
+		  *
 		  * <h2>About timestamps:</h2><hr>
 		  *  Generated observations timestamp are, by default, set from the computer clock as UDP packets are received.
 		  *  *TODO* Set from sensor timestamp.
@@ -62,19 +64,32 @@ namespace mrpt
 		  *  PARAMETERS IN THE ".INI"-LIKE CONFIGURATION STRINGS:
 		  * -------------------------------------------------------
 		  *   [supplied_section_name]
+		  *   # ---- Sensor description ----
+		  *   #calibration_file         = PUT_HERE_FULL_PATH_TO_CALIB_FILE.xml      // Optional but recommended: put here your vendor-provided calibration file
+		  *   model                    = VLP-16          // Can be any of: `VLP-16`, `HDL-32`  (It is used to load default calibration file. Parameter not required if `calibration_file` is provided.
+		  *   #pos_packets_min_period  = 0.5        // (Default=0.5 seconds) Minimum period between the reporting of position packets, used to decimate the large number of packets of this type.
 		  *   # ---- Online operation ----
-		  *   #device_ip       =  // IP address of the device. UDP packets from other IPs will be ignored. Leave commented or blank if only one scanner is present (no IP filtering)
-		  *   rpm              = 600            // Device spinning speed (this is NOT sent to the device, you must configure it in advance via the LIDAR web interface)
-		  *   #calibration_file = PUT_HERE_FULL_PATH_TO_CALIB_FILE.xml      // Optional but recommended: put here your vendor-provided calibration file
-		  *   model            = VLP-16          // Can be any of: `VLP-16`, `HDL-32`  (It is used to load default calibration file. Parameter not required if `calibration_file` is provided.
+		  *
+		  *   # IP address of the device. UDP packets from other IPs will be ignored. Leave commented or blank
+		  *   # if only one scanner is present (no IP filtering)
+		  *   #device_ip       = XXX.XXX.XXX.XXX
+		  *   rpm              = 600            // Device spinning speed (as set-up via the sensor Web Interface)
+		  *
 		  *   # ---- Offline operation ----
-		  *   # pcap_input     = PUT_FULL_PATH_TO_PCAP_LOG_FILE.pcap    // If uncommented, this class will read from the PCAP instead of connecting and listeling for online network packets.
+		  *   # If uncommented, this class will read from the PCAP instead of connecting and listeling
+		  *   # for online network packets.
+		  *   # pcap_input     = PUT_FULL_PATH_TO_PCAP_LOG_FILE.pcap
 		  *   # pcap_read_once = false   // Do not loop
 		  *   # pcap_read_fast = false    // fast forward skipping non-velodyne packets
 		  *   # pcap_repeat_delay = 0.0   // seconds
 		  *
+		  *   # ---- Save to PCAP file ----
+		  *   # If uncommented, a PCAP file named `[pcap_output_prefix]_[DATE_TIME].pcap` will be
+		  *   # written simultaneously to the normal operation of this class.
+		  *   # pcap_output     = velodyne_log
+		  *
 		  *   # 3D position of the sensor on the vehicle:
-		  *   pose_x     = 0      // 3D position (meters)
+		  *   pose_x     = 0    // 3D position (meters)
 		  *   pose_y     = 0
 		  *   pose_z     = 0
 		  *   pose_yaw   = 0    // 3D orientation (degrees)
@@ -90,7 +105,7 @@ namespace mrpt
 		  *  Copyright (C) 2009, 2010 Austin Robot Technology, Jack O'Quin
 		  *  License: Modified BSD Software License Agreement
 		  *
-		  * \note New in MRPT 1.3.3
+		  * \note New in MRPT 1.4.0
 		  * \ingroup mrpt_hwdrivers_grp
  		  */
 		class HWDRIVERS_IMPEXP CVelodyneScanner : public mrpt::hwdrivers::CGenericSensor
@@ -103,20 +118,27 @@ namespace mrpt
 		protected:
 			bool          m_initialized;
 			std::string   m_model;      //!< Default: "VLP-16"
+			double        m_pos_packets_min_period; //!< Default: 0.5
 			std::string   m_device_ip;  //!< Default: "" (no IP-based filtering)
 			std::string   m_pcap_input_file; //!< Default: "" (do not operate from an offline file)
+			std::string   m_pcap_output_file; //!< Default: "" (do not dump to an offline file)
 			int           m_rpm;        //!< Default: 600
 			mrpt::poses::CPose3D m_sensorPose;
 			mrpt::obs:: VelodyneCalibration  m_velodyne_calib; //!< Device calibration file (supplied by vendor in an XML file)
+			
+			mrpt::utils::CTicTac m_pos_packets_period_timewatch;
 
 			// offline operation:
 			void * m_pcap;             //!< opaque ptr: "pcap_t*"
+			void * m_pcap_out;         //!< opaque ptr: "pcap_t*"
+			void * m_pcap_dumper;      //!< opaque ptr: "pcap_dumper_t *"
 			void * m_pcap_bpf_program; //!< opaque ptr: bpf_program*
 			bool   m_pcap_file_empty;
 			unsigned int m_pcap_read_count; //!< number of pkts read from the file so far (for debugging)
 			bool   m_pcap_read_once;    //!< Default: false
 			bool   m_pcap_read_fast;    //!< Default: true
 			double m_pcap_repeat_delay; //!< Default: 0 (in seconds)
+
 
 			/** See the class documentation at the top for expected parameters */
 			void  loadConfig_sensorSpecific(
@@ -131,6 +153,9 @@ namespace mrpt
 			  * @{ */
 			void setModelName(const std::string & model) { m_model = model; }
 			const std::string &getModelName() const { return m_model; }
+
+			void setPosPacketsMinPeriod(double period) { m_pos_packets_min_period = period; }
+			double getPosPacketsMinPeriod() const { return m_pos_packets_min_period; }
 
 			void setDeviceIP(const std::string & ip) { m_device_ip = ip; }
 			const std::string &getDeviceIP() const { return m_device_ip; }

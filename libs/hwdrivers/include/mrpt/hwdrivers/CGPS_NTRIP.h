@@ -70,14 +70,10 @@ namespace mrpt
 			mrpt::hwdrivers::CGPSInterface  gps;
 			mrpt::hwdrivers::CNTRIPEmitter  ntrip;
 
-			/** Constructor. See mrpt::hwdrivers::CGPSInterface for the meaning of params. */
-			CGPS_NTRIP( int BUFFER_LENGTH = 500, mrpt::hwdrivers::CSerialPort *outPort = NULL, mrpt::synch::CCriticalSection *csOutPort = NULL);
+			CGPS_NTRIP();            //!< Constructor
+			virtual ~CGPS_NTRIP();   //!< Destructor
 
-			/** Destructor */
-			virtual ~CGPS_NTRIP();
-
-			// See docs in parent class
-			void  doProcess();
+			void  doProcess();  // See docs in parent class
 
 			virtual void initialize();
 		protected:

@@ -119,11 +119,16 @@ void xRawLogViewerFrame::OnMenuDrawGPSPath(wxCommandEvent& event)
 		}
 
 		// If we had a GPS obs, process it:
-		if (obs && obs->has_GGA_datum && (!only_rtk || obs->GGA_datum.fix_quality==4 || obs->GGA_datum.fix_quality==5) )
+		const mrpt::obs::gnss::Message_NMEA_GGA *gga = NULL;
+		if (obs && obs->hasMsgClass<mrpt::obs::gnss::Message_NMEA_GGA>()) {
+			gga = &obs->getMsgByClass<mrpt::obs::gnss::Message_NMEA_GGA>();
+		}
+
+		if (gga && (!only_rtk || gga->fields.fix_quality==4 || gga->fields.fix_quality==5) )
 		{
 			TPoint3D  X_ENU;		// Transformed coordinates
 
-			const TGeodeticCoords obsCoords = obs->GGA_datum.getAsStruct<TGeodeticCoords>();
+			const TGeodeticCoords obsCoords = gga->getAsStruct<TGeodeticCoords>();
 
 			// The first gps datum?
 			if (!ref_valid)
@@ -192,15 +197,24 @@ void fixGPStimestamp(CObservationGPSPtr &obs, CVectorDouble &time_changes, std::
 	CObservationGPS::TUTCTime	theTime;
 	bool  hasTime=false;
 
-	if (obs->has_GGA_datum && obs->GGA_datum.fix_quality>0)
+	const gnss::Message_NMEA_GGA *gga = NULL;
+	if (obs && obs->hasMsgClass<gnss::Message_NMEA_GGA>()) {
+		gga = &obs->getMsgByClass<gnss::Message_NMEA_GGA>();
+	}
+	const gnss::Message_NMEA_RMC *rmc = NULL;
+	if (obs && obs->hasMsgClass<gnss::Message_NMEA_RMC>()) {
+		rmc = &obs->getMsgByClass<gnss::Message_NMEA_RMC>();
+	}
+
+	if (gga && gga->fields.fix_quality>0)
 	{
-		theTime = obs->GGA_datum.UTCTime;
+		theTime = gga->fields.UTCTime;
 		hasTime = true;
 	}
 	else
-	if (obs->has_RMC_datum && obs->RMC_datum.validity_char=='A' )
+	if (rmc && rmc->fields.validity_char=='A' )
 	{
-		theTime = obs->RMC_datum.UTCTime;
+		theTime = rmc->fields.UTCTime;
 		hasTime = true;
 	}
 
@@ -385,7 +399,7 @@ void xRawLogViewerFrame::OnMenuDistanceBtwGPSs(wxCommandEvent& event)
                 	CObservationGPSPtr o = sf->getObservationByClass<CObservationGPS>();
                 	if (o && o->has_GGA_datum)
                 	{
-                		refCoords = o->GGA_datum.getAsStruct<TGeodeticCoords>();
+						refCoords = o->getMsgByClass<gnss::Message_NMEA_GGA>().getAsStruct<TGeodeticCoords>();
                 		ref_valid = true;
                 	}
                 }
@@ -397,14 +411,14 @@ void xRawLogViewerFrame::OnMenuDistanceBtwGPSs(wxCommandEvent& event)
                 {
                     ASSERT_(o1->GetRuntimeClass()==CLASS_ID(CObservationGPS));
                     CObservationGPSPtr obs = CObservationGPSPtr(o1);
-                    if (obs->has_GGA_datum && obs->GGA_datum.fix_quality==4)
+                    if (obs->has_GGA_datum && obs->getMsgByClass<gnss::Message_NMEA_GGA>().fields.fix_quality==4)
                         last_GPS1 = obs;
                 }
                 if (o2)
                 {
                     ASSERT_(o2->GetRuntimeClass()==CLASS_ID(CObservationGPS));
                     CObservationGPSPtr obs = CObservationGPSPtr(o2);
-                    if (obs->has_GGA_datum && obs->GGA_datum.fix_quality==4)
+                    if (obs->has_GGA_datum && obs->getMsgByClass<gnss::Message_NMEA_GGA>().fields.fix_quality==4)
                         last_GPS2 = obs;
                 }
             }
@@ -419,7 +433,7 @@ void xRawLogViewerFrame::OnMenuDistanceBtwGPSs(wxCommandEvent& event)
                 	CObservationGPSPtr ob = CObservationGPSPtr(o);
                 	if (ob && ob->has_GGA_datum)
                 	{
-                		refCoords = ob->GGA_datum.getAsStruct<TGeodeticCoords>();
+                		refCoords = ob->getMsgByClass<gnss::Message_NMEA_GGA>().getAsStruct<TGeodeticCoords>();
                 		ref_valid = true;
                 	}
                 }
@@ -429,7 +443,7 @@ void xRawLogViewerFrame::OnMenuDistanceBtwGPSs(wxCommandEvent& event)
                 {
                     ASSERT_(IS_CLASS(o,CObservationGPS));
                     CObservationGPSPtr obs = CObservationGPSPtr(o);
-                    if (obs->has_GGA_datum && obs->GGA_datum.fix_quality==4)
+                    if (obs->has_GGA_datum && obs->getMsgByClass<gnss::Message_NMEA_GGA>().fields.fix_quality==4)
                         last_GPS1 = obs;
                 }
 
@@ -437,7 +451,7 @@ void xRawLogViewerFrame::OnMenuDistanceBtwGPSs(wxCommandEvent& event)
                 {
                     ASSERT_(IS_CLASS(o,CObservationGPS));
                     CObservationGPSPtr obs = CObservationGPSPtr(o);
-                    if (obs->has_GGA_datum && obs->GGA_datum.fix_quality==4)
+                    if (obs->has_GGA_datum && obs->getMsgByClass<gnss::Message_NMEA_GGA>().fields.fix_quality==4)
                         last_GPS2 = obs;
                 }
             }
@@ -450,18 +464,18 @@ void xRawLogViewerFrame::OnMenuDistanceBtwGPSs(wxCommandEvent& event)
         // Now check if we have 2 gps with the same time stamp:
         if (last_GPS1 && last_GPS2)
         {
-            if (last_GPS1->GGA_datum.UTCTime == last_GPS2->GGA_datum.UTCTime)
+            if (last_GPS1->getMsgByClass<gnss::Message_NMEA_GGA>().fields.UTCTime == last_GPS2->getMsgByClass<gnss::Message_NMEA_GGA>().fields.UTCTime)
             {
                 // Compute distance:
                 TPoint3D  p1;
                 mrpt::topography::geodeticToENU_WGS84(
-                    last_GPS1->GGA_datum.getAsStruct<TGeodeticCoords>(),
+                    last_GPS1->getMsgByClass<gnss::Message_NMEA_GGA>().getAsStruct<TGeodeticCoords>(),
 					p1,
 					refCoords);
 
                 TPoint3D  p2;
                 mrpt::topography::geodeticToENU_WGS84(
-                    last_GPS2->GGA_datum.getAsStruct<TGeodeticCoords>(),
+                    last_GPS2->getMsgByClass<gnss::Message_NMEA_GGA>().getAsStruct<TGeodeticCoords>(),
 					p2,
 					refCoords);
 
@@ -525,8 +539,8 @@ void xRawLogViewerFrame::OnSummaryGPS(wxCommandEvent& event)
 			if (obs)
 				if (obs->has_GGA_datum)
 				{
-					ASSERT_(obs->GGA_datum.fix_quality<=8);
-					histogramGPSModes[ obs->GGA_datum.fix_quality ] ++;
+					ASSERT_(obs->getMsgByClass<gnss::Message_NMEA_GGA>().fields.fix_quality<=8);
+					histogramGPSModes[ obs->getMsgByClass<gnss::Message_NMEA_GGA>().fields.fix_quality ] ++;
 				}
 			}
 			break;
@@ -540,8 +554,8 @@ void xRawLogViewerFrame::OnSummaryGPS(wxCommandEvent& event)
 				if (obs)
 					if (obs->has_GGA_datum)
 					{
-						ASSERT_(obs->GGA_datum.fix_quality<=8);
-						histogramGPSModes[ obs->GGA_datum.fix_quality ] ++;
+						ASSERT_(obs->getMsgByClass<gnss::Message_NMEA_GGA>().fields.fix_quality<=8);
+						histogramGPSModes[ obs->getMsgByClass<gnss::Message_NMEA_GGA>().fields.fix_quality ] ++;
 					}
 			}
 			}
@@ -691,7 +705,7 @@ void xRawLogViewerFrame::OnGenGPSTxt(wxCommandEvent& event)
 								if (!ref_valid)
 								{
 									ref_valid=true;
-									refCoords = obs->GGA_datum.getAsStruct<TGeodeticCoords>();
+									refCoords = obs->getMsgByClass<gnss::Message_NMEA_GGA>().getAsStruct<TGeodeticCoords>();
 
 									// Local coordinates reference:
 									TPose3D _local_ENU;
@@ -704,14 +718,14 @@ void xRawLogViewerFrame::OnGenGPSTxt(wxCommandEvent& event)
 
 								// Local XYZ coordinates transform:
 								mrpt::topography::geodeticToENU_WGS84(
-									obs->GGA_datum.getAsStruct<TGeodeticCoords>(),
+									obs->getMsgByClass<gnss::Message_NMEA_GGA>().getAsStruct<TGeodeticCoords>(),
 									p,
 									refCoords );
 
 								// Geocentric XYZ:
 								TPoint3D geo;
 								mrpt::topography::geodeticToGeocentric_WGS84(
-									obs->GGA_datum.getAsStruct<TGeodeticCoords>(),
+									obs->getMsgByClass<gnss::Message_NMEA_GGA>().getAsStruct<TGeodeticCoords>(),
 									geo);
 
 								// Save file:
@@ -722,20 +736,20 @@ void xRawLogViewerFrame::OnGenGPSTxt(wxCommandEvent& event)
 
 								::fprintf(f_this,"%.4f %.16f %.16f %f %u %u %f %f %.16f %.16f %f %i %.4f %.4f %.4f\n",
 										tim,
-										DEG2RAD(obs->GGA_datum.latitude_degrees),
-										DEG2RAD(obs->GGA_datum.longitude_degrees),
-										obs->GGA_datum.altitude_meters,
-										obs->GGA_datum.fix_quality,
-										obs->GGA_datum.satellitesUsed,
-										obs->RMC_datum.speed_knots,
-										DEG2RAD(obs->RMC_datum.direction_degrees),
+										DEG2RAD(obs->getMsgByClass<gnss::Message_NMEA_GGA>().fields.latitude_degrees),
+										DEG2RAD(obs->getMsgByClass<gnss::Message_NMEA_GGA>().fields.longitude_degrees),
+										obs->getMsgByClass<gnss::Message_NMEA_GGA>().fields.altitude_meters,
+										obs->getMsgByClass<gnss::Message_NMEA_GGA>().fields.fix_quality,
+										obs->getMsgByClass<gnss::Message_NMEA_GGA>().fields.satellitesUsed,
+										obs->has_RMC_datum ? obs->getMsgByClass<gnss::Message_NMEA_RMC>().fields.speed_knots : 0.0,
+										obs->has_RMC_datum ? DEG2RAD(obs->getMsgByClass<gnss::Message_NMEA_RMC>().fields.direction_degrees) : 0.0,
 										p.x,p.y,p.z,
 										(int)i,  // rawlog index
 										geo.x, geo.y, geo.z
 									   );
 								M++;
 
-								if (obs->GGA_datum.fix_quality==4)
+								if (obs->getMsgByClass<gnss::Message_NMEA_GGA>().fields.fix_quality==4)
 								{
 									lstXYZallGPS[obs->timestamp][obs->sensorLabel] = CPoint3D(p);
 									lstAllGPSlabels.insert( obs->sensorLabel );
@@ -809,9 +823,9 @@ void xRawLogViewerFrame::OnGenGPSTxt(wxCommandEvent& event)
 								if (!ref_valid)
 								{
 									ref_valid=true;
-									refCoords.lon = obs->GGA_datum.longitude_degrees;
-									refCoords.lat = obs->GGA_datum.latitude_degrees;
-									refCoords.height = obs->GGA_datum.altitude_meters;
+									refCoords.lon = obs->getMsgByClass<gnss::Message_NMEA_GGA>().fields.longitude_degrees;
+									refCoords.lat = obs->getMsgByClass<gnss::Message_NMEA_GGA>().fields.latitude_degrees;
+									refCoords.height = obs->getMsgByClass<gnss::Message_NMEA_GGA>().fields.altitude_meters;
 
 									// Local coordinates reference:
 									TPose3D _local_ENU;
@@ -824,14 +838,14 @@ void xRawLogViewerFrame::OnGenGPSTxt(wxCommandEvent& event)
 
 								// Local XYZ coordinates transform:
 								mrpt::topography::geodeticToENU_WGS84(
-									obs->GGA_datum.getAsStruct<TGeodeticCoords>(),
+									obs->getMsgByClass<gnss::Message_NMEA_GGA>().getAsStruct<TGeodeticCoords>(),
 									p,
 									refCoords);
 
 								// Geocentric XYZ:
 								TPoint3D geo;
 								mrpt::topography::geodeticToGeocentric_WGS84(
-									obs->GGA_datum.getAsStruct<TGeodeticCoords>(),
+									obs->getMsgByClass<gnss::Message_NMEA_GGA>().getAsStruct<TGeodeticCoords>(),
 									geo );
 
 								// Save file:
@@ -840,15 +854,16 @@ void xRawLogViewerFrame::OnGenGPSTxt(wxCommandEvent& event)
 								// If available, Cartessian X Y Z, VX VY VZ, as supplied by the GPS itself:
 								TPoint3D  cart_pos(0,0,0), cart_vel(0,0,0);
 								TPoint3D  cart_vel_local(0,0,0);
-								if (obs->has_PZS_datum && obs->PZS_datum.hasCartesianPosVel)
+								if (obs->has_PZS_datum && obs->getMsgByClass<gnss::Message_TopCon_PZS>().hasCartesianPosVel)
 								{
-									cart_pos.x = obs->PZS_datum.cartesian_x;
-									cart_pos.y = obs->PZS_datum.cartesian_y;
-									cart_pos.z = obs->PZS_datum.cartesian_z;
+									const gnss::Message_TopCon_PZS & pzs = obs->getMsgByClass<gnss::Message_TopCon_PZS>();
+									cart_pos.x = pzs.cartesian_x;
+									cart_pos.y = pzs.cartesian_y;
+									cart_pos.z = pzs.cartesian_z;
 
-									cart_vel.x = obs->PZS_datum.cartesian_vx;
-									cart_vel.y = obs->PZS_datum.cartesian_vy;
-									cart_vel.z = obs->PZS_datum.cartesian_vz;
+									cart_vel.x = pzs.cartesian_vx;
+									cart_vel.y = pzs.cartesian_vy;
+									cart_vel.z = pzs.cartesian_vz;
 
 									cart_vel_local = TPoint3D( CPoint3D(cart_vel) - local_ENU );
 								}
@@ -866,24 +881,24 @@ void xRawLogViewerFrame::OnGenGPSTxt(wxCommandEvent& event)
 									"%14.4f "				// SAT Time
 									"\n",
 										tim,
-										DEG2RAD(obs->GGA_datum.latitude_degrees),
-										DEG2RAD(obs->GGA_datum.longitude_degrees),
-										obs->GGA_datum.altitude_meters,
-										obs->GGA_datum.fix_quality,
-										obs->GGA_datum.satellitesUsed,
-										obs->RMC_datum.speed_knots,
-										DEG2RAD(obs->RMC_datum.direction_degrees),
+										DEG2RAD(obs->getMsgByClass<gnss::Message_NMEA_GGA>().fields.latitude_degrees),
+										DEG2RAD(obs->getMsgByClass<gnss::Message_NMEA_GGA>().fields.longitude_degrees),
+										obs->getMsgByClass<gnss::Message_NMEA_GGA>().fields.altitude_meters,
+										obs->getMsgByClass<gnss::Message_NMEA_GGA>().fields.fix_quality,
+										obs->getMsgByClass<gnss::Message_NMEA_GGA>().fields.satellitesUsed,
+										obs->has_RMC_datum ? obs->getMsgByClass<gnss::Message_NMEA_RMC>().fields.speed_knots : 0.0,
+										obs->has_RMC_datum ? DEG2RAD(obs->getMsgByClass<gnss::Message_NMEA_RMC>().fields.direction_degrees) : 0.0,
 										p.x,p.y,p.z,
 										(int)i,  // rawlog index
 										geo.x, geo.y, geo.z,
 										cart_pos.x,cart_pos.y,cart_pos.z,
 										cart_vel.x,cart_vel.y,cart_vel.z,
 										cart_vel_local.x,cart_vel_local.y,cart_vel_local.z,
-                                        mrpt::system::timestampTotime_t( obs->GGA_datum.UTCTime.getAsTimestamp( obs->timestamp ) )
-									   );
+										mrpt::system::timestampTotime_t( obs->getMsgByClass<gnss::Message_NMEA_GGA>().fields.UTCTime.getAsTimestamp( obs->timestamp ) )
+									);
 								M++;
 
-								if (obs->GGA_datum.fix_quality==4)
+								if (obs->getMsgByClass<gnss::Message_NMEA_GGA>().fields.fix_quality==4)
 								{
 									lstXYZallGPS[obs->timestamp][obs->sensorLabel] = CPoint3D(p);
 									lstAllGPSlabels.insert( obs->sensorLabel );
@@ -978,9 +993,9 @@ void filter_delGPSNan(
             {
             	CObservationGPSPtr o = CObservationGPSPtr(*it);
             	if (o->has_GGA_datum &&
-					(mrpt::math::isNaN(o->GGA_datum.latitude_degrees) ||
-					 mrpt::math::isNaN(o->GGA_datum.longitude_degrees) ||
-					 mrpt::math::isNaN(o->GGA_datum.altitude_meters) ) )
+					(mrpt::math::isNaN(o->getMsgByClass<gnss::Message_NMEA_GGA>().fields.latitude_degrees) ||
+					 mrpt::math::isNaN(o->getMsgByClass<gnss::Message_NMEA_GGA>().fields.longitude_degrees) ||
+					 mrpt::math::isNaN(o->getMsgByClass<gnss::Message_NMEA_GGA>().fields.altitude_meters) ) )
 				{
 					it = SF->erase(it);
 					changesCount++;
