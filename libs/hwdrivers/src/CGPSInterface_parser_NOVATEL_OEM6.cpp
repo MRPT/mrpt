@@ -19,6 +19,7 @@ using namespace mrpt::hwdrivers;
 using namespace mrpt::obs;
 using namespace std;
 
+MRPT_TODO("Parse more frames")
 MRPT_TODO("check crc")
 
 void  CGPSInterface::implement_parser_NOVATEL_OEM6()

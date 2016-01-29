@@ -18,6 +18,7 @@
 MRPT_TODO("Add unit tests")
 MRPT_TODO("rpm: document usage. Add automatic determination of rpm from number of pkts/scan")
 MRPT_TODO("Use status bytes to check for dual return scans")
+MRPT_TODO("Add pose interpolation method for inserting in a point map")
 
 // socket's hdrs:
 #ifdef MRPT_OS_WINDOWS

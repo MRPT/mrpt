@@ -35,6 +35,7 @@
 				- New class mrpt::obs::CObservationVelodyneScan
 				- mrpt::obs::CSinCosLookUpTableFor2DScans now can build a table from a mrpt::obs::T2DScanProperties structure, which now also has its separate header file for better modularity.
 				- <b>[API changed]</b> mrpt::obs::CObservationGPS now stores only one message per objects. API clean-up and extended so the number of GNSS message types is larger and more scalable.
+				- mrpt::obs::gnss: A new namespace with many new data structures for GPS-related messages
 			- \ref mrpt_opengl_grp
 				- New class mrpt::opengl::CMesh3D to render 3D models/meshes
 			- \ref mrpt_vision_grp

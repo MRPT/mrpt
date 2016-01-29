@@ -19,6 +19,8 @@ using namespace mrpt::obs;
 using namespace mrpt::system;
 using namespace std;
 
+MRPT_TODO("Parse more frames")
+
 const size_t MAX_NMEA_LINE_LENGTH = 1024;
 
 void  CGPSInterface::implement_parser_NMEA()

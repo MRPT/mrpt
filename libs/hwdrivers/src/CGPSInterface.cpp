@@ -32,13 +32,13 @@ MRPT_TODO("new parse unit tests") // Example cmds: https://www.sparkfun.com/data
                 Constructor
    ----------------------------------------------------- */
 CGPSInterface::CGPSInterface() :
-	m_rx_buffer          (0x10000),
-	m_parser             (CGPSInterface::NMEA),
-	m_raw_dump_file_prefix(),
 	m_COM                (),
 	m_out_COM            (NULL),
 	m_cs_out_COM         (NULL),
 	m_customInit         (),
+	m_rx_buffer          (0x10000),
+	m_parser             (CGPSInterface::NMEA),
+	m_raw_dump_file_prefix(),
 	m_COMname            (),
 	m_COMbauds           (4800),
 	m_GPS_comsWork			(false),
