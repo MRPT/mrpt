@@ -207,11 +207,12 @@ int VelodyneView(int argc, char **argv)
 			last_obs_gps = thrPar.new_obs_gps.get();
 
 			std::string rmc_datum;
-			if (last_obs_gps->has_RMC_datum)
-			     rmc_datum = mrpt::format("Lon=%.09f deg  Lat=%.09f deg  Valid?: '%c'\n",
-				last_obs_gps->RMC_datum.longitude_degrees,
-				last_obs_gps->RMC_datum.latitude_degrees,
-				last_obs_gps->RMC_datum.validity_char);
+			if (last_obs_gps->has_RMC_datum) {
+				rmc_datum = mrpt::format("Lon=%.09f deg  Lat=%.09f deg  Valid?: '%c'\n",
+					last_obs_gps->getMsgByClass<gnss::Message_NMEA_RMC>().fields.longitude_degrees,
+					last_obs_gps->getMsgByClass<gnss::Message_NMEA_RMC>().fields.latitude_degrees,
+					last_obs_gps->getMsgByClass<gnss::Message_NMEA_RMC>().fields.validity_char);
+			}
 			else rmc_datum = "NO";
 
 			win3D.get3DSceneAndLock();

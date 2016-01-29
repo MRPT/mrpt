@@ -35,7 +35,7 @@ namespace mrpt
 
 		/** Reconstruct the path of a vehicle equipped with 3 RTK GPSs.
 		  *  \param robot_path [OUT] The reconstructed vehicle path
-		  *  \param rawlog [IN] The dataset
+		  *  \param rawlog [IN] The dataset. It must contain mrpt::obs::CObservationGPS observations with GGA datums.
 		  *  \param rawlog_first [IN] The index of the first entry to process (first=0)
 		  *  \param rawlog_last [IN] The index of the last entry to process
 		  *  \param isGUI [IN] If set to true, some progress dialogs will be shown during the computation (requires MRPT built with support for wxWidgets).

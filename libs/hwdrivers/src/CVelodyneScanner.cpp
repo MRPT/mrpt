@@ -13,10 +13,11 @@
 #include <mrpt/utils/CStream.h>
 #include <mrpt/utils/net_utils.h>
 #include <mrpt/hwdrivers/CGPSInterface.h>
+#include <mrpt/system/filesystem.h>
 
 MRPT_TODO("Add unit tests")
-MRPT_TODO("Optional save to PCAP")
 MRPT_TODO("rpm: document usage. Add automatic determination of rpm from number of pkts/scan")
+MRPT_TODO("Use status bytes to check for dual return scans")
 
 // socket's hdrs:
 #ifdef MRPT_OS_WINDOWS
@@ -24,6 +25,7 @@ MRPT_TODO("rpm: document usage. Add automatic determination of rpm from number o
 	typedef int socklen_t;
 #else
 	#define  INVALID_SOCKET  (-1)
+	#include <sys/time.h>  // gettimeofday()
 	#include <sys/socket.h>
 	#include <unistd.h>
 	#include <fcntl.h>
@@ -83,9 +85,12 @@ struct TModelPropertiesFactory {
 
 CVelodyneScanner::CVelodyneScanner() :
 	m_model("VLP-16"),
+	m_pos_packets_min_period(0.5),
 	m_device_ip(""),
 	m_rpm(600),
 	m_pcap(NULL),
+	m_pcap_out(NULL),
+	m_pcap_dumper(NULL),
 	m_pcap_bpf_program(NULL),
 	m_pcap_file_empty(true),
 	m_pcap_read_once(false),
@@ -138,9 +143,20 @@ void CVelodyneScanner::loadConfig_sensorSpecific(
 	MRPT_LOAD_HERE_CONFIG_VAR(rpm,            int, m_rpm             ,  cfg, sect);
 	MRPT_LOAD_HERE_CONFIG_VAR(model,       string, m_model           ,  cfg, sect);
 	MRPT_LOAD_HERE_CONFIG_VAR(pcap_input,  string, m_pcap_input_file ,  cfg, sect);
+	MRPT_LOAD_HERE_CONFIG_VAR(pcap_output, string, m_pcap_output_file,  cfg, sect);	
 	MRPT_LOAD_HERE_CONFIG_VAR(pcap_read_once,bool, m_pcap_read_once,  cfg, sect);
 	MRPT_LOAD_HERE_CONFIG_VAR(pcap_read_fast,bool, m_pcap_read_fast ,  cfg, sect);
 	MRPT_LOAD_HERE_CONFIG_VAR(pcap_repeat_delay,double, m_pcap_repeat_delay ,  cfg, sect);
+
+	using mrpt::utils::DEG2RAD;
+	m_sensorPose = mrpt::poses::CPose3D(
+		cfg.read_float(sect,"pose_x",0),
+		cfg.read_float(sect,"pose_y",0),
+		cfg.read_float(sect,"pose_z",0),
+		DEG2RAD( cfg.read_float(sect,"pose_yaw",0) ),
+		DEG2RAD( cfg.read_float(sect,"pose_pitch",0) ),
+		DEG2RAD( cfg.read_float(sect,"pose_roll",0) )
+		);
 
 	std::string calibration_file;
 	MRPT_LOAD_CONFIG_VAR(calibration_file,string,cfg, sect);
@@ -179,6 +195,7 @@ bool CVelodyneScanner::getNextObservation(
 		{
 			mrpt::obs::CObservationGPSPtr gps_obs = mrpt::obs::CObservationGPS::Create();
 			gps_obs->timestamp = pos_pkt_timestamp;
+			gps_obs->originalReceivedTimestamp = pos_pkt_timestamp;
 			gps_obs->sensorLabel = this->m_sensorLabel + std::string("_GPS");
 			gps_obs->sensorPose = m_sensorPose;
 
@@ -348,6 +365,30 @@ void CVelodyneScanner::initialize()
 #endif
 	}
 
+	// Save to PCAP file?
+	if (!m_pcap_output_file.empty())
+	{
+#if MRPT_HAS_LIBPCAP
+		char errbuf[PCAP_ERRBUF_SIZE];
+
+		mrpt::system::TTimeParts parts;
+		mrpt::system::timestampToParts(mrpt::system::now(), parts, true);
+		string	sFilePostfix = "_";
+		sFilePostfix += format("%04u-%02u-%02u_%02uh%02um%02us",(unsigned int)parts.year, (unsigned int)parts.month, (unsigned int)parts.day, (unsigned int)parts.hour, (unsigned int)parts.minute, (unsigned int)parts.second );
+		const string sFileName = m_pcap_output_file + mrpt::system::fileNameStripInvalidChars( sFilePostfix ) + string(".pcap");
+
+		m_pcap_out = pcap_open_dead(DLT_EN10MB, 65535);
+		ASSERTMSG_(m_pcap_out!=NULL, "Error creating PCAP live capture handle");
+
+		printf("\n[CVelodyneScanner] Writing to PCAP file \"%s\"\n", sFileName.c_str());
+		if ((m_pcap_dumper = pcap_dump_open(reinterpret_cast<pcap_t*>(m_pcap_out),sFileName.c_str())) == NULL) {
+			THROW_EXCEPTION_CUSTOM_MSG1("Error creating PCAP live dumper: '%s'",errbuf);
+		}
+#else
+		THROW_EXCEPTION("Velodyne: Writing PCAP files requires building MRPT with libpcap support!");
+#endif
+	}
+
 	m_initialized=true;
 }
 
@@ -375,14 +416,51 @@ void CVelodyneScanner::close()
 		m_hPositionSock=INVALID_SOCKET;
 	}
 #if MRPT_HAS_LIBPCAP
-	if (m_pcap)
-	{
+	if (m_pcap) {
 		pcap_close( reinterpret_cast<pcap_t*>(m_pcap) );
 		m_pcap = NULL;
+	}
+	if (m_pcap_dumper) {
+		pcap_dump_close(reinterpret_cast<pcap_dumper_t*>(m_pcap_dumper));
+		m_pcap_dumper=NULL;
+	}
+	if (m_pcap_out) {
+		pcap_close( reinterpret_cast<pcap_t*>(m_pcap_out) );
+		m_pcap_out = NULL;
 	}
 #endif
 	m_initialized=false;
 }
+
+// Fixed Ethernet headers for PCAP capture --------
+#if MRPT_HAS_LIBPCAP
+const uint16_t LidarPacketHeader[21] = {
+    0xffff, 0xffff, 0xffff, 0x7660,
+    0x0088, 0x0000, 0x0008, 0x0045,
+    0xd204, 0x0000, 0x0040, 0x11ff,
+    0xaab4, 0xa8c0, 0xc801, 0xffff, // checksum 0xa9b4 //source ip 0xa8c0, 0xc801 is 192.168.1.200
+    0xffff, 0x4009, 0x4009, 0xbe04, 0x0000};
+const uint16_t PositionPacketHeader[21] = {
+    0xffff, 0xffff, 0xffff, 0x7660,
+    0x0088, 0x0000, 0x0008, 0x0045,
+    0xd204, 0x0000, 0x0040, 0x11ff,
+    0xaab4, 0xa8c0, 0xc801, 0xffff, // checksum 0xa9b4 //source ip 0xa8c0, 0xc801 is 192.168.1.200
+    0xffff, 0x7420, 0x7420, 0x0802, 0x0000};
+#endif
+
+#if defined(MRPT_OS_WINDOWS) && MRPT_HAS_LIBPCAP
+int gettimeofday(struct timeval * tp, void *)
+{
+	FILETIME ft;
+	::GetSystemTimeAsFileTime( &ft );
+	long long t = (static_cast<long long>(ft.dwHighDateTime) << 32) | ft.dwLowDateTime;
+	t -= 116444736000000000LL;
+	t /= 10;  // microseconds
+	tp->tv_sec = static_cast<long>( t / 1000000UL);
+	tp->tv_usec = static_cast<long>( t % 1000000UL);
+	return 0;
+}
+#endif
 
 void CVelodyneScanner::receivePackets(
 	mrpt::system::TTimeStamp  &data_pkt_timestamp,
@@ -404,6 +482,52 @@ void CVelodyneScanner::receivePackets(
 	{
 		data_pkt_timestamp = internal_receive_UDP_packet(m_hDataSock     ,(uint8_t*)&out_data_pkt, CObservationVelodyneScan::PACKET_SIZE,m_device_ip);
 		pos_pkt_timestamp  = internal_receive_UDP_packet(m_hPositionSock ,(uint8_t*)&out_pos_pkt, CObservationVelodyneScan::POS_PACKET_SIZE,m_device_ip);
+	}
+
+	// Optional PCAP dump:
+#if MRPT_HAS_LIBPCAP
+	if (m_pcap_out && m_pcap_dumper && (data_pkt_timestamp!=INVALID_TIMESTAMP || pos_pkt_timestamp!=INVALID_TIMESTAMP)) 
+	{
+		struct pcap_pkthdr header;
+		struct timeval currentTime;
+		gettimeofday(&currentTime, NULL);
+		std::vector<unsigned char> packetBuffer;
+
+		// Data pkt:
+		if (data_pkt_timestamp!=INVALID_TIMESTAMP)
+		{
+			header.caplen = header.len = CObservationVelodyneScan::PACKET_SIZE+42;
+			packetBuffer.resize(header.caplen);
+			header.ts = currentTime;
+
+			memcpy(&(packetBuffer[0]), LidarPacketHeader, 42);
+			memcpy(&(packetBuffer[0]) + 42, (uint8_t*)&out_data_pkt, CObservationVelodyneScan::PACKET_SIZE);
+			pcap_dump((u_char*)this->m_pcap_dumper, &header, &(packetBuffer[0]));
+		}
+		// Pos pkt:
+		if (pos_pkt_timestamp!=INVALID_TIMESTAMP)
+		{
+			header.caplen = header.len = CObservationVelodyneScan::POS_PACKET_SIZE+42;
+			packetBuffer.resize(header.caplen);
+			header.ts = currentTime;
+
+			memcpy(&(packetBuffer[0]), PositionPacketHeader, 42);
+			memcpy(&(packetBuffer[0]) + 42, (uint8_t*)&out_pos_pkt, CObservationVelodyneScan::POS_PACKET_SIZE);
+			pcap_dump((u_char*)this->m_pcap_dumper, &header, &(packetBuffer[0]));
+		}
+	}
+#endif
+
+	// Position packet decimation:
+	if (pos_pkt_timestamp!=INVALID_TIMESTAMP) {
+		if (m_pos_packets_period_timewatch.Tac()< m_pos_packets_min_period) {
+			// Ignore this packet
+			pos_pkt_timestamp = INVALID_TIMESTAMP;
+		}
+		else {
+			// Reset time watch:
+			m_pos_packets_period_timewatch.Tic();
+		}
 	}
 }
 

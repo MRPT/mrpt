@@ -21,8 +21,8 @@ using namespace std;
 IMPLEMENTS_GENERIC_SENSOR(CGPS_NTRIP,mrpt::hwdrivers)
 
 /** Constructor. See mrpt::hwdrivers::CGPSInterface for the meaning of params. */
-CGPS_NTRIP::CGPS_NTRIP( int BUFFER_LENGTH, mrpt::hwdrivers::CSerialPort *outPort, mrpt::synch::CCriticalSection *csOutPort) :
-	gps(BUFFER_LENGTH,outPort,csOutPort),
+CGPS_NTRIP::CGPS_NTRIP() :
+	gps(),
 	ntrip()
 {
 }

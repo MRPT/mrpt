@@ -49,6 +49,7 @@ const mrpt::utils::TRuntimeClassId* lstClasses[] = {
 	CLASS_ID(CObservationCANBusJ1939),
 	CLASS_ID(CObservationRawDAQ),
 	CLASS_ID(CObservation6DFeatures),
+	CLASS_ID(CObservationVelodyneScan),
 	// Actions:
 	CLASS_ID(CActionRobotMovement2D),
 	CLASS_ID(CActionRobotMovement3D)

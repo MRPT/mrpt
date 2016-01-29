@@ -13,20 +13,28 @@
 <p> <b>Note:</b> <i>If you are displaying a local version of this page and you have not built the whole HTML documentation, the links above will be broken. Either build the documentation invoking <code>make documentation_html</code> or [browse it on-line](http://www.mrpt.org/).</i></p>
 
 <hr>
-<a name="1.3.3">
-  <h2>Version 1.3.3: (Under development) </h2></a>
+<a name="1.4.0">
+  <h2>Version 1.4.0: (Under development) </h2></a>
 	- <b>Most important changes:</b>
 		- Support for Velodyne LIDAR sensors.
+		- New minor version number due to changes in the API of these classes (read details below): mrpt::obs::CObservationGPS, mrpt::hwdrivers::CGPSInterface
 	- <b>Detailed list of changes:</b>
 		- New apps:
 			- [velodyne-view](http://www.mrpt.org/list-of-mrpt-apps/application-velodyne-view/): Application to test, visualize and grab data from a live Velodyne sensor or from a PCAP record.
+		- Changes in apps:
+			- [rawlog-grabber](http://www.mrpt.org/list-of-mrpt-apps/application-rawlog-grabber/): Now does not show GPS and IMU debug data in console, unless `MRPT_HWDRIVERS_VERBOSE` environment variable is set.
 		- Changes in libraries:
+			- \ref mrpt_base_grp
+				- [ABI change] mrpt::system::tokenize() new parameter `skipBlankTokens`
+				- mrpt::utils::circular_buffer now has peek() methods
 			- \ref mrpt_hwdrivers_grp
 				- New class mrpt::hwdrivers::CVelodyneScanner
 				- mrpt::hwdrivers::CNTRIPEmitter now has a parameter to enable/disable sending back the data from the serial port to the NTRIP caster.
+				- <b>[API changed]</b> mrpt::hwdrivers::CGPSInterface API clean-up and made more generic so any stream can be used to parse GNSS messages, not only serial ports.
 			- \ref mrpt_obs_grp
 				- New class mrpt::obs::CObservationVelodyneScan
 				- mrpt::obs::CSinCosLookUpTableFor2DScans now can build a table from a mrpt::obs::T2DScanProperties structure, which now also has its separate header file for better modularity.
+				- <b>[API changed]</b> mrpt::obs::CObservationGPS now stores only one message per objects. API clean-up and extended so the number of GNSS message types is larger and more scalable.
 			- \ref mrpt_opengl_grp
 				- New class mrpt::opengl::CMesh3D to render 3D models/meshes
 			- \ref mrpt_vision_grp
@@ -43,7 +51,7 @@
 <a name="1.3.2">
   <h2>Version 1.3.2: Released 3-NOV-2015 </h2></a>
   	- Changes in Apps:
-		- [rawlog-edit](http://www.mrpt.org/Application%3Arawlog-edit):
+		- [rawlog-edit](http://www.mrpt.org/list-of-mrpt-apps/application-rawlog-edit/):
 			- New operation: `--list-poses`
 			- `--list-images` now also works with 3D range scans
 	- Changes in libraries:

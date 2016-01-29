@@ -37,7 +37,7 @@ namespace obs
 	  * Otherwise, the following API exists for accurate reconstruction of the sensor path in SE(3) over time: 
 	  *  - **TODO** XXXX
 	  *
-	  * \note New in MRPT 1.3.3
+	  * \note New in MRPT 1.4.0
 	  * \sa CObservation, CPointsMap, CVelodyneScanner
 	  * \ingroup mrpt_obs_grp
 	  */

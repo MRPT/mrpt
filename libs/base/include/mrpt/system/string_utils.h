@@ -37,28 +37,19 @@ namespace mrpt
 		  *		- "Pepe"
 		  *		- "Er"
 		  *		- "Muo"
+		  * \param[in] skipBlankTokens If `true`, consecutive "delimiters" will be considered one single delimiters. If `false`, a blank token will be returned between each pair of delimiters.
 		  */
 		void  BASE_IMPEXP tokenize(
-			const std::string			&inString,
-			const std::string			&inDelimiters,
-			std::deque<std::string>		&outTokens ) MRPT_NO_THROWS;
-
-		/** Tokenizes a string according to a set of delimiting characters.
-		  * Example:
-		  * \code
-		  std::vector<std::string>	tokens;
-		  tokenize( " - Pepe-Er  Muo"," -",tokens);
-		  * \endcode
-		  *
-		  *  Will generate 3 tokens:
-		  *		- "Pepe"
-		  *		- "Er"
-		  *		- "Muo"
-		  */
+			const std::string       & inString,
+			const std::string       & inDelimiters,
+			std::deque<std::string> & outTokens,
+			bool                      skipBlankTokens = true) MRPT_NO_THROWS;
+		/** \overload */
 		void BASE_IMPEXP  tokenize(
-			const std::string			&inString,
-			const std::string			&inDelimiters,
-			std::vector<std::string>		&outTokens ) MRPT_NO_THROWS;
+			const std::string        & inString,
+			const std::string        & inDelimiters,
+			std::vector<std::string> & outTokens,
+			bool                       skipBlankTokens = true) MRPT_NO_THROWS;
 
 		/**  Removes leading and trailing spaces */
 		std::string BASE_IMPEXP trim(const std::string &str);

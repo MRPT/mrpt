@@ -505,8 +505,8 @@ void CIMUXSens_MT4::doProcess()
 			XsVector lla_data = packet.latitudeLongitude();
 
 			CObservationGPSPtr obsGPS = CObservationGPSPtr( new CObservationGPS() );
-			CObservationGPS::TGPSDatum_RMC& rGPS = obsGPS->RMC_datum;
-
+			gnss::Message_NMEA_RMC rGPSs;
+			gnss::Message_NMEA_RMC::content_t & rGPS = rGPSs.fields;
 			rGPS.latitude_degrees = lla_data[0];
 			rGPS.longitude_degrees = lla_data[1];
 
@@ -529,11 +529,6 @@ void CIMUXSens_MT4::doProcess()
 				rGPS.UTCTime.sec = fmod(obs->timestamp / (1000000.0 / 100), 60);
 			}
 
-			obsGPS->has_RMC_datum = true;
-			obsGPS->timestamp = obs->timestamp;
-			obsGPS->sensorPose	= m_sensorPose;
-			obsGPS->sensorLabel	= m_sensorLabel;
-
 			if (packet.containsVelocity())
 			{
 				XsVector vel_data = packet.velocity();
@@ -542,6 +537,12 @@ void CIMUXSens_MT4::doProcess()
 				rGPS.direction_degrees = 0; //Could be worked out from velocity and magnatic field perhaps.
 			}
 			else rGPS.speed_knots = rGPS.direction_degrees = 0;
+
+			obsGPS->setMsg(rGPSs);
+			obsGPS->timestamp = obs->timestamp;
+			obsGPS->originalReceivedTimestamp = obs->timestamp;
+			obsGPS->sensorPose	= m_sensorPose;
+			obsGPS->sensorLabel	= m_sensorLabel;
 
 			appendObservation(obsGPS);
 		}

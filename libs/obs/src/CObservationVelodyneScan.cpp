@@ -56,9 +56,16 @@ void  CObservationVelodyneScan::writeToStream(mrpt::utils::CStream &out, int *ve
 		out << timestamp << sensorLabel;
 
 		out << minRange << maxRange << sensorPose;
-		uint32_t N = scan_packets.size();
-		out << N;
-		if (N) out.WriteBuffer(&scan_packets[0],sizeof(scan_packets[0])*N);
+		{
+			uint32_t N = scan_packets.size();
+			out << N;
+			if (N) out.WriteBuffer(&scan_packets[0],sizeof(scan_packets[0])*N);
+		}
+		{
+			uint32_t N = calibration.laser_corrections.size();
+			out << N;
+			if (N) out.WriteBuffer(&calibration.laser_corrections[0],sizeof(calibration.laser_corrections[0])*N);
+		}
 		out << point_cloud.x << point_cloud.y << point_cloud.z << point_cloud.intensity;
 	}
 }
@@ -75,10 +82,18 @@ void  CObservationVelodyneScan::readFromStream(mrpt::utils::CStream &in, int ver
 			in >> timestamp >> sensorLabel;
 
 			in >> minRange >> maxRange >> sensorPose;
-			uint32_t N; 
-			in >> N;
-			scan_packets.resize(N);
-			if (N) in.ReadBuffer(&scan_packets[0],sizeof(scan_packets[0])*N);
+			{
+				uint32_t N; 
+				in >> N;
+				scan_packets.resize(N);
+				if (N) in.ReadBuffer(&scan_packets[0],sizeof(scan_packets[0])*N);
+			}
+			{
+				uint32_t N; 
+				in >> N;
+				calibration.laser_corrections.resize(N);
+				if (N) in.ReadBuffer(&calibration.laser_corrections[0],sizeof(calibration.laser_corrections[0])*N);
+			}
 			in >> point_cloud.x >> point_cloud.y >> point_cloud.z >> point_cloud.intensity;
 		} break;
 	default:
@@ -92,7 +107,7 @@ void CObservationVelodyneScan::getDescriptionAsText(std::ostream &o) const
 {
 	CObservation::getDescriptionAsText(o);
 	o << "Homogeneous matrix for the sensor 3D pose, relative to robot base:\n";
-	o << sensorPose.getHomogeneousMatrixVal() << sensorPose << endl;
+	o << sensorPose.getHomogeneousMatrixVal() << "\n" << sensorPose << endl;
 
 	o << format("Sensor min/max range: %.02f / %.02f m\n", minRange, maxRange );
 

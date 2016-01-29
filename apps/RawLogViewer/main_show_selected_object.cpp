@@ -74,7 +74,6 @@ void xRawLogViewerFrame::SelectObjectInTreeView( const CSerializablePtr & sel_ob
 			obs->getDescriptionAsText(cout);
 			curSelectedObservation = CObservationPtr( sel_obj );
 		}
-		else
 		if ( classID->derivedFrom( CLASS_ID( CAction ) ) )
 		{
 			CActionPtr obs( sel_obj );
@@ -101,318 +100,349 @@ void xRawLogViewerFrame::SelectObjectInTreeView( const CSerializablePtr & sel_ob
 			lyScan2D->SetData(Xs,Ys);
 			plotScan2D->Fit();      // Update the window to show the new data fitted.
 		}
-		else if ( classID  == CLASS_ID(CObservationImage) )
-			{
-				// ----------------------------------------------------------------------
-				//              CObservationImage
-				// ----------------------------------------------------------------------
-				Notebook1->ChangeSelection( 3 );
-				CObservationImagePtr obs = CObservationImagePtr( sel_obj );
+
+		if ( classID  == CLASS_ID(CObservationImage) )
+		{
+			// ----------------------------------------------------------------------
+			//              CObservationImage
+			// ----------------------------------------------------------------------
+			Notebook1->ChangeSelection( 3 );
+			CObservationImagePtr obs = CObservationImagePtr( sel_obj );
 				
-				// Get bitmap:
-				// ----------------------
-				wxImage *img = mrpt::gui::MRPTImage2wxImage( obs->image );
-				bmpObsImage->SetBitmap( wxBitmap(*img) );
-				bmpObsImage->Refresh();
-				delete img;
-				obs->image.unload(); // For externally-stored datasets
-			}
-			else if ( classID  == CLASS_ID(CObservationStereoImages) )
-				{
-					// ----------------------------------------------------------------------
-					//              CObservationStereoImages
-					// ----------------------------------------------------------------------
-					Notebook1->ChangeSelection( 4);
-					CObservationStereoImagesPtr obs = CObservationStereoImagesPtr(sel_obj);
+			// Get bitmap:
+			// ----------------------
+			wxImage *img = mrpt::gui::MRPTImage2wxImage( obs->image );
+			bmpObsImage->SetBitmap( wxBitmap(*img) );
+			bmpObsImage->Refresh();
+			delete img;
+			obs->image.unload(); // For externally-stored datasets
+		}
 
-					// Images:
-					// ----------------------
-					wxImage *imgLeft = mrpt::gui::MRPTImage2wxImage( obs->imageLeft );
-					bmpObsStereoLeft->SetBitmap( wxBitmap(*imgLeft) );
-					bmpObsStereoLeft->Refresh();
-					delete imgLeft;
+		if ( classID  == CLASS_ID(CObservationStereoImages) )
+		{
+			// ----------------------------------------------------------------------
+			//              CObservationStereoImages
+			// ----------------------------------------------------------------------
+			Notebook1->ChangeSelection( 4);
+			CObservationStereoImagesPtr obs = CObservationStereoImagesPtr(sel_obj);
 
-					wxImage *imgRight = mrpt::gui::MRPTImage2wxImage( obs->imageRight );
-					bmpObsStereoRight->SetBitmap( wxBitmap(*imgRight) );
-					bmpObsStereoRight->Refresh();
-					delete imgRight;
+			// Images:
+			// ----------------------
+			wxImage *imgLeft = mrpt::gui::MRPTImage2wxImage( obs->imageLeft );
+			bmpObsStereoLeft->SetBitmap( wxBitmap(*imgLeft) );
+			bmpObsStereoLeft->Refresh();
+			delete imgLeft;
 
-					wxImage *imgDisp = mrpt::gui::MRPTImage2wxImage( obs->imageDisparity );
-					bmpObsStereoDisp->SetBitmap( wxBitmap(*imgDisp) );
-					bmpObsStereoDisp->Refresh();
-					delete imgDisp;
-				}
-				else if ( classID == CLASS_ID(CActionRobotMovement2D) )
-					{
-						// ----------------------------------------------------------------------
-						//              CActionRobotMovement2D
-						// ----------------------------------------------------------------------
-						Notebook1->ChangeSelection( 1 );
+			wxImage *imgRight = mrpt::gui::MRPTImage2wxImage( obs->imageRight );
+			bmpObsStereoRight->SetBitmap( wxBitmap(*imgRight) );
+			bmpObsStereoRight->Refresh();
+			delete imgRight;
 
-						CActionRobotMovement2DPtr act = CActionRobotMovement2DPtr( sel_obj );
+			wxImage *imgDisp = mrpt::gui::MRPTImage2wxImage( obs->imageDisparity );
+			bmpObsStereoDisp->SetBitmap( wxBitmap(*imgDisp) );
+			bmpObsStereoDisp->Refresh();
+			delete imgDisp;
+		}
 
-						CPose2D			Ap;
-						CMatrixDouble33 mat;
-						act->poseChange->getCovarianceAndMean(mat,Ap);
+		if ( classID == CLASS_ID(CActionRobotMovement2D) )
+		{
+			// ----------------------------------------------------------------------
+			//              CActionRobotMovement2D
+			// ----------------------------------------------------------------------
+			Notebook1->ChangeSelection( 1 );
 
-						cout << "Robot Movement (as a gaussian pose change):\n";
-						cout << " Mean = " << Ap << endl;
+			CActionRobotMovement2DPtr act = CActionRobotMovement2DPtr( sel_obj );
 
-						cout << format(" Covariance:     DET=%e\n", mat.det());
+			CPose2D			Ap;
+			CMatrixDouble33 mat;
+			act->poseChange->getCovarianceAndMean(mat,Ap);
 
-						cout << format("      %e %e %e\n", mat(0,0), mat(0,1), mat(0,2) );
-						cout << format("      %e %e %e\n", mat(1,0), mat(1,1), mat(1,2) );
-						cout << format("      %e %e %e\n", mat(2,0), mat(2,1), mat(2,2) );
+			cout << "Robot Movement (as a gaussian pose change):\n";
+			cout << " Mean = " << Ap << endl;
 
-						cout << endl;
+			cout << format(" Covariance:     DET=%e\n", mat.det());
 
-						cout << " Actual reading from the odometry increment = " << act->rawOdometryIncrementReading << endl;
+			cout << format("      %e %e %e\n", mat(0,0), mat(0,1), mat(0,2) );
+			cout << format("      %e %e %e\n", mat(1,0), mat(1,1), mat(1,2) );
+			cout << format("      %e %e %e\n", mat(2,0), mat(2,1), mat(2,2) );
 
-						cout << format("Actual PDF class is: '%s'\n",
-									   act->poseChange->GetRuntimeClass()->className );
+			cout << endl;
 
-						if (act->poseChange->GetRuntimeClass()==CLASS_ID(CPosePDFParticles))
-						{
-							CPosePDFParticlesPtr aux = CPosePDFParticlesPtr( act->poseChange );
-							cout << format (" (Particle count = %u)\n", (unsigned)aux->m_particles.size() );
-						}
-						cout << endl;
+			cout << " Actual reading from the odometry increment = " << act->rawOdometryIncrementReading << endl;
 
-						cout << "Estimation method: ";
-						switch (act->estimationMethod)
-						{
-						case CActionRobotMovement2D::emOdometry:
-							cout << "emOdometry\n";
-							break;
-						case CActionRobotMovement2D::emScan2DMatching:
-							cout << "emScan2DMatching\n";
-							break;
-						default:
-							cout <<  "(Unknown ID!)\n";
-							break;
-						};
+			cout << format("Actual PDF class is: '%s'\n",
+							act->poseChange->GetRuntimeClass()->className );
 
-						// Additional data:
-						if (act->hasEncodersInfo)
-						{
-							cout << format(" Encoder info: deltaL=%i deltaR=%i\n", act->encoderLeftTicks, act->encoderRightTicks );
-						}
-						else    cout << "Encoder info: Not available!\n";
-
-						if (act->hasVelocities)
-						{
-							cout << format(" Velocity info: v=%.03f m/s  w=%.03f deg/s\n", act->velocityLin, RAD2DEG(act->velocityAng) );
-						}
-						else    cout << "Velocity info: Not available!\n";
-
-
-						// Plot the 2D pose samples:
-						unsigned int                    N = 1000;
-						vector<CVectorDouble>       samples;
-						vector<float>                    xs(N),ys(N),ps(N),dumm(N,0.1f);
-
-						// Draw a set of random (x,y,phi) samples:
-						act->poseChange->drawManySamples( N, samples );
-
-						// Pass to vectors and draw them:
-						for (unsigned int i=0;i<N;i++)
-						{
-							xs[i] = samples[i][0];
-							ys[i] = samples[i][1];
-							ps[i] = RAD2DEG(samples[i][2]);
-						}
-
-						lyAction2D_XY->SetData(xs,ys);
-						lyAction2D_PHI->SetData(ps,dumm);
-
-						plotAct2D_XY->Fit();
-						plotAct2D_PHI->Fit();
-					}
-					else if ( classID  == CLASS_ID(CObservationBearingRange) )
-						{
-							// ----------------------------------------------------------------------
-							//              CObservationBearingRange
-							// ----------------------------------------------------------------------
-							Notebook1->ChangeSelection( 8 );
-							CObservationBearingRangePtr obs = CObservationBearingRangePtr( sel_obj );
-
-							// The plot:
-							size_t nPts = obs->sensedData.size();
-							vector<float>    Xs(nPts),Ys(nPts),Zs(nPts);
-							for (size_t k=0;k<nPts;k++)
-							{
-								float R      = obs->sensedData[k].range;
-								float yaw    = obs->sensedData[k].yaw;
-								float pitch  = obs->sensedData[k].pitch;
-
-								CPoint3D   local(
-									R * cos(yaw) * cos(pitch),
-									R * sin(yaw) * cos(pitch),
-									R * sin(pitch) );
-								CPoint3D relRobot( obs->sensorLocationOnRobot + local);
-								Xs[k] = relRobot.x();
-								Ys[k] = relRobot.y();
-								Zs[k] = relRobot.z();
-							}
-							lyRangeBearingLandmarks->SetData(Xs,Ys);
-							plotRangeBearing->LockAspect();
-							plotRangeBearing->Fit();      // Update the window to show the new data fitted.
-						}
-						else
-							if ( classID  == CLASS_ID(CActionRobotMovement3D) )
-							{
-								// ----------------------------------------------------------------------
-								//              CActionRobotMovement3D
-								// ----------------------------------------------------------------------
-								//Notebook1->ChangeSelection( 1 );
-								CActionRobotMovement3DPtr act = CActionRobotMovement3DPtr( sel_obj );
-								cout << "Robot Movement (as a gaussian pose change):\n";
-								cout << act->poseChange << endl;
-							}
-							else if ( classID  == CLASS_ID(CObservation3DRangeScan) )
-								{
-									// ----------------------------------------------------------------------
-									//              CObservation3DRangeScan
-									// ----------------------------------------------------------------------
-									Notebook1->ChangeSelection( 9 );
-									CObservation3DRangeScanPtr obs = CObservation3DRangeScanPtr( sel_obj );
-
-									obs->load(); // Make sure the 3D point cloud, etc... are all loaded in memory.
-
-									const bool generate3Donthefly = !obs->hasPoints3D && mnuItemEnable3DCamAutoGenPoints->IsChecked();
-									if (generate3Donthefly)
-									{
-										obs->project3DPointsFromDepthImage();
-									}
-
-									if (generate3Donthefly)
-										cout << "NOTICE: The stored observation didn't contain 3D points, but these have been generated on-the-fly just for visualization purposes.\n"
-										"(You can disable this behavior from the menu Sensors->3D depth cameras\n\n";
-														
-									// Update 3D view ==========
-								#if RAWLOGVIEWER_HAS_3D
-									this->m_gl3DRangeScan->m_openGLScene->clear();
-									//this->m_gl3DRangeScan->m_openGLScene->insert( mrpt::opengl::stock_objects::CornerXYZ() );
-									this->m_gl3DRangeScan->m_openGLScene->insert( mrpt::opengl::CAxis::Create(-20,-20,-20,20,20,20,1,2,true ));
-
-									mrpt::opengl::CPointCloudColouredPtr pnts = mrpt::opengl::CPointCloudColoured::Create();
-									CColouredPointsMap  pointMap;
-									pointMap.colorScheme.scheme = CColouredPointsMap::cmFromIntensityImage;
-
-									if (obs->hasPoints3D)
-									{
-										// Assign only those points above a certain threshold:
-										const int confThreshold =   obs->hasConfidenceImage ? slid3DcamConf->GetValue() : 0;
-
-										if (confThreshold==0) // This includes when there is no confidence image.
-										{
-											pointMap.insertionOptions.minDistBetweenLaserPoints = 0; // don't drop any point
-											pointMap.insertObservation(obs.pointer());
-											pnts->loadFromPointsMap(&pointMap);
-										}
-										else
-										{
-											pnts->clear();
-
-											const vector<float>  &obs_xs = obs->points3D_x;
-											const vector<float>  &obs_ys = obs->points3D_y;
-											const vector<float>  &obs_zs = obs->points3D_z;
-
-											size_t i=0;
-
-											const size_t W = obs->confidenceImage.getWidth();
-											const size_t H = obs->confidenceImage.getHeight();
-
-											ASSERT_(obs->confidenceImage.isColor()==false)
-											ASSERT_(obs_xs.size() == H*W)
-
-											for(size_t r=0;r<H;r++)
-											{
-												unsigned char const * ptr_lin = obs->confidenceImage.get_unsafe(0,r,0);
-												for(size_t c=0;c<W;c++,  i++ )
-												{
-													unsigned char conf = *ptr_lin++;
-													if (conf>=confThreshold)
-														pnts->push_back(obs_xs[i],obs_ys[i],obs_zs[i],1,1,1);
-												}
-											}
-										}
-
-										pnts->setPointSize(4.0);
-
-										// Translate the 3D cloud since sensed points are relative to the camera, but the camera may be translated wrt the robot (our 0,0,0 here):
-										pnts->setPose( obs->sensorPose );
-									}
-									this->m_gl3DRangeScan->m_openGLScene->insert(pnts);
-									this->m_gl3DRangeScan->Refresh();
-
-									// Free memory:
-									if (generate3Donthefly)
-									{
-										obs->hasPoints3D = false;
-										obs->resizePoints3DVectors(0);
-									}
-
-								#endif
-
-									// Update intensity image ======
-									{
-										CImage im;
-										if (obs->hasIntensityImage)
-												im = obs->intensityImage;
-										else im.resize(10,10,CH_GRAY, true);
-										wxImage *img = mrpt::gui::MRPTImage2wxImage( im );
-										if (img->IsOk())
-											bmp3Dobs_int->SetBitmap( wxBitmap(*img) );
-										bmp3Dobs_int->Refresh();
-										delete img;
-										obs->intensityImage.unload(); // For externally-stored datasets
-									}
-									// Update depth image ======
-									{
-										CImage  auxImg;
-										if (obs->hasRangeImage)
-										{
-											// Convert to range [0,255]
-											mrpt::math::CMatrix normalized_range = obs->rangeImage;
-											const float max_rang = std::max(obs->maxRange, normalized_range.maximum() );
-											if (max_rang>0) normalized_range *= 255./max_rang;
-											auxImg.setFromMatrix(normalized_range, false /* it's in range [0,255] */);
-										}
-										else auxImg.resize(10,10, CH_GRAY, true );
-
-										wxImage *img = mrpt::gui::MRPTImage2wxImage( auxImg );
-										if (img->IsOk())
-											bmp3Dobs_depth->SetBitmap( wxBitmap(*img) );
-										bmp3Dobs_depth->Refresh();
-										delete img;
-									}
-									// Update confidence image ======
-									{
-										wxImage *img;
-										if (obs->hasConfidenceImage)
-											img = mrpt::gui::MRPTImage2wxImage( obs->confidenceImage );
-										else
-										{
-											mrpt::utils::CImage dumm(10,10);
-											img = mrpt::gui::MRPTImage2wxImage( dumm );
-										}
-										if (img->IsOk())
-											bmp3Dobs_conf->SetBitmap( wxBitmap(*img) );
-										bmp3Dobs_conf->Refresh();
-										delete img;
-										obs->confidenceImage.unload(); // For externally-stored datasets
-									}
-
-									obs->unload();
-
-								}
-
-			if ( classID->derivedFrom( CLASS_ID( CObservation ) ) )
+			if (act->poseChange->GetRuntimeClass()==CLASS_ID(CPosePDFParticles))
 			{
-				CObservationPtr obs( sel_obj );
-				obs->unload();
+				CPosePDFParticlesPtr aux = CPosePDFParticlesPtr( act->poseChange );
+				cout << format (" (Particle count = %u)\n", (unsigned)aux->m_particles.size() );
 			}
+			cout << endl;
+
+			cout << "Estimation method: ";
+			switch (act->estimationMethod)
+			{
+			case CActionRobotMovement2D::emOdometry:
+				cout << "emOdometry\n";
+				break;
+			case CActionRobotMovement2D::emScan2DMatching:
+				cout << "emScan2DMatching\n";
+				break;
+			default:
+				cout <<  "(Unknown ID!)\n";
+				break;
+			};
+
+			// Additional data:
+			if (act->hasEncodersInfo)
+			{
+				cout << format(" Encoder info: deltaL=%i deltaR=%i\n", act->encoderLeftTicks, act->encoderRightTicks );
+			}
+			else    cout << "Encoder info: Not available!\n";
+
+			if (act->hasVelocities)
+			{
+				cout << format(" Velocity info: v=%.03f m/s  w=%.03f deg/s\n", act->velocityLin, RAD2DEG(act->velocityAng) );
+			}
+			else    cout << "Velocity info: Not available!\n";
+
+
+			// Plot the 2D pose samples:
+			unsigned int                    N = 1000;
+			vector<CVectorDouble>       samples;
+			vector<float>                    xs(N),ys(N),ps(N),dumm(N,0.1f);
+
+			// Draw a set of random (x,y,phi) samples:
+			act->poseChange->drawManySamples( N, samples );
+
+			// Pass to vectors and draw them:
+			for (unsigned int i=0;i<N;i++)
+			{
+				xs[i] = samples[i][0];
+				ys[i] = samples[i][1];
+				ps[i] = RAD2DEG(samples[i][2]);
+			}
+
+			lyAction2D_XY->SetData(xs,ys);
+			lyAction2D_PHI->SetData(ps,dumm);
+
+			plotAct2D_XY->Fit();
+			plotAct2D_PHI->Fit();
+		}
+
+		if ( classID  == CLASS_ID(CObservationBearingRange) )
+		{
+			// ----------------------------------------------------------------------
+			//              CObservationBearingRange
+			// ----------------------------------------------------------------------
+			Notebook1->ChangeSelection( 8 );
+			CObservationBearingRangePtr obs = CObservationBearingRangePtr( sel_obj );
+
+			// The plot:
+			size_t nPts = obs->sensedData.size();
+			vector<float>    Xs(nPts),Ys(nPts),Zs(nPts);
+			for (size_t k=0;k<nPts;k++)
+			{
+				float R      = obs->sensedData[k].range;
+				float yaw    = obs->sensedData[k].yaw;
+				float pitch  = obs->sensedData[k].pitch;
+
+				CPoint3D   local(
+					R * cos(yaw) * cos(pitch),
+					R * sin(yaw) * cos(pitch),
+					R * sin(pitch) );
+				CPoint3D relRobot( obs->sensorLocationOnRobot + local);
+				Xs[k] = relRobot.x();
+				Ys[k] = relRobot.y();
+				Zs[k] = relRobot.z();
+			}
+			lyRangeBearingLandmarks->SetData(Xs,Ys);
+			plotRangeBearing->LockAspect();
+			plotRangeBearing->Fit();      // Update the window to show the new data fitted.
+		}
+
+		if ( classID  == CLASS_ID(CActionRobotMovement3D) )
+		{
+			// ----------------------------------------------------------------------
+			//              CActionRobotMovement3D
+			// ----------------------------------------------------------------------
+			//Notebook1->ChangeSelection( 1 );
+			CActionRobotMovement3DPtr act = CActionRobotMovement3DPtr( sel_obj );
+			cout << "Robot Movement (as a gaussian pose change):\n";
+			cout << act->poseChange << endl;
+		}
+
+		if ( classID  == CLASS_ID(CObservation3DRangeScan) )
+		{
+			// ----------------------------------------------------------------------
+			//              CObservation3DRangeScan
+			// ----------------------------------------------------------------------
+			Notebook1->ChangeSelection( 9 );
+			CObservation3DRangeScanPtr obs = CObservation3DRangeScanPtr( sel_obj );
+
+			obs->load(); // Make sure the 3D point cloud, etc... are all loaded in memory.
+
+			const bool generate3Donthefly = !obs->hasPoints3D && mnuItemEnable3DCamAutoGenPoints->IsChecked();
+			if (generate3Donthefly)
+			{
+				obs->project3DPointsFromDepthImage();
+			}
+
+			if (generate3Donthefly)
+				cout << "NOTICE: The stored observation didn't contain 3D points, but these have been generated on-the-fly just for visualization purposes.\n"
+				"(You can disable this behavior from the menu Sensors->3D depth cameras\n\n";
+														
+			// Update 3D view ==========
+#if RAWLOGVIEWER_HAS_3D
+			this->m_gl3DRangeScan->m_openGLScene->clear();
+			//this->m_gl3DRangeScan->m_openGLScene->insert( mrpt::opengl::stock_objects::CornerXYZ() );
+			this->m_gl3DRangeScan->m_openGLScene->insert( mrpt::opengl::CAxis::Create(-20,-20,-20,20,20,20,1,2,true ));
+
+			mrpt::opengl::CPointCloudColouredPtr pnts = mrpt::opengl::CPointCloudColoured::Create();
+			CColouredPointsMap  pointMap;
+			pointMap.colorScheme.scheme = CColouredPointsMap::cmFromIntensityImage;
+
+			if (obs->hasPoints3D)
+			{
+				// Assign only those points above a certain threshold:
+				const int confThreshold =   obs->hasConfidenceImage ? slid3DcamConf->GetValue() : 0;
+
+				if (confThreshold==0) // This includes when there is no confidence image.
+				{
+					pointMap.insertionOptions.minDistBetweenLaserPoints = 0; // don't drop any point
+					pointMap.insertObservation(obs.pointer());
+					pnts->loadFromPointsMap(&pointMap);
+				}
+				else
+				{
+					pnts->clear();
+
+					const vector<float>  &obs_xs = obs->points3D_x;
+					const vector<float>  &obs_ys = obs->points3D_y;
+					const vector<float>  &obs_zs = obs->points3D_z;
+
+					size_t i=0;
+
+					const size_t W = obs->confidenceImage.getWidth();
+					const size_t H = obs->confidenceImage.getHeight();
+
+					ASSERT_(obs->confidenceImage.isColor()==false)
+					ASSERT_(obs_xs.size() == H*W)
+
+					for(size_t r=0;r<H;r++)
+					{
+						unsigned char const * ptr_lin = obs->confidenceImage.get_unsafe(0,r,0);
+						for(size_t c=0;c<W;c++,  i++ )
+						{
+							unsigned char conf = *ptr_lin++;
+							if (conf>=confThreshold)
+								pnts->push_back(obs_xs[i],obs_ys[i],obs_zs[i],1,1,1);
+						}
+					}
+				}
+
+				pnts->setPointSize(4.0);
+
+				// Translate the 3D cloud since sensed points are relative to the camera, but the camera may be translated wrt the robot (our 0,0,0 here):
+				pnts->setPose( obs->sensorPose );
+			}
+			this->m_gl3DRangeScan->m_openGLScene->insert(pnts);
+			this->m_gl3DRangeScan->Refresh();
+
+			// Free memory:
+			if (generate3Donthefly)
+			{
+				obs->hasPoints3D = false;
+				obs->resizePoints3DVectors(0);
+			}
+#endif
+
+			// Update intensity image ======
+			{
+				CImage im;
+				if (obs->hasIntensityImage)
+						im = obs->intensityImage;
+				else im.resize(10,10,CH_GRAY, true);
+				wxImage *img = mrpt::gui::MRPTImage2wxImage( im );
+				if (img->IsOk())
+					bmp3Dobs_int->SetBitmap( wxBitmap(*img) );
+				bmp3Dobs_int->Refresh();
+				delete img;
+				obs->intensityImage.unload(); // For externally-stored datasets
+			}
+			// Update depth image ======
+			{
+				CImage  auxImg;
+				if (obs->hasRangeImage)
+				{
+					// Convert to range [0,255]
+					mrpt::math::CMatrix normalized_range = obs->rangeImage;
+					const float max_rang = std::max(obs->maxRange, normalized_range.maximum() );
+					if (max_rang>0) normalized_range *= 255./max_rang;
+					auxImg.setFromMatrix(normalized_range, false /* it's in range [0,255] */);
+				}
+				else auxImg.resize(10,10, CH_GRAY, true );
+
+				wxImage *img = mrpt::gui::MRPTImage2wxImage( auxImg );
+				if (img->IsOk())
+					bmp3Dobs_depth->SetBitmap( wxBitmap(*img) );
+				bmp3Dobs_depth->Refresh();
+				delete img;
+			}
+			// Update confidence image ======
+			{
+				wxImage *img;
+				if (obs->hasConfidenceImage)
+					img = mrpt::gui::MRPTImage2wxImage( obs->confidenceImage );
+				else
+				{
+					mrpt::utils::CImage dumm(10,10);
+					img = mrpt::gui::MRPTImage2wxImage( dumm );
+				}
+				if (img->IsOk())
+					bmp3Dobs_conf->SetBitmap( wxBitmap(*img) );
+				bmp3Dobs_conf->Refresh();
+				delete img;
+				obs->confidenceImage.unload(); // For externally-stored datasets
+			}
+			obs->unload();
+		}
+
+		if ( classID  == CLASS_ID(CObservationVelodyneScan) )
+		{
+			// ----------------------------------------------------------------------
+			//              CObservationVelodyneScan
+			// ----------------------------------------------------------------------
+			Notebook1->ChangeSelection( 9 );
+			CObservationVelodyneScanPtr obs = CObservationVelodyneScanPtr( sel_obj );
+			
+			obs->generatePointCloud();
+			// Update 3D view ==========
+#if RAWLOGVIEWER_HAS_3D
+			this->m_gl3DRangeScan->m_openGLScene->clear();
+			//this->m_gl3DRangeScan->m_openGLScene->insert( mrpt::opengl::stock_objects::CornerXYZ() );
+			this->m_gl3DRangeScan->m_openGLScene->insert( mrpt::opengl::CAxis::Create(-20,-20,-20,20,20,20,1,2,true ));
+
+			mrpt::opengl::CPointCloudColouredPtr pnts = mrpt::opengl::CPointCloudColoured::Create();
+
+			CColouredPointsMap pntsMap;
+			pntsMap.loadFromVelodyneScan(*obs);
+			pnts->loadFromPointsMap(&pntsMap);
+			pnts->setPointSize(4.0);
+
+			this->m_gl3DRangeScan->m_openGLScene->insert(pnts);
+			this->m_gl3DRangeScan->Refresh();
+
+			// Free memory:
+			obs->point_cloud.clear_deep();
+#endif
+		}
+
+		if ( classID->derivedFrom( CLASS_ID( CObservation ) ) ) {
+			CObservationPtr obs( sel_obj );
+			obs->unload();
+		}
 		} // scope for redirector
 		memo->ShowPosition(0);
 	}
