@@ -9,30 +9,25 @@ The MRPT project
 ------------------------------------------------------------------------------
 
 Mobile Robot Programming Toolkit (MRPT) provides C++ libraries aimed at researchers
-in mobile robotics and computer vision. Libraries include 3D(6D) geometry, SE(2)/SE(3) Lie groups, 
-probability density functions (pdfs) over points, landmarks, poses and maps, 
-Bayesian inference (Kalman filters, particle filters), image processing, obstacle
-avoidance, etc. 
-MRPT also provides GUI apps for Stereo camera calibration, dataset inspection, 
-and much more. 
+in mobile robotics and computer vision. Libraries include [3D(6D) geometry](http://www.mrpt.org/tutorials/programming/maths-and-geometry/2d_3d_geometry/), [SE(2)/SE(3) Lie groups](http://ingmec.ual.es/~jlblanco/papers/jlblanco2010geometry3D_techrep.pdf), 
+[probability density functions (pdfs)](http://reference.mrpt.org/stable/classmrpt_1_1utils_1_1_c_probability_density_function.html) over points, landmarks, poses and maps, 
+Bayesian inference ([Kalman filters](http://www.mrpt.org/Kalman_Filters), [particle filters](http://www.mrpt.org/tutorials/programming/statistics-and-bayes-filtering/particle_filters/)), [image processing](http://reference.mrpt.org/devel/group__mrpt__vision__grp.html), [obstacle avoidance](http://reference.mrpt.org/devel/group__mrpt__nav__grp.html), [etc](http://reference.mrpt.org/devel/modules.html). 
+MRPT also provides GUI apps for [Stereo camera calibration](http://www.mrpt.org/list-of-mrpt-apps/application-kinect-stereo-calib/), [dataset inspection](http://www.mrpt.org/list-of-mrpt-apps/rawlogviewer/), 
+and [much more](http://www.mrpt.org/list-of-mrpt-apps/).
 
 2. Resources
 ------------------------------------------------------------------------------
-  * Main website [http://www.mrpt.org/](http://www.mrpt.org/) ([Sources and Windows installer downloads](http://www.mrpt.org/download-mrpt/))
-  * C++ API reference: [http://reference.mrpt.org/](http://reference.mrpt.org/).
-  * Google group for questions: [http://www.mrpt.org/forum/](http://www.mrpt.org/forum/)
+  * [Main project website](http://www.mrpt.org/), including [sources and Windows installer downloads](http://www.mrpt.org/download-mrpt/))
+  * [C++ API reference](http://reference.mrpt.org/).
+  * Ask questions at: [this Google group](http://www.mrpt.org/forum/) or at [stackoverflow](http://stackoverflow.com/search?q=mrpt) (please, use the tag `mrpt`!)
   * [Bindings documentation](https://github.com/MRPT/mrpt/wiki) (Python, Matlab)
-  * Download the latest unstable code with: 
-    
-            git clone https://github.com/MRPT/mrpt.git --depth 1
-
+  * Download the latest unstable code with: `git clone https://github.com/MRPT/mrpt.git --depth 1`
+  * Source code for [dozens of examples](http://www.mrpt.org/tutorials/mrpt-examples/)
   * Example configuration files for  MRPT applications can be found at: 
      [MRPT/share/mrpt/config_files](https://github.com/MRPT/mrpt/tree/master/share/mrpt/config_files)
-
   * Some sample datasets are stored in: 
      [MRPT/share/mrpt/datasets](https://github.com/MRPT/mrpt/tree/master/share/mrpt/datasets). 
     A more complete dataset repository is [available online](http://www.mrpt.org/robotics_datasets).
-
 
 3. Compiling
 ------------------------------------------------------------------------------
