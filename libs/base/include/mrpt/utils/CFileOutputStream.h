@@ -28,17 +28,8 @@ namespace utils
 	class BASE_IMPEXP CFileOutputStream : public CStream, public CUncopiable
 	{
 	protected:
-		 /** Method responsible for reading from the stream.
-		 */
-		size_t  Read(void *Buffer, size_t Count);
-
-		/** Method responsible for writing to the stream.
-		 *  Write attempts to write up to Count bytes to Buffer, and returns the number of bytes actually written.
-		 */
-		size_t  Write(const void *Buffer, size_t Count);
-
-		// DECLARE_UNCOPIABLE( CFileOutputStream )
-
+		size_t Read(void *Buffer, size_t Count) MRPT_OVERRIDE;
+		size_t Write(const void *Buffer, size_t Count) MRPT_OVERRIDE;
 	private:
 		std::ofstream 	m_of;		//!< The actual output file stream.
 
@@ -53,8 +44,7 @@ namespace utils
 			bool  append = false
 			 );
 
-		 /** Default constructor
-		  */
+		 /** Default constructor */
 		CFileOutputStream();
 
 		 /** Open the given file for write
@@ -68,30 +58,21 @@ namespace utils
 		/** Close the stream. */
 		void close();
 
-		 /** Destructor
-		 */
+		 /** Destructor */
 		 virtual ~CFileOutputStream();
 
-		 /** Says if file was open successfully or not.
-		  */
+		 /** Says if file was open successfully or not */
 		 bool  fileOpenCorrectly();
 
-		/** Method for moving to a specified position in the streamed resource.
-		 *   See documentation of CStream::Seek
-		 */
-		uint64_t Seek(uint64_t Offset, CStream::TSeekOrigin Origin = sFromBeginning);
+		// See base class docs
+		uint64_t Seek(uint64_t Offset, CStream::TSeekOrigin Origin = sFromBeginning) MRPT_OVERRIDE;
 
-		/** Method for getting the total number of bytes writen to buffer.
-		 */
-		uint64_t getTotalBytesCount();
+		/** Method for getting the total number of bytes writen to buffer */
+		uint64_t getTotalBytesCount() MRPT_OVERRIDE;
 
-		/** Method for getting the current cursor position, where 0 is the first byte and TotalBytesCount-1 the last one.
-		 */
-		uint64_t getPosition();
-
-
+		/** Method for getting the current cursor position, where 0 is the first byte and TotalBytesCount-1 the last one */
+		uint64_t getPosition() MRPT_OVERRIDE;
 	}; // End of class def.
-
 	} // End of namespace
 } // end of namespace
 #endif

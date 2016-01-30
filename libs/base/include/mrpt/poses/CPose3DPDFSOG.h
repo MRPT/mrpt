@@ -84,26 +84,12 @@ namespace poses
 		const_iterator begin() const { return m_modes.begin(); }
 		const_iterator end()const { return m_modes.end(); }
 
-		 /** Returns an estimate of the pose, (the mean, or mathematical expectation of the PDF), computed as a weighted average over all m_particles.
-		   * \sa getCovariance
-		   */
-		void getMean(CPose3D &mean_pose) const;
+		void getMean(CPose3D &mean_pose) const MRPT_OVERRIDE; //!< Returns an estimate of the pose, (the mean, or mathematical expectation of the PDF), computed as a weighted average over all m_particles. \sa getCovariance
+		void getCovarianceAndMean(mrpt::math::CMatrixDouble66 &cov,CPose3D &mean_point) const MRPT_OVERRIDE; //!< Returns an estimate of the pose covariance matrix (6x6 cov matrix) and the mean, both at once. \sa getMean
+		void normalizeWeights(); //!< Normalize the weights in m_modes such as the maximum log-weight is 0.
+		void getMostLikelyMode( CPose3DPDFGaussian& outVal ) const; //!< Return the Gaussian mode with the highest likelihood (or an empty Gaussian if there are no modes in this SOG)
 
-		/** Returns an estimate of the pose covariance matrix (6x6 cov matrix) and the mean, both at once.
-		  * \sa getMean
-		  */
-		void getCovarianceAndMean(mrpt::math::CMatrixDouble66 &cov,CPose3D &mean_point) const;
-
-		/** Normalize the weights in m_modes such as the maximum log-weight is 0.
-		  */
-		void  normalizeWeights();
-
-		/** Return the Gaussian mode with the highest likelihood (or an empty Gaussian if there are no modes in this SOG) */
-		void getMostLikelyMode( CPose3DPDFGaussian& outVal ) const;
-
-		/** Copy operator, translating if necesary (for example, between particles and gaussian representations)
-		  */
-		void  copyFrom(const CPose3DPDF &o);
+		void copyFrom(const CPose3DPDF &o) MRPT_OVERRIDE; //!< Copy operator, translating if necesary (for example, between particles and gaussian representations)
 
 		/** Save the density to a text file, with the following format:
 		  *  There is one row per Gaussian "mode", and each row contains 10 elements:
@@ -122,38 +108,23 @@ namespace poses
 		  *   - C56 (Covariance elements)
 		  *
 		 */
-		void  saveToTextFile(const std::string &file) const;
+		void saveToTextFile(const std::string &file) const MRPT_OVERRIDE;
 
 		/** this = p (+) this. This can be used to convert a PDF from local coordinates to global, providing the point (newReferenceBase) from which
-		  *   "to project" the current pdf. Result PDF substituted the currently stored one in the object.
-		  */
-		void  changeCoordinatesReference(const CPose3D &newReferenceBase );
+		  *   "to project" the current pdf. Result PDF substituted the currently stored one in the object. */
+		void changeCoordinatesReference(const CPose3D &newReferenceBase ) MRPT_OVERRIDE;
 
-		/** Bayesian fusion of two pose distributions, then save the result in this object (WARNING: Currently p1 must be a mrpt::poses::CPose3DPDFSOG object and p2 a mrpt::poses::CPose3DPDFSOG object)
-		  */
-		void  bayesianFusion( const CPose3DPDF &p1,const  CPose3DPDF &p2 );
+		/** Bayesian fusion of two pose distributions, then save the result in this object (WARNING: Currently p1 must be a mrpt::poses::CPose3DPDFSOG object and p2 a mrpt::poses::CPose3DPDFSOG object) */
+		void bayesianFusion( const CPose3DPDF &p1,const  CPose3DPDF &p2 ) MRPT_OVERRIDE;
 
-		/** Draws a single sample from the distribution
-		  */
-		void  drawSingleSample( CPose3D &outPart ) const;
+		void drawSingleSample( CPose3D &outPart ) const MRPT_OVERRIDE; //!< Draws a single sample from the distribution
+		void drawManySamples( size_t N, std::vector<mrpt::math::CVectorDouble> & outSamples ) const MRPT_OVERRIDE; //!< Draws a number of samples from the distribution, and saves as a list of 1x6 vectors, where each row contains a (x,y,z,yaw,pitch,roll) datum
+		void inverse(CPose3DPDF &o) const MRPT_OVERRIDE; //!< Returns a new PDF such as: NEW_PDF = (0,0,0) - THIS_PDF
 
-		/** Draws a number of samples from the distribution, and saves as a list of 1x6 vectors, where each row contains a (x,y,z,yaw,pitch,roll) datum.
-		  */
-		void  drawManySamples( size_t N, std::vector<mrpt::math::CVectorDouble> & outSamples ) const;
-
-		/** Returns a new PDF such as: NEW_PDF = (0,0,0) - THIS_PDF
-		  */
-		void  inverse(CPose3DPDF &o) const;
-
-		/** Append the Gaussian modes from "o" to the current set of modes of "this" density.
-		  */
-		void appendFrom( const CPose3DPDFSOG &o );
+		void appendFrom( const CPose3DPDFSOG &o ); //!< Append the Gaussian modes from "o" to the current set of modes of "this" density
 
 	}; // End of class def.
 	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE( CPose3DPDFSOG, CPose3DPDF )
-
-
 	} // End of namespace
 } // End of namespace
-
 #endif

@@ -85,13 +85,12 @@ namespace mrpt
 #else
 			int m_pipe_file;
 #endif
-			virtual size_t  Read(void *Buffer, size_t Count);
-			virtual size_t  Write(const void *Buffer, size_t Count);
+			virtual size_t  Read(void *Buffer, size_t Count) MRPT_OVERRIDE;
+			virtual size_t  Write(const void *Buffer, size_t Count) MRPT_OVERRIDE;
 
-			virtual uint64_t Seek(uint64_t Offset, CStream::TSeekOrigin Origin = sFromBeginning); //!< Without effect in this class
-			virtual uint64_t getTotalBytesCount(); //!< Without effect in this class
-			virtual uint64_t getPosition(); //!< Without effect in this class
-
+			virtual uint64_t Seek(uint64_t Offset, CStream::TSeekOrigin Origin = sFromBeginning) MRPT_OVERRIDE; //!< Without effect in this class
+			virtual uint64_t getTotalBytesCount() MRPT_OVERRIDE; //!< Without effect in this class
+			virtual uint64_t getPosition() MRPT_OVERRIDE; //!< Without effect in this class
 		}; // end of CPipeBaseEndPoint
 
 		/** The read end-point in a pipe created with mrpt::synch::CPipe.

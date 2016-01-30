@@ -119,7 +119,7 @@ namespace poses
 
 		/** Draws a single sample from the distribution
 		  */
-		void  drawSingleSample( CPose2D &outPart ) const;
+		void  drawSingleSample( CPose2D &outPart ) const MRPT_OVERRIDE;
 
 		/** Draws a number of samples from the distribution, and saves as a list of 1x3 vectors, where each row contains a (x,y,phi) datum.
 		  */

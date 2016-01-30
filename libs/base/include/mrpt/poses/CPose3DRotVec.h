@@ -385,7 +385,7 @@ namespace poses
 		inline const type_value & getPoseMean() const { return *this; }
 		inline       type_value & getPoseMean()       { return *this; }
 
-		void setToNaN();
+		void setToNaN() MRPT_OVERRIDE;
 
 		/** @name STL-like methods and typedefs
 		   @{   */

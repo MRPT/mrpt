@@ -441,3 +441,18 @@ bool mrpt::poses::operator==(const CPose3DPDFGaussianInf &p1,const CPose3DPDFGau
 {
 	return p1.mean==p2.mean && p1.cov_inv==p2.cov_inv;
 }
+
+CPose3DPDFGaussianInf mrpt::poses::operator +( const CPose3DPDFGaussianInf &x, const CPose3DPDFGaussianInf &u )
+{
+	CPose3DPDFGaussianInf 	res(x);
+	res+=u;
+	return res;
+}
+
+CPose3DPDFGaussianInf mrpt::poses::operator -( const CPose3DPDFGaussianInf &x, const CPose3DPDFGaussianInf &u )
+{
+	CPose3DPDFGaussianInf 	res(x);
+	res-=u;
+	return res;
+}
+
