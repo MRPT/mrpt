@@ -1,6 +1,6 @@
 Source: mrpt
 Section: science
-Priority: optional
+Priority: extra
 Maintainer: Jose Luis Blanco (University of Malaga) <joseluisblancoc@gmail.com>
 Build-Depends: debhelper (>= 9), 
 	autotools-dev,
