@@ -92,7 +92,7 @@ namespace mrpt
 
 				/** See utils::CLoadableOptions
 				  */
-				void  dumpToTextStream(mrpt::utils::CStream	&out) const;
+				void  dumpToTextStream(mrpt::utils::CStream	&out) const MRPT_OVERRIDE;
 
 			} insertionOptions;
 

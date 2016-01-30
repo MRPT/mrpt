@@ -122,7 +122,7 @@ namespace maps
 
 			/** See utils::CLoadableOptions
 			  */
-			void  dumpToTextStream(mrpt::utils::CStream	&out) const;
+			void  dumpToTextStream(mrpt::utils::CStream	&out) const MRPT_OVERRIDE;
 
 			 /** The standard deviation used for Beacon ranges likelihood (default=0.08m).
 			   */
@@ -147,7 +147,7 @@ namespace maps
 
 			/** See utils::CLoadableOptions
 			  */
-			void  dumpToTextStream(mrpt::utils::CStream	&out) const;
+			void  dumpToTextStream(mrpt::utils::CStream	&out) const MRPT_OVERRIDE;
 
 			/** Insert a new beacon as a set of montecarlo samples (default=true), or, if false, as a sum of gaussians (see mrpt::maps::CBeacon).
 			  * \sa MC_performResampling

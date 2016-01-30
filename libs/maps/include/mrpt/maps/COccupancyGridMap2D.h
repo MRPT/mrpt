@@ -503,7 +503,7 @@ namespace maps
 
 			/** This method must display clearly all the contents of the structure in textual form, sending it to a CStream.
 			  */
-			void  dumpToTextStream(mrpt::utils::CStream	&out) const;
+			void  dumpToTextStream(mrpt::utils::CStream	&out) const MRPT_OVERRIDE;
 
 
 			/** The altitude (z-axis) of 2D scans (within a 0.01m tolerance) for they to be inserted in this map!
@@ -587,7 +587,7 @@ namespace maps
 
 			/** This method must display clearly all the contents of the structure in textual form, sending it to a CStream.
 			  */
-			void  dumpToTextStream(mrpt::utils::CStream	&out) const;
+			void  dumpToTextStream(mrpt::utils::CStream	&out) const MRPT_OVERRIDE;
 
 			/** The selected method to compute an observation likelihood.
 			*/

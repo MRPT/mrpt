@@ -134,7 +134,7 @@ namespace mrpt
 			/** @name PLY Import virtual methods to implement in base classes
 			    @{ */
 			/** In a base class, reserve memory to prepare subsequent calls to PLY_import_set_vertex */
-			virtual void PLY_import_set_vertex_count(const size_t N);
+			virtual void PLY_import_set_vertex_count(const size_t N) MRPT_OVERRIDE;
 			/** @} */
 
 			MAP_DEFINITION_START(CWeightedPointsMap,MAPS_IMPEXP)

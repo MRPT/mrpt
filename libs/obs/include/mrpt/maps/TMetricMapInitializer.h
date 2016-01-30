@@ -44,7 +44,7 @@ namespace mrpt
 			  */
 			void  loadFromConfigFile(const mrpt::utils::CConfigFileBase  &source, const std::string &sectionNamePrefix);
 			/** Dump the options of the metric map in human-readable format */
-			void  dumpToTextStream(mrpt::utils::CStream	&out) const;
+			void  dumpToTextStream(mrpt::utils::CStream	&out) const MRPT_OVERRIDE;
 
 			/** Query the map type (C++ class), as set by the factory method MapDefinition() */
 			const mrpt::utils::TRuntimeClassIdPtr & getMetricMapClassType() const { return metricMapClassType; }
@@ -294,7 +294,7 @@ namespace mrpt
 				const std::string &sectionName);
 
 			/** This method dumps the options of the multi-metric map AND those of every internal map. */
-			void  dumpToTextStream(mrpt::utils::CStream	&out) const;
+			void  dumpToTextStream(mrpt::utils::CStream	&out) const MRPT_OVERRIDE;
 		};
 
 

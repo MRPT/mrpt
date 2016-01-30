@@ -76,7 +76,7 @@ namespace mrpt
 			  */
 			void loadTextureInOpenGL() const;
 
-			virtual void  render_dl() const;
+			virtual void  render_dl() const MRPT_OVERRIDE;
 
 		};
 		DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CTexturedObject, CRenderizableDisplayList, OPENGL_IMPEXP )

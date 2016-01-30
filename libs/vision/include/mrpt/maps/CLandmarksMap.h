@@ -195,7 +195,7 @@ namespace maps
 
 			/** See utils::CLoadableOptions
 			  */
-			void  dumpToTextStream(mrpt::utils::CStream	&out) const;
+			void  dumpToTextStream(mrpt::utils::CStream	&out) const MRPT_OVERRIDE;
 
 			/** If set to true (default), the insertion of a CObservationImage in the map will insert SIFT 3D features.
 			  */
@@ -289,7 +289,7 @@ namespace maps
 
 			/** See utils::CLoadableOptions
 			  */
-			void  dumpToTextStream(mrpt::utils::CStream	&out) const;
+			void  dumpToTextStream(mrpt::utils::CStream	&out) const MRPT_OVERRIDE;
 
 			 /** The number of rays from a 2D range scan will be decimated by this factor (default = 1, no decimation)
 			   */

@@ -87,11 +87,8 @@ namespace utils
 		  */
 		virtual void  dumpToTextStream(mrpt::utils::CStream	&out) const;
 
-        /** Virtual destructor
-          */
-        virtual ~CLoadableOptions()
-		{
-		}
+		/** Virtual destructor */
+		virtual ~CLoadableOptions() { }
 
 	}; // End of class def.
 

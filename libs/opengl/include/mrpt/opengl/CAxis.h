@@ -65,10 +65,10 @@ namespace mrpt
 
 			/** Render
 			  */
-			void  render_dl() const;
+			void  render_dl() const MRPT_OVERRIDE;
 
 			/** Evaluates the bounding box of this object (including possible children) in the coordinate frame of the object parent. */
-			virtual void getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const;
+			void getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const MRPT_OVERRIDE;
 
 	private:
 			/** Constructor

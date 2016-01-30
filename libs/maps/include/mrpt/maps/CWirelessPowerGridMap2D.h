@@ -63,7 +63,7 @@ namespace maps
 				const mrpt::utils::CConfigFileBase  &source,
 				const std::string &section);
 
-			void  dumpToTextStream(mrpt::utils::CStream	&out) const; //!< See utils::CLoadableOptions
+			void  dumpToTextStream(mrpt::utils::CStream	&out) const MRPT_OVERRIDE; //!< See utils::CLoadableOptions
 
 		} insertionOptions;
 

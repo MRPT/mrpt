@@ -40,8 +40,8 @@ namespace utils
 		std::string      m_prefix_sections, m_prefix_keys;
 
 	protected:
-		virtual void  writeString(const std::string &section,const std::string &name, const std::string &str);
-		virtual std::string  readString(const std::string &section,const std::string &name,const std::string &defaultStr,bool failIfNotFound = false) const ;
+		void  writeString(const std::string &section,const std::string &name, const std::string &str) MRPT_OVERRIDE;
+		std::string  readString(const std::string &section,const std::string &name,const std::string &defaultStr,bool failIfNotFound = false) const MRPT_OVERRIDE;
 
 	public:
 		/** Unbound constructor: must bind this object to CConfigFileBase before usage with \a bind() and \a setPrefixes() */
@@ -59,13 +59,11 @@ namespace utils
 		std::string getKeyPrefix() const;
 		CConfigFileBase *getBoundConfigFileBase() const;  //!< Returns the currently-bounded config source, or NULL if none.
 
-        virtual ~CConfigFilePrefixer();
-		
-		virtual void getAllSections( vector_string	&sections ) const; // See base class docs
-		virtual void getAllKeys( const std::string &section, vector_string	&keys ) const; // See base class docs
+		virtual ~CConfigFilePrefixer();
+
+		void getAllSections( vector_string	&sections ) const MRPT_OVERRIDE; // See base class docs
+		void getAllKeys( const std::string &section, vector_string	&keys ) const MRPT_OVERRIDE; // See base class docs
 
 	}; // End of class def.
-
-
 } // End of namespace
 } // end of namespace

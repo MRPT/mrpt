@@ -62,7 +62,7 @@ namespace mrpt
 					const mrpt::utils::CConfigFileBase  &source,
 					const std::string &section); //!< See utils::CLoadableOptions
 
-				void  dumpToTextStream(mrpt::utils::CStream	&out) const; //!<See utils::CLoadableOptions
+				void  dumpToTextStream(mrpt::utils::CStream	&out) const MRPT_OVERRIDE; //!<See utils::CLoadableOptions
 
 
 				/** The algorithm to use (default: icpClassic)

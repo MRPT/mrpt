@@ -174,11 +174,11 @@ namespace mrpt
 			  */
 			void  loadFromConfigFile(
 				const mrpt::utils::CConfigFileBase	&source,
-				const std::string		&section);
+				const std::string		&section) MRPT_OVERRIDE;
 
 			/** See utils::CLoadableOptions
 			  */
-			void  dumpToTextStream(mrpt::utils::CStream	&out) const;
+			void  dumpToTextStream(mrpt::utils::CStream	&out) const MRPT_OVERRIDE;
 
 			/** Method for propagating the feature's image coordinate uncertainty into 3D space. Default value: Prop_Linear
 			  */
@@ -351,7 +351,7 @@ namespace mrpt
 
 			/** See utils::CLoadableOptions
 			  */
-			void  dumpToTextStream(mrpt::utils::CStream	&out) const;
+			void  dumpToTextStream(mrpt::utils::CStream	&out) const MRPT_OVERRIDE;
 
 #define COPY_MEMBER(_m) this->_m = o._m;
 #define CHECK_MEMBER(_m) this->_m == o._m

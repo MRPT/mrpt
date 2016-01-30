@@ -69,7 +69,7 @@ namespace mrpt
 
 				/** This method must display clearly all the contents of the structure in textual form, sending it to a CStream.
 				  */
-				void  dumpToTextStream(mrpt::utils::CStream	&out) const;
+				void  dumpToTextStream(mrpt::utils::CStream	&out) const MRPT_OVERRIDE;
 
 				std::string		vocab_path,vocabName;
 				double			p_obs_given_exists, p_at_new_place, df_lik_smooth;

@@ -74,17 +74,16 @@ namespace mrpt
 			}
 
 			/** Render the object, regenerating the display list if needed, otherwise just calling it. */
-			virtual void render() const;
+			void render() const MRPT_OVERRIDE;
 
 
 			/** @name Changes the appearance of the object to render (methods from CRenderizable that need to be redefined)
 			    @{ */
-
-			virtual CRenderizable&  setColorR_u8(const uint8_t r)	{m_color.R=r; notifyChange(); return *this;}	//!<Color components in the range [0,255] \return a ref to this
-			virtual CRenderizable&  setColorG_u8(const uint8_t g)	{m_color.G=g; notifyChange(); return *this;}	//!<Color components in the range [0,255] \return a ref to this
-			virtual CRenderizable&  setColorB_u8(const uint8_t b)	{m_color.B=b; notifyChange(); return *this;}	//!<Color components in the range [0,255] \return a ref to this
-			virtual CRenderizable&  setColorA_u8(const uint8_t a)	{m_color.A=a; notifyChange(); return *this;}	//!<Color components in the range [0,255] \return a ref to this
-			virtual CRenderizable& setColor_u8( const mrpt::utils::TColor &c) { CRenderizable::setColor_u8(c); notifyChange(); return *this; } //!< Changes the default object color \return a ref to this
+			CRenderizable&  setColorR_u8(const uint8_t r) MRPT_OVERRIDE	{m_color.R=r; notifyChange(); return *this;}	//!<Color components in the range [0,255] \return a ref to this
+			CRenderizable&  setColorG_u8(const uint8_t g) MRPT_OVERRIDE	{m_color.G=g; notifyChange(); return *this;}	//!<Color components in the range [0,255] \return a ref to this
+			CRenderizable&  setColorB_u8(const uint8_t b) MRPT_OVERRIDE	{m_color.B=b; notifyChange(); return *this;}	//!<Color components in the range [0,255] \return a ref to this
+			CRenderizable&  setColorA_u8(const uint8_t a) MRPT_OVERRIDE	{m_color.A=a; notifyChange(); return *this;}	//!<Color components in the range [0,255] \return a ref to this
+			CRenderizable& setColor_u8( const mrpt::utils::TColor &c) MRPT_OVERRIDE { CRenderizable::setColor_u8(c); notifyChange(); return *this; } //!< Changes the default object color \return a ref to this
 
 			/** @} */
 

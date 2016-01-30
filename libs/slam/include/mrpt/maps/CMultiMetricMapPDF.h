@@ -131,7 +131,7 @@ namespace maps
 
 			/** See utils::CLoadableOptions
 			  */
-			void  dumpToTextStream(mrpt::utils::CStream	&out) const;
+			void  dumpToTextStream(mrpt::utils::CStream	&out) const MRPT_OVERRIDE;
 
 			/** [pf optimal proposal only]  Only for PF algorithm=2 (Exact "pfOptimalProposal")
 			 *   Select the map on which to calculate the optimal

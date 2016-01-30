@@ -246,12 +246,12 @@ namespace opengl	{
 		  * Renderizes the object.
 		  * \sa mrpt::opengl::CRenderizable
 		  */
-		virtual void render_dl() const;
+		virtual void render_dl() const MRPT_OVERRIDE;
 		/**
 		  * Traces a ray to the object, returning the distance to a given pose through its X axis.
 		  * \sa mrpt::opengl::CRenderizable,trace2DSetOfRays,trace1DSetOfRays
 		  */
-		virtual bool traceRay(const mrpt::poses::CPose3D &o,double &dist) const;
+		bool traceRay(const mrpt::poses::CPose3D &o,double &dist) const MRPT_OVERRIDE;
 		/**
 		  * Sets the pitch bounds for this range.
 		  */

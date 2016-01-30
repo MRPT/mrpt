@@ -119,7 +119,7 @@ namespace mrpt
 
 				/** See utils::CLoadableOptions
 				  */
-				void  dumpToTextStream(mrpt::utils::CStream	&out) const;
+				void  dumpToTextStream(mrpt::utils::CStream	&out) const MRPT_OVERRIDE;
 
 				/** Wether to perform filtering by z-coordinate (default=false): coordinates are always RELATIVE to the robot for this filter.
 				  */

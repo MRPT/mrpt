@@ -406,7 +406,7 @@ namespace mrpt
 
 				/** This method must display clearly all the contents of the structure in textual form, sending it to a CStream.
 				  */
-				void  dumpToTextStream(mrpt::utils::CStream	&out) const;
+				void  dumpToTextStream(mrpt::utils::CStream	&out) const MRPT_OVERRIDE;
 
 
 				std::string	LOG_OUTPUT_DIR;		//!< [LOGGING] If it is not an empty string (""), a directory with that name will be created and log files save there.

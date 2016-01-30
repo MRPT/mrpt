@@ -89,7 +89,7 @@ namespace mrpt
 				/** See utils::CLoadableOptions */
 				void  loadFromConfigFile(const mrpt::utils::CConfigFileBase  &source,const std::string &section);
 				/** See utils::CLoadableOptions */
-				void  dumpToTextStream(mrpt::utils::CStream	&out) const;
+				void  dumpToTextStream(mrpt::utils::CStream	&out) const MRPT_OVERRIDE;
 
 				double maxrange;  //!< maximum range for how long individual beams are inserted (default -1: complete beam)
 				bool pruning;     //!< whether the tree is (losslessly) pruned after insertion (default: true)
@@ -156,7 +156,7 @@ namespace mrpt
 					const std::string &section);
 
 				/** See utils::CLoadableOptions */
-				void  dumpToTextStream(mrpt::utils::CStream	&out) const;
+				void  dumpToTextStream(mrpt::utils::CStream	&out) const MRPT_OVERRIDE;
 
 				void writeToStream(mrpt::utils::CStream &out) const;		//!< Binary dump to stream
 				void readFromStream(mrpt::utils::CStream &in);			//!< Binary dump to stream

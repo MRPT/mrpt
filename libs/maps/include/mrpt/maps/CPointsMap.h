@@ -167,7 +167,7 @@ namespace maps
 			/** See utils::CLoadableOptions */
 			void  loadFromConfigFile(const mrpt::utils::CConfigFileBase  &source,const std::string &section);
 			/** See utils::CLoadableOptions */
-			void  dumpToTextStream(mrpt::utils::CStream	&out) const;
+			void  dumpToTextStream(mrpt::utils::CStream	&out) const MRPT_OVERRIDE;
 
 			float   minDistBetweenLaserPoints;   //!< The minimum distance between points (in 3D): If two points are too close, one of them is not inserted into the map. Default is 0.02 meters.
 			bool    addToExistingPointsMap;      //!< Applicable to "loadFromRangeScan" only! If set to false, the points from the scan are loaded, clearing all previous content. Default is false.
@@ -201,7 +201,7 @@ namespace maps
 				const std::string &section);
 
 			/** See utils::CLoadableOptions */
-			void  dumpToTextStream(mrpt::utils::CStream	&out) const;
+			void  dumpToTextStream(mrpt::utils::CStream	&out) const MRPT_OVERRIDE;
 
 			void writeToStream(mrpt::utils::CStream &out) const;		//!< Binary dump to stream - for usage in derived classes' serialization
 			void readFromStream(mrpt::utils::CStream &in);			//!< Binary dump to stream - for usage in derived classes' serialization
@@ -859,22 +859,22 @@ namespace maps
 		/** @name PLY Import virtual methods to implement in base classes
 			@{ */
 		/** In a base class, reserve memory to prepare subsequent calls to PLY_import_set_face */
-		virtual void PLY_import_set_face_count(const size_t N) { MRPT_UNUSED_PARAM(N); }
+		virtual void PLY_import_set_face_count(const size_t N) MRPT_OVERRIDE { MRPT_UNUSED_PARAM(N); }
 
 		/** In a base class, will be called after PLY_import_set_vertex_count() once for each loaded point.
 		  *  \param pt_color Will be NULL if the loaded file does not provide color info.
 		  */
-		virtual void PLY_import_set_vertex(const size_t idx, const mrpt::math::TPoint3Df &pt, const mrpt::utils::TColorf *pt_color = NULL);
+		virtual void PLY_import_set_vertex(const size_t idx, const mrpt::math::TPoint3Df &pt, const mrpt::utils::TColorf *pt_color = NULL) MRPT_OVERRIDE;
 		/** @} */
 
 		/** @name PLY Export virtual methods to implement in base classes
 			@{ */
 
 		/** In a base class, return the number of vertices */
-		virtual size_t PLY_export_get_vertex_count() const;
+		virtual size_t PLY_export_get_vertex_count() const MRPT_OVERRIDE;
 
 		/** In a base class, return the number of faces */
-		virtual size_t PLY_export_get_face_count() const { return 0; }
+		virtual size_t PLY_export_get_face_count() const MRPT_OVERRIDE { return 0; }
 
 		/** In a base class, will be called after PLY_export_get_vertex_count() once for each exported point.
 		  *  \param pt_color Will be NULL if the loaded file does not provide color info.
