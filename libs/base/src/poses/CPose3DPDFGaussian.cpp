@@ -654,19 +654,3 @@ bool mrpt::poses::operator==(const CPose3DPDFGaussian &p1,const CPose3DPDFGaussi
 {
 	return p1.mean==p2.mean && p1.cov==p2.cov;
 }
-/** Pose composition for two 3D pose Gaussians  \sa CPose3DQuatPDFGaussian::operator += */
-CPose3DQuatPDFGaussian mrpt::poses::operator +( const CPose3DQuatPDFGaussian &x, const CPose3DQuatPDFGaussian &u )
-{
-	CPose3DQuatPDFGaussian 	res(x);
-	res+=u;
-	return res;
-}
-
-/** Inverse pose composition for two 3D pose Gaussians  \sa CPose3DQuatPDFGaussian::operator -= */
-inline CPose3DQuatPDFGaussian mrpt::poses::operator -( const CPose3DQuatPDFGaussian &x, const CPose3DQuatPDFGaussian &u )
-{
-	CPose3DQuatPDFGaussian 	res(x);
-	res-=u;
-	return res;
-}
-

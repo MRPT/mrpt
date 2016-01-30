@@ -51,44 +51,30 @@ namespace utils
 #	endif
 #else
 
-		/** The handle for the connected TCP socket, or -1
-		  */
-		int				m_hSock;
+		int				m_hSock; //!< The handle for the connected TCP socket, or -1
 #endif
-
-		/** The IP address of the remote part of the connection.
-		  */
-		std::string		m_remotePartIP;
-
-		/** The TCP port of the remote part of the connection.
-		  */
-		unsigned short	m_remotePartPort;
-
+		std::string		m_remotePartIP; //!< The IP address of the remote part of the connection.
+		unsigned short	m_remotePartPort; //!< The TCP port of the remote part of the connection.
 
 		/** Introduces a virtual method responsible for reading from the stream (This method BLOCKS)
 		  * This method is implemented as a call to "readAsync" with infinite timeouts.
-		  * \sa readAsync
-		  */
-		size_t  Read(void *Buffer, size_t Count);
+		  * \sa readAsync */
+		size_t  Read(void *Buffer, size_t Count) MRPT_OVERRIDE;
 
 		/** Introduces a virtual method responsible for writing to the stream.
 		  *  Write attempts to write up to Count bytes to Buffer, and returns the number of bytes actually written.
 		  *  This method is implemented as a call to "writeAsync" with infinite timeouts.
-		  * \sa writeAsync
-		 */
-		size_t  Write(const void *Buffer, size_t Count);
+		  * \sa writeAsync */
+		size_t  Write(const void *Buffer, size_t Count) MRPT_OVERRIDE;
 
 		/** Returns a description of the last Sockets error */
 		std::string  getLastErrorStr() { return mrpt::utils::net::getLastSocketErrorStr(); }
 
 	public:
-		/** Default constructor
-		  * \sa connect
-		  */
+		/** Default constructor \sa connect  */
 		CClientTCPSocket( );
 
-		/** Destructor
-		 */
+		/** Destructor */
 		~CClientTCPSocket( );
 
 		/** Establishes a connection with a remote part.
@@ -102,12 +88,10 @@ namespace utils
 			unsigned short		remotePartTCPPort,
 			unsigned int		timeout_ms = 0 );
 
-		/** Returns true if this objects represents a successfully connected socket.
-		  */
+		/** Returns true if this objects represents a successfully connected socket */
 		bool  isConnected();
 
-		/** Closes the connection.
-		  */
+		/** Closes the connection */
 		void  close();
 
 		/** Writes a string to the socket.
@@ -115,9 +99,8 @@ namespace utils
 		  */
 		void  sendString( const std::string &str );
 
-		/** This virtual method has no effect in this implementation over a TCP socket, and its use raises an exception
-		 */
-		uint64_t Seek(uint64_t Offset, CStream::TSeekOrigin Origin = sFromBeginning)
+		/** This virtual method has no effect in this implementation over a TCP socket, and its use raises an exception */
+		uint64_t Seek(uint64_t Offset, CStream::TSeekOrigin Origin = sFromBeginning) MRPT_OVERRIDE
 		{
 		    MRPT_START
 			MRPT_UNUSED_PARAM(Offset); MRPT_UNUSED_PARAM(Origin);
@@ -125,18 +108,16 @@ namespace utils
 		    MRPT_END
 		}
 
-		/** This virtual method has no effect in this implementation over a TCP socket, and its use raises an exception
-		 */
-		uint64_t getTotalBytesCount()
+		/** This virtual method has no effect in this implementation over a TCP socket, and its use raises an exception */
+		uint64_t getTotalBytesCount() MRPT_OVERRIDE
 		{
 		    MRPT_START
 			THROW_EXCEPTION("This method has no effect in this class!");
 		    MRPT_END
 		}
 
-		/** This virtual method has no effect in this implementation over a TCP socket, and its use raises an exception
-		 */
-		uint64_t getPosition()
+		/** This virtual method has no effect in this implementation over a TCP socket, and its use raises an exception */
+		uint64_t getPosition() MRPT_OVERRIDE
 		{
 		    MRPT_START
 			THROW_EXCEPTION("This method has no effect in this class!");
