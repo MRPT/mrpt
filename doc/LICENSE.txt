@@ -1,7 +1,7 @@
 License for the Mobile Robot Programming Toolkit (MRPT)
 
-Copyright (c) 2005-2015, Individual contributors, see AUTHORS file       
-Copyright (c) 2005-2015, MAPIR group, University of Malaga                
+Copyright (c) 2005-2016, Individual contributors, see AUTHORS file       
+Copyright (c) 2005-2016, MAPIR group, University of Malaga                
 Copyright (c) 2012-2015, University of Almeria                                 
 All rights reserved.                                                     
  
