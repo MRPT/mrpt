@@ -131,7 +131,7 @@ void CAboutBox::OnInit(wxInitDialogEvent& event)
 
     // Set the label with MRPT version:
     wxString    s(_("Build: "));
-    s << wxString(__DATE__,wxConvLibc);
+    s << _U( mrpt::system::MRPT_getCompilationDate().c_str() );
     s << _(" - ") << MRPTver;
 
     lbBuild->SetLabel( s );

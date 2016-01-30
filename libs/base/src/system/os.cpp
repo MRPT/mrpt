@@ -153,15 +153,15 @@ void mrpt::system::registerFatalExceptionHandlers()
 /*---------------------------------------------------------------
 					mrpt::system::MRPT_getCompilationDate
 ---------------------------------------------------------------*/
+#include <mrpt/version.h>
 string mrpt::system::MRPT_getCompilationDate()
 {
-	return string(__DATE__);
+	return string( MRPT_build_date_str );
 }
 
 /*---------------------------------------------------------------
 					mrpt::system::MRPT_getVersion
 ---------------------------------------------------------------*/
-#include <mrpt/version.h>
 string mrpt::system::MRPT_getVersion()
 {
 	return string( ::MRPT_version_str );
