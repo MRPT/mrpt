@@ -418,15 +418,15 @@ void CGPSInterface::JAVAD_sendMessage(const char *str, bool waitForAnswer )
 	if (!str) return;
 	const size_t len = strlen(str);
 
-    size_t written;
+	size_t written;
 
-    if( useExternCOM() )
-    {
-        CCriticalSectionLocker lock( m_cs_out_COM );
-        written = m_out_COM->Write(str,len);
-    }
-    else
-        written = m_COM.Write(str,len);
+	if( useExternCOM() )
+	{
+		CCriticalSectionLocker lock( m_cs_out_COM );
+		written = m_out_COM->Write(str,len);
+	}
+	else
+		written = m_COM.Write(str,len);
 
 	if (m_verbose)
 		std::cout << "[CGPSInterface] TX: " << str;
@@ -441,30 +441,30 @@ void CGPSInterface::JAVAD_sendMessage(const char *str, bool waitForAnswer )
 	char buf[200];
 	buf[0]='\0';
 
-    int bad_counter = 0;
-    while(bad_counter < 10)
-    {
-        size_t nRead;
-        if( useExternCOM() )
-        {
-            CCriticalSectionLocker lock( m_cs_out_COM );
-            nRead = m_out_COM->Read(buf,sizeof(buf));
-        }
-        else
-            nRead = m_COM.Read(buf,sizeof(buf));
+	int bad_counter = 0;
+	while(bad_counter < 10)
+	{
+		size_t nRead;
+		if( useExternCOM() )
+		{
+			CCriticalSectionLocker lock( m_cs_out_COM );
+			nRead = m_out_COM->Read(buf,sizeof(buf));
+		}
+		else
+			nRead = m_COM.Read(buf,sizeof(buf));
 
 		if (m_verbose)
 			std::cout << "[CGPSInterface] RX: " << buf << std::endl;
 
-        if (nRead<3 )
-            throw std::runtime_error(format("ERROR: Invalid response '%s' for command '%s'",buf,str));
+		if (nRead<3 )
+			throw std::runtime_error(format("ERROR: Invalid response '%s' for command '%s'",buf,str));
 
-        if (nRead>=3 && buf[0]=='R' && buf[1]=='E')
-            return; // Ok!
-        else
-            ++bad_counter;
-    }
-    throw std::runtime_error(format("ERROR: Invalid response '%s' for command '%s'",buf,str));
+		if (nRead>=3 && buf[0]=='R' && buf[1]=='E')
+			return; // Ok!
+		else
+			++bad_counter;
+	}
+	throw std::runtime_error(format("ERROR: Invalid response '%s' for command '%s'",buf,str));
 }
 
 bool CGPSInterface::OnConnectionShutdown()
@@ -530,8 +530,8 @@ bool CGPSInterface::OnConnectionEstablished()
 
 bool CGPSInterface::unsetJAVAD_AIM_mode()
 {
-    MRPT_START
-    if ( !os::_strcmpi( m_customInit.c_str(), "JAVAD" ) || !os::_strcmpi( m_customInit.c_str(), "TOPCON" ) )
+	MRPT_START
+	if ( !os::_strcmpi( m_customInit.c_str(), "JAVAD" ) || !os::_strcmpi( m_customInit.c_str(), "TOPCON" ) )
 	{
 		// Stop messaging:
 		JAVAD_sendMessage("%%dm\r\n", false);
@@ -561,43 +561,42 @@ bool CGPSInterface::setJAVAD_AIM_mode()
 	MRPT_START
 	if ( !os::_strcmpi( m_customInit.c_str(), "JAVAD" ) || !os::_strcmpi( m_customInit.c_str(), "TOPCON" ) )
 	{
-        JAVAD_sendMessage(format("%%%%set,/par%s/imode,cmd\r\n",m_JAVAD_rtk_src_port.c_str()).c_str());  // set the port in command mode
-        JAVAD_sendMessage("%%set,/par/cur/term/jps/0,{nscmd,37,n,\"\"}\r\n");               // any command starting with % will be treated as normal
+		JAVAD_sendMessage(format("%%%%set,/par%s/imode,cmd\r\n",m_JAVAD_rtk_src_port.c_str()).c_str());  // set the port in command mode
+		JAVAD_sendMessage("%%set,/par/cur/term/jps/0,{nscmd,37,n,\"\"}\r\n");               // any command starting with % will be treated as normal
 
-        ASSERT_(!m_JAVAD_rtk_format.empty())
-        cout << "Formato de correcciones para GR3: " << m_JAVAD_rtk_format << endl;
-        if( m_JAVAD_rtk_format == "cmr" )
-        {
-            JAVAD_sendMessage(format("%%%%set,/par/cur/term/jps/1,{cmr,-1,y,%s}\r\n", m_JAVAD_rtk_src_port.c_str()).c_str());   // set corrections type CMR or CMR+
-            JAVAD_sendMessage("%%set,/par/cur/term/jps/2,{none,-1,n,\"\"}\r\n");
-            JAVAD_sendMessage(format("%%%%set,/par%s/imode,cmr\r\n", m_JAVAD_rtk_src_port.c_str()).c_str());
-        }
-        else if( m_JAVAD_rtk_format == "rtcm" )
-        {
-            JAVAD_sendMessage(format("%%%%set,/par/cur/term/jps/1,{rtcm,-1,y,%s}\r\n", m_JAVAD_rtk_src_port.c_str()).c_str());  // set corrections type RTCM
-            JAVAD_sendMessage("%%set,/par/cur/term/jps/2,{none,-1,n,\"\"}\r\n");
-            JAVAD_sendMessage(format("%%%%set,/par%s/imode,rtcm\r\n", m_JAVAD_rtk_src_port.c_str()).c_str());
-        }
-        else if( m_JAVAD_rtk_format == "rtcm3" )
-        {
-            JAVAD_sendMessage(format("%%%%set,/par/cur/term/jps/1,{rtcm3,-1,y,%s}\r\n", m_JAVAD_rtk_src_port.c_str()).c_str()); // set corrections type RTCM 3.x
-            JAVAD_sendMessage("%%set,/par/cur/term/jps/2,{none,-1,n,\"\"}\r\n");
-            JAVAD_sendMessage(format("%%%%set,/par%s/imode,rtcm3\r\n", m_JAVAD_rtk_src_port.c_str()).c_str());
-        }
-        else
-        {
-            cout << "Unknown RTK corrections format. Only supported: CMR, RTCM or RTCM3" << endl;
-            return false;
-        }
-        JAVAD_sendMessage("%%set,/par/cur/term/imode,jps\r\n");                         // sets current port into "JPS" mode
+		ASSERT_(!m_JAVAD_rtk_format.empty())
+		cout << "Formato de correcciones para GR3: " << m_JAVAD_rtk_format << endl;
+		if( m_JAVAD_rtk_format == "cmr" )
+		{
+			JAVAD_sendMessage(format("%%%%set,/par/cur/term/jps/1,{cmr,-1,y,%s}\r\n", m_JAVAD_rtk_src_port.c_str()).c_str());   // set corrections type CMR or CMR+
+			JAVAD_sendMessage("%%set,/par/cur/term/jps/2,{none,-1,n,\"\"}\r\n");
+			JAVAD_sendMessage(format("%%%%set,/par%s/imode,cmr\r\n", m_JAVAD_rtk_src_port.c_str()).c_str());
+		}
+		else if( m_JAVAD_rtk_format == "rtcm" )
+		{
+			JAVAD_sendMessage(format("%%%%set,/par/cur/term/jps/1,{rtcm,-1,y,%s}\r\n", m_JAVAD_rtk_src_port.c_str()).c_str());  // set corrections type RTCM
+			JAVAD_sendMessage("%%set,/par/cur/term/jps/2,{none,-1,n,\"\"}\r\n");
+			JAVAD_sendMessage(format("%%%%set,/par%s/imode,rtcm\r\n", m_JAVAD_rtk_src_port.c_str()).c_str());
+		}
+		else if( m_JAVAD_rtk_format == "rtcm3" )
+		{
+			JAVAD_sendMessage(format("%%%%set,/par/cur/term/jps/1,{rtcm3,-1,y,%s}\r\n", m_JAVAD_rtk_src_port.c_str()).c_str()); // set corrections type RTCM 3.x
+			JAVAD_sendMessage("%%set,/par/cur/term/jps/2,{none,-1,n,\"\"}\r\n");
+			JAVAD_sendMessage(format("%%%%set,/par%s/imode,rtcm3\r\n", m_JAVAD_rtk_src_port.c_str()).c_str());
+		}
+		else
+		{
+			cout << "Unknown RTK corrections format. Only supported: CMR, RTCM or RTCM3" << endl;
+			return false;
+		}
+		JAVAD_sendMessage("%%set,/par/cur/term/imode,jps\r\n");                         // sets current port into "JPS" mode
 
-        return true;
+		return true;
 
 	} // end-if
 	else
-        return true;
-    MRPT_END
-
+		return true;
+	MRPT_END
 } // end-setJAVAD_AIM_mode
 
 std::string CGPSInterface::getLastGGA(bool reset)

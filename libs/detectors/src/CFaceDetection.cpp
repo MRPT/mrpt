@@ -144,7 +144,7 @@ void CFaceDetection::detectObjects_Impl(const mrpt::obs::CObservation *obs, vect
 			m_timeLog.leave("Detection time");
 
 		//if ( m_measure.takeMeasures )
-			m_measure.numPossibleFacesDetected += localDetected.size();
+		m_measure.numPossibleFacesDetected += localDetected.size();
 	}
 
 
@@ -428,17 +428,17 @@ bool CFaceDetection::checkIfFacePlaneCov( CObservation3DRangeScan* face )
 		if ( m_measure.takeTime )
 			m_timeLog.leave("Check if face plane: covariance");
 
-			// Uncomment if you want to analyze the calculated eigenvalues
-			//ofstream f;
-			/*f.open("eigenvalues.txt", ofstream::app);
-			f << m_measure.faceNum << " " << eVals[0] << endl;
-			f.close();*/
+		// Uncomment if you want to analyze the calculated eigenvalues
+		//ofstream f;
+		/*f.open("eigenvalues.txt", ofstream::app);
+		f << m_measure.faceNum << " " << eVals[0] << endl;
+		f.close();*/
 
-			//f.open("eigenvalues2.txt", ofstream::app);
-			cout << eVals[0] << " " << eVals[1] << " " << eVals[2] << " > " ;
-			cout << eVals[0]/eVals[2] << endl;
-			//f << eVals[0]/eVals[2] << endl;
-			//f.close();
+		//f.open("eigenvalues2.txt", ofstream::app);
+		cout << eVals[0] << " " << eVals[1] << " " << eVals[2] << " > " ;
+		cout << eVals[0]/eVals[2] << endl;
+		//f << eVals[0]/eVals[2] << endl;
+		//f.close();
 	}
 
 	if ( m_measure.faceNum >= 314 )

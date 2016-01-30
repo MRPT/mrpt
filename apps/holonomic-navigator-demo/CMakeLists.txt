@@ -8,7 +8,7 @@ INCLUDE(../../cmakemodules/AssureCMakeRootFile.cmake) # Avoid user mistake in CM
 
 PROJECT(holonomic_navigator_demo)
 
-IF(wxWidgets_FOUND)
+IF(CMAKE_MRPT_HAS_WXWIDGETS)
 
 	# ---------------------------------------------
 	# TARGET:
@@ -51,5 +51,5 @@ IF(wxWidgets_FOUND)
 
 	AppStartMenuLink(${TMP_TARGET_NAME} "Holonomic navigation simulator")   # Add link to the Start menu (in Windows Installable packages)
 			
-ENDIF(wxWidgets_FOUND)
+ENDIF()
 

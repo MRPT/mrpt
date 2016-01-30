@@ -398,7 +398,7 @@ u_result RPlidarDriverSerialImpl::ascendScanData(rplidar_response_measurement_no
     for (i = zero_pos; i < count; i++) {
         tmpbuffer[i-zero_pos] = nodebuffer[i];
     }
-    for (i = 0; i < zero_pos; i++) {
+	for (i = 0; i < (int)zero_pos; i++) {
         tmpbuffer[i+count-zero_pos] = nodebuffer[i];
     }
 

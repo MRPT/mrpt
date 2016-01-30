@@ -9,7 +9,7 @@ INCLUDE(../../cmakemodules/AssureCMakeRootFile.cmake) # Avoid user mistake in CM
 #-----------------------------------------------------------------
 PROJECT(hmt-slam-gui)
 
-IF(wxWidgets_FOUND AND CMAKE_MRPT_HAS_OPENGL_GLUT)
+IF(CMAKE_MRPT_HAS_WXWIDGETS AND CMAKE_MRPT_HAS_OPENGL_GLUT)
 
 	# ---------------------------------------------
 	# TARGET:
@@ -63,11 +63,11 @@ IF(wxWidgets_FOUND AND CMAKE_MRPT_HAS_OPENGL_GLUT)
 
 	AppStartMenuLink(${TMP_TARGET_NAME} "HMT-SLAM visual interface")   # Add link to the Start menu (in Windows Installable packages)
 
-ELSE(wxWidgets_FOUND AND CMAKE_MRPT_HAS_OPENGL_GLUT)
+ELSE()
 	# ----------------------------------------------------------------------------------
 	# For convenience. When we cannot continue, inform the user
 	# ----------------------------------------------------------------------------------
     MESSAGE(STATUS "wxWidgets and/or GL/GLUT not found!: **This target will not be included in the Makefiles**")
-ENDIF(wxWidgets_FOUND AND CMAKE_MRPT_HAS_OPENGL_GLUT)
+ENDIF()
 
 
