@@ -155,10 +155,10 @@ namespace mrpt
 			typedef class_name##Ptr SmartPtr; \
 			_STATIC_LINKAGE_ mrpt::utils::TRuntimeClassId  class##class_name; \
 			_STATIC_LINKAGE_ const mrpt::utils::TRuntimeClassId *classinfo; \
-			_VIRTUAL_LINKAGE_ const mrpt::utils::TRuntimeClassId* GetRuntimeClass() const; \
+			_VIRTUAL_LINKAGE_ const mrpt::utils::TRuntimeClassId* GetRuntimeClass() const MRPT_OVERRIDE; \
 			_STATIC_LINKAGE_ mrpt::utils::CObject* CreateObject(); \
 			_STATIC_LINKAGE_ class_name##Ptr Create(); \
-			_VIRTUAL_LINKAGE_ mrpt::utils::CObject *duplicate() const; \
+			_VIRTUAL_LINKAGE_ mrpt::utils::CObject *duplicate() const MRPT_OVERRIDE; \
 			/*! @} */ \
 		public: \
 			MRPT_MAKE_ALIGNED_OPERATOR_NEW \
@@ -272,7 +272,7 @@ namespace mrpt
 			static const mrpt::utils::TRuntimeClassId* _GetBaseClass(); \
 		public: \
 			static const mrpt::utils::TRuntimeClassId class##class_name; \
-			virtual const mrpt::utils::TRuntimeClassId* GetRuntimeClass() const; \
+			virtual const mrpt::utils::TRuntimeClassId* GetRuntimeClass() const MRPT_OVERRIDE; \
 			friend class mrpt::utils::CStream; \
 		/*! @}  */ \
 

@@ -139,8 +139,8 @@ namespace mrpt
 		protected: \
 			/*! @name CSerializable virtual methods */ \
 			/*! @{ */ \
-			_VOID_LINKAGE_ writeToStream(mrpt::utils::CStream &out, int *getVersion) const;\
-			_VOID_LINKAGE_ readFromStream(mrpt::utils::CStream &in, int version); \
+			_VOID_LINKAGE_ writeToStream(mrpt::utils::CStream &out, int *getVersion) const MRPT_OVERRIDE;\
+			_VOID_LINKAGE_ readFromStream(mrpt::utils::CStream &in, int version) MRPT_OVERRIDE; \
 			/*! @} */
 
 		/** This declaration must be inserted in all CSerializable classes definition, within the class declaration. */

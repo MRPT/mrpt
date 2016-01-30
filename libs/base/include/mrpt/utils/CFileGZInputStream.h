@@ -28,25 +28,14 @@ namespace mrpt
 		class BASE_IMPEXP CFileGZInputStream : public CStream, public CUncopiable
 		{
 		protected:
-			 /** Method responsible for reading from the stream.
-			 */
-			size_t  Read(void *Buffer, size_t Count);
-
-			/** Method responsible for writing to the stream.
-			 *  Write attempts to write up to Count bytes to Buffer, and returns the number of bytes actually written.
-			 */
-			size_t  Write(const void *Buffer, size_t Count);
-
-			// DECLARE_UNCOPIABLE( CFileGZInputStream )
-
+			size_t  Read(void *Buffer, size_t Count) MRPT_OVERRIDE;
+			size_t  Write(const void *Buffer, size_t Count) MRPT_OVERRIDE;
 		private:
 			void		*m_f;
 			uint64_t	m_file_size;	//!< Compressed file size
 
 		public:
-			 /** Constructor without open
-			  */
-			CFileGZInputStream();
+			CFileGZInputStream(); //!< Constructor without open
 
 			 /** Constructor and open
 			  * \param fileName The file to be open in this stream
@@ -54,37 +43,22 @@ namespace mrpt
 			  */
 			CFileGZInputStream(const std::string &fileName );
 
-			 /** Destructor
-			 */
-			 virtual ~CFileGZInputStream();
+			virtual ~CFileGZInputStream(); //!< Dtor
 
 			 /** Opens the file for read.
 			  * \param fileName The file to be open in this stream
 			  * \return false if there's an error opening the file, true otherwise
 			  */
-			 bool open(const std::string &fileName );
+			bool open(const std::string &fileName );
+			void close(); //!< Closes the file
+			bool fileOpenCorrectly(); //!< Says if file was open successfully or not.
+			bool checkEOF(); //!< Will be true if EOF has been already reached.
 
-			 /** Closes the file */
-			 void close();
-
-			 /** Says if file was open successfully or not.
-			  */
-			 bool  fileOpenCorrectly();
-
-			 /** Will be true if EOF has been already reached.
-			   */
-			 bool checkEOF();
-
-			/** Method for getting the total number of <b>compressed</b> bytes of in the file (the physical size of the compressed file).
-			 */
-			uint64_t getTotalBytesCount();
-
-			/** Method for getting the current cursor position in the <b>compressed</b>, where 0 is the first byte and TotalBytesCount-1 the last one.
-			 */
-			uint64_t getPosition();
+			uint64_t getTotalBytesCount() MRPT_OVERRIDE; //!< Method for getting the total number of <b>compressed</b> bytes of in the file (the physical size of the compressed file).
+			uint64_t getPosition() MRPT_OVERRIDE; //!< Method for getting the current cursor position in the <b>compressed</b>, where 0 is the first byte and TotalBytesCount-1 the last one.
 
 			/** This method is not implemented in this class */
-			uint64_t Seek(uint64_t Offset, CStream::TSeekOrigin Origin = sFromBeginning)
+			uint64_t Seek(uint64_t Offset, CStream::TSeekOrigin Origin = sFromBeginning) MRPT_OVERRIDE
 			{
             MRPT_UNUSED_PARAM(Offset); MRPT_UNUSED_PARAM(Origin);
 				THROW_EXCEPTION("Seek is not implemented in this class");

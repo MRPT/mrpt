@@ -430,7 +430,7 @@ namespace poses
 		typedef CPose3DQuat  mrpt_autotype;
 		//DECLARE_MRPT_CONTAINER_TYPES
 
-		void setToNaN();
+		void setToNaN() MRPT_OVERRIDE;
 
 	}; // End of class def.
 	DEFINE_SERIALIZABLE_POST( CPose3DQuat )
