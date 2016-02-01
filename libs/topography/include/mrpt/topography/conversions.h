@@ -42,14 +42,24 @@ namespace mrpt
 			mrpt::math::TPoint3D	&out_ENU_point,
 			const TGeodeticCoords		&in_coords_origin );
 
-		/** ENU to geocentric coordinates.
-		  * \sa geodeticToENU_WGS84
-		  */
+		/** ENU to geocentric coordinates. \sa geodeticToENU_WGS84 */
 		void  TOPO_IMPEXP ENUToGeocentric(
 			const mrpt::math::TPoint3D	&in_ENU_point,
 			const TGeodeticCoords		&in_coords_origin,
 			TGeocentricCoords			&out_coords,
 			const TEllipsoid			&ellip );
+
+		/** ENU to EFEC (Geocentric) coordinates \sa ENUToGeocentric, geodeticToENU_WGS84 */
+		void TOPO_IMPEXP geocentricToENU_WGS84(
+			const mrpt::math::TPoint3D  &in_geocentric_point,
+			mrpt::math::TPoint3D        &out_ENU_point,
+			const TGeodeticCoords       &in_coords_origin );
+
+		/** \overload More efficient for converting a pointcloud */
+		void TOPO_IMPEXP geocentricToENU_WGS84(
+			const std::vector<mrpt::math::TPoint3D> &in_geocentric_points,
+			std::vector<mrpt::math::TPoint3D>       &out_ENU_points,
+			const TGeodeticCoords       &in_coords_origin );
 
 		/** Coordinates transformation from longitude/latitude/height to geocentric X/Y/Z coordinates (with a WGS84 geoid).
 		  *  The WGS84 ellipsoid is used for the transformation. The coordinates are in 3D

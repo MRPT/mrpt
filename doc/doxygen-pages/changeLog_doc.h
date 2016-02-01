@@ -38,6 +38,8 @@
 				- mrpt::obs::gnss: A new namespace with many new data structures for GPS-related messages
 			- \ref mrpt_opengl_grp
 				- New class mrpt::opengl::CMesh3D to render 3D models/meshes
+			- \ref mrpt_topography_grp
+				- New function mrpt::topography::geocentricToENU_WGS84()
 			- \ref mrpt_vision_grp
 				- mrpt::vision::CDifOdo has been refactored and now does faster image pyramid computation (By Mariano Jaimez)
 		- Changes in build system:
