@@ -164,10 +164,8 @@ namespace maps
 		 {
 			/** Initilization of default parameters */
 			TInsertionOptions( );
-			/** See utils::CLoadableOptions */
-			void  loadFromConfigFile(const mrpt::utils::CConfigFileBase  &source,const std::string &section);
-			/** See utils::CLoadableOptions */
-			void  dumpToTextStream(mrpt::utils::CStream	&out) const MRPT_OVERRIDE;
+			void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) MRPT_OVERRIDE; // See base docs
+			void dumpToTextStream(mrpt::utils::CStream &out) const MRPT_OVERRIDE; // See base docs
 
 			float   minDistBetweenLaserPoints;   //!< The minimum distance between points (in 3D): If two points are too close, one of them is not inserted into the map. Default is 0.02 meters.
 			bool    addToExistingPointsMap;      //!< Applicable to "loadFromRangeScan" only! If set to false, the points from the scan are loaded, clearing all previous content. Default is false.
@@ -194,14 +192,8 @@ namespace maps
 			 */
 			TLikelihoodOptions( );
 			virtual ~TLikelihoodOptions() {}
-
-			/** See utils::CLoadableOptions */
-			void  loadFromConfigFile(
-				const mrpt::utils::CConfigFileBase  &source,
-				const std::string &section);
-
-			/** See utils::CLoadableOptions */
-			void  dumpToTextStream(mrpt::utils::CStream	&out) const MRPT_OVERRIDE;
+			void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) MRPT_OVERRIDE; // See base docs
+			void dumpToTextStream(mrpt::utils::CStream &out) const MRPT_OVERRIDE; // See base docs
 
 			void writeToStream(mrpt::utils::CStream &out) const;		//!< Binary dump to stream - for usage in derived classes' serialization
 			void readFromStream(mrpt::utils::CStream &in);			//!< Binary dump to stream - for usage in derived classes' serialization

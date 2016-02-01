@@ -62,9 +62,8 @@ namespace mrpt
 			bool  enableObservationInsertion;  //!< (Default=true) Enable inserting observations in this map 
 
 			TMapGenericParams();
-			void  loadFromConfigFile(const mrpt::utils::CConfigFileBase  &source, const std::string &sectionNamePrefix);
-			/** Dump the options of the metric map in human-readable format */
-			void  dumpToTextStream(mrpt::utils::CStream	&out) const MRPT_OVERRIDE;
+			void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &sectionNamePrefix) MRPT_OVERRIDE; // See base docs
+			void dumpToTextStream(mrpt::utils::CStream &out) const MRPT_OVERRIDE; // See base docs
 		};
 		DEFINE_SERIALIZABLE_POST_CUSTOM_LINKAGE ( TMapGenericParams, OBS_IMPEXP )
 

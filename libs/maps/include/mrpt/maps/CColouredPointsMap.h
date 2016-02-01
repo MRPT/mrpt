@@ -227,15 +227,9 @@ namespace mrpt
 				/** Initilization of default parameters */
 				TColourOptions( );
 				virtual ~TColourOptions() {}
-				/** See utils::CLoadableOptions
-				  */
-				void  loadFromConfigFile(
-					const mrpt::utils::CConfigFileBase  &source,
-					const std::string &section);
 
-				/** See utils::CLoadableOptions
-				  */
-				void  dumpToTextStream(mrpt::utils::CStream	&out) const MRPT_OVERRIDE;
+				void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) MRPT_OVERRIDE; // See base docs
+				void dumpToTextStream(mrpt::utils::CStream &out) const MRPT_OVERRIDE; // See base docs
 
 				TColouringMethod	scheme;
 				float				z_min,z_max;

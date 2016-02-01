@@ -497,13 +497,8 @@ namespace maps
 			 *	modeSelection=1		; 0=blah, 1=blah,...
 			 *  \endcode
 			 */
-			void  loadFromConfigFile(
-				const mrpt::utils::CConfigFileBase  &source,
-				const std::string &section);
-
-			/** This method must display clearly all the contents of the structure in textual form, sending it to a CStream.
-			  */
-			void  dumpToTextStream(mrpt::utils::CStream	&out) const MRPT_OVERRIDE;
+			void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) MRPT_OVERRIDE; // See base docs
+			void dumpToTextStream(mrpt::utils::CStream &out) const MRPT_OVERRIDE; // See base docs
 
 
 			/** The altitude (z-axis) of 2D scans (within a 0.01m tolerance) for they to be inserted in this map!
@@ -581,13 +576,8 @@ namespace maps
 			 *	modeSelection=1		; 0=blah, 1=blah,...
 			 *  \endcode
 			 */
-			void  loadFromConfigFile(
-				const mrpt::utils::CConfigFileBase  &source,
-				const std::string &section);
-
-			/** This method must display clearly all the contents of the structure in textual form, sending it to a CStream.
-			  */
-			void  dumpToTextStream(mrpt::utils::CStream	&out) const MRPT_OVERRIDE;
+			void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) MRPT_OVERRIDE; // See base docs
+			void dumpToTextStream(mrpt::utils::CStream &out) const MRPT_OVERRIDE; // See base docs
 
 			/** The selected method to compute an observation likelihood.
 			*/

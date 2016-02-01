@@ -88,8 +88,8 @@ namespace mrpt
 			double TARGET_ATTRACTIVE_FORCE;          //!< Dimension-less (may have to be tuned depending on the density of obstacle sampling) (Default: 20)
 
 			TOptions();
-			virtual void saveToConfigFile(mrpt::utils::CConfigFileBase &cfg, const std::string &section) const;
-			virtual void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section);
+			void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) MRPT_OVERRIDE; // See base docs
+			void saveToConfigFile(mrpt::utils::CConfigFileBase &cfg ,const std::string &section) const MRPT_OVERRIDE; // See base docs
 		};
 
 		TOptions options;  //!< Parameters of the algorithm (can be set manually or loaded from CHolonomicVFF::initialize or options.loadFromConfigFile(), etc.)

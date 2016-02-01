@@ -64,9 +64,7 @@ namespace mrpt
 			{
 			}
 
-			void  loadFromConfigFile(
-				const mrpt::utils::CConfigFileBase	&iniFile,
-				const std::string		&section)
+			void loadFromConfigFile(const mrpt::utils::CConfigFileBase &initFile,const std::string &section) MRPT_OVERRIDE
 			{
 				method = iniFile.read_enum<TKFMethod>(section,"method", method );
 				MRPT_LOAD_CONFIG_VAR( verbose, bool    , iniFile, section  );

@@ -114,20 +114,12 @@ namespace maps
 			 */
 			 TLikelihoodOptions();
 
-			/** See utils::CLoadableOptions
-			  */
-			void  loadFromConfigFile(
-				const mrpt::utils::CConfigFileBase	&source,
-				const std::string &section);
-
-			/** See utils::CLoadableOptions
-			  */
-			void  dumpToTextStream(mrpt::utils::CStream	&out) const MRPT_OVERRIDE;
+			 void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) MRPT_OVERRIDE; // See base docs
+			 void dumpToTextStream(mrpt::utils::CStream &out) const MRPT_OVERRIDE; // See base docs
 
 			 /** The standard deviation used for Beacon ranges likelihood (default=0.08m).
 			   */
 			 float			rangeStd;
-
 		 } likelihoodOptions;
 
 		 /** This struct contains data for choosing the method by which new beacons are inserted in the map.
@@ -135,19 +127,10 @@ namespace maps
 		 struct MAPS_IMPEXP TInsertionOptions : public utils::CLoadableOptions
 		 {
 		 public:
-			/** Initilization of default parameters
-			 */
+			/** Initilization of default parameters */
 			 TInsertionOptions();
-
-			/** See utils::CLoadableOptions
-			  */
-			void  loadFromConfigFile(
-				const mrpt::utils::CConfigFileBase	&source,
-				const std::string &section);
-
-			/** See utils::CLoadableOptions
-			  */
-			void  dumpToTextStream(mrpt::utils::CStream	&out) const MRPT_OVERRIDE;
+			 void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) MRPT_OVERRIDE; // See base docs
+			 void dumpToTextStream(mrpt::utils::CStream &out) const MRPT_OVERRIDE; // See base docs
 
 			/** Insert a new beacon as a set of montecarlo samples (default=true), or, if false, as a sum of gaussians (see mrpt::maps::CBeacon).
 			  * \sa MC_performResampling

@@ -42,10 +42,8 @@ namespace slam
 		 {
 			 /** Initializer */
 			 TConfigParams ();
-			 virtual void  loadFromConfigFile(
-				const mrpt::utils::CConfigFileBase	&source,
-				const std::string		&section);
-			 virtual void  dumpToTextStream( mrpt::utils::CStream &out) const;
+			 void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) MRPT_OVERRIDE; // See base docs
+			 void dumpToTextStream(mrpt::utils::CStream &out) const MRPT_OVERRIDE; // See base docs
 
 			/** (default:false) Match against the occupancy grid or the points map? The former is quicker but less precise. */
 			bool	matchAgainstTheGrid;

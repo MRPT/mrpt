@@ -111,15 +111,8 @@ namespace mrpt
 				  */
 				TInsertionOptions();
 
-				/** See utils::CLoadableOptions
-				  */
-				void  loadFromConfigFile(
-					const mrpt::utils::CConfigFileBase  &source,
-					const std::string &section);
-
-				/** See utils::CLoadableOptions
-				  */
-				void  dumpToTextStream(mrpt::utils::CStream	&out) const MRPT_OVERRIDE;
+				void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) MRPT_OVERRIDE; // See base docs
+				void dumpToTextStream(mrpt::utils::CStream &out) const MRPT_OVERRIDE; // See base docs
 
 				/** Wether to perform filtering by z-coordinate (default=false): coordinates are always RELATIVE to the robot for this filter.
 				  */

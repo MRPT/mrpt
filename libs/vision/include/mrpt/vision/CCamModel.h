@@ -37,14 +37,8 @@ namespace mrpt
 			/** Default Constructor */
 			CCamModel();
 
-			/** This method loads the options from a ".ini"-like file or memory-stored string list.
-			 */
-			void  loadFromConfigFile(
-				const mrpt::utils::CConfigFileBase	&source,
-				const std::string		&section);
-
-			/** This method displays clearly all the contents of the structure in textual form, sending it to a CStream. */
-			void  dumpToTextStream( mrpt::utils::CStream		&out) const;
+			void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) MRPT_OVERRIDE; // See base docs
+			void dumpToTextStream(mrpt::utils::CStream &out) const MRPT_OVERRIDE; // See base docs
 
 			/** Constructor from a ini file
 			 */

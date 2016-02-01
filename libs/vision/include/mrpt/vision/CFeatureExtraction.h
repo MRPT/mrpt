@@ -71,19 +71,11 @@ namespace mrpt
 			/** The set of parameters for all the detectors & descriptor algorithms */
 			struct VISION_IMPEXP TOptions : public utils::CLoadableOptions
 			{
-				/** Initalizer
-				*/
+				/** Initalizer */
 				TOptions(const TFeatureType featsType = featKLT);
 
-				/** See utils::CLoadableOptions
-				  */
-				void  loadFromConfigFile(
-					const mrpt::utils::CConfigFileBase  &source,
-					const std::string &section);
-
-				/** See utils::CLoadableOptions
-				  */
-				void  dumpToTextStream(mrpt::utils::CStream		&out) const;
+				void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) MRPT_OVERRIDE; // See base docs
+				void dumpToTextStream(mrpt::utils::CStream &out) const MRPT_OVERRIDE; // See base docs
 
 				/** Type of the extracted features
 				*/

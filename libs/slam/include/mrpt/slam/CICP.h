@@ -58,12 +58,8 @@ namespace mrpt
 			public:
 				TConfigParams();	//!< Initializer for default values:
 
-				void  loadFromConfigFile(
-					const mrpt::utils::CConfigFileBase  &source,
-					const std::string &section); //!< See utils::CLoadableOptions
-
-				void  dumpToTextStream(mrpt::utils::CStream	&out) const MRPT_OVERRIDE; //!<See utils::CLoadableOptions
-
+				void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) MRPT_OVERRIDE; // See base docs
+				void dumpToTextStream(mrpt::utils::CStream &out) const MRPT_OVERRIDE; // See base docs
 
 				/** The algorithm to use (default: icpClassic)
 				  *  See http://www.mrpt.org/Scan_Matching_Algorithms for details.

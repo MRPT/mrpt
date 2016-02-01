@@ -81,16 +81,8 @@ namespace mrpt
 				  */
 				TConfigParams();
 
-				/** See utils::CLoadableOptions
-				  */
-				void  loadFromConfigFile(
-					const mrpt::utils::CConfigFileBase  &source,
-					const std::string &section);
-
-				/** See utils::CLoadableOptions
-				  */
-				void  dumpToTextStream(mrpt::utils::CStream	&out) const MRPT_OVERRIDE;
-
+				void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) MRPT_OVERRIDE; // See base docs
+				void dumpToTextStream(mrpt::utils::CStream &out) const MRPT_OVERRIDE; // See base docs
 
 				TAlignerMethod		methodSelection;		//!< The aligner method:
 

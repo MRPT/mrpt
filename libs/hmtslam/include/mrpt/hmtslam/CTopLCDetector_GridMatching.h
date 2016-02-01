@@ -65,22 +65,10 @@ namespace mrpt
 				/** Options for the grid-to-grid matching algorithm */
 				mrpt::slam::CGridMapAligner::TConfigParams	matchingOptions;
 
-				/** Load parameters from configuration source
-				  */
-				void  loadFromConfigFile(
-					const mrpt::utils::CConfigFileBase	&source,
-					const std::string		&section);
-
-				/** This method must display clearly all the contents of the structure in textual form, sending it to a CStream.
-				  */
-				void  dumpToTextStream(mrpt::utils::CStream	&out) const MRPT_OVERRIDE;
-
+				void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) MRPT_OVERRIDE; // See base docs
+				void dumpToTextStream(mrpt::utils::CStream &out) const MRPT_OVERRIDE; // See base docs
 			};
-
 		}; // end class
-
 	} // end namespace
 } // end namespace
-
-
 #endif

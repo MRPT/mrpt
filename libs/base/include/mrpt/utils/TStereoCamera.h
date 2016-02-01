@@ -62,7 +62,7 @@ namespace mrpt
 			  *   Notice that 3 different sections are read, of which "section" is only the prefix.
 			  *  \exception std::exception on missing fields
 			  */
-			void loadFromConfigFile(const std::string &section, const mrpt::utils::CConfigFileBase &cfg );
+			void loadFromConfigFile(const std::string &section, const mrpt::utils::CConfigFileBase &cfg ) MRPT_OVERRIDE;
 
 			/** Dumps all the parameters as a multi-line string, with the same format than \a saveToConfigFile.  \sa saveToConfigFile */
 			std::string dumpAsText() const;

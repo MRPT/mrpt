@@ -141,38 +141,25 @@ namespace mrpt
 			  */
 			struct SLAM_IMPEXP TOptions : utils::CLoadableOptions
 			{
-				/** Default values
-				  */
+				/** Default values */
 				TOptions();
 
-				/** Load from a config file/text
-				  */
-				void loadFromConfigFile(
-					const mrpt::utils::CConfigFileBase	&source,
-					const std::string		&section);
+				void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) MRPT_OVERRIDE; // See base docs
+				void dumpToTextStream(mrpt::utils::CStream &out) const MRPT_OVERRIDE; // See base docs
 
-				/** This method must display clearly all the contents of the structure in textual form, sending it to a CStream.
-				*/
-				void  dumpToTextStream(mrpt::utils::CStream	&out) const MRPT_OVERRIDE;
-
-				/** A 7-length vector with the std. deviation of the transition model in (x,y,z, qr,qx,qy,qz) used only when there is no odometry (if there is odo, its uncertainty values will be used instead); x y z: In meters.
-				  */
+				/** A 7-length vector with the std. deviation of the transition model in (x,y,z, qr,qx,qy,qz) used only when there is no odometry (if there is odo, its uncertainty values will be used instead); x y z: In meters. */
 				mrpt::math::CVectorFloat stds_Q_no_odo;
 
-				/** The std. deviation of the sensor (for the matrix R in the kalman filters), in meters and radians.
-				  */
+				/** The std. deviation of the sensor (for the matrix R in the kalman filters), in meters and radians. */
 				float std_sensor_range, std_sensor_yaw, std_sensor_pitch;
 
-				/** Additional std. dev. to sum to the motion model in the z axis (useful when there is only 2D odometry and we want to put things hard to the algorithm) (default=0)
-				  */
+				/** Additional std. dev. to sum to the motion model in the z axis (useful when there is only 2D odometry and we want to put things hard to the algorithm) (default=0) */
 				float std_odo_z_additional;
 
-				/** If set to true (default=false), map will be partitioned using the method stated by partitioningMethod
-				  */
+				/** If set to true (default=false), map will be partitioned using the method stated by partitioningMethod */
 				bool doPartitioningExperiment;
 
-				/** Default = 3
-				  */
+				/** Default = 3 */
 				float quantiles_3D_representation;
 
 				/** Applicable only if "doPartitioningExperiment=true".

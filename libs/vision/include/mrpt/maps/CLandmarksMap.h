@@ -187,15 +187,8 @@ namespace maps
 			 */
 			TInsertionOptions(	);
 
-			/** See utils::CLoadableOptions
-			  */
-			void  loadFromConfigFile(
-				const mrpt::utils::CConfigFileBase	&source,
-				const std::string &section);
-
-			/** See utils::CLoadableOptions
-			  */
-			void  dumpToTextStream(mrpt::utils::CStream	&out) const MRPT_OVERRIDE;
+			void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) MRPT_OVERRIDE; // See base docs
+			void dumpToTextStream(mrpt::utils::CStream &out) const MRPT_OVERRIDE; // See base docs
 
 			/** If set to true (default), the insertion of a CObservationImage in the map will insert SIFT 3D features.
 			  */
@@ -281,44 +274,23 @@ namespace maps
 			 */
 			 TLikelihoodOptions();
 
-			/** See utils::CLoadableOptions
-			  */
-			void  loadFromConfigFile(
-				const mrpt::utils::CConfigFileBase	&source,
-				const std::string &section);
+			 void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) MRPT_OVERRIDE; // See base docs
+			 void dumpToTextStream(mrpt::utils::CStream &out) const MRPT_OVERRIDE; // See base docs
 
-			/** See utils::CLoadableOptions
-			  */
-			void  dumpToTextStream(mrpt::utils::CStream	&out) const MRPT_OVERRIDE;
-
-			 /** The number of rays from a 2D range scan will be decimated by this factor (default = 1, no decimation)
-			   */
+			 /** The number of rays from a 2D range scan will be decimated by this factor (default = 1, no decimation) */
 			 unsigned int	rangeScan2D_decimation;
-
 			 double			SIFTs_sigma_euclidean_dist;
-
 			 double			SIFTs_sigma_descriptor_dist;
-
 			 float			SIFTs_mahaDist_std;
-
 			 float			SIFTnullCorrespondenceDistance;
-
-			 /** Considers 1 out of "SIFTs_decimation" visual landmarks in the observation during the likelihood computation.
-			   */
+			 /** Considers 1 out of "SIFTs_decimation" visual landmarks in the observation during the likelihood computation. */
 			 int			SIFTs_decimation;
-
-			 /** The standard deviation used for Beacon ranges likelihood (default=0.08).
-			   */
+			 /** The standard deviation used for Beacon ranges likelihood (default=0.08). */
 			 float			beaconRangesStd;
-
-			 /** The ratio between gaussian and uniform distribution (default=1).
-			   */
+			 /** The ratio between gaussian and uniform distribution (default=1). */
 			 float			alphaRatio;
-
-			 /** Maximun reliable beacon range value (default=20)
-			   */
+			 /** Maximun reliable beacon range value (default=20) */
 			 float			beaconMaxRange;
-
 			/** This struct store de GPS longitude, latitude (in degrees ) and altitude (in meters) for the first GPS observation
 			  * compose with de sensor position on the robot.
 			 */

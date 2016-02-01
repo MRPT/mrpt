@@ -58,12 +58,8 @@ namespace maps
 		{
 			TInsertionOptions();	//!< Default values loader
 
-			/** See utils::CLoadableOptions */
-			void  loadFromConfigFile(
-				const mrpt::utils::CConfigFileBase  &source,
-				const std::string &section);
-
-			void  dumpToTextStream(mrpt::utils::CStream	&out) const MRPT_OVERRIDE; //!< See utils::CLoadableOptions
+			void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) MRPT_OVERRIDE; // See base docs
+			void dumpToTextStream(mrpt::utils::CStream &out) const MRPT_OVERRIDE; // See base docs
 
 		} insertionOptions;
 

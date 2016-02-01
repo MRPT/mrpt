@@ -80,20 +80,11 @@ namespace mrpt
 			  */
 			struct MAPS_IMPEXP TInsertionOptions : public utils::CLoadableOptions
 			{
-				/** Default values loader:
-				  */
+				/** Default values loader */
 				TInsertionOptions();
 
-				/** See utils::CLoadableOptions
-				  */
-				void  loadFromConfigFile(
-					const mrpt::utils::CConfigFileBase  &source,
-					const std::string &section);
-
-				/** See utils::CLoadableOptions
-				  */
-				void  dumpToTextStream(mrpt::utils::CStream	&out) const MRPT_OVERRIDE;
-
+				void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) MRPT_OVERRIDE; // See base docs
+				void dumpToTextStream(mrpt::utils::CStream &out) const MRPT_OVERRIDE; // See base docs
 			} insertionOptions;
 
 			/** See docs in base class: in this class this always returns 0 */

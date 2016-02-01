@@ -115,8 +115,9 @@ namespace mrpt
 
 
 			TOptions();
-			virtual void saveToConfigFile(mrpt::utils::CConfigFileBase &cfg ,const std::string &section) const;
-			virtual void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section);
+			void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) MRPT_OVERRIDE; // See base docs
+			void saveToConfigFile(mrpt::utils::CConfigFileBase &cfg ,const std::string &section) const MRPT_OVERRIDE; // See base docs
+			void dumpToTextStream(mrpt::utils::CStream &out) const MRPT_OVERRIDE; // See base docs
 		};
 
 		TOptions options;  //!< Parameters of the algorithm (can be set manually or loaded from CHolonomicND::initialize or options.loadFromConfigFile(), etc.)
