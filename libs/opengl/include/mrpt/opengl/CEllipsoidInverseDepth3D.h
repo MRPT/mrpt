@@ -57,7 +57,7 @@ namespace mrpt
 			  */
 			virtual void transformFromParameterSpace(
 				const std::vector<BASE::array_parameter_t> &in_pts,
-				std::vector<BASE::array_point_t> & out_pts) const;
+				std::vector<BASE::array_point_t> & out_pts) const MRPT_OVERRIDE;
 		private:
 			double m_underflowMaxRange;
 

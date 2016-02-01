@@ -159,13 +159,10 @@ namespace mrpt
 
 			TLikelihoodOptions  likelihoodOptions;
 
-			/** Returns true if the map is empty/no observation has been inserted.
-				*/
-			virtual bool  isEmpty() const;
+			/** Returns true if the map is empty/no observation has been inserted */
+			virtual bool isEmpty() const MRPT_OVERRIDE;
 
-
-
-			virtual void  saveMetricMapRepresentationToFile(const std::string	&filNamePrefix) const;
+			virtual void  saveMetricMapRepresentationToFile(const std::string	&filNamePrefix) const MRPT_OVERRIDE;
 
 			/** Options for the conversion of a mrpt::maps::COctoMap into a mrpt::opengl::COctoMapVoxels */
 			struct TRenderingOptions
@@ -195,7 +192,7 @@ namespace mrpt
 			/** Returns a 3D object representing the map.
 				* \sa renderingOptions
 				*/
-			virtual void  getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&outObj ) const
+			virtual void  getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&outObj ) const MRPT_OVERRIDE
 			{
 				mrpt::opengl::COctoMapVoxelsPtr gl_obj = mrpt::opengl::COctoMapVoxels::Create();
 				this->getAsOctoMapVoxels(*gl_obj);
@@ -293,7 +290,7 @@ namespace mrpt
 
 
 		protected:
-			virtual void  internal_clear() {  m_octomap.clear(); }
+			virtual void  internal_clear() MRPT_OVERRIDE {  m_octomap.clear(); }
 
 			/**  Builds the list of 3D points in global coordinates for a generic observation. Used for both, insertObservation() and computeLikelihood().
 			  * \param[out] point3d_sensorPt Is a pointer to a "point3D".

@@ -64,7 +64,7 @@ namespace mrpt
 			{
 			}
 
-			void loadFromConfigFile(const mrpt::utils::CConfigFileBase &initFile,const std::string &section) MRPT_OVERRIDE
+			void loadFromConfigFile(const mrpt::utils::CConfigFileBase &iniFile,const std::string &section) MRPT_OVERRIDE
 			{
 				method = iniFile.read_enum<TKFMethod>(section,"method", method );
 				MRPT_LOAD_CONFIG_VAR( verbose, bool    , iniFile, section  );
@@ -77,7 +77,7 @@ namespace mrpt
 			}
 
 			/** This method must display clearly all the contents of the structure in textual form, sending it to a CStream. */
-			void  dumpToTextStream(mrpt::utils::CStream	&out) const
+			void  dumpToTextStream(mrpt::utils::CStream	&out) const MRPT_OVERRIDE
 			{
 				out.printf("\n----------- [TKF_options] ------------ \n\n");
 				out.printf("method                                  = %s\n", mrpt::utils::TEnumType<TKFMethod>::value2name(method).c_str() );

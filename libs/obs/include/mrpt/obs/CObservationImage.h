@@ -62,11 +62,9 @@ namespace obs
 		void  getRectifiedImage( mrpt::utils::CImage &out_img ) const;
 
 		// See base class docs
-		void getSensorPose( mrpt::poses::CPose3D &out_sensorPose ) const { out_sensorPose = cameraPose; }
-		// See base class docs
-		void setSensorPose( const mrpt::poses::CPose3D &newSensorPose ) { cameraPose = newSensorPose; }
-		// See base class docs
-		virtual void getDescriptionAsText(std::ostream &o) const;
+		void getSensorPose( mrpt::poses::CPose3D &out_sensorPose ) const MRPT_OVERRIDE { out_sensorPose = cameraPose; }
+		void setSensorPose( const mrpt::poses::CPose3D &newSensorPose ) MRPT_OVERRIDE { cameraPose = newSensorPose; }
+		void getDescriptionAsText(std::ostream &o) const MRPT_OVERRIDE;
 
 	}; // End of class def.
 	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CObservationImage , CObservation,OBS_IMPEXP )

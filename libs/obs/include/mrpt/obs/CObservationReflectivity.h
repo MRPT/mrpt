@@ -46,11 +46,9 @@ namespace obs
 		float  sensorStdNoise;
 		
 		// See base class docs
-		void getSensorPose( mrpt::poses::CPose3D &out_sensorPose ) const { out_sensorPose = sensorPose; }
-		// See base class docs
-		void setSensorPose( const mrpt::poses::CPose3D &newSensorPose ) { sensorPose = newSensorPose; }
-		// See base class docs
-		virtual void getDescriptionAsText(std::ostream &o) const;
+		void getSensorPose( mrpt::poses::CPose3D &out_sensorPose ) const MRPT_OVERRIDE { out_sensorPose = sensorPose; }
+		void setSensorPose( const mrpt::poses::CPose3D &newSensorPose ) MRPT_OVERRIDE { sensorPose = newSensorPose; }
+		void getDescriptionAsText(std::ostream &o) const MRPT_OVERRIDE;
 
 	}; // End of class def.
 	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CObservationReflectivity , CObservation,OBS_IMPEXP )

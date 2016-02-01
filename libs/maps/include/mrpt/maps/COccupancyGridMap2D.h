@@ -124,7 +124,7 @@ namespace maps
 
 		bool m_is_empty; //!< True upon construction; used by isEmpty()
 
-		virtual void OnPostSuccesfulInsertObs(const mrpt::obs::CObservation *); //!< See base class
+		virtual void OnPostSuccesfulInsertObs(const mrpt::obs::CObservation *) MRPT_OVERRIDE; //!< See base class
 
 		/** The free-cells threshold used to compute the Voronoi diagram.
 		 */
@@ -212,7 +212,7 @@ namespace maps
 
 		/** Clear the map: It set all cells to their default occupancy value (0.5), without changing the resolution (the grid extension is reset to the default values).
 		  */
-		virtual void  internal_clear( );
+		virtual void  internal_clear( ) MRPT_OVERRIDE;
 
 		 /** Insert the observation information into this map.
 		  *
@@ -223,7 +223,7 @@ namespace maps
 		  *
 		  * \sa insertionOptions, CObservation::insertObservationInto
 		  */
-		 virtual bool  internal_insertObservation( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D *robotPose = NULL );
+		 virtual bool  internal_insertObservation( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D *robotPose = NULL ) MRPT_OVERRIDE;
 
 	public:
 		/** Read-only access to the raw cell contents (cells are in log-odd units) */
@@ -906,7 +906,7 @@ namespace maps
 
 		/** Returns a 3D plane with its texture being the occupancy grid and transparency proportional to "uncertainty" (i.e. a value of 0.5 is fully transparent)
 		  */
-		void  getAs3DObject ( mrpt::opengl::CSetOfObjectsPtr	&outObj ) const;
+		void getAs3DObject(mrpt::opengl::CSetOfObjectsPtr &outObj) const MRPT_OVERRIDE;
 
 		/** Get a point cloud with all (border) occupied cells as points */
 		void getAsPointCloud( mrpt::maps::CSimplePointsMap &pm, const float occup_threshold = 0.5f ) const;
@@ -914,7 +914,7 @@ namespace maps
 		/** Returns true upon map construction or after calling clear(), the return
 		  *  changes to false upon successful insertObservation() or any other method to load data in the map.
 		  */
-		bool  isEmpty() const;
+		bool isEmpty() const MRPT_OVERRIDE;
 
 		/** Load the gridmap from a image in a file (the format can be any supported by CImage::loadFromFile).
 		 * \param file The file to be loaded.
@@ -946,7 +946,7 @@ namespace maps
 			const mrpt::poses::CPose2D         & otherMapPose,
 			mrpt::utils::TMatchingPairList     & correspondences,
 			const TMatchingParams & params,
-			TMatchingExtraResults & extraResults ) const ;
+			TMatchingExtraResults & extraResults ) const MRPT_OVERRIDE;
 
 
 		/** See docs in base class: in this class this always returns 0 */
@@ -955,13 +955,10 @@ namespace maps
 				const mrpt::poses::CPose3D							&otherMapPose,
 				float									maxDistForCorr = 0.10f,
 				float									maxMahaDistForCorr = 2.0f
-				) const;
+				) const MRPT_OVERRIDE;
 
-		/** This virtual method saves the map to a file "filNamePrefix"+< some_file_extension >, as an image or in any other applicable way (Notice that other methods to save the map may be implemented in classes implementing this virtual interface).
-		  */
-		void  saveMetricMapRepresentationToFile(
-			const std::string	&filNamePrefix
-			) const;
+		/** This virtual method saves the map to a file "filNamePrefix"+< some_file_extension >, as an image or in any other applicable way (Notice that other methods to save the map may be implemented in classes implementing this virtual interface).  */
+		void  saveMetricMapRepresentationToFile(const std::string	&filNamePrefix) const MRPT_OVERRIDE;
 
 		/** The structure used to store the set of Voronoi diagram
 		 *    critical points.
@@ -980,9 +977,9 @@ namespace maps
 
 	private:
 		// See docs in base class
-		double internal_computeObservationLikelihood( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D &takenFrom );
+		double internal_computeObservationLikelihood( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D &takenFrom ) MRPT_OVERRIDE;
 		// See docs in base class
-		bool internal_canComputeObservationLikelihood( const mrpt::obs::CObservation *obs );
+		bool internal_canComputeObservationLikelihood( const mrpt::obs::CObservation *obs ) MRPT_OVERRIDE;
 
 		/** Returns a byte with the occupancy of the 8 sorrounding cells.
 		 * \param cx The cell index

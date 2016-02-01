@@ -42,72 +42,44 @@ namespace mrpt
 			// --------------------------------------------
 			/** @name Pure virtual interfaces to be implemented by any class derived from CPointsMap
 				@{ */
-
-			/** Reserves memory for a given number of points: the size of the map does not change, it only reserves the memory.
-			  *  This is useful for situations where it is approximately known the final size of the map. This method is more
-			  *  efficient than constantly increasing the size of the buffers. Refer to the STL C++ library's "reserve" methods.
-			  */
-			virtual void reserve(size_t newLength);
-
-			/** Resizes all point buffers so they can hold the given number of points: newly created points are set to default values,
-			  *  and old contents are not changed.
-			  * \sa reserve, setPoint, setPointFast, setSize
-			  */
-			virtual void resize(size_t newLength);
-
-			/** Resizes all point buffers so they can hold the given number of points, *erasing* all previous contents
-			  *  and leaving all points to default values.
-			  * \sa reserve, setPoint, setPointFast, setSize
-			  */
-			virtual void setSize(size_t newLength);
-
+			virtual void reserve(size_t newLength) MRPT_OVERRIDE; // See base class docs
+			virtual void resize(size_t newLength) MRPT_OVERRIDE; // See base class docs
+			virtual void setSize(size_t newLength) MRPT_OVERRIDE;  // See base class docs
 			/** Changes the coordinates of the given point (0-based index), *without* checking for out-of-bounds and *without* calling mark_as_modified()  \sa setPoint */
-			virtual void  setPointFast(size_t index,float x, float y, float z);
-
+			virtual void  setPointFast(size_t index,float x, float y, float z) MRPT_OVERRIDE;
 			/** The virtual method for \a insertPoint() *without* calling mark_as_modified()   */
-			virtual void  insertPointFast( float x, float y, float z = 0 );
-
-			 /** Virtual assignment operator, to be implemented in derived classes.
-			   */
-			 virtual void  copyFrom(const CPointsMap &obj);
-
+			virtual void  insertPointFast( float x, float y, float z = 0 ) MRPT_OVERRIDE;
+			/** Virtual assignment operator, to be implemented in derived classes  */
+			virtual void  copyFrom(const CPointsMap &obj) MRPT_OVERRIDE;
 			/** Get all the data fields for one point as a vector: [X Y Z]
 			  *  Unlike getPointAllFields(), this method does not check for index out of bounds
 			  * \sa getPointAllFields, setPointAllFields, setPointAllFieldsFast
 			  */
-			virtual void  getPointAllFieldsFast( const size_t index, std::vector<float> & point_data ) const {
+			virtual void  getPointAllFieldsFast( const size_t index, std::vector<float> & point_data ) const MRPT_OVERRIDE {
 				point_data.resize(3);
 				point_data[0] = x[index];
 				point_data[1] = y[index];
 				point_data[2] = z[index];
 			}
-
 			/** Set all the data fields for one point as a vector: [X Y Z]
 			  *  Unlike setPointAllFields(), this method does not check for index out of bounds
 			  * \sa setPointAllFields, getPointAllFields, getPointAllFieldsFast
 			  */
-			virtual void  setPointAllFieldsFast( const size_t index, const std::vector<float> & point_data ) {
+			virtual void  setPointAllFieldsFast( const size_t index, const std::vector<float> & point_data ) MRPT_OVERRIDE {
 				ASSERTDEB_(point_data.size()==3)
 				x[index] = point_data[0];
 				y[index] = point_data[1];
 				z[index] = point_data[2];
 			}
 
-			/** See CPointsMap::loadFromRangeScan() */
-			virtual void  loadFromRangeScan(
-				const mrpt::obs::CObservation2DRangeScan &rangeScan,
-				const mrpt::poses::CPose3D				  *robotPose = NULL );
-
-			/** See CPointsMap::loadFromRangeScan() */
-			virtual void  loadFromRangeScan(
-				const mrpt::obs::CObservation3DRangeScan &rangeScan,
-				const mrpt::poses::CPose3D				  *robotPose = NULL );
-
+			// See CPointsMap::loadFromRangeScan()
+			virtual void  loadFromRangeScan(const mrpt::obs::CObservation2DRangeScan &rangeScan,const mrpt::poses::CPose3D *robotPose = NULL) MRPT_OVERRIDE;
+			// See CPointsMap::loadFromRangeScan()
+			virtual void  loadFromRangeScan(const mrpt::obs::CObservation3DRangeScan &rangeScan,const mrpt::poses::CPose3D *robotPose = NULL ) MRPT_OVERRIDE;
 
 		protected:
-
 			/** Auxiliary method called from within \a addFrom() automatically, to finish the copying of class-specific data  */
-			virtual void  addFrom_classSpecific(const CPointsMap &anotherMap, const size_t nPreviousPoints) {
+			virtual void  addFrom_classSpecific(const CPointsMap &anotherMap, const size_t nPreviousPoints) MRPT_OVERRIDE {
 				MRPT_UNUSED_PARAM(anotherMap); MRPT_UNUSED_PARAM(nPreviousPoints);
 				// No extra data.
 			}
@@ -126,13 +98,13 @@ namespace mrpt
 			/** If the map is a simple points map or it's a multi-metric map that contains EXACTLY one simple points map, return it.
 				* Otherwise, return NULL
 				*/
-			virtual const mrpt::maps::CSimplePointsMap * getAsSimplePointsMap() const { return this; }
-			virtual       mrpt::maps::CSimplePointsMap * getAsSimplePointsMap()       { return this; }
+			virtual const mrpt::maps::CSimplePointsMap * getAsSimplePointsMap() const MRPT_OVERRIDE { return this; }
+			virtual       mrpt::maps::CSimplePointsMap * getAsSimplePointsMap()       MRPT_OVERRIDE { return this; }
 
 		protected:
 			/** Clear the map, erasing all the points.
 			 */
-			virtual void  internal_clear();
+			virtual void internal_clear() MRPT_OVERRIDE;
 
 			/** @name PLY Import virtual methods to implement in base classes
 			    @{ */

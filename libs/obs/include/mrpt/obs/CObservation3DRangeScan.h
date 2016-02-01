@@ -131,11 +131,11 @@ namespace obs
 		  *  If all the data were alredy loaded or this object has no externally stored data fields, calling this method has no effects.
 		  * \sa unload
 		  */
-		virtual void load() const;
+		virtual void load() const MRPT_OVERRIDE;
 		/** Unload all images, for the case they being delayed-load images stored in external files (othewise, has no effect).
 		  * \sa load
 		  */
-		virtual void unload();
+		virtual void unload() MRPT_OVERRIDE;
 		/** @} */
 
 		/** Project the RGB+D images into a 3D point cloud (with color if the target map supports it) and optionally at a given 3D pose.
@@ -384,24 +384,24 @@ namespace obs
 			typedef Eigen::Matrix<bitmask_t,Eigen::Dynamic,Eigen::Dynamic>  TPixelLabelMatrix;
 			TPixelLabelMatrix   pixelLabels;
 
-            void setSize(const int NROWS, const int NCOLS) {
+			void setSize(const int NROWS, const int NCOLS)  MRPT_OVERRIDE {
 				pixelLabels = TPixelLabelMatrix::Zero(NROWS,NCOLS);
 			}
-            void setLabel(const int row, const int col, uint8_t label_idx) {
-                pixelLabels(row,col) |= static_cast<bitmask_t>(1) << label_idx;
+			void setLabel(const int row, const int col, uint8_t label_idx) MRPT_OVERRIDE {
+				pixelLabels(row,col) |= static_cast<bitmask_t>(1) << label_idx;
 			}
-            void getLabels( const int row, const int col, uint8_t &labels )
-            {
-                labels = pixelLabels(row,col);
-            }
+			void getLabels( const int row, const int col, uint8_t &labels ) MRPT_OVERRIDE
+			{
+				labels = pixelLabels(row,col);
+			}
 
-            void unsetLabel(const int row, const int col, uint8_t label_idx) {
+			void unsetLabel(const int row, const int col, uint8_t label_idx) MRPT_OVERRIDE {
 				pixelLabels(row,col) &= ~(static_cast<bitmask_t>(1) << label_idx);
 			}
-            void unsetAll(const int row, const int col, uint8_t label_idx) {
+			void unsetAll(const int row, const int col, uint8_t label_idx) MRPT_OVERRIDE {
 				pixelLabels(row,col) = 0;
 			}
-            bool checkLabel(const int row, const int col, uint8_t label_idx) const {
+			bool checkLabel(const int row, const int col, uint8_t label_idx) const MRPT_OVERRIDE {
 				return (pixelLabels(row,col) & (static_cast<bitmask_t>(1) << label_idx)) != 0;
 			}
 
@@ -411,7 +411,7 @@ namespace obs
 			}
 
 		protected:
-			virtual void internal_readFromStream(mrpt::utils::CStream &in)
+			void internal_readFromStream(mrpt::utils::CStream &in) MRPT_OVERRIDE
 			{
 				{
 					uint32_t nR,nC;
@@ -423,7 +423,7 @@ namespace obs
 				}
 				in >> pixelLabelNames;
 			}
-			virtual void internal_writeToStream(mrpt::utils::CStream &out) const
+			void internal_writeToStream(mrpt::utils::CStream &out) const MRPT_OVERRIDE
 			{
 				{
 					const uint32_t nR=static_cast<uint32_t>(pixelLabels.rows());
@@ -435,28 +435,28 @@ namespace obs
 				}
 				out << pixelLabelNames;
 			}
-            virtual void Print( std::ostream& out ) const
-            {
-                {
-                    const uint32_t nR=static_cast<uint32_t>(pixelLabels.rows());
-                    const uint32_t nC=static_cast<uint32_t>(pixelLabels.cols());
-                    out << "Number of rows: " << nR << std::endl;
-                    out << "Number of cols: " << nC << std::endl;
-                    out << "Matrix of labels: " << std::endl;
-                    for (uint32_t c=0;c<nC;c++)
-                    {
-                        for (uint32_t r=0;r<nR;r++)
-                            out << pixelLabels.coeff(r,c) << " ";
+			void Print( std::ostream& out ) const MRPT_OVERRIDE
+			{
+				{
+					const uint32_t nR=static_cast<uint32_t>(pixelLabels.rows());
+					const uint32_t nC=static_cast<uint32_t>(pixelLabels.cols());
+					out << "Number of rows: " << nR << std::endl;
+					out << "Number of cols: " << nC << std::endl;
+					out << "Matrix of labels: " << std::endl;
+					for (uint32_t c=0;c<nC;c++)
+					{
+						for (uint32_t r=0;r<nR;r++)
+							out << pixelLabels.coeff(r,c) << " ";
 
-                        out << std::endl;
-                    }
-                }
-                out << std::endl;
-                out << "Label indices and names: " << std::endl;
-                std::map<uint32_t,std::string>::const_iterator it;
-                for ( it = pixelLabelNames.begin(); it != pixelLabelNames.end(); it++)
-                    out << it->first << " " << it->second << std::endl;
-            }
+						out << std::endl;
+					}
+				}
+				out << std::endl;
+				out << "Label indices and names: " << std::endl;
+				std::map<uint32_t,std::string>::const_iterator it;
+				for ( it = pixelLabelNames.begin(); it != pixelLabelNames.end(); it++)
+					out << it->first << " " << it->second << std::endl;
+			}
 		}; // end TPixelLabelInfo
 
 		/** All information about pixel labeling is stored in this (smart pointer to) structure; refer to TPixelLabelInfo for details on the contents 
@@ -487,14 +487,14 @@ namespace obs
 		float	stdError;	//!< The "sigma" error of the device in meters, used while inserting the scan in an occupancy grid.
 
 		// See base class docs
-		void getSensorPose( mrpt::poses::CPose3D &out_sensorPose ) const { out_sensorPose = sensorPose; }
+		void getSensorPose( mrpt::poses::CPose3D &out_sensorPose ) const MRPT_OVERRIDE { out_sensorPose = sensorPose; }
 		// See base class docs
-		void setSensorPose( const mrpt::poses::CPose3D &newSensorPose ) { sensorPose = newSensorPose; }
+		void setSensorPose( const mrpt::poses::CPose3D &newSensorPose ) MRPT_OVERRIDE { sensorPose = newSensorPose; }
 
 		/** @} */  // end sensor params
 
 		// See base class docs
-		virtual void getDescriptionAsText(std::ostream &o) const;
+		void getDescriptionAsText(std::ostream &o) const MRPT_OVERRIDE;
 
 		void swap(CObservation3DRangeScan &o);	//!< Very efficient method to swap the contents of two observations.
 

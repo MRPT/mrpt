@@ -88,22 +88,22 @@ namespace mrpt
 			virtual ~CDisplayWindowPlots();
 
 			/** Gets the last x,y pixel coordinates of the mouse. \return False if the window is closed. */
-			virtual bool getLastMousePosition(int &x, int &y) const;
+			virtual bool getLastMousePosition(int &x, int &y) const MRPT_OVERRIDE;
 
 			/** Set cursor style to default (cursorIsCross=false) or to a cross (cursorIsCross=true) */
-			virtual void setCursorCross(bool cursorIsCross);
+			virtual void setCursorCross(bool cursorIsCross) MRPT_OVERRIDE;
 
 			/** Resizes the window, stretching the image to fit into the display area.
 			 */
-			void  resize( unsigned int width, unsigned int height );
+			void  resize( unsigned int width, unsigned int height ) MRPT_OVERRIDE;
 
 			/** Changes the position of the window on the screen.
 			 */
-			void  setPos( int x, int y );
+			void  setPos( int x, int y ) MRPT_OVERRIDE;
 
 			/** Changes the window title text.
 			  */
-			void  setWindowTitle( const std::string &str );
+			void  setWindowTitle( const std::string &str ) MRPT_OVERRIDE;
 
 			/** Enable/disable the feature of pan/zoom with the mouse (default=enabled)
 			*/

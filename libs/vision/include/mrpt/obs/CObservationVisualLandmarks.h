@@ -50,11 +50,9 @@ namespace obs
 		 float  likelihoodWith( const mrpt::obs::CObservation *anotherObs, const mrpt::poses::CPosePDF *anotherObsPose = NULL ) const;
 
 		// See base class docs
-		void getSensorPose( mrpt::poses::CPose3D &out_sensorPose ) const { out_sensorPose = refCameraPose; }
-		// See base class docs
-		void setSensorPose( const mrpt::poses::CPose3D &newSensorPose ) { refCameraPose = newSensorPose; }
-		// See base class docs
-		virtual void getDescriptionAsText(std::ostream &o) const;
+		void getSensorPose( mrpt::poses::CPose3D &out_sensorPose ) const MRPT_OVERRIDE { out_sensorPose = refCameraPose; }
+		void setSensorPose( const mrpt::poses::CPose3D &newSensorPose ) MRPT_OVERRIDE { refCameraPose = newSensorPose; }
+		void getDescriptionAsText(std::ostream &o) const MRPT_OVERRIDE;
 
 	}; // End of class def.
 	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CObservationVisualLandmarks , CObservation, VISION_IMPEXP )

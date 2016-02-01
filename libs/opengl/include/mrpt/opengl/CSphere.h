@@ -49,7 +49,7 @@ namespace mrpt
 			void enableRadiusIndependentOfEyeDistance(bool v=true)  { m_keepRadiusIndependentEyeDistance=v; CRenderizableDisplayList::notifyChange(); }
 
 			/** \sa CRenderizableDisplayList */
-			virtual bool should_skip_display_list_cache() const { return m_keepRadiusIndependentEyeDistance; }
+			bool should_skip_display_list_cache() const  MRPT_OVERRIDE { return m_keepRadiusIndependentEyeDistance; }
 
 			/** Class factory  */
 			static CSpherePtr Create(

@@ -108,11 +108,9 @@ namespace obs
 
 
 		// See base class docs
-		void getSensorPose( mrpt::poses::CPose3D &out_sensorPose ) const { out_sensorPose = cameraPose; }
-		// See base class docs
-		void setSensorPose( const mrpt::poses::CPose3D &newSensorPose ) { cameraPose = mrpt::poses::CPose3DQuat(newSensorPose); }
-		// See base class docs
-		virtual void getDescriptionAsText(std::ostream &o) const;
+		void getSensorPose( mrpt::poses::CPose3D &out_sensorPose ) const MRPT_OVERRIDE { out_sensorPose = cameraPose; }
+		void setSensorPose( const mrpt::poses::CPose3D &newSensorPose ) MRPT_OVERRIDE { cameraPose = mrpt::poses::CPose3DQuat(newSensorPose); }
+		void getDescriptionAsText(std::ostream &o) const MRPT_OVERRIDE;
 
 		void swap( CObservationStereoImages &o); //!< Do an efficient swap of all data members of this object with "o".
 

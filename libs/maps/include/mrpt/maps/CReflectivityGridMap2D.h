@@ -56,7 +56,7 @@ namespace mrpt
 			  */
 			inline void clear() { CMetricMap::clear(); }
 
-			float cell2float(const int8_t& c) const
+			float cell2float(const int8_t& c) const MRPT_OVERRIDE
 			{
 				return m_logodd_lut.l2p(c);
 			}
@@ -73,7 +73,7 @@ namespace mrpt
 
 			 /** Returns true if the map is empty/no observation has been inserted.
 			   */
-			 bool  isEmpty() const;
+			 bool isEmpty() const MRPT_OVERRIDE;
 
 
 			/** Parameters related with inserting observations into the map.
@@ -93,21 +93,13 @@ namespace mrpt
 					const mrpt::poses::CPose3D							&otherMapPose,
 					float									maxDistForCorr = 0.10f,
 					float									maxMahaDistForCorr = 2.0f
-					) const;
+					) const MRPT_OVERRIDE;
 
-			/** The implementation in this class just calls all the corresponding method of the contained metric maps.
-			  */
-			void  saveMetricMapRepresentationToFile(
-				const std::string	&filNamePrefix
-				) const;
+			void saveMetricMapRepresentationToFile(const std::string &filNamePrefix ) const MRPT_OVERRIDE;
 
-			/** Returns a 3D object representing the map: by default, it will be a mrpt::opengl::CMesh object, unless
-			  *   it is specified otherwise in mrpt::
-			  */
-			void  getAs3DObject ( mrpt::opengl::CSetOfObjectsPtr	&outObj ) const;
+			void getAs3DObject(mrpt::opengl::CSetOfObjectsPtr &outObj) const MRPT_OVERRIDE;
 
-			/** Returns the grid as a 8-bit graylevel image, where each pixel is a cell (output image is RGB only if forceRGB is true)
-			  */
+			/** Returns the grid as a 8-bit graylevel image, where each pixel is a cell (output image is RGB only if forceRGB is true) */
 			void  getAsImage( utils::CImage	&img, bool verticalFlip = false, bool forceRGB=false) const;
 
 		protected:

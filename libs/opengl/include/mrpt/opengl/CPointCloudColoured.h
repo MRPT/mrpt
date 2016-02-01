@@ -193,7 +193,7 @@ namespace mrpt
 
 
 			/** Render */
-			void  render() const;
+			void  render() const MRPT_OVERRIDE;
 
 			/** Render a subset of points (required by octree renderer) */
 			void  render_subset(const bool all, const std::vector<size_t>& idxs, const float render_area_sqpixels ) const;
@@ -215,25 +215,10 @@ namespace mrpt
 
 			/** @name PLY Export virtual methods to implement in base classes
 			    @{ */
-
-			/** In a base class, return the number of vertices */
-			virtual size_t PLY_export_get_vertex_count() const MRPT_OVERRIDE;
-
-			/** In a base class, return the number of faces */
-			virtual size_t PLY_export_get_face_count() const MRPT_OVERRIDE { return 0; }
-
-			/** In a base class, will be called after PLY_export_get_vertex_count() once for each exported point.
-			  *  \param pt_color Will be NULL if the loaded file does not provide color info.
-			  */
-			virtual void PLY_export_get_vertex(
-				const size_t idx,
-				mrpt::math::TPoint3Df &pt,
-				bool &pt_has_color,
-				mrpt::utils::TColorf &pt_color) const;
-
+			size_t PLY_export_get_vertex_count() const MRPT_OVERRIDE;
+			size_t PLY_export_get_face_count() const MRPT_OVERRIDE { return 0; }
+			void   PLY_export_get_vertex(const size_t idx,mrpt::math::TPoint3Df &pt,bool &pt_has_color,mrpt::utils::TColorf &pt_color) const MRPT_OVERRIDE;
 			/** @} */
-
-
 		};
 		DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CPointCloudColoured, CRenderizable, OPENGL_IMPEXP )
 

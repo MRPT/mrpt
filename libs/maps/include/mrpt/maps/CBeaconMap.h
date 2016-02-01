@@ -56,9 +56,9 @@ namespace maps
 		TSequenceBeacons		m_beacons;  //!< The individual beacons
 
 		// See docs in base class
-		virtual void  internal_clear();
-		virtual bool  internal_insertObservation( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D *robotPose = NULL );
-		double	 internal_computeObservationLikelihood( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D &takenFrom );
+		virtual void  internal_clear() MRPT_OVERRIDE;
+		virtual bool  internal_insertObservation( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D *robotPose = NULL ) MRPT_OVERRIDE;
+		double	 internal_computeObservationLikelihood( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D &takenFrom ) MRPT_OVERRIDE;
 
 	public:
 		/** Constructor */
@@ -103,7 +103,7 @@ namespace maps
 				const mrpt::poses::CPose3D		&otherMapPose,
 				float				maxDistForCorr = 0.10f,
 				float				maxMahaDistForCorr = 2.0f
-				) const;
+				) const MRPT_OVERRIDE;
 
 		 /** With this struct options are provided to the likelihood computations.
 		  */
@@ -198,7 +198,7 @@ namespace maps
 			const mrpt::poses::CPose2D         & otherMapPose,
 			mrpt::utils::TMatchingPairList     & correspondences,
 			const TMatchingParams & params,
-			TMatchingExtraResults & extraResults ) const ;
+			TMatchingExtraResults & extraResults ) const MRPT_OVERRIDE;
 
 		/** Perform a search for correspondences between "this" and another lansmarks map:
 		  *  Firsly, the landmarks' descriptor is used to find correspondences, then inconsistent ones removed by
@@ -225,7 +225,7 @@ namespace maps
 
 		/** Returns true if the map is empty/no observation has been inserted.
 		   */
-		bool  isEmpty() const;
+		bool isEmpty() const MRPT_OVERRIDE;
 
 		/** Simulates a reading toward each of the beacons in the landmarks map, if any.
 		  * \param in_robotPose This robot pose is used to simulate the ranges to each beacon.
@@ -244,8 +244,7 @@ namespace maps
 		  *		- "filNamePrefix"+"_3D.3DScene": A 3D scene with a "ground plane grid" and the set of ellipsoids in 3D.
 		  *		- "filNamePrefix"+"_covs.m": A textual representation (see saveToTextFile)
 		  */
-		void  saveMetricMapRepresentationToFile(
-			const std::string	&filNamePrefix ) const;
+		void  saveMetricMapRepresentationToFile(const std::string	&filNamePrefix ) const MRPT_OVERRIDE;
 
 		/** Save a text file with a row per beacon, containing this 11 elements:
 		  *  - X Y Z: Mean values
@@ -255,7 +254,7 @@ namespace maps
 		  */
 		void saveToTextFile(const std::string &fil) const;
 
-		void  getAs3DObject ( mrpt::opengl::CSetOfObjectsPtr	&outObj ) const; //!< Returns a 3D object representing the map.
+		void getAs3DObject(mrpt::opengl::CSetOfObjectsPtr &outObj) const MRPT_OVERRIDE; //!< Returns a 3D object representing the map.
 
 		const CBeacon * getBeaconByID( CBeacon::TBeaconID  id ) const; //!< Returns a pointer to the beacon with the given ID, or NULL if it does not exist.
 		CBeacon * getBeaconByID( CBeacon::TBeaconID  id ); 		//!< Returns a pointer to the beacon with the given ID, or NULL if it does not exist.

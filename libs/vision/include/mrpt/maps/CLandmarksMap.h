@@ -485,7 +485,7 @@ namespace maps
 
 		/** Returns true if the map is empty/no observation has been inserted.
 		   */
-		bool  isEmpty() const;
+		bool isEmpty() const MRPT_OVERRIDE;
 
 		/** Simulates a noisy reading toward each of the beacons in the landmarks map, if any.
 		  * \param in_robotPose This robot pose is used to simulate the ranges to each beacon.
@@ -533,13 +533,12 @@ namespace maps
 		  *		- "filNamePrefix"+"_3D.m": A script for MATLAB for drawing landmarks as 3D ellipses.
 		  *		- "filNamePrefix"+"_3D.3DScene": A 3D scene with a "ground plane grid" and the set of ellipsoids in 3D.
 		  */
-		void  saveMetricMapRepresentationToFile(
-			const std::string	&filNamePrefix ) const;
+		void  saveMetricMapRepresentationToFile(const std::string &filNamePrefix) const MRPT_OVERRIDE;
 
 		/** Returns a 3D object representing the map.
 		  * \sa COLOR_LANDMARKS_IN_3DSCENES
 		  */
-		void  getAs3DObject ( mrpt::opengl::CSetOfObjectsPtr	&outObj ) const;
+		void getAs3DObject(mrpt::opengl::CSetOfObjectsPtr &outObj) const MRPT_OVERRIDE;
 
 		// See base docs
 		virtual void  auxParticleFilterCleanUp();

@@ -61,11 +61,11 @@ namespace obs
 		double sample_rate; //!< The sampling rate, in samples per second per channel
 
 		/** Not used in this class */
-		void getSensorPose( mrpt::poses::CPose3D & ) const { }
+		void getSensorPose( mrpt::poses::CPose3D & ) const  MRPT_OVERRIDE{ }
 		/** Not used in this class */
-		void setSensorPose( const mrpt::poses::CPose3D & ) { }
+		void setSensorPose( const mrpt::poses::CPose3D & ) MRPT_OVERRIDE { }
 		// See base class docs
-		virtual void getDescriptionAsText(std::ostream &o) const;
+		void getDescriptionAsText(std::ostream &o) const MRPT_OVERRIDE;
 
 	}; // End of class def.
 	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CObservationRawDAQ , CObservation, OBS_IMPEXP)

@@ -60,8 +60,7 @@ namespace mrpt
 			/** Triangle array. */
 			std::vector<TTriangle>	m_triangles;
 
-			/** Render */
-			void  render_texturedobj( ) const;
+			void  render_texturedobj( ) const MRPT_OVERRIDE;
 
 		public:
 			void clearTriangles( ) { m_triangles.clear(); CRenderizableDisplayList::notifyChange(); }
@@ -71,9 +70,7 @@ namespace mrpt
 			void insertTriangle( const TTriangle &t ) { m_triangles.push_back(t); CRenderizableDisplayList::notifyChange(); }
 
 
-			/** Ray Trace
-			  */
-			virtual bool traceRay( const mrpt::poses::CPose3D &o,double &dist ) const;
+			virtual bool traceRay( const mrpt::poses::CPose3D &o,double &dist ) const MRPT_OVERRIDE;
 
 		private:
 			/** Constructor

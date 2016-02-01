@@ -288,9 +288,7 @@ namespace mrpt
 			  *
 			  * \note Examples of map definitions can be found in the '.ini' files provided in the demo directories: "share/mrpt/config-files/"
 			  */
-			void  loadFromConfigFile(
-				const mrpt::utils::CConfigFileBase  &source,
-				const std::string &sectionName);
+			void  loadFromConfigFile(const mrpt::utils::CConfigFileBase  &source,const std::string &sectionName) MRPT_OVERRIDE;
 
 			/** This method dumps the options of the multi-metric map AND those of every internal map. */
 			void  dumpToTextStream(mrpt::utils::CStream	&out) const MRPT_OVERRIDE;

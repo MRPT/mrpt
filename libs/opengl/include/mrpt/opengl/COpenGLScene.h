@@ -98,9 +98,8 @@ namespace mrpt
 			  */
 			COpenGLViewportPtr getViewport( const std::string &viewportName = std::string("main") ) const;
 
-			/** Render this scene.
-			  */
-			void  render() const;
+			/** Render this scene */
+			void render() const;
 
 			size_t  viewportsCount() const { return m_viewports.size(); }
 
