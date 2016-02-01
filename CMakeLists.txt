@@ -28,7 +28,7 @@ if(COMMAND cmake_policy)
 	# We don't want to mix relative and absolute paths in linker lib lists.
 	cmake_policy(SET CMP0003 NEW)
 	if(POLICY CMP0053)
-		cmake_policy(SET CMP0053 OLD) # Simplify variable reference and escape sequence evaluation. 
+		cmake_policy(SET CMP0053 OLD) # Simplify variable reference and escape sequence evaluation.
 	endif()
 	if(POLICY CMP0026)
 		cmake_policy(SET CMP0026 OLD) # Allow using the LOCATION target property.
@@ -39,7 +39,7 @@ if(COMMAND cmake_policy)
 	if(POLICY CMP0043)
 		cmake_policy(SET CMP0043 OLD) #  Ignore COMPILE_DEFINITIONS_<Config> properties.
 	endif()
-	
+
 endif()
 # -------------------------
 
@@ -80,7 +80,7 @@ include(cmakemodules/script_detect_clang.cmake REQUIRED)     # Detect clang comp
 
 
 # ------------------------------------------
-# We want libraries to be named "libXXX" 
+# We want libraries to be named "libXXX"
 #  and "libXXX-dbg" in all compilers:
 # ------------------------------------------
 set(CMAKE_DEBUG_POSTFIX  "-dbg")
@@ -216,7 +216,7 @@ SET(MRPT_HAS_ASSERT ON CACHE BOOL "Enable ASSERT_ statements (disable it for spe
 #   "Clasic" function & headers detection:
 include(cmakemodules/script_detect_functions_headers.cmake REQUIRED)
 
-# MSVC only: 
+# MSVC only:
 # ===================================================
 IF(MSVC)
 	# Enable Parallel compilation?
@@ -250,7 +250,7 @@ include(cmakemodules/script_phidget.cmake REQUIRED)     # Support for phidget In
 include(cmakemodules/script_videre_svs.cmake REQUIRED)  # Support for Videre Design stereo camera:
 include(cmakemodules/script_ftdi.cmake REQUIRED)        # Check for the FTDI headers (Linux only, in win32 we use built-in header & dynamic DLL load):
 include(cmakemodules/script_inotify.cmake REQUIRED)     # Check for the sys/inotify headers (Linux only, in win32 we use the equivalent API for file system monitoring):
-include(cmakemodules/script_gl_glut.cmake REQUIRED)     # Check for the GL,GLUT libraries 
+include(cmakemodules/script_gl_glut.cmake REQUIRED)     # Check for the GL,GLUT libraries
 include(cmakemodules/script_opencv.cmake REQUIRED)      # Check for the OpenCV libraries (via pkg-config, CMake, with different options)
 include(cmakemodules/script_openni2.cmake REQUIRED)     # Check for the OpenNI2 library
 include(cmakemodules/script_ffmpeg.cmake REQUIRED)      # Check for ffmpeg C libraries: libavcodec, libavutil, libavformat, libswscale
@@ -267,7 +267,7 @@ include(cmakemodules/script_SIMD.cmake REQUIRED)        # SSE2/SSE3/... optimiza
 include(cmakemodules/script_gtest.cmake REQUIRED)       # Unit testing lib
 include(cmakemodules/script_clang.cmake REQUIRED)       # clang library (For UTFConvert)
 include(cmakemodules/script_national_instruments.cmake REQUIRED)  # NI C library
-include(cmakemodules/script_sift_hess.cmake REQUIRED)  # SIFT Hess implementation 
+include(cmakemodules/script_sift_hess.cmake REQUIRED)  # SIFT Hess implementation
 include(cmakemodules/script_xsens.cmake REQUIRED)      # XSens Motion trackers / IMU drivers
 include(cmakemodules/script_flycapture2.cmake REQUIRED)# Check for PointGreyResearch (PGR) FlyCapture2 library
 include(cmakemodules/script_triclops.cmake REQUIRED)	# Check for PointGreyResearch (PGR) Triclops library
@@ -381,14 +381,14 @@ SET(MRPT_ENABLE_PROFILING OFF CACHE BOOL "Enable profiling (add -g -pg in GCC/CL
 
 IF(MSVC)
 	SET(EXTRA_CPP_FLAGS "/W3 /D _CRT_SECURE_NO_DEPRECATE /D _CRT_NONSTDC_NO_DEPRECATE")
-	
+
 	# "In earlier versions of Visual C++, the compiler used several discrete
 	#   heaps, and each had a finite limit. Currently, the compiler dynamically
 	#   grows the heaps as necessary up to a total heap size limit, and requires
 	#   a fixed-size buffer only to construct precompiled headers. Consequently,
 	#   the /Zm compiler option is rarely necessary."
  	# http://msdn.microsoft.com/en-us/library/bdscwf1c.aspx
-	# 
+	#
 	#if(MSVC_VERSION LESS 1700) # <=VS 2012 (from my experience, in VS2012 this isn't needed).
 		SET(EXTRA_CPP_FLAGS "${EXTRA_CPP_FLAGS} /Zm1000")
 	#endif(MSVC_VERSION LESS 1700)
@@ -410,11 +410,11 @@ IF(MSVC)
 		SET(EXTRA_CPP_FLAGS "${EXTRA_CPP_FLAGS} /arch:SSE2")
 	ENDIF(CMAKE_MRPT_HAS_SSE2 AND NOT CMAKE_MRPT_WORD_SIZE EQUAL 64)
 
-	# SSE3: any flag needed? 
+	# SSE3: any flag needed?
 
 	# Fast math:
 	#SET(EXTRA_CPP_FLAGS "${EXTRA_CPP_FLAGS} /fp:fast")
-	
+
 	# Profiling?
 	IF(MRPT_ENABLE_PROFILING)
 		SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /PROFILE ")
@@ -425,12 +425,7 @@ ENDIF(MSVC)
 # GNU GCC options ================================
 IF(CMAKE_COMPILER_IS_GNUCXX)
 	# Wall & pedantic?
-	#IF(APPLE)
-		SET(MRPT_BUILD_GCC_PEDANTIC_DEFAULT "OFF")
-	#ELSE(APPLE)
-	#	SET(MRPT_BUILD_GCC_PEDANTIC_DEFAULT "ON")
-	#ENDIF(APPLE)
-
+	SET(MRPT_BUILD_GCC_PEDANTIC_DEFAULT "OFF")
 	SET( MRPT_BUILD_GCC_PEDANTIC ${MRPT_BUILD_GCC_PEDANTIC_DEFAULT} CACHE BOOL "Enable pedantic error detection (with GCC only)")
 	MARK_AS_ADVANCED(MRPT_BUILD_GCC_PEDANTIC)
 
@@ -695,8 +690,13 @@ ENDIF( BUILD_TESTING)
 
 include(cmakemodules/script_create_MRPTConfig.cmake REQUIRED)  # Generate the MRPTConfig.cmake & configure files
 
+#-----------------------------------
+# The python bindings
+# *Note*: This must be AFTER the generation of the MRPTConfig.cmake files
+include(cmakemodules/script_python_bindings.cmake REQUIRED)     # Support for python
+
 # Prepare CPack params for building binary packages (has to be after the apps/)
-include(cmakemodules/script_setup_cpack.cmake REQUIRED)			
+include(cmakemodules/script_setup_cpack.cmake REQUIRED)
 
 # ----------------------------------------------------------------------------
 #  Hide some variables to the user, just show the important variables:
@@ -723,7 +723,7 @@ IF (CMAKE_MRPT_USE_DEB_POSTFIXS AND CMAKE_BUILD_TYPE STREQUAL "Debug")
 ENDIF (CMAKE_MRPT_USE_DEB_POSTFIXS AND CMAKE_BUILD_TYPE STREQUAL "Debug")
 
 # Build list of files to install, packages, etc.
-include(cmakemodules/script_install_commands.cmake REQUIRED)  
+include(cmakemodules/script_install_commands.cmake REQUIRED)
 
 # Summary
 include(cmakemodules/script_show_final_summary.cmake REQUIRED)
