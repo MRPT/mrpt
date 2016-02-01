@@ -2,7 +2,7 @@
 #include "bindings.h"
 
 /* MRPT */
-#include <mrpt/nav/planners/CPathPlanningCircularRobot.h>
+#include <mrpt/nav/planners/PlannerSimple2D.h>
 #include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/poses/CPose2D.h>
 
@@ -12,8 +12,8 @@ using namespace mrpt::nav;
 using namespace mrpt::poses;
 using namespace mrpt::maps;
 
-// CPathPlanningCircularRobot
-tuple CPathPlanningCircularRobot_computePath(CPathPlanningCircularRobot &self, COccupancyGridMap2D &theMap, CPose2D &origin, CPose2D &target)
+// PlannerSimple2D
+tuple PlannerSimple2D_computePath(PlannerSimple2D &self, COccupancyGridMap2D &theMap, CPose2D &origin, CPose2D &target)
 {
     // function args
     std::deque<mrpt::math::TPoint2D> path;
@@ -31,20 +31,20 @@ tuple CPathPlanningCircularRobot_computePath(CPathPlanningCircularRobot &self, C
     ret_val.append(notFound);
     return tuple(ret_val);
 }
-// end of CPathPlanningCircularRobot
+// end of PlannerSimple2D
 
 
 // exporter
 void export_nav()
 {
-    // map namespace to be submodule of mrpt package
-    MAKE_SUBMODULE(nav)
+	// map namespace to be submodule of mrpt package
+	MAKE_SUBMODULE(nav)
 
-    // CPathPlanningCircularRobot
-    {
-        class_<CPathPlanningCircularRobot>("CPathPlanningCircularRobot", init<>())
-            .def("computePath", &CPathPlanningCircularRobot_computePath, "This method compute the optimal path for a circular robot, in the given occupancy grid map, from the origin location to a target point.")
-            .def_readwrite("robotRadius", &CPathPlanningCircularRobot::robotRadius)
-        ;
-    }
+	// PlannerSimple2D
+	{
+		class_<PlannerSimple2D>("PlannerSimple2D", init<>())
+			.def("computePath", &PlannerSimple2D_computePath, "This method compute the optimal path for a circular robot, in the given occupancy grid map, from the origin location to a target point.")
+			.def_readwrite("robotRadius", &PlannerSimple2D::robotRadius)
+		;
+	}
 }

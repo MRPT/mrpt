@@ -134,7 +134,10 @@ SHOW_CONFIG_LINE_SYSTEM("yamlcpp (YAML file format)          " CMAKE_MRPT_HAS_YA
 MESSAGE(STATUS  "")
 
 MESSAGE(STATUS " _______________________ WRAPPERS/BINDINGS ______________________")
-SHOW_CONFIG_LINE_SYSTEM("Matlab / mex files " CMAKE_MRPT_HAS_MATLAB "[Version: ${MATLAB_VERSION}]")
+SHOW_CONFIG_LINE_SYSTEM("Matlab / mex files        " CMAKE_MRPT_HAS_MATLAB "[Version: ${MATLAB_VERSION}]")
+SHOW_CONFIG_LINE("Python bindings (pymrpt)  " CMAKE_MRPT_HAS_PYTHON_BINDINGS)
+SHOW_CONFIG_LINE(" - dep: Boost found?      " Boost_FOUND)
+SHOW_CONFIG_LINE(" - dep: PythonLibs found? " PYTHONLIBS_FOUND)
 MESSAGE(STATUS "")
 
 MESSAGE(STATUS " _____________________ HARDWARE & SENSORS _______________________")
@@ -163,11 +166,6 @@ SHOW_CONFIG_LINE_SYSTEM("xSENS MT 3rd generation             " CMAKE_MRPT_HAS_xS
 SHOW_CONFIG_LINE_SYSTEM("xSENS MT 4th generation             " CMAKE_MRPT_HAS_xSENS_MT4)
 SHOW_CONFIG_LINE_SYSTEM("Intersense sensors                  " CMAKE_MRPT_HAS_INTERSENSE)
 MESSAGE(STATUS  "")
-
-MESSAGE(STATUS " _________________________ BINDINGS _____________________________")
-SHOW_CONFIG_LINE("Build MRPT python bindings? (pymrpt)" CMAKE_MRPT_HAS_PYTHON_BINDINGS)
-SHOW_CONFIG_LINE("- dep: Boost found?                 " Boost_FOUND)
-SHOW_CONFIG_LINE("- dep: PythonLibs found?            " PYTHONLIBS_FOUND)
 
 # Final warnings:
 IF (NOT CMAKE_MRPT_HAS_OPENCV AND NOT DISABLE_OPENCV)
