@@ -62,7 +62,9 @@ namespace mrpt
 			  *   Notice that 3 different sections are read, of which "section" is only the prefix.
 			  *  \exception std::exception on missing fields
 			  */
-			void loadFromConfigFile(const std::string &section, const mrpt::utils::CConfigFileBase &cfg ) MRPT_OVERRIDE;
+			void loadFromConfigFile(const std::string &section, const mrpt::utils::CConfigFileBase &cfg );
+			/** \overload This signature is consistent with the rest of MRPT APIs */
+			inline void loadFromConfigFile(const mrpt::utils::CConfigFileBase &cfg,const std::string &section) { loadFromConfigFile(section,cfg); }
 
 			/** Dumps all the parameters as a multi-line string, with the same format than \a saveToConfigFile.  \sa saveToConfigFile */
 			std::string dumpAsText() const;
