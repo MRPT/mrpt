@@ -176,7 +176,7 @@ namespace maps
 				const mrpt::poses::CPose3D							&otherMapPose,
 				float									maxDistForCorr = 0.10f,
 				float									maxMahaDistForCorr = 2.0f
-				) const;
+				) const MRPT_OVERRIDE;
 
 		 /** With this struct options are provided to the observation insertion process.
 		  */
@@ -541,7 +541,7 @@ namespace maps
 		void getAs3DObject(mrpt::opengl::CSetOfObjectsPtr &outObj) const MRPT_OVERRIDE;
 
 		// See base docs
-		virtual void  auxParticleFilterCleanUp();
+		virtual void  auxParticleFilterCleanUp() MRPT_OVERRIDE;
 
 		MAP_DEFINITION_START(CLandmarksMap,VISION_IMPEXP)
 			typedef std::pair<mrpt::math::TPoint3D,unsigned int> TPairIdBeacon;

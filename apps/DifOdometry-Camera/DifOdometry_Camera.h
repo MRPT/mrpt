@@ -48,7 +48,7 @@ public:
 	void closeCamera();
 
 	/** Capture a new depth frame */
-	void loadFrame();
+	void loadFrame() MRPT_OVERRIDE;
 
 	/** Create a file to save the estimated trajectory */
 	void CreateResultsFile();

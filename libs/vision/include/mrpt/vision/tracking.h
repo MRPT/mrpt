@@ -233,9 +233,9 @@ namespace mrpt
 			inline CFeatureTracker_KL(mrpt::utils::TParametersDouble extraParams) : CGenericFeatureTracker(extraParams)	{ }
 
 		protected:
-			virtual void trackFeatures_impl(const mrpt::utils::CImage &old_img,const mrpt::utils::CImage &new_img,vision::CFeatureList &inout_featureList );
-			virtual void trackFeatures_impl(const mrpt::utils::CImage &old_img,const mrpt::utils::CImage &new_img,TSimpleFeatureList  &inout_featureList );
-			virtual void trackFeatures_impl(const mrpt::utils::CImage &old_img,const mrpt::utils::CImage &new_img,TSimpleFeaturefList  &inout_featureList );
+			virtual void trackFeatures_impl(const mrpt::utils::CImage &old_img,const mrpt::utils::CImage &new_img,vision::CFeatureList &inout_featureList ) MRPT_OVERRIDE;
+			virtual void trackFeatures_impl(const mrpt::utils::CImage &old_img,const mrpt::utils::CImage &new_img,TSimpleFeatureList  &inout_featureList ) MRPT_OVERRIDE;
+			virtual void trackFeatures_impl(const mrpt::utils::CImage &old_img,const mrpt::utils::CImage &new_img,TSimpleFeaturefList  &inout_featureList ) MRPT_OVERRIDE;
 
 		private:
 			template <typename FEATLIST>
