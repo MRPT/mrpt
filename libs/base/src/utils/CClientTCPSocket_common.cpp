@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -201,6 +201,7 @@ void CClientTCPSocket::connect(
 	if (!net::DNS_resolve_async(remotePartAddress,solved_IP,DNS_LOOKUP_TIMEOUT_MS))
 		THROW_EXCEPTION_CUSTOM_MSG1("DNS lookup failed for '%s'",remotePartAddress.c_str());
 
+
 	// Fill out from IP address text:
 	otherAddress.sin_addr.s_addr = inet_addr(solved_IP.c_str());
 	if (INADDR_NONE==otherAddress.sin_addr.s_addr)
@@ -217,9 +218,16 @@ void CClientTCPSocket::connect(
 	if (-1==fcntl(m_hSock, F_SETFL, oldflags))  THROW_EXCEPTION( "Error entering non-blocking mode with fcntl()." );
 #endif
 
-	int r = ::connect( m_hSock , (struct sockaddr *)&otherAddress,sizeof(otherAddress));
 	// Try to connect:
-	if (r < 0 && errno != EINPROGRESS) THROW_EXCEPTION( format("Error connecting to %s:%hu. Error: %s", remotePartAddress.c_str(), remotePartTCPPort, strerror(errno)));
+	int r = ::connect( m_hSock , (struct sockaddr *)&otherAddress,sizeof(otherAddress));
+#ifdef MRPT_OS_WINDOWS
+	int er = WSAGetLastError();
+	if (r < 0 && er != WSAEINPROGRESS && er != WSAEWOULDBLOCK)
+#else
+	int er = errno;
+	if (r < 0 && er != EINPROGRESS)
+#endif
+		THROW_EXCEPTION( format("Error connecting to %s:%hu. Error: %s [%d]", remotePartAddress.c_str(), remotePartTCPPort, strerror(er),er));
 
 	// Wait for connect:
 	fd_set socket_set;

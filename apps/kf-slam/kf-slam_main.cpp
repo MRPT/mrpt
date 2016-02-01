@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -753,7 +753,7 @@ void Run_KF_SLAM( CConfigFile &cfgFile, const std::string &rawlogFileName )
             cerr << "Ignoring the following error loading ground truth file: " << e.what() << endl;
         }
 
-        if (GT.getRowCount()>0 && LMs.size())
+        if (GT.getRowCount()>0 && !LMs.empty())
         {
             // Each row has:
             //   [0] [1] [2]  [6]

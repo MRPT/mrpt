@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -53,9 +53,14 @@ namespace mrpt
 		  *
 		  *  \endcode
 		  *
+		  *  The next picture summarizes existing MRPT classes related to GPS / GNSS devices (CGPSInterface, CNTRIPEmitter, CGPS_NTRIP):
+		  *
+		  *  <div align=center> <img src="mrpt_gps_classes_usage.png"> </div>
+		  *
 		  *  \note Verbose debug info will be dumped to cout if the environment variable "MRPT_HWDRIVERS_VERBOSE" is set to "1", or if you call CGenericSensor::enableVerbose(true)
 		  *
 		  * \ingroup mrpt_hwdrivers_grp
+		  * \sa CGPSInterface, CNTRIPEmitter
 		  */
 		class HWDRIVERS_IMPEXP CGPS_NTRIP : public CGenericSensor
 		{
@@ -65,14 +70,10 @@ namespace mrpt
 			mrpt::hwdrivers::CGPSInterface  gps;
 			mrpt::hwdrivers::CNTRIPEmitter  ntrip;
 
-			/** Constructor. See mrpt::hwdrivers::CGPSInterface for the meaning of params. */
-			CGPS_NTRIP( int BUFFER_LENGTH = 500, mrpt::hwdrivers::CSerialPort *outPort = NULL, mrpt::synch::CCriticalSection *csOutPort = NULL);
+			CGPS_NTRIP();            //!< Constructor
+			virtual ~CGPS_NTRIP();   //!< Destructor
 
-			/** Destructor */
-			virtual ~CGPS_NTRIP();
-
-			// See docs in parent class
-			void  doProcess();
+			void  doProcess();  // See docs in parent class
 
 			virtual void initialize();
 		protected:

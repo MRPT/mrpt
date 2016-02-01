@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -12,6 +12,7 @@
 #include <mrpt/utils/CSerializable.h>
 #include <mrpt/obs/CObservation.h>
 #include <mrpt/poses/CPose3D.h>
+#include <mrpt/utils/aligned_containers.h>
 
 namespace mrpt
 {
@@ -44,16 +45,13 @@ namespace obs
 
 			MRPT_MAKE_ALIGNED_OPERATOR_NEW  // Required because we contain Eigen matrices
 		};
-		std::deque<TMeasurement> sensedFeatures; //!< The list of observed features
+		mrpt::aligned_containers<TMeasurement>::deque_t sensedFeatures; //!< The list of observed features
 
 		mrpt::poses::CPose3D sensorPose; //!< The pose of the sensor on the robot/vehicle
 
-		// See base class docs.
-		void getSensorPose( mrpt::poses::CPose3D &out_sensorPose ) const;
-		// See base class docs.
-		void setSensorPose( const mrpt::poses::CPose3D &newSensorPose );
-		// See base class docs
-		virtual void getDescriptionAsText(std::ostream &o) const;
+		void getSensorPose( mrpt::poses::CPose3D &out_sensorPose ) const MRPT_OVERRIDE;// See base class docs.
+		void setSensorPose( const mrpt::poses::CPose3D &newSensorPose ) MRPT_OVERRIDE;// See base class docs.
+		void getDescriptionAsText(std::ostream &o) const MRPT_OVERRIDE;// See base class docs
 
 	}; // End of class def.
 	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CObservation6DFeatures, CObservation, OBS_IMPEXP  )

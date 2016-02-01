@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -20,7 +20,7 @@ namespace Eigen { template<class T> class aligned_allocator; }
 
 namespace mrpt
 {
-	/** Helper types for STL containers with Eigen memory allocators. */
+	/** Helper types for STL containers with Eigen memory allocators.  (in #include <mrpt/utils/aligned_containers.h>)  */
 	template <class TYPE1,class TYPE2=TYPE1>
 	struct aligned_containers
 	{

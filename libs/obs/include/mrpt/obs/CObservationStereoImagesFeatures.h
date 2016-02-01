@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -89,17 +89,17 @@ namespace obs
 		std::vector<TStereoImageFeatures> theFeatures;
 
 		// See base class docs
-		void getSensorPose( mrpt::poses::CPose3D &out_sensorPose ) const { out_sensorPose = mrpt::poses::CPose3D(cameraPoseOnRobot); }
+		void getSensorPose( mrpt::poses::CPose3D &out_sensorPose ) const MRPT_OVERRIDE { out_sensorPose = mrpt::poses::CPose3D(cameraPoseOnRobot); }
 		// See base class docs
 		void getSensorPose( mrpt::poses::CPose3DQuat &out_sensorPose ) const { out_sensorPose = cameraPoseOnRobot; }
 		// See base class docs
-		virtual void getDescriptionAsText(std::ostream &o) const;
+		void getDescriptionAsText(std::ostream &o) const MRPT_OVERRIDE;
 
 		/** A general method to change the sensor pose on the robot in a mrpt::poses::CPose3D form.
 		  *  Note that most sensors will use the full (6D) CPose3DQuat, but see the derived classes for more details or special cases.
 		  * \sa getSensorPose
 		  */
-		inline void setSensorPose( const mrpt::poses::CPose3D &newSensorPose ) { cameraPoseOnRobot = mrpt::poses::CPose3DQuat(newSensorPose); }
+		inline void setSensorPose( const mrpt::poses::CPose3D &newSensorPose ) MRPT_OVERRIDE { cameraPoseOnRobot = mrpt::poses::CPose3DQuat(newSensorPose); }
 
 		/** A general method to change the sensor pose on the robot in a CPose3DQuat form.
 		  *  Note that most sensors will use the full (6D) CPose3DQuat, but see the derived classes for more details or special cases.

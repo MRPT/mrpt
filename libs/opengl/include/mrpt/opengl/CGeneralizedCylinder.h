@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -123,12 +123,12 @@ namespace opengl	{
 		  * Render.
 		  * \sa mrpt::opengl::CRenderizable
 		  */
-		void render_dl() const;
+		void render_dl() const MRPT_OVERRIDE;
 		/**
 		  * Ray tracing.
 		  * \sa mrpt::opengl::CRenderizable.
 		  */
-		virtual bool traceRay(const mrpt::poses::CPose3D &o,double &dist) const;
+		bool traceRay(const mrpt::poses::CPose3D &o,double &dist) const MRPT_OVERRIDE;
 		/**
 		  * Get axis's spatial coordinates.
 		  */
@@ -317,7 +317,7 @@ namespace opengl	{
 		void updatePolys() const;
 
 		/** Evaluates the bounding box of this object (including possible children) in the coordinate frame of the object parent. */
-		virtual void getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const;
+		void getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const MRPT_OVERRIDE;
 
 	private:
 		/**

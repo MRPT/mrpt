@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -11,6 +11,7 @@
 
 #include <mrpt/nav/reactive/CReactiveNavigationSystem3D.h>
 #include <mrpt/nav/tpspace/motion_planning_utils.h>
+#include <mrpt/poses/CPose3D.h>
 #include <typeinfo>  // For typeid()
 
 using namespace mrpt;
@@ -85,8 +86,7 @@ void CReactiveNavigationSystem3D::loadConfigFile(const mrpt::utils::CConfigFileB
 
 	// Load config from INI file:
 	// ------------------------------------------------------------
-
-	robotName = ini.read_string("ROBOT_CONFIG","Name", "", true );
+	robotName = ini.read_string("ROBOT_CONFIG","Name", "MyRobot", false );
 
 	unsigned int num_levels;
 	vector <float> xaux,yaux;
@@ -184,7 +184,6 @@ void CReactiveNavigationSystem3D::loadConfigFile(const mrpt::utils::CConfigFileB
 	printf_debug("\tLOADED CONFIGURATION:\n");
 	printf_debug("-------------------------------------------------------------\n");
 
-	printf_debug("  Robot name \t\t\t=%s\n",robotName.c_str());
 	ASSERT_(!m_holonomicMethod.empty())
 	printf_debug("  Holonomic method \t\t= %s\n",typeid(m_holonomicMethod[0]).name());
 	printf_debug("  PTG Count\t\t\t= %u\n", num_ptgs );

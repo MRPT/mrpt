@@ -2,13 +2,13 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
 #include <mrpt/maps/COccupancyGridMap2D.h>
-#include <mrpt/nav/planners/CPathPlanningCircularRobot.h>
+#include <mrpt/nav/planners/PlannerSimple2D.h>
 #include <mrpt/gui/CDisplayWindow.h>
 #include <mrpt/utils/CTicTac.h>
 #include <mrpt/utils/CFileGZInputStream.h>
@@ -47,7 +47,7 @@ void TestPathPlanning()
 
 
 	// Find path:
-	CPathPlanningCircularRobot	pathPlanning;
+	PlannerSimple2D	pathPlanning;
 	pathPlanning.robotRadius = 0.30f;
 
 	std::deque<TPoint2D>		thePath;

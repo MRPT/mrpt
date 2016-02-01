@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -16,11 +16,14 @@
 #include <mrpt/math/KDTreeCapable.h>
 #include <mrpt/obs/CSinCosLookUpTableFor2DScans.h>
 #include <mrpt/math/lightweight_geom_data.h>
+#include <mrpt/math/CMatrixFixedNumeric.h>
 #include <mrpt/utils/PLY_import_export.h>
 #include <mrpt/obs/obs_frwds.h>
-
 #include <mrpt/maps/link_pragmas.h>
 #include <mrpt/utils/adapters.h>
+
+// Add for declaration of mexplus::from template specialization
+DECLARE_MEXPLUS_FROM( mrpt::maps::CPointsMap )
 
 namespace mrpt
 {
@@ -57,6 +60,8 @@ namespace maps
 	{
 		// This must be added to any CSerializable derived class:
 		DEFINE_VIRTUAL_SERIALIZABLE( CPointsMap )
+		// This must be added for declaration of MEX-related functions
+		DECLARE_MEX_CONVERSION
 
 	protected:
 		/** Helper struct used for \a internal_loadFromRangeScan2D_prepareOneRange() */
@@ -74,7 +79,7 @@ namespace maps
 		struct MAPS_IMPEXP TLaserRange3DInsertContext {
 			TLaserRange3DInsertContext(const mrpt::obs::CObservation3DRangeScan  &_rangeScan) : HM(mrpt::math::UNINITIALIZED_MATRIX), rangeScan(_rangeScan)
 			{ }
-		 mrpt::math::CMatrixDouble44	HM;  //!< Homog matrix of the local sensor pose within the robot
+			mrpt::math::CMatrixDouble44	HM;  //!< Homog matrix of the local sensor pose within the robot
 			const mrpt::obs::CObservation3DRangeScan  &rangeScan;
 			float scan_x, scan_y,scan_z; //!< In \a internal_loadFromRangeScan3D_prepareOneRange, these are the local coordinates of the scan points being inserted right now.
 			std::vector<float>         fVars;  //!< Extra variables to be used as desired by the derived class.
@@ -159,10 +164,8 @@ namespace maps
 		 {
 			/** Initilization of default parameters */
 			TInsertionOptions( );
-			/** See utils::CLoadableOptions */
-			void  loadFromConfigFile(const mrpt::utils::CConfigFileBase  &source,const std::string &section);
-			/** See utils::CLoadableOptions */
-			void  dumpToTextStream(mrpt::utils::CStream	&out) const;
+			void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) MRPT_OVERRIDE; // See base docs
+			void dumpToTextStream(mrpt::utils::CStream &out) const MRPT_OVERRIDE; // See base docs
 
 			float   minDistBetweenLaserPoints;   //!< The minimum distance between points (in 3D): If two points are too close, one of them is not inserted into the map. Default is 0.02 meters.
 			bool    addToExistingPointsMap;      //!< Applicable to "loadFromRangeScan" only! If set to false, the points from the scan are loaded, clearing all previous content. Default is false.
@@ -189,14 +192,8 @@ namespace maps
 			 */
 			TLikelihoodOptions( );
 			virtual ~TLikelihoodOptions() {}
-
-			/** See utils::CLoadableOptions */
-			void  loadFromConfigFile(
-				const mrpt::utils::CConfigFileBase  &source,
-				const std::string &section);
-
-			/** See utils::CLoadableOptions */
-			void  dumpToTextStream(mrpt::utils::CStream	&out) const;
+			void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) MRPT_OVERRIDE; // See base docs
+			void dumpToTextStream(mrpt::utils::CStream &out) const MRPT_OVERRIDE; // See base docs
 
 			void writeToStream(mrpt::utils::CStream &out) const;		//!< Binary dump to stream - for usage in derived classes' serialization
 			void readFromStream(mrpt::utils::CStream &in);			//!< Binary dump to stream - for usage in derived classes' serialization
@@ -263,11 +260,8 @@ namespace maps
 		 */
 		bool  save3D_to_text_file(const std::string &file)const;
 
-		/** This virtual method saves the map to a file "filNamePrefix"+< some_file_extension >, as an image or in any other applicable way (Notice that other methods to save the map may be implemented in classes implementing this virtual interface).
-		  */
-		void  saveMetricMapRepresentationToFile(
-			const std::string	&filNamePrefix
-			)const
+		/** This virtual method saves the map to a file "filNamePrefix"+< some_file_extension >, as an image or in any other applicable way (Notice that other methods to save the map may be implemented in classes implementing this virtual interface) */
+		void  saveMetricMapRepresentationToFile(const std::string	&filNamePrefix)const MRPT_OVERRIDE
 		{
 			std::string		fil( filNamePrefix + std::string(".txt") );
 			save3D_to_text_file( fil );
@@ -525,7 +519,7 @@ namespace maps
 			const mrpt::poses::CPose2D         & otherMapPose,
 			mrpt::utils::TMatchingPairList     & correspondences,
 			const TMatchingParams & params,
-			TMatchingExtraResults & extraResults ) const;
+			TMatchingExtraResults & extraResults ) const MRPT_OVERRIDE;
 
 		// See docs in base class
 		virtual void  determineMatching3D(
@@ -533,7 +527,7 @@ namespace maps
 			const mrpt::poses::CPose3D         & otherMapPose,
 			mrpt::utils::TMatchingPairList     & correspondences,
 			const TMatchingParams & params,
-			TMatchingExtraResults & extraResults ) const;
+			TMatchingExtraResults & extraResults ) const MRPT_OVERRIDE;
 
 		// See docs in base class
 		float  compute3DMatchingRatio(
@@ -541,7 +535,7 @@ namespace maps
 				const mrpt::poses::CPose3D							&otherMapPose,
 				float									maxDistForCorr = 0.10f,
 				float									maxMahaDistForCorr = 2.0f
-				) const;
+				) const MRPT_OVERRIDE;
 
 
 		/** Computes the matchings between this and another 3D points map.
@@ -566,7 +560,7 @@ namespace maps
 		/** Transform the range scan into a set of cartessian coordinated
 		  *	 points. The options in "insertionOptions" are considered in this method.
 		  * \param rangeScan The scan to be inserted into this map
-		  * \param robotPose The robot 3D pose, default to (0,0,0|0deg,0deg,0deg). It is used to compute the sensor pose relative to the robot actual pose. Recall sensor pose is embeded in the observation class.
+		  * \param robotPose Default to (0,0,0|0deg,0deg,0deg). Changes the frame of reference for the point cloud (i.e. the vehicle/robot pose in world coordinates).
 		  *
 		  *  Only ranges marked as "valid=true" in the observation will be inserted
 		  *
@@ -583,15 +577,26 @@ namespace maps
 		/** Overload of \a loadFromRangeScan() for 3D range scans (for example, Kinect observations).
 		  *
 		  * \param rangeScan The scan to be inserted into this map
-		  * \param robotPose The robot 3D pose, default to (0,0,0|0deg,0deg,0deg). It is used to compute the sensor pose relative to the robot actual pose. Recall sensor pose is embeded in the observation class.
+		  * \param robotPose Default to (0,0,0|0deg,0deg,0deg). Changes the frame of reference for the point cloud (i.e. the vehicle/robot pose in world coordinates).
 		  *
 		  *  \note Each derived class may enrich points in different ways (color, weight, etc..), so please refer to the description of the specific
 		  *         implementation of mrpt::maps::CPointsMap you are using.
 		  *  \note The actual generic implementation of this file lives in <src>/CPointsMap_crtp_common.h, but specific instantiations are generated at each derived class.
+		  * \sa loadFromVelodyneScan
 		  */
 		virtual void  loadFromRangeScan(
 				const mrpt::obs::CObservation3DRangeScan &rangeScan,
 				const mrpt::poses::CPose3D				  *robotPose = NULL ) = 0;
+
+		/** Like \a loadFromRangeScan() for Velodyne 3D scans. Points are translated and rotated according to the \a sensorPose field in the observation and, if provided, to the \a robotPose parameter.
+		  *
+		  * \param scan The Raw LIDAR data to be inserted into this map. It MUST contain point cloud data, generated by calling to \a mrpt::obs::CObservationVelodyneScan::generatePointCloud() prior to insertion in this map.
+		  * \param robotPose Default to (0,0,0|0deg,0deg,0deg). Changes the frame of reference for the point cloud (i.e. the vehicle/robot pose in world coordinates).
+		  * \sa loadFromRangeScan
+		  */
+		void loadFromVelodyneScan(
+			const mrpt::obs::CObservationVelodyneScan & scan,
+			const mrpt::poses::CPose3D				  *robotPose = NULL );
 
 		/** Insert the contents of another map into this one, fusing the previous content with the new one.
 		 *    This means that points very close to existing ones will be "fused", rather than "added". This prevents
@@ -622,7 +627,7 @@ namespace maps
 
 		/** Returns true if the map is empty/no observation has been inserted.
 		   */
-		virtual bool isEmpty() const;
+		virtual bool isEmpty() const MRPT_OVERRIDE;
 
 		/** STL-like method to check whether the map is empty: */
 		inline bool  empty() const { return isEmpty(); }
@@ -631,13 +636,13 @@ namespace maps
 		  *  The color of the points is given by the static variables: COLOR_3DSCENE_R,COLOR_3DSCENE_G,COLOR_3DSCENE_B
 		  * \sa mrpt::global_settings::POINTSMAPS_3DOBJECT_POINTSIZE
 		  */
-		virtual void  getAs3DObject ( mrpt::opengl::CSetOfObjectsPtr	&outObj ) const;
+		virtual void getAs3DObject( mrpt::opengl::CSetOfObjectsPtr &outObj ) const MRPT_OVERRIDE;
 
 		/** If the map is a simple points map or it's a multi-metric map that contains EXACTLY one simple points map, return it.
 			* Otherwise, return NULL
 			*/
-		virtual const mrpt::maps::CSimplePointsMap * getAsSimplePointsMap() const { return NULL; }
-		virtual       mrpt::maps::CSimplePointsMap * getAsSimplePointsMap()       { return NULL; }
+		virtual const mrpt::maps::CSimplePointsMap * getAsSimplePointsMap() const MRPT_OVERRIDE { return NULL; }
+		virtual       mrpt::maps::CSimplePointsMap * getAsSimplePointsMap()       MRPT_OVERRIDE { return NULL; }
 
 
 		/** This method returns the largest distance from the origin to any of the points, such as a sphere centered at the origin with this radius cover ALL the points in the map (the results are buffered, such as, if the map is not modified, the second call will be much faster than the first one). */
@@ -696,7 +701,7 @@ namespace maps
 
 
 		// See docs in base class
-		virtual double internal_computeObservationLikelihood( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D &takenFrom );
+		virtual double internal_computeObservationLikelihood( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D &takenFrom ) MRPT_OVERRIDE;
 
 		/** @name PCL library support
 			@{ */
@@ -830,11 +835,8 @@ namespace maps
 
 		/** This is a common version of CMetricMap::insertObservation() for point maps (actually, CMetricMap::internal_insertObservation),
 		  *   so derived classes don't need to worry implementing that method unless something special is really necesary.
-		  * See mrpt::maps::CPointsMap for the enumeration of types of observations which are accepted.
-		  */
-		bool  internal_insertObservation(
-			const mrpt::obs::CObservation	*obs,
-			const mrpt::poses::CPose3D *robotPose);
+		  * See mrpt::maps::CPointsMap for the enumeration of types of observations which are accepted. */
+		bool  internal_insertObservation(const mrpt::obs::CObservation *obs,const mrpt::poses::CPose3D *robotPose) MRPT_OVERRIDE;
 
 		/** Helper method for ::copyFrom() */
 		void  base_copyFrom(const CPointsMap &obj);
@@ -843,32 +845,19 @@ namespace maps
 		/** @name PLY Import virtual methods to implement in base classes
 			@{ */
 		/** In a base class, reserve memory to prepare subsequent calls to PLY_import_set_face */
-		virtual void PLY_import_set_face_count(const size_t N) { MRPT_UNUSED_PARAM(N); }
+		virtual void PLY_import_set_face_count(const size_t N) MRPT_OVERRIDE { MRPT_UNUSED_PARAM(N); }
 
 		/** In a base class, will be called after PLY_import_set_vertex_count() once for each loaded point.
 		  *  \param pt_color Will be NULL if the loaded file does not provide color info.
 		  */
-		virtual void PLY_import_set_vertex(const size_t idx, const mrpt::math::TPoint3Df &pt, const mrpt::utils::TColorf *pt_color = NULL);
+		virtual void PLY_import_set_vertex(const size_t idx, const mrpt::math::TPoint3Df &pt, const mrpt::utils::TColorf *pt_color = NULL) MRPT_OVERRIDE;
 		/** @} */
 
 		/** @name PLY Export virtual methods to implement in base classes
 			@{ */
-
-		/** In a base class, return the number of vertices */
-		virtual size_t PLY_export_get_vertex_count() const;
-
-		/** In a base class, return the number of faces */
-		virtual size_t PLY_export_get_face_count() const { return 0; }
-
-		/** In a base class, will be called after PLY_export_get_vertex_count() once for each exported point.
-		  *  \param pt_color Will be NULL if the loaded file does not provide color info.
-		  */
-		virtual void PLY_export_get_vertex(
-			const size_t idx,
-			mrpt::math::TPoint3Df &pt,
-			bool &pt_has_color,
-			mrpt::utils::TColorf &pt_color) const;
-
+		size_t PLY_export_get_vertex_count() const MRPT_OVERRIDE;
+		size_t PLY_export_get_face_count() const MRPT_OVERRIDE { return 0; }
+		virtual void PLY_export_get_vertex(const size_t idx,mrpt::math::TPoint3Df &pt,bool &pt_has_color,mrpt::utils::TColorf &pt_color) const MRPT_OVERRIDE;
 		/** @} */
 
 		/** The minimum and maximum height for a certain laser scan to be inserted into this map

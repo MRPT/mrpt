@@ -40,8 +40,8 @@ rm -fr $MRPT_UBUNTU_OUT_DIR/
 # -------------------------------------------------------------------
 # And now create the custom packages for each Ubuntu distribution:
 # -------------------------------------------------------------------
-LST_DISTROS=(utopic trusty precise )
-LST_EBDEIGN=(    0    0      1    )
+LST_DISTROS=(xenial wily vivid trusty precise )
+LST_EBDEIGN=( 0       0      0   0        1   )
 
 count=${#LST_DISTROS[@]}
 IDXS=$(seq 0 $(expr $count - 1))
@@ -63,9 +63,12 @@ do
 	# Call the standard "prepare_debian.sh" script:
 	# -------------------------------------------------------------------
 	cd ${MRPTSRC}
-	bash scripts/prepare_debian.sh -s -u -d ${DEBIAN_DIST} ${EMBED_EIGEN_FLAG} -c "${MRPT_PKG_CUSTOM_CMAKE_PARAMS}" 
+	bash scripts/prepare_debian.sh -s -u -h -d ${DEBIAN_DIST} ${EMBED_EIGEN_FLAG} -c "${MRPT_PKG_CUSTOM_CMAKE_PARAMS}" 
 
-	MRPT_SNAPSHOT_VERSION=`date +%Y%m%d`
+	MRPT_SNAPSHOT_VERSION=`date +%Y%m%d-%H%M`
+	MRPT_SNAPSHOT_VERSION+="-git-"
+	MRPT_SNAPSHOT_VERSION+=`git rev-parse --short=8 HEAD`
+	MRPT_SNAPSHOT_VERSION+="-"
 
 	echo "===== Distribution: ${DEBIAN_DIST}  ========="
 	cd ${MRPT_DEB_DIR}/mrpt-${MRPT_VER_MMP}~snapshot${MRPT_SNAPSHOT_VERSION}${DEBIAN_DIST}/debian

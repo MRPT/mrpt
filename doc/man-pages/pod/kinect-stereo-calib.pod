@@ -20,7 +20,7 @@ stereo images of a checkerboard are already saved to disk.
 
 =head1 BUGS
 
-Please report bugs at https://github.com/jlblancoc/mrpt/issues
+Please report bugs at https://github.com/MRPT/mrpt/issues
 
 =head1 SEE ALSO
 

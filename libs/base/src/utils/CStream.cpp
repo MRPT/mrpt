@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -553,7 +553,7 @@ void  CStream::sendMessage( const utils::CMessage &msg)
 	buf[nBytesTx++] = 0x69;
 	buf[nBytesTx++] = (unsigned char)(msg.type);
 	buf[nBytesTx++] = (unsigned char)msg.content.size();
-	if (msg.content.size())
+	if (!msg.content.empty())
 		memcpy(	buf+nBytesTx, &msg.content[0], msg.content.size() );
 	nBytesTx += (unsigned char)msg.content.size();
 	buf[nBytesTx++] = 0x96;
@@ -637,13 +637,13 @@ bool  CStream::receiveMessage( utils::CMessage &msg )
 					if( buf[0] == 0x69 )
 					{
 						msg.content.resize( buf[2] );
-						if (msg.content.size())
+						if (!msg.content.empty())
 							memcpy( &msg.content[0], &buf[3], buf[2] );
 					} // end if
 					if ( buf[0] == 0x79 )
 					{
 						msg.content.resize( nB );
-						if (msg.content.size())
+						if (!msg.content.empty())
 							memcpy( &msg.content[0], &buf[4], nB );
 					} // end if
 					return true;

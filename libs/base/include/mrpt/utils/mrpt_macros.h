@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -241,7 +241,8 @@
 		}
 	}
 	#define MRPT_COMPILE_TIME_ASSERT(expression) \
-			typedef char BOOST_JOIN(MRPT_CTA, __LINE__)[::mrpt::utils::compile_time_assert<(bool)(expression)>::value];
+			typedef char BOOST_JOIN(MRPT_CTA, __LINE__)[::mrpt::utils::compile_time_assert<(bool)(expression)>::value]; extern BOOST_JOIN(MRPT_CTA, __LINE__) BOOST_JOIN(MRPT_DUMMYVAR_CTA, __LINE__);
+
 #endif
 
 	/** Assert comparing two values, reporting their actual values upon failure */

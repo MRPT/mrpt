@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -13,10 +13,12 @@
 
 namespace mrpt
 {
-	/** This namespace contains classes for building a TP-Space Reactive Navigation System.
-	*/
   namespace nav
   {
+	/** \defgroup nav_reactive Reactive navigation classes
+	  * \ingroup mrpt_nav_grp
+	  */
+	  
 		/** See base class CAbstractPTGBasedReactive for a description and instructions of use.
 		* This particular implementation assumes a 2D robot shape.
 		*
@@ -30,8 +32,14 @@ namespace mrpt
 		* - 17/OCT/2007: Whole code updated to accomodate to MRPT 0.5 and make it portable to Linux.
 		* - DEC/2013: Code refactoring between this class and CAbstractHolonomicReactiveMethod
 		*
+		* This class requires a number of parameters which are usually provided via an external config (".ini") file.
+		* Alternatively, a memory-only object can be used to avoid physical files, see mrpt::utils::CConfigFileMemory.
+		*
+		* Next we provide a self-documented template config file: 
+		* \verbinclude reactive2d_config.ini
+		*
 		*  \sa CAbstractReactiveNavigationSystem, CParameterizedTrajectoryGenerator, CAbstractHolonomicReactiveMethod
-		*  \ingroup mrpt_nav_grp
+		*  \ingroup nav_reactive
 		*/
 		class NAV_IMPEXP  CReactiveNavigationSystem : public CAbstractPTGBasedReactive
 		{
@@ -48,9 +56,14 @@ namespace mrpt
 			 */
 			virtual ~CReactiveNavigationSystem();
 
-			/** Reload the configuration from a file
+			/** Reload the configuration from a file. See details in CReactiveNavigationSystem docs. 
+			 * \param[in] ini The main source of configuration parameters.
+			 * \param[in] robotIni Deprecated (kept for backwards compatibility). It is recommended to use the newer loadConfigFile() method with one argument in new code.
 			 */
 			void loadConfigFile(const mrpt::utils::CConfigFileBase &ini, const mrpt::utils::CConfigFileBase &robotIni);
+
+			/** Reload the configuration from a file. See details in CReactiveNavigationSystem docs. */
+			void loadConfigFile(const mrpt::utils::CConfigFileBase &ini);
 
 			/** Change the robot shape, which is taken into account for collision
 			  *  grid building.

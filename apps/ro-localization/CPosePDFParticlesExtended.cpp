@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -1236,7 +1236,7 @@ double  CPosePDFParticlesExtended::auxiliarComputeObservationLikelihood(
 			obserDumm = *obs;
 
 			// Introduce bias:
-			ASSERT_( obserDumm.sensedData.size() == x->state.size() );
+			ASSERT_( (int)obserDumm.sensedData.size() == (int)x->state.size() );
 			for (size_t k=0;k<size_t(obserDumm.sensedData.size());k++)
 				obserDumm.sensedData[k].sensedDistance -= x->state[k];
 

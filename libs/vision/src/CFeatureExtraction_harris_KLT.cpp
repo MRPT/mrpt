@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -61,27 +61,15 @@ void CFeatureExtraction::extractFeaturesKLT(
 
 		nDesiredFeatures <= 0 ? nPts = MAX_COUNT : nPts = nDesiredFeatures;
 
-		std::vector<CvPoint2D32f> points(nPts);
-
-		//CvImage eig, temp;									// temporary and auxiliary images
-
 #ifdef VERBOSE_TIMING
 		tictac.Tic();
 #endif
-		//eig.create( cvGetSize( cGrey ), 32, 1 );
-		//temp.create( cvGetSize( cGrey ), 32, 1 );
+
 #ifdef VERBOSE_TIMING
 		cout << "[KLT] Create: " << tictac.Tac()*1000.0f << endl;
 #endif
 		count = nPts;										// Number of points to find
 
-
-#if 0	// Temporary debug
-		{
-			static int i=0;
-			cvSaveImage( format("debug_map_%05i.bmp",++i).c_str(), cGrey);
-		}
-#endif
 		// -----------------------------------------------------------------
 		// Select good features with subpixel accuracy (USING HARRIS OR KLT)
 		// -----------------------------------------------------------------
@@ -90,9 +78,9 @@ void CFeatureExtraction::extractFeaturesKLT(
 #ifdef VERBOSE_TIMING
 		tictac.Tic();
 #endif
-		std::vector<cv::Point2f> corners;
+		std::vector<cv::Point2f> points;
 		cv::goodFeaturesToTrack(
-			cGrey,corners, nPts, 
+			cGrey,points, nPts, 
 			(double)options.harrisOptions.threshold,    // for rejecting weak local maxima ( with min_eig < threshold*max(eig_image) )
 			(double)options.harrisOptions.min_distance, // minimum distance between features
 			cv::noArray(), // mask
@@ -113,7 +101,7 @@ void CFeatureExtraction::extractFeaturesKLT(
 			tictac.Tic();
 #endif
 			// Subpixel interpolation
-			cv::cornerSubPix(cGrey,corners,
+			cv::cornerSubPix(cGrey,points,
 				cv::Size(3,3), cv::Size(-1,-1),
 				cv::TermCriteria( CV_TERMCRIT_ITER|CV_TERMCRIT_EPS, 10, 0.05 ));
 

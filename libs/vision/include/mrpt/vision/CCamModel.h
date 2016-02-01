@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -37,14 +37,8 @@ namespace mrpt
 			/** Default Constructor */
 			CCamModel();
 
-			/** This method loads the options from a ".ini"-like file or memory-stored string list.
-			 */
-			void  loadFromConfigFile(
-				const mrpt::utils::CConfigFileBase	&source,
-				const std::string		&section);
-
-			/** This method displays clearly all the contents of the structure in textual form, sending it to a CStream. */
-			void  dumpToTextStream( mrpt::utils::CStream		&out) const;
+			void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) MRPT_OVERRIDE; // See base docs
+			void dumpToTextStream(mrpt::utils::CStream &out) const MRPT_OVERRIDE; // See base docs
 
 			/** Constructor from a ini file
 			 */
@@ -253,7 +247,7 @@ namespace mrpt
 				tmp1[2]=square(tmp1[0])+square(tmp1[1]);
 				double sK1=square(K1);
 				double K12=sK1-K2;
-				double K123=-K1*sK1+2*K1*K2-K3;	//-K1³+2K1K2-K3
+				double K123=-K1*sK1+2*K1*K2-K3;	//-K1^3+2K1K2-K3
 				//tmp1[3]=1-K1*tmp1[2]+K12*square(tmp1[2]);
 				tmp1[3]=1+tmp1[2]*(-K1+tmp1[2]*(K12+tmp1[2]*K123));
 				J2.set_unsafe(2,0,2*tmp1[0]);

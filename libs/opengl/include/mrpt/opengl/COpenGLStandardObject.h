@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -46,14 +46,14 @@ namespace mrpt	{
 			  * Render.
 			  * \sa mrpt::opengl::CRenderizable
 			  */
-			virtual void render_dl() const;
+			virtual void render_dl() const MRPT_OVERRIDE;
 			/** Evaluates the bounding box of this object (including possible children) in the coordinate frame of the object parent. */
-			virtual void getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const;
+			void getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const MRPT_OVERRIDE;
 			/**
 			  * Ray Tracing. Will always return false, since objects of this class are not intended to have geometric properties.
 			  * \sa mrpt::opengl::CRenderizable
 			  */
-			virtual bool traceRay(const mrpt::poses::CPose3D &o,double &dist) const;
+			bool traceRay(const mrpt::poses::CPose3D &o,double &dist) const MRPT_OVERRIDE;
 			/**
 			  * Creation of object from type, vertices, chunk size and a list of enabled openGL flags.
 			  * \throw std::logic_error if the number of vertices is not an exact multiple of the chunk size.

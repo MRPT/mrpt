@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -390,22 +390,22 @@ double	 CLandmarksMap::internal_computeObservationLikelihood(
 		double					x,y;
 		double					earth_radius=6378137;
 
-		if ((o->has_RMC_datum)&&(likelihoodOptions.GPSOrigin.min_sat<=o->GGA_datum.satellitesUsed))
+		if ((o->has_RMC_datum)&&(likelihoodOptions.GPSOrigin.min_sat<=o->getMsgByClass<gnss::Message_NMEA_GGA>().fields.satellitesUsed))
 		{
 			//Compose GPS robot position
 
-			x = DEG2RAD((o->GGA_datum.longitude_degrees - likelihoodOptions.GPSOrigin.longitude))*earth_radius*1.03;
-			y = DEG2RAD((o->GGA_datum.latitude_degrees - likelihoodOptions.GPSOrigin.latitude))*earth_radius*1.15;
+			x = DEG2RAD((o->getMsgByClass<gnss::Message_NMEA_GGA>().fields.longitude_degrees - likelihoodOptions.GPSOrigin.longitude))*earth_radius*1.03;
+			y = DEG2RAD((o->getMsgByClass<gnss::Message_NMEA_GGA>().fields.latitude_degrees - likelihoodOptions.GPSOrigin.latitude))*earth_radius*1.15;
 			GPSpose.x( (x*cos(likelihoodOptions.GPSOrigin.ang)+y*sin(likelihoodOptions.GPSOrigin.ang)+likelihoodOptions.GPSOrigin.x_shift) );
 			GPSpose.y( (-x*sin(likelihoodOptions.GPSOrigin.ang)+y*cos(likelihoodOptions.GPSOrigin.ang)+likelihoodOptions.GPSOrigin.y_shift) );
-			GPSpose.z( (o->GGA_datum.altitude_meters- likelihoodOptions.GPSOrigin.altitude) );
+			GPSpose.z( (o->getMsgByClass<gnss::Message_NMEA_GGA>().fields.altitude_meters- likelihoodOptions.GPSOrigin.altitude) );
 			//std::cout<<"GPSpose calculo: "<<GPSpose.x<<","<<GPSpose.y<<"\n";
 
 			//-------------------------------//
-			//sigmaGPS = f(o->GGA_datum.satellitesUsed) //funcion del numero de satelites
+			//sigmaGPS = f(o->getMsgByClass<gnss::Message_NMEA_GGA>().fields.satellitesUsed) //funcion del numero de satelites
 			//-------------------------------//
 
-			//std::cout<<"datos de longitud y latitud: "<<o->GGA_datum.longitude_degrees<<","<<o->GGA_datum.latitude_degrees<<","<<"\n";
+			//std::cout<<"datos de longitud y latitud: "<<o->getMsgByClass<gnss::Message_NMEA_GGA>().fields.longitude_degrees<<","<<o->getMsgByClass<gnss::Message_NMEA_GGA>().fields.latitude_degrees<<","<<"\n";
 			//std::cout<<"x,y sin rotar: "<<x<<","<<y<<","<<"\n";
 			//std::cout<<"angulo: "<<likelihoodOptions.GPSOrigin.ang<<"\n";
 			//std::cout<<"desp x,y: "<<likelihoodOptions.GPSOrigin.x_shift<<","<<likelihoodOptions.GPSOrigin.y_shift<<"\n";
@@ -415,9 +415,6 @@ double	 CLandmarksMap::internal_computeObservationLikelihood(
 			//std::cin.get();
 
 			float distance = GPSpose.distanceTo(point3D);
-								//sqrt((GPSpose.x-point3D.x)*(GPSpose.x-point3D.x)+
-								//  (GPSpose.y-point3D.y)*(GPSpose.y-point3D.y)+
-								//  (GPSpose.z-point3D.z)*(GPSpose.z-point3D.z));
 
 			//std::cout<<"likel gps:"<<-0.5f*square( ( distance )/likelihoodOptions.GPS_sigma)<<"\n";;
 			double ret = -0.5f*square( ( distance )/likelihoodOptions.GPS_sigma);
@@ -1633,7 +1630,7 @@ double  CLandmarksMap::computeLikelihood_RSLC_2007( const CLandmarksMap  *s, con
 		{
 			corrs = grid->cellByIndex( cx, cy );
 			ASSERT_( corrs!=NULL );
-			if (corrs->size())
+			if (!corrs->empty())
 			for (vector_int::iterator	it=corrs->begin();it!=corrs->end();++it)
 			{
 			lm = landmarks.get(*it);

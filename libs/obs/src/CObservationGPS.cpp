@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -10,10 +10,10 @@
 #include "obs-precomp.h"   // Precompiled headers
 
 #include <mrpt/obs/CObservationGPS.h>
-#include <mrpt/utils/CStdOutStream.h>
 #include <mrpt/utils/CStream.h>
 #include <mrpt/math/matrix_serialization.h> // for << of matrices
 #include <mrpt/utils/CMemoryStream.h>
+#include <iomanip>
 
 using namespace std;
 using namespace mrpt;
@@ -24,21 +24,24 @@ using namespace mrpt::math;
 // This must be added to any CSerializable class implementation file.
 IMPLEMENTS_SERIALIZABLE(CObservationGPS, CObservation,mrpt::obs)
 
-CStdOutStream	gps_my_cout;
-
-/** Constructor
- */
 CObservationGPS::CObservationGPS( ) :
 	sensorPose(),
-	has_GGA_datum (false),
-	has_RMC_datum (false),
-	has_PZS_datum (false),
-	has_SATS_datum(false),
-	GGA_datum(),
-	RMC_datum(),
-	PZS_datum(),
-	SATS_datum()
+	originalReceivedTimestamp(INVALID_TIMESTAMP),
+	messages(),
+	has_GGA_datum (messages),
+	has_RMC_datum (messages),
+	has_PZS_datum (messages),
+	has_SATS_datum(messages)
 {
+}
+
+void CObservationGPS::swap(CObservationGPS &o)
+{
+	std::swap(timestamp, o.timestamp);
+	std::swap(originalReceivedTimestamp, o.originalReceivedTimestamp);
+	std::swap(sensorLabel, o.sensorLabel);
+	std::swap(sensorPose, o.sensorPose);
+	messages.swap( o.messages );
 }
 
 /*---------------------------------------------------------------
@@ -46,87 +49,16 @@ CObservationGPS::CObservationGPS( ) :
  ---------------------------------------------------------------*/
 void  CObservationGPS::writeToStream(mrpt::utils::CStream &out, int *version) const
 {
-	MRPT_UNUSED_PARAM(out);
 	if (version)
-		*version = 9;
+		*version = 10;
 	else
 	{
-		out << timestamp;
+		out << timestamp << originalReceivedTimestamp << sensorLabel << sensorPose;
 
-		out << has_GGA_datum;
-		if (has_GGA_datum)
-		{
-			// OLD Version 0: out.WriteBuffer( &GGA_datum, sizeof(GGA_datum) );
-			// New version:
-			out << GGA_datum.UTCTime.hour
-			    << GGA_datum.UTCTime.minute
-				<< GGA_datum.UTCTime.sec
-				<< GGA_datum.latitude_degrees
-				<< GGA_datum.longitude_degrees
-				<< GGA_datum.fix_quality
-				<< GGA_datum.altitude_meters
-                << GGA_datum.geoidal_distance                   // Added in V9
-                << GGA_datum.orthometric_altitude               // Added in V9
-                << GGA_datum.corrected_orthometric_altitude     // Added in V9
-                << GGA_datum.satellitesUsed
-				<< GGA_datum.thereis_HDOP
-				<< GGA_datum.HDOP;
-		}
-
-		out << has_RMC_datum;
-		if (has_RMC_datum)
-		{
-			// OLD Version 0: out.WriteBuffer( &RMC_datum, sizeof(RMC_datum) );
-			// New version:
-			out << RMC_datum.UTCTime.hour
-				<< RMC_datum.UTCTime.minute
-				<< RMC_datum.UTCTime.sec
-				<< RMC_datum.validity_char
-				<< RMC_datum.latitude_degrees
-				<< RMC_datum.longitude_degrees
-				<< RMC_datum.speed_knots
-				<< RMC_datum.direction_degrees;
-		}
-
-		out << sensorLabel << sensorPose;
-
-		// Added in V5.
-		out << has_PZS_datum;
-		if (has_PZS_datum)
-		{
-			out <<
-				PZS_datum.latitude_degrees <<
-				PZS_datum.longitude_degrees <<
-				PZS_datum.height_meters <<
-				PZS_datum.RTK_height_meters <<
-				PZS_datum.PSigma <<
-				PZS_datum.angle_transmitter <<
-				PZS_datum.nId <<
-				PZS_datum.Fix <<
-				PZS_datum.TXBattery <<
-				PZS_datum.RXBattery <<
-				PZS_datum.error <<
-			// Added in V6:
-				PZS_datum.hasCartesianPosVel <<
-				PZS_datum.cartesian_x << PZS_datum.cartesian_y << PZS_datum.cartesian_z <<
-				PZS_datum.cartesian_vx << PZS_datum.cartesian_vy << PZS_datum.cartesian_vz <<
-				PZS_datum.hasPosCov <<
-				PZS_datum.pos_covariance <<
-				PZS_datum.hasVelCov <<
-				PZS_datum.vel_covariance <<
-				PZS_datum.hasStats <<
-				PZS_datum.stats_GPS_sats_used <<
-				PZS_datum.stats_GLONASS_sats_used <<
-			// Added V8:
-				PZS_datum.stats_rtk_fix_progress;
-		}
-
-		// Added in V7:
-		out << has_SATS_datum;
-		if (has_SATS_datum)
-		{
-			out << SATS_datum.USIs << SATS_datum.ELs << SATS_datum.AZs;
-		}
+		const uint32_t nMsgs = messages.size();
+		out << nMsgs;
+		for (message_list_t::const_iterator it=messages.begin();it!=messages.end();++it)
+			it->second->writeToStream(out);
 	}
 }
 
@@ -135,18 +67,40 @@ void  CObservationGPS::writeToStream(mrpt::utils::CStream &out, int *version) co
  ---------------------------------------------------------------*/
 void  CObservationGPS::readFromStream(mrpt::utils::CStream &in, int version)
 {
-	MRPT_UNUSED_PARAM(in);
+	this->clear();
+
 	switch(version)
 	{
+	case 10:
+		{
+			in >> timestamp >> originalReceivedTimestamp >> sensorLabel >>sensorPose;
+			uint32_t nMsgs;
+			in >> nMsgs;
+			for (unsigned i=0;i<nMsgs;i++) {
+				gnss::gnss_message * msg = gnss::gnss_message::readAndBuildFromStream(in);
+				messages[msg->message_type] = gnss::gnss_message_ptr(msg);
+			}
+		};
+		break;
+
+	// OLD VERSIONS: Ensure we can load datasets from many years ago ==========
 	case 0:
 		{
-			in >> has_GGA_datum;
-			if (has_GGA_datum)
-				in.ReadBuffer( &GGA_datum, sizeof(GGA_datum) );
+			bool has_GGA_datum_;
+			in >> has_GGA_datum_;
+			if (has_GGA_datum_) {
+				gnss::Message_NMEA_GGA * datum = new gnss::Message_NMEA_GGA();
+				in.ReadBuffer( &datum->fields, sizeof(datum->fields) );
+				messages[gnss::NMEA_GGA] = gnss::gnss_message_ptr(datum);
+			}
 
-			in >> has_RMC_datum;
-			if (has_RMC_datum)
-				in.ReadBuffer( &RMC_datum, sizeof(RMC_datum) );
+			bool has_RMC_datum_;
+			in >> has_RMC_datum_;
+			if (has_RMC_datum_) {
+				gnss::Message_NMEA_RMC * datum = new gnss::Message_NMEA_RMC();
+				in.ReadBuffer( &datum->fields, sizeof(datum->fields) );
+				messages[gnss::NMEA_RMC] = gnss::gnss_message_ptr(datum);
+			}
 		} break;
 	case 1:
 	case 2:
@@ -162,357 +116,349 @@ void  CObservationGPS::readFromStream(mrpt::utils::CStream &in, int version)
 					in >> timestamp;
 			else 	timestamp = INVALID_TIMESTAMP;
 
-			in >> has_GGA_datum;
-			if (has_GGA_datum)
+			bool has_GGA_datum_;
+			in >> has_GGA_datum_;
+			if (has_GGA_datum_)
 			{
-				in  >> GGA_datum.UTCTime.hour
-					>> GGA_datum.UTCTime.minute
-					>> GGA_datum.UTCTime.sec
-					>> GGA_datum.latitude_degrees
-					>> GGA_datum.longitude_degrees
-					>> GGA_datum.fix_quality
-					>> GGA_datum.altitude_meters;
-					if( version >= 9 )
-					{
-                        in  >> GGA_datum.geoidal_distance
-                            >> GGA_datum.orthometric_altitude
-                            >> GGA_datum.corrected_orthometric_altitude;
-                    }
-                    else
-                    {
-                        GGA_datum.geoidal_distance                  = 0.0f;
-                        GGA_datum.orthometric_altitude              = 0.0f;
-                        GGA_datum.corrected_orthometric_altitude    = 0.0f;
-                    }
+				gnss::Message_NMEA_GGA datum;
+				gnss::Message_NMEA_GGA::content_t & GGA_datum = datum.fields;
 
-                in  >> GGA_datum.satellitesUsed
-					>> GGA_datum.thereis_HDOP
-					>> GGA_datum.HDOP;
+				in  >> GGA_datum.UTCTime.hour >> GGA_datum.UTCTime.minute >> GGA_datum.UTCTime.sec >> GGA_datum.latitude_degrees
+					>> GGA_datum.longitude_degrees >> GGA_datum.fix_quality >> GGA_datum.altitude_meters;
+				if( version >= 9 ) {
+					in  >> GGA_datum.geoidal_distance
+						>> GGA_datum.orthometric_altitude
+						>> GGA_datum.corrected_orthometric_altitude;
+				}
+				else {
+					GGA_datum.geoidal_distance                  = 0.0f;
+					GGA_datum.orthometric_altitude              = 0.0f;
+					GGA_datum.corrected_orthometric_altitude    = 0.0f;
+				}
+
+				in  >> GGA_datum.satellitesUsed >> GGA_datum.thereis_HDOP >> GGA_datum.HDOP;
+				this->setMsg(datum);
 			}
 
-			in >> has_RMC_datum;
-			if (has_RMC_datum)
+			bool has_RMC_datum_;
+			in >> has_RMC_datum_;
+			if (has_RMC_datum_)
 			{
-				in  >> RMC_datum.UTCTime.hour
-					>> RMC_datum.UTCTime.minute
-					>> RMC_datum.UTCTime.sec
-					>> RMC_datum.validity_char
-					>> RMC_datum.latitude_degrees
-					>> RMC_datum.longitude_degrees
-					>> RMC_datum.speed_knots
-					>> RMC_datum.direction_degrees;
-			}
+				gnss::Message_NMEA_RMC datum;
+				gnss::Message_NMEA_RMC::content_t & RMC_datum = datum.fields;
 
+				in  >> RMC_datum.UTCTime.hour >> RMC_datum.UTCTime.minute >> RMC_datum.UTCTime.sec
+					>> RMC_datum.validity_char >> RMC_datum.latitude_degrees >> RMC_datum.longitude_degrees
+					>> RMC_datum.speed_knots >> RMC_datum.direction_degrees;
+				this->setMsg(datum);
+			}
 			if (version>1)
 					in >> sensorLabel;
 			else 	sensorLabel = "";
-
 			if (version>=4)
 					in >> sensorPose;
 			else	sensorPose.setFromValues(0,0,0,0,0,0);
-
 			if (version>=5)
 			{
-				in >> has_PZS_datum;
-				if (has_PZS_datum)
+				bool has_PZS_datum_;
+				in >> has_PZS_datum_;
+				if (has_PZS_datum_)
 				{
-					in >>
-						PZS_datum.latitude_degrees >>
-						PZS_datum.longitude_degrees >>
-						PZS_datum.height_meters >>
-						PZS_datum.RTK_height_meters >>
-						PZS_datum.PSigma >>
-						PZS_datum.angle_transmitter >>
-						PZS_datum.nId >>
-						PZS_datum.Fix >>
-						PZS_datum.TXBattery >>
-						PZS_datum.RXBattery >>
-						PZS_datum.error;
-					// extra data?
-					if (version>=6)
-					{
-						in >>
-							PZS_datum.hasCartesianPosVel >>
-							PZS_datum.cartesian_x >> PZS_datum.cartesian_y >> PZS_datum.cartesian_z >>
-							PZS_datum.cartesian_vx >> PZS_datum.cartesian_vy >> PZS_datum.cartesian_vz >>
-							PZS_datum.hasPosCov >>
-							PZS_datum.pos_covariance >>
-							PZS_datum.hasVelCov >>
-							PZS_datum.vel_covariance >>
-							PZS_datum.hasStats >>
-							PZS_datum.stats_GPS_sats_used >>
-							PZS_datum.stats_GLONASS_sats_used;
+					gnss::Message_TopCon_PZS * datum = new gnss::Message_TopCon_PZS();
+					messages[gnss::TOPCON_PZS] = gnss::gnss_message_ptr(datum);
+					gnss::Message_TopCon_PZS & PZS_datum = *datum;
 
+					in >>
+						PZS_datum.latitude_degrees >> PZS_datum.longitude_degrees >> PZS_datum.height_meters >>
+						PZS_datum.RTK_height_meters >> PZS_datum.PSigma >> PZS_datum.angle_transmitter >> PZS_datum.nId >>
+						PZS_datum.Fix >> PZS_datum.TXBattery >> PZS_datum.RXBattery >> PZS_datum.error;
+					// extra data?
+					if (version>=6) {
+						in >>
+							PZS_datum.hasCartesianPosVel >> PZS_datum.cartesian_x >> PZS_datum.cartesian_y >> PZS_datum.cartesian_z >>
+							PZS_datum.cartesian_vx >> PZS_datum.cartesian_vy >> PZS_datum.cartesian_vz >>
+							PZS_datum.hasPosCov >> PZS_datum.pos_covariance >> PZS_datum.hasVelCov >>
+							PZS_datum.vel_covariance >> PZS_datum.hasStats >> PZS_datum.stats_GPS_sats_used >> PZS_datum.stats_GLONASS_sats_used;
 						if (version>=8)
 							in >> PZS_datum.stats_rtk_fix_progress;
 						else
 							PZS_datum.stats_rtk_fix_progress=0;
 					}
-					else
-					{
-						PZS_datum.hasCartesianPosVel =
-						PZS_datum.hasPosCov =
-						PZS_datum.hasVelCov =
-						PZS_datum.hasStats = false;
+					else {
+						PZS_datum.hasCartesianPosVel = PZS_datum.hasPosCov = PZS_datum.hasVelCov = PZS_datum.hasStats = false;
 					}
 				}
 			} // end version >=5
-			else has_PZS_datum = false;
 
 			// Added in V7:
-			if (version>=7)
-			{
-				in >> has_SATS_datum;
-				if (has_SATS_datum)
+			if (version>=7) {
+				gnss::Message_TopCon_SATS * datum = new gnss::Message_TopCon_SATS();
+				messages[gnss::TOPCON_SATS] = gnss::gnss_message_ptr(datum);
+				gnss::Message_TopCon_SATS & SATS_datum = *datum;
+				bool has_SATS_datum_;
+				in >> has_SATS_datum_;
+				if (has_SATS_datum_)
 				{
 					in >> SATS_datum.USIs >> SATS_datum.ELs >> SATS_datum.AZs;
 				}
 			}
-			else has_SATS_datum = false;
-
 		} break;
 	default:
 		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
-
 	};
 
+	if (originalReceivedTimestamp==INVALID_TIMESTAMP)
+		originalReceivedTimestamp = timestamp;
 }
-
 
 /*---------------------------------------------------------------
 					dumpToStream
  ---------------------------------------------------------------*/
 void  CObservationGPS::dumpToStream( CStream &out ) const 
 {
-	out.printf("\n--------------------- [CObservationGPS] Dump: -----------------------\n");
-
-	out.printf("\n[GGA datum: ");
-	if (has_GGA_datum)
-			out.printf("YES]\n");
-	else	out.printf("NO]\n");
-	if (has_GGA_datum)
-	{
-		out.printf("  Longitude: %.09f deg  Latitude: %.09f deg  Height: %.03f m\n",
-			GGA_datum.longitude_degrees,
-			GGA_datum.latitude_degrees,
-			GGA_datum.altitude_meters );
-
-        out.printf("  Geoidal distance: %.03f m  Orthometric alt.: %.03f m  Corrected ort. alt.: %.03f m\n",
-            GGA_datum.geoidal_distance,
-            GGA_datum.orthometric_altitude,
-            GGA_datum.corrected_orthometric_altitude );
-
-		out.printf("  UTC time-stamp: %02u:%02u:%02.03f  #sats=%2u  ",
-			GGA_datum.UTCTime.hour,
-			GGA_datum.UTCTime.minute,
-			GGA_datum.UTCTime.sec,
-			GGA_datum.satellitesUsed );
-
-		out.printf("Fix mode: %u ",GGA_datum.fix_quality);
-		switch( GGA_datum.fix_quality )
-		{
-			case 0: out.printf("(Invalid)\n"); break;
-			case 1: out.printf("(GPS fix)\n"); break;
-			case 2: out.printf("(DGPS fix)\n"); break;
-			case 3: out.printf("(PPS fix)\n"); break;
-			case 4: out.printf("(Real Time Kinematic/RTK Fixed)\n"); break;
-			case 5: out.printf("(Real Time Kinematic/RTK Float)\n"); break;
-			case 6: out.printf("(Dead Reckoning)\n"); break;
-			case 7: out.printf("(Manual)\n"); break;
-			case 8: out.printf("(Simulation)\n"); break;
-			case 9: out.printf("(mmGPS + RTK Fixed)\n"); break;
-			case 10: out.printf("(mmGPS + RTK Float)\n"); break;
-			default: out.printf("(UNKNOWN!)\n"); break;
-		};
-
-		out.printf(" HDOP (Horizontal Dilution of Precision): ");
-		if (GGA_datum.thereis_HDOP)
-				out.printf(" %f\n", GGA_datum.HDOP);
-		else 	out.printf(" N/A\n");
-
-	} // END GGA
-
-	out.printf("\n[RMC datum: ");
-	if (has_RMC_datum)
-			out.printf("YES]\n");
-	else	out.printf("NO]\n");
-	if (has_RMC_datum)
-	{
-		out.printf("  Longitude: %.09f deg  Latitude: %.09f deg  Valid?: '%c'\n",
-			RMC_datum.longitude_degrees,
-			RMC_datum.latitude_degrees,
-			RMC_datum.validity_char
-			);
-		out.printf("  UTC time-stamp: %02u:%02u:%02.03f  ",
-			RMC_datum.UTCTime.hour,
-			RMC_datum.UTCTime.minute,
-			RMC_datum.UTCTime.sec
-			);
-
-		out.printf(" Speed: %.05f knots  Direction:%.03f deg.\n ",
-			RMC_datum.speed_knots,
-			RMC_datum.direction_degrees
-			);
-
-	} // END RMC
-
-
-	// PZS datum:
-	if (has_PZS_datum)
-	{
-		out.printf("\n[PZS datum: YES]\n");
-		out.printf("  Longitude: %.09f deg  Latitude: %.09f deg Height: %.03f m (%.03f m without NBeam) \n",
-			PZS_datum.longitude_degrees,
-			PZS_datum.latitude_degrees,
-			PZS_datum.height_meters,
-			PZS_datum.RTK_height_meters);
-
-		out.printf(" PZL-ID: %i  Angle trans: %.05f deg\n ",
-			(int)PZS_datum.nId,
-			PZS_datum.angle_transmitter
-			);
-
-		out.printf(" Fix: %i  ",(int)PZS_datum.Fix);
-		out.printf(" Error: %i ",(int)PZS_datum.error);
-		out.printf(" Battery levels: TX=%i  RX=%i\n ",PZS_datum.TXBattery,PZS_datum.RXBattery);
-
-		out.printf(" hasCartesianPosVel= %s", PZS_datum.hasCartesianPosVel ? "YES -> ":"NO\n");
-		if (PZS_datum.hasCartesianPosVel)
-		{
-			out.printf(" x=%f  y=%f  z=%f\n",PZS_datum.cartesian_x,PZS_datum.cartesian_y,PZS_datum.cartesian_z);
-			out.printf(" vx=%f  vy=%f  vz=%f\n",PZS_datum.cartesian_vx,PZS_datum.cartesian_vy,PZS_datum.cartesian_vz);
-		}
-		out.printf("hasPosCov = %s", PZS_datum.hasPosCov ? "YES\n":"NO\n");
-		if (PZS_datum.hasPosCov)
-			out.printf("%s\n", PZS_datum.pos_covariance.inMatlabFormat().c_str() );
-
-		out.printf("hasVelCov = %s", PZS_datum.hasVelCov ? "YES\n":"NO\n");
-		if (PZS_datum.hasVelCov)
-			out.printf("%s\n", PZS_datum.vel_covariance.inMatlabFormat().c_str() );
-
-		out.printf("hasStats = %s", PZS_datum.hasStats? "YES: ":"NO\n");
-		if(PZS_datum.hasStats)
-			out.printf("GPS sats used: %i  GLONASS sats used: %i  RTK Fix progress:%i%%\n", (int)PZS_datum.stats_GPS_sats_used, (int)PZS_datum.stats_GLONASS_sats_used,(int)PZS_datum.stats_rtk_fix_progress);
-	} // END PZS
-
-	// Stats:
-	out.printf("\n[SATS datum: ");
-	if (has_SATS_datum)
-			out.printf("YES]\n");
-	else	out.printf("NO]\n");
-	if (has_SATS_datum)
-	{
-		out.printf("  USI   ELEV    AZIM \n");
-		out.printf("---------------------------\n");
-
-		ASSERT_(SATS_datum.USIs.size()==SATS_datum.AZs.size() && SATS_datum.USIs.size()==SATS_datum.ELs.size());
-		for (size_t i=0;i<SATS_datum.USIs.size();i++)
-			out.printf(" %03i   %02i    %03i\n", (int)SATS_datum.USIs[i], (int)SATS_datum.ELs[i], (int)SATS_datum.AZs[i] );
-
-	} // end SATS_datum
-
-	out.printf("---------------------------------------------------------------------\n\n");
+	out.printf("\n------------- [CObservationGPS] Dump of %u messages -----------------------\n",static_cast<unsigned int>(messages.size()));
+	for (message_list_t::const_iterator it=messages.begin();it!=messages.end();++it)
+		it->second->dumpToStream(out);
+	out.printf("-------------- [CObservationGPS] End of dump  ------------------------------\n\n");
 }
 
 void  CObservationGPS::dumpToConsole(std::ostream &o) const
 {
 	mrpt::utils::CMemoryStream memStr;
 	this->dumpToStream( memStr );
-	
 	if (memStr.getTotalBytesCount()) {
 		o.write((const char*)memStr.getRawBufferData(),memStr.getTotalBytesCount());
 	}
 }
 
-// Ctor:
-CObservationGPS::TUTCTime::TUTCTime() :
-	hour(0), minute(0), sec(0)
-{
-}
-
-// Ctor:
-CObservationGPS::TGPSDatum_RMC::TGPSDatum_RMC() :
-	UTCTime(),
-	validity_char('V'),
-	latitude_degrees(0),
-	longitude_degrees(0),
-	speed_knots(0),
-	direction_degrees(0)
-{ }
-
-// Ctor:
-CObservationGPS::TGPSDatum_GGA::TGPSDatum_GGA() :
-	UTCTime(),
-	latitude_degrees(0),
-	longitude_degrees(0),
-	fix_quality(0),
-	altitude_meters(0),
-	satellitesUsed(0),
-	thereis_HDOP(false),
-	HDOP(0)
-{ }
-
-// Ctor:
-CObservationGPS::TGPSDatum_PZS::TGPSDatum_PZS() :
-	latitude_degrees(0),
-	longitude_degrees(0),
-	height_meters(0),
-	RTK_height_meters(0),
-	PSigma(0),
-	angle_transmitter(0),
-	nId(0),
-	Fix(0),
-	TXBattery(0),
-	RXBattery(0),
-	error(0),
-	hasCartesianPosVel(false),
-	cartesian_x(0),cartesian_y(0),cartesian_z(0),
-	cartesian_vx(0),cartesian_vy(0),cartesian_vz(0),
-	hasPosCov(false),
-	pos_covariance(),
-	hasVelCov(false),
-	vel_covariance(),
-	hasStats(false),
-	stats_GPS_sats_used(0),
-	stats_GLONASS_sats_used(0)
-{ }
-
-// Ctor:
-CObservationGPS::TGPSDatum_SATS::TGPSDatum_SATS()
-{ }
-
 void CObservationGPS::clear()
 {
-	has_GGA_datum = false;
-	has_RMC_datum = false;
-	has_PZS_datum = false;
-	has_SATS_datum = false;
+	messages.clear();
+	timestamp = INVALID_TIMESTAMP;
+	originalReceivedTimestamp = INVALID_TIMESTAMP;
 }
-
-
-// Build an MRPT timestamp with the hour/minute/sec of this structure and the date from the given timestamp.
-mrpt::system::TTimeStamp CObservationGPS::TUTCTime::getAsTimestamp(const mrpt::system::TTimeStamp &date) const
-{
-    using namespace mrpt::system;
-
-    TTimeParts parts;
-    timestampToParts(date,parts, false /* UTC, not local */);
-
-    parts.hour   = this->hour;
-    parts.minute = this->minute;
-    parts.second = this->sec;
-
-    return buildTimestampFromParts(parts);
-}
-
 void CObservationGPS::getDescriptionAsText(std::ostream &o) const
 {
 	CObservation::getDescriptionAsText(o);
 
-	if (has_GGA_datum)
-		std::cout << std::endl << "Satellite time: " << format("%02u:%02u:%02.3f",GGA_datum.UTCTime.hour,GGA_datum.UTCTime.minute,GGA_datum.UTCTime.sec) << std::endl;
+	o << "Timestamp (UTC) of reception at the computer: " << mrpt::system::dateTimeToString(originalReceivedTimestamp) << std::endl;
+	o << "  (as time_t): " <<  std::fixed << std::setprecision(5) << mrpt::system::timestampTotime_t(originalReceivedTimestamp) << std::endl;
+	o << "  (as TTimestamp): " << originalReceivedTimestamp << std::endl;
 
-	std::cout << "Sensor position on the robot: " << sensorPose << std::endl;
+	o << "Sensor position on the robot/vehicle: " << sensorPose << std::endl;
 
-	this->dumpToConsole();
+	this->dumpToConsole(o);
 }
+
+bool CObservationGPS::hasMsgType(const gnss::gnss_message_type_t type_id) const 
+{
+	return messages.find(type_id)!=messages.end();
+}
+
+mrpt::obs::gnss::gnss_message* CObservationGPS::getMsgByType(const gnss::gnss_message_type_t type_id) 
+{
+	message_list_t::iterator it = messages.find(type_id);
+	ASSERTMSG_(it!=messages.end(), mrpt::format("[CObservationGPS::getMsgByType] Cannot find any observation of type `%u`",static_cast<unsigned int>(type_id) ));
+	return it->second.get();
+}
+/** \overload */
+const mrpt::obs::gnss::gnss_message* CObservationGPS::getMsgByType(const gnss::gnss_message_type_t type_id) const 
+{
+	message_list_t::const_iterator it = messages.find(type_id);
+	ASSERTMSG_(it!=messages.end(), mrpt::format("[CObservationGPS::getMsgByType] Cannot find any observation of type `%u`",static_cast<unsigned int>(type_id) ));
+	return it->second.get();
+}
+
+
+// From: http://gnsstk.sourceforge.net/time__conversion_8c-source.html
+#define TIMECONV_JULIAN_DATE_START_OF_GPS_TIME (2444244.5)  // [days]
+bool TIMECONV_GetJulianDateFromGPSTime(	const unsigned short 	gps_week, const double 	gps_tow, const unsigned char 	utc_offset, double * 	julian_date)
+{
+	if( gps_tow < 0.0  || gps_tow > 604800.0 )
+		return false;
+	// GPS time is ahead of UTC time and Julian time by the UTC offset
+	*julian_date = (gps_week + (gps_tow-utc_offset)/604800.0)*7.0 + TIMECONV_JULIAN_DATE_START_OF_GPS_TIME;
+	return true;
+}
+
+bool TIMECONV_DetermineUTCOffset(
+	double julian_date,       //!< Number of days since noon Universal Time Jan 1, 4713 BCE (Julian calendar) [days]
+	unsigned char* utc_offset //!< Integer seconds that GPS is ahead of UTC time, always positive             [s], obtained from a look up table
+	)
+{
+	if( julian_date < 0.0 )
+		return false;
+	if(      julian_date < 2444786.5000 ) *utc_offset = 0;
+	else if( julian_date < 2445151.5000 ) *utc_offset = 1;
+	else if( julian_date < 2445516.5000 ) *utc_offset = 2;
+	else if( julian_date < 2446247.5000 ) *utc_offset = 3;
+	else if( julian_date < 2447161.5000 ) *utc_offset = 4;
+	else if( julian_date < 2447892.5000 ) *utc_offset = 5;
+	else if( julian_date < 2448257.5000 ) *utc_offset = 6;
+	else if( julian_date < 2448804.5000 ) *utc_offset = 7;
+	else if( julian_date < 2449169.5000 ) *utc_offset = 8;
+	else if( julian_date < 2449534.5000 ) *utc_offset = 9;
+	else if( julian_date < 2450083.5000 ) *utc_offset = 10;
+	else if( julian_date < 2450630.5000 ) *utc_offset = 11;
+	else if( julian_date < 2451179.5000 ) *utc_offset = 12;  
+	else if( julian_date < 2453736.5000 ) *utc_offset = 13;  
+	else                                  *utc_offset = 14;
+
+	return true;
+}
+
+bool TIMECONV_IsALeapYear( const unsigned short year )
+{
+	bool is_a_leap_year = false;
+	if( (year%4) == 0 ) 
+	{
+		is_a_leap_year = true;
+		if( (year%100) == 0 )
+		{
+			if( (year%400) == 0 )
+			     is_a_leap_year = true;
+			else is_a_leap_year = false;
+		}
+	}
+	return is_a_leap_year;
+}
+
+bool TIMECONV_GetNumberOfDaysInMonth(
+	const unsigned short year,        //!< Universal Time Coordinated    [year]
+	const unsigned char month,        //!< Universal Time Coordinated    [1-12 months] 
+	unsigned char* days_in_month      //!< Days in the specified month   [1-28|29|30|31 days]
+	)
+{
+	unsigned char utmp = 0;
+	bool is_a_leapyear = TIMECONV_IsALeapYear( year );
+
+	switch(month)
+	{
+	case  1: utmp = 31; break;
+	case  2: if( is_a_leapyear ){ utmp = 29; }else{ utmp = 28; }break;    
+	case  3: utmp = 31; break;
+	case  4: utmp = 30; break;
+	case  5: utmp = 31; break;
+	case  6: utmp = 30; break;
+	case  7: utmp = 31; break;
+	case  8: utmp = 31; break;
+	case  9: utmp = 30; break;
+	case 10: utmp = 31; break;
+	case 11: utmp = 30; break;
+	case 12: utmp = 31; break;
+	default: return false; break;    
+	}
+	*days_in_month = utmp;
+	return true;
+}
+bool TIMECONV_GetUTCTimeFromJulianDate(const double julian_date,  //!< Number of days since noon Universal Time Jan 1, 4713 BCE (Julian calendar) [days]
+	mrpt::system::TTimeParts &utc
+	)
+{
+	int a, b, c, d, e; // temporary values
+
+	unsigned short year;  
+	unsigned char month;
+	unsigned char day;
+	unsigned char hour;
+	unsigned char minute;        
+	unsigned char days_in_month = 0;  
+	double td; // temporary double
+	double seconds;
+	bool result;
+
+	// Check the input.
+	if( julian_date < 0.0 )
+		return false;
+
+	a = (int)(julian_date+0.5);
+	b = a + 1537;
+	c = (int)( ((double)b-122.1)/365.25 );
+	d = (int)(365.25*c);
+	e = (int)( ((double)(b-d))/30.6001 );
+
+	td      = b - d - (int)(30.6001*e) + fmod( julian_date+0.5, 1.0 );   // [days]
+	day     = (unsigned char)td;   
+	td     -= day;
+	td     *= 24.0;        // [hours]
+	hour    = (unsigned char)td;
+	td     -= hour;
+	td     *= 60.0;        // [minutes]
+	minute  = (unsigned char)td;
+	td     -= minute;
+	td     *= 60.0;        // [s]
+	seconds = td;
+	month   = (unsigned char)(e - 1 - 12*(int)(e/14));
+	year    = (unsigned short)(c - 4715 - (int)( (7.0+(double)month) / 10.0 ));
+	// check for rollover issues
+	if( seconds >= 60.0 )
+	{
+		seconds -= 60.0;
+		minute++;
+		if( minute >= 60 )
+		{
+			minute -= 60;
+			hour++;
+			if( hour >= 24 )
+			{
+				hour -= 24;
+				day++;
+				result = TIMECONV_GetNumberOfDaysInMonth( year, month, &days_in_month );
+				if( result == false )
+					return false;
+				if( day > days_in_month )
+				{
+					day = 1;
+					month++;
+					if( month > 12 )
+					{
+						month = 1;
+						year++;
+					}
+				}
+			}
+		}
+	}
+
+	utc.year   = year;
+	utc.month  = month;
+	utc.day    = day;
+	utc.hour   = hour;
+	utc.minute = minute;
+	utc.second = seconds;
+	return true;
+}
+
+bool CObservationGPS::GPS_time_to_UTC(uint16_t gps_week,double gps_sec, mrpt::system::TTimeStamp &utc_out)
+{
+	 mrpt::system::TTimeParts tim;
+	if (!GPS_time_to_UTC(gps_week,gps_sec,tim)) return false;
+	utc_out = mrpt::system::buildTimestampFromParts(tim);
+	return true;
+}
+
+bool CObservationGPS::GPS_time_to_UTC(uint16_t gps_week,double gps_sec, mrpt::system::TTimeParts &utc_out)
+{
+	double julian_date = 0.0; 
+	uint8_t utc_offset = 0;
+	if( gps_sec < 0.0  || gps_sec > 604800.0 )
+		return false;
+	// iterate to get the right utc offset
+	for(int i = 0; i < 4; i++ )
+	{
+		if (!TIMECONV_GetJulianDateFromGPSTime(
+			gps_week,
+			gps_sec,
+			utc_offset,
+			&julian_date ) ) 
+			return false;
+		if (!TIMECONV_DetermineUTCOffset( julian_date, &utc_offset ) )
+			return false;
+	}
+
+	if (!TIMECONV_GetUTCTimeFromJulianDate(julian_date,utc_out))
+	return false;
+
+	return true;
+}
+

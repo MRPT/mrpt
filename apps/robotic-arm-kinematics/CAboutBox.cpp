@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -128,7 +128,7 @@ void CAboutBox::OnInit(wxInitDialogEvent& event)
 
     // Set the label with MRPT version:
     wxString    s(_("Build: "));
-    s << wxString(__DATE__,wxConvLibc);
+    s << _U( mrpt::system::MRPT_getCompilationDate().c_str() );
     s << _(" - ") << MRPTver;
 
     lbBuild->SetLabel( s );
@@ -141,7 +141,7 @@ void CAboutBox::OnInit(wxInitDialogEvent& event)
 
 		cout << "  Robotic Arm Kinematics GUI\n";
 		cout << "--------------------------------\n";
-		cout << "Jose Luis Blanco (C) 2005-2013\n";
+		cout << "Jose Luis Blanco\n";
 		cout << "\n";
 		cout << "For bug reports or to collaborate:\n";
 		cout << "    http://www.mrpt.org/    \n\n";

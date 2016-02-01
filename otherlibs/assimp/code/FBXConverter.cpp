@@ -260,7 +260,7 @@ private:
 				}
 			}
 
-			if(nodes.size()) {
+			if(!nodes.empty()) {
 				parent.mChildren = new aiNode*[nodes.size()]();
 				parent.mNumChildren = static_cast<unsigned int>(nodes.size());
 
@@ -812,7 +812,7 @@ private:
 			}
 		}
 
-		if(meshes.size()) {
+		if(!meshes.empty()) {
 			nd.mMeshes = new unsigned int[meshes.size()]();
 			nd.mNumMeshes = static_cast<unsigned int>(meshes.size());
 
@@ -926,7 +926,7 @@ private:
 
 		// copy normals
 		const std::vector<aiVector3D>& normals = mesh.GetNormals();
-		if(normals.size()) {
+		if(!normals.empty()) {
 			ai_assert(normals.size() == vertices.size());
 
 			out_mesh->mNormals = new aiVector3D[vertices.size()];
@@ -939,10 +939,10 @@ private:
 		const std::vector<aiVector3D>& tangents = mesh.GetTangents();
 		const std::vector<aiVector3D>* binormals = &mesh.GetBinormals();
 
-		if(tangents.size()) {
+		if(!tangents.empty()) {
 			std::vector<aiVector3D> tempBinormals;
-			if (!binormals->size()) {
-				if (normals.size()) {
+			if (binormals->empty()) {
+				if (!normals.empty()) {
 					tempBinormals.resize(normals.size());
 					for (unsigned int i = 0; i < tangents.size(); ++i) {
 						tempBinormals[i] = normals[i] ^ tangents[i];
@@ -1078,7 +1078,7 @@ private:
 
 		// allocate normals
 		const std::vector<aiVector3D>& normals = mesh.GetNormals();
-		if(normals.size()) {
+		if(!normals.empty()) {
 			ai_assert(normals.size() == vertices.size());
 			out_mesh->mNormals = new aiVector3D[vertices.size()];
 		}
@@ -1087,10 +1087,10 @@ private:
 		const std::vector<aiVector3D>& tangents = mesh.GetTangents();
 		const std::vector<aiVector3D>* binormals = &mesh.GetBinormals();
 
-		if(tangents.size()) {
+		if(!tangents.empty()) {
 			std::vector<aiVector3D> tempBinormals;
-			if (!binormals->size()) {
-				if (normals.size()) {
+			if (binormals->empty()) {
+				if (!normals.empty()) {
 					// XXX this computes the binormals for the entire mesh, not only 
 					// the part for which we need them.
 					tempBinormals.resize(normals.size());
@@ -1170,7 +1170,7 @@ private:
 			for (unsigned int i = 0; i < pcount; ++i, ++cursor, ++in_cursor) {
 				f.mIndices[i] = cursor;
 
-				if(reverseMapping.size()) {
+				if(!reverseMapping.empty()) {
 					reverseMapping[cursor] = in_cursor;
 				}
 
@@ -2029,7 +2029,7 @@ private:
 			throw;
 		}
 
-		if(node_anims.size()) {
+		if(!node_anims.empty()) {
 			anim->mChannels = new aiNodeAnim*[node_anims.size()]();
 			anim->mNumChannels = static_cast<unsigned int>(node_anims.size());
 
@@ -2773,7 +2773,7 @@ private:
 		const aiVector3D& def_translate,
 		const aiQuaternion& def_rotation)
 	{
-		if (rotation.size()) {
+		if (!rotation.empty()) {
 			InterpolateKeys(out_quat, times, rotation, false, maxTime, minTime, order);
 		}
 		else {
@@ -2783,7 +2783,7 @@ private:
 			}
 		}
 
-		if (scaling.size()) {
+		if (!scaling.empty()) {
 			InterpolateKeys(out_scale, times, scaling, true, maxTime, minTime);
 		}
 		else {
@@ -2793,7 +2793,7 @@ private:
 			}
 		}
 
-		if (translation.size()) {
+		if (!translation.empty()) {
 			InterpolateKeys(out_translation, times, translation, false, maxTime, minTime);
 		}
 		else {
@@ -2897,35 +2897,35 @@ private:
 		// many C++ users seem to know this, so pointing it out to avoid
 		// confusion why this code works.
 
-		if(meshes.size()) {
+		if(!meshes.empty()) {
 			out->mMeshes = new aiMesh*[meshes.size()]();
 			out->mNumMeshes = static_cast<unsigned int>(meshes.size());
 
 			std::swap_ranges(meshes.begin(),meshes.end(),out->mMeshes);
 		}
 
-		if(materials.size()) {
+		if(!materials.empty()) {
 			out->mMaterials = new aiMaterial*[materials.size()]();
 			out->mNumMaterials = static_cast<unsigned int>(materials.size());
 
 			std::swap_ranges(materials.begin(),materials.end(),out->mMaterials);
 		}
 
-		if(animations.size()) {
+		if(!animations.empty()) {
 			out->mAnimations = new aiAnimation*[animations.size()]();
 			out->mNumAnimations = static_cast<unsigned int>(animations.size());
 
 			std::swap_ranges(animations.begin(),animations.end(),out->mAnimations);
 		}
 
-		if(lights.size()) {
+		if(!lights.empty()) {
 			out->mLights = new aiLight*[lights.size()]();
 			out->mNumLights = static_cast<unsigned int>(lights.size());
 
 			std::swap_ranges(lights.begin(),lights.end(),out->mLights);
 		}
 
-		if(cameras.size()) {
+		if(!cameras.empty()) {
 			out->mCameras = new aiCamera*[cameras.size()]();
 			out->mNumCameras = static_cast<unsigned int>(cameras.size());
 

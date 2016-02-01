@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -12,6 +12,7 @@
 #include <mrpt/utils/TCamera.h>
 #include <mrpt/utils/CConfigFileMemory.h>
 #include <mrpt/math/matrix_serialization.h>  // For "<<" ">>" operators.
+#include <mrpt/math/utils_matlab.h>
 
 using namespace mrpt::utils;
 using namespace mrpt::math;
@@ -81,6 +82,25 @@ void TCamera::readFromStream( CStream &in, int version )
 	}
 }
 
+/*---------------------------------------------------------------
+  Implements the writing to a mxArray for Matlab
+ ---------------------------------------------------------------*/
+#if MRPT_HAS_MATLAB
+// Add to implement mexplus::from template specialization
+IMPLEMENTS_MEXPLUS_FROM( mrpt::utils::TCamera )
+
+mxArray* TCamera::writeToMatlab() const
+{
+	const char* fields[] = {"K","dist","f","ncols","nrows"};
+	mexplus::MxArray params_struct( mexplus::MxArray::Struct(sizeof(fields)/sizeof(fields[0]),fields) );
+	params_struct.set("K", mrpt::math::convertToMatlab(this->intrinsicParams));
+	params_struct.set("dist", mrpt::math::convertToMatlab(this->dist));
+	params_struct.set("f", this->focalLengthMeters);
+	params_struct.set("ncols", this->ncols);
+	params_struct.set("nrows", this->nrows);
+	return params_struct.release();
+}
+#endif
 
 /**  Save as a config block:
   *  \code

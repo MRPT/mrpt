@@ -21,7 +21,7 @@ classes, so for further details, check out the program source code.
 
 =head1 BUGS
 
-Please report bugs at https://github.com/jlblancoc/mrpt/issues
+Please report bugs at https://github.com/MRPT/mrpt/issues
 
 =head1 SEE ALSO
 

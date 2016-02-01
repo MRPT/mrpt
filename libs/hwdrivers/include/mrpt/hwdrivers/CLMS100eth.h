@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -107,10 +107,10 @@ namespace mrpt
 			bool                    m_turnedOn;
 			std::string             m_cmd;
 			bool                    m_connected;
-			unsigned int            m_scanFrequency;    // en hertz
-			double                  m_angleResolution;  // en degrés
-			double                  m_startAngle;       // degrés
-			double                  m_stopAngle;        // degrés
+			unsigned int            m_scanFrequency;    // hertz
+			double                  m_angleResolution;  // degrees
+			double                  m_startAngle;       // degrees
+			double                  m_stopAngle;        // degrees
 			mrpt::poses::CPose3D    m_sensorPose;
 			double                  m_maxRange;
 			double                  m_beamApperture;

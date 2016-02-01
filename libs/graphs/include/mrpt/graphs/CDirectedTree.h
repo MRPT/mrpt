@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -10,6 +10,7 @@
 #define  MRPT_DIRECTED_TREE_H
 
 #include <mrpt/utils/utils_defs.h>
+#include <list>
 
 /*---------------------------------------------------------------
 	Class
@@ -133,7 +134,7 @@ namespace mrpt
 				{
 					std::ostringstream  &m_s;
 					CMyVisitor(std::ostringstream &s) : m_s(s) { }
-					virtual void OnVisitNode( const TNodeID parent, const typename mrpt::graphs::CDirectedTree<TYPE_EDGES>::Visitor::tree_t::TEdgeInfo &edge_to_child, const size_t depth_level ) {
+					virtual void OnVisitNode( const TNodeID parent, const typename mrpt::graphs::CDirectedTree<TYPE_EDGES>::Visitor::tree_t::TEdgeInfo &edge_to_child, const size_t depth_level ) MRPT_OVERRIDE {
 						m_s << std::string(depth_level*5, ' ') << (edge_to_child.reverse ? "<-" : "->" ) //;
 							<< edge_to_child.id << std::endl;
 					}

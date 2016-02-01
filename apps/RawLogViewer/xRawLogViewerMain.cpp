@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -1437,7 +1437,7 @@ void xRawLogViewerFrame::loadRawlogFile(
 
 				const uint64_t  progPos = fil_pos>>10;
 
-				auxStr.sprintf(wxT("Loading... %u objects / Memory usage: %.03fMb"),rawlog.size(), memUsg_Mb);
+				auxStr.sprintf(wxT("Loading... %u objects / Memory usage: %.03fMb"),static_cast<unsigned int>(rawlog.size()), memUsg_Mb);
 				if (!progDia.Update( progPos<(progDialogMax-1) ? progPos : (progDialogMax-1), auxStr ))
 					keepLoading = false;
 				progDia.Fit();

@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -569,8 +569,8 @@ void camera_calib_guiDialog::OnbtnSaveClick(wxCommandEvent& event)
 
 		if (wxID_OK!=dlg.ShowModal()) return;
 
-		CMatrixDouble  M(1,4);
-		for (unsigned i=0;i<4;i++)
+		CMatrixDouble  M(1,5);
+		for (unsigned i=0;i<5;i++)
 			M(0,i) = camera_params.dist[i];
 
 		M.saveToTextFile( string(dlg.GetPath().mb_str()) );

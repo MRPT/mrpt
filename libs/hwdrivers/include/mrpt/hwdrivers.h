@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -50,6 +50,7 @@ MRPT_WARNING("Including <mrpt/hwdrivers.h> makes compilation much slower, consid
 #include <mrpt/hwdrivers/CBoardSonars.h>
 #include <mrpt/hwdrivers/CBoardENoses.h>
 #include <mrpt/hwdrivers/CEnoseModular.h>
+#include <mrpt/hwdrivers/CGillAnemometer.h>
 #include <mrpt/hwdrivers/CServoeNeck.h>
 #include <mrpt/hwdrivers/CNTRIPEmitter.h>
 #include <mrpt/hwdrivers/CRoboticHeadInterface.h>
@@ -72,5 +73,8 @@ MRPT_WARNING("Including <mrpt/hwdrivers.h> makes compilation much slower, consid
 #include <mrpt/hwdrivers/CNationalInstrumentsDAQ.h>
 #include <mrpt/hwdrivers/CDUO3DCamera.h>
 #include <mrpt/hwdrivers/CGPS_NTRIP.h>
+#include <mrpt/hwdrivers/CIMUIntersense.h>
+#include <mrpt/hwdrivers/CSkeletonTracker.h>
+#include <mrpt/hwdrivers/CVelodyneScanner.h>
 
 #endif

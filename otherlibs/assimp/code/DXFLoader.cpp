@@ -230,7 +230,7 @@ void DXFImporter::ConvertMeshes(aiScene* pScene, DXF::FileData& output)
 		));
 	}
 
-	if (! output.blocks.size()  ) {
+	if (output.blocks.empty()  ) {
 		throw DeadlyImportError("DXF: no data blocks loaded");
 	}
 
@@ -260,7 +260,7 @@ void DXFImporter::ConvertMeshes(aiScene* pScene, DXF::FileData& output)
 
 	unsigned int cur = 0;
 	BOOST_FOREACH (boost::shared_ptr<const DXF::PolyLine> pl, entities->lines) {
-		if (pl->positions.size()) {
+		if (!pl->positions.empty()) {
 
 			std::map<std::string, unsigned int>::iterator it = layers.find(pl->layer);
 			if (it == layers.end()) {
@@ -688,7 +688,7 @@ void DXFImporter::ParsePolyLine(DXF::LineReader& reader, DXF::FileData& output)
 			));
 		}
 	}
-	else if (!line.indices.size() && !line.counts.size()) {
+	else if (line.indices.empty() && line.counts.empty()) {
 		// a polyline - so there are no indices yet.
 		size_t guess = line.positions.size() + (line.flags & DXF_POLYLINE_FLAG_CLOSED ? 1 : 0);
 		line.indices.reserve(guess);

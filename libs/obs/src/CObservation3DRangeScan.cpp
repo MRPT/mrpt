@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -133,6 +133,7 @@ CObservation3DRangeScan::CObservation3DRangeScan( ) :
 	hasIntensityImage(false),
 	intensityImageChannel(CH_VISIBLE),
 	hasConfidenceImage(false),
+	pixelLabels(), // Start without label info
 	cameraParams(),
 	cameraParamsIntensity(),
 	relativePoseIntensityWRTDepth(0,0,0,DEG2RAD(-90),DEG2RAD(0),DEG2RAD(-90)),
@@ -160,7 +161,7 @@ CObservation3DRangeScan::~CObservation3DRangeScan()
 void  CObservation3DRangeScan::writeToStream(mrpt::utils::CStream &out, int *version) const
 {
 	if (version)
-		*version = 6;
+		*version = 7;
 	else
 	{
 		// The data
@@ -200,6 +201,13 @@ void  CObservation3DRangeScan::writeToStream(mrpt::utils::CStream &out, int *ver
 
 		// New in v6:
 		out << static_cast<int8_t>(intensityImageChannel);
+
+		// New in v7:
+		out << hasPixelLabels();
+		if (hasPixelLabels())
+		{
+			pixelLabels->writeToStream(out);
+		}
 	}
 }
 
@@ -217,6 +225,7 @@ void  CObservation3DRangeScan::readFromStream(mrpt::utils::CStream &in, int vers
 	case 4:
 	case 5:
 	case 6:
+	case 7:
 		{
 			uint32_t		N;
 
@@ -322,6 +331,17 @@ void  CObservation3DRangeScan::readFromStream(mrpt::utils::CStream &in, int vers
 				intensityImageChannel = CH_VISIBLE;
 			}
 
+			pixelLabels.clear_unique(); // Remove existing data first (_unique() is to leave alive any user copies of the shared pointer).
+			if (version>=7)
+			{
+
+				bool do_have_labels;
+				in >> do_have_labels;
+
+				if (do_have_labels)
+					pixelLabels = TPixelLabelInfoPtr( TPixelLabelInfoBase::readAndBuildFromStream(in) );
+			}
+
 		} break;
 	default:
 		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
@@ -352,6 +372,8 @@ void CObservation3DRangeScan::swap(CObservation3DRangeScan &o)
 
 	std::swap(hasConfidenceImage,o.hasConfidenceImage);
 	confidenceImage.swap(o.confidenceImage);
+
+	std::swap(pixelLabels,o.pixelLabels);
 
 	std::swap(relativePoseIntensityWRTDepth, o.relativePoseIntensityWRTDepth);
 
@@ -689,6 +711,8 @@ void CObservation3DRangeScan::getZoneAsObs(
 	if ( hasConfidenceImage )
 		confidenceImage.extract_patch( obs.confidenceImage, c1, r1, c2-c1, r2-r1 );
 
+	MRPT_TODO("Extract zone of labels")
+
 	// Copy zone of scanned points
 	obs.hasPoints3D = hasPoints3D;
 	if ( hasPoints3D )
@@ -943,6 +967,14 @@ void CObservation3DRangeScan::getDescriptionAsText(std::ostream &o) const
 		if (confidenceImage.isExternallyStored())
 			o << ". External file: " << confidenceImage.getExternalStorageFile() << endl;
 		else o << " (embedded)." << endl;
+    }
+
+	o << endl << "Has pixel labels? " << (hasPixelLabels()? "YES": "NO");
+	if (hasPixelLabels())
+	{
+        o << " Human readable labels:" << endl;
+		for (TPixelLabelInfoBase::TMapLabelID2Name::const_iterator it=pixelLabels->pixelLabelNames.begin();it!=pixelLabels->pixelLabelNames.end();++it)
+			o << " label[" << it->first << "]: '" << it->second << "'" << endl;
 	}
 
 	o << endl << endl;
@@ -963,3 +995,60 @@ void CObservation3DRangeScan::getDescriptionAsText(std::ostream &o) const
 		<< relativePoseIntensityWRTDepth.getHomogeneousMatrixVal() << endl;
 
 }
+
+void CObservation3DRangeScan::TPixelLabelInfoBase::writeToStream(mrpt::utils::CStream &out) const
+{
+	const uint8_t version = 1; // for possible future changes.
+	out << version; 
+
+	// 1st: Save number MAX_NUM_DIFFERENT_LABELS so we can reconstruct the object in the class factory later on.
+	out << BITFIELD_BYTES;
+
+	// 2nd: data-specific serialization:
+	this->internal_writeToStream(out);
+}
+
+
+// Deserialization and class factory. All in one, ladies and gentlemen
+CObservation3DRangeScan::TPixelLabelInfoBase* CObservation3DRangeScan::TPixelLabelInfoBase::readAndBuildFromStream(mrpt::utils::CStream &in)
+{
+	uint8_t version;
+	in >> version;
+
+	switch (version)
+	{
+	case 1: 
+		{
+			// 1st: Read NUM BYTES
+			uint8_t  bitfield_bytes;
+			in >> bitfield_bytes;
+
+			// Hand-made class factory. May be a good solution if there will be not too many different classes:
+			CObservation3DRangeScan::TPixelLabelInfoBase *new_obj = NULL;
+			switch (bitfield_bytes)
+			{
+			case 1: new_obj = new CObservation3DRangeScan::TPixelLabelInfo<1>(); break;
+			case 2: new_obj = new CObservation3DRangeScan::TPixelLabelInfo<2>(); break;
+			case 3:
+			case 4: new_obj = new CObservation3DRangeScan::TPixelLabelInfo<4>(); break;
+			case 5:
+			case 6:
+			case 7:
+			case 8: new_obj = new CObservation3DRangeScan::TPixelLabelInfo<8>(); break;
+			default: 
+				throw std::runtime_error("Unknown type of pixelLabel inner class while deserializing!");
+			};
+			// 2nd: data-specific serialization:
+			new_obj->internal_readFromStream(in);
+
+			return new_obj;
+		}
+		break;
+
+	default:
+		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		break;
+	};
+
+}
+

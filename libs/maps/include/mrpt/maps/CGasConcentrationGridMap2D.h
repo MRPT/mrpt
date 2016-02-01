@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -61,12 +61,8 @@ namespace maps
 		{
 			TInsertionOptions();	//!< Default values loader
 
-			/** See utils::CLoadableOptions */
-			void  loadFromConfigFile(
-				const mrpt::utils::CConfigFileBase  &source,
-				const std::string &section);
-
-			void  dumpToTextStream(mrpt::utils::CStream	&out) const; //!< See utils::CLoadableOptions
+			void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) MRPT_OVERRIDE; // See base docs
+			void dumpToTextStream(mrpt::utils::CStream &out) const MRPT_OVERRIDE; // See base docs
 
 			/** @name For all mapping methods
 			    @{ */
@@ -87,26 +83,20 @@ namespace maps
 
 
 		/** Returns an image just as described in \a saveAsBitmapFile */
-		virtual void  getAsBitmapFile(mrpt::utils::CImage &out_img) const;
+		virtual void getAsBitmapFile(mrpt::utils::CImage &out_img) const MRPT_OVERRIDE;
 
-		/** The implementation in this class just calls all the corresponding method of the contained metric maps.
-		  */
-		virtual void  saveMetricMapRepresentationToFile(
-			const std::string	&filNamePrefix
-			) const;
+		/** The implementation in this class just calls all the corresponding method of the contained metric maps  */
+		virtual void saveMetricMapRepresentationToFile(const std::string &filNamePrefix) const MRPT_OVERRIDE;
 
 		/** Save a matlab ".m" file which represents as 3D surfaces the mean and a given confidence level for the concentration of each cell.
-		  *  This method can only be called in a KF map model.
-		  */
-		virtual void  saveAsMatlab3DGraph(const std::string  &filName) const;
+		  *  This method can only be called in a KF map model  */
+		virtual void  saveAsMatlab3DGraph(const std::string  &filName) const MRPT_OVERRIDE;
 
-		/** Returns a 3D object representing the map.
-		  */
-		virtual void  getAs3DObject ( mrpt::opengl::CSetOfObjectsPtr	&outObj ) const;
+		/** Returns a 3D object representing the map */
+		virtual void getAs3DObject( mrpt::opengl::CSetOfObjectsPtr &outObj ) const MRPT_OVERRIDE;
 
-		/** Returns two 3D objects representing the mean and variance maps.
-		  */
-		virtual void  getAs3DObject ( mrpt::opengl::CSetOfObjectsPtr	&meanObj, mrpt::opengl::CSetOfObjectsPtr	&varObj ) const;
+		/** Returns two 3D objects representing the mean and variance maps */
+		virtual void  getAs3DObject ( mrpt::opengl::CSetOfObjectsPtr	&meanObj, mrpt::opengl::CSetOfObjectsPtr	&varObj ) const MRPT_OVERRIDE;
 
 		/** Returns the 3D object representing the wind grid information
 		 */
@@ -152,7 +142,7 @@ namespace maps
 	protected:
 
 		/** Get the part of the options common to all CRandomFieldGridMap2D classes */
-		virtual CRandomFieldGridMap2D::TInsertionOptionsCommon * getCommonInsertOptions() {
+		virtual CRandomFieldGridMap2D::TInsertionOptionsCommon * getCommonInsertOptions()  MRPT_OVERRIDE {
 			return &insertionOptions;
 		}
 

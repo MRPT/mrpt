@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -27,14 +27,11 @@ namespace utils
 	class BASE_IMPEXP CConfigFileMemory : public CConfigFileBase
 	{
 	private:
-		/** The IniFile object
-		  */
-		void_ptr_noncopy		m_ini;
+		void_ptr_noncopy		m_ini; //!< The IniFile object
 
 	protected:
-		/** A virtual method to write a generic string.
-		  */
-		void  writeString(const std::string &section,const std::string &name, const std::string &str);
+		/** A virtual method to write a generic string. */
+		void  writeString(const std::string &section,const std::string &name, const std::string &str) MRPT_OVERRIDE;
 
 		/** A virtual method to read a generic string.
 		  */
@@ -42,7 +39,7 @@ namespace utils
             const std::string &section,
             const std::string &name,
             const std::string &defaultStr,
-            bool failIfNotFound = false) const;
+			bool failIfNotFound = false) const MRPT_OVERRIDE;
 
 	public:
 		/** Constructor and initialize from a list of strings */
@@ -76,13 +73,11 @@ namespace utils
 		 */
 		virtual ~CConfigFileMemory( );
 
-		/** Returns a list with all the section names.
-		  */
-		virtual void getAllSections( vector_string	&sections ) const;
+		/** Returns a list with all the section names */
+		void getAllSections( vector_string	&sections ) const MRPT_OVERRIDE;
 
-		/** Returs a list with all the keys into a section.
-		  */
-		virtual void getAllKeys( const std::string &section, vector_string	&keys ) const;
+		/** Returs a list with all the keys into a section */
+		void getAllKeys( const std::string &section, vector_string	&keys ) const MRPT_OVERRIDE;
 
 	}; // End of class def.
 

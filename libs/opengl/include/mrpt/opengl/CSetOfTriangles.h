@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -115,19 +115,19 @@ namespace mrpt
 			/** Enables or disables transparency. */
 			inline void enableTransparency( bool v )	{ m_enableTransparency = v; CRenderizableDisplayList::notifyChange(); }
 
-			virtual CRenderizable& setColor_u8(const mrpt::utils::TColor &c);
-			virtual CRenderizable& setColorR_u8(const uint8_t r);
-			virtual CRenderizable& setColorG_u8(const uint8_t g);
-			virtual CRenderizable& setColorB_u8(const uint8_t b);
-			virtual CRenderizable& setColorA_u8(const uint8_t a);
+			CRenderizable& setColor_u8(const mrpt::utils::TColor &c) MRPT_OVERRIDE;
+			CRenderizable& setColorR_u8(const uint8_t r) MRPT_OVERRIDE;
+			CRenderizable& setColorG_u8(const uint8_t g) MRPT_OVERRIDE;
+			CRenderizable& setColorB_u8(const uint8_t b) MRPT_OVERRIDE;
+			CRenderizable& setColorA_u8(const uint8_t a) MRPT_OVERRIDE;
 
 			/** Render
 			  */
-			void  render_dl() const;
+			void render_dl() const MRPT_OVERRIDE;
 
 			/** Ray tracing
 			  */
-			virtual bool traceRay(const mrpt::poses::CPose3D &o,double &dist) const;
+			bool traceRay(const mrpt::poses::CPose3D &o,double &dist) const MRPT_OVERRIDE;
 
 			/**
 			  * Gets the polygon cache.
@@ -171,7 +171,7 @@ namespace mrpt
 			}
 
 			/** Evaluates the bounding box of this object (including possible children) in the coordinate frame of the object parent. */
-			virtual void getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const;
+			void getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const MRPT_OVERRIDE;
 
 		private:
 			/** Constructor

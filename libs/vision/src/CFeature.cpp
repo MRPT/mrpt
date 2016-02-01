@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -177,17 +177,17 @@ void TMultiResDescOptions::saveToConfigFile( mrpt::utils::CConfigFileBase &cfg, 
 	cfg.write(section,"sg2", sg2 );
 	cfg.write(section,"sg3", sg3 );
 
-    cfg.write(section,"computeDepth", computeDepth ? "true" : "false" );
-    cfg.write(section,"blurImage", blurImage ? "true" : "false" );
+	cfg.write(section,"computeDepth", computeDepth ? "true" : "false" );
+	cfg.write(section,"blurImage", blurImage ? "true" : "false" );
 	cfg.write(section,"fx", fx );
 	cfg.write(section,"cx", cx );
 	cfg.write(section,"cy", cy );
 	cfg.write(section,"baseline", baseline );
-    cfg.write(section,"computeHashCoeffs", computeHashCoeffs ? "true" : "false" );
+	cfg.write(section,"computeHashCoeffs", computeHashCoeffs ? "true" : "false" );
 
-    char buf[300];
-    for(unsigned int k = 0; k < scales.size(); ++k)
-        mrpt::system::os::sprintf( buf, 300, "%.2f ", scales[k] );
+	char buf[300];
+	for(unsigned int k = 0; k < scales.size(); ++k)
+		mrpt::system::os::sprintf( buf, 300, "%.2f ", scales[k] );
 	cfg.write(section,"scales", buf );
 } // end-saveToConfigFile
 
@@ -196,74 +196,73 @@ void TMultiResDescOptions::saveToConfigFile( mrpt::utils::CConfigFileBase &cfg, 
 // --------------------------------------------------
 void  TMultiResDescOptions::dumpToTextStream( mrpt::utils::CStream &out) const
 {
-    out.printf("\n----------- [vision::TMultiResDescOptions] ------------ \n");
-    out.printf("Base patch size:                %d px\n", basePSize);
+	out.printf("\n----------- [vision::TMultiResDescOptions] ------------ \n");
+	out.printf("Base patch size:                %d px\n", basePSize);
 	out.printf("Lowest scale to compute:        %d\n", comLScl );
 	out.printf("Highest scale to compute:       %d\n", comHScl );
 	out.printf("Image smoothing sigma:          %.2f px\n", sg1 );
 	out.printf("Orientation histogram sigma:    %.2f\n", sg2 );
 	out.printf("Descriptor histogram sigma:     %.2f\n", sg3 );
-    out.printf("Compute depth:                  ");
-    if( computeDepth )
-    {
-        out.printf("Yes\n");
-        out.printf("Focal length:                   %.2f px\n", fx );
-        out.printf("Principal point (cx):           %.2f px\n", cx );
-        out.printf("Principal point (cy):           %.2f px\n", cy );
-        out.printf("Baseline:                       %.2f m\n", baseline );
-    }
-    else
-        out.printf("No\n");
+	out.printf("Compute depth:                  ");
+	if( computeDepth )
+	{
+		out.printf("Yes\n");
+		out.printf("Focal length:                   %.2f px\n", fx );
+		out.printf("Principal point (cx):           %.2f px\n", cx );
+		out.printf("Principal point (cy):           %.2f px\n", cy );
+		out.printf("Baseline:                       %.2f m\n", baseline );
+	}
+	else
+		out.printf("No\n");
 
-    out.printf("Compute Hash Coeffs:            ");
-    if( computeHashCoeffs )
-        out.printf("Yes\n");
-    else
-        out.printf("No\n");
+	out.printf("Compute Hash Coeffs:            ");
+	if( computeHashCoeffs )
+		out.printf("Yes\n");
+	else
+		out.printf("No\n");
 
-    out.printf("Blur image previously:          ");
-    if( blurImage )
-        out.printf("Yes\n");
-    else
-        out.printf("No\n");
+	out.printf("Blur image previously:          ");
+	if( blurImage )
+		out.printf("Yes\n");
+	else
+		out.printf("No\n");
 
 	out.printf("Scales:                         ");
-    for(unsigned int k = 0; k < scales.size(); ++k)
-        out.printf( "%.2f ", scales[k] );
-    out.printf("\n");
-    out.printf("-------------------------------------------------------- \n");
+	for(unsigned int k = 0; k < scales.size(); ++k)
+		out.printf( "%.2f ", scales[k] );
+	out.printf("\n");
+	out.printf("-------------------------------------------------------- \n");
 } // end-dumpToTextStream
 
 void CFeature::dumpToTextStream( mrpt::utils::CStream &out) const
 {
-
-    out.printf("\n----------- [vision::CFeature] ------------ \n");
-    out.printf("Feature ID:                     %d\n", (int)ID);
+	out.printf("\n----------- [vision::CFeature] ------------ \n");
+	out.printf("Feature ID:                     %d\n", (int)ID);
 	out.printf("Coordinates:                    (%.2f,%.2f) px\n", x, y );
 	out.printf("PatchSize:                      %d\n", patchSize );
 	out.printf("Type:                           ");
 	switch( type )
 	{
-	    case -1: out.printf("Not defined\n"); break;
-	    case 0: out.printf("KLT\n"); break;
-	    case 1: out.printf("Harris\n"); break;
-	    case 2: out.printf("BCD\n"); break;
-	    case 3: out.printf("SIFT\n"); break;
-	    case 4: out.printf("SURF\n"); break;
-	    case 5: out.printf("Beacon\n"); break;
-	    case 6: out.printf("FAST\n"); break;
-	    case 7: out.printf("FASTER-9\n"); break;
-	    case 8: out.printf("FASTER-10\n"); break;
-	    case 9: out.printf("FASTER-12\n"); break;
-		case 10:out.printf("ORB"); break;
+	case -1: out.printf("Not defined\n"); break;
+	case 0: out.printf("KLT\n"); break;
+	case 1: out.printf("Harris\n"); break;
+	case 2: out.printf("BCD\n"); break;
+	case 3: out.printf("SIFT\n"); break;
+	case 4: out.printf("SURF\n"); break;
+	case 5: out.printf("Beacon\n"); break;
+	case 6: out.printf("FAST\n"); break;
+	case 7: out.printf("FASTER-9\n"); break;
+	case 8: out.printf("FASTER-10\n"); break;
+	case 9: out.printf("FASTER-12\n"); break;
+	case 10:out.printf("ORB"); break;
 	}
 	out.printf("Status:                         ");
 	switch( track_status )
 	{
-	    case 0: out.printf("Idle\n"); break;
-	    case 1: out.printf("[KLT] Out of bounds [KLT]\n"); break;
-	    case 5: out.printf("[KLT] Tracked\n"); break;
-	    case 10: out.printf("[KLT] Lost\n"); break;
+	case 0: out.printf("Idle\n"); break;
+	case 1: out.printf("[KLT] Out of bounds [KLT]\n"); break;
+	case 5: out.printf("[KLT] Tracked\n"); break;
+	case 10: out.printf("[KLT] Lost\n"); break;
 	}
 
 	out.printf("Response:                       %.2f\n", response );
@@ -279,7 +278,7 @@ void CFeature::dumpToTextStream( mrpt::utils::CStream &out) const
 	isPointFeature() ? out.printf("Yes\n") : out.printf("No\n");
 
 	out.printf("Has SIFT descriptor?:           ");
-    descriptors.hasDescriptorSIFT() ? out.printf("Yes\n") : out.printf("No\n");
+	descriptors.hasDescriptorSIFT() ? out.printf("Yes\n") : out.printf("No\n");
 	out.printf("Has SURF descriptor?:           ");
 	descriptors.hasDescriptorSURF() ? out.printf("Yes\n") : out.printf("No\n");
 	out.printf("Has Spin image descriptor?:     ");
@@ -293,26 +292,26 @@ void CFeature::dumpToTextStream( mrpt::utils::CStream &out) const
 
 
 	out.printf("Has multiscale?:                ");
-    if( !descriptors.hasDescriptorMultiSIFT() )
-        out.printf("No\n");
-    else
-    {
-        out.printf("Yes [%d]\n", (int)multiScales.size());
-        for( int k = 0; k < (int)multiScales.size(); ++k )
-        {
-            out.printf(" · Scale %d: %.2f\n", k, multiScales[k] );
-            for( int m = 0; m < (int)multiOrientations[k].size(); ++m )
-            {
-                out.printf(" ·· Orientation %d: %.2f\n", m, multiOrientations[k][m] );
-                out.printf(" ·· [D] " );
-                for( int n = 0; n < (int)descriptors.multiSIFTDescriptors[k][m].size(); ++n )
-                    out.printf("%d ", descriptors.multiSIFTDescriptors[k][m][n] );
-                out.printf("\n");
-                if( multiHashCoeffs.size() > 0 )
-                    out.printf(" ·· HASH coefficients %d,%d,%d\n", multiHashCoeffs[k][m][0], multiHashCoeffs[k][m][1],multiHashCoeffs[k][m][2] );
-            }//end-for-m
-        }//end-for-k
-    } // end else
+	if( !descriptors.hasDescriptorMultiSIFT() )
+		out.printf("No\n");
+	else
+	{
+		out.printf("Yes [%d]\n", (int)multiScales.size());
+		for( int k = 0; k < (int)multiScales.size(); ++k )
+		{
+			out.printf(" · Scale %d: %.2f\n", k, multiScales[k] );
+			for( int m = 0; m < (int)multiOrientations[k].size(); ++m )
+			{
+				out.printf(" ·· Orientation %d: %.2f\n", m, multiOrientations[k][m] );
+				out.printf(" ·· [D] " );
+				for( int n = 0; n < (int)descriptors.multiSIFTDescriptors[k][m].size(); ++n )
+					out.printf("%d ", descriptors.multiSIFTDescriptors[k][m][n] );
+				out.printf("\n");
+				if( multiHashCoeffs.size() > 0 )
+					out.printf(" ·· HASH coefficients %d,%d,%d\n", multiHashCoeffs[k][m][0], multiHashCoeffs[k][m][1],multiHashCoeffs[k][m][2] );
+			}//end-for-m
+		}//end-for-k
+	} // end else
 } // end dumpToTextStream
 
 void CFeature::dumpToConsole() const
@@ -339,15 +338,15 @@ void  CFeature::writeToStream(mrpt::utils::CStream &out,int *version) const
 			<< orientation
 			<< scale
 			<< user_flags
-            << nTimesSeen
-            << nTimesNotSeen
-            << nTimesLastSeen
-            << depth
-            << initialDepth
-            << p3D
-            << multiScales
-            << multiOrientations
-            << multiHashCoeffs
+			<< nTimesSeen
+			<< nTimesNotSeen
+			<< nTimesLastSeen
+			<< depth
+			<< initialDepth
+			<< p3D
+			<< multiScales
+			<< multiOrientations
+			<< multiHashCoeffs
 			<< descriptors.SIFT
 			<< descriptors.SURF
 			<< descriptors.SpinImg
@@ -381,27 +380,27 @@ void  CFeature::readFromStream(mrpt::utils::CStream &in,int version)
 				>> orientation
 				>> scale
 				>> user_flags;
-            if( version > 0 )
-            {
-                in  >> nTimesSeen
-                    >> nTimesNotSeen
-                    >> nTimesLastSeen
-                    >> depth
-                    >> initialDepth
-                    >> p3D
-                    >> multiScales
-                    >> multiOrientations
-                    >> multiHashCoeffs;
-            }
-            in  >> descriptors.SIFT
+			if( version > 0 )
+			{
+				in  >> nTimesSeen
+					>> nTimesNotSeen
+					>> nTimesLastSeen
+					>> depth
+					>> initialDepth
+					>> p3D
+					>> multiScales
+					>> multiOrientations
+					>> multiHashCoeffs;
+			}
+			in  >> descriptors.SIFT
 				>> descriptors.SURF
 				>> descriptors.SpinImg
 				>> descriptors.SpinImg_range_rows
 				>> descriptors.PolarImg
 				>> descriptors.LogPolarImg
 				>> descriptors.polarImgsNoRotation;
-            if( version > 0 )
-                in  >> descriptors.multiSIFTDescriptors;
+			if( version > 0 )
+				in  >> descriptors.multiSIFTDescriptors;
 			if( version > 1 )
 				in 	>> descriptors.ORB;
 
@@ -1170,15 +1169,15 @@ void CMatchedFeatureList::updateMaxID( const TListIdx &idx )
 void CMatchedFeatureList::getMaxID( const TListIdx &idx, TFeatureID & firstListID, TFeatureID & secondListID )
 {
 	MRPT_START
-	ASSERT_( !empty() )
-    if( idx == firstList || idx == bothLists )
-        if( m_leftMaxID == 0 )
-            updateMaxID( firstList );
+	ASSERT_( !empty() );
+	if( idx == firstList || idx == bothLists )
+		if( m_leftMaxID == 0 )
+			updateMaxID( firstList );
 	if( idx == secondList || idx == bothLists )
-        if( m_rightMaxID == 0 )
-            updateMaxID( secondList );
-    firstListID = m_leftMaxID;
-    secondListID = m_rightMaxID;
+		if( m_rightMaxID == 0 )
+			updateMaxID( secondList );
+	firstListID = m_leftMaxID;
+	secondListID = m_rightMaxID;
 	MRPT_END
 } // end getMaxID()
 // --------------------------------------------------

@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -30,74 +30,65 @@ void  COccupancyGridMap2D::buildVoronoiDiagram(
 			int			y1,
 			int			y2)
 {
-        // The whole map?
-        if (!x1 && !x2 && !y1 && !y2)
-        {
-                x1=y1=0;
-                x2=size_x-1;
-                y2=size_y-1;
-        }
-        else
-        {
-                x1=max(0,x1);
-                y1=max(0,y1);
-                x2=min(x2,static_cast<int>(size_x)-1);
-                y2=min(y2,static_cast<int>(size_y)-1);
-        }
+	// The whole map?
+	if (!x1 && !x2 && !y1 && !y2) {
+		x1=y1=0;
+		x2=size_x-1;
+		y2=size_y-1;
+	}
+	else {
+		x1=max(0,x1);
+		y1=max(0,y1);
+		x2=min(x2,static_cast<int>(size_x)-1);
+		y2=min(y2,static_cast<int>(size_y)-1);
+	}
 
-        int robot_size_units= round(100*robot_size / resolution);
+	int robot_size_units= round(100*robot_size / resolution);
 
-/*   ¡¡DE RECUERDO!!
-        // En cada celda se guarda un 0 si no pertenece al diagrama de voronoi,
-        //   o si pertenece, la distancia hasta los obstaculos mas cercanos,
-        //   la "clearance" (en unidades enteras de centesimas de celdas)
-        int             *voronoi_diagram;
-*/
-        // Iniciar voronoi:
+	/* We store 0 in cells NOT belonging to Voronoi, or the closest distance
+ * to obstacle otherwise, the "clearance" in "int" distance units.
+ */
+	m_voronoi_diagram.setSize(x_min,x_max, y_min,y_max, resolution);  // assign(size_x*size_y,0);
+	ASSERT_EQUAL_(m_voronoi_diagram.getSizeX(), size_x);
+	ASSERT_EQUAL_(m_voronoi_diagram.getSizeY(), size_y);
+	m_voronoi_diagram.fill(0);
 
-		m_voronoi_diagram.setSize(x_min,x_max, y_min,y_max, resolution);  // assign(size_x*size_y,0);
-		ASSERT_EQUAL_(m_voronoi_diagram.getSizeX(), size_x);
-		ASSERT_EQUAL_(m_voronoi_diagram.getSizeY(), size_y);
-		m_voronoi_diagram.fill(0);
+	// freeness threshold
+	voroni_free_threshold= 1.0f - threshold;
 
-        // threshold en prob. de ocupado. Nosotros guardamos prob. de libre.
-//        voroni_free_threshold= 1.0f - threshold;
-        voroni_free_threshold= 1.0f - threshold;
+	int     basis_x[2],basis_y[2];
+	int     nBasis;
 
+	// Build Voronoi:
+	for (int x=x1;x<=x2;x++) {
+		for (int y=y1;y<=y2;y++)
+		{
+			const int Clearance = computeClearance(x,y,basis_x,basis_y,&nBasis);
 
-        int     basis_x[2],basis_y[2];
-        int     nBasis;
-        int     Clearance;
+			if (Clearance > robot_size_units )
+				setVoroniClearance(x,y,Clearance );
+		}
+	}
 
-        // Construir: (Lo gordo esta en la funcion "ComputeClearance")
-		int x;
-        for (x=x1;x<=x2;x++)
-         for (int y=y1;y<=y2;y++)
-         {
-                Clearance = computeClearance(x,y,basis_x,basis_y,&nBasis);
+	// Limpiar: Hacer que los trazos sean de grosor 1:
+	//  Si un punto del diagrama esta rodeada de mas de 2
+	//   puntos tb del diagrama, eliminarlo:
+	int    nDiag;
+	for (int x=x1;x<=x2;x++) {
+		for (int y=y1;y<=y2;y++) {
+			if ( getVoroniClearance(x,y) )
+			{
+				nDiag=0;
+				for (int xx=x-1;xx<=(x+1);xx++)
+					for (int yy=y-1;yy<=(y+1);yy++)
+						if (getVoroniClearance(xx,yy)) nDiag++;
 
-                if (Clearance > robot_size_units )
-                        setVoroniClearance(x,y,Clearance );
-         }
-
-         // Limpiar: Hacer que los trazos sean de grosor 1:
-         //  Si un punto del diagrama esta rodeada de mas de 2
-         //   puntos tb del diagrama, eliminarlo:
-         int    nDiag;
-         for (x=x1;x<=x2;x++)
-          for (int y=y1;y<=y2;y++)
-           if ( getVoroniClearance(x,y) )
-           {
-                nDiag=0;
-                for (int xx=x-1;xx<=(x+1);xx++)
-                 for (int yy=y-1;yy<=(y+1);yy++)
-                  if (getVoroniClearance(xx,yy)) nDiag++;
-
-                // Eliminar?
-                if (nDiag>3)
-                        setVoroniClearance(x,y,0);
-           }
-
+				// Eliminar?
+				if (nDiag>3)
+					setVoroniClearance(x,y,0);
+			}
+		}
+	}
 }
 
 /*---------------------------------------------------------------
@@ -105,141 +96,140 @@ void  COccupancyGridMap2D::buildVoronoiDiagram(
   ---------------------------------------------------------------*/
 void  COccupancyGridMap2D::findCriticalPoints( float filter_distance )
 {
-        int     clear_xy, clear;
+	int     clear_xy, clear;
 
-        int     filter_dist = round(filter_distance / resolution);
-        int     min_clear_near, max_clear_near;
-
-
-        // Resize basis-points map & set to zero:
-		m_basis_map.setSize(x_min,x_max, y_min,y_max, resolution);	//m_basis_map.assign(size_x*size_y, 0);
-		ASSERT_EQUAL_(m_basis_map.getSizeX(), size_x);
-		ASSERT_EQUAL_(m_basis_map.getSizeY(), size_y);
-		m_basis_map.fill(0);
-
-        // Lista temporary de candidatos:
-		std::vector<int>	temp_x,temp_y, temp_clear, temp_borrar;
-
-        // Escanear en busqueda de puntos criticos:
-        // ---------------------------------------------
-        for (int x=1;x<(static_cast<int>(size_x)-1);x++)
-          for (int y=1;y<(static_cast<int>(size_y)-1);y++)
-            if ( 0!=(clear_xy=getVoroniClearance(x,y)) )
-                {
-                        // Ver si es un punto critico:
-                        int nVecinosVoroni = 0;
-                        min_clear_near = max_clear_near = clear_xy;
-
-                        for (int xx=x-2;xx<=(x+2);xx++)
-                          for (int yy=y-2;yy<=(y+2);yy++)
-                          {
-                                if ( 0!=(clear = getVoroniClearance(xx,yy)) )
-                                {
-                                        nVecinosVoroni++;
-                                        min_clear_near = min( min_clear_near , clear );
-                                        max_clear_near = max( max_clear_near , clear );
-                                }
-                          }
-
-                          // Al menos tiene q haber 2 puntos mas alrededor:
-                          if (nVecinosVoroni>=3 && min_clear_near==clear_xy && max_clear_near!=clear_xy )
-                          {
-                                // Add to temp list:
-                                temp_x.push_back( x );
-                                temp_y.push_back( y );
-                                temp_clear.push_back( clear_xy );
-                                temp_borrar.push_back( 0 );
-                          }
-
-                }
+	int     filter_dist = round(filter_distance / resolution);
+	int     min_clear_near, max_clear_near;
 
 
-        // Filtrar: Hayar los "basis points". Si dos coindicen, dejar solo
-        //  el crit.pt. con menos clearance:
+	// Resize basis-points map & set to zero:
+	m_basis_map.setSize(x_min,x_max, y_min,y_max, resolution);	//m_basis_map.assign(size_x*size_y, 0);
+	ASSERT_EQUAL_(m_basis_map.getSizeX(), size_x);
+	ASSERT_EQUAL_(m_basis_map.getSizeY(), size_y);
+	m_basis_map.fill(0);
 
-        // Hacer la lista de todos los basis points:
-		std::vector<int>       basis1_x,basis1_y, basis2_x,basis2_y;
-		unsigned i;
-        for (i=0;i<temp_x.size();i++)
-        {
-                int     basis_x[2];
-                int     basis_y[2];
-                int     nBasis;
+	// Temp list of candidate
+	std::vector<int>	temp_x,temp_y, temp_clear, temp_borrar;
 
-                computeClearance(temp_x[i],temp_y[i],basis_x,basis_y,&nBasis);
+	// Scan for critical points
+	// ---------------------------------------------
+	for (int x=1;x<(static_cast<int>(size_x)-1);x++) {
+		for (int y=1;y<(static_cast<int>(size_y)-1);y++) {
+			if ( 0!=(clear_xy=getVoroniClearance(x,y)) )
+			{
+				// Is this a critical point?
+				int nVecinosVoroni = 0;
+				min_clear_near = max_clear_near = clear_xy;
 
-                if (nBasis==2)
-                {
-                        basis1_x.push_back(basis_x[0]);
-                        basis1_y.push_back(basis_y[0]);
+				for (int xx=x-2;xx<=(x+2);xx++)
+					for (int yy=y-2;yy<=(y+2);yy++)
+					{
+						if ( 0!=(clear = getVoroniClearance(xx,yy)) )
+						{
+							nVecinosVoroni++;
+							min_clear_near = min( min_clear_near , clear );
+							max_clear_near = max( max_clear_near , clear );
+						}
+					}
 
-                        basis2_x.push_back(basis_x[1]);
-                        basis2_y.push_back(basis_y[1]);
-                }
-        }
+				// At least 2 more neighbors
+				if (nVecinosVoroni>=3 && min_clear_near==clear_xy && max_clear_near!=clear_xy )
+				{
+					// Add to temp list:
+					temp_x.push_back( x );
+					temp_y.push_back( y );
+					temp_clear.push_back( clear_xy );
+					temp_borrar.push_back( 0 );
+				}
 
-       // Ver basis que coincidan:
-       for (i=0;i<(((temp_x.size()))-1);i++)
-        if (!temp_borrar[i])
-         for (unsigned int j=i+1;j<temp_x.size();j++)
-          if (!temp_borrar[j])
-          {
-                int ax,ay;
+			}
+		}
+	}
 
-                // i1-j1
-                ax = basis1_x[i]-basis1_x[j];
-                ay = basis1_y[i]-basis1_y[j];
-                bool i1j1= (sqrt(1.0f*ax*ax+ay*ay)<filter_dist);
+	// Filter: find "basis points". If two coincide, leave the one with the shortest clearance.
+	std::vector<int> basis1_x,basis1_y, basis2_x,basis2_y;
+	for (unsigned i=0;i<temp_x.size();i++)
+	{
+		int     basis_x[2];
+		int     basis_y[2];
+		int     nBasis;
 
-                // i1-j2
-                ax = basis1_x[i]-basis2_x[j];
-                ay = basis1_y[i]-basis2_y[j];
-                bool i1j2= (sqrt(1.0f*ax*ax+ay*ay)<filter_dist);
+		computeClearance(temp_x[i],temp_y[i],basis_x,basis_y,&nBasis);
 
-                // i2-j1
-                ax = basis2_x[i]-basis1_x[j];
-                ay = basis2_y[i]-basis1_y[j];
-                bool i2j1= (sqrt(1.0f*ax*ax+ay*ay)<filter_dist);
+		if (nBasis==2)
+		{
+			basis1_x.push_back(basis_x[0]);
+			basis1_y.push_back(basis_y[0]);
 
-                // i2-j2
-                ax = basis2_x[i]-basis2_x[j];
-                ay = basis2_y[i]-basis2_y[j];
-                bool i2j2= (sqrt(1.0f*ax*ax+ay*ay)<filter_dist);
+			basis2_x.push_back(basis_x[1]);
+			basis2_y.push_back(basis_y[1]);
+		}
+	}
+
+	// Ver basis que coincidan:
+	for (unsigned i=0;i<(((temp_x.size()))-1);i++) {
+		if (!temp_borrar[i]) {
+			for (unsigned int j=i+1;j<temp_x.size();j++) {
+				if (!temp_borrar[j])
+				{
+					int ax,ay;
+
+					// i1-j1
+					ax = basis1_x[i]-basis1_x[j];
+					ay = basis1_y[i]-basis1_y[j];
+					bool i1j1= (sqrt(1.0f*ax*ax+ay*ay)<filter_dist);
+
+					// i1-j2
+					ax = basis1_x[i]-basis2_x[j];
+					ay = basis1_y[i]-basis2_y[j];
+					bool i1j2= (sqrt(1.0f*ax*ax+ay*ay)<filter_dist);
+
+					// i2-j1
+					ax = basis2_x[i]-basis1_x[j];
+					ay = basis2_y[i]-basis1_y[j];
+					bool i2j1= (sqrt(1.0f*ax*ax+ay*ay)<filter_dist);
+
+					// i2-j2
+					ax = basis2_x[i]-basis2_x[j];
+					ay = basis2_y[i]-basis2_y[j];
+					bool i2j2= (sqrt(1.0f*ax*ax+ay*ay)<filter_dist);
 
 
-                // Si coincide, eliminar el de mas "dist."
-                if ( (i1j1 && i2j2) || (i1j2 && i2j1) )
-                {
-                        if ( temp_clear[i]<temp_clear[j] )
-                                temp_borrar[j]=1;
-                        else    temp_borrar[i]=1;
-                }
+					// Si coincide, eliminar el de mas "dist."
+					if ( (i1j1 && i2j2) || (i1j2 && i2j1) )
+					{
+						if ( temp_clear[i]<temp_clear[j] )
+							temp_borrar[j]=1;
+						else    temp_borrar[i]=1;
+					}
 
-          }
+				}
+			}
+		}
+	}
 
+	// Copy to permanent list:
+	// ----------------------------------------------------------
+	CriticalPointsList.clearance.clear();
+	CriticalPointsList.x.clear();
+	CriticalPointsList.y.clear();
+	CriticalPointsList.x_basis1.clear();
+	CriticalPointsList.y_basis1.clear();
+	CriticalPointsList.x_basis2.clear();
+	CriticalPointsList.y_basis2.clear();
 
-        // Copiar ya a la lista definitiva:
-        // ----------------------------------------------------------
-        CriticalPointsList.clearance.clear();
-        CriticalPointsList.x.clear();
-        CriticalPointsList.y.clear();
-        CriticalPointsList.x_basis1.clear();
-        CriticalPointsList.y_basis1.clear();
-        CriticalPointsList.x_basis2.clear();
-        CriticalPointsList.y_basis2.clear();
+	for (unsigned i=0;i<temp_x.size();i++)
+	{
+		if (!temp_borrar[i])
+		{
+			CriticalPointsList.x.push_back( temp_x[i] );
+			CriticalPointsList.y.push_back( temp_y[i] );
+			CriticalPointsList.clearance.push_back( temp_clear[i] );
 
-        for (i=0;i<temp_x.size();i++)
-        {
-                if (!temp_borrar[i])
-                {
-                        CriticalPointsList.x.push_back( temp_x[i] );
-                        CriticalPointsList.y.push_back( temp_y[i] );
-                        CriticalPointsList.clearance.push_back( temp_clear[i] );
-
-                        // Add to the basis points as well:
-                        setBasisCell( temp_x[i],temp_y[i] ,1);
-                }
-        }
+			// Add to the basis points as well:
+			setBasisCell( temp_x[i],temp_y[i] ,1);
+		}
+	}
 }
 
 /*---------------------------------------------------------------

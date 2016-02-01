@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -11,15 +11,15 @@
 #define REACTIVENAVIGATIONDEMOMAIN_H
 
 //(*Headers(ReactiveNavigationDemoFrame)
-#include <wx/checkbox.h>
 #include <wx/sizer.h>
-#include <wx/button.h>
-#include <wx/panel.h>
-#include <wx/statusbr.h>
-#include <wx/frame.h>
 #include <wx/stattext.h>
 #include <wx/textctrl.h>
+#include <wx/checkbox.h>
+#include <wx/panel.h>
+#include <wx/button.h>
+#include <wx/frame.h>
 #include <wx/timer.h>
+#include <wx/statusbr.h>
 //*)
 
 #include <mrpt/otherlibs/mathplot/mathplot.h>
@@ -45,7 +45,6 @@ class ReactiveNavigationDemoFrame: public wxFrame
         void OnplotMouseMove(wxMouseEvent& event);
         void OntimSimulateTrigger(wxTimerEvent& event);
         void OnbtnResetClick(wxCommandEvent& event);
-        void OnbtnEditRobotParamsClick(wxCommandEvent& event);
         void OnbtnEditNavParamsClick(wxCommandEvent& event);
         void OnrbExtMapSelect(wxCommandEvent& event);
         void OncbInternalParamsClick(wxCommandEvent& event);
@@ -62,11 +61,8 @@ class ReactiveNavigationDemoFrame: public wxFrame
         static const long ID_CHECKBOX1;
         static const long ID_STATICTEXT1;
         static const long ID_TEXTCTRL2;
-        static const long ID_BUTTON6;
         static const long ID_BUTTON7;
         static const long ID_CHECKBOX2;
-        static const long ID_STATICTEXT5;
-        static const long ID_TEXTCTRL5;
         static const long ID_STATICTEXT6;
         static const long ID_TEXTCTRL6;
         static const long ID_STATICTEXT2;
@@ -85,30 +81,27 @@ class ReactiveNavigationDemoFrame: public wxFrame
 		static const long ID_MENUITEM_SET_reactivenav_TARGET;
 
         //(*Declarations(ReactiveNavigationDemoFrame)
+        wxStaticText* StaticText2;
+        wxButton* btnStart;
         wxTextCtrl* edMapFile;
-        wxPanel* Panel1;
-        wxTextCtrl* edX;
-        mpWindow* plot;
-        wxTextCtrl* edY;
-        wxStatusBar* StatusBar1;
-        wxTextCtrl* edRobotCfgFile;
-        wxButton* btnNavigate;
-        wxButton* btnPause;
-        wxCheckBox* cbExtMap;
-        wxStaticText* StaticText3;
         wxButton* btnEditNavParams;
+        wxStaticText* StaticText6;
+        wxButton* btnNavigate;
+        wxTextCtrl* edX;
+        wxPanel* Panel1;
+        wxStaticText* StaticText3;
+        wxCheckBox* cbExtMap;
+        wxTextCtrl* edY;
         wxButton* btnExit;
         wxTextCtrl* edLog;
+        wxButton* btnPause;
+        wxStatusBar* StatusBar1;
+        wxCheckBox* cbLog;
+        wxTimer timSimulate;
         wxTextCtrl* edNavCfgFile;
         wxStaticText* StaticText4;
-        wxStaticText* StaticText5;
-        wxStaticText* StaticText2;
-        wxCheckBox* cbLog;
-        wxStaticText* StaticText6;
-        wxTimer timSimulate;
-        wxButton* btnStart;
+        mpWindow* plot;
         wxCheckBox* cbInternalParams;
-        wxButton* btnEditRobotParams;
         //*)
 
 

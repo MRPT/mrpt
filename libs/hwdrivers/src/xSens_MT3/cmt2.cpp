@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -202,9 +202,9 @@ XsensResultValue Cmt2s::readMessage(Message* rcv)
 	MessageHeader* hdr = (MessageHeader*) m_readBuffer;
 	uint16_t pre = 0;
 	uint32_t length = 0;
-	uint32_t target;
+	uint32_t target=0;
 	uint16_t i;
-	bool extended;
+	bool extended=false;
 
 	CMT2LOG("L2: readMessage started, bufferCount=%u\n",m_readBufferCount);
 

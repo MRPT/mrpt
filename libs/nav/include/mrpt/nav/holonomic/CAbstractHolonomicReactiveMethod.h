@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -19,9 +19,11 @@ namespace mrpt
 {
 	namespace nav
 	{
-	/**  The implemented reactive navigation methods. This enum works with mrpt::utils::TEnumType
-	*  \ingroup mrpt_nav_grp
-	*/
+	/** \addtogroup nav_holo Holonomic navigation methods
+	  * \ingroup mrpt_nav_grp
+	  * @{ */
+	  
+	/**  The implemented reactive navigation methods. This enum works with mrpt::utils::TEnumType */
 	enum THolonomicMethod
 	{
 		hmVIRTUAL_FORCE_FIELDS = 0,
@@ -30,7 +32,6 @@ namespace mrpt
 
 	/** A base class for holonomic reactive navigation methods.
 	 *  \sa CHolonomicVFF,CHolonomicND, CReactiveNavigationSystem
-	 *  \ingroup mrpt_nav_grp
 	 */
 	class NAV_IMPEXP CAbstractHolonomicReactiveMethod
 	{
@@ -44,7 +45,7 @@ namespace mrpt
 		   *  \param logRecord [IN/OUT] A placeholder for a pointer to a log record with extra info about the execution. Set to NULL if not required. User <b>must free memory</b> using "delete logRecord" after using it.
 		   *
 		   *  NOTE: With "pseudometers" we refer to the distance unit in TP-Space, thus:
-		   *     <br><center><code>pseudometer<sup>2</sup>= meter<sup>2</sup> + (rad · r)<sup>2</sup></code><br></center>
+		   *     <br><center><code>pseudometer<sup>2</sup>= meter<sup>2</sup> + (rad * r)<sup>2</sup></code><br></center>
 		   */
 		 virtual void  navigate(const mrpt::math::TPoint2D &target,
 								const std::vector<float>	&obstacles,
@@ -62,6 +63,7 @@ namespace mrpt
 		 virtual void  initialize( const mrpt::utils::CConfigFileBase &INI_FILE  ) = 0;
 
 	};
+	  /** @} */
   }
 	// Specializations MUST occur at the same namespace:
 	namespace utils

@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -16,6 +16,10 @@ namespace mrpt
 {
 	namespace utils
 	{
+		/** \addtogroup color_maps Color map functions (in #include <mrpt/utils/color_maps.h>)
+		  *  \ingroup mrpt_base_grp
+		  * @{ */
+
 		/** Transform HSV color components to RGB, all of them in the range [0,1]
 		  * \sa rgb2hsv
 		  */
@@ -64,6 +68,7 @@ namespace mrpt
 			float	&r,
 			float	&g,
 			float	&b);
+		/** @} */
 	}
 }
 

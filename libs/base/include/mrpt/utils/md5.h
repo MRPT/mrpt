@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -15,12 +15,16 @@ namespace mrpt
 {
 	namespace utils
 	{
+		/** \addtogroup mrpt_md5 MD5 functions (in #include <mrpt/utils/md5.h>)
+		  *  \ingroup mrpt_base_grp
+		  * @{ */
 		/** Computes the md5 of a block of data. */
 		std::string BASE_IMPEXP md5(const std::string &str);
 		/** Computes the md5 of a block of data. */
 		std::string BASE_IMPEXP md5(const mrpt::vector_byte &str);
 		/** Computes the md5 of a block of data. */
 		std::string BASE_IMPEXP md5(const unsigned char * data, const size_t len);
+		/** @} */
 	}
 }
 

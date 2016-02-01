@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -262,7 +262,7 @@ bool CServoeNeck::setAngle( double angle, const uint8_t servo, bool fast )
 -------------------------------------------------------------*/
 bool CServoeNeck::setAngleAndSpeed( double angle, const uint8_t servo, const uint8_t speed )
 {
-	// speed in the range 15º/s-250º/s
+	// speed in the range 15/s-250/s
 	if( angle < -m_TruncateFactor*M_PI/2 )	angle = -m_TruncateFactor*M_PI/2;
 	if( angle > m_TruncateFactor*M_PI/2 )	angle = m_TruncateFactor*M_PI/2;
 

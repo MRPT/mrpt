@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -166,19 +166,11 @@ namespace mrpt
 		  */
 		struct VISION_IMPEXP TStereoSystemParams : public mrpt::utils::CLoadableOptions
 		{
-			/** Initilization of default parameters
-			 */
+			/** Initilization of default parameters */
 			TStereoSystemParams(	);
 
-			/** See utils::CLoadableOptions
-			  */
-			void  loadFromConfigFile(
-				const mrpt::utils::CConfigFileBase	&source,
-				const std::string		&section);
-
-			/** See utils::CLoadableOptions
-			  */
-			void  dumpToTextStream(mrpt::utils::CStream	&out) const;
+			void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) MRPT_OVERRIDE; // See base docs
+			void dumpToTextStream(mrpt::utils::CStream &out) const MRPT_OVERRIDE; // See base docs
 
 			/** Method for propagating the feature's image coordinate uncertainty into 3D space. Default value: Prop_Linear
 			  */
@@ -339,19 +331,11 @@ namespace mrpt
 			double  maxDepthThreshold;          //!< The maximum allowed depth for the matching. If its computed depth is larger than this, the match won't be considered.
 //            double  fx,cx,cy,baseline;          //!< Intrinsic parameters of the stereo rig
 
-			/** Constructor
-			  */
+			/** Constructor */
 			TMatchingOptions( );
 
-			/** See utils::CLoadableOptions
-			  */
-			void  loadFromConfigFile(
-				const mrpt::utils::CConfigFileBase	&source,
-				const std::string		&section);
-
-			/** See utils::CLoadableOptions
-			  */
-			void  dumpToTextStream(mrpt::utils::CStream	&out) const;
+			void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) MRPT_OVERRIDE; // See base docs
+			void dumpToTextStream(mrpt::utils::CStream &out) const MRPT_OVERRIDE; // See base docs
 
 #define COPY_MEMBER(_m) this->_m = o._m;
 #define CHECK_MEMBER(_m) this->_m == o._m
@@ -471,62 +455,62 @@ namespace mrpt
 				highScl1( _hwscl1 ), highScl2( _hwscl2 ), searchAreaSize( _searchAreaSize ), lastSeenThreshold( _lsth ), timesSeenThreshold( _tsth ),
 				minFeaturesToFind( _minFeaturesToFind ), minFeaturesToBeLost(_minFeaturesToBeLost)  {}
 
-			void  loadFromConfigFile( const mrpt::utils::CConfigFileBase &cfg, const std::string &section );
-			void  saveToConfigFile( mrpt::utils::CConfigFileBase &cfg, const std::string &section ) const;
-			void  dumpToTextStream( mrpt::utils::CStream &out) const;
+			void loadFromConfigFile( const mrpt::utils::CConfigFileBase &cfg, const std::string &section ) MRPT_OVERRIDE;
+			void saveToConfigFile( mrpt::utils::CConfigFileBase &cfg, const std::string &section ) const MRPT_OVERRIDE;
+			void dumpToTextStream( mrpt::utils::CStream &out) const MRPT_OVERRIDE;
 
 		}; // end TMultiResDescMatchOptions
 
-        /** Struct containing the options when computing the multi-resolution SIFT-like descriptors
+		/** Struct containing the options when computing the multi-resolution SIFT-like descriptors
 		*/
-        struct VISION_IMPEXP TMultiResDescOptions : public mrpt::utils::CLoadableOptions
-        {
-            uint32_t        basePSize;          //!< The size of the base patch
-            std::vector<double>  scales;             //!< The set of scales relatives to the base patch
-            uint32_t        comLScl, comHScl;   //!< The subset of scales for which to compute the descriptors
-            double          sg1, sg2, sg3;      //!< The sigmas for the Gaussian kernels
-            bool            computeDepth;       //!< Whether or not to compute the depth of the feature
-            bool            blurImage;          //!< Whether or not to blur the image previously to compute the descriptors
-            double          fx,cx,cy,baseline;  //!< Intrinsic stereo pair parameters for computing the depth of the feature
-            bool            computeHashCoeffs;  //!< Whether or not compute the coefficients for mantaining a HASH table of descriptors (for relocalization)
+		struct VISION_IMPEXP TMultiResDescOptions : public mrpt::utils::CLoadableOptions
+		{
+			uint32_t        basePSize;          //!< The size of the base patch
+			std::vector<double>  scales;             //!< The set of scales relatives to the base patch
+			uint32_t        comLScl, comHScl;   //!< The subset of scales for which to compute the descriptors
+			double          sg1, sg2, sg3;      //!< The sigmas for the Gaussian kernels
+			bool            computeDepth;       //!< Whether or not to compute the depth of the feature
+			bool            blurImage;          //!< Whether or not to blur the image previously to compute the descriptors
+			double          fx,cx,cy,baseline;  //!< Intrinsic stereo pair parameters for computing the depth of the feature
+			bool            computeHashCoeffs;  //!< Whether or not compute the coefficients for mantaining a HASH table of descriptors (for relocalization)
 
-            double          cropValue;          //!< The SIFT-like descriptor is cropped at this value during normalization
+			double          cropValue;          //!< The SIFT-like descriptor is cropped at this value during normalization
 
-            /** Default constructor
-              */
-            TMultiResDescOptions() :
-                basePSize(23), sg1 (0.5), sg2(7.5), sg3(8.0), computeDepth(true), blurImage(true), fx(0.0), cx(0.0), cy(0.0), baseline(0.0), computeHashCoeffs(false), cropValue(0.2)
-            {
-                scales.resize(7);
-                scales[0] = 0.5;
-                scales[1] = 0.8;
-                scales[2] = 1.0;
-                scales[3] = 1.2;
-                scales[4] = 1.5;
-                scales[5] = 1.8;
-                scales[6] = 2.0;
-                comLScl = 0;
-                comHScl = 6;
-            }
+			/** Default constructor
+			  */
+			TMultiResDescOptions() :
+				basePSize(23), sg1 (0.5), sg2(7.5), sg3(8.0), computeDepth(true), blurImage(true), fx(0.0), cx(0.0), cy(0.0), baseline(0.0), computeHashCoeffs(false), cropValue(0.2)
+			{
+				scales.resize(7);
+				scales[0] = 0.5;
+				scales[1] = 0.8;
+				scales[2] = 1.0;
+				scales[3] = 1.2;
+				scales[4] = 1.5;
+				scales[5] = 1.8;
+				scales[6] = 2.0;
+				comLScl = 0;
+				comHScl = 6;
+			}
 
-            TMultiResDescOptions( const unsigned int &_basePSize, const std::vector<double> &_scales,
-                const unsigned int &_comLScl, const unsigned int &_comHScl,
-                const double &_sg1, const double &_sg2, const double &_sg3,
-                const bool &_computeDepth, const bool _blurImage, const double &_fx, const double &_cx, const double &_cy, const double &_baseline, const bool &_computeHashCoeffs, const double &_cropValue ):
-                basePSize( _basePSize ), comLScl( _comLScl ), comHScl( _comHScl ),
-                sg1( _sg1 ), sg2( _sg2 ), sg3( _sg3 ),
-                computeDepth( _computeDepth ), blurImage( _blurImage ), fx( _fx ), cx( _cx ), cy( _cy ), baseline( _baseline ), computeHashCoeffs( _computeHashCoeffs), cropValue( _cropValue )
-            {
-                scales.resize( _scales.size() );
-                for(unsigned int k = 0; k < _scales.size(); ++k)
-                    scales[k] = _scales[k];
-            }
+			TMultiResDescOptions( const unsigned int &_basePSize, const std::vector<double> &_scales,
+				const unsigned int &_comLScl, const unsigned int &_comHScl,
+				const double &_sg1, const double &_sg2, const double &_sg3,
+				const bool &_computeDepth, const bool _blurImage, const double &_fx, const double &_cx, const double &_cy, const double &_baseline, const bool &_computeHashCoeffs, const double &_cropValue ):
+				basePSize( _basePSize ), comLScl( _comLScl ), comHScl( _comHScl ),
+				sg1( _sg1 ), sg2( _sg2 ), sg3( _sg3 ),
+				computeDepth( _computeDepth ), blurImage( _blurImage ), fx( _fx ), cx( _cx ), cy( _cy ), baseline( _baseline ), computeHashCoeffs( _computeHashCoeffs), cropValue( _cropValue )
+			{
+				scales.resize( _scales.size() );
+				for(unsigned int k = 0; k < _scales.size(); ++k)
+					scales[k] = _scales[k];
+			}
 
-            void  loadFromConfigFile( const mrpt::utils::CConfigFileBase &cfg, const std::string &section );
-			void  saveToConfigFile( mrpt::utils::CConfigFileBase &cfg, const std::string &section ) const;
-            void  dumpToTextStream( mrpt::utils::CStream &out) const;
+			void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) MRPT_OVERRIDE; // See base docs
+			void saveToConfigFile( mrpt::utils::CConfigFileBase &cfg, const std::string &section ) const MRPT_OVERRIDE; // See base docs
+			void dumpToTextStream(mrpt::utils::CStream &out) const MRPT_OVERRIDE; // See base docs
 
-        }; // end TMultiResDescOptions
+		}; // end TMultiResDescOptions
 
 
 	/** @} */ // end of grouping

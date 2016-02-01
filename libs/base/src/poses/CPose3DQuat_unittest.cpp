@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -55,6 +55,26 @@ protected:
 		EXPECT_NEAR(0, (p1_i_p2.getAsVectorVal()-p_q1_i_q2.getAsVectorVal()).array().abs().sum(), 1e-5) <<
 			"p1_i_p2: " << p1_i_p2 << endl <<
 			"q1_i_p2: " << p_q1_i_q2 << endl;
+
+		// Test + operator: trg new var
+		{
+			CPose3DQuat C = q1;
+			CPose3DQuat A = C + q2;
+			EXPECT_NEAR(0, (A.getAsVectorVal()-q1_c_q2.getAsVectorVal()).array().abs().sum(), 1e-6);
+		}
+		// Test + operator: trg same var
+		{
+			CPose3DQuat A = q1;
+			A = A + q2;
+			EXPECT_NEAR(0, (A.getAsVectorVal()-q1_c_q2.getAsVectorVal()).array().abs().sum(), 1e-6);
+		}
+		// Test =+ operator
+		{
+			CPose3DQuat A = q1;
+			A += q2;
+			EXPECT_NEAR(0, (A.getAsVectorVal()-q1_c_q2.getAsVectorVal()).array().abs().sum(), 1e-6);
+		}
+
 	}
 
 	void test_composePoint(double x1,double y1,double z1, double yaw1,double pitch1,double roll1,

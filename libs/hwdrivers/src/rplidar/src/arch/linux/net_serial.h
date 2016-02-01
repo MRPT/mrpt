@@ -54,7 +54,7 @@ public:
     virtual bool open();
     virtual void close();
     virtual void flush( _u32 flags);
-
+    
     virtual int waitfordata(size_t data_count,_u32 timeout = -1, size_t * returned_size = NULL);
 
     virtual int senddata(const unsigned char * data, size_t size);
@@ -65,6 +65,9 @@ public:
 
     virtual size_t rxqueue_count();
 
+	virtual void setDTR();
+	virtual void clearDTR();
+	
     _u32 getTermBaudBitmap(_u32 baud);
 protected:
     bool open(const char * portname, uint32_t baudrate, uint32_t flags = 0);

@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -305,12 +305,12 @@ CImageGrabber_dc1394::CImageGrabber_dc1394(
 	/*-----------------------------------------------------------------------
 	 *  have the camera start sending us data
 	 *-----------------------------------------------------------------------*/
-	err=dc1394_video_set_transmission(THE_CAMERA, DC1394_ON);
-	if (err!=DC1394_SUCCESS)
-	{
-		cerr << "[CImageGrabber_dc1394] ERROR: Could not start camera iso transmission." << endl;
-		return;
-	}
+    err=dc1394_video_set_transmission(THE_CAMERA, DC1394_ON);
+    if (err!=DC1394_SUCCESS)
+    {
+        cerr << "[CImageGrabber_dc1394] ERROR: Could not start camera iso transmission." << endl;
+        return;
+    }
 
 	// remember that we successfully initialized everything
 	m_bInitialized = true;
@@ -372,10 +372,19 @@ bool  CImageGrabber_dc1394::getObservation( mrpt::obs::CObservationImage &out_ob
 
 #if MRPT_HAS_LIBDC1394_2
     dc1394video_frame_t *frame=NULL;
+    dc1394error_t err;
+
+    err=dc1394_video_set_transmission(THE_CAMERA, DC1394_ON);
+    if (err!=DC1394_SUCCESS)
+    {
+        cerr << "[CImageGrabber_dc1394] ERROR: Could not start camera iso transmission." << endl;
+        return false;
+    }
 
 	// get frame from ring buffer:
     MRPT_TODO("Thread will keep frozen in this line when using software trigger if no frame is available: Assure trigger before getObservation")
-    dc1394error_t err=dc1394_capture_dequeue(THE_CAMERA, DC1394_CAPTURE_POLICY_WAIT, &frame);
+    err = dc1394_capture_dequeue(THE_CAMERA, DC1394_CAPTURE_POLICY_WAIT, &frame);
+    //dc1394error_t err=dc1394_capture_dequeue(THE_CAMERA, DC1394_CAPTURE_POLICY_POLL, &frame);
 	if (err!=DC1394_SUCCESS)
 	{
 		cerr << "[CImageGrabber_dc1394] ERROR: Could not capture a frame" << endl;
@@ -422,7 +431,7 @@ bool  CImageGrabber_dc1394::getObservation( mrpt::obs::CObservationImage &out_ob
 		if ((err = dc1394_bayer_decoding_8bit(imageBuf, imageBufRGB,
 											  width, 2*height,
 											  DC1394_COLOR_FILTER_GBRG, // Has to be this value for Bumblebee!
-											  DC1394_BAYER_METHOD_NEAREST)) != DC1394_SUCCESS)
+											  DC1394_BAYER_METHOD_HQLINEAR)) != DC1394_SUCCESS)
 		{
 			cerr << "[CImageGrabber_dc1394] ERROR: Could not apply Bayer conversion: " << err << endl;
 			return false;
@@ -436,9 +445,14 @@ bool  CImageGrabber_dc1394::getObservation( mrpt::obs::CObservationImage &out_ob
 	}
 
 	// Now we can return the frame to the ring buffer:
-	dc1394_capture_enqueue(THE_CAMERA, frame);
+    err = dc1394_capture_enqueue(THE_CAMERA, frame);
+    if (err!=DC1394_SUCCESS)
+    {
+        cerr << "[CImageGrabber_dc1394] ERROR: Could not enqueue the ring buffer frame" << endl;
+        return false;
+    }
 
-	return true;
+    return true;
 #else
    THROW_EXCEPTION("The MRPT has been compiled with MRPT_HAS_LIBDC1394_2=0 !");
 #endif
@@ -491,7 +505,7 @@ bool  CImageGrabber_dc1394::getObservation( mrpt::obs::CObservationStereoImages 
 		if ((err = dc1394_bayer_decoding_8bit(imageBuf, imageBufRGB,
 											  width, 2*height,
 											  DC1394_COLOR_FILTER_GBRG, // Has to be this value for Bumblebee!
-											  DC1394_BAYER_METHOD_NEAREST)) != DC1394_SUCCESS)
+											  DC1394_BAYER_METHOD_HQLINEAR)) != DC1394_SUCCESS)
 		{
 			cerr << "[CImageGrabber_dc1394] ERROR: Could not apply Bayer conversion: " << err << endl;
 			return false;

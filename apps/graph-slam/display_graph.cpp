@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -108,7 +108,7 @@ void display_graph(const GRAPHTYPE & g)
 
 	protected:
 		/** This virtual function will be called upon receive of any event after starting listening at any CObservable object. */
-		virtual void OnEvent(const mrptEvent &e)
+		virtual void OnEvent(const mrptEvent &e) MRPT_OVERRIDE
 		{
 			if (e.isOfType<mrpt::gui::mrptEventWindowChar>())
 			{

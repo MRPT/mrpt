@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -49,7 +49,7 @@ namespace mrpt
 			void enableRadiusIndependentOfEyeDistance(bool v=true)  { m_keepRadiusIndependentEyeDistance=v; CRenderizableDisplayList::notifyChange(); }
 
 			/** \sa CRenderizableDisplayList */
-			virtual bool should_skip_display_list_cache() const { return m_keepRadiusIndependentEyeDistance; }
+			bool should_skip_display_list_cache() const  MRPT_OVERRIDE { return m_keepRadiusIndependentEyeDistance; }
 
 			/** Class factory  */
 			static CSpherePtr Create(
@@ -58,14 +58,14 @@ namespace mrpt
 				int					nDivsLatitude = 20 );
 
 			/** Render */
-			void  render_dl() const;
+			void  render_dl() const MRPT_OVERRIDE;
 
 			/** Evaluates the bounding box of this object (including possible children) in the coordinate frame of the object parent. */
-			virtual void getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const;
+			void getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const MRPT_OVERRIDE;
 
 			/** Ray tracing
 			  */
-			virtual bool traceRay(const mrpt::poses::CPose3D &o,double &dist) const;
+			bool traceRay(const mrpt::poses::CPose3D &o,double &dist) const MRPT_OVERRIDE;
 
 		private:
 			/** Constructor

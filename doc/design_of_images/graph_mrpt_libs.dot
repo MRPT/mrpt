@@ -19,18 +19,12 @@ digraph MRPT_LIBS {
 	
 	hmtslam		[label="mrpt-hmtslam",URL="group__mrpt__hmtslam__grp.html"];
 	nav	        [label="mrpt-nav",URL="group__mrpt__nav__grp.html"];
-//	stereoslam	[label="mrpt-stereoslam (*)",URL="group__mrpt__stereoslam__grp.html"];
 	
 	detectors	[label="mrpt-detectors",URL="group__mrpt__detectors__grp.html"];
 
 	kinematics	[label="mrpt-kinematics",URL="group__mrpt__kinematics__grp.html"];
 
-	srba	[label="mrpt-srba (.h)",URL="group__mrpt__srba__grp.html"];
-
 	pbmap    [label="mrpt-pbmap",URL="group__mrpt__pbmap__grp.html"];
-
-
-	srba -> opengl;
 
 	pbmap -> graphs;
 

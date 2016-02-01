@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -26,7 +26,7 @@
 #include <mrpt/obs/CObservationRange.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
-
+#include <mrpt/obs/CObservationVelodyneScan.h>
 
 #if MRPT_HAS_PCL
 #   include <pcl/io/pcd_io.h>
@@ -37,6 +37,10 @@
 #if MRPT_HAS_SSE2
 #	include <mrpt/utils/SSE_types.h>
 #	include <mrpt/utils/SSE_macros.h>
+#endif
+
+#if MRPT_HAS_MATLAB
+#	include <mexplus.h>
 #endif
 
 using namespace mrpt::poses;
@@ -180,6 +184,27 @@ bool  CPointsMap::load2Dor3D_from_text_file(
 
 	MRPT_END
 }
+
+
+/*---------------------------------------------------------------
+  Implements the writing to a mxArray for Matlab
+ ---------------------------------------------------------------*/
+#if MRPT_HAS_MATLAB
+// Add to implement mexplus::from template specialization
+IMPLEMENTS_MEXPLUS_FROM( mrpt::maps::CPointsMap )
+
+mxArray* CPointsMap::writeToMatlab() const
+{
+	MRPT_TODO("Create 3xN array xyz of points coordinates")
+	const char* fields[] = {"x","y","z"};
+	mexplus::MxArray map_struct( mexplus::MxArray::Struct(sizeof(fields)/sizeof(fields[0]),fields) );
+
+	map_struct.set("x", this->x);
+	map_struct.set("y", this->y);
+	map_struct.set("z", this->z);
+	return map_struct.release();
+}
+#endif
 
 
 /*---------------------------------------------------------------
@@ -960,9 +985,9 @@ void CPointsMap::boundingBox(
 				float *ptr_in_y = const_cast<float*>(&y[0]);
 				float *ptr_in_z = const_cast<float*>(&z[0]);
 				for (size_t k=nExtraPad;k; k--) {
-					ptr_in_x[nPoints+k]=0;
-					ptr_in_y[nPoints+k]=0;
-					ptr_in_z[nPoints+k]=0;
+					ptr_in_x[nPoints+k-1]=0;
+					ptr_in_y[nPoints+k-1]=0;
+					ptr_in_z[nPoints+k-1]=0;
 				}
 			}
 
@@ -2049,5 +2074,59 @@ void  CPointsMap::fuseWith(
 				(*notFusedPoints).push_back(false);
 		}
 	}
-
 }
+
+void CPointsMap::loadFromVelodyneScan(
+	const mrpt::obs::CObservationVelodyneScan & scan,
+	const mrpt::poses::CPose3D				  *robotPose)
+{
+	ASSERT_EQUAL_(scan.point_cloud.x.size(),scan.point_cloud.y.size());
+	ASSERT_EQUAL_(scan.point_cloud.x.size(),scan.point_cloud.z.size());
+	ASSERT_EQUAL_(scan.point_cloud.x.size(),scan.point_cloud.intensity.size());
+
+	this->mark_as_modified();
+
+	// Insert vs. load and replace:
+	if (!insertionOptions.addToExistingPointsMap)
+		resize(0); // Resize to 0 instead of clear() so the std::vector<> memory is not actually deallocated and can be reused.
+
+	// Alloc space:
+	const size_t nOldPtsCount = this->size();
+	const size_t nScanPts = scan.point_cloud.size();
+	const size_t nNewPtsCount = nOldPtsCount + nScanPts;
+	this->resize(nNewPtsCount);
+
+	const float K = 1.0f / 255;  // Intensity scale.
+
+	// global 3D pose:
+	CPose3D sensorGlobalPose;
+	if (robotPose) 
+	      sensorGlobalPose = *robotPose + scan.sensorPose;
+	else  sensorGlobalPose = scan.sensorPose;
+
+	mrpt::math::CMatrixDouble44 HM;
+	sensorGlobalPose.getHomogeneousMatrix(HM);
+
+	const double m00 = HM.get_unsafe(0,0), m01 = HM.get_unsafe(0,1), m02 = HM.get_unsafe(0,2), m03 = HM.get_unsafe(0,3);
+	const double m10 = HM.get_unsafe(1,0), m11 = HM.get_unsafe(1,1), m12 = HM.get_unsafe(1,2), m13 = HM.get_unsafe(1,3);
+	const double m20 = HM.get_unsafe(2,0), m21 = HM.get_unsafe(2,1), m22 = HM.get_unsafe(2,2), m23 = HM.get_unsafe(2,3);
+
+	// Copy points:
+	for (size_t i=0;i<nScanPts;i++)
+	{
+		const float inten = scan.point_cloud.intensity[i] * K;
+		const double lx = scan.point_cloud.x[i];
+		const double ly = scan.point_cloud.y[i];
+		const double lz = scan.point_cloud.z[i];
+
+		const double gx = m00*lx + m01*ly + m02*lz + m03;
+		const double gy = m10*lx + m11*ly + m12*lz + m13;
+		const double gz = m20*lx + m21*ly + m22*lz + m23;
+
+		this->setPoint(nOldPtsCount+i,
+			gx,gy,gz,  // XYZ
+			inten,inten,inten // RGB
+			);
+	}
+}
+

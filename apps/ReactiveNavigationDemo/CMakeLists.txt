@@ -10,7 +10,7 @@ INCLUDE(../../cmakemodules/AssureCMakeRootFile.cmake) # Avoid user mistake in CM
 
 PROJECT(ReactiveNavigationDemo)
 
-IF(wxWidgets_FOUND)
+IF(CMAKE_MRPT_HAS_WXWIDGETS)
 
 	# ---------------------------------------------
 	# TARGET:
@@ -42,17 +42,16 @@ IF(wxWidgets_FOUND)
 	# Dependencies on MRPT libraries:
 	#  Just mention the top-level dependency, the rest will be detected automatically, 
 	#  and all the needed #include<> dirs added (see the script DeclareAppDependencies.cmake for further details)
-	DeclareAppDependencies(${TMP_TARGET_NAME} mrpt-gui mrpt-reactivenav)
+	DeclareAppDependencies(${TMP_TARGET_NAME} mrpt-gui mrpt-nav)
 
 	DeclareAppForInstall(${TMP_TARGET_NAME})
 
 	AppStartMenuLink(${TMP_TARGET_NAME} "Reactive navigation demo")   # Add link to the Start menu (in Windows Installable packages)
 
-ELSE(wxWidgets_FOUND)
+ELSE()
 	# ----------------------------------------------------------------------------------
     # For convenience. When we cannot continue, inform the user
 	# ----------------------------------------------------------------------------------
     MESSAGE(STATUS "wxWidgets not found!: **This target will not be included in the Makefiles**")
-ENDIF(wxWidgets_FOUND)
-
+ENDIF()
 

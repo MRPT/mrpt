@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -19,6 +19,7 @@
 #include <mrpt/system/string_utils.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPose3D.h>
+#include <mrpt/poses/CPose3DQuat.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/poses/CPosePDFGaussianInf.h>
 #include <mrpt/poses/CPose3DPDFGaussian.h>
@@ -587,7 +588,7 @@ namespace mrpt
 						graph_t * m_g; // The original graph
 
 						VisitorComputePoses(graph_t *g) : m_g(g) { }
-						virtual void OnVisitNode( const TNodeID parent_id, const typename dijkstra_t::tree_graph_t::Visitor::tree_t::TEdgeInfo &edge_to_child, const size_t depth_level )
+						virtual void OnVisitNode( const TNodeID parent_id, const typename dijkstra_t::tree_graph_t::Visitor::tree_t::TEdgeInfo &edge_to_child, const size_t depth_level ) MRPT_OVERRIDE
 						{
 							MRPT_UNUSED_PARAM(depth_level);
 							const TNodeID  child_id = edge_to_child.id;

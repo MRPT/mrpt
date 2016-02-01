@@ -4,6 +4,8 @@
 
 # Build xSens MT3?
 IF(CMAKE_MRPT_HAS_xSENS_MT3)
+	SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -pthread")
+
 	LIST(APPEND hwdrivers_EXTRA_SRCS
 		"${MRPT_LIBS_ROOT}/hwdrivers/src/xSens_MT3/*.cpp"
 		"${MRPT_LIBS_ROOT}/hwdrivers/src/xSens_MT3/*.h"
@@ -32,6 +34,16 @@ IF(CMAKE_MRPT_HAS_xSENS_MT4)
 		"${MRPT_LIBS_ROOT}/hwdrivers/src/xSens_MT4/xstypes/include/xsens/"
 		)
 ENDIF(CMAKE_MRPT_HAS_xSENS_MT4)
+
+# Build Intersense devices?
+IF(CMAKE_MRPT_HAS_INTERSENSE)
+   LIST(APPEND hwdrivers_EXTRA_SRCS
+      "${MRPT_LIBS_ROOT}/hwdrivers/src/isense/*.c"
+      "${MRPT_LIBS_ROOT}/hwdrivers/src/isense/*.h"
+      )
+
+   LIST(APPEND hwdrivers_EXTRA_SRCS_NAME "isense" "isense" )
+ENDIF(CMAKE_MRPT_HAS_INTERSENSE)
 
 # Build Kinect support via libfreenect?
 IF(CMAKE_MRPT_HAS_FREENECT)
@@ -119,8 +131,8 @@ endif(CMAKE_MRPT_HAS_LIBDC1394_2)
 
 
 IF(CMAKE_MRPT_HAS_DUO3D)
-	INCLUDE_DIRECTORIES("${DUO3D_ROOT_DIR}/include")
-	LINK_DIRECTORIES("${DUO3D_ROOT_DIR}/lib")
+	INCLUDE_DIRECTORIES("${DUO3D_INCLUDE_DIR}")
+	LINK_DIRECTORIES("${DUO3D_LIB_DIR}")
 ENDIF(CMAKE_MRPT_HAS_DUO3D)
 
 IF(CMAKE_MRPT_HAS_OPENNI2)
@@ -134,7 +146,11 @@ ENDIF(CMAKE_MRPT_HAS_SWISSRANGE)
 
 IF(CMAKE_MRPT_HAS_OPENCV)
 	INCLUDE_DIRECTORIES(${OpenCV_INCLUDE_DIR} ${OpenCV_INCLUDE_DIRS} ${OPENCV_INCLUDE_DIRS} ${OPENCV_INCLUDEDIR})
-ENDIF(CMAKE_MRPT_HAS_OPENCV)
+ENDIF()
+
+IF(CMAKE_MRPT_HAS_LIBPCAP)
+	INCLUDE_DIRECTORIES(${PCAP_INCLUDE_DIR})
+ENDIF()
 
 
 # Macro declared in "DeclareMRPTLib.cmake":
@@ -152,6 +168,20 @@ define_mrpt_lib(
 	)
 
 IF(BUILD_mrpt-hwdrivers) 
+	# Ignore precompiled headers in intersense sources:
+	IF(CMAKE_MRPT_HAS_INTERSENSE)
+		IF(MRPT_ENABLE_PRECOMPILED_HDRS AND MSVC)
+			set_source_files_properties(${isense_FILES} PROPERTIES COMPILE_FLAGS "/Y-")
+		ENDIF(MRPT_ENABLE_PRECOMPILED_HDRS AND MSVC)
+	ENDIF(CMAKE_MRPT_HAS_INTERSENSE)
+	
+	# Link to NITE2 libraries:
+	IF(CMAKE_MRPT_HAS_NITE2)
+		# link_directories() was added in the configuration script under /cmakemodules/*_ni.cmake
+		INCLUDE_DIRECTORIES(${NITE2_INCLUDE_DIR})
+		TARGET_LINK_LIBRARIES(mrpt-hwdrivers ${NITE2_LIB_FILE_RELEASE})
+	ENDIF(CMAKE_MRPT_HAS_NITE2)
+
 	# Ignore precompiled headers in xSens sources:
 	IF(CMAKE_MRPT_HAS_xSENS_MT3 OR CMAKE_MRPT_HAS_xSENS_MT4)
 		IF(MRPT_ENABLE_PRECOMPILED_HDRS AND MSVC)
@@ -171,7 +201,17 @@ IF(BUILD_mrpt-hwdrivers)
 
 	IF(CMAKE_MRPT_HAS_OPENCV)
 		target_link_libraries(mrpt-hwdrivers ${OpenCV_LIBRARIES})
-	ENDIF(CMAKE_MRPT_HAS_OPENCV)
+	ENDIF()
+
+	IF(CMAKE_MRPT_HAS_LIBPCAP)
+		target_link_libraries(mrpt-hwdrivers ${PCAP_LIBRARY})
+
+		# Windows: 
+		# Set wpcap.dll as DELAYLOAD, so users without that driver can use binaries compiled with wpcap support:
+		IF (MSVC)
+			set_property(TARGET mrpt-hwdrivers APPEND_STRING PROPERTY LINK_FLAGS " /DELAYLOAD:\"wpcap.dll\"")
+		ENDIF (MSVC)
+	ENDIF()
 
 	# XSens MT4 required libs:
 	IF (BUILD_XSENS_MT4)
@@ -189,6 +229,10 @@ IF(BUILD_mrpt-hwdrivers)
 	IF(CMAKE_MRPT_HAS_FTDI_SYSTEM)
 		TARGET_LINK_LIBRARIES(mrpt-hwdrivers ${FTDI_LIBS})
 	ENDIF(CMAKE_MRPT_HAS_FTDI_SYSTEM)
+	
+	IF(CMAKE_MRPT_HAS_DUO3D)
+		TARGET_LINK_LIBRARIES(mrpt-hwdrivers "${DUO3D_LIB_DIR}/DUOLib.lib" "${DUO3D_LIB_DIR}/Dense3D.lib")
+	ENDIF(CMAKE_MRPT_HAS_DUO3D)
 
 	# Seems to be required to link against prebuilt libavcodec, etc.
 	IF (MSVC)
@@ -337,4 +381,5 @@ IF(BUILD_mrpt-hwdrivers)
 	ENDIF(CMAKE_MRPT_HAS_WXWIDGETS)
 
 ENDIF(BUILD_mrpt-hwdrivers) 
+
 

@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -36,6 +36,7 @@ namespace mrpt
 		  * The default underlying non-associative container is a "memory-aligned std::vector<>", but it can be changed to a
 		  *  standard vector<> or to a deque<> (to avoid memory reallocations) by changing the template parameter \a VECTOR_T.
 		  *
+		  * \note Defined in #include <mrpt/utils/map_as_vector.h>
 		  * \ingroup stlext_grp
 		  */
 		template <

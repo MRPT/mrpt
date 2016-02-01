@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -16,6 +16,7 @@
 #include <mrpt/utils/CStream.h>
 #include <mrpt/random.h>
 #include <mrpt/system/os.h>
+#include <mrpt/poses/SO_SE_average.h>
 
 using namespace std;
 using namespace mrpt;
@@ -71,21 +72,16 @@ CPosePDFGrid::~CPosePDFGrid( )
  ---------------------------------------------------------------*/
 void CPosePDFGrid::getMean(CPose2D &p) const
 {
-	CPosePDFParticles	auxParts;
-
-	auxParts.resetDeterministic( CPose2D(0,0,0), m_sizePhi*m_sizeY*m_sizeX );
-
-	size_t idx=0;
-
+	// Calc average on SE(2)
+	mrpt::poses::SE_average<2> se_averager;
 	for (size_t phiInd = 0; phiInd < m_sizePhi; phiInd++)
 		for (size_t y=0;y<m_sizeY;y++)
 			for (size_t x=0;x<m_sizeX;x++)
 			{
-				auxParts.m_particles[idx].log_w = log( *getByIndex(x,y,phiInd) );
-				*auxParts.m_particles[idx].d = CPose2D( idx2x(x),idx2y(y), idx2phi(phiInd) );
+				const double w = *getByIndex(x,y,phiInd);
+				se_averager.append( CPose2D( idx2x(x),idx2y(y), idx2phi(phiInd) ),w );
 			}
-
-	auxParts.getMean(p);
+	se_averager.get_average(p);
 }
 
 /*---------------------------------------------------------------
@@ -94,11 +90,8 @@ void CPosePDFGrid::getMean(CPose2D &p) const
 void CPosePDFGrid::getCovarianceAndMean(CMatrixDouble33 &cov, CPose2D &p) const
 {
 	CPosePDFParticles	auxParts;
-
 	auxParts.resetDeterministic( CPose2D(0,0,0), m_sizePhi*m_sizeY*m_sizeX );
-
 	size_t idx=0;
-
 	for (size_t phiInd = 0; phiInd < m_sizePhi; phiInd++)
 	{
 		for (size_t y=0;y<m_sizeY;y++)
@@ -108,7 +101,6 @@ void CPosePDFGrid::getCovarianceAndMean(CMatrixDouble33 &cov, CPose2D &p) const
 				*auxParts.m_particles[idx].d = CPose2D( idx2x(x),idx2y(y), idx2phi(phiInd) );
 			}
 	}
-
 	auxParts.getCovarianceAndMean(cov,p);
 }
 

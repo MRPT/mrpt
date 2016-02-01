@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -65,7 +65,7 @@ namespace mrpt
 			(*this)[1] = x;
 			(*this)[2] = y;
 			(*this)[3] = z;
-			ASSERTDEBMSG_(std::abs(normSqr()-1.0)<1e-5, mrpt::format("Initialization data for quaternion is not normalized: %f %f %f %f -> sqrNorm=%f",r,x,y,z,normSqr()) );
+			ASSERTMSG_(std::abs(normSqr()-1.0)<1e-5, mrpt::format("Initialization data for quaternion is not normalized: %f %f %f %f -> sqrNorm=%f",r,x,y,z,normSqr()) );
 		}
 
 		/* @}
@@ -178,10 +178,12 @@ namespace mrpt
 		  */
 		inline void  crossProduct(const CQuaternion &q1, const CQuaternion &q2)
 		{
-			this->r(  q1.r()*q2.r() - q1.x()*q2.x() - q1.y()*q2.y() - q1.z()*q2.z() );
-			this->x(  q1.r()*q2.x() + q2.r()*q1.x() + q1.y()*q2.z() - q2.y()*q1.z() );
-            this->y(  q1.r()*q2.y() + q2.r()*q1.y() + q1.z()*q2.x() - q2.z()*q1.x() );
-			this->z(  q1.r()*q2.z() + q2.r()*q1.z() + q1.x()*q2.y() - q2.x()*q1.y() );
+			// First: compute result, then save in this object. In this way we avoid problems when q1 or q2 == *this !!
+			const T new_r = q1.r()*q2.r() - q1.x()*q2.x() - q1.y()*q2.y() - q1.z()*q2.z();
+			const T new_x = q1.r()*q2.x() + q2.r()*q1.x() + q1.y()*q2.z() - q2.y()*q1.z();
+			const T new_y = q1.r()*q2.y() + q2.r()*q1.y() + q1.z()*q2.x() - q2.z()*q1.x();
+			const T new_z = q1.r()*q2.z() + q2.r()*q1.z() + q1.x()*q2.y() - q2.x()*q1.y();
+			this->r(new_r); this->x(new_x); this->y(new_y); this->z(new_z);
 			this->normalize();
 		}
 

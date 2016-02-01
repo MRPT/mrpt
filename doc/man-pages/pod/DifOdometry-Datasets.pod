@@ -21,7 +21,7 @@ http://www.mrpt.org/list-of-mrpt-apps/application-difodometry-datasets/
 
 =head1 BUGS
 
-Please report bugs at http://www.mrpt.org/project/issues/MRPT
+Please report bugs at https://github.com/MRPT/mrpt/issues
 
 =head1 SEE ALSO
 

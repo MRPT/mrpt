@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -17,7 +17,7 @@ namespace mrpt
   {
 	/** A PTG for optimal paths of type "C|C,S" (as named in PTG papers).
 	  *  See also "Obstacle Distance for Car-Like Robots", IEEE Trans. Rob. And Autom, 1999.
-	  *  \ingroup mrpt_nav_grp
+	  *  \ingroup nav_tpspace
 	 */
 	class NAV_IMPEXP  CPTG3 : public CParameterizedTrajectoryGenerator
 	{

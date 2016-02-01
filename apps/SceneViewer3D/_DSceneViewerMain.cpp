@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -333,6 +333,8 @@ const long _DSceneViewerFrame::ID_MENUITEM25 = wxNewId();
 const long _DSceneViewerFrame::ID_MENUITEM19 = wxNewId();
 const long _DSceneViewerFrame::ID_MENUITEM22 = wxNewId();
 const long _DSceneViewerFrame::ID_MENUITEM21 = wxNewId();
+const long _DSceneViewerFrame::ID_MENUITEM29 = wxNewId();
+const long _DSceneViewerFrame::ID_MENUITEM30 = wxNewId();
 const long _DSceneViewerFrame::ID_MENUITEM12 = wxNewId();
 const long _DSceneViewerFrame::ID_MENUITEM23 = wxNewId();
 const long _DSceneViewerFrame::ID_MENUITEM18 = wxNewId();
@@ -396,7 +398,7 @@ _DSceneViewerFrame::_DSceneViewerFrame(wxWindow* parent,wxWindowID id)
     wxFlexGridSizer* FlexGridSizer1;
     wxMenu* Menu2;
 
-    Create(parent, id, _("3DSceneViewer - Part of the MRPT project - Jose Luis Blanco (C) 2005-2008"), wxDefaultPosition, wxDefaultSize, wxDEFAULT_FRAME_STYLE, _T("id"));
+    Create(parent, id, _("3DSceneViewer - Part of the MRPT project"), wxDefaultPosition, wxDefaultSize, wxDEFAULT_FRAME_STYLE, _T("id"));
     SetMinSize(wxSize(150,100));
     {
     	wxIcon FrameIcon;
@@ -483,6 +485,11 @@ _DSceneViewerFrame::_DSceneViewerFrame(wxWindow* parent,wxWindowID id)
     MenuItem20->Append(MenuItem21);
     Menu1->Append(ID_MENUITEM21, _("Export"), MenuItem20, wxEmptyString);
     Menu1->AppendSeparator();
+    MenuItem23 = new wxMenuItem(Menu1, ID_MENUITEM29, _("Previous file\tF7"), wxEmptyString, wxITEM_NORMAL);
+    Menu1->Append(MenuItem23);
+    MenuItem24 = new wxMenuItem(Menu1, ID_MENUITEM30, _("Next file\tF8"), wxEmptyString, wxITEM_NORMAL);
+    Menu1->Append(MenuItem24);
+    Menu1->AppendSeparator();
     MenuItem14 = new wxMenuItem(Menu1, ID_MENUITEM12, _("Take snapshot...\tF2"), _("Saves the current window image to a file"), wxITEM_NORMAL);
     Menu1->Append(MenuItem14);
     MenuItem22 = new wxMenuItem(Menu1, ID_MENUITEM23, _("High-resolution render to file..."), wxEmptyString, wxITEM_NORMAL);
@@ -567,6 +574,8 @@ _DSceneViewerFrame::_DSceneViewerFrame(wxWindow* parent,wxWindowID id)
     Connect(ID_MENUITEM20,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnMenuItemImportPLYPointCloud);
     Connect(ID_MENUITEM25,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnmnuImportLASSelected);
     Connect(ID_MENUITEM22,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnMenuItemExportPointsPLY);
+    Connect(ID_MENUITEM29,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnPrevious);
+    Connect(ID_MENUITEM30,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnNext);
     Connect(ID_MENUITEM12,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnMenuItem14Selected);
     Connect(ID_MENUITEM23,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnMenuItemHighResRender);
     Connect(ID_MENUITEM18,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnmnuSceneStatsSelected);
@@ -793,6 +802,7 @@ void _DSceneViewerFrame::updateTitle()
 
 void _DSceneViewerFrame::OntimLoadFileCmdLineTrigger(wxTimerEvent& event)
 {
+	timLoadFileCmdLine.Stop(); // One shot only.
     // Open file if passed by the command line:
     if (global_fileToOpen.size())
         loadFromFile( global_fileToOpen );

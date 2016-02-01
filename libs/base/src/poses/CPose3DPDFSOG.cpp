@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -13,6 +13,7 @@
 #include <mrpt/system/os.h>
 #include <mrpt/utils/CStream.h>
 #include <mrpt/math/matrix_serialization.h>
+#include <mrpt/poses/SO_SE_average.h>
 
 using namespace mrpt;
 using namespace mrpt::poses;
@@ -54,91 +55,16 @@ void CPose3DPDFSOG::resize(const size_t N)
  ---------------------------------------------------------------*/
 void CPose3DPDFSOG::getMean(CPose3D &p) const
 {
-	size_t		N = m_modes.size();
-
-	if (N)
+	if (!m_modes.empty())
 	{
-		double			X=0,Y=0,Z=0,YAW=0,PITCH=0,ROLL=0;
-		double			sumW=0;
-
-		double			W_yaw_R=0,W_yaw_L=0;
-		double			yaw_R=0,yaw_L=0;
-		double			W_roll_R=0,W_roll_L=0;
-		double			roll_R=0,roll_L=0;
-
+		// Calc average on SE(3)
+		mrpt::poses::SE_average<3> se_averager;
 		for (const_iterator	it=m_modes.begin();it!=m_modes.end();++it)
 		{
-		    double w;
-			sumW += w = exp((it)->log_w);
-
-			X += (it)->val.mean.x() * w;
-			Y += (it)->val.mean.y() * w;
-			Z += (it)->val.mean.z() * w;
-			PITCH	+= w * (it)->val.mean.pitch();
-
-			// Angles Yaw and Roll are especials!:
-			double ang = (it)->val.mean.yaw();
-			if (fabs( ang )>1.5707963267948966192313216916398f)
-			{
-				// LEFT HALF: 0,2pi
-				if (ang<0) ang = M_2PI + ang;
-				yaw_L += ang * w;
-				W_yaw_L += w;
-			}
-			else
-			{
-				// RIGHT HALF: -pi,pi
-				yaw_R += ang * w;
-				W_yaw_R += w;
-			}
-
-			// Angles Yaw and Roll are especials!:
-			ang = (it)->val.mean.roll();
-			if (fabs( ang )>1.5707963267948966192313216916398f)
-			{
-				// LEFT HALF: 0,2pi
-				if (ang<0) ang = M_2PI + ang;
-				roll_L += ang * w;
-				W_roll_L += w;
-			}
-			else
-			{
-				// RIGHT HALF: -pi,pi
-				roll_R += ang * w;
-				W_roll_R += w;
-			}
+			const double w  = exp(it->log_w);
+			se_averager.append( (it)->val.mean,w );
 		}
-
-		if (sumW==0)
-		{
-			p.setFromValues(0,0,0,0,0,0);
-			return;
-		}
-
-		X /= sumW;
-		Y /= sumW;
-		Z /= sumW;
-		PITCH /= sumW;
-
-		// Next: Yaw and Roll:
-		// -----------------------------------
-		// The mean value from each side:
-		if (W_yaw_L>0)	yaw_L /= W_yaw_L;  // [0,2pi]
-		if (W_yaw_R>0)	yaw_R /= W_yaw_R;  // [-pi,pi]
-		// Left side to [-pi,pi] again:
-		if (yaw_L>M_PI) yaw_L = yaw_L - M_2PI;
-
-		// The mean value from each side:
-		if (W_roll_L>0)	roll_L /= W_roll_L;  // [0,2pi]
-		if (W_roll_R>0)	roll_R /= W_roll_R;  // [-pi,pi]
-		// Left side to [-pi,pi] again:
-		if (roll_L>M_PI) roll_L = roll_L - M_2PI;
-
-		// The total means:
-		YAW = ((yaw_L * W_yaw_L + yaw_R * W_yaw_R )/(W_yaw_L+W_yaw_R));
-		ROLL = ((roll_L * W_roll_L + roll_R * W_roll_R )/(W_roll_L+W_roll_R));
-
-		p.setFromValues(X,Y,Z,YAW,PITCH,ROLL);
+		se_averager.get_average(p);
 	}
 	else
 	{
@@ -403,7 +329,7 @@ void  CPose3DPDFSOG::normalizeWeights()
 {
 	MRPT_START
 
-	if (!m_modes.size()) return;
+	if (m_modes.empty()) return;
 
 	double		maxW = m_modes[0].log_w;
 	for (iterator it=m_modes.begin();it!=m_modes.end();++it)

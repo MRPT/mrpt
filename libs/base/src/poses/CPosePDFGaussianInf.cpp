@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -526,3 +526,18 @@ bool mrpt::poses::operator==(const CPosePDFGaussianInf &p1,const CPosePDFGaussia
 {
 	return p1.mean==p2.mean && p1.cov_inv==p2.cov_inv;
 }
+
+/** Pose compose operator: RES = A (+) B , computing both the mean and the covariance */
+CPosePDFGaussianInf mrpt::poses::operator +( const CPosePDFGaussianInf &a, const CPosePDFGaussianInf &b  ) {
+	CPosePDFGaussianInf res(a);
+	res+=b;
+	return res;
+}
+
+/** Pose inverse compose operator: RES = A (-) B , computing both the mean and the covariance */
+CPosePDFGaussianInf mrpt::poses::operator -( const CPosePDFGaussianInf &a, const CPosePDFGaussianInf &b  ) {
+	CPosePDFGaussianInf res;
+	res.inverseComposition(a,b);
+	return res;
+}
+

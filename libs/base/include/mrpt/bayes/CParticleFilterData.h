@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -35,24 +35,24 @@ namespace bayes
 		/// CRTP helper method
 		inline       Derived& derived()       { return *static_cast<Derived*>(this); }
 
-		double getW(size_t i) const
+		double getW(size_t i) const MRPT_OVERRIDE
 		{
 			if (i>=derived().m_particles.size()) THROW_EXCEPTION_CUSTOM_MSG1("Index %i is out of range!",(int)i);
 			return derived().m_particles[i].log_w;
 		}
 
-		void setW(size_t i, double w)
+		void setW(size_t i, double w) MRPT_OVERRIDE
 		{
 			if (i>=derived().m_particles.size()) THROW_EXCEPTION_CUSTOM_MSG1("Index %i is out of range!",(int)i);
 			derived().m_particles[i].log_w = w;
 		}
 
-		size_t particlesCount() const
+		size_t particlesCount() const MRPT_OVERRIDE
 		{
 			return derived().m_particles.size();
 		}
 
-		double normalizeWeights( double *out_max_log_w = NULL )
+		double normalizeWeights( double *out_max_log_w = NULL ) MRPT_OVERRIDE
 		{
 			MRPT_START
 			if (derived().m_particles.empty()) return 0;
@@ -75,7 +75,7 @@ namespace bayes
 			MRPT_END
 		}
 
-		double ESS() const
+		double ESS() const MRPT_OVERRIDE
 		{
 			MRPT_START
 			double	cum = 0;
@@ -95,7 +95,7 @@ namespace bayes
 		}
 
 		/** Replaces the old particles by copies determined by the indexes in "indx", performing an efficient copy of the necesary particles only and allowing the number of particles to change.*/
-		void  performSubstitution( const std::vector<size_t> &indx)
+		void  performSubstitution( const std::vector<size_t> &indx) MRPT_OVERRIDE
 		{
 			MRPT_START
 			particle_list_t                      parts;
@@ -187,9 +187,9 @@ namespace bayes
 		CParticleFilterData() : m_particles(0)
 		{ }
 
-        /** Free the memory of all the particles and reset the array "m_particles" to length zero.
-          */
-        void clearParticles()
+		/** Free the memory of all the particles and reset the array "m_particles" to length zero.
+		  */
+		void clearParticles()
 		{
 			MRPT_START
 			for (typename CParticleList::iterator it=m_particles.begin();it!=m_particles.end();++it)
@@ -198,9 +198,8 @@ namespace bayes
 			MRPT_END
 		}
 
-        /** Virtual destructor
-          */
-        virtual ~CParticleFilterData()
+		/** Virtual destructor */
+		virtual ~CParticleFilterData()
 		{
 			clearParticles();
 		}

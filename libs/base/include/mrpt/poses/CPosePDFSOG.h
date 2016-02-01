@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -65,24 +65,20 @@ namespace mrpt
 			typedef CListGaussianModes::iterator iterator;
 
 		protected:
-			/** Assures the symmetry of the covariance matrix (eventually certain operations in the math-coprocessor lead to non-symmetric matrixes!)
-			  */
-			void  assureSymmetry();
+			void assureSymmetry(); //!< Ensures the symmetry of the covariance matrix (eventually certain operations in the math-coprocessor lead to non-symmetric matrixes!)
 
-			/** The list of SOG modes */
-			CListGaussianModes	m_modes;
+			CListGaussianModes	m_modes; //!< The list of SOG modes
 
 		 public:
 			/** Default constructor
-			  * \param nModes The initial size of CPosePDFSOG::m_modes
-			  */
+			  * \param nModes The initial size of CPosePDFSOG::m_modes */
 			CPosePDFSOG( size_t nModes = 1 );
 
 			size_t size() const { return m_modes.size(); } //!< Return the number of Gaussian modes.
 			bool empty() const { return m_modes.empty(); } //!< Return whether there is any Gaussian mode.
 
-			/** Clear the list of modes */
-			void clear();
+
+			void clear(); //!< Clear the list of modes
 
 			/** Access to individual beacons */
 			const TGaussianMode& operator [](size_t i) const {
@@ -128,28 +124,12 @@ namespace mrpt
 			  */
 			void mergeModes( double max_KLd = 0.5, bool verbose = false );
 
-			 /** Returns an estimate of the pose, (the mean, or mathematical expectation of the PDF).
-			   * \sa getCovariance
-			   */
-			void getMean(CPose2D &mean_pose) const;
+			void getMean(CPose2D &mean_pose) const MRPT_OVERRIDE; //!< Returns an estimate of the pose, (the mean, or mathematical expectation of the PDF) \sa getCovariance
+			void getCovarianceAndMean(mrpt::math::CMatrixDouble33 &cov,CPose2D &mean_point) const MRPT_OVERRIDE; //!< Returns an estimate of the pose covariance matrix (3x3 cov matrix) and the mean, both at once. \sa getMean
+			void getMostLikelyCovarianceAndMean(mrpt::math::CMatrixDouble33 &cov,CPose2D &mean_point) const; //!< For the most likely Gaussian mode in the SOG, returns the pose covariance matrix (3x3 cov matrix) and the mean. \sa getMean
+			void normalizeWeights(); //!< Normalize the weights in m_modes such as the maximum log-weight is 0
 
-			/** Returns an estimate of the pose covariance matrix (3x3 cov matrix) and the mean, both at once.
-			  * \sa getMean
-			  */
-			void getCovarianceAndMean(mrpt::math::CMatrixDouble33 &cov,CPose2D &mean_point) const;
-
-			/** For the most likely Gaussian mode in the SOG, returns the pose covariance matrix (3x3 cov matrix) and the mean.
-			  * \sa getMean
-			  */
-			void getMostLikelyCovarianceAndMean(mrpt::math::CMatrixDouble33 &cov,CPose2D &mean_point) const;
-
-			/** Normalize the weights in m_modes such as the maximum log-weight is 0.
-			  */
-			void  normalizeWeights();
-
-			/** Copy operator, translating if necesary (for example, between particles and gaussian representations)
-			  */
-			void  copyFrom(const CPosePDF &o);
+			void  copyFrom(const CPosePDF &o) MRPT_OVERRIDE; //!< Copy operator, translating if necesary (for example, between particles and gaussian representations)
 
 			/** Save the density to a text file, with the following format:
 			  *  There is one row per Gaussian "mode", and each row contains 10 elements:
@@ -163,45 +143,24 @@ namespace mrpt
 			  *   - C12 (Covariance elements)
 			  *   - C13 (Covariance elements)
 			  *   - C23 (Covariance elements)
-			  *
-			 */
-			void  saveToTextFile(const std::string &file) const;
+			  */
+			void saveToTextFile(const std::string &file) const MRPT_OVERRIDE;
 
 			/** this = p (+) this. This can be used to convert a PDF from local coordinates to global, providing the point (newReferenceBase) from which
-			  *   "to project" the current pdf. Result PDF substituted the currently stored one in the object.
-			  */
-			void  changeCoordinatesReference(const CPose3D &newReferenceBase );
+			  *   "to project" the current pdf. Result PDF substituted the currently stored one in the object. */
+			void changeCoordinatesReference(const CPose3D &newReferenceBase ) MRPT_OVERRIDE;
 
-			/** Rotate all the covariance matrixes by replacing them by \f$ \mathbf{R}~\mathbf{COV}~\mathbf{R}^t \f$, where \f$ \mathbf{R} = \left[ \begin{array}{ccc} \cos\alpha & -\sin\alpha & 0 \\ \sin\alpha & \cos\alpha & 0 \\ 0 & 0 & 1 \end{array}\right] \f$.
-			  */
-			void  rotateAllCovariances(const double &ang);
+			void rotateAllCovariances(const double &ang); //!< Rotate all the covariance matrixes by replacing them by \f$ \mathbf{R}~\mathbf{COV}~\mathbf{R}^t \f$, where \f$ \mathbf{R} = \left[ \begin{array}{ccc} \cos\alpha & -\sin\alpha & 0 \\ \sin\alpha & \cos\alpha & 0 \\ 0 & 0 & 1 \end{array}\right] \f$
+			void drawSingleSample( CPose2D &outPart ) const MRPT_OVERRIDE; //!< Draws a single sample from the distribution
+			void drawManySamples( size_t N, std::vector<mrpt::math::CVectorDouble> & outSamples ) const MRPT_OVERRIDE; //!< Draws a number of samples from the distribution, and saves as a list of 1x3 vectors, where each row contains a (x,y,phi) datum.
+			void inverse(CPosePDF &o) const MRPT_OVERRIDE; //!< Returns a new PDF such as: NEW_PDF = (0,0,0) - THIS_PDF
 
-			/** Draws a single sample from the distribution
-			  */
-			void  drawSingleSample( CPose2D &outPart ) const;
+			void operator += ( const mrpt::poses::CPose2D &Ap); //!< Makes: thisPDF = thisPDF + Ap, where "+" is pose composition (both the mean, and the covariance matrix are updated).
 
-			/** Draws a number of samples from the distribution, and saves as a list of 1x3 vectors, where each row contains a (x,y,phi) datum.
-			  */
-			void  drawManySamples( size_t N, std::vector<mrpt::math::CVectorDouble> & outSamples ) const;
+			double  evaluatePDF( const mrpt::poses::CPose2D &x, bool sumOverAllPhis = false ) const; //!< Evaluates the PDF at a given point.
+			double  evaluateNormalizedPDF( const mrpt::poses::CPose2D &x ) const; //!< Evaluates the ratio PDF(x) / max_PDF(x*), that is, the normalized PDF in the range [0,1].
 
-			/** Returns a new PDF such as: NEW_PDF = (0,0,0) - THIS_PDF
-			  */
-			void	 inverse(CPosePDF &o) const;
-
-			/** Makes: thisPDF = thisPDF + Ap, where "+" is pose composition (both the mean, and the covariance matrix are updated).
-			  */
-			void  operator += ( const mrpt::poses::CPose2D &Ap);
-
-			/** Evaluates the PDF at a given point.
-			  */
-			double  evaluatePDF( const mrpt::poses::CPose2D &x, bool sumOverAllPhis = false ) const;
-
-			/** Evaluates the ratio PDF(x) / max_PDF(x*), that is, the normalized PDF in the range [0,1].
-			  */
-			double  evaluateNormalizedPDF( const mrpt::poses::CPose2D &x ) const;
-
-			/** Evaluates the PDF within a rectangular grid (and a fixed orientation) and saves the result in a matrix (each row contains values for a fixed y-coordinate value).
-			  */
+			/** Evaluates the PDF within a rectangular grid (and a fixed orientation) and saves the result in a matrix (each row contains values for a fixed y-coordinate value). */
 			void  evaluatePDFInArea(
 				const double &		x_min,
 				const double &		x_max,
@@ -212,15 +171,11 @@ namespace mrpt
 				mrpt::math::CMatrixD	&outMatrix,
 				bool		sumOverAllPhis = false );
 
-			/** Bayesian fusion of two pose distributions, then save the result in this object (WARNING: Currently p1 must be a mrpt::poses::CPosePDFSOG object and p2 a mrpt::poses::CPosePDFGaussian object)
-			  */
-			void  bayesianFusion(const  CPosePDF &p1,const  CPosePDF &p2, const double &minMahalanobisDistToDrop=0 );
-
+			/** Bayesian fusion of two pose distributions, then save the result in this object (WARNING: Currently p1 must be a mrpt::poses::CPosePDFSOG object and p2 a mrpt::poses::CPosePDFGaussian object) */
+			void  bayesianFusion(const  CPosePDF &p1,const  CPosePDF &p2, const double &minMahalanobisDistToDrop=0 ) MRPT_OVERRIDE;
 
 		}; // End of class def.
 		DEFINE_SERIALIZABLE_POST_CUSTOM_BASE( CPosePDFSOG , CPosePDF )
-
 	} // End of namespace
 } // End of namespace
-
 #endif

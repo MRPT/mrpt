@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -12,8 +12,10 @@
 #include <mrpt/obs/CObservationImage.h>
 #include <mrpt/utils/CStream.h>
 #include <mrpt/math/ops_vectors.h>  // << of std::vector()
-
 #include <iostream>
+#if MRPT_HAS_MATLAB
+#	include <mexplus/mxarray.h>
+#endif
 
 using namespace mrpt::obs;
 using namespace mrpt::utils;
@@ -105,6 +107,28 @@ void  CObservationImage::readFromStream(mrpt::utils::CStream &in, int version)
 	};
 
 }
+
+/*---------------------------------------------------------------
+  Implements the writing to a mxArray for Matlab
+ ---------------------------------------------------------------*/
+#if MRPT_HAS_MATLAB
+// Add to implement mexplus::from template specialization
+IMPLEMENTS_MEXPLUS_FROM( mrpt::obs::CObservationImage )
+
+mxArray* CObservationImage::writeToMatlab() const
+{
+	const char* fields[] = {"class","ts","sensorLabel","image","pose","params"};
+	mexplus::MxArray obs_struct( mexplus::MxArray::Struct(sizeof(fields)/sizeof(fields[0]),fields) );
+
+	obs_struct.set("class", this->GetRuntimeClass()->className);
+	obs_struct.set("ts", this->timestamp);
+	obs_struct.set("sensorLabel", this->sensorLabel);
+	obs_struct.set("image", this->image);
+	obs_struct.set("pose", this->cameraPose);
+	obs_struct.set("params", this->cameraParams);
+	return obs_struct.release();
+}
+#endif
 
 /*---------------------------------------------------------------
 						getRectifiedImage

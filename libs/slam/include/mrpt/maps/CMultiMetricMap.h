@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -122,10 +122,10 @@ namespace maps
 		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE( CMultiMetricMap )
 	protected:
-		void  deleteAllMaps(); //!< Deletes all maps and clears the internal lists of maps (with clear_unique(), so user copies remain alive)
-		virtual void  internal_clear(); //!< Clear all elements of the map.
+		void deleteAllMaps(); //!< Deletes all maps and clears the internal lists of maps (with clear_unique(), so user copies remain alive)
+		void internal_clear() MRPT_OVERRIDE; //!< Clear all elements of the map.
 		// See base class docs
-		virtual bool  internal_insertObservation( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D *robotPose = NULL ) MRPT_OVERRIDE;
+		bool internal_insertObservation( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D *robotPose = NULL ) MRPT_OVERRIDE;
 		/** Returns true if any of the inner maps is able to compute a sensible likelihood function for this observation.
 		 * \param obs The observation.
 		 * \sa computeObservationLikelihood
@@ -279,7 +279,7 @@ namespace maps
 			const mrpt::poses::CPose2D         & otherMapPose,
 			mrpt::utils::TMatchingPairList     & correspondences,
 			const mrpt::maps::TMatchingParams & params,
-			mrpt::maps::TMatchingExtraResults & extraResults ) const;
+			mrpt::maps::TMatchingExtraResults & extraResults ) const MRPT_OVERRIDE;
 
 		/** See the definition in the base class: Calls in this class become a call to every single map in this set. */
 		float  compute3DMatchingRatio(
@@ -287,13 +287,10 @@ namespace maps
 				const mrpt::poses::CPose3D							&otherMapPose,
 				float									maxDistForCorr = 0.10f,
 				float									maxMahaDistForCorr = 2.0f
-				) const;
+				) const MRPT_OVERRIDE;
 
-		/** The implementation in this class just calls all the corresponding method of the contained metric maps.
-		  */
-		void  saveMetricMapRepresentationToFile(
-			const std::string	&filNamePrefix
-			) const;
+		/** The implementation in this class just calls all the corresponding method of the contained metric maps */
+		void  saveMetricMapRepresentationToFile(const std::string	&filNamePrefix ) const MRPT_OVERRIDE;
 
 		/** This method is called at the end of each "prediction-update-map insertion" cycle within "mrpt::slam::CMetricMapBuilderRBPF::processActionObservation".
 		  *  This method should normally do nothing, but in some cases can be used to free auxiliary cached variables.
@@ -302,7 +299,7 @@ namespace maps
 
 		/** Returns a 3D object representing the map.
 		  */
-		void  getAs3DObject ( mrpt::opengl::CSetOfObjectsPtr	&outObj ) const;
+		void getAs3DObject(mrpt::opengl::CSetOfObjectsPtr &outObj) const MRPT_OVERRIDE;
 
 		/** If the map is a simple point map or it's a multi-metric map that contains EXACTLY one simple point map, return it.
 			* Otherwise, return NULL

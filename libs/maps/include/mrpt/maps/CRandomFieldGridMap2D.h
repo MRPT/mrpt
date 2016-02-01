@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -20,10 +20,9 @@
 #include <mrpt/maps/COccupancyGridMap2D.h>
 
 #include <mrpt/maps/link_pragmas.h>
-
-#if EIGEN_VERSION_AT_LEAST(3,1,0)
-// #define EIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET  // No need to for this macro in Eigen 3.1+
-#	include <Eigen/Sparse>
+#if EIGEN_VERSION_AT_LEAST(3,1,0) // eigen 3.1+
+	#include <Eigen/SparseCore>
+	#include <Eigen/SparseCholesky>
 #endif
 
 namespace mrpt
@@ -122,7 +121,7 @@ namespace maps
 		inline void clear() { CMetricMap::clear(); }
 
 		// This method is just used for the ::saveToTextFile() method in base class.
-		float cell2float(const TRandomFieldCell& c) const
+		float cell2float(const TRandomFieldCell& c) const MRPT_OVERRIDE
 		{
 			return c.kf_mean;
 		}
@@ -145,7 +144,7 @@ namespace maps
 		  */
 		CRandomFieldGridMap2D(
 			TMapRepresentation	mapType = mrAchim,
-            float				x_min = -2,
+			float				x_min = -2,
 			float				x_max = 2,
 			float				y_min = -2,
 			float				y_max = 2,
@@ -158,7 +157,7 @@ namespace maps
 		 /** Returns true if the map is empty/no observation has been inserted (in this class it always return false,
 		   * unless redefined otherwise in base classes)
 		   */
-		 virtual bool  isEmpty() const;
+		virtual bool isEmpty() const MRPT_OVERRIDE;
 
 
 		/** Save the current map as a graphical file (BMP,PNG,...).
@@ -233,7 +232,7 @@ namespace maps
 									float	new_y_min,
 									float	new_y_max,
 									const	TRandomFieldCell& defaultValueNewCells,
-									float	additionalMarginMeters = 1.0f );
+									float	additionalMarginMeters = 1.0f ) MRPT_OVERRIDE;
 
 		/** See docs in base class: in this class this always returns 0 */
 		float  compute3DMatchingRatio(
@@ -241,14 +240,10 @@ namespace maps
 				const mrpt::poses::CPose3D							&otherMapPose,
 				float									maxDistForCorr = 0.10f,
 				float									maxMahaDistForCorr = 2.0f
-				) const;
+				) const MRPT_OVERRIDE;
 
-
-		/** The implementation in this class just calls all the corresponding method of the contained metric maps.
-		  */
-		virtual void  saveMetricMapRepresentationToFile(
-			const std::string	&filNamePrefix
-			) const;
+		/** The implementation in this class just calls all the corresponding method of the contained metric maps */
+		virtual void  saveMetricMapRepresentationToFile(const std::string &filNamePrefix) const MRPT_OVERRIDE;
 
 		/** Save a matlab ".m" file which represents as 3D surfaces the mean and a given confidence level for the concentration of each cell.
 		  *  This method can only be called in a KF map model.
@@ -263,7 +258,7 @@ namespace maps
 
 		/** Returns a 3D object representing the map (mean).
 		  */
-		virtual void  getAs3DObject ( mrpt::opengl::CSetOfObjectsPtr	&outObj ) const;
+		virtual void getAs3DObject( mrpt::opengl::CSetOfObjectsPtr &outObj ) const MRPT_OVERRIDE;
 
 		/** Returns two 3D objects representing the mean and variance maps.
 		  */
@@ -402,7 +397,7 @@ namespace maps
 		void  recoverMeanAndCov() const;
 
 		/** Erase all the contents of the map */
-		virtual void  internal_clear();
+		virtual void  internal_clear() MRPT_OVERRIDE;
 
 		/** Check if two cells of the gridmap (m_map) are connected, based on the provided occupancy gridmap*/
 		bool exist_relation_between2cells(

@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -41,6 +41,7 @@ using namespace std;
 DECLARE_OP_FUNCTION(op_externalize);
 DECLARE_OP_FUNCTION(op_info);
 DECLARE_OP_FUNCTION(op_list_images);
+DECLARE_OP_FUNCTION(op_list_poses);
 DECLARE_OP_FUNCTION(op_list_rangebearing);
 DECLARE_OP_FUNCTION(op_remove_label);
 DECLARE_OP_FUNCTION(op_keep_label);
@@ -50,6 +51,8 @@ DECLARE_OP_FUNCTION(op_export_gps_gas_kml);
 DECLARE_OP_FUNCTION(op_export_gps_txt);
 DECLARE_OP_FUNCTION(op_export_imu_txt);
 DECLARE_OP_FUNCTION(op_export_odometry_txt);
+DECLARE_OP_FUNCTION(op_export_enose_txt);
+DECLARE_OP_FUNCTION(op_export_anemometer_txt);
 DECLARE_OP_FUNCTION(op_recalc_odometry);
 DECLARE_OP_FUNCTION(op_export_rawdaq_txt);
 DECLARE_OP_FUNCTION(op_export_2d_scans_txt);
@@ -121,6 +124,12 @@ int main(int argc, char **argv)
 			,cmd, false) );
 		ops_functors["list-images"] = &op_list_images;
 
+		arg_ops.push_back(new TCLAP::SwitchArg("","list-poses",
+			"Op: dump a list of all the poses of the observations in the dataset.\n"
+			"Optionally the output text file can be changed with --text-file-output."
+			,cmd, false) );
+		ops_functors["list-poses"] = &op_list_poses;
+
 		arg_ops.push_back(new TCLAP::SwitchArg("","list-timestamps",
 			"Op: generates a list with all the observations' timestamp, sensor label and C++ class name.\n"
 			"Optionally the output text file can be changed with --text-file-output."
@@ -190,6 +199,22 @@ int main(int argc, char **argv)
 			"filename + each sensorLabel."
 			,cmd,false) );
 		ops_functors["export-odometry-txt"] = &op_export_odometry_txt;
+
+		arg_ops.push_back(new TCLAP::SwitchArg("", "export-enose-txt",
+			"Op: Export e-nose readigns to TXT files.\n"
+			"Generates one .txt file for each different sensor label of an e-nose observation in the dataset. "
+			"The generated .txt files will be saved in the same path than the input rawlog, with the same "
+			"filename + each sensorLabel."
+			, cmd, false));
+		ops_functors["export-enose-txt"] = &op_export_enose_txt;
+
+		arg_ops.push_back(new TCLAP::SwitchArg("", "export-anemometer-txt",
+			"Op: Export anemometer readigns to TXT files.\n"
+			"Generates one .txt file for each different sensor label of an anemometer observation in the dataset. "
+			"The generated .txt files will be saved in the same path than the input rawlog, with the same "
+			"filename + each sensorLabel."
+			, cmd, false));
+		ops_functors["export-anemometer-txt"] = &op_export_anemometer_txt;
 
 		arg_ops.push_back(new TCLAP::SwitchArg("","recalc-odometry",
 			"Op: Recomputes odometry increments from new encoder-to-odometry constants.\n"

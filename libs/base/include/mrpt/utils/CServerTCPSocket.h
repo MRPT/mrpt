@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -11,6 +11,7 @@
 
 #include <mrpt/utils/core_defs.h>
 #include <mrpt/utils/CDebugOutputCapable.h>
+#include <mrpt/utils/net_utils.h>
 #include <string>
 
 namespace mrpt
@@ -37,8 +38,8 @@ namespace utils
 		int				m_serverSock;
 #endif
 
-		/** Returns a description of the last error */
-		std::string  getLastErrorStr();
+		/** Returns a description of the last Sockets error */
+		std::string  getLastErrorStr() { return mrpt::utils::net::getLastSocketErrorStr(); }
 
 		bool		m_verbose;
 

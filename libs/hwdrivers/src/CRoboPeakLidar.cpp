@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -98,8 +98,8 @@ void  CRoboPeakLidar::doProcessSimple(
 			rplidar_response_measurement_node_t angle_compensate_nodes[angle_compensate_nodes_count];
 			memset(angle_compensate_nodes, 0, angle_compensate_nodes_count*sizeof(rplidar_response_measurement_node_t));
 
-			outObservation.scan.assign(count, 0);
-			outObservation.validRange.resize(count, 0);
+			outObservation.scan.assign(angle_compensate_nodes_count, 0);
+			outObservation.validRange.resize(angle_compensate_nodes_count, 0);
 
 			for(size_t i=0 ; i < count; i++ )
 			{
@@ -115,7 +115,7 @@ void  CRoboPeakLidar::doProcessSimple(
 				}
 			}
 
-			for(size_t i=0 ; i < count; i++ )
+			for(size_t i=0 ; i < angle_compensate_nodes_count; i++ )
 			{
 				const float read_value = (float) angle_compensate_nodes[i].distance_q2/4.0f/1000;
 				outObservation.scan[i] = read_value;
@@ -190,7 +190,10 @@ void  CRoboPeakLidar::loadConfig_sensorSpecific(
 -------------------------------------------------------------*/
 bool  CRoboPeakLidar::turnOn()
 {
-	return checkCOMMs();
+	bool ret = checkCOMMs();
+	if (ret && RPLIDAR_DRV) 
+		RPLIDAR_DRV->startMotor();
+	return ret;
 }
 
 /*-------------------------------------------------------------
@@ -199,7 +202,10 @@ bool  CRoboPeakLidar::turnOn()
 bool  CRoboPeakLidar::turnOff()
 {
 #if MRPT_HAS_ROBOPEAK_LIDAR
-	if (RPLIDAR_DRV) RPLIDAR_DRV->stop();
+	if (RPLIDAR_DRV) {
+		RPLIDAR_DRV->stop();
+		RPLIDAR_DRV->stopMotor();
+	}
 	return true;
 #else
 	THROW_EXCEPTION("MRPT has been compiled without RPLidar support!")
@@ -316,14 +322,10 @@ bool  CRoboPeakLidar::checkCOMMs()
 -------------------------------------------------------------*/
 void CRoboPeakLidar::initialize()
 {
-	if (!checkCOMMs()) return;
-
+	if (!checkCOMMs())
+		throw std::runtime_error("[CRoboPeakLidar::initialize] Error initializing RPLIDAR scanner.");
 	if (!turnOn())
-	{
-		cerr << "[CRoboPeakLidar::initialize] Error initializing RPLIDAR scanner" << endl;
-		return;
-	}
-
+		throw std::runtime_error("[CRoboPeakLidar::initialize] Error initializing RPLIDAR scanner.");
 }
 
 

@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -49,6 +49,60 @@ std::ostream& mrpt::topography::operator<<( std::ostream& out, const TCoords &o 
 	return out << o.getAsString();
 }
 
+
+/*---------------------------------------------------------------
+				geocentricToENU_WGS84
+ ---------------------------------------------------------------*/
+void  mrpt::topography::geocentricToENU_WGS84(
+	const mrpt::math::TPoint3D  &P_geocentric_,
+	mrpt::math::TPoint3D        &out_ENU_point,
+	const TGeodeticCoords       &in_coords_origin )
+{
+	// Generate reference 3D point:
+	TPoint3D P_geocentric_ref;
+	geodeticToGeocentric_WGS84(in_coords_origin,P_geocentric_ref);
+
+	const double clat = cos(DEG2RAD(in_coords_origin.lat)), slat = sin(DEG2RAD(in_coords_origin.lat));
+	const double clon = cos(DEG2RAD(in_coords_origin.lon)), slon = sin(DEG2RAD(in_coords_origin.lon));
+
+	// Compute the resulting relative coordinates:
+	// For using smaller numbers:
+	const mrpt::math::TPoint3D P_geocentric = P_geocentric_ - P_geocentric_ref;
+
+	// Optimized calculation: Local transformed coordinates of P_geo(x,y,z)
+	//   after rotation given by the transposed rotation matrix from ENU -> ECEF.
+	out_ENU_point.x = -slon*P_geocentric.x + clon*P_geocentric.y;
+	out_ENU_point.y = -clon*slat*P_geocentric.x -slon*slat*P_geocentric.y + clat*P_geocentric.z;
+	out_ENU_point.z = clon*clat*P_geocentric.x + slon*clat*P_geocentric.y +slat*P_geocentric.z;
+}
+
+void mrpt::topography::geocentricToENU_WGS84(
+	const std::vector<mrpt::math::TPoint3D> &in_geocentric_points,
+	std::vector<mrpt::math::TPoint3D>       &out_ENU_points,
+	const TGeodeticCoords       &in_coords_origin )
+{
+	// Generate reference 3D point:
+	TPoint3D P_geocentric_ref;
+	geodeticToGeocentric_WGS84(in_coords_origin,P_geocentric_ref);
+
+	const double clat = cos(DEG2RAD(in_coords_origin.lat)), slat = sin(DEG2RAD(in_coords_origin.lat));
+	const double clon = cos(DEG2RAD(in_coords_origin.lon)), slon = sin(DEG2RAD(in_coords_origin.lon));
+
+	const size_t N= in_geocentric_points.size();
+	out_ENU_points.resize(N);
+	for (size_t i=0;i<N;i++)
+	{
+		// Compute the resulting relative coordinates for using smaller numbers:
+		const mrpt::math::TPoint3D P_geocentric = in_geocentric_points[i] - P_geocentric_ref;
+
+		// Optimized calculation: Local transformed coordinates of P_geo(x,y,z)
+		//   after rotation given by the transposed rotation matrix from ENU -> ECEF.
+		out_ENU_points[i].x = -slon*P_geocentric.x + clon*P_geocentric.y;
+		out_ENU_points[i].y = -clon*slat*P_geocentric.x -slon*slat*P_geocentric.y + clat*P_geocentric.z;
+		out_ENU_points[i].z = clon*clat*P_geocentric.x + slon*clat*P_geocentric.y +slat*P_geocentric.z;
+	}
+}
+
 /*---------------------------------------------------------------
 				geodeticToENU_WGS84
  ---------------------------------------------------------------*/
@@ -70,24 +124,8 @@ void  mrpt::topography::geodeticToENU_WGS84(
 	TPoint3D	P_geocentric;
 	geodeticToGeocentric_WGS84(in_coords,P_geocentric);
 
-	// Generate reference 3D point:
-	TPoint3D P_geocentric_ref;
-	geodeticToGeocentric_WGS84(in_coords_origin,P_geocentric_ref);
-
-	const double clat = cos(DEG2RAD(in_coords_origin.lat)), slat = sin(DEG2RAD(in_coords_origin.lat));
-	const double clon = cos(DEG2RAD(in_coords_origin.lon)), slon = sin(DEG2RAD(in_coords_origin.lon));
-
-	// Compute the resulting relative coordinates:
-	// For using smaller numbers:
-	P_geocentric -= P_geocentric_ref;
-
-	// Optimized calculation: Local transformed coordinates of P_geo(x,y,z)
-	//   after rotation given by the transposed rotation matrix from ENU -> ECEF.
-	out_ENU_point.x = -slon*P_geocentric.x + clon*P_geocentric.y;
-	out_ENU_point.y = -clon*slat*P_geocentric.x -slon*slat*P_geocentric.y + clat*P_geocentric.z;
-	out_ENU_point.z = clon*clat*P_geocentric.x + slon*clat*P_geocentric.y +slat*P_geocentric.z;
+	geocentricToENU_WGS84(P_geocentric,out_ENU_point,in_coords_origin);
 }
-
 
 /*---------------------------------------------------------------
 					ENU_axes_from_WGS84

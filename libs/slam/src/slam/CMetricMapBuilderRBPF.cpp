@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -397,7 +397,7 @@ void  CMetricMapBuilderRBPF::drawCurrentEstimationToImage( utils::CCanvas *img )
 					x1, round( (imgHeight-1)-y1 ),
 					x2, round( (imgHeight-1)-y2 ),
 					i==M ? TColor(0,0,0) : TColor(0x50,0x50,0x50),	 // Color, gray levels,
-					i==M ? 70 : 30				 // Line width
+					i==M ? 3 : 1				 // Line width
 					);
 			}
 		}

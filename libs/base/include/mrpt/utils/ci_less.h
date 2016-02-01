@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -16,11 +16,12 @@ namespace mrpt
 {
 	namespace utils
 	{
-		/** \addtogroup stlext_grp STL extensions and metaprogramming
+		/** \addtogroup stlext_grp STL extensions and metaprogramming 
 		  * \ingroup mrpt_base_grp
 		  * @{ */
 
 		/** A case-insensitive comparator struct for usage within STL containers, eg: map<string,string,ci_less>
+		  * \note Defined in #include <mrpt/utils/ci_less.h>
 		  */
 		struct ci_less : std::binary_function<std::string,std::string,bool>
 		{

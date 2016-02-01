@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -184,7 +184,7 @@ CHMTSLAM::TMessageLSLAMfromTBIPtr CHMTSLAM::TBI_main_method(
 	// ----------------------------------------------------
 	std::set<CHMHMapNode::TNodeID>  lstNodesToErase;
 	{
-		synch::CCriticalSection( obj->m_topLCdets_cs );
+		synch::CCriticalSection lock( obj->m_topLCdets_cs );
 
 		for ( deque<CTopLCDetectorBase*>::const_iterator it=obj->m_topLCdets.begin();it!=obj->m_topLCdets.end();++it)
 		{

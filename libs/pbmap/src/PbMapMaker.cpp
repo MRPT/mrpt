@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -1199,7 +1199,7 @@ void PbMapMaker::run()
     detectPlanesCloud( frameQueue.back().cloudPtr, frameQueue.back().pose,
                       configPbMap.dist_threshold, configPbMap.angle_threshold, configPbMap.minInliersRate);
 
-    if(configPbMap.makeClusters)
+	if(configPbMap.makeClusters) {
       if(mPbMap.vPlanes.size() > minGrowPlanes)
       {
         // Evaluate the partition of the current groups with minNcut
@@ -1209,8 +1209,9 @@ void PbMapMaker::run()
 
         minGrowPlanes += 2;
       }
+	}
 
-      ++numPrevKFs;
+	++numPrevKFs;
     }
   }
 

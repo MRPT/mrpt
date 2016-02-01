@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -18,7 +18,7 @@
 This library includes an implementation of the HMT-SLAM framework. 
 See the list of classes in mrpt::hmtslam, and the application hmt-slam-gui.
 
-<b>NOTE:</b> For new designs, it is recommended to try the \ref mrpt_srba_grp "[mrpt-srba]" library instead.
+<b>NOTE:</b> For new designs, it is recommended to try the \ref mrpt_srba_grp "[srba]" library instead.
 
 
 */

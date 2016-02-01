@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -117,7 +117,7 @@ AREXPORT ArModuleLoader::Status ArModuleLoader::load(const char *modName,
 
 #ifndef _MSC_VER
   #pragma GCC diagnostic push
-  #pragma GCC diagnostic ignored "-fstrict-aliasing"
+//  #pragma GCC diagnostic ignored "-fstrict-aliasing"
 #endif
   //func=(bool(*)(ArRobot*,void*))dlsym(handle, "ariaInitModule");
   func=reinterpret_cast<TFunc>( dlsym(handle, "ariaInitModule") );

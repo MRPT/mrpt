@@ -104,18 +104,5 @@ IF(BUILD_mrpt-base)
 		target_link_libraries(mrpt-base ${wxWidgets_LIBRARIES})
 	ENDIF(CMAKE_MRPT_HAS_WXWIDGETS)
 
-
-	# For GCC<4.5.1 and 64bit architectures, we need to disable vectorization at one problematic file (weird bug!)
-	# JL: It seems the bug is still there for GCC 4.6.0, so disable vect. in all cases for that file :-(
-	#IF(CMAKE_COMPILER_IS_GNUCXX AND "${CMAKE_GCC_REGEX_VERSION}" VERSION_LESS "4.5.1" AND CMAKE_MRPT_WORD_SIZE EQUAL 64)
-	IF(CMAKE_COMPILER_IS_GNUCXX AND WIN32)
-		# Skip for MinGW
-	ELSE(CMAKE_COMPILER_IS_GNUCXX AND WIN32)		
-		set_source_files_properties(
-			${MRPT_LIBS_ROOT}/base/src/poses/CPose3DQuatPDF.cpp
-			PROPERTIES COMPILE_FLAGS -DEIGEN_DONT_VECTORIZE
-			)
-	ENDIF(CMAKE_COMPILER_IS_GNUCXX AND WIN32)		
-	#ENDIF(CMAKE_COMPILER_IS_GNUCXX AND "${CMAKE_GCC_REGEX_VERSION}" VERSION_LESS "4.5.1" AND CMAKE_MRPT_WORD_SIZE EQUAL 64)
 ENDIF(BUILD_mrpt-base) 
 

@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -10,6 +10,7 @@
 #include "rawlog-edit-declarations.h"
 #include <mrpt/obs/CObservationImage.h>
 #include <mrpt/obs/CObservationStereoImages.h>
+#include <mrpt/obs/CObservation3DRangeScan.h>
 
 using namespace mrpt;
 using namespace mrpt::utils;
@@ -64,6 +65,13 @@ DECLARE_OP_FUNCTION(op_list_images)
 				if (obsIm->image.isExternallyStored())
 					m_out << obsIm->image.getExternalStorageFile() << std::endl;
 			}
+			else if (IS_CLASS(obs, CObservation3DRangeScan ) )
+			  {
+				CObservation3DRangeScanPtr obs3D = CObservation3DRangeScanPtr(obs);
+
+				if (obs3D->intensityImage.isExternallyStored())
+					m_out << obs3D->intensityImage.getExternalStorageFile() << std::endl;
+			  }
 
 			return true;
 		}

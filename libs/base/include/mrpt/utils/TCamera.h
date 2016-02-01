@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -31,6 +31,9 @@ namespace mrpt
 		class BASE_IMPEXP TCamera : public mrpt::utils::CSerializable
 		{
 			DEFINE_SERIALIZABLE( TCamera )
+
+            // This must be added for declaration of MEX-related functions
+            DECLARE_MEX_CONVERSION
 
 		public:
 			TCamera() : ncols(640), nrows(480), focalLengthMeters(0)
@@ -87,6 +90,8 @@ namespace mrpt
 			  *  \exception std::exception on missing fields
 			  */
 			void loadFromConfigFile(const std::string &section, const mrpt::utils::CConfigFileBase &cfg );
+			/** \overload This signature is consistent with the rest of MRPT APIs */
+			inline void loadFromConfigFile(const mrpt::utils::CConfigFileBase &cfg,const std::string &section) { loadFromConfigFile(section,cfg); }
 
 			/** Dumps all the parameters as a multi-line string, with the same format than \a saveToConfigFile.  \sa saveToConfigFile */
 			std::string dumpAsText() const;
@@ -193,4 +198,7 @@ namespace mrpt
 
 	} // End of namespace
 } // end of namespace
+
+// Add for declaration of mexplus::from template specialization
+DECLARE_MEXPLUS_FROM( mrpt::utils::TCamera ) // Not working at the beginning?
 #endif

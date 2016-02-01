@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -65,10 +65,10 @@ namespace obs
 		std::vector<char> m_raw_frame;
 
 		/** Not used */
-		void getSensorPose( mrpt::poses::CPose3D &) const { }
-		void setSensorPose( const mrpt::poses::CPose3D & ) { }
+		void getSensorPose( mrpt::poses::CPose3D &) const MRPT_OVERRIDE { }
+		void setSensorPose( const mrpt::poses::CPose3D & ) MRPT_OVERRIDE { }
 		// See base class docs
-		virtual void getDescriptionAsText(std::ostream &o) const;
+		void getDescriptionAsText(std::ostream &o) const MRPT_OVERRIDE;
 
 	}; // End of class def.
 	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CObservationCANBusJ1939 , CObservation, OBS_IMPEXP)

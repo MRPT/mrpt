@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -14,6 +14,10 @@ namespace mrpt
 {
 	namespace system
 	{
+		/** @defgroup vector_loadsave Load and save vectors to files (in #include <mrpt/system/vector_loadsave.h>)
+		  * \ingroup mrpt_base_grp
+		  * @{ */
+
 		/** A useful function for debugging, which saves a std::vector into a text file (compat. with MATLAB)
 		* \return Returns false on any error, true on everything OK.
 		*/
@@ -51,6 +55,7 @@ namespace mrpt
 		*/
 		bool BASE_IMPEXP loadBinaryFile( vector_byte &out_data, const std::string &fileName );
 
+		/** @} */
 
 	} // End of namespace
 } // End of namespace

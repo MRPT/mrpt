@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -17,7 +17,8 @@ namespace mrpt
 	namespace utils
 	{
 		/** A circular buffer of fixed size (defined at construction-time), implemented with a std::vector as the underlying storage.
-		 * \ingroup stlext_grp
+		 * \ingroup stlext_grp 
+		  * \note Defined in #include <mrpt/utils/circular_buffer.h>
 		  */
 		template <typename T>
 		class circular_buffer
@@ -92,16 +93,43 @@ namespace mrpt
 			}
 
 			/** Pop a number of elements into a user-provided array.
-			  * \exception std::out_of_range If the buffer has less elements than requested.
-			  */
+			  * \exception std::out_of_range If the buffer has less elements than requested. */
 			void pop_many(T *out_array, size_t count) {
 				while (count--)
 					pop(*out_array++);
 			}
 
+			/** Peek (see without modifying) what is to be read from the buffer if pop() was to be called.
+			  * \exception std::out_of_range If the buffer is empty. */
+			T peek() const {
+				if (m_next_read==m_next_write) throw std::out_of_range("peek: circular_buffer is empty");
+				return m_data[m_next_read];
+			}
+			/** Like peek(), but seeking ahead in the buffer (index=0 means the immediate next element, index=1 the following one, etc.)
+			  * \exception std::out_of_range If trying to read passing the number of available elements. */
+			T peek(size_t index) const {
+				size_t peek_read = m_next_read;
+				peek_read+=index;
+				peek_read%=m_size;
+				if (m_next_read==m_next_write || (m_next_read<m_next_write && peek_read>m_next_write) || (m_next_read>m_next_write && peek_read<m_next_write)) throw std::out_of_range("peek: seek out of range");
+				return m_data[peek_read];
+			}
+
+			/** Like peek(), for multiple elements, storing a number of elements into a user-provided array.
+			  * \exception std::out_of_range If the buffer has less elements than requested. */
+			void peek_many(T *out_array, size_t count) const {
+				size_t peek_read = m_next_read;
+				while (count--)
+				{
+					if (peek_read==m_next_write) throw std::out_of_range("peek: circular_buffer is empty");
+					T val =m_data[peek_read++];
+					if (peek_read==m_size) peek_read=0;
+					*out_array++ = val;
+				}
+			}
+
 			/** Return the number of elements available for read ("pop") in the buffer (this is NOT the maximum size of the internal buffer)
-			  * \sa capacity
-			  */
+			  * \sa capacity */
 			size_t size() const {
 				if (m_next_write>=m_next_read)
 						return m_next_write-m_next_read;

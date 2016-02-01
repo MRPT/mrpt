@@ -2,11 +2,10 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
-
 
 /*-----------------------------------------------------------------------------
 	APPLICATION: rawlog-grabber
@@ -14,7 +13,7 @@
 	AUTHOR: Jose Luis Blanco Claraco <joseluisblancoc@gmail.com>
 
 	For instructions and details, see:
-	 http://www.mrpt.org/Application:rawlog-grabber
+	 http://www.mrpt.org/list-of-mrpt-apps/application-rawlog-grabber/
   -----------------------------------------------------------------------------*/
 
 #include <mrpt/hwdrivers/CGenericSensor.h>
@@ -43,6 +42,7 @@ using namespace mrpt::obs;
 using namespace mrpt::poses;
 using namespace std;
 
+const bool hwdrivers_verbose = (getenv("MRPT_HWDRIVERS_VERBOSE")!=NULL) && atoi(getenv("MRPT_HWDRIVERS_VERBOSE"))!=0;
 
 const std::string GLOBAL_SECTION_NAME = "global";
 
@@ -150,8 +150,6 @@ int main(int argc, char **argv)
 		{
 			if (*it==GLOBAL_SECTION_NAME || it->empty() || iniFile.read_bool(*it,"rawlog-grabber-ignore",false,false) ) 
 				continue;	// This is not a sensor:
-
-			//cout << "Launching thread for sensor '" << *it << "'" << endl;
 
 			TThreadParams	threParms;
 			threParms.cfgFile		= &iniFile;
@@ -273,26 +271,28 @@ int main(int argc, char **argv)
 						// First, check if inserting this OBS into the SF would overflow "SF_max_time_span":
 						if (curSF.size()!=0 && timeDifference( curSF.getObservationByIndex(0)->timestamp, obs->timestamp ) > SF_max_time_span )
 						{
-							// Show GPS mode:
-							CObservationGPSPtr gps;
-							size_t idx=0;
-							do
+							if (hwdrivers_verbose)
 							{
-								gps = curSF.getObservationByClass<CObservationGPS>(idx++ );
-								if (gps)
+								// Show GPS mode:
+								CObservationGPSPtr gps;
+								size_t idx=0;
+								do
 								{
-									cout << "  GPS mode: " << (int)gps->GGA_datum.fix_quality << " label: " << gps->sensorLabel << endl;
-								}
-							} while (gps);
+									gps = curSF.getObservationByClass<CObservationGPS>(idx++ );
+									if (gps && gps->has_GGA_datum) {
+										cout << "  GPS mode: " << (int)gps->getMsgByClass<mrpt::obs::gnss::Message_NMEA_GGA>().fields.fix_quality << " label: " << gps->sensorLabel << endl;
+									}
+								} while (gps);
 
-							// Show IMU angles:
-							CObservationIMUPtr imu = curSF.getObservationByClass<CObservationIMU>();
-							if (imu)
-							{
-								cout << format("   IMU angles (degrees): (yaw,pitch,roll)=(%.06f, %.06f, %.06f)",
-									RAD2DEG( imu->rawMeasurements[IMU_YAW] ),
-									RAD2DEG( imu->rawMeasurements[IMU_PITCH] ),
-									RAD2DEG( imu->rawMeasurements[IMU_ROLL] ) ) << endl;
+								// Show IMU angles:
+								CObservationIMUPtr imu = curSF.getObservationByClass<CObservationIMU>();
+								if (imu)
+								{
+									cout << format("   IMU angles (degrees): (yaw,pitch,roll)=(%.06f, %.06f, %.06f)",
+										RAD2DEG( imu->rawMeasurements[IMU_YAW] ),
+										RAD2DEG( imu->rawMeasurements[IMU_PITCH] ),
+										RAD2DEG( imu->rawMeasurements[IMU_ROLL] ) ) << endl;
+								}
 							}
 
 							// Save and start a new one:
@@ -319,38 +319,39 @@ int main(int argc, char **argv)
 					out_file << *(it->second);
 
 					// Show GPS mode:
-					if ( (it->second)->GetRuntimeClass() == CLASS_ID(CObservationGPS) )
+					if (hwdrivers_verbose)
 					{
-						CObservationGPSPtr gps = CObservationGPSPtr( it->second );
-						cout << "  GPS mode: " << (int)gps->GGA_datum.fix_quality << " label: " << gps->sensorLabel << endl;
-					}
-					else if ( (it->second)->GetRuntimeClass() == CLASS_ID(CObservationIMU) )
-					{
-						imu = CObservationIMUPtr( it->second );
+						if ( (it->second)->GetRuntimeClass() == CLASS_ID(CObservationGPS) ) {
+							CObservationGPSPtr gps = CObservationGPSPtr( it->second );
+							if (gps->has_GGA_datum)
+								cout << "  GPS mode: " << (int)gps->getMsgByClass<mrpt::obs::gnss::Message_NMEA_GGA>().fields.fix_quality << " label: " << gps->sensorLabel << endl;
+						}
+						else if ( (it->second)->GetRuntimeClass() == CLASS_ID(CObservationIMU) ) {
+							imu = CObservationIMUPtr( it->second );
+						}
 					}
 				}
 
-				// Show IMU angles:
-				if (imu)
+				if (hwdrivers_verbose)
 				{
-					cout << format("   IMU angles (degrees): (yaw,pitch,roll)=(%.06f, %.06f, %.06f)",
-						RAD2DEG( imu->rawMeasurements[IMU_YAW] ),
-						RAD2DEG( imu->rawMeasurements[IMU_PITCH] ),
-						RAD2DEG( imu->rawMeasurements[IMU_ROLL] ) ) << endl;
+					// Show IMU angles:
+					if (imu)
+					{
+						cout << format("   IMU angles (degrees): (yaw,pitch,roll)=(%.06f, %.06f, %.06f)",
+							RAD2DEG( imu->rawMeasurements[IMU_YAW] ),
+							RAD2DEG( imu->rawMeasurements[IMU_PITCH] ),
+							RAD2DEG( imu->rawMeasurements[IMU_ROLL] ) ) << endl;
+					}
 				}
 
-
-				if (!copy_of_global_list_obs.empty())
-				{
+				if (!copy_of_global_list_obs.empty()) {
 					cout << "[" << dateTimeToString(now()) << "] Saved " << copy_of_global_list_obs.size() << " objects." << endl;
 				}
 			}
-
 			sleep(GRABBER_PERIOD_MS);
 		}
 
-		if (allThreadsMustExit)
-		{
+		if (allThreadsMustExit) {
 			cerr << "[main thread] Ended due to other thread signal to exit application." << endl;
 		}
 

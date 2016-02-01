@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -25,6 +25,10 @@
 
 // Universal include for all versions of OpenCV
 #include <mrpt/otherlibs/do_opencv_includes.h>
+
+#if MRPT_HAS_MATLAB
+#	include <mexplus/mxarray.h>
+#endif
 
 // Prototypes of SSE2/SSE3/SSSE3 optimized functions:
 #include "CImage_SSEx.h"
@@ -55,7 +59,6 @@ std::string CImage::IMAGES_PATH_BASE(".");
 #if IMAGE_ALLOC_PERFLOG
 mrpt::utils::CTimeLogger alloc_tims;
 #endif
-
 
 /*---------------------------------------------------------------
 						Constructor
@@ -835,6 +838,20 @@ void  CImage::readFromStream(mrpt::utils::CStream &in, int version)
 	};
 #endif
 }
+
+/*---------------------------------------------------------------
+  Implements the writing to a mxArray for Matlab
+ ---------------------------------------------------------------*/
+#if MRPT_HAS_MATLAB
+// Add to implement mexplus::from template specialization
+IMPLEMENTS_MEXPLUS_FROM( mrpt::utils::CImage )
+
+mxArray* CImage::writeToMatlab() const
+{
+    cv::Mat cvImg = cv::cvarrToMat( this->getAs<IplImage>() );
+	return mexplus::from( cvImg );
+}
+#endif
 
 /*---------------------------------------------------------------
 						getSize
@@ -2049,17 +2066,17 @@ void CImage::rectifyImageInPlace( const mrpt::utils::TCamera &cameraParams  )
 	IplImage *outImg;												// Output Image
 	outImg = cvCreateImage( cvGetSize( srcImg ), srcImg->depth, srcImg->nChannels );
 
-	double aux1[3][3], aux2[1][4];
+	double aux1[3][3], aux2[1][5];
 	const CMatrixDouble33 &cameraMatrix = cameraParams.intrinsicParams;
 
 	for (int i=0;i<3;i++)
 		for (int j=0;j<3;j++)
 			aux1[i][j] = cameraMatrix(i,j);
-	for (int i=0;i<4;i++)
+	for (int i=0;i<5;i++)
 		aux2[0][i]=cameraParams.dist[i];
 
 	CvMat inMat =  cvMat( cameraMatrix.getRowCount(), cameraMatrix.getColCount(), CV_64F, aux1 );
-	CvMat distM =  cvMat( 1, 4, CV_64F, aux2 );
+	CvMat distM =  cvMat( 1, 5, CV_64F, aux2 );
 
 	// Remove distortion
 	cvUndistort2( srcImg, outImg, &inMat, &distM );
@@ -2085,17 +2102,17 @@ void CImage::rectifyImage(
 	IplImage *outImg;												// Output Image
 	outImg = cvCreateImage( cvGetSize( srcImg ), srcImg->depth, srcImg->nChannels );
 
-	double aux1[3][3], aux2[1][4];
+	double aux1[3][3], aux2[1][5];
 	const CMatrixDouble33 &cameraMatrix = cameraParams.intrinsicParams;
 
 	for (int i=0;i<3;i++)
 		for (int j=0;j<3;j++)
 			aux1[i][j] = cameraMatrix(i,j);
-	for (int i=0;i<4;i++)
+	for (int i=0;i<5;i++)
 		aux2[0][i]=cameraParams.dist[i];
 
 	CvMat inMat =  cvMat( cameraMatrix.getRowCount(), cameraMatrix.getColCount(), CV_64F, aux1 );
-	CvMat distM =  cvMat( 1, 4, CV_64F, aux2 );
+	CvMat distM =  cvMat( 1, 5, CV_64F, aux2 );
 
 	// Remove distortion
 	cvUndistort2( srcImg, outImg, &inMat, &distM );

@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -11,50 +11,34 @@
 // Eigen forward declarations:
 #include <mrpt/config.h>
 
-#include <Eigen/src/Core/util/DisableStupidWarnings.h>
-#include <Eigen/src/Core/util/Macros.h>
-#include <complex> // Needed by hdrs below
-
-#define STAGE99_NO_EIGEN2_SUPPORT           99
-#define EIGEN2_SUPPORT_STAGE STAGE99_NO_EIGEN2_SUPPORT
-
-#if !EIGEN_VERSION_AT_LEAST(3,0,93)
+// Minimum Eigen fwrd-decls:
 namespace Eigen {
-#endif
-// These headers were assumed to lie inside namespace Eigen{} in Eigen <=3.1.0
-#	include <Eigen/src/Core/util/Constants.h>
-#	include <Eigen/src/Core/util/ForwardDeclarations.h>
-
-#if !EIGEN_VERSION_AT_LEAST(3,0,93)
+	template<typename Derived> struct EigenBase;
 }
-#endif
-
-#undef STAGE99_NO_EIGEN2_SUPPORT
-#undef EIGEN2_SUPPORT_STAGE
 
 namespace mrpt
 {
-    namespace math
-    {
-    	/** ContainerType<T>::element_t exposes the value of any STL or Eigen container */
-    	template <typename CONTAINER> struct ContainerType;
-    	/** Specialization for Eigen containers */
-    	template <typename Derived>
-    	struct ContainerType<Eigen::EigenBase<Derived> > {
-    		typedef typename Derived::Scalar element_t;
+	namespace math
+	{
+		/** ContainerType<T>::element_t exposes the value of any STL or Eigen container */
+		template <typename CONTAINER> struct ContainerType;
+		/** Specialization for Eigen containers */
+		template <typename Derived>
+		struct ContainerType<Eigen::EigenBase<Derived> > {
+			typedef typename Derived::Scalar element_t;
 		};
 
-        // Dynamic size:
-        template <class T> class CMatrixTemplateNumeric;
+		// Dynamic size:
+		template <class T> class CMatrixTemplateNumeric;
 		typedef CMatrixTemplateNumeric<float> CMatrixFloat;
-        typedef CMatrixTemplateNumeric<double> CMatrixDouble;
+		typedef CMatrixTemplateNumeric<double> CMatrixDouble;
 		template <typename T> class dynamic_vector;
 		typedef dynamic_vector<float>  CVectorFloat;
 		typedef dynamic_vector<double> CVectorDouble;
 
 
-        // Fixed size:
-        template <typename T,size_t NROWS,size_t NCOLS> class CMatrixFixedNumeric;
+		// Fixed size:
+		template <typename T,size_t NROWS,size_t NCOLS> class CMatrixFixedNumeric;
 
 		/** @name Typedefs for common sizes
 			@{ */

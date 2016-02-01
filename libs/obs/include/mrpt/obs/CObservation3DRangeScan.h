@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -19,7 +19,8 @@
 #include <mrpt/math/CMatrix.h>
 #include <mrpt/utils/TEnumType.h>
 #include <mrpt/utils/adapters.h>
-
+#include <mrpt/utils/integer_select.h>
+#include <mrpt/utils/stl_serialization.h>
 
 namespace mrpt
 {
@@ -33,13 +34,14 @@ namespace obs
 		void project3DPointsFromDepthImageInto(CObservation3DRangeScan    & src_obs,POINTMAP                   & dest_pointcloud,const bool                   takeIntoAccountSensorPoseOnRobot,const mrpt::poses::CPose3D * robotPoseInTheWorld,const bool                   PROJ3D_USE_LUT);
 	}
 
-	/** Declares a class derived from "CObservation" that
-	 *      encapsules a 3D range scan measurement (e.g. from a time of flight range camera).
+	/** Declares a class derived from "CObservation" that encapsules a 3D range scan measurement, as from a time-of-flight range camera or any other RGBD sensor.
+	 *
 	 *  This kind of observations can carry one or more of these data fields:
 	 *    - 3D point cloud (as float's).
 	 *    - 2D range image (as a matrix): Each entry in the matrix "rangeImage(ROW,COLUMN)" contains a distance or a depth (in meters), depending on \a range_is_depth.
 	 *    - 2D intensity (grayscale or RGB) image (as a mrpt::utils::CImage): For SwissRanger cameras, a logarithmic A-law compression is used to convert the original 16bit intensity to a more standard 8bit graylevel.
 	 *    - 2D confidence image (as a mrpt::utils::CImage): For each pixel, a 0x00 and a 0xFF mean the lowest and highest confidence levels, respectively.
+	 *    - Semantic labels: Stored as a matrix of bitfields, each bit having a user-defined meaning.
 	 *
 	 *  The coordinates of the 3D point cloud are in meters with respect to the depth camera origin of coordinates
 	 *    (in SwissRanger, the front face of the camera: a small offset ~1cm in front of the physical focal point),
@@ -87,10 +89,21 @@ namespace obs
 	 *  3D point clouds can be generated at any moment after grabbing with CObservation3DRangeScan::project3DPointsFromDepthImage() and CObservation3DRangeScan::project3DPointsFromDepthImageInto(), provided the correct
 	 *   calibration parameters.
 	 *
+	 *  Example of how to assign labels to pixels (for object segmentation, semantic information, etc.):
+	 *
+	 * \code
+	 *   // Assume obs of type CObservation3DRangeScanPtr
+	 *   obs->pixelLabels = CObservation3DRangeScan::TPixelLabelInfoPtr( new CObservation3DRangeScan::TPixelLabelInfo<NUM_BYTES>() );
+	 *   obs->pixelLabels->setSize(ROWS,COLS);
+	 *   obs->pixelLabels->setLabel(col,row, label_idx);   // label_idxs = [0,2^NUM_BYTES-1] 
+	 *   //...
+	 * \endcode
+	 *
 	 *  \note Starting at serialization version 2 (MRPT 0.9.1+), the confidence channel is stored as an image instead of a matrix to optimize memory and disk space.
 	 *  \note Starting at serialization version 3 (MRPT 0.9.1+), the 3D point cloud and the rangeImage can both be stored externally to save rawlog space.
 	 *  \note Starting at serialization version 5 (MRPT 0.9.5+), the new field \a range_is_depth
 	 *  \note Starting at serialization version 6 (MRPT 0.9.5+), the new field \a intensityImageChannel
+	 *  \note Starting at serialization version 7 (MRPT 1.3.1+), new fields for semantic labeling
 	 *
 	 * \sa mrpt::hwdrivers::CSwissRanger3DCamera, mrpt::hwdrivers::CKinect, CObservation
 	 * \ingroup mrpt_obs_grp
@@ -118,11 +131,11 @@ namespace obs
 		  *  If all the data were alredy loaded or this object has no externally stored data fields, calling this method has no effects.
 		  * \sa unload
 		  */
-		virtual void load() const;
+		virtual void load() const MRPT_OVERRIDE;
 		/** Unload all images, for the case they being delayed-load images stored in external files (othewise, has no effect).
 		  * \sa load
 		  */
-		virtual void unload();
+		virtual void unload() MRPT_OVERRIDE;
 		/** @} */
 
 		/** Project the RGB+D images into a 3D point cloud (with color if the target map supports it) and optionally at a given 3D pose.
@@ -223,7 +236,8 @@ namespace obs
 		/** Use this method instead of resizing all three \a points3D_x, \a points3D_y & \a points3D_z to allow the usage of the internal memory pool. */
 		void resizePoints3DVectors(const size_t nPoints);
 
-		// 3D points external storage functions ---------
+		/** \name 3D points external storage functions
+		  * @{ */
 		inline bool points3D_isExternallyStored() const { return m_points3D_external_stored; }
 		inline std::string points3D_getExternalStorageFile() const { return m_points3D_external_file; }
 		void points3D_getExternalStorageFileAbsolutePath(std::string &out_path) const;
@@ -233,15 +247,19 @@ namespace obs
 				return tmp;
 		}
 		void points3D_convertToExternalStorage( const std::string &fileName, const std::string &use_this_base_dir ); //!< Users won't normally want to call this, it's only used from internal MRPT programs.
-		// ---------
+		/** @} */
 
+		/** \name Range (depth) image
+		  * @{ */
 		bool hasRangeImage; 				//!< true means the field rangeImage contains valid data
 		mrpt::math::CMatrix rangeImage; 	//!< If hasRangeImage=true, a matrix of floats with the range data as captured by the camera (in meters) \sa range_is_depth
 		bool range_is_depth;				//!< true: Kinect-like ranges: entries of \a rangeImage are distances along the +X axis; false: Ranges in \a rangeImage are actual distances in 3D.
 
 		void rangeImage_setSize(const int HEIGHT, const int WIDTH); //!< Similar to calling "rangeImage.setSize(H,W)" but this method provides memory pooling to speed-up the memory allocation.
+		/** @} */
 
-		// Range Matrix external storage functions ---------
+		/** \name Range Matrix external storage functions
+		  * @{ */
 		inline bool rangeImage_isExternallyStored() const { return m_rangeImage_external_stored; }
 		inline std::string rangeImage_getExternalStorageFile() const { return m_rangeImage_external_file; }
 		void rangeImage_getExternalStorageFileAbsolutePath(std::string &out_path) const;
@@ -253,8 +271,11 @@ namespace obs
 		void rangeImage_convertToExternalStorage( const std::string &fileName, const std::string &use_this_base_dir ); //!< Users won't normally want to call this, it's only used from internal MRPT programs.
 		/** Forces marking this observation as non-externally stored - it doesn't anything else apart from reseting the corresponding flag (Users won't normally want to call this, it's only used from internal MRPT programs) */
 		void rangeImage_forceResetExternalStorage() { m_rangeImage_external_stored=false; }
-		// ---------
+		/** @} */
 
+
+		/** \name Intensity (RGB) channels
+		  * @{ */
 		/** Enum type for intensityImageChannel */
 		enum TIntensityChannelID
 		{
@@ -265,10 +286,187 @@ namespace obs
 		bool hasIntensityImage;                    //!< true means the field intensityImage contains valid data
 		mrpt::utils::CImage intensityImage;        //!< If hasIntensityImage=true, a color or gray-level intensity image of the same size than "rangeImage"
 		TIntensityChannelID intensityImageChannel; //!< The source of the intensityImage; typically the visible channel \sa TIntensityChannelID
+		/** @} */
 
+		/** \name Confidence "channel"
+		  * @{ */
 		bool hasConfidenceImage; 			//!< true means the field confidenceImage contains valid data
 		mrpt::utils::CImage confidenceImage;  //!< If hasConfidenceImage=true, an image with the "confidence" value [range 0-255] as estimated by the capture drivers.
+		/** @} */
 
+		/** \name Pixel-wise classification labels (for semantic labeling, etc.)
+		  * @{ */
+		/** Returns true if the field CObservation3DRangeScan::pixelLabels contains a non-NULL smart pointer. 
+		  * To enhance a 3D point cloud with labeling info, just assign an appropiate object to \a pixelLabels
+		  */
+		bool hasPixelLabels() const { return pixelLabels.present(); }
+
+		/** Virtual interface to all pixel-label information structs. See CObservation3DRangeScan::pixelLabels */
+		struct OBS_IMPEXP TPixelLabelInfoBase
+		{
+			typedef std::map<uint32_t,std::string> TMapLabelID2Name;
+
+			/** The 'semantic' or human-friendly name of the i'th bit in pixelLabels(r,c) can be found in pixelLabelNames[i] as a std::string */
+			TMapLabelID2Name pixelLabelNames;
+
+			const std::string & getLabelName(unsigned int label_idx) const  { 
+				std::map<uint32_t,std::string>::const_iterator it = pixelLabelNames.find(label_idx);
+				if (it==pixelLabelNames.end()) throw std::runtime_error("Error: label index has no defined name");
+				return it->second;
+			}
+			void setLabelName(unsigned int label_idx, const std::string &name) { pixelLabelNames[label_idx]=name; }
+            /** Check the existence of a label by returning its associated index.
+              * -1 if it does not exist. */
+            int checkLabelNameExistence(const std::string &name) const {
+                std::map<uint32_t,std::string>::const_iterator it;
+                for ( it = pixelLabelNames.begin() ; it != pixelLabelNames.end(); it++ )
+                    if ( it->second == name )
+                        return it->first;
+                return -1;
+            }
+
+			/** Resizes the matrix pixelLabels to the given size, setting all bitfields to zero (that is, all pixels are assigned NONE category). */
+			virtual void setSize(const int NROWS, const int NCOLS) =0;
+			/** Mark the pixel(row,col) as classified in the category \a label_idx, which may be in the range 0 to MAX_NUM_LABELS-1 
+			  * Note that 0 is a valid label index, it does not mean "no label" \sa unsetLabel, unsetAll */
+			virtual void setLabel(const int row, const int col, uint8_t label_idx) =0;
+            virtual void getLabels( const int row, const int col, uint8_t &labels ) =0;
+			/** For the pixel(row,col), removes its classification into the category \a label_idx, which may be in the range 0 to 7 
+			  * Note that 0 is a valid label index, it does not mean "no label" \sa setLabel, unsetAll */
+			virtual void unsetLabel(const int row, const int col, uint8_t label_idx)=0;
+			/** Removes all categories for pixel(row,col)  \sa setLabel, unsetLabel */
+			virtual void unsetAll(const int row, const int col, uint8_t label_idx) =0;
+			/** Checks whether pixel(row,col) has been clasified into category \a label_idx, which may be in the range 0 to 7 
+			  * \sa unsetLabel, unsetAll */
+			virtual bool checkLabel(const int row, const int col, uint8_t label_idx) const =0;
+
+			void writeToStream(mrpt::utils::CStream &out) const;
+			static TPixelLabelInfoBase* readAndBuildFromStream(mrpt::utils::CStream &in);
+
+            /// std stream interface
+            friend std::ostream& operator<<( std::ostream& out, const TPixelLabelInfoBase& obj )
+            {
+                obj.Print( out );
+                return out;
+            }
+
+			TPixelLabelInfoBase(unsigned int BITFIELD_BYTES_) : 
+				BITFIELD_BYTES (BITFIELD_BYTES_)
+			{
+			}
+
+			virtual ~TPixelLabelInfoBase() {}
+
+			const uint8_t  BITFIELD_BYTES; //!< Minimum number of bytes required to hold MAX_NUM_DIFFERENT_LABELS bits.
+
+		protected:
+			virtual void internal_readFromStream(mrpt::utils::CStream &in) = 0;
+			virtual void internal_writeToStream(mrpt::utils::CStream &out) const = 0;
+            virtual void Print( std::ostream& ) const =0;
+		};
+		typedef stlplus::smart_ptr<TPixelLabelInfoBase>  TPixelLabelInfoPtr;  //!< Used in CObservation3DRangeScan::pixelLabels
+
+		template <unsigned int BYTES_REQUIRED_> 
+		struct TPixelLabelInfo : public TPixelLabelInfoBase
+		{
+			enum {
+			      BYTES_REQUIRED = BYTES_REQUIRED_ // ((MAX_LABELS-1)/8)+1 
+			};
+
+			/** Automatically-determined integer type of the proper size such that all labels fit as one bit (max: 64)  */
+			typedef typename mrpt::utils::uint_select_by_bytecount<BYTES_REQUIRED>::type  bitmask_t;
+
+			/** Each pixel may be assigned between 0 and MAX_NUM_LABELS-1 'labels' by 
+			  * setting to 1 the corresponding i'th bit [0,MAX_NUM_LABELS-1] in the byte in pixelLabels(r,c). 
+			  * That is, each pixel is assigned an 8*BITFIELD_BYTES bit-wide bitfield of possible categories.
+			  * \sa hasPixelLabels
+			  */
+			typedef Eigen::Matrix<bitmask_t,Eigen::Dynamic,Eigen::Dynamic>  TPixelLabelMatrix;
+			TPixelLabelMatrix   pixelLabels;
+
+			void setSize(const int NROWS, const int NCOLS)  MRPT_OVERRIDE {
+				pixelLabels = TPixelLabelMatrix::Zero(NROWS,NCOLS);
+			}
+			void setLabel(const int row, const int col, uint8_t label_idx) MRPT_OVERRIDE {
+				pixelLabels(row,col) |= static_cast<bitmask_t>(1) << label_idx;
+			}
+			void getLabels( const int row, const int col, uint8_t &labels ) MRPT_OVERRIDE
+			{
+				labels = pixelLabels(row,col);
+			}
+
+			void unsetLabel(const int row, const int col, uint8_t label_idx) MRPT_OVERRIDE {
+				pixelLabels(row,col) &= ~(static_cast<bitmask_t>(1) << label_idx);
+			}
+			void unsetAll(const int row, const int col, uint8_t label_idx) MRPT_OVERRIDE {
+				pixelLabels(row,col) = 0;
+			}
+			bool checkLabel(const int row, const int col, uint8_t label_idx) const MRPT_OVERRIDE {
+				return (pixelLabels(row,col) & (static_cast<bitmask_t>(1) << label_idx)) != 0;
+			}
+
+			// Ctor: pass identification to parent for deserialization
+			TPixelLabelInfo() : TPixelLabelInfoBase(BYTES_REQUIRED_)
+			{
+			}
+
+		protected:
+			void internal_readFromStream(mrpt::utils::CStream &in) MRPT_OVERRIDE
+			{
+				{
+					uint32_t nR,nC;
+					in >> nR >> nC;
+					pixelLabels.resize(nR,nC);
+					for (uint32_t c=0;c<nC;c++)
+						for (uint32_t r=0;r<nR;r++)
+							in >> pixelLabels.coeffRef(r,c);
+				}
+				in >> pixelLabelNames;
+			}
+			void internal_writeToStream(mrpt::utils::CStream &out) const MRPT_OVERRIDE
+			{
+				{
+					const uint32_t nR=static_cast<uint32_t>(pixelLabels.rows());
+					const uint32_t nC=static_cast<uint32_t>(pixelLabels.cols());
+					out << nR << nC;
+					for (uint32_t c=0;c<nC;c++)
+						for (uint32_t r=0;r<nR;r++)
+							out << pixelLabels.coeff(r,c);
+				}
+				out << pixelLabelNames;
+			}
+			void Print( std::ostream& out ) const MRPT_OVERRIDE
+			{
+				{
+					const uint32_t nR=static_cast<uint32_t>(pixelLabels.rows());
+					const uint32_t nC=static_cast<uint32_t>(pixelLabels.cols());
+					out << "Number of rows: " << nR << std::endl;
+					out << "Number of cols: " << nC << std::endl;
+					out << "Matrix of labels: " << std::endl;
+					for (uint32_t c=0;c<nC;c++)
+					{
+						for (uint32_t r=0;r<nR;r++)
+							out << pixelLabels.coeff(r,c) << " ";
+
+						out << std::endl;
+					}
+				}
+				out << std::endl;
+				out << "Label indices and names: " << std::endl;
+				std::map<uint32_t,std::string>::const_iterator it;
+				for ( it = pixelLabelNames.begin(); it != pixelLabelNames.end(); it++)
+					out << it->first << " " << it->second << std::endl;
+			}
+		}; // end TPixelLabelInfo
+
+		/** All information about pixel labeling is stored in this (smart pointer to) structure; refer to TPixelLabelInfo for details on the contents 
+		  * User is responsible of creating a new object of the desired data type. It will be automatically (de)serialized no matter its specific type. */
+		TPixelLabelInfoPtr  pixelLabels;
+
+		/** @} */
+
+		/** \name Sensor parameters
+		  * @{ */
 		mrpt::utils::TCamera	cameraParams;	//!< Projection parameters of the depth camera.
 		mrpt::utils::TCamera	cameraParamsIntensity;	//!< Projection parameters of the intensity (graylevel or RGB) camera.
 
@@ -284,17 +482,19 @@ namespace obs
 		  */
 		bool doDepthAndIntensityCamerasCoincide() const;
 
-
 		float  	maxRange;	//!< The maximum range allowed by the device, in meters (e.g. 8.0m, 5.0m,...)
 		mrpt::poses::CPose3D	sensorPose;	//!< The 6D pose of the sensor on the robot.
 		float	stdError;	//!< The "sigma" error of the device in meters, used while inserting the scan in an occupancy grid.
 
 		// See base class docs
-		void getSensorPose( mrpt::poses::CPose3D &out_sensorPose ) const { out_sensorPose = sensorPose; }
+		void getSensorPose( mrpt::poses::CPose3D &out_sensorPose ) const MRPT_OVERRIDE { out_sensorPose = sensorPose; }
 		// See base class docs
-		void setSensorPose( const mrpt::poses::CPose3D &newSensorPose ) { sensorPose = newSensorPose; }
+		void setSensorPose( const mrpt::poses::CPose3D &newSensorPose ) MRPT_OVERRIDE { sensorPose = newSensorPose; }
+
+		/** @} */  // end sensor params
+
 		// See base class docs
-		virtual void getDescriptionAsText(std::ostream &o) const;
+		void getDescriptionAsText(std::ostream &o) const MRPT_OVERRIDE;
 
 		void swap(CObservation3DRangeScan &o);	//!< Very efficient method to swap the contents of two observations.
 

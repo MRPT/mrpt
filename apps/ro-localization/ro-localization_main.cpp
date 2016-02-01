@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -31,6 +31,7 @@
 #include <mrpt/math/data_utils.h>
 #include <mrpt/system/threads.h>
 #include <mrpt/obs/CObservationBeaconRanges.h>
+#include <mrpt/obs/CObservationGPS.h>
 #include <mrpt/obs/CRawlog.h>
 #include <mrpt/bayes/CParticleFilter.h>
 #include <mrpt/random.h>
@@ -268,7 +269,7 @@ void TestParticlesLocalization()
 			COpenGLScenePtr scene = COpenGLScene::Create();
 
 	#ifdef	SHOW_REAL_TIME_3D
-			CDisplayWindow3D		window("ro-localization - MRPT (C) 2005-2012");
+			CDisplayWindow3D		window("ro-localization - Part of MRPT");
 			window.setPos(50,50);
 			window.resize(800,500);
 			window.setCameraElevationDeg( 90 );
@@ -774,12 +775,16 @@ void TestParticlesLocalization()
 
 							sphere->setColor(0,1,1, 0.5);
 							sphere->setName( "gps");
-							x = DEG2RAD((o->GGA_datum.longitude_degrees-metricMap.m_landmarksMap->likelihoodOptions.GPSOrigin.longitude))*6371000*1.03;
-							y = DEG2RAD((o->GGA_datum.latitude_degrees-metricMap.m_landmarksMap->likelihoodOptions.GPSOrigin.latitude))*6371000*1.15;
-							sphere->setLocation(
-								(x*cos(metricMap.m_landmarksMap->likelihoodOptions.GPSOrigin.ang)+y*sin(metricMap.m_landmarksMap->likelihoodOptions.GPSOrigin.ang)+metricMap.m_landmarksMap->likelihoodOptions.GPSOrigin.x_shift),
-								(-x*sin(metricMap.m_landmarksMap->likelihoodOptions.GPSOrigin.ang)+y*cos(metricMap.m_landmarksMap->likelihoodOptions.GPSOrigin.ang)+metricMap.m_landmarksMap->likelihoodOptions.GPSOrigin.y_shift),
-								0 );
+							if (o->hasMsgClass<mrpt::obs::gnss::Message_NMEA_GGA>())
+							{
+								const mrpt::obs::gnss::Message_NMEA_GGA &gga = o->getMsgByClass<mrpt::obs::gnss::Message_NMEA_GGA>();
+								x = DEG2RAD((gga.fields.longitude_degrees-metricMap.m_landmarksMap->likelihoodOptions.GPSOrigin.longitude))*6371000*1.03;
+								y = DEG2RAD((gga.fields.latitude_degrees-metricMap.m_landmarksMap->likelihoodOptions.GPSOrigin.latitude))*6371000*1.15;
+								sphere->setLocation(
+									(x*cos(metricMap.m_landmarksMap->likelihoodOptions.GPSOrigin.ang)+y*sin(metricMap.m_landmarksMap->likelihoodOptions.GPSOrigin.ang)+metricMap.m_landmarksMap->likelihoodOptions.GPSOrigin.x_shift),
+									(-x*sin(metricMap.m_landmarksMap->likelihoodOptions.GPSOrigin.ang)+y*cos(metricMap.m_landmarksMap->likelihoodOptions.GPSOrigin.ang)+metricMap.m_landmarksMap->likelihoodOptions.GPSOrigin.y_shift),
+									0 );
+							}
 							CMatrix	r(2,2);
 							r(1,1)=9;
 							r(0,0)=9;
@@ -805,13 +810,16 @@ void TestParticlesLocalization()
 								sphere = opengl::CSpherePtr(obj);
 							sphere->setColor(0,1,1);
 							sphere->setName("gps_CENTER");
-							x = DEG2RAD((o->GGA_datum.longitude_degrees-metricMap.m_landmarksMap->likelihoodOptions.GPSOrigin.longitude))*6371000*1.03;//*9000000;
-							y = DEG2RAD((o->GGA_datum.latitude_degrees-metricMap.m_landmarksMap->likelihoodOptions.GPSOrigin.latitude))*6371000*1.15;//*12000000;
-							sphere->setLocation(
-								(x*cos(metricMap.m_landmarksMap->likelihoodOptions.GPSOrigin.ang)+y*sin(metricMap.m_landmarksMap->likelihoodOptions.GPSOrigin.ang)+metricMap.m_landmarksMap->likelihoodOptions.GPSOrigin.x_shift),
-								(-x*sin(metricMap.m_landmarksMap->likelihoodOptions.GPSOrigin.ang)+y*cos(metricMap.m_landmarksMap->likelihoodOptions.GPSOrigin.ang)+metricMap.m_landmarksMap->likelihoodOptions.GPSOrigin.y_shift),
-								0);
-							//std::cout<<"GPS pintado: "<<sphere->m_x<<","<<sphere->m_y<<"\n";
+							if (o->hasMsgClass<mrpt::obs::gnss::Message_NMEA_GGA>())
+							{
+								const mrpt::obs::gnss::Message_NMEA_GGA &gga = o->getMsgByClass<mrpt::obs::gnss::Message_NMEA_GGA>();
+								x = DEG2RAD((gga.fields.longitude_degrees-metricMap.m_landmarksMap->likelihoodOptions.GPSOrigin.longitude))*6371000*1.03;//*9000000;
+								y = DEG2RAD((gga.fields.latitude_degrees-metricMap.m_landmarksMap->likelihoodOptions.GPSOrigin.latitude))*6371000*1.15;//*12000000;
+								sphere->setLocation(
+									(x*cos(metricMap.m_landmarksMap->likelihoodOptions.GPSOrigin.ang)+y*sin(metricMap.m_landmarksMap->likelihoodOptions.GPSOrigin.ang)+metricMap.m_landmarksMap->likelihoodOptions.GPSOrigin.x_shift),
+									(-x*sin(metricMap.m_landmarksMap->likelihoodOptions.GPSOrigin.ang)+y*cos(metricMap.m_landmarksMap->likelihoodOptions.GPSOrigin.ang)+metricMap.m_landmarksMap->likelihoodOptions.GPSOrigin.y_shift),
+									0);
+							}
 							sphere->setRadius(0.5);
 							if( !obj.present() )
 							{

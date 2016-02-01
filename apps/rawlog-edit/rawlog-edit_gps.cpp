@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -69,11 +69,11 @@ DECLARE_OP_FUNCTION(op_export_gps_kml)
 			// Insert the new entries:
 			TDataPerGPS   &D = m_gps_paths[obs->sensorLabel];
 			TGPSDataPoint &d = D.path[o->timestamp];
-
-			d.lon = obs->GGA_datum.longitude_degrees;
-			d.lat = obs->GGA_datum.latitude_degrees;
-			d.alt = obs->GGA_datum.altitude_meters;
-			d.fix = obs->GGA_datum.fix_quality;
+			const mrpt::obs::gnss::Message_NMEA_GGA & gga = obs->getMsgByClass<mrpt::obs::gnss::Message_NMEA_GGA>();
+			d.lon = gga.fields.longitude_degrees;
+			d.lat = gga.fields.latitude_degrees;
+			d.alt = gga.fields.altitude_meters;
+			d.fix = gga.fields.fix_quality;
 
 			return true; // All ok
 		}
@@ -444,12 +444,13 @@ DECLARE_OP_FUNCTION(op_export_gps_txt)
 
 			if (obs->has_GGA_datum)
 			{
+				const mrpt::obs::gnss::Message_NMEA_GGA & gga = obs->getMsgByClass<mrpt::obs::gnss::Message_NMEA_GGA>();
 				TPoint3D p;		// Transformed coordinates
 
 				// The first gps datum?
 				if (refCoords.isClear())
 				{
-					refCoords = obs->GGA_datum.getAsStruct<TGeodeticCoords>();
+					refCoords = gga.getAsStruct<TGeodeticCoords>();
 
 					// Local coordinates reference:
 					TPose3D _local_ENU;
@@ -459,14 +460,14 @@ DECLARE_OP_FUNCTION(op_export_gps_txt)
 
 				// Local XYZ coordinates transform:
 				mrpt::topography::geodeticToENU_WGS84(
-					obs->GGA_datum.getAsStruct<TGeodeticCoords>(),
+					gga.getAsStruct<TGeodeticCoords>(),
 					p,
 					refCoords);
 
 				// Geocentric XYZ:
 				TPoint3D geo;
 				mrpt::topography::geodeticToGeocentric_WGS84(
-					obs->GGA_datum.getAsStruct<TGeodeticCoords>(),
+					gga.getAsStruct<TGeodeticCoords>(),
 					geo );
 
 				// Save file:
@@ -475,17 +476,18 @@ DECLARE_OP_FUNCTION(op_export_gps_txt)
 				// If available, Cartessian X Y Z, VX VY VZ, as supplied by the GPS itself:
 				TPoint3D  cart_pos(0,0,0), cart_vel(0,0,0);
 				TPoint3D  cart_vel_local(0,0,0);
-				if (obs->has_PZS_datum && obs->PZS_datum.hasCartesianPosVel)
-				{
-					cart_pos.x = obs->PZS_datum.cartesian_x;
-					cart_pos.y = obs->PZS_datum.cartesian_y;
-					cart_pos.z = obs->PZS_datum.cartesian_z;
+				if (obs->has_PZS_datum) {
+					const mrpt::obs::gnss::Message_TopCon_PZS & pzs = obs->getMsgByClass<mrpt::obs::gnss::Message_TopCon_PZS>();
+					if (pzs.hasCartesianPosVel) {
+						cart_pos.x = pzs.cartesian_x;
+						cart_pos.y = pzs.cartesian_y;
+						cart_pos.z = pzs.cartesian_z;
+						cart_vel.x = pzs.cartesian_vx;
+						cart_vel.y = pzs.cartesian_vy;
+						cart_vel.z = pzs.cartesian_vz;
 
-					cart_vel.x = obs->PZS_datum.cartesian_vx;
-					cart_vel.y = obs->PZS_datum.cartesian_vy;
-					cart_vel.z = obs->PZS_datum.cartesian_vz;
-
-					cart_vel_local = TPoint3D( CPoint3D(cart_vel) - local_ENU );
+						cart_vel_local = TPoint3D( CPoint3D(cart_vel) - local_ENU );
+					}
 				}
 
 				::fprintf(f_this,
@@ -501,20 +503,20 @@ DECLARE_OP_FUNCTION(op_export_gps_txt)
 					"%14.4f "				// SAT Time
 					"\n",
 						tim,
-						DEG2RAD(obs->GGA_datum.latitude_degrees),
-						DEG2RAD(obs->GGA_datum.longitude_degrees),
-						obs->GGA_datum.altitude_meters,
-						obs->GGA_datum.fix_quality,
-						obs->GGA_datum.satellitesUsed,
-						obs->RMC_datum.speed_knots,
-						DEG2RAD(obs->RMC_datum.direction_degrees),
+						DEG2RAD(gga.fields.latitude_degrees),
+						DEG2RAD(gga.fields.longitude_degrees),
+						gga.fields.altitude_meters,
+						gga.fields.fix_quality,
+						gga.fields.satellitesUsed,
+						obs->has_RMC_datum ? DEG2RAD(obs->getMsgByClass<mrpt::obs::gnss::Message_NMEA_RMC>().fields.speed_knots) : 0.0,
+						obs->has_RMC_datum ? DEG2RAD(obs->getMsgByClass<mrpt::obs::gnss::Message_NMEA_RMC>().fields.direction_degrees) : 0.0,
 						p.x,p.y,p.z,
 						(int)m_rawlogEntry,  // rawlog index
 						geo.x, geo.y, geo.z,
 						cart_pos.x,cart_pos.y,cart_pos.z,
 						cart_vel.x,cart_vel.y,cart_vel.z,
 						cart_vel_local.x,cart_vel_local.y,cart_vel_local.z,
-                        mrpt::system::timestampTotime_t( obs->GGA_datum.UTCTime.getAsTimestamp( obs->timestamp ) )
+						mrpt::system::timestampTotime_t( gga.fields.UTCTime.getAsTimestamp( obs->timestamp ) )
 					   );
 
 				m_GPS_entriesSaved++;
@@ -524,17 +526,14 @@ DECLARE_OP_FUNCTION(op_export_gps_txt)
 					lstXYZallGPS[obs->timestamp][obs->sensorLabel] = CPoint3D(p);
 				}
 
-				if (obs->GGA_datum.fix_quality==4)
+				if (gga.fields.fix_quality==4)
 				{
 					lstAllGPSlabels_RTK.insert( obs->sensorLabel );
 					lstXYZallGPS_RTK[obs->timestamp][obs->sensorLabel] = CPoint3D(p);
 				}
 			}
-
-
 			return true; // All ok
 		}
-
 
 		// Destructor: close files and generate summary files:
 		~CRawlogProcessor_ExportGPS_TXT()

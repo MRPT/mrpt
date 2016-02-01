@@ -13,6 +13,7 @@ ADD_EXECUTABLE(rawlog-edit
 	rawlog-edit-declarations.h
 	CRawlogProcessor.h
 	# Ops:
+	rawlog-edit_list-poses.cpp
 	rawlog-edit_gps.cpp
 	rawlog-edit_gps_gas.cpp
 	rawlog-edit_info.cpp
@@ -33,6 +34,8 @@ ADD_EXECUTABLE(rawlog-edit
 	rawlog-edit_imu.cpp
 	rawlog-edit_2d-scans.cpp
 	rawlog-edit_odometry.cpp
+	rawlog-edit_enose.cpp
+	rawlog-edit_anemometer.cpp
 	${MRPT_VERSION_RC_FILE}
  	)
 SET(TMP_TARGET_NAME "rawlog-edit")

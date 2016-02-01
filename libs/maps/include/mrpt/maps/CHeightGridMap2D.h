@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -74,7 +74,7 @@ namespace mrpt
 			  */
 			inline void clear() { CMetricMap::clear(); }
 
-			float cell2float(const THeightGridmapCell& c) const
+			float cell2float(const THeightGridmapCell& c) const MRPT_OVERRIDE
 			{
 				return float(c.h);
 			}
@@ -101,7 +101,7 @@ namespace mrpt
 
 			 /** Returns true if the map is empty/no observation has been inserted.
 			   */
-			 bool  isEmpty() const;
+			 bool isEmpty() const MRPT_OVERRIDE;
 
 			/** Parameters related with inserting observations into the map.
 			  */
@@ -111,15 +111,8 @@ namespace mrpt
 				  */
 				TInsertionOptions();
 
-				/** See utils::CLoadableOptions
-				  */
-				void  loadFromConfigFile(
-					const mrpt::utils::CConfigFileBase  &source,
-					const std::string &section);
-
-				/** See utils::CLoadableOptions
-				  */
-				void  dumpToTextStream(mrpt::utils::CStream	&out) const;
+				void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) MRPT_OVERRIDE; // See base docs
+				void dumpToTextStream(mrpt::utils::CStream &out) const MRPT_OVERRIDE; // See base docs
 
 				/** Wether to perform filtering by z-coordinate (default=false): coordinates are always RELATIVE to the robot for this filter.
 				  */
@@ -141,26 +134,19 @@ namespace mrpt
 					const mrpt::poses::CPose3D							&otherMapPose,
 					float									maxDistForCorr = 0.10f,
 					float									maxMahaDistForCorr = 2.0f
-					) const;
+					) const MRPT_OVERRIDE;
 
-			/** The implementation in this class just calls all the corresponding method of the contained metric maps.
-			  */
-			void  saveMetricMapRepresentationToFile(
-				const std::string	&filNamePrefix
-				) const;
+			/** The implementation in this class just calls all the corresponding method of the contained metric maps */
+			void  saveMetricMapRepresentationToFile(const std::string &filNamePrefix) const MRPT_OVERRIDE;
 
 			/** Returns a 3D object representing the map: by default, it will be a mrpt::opengl::CMesh object, unless
-			  *   it is specified otherwise in mrpt::
-			  */
-			void  getAs3DObject ( mrpt::opengl::CSetOfObjectsPtr	&outObj ) const;
+			  *   it is specified otherwise  */
+			void getAs3DObject(mrpt::opengl::CSetOfObjectsPtr &outObj) const MRPT_OVERRIDE;
 
-			/** Return the type of the gas distribution map, according to parameters passed on construction.
-			  */
+			/** Return the type of the gas distribution map, according to parameters passed on construction */
 			TMapRepresentation	 getMapType();
 
-
-			/** Gets the intersection between a 3D line and a Height Grid map (taking into account the different heights of each individual cell).
-			  */
+			/** Gets the intersection between a 3D line and a Height Grid map (taking into account the different heights of each individual cell)  */
 			bool intersectLine3D(const mrpt::math::TLine3D &r1, mrpt::math::TObject3D &obj) const;
 
 			/** Computes the minimum and maximum height in the grid.

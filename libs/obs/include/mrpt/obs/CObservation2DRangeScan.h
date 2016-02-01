@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -11,27 +11,18 @@
 
 #include <mrpt/utils/CSerializable.h>
 #include <mrpt/obs/CObservation.h>
+#include <mrpt/obs/T2DScanProperties.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/maps/CMetricMap.h>
 #include <mrpt/math/CPolygon.h>
+
+// Add for declaration of mexplus::from template specialization
+DECLARE_MEXPLUS_FROM( mrpt::obs::CObservation2DRangeScan )
 
 namespace mrpt
 {
 namespace obs
 {
-	/** Auxiliary struct that holds all the relevant *geometry* information about a 2D scan.
-	  * This class is used in CSinCosLookUpTableFor2DScans
-	  * \ingroup mrpt_obs_grp
-	  * \sa CObservation2DRangeScan and CObservation2DRangeScan::getScanProperties */
-	struct OBS_IMPEXP T2DScanProperties {
-		size_t  nRays;
-		double  aperture;
-		bool    rightToLeft;
-	};
-	bool OBS_IMPEXP operator<(const T2DScanProperties&a, const T2DScanProperties&b);	//!< Order operator, so T2DScanProperties can appear in associative STL containers.
-
-
-
 	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CObservation2DRangeScan, CObservation, OBS_IMPEXP)
 
 	/** A "CObservation"-derived class that represents a 2D range scan measurement (typically from a laser scanner).
@@ -50,6 +41,8 @@ namespace obs
 	{
 		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE( CObservation2DRangeScan )
+		// This must be added for declaration of MEX-related functions
+		DECLARE_MEX_CONVERSION
 
 	 public:
 		typedef std::vector<mrpt::math::CPolygon> TListExclusionAreas; //!< Used in filterByExclusionAreas
@@ -124,11 +117,9 @@ namespace obs
 		bool isPlanarScan(const double tolerance = 0) const;
 
 		// See base class docs
-		void getSensorPose( mrpt::poses::CPose3D &out_sensorPose ) const { out_sensorPose = sensorPose; }
-		// See base class docs
-		void setSensorPose( const mrpt::poses::CPose3D &newSensorPose ) { sensorPose = newSensorPose; }
-		// See base class docs
-		virtual void getDescriptionAsText(std::ostream &o) const;
+		void getSensorPose( mrpt::poses::CPose3D &out_sensorPose ) const MRPT_OVERRIDE { out_sensorPose = sensorPose; }
+		void setSensorPose( const mrpt::poses::CPose3D &newSensorPose ) MRPT_OVERRIDE { sensorPose = newSensorPose; }
+		void getDescriptionAsText(std::ostream &o) const MRPT_OVERRIDE;
 
 		/** A general method to truncate the scan by defining a minimum valid distance and a maximum valid angle as well as minimun and maximum heights
 		   (NOTE: the laser z-coordinate must be provided).

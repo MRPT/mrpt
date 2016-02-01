@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -141,38 +141,25 @@ namespace mrpt
 			  */
 			struct SLAM_IMPEXP TOptions : utils::CLoadableOptions
 			{
-				/** Default values
-				  */
+				/** Default values */
 				TOptions();
 
-				/** Load from a config file/text
-				  */
-				void loadFromConfigFile(
-					const mrpt::utils::CConfigFileBase	&source,
-					const std::string		&section);
+				void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) MRPT_OVERRIDE; // See base docs
+				void dumpToTextStream(mrpt::utils::CStream &out) const MRPT_OVERRIDE; // See base docs
 
-				/** This method must display clearly all the contents of the structure in textual form, sending it to a CStream.
-				*/
-				void  dumpToTextStream(mrpt::utils::CStream	&out) const;
-
-				/** A 7-length vector with the std. deviation of the transition model in (x,y,z, qr,qx,qy,qz) used only when there is no odometry (if there is odo, its uncertainty values will be used instead); x y z: In meters.
-				  */
+				/** A 7-length vector with the std. deviation of the transition model in (x,y,z, qr,qx,qy,qz) used only when there is no odometry (if there is odo, its uncertainty values will be used instead); x y z: In meters. */
 				mrpt::math::CVectorFloat stds_Q_no_odo;
 
-				/** The std. deviation of the sensor (for the matrix R in the kalman filters), in meters and radians.
-				  */
+				/** The std. deviation of the sensor (for the matrix R in the kalman filters), in meters and radians. */
 				float std_sensor_range, std_sensor_yaw, std_sensor_pitch;
 
-				/** Additional std. dev. to sum to the motion model in the z axis (useful when there is only 2D odometry and we want to put things hard to the algorithm) (default=0)
-				  */
+				/** Additional std. dev. to sum to the motion model in the z axis (useful when there is only 2D odometry and we want to put things hard to the algorithm) (default=0) */
 				float std_odo_z_additional;
 
-				/** If set to true (default=false), map will be partitioned using the method stated by partitioningMethod
-				  */
+				/** If set to true (default=false), map will be partitioned using the method stated by partitioningMethod */
 				bool doPartitioningExperiment;
 
-				/** Default = 3
-				  */
+				/** Default = 3 */
 				float quantiles_3D_representation;
 
 				/** Applicable only if "doPartitioningExperiment=true".
@@ -321,7 +308,7 @@ namespace mrpt
 			  *
 			  * \param out_z N vectors, each for one "observation" of length OBS_SIZE, N being the number of "observations": how many observed landmarks for a map, or just one if not applicable.
 			  * \param out_data_association An empty vector or, where applicable, a vector where the i'th element corresponds to the position of the observation in the i'th row of out_z within the system state vector (in the range [0,getNumberOfLandmarksInTheMap()-1]), or -1 if it is a new map element and we want to insert it at the end of this KF iteration.
-			  * \param in_S The full covariance matrix of the observation predictions (i.e. the "innovation covariance matrix"). This is a M·O x M·O matrix with M=length of "in_lm_indices_in_S".
+			  * \param in_S The full covariance matrix of the observation predictions (i.e. the "innovation covariance matrix"). This is a M*O x M*O matrix with M=length of "in_lm_indices_in_S".
 			  * \param in_lm_indices_in_S The indices of the map landmarks (range [0,getNumberOfLandmarksInTheMap()-1]) that can be found in the matrix in_S.
 			  *
 			  *  This method will be called just once for each complete KF iteration.

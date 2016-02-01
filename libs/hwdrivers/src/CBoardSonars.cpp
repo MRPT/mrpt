@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -213,7 +213,7 @@ bool CBoardSonars::getObservation( mrpt::obs::CObservationRange &obs )
 
 		if (receiveMessage(msgRx) )
 		{
-			if ( !msgRx.content.size() )
+			if ( msgRx.content.empty() )
 				return false;
 
 			// For each sensor:

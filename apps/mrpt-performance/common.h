@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -29,7 +29,6 @@ void register_tests_feature_extraction();
 void register_tests_feature_matching();
 void register_tests_graph();
 void register_tests_graphslam();
-void register_tests_srba();
 // -------------------------------------------------
 
 typedef double (*TestFunctor)(int a1, int a2);  // return run-time in secs.

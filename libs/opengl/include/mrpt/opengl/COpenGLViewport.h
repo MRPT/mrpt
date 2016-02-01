@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -383,7 +383,7 @@ namespace mrpt
 		class OPENGL_IMPEXP mrptEventGLPreRender : public mrpt::utils::mrptEvent
 		{
 		protected:
-			virtual void do_nothing() { } //!< Just to allow this class to be polymorphic
+			void do_nothing() MRPT_OVERRIDE { } //!< Just to allow this class to be polymorphic
 		public:
 			inline mrptEventGLPreRender(const COpenGLViewport* obj) : source_viewport(obj) { }
 			const COpenGLViewport * const source_viewport;
@@ -400,7 +400,7 @@ namespace mrpt
 		class OPENGL_IMPEXP mrptEventGLPostRender : public mrpt::utils::mrptEvent
 		{
 		protected:
-			virtual void do_nothing() { } //!< Just to allow this class to be polymorphic
+			void do_nothing()  MRPT_OVERRIDE { } //!< Just to allow this class to be polymorphic
 		public:
 			inline mrptEventGLPostRender(const COpenGLViewport* obj) : source_viewport(obj) { }
 			const COpenGLViewport * const source_viewport;

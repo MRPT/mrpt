@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -36,6 +36,7 @@ void registerAllClasses_mrpt_opengl()
 	registerClass( CLASS_ID( CDisk ) );
 	registerClass( CLASS_ID( CGridPlaneXY ) );
 	registerClass( CLASS_ID( CMesh ) );
+	registerClass( CLASS_ID( CMesh3D ) );
 	registerClass( CLASS_ID( CMeshFast ) );
 	registerClass( CLASS_ID( COpenGLViewport ) );
 	registerClass( CLASS_ID( CPointCloud ) );

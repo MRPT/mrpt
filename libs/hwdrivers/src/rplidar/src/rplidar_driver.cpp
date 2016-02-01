@@ -325,14 +325,15 @@ u_result RPlidarDriverSerialImpl::grabScanData(rplidar_response_measurement_node
     }
 }
 
-u_result RPlidarDriverSerialImpl::ascendScanData(rplidar_response_measurement_node_t * nodebuffer, size_t count)
+u_result RPlidarDriverSerialImpl::ascendScanData(rplidar_response_measurement_node_t * nodebuffer, size_t count_)
 {
-    float inc_origin_angle = 360.0f/count;
+	const int count= (int)count_;
+	float inc_origin_angle = 360.0f/count;
     rplidar_response_measurement_node_t *tmpbuffer = new rplidar_response_measurement_node_t[count];
     int i = 0;
 
     //Tune head
-    for (i = 0; i < count; i++) {
+	for (i = 0; i < count; i++) {
         if(nodebuffer[i].distance_q2 == 0) {
             continue;
         } else {
@@ -397,7 +398,7 @@ u_result RPlidarDriverSerialImpl::ascendScanData(rplidar_response_measurement_no
     for (i = zero_pos; i < count; i++) {
         tmpbuffer[i-zero_pos] = nodebuffer[i];
     }
-    for (i = 0; i < zero_pos; i++) {
+	for (i = 0; i < (int)zero_pos; i++) {
         tmpbuffer[i+count-zero_pos] = nodebuffer[i];
     }
 
@@ -406,6 +407,21 @@ u_result RPlidarDriverSerialImpl::ascendScanData(rplidar_response_measurement_no
 
     return RESULT_OK;
 }
+
+u_result RPlidarDriverSerialImpl::stopMotor()
+{
+  //stop();
+  _rxtx->setDTR();
+  return RESULT_OK;
+}
+
+u_result RPlidarDriverSerialImpl::startMotor()
+{
+  //startScan();
+  _rxtx->clearDTR();
+  return RESULT_OK;
+}
+
 
 u_result RPlidarDriverSerialImpl::_waitNode(rplidar_response_measurement_node_t * node, _u32 timeout)
 {

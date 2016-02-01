@@ -65,12 +65,15 @@ public:
 
     virtual int senddata(const unsigned char * data, size_t size) = 0;
     virtual int recvdata(unsigned char * data, size_t size) = 0;
-
+	
     virtual int waitforsent(_u32 timeout = -1, size_t * returned_size = NULL) = 0;
     virtual int waitforrecv(_u32 timeout = -1, size_t * returned_size = NULL) = 0;
 
     virtual size_t rxqueue_count() = 0;
 
+	virtual void setDTR() = 0;
+	virtual void clearDTR() = 0;
+	
     virtual bool isOpened()
     {
         return _is_serial_opened;

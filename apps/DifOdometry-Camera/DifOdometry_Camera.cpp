@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -27,10 +27,10 @@ using namespace mrpt::opengl;
 
 void CDifodoCamera::loadConfiguration(const utils::CConfigFileBase &ini )
 {
-	fovh = M_PI*58.0/180.0;
-	fovv = M_PI*45.0/180.0;
-	f_dist = 1.f/580.f;
+	fovh = M_PI*58.6/180.0;
+	fovv = M_PI*45.6/180.0;
 	downsample = 1;
+	fast_pyramid = true;
 	cam_mode = ini.read_int("DIFODO_CONFIG", "cam_mode", 2, true);
 	rows = ini.read_int("DIFODO_CONFIG", "rows", 240, true);
 	cols = ini.read_int("DIFODO_CONFIG", "cols", 320, true);
@@ -210,6 +210,8 @@ void CDifodoCamera::CreateResultsFile()
 
 void CDifodoCamera::initializeScene()
 {
+	poses::CPose3D rel_lenspose(0,-0.05,0,0,0,0);
+	
 	global_settings::OCTREE_RENDER_MAX_POINTS_PER_NODE = 1000000;
 	window.resize(1000,900);
 	window.setPos(900,0);
@@ -240,7 +242,7 @@ void CDifodoCamera::initializeScene()
 
 	//DifOdo camera
 	CBoxPtr camera_odo = CBox::Create(math::TPoint3D(-0.02,-0.1,-0.01),math::TPoint3D(0.02,0.1,0.01));
-	camera_odo->setPose(cam_pose);
+	camera_odo->setPose(cam_pose + rel_lenspose);
 	camera_odo->setColor(0,1,0);
 	scene->insert( camera_odo );
 
@@ -286,7 +288,7 @@ void CDifodoCamera::initializeScene()
 	ellip->setQuantiles(2.0);
 	ellip->setColor(1.0, 1.0, 1.0, 0.5);
 	ellip->enableDrawSolid3D(true);
-	ellip->setPose(cam_pose);
+	ellip->setPose(cam_pose + rel_lenspose);
 	scene->insert( ellip );
 
 	//User-interface information
@@ -302,6 +304,8 @@ void CDifodoCamera::initializeScene()
 
 void CDifodoCamera::updateScene()
 {
+	poses::CPose3D rel_lenspose(0,-0.05,0,0,0,0);
+	
 	scene = window.get3DSceneAndLock();
 
 	//Reference gt
@@ -319,7 +323,7 @@ void CDifodoCamera::updateScene()
 
 	//DifOdo camera
 	CBoxPtr camera_odo = scene->getByClass<CBox>(0);
-	camera_odo->setPose(cam_pose);
+	camera_odo->setPose(cam_pose + rel_lenspose);
 
 	//Frustum
 	CFrustumPtr FOV = scene->getByClass<CFrustum>(0);
@@ -337,7 +341,7 @@ void CDifodoCamera::updateScene()
 	math::CMatrixFloat33 cov3d = 20.f*est_cov.topLeftCorner(3,3);
 	CEllipsoidPtr ellip = scene->getByClass<CEllipsoid>(0);
 	ellip->setCovMatrix(cov3d);
-	ellip->setPose(cam_pose);
+	ellip->setPose(cam_pose + rel_lenspose);
 
 	window.unlockAccess3DScene();
 	window.repaint();
@@ -353,7 +357,8 @@ void CDifodoCamera::reset()
 {
 	//Reset Difodo
 	loadFrame();
-	buildImagePyramid();
+	if (fast_pyramid)	buildCoordinatesPyramidFast();
+	else				buildCoordinatesPyramid();
 	loadFrame();
 	odometryCalculation();
 

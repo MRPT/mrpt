@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -32,20 +32,11 @@ namespace mrpt
 		class BASE_IMPEXP CFileGZOutputStream : public CStream, public CUncopiable
 		{
 		protected:
-			 /** Method responsible for reading from the stream.
-			 */
-			size_t  Read(void *Buffer, size_t Count);
-
-			/** Method responsible for writing to the stream.
-			 *  Write attempts to write up to Count bytes to Buffer, and returns the number of bytes actually written.
-			 */
-			size_t  Write(const void *Buffer, size_t Count);
-
+			size_t  Read(void *Buffer, size_t Count) MRPT_OVERRIDE;
+			size_t  Write(const void *Buffer, size_t Count) MRPT_OVERRIDE;
 			// DECLARE_UNCOPIABLE( CFileGZOutputStream )
-
 		private:
 			void		*m_f;
-
 		public:
 			 /** Constructor: opens an output file with compression level = 1 (minimum, fastest).
 			  * \param fileName The file to be open in this stream
@@ -57,6 +48,7 @@ namespace mrpt
 			  * \sa open
 			  */
 			CFileGZOutputStream();
+			virtual ~CFileGZOutputStream(); //!< Destructor
 
 			 /** Open a file for write, choosing the compression level
 			  * \param fileName The file to be open in this stream
@@ -64,35 +56,22 @@ namespace mrpt
 			  * \return true on success, false on any error.
 			  */
 			bool open(const std::string &fileName, int compress_level = 1 );
-
-			/** Close the file. */
-			void close();
-
-			 /** Destructor
-			 */
-			 virtual ~CFileGZOutputStream();
-
-			 /** Says if file was open successfully or not.
-			  */
-			 bool  fileOpenCorrectly();
-
-			/** Method for getting the current cursor position, where 0 is the first byte and TotalBytesCount-1 the last one.
-			 */
-			uint64_t getPosition();
+			void close(); //!< Close the file
+			bool fileOpenCorrectly(); //!< Returns true if the file was open ok
+			uint64_t getPosition()  MRPT_OVERRIDE; //!< Method for getting the current cursor position, where 0 is the first byte and TotalBytesCount-1 the last one.
 
 			/** This method is not implemented in this class */
-			uint64_t Seek(uint64_t Offset, CStream::TSeekOrigin Origin = sFromBeginning)
+			uint64_t Seek(uint64_t Offset, CStream::TSeekOrigin Origin = sFromBeginning)  MRPT_OVERRIDE
 			{
-            MRPT_UNUSED_PARAM(Offset); MRPT_UNUSED_PARAM(Origin);
+				MRPT_UNUSED_PARAM(Offset); MRPT_UNUSED_PARAM(Origin);
 				THROW_EXCEPTION("Seek is not implemented in this class");
 			}
 
 			/** This method is not implemented in this class */
-			uint64_t getTotalBytesCount()
+			uint64_t getTotalBytesCount()  MRPT_OVERRIDE
 			{
 				THROW_EXCEPTION("getTotalBytesCount is not implemented in this class");
 			}
-
 		}; // End of class def.
 #endif
 

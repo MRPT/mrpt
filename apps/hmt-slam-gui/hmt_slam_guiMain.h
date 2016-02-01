@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -13,7 +13,6 @@
 
 #include <wx/log.h>
 #include "CDlgLog.h"
-
 
 //(*Headers(hmt_slam_guiFrame)
 #include <wx/sizer.h>
@@ -33,17 +32,16 @@
 #include <wx/things/toggle.h>
 //*)
 
-
-
-#include <mrpt/hmtslam.h>
-
-
 // JLBC: Unix X headers have these funny things...
 #ifdef Button1
 #	undef Button1
 #	undef Button2
 #	undef Button3
 #endif
+
+
+#include <mrpt/hmtslam.h>
+
 
 class CDlgLog;
 

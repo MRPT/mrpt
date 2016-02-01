@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -15,6 +15,9 @@
 #include <mrpt/utils/CCanvas.h>
 #include <mrpt/utils/TCamera.h>
 #include <mrpt/utils/exceptions.h>
+
+// Add for declaration of mexplus::from template specialization
+DECLARE_MEXPLUS_FROM( mrpt::utils::CImage )
 
 namespace mrpt
 {
@@ -98,6 +101,12 @@ namespace mrpt
 		class BASE_IMPEXP CImage : public mrpt::utils::CSerializable, public CCanvas
 		{
 			DEFINE_SERIALIZABLE( CImage )
+
+            // This must be added for declaration of MEX-related functions
+            DECLARE_MEX_CONVERSION
+
+
+
 		public:
 
 			// ================================================================
@@ -228,10 +237,9 @@ namespace mrpt
 			  *  This method must support (x,y) values OUT of the actual image size without neither
 			  *   raising exceptions, nor leading to memory access errors.
 			  */
-			void  setPixel(int x, int y, size_t color);
+			void  setPixel(int x, int y, size_t color) MRPT_OVERRIDE;
 
-			/** Changes the property of the image stating if the top-left corner (vs. bottom-left) is the coordinate reference.
-			  */
+			/** Changes the property of the image stating if the top-left corner (vs. bottom-left) is the coordinate reference */
 			void  setOriginTopLeft(bool val);
 
 			/** Draws a line.
@@ -243,14 +251,12 @@ namespace mrpt
 			  * \param width The desired width of the line (this is IGNORED in this virtual class)
 			  *  This method may be redefined in some classes implementing this interface in a more appropiate manner.
 			  */
-			virtual void  line(
-				int				x0,
-				int				y0,
-				int				x1,
-				int				y1,
+			void  line(
+				int x0, int y0,
+				int x1, int y1,
 				const mrpt::utils::TColor color,
 				unsigned int	width = 1,
-				TPenStyle		penStyle = psSolid);
+				TPenStyle		penStyle = psSolid) MRPT_OVERRIDE;
 
 			/** Draws a circle of a given radius.
 			  * \param x The center - x coordinate in pixels.
@@ -259,12 +265,12 @@ namespace mrpt
 			  * \param color The color of the circle.
 			  * \param width The desired width of the line
 			  */
-			void  drawCircle(
+			void drawCircle(
 				int				x,
 				int				y,
 				int				radius,
 				const mrpt::utils::TColor &color = mrpt::utils::TColor(255,255,255),
-				unsigned int	width = 1);
+				unsigned int	width = 1) MRPT_OVERRIDE;
 
 			void equalizeHistInPlace(); //!< Equalize the image histogram, replacing the original image. \note RGB images are first converted to HSV color space, then equalized for brightness (V)
 			void equalizeHist( CImage  &outImg ) const; //!< Equalize the image histogram, saving the new image in the given output object.  \note RGB images are first converted to HSV color space, then equalized for brightness (V)
@@ -560,24 +566,11 @@ namespace mrpt
 			/** @name Query image properties
 			    @{ */
 
-			/** Returns the width of the image in pixels
-			  * \sa getSize
-			  */
-			size_t getWidth() const;
+			size_t getWidth() const MRPT_OVERRIDE; //!< Returns the width of the image in pixels \sa getSize
+			size_t getHeight() const MRPT_OVERRIDE; //!< Returns the height of the image in pixels \sa getSize
 
-			/** Returns the height of the image in pixels
-			  * \sa getSize
-			  */
-			size_t getHeight() const;
-
-			/** Return the size of the image
-			  * \sa getWidth, getHeight
-			  */
-			void getSize(TImageSize &s) const;
-
-			/** Return the size of the image
-			  * \sa getWidth, getHeight
-			  */
+			void getSize(TImageSize &s) const; //!< Return the size of the image \sa getWidth, getHeight
+			/** Return the size of the image \sa getWidth, getHeight */
 			inline TImageSize getSize() const {
 				TImageSize  ret;
 				getSize(ret);
@@ -585,13 +578,11 @@ namespace mrpt
 			}
 
 			/** Returns the row stride of the image: this is the number of *bytes* between two consecutive rows. You can access the pointer to the first row with get_unsafe(0,0)
-			  * \sa getSize, get_unsafe
-			  */
+			  * \sa getSize, get_unsafe */
 			size_t getRowStride() const;
 
 			/** Return the maximum pixel value of the image, as a float value in the range [0,1]
-			  * \sa getAsFloat
-			  */
+			  * \sa getAsFloat */
 			float  getMaxAsFloat() const;
 
 			/** Returns true if the image is RGB, false if it is grayscale */

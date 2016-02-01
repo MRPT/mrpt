@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -45,8 +45,7 @@ namespace utils
 			const std::string &targetFileName,
 			int		scaleFactor = 1);
 
-		/** Destructor
-		  */
+		/** Destructor */
 		virtual ~CEnhancedMetaFile(  );
 
 		/** Changes the value of the pixel (x,y).
@@ -56,15 +55,13 @@ namespace utils
 		  *  This method must support (x,y) values OUT of the actual image size without neither
 		  *   raising exceptions, nor leading to memory access errors.
 		  */
-		virtual void  setPixel( int x, int y, size_t color);
+		void  setPixel( int x, int y, size_t color) MRPT_OVERRIDE;
 
-		/** Returns the width of the image in pixels (this currently has no applicability for a EMF file...)
-		  */
-		virtual size_t  getWidth() const { return 640; }
+		/** Returns the width of the image in pixels (this currently has no applicability for a EMF file...) */
+		size_t  getWidth() const MRPT_OVERRIDE { return 640; }
 
-		/** Returns the height of the image in pixels (this currently has no applicability for a EMF file...)
-		  */
-		virtual size_t getHeight() const {return 480;}
+		/** Returns the height of the image in pixels (this currently has no applicability for a EMF file...) */
+		size_t getHeight() const MRPT_OVERRIDE {return 480;}
 
 		/** Draws an image as a bitmap at a given position.
 		  * \param x0 The top-left corner x coordinates on this canvas where the image is to be drawn
@@ -72,10 +69,7 @@ namespace utils
 		  * \param img The image to be drawn in this canvas
 		  *  This method may be redefined in some classes implementing this interface in a more appropiate manner.
 		  */
-		virtual void  drawImage(
-			int						x,
-			int						y,
-			const utils::CImage	&img );
+		void  drawImage(int x, int y, const utils::CImage	&img ) MRPT_OVERRIDE;
 
 		/** Draws a line.
 		  * \param x0 The starting point x coordinate
@@ -86,14 +80,12 @@ namespace utils
 		  * \param width The desired width of the line (this is IGNORED in this virtual class)
 		  *  This method may be redefined in some classes implementing this interface in a more appropiate manner.
 		  */
-		virtual void  line(
-			int				x0,
-			int				y0,
-			int				x1,
-			int				y1,
+		void  line(
+			int x0, int y0,
+			int x1, int y1,
 			const mrpt::utils::TColor color,
 			unsigned int	width = 1,
-			TPenStyle		penStyle = psSolid);
+			TPenStyle		penStyle = psSolid) MRPT_OVERRIDE;
 
 		/** Places a text label.
 		  * \param x0 The x coordinates
@@ -104,12 +96,11 @@ namespace utils
 		  *  This method may be redefined in some classes implementing this interface in a more appropiate manner.
 		  * \sa rectangle
 		  */
-		virtual void  textOut(
-			int					x0,
-			int					y0,
+		void  textOut(
+			int x0, int y0,
 			const std::string	&str,
 			const mrpt::utils::TColor color
-			);
+			) MRPT_OVERRIDE;
 
 		/** Select the current font used when drawing text.
 		  * \param fontName The face name of a font (e.g. "Arial","System",...)
@@ -132,16 +123,14 @@ namespace utils
 		  * \param img The image to be drawn in this canvas
 		  *  This method may be redefined in some classes implementing this interface in a more appropiate manner.
 		  */
-		virtual void  drawImage(
-			int						x,
-			int						y,
+		void drawImage(
+			int x, int y,
 			const utils::CImage	&img,
-			float					rotation,
-			float					scale )
+			float rotation,
+			float scale ) MRPT_OVERRIDE
 		{
 			CCanvas::drawImage(x,y,img,rotation,scale);
 		}
-
 
 		/** Draws a rectangle (an empty rectangle, without filling)
 		  * \param x0 The top-left x coordinate
@@ -213,11 +202,7 @@ namespace utils
 				std::cout << "Covariance matrix leading to error is:" << std::endl << *cov2D << std::endl; \
 				);
 		}
-
-
-
 	}; // End of class def.
-
 	} // End of namespace
 } // end of namespace
 #endif

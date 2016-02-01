@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -47,6 +47,7 @@ void registerAllClasses_mrpt_hwdrivers()
 	CSickLaserSerial::doRegister();
 	CBoardENoses::doRegister();
 	CEnoseModular::doRegister();
+	CGillAnemometer::doRegister();
 	CNTRIPEmitter::doRegister();
 	CSwissRanger3DCamera::doRegister();
 	CLMS100Eth::doRegister();
@@ -58,5 +59,8 @@ void registerAllClasses_mrpt_hwdrivers()
 	CCANBusReader::doRegister();
 	CNationalInstrumentsDAQ::doRegister();
 	CGPS_NTRIP::doRegister();
+	CIMUIntersense::doRegister();
+	CSkeletonTracker::doRegister();
+    CVelodyneScanner::doRegister();
 }
 

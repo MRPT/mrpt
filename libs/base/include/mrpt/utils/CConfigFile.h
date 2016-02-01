@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -28,31 +28,21 @@ namespace utils
 	class BASE_IMPEXP CConfigFile : public CConfigFileBase
 	{
 	private:
-		/** The name of the file
-		  */
-		std::string		m_file;
-
-		/** The interface to the file:
-		  */
-		void_ptr_noncopy m_ini;
-
-		/** If modified since load.
-		  */
-		bool			m_modified;
+		std::string		m_file; //!< The name of the file
+		void_ptr_noncopy m_ini; //!< The interface to the file:
+		bool			m_modified; //!< If modified since load.
 
 	protected:
-		/** A virtual method to write a generic string.
-		  */
-		void  writeString(const std::string &section,const std::string &name, const std::string &str);
+		/** A virtual method to write a generic string  */
+		void  writeString(const std::string &section,const std::string &name, const std::string &str) MRPT_OVERRIDE;
 
 		/** A virtual method to read a generic string.
-         * \exception std::exception If the key name is not found and "failIfNotFound" is true. Otherwise the "defaultValue" is returned.
-		 */
+		 * \exception std::exception If the key name is not found and "failIfNotFound" is true. Otherwise the "defaultValue" is returned. */
 		std::string  readString(
-            const std::string &section,
-            const std::string &name,
-            const std::string &defaultStr,
-            bool failIfNotFound = false) const;
+			const std::string &section,
+			const std::string &name,
+			const std::string &defaultStr,
+			bool failIfNotFound = false) const MRPT_OVERRIDE;
 
 	public:
 		/** Constructor that opens a configuration file. */
@@ -63,28 +53,23 @@ namespace utils
 		  */
 		CConfigFile();
 
-        /** Associate this object with the given file, so future read/write operations will be applied to that file (it's synchronized at destruction).
-          */
+		/** Associate this object with the given file, so future read/write operations will be applied to that file (it's synchronized at destruction) */
 		void setFileName(const std::string &fil_path);
 
-        /** Dumps the changes to the physical configuration file now, not waiting until destruction. */
+		/** Dumps the changes to the physical configuration file now, not waiting until destruction. */
 		void writeNow();
 
-        /** Returns the file currently open by this object.
-          */
+		/** Returns the file currently open by this object. */
 		std::string getAssociatedFile() const { return m_file; }
 
-		/** Destructor
-		  */
-        virtual ~CConfigFile();
+		/** Destructor */
+		virtual ~CConfigFile();
 
-		/** Returns a list with all the section names.
-		  */
-		virtual void getAllSections( vector_string	&sections ) const;
+		/** Returns a list with all the section names. */
+		virtual void getAllSections( vector_string	&sections ) const MRPT_OVERRIDE;
 
-		/** Returs a list with all the keys into a section.
-		  */
-		virtual void getAllKeys( const std::string &section, vector_string	&keys ) const;
+		/** Returs a list with all the keys into a section. */
+		virtual void getAllKeys( const std::string &section, vector_string	&keys ) const MRPT_OVERRIDE;
 
 	}; // End of class def.
 

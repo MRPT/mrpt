@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -21,8 +21,8 @@ using namespace std;
 IMPLEMENTS_GENERIC_SENSOR(CGPS_NTRIP,mrpt::hwdrivers)
 
 /** Constructor. See mrpt::hwdrivers::CGPSInterface for the meaning of params. */
-CGPS_NTRIP::CGPS_NTRIP( int BUFFER_LENGTH, mrpt::hwdrivers::CSerialPort *outPort, mrpt::synch::CCriticalSection *csOutPort) :
-	gps(BUFFER_LENGTH,outPort,csOutPort),
+CGPS_NTRIP::CGPS_NTRIP() :
+	gps(),
 	ntrip()
 {
 }
@@ -62,7 +62,7 @@ void  CGPS_NTRIP::doProcess()
 	{
 		if (m_verbose) cout << "[CGPS_NTRIP] Redirecting GGA frame from GPS->NTRIP: '" << sLastGGA << "'" << endl;
 
-		ntrip.getNTRIPClient().sendBackToServer( sLastGGA );
+		ntrip.getNTRIPClient().sendBackToServer( sLastGGA + std::string("\r\n") );
 	}
 
 	// Process NTRIP server comms:

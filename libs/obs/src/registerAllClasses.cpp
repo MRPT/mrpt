@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -36,6 +36,7 @@ void registerAllClasses_mrpt_obs()
 	registerClass( CLASS_ID( CObservation ) );
 	registerClass( CLASS_ID( CObservation2DRangeScan ) );
 	registerClass( CLASS_ID( CObservation3DRangeScan ) );
+	registerClass( CLASS_ID( CObservationVelodyneScan ) );
 	registerClass( CLASS_ID( CObservationRGBD360 ) );
 	registerClass( CLASS_ID( CObservationBatteryState ) );
 	registerClass( CLASS_ID( CObservationWirelessPower ) );
@@ -69,6 +70,7 @@ void registerAllClasses_mrpt_obs()
 	registerClass( CLASS_ID( CActionRobotMovement2D ) );
 	registerClass( CLASS_ID( CActionRobotMovement3D ) );
 
+	registerClass( CLASS_ID( CObservationSkeleton ) );
 
 	registerClass( CLASS_ID( TMapGenericParams ) );
 

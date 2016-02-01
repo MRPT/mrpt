@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -552,7 +552,7 @@ double	 COccupancyGridMap2D::computeLikelihoodField_Thrun( const CPointsMap	*pm,
         // Reset the precomputed likelihood values map
         if (precomputedLikelihoodToBeRecomputed)
         {
-			if (map.size())
+			if (!map.empty())
 					precomputedLikelihood.assign( map.size(),LIK_LF_CACHE_INVALID);
 			else	precomputedLikelihood.clear();
 

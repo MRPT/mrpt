@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -31,6 +31,7 @@ namespace mrpt
 		  *   COM_port_WIN = COM1         // Serial port where the NTRIP stream will be dumped to.
 		  *   COM_port_LIN = ttyUSB0
 		  *   baudRate     = 38400   
+		  *   #transmit_to_server = true   // (Default:true) Whether to send back to the TCP/IP caster all data received from the output serial port
 		  *
 		  *   server   = 143.123.9.129    // NTRIP caster IP
 		  *   port     = 2101
@@ -40,8 +41,12 @@ namespace mrpt
 		  *
 		  *  \endcode
 		  *
+		  *  The next picture summarizes existing MRPT classes related to GPS / GNSS devices (CGPSInterface, CNTRIPEmitter, CGPS_NTRIP):
+		  *
+		  *  <div align=center> <img src="mrpt_gps_classes_usage.png"> </div>
+		  *
 		  * \ingroup mrpt_hwdrivers_grp
-		  * \sa CGPSInterface, CNTRIPClient
+		  * \sa CGPSInterface, CGPS_NTRIP, CNTRIPClient
 		  */
 		class HWDRIVERS_IMPEXP CNTRIPEmitter : public CGenericSensor
 		{
@@ -53,8 +58,9 @@ namespace mrpt
 			CNTRIPClient	m_client;  //!< The NTRIP comms object.
 			CSerialPort		m_out_COM; //!< The output serial port.
 
-			std::string		m_com_port;		//!< If set to non-empty, the serial port will be attempted to be opened automatically when this class is first used to request data from the laser.
-			int				m_com_bauds;
+			std::string     m_com_port;		//!< If set to non-empty, the serial port will be attempted to be opened automatically when this class is first used to request data from the laser.
+			int             m_com_bauds;
+			bool            m_transmit_to_server;
 
 		protected:
 			/** See the class documentation at the top for expected parameters */

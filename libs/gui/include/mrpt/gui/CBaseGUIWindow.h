@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -150,7 +150,7 @@ namespace mrpt
 		class GUI_IMPEXP mrptEventWindowChar : public mrpt::utils::mrptEvent
 		{
 		protected:
-			virtual void do_nothing() { } //!< Just to allow this class to be polymorphic
+			virtual void do_nothing() MRPT_OVERRIDE { } //!< Just to allow this class to be polymorphic
 		public:
 			inline mrptEventWindowChar(
 				CBaseGUIWindow *obj,
@@ -171,7 +171,7 @@ namespace mrpt
 		class GUI_IMPEXP mrptEventWindowResize : public mrpt::utils::mrptEvent
 		{
 		protected:
-			virtual void do_nothing() { } //!< Just to allow this class to be polymorphic
+			virtual void do_nothing() MRPT_OVERRIDE { } //!< Just to allow this class to be polymorphic
 		public:
 			inline mrptEventWindowResize(
 				CBaseGUIWindow *obj,
@@ -192,7 +192,7 @@ namespace mrpt
 		class GUI_IMPEXP mrptEventMouseDown : public mrpt::utils::mrptEvent
 		{
 		protected:
-			virtual void do_nothing() { } //!< Just to allow this class to be polymorphic
+			virtual void do_nothing() MRPT_OVERRIDE { } //!< Just to allow this class to be polymorphic
 		public:
 			inline mrptEventMouseDown (
 				CBaseGUIWindow *obj,
@@ -220,7 +220,7 @@ namespace mrpt
 		class GUI_IMPEXP mrptEventWindowClosed : public mrpt::utils::mrptEvent
 		{
 		protected:
-			virtual void do_nothing() { } //!< Just to allow this class to be polymorphic
+			virtual void do_nothing() MRPT_OVERRIDE { } //!< Just to allow this class to be polymorphic
 		public:
 			inline mrptEventWindowClosed (
 				CBaseGUIWindow *obj,

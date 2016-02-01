@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -538,7 +538,7 @@ public:
 			kinects[i-1].m_max_range = ini.read_float("KINECT_CONFIG",format("KINECT%d_MAXRANGE",i), 0, true);
 			kinects[i-1].m_fov_v = DEG2RAD(ini.read_float("KINECT_CONFIG",format("KINECT%d_FOV_V",i), 60, true));
 			kinects[i-1].m_fov_h = DEG2RAD(ini.read_float("KINECT_CONFIG",format("KINECT%d_FOV_H",i), 60, true));
-			kinects[i-1].m_pitch_angle = DEG2RAD(ini.read_float("KINECT_CONFIG",format("KINECT%d_PITCH_ANGLE",i), 0, true));
+			kinects[i-1].m_pitch_angle = DEG2RAD(ini.read_float("KINECT_CONFIG",format("KINECT%d_PITCH",i), 0, true));
 			kinects[i-1].m_rows = ini.read_int("KINECT_CONFIG",format("KINECT%d_ROWS",i), 10, true);
 			kinects[i-1].m_columns = ini.read_int("KINECT_CONFIG",format("KINECT%d_COLUMNS",i), 10, true);
 			kinects[i-1].m_std_error = ini.read_float("KINECT_CONFIG",format("KINECT%d_STD_ERROR",i), 0.05, true);
@@ -561,8 +561,8 @@ public:
 		}
 
 		//Read other params associated with the robot model and its navigation
-		float tau = ini.read_float("NAVIGATION_CONFIG","ROBOTMODEL_TAU", 0, true);
-		float delay = ini.read_float("NAVIGATION_CONFIG","ROBOTMODEL_DELAY", 0, true);
+		float tau = 0.f; //ini.read_float("NAVIGATION_CONFIG","ROBOTMODEL_TAU", 0, true);
+		float delay = 0.f; //ini.read_float("NAVIGATION_CONFIG","ROBOTMODEL_DELAY", 0, true);
 		float x_ini = ini.read_float("NAVIGATION_CONFIG","X0", 0, true);
 		float y_ini = ini.read_float("NAVIGATION_CONFIG","Y0", 0, true);
 		float phi_ini = DEG2RAD(ini.read_float("NAVIGATION_CONFIG","PHI0", 0, true));

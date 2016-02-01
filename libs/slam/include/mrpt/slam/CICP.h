@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -58,12 +58,8 @@ namespace mrpt
 			public:
 				TConfigParams();	//!< Initializer for default values:
 
-				void  loadFromConfigFile(
-					const mrpt::utils::CConfigFileBase  &source,
-					const std::string &section); //!< See utils::CLoadableOptions
-
-				void  dumpToTextStream(mrpt::utils::CStream	&out) const; //!<See utils::CLoadableOptions
-
+				void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) MRPT_OVERRIDE; // See base docs
+				void dumpToTextStream(mrpt::utils::CStream &out) const MRPT_OVERRIDE; // See base docs
 
 				/** The algorithm to use (default: icpClassic)
 				  *  See http://www.mrpt.org/Scan_Matching_Algorithms for details.

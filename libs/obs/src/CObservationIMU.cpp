@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -82,23 +82,19 @@ void  CObservationIMU::readFromStream(mrpt::utils::CStream &in, int version)
 
 		in >> sensorLabel;
 
-		// Version 3: Added 6 new raw measurements (IMU_MAG_X=15 to IMU_TEMPERATURE=20)
-		if (version<3)
+		// Fill new entries with default values:
+		if (dataIsPresent.size()<COUNT_IMU_DATA_FIELDS)
 		{
-			// Fill the last 6 entries with default values:
 			const size_t nOld = dataIsPresent.size();
-			ASSERT_(nOld==15)
-			ASSERT_(rawMeasurements.size()==nOld)
+			ASSERT_(rawMeasurements.size()==dataIsPresent.size());
 
 			dataIsPresent.resize(COUNT_IMU_DATA_FIELDS);
 			rawMeasurements.resize(COUNT_IMU_DATA_FIELDS);
-			for (size_t i=nOld;i<COUNT_IMU_DATA_FIELDS;i++)
-			{
+			for (size_t i=nOld;i<COUNT_IMU_DATA_FIELDS;i++) {
 				dataIsPresent[i]=false;
 				rawMeasurements[i]=0;
 			}
 		}
-
 		break;
 	default:
 		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
@@ -145,7 +141,13 @@ void CObservationIMU::getDescriptionAsText(std::ostream &o) const
 		"qx", // IMU_ORI_QUAT_X,
 		"qy", // IMU_ORI_QUAT_Y,
 		"qz", // IMU_ORI_QUAT_Z,
-		"qw" // IMU_ORI_QUAT_W,
+		"qw", // IMU_ORI_QUAT_W,
+		"rad/s", //	IMU_YAW_VEL_GLOBAL
+		"rad/s", //	IMU_PITCH_VEL_GLOBAL
+		"rad/s", //	IMU_ROLL_VEL_GLOBAL
+		"m/s^2", //	IMU_X_ACC_GLOBAL
+		"m/s^2", //	IMU_Y_ACC_GLOBAL
+		"m/s^2"  //	IMU_Z_ACC_GLOBAL
 	};
 
 #define DUMP_IMU_DATA(x)  \
@@ -179,4 +181,12 @@ void CObservationIMU::getDescriptionAsText(std::ostream &o) const
 	DUMP_IMU_DATA(IMU_ORI_QUAT_Y)
 	DUMP_IMU_DATA(IMU_ORI_QUAT_Z)
 	DUMP_IMU_DATA(IMU_ORI_QUAT_W)
+	DUMP_IMU_DATA(IMU_YAW_VEL_GLOBAL)
+	DUMP_IMU_DATA(IMU_PITCH_VEL_GLOBAL)
+	DUMP_IMU_DATA(IMU_ROLL_VEL_GLOBAL)
+	DUMP_IMU_DATA(IMU_X_ACC_GLOBAL)
+	DUMP_IMU_DATA(IMU_Y_ACC_GLOBAL)
+	DUMP_IMU_DATA(IMU_Z_ACC_GLOBAL)
+
+
 }

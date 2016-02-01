@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -320,7 +320,7 @@ void  CLSLAM_RBPF_2DLASER::prediction_and_update_pfAuxiliaryPFOptimal(
 #endif
 
 	// Now we have the vector "m_fastDrawProbability" filled out with:
-	//     w[i]·p(zt|z^{t-1},x^{[i],t-1},X)
+	//     w[i]p(zt|z^{t-1},x^{[i],t-1},X)
 	//  where X is the robot pose prior (as implemented in
 	//  the aux. function "particlesEvaluator_AuxPFOptimal"),
 	//  and also the "m_maxLikelihood" filled with the maximum lik. values.
@@ -546,7 +546,7 @@ double  CLSLAM_RBPF_2DLASER::particlesEvaluator_AuxPFOptimal(
 	const CLocalMetricHypothesis  *myObj = static_cast<const CLocalMetricHypothesis*>(obj);
 
 	// Compute the quantity:
-	//     w[i]·p(zt|z^{t-1},x^{[i],t-1})
+	//     w[i]p(zt|z^{t-1},x^{[i],t-1})
 	// As the Monte-Carlo approximation of the
 	//  integral over all posible $x_t$.
 

@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -22,16 +22,10 @@
 
 #include <mrpt/utils/traits_map.h>
 #include <mrpt/utils/stl_serialization.h>
+#include <mrpt/poses/poses_frwds.h>
 
 namespace mrpt
 {
-	// Fwd decls:
-	namespace poses {
-		class CPose2D; class CPose3D;
-		class CPosePDFGaussian;  class CPose3DPDFGaussian;
-		class CPosePDFGaussianInf; class CPose3DPDFGaussianInf;
-	}
-
 	namespace graphs
 	{
 		/** Internal functions for MRPT */

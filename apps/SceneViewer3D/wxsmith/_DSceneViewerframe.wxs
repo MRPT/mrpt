@@ -243,6 +243,17 @@
 					</object>
 				</object>
 				<object class="separator" />
+				<object class="wxMenuItem" name="ID_MENUITEM29" variable="MenuItem23" member="yes">
+					<label>Previous file</label>
+					<accel>F7</accel>
+					<handler function="OnPrevious" entry="EVT_MENU" />
+				</object>
+				<object class="wxMenuItem" name="ID_MENUITEM30" variable="MenuItem24" member="yes">
+					<label>Next file</label>
+					<accel>F8</accel>
+					<handler function="OnNext" entry="EVT_MENU" />
+				</object>
+				<object class="separator" />
 				<object class="wxMenuItem" name="ID_MENUITEM12" variable="MenuItem14" member="yes">
 					<label>Take snapshot...</label>
 					<accel>F2</accel>

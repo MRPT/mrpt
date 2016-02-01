@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -176,7 +176,7 @@ namespace maps
 				const mrpt::poses::CPose3D							&otherMapPose,
 				float									maxDistForCorr = 0.10f,
 				float									maxMahaDistForCorr = 2.0f
-				) const;
+				) const MRPT_OVERRIDE;
 
 		 /** With this struct options are provided to the observation insertion process.
 		  */
@@ -187,15 +187,8 @@ namespace maps
 			 */
 			TInsertionOptions(	);
 
-			/** See utils::CLoadableOptions
-			  */
-			void  loadFromConfigFile(
-				const mrpt::utils::CConfigFileBase	&source,
-				const std::string &section);
-
-			/** See utils::CLoadableOptions
-			  */
-			void  dumpToTextStream(mrpt::utils::CStream	&out) const;
+			void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) MRPT_OVERRIDE; // See base docs
+			void dumpToTextStream(mrpt::utils::CStream &out) const MRPT_OVERRIDE; // See base docs
 
 			/** If set to true (default), the insertion of a CObservationImage in the map will insert SIFT 3D features.
 			  */
@@ -281,44 +274,23 @@ namespace maps
 			 */
 			 TLikelihoodOptions();
 
-			/** See utils::CLoadableOptions
-			  */
-			void  loadFromConfigFile(
-				const mrpt::utils::CConfigFileBase	&source,
-				const std::string &section);
+			 void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) MRPT_OVERRIDE; // See base docs
+			 void dumpToTextStream(mrpt::utils::CStream &out) const MRPT_OVERRIDE; // See base docs
 
-			/** See utils::CLoadableOptions
-			  */
-			void  dumpToTextStream(mrpt::utils::CStream	&out) const;
-
-			 /** The number of rays from a 2D range scan will be decimated by this factor (default = 1, no decimation)
-			   */
+			 /** The number of rays from a 2D range scan will be decimated by this factor (default = 1, no decimation) */
 			 unsigned int	rangeScan2D_decimation;
-
 			 double			SIFTs_sigma_euclidean_dist;
-
 			 double			SIFTs_sigma_descriptor_dist;
-
 			 float			SIFTs_mahaDist_std;
-
 			 float			SIFTnullCorrespondenceDistance;
-
-			 /** Considers 1 out of "SIFTs_decimation" visual landmarks in the observation during the likelihood computation.
-			   */
+			 /** Considers 1 out of "SIFTs_decimation" visual landmarks in the observation during the likelihood computation. */
 			 int			SIFTs_decimation;
-
-			 /** The standard deviation used for Beacon ranges likelihood (default=0.08).
-			   */
+			 /** The standard deviation used for Beacon ranges likelihood (default=0.08). */
 			 float			beaconRangesStd;
-
-			 /** The ratio between gaussian and uniform distribution (default=1).
-			   */
+			 /** The ratio between gaussian and uniform distribution (default=1). */
 			 float			alphaRatio;
-
-			 /** Maximun reliable beacon range value (default=20)
-			   */
+			 /** Maximun reliable beacon range value (default=20) */
 			 float			beaconMaxRange;
-
 			/** This struct store de GPS longitude, latitude (in degrees ) and altitude (in meters) for the first GPS observation
 			  * compose with de sensor position on the robot.
 			 */
@@ -327,21 +299,13 @@ namespace maps
 			public:
 				TGPSOrigin();
 
-				/** Longitud del Origen del GPS (en grados)
-				  */
-				double	longitude;
-
-				/** Latitud del Origen del GPS (en grados)
-				  */
-				double	latitude;
-
-				/** Altitud del Origen del GPS (en metros)
-				  */
-				double	altitude;
+				double	longitude;   //!< degrees
+				double	latitude;    //!< degrees
+				double	altitude;    //!< meters
 
 				/** Estas tres opciones sirven para encajar mapas de GPS con posiciones absolutas con
 				  *  mapas de otros sensores (como laser :D) se obtienen facilmente con el programa matlab  map_matching
-				  *   ang : Rotación del mapa del GPS (para encajarlo en grados)
+				  *   ang : Map rotation (deg)
 				  *   x_shift: Desplazamiento en x relativo al robot (en metros)
 				  *   y_shift: Desplazamiento en y relativo al robot (en metros)
 			      */
@@ -349,9 +313,7 @@ namespace maps
 						x_shift,
 						y_shift;
 
-				/** Número mínimo de satelites para tener en cuenta los datos
-				  */
-				unsigned int min_sat;
+				unsigned int min_sat; //!< Minimum number of sats to take into account the data
 
 			} GPSOrigin;
 
@@ -523,7 +485,7 @@ namespace maps
 
 		/** Returns true if the map is empty/no observation has been inserted.
 		   */
-		bool  isEmpty() const;
+		bool isEmpty() const MRPT_OVERRIDE;
 
 		/** Simulates a noisy reading toward each of the beacons in the landmarks map, if any.
 		  * \param in_robotPose This robot pose is used to simulate the ranges to each beacon.
@@ -571,16 +533,15 @@ namespace maps
 		  *		- "filNamePrefix"+"_3D.m": A script for MATLAB for drawing landmarks as 3D ellipses.
 		  *		- "filNamePrefix"+"_3D.3DScene": A 3D scene with a "ground plane grid" and the set of ellipsoids in 3D.
 		  */
-		void  saveMetricMapRepresentationToFile(
-			const std::string	&filNamePrefix ) const;
+		void  saveMetricMapRepresentationToFile(const std::string &filNamePrefix) const MRPT_OVERRIDE;
 
 		/** Returns a 3D object representing the map.
 		  * \sa COLOR_LANDMARKS_IN_3DSCENES
 		  */
-		void  getAs3DObject ( mrpt::opengl::CSetOfObjectsPtr	&outObj ) const;
+		void getAs3DObject(mrpt::opengl::CSetOfObjectsPtr &outObj) const MRPT_OVERRIDE;
 
 		// See base docs
-		virtual void  auxParticleFilterCleanUp();
+		virtual void  auxParticleFilterCleanUp() MRPT_OVERRIDE;
 
 		MAP_DEFINITION_START(CLandmarksMap,VISION_IMPEXP)
 			typedef std::pair<mrpt::math::TPoint3D,unsigned int> TPairIdBeacon;

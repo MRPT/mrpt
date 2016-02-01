@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -53,10 +53,10 @@ namespace mrpt
 			virtual ~CDisplayWindow();
 
 			/** Gets the last x,y pixel coordinates of the mouse. \return False if the window is closed. */
-			virtual bool getLastMousePosition(int &x, int &y) const;
+			virtual bool getLastMousePosition(int &x, int &y) const MRPT_OVERRIDE;
 
 			/** Set cursor style to default (cursorIsCross=false) or to a cross (cursorIsCross=true) */
-			virtual void setCursorCross(bool cursorIsCross);
+			virtual void setCursorCross(bool cursorIsCross) MRPT_OVERRIDE;
 
 			/** Show a given color or grayscale image on the window and print a set of points on it.
 			 *  It adapts the size of the window to that of the image.
@@ -184,11 +184,11 @@ namespace mrpt
 
 			/** Resizes the window, stretching the image to fit into the display area.
 			 */
-			void  resize( unsigned int width, unsigned int height );
+			void  resize( unsigned int width, unsigned int height ) MRPT_OVERRIDE;
 
 			/** Changes the position of the window on the screen.
 			 */
-			void  setPos( int x, int y );
+			void  setPos( int x, int y ) MRPT_OVERRIDE;
 
 			/** Enables or disables the visualization of cursor coordinates on the window caption (default = enabled).
 			  */
@@ -199,7 +199,7 @@ namespace mrpt
 
 			/** Changes the window title text.
 			  */
-			void  setWindowTitle( const std::string &str );
+			void  setWindowTitle( const std::string &str ) MRPT_OVERRIDE;
 
 		}; // End of class def.
 		DEFINE_MRPT_OBJECT_POST_CUSTOM_BASE_LINKAGE(CDisplayWindow, mrpt::gui::CBaseGUIWindow, GUI_IMPEXP)

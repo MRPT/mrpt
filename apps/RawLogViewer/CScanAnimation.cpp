@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -48,6 +48,7 @@ BEGIN_EVENT_TABLE(CScanAnimation,wxDialog)
 END_EVENT_TABLE()
 
 #include <mrpt/obs/CObservation3DRangeScan.h>
+#include <mrpt/obs/CObservationVelodyneScan.h>
 #include <mrpt/maps/CColouredPointsMap.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/stock_objects.h>
@@ -324,11 +325,45 @@ void CScanAnimation::BuildMapAndRefresh(CSensoryFrame *sf)
 				m_gl_objects[obs->sensorLabel]=ro;
 				m_plot3D->m_openGLScene->insert( gl_obj );
 			}
-
-
-//
 			// Add to list:
 //				m_lstScans[obs->sensorLabel] = obs;
+		}
+		else
+		if (IS_CLASS(*it,CObservationVelodyneScan))
+		{
+			CObservationVelodyneScanPtr obs = CObservationVelodyneScanPtr(*it);
+			wereScans = true;
+			if (tim_last==INVALID_TIMESTAMP || tim_last<obs->timestamp)
+				tim_last = obs->timestamp;
+
+			obs->generatePointCloud();
+			CColouredPointsMap pointMap;
+			pointMap.loadFromVelodyneScan(*obs);
+			obs->point_cloud.clear_deep();
+			
+			// Already in the map with the same sensor label?
+			TListGlObjects::iterator it_gl = m_gl_objects.find(obs->sensorLabel);
+			if (it_gl!=m_gl_objects.end())
+			{
+				// Update existing object:
+				TRenderObject &ro = it_gl->second;
+				CPointCloudColouredPtr gl_obj = CPointCloudColouredPtr(ro.obj);
+				gl_obj->loadFromPointsMap(&pointMap);
+				ro.timestamp = obs->timestamp;
+			}
+			else
+			{
+				// Create object:
+				CPointCloudColouredPtr gl_obj = CPointCloudColoured::Create();
+				gl_obj->setPointSize(3.0);
+				gl_obj->loadFromPointsMap(&pointMap);
+
+				TRenderObject ro;
+				ro.obj = gl_obj;
+				ro.timestamp = obs->timestamp;
+				m_gl_objects[obs->sensorLabel]=ro;
+				m_plot3D->m_openGLScene->insert( gl_obj );
+			}
 		}
 	}
 

@@ -77,7 +77,7 @@ IF(WIN32)
 	SET(CPACK_PACKAGE_EXECUTABLES ${_str}) # --> Set in each apps/*/CMakeLists.txt file
 
 	SET(CPACK_NSIS_MENU_LINKS
-	    "doc;Documentation directory;bin;Directory of executables (bin);doc/chm/libMRPT-@CMAKE_MRPT_VERSION_NUMBER_MAJOR@.@CMAKE_MRPT_VERSION_NUMBER_MINOR@.@CMAKE_MRPT_VERSION_NUMBER_PATCH@.chm;MRPT libraries reference (CHM);http://www.mrpt.org/;Online help;doc/mrpt-book.pdf;The MRPT book (PDF);doc/srba-guide.pdf;The SRBA programming guide (PDF)")
+	    "doc;Documentation directory;bin;Directory of executables (bin);doc/chm/libMRPT-@CMAKE_MRPT_VERSION_NUMBER_MAJOR@.@CMAKE_MRPT_VERSION_NUMBER_MINOR@.@CMAKE_MRPT_VERSION_NUMBER_PATCH@.chm;MRPT libraries reference (CHM);http://www.mrpt.org/;Online help;doc/mrpt-book.pdf;The MRPT book (PDF)")
 
 	# Force usage of our custom NSIS template:
 	SET(CPACK_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/parse-files/")

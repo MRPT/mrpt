@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -298,7 +298,7 @@ void  CRandomFieldGridMap2D::internal_clear()
 
 							if (j==i)
 							{
-								//H_ii = Nº constraints * Lambda_cell * (J_ij^2 +1)
+								//H_ii = N constraints * Lambda_cell * (J_ij^2 +1)
 #if EIGEN_VERSION_AT_LEAST(3,1,0)
 								//std::pair<size_t,float> Hentry (j , nConsFixed_j * m_insertOptions_common->GMRF_lambdaPrior * (square(1.0/gauss_val[abs(kr+kc)]) + 1) );
 								//H_vm.at(i).insert(Hentry);
@@ -555,7 +555,7 @@ void  CRandomFieldGridMap2D::internal_clear()
 						}
 					}
 
-					//Factors of cell_j: H_jj = Nº factors * Lambda_prior
+					//Factors of cell_j: H_jj = N factors * Lambda_prior
 					//----------------------------------------------------
 					std::pair < std::multimap<size_t,size_t>::iterator, std::multimap<size_t,size_t>::iterator > range;
 					range = cell_interconnections.equal_range(j);
@@ -618,7 +618,7 @@ void  CRandomFieldGridMap2D::internal_clear()
 						count = count +1;
 					}
 
-					//Factors of cell_i: H_ii = Nº factors * Lambda_prior
+					//Factors of cell_i: H_ii = N factors * Lambda_prior
 					//----------------------------------------------------
 					size_t nFactors_j = 4 - (cx==0) - (cx==m_size_x-1) - (cy==0) - (cy==m_size_y-1);
 					Eigen::Triplet<double> Hentry(j,j , nFactors_j * m_insertOptions_common->GMRF_lambdaPrior );

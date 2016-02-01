@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -26,7 +26,7 @@ namespace obs { class CObservation; }
 		class mrptEventMetricMapClear : public mrpt::utils::mrptEvent
 		{
 		protected:
-			virtual void do_nothing() { } //!< Just to allow this class to be polymorphic
+			virtual void do_nothing() MRPT_OVERRIDE { } //!< Just to allow this class to be polymorphic
 		public:
 			inline mrptEventMetricMapClear(const mrpt::maps::CMetricMap   *smap) : source_map(smap) {}
 
@@ -40,7 +40,7 @@ namespace obs { class CObservation; }
 		class mrptEventMetricMapInsert : public mrpt::utils::mrptEvent
 		{
 		protected:
-			virtual void do_nothing() { } //!< Just to allow this class to be polymorphic
+			virtual void do_nothing() MRPT_OVERRIDE { } //!< Just to allow this class to be polymorphic
 		public:
 			inline mrptEventMetricMapInsert(const mrpt::maps::CMetricMap   *smap, const mrpt::obs::CObservation *obs,const mrpt::poses::CPose3D *robotPose ) : source_map(smap), inserted_obs(obs), inserted_robotPose(robotPose) { }
 

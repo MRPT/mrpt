@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -184,7 +184,7 @@ public:
         FILE * m_file;
     public:
         FileWriter(FILE * a_file) : m_file(a_file) { }
-        void Write(const char * a_pBuf) {
+		void Write(const char * a_pBuf) MRPT_OVERRIDE  {
             fputs(a_pBuf, m_file);
         }
     private:
@@ -197,7 +197,7 @@ public:
         std::string & m_string;
     public:
         StringWriter(std::string & a_string) : m_string(a_string) { }
-        void Write(const char * a_pBuf) {
+		void Write(const char * a_pBuf) MRPT_OVERRIDE {
             m_string.append(a_pBuf);
         }
     private:

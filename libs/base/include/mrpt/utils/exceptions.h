@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -16,6 +16,10 @@ namespace mrpt
 {
 	namespace utils
 	{
+		/** \addtogroup mrpt_exceptions Exception base classes (in #include <mrpt/utils/exceptions.h>)
+		  *  \ingroup mrpt_base_grp
+		  * @{ */
+
 		/** The base for MRPT-especific exceptions \ingroup mrpt_base_grp */
 		class CMRPTException: public std::logic_error
 		{
@@ -37,6 +41,7 @@ namespace mrpt
 			CExceptionEOF(const std::string &s) : CMRPTException(s) {  }
 		};
 
+		/** @} */
 	} // End of namespace
 } // End of namespace
 #endif

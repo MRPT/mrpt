@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -39,7 +39,7 @@ namespace mrpt
 
 		/** Different metrics for data association, used in mrpt::slam::data_association
 		  *  For a comparison of both methods see paper:
-		  *  * J.L. Blanco, J. Gonzalez-Jimenez, J.A. Fernandez-Madrigal, "An alternative to the Mahalanobis distance for determining optimal correspondences in data association", IEEE Transactions on Robotics (T-RO), (2012) DOI: 10.1109/TRO.2012.2193706 Draft: http://mapir.isa.uma.es/~jlblanco/papers/blanco2012amd.pdf
+		  *  * J.L. Blanco, J. Gonzalez-Jimenez, J.A. Fernandez-Madrigal, "An alternative to the Mahalanobis distance for determining optimal correspondences in data association", IEEE Transactions on Robotics (T-RO), (2012) DOI: 10.1109/TRO.2012.2193706 Draft: http://ingmec.ual.es/~jlblanco/papers/blanco2012amd.pdf
 		  */
 		enum TDataAssociationMetric
 		{
@@ -99,11 +99,11 @@ namespace mrpt
 		  *		- JCBB: Joint Compatibility Branch & Bound [Neira, Tardos 2001]
 		  *
 		  *  With both a Mahalanobis-distance or Matching-likelihood metric. For a comparison of both methods, see paper:
-		  *  * J.L. Blanco, J. Gonzalez-Jimenez, J.A. Fernandez-Madrigal, "An alternative to the Mahalanobis distance for determining optimal correspondences in data association", IEEE Transactions on Robotics (T-RO), (2012) DOI: 10.1109/TRO.2012.2193706 Draft: http://mapir.isa.uma.es/~jlblanco/papers/blanco2012amd.pdf		  
+		  *  * J.L. Blanco, J. Gonzalez-Jimenez, J.A. Fernandez-Madrigal, "An alternative to the Mahalanobis distance for determining optimal correspondences in data association", IEEE Transactions on Robotics (T-RO), (2012) DOI: 10.1109/TRO.2012.2193706 Draft: http://ingmec.ual.es/~jlblanco/papers/blanco2012amd.pdf		  
 		  *
 		  * \param Z_observations_mean [IN] An MxO matrix with the M observations, each row containing the observation "mean".
 		  * \param Y_predictions_mean [IN] An NxO matrix with the N predictions, each row containing the mean of one prediction.
-		  * \param Y_predictions_cov [IN] An N·OxN·O matrix with the full covariance matrix of all the N predictions.
+		  * \param Y_predictions_cov [IN] An N*OxN*O matrix with the full covariance matrix of all the N predictions.
 		  * \param results [OUT] The output data association hypothesis, and other useful information.
 		  * \param method [IN, optional] The selected method to make the associations.
 		  * \param chi2quantile [IN, optional] The threshold for considering a match between two close Gaussians for two landmarks, in the range [0,1]. It is used to call mrpt::math::chi2inv
@@ -132,11 +132,11 @@ namespace mrpt
 		  *		- JCBB: Joint Compatibility Branch & Bound [Neira, Tardos 2001]
 		  *
 		  *  With both a Mahalanobis-distance or Matching-likelihood metric. For a comparison of both methods, see paper:
-		  *  * J.L. Blanco, J. Gonzalez-Jimenez, J.A. Fernandez-Madrigal, "An alternative to the Mahalanobis distance for determining optimal correspondences in data association", IEEE Transactions on Robotics (T-RO), (2012) DOI: 10.1109/TRO.2012.2193706 Draft: http://mapir.isa.uma.es/~jlblanco/papers/blanco2012amd.pdf		  
+		  *  * J.L. Blanco, J. Gonzalez-Jimenez, J.A. Fernandez-Madrigal, "An alternative to the Mahalanobis distance for determining optimal correspondences in data association", IEEE Transactions on Robotics (T-RO), (2012) DOI: 10.1109/TRO.2012.2193706 Draft: http://ingmec.ual.es/~jlblanco/papers/blanco2012amd.pdf		  
 		  *
 		  * \param Z_observations_mean [IN] An MxO matrix with the M observations, each row containing the observation "mean".
 		  * \param Y_predictions_mean [IN] An NxO matrix with the N predictions, each row containing the mean of one prediction.
-		  * \param Y_predictions_cov [IN] An N·OxO matrix: A vertical stack of N covariance matrix, one for each of the N prediction.
+		  * \param Y_predictions_cov [IN] An N*OxO matrix: A vertical stack of N covariance matrix, one for each of the N prediction.
 		  * \param results [OUT] The output data association hypothesis, and other useful information.
 		  * \param method [IN, optional] The selected method to make the associations.
 		  * \param chi2quantile [IN, optional] The threshold for considering a match between two close Gaussians for two landmarks, in the range [0,1]. It is used to call mrpt::math::chi2inv

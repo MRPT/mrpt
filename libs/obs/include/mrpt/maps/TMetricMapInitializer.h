@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -42,9 +42,8 @@ namespace mrpt
 			  *  - `<sectionNamePrefix>_insertOpts`
 			  *  - `<sectionNamePrefix>_likelihoodOpts`
 			  */
-			void  loadFromConfigFile(const mrpt::utils::CConfigFileBase  &source, const std::string &sectionNamePrefix);
-			/** Dump the options of the metric map in human-readable format */
-			void  dumpToTextStream(mrpt::utils::CStream	&out) const;
+			void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &sectionNamePrefix) MRPT_OVERRIDE; // See base docs
+			void dumpToTextStream(mrpt::utils::CStream &out) const MRPT_OVERRIDE; // See base docs
 
 			/** Query the map type (C++ class), as set by the factory method MapDefinition() */
 			const mrpt::utils::TRuntimeClassIdPtr & getMetricMapClassType() const { return metricMapClassType; }
@@ -289,12 +288,10 @@ namespace mrpt
 			  *
 			  * \note Examples of map definitions can be found in the '.ini' files provided in the demo directories: "share/mrpt/config-files/"
 			  */
-			void  loadFromConfigFile(
-				const mrpt::utils::CConfigFileBase  &source,
-				const std::string &sectionName);
+			void  loadFromConfigFile(const mrpt::utils::CConfigFileBase  &source,const std::string &sectionName) MRPT_OVERRIDE;
 
 			/** This method dumps the options of the multi-metric map AND those of every internal map. */
-			void  dumpToTextStream(mrpt::utils::CStream	&out) const;
+			void  dumpToTextStream(mrpt::utils::CStream	&out) const MRPT_OVERRIDE;
 		};
 
 

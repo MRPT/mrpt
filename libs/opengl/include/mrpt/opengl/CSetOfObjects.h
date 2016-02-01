@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -66,7 +66,7 @@ namespace mrpt
 
 			/** Render child objects.
 			  */
-			void  render() const;
+			void  render() const MRPT_OVERRIDE;
 
 			/** Clear the list of objects in the scene, deleting objects' memory.
 			  */
@@ -100,24 +100,18 @@ namespace mrpt
 			  */
 			void removeObject( const CRenderizablePtr &obj );
 
-			/** Retrieves a list of all objects in text form.
-			  */
+			/** Retrieves a list of all objects in text form  */
 			void dumpListOfObjects( mrpt::utils::CStringList  &lst );
 
-			/** Ray tracing
-			  */
-			virtual bool traceRay(const mrpt::poses::CPose3D &o,double &dist) const;
+			virtual bool traceRay(const mrpt::poses::CPose3D &o,double &dist) const MRPT_OVERRIDE;
 
-			virtual CRenderizable& setColor_u8(const mrpt::utils::TColor &c);
-			virtual CRenderizable& setColorR_u8(const uint8_t r);
-			virtual CRenderizable& setColorG_u8(const uint8_t g);
-			virtual CRenderizable& setColorB_u8(const uint8_t b);
-			virtual CRenderizable& setColorA_u8(const uint8_t a);
-
+			virtual CRenderizable& setColor_u8(const mrpt::utils::TColor &c) MRPT_OVERRIDE;
+			virtual CRenderizable& setColorR_u8(const uint8_t r) MRPT_OVERRIDE;
+			virtual CRenderizable& setColorG_u8(const uint8_t g) MRPT_OVERRIDE;
+			virtual CRenderizable& setColorB_u8(const uint8_t b) MRPT_OVERRIDE;
+			virtual CRenderizable& setColorA_u8(const uint8_t a) MRPT_OVERRIDE;
 			bool contains(const CRenderizablePtr &obj) const;
-
-			/** Evaluates the bounding box of this object (including possible children) in the coordinate frame of the object parent. */
-			virtual void getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const;
+			virtual void getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const MRPT_OVERRIDE;
 
 			/** @name pose_pdf -> 3d objects auxiliary templates
 			    @{ */

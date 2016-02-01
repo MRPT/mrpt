@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -233,9 +233,9 @@ namespace mrpt
 			inline CFeatureTracker_KL(mrpt::utils::TParametersDouble extraParams) : CGenericFeatureTracker(extraParams)	{ }
 
 		protected:
-			virtual void trackFeatures_impl(const mrpt::utils::CImage &old_img,const mrpt::utils::CImage &new_img,vision::CFeatureList &inout_featureList );
-			virtual void trackFeatures_impl(const mrpt::utils::CImage &old_img,const mrpt::utils::CImage &new_img,TSimpleFeatureList  &inout_featureList );
-			virtual void trackFeatures_impl(const mrpt::utils::CImage &old_img,const mrpt::utils::CImage &new_img,TSimpleFeaturefList  &inout_featureList );
+			virtual void trackFeatures_impl(const mrpt::utils::CImage &old_img,const mrpt::utils::CImage &new_img,vision::CFeatureList &inout_featureList ) MRPT_OVERRIDE;
+			virtual void trackFeatures_impl(const mrpt::utils::CImage &old_img,const mrpt::utils::CImage &new_img,TSimpleFeatureList  &inout_featureList ) MRPT_OVERRIDE;
+			virtual void trackFeatures_impl(const mrpt::utils::CImage &old_img,const mrpt::utils::CImage &new_img,TSimpleFeaturefList  &inout_featureList ) MRPT_OVERRIDE;
 
 		private:
 			template <typename FEATLIST>

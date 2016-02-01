@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -25,7 +25,7 @@ namespace mrpt
 	  *   all pure virtual and the desired virtual methods according to the documentation in this class.
 	  *
 	  * \sa CReactiveNavigationSystem, CAbstractReactiveNavigationSystem
-	  *  \ingroup mrpt_nav_grp
+	  *  \ingroup nav_reactive
 	  */
 	class NAV_IMPEXP CReactiveInterfaceImplementation
 	{
@@ -97,6 +97,7 @@ namespace mrpt
 	 *      - navigationStep() must be called periodically in order to effectively run the navigation. This method will internally call the callbacks to gather sensor data and robot positioning data.
 	 *
 	 * \sa CReactiveNavigationSystem, CReactiveInterfaceImplementation
+	 *  \ingroup nav_reactive
 	 */
 	class NAV_IMPEXP CAbstractReactiveNavigationSystem : public mrpt::utils::CDebugOutputCapable
 	{

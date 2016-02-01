@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -48,13 +48,8 @@ namespace obs
 				temperature()
 			{}
 
-			/** The pose of the sensors on the robot
-			  */
-			math::TPose3D			eNosePoseOnTheRobot;
-
-			/** The set of readings (in volts) from the array of sensors (size of "sensorTypes" is the same that the size of "readingsVoltage")
-			  */
-			std::vector<float>	readingsVoltage;
+			math::TPose3D      eNosePoseOnTheRobot;//!< The pose of the sensors on the robot
+			std::vector<float> readingsVoltage;//!< The set of readings (in volts) from the array of sensors (size of "sensorTypes" is the same that the size of "readingsVoltage")
 
 			/** The kind of sensors in the array (size of "sensorTypes" is the same that the size of "readingsVoltage")
 			  *  The meaning of values for types of sensors is as follows:
@@ -64,32 +59,19 @@ namespace obs
 			  *  0x2620 : Figaro TGS 2620
 			  *  0x4161 : Figaro TGS 4161
 			  */
-			vector_int		sensorTypes;
-
-			/** Must be true for "temperature" to contain a valid measurement
-			  */
-			bool			hasTemperature;
-
-			/** Sensed temperature in Celcius (valid if hasTemperature=true only)
-			  */
-			float			temperature;
-
-			/** True if the input to this chamber/enose is poluted air, False if clean air
-			  */
-			bool			isActive;
-
+			vector_int sensorTypes;
+			bool       hasTemperature;//!< Must be true for "temperature" to contain a valid measurement
+			float      temperature;//!< Sensed temperature in Celcius (valid if hasTemperature=true only)
+			bool       isActive;//!< True if the input to this chamber/enose is poluted air, False if clean air
 		};
 
-		/** One entry per e-nose on the robot.
-		  */
+		/** One entry per e-nose on the robot */
 		std::vector<TObservationENose>		m_readings;
 
 		// See base class docs
-		void getSensorPose( mrpt::poses::CPose3D &out_sensorPose ) const;
-		// See base class docs
-		void setSensorPose( const mrpt::poses::CPose3D &newSensorPose );
-		// See base class docs
-		virtual void getDescriptionAsText(std::ostream &o) const;
+		void getSensorPose( mrpt::poses::CPose3D &out_sensorPose ) const MRPT_OVERRIDE;
+		void setSensorPose( const mrpt::poses::CPose3D &newSensorPose ) MRPT_OVERRIDE;
+		void getDescriptionAsText(std::ostream &o) const MRPT_OVERRIDE;
 
 					/** Declares a class within "CObservationGasSensors" that represents a set of gas concentration readings from the modelation of a MOS gas sensor readings.
 					 * This class provides the parameters and functions to simulate the inverse model of a MOS gas sensor.
@@ -98,16 +80,13 @@ namespace obs
 					 */
 					class OBS_IMPEXP CMOSmodel
 					{
-
 					public:
-						/** Constructor
-						  */
+						/** Constructor  */
 						CMOSmodel();
 						~CMOSmodel();
 
 						/** @name MOS-model parameters
 						  *  @{  */
-
 						size_t        winNoise_size;              //!< The size of the mobile average window used to reduce noise on sensor reagings.
 						int           decimate_value;             //!< [useMOSmodel] The decimate frecuency applied after noise filtering
 						
@@ -171,7 +150,6 @@ namespace obs
 
 	}; // End of class def.
 	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CObservationGasSensors , CObservation, OBS_IMPEXP)
-
 
 	} // End of namespace
 } // End of namespace

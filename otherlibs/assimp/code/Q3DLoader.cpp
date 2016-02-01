@@ -545,7 +545,7 @@ outer:
 				else *norms =  m.normals[ face.indices[n] ];
 
 				// copy texture coordinates
-				if (uv && m.uv.size())
+				if (uv && !m.uv.empty())
 				{
 					if (m.prevUVIdx != 0xffffffff && m.uv.size() >= m.verts.size()) // workaround
 					{

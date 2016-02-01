@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -265,7 +265,7 @@ void MapBuilding_RBPF()
 
     if (SHOW_PROGRESS_IN_WINDOW)
     {
-		win3D = new CDisplayWindow3D("RBPF-SLAM @ MRPT C++ Library (C) 2004-2009", PROGRESS_WINDOW_WIDTH, PROGRESS_WINDOW_HEIGHT);
+		win3D = new CDisplayWindow3D("RBPF-SLAM @ MRPT C++ Library", PROGRESS_WINDOW_WIDTH, PROGRESS_WINDOW_HEIGHT);
 		win3D->setCameraZoom(40);
 		win3D->setCameraAzimuthDeg(-50);
 		win3D->setCameraElevationDeg(70);

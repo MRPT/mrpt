@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -16,6 +16,7 @@
 #include <mrpt/utils/printf_vector.h>
 #include <mrpt/utils/metaprogramming.h>
 #include <mrpt/utils/CFileOutputStream.h>
+#include <mrpt/utils/CMemoryStream.h>
 
 using namespace mrpt;
 using namespace mrpt::poses;
@@ -254,6 +255,27 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 	const bool fill_log_record = (m_logFile!=NULL || m_enableKeepLogRecords);
 	CLogFileRecord newLogRec;
 	newLogRec.infoPerPTG.resize(nPTGs);
+
+	// At the beginning of each log file, add an introductory block explaining which PTGs are we using:
+	{
+		static mrpt::utils::CStream  *prev_logfile = NULL;
+		if (m_logFile && m_logFile!=prev_logfile)  // Only the first time
+		{
+			prev_logfile=m_logFile;
+			for (size_t i=0;i<nPTGs;i++)
+			{
+				const mrpt::nav::CParameterizedTrajectoryGenerator* ptg = this->getPTG(i);
+				mrpt::utils::CMemoryStream memstr;
+				ptg->saveTrajectories(memstr);
+				memstr.Seek(0);
+				mrpt::nav::CParameterizedTrajectoryGeneratorPtr ptg_data = mrpt::nav::CParameterizedTrajectoryGeneratorPtr( new CPTG_Dummy );
+				ptg_data->loadTrajectories(memstr);
+
+				newLogRec.infoPerPTG[i].ptg_trajectory = ptg_data;
+			}
+		}
+	}
+
 
 	// Lock
 	mrpt::synch::CCriticalSectionLocker lock( &m_critZoneNavigating );
@@ -717,14 +739,31 @@ void CAbstractPTGBasedReactive::STEP5_PTGEvaluator(
 	}
 }
 
+void filter_max_vw(float &v, float &w, const float max_v, const float max_w)
+{
+	// Assure maximum speeds:
+	if (fabs(v) > max_v)
+	{
+		// Scale:
+		float F = fabs(max_v / v);
+		v *= F;
+		w *= F;
+	}
+
+	if (fabs(w) > max_w)
+	{
+		// Scale:
+		float F = fabs(max_w / w);
+		v *= F;
+		w *= F;
+	}
+}
+
+
 void CAbstractPTGBasedReactive::STEP7_GenerateSpeedCommands( const THolonomicMovement &in_movement)
 {
 	try
 	{
-
-		last_cmd_v = new_cmd_v;
-		last_cmd_w = new_cmd_w;
-
 		if (in_movement.speed == 0)
 		{
 			// The robot will stop:
@@ -748,29 +787,26 @@ void CAbstractPTGBasedReactive::STEP7_GenerateSpeedCommands( const THolonomicMov
 			new_cmd_v*=reduction;
 			new_cmd_w*=reduction;
 
-			// Assure maximum speeds:
-			if (fabs(new_cmd_v) > robotMax_V_mps)
-			{
-				// Scale:
-				float F = fabs(robotMax_V_mps / new_cmd_v);
-				new_cmd_v *= F;
-				new_cmd_w *= F;
-			}
-
-			if (fabs(new_cmd_w) > DEG2RAD(robotMax_W_degps))
-			{
-				// Scale:
-				float F = fabs((float)DEG2RAD(robotMax_W_degps) / new_cmd_w);
-				new_cmd_v *= F;
-				new_cmd_w *= F;
-			}
+			filter_max_vw(new_cmd_v, new_cmd_w,  robotMax_V_mps,DEG2RAD(robotMax_W_degps));
 
 			//First order low-pass filter
 			float alfa = meanExecutionPeriod/( meanExecutionPeriod + SPEEDFILTER_TAU);
-			new_cmd_v = alfa*new_cmd_v + (1-alfa)*last_cmd_v;
-			new_cmd_w = alfa*new_cmd_w + (1-alfa)*last_cmd_w;
+			if(fabs(new_cmd_v)<0.01) // i.e. new behavior is nearly a pure rotation
+			{                        // thus, it's OK to blend the rotational component
+				new_cmd_w = alfa*new_cmd_w + (1-alfa)*last_cmd_w;
+			}
+			else                     // there is a non-zero translational component
+			{
+				// must maintain the ratio of w to v (while filtering v)
+				float ratio = new_cmd_w / new_cmd_v;
+				new_cmd_v = alfa*new_cmd_v + (1-alfa)*last_cmd_v;   // blend new v value
+				new_cmd_w = ratio * new_cmd_v;  // ensure new w implements expected path curvature
 
+				filter_max_vw(new_cmd_v, new_cmd_w,  robotMax_V_mps,DEG2RAD(robotMax_W_degps));
+			}
 		}
+		last_cmd_v = new_cmd_v;
+		last_cmd_w = new_cmd_w;
 		m_timelogger.leave("navigationStep.STEP7_NonHolonomicMovement");
 	}
 	catch (std::exception &e)

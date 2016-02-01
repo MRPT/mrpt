@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -33,15 +33,15 @@ void CUndistortMap::setFromCamParams(const mrpt::utils::TCamera &campar)
 	m_camera_params = campar;
 
 	// Convert to opencv's format:
-	double aux1[3][3], aux2[1][4];
+	double aux1[3][3], aux2[1][5];
 	for (int i=0;i<3;i++)
 	for (int j=0;j<3;j++)
 	aux1[i][j] = campar.intrinsicParams(i,j);
-	for (int i=0;i<4;i++)
+	for (int i=0;i<5;i++)
 	aux2[0][i]=campar.dist[i];
 
 	const cv::Mat inMat( 3,3, CV_64F, aux1 );
-	const cv::Mat distM( 1, 4, CV_64F, aux2 );
+	const cv::Mat distM( 1, 5, CV_64F, aux2 );
 
 	m_dat_mapx.resize(2*campar.nrows*campar.ncols);
 	m_dat_mapy.resize(campar.nrows*campar.ncols);

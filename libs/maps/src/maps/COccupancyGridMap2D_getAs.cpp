@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -10,6 +10,7 @@
 #include "maps-precomp.h" // Precomp header
 
 #include <mrpt/maps/COccupancyGridMap2D.h>
+#include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/system/os.h>
 #include <mrpt/utils/round.h>
 #include <mrpt/opengl/CSetOfObjects.h>
@@ -190,3 +191,29 @@ void  COccupancyGridMap2D::getAs3DObject(mrpt::opengl::CSetOfObjectsPtr	&outSetO
 	MRPT_END
 }
 
+
+
+/** Get a point cloud with all (border) occupied cells as points */
+void COccupancyGridMap2D::getAsPointCloud( mrpt::maps::CSimplePointsMap &pm, const float occup_threshold ) const
+{
+	pm.clear();
+	pm.reserve(1000);
+
+	// for all rows in the gridmap
+	for (size_t i=1; i+1<size_x; i++)
+	{
+		// for all columns in the gridmap
+		for (size_t j=1; j+1<size_y; j++) 
+		{
+			//if there is an obstacle and *it is a borderline*:
+			bool is_surrounded = true;
+			for (int di=-1;di<=1 && is_surrounded;di++)
+				for (int dj=-1;dj<=1  && is_surrounded;dj++)
+					if ((di!=0 || dj!=0) && getCell(i+di,j+dj)>occup_threshold)
+						is_surrounded=false;
+
+			if (getCell(i,j)<occup_threshold && !is_surrounded)
+				pm.insertPoint(idx2x(i), idx2y(j));
+		}
+	}
+}

@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -197,7 +197,7 @@ namespace opengl	{
 			}
 		};
 
-		void getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const;
+		void getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const MRPT_OVERRIDE;
 
 	protected:
 		void updateMesh() const; //!< Updates the mesh, if needed. It's a const method, but modifies mutable content.
@@ -246,12 +246,12 @@ namespace opengl	{
 		  * Renderizes the object.
 		  * \sa mrpt::opengl::CRenderizable
 		  */
-		virtual void render_dl() const;
+		virtual void render_dl() const MRPT_OVERRIDE;
 		/**
 		  * Traces a ray to the object, returning the distance to a given pose through its X axis.
 		  * \sa mrpt::opengl::CRenderizable,trace2DSetOfRays,trace1DSetOfRays
 		  */
-		virtual bool traceRay(const mrpt::poses::CPose3D &o,double &dist) const;
+		bool traceRay(const mrpt::poses::CPose3D &o,double &dist) const MRPT_OVERRIDE;
 		/**
 		  * Sets the pitch bounds for this range.
 		  */
@@ -382,7 +382,7 @@ namespace opengl	{
 		template<class T> static void trace1DSetOfRays(const T &e,const mrpt::poses::CPose3D &initial,mrpt::obs::CObservation2DRangeScan &obs,const TDoubleRange &yaws)	{
 			std::vector<double> yValues;
 			yaws.values(yValues);
-			std::vector<double> scanValues;
+			std::vector<float> scanValues;
 			std::vector<char> valid;
 			size_t nV=yaws.amount();
 			scanValues.reserve(nV);

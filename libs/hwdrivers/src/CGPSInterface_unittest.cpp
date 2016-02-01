@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -26,9 +26,10 @@ TEST(CGPSInterface, NMEA_parser)
 		EXPECT_TRUE(parse_ret) << "Failed parse of: " << test_cmd << endl;
 
 		EXPECT_TRUE(obsGPS.has_GGA_datum);
-		EXPECT_NEAR(obsGPS.GGA_datum.latitude_degrees, 36+49.76162994/60.0,1e-10);
-		EXPECT_NEAR(obsGPS.GGA_datum.longitude_degrees, -(002+24.53709052/60.0),1e-10);
-		EXPECT_NEAR(obsGPS.GGA_datum.altitude_meters, 9.3,1e-10);
+		const mrpt::obs::gnss::Message_NMEA_GGA &gga = obsGPS.getMsgByClass<mrpt::obs::gnss::Message_NMEA_GGA>();
+		EXPECT_NEAR(gga.fields.latitude_degrees, 36+49.76162994/60.0,1e-10);
+		EXPECT_NEAR(gga.fields.longitude_degrees, -(002+24.53709052/60.0),1e-10);
+		EXPECT_NEAR(gga.fields.altitude_meters, 9.3,1e-10);
 	}
 
 	// Test with an empty frame:

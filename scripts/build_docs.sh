@@ -171,11 +171,6 @@ cp images/*.* html/
 cp html_postbuild/*.* html/
 
 # Build & copy PDF manuals:
-cd srba-guide
-make 2> /dev/null
-mv *.pdf ..
-cd ..
-
 cd pbmap-guide
 make 2> /dev/null
 mv *.pdf ..
@@ -270,6 +265,5 @@ cd ..
 
 # Keep a valid command at the end to assure that ERRORLEVEL is "0" when executing the script in Windows
 printf "Done!\n\n"
-
 
 

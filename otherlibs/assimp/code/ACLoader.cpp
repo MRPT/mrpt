@@ -438,9 +438,9 @@ aiNode* AC3DImporter::ConvertObjectSection(Object& object,
 {
 	aiNode* node = new aiNode();
 	node->mParent = parent;
-	if (object.vertices.size())
+	if (!object.vertices.empty())
 	{
-		if (!object.surfaces.size() || !object.numRefs)
+		if (object.surfaces.empty() || !object.numRefs)
 		{
 			/* " An object with 7 vertices (no surfaces, no materials defined). 
 			     This is a good way of getting point data into AC3D. 
@@ -721,7 +721,7 @@ aiNode* AC3DImporter::ConvertObjectSection(Object& object,
 	}
 
 	// add children to the object
-	if (object.children.size())
+	if (!object.children.empty())
 	{
 		node->mNumChildren = (unsigned int)object.children.size();
 		node->mChildren = new aiNode*[node->mNumChildren];
@@ -856,7 +856,7 @@ void AC3DImporter::InternReadFile( const std::string& pFile,
 
 	// copy lights
 	pScene->mNumLights = (unsigned int)lights.size();
-	if (lights.size())
+	if (!lights.empty())
 	{
 		pScene->mLights = new aiLight*[lights.size()];
 		::memcpy(pScene->mLights,&lights[0],lights.size()*sizeof(void*));

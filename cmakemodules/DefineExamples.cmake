@@ -309,6 +309,7 @@ IF(BUILD_EXAMPLES)
 			openNI2_RGBD_demo
 			openNI2_proximity_demo
 			openNI2_driver_demo
+			openNI2_2d-icp-slam
 			openNI2_to_rawlog)
 			
 		SET(CMAKE_EXAMPLE_DEPS mrpt-base mrpt-hwdrivers mrpt-gui mrpt-opengl mrpt-maps)
@@ -316,11 +317,6 @@ IF(BUILD_EXAMPLES)
 		GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
 	ENDIF(MRPT_HAS_OPENNI2)
 	
-	# === SRBA examples ===
-	IF(BUILD_mrpt-srba)
-		ADD_SAMPLES_DIRECTORY(srba-examples)
-	ENDIF(BUILD_mrpt-srba)
-
 	# === PbMap examples ===
 	IF(BUILD_mrpt-pbmap)
 		ADD_SAMPLES_DIRECTORY(pbmap-examples)

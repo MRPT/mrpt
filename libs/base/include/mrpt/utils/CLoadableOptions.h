@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -87,11 +87,8 @@ namespace utils
 		  */
 		virtual void  dumpToTextStream(mrpt::utils::CStream	&out) const;
 
-        /** Virtual destructor
-          */
-        virtual ~CLoadableOptions()
-		{
-		}
+		/** Virtual destructor */
+		virtual ~CLoadableOptions() { }
 
 	}; // End of class def.
 

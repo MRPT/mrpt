@@ -66,9 +66,11 @@ SET(MRPT_LINKER_LIBS "")
 
 # ----- Useful macros ------
 include(cmakemodules/UtilsMacros.cmake REQUIRED)
+include(cmakemodules/DebugMacros.cmake REQUIRED)
 include(cmakemodules/FilterFileLists.cmake REQUIRED)
 include(cmakemodules/MRPTPCHSupport.cmake REQUIRED)
 include(cmakemodules/DeclareMRPTLib.cmake REQUIRED)
+include(cmakemodules/DeclareMEXLib.cmake REQUIRED)
 include(cmakemodules/DeclareAppDependencies.cmake REQUIRED)
 # --------------------------
 
@@ -172,6 +174,10 @@ ENDIF(BUILD_ROBOPEAK_LIDAR)
 SET(BUILD_HWDRIVERS ON CACHE BOOL "Build hardware drivers (library apps/lib_hwdrivers)?.")
 MARK_AS_ADVANCED(BUILD_HWDRIVERS)
 
+#-----------------------------------
+#  Build with MRPT-MEX compatibility?
+#-----------------------------------
+SET(BUILD_MATLAB OFF CACHE BOOL "Build with compatibility options for MEX wrapper?.")
 
 # GCC only:
 # ===================================================
@@ -266,12 +272,20 @@ include(cmakemodules/script_xsens.cmake REQUIRED)      # XSens Motion trackers /
 include(cmakemodules/script_flycapture2.cmake REQUIRED)# Check for PointGreyResearch (PGR) FlyCapture2 library
 include(cmakemodules/script_triclops.cmake REQUIRED)	# Check for PointGreyResearch (PGR) Triclops library
 include(cmakemodules/script_duo3d.cmake REQUIRED)		# Support for DUO3D Camera
+include(cmakemodules/script_matlab.cmake REQUIRED)	# Support for Matlab MEX functions generation
+include(cmakemodules/script_isense.cmake REQUIRED)		# Support for INTERSENSE Sensors
+include(cmakemodules/script_nite2.cmake REQUIRED)		# Check for NITE2 library
+include(cmakemodules/script_yamlcpp.cmake REQUIRED)		# Check for YAMLCPP library
+include(cmakemodules/script_pcap.cmake REQUIRED)        # Check for the libpcap library
+
 # ---------------------------------------------------------------------------
 #			OPTIONS
 #The options for the user when using "cmakesetup" or "ccmake":
 # ---------------------------------------------------------------------------
 OPTION(MRPT_ALWAYS_CHECKS_DEBUG "Additional checks even in Release" "OFF")
+MARK_AS_ADVANCED(FORCE MRPT_ALWAYS_CHECKS_DEBUG)
 OPTION(MRPT_ALWAYS_CHECKS_DEBUG_MATRICES "Additional checks even in Release (Only in matrix classes)" "OFF")
+MARK_AS_ADVANCED(FORCE MRPT_ALWAYS_CHECKS_DEBUG_MATRICES)
 
 # ---------------------------------------------------------------------------
 # Create the minimum list of libraries required by an application that
@@ -344,7 +358,7 @@ SET(USER_EXTRA_CPP_FLAGS "" CACHE STRING "Put extra compiler options here if des
 # ----------------------------------------------------------------------------
 # 			Set the maximum level of warnings:
 # ----------------------------------------------------------------------------
-SET( MRPT_EXTRA_WARNINGS OFF CACHE BOOL "Enable extra warnings apart from -Wall")
+SET( MRPT_EXTRA_WARNINGS ON CACHE BOOL "Enable extra warnings apart from -Wall")
 MARK_AS_ADVANCED(MRPT_EXTRA_WARNINGS)
 
 # Should be set to true for development
@@ -357,12 +371,9 @@ MARK_AS_ADVANCED(MRPT_WHOLE_PROGRAM_OPTIMIZATION)
 
 # Even more warnings for different compilers
 IF(MRPT_EXTRA_WARNINGS)
-   #TODO - Add options for MSVC
-   IF (${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
-      SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wreturn-type -Wextra") # -Wold-style-cast  -Woverloaded-virtual
-   ELSEIF(${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
-		SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wextra")
-	ENDIF()
+   IF (${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU" OR ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
+      SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wreturn-type -Wextra -Wno-unused-parameter") # -Wold-style-cast  -Woverloaded-virtual
+   ENDIF(${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU" OR ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
 ENDIF(MRPT_EXTRA_WARNINGS)
 
 # Enable profiling?
@@ -386,9 +397,7 @@ IF(MSVC)
 	IF(MRPT_WHOLE_PROGRAM_OPTIMIZATION)
 		SET(EXTRA_CPP_FLAGS "${EXTRA_CPP_FLAGS} /GL")
 		SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /LTCG ")
-		#SET(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /LTCG ")
 		SET(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} /LTCG ")
-		#SET(CMAKE_MODULE_LINKER_FLAGS_RELEASE "${CMAKE_MODULE_LINKER_FLAGS_RELEASE} /LTCG ")
 		SET(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} /LTCG ")
 	ENDIF(MRPT_WHOLE_PROGRAM_OPTIMIZATION)
 
@@ -416,15 +425,7 @@ ENDIF(MSVC)
 # GNU GCC options ================================
 IF(CMAKE_COMPILER_IS_GNUCXX)
 	# Wall & pedantic?
-	IF(APPLE)
-		SET(MRPT_BUILD_GCC_PEDANTIC_DEFAULT "OFF")
-	ELSE(APPLE)
-		SET(MRPT_BUILD_GCC_PEDANTIC_DEFAULT "ON")
-
-
-
-	ENDIF(APPLE)
-
+	SET(MRPT_BUILD_GCC_PEDANTIC_DEFAULT "OFF")
 	SET( MRPT_BUILD_GCC_PEDANTIC ${MRPT_BUILD_GCC_PEDANTIC_DEFAULT} CACHE BOOL "Enable pedantic error detection (with GCC only)")
 	MARK_AS_ADVANCED(MRPT_BUILD_GCC_PEDANTIC)
 
@@ -444,7 +445,8 @@ IF(CMAKE_COMPILER_IS_GNUCXX)
 
 	IF(MRPT_BUILD_GCC_PEDANTIC)
 		SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pedantic")
- 		SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -pedantic")
+		# No need to be pendantic in old C files, most of them from 3rd parties anyway...
+ 		#SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -pedantic")
 	ENDIF(MRPT_BUILD_GCC_PEDANTIC)
 
 	# Enable C++11 features in GCC 4.7+
@@ -601,7 +603,6 @@ IF(CMAKE_COMPILER_IS_GNUCXX AND NOT APPLE)
 	#SET(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--as-needed")
 ENDIF(CMAKE_COMPILER_IS_GNUCXX AND NOT APPLE)
 
-
 IF($ENV{VERBOSE})
 	MESSAGE(STATUS "Final CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
 	MESSAGE(STATUS "Final CMAKE_EXE_LINKER_FLAGS: ${CMAKE_EXE_LINKER_FLAGS}")
@@ -612,6 +613,8 @@ ENDIF($ENV{VERBOSE})
 # Save libs and executables in the same place
 SET( LIBRARY_OUTPUT_PATH ${MRPT_BINARY_DIR}/lib CACHE PATH "Output directory for libraries" )
 SET( EXECUTABLE_OUTPUT_PATH ${MRPT_BINARY_DIR}/bin CACHE PATH "Output directory for applications" )
+SET( MEX_LIBRARY_OUTPUT_PATH ${MRPT_BINARY_DIR}/mex/+mrpt CACHE PATH "Output directory for mex functions" )
+SET( MEX_EXECUTABLE_OUTPUT_PATH ${MRPT_BINARY_DIR}/mex/test CACHE PATH "Output directory for executable mexs" )
 
 #--------------------------------------------------------------
 # If we are building the final step of the Debian package,
@@ -630,12 +633,14 @@ IF(CMAKE_MRPT_USE_DEB_POSTFIXS)
 
 	SET(mrpt_apps_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}/mrpt-apps/usr/")
 	SET(mrpt_doc_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}/mrpt-doc/usr/")
+	SET(mrpt_common_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}/mrpt-common/usr/")
 	SET(mrpt_pkgconfig_INSTALL_PREFIX "/usr")	# Values when building a Debian package
 ELSE(CMAKE_MRPT_USE_DEB_POSTFIXS)
 	# Values under normal conditions -----------------------
 	SET(libmrpt_dev_INSTALL_PREFIX "")
 	SET(mrpt_apps_INSTALL_PREFIX "")
 	SET(mrpt_doc_INSTALL_PREFIX "")
+	SET(mrpt_common_INSTALL_PREFIX "")
 	SET(mrpt_pkgconfig_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}") 	# Values under normal conditions
 ENDIF(CMAKE_MRPT_USE_DEB_POSTFIXS)
 
@@ -661,6 +666,10 @@ SET( BUILD_APPLICATIONS ON CACHE BOOL "If you only want the MRPT libraries, disa
 IF(BUILD_APPLICATIONS)
 	add_subdirectory(apps)    # The applications:
 ENDIF(BUILD_APPLICATIONS)
+
+IF(BUILD_MATLAB)
+        add_subdirectory(mex/apps)# The MEX applications
+ENDIF(BUILD_MATLAB)
 
 # Documentation targets (must be AFTER "apps" because it uses the aux program "mrpt-perfdata2html")
 add_subdirectory(doc)

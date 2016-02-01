@@ -2,7 +2,7 @@
 |                     Mobile Robot Programming Toolkit (MRPT)               |
 |                          http://www.mrpt.org/                             |
 |                                                                           |
-| Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+| Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
 | See: http://www.mrpt.org/Authors - All rights reserved.                   |
 | Released under BSD License. See details in http://www.mrpt.org/License    |
 +---------------------------------------------------------------------------+ */
@@ -176,8 +176,8 @@ namespace mrpt
 			// , but: it's actually a subset of the full Jacobian, since the non-predicted
 			//  features do not appear.
 			//
-			//  dh_dx: O·M x V+M·F
-			//      S: O·M x O·M
+			//  dh_dx: O*M x V+M*F
+			//      S: O*M x O*M
 			//  M = |predictLMidxs|
 			//  O=size of each observation.
 			//  F=size of features in the map
@@ -523,15 +523,17 @@ namespace mrpt
 
 									// aux_K_dh_dx  <-- I-aux_K_dh_dx
 									const size_t stat_len = aux_K_dh_dx.getColCount();
-									for (size_t r=0;r<stat_len;r++)
-										for (size_t c=0;c<stat_len;c++)
+									for (size_t r=0;r<stat_len;r++) {
+										for (size_t c=0;c<stat_len;c++) {
 											if (r==c)
 												aux_K_dh_dx.get_unsafe(r,c)=-aux_K_dh_dx.get_unsafe(r,c) + kftype(1);
 											else aux_K_dh_dx.get_unsafe(r,c)=-aux_K_dh_dx.get_unsafe(r,c);
+										}
+									}
 
-											m_pkk.multiply_result_is_symmetric(aux_K_dh_dx, m_pkk );
+									m_pkk.multiply_result_is_symmetric(aux_K_dh_dx, m_pkk );
 
-											m_timLogger.leave("KF:8.update stage:3.FULLKF:update Pkk");
+									m_timLogger.leave("KF:8.update stage:3.FULLKF:update Pkk");
 								}
 							} // end for each IKF iteration
 						}

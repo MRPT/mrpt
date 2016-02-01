@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -12,6 +12,9 @@
 #include <mrpt/poses/CPose.h>
 #include <mrpt/math/CMatrixFixedNumeric.h>
 #include <mrpt/math/CQuaternion.h>
+
+// Add for declaration of mexplus::from template specialization
+DECLARE_MEXPLUS_FROM( mrpt::poses::CPose3D )
 
 namespace mrpt
 {
@@ -70,6 +73,9 @@ namespace poses
 	{
 		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE( CPose3D )
+
+        // This must be added for declaration of MEX-related functions
+        DECLARE_MEX_CONVERSION
 
 	public:
 		mrpt::math::CArrayDouble<3>   m_coords; //!< The translation vector [x,y,z] access directly or with x(), y(), z() setter/getter methods.
@@ -498,7 +504,7 @@ namespace poses
 
 		/** @} */
 
-		void setToNaN();
+		void setToNaN() MRPT_OVERRIDE;
 
 		typedef CPose3D  type_value; //!< Used to emulate CPosePDF types, for example, in mrpt::graphs::CNetworkOfPoses
 		enum { is_3D_val = 1 };

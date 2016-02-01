@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -230,7 +230,7 @@ void CCameraSensor::initialize()
 	else if (m_grabber_type=="openni2")
 	{
 		cout << "[CCameraSensor::initialize] OpenNI2 sensor...\n";
-    m_cap_openni2 = new COpenNI2Sensor();
+        m_cap_openni2 = new COpenNI2Sensor();
 		m_cap_openni2->enableGrab3DPoints( m_kinect_save_3d ); // It uses the same options as the Kinect grabber
 		m_cap_openni2->enableGrabDepth ( m_kinect_save_range_img );
 		m_cap_openni2->enableGrabRGB( m_kinect_save_intensity_img );
@@ -693,6 +693,26 @@ void CCameraSensor::getNextFrame( vector<CSerializablePtr> & out_obs )
 		}
 		else capture_ok = true;
 	}
+    else if (m_cap_openni2)
+    {
+        obs3D = CObservation3DRangeScan::Create();
+        // Specially at start-up, there may be a delay grabbing so a few calls return false: add a timeout.
+        const mrpt::system::TTimeStamp t0 = mrpt::system::now();
+        double max_timeout = 3.0; // seconds
+        bool there_is_obs, hardware_error;
+        do
+        {
+            m_cap_openni2->getNextObservation(*obs3D, there_is_obs, hardware_error);
+            if (!there_is_obs) mrpt::system::sleep(1);
+        } while (!there_is_obs && mrpt::system::timeDifference(t0,mrpt::system::now())<max_timeout);
+
+        if (!there_is_obs || hardware_error)
+        {	// Error
+            m_state = CGenericSensor::ssError;
+            THROW_EXCEPTION("Error grabbing image from OpenNI2 camera.");
+        }
+        else capture_ok = true;
+    }
 	else if (m_cap_bumblebee)
 	{
 		stObs = CObservationStereoImages::Create();
@@ -1049,6 +1069,7 @@ void CCameraSensor::getNextFrame( vector<CSerializablePtr> & out_obs )
 			}
 		} // end else
 	}
+
 	// Show preview??
 	if (m_preview_decimation>0)
 	{	// Yes
@@ -1130,9 +1151,11 @@ void CCameraSensor::getNextFrame( vector<CSerializablePtr> & out_obs )
 			}
 		}
 	} // end show preview
+
 	if (delayed_insertion_in_obs_queue)
 	{
-		if( m_cap_duo3d && m_cap_duo3d->captureIMUIsSet() && obsIMU )	out_obs.push_back( CObservationPtr(obsIMU) );
+		if( m_cap_duo3d && m_cap_duo3d->captureIMUIsSet() && obsIMU )	
+			out_obs.push_back( CObservationPtr(obsIMU) );
 	}
 	else
 	{

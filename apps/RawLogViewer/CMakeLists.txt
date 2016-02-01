@@ -9,8 +9,7 @@ INCLUDE(../../cmakemodules/AssureCMakeRootFile.cmake) # Avoid user mistake in CM
 #-----------------------------------------------------------------
 PROJECT(RawLogViewer)
 
-IF(wxWidgets_FOUND)
-
+IF(CMAKE_MRPT_HAS_WXWIDGETS)
 	# ---------------------------------------------
 	# TARGET:
 	# ---------------------------------------------
@@ -76,11 +75,11 @@ IF(wxWidgets_FOUND)
 	AppStartMenuLink(${TMP_TARGET_NAME} "RawLog (dataset) viewer")   # Add link to the Start menu (in Windows Installable packages)
 
 
-ELSE(wxWidgets_FOUND)
+ELSE()
 	# ----------------------------------------------------------------------------------
 	# For convenience. When we cannot continue, inform the user
 	# ----------------------------------------------------------------------------------
     MESSAGE(STATUS "wxWidgets not found!: **This target will not be included in the Makefiles**")
-ENDIF(wxWidgets_FOUND)
+ENDIF()
 
 

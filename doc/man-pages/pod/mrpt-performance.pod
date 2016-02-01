@@ -14,7 +14,7 @@ are dumped as an HTML document.
 
 =head1 BUGS
 
-Please report bugs at https://github.com/jlblancoc/mrpt/issues
+Please report bugs at https://github.com/MRPT/mrpt/issues
 
 =head1 SEE ALSO
 

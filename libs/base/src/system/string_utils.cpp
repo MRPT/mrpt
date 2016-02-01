@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -184,61 +184,65 @@ char *mrpt::system::strtok( char *str, const char *strDelimit, char **context ) 
 #endif
 }
 
-/*---------------------------------------------------------------
-						tokenize
----------------------------------------------------------------*/
-void  mrpt::system::tokenize(
-	const std::string			&inString,
-	const std::string			&inDelimiters,
-	std::deque<std::string>	&outTokens ) MRPT_NO_THROWS
+template <class CONTAINER>
+void  my_tokenize(
+	const std::string  & inString,
+	const std::string  & inDelimiters,
+	CONTAINER &outTokens,
+	bool skipBlankTokens) MRPT_NO_THROWS
 {
-#ifndef HAVE_STRTOK_R
-    static mrpt::synch::CCriticalSection cs;
-    mrpt::synch::CCriticalSectionLocker lock(&cs);
-#endif
-
-	char	*nextTok,*context;
-
 	outTokens.clear();
-
-	char *dupStr = ::strdup(inString.c_str());
-
-	nextTok = strtok (dupStr,inDelimiters.c_str(),&context);
-	while (nextTok != NULL)
+	
+	const size_t len = inString.size();
+	bool prev_was_delim = true;
+	std::string cur_token;
+	for (size_t pos=0; pos<=len ; pos++) // the "<=" is intentional!!
 	{
-		outTokens.push_back( std::string(nextTok) );
-		nextTok = strtok (NULL,inDelimiters.c_str(),&context);
+		char c='\0';
+		bool cur_is_delim;
+		if (pos==len) 
+		{
+			// end of string.
+			cur_is_delim = true;
+		} else 
+		{
+			// Regular string char:
+			c= inString[pos];
+			cur_is_delim = (inDelimiters.find(c)!=string::npos);
+		}
+		if (cur_is_delim) 
+		{
+			if (prev_was_delim) {
+				if (!skipBlankTokens)
+					outTokens.push_back( std::string() );
+			}
+			else {
+				outTokens.push_back( cur_token );
+			}
+			cur_token.clear();
+		} else {
+			cur_token.push_back(c);
+		}
+		prev_was_delim = cur_is_delim;
 	}
-
-	free(dupStr);
 }
 
-/*---------------------------------------------------------------
-						tokenize
----------------------------------------------------------------*/
 void  mrpt::system::tokenize(
 	const std::string			&inString,
 	const std::string			&inDelimiters,
-	std::vector<std::string>	&outTokens ) MRPT_NO_THROWS
+	std::deque<std::string>	&outTokens,
+	bool skipBlankTokens) MRPT_NO_THROWS
 {
-#ifndef HAVE_STRTOK_R
-    static mrpt::synch::CCriticalSection cs;
-    mrpt::synch::CCriticalSectionLocker lock(&cs);
-#endif
+	my_tokenize(inString,inDelimiters,outTokens,skipBlankTokens);
+}
 
-	char	*nextTok,*context;
-
-	outTokens.clear();
-	char *dupStr = ::strdup(inString.c_str());
-
-	nextTok = strtok (dupStr,inDelimiters.c_str(),&context);
-	while (nextTok != NULL)
-	{
-		outTokens.push_back( std::string(nextTok) );
-		nextTok = strtok (NULL,inDelimiters.c_str(),&context);
-	};
-
-	free(dupStr);
+void  mrpt::system::tokenize(
+	const std::string			&inString,
+	const std::string			&inDelimiters,
+	std::vector<std::string>	&outTokens,
+	bool skipBlankTokens) MRPT_NO_THROWS
+{
+	my_tokenize(inString,inDelimiters,outTokens,skipBlankTokens);
 }
 
 /*---------------------------------------------------------------

@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -30,9 +30,9 @@ std::map<const mrpt::hwdrivers::TCaptureOptions_DUO3D*,TDUOParams> duo_params;
 // duo3d header files
 #if MRPT_HAS_DUO3D
 #	include <DUOLib.h>
-#	ifdef _MSC_VER  // this pragma only works for MSVC:
-#		pragma comment(lib, "DUOLib.lib")
-#	endif
+//#	ifdef _MSC_VER  // this pragma only works for MSVC:
+//#		pragma comment(lib, "DUOLib.lib")
+//#	endif
 #endif
 MRPT_TODO("FIXME: Try to remove the pragma lib above ==> TARGET_LINK_LIBRARIES() in hwdrivers/CMakeLists.txt, so it can work seamlessly on Linux in the future")
 
@@ -49,8 +49,6 @@ using namespace mrpt::poses;
 using namespace mrpt::obs;
 using namespace mrpt::hwdrivers;
 
-MRPT_TODO("FIXME: Put #if MRPT_HAS_OPENCV around any function using cv::Mat, if cv::Mat is to be definitive (=> Eigen?)")
-
 // opencv header files and namespaces
 #if MRPT_HAS_OPENCV
 	using namespace cv;
@@ -62,7 +60,7 @@ TCaptureOptions_DUO3D::TCaptureOptions_DUO3D() :
 	m_fps(30),
 	m_exposure(50),
 	m_led(25),
-	m_gain(10),
+	m_gain(0),
 	m_capture_imu(false),
 	m_capture_rectified(false),
 	m_calibration_from_file(true),
@@ -351,16 +349,23 @@ void CDUO3DCamera::open( const TCaptureOptions_DUO3D & options, const bool start
 
 				this->m_options.m_capture_rectified = res == TCaptureOptions_DUO3D::yrr_OK;
 
-				const size_t area = this->m_options.dp.m_rectify_map_left_x.size().area();
+				//const size_t area = this->m_options.dp.m_rectify_map_left_x.size().area();
+				TDUOParams & dp = duo_params[&(this->m_options)];
+				const size_t area = dp.m_rectify_map_left_x.size().area();
 				vector<int16_t> v_left_x(area), v_right_x(area);
 				vector<uint16_t> v_left_y(area), v_right_y(area);
 
 				for( size_t k = 0; k < area; ++k )
 				{
-					v_left_x[k] = this->m_options.dp.m_rectify_map_left_x.at<int16_t>(k);
-					v_left_y[k] = this->m_options.dp.m_rectify_map_left_y.at<uint16_t>(k);
-					v_right_x[k] = this->m_options.dp.m_rectify_map_right_x.at<int16_t>(k);
-					v_right_y[k] = this->m_options.dp.m_rectify_map_right_y.at<uint16_t>(k);
+					v_left_x[k] = dp.m_rectify_map_left_x.at<int16_t>(k);
+					v_left_y[k] = dp.m_rectify_map_left_y.at<uint16_t>(k);
+					v_right_x[k] = dp.m_rectify_map_right_x.at<int16_t>(k);
+					v_right_y[k] = dp.m_rectify_map_right_y.at<uint16_t>(k);
+
+					//v_left_x[k] = this->m_options.dp.m_rectify_map_left_x.at<int16_t>(k);
+					//v_left_y[k] = this->m_options.dp.m_rectify_map_left_y.at<uint16_t>(k);
+					//v_right_x[k] = this->m_options.dp.m_rectify_map_right_x.at<int16_t>(k);
+					//v_right_y[k] = this->m_options.dp.m_rectify_map_right_y.at<uint16_t>(k);
 				}
 				m_rectify_map.setFromCamParams( this->m_options.m_stereo_camera );
 				//m_rectify_map.setRectifyMaps( v_left_x, v_left_y, v_right_x, v_right_y );

@@ -10,7 +10,7 @@
 #     or
 #    FIND_PACKAGE( MRPT REQUIRED base vision hwdrivers ... )
 #
-#    TARGET_LINK_LIBRARIES(MY_TARGET_NAME ${MRPT_LIBS})
+#    TARGET_LINK_LIBRARIES(MY_TARGET_NAME ${MRPT_LIBRARIES})
 #
 #   
 #   The libraries or "modules" which can be included are
@@ -22,8 +22,11 @@
 #     - hmtslam        --> libmrpt-hmtslam
 #
 #   This file will define the following variables:
-#    - MRPT_LIBS: The list of libraries to links against.
-#    - MRPT_VERSION: The MRPT version (e.g. "1.0.0"). 
+#    - MRPT_LIBRARIES        : The list of libraries to links against.
+#    - MRPT_LIBS             : Like MRPT_LIBRARIES, for backward compat.
+#    - MRPT_INCLUDE_DIRS     : The list of include directories
+#    - MRTP_LINK_DIRECTORIES : The list of link directories
+#    - MRPT_VERSION          : The MRPT version (e.g. "1.0.0"). 
 #    - MRPT_VERSION_{MAJOR,MINOR,PATCH}: 3 variables for the version parts
 #
 #   Optional input variables:
@@ -55,12 +58,19 @@ SET(MRPT_CONFIG_DIR "@THE_MRPT_CONFIG_FILE_INCLUDE_DIR@")
 
 #MESSAGE(STATUS "MRPT_FIND_COMPONENTS: ${MRPT_FIND_COMPONENTS}")
 
+# MRPT include directories
+SET(MRPT_INCLUDE_DIRS "@THE_INCLUDE_DIRECTORIES@")
+
+# MRPT library directories
+SET(MRPT_LINK_DIRECTORIES "@THE_LINK_DIRECTORIES@")
+
 # ======================================================
 # Include directories where Eigen3 headers are... if 
 #  they are not embedded under mrpt-base headers:
 # ======================================================
 IF (NOT @MRPT_CONFIGFILE_IS_INSTALL@ OR NOT @EIGEN_USE_EMBEDDED_VERSION_BOOL@)
 	INCLUDE_DIRECTORIES("@MRPT_EIGEN_INCLUDE_DIR@")
+	LIST(APPEND MRPT_INCLUDE_DIRS "@MRPT_EIGEN_INCLUDE_DIR@")
 ENDIF (NOT @MRPT_CONFIGFILE_IS_INSTALL@ OR NOT @EIGEN_USE_EMBEDDED_VERSION_BOOL@)
 
 # If using GCC and -Wall, eigen3 headers raise some warnings: silent them:
@@ -73,6 +83,7 @@ ENDIF(CMAKE_COMPILER_IS_GNUCXX)
 # Include directories to add to the user project:
 # ======================================================
 INCLUDE_DIRECTORIES(${MRPT_CONFIG_DIR})
+LIST(APPEND MRPT_INCLUDE_DIRS ${MRPT_CONFIG_DIR})
 
 # OpenCV library:
 IF(@CMAKE_MRPT_HAS_OPENCV_SYSTEM@)    # CMAKE_MRPT_HAS_OPENCV_SYSTEM
@@ -80,12 +91,14 @@ IF(@CMAKE_MRPT_HAS_OPENCV_SYSTEM@)    # CMAKE_MRPT_HAS_OPENCV_SYSTEM
 	# Users must link against OpenCV only if MRPT is not a dynamic library:
 	IF (NOT @CMAKE_MRPT_BUILD_SHARED_LIB_ONOFF@)  # CMAKE_MRPT_BUILD_SHARED_LIB
 		LINK_DIRECTORIES("@OPENCV_LIBDIR@")  # OPENCV_LIBDIR
+		LIST(APPEND MRPT_LINK_DIRECTORIES "@OPENCV_LIBDIR@")
 	ENDIF (NOT @CMAKE_MRPT_BUILD_SHARED_LIB_ONOFF@)
 ENDIF(@CMAKE_MRPT_HAS_OPENCV_SYSTEM@)
 
 # Suitesparse lib (only if present as a system lib)
 IF(@CMAKE_MRPT_HAS_SUITESPARSE_SYSTEM@)    # CMAKE_MRPT_HAS_SUITESPARSE_SYSTEM
 	INCLUDE_DIRECTORIES("@SuiteSparse_INCLUDE_DIRS@") # SuiteSparse_INCLUDE_DIRS
+	LIST(APPEND MRPT_INCLUDE_DIRS "@SuiteSparse_INCLUDE_DIRS@")
 ENDIF(@CMAKE_MRPT_HAS_SUITESPARSE_SYSTEM@)
 
 
@@ -151,7 +164,7 @@ ENDFOREACH(MRPTLIB)
 # ======================================================
 #   MRPT list of libraries the user should link against:
 # ======================================================
-SET(MRPT_LIBS "@MRPT_LINKER_LIBS@")
+SET(MRPT_LIBRARIES "@MRPT_LINKER_LIBS@")
 
 SET(MRPT_COMP_HWDRIVERS 0  INTERNAL)
 # Process the list:
@@ -161,6 +174,7 @@ FOREACH(MRPTLIB ${MRPT_FIND_COMPONENTS})
 
 	# The include dir:
 	INCLUDE_DIRECTORIES("${MRPT_LIBS_INCL_DIR}/${MRPTLIB}/include")
+	LIST(APPEND MRPT_INCLUDE_DIRS "${MRPT_LIBS_INCL_DIR}/${MRPTLIB}/include")
 
 	# List of link libs only needed in GCC. In MSVC we use pragma link libs.
 	IF(NOT MSVC AND NOT BORLAND)
@@ -168,9 +182,9 @@ FOREACH(MRPTLIB ${MRPT_FIND_COMPONENTS})
 		get_property(_LIB_HDRONLY GLOBAL PROPERTY "mrpt-${MRPTLIB}_LIB_IS_HEADERS_ONLY")
 		IF(NOT _LIB_HDRONLY)
 			IF(NOT MRPT_DONT_USE_DBG_LIBS)
-				LIST(APPEND MRPT_LIBS  optimized mrpt-${MRPTLIB}@MRPT_DLL_VERSION_POSTFIX@ debug mrpt-${MRPTLIB}@MRPT_DLL_VERSION_POSTFIX@-dbg)
+				LIST(APPEND MRPT_LIBRARIES  optimized mrpt-${MRPTLIB}@MRPT_DLL_VERSION_POSTFIX@ debug mrpt-${MRPTLIB}@MRPT_DLL_VERSION_POSTFIX@-dbg)
 			ELSE(NOT MRPT_DONT_USE_DBG_LIBS)
-				LIST(APPEND MRPT_LIBS  mrpt-${MRPTLIB}@MRPT_DLL_VERSION_POSTFIX@)
+				LIST(APPEND MRPT_LIBRARIES  mrpt-${MRPTLIB}@MRPT_DLL_VERSION_POSTFIX@)
 			ENDIF(NOT MRPT_DONT_USE_DBG_LIBS)
 		ENDIF(NOT _LIB_HDRONLY)
 	ENDIF(NOT MSVC AND NOT BORLAND)
@@ -185,7 +199,7 @@ ENDFOREACH(MRPTLIB)
 IF(MRPT_COMP_HWDRIVERS AND NOT @CMAKE_MRPT_BUILD_SHARED_LIB_ONOFF@)
 	IF(@MRPT_HAS_FFMPEG_WIN32@ MATCHES "ON")  # MRPT_HAS_FFMPEG_WIN32
 		FOREACH(FFMPGLIB "@MRPT_FFMPEG_LIBS_TO_LINK@")
-			LIST(APPEND MRPT_LIBS general "${FFMPGLIB}")
+			LIST(APPEND MRPT_LIBRARIES general "${FFMPGLIB}")
 		ENDFOREACH(FFMPGLIB)
 	ENDIF(@MRPT_HAS_FFMPEG_WIN32@ MATCHES "ON")
 ENDIF(MRPT_COMP_HWDRIVERS AND NOT @CMAKE_MRPT_BUILD_SHARED_LIB_ONOFF@)
@@ -209,12 +223,13 @@ IF(@CMAKE_MRPT_HAS_WXWIDGETS@ AND NOT @CMAKE_MRPT_BUILD_SHARED_LIB_ONOFF@)  # CM
 		INCLUDE(${wxWidgets_USE_FILE})
 		# ${wxWidgets_LIBRARIES}  will contain the libraries that should be added through TARGET_LINK_LIBRARIES(...)
 		LINK_DIRECTORIES(${wxWidgets_LIBRARY_DIRS})
+		LIST(APPEND MRPT_LINK_DIRECTORIES ${wxWidgets_LIBRARY_DIRS})
 
 		IF(MSVC)
 			ADD_DEFINITIONS(-DwxUSE_NO_MANIFEST=1)
 		ENDIF(MSVC)
 
-		LIST(APPEND MRPT_LIBS ${wxWidgets_LIBRARIES})
+		LIST(APPEND MRPT_LIBRARIES ${wxWidgets_LIBRARIES})
 		IF(MSVC)
 			ADD_DEFINITIONS(-D_CRT_SECURE_NO_WARNINGS)
 		ENDIF(MSVC)
@@ -230,6 +245,8 @@ IF(WIN32 AND NOT @CMAKE_MRPT_BUILD_SHARED_LIB_ONOFF@)
 	IF(@CMAKE_MRPT_HAS_BUMBLEBEE@)   # CMAKE_MRPT_HAS_BUMBLEBEE
 		LINK_DIRECTORIES("@BUMBLEBEE_PGR_FLYCAPTURE_ROOT_DIR@/lib")
 		LINK_DIRECTORIES("@BUMBLEBEE_TRICLOPS_ROOT_DIR@/lib")
+		LIST(APPEND MRPT_LINK_DIRECTORIES "@BUMBLEBEE_PGR_FLYCAPTURE_ROOT_DIR@/lib")
+		LIST(APPEND MRPT_LINK_DIRECTORIES "@BUMBLEBEE_TRICLOPS_ROOT_DIR@/lib")
 	ENDIF(@CMAKE_MRPT_HAS_BUMBLEBEE@)
 ENDIF(WIN32 AND NOT @CMAKE_MRPT_BUILD_SHARED_LIB_ONOFF@)
 
@@ -237,4 +254,6 @@ ENDIF(WIN32 AND NOT @CMAKE_MRPT_BUILD_SHARED_LIB_ONOFF@)
 # Link directories to add to the user project:
 # ======================================================
 LINK_DIRECTORIES(${MRPT_DIR}/lib)
+LIST(APPEND MRPT_LINK_DIRECTORIES ${MRPT_DIR}/lib)
 
+SET(MRPT_LIBS ${MRPT_LIBRARIES}) # For backward compatible code

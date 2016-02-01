@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -441,3 +441,18 @@ bool mrpt::poses::operator==(const CPose3DPDFGaussianInf &p1,const CPose3DPDFGau
 {
 	return p1.mean==p2.mean && p1.cov_inv==p2.cov_inv;
 }
+
+CPose3DPDFGaussianInf mrpt::poses::operator +( const CPose3DPDFGaussianInf &x, const CPose3DPDFGaussianInf &u )
+{
+	CPose3DPDFGaussianInf 	res(x);
+	res+=u;
+	return res;
+}
+
+CPose3DPDFGaussianInf mrpt::poses::operator -( const CPose3DPDFGaussianInf &x, const CPose3DPDFGaussianInf &u )
+{
+	CPose3DPDFGaussianInf 	res(x);
+	res-=u;
+	return res;
+}
+

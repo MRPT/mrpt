@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -57,7 +57,7 @@ void markAsPicked(
 					robustRigidTransformation
 
   The technique was described in the paper:
-    J.L. Blanco, J. González-Jimenez and J.A. Fernandez-Madrigal.
+    J.L. Blanco, J. Gonzalez-Jimenez and J.A. Fernandez-Madrigal.
 	"A robust, multi-hypothesis approach to matching occupancy grid maps".
 	Robotica, available on CJO2013. doi:10.1017/S0263574712000732.
 	http://journals.cambridge.org/action/displayAbstract?aid=8815308

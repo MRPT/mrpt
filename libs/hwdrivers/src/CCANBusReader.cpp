@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -108,25 +108,26 @@ void  CCANBusReader::doProcessSimple(
 		return;
 	}
 
-    m_state = ssWorking;
+	m_state = ssWorking;
 
 	// Wait for a scan:
-    uint8_t out_prio,out_pdu_format,out_pdu_spec,out_src_address,out_data_length;
-    uint16_t out_pgn;
-    vector<uint8_t> out_data;
-    vector<char> out_raw_frame;
-	if (!waitContinuousSampleFrame( out_prio,
-                                    out_pdu_format,
-                                    out_pdu_spec,
-                                    out_src_address,
-                                    out_data_length,
-                                    out_pgn,
-                                    out_data,
-                                    out_raw_frame ))
-    return;
+	uint8_t out_prio,out_pdu_format,out_pdu_spec,out_src_address,out_data_length;
+	uint16_t out_pgn;
+	vector<uint8_t> out_data;
+	vector<char> out_raw_frame;
+	if (!waitContinuousSampleFrame(
+				out_prio,
+				out_pdu_format,
+				out_pdu_spec,
+				out_src_address,
+				out_data_length,
+				out_pgn,
+				out_data,
+				out_raw_frame ))
+		return;
 
 	// Yes, we have a new scan:
-//    cout << "we've got a frame" << endl;
+	//    cout << "we've got a frame" << endl;
 	// -----------------------------------------------
 	//   Extract the observation:
 	// -----------------------------------------------
@@ -142,10 +143,10 @@ void  CCANBusReader::doProcessSimple(
 	outObservation.m_data_length    = out_data_length;
 	outObservation.m_data.resize( out_data.size() );
 	for(uint8_t k = 0; k < out_data.size(); ++k)
-        outObservation.m_data[k] = out_data[k];
-    outObservation.m_raw_frame.resize( out_raw_frame.size() );
-    for(uint8_t k = 0; k < out_raw_frame.size(); ++k)
-        outObservation.m_raw_frame[k] = out_raw_frame[k];
+		outObservation.m_data[k] = out_data[k];
+	outObservation.m_raw_frame.resize( out_raw_frame.size() );
+	for(uint8_t k = 0; k < out_raw_frame.size(); ++k)
+		outObservation.m_raw_frame[k] = out_raw_frame[k];
 
 	// we've got a new observation
 	outThereIsObservation = true;

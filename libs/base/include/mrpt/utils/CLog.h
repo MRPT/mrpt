@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -10,7 +10,7 @@
 /***************************************************************
  * Name:      Log.h
  * Purpose:   Defines the Log class
- * Author:    Vicente Arévalo (varevalo@ctima.uma.es)
+ * Author:    Vicente Arevalo (varevalo@ctima.uma.es)
  * Created:   2009-09-23
  * Copyright: mapir (http://babel.isa.uma.es/mapir)
  * License:

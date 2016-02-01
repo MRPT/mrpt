@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -71,19 +71,11 @@ namespace mrpt
 			/** The set of parameters for all the detectors & descriptor algorithms */
 			struct VISION_IMPEXP TOptions : public utils::CLoadableOptions
 			{
-				/** Initalizer
-				*/
+				/** Initalizer */
 				TOptions(const TFeatureType featsType = featKLT);
 
-				/** See utils::CLoadableOptions
-				  */
-				void  loadFromConfigFile(
-					const mrpt::utils::CConfigFileBase  &source,
-					const std::string &section);
-
-				/** See utils::CLoadableOptions
-				  */
-				void  dumpToTextStream(mrpt::utils::CStream		&out) const;
+				void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) MRPT_OVERRIDE; // See base docs
+				void dumpToTextStream(mrpt::utils::CStream &out) const MRPT_OVERRIDE; // See base docs
 
 				/** Type of the extracted features
 				*/
@@ -155,7 +147,7 @@ namespace mrpt
 				{
 					TSIFTOptions() : threshold(0.04), edgeThreshold(10) { }
 
-					TSIFTImplementation implementation;
+					TSIFTImplementation implementation;  //!< Default: Hess (OpenCV should be preferred, but its nonfree module is not always available by default in all systems)
 					double threshold;  //!< default= 0.04
 					double edgeThreshold; //!< default= 10
 				} SIFTOptions;

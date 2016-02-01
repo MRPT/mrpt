@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -54,14 +54,13 @@ namespace mrpt
 			};
 
 			/** Evaluates the bounding box of this object (including possible children) in the coordinate frame of the object parent. */
-			virtual void getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const;
+			void getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const MRPT_OVERRIDE;
 
 		protected:
 			/** Triangle array. */
 			std::vector<TTriangle>	m_triangles;
 
-			/** Render */
-			void  render_texturedobj( ) const;
+			void  render_texturedobj( ) const MRPT_OVERRIDE;
 
 		public:
 			void clearTriangles( ) { m_triangles.clear(); CRenderizableDisplayList::notifyChange(); }
@@ -71,9 +70,7 @@ namespace mrpt
 			void insertTriangle( const TTriangle &t ) { m_triangles.push_back(t); CRenderizableDisplayList::notifyChange(); }
 
 
-			/** Ray Trace
-			  */
-			virtual bool traceRay( const mrpt::poses::CPose3D &o,double &dist ) const;
+			virtual bool traceRay( const mrpt::poses::CPose3D &o,double &dist ) const MRPT_OVERRIDE;
 
 		private:
 			/** Constructor

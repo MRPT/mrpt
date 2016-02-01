@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -114,8 +114,7 @@ namespace mrpt
 			void internalSetMinMaxRange();
 
 		public:
-			/** Constructor
-			 */
+			/** Constructor */
 			CDisplayWindow3D(
 				const std::string	&windowCaption = std::string(),
 				unsigned int		initialWindowWidth = 400,
@@ -127,112 +126,44 @@ namespace mrpt
 				unsigned int		initialWindowWidth = 400,
 				unsigned int		initialWindowHeight = 300 );
 
-			/** Destructor
-			 */
+			/** Destructor */
 			virtual ~CDisplayWindow3D();
 
 			/** Gets a reference to the smart shared pointer that holds the internal scene (carefuly read introduction in gui::CDisplayWindow3D before use!)
-			  *  This also locks the critical section for accesing the scene, thus the window will not be repainted until it is unlocked.
-			  */
+			  *  This also locks the critical section for accesing the scene, thus the window will not be repainted until it is unlocked. */
 			opengl::COpenGLScenePtr & get3DSceneAndLock( );
 
 			/** Unlocks the access to the internal 3D scene.
-			  *  Typically user will want to call forceRepaint after updating the scene.
-			  */
+			  *  Typically user will want to call forceRepaint after updating the scene. */
 			void  unlockAccess3DScene();
 
-			/** Repaints the window.
-			  * forceRepaint, repaint and updateWindow are all aliases of the same method.
-			  */
-			void  forceRepaint();
+			void forceRepaint(); //!< Repaints the window. forceRepaint, repaint and updateWindow are all aliases of the same method
+			void repaint() //!< Repaints the window. forceRepaint, repaint and updateWindow are all aliases of the same method
+			{ forceRepaint(); }
+			void updateWindow() //!< Repaints the window. forceRepaint, repaint and updateWindow are all aliases of the same method
+			{ forceRepaint(); }
 
-			/** Repaints the window.
-			  * forceRepaint, repaint and updateWindow are all aliases of the same method.
-			  */
-			void  repaint() { forceRepaint(); }
-
-			/** Repaints the window.
-			  * forceRepaint, repaint and updateWindow are all aliases of the same method.
-			  */
-			void  updateWindow() { forceRepaint(); }
-
-			/** Return the camera field of view (in degrees) (used for gluPerspective). */
-			float getFOV() const;
-
-			/** Changes the camera min clip range (z) (used for gluPerspective).
-			  *  The window is not updated with this method, call "forceRepaint" to update the 3D view.
-			  */
-			void setMinRange(double new_min);
-
-			/** Changes the camera max clip range (z) (used for gluPerspective).
-			  *  The window is not updated with this method, call "forceRepaint" to update the 3D view.
-			  */
-			void setMaxRange(double new_max);
-
-			/** Changes the camera field of view (in degrees) (used for gluPerspective).
-			  *  The window is not updated with this method, call "forceRepaint" to update the 3D view.
-			  */
-			void setFOV(float v);
-
-			/** Resizes the window, stretching the image to fit into the display area.
-			 */
-			void  resize( unsigned int width, unsigned int height );
-
-			/** Changes the position of the window on the screen.
-			 */
-			void  setPos( int x, int y );
-
-			/** Changes the window title.
-			  */
-			void  setWindowTitle( const std::string &str );
-
-			/** Changes the camera parameters programatically
-			  */
-			void setCameraElevationDeg( float deg );
-
-			/** Changes the camera parameters programatically
-			  */
-			void setCameraAzimuthDeg( float deg );
-
-			/** Changes the camera parameters programatically
-			  */
-			void setCameraPointingToPoint( float x,float y, float z );
-
-			/** Changes the camera parameters programatically
-			  */
-			void setCameraZoom( float zoom );
-
-			/** Sets the camera as projective, or orthogonal. */
-			void setCameraProjective( bool isProjective );
-
-
-			/** Get camera parameters programatically */
-			float getCameraElevationDeg() const;
-
-			/** Get camera parameters programatically  */
-			float getCameraAzimuthDeg() const;
-
-			/** Get camera parameters programatically  */
-			void getCameraPointingToPoint( float &x,float &y, float &z ) const;
-
-			/** Get camera parameters programatically */
-			float getCameraZoom() const;
-
-			/** Sets the camera as projective, or orthogonal. */
-			bool isCameraProjective() const;
-
-			/**  If set to true (default = false), the mouse-based scene navigation will be disabled and the camera position will be determined by the opengl viewports in the 3D scene.
-			  */
-			void useCameraFromScene(bool useIt = true);
-
-			/** Gets the 3D ray for the direction line of the pixel where the mouse cursor is at. \return False if the window is closed. \sa getLastMousePosition */
-			bool getLastMousePositionRay(mrpt::math::TLine3D &ray) const;
-
-			/** Gets the last x,y pixel coordinates of the mouse. \return False if the window is closed. \sa getLastMousePositionRay */
-			virtual bool getLastMousePosition(int &x, int &y) const;
-
-			/** Set cursor style to default (cursorIsCross=false) or to a cross (cursorIsCross=true) \sa getLastMousePositionRay */
-			virtual void setCursorCross(bool cursorIsCross);
+			float getFOV() const; //!< Return the camera field of view (in degrees) (used for gluPerspective)
+			void setMinRange(double new_min);//!< Changes the camera min clip range (z) (used for gluPerspective). The window is not updated with this method, call "forceRepaint" to update the 3D view.
+			void setMaxRange(double new_max);//!< Changes the camera max clip range (z) (used for gluPerspective. The window is not updated with this method, call "forceRepaint" to update the 3D view.
+			void setFOV(float v);//!< Changes the camera field of view (in degrees) (used for gluPerspective). The window is not updated with this method, call "forceRepaint" to update the 3D view.
+			void resize( unsigned int width, unsigned int height) MRPT_OVERRIDE; //!< Resizes the window, stretching the image to fit into the display area.
+			void setPos( int x, int y ) MRPT_OVERRIDE;//!< Changes the position of the window on the screen.
+			void setWindowTitle( const std::string &str ) MRPT_OVERRIDE;//!<  Changes the window title.
+			void setCameraElevationDeg( float deg );//!< Changes the camera parameters programatically
+			void setCameraAzimuthDeg( float deg );//!< Changes the camera parameters programatically
+			void setCameraPointingToPoint( float x,float y, float z );//!< Changes the camera parameters programatically
+			void setCameraZoom( float zoom );//!< Changes the camera parameters programatically
+			void setCameraProjective( bool isProjective );//!< Sets the camera as projective, or orthogonal.
+			float getCameraElevationDeg() const;//!< Get camera parameters programatically
+			float getCameraAzimuthDeg() const;//!< Get camera parameters programatically
+			void getCameraPointingToPoint( float &x,float &y, float &z ) const;//!< Get camera parameters programatically
+			float getCameraZoom() const;//!< Get camera parameters programatically
+			bool isCameraProjective() const;//!< Sets the camera as projective, or orthogonal
+			void useCameraFromScene(bool useIt = true);//!< If set to true (default = false), the mouse-based scene navigation will be disabled and the camera position will be determined by the opengl viewports in the 3D scene
+			bool getLastMousePositionRay(mrpt::math::TLine3D &ray) const;//!< Gets the 3D ray for the direction line of the pixel where the mouse cursor is at. \return False if the window is closed. \sa getLastMousePosition
+			virtual bool getLastMousePosition(int &x, int &y) const MRPT_OVERRIDE;//!< Gets the last x,y pixel coordinates of the mouse. \return False if the window is closed. \sa getLastMousePositionRay
+			virtual void setCursorCross(bool cursorIsCross) MRPT_OVERRIDE;//!< Set cursor style to default (cursorIsCross=false) or to a cross (cursorIsCross=true) \sa getLastMousePositionRay
 
 			/** Start to save rendered images to disk.
 			  *  Images will be saved independently as png files, depending on
@@ -378,7 +309,7 @@ namespace mrpt
 		class GUI_IMPEXP mrptEvent3DWindowGrabImageFile : public mrpt::utils::mrptEvent
 		{
 		protected:
-			virtual void do_nothing() { } //!< Just to allow this class to be polymorphic
+			virtual void do_nothing() MRPT_OVERRIDE { } //!< Just to allow this class to be polymorphic
 		public:
 			inline mrptEvent3DWindowGrabImageFile(
 				CDisplayWindow3D *obj,

@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -72,31 +72,31 @@ namespace poses
 		 /** Returns an estimate of the pose, (the mean, or mathematical expectation of the PDF).
 		   * \sa getCovariance
 		   */
-		void getMean(CPose2D &mean_pose) const {
+		void getMean(CPose2D &mean_pose) const  MRPT_OVERRIDE{
 			mean_pose = mean;
 		}
 
 		/** Returns an estimate of the pose covariance matrix (3x3 cov matrix) and the mean, both at once.
 		  * \sa getMean
 		  */
-		void getCovarianceAndMean(mrpt::math::CMatrixDouble33 &cov,CPose2D &mean_point) const {
+		void getCovarianceAndMean(mrpt::math::CMatrixDouble33 &cov,CPose2D &mean_point) const  MRPT_OVERRIDE{
 			mean_point = mean;
 			cov = this->cov;
 		}
 
 		/** Copy operator, translating if necesary (for example, between particles and gaussian representations) */
-		void  copyFrom(const CPosePDF &o);
+		void  copyFrom(const CPosePDF &o) MRPT_OVERRIDE;
 
 		/** Copy operator, translating if necesary (for example, between particles and gaussian representations) */
 		void  copyFrom(const CPose3DPDF &o);
 
 		/** Save PDF's particles to a text file, containing the 2D pose in the first line, then the covariance matrix in next 3 lines. */
-		void  saveToTextFile(const std::string &file) const;
+		void  saveToTextFile(const std::string &file) const MRPT_OVERRIDE;
 
 		/** this = p (+) this. This can be used to convert a PDF from local coordinates to global, providing the point (newReferenceBase) from which
 		  *   "to project" the current pdf. Result PDF substituted the currently stored one in the object.
 		  */
-		void  changeCoordinatesReference( const CPose3D &newReferenceBase );
+		void  changeCoordinatesReference( const CPose3D &newReferenceBase ) MRPT_OVERRIDE;
 
 		/** this = p (+) this. This can be used to convert a PDF from local coordinates to global, providing the point (newReferenceBase) from which
 		  *   "to project" the current pdf. Result PDF substituted the currently stored one in the object.
@@ -119,11 +119,11 @@ namespace poses
 
 		/** Draws a single sample from the distribution
 		  */
-		void  drawSingleSample( CPose2D &outPart ) const;
+		void  drawSingleSample( CPose2D &outPart ) const MRPT_OVERRIDE;
 
 		/** Draws a number of samples from the distribution, and saves as a list of 1x3 vectors, where each row contains a (x,y,phi) datum.
 		  */
-		void  drawManySamples( size_t N, std::vector<mrpt::math::CVectorDouble> & outSamples ) const;
+		void  drawManySamples( size_t N, std::vector<mrpt::math::CVectorDouble> & outSamples ) const MRPT_OVERRIDE;
 
 		/** Bayesian fusion of two points gauss. distributions, then save the result in this object.
 		  *  The process is as follows:<br>
@@ -134,11 +134,11 @@ namespace poses
 		  *    S = (S1<sup>-1</sup> + S2<sup>-1</sup>)<sup>-1</sup>;
 		  *    x = S * ( S1<sup>-1</sup>*x1 + S2<sup>-1</sup>*x2 );
 		  */
-		void  bayesianFusion(const  CPosePDF &p1,const  CPosePDF &p2, const double &minMahalanobisDistToDrop = 0 );
+		void  bayesianFusion(const  CPosePDF &p1,const  CPosePDF &p2, const double &minMahalanobisDistToDrop = 0 ) MRPT_OVERRIDE;
 
 		/** Returns a new PDF such as: NEW_PDF = (0,0,0) - THIS_PDF
 		  */
-		void	 inverse(CPosePDF &o) const;
+		void	 inverse(CPosePDF &o) const MRPT_OVERRIDE;
 
 		/** Makes: thisPDF = thisPDF + Ap, where "+" is pose composition (both the mean, and the covariance matrix are updated). */
 		void  operator += ( const CPose2D &Ap);

@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -64,9 +64,7 @@ namespace mrpt
 			{
 			}
 
-			void  loadFromConfigFile(
-				const mrpt::utils::CConfigFileBase	&iniFile,
-				const std::string		&section)
+			void loadFromConfigFile(const mrpt::utils::CConfigFileBase &iniFile,const std::string &section) MRPT_OVERRIDE
 			{
 				method = iniFile.read_enum<TKFMethod>(section,"method", method );
 				MRPT_LOAD_CONFIG_VAR( verbose, bool    , iniFile, section  );
@@ -79,7 +77,7 @@ namespace mrpt
 			}
 
 			/** This method must display clearly all the contents of the structure in textual form, sending it to a CStream. */
-			void  dumpToTextStream(mrpt::utils::CStream	&out) const
+			void  dumpToTextStream(mrpt::utils::CStream	&out) const MRPT_OVERRIDE
 			{
 				out.printf("\n----------- [TKF_options] ------------ \n\n");
 				out.printf("method                                  = %s\n", mrpt::utils::TEnumType<TKFMethod>::value2name(method).c_str() );
@@ -300,7 +298,7 @@ namespace mrpt
 			  * \param out_z N vectors, each for one "observation" of length OBS_SIZE, N being the number of "observations": how many observed landmarks for a map, or just one if not applicable.
 			  * \param out_data_association An empty vector or, where applicable, a vector where the i'th element corresponds to the position of the observation in the i'th row of out_z within the system state vector (in the range [0,getNumberOfLandmarksInTheMap()-1]), or -1 if it is a new map element and we want to insert it at the end of this KF iteration.
 			  * \param in_all_predictions A vector with the prediction of ALL the landmarks in the map. Note that, in contrast, in_S only comprises a subset of all the landmarks.
-			  * \param in_S The full covariance matrix of the observation predictions (i.e. the "innovation covariance matrix"). This is a M·O x M·O matrix with M=length of "in_lm_indices_in_S".
+			  * \param in_S The full covariance matrix of the observation predictions (i.e. the "innovation covariance matrix"). This is a M*O x M*O matrix with M=length of "in_lm_indices_in_S".
 			  * \param in_lm_indices_in_S The indices of the map landmarks (range [0,getNumberOfLandmarksInTheMap()-1]) that can be found in the matrix in_S.
 			  *
 			  *  This method will be called just once for each complete KF iteration.

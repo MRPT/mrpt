@@ -65,6 +65,10 @@ public:
     virtual u_result grabScanData(rplidar_response_measurement_node_t * nodebuffer, size_t & count, _u32 timeout = DEFAULT_TIMEOUT);
     virtual u_result ascendScanData(rplidar_response_measurement_node_t * nodebuffer, size_t count);
 
+	virtual u_result stopMotor();
+	virtual u_result startMotor();
+	
+	
 protected:
     u_result _waitNode(rplidar_response_measurement_node_t * node, _u32 timeout);
     u_result _waitScanData(rplidar_response_measurement_node_t * nodebuffer, size_t & count, _u32 timeout = DEFAULT_TIMEOUT);

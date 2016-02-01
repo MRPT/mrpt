@@ -126,6 +126,7 @@ bool raw_serial::open(const char * portname, uint32_t baudrate, uint32_t flags)
 
     //Clear the DTR bit to let the motor spin
     uint32_t controll = TIOCM_DTR;
+	
     ioctl(serial_fd, TIOCMBIC, &controll);
     
     _is_serial_opened = true;
@@ -272,6 +273,24 @@ size_t raw_serial::rxqueue_count()
     return remaining;
 }
 
+void raw_serial::setDTR()
+{
+  if(!isOpened()) return;
+  uint32_t status;
+  ioctl(serial_fd, TIOCMGET, &status);
+  status |= TIOCM_DTR;
+  ioctl(serial_fd, TIOCMSET, &status);
+}
+
+void raw_serial::clearDTR()
+{
+  if(!isOpened()) return;
+
+  uint32_t status;
+  ioctl(serial_fd, TIOCMGET, &status);
+  status &= ~TIOCM_DTR;
+  ioctl(serial_fd, TIOCMSET, &status);
+}
 
 void raw_serial::_init()
 {

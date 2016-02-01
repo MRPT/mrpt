@@ -96,6 +96,8 @@ ${CMAKE_MRPT_BUILD_SHARED_LIB}
 
 /** The file ftdi.h exists (Linux only) */
 #define MRPT_HAS_FTDI             ${CMAKE_MRPT_HAS_FTDI}
+#define MRPT_FTDI_VERSION         0x${LIBFTDI_VERSION_MAJOR}${LIBFTDI_VERSION_MINOR}0
+
 
 /** Support for the liblas library (A standard for LiDAR data format)  */
 #define MRPT_HAS_LIBLAS           ${CMAKE_MRPT_HAS_LIBLAS}
@@ -106,6 +108,9 @@ ${CMAKE_MRPT_BUILD_SHARED_LIB}
 /** Has MRPT libjpeg? And whether it's in the system (Linux) or built-in (Windows, some rare cases in Linux). */
 #define MRPT_HAS_JPEG             ${CMAKE_MRPT_HAS_JPEG}
 #define MRPT_HAS_JPEG_SYSTEM      ${CMAKE_MRPT_HAS_JPEG_SYSTEM}
+
+/** Matlab wrapper is available */
+#define MRPT_HAS_MATLAB           ${CMAKE_MRPT_HAS_MATLAB}
 
 /* Automatic definition of OS-macros */
 #if defined(_WIN32) || defined(_WIN32_)  || defined(WIN32) || defined(_WIN64)
@@ -171,6 +176,11 @@ ${CMAKE_MRPT_BUILD_SHARED_LIB}
 /** Whether to include the xSens MTi device interface: */
 #define MRPT_HAS_xSENS_MT3 ${CMAKE_MRPT_HAS_xSENS_MT3}
 #define MRPT_HAS_xSENS_MT4 ${CMAKE_MRPT_HAS_xSENS_MT4}
+/** Whether to include the Intersense device interface: */
+#define MRPT_HAS_INTERSENSE ${CMAKE_MRPT_HAS_INTERSENSE}
+
+/** Whether to include the NITE2 library: */
+#define MRPT_HAS_NITE2 ${CMAKE_MRPT_HAS_NITE2}
 
 /** Whether to compile support for .gz compressed I/O streams: */
 #define MRPT_HAS_GZ_STREAMS ${CMAKE_MRPT_HAS_GZ_STREAMS}
@@ -212,6 +222,13 @@ ${CMAKE_MRPT_BUILD_SHARED_LIB}
 /** Has NationalInstruments headers/libraries? */
 #define MRPT_HAS_NIDAQMXBASE ${CMAKE_MRPT_HAS_NIDAQMXBASE}
 #define MRPT_HAS_NIDAQMX ${CMAKE_MRPT_HAS_NIDAQMX}
+
+/** Do we have yaml-cpp? */
+#define MRPT_HAS_YAMLCPP        ${CMAKE_MRPT_HAS_YAMLCPP}
+#define MRPT_HAS_YAMLCPP_SYSTEM ${CMAKE_MRPT_HAS_YAMLCPP_SYSTEM}
+
+/** Do we have PCAP? */
+#define MRPT_HAS_LIBPCAP        ${CMAKE_MRPT_HAS_LIBPCAP}
 
 
 /** Standard headers */

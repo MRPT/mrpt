@@ -2,14 +2,14 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 #ifndef  mrpt_math_container_ops_H
 #define  mrpt_math_container_ops_H
 
-#include <mrpt/math/math_frwds.h>  // forward declarations
+#include <mrpt/utils/types_math.h>
 
 #include <mrpt/math/lightweight_geom_data.h>  // forward declarations
 
@@ -144,7 +144,7 @@ namespace mrpt
 			return res;
 		}
 
-		/** v1·v2: The dot product of two containers (vectors/arrays/matrices) */
+		/** v1*v2: The dot product of two containers (vectors/arrays/matrices) */
 		template <class CONTAINER1,class CONTAINER2>
 		inline typename CONTAINER1::Scalar
 		dotProduct(const CONTAINER1 &v1,const CONTAINER1 &v2)
@@ -152,7 +152,7 @@ namespace mrpt
 			return v1.dot(v2);
 		}
 
-		/** v1·v2: The dot product of any two objects supporting []  */
+		/** v1*v2: The dot product of any two objects supporting []  */
 		template<size_t N,class T,class U,class V>
 		inline T dotProduct(const U &v1,const V &v2)	{
 			T res=0;

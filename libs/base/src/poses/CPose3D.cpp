@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -21,8 +21,10 @@
 #include <mrpt/math/matrix_serialization.h>
 #include <mrpt/math/ops_matrices.h>
 #include <mrpt/utils/CStream.h>
+#include <mrpt/math/utils_matlab.h>
 #include <iomanip>
 #include <limits>
+
 
 #ifndef M_SQRT1_2
 #define M_SQRT1_2 0.70710678118654752440
@@ -208,6 +210,23 @@ std::ostream& mrpt::poses::operator << (std::ostream& o, const CPose3D& p)
 	o.precision(old_pre);
 	return o;
 }
+
+/*---------------------------------------------------------------
+  Implements the writing to a mxArray for Matlab
+ ---------------------------------------------------------------*/
+#if MRPT_HAS_MATLAB
+// Add to implement mexplus::from template specialization
+IMPLEMENTS_MEXPLUS_FROM( mrpt::poses::CPose3D )
+
+mxArray* CPose3D::writeToMatlab() const
+{
+	const char* fields[] = {"R","t"};
+	mexplus::MxArray pose_struct( mexplus::MxArray::Struct(sizeof(fields)/sizeof(fields[0]),fields) );
+	pose_struct.set("R", mrpt::math::convertToMatlab(this->m_ROT));
+	pose_struct.set("t", mrpt::math::convertToMatlab(this->m_coords));
+	return pose_struct.release();
+}
+#endif
 
 /*---------------------------------------------------------------
 				normalizeAngles

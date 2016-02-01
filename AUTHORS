@@ -4,13 +4,48 @@ fork and pull-request.
 
  DEVELOPERS
 ==========================================================
-
-The development of the MRPT project was started at the MAPIR lab of
-the University of Malaga.
+MRPT development started at MAPIR lab, University of Malaga. 
+The following list is roughly sorted in reverse cronological order.
 
 * Jose-Luis Blanco-Claraco. Main developer.  http://www.ual.es/~jlblanco/
 
-* Francisco-Angel Moreno-Dueñas. http://www.isa.uma.es/famoreno
+* Jesus Briales (University of Malaga, 2014-)
+  - Fixes in mrpt::hwdrivers::CImageGrabber_dc1394
+  - MRPT to Matlab (MEX) wrappers.
+  
+* Mariano Jaimez Tarifa, University of Malaga (2012-)
+  - Several improvements and bug fixes in the mrpt-reactivenav library.
+  - Development in octomap classes.
+  - Some improvements and bug fixes in the mrpt-opengl library.
+  - Visual Odometry based on depth images (mrpt::vision::CDifodo) and 2 applications to use it: DifOdometry-Camera and DifOdometry-Datasets
+  - Examples to manage an RGB-D camera with openNI2
+
+* Eduardo Fernandez Moral , University of Malaga (2013-).
+  - OpenNI2 classes: COpenNI2Sensor, 
+  - The new library: mrpt-pbmap
+  - Driver for Rovio mobile robot with webcam. 
+  - Some other functions.
+
+* Javier G. Monroy, University of Malaga (2013-).
+  - Driver for Rovio mobile robot with webcam.
+  - New algorithms in gas maps.
+
+* Robert Schattschneider, University of Canterbury (2012)
+  - Patches for bug fixes, serialization of templates.
+
+* Jurica Stanojkovic (IMGTEC, 2014)
+  - Testing and patches for MIPS* architectures.
+
+* Randolph Voorhies, University of Southern California (2014)
+  - Fixes for OS X.
+
+* Yuya Ochiai, (Aichi, Japan) (2014)
+  - Fixes for OS X.
+
+* Kenzaburo Miyawaki (Osaka Institute of Technology, 2014)
+  - Refactoring of OpenNI2 classes in mrpt::hwdrivers
+ 
+* Francisco-Angel Moreno-Dueñas (2010-). http://www.isa.uma.es/famoreno
   - Maintainer of vision-related classes (mrpt::vision namespace in libmrpt-core).
   - Visual odometry for stereo images.
   - Work in CLandmarksMap for efficiency of visual SLAM.
@@ -19,6 +54,9 @@ the University of Malaga.
   - mrpt::hwdrivers::CCANBusReader and related classes
   - mrpt::poses::CPose3DRotVec
   - mrpt::hwdrivers::CDUO3DCamera for DUO3D cameras
+
+* Emilio Sanjurjo Maroño, LIM, University of Coruña (2013)
+  - Fixed orientation of ENU axes for Geodetic coordinate conversions in mrpt::topography.
 
 * Antonio J. Ortiz de Galisteo, University of Malaga (2007).
   - Addition of many mathematical functions.
@@ -42,6 +80,14 @@ the University of Malaga.
   - Some classes: mrpt::hwdrivers::CPtuDperception, mrpt::utils::md5, and more.
   - Website documentation.
 
+* Emil Khatib, University of Malaga (2011-2012)
+  - A few new classes to handle WiFi-signal strength receivers and build 
+     maps out of such observations: mrpt::slam::CObservationWirelessPower, 
+     mrpt::hwdrivers::CWirelessPower and mrpt::slam::CWirelessPowerGridMap2D.
+  - Classes for RFID observations and sensors: mrpt::slam::CObservationRFID, 
+     mrpt::hwdrivers::CImpinjRFID.
+  - Interface to PID sensor: mrpt::hwdrivers::CRaePID
+
 * Vicente Arevalo Espejo, University of Malaga.
   - The application camera-calib.
   - Some classes: mrpt::opengl::CSetOfTexturedTriangles, etc..
@@ -62,16 +108,6 @@ the University of Malaga.
 * Philipp Robbel, Massachusetts Institute of Technology, USA.
   - New CRangeObservation for 3D point clouds.
   - Many hacks and optimizations in different parts of MRPT.
-  
-* Eduardo Fernandez Moral , University of Malaga.
-  - OpenNI2 classes: COpenNI2Sensor, 
-  - The new library: mrpt-pbmap
-  - Driver for Rovio mobile robot with webcam. 
-  - Some other functions.
-
-* Javier G. Monroy, University of Malaga.
-  - Driver for Rovio mobile robot with webcam.
-  - New algorithms in gas maps.
 
 * Cipriano Galindo Andrades. University of Malaga.
   - New functionality in HMT maps.
@@ -91,45 +127,8 @@ the University of Malaga.
 * Jan Girlich, University of Hamburg.
   - Added mrpt::hwdrivers::CIbeoLuxETH 
 
-* Emil Khatib, University of Malaga (2011-2012)
-  - A few new classes to handle WiFi-signal strength receivers and build 
-     maps out of such observations: mrpt::slam::CObservationWirelessPower, 
-     mrpt::hwdrivers::CWirelessPower and mrpt::slam::CWirelessPowerGridMap2D.
-  - Classes for RFID observations and sensors: mrpt::slam::CObservationRFID, 
-     mrpt::hwdrivers::CImpinjRFID.
-  - Interface to PID sensor: mrpt::hwdrivers::CRaePID
-    
 *  Kasra Khosoussi (K.N.Toosi University, Iran)
   - Patches to improve the JCBB data association implementation.
-
-* Mariano Jaimez Tarifa, University of Malaga (2012-)
-  - Several improvements and bug fixes in the mrpt-reactivenav library.
-  - Developemnt in octomap classes.
-  - Some improvements and bug fixes in the mrpt-opengl library.
-  - Visual Odometry based on depth images (mrpt::vision::CDifodo) and 2 applications to use it: DifOdometry-Camera and DifOdometry-Datasets
-  - Examples to manage an RGB-D camera with openNI2
-
-* Robert Schattschneider, University of Canterbury (2012)
-  - Patches for bug fixes, serialization of templates.
-
-* Emilio Sanjurjo Maroño, LIM, University of Coruña (2013)
-  - Fixed orientation of ENU axes for Geodetic coordinate conversions in mrpt::topography.
-
-* Randolph Voorhies, University of Southern California (2014)
-  - Fixes for OS X.
-
-* Yuya Ochiai, (Aichi, Japan) (2014)
-  - Fixes for OS X.
-
-* Kenzaburo Miyawaki (Osaka Institute of Technology, 2014)
-  - Refactoring of OpenNI2 classes in mrpt::hwdrivers
-
-* Jesus Briales (University of Malaga, 2014)
-  - Fixes in mrpt::hwdrivers::CImageGrabber_dc1394
-
-* Jurica Stanojkovic (IMGTEC, 2014)
-  - Testing and patches for MIPS* architectures.
-
 
 Several bug reports have been provided from MRPT users world-wide. We kindly thank all of
 them for this valuable feedback, and they are usually mentioned in changelogs.

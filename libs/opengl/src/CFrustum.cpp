@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -50,14 +50,14 @@ void CFrustum::render_dl() const	{
     	const float r = j==0 ? m_min_distance : m_max_distance;
     	for (int i=0;i<4;i++)
 			pts[4*j+i].x = r;
-		pts[4*j+0].y = -r*sin(m_fov_horz_left);
-		pts[4*j+1].y = -r*sin(m_fov_horz_left);
-		pts[4*j+2].y =  r*sin(m_fov_horz_right);
-		pts[4*j+3].y =  r*sin(m_fov_horz_right);
-		pts[4*j+0].z = -r*sin(m_fov_vert_down);
-		pts[4*j+1].z =  r*sin(m_fov_vert_up);
-		pts[4*j+2].z = -r*sin(m_fov_vert_down);
-		pts[4*j+3].z =  r*sin(m_fov_vert_up);
+		pts[4*j+0].y = -r*tan(m_fov_horz_left);
+		pts[4*j+1].y = -r*tan(m_fov_horz_left);
+		pts[4*j+2].y =  r*tan(m_fov_horz_right);
+		pts[4*j+3].y =  r*tan(m_fov_horz_right);
+		pts[4*j+0].z = -r*tan(m_fov_vert_down);
+		pts[4*j+1].z =  r*tan(m_fov_vert_up);
+		pts[4*j+2].z = -r*tan(m_fov_vert_down);
+		pts[4*j+3].z =  r*tan(m_fov_vert_up);
     }
 
     // Render lines:
@@ -232,14 +232,14 @@ void CFrustum::getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D
     	const float r = j==0 ? m_min_distance : m_max_distance;
     	for (int i=0;i<4;i++)
 			pts[4*j+i].x = r;
-		pts[4*j+0].y = -r*sin(m_fov_horz_left);
-		pts[4*j+1].y = -r*sin(m_fov_horz_left);
-		pts[4*j+2].y =  r*sin(m_fov_horz_right);
-		pts[4*j+3].y =  r*sin(m_fov_horz_right);
-		pts[4*j+0].z = -r*sin(m_fov_vert_down);
-		pts[4*j+1].z =  r*sin(m_fov_vert_up);
-		pts[4*j+2].z = -r*sin(m_fov_vert_down);
-		pts[4*j+3].z =  r*sin(m_fov_vert_up);
+		pts[4*j+0].y = -r*tan(m_fov_horz_left);
+		pts[4*j+1].y = -r*tan(m_fov_horz_left);
+		pts[4*j+2].y =  r*tan(m_fov_horz_right);
+		pts[4*j+3].y =  r*tan(m_fov_horz_right);
+		pts[4*j+0].z = -r*tan(m_fov_vert_down);
+		pts[4*j+1].z =  r*tan(m_fov_vert_up);
+		pts[4*j+2].z = -r*tan(m_fov_vert_down);
+		pts[4*j+3].z =  r*tan(m_fov_vert_up);
     }
 
 	bb_min = TPoint3D( std::numeric_limits<double>::max(), std::numeric_limits<double>::max(), std::numeric_limits<double>::max() );

@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -337,4 +337,20 @@ ostream &   mrpt::poses::operator << (
 bool mrpt::poses::operator==(const CPose3DQuatPDFGaussianInf &p1,const CPose3DQuatPDFGaussianInf &p2)
 {
 	return p1.mean==p2.mean && p1.cov_inv==p2.cov_inv;
+}
+
+/** Pose composition for two 3D pose Gaussians  \sa CPose3DQuatPDFGaussianInf::operator += */
+CPose3DQuatPDFGaussianInf mrpt::poses::operator +( const CPose3DQuatPDFGaussianInf &x, const CPose3DQuatPDFGaussianInf &u )
+{
+	CPose3DQuatPDFGaussianInf 	res(x);
+	res+=u;
+	return res;
+}
+
+/** Inverse pose composition for two 3D pose Gaussians  \sa CPose3DQuatPDFGaussianInf::operator -= */
+CPose3DQuatPDFGaussianInf mrpt::poses::operator -( const CPose3DQuatPDFGaussianInf &x, const CPose3DQuatPDFGaussianInf &u )
+{
+	CPose3DQuatPDFGaussianInf 	res(x);
+	res-=u;
+	return res;
 }

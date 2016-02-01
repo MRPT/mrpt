@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -24,8 +24,8 @@
 #   define linux 1
 #endif
 
-#	include <OpenNI.h>
-#	include <PS1080.h>
+#include <OpenNI.h>
+#include <PS1080.h>
 #endif
 
 using namespace mrpt::hwdrivers;
@@ -706,8 +706,10 @@ bool COpenNI2Generic::CDevice::open(int w, int h, int fps){
 		m_log << "  Device doesn't do image registration!" << endl;
 	}
 
-	if (hasColor())
-		m_streams[COLOR_STREAM]->disableAutoExposure();
+    std::cout << m_log.str()     << std::endl;
+
+//	if (hasColor())
+//		m_streams[COLOR_STREAM]->disableAutoExposure();
 
 	if(startStreams() == false){
 		close();

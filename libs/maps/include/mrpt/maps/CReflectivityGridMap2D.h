@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -56,7 +56,7 @@ namespace mrpt
 			  */
 			inline void clear() { CMetricMap::clear(); }
 
-			float cell2float(const int8_t& c) const
+			float cell2float(const int8_t& c) const MRPT_OVERRIDE
 			{
 				return m_logodd_lut.l2p(c);
 			}
@@ -73,27 +73,18 @@ namespace mrpt
 
 			 /** Returns true if the map is empty/no observation has been inserted.
 			   */
-			 bool  isEmpty() const;
+			 bool isEmpty() const MRPT_OVERRIDE;
 
 
 			/** Parameters related with inserting observations into the map.
 			  */
 			struct MAPS_IMPEXP TInsertionOptions : public utils::CLoadableOptions
 			{
-				/** Default values loader:
-				  */
+				/** Default values loader */
 				TInsertionOptions();
 
-				/** See utils::CLoadableOptions
-				  */
-				void  loadFromConfigFile(
-					const mrpt::utils::CConfigFileBase  &source,
-					const std::string &section);
-
-				/** See utils::CLoadableOptions
-				  */
-				void  dumpToTextStream(mrpt::utils::CStream	&out) const;
-
+				void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) MRPT_OVERRIDE; // See base docs
+				void dumpToTextStream(mrpt::utils::CStream &out) const MRPT_OVERRIDE; // See base docs
 			} insertionOptions;
 
 			/** See docs in base class: in this class this always returns 0 */
@@ -102,21 +93,13 @@ namespace mrpt
 					const mrpt::poses::CPose3D							&otherMapPose,
 					float									maxDistForCorr = 0.10f,
 					float									maxMahaDistForCorr = 2.0f
-					) const;
+					) const MRPT_OVERRIDE;
 
-			/** The implementation in this class just calls all the corresponding method of the contained metric maps.
-			  */
-			void  saveMetricMapRepresentationToFile(
-				const std::string	&filNamePrefix
-				) const;
+			void saveMetricMapRepresentationToFile(const std::string &filNamePrefix ) const MRPT_OVERRIDE;
 
-			/** Returns a 3D object representing the map: by default, it will be a mrpt::opengl::CMesh object, unless
-			  *   it is specified otherwise in mrpt::
-			  */
-			void  getAs3DObject ( mrpt::opengl::CSetOfObjectsPtr	&outObj ) const;
+			void getAs3DObject(mrpt::opengl::CSetOfObjectsPtr &outObj) const MRPT_OVERRIDE;
 
-			/** Returns the grid as a 8-bit graylevel image, where each pixel is a cell (output image is RGB only if forceRGB is true)
-			  */
+			/** Returns the grid as a 8-bit graylevel image, where each pixel is a cell (output image is RGB only if forceRGB is true) */
 			void  getAsImage( utils::CImage	&img, bool verticalFlip = false, bool forceRGB=false) const;
 
 		protected:
