@@ -10,8 +10,8 @@
 #include "maps-precomp.h" // Precomp header
 
 #include <mrpt/maps/CHeightGridMap2D.h>
-#include <mrpt/obs/CObservationGasSensors.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
+#include <mrpt/obs/CObservationVelodyneScan.h>
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/system/os.h>
 #include <mrpt/utils/stl_serialization.h>
@@ -124,20 +124,15 @@ bool  CHeightGridMap2D::internal_insertObservation(
 {
 	MRPT_START
 
-	CPose2D		robotPose2D;
-	CPose3D		robotPose3D;
+	CPose3D robotPose3D;  // Default: 0,0,0
 
 	if (robotPose)
-	{
-		robotPose2D = CPose2D(*robotPose);
 		robotPose3D = (*robotPose);
-	}
-	else
-	{
-		// Default values are (0,0,0)
-	}
 
-	if ( CLASS_ID( CObservation2DRangeScan )==obs->GetRuntimeClass())
+	// Points to insert:
+	CSimplePointsMap	thePointsMoved;
+
+	if ( IS_CLASS(obs, CObservation2DRangeScan ))
 	{
 		/********************************************************************
 					OBSERVATION TYPE: CObservation2DRangeScan
@@ -150,35 +145,34 @@ bool  CHeightGridMap2D::internal_insertObservation(
 		const CPointsMap	*thePoints = o->buildAuxPointsMap<mrpt::maps::CPointsMap>( &opts );
 
 		// And rotate to the robot pose:
-		CSimplePointsMap	thePointsMoved;
 		thePointsMoved.changeCoordinatesReference( *thePoints, robotPose3D );
+	}
+	else
+	if ( IS_CLASS(obs, CObservationVelodyneScan ))
+	{
+		/********************************************************************
+					OBSERVATION TYPE: CObservationVelodyneScan
+		********************************************************************/
+		const CObservationVelodyneScan *o = static_cast<const CObservationVelodyneScan*>( obs );
 
-		size_t i, N = thePointsMoved.size();
-		float	x,y,z;
-		//float	rel_x,rel_y,rel_z;
+		// Create points map, if not created yet:
+		thePointsMoved.insertionOptions.minDistBetweenLaserPoints = insertionOptions.minDistBetweenPointsWhenInserting;
+		thePointsMoved.loadFromVelodyneScan(*o,&robotPose3D);
+	}
 
-		// First compute the bounding box:
-/*		float	min_x,max_x, min_y,max_y, min_z, max_z;
-		thePointsMoved.boundingBox( min_x,max_x,min_y,max_y, min_z,max_z );
+	// Factorized insertion of points, for different observation classes:
+	if (!thePointsMoved.empty())
+	{
+		const size_t N = thePointsMoved.size();
 
-		// Resize grid if necessary:
-		const THeightGridmapCell	dummyCell;
-		resize( min_x,max_x,min_y, max_y, dummyCell, 3 );
-*/
-
-		// Insert z's using the selected method:
-//		const bool	doWindow = m_mapType==mrSlidingWindow;
-//		const mrpt::system::TTimeStamp	tim = o->timestamp;
-
-		for (i=0;i<N;i++)
+		for (size_t i=0;i<N;i++)
 		{
+			float x,y,z;
 			thePointsMoved.getPoint(i, x,y,z);
-			//thePoints->getPoint(i,rel_x,rel_y,rel_z);
 
 			THeightGridmapCell *cell = cellByPos(x,y);
 			if(!cell) continue; // Out of the map: Ignore if we've not resized before.
 
-			//if (!insertionOptions.filterByHeight || (rel_z>=insertionOptions.z_min && rel_z<=insertionOptions.z_max ) )
 			if (!insertionOptions.filterByHeight || (z>=insertionOptions.z_min && z<=insertionOptions.z_max ) )
 			{
 				cell->u += z;
@@ -195,19 +189,13 @@ bool  CHeightGridMap2D::internal_insertObservation(
 					if (W > 0)
 						cell->var = 1/(W) * (cell->v - pow(cell->u,2)/cell->w);
 				}
-
-				//if (doWindow)
-				//	cell->history_Zs.insert( pair<TTimeStamp,float>(tim, z));
-
 			} // end if really inserted
 		} // end for i
 
-		return true;	// Done!
+		return true; // Done, new points inserted
+	}
 
-	} // end if "CObservationGasSensors"
-
-	return false;
-
+	return false; // No insertion done
 	MRPT_END
 }
 

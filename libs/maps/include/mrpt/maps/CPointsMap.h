@@ -43,9 +43,10 @@ namespace maps
 	 *  This is a virtual class, thus only a derived class can be instantiated by the user. The user most usually wants to use CSimplePointsMap.
 	 *
 	 *  This class implements generic version of mrpt::maps::CMetric::insertObservation() accepting these types of sensory data:
-	 *		- mrpt::obs::CObservation2DRangeScan: 2D range scans
-	 *		- mrpt::obs::CObservation3DRangeScan: 3D range scans (Kinect, etc...)
-	 *		- mrpt::obs::CObservationRange: IRs, Sonars, etc.
+	 *   - mrpt::obs::CObservation2DRangeScan: 2D range scans
+	 *   - mrpt::obs::CObservation3DRangeScan: 3D range scans (Kinect, etc...)
+	 *   - mrpt::obs::CObservationRange: IRs, Sonars, etc.
+	 *   - mrpt::obs::CObservationVelodyneScan
 	 *
 	 * If built against liblas, this class also provides method for loading and saving in the standard LAS LiDAR point cloud format: saveLASFile(), loadLASFile()
 	 *
