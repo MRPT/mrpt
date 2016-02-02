@@ -30,11 +30,13 @@ namespace obs
 	  * 
 	  * If it can be assumed that the sensor moves SLOWLY through the environment (i.e. its pose can be approximated to be the same since the beginning to the end of one complete scan)
 	  * then this observation can be converted / loaded into the following other classes:
-	  *  - **TODO** mrpt::opengl::CPointCloud 
-	  *  - **TODO** mrpt::opengl::CPointCloudColoured
-	  *  - Maps of points: See mrpt::maps::CPointsMap::loadFromRangeScan() (available in all derived classes)
+	  *  - Maps of points:
+	  *    - mrpt::maps::CPointsMap::loadFromRangeScan() (available in all derived classes)
+	  *    - and the generic method:mrpt::maps::CPointsMap::insertObservation()
+	  *  - mrpt::opengl::CPointCloud and mrpt::opengl::CPointCloudColoured is supported by first converting 
+	  *    this scan to a mrpt::maps::CPointsMap-derived class, then loading it into the opengl object.
 	  *
-	  * Otherwise, the following API exists for accurate reconstruction of the sensor path in SE(3) over time: 
+	  * Otherwise, the following API exists for accurate reconstruction of the sensor path in SE(3) over time:
 	  *  - **TODO** XXXX
 	  *
 	  * \note New in MRPT 1.4.0
@@ -148,7 +150,9 @@ namespace obs
 			}
 		};
 
-		/** Optionally, raw data can be converted into a 3D point cloud (local coordinates wrt the vehicle, not sensor, according to sensorPose) with intensity (graylevel) information. \sa generatePointCloud() */
+		/** Optionally, raw data can be converted into a 3D point cloud (local coordinates wrt the sensor, not the vehicle) 
+		  * with intensity (graylevel) information. See axes convention in mrpt::obs::CObservationVelodyneScan \sa generatePointCloud()
+		  */
 		TPointCloud point_cloud;
 		/** @} */
 

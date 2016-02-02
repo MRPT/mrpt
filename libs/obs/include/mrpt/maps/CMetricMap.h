@@ -42,6 +42,12 @@ namespace mrpt
 		 *	  - mrpt::obs::mrptEventMetricMapClear: Upon call of the ::clear() method.
 		 *    - mrpt::obs::mrptEventMetricMapInsert: Upon insertion of an observation that effectively modifies the map (e.g. inserting an image into a grid map will NOT raise an event, inserting a laser scan will).
 		 *
+		 * The following observations are supported in this class for CMetricMap::insertObservation():
+		 *  - mrpt::obs::CObservation2DRangeScan
+		 *  - mrpt::obs::CObservation3DRangeScan
+		 *  - mrpt::obs::CObservationRange
+		 *  - mrpt::obs::CObsercationVelodyneScan
+		 *
 		 * \note All derived class must implement a static class factory `<metric_map_class>::MapDefinition()` that builds a default TMetricMapInitializer [New in MRPT 1.3.0] 
 		 *
 		 * \sa CObservation, CSensoryFrame, CMultiMetricMap

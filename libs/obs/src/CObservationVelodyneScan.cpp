@@ -16,6 +16,9 @@
 using namespace std;
 using namespace mrpt::obs;
 
+MRPT_TODO("Docs: add figure with axes convention")
+MRPT_TODO("API for accurate reconstruction of the sensor path in SE(3) over time")
+
 // This must be added to any CSerializable class implementation file.
 IMPLEMENTS_SERIALIZABLE(CObservationVelodyneScan, CObservation,mrpt::obs)
 

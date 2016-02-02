@@ -1970,6 +1970,31 @@ bool  CPointsMap::internal_insertObservation(
 		return true;
 	}
 	else
+	if (IS_CLASS(obs,CObservationVelodyneScan))
+	{
+		/********************************************************************
+					OBSERVATION TYPE: CObservationVelodyneScan
+		 ********************************************************************/
+		mark_as_modified();
+
+		const CObservationVelodyneScan *o = static_cast<const CObservationVelodyneScan *>(obs);
+
+		if (insertionOptions.fuseWithExisting) {
+			// Fuse:
+			CSimplePointsMap	auxMap;
+			auxMap.insertionOptions = insertionOptions;
+			auxMap.insertionOptions.addToExistingPointsMap = false;
+			auxMap.loadFromVelodyneScan(*o,&robotPose3D);
+			fuseWith(&auxMap, insertionOptions.minDistBetweenLaserPoints,  NULL /* rather than &checkForDeletion which we don't need for 3D observations */ );
+		}
+		else {
+			// Don't fuse: Simply add
+			insertionOptions.addToExistingPointsMap = true;
+			loadFromVelodyneScan(*o,&robotPose3D);
+		}
+		return true;
+	}
+	else
 	{
 		/********************************************************************
 					OBSERVATION TYPE: Unknown
@@ -2083,6 +2108,9 @@ void CPointsMap::loadFromVelodyneScan(
 	ASSERT_EQUAL_(scan.point_cloud.x.size(),scan.point_cloud.y.size());
 	ASSERT_EQUAL_(scan.point_cloud.x.size(),scan.point_cloud.z.size());
 	ASSERT_EQUAL_(scan.point_cloud.x.size(),scan.point_cloud.intensity.size());
+
+	if (scan.point_cloud.x.empty())
+		const_cast<mrpt::obs::CObservationVelodyneScan *>(&scan)->generatePointCloud();
 
 	this->mark_as_modified();
 
