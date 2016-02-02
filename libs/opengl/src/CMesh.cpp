@@ -422,9 +422,28 @@ void CMesh::updateColorsMatrix() const
 		// Color is proportional to difference between height of a cell and
 		//  the mean of the nearby cells MEANS:
 		C = Z;
-		C.normalize(0.01f,0.99f);
-	}
+		// Was: C.normalize(0.01f,0.99f);
+		// Reimplemented like this to ignore masked-out cells:
+		float val_max = -std::numeric_limits<float>::max(), val_min =  std::numeric_limits<float>::max();
 
+		bool any_valid =false;
+		for (size_t c=0;c<cols;c++) {
+			for (size_t r=0;r<rows;r++) {
+				if (!mask(r,c)) continue;
+				any_valid = true;
+				const float val = C(r,c);
+				mrpt::utils::keep_max(val_max,val);
+				mrpt::utils::keep_min(val_min,val);
+			}
+		}
+		if (any_valid)
+		{
+			float minMaxDelta = val_max - val_min;
+			if (minMaxDelta==0) minMaxDelta = 1;
+			const float minMaxDelta_ = 1.0f/minMaxDelta;
+			C.array() = (C.array()-val_min)*minMaxDelta_;
+		}
+	}
 
 	m_modified_Image = false;
 	m_modified_Z = false; // Done

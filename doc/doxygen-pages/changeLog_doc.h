@@ -52,6 +52,7 @@
 			- Fix build errors against OpenCV 3.0.0+ without opencv_contrib modules.
 			- mrpt::hwdrivers::CHokuyoURG now correctly handles opening both USB and Ethernet Hokuyo devices (Closes Github issue #180)
 			- Fixed mrpt::utils::net::DNS_resolve_async() may SIGSEGV in slow networks.
+			- mrpt::opengl::CMesh::updateColorsMatrix() did not ignore cells masked out.
 
 <a name="1.3.2">
   <h2>Version 1.3.2: Released 3-NOV-2015 </h2></a>
