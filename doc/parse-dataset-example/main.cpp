@@ -37,10 +37,10 @@ using namespace mrpt;
 using namespace mrpt::math;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
-using namespace mrpt::slam;
 using namespace mrpt::gui;
 using namespace mrpt::opengl;
 using namespace mrpt::system;
+using namespace mrpt::obs;
 using namespace std;
 
 int main(int argc, char **argv)
@@ -101,18 +101,22 @@ int main(int argc, char **argv)
 			if (IS_CLASS(obs,CObservationGPS))
 			{
 				CObservationGPSPtr o = CObservationGPSPtr(obs);
-				if (o->has_GGA_datum && o->GGA_datum.fix_quality>=1)
+				if (o->has_GGA_datum) 
 				{
-					topography::TGeodeticCoords  coord = o->GGA_datum.getAsStruct<topography::TGeodeticCoords>();
-					if (coords_ref.isClear())
-						coords_ref = coord;
+					const mrpt::obs::gnss::Message_NMEA_GGA &gga = o->getMsgByClass<mrpt::obs::gnss::Message_NMEA_GGA>();
+					if (gga.fields.fix_quality>=1)
+					{
+						topography::TGeodeticCoords  coord = gga.getAsStruct<topography::TGeodeticCoords>();
+						if (coords_ref.isClear())
+							coords_ref = coord;
 
-					TPoint3D P;
-					topography::geodeticToENU_WGS84(coord,P,coords_ref);
+						TPoint3D P;
+						topography::geodeticToENU_WGS84(coord,P,coords_ref);
 
-					cout << "GPS: ENU coords=" << P
-					     << " lat: " << coord.lat.getAsString()
-					     << " lon: "<< coord.lon.getAsString() << endl;
+						cout << "GPS: ENU coords=" << P
+						     << " lat: " << coord.lat.getAsString()
+						     << " lon: "<< coord.lon.getAsString() << endl;
+					}
 				}
 			}
 			else
