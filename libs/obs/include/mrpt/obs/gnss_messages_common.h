@@ -11,6 +11,7 @@
 #include <mrpt/utils/CStream.h>
 #include <mrpt/system/datetime.h>
 #include <iostream>
+#include <cstring> // memset()
 #include <mrpt/obs/link_pragmas.h>
 #include <mrpt/obs/gnss_messages_type_list.h>
 

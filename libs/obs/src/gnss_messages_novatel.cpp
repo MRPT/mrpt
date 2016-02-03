@@ -238,9 +238,9 @@ void Message_NV_OEM6_VERSION::dumpToStream( mrpt::utils::CStream &out ) const
 	out.printf(" Number of components: %u\n", static_cast<unsigned int>(this->num_comps));
 	for (unsigned i=0;i<components.size();i++){
 		out.printf(" Component #%u:\n  Model: `%.*s`\n  Serial: `%.*s`\n  SW version:`%.*s`\n",i, 
-			sizeof(components[i].model), components[i].model,
-			sizeof(components[i].serial), components[i].serial,
-			sizeof(components[i].swversion), components[i].swversion
+			(int)sizeof(components[i].model), components[i].model,
+			(int)sizeof(components[i].serial), components[i].serial,
+			(int)sizeof(components[i].swversion), components[i].swversion
 			);
 	}
 }
