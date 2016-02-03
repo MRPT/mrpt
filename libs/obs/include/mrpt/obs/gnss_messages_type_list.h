@@ -65,6 +65,9 @@ enum gnss_message_type_t
 	NV_OEM6_MARKTIME         =  231  + NV_OEM6_MSG2ENUM,
 	NV_OEM6_MARK2TIME        =  616  + NV_OEM6_MSG2ENUM,
 	NV_OEM6_PPPPOS           = 1538  + NV_OEM6_MSG2ENUM,
+	NV_OEM6_RANGECMP         =  140  + NV_OEM6_MSG2ENUM,
+	NV_OEM6_RAWEPHEM         =   41  + NV_OEM6_MSG2ENUM,
+	NV_OEM6_RXSTATUS         =   93  + NV_OEM6_MSG2ENUM,
 	NV_OEM6_VERSION          =   37  + NV_OEM6_MSG2ENUM,
 
 	// ====== Novatel SPAN+OEM6 ====== 

@@ -142,8 +142,8 @@ namespace obs
 		/** @name Deprecated, backwards compatible (MRPT <1.4.0) data and types
 		  * @{ */
 		typedef gnss::UTC_time   TUTCTime;        //!< Deprecated, kept for backwards compatibility
-		typedef gnss::Message_TopCon_PZS  TGPSDatum_PZS;  //!< Deprecated, kept for backwards compatibility
-		typedef gnss::Message_TopCon_SATS TGPSDatum_SATS; //!< Deprecated, kept for backwards compatibility
+		typedef gnss::Message_TOPCON_PZS  TGPSDatum_PZS;  //!< Deprecated, kept for backwards compatibility
+		typedef gnss::Message_TOPCON_SATS TGPSDatum_SATS; //!< Deprecated, kept for backwards compatibility
 		typedef gnss::Message_NMEA_GGA    TGPSDatum_GGA;  //!< Deprecated, kept for backwards compatibility
 		typedef gnss::Message_NMEA_RMC    TGPSDatum_RMC;  //!< Deprecated, kept for backwards compatibility
 

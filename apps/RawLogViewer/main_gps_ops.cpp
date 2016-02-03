@@ -854,9 +854,9 @@ void xRawLogViewerFrame::OnGenGPSTxt(wxCommandEvent& event)
 								// If available, Cartessian X Y Z, VX VY VZ, as supplied by the GPS itself:
 								TPoint3D  cart_pos(0,0,0), cart_vel(0,0,0);
 								TPoint3D  cart_vel_local(0,0,0);
-								if (obs->has_PZS_datum && obs->getMsgByClass<gnss::Message_TopCon_PZS>().hasCartesianPosVel)
+								if (obs->has_PZS_datum && obs->getMsgByClass<gnss::Message_TOPCON_PZS>().hasCartesianPosVel)
 								{
-									const gnss::Message_TopCon_PZS & pzs = obs->getMsgByClass<gnss::Message_TopCon_PZS>();
+									const gnss::Message_TOPCON_PZS & pzs = obs->getMsgByClass<gnss::Message_TOPCON_PZS>();
 									cart_pos.x = pzs.cartesian_x;
 									cart_pos.y = pzs.cartesian_y;
 									cart_pos.z = pzs.cartesian_z;

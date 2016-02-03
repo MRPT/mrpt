@@ -152,9 +152,9 @@ protected:
 };
 
 /** Novatel generic short-header frame (to store frames without a parser at the present time). \sa mrpt::obs::CObservationGPS  */
-struct OBS_IMPEXP Message_NV_OEM6_GENERIC_FRAME_SHORT : public gnss_message
+struct OBS_IMPEXP Message_NV_OEM6_GENERIC_SHORT_FRAME : public gnss_message
 {
-	Message_NV_OEM6_GENERIC_FRAME_SHORT() : gnss_message((gnss_message_type_t)NV_OEM6_GENERIC_SHORT_FRAME)
+	Message_NV_OEM6_GENERIC_SHORT_FRAME() : gnss_message((gnss_message_type_t)NV_OEM6_GENERIC_SHORT_FRAME)
 	{}
 	nv_oem6_short_header_t  header;  //!< Frame header
 	std::vector<uint8_t>    msg_body;
@@ -167,55 +167,33 @@ protected:
 
 
 /** Novatel frame: NV_OEM6_BESTPOS. \sa mrpt::obs::CObservationGPS  */
-struct OBS_IMPEXP Message_NV_OEM6_BESTPOS : public gnss_message
-{
-	GNSS_MESSAGE_BINARY_BLOCK(&fields,sizeof(fields))
-	enum { msg_type = NV_OEM6_BESTPOS };  //!< Static msg type (member expected by templates)
-	Message_NV_OEM6_BESTPOS() : gnss_message((gnss_message_type_t)msg_type)
-	{}
-
-	struct OBS_IMPEXP content_t
-	{
-		nv_oem6_header_t   header;  //!< Frame header
-		uint32_t   solution_stat;   //!< nv_oem6_solution_status::nv_solution_status_t
-		uint32_t   position_type;   //!< nv_oem6_position_type::nv_position_type_t
-		double     lat,lon,hgt;     //!< [deg], [deg], [m]
-		float      undulation;
-		uint32_t   datum_id;
-		float      lat_sigma, lon_sigma, hgt_sigma;
-		char       base_station_id[4];
-		float      diff_age, sol_age;
-		uint8_t    num_sats_tracked, num_sats_sol, num_sats_sol_L1, num_sats_sol_multi;
-		uint8_t    reserved;
-		uint8_t    ext_sol_stat;
-		uint8_t    galileo_beidou_mask;
-		uint8_t    gps_glonass_mask;
-		uint32_t   crc;
-
-		content_t();
-	};
-	content_t  fields; //!< Message content, accesible by individual fields
-
+GNSS_BINARY_MSG_DEFINITION_START(NV_OEM6_BESTPOS)
+	nv_oem6_header_t   header;  //!< Frame header
+	uint32_t   solution_stat;   //!< nv_oem6_solution_status::nv_solution_status_t
+	uint32_t   position_type;   //!< nv_oem6_position_type::nv_position_type_t
+	double     lat,lon,hgt;     //!< [deg], [deg], hgt over sea level[m]
+	float      undulation;
+	uint32_t   datum_id;
+	float      lat_sigma, lon_sigma, hgt_sigma; //!< Uncertainties (all in [m])
+	char       base_station_id[4];
+	float      diff_age, sol_age;
+	uint8_t    num_sats_tracked, num_sats_sol, num_sats_sol_L1, num_sats_sol_multi;
+	uint8_t    reserved;
+	uint8_t    ext_sol_stat;
+	uint8_t    galileo_beidou_mask;
+	uint8_t    gps_glonass_mask;
+	uint32_t   crc;
+GNSS_BINARY_MSG_DEFINITION_MID
 	/**  Return the geodetic coords as a mrpt::topography::TGeodeticCoords structure (requires linking against mrpt-topography)
 		*   Call as: getAsStruct<TGeodeticCoords>(); */
 	template <class TGEODETICCOORDS>
 	inline TGEODETICCOORDS getAsStruct() const {
 		return TGEODETICCOORDS(fields.lat,fields.lon,fields.hgt);
 	}
-
-	void dumpToStream( mrpt::utils::CStream &out ) const MRPT_OVERRIDE; // See docs in base
-};
+GNSS_BINARY_MSG_DEFINITION_MID_END
 
 /** Novatel frame: NV_OEM6_INSPVAS. \sa mrpt::obs::CObservationGPS  */
-struct OBS_IMPEXP Message_NV_OEM6_INSPVAS : public gnss_message
-{
-	GNSS_MESSAGE_BINARY_BLOCK(&fields,sizeof(fields))
-	enum { msg_type = NV_OEM6_INSPVAS };  //!< Static msg type (member expected by templates)
-	Message_NV_OEM6_INSPVAS() : gnss_message((gnss_message_type_t)msg_type)
-	{}
-
-	struct OBS_IMPEXP content_t
-	{
+GNSS_BINARY_MSG_DEFINITION_START(NV_OEM6_INSPVAS)
 		nv_oem6_short_header_t   header;  //!< Frame header
 		uint32_t   week;
 		double     seconds_in_week;
@@ -223,21 +201,150 @@ struct OBS_IMPEXP Message_NV_OEM6_INSPVAS : public gnss_message
 		double     vel_north,vel_east,vel_up;
 		double     roll,pitch,azimuth;
 		uint32_t   ins_status; //!< nv_oem6_ins_status_type::nv_ins_status_type_t
-
 		uint32_t   crc;
-
-		content_t();
-	};
-	content_t  fields; //!< Message content, accesible by individual fields
-	
+GNSS_BINARY_MSG_DEFINITION_MID
 	/**  Return the geodetic coords as a mrpt::topography::TGeodeticCoords structure (requires linking against mrpt-topography)
 		*   Call as: getAsStruct<TGeodeticCoords>(); */
 	template <class TGEODETICCOORDS>
 	inline TGEODETICCOORDS getAsStruct() const {
 		return TGEODETICCOORDS(fields.lat,fields.lon,fields.hgt);
 	}
+GNSS_BINARY_MSG_DEFINITION_MID_END
+
+
+/** Novatel frame: NV_OEM6_INSCOVS. \sa mrpt::obs::CObservationGPS  */
+GNSS_BINARY_MSG_DEFINITION_START(NV_OEM6_INSCOVS)
+	nv_oem6_short_header_t   header;  //!< Frame header
+	uint32_t   week;
+	double     seconds_in_week;
+	double     pos_cov[9]; //!< Position covariance matrix in local level frame (metres squared) xx,xy,xz,yx,yy,yz,zx,zy,zz
+	double     att_cov[9]; //!< Attitude covariance matrix of the SPAN frame to the local level frame.  (deg sq) xx,xy,xz,yx,yy,yz,zx,zy,zz
+	double     vel_cov[9]; //!< Velocity covariance matrix in local level frame. (metres/second squared) xx,xy,xz,yx,yy,yz,zx,zy,zz
+	uint32_t   crc;
+GNSS_BINARY_MSG_DEFINITION_END
+
+/** Novatel frame: NV_OEM6_RANGECMP. \sa mrpt::obs::CObservationGPS  */
+struct OBS_IMPEXP Message_NV_OEM6_RANGECMP : public gnss_message
+{
+	Message_NV_OEM6_RANGECMP() : gnss_message((gnss_message_type_t)NV_OEM6_RANGECMP),num_obs(0)
+	{}
+	struct OBS_IMPEXP TCompressedRangeLog {
+		uint8_t data[24];
+	};
+
+	nv_oem6_header_t     header;  //!< Frame header
+	uint32_t             num_obs;
+	std::vector<TCompressedRangeLog> obs_data;
+	uint32_t             crc;
+
 	void dumpToStream( mrpt::utils::CStream &out ) const MRPT_OVERRIDE; // See docs in base
+protected:
+	void internal_writeToStream(mrpt::utils::CStream &out) const MRPT_OVERRIDE;
+	void internal_readFromStream(mrpt::utils::CStream &in) MRPT_OVERRIDE;
 };
+
+/** Novatel frame: NV_OEM6_RXSTATUS. \sa mrpt::obs::CObservationGPS  */
+GNSS_BINARY_MSG_DEFINITION_START(NV_OEM6_RXSTATUS)
+	nv_oem6_header_t   header;  //!< Frame header
+	uint32_t   error, num_stats;
+	uint32_t   rxstat,rxstat_pri, rxstat_set, rxstat_clear;
+	uint32_t   aux1stat,aux1stat_pri,aux1stat_set,aux1stat_clear;
+	uint32_t   aux2stat,aux2stat_pri,aux2stat_set,aux2stat_clear;
+	uint32_t   aux3stat,aux3stat_pri,aux3stat_set,aux3stat_clear;
+	uint32_t   crc;
+GNSS_BINARY_MSG_DEFINITION_END
+
+/** Novatel frame: NV_OEM6_RAWEPHEM. \sa mrpt::obs::CObservationGPS  */
+GNSS_BINARY_MSG_DEFINITION_START(NV_OEM6_RAWEPHEM)
+	nv_oem6_header_t   header;  //!< Frame header
+	uint32_t   sat_prn, ref_week, ref_secs;
+	uint8_t    subframe1[30],subframe2[30],subframe3[30];
+	uint32_t   crc;
+GNSS_BINARY_MSG_DEFINITION_END
+
+/** Novatel frame: NV_OEM6_VERSION. \sa mrpt::obs::CObservationGPS  */
+struct OBS_IMPEXP Message_NV_OEM6_VERSION : public gnss_message
+{
+	Message_NV_OEM6_VERSION() : gnss_message((gnss_message_type_t)NV_OEM6_VERSION),num_comps(0)
+	{}
+	struct OBS_IMPEXP TComponentVersion {
+		uint32_t type;
+		char model[16], serial[16];
+		char hwversion[16], swversion[16],bootversion[16];
+		char compdate[12], comptime[12];
+	};
+
+	nv_oem6_header_t     header;  //!< Frame header
+	uint32_t             num_comps;
+	std::vector<TComponentVersion> components;
+	uint32_t             crc;
+
+	void dumpToStream( mrpt::utils::CStream &out ) const MRPT_OVERRIDE; // See docs in base
+protected:
+	void internal_writeToStream(mrpt::utils::CStream &out) const MRPT_OVERRIDE;
+	void internal_readFromStream(mrpt::utils::CStream &in) MRPT_OVERRIDE;
+};
+
+
+/** Novatel frame: NV_OEM6_RAWIMUS. \sa mrpt::obs::CObservationGPS  */
+GNSS_BINARY_MSG_DEFINITION_START(NV_OEM6_RAWIMUS)
+	nv_oem6_short_header_t header;  //!< Frame header
+	uint32_t   week;
+	double     week_seconds;
+	uint32_t   imu_status;
+	int32_t    accel_z, accel_y_neg, accel_x;
+	int32_t    gyro_z,gyro_y_neg,gyro_x;
+	uint32_t   crc;
+GNSS_BINARY_MSG_DEFINITION_END
+
+/** Novatel frame: NV_OEM6_MARKPOS. \sa mrpt::obs::CObservationGPS  */
+GNSS_BINARY_MSG_DEFINITION_START(NV_OEM6_MARKPOS)
+	nv_oem6_header_t   header;  //!< Frame header
+	uint32_t   solution_stat;   //!< nv_oem6_solution_status::nv_solution_status_t
+	uint32_t   position_type;   //!< nv_oem6_position_type::nv_position_type_t
+	double     lat,lon,hgt;     //!< [deg], [deg], hgt over sea level[m]
+	float      undulation;
+	uint32_t   datum_id;
+	float      lat_sigma, lon_sigma, hgt_sigma;
+	char       base_station_id[4];
+	float      diff_age, sol_age;
+	uint8_t    num_sats_tracked, num_sats_sol, num_sats_sol_L1, num_sats_sol_multi;
+	uint8_t    reserved;
+	uint8_t    ext_sol_stat;
+	uint8_t    galileo_beidou_mask;
+	uint8_t    gps_glonass_mask;
+	uint32_t   crc;
+GNSS_BINARY_MSG_DEFINITION_MID
+	/**  Return the geodetic coords as a mrpt::topography::TGeodeticCoords structure (requires linking against mrpt-topography)
+		*   Call as: getAsStruct<TGeodeticCoords>(); */
+	template <class TGEODETICCOORDS>
+	inline TGEODETICCOORDS getAsStruct() const {
+		return TGEODETICCOORDS(fields.lat,fields.lon,fields.hgt);
+	}
+GNSS_BINARY_MSG_DEFINITION_MID_END
+
+/** Novatel frame: NV_OEM6_MARKTIME. \sa mrpt::obs::CObservationGPS  */
+GNSS_BINARY_MSG_DEFINITION_START(NV_OEM6_MARKTIME)
+	nv_oem6_header_t header;  //!< Frame header
+	uint32_t   week;
+	double     week_seconds;
+	double     clock_offset, clock_offset_std;
+	double     utc_offset;
+	uint32_t   clock_status;
+	uint32_t   crc;
+GNSS_BINARY_MSG_DEFINITION_END
+
+/** Novatel frame: NV_OEM6_MARK2TIME. \sa mrpt::obs::CObservationGPS  */
+GNSS_BINARY_MSG_DEFINITION_START(NV_OEM6_MARK2TIME)
+	nv_oem6_header_t header;  //!< Frame header
+	uint32_t   week;
+	double     week_seconds;
+	double     clock_offset, clock_offset_std;
+	double     utc_offset;
+	uint32_t   clock_status;
+	uint32_t   crc;
+GNSS_BINARY_MSG_DEFINITION_END
+
 
 #pragma pack(pop) // End of pack = 1
 } } } // End of namespaces

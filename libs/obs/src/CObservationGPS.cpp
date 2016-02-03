@@ -164,9 +164,9 @@ void  CObservationGPS::readFromStream(mrpt::utils::CStream &in, int version)
 				in >> has_PZS_datum_;
 				if (has_PZS_datum_)
 				{
-					gnss::Message_TopCon_PZS * datum = new gnss::Message_TopCon_PZS();
+					gnss::Message_TOPCON_PZS * datum = new gnss::Message_TOPCON_PZS();
 					messages[gnss::TOPCON_PZS] = gnss::gnss_message_ptr(datum);
-					gnss::Message_TopCon_PZS & PZS_datum = *datum;
+					gnss::Message_TOPCON_PZS & PZS_datum = *datum;
 
 					in >>
 						PZS_datum.latitude_degrees >> PZS_datum.longitude_degrees >> PZS_datum.height_meters >>
@@ -192,9 +192,9 @@ void  CObservationGPS::readFromStream(mrpt::utils::CStream &in, int version)
 
 			// Added in V7:
 			if (version>=7) {
-				gnss::Message_TopCon_SATS * datum = new gnss::Message_TopCon_SATS();
+				gnss::Message_TOPCON_SATS * datum = new gnss::Message_TOPCON_SATS();
 				messages[gnss::TOPCON_SATS] = gnss::gnss_message_ptr(datum);
-				gnss::Message_TopCon_SATS & SATS_datum = *datum;
+				gnss::Message_TOPCON_SATS & SATS_datum = *datum;
 				bool has_SATS_datum_;
 				in >> has_SATS_datum_;
 				if (has_SATS_datum_)

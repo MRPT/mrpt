@@ -19,7 +19,6 @@ using namespace mrpt::hwdrivers;
 using namespace mrpt::obs;
 using namespace std;
 
-MRPT_TODO("Parse more frames")
 MRPT_TODO("check crc")
 
 void  CGPSInterface::implement_parser_NOVATEL_OEM6()
@@ -82,7 +81,7 @@ void  CGPSInterface::implement_parser_NOVATEL_OEM6()
 				: 
 				(uint32_t) hdr.msg_id;
 			tmpStream << (uint32_t )(msg_id+NV_OEM6_MSG2ENUM);
-			tmpStream << (uint32_t)(expected_total_msg_len);
+			tmpStream << (uint32_t)(expected_total_msg_len);  // This len = hdr + hdr.msg_len + 4 (crc);
 			tmpStream.WriteBuffer(&buf[0],buf.size());
 
 			tmpStream.Seek(0);

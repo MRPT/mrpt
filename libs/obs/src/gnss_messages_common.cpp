@@ -18,28 +18,38 @@ using namespace mrpt::obs::gnss;
 // Class factory:
 gnss_message*  gnss_message::Factory(const gnss_message_type_t msg_id)
 {
+#define CASE_FACTORY(_MSG_ID)  case _MSG_ID: return new Message_##_MSG_ID();
 	switch (msg_id)
 	{
 	// ====== NMEA ====== 
-	case NMEA_GGA: return new Message_NMEA_GGA();
-	case NMEA_RMC: return new Message_NMEA_RMC();
-	
+	CASE_FACTORY(NMEA_GGA)
+	CASE_FACTORY(NMEA_RMC)
+
 	// ====== TopCon mmGPS ====== 
-	case TOPCON_PZS:  return new Message_TopCon_PZS();
-	case TOPCON_SATS: return new Message_TopCon_SATS();
+	CASE_FACTORY(TOPCON_PZS)
+	CASE_FACTORY(TOPCON_SATS)
 
 	// ====== Novatel OEM6 ====== 
-	case NV_OEM6_GENERIC_FRAME: return new Message_NV_OEM6_GENERIC_FRAME();
-	case NV_OEM6_BESTPOS:       return new Message_NV_OEM6_BESTPOS();
+	CASE_FACTORY(NV_OEM6_GENERIC_FRAME)
+	CASE_FACTORY(NV_OEM6_BESTPOS)
 
 	// ====== Novatel SPAN+OEM6 ====== 
-	case NV_OEM6_GENERIC_SHORT_FRAME: return new Message_NV_OEM6_GENERIC_FRAME_SHORT();
-	case NV_OEM6_INSPVAS:             return new Message_NV_OEM6_INSPVAS();
-		
+	CASE_FACTORY(NV_OEM6_GENERIC_SHORT_FRAME)
+	CASE_FACTORY(NV_OEM6_INSPVAS)
+	CASE_FACTORY(NV_OEM6_RANGECMP)
+	CASE_FACTORY(NV_OEM6_RXSTATUS)
+	CASE_FACTORY(NV_OEM6_RAWEPHEM)
+	CASE_FACTORY(NV_OEM6_VERSION)
+	CASE_FACTORY(NV_OEM6_RAWIMUS)
+	CASE_FACTORY(NV_OEM6_MARKPOS)
+	CASE_FACTORY(NV_OEM6_MARKTIME)
+	CASE_FACTORY(NV_OEM6_MARK2TIME)
 
-	default: 
+	default:
 		return NULL;
 	};
+
+#undef CASE_FACTORY
 }
 
 // Save to binary stream. Launches an exception upon error

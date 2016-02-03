@@ -16,7 +16,7 @@ namespace obs {
 namespace gnss {
 
 /** GPS datum for TopCon's mmGPS devices: PZS. \sa mrpt::obs::CObservationGPS   */
-struct OBS_IMPEXP Message_TopCon_PZS : public gnss_message
+struct OBS_IMPEXP Message_TOPCON_PZS : public gnss_message
 {
 	static const gnss_message_type_t  msg_type = TOPCON_PZS;  //!< Static msg type (member expected by templates)
 
@@ -46,7 +46,7 @@ struct OBS_IMPEXP Message_TopCon_PZS : public gnss_message
 	uint8_t stats_GPS_sats_used, stats_GLONASS_sats_used; //<! Only if hasStats is true
 	uint8_t stats_rtk_fix_progress; //!< [0,100] %, only in modes other than RTK FIXED.
 
-	Message_TopCon_PZS();
+	Message_TOPCON_PZS();
 	/**  Return the geodetic coords as a mrpt::topography::TGeodeticCoords structure (requires linking against mrpt-topography)
 		*   Call as: getAsStruct<TGeodeticCoords>(); */
 	template <class TGEODETICCOORDS>
@@ -60,11 +60,11 @@ protected:
 };
 
 /** TopCon mmGPS devices: SATS, a generic structure for statistics about tracked satelites and their positions. \sa mrpt::obs::CObservationGPS   */
-struct OBS_IMPEXP Message_TopCon_SATS : public gnss_message
+struct OBS_IMPEXP Message_TOPCON_SATS : public gnss_message
 {
 	static const gnss_message_type_t  msg_type = TOPCON_SATS;  //!< Static msg type (member expected by templates)
 
-	Message_TopCon_SATS();
+	Message_TOPCON_SATS();
 
 	mrpt::vector_byte  USIs;  //!< The list of USI (Universal Sat ID) for the detected sats (See GRIL Manual, pag 4-31).
 	mrpt::vector_signed_byte ELs; //!< Elevation (in degrees, 0-90) for each satellite in USIs.

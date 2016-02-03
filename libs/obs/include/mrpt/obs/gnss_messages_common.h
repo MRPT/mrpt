@@ -75,6 +75,27 @@ public:
 			in.ReadBuffer(DATA_PTR,DATA_LEN); } \
 	public:
 
+#define GNSS_BINARY_MSG_DEFINITION_START(_MSG_ID) \
+	struct OBS_IMPEXP Message_##_MSG_ID : public gnss_message { \
+		GNSS_MESSAGE_BINARY_BLOCK(&fields,sizeof(fields)) \
+		enum { msg_type = _MSG_ID };  /* Static msg type (member expected by templates)*/ \
+		Message_##_MSG_ID() : gnss_message((gnss_message_type_t)msg_type) {} \
+		struct OBS_IMPEXP content_t {
+
+#define GNSS_BINARY_MSG_DEFINITION_MID \
+		content_t() { ::memset(this,0,sizeof(*this)); } \
+	}; \
+	content_t  fields; /** Message content, accesible by individual fields */ \
+	void dumpToStream( mrpt::utils::CStream &out ) const MRPT_OVERRIDE;
+
+#define GNSS_BINARY_MSG_DEFINITION_MID_END \
+	};
+
+#define GNSS_BINARY_MSG_DEFINITION_END \
+	GNSS_BINARY_MSG_DEFINITION_MID \
+	GNSS_BINARY_MSG_DEFINITION_MID_END
+
+
 // Pragma to ensure we can safely serialize some of these structures
 #pragma pack(push,1)
 

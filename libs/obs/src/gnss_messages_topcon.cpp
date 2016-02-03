@@ -15,7 +15,7 @@
 using namespace std;
 using namespace mrpt::obs::gnss;
 
-Message_TopCon_PZS::Message_TopCon_PZS() :
+Message_TOPCON_PZS::Message_TOPCON_PZS() :
 	gnss_message(TOPCON_PZS),
 	latitude_degrees(0),
 	longitude_degrees(0),
@@ -40,7 +40,7 @@ Message_TopCon_PZS::Message_TopCon_PZS() :
 	stats_GLONASS_sats_used(0)
 {}
 
-void Message_TopCon_PZS::dumpToStream( mrpt::utils::CStream &out ) const
+void Message_TOPCON_PZS::dumpToStream( mrpt::utils::CStream &out ) const
 {
 	out.printf("\n[TopCon PZS datum]\n");
 	out.printf("  Longitude: %.09f deg  Latitude: %.09f deg Height: %.03f m (%.03f m without NBeam) \n",
@@ -77,7 +77,7 @@ void Message_TopCon_PZS::dumpToStream( mrpt::utils::CStream &out ) const
 		out.printf("GPS sats used: %i  GLONASS sats used: %i  RTK Fix progress:%i%%\n", (int)stats_GPS_sats_used, (int)stats_GLONASS_sats_used,(int)stats_rtk_fix_progress);
 }
 
-void Message_TopCon_PZS::internal_writeToStream(mrpt::utils::CStream &out) const
+void Message_TOPCON_PZS::internal_writeToStream(mrpt::utils::CStream &out) const
 {
 	out <<
 	latitude_degrees << longitude_degrees << height_meters <<
@@ -91,7 +91,7 @@ void Message_TopCon_PZS::internal_writeToStream(mrpt::utils::CStream &out) const
 	stats_GLONASS_sats_used << stats_rtk_fix_progress;
 }
 
-void Message_TopCon_PZS::internal_readFromStream(mrpt::utils::CStream &in)
+void Message_TOPCON_PZS::internal_readFromStream(mrpt::utils::CStream &in)
 {
 	in  >>
 	latitude_degrees >> longitude_degrees >> height_meters >>
@@ -106,12 +106,12 @@ void Message_TopCon_PZS::internal_readFromStream(mrpt::utils::CStream &in)
 }
 
 // -------------
-Message_TopCon_SATS::Message_TopCon_SATS() : 
+Message_TOPCON_SATS::Message_TOPCON_SATS() : 
 	gnss_message(TOPCON_SATS)
 {
 }
 
-void Message_TopCon_SATS::dumpToStream( mrpt::utils::CStream &out ) const
+void Message_TOPCON_SATS::dumpToStream( mrpt::utils::CStream &out ) const
 {
 	out.printf("\n[TopCon SATS datum]\n");
 	out.printf("  USI   ELEV    AZIM      (%u entries) \n",static_cast<unsigned int>(USIs.size()));
@@ -121,12 +121,12 @@ void Message_TopCon_SATS::dumpToStream( mrpt::utils::CStream &out ) const
 		out.printf(" %03i   %02i    %03i\n", (int)USIs[i], (int)ELs[i], (int)AZs[i] );
 }
 
-void Message_TopCon_SATS::internal_writeToStream(mrpt::utils::CStream &out) const
+void Message_TOPCON_SATS::internal_writeToStream(mrpt::utils::CStream &out) const
 {
 	out << USIs << ELs << AZs;
 }
 
-void Message_TopCon_SATS::internal_readFromStream(mrpt::utils::CStream &in)
+void Message_TOPCON_SATS::internal_readFromStream(mrpt::utils::CStream &in)
 {
 	in >> USIs >> ELs >> AZs;
 }

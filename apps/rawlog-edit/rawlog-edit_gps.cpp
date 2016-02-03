@@ -477,7 +477,7 @@ DECLARE_OP_FUNCTION(op_export_gps_txt)
 				TPoint3D  cart_pos(0,0,0), cart_vel(0,0,0);
 				TPoint3D  cart_vel_local(0,0,0);
 				if (obs->has_PZS_datum) {
-					const mrpt::obs::gnss::Message_TopCon_PZS & pzs = obs->getMsgByClass<mrpt::obs::gnss::Message_TopCon_PZS>();
+					const mrpt::obs::gnss::Message_TOPCON_PZS & pzs = obs->getMsgByClass<mrpt::obs::gnss::Message_TOPCON_PZS>();
 					if (pzs.hasCartesianPosVel) {
 						cart_pos.x = pzs.cartesian_x;
 						cart_pos.y = pzs.cartesian_y;
