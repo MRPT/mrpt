@@ -622,14 +622,14 @@ DECLARE_OP_FUNCTION(op_export_gps_all)
 					// The first line is a description of the columns:
 					std::stringstream buf;
 					msg_ptr->getAllFieldDescriptions(buf);
-					::fprintf(f_this,"%% %s\n%% ------------------------\n", buf.str().c_str());
+					::fprintf(f_this,"%% %16s %16s %s\n%% ------------------------\n", "GPS_UNIX_time","PC_UNIX_time", buf.str().c_str());
 				}
 				else
 					f_this = itF->second;
 
 				std::stringstream buf;
 				msg_ptr->getAllFieldValues(buf);
-				::fprintf(f_this,"%s\n", buf.str().c_str());
+				::fprintf(f_this,"%16.06f %16.06f %s\n", mrpt::system::timestampTotime_t(obs->timestamp),mrpt::system::timestampTotime_t(obs->originalReceivedTimestamp), buf.str().c_str());
 				m_GPS_entriesSaved++;
 
 			} // for each msg
@@ -639,15 +639,13 @@ DECLARE_OP_FUNCTION(op_export_gps_all)
 		// Destructor: close files and generate summary files:
 		~CRawlogProcessor_ExportGPS_ALL()
 		{
-			for (map<string, FILE*>::const_iterator  it=lstFiles.begin();it!=lstFiles.end();++it)
-			{
+			VERBOSE_COUT << "Number of different files saved   : " << lstFiles.size() << endl;
+
+			for (map<string, FILE*>::const_iterator  it=lstFiles.begin();it!=lstFiles.end();++it) {
 				os::fclose(it->second);
 			}
 			lstFiles.clear();
 
-			// Save the joint file:
-			// -------------------------
-			VERBOSE_COUT << "Number of different files saved  : " << lstFiles.size() << endl;
 		} // end of destructor
 	};
 
