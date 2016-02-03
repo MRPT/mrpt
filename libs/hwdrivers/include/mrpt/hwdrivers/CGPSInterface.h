@@ -31,8 +31,9 @@ namespace mrpt
 		  *
 		  * The parsers in the enum type CGPSInterface::PARSERS are supported as parameter `parser` in the 
 		  * configuration file below or in method CGPSInterface::setParser():
-		  *  - `NMEA` (NMEA 0183, ASCII messages): Default parser. Supported frames: GGA, RMC.
-		  *  - `NOVATEL_OEM6` (Novatel OEM6, binary frames): Supported frames: XXX
+		  *  - `AUTO`: Try to automatically identify the format of incomming data.
+		  *  - `NMEA` (NMEA 0183, ASCII messages): Default parser. Supported frames: GGA, RMC,... See full list of messages in children of mrpt::obs::gnss::gnss_message
+		  *  - `NOVATEL_OEM6` (Novatel OEM6, binary frames): Supported frames: BESTPOS,... See full list of messages in children of mrpt::obs::gnss::gnss_message
 		  *
 		  * See available parameters below, and an example config file for rawlog-grabber [here](https://github.com/MRPT/mrpt/blob/master/share/mrpt/config_files/rawlog-grabber/gps.ini)
 		  *
@@ -48,7 +49,7 @@ namespace mrpt
 		  *
 		  *  # Select a parser for GNSS data:
 		  *  # Up-to-date list of supported parsers available in http://reference.mrpt.org/devel/classmrpt_1_1hwdrivers_1_1_c_g_p_s_interface.html
-		  *  parser =  NMEA
+		  *  parser =  AUTO
 		  *
 		  *  # If uncommented and non-empty, raw binary/ascii data received from the serial port will be also dumped 
 		  *  # into a file named after this prefix, plus date/time and extension `.gps`.
@@ -107,6 +108,7 @@ namespace mrpt
 			/** Read about parser selection in the documentation for CGPSInterface */
 			enum PARSERS
 			{
+				AUTO         = -1,
 				NMEA         = 0,
 				NOVATEL_OEM6
 			};
@@ -235,8 +237,14 @@ namespace mrpt
 
 			void  parseBuffer(); //!< Process data in "m_buffer" to extract GPS messages, and remove them from the buffer.
 
-			void  implement_parser_NMEA();
-			void  implement_parser_NOVATEL_OEM6();
+			typedef bool (CGPSInterface::*ptr_parser_t)(size_t &out_minimum_rx_buf_to_decide);
+			/** @name Parser implementations: each method must try to parse the first bytes in the 
+			  *  incoming buffer, and return false if the available data does not match the expected format, so we must skip 1 byte and try again.
+			  * @{ */
+			bool implement_parser_NMEA(size_t &out_minimum_rx_buf_to_decide);
+			bool implement_parser_NOVATEL_OEM6(size_t &out_minimum_rx_buf_to_decide);
+
+			/** @} */
 
 			void  flushParsedMessagesNow();  //!< Queue out now the messages in \a m_just_parsed_messages, leaving it empty
 			mrpt::obs::CObservationGPS  m_just_parsed_messages; //!< A private copy of the last received gps datum
@@ -253,6 +261,7 @@ namespace mrpt
 			typedef hwdrivers::CGPSInterface::PARSERS enum_t;
 			static void fill(bimap<enum_t,std::string>  &m_map)
 			{
+				m_map.insert(hwdrivers::CGPSInterface::AUTO,          "AUTO");
 				m_map.insert(hwdrivers::CGPSInterface::NMEA,          "NMEA");
 				m_map.insert(hwdrivers::CGPSInterface::NOVATEL_OEM6,  "NOVATEL_OEM6");
 			}

@@ -23,7 +23,6 @@ using namespace std;
 
 IMPLEMENTS_GENERIC_SENSOR(CGPSInterface,mrpt::hwdrivers)
 
-MRPT_TODO("Export to binary file from rawlog-edit")
 MRPT_TODO("Import from ASCII/binary file with a new app: gps2rawlog")
 
 MRPT_TODO("new parse unit tests") // Example cmds: https://www.sparkfun.com/datasheets/GPS/NMEA%20Reference%20Manual-Rev2.1-Dec07.pdf
@@ -37,7 +36,7 @@ CGPSInterface::CGPSInterface() :
 	m_cs_out_COM         (NULL),
 	m_customInit         (),
 	m_rx_buffer          (0x10000),
-	m_parser             (CGPSInterface::NMEA),
+	m_parser             (CGPSInterface::AUTO),
 	m_raw_dump_file_prefix(),
 	m_COMname            (),
 	m_COMbauds           (4800),
@@ -401,13 +400,56 @@ void  CGPSInterface::flushParsedMessagesNow()
 ----------------------------------------------------- */
 void  CGPSInterface::parseBuffer()
 {
+	// Only one parser selected?
+	ptr_parser_t parser_ptr = NULL;
 	switch (m_parser)
 	{
-	case CGPSInterface::NMEA:           implement_parser_NMEA();           break;
-	case CGPSInterface::NOVATEL_OEM6:   implement_parser_NOVATEL_OEM6();   break;
-
-	default: throw std::runtime_error("[CGPSInterface] Unknown parser!");
+	case CGPSInterface::NMEA:           parser_ptr=&CGPSInterface::implement_parser_NMEA;           break;
+	case CGPSInterface::NOVATEL_OEM6:   parser_ptr=&CGPSInterface::implement_parser_NOVATEL_OEM6;   break;
+	case CGPSInterface::AUTO:   break; // Leave it as NULL
+	default:
+		throw std::runtime_error("[CGPSInterface] Unknown parser!");
 	};
+	if (parser_ptr)
+	{
+		// Use only one parser ----------
+		size_t min_bytes;
+		do
+		{
+			if (!(*this.*parser_ptr)(min_bytes)) 
+			{
+				m_rx_buffer.pop(); // Not the start of a frame, skip 1 byte
+			}
+		} while (m_rx_buffer.size()>=min_bytes);
+	} // end one parser mode ----------
+	else
+	{
+		// AUTO mode --------
+		static std::vector<ptr_parser_t> all_parsers;
+		static bool all_lst_init = false;
+		if (!all_lst_init)
+		{
+			all_lst_init=true;
+			all_parsers.push_back(&CGPSInterface::implement_parser_NMEA);
+			all_parsers.push_back(&CGPSInterface::implement_parser_NOVATEL_OEM6);
+		}
+		
+		size_t global_min_bytes_max=0;
+		do
+		{
+			bool all_parsers_want_to_skip = true;
+			for (size_t i=0;i<all_parsers.size();i++)
+			{
+				size_t this_parser_min_bytes;
+				if ((*this.*parser_ptr)(this_parser_min_bytes))
+					all_parsers_want_to_skip = false;
+				mrpt::utils::keep_max(global_min_bytes_max, this_parser_min_bytes);
+			}
+
+			if (all_parsers_want_to_skip)
+				m_rx_buffer.pop(); // Not the start of a frame, skip 1 byte
+		} while (m_rx_buffer.size()>=global_min_bytes_max);
+	} // end AUTO mode ----
 }
 
 /* -----------------------------------------------------
