@@ -203,7 +203,7 @@ bool Message_NV_OEM6_INSPVAS::getAllFieldDescriptions( std::ostream &o ) const
 bool Message_NV_OEM6_INSPVAS::getAllFieldValues( std::ostream &o ) const
 {
 	o << mrpt::format(
-		"%u %u %.09f %.09f %.06f %.05f %.05f %.05f %.05f %.05f %.05f",
+		"%u %.09f %.09f %.06f %.05f %.05f %.05f %.05f %.05f %.05f",
 		(unsigned)fields.ins_status,
 		fields.lon,fields.lat,fields.hgt,
 		fields.vel_north, fields.vel_east, fields.vel_up,

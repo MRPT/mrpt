@@ -24,6 +24,7 @@
 			- [velodyne-view](http://www.mrpt.org/list-of-mrpt-apps/application-velodyne-view/): Application to test, visualize and grab data from a live Velodyne sensor or from a PCAP record.
 		- Changes in apps:
 			- [rawlog-grabber](http://www.mrpt.org/list-of-mrpt-apps/application-rawlog-grabber/): Now does not show GPS and IMU debug data in console, unless `MRPT_HWDRIVERS_VERBOSE` environment variable is set.
+			- [rawlog-edit](http://www.mrpt.org/list-of-mrpt-apps/application-rawlog-edit/): New operation: `--export-gps-all`
 		- Changes in libraries:
 			- \ref mrpt_base_grp
 				- [ABI change] mrpt::system::tokenize() new parameter `skipBlankTokens`

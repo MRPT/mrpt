@@ -49,6 +49,7 @@ DECLARE_OP_FUNCTION(op_cut);
 DECLARE_OP_FUNCTION(op_export_gps_kml);
 DECLARE_OP_FUNCTION(op_export_gps_gas_kml);
 DECLARE_OP_FUNCTION(op_export_gps_txt);
+DECLARE_OP_FUNCTION(op_export_gps_all);
 DECLARE_OP_FUNCTION(op_export_imu_txt);
 DECLARE_OP_FUNCTION(op_export_odometry_txt);
 DECLARE_OP_FUNCTION(op_export_enose_txt);
@@ -177,12 +178,19 @@ int main(int argc, char **argv)
 		ops_functors["export-gps-gas-kml"] = &op_export_gps_gas_kml;
 
 		arg_ops.push_back(new TCLAP::SwitchArg("","export-gps-txt",
-			"Op: Export GPS readings to TXT files.\n"
+			"Op: Export GPS GPGGA messages to TXT files.\n"
 			"Generates one .txt file for each different sensor label of GPS observations in the dataset. "
 			"The generated .txt files will be saved in the same path than the input rawlog, with the same "
 			"filename + each sensorLabel."
 			,cmd,false) );
 		ops_functors["export-gps-txt"] = &op_export_gps_txt;
+
+		arg_ops.push_back(new TCLAP::SwitchArg("","export-gps-all",
+			"Op: Generic export all kinds of GPS/GNSS messages to separate TXT files.\n"
+			"Generates one .txt file for each different sensor label and for each "
+			"message type in the dataset, with a first header line describing each field."
+			,cmd,false) );
+		ops_functors["export-gps-all"] = &op_export_gps_all;
 
 		arg_ops.push_back(new TCLAP::SwitchArg("","export-imu-txt",
 			"Op: Export IMU readings to TXT files.\n"

@@ -272,8 +272,6 @@ DECLARE_OP_FUNCTION(op_export_gps_kml)
 
 }
 
-
-
 // ======================================================================
 //		op_export_gps_txt
 // ======================================================================
@@ -372,15 +370,6 @@ DECLARE_OP_FUNCTION(op_export_gps_txt)
 			m_GPS_entriesSaved(0)
 		{
 			getArgValue<string>(cmdline,"input",m_inFile);
-
-//		// Load configuration block:
-//		CConfigFileMemory	memFil;
-//		rawlog.getCommentTextAsConfigFile(memFil);
-//
-//		refCoords.lat = memFil.read_double("GPS_ORIGIN","lat_deg",0);
-//		refCoords.lon = memFil.read_double("GPS_ORIGIN","lon_deg",0);
-//		refCoords.height = memFil.read_double("GPS_ORIGIN","height",0);
-
 			m_filPrefix =
 				extractFileDirectory(m_inFile) +
 				extractFileName(m_inFile);
@@ -568,5 +557,108 @@ DECLARE_OP_FUNCTION(op_export_gps_txt)
 	// ---------------------------------
 	VERBOSE_COUT << "Time to process file (sec)        : " << proc.m_timToParse << "\n";
 	VERBOSE_COUT << "Number of records saved           : " << proc.m_GPS_entriesSaved << "\n";
-
 }
+
+// ======================================================================
+//		op_export_gps_all
+// ======================================================================
+DECLARE_OP_FUNCTION(op_export_gps_all)
+{
+	// A class to do this operation:
+	class CRawlogProcessor_ExportGPS_ALL : public CRawlogProcessorOnEachObservation
+	{
+	protected:
+		string              m_inFile;
+		map<string, FILE*>  lstFiles;
+		string              m_filPrefix;
+	public:
+		size_t m_GPS_entriesSaved;
+
+		CRawlogProcessor_ExportGPS_ALL(CFileGZInputStream &in_rawlog, TCLAP::CmdLine &cmdline, bool verbose) :
+			CRawlogProcessorOnEachObservation(in_rawlog,cmdline,verbose),
+			m_GPS_entriesSaved(0)
+		{
+			getArgValue<string>(cmdline,"input",m_inFile);
+			m_filPrefix =
+				extractFileDirectory(m_inFile) +
+				extractFileName(m_inFile);
+		}
+
+		// return false on any error.
+		bool processOneObservation(CObservationPtr  &o)
+		{
+			if (!IS_CLASS(o, CObservationGPS ) )
+				return true;
+
+			const CObservationGPS* obs = CObservationGPSPtr(o).pointer();
+
+			for (CObservationGPS::message_list_t::const_iterator it=obs->messages.begin();it!=obs->messages.end();++it)
+			{
+				const gnss::gnss_message* msg_ptr = it->second.get();
+				if (!msg_ptr) continue;
+				
+				const string sMsg = msg_ptr->getMessageTypeAsString();
+				if (sMsg.empty()) continue;
+
+				const string sLabelMsg = string(obs->sensorLabel)+string("_MSG_")+sMsg;
+				map<string, FILE*>::const_iterator  itF = lstFiles.find( sLabelMsg );
+
+				FILE *f_this;
+
+				if ( itF==lstFiles.end() )	// A new file for this sensorlabel??
+				{
+					const std::string fileName =
+						m_filPrefix+
+						string("_") +
+						fileNameStripInvalidChars( sLabelMsg ) +
+						string(".txt");
+
+					VERBOSE_COUT << "Writing GPS TXT file: " << fileName << endl;
+
+					f_this = lstFiles[sLabelMsg ] = os::fopen( fileName.c_str(), "wt");
+					if (!f_this)
+						THROW_EXCEPTION_CUSTOM_MSG1("Cannot open output file for write: %s", fileName.c_str() );
+
+					// The first line is a description of the columns:
+					std::stringstream buf;
+					msg_ptr->getAllFieldDescriptions(buf);
+					::fprintf(f_this,"%% %s\n%% ------------------------\n", buf.str().c_str());
+				}
+				else
+					f_this = itF->second;
+
+				std::stringstream buf;
+				msg_ptr->getAllFieldValues(buf);
+				::fprintf(f_this,"%s\n", buf.str().c_str());
+				m_GPS_entriesSaved++;
+
+			} // for each msg
+			return true; // All ok
+		}
+
+		// Destructor: close files and generate summary files:
+		~CRawlogProcessor_ExportGPS_ALL()
+		{
+			for (map<string, FILE*>::const_iterator  it=lstFiles.begin();it!=lstFiles.end();++it)
+			{
+				os::fclose(it->second);
+			}
+			lstFiles.clear();
+
+			// Save the joint file:
+			// -------------------------
+			VERBOSE_COUT << "Number of different files saved  : " << lstFiles.size() << endl;
+		} // end of destructor
+	};
+
+	// Process
+	// ---------------------------------
+	CRawlogProcessor_ExportGPS_ALL proc(in_rawlog,cmdline,verbose);
+	proc.doProcessRawlog();
+
+	// Dump statistics:
+	// ---------------------------------
+	VERBOSE_COUT << "Time to process file (sec)        : " << proc.m_timToParse << "\n";
+	VERBOSE_COUT << "Number of records saved           : " << proc.m_GPS_entriesSaved << "\n";
+}
+
