@@ -11,6 +11,7 @@
 
 #include <mrpt/obs/gnss_messages.h> // Must include all message classes so we can implemente the class factory here
 #include <mrpt/utils/CMemoryStream.h>
+#include <map>
 
 using namespace std;
 using namespace mrpt::obs::gnss;
