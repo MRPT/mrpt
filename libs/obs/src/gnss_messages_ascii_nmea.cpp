@@ -71,6 +71,27 @@ void Message_NMEA_GGA::dumpToStream( mrpt::utils::CStream &out ) const
 	else 	out.printf(" N/A\n");
 }
 
+bool Message_NMEA_GGA::getAllFieldDescriptions( std::ostream &o ) const
+{
+	o << "lon_deg lat_deg hgt_m undulation_m hour min sec num_sats fix_quality hdop";
+	return true;
+}
+bool Message_NMEA_GGA::getAllFieldValues( std::ostream &o ) const
+{
+	o << mrpt::format("%.09f %.09f %.04f %.04f %02u %02u %02.03f %2u %u %f",
+		fields.longitude_degrees,
+		fields.latitude_degrees,
+		fields.altitude_meters,
+		fields.geoidal_distance,
+		fields.UTCTime.hour,
+		fields.UTCTime.minute,
+		fields.UTCTime.sec,
+		fields.satellitesUsed,
+		fields.fix_quality,
+		fields.HDOP
+		);
+	return true;
+}
 
 // ---------------------------------------
 Message_NMEA_RMC::content_t::content_t() :
@@ -108,5 +129,27 @@ void Message_NMEA_RMC::dumpToStream( mrpt::utils::CStream &out ) const
 		fields.direction_degrees
 		);
 	out.printf(" Magnetic variation direction: %.04f deg\n ", fields.magnetic_dir);
-	}
+}
+
+bool Message_NMEA_RMC::getAllFieldDescriptions( std::ostream &o ) const
+{
+	o << "lon_deg lat_deg hour min sec speed_knots direction_deg";
+	return true;
+}
+bool Message_NMEA_RMC::getAllFieldValues( std::ostream &o ) const
+{
+	o << mrpt::format("%.09f %.09f %02u %02u %02.03f %.05f %.03f",
+		fields.longitude_degrees,
+		fields.latitude_degrees,
+		fields.UTCTime.hour,
+		fields.UTCTime.minute,
+		fields.UTCTime.sec,
+		fields.speed_knots,
+		fields.direction_degrees
+		);
+	return true;
+}
+
+
+
 

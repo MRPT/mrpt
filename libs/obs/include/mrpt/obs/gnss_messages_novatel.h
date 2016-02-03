@@ -190,6 +190,8 @@ GNSS_BINARY_MSG_DEFINITION_MID
 	inline TGEODETICCOORDS getAsStruct() const {
 		return TGEODETICCOORDS(fields.lat,fields.lon,fields.hgt);
 	}
+	bool getAllFieldDescriptions( std::ostream &o ) const MRPT_OVERRIDE;
+	bool getAllFieldValues( std::ostream &o ) const MRPT_OVERRIDE;
 GNSS_BINARY_MSG_DEFINITION_MID_END
 
 /** Novatel frame: NV_OEM6_INSPVAS. \sa mrpt::obs::CObservationGPS  */
@@ -209,6 +211,8 @@ GNSS_BINARY_MSG_DEFINITION_MID
 	inline TGEODETICCOORDS getAsStruct() const {
 		return TGEODETICCOORDS(fields.lat,fields.lon,fields.hgt);
 	}
+	bool getAllFieldDescriptions( std::ostream &o ) const MRPT_OVERRIDE;
+	bool getAllFieldValues( std::ostream &o ) const MRPT_OVERRIDE;
 GNSS_BINARY_MSG_DEFINITION_MID_END
 
 
@@ -221,7 +225,10 @@ GNSS_BINARY_MSG_DEFINITION_START(NV_OEM6_INSCOVS)
 	double     att_cov[9]; //!< Attitude covariance matrix of the SPAN frame to the local level frame.  (deg sq) xx,xy,xz,yx,yy,yz,zx,zy,zz
 	double     vel_cov[9]; //!< Velocity covariance matrix in local level frame. (metres/second squared) xx,xy,xz,yx,yy,yz,zx,zy,zz
 	uint32_t   crc;
-GNSS_BINARY_MSG_DEFINITION_END
+GNSS_BINARY_MSG_DEFINITION_MID
+	bool getAllFieldDescriptions( std::ostream &o ) const MRPT_OVERRIDE;
+	bool getAllFieldValues( std::ostream &o ) const MRPT_OVERRIDE;
+GNSS_BINARY_MSG_DEFINITION_MID_END
 
 /** Novatel frame: NV_OEM6_RANGECMP. \sa mrpt::obs::CObservationGPS  */
 struct OBS_IMPEXP Message_NV_OEM6_RANGECMP : public gnss_message
@@ -295,7 +302,10 @@ GNSS_BINARY_MSG_DEFINITION_START(NV_OEM6_RAWIMUS)
 	int32_t    accel_z, accel_y_neg, accel_x;
 	int32_t    gyro_z,gyro_y_neg,gyro_x;
 	uint32_t   crc;
-GNSS_BINARY_MSG_DEFINITION_END
+GNSS_BINARY_MSG_DEFINITION_MID
+	bool getAllFieldDescriptions( std::ostream &o ) const MRPT_OVERRIDE;
+	bool getAllFieldValues( std::ostream &o ) const MRPT_OVERRIDE;
+GNSS_BINARY_MSG_DEFINITION_MID_END
 
 /** Novatel frame: NV_OEM6_MARKPOS. \sa mrpt::obs::CObservationGPS  */
 GNSS_BINARY_MSG_DEFINITION_START(NV_OEM6_MARKPOS)
@@ -332,7 +342,10 @@ GNSS_BINARY_MSG_DEFINITION_START(NV_OEM6_MARKTIME)
 	double     utc_offset;
 	uint32_t   clock_status;
 	uint32_t   crc;
-GNSS_BINARY_MSG_DEFINITION_END
+GNSS_BINARY_MSG_DEFINITION_MID
+	bool getAllFieldDescriptions( std::ostream &o ) const MRPT_OVERRIDE;
+	bool getAllFieldValues( std::ostream &o ) const MRPT_OVERRIDE;
+GNSS_BINARY_MSG_DEFINITION_MID_END
 
 /** Novatel frame: NV_OEM6_MARK2TIME. \sa mrpt::obs::CObservationGPS  */
 GNSS_BINARY_MSG_DEFINITION_START(NV_OEM6_MARK2TIME)
@@ -342,6 +355,24 @@ GNSS_BINARY_MSG_DEFINITION_START(NV_OEM6_MARK2TIME)
 	double     clock_offset, clock_offset_std;
 	double     utc_offset;
 	uint32_t   clock_status;
+	uint32_t   crc;
+GNSS_BINARY_MSG_DEFINITION_MID
+	bool getAllFieldDescriptions( std::ostream &o ) const MRPT_OVERRIDE;
+	bool getAllFieldValues( std::ostream &o ) const MRPT_OVERRIDE;
+GNSS_BINARY_MSG_DEFINITION_MID_END
+
+/** Novatel frame: NV_OEM6_IONUTC. \sa mrpt::obs::CObservationGPS  */
+GNSS_BINARY_MSG_DEFINITION_START(NV_OEM6_IONUTC)
+	nv_oem6_header_t header;  //!< Frame header
+	double     a0,a1,a2,a3,b0,b1,b2,b3; // Ionospheric alpha and beta constant terms parameters
+	uint32_t   utc_wn; //!< UTC reference week number
+	uint32_t   tot;    //!< Reference time of UTC params
+	double     A0,A1;  //!< UTC constant and 1st order terms
+	uint32_t   wn_lsf; //!< Future week number
+	uint32_t   dn;     //!< Day number (1=sunday, 7=saturday)
+	uint32_t   deltat_ls;     //!< Delta time due to leap seconds
+	uint32_t   deltat_lsf;    //!< Delta time due to leap seconds (future)
+	uint32_t   reserved;
 	uint32_t   crc;
 GNSS_BINARY_MSG_DEFINITION_END
 

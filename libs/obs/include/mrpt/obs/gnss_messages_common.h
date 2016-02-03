@@ -37,7 +37,10 @@ struct OBS_IMPEXP gnss_message {
 
 	virtual void dumpToStream( mrpt::utils::CStream &out ) const = 0; //!< Dumps the contents of the observation in a human-readable form to a given output stream \sa dumpToConsole()
 	void dumpToConsole(std::ostream &o = std::cout) const; //!< Dumps the contents of the observation in a human-readable form to an std::ostream (default=console)
-    virtual ~gnss_message() {}
+	virtual bool getAllFieldDescriptions( std::ostream &o ) const { return false; } //!< Dumps a header for getAllFieldValues() \return false if not implemented for this message type
+	virtual bool getAllFieldValues( std::ostream &o ) const { return false; } //!< Dumps a line with the sequence of all field values (without a line feed at the end). \sa getAllFieldDescriptions() \return false if not implemented for this message type
+	const std::string & getMessageTypeAsString() const; //!< Returns "NMEA_GGA", etc.
+	virtual ~gnss_message() {}
 protected:
 	virtual void internal_writeToStream(mrpt::utils::CStream &out) const = 0; //!< Save to binary stream. Launches an exception upon error
 	virtual void internal_readFromStream(mrpt::utils::CStream &in) = 0; //!< Save to binary stream. Launches an exception upon error
@@ -88,6 +91,7 @@ public:
 	}; \
 	content_t  fields; /** Message content, accesible by individual fields */ \
 	void dumpToStream( mrpt::utils::CStream &out ) const MRPT_OVERRIDE;
+
 
 #define GNSS_BINARY_MSG_DEFINITION_MID_END \
 	};

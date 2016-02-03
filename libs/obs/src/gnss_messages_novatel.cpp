@@ -164,6 +164,27 @@ void Message_NV_OEM6_BESTPOS::dumpToStream( mrpt::utils::CStream &out ) const
 	generic_dump_BESTPOS(fields,out);
 }
 
+bool Message_NV_OEM6_BESTPOS::getAllFieldDescriptions( std::ostream &o ) const
+{
+	o << "solution_stat position_type lon_deg lat_deg hgt_m undulation_m lon_sigma_m lat_sigma_m hgt_sigma_m diff_age sol_age num_sats_tracked num_sats_sol";
+	return true;
+}
+bool Message_NV_OEM6_BESTPOS::getAllFieldValues( std::ostream &o ) const
+{
+	o << mrpt::format(
+		"%u %u %.09f %.09f %.06f %.04f %.06f %.06f %.06f %.03f %.03f %u %u",
+		(unsigned)fields.solution_stat,
+		(unsigned)fields.position_type,
+		fields.lon,fields.lat,fields.hgt, fields.undulation,
+		fields.lon_sigma, fields.lat_sigma, fields.hgt_sigma,
+		fields.diff_age, fields.sol_age,
+		(unsigned)fields.num_sats_tracked, (unsigned)fields.num_sats_sol
+		);
+	return true;
+}
+
+
+
 // ------------
 void Message_NV_OEM6_INSPVAS::dumpToStream( mrpt::utils::CStream &out ) const
 {
@@ -173,6 +194,25 @@ void Message_NV_OEM6_INSPVAS::dumpToStream( mrpt::utils::CStream &out ) const
 	out.printf(" Velocities: North: %.05f  East: %.05f  Up: %.05f\n", fields.vel_north, fields.vel_east, fields.vel_up);
 	out.printf(" Attitude: Roll: %.05f  Pitch: %.05f  Azimuth: %.05f\n", fields.roll, fields.pitch, fields.azimuth);
 }
+
+bool Message_NV_OEM6_INSPVAS::getAllFieldDescriptions( std::ostream &o ) const
+{
+	o << "ins_status lon_deg lat_deg ellip_height_WGS84 vel_north vel_east vel_up roll_deg pitch_deg azimuth_deg";
+	return true;
+}
+bool Message_NV_OEM6_INSPVAS::getAllFieldValues( std::ostream &o ) const
+{
+	o << mrpt::format(
+		"%u %u %.09f %.09f %.06f %.05f %.05f %.05f %.05f %.05f %.05f",
+		(unsigned)fields.ins_status,
+		fields.lon,fields.lat,fields.hgt,
+		fields.vel_north, fields.vel_east, fields.vel_up,
+		fields.roll, fields.pitch, fields.azimuth
+		);
+	return true;
+}
+
+
 
 // ------------
 void Message_NV_OEM6_INSCOVS::dumpToStream( mrpt::utils::CStream &out ) const
@@ -190,6 +230,29 @@ void Message_NV_OEM6_INSCOVS::dumpToStream( mrpt::utils::CStream &out ) const
 		fields.vel_cov[0],fields.vel_cov[1],fields.vel_cov[2],
 		fields.vel_cov[3],fields.vel_cov[4],fields.vel_cov[5],
 		fields.vel_cov[6],fields.vel_cov[7],fields.vel_cov[8]);
+}
+
+bool Message_NV_OEM6_INSCOVS::getAllFieldDescriptions( std::ostream &o ) const
+{
+	o << "pos_cov(*9) att-cov(*9) vel_cov(*9)";
+	return true;
+}
+bool Message_NV_OEM6_INSCOVS::getAllFieldValues( std::ostream &o ) const
+{
+	o << mrpt::format(
+		"%9.03f %9.03f %9.03f  %9.03f %9.03f %9.03f  %9.03f %9.03f %9.03f "
+		"%9.03f %9.03f %9.03f  %9.03f %9.03f %9.03f  %9.03f %9.03f %9.03f "
+		"%9.03f %9.03f %9.03f  %9.03f %9.03f %9.03f  %9.03f %9.03f %9.03f ",
+		fields.pos_cov[0],fields.pos_cov[1],fields.pos_cov[2],
+		fields.pos_cov[3],fields.pos_cov[4],fields.pos_cov[5],
+		fields.pos_cov[6],fields.pos_cov[7],fields.pos_cov[8],
+		fields.att_cov[0],fields.att_cov[1],fields.att_cov[2],
+		fields.att_cov[3],fields.att_cov[4],fields.att_cov[5],
+		fields.att_cov[6],fields.att_cov[7],fields.att_cov[8],
+		fields.vel_cov[0],fields.vel_cov[1],fields.vel_cov[2],
+		fields.vel_cov[3],fields.vel_cov[4],fields.vel_cov[5],
+		fields.vel_cov[6],fields.vel_cov[7],fields.vel_cov[8]);
+	return true;
 }
 
 // ------------
@@ -273,12 +336,30 @@ void Message_NV_OEM6_RAWIMUS::dumpToStream( mrpt::utils::CStream &out ) const
 	out.printf(" Gyro: X=%li Y=%li Z=%li\n",(long)fields.gyro_x,-(long)fields.gyro_y_neg,(long)fields.gyro_z);
 }
 
+bool Message_NV_OEM6_RAWIMUS::getAllFieldDescriptions( std::ostream &o ) const
+{
+	o << "imu_status acc_x acc_y acc_z gyro_x gyro_y gyro_z";
+	return true;
+}
+bool Message_NV_OEM6_RAWIMUS::getAllFieldValues( std::ostream &o ) const
+{
+	o << mrpt::format(
+		"%u %li %li %li",
+		(unsigned)fields.imu_status,
+		(long)fields.accel_x,-(long)fields.accel_y_neg,(long)fields.accel_z,
+		(long)fields.gyro_x,-(long)fields.gyro_y_neg,(long)fields.gyro_z
+		);
+	return true;
+}
+
+
 // ------------
 void generic_dump_MARKTIME(const Message_NV_OEM6_MARKTIME::content_t &fields,mrpt::utils::CStream &out)
 {
 	out.printf(" Clock status: 0x%08lu\n",(long)fields.clock_status);
 	out.printf(" GPS week: %lu Seconds: %f\n",(long)fields.week, fields.week_seconds);
 	out.printf(" Clock offset: %f  (std dev = %e)\n", fields.clock_offset,fields.clock_offset_std);
+	out.printf(" UTC offset: %f\n", fields.utc_offset);
 }
 
 void Message_NV_OEM6_MARKTIME::dumpToStream( mrpt::utils::CStream &out ) const
@@ -286,12 +367,43 @@ void Message_NV_OEM6_MARKTIME::dumpToStream( mrpt::utils::CStream &out ) const
 	out.printf("[Novatel OEM6 MARKTIME]\n");
 	generic_dump_MARKTIME(fields,out);
 }
+
+bool Message_NV_OEM6_MARKTIME::getAllFieldDescriptions( std::ostream &o ) const
+{
+	o << "clock_status week week_seconds utc_offset";
+	return true;
+}
+void generic_getFieldValues_MARKTIME(const Message_NV_OEM6_MARKTIME::content_t &fields, std::ostream &o)
+{
+	o << mrpt::format(
+		"%u %lu %f %f",
+		(long)fields.clock_status,
+		(long)fields.week, fields.week_seconds,
+		fields.utc_offset
+		);
+}
+bool Message_NV_OEM6_MARKTIME::getAllFieldValues( std::ostream &o ) const
+{
+	generic_getFieldValues_MARKTIME(fields,o);
+	return true;
+}
 // ------------
 void Message_NV_OEM6_MARK2TIME::dumpToStream( mrpt::utils::CStream &out ) const
 {
 	out.printf("[Novatel OEM6 MARK2TIME]\n");
 	generic_dump_MARKTIME(*reinterpret_cast<const Message_NV_OEM6_MARKTIME::content_t*>(&fields),out);
 }
+bool Message_NV_OEM6_MARK2TIME::getAllFieldDescriptions( std::ostream &o ) const
+{
+	o << "clock_status week week_seconds utc_offset";
+	return true;
+}
+bool Message_NV_OEM6_MARK2TIME::getAllFieldValues( std::ostream &o ) const
+{
+	generic_getFieldValues_MARKTIME(*reinterpret_cast<const Message_NV_OEM6_MARKTIME::content_t*>(&fields),o);
+	return true;
+}
+
 
 // ------------
 void Message_NV_OEM6_MARKPOS::dumpToStream( mrpt::utils::CStream &out ) const
@@ -300,5 +412,10 @@ void Message_NV_OEM6_MARKPOS::dumpToStream( mrpt::utils::CStream &out ) const
 	generic_dump_BESTPOS(*reinterpret_cast<const Message_NV_OEM6_BESTPOS::content_t*>(&fields),out);
 }
 
-
-
+// ------------
+void Message_NV_OEM6_IONUTC::dumpToStream( mrpt::utils::CStream &out ) const
+{
+	out.printf("[Novatel NV_OEM6_IONUTC]\n");
+	out.printf(" UTC ref week: %u  Tot: %u\n",(unsigned)fields.utc_wn, (unsigned)fields.tot);
+	out.printf(" Leap seconds delta_t: %u  future: %u\n",(unsigned)fields.deltat_ls, (unsigned)fields.deltat_lsf);
+}

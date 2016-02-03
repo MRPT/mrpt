@@ -60,6 +60,7 @@ enum gnss_message_type_t
 	NV_OEM6_GPRMC            =  225 + NV_OEM6_MSG2ENUM,
 	NV_OEM6_GPVTG            =  226 + NV_OEM6_MSG2ENUM,
 	NV_OEM6_GPZDA            =  227  + NV_OEM6_MSG2ENUM,
+	NV_OEM6_IONUTC           =    8  + NV_OEM6_MSG2ENUM,
 	NV_OEM6_MARKPOS          =  181  + NV_OEM6_MSG2ENUM,
 	NV_OEM6_MARK2POS         =  615  + NV_OEM6_MSG2ENUM,
 	NV_OEM6_MARKTIME         =  231  + NV_OEM6_MSG2ENUM,

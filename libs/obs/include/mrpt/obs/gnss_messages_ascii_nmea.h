@@ -63,6 +63,9 @@ struct OBS_IMPEXP Message_NMEA_GGA : public gnss_message
 	inline TGEODETICCOORDS getAsStruct() const {
 		return TGEODETICCOORDS(fields.latitude_degrees,fields.longitude_degrees,fields.altitude_meters);
 	}
+
+	bool getAllFieldDescriptions( std::ostream &o ) const MRPT_OVERRIDE;
+	bool getAllFieldValues( std::ostream &o ) const MRPT_OVERRIDE;
 };
 
 /** NMEA datum: RMC. \sa mrpt::obs::CObservationGPS   */
@@ -89,6 +92,8 @@ struct OBS_IMPEXP Message_NMEA_RMC : public gnss_message
 	content_t  fields; //!< Message content, accesible by individual fields
 
 	void dumpToStream( mrpt::utils::CStream &out ) const MRPT_OVERRIDE; // See docs in base
+	bool getAllFieldDescriptions( std::ostream &o ) const MRPT_OVERRIDE;
+	bool getAllFieldValues( std::ostream &o ) const MRPT_OVERRIDE;
 };
 
 #pragma pack(pop) // End of pack = 1
