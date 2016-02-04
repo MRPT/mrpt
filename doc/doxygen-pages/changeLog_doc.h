@@ -22,6 +22,7 @@
 	- <b>Detailed list of changes:</b>
 		- New apps:
 			- [velodyne-view](http://www.mrpt.org/list-of-mrpt-apps/application-velodyne-view/): Application to test, visualize and grab data from a live Velodyne sensor or from a PCAP record.
+			- [gps2rawlog](http://www.mrpt.org/list-of-mrpt-apps/application-gps2rawlog/): Application to parse raw dumps of a GPS (GNSS) receiver output.
 		- Changes in apps:
 			- [rawlog-grabber](http://www.mrpt.org/list-of-mrpt-apps/application-rawlog-grabber/): Now does not show GPS and IMU debug data in console, unless `MRPT_HWDRIVERS_VERBOSE` environment variable is set.
 			- [rawlog-edit](http://www.mrpt.org/list-of-mrpt-apps/application-rawlog-edit/): New operation: `--export-gps-all`

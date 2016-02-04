@@ -81,10 +81,10 @@ bool  CGPSInterface::implement_parser_NOVATEL_OEM6(size_t &out_minimum_rx_buf_to
 		// ------
 		mrpt::utils::CMemoryStream tmpStream;
 		const uint32_t msg_id = use_generic_container ? 
-			(uint32_t)(NV_OEM6_GENERIC_SHORT_FRAME-NV_OEM6_MSG2ENUM)
+			(uint32_t)(NV_OEM6_GENERIC_SHORT_FRAME)
 			: 
-			(uint32_t) hdr.msg_id;
-		tmpStream << (uint32_t )(msg_id+NV_OEM6_MSG2ENUM);
+			(uint32_t) hdr.msg_id+NV_OEM6_MSG2ENUM;
+		tmpStream << (uint32_t )(msg_id);
 		tmpStream << (uint32_t)(expected_total_msg_len);  // This len = hdr + hdr.msg_len + 4 (crc);
 		tmpStream.WriteBuffer(&buf[0],buf.size());
 
@@ -136,10 +136,10 @@ bool  CGPSInterface::implement_parser_NOVATEL_OEM6(size_t &out_minimum_rx_buf_to
 		// ------
 		mrpt::utils::CMemoryStream tmpStream;
 		const int32_t msg_id = use_generic_container ? 
-			(uint32_t)(NV_OEM6_GENERIC_FRAME-NV_OEM6_MSG2ENUM)
+			(uint32_t)(NV_OEM6_GENERIC_FRAME)
 			: 
-			(uint32_t) hdr.msg_id;
-		tmpStream << msg_id+NV_OEM6_MSG2ENUM;
+			(uint32_t) hdr.msg_id+NV_OEM6_MSG2ENUM;
+		tmpStream << msg_id;
 		tmpStream << (uint32_t)(expected_total_msg_len);
 		tmpStream.WriteBuffer(&buf[0],buf.size());
 

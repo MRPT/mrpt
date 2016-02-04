@@ -176,6 +176,15 @@ namespace mrpt
 			  */
 			std::string getLastGGA(bool reset=true);
 
+			typedef bool (CGPSInterface::*ptr_parser_t)(size_t &out_minimum_rx_buf_to_decide);
+
+			/** @name Parser implementations: each method must try to parse the first bytes in the 
+			  *  incoming buffer, and return false if the available data does not match the expected format, so we must skip 1 byte and try again.
+			  * @{ */
+			bool implement_parser_NMEA(size_t &out_minimum_rx_buf_to_decide);
+			bool implement_parser_NOVATEL_OEM6(size_t &out_minimum_rx_buf_to_decide);
+			/** @} */
+
 		protected:
 			/** Implements custom messages to be sent to the GPS unit just after connection and before normal use.
 			  *  Returns false or raise an exception if something goes wrong. */
@@ -244,15 +253,6 @@ namespace mrpt
 			bool  tryToOpenTheCOM();
 
 			void  parseBuffer(); //!< Process data in "m_buffer" to extract GPS messages, and remove them from the buffer.
-
-			typedef bool (CGPSInterface::*ptr_parser_t)(size_t &out_minimum_rx_buf_to_decide);
-			/** @name Parser implementations: each method must try to parse the first bytes in the 
-			  *  incoming buffer, and return false if the available data does not match the expected format, so we must skip 1 byte and try again.
-			  * @{ */
-			bool implement_parser_NMEA(size_t &out_minimum_rx_buf_to_decide);
-			bool implement_parser_NOVATEL_OEM6(size_t &out_minimum_rx_buf_to_decide);
-
-			/** @} */
 
 			void  flushParsedMessagesNow();  //!< Queue out now the messages in \a m_just_parsed_messages, leaving it empty
 			mrpt::obs::CObservationGPS  m_just_parsed_messages; //!< A private copy of the last received gps datum

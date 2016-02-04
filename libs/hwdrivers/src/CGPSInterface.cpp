@@ -14,6 +14,7 @@
 #include <mrpt/system/filesystem.h>
 #include <mrpt/hwdrivers/CGPSInterface.h>
 #include <mrpt/utils/CClientTCPSocket.h>
+#include <list>
 
 using namespace mrpt::hwdrivers;
 using namespace mrpt::obs;
@@ -24,10 +25,26 @@ using namespace std;
 
 IMPLEMENTS_GENERIC_SENSOR(CGPSInterface,mrpt::hwdrivers)
 
-MRPT_TODO("Import from ASCII/binary file with a new app: gps2rawlog")
-
 MRPT_TODO("new parse unit tests") // Example cmds: https://www.sparkfun.com/datasheets/GPS/NMEA%20Reference%20Manual-Rev2.1-Dec07.pdf
 
+struct TParsersRegistry
+{
+	std::list<CGPSInterface::ptr_parser_t> all_parsers;
+
+	static const TParsersRegistry & getInstance()
+	{
+		static TParsersRegistry reg;
+		return reg;
+	}
+
+private:
+	TParsersRegistry()
+	{
+		all_parsers.push_back( &CGPSInterface::implement_parser_NMEA );
+		all_parsers.push_back( &CGPSInterface::implement_parser_NOVATEL_OEM6 );
+	}
+};
+	
 /* -----------------------------------------------------
                 Constructor
    ----------------------------------------------------- */
@@ -416,21 +433,15 @@ void  CGPSInterface::parseBuffer()
 	else
 	{
 		// AUTO mode --------
-		static std::vector<ptr_parser_t> all_parsers;
-		static bool all_lst_init = false;
-		if (!all_lst_init)
-		{
-			all_lst_init=true;
-			all_parsers.push_back(&CGPSInterface::implement_parser_NMEA);
-			all_parsers.push_back(&CGPSInterface::implement_parser_NOVATEL_OEM6);
-		}
-		
+		const std::list<CGPSInterface::ptr_parser_t> &all_parsers = TParsersRegistry::getInstance().all_parsers;
+
 		size_t global_min_bytes_max=0;
 		do
 		{
 			bool all_parsers_want_to_skip = true;
-			for (size_t i=0;i<all_parsers.size();i++)
+			for (std::list<CGPSInterface::ptr_parser_t>::const_iterator it=all_parsers.begin();it!=all_parsers.end();++it)
 			{
+				parser_ptr = *it;
 				size_t this_parser_min_bytes;
 				if ((*this.*parser_ptr)(this_parser_min_bytes))
 					all_parsers_want_to_skip = false;

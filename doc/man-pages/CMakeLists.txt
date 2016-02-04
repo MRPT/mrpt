@@ -66,11 +66,10 @@ IF (PROG_GZIP AND PROG_POD2MAN)
 	CREATE_MANPAGE_PROJECT(kinect-stereo-calib)
 	CREATE_MANPAGE_PROJECT(robotic-arm-kinematics)
 	CREATE_MANPAGE_PROJECT(velodyne-view)
-
-
+	CREATE_MANPAGE_PROJECT(gps2rawlog)
 	CREATE_MANPAGE_PROJECT(rawlog-edit)
 	CREATE_MANPAGE_PROJECT(carmen2rawlog)
-        CREATE_MANPAGE_PROJECT(carmen2simplemap)
+	CREATE_MANPAGE_PROJECT(carmen2simplemap)
 #	CREATE_MANPAGE_PROJECT(rawlog2carmen)
 
 	CREATE_MANPAGE_PROJECT(DifOdometry-Datasets)

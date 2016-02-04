@@ -1,0 +1,56 @@
+=head1 NAME
+
+gps2rawlog - Command-line tool to import raw GPS/GNSS logs to RawLog
+
+=head1 SYNOPSIS
+
+   gps2rawlog
+
+=head1 USAGE EXAMPLES
+
+B<Typical use to parse a text or binary dump file:>
+
+gps2rawlog -i I<in.gps>  -o I<out.rawlog>
+
+=head1 DESCRIPTION
+
+B<gps2rawlog> is a command-line application to import raw GNSS receiver
+logs to MRP RawLog format.
+
+These are the supported arguments and operations:
+
+
+   --version
+     Displays version information and exits.
+
+   -h,  --help
+     Displays usage information and exits.
+
+--
+
+
+=head1 BUGS
+
+Please report bugs at https://github.com/MRPT/mrpt/issues
+
+=head1 SEE ALSO
+
+The GUI program RawLogViewer, and the application wiki pages
+at http://www.mrpt.org/
+
+=head1 AUTHORS
+
+B<gps2rawlog> is part of the Mobile Robot Programming Toolkit (MRPT), and 
+was originally written by the MAPIR laboratory (University of Malaga).
+
+This manual page was written by Jose Luis Blanco <joseluisblancoc@gmail.com>.
+
+=head1 COPYRIGHT
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of the BSD License.
+
+On Debian GNU/Linux systems, the complete text of the BSD License can be 
+found in `/usr/share/common-licenses/BSD'.
+
+=cut
