@@ -122,7 +122,7 @@ CGPSInterface::~CGPSInterface()
 {
 	OnConnectionShutdown();
 
-	if (!m_data_stream_is_external) 
+	if (!m_data_stream_is_external)
 	{
 		delete m_data_stream;
 		m_data_stream = NULL;
@@ -137,6 +137,11 @@ CGPSInterface::PARSERS CGPSInterface::getParser() const {
 }
 void CGPSInterface::bindStream(mrpt::utils::CStream * external_stream, mrpt::synch::CCriticalSection *csOptionalExternalStream)
 {
+	if (!m_data_stream_is_external) {
+		delete m_data_stream;
+		m_data_stream = NULL;
+	}
+
 	m_data_stream_is_external = true;
 	m_data_stream = external_stream;
 	m_data_stream_cs = csOptionalExternalStream;
@@ -384,6 +389,8 @@ void  CGPSInterface::flushParsedMessagesNow()
 ----------------------------------------------------- */
 void  CGPSInterface::parseBuffer()
 {
+	if (m_parser == CGPSInterface::NONE) return; // Dont try to parse data
+
 	// Only one parser selected?
 	ptr_parser_t parser_ptr = NULL;
 	switch (m_parser)
@@ -506,9 +513,13 @@ bool CGPSInterface::OnConnectionShutdown()
 		std::string sTx = m_shutdown_cmds[i];
 		if (m_custom_cmds_append_CRLF)
 			sTx+=std::string("\r\n");
-		const size_t written = m_data_stream->WriteBuffer(&sTx[0],sTx.size());
-		if (written!=sTx.size())
-			return false;
+		try 
+		{
+			CCriticalSectionLocker lock(m_data_stream_cs);
+			m_data_stream->WriteBuffer(&sTx[0],sTx.size());
+		} catch (...) {
+			return false; // On any I/O error
+		}
 
 		mrpt::system::sleep(m_custom_cmds_delay*1000);
 	}
@@ -529,8 +540,12 @@ bool CGPSInterface::OnConnectionEstablished()
 	}
 
 	// Purge input:
-	MRPT_TODO("Replace m_COM here and above by generic stream object")
-	m_COM.purgeBuffers();
+	CSerialPort *stream_serial = dynamic_cast<CSerialPort*>(m_data_stream);
+	if (stream_serial)
+	{
+		CCriticalSectionLocker lock( m_data_stream_cs );
+		stream_serial->purgeBuffers();
+	}	
 
 	// New behavior: Send generic commands set-up by the user in the config file.
 
@@ -543,12 +558,16 @@ bool CGPSInterface::OnConnectionEstablished()
 		std::string sTx = m_setup_cmds[i];
 		if (m_custom_cmds_append_CRLF) 
 			sTx+=std::string("\r\n");
-		const size_t written = m_COM.Write(&sTx[0],sTx.size());
-		ASSERT_EQUAL_(written,sTx.size());
 
+		try {
+			CCriticalSectionLocker lock( m_data_stream_cs );
+			m_data_stream->WriteBuffer(&sTx[0],sTx.size());
+		} catch (std::exception &e) {
+			std::cerr << "[CGPSInterface::OnConnectionEstablished] Error sending setup cmds: " << e.what() << std::endl;
+			return false;
+		}
 		mrpt::system::sleep(m_custom_cmds_delay*1000);
 	}
-
 	mrpt::system::sleep(m_custom_cmds_delay*1000);
 	return true;
 }
@@ -565,13 +584,12 @@ bool CGPSInterface::unsetJAVAD_AIM_mode()
 		mrpt::system::sleep(1000);
 
 		// Purge input:
-		if( useExternCOM() )
+		CSerialPort *stream_serial = dynamic_cast<CSerialPort*>(m_data_stream);
+		if (stream_serial)
 		{
-		    CCriticalSectionLocker lock( m_cs_out_COM );
-		    m_out_COM->purgeBuffers();
+			CCriticalSectionLocker lock( m_data_stream_cs );
+			stream_serial->purgeBuffers();
 		}
-		else
-			m_COM.purgeBuffers();
 
 		JAVAD_sendMessage("%%set,/par/cur/term/imode,cmd\r\n");                // set the current port in command mode
 		return true;
@@ -704,12 +722,15 @@ bool CGPSInterface::legacy_topcon_setup_commands()
 /** Send a custom data block to the GNSS device right now. Can be used to change its behavior online as needed. */
 bool CGPSInterface::sendCustomCommand(const void* data, const size_t datalen)
 {
-	try {
-		MRPT_TODO("Replace m_COM here by generic stream object")
-		//const size_t written = m_COM.Write(data,datalen);
-		return true;//written == datalen;
-	}
-	catch(...) {
+	try 
+	{
+		CCriticalSectionLocker lock( m_data_stream_cs );
+		m_data_stream->WriteBuffer(data,datalen);
+		return true;
+	} 
+	catch (std::exception &e) 
+	{
+		std::cerr << "[CGPSInterface::sendCustomCommand] Error sending cmd: " << e.what() << std::endl;
 		return false;
 	}
 }

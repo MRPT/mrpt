@@ -34,6 +34,7 @@ namespace mrpt
 		  *
 		  * The parsers in the enum type CGPSInterface::PARSERS are supported as parameter `parser` in the 
 		  * configuration file below or in method CGPSInterface::setParser():
+		  *  - `NONE`: Do not try to parse the messages into CObservation's. Only useful if combined with `raw_dump_file_prefix`
 		  *  - `AUTO`: Try to automatically identify the format of incomming data.
 		  *  - `NMEA` (NMEA 0183, ASCII messages): Default parser. Supported frames: GGA, RMC,... See full list of messages in children of mrpt::obs::gnss::gnss_message
 		  *  - `NOVATEL_OEM6` (Novatel OEM6, binary frames): Supported frames: BESTPOS,... See full list of messages in children of mrpt::obs::gnss::gnss_message
@@ -89,12 +90,12 @@ namespace mrpt
 		  *  <div align=center> <img src="mrpt_gps_classes_usage.png"> </div>
 		  *
 		  * <b>VERSIONS HISTORY:</b>
-		  * - 9/JUN/2006: First version (JLBC)
-		  * - 4/JUN/2008: Added virtual methods for device-specific initialization commands.
+		  * - 09/JUN/2006: First version (JLBC)
+		  * - 04/JUN/2008: Added virtual methods for device-specific initialization commands.
 		  * - 10/JUN/2008: Converted into CGenericSensor class (there are no inhirited classes anymore).
-		  * - 7/DEC/2012: Added public static method to parse NMEA strings.
+		  * - 07/DEC/2012: Added public static method to parse NMEA strings.
 		  * - 17/JUN/2014: Added GGA feedback.
-		  * - 24/JAN/2015: API changed for MTPT 1.4.0
+		  * - 01/FEB/2016: API changed for MTPT 1.4.0
 		  *
 		  *  \note Verbose debug info will be dumped to cout if the environment variable "MRPT_HWDRIVERS_VERBOSE" is set to "1", or if you call CGenericSensor::enableVerbose(true)
 		  *  \note 
@@ -111,6 +112,7 @@ namespace mrpt
 			/** Read about parser selection in the documentation for CGPSInterface */
 			enum PARSERS
 			{
+				NONE         = -2,
 				AUTO         = -1,
 				NMEA         = 0,
 				NOVATEL_OEM6
@@ -267,6 +269,7 @@ namespace mrpt
 			typedef hwdrivers::CGPSInterface::PARSERS enum_t;
 			static void fill(bimap<enum_t,std::string>  &m_map)
 			{
+				m_map.insert(hwdrivers::CGPSInterface::NONE,          "NONE");
 				m_map.insert(hwdrivers::CGPSInterface::AUTO,          "AUTO");
 				m_map.insert(hwdrivers::CGPSInterface::NMEA,          "NMEA");
 				m_map.insert(hwdrivers::CGPSInterface::NOVATEL_OEM6,  "NOVATEL_OEM6");
