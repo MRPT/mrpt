@@ -23,52 +23,65 @@ MRPT_TODO("Parse more frames")
 
 const size_t MAX_NMEA_LINE_LENGTH = 1024;
 
-void  CGPSInterface::implement_parser_NMEA()
+bool  CGPSInterface::implement_parser_NMEA(size_t &out_minimum_rx_buf_to_decide)
 {
-	while (m_rx_buffer.size()>=3)
+	out_minimum_rx_buf_to_decide = 3;
+
+	if (m_rx_buffer.size()<3)
+		return true; // no need to skip a byte
+
+	const size_t nBytesAval = m_rx_buffer.size();  // Available for read
+
+	// If the string does not start with "$GP" it is not valid:
+	uint8_t peek_buffer[3];
+	m_rx_buffer.peek_many(&peek_buffer[0],3);
+	if (peek_buffer[0]!='$' || peek_buffer[1]!='G' || peek_buffer[2]!='P') {
+		// Not the start of a NMEA string, skip 1 char:
+		return false;
+	}
+	else 
 	{
-		const size_t nBytesAval = m_rx_buffer.size();  // Available for read
-
-		// If the string does not start with "$GP" it is not valid:
-		uint8_t peek_buffer[3];
-		m_rx_buffer.peek_many(&peek_buffer[0],3);
-		if (peek_buffer[0]!='$' || peek_buffer[1]!='G' || peek_buffer[2]!='P') {
-			// Not the start of a NMEA string, skip 1 char:
-			m_rx_buffer.pop();
-			continue;
-		}
-		else 
+		// It starts OK: try to find the end of the line
+		std::string  line;
+		bool line_is_ended = false;
+		for (size_t i=0;i<nBytesAval && i<MAX_NMEA_LINE_LENGTH;i++)
 		{
-			// It starts OK: try to find the end of the line
-			std::string  line;
-			bool line_is_ended = false;
-			for (size_t i=0;i<nBytesAval && i<MAX_NMEA_LINE_LENGTH;i++)
-			{
-				const char val = static_cast<char>(m_rx_buffer.peek(i));
-				if (val=='\r' || val=='\n') {
-					line_is_ended = true;
-					break;
-				}
-				line.push_back(val);
+			const char val = static_cast<char>(m_rx_buffer.peek(i));
+			if (val=='\r' || val=='\n') {
+				line_is_ended = true;
+				break;
 			}
-			if (line_is_ended)
-			{ 
-				// Pop from buffer:
-				for (size_t i=0;i<line.size();i++) m_rx_buffer.pop();
-
-				// Parse:
-				const bool did_have_gga = m_just_parsed_messages.has_GGA_datum;
-				if (CGPSInterface::parse_NMEA(line,m_just_parsed_messages, false /*verbose*/))
-				{
-					// Save GGA cache (useful for NTRIP,...)
-					const bool now_has_gga = m_just_parsed_messages.has_GGA_datum;
-					if (now_has_gga && !did_have_gga) {
-						m_last_GGA = line;
-					}
-				}
-			}
+			line.push_back(val);
 		}
-	} // end while data in buffer
+		if (line_is_ended)
+		{
+			// Pop from buffer:
+			for (size_t i=0;i<line.size();i++) m_rx_buffer.pop();
+
+			// Parse:
+			const bool did_have_gga = m_just_parsed_messages.has_GGA_datum;
+			if (CGPSInterface::parse_NMEA(line,m_just_parsed_messages, false /*verbose*/))
+			{
+				// Save GGA cache (useful for NTRIP,...)
+				const bool now_has_gga = m_just_parsed_messages.has_GGA_datum;
+				if (now_has_gga && !did_have_gga) {
+					m_last_GGA = line;
+				}
+			}
+			else
+			{
+				if (m_verbose)
+					std::cerr << "[CGPSInterface::implement_parser_NMEA] Line of unknown format ignored: `"<<line<<"`\n";
+			}
+			return true;
+		}
+		else
+		{
+			// We still need to wait for more data to be read:
+			out_minimum_rx_buf_to_decide = nBytesAval+1;
+			return true;
+		}
+	}
 }
 
 /* -----------------------------------------------------

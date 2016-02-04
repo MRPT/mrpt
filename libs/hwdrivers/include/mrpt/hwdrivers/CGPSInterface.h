@@ -27,12 +27,17 @@ namespace mrpt
 		/** A class capable of reading GPS/GNSS/GNSS+IMU receiver data, from a serial port or from any input stream, 
 		  *  and \b parsing the ASCII/binary stream into indivual messages \b stored in mrpt::obs::CObservationGPS objects.
 		  *
-		  * Typical input streams are serial ports or raw GPS log files.
+		  * Typical input streams are serial ports or raw GPS log files. By default, the serial port selected by CGPSInterface::setSerialPortName()
+		  * or as set in the configuration file will be open upon call to CGenericSensor::initialize(). 
+		  * Alternatively, an external stream can be bound with CGPSInterface::bindStream() before calling CGenericSensor::initialize(). 
+		  * This feature can be used to parse commands from a file, a TCP/IP stream, a memory block, etc.
 		  *
 		  * The parsers in the enum type CGPSInterface::PARSERS are supported as parameter `parser` in the 
 		  * configuration file below or in method CGPSInterface::setParser():
-		  *  - `NMEA` (NMEA 0183, ASCII messages): Default parser. Supported frames: GGA, RMC.
-		  *  - `NOVATEL_OEM6` (Novatel OEM6, binary frames): Supported frames: XXX
+		  *  - `NONE`: Do not try to parse the messages into CObservation's. Only useful if combined with `raw_dump_file_prefix`
+		  *  - `AUTO`: Try to automatically identify the format of incomming data.
+		  *  - `NMEA` (NMEA 0183, ASCII messages): Default parser. Supported frames: GGA, RMC,... See full list of messages in children of mrpt::obs::gnss::gnss_message
+		  *  - `NOVATEL_OEM6` (Novatel OEM6, binary frames): Supported frames: BESTPOS,... See full list of messages in children of mrpt::obs::gnss::gnss_message
 		  *
 		  * See available parameters below, and an example config file for rawlog-grabber [here](https://github.com/MRPT/mrpt/blob/master/share/mrpt/config_files/rawlog-grabber/gps.ini)
 		  *
@@ -48,7 +53,7 @@ namespace mrpt
 		  *
 		  *  # Select a parser for GNSS data:
 		  *  # Up-to-date list of supported parsers available in http://reference.mrpt.org/devel/classmrpt_1_1hwdrivers_1_1_c_g_p_s_interface.html
-		  *  parser =  NMEA
+		  *  parser =  AUTO
 		  *
 		  *  # If uncommented and non-empty, raw binary/ascii data received from the serial port will be also dumped 
 		  *  # into a file named after this prefix, plus date/time and extension `.gps`.
@@ -85,12 +90,12 @@ namespace mrpt
 		  *  <div align=center> <img src="mrpt_gps_classes_usage.png"> </div>
 		  *
 		  * <b>VERSIONS HISTORY:</b>
-		  * - 9/JUN/2006: First version (JLBC)
-		  * - 4/JUN/2008: Added virtual methods for device-specific initialization commands.
+		  * - 09/JUN/2006: First version (JLBC)
+		  * - 04/JUN/2008: Added virtual methods for device-specific initialization commands.
 		  * - 10/JUN/2008: Converted into CGenericSensor class (there are no inhirited classes anymore).
-		  * - 7/DEC/2012: Added public static method to parse NMEA strings.
+		  * - 07/DEC/2012: Added public static method to parse NMEA strings.
 		  * - 17/JUN/2014: Added GGA feedback.
-		  * - 24/JAN/2015: API changed for MTPT 1.4.0
+		  * - 01/FEB/2016: API changed for MTPT 1.4.0
 		  *
 		  *  \note Verbose debug info will be dumped to cout if the environment variable "MRPT_HWDRIVERS_VERBOSE" is set to "1", or if you call CGenericSensor::enableVerbose(true)
 		  *  \note 
@@ -107,6 +112,8 @@ namespace mrpt
 			/** Read about parser selection in the documentation for CGPSInterface */
 			enum PARSERS
 			{
+				NONE         = -2,
+				AUTO         = -1,
 				NMEA         = 0,
 				NOVATEL_OEM6
 			};
@@ -127,7 +134,17 @@ namespace mrpt
 			void  setParser(PARSERS parser);  //!< Select the parser for incomming data, among the options enumerated in \a CGPSInterface
 			PARSERS getParser() const;
 
-			void setExternCOM( CSerialPort *outPort, mrpt::synch::CCriticalSection *csOutPort );
+			//void setExternCOM( CSerialPort *outPort, mrpt::synch::CCriticalSection *csOutPort ); // Replaced by bindStream() in MRPT 1.4.0
+
+			/** This enforces the use of a given user stream, instead of trying to open the serial port set in this class parameters.
+			  * \param[in] csExternalStream If not NULL, read/write operations to the stream will be guarded by this critical section.
+			  * The stream object is not deleted. It is the user responsibility to keep that object allocated during the entire life of this object.
+			  * \note Call before CGenericSensor::initialize()
+			  */
+			void bindStream(mrpt::utils::CStream * external_stream, mrpt::synch::CCriticalSection *csOptionalExternalStream = NULL );
+
+			bool useExternCOM() const { return m_data_stream_is_external; }
+			bool useExternalStream() const { return m_data_stream_is_external; }
 
 			void setSetupCommandsDelay(const double delay_secs);
 			double getSetupCommandsDelay() const;
@@ -159,6 +176,15 @@ namespace mrpt
 			  */
 			std::string getLastGGA(bool reset=true);
 
+			typedef bool (CGPSInterface::*ptr_parser_t)(size_t &out_minimum_rx_buf_to_decide);
+
+			/** @name Parser implementations: each method must try to parse the first bytes in the 
+			  *  incoming buffer, and return false if the available data does not match the expected format, so we must skip 1 byte and try again.
+			  * @{ */
+			bool implement_parser_NMEA(size_t &out_minimum_rx_buf_to_decide);
+			bool implement_parser_NOVATEL_OEM6(size_t &out_minimum_rx_buf_to_decide);
+			/** @} */
+
 		protected:
 			/** Implements custom messages to be sent to the GPS unit just after connection and before normal use.
 			  *  Returns false or raise an exception if something goes wrong. */
@@ -167,12 +193,9 @@ namespace mrpt
 
 			bool legacy_topcon_setup_commands();
 
-			CSerialPort		m_COM;
-
-			// MAR'11 -------------------------------------
-			CSerialPort		                *m_out_COM;
-			mrpt::synch::CCriticalSection   *m_cs_out_COM;
-			// --------------------------------------------
+			mrpt::utils::CStream           *m_data_stream;    //!< Typically a CSerialPort created by this class, but may be set externally.
+			mrpt::synch::CCriticalSection  *m_data_stream_cs;
+			bool                            m_data_stream_is_external;
 
 			poses::CPose3D  m_sensorPose;
 			std::string     m_customInit;
@@ -198,10 +221,6 @@ namespace mrpt
 
 			/** Unset Advanced Input Mode for the primary port and use it only as a command port. */
 			bool unsetJAVAD_AIM_mode();
-
-			// MAR'11 -------------------------------------
-			inline bool useExternCOM() const { return (m_out_COM!=NULL); }
-			// --------------------------------------------
 
 		private:
 			mrpt::utils::circular_buffer<uint8_t> m_rx_buffer; //!< Auxiliary buffer for readings
@@ -235,9 +254,6 @@ namespace mrpt
 
 			void  parseBuffer(); //!< Process data in "m_buffer" to extract GPS messages, and remove them from the buffer.
 
-			void  implement_parser_NMEA();
-			void  implement_parser_NOVATEL_OEM6();
-
 			void  flushParsedMessagesNow();  //!< Queue out now the messages in \a m_just_parsed_messages, leaving it empty
 			mrpt::obs::CObservationGPS  m_just_parsed_messages; //!< A private copy of the last received gps datum
 			std::string   m_last_GGA; //!< Used in getLastGGA()
@@ -253,6 +269,8 @@ namespace mrpt
 			typedef hwdrivers::CGPSInterface::PARSERS enum_t;
 			static void fill(bimap<enum_t,std::string>  &m_map)
 			{
+				m_map.insert(hwdrivers::CGPSInterface::NONE,          "NONE");
+				m_map.insert(hwdrivers::CGPSInterface::AUTO,          "AUTO");
 				m_map.insert(hwdrivers::CGPSInterface::NMEA,          "NMEA");
 				m_map.insert(hwdrivers::CGPSInterface::NOVATEL_OEM6,  "NOVATEL_OEM6");
 			}

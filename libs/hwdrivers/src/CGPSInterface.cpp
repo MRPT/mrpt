@@ -13,6 +13,8 @@
 #include <mrpt/synch/CCriticalSection.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/hwdrivers/CGPSInterface.h>
+#include <mrpt/utils/CClientTCPSocket.h>
+#include <list>
 
 using namespace mrpt::hwdrivers;
 using namespace mrpt::obs;
@@ -23,21 +25,36 @@ using namespace std;
 
 IMPLEMENTS_GENERIC_SENSOR(CGPSInterface,mrpt::hwdrivers)
 
-MRPT_TODO("Export to binary file from rawlog-edit")
-MRPT_TODO("Import from ASCII/binary file with a new app: gps2rawlog")
-
 MRPT_TODO("new parse unit tests") // Example cmds: https://www.sparkfun.com/datasheets/GPS/NMEA%20Reference%20Manual-Rev2.1-Dec07.pdf
 
+struct TParsersRegistry
+{
+	std::list<CGPSInterface::ptr_parser_t> all_parsers;
+
+	static const TParsersRegistry & getInstance()
+	{
+		static TParsersRegistry reg;
+		return reg;
+	}
+
+private:
+	TParsersRegistry()
+	{
+		all_parsers.push_back( &CGPSInterface::implement_parser_NMEA );
+		all_parsers.push_back( &CGPSInterface::implement_parser_NOVATEL_OEM6 );
+	}
+};
+	
 /* -----------------------------------------------------
                 Constructor
    ----------------------------------------------------- */
 CGPSInterface::CGPSInterface() :
-	m_COM                (),
-	m_out_COM            (NULL),
-	m_cs_out_COM         (NULL),
+	m_data_stream(NULL),    // Typically a CSerialPort created by this class, but may be set externally.
+	m_data_stream_cs(NULL),
+	m_data_stream_is_external(false),
 	m_customInit         (),
 	m_rx_buffer          (0x10000),
-	m_parser             (CGPSInterface::NMEA),
+	m_parser             (CGPSInterface::AUTO),
 	m_raw_dump_file_prefix(),
 	m_COMname            (),
 	m_COMbauds           (4800),
@@ -121,6 +138,12 @@ void  CGPSInterface::loadConfig_sensorSpecific(
 CGPSInterface::~CGPSInterface()
 {
 	OnConnectionShutdown();
+
+	if (!m_data_stream_is_external)
+	{
+		delete m_data_stream;
+		m_data_stream = NULL;
+	}
 }
 
 void CGPSInterface::setParser(CGPSInterface::PARSERS parser) {
@@ -129,10 +152,16 @@ void CGPSInterface::setParser(CGPSInterface::PARSERS parser) {
 CGPSInterface::PARSERS CGPSInterface::getParser() const {
 	return m_parser;
 }
-void CGPSInterface::setExternCOM( CSerialPort *outPort, mrpt::synch::CCriticalSection *csOutPort )
-{ 
-	m_out_COM = outPort; 
-	m_cs_out_COM = csOutPort; 
+void CGPSInterface::bindStream(mrpt::utils::CStream * external_stream, mrpt::synch::CCriticalSection *csOptionalExternalStream)
+{
+	if (!m_data_stream_is_external) {
+		delete m_data_stream;
+		m_data_stream = NULL;
+	}
+
+	m_data_stream_is_external = true;
+	m_data_stream = external_stream;
+	m_data_stream_cs = csOptionalExternalStream;
 }
 void CGPSInterface::setSetupCommandsDelay(const double delay_secs) {
 	m_custom_cmds_delay = delay_secs;
@@ -164,21 +193,19 @@ bool CGPSInterface::isEnabledSetupCommandsAppendCRLF() const {
 ----------------------------------------------------- */
 void  CGPSInterface::setSerialPortName(const std::string &COM_port)
 {
-    // MAR'11
-    if( useExternCOM() )
-    {
-        bool res = false;
-        {
-            CCriticalSectionLocker lock( m_cs_out_COM );
-            res = m_out_COM->isOpen();
-        }
-        if( res )
-            THROW_EXCEPTION("Cannot change serial port name when it's already open")
-	}
-	else
-        if (m_COM.isOpen())
-            THROW_EXCEPTION("Cannot change serial port name when it's already open")
+	// Dont allow changing the serial port if:
+	if (m_data_stream_is_external)
+		THROW_EXCEPTION("Cannot change serial port name: an external stream has been already bound manually.")
 
+	if (m_data_stream)
+	{
+		CCriticalSectionLocker lock(m_data_stream_cs);
+		CSerialPort *serial = dynamic_cast<CSerialPort*>(m_data_stream);
+		if (serial && serial->isOpen())
+			THROW_EXCEPTION("Cannot change serial port name when it is already open")
+	}
+
+	// OK:
 	m_COMname = COM_port;
 }
 
@@ -195,67 +222,46 @@ std::string CGPSInterface::getSerialPortName() const
 ----------------------------------------------------- */
 bool  CGPSInterface::tryToOpenTheCOM()
 {
-	if( useExternCOM() )
+	// If this is the first use of the COM port, create it:
+	if (!m_data_stream)
 	{
-		bool res = false;
-		{
-			CCriticalSectionLocker loc( m_cs_out_COM );
-			res = m_out_COM->isOpen();
-		}
-		if( res )
-			return true;	// Already open
+		m_data_stream = new CSerialPort();
+		m_data_stream_is_external = false;
 	}
-	else
-		if (m_COM.isOpen())
-			return true;	// Already open
 
-	if (m_verbose) cout << "[CGPSInterface] Opening " << m_COMname << " @ " << m_COMbauds << endl;
-
-	try
+	CSerialPort *serial = dynamic_cast<CSerialPort*>(m_data_stream);
+	if (serial)
 	{
-		if( useExternCOM() )
-		{
-			CCriticalSectionLocker lock( m_cs_out_COM );
-			m_out_COM->open(m_COMname);
-			// Config:
-			m_out_COM->setConfig( m_COMbauds, 0, 8, 1 );
-			m_out_COM->setTimeouts( 1, 0, 1, 1, 1 );
-		}
-		else
-		{
-			m_COM.open(m_COMname);
-			// Config:
-			m_COM.setConfig( m_COMbauds, 0, 8, 1 );
-			m_COM.setTimeouts( 1, 0, 1, 1, 1 );
-		}
+		CCriticalSectionLocker lock(m_data_stream_cs);
+		if (serial->isOpen())
+			return true;  // Already open
 
-		// Do extra initialization?
-		if (! OnConnectionEstablished() )
+		if (m_verbose) cout << "[CGPSInterface] Opening " << m_COMname << " @ " << m_COMbauds << endl;
+
+		try
 		{
-			if( useExternCOM() )
+			serial->open(m_COMname);
+			// Config:
+			serial->setConfig( m_COMbauds, 0, 8, 1 );
+			serial->setTimeouts( 1, 0, 1, 1, 1 );
+
+			// Do extra initialization?
+			if (! OnConnectionEstablished() )
 			{
-				CCriticalSectionLocker lock( m_cs_out_COM );
-				m_out_COM->close();
+				serial->close();
+				return false;
 			}
-			else
-				m_COM.close();
+			return true; // All OK
+		}
+		catch (std::exception &e)
+		{
+			std::cerr << "[CGPSInterface::tryToOpenTheCOM] Error opening or configuring serial port:" << std::endl << e.what();
+			serial->close();
 			return false;
 		}
+	} // end of this is a serial port
 
-		return true; // All OK!
-	}
-	catch (std::exception &e)
-	{
-		std::cerr << "[CGPSInterface::tryToOpenTheCOM] Error opening or configuring the serial port:" << std::endl << e.what();
-		if( useExternCOM() )
-		{
-			CCriticalSectionLocker lock( m_cs_out_COM );
-			m_out_COM->close();
-		}
-		else
-			m_COM.close();
-		return false;
-	}
+	return true; // All OK
 }
 
 /* -----------------------------------------------------
@@ -276,6 +282,9 @@ void  CGPSInterface::doProcess()
 		m_state = ssError;
 		THROW_EXCEPTION("Could not open the input stream");
 	}
+	ASSERT_(m_data_stream!=NULL)
+	CSerialPort *stream_serial = dynamic_cast<CSerialPort*>(m_data_stream);
+	CClientTCPSocket *stream_tcpip  = dynamic_cast<CClientTCPSocket*>(m_data_stream);
 
 	// Read as many bytes as available:
 	uint8_t       buf[0x1000];
@@ -285,20 +294,19 @@ void  CGPSInterface::doProcess()
 		size_t nRead=0;
 		if (to_read>0)
 		{
-			MRPT_TODO("handle tcp/ip streams")
-			/*if ( dynamic_cast<>(XXX) ) {
-				CClientTCPSocket	*client = dynamic_cast<CClientTCPSocket*>(m_stream);
-				nRead = client->readAsync( buf, to_read, 100, 10 );
+			CCriticalSectionLocker lock(m_data_stream_cs);
+			if (stream_tcpip) {
+				nRead = stream_tcpip->readAsync( buf, to_read, 100, 10 );
 			}
-			else {*/
-			nRead = m_COM.Read(buf,to_read);
-			//}
+			else if (stream_serial) {
+				nRead = stream_serial->Read(buf,to_read);
+			}
+			else{
+				nRead = m_data_stream->ReadBuffer(buf,to_read);
+			}
 		}
 
-		if (nRead) {
-			m_rx_buffer.push_many(buf,nRead);
-			//if (m_verbose) { buf[nRead] = '\0'; printf("RX: %s",(char*)buf); }
-		}
+		if (nRead) m_rx_buffer.push_many(buf,nRead);
 		
 		// Also dump to raw file:
 		if (!m_raw_dump_file_prefix.empty() && !m_raw_output_file.fileOpenCorrectly()) {
@@ -319,13 +327,10 @@ void  CGPSInterface::doProcess()
 	catch (std::exception &)
 	{
 		// ERROR:
-		printf_debug("[CGPSInterface::doProcess] Error reading COM port: Closing communications\n");
-		if( useExternCOM() ) {
-			CCriticalSectionLocker lock( m_cs_out_COM );
-			m_out_COM->close();
-		}
-		else {
-			m_COM.close();
+		printf_debug("[CGPSInterface::doProcess] Error reading stream of data: Closing communications\n");
+		if(stream_serial) {
+			CCriticalSectionLocker lock(m_data_stream_cs);
+			stream_serial->close();
 		}
 		m_GPS_comsWork			= false;
 		return;
@@ -401,13 +406,52 @@ void  CGPSInterface::flushParsedMessagesNow()
 ----------------------------------------------------- */
 void  CGPSInterface::parseBuffer()
 {
+	if (m_parser == CGPSInterface::NONE) return; // Dont try to parse data
+
+	// Only one parser selected?
+	ptr_parser_t parser_ptr = NULL;
 	switch (m_parser)
 	{
-	case CGPSInterface::NMEA:           implement_parser_NMEA();           break;
-	case CGPSInterface::NOVATEL_OEM6:   implement_parser_NOVATEL_OEM6();   break;
-
-	default: throw std::runtime_error("[CGPSInterface] Unknown parser!");
+	case CGPSInterface::NMEA:           parser_ptr=&CGPSInterface::implement_parser_NMEA;           break;
+	case CGPSInterface::NOVATEL_OEM6:   parser_ptr=&CGPSInterface::implement_parser_NOVATEL_OEM6;   break;
+	case CGPSInterface::AUTO:   break; // Leave it as NULL
+	default:
+		throw std::runtime_error("[CGPSInterface] Unknown parser!");
 	};
+	if (parser_ptr)
+	{
+		// Use only one parser ----------
+		size_t min_bytes;
+		do
+		{
+			if (!(*this.*parser_ptr)(min_bytes)) 
+			{
+				m_rx_buffer.pop(); // Not the start of a frame, skip 1 byte
+			}
+		} while (m_rx_buffer.size()>=min_bytes);
+	} // end one parser mode ----------
+	else
+	{
+		// AUTO mode --------
+		const std::list<CGPSInterface::ptr_parser_t> &all_parsers = TParsersRegistry::getInstance().all_parsers;
+
+		size_t global_min_bytes_max=0;
+		do
+		{
+			bool all_parsers_want_to_skip = true;
+			for (std::list<CGPSInterface::ptr_parser_t>::const_iterator it=all_parsers.begin();it!=all_parsers.end();++it)
+			{
+				parser_ptr = *it;
+				size_t this_parser_min_bytes;
+				if ((*this.*parser_ptr)(this_parser_min_bytes))
+					all_parsers_want_to_skip = false;
+				mrpt::utils::keep_max(global_min_bytes_max, this_parser_min_bytes);
+			}
+
+			if (all_parsers_want_to_skip)
+				m_rx_buffer.pop(); // Not the start of a frame, skip 1 byte
+		} while (m_rx_buffer.size()>=global_min_bytes_max);
+	} // end AUTO mode ----
 }
 
 /* -----------------------------------------------------
@@ -417,16 +461,15 @@ void CGPSInterface::JAVAD_sendMessage(const char *str, bool waitForAnswer )
 {
 	if (!str) return;
 	const size_t len = strlen(str);
+	CSerialPort *stream_serial = dynamic_cast<CSerialPort*>(m_data_stream);
+	if (!stream_serial) return;
 
 	size_t written;
 
-	if( useExternCOM() )
 	{
-		CCriticalSectionLocker lock( m_cs_out_COM );
-		written = m_out_COM->Write(str,len);
+		CCriticalSectionLocker lock( m_data_stream_cs);
+		written = stream_serial->Write(str,len);
 	}
-	else
-		written = m_COM.Write(str,len);
 
 	if (m_verbose)
 		std::cout << "[CGPSInterface] TX: " << str;
@@ -445,13 +488,11 @@ void CGPSInterface::JAVAD_sendMessage(const char *str, bool waitForAnswer )
 	while(bad_counter < 10)
 	{
 		size_t nRead;
-		if( useExternCOM() )
 		{
-			CCriticalSectionLocker lock( m_cs_out_COM );
-			nRead = m_out_COM->Read(buf,sizeof(buf));
+			CCriticalSectionLocker lock( m_data_stream_cs);
+			written = stream_serial->Write(str,len);
+			nRead = stream_serial->Read(buf,sizeof(buf));
 		}
-		else
-			nRead = m_COM.Read(buf,sizeof(buf));
 
 		if (m_verbose)
 			std::cout << "[CGPSInterface] RX: " << buf << std::endl;
@@ -469,7 +510,9 @@ void CGPSInterface::JAVAD_sendMessage(const char *str, bool waitForAnswer )
 
 bool CGPSInterface::OnConnectionShutdown()
 {
-	if (!m_COM.isOpen())
+	CSerialPort *stream_serial = dynamic_cast<CSerialPort*>(m_data_stream);
+
+	if (stream_serial && !stream_serial->isOpen())
 		return false;
 
 	// Send commands:
@@ -481,9 +524,13 @@ bool CGPSInterface::OnConnectionShutdown()
 		std::string sTx = m_shutdown_cmds[i];
 		if (m_custom_cmds_append_CRLF)
 			sTx+=std::string("\r\n");
-		const size_t written = m_COM.Write(&sTx[0],sTx.size());
-		if (written!=sTx.size())
-			return false;
+		try 
+		{
+			CCriticalSectionLocker lock(m_data_stream_cs);
+			m_data_stream->WriteBuffer(&sTx[0],sTx.size());
+		} catch (...) {
+			return false; // On any I/O error
+		}
 
 		mrpt::system::sleep(m_custom_cmds_delay*1000);
 	}
@@ -504,8 +551,12 @@ bool CGPSInterface::OnConnectionEstablished()
 	}
 
 	// Purge input:
-	MRPT_TODO("Replace m_COM here and above by generic stream object")
-	m_COM.purgeBuffers();
+	CSerialPort *stream_serial = dynamic_cast<CSerialPort*>(m_data_stream);
+	if (stream_serial)
+	{
+		CCriticalSectionLocker lock( m_data_stream_cs );
+		stream_serial->purgeBuffers();
+	}	
 
 	// New behavior: Send generic commands set-up by the user in the config file.
 
@@ -518,12 +569,16 @@ bool CGPSInterface::OnConnectionEstablished()
 		std::string sTx = m_setup_cmds[i];
 		if (m_custom_cmds_append_CRLF) 
 			sTx+=std::string("\r\n");
-		const size_t written = m_COM.Write(&sTx[0],sTx.size());
-		ASSERT_EQUAL_(written,sTx.size());
 
+		try {
+			CCriticalSectionLocker lock( m_data_stream_cs );
+			m_data_stream->WriteBuffer(&sTx[0],sTx.size());
+		} catch (std::exception &e) {
+			std::cerr << "[CGPSInterface::OnConnectionEstablished] Error sending setup cmds: " << e.what() << std::endl;
+			return false;
+		}
 		mrpt::system::sleep(m_custom_cmds_delay*1000);
 	}
-
 	mrpt::system::sleep(m_custom_cmds_delay*1000);
 	return true;
 }
@@ -540,13 +595,12 @@ bool CGPSInterface::unsetJAVAD_AIM_mode()
 		mrpt::system::sleep(1000);
 
 		// Purge input:
-		if( useExternCOM() )
+		CSerialPort *stream_serial = dynamic_cast<CSerialPort*>(m_data_stream);
+		if (stream_serial)
 		{
-		    CCriticalSectionLocker lock( m_cs_out_COM );
-		    m_out_COM->purgeBuffers();
+			CCriticalSectionLocker lock( m_data_stream_cs );
+			stream_serial->purgeBuffers();
 		}
-		else
-			m_COM.purgeBuffers();
 
 		JAVAD_sendMessage("%%set,/par/cur/term/imode,cmd\r\n");                // set the current port in command mode
 		return true;
@@ -615,13 +669,12 @@ bool CGPSInterface::legacy_topcon_setup_commands()
 	mrpt::system::sleep(1000);
 
 	// Purge input:
-	if( useExternCOM() )
+	CSerialPort *stream_serial = dynamic_cast<CSerialPort*>(m_data_stream);
+	if (stream_serial)
 	{
-		CCriticalSectionLocker lock( m_cs_out_COM );
-		m_out_COM->purgeBuffers();
+		CCriticalSectionLocker lock( m_data_stream_cs );
+		stream_serial->purgeBuffers();
 	}
-	else
-		m_COM.purgeBuffers();
 
 	// Configure RTK mode and source:
 	if (m_verbose)
@@ -680,12 +733,15 @@ bool CGPSInterface::legacy_topcon_setup_commands()
 /** Send a custom data block to the GNSS device right now. Can be used to change its behavior online as needed. */
 bool CGPSInterface::sendCustomCommand(const void* data, const size_t datalen)
 {
-	try {
-		MRPT_TODO("Replace m_COM here by generic stream object")
-		const size_t written = m_COM.Write(data,datalen);
-		return written == datalen;
-	}
-	catch(...) {
+	try 
+	{
+		CCriticalSectionLocker lock( m_data_stream_cs );
+		m_data_stream->WriteBuffer(data,datalen);
+		return true;
+	} 
+	catch (std::exception &e) 
+	{
+		std::cerr << "[CGPSInterface::sendCustomCommand] Error sending cmd: " << e.what() << std::endl;
 		return false;
 	}
 }
