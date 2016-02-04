@@ -58,6 +58,7 @@ CGPSInterface::CGPSInterface() :
 	m_raw_dump_file_prefix(),
 	m_COMname            (),
 	m_COMbauds           (4800),
+	m_sensorLabelAppendMsgType (true),
 	m_GPS_comsWork			(false),
 	m_last_timestamp        ( INVALID_TIMESTAMP ),
 	m_custom_cmds_delay   (0.1),
@@ -90,6 +91,7 @@ void  CGPSInterface::loadConfig_sensorSpecific(
 #endif
 
 	m_COMbauds		= configSource.read_int( iniSection, "baudRate",m_COMbauds, true );
+	m_sensorLabelAppendMsgType  = configSource.read_bool(iniSection,"sensor_label_append_msg_type",m_sensorLabelAppendMsgType );
 
 	// legacy custom cmds:
 	m_customInit	= configSource.read_string( iniSection, "customInit", m_customInit, false );
@@ -387,7 +389,10 @@ void  CGPSInterface::flushParsedMessagesNow()
 {
 	// Generic observation data:
 	m_just_parsed_messages.sensorPose     = m_sensorPose;
-	m_just_parsed_messages.sensorLabel    = m_sensorLabel;
+	if (m_sensorLabelAppendMsgType)
+	     m_just_parsed_messages.sensorLabel = m_sensorLabel + string("_")+ m_just_parsed_messages.sensorLabel;
+	else m_just_parsed_messages.sensorLabel = m_sensorLabel;
+
 
 	// Add observation to the output queue:
 	CObservationGPSPtr newObs = CObservationGPS::Create();

@@ -33,7 +33,7 @@ using namespace std;
 TCLAP::CmdLine cmd("gps2rawlog", ' ', MRPT_getVersion().c_str());
 
 TCLAP::ValueArg<std::string> arg_input_file ("i","input","Input raw file (required) (*.raw,*.gps,...)",true,"","log.gps",cmd);
-TCLAP::ValueArg<std::string> arg_output_file("o","output","Output dataset (*.rawlog)",false,"dataset_out.rawlog","dataset_out.rawlog",cmd);
+TCLAP::ValueArg<std::string> arg_output_file("o","output","Output dataset (*.rawlog)",false,"","dataset_out.rawlog",cmd);
 
 TCLAP::SwitchArg arg_overwrite("w","overwrite","Force overwrite target file without prompting.",cmd, false);
 
@@ -47,7 +47,9 @@ int main(int argc, char **argv)
 			throw std::runtime_error(""); // should exit.
 
 		const string input_gps_file  = arg_input_file.getValue();
-		const string output_rawlog_file  = arg_output_file.getValue();
+		string output_rawlog_file = arg_output_file.getValue();
+		if (output_rawlog_file.empty())
+			output_rawlog_file = mrpt::system::fileNameChangeExtension(input_gps_file,"rawlog");
 
 		ASSERT_FILE_EXISTS_(input_gps_file)
 

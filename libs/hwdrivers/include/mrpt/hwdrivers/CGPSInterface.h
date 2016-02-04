@@ -51,6 +51,9 @@ namespace mrpt
 		  *  COM_port_LIN = ttyUSB0
 		  *  baudRate     = 4800   // The baudrate of the communications (typ. 4800 or 9600 bauds)
 		  *
+		  *  # (Default:true) Whether to append the GNNS message type to CObservation `sensorLabel` field
+		  *  sensor_label_append_msg_type = true
+		  *
 		  *  # Select a parser for GNSS data:
 		  *  # Up-to-date list of supported parsers available in http://reference.mrpt.org/devel/classmrpt_1_1hwdrivers_1_1_c_g_p_s_interface.html
 		  *  parser =  AUTO
@@ -158,6 +161,8 @@ namespace mrpt
 			void enableSetupCommandsAppendCRLF(const bool enable);
 			bool isEnabledSetupCommandsAppendCRLF() const;
 
+			void enableAppendMsgTypeToSensorLabel(bool enable) { m_sensorLabelAppendMsgType = enable; }
+
 			/** Send a custom data block to the GNSS device right now. Can be used to change its behavior online as needed. 
 			  \return false on communication error */
 			bool sendCustomCommand(const void* data, const size_t datalen);
@@ -228,6 +233,7 @@ namespace mrpt
 			std::string  m_raw_dump_file_prefix;
 			std::string  m_COMname;
 			int          m_COMbauds;
+			bool         m_sensorLabelAppendMsgType;
 			bool         m_GPS_comsWork;
 			mrpt::system::TTimeStamp        m_last_timestamp;
 			mrpt::utils::CFileOutputStream  m_raw_output_file;

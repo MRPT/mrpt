@@ -96,8 +96,13 @@ bool  CGPSInterface::implement_parser_NOVATEL_OEM6(size_t &out_minimum_rx_buf_to
 		}
 		m_just_parsed_messages.messages[msg->message_type] = msg;
 		m_just_parsed_messages.originalReceivedTimestamp = mrpt::system::now();
+		
+		MRPT_TODO("check UTC time conversion!")
 		if (!CObservationGPS::GPS_time_to_UTC(hdr.week,hdr.ms_in_week*1e-3,m_just_parsed_messages.timestamp))
 			m_just_parsed_messages.timestamp =  mrpt::system::now();
+
+		m_just_parsed_messages.sensorLabel = msg->getMessageTypeAsString();
+
 		flushParsedMessagesNow();
 		return true;
 	} // end short hdr
@@ -151,8 +156,10 @@ bool  CGPSInterface::implement_parser_NOVATEL_OEM6(size_t &out_minimum_rx_buf_to
 		}
 		m_just_parsed_messages.messages[msg->message_type] = msg;
 		m_just_parsed_messages.originalReceivedTimestamp = mrpt::system::now();
+		MRPT_TODO("check UTC time conversion!")
 		if (!CObservationGPS::GPS_time_to_UTC(hdr.week,hdr.ms_in_week*1e-3,m_just_parsed_messages.timestamp))
 			m_just_parsed_messages.timestamp =  mrpt::system::now();
+		m_just_parsed_messages.sensorLabel = msg->getMessageTypeAsString();
 		flushParsedMessagesNow();
 		return true;
 	} // end regular hdr
