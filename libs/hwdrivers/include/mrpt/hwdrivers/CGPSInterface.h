@@ -27,7 +27,10 @@ namespace mrpt
 		/** A class capable of reading GPS/GNSS/GNSS+IMU receiver data, from a serial port or from any input stream, 
 		  *  and \b parsing the ASCII/binary stream into indivual messages \b stored in mrpt::obs::CObservationGPS objects.
 		  *
-		  * Typical input streams are serial ports or raw GPS log files.
+		  * Typical input streams are serial ports or raw GPS log files. By default, the serial port selected by CGPSInterface::setSerialPortName()
+		  * or as set in the configuration file will be open upon call to CGenericSensor::initialize(). 
+		  * Alternatively, an external stream can be bound with CGPSInterface::bindStream() before calling CGenericSensor::initialize(). 
+		  * This feature can be used to parse commands from a file, a TCP/IP stream, a memory block, etc.
 		  *
 		  * The parsers in the enum type CGPSInterface::PARSERS are supported as parameter `parser` in the 
 		  * configuration file below or in method CGPSInterface::setParser():
@@ -129,7 +132,17 @@ namespace mrpt
 			void  setParser(PARSERS parser);  //!< Select the parser for incomming data, among the options enumerated in \a CGPSInterface
 			PARSERS getParser() const;
 
-			void setExternCOM( CSerialPort *outPort, mrpt::synch::CCriticalSection *csOutPort );
+			//void setExternCOM( CSerialPort *outPort, mrpt::synch::CCriticalSection *csOutPort ); // Replaced by bindStream() in MRPT 1.4.0
+
+			/** This enforces the use of a given user stream, instead of trying to open the serial port set in this class parameters.
+			  * \param[in] csExternalStream If not NULL, read/write operations to the stream will be guarded by this critical section.
+			  * The stream object is not deleted. It is the user responsibility to keep that object allocated during the entire life of this object.
+			  * \note Call before CGenericSensor::initialize()
+			  */
+			void bindStream(mrpt::utils::CStream * external_stream, mrpt::synch::CCriticalSection *csOptionalExternalStream = NULL );
+
+			bool useExternCOM() const { return m_data_stream_is_external; }
+			bool useExternalStream() const { return m_data_stream_is_external; }
 
 			void setSetupCommandsDelay(const double delay_secs);
 			double getSetupCommandsDelay() const;
@@ -169,12 +182,9 @@ namespace mrpt
 
 			bool legacy_topcon_setup_commands();
 
-			CSerialPort		m_COM;
-
-			// MAR'11 -------------------------------------
-			CSerialPort		                *m_out_COM;
-			mrpt::synch::CCriticalSection   *m_cs_out_COM;
-			// --------------------------------------------
+			mrpt::utils::CStream           *m_data_stream;    //!< Typically a CSerialPort created by this class, but may be set externally.
+			mrpt::synch::CCriticalSection  *m_data_stream_cs;
+			bool                            m_data_stream_is_external;
 
 			poses::CPose3D  m_sensorPose;
 			std::string     m_customInit;
@@ -200,10 +210,6 @@ namespace mrpt
 
 			/** Unset Advanced Input Mode for the primary port and use it only as a command port. */
 			bool unsetJAVAD_AIM_mode();
-
-			// MAR'11 -------------------------------------
-			inline bool useExternCOM() const { return (m_out_COM!=NULL); }
-			// --------------------------------------------
 
 		private:
 			mrpt::utils::circular_buffer<uint8_t> m_rx_buffer; //!< Auxiliary buffer for readings
