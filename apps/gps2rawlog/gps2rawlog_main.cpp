@@ -18,6 +18,7 @@
 #include <mrpt/hwdrivers/CGPSInterface.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/utils/CFileGZInputStream.h>
+#include <mrpt/utils/CFileGZOutputStream.h>
 
 #include <mrpt/otherlibs/tclap/CmdLine.h>
 
@@ -32,7 +33,7 @@ using namespace std;
 TCLAP::CmdLine cmd("gps2rawlog", ' ', MRPT_getVersion().c_str());
 
 TCLAP::ValueArg<std::string> arg_input_file ("i","input","Input raw file (required) (*.raw,*.gps,...)",true,"","log.gps",cmd);
-TCLAP::ValueArg<std::string> arg_output_file("o","output","Output dataset (*.rawlog)",false,"","dataset_out.rawlog",cmd);
+TCLAP::ValueArg<std::string> arg_output_file("o","output","Output dataset (*.rawlog)",false,"dataset_out.rawlog","dataset_out.rawlog",cmd);
 
 TCLAP::SwitchArg arg_overwrite("w","overwrite","Force overwrite target file without prompting.",cmd, false);
 
@@ -52,9 +53,21 @@ int main(int argc, char **argv)
 
 		// Open input rawlog:
 		CFileGZInputStream  fil_input;
-		cout << "Opening '" << input_gps_file << "'...\n";
+		cout << "Opening for reading: '" << input_gps_file << "'...\n";
 		fil_input.open(input_gps_file);
 		cout << "Open OK.\n";
+
+		// Open output:
+		if (mrpt::system::fileExists(output_rawlog_file) && !arg_overwrite.isSet())
+		{
+			cout << "Output file already exists: `"<<output_rawlog_file<<"`, aborting. Use `-w` flag to overwrite.\n";
+			return 1;
+		}
+
+		CFileGZOutputStream fil_out;
+		cout << "Opening for writing: '" << output_rawlog_file << "'...\n";
+		if (!fil_out.open(output_rawlog_file))
+			throw std::runtime_error("Error writing file!");
 
 		// GPS object:
 		CGPSInterface  gps_if;
@@ -63,7 +76,7 @@ int main(int argc, char **argv)
 		// ------------------------------------
 		//  Parse:
 		// ------------------------------------
-		while (1)
+		while ( !fil_input.checkEOF() )
 		{
 			gps_if.doProcess();
 
@@ -71,6 +84,10 @@ int main(int argc, char **argv)
 			gps_if.getObservations(lst_obs);
 
 			cout << "Read obs: " << lst_obs.size() << endl;
+			for (CGenericSensor::TListObservations::const_iterator it=lst_obs.begin();it!=lst_obs.end();++it)
+			{
+				fil_out << *it->second;
+			}
 		}
 
 		// successful end of program.

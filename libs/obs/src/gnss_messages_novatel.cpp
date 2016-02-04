@@ -264,6 +264,8 @@ void Message_NV_OEM6_RANGECMP::dumpToStream( mrpt::utils::CStream &out ) const
 
 void Message_NV_OEM6_RANGECMP::internal_writeToStream(mrpt::utils::CStream &out) const
 {
+	const uint32_t msg_len = sizeof(header) + header.msg_len + 4;
+	out << msg_len;
 	out.WriteBuffer(&header,sizeof(header));
 	out << num_obs;
 	ASSERT_EQUAL_(num_obs,obs_data.size());
@@ -273,6 +275,8 @@ void Message_NV_OEM6_RANGECMP::internal_writeToStream(mrpt::utils::CStream &out)
 
 void Message_NV_OEM6_RANGECMP::internal_readFromStream(mrpt::utils::CStream &in)
 {
+	uint32_t expected_msg_len;
+	in >> expected_msg_len;
 	in.ReadBuffer(&header,sizeof(header));
 	in >> num_obs;
 	ASSERT_BELOW_(num_obs,2000);
@@ -310,6 +314,8 @@ void Message_NV_OEM6_VERSION::dumpToStream( mrpt::utils::CStream &out ) const
 
 void Message_NV_OEM6_VERSION::internal_writeToStream(mrpt::utils::CStream &out) const
 {
+	const uint32_t msg_len = sizeof(header) + header.msg_len + 4;
+	out << msg_len;
 	out.WriteBuffer(&header,sizeof(header));
 	out << num_comps;
 	ASSERT_EQUAL_(num_comps,components.size());
@@ -319,6 +325,8 @@ void Message_NV_OEM6_VERSION::internal_writeToStream(mrpt::utils::CStream &out) 
 
 void Message_NV_OEM6_VERSION::internal_readFromStream(mrpt::utils::CStream &in)
 {
+	uint32_t expected_msg_len;
+	in >> expected_msg_len;
 	in.ReadBuffer(&header,sizeof(header));
 	in >> num_comps;
 	ASSERT_BELOW_(num_comps,2000);
