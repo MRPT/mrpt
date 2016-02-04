@@ -344,7 +344,7 @@ bool Message_NV_OEM6_RAWIMUS::getAllFieldDescriptions( std::ostream &o ) const
 bool Message_NV_OEM6_RAWIMUS::getAllFieldValues( std::ostream &o ) const
 {
 	o << mrpt::format(
-		"%u %li %li %li",
+		"%u %li %li %li %li %li %li",
 		(unsigned)fields.imu_status,
 		(long)fields.accel_x,-(long)fields.accel_y_neg,(long)fields.accel_z,
 		(long)fields.gyro_x,-(long)fields.gyro_y_neg,(long)fields.gyro_z
@@ -377,8 +377,8 @@ void generic_getFieldValues_MARKTIME(const Message_NV_OEM6_MARKTIME::content_t &
 {
 	o << mrpt::format(
 		"%u %lu %f %f",
-		(long)fields.clock_status,
-		(long)fields.week, fields.week_seconds,
+		(unsigned)fields.clock_status,
+		(long unsigned)fields.week, fields.week_seconds,
 		fields.utc_offset
 		);
 }
