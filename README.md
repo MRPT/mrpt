@@ -15,6 +15,9 @@ Bayesian inference ([Kalman filters](http://www.mrpt.org/Kalman_Filters), [parti
 MRPT also provides GUI apps for [Stereo camera calibration](http://www.mrpt.org/list-of-mrpt-apps/application-kinect-stereo-calib/), [dataset inspection](http://www.mrpt.org/list-of-mrpt-apps/rawlogviewer/), 
 and [much more](http://www.mrpt.org/list-of-mrpt-apps/).
 
+[![ReactiveNav2D](https://raw.githubusercontent.com/MRPT/mrpt/master/doc/video-screenshots/reactivenav2d.jpg)](https://www.youtube.com/watch?v=qSMs5rnmwTM&index=9&list=PLOJ3GF0x2_eX7TXG_ZyDgEIJdNcuB193X) [![6D-EKF-SLAM](https://raw.githubusercontent.com/MRPT/mrpt/master/doc/video-screenshots/ekf6d.jpg)](https://www.youtube.com/watch?v=eOkzd_i_-ps&index=6&list=PLOJ3GF0x2_eX7TXG_ZyDgEIJdNcuB193X)
+[![ReactiveNav3D](https://raw.githubusercontent.com/MRPT/mrpt/master/doc/video-screenshots/reactivenav3d.jpg)](https://www.youtube.com/watch?v=CXdZ4CjWFuU&index=2&list=PLOJ3GF0x2_eX7TXG_ZyDgEIJdNcuB193X) [![NavLogViewer](https://raw.githubusercontent.com/MRPT/mrpt/master/doc/video-screenshots/navlogviewer.jpg)](https://www.youtube.com/watch?v=6Dp-tr7yR1k&list=PLOJ3GF0x2_eXj35SYVa4-n2-E_zW6klfR&index=2)
+
 2. Resources
 ------------------------------------------------------------------------------
   * Download the latest unstable code with: `git clone https://github.com/MRPT/mrpt.git --depth 1`
