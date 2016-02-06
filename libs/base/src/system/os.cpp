@@ -157,6 +157,7 @@ void mrpt::system::registerFatalExceptionHandlers()
 #include <errno.h>
 #include <limits.h>
 #include <ctime>
+#include <cstdlib>
 
 string mrpt::system::MRPT_getCompilationDate()
 {
@@ -165,7 +166,7 @@ string mrpt::system::MRPT_getCompilationDate()
 	const char *source_date_epoch = MRPT_SOURCE_DATE_EPOCH;
 	
 	errno = 0;
-	unsigned long long epoch = strtoull(source_date_epoch, &endptr, 10);
+	unsigned long epoch = strtoul(source_date_epoch, &endptr, 10);
 	if ((errno == ERANGE && (epoch == ULLONG_MAX || epoch == 0)) || (errno != 0 && epoch == 0)) {
 		// Last resort:
  		now = time(NULL);

@@ -19,6 +19,7 @@
 #include <mrpt/system/filesystem.h>
 #include <mrpt/utils/CFileGZInputStream.h>
 #include <mrpt/utils/CFileGZOutputStream.h>
+#include <mrpt/system/os.h>
 
 #include <mrpt/otherlibs/tclap/CmdLine.h>
 
@@ -42,6 +43,9 @@ int main(int argc, char **argv)
 {
 	try
 	{
+		printf(" gps2rawlog - Part of the MRPT\n");
+		printf(" MRPT C++ Library: %s - Sources timestamp: %s\n", MRPT_getVersion().c_str(), MRPT_getCompilationDate().c_str());
+
 		// Parse arguments:
 		if (!cmd.parse( argc, argv ))
 			throw std::runtime_error(""); // should exit.
@@ -85,9 +89,8 @@ int main(int argc, char **argv)
 			CGenericSensor::TListObservations lst_obs;
 			gps_if.getObservations(lst_obs);
 
-			cout << "Read obs: " << lst_obs.size() << endl;
-			for (CGenericSensor::TListObservations::const_iterator it=lst_obs.begin();it!=lst_obs.end();++it)
-			{
+			printf("%u bytes parsed, %u new observations identified...\n",(unsigned)fil_input.getPosition(),(unsigned)lst_obs.size());
+			for (CGenericSensor::TListObservations::const_iterator it=lst_obs.begin();it!=lst_obs.end();++it) {
 				fil_out << *it->second;
 			}
 		}
