@@ -76,7 +76,7 @@ int main(int argc, char ** argv)
 		if (arg_nologo.getValue())
 		{
 			printf(" simul-gridmap - Part of the MRPT\n");
-			printf(" MRPT C++ Library: %s - BUILD DATE %s\n", MRPT_getVersion().c_str(), MRPT_getCompilationDate().c_str());
+			printf(" MRPT C++ Library: %s - Sources timestamp: %s\n", MRPT_getVersion().c_str(), MRPT_getCompilationDate().c_str());
 		}
 
 		// Invoke method:

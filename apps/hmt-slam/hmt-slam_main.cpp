@@ -51,7 +51,7 @@ int main(int argc, char **argv)
 		CConsoleRedirector	dbg_out_file("./DEBUG_log_streaming.txt",true, true,false,0 );
 
 		printf(" HMT-SLAM version 0.2 - Part of the MRPT\n");
-		printf(" MRPT C++ Library: %s - BUILD DATE %s\n", MRPT_getVersion().c_str(), MRPT_getCompilationDate().c_str() );
+		printf(" MRPT C++ Library: %s - Sources timestamp: %s\n", MRPT_getVersion().c_str(), MRPT_getCompilationDate().c_str() );
 		printf("-------------------------------------------------------------------\n");
 
 		// Process arguments:

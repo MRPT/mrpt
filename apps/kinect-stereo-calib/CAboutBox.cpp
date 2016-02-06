@@ -147,7 +147,7 @@ void CAboutBox::OnInit(wxInitDialogEvent& event)
 		cout << "For bug reports or to collaborate: <joseluisblancoc@gmail.com>\n";
 
 		cout << "MRPT version:           " << MRPT_getVersion() << endl;
-		cout << "MRPT compilation date:  " << MRPT_getCompilationDate() << endl;
+		cout << "MRPT source timestamp:  " << MRPT_getCompilationDate() << endl;
  		cout << "Eigen version:          " << EIGEN_WORLD_VERSION << "." << EIGEN_MAJOR_VERSION << "." << EIGEN_MINOR_VERSION << endl;
 		cout << "wxWidgets version:      " <<std::string(wxVer.mb_str()) << endl;
  		cout << "OpenCV version:         ";

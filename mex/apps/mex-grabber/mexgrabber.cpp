@@ -80,7 +80,7 @@ namespace {
 MEX_DEFINE(new) (int nlhs, mxArray* plhs[],
                  int nrhs, const mxArray* prhs[]) {
     printf(" mex-grabber - Part of the MRPT\n");
-    printf(" MRPT C++ Library: %s - BUILD DATE %s\n", MRPT_getVersion().c_str(), MRPT_getCompilationDate().c_str());
+    printf(" MRPT C++ Library: %s - Sources timestamp: %s\n", MRPT_getVersion().c_str(), MRPT_getCompilationDate().c_str());
     printf("-------------------------------------------------------------------\n");
 
     mexplus::InputArguments input(nrhs, prhs, 1);
@@ -297,7 +297,7 @@ int main(int argc, const char* argv[] )
     try
     {
         printf(" MEX-grabber - Part of the MRPT\n");
-        printf(" MRPT C++ Library: %s - BUILD DATE %s\n", MRPT_getVersion().c_str(), MRPT_getCompilationDate().c_str());
+        printf(" MRPT C++ Library: %s - Sources timestamp: %s\n", MRPT_getVersion().c_str(), MRPT_getCompilationDate().c_str());
         printf("-------------------------------------------------------------------\n");
         printf(" This is a test for Matlab MEX functionalities\n");
         printf("-------------------------------------------------------------------\n");

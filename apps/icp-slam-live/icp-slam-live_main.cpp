@@ -53,7 +53,7 @@ int main(int argc, char **argv)
 		bool showVersion = argc>1 && !os::_strcmp(argv[1],"--version");
 
 		printf(" icp-slam-live - Part of the MRPT\n");
-		printf(" MRPT C++ Library: %s - BUILD DATE %s\n", MRPT_getVersion().c_str(), MRPT_getCompilationDate().c_str());
+		printf(" MRPT C++ Library: %s - Sources timestamp: %s\n", MRPT_getVersion().c_str(), MRPT_getCompilationDate().c_str());
 		if (showVersion)
 			return 0;	// Program end
 		printf("-------------------------------------------------------------------\n");

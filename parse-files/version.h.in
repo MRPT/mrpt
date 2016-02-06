@@ -6,10 +6,11 @@
 #define  MRPT_VERSION_H
 
 const char MRPT_version_str[]    = "${CMAKE_MRPT_COMPLETE_NAME}";
-const char MRPT_build_date_str[] = "${CMAKE_MRPT_BUILD_DATE}";
-
 /** Version number of package in hexadecimal:
   * A three digits version code, eg. 0.5.1 -> 0x051,  1.2.0 -> 0x120 */
 #define MRPT_VERSION ${CMAKE_MRPT_VERSION_CODE}
+
+// See specs: https://reproducible-builds.org/specs/source-date-epoch/
+const char MRPT_SOURCE_DATE_EPOCH[] = "${CMAKE_SOURCE_DATE_EPOCH}";
 
 #endif

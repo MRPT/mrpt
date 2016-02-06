@@ -154,9 +154,31 @@ void mrpt::system::registerFatalExceptionHandlers()
 					mrpt::system::MRPT_getCompilationDate
 ---------------------------------------------------------------*/
 #include <mrpt/version.h>
+#include <errno.h>
+#include <limits.h>
+#include <ctime>
+
 string mrpt::system::MRPT_getCompilationDate()
 {
-	return string( MRPT_build_date_str );
+	time_t now;
+	char *endptr;
+	const char *source_date_epoch = MRPT_SOURCE_DATE_EPOCH;
+	
+	errno = 0;
+	unsigned long long epoch = strtoull(source_date_epoch, &endptr, 10);
+	if ((errno == ERANGE && (epoch == ULLONG_MAX || epoch == 0)) || (errno != 0 && epoch == 0)) {
+		// Last resort:
+ 		now = time(NULL);
+	}
+	else {
+		now = epoch;
+	}
+	struct tm *build_time = gmtime(&now);
+	const int year  = build_time->tm_year + 1900;
+	const int month = build_time->tm_mon + 1;
+	const int day   = build_time->tm_mday;
+
+	return mrpt::format("%i-%02i-%02i",year,month,day);
 }
 
 /*---------------------------------------------------------------

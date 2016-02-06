@@ -146,7 +146,7 @@ void CAboutBox::OnInit(wxInitDialogEvent& event)
 
 		cout << "Program version:        " << CAMERA_CALIB_GUI_VERSION << endl;
 		cout << "MRPT version:           " << MRPT_getVersion() << endl;
-		cout << "MRPT compilation date:  " << MRPT_getCompilationDate() << endl;
+		cout << "MRPT source timestamp:  " << MRPT_getCompilationDate() << endl;
  		cout << "Eigen version:          " << EIGEN_WORLD_VERSION << "." << EIGEN_MAJOR_VERSION << "." << EIGEN_MINOR_VERSION << endl;
 		cout << "wxWidgets version:      " <<std::string(wxVer.mb_str()) << endl;
  		cout << "OpenCV version:         ";

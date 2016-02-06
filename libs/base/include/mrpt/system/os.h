@@ -141,19 +141,16 @@ namespace mrpt
 		/** \addtogroup mrpt_system_os
 		  * @{ */
 
-		/** Shows the message "Press any key to continue" (or other custom message) to the current standard output and returns when a key is pressed.
-		  */
+		/** Shows the message "Press any key to continue" (or other custom message) to the current standard output and returns when a key is pressed */
 		void BASE_IMPEXP pause(const std::string &msg = std::string("Press any key to continue...") ) MRPT_NO_THROWS;
 
 		/** Clears the console window */
 		void BASE_IMPEXP clearConsole();
 
-		/** Returns the MRPT compilation date
-		  */
+		/** Returns the MRPT source code timestamp, according to the Reproducible-Builds specifications: https://reproducible-builds.org/specs/source-date-epoch/  */
 		std::string BASE_IMPEXP MRPT_getCompilationDate();
 
-		/** Returns a string describing the MRPT version including the SVN number.
-		  */
+		/** Returns a string describing the MRPT version */
 		std::string BASE_IMPEXP MRPT_getVersion();
 
 		/** Returns a const ref to a text with the same text that appears at the beginning of each MRPT file (useful for displaying the License text in GUIs) */

@@ -39,11 +39,18 @@ if [ -d "$MRPTSRC/.git" ];
 then
 	echo "Exporting git source tree to ${MRPT_DEBSRC_DIR}"
 	git archive --format=tar master | tar -x -C ${MRPT_DEBSRC_DIR}
+
+	# Generate ./SOURCE_DATE_EPOCH with UNIX time_t
+	SOURCE_DATE_EPOCH=$(git log -1 --pretty=%ct)
 else
 	echo "Copying sources to ${MRPT_DEBSRC_DIR}"
 	cp -R . ${MRPT_DEBSRC_DIR}
+
+	# Generate ./SOURCE_DATE_EPOCH with UNIX time_t
+	SOURCE_DATE_EPOCH=$(date +%s)
 fi
 
+echo $SOURCE_DATE_EPOCH > ${MRPT_DEBSRC_DIR}/SOURCE_DATE_EPOCH
 
 # Copy the MRPT book:
 if [ -f /Work/MyBooks/mrpt-book/mrpt-book.ps ];
@@ -87,7 +94,7 @@ echo "Creating orig zip in DOS format: mrpt-${MRPT_VERSION_STR}.zip"
 cd mrpt-${MRPT_VERSION_STR}
 bash scripts/all_files_DOS_format.sh
 cd ..
-zip mrpt-${MRPT_VERSION_STR}.zip -r mrpt-${MRPT_VERSION_STR}/*
+zip mrpt-${MRPT_VERSION_STR}.zip -q -r mrpt-${MRPT_VERSION_STR}/*
 
 rm -fr mrpt-${MRPT_VERSION_STR}
 

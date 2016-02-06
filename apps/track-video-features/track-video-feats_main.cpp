@@ -369,7 +369,7 @@ int main(int argc, char **argv)
 	try
 	{
 		printf(" track-video-features - Part of MRPT\n");
-		printf(" MRPT C++ Library: %s - BUILD DATE %s\n", mrpt::system::MRPT_getVersion().c_str(), mrpt::system::MRPT_getCompilationDate().c_str());
+		printf(" MRPT C++ Library: %s - Sources timestamp: %s\n", mrpt::system::MRPT_getVersion().c_str(), mrpt::system::MRPT_getCompilationDate().c_str());
 		printf("-------------------------------------------------------------------\n");
 
 		// The video source:

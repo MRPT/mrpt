@@ -717,7 +717,7 @@ int main(int argc, char **argv)
 		if (!arg_nologo.getValue())
 		{
 			printf(" grid-matching - Part of the MRPT\n");
-			printf(" MRPT C++ Library: %s - BUILD DATE %s\n", mrpt::system::MRPT_getVersion().c_str(), mrpt::system::MRPT_getCompilationDate().c_str());
+			printf(" MRPT C++ Library: %s - Sources timestamp: %s\n", mrpt::system::MRPT_getVersion().c_str(), mrpt::system::MRPT_getCompilationDate().c_str());
 		}
 
 		SKIP_ICP_STAGE = arg_skip_icp.getValue();
