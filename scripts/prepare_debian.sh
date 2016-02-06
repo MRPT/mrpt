@@ -115,9 +115,6 @@ rm -fR lib
 rm -fR packaging
 
 # Not stable...
-rm -fR apps/vOdometry
-rm -fR share/mrpt/config_files/vOdometry
-
 rm -fR apps/hmt-slam
 rm -fR apps/hmtMapViewer
 

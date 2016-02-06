@@ -54,12 +54,6 @@ then
 fi
 
 # Try to compile guide now:
-make -C $MRPTSRC/doc/srba-guide/
-if [ -f $MRPTSRC/doc/srba-guide/srba-guide.pdf ];
-then
-	cp $MRPTSRC/doc/srba-guide/srba-guide.pdf ${MRPT_DEBSRC_DIR}/doc/
-fi
-
 make -C $MRPTSRC/doc/pbmap-guide/
 if [ -f $MRPTSRC/doc/pbmap-guide/pbmap-guide.pdf ];
 then
@@ -77,9 +71,6 @@ echo "Deleting some files..."
 # Deletions:
 rm -fR lib
 rm -fR packaging
-
-rm -fR apps/vOdometry
-rm -fR share/mrpt/config_files/vOdometry
 
 # Not stable yet...
 rm -fR apps/hmt-slam
