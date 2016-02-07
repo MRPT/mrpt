@@ -31,6 +31,7 @@ and [much more](http://www.mrpt.org/list-of-mrpt-apps/).
   * Some sample datasets are stored in: 
      [MRPT/share/mrpt/datasets](https://github.com/MRPT/mrpt/tree/master/share/mrpt/datasets). 
     A more complete dataset repository is [available online](http://www.mrpt.org/robotics_datasets).
+  * [How to contribute](https://github.com/MRPT/mrpt/wiki/HowToContribute) with your code for new feaures, bug fixes, etc.
 
 3. Compiling
 ------------------------------------------------------------------------------
