@@ -367,14 +367,14 @@ bool  CHokuyoURG::setHighBaudrate()
 	// Receive response:
 	if (!receiveResponse( cmd, rcv_status0,rcv_status1, rcv_data, rcv_dataLength ) )
 	{
-		printf("ERROR!\n");
+		std::cerr << "Error waiting for response\n";
 		return false;
 	}
 
 	// DECODE:
 	if (rcv_status0!='0')
 	{
-		printf("ERROR!\n");
+		std::cerr << "Error in LIDAR status: "<< (int)rcv_status0 <<"\n";
 		return false;
 	}
 
@@ -584,7 +584,7 @@ bool  CHokuyoURG::enableSCIP20()
 	// Receive response:
 	if (!receiveResponse( cmd, rcv_status0,rcv_status1, rcv_data, rcv_dataLength ) )
 	{
-		printf("ERROR!\n");
+		std::cerr << "Error waiting for response\n";
 		return false;
 	}
 
@@ -592,7 +592,7 @@ bool  CHokuyoURG::enableSCIP20()
 	// DECODE:
 	if (rcv_status0!='0')
 	{
-		printf("ERROR!\n");
+		std::cerr << "Error in LIDAR status: "<< (int)rcv_status0 <<"\n";
 		return false;
 	}
 
@@ -625,14 +625,14 @@ bool  CHokuyoURG::switchLaserOn()
 	// Receive response:
 	if (!receiveResponse( cmd, rcv_status0,rcv_status1, rcv_data, rcv_dataLength ) )
 	{
-		printf("ERROR!\n");
+		std::cerr << "Error waiting for response\n";
 		return false;
 	}
 
 	// DECODE:
 	if (rcv_status0!='0')
 	{
-		printf("ERROR!\n");
+		std::cerr << "Error in LIDAR status: "<< (int)rcv_status0 <<"\n";
 		return false;
 	}
 
@@ -665,14 +665,14 @@ bool  CHokuyoURG::switchLaserOff()
 	// Receive response:
 	if (!receiveResponse( cmd, rcv_status0,rcv_status1, rcv_data, rcv_dataLength ) )
 	{
-		printf("ERROR!\n");
+		std::cerr << "Error waiting for response\n";
 		return false;
 	}
 
 	// DECODE:
 	if (rcv_status0!='0')
 	{
-		printf("ERROR!\n");
+		std::cerr << "Error in LIDAR status: "<< (int)rcv_status0 <<"\n";
 		return false;
 	}
 
@@ -711,14 +711,14 @@ bool  CHokuyoURG::setMotorSpeed(int motoSpeed_rpm)
 	// Receive response:
 	if (!receiveResponse( cmd, rcv_status0,rcv_status1, rcv_data, rcv_dataLength ) )
 	{
-		printf("ERROR!\n");
+		std::cerr << "Error waiting for response\n";
 		return false;
 	}
 
 	// DECODE:
 	if (rcv_status0!='0')
 	{
-		printf("ERROR!\n");
+		std::cerr << "Error in LIDAR status: "<< (int)rcv_status0 <<"\n";
 		return false;
 	}
 
@@ -750,14 +750,14 @@ bool  CHokuyoURG::setHighSensitivityMode(bool enabled)
 	// Receive response:
 	if (!receiveResponse( cmd, rcv_status0,rcv_status1, rcv_data, rcv_dataLength ) )
 	{
-		printf("ERROR!\n");
+		std::cerr << "Error waiting for response\n";
 		return false;
 	}
 
 	// DECODE:
 	if (rcv_status0!='0')
 	{
-		printf("ERROR!\n");
+		std::cerr << "Error in LIDAR status: "<< (int)rcv_status0 <<"\n";
 		return false;
 	}
 
@@ -790,14 +790,14 @@ bool  CHokuyoURG::displayVersionInfo( )
 	// Receive response:
 	if (!receiveResponse( cmd, rcv_status0,rcv_status1, rcv_data, rcv_dataLength ) )
 	{
-		printf("ERROR!\n");
+		std::cerr << "Error waiting for response\n";
 		return false;
 	}
 
 	// DECODE:
 	if (rcv_status0!='0')
 	{
-		printf("ERROR!\n");
+		std::cerr << "Error in LIDAR status: "<< (int)rcv_status0 <<"\n";
 		return false;
 	}
 
@@ -842,14 +842,14 @@ bool  CHokuyoURG::displaySensorInfo( TSensorInfo * out_data)
 	// Receive response:
 	if (!receiveResponse( cmd, rcv_status0,rcv_status1, rcv_data, rcv_dataLength ) )
 	{
-		printf("ERROR!\n");
+		std::cerr << "Error waiting for response\n";
 		return false;
 	}
 
 	// DECODE:
 	if (rcv_status0!='0')
 	{
-		printf("ERROR!\n");
+		std::cerr << "Error in LIDAR status: "<< (int)rcv_status0 <<"\n";
 		return false;
 	}
 
@@ -938,14 +938,14 @@ bool  CHokuyoURG::startScanningMode()
 	// Receive response:
 	if (!receiveResponse( cmd, rcv_status0,rcv_status1, rcv_data, rcv_dataLength ) )
 	{
-		printf("ERROR!\n");
+		std::cerr << "Error waiting for response\n";
 		return false;
 	}
 
 	// DECODE:
 	if (rcv_status0!='0')
 	{
-		printf("ERROR!\n");
+		std::cerr << "Error in LIDAR status: "<< (int)rcv_status0 <<"\n";
 		return false;
 	}
 
