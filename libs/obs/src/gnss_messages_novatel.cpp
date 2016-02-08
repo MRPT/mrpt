@@ -166,13 +166,14 @@ void Message_NV_OEM6_BESTPOS::dumpToStream( mrpt::utils::CStream &out ) const
 
 bool Message_NV_OEM6_BESTPOS::getAllFieldDescriptions( std::ostream &o ) const
 {
-	o << "solution_stat position_type lon_deg lat_deg hgt_m undulation_m lon_sigma_m lat_sigma_m hgt_sigma_m diff_age sol_age num_sats_tracked num_sats_sol";
+	o << "gps_week.gps_ms solution_stat position_type lon_deg lat_deg hgt_m undulation_m lon_sigma_m lat_sigma_m hgt_sigma_m diff_age sol_age num_sats_tracked num_sats_sol";
 	return true;
 }
 bool Message_NV_OEM6_BESTPOS::getAllFieldValues( std::ostream &o ) const
 {
 	o << mrpt::format(
-		"%u %u %.09f %.09f %.06f %.04f %.06f %.06f %.06f %.03f %.03f %u %u",
+		"%u.%08u %u %u %.09f %.09f %.06f %.04f %.06f %.06f %.06f %.03f %.03f %u %u",
+		(unsigned)fields.header.week, (unsigned)(fields.header.ms_in_week),
 		(unsigned)fields.solution_stat,
 		(unsigned)fields.position_type,
 		fields.lon,fields.lat,fields.hgt, fields.undulation,
@@ -197,13 +198,14 @@ void Message_NV_OEM6_INSPVAS::dumpToStream( mrpt::utils::CStream &out ) const
 
 bool Message_NV_OEM6_INSPVAS::getAllFieldDescriptions( std::ostream &o ) const
 {
-	o << "ins_status lon_deg lat_deg ellip_height_WGS84 vel_north vel_east vel_up roll_deg pitch_deg azimuth_deg";
+	o << "gps_week.gps_ms ins_status lon_deg lat_deg ellip_height_WGS84 vel_north vel_east vel_up roll_deg pitch_deg azimuth_deg";
 	return true;
 }
 bool Message_NV_OEM6_INSPVAS::getAllFieldValues( std::ostream &o ) const
 {
 	o << mrpt::format(
-		"%u %.09f %.09f %.06f %.05f %.05f %.05f %.05f %.05f %.05f",
+		"%u.%08u %u %.09f %.09f %.06f %.05f %.05f %.05f %.05f %.05f %.05f",
+		(unsigned)fields.header.week, (unsigned)(fields.header.ms_in_week),
 		(unsigned)fields.ins_status,
 		fields.lon,fields.lat,fields.hgt,
 		fields.vel_north, fields.vel_east, fields.vel_up,
@@ -234,15 +236,17 @@ void Message_NV_OEM6_INSCOVS::dumpToStream( mrpt::utils::CStream &out ) const
 
 bool Message_NV_OEM6_INSCOVS::getAllFieldDescriptions( std::ostream &o ) const
 {
-	o << "pos_cov(*9) att-cov(*9) vel_cov(*9)";
+	o << "gps_week.gps_ms pos_cov(*9) att-cov(*9) vel_cov(*9)";
 	return true;
 }
 bool Message_NV_OEM6_INSCOVS::getAllFieldValues( std::ostream &o ) const
 {
 	o << mrpt::format(
+		"%u.%08u "
 		"%9.03f %9.03f %9.03f  %9.03f %9.03f %9.03f  %9.03f %9.03f %9.03f "
 		"%9.03f %9.03f %9.03f  %9.03f %9.03f %9.03f  %9.03f %9.03f %9.03f "
 		"%9.03f %9.03f %9.03f  %9.03f %9.03f %9.03f  %9.03f %9.03f %9.03f ",
+		(unsigned)fields.header.week, (unsigned)(fields.header.ms_in_week),
 		fields.pos_cov[0],fields.pos_cov[1],fields.pos_cov[2],
 		fields.pos_cov[3],fields.pos_cov[4],fields.pos_cov[5],
 		fields.pos_cov[6],fields.pos_cov[7],fields.pos_cov[8],
@@ -346,13 +350,14 @@ void Message_NV_OEM6_RAWIMUS::dumpToStream( mrpt::utils::CStream &out ) const
 
 bool Message_NV_OEM6_RAWIMUS::getAllFieldDescriptions( std::ostream &o ) const
 {
-	o << "imu_status acc_x acc_y acc_z gyro_x gyro_y gyro_z";
+	o << "gps_week.gps_ms imu_status acc_x acc_y acc_z gyro_x gyro_y gyro_z";
 	return true;
 }
 bool Message_NV_OEM6_RAWIMUS::getAllFieldValues( std::ostream &o ) const
 {
 	o << mrpt::format(
-		"%u %li %li %li %li %li %li",
+		"%u.%08u %u %li %li %li %li %li %li",
+		(unsigned)fields.header.week, (unsigned)(fields.header.ms_in_week),
 		(unsigned)fields.imu_status,
 		(long)fields.accel_x,-(long)fields.accel_y_neg,(long)fields.accel_z,
 		(long)fields.gyro_x,-(long)fields.gyro_y_neg,(long)fields.gyro_z
@@ -378,13 +383,14 @@ void Message_NV_OEM6_MARKTIME::dumpToStream( mrpt::utils::CStream &out ) const
 
 bool Message_NV_OEM6_MARKTIME::getAllFieldDescriptions( std::ostream &o ) const
 {
-	o << "clock_status week week_seconds utc_offset";
+	o << "gps_week.gps_ms clock_status week week_seconds utc_offset";
 	return true;
 }
 void generic_getFieldValues_MARKTIME(const Message_NV_OEM6_MARKTIME::content_t &fields, std::ostream &o)
 {
 	o << mrpt::format(
-		"%u %lu %f %f",
+		"%u.%08u %u %lu %f %f",
+		(unsigned)fields.header.week, (unsigned)(fields.header.ms_in_week),
 		(unsigned)fields.clock_status,
 		(long unsigned)fields.week, fields.week_seconds,
 		fields.utc_offset
@@ -403,7 +409,7 @@ void Message_NV_OEM6_MARK2TIME::dumpToStream( mrpt::utils::CStream &out ) const
 }
 bool Message_NV_OEM6_MARK2TIME::getAllFieldDescriptions( std::ostream &o ) const
 {
-	o << "clock_status week week_seconds utc_offset";
+	o << "gps_week.gps_ms clock_status week week_seconds utc_offset";
 	return true;
 }
 bool Message_NV_OEM6_MARK2TIME::getAllFieldValues( std::ostream &o ) const
