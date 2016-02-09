@@ -29,6 +29,9 @@ const float CObservationVelodyneScan::DISTANCE_MAX = 130.0f;        /**< meters 
 const float CObservationVelodyneScan::DISTANCE_RESOLUTION = 0.002f; /**< meters */
 const float CObservationVelodyneScan::DISTANCE_MAX_UNITS = (CObservationVelodyneScan::DISTANCE_MAX / CObservationVelodyneScan::DISTANCE_RESOLUTION + 1.0f);
 
+const float CObservationVelodyneScan::VLP16_BLOCK_TDURATION = 110.592f; // [us]
+const float CObservationVelodyneScan::VLP16_DSR_TOFFSET = 2.304f; // [us]
+const float CObservationVelodyneScan::VLP16_FIRING_TOFFSET = 55.296f; // [us]
 
 CObservationVelodyneScan::TGeneratePointCloudParameters::TGeneratePointCloudParameters() :
 	minAzimuth_deg(0.0),
