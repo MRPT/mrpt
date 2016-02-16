@@ -11,7 +11,7 @@
 
 **Code content and style**
 
-* **Prefer tabs to spaces**. Yes, I know this is an ethernal source of discussions and debate, but virtually all MRPT code follow this convention, so **please** respect it to avoid mixing whitespaces:
+* **Prefer tabs to spaces**. Yes, I know this is an eternal source of discussions and debate, but virtually all MRPT code follow this convention, so **please** respect it to avoid mixing whitespaces:
 
 ![spaces_tabs](https://raw.githubusercontent.com/MRPT/mrpt/master/doc/coding_style_mixed_space_tabs.png)
 
