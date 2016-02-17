@@ -65,7 +65,7 @@ void CPosePDFSOG::getMean(CPose2D &p) const
 		mrpt::poses::SE_average<2> se_averager;
 		for (const_iterator it=m_modes.begin();it!=m_modes.end();++it)
 		{
-			const double w = (it)->log_w;
+			const double w = exp((it)->log_w);
 			se_averager.append( (it)->mean, w);
 		}
 		se_averager.get_average(p);
