@@ -195,10 +195,12 @@ bool CVelodyneScanner::getNextObservation(
 		if (pos_pkt_timestamp!=INVALID_TIMESTAMP)
 		{
 			mrpt::obs::CObservationGPSPtr gps_obs = mrpt::obs::CObservationGPS::Create();
-			gps_obs->timestamp = pos_pkt_timestamp;
-			gps_obs->originalReceivedTimestamp = pos_pkt_timestamp;
 			gps_obs->sensorLabel = this->m_sensorLabel + std::string("_GPS");
 			gps_obs->sensorPose = m_sensorPose;
+
+			MRPT_TODO("Calculate accurate timestamp from gps pkts")
+			gps_obs->originalReceivedTimestamp = pos_pkt_timestamp;
+			gps_obs->timestamp = pos_pkt_timestamp;
 
 			CGPSInterface::parse_NMEA( std::string(rx_pos_pkt.NMEA_GPRMC), *gps_obs);
 			outGPS = gps_obs;
@@ -219,10 +221,13 @@ bool CVelodyneScanner::getNextObservation(
 			// Create smart ptr to new in-progress observation:
 			if (!m_rx_scan) {
 				m_rx_scan= mrpt::obs::CObservationVelodyneScan::Create();
-				m_rx_scan->timestamp = data_pkt_timestamp;
 				m_rx_scan->sensorLabel = this->m_sensorLabel + std::string("_SCAN");
 				m_rx_scan->sensorPose = m_sensorPose;
 				m_rx_scan->calibration = m_velodyne_calib; // Embed a copy of the calibration info
+
+				MRPT_TODO("Calculate accurate timestamp from gps pkts")
+				m_rx_scan->originalReceivedTimestamp = data_pkt_timestamp;
+				m_rx_scan->timestamp = data_pkt_timestamp;
 
 				{
 					const std::map<std::string,TModelProperties> &lstModels = TModelPropertiesFactory::get();
@@ -697,17 +702,18 @@ void CVelodyneScanner::internal_read_PCAP_packet(
 
 		if (m_pcap_read_once)
 		{
-			printf("[CVelodyneScanner] INFO: end of file reached -- done reading.");
+			printf("[CVelodyneScanner] INFO: end of file reached -- done reading.\n");
+			mrpt::system::sleep(1000);
 			return;
 		}
 
 		if (m_pcap_repeat_delay > 0.0)
 		{
-			printf("[CVelodyneScanner] INFO: end of file reached -- delaying %.3f seconds.", m_pcap_repeat_delay);
+			printf("[CVelodyneScanner] INFO: end of file reached -- delaying %.3f seconds.\n", m_pcap_repeat_delay);
 			mrpt::system::sleep( m_pcap_repeat_delay * 1000.0);
 		}
 
-		printf("[CVelodyneScanner] INFO: replaying Velodyne dump file\n");
+		printf("[CVelodyneScanner] INFO: replaying Velodyne dump file.\n");
 
 		// rewind the file
 		pcap_close( reinterpret_cast<pcap_t*>(m_pcap) );
