@@ -15,6 +15,16 @@
 // Universal include for all versions of OpenCV
 #include <mrpt/otherlibs/do_opencv_includes.h> 
 
+#ifdef HAVE_OPENCV_NONFREE  //MRPT_HAS_OPENCV_NONFREE
+# include <opencv2/nonfree/nonfree.hpp>
+#endif
+#ifdef HAVE_OPENCV_FEATURES2D
+# include <opencv2/features2d.hpp>
+#endif
+#ifdef HAVE_OPENCV_XFEATURES2D
+# include <opencv2/xfeatures2d.hpp>
+#endif
+
 
 using namespace mrpt;
 using namespace mrpt::vision;
@@ -22,11 +32,8 @@ using namespace mrpt::system;
 using namespace mrpt::utils;
 using namespace std;
 
-//#define HAVE_OPENCV_WITH_SURF MRPT_HAS_OPENCV && MRPT_OPENCV_VERSION_NUM >= 0x240 && (MRPT_OPENCV_VERSION_NUM < 0x300 || defined(HAVE_OPENCV_XFEATURES2D) ) /*HAVE_OPENCV_XFEATURES2D: required in opencv 3.0.0+ */
-//#define HAVE_OPENCV_WITH_SURF MRPT_HAS_OPENCV && MRPT_OPENCV_VERSION_NUM >= 0x240 && (MRPT_OPENCV_VERSION_NUM < 0x300 || defined(MRPT_HAS_OPENCV_NONFREE) ) /*MRPT_HAS_OPENCV_NONFREE: required in opencv 3.0.0+ */
-//gbnote: the definition above does no result in HAVE_OPENCV_WITH_SURF=1; I used the line below to force compiling to go into the surf part of the  code
-#define HAVE_OPENCV_WITH_SURF MRPT_HAS_OPENCV_NONFREE //gb modified because the versions above do not lead to HAVE_OPENCV_WITH_SURF = 1
-
+//Was: MRPT_HAS_OPENCV_NONFREE
+#define HAVE_OPENCV_WITH_SURF defined(HAVE_OPENCV_XFEATURES2D) || (MRPT_OPENCV_VERSION_NUM < 0x300 && MRPT_OPENCV_VERSION_NUM >= 0x240)
 
 /************************************************************************************************
 *								extractFeaturesSURF  									        *
@@ -63,7 +70,6 @@ void  CFeatureExtraction::extractFeaturesSURF(
 		surf->operator()(img, Mat(), cv_feats, cv_descs);
 
 	#else
-	
 		Ptr<xfeatures2d::SURF> surf = xfeatures2d::SURF::create(100.0, 4, 3, 0, 0);//gb
 		
 		if( surf.empty() )

@@ -43,8 +43,8 @@
 #		include <opencv2/objdetect/objdetect.hpp>
 //#		include <opencv2/core/eigen.hpp>  // Removed: opencv 2.3 had this file broken in Ubuntu (??)
 #		// These ones dissapeared in 3.0.0:  <opencv2/legacy/{legacy,compat}.hpp>  // CvImage
-#		if (MRPT_OPENCV_VERSION_NUM>=0x240) && MRPT_HAS_OPENCV_NONFREE
-#			include <opencv2/nonfree/nonfree.hpp>
+#		if (MRPT_OPENCV_VERSION_NUM>=0x240)
+#		include <opencv2/opencv_modules.hpp>
 #		endif
 #	endif
 #	else

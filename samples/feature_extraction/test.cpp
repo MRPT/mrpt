@@ -12,7 +12,7 @@
 #include <mrpt/gui.h>
 
 #include <mrpt/otherlibs/do_opencv_includes.h>
-#if (MRPT_OPENCV_VERSION_NUM>=0x240) && MRPT_HAS_OPENCV_NONFREE
+#if defined(HAVE_OPENCV_NONFREE)
 #   include <opencv2/nonfree/features2d.hpp>
 #endif
 
@@ -527,7 +527,7 @@ void TestExtractFeatures()
 	return;
 }
 
-#if (MRPT_OPENCV_VERSION_NUM>=0x240) && MRPT_HAS_OPENCV_NONFREE
+#if defined(HAVE_OPENCV_NONFREE)
 void TestORBTiled()
 {
 	using namespace cv;

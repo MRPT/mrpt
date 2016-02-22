@@ -21,7 +21,16 @@
 
 
 // Universal include for all versions of OpenCV
-#include <mrpt/otherlibs/do_opencv_includes.h> 
+#include <mrpt/otherlibs/do_opencv_includes.h>
+#ifdef HAVE_OPENCV_NONFREE  //MRPT_HAS_OPENCV_NONFREE
+# include <opencv2/nonfree/nonfree.hpp>
+#endif
+#ifdef HAVE_OPENCV_FEATURES2D
+# include <opencv2/features2d.hpp>
+#endif
+#ifdef HAVE_OPENCV_XFEATURES2D
+# include <opencv2/xfeatures2d.hpp>
+#endif
 
 
 // TODO: Remove, it's just for GetTempPathA
@@ -334,9 +343,7 @@ void  CFeatureExtraction::extractFeaturesSIFT(
 //***********************************************************************************************
 		case OpenCV:
 		{
-			
-
-#if MRPT_HAS_OPENCV && MRPT_HAS_OPENCV_NONFREE
+#if defined(HAVE_OPENCV_NONFREE) || defined(HAVE_OPENCV_XFEATURES2D)  //MRPT_HAS_OPENCV_NONFREE
 
 	#if MRPT_OPENCV_VERSION_NUM >= 0x211 && MRPT_OPENCV_VERSION_NUM < 0x300 
 
@@ -405,10 +412,8 @@ void  CFeatureExtraction::extractFeaturesSIFT(
 				++i;
 			}
 			feats.resize( cont );
-	#endif
-
-	#if MRPT_OPENCV_VERSION_NUM >= 0x300 
-			
+	#else
+	// MRPT_OPENCV_VERSION_NUM >= 0x300
 			using namespace cv;
 			vector<KeyPoint> cv_feats;
 
@@ -470,8 +475,6 @@ void  CFeatureExtraction::extractFeaturesSIFT(
 				++i;
 			}
 			feats.resize(cont);
-
-
 	#endif
 #else
 	THROW_EXCEPTION("This method requires OpenCV >= 2.1.1 with nonfree module")

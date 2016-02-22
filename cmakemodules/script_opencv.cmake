@@ -96,7 +96,6 @@ ENDIF(DISABLE_OPENCV)
 
 
 # OpenCV (all compilers):
-SET(CMAKE_MRPT_HAS_OPENCV_NONFREE 0)
 IF(CMAKE_MRPT_HAS_OPENCV)
 	# Important: we can't link against opencv_ts, apparently it leads to crashes 
 	# when also linking to gtest (???)
@@ -108,10 +107,6 @@ IF(CMAKE_MRPT_HAS_OPENCV)
 		MESSAGE(STATUS "        OpenCV_INCLUDE_DIR: ${OpenCV_INCLUDE_DIR} ${OpenCV_INCLUDE_DIRS}")
 	ENDIF($ENV{VERBOSE})
 
-	IF ("${OpenCV_LIBRARIES}" MATCHES ".*opencv_nonfree.*")
-		SET(CMAKE_MRPT_HAS_OPENCV_NONFREE 1)
-	ENDIF ("${OpenCV_LIBRARIES}" MATCHES ".*opencv_nonfree.*")
-	
 	INCLUDE_DIRECTORIES(${OpenCV_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIR})
 	#ADD_DIRECTORIES_AS_ISYSTEM(OpenCV_INCLUDE_DIRS)
 
