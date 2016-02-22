@@ -284,23 +284,15 @@ void  CFeatureExtraction::extractFeaturesSIFT(
 			CvMemStorage* storage;
 			CvSeq* features;
 			int octvs;
-			std::cout << "got to hess 1";//gb
 			/* check arguments */
 			ASSERT_(img_grayscale.getWidth() != 0 && img_grayscale.getHeight() != 0);
-			std::cout << "got to hess 2";//gb
 			/* build scale space pyramid; smallest dimension of top level is ~4 pixels */
 			const IplImage* ipl_im = img_grayscale.getAs<IplImage>();
-			std::cout << "got to hess 3"; //gb the program crashes in the next line 
 			init_img = create_init_img( ipl_im, SIFT_IMG_DBL, SIFT_SIGMA );
-			std::cout << "got to hess 3b";//gb
 			octvs = log( (float)(MIN( init_img->width, init_img->height )) ) / log((float)2) - 2;
-			std::cout << "got to hess 4";//gb
 			gauss_pyr = build_gauss_pyr( init_img, octvs, SIFT_INTVLS, SIFT_SIGMA );
-			std::cout << "got to hess 5";//gb
 			dog_pyr = build_dog_pyr( gauss_pyr, octvs, SIFT_INTVLS );
-			std::cout << "got to hess 6";//gb
 			storage = cvCreateMemStorage( 0 );
-			std::cout << "got to hess 7"; //gb
 			features = scale_space_extrema( dog_pyr, octvs, SIFT_INTVLS, 
 				options.SIFTOptions.threshold, // SIFT_CONTR_THR,
 				options.SIFTOptions.edgeThreshold, // SIFT_CURV_THR
