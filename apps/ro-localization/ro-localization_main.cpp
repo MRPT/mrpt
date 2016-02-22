@@ -14,9 +14,9 @@
 
  DESCRIPTION: Localization with PF, with an extended model to
               cope with unknown, dynamic biases in the beacon
-			  ranges. Refer to the paper:
- http://www.mrpt.org/Paper:UWB_Particle_Filter_Localization
-
+			  ranges. Refer to the paper: http://www.mrpt.org/paperuwb-particle-filter-localization/
+ Demo config file: https://github.com/MRPT/mrpt/blob/master/share/mrpt/config_files/ro-localization/UWB_localization_demo.ini
+ 
  Antonio J. Ortiz de Galisteo worked hard in the first version of this program.
   Gracias!! :-)
  --------------------------------------------------------------------------------- */
