@@ -19,6 +19,7 @@ MRPT_TODO("Add unit tests")
 MRPT_TODO("rpm: document usage. Add automatic determination of rpm from number of pkts/scan")
 MRPT_TODO("Use status bytes to check for dual return scans")
 MRPT_TODO("Add pose interpolation method for inserting in a point map")
+MRPT_TODO("Convert Sensor model -> enum")
 
 // socket's hdrs:
 #ifdef MRPT_OS_WINDOWS
@@ -190,7 +191,12 @@ bool CVelodyneScanner::getNextObservation(
 		mrpt::obs::CObservationVelodyneScan::TVelodyneRawPacket  rx_pkt;
 		mrpt::obs::CObservationVelodyneScan::TVelodynePositionPacket rx_pos_pkt;
 		mrpt::system::TTimeStamp data_pkt_timestamp, pos_pkt_timestamp;
-		this->receivePackets(data_pkt_timestamp,rx_pkt, pos_pkt_timestamp,rx_pos_pkt);
+		bool rx_all_ok = this->receivePackets(data_pkt_timestamp,rx_pkt, pos_pkt_timestamp,rx_pos_pkt);
+
+		if (!rx_all_ok) {
+			// PCAP EOF:
+			return false;
+		}
 
 		if (pos_pkt_timestamp!=INVALID_TIMESTAMP)
 		{
@@ -468,7 +474,7 @@ int gettimeofday(struct timeval * tp, void *)
 }
 #endif
 
-void CVelodyneScanner::receivePackets(
+bool CVelodyneScanner::receivePackets(
 	mrpt::system::TTimeStamp  &data_pkt_timestamp,
 	mrpt::obs::CObservationVelodyneScan::TVelodyneRawPacket &out_data_pkt,
 	mrpt::system::TTimeStamp  &pos_pkt_timestamp,
@@ -478,9 +484,10 @@ void CVelodyneScanner::receivePackets(
 	MRPT_COMPILE_TIME_ASSERT(sizeof(mrpt::obs::CObservationVelodyneScan::TVelodynePositionPacket)== CObservationVelodyneScan::POS_PACKET_SIZE);
 	MRPT_COMPILE_TIME_ASSERT(sizeof(mrpt::obs::CObservationVelodyneScan::TVelodyneRawPacket)== CObservationVelodyneScan::PACKET_SIZE);
 
+	bool ret = true; // all ok
 	if (m_pcap)
 	{
-		internal_read_PCAP_packet(
+		ret = internal_read_PCAP_packet(
 			data_pkt_timestamp, (uint8_t*)&out_data_pkt,
 			pos_pkt_timestamp, (uint8_t*)&out_pos_pkt);
 	}
@@ -535,6 +542,8 @@ void CVelodyneScanner::receivePackets(
 			m_pos_packets_period_timewatch.Tic();
 		}
 	}
+
+	return ret;
 }
 
 // static method:
@@ -639,7 +648,7 @@ mrpt::system::TTimeStamp CVelodyneScanner::internal_receive_UDP_packet(
 	return (time1/2+time2/2);
 }
 
-void CVelodyneScanner::internal_read_PCAP_packet(
+bool CVelodyneScanner::internal_read_PCAP_packet(
 	mrpt::system::TTimeStamp  & data_pkt_time, uint8_t *out_data_buffer,
 	mrpt::system::TTimeStamp  & pos_pkt_time, uint8_t  *out_pos_buffer
 	)
@@ -681,13 +690,13 @@ void CVelodyneScanner::internal_read_PCAP_packet(
 				if (m_verbose) std::cout << "[CVelodyneScanner] DEBUG: Packet #"<< m_pcap_read_count <<" in PCAP file is POSITION pkt.\n";
 				memcpy(out_pos_buffer, pkt_data+42, CObservationVelodyneScan::POS_PACKET_SIZE);
 				pos_pkt_time = tim;  // success
-				return;
+				return true;
 			}
 			else if (udp_dst_port==CVelodyneScanner::VELODYNE_DATA_UDP_PORT) {
 				if (m_verbose) std::cout << "[CVelodyneScanner] DEBUG: Packet #"<< m_pcap_read_count <<" in PCAP file is DATA pkt.\n";
 				memcpy(out_data_buffer, pkt_data+42, CObservationVelodyneScan::PACKET_SIZE);
 				data_pkt_time = tim;  // success
-				return;
+				return true;
 			}
 			else {
 				std::cerr << "[CVelodyneScanner] ERROR: Packet "<<m_pcap_read_count <<" in PCAP file passed the filter but does not match expected UDP port numbers! Skipping it.\n";
@@ -697,14 +706,14 @@ void CVelodyneScanner::internal_read_PCAP_packet(
 		if (m_pcap_file_empty) // no data in file?
 		{
 			fprintf(stderr, "[CVelodyneScanner] Maybe the PCAP file is empty? Error %d reading Velodyne packet: `%s`\n", res, pcap_geterr(reinterpret_cast<pcap_t*>(m_pcap) ));
-			return;
+			return true;
 		}
 
 		if (m_pcap_read_once)
 		{
 			printf("[CVelodyneScanner] INFO: end of file reached -- done reading.\n");
-			mrpt::system::sleep(1000);
-			return;
+			mrpt::system::sleep(250);
+			return false;
 		}
 
 		if (m_pcap_repeat_delay > 0.0)

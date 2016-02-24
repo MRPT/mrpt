@@ -151,6 +151,7 @@ namespace mrpt
 
 			/** @name Change configuration parameters; to be called BEFORE initialize(); see above for the list of parameters and their meaning
 			  * @{ */
+			/** See supported model names in the general discussion docs for mrpt::hwdrivers::CVelodyneScanner */
 			void setModelName(const std::string & model) { m_model = model; }
 			const std::string &getModelName() const { return m_model; }
 
@@ -162,6 +163,10 @@ namespace mrpt
 
 			void setPCAPInputFile(const std::string &pcap_file) { m_pcap_input_file = pcap_file; }
 			const std::string & getPCAPInputFile() const { return m_pcap_input_file; }
+
+			void setPCAPInputFileReadOnce(bool read_once) { m_pcap_read_once=read_once; }
+			bool getPCAPInputFileReadOnce() const { return m_pcap_read_once; }
+			
 
 			void setDeviceRPM(const int rpm) { m_rpm = rpm; }
 			int getDeviceRPM() const { return m_rpm; }
@@ -197,8 +202,10 @@ namespace mrpt
 
 			/** Users normally would prefer calling \a getNextObservation() instead.
 			  * This method polls the UDP data port and returns one Velodyne DATA packet (1206 bytes) and/or one POSITION packet. Refer to Velodyne users manual. 
-			  * Approximate timestamps (based on this computer clock) are returned for each kind of packets, or INVALID_TIMESTAMP if timeout ocurred waiting for a packet. */
-			void receivePackets(
+			  * Approximate timestamps (based on this computer clock) are returned for each kind of packets, or INVALID_TIMESTAMP if timeout ocurred waiting for a packet. 
+			  * \return true on all ok. false only for pcap reading EOF
+			  */
+			bool receivePackets(
 				mrpt::system::TTimeStamp  &data_pkt_timestamp,
 				mrpt::obs::CObservationVelodyneScan::TVelodyneRawPacket &out_data_pkt,
 				mrpt::system::TTimeStamp  &pos_pkt_timestamp,
@@ -223,7 +230,7 @@ namespace mrpt
 
 		static mrpt::system::TTimeStamp internal_receive_UDP_packet(platform_socket_t hSocket, uint8_t *out_buffer, const size_t expected_packet_size,const std::string &filter_only_from_IP);
 
-		void internal_read_PCAP_packet(
+		bool internal_read_PCAP_packet(
 			mrpt::system::TTimeStamp  & data_pkt_time, uint8_t *out_data_buffer,
 			mrpt::system::TTimeStamp  & pos_pkt_time, uint8_t  *out_pos_buffer
 			);

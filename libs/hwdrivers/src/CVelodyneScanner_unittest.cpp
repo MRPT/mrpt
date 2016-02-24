@@ -37,7 +37,10 @@ TEST(CVelodyneScanner, sample_vlp16_dataset)
 
 	CVelodyneScanner velodyne;
 
+	velodyne.setModelName("VLP-16");
 	velodyne.setPCAPInputFile(fil);
+	velodyne.setPCAPInputFileReadOnce(true);
+	velodyne.enableVerbose(false);
 
 	velodyne.initialize();
 
@@ -56,8 +59,8 @@ TEST(CVelodyneScanner, sample_vlp16_dataset)
 			nGPS++;
 		}
 	};
-	
-	cout << nScans;
+
+	EXPECT_EQ(nScans,4);
 }
 
 #endif // MRPT_HAS_LIBPCAP
