@@ -10,6 +10,7 @@
 #include "sift.h"
 #include "imgfeatures.h"
 #include "utils.h"
+#include <math.h>
 
 //#include "cxcore.h"
 //#include <highgui.h>

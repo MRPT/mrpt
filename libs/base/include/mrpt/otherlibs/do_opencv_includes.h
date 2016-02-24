@@ -20,6 +20,9 @@
 #	define CV_NO_CVV_IMAGE // Avoid CImage name crash
 
 #	if MRPT_OPENCV_VERSION_NUM>=0x211
+#		if MRPT_OPENCV_VERSION_NUM>=0x300
+#			include <opencv2/core/fast_math.hpp>
+#		endif
 #	if !defined(__cplusplus)
 #		include <opencv2/core/core_c.h>
 #		include <opencv2/highgui/highgui_c.h>
@@ -40,8 +43,8 @@
 #		include <opencv2/objdetect/objdetect.hpp>
 //#		include <opencv2/core/eigen.hpp>  // Removed: opencv 2.3 had this file broken in Ubuntu (??)
 #		// These ones dissapeared in 3.0.0:  <opencv2/legacy/{legacy,compat}.hpp>  // CvImage
-#		if (MRPT_OPENCV_VERSION_NUM>=0x240) && MRPT_HAS_OPENCV_NONFREE
-#			include <opencv2/nonfree/nonfree.hpp>
+#		if (MRPT_OPENCV_VERSION_NUM>=0x240)
+#		include <opencv2/opencv_modules.hpp>
 #		endif
 #	endif
 #	else

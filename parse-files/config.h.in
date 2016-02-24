@@ -50,10 +50,6 @@ ${CMAKE_MRPT_BUILD_SHARED_LIB}
 // Version as hexadecimal number: eg. 1.0.0 -> 0x100
 #define MRPT_OPENCV_VERSION_NUM  ${MRPT_OPENCV_VERSION_HEX}
 
-// Do we have the opencv-nonfree module?
-#define MRPT_HAS_OPENCV_NONFREE  ${CMAKE_MRPT_HAS_OPENCV_NONFREE}
-
-
 /** Includes OpenGL & GLUT libraries, required for CDisplayWindows3D to work. */
 #define MRPT_HAS_OPENGL_GLUT      ${CMAKE_MRPT_HAS_OPENGL_GLUT}
 
