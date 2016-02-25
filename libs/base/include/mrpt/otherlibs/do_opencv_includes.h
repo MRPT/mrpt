@@ -20,7 +20,7 @@
 #	define CV_NO_CVV_IMAGE // Avoid CImage name crash
 
 #	if MRPT_OPENCV_VERSION_NUM>=0x211
-#		if MRPT_OPENCV_VERSION_NUM>=0x300
+#		if MRPT_OPENCV_VERSION_NUM>0x300
 #			include <opencv2/core/fast_math.hpp>
 #		endif
 #	if !defined(__cplusplus)
