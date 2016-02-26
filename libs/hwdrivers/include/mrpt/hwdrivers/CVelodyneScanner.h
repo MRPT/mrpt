@@ -15,12 +15,13 @@
 #include <mrpt/obs/CObservationGPS.h>
 #include <mrpt/utils/CConfigFileBase.h>
 #include <mrpt/utils/CTicTac.h>
+#include <mrpt/utils/TEnumType.h>
 
 namespace mrpt
 {
 	namespace hwdrivers
 	{
-		/** A C++ interface to Velodyne laser scanners (HDL-32, VLP-16), working on Windows and Linux.
+		/** A C++ interface to Velodyne laser scanners (HDL-64, HDL-32, VLP-16), working on Windows and Linux.
 		  * It can receive data from real devices via an Ethernet connection or parse a WireShark PCAP file for offline processing.
 		  * The choice of online vs. offline operation is taken upon calling \a initialize(): if a PCAP input file has been defined,
 		  * offline operation takes place and network is not listened for incomming packets.
@@ -66,7 +67,7 @@ namespace mrpt
 		  *   [supplied_section_name]
 		  *   # ---- Sensor description ----
 		  *   #calibration_file         = PUT_HERE_FULL_PATH_TO_CALIB_FILE.xml      // Optional but recommended: put here your vendor-provided calibration file
-		  *   model                    = VLP-16          // Can be any of: `VLP-16`, `HDL-32`  (It is used to load default calibration file. Parameter not required if `calibration_file` is provided.
+		  *   model                    = VLP16      // Can be any of: `VLP16`, `HDL32`, `HDL64`  (It is used to load default calibration file. Parameter not required if `calibration_file` is provided.
 		  *   #pos_packets_min_period  = 0.5        // (Default=0.5 seconds) Minimum period between the reporting of position packets, used to decimate the large number of packets of this type.
 		  *   # ---- Online operation ----
 		  *
@@ -115,10 +116,17 @@ namespace mrpt
 			static short int VELODYNE_DATA_UDP_PORT;  //!< Default: 2368. Change it if required.
 			static short int VELODYNE_POSITION_UDP_PORT;  //!< Default: 8308. Change it if required.
 
+			/** LIDAR model types */
+			enum model_t {
+				VLP16 = 1,
+				HDL32 = 2,
+				HDL64 = 3
+			};
+
 		protected:
 			bool          m_initialized;
-			std::string   m_model;      //!< Default: "VLP-16"
-			double        m_pos_packets_min_period; //!< Default: 0.5
+			model_t       m_model;      //!< Default: "VLP16"
+			double        m_pos_packets_min_period; //!< Default: 0.5 seconds
 			std::string   m_device_ip;  //!< Default: "" (no IP-based filtering)
 			std::string   m_pcap_input_file; //!< Default: "" (do not operate from an offline file)
 			std::string   m_pcap_output_file; //!< Default: "" (do not dump to an offline file)
@@ -152,21 +160,23 @@ namespace mrpt
 			/** @name Change configuration parameters; to be called BEFORE initialize(); see above for the list of parameters and their meaning
 			  * @{ */
 			/** See supported model names in the general discussion docs for mrpt::hwdrivers::CVelodyneScanner */
-			void setModelName(const std::string & model) { m_model = model; }
-			const std::string &getModelName() const { return m_model; }
+			void setModelName(const model_t model) { m_model = model; }
+			model_t getModelName() const { return m_model; }
 
-			void setPosPacketsMinPeriod(double period) { m_pos_packets_min_period = period; }
+			/** Set the minimum period between the generation of mrpt::obs::CObservationGPS observations from Velodyne Position RMC GPS packets */
+			void setPosPacketsMinPeriod(double period_seconds) { m_pos_packets_min_period = period_seconds; }
 			double getPosPacketsMinPeriod() const { return m_pos_packets_min_period; }
 
+			/** UDP packets from other IPs will be ignored. Default: empty string, means do not filter by IP */
 			void setDeviceIP(const std::string & ip) { m_device_ip = ip; }
 			const std::string &getDeviceIP() const { return m_device_ip; }
 
+			/** Enables reading from a PCAP file instead of live UDP packet listening */
 			void setPCAPInputFile(const std::string &pcap_file) { m_pcap_input_file = pcap_file; }
 			const std::string & getPCAPInputFile() const { return m_pcap_input_file; }
 
 			void setPCAPInputFileReadOnce(bool read_once) { m_pcap_read_once=read_once; }
 			bool getPCAPInputFileReadOnce() const { return m_pcap_read_once; }
-			
 
 			void setDeviceRPM(const int rpm) { m_rpm = rpm; }
 			int getDeviceRPM() const { return m_rpm; }
@@ -239,6 +249,21 @@ namespace mrpt
 
 		}; // end of class
 	} // end of namespace
+	
+	namespace utils // Specializations MUST occur at the same namespace:
+	{
+		template <>
+		struct TEnumTypeFiller<hwdrivers::CVelodyneScanner::model_t>
+		{
+			typedef hwdrivers::CVelodyneScanner::model_t enum_t;
+			static void fill(bimap<enum_t,std::string>  &m_map)
+			{
+				m_map.insert(hwdrivers::CVelodyneScanner::VLP16,  "VLP16");
+				m_map.insert(hwdrivers::CVelodyneScanner::HDL32,  "HDL32");
+				m_map.insert(hwdrivers::CVelodyneScanner::HDL64,  "HDL64");
+			}
+		};
+	} // End of namespace
 } // end of namespace
 
 

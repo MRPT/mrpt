@@ -21,6 +21,9 @@ namespace mrpt { namespace utils {
 	extern std::string MRPT_GLOBAL_UNITTEST_SRC_DIR;
   }
 }
+MRPT_TODO("Add test for HDL-64")
+MRPT_TODO("Add test for HDL-32")
+MRPT_TODO("Add test for VLP16 dual return")
 
 #include <mrpt/config.h>
 #if MRPT_HAS_LIBPCAP
@@ -61,6 +64,7 @@ TEST(CVelodyneScanner, sample_vlp16_dataset)
 	};
 
 	EXPECT_EQ(nScans,4);
+	EXPECT_GT(nGPS,0);
 }
 
 #endif // MRPT_HAS_LIBPCAP

@@ -15,11 +15,9 @@
 #include <mrpt/hwdrivers/CGPSInterface.h>
 #include <mrpt/system/filesystem.h>
 
-MRPT_TODO("Add unit tests")
 MRPT_TODO("rpm: document usage. Add automatic determination of rpm from number of pkts/scan")
 MRPT_TODO("Use status bytes to check for dual return scans")
 MRPT_TODO("Add pose interpolation method for inserting in a point map")
-MRPT_TODO("Convert Sensor model -> enum")
 
 // socket's hdrs:
 #ifdef MRPT_OS_WINDOWS
@@ -62,31 +60,33 @@ short int CVelodyneScanner::VELODYNE_POSITION_UDP_PORT= 8308;
 struct TModelProperties {
 	double maxRange;
 };
+typedef std::map<CVelodyneScanner::model_t,TModelProperties> model_properties_list_t;
+
 struct TModelPropertiesFactory {
-	static const std::map<std::string,TModelProperties>  & get()
+	static const model_properties_list_t & get()
 	{
-		static std::map<std::string,TModelProperties>  modelProperties;
+		static model_properties_list_t modelProperties;
 		static bool init = false;
 		if (!init) {
 			init = true;
-			modelProperties["VLP-16"].maxRange = 120.0;
-			modelProperties["HDL-32"].maxRange = 70.0;
+			modelProperties[CVelodyneScanner::VLP16].maxRange = 120.0;
+			modelProperties[CVelodyneScanner::HDL32].maxRange = 70.0;
 		}
 		return modelProperties;
 	}
 	// Return human-readable string: "`VLP-16`,`XXX`,..."
 	static std::string getListKnownModels(){
-		const std::map<std::string,TModelProperties>  & lst = TModelPropertiesFactory::get();
+		const model_properties_list_t  & lst = TModelPropertiesFactory::get();
 		std::string s;
-		for (std::map<std::string,TModelProperties>::const_iterator it=lst.begin();it!=lst.end();++it)
-			s+=mrpt::format("`%s`,",it->first.c_str());
+		for (model_properties_list_t::const_iterator it=lst.begin();it!=lst.end();++it)
+			s+=mrpt::format("`%s`,", mrpt::utils::TEnumType<CVelodyneScanner::model_t>::value2name(it->first).c_str() );
 		return s;
 	}
 };
 
 
 CVelodyneScanner::CVelodyneScanner() :
-	m_model("VLP-16"),
+	m_model(CVelodyneScanner::VLP16),
 	m_pos_packets_min_period(0.5),
 	m_device_ip(""),
 	m_rpm(600),
@@ -141,9 +141,9 @@ void CVelodyneScanner::loadConfig_sensorSpecific(
 {
 	MRPT_START
 
+	cfg.read_enum<CVelodyneScanner::model_t>(sect,"model",m_model);
 	MRPT_LOAD_HERE_CONFIG_VAR(device_ip,   string, m_device_ip       ,  cfg, sect);
 	MRPT_LOAD_HERE_CONFIG_VAR(rpm,            int, m_rpm             ,  cfg, sect);
-	MRPT_LOAD_HERE_CONFIG_VAR(model,       string, m_model           ,  cfg, sect);
 	MRPT_LOAD_HERE_CONFIG_VAR(pcap_input,  string, m_pcap_input_file ,  cfg, sect);
 	MRPT_LOAD_HERE_CONFIG_VAR(pcap_output, string, m_pcap_output_file,  cfg, sect);	
 	MRPT_LOAD_HERE_CONFIG_VAR(pcap_read_once,bool, m_pcap_read_once,  cfg, sect);
@@ -166,9 +166,11 @@ void CVelodyneScanner::loadConfig_sensorSpecific(
 		this->loadCalibrationFile(calibration_file);
 
 	// Check validity:
-	const std::map<std::string,TModelProperties> &lstModels = TModelPropertiesFactory::get();
+	const model_properties_list_t &lstModels = TModelPropertiesFactory::get();
 	if (lstModels.find(m_model)==lstModels.end()) {
-		THROW_EXCEPTION(mrpt::format("Unrecognized `model` parameter: `%s` . Known values are: %s",m_model.c_str(),TModelPropertiesFactory::getListKnownModels().c_str()))
+		THROW_EXCEPTION(mrpt::format("Unrecognized `model` parameter: `%u` . Known values are: %s",
+			static_cast<unsigned int>(m_model),
+			TModelPropertiesFactory::getListKnownModels().c_str()))
 	}
 
 	MRPT_END
@@ -236,8 +238,8 @@ bool CVelodyneScanner::getNextObservation(
 				m_rx_scan->timestamp = data_pkt_timestamp;
 
 				{
-					const std::map<std::string,TModelProperties> &lstModels = TModelPropertiesFactory::get();
-					std::map<std::string,TModelProperties>::const_iterator it=lstModels.find(this->m_model);
+					const model_properties_list_t &lstModels = TModelPropertiesFactory::get();
+					model_properties_list_t::const_iterator it=lstModels.find(this->m_model);
 					if (it!=lstModels.end())
 					{ // Model params:
 						m_rx_scan->maxRange = it->second.maxRange;
@@ -289,11 +291,9 @@ void CVelodyneScanner::initialize()
 	// (0) Preparation:
 	// --------------------------------
 	// Make sure we have calibration data:
-	if (m_velodyne_calib.empty() && m_model.empty())
-		THROW_EXCEPTION("You must provide either a `model` name or load a valid XML configuration file first.");
 	if (m_velodyne_calib.empty()) {
 		// Try to load default data:
-		m_velodyne_calib = VelodyneCalibration::LoadDefaultCalibration(m_model);
+		m_velodyne_calib = VelodyneCalibration::LoadDefaultCalibration( mrpt::utils::TEnumType<CVelodyneScanner::model_t>::value2name(m_model) );
 		if (m_velodyne_calib.empty())
 			THROW_EXCEPTION("Could not find default calibration data for the given LIDAR `model` name. Please, specify a valid `model` or load a valid XML configuration file first.");
 	}
