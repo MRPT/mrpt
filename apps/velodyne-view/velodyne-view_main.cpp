@@ -72,7 +72,7 @@ void thread_grabbing(TThreadParam &p)
 		CFileGZOutputStream f_out_rawlog;
 		if (arg_out_rawlog.isSet()) {
 			if (!f_out_rawlog.open(arg_out_rawlog.getValue()))
-				THROW_EXCEPTION_CUSTOM_MSG1("Error creating output rawlog file: ", arg_out_rawlog.getValue())
+				THROW_EXCEPTION_CUSTOM_MSG1("Error creating output rawlog file: %s", arg_out_rawlog.getValue().c_str())
 		}
 
 		mrpt::hwdrivers::CVelodyneScanner velodyne;
