@@ -56,33 +56,26 @@ IMPLEMENTS_GENERIC_SENSOR(CVelodyneScanner,mrpt::hwdrivers)
 short int CVelodyneScanner::VELODYNE_DATA_UDP_PORT = 2368;
 short int CVelodyneScanner::VELODYNE_POSITION_UDP_PORT= 8308;
 
-// Hard-wired properties of LIDARs depending on the model:
-struct TModelProperties {
-	double maxRange;
-};
-typedef std::map<CVelodyneScanner::model_t,TModelProperties> model_properties_list_t;
-
-struct TModelPropertiesFactory {
-	static const model_properties_list_t & get()
-	{
-		static model_properties_list_t modelProperties;
-		static bool init = false;
-		if (!init) {
-			init = true;
-			modelProperties[CVelodyneScanner::VLP16].maxRange = 120.0;
-			modelProperties[CVelodyneScanner::HDL32].maxRange = 70.0;
-		}
-		return modelProperties;
+const CVelodyneScanner::model_properties_list_t & CVelodyneScanner::TModelPropertiesFactory::get()
+{
+	static CVelodyneScanner::model_properties_list_t modelProperties;
+	static bool init = false;
+	if (!init) {
+		init = true;
+		modelProperties[CVelodyneScanner::VLP16].maxRange = 120.0;
+		modelProperties[CVelodyneScanner::HDL32].maxRange = 70.0;
+		modelProperties[CVelodyneScanner::HDL64].maxRange = 120.0;
 	}
-	// Return human-readable string: "`VLP-16`,`XXX`,..."
-	static std::string getListKnownModels(){
-		const model_properties_list_t  & lst = TModelPropertiesFactory::get();
-		std::string s;
-		for (model_properties_list_t::const_iterator it=lst.begin();it!=lst.end();++it)
-			s+=mrpt::format("`%s`,", mrpt::utils::TEnumType<CVelodyneScanner::model_t>::value2name(it->first).c_str() );
-		return s;
-	}
-};
+	return modelProperties;
+}
+std::string CVelodyneScanner::TModelPropertiesFactory::getListKnownModels()
+{
+	const CVelodyneScanner::model_properties_list_t  & lst = CVelodyneScanner::TModelPropertiesFactory::get();
+	std::string s;
+	for (CVelodyneScanner::model_properties_list_t::const_iterator it=lst.begin();it!=lst.end();++it)
+		s+=mrpt::format("`%s`,", mrpt::utils::TEnumType<CVelodyneScanner::model_t>::value2name(it->first).c_str() );
+	return s;
+}
 
 
 CVelodyneScanner::CVelodyneScanner() :

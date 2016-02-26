@@ -122,6 +122,16 @@ namespace mrpt
 				HDL32 = 2,
 				HDL64 = 3
 			};
+			/** Hard-wired properties of LIDARs depending on the model */
+			struct HWDRIVERS_IMPEXP TModelProperties {
+				double maxRange;
+			};
+			typedef std::map<model_t,TModelProperties> model_properties_list_t;
+			/** Access to default sets of parameters for Velodyne LIDARs */
+			struct HWDRIVERS_IMPEXP TModelPropertiesFactory {
+				static const model_properties_list_t & get(); //!< Singleton access
+				static std::string getListKnownModels(); //!< Return human-readable string: "`VLP16`,`XXX`,..."
+			};
 
 		protected:
 			bool          m_initialized;
@@ -174,6 +184,10 @@ namespace mrpt
 			/** Enables reading from a PCAP file instead of live UDP packet listening */
 			void setPCAPInputFile(const std::string &pcap_file) { m_pcap_input_file = pcap_file; }
 			const std::string & getPCAPInputFile() const { return m_pcap_input_file; }
+
+			/** Enables dumping to a PCAP file in parallel to returning regular MRPT objects. Default="": no pcap log. */
+			void setPCAPOutputFile(const std::string &out_pcap_file) { m_pcap_output_file = out_pcap_file; }
+			const std::string & getPCAPOutputFile() const { return m_pcap_output_file; }
 
 			void setPCAPInputFileReadOnce(bool read_once) { m_pcap_read_once=read_once; }
 			bool getPCAPInputFileReadOnce() const { return m_pcap_read_once; }
