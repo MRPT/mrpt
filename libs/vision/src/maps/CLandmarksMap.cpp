@@ -277,14 +277,6 @@ double	 CLandmarksMap::internal_computeObservationLikelihood(
 		auxMap.loadSiftFeaturesFromStereoImageObservation( *o, CLandmarksMap::_mapMaxID, likelihoodOptions.SIFT_feat_options );
 		auxMap.changeCoordinatesReference( robotPose3D );
 
-		//auxMap.saveToMATLABScript3D("observationMap.m");
-		//auxMap.saveToTextFile("observationMap.txt");
-
-		//this->saveToMATLABScript3D("particleMap.m");
-		//this->saveToTextFile("particleMap.txt");
-
-		//system("pause");
-
 		// ACCESS TO STATIC VARIABLE
 		//std::cout << "_mapMaxID, from " << CLandmarksMap::_mapMaxID << " to ";
 		if( !CLandmarksMap::_maxIDUpdated )
@@ -333,31 +325,15 @@ double	 CLandmarksMap::internal_computeObservationLikelihood(
 					// Compute the 3D position of the sensor:
 					point3D = robotPose3D + it->sensorLocationOnRobot;
 
-					float	expectedRange = point3D.distanceTo( beacon3D );
-					float	sensedDist    = it->sensedDistance;
+					const float	expectedRange = point3D.distanceTo( beacon3D );
+					const float	sensedDist    = it->sensedDistance;
 
 					if (sensedDist<0) sensedDist=0;
-
-/********************************************************MODELO************************************************************************/
-					// expectedRange += mrpt::random::RandomNormal( 0.1f*(1.01f-exp(-0.17f*expectedRange)), 0.0119f);	//Tony aprox
-					// JLBC: The "bias" random variable is already modeled by a larger variance!
-					expectedRange += 0.1f*(1.01f-exp(-0.17f*expectedRange));
-
-					// Simulation of BIAS:
-//					ret += log(likelihoodOptions.alphaRatio*(1/(likelihoodOptions.beaconRangesStd*sqrt(M_2PI)))*
-//						exp(-0.5f*square( ( expectedRange - it->sensedDistance  ) / likelihoodOptions.beaconRangesStd ))+
-//						(1-likelihoodOptions.alphaRatio)*((1+sign(expectedRange - it->sensedDistance))/2)/
-//						(likelihoodOptions.beaconMaxRange-it->sensedDistance)+1e-30);
 
 					// Filter:
 					ret += (-0.5f*square( ( expectedRange - sensedDist  ) / likelihoodOptions.beaconRangesStd ));
 
 					found = true;
-/**************************************************************************************************************************************/
-					// With out BIAS:
-//					ret += -0.5f*square( ( expectedRange - it->sensedDistance  ) / likelihoodOptions.beaconRangesStd );
-//					found = true;
-/**************************************************************************************************************************************/
 				}
 			}
 

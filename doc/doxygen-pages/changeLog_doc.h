@@ -56,6 +56,7 @@
 			- Fixed mrpt::utils::net::DNS_resolve_async() may SIGSEGV in slow networks.
 			- mrpt::opengl::CMesh::updateColorsMatrix() did not ignore cells masked out.
 			- Wrong weights used in mrpt::poses::CPosePDFSOG::getMean()
+			- Removed ad-hoc bias addition in range-only predictions in landmarks maps.
 
 <a name="1.3.2">
   <h2>Version 1.3.2: Released 3-NOV-2015 </h2></a>
