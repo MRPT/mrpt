@@ -326,13 +326,10 @@ double	 CLandmarksMap::internal_computeObservationLikelihood(
 					point3D = robotPose3D + it->sensorLocationOnRobot;
 
 					const float	expectedRange = point3D.distanceTo( beacon3D );
-					const float	sensedDist    = it->sensedDistance;
-
+					float	sensedDist    = it->sensedDistance;
 					if (sensedDist<0) sensedDist=0;
-
-					// Filter:
+					
 					ret += (-0.5f*square( ( expectedRange - sensedDist  ) / likelihoodOptions.beaconRangesStd ));
-
 					found = true;
 				}
 			}

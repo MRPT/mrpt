@@ -350,11 +350,13 @@ void do_pf_localization(const std::string &ini_fil, const std::string &cmdline_r
 				ASSERT_(fileExists(sOUT_DIR_3D));
 				deleteFiles(format("%s/*.*",sOUT_DIR_3D.c_str()));
 
-				metricMap.m_gridMaps[0]->saveAsBitmapFile(format("%s/gridmap.png",sOUT_DIR.c_str()));
-				CFileOutputStream(format("%s/gridmap_limits.txt",sOUT_DIR.c_str())).printf(
-					"%f %f %f %f",
-					metricMap.m_gridMaps[0]->getXMin(),metricMap.m_gridMaps[0]->getXMax(),
-					metricMap.m_gridMaps[0]->getYMin(),metricMap.m_gridMaps[0]->getYMax() );
+				if (!metricMap.m_gridMaps.empty()) {
+					metricMap.m_gridMaps[0]->saveAsBitmapFile(format("%s/gridmap.png",sOUT_DIR.c_str()));
+					CFileOutputStream(format("%s/gridmap_limits.txt",sOUT_DIR.c_str())).printf(
+						"%f %f %f %f",
+						metricMap.m_gridMaps[0]->getXMin(),metricMap.m_gridMaps[0]->getXMax(),
+						metricMap.m_gridMaps[0]->getYMin(),metricMap.m_gridMaps[0]->getYMax() );
+				}
 
 				// Save the landmarks for plot in matlab:
 				if (metricMap.m_landmarksMap)
