@@ -47,7 +47,8 @@ namespace mrpt
 			  */
 			bool open(const std::string &fileName );
 			void close(); //!< Close the stream
-			bool  fileOpenCorrectly(); //!< Says if file was open successfully or not.
+			bool fileOpenCorrectly(); //!< Returns true if the file was open without errors.
+			bool is_open() { return fileOpenCorrectly(); } //!< Returns true if the file was open without errors.
 			bool checkEOF(); //!< Will be true if EOF has been already reached.
 
 			/** Method for moving to a specified position in the streamed resource.

@@ -4,12 +4,73 @@ velodyne-view - Demo for grabbing and visualizing data from a Velodyne sensor
 
 =head1 SYNOPSIS
 
+velodyne-view  [-v] [-n] [-m <`VLP16`,`HDL32`,`HDL64`,>] [-c
+			  <calib.xml>] [--ip-filter <192.168.1.201>] [--out-pcap
+			  <out>] [-i <in_dataset.pcap>] [-o <out.rawlog>] [--]
+			  [--version] [-h]
+
+
+=head1 USAGE EXAMPLES
+
+B<Run with all default parameters and show live VLP16 LIDAR scans>
+
 velodyne-view
+
+B<Parses a PCAP file with a LIDAR dump>
+
+velodyne-view --in-pcap DATASET.pcap
+velodyne-view --in-pcap DATASET.pcap --calib CALIB.xml
+
+B<Grab RawLog and PCAP log files from a live VLP16 LIDAR>
+
+velodyne-view --out-pcap out --out-rawlog out.rawlog
+
+B<Grab RawLog and PCAP log files from a live LIDAR with calibration file>
+
+velodyne-view --out-pcap out --out-rawlog out.rawlog --calib CALIB.xml
+
 
 =head1 DESCRIPTION
 
 B<velodyne-view> is a simple application that continuously grabs scans from a
 Velodyne sensor and displays the 3D point cloud live.
+
+Arguments:
+
+   -v,  --verbose
+     Verbose debug output
+
+   -n,  --nologo
+     Skip the logo at startup
+
+   -m <`VLP16`,`HDL32`,`HDL64`,>,  --model <`VLP16`,`HDL32`,`HDL64`,>
+     If no calibration file is specified, set the model to load default
+     values
+
+   -c <calib.xml>,  --calib <calib.xml>
+     Optionally, select the calibration XML file for the LIDAR
+
+   --ip-filter <192.168.1.201>
+     Only listen to a LIDAR emitting commands from a given IP
+
+   --out-pcap <out>
+     If set, grab all packets to a PCAP log file. Set name prefix only.
+
+   -i <in_dataset.pcap>,  --in-pcap <in_dataset.pcap>
+     Instead of listening to a live sensor, read data from a PCAP file
+
+   -o <out.rawlog>,  --out-rawlog <out.rawlog>
+     If set, grab dataset in rawlog format
+
+   --,  --ignore_rest
+     Ignores the rest of the labeled arguments following this flag.
+
+   --version
+     Displays version information and exits.
+
+   -h,  --help
+     Displays usage information and exits.
+
 
 =head1 BUGS
 

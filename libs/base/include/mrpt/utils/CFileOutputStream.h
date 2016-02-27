@@ -58,11 +58,11 @@ namespace utils
 		/** Close the stream. */
 		void close();
 
-		 /** Destructor */
-		 virtual ~CFileOutputStream();
+		/** Destructor */
+		virtual ~CFileOutputStream();
 
-		 /** Says if file was open successfully or not */
-		 bool  fileOpenCorrectly();
+		bool fileOpenCorrectly(); //!< Returns true if the file was open without errors.
+		bool is_open() { return fileOpenCorrectly(); } //!< Returns true if the file was open without errors.
 
 		// See base class docs
 		uint64_t Seek(uint64_t Offset, CStream::TSeekOrigin Origin = sFromBeginning) MRPT_OVERRIDE;

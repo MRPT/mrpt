@@ -19,6 +19,7 @@
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/maps/CColouredPointsMap.h>
 #include <mrpt/utils/CTicTac.h>
+#include <mrpt/utils/CFileGZOutputStream.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/stock_objects.h>
 #include <mrpt/opengl/CPointCloudColoured.h>
@@ -39,10 +40,12 @@ using namespace std;
 // Declare the supported options.
 TCLAP::CmdLine cmd("velodyne-view", ' ', mrpt::system::MRPT_getVersion().c_str());
 
-TCLAP::ValueArg<std::string>	arg_out_rawlog("o","out-rawlog","Grab to an output rawlog",false,"","out.rawlog",cmd);
-TCLAP::ValueArg<std::string>	arg_in_pcap("i","in-pcap","Instead of listening to a live sensor, read data from a PCAP file",false,"","dataset.pcap",cmd);
+TCLAP::ValueArg<std::string>	arg_out_rawlog("o","out-rawlog","If set, grab dataset in rawlog format",false,"","out.rawlog",cmd);
+TCLAP::ValueArg<std::string>	arg_in_pcap ("i","in-pcap","Instead of listening to a live sensor, read data from a PCAP file",false,"","in_dataset.pcap",cmd);
+TCLAP::ValueArg<std::string>	arg_out_pcap("","out-pcap","If set, grab all packets to a PCAP log file. Set name prefix only.",false,"","out",cmd);
 TCLAP::ValueArg<std::string>	arg_ip_filter("","ip-filter","Only listen to a LIDAR emitting commands from a given IP",false,"","192.168.1.201",cmd);
 TCLAP::ValueArg<std::string>	arg_calib_file("c","calib","Optionally, select the calibration XML file for the LIDAR",false,"","calib.xml",cmd);
+TCLAP::ValueArg<std::string>	arg_model("m","model","If no calibration file is specified, set the model to load default values",false,"VLP16", CVelodyneScanner::TModelPropertiesFactory::getListKnownModels(),cmd);
 TCLAP::SwitchArg				arg_nologo("n","nologo","Skip the logo at startup",cmd, false);
 TCLAP::SwitchArg				arg_verbose("v","verbose","Verbose debug output",cmd, false);
 
@@ -66,14 +69,22 @@ void thread_grabbing(TThreadParam &p)
 {
 	try
 	{
+		CFileGZOutputStream f_out_rawlog;
+		if (arg_out_rawlog.isSet()) {
+			if (!f_out_rawlog.open(arg_out_rawlog.getValue()))
+				THROW_EXCEPTION_CUSTOM_MSG1("Error creating output rawlog file: %s", arg_out_rawlog.getValue().c_str())
+		}
+
 		mrpt::hwdrivers::CVelodyneScanner velodyne;
 
 		if (arg_verbose.isSet())
 			velodyne.enableVerbose(true);
 
 		// Set params:
+		velodyne.setModelName( mrpt::utils::TEnumType<mrpt::hwdrivers::CVelodyneScanner::model_t>::name2value( arg_model.getValue() ) );
 		if (arg_ip_filter.isSet())  velodyne.setDeviceIP( arg_ip_filter.getValue() ); // Default: from any IP
 		if (arg_in_pcap.isSet())    velodyne.setPCAPInputFile(arg_in_pcap.getValue());
+		if (arg_out_pcap.isSet())   velodyne.setPCAPOutputFile(arg_out_pcap.getValue());
 
 		// If you have a calibration file, better than default values:
 		if (arg_calib_file.isSet())
@@ -102,6 +113,13 @@ void thread_grabbing(TThreadParam &p)
 			CObservationGPSPtr           obs_gps;
 
 			hard_error = !velodyne.getNextObservation(obs,obs_gps);
+
+			// Save to log file:
+			if (f_out_rawlog.fileOpenCorrectly())
+			{
+				if (obs) f_out_rawlog << *obs;
+				if (obs_gps) f_out_rawlog << *obs_gps;
+			}
 
 			if (obs)      {p.new_obs.set(obs); nScans++;}
 			if (obs_gps)  p.new_obs_gps.set(obs_gps);

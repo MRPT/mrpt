@@ -57,7 +57,8 @@ namespace mrpt
 			  */
 			bool open(const std::string &fileName, int compress_level = 1 );
 			void close(); //!< Close the file
-			bool fileOpenCorrectly(); //!< Returns true if the file was open ok
+			bool fileOpenCorrectly(); //!< Returns true if the file was open without errors.
+			bool is_open() { return fileOpenCorrectly(); } //!< Returns true if the file was open without errors.
 			uint64_t getPosition()  MRPT_OVERRIDE; //!< Method for getting the current cursor position, where 0 is the first byte and TotalBytesCount-1 the last one.
 
 			/** This method is not implemented in this class */

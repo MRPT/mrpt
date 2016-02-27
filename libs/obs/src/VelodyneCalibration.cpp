@@ -202,9 +202,9 @@ const VelodyneCalibration & VelodyneCalibration::LoadDefaultCalibration(const st
 	VelodyneCalibration result; // Leave empty to indicate unknown model
 	std::string xml_contents;
 
-	if (lidar_model=="VLP-16")
+	if (lidar_model=="VLP16")
 		xml_contents = velodyne_default_calib_VLP16;
-	else if (lidar_model=="HDL-32")
+	else if (lidar_model=="HDL32")
 		xml_contents = velodyne_default_calib_HDL32;
 	else
 	{}

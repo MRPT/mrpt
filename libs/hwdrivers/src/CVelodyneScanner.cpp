@@ -15,7 +15,6 @@
 #include <mrpt/hwdrivers/CGPSInterface.h>
 #include <mrpt/system/filesystem.h>
 
-MRPT_TODO("Add unit tests")
 MRPT_TODO("rpm: document usage. Add automatic determination of rpm from number of pkts/scan")
 MRPT_TODO("Use status bytes to check for dual return scans")
 MRPT_TODO("Add pose interpolation method for inserting in a point map")
@@ -57,35 +56,30 @@ IMPLEMENTS_GENERIC_SENSOR(CVelodyneScanner,mrpt::hwdrivers)
 short int CVelodyneScanner::VELODYNE_DATA_UDP_PORT = 2368;
 short int CVelodyneScanner::VELODYNE_POSITION_UDP_PORT= 8308;
 
-// Hard-wired properties of LIDARs depending on the model:
-struct TModelProperties {
-	double maxRange;
-};
-struct TModelPropertiesFactory {
-	static const std::map<std::string,TModelProperties>  & get()
-	{
-		static std::map<std::string,TModelProperties>  modelProperties;
-		static bool init = false;
-		if (!init) {
-			init = true;
-			modelProperties["VLP-16"].maxRange = 120.0;
-			modelProperties["HDL-32"].maxRange = 70.0;
-		}
-		return modelProperties;
+const CVelodyneScanner::model_properties_list_t & CVelodyneScanner::TModelPropertiesFactory::get()
+{
+	static CVelodyneScanner::model_properties_list_t modelProperties;
+	static bool init = false;
+	if (!init) {
+		init = true;
+		modelProperties[CVelodyneScanner::VLP16].maxRange = 120.0;
+		modelProperties[CVelodyneScanner::HDL32].maxRange = 70.0;
+		modelProperties[CVelodyneScanner::HDL64].maxRange = 120.0;
 	}
-	// Return human-readable string: "`VLP-16`,`XXX`,..."
-	static std::string getListKnownModels(){
-		const std::map<std::string,TModelProperties>  & lst = TModelPropertiesFactory::get();
-		std::string s;
-		for (std::map<std::string,TModelProperties>::const_iterator it=lst.begin();it!=lst.end();++it)
-			s+=mrpt::format("`%s`,",it->first.c_str());
-		return s;
-	}
-};
+	return modelProperties;
+}
+std::string CVelodyneScanner::TModelPropertiesFactory::getListKnownModels()
+{
+	const CVelodyneScanner::model_properties_list_t  & lst = CVelodyneScanner::TModelPropertiesFactory::get();
+	std::string s;
+	for (CVelodyneScanner::model_properties_list_t::const_iterator it=lst.begin();it!=lst.end();++it)
+		s+=mrpt::format("`%s`,", mrpt::utils::TEnumType<CVelodyneScanner::model_t>::value2name(it->first).c_str() );
+	return s;
+}
 
 
 CVelodyneScanner::CVelodyneScanner() :
-	m_model("VLP-16"),
+	m_model(CVelodyneScanner::VLP16),
 	m_pos_packets_min_period(0.5),
 	m_device_ip(""),
 	m_rpm(600),
@@ -140,9 +134,9 @@ void CVelodyneScanner::loadConfig_sensorSpecific(
 {
 	MRPT_START
 
+	cfg.read_enum<CVelodyneScanner::model_t>(sect,"model",m_model);
 	MRPT_LOAD_HERE_CONFIG_VAR(device_ip,   string, m_device_ip       ,  cfg, sect);
 	MRPT_LOAD_HERE_CONFIG_VAR(rpm,            int, m_rpm             ,  cfg, sect);
-	MRPT_LOAD_HERE_CONFIG_VAR(model,       string, m_model           ,  cfg, sect);
 	MRPT_LOAD_HERE_CONFIG_VAR(pcap_input,  string, m_pcap_input_file ,  cfg, sect);
 	MRPT_LOAD_HERE_CONFIG_VAR(pcap_output, string, m_pcap_output_file,  cfg, sect);	
 	MRPT_LOAD_HERE_CONFIG_VAR(pcap_read_once,bool, m_pcap_read_once,  cfg, sect);
@@ -165,9 +159,11 @@ void CVelodyneScanner::loadConfig_sensorSpecific(
 		this->loadCalibrationFile(calibration_file);
 
 	// Check validity:
-	const std::map<std::string,TModelProperties> &lstModels = TModelPropertiesFactory::get();
+	const model_properties_list_t &lstModels = TModelPropertiesFactory::get();
 	if (lstModels.find(m_model)==lstModels.end()) {
-		THROW_EXCEPTION(mrpt::format("Unrecognized `model` parameter: `%s` . Known values are: %s",m_model.c_str(),TModelPropertiesFactory::getListKnownModels().c_str()))
+		THROW_EXCEPTION(mrpt::format("Unrecognized `model` parameter: `%u` . Known values are: %s",
+			static_cast<unsigned int>(m_model),
+			TModelPropertiesFactory::getListKnownModels().c_str()))
 	}
 
 	MRPT_END
@@ -190,15 +186,22 @@ bool CVelodyneScanner::getNextObservation(
 		mrpt::obs::CObservationVelodyneScan::TVelodyneRawPacket  rx_pkt;
 		mrpt::obs::CObservationVelodyneScan::TVelodynePositionPacket rx_pos_pkt;
 		mrpt::system::TTimeStamp data_pkt_timestamp, pos_pkt_timestamp;
-		this->receivePackets(data_pkt_timestamp,rx_pkt, pos_pkt_timestamp,rx_pos_pkt);
+		bool rx_all_ok = this->receivePackets(data_pkt_timestamp,rx_pkt, pos_pkt_timestamp,rx_pos_pkt);
+
+		if (!rx_all_ok) {
+			// PCAP EOF:
+			return false;
+		}
 
 		if (pos_pkt_timestamp!=INVALID_TIMESTAMP)
 		{
 			mrpt::obs::CObservationGPSPtr gps_obs = mrpt::obs::CObservationGPS::Create();
-			gps_obs->timestamp = pos_pkt_timestamp;
-			gps_obs->originalReceivedTimestamp = pos_pkt_timestamp;
 			gps_obs->sensorLabel = this->m_sensorLabel + std::string("_GPS");
 			gps_obs->sensorPose = m_sensorPose;
+
+			MRPT_TODO("Calculate accurate timestamp from gps pkts")
+			gps_obs->originalReceivedTimestamp = pos_pkt_timestamp;
+			gps_obs->timestamp = pos_pkt_timestamp;
 
 			CGPSInterface::parse_NMEA( std::string(rx_pos_pkt.NMEA_GPRMC), *gps_obs);
 			outGPS = gps_obs;
@@ -219,14 +222,17 @@ bool CVelodyneScanner::getNextObservation(
 			// Create smart ptr to new in-progress observation:
 			if (!m_rx_scan) {
 				m_rx_scan= mrpt::obs::CObservationVelodyneScan::Create();
-				m_rx_scan->timestamp = data_pkt_timestamp;
 				m_rx_scan->sensorLabel = this->m_sensorLabel + std::string("_SCAN");
 				m_rx_scan->sensorPose = m_sensorPose;
 				m_rx_scan->calibration = m_velodyne_calib; // Embed a copy of the calibration info
 
+				MRPT_TODO("Calculate accurate timestamp from gps pkts")
+				m_rx_scan->originalReceivedTimestamp = data_pkt_timestamp;
+				m_rx_scan->timestamp = data_pkt_timestamp;
+
 				{
-					const std::map<std::string,TModelProperties> &lstModels = TModelPropertiesFactory::get();
-					std::map<std::string,TModelProperties>::const_iterator it=lstModels.find(this->m_model);
+					const model_properties_list_t &lstModels = TModelPropertiesFactory::get();
+					model_properties_list_t::const_iterator it=lstModels.find(this->m_model);
 					if (it!=lstModels.end())
 					{ // Model params:
 						m_rx_scan->maxRange = it->second.maxRange;
@@ -278,11 +284,9 @@ void CVelodyneScanner::initialize()
 	// (0) Preparation:
 	// --------------------------------
 	// Make sure we have calibration data:
-	if (m_velodyne_calib.empty() && m_model.empty())
-		THROW_EXCEPTION("You must provide either a `model` name or load a valid XML configuration file first.");
 	if (m_velodyne_calib.empty()) {
 		// Try to load default data:
-		m_velodyne_calib = VelodyneCalibration::LoadDefaultCalibration(m_model);
+		m_velodyne_calib = VelodyneCalibration::LoadDefaultCalibration( mrpt::utils::TEnumType<CVelodyneScanner::model_t>::value2name(m_model) );
 		if (m_velodyne_calib.empty())
 			THROW_EXCEPTION("Could not find default calibration data for the given LIDAR `model` name. Please, specify a valid `model` or load a valid XML configuration file first.");
 	}
@@ -463,7 +467,7 @@ int gettimeofday(struct timeval * tp, void *)
 }
 #endif
 
-void CVelodyneScanner::receivePackets(
+bool CVelodyneScanner::receivePackets(
 	mrpt::system::TTimeStamp  &data_pkt_timestamp,
 	mrpt::obs::CObservationVelodyneScan::TVelodyneRawPacket &out_data_pkt,
 	mrpt::system::TTimeStamp  &pos_pkt_timestamp,
@@ -473,9 +477,10 @@ void CVelodyneScanner::receivePackets(
 	MRPT_COMPILE_TIME_ASSERT(sizeof(mrpt::obs::CObservationVelodyneScan::TVelodynePositionPacket)== CObservationVelodyneScan::POS_PACKET_SIZE);
 	MRPT_COMPILE_TIME_ASSERT(sizeof(mrpt::obs::CObservationVelodyneScan::TVelodyneRawPacket)== CObservationVelodyneScan::PACKET_SIZE);
 
+	bool ret = true; // all ok
 	if (m_pcap)
 	{
-		internal_read_PCAP_packet(
+		ret = internal_read_PCAP_packet(
 			data_pkt_timestamp, (uint8_t*)&out_data_pkt,
 			pos_pkt_timestamp, (uint8_t*)&out_pos_pkt);
 	}
@@ -530,6 +535,8 @@ void CVelodyneScanner::receivePackets(
 			m_pos_packets_period_timewatch.Tic();
 		}
 	}
+
+	return ret;
 }
 
 // static method:
@@ -634,7 +641,7 @@ mrpt::system::TTimeStamp CVelodyneScanner::internal_receive_UDP_packet(
 	return (time1/2+time2/2);
 }
 
-void CVelodyneScanner::internal_read_PCAP_packet(
+bool CVelodyneScanner::internal_read_PCAP_packet(
 	mrpt::system::TTimeStamp  & data_pkt_time, uint8_t *out_data_buffer,
 	mrpt::system::TTimeStamp  & pos_pkt_time, uint8_t  *out_pos_buffer
 	)
@@ -676,13 +683,13 @@ void CVelodyneScanner::internal_read_PCAP_packet(
 				if (m_verbose) std::cout << "[CVelodyneScanner] DEBUG: Packet #"<< m_pcap_read_count <<" in PCAP file is POSITION pkt.\n";
 				memcpy(out_pos_buffer, pkt_data+42, CObservationVelodyneScan::POS_PACKET_SIZE);
 				pos_pkt_time = tim;  // success
-				return;
+				return true;
 			}
 			else if (udp_dst_port==CVelodyneScanner::VELODYNE_DATA_UDP_PORT) {
 				if (m_verbose) std::cout << "[CVelodyneScanner] DEBUG: Packet #"<< m_pcap_read_count <<" in PCAP file is DATA pkt.\n";
 				memcpy(out_data_buffer, pkt_data+42, CObservationVelodyneScan::PACKET_SIZE);
 				data_pkt_time = tim;  // success
-				return;
+				return true;
 			}
 			else {
 				std::cerr << "[CVelodyneScanner] ERROR: Packet "<<m_pcap_read_count <<" in PCAP file passed the filter but does not match expected UDP port numbers! Skipping it.\n";
@@ -692,22 +699,23 @@ void CVelodyneScanner::internal_read_PCAP_packet(
 		if (m_pcap_file_empty) // no data in file?
 		{
 			fprintf(stderr, "[CVelodyneScanner] Maybe the PCAP file is empty? Error %d reading Velodyne packet: `%s`\n", res, pcap_geterr(reinterpret_cast<pcap_t*>(m_pcap) ));
-			return;
+			return true;
 		}
 
 		if (m_pcap_read_once)
 		{
-			printf("[CVelodyneScanner] INFO: end of file reached -- done reading.");
-			return;
+			printf("[CVelodyneScanner] INFO: end of file reached -- done reading.\n");
+			mrpt::system::sleep(250);
+			return false;
 		}
 
 		if (m_pcap_repeat_delay > 0.0)
 		{
-			printf("[CVelodyneScanner] INFO: end of file reached -- delaying %.3f seconds.", m_pcap_repeat_delay);
+			printf("[CVelodyneScanner] INFO: end of file reached -- delaying %.3f seconds.\n", m_pcap_repeat_delay);
 			mrpt::system::sleep( m_pcap_repeat_delay * 1000.0);
 		}
 
-		printf("[CVelodyneScanner] INFO: replaying Velodyne dump file\n");
+		printf("[CVelodyneScanner] INFO: replaying Velodyne dump file.\n");
 
 		// rewind the file
 		pcap_close( reinterpret_cast<pcap_t*>(m_pcap) );

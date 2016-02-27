@@ -51,7 +51,8 @@ namespace mrpt
 			  */
 			bool open(const std::string &fileName );
 			void close(); //!< Closes the file
-			bool fileOpenCorrectly(); //!< Says if file was open successfully or not.
+			bool fileOpenCorrectly(); //!< Returns true if the file was open without errors.
+			bool is_open() { return fileOpenCorrectly(); } //!< Returns true if the file was open without errors.
 			bool checkEOF(); //!< Will be true if EOF has been already reached.
 
 			uint64_t getTotalBytesCount() MRPT_OVERRIDE; //!< Method for getting the total number of <b>compressed</b> bytes of in the file (the physical size of the compressed file).
