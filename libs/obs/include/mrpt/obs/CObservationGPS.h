@@ -121,7 +121,7 @@ namespace obs
 		template <class MSG_CLASS>
 		MSG_CLASS * getMsgByClassPtr() {
 			message_list_t::iterator it = messages.find(static_cast<gnss::gnss_message_type_t>(MSG_CLASS::msg_type));
-			return it==messages.end() ? dynamic_cast<MSG_CLASS*>(NULL) : dynamic_cast<MSG_CLASS*>(it->second.get());
+			return it==messages.end() ? reinterpret_cast<MSG_CLASS*>(NULL) : dynamic_cast<MSG_CLASS*>(it->second.get());
 		}
 		/** \overload */
 		template <class MSG_CLASS>

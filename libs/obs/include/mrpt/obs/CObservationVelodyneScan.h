@@ -46,6 +46,7 @@ namespace obs
 	  *  Note that this object has \b two timestamp fields:
 	  *  - The standard CObservation::timestamp field in the base class, which should contain the accurate satellite-based UTC timestamp, and
 	  *  - the field CObservationVelodyneScan::originalReceivedTimestamp, with the local computer-based timestamp based on the reception of the message in the computer.
+	  *  Both timestamps correspond to the firing of the <b>first</b> laser in the <b>first</b> CObservationVelodyneScan::scan_packets packet.
 	  *
 	  * \note New in MRPT 1.4.0
 	  * \sa CObservation, CPointsMap, CVelodyneScanner

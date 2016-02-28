@@ -207,6 +207,7 @@ bool CGPSInterface::parse_NMEA(const std::string &s, mrpt::obs::CObservationGPS 
 			out_obs.setMsg(gga);
 			out_obs.originalReceivedTimestamp = mrpt::system::now();
 			out_obs.timestamp = gga.fields.UTCTime.getAsTimestamp( mrpt::system::now() );
+			out_obs.has_satellite_timestamp = true;
 		}
 		parsed_ok = all_fields_ok;
 	}
@@ -309,7 +310,7 @@ bool CGPSInterface::parse_NMEA(const std::string &s, mrpt::obs::CObservationGPS 
 			if (all_fields_ok) {
 				out_obs.setMsg(rmc);
 				out_obs.originalReceivedTimestamp = mrpt::system::now();
-				out_obs.timestamp = rmc.fields.UTCTime.getAsTimestamp( mrpt::system::now() );
+				out_obs.timestamp = rmc.fields.UTCTime.getAsTimestamp( rmc.getDateAsTimestamp() );
 			}
 			parsed_ok = all_fields_ok;
 		}

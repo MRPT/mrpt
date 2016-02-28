@@ -81,6 +81,7 @@ std::string CVelodyneScanner::TModelPropertiesFactory::getListKnownModels()
 CVelodyneScanner::CVelodyneScanner() :
 	m_model(CVelodyneScanner::VLP16),
 	m_pos_packets_min_period(0.5),
+	m_pos_packets_timing_timeout(30.0),
 	m_device_ip(""),
 	m_rpm(600),
 	m_pcap(NULL),
@@ -142,6 +143,8 @@ void CVelodyneScanner::loadConfig_sensorSpecific(
 	MRPT_LOAD_HERE_CONFIG_VAR(pcap_read_once,bool, m_pcap_read_once,  cfg, sect);
 	MRPT_LOAD_HERE_CONFIG_VAR(pcap_read_fast,bool, m_pcap_read_fast ,  cfg, sect);
 	MRPT_LOAD_HERE_CONFIG_VAR(pcap_repeat_delay,double, m_pcap_repeat_delay ,  cfg, sect);
+	MRPT_LOAD_HERE_CONFIG_VAR(pos_packets_timing_timeout,double, m_pos_packets_timing_timeout ,  cfg, sect);
+	MRPT_LOAD_HERE_CONFIG_VAR(pos_packets_min_period,double, m_pos_packets_min_period ,  cfg, sect);
 
 	using mrpt::utils::DEG2RAD;
 	m_sensorPose = mrpt::poses::CPose3D(
@@ -199,13 +202,22 @@ bool CVelodyneScanner::getNextObservation(
 			gps_obs->sensorLabel = this->m_sensorLabel + std::string("_GPS");
 			gps_obs->sensorPose = m_sensorPose;
 
-			MRPT_TODO("Calculate accurate timestamp from gps pkts")
-			gps_obs->has_satellite_timestamp = true; // ...
 			gps_obs->originalReceivedTimestamp = pos_pkt_timestamp;
-			gps_obs->timestamp = pos_pkt_timestamp;
 
-			CGPSInterface::parse_NMEA( std::string(rx_pos_pkt.NMEA_GPRMC), *gps_obs);
-			outGPS = gps_obs;
+			bool parsed_ok = CGPSInterface::parse_NMEA( std::string(rx_pos_pkt.NMEA_GPRMC), *gps_obs);
+			const mrpt::obs::gnss::Message_NMEA_RMC *msg_rmc = gps_obs->getMsgByClassPtr<mrpt::obs::gnss::Message_NMEA_RMC>();
+			if (!parsed_ok || !msg_rmc || msg_rmc->fields.validity_char!='A')
+			{
+				gps_obs->has_satellite_timestamp = false;
+				gps_obs->timestamp = pos_pkt_timestamp;
+			}
+			else
+			{
+				// We have live GPS signal and a recent RMC frame:
+				m_last_gps_rmc_age.Tic();
+				m_last_gps_rmc = *msg_rmc;
+			}
+			outGPS = gps_obs; // save in output object
 		}
 
 		if (data_pkt_timestamp!=INVALID_TIMESTAMP)
@@ -227,11 +239,6 @@ bool CVelodyneScanner::getNextObservation(
 				m_rx_scan->sensorPose = m_sensorPose;
 				m_rx_scan->calibration = m_velodyne_calib; // Embed a copy of the calibration info
 
-				MRPT_TODO("Calculate accurate timestamp from gps pkts")
-				m_rx_scan->has_satellite_timestamp = true; // ...
-				m_rx_scan->originalReceivedTimestamp = data_pkt_timestamp;
-				m_rx_scan->timestamp = data_pkt_timestamp;
-
 				{
 					const model_properties_list_t &lstModels = TModelPropertiesFactory::get();
 					model_properties_list_t::const_iterator it=lstModels.find(this->m_model);
@@ -245,6 +252,36 @@ bool CVelodyneScanner::getNextObservation(
 					}
 				}
 			}
+
+			// For the first packet, set timestamp:
+			if (m_rx_scan->scan_packets.empty())
+			{
+				m_rx_scan->originalReceivedTimestamp = data_pkt_timestamp;
+				// Using GPS, if available:
+				if (m_last_gps_rmc.fields.validity_char=='A' && m_last_gps_rmc_age.Tac()<=m_pos_packets_timing_timeout)
+				{
+					// Each Velodyne data packet has a timestamp field, 
+					// with the number of us since the top of the current HOUR: 
+					// take the date and time from the GPS, then modify minutes and seconds from data pkt:
+					const mrpt::system::TTimeStamp gps_tim = m_last_gps_rmc.fields.UTCTime.getAsTimestamp(m_last_gps_rmc.getDateAsTimestamp());
+
+					mrpt::system::TTimeParts tim_parts;
+					mrpt::system::timestampToParts(gps_tim,tim_parts);
+					tim_parts.minute =  rx_pkt.gps_timestamp /*us from top of hour*/  / 60000000ul;
+					tim_parts.second = (rx_pkt.gps_timestamp /*us from top of hour*/  % 60000000ul)*1e-6;
+
+					const mrpt::system::TTimeStamp data_pkt_tim = mrpt::system::buildTimestampFromParts(tim_parts);
+
+					m_rx_scan->timestamp = data_pkt_tim;
+					m_rx_scan->has_satellite_timestamp = true;
+				}
+				else
+				{
+					m_rx_scan->has_satellite_timestamp = false;
+					m_rx_scan->timestamp = data_pkt_timestamp;
+				}
+			}
+
 			// Accumulate pkts in the observation object:
 			m_rx_scan->scan_packets.push_back(rx_pkt);
 		}
@@ -730,5 +767,3 @@ bool CVelodyneScanner::internal_read_PCAP_packet(
 	THROW_EXCEPTION("MRPT needs to be built against libpcap to enable this functionality")
 #endif
 }
-
-

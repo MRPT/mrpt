@@ -100,6 +100,7 @@ bool  CGPSInterface::implement_parser_NOVATEL_OEM6(size_t &out_minimum_rx_buf_to
 		MRPT_TODO("check UTC time conversion!")
 		if (!CObservationGPS::GPS_time_to_UTC(hdr.week,hdr.ms_in_week*1e-3,m_just_parsed_messages.timestamp))
 			m_just_parsed_messages.timestamp =  mrpt::system::now();
+		else m_just_parsed_messages.has_satellite_timestamp = true;
 
 		m_just_parsed_messages.sensorLabel = msg->getMessageTypeAsString();
 
@@ -159,6 +160,8 @@ bool  CGPSInterface::implement_parser_NOVATEL_OEM6(size_t &out_minimum_rx_buf_to
 		MRPT_TODO("check UTC time conversion!")
 		if (!CObservationGPS::GPS_time_to_UTC(hdr.week,hdr.ms_in_week*1e-3,m_just_parsed_messages.timestamp))
 			m_just_parsed_messages.timestamp =  mrpt::system::now();
+		else m_just_parsed_messages.has_satellite_timestamp = true;
+
 		m_just_parsed_messages.sensorLabel = msg->getMessageTypeAsString();
 		flushParsedMessagesNow();
 		return true;

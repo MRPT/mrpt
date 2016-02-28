@@ -25,6 +25,8 @@ namespace mrpt
 		  * It can receive data from real devices via an Ethernet connection or parse a WireShark PCAP file for offline processing.
 		  * The choice of online vs. offline operation is taken upon calling \a initialize(): if a PCAP input file has been defined,
 		  * offline operation takes place and network is not listened for incomming packets.
+		  *
+		  * Parsing dual return scans requires a VLP-16 with firmware version 3.0.23 or newer.
 		  * 
 		  * <h2>Grabbing live data (as a user)</h2> <hr>
 		  *  - Use the application [velodyne-view](http://www.mrpt.org/list-of-mrpt-apps/application-velodyne-view/) to visualize the LIDAR output in real-time (optionally saving to a PCAP file) or to playback a PCAP file.
@@ -68,7 +70,9 @@ namespace mrpt
 		  *   # ---- Sensor description ----
 		  *   #calibration_file         = PUT_HERE_FULL_PATH_TO_CALIB_FILE.xml      // Optional but recommended: put here your vendor-provided calibration file
 		  *   model                    = VLP16      // Can be any of: `VLP16`, `HDL32`, `HDL64`  (It is used to load default calibration file. Parameter not required if `calibration_file` is provided.
-		  *   #pos_packets_min_period  = 0.5        // (Default=0.5 seconds) Minimum period between the reporting of position packets, used to decimate the large number of packets of this type.
+		  *   #pos_packets_min_period  = 0.5        // (Default=0.5 seconds) Minimum period to leave between reporting position packets. Used to decimate the large number of packets of this type.
+		  *   # How long to wait, after loss of GPS signal, to report timestamps as "not based on satellite time". 30 secs, with typical velodyne clock drifts, means a ~1.7 ms typical drift.
+		  *   #pos_packets_timing_timeout = 30      // (Default=30 seconds)
 		  *   # ---- Online operation ----
 		  *
 		  *   # IP address of the device. UDP packets from other IPs will be ignored. Leave commented or blank
@@ -137,6 +141,7 @@ namespace mrpt
 			bool          m_initialized;
 			model_t       m_model;      //!< Default: "VLP16"
 			double        m_pos_packets_min_period; //!< Default: 0.5 seconds
+			double        m_pos_packets_timing_timeout; //!< Default: 30 seconds
 			std::string   m_device_ip;  //!< Default: "" (no IP-based filtering)
 			std::string   m_pcap_input_file; //!< Default: "" (do not operate from an offline file)
 			std::string   m_pcap_output_file; //!< Default: "" (do not dump to an offline file)
@@ -176,6 +181,10 @@ namespace mrpt
 			/** Set the minimum period between the generation of mrpt::obs::CObservationGPS observations from Velodyne Position RMC GPS packets */
 			void setPosPacketsMinPeriod(double period_seconds) { m_pos_packets_min_period = period_seconds; }
 			double getPosPacketsMinPeriod() const { return m_pos_packets_min_period; }
+
+			/** Set how long to wait, after loss of GPS signal, to report timestamps as "not based on satellite time". 30 secs, with typical velodyne clock drifts, means a ~1.7 ms typical drift. */
+			void setPosPacketsTimingTimeout(double timeout) { m_pos_packets_timing_timeout = timeout; }
+			double getPosPacketsTimingTimeout() const { return m_pos_packets_timing_timeout; }			
 
 			/** UDP packets from other IPs will be ignored. Default: empty string, means do not filter by IP */
 			void setDeviceIP(const std::string & ip) { m_device_ip = ip; }
@@ -260,6 +269,9 @@ namespace mrpt
 			);
 
 		mrpt::obs::CObservationVelodyneScanPtr m_rx_scan; //!< In progress RX scan
+
+		mrpt::obs::gnss::Message_NMEA_RMC m_last_gps_rmc;
+		mrpt::utils::CTicTac              m_last_gps_rmc_age;
 
 		}; // end of class
 	} // end of namespace
