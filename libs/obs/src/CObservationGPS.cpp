@@ -27,6 +27,7 @@ IMPLEMENTS_SERIALIZABLE(CObservationGPS, CObservation,mrpt::obs)
 CObservationGPS::CObservationGPS( ) :
 	sensorPose(),
 	originalReceivedTimestamp(INVALID_TIMESTAMP),
+	has_satellite_timestamp(false),
 	messages(),
 	has_GGA_datum (messages),
 	has_RMC_datum (messages),
@@ -39,6 +40,7 @@ void CObservationGPS::swap(CObservationGPS &o)
 {
 	std::swap(timestamp, o.timestamp);
 	std::swap(originalReceivedTimestamp, o.originalReceivedTimestamp);
+	std::swap(has_satellite_timestamp,o.has_satellite_timestamp);
 	std::swap(sensorLabel, o.sensorLabel);
 	std::swap(sensorPose, o.sensorPose);
 	messages.swap( o.messages );
@@ -50,10 +52,11 @@ void CObservationGPS::swap(CObservationGPS &o)
 void  CObservationGPS::writeToStream(mrpt::utils::CStream &out, int *version) const
 {
 	if (version)
-		*version = 10;
+		*version = 11;
 	else
 	{
 		out << timestamp << originalReceivedTimestamp << sensorLabel << sensorPose;
+		out << has_satellite_timestamp; // v11
 
 		const uint32_t nMsgs = messages.size();
 		out << nMsgs;
@@ -72,8 +75,13 @@ void  CObservationGPS::readFromStream(mrpt::utils::CStream &in, int version)
 	switch(version)
 	{
 	case 10:
+	case 11:
 		{
 			in >> timestamp >> originalReceivedTimestamp >> sensorLabel >>sensorPose;
+			if (version>=11)
+				in >> has_satellite_timestamp; // v11
+			else has_satellite_timestamp = (this->timestamp!=this->originalReceivedTimestamp);
+
 			uint32_t nMsgs;
 			in >> nMsgs;
 			for (unsigned i=0;i<nMsgs;i++) {

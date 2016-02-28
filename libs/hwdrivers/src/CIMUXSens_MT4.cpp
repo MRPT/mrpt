@@ -541,6 +541,7 @@ void CIMUXSens_MT4::doProcess()
 			obsGPS->setMsg(rGPSs);
 			obsGPS->timestamp = obs->timestamp;
 			obsGPS->originalReceivedTimestamp = obs->timestamp;
+			obsGPS->has_satellite_timestamp = false;
 			obsGPS->sensorPose	= m_sensorPose;
 			obsGPS->sensorLabel	= m_sensorLabel;
 

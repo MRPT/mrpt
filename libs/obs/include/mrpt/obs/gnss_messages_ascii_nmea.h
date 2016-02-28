@@ -91,6 +91,8 @@ struct OBS_IMPEXP Message_NMEA_RMC : public gnss_message
 	};
 	content_t  fields; //!< Message content, accesible by individual fields
 
+	mrpt::system::TTimeStamp getDateAsTimestamp() const; //!< Build an MRPT timestamp with the year/month/day of this observation.
+
 	void dumpToStream( mrpt::utils::CStream &out ) const MRPT_OVERRIDE; // See docs in base
 	bool getAllFieldDescriptions( std::ostream &o ) const MRPT_OVERRIDE;
 	bool getAllFieldValues( std::ostream &o ) const MRPT_OVERRIDE;

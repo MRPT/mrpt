@@ -27,7 +27,11 @@ namespace obs
 	  * <h2>Main data fields:</h2><hr>
 	  * - CObservationVelodyneScan::scan_packets with raw data packets.
 	  * - CObservationVelodyneScan::point_cloud normally empty after grabbing for efficiency, can be generated calling \a CObservationVelodyneScan::generatePointCloud()
-	  * 
+	  *
+	  * Axes convention for point cloud (x,y,z) coordinates:
+	  *
+	  *  <div align=center> <img src="velodyne_axes.jpg"> </div>
+	  *
 	  * If it can be assumed that the sensor moves SLOWLY through the environment (i.e. its pose can be approximated to be the same since the beginning to the end of one complete scan)
 	  * then this observation can be converted / loaded into the following other classes:
 	  *  - Maps of points:
@@ -37,11 +41,12 @@ namespace obs
 	  *    this scan to a mrpt::maps::CPointsMap-derived class, then loading it into the opengl object.
 	  *
 	  * Otherwise, the following API exists for accurate reconstruction of the sensor path in SE(3) over time:
-	  *  - **TODO** XXXX
+	  *  - **TO DO**
 	  *
 	  *  Note that this object has \b two timestamp fields:
 	  *  - The standard CObservation::timestamp field in the base class, which should contain the accurate satellite-based UTC timestamp, and
 	  *  - the field CObservationVelodyneScan::originalReceivedTimestamp, with the local computer-based timestamp based on the reception of the message in the computer.
+	  *  Both timestamps correspond to the firing of the <b>first</b> laser in the <b>first</b> CObservationVelodyneScan::scan_packets packet.
 	  *
 	  * \note New in MRPT 1.4.0
 	  * \sa CObservation, CPointsMap, CVelodyneScanner
@@ -130,7 +135,8 @@ namespace obs
 		mrpt::poses::CPose3D         sensorPose; //!< The 6D pose of the sensor on the robot/vehicle frame of reference
 		std::vector<TVelodyneRawPacket> scan_packets;  //!< The main content of this object: raw data packet from the LIDAR. \sa point_cloud
 		mrpt::obs::VelodyneCalibration  calibration;   //!< The calibration data for the LIDAR device. See mrpt::hwdrivers::CVelodyneScanner and mrpt::obs::VelodyneCalibration for details.
-		mrpt::system::TTimeStamp     originalReceivedTimestamp; //!< The local computer-based timestamp based on the reception of the message in the computer. \sa CObservation::timestamp in the base class, which should contain the accurate satellite-based UTC timestamp.
+		mrpt::system::TTimeStamp     originalReceivedTimestamp; //!< The local computer-based timestamp based on the reception of the message in the computer. \sa has_satellite_timestamp, CObservation::timestamp in the base class, which should contain the accurate satellite-based UTC timestamp. 
+		bool                         has_satellite_timestamp;   //!< If true, CObservation::timestamp has been generated from accurate satellite clock. Otherwise, no GPS data is available and timestamps are based on the local computer clock.
 
 		/** See \a point_cloud and \a scan_packets */
 		struct OBS_IMPEXP TPointCloud
