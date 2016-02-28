@@ -27,7 +27,11 @@ namespace obs
 	  * <h2>Main data fields:</h2><hr>
 	  * - CObservationVelodyneScan::scan_packets with raw data packets.
 	  * - CObservationVelodyneScan::point_cloud normally empty after grabbing for efficiency, can be generated calling \a CObservationVelodyneScan::generatePointCloud()
-	  * 
+	  *
+	  * Axes convention for point cloud (x,y,z) coordinates:
+	  *
+	  *  <div align=center> <img src="velodyne_axes.jpg"> </div>
+	  *
 	  * If it can be assumed that the sensor moves SLOWLY through the environment (i.e. its pose can be approximated to be the same since the beginning to the end of one complete scan)
 	  * then this observation can be converted / loaded into the following other classes:
 	  *  - Maps of points:
@@ -37,7 +41,7 @@ namespace obs
 	  *    this scan to a mrpt::maps::CPointsMap-derived class, then loading it into the opengl object.
 	  *
 	  * Otherwise, the following API exists for accurate reconstruction of the sensor path in SE(3) over time:
-	  *  - **TODO** XXXX
+	  *  - **TO DO**
 	  *
 	  *  Note that this object has \b two timestamp fields:
 	  *  - The standard CObservation::timestamp field in the base class, which should contain the accurate satellite-based UTC timestamp, and
