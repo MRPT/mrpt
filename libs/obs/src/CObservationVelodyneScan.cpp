@@ -41,7 +41,9 @@ CObservationVelodyneScan::TGeneratePointCloudParameters::TGeneratePointCloudPara
 CObservationVelodyneScan::CObservationVelodyneScan( ) :
 	minRange(1.0),
 	maxRange(130.0),
-	sensorPose()
+	sensorPose(),
+	originalReceivedTimestamp(INVALID_TIMESTAMP),
+	has_satellite_timestamp(false)
 {
 }
 
@@ -55,7 +57,7 @@ CObservationVelodyneScan::~CObservationVelodyneScan()
 void  CObservationVelodyneScan::writeToStream(mrpt::utils::CStream &out, int *version) const
 {
 	if (version)
-		*version = 0;
+		*version = 1;
 	else
 	{
 		out << timestamp << sensorLabel;
@@ -72,6 +74,7 @@ void  CObservationVelodyneScan::writeToStream(mrpt::utils::CStream &out, int *ve
 			if (N) out.WriteBuffer(&calibration.laser_corrections[0],sizeof(calibration.laser_corrections[0])*N);
 		}
 		out << point_cloud.x << point_cloud.y << point_cloud.z << point_cloud.intensity;
+		out << has_satellite_timestamp; // v1
 	}
 }
 
@@ -83,6 +86,7 @@ void  CObservationVelodyneScan::readFromStream(mrpt::utils::CStream &in, int ver
 	switch(version)
 	{
 	case 0:
+	case 1:
 		{
 			in >> timestamp >> sensorLabel;
 
@@ -100,6 +104,10 @@ void  CObservationVelodyneScan::readFromStream(mrpt::utils::CStream &in, int ver
 				if (N) in.ReadBuffer(&calibration.laser_corrections[0],sizeof(calibration.laser_corrections[0])*N);
 			}
 			in >> point_cloud.x >> point_cloud.y >> point_cloud.z >> point_cloud.intensity;
+			if (version>=1)
+				in >> has_satellite_timestamp;
+			else has_satellite_timestamp = (this->timestamp!=this->originalReceivedTimestamp);
+
 		} break;
 	default:
 		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)

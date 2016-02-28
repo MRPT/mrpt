@@ -200,6 +200,7 @@ bool CVelodyneScanner::getNextObservation(
 			gps_obs->sensorPose = m_sensorPose;
 
 			MRPT_TODO("Calculate accurate timestamp from gps pkts")
+			gps_obs->has_satellite_timestamp = true; // ...
 			gps_obs->originalReceivedTimestamp = pos_pkt_timestamp;
 			gps_obs->timestamp = pos_pkt_timestamp;
 
@@ -227,6 +228,7 @@ bool CVelodyneScanner::getNextObservation(
 				m_rx_scan->calibration = m_velodyne_calib; // Embed a copy of the calibration info
 
 				MRPT_TODO("Calculate accurate timestamp from gps pkts")
+				m_rx_scan->has_satellite_timestamp = true; // ...
 				m_rx_scan->originalReceivedTimestamp = data_pkt_timestamp;
 				m_rx_scan->timestamp = data_pkt_timestamp;
 

@@ -134,7 +134,8 @@ namespace obs
 		mrpt::poses::CPose3D         sensorPose; //!< The 6D pose of the sensor on the robot/vehicle frame of reference
 		std::vector<TVelodyneRawPacket> scan_packets;  //!< The main content of this object: raw data packet from the LIDAR. \sa point_cloud
 		mrpt::obs::VelodyneCalibration  calibration;   //!< The calibration data for the LIDAR device. See mrpt::hwdrivers::CVelodyneScanner and mrpt::obs::VelodyneCalibration for details.
-		mrpt::system::TTimeStamp     originalReceivedTimestamp; //!< The local computer-based timestamp based on the reception of the message in the computer. \sa CObservation::timestamp in the base class, which should contain the accurate satellite-based UTC timestamp.
+		mrpt::system::TTimeStamp     originalReceivedTimestamp; //!< The local computer-based timestamp based on the reception of the message in the computer. \sa has_satellite_timestamp, CObservation::timestamp in the base class, which should contain the accurate satellite-based UTC timestamp. 
+		bool                         has_satellite_timestamp;   //!< If true, CObservation::timestamp has been generated from accurate satellite clock. Otherwise, no GPS data is available and timestamps are based on the local computer clock.
 
 		/** See \a point_cloud and \a scan_packets */
 		struct OBS_IMPEXP TPointCloud
