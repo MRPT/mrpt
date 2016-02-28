@@ -5,9 +5,9 @@ velodyne-view - Demo for grabbing and visualizing data from a Velodyne sensor
 =head1 SYNOPSIS
 
 velodyne-view  [-v] [-n] [-m <`VLP16`,`HDL32`,`HDL64`,>] [-c
-			  <calib.xml>] [--ip-filter <192.168.1.201>] [--out-pcap
-			  <out>] [-i <in_dataset.pcap>] [-o <out.rawlog>] [--]
-			  [--version] [-h]
+ <calib.xml>] [--ip-filter <192.168.1.201>] [--out-pcap
+ <out>] [-i <in_dataset.pcap>] [-o <out.rawlog>] [--]
+ [--version] [-h]
 
 
 =head1 USAGE EXAMPLES
@@ -16,18 +16,24 @@ B<Run with all default parameters and show live VLP16 LIDAR scans>
 
 velodyne-view
 
-B<Parses a PCAP file with a LIDAR dump>
+B<Parses a PCAP file with a LIDAR dump (default params)>
 
 velodyne-view --in-pcap DATASET.pcap
+
+B<Parses a PCAP file with a LIDAR dump (custom calibration file)>
+
 velodyne-view --in-pcap DATASET.pcap --calib CALIB.xml
+
 
 B<Grab RawLog and PCAP log files from a live VLP16 LIDAR>
 
 velodyne-view --out-pcap out --out-rawlog out.rawlog
 
+
 B<Grab RawLog and PCAP log files from a live LIDAR with calibration file>
 
 velodyne-view --out-pcap out --out-rawlog out.rawlog --calib CALIB.xml
+
 
 
 =head1 DESCRIPTION
