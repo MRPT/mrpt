@@ -164,7 +164,7 @@ void CObservationVelodyneScan::generatePointCloud(const TGeneratePointCloudParam
 	mrpt::obs::T2DScanProperties scan_props;
 	scan_props.aperture = 2*M_PI;
 	scan_props.nRays = ROTATION_MAX_UNITS;
-	scan_props.rightToLeft = false;
+	scan_props.rightToLeft = true;
 	// The LUT contains sin/cos values for angles in this order: [180deg ... 0 deg ... -180 deg]
 	const CSinCosLookUpTableFor2DScans::TSinCosValues & lut_sincos = velodyne_sincos_tables.getSinCosForScan(scan_props);
 

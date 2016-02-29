@@ -54,8 +54,7 @@ namespace mrpt
 		  *  - mrpt::obs::CObservationGPS for GPS (GPRMC) packets, if available via the synchronization interface of the device.
 		  *  See those classes for documentation on their fields.
 		  *
-		  * Configuration includes setting the device IP (optional), model (mandatory only if a calibration file is not provided) and RPM rotation speed
-		  * (for calculating how many packets form a scan).
+		  * Configuration includes setting the device IP (optional) and sensor model (mandatory only if a calibration file is not provided).
 		  * These parameters can be set programatically (see methods of this class), or via a configuration file with CGenericSensor::loadConfig() (see example config file section below).
 		  *
 		  * <h2>About timestamps:</h2><hr>
@@ -78,7 +77,6 @@ namespace mrpt
 		  *   # IP address of the device. UDP packets from other IPs will be ignored. Leave commented or blank
 		  *   # if only one scanner is present (no IP filtering)
 		  *   #device_ip       = XXX.XXX.XXX.XXX
-		  *   rpm              = 600            // Device spinning speed (as set-up via the sensor Web Interface)
 		  *
 		  *   # ---- Offline operation ----
 		  *   # If uncommented, this class will read from the PCAP instead of connecting and listeling
@@ -145,7 +143,6 @@ namespace mrpt
 			std::string   m_device_ip;  //!< Default: "" (no IP-based filtering)
 			std::string   m_pcap_input_file; //!< Default: "" (do not operate from an offline file)
 			std::string   m_pcap_output_file; //!< Default: "" (do not dump to an offline file)
-			int           m_rpm;        //!< Default: 600
 			mrpt::poses::CPose3D m_sensorPose;
 			mrpt::obs:: VelodyneCalibration  m_velodyne_calib; //!< Device calibration file (supplied by vendor in an XML file)
 			
@@ -200,9 +197,6 @@ namespace mrpt
 
 			void setPCAPInputFileReadOnce(bool read_once) { m_pcap_read_once=read_once; }
 			bool getPCAPInputFileReadOnce() const { return m_pcap_read_once; }
-
-			void setDeviceRPM(const int rpm) { m_rpm = rpm; }
-			int getDeviceRPM() const { return m_rpm; }
 
 			const mrpt::obs:: VelodyneCalibration & getCalibration() const { return m_velodyne_calib; }
 			void setCalibration(const mrpt::obs::VelodyneCalibration & calib) { m_velodyne_calib=calib; }
