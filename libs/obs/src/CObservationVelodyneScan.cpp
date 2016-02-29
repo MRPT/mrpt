@@ -279,31 +279,12 @@ void CObservationVelodyneScan::generatePointCloud(const TGeneratePointCloudParam
 
 						MRPT_TODO("Process LIDAR dual mode here")
 
-						// Intensity Calculation
-						MRPT_TODO("corrections!")
-						const float min_intensity = 0; //corrections.min_intensity;
-						const float max_intensity = 255; //corrections.max_intensity;
-
-						float intensity = raw->blocks[block].laser_returns[k].intensity;
-
-#if 0
-							float focal_offset = 256 
-								* (1 - corrections.focal_distance / 13100) 
-								* (1 - corrections.focal_distance / 13100);
-							float focal_slope = corrections.focal_slope;
-							intensity += focal_slope * (abs(focal_offset - 256 * 
-								(1 - tmp.uint/65535)*(1 - tmp.uint/65535)));
-							intensity = (intensity < min_intensity) ? min_intensity : intensity;
-							intensity = (intensity > max_intensity) ? max_intensity : intensity;
-#endif
-
 						if (distance>=minRange && distance<=maxRange)
 						{
-							//point.ring = corrections.laser_ring;
 							point_cloud.x.push_back( pt_raw.x );
 							point_cloud.y.push_back( pt_raw.y );
 							point_cloud.z.push_back( pt_raw.z );
-							point_cloud.intensity.push_back( static_cast<uint8_t>(intensity) );
+							point_cloud.intensity.push_back( raw->blocks[block].laser_returns[k].intensity );
 						}
 					}
 				}
