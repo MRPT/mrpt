@@ -14,7 +14,6 @@
 #include <mrpt/obs/CObservationVelodyneScan.h>
 #include <mrpt/obs/CObservationGPS.h>
 #include <mrpt/utils/CConfigFileBase.h>
-#include <mrpt/utils/CTicTac.h>
 #include <mrpt/utils/TEnumType.h>
 
 namespace mrpt
@@ -145,8 +144,7 @@ namespace mrpt
 			std::string   m_pcap_output_file; //!< Default: "" (do not dump to an offline file)
 			mrpt::poses::CPose3D m_sensorPose;
 			mrpt::obs:: VelodyneCalibration  m_velodyne_calib; //!< Device calibration file (supplied by vendor in an XML file)
-			
-			mrpt::utils::CTicTac m_pos_packets_period_timewatch;
+			mrpt::system::TTimeStamp m_last_pos_packet_timestamp;
 
 			// offline operation:
 			void * m_pcap;             //!< opaque ptr: "pcap_t*"
@@ -265,7 +263,7 @@ namespace mrpt
 		mrpt::obs::CObservationVelodyneScanPtr m_rx_scan; //!< In progress RX scan
 
 		mrpt::obs::gnss::Message_NMEA_RMC m_last_gps_rmc;
-		mrpt::utils::CTicTac              m_last_gps_rmc_age;
+		mrpt::system::TTimeStamp          m_last_gps_rmc_age;
 
 		}; // end of class
 	} // end of namespace

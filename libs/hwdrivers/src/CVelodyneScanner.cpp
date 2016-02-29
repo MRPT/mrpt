@@ -82,6 +82,7 @@ CVelodyneScanner::CVelodyneScanner() :
 	m_pos_packets_min_period(0.5),
 	m_pos_packets_timing_timeout(30.0),
 	m_device_ip(""),
+	m_last_pos_packet_timestamp(INVALID_TIMESTAMP),
 	m_pcap(NULL),
 	m_pcap_out(NULL),
 	m_pcap_dumper(NULL),
@@ -91,7 +92,8 @@ CVelodyneScanner::CVelodyneScanner() :
 	m_pcap_read_fast(false),
 	m_pcap_repeat_delay(0.0),
 	m_hDataSock(INVALID_SOCKET),
-	m_hPositionSock(INVALID_SOCKET)
+	m_hPositionSock(INVALID_SOCKET),
+	m_last_gps_rmc_age(INVALID_TIMESTAMP)
 {
 	m_sensorLabel = "Velodyne";
 
@@ -211,7 +213,7 @@ bool CVelodyneScanner::getNextObservation(
 			else
 			{
 				// We have live GPS signal and a recent RMC frame:
-				m_last_gps_rmc_age.Tic();
+				m_last_gps_rmc_age = pos_pkt_timestamp;
 				m_last_gps_rmc = *msg_rmc;
 			}
 			outGPS = gps_obs; // save in output object
@@ -219,6 +221,8 @@ bool CVelodyneScanner::getNextObservation(
 
 		if (data_pkt_timestamp!=INVALID_TIMESTAMP)
 		{
+			m_state = ssWorking;
+
 			// Break into a new observation object when the azimuth passes 360->0 deg:
 			if (m_rx_scan &&
 			    !m_rx_scan->scan_packets.empty() &&
@@ -255,7 +259,7 @@ bool CVelodyneScanner::getNextObservation(
 			{
 				m_rx_scan->originalReceivedTimestamp = data_pkt_timestamp;
 				// Using GPS, if available:
-				if (m_last_gps_rmc.fields.validity_char=='A' && m_last_gps_rmc_age.Tac()<=m_pos_packets_timing_timeout)
+				if (m_last_gps_rmc.fields.validity_char=='A' && mrpt::system::timeDifference(m_last_gps_rmc_age,data_pkt_timestamp) < m_pos_packets_timing_timeout )
 				{
 					// Each Velodyne data packet has a timestamp field, 
 					// with the number of us since the top of the current HOUR: 
@@ -430,6 +434,10 @@ void CVelodyneScanner::initialize()
 #endif
 	}
 
+	m_last_pos_packet_timestamp=INVALID_TIMESTAMP;
+	m_last_gps_rmc_age=INVALID_TIMESTAMP;
+	m_state = ssInitializing;
+
 	m_initialized=true;
 }
 
@@ -562,13 +570,14 @@ bool CVelodyneScanner::receivePackets(
 
 	// Position packet decimation:
 	if (pos_pkt_timestamp!=INVALID_TIMESTAMP) {
-		if (m_pos_packets_period_timewatch.Tac()< m_pos_packets_min_period) {
+		if (m_last_pos_packet_timestamp!=INVALID_TIMESTAMP &&
+				mrpt::system::timeDifference(m_last_pos_packet_timestamp,pos_pkt_timestamp)< m_pos_packets_min_period) {
 			// Ignore this packet
 			pos_pkt_timestamp = INVALID_TIMESTAMP;
 		}
 		else {
 			// Reset time watch:
-			m_pos_packets_period_timewatch.Tic();
+			m_last_pos_packet_timestamp = pos_pkt_timestamp;
 		}
 	}
 

@@ -40,7 +40,7 @@ TEST(CVelodyneScanner, sample_vlp16_dataset)
 
 	CVelodyneScanner velodyne;
 
-	velodyne.setModelName("VLP-16");
+	velodyne.setModelName( mrpt::hwdrivers::CVelodyneScanner::VLP16);
 	velodyne.setPCAPInputFile(fil);
 	velodyne.setPCAPInputFileReadOnce(true);
 	velodyne.enableVerbose(false);
