@@ -78,15 +78,6 @@ namespace obs
 		static const uint16_t UPPER_BANK = 0xeeff;  //!< Blocks 0-31
 		static const uint16_t LOWER_BANK = 0xddff;  //!< Blocks 32-63
 
-		static const int VLP16_FIRINGS_PER_BLOCK = 2;
-		static const int VLP16_SCANS_PER_FIRING = 16;
-		static const float VLP16_BLOCK_TDURATION; // [us]
-		static const float VLP16_DSR_TOFFSET; // [us]
-		static const float VLP16_FIRING_TOFFSET; // [us]
-
-		static const int HDR32_DSR_TOFFSET = 1.152;
-		static const int HDR32_FIRING_TOFFSET = 46.08;
-
 		static const int PACKET_SIZE     = 1206;
 		static const int POS_PACKET_SIZE = 512;
 		static const int BLOCKS_PER_PACKET = 12;
