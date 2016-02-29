@@ -164,7 +164,8 @@ void CObservationVelodyneScan::generatePointCloud(const TGeneratePointCloudParam
 	mrpt::obs::T2DScanProperties scan_props;
 	scan_props.aperture = 2*M_PI;
 	scan_props.nRays = ROTATION_MAX_UNITS;
-	scan_props.rightToLeft = true;
+	scan_props.rightToLeft = false;
+	// The LUT contains sin/cos values for angles in this order: [180deg ... 0 deg ... -180 deg]
 	const CSinCosLookUpTableFor2DScans::TSinCosValues & lut_sincos = velodyne_sincos_tables.getSinCosForScan(scan_props);
 
 	const int minAzimuth_int = round( params.minAzimuth_deg * 100 );
@@ -180,7 +181,7 @@ void CObservationVelodyneScan::generatePointCloud(const TGeneratePointCloudParam
 
 		std::vector<int> diffs(BLOCKS_PER_PACKET - 1);
 		for(int i = 0; i < BLOCKS_PER_PACKET-1; ++i) {
-			int localDiff = (36000 + raw->blocks[i+1].rotation - raw->blocks[i].rotation) % 36000;
+			int localDiff = (ROTATION_MAX_UNITS + raw->blocks[i+1].rotation - raw->blocks[i].rotation) % ROTATION_MAX_UNITS;
 			diffs[i] = localDiff;
 		}
 		std::nth_element(
@@ -247,7 +248,7 @@ void CObservationVelodyneScan::generatePointCloud(const TGeneratePointCloudParam
 					timestampadjustment= mrpt::utils::round( timestampadjustment );
 
 					const float azimuth_corrected_f = azimuth_raw_f + azimuthadjustment;
-					const int azimuth_corrected = ((int)round(azimuth_corrected_f)) % 36000;
+					const int azimuth_corrected = ((int)round(azimuth_corrected_f)) % ROTATION_MAX_UNITS;
 
 					// For the following code: See reference implementation in vtkVelodyneHDLReader::vtkInternal::PushFiringData()
 					// -----------------------------------------
@@ -265,13 +266,14 @@ void CObservationVelodyneScan::generatePointCloud(const TGeneratePointCloudParam
 
 						const float xy_distance = distance * cos_vert_angle + vert_offset * sin_vert_angle;
 
-						const float cos_azimuth = lut_sincos.ccos[azimuth_corrected];
-						const float sin_azimuth = lut_sincos.csin[azimuth_corrected];
+						const int azimuth_corrected_for_lut = (azimuth_corrected + (ROTATION_MAX_UNITS/2))%ROTATION_MAX_UNITS;
+						const float cos_azimuth = lut_sincos.ccos[azimuth_corrected_for_lut];
+						const float sin_azimuth = lut_sincos.csin[azimuth_corrected_for_lut];
 
 						// Compute raw position
 						const mrpt::math::TPoint3Df pt_raw(
-							xy_distance * sin_azimuth - horz_offset * cos_azimuth,
-							xy_distance * cos_azimuth + horz_offset * sin_azimuth,
+							xy_distance * cos_azimuth + horz_offset * sin_azimuth, // MRPT +X = Velodyne +Y
+							-(xy_distance * sin_azimuth - horz_offset * cos_azimuth), // MRPT +Y = Velodyne -X
 							distance * sin_vert_angle + vert_offset
 							);
 
