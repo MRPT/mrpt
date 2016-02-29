@@ -165,6 +165,7 @@ void CObservationVelodyneScan::generatePointCloud(const TGeneratePointCloudParam
 	scan_props.aperture = 2*M_PI;
 	scan_props.nRays = ROTATION_MAX_UNITS;
 	scan_props.rightToLeft = true;
+	// The LUT contains sin/cos values for angles in this order: [180deg ... 0 deg ... -180 deg]
 	const CSinCosLookUpTableFor2DScans::TSinCosValues & lut_sincos = velodyne_sincos_tables.getSinCosForScan(scan_props);
 
 	const int minAzimuth_int = round( params.minAzimuth_deg * 100 );
@@ -180,7 +181,7 @@ void CObservationVelodyneScan::generatePointCloud(const TGeneratePointCloudParam
 
 		std::vector<int> diffs(BLOCKS_PER_PACKET - 1);
 		for(int i = 0; i < BLOCKS_PER_PACKET-1; ++i) {
-			int localDiff = (36000 + raw->blocks[i+1].rotation - raw->blocks[i].rotation) % 36000;
+			int localDiff = (ROTATION_MAX_UNITS + raw->blocks[i+1].rotation - raw->blocks[i].rotation) % ROTATION_MAX_UNITS;
 			diffs[i] = localDiff;
 		}
 		std::nth_element(
@@ -247,7 +248,7 @@ void CObservationVelodyneScan::generatePointCloud(const TGeneratePointCloudParam
 					timestampadjustment= mrpt::utils::round( timestampadjustment );
 
 					const float azimuth_corrected_f = azimuth_raw_f + azimuthadjustment;
-					const int azimuth_corrected = ((int)round(azimuth_corrected_f)) % 36000;
+					const int azimuth_corrected = ((int)round(azimuth_corrected_f)) % ROTATION_MAX_UNITS;
 
 					// For the following code: See reference implementation in vtkVelodyneHDLReader::vtkInternal::PushFiringData()
 					// -----------------------------------------
@@ -265,43 +266,25 @@ void CObservationVelodyneScan::generatePointCloud(const TGeneratePointCloudParam
 
 						const float xy_distance = distance * cos_vert_angle + vert_offset * sin_vert_angle;
 
-						const float cos_azimuth = lut_sincos.ccos[azimuth_corrected];
-						const float sin_azimuth = lut_sincos.csin[azimuth_corrected];
+						const int azimuth_corrected_for_lut = (azimuth_corrected + (ROTATION_MAX_UNITS/2))%ROTATION_MAX_UNITS;
+						const float cos_azimuth = lut_sincos.ccos[azimuth_corrected_for_lut];
+						const float sin_azimuth = lut_sincos.csin[azimuth_corrected_for_lut];
 
 						// Compute raw position
 						const mrpt::math::TPoint3Df pt_raw(
-							xy_distance * sin_azimuth - horz_offset * cos_azimuth,
-							xy_distance * cos_azimuth + horz_offset * sin_azimuth,
+							xy_distance * cos_azimuth + horz_offset * sin_azimuth, // MRPT +X = Velodyne +Y
+							-(xy_distance * sin_azimuth - horz_offset * cos_azimuth), // MRPT +Y = Velodyne -X
 							distance * sin_vert_angle + vert_offset
 							);
 
 						MRPT_TODO("Process LIDAR dual mode here")
 
-						// Intensity Calculation
-						MRPT_TODO("corrections!")
-						const float min_intensity = 0; //corrections.min_intensity;
-						const float max_intensity = 255; //corrections.max_intensity;
-
-						float intensity = raw->blocks[block].laser_returns[k].intensity;
-
-#if 0
-							float focal_offset = 256 
-								* (1 - corrections.focal_distance / 13100) 
-								* (1 - corrections.focal_distance / 13100);
-							float focal_slope = corrections.focal_slope;
-							intensity += focal_slope * (abs(focal_offset - 256 * 
-								(1 - tmp.uint/65535)*(1 - tmp.uint/65535)));
-							intensity = (intensity < min_intensity) ? min_intensity : intensity;
-							intensity = (intensity > max_intensity) ? max_intensity : intensity;
-#endif
-
 						if (distance>=minRange && distance<=maxRange)
 						{
-							//point.ring = corrections.laser_ring;
 							point_cloud.x.push_back( pt_raw.x );
 							point_cloud.y.push_back( pt_raw.y );
 							point_cloud.z.push_back( pt_raw.z );
-							point_cloud.intensity.push_back( static_cast<uint8_t>(intensity) );
+							point_cloud.intensity.push_back( raw->blocks[block].laser_returns[k].intensity );
 						}
 					}
 				}

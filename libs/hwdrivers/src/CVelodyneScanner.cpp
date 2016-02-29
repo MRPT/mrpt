@@ -15,7 +15,6 @@
 #include <mrpt/hwdrivers/CGPSInterface.h>
 #include <mrpt/system/filesystem.h>
 
-MRPT_TODO("rpm: document usage. Add automatic determination of rpm from number of pkts/scan")
 MRPT_TODO("Use status bytes to check for dual return scans")
 MRPT_TODO("Add pose interpolation method for inserting in a point map")
 
@@ -83,7 +82,6 @@ CVelodyneScanner::CVelodyneScanner() :
 	m_pos_packets_min_period(0.5),
 	m_pos_packets_timing_timeout(30.0),
 	m_device_ip(""),
-	m_rpm(600),
 	m_pcap(NULL),
 	m_pcap_out(NULL),
 	m_pcap_dumper(NULL),
@@ -137,7 +135,6 @@ void CVelodyneScanner::loadConfig_sensorSpecific(
 
 	cfg.read_enum<CVelodyneScanner::model_t>(sect,"model",m_model);
 	MRPT_LOAD_HERE_CONFIG_VAR(device_ip,   string, m_device_ip       ,  cfg, sect);
-	MRPT_LOAD_HERE_CONFIG_VAR(rpm,            int, m_rpm             ,  cfg, sect);
 	MRPT_LOAD_HERE_CONFIG_VAR(pcap_input,  string, m_pcap_input_file ,  cfg, sect);
 	MRPT_LOAD_HERE_CONFIG_VAR(pcap_output, string, m_pcap_output_file,  cfg, sect);	
 	MRPT_LOAD_HERE_CONFIG_VAR(pcap_read_once,bool, m_pcap_read_once,  cfg, sect);

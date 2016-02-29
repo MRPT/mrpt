@@ -60,7 +60,7 @@ namespace obs
 		std::vector<float>   scan; //!< The range values of the scan, in meters. Must have same length than \a validRange 
 		std::vector<char>    validRange;  //!< It's false (=0) on no reflected rays, referenced to elements in \a scan
 		float                aperture; //!< The "aperture" or field-of-view of the range finder, in radians (typically M_PI = 180 degrees).
-		bool                 rightToLeft; //!< The scanning direction
+		bool                 rightToLeft; //!< The scanning direction: true=counterclockwise; false=clockwise
 		float                maxRange; //!< The maximum range allowed by the device, in meters (e.g. 80m, 50m,...)
 		mrpt::poses::CPose3D sensorPose; //!< The 6D pose of the sensor on the robot at the moment of starting the scan.
 		float                stdError; //!< The "sigma" error of the device in meters, used while inserting the scan in an occupancy grid.
