@@ -18,9 +18,6 @@
 
 using namespace mrpt::hwdrivers;
 
-
-//MRPT_TODO("Crear metodos open() y close() en vez del constructor!")
-
 /*-------------------------------------------------------------
 			TCaptureOptions_bumblebee Constructor
  -------------------------------------------------------------*/

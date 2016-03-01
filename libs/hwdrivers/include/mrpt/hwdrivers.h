@@ -62,6 +62,7 @@ MRPT_WARNING("Including <mrpt/hwdrivers.h> makes compilation much slower, consid
 #include <mrpt/hwdrivers/CImageGrabber_OpenCV.h>
 #include <mrpt/hwdrivers/CImageGrabber_FlyCapture2.h>
 #include <mrpt/hwdrivers/CStereoGrabber_Bumblebee.h>
+#include <mrpt/hwdrivers/CStereoGrabber_Bumblebee_libdc1394.h>
 #include <mrpt/hwdrivers/CStereoGrabber_SVS.h>
 #include <mrpt/hwdrivers/CPhidgetInterfaceKitProximitySensors.h>
 #include <mrpt/hwdrivers/CKinect.h>

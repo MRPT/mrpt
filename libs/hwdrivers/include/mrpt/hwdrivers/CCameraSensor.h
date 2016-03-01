@@ -21,6 +21,7 @@
 #include <mrpt/hwdrivers/CImageGrabber_dc1394.h>
 #include <mrpt/hwdrivers/CImageGrabber_FlyCapture2.h>
 #include <mrpt/hwdrivers/CStereoGrabber_Bumblebee.h>
+#include <mrpt/hwdrivers/CStereoGrabber_Bumblebee_libdc1394.h>
 #include <mrpt/hwdrivers/CSwissRanger3DCamera.h>
 #include <mrpt/hwdrivers/CKinect.h>
 #include <mrpt/hwdrivers/COpenNI2Sensor.h>
@@ -72,7 +73,7 @@ namespace mrpt
 		  * -------------------------------------------------------
 		  *   [supplied_section_name]
 		  *    # Select one of the grabber implementations -----------------------
-		  *    grabber_type       = opencv | dc1394 | bumblebee | ffmpeg | rawlog | swissranger | svs | kinect | flycap | flycap_stereo | image_dir | duo3d
+		  *    grabber_type       = opencv | dc1394 | bumblebee | bumblebee_dc1394 | ffmpeg | rawlog | swissranger | svs | kinect | flycap | flycap_stereo | image_dir | duo3d
 		  *
 		  *    #  Options for any grabber_type ------------------------------------
 		  *    preview_decimation = 0     // N<=0 (or not present): No preview; N>0, display 1 out of N captured frames.
@@ -138,6 +139,11 @@ namespace mrpt
 		  *    bumblebee_fps           = 15      // [bumblebee] Capture FPS (not present or 0 for default)
 		  *    bumblebee_mono          = 0|1     // [bumblebee] OPTIONAL: If this parameter is present, monocular (0:left, 1:right) images will be grabbed instead of stereo pairs.
 		  *    bumblebee_get_rectified = 0|1     // [bumblebee] Determines if the camera should grab rectified or raw images (1 is the default)
+		  *
+		  *    # Options for grabber_type= bumblebee_dc1394 ----------------------------------
+		  *    bumblebee_dc1394_camera_guid   = 0 | 0x11223344  // 0 (or not present): the first camera; A hexadecimal number: The GUID of the camera to open
+		  *    bumblebee_dc1394_camera_unit   = 0     			// 0 (or not present): the first camera; 0,1,2,...: The unit number (within the given GUID) of the camera to open (Stereo cameras: 0 or 1)
+		  *    bumblebee_dc1394_framerate     = 15				// eg: 7.5, 15, 30, 60, etc... For posibilities see mrpt::hwdrivers::TCaptureOptions_dc1394
 		  *
 		  *    # Options for grabber_type= ffmpeg -------------------------------------
 		  *    ffmpeg_url             = rtsp://127.0.0.1      // [ffmpeg] The video file or IP camera to open
@@ -320,6 +326,11 @@ namespace mrpt
 			TCaptureOptions_bumblebee	m_bumblebee_options;
 			int										m_bumblebee_monocam; // 0:Left, 1: Right, <0,>1 -> Stereo
 
+			// Options for grabber_type= bumblebee_dc1394 ----------------------------------
+			uint64_t m_bumblebee_dc1394_camera_guid;
+			int	     m_bumblebee_dc1394_camera_unit;
+			double   m_bumblebee_dc1394_framerate;
+
 			// Options for grabber type= svs -----------------------------------------
 			int										m_svs_camera_index;
 			TCaptureOptions_SVS    m_svs_options;
@@ -381,6 +392,7 @@ namespace mrpt
 			CImageGrabber_FlyCapture2 * m_cap_flycap;     //!< The FlyCapture2 object
 			CImageGrabber_FlyCapture2 * m_cap_flycap_stereo_l, *m_cap_flycap_stereo_r;     //!< The FlyCapture2 object for stereo pairs
 			CStereoGrabber_Bumblebee  * m_cap_bumblebee;	//!< The bumblebee capture object.
+			CStereoGrabber_Bumblebee_libdc1394 * m_cap_bumblebee_dc1394;
 			CStereoGrabber_SVS        * m_cap_svs;	//!< The svs capture object.
 			CFFMPEG_InputStream       * m_cap_ffmpeg;	//!< The FFMPEG capture object
 			mrpt::utils::CFileGZInputStream * m_cap_rawlog;	//!< The input file for rawlogs

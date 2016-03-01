@@ -50,29 +50,37 @@ CCameraSensor::CCameraSensor() :
 	m_cv_camera_index		(0),
 	m_cv_camera_type		("CAMERA_CV_AUTODETECT"),
 	m_cv_options			(),
+	// ---
 	m_dc1394_camera_guid	(0),
 	m_dc1394_camera_unit	(0),
 	m_dc1394_options		(),
 	m_preview_decimation	(0),
 	m_preview_reduction		(1),
+	// ---
 	m_bumblebee_camera_index(0),
 	m_bumblebee_options		(),
 	m_bumblebee_monocam		(-1),
+	// ---
+	m_bumblebee_dc1394_camera_guid(0),
+	m_bumblebee_dc1394_camera_unit(0),
+	m_bumblebee_dc1394_framerate(15),
+	// ---
 	m_svs_camera_index(0),
 	m_svs_options                   (),
+	// ---
 	m_sr_open_from_usb		(true),
 	m_sr_save_3d			(true),
 	m_sr_save_range_img		(true),
 	m_sr_save_intensity_img	(true),
 	m_sr_save_confidence	(true),
-
+	// ---
 	m_kinect_save_3d		(true), // These options are also used for OpenNI2 grabber
 	m_kinect_save_range_img (true),
 	m_kinect_save_intensity_img(true),
 	m_kinect_video_rgb		(true),
-
+	// ---
 	m_fcs_start_synch_capture(false),
-
+	// ---
 	m_img_dir_url			(""),
 	m_img_dir_left_format	("imL_%04d.jpg"),
 	m_img_dir_right_format	("imR_%04d.jpg"),
@@ -80,7 +88,7 @@ CCameraSensor::CCameraSensor() :
 	m_img_dir_end_index		(100),
 	m_img_dir_is_stereo		(true),
 	m_img_dir_counter		(0),
-
+	// ---
 	m_external_images_own_thread(false),
 	m_cap_cv             (NULL),
 	m_cap_dc1394         (NULL),
@@ -88,6 +96,7 @@ CCameraSensor::CCameraSensor() :
 	m_cap_flycap_stereo_l(NULL),
 	m_cap_flycap_stereo_r(NULL),
 	m_cap_bumblebee      (NULL),
+	m_cap_bumblebee_dc1394(NULL),
 	m_cap_svs            (NULL),
 	m_cap_ffmpeg         (NULL),
 	m_cap_rawlog         (NULL),
@@ -157,15 +166,18 @@ void CCameraSensor::initialize()
 	}
 	else if (m_grabber_type=="bumblebee")
 	{
-		//m_cap_bumblebee
 		cout << format("[CCameraSensor::initialize] bumblebee camera: %u...\n", (unsigned int)( m_bumblebee_camera_index ) );
 		m_cap_bumblebee = new CStereoGrabber_Bumblebee( m_bumblebee_camera_index, m_bumblebee_options );
+	}
+	else if (m_grabber_type=="bumblebee_dc1394")
+	{
+		cout << format("[CCameraSensor::initialize] bumblebee_libdc1394 camera: GUID:0x%08X Index:%i FPS:%f...\n", (unsigned int)( m_bumblebee_dc1394_camera_guid ), m_bumblebee_dc1394_camera_unit, m_bumblebee_dc1394_framerate );
+		m_cap_bumblebee_dc1394 = new CStereoGrabber_Bumblebee_libdc1394( m_bumblebee_dc1394_camera_guid,m_bumblebee_dc1394_camera_unit, m_bumblebee_dc1394_framerate );
 	}
 	else if(m_grabber_type=="svs")
 	{
 		cout << format("[CCameraSensor::initialize] SVS camera: %u...\n", (unsigned int)( m_svs_camera_index ) );
 		m_cap_svs = new CStereoGrabber_SVS( m_svs_camera_index, m_svs_options );
-
 	}
 	else if (m_grabber_type=="ffmpeg")
 	{
@@ -369,6 +381,7 @@ void CCameraSensor::close()
 	delete_safe(m_cap_flycap_stereo_l);
 	delete_safe(m_cap_flycap_stereo_r);
 	delete_safe(m_cap_bumblebee);
+	delete_safe(m_cap_bumblebee_dc1394);
 	delete_safe(m_cap_ffmpeg);
 	delete_safe(m_cap_rawlog);
 	delete_safe(m_cap_swissranger);
@@ -464,6 +477,10 @@ void  CCameraSensor::loadConfig_sensorSpecific(
 	m_bumblebee_monocam                 = configSource.read_int( iniSection, "bumblebee_mono", m_bumblebee_monocam );
 	m_bumblebee_options.getRectified	= configSource.read_bool( iniSection, "bumblebee_get_rectified", m_bumblebee_options.getRectified );
 
+	// Bumblebee_dc1394 options:
+	MRPT_LOAD_HERE_CONFIG_VAR( bumblebee_dc1394_camera_guid, uint64_t, m_bumblebee_dc1394_camera_guid, configSource, iniSection )
+	MRPT_LOAD_HERE_CONFIG_VAR( bumblebee_dc1394_camera_unit, int, m_bumblebee_dc1394_camera_unit, configSource, iniSection )
+	MRPT_LOAD_HERE_CONFIG_VAR( bumblebee_dc1394_framerate, double, m_bumblebee_dc1394_framerate, configSource, iniSection )
 
 	// SVS options:
 	m_svs_camera_index                              = configSource.read_int( iniSection, "svs_camera_index", m_svs_camera_index );
@@ -731,6 +748,17 @@ void CCameraSensor::getNextFrame( vector<CSerializablePtr> & out_obs )
 				obs->image.copyFastFrom( m_bumblebee_monocam==0 ? stObs->imageLeft : stObs->imageRight );
 				stObs.clear();
 			}
+			capture_ok = true;
+		}
+	}
+	else if (m_cap_bumblebee_dc1394)
+	{
+		stObs = CObservationStereoImages::Create();
+		if (!m_cap_bumblebee_dc1394->getStereoObservation( *stObs )) {
+			m_state = CGenericSensor::ssError;
+			THROW_EXCEPTION("Error grabbing stereo images");
+		}
+		else {
 			capture_ok = true;
 		}
 	}

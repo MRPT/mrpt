@@ -429,9 +429,9 @@ bool  CImageGrabber_dc1394::getObservation( mrpt::obs::CObservationImage &out_ob
 		}
 
 		if ((err = dc1394_bayer_decoding_8bit(imageBuf, imageBufRGB,
-											  width, 2*height,
-											  DC1394_COLOR_FILTER_GBRG, // Has to be this value for Bumblebee!
-											  DC1394_BAYER_METHOD_HQLINEAR)) != DC1394_SUCCESS)
+		  width, 2*height,
+		  DC1394_COLOR_FILTER_GBRG, // Has to be this value for Bumblebee!
+		  DC1394_BAYER_METHOD_HQLINEAR)) != DC1394_SUCCESS)
 		{
 			cerr << "[CImageGrabber_dc1394] ERROR: Could not apply Bayer conversion: " << err << endl;
 			return false;

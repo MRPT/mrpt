@@ -12,6 +12,7 @@
 #include <mrpt/obs/CObservationStereoImages.h>
 #include <mrpt/hwdrivers/link_pragmas.h>
 #include <mrpt/utils/CUncopiable.h>
+#include <mrpt/hwdrivers/TCaptureOptions_bumblebee.h>
 
 #ifndef MRPT_OS_WINDOWS
 	#include <mrpt/hwdrivers/CImageGrabber_dc1394.h>
@@ -23,19 +24,6 @@ namespace mrpt
 {
 	namespace hwdrivers
 	{
-		/** Options used when creating a bumblebee camera capture object
-		  * \ingroup mrpt_hwdrivers_grp
-		  */
-		struct HWDRIVERS_IMPEXP TCaptureOptions_bumblebee
-		{
-			TCaptureOptions_bumblebee();
-
-			int	frame_width, frame_height;	//!< Capture resolution (Default: 640x480)
-			bool color;						//!< Indicates if the Bumblebee camera must capture color images (Default: false -> grayscale)
-			bool getRectified;				//!< Indicates if the Bumblebee camera must capture rectified images (Default: true -> rectified)
-			double framerate;				//!< Bumblebee camera frame rate (Default: 15 fps)
-		};
-
 		/** A class for grabing stereo images from a "Bumblebee" or "Bumblebee2" camera
 		  * NOTE:
 		  *		- Windows:
