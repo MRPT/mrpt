@@ -83,6 +83,7 @@ namespace mrpt
 		  *   # pcap_input     = PUT_FULL_PATH_TO_PCAP_LOG_FILE.pcap
 		  *   # pcap_read_once = false   // Do not loop
 		  *   # pcap_read_fast = false    // fast forward skipping non-velodyne packets
+		  *   # pcap_read_full_scan_delay_ms = 100 // Used to simulate a reasonable number of full scans / second
 		  *   # pcap_repeat_delay = 0.0   // seconds
 		  *
 		  *   # ---- Save to PCAP file ----
@@ -154,7 +155,8 @@ namespace mrpt
 			bool   m_pcap_file_empty;
 			unsigned int m_pcap_read_count; //!< number of pkts read from the file so far (for debugging)
 			bool   m_pcap_read_once;    //!< Default: false
-			bool   m_pcap_read_fast;    //!< Default: true
+			bool   m_pcap_read_fast;    //!< (Default: false) If false, will use m_pcap_read_full_scan_delay_ms
+			double m_pcap_read_full_scan_delay_ms;    //!< (Default:100 ms) delay after each full scan read from a PCAP log
 			double m_pcap_repeat_delay; //!< Default: 0 (in seconds)
 
 

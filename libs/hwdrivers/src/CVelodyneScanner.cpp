@@ -90,6 +90,7 @@ CVelodyneScanner::CVelodyneScanner() :
 	m_pcap_file_empty(true),
 	m_pcap_read_once(false),
 	m_pcap_read_fast(false),
+	m_pcap_read_full_scan_delay_ms(100),
 	m_pcap_repeat_delay(0.0),
 	m_hDataSock(INVALID_SOCKET),
 	m_hPositionSock(INVALID_SOCKET),
@@ -141,6 +142,7 @@ void CVelodyneScanner::loadConfig_sensorSpecific(
 	MRPT_LOAD_HERE_CONFIG_VAR(pcap_output, string, m_pcap_output_file,  cfg, sect);	
 	MRPT_LOAD_HERE_CONFIG_VAR(pcap_read_once,bool, m_pcap_read_once,  cfg, sect);
 	MRPT_LOAD_HERE_CONFIG_VAR(pcap_read_fast,bool, m_pcap_read_fast ,  cfg, sect);
+	MRPT_LOAD_HERE_CONFIG_VAR(pcap_read_full_scan_delay_ms,double, m_pcap_read_full_scan_delay_ms,  cfg, sect);
 	MRPT_LOAD_HERE_CONFIG_VAR(pcap_repeat_delay,double, m_pcap_repeat_delay ,  cfg, sect);
 	MRPT_LOAD_HERE_CONFIG_VAR(pos_packets_timing_timeout,double, m_pos_packets_timing_timeout ,  cfg, sect);
 	MRPT_LOAD_HERE_CONFIG_VAR(pos_packets_min_period,double, m_pos_packets_min_period ,  cfg, sect);
@@ -231,6 +233,12 @@ bool CVelodyneScanner::getNextObservation(
 				// Return the observation as done when a complete 360 deg scan is ready:
 				outScan = m_rx_scan;
 				m_rx_scan.clear_unique();
+
+				if (m_pcap) {
+					// Keep the reader from blowing through the file.
+					if (!m_pcap_read_fast)
+						mrpt::system::sleep(m_pcap_read_full_scan_delay_ms);
+				}
 			}
 
 			// Create smart ptr to new in-progress observation:
@@ -714,10 +722,6 @@ bool CVelodyneScanner::internal_read_PCAP_packet(
 				if (m_verbose) std::cout << "[CVelodyneScanner] DEBUG: Filtering out packet #"<< m_pcap_read_count <<" in PCAP file.\n";
 				continue;
 			}
-
-			// Keep the reader from blowing through the file.
-			if (!m_pcap_read_fast)
-				mrpt::system::sleep(1); //packet_rate_.sleep();
 
 			// Determine whether it is a DATA or POSITION packet:
 			m_pcap_file_empty = false;
