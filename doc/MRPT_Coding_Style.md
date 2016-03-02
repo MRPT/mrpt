@@ -2,6 +2,7 @@
  -------------------------------
  
 * **General rules**: Take a look at [Google's C++ style guide](https://google.github.io/styleguide/cppguide.html) for very good general advices and reasons to worry about code style. It is worth reading carefully.
+* C++11/14 is **not** allowed unless working on a MRPT 2.0.0 branch.
 
 **Class and file names**
 * For historical reasons, most MRPT classes and structures use the prefix `C` and `T`, respectively. For example: `class CBar`and `struct TFoo`. This convention *should* be observed in new code for the sake of consistency. 
