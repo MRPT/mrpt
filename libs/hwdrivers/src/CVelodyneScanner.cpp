@@ -15,7 +15,6 @@
 #include <mrpt/hwdrivers/CGPSInterface.h>
 #include <mrpt/system/filesystem.h>
 
-MRPT_TODO("Use status bytes to check for dual return scans")
 MRPT_TODO("Add pose interpolation method for inserting in a point map")
 
 // socket's hdrs:
@@ -226,18 +225,22 @@ bool CVelodyneScanner::getNextObservation(
 			m_state = ssWorking;
 
 			// Break into a new observation object when the azimuth passes 360->0 deg:
-			if (m_rx_scan &&
-			    !m_rx_scan->scan_packets.empty() &&
-			    rx_pkt.blocks[0].rotation < m_rx_scan->scan_packets.rbegin()->blocks[0].rotation )
-			{
-				// Return the observation as done when a complete 360 deg scan is ready:
-				outScan = m_rx_scan;
-				m_rx_scan.clear_unique();
+			const uint16_t rx_pkt_start_angle = rx_pkt.blocks[0].rotation;
+			//const uint16_t rx_pkt_end_angle   = rx_pkt.blocks[CObservationVelodyneScan::BLOCKS_PER_PACKET-1].rotation;
 
-				if (m_pcap) {
-					// Keep the reader from blowing through the file.
-					if (!m_pcap_read_fast)
-						mrpt::system::sleep(m_pcap_read_full_scan_delay_ms);
+			// Return the observation as done when a complete 360 deg scan is ready:
+			if (m_rx_scan && !m_rx_scan->scan_packets.empty())
+			{
+				if (rx_pkt_start_angle < m_rx_scan->scan_packets.rbegin()->blocks[0].rotation )
+				{
+					outScan = m_rx_scan;
+					m_rx_scan.clear_unique();
+
+					if (m_pcap) {
+						// Keep the reader from blowing through the file.
+						if (!m_pcap_read_fast)
+							mrpt::system::sleep(m_pcap_read_full_scan_delay_ms);
+					}
 				}
 			}
 

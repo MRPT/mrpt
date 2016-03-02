@@ -214,6 +214,7 @@ int VelodyneView(int argc, char **argv)
 
 	CObservationVelodyneScanPtr  last_obs;
 	CObservationGPSPtr           last_obs_gps;
+	bool view_freeze = false; // for pausing the view
 
 	while (win3D.isOpen() && !thrPar.quit)
 	{
@@ -264,6 +265,7 @@ int VelodyneView(int argc, char **argv)
 			// Update visualization ---------------------------------------
 
 			// Show 3D points:
+			if (!view_freeze)
 			{
 				CObservationVelodyneScan::TGeneratePointCloudParameters pc_params;
 				last_obs->generatePointCloud(pc_params);
@@ -303,6 +305,9 @@ int VelodyneView(int argc, char **argv)
 					win3D.setCameraZoom( win3D.getCameraZoom() / 1.2 );
 					win3D.repaint();
 					break;
+				case ' ':
+					view_freeze = !view_freeze;
+					break;
 				// ...and the rest in the sensor thread:
 				default:
 					thrPar.pushed_key = key;
@@ -311,7 +316,7 @@ int VelodyneView(int argc, char **argv)
 		}
 
 		win3D.get3DSceneAndLock();
-		win3D.addTextMessage(5,10,"'o'/'i'-zoom out/in, mouse: orbit 3D,ESC: quit", TColorf(1,1,1),"mono",10.0, mrpt::opengl::NICE, 110 );
+		win3D.addTextMessage(5,10,"'o'/'i'-zoom out/in, mouse: orbit 3D, spacebar: freeze, ESC: quit", TColorf(1,1,1),"mono",10.0, mrpt::opengl::NICE, 110 );
 		win3D.unlockAccess3DScene();
 
 		mrpt::system::sleep(50);

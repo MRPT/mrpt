@@ -83,6 +83,10 @@ namespace obs
 		static const int BLOCKS_PER_PACKET = 12;
 		static const int PACKET_STATUS_SIZE = 4;
 		static const int SCANS_PER_PACKET = (SCANS_PER_BLOCK * BLOCKS_PER_PACKET);
+
+		static const uint8_t RETMODE_STRONGEST = 0x37;
+		static const uint8_t RETMODE_LAST      = 0x38;
+		static const uint8_t RETMODE_DUAL      = 0x39;
 		/** @} */
 
 		/** @name Scan data
@@ -164,14 +168,26 @@ namespace obs
 		{
 			double minAzimuth_deg; //!< Minimum azimuth, in degrees (Default=0). Points will be generated only the the area of interest [minAzimuth, maxAzimuth]
 			double maxAzimuth_deg; //!< Minimum azimuth, in degrees (Default=360). Points will be generated only the the area of interest [minAzimuth, maxAzimuth]
+			float  minDistance,maxDistance; //!< Minimum (default=1.0f) and maximum (default: Infinity) distances/ranges for a point to be considered. Points must pass this (application specific) condition and also the minRange/maxRange values in CObservationVelodyneScan (sensor-specific).
+			/** The limits of the 3D box (default=infinity) in sensor (not vehicle) local coordinates for the ROI filter \sa filterByROI */
+			float  ROI_x_min, ROI_x_max, ROI_y_min, ROI_y_max, ROI_z_min, ROI_z_max;
+			/** The limits of the 3D box (default=0) in sensor (not vehicle) local coordinates for the nROI filter \sa filterBynROI */
+			float  nROI_x_min, nROI_x_max, nROI_y_min, nROI_y_max, nROI_z_min, nROI_z_max;
+			float  isolatedPointsFilterDistance; //!< (Default:2.0 meters) Minimum distance between a point and its two neighbors to be considered an invalid point.
+
+			bool   filterByROI; //!< Enable ROI filter (Default:false): add points inside a given 3D box
+			bool   filterBynROI; //!< Enable nROI filter (Default:false): do NOT add points inside a given 3D box
+			bool   filterOutIsolatedPoints; //!< (Default:false) Simple filter to remove spurious returns (e.g. Sun reflected on large water extensions)
 
 			TGeneratePointCloudParameters();
 		};
 
+		static const TGeneratePointCloudParameters defaultPointCloudParams;
+
 		/** Generates the point cloud into the point cloud data fields in \a CObservationVelodyneScan::point_cloud
 		  * \note Points with ranges out of [minRange,maxRange] are discarded.
 		  */
-		void generatePointCloud(const TGeneratePointCloudParameters &params = TGeneratePointCloudParameters() );
+		void generatePointCloud(const TGeneratePointCloudParameters &params = defaultPointCloudParams );
 
 		/** @} */
 		

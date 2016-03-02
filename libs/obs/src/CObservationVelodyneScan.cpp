@@ -38,11 +38,30 @@ const float HDR32_DSR_TOFFSET = 1.152f; // [us]
 const float HDR32_FIRING_TOFFSET = 46.08f; // [us]
 
 
+const CObservationVelodyneScan::TGeneratePointCloudParameters CObservationVelodyneScan::defaultPointCloudParams;
 
 
 CObservationVelodyneScan::TGeneratePointCloudParameters::TGeneratePointCloudParameters() :
 	minAzimuth_deg(0.0),
-	maxAzimuth_deg(360.0)
+	maxAzimuth_deg(360.0),
+	minDistance(1.0f),
+	maxDistance(std::numeric_limits<float>::max()),
+	ROI_x_min(-std::numeric_limits<float>::max()),
+	ROI_x_max(+std::numeric_limits<float>::max()),
+	ROI_y_min(-std::numeric_limits<float>::max()),
+	ROI_y_max(+std::numeric_limits<float>::max()),
+	ROI_z_min(-std::numeric_limits<float>::max()),
+	ROI_z_max(+std::numeric_limits<float>::max()),
+	nROI_x_min(.0f),
+	nROI_x_max(.0f),
+	nROI_y_min(.0f),
+	nROI_y_max(.0f),
+	nROI_z_min(.0f),
+	nROI_z_max(.0f),
+	isolatedPointsFilterDistance(2.0f),
+	filterByROI(false),
+	filterBynROI(false),
+	filterOutIsolatedPoints(false)
 {
 }
 
@@ -173,6 +192,8 @@ void CObservationVelodyneScan::generatePointCloud(const TGeneratePointCloudParam
 
 	const int minAzimuth_int = round( params.minAzimuth_deg * 100 );
 	const int maxAzimuth_int = round( params.maxAzimuth_deg * 100 );
+	const float realMinDist = std::max(static_cast<float>(minRange),params.minDistance);
+	const float realMaxDist = std::min(params.maxDistance,static_cast<float>(maxRange));
 
 	// This is: 16,32,64 depending on the LIDAR model
 	const size_t num_lasers = calibration.laser_corrections.size();
@@ -180,18 +201,20 @@ void CObservationVelodyneScan::generatePointCloud(const TGeneratePointCloudParam
 	for (size_t iPkt = 0; iPkt<scan_packets.size();iPkt++)
 	{
 		const TVelodyneRawPacket *raw = &scan_packets[iPkt];
-//		const double timestamp = this->ComputeTimestamp(dataPacket->gpsTimestamp);
 
-		std::vector<int> diffs(BLOCKS_PER_PACKET - 1);
-		for(int i = 0; i < BLOCKS_PER_PACKET-1; ++i) {
-			int localDiff = (ROTATION_MAX_UNITS + raw->blocks[i+1].rotation - raw->blocks[i].rotation) % ROTATION_MAX_UNITS;
-			diffs[i] = localDiff;
+		// Take the median rotational speed as a good value for interpolating the missing azimuths:
+		int median_azimuth_diff;
+		{
+			// In dual return, the azimuth rate is actually twice this estimation:
+			const int nBlocksPerAzimuth = (raw->laser_return_mode==RETMODE_DUAL) ? 2 : 1;
+			std::vector<int> diffs(BLOCKS_PER_PACKET - nBlocksPerAzimuth);
+			for(int i = 0; i < BLOCKS_PER_PACKET-nBlocksPerAzimuth; ++i) {
+				int localDiff = (ROTATION_MAX_UNITS + raw->blocks[i+nBlocksPerAzimuth].rotation - raw->blocks[i].rotation) % ROTATION_MAX_UNITS;
+				diffs[i] = localDiff;
+			}
+			std::nth_element(diffs.begin(), diffs.begin() + BLOCKS_PER_PACKET/2, diffs.end()); // Calc median
+			median_azimuth_diff = diffs[BLOCKS_PER_PACKET/2];
 		}
-		std::nth_element(
-			diffs.begin(),
-			diffs.begin() + BLOCKS_PER_PACKET/2,
-			diffs.end());
-		const int median_azimuth_diff = diffs[BLOCKS_PER_PACKET/2];
 
 		for (int block = 0; block < BLOCKS_PER_PACKET; block++)  // Firings per packet
 		{
@@ -203,14 +226,14 @@ void CObservationVelodyneScan::generatePointCloud(const TGeneratePointCloudParam
 				continue;
 			}
 
-			MRPT_TODO("Support LIDAR dual data")
-
 			const int dsr_offset = (raw->blocks[block].header==LOWER_BANK) ? 32:0;
-
 			const float azimuth_raw_f = (float)(raw->blocks[block].rotation);
 
 			for (int dsr=0,k=0; dsr < SCANS_PER_FIRING; dsr++, k++)
 			{
+				if (!raw->blocks[block].laser_returns[k].distance) // Invalid return?
+					continue;
+
 				const uint8_t rawLaserId = static_cast<uint8_t>(dsr + dsr_offset);
 				uint8_t laserId = rawLaserId;
 
@@ -234,9 +257,18 @@ void CObservationVelodyneScan::generatePointCloud(const TGeneratePointCloudParam
 				{
 				// VLP-16
 				case 16:
-					timestampadjustment = VLP16AdjustTimeStamp(block, laserId, firingWithinBlock);
-					nextblockdsr0 = VLP16AdjustTimeStamp(block+1,0,0);
-					blockdsr0 = VLP16AdjustTimeStamp(block,0,0);
+					{
+						if (raw->laser_return_mode==RETMODE_DUAL) {
+							timestampadjustment = VLP16AdjustTimeStamp(block/2, laserId, firingWithinBlock);
+							nextblockdsr0 = VLP16AdjustTimeStamp(block/2+1,0,0);
+							blockdsr0 = VLP16AdjustTimeStamp(block/2,0,0);
+						}
+						else {
+							timestampadjustment = VLP16AdjustTimeStamp(block, laserId, firingWithinBlock);
+							nextblockdsr0 = VLP16AdjustTimeStamp(block+1,0,0);
+							blockdsr0 = VLP16AdjustTimeStamp(block,0,0);
+						}
+					}
 					break;
 				// HDL-32:
 				case 32:
@@ -251,53 +283,64 @@ void CObservationVelodyneScan::generatePointCloud(const TGeneratePointCloudParam
 					}
 				};
 
-				//Was: float azimuth_correction_f = (median_azimuth_diff * ((dsr*VLP16_DSR_TOFFSET) + (firing*VLP16_FIRING_TOFFSET)) / VLP16_BLOCK_TDURATION);
 				const int azimuthadjustment = mrpt::utils::round( median_azimuth_diff * ((timestampadjustment - blockdsr0) / (nextblockdsr0 - blockdsr0)));
-				timestampadjustment= mrpt::utils::round( timestampadjustment );
 
 				const float azimuth_corrected_f = azimuth_raw_f + azimuthadjustment;
 				const int azimuth_corrected = ((int)round(azimuth_corrected_f)) % ROTATION_MAX_UNITS;
 
-				// For the following code: See reference implementation in vtkVelodyneHDLReader::vtkInternal::PushFiringData()
-				// -----------------------------------------
-				if ((minAzimuth_int < maxAzimuth_int && azimuth_corrected >= minAzimuth_int && azimuth_corrected <= maxAzimuth_int )
-					||(minAzimuth_int > maxAzimuth_int && (azimuth_corrected <= maxAzimuth_int || azimuth_corrected >= minAzimuth_int)))
-				{
-					/** Position Calculation */
-					if (!raw->blocks[block].laser_returns[k].distance)
-						continue; 
-					const float distance = raw->blocks[block].laser_returns[k].distance * DISTANCE_RESOLUTION + calib.distanceCorrection;
+				// Filter by azimuth:
+				if (!((minAzimuth_int < maxAzimuth_int && azimuth_corrected >= minAzimuth_int && azimuth_corrected <= maxAzimuth_int )
+					||(minAzimuth_int > maxAzimuth_int && (azimuth_corrected <= maxAzimuth_int || azimuth_corrected >= minAzimuth_int))))
+					continue;
 
-					MRPT_TODO("Process LIDAR dual mode here")
+				// Return distance:
+				const float distance = raw->blocks[block].laser_returns[k].distance * DISTANCE_RESOLUTION + calib.distanceCorrection;
+				if (distance<realMinDist || distance>realMaxDist)
+					continue;
 
-					if (distance>=minRange && distance<=maxRange)
-					{
-						// Vertical axis mis-alignment calibration:
-						const float cos_vert_angle = calib.cosVertCorrection;
-						const float sin_vert_angle = calib.sinVertCorrection;
-						const float horz_offset = calib.horizontalOffsetCorrection;
-						const float vert_offset = calib.verticalOffsetCorrection;
+				MRPT_TODO("In dual return, if the distance is equal in both ranges, ignore one of them!")
 
-						float xy_distance = distance * cos_vert_angle; 
-						if (vert_offset) xy_distance+= vert_offset * sin_vert_angle;
+				// Vertical axis mis-alignment calibration:
+				const float cos_vert_angle = calib.cosVertCorrection;
+				const float sin_vert_angle = calib.sinVertCorrection;
+				const float horz_offset = calib.horizontalOffsetCorrection;
+				const float vert_offset = calib.verticalOffsetCorrection;
 
-						const int azimuth_corrected_for_lut = (azimuth_corrected + (ROTATION_MAX_UNITS/2))%ROTATION_MAX_UNITS;
-						const float cos_azimuth = lut_sincos.ccos[azimuth_corrected_for_lut];
-						const float sin_azimuth = lut_sincos.csin[azimuth_corrected_for_lut];
+				float xy_distance = distance * cos_vert_angle; 
+				if (vert_offset) xy_distance+= vert_offset * sin_vert_angle;
 
-						// Compute raw position
-						const mrpt::math::TPoint3Df pt_raw(
-							xy_distance * cos_azimuth + horz_offset * sin_azimuth, // MRPT +X = Velodyne +Y
-							-(xy_distance * sin_azimuth - horz_offset * cos_azimuth), // MRPT +Y = Velodyne -X
-							distance * sin_vert_angle + vert_offset
-							);
+				const int azimuth_corrected_for_lut = (azimuth_corrected + (ROTATION_MAX_UNITS/2))%ROTATION_MAX_UNITS;
+				const float cos_azimuth = lut_sincos.ccos[azimuth_corrected_for_lut];
+				const float sin_azimuth = lut_sincos.csin[azimuth_corrected_for_lut];
 
-						point_cloud.x.push_back( pt_raw.x );
-						point_cloud.y.push_back( pt_raw.y );
-						point_cloud.z.push_back( pt_raw.z );
-						point_cloud.intensity.push_back( raw->blocks[block].laser_returns[k].intensity );
-					}
-				}
+				// Compute raw position
+				const mrpt::math::TPoint3Df pt(
+					xy_distance * cos_azimuth + horz_offset * sin_azimuth, // MRPT +X = Velodyne +Y
+					-(xy_distance * sin_azimuth - horz_offset * cos_azimuth), // MRPT +Y = Velodyne -X
+					distance * sin_vert_angle + vert_offset
+					);
+
+				bool add_point = true;
+				if (params.filterByROI && (
+				 pt.x>params.ROI_x_max || pt.x<params.ROI_x_min ||
+				 pt.y>params.ROI_y_max || pt.y<params.ROI_y_min ||
+				 pt.z>params.ROI_z_max || pt.z<params.ROI_z_min))
+				  add_point=false;
+
+				if (params.filterBynROI && (
+				 pt.x<=params.nROI_x_max && pt.x>=params.nROI_x_min &&
+				 pt.y<=params.nROI_y_max && pt.y>=params.nROI_y_min &&
+				 pt.z<=params.nROI_z_max && pt.z>=params.nROI_z_min))
+				  add_point=false;
+
+				if (!add_point)
+					continue;
+
+				point_cloud.x.push_back( pt.x );
+				point_cloud.y.push_back( pt.y );
+				point_cloud.z.push_back( pt.z );
+				point_cloud.intensity.push_back( raw->blocks[block].laser_returns[k].intensity );
+				MRPT_TODO("filterOutIsolatedPoints")
 
 			} // end for k,dsr=[0,31]
 		} // end for each block [0,11]

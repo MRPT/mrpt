@@ -25,8 +25,11 @@ namespace mrpt
 		  * The choice of online vs. offline operation is taken upon calling \a initialize(): if a PCAP input file has been defined,
 		  * offline operation takes place and network is not listened for incomming packets.
 		  *
-		  * Parsing dual return scans requires a VLP-16 with firmware version 3.0.23 or newer.
-		  * 
+		  * Parsing dual return scans requires a VLP-16 with firmware version 3.0.23 or newer. While converting the scan into a 
+		  * point cloud in mrpt::obs::CObservationVelodyneScan you can select whether to keep the strongest, the last or both laser returns.
+		  *
+		  * XML calibration files are not mandatory for VLP-16 and HDL-32, but they are for HDL-64.
+		  *
 		  * <h2>Grabbing live data (as a user)</h2> <hr>
 		  *  - Use the application [velodyne-view](http://www.mrpt.org/list-of-mrpt-apps/application-velodyne-view/) to visualize the LIDAR output in real-time (optionally saving to a PCAP file) or to playback a PCAP file.
 		  *  - Use [rawlog-grabber](http://www.mrpt.org/list-of-mrpt-apps/application-rawlog-grabber/) to record a dataset in MRPT's format together with any other set of sensors. See example config file: [MRPT\share\mrpt\config_files\rawlog-grabber\velodyne.ini](https://github.com/MRPT/mrpt/blob/master/share/mrpt/config_files/rawlog-grabber/velodyne.ini)
