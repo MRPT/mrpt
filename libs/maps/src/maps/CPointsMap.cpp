@@ -2110,7 +2110,7 @@ void CPointsMap::loadFromVelodyneScan(
 	ASSERT_EQUAL_(scan.point_cloud.x.size(),scan.point_cloud.intensity.size());
 
 	if (scan.point_cloud.x.empty())
-		const_cast<mrpt::obs::CObservationVelodyneScan *>(&scan)->generatePointCloud();
+		return;
 
 	this->mark_as_modified();
 

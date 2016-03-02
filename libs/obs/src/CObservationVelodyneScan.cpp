@@ -61,7 +61,9 @@ CObservationVelodyneScan::TGeneratePointCloudParameters::TGeneratePointCloudPara
 	isolatedPointsFilterDistance(2.0f),
 	filterByROI(false),
 	filterBynROI(false),
-	filterOutIsolatedPoints(false)
+	filterOutIsolatedPoints(false),
+	dualKeepStrongest(true),
+	dualKeepLast(true)
 {
 }
 
@@ -228,6 +230,8 @@ void CObservationVelodyneScan::generatePointCloud(const TGeneratePointCloudParam
 
 			const int dsr_offset = (raw->blocks[block].header==LOWER_BANK) ? 32:0;
 			const float azimuth_raw_f = (float)(raw->blocks[block].rotation);
+			const bool block_is_dual_2nd_ranges  = (raw->laser_return_mode==RETMODE_DUAL && ((block & 0x01)!=0));
+			const bool block_is_dual_last_ranges = (raw->laser_return_mode==RETMODE_DUAL && ((block & 0x01)==0));
 
 			for (int dsr=0,k=0; dsr < SCANS_PER_FIRING; dsr++, k++)
 			{
@@ -248,6 +252,21 @@ void CObservationVelodyneScan::generatePointCloud(const TGeneratePointCloudParam
 
 				ASSERT_BELOW_(laserId,num_lasers)
 				const mrpt::obs::VelodyneCalibration::PerLaserCalib &calib = calibration.laser_corrections[laserId];
+
+				// In dual return, if the distance is equal in both ranges, ignore one of them:
+				if (block_is_dual_2nd_ranges) {
+					if (raw->blocks[block].laser_returns[k].distance == raw->blocks[block-1].laser_returns[k].distance)
+						continue; // duplicated point
+					if (!params.dualKeepStrongest)
+						continue;
+				}
+				if (block_is_dual_last_ranges && !params.dualKeepLast)
+					continue;
+
+				// Return distance:
+				const float distance = raw->blocks[block].laser_returns[k].distance * DISTANCE_RESOLUTION + calib.distanceCorrection;
+				if (distance<realMinDist || distance>realMaxDist)
+					continue;
 
 				// Azimuth correction: correct for the laser rotation as a function of timing during the firings
 				double timestampadjustment = 0.0;
@@ -292,13 +311,6 @@ void CObservationVelodyneScan::generatePointCloud(const TGeneratePointCloudParam
 				if (!((minAzimuth_int < maxAzimuth_int && azimuth_corrected >= minAzimuth_int && azimuth_corrected <= maxAzimuth_int )
 					||(minAzimuth_int > maxAzimuth_int && (azimuth_corrected <= maxAzimuth_int || azimuth_corrected >= minAzimuth_int))))
 					continue;
-
-				// Return distance:
-				const float distance = raw->blocks[block].laser_returns[k].distance * DISTANCE_RESOLUTION + calib.distanceCorrection;
-				if (distance<realMinDist || distance>realMaxDist)
-					continue;
-
-				MRPT_TODO("In dual return, if the distance is equal in both ranges, ignore one of them!")
 
 				// Vertical axis mis-alignment calibration:
 				const float cos_vert_angle = calib.cosVertCorrection;

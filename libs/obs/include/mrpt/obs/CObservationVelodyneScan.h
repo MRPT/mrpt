@@ -178,6 +178,7 @@ namespace obs
 			bool   filterByROI; //!< Enable ROI filter (Default:false): add points inside a given 3D box
 			bool   filterBynROI; //!< Enable nROI filter (Default:false): do NOT add points inside a given 3D box
 			bool   filterOutIsolatedPoints; //!< (Default:false) Simple filter to remove spurious returns (e.g. Sun reflected on large water extensions)
+			bool   dualKeepStrongest, dualKeepLast; //!< (Default:true) In VLP16 dual mode, keep both or just one of the returns.
 
 			TGeneratePointCloudParameters();
 		};

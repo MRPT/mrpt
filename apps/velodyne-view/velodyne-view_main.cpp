@@ -215,6 +215,7 @@ int VelodyneView(int argc, char **argv)
 	CObservationVelodyneScanPtr  last_obs;
 	CObservationGPSPtr           last_obs_gps;
 	bool view_freeze = false; // for pausing the view
+	CObservationVelodyneScan::TGeneratePointCloudParameters pc_params;
 
 	while (win3D.isOpen() && !thrPar.quit)
 	{
@@ -239,9 +240,9 @@ int VelodyneView(int argc, char **argv)
 			else rmc_datum = "NO";
 
 			win3D.get3DSceneAndLock();
-			win3D.addTextMessage(5,25,
+			win3D.addTextMessage(5,40,
 				format("POS. frame rx at %s, RMC=%s",mrpt::system::dateTimeLocalToString(last_obs_gps->timestamp).c_str(),rmc_datum.c_str()),
-				TColorf(1,1,1),"mono",10.0, mrpt::opengl::NICE, 101 );
+				TColorf(1,1,1),"mono",10.0, mrpt::opengl::NICE, 102 );
 			win3D.unlockAccess3DScene();
 			do_view_refresh=true;
 		}
@@ -255,9 +256,9 @@ int VelodyneView(int argc, char **argv)
 			if (!last_obs->scan_packets.empty())
 			{
 				win3D.get3DSceneAndLock();
-				win3D.addTextMessage(5,40,
+				win3D.addTextMessage(5,55,
 					format("LIDAR scan rx at %s with %u packets",mrpt::system::dateTimeLocalToString(last_obs->timestamp).c_str(), static_cast<unsigned int>(last_obs->scan_packets.size())),
-					TColorf(1,1,1),"mono",10.0, mrpt::opengl::NICE, 102 );
+					TColorf(1,1,1),"mono",10.0, mrpt::opengl::NICE, 103 );
 				win3D.unlockAccess3DScene();
 				do_view_refresh=true;
 			}
@@ -267,7 +268,6 @@ int VelodyneView(int argc, char **argv)
 			// Show 3D points:
 			if (!view_freeze)
 			{
-				CObservationVelodyneScan::TGeneratePointCloudParameters pc_params;
 				last_obs->generatePointCloud(pc_params);
 
 				CColouredPointsMap pntsMap;
@@ -308,6 +308,12 @@ int VelodyneView(int argc, char **argv)
 				case ' ':
 					view_freeze = !view_freeze;
 					break;
+				case '1': 
+					pc_params.dualKeepLast = !pc_params.dualKeepLast;
+					break;
+				case '2':
+					pc_params.dualKeepStrongest = !pc_params.dualKeepStrongest;
+					break;
 				// ...and the rest in the sensor thread:
 				default:
 					thrPar.pushed_key = key;
@@ -317,6 +323,7 @@ int VelodyneView(int argc, char **argv)
 
 		win3D.get3DSceneAndLock();
 		win3D.addTextMessage(5,10,"'o'/'i'-zoom out/in, mouse: orbit 3D, spacebar: freeze, ESC: quit", TColorf(1,1,1),"mono",10.0, mrpt::opengl::NICE, 110 );
+		win3D.addTextMessage(5,25,mrpt::format("'1'/'2': Toggle view dual last (%s)/strongest(%s) returns.",pc_params.dualKeepLast ? "ON":"OFF",pc_params.dualKeepStrongest ? "ON":"OFF"), TColorf(1,1,1),"mono",10.0, mrpt::opengl::NICE, 111 );
 		win3D.unlockAccess3DScene();
 
 		mrpt::system::sleep(50);
