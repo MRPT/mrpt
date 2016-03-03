@@ -47,6 +47,7 @@
 #include <mrpt/opengl/CPointCloud.h>
 #include <mrpt/opengl/CEllipsoid.h>
 #include <mrpt/opengl/CDisk.h>
+#include <mrpt/opengl/stock_objects.h>
 
 using namespace mrpt;
 using namespace mrpt::slam;
@@ -270,32 +271,46 @@ void do_pf_localization(const std::string &ini_fil, const std::string &cmdline_r
 
 	// Create the 3D scene and get the map only once, later we'll modify only the particles, etc..
 	COpenGLScene			scene;
-	COccupancyGridMap2D::TEntropyInfo	gridInfo;
 
-	// The gridmap:
+	float init_PDF_min_x=0, init_PDF_min_y=0, init_PDF_max_x=0,init_PDF_max_y=0;
+	MRPT_LOAD_CONFIG_VAR(init_PDF_min_x,float, iniFile,iniSectionName)
+	MRPT_LOAD_CONFIG_VAR(init_PDF_min_y,float, iniFile,iniSectionName)
+	MRPT_LOAD_CONFIG_VAR(init_PDF_max_x,float, iniFile,iniSectionName)
+	MRPT_LOAD_CONFIG_VAR(init_PDF_max_y,float, iniFile,iniSectionName)
+
+	// Gridmap / area of initial uncertainty:
+	COccupancyGridMap2D::TEntropyInfo	gridInfo;
 	if (metricMap.m_gridMaps.size())
 	{
 		metricMap.m_gridMaps[0]->computeEntropy( gridInfo );
 		printf("The gridmap has %.04fm2 observed area, %u observed cells\n", gridInfo.effectiveMappedArea, (unsigned) gridInfo.effectiveMappedCells );
 
 		{
-			CSetOfObjectsPtr plane = CSetOfObjects::Create();
-			metricMap.m_gridMaps[0]->getAs3DObject( plane );
-			scene.insert( plane );
+			scene.insert( mrpt::opengl::CGridPlaneXY::Create(-50,50,-50,50,0,5) );
+
+			CSetOfObjectsPtr gl_obj = CSetOfObjects::Create();
+			metricMap.getAs3DObject(gl_obj);
+			scene.insert(gl_obj);
 		}
 
 		if (SHOW_PROGRESS_3D_REAL_TIME)
 		{
 			COpenGLScenePtr ptrScene = win3D->get3DSceneAndLock();
 
-			CSetOfObjectsPtr plane = CSetOfObjects::Create();
-			metricMap.m_gridMaps[0]->getAs3DObject( plane );
-			ptrScene->insert( plane );
+			ptrScene->insert( mrpt::opengl::CGridPlaneXY::Create(-50,50,-50,50,0,5) );
+
+			CSetOfObjectsPtr gl_obj = CSetOfObjects::Create();
+			metricMap.getAs3DObject(gl_obj);
+			ptrScene->insert(gl_obj);
 
 			ptrScene->enableFollowCamera(true);
 
 			win3D->unlockAccess3DScene();
 		}
+	}
+	else
+	{
+		gridInfo.effectiveMappedArea = (init_PDF_max_x-init_PDF_min_x)*(init_PDF_max_y-init_PDF_min_y);
 	}
 
 
@@ -385,20 +400,16 @@ void do_pf_localization(const std::string &ini_fil, const std::string &cmdline_r
 				pdf.resetUniformFreeSpace(
 					metricMap.m_gridMaps[0].pointer(),
 					0.7f,
-					PARTICLE_COUNT ,
-					iniFile.read_float(iniSectionName,"init_PDF_min_x",0,true),
-					iniFile.read_float(iniSectionName,"init_PDF_max_x",0,true),
-					iniFile.read_float(iniSectionName,"init_PDF_min_y",0,true),
-					iniFile.read_float(iniSectionName,"init_PDF_max_y",0,true),
+					PARTICLE_COUNT,
+					init_PDF_min_x,init_PDF_max_x,
+					init_PDF_min_y,init_PDF_max_y,
 					DEG2RAD(iniFile.read_float(iniSectionName,"init_PDF_min_phi_deg",-180)),
 					DEG2RAD(iniFile.read_float(iniSectionName,"init_PDF_max_phi_deg",180))
 					);
 			else
 				pdf.resetUniform(
-					iniFile.read_float(iniSectionName,"init_PDF_min_x",0,true),
-					iniFile.read_float(iniSectionName,"init_PDF_max_x",0,true),
-					iniFile.read_float(iniSectionName,"init_PDF_min_y",0,true),
-					iniFile.read_float(iniSectionName,"init_PDF_max_y",0,true),
+					init_PDF_min_x,init_PDF_max_x,
+					init_PDF_min_y,init_PDF_max_y,
 					DEG2RAD(iniFile.read_float(iniSectionName,"init_PDF_min_phi_deg",-180)),
 					DEG2RAD(iniFile.read_float(iniSectionName,"init_PDF_max_phi_deg",180)),
 					PARTICLE_COUNT
@@ -516,6 +527,7 @@ void do_pf_localization(const std::string &ini_fil, const std::string &cmdline_r
 								"mono", 15, mrpt::opengl::NICE, 6003 );
 
 							// The Ground Truth (GT):
+							if (GT.getRowCount()>0)
 							{
 								CRenderizablePtr GTpt = ptrScene->getByName("GT");
 								if (!GTpt)
@@ -707,6 +719,7 @@ void do_pf_localization(const std::string &ini_fil, const std::string &cmdline_r
 						MRPT_TODO("Someday I should clean up this mess, since two different 3D scenes are built -> refactor code")
 
 						// The Ground Truth (GT):
+						if (GT.getRowCount()>0)
 						{
 							CRenderizablePtr GTpt = scene.getByName("GT");
 							if (!GTpt)
