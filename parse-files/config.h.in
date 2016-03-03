@@ -53,9 +53,6 @@ ${CMAKE_MRPT_BUILD_SHARED_LIB}
 /** Includes OpenGL & GLUT libraries, required for CDisplayWindows3D to work. */
 #define MRPT_HAS_OPENGL_GLUT      ${CMAKE_MRPT_HAS_OPENGL_GLUT}
 
-/** Define for including Bumblebee interface through the vendor's proprietary API, which enables the definition of some classes in the MRVL namespace. \sa CStereoGrabber_Bumblebee  */
-#define MRPT_HAS_BUMBLEBEE        ${CMAKE_MRPT_HAS_BUMBLEBEE}
-
 /** Has PGR Fly Capture 2? */
 #define MRPT_HAS_FLYCAPTURE2 ${CMAKE_MRPT_HAS_FLYCAPTURE2}
 

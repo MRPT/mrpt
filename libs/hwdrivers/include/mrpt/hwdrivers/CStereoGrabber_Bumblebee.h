@@ -24,17 +24,12 @@ namespace mrpt
 {
 	namespace hwdrivers
 	{
-		/** A class for grabing stereo images from a "Bumblebee" or "Bumblebee2" camera
-		  * NOTE:
-		  *		- Windows:
-		  *			- This class is only available when compiling MRPT with "MRPT_HAS_BUMBLEBEE".
-		  *			- You will need the "include" and "lib" directories of the vendor's proprietary software to be included in VC++ includes path.
-		  *		- Linux:
-		  *			- This class is only available when compiling MRPT with "MRPT_HAS_LIBDC1394_2".
-		  *			- Capture will be made in color, full resolution and "raw" (not rectified) only.
+		/** A class for grabing stereo images from a "Bumblebee" or "Bumblebee2" camera using the PGR libraries `FlyCapture2` and `Triclops`. 
 		  *
 		  * Once connected to a camera, you can call "getStereoObservation" to retrieve the stereo images.
 		  *
+		  * Another grabber class that does not require proprietary libraries is mrpt::hwdrivers::CStereoGrabber_Bumblebee_libdc1394
+		  * 
 		  * \sa You'll probably want to use instead the most generic camera grabber in MRPT: mrpt::hwdrivers::CCameraSensor
 		  * \ingroup mrpt_hwdrivers_grp
 		  */

@@ -23,7 +23,7 @@ namespace mrpt
 		  * Only raw, unrectified images can be captured with this class, which can be manually rectified given
 		  * correct calibration parameters.
 		  *
-		  * See CStereoGrabber_Bumblebee for another class capable of live capture of rectified images using
+		  * See mrpt::hwdrivers::CStereoGrabber_Bumblebee for another class capable of live capture of rectified images using
 		  * the vendor (PointGreyResearch) Triclops API.
 		  *
 		  * Once connected to a camera, you can call `getStereoObservation()` to retrieve the stereo images.

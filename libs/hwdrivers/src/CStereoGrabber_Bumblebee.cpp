@@ -11,7 +11,29 @@
 
 #include <mrpt/hwdrivers/CStereoGrabber_Bumblebee.h>
 
+#define MRPT_HAS_BUMBLEBEE  (MRPT_HAS_FLYCAPTURE2 && MRPT_HAS_TRICLOPS)
+
+#if MRPT_HAS_BUMBLEBEE
+	#include <PGRFlyCapture.h>
+#endif
+
 using namespace mrpt::hwdrivers;
+
+/*-------------------------------------------------------------
+			TCaptureOptions_bumblebee Constructor
+ -------------------------------------------------------------*/
+TCaptureOptions_bumblebee::TCaptureOptions_bumblebee() :
+				frame_width		(640),
+				frame_height	(480),
+				color			(false),
+				getRectified	(true),
+#if MRPT_HAS_BUMBLEBEE
+				framerate		(FLYCAPTURE_FRAMERATE_15)
+#else
+				framerate		(15)
+#endif
+{
+}
 
 #if MRPT_HAS_BUMBLEBEE && MRPT_HAS_OPENCV
 	// Include the OPENCV libraries:
