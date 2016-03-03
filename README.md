@@ -1,9 +1,9 @@
 The MRPT project 
 ====================================================
-
 [![Build Status](https://travis-ci.org/MRPT/mrpt.png?branch=master)](https://travis-ci.org/MRPT/mrpt)
 [![GitHub release](https://img.shields.io/github/release/MRPT/mrpt.svg)](https://github.com/MRPT/mrpt/releases)
 [![BSD3 License](http://img.shields.io/badge/license-BSD3-brightgreen.svg)](https://github.com/MRPT/mrpt/blob/master/doc/LICENSE.txt) 
+[![Join the chat at https://gitter.im/MRPT/mrpt](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/MRPT/mrpt)
 
 1. Introduction
 ------------------------------------------------------------------------------
