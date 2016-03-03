@@ -168,7 +168,7 @@ namespace mrpt
 
 			/** Grab an image from the opened camera (for monocular cameras).
 			 * \param out_observation The object to be filled with sensed data.
-			 *
+			 * \note This may be blocking when using software trigger and no frame is available yet. Ensure trigger before getObservation() or take into account that this call may block.
 			 * \return false on any error, true if all go fine.
 			*/
 			bool  getObservation( mrpt::obs::CObservationImage &out_observation);

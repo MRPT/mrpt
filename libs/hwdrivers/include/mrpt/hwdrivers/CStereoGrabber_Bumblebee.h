@@ -14,12 +14,6 @@
 #include <mrpt/utils/CUncopiable.h>
 #include <mrpt/hwdrivers/TCaptureOptions_bumblebee.h>
 
-#ifndef MRPT_OS_WINDOWS
-	#include <mrpt/hwdrivers/CImageGrabber_dc1394.h>
-#endif
-
-#include <mrpt/config.h>
-
 namespace mrpt
 {
 	namespace hwdrivers
@@ -36,13 +30,9 @@ namespace mrpt
 		class HWDRIVERS_IMPEXP  CStereoGrabber_Bumblebee : public mrpt::utils::CUncopiable
 		{
 		protected:
-#ifdef MRPT_OS_WINDOWS
 			void			*m_triclops;					//!< The Triclops context (TriclopsContext)
 			void			*m_flycapture;					//!< The Flycapture context (FlyCaptureContext).
 			vector_byte		m_imgBuff;						//!< A buffer to store an image
-#else
-			mrpt::hwdrivers::CImageGrabber_dc1394	*m_firewire_capture;  //!< The actual capture object used in Linux / Mac.
-#endif
 
 			bool			m_bInitialized;					//!< If this has been correctly initiated
 			unsigned int	m_resolutionX, m_resolutionY;	//!< The desired resolution
@@ -54,7 +44,6 @@ namespace mrpt
 
 		private:
 
-#ifdef MRPT_OS_WINDOWS
 			void scaleImage( void* 	image, unsigned char	ucMinOut,  unsigned char	ucMaxOut );
 			void convertTriclopsImageTo8BitsIplImage( void *src, void* dst );
 
@@ -68,7 +57,6 @@ namespace mrpt
 				void* dstL,
 				void* dstR );
 
-#endif
 			/** Splits a Flycapture image into two separate IplImages (from the left and right cameras) (for internal use only)
 			  * triclopsImage [input]. The FlyCapture image to split
 			  * dstL [output]. The Left CImage.
@@ -77,31 +65,24 @@ namespace mrpt
 			static void convertFlyCaptureImagesToIplImages( void* flycapImage, void* dstL, void* dstR );
 
 		public:
-
 			TCaptureOptions_bumblebee	m_options;			//!< Bumblebee camera frame rate (Default: 15 fps)
 
-			/** Constructor: */
+			/** Constructor */
 			CStereoGrabber_Bumblebee( int cameraIndex = 0, const TCaptureOptions_bumblebee &options = TCaptureOptions_bumblebee() );
 
 			/** Destructor */
 			virtual ~CStereoGrabber_Bumblebee(void);
 
 			/** Grab stereo images, and return the pair of rectified images.
-			 * \param out_observation The object to be filled with sensed data.
+			 * \param[in,out] out_observation The object to be filled with sensed data. Note that camera
+			 *  intrinsic and extrinsic parameters must be filled in by the caller.
 			 *
-			 *  NOTICE: (1) That the member "CObservationStereoImages::refCameraPose" must be
-			 *                set on the return of this method, since we don't know here the robot physical structure.
-			 *          (2) The images are already rectified.
-			 *
-			 * \return false on any error, true if all go fine.
-			*/
+			 * \return false on any error, true if all go fine. */
 			bool  getStereoObservation( mrpt::obs::CObservationStereoImages &out_observation );
-
 
 		};	// End of class
 
 	} // End of NS
 } // End of NS
-
 
 #endif
