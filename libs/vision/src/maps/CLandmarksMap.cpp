@@ -2328,6 +2328,8 @@ void  CLandmarksMap::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&outObj )cons
 		ellip->setQuantiles(3.0);
 		ellip->set3DsegmentsCount(10);
 		ellip->setColor(0,0,1);
+		ellip->setName(mrpt::format("LM.ID=%u",static_cast<unsigned int>(it->ID) ));
+		ellip->enableShowName(true);
 
 		outObj->insert( ellip );
 	}
