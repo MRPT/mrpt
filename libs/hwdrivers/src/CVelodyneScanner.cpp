@@ -81,6 +81,7 @@ CVelodyneScanner::CVelodyneScanner() :
 	m_pos_packets_min_period(0.5),
 	m_pos_packets_timing_timeout(30.0),
 	m_device_ip(""),
+	m_pcap_verbose(true),
 	m_last_pos_packet_timestamp(INVALID_TIMESTAMP),
 	m_pcap(NULL),
 	m_pcap_out(NULL),
@@ -395,7 +396,7 @@ void CVelodyneScanner::initialize()
 #if MRPT_HAS_LIBPCAP
 		char errbuf[PCAP_ERRBUF_SIZE];
 
-		printf("\n[CVelodyneScanner] Opening PCAP file \"%s\"\n", m_pcap_input_file.c_str());
+		if (m_pcap_verbose) printf("\n[CVelodyneScanner] Opening PCAP file \"%s\"\n", m_pcap_input_file.c_str());
 		if ((m_pcap = pcap_open_offline(m_pcap_input_file.c_str(), errbuf) ) == NULL) {
 			THROW_EXCEPTION_CUSTOM_MSG1("Error opening PCAP file: '%s'",errbuf);
 		}
@@ -756,18 +757,18 @@ bool CVelodyneScanner::internal_read_PCAP_packet(
 
 		if (m_pcap_read_once)
 		{
-			printf("[CVelodyneScanner] INFO: end of file reached -- done reading.\n");
+			if (m_pcap_verbose) printf("[CVelodyneScanner] INFO: end of file reached -- done reading.\n");
 			mrpt::system::sleep(250);
 			return false;
 		}
 
 		if (m_pcap_repeat_delay > 0.0)
 		{
-			printf("[CVelodyneScanner] INFO: end of file reached -- delaying %.3f seconds.\n", m_pcap_repeat_delay);
+			if (m_pcap_verbose) printf("[CVelodyneScanner] INFO: end of file reached -- delaying %.3f seconds.\n", m_pcap_repeat_delay);
 			mrpt::system::sleep( m_pcap_repeat_delay * 1000.0);
 		}
 
-		printf("[CVelodyneScanner] INFO: replaying Velodyne dump file.\n");
+		if (m_pcap_verbose) printf("[CVelodyneScanner] INFO: replaying Velodyne dump file.\n");
 
 		// rewind the file
 		pcap_close( reinterpret_cast<pcap_t*>(m_pcap) );

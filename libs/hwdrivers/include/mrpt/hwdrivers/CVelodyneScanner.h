@@ -144,6 +144,7 @@ namespace mrpt
 			double        m_pos_packets_min_period; //!< Default: 0.5 seconds
 			double        m_pos_packets_timing_timeout; //!< Default: 30 seconds
 			std::string   m_device_ip;  //!< Default: "" (no IP-based filtering)
+			bool          m_pcap_verbose; //!< Default: true Output PCAP Info msgs
 			std::string   m_pcap_input_file; //!< Default: "" (do not operate from an offline file)
 			std::string   m_pcap_output_file; //!< Default: "" (do not dump to an offline file)
 			mrpt::poses::CPose3D m_sensorPose;
@@ -189,6 +190,9 @@ namespace mrpt
 			/** UDP packets from other IPs will be ignored. Default: empty string, means do not filter by IP */
 			void setDeviceIP(const std::string & ip) { m_device_ip = ip; }
 			const std::string &getDeviceIP() const { return m_device_ip; }
+
+			/** Enables/disables PCAP info messages to console (default: true) */
+			void setPCAPVerbosity(const bool verbose) { m_pcap_verbose = verbose; }
 
 			/** Enables reading from a PCAP file instead of live UDP packet listening */
 			void setPCAPInputFile(const std::string &pcap_file) { m_pcap_input_file = pcap_file; }

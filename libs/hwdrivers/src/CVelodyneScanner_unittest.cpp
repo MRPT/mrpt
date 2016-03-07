@@ -41,6 +41,7 @@ TEST(CVelodyneScanner, sample_vlp16_dataset)
 	velodyne.setPCAPInputFile(fil);
 	velodyne.setPCAPInputFileReadOnce(true);
 	velodyne.enableVerbose(false);
+	velodyne.setPCAPVerbosity(false);
 
 	velodyne.initialize();
 
@@ -74,6 +75,7 @@ TEST(CVelodyneScanner, sample_hdl32_dataset)
 	velodyne.setPCAPInputFile(fil);
 	velodyne.setPCAPInputFileReadOnce(true);
 	velodyne.enableVerbose(false);
+	velodyne.setPCAPVerbosity(false);
 
 	velodyne.initialize();
 
