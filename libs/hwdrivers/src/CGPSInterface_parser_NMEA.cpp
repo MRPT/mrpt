@@ -19,8 +19,6 @@ using namespace mrpt::obs;
 using namespace mrpt::system;
 using namespace std;
 
-MRPT_TODO("Parse more frames")
-
 const size_t MAX_NMEA_LINE_LENGTH = 1024;
 
 bool  CGPSInterface::implement_parser_NMEA(size_t &out_minimum_rx_buf_to_decide)
@@ -211,113 +209,147 @@ bool CGPSInterface::parse_NMEA(const std::string &s, mrpt::obs::CObservationGPS 
 		}
 		parsed_ok = all_fields_ok;
 	}
+	else if ( lstTokens[0]=="$GPRMC" && lstTokens.size()>=13)
+	{
+		// ---------------------------------------------
+		//					GPRMC
+		// ---------------------------------------------
+		bool all_fields_ok = true;
+		std::string token;
+
+		// Fill out the output structure:
+		gnss::Message_NMEA_RMC rmc;
+
+		// Time:
+		token = lstTokens[1];
+		if (token.size()>=6)
+		{
+			rmc.fields.UTCTime.hour		= 10 * (token[0]-'0') + token[1]-'0';
+			rmc.fields.UTCTime.minute	= 10 * (token[2]-'0') + token[3]-'0';
+			rmc.fields.UTCTime.sec		= atof( & (token.c_str()[4]) );
+		}
+		else all_fields_ok = false;
+
+		// Valid?
+		token = lstTokens[2];
+		if (token.empty()) all_fields_ok = false;
+		else rmc.fields.validity_char = token.c_str()[0];
+
+		// Latitude:
+		token = lstTokens[3];
+		if (token.size()>=4)
+		{
+			double	lat = 10 * (token[0]-'0') + token[1]-'0';
+			lat += atof( & (token.c_str()[2]) ) / 60.0;
+			rmc.fields.latitude_degrees = lat;
+		}
+		else all_fields_ok = false;
+
+		// N/S:
+		token = lstTokens[4];
+		if (token.empty()) all_fields_ok = false;
+		else if (token[0]=='S')
+			rmc.fields.latitude_degrees = -rmc.fields.latitude_degrees;
+
+		// Longitude:
+		token = lstTokens[5];
+		if (token.size()>=5)
+		{
+			double	lat = 100 * (token[0]-'0') + 10 * (token[1]-'0')+ token[2]-'0';
+			lat += atof( & (token.c_str()[3]) ) / 60.0;
+			rmc.fields.longitude_degrees = lat;
+		}
+		else all_fields_ok = false;
+
+		// E/W:
+		token = lstTokens[6];
+		if (token.empty()) all_fields_ok = false;
+		else if (token[0]=='W')
+			rmc.fields.longitude_degrees = -rmc.fields.longitude_degrees;
+
+		// Speed:
+		token = lstTokens[7];
+		if (!token.empty()) rmc.fields.speed_knots = atof( token.c_str() );
+
+		// Direction:
+		token = lstTokens[8];
+		if (!token.empty()) rmc.fields.direction_degrees= atof( token.c_str() );
+
+		// Date:
+		token = lstTokens[9];
+		if (token.size()>=6) {
+			rmc.fields.date_day   = 10 * (token[0]-'0') + token[1]-'0';
+			rmc.fields.date_month = 10 * (token[2]-'0') + token[3]-'0';
+			rmc.fields.date_year  = atoi( & (token.c_str()[4]) );
+		}
+		else all_fields_ok = false;
+
+		// Magnatic var
+		token = lstTokens[10];
+		if (token.size()>=2)
+			rmc.fields.magnetic_dir = atof(token.c_str());
+		else all_fields_ok = false;
+
+		// E/W:
+		token = lstTokens[11];
+		if (token.empty()) all_fields_ok = false;
+		else if (token[0]=='W')
+			rmc.fields.magnetic_dir = -rmc.fields.magnetic_dir;
+
+		// Mode ind.
+		token = lstTokens[12];
+		if (token.empty()) all_fields_ok = false;
+		else rmc.fields.positioning_mode = token.c_str()[0];
+
+		if (all_fields_ok) {
+			out_obs.setMsg(rmc);
+			out_obs.originalReceivedTimestamp = mrpt::system::now();
+			out_obs.timestamp = rmc.fields.UTCTime.getAsTimestamp( rmc.getDateAsTimestamp() );
+		}
+		parsed_ok = all_fields_ok;
+	}
+	else if ( lstTokens[0]=="$GPGLL" && lstTokens.size()>=13)
+	{
+		// ---------------------------------------------
+		//					GPGLL
+		// ---------------------------------------------
+		bool all_fields_ok = true;
+		std::string token;
+
+		// Fill out the output structure:
+		gnss::Message_NMEA_GLL gll;
+		// *** FIX lstTokens.size() above
+		MRPT_TODO("Parse GLL")
+	}
+	else if ( lstTokens[0]=="$GPVTG" && lstTokens.size()>=13)
+	{
+		// ---------------------------------------------
+		//					GPVTG
+		// ---------------------------------------------
+		bool all_fields_ok = true;
+		std::string token;
+
+		// Fill out the output structure:
+		gnss::Message_NMEA_VTG vtg;
+		// *** FIX lstTokens.size() above
+		MRPT_TODO("Parse VTG")
+	}
+	else if ( lstTokens[0]=="$GPZDA" && lstTokens.size()>=13)
+	{
+		// ---------------------------------------------
+		//					GPZDA
+		// ---------------------------------------------
+		bool all_fields_ok = true;
+		std::string token;
+
+		// Fill out the output structure:
+		gnss::Message_NMEA_ZDA zda;
+		// *** FIX lstTokens.size() above
+		MRPT_TODO("Parse ZDA")
+	}
 	else
 	{
-		// Try to determine the kind of command:
-		if ( lstTokens[0]=="$GPRMC" && lstTokens.size()>=13)
-		{
-			// ---------------------------------------------
-			//					GPRMC
-			// ---------------------------------------------
-			bool all_fields_ok = true;
-			std::string token;
-
-			// Rellenar la estructura de "ultimo dato RMC recibido"
-			// Fill out the output structure:
-			gnss::Message_NMEA_RMC rmc;
-
-			// Time:
-			token = lstTokens[1];
-			if (token.size()>=6)
-			{
-				rmc.fields.UTCTime.hour		= 10 * (token[0]-'0') + token[1]-'0';
-				rmc.fields.UTCTime.minute	= 10 * (token[2]-'0') + token[3]-'0';
-				rmc.fields.UTCTime.sec		= atof( & (token.c_str()[4]) );
-			}
-			else all_fields_ok = false;
-
-			// Valid?
-			token = lstTokens[2];
-			if (token.empty()) all_fields_ok = false;
-			else rmc.fields.validity_char = token.c_str()[0];
-
-			// Latitude:
-			token = lstTokens[3];
-			if (token.size()>=4)
-			{
-				double	lat = 10 * (token[0]-'0') + token[1]-'0';
-				lat += atof( & (token.c_str()[2]) ) / 60.0;
-				rmc.fields.latitude_degrees = lat;
-			}
-			else all_fields_ok = false;
-
-			// N/S:
-			token = lstTokens[4];
-			if (token.empty()) all_fields_ok = false;
-			else if (token[0]=='S')
-				rmc.fields.latitude_degrees = -rmc.fields.latitude_degrees;
-
-			// Longitude:
-			token = lstTokens[5];
-			if (token.size()>=5)
-			{
-				double	lat = 100 * (token[0]-'0') + 10 * (token[1]-'0')+ token[2]-'0';
-				lat += atof( & (token.c_str()[3]) ) / 60.0;
-				rmc.fields.longitude_degrees = lat;
-			}
-			else all_fields_ok = false;
-
-			// E/W:
-			token = lstTokens[6];
-			if (token.empty()) all_fields_ok = false;
-			else if (token[0]=='W')
-				rmc.fields.longitude_degrees = -rmc.fields.longitude_degrees;
-
-			// Speed:
-			token = lstTokens[7];
-			if (!token.empty()) rmc.fields.speed_knots = atof( token.c_str() );
-
-			// Direction:
-			token = lstTokens[8];
-			if (!token.empty()) rmc.fields.direction_degrees= atof( token.c_str() );
-
-			// Date:
-			token = lstTokens[9];
-			if (token.size()>=6) {
-				rmc.fields.date_day   = 10 * (token[0]-'0') + token[1]-'0';
-				rmc.fields.date_month = 10 * (token[2]-'0') + token[3]-'0';
-				rmc.fields.date_year  = atoi( & (token.c_str()[4]) );
-			}
-			else all_fields_ok = false;
-
-			// Magnatic var
-			token = lstTokens[10];
-			if (token.size()>=2)
-				rmc.fields.magnetic_dir = atof(token.c_str());
-			else all_fields_ok = false;
-
-			// E/W:
-			token = lstTokens[11];
-			if (token.empty()) all_fields_ok = false;
-			else if (token[0]=='W')
-				rmc.fields.magnetic_dir = -rmc.fields.magnetic_dir;
-
-			// Mode ind.
-			token = lstTokens[12];
-			if (token.empty()) all_fields_ok = false;
-			else rmc.fields.positioning_mode = token.c_str()[0];
-
-			if (all_fields_ok) {
-				out_obs.setMsg(rmc);
-				out_obs.originalReceivedTimestamp = mrpt::system::now();
-				out_obs.timestamp = rmc.fields.UTCTime.getAsTimestamp( rmc.getDateAsTimestamp() );
-			}
-			parsed_ok = all_fields_ok;
-		}
-		else
-		{
-			// ... parse other commands
-		}
+		// other commands?
 	}
 
 	return parsed_ok;
