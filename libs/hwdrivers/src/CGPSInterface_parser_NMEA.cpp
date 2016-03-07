@@ -98,9 +98,10 @@ bool CGPSInterface::parse_NMEA(const std::string &s, mrpt::obs::CObservationGPS 
 	if ( s[0]!='$' || s[1]!='G' ) return false;
 
 	std::vector<std::string> lstTokens;
-	mrpt::system::tokenize(s," *,\t\r\n",lstTokens, false /* do not skip blank tokens */);
+	mrpt::system::tokenize(s,"*,\t\r\n",lstTokens, false /* do not skip blank tokens */);
 	if (lstTokens.size()<3) return false;
 
+	for (size_t i=0;i<lstTokens.size();i++) lstTokens[i] = mrpt::system::trim(lstTokens[i]); // Trim whitespaces
 
 	bool parsed_ok = false;
 	// Try to determine the kind of command:
@@ -284,22 +285,25 @@ bool CGPSInterface::parse_NMEA(const std::string &s, mrpt::obs::CObservationGPS 
 		}
 		else all_fields_ok = false;
 
-		// Magnatic var
+		// Magnetic var
 		token = lstTokens[10];
-		if (token.size()>=2)
+		if (token.size()>=2) 
+		{
 			rmc.fields.magnetic_dir = atof(token.c_str());
-		else all_fields_ok = false;
-
-		// E/W:
-		token = lstTokens[11];
-		if (token.empty()) all_fields_ok = false;
-		else if (token[0]=='W')
-			rmc.fields.magnetic_dir = -rmc.fields.magnetic_dir;
+			// E/W:
+			token = lstTokens[11];
+			if (token.empty()) all_fields_ok = false;
+			else if (token[0]=='W')
+				rmc.fields.magnetic_dir = -rmc.fields.magnetic_dir;
+		}
 
 		// Mode ind.
-		token = lstTokens[12];
-		if (token.empty()) all_fields_ok = false;
-		else rmc.fields.positioning_mode = token.c_str()[0];
+		if (lstTokens.size()>=14) {
+			// Only for NMEA 2.3
+			token = lstTokens[12];
+			if (token.empty()) all_fields_ok = false;
+			else rmc.fields.positioning_mode = token.c_str()[0];
+		} else rmc.fields.positioning_mode = 'A'; // Default for older receiver
 
 		if (all_fields_ok) {
 			out_obs.setMsg(rmc);
@@ -354,4 +358,3 @@ bool CGPSInterface::parse_NMEA(const std::string &s, mrpt::obs::CObservationGPS 
 
 	return parsed_ok;
 }
-

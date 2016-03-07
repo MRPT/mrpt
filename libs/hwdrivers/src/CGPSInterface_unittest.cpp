@@ -44,7 +44,6 @@ TEST(CGPSInterface, parse_NMEA_GGA)
 	}
 }
 
-#if 0
 TEST(CGPSInterface, parse_NMEA_RMC)
 {
 	const char *test_cmd = "$GPRMC,161229.487,A,3723.2475,N,12158.3416,W,0.13,309.62,120598, ,*10";
@@ -60,6 +59,7 @@ TEST(CGPSInterface, parse_NMEA_RMC)
 	EXPECT_NEAR(msg->fields.longitude_degrees, -(121+58.3416/60.0),1e-10);
 }
 
+#if 0
 TEST(CGPSInterface, parse_NMEA_GLL)
 {
 	const char *test_cmd = "$GPGLL,3723.2475,N,12158.3416,W,161229.487,A,A*41";
