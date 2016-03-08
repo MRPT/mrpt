@@ -284,35 +284,28 @@ void do_pf_localization(const std::string &ini_fil, const std::string &cmdline_r
 	{
 		metricMap.m_gridMaps[0]->computeEntropy( gridInfo );
 		printf("The gridmap has %.04fm2 observed area, %u observed cells\n", gridInfo.effectiveMappedArea, (unsigned) gridInfo.effectiveMappedCells );
+	}
+	else {
+		gridInfo.effectiveMappedArea = (init_PDF_max_x-init_PDF_min_x)*(init_PDF_max_y-init_PDF_min_y);
+	}
 
-		{
-			scene.insert( mrpt::opengl::CGridPlaneXY::Create(-50,50,-50,50,0,5) );
+	{
+		scene.insert( mrpt::opengl::CGridPlaneXY::Create(-50,50,-50,50,0,5) );
 
-			CSetOfObjectsPtr gl_obj = CSetOfObjects::Create();
-			metricMap.getAs3DObject(gl_obj);
-			scene.insert(gl_obj);
-		}
+		CSetOfObjectsPtr gl_obj = CSetOfObjects::Create();
+		metricMap.getAs3DObject(gl_obj);
+		scene.insert(gl_obj);
 
 		if (SHOW_PROGRESS_3D_REAL_TIME)
 		{
 			COpenGLScenePtr ptrScene = win3D->get3DSceneAndLock();
 
-			ptrScene->insert( mrpt::opengl::CGridPlaneXY::Create(-50,50,-50,50,0,5) );
-
-			CSetOfObjectsPtr gl_obj = CSetOfObjects::Create();
-			metricMap.getAs3DObject(gl_obj);
 			ptrScene->insert(gl_obj);
-
 			ptrScene->enableFollowCamera(true);
 
 			win3D->unlockAccess3DScene();
 		}
 	}
-	else
-	{
-		gridInfo.effectiveMappedArea = (init_PDF_max_x-init_PDF_min_x)*(init_PDF_max_y-init_PDF_min_y);
-	}
-
 
 	for ( vector_int::iterator itNum = particles_count.begin(); itNum!=particles_count.end(); ++itNum )
 	{
@@ -525,6 +518,17 @@ void do_pf_localization(const std::string &ini_fil, const std::string &cmdline_r
 								10,55, mrpt::format("mean pose (x y phi_deg)= %s", meanPose.asString().c_str() ),
 								mrpt::utils::TColorf(.8f,.8f,.8f),
 								"mono", 15, mrpt::opengl::NICE, 6003 );
+
+							{
+								CRenderizablePtr grid_ground = ptrScene->getByName("ground_lines");
+								if (!grid_ground)
+								{
+									grid_ground = mrpt::opengl::CGridPlaneXY::Create(-50,50,-50,50,0,5);
+									grid_ground->setName("ground_lines");
+									ptrScene->insert(grid_ground);
+									ptrScene->insert( stock_objects::CornerXYZSimple(1.0f,3.0f) );
+								}
+							}
 
 							// The Ground Truth (GT):
 							if (GT.getRowCount()>0)

@@ -25,8 +25,6 @@ using namespace std;
 
 IMPLEMENTS_GENERIC_SENSOR(CGPSInterface,mrpt::hwdrivers)
 
-MRPT_TODO("new parse unit tests") // Example cmds: https://www.sparkfun.com/datasheets/GPS/NMEA%20Reference%20Manual-Rev2.1-Dec07.pdf
-
 struct TParsersRegistry
 {
 	std::list<CGPSInterface::ptr_parser_t> all_parsers;

@@ -23,6 +23,8 @@
 #include <mrpt/gui/WxUtils.h>
 #include <mrpt/gui/WxSubsystem.h>
 
+#define MRPT_HAS_BUMBLEBEE  (MRPT_HAS_FLYCAPTURE2 && MRPT_HAS_TRICLOPS)
+
 #if MRPT_HAS_BUMBLEBEE
 	#include <PGRFlyCapture.h>
 	#include <triclops.h>

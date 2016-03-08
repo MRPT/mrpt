@@ -167,6 +167,7 @@ mkdir html 2> /dev/null
 cp design_of_images/*.gif images/
 cp design_of_images/*.png images/
 cp design_of_images/*.map images/
+cp design_of_images/*.jpg images/
 cp images/*.* html/
 cp html_postbuild/*.* html/
 

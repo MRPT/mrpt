@@ -157,7 +157,6 @@ SHOW_CONFIG_LINE("...NIDAQmx Base?                    " CMAKE_MRPT_HAS_NIDAQMXBA
 SHOW_CONFIG_LINE_SYSTEM("NITE2 library                       " CMAKE_MRPT_HAS_NITE2)
 SHOW_CONFIG_LINE_SYSTEM("OpenKinect libfreenect              " CMAKE_MRPT_HAS_FREENECT)
 SHOW_CONFIG_LINE_SYSTEM("OpenNI2                             " CMAKE_MRPT_HAS_OPENNI2)
-SHOW_CONFIG_LINE("PGR Digiclops/Triclops (Windows)    " CMAKE_MRPT_HAS_BUMBLEBEE)
 SHOW_CONFIG_LINE("PGR FlyCapture2                     " CMAKE_MRPT_HAS_FLYCAPTURE2)
 SHOW_CONFIG_LINE("PGR Triclops                        " CMAKE_MRPT_HAS_TRICLOPS)
 SHOW_CONFIG_LINE_SYSTEM("Phidgets                            " CMAKE_MRPT_HAS_PHIDGET)

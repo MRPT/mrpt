@@ -18,7 +18,7 @@
 
 Enable **viewing whitespaces** in your editor to prevent errors (`CTRL+SHIFT+8` in Visual Studio) and change the default editor settings accordingly (QtCreator: Settings -> Editor -> ...).
 
-* **Never**, **never**, put a `using namespace XXX;` in a header file, since it will polute without control user namespaces. An exception is its use **inside** the scope of a function implementation in a header, e.g. an inline function or method.
+* **Never**, **never**, put a `using namespace XXX;` in a header file, since it will pollute without control user namespaces. An exception is its use **inside** the scope of a function implementation in a header, e.g. an inline function or method.
 
 * Member variables of a `struct` should have **no** suffix or prefix, e.g: 
 

@@ -382,7 +382,6 @@ bool  CImageGrabber_dc1394::getObservation( mrpt::obs::CObservationImage &out_ob
     }
 
 	// get frame from ring buffer:
-    MRPT_TODO("Thread will keep frozen in this line when using software trigger if no frame is available: Assure trigger before getObservation")
     err = dc1394_capture_dequeue(THE_CAMERA, DC1394_CAPTURE_POLICY_WAIT, &frame);
     //dc1394error_t err=dc1394_capture_dequeue(THE_CAMERA, DC1394_CAPTURE_POLICY_POLL, &frame);
 	if (err!=DC1394_SUCCESS)
