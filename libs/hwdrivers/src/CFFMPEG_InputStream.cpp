@@ -20,9 +20,15 @@
 	extern "C"
 	{
 	#define _MSC_STDINT_H_    // We already have pstdint.h in MRPT
+	#if defined(__APPLE__)
+	#include <libavformat/avformat.h>
+	#include <libavcodec/avcodec.h>
+	#include <libswscale/swscale.h>
+	#else
 	#include <avformat.h>
 	#include <avcodec.h>
 	#include <swscale.h>
+	#endif
 	}
 #endif
 
