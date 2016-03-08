@@ -44,7 +44,7 @@ using namespace std;
  *   - v_max, w_max: Maximum robot speeds.
  */
 CParameterizedTrajectoryGenerator::CParameterizedTrajectoryGenerator(const mrpt::utils::TParameters<double> &params) :
-	m_collisionGrid(-1,1,-1,1,0.5,this)
+	m_collisionGrid(-1,1,-1,1,0.5,this),m_clearanceGrid(-1,1,-1,1,0.5,this)
 {
 	this->refDistance	= params["ref_distance"];
 	this->V_MAX			= params["v_max"];
@@ -445,6 +445,17 @@ const CParameterizedTrajectoryGenerator::TCollisionCell & CParameterizedTrajecto
 }
 
 /*---------------------------------------------------------------
+					getTPObstacleClearance
+  ---------------------------------------------------------------*/
+const mrpt::math::CMatrix & CParameterizedTrajectoryGenerator::CClearanceGrid::getTPObstacleClearance(
+	const float obsX, const float obsY) const
+{
+	static const mrpt::math::CMatrix emptyMatrix;
+	const mrpt::math::CMatrix *matrix = cellByPos(obsX,obsY);
+	return matrix!=NULL ? *matrix : emptyMatrix;
+}
+
+/*---------------------------------------------------------------
 	Updates the info into a cell: It updates the cell only
 	  if the distance d for the path k is lower than the previous value:
   ---------------------------------------------------------------*/
@@ -476,6 +487,30 @@ void CParameterizedTrajectoryGenerator::CColisionGrid::updateCellInfo(
 			itK->second = dist;
 	}
 }
+
+/*-----------------------------------------------------------------
+	Updates info into a the CMatrix inside a cell. It stores the 
+	minimum distance of the bot from the obstacle for the paricular
+	(a,d) pair
+------------------------------------------------------------------*/
+
+void CParameterizedTrajectoryGenerator::CClearanceGrid::updateCellInfo(
+	const unsigned int icx,
+	const unsigned int icy,
+	const uint16_t k,
+	const uint16_t n,
+	const float dist)
+{
+	mrpt::math::CMatrix *matrix = cellByIndex(icx, icy);
+	if(!matrix) return;
+
+	//here we determine whether we need to increase size of matrix or not and then resize the matrix
+	const int cols = std::max(static_cast<int>(matrix->cols()), n+1);
+	matrix->resize(m_parent->getAlfaValuesCount(), cols);
+
+	(*matrix)(k,n) = dist;
+}
+
 
 
 /*---------------------------------------------------------------
@@ -520,7 +555,9 @@ bool CParameterizedTrajectoryGenerator::LoadColGridsFromFile( const std::string 
 	}
 }
 
+
 const uint32_t COLGRID_FILE_MAGIC     = 0xC0C0C0C3;
+
 
 /*---------------------------------------------------------------
 					Save to file
@@ -654,6 +691,10 @@ bool CParameterizedTrajectoryGenerator::CColisionGrid::loadFromFile( CStream *f,
 		return false;
 	}
 }
+
+
+
+
 
 // Deprecated:         
 void CParameterizedTrajectoryGenerator::lambdaFunction( float x, float y, int &out_k, float &out_d )
