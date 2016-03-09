@@ -190,10 +190,14 @@ void  CRoboPeakLidar::loadConfig_sensorSpecific(
 -------------------------------------------------------------*/
 bool  CRoboPeakLidar::turnOn()
 {
+#if MRPT_HAS_ROBOPEAK_LIDAR
 	bool ret = checkCOMMs();
 	if (ret && RPLIDAR_DRV) 
 		RPLIDAR_DRV->startMotor();
 	return ret;
+#else
+	THROW_EXCEPTION("MRPT has been compiled without RPLidar support!")
+#endif
 }
 
 /*-------------------------------------------------------------
@@ -209,7 +213,7 @@ bool  CRoboPeakLidar::turnOff()
 	return true;
 #else
 	THROW_EXCEPTION("MRPT has been compiled without RPLidar support!")
-		#endif
+#endif
 }
 
 /** Returns true if the device is connected & operative */
