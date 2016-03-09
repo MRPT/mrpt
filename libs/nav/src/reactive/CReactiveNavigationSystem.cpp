@@ -215,7 +215,9 @@ void CReactiveNavigationSystem::STEP1_CollisionGridsBuilder()
 			mrpt::nav::build_PTG_collision_grids(
 				PTGs[i],
 				m_robotShape,
-				format("ReacNavGrid_%s_%03u.dat.gz",robotName.c_str(),i),
+				format("ReacNavCollisionGrid_%s_%03u.dat.gz",robotName.c_str(),i),
+				format("ReacNavClearanceGrid_%s_%03u.dat.gz",robotName.c_str(),i),
+				max_clearance,
 				m_enableConsoleOutput /*verbose*/
 				);
 		}

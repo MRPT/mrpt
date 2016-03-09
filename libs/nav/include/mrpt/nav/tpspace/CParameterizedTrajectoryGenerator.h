@@ -277,7 +277,7 @@ namespace mrpt
 		/** To be implemented in derived classes */
 		virtual bool PTG_IsIntoDomain( float x, float y ) = 0;
 
-		protected:
+	protected:
 		/** Protected constructor for CPTG_Dummy; does not init collision grid. Not for normal usage */
 		CParameterizedTrajectoryGenerator() : m_collisionGrid(-1,1,-1,1,0.5,this),m_clearanceGrid(-1,1,-1,1,0.5,this){ }
 

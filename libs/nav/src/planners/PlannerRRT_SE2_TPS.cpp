@@ -130,7 +130,9 @@ void PlannerRRT_SE2_TPS::initialize()
 		mrpt::nav::build_PTG_collision_grids(
 			m_PTGs[i].pointer(),
 			poly_robot_shape,
-			mrpt::format("TPRRT_PTG_%03u.dat.gz",static_cast<unsigned int>(i)),
+			mrpt::format("TPRRT_PTG_CollisonGrid%03u.dat.gz",static_cast<unsigned int>(i)),
+			mrpt::format("TPRRT_PTG_ClearanceGrid%03u.dat.gz",static_cast<unsigned int>(i)),
+			max_clearance,
 			params.ptg_verbose
 			);
 	}

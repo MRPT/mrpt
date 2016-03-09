@@ -31,7 +31,9 @@ namespace mrpt
 		void NAV_IMPEXP build_PTG_collision_grids(
 			CParameterizedTrajectoryGenerator * PTG,
 			const mrpt::math::CPolygon        & robotShape,
-			const std::string                 & cacheFilename,
+			const std::string                 & cacheFilename_col,
+			const std::string                 & cacheFilename_cle,
+			const unsigned int 					max_Clearance,
 			const bool                          verbose = true
 			);
 

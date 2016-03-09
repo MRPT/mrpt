@@ -259,6 +259,16 @@ namespace mrpt
 			mrpt::utils::CTimeLogger & getProfiler() { return m_timelogger; }
 			const mrpt::nav::TListPTGPtr & getPTGs() const { return m_PTGs;}
 
+			inline void set_max_clearance(const unsigned int max_clearance)
+			{
+				this->max_clearance = max_clearance;
+			}
+
+			inline unsigned int get_max_clearance()
+			{
+				return max_clearance;
+			}
+
 		protected:
 			mrpt::utils::CTimeLogger m_timelogger;
 			bool  m_initialized; 
@@ -278,6 +288,9 @@ namespace mrpt
 				const double MAX_DIST,
 				std::vector<float> &out_TPObstacles
 				);
+		private:
+			//this parameter is used for constructing clearance grid
+			unsigned int max_clearance = 1;
 
 		}; // end class PlannerRRT_SE2_TPS
 		
