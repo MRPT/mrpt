@@ -11,11 +11,14 @@
 
 #include <mrpt/utils/CDynamicGrid.h>
 #include <mrpt/math/CPolygon.h>
+#include <mrpt/math/CMatrix.h>
+#include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/utils/CStream.h>
 #include <mrpt/utils/TParameters.h>
 #include <mrpt/nav/link_pragmas.h>
 #include <mrpt/utils/mrpt_stdint.h>    // compiler-independent version of "stdint.h"
 #include <limits>  // numeric_limits
+
 
 namespace mrpt
 {
@@ -229,6 +232,42 @@ namespace mrpt
 		bool    SaveColGridsToFile( const std::string &filename, const mrpt::math::CPolygon & computed_robotShape );	// true = OK
 		bool    LoadColGridsFromFile( const std::string &filename, const mrpt::math::CPolygon & current_robotShape ); // true = OK
 
+		
+		class NAV_IMPEXP CClearanceGrid : public mrpt::utils::CDynamicGrid<mrpt::math::CMatrix>
+		{
+		private:
+				CParameterizedTrajectoryGenerator const * m_parent;
+
+		public:
+				CClearanceGrid(float x_min, float x_max,float y_min, float y_max, float resolution, CParameterizedTrajectoryGenerator* parent )
+				  : mrpt::utils::CDynamicGrid<mrpt::math::CMatrix>(x_min,x_max,y_min,y_max,resolution),
+				    m_parent(parent)
+				{
+				}
+				virtual ~CClearanceGrid() { }
+
+				bool    saveToFile( mrpt::utils::CStream* fil, const mrpt::math::CPolygon & computed_robotShape );	//!< Save to file, true = OK
+				bool    loadFromFile( mrpt::utils::CStream* fil, const mrpt::math::CPolygon & current_robotShape );	//!< Load from file,  true = OK
+
+				/** For an obstacle (x,y), returns a vector with all the pairs (a,d) such as the robot collides.
+					*/
+				const mrpt::math::CMatrix & getTPObstacleClearance(const float obsX, const float obsY) const;
+
+				/** Updates the info into a cell: It updates the cell only if the distance d for the path k is lower than the previous value:
+				  *	\param cellInfo The index of the cell
+				  * \param k The path index (alpha discreet value)
+				  * \param d The distance (in TP-Space, range 0..1) to collision.
+				  */
+				void updateCellInfo(const unsigned int icx, const unsigned int icy, const uint16_t k, const uint16_t n, const float dist);
+
+		}; // end of class CClearanceGrid
+
+		/** The clearance grid */
+		CClearanceGrid	m_clearanceGrid;
+
+		// Save/Load from files.
+		bool    SaveCleGridsToFile( const std::string &filename, const mrpt::math::CPolygon & computed_robotShape );	// true = OK
+		bool    LoadCleGridsFromFile( const std::string &filename, const mrpt::math::CPolygon & current_robotShape ); // true = OK
 
 		float	refDistance;
 
@@ -238,9 +277,9 @@ namespace mrpt
 		/** To be implemented in derived classes */
 		virtual bool PTG_IsIntoDomain( float x, float y ) = 0;
 
-protected:
+		protected:
 		/** Protected constructor for CPTG_Dummy; does not init collision grid. Not for normal usage */
-		CParameterizedTrajectoryGenerator() : m_collisionGrid(-1,1,-1,1,0.5,this) { }
+		CParameterizedTrajectoryGenerator() : m_collisionGrid(-1,1,-1,1,0.5,this),m_clearanceGrid(-1,1,-1,1,0.5,this){ }
 
 		float			V_MAX, W_MAX;
 		float			turningRadiusReference;

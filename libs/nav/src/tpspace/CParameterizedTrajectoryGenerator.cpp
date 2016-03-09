@@ -44,7 +44,7 @@ using namespace std;
  *   - v_max, w_max: Maximum robot speeds.
  */
 CParameterizedTrajectoryGenerator::CParameterizedTrajectoryGenerator(const mrpt::utils::TParameters<double> &params) :
-	m_collisionGrid(-1,1,-1,1,0.5,this)
+	m_collisionGrid(-1,1,-1,1,0.5,this),m_clearanceGrid(-1,1,-1,1,0.5,this)
 {
 	this->refDistance	= params["ref_distance"];
 	this->V_MAX			= params["v_max"];
@@ -445,6 +445,17 @@ const CParameterizedTrajectoryGenerator::TCollisionCell & CParameterizedTrajecto
 }
 
 /*---------------------------------------------------------------
+					getTPObstacleClearance
+  ---------------------------------------------------------------*/
+const mrpt::math::CMatrix & CParameterizedTrajectoryGenerator::CClearanceGrid::getTPObstacleClearance(
+	const float obsX, const float obsY) const
+{
+	static const mrpt::math::CMatrix emptyMatrix;
+	const mrpt::math::CMatrix *matrix = cellByPos(obsX,obsY);
+	return matrix!=NULL ? *matrix : emptyMatrix;
+}
+
+/*---------------------------------------------------------------
 	Updates the info into a cell: It updates the cell only
 	  if the distance d for the path k is lower than the previous value:
   ---------------------------------------------------------------*/
@@ -476,6 +487,30 @@ void CParameterizedTrajectoryGenerator::CColisionGrid::updateCellInfo(
 			itK->second = dist;
 	}
 }
+
+/*-----------------------------------------------------------------
+	Updates info into a the CMatrix inside a cell. It stores the 
+	minimum distance of the bot from the obstacle for the paricular
+	(a,d) pair
+------------------------------------------------------------------*/
+
+void CParameterizedTrajectoryGenerator::CClearanceGrid::updateCellInfo(
+	const unsigned int icx,
+	const unsigned int icy,
+	const uint16_t k,
+	const uint16_t n,
+	const float dist)
+{
+	mrpt::math::CMatrix *matrix = cellByIndex(icx, icy);
+	if(!matrix) return;
+
+	//here we determine whether we need to increase size of matrix or not and then resize the matrix
+	const int cols = std::max(static_cast<int>(matrix->cols()), n+1);
+	matrix->resize(m_parent->getAlfaValuesCount(), cols);
+
+	(*matrix)(k,n) = dist;
+}
+
 
 
 /*---------------------------------------------------------------
@@ -520,7 +555,53 @@ bool CParameterizedTrajectoryGenerator::LoadColGridsFromFile( const std::string 
 	}
 }
 
+/*---------------------------------------------------------------
+					Save to file
+  ---------------------------------------------------------------*/
+bool CParameterizedTrajectoryGenerator::SaveCleGridsToFile( const std::string &filename, const mrpt::math::CPolygon & computed_robotShape )
+{
+	try
+	{
+		CFileGZOutputStream   fo(filename);
+		if (!fo.fileOpenCorrectly()) return false;
+
+		const uint32_t n = 1; // for backwards compatibility...
+		fo << n;
+		return m_collisionGrid.saveToFile(&fo, computed_robotShape);
+	}
+	catch (...)
+	{
+		return false;
+	}
+}
+
+/*---------------------------------------------------------------
+					Load from file
+  ---------------------------------------------------------------*/
+bool CParameterizedTrajectoryGenerator::LoadCleGridsFromFile( const std::string &filename, const mrpt::math::CPolygon & current_robotShape  )
+{
+	try
+	{
+		CFileGZInputStream   fi(filename);
+		if (!fi.fileOpenCorrectly()) return false;
+
+		uint32_t n;
+		fi >> n;
+		if (n!=1) return false; // Incompatible (old) format, just discard and recompute.
+
+		return m_collisionGrid.loadFromFile(&fi,current_robotShape);
+	}
+	catch(...)
+	{
+		return false;
+	}
+}
+
+
+
+
 const uint32_t COLGRID_FILE_MAGIC     = 0xC0C0C0C3;
+
 
 /*---------------------------------------------------------------
 					Save to file
@@ -647,6 +728,132 @@ bool CParameterizedTrajectoryGenerator::CColisionGrid::loadFromFile( CStream *f,
 	catch(std::exception &e)
 	{
 		std::cerr << "[CColisionGrid::loadFromFile] " << e.what();
+		return false;
+	}
+	catch(...)
+	{
+		return false;
+	}
+}
+
+const uint32_t CLEGRID_FILE_MAGIC     = 0xC0C0C0C3;
+
+
+/*---------------------------------------------------------------
+					Save to file
+  ---------------------------------------------------------------*/
+bool CParameterizedTrajectoryGenerator::CClearanceGrid::saveToFile( CStream *f, const mrpt::math::CPolygon & computed_robotShape )
+{
+	try
+	{
+		if (!f) return false;
+
+		const uint8_t serialize_version = 2; // v1: As of jun 2012, v2: As of dec-2013
+
+		// Save magic signature && serialization version:
+		*f << CLEGRID_FILE_MAGIC << serialize_version;
+
+		// Robot shape:
+		*f << computed_robotShape;
+
+		// and standard PTG data:
+		*f << m_parent->getDescription()
+			<< m_parent->getAlfaValuesCount()
+			<< m_parent->getMax_V()
+			<< m_parent->getMax_W();
+
+		*f << m_x_min << m_x_max << m_y_min << m_y_max;
+		*f << m_resolution;
+
+		//v1 was:  *f << m_map;
+		uint32_t N = m_map.size();
+		*f << N;
+		for (uint32_t i=0;i<N;i++)		
+			*f << m_map[i];	//printing the matrix corresponding t each cell		
+
+		return true;
+	}
+	catch(...)
+	{
+		return false;
+	}
+}
+
+/*---------------------------------------------------------------
+						loadFromFile
+  ---------------------------------------------------------------*/
+bool CParameterizedTrajectoryGenerator::CClearanceGrid::loadFromFile( CStream *f, const mrpt::math::CPolygon & current_robotShape  )
+{
+	try
+	{
+		if (!f) return false;
+
+		// Return false if the file contents doesn't match what we expected:
+		uint32_t file_magic;
+		*f >> file_magic;
+
+		// It doesn't seem to be a valid file or was in an old format, just recompute the grid:
+		if (CLEGRID_FILE_MAGIC!=file_magic)
+			return false;
+
+		uint8_t serialized_version;
+		*f >> serialized_version;
+
+		switch (serialized_version)
+		{
+		case 2:
+			{
+				mrpt::math::CPolygon stored_shape;
+				*f >> stored_shape;
+
+				const bool shapes_match =
+					( stored_shape.size()==current_robotShape.size() &&
+					  std::equal(stored_shape.begin(),stored_shape.end(), current_robotShape.begin() ) );
+
+				if (!shapes_match) return false; // Must recompute if the robot shape changed.
+			}
+			break;
+
+		case 1:
+		default:
+			// Unknown version: Maybe we are loading a file from a more recent version of MRPT? Whatever, we can't read it: It's safer just to re-generate the PTG data
+			return false;
+		};
+
+		// Standard PTG data:
+		const std::string expected_desc = m_parent->getDescription();
+		std::string desc;
+		*f >> desc;
+		if (desc!=expected_desc) return false;
+
+		// and standard PTG data:
+		float	  ff;
+		uint16_t  nAlphaStored;
+		*f >> nAlphaStored; if (nAlphaStored!=m_parent->getAlfaValuesCount()) return false;
+		*f >> ff; if (ff!=m_parent->getMax_V()) return false;
+		*f >> ff; if (ff!=m_parent->getMax_W()) return false;
+
+		// Cell dimensions:
+		*f >> ff; if(ff!=m_x_min) return false;
+		*f >> ff; if(ff!=m_x_max) return false;
+		*f >> ff; if(ff!=m_y_min) return false;
+		*f >> ff; if(ff!=m_y_max) return false;
+		*f >> ff; if(ff!=m_resolution) return false;
+
+		// OK, all parameters seem to be exactly the same than when we precomputed the table: load it.
+		//v1 was:  *f >> m_map;
+		uint32_t N;
+		*f >> N;
+		m_map.resize(N);
+		for (uint32_t i=0;i<N;i++)		
+			*f >> m_map[i]; // taking all matrices as input
+		
+
+		return true;
+	}
+	catch(std::exception &e)
+	{
+		std::cerr << "[CClearanceGrid::loadFromFile] " << e.what();
 		return false;
 	}
 	catch(...)
