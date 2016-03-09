@@ -42,6 +42,8 @@
 				- mrpt::obs::gnss: A new namespace with many new data structures for GPS-related messages
 			- \ref mrpt_opengl_grp
 				- New class mrpt::opengl::CMesh3D to render 3D models/meshes
+			- \ref mrpt_slam_grp
+				- Small clean up of mrpt::slam::CICP API, add separate variable to select covariance estimation method.
 			- \ref mrpt_topography_grp
 				- New function mrpt::topography::geocentricToENU_WGS84()
 			- \ref mrpt_vision_grp

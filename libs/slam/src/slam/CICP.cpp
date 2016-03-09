@@ -72,9 +72,6 @@ CPosePDFPtr CICP::AlignPDF(
 	case icpLevenbergMarquardt:
 		resultPDF = ICP_Method_LM( m1, mm2, initialEstimationPDF, outInfo );
 		break;
-	case icpIKF:
-		resultPDF = ICP_Method_IKF( m1, mm2, initialEstimationPDF, outInfo );
-		break;
 	default:
 		THROW_EXCEPTION_CUSTOM_MSG1("Invalid value for ICP_algorithm: %i", static_cast<int>(options.ICP_algorithm));
 	} // end switch
@@ -82,13 +79,7 @@ CPosePDFPtr CICP::AlignPDF(
 	if (runningTime)  *runningTime = tictac.Tac();
 
 	// Copy the output info if requested:
-	if (info)
-	{
-		if ( static_cast<TReturnInfo*>(info)->cbSize != sizeof(TReturnInfo) )
-			THROW_EXCEPTION("'TReturnInfo' size is wrong, filling it would lead to memory corruption")
-		// It's ok:
-		*static_cast<TReturnInfo*>(info) = outInfo;
-	}
+	if (info) *static_cast<TReturnInfo*>(info) = outInfo;
 
 	return resultPDF;
 
@@ -100,6 +91,7 @@ CPosePDFPtr CICP::AlignPDF(
   ---------------------------------------------------------------*/
 CICP::TConfigParams::TConfigParams() :
 	ICP_algorithm				( icpClassic ),
+	ICP_covariance_method		( icpCovFiniteDifferences ),
 
 	onlyClosestCorrespondences	( true ),
 	onlyUniqueRobust			( false ),
@@ -147,6 +139,7 @@ void  CICP::TConfigParams::loadFromConfigFile(
 	MRPT_LOAD_CONFIG_VAR( minAbsStep_rot, float,			iniFile, section);
 
 	ICP_algorithm = iniFile.read_enum<TICPAlgorithm>(section,"ICP_algorithm",ICP_algorithm);
+	ICP_covariance_method = iniFile.read_enum<TICPCovarianceMethod>(section,"ICP_covariance_method",ICP_covariance_method);
 
 	MRPT_LOAD_CONFIG_VAR( thresholdDist, float,			iniFile, section);
 	thresholdAng = DEG2RAD( iniFile.read_float(section.c_str(),"thresholdAng_DEG",RAD2DEG(thresholdAng)) );
@@ -186,11 +179,8 @@ void  CICP::TConfigParams::dumpToTextStream(mrpt::utils::CStream	&out) const
 {
 	out.printf("\n----------- [CICP::TConfigParams] ------------ \n\n");
 
-	out.printf("ICP_algorithm                           = %s\n",
-		ICP_algorithm==icpClassic ?  "icpClassic" :
-		ICP_algorithm==icpLevenbergMarquardt ? "icpLevenbergMarquardt" :
-		ICP_algorithm==icpIKF ? "icpIKF" : "(INVALID VALUE!)" );
-
+	out.printf("ICP_algorithm                           = %s\n", mrpt::utils::TEnumType<TICPAlgorithm>::value2name(ICP_algorithm).c_str() );
+	out.printf("ICP_covariance_method                   = %s\n", mrpt::utils::TEnumType<TICPCovarianceMethod>::value2name(ICP_covariance_method).c_str() );
 	out.printf("maxIterations                           = %i\n",maxIterations);
 	out.printf("minAbsStep_trans                        = %f\n",minAbsStep_trans);
 	out.printf("minAbsStep_rot                          = %f\n",minAbsStep_rot);
@@ -366,20 +356,25 @@ CPosePDFPtr CICP::ICP_Method_Classic(
 		// -------------------------------------------------
 		if (!options.skip_cov_calculation && nCorrespondences)
 		{
-#if 0
+			switch(options.ICP_covariance_method)
+			{
 			// ----------------------------------------------
-			// METHOD 1: MSE linear estimation
+			// METHOD: MSE linear estimation
 			// ----------------------------------------------
-			mrpt::tfest::se2_l2(correspondences, *gaussPdf );
-			// Scale covariance:
-			gaussPdf->cov *= options.covariance_varPoints;
-#else
+			case icpCovLinealMSE:
+				mrpt::tfest::se2_l2(correspondences, *gaussPdf );
+				// Scale covariance:
+				gaussPdf->cov *= options.covariance_varPoints;
+				break;
+
 			// ----------------------------------------------
-			// METHOD 2: Method from Oxford MRG's "OXSMV2"
+			// METHOD: Method from Oxford MRG's "OXSMV2"
 			//
 			//  It is the equivalent covariance resulting
 			//   from a Levenberg-Maquardt optimization stage.
 			// ----------------------------------------------
+			case icpCovFiniteDifferences:
+			{
 			Eigen::Matrix<double,3,Eigen::Dynamic> D(3,nCorrespondences);
 
 			const TPose2D transf( gaussPdf->mean );
@@ -448,12 +443,14 @@ CPosePDFPtr CICP::ICP_Method_Classic(
 			for (i=0;i<3;i++) DDt( i,i ) += 1e-6;  // Just to make sure the matrix is not singular, while not changing its covariance significantly.
 
 			DDt.inv(gaussPdf->cov);
-#endif
+			}
+			break;
+		default:
+			THROW_EXCEPTION_CUSTOM_MSG1("Invalid value for ICP_covariance_method: %i", static_cast<int>(options.ICP_covariance_method));
+			}
 		}
 
-		//
 		outInfo.goodness = matchExtraResults.correspondencesRatio;
-
 
 		if (!nCorrespondences || options.skip_quality_calculation)
 		{
@@ -879,25 +876,6 @@ CPosePDFPtr CICP::ICP_Method_LM(
 }
 
 /*---------------------------------------------------------------
-					ICP_Method_IKF
-  ---------------------------------------------------------------*/
-CPosePDFPtr CICP::ICP_Method_IKF(
-		const mrpt::maps::CMetricMap		*m1,
-		const mrpt::maps::CMetricMap		*mm2,
-		const CPosePDFGaussian	&initialEstimationPDF,
-		TReturnInfo				&outInfo )
-{
-	MRPT_UNUSED_PARAM(m1); MRPT_UNUSED_PARAM(mm2); MRPT_UNUSED_PARAM(initialEstimationPDF);
-	MRPT_UNUSED_PARAM(outInfo);
-	MRPT_START
-	THROW_EXCEPTION("Not implemented yet");
-	return CPosePDFGaussian::Create();
-
-	MRPT_END
-}
-
-
-/*---------------------------------------------------------------
 The method for aligning a pair of 2D points map.
 *   The meaning of some parameters are implementation dependant,
 *    so look for derived classes for instructions.
@@ -935,9 +913,6 @@ CPose3DPDFPtr CICP::Align3DPDF(
 		resultPDF = ICP3D_Method_Classic( m1, mm2, initialEstimationPDF, outInfo );
 		break;
 	case icpLevenbergMarquardt:
-		THROW_EXCEPTION("Only icpClassic is implemented for ICP-3D")
-		break;
-	case icpIKF:
 		THROW_EXCEPTION("Only icpClassic is implemented for ICP-3D")
 		break;
 	default:
