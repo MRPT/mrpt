@@ -109,5 +109,11 @@ IF(BUILD_mrpt-base)
 			target_link_libraries(mrpt-base ${MRPT_ZLIB_LIBS})
 		ENDIF()
 	ENDIF()
+
+        IF(CMAKE_MRPT_HAS_JPEG)
+            message(STATUS ${JPEG_LIBS})
+            target_link_libraries(mrpt-base ${JPEG_LIBS})
+        ENDIF()
+
 ENDIF(BUILD_mrpt-base) 
 
