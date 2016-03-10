@@ -20,7 +20,6 @@
 #include <mrpt/hwdrivers/CImageGrabber_OpenCV.h>
 #include <mrpt/hwdrivers/CImageGrabber_dc1394.h>
 #include <mrpt/hwdrivers/CImageGrabber_FlyCapture2.h>
-#include <mrpt/hwdrivers/CStereoGrabber_Bumblebee.h>
 #include <mrpt/hwdrivers/CStereoGrabber_Bumblebee_libdc1394.h>
 #include <mrpt/hwdrivers/CSwissRanger3DCamera.h>
 #include <mrpt/hwdrivers/CKinect.h>
@@ -37,7 +36,7 @@ namespace mrpt
 	namespace hwdrivers
 	{
 		/** The central class for camera grabbers in MRPT, implementing the "generic sensor" interface.
-		  *   This class provides the user with a uniform interface to a variety of other classes which manage only one specific camera "driver" (opencv, ffmpeg, bumblebee,...)
+		  *   This class provides the user with a uniform interface to a variety of other classes which manage only one specific camera "driver" (opencv, ffmpeg, PGR FlyCapture,...)
 		  *
 		  *   Following the "generic sensor" interface, all the parameters must be passed int the form of a configuration file, 
 		  *   which may be also formed on the fly (without being a real config file) as in this example:
@@ -73,7 +72,7 @@ namespace mrpt
 		  * -------------------------------------------------------
 		  *   [supplied_section_name]
 		  *    # Select one of the grabber implementations -----------------------
-		  *    grabber_type       = opencv | dc1394 | bumblebee | bumblebee_dc1394 | ffmpeg | rawlog | swissranger | svs | kinect | flycap | flycap_stereo | image_dir | duo3d
+		  *    grabber_type       = opencv | dc1394 | bumblebee_dc1394 | ffmpeg | rawlog | swissranger | svs | kinect | flycap | flycap_stereo | image_dir | duo3d
 		  *
 		  *    #  Options for any grabber_type ------------------------------------
 		  *    preview_decimation = 0     // N<=0 (or not present): No preview; N>0, display 1 out of N captured frames.
@@ -132,14 +131,6 @@ namespace mrpt
 		  *    dc1394_trigger_polarity = -1 // -1 (or not present) for not to change | 0 [ACTIVE_LOW] | 1 [ACTIVE_HIGH]
 		  *    dc1394_ring_buffer_size = 15  // Length of frames ring buffer (internal to libdc1394)
 		  *
-		  *    # Options for grabber_type= bumblebee ----------------------------------
-		  *    bumblebee_camera_index  = 0       // [bumblebee] Number of camera within the firewire bus to open (typically = 0)
-		  *    bumblebee_frame_width   = 640     // [bumblebee] Capture width (not present or set to 0 for default)
-		  *    bumblebee_frame_height  = 480     // [bumblebee] Capture height (not present or set to 0 for default)
-		  *    bumblebee_fps           = 15      // [bumblebee] Capture FPS (not present or 0 for default)
-		  *    bumblebee_mono          = 0|1     // [bumblebee] OPTIONAL: If this parameter is present, monocular (0:left, 1:right) images will be grabbed instead of stereo pairs.
-		  *    bumblebee_get_rectified = 0|1     // [bumblebee] Determines if the camera should grab rectified or raw images (1 is the default)
-		  *
 		  *    # Options for grabber_type= bumblebee_dc1394 ----------------------------------
 		  *    bumblebee_dc1394_camera_guid   = 0 | 0x11223344  // 0 (or not present): the first camera; A hexadecimal number: The GUID of the camera to open
 		  *    bumblebee_dc1394_camera_unit   = 0     			// 0 (or not present): the first camera; 0,1,2,...: The unit number (within the given GUID) of the camera to open (Stereo cameras: 0 or 1)
@@ -181,7 +172,7 @@ namespace mrpt
 		  *    kinect_grab_range      = true            // whether to save the depth image
 		  *    #kinect_video_rgb       = true            // Optional. If set to "false", the IR intensity channel will be grabbed instead of the color RGB channel.
 		  *
-		  *    # Options for grabber_type= flycap (Point Grey Research's FlyCapture 2) --------
+		  *    # Options for grabber_type= flycap (Point Grey Research's FlyCapture 2 for Monocular and Stereo cameras, e.g. Bumblebee2) --------
 		  *    flycap_camera_index           = 0
 		  *    #... (all the parameters enumerated in mrpt::hwdrivers::TCaptureOptions_FlyCapture2 with the prefix "flycap_")
 		  *
@@ -193,58 +184,59 @@ namespace mrpt
 		  *    fcs_RIGHT_camera_index          = 0
 		  *    #... (all the parameters enumerated in mrpt::hwdrivers::TCaptureOptions_FlyCapture2 with the prefix "fcs_RIGHT_")
 		  *
-		  *	   # Options for grabber_type= image_dir
-		  *	   image_dir_url					= 				// [string] URL of the directory 
+		  *    # Options for grabber_type= image_dir
+		  *    image_dir_url					= 				// [string] URL of the directory 
 		  *    left_filename_format				= imL_%05d.jpg	// [string] Format including prefix, number of trailing zeros, digits and image format (extension)
-		  *	   right_filename_format			= imR_%05d.jpg	// [string] Format including prefix, number of trailing zeros, digits and image format (extension). Leave blank if only images from one camera will be used.
-		  *	   start_index						= 0				// [int]	Starting index for images
-		  *	   end_index						= 100			// [int]	End index for the images
+		  *    right_filename_format			= imR_%05d.jpg	// [string] Format including prefix, number of trailing zeros, digits and image format (extension). Leave blank if only images from one camera will be used.
+		  *    start_index						= 0				// [int]	Starting index for images
+		  *    end_index						= 100			// [int]	End index for the images
 		  *
-		  *	   # Options for grabber_type= duo3d
-		  *		Create a section like this:
-		  *		[DUO3DOptions]
-		  *		rawlog-grabber-ignore	= true // Instructs rawlog-grabber to ignore this section (it is not a separate device!)
+		  *    # Options for grabber_type= duo3d
+		  *    Create a section like this:
+		  *    [DUO3DOptions]
+		  *    rawlog-grabber-ignore	= true // Instructs rawlog-grabber to ignore this section (it is not a separate device!)
 		  *
-		  *		image_width   			= 640			// [int]	x Resolution
-		  *		image_height  			= 480			// [int]	y Resolution
-		  *		fps						= 30			// [int]	Frames per second (<= 30)
-		  *		exposure				= 50			// [int]	Exposure value (1..100)
-		  *		led						= 0				// [int]	Led intensity (only for some device models) (1..100).
-		  *		gain					= 50			// [int]	Camera gain (1..100)
-		  *		capture_rectified 		= false			// [bool]	Rectify captured images
-		  *		capture_imu 			= true			// [bool]	Capture IMU data from DUO3D device (if available)
-		  *		calibration_from_file	= true			// [bool]	Use YML calibration files provided by calibration application supplied with DUO3D device
-		  *	  	intrinsic_filename		= ""			// [string]	Intrinsic parameters file. This filename should contain a substring _RWWWxHHH_ with WWW being the image width and HHH the image height, as provided by the calibration application.
-		  *		extrinsic_filename		= ""			// [string]	Extrinsic parameters file. This filename should contain a substring _RWWWxHHH_ with WWW being the image width and HHH the image height, as provided by the calibration application.
-		  *		rectify_map_filename	= ""			// [string]	Rectification map file. This filename should contain a substring _RWWWxHHH_ with WWW being the image width and HHH the image height, as provided by the calibration application.
-		  *		
-		  *		// if 'calibration_from_file' = false, three more sections containing the calibration must be provided:
-		  *		[DUO3D_LEFT]
-		  *		rawlog-grabber-ignore	= true // Instructs rawlog-grabber to ignore this section (it is not a separate device!)
-		  *		resolution 		= [640 480]
-		  *		cx 				= 320
-		  *		cy 				= 240
-		  *		fx 				= 700
-		  *		fy 				= 700
-		  *		dist 			= [0 0 0 0 0]
+		  *    image_width   			= 640			// [int]	x Resolution
+		  *    image_height  			= 480			// [int]	y Resolution
+		  *    fps						= 30			// [int]	Frames per second (<= 30)
+		  *    exposure				= 50			// [int]	Exposure value (1..100)
+		  *    led						= 0				// [int]	Led intensity (only for some device models) (1..100).
+		  *    gain					= 50			// [int]	Camera gain (1..100)
+		  *    capture_rectified 		= false			// [bool]	Rectify captured images
+		  *    capture_imu 			= true			// [bool]	Capture IMU data from DUO3D device (if available)
+		  *    calibration_from_file	= true			// [bool]	Use YML calibration files provided by calibration application supplied with DUO3D device
+		  *    intrinsic_filename		= ""			// [string]	Intrinsic parameters file. This filename should contain a substring _RWWWxHHH_ with WWW being the image width and HHH the image height, as provided by the calibration application.
+		  *    extrinsic_filename		= ""			// [string]	Extrinsic parameters file. This filename should contain a substring _RWWWxHHH_ with WWW being the image width and HHH the image height, as provided by the calibration application.
+		  *    rectify_map_filename	= ""			// [string]	Rectification map file. This filename should contain a substring _RWWWxHHH_ with WWW being the image width and HHH the image height, as provided by the calibration application.
 		  *
-		  *		[DUO3D_RIGHT]
-		  *		rawlog-grabber-ignore	= true // Instructs rawlog-grabber to ignore this section (it is not a separate device!)
-		  *		resolution 		= [640 480]
-		  *		cx 				= 320
-		  *		cy 				= 240
-		  *		fx 				= 700
-		  *		fy 				= 700
-		  *		dist 			= [0 0 0 0 0]
+		  *    // if 'calibration_from_file' = false, three more sections containing the calibration must be provided:
+		  *    [DUO3D_LEFT]
+		  *    rawlog-grabber-ignore	= true // Instructs rawlog-grabber to ignore this section (it is not a separate device!)
+		  *    resolution 		= [640 480]
+		  *    cx 				= 320
+		  *    cy 				= 240
+		  *    fx 				= 700
+		  *    fy 				= 700
+		  *    dist 			= [0 0 0 0 0]
 		  *
-		  *		[DUO3D_LEFT2RIGHT_POSE]
-		  *		rawlog-grabber-ignore	= true // Instructs rawlog-grabber to ignore this section (it is not a separate device!)
-		  *		pose_quaternion = [0.12 0 0 1 0 0 0]
+		  *    [DUO3D_RIGHT]
+		  *    rawlog-grabber-ignore	= true // Instructs rawlog-grabber to ignore this section (it is not a separate device!)
+		  *    resolution 		= [640 480]
+		  *    cx 				= 320
+		  *    cy 				= 240
+		  *    fx 				= 700
+		  *    fy 				= 700
+		  *    dist 			= [0 0 0 0 0]
+		  *
+		  *    [DUO3D_LEFT2RIGHT_POSE]
+		  *    rawlog-grabber-ignore	= true // Instructs rawlog-grabber to ignore this section (it is not a separate device!)
+		  *    pose_quaternion = [0.12 0 0 1 0 0 0]
 		  *
 		  *  \endcode
 		  *
 		  *  \note The execution rate, in rawlog-grabber or the user code calling doProcess(), should be greater than the required capture FPS.
 		  *  \note In Linux you may need to execute "chmod 666 /dev/video1394/ * " and "chmod 666 /dev/raw1394" for allowing any user R/W access to firewire cameras.
+		  * \note [New in MRPT 1.4.0] The `bumblebee` driver has been deleted, use the `flycap` driver in stereo mode.
 		  *  \sa mrpt::hwdrivers::CImageGrabber_OpenCV, mrpt::hwdrivers::CImageGrabber_dc1394, CGenericSensor, prepareVideoSourceFromUserSelection()
 		  * \ingroup mrpt_hwdrivers_grp
 		  */
@@ -321,11 +313,6 @@ namespace mrpt
 			int										m_preview_decimation;
 			int										m_preview_reduction;
 
-			// Options for grabber_type= bumblebee ----------------------------------
-			int										m_bumblebee_camera_index;
-			TCaptureOptions_bumblebee	m_bumblebee_options;
-			int										m_bumblebee_monocam; // 0:Left, 1: Right, <0,>1 -> Stereo
-
 			// Options for grabber_type= bumblebee_dc1394 ----------------------------------
 			uint64_t m_bumblebee_dc1394_camera_guid;
 			int	     m_bumblebee_dc1394_camera_unit;
@@ -391,7 +378,6 @@ namespace mrpt
 			CImageGrabber_dc1394      * m_cap_dc1394;	//!< The dc1394 capture object.
 			CImageGrabber_FlyCapture2 * m_cap_flycap;     //!< The FlyCapture2 object
 			CImageGrabber_FlyCapture2 * m_cap_flycap_stereo_l, *m_cap_flycap_stereo_r;     //!< The FlyCapture2 object for stereo pairs
-			CStereoGrabber_Bumblebee  * m_cap_bumblebee;	//!< The bumblebee capture object.
 			CStereoGrabber_Bumblebee_libdc1394 * m_cap_bumblebee_dc1394;
 			CStereoGrabber_SVS        * m_cap_svs;	//!< The svs capture object.
 			CFFMPEG_InputStream       * m_cap_ffmpeg;	//!< The FFMPEG capture object

@@ -35,6 +35,7 @@
 				- mrpt::hwdrivers::CNTRIPEmitter now has a parameter to enable/disable sending back the data from the serial port to the NTRIP caster.
 				- <b>[API changed]</b> mrpt::hwdrivers::CGPSInterface API clean-up and made more generic so any stream can be used to parse GNSS messages, not only serial ports.
 				- New class mrpt::hwdrivers::CStereoGrabber_Bumblebee_libdc1394 for capturing without PGR Flycapture but directly through libdc1394.
+				- Removed class mrpt::hwdrivers::CStereoGrabber_Bumblebee , superseded by mrpt::hwdrivers::CImageGrabber_FlyCapture2 which is capable of both monocular and stereo grabbing.
 			- \ref mrpt_obs_grp
 				- New class mrpt::obs::CObservationVelodyneScan
 				- mrpt::obs::CSinCosLookUpTableFor2DScans now can build a table from a mrpt::obs::T2DScanProperties structure, which now also has its separate header file for better modularity.
@@ -42,6 +43,8 @@
 				- mrpt::obs::gnss: A new namespace with many new data structures for GPS-related messages
 			- \ref mrpt_opengl_grp
 				- New class mrpt::opengl::CMesh3D to render 3D models/meshes
+			- \ref mrpt_slam_grp
+				- Small clean up of mrpt::slam::CICP API, add separate variable to select covariance estimation method.
 			- \ref mrpt_topography_grp
 				- New function mrpt::topography::geocentricToENU_WGS84()
 			- \ref mrpt_vision_grp

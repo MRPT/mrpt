@@ -449,78 +449,59 @@ void CImageGrabber_FlyCapture2::open( const TCaptureOptions_FlyCapture2 &options
 	fe = FC2_CAM->SetConfiguration( &fc2conf);
 	CHECK_FC2_ERROR(fe)
 
-    /*// Set the shutter property of the camera
-    Property prop;
-    prop.type = SHUTTER;
-    error = cam.GetProperty( &prop );
-    if (error != PGRERROR_OK)
-    {
-        PrintError( error );
-        return -1;
-    }
-
-    prop.autoManualMode = false;
-    prop.absControl = true;
-
-    const float k_shutterVal = 30000.0;
-    prop.absValue = k_shutterVal;*/
-
 	// Autoexposure:
-    {
+	{
 		FlyCapture2::Property p;
 		p.type = FlyCapture2::AUTO_EXPOSURE;
-        FlyCapture2::Error error = FC2_CAM->GetProperty( &p );
-        CHECK_FC2_ERROR(error)
-        p.autoManualMode = m_options.autoexposure_auto; // true=auto
-        p.onOff = m_options.autoexposure_onOff; // true=on
-        p.absControl = m_options.autoexposure_abs; // true=abs
-        MRPT_TODO("Add integer value case")
-        p.absValue = m_options.autoexposure_EV; // abs value in Exposure Value (EV)
-		fe = FC2_CAM->SetProperty (&p);
-        CHECK_FC2_ERROR(fe)
-	}
-
-	// Brightness:
-    {
-		FlyCapture2::Property p;
-		p.type = FlyCapture2::BRIGHTNESS;
-        FlyCapture2::Error error = FC2_CAM->GetProperty( &p );
-        CHECK_FC2_ERROR(error)
-		p.autoManualMode = true; // true=auto
-		//p.absControl = true;
-		//p.absValue = Brightness;
-		fe = FC2_CAM->SetProperty (&p);
-        CHECK_FC2_ERROR(fe)
-	}
-
-    // Shutter:
-    {
-		FlyCapture2::Property p;
-		p.type = FlyCapture2::SHUTTER;
-        FlyCapture2::Error error = FC2_CAM->GetProperty( &p );
-        CHECK_FC2_ERROR(error)
-		p.autoManualMode = m_options.shutter_auto; // true=auto
-        p.absControl = m_options.shutter_abs; // true=abs
-        MRPT_TODO("Add integer value case")
-		p.absValue = m_options.shutter_time_ms;
-	    //p.onOff = false;
+		FlyCapture2::Error error = FC2_CAM->GetProperty( &p );
+		CHECK_FC2_ERROR(error)
+		p.autoManualMode = m_options.autoexposure_auto; // true=auto
+		p.onOff = m_options.autoexposure_onOff; // true=on
+		p.absControl = m_options.autoexposure_abs; // true=abs
+		p.absValue = m_options.autoexposure_EV; // abs value in Exposure Value (EV)
 		fe = FC2_CAM->SetProperty (&p);
 		CHECK_FC2_ERROR(fe)
 	}
 
-    // Gain:
-    {
+	// Brightness:
+	{
+		FlyCapture2::Property p;
+		p.type = FlyCapture2::BRIGHTNESS;
+		FlyCapture2::Error error = FC2_CAM->GetProperty( &p );
+		CHECK_FC2_ERROR(error)
+		p.autoManualMode = true; // true=auto
+		//p.absControl = true;
+		//p.absValue = Brightness;
+		fe = FC2_CAM->SetProperty (&p);
+		CHECK_FC2_ERROR(fe)
+	}
+
+	// Shutter:
+	{
+		FlyCapture2::Property p;
+		p.type = FlyCapture2::SHUTTER;
+		FlyCapture2::Error error = FC2_CAM->GetProperty( &p );
+		CHECK_FC2_ERROR(error)
+		p.autoManualMode = m_options.shutter_auto; // true=auto
+		p.absControl = m_options.shutter_abs; // true=abs
+		p.absValue = m_options.shutter_time_ms;
+		//p.onOff = false;
+		fe = FC2_CAM->SetProperty (&p);
+		CHECK_FC2_ERROR(fe)
+	}
+
+	// Gain:
+	{
 		FlyCapture2::Property p;
 		p.type = FlyCapture2::GAIN;
-        FlyCapture2::Error error = FC2_CAM->GetProperty( &p );
-        CHECK_FC2_ERROR(error)
-        p.autoManualMode = m_options.gain_auto; // true=auto
-        p.absControl = m_options.gain_abs; // true=abs
-        MRPT_TODO("Add integer value case")
-        p.absValue = m_options.gain_dB; // abs value in dB (decibeles)
-	    //p.onOff = false;
+		FlyCapture2::Error error = FC2_CAM->GetProperty( &p );
+		CHECK_FC2_ERROR(error)
+		p.autoManualMode = m_options.gain_auto; // true=auto
+		p.absControl = m_options.gain_abs; // true=abs
+		p.absValue = m_options.gain_dB; // abs value in dB (decibeles)
+		//p.onOff = false;
 		fe = FC2_CAM->SetProperty (&p);
-        CHECK_FC2_ERROR(fe)
+		CHECK_FC2_ERROR(fe)
 	}
 
 	// Framecounter:
@@ -536,7 +517,6 @@ void CImageGrabber_FlyCapture2::open( const TCaptureOptions_FlyCapture2 &options
 		// Enable all:
 		FC2_CAM->SetEmbeddedImageInfo(&eii);
 	}
-
 
 	// Start:
 	if (startCapture)
@@ -739,13 +719,12 @@ bool CImageGrabber_FlyCapture2::getObservation( mrpt::obs::CObservationStereoIma
 					rawImage[1] );	// Left image
 		if (fterr != Fc2Triclops::ERRORTYPE_OK)
 		{
-			return Fc2Triclops::handleFc2TriclopsError(fterr,
-																	 "unprocessedRawOrMono16Image()");
+			Fc2Triclops::handleFc2TriclopsError(fterr, "unprocessedRawOrMono16Image()");
+			return false;
 		}
 
 		// Convert each raw image to RGBU image (for color images)
 		unsigned int img_rows, img_cols, img_stride;
-		MRPT_TODO("Add case for non-color images")
 		for ( int i = 0; i < 2; ++i )
 		{
 			FlyCapture2::Image rgbuImage;
@@ -771,10 +750,11 @@ bool CImageGrabber_FlyCapture2::getObservation( mrpt::obs::CObservationStereoIma
 
 				// Do rectification
 				TriclopsPackedColorImage rectPackColImg;
-				te = triclopsRectifyPackedColorImage( *(TRI_CONTEXT),
-																  i==0 ? TriCam_RIGHT : TriCam_LEFT,
-																  const_cast<TriclopsInput *>(&triclopsColorInput),
-																  &rectPackColImg );
+				te = triclopsRectifyPackedColorImage(
+					*(TRI_CONTEXT),
+					i==0 ? TriCam_RIGHT : TriCam_LEFT,
+					const_cast<TriclopsInput *>(&triclopsColorInput),
+					&rectPackColImg );
 				CHECK_TRICLOPS_ERROR( te )
 
 				// Set image properties for reallocation
