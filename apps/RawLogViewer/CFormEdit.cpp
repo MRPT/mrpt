@@ -806,7 +806,11 @@ void CFormEdit::executeOperationOnRawlog( TRawlogFilter operation, const char *e
         {
             if (isInMemory)
             {
+				try {
                 newObj = rawlog.getAsGeneric(countLoop);
+				} catch (std::exception &) {
+					break;
+				}
             }
             else
             {
