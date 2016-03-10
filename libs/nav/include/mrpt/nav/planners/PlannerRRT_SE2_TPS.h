@@ -289,7 +289,8 @@ namespace mrpt
 				std::vector<float> &out_TPObstacles
 				);
 		private:
-			//this parameter is used for constructing clearance grid
+			//this parameter is used while constructing the clearance grid
+			//max_clearance is given in "number of cells" and not in meters or centimeters
 			unsigned int max_clearance = 1;
 
 		}; // end class PlannerRRT_SE2_TPS

@@ -24,7 +24,9 @@ namespace mrpt
 		  * The collision grid must be calculated before calling CParameterizedTrajectoryGenerator::CColisionGrid::getTPObstacle
 		  *  \param PTGs The list of PTGs to calculate their grids.
 		  *  \param robotShape The shape of the robot.
-		  *  \param cacheFilename The filename where the collision grids will be dumped to speed-up future recalculations. If it exists upon call, the collision grid will be loaded from here if all PTG parameters match. Example: "PTG_%03d.dat.gz".
+		  *  \param cacheFilename_col The filename where the collision grids will be dumped to speed-up future recalculations. If it exists upon call, the collision grid will be loaded from here if all PTG parameters match. Example: "PTG_%03d.dat.gz".
+		  *  \param cacheFilename_cle The filename where the clearance grids will be dumped to speed-up future recalculations. If it exists upon call, the clearance grid will be loaded from here if all PTG parameters match. Example: "PTG_%03d.dat.gz".
+		  *  \param max_clearance is given in "number of cells" and not in meters or centimeters
 		  * \sa CReactiveNavigationSystem
 		  *  \ingroup nav_tpspace
 		  */

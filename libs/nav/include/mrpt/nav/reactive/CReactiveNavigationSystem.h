@@ -121,6 +121,7 @@ namespace mrpt
 			mrpt::maps::CSimplePointsMap m_WS_Obstacles;  //!< The obstacle points, as seen from the local robot frame.
 
 			//this parameter is used while constructing the clearance grid
+			//max_clearance is given in "number of cells" and not in meters or centimeters
 			unsigned int max_clearance = 1; 
 
 		}; // end class

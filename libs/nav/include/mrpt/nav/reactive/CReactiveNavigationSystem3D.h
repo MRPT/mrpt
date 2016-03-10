@@ -126,6 +126,8 @@ namespace mrpt
 			/** Generates a pointcloud of obstacles, and the robot shape, to be saved in the logging record for the current timestep */
 			virtual void loggingGetWSObstaclesAndShape(CLogFileRecord &out_log);
 
+			//this parameter is used while constructing the clearance grid
+			//max_clearance is given in "number of cells" and not in meters or centimeters
 			unsigned int max_clearance = 1;
 
 
