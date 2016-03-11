@@ -338,7 +338,7 @@ bool CGPSInterface::parse_NMEA(const std::string &s, mrpt::obs::CObservationGPS 
 		// *** FIX lstTokens.size() above
 		MRPT_TODO("Parse VTG")
 	}
-	else if ( lstTokens[0]=="$GPZDA" && lstTokens.size()>=13)
+	else if ( lstTokens[0]=="$GPZDA" && lstTokens.size()>=5)
 	{
 		// ---------------------------------------------
 		//					GPZDA
@@ -348,8 +348,44 @@ bool CGPSInterface::parse_NMEA(const std::string &s, mrpt::obs::CObservationGPS 
 
 		// Fill out the output structure:
 		gnss::Message_NMEA_ZDA zda;
-		// *** FIX lstTokens.size() above
-		MRPT_TODO("Parse ZDA")
+		//$--ZDA,hhmmss.ss,xx,xx,xxxx,xx,xx
+		//hhmmss.ss = UTC 
+		//xx = Day, 01 to 31 
+		//xx = Month, 01 to 12 
+		//xxxx = Year 
+		//xx = Local zone description, 00 to +/- 13 hours 
+		//xx = Local zone minutes description (same sign as hours)
+
+		// Time:
+		token = lstTokens[1];
+		if (token.size()>=6) {
+			zda.fields.UTCTime.hour		= 10 * (token[0]-'0') + token[1]-'0';
+			zda.fields.UTCTime.minute	= 10 * (token[2]-'0') + token[3]-'0';
+			zda.fields.UTCTime.sec		= atof( & (token.c_str()[4]) );
+		}
+		else all_fields_ok = false;
+
+		// Day:
+		token = lstTokens[2];
+		if (!token.empty())
+			zda.fields.date_day = atoi(token.c_str());
+		// Month:
+		token = lstTokens[3];
+		if (!token.empty())
+			zda.fields.date_month = atoi(token.c_str());
+		// Year:
+		token = lstTokens[4];
+		if (!token.empty())
+			zda.fields.date_year = atoi(token.c_str());
+
+		if (all_fields_ok) {
+			out_obs.setMsg(zda);
+			out_obs.originalReceivedTimestamp = mrpt::system::now();
+			MRPT_TODO("Add zda.getDateAsTimestamp()")
+			//out_obs.timestamp = zda.fields.UTCTime.getAsTimestamp( zda.getDateAsTimestamp() );
+			out_obs.timestamp = zda.fields.UTCTime.getAsTimestamp( mrpt::system::now() );
+		}
+		parsed_ok = all_fields_ok;
 	}
 	else
 	{
