@@ -80,6 +80,16 @@ namespace mrpt
 				return PTGs[i];
 			}
 
+			inline void set_max_clearance(const unsigned int max_clearance)
+			{
+				this->max_clearance = max_clearance;
+			}
+
+			inline unsigned int get_max_clearance()
+			{
+				return max_clearance;
+			}
+
 
 		private:
 			// ------------------------------------------------------
@@ -109,6 +119,10 @@ namespace mrpt
 
 
 			mrpt::maps::CSimplePointsMap m_WS_Obstacles;  //!< The obstacle points, as seen from the local robot frame.
+
+			//this parameter is used while constructing the clearance grid
+			//max_clearance is given in "number of cells" and not in meters or centimeters
+			unsigned int max_clearance = 1; 
 
 		}; // end class
 	}

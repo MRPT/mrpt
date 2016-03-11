@@ -26,7 +26,9 @@ using namespace mrpt::system;
 void mrpt::nav::build_PTG_collision_grids(
 	CParameterizedTrajectoryGenerator * PT,
 	const mrpt::math::CPolygon        & robotShape,
-	const std::string                 & cacheFilename,
+	const std::string                 & cacheFilename_col,
+	const std::string                 & cacheFilename_cle,
+	const unsigned int 					max_Clearance,	
 	const bool                          verbose
 	)
 {
@@ -38,7 +40,7 @@ void mrpt::nav::build_PTG_collision_grids(
 	utils::CTicTac		tictac;
 
 	if (verbose)
-		cout << "Computing collision cells for PTG '" << cacheFilename << "'...";
+		cout << "Computing collision cells for PTG " << cacheFilename_col << "'...";
 
 	ASSERT_(PT)
 
@@ -53,7 +55,7 @@ void mrpt::nav::build_PTG_collision_grids(
 	//Collision grid
 
 	// Load the cached version, if possible	
-	if (PT->LoadColGridsFromFile( cacheFilename, robotShape ) )
+	if (PT->LoadColGridsFromFile( cacheFilename_col, robotShape ) )
 	{
 		if (verbose)
 			cout << "CollisonGrid loaded from file OK" << endl;
@@ -135,12 +137,15 @@ void mrpt::nav::build_PTG_collision_grids(
 			cout << format("Done! [%.03f sec]\n",tictac.Tac() );
 
 		// save it to the cache file for the next run:
-		PT->SaveColGridsToFile( cacheFilename, robotShape );
+		PT->SaveColGridsToFile( cacheFilename_col, robotShape );
 
 	}	// "else" recompute all PTG
 
+	if (verbose)
+		cout << "Computing clearance from obstacle cells for PTG '" << cacheFilename_cle << "'...";
+
 	//Clearance grid
-	if (PT->LoadCleGridsFromFile( cacheFilename, robotShape ) )
+	if (PT->LoadCleGridsFromFile( cacheFilename_cle, robotShape ) )
 	{
 		if (verbose)
 			cout << "ClearanceGrid loaded from file OK" << endl;
@@ -151,8 +156,8 @@ void mrpt::nav::build_PTG_collision_grids(
 		//         we must make sure that there's space enough for the grid:
 		PT->m_clearanceGrid.setSize( -PT->refDistance,PT->refDistance,-PT->refDistance,PT->refDistance,PT->m_clearanceGrid.getResolution());
 
-		const int grid_cx_max = PT->m_clearanceGrid.getSizeX()-1;
-		const int grid_cy_max = PT->m_clearanceGrid.getSizeY()-1;
+		const unsigned int grid_cx_max = PT->m_clearanceGrid.getSizeX()-1;
+		const unsigned int grid_cy_max = PT->m_clearanceGrid.getSizeY()-1;
 
 		const size_t nVerts = robotShape.verticesCount();
 		std::vector<mrpt::math::TPoint2D> transf_shape(nVerts); // The robot shape at each location
@@ -186,10 +191,10 @@ void mrpt::nav::build_PTG_collision_grids(
 				const mrpt::math::TPolygon2D poly(transf_shape);
 
 				// Get the range of cells that may collide with this shape:
-				const int ix_min = std::max(0,PT->m_clearanceGrid.x2idx(bb_min.x)-1);
-				const int iy_min = std::max(0,PT->m_clearanceGrid.y2idx(bb_min.y)-1);
-				const int ix_max = std::min(PT->m_clearanceGrid.x2idx(bb_max.x)+1,grid_cx_max);
-				const int iy_max = std::min(PT->m_clearanceGrid.y2idx(bb_max.y)+1,grid_cy_max);
+				const int ix_min = std::max((unsigned int)0,static_cast<unsigned int>(PT->m_clearanceGrid.x2idx(bb_min.x))-max_Clearance);
+				const int iy_min = std::max((unsigned int)0,static_cast<unsigned int>(PT->m_clearanceGrid.y2idx(bb_min.y))-max_Clearance);
+				const int ix_max = std::min(static_cast<unsigned int>(PT->m_clearanceGrid.x2idx(bb_max.x))+max_Clearance,grid_cx_max);
+				const int iy_max = std::min(static_cast<unsigned int>(PT->m_clearanceGrid.y2idx(bb_max.y))+max_Clearance,grid_cy_max);
 
 				for (int ix=ix_min;ix<ix_max;ix++)
 				{
@@ -221,7 +226,7 @@ void mrpt::nav::build_PTG_collision_grids(
 			cout << format("Done! [%.03f sec]\n",tictac.Tac() );
 
 		// save it to the cache file for the next run:
-		PT->SaveCleGridsToFile( cacheFilename, robotShape );
+		PT->SaveCleGridsToFile( cacheFilename_cle, robotShape );
 
 	}	// "else" recompute all PTG
 

@@ -506,7 +506,7 @@ void CParameterizedTrajectoryGenerator::CClearanceGrid::updateCellInfo(
 
 	//here we determine whether we need to increase size of matrix or not and then resize the matrix
 	const int cols = std::max(static_cast<int>(matrix->cols()), n+1);
-	matrix->resize(m_parent->getAlfaValuesCount(), cols);
+	matrix->setSize(m_parent->getAlfaValuesCount(), cols);
 
 	(*matrix)(k,n) = dist;
 }
