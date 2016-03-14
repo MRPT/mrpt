@@ -297,6 +297,10 @@ IF(BUILD_mrpt-hwdrivers)
 		# link_directories() was added in the configuration script under /cmakemodules/*_ni.cmake
 		INCLUDE_DIRECTORIES(${PGR_FLYCAPTURE2_INCLUDE_DIR})
 		TARGET_LINK_LIBRARIES(mrpt-hwdrivers ${PGR_FLYCAPTURE2_LIB_FILE_RELEASE})
+		# Windows: Set dll as DELAYLOAD, so users without that driver can use precompiled binaries:
+		IF(MSVC)
+			set_property(TARGET mrpt-hwdrivers APPEND_STRING PROPERTY LINK_FLAGS " /DELAYLOAD:\"FLYCAPTURE2.DLL\"")
+		ENDIF()
 	ENDIF(CMAKE_MRPT_HAS_FLYCAPTURE2)
 
 	# Link to PGR Triclops libraries:
@@ -305,7 +309,14 @@ IF(BUILD_mrpt-hwdrivers)
 		INCLUDE_DIRECTORIES(${PGR_TRICLOPS_INCLUDE_DIR})
 		TARGET_LINK_LIBRARIES(mrpt-hwdrivers ${PGR_TRICLOPS_LIB_FILE_RELEASE})
 		TARGET_LINK_LIBRARIES(mrpt-hwdrivers ${PGR_FC2BRIDGE_LIB_FILE_RELEASE})
-		TARGET_LINK_LIBRARIES(mrpt-hwdrivers ${PGR_PNMUTILS_LIB_FILE_RELEASE})
+		#TARGET_LINK_LIBRARIES(mrpt-hwdrivers ${PGR_PNMUTILS_LIB_FILE_RELEASE}) # Not used in mrpt
+		# Windows: Set dll as DELAYLOAD, so users without that driver can use precompiled binaries:
+		IF(MSVC)
+			get_filename_component(PGR_TRICLOPS_LIBNAME ${PGR_TRICLOPS_LIB_FILE_RELEASE} NAME_WE)
+			get_filename_component(PGR_FC2BRIDGE_LIBNAME ${PGR_FC2BRIDGE_LIB_FILE_RELEASE} NAME_WE)
+			set_property(TARGET mrpt-hwdrivers APPEND_STRING PROPERTY LINK_FLAGS " /DELAYLOAD:\"${PGR_TRICLOPS_LIBNAME}.DLL\"")
+			set_property(TARGET mrpt-hwdrivers APPEND_STRING PROPERTY LINK_FLAGS " /DELAYLOAD:\"${PGR_FC2BRIDGE_LIBNAME}.DLL\"")
+		ENDIF()
 	ENDIF(CMAKE_MRPT_HAS_TRICLOPS)
 
 	# Ignore precompiled headers in RPLIDAR sources:
