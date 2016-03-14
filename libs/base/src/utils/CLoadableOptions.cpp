@@ -20,8 +20,6 @@ using namespace mrpt::utils;
 CStdOutStream	loadable_opts_my_cout;
 const int LOADABLEOPTS_COLUMN_WIDTH   = 41;  // Until the "=" in each row.
 
-//MRPT_TODO("Reimplement with an internal registry of variables, etc..")
-
 void  CLoadableOptions::loadFromConfigFileName(
 	const std::string		&config_file,
 	const std::string			&section)
