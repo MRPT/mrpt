@@ -339,14 +339,10 @@ void  CGPSInterface::doProcess()
 	// Try to parse incomming data as messages:
 	parseBuffer( );
 	
-	// Decide whether to push out a new observation:
-	bool do_append_obs = false;
-	if (m_customInit.empty())
-	{   // General case:
-		do_append_obs = ( !m_just_parsed_messages.messages.empty() );
-	}
-	else
+	// Decide whether to push out a new observation in old legacy mode.
+	if (!m_customInit.empty())
 	{	// "Advanced" (RTK,mmGPS) device  (kept for backwards-compatibility)
+		bool do_append_obs = false;
 		// FAMD
 		// Append observation if:
 		// 0. the timestamp seems to be correct!
@@ -376,10 +372,11 @@ void  CGPSInterface::doProcess()
 			// don't append observation until we have both data
 			do_append_obs = ( m_just_parsed_messages.has_GGA_datum && m_just_parsed_messages.has_RMC_datum );
 		} // end-else
+
+		if (do_append_obs)
+			flushParsedMessagesNow();
 	}
 
-	if (do_append_obs)
-		flushParsedMessagesNow();
 }
 
 //!< Queue out now the messages in \a m_just_parsed_messages, leaving it empty
@@ -431,6 +428,8 @@ void  CGPSInterface::parseBuffer()
 			{
 				m_rx_buffer.pop(); // Not the start of a frame, skip 1 byte
 			}
+			if (m_customInit.empty() /* If we are not in old legacy mode */ && !m_just_parsed_messages.messages.empty() )
+				flushParsedMessagesNow();
 		} while (m_rx_buffer.size()>=min_bytes);
 	} // end one parser mode ----------
 	else
@@ -453,6 +452,9 @@ void  CGPSInterface::parseBuffer()
 
 			if (all_parsers_want_to_skip)
 				m_rx_buffer.pop(); // Not the start of a frame, skip 1 byte
+
+			if (m_customInit.empty() /* If we are not in old legacy mode */ && !m_just_parsed_messages.messages.empty() )
+				flushParsedMessagesNow();
 		} while (m_rx_buffer.size()>=global_min_bytes_max);
 	} // end AUTO mode ----
 }

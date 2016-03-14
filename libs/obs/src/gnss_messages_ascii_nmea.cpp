@@ -176,8 +176,7 @@ mrpt::system::TTimeStamp Message_NMEA_RMC::getDateAsTimestamp() const
 	using namespace mrpt::system;
 
 	// Detect current century:
-	uint16_t years_century;
-	{
+	uint16_t years_century; {
 		TTimeParts dec_parts;
 		timestampToParts(now(), dec_parts);
 		years_century = (dec_parts.year/100)*100;
@@ -193,7 +192,6 @@ mrpt::system::TTimeStamp Message_NMEA_RMC::getDateAsTimestamp() const
 	parts.year  = years_century + fields.date_year;
 
 	return buildTimestampFromParts(parts);
-
 }
 
 void Message_NMEA_RMC::dumpToStream( mrpt::utils::CStream &out ) const
@@ -273,4 +271,23 @@ bool Message_NMEA_ZDA::getAllFieldValues( std::ostream &o ) const
 		fields.UTCTime.minute,
 		fields.UTCTime.sec);
 	return true;
+}
+
+mrpt::system::TTimeStamp Message_NMEA_ZDA::getDateTimeAsTimestamp() const
+{
+	return fields.UTCTime.getAsTimestamp( this->getDateAsTimestamp() );
+}
+
+//!< Build an MRPT timestamp with the year/month/day of this observation.
+mrpt::system::TTimeStamp Message_NMEA_ZDA::getDateAsTimestamp() const
+{
+	using namespace mrpt::system;
+	TTimeParts parts;
+	parts.second = 
+	parts.minute = 
+	parts.hour = 0;
+	parts.day   = fields.date_day;
+	parts.month = fields.date_month;
+	parts.year  = fields.date_year;
+	return buildTimestampFromParts(parts);
 }

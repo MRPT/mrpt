@@ -90,6 +90,8 @@ bool  CGPSInterface::implement_parser_NMEA(size_t &out_minimum_rx_buf_to_decide)
 ----------------------------------------------------- */
 bool CGPSInterface::parse_NMEA(const std::string &s, mrpt::obs::CObservationGPS &out_obs, const bool verbose)
 {
+	static mrpt::system::TTimeStamp last_known_date = mrpt::system::now(); // For building complete date+time in msgs without a date.
+
 	if (verbose)
 		cout << "[CGPSInterface] GPS raw string: " << s << endl;
 
@@ -205,7 +207,7 @@ bool CGPSInterface::parse_NMEA(const std::string &s, mrpt::obs::CObservationGPS 
 		if (all_fields_ok) {
 			out_obs.setMsg(gga);
 			out_obs.originalReceivedTimestamp = mrpt::system::now();
-			out_obs.timestamp = gga.fields.UTCTime.getAsTimestamp( mrpt::system::now() );
+			out_obs.timestamp = gga.fields.UTCTime.getAsTimestamp( last_known_date );
 			out_obs.has_satellite_timestamp = true;
 		}
 		parsed_ok = all_fields_ok;
@@ -309,6 +311,8 @@ bool CGPSInterface::parse_NMEA(const std::string &s, mrpt::obs::CObservationGPS 
 			out_obs.setMsg(rmc);
 			out_obs.originalReceivedTimestamp = mrpt::system::now();
 			out_obs.timestamp = rmc.fields.UTCTime.getAsTimestamp( rmc.getDateAsTimestamp() );
+			last_known_date = rmc.getDateAsTimestamp();
+			out_obs.has_satellite_timestamp = true;
 		}
 		parsed_ok = all_fields_ok;
 	}
@@ -381,9 +385,14 @@ bool CGPSInterface::parse_NMEA(const std::string &s, mrpt::obs::CObservationGPS 
 		if (all_fields_ok) {
 			out_obs.setMsg(zda);
 			out_obs.originalReceivedTimestamp = mrpt::system::now();
-			MRPT_TODO("Add zda.getDateAsTimestamp()")
-			//out_obs.timestamp = zda.fields.UTCTime.getAsTimestamp( zda.getDateAsTimestamp() );
-			out_obs.timestamp = zda.fields.UTCTime.getAsTimestamp( mrpt::system::now() );
+			try {
+				out_obs.timestamp = zda.getDateTimeAsTimestamp();
+				last_known_date = zda.getDateAsTimestamp();
+				out_obs.has_satellite_timestamp = true;
+			} catch (...) {
+				// Invalid date:
+				out_obs.timestamp = out_obs.originalReceivedTimestamp;
+			}
 		}
 		parsed_ok = all_fields_ok;
 	}

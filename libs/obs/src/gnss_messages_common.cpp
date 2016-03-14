@@ -20,6 +20,9 @@ using namespace mrpt::obs::gnss;
 	/* ====== NMEA ======  */ \
 	DOFOR(NMEA_GGA) \
 	DOFOR(NMEA_RMC) \
+	DOFOR(NMEA_ZDA) \
+	DOFOR(NMEA_VTG) \
+	DOFOR(NMEA_GLL) \
 	/* ====== TopCon mmGPS ====== */  \
 	DOFOR(TOPCON_PZS) \
 	DOFOR(TOPCON_SATS) \
