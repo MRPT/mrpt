@@ -133,6 +133,8 @@ namespace obs
 		mrpt::system::TTimeStamp     originalReceivedTimestamp; //!< The local computer-based timestamp based on the reception of the message in the computer. \sa has_satellite_timestamp, CObservation::timestamp in the base class, which should contain the accurate satellite-based UTC timestamp. 
 		bool                         has_satellite_timestamp;   //!< If true, CObservation::timestamp has been generated from accurate satellite clock. Otherwise, no GPS data is available and timestamps are based on the local computer clock.
 
+		mrpt::system::TTimeStamp getOriginalReceivedTimeStamp() const MRPT_OVERRIDE; // See base class docs
+
 		/** See \a point_cloud and \a scan_packets */
 		struct OBS_IMPEXP TPointCloud
 		{

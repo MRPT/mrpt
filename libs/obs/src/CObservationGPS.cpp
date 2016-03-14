@@ -239,6 +239,10 @@ void  CObservationGPS::dumpToConsole(std::ostream &o) const
 	}
 }
 
+mrpt::system::TTimeStamp CObservationGPS::getOriginalReceivedTimeStamp() const {
+	return originalReceivedTimestamp;
+}
+
 void CObservationGPS::clear()
 {
 	messages.clear();

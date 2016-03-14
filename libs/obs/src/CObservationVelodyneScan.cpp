@@ -80,6 +80,10 @@ CObservationVelodyneScan::~CObservationVelodyneScan()
 {
 }
 
+mrpt::system::TTimeStamp CObservationVelodyneScan::getOriginalReceivedTimeStamp() const {
+	return originalReceivedTimestamp;
+}
+
 /*---------------------------------------------------------------
   Implements the writing to a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
@@ -358,3 +362,4 @@ void CObservationVelodyneScan::generatePointCloud(const TGeneratePointCloudParam
 		} // end for each block [0,11]
 	} // end for each data packet
 }
+

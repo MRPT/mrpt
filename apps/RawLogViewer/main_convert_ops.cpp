@@ -785,38 +785,41 @@ void xRawLogViewerFrame::OnMenuResortByTimestamp(wxCommandEvent& event)
 {
 	WX_START_TRY
 
+	bool useSensorTimestamp = (wxYES==wxMessageBox( _("Yes: use sensor-based UTC timestamp. No: use computer-based timestamp, when available."), _("Which timestamp to use?"),wxYES_NO, this ));
+
 	wxBusyCursor        waitCursor;
 
 
 	// First, build an ordered list of "times"->"indexes":
 	// ------------------------------------------------------
 	std::multimap<TTimeStamp,size_t>	ordered_times;
-    size_t  i, n = rawlog.size();
+	size_t  i, n = rawlog.size();
 
-    for (i=0;i<n;i++)
-    {
-        switch ( rawlog.getType(i) )
-        {
-        default:
+	for (i=0;i<n;i++)
+	{
+		switch ( rawlog.getType(i) )
+		{
+		default:
 			wxMessageBox(_("Error: this command is for rawlogs without sensory frames."));
 			return;
-            break;
+			break;
 
-        case CRawlog::etObservation:
-            {
-                CObservationPtr o = rawlog.getAsObservation(i);
+		case CRawlog::etObservation:
+			{
+				CObservationPtr o = rawlog.getAsObservation(i);
 
-                if (o->timestamp == INVALID_TIMESTAMP)
-                {
-                	wxMessageBox( wxString::Format(_("Error: Element %u does not have a valid timestamp."),(unsigned int)i) );
-                	return;
-                }
+				TTimeStamp tim = useSensorTimestamp ? o->getTimeStamp() : o->getOriginalReceivedTimeStamp();
+
+				if (o->timestamp == INVALID_TIMESTAMP) {
+					wxMessageBox( wxString::Format(_("Error: Element %u does not have a valid timestamp."),(unsigned int)i) );
+					return;
+				}
 
 				ordered_times.insert(  multimap<TTimeStamp,size_t>::value_type(o->timestamp,i));
-            }
-            break;
-        } // end switch type
-    } // end for i
+			}
+			break;
+		} // end switch type
+	} // end for i
 
 	// Now create the new ordered rawlog
 	// ------------------------------------------------------

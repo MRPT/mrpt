@@ -18,8 +18,7 @@
 
 namespace mrpt
 {
-	/** This namespace contains algorithms for SLAM, localization, map building, representation of robot's actions and observations, and representation of many kinds of metric maps.
-	  */
+	/** This namespace contains representation of robot actions and observations */
 	namespace obs
 	{
 		/** Used for CObservationBearingRange::TMeasurement::beaconID
@@ -57,8 +56,13 @@ namespace mrpt
 
 		 /** @name Data common to any observation
 		     @{ */
-			mrpt::system::TTimeStamp timestamp; //!< The associated time-stamp.
+			mrpt::system::TTimeStamp timestamp; //!< The associated UTC time-stamp. Where available, this should contain the accurate satellite-based timestamp of the sensor reading. \sa getOriginalReceivedTimeStamp(), getTimeStamp()
 			std::string              sensorLabel;//!< An arbitrary label that can be used to identify the sensor.
+
+			/** Returns CObservation::timestamp for all kind of observations \sa getOriginalReceivedTimeStamp() */
+			mrpt::system::TTimeStamp getTimeStamp() const { return timestamp;  }
+			/** By default, returns CObservation::timestamp but in sensors capable of satellite (or otherwise) accurate UTC timing of readings, this contains the computer-based timestamp of reception, which may be slightly different than \a timestamp \sa getTimeStamp()  */
+			virtual mrpt::system::TTimeStamp getOriginalReceivedTimeStamp() const { return timestamp; }
 		/** @} */
 
 		CObservation(); //!< Constructor: It sets the initial timestamp to current time
