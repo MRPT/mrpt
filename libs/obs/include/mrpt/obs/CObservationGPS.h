@@ -169,8 +169,11 @@ namespace obs
 
 		/** @name Utilities
 		  * @{ */
-		static bool GPS_time_to_UTC(uint16_t gps_week,double gps_sec, mrpt::system::TTimeParts &utc_out); //!< Return false on invalid input data
-		static bool GPS_time_to_UTC(uint16_t gps_week,double gps_sec, mrpt::system::TTimeStamp &utc_out); //!< Return false on invalid input data
+		static bool GPS_time_to_UTC(
+			uint16_t gps_week,double gps_sec,
+			const int leap_seconds_count /**< [in] GPS to UTC time number of leap seconds (normally grabbed from satellital live data) */,
+			mrpt::system::TTimeStamp &utc_out /**< [out] UTC timestamp */ ); //!< Return false on invalid input data
+		static bool GPS_time_to_UTC(uint16_t gps_week,double gps_sec,const int leap_seconds_count, mrpt::system::TTimeParts &utc_out); //!< \overload
 		/** @} */
 	}; // End of class def.
 	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CObservationGPS , CObservation, OBS_IMPEXP)

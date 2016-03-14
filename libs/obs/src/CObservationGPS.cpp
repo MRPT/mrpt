@@ -284,38 +284,12 @@ const mrpt::obs::gnss::gnss_message* CObservationGPS::getMsgByType(const gnss::g
 
 // From: http://gnsstk.sourceforge.net/time__conversion_8c-source.html
 #define TIMECONV_JULIAN_DATE_START_OF_GPS_TIME (2444244.5)  // [days]
-bool TIMECONV_GetJulianDateFromGPSTime(	const unsigned short 	gps_week, const double 	gps_tow, const unsigned char 	utc_offset, double * 	julian_date)
+bool TIMECONV_GetJulianDateFromGPSTime(	const unsigned short 	gps_week, const double 	gps_tow, const unsigned int utc_offset, double * 	julian_date)
 {
 	if( gps_tow < 0.0  || gps_tow > 604800.0 )
 		return false;
 	// GPS time is ahead of UTC time and Julian time by the UTC offset
 	*julian_date = (gps_week + (gps_tow-utc_offset)/604800.0)*7.0 + TIMECONV_JULIAN_DATE_START_OF_GPS_TIME;
-	return true;
-}
-
-bool TIMECONV_DetermineUTCOffset(
-	double julian_date,       //!< Number of days since noon Universal Time Jan 1, 4713 BCE (Julian calendar) [days]
-	unsigned char* utc_offset //!< Integer seconds that GPS is ahead of UTC time, always positive             [s], obtained from a look up table
-	)
-{
-	if( julian_date < 0.0 )
-		return false;
-	if(      julian_date < 2444786.5000 ) *utc_offset = 0;
-	else if( julian_date < 2445151.5000 ) *utc_offset = 1;
-	else if( julian_date < 2445516.5000 ) *utc_offset = 2;
-	else if( julian_date < 2446247.5000 ) *utc_offset = 3;
-	else if( julian_date < 2447161.5000 ) *utc_offset = 4;
-	else if( julian_date < 2447892.5000 ) *utc_offset = 5;
-	else if( julian_date < 2448257.5000 ) *utc_offset = 6;
-	else if( julian_date < 2448804.5000 ) *utc_offset = 7;
-	else if( julian_date < 2449169.5000 ) *utc_offset = 8;
-	else if( julian_date < 2449534.5000 ) *utc_offset = 9;
-	else if( julian_date < 2450083.5000 ) *utc_offset = 10;
-	else if( julian_date < 2450630.5000 ) *utc_offset = 11;
-	else if( julian_date < 2451179.5000 ) *utc_offset = 12;  
-	else if( julian_date < 2453736.5000 ) *utc_offset = 13;  
-	else                                  *utc_offset = 14;
-
 	return true;
 }
 
@@ -441,36 +415,28 @@ bool TIMECONV_GetUTCTimeFromJulianDate(const double julian_date,  //!< Number of
 	return true;
 }
 
-bool CObservationGPS::GPS_time_to_UTC(uint16_t gps_week,double gps_sec, mrpt::system::TTimeStamp &utc_out)
+bool CObservationGPS::GPS_time_to_UTC(uint16_t gps_week,double gps_sec,const int leap_seconds_count, mrpt::system::TTimeStamp &utc_out)
 {
 	 mrpt::system::TTimeParts tim;
-	if (!GPS_time_to_UTC(gps_week,gps_sec,tim)) return false;
+	if (!GPS_time_to_UTC(gps_week,gps_sec,leap_seconds_count,tim)) return false;
 	utc_out = mrpt::system::buildTimestampFromParts(tim);
 	return true;
 }
 
-bool CObservationGPS::GPS_time_to_UTC(uint16_t gps_week,double gps_sec, mrpt::system::TTimeParts &utc_out)
+bool CObservationGPS::GPS_time_to_UTC(uint16_t gps_week,double gps_sec,const int leap_seconds_count, mrpt::system::TTimeParts &utc_out)
 {
 	double julian_date = 0.0; 
 	uint8_t utc_offset = 0;
 	if( gps_sec < 0.0  || gps_sec > 604800.0 )
 		return false;
-	// iterate to get the right utc offset
-	for(int i = 0; i < 4; i++ )
-	{
-		if (!TIMECONV_GetJulianDateFromGPSTime(
-			gps_week,
-			gps_sec,
-			utc_offset,
-			&julian_date ) ) 
-			return false;
-		if (!TIMECONV_DetermineUTCOffset( julian_date, &utc_offset ) )
-			return false;
-	}
-
+	if (!TIMECONV_GetJulianDateFromGPSTime(
+		gps_week,
+		gps_sec,
+		leap_seconds_count,
+		&julian_date ) )
+		return false;
 	if (!TIMECONV_GetUTCTimeFromJulianDate(julian_date,utc_out))
-	return false;
-
+		return false;
 	return true;
 }
 

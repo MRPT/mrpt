@@ -149,6 +149,7 @@ const std::string OBS_IMPEXP & nv_oem6_ins_status_type::enum2str(int val)
 
 void generic_dump_BESTPOS(const Message_NV_OEM6_BESTPOS::content_t &fields, mrpt::utils::CStream &out )
 {
+	out.printf(" GPS week: %u  ms in week: %u\n", (unsigned)fields.header.week, (unsigned)(fields.header.ms_in_week));
 	out.printf(" Solution status: `%s`\n", nv_oem6_solution_status::enum2str(fields.solution_stat).c_str() );
 	out.printf(" Position type  : `%s`\n", nv_oem6_position_type::enum2str(fields.position_type).c_str() );
 	out.printf(" Longitude: %.09f deg (std dev: %.06f m)  Latitude: %.09f deg (std dev: %.06f m)\n", fields.lon, fields.lon_sigma, fields.lat, fields.lat_sigma);
@@ -190,6 +191,7 @@ bool Message_NV_OEM6_BESTPOS::getAllFieldValues( std::ostream &o ) const
 void Message_NV_OEM6_INSPVAS::dumpToStream( mrpt::utils::CStream &out ) const
 {
 	out.printf("[Novatel OEM6 INSPVAS]\n");
+	out.printf(" GPS week: %u  ms in week: %u\n", (unsigned)fields.header.week, (unsigned)(fields.header.ms_in_week));
 	out.printf(" INS status: `%s`\n", nv_oem6_ins_status_type::enum2str(fields.ins_status).c_str());
 	out.printf(" Longitude: %.09f deg  Latitude: %.09f deg  Height: %.03f m\n", fields.lon, fields.lat, fields.hgt );
 	out.printf(" Velocities: North: %.05f  East: %.05f  Up: %.05f\n", fields.vel_north, fields.vel_east, fields.vel_up);
@@ -220,6 +222,7 @@ bool Message_NV_OEM6_INSPVAS::getAllFieldValues( std::ostream &o ) const
 void Message_NV_OEM6_INSCOVS::dumpToStream( mrpt::utils::CStream &out ) const
 {
 	out.printf("[Novatel OEM6 INSCOVS]\n");
+	out.printf(" GPS week: %u  ms in week: %u\n", (unsigned)fields.header.week, (unsigned)(fields.header.ms_in_week));
 	out.printf(" Position cov: %9.03f %9.03f %9.03f  %9.03f %9.03f %9.03f  %9.03f %9.03f %9.03f\n",
 		fields.pos_cov[0],fields.pos_cov[1],fields.pos_cov[2],
 		fields.pos_cov[3],fields.pos_cov[4],fields.pos_cov[5],
@@ -300,6 +303,7 @@ void Message_NV_OEM6_RXSTATUS::dumpToStream( mrpt::utils::CStream &out ) const
 void Message_NV_OEM6_RAWEPHEM::dumpToStream( mrpt::utils::CStream &out ) const
 {
 	out.printf("[Novatel OEM6 RAWEPHEM]\n");
+	out.printf(" GPS week: %u  ms in week: %u\n", (unsigned)fields.header.week, (unsigned)(fields.header.ms_in_week));
 }
 
 // ------------
@@ -343,6 +347,7 @@ void Message_NV_OEM6_VERSION::internal_readFromStream(mrpt::utils::CStream &in)
 void Message_NV_OEM6_RAWIMUS::dumpToStream( mrpt::utils::CStream &out ) const
 {
 	out.printf("[Novatel OEM6 RAWIMUS]\n");
+	out.printf(" GPS week: %u  ms in week: %u\n", (unsigned)fields.header.week, (unsigned)(fields.header.ms_in_week));
 	out.printf(" Status: 0x%08lu\n",(long)fields.imu_status);
 	out.printf(" Acel: X=%li Y=%li Z=%li\n",(long)fields.accel_x,-(long)fields.accel_y_neg,(long)fields.accel_z);
 	out.printf(" Gyro: X=%li Y=%li Z=%li\n",(long)fields.gyro_x,-(long)fields.gyro_y_neg,(long)fields.gyro_z);
@@ -430,6 +435,7 @@ void Message_NV_OEM6_MARKPOS::dumpToStream( mrpt::utils::CStream &out ) const
 void Message_NV_OEM6_IONUTC::dumpToStream( mrpt::utils::CStream &out ) const
 {
 	out.printf("[Novatel NV_OEM6_IONUTC]\n");
+	out.printf(" GPS week: %u  ms in week: %u\n", (unsigned)fields.header.week, (unsigned)(fields.header.ms_in_week));
 	out.printf(" UTC ref week: %u  Tot: %u\n",(unsigned)fields.utc_wn, (unsigned)fields.tot);
 	out.printf(" Leap seconds delta_t: %u  future: %u\n",(unsigned)fields.deltat_ls, (unsigned)fields.deltat_lsf);
 }

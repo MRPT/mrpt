@@ -391,7 +391,8 @@ bool CGPSInterface::parse_NMEA(const std::string &s, mrpt::obs::CObservationGPS 
 				out_obs.has_satellite_timestamp = true;
 			} catch (...) {
 				// Invalid date:
-				out_obs.timestamp = out_obs.originalReceivedTimestamp;
+				out_obs.timestamp 
+					= out_obs.originalReceivedTimestamp;
 			}
 		}
 		parsed_ok = all_fields_ok;

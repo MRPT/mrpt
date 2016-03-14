@@ -37,7 +37,7 @@ namespace mrpt
 		  *  - `NONE`: Do not try to parse the messages into CObservation's. Only useful if combined with `raw_dump_file_prefix`
 		  *  - `AUTO`: Try to automatically identify the format of incomming data.
 		  *  - `NMEA` (NMEA 0183, ASCII messages): Default parser. Supported frames: GGA, RMC,... See full list of messages in children of mrpt::obs::gnss::gnss_message
-		  *  - `NOVATEL_OEM6` (Novatel OEM6, binary frames): Supported frames: BESTPOS,... See full list of messages in children of mrpt::obs::gnss::gnss_message
+		  *  - `NOVATEL_OEM6` (Novatel OEM6, binary frames): Supported frames: BESTPOS,... Note that receiving a correct IONUTC msg is required for a correct timestamping of subsequent frames. See full list of messages in children of mrpt::obs::gnss::gnss_message
 		  *
 		  * See available parameters below, and an example config file for rawlog-grabber [here](https://github.com/MRPT/mrpt/blob/master/share/mrpt/config_files/rawlog-grabber/gps.ini)
 		  *

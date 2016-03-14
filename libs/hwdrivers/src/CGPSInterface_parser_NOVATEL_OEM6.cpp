@@ -23,6 +23,8 @@ MRPT_TODO("check crc")
 
 bool  CGPSInterface::implement_parser_NOVATEL_OEM6(size_t &out_minimum_rx_buf_to_decide)
 {
+	static uint32_t num_leap_seconds = 0; // to be grabbed from the last Message_NV_OEM6_IONUTC msg
+
 	using namespace mrpt::obs::gnss;
 
 	out_minimum_rx_buf_to_decide = sizeof(nv_oem6_short_header_t);
@@ -96,9 +98,7 @@ bool  CGPSInterface::implement_parser_NOVATEL_OEM6(size_t &out_minimum_rx_buf_to
 		}
 		m_just_parsed_messages.messages[msg->message_type] = msg;
 		m_just_parsed_messages.originalReceivedTimestamp = mrpt::system::now();
-		
-		MRPT_TODO("check UTC time conversion!")
-		if (!CObservationGPS::GPS_time_to_UTC(hdr.week,hdr.ms_in_week*1e-3,m_just_parsed_messages.timestamp))
+		if (!CObservationGPS::GPS_time_to_UTC(hdr.week,hdr.ms_in_week*1e-3,num_leap_seconds, m_just_parsed_messages.timestamp))
 			m_just_parsed_messages.timestamp =  mrpt::system::now();
 		else m_just_parsed_messages.has_satellite_timestamp = true;
 
@@ -157,8 +157,13 @@ bool  CGPSInterface::implement_parser_NOVATEL_OEM6(size_t &out_minimum_rx_buf_to
 		}
 		m_just_parsed_messages.messages[msg->message_type] = msg;
 		m_just_parsed_messages.originalReceivedTimestamp = mrpt::system::now();
-		MRPT_TODO("check UTC time conversion!")
-		if (!CObservationGPS::GPS_time_to_UTC(hdr.week,hdr.ms_in_week*1e-3,m_just_parsed_messages.timestamp))
+		{
+			// Detect NV_OEM6_IONUTC msgs to learn about the current leap seconds:
+			const gnss::Message_NV_OEM6_IONUTC *ionutc = dynamic_cast<const gnss::Message_NV_OEM6_IONUTC *>(msg.get());
+			if (ionutc) 
+				num_leap_seconds = ionutc->fields.deltat_ls;
+		}
+		if (!CObservationGPS::GPS_time_to_UTC(hdr.week,hdr.ms_in_week*1e-3,num_leap_seconds,m_just_parsed_messages.timestamp))
 			m_just_parsed_messages.timestamp =  mrpt::system::now();
 		else m_just_parsed_messages.has_satellite_timestamp = true;
 
