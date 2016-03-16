@@ -328,7 +328,7 @@ void Eigen::MatrixBase<Derived>::loadFromTextFile(std::istream &f)
 			while ( ptr[0] && ptr!=ptrEnd )
 			{
 				// Find next number: (non white-space character):
-				while (ptr[0] && (ptr[0]==' ' || ptr[0]=='\t' || ptr[0]=='\r' || ptr[0]=='\n'))
+				while (ptr[0] && (ptr[0]==' ' || ptr[0]==',' || ptr[0]=='\t' || ptr[0]=='\r' || ptr[0]=='\n'))
 					ptr++;
 				if (fil.size()<=i)	fil.resize(fil.size()+ (fil.size()>>1));
 				// Convert to "double":
