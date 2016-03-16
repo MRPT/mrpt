@@ -96,8 +96,7 @@ namespace maps
 	  *		- mrKalmanFilter: A "brute-force" approach to estimate the entire map with a dense (linear) Kalman filter. Will be very slow for mid or large maps. It's provided just for comparison purposes, not useful in practice.
 	  *		- mrKalmanApproximate: A compressed/sparse Kalman filter approach. See:
 	  *			- "A Kalman Filter Based Approach to Probabilistic Gas Distribution Mapping", JL Blanco, JG Monroy, J Gonzalez-Jimenez, A Lilienthal, 28th Symposium On Applied Computing (SAC), 2013.
-	  *		- mrGMRF: Time-Varying Gas Distribution Mapping with a Sparse MArkov Random Field estimator. See: 
-	  *			- (under review)
+	  *		- mrGMRF: See paper: Monroy, J. G., Blanco, J. L., & Gonzalez-Jimenez, J. (2016). Time-variant gas distribution mapping with obstacle information. Autonomous Robots, 40(1), 1-16.
 	  *
 	  *  Note that this class is virtual, since derived classes still have to implement:
 	  *		- mrpt::maps::CMetricMap::internal_computeObservationLikelihood()
@@ -135,9 +134,9 @@ namespace maps
 			mrKalmanFilter,
 			mrKalmanApproximate,
 			mrKernelDMV,
-			mrGMRF_G,
-			mrGMRF_SD,
-			mrGMRF_L
+			mrGMRF_G,   //!< Gaussian Markov Random Field, Gaussian prior weights between neighboring cells
+			mrGMRF_SD,  //!< Gaussian Markov Random Field, squared differences prior weights between neighboring cells
+			mrGMRF_L    //!< Gaussian Markov Random Field, Laplacian prior weights between neighboring cells
 		};
 
 		/** Constructor
@@ -273,7 +272,7 @@ namespace maps
 		  *
 		  * This is a direct way to update the map, an alternative to the generic insertObservation() method which works with mrpt::obs::CObservation objects.
 		  */
-		void insertIndividualReading(const float sensorReading,const mrpt::math::TPoint2D & point);
+		void insertIndividualReading(const float sensorReading,const mrpt::math::TPoint2D & point, const bool update_map = true);
 
 		/** Returns the prediction of the measurement at some (x,y) coordinates, and its certainty (in the form of the expected variance).
 		  *  This methods is implemented differently for the different gas map types.
@@ -292,6 +291,8 @@ namespace maps
 
 		/** Load the mean and STD vectors of the full Kalman filter estimate (works for all KF-based methods). */
 		void setMeanAndSTD( mrpt::math::CVectorDouble &out_means, mrpt::math::CVectorDouble &out_STD);
+
+		void updateMapEstimation();
 
 	protected:
 		/** Common options to all random-field grid maps: pointer that is set to the derived-class instance of "insertOptions" upon construction of this class. */
@@ -375,12 +376,10 @@ namespace maps
 		  * \param normReading Is a [0,1] normalized concentration reading.
 		  * \param point Is the sensor location on the map
 		  */
-		void  insertObservation_GMRF(
-			float			normReading,
-			const mrpt::math::TPoint2D &point );
+		void  insertObservation_GMRF(float normReading,const mrpt::math::TPoint2D &point, const bool update_map);
 
 		/** solves the minimum quadratic system to determine the new concentration of each cell */
-		void  updateMapEstimation_GMRF();		
+		void  updateMapEstimation_GMRF();
 
 		/** Computes the confidence of the cell concentration (alpha) */
 		double computeConfidenceCellValue_DM_DMV (const TRandomFieldCell *cell ) const;

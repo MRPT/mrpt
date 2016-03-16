@@ -212,7 +212,7 @@ void  CRandomFieldGridMap2D::internal_clear()
 			TRandomFieldCell	def(0,0);		// mean, std
 			fill( def );
 
-			//Set initial restrictions: L "cell Constraints" + 0 "Observations constraints"
+			//Set initial restrictions: L "cell Constraints" + O "Observations constraints"
 			const uint16_t Gsize = m_insertOptions_common->GMRF_constraintsSize;
 			const uint16_t Gside = mrpt::utils::round((Gsize-1)/2);
 			const float Gsigma = m_insertOptions_common->GMRF_constraintsSigma;
@@ -255,7 +255,7 @@ void  CRandomFieldGridMap2D::internal_clear()
 			}
 
 			nFactors = nPriorFactors + nObsFactors;
-			cout << "Generating " << nFactors << "cell constraints for a map size of N=" << N << endl;
+			cout << "Generating " << nFactors << " cell constraints for a map size of N=" << N << endl;
 
 			//Reset the vector of maps (Hessian_vm), the gradient, and the vector of active observations
 #if EIGEN_VERSION_AT_LEAST(3,1,0)
@@ -2463,7 +2463,27 @@ CRandomFieldGridMap2D::TMapRepresentation	 CRandomFieldGridMap2D::getMapType()
 	return m_mapType;
 }
 
-void CRandomFieldGridMap2D::insertIndividualReading(const float sensorReading,const mrpt::math::TPoint2D & point)
+void CRandomFieldGridMap2D::updateMapEstimation()
+{
+	switch (m_mapType)
+	{
+		case mrKernelDM:
+		case mrKernelDMV:
+		case mrKalmanFilter:
+		case mrKalmanApproximate:
+			MRPT_TODO("Implement!");
+			THROW_EXCEPTION("To do!");
+			break;
+		case mrGMRF_G:
+		case mrGMRF_SD:
+			this->updateMapEstimation_GMRF();
+			break;
+	default:
+		THROW_EXCEPTION("insertObservation() isn't implemented for selected 'mapType'")
+	};
+}
+
+void CRandomFieldGridMap2D::insertIndividualReading(const float sensorReading,const mrpt::math::TPoint2D & point, const bool update_map)
 {
 	switch (m_mapType)
 	{
@@ -2471,8 +2491,8 @@ void CRandomFieldGridMap2D::insertIndividualReading(const float sensorReading,co
 		case mrKernelDMV:          insertObservation_KernelDM_DMV(sensorReading,point, true); break;
 		case mrKalmanFilter:       insertObservation_KF(sensorReading,point); break;
 		case mrKalmanApproximate:  insertObservation_KF2(sensorReading,point);break;
-		case mrGMRF_G:			   insertObservation_GMRF(sensorReading,point); break;
-		case mrGMRF_SD:			   insertObservation_GMRF(sensorReading,point); break;
+		case mrGMRF_G:			   insertObservation_GMRF(sensorReading,point,update_map); break;
+		case mrGMRF_SD:			   insertObservation_GMRF(sensorReading,point,update_map); break;
 	default:
 		THROW_EXCEPTION("insertObservation() isn't implemented for selected 'mapType'")
 	};
@@ -2484,7 +2504,7 @@ void CRandomFieldGridMap2D::insertIndividualReading(const float sensorReading,co
   ---------------------------------------------------------------*/
 void CRandomFieldGridMap2D::insertObservation_GMRF(
 	float normReading,
-	const mrpt::math::TPoint2D &point )
+	const mrpt::math::TPoint2D &point,const bool update_map )
 {
 
 	try{
@@ -2506,7 +2526,7 @@ void CRandomFieldGridMap2D::insertObservation_GMRF(
 	}
 
 	//Solve system and update map estimation
-	updateMapEstimation_GMRF();
+	if (update_map) updateMapEstimation_GMRF();
 }
 
 
@@ -2631,7 +2651,7 @@ void CRandomFieldGridMap2D::updateMapEstimation_GMRF()
 				else
 				{
 					//Gradient with all 4 neighbours
-					if (cx != 0)	//factor with lef node
+					if (cx != 0)	//factor with left node
 						g[j] += ( m_map[j].gmrf_mean - m_map[j-1].gmrf_mean) * m_insertOptions_common->GMRF_lambdaPrior;
 
 					if (cx != (m_size_x-1))	//factor with right node
@@ -2647,10 +2667,7 @@ void CRandomFieldGridMap2D::updateMapEstimation_GMRF()
 			break;
 
 		default:
-			{
-				g[j] = 0.0;
-				cout << "Gradient estimation ERROR: Method not found" << endl;
-			}
+			THROW_EXCEPTION("Gradient estimation error: Unknown method!");
 		};
 
 		// Increment j coordinates (row(x), col(y))
@@ -2677,17 +2694,15 @@ void CRandomFieldGridMap2D::updateMapEstimation_GMRF()
 	timelogger.leave("GMRF.solve");
 	timelogger.enter("GMRF.variance");
 #endif
-
+	Eigen::SparseMatrix<double> Sigma(N,N);								//Variance Matrix
+	MRPT_TODO("UT.coeff() implies a heavy time cost in sparse matrices. Rewrite.");
+#if 0
 	// VARIANCE SIGMA = inv(P) * inv( P*H*inv(P) ) * P
 	//Get triangular supperior P*H*inv(P) = UT' * UT = P * R'*R * inv(P)
 
 	Eigen::SparseMatrix<double> UT = solver.matrixU();
-
-	Eigen::SparseMatrix<double> Sigma(N,N);								//Variance Matrix
 	Sigma.reserve(UT.nonZeros());
 
-	// TODO: UT.coeff() implies a heavy time cost in sparse matrices... the following
-	//       should be rewritten for efficiency exploiting the knowledge about the nonzero pattern.
 
 	//Apply custom equations to obtain the inverse -> inv( P*H*inv(P) )
 	for (int l=N-1; l>=0; l--)
@@ -2725,7 +2740,7 @@ void CRandomFieldGridMap2D::updateMapEstimation_GMRF()
 
 		Sigma.insert(l,l) = (1/UT.coeff(l,l)) * ( 1/UT.coeff(l,l) - subSigmas );
 	}
-
+#endif
 #ifdef DO_PROFILE
 	timelogger.leave("GMRF.variance");
 	timelogger.enter("GMRF.copy_to_map");
