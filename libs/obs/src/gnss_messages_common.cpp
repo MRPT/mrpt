@@ -53,7 +53,17 @@ gnss_message*  gnss_message::Factory(const gnss_message_type_t msg_id)
 	default:
 		return NULL;
 	};
-
+#undef DOFOR
+}
+bool gnss_message::FactoryKnowsMsgType(const gnss_message_type_t msg_id)
+{
+#define DOFOR(_MSG_ID)  case _MSG_ID: return true;
+	switch (msg_id)
+	{
+		LIST_ALL_MSGS
+	default:
+		return false;
+	};
 #undef DOFOR
 }
 

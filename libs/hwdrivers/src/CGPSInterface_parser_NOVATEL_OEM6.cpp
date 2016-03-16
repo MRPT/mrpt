@@ -23,7 +23,9 @@ MRPT_TODO("check crc")
 
 bool  CGPSInterface::implement_parser_NOVATEL_OEM6(size_t &out_minimum_rx_buf_to_decide)
 {
-	static uint32_t num_leap_seconds = 0; // to be grabbed from the last Message_NV_OEM6_IONUTC msg
+	// to be grabbed from the last Message_NV_OEM6_IONUTC msg
+	static uint32_t num_leap_seconds = getenv("MRPT_HWDRIVERS_DEFAULT_LEAP_SECONDS")==NULL ? 
+		17 : atoi(getenv("MRPT_HWDRIVERS_DEFAULT_LEAP_SECONDS"));
 
 	using namespace mrpt::obs::gnss;
 
@@ -70,12 +72,7 @@ bool  CGPSInterface::implement_parser_NOVATEL_OEM6(size_t &out_minimum_rx_buf_to
 
 		// Deserialize the message:
 		// 1st, test if we have a specific data structure for this msg_id:
-		bool use_generic_container;
-		{
-			gnss_message* dummy = gnss_message::Factory( (gnss_message_type_t)(NV_OEM6_MSG2ENUM + hdr.msg_id ) );
-			use_generic_container = (dummy==NULL);
-			delete dummy;
-		}
+		const bool use_generic_container = !gnss_message::FactoryKnowsMsgType( (gnss_message_type_t)(NV_OEM6_MSG2ENUM + hdr.msg_id ) );
 		// ------ Serialization format:
 		//const int32_t msg_id = message_type;
 		//out << msg_id;
@@ -129,12 +126,7 @@ bool  CGPSInterface::implement_parser_NOVATEL_OEM6(size_t &out_minimum_rx_buf_to
 
 		// Deserialize the message:
 		// 1st, test if we have a specific data structure for this msg_id:
-		bool use_generic_container;
-		{
-			gnss_message* dummy = gnss_message::Factory( (gnss_message_type_t)(NV_OEM6_MSG2ENUM + hdr.msg_id ) );
-			use_generic_container = (dummy==NULL);
-			delete dummy;
-		}
+		const bool use_generic_container = !gnss_message::FactoryKnowsMsgType( (gnss_message_type_t)(NV_OEM6_MSG2ENUM + hdr.msg_id ) );
 		// ------ Serialization format:
 		//const int32_t msg_id = message_type;
 		//out << msg_id;
