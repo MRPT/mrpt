@@ -31,7 +31,7 @@ using namespace std;
 
 
 //  =========== Begin of Map definition ============
-MAP_DEFINITION_REGISTER("CHeightGridMap2D,beaconMap", mrpt::maps::CHeightGridMap2D)
+MAP_DEFINITION_REGISTER("CHeightGridMap2D,heightMap", mrpt::maps::CHeightGridMap2D)
 
 CHeightGridMap2D::TMapDefinition::TMapDefinition() :
 	min_x(-2),

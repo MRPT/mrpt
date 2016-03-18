@@ -63,6 +63,7 @@
 			- mrpt::opengl::CMesh::updateColorsMatrix() did not ignore cells masked out.
 			- Wrong weights used in mrpt::poses::CPosePDFSOG::getMean()
 			- Removed ad-hoc bias addition in range-only predictions in landmarks maps.
+			- Error loading height map count in mrpt::maps::TSetOfMetricMapInitializers (Closes GitHub issue <a href="https://github.com/MRPT/mrpt/issues/205" >#205</a>.
 
 <a name="1.3.2">
   <h2>Version 1.3.2: Released 3-NOV-2015 </h2></a>
