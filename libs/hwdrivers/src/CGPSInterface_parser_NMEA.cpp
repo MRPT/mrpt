@@ -91,6 +91,7 @@ bool  CGPSInterface::implement_parser_NMEA(size_t &out_minimum_rx_buf_to_decide)
 bool CGPSInterface::parse_NMEA(const std::string &s, mrpt::obs::CObservationGPS &out_obs, const bool verbose)
 {
 	static mrpt::system::TTimeStamp last_known_date = mrpt::system::now(); // For building complete date+time in msgs without a date.
+	static mrpt::system::TTimeStamp last_known_time = mrpt::system::now();
 
 	if (verbose)
 		cout << "[CGPSInterface] GPS raw string: " << s << endl;
@@ -312,11 +313,12 @@ bool CGPSInterface::parse_NMEA(const std::string &s, mrpt::obs::CObservationGPS 
 			out_obs.originalReceivedTimestamp = mrpt::system::now();
 			out_obs.timestamp = rmc.fields.UTCTime.getAsTimestamp( rmc.getDateAsTimestamp() );
 			last_known_date = rmc.getDateAsTimestamp();
+			last_known_time = out_obs.timestamp;
 			out_obs.has_satellite_timestamp = true;
 		}
 		parsed_ok = all_fields_ok;
 	}
-	else if ( lstTokens[0]=="$GPGLL" && lstTokens.size()>=13)
+	else if ( lstTokens[0]=="$GPGLL" && lstTokens.size()>=5)
 	{
 		// ---------------------------------------------
 		//					GPGLL
@@ -326,10 +328,65 @@ bool CGPSInterface::parse_NMEA(const std::string &s, mrpt::obs::CObservationGPS 
 
 		// Fill out the output structure:
 		gnss::Message_NMEA_GLL gll;
-		// *** FIX lstTokens.size() above
-		MRPT_TODO("Parse GLL")
+		// Latitude:
+		token = lstTokens[1];
+		if (token.size()>=4)
+		{
+			double	lat = 10 * (token[0]-'0') + token[1]-'0';
+			lat += atof( & (token.c_str()[2]) ) / 60.0;
+			gll.fields.latitude_degrees = lat;
+		}
+		else all_fields_ok = false;
+
+		// N/S:
+		token = lstTokens[2];
+		if (token.empty()) all_fields_ok = false;
+		else if (token[0]=='S')
+			gll.fields.latitude_degrees = -gll.fields.latitude_degrees;
+
+		// Longitude:
+		token = lstTokens[3];
+		if (token.size()>=5)
+		{
+			double	lat = 100 * (token[0]-'0') + 10 * (token[1]-'0')+ token[2]-'0';
+			lat += atof( & (token.c_str()[3]) ) / 60.0;
+			gll.fields.longitude_degrees = lat;
+		}
+		else all_fields_ok = false;
+
+		// E/W:
+		token = lstTokens[4];
+		if (token.empty()) all_fields_ok = false;
+		else if (token[0]=='W')
+			gll.fields.longitude_degrees = -gll.fields.longitude_degrees;
+
+		if (lstTokens.size()>=7) {
+			// Time:
+			token = lstTokens[5];
+			if (token.size()>=6)
+			{
+				gll.fields.UTCTime.hour		= 10 * (token[0]-'0') + token[1]-'0';
+				gll.fields.UTCTime.minute	= 10 * (token[2]-'0') + token[3]-'0';
+				gll.fields.UTCTime.sec		= atof( & (token.c_str()[4]) );
+			}
+			else all_fields_ok = false;
+
+			// Valid?
+			token = lstTokens[6];
+			if (token.empty()) all_fields_ok = false;
+			else gll.fields.validity_char = token.c_str()[0];
+		}
+
+		if (all_fields_ok) {
+			out_obs.setMsg(gll);
+			out_obs.originalReceivedTimestamp = mrpt::system::now();
+			out_obs.timestamp = gll.fields.UTCTime.getAsTimestamp( last_known_date );
+			last_known_time = out_obs.timestamp;
+			out_obs.has_satellite_timestamp = true;
+		}
+		parsed_ok = all_fields_ok;
 	}
-	else if ( lstTokens[0]=="$GPVTG" && lstTokens.size()>=13)
+	else if ( lstTokens[0]=="$GPVTG" && lstTokens.size()>=9)
 	{
 		// ---------------------------------------------
 		//					GPVTG
@@ -339,8 +396,23 @@ bool CGPSInterface::parse_NMEA(const std::string &s, mrpt::obs::CObservationGPS 
 
 		// Fill out the output structure:
 		gnss::Message_NMEA_VTG vtg;
-		// *** FIX lstTokens.size() above
-		MRPT_TODO("Parse VTG")
+
+		vtg.fields.true_track = atof(lstTokens[1].c_str());
+		vtg.fields.magnetic_track = atof(lstTokens[3].c_str());
+		vtg.fields.ground_speed_knots = atof(lstTokens[5].c_str());
+		vtg.fields.ground_speed_kmh = atof(lstTokens[7].c_str());
+
+		if (lstTokens[2]!="T" ||lstTokens[4]!="M" ||lstTokens[6]!="N" ||lstTokens[8]!="K")
+			all_fields_ok=false;
+
+		if (all_fields_ok) {
+			out_obs.setMsg(vtg);
+			out_obs.originalReceivedTimestamp = mrpt::system::now();
+			out_obs.timestamp = last_known_time;
+			out_obs.has_satellite_timestamp = false;
+		}
+		parsed_ok = all_fields_ok;
+
 	}
 	else if ( lstTokens[0]=="$GPZDA" && lstTokens.size()>=5)
 	{
@@ -389,6 +461,7 @@ bool CGPSInterface::parse_NMEA(const std::string &s, mrpt::obs::CObservationGPS 
 				out_obs.timestamp = zda.getDateTimeAsTimestamp();
 				last_known_date = zda.getDateAsTimestamp();
 				out_obs.has_satellite_timestamp = true;
+				last_known_time = out_obs.timestamp;
 			} catch (...) {
 				// Invalid date:
 				out_obs.timestamp 

@@ -14,16 +14,17 @@
 #include <mrpt/system/filesystem.h>
 #include <mrpt/hwdrivers/CGPSInterface.h>
 #include <mrpt/utils/CMemoryStream.h>
+#include <mrpt/utils/crc.h>
 
 using namespace mrpt::hwdrivers;
 using namespace mrpt::obs;
 using namespace std;
 
-MRPT_TODO("check crc")
-
 bool  CGPSInterface::implement_parser_NOVATEL_OEM6(size_t &out_minimum_rx_buf_to_decide)
 {
-	static uint32_t num_leap_seconds = 0; // to be grabbed from the last Message_NV_OEM6_IONUTC msg
+	// to be grabbed from the last Message_NV_OEM6_IONUTC msg
+	static uint32_t num_leap_seconds = getenv("MRPT_HWDRIVERS_DEFAULT_LEAP_SECONDS")==NULL ? 
+		17 : atoi(getenv("MRPT_HWDRIVERS_DEFAULT_LEAP_SECONDS"));
 
 	using namespace mrpt::obs::gnss;
 
@@ -68,14 +69,19 @@ bool  CGPSInterface::implement_parser_NOVATEL_OEM6(size_t &out_minimum_rx_buf_to
 		m_rx_buffer.pop_many(reinterpret_cast<uint8_t*>(&buf[0]), sizeof(hdr));
 		m_rx_buffer.pop_many(reinterpret_cast<uint8_t*>(&buf[sizeof(hdr)]), hdr.msg_len + 4 /*crc*/ );
 
+		// Check CRC:
+		const uint32_t crc_computed = mrpt::utils::compute_CRC32(&buf[0], expected_total_msg_len-4);
+		const uint32_t crc_read = 
+			(buf[expected_total_msg_len-1] << 24) | 
+			(buf[expected_total_msg_len-2] << 16) | 
+			(buf[expected_total_msg_len-3] << 8) | 
+			(buf[expected_total_msg_len-4] << 0);
+		if (crc_read!=crc_computed)
+			return false; // skip 1 byte, we dont recognize this format
+
 		// Deserialize the message:
 		// 1st, test if we have a specific data structure for this msg_id:
-		bool use_generic_container;
-		{
-			gnss_message* dummy = gnss_message::Factory( (gnss_message_type_t)(NV_OEM6_MSG2ENUM + hdr.msg_id ) );
-			use_generic_container = (dummy==NULL);
-			delete dummy;
-		}
+		const bool use_generic_container = !gnss_message::FactoryKnowsMsgType( (gnss_message_type_t)(NV_OEM6_MSG2ENUM + hdr.msg_id ) );
 		// ------ Serialization format:
 		//const int32_t msg_id = message_type;
 		//out << msg_id;
@@ -127,14 +133,19 @@ bool  CGPSInterface::implement_parser_NOVATEL_OEM6(size_t &out_minimum_rx_buf_to
 		m_rx_buffer.pop_many(reinterpret_cast<uint8_t*>(&buf[0]), sizeof(hdr));
 		m_rx_buffer.pop_many(reinterpret_cast<uint8_t*>(&buf[sizeof(hdr)]), hdr.msg_len + 4 /*crc*/ );
 
+		// Check CRC:
+		const uint32_t crc_computed = mrpt::utils::compute_CRC32(&buf[0], expected_total_msg_len-4);
+		const uint32_t crc_read = 
+			(buf[expected_total_msg_len-1] << 24) | 
+			(buf[expected_total_msg_len-2] << 16) | 
+			(buf[expected_total_msg_len-3] << 8) | 
+			(buf[expected_total_msg_len-4] << 0);
+		if (crc_read!=crc_computed)
+			return false; // skip 1 byte, we dont recognize this format
+
 		// Deserialize the message:
 		// 1st, test if we have a specific data structure for this msg_id:
-		bool use_generic_container;
-		{
-			gnss_message* dummy = gnss_message::Factory( (gnss_message_type_t)(NV_OEM6_MSG2ENUM + hdr.msg_id ) );
-			use_generic_container = (dummy==NULL);
-			delete dummy;
-		}
+		const bool use_generic_container = !gnss_message::FactoryKnowsMsgType( (gnss_message_type_t)(NV_OEM6_MSG2ENUM + hdr.msg_id ) );
 		// ------ Serialization format:
 		//const int32_t msg_id = message_type;
 		//out << msg_id;

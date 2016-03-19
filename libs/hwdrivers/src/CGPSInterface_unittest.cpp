@@ -59,7 +59,6 @@ TEST(CGPSInterface, parse_NMEA_RMC)
 	EXPECT_NEAR(msg->fields.longitude_degrees, -(121+58.3416/60.0),1e-10);
 }
 
-#if 0
 TEST(CGPSInterface, parse_NMEA_GLL)
 {
 	const char *test_cmd = "$GPGLL,3723.2475,N,12158.3416,W,161229.487,A,A*41";
@@ -77,7 +76,7 @@ TEST(CGPSInterface, parse_NMEA_GLL)
 
 TEST(CGPSInterface, parse_NMEA_VTG)
 {
-	const char *test_cmd = "$GPVTG,309.62,T, ,M,0.13,N,0.2,K,A*23";
+	const char *test_cmd = "$GPVTG,054.7,T,034.4,M,005.5,N,010.2,K*48";
 	mrpt::obs::CObservationGPS obsGPS;
 	const bool parse_ret = CGPSInterface::parse_NMEA( test_cmd, obsGPS );
 	EXPECT_TRUE(parse_ret) << "Failed parse of: " << test_cmd << endl;
@@ -86,7 +85,10 @@ TEST(CGPSInterface, parse_NMEA_VTG)
 
 	EXPECT_TRUE(msg!=NULL);
 	if (!msg) return;
-	//EXPECT_NEAR(msg->fields.longitude_degrees, -(121+58.3416/60.0),1e-10);
+	EXPECT_NEAR(msg->fields.true_track, 54.7,1e-6);
+	EXPECT_NEAR(msg->fields.magnetic_track, 34.4,1e-6);
+	EXPECT_NEAR(msg->fields.ground_speed_knots, 5.5,1e-6);
+	EXPECT_NEAR(msg->fields.ground_speed_kmh, 10.2,1e-6);
 }
 
 TEST(CGPSInterface, parse_NMEA_ZDA)
@@ -100,6 +102,10 @@ TEST(CGPSInterface, parse_NMEA_ZDA)
 
 	EXPECT_TRUE(msg!=NULL);
 	if (!msg) return;
-	//EXPECT_NEAR(msg->fields.longitude_degrees, -(121+58.3416/60.0),1e-10);
+	EXPECT_EQ(msg->fields.date_day,14);
+	EXPECT_EQ(msg->fields.date_month,10);
+	EXPECT_EQ(msg->fields.date_year,2003);
+	EXPECT_EQ(msg->fields.UTCTime.hour,18);
+	EXPECT_EQ(msg->fields.UTCTime.minute,18);
+	EXPECT_EQ(msg->fields.UTCTime.sec,13);
 }
-#endif

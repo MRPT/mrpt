@@ -31,6 +31,7 @@
 				- [ABI change] mrpt::system::tokenize() new parameter `skipBlankTokens`
 				- mrpt::utils::circular_buffer now has peek() methods
 				- Eigen::MatrixBase<Derived>::loadFromTextFile() now also accepts `,` as column separator.
+				- New function mrpt::utils::compute_CRC32()
 			- \ref mrpt_hwdrivers_grp
 				- New class mrpt::hwdrivers::CVelodyneScanner
 				- mrpt::hwdrivers::CNTRIPEmitter now has a parameter to enable/disable sending back the data from the serial port to the NTRIP caster.
@@ -62,6 +63,7 @@
 			- mrpt::opengl::CMesh::updateColorsMatrix() did not ignore cells masked out.
 			- Wrong weights used in mrpt::poses::CPosePDFSOG::getMean()
 			- Removed ad-hoc bias addition in range-only predictions in landmarks maps.
+			- Error loading height map count in mrpt::maps::TSetOfMetricMapInitializers (Closes GitHub issue <a href="https://github.com/MRPT/mrpt/issues/205" >#205</a>.
 
 <a name="1.3.2">
   <h2>Version 1.3.2: Released 3-NOV-2015 </h2></a>
