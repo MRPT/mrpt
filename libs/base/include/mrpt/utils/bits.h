@@ -140,11 +140,24 @@ namespace mrpt
 		inline void keep_min(T &var,  const K test_val) {
 			if (test_val<var) var = test_val;
 		}
-
 		/** If the second argument is above the first one, set the first argument to this higher value. */
 		template <typename T,typename K>
 		inline void keep_max(T &var,  const K test_val) {
 			if (test_val>var) var = test_val;
+		}
+		/** Saturate the value of var (the variable gets modified) so it does not get out of [min,max]. */
+		template <typename T>
+		inline void saturate(T &var, const T sat_min, const T sat_max) {
+			if (var>sat_max) var = sat_max;
+			if (var<sat_min) var = sat_min;
+		}
+		/** Like saturate() but it returns the value instead of modifying the variable */
+		template <typename T>
+		inline T saturate_val(const T &value, const T sat_min, const T sat_max) {
+			T var=value;
+			if (var>sat_max) var = sat_max;
+			if (var<sat_min) var = sat_min;
+			return var;
 		}
 
 		/** Calls "delete" to free an object only if the pointer is not NULL, then set the pointer to NULL. */
