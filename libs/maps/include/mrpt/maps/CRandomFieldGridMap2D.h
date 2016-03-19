@@ -174,6 +174,9 @@ namespace maps
 		/** Returns an image just as described in \a saveAsBitmapFile */
 		virtual void  getAsBitmapFile(mrpt::utils::CImage &out_img) const;
 
+		/** Like saveAsBitmapFile(), but returns the data in matrix form (first row in the matrix is the upper (y_max) part of the map) */
+		virtual void getAsMatrix( mrpt::math::CMatrixDouble &out_mat) const;
+
 		/** Parameters common to any derived class.
 		  *  Derived classes should derive a new struct from this one, plus "public utils::CLoadableOptions",
 		  *  and call the internal_* methods where appropiate to deal with the variables declared here.
@@ -194,7 +197,7 @@ namespace maps
 			    @{ */
 			float	sigma;	//!< The sigma of the "Parzen"-kernel Gaussian
 			float	cutoffRadius;	//!< The cutoff radius for updating cells.
-            float	R_min,R_max;	//!< Limits for normalization of sensor readings.
+			float	R_min,R_max;	//!< Limits for normalization of sensor readings.
 			double	dm_sigma_omega;	//!< [DM/DM+V methods] The scaling parameter for the confidence "alpha" values (see the IROS 2009 paper; see CRandomFieldGridMap2D) */
 			/** @} */
 
@@ -220,8 +223,9 @@ namespace maps
 			size_t GMRF_gridmap_image_cx;			//!< Pixel coordinates of the origin for the occupancy_gridmap
 			size_t GMRF_gridmap_image_cy;			//!< Pixel coordinates of the origin for the occupancy_gridmap
 
-			uint16_t	GMRF_constraintsSize;	//!< [mrGMRF_G only] The size of the Gaussian window to impose fixed restrictions between cells.
-			float		GMRF_constraintsSigma;  //!< [mrGMRF_G only] The sigma of the Gaussian window to impose fixed restrictions between cells.
+			uint16_t  GMRF_constraintsSize;	//!< [mrGMRF_G only] The size of the Gaussian window to impose fixed restrictions between cells.
+			float     GMRF_constraintsSigma;  //!< [mrGMRF_G only] The sigma of the Gaussian window to impose fixed restrictions between cells.
+			double    GMRF_saturate_min, GMRF_saturate_max; //!< (Default:-inf,+inf) Saturate the estimated mean in these limits
 			/** @} */
 		};
 
@@ -284,7 +288,12 @@ namespace maps
 
 		void updateMapEstimation();
 
+		void enableVerbose(bool enable_verbose) { m_rfgm_verbose = enable_verbose; }
+		bool isEnabledVerbose() const { return m_rfgm_verbose; }
+
 	protected:
+		bool m_rfgm_verbose; //!< Enable verbose debug output for Random Field grid map operations (Default: false)
+
 		/** Common options to all random-field grid maps: pointer that is set to the derived-class instance of "insertOptions" upon construction of this class. */
 		TInsertionOptionsCommon * m_insertOptions_common;
 

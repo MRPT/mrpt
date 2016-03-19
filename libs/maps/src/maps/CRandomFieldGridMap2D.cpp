@@ -22,12 +22,6 @@
 
 #include <numeric>
 
-// =========== DEBUG MACROS =============
-#define RANDOMFIELDGRIDMAP_VERBOSE		    0
-#define RANDOMFIELDGRIDMAP_KF2_VERBOSE		0
-// ======================================
-
-
 using namespace mrpt;
 using namespace mrpt::maps;
 using namespace mrpt::math;
@@ -50,6 +44,7 @@ CRandomFieldGridMap2D::CRandomFieldGridMap2D(
 	float		y_max,
 	float		resolution ) :
 		CDynamicGrid<TRandomFieldCell>( x_min,x_max,y_min,y_max,resolution ),
+		m_rfgm_verbose(false),
 		m_insertOptions_common( NULL ),
 		m_mapType(mapType),
 		m_cov(0,0),
@@ -95,7 +90,8 @@ void  CRandomFieldGridMap2D::internal_clear()
 
 	case mrKalmanFilter:
 		{
-			printf("[CRandomFieldGridMap2D::clear] Setting covariance matrix to %ux%u\n",(unsigned int)(m_size_y*m_size_x),(unsigned int)(m_size_y*m_size_x));
+			if (m_rfgm_verbose)
+				printf("[CRandomFieldGridMap2D::clear] Setting covariance matrix to %ux%u\n",(unsigned int)(m_size_y*m_size_x),(unsigned int)(m_size_y*m_size_x));
 
 			TRandomFieldCell	def(
 				m_insertOptions_common->KF_defaultCellMeanValue,		// mean
@@ -146,7 +142,8 @@ void  CRandomFieldGridMap2D::internal_clear()
 			CTicTac	tictac;
 			tictac.Tic();
 
-			printf("[CRandomFieldGridMap2D::clear] Resetting compressed cov. matrix and cells\n");
+			if (m_rfgm_verbose)
+				printf("[CRandomFieldGridMap2D::clear] Resetting compressed cov. matrix and cells\n");
 			TRandomFieldCell	def(
 				m_insertOptions_common->KF_defaultCellMeanValue,									// mean
 				m_insertOptions_common->KF_initialCellStd		// std
@@ -197,7 +194,8 @@ void  CRandomFieldGridMap2D::internal_clear()
 				}
 			}
 
-			//printf("[CRandomFieldGridMap2D::clear] %ux%u cells done in %.03fms\n", unsigned(m_size_x),unsigned(m_size_y),1000*tictac.Tac());
+			if (m_rfgm_verbose)
+				printf("[CRandomFieldGridMap2D::clear] %ux%u cells done in %.03fms\n", unsigned(m_size_x),unsigned(m_size_y),1000*tictac.Tac());
 		}
 		break;
 
@@ -206,7 +204,8 @@ void  CRandomFieldGridMap2D::internal_clear()
 			CTicTac	tictac;
 			tictac.Tic();
 
-			printf("[CRandomFieldGridMap2D::clear] Generating Prior based on Gaussian\n");
+			if (m_rfgm_verbose)
+				printf("[CRandomFieldGridMap2D::clear] Generating Prior based on Gaussian\n");
 
 			// Set the grid to initial values:
 			TRandomFieldCell	def(0,0);		// mean, std
@@ -255,7 +254,7 @@ void  CRandomFieldGridMap2D::internal_clear()
 			}
 
 			nFactors = nPriorFactors + nObsFactors;
-			cout << "Generating " << nFactors << " cell constraints for a map size of N=" << N << endl;
+			if (m_rfgm_verbose) cout << "Generating " << nFactors << " cell constraints for a map size of N=" << N << endl;
 
 			//Reset the vector of maps (Hessian_vm), the gradient, and the vector of active observations
 #if EIGEN_VERSION_AT_LEAST(3,1,0)
@@ -334,7 +333,7 @@ void  CRandomFieldGridMap2D::internal_clear()
 				} // end for "j"
 			}
 
-			cout << "		Ready in: " << tictac.Tac() << "s" << endl;
+			if (m_rfgm_verbose) cout << "		Ready in: " << tictac.Tac() << "s" << endl;
 			//Solve system and update map estimation
 			updateMapEstimation_GMRF();
 		}
@@ -345,8 +344,10 @@ void  CRandomFieldGridMap2D::internal_clear()
 			CTicTac	tictac;
 			tictac.Tic();
 
-			printf("[CRandomFieldGridMap2D::clear] Generating Prior based on 'Squared Differences'\n");
-			printf("Initial map dimension: %u cells, x=(%.2f,%.2f) y=(%.2f,%.2f)\n", static_cast<unsigned int>(m_map.size()), getXMin(),getXMax(),getYMin(),getYMax());
+			if (m_rfgm_verbose) {
+				printf("[CRandomFieldGridMap2D::clear] Generating Prior based on 'Squared Differences'\n");
+				printf("[CRandomFieldGridMap2D::clear] Initial map dimension: %u cells, x=(%.2f,%.2f) y=(%.2f,%.2f)\n", static_cast<unsigned int>(m_map.size()), getXMin(),getXMax(),getYMin(),getYMax());
+			}
 
 			// Set the gasgridmap (m_map) to initial values:
 			TRandomFieldCell	def(0,0);		// mean, std
@@ -358,11 +359,7 @@ void  CRandomFieldGridMap2D::internal_clear()
 			if (this->m_insertOptions_common->GMRF_use_occupancy_information)
 			{
 				MRPT_TODO("Clean up!")
-				printf("loading simplemap: %s ",m_insertOptions_common->GMRF_simplemap_file.c_str());
-				printf("%i \n",m_insertOptions_common->GMRF_simplemap_file.compare(""));
 
-				printf("loading map_image: %s ",m_insertOptions_common->GMRF_gridmap_image_file.c_str());
-				printf("%i \n",m_insertOptions_common->GMRF_gridmap_image_file.compare(""));
 				//Load Occupancy Gridmap and resize
 				if( m_insertOptions_common->GMRF_simplemap_file.compare("") )
 				{
@@ -393,21 +390,26 @@ void  CRandomFieldGridMap2D::internal_clear()
 				else if( m_insertOptions_common->GMRF_gridmap_image_file.compare("") )
 				{
 					//Load from image
-					bool loaded = m_Ocgridmap.loadFromBitmapFile(this->m_insertOptions_common->GMRF_gridmap_image_file,this->m_insertOptions_common->GMRF_gridmap_image_res,this->m_insertOptions_common->GMRF_gridmap_image_cx,this->m_insertOptions_common->GMRF_gridmap_image_cy);
-					printf ("Occupancy Gridmap loaded : %s",loaded ? "YES" : "NO");
+					const bool grid_loaded_ok = m_Ocgridmap.loadFromBitmapFile(this->m_insertOptions_common->GMRF_gridmap_image_file,this->m_insertOptions_common->GMRF_gridmap_image_res,this->m_insertOptions_common->GMRF_gridmap_image_cx,this->m_insertOptions_common->GMRF_gridmap_image_cy);
+					ASSERT_(grid_loaded_ok);
 					res_coef = this->getResolution() / this->m_insertOptions_common->GMRF_gridmap_image_res;
 				}
-				else
-					cout << "Neither 'simplemap_file' nor 'gridmap_image_file' found in mission file. Quitting."<< endl;
+				else {
+					THROW_EXCEPTION("Neither `simplemap_file` nor `gridmap_image_file` found in config/mission file. Quitting.");
+				}
 
 				//Resize GasMap to match Occupancy Gridmap dimmensions
-				printf("Resizing m_map to match Occupancy Gridmap dimensions \n");
+				if (m_rfgm_verbose) {
+					printf("Resizing m_map to match Occupancy Gridmap dimensions \n");
+				}
 				resize(m_Ocgridmap.getXMin(),m_Ocgridmap.getXMax(),m_Ocgridmap.getYMin(),m_Ocgridmap.getYMax(),def,0.0);
 
-				printf("Occupancy Gridmap dimensions: x=(%.2f,%.2f)m y=(%.2f,%.2f)m \n",m_Ocgridmap.getXMin(),m_Ocgridmap.getXMax(),m_Ocgridmap.getYMin(),m_Ocgridmap.getYMax());
-				printf("Occupancy Gridmap dimensions: %u cells, cx=%i cy=%i\n\n", static_cast<unsigned int>(m_Ocgridmap.getSizeX()*m_Ocgridmap.getSizeY()), m_Ocgridmap.getSizeX(), m_Ocgridmap.getSizeY());
-				printf("New map dimensions: %u cells, x=(%.2f,%.2f) y=(%.2f,%.2f)\n", static_cast<unsigned int>(m_map.size()), getXMin(),getXMax(),getYMin(),getYMax());
-				printf("New map dimensions: %u cells, cx=%u cy=%u\n", static_cast<unsigned int>(m_map.size()), static_cast<unsigned int>(getSizeX()), static_cast<unsigned int>(getSizeY()));
+				if (m_rfgm_verbose) {
+					printf("Occupancy Gridmap dimensions: x=(%.2f,%.2f)m y=(%.2f,%.2f)m \n",m_Ocgridmap.getXMin(),m_Ocgridmap.getXMax(),m_Ocgridmap.getYMin(),m_Ocgridmap.getYMax());
+					printf("Occupancy Gridmap dimensions: %u cells, cx=%i cy=%i\n\n", static_cast<unsigned int>(m_Ocgridmap.getSizeX()*m_Ocgridmap.getSizeY()), m_Ocgridmap.getSizeX(), m_Ocgridmap.getSizeY());
+					printf("New map dimensions: %u cells, x=(%.2f,%.2f) y=(%.2f,%.2f)\n", static_cast<unsigned int>(m_map.size()), getXMin(),getXMax(),getYMin(),getYMax());
+					printf("New map dimensions: %u cells, cx=%u cy=%u\n", static_cast<unsigned int>(m_map.size()), static_cast<unsigned int>(getSizeX()), static_cast<unsigned int>(getSizeY()));
+				}
 
 				m_Ocgridmap.saveAsBitmapFile("./obstacle_map_from_MRPT.png");
 			}
@@ -419,7 +421,7 @@ void  CRandomFieldGridMap2D::internal_clear()
 			nPriorFactors = (this->getSizeX() -1) * this->getSizeY() + this->getSizeX() * (this->getSizeY() -1);		// L = (Nr-1)*Nc + Nr*(Nc-1); Full connected
 			nObsFactors = 0;		// M
 			nFactors = nPriorFactors + nObsFactors;
-			cout << "Generating " << nFactors << "factors for a map size of N=" << N << endl;
+			if (m_rfgm_verbose) cout << "Generating " << nFactors << " factors for a map size of N=" << N << endl;
 
 
 #if EIGEN_VERSION_AT_LEAST(3,1,0)
@@ -437,10 +439,12 @@ void  CRandomFieldGridMap2D::internal_clear()
 			//-------------------------------------
 			if (this->m_insertOptions_common->GMRF_use_occupancy_information)
 			{
-				printf("LOADING PRIOR BASED ON OCCUPANCY GRIDMAP \n");
-				printf("Gas Map Dimmensions: %u x %u cells \n", static_cast<unsigned int>(m_size_x), static_cast<unsigned int>(m_size_y));
-				printf("Occupancy map Dimmensions: %i x %i cells \n", m_Ocgridmap.getSizeX(), m_Ocgridmap.getSizeY());
-				printf("Res_Coeff = %f pixels/celda",res_coef);
+				if (m_rfgm_verbose) {
+					printf("LOADING PRIOR BASED ON OCCUPANCY GRIDMAP \n");
+					printf("Gas Map Dimmensions: %u x %u cells \n", static_cast<unsigned int>(m_size_x), static_cast<unsigned int>(m_size_y));
+					printf("Occupancy map Dimmensions: %i x %i cells \n", m_Ocgridmap.getSizeX(), m_Ocgridmap.getSizeY());
+					printf("Res_Coeff = %f pixels/celda",res_coef);
+				}
 
 				//Use region growing algorithm to determine the gascell interconnections (Factors)
 				size_t cx = 0;
@@ -587,13 +591,12 @@ void  CRandomFieldGridMap2D::internal_clear()
 			}
 			else
 			{
-				cout << "LOADING FULL PRIOR" << endl;
+				if (m_rfgm_verbose) cout << "LOADING FULL PRIOR" << endl;
 				//---------------------------------------------------------------
 				// Load default values for H_prior without Occupancy information:
 				//---------------------------------------------------------------
 				size_t cx = 0;
 				size_t cy = 0;
-				size_t count = 0;
 				for (size_t j=0; j<N; j++)
 				{
 					//Factor with the right node: H_ji = - Lamda_prior
@@ -601,11 +604,8 @@ void  CRandomFieldGridMap2D::internal_clear()
 					if (cx<(m_size_x-1))
 					{
 						size_t i = j+1;
-
-
 						Eigen::Triplet<double> Hentry(i,j, - m_insertOptions_common->GMRF_lambdaPrior);
 						H_prior.push_back( Hentry );
-						count = count +1;
 					}
 
 					//Factor with the above node: H_ji = - Lamda_prior
@@ -613,10 +613,8 @@ void  CRandomFieldGridMap2D::internal_clear()
 					if (cy<(m_size_y-1))
 					{
 						size_t i = j+m_size_x;
-
 						Eigen::Triplet<double> Hentry(i,j, - m_insertOptions_common->GMRF_lambdaPrior);
 						H_prior.push_back( Hentry );
-						count = count +1;
 					}
 
 					//Factors of cell_i: H_ii = N factors * Lambda_prior
@@ -626,15 +624,16 @@ void  CRandomFieldGridMap2D::internal_clear()
 					H_prior.push_back( Hentry );
 
 					// Increment j coordinates (row(x), col(y))
-					if (++cx>=m_size_x)
-					{
+					if (++cx>=m_size_x) {
 						cx=0;
 						cy++;
 					}
 				} // end for "j"
 			} // end if_use_Occupancy
 
-			cout << "---------- Prior Built in: " << tictac.Tac() << "s ----------" << endl;
+			if (m_rfgm_verbose) {
+				cout << "---------- Prior Built in: " << tictac.Tac() << "s ----------" << endl;
+			}
 
 			//Solve system and update map estimation
 			updateMapEstimation_GMRF();
@@ -642,10 +641,9 @@ void  CRandomFieldGridMap2D::internal_clear()
 		}//end case
 		break;
 	default:
-		cout << "MAP TYPE NOT RECOGNIZED... QUITTING" << endl;
+		cerr << "MAP TYPE NOT RECOGNIZED... QUITTING" << endl;
 		break;
 	} //end switch
-
 }
 
 /*---------------------------------------------------------------
@@ -689,7 +687,7 @@ void  CRandomFieldGridMap2D::insertObservation_KernelDM_DMV(
 	if ( m_DM_lastCutOff!=m_insertOptions_common->cutoffRadius ||
 			m_DM_gaussWindow.size() != square(Ac_all) )
 	{
-		printf("[CRandomFieldGridMap2D::insertObservation_KernelDM_DMV] Precomputing window %ux%u\n",Ac_all,Ac_all);
+		if (m_rfgm_verbose) printf("[CRandomFieldGridMap2D::insertObservation_KernelDM_DMV] Precomputing window %ux%u\n",Ac_all,Ac_all);
 
 		double	dist;
 		double	std = m_insertOptions_common->sigma;
@@ -710,7 +708,7 @@ void  CRandomFieldGridMap2D::insertObservation_KernelDM_DMV(
 			}
 		}
 
-		printf("[CRandomFieldGridMap2D::insertObservation_KernelDM_DMV] Done!\n");
+		if (m_rfgm_verbose) printf("[CRandomFieldGridMap2D::insertObservation_KernelDM_DMV] Done!\n");
 	} // end of computing the gauss. window.
 
 	//	Fuse with current content of grid (the MEAN of each cell):
@@ -764,7 +762,7 @@ CRandomFieldGridMap2D::TInsertionOptionsCommon::TInsertionOptionsCommon() :
 
 	GMRF_lambdaPrior			( 0.01f ),		// [GMRF model] The information (Lambda) of fixed map constraints
 	GMRF_lambdaObs				( 10.0f ),		// [GMRF model] The initial information (Lambda) of each observation (this information will decrease with time)
-	GMRF_lambdaObsLoss			( 1.0f ),		//!< The loss of information of the observations with each iteration
+	GMRF_lambdaObsLoss			( 0.0f ),		//!< The loss of information of the observations with each iteration
 
 	GMRF_use_occupancy_information	( false ),
 	GMRF_simplemap_file				( "" ),
@@ -773,8 +771,11 @@ CRandomFieldGridMap2D::TInsertionOptionsCommon::TInsertionOptionsCommon() :
 	GMRF_gridmap_image_cx			( 0 ),
 	GMRF_gridmap_image_cy			( 0 ),
 
-	GMRF_constraintsSize		( 3	),			// [GMRF model] The size (cells) of the Gaussian window to impose fixed restrictions between cells.
-	GMRF_constraintsSigma		( 4.0f )  		// [GMRF model] The sigma of the Gaussian window to impose fixed restrictions between cells.
+	GMRF_constraintsSize		( 3	),
+	GMRF_constraintsSigma		( 4.0f ),
+
+	GMRF_saturate_min			( -std::numeric_limits<double>::max() ),
+	GMRF_saturate_max			(  std::numeric_limits<double>::max() )
 {
 }
 
@@ -860,27 +861,20 @@ void  CRandomFieldGridMap2D::saveAsBitmapFile(const std::string &filName) const
 	MRPT_END
 }
 
-/*---------------------------------------------------------------
-					getAsBitmapFile
- ---------------------------------------------------------------*/
-void  CRandomFieldGridMap2D::getAsBitmapFile(mrpt::utils::CImage &out_img) const
+/** Like saveAsBitmapFile(), but returns the data in matrix form */
+void CRandomFieldGridMap2D::getAsMatrix( mrpt::math::CMatrixDouble &cells_mat) const
 {
 	MRPT_START
-
-	unsigned int	x,y;
-	double c;
-	const TRandomFieldCell	*cell;
-
-	mrpt::math::CMatrixDouble cells_mat(m_size_y,m_size_x);
-
+	cells_mat.resize(m_size_y,m_size_x);
 	recoverMeanAndCov();	// Only has effects for KF2 method
 
-	for (y=0;y<m_size_y;y++)
+	for (unsigned int y=0;y<m_size_y;y++)
 	{
-		for (x=0;x<m_size_x;x++)
+		for (unsigned int x=0;x<m_size_x;x++)
 		{
-			cell = cellByIndex(x,y);
+			const TRandomFieldCell *cell = cellByIndex(x,y);
 			ASSERT_( cell!=NULL );
+			double c;
 
 			switch (m_mapType)
 			{
@@ -901,16 +895,22 @@ void  CRandomFieldGridMap2D::getAsBitmapFile(mrpt::utils::CImage &out_img) const
 			default:
 				THROW_EXCEPTION("Unknown m_mapType!!");
 			};
-
-			if (c<0) c=0;
-			if (c>1) c=1;
-
+			mrpt::utils::saturate(c, m_insertOptions_common->GMRF_saturate_min, m_insertOptions_common->GMRF_saturate_max);
 			cells_mat(m_size_y-1-y,x) = c;
 		}
 	}
+	MRPT_END
+}
 
-	out_img.setFromMatrix(cells_mat, true /* vals are normalized in [0,1] */);
-
+/*---------------------------------------------------------------
+					getAsBitmapFile
+ ---------------------------------------------------------------*/
+void CRandomFieldGridMap2D::getAsBitmapFile(mrpt::utils::CImage &out_img) const
+{
+	MRPT_START
+	mrpt::math::CMatrixDouble cells_mat;
+	getAsMatrix(cells_mat);
+	out_img.setFromMatrix(cells_mat, false /* vals are not normalized in by default [0,1] */);
 	MRPT_END
 }
 
@@ -1246,12 +1246,12 @@ void  CRandomFieldGridMap2D::insertObservation_KF(
 
 	std::vector<TRandomFieldCell>::iterator	it;
 
-#if RANDOMFIELDGRIDMAP_VERBOSE
-	CTicTac		tictac;
-	//cout << "[insertObservation_KF] Sensor: " << point << " measur: " << normReading << endl;
-	printf("[insertObservation_KF] Updating mean values...");
-	tictac.Tic();
-#endif
+	static CTicTac tictac;
+	if (m_rfgm_verbose) {
+		//cout << "[insertObservation_KF] Sensor: " << point << " measur: " << normReading << endl;
+		printf("[insertObservation_KF] Updating mean values...");
+		tictac.Tic();
+	}
 
 	// Update mean values:
 	// ---------------------------------------------------------
@@ -1259,18 +1259,18 @@ void  CRandomFieldGridMap2D::insertObservation_KF(
 		//it->kf_mean =  it->kf_mean + yk * sk_1 * m_cov.get_unsafe(i,cellIdx);
 		it->kf_mean +=  yk * sk_1 * m_cov(i,cellIdx);
 
-#if RANDOMFIELDGRIDMAP_VERBOSE
-	printf("Done in %.03fms\n",	tictac.Tac()*1000 );
-#endif
+	if (m_rfgm_verbose) {
+		printf("Done in %.03fms\n",	tictac.Tac()*1000 );
+	}
 
 	// Update covariance matrix values:
 	// ---------------------------------------------------------
 	N = m_cov.getRowCount();
 
-#if RANDOMFIELDGRIDMAP_VERBOSE
-	printf("[insertObservation_KF] Updating covariance matrix...");
-	tictac.Tic();
-#endif
+	if (m_rfgm_verbose) {
+		printf("[insertObservation_KF] Updating covariance matrix...");
+		tictac.Tic();
+	}
 
 	// We need to refer to the old cov: make an efficient copy of it:
 	//CMatrixD		oldCov( m_cov );
@@ -1284,9 +1284,9 @@ void  CRandomFieldGridMap2D::insertObservation_KF(
 
 //	m_cov.saveToTextFile("bef.txt");
 
-#if RANDOMFIELDGRIDMAP_VERBOSE
-	printf("Copy matrix %ux%u: %.06fms\n",	(unsigned)m_cov.getRowCount(), (unsigned)m_cov.getColCount(),  tictac.Tac()*1000 );
-#endif
+	if (m_rfgm_verbose) {
+		printf("Copy matrix %ux%u: %.06fms\n",	(unsigned)m_cov.getRowCount(), (unsigned)m_cov.getColCount(),  tictac.Tac()*1000 );
+	}
 
 	// The following follows from the expansion of Kalman Filter matrix equations
 	// TODO: Add references to some paper (if any)?
@@ -1324,12 +1324,9 @@ void  CRandomFieldGridMap2D::insertObservation_KF(
 	// Free mem:
 	/*mrpt_alloca_*/ free( oldCov );
 
-#if RANDOMFIELDGRIDMAP_VERBOSE
-	printf("Done! %.03fms\n",	tictac.Tac()*1000 );
-#endif
-
-//	m_cov.saveToTextFile("aft.txt");
-	//mrpt::system::pause();
+	if (m_rfgm_verbose) {
+		printf("Done! %.03fms\n",	tictac.Tac()*1000 );
+	}
 
 	MRPT_END
 }
@@ -1344,8 +1341,10 @@ void  CRandomFieldGridMap2D::saveMetricMapRepresentationToFile(
 	std::string		fil;
 
 	// Save as a bitmap:
+#if MRPT_HAS_OPENCV
 	fil = filNamePrefix + std::string("_mean.png");
 	saveAsBitmapFile( fil );
+#endif
 
 	// Save dimensions of the grid (for any mapping algorithm):
 	CMatrix DIMs(1,4);
@@ -1357,86 +1356,96 @@ void  CRandomFieldGridMap2D::saveMetricMapRepresentationToFile(
 	DIMs.saveToTextFile( filNamePrefix + std::string("_grid_limits.txt"), MATRIX_FORMAT_FIXED, false /* add mrpt header */, "% Grid limits: [x_min x_max y_min y_max]\n" );
 
 
-	if ( m_mapType == mrKernelDM || m_mapType == mrKernelDMV )
+	switch(m_mapType)
 	{
-		CMatrix  all_means(m_size_y,m_size_x);
-		CMatrix  all_vars(m_size_y,m_size_x);
-		CMatrix  all_confs(m_size_y,m_size_x);
-
-		for (size_t y=0;y<m_size_y;y++)
-			for (size_t x=0;x<m_size_x;x++)
-			{
-				const TRandomFieldCell * cell =cellByIndex(x,y);
-				all_means(y,x) = computeMeanCellValue_DM_DMV(cell);
-				all_vars(y,x)  = computeVarCellValue_DM_DMV(cell);
-				all_confs(y,x) = computeConfidenceCellValue_DM_DMV(cell);
-			}
-
-		all_means.saveToTextFile( filNamePrefix + std::string("_mean.txt"), MATRIX_FORMAT_FIXED );
-		if (m_mapType == mrKernelDMV)
+	case mrKernelDM:
+	case mrKernelDMV:
 		{
-			all_vars.saveToTextFile( filNamePrefix + std::string("_var.txt"), MATRIX_FORMAT_FIXED );
-			all_confs.saveToTextFile( filNamePrefix + std::string("_confidence.txt"), MATRIX_FORMAT_FIXED );
-		}
-	}
+			CMatrix  all_means(m_size_y,m_size_x);
+			CMatrix  all_vars(m_size_y,m_size_x);
+			CMatrix  all_confs(m_size_y,m_size_x);
 
+			for (size_t y=0;y<m_size_y;y++)
+				for (size_t x=0;x<m_size_x;x++)
+				{
+					const TRandomFieldCell * cell =cellByIndex(x,y);
+					all_means(y,x) = computeMeanCellValue_DM_DMV(cell);
+					all_vars(y,x)  = computeVarCellValue_DM_DMV(cell);
+					all_confs(y,x) = computeConfidenceCellValue_DM_DMV(cell);
+				}
 
-	if ( m_mapType == mrKalmanFilter || m_mapType == mrKalmanApproximate )
-	{
-		recoverMeanAndCov();
-
-		// Save the mean and std matrix:
-		CMatrix	MEAN( m_size_y,m_size_x);
-		CMatrix	STDs( m_size_y, m_size_x );
-
-		for (size_t i=0;i<m_size_y;i++)
-			for (size_t j=0;j<m_size_x;j++)
+			all_means.saveToTextFile( filNamePrefix + std::string("_mean.txt"), MATRIX_FORMAT_FIXED );
+			if (m_mapType == mrKernelDMV)
 			{
-				MEAN(i,j)=cellByIndex(j,i)->kf_mean;
-				STDs(i,j)=cellByIndex(j,i)->kf_std;
-			}
-
-		MEAN.saveToTextFile( filNamePrefix + std::string("_mean.txt"), MATRIX_FORMAT_FIXED );
-		STDs.saveToTextFile( filNamePrefix + std::string("_cells_std.txt"), MATRIX_FORMAT_FIXED );
-
-		if ( m_mapType == mrKalmanApproximate )
-			{
-				m_stackedCov.saveToTextFile( filNamePrefix + std::string("_mean_compressed_cov.txt"), MATRIX_FORMAT_FIXED );
-			}
-		if (m_mapType == mrKalmanFilter)
-		{
-			// Save the covariance matrix:
-			m_cov.saveToTextFile( filNamePrefix + std::string("_mean_cov.txt") );
-		}
-
-		// And also as bitmap:
-		STDs.normalize();
-		CImage	img_cov(STDs, true);
-		img_cov.saveToFile(filNamePrefix + std::string("_cells_std.png"), true /* vertical flip */);
-
-		// Save the 3D graphs:
-		saveAsMatlab3DGraph( filNamePrefix + std::string("_3D.m") );
-	}
-
-	if (m_mapType == mrGMRF_G || m_mapType == mrGMRF_SD)
-	{
-		// Save the mean and std matrix:
-		CMatrix	MEAN( m_size_y, m_size_x );
-		CMatrix	STDs( m_size_y, m_size_x );
-
-		for (size_t i=0; i<m_size_y; i++)
-		{
-			for (size_t j=0; j<m_size_x; j++)
-			{
-				MEAN(i,j) = cellByIndex(j,i)->gmrf_mean;
-				STDs(i,j) = cellByIndex(j,i)->gmrf_std;
+				all_vars.saveToTextFile( filNamePrefix + std::string("_var.txt"), MATRIX_FORMAT_FIXED );
+				all_confs.saveToTextFile( filNamePrefix + std::string("_confidence.txt"), MATRIX_FORMAT_FIXED );
 			}
 		}
+		break;
 
-		MEAN.saveToTextFile( filNamePrefix + std::string("_mean.txt"), MATRIX_FORMAT_FIXED );
-		STDs.saveToTextFile( filNamePrefix + std::string("_cells_std.txt"), MATRIX_FORMAT_FIXED );
-	}
+	case mrKalmanFilter:
+	case mrKalmanApproximate:
+		{
+			recoverMeanAndCov();
 
+			// Save the mean and std matrix:
+			CMatrix	MEAN( m_size_y,m_size_x);
+			CMatrix	STDs( m_size_y, m_size_x );
+
+			for (size_t i=0;i<m_size_y;i++)
+				for (size_t j=0;j<m_size_x;j++)
+				{
+					MEAN(i,j)=cellByIndex(j,i)->kf_mean;
+					STDs(i,j)=cellByIndex(j,i)->kf_std;
+				}
+
+			MEAN.saveToTextFile( filNamePrefix + std::string("_mean.txt"), MATRIX_FORMAT_FIXED );
+			STDs.saveToTextFile( filNamePrefix + std::string("_cells_std.txt"), MATRIX_FORMAT_FIXED );
+
+			if ( m_mapType == mrKalmanApproximate )
+				{
+					m_stackedCov.saveToTextFile( filNamePrefix + std::string("_mean_compressed_cov.txt"), MATRIX_FORMAT_FIXED );
+				}
+			if (m_mapType == mrKalmanFilter)
+			{
+				// Save the covariance matrix:
+				m_cov.saveToTextFile( filNamePrefix + std::string("_mean_cov.txt") );
+			}
+
+			// And also as bitmap:
+			STDs.normalize();
+			CImage	img_cov(STDs, true);
+			img_cov.saveToFile(filNamePrefix + std::string("_cells_std.png"), true /* vertical flip */);
+
+			// Save the 3D graphs:
+			saveAsMatlab3DGraph( filNamePrefix + std::string("_3D.m") );
+		}
+		break;
+
+	case mrGMRF_G:
+	case mrGMRF_SD:
+		{
+			// Save the mean and std matrix:
+			CMatrix	MEAN( m_size_y, m_size_x );
+			CMatrix	STDs( m_size_y, m_size_x );
+
+			for (size_t i=0; i<m_size_y; i++)
+			{
+				for (size_t j=0; j<m_size_x; j++)
+				{
+					MEAN(i,j) = cellByIndex(j,i)->gmrf_mean;
+					STDs(i,j) = cellByIndex(j,i)->gmrf_std;
+				}
+			}
+
+			MEAN.saveToTextFile( filNamePrefix + std::string("_mean.txt"), MATRIX_FORMAT_FIXED );
+			STDs.saveToTextFile( filNamePrefix + std::string("_cells_std.txt"), MATRIX_FORMAT_FIXED );
+		}
+		break;
+
+	default:
+		THROW_EXCEPTION("Unknown method!");
+	}; // end switch
 }
 
 /*---------------------------------------------------------------
@@ -1448,7 +1457,7 @@ void  CRandomFieldGridMap2D::saveAsMatlab3DGraph(const std::string  &filName) co
 
 	const double std_times = 3;
 
-	ASSERT_( m_mapType == mrKalmanFilter || m_mapType==mrKalmanApproximate );
+	ASSERT_( m_mapType == mrKalmanFilter || m_mapType==mrKalmanApproximate|| m_mapType==mrGMRF_G || m_mapType==mrGMRF_SD );
 
 	recoverMeanAndCov();
 
@@ -1511,10 +1520,9 @@ void  CRandomFieldGridMap2D::saveAsMatlab3DGraph(const std::string  &filName) co
 	{
 		for (cx=0;cx<m_size_x;cx++)
 		{
-            const TRandomFieldCell	*cell = cellByIndex( cx,cy );
+			const TRandomFieldCell	*cell = cellByIndex( cx,cy );
 			ASSERT_( cell!=NULL );
-			//os::fprintf(f,"%e ",  min(1.0,max(0.0,  cell->kf_mean + std_times * cell->kf_std ) ));
-			os::fprintf(f,"%e ",  max(0.0,  cell->kf_mean + std_times * cell->kf_std ));
+			os::fprintf(f,"%e ", mrpt::utils::saturate_val(cell->kf_mean + std_times * cell->kf_std , m_insertOptions_common->GMRF_saturate_min, m_insertOptions_common->GMRF_saturate_max) );
 		} // for cx
 
 		if (cy<(m_size_y-1))
@@ -1530,8 +1538,7 @@ void  CRandomFieldGridMap2D::saveAsMatlab3DGraph(const std::string  &filName) co
 		{
 			const TRandomFieldCell	*cell = cellByIndex( cx,cy );
 			ASSERT_(cell!=NULL);
-
-			os::fprintf(f,"%e ",  min(1.0,max(0.0,  cell->kf_mean - std_times * cell->kf_std ) ));
+			os::fprintf(f,"%e ",  mrpt::utils::saturate_val(cell->kf_mean - std_times * cell->kf_std, m_insertOptions_common->GMRF_saturate_min, m_insertOptions_common->GMRF_saturate_max) );
 		} // for cx
 
 		if (cy<(m_size_y-1))
@@ -1562,6 +1569,8 @@ void  CRandomFieldGridMap2D::saveAsMatlab3DGraph(const std::string  &filName) co
 		m_y_max
 		);
 
+	os::fprintf(f,"\nfigure; imagesc(xs,ys,z_mean);axis equal;title('Mean value');");
+	os::fprintf(f,"\nfigure; imagesc(xs,ys,(z_upper-z_mean)/%f);axis equal;title('Std dev of estimated value');",std_times);
 
 	fclose(f);
 
@@ -1660,15 +1669,15 @@ void  CRandomFieldGridMap2D::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&mean
 
 					// MEAN values
 					//-----------------
-					double c_xy			= min(1.0,max(0.0, cell_xy->kf_mean) );
-					double c_x_1y		= min(1.0,max(0.0, cell_x_1y->kf_mean) );
-					double c_xy_1		= min(1.0,max(0.0, cell_xy_1->kf_mean) );
-					double c_x_1y_1		= min(1.0,max(0.0, cell_x_1y_1->kf_mean) );
+					double c_xy			= mrpt::utils::saturate_val(cell_xy->kf_mean,  m_insertOptions_common->GMRF_saturate_min, m_insertOptions_common->GMRF_saturate_max);
+					double c_x_1y		= mrpt::utils::saturate_val(cell_x_1y->kf_mean,  m_insertOptions_common->GMRF_saturate_min, m_insertOptions_common->GMRF_saturate_max);
+					double c_xy_1		= mrpt::utils::saturate_val(cell_xy_1->kf_mean,  m_insertOptions_common->GMRF_saturate_min, m_insertOptions_common->GMRF_saturate_max);
+					double c_x_1y_1		= mrpt::utils::saturate_val(cell_x_1y_1->kf_mean,  m_insertOptions_common->GMRF_saturate_min, m_insertOptions_common->GMRF_saturate_max);
 
-					double col_xy		= c_xy;		//min(1.0,max(0.0, (c_xy-minVal_m)/AMaxMin_m ) );
-					double col_x_1y		= c_x_1y;	//min(1.0,max(0.0, (c_x_1y-minVal_m)/AMaxMin_m ) );
-					double col_xy_1		= c_xy_1;	//min(1.0,max(0.0, (c_xy_1-minVal_m)/AMaxMin_m ) );
-					double col_x_1y_1	= c_x_1y_1; //min(1.0,max(0.0, (c_x_1y_1-minVal_m)/AMaxMin_m ) );
+					double col_xy		= c_xy;
+					double col_x_1y		= c_x_1y;
+					double col_xy_1		= c_xy_1;
+					double col_x_1y_1	= c_x_1y_1;
 
 					// Triangle #1:
 					triag.x[0] = xs[cx];	triag.y[0] = ys[cy];	triag.z[0] = c_xy;
@@ -1702,18 +1711,18 @@ void  CRandomFieldGridMap2D::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&mean
 
 
 					// Triangle #1:
-					triag.x[0] = xs[cx];	triag.y[0] = ys[cy];	triag.z[0] = v_xy;
-					triag.x[1] = xs[cx];	triag.y[1] = ys[cy-1];	triag.z[1] = v_xy_1;
-					triag.x[2] = xs[cx-1];	triag.y[2] = ys[cy-1];	triag.z[2] = v_x_1y_1;
+					triag.x[0] = xs[cx];	triag.y[0] = ys[cy];	triag.z[0] = c_xy    + v_xy;
+					triag.x[1] = xs[cx];	triag.y[1] = ys[cy-1];	triag.z[1] = c_xy_1  + v_xy_1;
+					triag.x[2] = xs[cx-1];	triag.y[2] = ys[cy-1];	triag.z[2] = c_x_1y_1+ v_x_1y_1;
 					jet2rgb( col_xy,triag.r[0],triag.g[0],triag.b[0] );
 					jet2rgb( col_xy_1,triag.r[1],triag.g[1],triag.b[1] );
 					jet2rgb( col_x_1y_1,triag.r[2],triag.g[2],triag.b[2] );
 					obj_v->insertTriangle( triag );
 
 					// Triangle #2:
-					triag.x[0] = xs[cx];	triag.y[0] = ys[cy];	triag.z[0] = v_xy;
-					triag.x[1] = xs[cx-1];	triag.y[1] = ys[cy-1];	triag.z[1] = v_x_1y_1;
-					triag.x[2] = xs[cx-1];	triag.y[2] = ys[cy];	triag.z[2] = v_x_1y;
+					triag.x[0] = xs[cx];	triag.y[0] = ys[cy];	triag.z[0] = c_xy    + v_xy;
+					triag.x[1] = xs[cx-1];	triag.y[1] = ys[cy-1];	triag.z[1] = c_x_1y_1+ v_x_1y_1;
+					triag.x[2] = xs[cx-1];	triag.y[2] = ys[cy];	triag.z[2] = c_x_1y  + v_x_1y;
 					jet2rgb( col_xy,triag.r[0],triag.g[0],triag.b[0] );
 					jet2rgb( col_x_1y_1,triag.r[1],triag.g[1],triag.b[1] );
 					jet2rgb( col_x_1y,triag.r[2],triag.g[2],triag.b[2] );
@@ -1723,210 +1732,6 @@ void  CRandomFieldGridMap2D::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&mean
 			} // for cy
 			meanObj->insert( obj_m );
 			varObj->insert( obj_v );
-
-
-//-----------------------------
-//Code from JL starts here
-//-----------------------------
-	//		opengl::CSetOfTrianglesPtr obj = opengl::CSetOfTriangles::Create();
-	//		const double  std_times = 2;
-	//		const double  z_aspect_ratio = 4;
-
-	//		//  Compute max/min values:
-	//		// ---------------------------------------
-	//		double	maxVal=0, minVal=1, AMaxMin;
-	//		for (cy=1;cy<m_size_y;cy++)
-	//		{
-	//			for (cx=1;cx<m_size_x;cx++)
-	//			{
-	//				const TRandomFieldCell	*cell_xy = cellByIndex( cx,cy ); ASSERT_( cell_xy!=NULL );
-	//				minVal = min(minVal, cell_xy->kf_mean);
-	//				maxVal = max(maxVal, cell_xy->kf_mean);
-	//			}
-	//		}
-
-	//		AMaxMin = maxVal - minVal;
-	//		if (AMaxMin==0) AMaxMin=1;
-
-
-	//		// ---------------------------------------
-	//		//  BOTTOM LAYER:  mean - K*std
-	//		// ---------------------------------------
-	//		triag.a[0]=triag.a[1]=triag.a[2]= 0.8f;
-
-	//		for (cy=1;cy<m_size_y;cy++)
-	//		{
-	//			for (cx=1;cx<m_size_x;cx++)
-	//			{
-	//				// Cell values:
-	//				const TRandomFieldCell	*cell_xy = cellByIndex( cx,cy ); ASSERT_( cell_xy!=NULL );
-	//				const TRandomFieldCell	*cell_x_1y = cellByIndex( cx-1,cy ); ASSERT_( cell_x_1y!=NULL );
-	//				const TRandomFieldCell	*cell_xy_1 = cellByIndex( cx,cy-1 ); ASSERT_( cell_xy_1!=NULL );
-	//				const TRandomFieldCell	*cell_x_1y_1 = cellByIndex( cx-1,cy-1 ); ASSERT_( cell_x_1y_1!=NULL );
-
-	//				double c_xy	= min(1.0,max(0.0, cell_xy->kf_mean - std_times*cell_xy->kf_std ) );
-	//				double c_x_1y	= min(1.0,max(0.0, cell_x_1y->kf_mean - std_times*cell_x_1y->kf_std ) );
-	//				double c_xy_1	= min(1.0,max(0.0, cell_xy_1->kf_mean - std_times*cell_xy_1->kf_std ) );
-	//				double c_x_1y_1= min(1.0,max(0.0, cell_x_1y_1->kf_mean - std_times*cell_x_1y_1->kf_std) );
-
-	//				double col_xy		= min(1.0,max(0.0, (cell_xy->kf_mean-minVal)/AMaxMin ) );
-	//				double col_x_1y	= min(1.0,max(0.0, (cell_x_1y->kf_mean-minVal)/AMaxMin ) );
-	//				double col_xy_1	= min(1.0,max(0.0, (cell_xy_1->kf_mean-minVal)/AMaxMin ) );
-	//				double col_x_1y_1	= min(1.0,max(0.0, (cell_x_1y_1->kf_mean-minVal)/AMaxMin ) );
-
-	//				// Triangle #1:
-	//				//if ( fabs(c_xy-0.5f)<0.49f ||
-	//				//	 fabs(c_x_1y-0.5f)<0.49f ||
-	//				//	 fabs(c_xy_1-0.5f)<0.49f ||
-	//				//	 fabs(c_x_1y_1-0.5f)<0.49f )
-	//				{
-	//					triag.x[0] = xs[cx];	triag.y[0] = ys[cy];	triag.z[0] = c_xy;
-	//					triag.x[1] = xs[cx];	triag.y[1] = ys[cy-1];	triag.z[1] = c_xy_1;
-	//					triag.x[2] = xs[cx-1];	triag.y[2] = ys[cy-1];	triag.z[2] = c_x_1y_1;
-	//					jet2rgb( col_xy,triag.r[0],triag.g[0],triag.b[0] );
-	//					jet2rgb( col_xy_1,triag.r[1],triag.g[1],triag.b[1] );
-	//					jet2rgb( col_x_1y_1,triag.r[2],triag.g[2],triag.b[2] );
-
-	//					obj->insertTriangle( triag );
-	//				}
-
-	//				// Triangle #2:
-	//				//if ( fabs(c_xy-0.5f)<0.49f ||
-	//				//	 fabs(c_x_1y-0.5f)<0.49f ||
-	//				//	 fabs(c_xy_1-0.5f)<0.49f ||
-	//				//	 fabs(c_x_1y_1-0.5f)<0.49f )
-	//				{
-	//					triag.x[0] = xs[cx];	triag.y[0] = ys[cy];	triag.z[0] = c_xy;
-	//					triag.x[1] = xs[cx-1];	triag.y[1] = ys[cy-1];	triag.z[1] = c_x_1y_1;
-	//					triag.x[2] = xs[cx-1];	triag.y[2] = ys[cy];	triag.z[2] = c_x_1y;
-
-	//					jet2rgb( col_xy,triag.r[0],triag.g[0],triag.b[0] );
-	//					jet2rgb( col_x_1y_1,triag.r[1],triag.g[1],triag.b[1] );
-	//					jet2rgb( col_x_1y,triag.r[2],triag.g[2],triag.b[2] );
-
-	//					obj->insertTriangle( triag );
-	//				}
-	//			} // for cx
-	//		} // for cy
-	///**/
-	//		// ---------------------------------------
-	//		//  MID LAYER:  mean
-	//		// ---------------------------------------
-	///**/
-	//		triag.a[0]=triag.a[1]=triag.a[2]= 0.8f;
-	//		for (cy=1;cy<m_size_y;cy++)
-	//		{
-	//			for (cx=1;cx<m_size_x;cx++)
-	//			{
-	//				// Cell values:
-	//				const TRandomFieldCell	*cell_xy = cellByIndex( cx,cy ); ASSERT_( cell_xy!=NULL );
-	//				const TRandomFieldCell	*cell_x_1y = cellByIndex( cx-1,cy ); ASSERT_( cell_x_1y!=NULL );
-	//				const TRandomFieldCell	*cell_xy_1 = cellByIndex( cx,cy-1 ); ASSERT_( cell_xy_1!=NULL );
-	//				const TRandomFieldCell	*cell_x_1y_1 = cellByIndex( cx-1,cy-1 ); ASSERT_( cell_x_1y_1!=NULL );
-
-	//				double c_xy	= min(1.0,max(0.0, cell_xy->kf_mean ) );
-	//				double c_x_1y	= min(1.0,max(0.0, cell_x_1y->kf_mean ) );
-	//				double c_xy_1	= min(1.0,max(0.0, cell_xy_1->kf_mean ) );
-	//				double c_x_1y_1= min(1.0,max(0.0, cell_x_1y_1->kf_mean ) );
-
-	//				double col_xy		= min(1.0,max(0.0, cell_xy->kf_mean ) );
-	//				double col_xy_1	= min(1.0,max(0.0, cell_xy_1->kf_mean ) );
-	//				double col_x_1y	= min(1.0,max(0.0, cell_x_1y->kf_mean ) );
-	//				double col_x_1y_1	= min(1.0,max(0.0, cell_x_1y_1->kf_mean ) );
-
-	//				// Triangle #1:
-	//				triag.x[0] = xs[cx];	triag.y[0] = ys[cy];	triag.z[0] = z_aspect_ratio*c_xy;
-	//				triag.x[1] = xs[cx];	triag.y[1] = ys[cy-1];	triag.z[1] = z_aspect_ratio*c_xy_1;
-	//				triag.x[2] = xs[cx-1];	triag.y[2] = ys[cy-1];	triag.z[2] = z_aspect_ratio*c_x_1y_1;
-	//				jet2rgb( col_xy,triag.r[0],triag.g[0],triag.b[0] );
-	//				jet2rgb( col_xy_1,triag.r[1],triag.g[1],triag.b[1] );
-	//				jet2rgb( col_x_1y_1,triag.r[2],triag.g[2],triag.b[2] );
-
-	//				obj->insertTriangle( triag );
-
-	//				// Triangle #2:
-	//				triag.x[0] = xs[cx];	triag.y[0] = ys[cy];	triag.z[0] = z_aspect_ratio*c_xy;
-	//				triag.x[1] = xs[cx-1];	triag.y[1] = ys[cy-1];	triag.z[1] = z_aspect_ratio*c_x_1y_1;
-	//				triag.x[2] = xs[cx-1];	triag.y[2] = ys[cy];	triag.z[2] = z_aspect_ratio*c_x_1y;
-
-	//				jet2rgb( col_xy,triag.r[0],triag.g[0],triag.b[0] );
-	//				jet2rgb( col_x_1y_1,triag.r[1],triag.g[1],triag.b[1] );
-	//				jet2rgb( col_x_1y,triag.r[2],triag.g[2],triag.b[2] );
-	//				obj->insertTriangle( triag );
-
-	//			} // for cx
-	//		} // for cy
-	///**/
-
-	//		// ---------------------------------------
-	//		//  TOP LAYER:  mean + K*std
-	//		// ---------------------------------------
-	//		triag.a[0]=triag.a[1]=triag.a[2]= 0.5f;
-
-	//		for (cy=1;cy<m_size_y;cy++)
-	//		{
-	//			for (cx=1;cx<m_size_x;cx++)
-	//			{
-	//				// Cell values:
-	//				const TRandomFieldCell	*cell_xy = cellByIndex( cx,cy ); ASSERT_( cell_xy!=NULL );
-	//				const TRandomFieldCell	*cell_x_1y = cellByIndex( cx-1,cy ); ASSERT_( cell_x_1y!=NULL );
-	//				const TRandomFieldCell	*cell_xy_1 = cellByIndex( cx,cy-1 ); ASSERT_( cell_xy_1!=NULL );
-	//				const TRandomFieldCell	*cell_x_1y_1 = cellByIndex( cx-1,cy-1 ); ASSERT_( cell_x_1y_1!=NULL );
-
-	//				double c_xy	= min(1.0,max(0.0, cell_xy->kf_mean + std_times*cell_xy->kf_std ) );
-	//				double c_x_1y	= min(1.0,max(0.0, cell_x_1y->kf_mean + std_times*cell_x_1y->kf_std ) );
-	//				double c_xy_1	= min(1.0,max(0.0, cell_xy_1->kf_mean + std_times*cell_xy_1->kf_std ) );
-	//				double c_x_1y_1= min(1.0,max(0.0, cell_x_1y_1->kf_mean + std_times*cell_x_1y_1->kf_std) );
-
-	//				double col_xy		= min(1.0,max(0.0, (cell_xy->kf_mean-minVal)/AMaxMin ) );
-	//				double col_x_1y	= min(1.0,max(0.0, (cell_x_1y->kf_mean-minVal)/AMaxMin ) );
-	//				double col_xy_1	= min(1.0,max(0.0, (cell_xy_1->kf_mean-minVal)/AMaxMin ) );
-	//				double col_x_1y_1	= min(1.0,max(0.0, (cell_x_1y_1->kf_mean-minVal)/AMaxMin ) );
-
-	//				// Triangle #1:
-	//				/*if ( fabs(c_xy-0.5f)<0.49f ||
-	//					 fabs(c_x_1y-0.5f)<0.49f ||
-	//					 fabs(c_xy_1-0.5f)<0.49f ||
-	//					 fabs(c_x_1y_1-0.5f)<0.49f )*/
-	//				{
-	//					triag.x[0] = xs[cx];	triag.y[0] = ys[cy];	triag.z[0] = z_aspect_ratio*c_xy;
-	//					triag.x[1] = xs[cx];	triag.y[1] = ys[cy-1];	triag.z[1] = z_aspect_ratio*c_xy_1;
-	//					triag.x[2] = xs[cx-1];	triag.y[2] = ys[cy-1];	triag.z[2] = z_aspect_ratio*c_x_1y_1;
-	//					jet2rgb( col_xy,triag.r[0],triag.g[0],triag.b[0] );
-	//					jet2rgb( col_xy_1,triag.r[1],triag.g[1],triag.b[1] );
-	//					jet2rgb( col_x_1y_1,triag.r[2],triag.g[2],triag.b[2] );
-
-	//					obj->insertTriangle( triag );
-	//				}
-
-	//				// Triangle #2:
-	//				/*if ( fabs(c_xy-0.5f)<0.49f ||
-	//					 fabs(c_x_1y-0.5f)<0.49f ||
-	//					 fabs(c_xy_1-0.5f)<0.49f ||
-	//					 fabs(c_x_1y_1-0.5f)<0.49f )*/
-	//				{
-	//					triag.x[0] = xs[cx];	triag.y[0] = ys[cy];	triag.z[0] = z_aspect_ratio*c_xy;
-	//					triag.x[1] = xs[cx-1];	triag.y[1] = ys[cy-1];	triag.z[1] = z_aspect_ratio*c_x_1y_1;
-	//					triag.x[2] = xs[cx-1];	triag.y[2] = ys[cy];	triag.z[2] = z_aspect_ratio*c_x_1y;
-
-	//					jet2rgb( col_xy,triag.r[0],triag.g[0],triag.b[0] );
-	//					jet2rgb( col_x_1y_1,triag.r[1],triag.g[1],triag.b[1] );
-	//					jet2rgb( col_x_1y,triag.r[2],triag.g[2],triag.b[2] );
-
-	//					obj->insertTriangle( triag );
-	//				}
-	//			} // for cx
-	//		} // for cy
-
-
-	//		obj->enableTransparency(true);;
-	//		meanObj->insert( obj );
-	//		varObj->insert( obj );
-
-//-----------------------------
-//Code from JL ends here
-//-----------------------------
-
 		}
 		break; // end KF models
 
@@ -1981,15 +1786,15 @@ void  CRandomFieldGridMap2D::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&mean
 
 					// MEAN values
 					//-----------------
-					double c_xy			= min(1.0,max(0.0, computeMeanCellValue_DM_DMV(cell_xy) ) );
-					double c_x_1y		= min(1.0,max(0.0, computeMeanCellValue_DM_DMV(cell_x_1y) ) );
-					double c_xy_1		= min(1.0,max(0.0, computeMeanCellValue_DM_DMV(cell_xy_1) ) );
-					double c_x_1y_1		= min(1.0,max(0.0, computeMeanCellValue_DM_DMV(cell_x_1y_1) ) );
+					double c_xy			= mrpt::utils::saturate_val(computeMeanCellValue_DM_DMV(cell_xy) , m_insertOptions_common->GMRF_saturate_min, m_insertOptions_common->GMRF_saturate_max);
+					double c_x_1y		= mrpt::utils::saturate_val(computeMeanCellValue_DM_DMV(cell_x_1y) , m_insertOptions_common->GMRF_saturate_min, m_insertOptions_common->GMRF_saturate_max);
+					double c_xy_1		= mrpt::utils::saturate_val(computeMeanCellValue_DM_DMV(cell_xy_1) , m_insertOptions_common->GMRF_saturate_min, m_insertOptions_common->GMRF_saturate_max);
+					double c_x_1y_1		= mrpt::utils::saturate_val(computeMeanCellValue_DM_DMV(cell_x_1y_1) , m_insertOptions_common->GMRF_saturate_min, m_insertOptions_common->GMRF_saturate_max);
 
-					double col_xy		= c_xy;		//min(1.0,max(0.0, (c_xy-minVal_m)/AMaxMin_m ) );
-					double col_x_1y		= c_x_1y;	//min(1.0,max(0.0, (c_x_1y-minVal_m)/AMaxMin_m ) );
-					double col_xy_1		= c_xy_1;	//min(1.0,max(0.0, (c_xy_1-minVal_m)/AMaxMin_m ) );
-					double col_x_1y_1	= c_x_1y_1;	//min(1.0,max(0.0, (c_x_1y_1-minVal_m)/AMaxMin_m ) );
+					double col_xy		= c_xy;
+					double col_x_1y		= c_x_1y;
+					double col_xy_1		= c_xy_1;
+					double col_x_1y_1	= c_x_1y_1;
 
 					// Triangle #1:
 					triag.x[0] = xs[cx];	triag.y[0] = ys[cy];	triag.z[0] = c_xy;
@@ -2017,11 +1822,10 @@ void  CRandomFieldGridMap2D::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&mean
 					double v_xy_1		= min(1.0,max(0.0, computeVarCellValue_DM_DMV(cell_xy_1) ) );
 					double v_x_1y_1		= min(1.0,max(0.0, computeVarCellValue_DM_DMV(cell_x_1y_1) ) );
 
-					col_xy				= v_xy;		//min(1.0,max(0.0, (v_xy-minVal_v)/AMaxMin_v ) );
-					col_x_1y			= v_x_1y;	//min(1.0,max(0.0, (v_x_1y-minVal_v)/AMaxMin_v ) );
-					col_xy_1			= v_xy_1;	//min(1.0,max(0.0, (v_xy_1-minVal_v)/AMaxMin_v ) );
-					col_x_1y_1			= v_x_1y_1;	//min(1.0,max(0.0, (v_x_1y_1-minVal_v)/AMaxMin_v ) );
-
+					col_xy				= v_xy;
+					col_x_1y			= v_x_1y;
+					col_xy_1			= v_xy_1;
+					col_x_1y_1			= v_x_1y_1;
 
 					// Triangle #1:
 					triag.x[0] = xs[cx];	triag.y[0] = ys[cy];	triag.z[0] = v_xy;
@@ -2168,7 +1972,7 @@ void  CRandomFieldGridMap2D::insertObservation_KF2(
 {
 	MRPT_START
 
-	cout << "Inserting KF2: (" << normReading << ") at Postion" << point << endl;
+	if (m_rfgm_verbose) cout << "Inserting KF2: (" << normReading << ") at Postion" << point << endl;
 
 	const signed	W = m_insertOptions_common->KF_W_size;
 	const size_t	K = 2*W*(W+1)+1;
@@ -2228,11 +2032,11 @@ void  CRandomFieldGridMap2D::insertObservation_KF2(
 
 	double		sk_1 = 1.0 / sk;
 
-#if RANDOMFIELDGRIDMAP_KF2_VERBOSE
-	CTicTac		tictac;
-	printf("[insertObservation_KF2] Updating mean values...");
-	tictac.Tic();
-#endif
+	static CTicTac tictac;
+	if (m_rfgm_verbose) {
+		printf("[insertObservation_KF2] Updating mean values...");
+		tictac.Tic();
+	}
 
 	// ------------------------------------------------------------
 	// Update mean values:
@@ -2365,25 +2169,9 @@ void  CRandomFieldGridMap2D::insertObservation_KF2(
 	} // end for i
 
 
-#if RANDOMFIELDGRIDMAP_KF2_VERBOSE
-	printf("Done in %.03fms\n",	tictac.Tac()*1000 );
-#endif
-
-	// Update covariance matrix values:
-	// ---------------------------------------------------------
-
-
-#if RANDOMFIELDGRIDMAP_KF2_VERBOSE
-	printf("[insertObservation_KF2] Updating covariance matrix...");
-	tictac.Tic();
-#endif
-
-
-
-#if RANDOMFIELDGRIDMAP_KF2_VERBOSE
-	printf("Done! %.03fms\n",	tictac.Tac()*1000 );
-#endif
-
+	if (m_rfgm_verbose) {
+		printf("Done in %.03fms\n",	tictac.Tac()*1000 );
+	}
 
 	MRPT_END
 }
@@ -2519,7 +2307,7 @@ void CRandomFieldGridMap2D::insertObservation_GMRF(
 
 
 	}catch(std::exception e){
-		cout << "Exception while Inserting new Observation: "  << e.what() << endl;
+		cerr << "Exception while Inserting new Observation: "  << e.what() << endl;
 	}
 
 	//Solve system and update map estimation
@@ -2534,10 +2322,8 @@ void CRandomFieldGridMap2D::updateMapEstimation_GMRF()
 {
 #if EIGEN_VERSION_AT_LEAST(3,1,0)
 	size_t N = m_map.size();
-	const uint16_t Gsize = m_insertOptions_common->GMRF_constraintsSize;
-	const uint16_t Gside = mrpt::utils::round((Gsize-1)/2);
 
-#define DO_PROFILE
+//#define DO_PROFILE
 
 #ifdef DO_PROFILE
 	static mrpt::utils::CTimeLogger timelogger;
@@ -2557,9 +2343,8 @@ void CRandomFieldGridMap2D::updateMapEstimation_GMRF()
 	for (size_t j=0; j<N; j++)
 	{
 		//Sum the information of all observations on cell j
-		std::vector<TobservationGMRF>::iterator ito;
 		float Lambda_obs_j = 0.0;
-		for (ito = activeObs[j].begin(); ito !=activeObs[j].end(); ++ito)
+		for (std::vector<TobservationGMRF>::const_iterator ito = activeObs[j].begin(); ito !=activeObs[j].end(); ++ito)
 			Lambda_obs_j += ito->Lambda;
 
 		if (Lambda_obs_j != 0.0)
@@ -2589,16 +2374,16 @@ void CRandomFieldGridMap2D::updateMapEstimation_GMRF()
 	for (size_t j=0; j<N; j++)
 	{
 		//A- Gradient due to Observations
-		std::vector<TobservationGMRF>::iterator ito;
-		for (ito = activeObs[j].begin(); ito !=activeObs[j].end(); ++ito)
+		for (std::vector<TobservationGMRF>::const_iterator ito = activeObs[j].begin(); ito !=activeObs[j].end(); ++ito)
 			g[j] += ((m_map[j].gmrf_mean - ito->obsValue) * ito->Lambda);
-
 
 		//B- Gradient due to Prior
 		switch (m_mapType)
 		{
 		case mrGMRF_G:
 			{
+				const uint16_t Gsize = m_insertOptions_common->GMRF_constraintsSize;
+				const uint16_t Gside = mrpt::utils::round((Gsize-1)/2);
 				//Determine num of columns out of the gridmap
 				int outc_left = max( 0 , int(Gside-cx) );
 				int outc_right = max(int (0) , int (Gside-(m_size_x-cx-1)) );
@@ -2693,7 +2478,7 @@ void CRandomFieldGridMap2D::updateMapEstimation_GMRF()
 #endif
 	Eigen::SparseMatrix<double> Sigma(N,N);								//Variance Matrix
 	MRPT_TODO("UT.coeff() implies a heavy time cost in sparse matrices. Rewrite.");
-#if 0
+
 	// VARIANCE SIGMA = inv(P) * inv( P*H*inv(P) ) * P
 	//Get triangular supperior P*H*inv(P) = UT' * UT = P * R'*R * inv(P)
 
@@ -2737,7 +2522,6 @@ void CRandomFieldGridMap2D::updateMapEstimation_GMRF()
 
 		Sigma.insert(l,l) = (1/UT.coeff(l,l)) * ( 1/UT.coeff(l,l) - subSigmas );
 	}
-#endif
 #ifdef DO_PROFILE
 	timelogger.leave("GMRF.variance");
 	timelogger.enter("GMRF.copy_to_map");
@@ -2752,26 +2536,28 @@ void CRandomFieldGridMap2D::updateMapEstimation_GMRF()
 
 		m_map[j].gmrf_std = std::sqrt(variance);
 		m_map[j].gmrf_mean -= m_inc[j]; // "-" because we solved for "+grad" instead of "-grad".
-		if (m_map[j].gmrf_mean >1) m_map[j].gmrf_mean = 1.0;
-		if (m_map[j].gmrf_mean <0) m_map[j].gmrf_mean = 0.0;
+
+		mrpt::utils::saturate(m_map[j].gmrf_mean, m_insertOptions_common->GMRF_saturate_min, m_insertOptions_common->GMRF_saturate_max);
 	}
 
 	// Update Information/Strength of Active Observations
 	//---------------------------------------------------------
-	for (size_t j=0; j<activeObs.size(); j++)
-	{
-		std::vector<TobservationGMRF>::iterator ito = activeObs[j].begin();
-		while ( ito!=activeObs[j].end() )
+	if (m_insertOptions_common->GMRF_lambdaObsLoss!=0) {
+		for (size_t j=0; j<activeObs.size(); j++)
 		{
-			if (ito->time_invariant==false)
+			std::vector<TobservationGMRF>::iterator ito = activeObs[j].begin();
+			while ( ito!=activeObs[j].end() )
 			{
-				ito->Lambda -= m_insertOptions_common->GMRF_lambdaObsLoss;
-				if (ito->Lambda <= 0.0)
-					ito = activeObs[j].erase(ito);
-				else
+				if (ito->time_invariant==false)
+				{
+					ito->Lambda -= m_insertOptions_common->GMRF_lambdaObsLoss;
+					if (ito->Lambda <= 0.0)
+						ito = activeObs[j].erase(ito);
+					else
+						++ito;
+				}else
 					++ito;
-			}else
-				++ito;
+			}
 		}
 	}
 
@@ -2779,32 +2565,6 @@ void CRandomFieldGridMap2D::updateMapEstimation_GMRF()
 	timelogger.leave("GMRF.copy_to_map");
 #endif
 
-	/* //Save Hessian matrix to text file
-	Eigen::MatrixXd H = Hsparse.toDense();
-	H.saveToTextFile("_Hessian_Matrix_GMRF.txt");
-	UT.toDense().saveToTextFile("_UT_GMRF.txt");
-	solver.permutationP().toDenseMatrix().saveToTextFile("_P_GMRF.txt");
-	solver.permutationPinv().toDenseMatrix().saveToTextFile("_Pinv_GMRF.txt");
-
-	//Save Variance matrix to text file
-	Sigma.toDense().saveToTextFile("_Var_GMRF.txt");*/
-
-
-	//Sigma.toDense().saveToTextFile("_Sigma_GMRF.txt");
-
-	//Hsparse = solver.permutationP() * Hsparse * solver.permutationPinv();
-	//Hsparse.toDense().saveToTextFile("_PHPinv_GMRF.txt");
-
-	//Save gradient vector
-	//g.saveToTextFile("_gradient_vector_GMRF.txt");
-	//
-	////Save map
-	//Eigen::VectorXd mymap;
-	//mymap.resize(N);
-	//m_inc.saveToTextFile("_m_inc_GMRF.txt");
-	//for (size_t i=0; i<N; i++)
-	//	mymap[i] = m_map[i].gmrf_mean;
-	//mymap.saveToTextFile("_meanMap_GMRF.txt");
 #else
 	THROW_EXCEPTION("This method requires Eigen 3.1.0 or above")
 #endif

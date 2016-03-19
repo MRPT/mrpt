@@ -98,7 +98,12 @@ CGasConcentrationGridMap2D::CGasConcentrationGridMap2D(
 		CRandomFieldGridMap2D(mapType, x_min,x_max,y_min,y_max,resolution ),
 		insertionOptions()
 {
-	// Set the grid to initial values (and adjusts the KF covariance matrix!)
+	// Override defaults:
+	insertionOptions.GMRF_saturate_min = 0;
+	insertionOptions.GMRF_saturate_max = 1;
+	insertionOptions.GMRF_lambdaObsLoss = 1.0;
+
+	// Set the grid to initial values (and adjust covariance matrices,...)
 	//  Also, calling clear() is mandatory to end initialization of our base class (read note in CRandomFieldGridMap2D::CRandomFieldGridMap2D)
 	CMetricMap::clear();
 
