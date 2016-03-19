@@ -89,14 +89,18 @@ namespace maps
 	  *    "TMapRepresentation maptype" passed in the constructor.
 	  *
 	  *  The following papers describe the mapping alternatives implemented here:
-	  *		- mrKernelDM: A kernel-based method. See:
+	  *		- `mrKernelDM`: A kernel-based method. See:
 	  *			- "Building gas concentration gridmaps with a mobile robot", Lilienthal, A. and Duckett, T., Robotics and Autonomous Systems, v.48, 2004.
-	  *		- mrKernelDMV: A kernel-based method. See:
+	  *		- `mrKernelDMV`: A kernel-based method. See:
 	  *			- "A Statistical Approach to Gas Distribution Modelling with Mobile Robots--The Kernel DM+ V Algorithm", Lilienthal, A.J. and Reggente, M. and Trincavelli, M. and Blanco, J.L. and Gonzalez, J., IROS 2009.
-	  *		- mrKalmanFilter: A "brute-force" approach to estimate the entire map with a dense (linear) Kalman filter. Will be very slow for mid or large maps. It's provided just for comparison purposes, not useful in practice.
-	  *		- mrKalmanApproximate: A compressed/sparse Kalman filter approach. See:
+	  *		- `mrKalmanFilter`: A "brute-force" approach to estimate the entire map with a dense (linear) Kalman filter. Will be very slow for mid or large maps. It's provided just for comparison purposes, not useful in practice.
+	  *		- `mrKalmanApproximate`: A compressed/sparse Kalman filter approach. See:
 	  *			- "A Kalman Filter Based Approach to Probabilistic Gas Distribution Mapping", JL Blanco, JG Monroy, J Gonzalez-Jimenez, A Lilienthal, 28th Symposium On Applied Computing (SAC), 2013.
-	  *		- mrGMRF: See paper: Monroy, J. G., Blanco, J. L., & Gonzalez-Jimenez, J. (2016). Time-variant gas distribution mapping with obstacle information. Autonomous Robots, 40(1), 1-16.
+	  *		- `mrGMRF_G` and `mrGMRF_SD`: A Gaussian Markov Random Field (GMRF) estimator, with these constraints:
+	  *			- `mrGMRF_G`: Each cell connected to a square area of neighbors cells.
+	  *			- `mrGMRF_SD`: Each cell only connected to its 4 immediate neighbors (Up, down, left, right).
+	  *			- See papers: 
+	  *				- "Time-variant gas distribution mapping with obstacle information", Monroy, J. G., Blanco, J. L., & Gonzalez-Jimenez, J. Autonomous Robots, 40(1), 1-16, 2016.
 	  *
 	  *  Note that this class is virtual, since derived classes still have to implement:
 	  *		- mrpt::maps::CMetricMap::internal_computeObservationLikelihood()
@@ -134,9 +138,8 @@ namespace maps
 			mrKalmanFilter,
 			mrKalmanApproximate,
 			mrKernelDMV,
-			mrGMRF_G,   //!< Gaussian Markov Random Field, Gaussian prior weights between neighboring cells
-			mrGMRF_SD,  //!< Gaussian Markov Random Field, squared differences prior weights between neighboring cells
-			mrGMRF_L    //!< Gaussian Markov Random Field, Laplacian prior weights between neighboring cells
+			mrGMRF_G,   //!< Gaussian Markov Random Field, Gaussian prior weights between neighboring cells up to a certain distance
+			mrGMRF_SD,  //!< Gaussian Markov Random Field, squared differences prior weights between 4 neighboring cells
 		};
 
 		/** Constructor
@@ -157,7 +160,6 @@ namespace maps
 		   * unless redefined otherwise in base classes)
 		   */
 		virtual bool isEmpty() const MRPT_OVERRIDE;
-
 
 		/** Save the current map as a graphical file (BMP,PNG,...).
 		  * The file format will be derived from the file extension (see  CImage::saveToFile )
@@ -205,7 +207,7 @@ namespace maps
 			uint16_t	KF_W_size;	//!< [mrKalmanApproximate] The size of the window of neighbor cells.
 			/** @} */
 
-			/** @name Gaussian Markov Random Fields methods (mrGMRF_)
+			/** @name Gaussian Markov Random Fields methods (mrGMRF_G & mrGMRF_SD)
 			    @{ */
 			float		GMRF_lambdaPrior;		//!< The information (Lambda) of fixed map constraints
 			float		GMRF_lambdaObs;			//!< The initial information (Lambda) of each observation (this information will decrease with time)
@@ -218,20 +220,14 @@ namespace maps
 			size_t GMRF_gridmap_image_cx;			//!< Pixel coordinates of the origin for the occupancy_gridmap
 			size_t GMRF_gridmap_image_cy;			//!< Pixel coordinates of the origin for the occupancy_gridmap
 
-			uint16_t	GMRF_constraintsSize;	//!< The size of the Gaussian window to impose fixed restrictions between cells.
-			float		GMRF_constraintsSigma;  //!< The sigma of the Gaussian window to impose fixed restrictions between cells.
+			uint16_t	GMRF_constraintsSize;	//!< [mrGMRF_G only] The size of the Gaussian window to impose fixed restrictions between cells.
+			float		GMRF_constraintsSigma;  //!< [mrGMRF_G only] The sigma of the Gaussian window to impose fixed restrictions between cells.
 			/** @} */
 		};
 
 		/** Changes the size of the grid, maintaining previous contents.
-		  * \sa setSize
-		  */
-		virtual void  resize(		float	new_x_min,
-									float	new_x_max,
-									float	new_y_min,
-									float	new_y_max,
-									const	TRandomFieldCell& defaultValueNewCells,
-									float	additionalMarginMeters = 1.0f ) MRPT_OVERRIDE;
+		  * \sa setSize */
+		virtual void  resize(float	new_x_min, float new_x_max, float new_y_min, float	new_y_max, const TRandomFieldCell& defaultValueNewCells, float	additionalMarginMeters = 1.0f ) MRPT_OVERRIDE;
 
 		/** See docs in base class: in this class this always returns 0 */
 		float  compute3DMatchingRatio(
@@ -246,26 +242,20 @@ namespace maps
 
 		/** Save a matlab ".m" file which represents as 3D surfaces the mean and a given confidence level for the concentration of each cell.
 		  *  This method can only be called in a KF map model.
-		  *  \sa getAsMatlab3DGraphScript
-		  */
+		  *  \sa getAsMatlab3DGraphScript    */
 		virtual void  saveAsMatlab3DGraph(const std::string  &filName) const;
 
 		/** Return a large text block with a MATLAB script to plot the contents of this map \sa saveAsMatlab3DGraph
-		  *  This method can only be called in a KF map model.
-		  */
+		  *  This method can only be called in a KF map model  */
 		void  getAsMatlab3DGraphScript(std::string  &out_script) const;
 
-		/** Returns a 3D object representing the map (mean).
-		  */
+		/** Returns a 3D object representing the map (mean) */
 		virtual void getAs3DObject( mrpt::opengl::CSetOfObjectsPtr &outObj ) const MRPT_OVERRIDE;
 
-		/** Returns two 3D objects representing the mean and variance maps.
-		  */
+		/** Returns two 3D objects representing the mean and variance maps */
 		virtual void  getAs3DObject ( mrpt::opengl::CSetOfObjectsPtr	&meanObj, mrpt::opengl::CSetOfObjectsPtr	&varObj ) const;
 
-		/** Return the type of the random-field grid map, according to parameters passed on construction.
-		  */
-		TMapRepresentation	 getMapType();
+		TMapRepresentation	 getMapType(); //!< Return the type of the random-field grid map, according to parameters passed on construction.
 
 		/** Direct update of the map with a reading in a given position of the map, using 
 		  *  the appropriate method according to mapType passed in the constructor.
@@ -301,16 +291,15 @@ namespace maps
 		/** Get the part of the options common to all CRandomFieldGridMap2D classes */
 		virtual CRandomFieldGridMap2D::TInsertionOptionsCommon* getCommonInsertOptions() = 0;
 
-		/** The map representation type of this map, as passed in the constructor */
-		TMapRepresentation	m_mapType;
+		TMapRepresentation	m_mapType; //!< The map representation type of this map, as passed in the constructor
 
-	 mrpt::math::CMatrixD				m_cov;	//!< The whole covariance matrix, used for the Kalman Filter map representation.
+		mrpt::math::CMatrixD				m_cov;	//!< The whole covariance matrix, used for the Kalman Filter map representation.
 
 		/** The compressed band diagonal matrix for the KF2 implementation.
 		  *   The format is a Nx(W^2+2W+1) matrix, one row per cell in the grid map with the
 		  *    cross-covariances between each cell and half of the window around it in the grid.
 		  */
-	 mrpt::math::CMatrixD		m_stackedCov;
+		mrpt::math::CMatrixD		m_stackedCov;
 		mutable bool	m_hasToRecoverMeanAndCov;       //!< Only for the KF2 implementation.
 
 		/** @name Auxiliary vars for DM & DM+V methods
@@ -431,7 +420,6 @@ namespace maps
 				m_map.insert(maps::CRandomFieldGridMap2D::mrKernelDMV,         "mrKernelDMV");
 				m_map.insert(maps::CRandomFieldGridMap2D::mrGMRF_G,			   "mrGMRF_G");
 				m_map.insert(maps::CRandomFieldGridMap2D::mrGMRF_SD,		   "mrGMRF_SD");
-				m_map.insert(maps::CRandomFieldGridMap2D::mrGMRF_L,			   "mrGMRF_L");
 			}
 		};
 	} // End of namespace

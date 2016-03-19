@@ -31,7 +31,7 @@ using namespace std;
 
 
 //  =========== Begin of Map definition ============
-MAP_DEFINITION_REGISTER("CHeightGridMap2D,heightMap", mrpt::maps::CHeightGridMap2D)
+MAP_DEFINITION_REGISTER("CHeightGridMap2D,heightMap,dem", mrpt::maps::CHeightGridMap2D)
 
 CHeightGridMap2D::TMapDefinition::TMapDefinition() :
 	min_x(-2),
@@ -437,6 +437,8 @@ void  CHeightGridMap2D::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&outObj ) 
 	}
 }
 
+MRPT_TODO("Port getMinMaxHeight(),... to a new base class common to all DEM maps")
+
 /** Computes the minimum and maximum height in the grid.
   * \return False if there is no observed cell yet.
   */
@@ -557,7 +559,8 @@ size_t CHeightGridMap2D::countObservedCells() const
 	};
 }
 
-
+MRPT_TODO("Rewrite compute2DMatchingRatio() in virtual base with params struct")
+MRPT_TODO("Rewrite compute3DMatchingRatio() in virtual base with params struct")
 float  CHeightGridMap2D::compute3DMatchingRatio(
 	const mrpt::maps::CMetricMap						*otherMap,
 	const CPose3D							&otherMapPose,

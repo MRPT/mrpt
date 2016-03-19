@@ -275,6 +275,7 @@ void  CGasConcentrationGridMap2D::writeToStream(mrpt::utils::CStream &out, int *
 		*version = 4;
 	else
 	{
+		MRPT_TODO("Refactor common members of base class!");
 		uint32_t	n;
 
 		// Save the dimensions of the grid:
@@ -283,7 +284,7 @@ void  CGasConcentrationGridMap2D::writeToStream(mrpt::utils::CStream &out, int *
 		out << static_cast<uint32_t>(m_size_x) << static_cast<uint32_t>(m_size_y);
 
 		// To assure compatibility: The size of each cell:
-		n = static_cast<uint32_t>(sizeof( TGasConcentrationCell ));
+		n = static_cast<uint32_t>(sizeof( TRandomFieldCell ));
 		out << n;
 
 		// Save the map contents:
@@ -374,7 +375,7 @@ void  CGasConcentrationGridMap2D::readFromStream(mrpt::utils::CStream &in, int v
 			}
 			else
 			{
-				ASSERT_EQUAL_( n , static_cast<uint32_t>( sizeof( TGasConcentrationCell ) ));
+				ASSERT_EQUAL_( n , static_cast<uint32_t>( sizeof( TRandomFieldCell ) ));
 				// Load the map contents:
 				in >> n;
 				m_map.resize(n);
@@ -522,56 +523,13 @@ void  CGasConcentrationGridMap2D::TInsertionOptions::loadFromConfigFile(
 
 
 /*---------------------------------------------------------------
-					getAsBitmapFile
- ---------------------------------------------------------------*/
-void  CGasConcentrationGridMap2D::getAsBitmapFile(mrpt::utils::CImage &out_img) const
-{
-	MRPT_START
-
-	// Nothing special in this derived class:
-	CRandomFieldGridMap2D::getAsBitmapFile(out_img);
-
-	MRPT_END
-}
-
-
-/*---------------------------------------------------------------
-					saveMetricMapRepresentationToFile
-  ---------------------------------------------------------------*/
-void  CGasConcentrationGridMap2D::saveMetricMapRepresentationToFile(
-	const std::string	&filNamePrefix ) const
-{
-	MRPT_START
-
-	// Nothing special in this derived class:
-	CRandomFieldGridMap2D::saveMetricMapRepresentationToFile(filNamePrefix);
-
-	MRPT_END
-}
-
-/*---------------------------------------------------------------
-					saveAsMatlab3DGraph
-  ---------------------------------------------------------------*/
-void  CGasConcentrationGridMap2D::saveAsMatlab3DGraph(const std::string  &filName) const
-{
-	MRPT_START
-
-	// Nothing special in this derived class:
-	CRandomFieldGridMap2D::saveAsMatlab3DGraph(filName);
-
-	MRPT_END
-}
-
-/*---------------------------------------------------------------
 						getAs3DObject
 ---------------------------------------------------------------*/
 void  CGasConcentrationGridMap2D::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&outObj) const
 {
 	MRPT_START
 	if (!genericMapParams.enableSaveAs3DObject) return;
-
 	CRandomFieldGridMap2D::getAs3DObject(outObj);
-
 	MRPT_END
 }
 
@@ -584,9 +542,7 @@ void  CGasConcentrationGridMap2D::getAs3DObject(
 {
 	MRPT_START
 	if (!genericMapParams.enableSaveAs3DObject) return;
-
 	CRandomFieldGridMap2D::getAs3DObject(meanObj,varObj);
-
 	MRPT_END
 }
 

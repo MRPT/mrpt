@@ -15,6 +15,7 @@
 #include <mrpt/maps/CGasConcentrationGridMap2D.h>
 #include <mrpt/maps/CWirelessPowerGridMap2D.h>
 #include <mrpt/maps/CHeightGridMap2D.h>
+#include <mrpt/maps/CHeightGridMap2D_MRF.h>
 #include <mrpt/maps/CReflectivityGridMap2D.h>
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/maps/CColouredPointsMap.h>
@@ -51,7 +52,8 @@ namespace maps
 	 *		- mrpt::maps::CGasConcentrationGridMap2D: For gas concentration maps.
 	 *		- mrpt::maps::CWirelessPowerGridMap2D: For wifi power maps.
 	 *		- mrpt::maps::CBeaconMap: For range-only SLAM.
-	 *		- mrpt::maps::CHeightGridMap2D: For maps of height for each (x,y) location.
+	 *		- mrpt::maps::CHeightGridMap2D: For elevation maps of height for each (x,y) location (Digital elevation model, DEM)
+	 *		- mrpt::maps::CHeightGridMap2D_MRF: DEMs as Markov Random Field (MRF)
 	 *		- mrpt::maps::CReflectivityGridMap2D: For maps of "reflectivity" for each (x,y) location.
 	 *		- mrpt::maps::CColouredPointsMap: For point map with color.
 	 *		- mrpt::maps::CWeightedPointsMap: For point map with weights (capable of "fusing").
@@ -249,6 +251,7 @@ namespace maps
 		ProxyFilterContainerByClass<mrpt::maps::CGasConcentrationGridMap2DPtr,TListMaps> m_gasGridMaps;   //!< STL-like proxy to access this kind of maps in \ref maps
 		ProxyFilterContainerByClass<mrpt::maps::CWirelessPowerGridMap2DPtr,TListMaps>    m_wifiGridMaps;   //!< STL-like proxy to access this kind of maps in \ref maps
 		ProxyFilterContainerByClass<mrpt::maps::CHeightGridMap2DPtr,TListMaps>           m_heightMaps;   //!< STL-like proxy to access this kind of maps in \ref maps
+		ProxyFilterContainerByClass<mrpt::maps::CHeightGridMap2D_MRFPtr,TListMaps>       m_heightMRFMaps;   //!< STL-like proxy to access this kind of maps in \ref maps
 		ProxyFilterContainerByClass<mrpt::maps::CReflectivityGridMap2DPtr,TListMaps>     m_reflectivityMaps;   //!< STL-like proxy to access this kind of maps in \ref maps
 		ProxySelectorContainerByClass<mrpt::maps::CColouredPointsMapPtr,TListMaps>       m_colourPointsMap; //!< Proxy that looks like a smart pointer to the first matching object in \ref maps
 		ProxySelectorContainerByClass<mrpt::maps::CWeightedPointsMapPtr,TListMaps>       m_weightedPointsMap; //!< Proxy that looks like a smart pointer to the first matching object in \ref maps

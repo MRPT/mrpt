@@ -357,6 +357,7 @@ void  CRandomFieldGridMap2D::internal_clear()
 
 			if (this->m_insertOptions_common->GMRF_use_occupancy_information)
 			{
+				MRPT_TODO("Clean up!")
 				printf("loading simplemap: %s ",m_insertOptions_common->GMRF_simplemap_file.c_str());
 				printf("%i \n",m_insertOptions_common->GMRF_simplemap_file.compare(""));
 
@@ -1606,10 +1607,6 @@ void  CRandomFieldGridMap2D::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&mean
 	// Draw the surfaces:
 	switch(m_mapType)
 	{
-	case mrGMRF_L:
-		THROW_EXCEPTION("Rendering not implemented for map type:'mrGMRF_L'")
-		break;
-
 	case mrKalmanFilter:
 	case mrKalmanApproximate:
 	case mrGMRF_G:
