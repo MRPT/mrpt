@@ -167,7 +167,7 @@ string mrpt::system::MRPT_getCompilationDate()
 	
 	errno = 0;
 	unsigned long epoch = strtoul(source_date_epoch, &endptr, 10);
-	if ((errno == ERANGE && (epoch == ULLONG_MAX || epoch == 0)) || (errno != 0 && epoch == 0)) {
+	if (epoch==0 || ((errno == ERANGE && (epoch == ULLONG_MAX || epoch == 0)) || (errno != 0 && epoch == 0))) {
 		// Last resort:
  		now = time(NULL);
 	}
