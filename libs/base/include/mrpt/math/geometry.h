@@ -1047,7 +1047,7 @@ namespace mrpt
 							double &x,   double &y,   double &z,
 							double &dist);
 
-		/** Returns wether two rotated rectangles intersect.
+		/** Returns whether two rotated rectangles intersect.
 		 *  The first rectangle is not rotated and given by (R1_x_min,R1_x_max)-(R1_y_min,R1_y_max).
 		 *  The second rectangle is given is a similar way, but it is internally rotated according
 		 *   to the given coordinates translation (R2_pose_x,R2_pose_y,R2_pose_phi(radians)), relative

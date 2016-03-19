@@ -30,11 +30,13 @@ CStartUpClassesRegister  mrpt_vision_class_reg(&registerAllClasses_mrpt_vision);
   ---------------------------------------------------------------*/
 void registerAllClasses_mrpt_vision()
 {
+#if !defined(DISABLE_MRPT_AUTO_CLASS_REGISTRATION)
 	registerClass( CLASS_ID( CFeature ) );
 
 	registerClass( CLASS_ID( CLandmark ) );
 	registerClass( CLASS_ID( CLandmarksMap ) );
 
 	registerClass( CLASS_ID( CObservationVisualLandmarks ) );
+#endif
 }
 

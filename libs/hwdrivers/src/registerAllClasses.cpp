@@ -28,6 +28,7 @@ CStartUpClassesRegister  mrpt_hwdrivers_class_reg(&registerAllClasses_mrpt_hwdri
   */
 void registerAllClasses_mrpt_hwdrivers()
 {
+#if !defined(DISABLE_MRPT_AUTO_CLASS_REGISTRATION)
 	CSickLaserUSB::doRegister();
 	CIbeoLuxETH::doRegister();
 	CHokuyoURG::doRegister();
@@ -61,6 +62,7 @@ void registerAllClasses_mrpt_hwdrivers()
 	CGPS_NTRIP::doRegister();
 	CIMUIntersense::doRegister();
 	CSkeletonTracker::doRegister();
-    CVelodyneScanner::doRegister();
+	CVelodyneScanner::doRegister();
+#endif
 }
 

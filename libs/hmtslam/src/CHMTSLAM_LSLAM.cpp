@@ -975,7 +975,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA( const TMessageLSLAMfromAA &myMsg )
 					}
 				}
 
-				// Now, go thru all other areas to check wether they are neighbors of "area_a":
+				// Now, go thru all other areas to check whether they are neighbors of "area_a":
 				for (size_t idx_area_b=0;idx_area_b<myMsg.partitions.size();idx_area_b++)
 				{
 					if (idx_area_a==idx_area_b) continue; // Look for poses in a different area only!

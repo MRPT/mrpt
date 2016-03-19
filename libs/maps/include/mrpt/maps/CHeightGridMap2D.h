@@ -93,7 +93,7 @@ namespace mrpt
 				void   loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) MRPT_OVERRIDE; // See base docs
 				void   dumpToTextStream(mrpt::utils::CStream &out) const MRPT_OVERRIDE; // See base docs
 
-				bool   filterByHeight; //!< Wether to perform filtering by z-coordinate (default=false): coordinates are always RELATIVE to the robot for this filter.vvv
+				bool   filterByHeight; //!< Whether to perform filtering by z-coordinate (default=false): coordinates are always RELATIVE to the robot for this filter.vvv
 				float  z_min,z_max; //!< Only when filterByHeight is true: coordinates are always RELATIVE to the robot for this filter.
 				float  minDistBetweenPointsWhenInserting; //!< When inserting a scan, a point cloud is first created with this minimum distance between the 3D points (default=0).
 

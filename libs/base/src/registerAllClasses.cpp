@@ -36,12 +36,12 @@ void registerAllClasses_mrpt_base();
 
 CStartUpClassesRegister  mrpt_base_class_reg(&registerAllClasses_mrpt_base);
 
-
 /*---------------------------------------------------------------
 					registerAllClasses_mrpt_base
   ---------------------------------------------------------------*/
 void registerAllClasses_mrpt_base()
 {
+#if !defined(DISABLE_MRPT_AUTO_CLASS_REGISTRATION)
 	// Abstract classes are not registered since they can not be
 	//   instanciated, nor loaded from streams.
 	registerClass( CLASS_ID( CMatrix ) );
@@ -99,5 +99,6 @@ void registerAllClasses_mrpt_base()
 	registerClass( CLASS_ID( TStereoCamera ) );
 	registerClass( CLASS_ID( CSplineInterpolator1D  ) );
 	registerClass( CLASS_ID( CStringList ) );
+#endif
 }
 

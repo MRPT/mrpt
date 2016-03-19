@@ -25,7 +25,8 @@ CStartUpClassesRegister  mrpt_tfest_class_reg(&registerAllClasses_mrpt_tfest);
   ---------------------------------------------------------------*/
 void registerAllClasses_mrpt_tfest()
 {
+#if !defined(DISABLE_MRPT_AUTO_CLASS_REGISTRATION)
 //	registerClass( CLASS_ID( XXXX ) );
-
+#endif
 }
 

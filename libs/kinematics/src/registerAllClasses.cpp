@@ -26,7 +26,8 @@ CStartUpClassesRegister  mrpt_kinematics_class_reg(&registerAllClasses_mrpt_kine
   ---------------------------------------------------------------*/
 void registerAllClasses_mrpt_kinematics()
 {
+#if !defined(DISABLE_MRPT_AUTO_CLASS_REGISTRATION)
 	registerClass( CLASS_ID( CKinematicChain ) );
-
+#endif
 }
 

@@ -213,7 +213,7 @@ namespace maps
 			float		GMRF_lambdaObs;			//!< The initial information (Lambda) of each observation (this information will decrease with time)
 			float		GMRF_lambdaObsLoss;		//!< The loss of information of the observations with each iteration
 			
-			bool GMRF_use_occupancy_information;	//!< wether to use information of an occupancy_gridmap map for buidling the GMRF
+			bool GMRF_use_occupancy_information;	//!< whether to use information of an occupancy_gridmap map for buidling the GMRF
 			std::string GMRF_simplemap_file;		//!< simplemap_file name of the occupancy_gridmap
 			std::string GMRF_gridmap_image_file;	//!< image name of the occupancy_gridmap
 			float GMRF_gridmap_image_res;			//!< occupancy_gridmap resolution: size of each pixel (m)

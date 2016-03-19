@@ -27,6 +27,7 @@ CStartUpClassesRegister  mrpt_maps_class_reg(&registerAllClasses_mrpt_maps);
   ---------------------------------------------------------------*/
 void registerAllClasses_mrpt_maps()
 {
+#if !defined(DISABLE_MRPT_AUTO_CLASS_REGISTRATION)
 	registerClass( CLASS_ID( CBeacon ) );
 	registerClass( CLASS_ID( CBeaconMap ) );
 
@@ -47,5 +48,6 @@ void registerAllClasses_mrpt_maps()
 
 	registerClass( CLASS_ID( CAngularObservationMesh ) );
 	registerClass( CLASS_ID( CPlanarLaserScan ) ) ;
+#endif
 }
 

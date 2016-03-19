@@ -51,7 +51,7 @@ namespace mrpt
 
 			KFArray_VEH xv( &m_xkk[0] );  // Vehicle pose
 
-			bool skipPrediction=false; // Wether to skip the prediction step (in SLAM this is desired for the first iteration...)
+			bool skipPrediction=false; // Whether to skip the prediction step (in SLAM this is desired for the first iteration...)
 
 			// Update mean: xv will have the updated pose until we update it in the filterState later.
 			//  This is to maintain a copy of the last robot pose in the state vector, required for the Jacobian computation.

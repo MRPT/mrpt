@@ -26,6 +26,7 @@ CStartUpClassesRegister  mrpt_opengl_class_reg(&registerAllClasses_mrpt_opengl);
   ---------------------------------------------------------------*/
 void registerAllClasses_mrpt_opengl()
 {
+#if !defined(DISABLE_MRPT_AUTO_CLASS_REGISTRATION)
 	// Opengl classes:
 	registerClass( CLASS_ID( CRenderizable ) );
 	registerClass( CLASS_ID( C3DSScene ) );
@@ -67,5 +68,6 @@ void registerAllClasses_mrpt_opengl()
 	// These ones are in the lib: mrpt-obsmaps
 	//registerClass( CLASS_ID( CPlanarLaserScan ) );
 	//registerClass( CLASS_ID( CAngularObservationMesh ) );
+#endif
 }
 

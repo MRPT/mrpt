@@ -25,6 +25,7 @@ CStartUpClassesRegister  mrpt_hmtslam_class_reg(&registerAllClasses_mrpt_hmtslam
   ---------------------------------------------------------------*/
 void registerAllClasses_mrpt_hmtslam()
 {
+#if !defined(DISABLE_MRPT_AUTO_CLASS_REGISTRATION)
 	registerClass( CLASS_ID(CHMTSLAM) );
 	registerClass( CLASS_ID(CLSLAMParticleData) );
 	registerClass( CLASS_ID(CHierarchicalMHMap) );
@@ -33,6 +34,7 @@ void registerAllClasses_mrpt_hmtslam()
 	registerClass( CLASS_ID(CRobotPosesGraph ) );
 	registerClass( CLASS_ID(THypothesisIDSet) );
 	registerClass( CLASS_ID(CLocalMetricHypothesis) );
+#endif
 }
 
 

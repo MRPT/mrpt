@@ -30,6 +30,7 @@ CStartUpClassesRegister  mrpt_obs_class_reg(&registerAllClasses_mrpt_obs);
   ---------------------------------------------------------------*/
 void registerAllClasses_mrpt_obs()
 {
+#if !defined(DISABLE_MRPT_AUTO_CLASS_REGISTRATION)
 	registerClass( CLASS_ID( CSensoryFrame ) );
 	registerClassCustomName( "CSensorialFrame", CLASS_ID( CSensoryFrame ) );
 
@@ -73,6 +74,6 @@ void registerAllClasses_mrpt_obs()
 	registerClass( CLASS_ID( CObservationSkeleton ) );
 
 	registerClass( CLASS_ID( TMapGenericParams ) );
-
+#endif
 }
 
