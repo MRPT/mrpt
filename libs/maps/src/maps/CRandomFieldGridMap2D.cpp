@@ -37,14 +37,14 @@ IMPLEMENTS_VIRTUAL_SERIALIZABLE(CRandomFieldGridMap2D, CMetricMap,mrpt::maps)
 						Constructor
   ---------------------------------------------------------------*/
 CRandomFieldGridMap2D::CRandomFieldGridMap2D(
-	TMapRepresentation	mapType,
-	float		x_min,
-	float		x_max,
-	float		y_min,
-	float		y_max,
-	float		resolution ) :
+	TMapRepresentation mapType,
+	float x_min, float x_max,
+	float y_min, float y_max,
+	float resolution
+	) :
 		CDynamicGrid<TRandomFieldCell>( x_min,x_max,y_min,y_max,resolution ),
 		m_rfgm_verbose(false),
+		m_rfgm_run_update_upon_clear(true),
 		m_insertOptions_common( NULL ),
 		m_mapType(mapType),
 		m_cov(0,0),
@@ -53,7 +53,6 @@ CRandomFieldGridMap2D::CRandomFieldGridMap2D(
 		m_average_normreadings_mean(0),
 		m_average_normreadings_var(0),
 		m_average_normreadings_count(0)
-
 {
 	// We can't set "m_insertOptions_common" here via "getCommonInsertOptions()" since
 	//  it's a pure virtual method and we're at the constructor.
@@ -64,6 +63,14 @@ CRandomFieldGridMap2D::CRandomFieldGridMap2D(
 CRandomFieldGridMap2D::~CRandomFieldGridMap2D()
 {
 }
+
+/** Changes the size of the grid, erasing previous contents. \sa resize */
+void CRandomFieldGridMap2D::setSize(const float	x_min, const float x_max, const float y_min, const float y_max, const float resolution, const TRandomFieldCell * fill_value)
+{
+	CDynamicGrid<TRandomFieldCell>::setSize(x_min,x_max,y_min,y_max,resolution,fill_value);
+	CMetricMap::clear();
+}
+
 
 /*---------------------------------------------------------------
 						clear
@@ -334,8 +341,11 @@ void  CRandomFieldGridMap2D::internal_clear()
 			}
 
 			if (m_rfgm_verbose) cout << "		Ready in: " << tictac.Tac() << "s" << endl;
-			//Solve system and update map estimation
-			updateMapEstimation_GMRF();
+			
+			if (m_rfgm_run_update_upon_clear) {
+				//Solve system and update map estimation
+				updateMapEstimation_GMRF();
+			}
 		}
 		break;
 
@@ -488,7 +498,6 @@ void  CRandomFieldGridMap2D::internal_clear()
 								//	cout << " **** Inserting Observation at cell: " << j << endl;
 								//}
 
-
 					//Factor with the right node: H_ji = - Lamda_prior
 					//-------------------------------------------------
 					if (cx<(m_size_x-1))
@@ -581,13 +590,14 @@ void  CRandomFieldGridMap2D::internal_clear()
 					}
 				} // end for "j"
 
+#if 0
 				//DEBUG - Save cell interconnections to file
 				ofstream myfile;
 				myfile.open("MRF.txt");
 				for (std::multimap<size_t,size_t>::iterator it=cell_interconnections.begin(); it!=cell_interconnections.end(); ++it)
 					myfile << (*it).first << " " << (*it).second << '\n';
 				myfile.close();
-
+#endif
 			}
 			else
 			{
@@ -635,8 +645,10 @@ void  CRandomFieldGridMap2D::internal_clear()
 				cout << "---------- Prior Built in: " << tictac.Tac() << "s ----------" << endl;
 			}
 
-			//Solve system and update map estimation
-			updateMapEstimation_GMRF();
+			if (m_rfgm_run_update_upon_clear) {
+				//Solve system and update map estimation
+				updateMapEstimation_GMRF();
+			}
 #endif
 		}//end case
 		break;
@@ -775,7 +787,8 @@ CRandomFieldGridMap2D::TInsertionOptionsCommon::TInsertionOptionsCommon() :
 	GMRF_constraintsSigma		( 4.0f ),
 
 	GMRF_saturate_min			( -std::numeric_limits<double>::max() ),
-	GMRF_saturate_max			(  std::numeric_limits<double>::max() )
+	GMRF_saturate_max			(  std::numeric_limits<double>::max() ),
+	GMRF_skip_variance			(false)
 {
 }
 
@@ -1569,8 +1582,8 @@ void  CRandomFieldGridMap2D::saveAsMatlab3DGraph(const std::string  &filName) co
 		m_y_max
 		);
 
-	os::fprintf(f,"\nfigure; imagesc(xs,ys,z_mean);axis equal;title('Mean value');");
-	os::fprintf(f,"\nfigure; imagesc(xs,ys,(z_upper-z_mean)/%f);axis equal;title('Std dev of estimated value');",std_times);
+	os::fprintf(f,"\nfigure; imagesc(xs,ys,z_mean);axis equal;title('Mean value');colorbar;");
+	os::fprintf(f,"\nfigure; imagesc(xs,ys,(z_upper-z_mean)/%f);axis equal;title('Std dev of estimated value');colorbar;",std_times);
 
 	fclose(f);
 
@@ -2256,9 +2269,9 @@ void CRandomFieldGridMap2D::updateMapEstimation()
 		case mrKernelDMV:
 		case mrKalmanFilter:
 		case mrKalmanApproximate:
-			MRPT_TODO("Implement!");
-			THROW_EXCEPTION("To do!");
+			// Nothing to do, already done in the insert method...
 			break;
+
 		case mrGMRF_G:
 		case mrGMRF_SD:
 			this->updateMapEstimation_GMRF();
@@ -2268,7 +2281,7 @@ void CRandomFieldGridMap2D::updateMapEstimation()
 	};
 }
 
-void CRandomFieldGridMap2D::insertIndividualReading(const float sensorReading,const mrpt::math::TPoint2D & point, const bool update_map)
+void CRandomFieldGridMap2D::insertIndividualReading(const double sensorReading,const mrpt::math::TPoint2D & point, const bool update_map,const bool time_invariant)
 {
 	switch (m_mapType)
 	{
@@ -2276,8 +2289,8 @@ void CRandomFieldGridMap2D::insertIndividualReading(const float sensorReading,co
 		case mrKernelDMV:          insertObservation_KernelDM_DMV(sensorReading,point, true); break;
 		case mrKalmanFilter:       insertObservation_KF(sensorReading,point); break;
 		case mrKalmanApproximate:  insertObservation_KF2(sensorReading,point);break;
-		case mrGMRF_G:			   insertObservation_GMRF(sensorReading,point,update_map); break;
-		case mrGMRF_SD:			   insertObservation_GMRF(sensorReading,point,update_map); break;
+		case mrGMRF_G:			   insertObservation_GMRF(sensorReading,point,update_map,time_invariant); break;
+		case mrGMRF_SD:			   insertObservation_GMRF(sensorReading,point,update_map,time_invariant); break;
 	default:
 		THROW_EXCEPTION("insertObservation() isn't implemented for selected 'mapType'")
 	};
@@ -2288,8 +2301,9 @@ void CRandomFieldGridMap2D::insertIndividualReading(const float sensorReading,co
 					insertObservation_GMRF
   ---------------------------------------------------------------*/
 void CRandomFieldGridMap2D::insertObservation_GMRF(
-	float normReading,
-	const mrpt::math::TPoint2D &point,const bool update_map )
+	double normReading,
+	const mrpt::math::TPoint2D &point,const bool update_map,
+	const bool time_invariant)
 {
 
 	try{
@@ -2302,10 +2316,8 @@ void CRandomFieldGridMap2D::insertObservation_GMRF(
 		TobservationGMRF new_obs;
 		new_obs.obsValue = normReading;
 		new_obs.Lambda = m_insertOptions_common->GMRF_lambdaObs;
-		new_obs.time_invariant = false;		//Default behaviour, the obs will lose weight with time.
+		new_obs.time_invariant = time_invariant;
 		activeObs[cellIdx].push_back(new_obs);
-
-
 	}catch(std::exception e){
 		cerr << "Exception while Inserting new Observation: "  << e.what() << endl;
 	}
@@ -2314,6 +2326,7 @@ void CRandomFieldGridMap2D::insertObservation_GMRF(
 	if (update_map) updateMapEstimation_GMRF();
 }
 
+bool CRandomFieldGridMap2D::ENABLE_GMRF_PROFILER  = false;
 
 /*---------------------------------------------------------------
 					updateMapEstimation_GMRF
@@ -2323,12 +2336,11 @@ void CRandomFieldGridMap2D::updateMapEstimation_GMRF()
 #if EIGEN_VERSION_AT_LEAST(3,1,0)
 	size_t N = m_map.size();
 
-//#define DO_PROFILE
 
-#ifdef DO_PROFILE
 	static mrpt::utils::CTimeLogger timelogger;
+	timelogger.enable(ENABLE_GMRF_PROFILER);
+
 	timelogger.enter("GMRF.build_hessian");
-#endif
 
 	//------------------
 	//  1- HESSIAN
@@ -2359,10 +2371,8 @@ void CRandomFieldGridMap2D::updateMapEstimation_GMRF()
 #endif
 
 
-#ifdef DO_PROFILE
 	timelogger.leave("GMRF.build_hessian");
 	timelogger.enter("GMRF.build_grad");
-#endif
 
 	//------------------
 	//  2- GRADIENT
@@ -2460,35 +2470,40 @@ void CRandomFieldGridMap2D::updateMapEstimation_GMRF()
 		}
 	}//end-for
 
-#ifdef DO_PROFILE
 	timelogger.leave("GMRF.build_grad");
 	timelogger.enter("GMRF.solve");
-#endif
 
+	if (m_rfgm_verbose) printf("[CRandomFieldGridMap2D] Solving...\n");
 	//Cholesky Factorization of Hessian --> Realmente se hace: chol( P * H * inv(P) )
 	Eigen::SimplicialLLT< Eigen::SparseMatrix <double> > solver;
 	solver.compute(Hsparse);
 	// Solve System:    m = m + H\(-g);
 	// Note: we solve for (+g) to avoid creating a temporary "-g", then we'll substract the result in m_inc instead of adding it:
-	Eigen::VectorXd m_inc = solver.solve(g);
 
-#ifdef DO_PROFILE
+
+	Eigen::VectorXd m_inc = solver.solve(g);
+	if (m_rfgm_verbose) printf("[CRandomFieldGridMap2D] Solved.\n");
+
 	timelogger.leave("GMRF.solve");
-	timelogger.enter("GMRF.variance");
-#endif
+
 	Eigen::SparseMatrix<double> Sigma(N,N);								//Variance Matrix
-	MRPT_TODO("UT.coeff() implies a heavy time cost in sparse matrices. Rewrite.");
+	if(!m_insertOptions_common->GMRF_skip_variance)
+	{
+	timelogger.enter("GMRF.variance");
 
 	// VARIANCE SIGMA = inv(P) * inv( P*H*inv(P) ) * P
 	//Get triangular supperior P*H*inv(P) = UT' * UT = P * R'*R * inv(P)
 
+	if (m_rfgm_verbose) printf("[CRandomFieldGridMap2D] Computing variance: U matrix...\n");
 	Eigen::SparseMatrix<double> UT = solver.matrixU();
+	if (m_rfgm_verbose) printf("[CRandomFieldGridMap2D] Computing variance: U done.\n");
 	Sigma.reserve(UT.nonZeros());
-
 
 	//Apply custom equations to obtain the inverse -> inv( P*H*inv(P) )
 	for (int l=N-1; l>=0; l--)
 	{
+		if (m_rfgm_verbose && !(l%1000)) printf("[CRandomFieldGridMap2D] Computing variance %6.02f%%... \r", (100.0*(N-l-1))/N );
+
 		//Computes variances in the inferior submatrix of "l"
 		double subSigmas = 0.0;
 		for(size_t j=l+1; j<N; j++)
@@ -2522,12 +2537,12 @@ void CRandomFieldGridMap2D::updateMapEstimation_GMRF()
 
 		Sigma.insert(l,l) = (1/UT.coeff(l,l)) * ( 1/UT.coeff(l,l) - subSigmas );
 	}
-#ifdef DO_PROFILE
-	timelogger.leave("GMRF.variance");
-	timelogger.enter("GMRF.copy_to_map");
-#endif
 
-	// Update Mean-Variance and force (0 < m_map[i].mean < 1)
+	timelogger.leave("GMRF.variance");
+	}
+	timelogger.enter("GMRF.copy_to_map");
+
+	// Update Mean-Variance in the base grid class
 	for (size_t j=0; j<N; j++)
 	{
 		// Recover the diagonal covariance values, undoing the permutation:
@@ -2548,7 +2563,7 @@ void CRandomFieldGridMap2D::updateMapEstimation_GMRF()
 			std::vector<TobservationGMRF>::iterator ito = activeObs[j].begin();
 			while ( ito!=activeObs[j].end() )
 			{
-				if (ito->time_invariant==false)
+				if (!ito->time_invariant)
 				{
 					ito->Lambda -= m_insertOptions_common->GMRF_lambdaObsLoss;
 					if (ito->Lambda <= 0.0)
@@ -2561,10 +2576,7 @@ void CRandomFieldGridMap2D::updateMapEstimation_GMRF()
 		}
 	}
 
-#ifdef DO_PROFILE
 	timelogger.leave("GMRF.copy_to_map");
-#endif
-
 #else
 	THROW_EXCEPTION("This method requires Eigen 3.1.0 or above")
 #endif

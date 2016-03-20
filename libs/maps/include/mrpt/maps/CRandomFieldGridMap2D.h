@@ -89,7 +89,7 @@ namespace maps
 	  *    "TMapRepresentation maptype" passed in the constructor.
 	  *
 	  *  The following papers describe the mapping alternatives implemented here:
-	  *		- `mrKernelDM`: A kernel-based method. See:
+	  *		- `mrKernelDM`: A Gaussian kernel-based method. See:
 	  *			- "Building gas concentration gridmaps with a mobile robot", Lilienthal, A. and Duckett, T., Robotics and Autonomous Systems, v.48, 2004.
 	  *		- `mrKernelDMV`: A kernel-based method. See:
 	  *			- "A Statistical Approach to Gas Distribution Modelling with Mobile Robots--The Kernel DM+ V Algorithm", Lilienthal, A.J. and Reggente, M. and Trincavelli, M. and Blanco, J.L. and Gonzalez, J., IROS 2009.
@@ -117,6 +117,7 @@ namespace maps
 		// This must be added to any CSerializable derived class:
 		DEFINE_VIRTUAL_SERIALIZABLE( CRandomFieldGridMap2D )
 	public:
+		static bool ENABLE_GMRF_PROFILER; //!< [default:false] Enables a profiler to show a performance report at application end.
 
 		/** Calls the base CMetricMap::clear
 		  * Declared here to avoid ambiguity between the two clear() in both base classes.
@@ -133,24 +134,21 @@ namespace maps
 		  */
 		enum TMapRepresentation
 		{
-			mrKernelDM = 0,   
-			mrAchim = 0,      //!< Another alias for "mrKernelDM", for backwards compatibility
-			mrKalmanFilter,
-			mrKalmanApproximate,
-			mrKernelDMV,
-			mrGMRF_G,   //!< Gaussian Markov Random Field, Gaussian prior weights between neighboring cells up to a certain distance
-			mrGMRF_SD,  //!< Gaussian Markov Random Field, squared differences prior weights between 4 neighboring cells
+			mrKernelDM = 0,  //!< Gaussian kernel-based estimator (see discussion in mrpt::maps::CRandomFieldGridMap2D)
+			mrAchim = 0,     //!< Another alias for "mrKernelDM", for backwards compatibility (see discussion in mrpt::maps::CRandomFieldGridMap2D)
+			mrKalmanFilter,  //!< "Brute-force" Kalman filter (see discussion in mrpt::maps::CRandomFieldGridMap2D)
+			mrKalmanApproximate, //!< (see discussion in mrpt::maps::CRandomFieldGridMap2D)
+			mrKernelDMV,     //!< Double mean + variance Gaussian kernel-based estimator (see discussion in mrpt::maps::CRandomFieldGridMap2D)
+			mrGMRF_G,   //!< Gaussian Markov Random Field, Gaussian prior weights between neighboring cells up to a certain distance (see discussion in mrpt::maps::CRandomFieldGridMap2D)
+			mrGMRF_SD   //!< Gaussian Markov Random Field, squared differences prior weights between 4 neighboring cells (see discussion in mrpt::maps::CRandomFieldGridMap2D)
 		};
 
-		/** Constructor
-		  */
+		/** Constructor */
 		CRandomFieldGridMap2D(
-			TMapRepresentation	mapType = mrAchim,
-			float				x_min = -2,
-			float				x_max = 2,
-			float				y_min = -2,
-			float				y_max = 2,
-			float				resolution = 0.1
+			TMapRepresentation	mapType = mrKernelDM,
+			float x_min = -2, float x_max = 2,
+			float y_min = -2, float y_max = 2,
+			float resolution = 0.1
 			);
 
 		/** Destructor */
@@ -226,12 +224,15 @@ namespace maps
 			uint16_t  GMRF_constraintsSize;	//!< [mrGMRF_G only] The size of the Gaussian window to impose fixed restrictions between cells.
 			float     GMRF_constraintsSigma;  //!< [mrGMRF_G only] The sigma of the Gaussian window to impose fixed restrictions between cells.
 			double    GMRF_saturate_min, GMRF_saturate_max; //!< (Default:-inf,+inf) Saturate the estimated mean in these limits
+			bool      GMRF_skip_variance;     //!< (Default:false) Skip the computation of the variance, just compute the mean
 			/** @} */
 		};
 
-		/** Changes the size of the grid, maintaining previous contents.
-		  * \sa setSize */
+		/** Changes the size of the grid, maintaining previous contents. \sa setSize */
 		virtual void  resize(float	new_x_min, float new_x_max, float new_y_min, float	new_y_max, const TRandomFieldCell& defaultValueNewCells, float	additionalMarginMeters = 1.0f ) MRPT_OVERRIDE;
+
+		/** Changes the size of the grid, erasing previous contents. \sa resize */
+		virtual void setSize(const float	x_min, const float x_max, const float y_min, const float y_max, const float resolution, const TRandomFieldCell * fill_value = NULL);
 
 		/** See docs in base class: in this class this always returns 0 */
 		float  compute3DMatchingRatio(
@@ -266,7 +267,12 @@ namespace maps
 		  *
 		  * This is a direct way to update the map, an alternative to the generic insertObservation() method which works with mrpt::obs::CObservation objects.
 		  */
-		void insertIndividualReading(const float sensorReading,const mrpt::math::TPoint2D & point, const bool update_map = true);
+		void insertIndividualReading(
+			const double sensorReading,          //!< [in] The value observed in the (x,y) position
+			const mrpt::math::TPoint2D & point,  //!< [in] The (x,y) location
+			const bool update_map = true,        //!< [in] Run a global map update after inserting this observatin (algorithm-dependant)
+			const bool time_invariant = true     //!< [in] Whether the observation "vanishes" with time (false) or not (true) [Only for GMRF methods]
+			);
 
 		/** Returns the prediction of the measurement at some (x,y) coordinates, and its certainty (in the form of the expected variance).
 		  *  This methods is implemented differently for the different gas map types.
@@ -286,13 +292,14 @@ namespace maps
 		/** Load the mean and STD vectors of the full Kalman filter estimate (works for all KF-based methods). */
 		void setMeanAndSTD( mrpt::math::CVectorDouble &out_means, mrpt::math::CVectorDouble &out_STD);
 
-		void updateMapEstimation();
+		void updateMapEstimation(); //!< Run the method-specific procedure required to ensure that the mean & variances are up-to-date with all inserted observations.
 
 		void enableVerbose(bool enable_verbose) { m_rfgm_verbose = enable_verbose; }
 		bool isEnabledVerbose() const { return m_rfgm_verbose; }
 
 	protected:
 		bool m_rfgm_verbose; //!< Enable verbose debug output for Random Field grid map operations (Default: false)
+		bool m_rfgm_run_update_upon_clear;
 
 		/** Common options to all random-field grid maps: pointer that is set to the derived-class instance of "insertOptions" upon construction of this class. */
 		TInsertionOptionsCommon * m_insertOptions_common;
@@ -374,7 +381,7 @@ namespace maps
 		  * \param normReading Is a [0,1] normalized concentration reading.
 		  * \param point Is the sensor location on the map
 		  */
-		void  insertObservation_GMRF(float normReading,const mrpt::math::TPoint2D &point, const bool update_map);
+		void  insertObservation_GMRF(double normReading,const mrpt::math::TPoint2D &point, const bool update_map,const bool time_invariant);
 
 		/** solves the minimum quadratic system to determine the new concentration of each cell */
 		void  updateMapEstimation_GMRF();

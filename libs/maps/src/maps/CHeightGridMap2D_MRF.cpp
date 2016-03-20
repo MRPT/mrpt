@@ -12,21 +12,6 @@
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPose3D.h>
 
-//#include <mrpt/obs/CObservationGasSensors.h>
-//#include <mrpt/math/CMatrix.h>
-//#include <mrpt/math/ops_containers.h>
-//#include <mrpt/utils/CTicTac.h>
-//#include <mrpt/utils/color_maps.h>
-//#include <mrpt/utils/round.h>  // round()
-//#include <mrpt/utils/CFileGZOutputStream.h>
-//#include <mrpt/utils/CFileGZInputStream.h>
-//#include <mrpt/system/datetime.h>
-//#include <mrpt/system/filesystem.h>
-//#include <mrpt/system/os.h>
-//#include <mrpt/opengl/CArrow.h>
-//#include <mrpt/opengl/CSetOfObjects.h>
-//#include <mrpt/utils/CStream.h>
-
 using namespace mrpt;
 using namespace mrpt::maps;
 using namespace mrpt::obs;
@@ -39,6 +24,7 @@ using namespace mrpt::math;
 MAP_DEFINITION_REGISTER("CHeightGridMap2D_MRF,dem_mrf", mrpt::maps::CHeightGridMap2D_MRF)
 
 CHeightGridMap2D_MRF::TMapDefinition::TMapDefinition() :
+	run_map_estimation_at_ctor(true),
 	min_x(-2),
 	max_x(2),
 	min_y(-2),
@@ -52,6 +38,7 @@ void CHeightGridMap2D_MRF::TMapDefinition::loadFromConfigFile_map_specific(const
 {
 	// [<sectionNamePrefix>+"_creationOpts"]
 	const std::string sSectCreation = sectionNamePrefix+string("_creationOpts");
+	MRPT_LOAD_CONFIG_VAR(run_map_estimation_at_ctor, bool,   source,sSectCreation);
 	MRPT_LOAD_CONFIG_VAR(min_x, float,   source,sSectCreation);
 	MRPT_LOAD_CONFIG_VAR(max_x, float,   source,sSectCreation);
 	MRPT_LOAD_CONFIG_VAR(min_y, float,   source,sSectCreation);
@@ -65,6 +52,7 @@ void CHeightGridMap2D_MRF::TMapDefinition::loadFromConfigFile_map_specific(const
 void CHeightGridMap2D_MRF::TMapDefinition::dumpToTextStream_map_specific(mrpt::utils::CStream &out) const
 {
 	out.printf("MAP TYPE                                  = %s\n", mrpt::utils::TEnumType<CHeightGridMap2D_MRF::TMapRepresentation>::value2name(mapType).c_str() );
+	LOADABLEOPTS_DUMP_VAR(run_map_estimation_at_ctor , bool);
 	LOADABLEOPTS_DUMP_VAR(min_x         , float);
 	LOADABLEOPTS_DUMP_VAR(max_x         , float);
 	LOADABLEOPTS_DUMP_VAR(min_y         , float);
@@ -77,7 +65,7 @@ void CHeightGridMap2D_MRF::TMapDefinition::dumpToTextStream_map_specific(mrpt::u
 mrpt::maps::CMetricMap* CHeightGridMap2D_MRF::internal_CreateFromMapDefinition(const mrpt::maps::TMetricMapInitializer &_def)
 {
 	const CHeightGridMap2D_MRF::TMapDefinition &def = *dynamic_cast<const CHeightGridMap2D_MRF::TMapDefinition*>(&_def);
-	CHeightGridMap2D_MRF *obj = new CHeightGridMap2D_MRF(def.mapType,def.min_x,def.max_x,def.min_y,def.max_y,def.resolution );
+	CHeightGridMap2D_MRF *obj = new CHeightGridMap2D_MRF(def.mapType,def.min_x,def.max_x,def.min_y,def.max_y,def.resolution,def.run_map_estimation_at_ctor);
 	obj->insertionOptions  = def.insertionOpts;
 	return obj;
 }
@@ -89,10 +77,13 @@ IMPLEMENTS_SERIALIZABLE(CHeightGridMap2D_MRF, CRandomFieldGridMap2D,mrpt::maps)
 CHeightGridMap2D_MRF::CHeightGridMap2D_MRF(
 	TMapRepresentation mapType,
 	float x_min, float x_max,
-	float y_min, float y_max, float resolution ) :
-		CRandomFieldGridMap2D(mapType, x_min,x_max,y_min,y_max,resolution ),
-		insertionOptions()
+	float y_min, float y_max, float resolution,
+	bool  run_first_map_estimation_now
+	) :
+	CRandomFieldGridMap2D(mapType, x_min,x_max,y_min,y_max,resolution ),
+	insertionOptions()
 {
+	m_rfgm_run_update_upon_clear = run_first_map_estimation_now;
 	// Set the grid to initial values (and adjusts the KF covariance matrix!)
 	//  Also, calling clear() is mandatory to end initialization of our base class (read note in CRandomFieldGridMap2D::CRandomFieldGridMap2D)
 	CMetricMap::clear();
