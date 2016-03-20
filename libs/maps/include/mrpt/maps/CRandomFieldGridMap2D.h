@@ -278,10 +278,11 @@ namespace maps
 		  *  This methods is implemented differently for the different gas map types.
 		  */
 		virtual void predictMeasurement(
-			const double	&x,
-			const double	&y,
+			const double	x,
+			const double	y,
 			double			&out_predict_response,
-			double			&out_predict_response_variance );
+			double			&out_predict_response_variance,
+			bool			do_sensor_normalization);
 
 		/** Return the mean and covariance vector of the full Kalman filter estimate (works for all KF-based methods). */
 		void getMeanAndCov( mrpt::math::CVectorDouble &out_means, mrpt::math::CMatrixDouble &out_cov) const;

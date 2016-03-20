@@ -768,8 +768,8 @@ CRandomFieldGridMap2D::TInsertionOptionsCommon::TInsertionOptionsCommon() :
 
 	KF_covSigma					( 0.35f ),		// in meters
 	KF_initialCellStd			( 1.0 ),		// std in normalized concentration units
-	KF_observationModelNoise	( 0.25f ),		// in normalized concentration units
-	KF_defaultCellMeanValue		( 0.25f ),
+	KF_observationModelNoise	( 0 ),		// in normalized concentration units
+	KF_defaultCellMeanValue		( 0 ),
 	KF_W_size					( 4 ),
 
 	GMRF_lambdaPrior			( 0.01f ),		// [GMRF model] The information (Lambda) of fixed map constraints
@@ -1906,10 +1906,11 @@ double CRandomFieldGridMap2D::computeVarCellValue_DM_DMV (const TRandomFieldCell
 					predictMeasurement
   ---------------------------------------------------------------*/
 void CRandomFieldGridMap2D::predictMeasurement(
-	const double	&x,
-	const double	&y,
+	const double	x,
+	const double	y,
 	double			&out_predict_response,
-	double			&out_predict_response_variance )
+	double			&out_predict_response_variance,
+	bool			do_sensor_normalization)
 {
 	MRPT_START
 
@@ -1948,8 +1949,11 @@ void CRandomFieldGridMap2D::predictMeasurement(
 
 	case mrKalmanFilter:
 	case mrKalmanApproximate:
+	case mrGMRF_G:
+	case mrGMRF_SD:
 		{
-			if (m_hasToRecoverMeanAndCov)	recoverMeanAndCov();	// Just for KF2
+			if (m_mapType==mrKalmanApproximate && m_hasToRecoverMeanAndCov) 
+				recoverMeanAndCov();	// Just for KF2
 
 			TRandomFieldCell	*cell = cellByPos( x, y );
 			if (!cell)
@@ -1970,7 +1974,8 @@ void CRandomFieldGridMap2D::predictMeasurement(
 	};
 
 	// Un-do the sensor normalization:
-	out_predict_response = m_insertOptions_common->R_min + out_predict_response * ( m_insertOptions_common->R_max - m_insertOptions_common->R_min );
+	if (do_sensor_normalization)
+		out_predict_response = m_insertOptions_common->R_min + out_predict_response * ( m_insertOptions_common->R_max - m_insertOptions_common->R_min );
 
 	MRPT_END
 }
