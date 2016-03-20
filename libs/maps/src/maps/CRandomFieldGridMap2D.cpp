@@ -2492,12 +2492,15 @@ void CRandomFieldGridMap2D::updateMapEstimation_GMRF()
 	timelogger.leave("GMRF.solve");
 
 	Eigen::SparseMatrix<double> Sigma(N,N);								//Variance Matrix
+	bool use_variance_perm = true;
 	if(!m_insertOptions_common->GMRF_skip_variance)
 	{
 	timelogger.enter("GMRF.variance");
 
+#if 1
 	// VARIANCE SIGMA = inv(P) * inv( P*H*inv(P) ) * P
 	//Get triangular supperior P*H*inv(P) = UT' * UT = P * R'*R * inv(P)
+	MRPT_TODO("Use compressed access instead of coeff() below");
 
 	if (m_rfgm_verbose) printf("[CRandomFieldGridMap2D] Computing variance: U matrix...\n");
 	Eigen::SparseMatrix<double> UT = solver.matrixU();
@@ -2507,7 +2510,7 @@ void CRandomFieldGridMap2D::updateMapEstimation_GMRF()
 	//Apply custom equations to obtain the inverse -> inv( P*H*inv(P) )
 	for (int l=N-1; l>=0; l--)
 	{
-		if (m_rfgm_verbose && !(l%1000)) printf("[CRandomFieldGridMap2D] Computing variance %6.02f%%... \r", (100.0*(N-l-1))/N );
+		if (m_rfgm_verbose && !(l%100)) printf("[CRandomFieldGridMap2D] Computing variance %6.02f%%... \r", (100.0*(N-l-1))/N );
 
 		//Computes variances in the inferior submatrix of "l"
 		double subSigmas = 0.0;
@@ -2542,7 +2545,13 @@ void CRandomFieldGridMap2D::updateMapEstimation_GMRF()
 
 		Sigma.insert(l,l) = (1/UT.coeff(l,l)) * ( 1/UT.coeff(l,l) - subSigmas );
 	}
-
+#else
+	// Naive method: (much slower!)
+	Eigen::SparseMatrix<double> I(N,N);
+	I.setIdentity();
+	Sigma = solver.solve(I);
+	use_variance_perm = false;
+#endif
 	timelogger.leave("GMRF.variance");
 	}
 	timelogger.enter("GMRF.copy_to_map");
@@ -2551,7 +2560,7 @@ void CRandomFieldGridMap2D::updateMapEstimation_GMRF()
 	for (size_t j=0; j<N; j++)
 	{
 		// Recover the diagonal covariance values, undoing the permutation:
-		int idx = solver.permutationP().indices().coeff(j);
+		const int idx = use_variance_perm ? (int)solver.permutationP().indices().coeff(j) : (int)j;
 		const double variance = Sigma.coeff(idx,idx);
 
 		m_map[j].gmrf_std = std::sqrt(variance);
