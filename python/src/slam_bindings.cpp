@@ -1,7 +1,5 @@
 /* bindings */
 #include "bindings.h"
-#include "maps_bindings.h"
-#include "poses_bindings.h"
 
 /* MRPT */
 #include <mrpt/obs/CRawlog.h>
@@ -20,8 +18,14 @@
 #include <mrpt/slam/CMetricMapBuilderICP.h>
 #include <mrpt/slam/CMetricMapBuilderRBPF.h>
 #include <mrpt/slam/CRangeBearingKFSLAM2D.h>
+#include <mrpt/slam/CRangeBearingKFSLAM.h>
+#include <mrpt/slam/CMonteCarloLocalization2D.h>
+#include <mrpt/slam/CMonteCarloLocalization3D.h>
+
+#include <mrpt/bayes/CParticleFilter.h>
 
 #include <mrpt/poses/CPosePDFGaussian.h>
+#include <mrpt/poses/CPosePDFParticles.h>
 
 /* STD */
 #include <stdint.h>
@@ -29,23 +33,11 @@
 using namespace boost::python;
 
 using namespace mrpt::poses;
+using namespace mrpt::bayes;
 using namespace mrpt::utils;
 using namespace mrpt::slam;
 using namespace mrpt::maps;
 using namespace mrpt::obs;
-
-// TMetricMapInitializer
-void TMetricMapInitializer_set_COccupancyGridMap2D(TMetricMapInitializer &self, float min_x, float max_x, float min_y, float max_y, float resolution)
-{
-// FIXME old_stable: 1.2
-//     self.metricMapClassType = CLASS_ID(COccupancyGridMap2D);
-//     self.m_disableSaveAs3DObject = true;
-//     self.occupancyGridMap2D_options.min_x = min_x;
-//     self.occupancyGridMap2D_options.max_x = max_x;
-//     self.occupancyGridMap2D_options.min_y = min_y;
-//     self.occupancyGridMap2D_options.max_y = max_y;
-//     self.occupancyGridMap2D_options.resolution = resolution;
-}
 
 // CICP
 tuple CICP_AlignPDF1(CICP &self, COccupancyGridMap2D &m1, CSimplePointsMap &m2, CPosePDFGaussian &initialEstimationPDF)
@@ -177,6 +169,176 @@ mrpt::opengl::CSetOfObjectsPtr CRangeBearingKFSLAM2D_getAs3DObject(CRangeBearing
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(CRangeBearingKFSLAM2D_saveMapAndPath2DRepresentationAsMATLABFile_overloads, saveMapAndPath2DRepresentationAsMATLABFile, 1, 5)
 // end of CRangeBearingKFSLAM2D
 
+// CMonteCarloLocalization2D
+void CMonteCarloLocalization2D_prediction_and_update_pfStandardProposal(CMonteCarloLocalization2D& self, const mrpt::obs::CActionCollectionPtr action, const mrpt::obs::CSensoryFramePtr observation, const CParticleFilter::TParticleFilterOptions &PF_options)
+{
+    self.prediction_and_update_pfStandardProposal(action.pointer(), observation.pointer(), PF_options);
+}
+
+void CMonteCarloLocalization2D_prediction_and_update_pfAuxiliaryPFStandard(CMonteCarloLocalization2D& self, const mrpt::obs::CActionCollectionPtr action, const mrpt::obs::CSensoryFramePtr observation, const CParticleFilter::TParticleFilterOptions &PF_options)
+{
+    self.prediction_and_update_pfAuxiliaryPFStandard(action.pointer(), observation.pointer(), PF_options);
+}
+
+void CMonteCarloLocalization2D_prediction_and_update_pfAuxiliaryPFOptimal(CMonteCarloLocalization2D& self, const mrpt::obs::CActionCollectionPtr action, const mrpt::obs::CSensoryFramePtr observation, const CParticleFilter::TParticleFilterOptions &PF_options)
+{
+    self.prediction_and_update_pfAuxiliaryPFOptimal(action.pointer(), observation.pointer(), PF_options);
+}
+
+void CMonteCarloLocalization2D_prediction_and_update(CMonteCarloLocalization2D& self, const mrpt::obs::CActionCollectionPtr action, const mrpt::obs::CSensoryFramePtr observation, const CParticleFilter::TParticleFilterOptions &PF_options)
+{
+    self.prediction_and_update(action.pointer(), observation.pointer(), PF_options);
+}
+
+CPose2D CMonteCarloLocalization2D_getMean(CMonteCarloLocalization2D& self)
+{
+    CPose2D mean;
+    self.getMean(mean);
+    return mean;
+}
+
+tuple CMonteCarloLocalization2D_getCovarianceAndMean(CMonteCarloLocalization2D& self)
+{
+    list ret_val;
+    mrpt::math::CMatrixDouble33 cov;
+    CPose2D mean_point;
+    self.getCovarianceAndMean(cov, mean_point);
+    ret_val.append(cov);
+    ret_val.append(mean_point);
+    return tuple(ret_val);
+}
+
+CPose2D CMonteCarloLocalization2D_drawSingleSample(CMonteCarloLocalization2D& self)
+{
+    CPose2D outPart;
+    self.drawSingleSample(outPart);
+    return outPart;
+}
+
+CPosePDFParticles CMonteCarloLocalization2D_inverse(CMonteCarloLocalization2D& self)
+{
+    CPosePDFParticles o;
+    self.inverse(o);
+    return o;
+}
+
+void CMonteCarloLocalization2D_writeParticlesToStream(CMonteCarloLocalization2D& self, CStream &out)
+{
+    self.writeParticlesToStream(out);
+}
+
+void CMonteCarloLocalization2D_readParticlesFromStream(CMonteCarloLocalization2D& self, CStream &in)
+{
+    self.readParticlesFromStream(in);
+}
+
+mrpt::opengl::CSetOfObjectsPtr CMonteCarloLocalization2D_getAs3DObject(CMonteCarloLocalization2D& self)
+{
+    mrpt::opengl::CSetOfObjectsPtr outObj = mrpt::opengl::CSetOfObjects::Create();
+    self.getAs3DObject(outObj);
+    return outObj;
+}
+
+tuple CMonteCarloLocalization2D_normalizeWeights(CMonteCarloLocalization2D& self)
+{
+    list ret_val;
+    double out_max_log_w;
+    double norm = self.normalizeWeights(&out_max_log_w);
+    ret_val.append(norm);
+    ret_val.append(out_max_log_w);
+    return tuple(ret_val);
+}
+
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(CMonteCarloLocalization2D_resetUniformFreeSpace_overloads, resetUniformFreeSpace, 1, 8)
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(CMonteCarloLocalization2D_resetDeterministic_overloads, resetDeterministic, 1, 2)
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(CMonteCarloLocalization2D_resetUniform_overloads, resetUniform, 4, 7)
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(CMonteCarloLocalization2D_performResampling_overloads, performResampling, 1, 2)
+// end of CMonteCarloLocalization2D
+
+// CMonteCarloLocalization3D
+void CMonteCarloLocalization3D_prediction_and_update_pfStandardProposal(CMonteCarloLocalization3D& self, const mrpt::obs::CActionCollectionPtr action, const mrpt::obs::CSensoryFramePtr observation, const CParticleFilter::TParticleFilterOptions &PF_options)
+{
+    self.prediction_and_update_pfStandardProposal(action.pointer(), observation.pointer(), PF_options);
+}
+
+void CMonteCarloLocalization3D_prediction_and_update_pfAuxiliaryPFStandard(CMonteCarloLocalization3D& self, const mrpt::obs::CActionCollectionPtr action, const mrpt::obs::CSensoryFramePtr observation, const CParticleFilter::TParticleFilterOptions &PF_options)
+{
+    self.prediction_and_update_pfAuxiliaryPFStandard(action.pointer(), observation.pointer(), PF_options);
+}
+
+void CMonteCarloLocalization3D_prediction_and_update_pfAuxiliaryPFOptimal(CMonteCarloLocalization3D& self, const mrpt::obs::CActionCollectionPtr action, const mrpt::obs::CSensoryFramePtr observation, const CParticleFilter::TParticleFilterOptions &PF_options)
+{
+    self.prediction_and_update_pfAuxiliaryPFOptimal(action.pointer(), observation.pointer(), PF_options);
+}
+
+void CMonteCarloLocalization3D_prediction_and_update(CMonteCarloLocalization3D& self, const mrpt::obs::CActionCollectionPtr action, const mrpt::obs::CSensoryFramePtr observation, const CParticleFilter::TParticleFilterOptions &PF_options)
+{
+    self.prediction_and_update(action.pointer(), observation.pointer(), PF_options);
+}
+
+CPose3D CMonteCarloLocalization3D_getMean(CMonteCarloLocalization3D& self)
+{
+    CPose3D mean;
+    self.getMean(mean);
+    return mean;
+}
+
+tuple CMonteCarloLocalization3D_getCovarianceAndMean(CMonteCarloLocalization3D& self)
+{
+    list ret_val;
+    mrpt::math::CMatrixDouble66 cov;
+    CPose3D mean_point;
+    self.getCovarianceAndMean(cov, mean_point);
+    ret_val.append(cov);
+    ret_val.append(mean_point);
+    return tuple(ret_val);
+}
+
+CPose3D CMonteCarloLocalization3D_drawSingleSample(CMonteCarloLocalization3D& self)
+{
+    CPose3D outPart;
+    self.drawSingleSample(outPart);
+    return outPart;
+}
+
+CPose3DPDFParticles CMonteCarloLocalization3D_inverse(CMonteCarloLocalization3D& self)
+{
+    CPose3DPDFParticles o;
+    self.inverse(o);
+    return o;
+}
+
+void CMonteCarloLocalization3D_writeParticlesToStream(CMonteCarloLocalization3D& self, CStream &out)
+{
+    self.writeParticlesToStream(out);
+}
+
+void CMonteCarloLocalization3D_readParticlesFromStream(CMonteCarloLocalization3D& self, CStream &in)
+{
+    self.readParticlesFromStream(in);
+}
+
+mrpt::opengl::CSetOfObjectsPtr CMonteCarloLocalization3D_getAs3DObject(CMonteCarloLocalization3D& self)
+{
+    mrpt::opengl::CSetOfObjectsPtr outObj = mrpt::opengl::CSetOfObjects::Create();
+    self.getAs3DObject(outObj);
+    return outObj;
+}
+
+tuple CMonteCarloLocalization3D_normalizeWeights(CMonteCarloLocalization3D& self)
+{
+    list ret_val;
+    double out_max_log_w;
+    double norm = self.normalizeWeights(&out_max_log_w);
+    ret_val.append(norm);
+    ret_val.append(out_max_log_w);
+    return tuple(ret_val);
+}
+
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(CMonteCarloLocalization3D_resetDeterministic_overloads, resetDeterministic, 1, 2)
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(CMonteCarloLocalization3D_performResampling_overloads, performResampling, 1, 2)
+// end of CMonteCarloLocalization3D
+
 void export_slam()
 {
     // map namespace to be submodule of mrpt package
@@ -266,7 +428,7 @@ void export_slam()
     {
         scope s = class_<CMetricMapBuilderRBPF, bases<CMetricMapBuilder> >("CMetricMapBuilderRBPF", init<CMetricMapBuilderRBPF::TConstructionOptions>())
             .def("getCurrentPoseEstimation", &CMetricMapBuilderRBPF_getCurrentPoseEstimation, "Returns a copy of the current best pose estimation as a pose PDF.")
-//          .def("drawCurrentEstimationToImage", &CMetricMapBuilderRBPF::drawCurrentEstimationToImage) // this function seems not to be useful within python
+            .def("drawCurrentEstimationToImage", &CMetricMapBuilderRBPF::drawCurrentEstimationToImage)
             .def("initialize", &CMetricMapBuilderRBPF_initialize, "Initialize the method, starting with a known location PDF \"x0\"(if supplied, set to NULL to left unmodified) and a given fixed, past map.")
             .def("saveCurrentPathEstimationToTextFile", &CMetricMapBuilderRBPF::saveCurrentPathEstimationToTextFile)
             .def("getCurrentJointEntropy", &CMetricMapBuilderRBPF::getCurrentJointEntropy)
@@ -308,7 +470,106 @@ void export_slam()
             .def_readwrite("create_simplemap", &CRangeBearingKFSLAM2D::TOptions::create_simplemap)
             // TODO add data association options
         ;
+    }
 
+    // TKLDParams
+    {
+        class_<TKLDParams, bases<CLoadableOptions> >("TKLDParams", init<>())
+            .def_readwrite("KLD_binSize_XY", &TKLDParams::KLD_binSize_XY)
+            .def_readwrite("KLD_binSize_PHI", &TKLDParams::KLD_binSize_PHI)
+            .def_readwrite("KLD_delta", &TKLDParams::KLD_delta)
+            .def_readwrite("KLD_epsilon", &TKLDParams::KLD_epsilon)
+            .def_readwrite("KLD_minSampleSize", &TKLDParams::KLD_minSampleSize)
+            .def_readwrite("KLD_maxSampleSize", &TKLDParams::KLD_maxSampleSize)
+            .def_readwrite("KLD_minSamplesPerBin", &TKLDParams::KLD_minSamplesPerBin)
+        ;
+    }
 
+    // TMonteCarloLocalizationParams
+    {
+        class_<TMonteCarloLocalizationParams>("TMonteCarloLocalizationParams", init<>())
+            .def_readwrite("metricMaps", &TMonteCarloLocalizationParams::metricMaps)
+            .def_readwrite("KLD_params", &TMonteCarloLocalizationParams::KLD_params)
+            .def_readwrite("metricMap", &TMonteCarloLocalizationParams::metricMap)
+        ;
+    }
+
+    // CMonteCarloLocalization2D
+    {
+        scope s = class_<CMonteCarloLocalization2D, boost::noncopyable, bases<CParticleFilterCapable> >("CMonteCarloLocalization2D", init<optional<size_t> >())
+            .def("resetUniformFreeSpace", &CMonteCarloLocalization2D::resetUniformFreeSpace, CMonteCarloLocalization2D_resetUniformFreeSpace_overloads())
+            .def("prediction_and_update_pfStandardProposal", &CMonteCarloLocalization2D_prediction_and_update_pfStandardProposal, "Update the m_particles, predicting the posterior of robot pose and map after a movement command.")
+            .def("prediction_and_update_pfAuxiliaryPFStandard", &CMonteCarloLocalization2D_prediction_and_update_pfAuxiliaryPFStandard, "Update the m_particles, predicting the posterior of robot pose and map after a movement command.")
+            .def("prediction_and_update_pfAuxiliaryPFOptimal", &CMonteCarloLocalization2D_prediction_and_update_pfAuxiliaryPFOptimal, "Update the m_particles, predicting the posterior of robot pose and map after a movement command.")
+            .def("clear", &CMonteCarloLocalization2D::clear, "Free all the memory associated to m_particles, and set the number of parts = 0.")
+            .def("copyFrom", &CMonteCarloLocalization2D::copyFrom, "Copy operator, translating if necesary (for example, between m_particles and gaussian representations).")
+            .def("resetDeterministic", &CMonteCarloLocalization2D::resetDeterministic, CMonteCarloLocalization2D_resetDeterministic_overloads())
+            .def("resetUniform", &CMonteCarloLocalization2D::resetUniform, CMonteCarloLocalization2D_resetUniform_overloads())
+            .def("getMean", &CMonteCarloLocalization2D_getMean, "Returns an estimate of the pose, (the mean, or mathematical expectation of the PDF).")
+            .def("getCovarianceAndMean", &CMonteCarloLocalization2D_getCovarianceAndMean, "Returns an estimate of the pose covariance matrix (3x3 cov matrix) and the mean, both at once.")
+            .def("getParticlePose", &CMonteCarloLocalization2D::getParticlePose, "Returns the pose of the i'th particle.")
+            .def("saveToTextFile", &CMonteCarloLocalization2D::saveToTextFile, "Save PDF's m_particles to a text file.")
+            .def("size", &CMonteCarloLocalization2D::size, "Get the m_particles count (equivalent to \"particlesCount\").")
+            .def("changeCoordinatesReference", &CMonteCarloLocalization2D::changeCoordinatesReference, "this = p (+) this.")
+            .def("drawSingleSample", &CMonteCarloLocalization2D_drawSingleSample, "Draws a single sample from the distribution (WARNING: weights are assumed to be normalized!).")
+            .def(self += CPose2D())
+            .def("append", &CMonteCarloLocalization2D::append, "Appends (add to the list) a set of m_particles to the existing ones, and then normalize weights.")
+            .def("inverse", &CMonteCarloLocalization2D_inverse, "Returns a new PDF such as: NEW_PDF = (0,0,0) - THIS_PDF.")
+            .def("getMostLikelyParticle", &CMonteCarloLocalization2D::getMostLikelyParticle, "Returns the particle with the highest weight.")
+            .def("getAs3DObject", &CMonteCarloLocalization2D_getAs3DObject, "Returns a 3D representation of this PDF (it doesn't clear the current contents of out_obj, but append new OpenGL objects to that list).")
+            .def("getCovarianceEntropy", &CMonteCarloLocalization2D::getCovarianceEntropy, "Compute the entropy of the estimated covariance matrix.")
+            .def("clearParticles", &CMonteCarloLocalization2D::clearParticles, "Free the memory of all the particles and reset the array \"m_particles\" to length zero.")
+            .def("writeParticlesToStream", &CMonteCarloLocalization2D_writeParticlesToStream, "Dumps the sequence of particles and their weights to a stream (requires T implementing CSerializable).")
+            .def("readParticlesFromStream", &CMonteCarloLocalization2D_readParticlesFromStream, "Reads the sequence of particles and their weights from a stream (requires T implementing CSerializable).")
+            .def("getWeights", &CMonteCarloLocalization2D::getWeights, "Returns a vector with the sequence of the logaritmic weights of all the samples.")
+            .def("getW", &CMonteCarloLocalization2D::getW, "Access to i'th particle (logarithm) weight, where first one is index 0.")
+            .def("setW", &CMonteCarloLocalization2D::setW, "Modifies i'th particle (logarithm) weight, where first one is index 0.")
+            .def("particlesCount", &CMonteCarloLocalization2D::particlesCount, "Get the m_particles count.")
+            .def("normalizeWeights", &CMonteCarloLocalization2D_normalizeWeights, "Normalize the (logarithmic) weights, such as the maximum weight is zero.")
+            .def("ESS", &CMonteCarloLocalization2D::ESS, "Returns the normalized ESS (Estimated Sample Size), in the range [0,1].")
+            .def("performSubstitution", &CMonteCarloLocalization2D::performSubstitution, "Replaces the old particles by copies determined by the indexes in \"indx\", performing an efficient copy of the necesary particles only and allowing the number of particles to change.")
+            .def("prediction_and_update", &CMonteCarloLocalization2D_prediction_and_update, "Returns the normalized ESS (Estimated Sample Size), in the range [0,1].")
+            .def("performResampling", &CMonteCarloLocalization2D::performResampling, CMonteCarloLocalization2D_performResampling_overloads())
+            .def_readwrite("options", &CMonteCarloLocalization2D::options)
+            .def_readwrite("m_particles", &CMonteCarloLocalization2D::m_particles)
+        ;
+    }
+
+    // CMonteCarloLocalization3D
+    {
+        scope s = class_<CMonteCarloLocalization3D, boost::noncopyable, bases<CParticleFilterCapable> >("CMonteCarloLocalization3D", init<optional<size_t> >())
+            .def("prediction_and_update_pfStandardProposal", &CMonteCarloLocalization3D_prediction_and_update_pfStandardProposal, "Update the m_particles, predicting the posterior of robot pose and map after a movement command.")
+            .def("prediction_and_update_pfAuxiliaryPFStandard", &CMonteCarloLocalization3D_prediction_and_update_pfAuxiliaryPFStandard, "Update the m_particles, predicting the posterior of robot pose and map after a movement command.")
+            .def("prediction_and_update_pfAuxiliaryPFOptimal", &CMonteCarloLocalization3D_prediction_and_update_pfAuxiliaryPFOptimal, "Update the m_particles, predicting the posterior of robot pose and map after a movement command.")
+            .def("copyFrom", &CMonteCarloLocalization3D::copyFrom, "Copy operator, translating if necesary (for example, between m_particles and gaussian representations).")
+            .def("resetDeterministic", &CMonteCarloLocalization3D::resetDeterministic, CMonteCarloLocalization2D_resetDeterministic_overloads())
+            .def("getMean", &CMonteCarloLocalization3D_getMean, "Returns an estimate of the pose, (the mean, or mathematical expectation of the PDF).")
+            .def("getCovarianceAndMean", &CMonteCarloLocalization3D_getCovarianceAndMean, "Returns an estimate of the pose covariance matrix (3x3 cov matrix) and the mean, both at once.")
+            .def("getParticlePose", &CMonteCarloLocalization3D::getParticlePose, "Returns the pose of the i'th particle.")
+            .def("saveToTextFile", &CMonteCarloLocalization3D::saveToTextFile, "Save PDF's m_particles to a text file.")
+            .def("size", &CMonteCarloLocalization3D::size, "Get the m_particles count (equivalent to \"particlesCount\").")
+            .def("changeCoordinatesReference", &CMonteCarloLocalization3D::changeCoordinatesReference, "this = p (+) this.")
+            .def("drawSingleSample", &CMonteCarloLocalization3D_drawSingleSample, "Draws a single sample from the distribution (WARNING: weights are assumed to be normalized!).")
+            .def(self += CPose3D())
+            .def("append", &CMonteCarloLocalization3D::append, "Appends (add to the list) a set of m_particles to the existing ones, and then normalize weights.")
+            .def("inverse", &CMonteCarloLocalization3D_inverse, "Returns a new PDF such as: NEW_PDF = (0,0,0) - THIS_PDF.")
+            .def("getMostLikelyParticle", &CMonteCarloLocalization3D::getMostLikelyParticle, "Returns the particle with the highest weight.")
+            .def("getAs3DObject", &CMonteCarloLocalization3D_getAs3DObject, "Returns a 3D representation of this PDF (it doesn't clear the current contents of out_obj, but append new OpenGL objects to that list).")
+            .def("getCovarianceEntropy", &CMonteCarloLocalization3D::getCovarianceEntropy, "Compute the entropy of the estimated covariance matrix.")
+            .def("clearParticles", &CMonteCarloLocalization3D::clearParticles, "Free the memory of all the particles and reset the array \"m_particles\" to length zero.")
+            .def("writeParticlesToStream", &CMonteCarloLocalization3D_writeParticlesToStream, "Dumps the sequence of particles and their weights to a stream (requires T implementing CSerializable).")
+            .def("readParticlesFromStream", &CMonteCarloLocalization3D_readParticlesFromStream, "Reads the sequence of particles and their weights from a stream (requires T implementing CSerializable).")
+            .def("getWeights", &CMonteCarloLocalization3D::getWeights, "Returns a vector with the sequence of the logaritmic weights of all the samples.")
+            .def("getW", &CMonteCarloLocalization3D::getW, "Access to i'th particle (logarithm) weight, where first one is index 0.")
+            .def("setW", &CMonteCarloLocalization3D::setW, "Modifies i'th particle (logarithm) weight, where first one is index 0.")
+            .def("particlesCount", &CMonteCarloLocalization3D::particlesCount, "Get the m_particles count.")
+            .def("normalizeWeights", &CMonteCarloLocalization3D_normalizeWeights, "Normalize the (logarithmic) weights, such as the maximum weight is zero.")
+            .def("ESS", &CMonteCarloLocalization3D::ESS, "Returns the normalized ESS (Estimated Sample Size), in the range [0,1].")
+            .def("performSubstitution", &CMonteCarloLocalization3D::performSubstitution, "Replaces the old particles by copies determined by the indexes in \"indx\", performing an efficient copy of the necesary particles only and allowing the number of particles to change.")
+            .def("prediction_and_update", &CMonteCarloLocalization3D_prediction_and_update, "Returns the normalized ESS (Estimated Sample Size), in the range [0,1].")
+            .def("performResampling", &CMonteCarloLocalization3D::performResampling, CMonteCarloLocalization2D_performResampling_overloads())
+            .def_readwrite("options", &CMonteCarloLocalization3D::options)
+            .def_readwrite("m_particles", &CMonteCarloLocalization3D::m_particles)
+        ;
     }
 }

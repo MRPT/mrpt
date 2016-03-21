@@ -1,19 +1,22 @@
 /* bidings */
 #include "bindings.h"
-#include "system_bindings.h"
-#include "utils_bindings.h"
 
 /* MRPT */
-// #include <mrpt/obs/CAction.h>
+#include <mrpt/obs/CAction.h>
 #include <mrpt/obs/CRawlog.h>
 #include <mrpt/obs/CActionCollection.h>
 #include <mrpt/obs/CActionRobotMovement3D.h>
+#include <mrpt/obs/CObservation.h>
 #include <mrpt/obs/CObservationRange.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/obs/CObservationBearingRange.h>
 #include <mrpt/obs/CObservationOdometry.h>
+
+#include <mrpt/maps/CPointsMap.h>
 #include <mrpt/maps/CSimpleMap.h>
+
+#include <mrpt/utils/CStream.h>
 
 /* STD */
 #include <stdint.h>
@@ -24,7 +27,7 @@ using namespace mrpt::poses;
 using namespace mrpt::utils;
 using namespace mrpt::obs;
 using namespace mrpt::maps;
-
+using namespace mrpt::math;
 
 // CActionCollection
 void CActionCollection_insert1(CActionCollection &self, CActionRobotMovement2D &action)
@@ -38,45 +41,19 @@ void CActionCollection_insert2(CActionCollection &self, CActionRobotMovement3D &
 }
 // end of CActionCollection
 
-
-// CAction
-struct CActionWrap : CAction, wrapper<CAction>
+// CSensoryFrame
+const CPointsMap* CSensoryFrame_getAuxPointsMap(CSensoryFrame& self)
 {
-    CObject *duplicate() const
-    {
-        return this->get_override("duplicate")();
-    }
-};
+    return self.getAuxPointsMap<CPointsMap>();
+}
+
+const CPointsMap* CSensoryFrame_buildAuxPointsMap(CSensoryFrame& self)
+{
+    return self.buildAuxPointsMap<CPointsMap>();
+}
+// end of CSensoryFrame
 
 // CObservation
-struct CObservationWrap : CObservation, wrapper<CObservation>
-{
-    CObject *duplicate() const
-    {
-        return this->get_override("duplicate")();
-    }
-
-    void writeToStream(mrpt::utils::CStream& stream, int32_t* pos) const
-    {
-        this->get_override("writeToStream")(stream, pos);
-    }
-
-    void readFromStream(mrpt::utils::CStream& stream, int32_t pos)
-    {
-        this->get_override("readFromStream")(stream, pos);
-    }
-
-    void getSensorPose(CPose3D &out_sensorPose) const
-    {
-        this->get_override("getSensorPose")(out_sensorPose);
-    }
-
-    void setSensorPose(const CPose3D &newSensorPose)
-    {
-        this->get_override("setSensorPose")(newSensorPose);
-    }
-};
-
 long_ CObservation_get_timestamp(CObservation &self)
 {
     return long_(self.timestamp);
@@ -85,6 +62,33 @@ long_ CObservation_get_timestamp(CObservation &self)
 void CObservation_set_timestamp(CObservation &self, long_ timestamp)
 {
     self.timestamp = extract<uint64_t>(timestamp);
+}
+
+CPose3D CObservation_getSensorPose1(CObservation& self)
+{
+    CPose3D sensorPose;
+    self.getSensorPose(sensorPose);
+    return sensorPose;
+}
+
+void CObservation_getSensorPose2(CObservation& self, CPose3D& sensorPose)
+{
+    self.getSensorPose(sensorPose);
+}
+
+void CObservation_getSensorPose3(CObservation& self, TPose3D& sensorPose)
+{
+    self.getSensorPose(sensorPose);
+}
+
+void CObservation_setSensorPose1(CObservation& self, CPose3D& sensorPose)
+{
+    self.setSensorPose(sensorPose);
+}
+
+void CObservation_setSensorPose2(CObservation& self, TPose3D& sensorPose)
+{
+    self.setSensorPose(sensorPose);
 }
 // end of CObservation
 
@@ -216,21 +220,6 @@ void CObservation2DRangeScan_from_ROS_LaserScan_msg(CObservation2DRangeScan &sel
 #endif
 // end of CObservation2DRangeScan
 
-
-// CSensoryFrame
-// void CSensoryFrame_insert1(CSensoryFrame &self, CObservation2DRangeScan &obs)
-// {
-//     CObservationPtr obsPtr = (CObservationPtr) obs.duplicateGetSmartPtr();
-//     self.insert(obsPtr);
-// }
-//
-// void CSensoryFrame_insert2(CSensoryFrame &self, CObservation3DRangeScan &obs)
-// {
-//     CObservationPtr obsPtr = (CObservationPtr) obs.duplicateGetSmartPtr();
-//     self.insert(obsPtr);
-// }
-// end of CSensoryFrame
-
 // CRawLog
 tuple CRawlog_readActionObservationPair(CStream &inStream, size_t rawlogEntry)
 {
@@ -279,9 +268,9 @@ void export_obs()
 
     // CAction
     {
-        MAKE_PTR(CAction)
+        MAKE_PTR_BASE(CAction, CSerializable)
 
-        class_<CActionWrap, boost::noncopyable>("CAction", no_init)
+        class_<CAction, boost::noncopyable, bases<CSerializable> >("CAction", no_init)
             .def_readwrite("timestamp", &CAction::timestamp)
         ;
     }
@@ -363,13 +352,16 @@ void export_obs()
 
     // CObservation
     {
-        MAKE_PTR(CObservation)
+        MAKE_PTR_BASE(CObservation, CSerializable)
 
-        class_<CObservationWrap, boost::noncopyable>("CObservation", no_init)
+        class_<CObservation, boost::noncopyable, bases<CSerializable> >("CObservation", no_init)
             .add_property("timestamp", &CObservation_get_timestamp, &CObservation_set_timestamp)
             .def_readwrite("sensorLabel", &CObservation::sensorLabel)
-            .def("getSensorPose", &CObservationWrap::getSensorPose, "A general method to retrieve the sensor pose on the robot.")
-            .def("setSensorPose", &CObservationWrap::setSensorPose, "A general method to change the sensor pose on the robot.")
+            .def("getSensorPose", &CObservation_getSensorPose1, "A general method to retrieve the sensor pose on the robot.")
+            .def("getSensorPose", &CObservation_getSensorPose2, "A general method to retrieve the sensor pose on the robot.")
+            .def("getSensorPose", &CObservation_getSensorPose3, "A general method to retrieve the sensor pose on the robot.")
+            .def("setSensorPose", &CObservation_setSensorPose1, "A general method to change the sensor pose on the robot.")
+            .def("setSensorPose", &CObservation_setSensorPose2, "A general method to change the sensor pose on the robot.")
         ;
     }
 
@@ -506,10 +498,10 @@ void export_obs()
         class_<CSensoryFrame>("CSensoryFrame", init<>())
             .def("clear", &CSensoryFrame::clear, "Clear all current observations.")
             .def("insert", &CSensoryFrame::insert, "Inserts a new observation to the list.")
-//             .def("insert", &CSensoryFrame_insert1, "Inserts a new observation to the list.")
-//             .def("insert", &CSensoryFrame_insert2, "Inserts a new observation to the list.")
             .def("size", &CSensoryFrame::size, "Returns the number of observations in the list")
             .def("eraseByIndex", &CSensoryFrame::eraseByIndex, "Removes the i'th observation in the list (0=first).")
+            .def("getAuxPointsMap", &CSensoryFrame_getAuxPointsMap, return_internal_reference<>(), "Returns the cached points map representation of the scan, if already build with buildAuxPointsMap(), or NULL otherwise.")
+            .def("buildAuxPointsMap", &CSensoryFrame_buildAuxPointsMap, return_internal_reference<>(), "Returns a cached points map representing this laser scan, building it upon the first call.")
             MAKE_CREATE(CSensoryFrame)
         ;
     }
