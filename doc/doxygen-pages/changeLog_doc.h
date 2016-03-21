@@ -33,6 +33,7 @@
 				- Eigen::MatrixBase<Derived>::loadFromTextFile() now also accepts `,` as column separator.
 				- New function mrpt::utils::compute_CRC32()
 				- New function mrpt::utils::saturate<>()
+				- mrpt::utils::CDynamicGrid<> now uses `double` instead of `float` for all dimensions and coordinate computations.
 			- \ref mrpt_hwdrivers_grp
 				- New class mrpt::hwdrivers::CVelodyneScanner
 				- mrpt::hwdrivers::CNTRIPEmitter now has a parameter to enable/disable sending back the data from the serial port to the NTRIP caster.

@@ -274,7 +274,7 @@ void Eigen::MatrixBase<Derived>::saveToTextFile(
 #else
 		char *strTime = asctime(timeinfo);
 #endif
-		fprintf(f,"%% File generated with MRPT %s at %s\n%%-----------------------------------------------------------------\n",
+		fprintf(f,"%% File generated with %s at %s\n%%-----------------------------------------------------------------\n",
 			mrpt::system::MRPT_getVersion().c_str(),
 			strTime);
 	}

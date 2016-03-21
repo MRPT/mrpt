@@ -40,9 +40,9 @@ IMPLEMENTS_VIRTUAL_SERIALIZABLE(CRandomFieldGridMap2D, CMetricMap,mrpt::maps)
   ---------------------------------------------------------------*/
 CRandomFieldGridMap2D::CRandomFieldGridMap2D(
 	TMapRepresentation mapType,
-	float x_min, float x_max,
-	float y_min, float y_max,
-	float resolution
+	double x_min, double x_max,
+	double y_min, double y_max,
+	double resolution
 	) :
 		CDynamicGrid<TRandomFieldCell>( x_min,x_max,y_min,y_max,resolution ),
 		m_rfgm_verbose(false),
@@ -67,7 +67,7 @@ CRandomFieldGridMap2D::~CRandomFieldGridMap2D()
 }
 
 /** Changes the size of the grid, erasing previous contents. \sa resize */
-void CRandomFieldGridMap2D::setSize(const float	x_min, const float x_max, const float y_min, const float y_max, const float resolution, const TRandomFieldCell * fill_value)
+void CRandomFieldGridMap2D::setSize(const double x_min, const double x_max, const double y_min, const double y_max, const double resolution, const TRandomFieldCell * fill_value)
 {
 	CDynamicGrid<TRandomFieldCell>::setSize(x_min,x_max,y_min,y_max,resolution,fill_value);
 	CMetricMap::clear();
@@ -660,7 +660,7 @@ bool  CRandomFieldGridMap2D::isEmpty() const
 * \param is_DMV = false -> map type is Kernel DM; true -> map type is DM+V
 */
 void  CRandomFieldGridMap2D::insertObservation_KernelDM_DMV(
-	float			normReading,
+	double normReading,
 	const mrpt::math::TPoint2D &point,
 	bool             is_DMV )
 {
@@ -916,19 +916,16 @@ void CRandomFieldGridMap2D::getAsBitmapFile(mrpt::utils::CImage &out_img) const
 					resize
  ---------------------------------------------------------------*/
 void  CRandomFieldGridMap2D::resize(
-	float	new_x_min,
-	float	new_x_max,
-	float	new_y_min,
-	float	new_y_max,
+	double new_x_min,double new_x_max,double new_y_min,double new_y_max,
 	const TRandomFieldCell& defaultValueNewCells,
-	float	additionalMarginMeters)
+	double additionalMarginMeters)
 {
 	MRPT_START
 
-	size_t		old_sizeX = m_size_x;
-	size_t		old_sizeY = m_size_y;
-	float		old_x_min = m_x_min;
-	float		old_y_min = m_y_min;
+	size_t old_sizeX = m_size_x;
+	size_t old_sizeY = m_size_y;
+	double old_x_min = m_x_min;
+	double old_y_min = m_y_min;
 
 	// The parent class method:
 	CDynamicGrid<TRandomFieldCell>::resize(new_x_min,new_x_max,new_y_min,new_y_max,defaultValueNewCells,additionalMarginMeters);
@@ -1192,7 +1189,7 @@ void  CRandomFieldGridMap2D::resize(
 					insertObservation_KF
   ---------------------------------------------------------------*/
 void  CRandomFieldGridMap2D::insertObservation_KF(
-	float			normReading,
+	double normReading,
 	const mrpt::math::TPoint2D &point )
 {
 	MRPT_START
@@ -1424,18 +1421,26 @@ void  CRandomFieldGridMap2D::saveMetricMapRepresentationToFile(
 			// Save the mean and std matrix:
 			CMatrix	MEAN( m_size_y, m_size_x );
 			CMatrix	STDs( m_size_y, m_size_x );
+			CMatrixD XYZ( m_size_y*m_size_x, 4 );
 
-			for (size_t i=0; i<m_size_y; i++)
+			size_t idx=0;
+			for (size_t i=0; i<m_size_y; ++i)
 			{
-				for (size_t j=0; j<m_size_x; j++)
+				for (size_t j=0; j<m_size_x; ++j,++idx)
 				{
 					MEAN(i,j) = cellByIndex(j,i)->gmrf_mean;
 					STDs(i,j) = cellByIndex(j,i)->gmrf_std;
+					
+					XYZ(idx,0) = idx2x(j);
+					XYZ(idx,1) = idx2y(i);
+					XYZ(idx,2) = cellByIndex(j,i)->gmrf_mean;
+					XYZ(idx,3) = cellByIndex(j,i)->gmrf_std;
 				}
 			}
 
 			MEAN.saveToTextFile( filNamePrefix + std::string("_mean.txt"), MATRIX_FORMAT_FIXED );
 			STDs.saveToTextFile( filNamePrefix + std::string("_cells_std.txt"), MATRIX_FORMAT_FIXED );
+			XYZ.saveToTextFile( filNamePrefix + std::string("_xyz_and_std.txt"), MATRIX_FORMAT_FIXED, false, "% Columns: GRID_X   GRID_Y   ESTIMATED_Z   STD_DEV_OF_ESTIMATED_Z \n" );
 		}
 		break;
 
@@ -1472,7 +1477,7 @@ void  CRandomFieldGridMap2D::saveAsMatlab3DGraph(const std::string  &filName) co
 
 
 	unsigned int	cx,cy;
-	vector<float>	xs,ys;
+	vector<double>	xs,ys;
 
 	// xs: array of X-axis values
 	os::fprintf(f,"xs = [");
@@ -1500,7 +1505,7 @@ void  CRandomFieldGridMap2D::saveAsMatlab3DGraph(const std::string  &filName) co
 	{
 		for (cx=0;cx<m_size_x;cx++)
 		{
-            const TRandomFieldCell	*cell = cellByIndex( cx,cy );
+			const TRandomFieldCell	*cell = cellByIndex( cx,cy );
 			ASSERT_( cell!=NULL );
 			os::fprintf(f,"%e ", cell->kf_mean  );
 		} // for cx
@@ -1599,7 +1604,7 @@ void  CRandomFieldGridMap2D::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&mean
 	opengl::CSetOfTriangles::TTriangle		triag;
 
 	unsigned int	cx,cy;
-	vector<float>	xs,ys;
+	vector<double>	xs,ys;
 
 	// xs: array of X-axis values
 	xs.resize( m_size_x );
@@ -1968,7 +1973,7 @@ void CRandomFieldGridMap2D::predictMeasurement(
 					insertObservation_KF2
   ---------------------------------------------------------------*/
 void  CRandomFieldGridMap2D::insertObservation_KF2(
-	float			normReading,
+	double normReading,
 	const mrpt::math::TPoint2D &point )
 {
 	MRPT_START
@@ -2343,7 +2348,7 @@ void CRandomFieldGridMap2D::updateMapEstimation_GMRF()
 	for (size_t j=0; j<N; j++)
 	{
 		//Sum the information of all observations on cell j
-		float Lambda_obs_j = 0.0;
+		double Lambda_obs_j = 0.0;
 		for (std::vector<TobservationGMRF>::const_iterator ito = activeObs[j].begin(); ito !=activeObs[j].end(); ++ito)
 			Lambda_obs_j += ito->Lambda;
 

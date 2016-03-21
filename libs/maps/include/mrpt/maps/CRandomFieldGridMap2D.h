@@ -146,9 +146,9 @@ namespace maps
 		/** Constructor */
 		CRandomFieldGridMap2D(
 			TMapRepresentation	mapType = mrKernelDM,
-			float x_min = -2, float x_max = 2,
-			float y_min = -2, float y_max = 2,
-			float resolution = 0.1
+			double x_min = -2, double x_max = 2,
+			double y_min = -2, double y_max = 2,
+			double resolution = 0.1
 			);
 
 		/** Destructor */
@@ -210,29 +210,29 @@ namespace maps
 
 			/** @name Gaussian Markov Random Fields methods (mrGMRF_G & mrGMRF_SD)
 			    @{ */
-			float		GMRF_lambdaPrior;		//!< The information (Lambda) of fixed map constraints
-			float		GMRF_lambdaObs;			//!< The initial information (Lambda) of each observation (this information will decrease with time)
-			float		GMRF_lambdaObsLoss;		//!< The loss of information of the observations with each iteration
+			double GMRF_lambdaPrior;		//!< The information (Lambda) of fixed map constraints
+			double GMRF_lambdaObs;			//!< The initial information (Lambda) of each observation (this information will decrease with time)
+			double GMRF_lambdaObsLoss;		//!< The loss of information of the observations with each iteration
 			
 			bool GMRF_use_occupancy_information;	//!< whether to use information of an occupancy_gridmap map for buidling the GMRF
 			std::string GMRF_simplemap_file;		//!< simplemap_file name of the occupancy_gridmap
 			std::string GMRF_gridmap_image_file;	//!< image name of the occupancy_gridmap
-			float GMRF_gridmap_image_res;			//!< occupancy_gridmap resolution: size of each pixel (m)
+			double GMRF_gridmap_image_res;			//!< occupancy_gridmap resolution: size of each pixel (m)
 			size_t GMRF_gridmap_image_cx;			//!< Pixel coordinates of the origin for the occupancy_gridmap
 			size_t GMRF_gridmap_image_cy;			//!< Pixel coordinates of the origin for the occupancy_gridmap
 
 			uint16_t  GMRF_constraintsSize;	//!< [mrGMRF_G only] The size of the Gaussian window to impose fixed restrictions between cells.
-			float     GMRF_constraintsSigma;  //!< [mrGMRF_G only] The sigma of the Gaussian window to impose fixed restrictions between cells.
+			double    GMRF_constraintsSigma;  //!< [mrGMRF_G only] The sigma of the Gaussian window to impose fixed restrictions between cells.
 			double    GMRF_saturate_min, GMRF_saturate_max; //!< (Default:-inf,+inf) Saturate the estimated mean in these limits
 			bool      GMRF_skip_variance;     //!< (Default:false) Skip the computation of the variance, just compute the mean
 			/** @} */
 		};
 
 		/** Changes the size of the grid, maintaining previous contents. \sa setSize */
-		virtual void  resize(float	new_x_min, float new_x_max, float new_y_min, float	new_y_max, const TRandomFieldCell& defaultValueNewCells, float	additionalMarginMeters = 1.0f ) MRPT_OVERRIDE;
+		virtual void  resize(double new_x_min, double new_x_max, double new_y_min, double new_y_max, const TRandomFieldCell& defaultValueNewCells, double additionalMarginMeters = 1.0f ) MRPT_OVERRIDE;
 
 		/** Changes the size of the grid, erasing previous contents. \sa resize */
-		virtual void setSize(const float	x_min, const float x_max, const float y_min, const float y_max, const float resolution, const TRandomFieldCell * fill_value = NULL);
+		virtual void setSize(const double x_min, const double x_max, const double y_min, const double y_max, const double resolution, const TRandomFieldCell * fill_value = NULL);
 
 		/** See docs in base class: in this class this always returns 0 */
 		float  compute3DMatchingRatio(
@@ -342,9 +342,9 @@ namespace maps
 
 		struct TobservationGMRF
 		{
-			float	obsValue;
-			float	Lambda;
-			bool	time_invariant;						//if the observation will lose weight (lambda) as time goes on (default false)
+			double obsValue;
+			double Lambda;
+			bool   time_invariant;						//if the observation will lose weight (lambda) as time goes on (default false)
 		};
 
 		std::vector<std::vector<TobservationGMRF> > activeObs;		//Vector with the active observations and their respective Information
@@ -358,7 +358,7 @@ namespace maps
 		  * \param is_DMV = false -> map type is Kernel DM; true -> map type is DM+V
 		  */
 		void  insertObservation_KernelDM_DMV(
-			float            normReading,
+			double  normReading,
 			const mrpt::math::TPoint2D &point,
 			bool             is_DMV );
 
@@ -367,7 +367,7 @@ namespace maps
 		  * \param point Is the sensor location on the map
 		  */
 		void  insertObservation_KF(
-			float			normReading,
+			double  normReading,
 			const mrpt::math::TPoint2D &point );
 
 		/** The implementation of "insertObservation" for the Efficient Kalman Filter map model.
@@ -375,7 +375,7 @@ namespace maps
 		  * \param point Is the sensor location on the map
 		  */
 		void  insertObservation_KF2(
-			float			normReading,
+			double normReading,
 			const mrpt::math::TPoint2D &point );
 
 		/** The implementation of "insertObservation" for the Gaussian Markov Random Field map model.

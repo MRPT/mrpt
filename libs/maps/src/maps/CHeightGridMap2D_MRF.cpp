@@ -39,11 +39,11 @@ void CHeightGridMap2D_MRF::TMapDefinition::loadFromConfigFile_map_specific(const
 	// [<sectionNamePrefix>+"_creationOpts"]
 	const std::string sSectCreation = sectionNamePrefix+string("_creationOpts");
 	MRPT_LOAD_CONFIG_VAR(run_map_estimation_at_ctor, bool,   source,sSectCreation);
-	MRPT_LOAD_CONFIG_VAR(min_x, float,   source,sSectCreation);
-	MRPT_LOAD_CONFIG_VAR(max_x, float,   source,sSectCreation);
-	MRPT_LOAD_CONFIG_VAR(min_y, float,   source,sSectCreation);
-	MRPT_LOAD_CONFIG_VAR(max_y, float,   source,sSectCreation);
-	MRPT_LOAD_CONFIG_VAR(resolution, float,   source,sSectCreation);
+	MRPT_LOAD_CONFIG_VAR(min_x, double,   source,sSectCreation);
+	MRPT_LOAD_CONFIG_VAR(max_x, double,   source,sSectCreation);
+	MRPT_LOAD_CONFIG_VAR(min_y, double,   source,sSectCreation);
+	MRPT_LOAD_CONFIG_VAR(max_y, double,   source,sSectCreation);
+	MRPT_LOAD_CONFIG_VAR(resolution, double,   source,sSectCreation);
 	mapType = source.read_enum<CHeightGridMap2D_MRF::TMapRepresentation>(sSectCreation,"mapType",mapType);
 
 	insertionOpts.loadFromConfigFile(source, sectionNamePrefix+string("_insertOpts") );
@@ -53,11 +53,11 @@ void CHeightGridMap2D_MRF::TMapDefinition::dumpToTextStream_map_specific(mrpt::u
 {
 	out.printf("MAP TYPE                                  = %s\n", mrpt::utils::TEnumType<CHeightGridMap2D_MRF::TMapRepresentation>::value2name(mapType).c_str() );
 	LOADABLEOPTS_DUMP_VAR(run_map_estimation_at_ctor , bool);
-	LOADABLEOPTS_DUMP_VAR(min_x         , float);
-	LOADABLEOPTS_DUMP_VAR(max_x         , float);
-	LOADABLEOPTS_DUMP_VAR(min_y         , float);
-	LOADABLEOPTS_DUMP_VAR(max_y         , float);
-	LOADABLEOPTS_DUMP_VAR(resolution         , float);
+	LOADABLEOPTS_DUMP_VAR(min_x         , double);
+	LOADABLEOPTS_DUMP_VAR(max_x         , double);
+	LOADABLEOPTS_DUMP_VAR(min_y         , double);
+	LOADABLEOPTS_DUMP_VAR(max_y         , double);
+	LOADABLEOPTS_DUMP_VAR(resolution         , double);
 
 	this->insertionOpts.dumpToTextStream(out);
 }
@@ -76,8 +76,8 @@ IMPLEMENTS_SERIALIZABLE(CHeightGridMap2D_MRF, CRandomFieldGridMap2D,mrpt::maps)
 // Constructor
 CHeightGridMap2D_MRF::CHeightGridMap2D_MRF(
 	TMapRepresentation mapType,
-	float x_min, float x_max,
-	float y_min, float y_max, float resolution,
+	double x_min, double x_max,
+	double y_min, double y_max, double resolution,
 	bool  run_first_map_estimation_now
 	) :
 	CRandomFieldGridMap2D(mapType, x_min,x_max,y_min,y_max,resolution ),
@@ -161,16 +161,10 @@ void  CHeightGridMap2D_MRF::writeToStream(mrpt::utils::CStream &out, int *versio
 		*version = 0;
 	else
 	{
-		MRPT_TODO("Refactor common members of base class!");
-		uint32_t	n;
-
-		// Save the dimensions of the grid:
-		out << m_x_min << m_x_max << m_y_min << m_y_max;
-		out << m_resolution;
-		out << static_cast<uint32_t>(m_size_x) << static_cast<uint32_t>(m_size_y);
+		dyngridcommon_writeToStream(out);
 
 		// To assure compatibility: The size of each cell:
-		n = static_cast<uint32_t>(sizeof( TRandomFieldCell ));
+		uint32_t n = static_cast<uint32_t>(sizeof( TRandomFieldCell ));
 		out << n;
 
 		// Save the map contents:
@@ -219,16 +213,10 @@ void  CHeightGridMap2D_MRF::readFromStream(mrpt::utils::CStream &in, int version
 	{
 	case 0:
 		{
-			uint32_t	n,i,j;
-
-			// Load the dimensions of the grid:
-			in >> m_x_min >> m_x_max >> m_y_min >> m_y_max;
-			in >> m_resolution;
-			in >> i >> j;
-			m_size_x = i;
-			m_size_y = j;
+			dyngridcommon_readFromStream(in);
 
 			// To assure compatibility: The size of each cell:
+			uint32_t n;
 			in >> n;
 
 			ASSERT_EQUAL_( n , static_cast<uint32_t>( sizeof( TRandomFieldCell ) ));

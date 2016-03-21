@@ -277,19 +277,13 @@ double	 CGasConcentrationGridMap2D::internal_computeObservationLikelihood(
 void  CGasConcentrationGridMap2D::writeToStream(mrpt::utils::CStream &out, int *version) const
 {
 	if (version)
-		*version = 4;
+		*version = 5;
 	else
 	{
-		MRPT_TODO("Refactor common members of base class!");
-		uint32_t	n;
-
-		// Save the dimensions of the grid:
-		out << m_x_min << m_x_max << m_y_min << m_y_max;
-		out << m_resolution;
-		out << static_cast<uint32_t>(m_size_x) << static_cast<uint32_t>(m_size_y);
+		dyngridcommon_writeToStream(out);
 
 		// To assure compatibility: The size of each cell:
-		n = static_cast<uint32_t>(sizeof( TRandomFieldCell ));
+		uint32_t n = static_cast<uint32_t>(sizeof( TRandomFieldCell ));
 		out << n;
 
 		// Save the map contents:
@@ -349,17 +343,12 @@ void  CGasConcentrationGridMap2D::readFromStream(mrpt::utils::CStream &in, int v
 	case 2:
 	case 3:
 	case 4:
+	case 5:
 		{
-			uint32_t	n,i,j;
-
-			// Load the dimensions of the grid:
-			in >> m_x_min >> m_x_max >> m_y_min >> m_y_max;
-			in >> m_resolution;
-			in >> i >> j;
-			m_size_x = i;
-			m_size_y = j;
+			dyngridcommon_readFromStream(in, version<5);
 
 			// To assure compatibility: The size of each cell:
+			uint32_t	n;
 			in >> n;
 
 			if (version<2)

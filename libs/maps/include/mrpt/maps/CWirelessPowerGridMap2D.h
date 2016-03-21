@@ -36,16 +36,8 @@ namespace maps
 		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE( CWirelessPowerGridMap2D )
 	public:
-		/** Constructor
-		  */
-		CWirelessPowerGridMap2D(
-			TMapRepresentation	mapType = mrKernelDM,
-            float				x_min = -2,
-			float				x_max = 2,
-			float				y_min = -2,
-			float				y_max = 2,
-			float				resolution = 0.1
-			);
+		/** Constructor */
+		CWirelessPowerGridMap2D(TMapRepresentation mapType = mrKernelDM, double x_min = -2, double x_max = 2, double y_min = -2, double y_max = 2, double resolution = 0.1);
 
 		/** Destructor */
 		virtual ~CWirelessPowerGridMap2D();
@@ -77,7 +69,7 @@ namespace maps
 		double internal_computeObservationLikelihood( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D &takenFrom ) MRPT_OVERRIDE;
 
 		MAP_DEFINITION_START(CWirelessPowerGridMap2D,MAPS_IMPEXP)
-			float	min_x,max_x,min_y,max_y,resolution;	//!< See CWirelessPowerGridMap2D::CWirelessPowerGridMap2D
+			double min_x,max_x,min_y,max_y,resolution;	//!< See CWirelessPowerGridMap2D::CWirelessPowerGridMap2D
 			mrpt::maps::CWirelessPowerGridMap2D::TMapRepresentation	mapType;	//!< The kind of map representation (see CWirelessPowerGridMap2D::CWirelessPowerGridMap2D)
 			mrpt::maps::CWirelessPowerGridMap2D::TInsertionOptions	insertionOpts;
 		MAP_DEFINITION_END(CWirelessPowerGridMap2D,MAPS_IMPEXP)

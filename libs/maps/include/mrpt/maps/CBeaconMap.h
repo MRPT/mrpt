@@ -13,7 +13,6 @@
 #include <mrpt/maps/CBeacon.h>
 #include <mrpt/utils/CSerializable.h>
 #include <mrpt/math/CMatrix.h>
-#include <mrpt/utils/CDynamicGrid.h>
 #include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/obs/obs_frwds.h>
 

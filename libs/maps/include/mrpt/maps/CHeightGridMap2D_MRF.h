@@ -37,8 +37,8 @@ namespace maps
 		/** Constructor */
 		CHeightGridMap2D_MRF(
 			TMapRepresentation	mapType = mrGMRF_SD,
-			float x_min = -2, float x_max = 2,
-			float y_min = -2, float y_max = 2, float resolution = 0.1,
+			double x_min = -2, double x_max = 2,
+			double y_min = -2, double y_max = 2, double resolution = 0.1,
 			bool  run_first_map_estimation_now=true  //!< [in] Whether to call updateMapEstimation(). If false, make sure of calling that function before accessing map contents.
 			);
 
@@ -74,7 +74,7 @@ namespace maps
 
 		MAP_DEFINITION_START(CHeightGridMap2D_MRF,MAPS_IMPEXP)
 			bool    run_map_estimation_at_ctor;  //!< Runs map estimation at start up (Default:true)
-			float   min_x,max_x,min_y,max_y,resolution;	//!< See CHeightGridMap2D_MRF::CHeightGridMap2D_MRF
+			double  min_x,max_x,min_y,max_y,resolution;	//!< See CHeightGridMap2D_MRF::CHeightGridMap2D_MRF
 			mrpt::maps::CHeightGridMap2D_MRF::TMapRepresentation  mapType;	//!< The kind of map representation (see CHeightGridMap2D_MRF::CHeightGridMap2D_MRF)
 			mrpt::maps::CHeightGridMap2D_MRF::TInsertionOptions   insertionOpts;	//!< Observations insertion options
 		MAP_DEFINITION_END(CHeightGridMap2D_MRF,MAPS_IMPEXP)
