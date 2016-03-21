@@ -426,7 +426,6 @@ bool CObservationGPS::GPS_time_to_UTC(uint16_t gps_week,double gps_sec,const int
 bool CObservationGPS::GPS_time_to_UTC(uint16_t gps_week,double gps_sec,const int leap_seconds_count, mrpt::system::TTimeParts &utc_out)
 {
 	double julian_date = 0.0; 
-	uint8_t utc_offset = 0;
 	if( gps_sec < 0.0  || gps_sec > 604800.0 )
 		return false;
 	if (!TIMECONV_GetJulianDateFromGPSTime(
