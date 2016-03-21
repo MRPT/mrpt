@@ -274,15 +274,21 @@ namespace maps
 			const bool time_invariant = true     //!< [in] Whether the observation "vanishes" with time (false) or not (true) [Only for GMRF methods]
 			);
 
-		/** Returns the prediction of the measurement at some (x,y) coordinates, and its certainty (in the form of the expected variance).
-		  *  This methods is implemented differently for the different gas map types.
-		  */
+
+		enum TGridInterpolationMethod {
+			gimNearest = 0,
+			gimBilinear 
+		};
+
+		/** Returns the prediction of the measurement at some (x,y) coordinates, and its certainty (in the form of the expected variance).  */
 		virtual void predictMeasurement(
-			const double	x,
-			const double	y,
-			double			&out_predict_response,
-			double			&out_predict_response_variance,
-			bool			do_sensor_normalization);
+			const double	x,                                 //!< [in] Query X coordinate
+			const double	y,                                 //!< [in] Query Y coordinate
+			double			&out_predict_response,             //!< [out] The output value
+			double			&out_predict_response_variance,    //!< [out] The output variance
+			bool			do_sensor_normalization,           //!< [in] Whether to renormalize the prediction to a predefined interval (`R` values in insertionOptions)
+			const TGridInterpolationMethod interp_method = gimNearest //!< [in] Interpolation method
+			);
 
 		/** Return the mean and covariance vector of the full Kalman filter estimate (works for all KF-based methods). */
 		void getMeanAndCov( mrpt::math::CVectorDouble &out_means, mrpt::math::CMatrixDouble &out_cov) const;

@@ -1890,6 +1890,14 @@ double CRandomFieldGridMap2D::computeVarCellValue_DM_DMV (const TRandomFieldCell
 	return alpha * r_val + (1-alpha) * m_average_normreadings_var;
 }
 
+
+struct TInterpQuery
+{
+	int cx,cy;
+	double val, var;
+	double coef;
+};
+
 /*---------------------------------------------------------------
 					predictMeasurement
   ---------------------------------------------------------------*/
@@ -1898,68 +1906,125 @@ void CRandomFieldGridMap2D::predictMeasurement(
 	const double	y,
 	double			&out_predict_response,
 	double			&out_predict_response_variance,
-	bool			do_sensor_normalization)
+	bool			do_sensor_normalization,
+	const TGridInterpolationMethod interp_method
+	)
 {
 	MRPT_START
 
-	switch (m_mapType)
+	vector<TInterpQuery> queries;
+	switch (interp_method)
 	{
-	case mrKernelDM:
-		{
-			TRandomFieldCell	*cell = cellByPos( x, y );
-			if (!cell)
-			{
-				out_predict_response = m_average_normreadings_mean;
-				out_predict_response_variance = square( m_insertOptions_common->KF_initialCellStd );
-			}
-			else
-			{
-				out_predict_response = computeMeanCellValue_DM_DMV(cell);
-				out_predict_response_variance = square( m_insertOptions_common->KF_initialCellStd );
-			}
-		}
-		break;
-	case mrKernelDMV:
-		{
-			TRandomFieldCell	*cell = cellByPos( x, y );
-			if (!cell)
-			{
-				out_predict_response = m_average_normreadings_mean;
-				out_predict_response_variance = square( m_insertOptions_common->KF_initialCellStd );
-			}
-			else
-			{
-				out_predict_response = computeMeanCellValue_DM_DMV(cell);
-				out_predict_response_variance = computeVarCellValue_DM_DMV(cell);
-			}
-		}
+	case gimNearest:
+		queries.resize(1);
+		queries[0].cx = x2idx(x);
+		queries[0].cy = y2idx(y);
+		queries[0].coef = 1.0;
 		break;
 
-	case mrKalmanFilter:
-	case mrKalmanApproximate:
-	case mrGMRF_G:
-	case mrGMRF_SD:
+	case gimBilinear:
+		if (x<=m_x_min+m_resolution*0.5 ||
+			y<=m_y_min+m_resolution*0.5 ||
+			x>=m_x_max-m_resolution*0.5 ||
+			x>=m_x_max-m_resolution*0.5) 
 		{
-			if (m_mapType==mrKalmanApproximate && m_hasToRecoverMeanAndCov) 
-				recoverMeanAndCov();	// Just for KF2
-
-			TRandomFieldCell	*cell = cellByPos( x, y );
-			if (!cell)
-			{
-				out_predict_response = m_insertOptions_common->KF_defaultCellMeanValue;
-				out_predict_response_variance = square( m_insertOptions_common->KF_initialCellStd ) + square(m_insertOptions_common->KF_observationModelNoise);
-			}
-			else
-			{
-				out_predict_response = cell->kf_mean;
-				out_predict_response_variance = square( cell->kf_std ) +  square(m_insertOptions_common->KF_observationModelNoise);
-			}
+			// Too close to a border:
+			queries.resize(1);
+			queries[0].cx = x2idx(x);
+			queries[0].cy = y2idx(y);
+			queries[0].coef = 1.0;
+		}
+		else
+		{
+			queries.resize(4);
+			const double K_1 = 1.0/(m_resolution*m_resolution);
+			// 11
+			queries[0].cx = x2idx(x-m_resolution*0.5);
+			queries[0].cy = y2idx(y-m_resolution*0.5);
+			// 12
+			queries[1].cx = x2idx(x-m_resolution*0.5);
+			queries[1].cy = y2idx(y+m_resolution*0.5);
+			// 21
+			queries[2].cx = x2idx(x+m_resolution*0.5);
+			queries[2].cy = y2idx(y-m_resolution*0.5);
+			// 22
+			queries[3].cx = x2idx(x+m_resolution*0.5);
+			queries[3].cy = y2idx(y+m_resolution*0.5);
+			// Weights:
+			queries[0].coef = K_1*(idx2x(queries[3].cx)-x)*(idx2y(queries[3].cy)-y);
+			queries[1].coef = K_1*(idx2x(queries[3].cx)-x)*(y-idx2y(queries[0].cy));
+			queries[2].coef = K_1*(x-idx2x(queries[0].cx))*(idx2y(queries[3].cy)-y);
+			queries[3].coef = K_1*(x-idx2x(queries[0].cx))*(y-idx2y(queries[0].cy));
 		}
 		break;
-
 	default:
-		THROW_EXCEPTION("Invalid map type.");
+		THROW_EXCEPTION("Unknown interpolation method!");
 	};
+
+	// Run queries:
+	for (size_t i=0;i<queries.size();i++)
+	{
+		TInterpQuery & q = queries[i];
+
+		const TRandomFieldCell *cell = cellByIndex( q.cx, q.cy);
+		switch (m_mapType)
+		{
+		case mrKernelDM:
+			{
+				if (!cell) {
+					q.val = m_average_normreadings_mean;
+					q.var = square( m_insertOptions_common->KF_initialCellStd );
+				}
+				else {
+					q.val = computeMeanCellValue_DM_DMV(cell);
+					q.var = square( m_insertOptions_common->KF_initialCellStd );
+				}
+			}
+			break;
+		case mrKernelDMV:
+			{
+				if (!cell) {
+					q.val = m_average_normreadings_mean;
+					q.var = square( m_insertOptions_common->KF_initialCellStd );
+				}
+				else {
+					q.val = computeMeanCellValue_DM_DMV(cell);
+					q.var = computeVarCellValue_DM_DMV(cell);
+				}
+			}
+			break;
+
+		case mrKalmanFilter:
+		case mrKalmanApproximate:
+		case mrGMRF_G:
+		case mrGMRF_SD:
+			{
+				if (m_mapType==mrKalmanApproximate && m_hasToRecoverMeanAndCov) 
+					recoverMeanAndCov();	// Just for KF2
+
+				if (!cell) {
+					q.val = m_insertOptions_common->KF_defaultCellMeanValue;
+					q.var = square( m_insertOptions_common->KF_initialCellStd ) + square(m_insertOptions_common->KF_observationModelNoise);
+				}
+				else {
+					q.val = cell->kf_mean;
+					q.var = square( cell->kf_std ) +  square(m_insertOptions_common->KF_observationModelNoise);
+				}
+			}
+			break;
+
+		default:
+			THROW_EXCEPTION("Invalid map type.");
+		};
+	}
+
+	// Sum coeffs:
+	out_predict_response = 0;
+	out_predict_response_variance = 0;
+	for (size_t i=0;i<queries.size();i++) {
+		out_predict_response += queries[i].val * queries[i].coef;
+		out_predict_response_variance += queries[i].var * queries[i].coef;
+	}
 
 	// Un-do the sensor normalization:
 	if (do_sensor_normalization)
