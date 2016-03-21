@@ -10,6 +10,7 @@
 #include "maps-precomp.h" // Precomp header
 
 #include <mrpt/maps/CRandomFieldGridMap2D.h>
+#include <mrpt/maps/CSimpleMap.h>
 #include <mrpt/system/os.h>
 #include <mrpt/math/CMatrix.h>
 #include <mrpt/math/utils.h>
@@ -17,6 +18,7 @@
 #include <mrpt/utils/CTimeLogger.h>
 #include <mrpt/utils/color_maps.h>
 #include <mrpt/utils/round.h>
+#include <mrpt/utils/CFileGZInputStream.h>
 #include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/opengl/CSetOfTriangles.h>
 
@@ -359,7 +361,7 @@ void  CRandomFieldGridMap2D::internal_clear()
 				printf("[CRandomFieldGridMap2D::clear] Initial map dimension: %u cells, x=(%.2f,%.2f) y=(%.2f,%.2f)\n", static_cast<unsigned int>(m_map.size()), getXMin(),getXMax(),getYMin(),getYMax());
 			}
 
-			// Set the gasgridmap (m_map) to initial values:
+			// Set the gridmap (m_map) to initial values:
 			TRandomFieldCell	def(0,0);		// mean, std
 			fill( def );
 
@@ -367,11 +369,8 @@ void  CRandomFieldGridMap2D::internal_clear()
 			float res_coef = 1.f; // Default value
 
 			if (this->m_insertOptions_common->GMRF_use_occupancy_information)
-			{
-				MRPT_TODO("Clean up!")
-
-				//Load Occupancy Gridmap and resize
-				if( m_insertOptions_common->GMRF_simplemap_file.compare("") )
+			{	//Load Occupancy Gridmap and resize
+				if( !m_insertOptions_common->GMRF_simplemap_file.empty() )
 				{
 					//TSetOfMetricMapInitializers	mapList;
 					//mapList.loadFromConfigFile(m_ini,"MetricMap");
@@ -379,25 +378,13 @@ void  CRandomFieldGridMap2D::internal_clear()
 					//CMultiMetricMap	 metricMap;
 					//metricMap.setListOfMaps( &mapList );
 
-					/*printf("Loading '.simplemap' file...");
-					mrpt::maps::CSimpleMap MsimpleMap;
+					mrpt::maps::CSimpleMap simpleMap;
 					CFileGZInputStream(this->m_insertOptions_common->GMRF_simplemap_file) >> simpleMap;
-					printf("Ok (%u poses)\n",(unsigned)simpleMap.size());*/
-
-					//ASSERT_( simpleMap.size()>0 );
-
-					// Build metric map:
-					// ------------------------------
-					/*printf("Building metric map(s) from '.simplemap'...");
-					m_Ocgridmap.loadFromProbabilisticPosesAndObservations(simpleMap);
-					printf("Ok\n");*/
-
-					//ASSERTMSG_(!metricMap.m_gridMaps.empty(),"The simplemap file has no gridmap!");
-
-					//m_gridmap = *metricMap.m_gridMaps[0];
-					//res_coef = XXX;
+					ASSERT_(!simpleMap.empty())
+					m_Ocgridmap.loadFromSimpleMap(simpleMap);
+					res_coef = this->getResolution() / m_Ocgridmap.getResolution();
 				}
-				else if( m_insertOptions_common->GMRF_gridmap_image_file.compare("") )
+				else if( !m_insertOptions_common->GMRF_gridmap_image_file.empty() )
 				{
 					//Load from image
 					const bool grid_loaded_ok = m_Ocgridmap.loadFromBitmapFile(this->m_insertOptions_common->GMRF_gridmap_image_file,this->m_insertOptions_common->GMRF_gridmap_image_res,this->m_insertOptions_common->GMRF_gridmap_image_cx,this->m_insertOptions_common->GMRF_gridmap_image_cy);
@@ -408,7 +395,7 @@ void  CRandomFieldGridMap2D::internal_clear()
 					THROW_EXCEPTION("Neither `simplemap_file` nor `gridmap_image_file` found in config/mission file. Quitting.");
 				}
 
-				//Resize GasMap to match Occupancy Gridmap dimmensions
+				//Resize MRF Map to match Occupancy Gridmap dimmensions
 				if (m_rfgm_verbose) {
 					printf("Resizing m_map to match Occupancy Gridmap dimensions \n");
 				}
@@ -431,7 +418,7 @@ void  CRandomFieldGridMap2D::internal_clear()
 			nPriorFactors = (this->getSizeX() -1) * this->getSizeY() + this->getSizeX() * (this->getSizeY() -1);		// L = (Nr-1)*Nc + Nr*(Nc-1); Full connected
 			nObsFactors = 0;		// M
 			nFactors = nPriorFactors + nObsFactors;
-			if (m_rfgm_verbose) cout << "Generating " << nFactors << " factors for a map size of N=" << N << endl;
+			if (m_rfgm_verbose) cout << "[CRandomFieldGridMap2D::clear] Generating " << nFactors << " factors for a map size of N=" << N << endl;
 
 
 #if EIGEN_VERSION_AT_LEAST(3,1,0)
@@ -443,7 +430,6 @@ void  CRandomFieldGridMap2D::internal_clear()
 			g.fill(0.0);
 			activeObs.resize(N);	//No initial Observations
 
-
 			//-------------------------------------
 			// Load default values for H_prior:
 			//-------------------------------------
@@ -451,12 +437,12 @@ void  CRandomFieldGridMap2D::internal_clear()
 			{
 				if (m_rfgm_verbose) {
 					printf("LOADING PRIOR BASED ON OCCUPANCY GRIDMAP \n");
-					printf("Gas Map Dimmensions: %u x %u cells \n", static_cast<unsigned int>(m_size_x), static_cast<unsigned int>(m_size_y));
+					printf("MRF Map Dimmensions: %u x %u cells \n", static_cast<unsigned int>(m_size_x), static_cast<unsigned int>(m_size_y));
 					printf("Occupancy map Dimmensions: %i x %i cells \n", m_Ocgridmap.getSizeX(), m_Ocgridmap.getSizeY());
 					printf("Res_Coeff = %f pixels/celda",res_coef);
 				}
 
-				//Use region growing algorithm to determine the gascell interconnections (Factors)
+				//Use region growing algorithm to determine the cell interconnections (Factors)
 				size_t cx = 0;
 				size_t cy = 0;
 
@@ -465,7 +451,7 @@ void  CRandomFieldGridMap2D::internal_clear()
 				size_t cxo_min, cxo_max, cyo_min, cyo_max;										//Cell i+j limits in the Occupancy
 				//bool first_obs = false;
 
-				for (size_t j=0; j<N; j++)		//For each cell in the gas_map
+				for (size_t j=0; j<N; j++)		//For each cell in the map
 				{
 					// Get cell_j indx-limits in Occuppancy gridmap
 					cxoj_min = floor(cx*res_coef);
@@ -556,7 +542,6 @@ void  CRandomFieldGridMap2D::internal_clear()
 						cyo_min = min(cyoj_min, cyoi_min );
 						cyo_max = max(cyoj_max, cyoi_max );
 
-
 						//Check using Region growing if cell j is connected to cell i (Occupancy gridmap)
 						if( exist_relation_between2cells(&m_Ocgridmap, cxo_min,cxo_max,cyo_min,cyo_max,seed_cxo,seed_cyo,objective_cxo,objective_cyo))
 						{
@@ -601,7 +586,7 @@ void  CRandomFieldGridMap2D::internal_clear()
 			}
 			else
 			{
-				if (m_rfgm_verbose) cout << "LOADING FULL PRIOR" << endl;
+				if (m_rfgm_verbose) cout << "[CRandomFieldGridMap2D::clear] Initiating prior (fully connected)\n";
 				//---------------------------------------------------------------
 				// Load default values for H_prior without Occupancy information:
 				//---------------------------------------------------------------
@@ -642,7 +627,7 @@ void  CRandomFieldGridMap2D::internal_clear()
 			} // end if_use_Occupancy
 
 			if (m_rfgm_verbose) {
-				cout << "---------- Prior Built in: " << tictac.Tac() << "s ----------" << endl;
+				cout << " [CRandomFieldGridMap2D::clear] Prior built in " << tictac.Tac() << " s ----------\n";
 			}
 
 			if (m_rfgm_run_update_upon_clear) {
@@ -1229,7 +1214,7 @@ void  CRandomFieldGridMap2D::insertObservation_KF(
 			defCell );
 
 	// --------------------------------------------------------
-	// The Kalman-Filter estimation of the gas grid-map:
+	// The Kalman-Filter estimation of the MRF grid-map:
 	// --------------------------------------------------------
 
 	// Prediction stage of KF:
@@ -1254,14 +1239,12 @@ void  CRandomFieldGridMap2D::insertObservation_KF(
 //	CVectorDouble	Kk;
 //	m_cov.extractCol( cellIdx,Kk );
 //	Kk *= 1.0/sk;
-
 	//Kk.saveToTextFile("__debug_Kk.txt");
 
 	std::vector<TRandomFieldCell>::iterator	it;
 
 	static CTicTac tictac;
 	if (m_rfgm_verbose) {
-		//cout << "[insertObservation_KF] Sensor: " << point << " measur: " << normReading << endl;
 		printf("[insertObservation_KF] Updating mean values...");
 		tictac.Tic();
 	}
@@ -2017,7 +2000,7 @@ void  CRandomFieldGridMap2D::insertObservation_KF2(
 			Aspace );
 
 	// --------------------------------------------------------
-	// The Kalman-Filter estimation of the gas grid-map:
+	// The Kalman-Filter estimation of the MRF grid-map:
 	// --------------------------------------------------------
 	const size_t	N = m_map.size();
 
