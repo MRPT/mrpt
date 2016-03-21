@@ -1698,10 +1698,10 @@ void 	CLandmarksMap::TCustomSequenceLandmarks::push_back( const CLandmark	&l)
 	// Resize grid if necesary:
 	vector_int		dummyEmpty;
 
-	m_grid.resize(	min( m_grid.getXMin(),(float)l.pose_mean.x-0.1f ),
-					max( m_grid.getXMax(),(float)l.pose_mean.x+0.1f ),
-					min( m_grid.getYMin(),(float)l.pose_mean.y-0.1f ),
-					max( m_grid.getYMax(),(float)l.pose_mean.y+0.1f ),
+	m_grid.resize(	min( m_grid.getXMin(),l.pose_mean.x-0.1 ),
+					max( m_grid.getXMax(),l.pose_mean.x+0.1 ),
+					min( m_grid.getYMin(),l.pose_mean.y-0.1 ),
+					max( m_grid.getYMax(),l.pose_mean.y+0.1 ),
 					dummyEmpty );
 
 	m_landmarks.push_back( l );
@@ -1752,10 +1752,10 @@ void 	CLandmarksMap::TCustomSequenceLandmarks::hasBeenModified(unsigned int indx
 	vector_int		dummyEmpty;
 
 	// Resize grid if necesary:
-	m_grid.resize(	min( m_grid.getXMin(),(float)m_landmarks[indx].pose_mean.x ),
-					max( m_grid.getXMax(),(float)m_landmarks[indx].pose_mean.x ),
-					min( m_grid.getYMin(),(float)m_landmarks[indx].pose_mean.y ),
-					max( m_grid.getYMax(),(float)m_landmarks[indx].pose_mean.y ),
+	m_grid.resize(	min( m_grid.getXMin(),m_landmarks[indx].pose_mean.x ),
+					max( m_grid.getXMax(),m_landmarks[indx].pose_mean.x ),
+					min( m_grid.getYMin(),m_landmarks[indx].pose_mean.y ),
+					max( m_grid.getYMax(),m_landmarks[indx].pose_mean.y ),
 					dummyEmpty );
 
 	// Add to the grid:
@@ -1770,8 +1770,8 @@ void 	CLandmarksMap::TCustomSequenceLandmarks::hasBeenModifiedAll()
 
 	TSequenceLandmarks::iterator	it;
 	unsigned int					idx;
-	float							min_x=-10.0f, max_x=10.0f;
-	float							min_y=-10.0f, max_y=10.0f;
+	double    min_x=-10.0, max_x=10.0;
+	double    min_y=-10.0, max_y=10.0;
 	vector_int						dummyEmpty;
 
 	// Clear cells:
@@ -1780,10 +1780,10 @@ void 	CLandmarksMap::TCustomSequenceLandmarks::hasBeenModifiedAll()
 	// Resize the grid to the outer limits of landmarks:
 	for (idx=0,it=m_landmarks.begin();it!=m_landmarks.end();idx++,it++)
 	{
-		min_x = min(min_x, (float)it->pose_mean.x);
-		max_x = max(max_x, (float)it->pose_mean.x);
-		min_y = min(min_y, (float)it->pose_mean.y);
-		max_y = max(max_y, (float)it->pose_mean.y);
+		min_x = min(min_x, it->pose_mean.x);
+		max_x = max(max_x, it->pose_mean.x);
+		min_y = min(min_y, it->pose_mean.y);
+		max_y = max(max_y, it->pose_mean.y);
 	}
 	m_grid.resize(min_x,max_x,min_y,max_y,dummyEmpty );
 
