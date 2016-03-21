@@ -95,6 +95,9 @@ MAKE_SETITEM(TPose3DQuat, double)
 // CMatrix
 MAKE_FIXED_DOUBLE_MATRIX_GETSET(3, 3)
 MAKE_FIXED_DOUBLE_MATRIX_GETSET(6, 6)
+
+// TODO: add conversion from/to list for convenience
+
 // end of CMatrix
 
 // re-implement inline functions, otherwise they are not included inside pymrpt.so
