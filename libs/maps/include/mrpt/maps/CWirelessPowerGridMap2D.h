@@ -63,20 +63,7 @@ namespace maps
 
 		} insertionOptions;
 
-
-		/** Returns an image just as described in \a saveAsBitmapFile */
-		virtual void  getAsBitmapFile(mrpt::utils::CImage &out_img) const MRPT_OVERRIDE;
-
-		/** The implementation in this class just calls all the corresponding method of the contained metric maps */
-		void  saveMetricMapRepresentationToFile(const std::string &filNamePrefix) const MRPT_OVERRIDE;
-
-		/** Save a matlab ".m" file which represents as 3D surfaces the mean and a given confidence level for the concentration of each cell.
-		  *  This method can only be called in a KF map model  */
-		void  saveAsMatlab3DGraph(const std::string  &filName) const MRPT_OVERRIDE;
-
-		/** Returns a 3D object representing the map.
-		  */
-		void getAs3DObject(mrpt::opengl::CSetOfObjectsPtr &outObj) const MRPT_OVERRIDE;
+		void getAs3DObject(mrpt::opengl::CSetOfObjectsPtr &outObj) const MRPT_OVERRIDE; //!< Returns a 3D object representing the map 
 
 	protected:
 		/** Get the part of the options common to all CRandomFieldGridMap2D classes */

@@ -23,6 +23,7 @@ MRPT_WARNING("Including <mrpt/maps.h> makes compilation much slower, consider in
 #include <mrpt/maps/CGasConcentrationGridMap2D.h>
 #include <mrpt/maps/CWirelessPowerGridMap2D.h>
 #include <mrpt/maps/CHeightGridMap2D.h>
+#include <mrpt/maps/CHeightGridMap2D_MRF.h>
 #include <mrpt/maps/CReflectivityGridMap2D.h>
 #include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/maps/CPointsMap.h>

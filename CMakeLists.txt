@@ -8,11 +8,10 @@
 #  For compiling instructions for all compilers and platforms, see
 #   http://www.mrpt.org/Building_and_Installing_Instructions
 #
-#  2007-2014, Jose Luis Blanco <jlblanco@ual.es>
+#  2007-2016, Jose Luis Blanco <jlblanco@ual.es>
 #
 #  NOTE: CMake can be obtained at http://www.cmake.org/
 # ----------------------------------------------------------------------------
-
 PROJECT(MRPT)
 
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6.4)

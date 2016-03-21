@@ -206,8 +206,7 @@ namespace mrpt
 				bool						&isInverted ) const;
 
 
-			 /** Returns wether two nodes are "neightbour", i.e. have a direct arc between them
-			   */
+			 /** Returns whether two nodes are "neightbour", i.e. have a direct arc between them  */
 			bool areNodesNeightbour(
 				const CHMHMapNode::TNodeID	&node1,
 				const CHMHMapNode::TNodeID	&node2,

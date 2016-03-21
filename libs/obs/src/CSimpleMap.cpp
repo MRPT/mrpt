@@ -61,13 +61,16 @@ CSimpleMap & CSimpleMap::operator = ( const CSimpleMap& o)
 	MRPT_END
 }
 
-
 /*---------------------------------------------------------------
 						size
   ---------------------------------------------------------------*/
 size_t CSimpleMap::size() const
 {
 	return m_posesObsPairs.size();
+}
+
+bool CSimpleMap::empty() const {
+	return m_posesObsPairs.empty();
 }
 
 /*---------------------------------------------------------------

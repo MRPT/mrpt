@@ -25,8 +25,10 @@ CStartUpClassesRegister  mrpt_detectors_class_reg(&registerAllClasses_mrpt_detec
   ---------------------------------------------------------------*/
 void registerAllClasses_mrpt_detectors()
 {
+#if !defined(DISABLE_MRPT_AUTO_CLASS_REGISTRATION)
 	registerClass( CLASS_ID( CDetectableObject ) );
 	registerClass( CLASS_ID( CDetectable2D ) );
 	registerClass( CLASS_ID( CDetectable3D ) );
+#endif
 }
 

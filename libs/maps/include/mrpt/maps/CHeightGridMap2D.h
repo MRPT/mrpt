@@ -93,7 +93,7 @@ namespace mrpt
 				void   loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) MRPT_OVERRIDE; // See base docs
 				void   dumpToTextStream(mrpt::utils::CStream &out) const MRPT_OVERRIDE; // See base docs
 
-				bool   filterByHeight; //!< Wether to perform filtering by z-coordinate (default=false): coordinates are always RELATIVE to the robot for this filter.vvv
+				bool   filterByHeight; //!< Whether to perform filtering by z-coordinate (default=false): coordinates are always RELATIVE to the robot for this filter.vvv
 				float  z_min,z_max; //!< Only when filterByHeight is true: coordinates are always RELATIVE to the robot for this filter.
 				float  minDistBetweenPointsWhenInserting; //!< When inserting a scan, a point cloud is first created with this minimum distance between the 3D points (default=0).
 
@@ -108,11 +108,10 @@ namespace mrpt
 					float									maxMahaDistForCorr = 2.0f
 					) const MRPT_OVERRIDE;
 
-			/** The implementation in this class just calls all the corresponding method of the contained metric maps */
-			void  saveMetricMapRepresentationToFile(const std::string &filNamePrefix) const MRPT_OVERRIDE;
+			void  saveMetricMapRepresentationToFile(const std::string &filNamePrefix) const MRPT_OVERRIDE; // See base class docs
 
 			/** Returns a 3D object representing the map: by default, it will be a mrpt::opengl::CMesh object, unless
-			  *   it is specified otherwise  */
+			  *   it is specified otherwise in mrpt::global_settings::HEIGHTGRIDMAP_EXPORT3D_AS_MESH */
 			void getAs3DObject(mrpt::opengl::CSetOfObjectsPtr &outObj) const MRPT_OVERRIDE;
 
 			/** Return the type of the gas distribution map, according to parameters passed on construction */

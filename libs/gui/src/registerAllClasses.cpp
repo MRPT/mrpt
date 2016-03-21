@@ -28,8 +28,10 @@ CStartUpClassesRegister  mrpt_gui_class_reg(&registerAllClasses_mrpt_gui);
   ---------------------------------------------------------------*/
 void registerAllClasses_mrpt_gui()
 {
+#if !defined(DISABLE_MRPT_AUTO_CLASS_REGISTRATION)
 	registerClass( CLASS_ID( CDisplayWindow ) );
 	registerClass( CLASS_ID( CDisplayWindow3D ) );
 	registerClass( CLASS_ID( CDisplayWindowPlots ) );
+#endif
 }
 

@@ -24,7 +24,9 @@ CStartUpClassesRegister  mrpt_pbmap_class_reg(&registerAllClasses_mrpt_pbmap);
   ---------------------------------------------------------------*/
 void registerAllClasses_mrpt_pbmap()
 {
+#if !defined(DISABLE_MRPT_AUTO_CLASS_REGISTRATION)
 	registerClass( CLASS_ID( Plane ) );
 	registerClass( CLASS_ID( PbMap ) );
+#endif
 }
 

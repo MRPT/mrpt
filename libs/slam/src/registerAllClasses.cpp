@@ -31,13 +31,13 @@ CStartUpClassesRegister  mrpt_slam_class_reg(&registerAllClasses_mrpt_core);
   ---------------------------------------------------------------*/
 void registerAllClasses_mrpt_core()
 {
+#if !defined(DISABLE_MRPT_AUTO_CLASS_REGISTRATION)
 //   Hack to enable compatibility with an older name of this class:
 	registerClass( CLASS_ID( CMultiMetricMap ) );
 	registerClassCustomName( "CHybridMetricMap", CLASS_ID( CMultiMetricMap ) );
 
 	registerClass( CLASS_ID( CIncrementalMapPartitioner ) );
 	registerClass( CLASS_ID( CMultiMetricMapPDF ) );
-
-
+#endif
 }
 

@@ -25,7 +25,8 @@ CStartUpClassesRegister  mrpt_topography_class_reg(&registerAllClasses_mrpt_topo
   ---------------------------------------------------------------*/
 void registerAllClasses_mrpt_topography()
 {
+#if !defined(DISABLE_MRPT_AUTO_CLASS_REGISTRATION)
 //	registerClass( CLASS_ID( XXXX ) );
-
+#endif
 }
 

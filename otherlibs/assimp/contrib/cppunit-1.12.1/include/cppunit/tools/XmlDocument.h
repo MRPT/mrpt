@@ -48,7 +48,7 @@ public:
 
   /*! \brief set the output document as standalone or not.
    *
-   *  For the output document, specify wether it's a standalone XML
+   *  For the output document, specify whether it's a standalone XML
    *  document, or not.
    *
    *  \param standalone if true, the output will be specified as standalone.

@@ -32,6 +32,7 @@
 				- mrpt::utils::circular_buffer now has peek() methods
 				- Eigen::MatrixBase<Derived>::loadFromTextFile() now also accepts `,` as column separator.
 				- New function mrpt::utils::compute_CRC32()
+				- New function mrpt::utils::saturate<>()
 			- \ref mrpt_hwdrivers_grp
 				- New class mrpt::hwdrivers::CVelodyneScanner
 				- mrpt::hwdrivers::CNTRIPEmitter now has a parameter to enable/disable sending back the data from the serial port to the NTRIP caster.
@@ -55,6 +56,7 @@
 			- [Python bindings](https://github.com/MRPT/mrpt/wiki/PythonBindings) added for a subset of MRPT functionality (Thanks Peter Rudolph!)
 			- Code ported to support the new libftdi1-dev (Fixes Debian bug #810368, GitHub issue #176)
 			- Fix building with gcc 6.0 (Closes Debian bug #811812)
+			- CMake new option: `DISABLE_MRPT_AUTO_CLASS_REGISTRATION` to reduce the footprint of MRPT statically-linked programs.
 		- BUG FIXES:
 			- mrpt::math::CQuaternion<> did not check for unit norm in Release builds.
 			- Fix build errors against OpenCV 3.0.0+ without opencv_contrib modules.

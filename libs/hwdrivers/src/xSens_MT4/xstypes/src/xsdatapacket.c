@@ -1946,7 +1946,7 @@ uint32_t XsDataPacket_status(const XsDataPacket* thisPtr)
 }
 
 /*! \relates XsDataPacket
-	\brief Returns wether the %XsDataPacket contains a statusbyte
+	\brief Returns whether the %XsDataPacket contains a statusbyte
 	\returns Returns true if this packet contains a statusbyte
 */
 int XsDataPacket_containsStatusByte(const XsDataPacket* thisPtr)
