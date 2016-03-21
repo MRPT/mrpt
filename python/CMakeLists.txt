@@ -2,7 +2,8 @@ cmake_minimum_required(VERSION 2.8.3)
 
 project(pymrpt)
 
-set( PYMRPT_INSTALL_DIR "/usr/local/lib/python2.7/dist-packages" CACHE STRING "Set install directory for pymrpt. Ensure directory is in PYTHONPATH!")
+# Note: relative paths are relative to ${CMAKE_INSTALL_PREFIX} (defaults to /usr/local on Ubuntu)
+set( PYMRPT_INSTALL_DIR "lib/python${PYTHON_MAJOR_VERSION}.${PYTHON_MINOR_VERSION}/dist-packages" )
 
 include_directories(include)
 include_directories(
