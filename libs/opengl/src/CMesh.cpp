@@ -384,21 +384,19 @@ void  CMesh::readFromStream(mrpt::utils::CStream &in,int version)
 
 
 void CMesh::updateColorsMatrix() const
-{
+{	
 	if ((!m_modified_Z)&&(!m_modified_Image)) return;
 
 	CRenderizableDisplayList::notifyChange();
 
 	if (m_isImage)
-	{
+	{	
 		const size_t cols = m_textureImage.getWidth();
 		const size_t rows = m_textureImage.getHeight();
 
 		if ((cols != Z.getColCount())||(rows != Z.getRowCount()))
-		{
 			printf("\nTexture Image and Z sizes have to be equal");
 
-		}
 		else if (m_textureImage.isColor())
 		{
 			C_r.setSize(rows, cols);
@@ -416,37 +414,43 @@ void CMesh::updateColorsMatrix() const
 	{
 		const size_t cols = Z.getColCount();
 		const size_t rows = Z.getRowCount();
-
 		C.setSize(rows,cols);
 
-		// Color is proportional to difference between height of a cell and
-		//  the mean of the nearby cells MEANS:
+		//Color is proportional to height:
 		C = Z;
-		// Was: C.normalize(0.01f,0.99f);
-		// Reimplemented like this to ignore masked-out cells:
-		float val_max = -std::numeric_limits<float>::max(), val_min =  std::numeric_limits<float>::max();
 
-		bool any_valid =false;
-		for (size_t c=0;c<cols;c++) {
-			for (size_t r=0;r<rows;r++) {
-				if (!mask(r,c)) continue;
-				any_valid = true;
-				const float val = C(r,c);
-				mrpt::utils::keep_max(val_max,val);
-				mrpt::utils::keep_min(val_min,val);
-			}
-		}
-		if (any_valid)
+		//If mask is empty -> Normalize the whole mesh
+		if (mask.empty())
+			C.normalize(0.01f,0.99f);
+
+		//Else -> Normalize color ignoring masked-out cells:
+		else
 		{
-			float minMaxDelta = val_max - val_min;
-			if (minMaxDelta==0) minMaxDelta = 1;
-			const float minMaxDelta_ = 1.0f/minMaxDelta;
-			C.array() = (C.array()-val_min)*minMaxDelta_;
+			float val_max = -std::numeric_limits<float>::max(), val_min =  std::numeric_limits<float>::max();
+			bool any_valid =false;
+
+			for (size_t c=0;c<cols;c++) 
+				for (size_t r=0;r<rows;r++)
+				{
+					if (!mask(r,c)) continue;
+					any_valid = true;
+					const float val = C(r,c);
+					mrpt::utils::keep_max(val_max,val);
+					mrpt::utils::keep_min(val_min,val);
+				}
+
+			if (any_valid)
+			{
+				float minMaxDelta = val_max - val_min;
+				if (minMaxDelta==0) minMaxDelta = 1;
+				const float minMaxDelta_ = 1.0f/minMaxDelta;
+				C.array() = (C.array()-val_min)*minMaxDelta_;
+			}
 		}
 	}
 
 	m_modified_Image = false;
-	m_modified_Z = false; // Done
+	m_modified_Z = false;
 	trianglesUpToDate=false;
 }
 

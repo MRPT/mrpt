@@ -178,18 +178,23 @@ void CMesh3D::loadMesh(unsigned int num_verts, unsigned int num_faces, const Arr
   ---------------------------------------------------------------*/
 void CMesh3D::render_dl() const	{
 #if MRPT_HAS_OPENGL_GLUT
-	if (m_enableTransparency)	{
+
+	if (m_enableTransparency || m_antiAliasing)
+	{
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 	}
-	else	{
+	else
+	{
 		glEnable(GL_DEPTH_TEST);
 		glDisable(GL_BLEND);
 	}
+
+
 	glEnable(GL_NORMALIZE);  // So the GPU normalizes the normals instead of doing it in the CPU
 	glEnable(GL_COLOR_MATERIAL);
 	glShadeModel(GL_SMOOTH);
-
+	
 	if (m_num_verts == 0)
 		return;
 

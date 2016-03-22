@@ -203,28 +203,34 @@ void CMyGLCanvas_DisplayWindow3D::OnPostRenderSwapBuffers(double At, wxPaintDC &
 	{
 		int w,h;
 		dc.GetSize(&w, &h);
+			
+		//Save image directly from OpenGL - It could also use 4 channels and save with GL_BGRA_EXT
+		CImagePtr frame(new CImage(w, h, 3, false));
+		glReadBuffer(GL_FRONT);
+		glReadPixels(0, 0, w, h, GL_BGR_EXT, GL_UNSIGNED_BYTE, (*frame)(0,0) );
 
-		// create a memory DC and bitmap to capture the DC
-		wxMemoryDC memDC;
-		wxBitmap memBmp(w, h);
-		memDC.SelectObject(memBmp);
-		memDC.Blit(0,0, w,h, &dc, 0,0);
+		//Old way of saving the image with wxwidget - create a memory DC and bitmap to capture the DC
+		//wxMemoryDC memDC;
+		//wxBitmap memBmp(w, h);
+		//memDC.SelectObject(memBmp);
+		//memDC.Blit(0,0, w,h, &dc, 0,0);
 
 		if (!grabFile.empty())
 		{
-			memBmp.SaveFile( _U(grabFile.c_str()) , wxBITMAP_TYPE_PNG );
+			//memBmp.SaveFile( _U(grabFile.c_str()) , wxBITMAP_TYPE_PNG );
+			frame->saveToFile(grabFile);
 			m_win3D->internal_emitGrabImageEvent(grabFile);
 		}
 
 		if (m_win3D->isCapturingImgs())
-		{
-			wxImage img = memBmp.ConvertToImage();
-			CImagePtr pimg = mrpt::gui::wxImage2MRPTImagePtr(img);
-
+		{				
+			//wxImage img = memBmp.ConvertToImage();
+			//CImagePtr pimg = mrpt::gui::wxImage2MRPTImagePtr(img);
+			//CImagePtr pimg =  frame;
 			{
 				mrpt::synch::CCriticalSectionLocker	lock(& m_win3D->m_last_captured_img_cs );
-				m_win3D->m_last_captured_img = pimg;
-				pimg.clear_unique();
+				m_win3D->m_last_captured_img = frame;
+				frame.clear_unique();
 			}
 		}
 	}

@@ -46,6 +46,7 @@ namespace mrpt
 		protected:
 
 			bool		m_enableTransparency;
+			bool		m_antiAliasing;
 			bool		m_showEdges;
 			bool		m_showFaces;
 			bool		m_showVertices;
@@ -70,6 +71,7 @@ namespace mrpt
 		public:
 
 			void enableTransparency(bool v)		{ m_enableTransparency = v; CRenderizableDisplayList::notifyChange(); }
+			void enableAntiAliasing(bool v)		{ m_antiAliasing = v; CRenderizableDisplayList::notifyChange(); }
 			void enableShowEdges(bool v) 		{ m_showEdges = v; CRenderizableDisplayList::notifyChange(); }
 			void enableShowFaces(bool v) 		{ m_showFaces = v; CRenderizableDisplayList::notifyChange(); }
 			void enableShowVertices(bool v)		{ m_showVertices = v; CRenderizableDisplayList::notifyChange(); }
@@ -117,8 +119,9 @@ namespace mrpt
 		private:
 			/** Constructor
 			  */
-			CMesh3D(bool enableTransparency = false, bool enableShowEdges = true, bool enableShowFaces = true, bool enableShowVertices = false) :
+			CMesh3D(bool enableTransparency = false, bool antiAliasing = false, bool enableShowEdges = true, bool enableShowFaces = true, bool enableShowVertices = false) :
 				m_enableTransparency(enableTransparency),
+				m_antiAliasing(antiAliasing),
 				m_showEdges(enableShowEdges),
 				m_showFaces(enableShowFaces),
 				m_showVertices(enableShowVertices),
