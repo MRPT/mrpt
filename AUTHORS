@@ -30,6 +30,9 @@ The following list is roughly sorted in reverse cronological order.
   - Driver for Rovio mobile robot with webcam.
   - New algorithms in gas maps.
 
+* Nikolaus Demmel, Robert Bosch Start-up GmbH (2016)
+  - Additions to python bindings.
+
 * Robert Schattschneider, University of Canterbury (2012)
   - Patches for bug fixes, serialization of templates.
 
