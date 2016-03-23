@@ -17,7 +17,7 @@
 	- <b>Most important changes:</b>
 		- Support for Velodyne LIDAR sensors.
 		- New minor version number due to changes in the API of these classes (read details below): mrpt::obs::CObservationGPS, mrpt::hwdrivers::CGPSInterface
-		- [Python bindings](https://github.com/MRPT/mrpt/wiki/PythonBindings) added for a subset of MRPT functionality (Thanks Peter Rudolph!)
+		- [Python bindings](https://github.com/MRPT/mrpt/wiki/PythonBindings) added for a subset of MRPT functionality (Thanks Peter Rudolph and Nikolaus Demmel!)
 	- <b>Detailed list of changes:</b>
 		- New apps:
 			- [velodyne-view](http://www.mrpt.org/list-of-mrpt-apps/application-velodyne-view/): Application to test, visualize and grab data from a live Velodyne sensor or from a PCAP record.
