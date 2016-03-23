@@ -94,6 +94,9 @@ namespace poses
 			mean_point = this->mean;
 		}
 
+        void asString(std::string &s) const;
+        inline std::string asString() const { std::string s; asString(s); return s; }
+
 		/** Copy operator, translating if necesary (for example, between particles and gaussian representations)
 		  */
 		void  copyFrom(const CPose3DPDF &o) MRPT_OVERRIDE;

@@ -1,5 +1,5 @@
 /* bindings */
-#include "bindings.h"
+#include "../include/bindings.h"
 
 /* MRPT */
 #include <mrpt/poses/CPose2D.h>
@@ -75,6 +75,7 @@ tuple CPose3D_getYawPitchRoll(CPose3D &self)
 }
 
 MAKE_AS_STR(CPose3D)
+MAKE_GETITEM(CPose3D, double)
 
 #ifdef ROS_EXTENSIONS
 object CPose3D_to_ROS_Pose_msg(CPose3D &self)
@@ -192,6 +193,11 @@ void CPose3D_from_ROS_Pose_msg(CPose3D &self, object pose_msg)
 //         this->get_override("getMean")(mean_point);
 //     }
 //
+//     void getCovariance(mrpt::math::CMatrixFixedNumeric<double,6ul,6ul> &cov) const
+//     {
+//         this->get_override("getCovariance")(cov);
+//     }
+//
 //     void getCovarianceAndMean(mrpt::math::CMatrixFixedNumeric<double,6ul,6ul> &cov, mrpt::poses::CPose3D &mean_point) const
 //     {
 //         this->get_override("getCovarianceAndMean")(cov, mean_point);
@@ -205,6 +211,11 @@ void CPose3D_from_ROS_Pose_msg(CPose3D &self, object pose_msg)
 //     void changeCoordinatesReference(const mrpt::poses::CPose3D &newReferenceBase)
 //     {
 //         this->get_override("changeCoordinatesReference")(newReferenceBase);
+//     }
+//
+//     double getCovarianceEntropy() const
+//     {
+//         return this->get_override("getCovarianceEntropy")();
 //     }
 //
 //     void drawSingleSample(mrpt::poses::CPose3D &outPart) const
@@ -241,6 +252,79 @@ void CPosePDFGaussian_set_cov(CPosePDFGaussian &self, list cov)
     for (int32_t i = 0; i < 9; ++i) { self.cov(i) = extract<double>(cov[i]); }
 }
 // end of CPosePDFGaussian
+
+// CPose3DPDFGaussian
+list CPose3DPDFGaussian_get_cov(CPose3DPDFGaussian &self)
+{
+    list cov;
+    for (int32_t i = 0; i < 36; ++i) { cov.append(self.cov(i)); }
+    return cov;
+}
+
+void CPose3DPDFGaussian_set_cov(CPose3DPDFGaussian &self, list cov)
+{
+    for (int32_t i = 0; i < 36; ++i) { self.cov(i) = extract<double>(cov[i]); }
+}
+
+MAKE_AS_STR(CPose3DPDFGaussian)
+
+#ifdef ROS_EXTENSIONS
+object CPose3DPDFGaussian_to_ROS_PoseWithCovariance_msg(CPose3DPDFGaussian &self)
+{
+    CPose3DQuat pose_quat(self.mean);
+    // import msg
+    dict locals;
+    exec("from geometry_msgs.msg import PoseWithCovariance\n"
+         "pose_msg = PoseWithCovariance()\n",
+         object(), locals);
+    object pose_msg = locals["pose_msg"];
+    pose_msg.attr("pose") = CPose3D_to_ROS_Pose_msg(self.mean);
+
+    // Read REP103: http://ros.org/reps/rep-0103.html#covariance-representation
+    // # Row-major representation of the 6x6 covariance matrix
+    // # The orientation parameters use a fixed-axis representation.
+    // # In order, the parameters are:
+    // # (x, y, z, rotation about X axis, rotation about Y axis, rotation about Z axis)
+    // float64[36] covariance
+    // ==> MRPT uses non-fixed z-y-x and ROS uses fixed x-y-z rotations --> which
+    //     are equal except for the ordering --> only need to rearrange yaw, pitch, roll
+
+    const unsigned int indxs_map[6] = {0, 1, 2, 5, 4, 3};  // X,Y,Z,YAW,PITCH,ROLL
+
+    list mrptcov = CPose3DPDFGaussian_get_cov(self);
+    pose_msg.attr("covariance") = list(mrptcov);
+
+    for (int i = 0; i < 6; i++)
+    {
+        for (int j = 0; j < 6; j++)
+        {
+            pose_msg.attr("covariance")[indxs_map[i] * 6 + indxs_map[j]] = mrptcov(i*6 + j);
+        }
+    }
+
+    return pose_msg;
+}
+
+void CPose3DPDFGaussian_from_ROS_PoseWithCovariance_msg(CPose3DPDFGaussian &self, object pose_msg)
+{
+    self = CPose3DPDFGaussian();
+    CPose3D_from_ROS_Pose_msg(self.mean, pose_msg.attr("pose"));
+
+    list roscov = list(pose_msg.attr("covariance"));
+
+    // rearrange covariance (see above)
+    const unsigned int indxs_map[6] = {0, 1, 2, 5, 4, 3};  // X,Y,Z,YAW,PITCH,ROLL
+
+    for (int i = 0; i < 6; i++)
+    {
+        for (int j = 0; j < 6; j++)
+        {
+            self.cov(i, j) = extract<double>(roscov[indxs_map[i] * 6 + indxs_map[j]]);
+        }
+    }
+}
+#endif
+// end of CPose3DPDFGaussian
 
 // CPosePDFParticles
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(CPosePDFParticles_resetUniform_overloads, resetUniform, 4, 7)
@@ -337,6 +421,8 @@ void export_poses()
         MAKE_PTR(CPose3D)
 
         class_<CPose3D>("CPose3D", init<optional<CPose2D> >())
+            .def(init<CPose3D>())
+            .def(init<double, double, double, double, double, double>())
             .add_property("x",
                 make_function(CPose3D_get_x, return_value_policy<copy_non_const_reference>()),
                 CPose3D_set_x
@@ -349,10 +435,14 @@ void export_poses()
                 make_function(CPose3D_get_z, return_value_policy<copy_non_const_reference>()),
                 CPose3D_set_z
             )
-            .def(init<CPose3D>())
+            .def("__getitem__", &CPose3D_getitem)
             .def("setYawPitchRoll", &CPose3D::setYawPitchRoll, "Set the 3 angles of the 3D pose (in radians) - This method recomputes the internal rotation coordinates matrix.")
             .def("getYawPitchRoll", &CPose3D_getYawPitchRoll, "Returns the three angles (yaw, pitch, roll), in radians, from the rotation matrix.")
             .def("setFromValues", &CPose3D::setFromValues, "Set the pose from a 3D position (meters) and yaw/pitch/roll angles (radians) - This method recomputes the internal rotation matrix.")
+            .def("inverse", &CPose3D::inverse, "Convert this pose into its inverse, saving the result in itself.")
+            .def("__str__", &CPose3D_asString)
+            .def(self + self)
+            .def(self - self)
 #ifdef ROS_EXTENSIONS
             .def("to_ROS_Pose_msg", &CPose3D_to_ROS_Pose_msg, "Convert to ROS geometry_msgs/Pose.")
             .def("from_ROS_Pose_msg", &CPose3D_from_ROS_Pose_msg, "Convert from ROS geometry_msgs/Pose.")
@@ -364,9 +454,22 @@ void export_poses()
     {
         MAKE_PTR(CPose3DPDF)
 
+        // dealing with overloading
+        void (CPose3DPDF::*getCovariance1)(mrpt::math::CMatrixFixedNumeric<double,6ul,6ul> &cov) const = &CPose3DPDF::getCovariance;
+
         class_<CPose3DPDF, boost::noncopyable>("CPose3DPDF", no_init)
             .def("jacobiansPoseComposition", &CPose3DPDF::jacobiansPoseComposition, "This static method computes the pose composition Jacobians.")
             .def("getMeanVal", &CPose3DPDF::getMeanVal)
+            .def("getMean", &CPose3DPDF::getMean, "Returns the mean, or mathematical expectation of the probability density distribution (PDF).")
+            .def("getCovariance", getCovariance1, "Returns an estimate of the pose covariance matrix (STATE_LENxSTATE_LEN cov matrix).")
+            .def("getCovarianceAndMean", &CPose3DPDF::getCovarianceAndMean, "Returns an estimate of the pose covariance matrix (STATE_LENxSTATE_LEN cov matrix) and the mean, both at once.")
+            .def("saveToTextFile", &CPose3DPDF::saveToTextFile, "Save PDF's particles to a text file. See derived classes for more information about the format of generated files.")
+            .def("changeCoordinatesReference", &CPose3DPDF::changeCoordinatesReference, "this = p (+) this. This can be used to convert a PDF from local coordinates to global, providing the point (newReferenceBase) from which 'to project' the current pdf. Result PDF substituted the currently stored one in the object.")
+            .def("getCovarianceEntropy", &CPose3DPDF::getCovarianceEntropy, "Compute the entropy of the estimated covariance matrix.")
+            .def("drawSingleSample", &CPose3DPDF::drawSingleSample, "Draws a single sample from the distribution")
+            .def("copyFrom", &CPose3DPDF::copyFrom, "Copy operator, translating if necesary (for example, between particles and gaussian representations).")
+            .def("bayesianFusion", &CPose3DPDF::bayesianFusion, "Bayesian fusion of two pose distributions (product of two distributions->new distribution), then save the result in this object (WARNING: See implementing classes to see classes that can and cannot be mixtured!).")
+            .def("inverse", &CPose3DPDF::inverse, "Returns a new PDF such as: NEW_PDF = (0,0,0) - THIS_PDF")
         ;
     }
 
@@ -374,7 +477,37 @@ void export_poses()
     {
         MAKE_PTR(CPose3DPDFGaussian)
 
+        // dealing with overloading
+        void (CPose3DPDF::*getCovariance1)(mrpt::math::CMatrixFixedNumeric<double,6ul,6ul> &cov) const = &CPose3DPDFGaussian::getCovariance;
+
         class_<CPose3DPDFGaussian, bases<CPose3DPDF> >("CPose3DPDFGaussian", init<>())
+            .def(init<CPose3DPDFGaussian>())
+            .def(init<CPose3D>())
+            .def("getMean", &CPose3DPDFGaussian::getMean, "Returns the mean, or mathematical expectation of the probability density distribution (PDF).")
+            .def("getCovariance", getCovariance1, "Returns an estimate of the pose covariance matrix (STATE_LENxSTATE_LEN cov matrix).")
+            .def("getCovarianceAndMean", &CPose3DPDFGaussian::getCovarianceAndMean, "Returns an estimate of the pose covariance matrix (STATE_LENxSTATE_LEN cov matrix) and the mean, both at once.")
+            .def("saveToTextFile", &CPose3DPDFGaussian::saveToTextFile, "Save PDF's particles to a text file. See derived classes for more information about the format of generated files.")
+            .def("changeCoordinatesReference", &CPose3DPDF::changeCoordinatesReference, "this = p (+) this. This can be used to convert a PDF from local coordinates to global, providing the point (newReferenceBase) from which 'to project' the current pdf. Result PDF substituted the currently stored one in the object.")
+            .def("getCovarianceEntropy", &CPose3DPDFGaussian::getCovarianceEntropy, "Compute the entropy of the estimated covariance matrix.")
+            .def("drawSingleSample", &CPose3DPDFGaussian::drawSingleSample, "Draws a single sample from the distribution")
+//            .def("copyFrom", &CPose3DPDFGaussian::copyFrom, "Copy operator, translating if necesary (for example, between particles and gaussian representations).")
+            .def("bayesianFusion", &CPose3DPDF::bayesianFusion, "Bayesian fusion of two pose distributions (product of two distributions->new distribution), then save the result in this object (WARNING: See implementing classes to see classes that can and cannot be mixtured!).")
+            .def("inverse", &CPose3DPDFGaussian::inverse, "Returns a new PDF such as: NEW_PDF = (0,0,0) - THIS_PDF")
+            .def("jacobiansPoseComposition", &CPose3DPDFGaussian::jacobiansPoseComposition, "This static method computes the pose composition Jacobians.")
+            .def("__str__", &CPose3DPDFGaussian_asString)
+            .def_readwrite("mean", &CPose3DPDFGaussian::mean)
+            // Note: the following does not work unfortunately: p.cov[35] = 1.0
+            // FIXME: change cov to return actual matrix object (use def_readwrite)
+            .add_property("cov", CPose3DPDFGaussian_get_cov, CPose3DPDFGaussian_set_cov)
+            .def(self + self)
+            .def(self - self)
+            .def(- self)
+            .def(self += self)
+            .def(self -= self)
+#ifdef ROS_EXTENSIONS
+            .def("to_ROS_PoseWithCovariance_msg", &CPose3DPDFGaussian_to_ROS_PoseWithCovariance_msg, "Convert to ROS geometry_msgs/PoseWithCovariance.")
+            .def("from_ROS_PoseWithCovariance_msg", &CPose3DPDFGaussian_from_ROS_PoseWithCovariance_msg, "Convert from ROS geometry_msgs/PoseWithCovariance.")
+#endif
         ;
     }
 

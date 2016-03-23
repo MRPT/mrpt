@@ -18,6 +18,8 @@
 #include <mrpt/system/os.h>
 #include <mrpt/utils/CStream.h>
 
+#include <sstream>
+
 using namespace mrpt;
 using namespace mrpt::poses;
 using namespace mrpt::math;
@@ -111,6 +113,16 @@ CPose3DPDFGaussian::CPose3DPDFGaussian( const CPose3DQuatPDFGaussian &o)  :
 	mean(UNINITIALIZED_POSE), cov(UNINITIALIZED_MATRIX)
 {
 	this->copyFrom(o);
+}
+
+/*---------------------------------------------------------------
+                    asString
+ ---------------------------------------------------------------*/
+void CPose3DPDFGaussian::asString(std::string &s) const
+{
+    ostringstream ss;
+    ss << *this;
+    s = ss.str();
 }
 
 /*---------------------------------------------------------------
