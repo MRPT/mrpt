@@ -42,7 +42,8 @@ void TestLM()
 	initial_x[0] = 1.4;	// x
 	initial_x[1] = 2.5;	// y
 
-	increments_x.resize(2, 0.0001 );
+	increments_x.resize(2);
+	increments_x.setConstant(0.0001);
 
 	double T;
 	size_t  N = 1;
