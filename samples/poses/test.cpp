@@ -79,7 +79,7 @@ void TestPoseComposition()
 
 // ---------------------------------------------------------------
     /**
-     * CPose3D default constructor method takes the arguements in the 
+     * CPose3D default constructor method takes the arguments in the 
      * (X, Y, Z, YAW=0, PITCH=0, ROLL=0) format. The angles are optional
      */
 	CPose3D		A(0,0,0), B(1,1,0,DEG2RAD(45),0,0), C;

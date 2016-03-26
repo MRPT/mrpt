@@ -10,7 +10,7 @@
 /**
  * Execute the iterating closest point algorithm (ICP) on a hardcoded pair of
  * laser data. The algorithm computes the transformation (translation and
- * rotation) for alighning the 2 sets of laser scans and plots the 
+ * rotation) for aligning the 2 sets of laser scans and plots the 
  */
 
 #include <mrpt/maps/CSimplePointsMap.h>
@@ -124,7 +124,7 @@ void TestICP()
      * Scans alignment procedure.
      * Given an initial guess (initialPose) and the maps to be aligned, the
      * algorithm returns the probability density function (pdf) of the alignment
-     * Additional arguements are provided to investigate the performance of the
+     * Additional arguments are provided to investigate the performance of the
      * algorithm
      */
 	CPose2D		initialPose(0.8f,0.0f,(float)DEG2RAD(0.0f));
