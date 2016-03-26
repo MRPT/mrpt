@@ -7,6 +7,11 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
+/**
+ * times
+ * Prints current time instances in UTC format 
+ */
+
 #include <mrpt/utils.h>
 
 
