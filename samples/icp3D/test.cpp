@@ -7,6 +7,11 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
+/** 
+ * icp3d
+ * Execute an Iterative Closest Point algorithm using two 3D point clouds.
+ */
+
 #include <mrpt/slam/CICP.h>
 
 #include <mrpt/poses/CPose3DPDF.h>
@@ -46,6 +51,9 @@ CPose3D	viewpoint2(0.5,-0.2,2.6, DEG2RAD(-5),DEG2RAD(100),DEG2RAD(-7));
 CPose3D SCAN2_POSE_ERROR (0.15,-0.07,0.10, -0.03, 0.1, 0.1 );
 
 
+/** 
+ * Generate 3 objects to work with - 1 sphere, 2 disks
+ */
 void generateObjects(CSetOfObjectsPtr &world)
 {
 	CSpherePtr sph=CSphere::Create(0.5);

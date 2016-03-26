@@ -7,6 +7,11 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
+/**
+ * slerp_demo
+ * Execute a Spherical Linear Interpolation given 2 poses.
+ */
+
 #include <mrpt/math/slerp.h>
 #include <mrpt/utils/CTicTac.h>
 #include <mrpt/system/threads.h>
@@ -44,6 +49,7 @@ void TestSLERP()
 		theScene->insert( obj);
 	}
 
+    // Initialize the start, end pose of the animation
 	const CPose3D  pose_a(0,0,0, DEG2RAD(0),DEG2RAD(0),DEG2RAD(0));
 	const CPose3D  pose_b(3,4,1, DEG2RAD(120),DEG2RAD(40),DEG2RAD(50));
 
