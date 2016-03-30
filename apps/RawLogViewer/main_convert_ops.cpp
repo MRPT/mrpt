@@ -810,12 +810,12 @@ void xRawLogViewerFrame::OnMenuResortByTimestamp(wxCommandEvent& event)
 
 				TTimeStamp tim = useSensorTimestamp ? o->getTimeStamp() : o->getOriginalReceivedTimeStamp();
 
-				if (o->timestamp == INVALID_TIMESTAMP) {
+				if (tim == INVALID_TIMESTAMP) {
 					wxMessageBox( wxString::Format(_("Error: Element %u does not have a valid timestamp."),(unsigned int)i) );
 					return;
 				}
 
-				ordered_times.insert(  multimap<TTimeStamp,size_t>::value_type(o->timestamp,i));
+				ordered_times.insert(  multimap<TTimeStamp,size_t>::value_type(tim,i));
 			}
 			break;
 		} // end switch type
