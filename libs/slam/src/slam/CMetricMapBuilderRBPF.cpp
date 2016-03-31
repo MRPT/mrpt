@@ -50,6 +50,32 @@ CMetricMapBuilderRBPF::CMetricMapBuilderRBPF(  const TConstructionOptions &initi
 	clear();
 }
 
+CMetricMapBuilderRBPF::CMetricMapBuilderRBPF()
+{
+	std::cerr << "WARNING: empty constructor" << std::endl;
+}
+
+/*---------------------------------------------------------------
+				     Copy operator
+  ---------------------------------------------------------------*/
+CMetricMapBuilderRBPF & CMetricMapBuilderRBPF::operator =(const CMetricMapBuilderRBPF &src)
+{
+	if (this==&src) {
+		return *this;
+	}
+	mapPDF = src.mapPDF;
+	m_PF_options = src.m_PF_options;
+	insertionLinDistance = src.insertionLinDistance;
+	insertionAngDistance = src.insertionAngDistance;
+	localizeLinDistance = src.localizeLinDistance;
+	localizeAngDistance = src.localizeAngDistance;
+	odoIncrementSinceLastLocalization = src.odoIncrementSinceLastLocalization;
+	odoIncrementSinceLastMapUpdate = src.odoIncrementSinceLastMapUpdate;
+	currentMetricMapEstimation = NULL;
+	m_statsLastIteration = src.m_statsLastIteration;
+	return *this;
+}
+
 /*---------------------------------------------------------------
 						Destructor
   ---------------------------------------------------------------*/

@@ -92,6 +92,13 @@ namespace slam
 
 		/** Constructor. */
 		CMetricMapBuilderRBPF( const TConstructionOptions &initializationOptions );
+		
+		/** This second constructor is created for the situation where a class member needs to be
+of type CMetricMapBuilderRBPF  */
+		CMetricMapBuilderRBPF();
+		
+		/** Copy Operator. */
+		CMetricMapBuilderRBPF & operator =(const CMetricMapBuilderRBPF &src);
 
 		/** Destructor. */
 		virtual ~CMetricMapBuilderRBPF( );
