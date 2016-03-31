@@ -260,7 +260,7 @@ hmtMapViewerFrame::hmtMapViewerFrame(wxWindow* parent,wxWindowID id)
     FlexGridSizer8 = new wxFlexGridSizer(0, 1, 0, 0);
     FlexGridSizer8->AddGrowableCol(0);
     FlexGridSizer8->AddGrowableRow(0);
-    edLog = new wxTextCtrl(Panel8, ID_TEXTCTRL1, _("Log window"), wxDefaultPosition, wxDefaultSize, wxTE_AUTO_SCROLL|wxTE_PROCESS_ENTER|wxTE_PROCESS_TAB|wxTE_MULTILINE|wxTE_READONLY|wxHSCROLL|wxVSCROLL, wxDefaultValidator, _T("ID_TEXTCTRL1"));
+    edLog = new wxTextCtrl(Panel8, ID_TEXTCTRL1, _("Log window"), wxDefaultPosition, wxDefaultSize, wxTE_PROCESS_ENTER|wxTE_PROCESS_TAB|wxTE_MULTILINE|wxTE_READONLY|wxHSCROLL|wxVSCROLL, wxDefaultValidator, _T("ID_TEXTCTRL1"));
     wxFont edLogFont = wxSystemSettings::GetFont(wxSYS_OEM_FIXED_FONT);
     if ( !edLogFont.Ok() ) edLogFont = wxSystemSettings::GetFont(wxSYS_DEFAULT_GUI_FONT);
     edLogFont.SetPointSize((int)(edLogFont.GetPointSize() * 1.000000));

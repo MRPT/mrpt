@@ -1264,7 +1264,7 @@
 											<size>8</size>
 											<family>teletype</family>
 										</font>
-										<style>wxTE_AUTO_SCROLL|wxTE_MULTILINE|wxTE_READONLY|wxHSCROLL|wxVSCROLL</style>
+										<style>wxTE_MULTILINE|wxTE_READONLY|wxHSCROLL|wxVSCROLL</style>
 									</object>
 									<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
 									<border>5</border>

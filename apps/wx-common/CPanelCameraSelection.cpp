@@ -133,7 +133,7 @@ CPanelCameraSelection::CPanelCameraSelection(wxWindow* parent,wxWindowID id)
 	FlexGridSizer16 = new wxFlexGridSizer(0, 1, 0, 0);
 	FlexGridSizer16->AddGrowableCol(0);
 	FlexGridSizer16->AddGrowableRow(0);
-	edCustomCamConfig = new wxTextCtrl(Panel4, ID_TEXTCTRL6, _("// Configuration block for the CCameraSensor object.\n// Check out its documentation at:\n// http://reference.mrpt.org/svn/classmrpt_1_1hwdrivers_1_1_c_camera_sensor.html\n\n[CONFIG]\ngrabber_type = opencv \ncv_camera_index = 0\ncv_camera_type = CAMERA_CV_AUTODETECT\n\n"), wxDefaultPosition, wxDefaultSize, wxTE_AUTO_SCROLL|wxTE_MULTILINE|wxHSCROLL|wxTE_DONTWRAP|wxVSCROLL|wxALWAYS_SHOW_SB, wxDefaultValidator, _T("ID_TEXTCTRL6"));
+	edCustomCamConfig = new wxTextCtrl(Panel4, ID_TEXTCTRL6, _("// Configuration block for the CCameraSensor object.\n// Check out its documentation at:\n// http://reference.mrpt.org/svn/classmrpt_1_1hwdrivers_1_1_c_camera_sensor.html\n\n[CONFIG]\ngrabber_type = opencv \ncv_camera_index = 0\ncv_camera_type = CAMERA_CV_AUTODETECT\n\n"), wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE|wxHSCROLL|wxTE_DONTWRAP|wxVSCROLL|wxALWAYS_SHOW_SB, wxDefaultValidator, _T("ID_TEXTCTRL6"));
 	wxFont edCustomCamConfigFont = wxSystemSettings::GetFont(wxSYS_OEM_FIXED_FONT);
 	if ( !edCustomCamConfigFont.Ok() ) edCustomCamConfigFont = wxSystemSettings::GetFont(wxSYS_DEFAULT_GUI_FONT);
 	edCustomCamConfigFont.SetPointSize(7);

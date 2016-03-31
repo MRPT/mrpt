@@ -119,7 +119,7 @@
 											<size>7</size>
 											<sysfont>wxSYS_OEM_FIXED_FONT</sysfont>
 										</font>
-										<style>wxTE_AUTO_SCROLL|wxTE_MULTILINE|wxHSCROLL|wxTE_DONTWRAP|wxVSCROLL|wxALWAYS_SHOW_SB</style>
+										<style>wxTE_MULTILINE|wxHSCROLL|wxTE_DONTWRAP|wxVSCROLL|wxALWAYS_SHOW_SB</style>
 									</object>
 									<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
 									<border>5</border>

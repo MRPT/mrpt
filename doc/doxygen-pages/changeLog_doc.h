@@ -57,6 +57,7 @@
 			- Code ported to support the new libftdi1-dev (Fixes Debian bug #810368, GitHub issue #176)
 			- Fix building with gcc 6.0 (Closes Debian bug #811812)
 			- CMake new option: `DISABLE_MRPT_AUTO_CLASS_REGISTRATION` to reduce the footprint of MRPT statically-linked programs.
+			- Fix building against wxWidgets 3.1 
 		- BUG FIXES:
 			- mrpt::math::CQuaternion<> did not check for unit norm in Release builds.
 			- Fix build errors against OpenCV 3.0.0+ without opencv_contrib modules.

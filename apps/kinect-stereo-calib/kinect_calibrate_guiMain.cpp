@@ -680,7 +680,7 @@ kinect_calibrate_guiDialog::kinect_calibrate_guiDialog(wxWindow* parent,wxWindow
     FlexGridSizer13->AddGrowableRow(0);
     StaticText10 = new wxStaticText(Panel2, ID_STATICTEXT10, _("Log:"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT10"));
     FlexGridSizer13->Add(StaticText10, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-    edLogTest = new wxTextCtrl(Panel2, ID_TEXTCTRL4, wxEmptyString, wxDefaultPosition, wxSize(-1,50), wxTE_AUTO_SCROLL|wxTE_MULTILINE|wxTE_READONLY|wxHSCROLL|wxVSCROLL, wxDefaultValidator, _T("ID_TEXTCTRL4"));
+    edLogTest = new wxTextCtrl(Panel2, ID_TEXTCTRL4, wxEmptyString, wxDefaultPosition, wxSize(-1,50), wxTE_MULTILINE|wxTE_READONLY|wxHSCROLL|wxVSCROLL, wxDefaultValidator, _T("ID_TEXTCTRL4"));
     wxFont edLogTestFont(8,wxTELETYPE,wxFONTSTYLE_NORMAL,wxNORMAL,false,wxEmptyString,wxFONTENCODING_DEFAULT);
     edLogTest->SetFont(edLogTestFont);
     FlexGridSizer13->Add(edLogTest, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);

@@ -102,7 +102,7 @@
 												<sysfont>wxSYS_OEM_FIXED_FONT</sysfont>
 												<relativesize>1.000000</relativesize>
 											</font>
-											<style>wxTE_AUTO_SCROLL|wxTE_PROCESS_ENTER|wxTE_PROCESS_TAB|wxTE_MULTILINE|wxTE_READONLY|wxHSCROLL|wxVSCROLL</style>
+											<style>wxTE_PROCESS_ENTER|wxTE_PROCESS_TAB|wxTE_MULTILINE|wxTE_READONLY|wxHSCROLL|wxVSCROLL</style>
 										</object>
 										<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
 										<border>1</border>
