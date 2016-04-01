@@ -1390,7 +1390,7 @@ void slamdemoFrame::updateAllGraphs(bool alsoGTMap )
 		for (unsigned int o=0;o<m_lastObservation.sensedData.size();o++)
 			for (unsigned int p=0;p<da.predictions_IDs.size();p++)
 			{
-				gridDA->SetCellAlignment(p,o,wxALIGN_RIGHT);
+				gridDA->SetCellAlignment(p,o,wxALIGN_RIGHT,wxALIGN_CENTRE);
 
 				const double v= da.results.indiv_distances(p,o);
 				if (v>500)

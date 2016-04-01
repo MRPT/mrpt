@@ -185,7 +185,7 @@ void CDlgCamTracking::UpdateTableFromPoses()
 {
 	gridPoses->BeginBatch();
 
-	gridPoses->DeleteRows(0,gridPoses->GetCols());
+	gridPoses->DeleteRows(0,gridPoses->GetNumberRows());
 
 	const size_t N = m_poses.size();
 	gridPoses->InsertRows(0, N );
