@@ -27,10 +27,14 @@ REM MinGW directories will be: %MINGW_ROOT%-32 and %MINGW_ROOT%-64
 REM  (NOTE: Use "/" for paths in this one)
 set MINGW_ROOT=D:/MinGW
 set MINGW_ROOT_BKSLH=D:\MinGW
-REM === wxWidgets directory base name will be: %WX_ROOT%-win%ARCHN%-%COMP%
+REM === wxWidgets directory base name will be: %WX_ROOT%
 set WX_ROOT=D:/code/wxWidgets-3.0.2
 REM MSVC Redistributables: %MSVC_REDIST_BASE_DIR%/%COMP%/vcredist_%ARCH%.exe
 set MSVC_REDIST_BASE_DIR=D:/code/MSVC_Redist
+
+REM WinPCAP
+set PCAP_ROOT=D:/code/WpdPack
+
 
 REM Since mrpt 1.3.0 we can build against libusb (for libfreenect) and will work in all systems (even w/o drivers)
 set KINECT=1
@@ -87,7 +91,7 @@ set DIR=%MRPT_BASE_DIR%-%COMP%-%ARCH%
 if %ARCHN%==32 set ARCH_NAME=x86
 if %ARCHN%==64 set ARCH_NAME=amd64
 
-set WXDIR=%WX_ROOT%-%COMP%-%ARCH%
+set WXDIR=%WX_ROOT%
 
 set MSVC_REDIST=%MSVC_REDIST_BASE_DIR%/%COMP%/vcredist_%ARCH%.exe
 
@@ -109,9 +113,18 @@ set CMAKE_EXTRA1=-DINSTALL_MSVC_REDISTRIBUTABLE=%MSVC_REDIST%
 set CMAKE_EXTRA2=
 set CMAKE_EXTRA3=
 
+if %COMP%==msvc11 set WXLIB_DIR=vc110
+if %COMP%==msvc12 set WXLIB_DIR=vc120
+if %COMP%==msvc14 set WXLIB_DIR=vc140
+if %ARCHN%==64 set WXLIB_DIR=%WXLIB_DIR%_x64
+
+
 set FFMPEGDIR=D:/code/ffmpeg-win%ARCHN%-dev
-if %ARCHN%==32 set WXLIBDIR=%WXDIR%/lib/vc_dll
-if %ARCHN%==64 set WXLIBDIR=%WXDIR%/lib/vc_x64_dll
+set WXLIBDIR=%WXDIR%/lib/%WXLIB_DIR%_dll
+
+set PCAP_LIB=%PCAP_ROOT%/Lib/
+if %ARCHN%==64 set PCAP_LIB=%PCAP_LIB%/x64
+set PCAP_LIB=%PCAP_LIB%/wpcap.lib 
 
 GOTO :subGen_common
 
@@ -151,7 +164,7 @@ if %COMP%==mingw echo %MINGW_ROOT_BKSLH%-%ARCHN%\bin\mingw32-make package >> AUT
 
 REM ---------------- Call CMake ----------------
 call %PATH_FIL%
-set ALL_PARAMS=-DDISABLE_SWISSRANGER_3DCAM_LIBS=ON -DDISABLE_PCL=ON -DDISABLE_NationalInstruments=ON -DOpenCV_DIR=d:/code/opencv-%COMP%-%ARCH% -DMRPT_HAS_FFMPEG_WIN32=ON -DFFMPEG_WIN32_ROOT_DIR=%FFMPEGDIR% -DwxWidgets_ROOT_DIR=%WXDIR% -DwxWidgets_LIB_DIR=%WXLIBDIR%
+set ALL_PARAMS=-DDISABLE_SWISSRANGER_3DCAM_LIBS=ON -DDISABLE_PCL=ON -DDISABLE_NationalInstruments=ON -DOpenCV_DIR=d:/code/opencv-%COMP%-%ARCH% -DMRPT_HAS_FFMPEG_WIN32=ON -DFFMPEG_WIN32_ROOT_DIR=%FFMPEGDIR% -DwxWidgets_ROOT_DIR=%WXDIR% -DwxWidgets_LIB_DIR=%WXLIBDIR% -DPCAP_ROOT_DIR=%PCAP_ROOT% -DPCAP_INCLUDE_DIR=%PCAP_ROOT%/include -DPCAP_LIBRARY=%PCAP_LIB%
 
 if %ARCHN%==32 set LIBUSBLIB=%LIBUSBDIR%\lib\msvc\libusb.lib 
 if %ARCHN%==64 set LIBUSBLIB=%LIBUSBDIR%\lib\msvc_x64\libusb.lib 

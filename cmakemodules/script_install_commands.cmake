@@ -67,6 +67,11 @@ IF(WIN32)
 			INSTALL(FILES "${F}" DESTINATION bin)
 		ENDFOREACH(F)
 	ENDIF (EXISTS "${FFMPEG_WIN32_ROOT_DIR}/bin")
+	
+	# wpcap
+	IF (EXISTS "${PCAP_INCLUDE_DIR}/../wpcap.dll")
+		INSTALL(FILES "${PCAP_INCLUDE_DIR}/../wpcap.dll" DESTINATION bin)
+	ENDIF ()
 
 	# Extra optional DLLs to be installed in the "bin" folder:
 	file(TO_CMAKE_PATH "$ENV{MRPT_EXTRA_DLLS_TO_INSTALL}" MRPT_EXTRA_DLLS_TO_INSTALL)
