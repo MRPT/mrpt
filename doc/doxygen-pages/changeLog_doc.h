@@ -20,8 +20,9 @@
 		- [Python bindings](https://github.com/MRPT/mrpt/wiki/PythonBindings) added for a subset of MRPT functionality (Thanks Peter Rudolph and Nikolaus Demmel!)
 	- <b>Detailed list of changes:</b>
 		- New apps:
-			- [velodyne-view](http://www.mrpt.org/list-of-mrpt-apps/application-velodyne-view/): Application to test, visualize and grab data from a live Velodyne sensor or from a PCAP record.
 			- [gps2rawlog](http://www.mrpt.org/list-of-mrpt-apps/application-gps2rawlog/): Application to parse raw dumps of a GPS (GNSS) receiver output.
+      - [image2gridmap](http://www.mrpt.org/list-of-mrpt-apps/application-image2gridmap/): Small tool to import any image as an MRPT gridmap object file (*.gridmap).
+      - [velodyne-view](http://www.mrpt.org/list-of-mrpt-apps/application-velodyne-view/): Application to test, visualize and grab data from a live Velodyne sensor or from a PCAP record.
 		- Changes in apps:
 			- [rawlog-grabber](http://www.mrpt.org/list-of-mrpt-apps/application-rawlog-grabber/): Now does not show GPS and IMU debug data in console, unless `MRPT_HWDRIVERS_VERBOSE` environment variable is set.
 			- [rawlog-edit](http://www.mrpt.org/list-of-mrpt-apps/application-rawlog-edit/): New operation: `--export-gps-all`
@@ -57,7 +58,7 @@
 			- Code ported to support the new libftdi1-dev (Fixes Debian bug #810368, GitHub issue #176)
 			- Fix building with gcc 6.0 (Closes Debian bug #811812)
 			- CMake new option: `DISABLE_MRPT_AUTO_CLASS_REGISTRATION` to reduce the footprint of MRPT statically-linked programs.
-			- Fix building against wxWidgets 3.1 
+			- Fix building against wxWidgets 3.1
 		- BUG FIXES:
 			- mrpt::math::CQuaternion<> did not check for unit norm in Release builds.
 			- Fix build errors against OpenCV 3.0.0+ without opencv_contrib modules.
@@ -86,7 +87,7 @@
 			- mrpt::nav::CAbstractPTGBasedReactive: Maximum acceleration filter (SPEEDFILTER_TAU) now follows paths better (Thanks to Steven Butner, UCSB/ECE)
 	- Changes in build system:
 		- `FIND_PACKAGE(MRPT)` will return libraries in the var `MRPT_LIBRARIES`, following the CMake convention. The old variable name `MRPT_LIBS` will be also returned for backward compatibility.
-	- BUG FIXES: 
+	- BUG FIXES:
 		- Fix excessive width of paths drawn by CMetricMapBuilderRBPF::drawCurrentEstimationToImage()
 		- Fix image distortion: k3 may be ignored. (Thanks to CBaiz)
 		- Fix Debian bugs.
@@ -100,7 +101,7 @@
 	- Changes in libraries:
 		- \ref mrpt_base_grp
 			- New helper templates: mrpt::utils::int_select_by_bytecount<>, mrpt::utils::uint_select_by_bytecount<>
-			- New methods to evaluate SO(2), SO(3), SE(2) and SE(3) averages and weighted averages. See: 
+			- New methods to evaluate SO(2), SO(3), SE(2) and SE(3) averages and weighted averages. See:
 				- Header <mrpt/poses/SO_SE_average.h>
 				- mrpt::poses::SO_average<2>, mrpt::poses::SO_average<3>
 				- mrpt::poses::SE_average<2>, mrpt::poses::SE_average<3>
@@ -111,13 +112,13 @@
 			- New parameter mrpt::hwdrivers::CHokuyoURG::m_disable_firmware_timestamp to override faulty Hokuyo timestamps with PC time.
 			- mrpt::hwdrivers::CRoboPeakLidar::turnOn() and turnOff() now really implement turning on/off the RPLidar motor.
 		- \ref mrpt_maps_grp
-			- New method mrpt::maps::COccupancyGridMap2D::getAsPointCloud() 
+			- New method mrpt::maps::COccupancyGridMap2D::getAsPointCloud()
 		- \ref mrpt_nav_grp
 			- Removed old base class CPathPlanningMethod
 			- CPathPlanningCircularRobot => mrpt::nav::PlannerSimple2D: Class renamed (and better described) for consistency with other planners
 			- mrpt::nav::CReactiveNavigationSystem:
 				- Documentation has been added about all existing parameters, and template config files provided as starting points.
-				- The loadConfigFile() method with 2 config files has been deprecated favoring the newer, simpler single config file. 
+				- The loadConfigFile() method with 2 config files has been deprecated favoring the newer, simpler single config file.
 				- The "ROBOT_NAME" parameter is no longer employed. A minor side effect (probably affecting no one) is that PTG cache files are no longer named differently for different robots.
 			- mrpt::nav::CParameterizedTrajectoryGenerator: New methods to save and load trajectories to binary streams. Used to debug in navlog-viewer.
 		- \ref mrpt_obs_grp
@@ -157,7 +158,7 @@
 			- New library \ref mrpt_nav_grp, subsumming the old mrpt-reactivenav (\ref mrpt_reactivenav_grp).
 			- \ref mrpt_reactivenav_grp is now a meta-library, depending on \ref mrpt_nav_grp.
 			- \ref mrpt_tfest_grp : Old library mrpt-scanmatching (\ref mrpt_scanmatching_grp) has been refactored, its API clean-up, and renamed \ref mrpt_tfest_grp
-			- \ref mrpt_scanmatching_grp is now a meta-library, depending on \ref mrpt_tfest_grp. 
+			- \ref mrpt_scanmatching_grp is now a meta-library, depending on \ref mrpt_tfest_grp.
 			- These classes have been moved between libs for a more sensible organization:
 				- mrpt::slam::CDetectorDoorCrossing ==> mrpt::detectors::CDetectorDoorCrossing
 				- mrpt::slam::CPathPlanningMethod & CPathPlanningCircularRobot: \ref mrpt_slam_grp ==> \ref mrpt_nav_grp
@@ -179,8 +180,8 @@
 					- Add GPS observations to CIMUXSens_MT4 for Xsens devices like GTi-G-700 which have GPS
 				- mrpt::hwdrivers::CImageGrabber_dc1394: Length of ring buffer is now configurable via TCaptureOptions_dc1394::ring_buffer_size
 			- [mrpt-maps]
-				- Important refactor of internal code related to mrpt::maps::CMultiMetricMap: 
-					- All maps (derived from mrpt::maps::CMetricMap) now have a more uniform interface. 
+				- Important refactor of internal code related to mrpt::maps::CMultiMetricMap:
+					- All maps (derived from mrpt::maps::CMetricMap) now have a more uniform interface.
 					- Each map now has a `MapDefinition` structure with all its parameters. See docs for mrpt::maps::TMetricMapInitializer
 					- Introduced mrpt::maps::TMapGenericParams to hold parameters shared in all maps.
 			- [mrpt-obs]
@@ -208,7 +209,7 @@
 		- Consistency in all "laser scan" classes: angular increments between rays are now FOV/(N-1) instead of FOV/N.
 		- [mrpt-base]
 			- New method mrpt::utils::CImage::loadTGA()
-			- *IMPORTANT*: Changed behavior of CSerializable/CObject macros (see bugfix below), introducing the new macros DEFINE_SERIALIZABLE_POST_*. 
+			- *IMPORTANT*: Changed behavior of CSerializable/CObject macros (see bugfix below), introducing the new macros DEFINE_SERIALIZABLE_POST_*.
 			   May require changes in user code if serializable classes are defined:
 				- Previous version:
 					\code
