@@ -124,6 +124,24 @@ COccupancyGridMap2D::~COccupancyGridMap2D()
 	freeMap();
 }
 
+void COccupancyGridMap2D::copyMapContentFrom(const COccupancyGridMap2D &o)
+{
+	freeMap();
+	resolution = o.resolution;
+	x_min = o.x_min;
+	x_max = o.x_max;
+	y_min = o.y_min;
+	y_max = o.y_max;
+	size_x = o.size_x;
+	size_y = o.size_y;
+	map = o.map;
+
+	m_basis_map.clear();
+	m_voronoi_diagram.clear();
+
+	precomputedLikelihoodToBeRecomputed = true;
+	m_is_empty=o.m_is_empty;
+}
 
 /*---------------------------------------------------------------
 						setSize

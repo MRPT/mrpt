@@ -29,6 +29,7 @@
 #include <mrpt/system/threads.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
+#include <mrpt/poses/CPosePDFGaussian.h>
 
 #include <mrpt/opengl/CSetOfLines.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
@@ -51,22 +52,25 @@ using namespace std;
 /*****************************************************
 			Config params
  *****************************************************/
-std::string				INI_FILENAME;
-std::string				RAWLOG_FILE;
-unsigned int			rawlog_offset;
-std::string				OUT_DIR_STD;
-const char				*OUT_DIR;
-int						LOG_FREQUENCY;
-bool					GENERATE_LOG_JOINT_H;
-bool					GENERATE_LOG_INFO;
-bool					SAVE_POSE_LOG;
-bool					SAVE_MAP_IMAGES;
-bool					SAVE_3D_SCENE;
-bool					CAMERA_3DSCENE_FOLLOWS_ROBOT;
+std::string  INI_FILENAME;
+std::string  RAWLOG_FILE;
+unsigned int rawlog_offset;
+std::string  OUT_DIR_STD;
+const char *OUT_DIR;
+int  LOG_FREQUENCY;
+bool GENERATE_LOG_JOINT_H;
+bool GENERATE_LOG_INFO;
+bool SAVE_POSE_LOG;
+bool SAVE_MAP_IMAGES;
+bool SAVE_3D_SCENE;
+bool CAMERA_3DSCENE_FOLLOWS_ROBOT;
 
-bool					SHOW_PROGRESS_IN_WINDOW;
-int                     SHOW_PROGRESS_IN_WINDOW_DELAY_MS;
-int PROGRESS_WINDOW_WIDTH=600, PROGRESS_WINDOW_HEIGHT=500;
+bool SHOW_PROGRESS_IN_WINDOW;
+int  SHOW_PROGRESS_IN_WINDOW_DELAY_MS;
+int  PROGRESS_WINDOW_WIDTH=600, PROGRESS_WINDOW_HEIGHT=500;
+
+std::string         METRIC_MAP_CONTINUATION_GRIDMAP_FILE; // .gridmap file
+mrpt::math::TPose2D METRIC_MAP_CONTINUATION_START_POSE;
 
 // Forward declaration.
 void MapBuilding_RBPF();
@@ -116,10 +120,14 @@ int main(int argc, char **argv)
 		CAMERA_3DSCENE_FOLLOWS_ROBOT = iniFile.read_bool("MappingApplication","CAMERA_3DSCENE_FOLLOWS_ROBOT", true);
 		SHOW_PROGRESS_IN_WINDOW = iniFile.read_bool("MappingApplication","SHOW_PROGRESS_IN_WINDOW", false);
 		SHOW_PROGRESS_IN_WINDOW_DELAY_MS = iniFile.read_int("MappingApplication","SHOW_PROGRESS_IN_WINDOW_DELAY_MS",1);
+		METRIC_MAP_CONTINUATION_GRIDMAP_FILE = iniFile.read_string("MappingApplication","METRIC_MAP_CONTINUATION_GRIDMAP_FILE","");
+
+		METRIC_MAP_CONTINUATION_START_POSE.x = iniFile.read_double("MappingApplication","METRIC_MAP_CONTINUATION_START_POSE_X",.0);
+		METRIC_MAP_CONTINUATION_START_POSE.y = iniFile.read_double("MappingApplication","METRIC_MAP_CONTINUATION_START_POSE_Y",.0);
+		METRIC_MAP_CONTINUATION_START_POSE.phi = DEG2RAD( iniFile.read_double("MappingApplication","METRIC_MAP_CONTINUATION_START_POSE_PHI_DEG",.0) );
 
 		MRPT_LOAD_CONFIG_VAR(PROGRESS_WINDOW_WIDTH, int,  iniFile, "MappingApplication");
 		MRPT_LOAD_CONFIG_VAR(PROGRESS_WINDOW_HEIGHT, int,  iniFile, "MappingApplication");
-
 
 		// easier!
 		OUT_DIR = OUT_DIR_STD.c_str();
@@ -196,6 +204,34 @@ void MapBuilding_RBPF()
 	//		Constructor
 	// ---------------------------------
 	CMetricMapBuilderRBPF mapBuilder( rbpfMappingOptions );
+
+	// handle the case of metric map continuation
+	if ( !METRIC_MAP_CONTINUATION_GRIDMAP_FILE.empty() )
+	{
+		CSimpleMap       dummySimpleMap;
+		CPosePDFGaussian startPose;
+
+		startPose.mean.x( METRIC_MAP_CONTINUATION_START_POSE.x );
+		startPose.mean.y( METRIC_MAP_CONTINUATION_START_POSE.y );
+		startPose.mean.phi( METRIC_MAP_CONTINUATION_START_POSE.phi );
+		startPose.cov.setZero();
+
+		mrpt::maps::COccupancyGridMap2D gridmap;
+		{
+			mrpt::utils::CFileGZInputStream f(METRIC_MAP_CONTINUATION_GRIDMAP_FILE);
+			f >> gridmap;
+		}
+
+		mapBuilder.initialize(dummySimpleMap,&startPose);
+
+		for (CMultiMetricMapPDF::CParticleList::iterator it=mapBuilder.mapPDF.m_particles.begin();it!=mapBuilder.mapPDF.m_particles.end();++it) {
+			CRBPFParticleData* part_d = it->d;
+			CMultiMetricMap &mmap = part_d->mapTillNow;
+			mrpt::maps::COccupancyGridMap2DPtr it_grid = mmap.getMapByClass<mrpt::maps::COccupancyGridMap2D>();
+			ASSERTMSG_(it_grid.present(), "No gridmap in multimetric map definition, but metric map continuation was set (!)" );
+			it_grid->copyMapContentFrom( gridmap );
+		}
+	}
 
 	// ---------------------------------
 	//   CMetricMapBuilder::TOptions

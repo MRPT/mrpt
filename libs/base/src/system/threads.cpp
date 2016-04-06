@@ -28,7 +28,7 @@
     #include <termios.h>
     #include <unistd.h>
     #include <sys/select.h>
-    #include <sys/time.h>
+	#include <sys/time.h>
     #include <time.h>
 	#include <unistd.h>
 	#include <utime.h>
@@ -283,7 +283,8 @@ void BASE_IMPEXP mrpt::system::changeThreadPriority(
 	}
 
 	param.sched_priority = prio;
-
+	policy = SCHED_RR; //
+	MRPT_TODO("read specs: http://man7.org/linux/man-pages/man7/sched.7.html")
 	if (pthread_setschedparam(tid, policy, &param)) {
 		cerr << "[mrpt::system::changeThreadPriority] Warning: Failed call to pthread_getschedparam" << endl;
 		return;
@@ -530,4 +531,3 @@ void mrpt::system::terminateThread(TThreadHandle &threadHandle) MRPT_NO_THROWS
 #endif
 	threadHandle.clear();
 }
-

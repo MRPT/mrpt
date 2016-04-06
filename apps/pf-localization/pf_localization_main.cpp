@@ -695,7 +695,7 @@ void do_pf_localization(const std::string &ini_fil, const std::string &cmdline_r
 					if (!SAVE_STATS_ONLY)
 					{
 						cout << "    Odometry est: " << odometryEstimation << "\n";
-						cout << "         PDF est: " << pdfEstimation << ", ESS (B.R.)= " << PF_stats.ESS_beforeResample << "\n";
+						cout << "         PDF est: " << pdfEstimation << ", ESS (B.R.)= " << PF_stats.ESS_beforeResample << " tr(cov): " << std::sqrt(pdf.getCovariance().trace()) << "\n";
 						if (GT.getRowCount()>0)
 							cout << "    Ground truth: " << expectedPose << "\n";
 					}

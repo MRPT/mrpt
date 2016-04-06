@@ -91,7 +91,6 @@ CMonteCarloLocalization2D::~CMonteCarloLocalization2D()
 {
 }
 
-
 /*---------------------------------------------------------------
 						getLastPose
  ---------------------------------------------------------------*/
@@ -103,8 +102,6 @@ const TPose3D* CMonteCarloLocalization2D::getLastPose(const size_t i) const
 	auxHolder = TPose3D( TPose2D(*m_particles[i].d));
 	return &auxHolder;
 }
-
-
 
 /*---------------------------------------------------------------
 

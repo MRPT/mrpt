@@ -265,6 +265,13 @@ void  CMetricMapBuilderRBPF::initialize(
 			printf("(Not supplied)\n");
 	}
 
+	this->clear();
+	if (x0) {
+		const CPose2D meanPose = x0->getMeanVal();
+		// Clear maps for each particle & set pose:
+		mapPDF.clear( meanPose );
+	}
+
 	// Leaving critical section (updating map)
 	leaveCriticalSection();
 }

@@ -166,7 +166,6 @@ namespace maps
 		  */
 		static std::vector<float>		entropyTable;
 
-
 		/** One of the methods that can be selected for implementing "computeObservationLikelihood" (This method is the Range-Scan Likelihood Consensus for gridmaps, see the ICRA2007 paper by Blanco et al.)
 		  */
 		double	 computeObservationLikelihood_Consensus(
@@ -441,6 +440,8 @@ namespace maps
 #endif
 			return *cell;
 		}
+
+		void copyMapContentFrom(const COccupancyGridMap2D &otherMap); //!< copy the gridmap contents, but not all the options, from another map instance
 
 		/** Used for returning entropy related information
 		 * \sa computeEntropy
