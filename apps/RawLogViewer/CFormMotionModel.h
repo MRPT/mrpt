@@ -17,6 +17,7 @@
 #include <wx/checkbox.h>
 #include <wx/radiobut.h>
 #include <wx/panel.h>
+#include <wx/hyperlink.h>
 #include <wx/button.h>
 #include <wx/dialog.h>
 //*)
@@ -35,6 +36,7 @@ public:
     //(*Identifiers(CFormMotionModel)
     static const long ID_STATICTEXT1;
     static const long ID_BUTTON1;
+    static const long ID_HYPERLINKCTRL1;
     static const long ID_STATICTEXT4;
     static const long ID_TEXTCTRL1;
     static const long ID_STATICTEXT2;
@@ -155,7 +157,6 @@ public:
     wxStaticText* StaticText2;
     wxStaticText* StaticText30;
     wxStaticText* StaticText14;
-    wxFlexGridSizer* FlexGridSizer3;
     wxButton* btnGetFromFile;
     wxStaticText* StaticText26;
     wxStaticText* StaticText6;
@@ -179,6 +180,7 @@ public:
     wxStaticText* StaticText3;
     mpWindow* plotSamplesPHI;
     wxTextCtrl* edA3;
+    wxHyperlinkCtrl* HyperlinkCtrl1;
     wxButton* btnGetFromCurrent;
     wxFlexGridSizer* FlexGridSizer7;
     wxTextCtrl* edG_A3;
@@ -209,6 +211,7 @@ public:
     wxStaticBoxSizer* StaticBoxSizer1;
     wxFlexGridSizer* FlexGridSizer1;
     wxStaticText* StaticText25;
+    wxFlexGridSizer* FlexGridSizer11;
     wxBoxSizer* BoxSizer3;
     wxTextCtrl* edG_A4;
     wxStaticText* StaticText17;
