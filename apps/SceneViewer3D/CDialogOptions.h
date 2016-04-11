@@ -10,14 +10,14 @@
 #define CDIALOGOPTIONS_H
 
 //(*Headers(CDialogOptions)
-#include <wx/spinctrl.h>
-#include <wx/checkbox.h>
-#include <wx/dialog.h>
-#include <wx/sizer.h>
 #include <wx/notebook.h>
-#include <wx/button.h>
-#include <wx/panel.h>
+#include <wx/sizer.h>
 #include <wx/stattext.h>
+#include <wx/checkbox.h>
+#include <wx/spinctrl.h>
+#include <wx/panel.h>
+#include <wx/button.h>
+#include <wx/dialog.h>
 //*)
 
 class CDialogOptions: public wxDialog
@@ -28,36 +28,36 @@ class CDialogOptions: public wxDialog
 		virtual ~CDialogOptions();
 
 		//(*Declarations(CDialogOptions)
-		wxCheckBox* cbFreeCameraNoAzimuth;
-		wxPanel* Panel1;
-		wxSpinCtrl* SpinCtrl4;
-		wxSpinCtrl* SpinCtrl7;
-		wxCheckBox* cbFreeCamera;
-		wxStaticText* StaticText1;
 		wxStaticText* StaticText10;
-		wxPanel* Panel2;
-		wxStaticText* StaticText3;
+		wxStaticText* StaticText9;
+		wxCheckBox* cbFreeCamera;
+		wxSpinCtrl* SpinCtrl4;
 		wxButton* btnOk;
-		wxSpinCtrl* SpinCtrl3;
+		wxNotebook* Notebook1;
+		wxSpinCtrl* SpinCtrl1;
+		wxSpinCtrl* edDelay;
+		wxStaticText* StaticText2;
+		wxButton* btnCancel;
+		wxStaticText* StaticText6;
 		wxStaticText* StaticText8;
-		wxSpinCtrl* SpinCtrl5;
+		wxStaticText* StaticText11;
+		wxSpinCtrl* SpinCtrl9;
+		wxSpinCtrl* SpinCtrl7;
+		wxPanel* Panel1;
+		wxStaticText* StaticText1;
+		wxStaticText* StaticText3;
 		wxPanel* Panel3;
+		wxCheckBox* cbFreeCameraNoAzimuth;
+		wxSpinCtrl* SpinCtrl3;
+		wxStaticText* StaticText5;
 		wxStaticText* StaticText7;
 		wxSpinCtrl* SpinCtrl2;
-		wxStaticText* StaticText4;
-		wxStaticText* StaticText5;
-		wxStaticText* StaticText2;
-		wxNotebook* Notebook1;
-		wxStaticText* StaticText6;
-		wxSpinCtrl* SpinCtrl1;
-		wxButton* btnCancel;
-		wxSpinCtrl* SpinCtrl8;
-		wxSpinCtrl* edDelay;
-		wxSpinCtrl* SpinCtrl6;
+		wxSpinCtrl* SpinCtrl5;
 		wxCheckBox* cbViewFileName;
-		wxSpinCtrl* SpinCtrl9;
-		wxStaticText* StaticText9;
-		wxStaticText* StaticText11;
+		wxPanel* Panel2;
+		wxStaticText* StaticText4;
+		wxSpinCtrl* SpinCtrl6;
+		wxSpinCtrl* SpinCtrl8;
 		//*)
 
 	protected:
