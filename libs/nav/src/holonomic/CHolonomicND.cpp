@@ -47,8 +47,6 @@ void  CHolonomicND::navigate(
 	double			&desiredSpeed,
 	CHolonomicLogFileRecordPtr &logRecord)
 {
-	MRPT_UNUSED_PARAM(maxRobotSpeed);
-
 	TGapArray			gaps;
 	TSituations			situation;
 	unsigned int		selectedSector;
@@ -93,18 +91,12 @@ void  CHolonomicND::navigate(
 
 		// Speed control: Reduction factors
 		// ---------------------------------------------
-		//double		targetNearnessFactor = max(0.20, min(1.0, 1.0-exp(-(target.norm()+0.01)/options.TARGET_SLOW_APPROACHING_DISTANCE)));
 		const double targetNearnessFactor = std::min( 1.0, target.norm()/(options.TARGET_SLOW_APPROACHING_DISTANCE));
-		//printf(" TARGET NEARNESS = %f\n",targetNearnessFactor);
-		double		riskFactor = min(1.0, riskEvaluation / options.RISK_EVALUATION_DISTANCE );
-
-		//desiredSpeed = maxRobotSpeed * min(riskFactor,targetNearnessFactor);
-		desiredSpeed = min(riskFactor,targetNearnessFactor);
-
+		const double riskFactor = std::min(1.0, riskEvaluation / options.RISK_EVALUATION_DISTANCE );
+		desiredSpeed = maxRobotSpeed * std::min(riskFactor,targetNearnessFactor);
 	}
 
 	m_last_selected_sector = selectedSector;
-
 
 	// LOG --------------------------
 	if (log)

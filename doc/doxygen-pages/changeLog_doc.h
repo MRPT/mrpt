@@ -75,6 +75,7 @@
 			- Error loading height map count in mrpt::maps::TSetOfMetricMapInitializers (Closes GitHub issue <a href="https://github.com/MRPT/mrpt/issues/205" >#205</a>.
 			- Fix "gray images" grabbed in Windows when capturing the render output of 3D windows (Thanks Mariano J.T. & Christian Kerl from TUM!)
 			- Fix typos and wxWidgets align errors in RawLogViewer GUI (Closes #219)
+			- mrpt::nav::CHolonomicND & mrpt::nav::CHolonomicVFF didn't use the full range of output velocities.
 
 <hr>
 <a name="1.3.2">

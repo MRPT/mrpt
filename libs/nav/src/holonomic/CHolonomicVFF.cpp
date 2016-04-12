@@ -40,7 +40,6 @@ void  CHolonomicVFF::navigate(
 	double			&desiredSpeed,
 	CHolonomicLogFileRecordPtr &logRecord)
 {
-	MRPT_UNUSED_PARAM(maxRobotSpeed);
 	// Create a log record for returning data.
 	if (!logRecord)
 	{
@@ -85,8 +84,7 @@ void  CHolonomicVFF::navigate(
 	// Speed control: Reduction factors
 	// ---------------------------------------------
 	const double targetNearnessFactor = std::min( 1.0, target.norm()/(options.TARGET_SLOW_APPROACHING_DISTANCE));
-	//desiredSpeed = maxRobotSpeed * std::min(obstacleNearnessFactor, targetNearnessFactor);
-	desiredSpeed = std::min(obstacleNearnessFactor, targetNearnessFactor);
+	desiredSpeed = maxRobotSpeed * std::min(obstacleNearnessFactor, targetNearnessFactor);
 }
 
 /*---------------------------------------------------------------
