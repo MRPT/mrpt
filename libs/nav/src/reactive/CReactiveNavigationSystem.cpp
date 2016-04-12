@@ -215,7 +215,7 @@ void CReactiveNavigationSystem::STEP1_CollisionGridsBuilder()
 			mrpt::nav::build_PTG_collision_grids(
 				PTGs[i],
 				m_robotShape,
-				format("ReacNavGrid_%s_%03u.dat.gz",robotName.c_str(),i),
+				format("%s/ReacNavGrid_%s_%03u.dat.gz",ptg_cache_files_directory.c_str(), robotName.c_str(),i),
 				m_enableConsoleOutput /*verbose*/
 				);
 		}

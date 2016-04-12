@@ -49,6 +49,7 @@ CAbstractPTGBasedReactive::CAbstractPTGBasedReactive(CReactiveInterfaceImplement
 	navigationEndEventSent       (false),
 	m_enableConsoleOutput        (enableConsoleOutput),
 	m_init_done                  (false),
+	ptg_cache_files_directory    ("."),
 	refDistance                  (4.0f),
 	colGridRes                   (0.10f),
 	robotMax_V_mps               (1.0f),

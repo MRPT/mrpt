@@ -161,6 +161,7 @@ namespace mrpt
 		mrpt::utils::CTicTac	timerForExecutionPeriod;
 
 		// PTG params loaded from INI file:
+		std::string ptg_cache_files_directory; //!< (Default: ".")
 		std::string robotName;       //!< Robot name
 		float  refDistance;          //!< "D_{max}" in papers.
 		float  colGridRes;           //!< CollisionGrid resolution

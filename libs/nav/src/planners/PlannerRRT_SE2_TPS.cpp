@@ -130,7 +130,7 @@ void PlannerRRT_SE2_TPS::initialize()
 		mrpt::nav::build_PTG_collision_grids(
 			m_PTGs[i].pointer(),
 			poly_robot_shape,
-			mrpt::format("TPRRT_PTG_%03u.dat.gz",static_cast<unsigned int>(i)),
+			mrpt::format("%s/TPRRT_PTG_%03u.dat.gz",params.ptg_cache_files_directory.c_str(),static_cast<unsigned int>(i)),
 			params.ptg_verbose
 			);
 	}

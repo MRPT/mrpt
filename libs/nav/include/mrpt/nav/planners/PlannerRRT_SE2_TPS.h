@@ -98,6 +98,7 @@ namespace mrpt
 				  *  \endcode
 				  */
 				mrpt::math::TPolygon2D robot_shape;
+				std::string ptg_cache_files_directory; //!< (Default: ".")
 
 				double goalBias;  //!< Probabily of picking the goal as random target (in [0,1], default=0.05)
 				double maxLength; //!< (Very sensitive parameter!) Max length of each edge path (in meters, default=1.0)
@@ -108,6 +109,7 @@ namespace mrpt
 				size_t save_3d_log_freq; //!< Frequency (in iters) of saving tree state to debug log files viewable in SceneViewer3D (default=0, disabled)
 
 				TAlgorithmParams() :
+					ptg_cache_files_directory("."),
 					goalBias(0.05),
 					maxLength(1.0),
 					minDistanceBetweenNewNodes(0.10),
