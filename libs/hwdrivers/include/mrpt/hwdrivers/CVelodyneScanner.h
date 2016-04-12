@@ -60,8 +60,8 @@ namespace mrpt
 		  * These parameters can be set programatically (see methods of this class), or via a configuration file with CGenericSensor::loadConfig() (see example config file section below).
 		  *
 		  * <h2>About timestamps:</h2><hr>
-		  *  Generated observations timestamp are, by default, set from the computer clock as UDP packets are received.
-		  *  *TODO* Set from sensor timestamp.
+		  *  Each gathered observation of type mrpt::obs::CObservationVelodyneScan is populated with two timestamps, one for the local PC timestamp and,
+		  *  if available, another one for the GPS-stamped timestamp. Refer to the observation docs for details.
 		  *
 		  * <h2>Format of parameters for loading from a .ini file</h2><hr>
 		  *  \code
