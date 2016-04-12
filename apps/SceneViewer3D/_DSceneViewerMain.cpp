@@ -177,17 +177,15 @@ void CMyGLCanvas::OnPostRenderSwapBuffers(double At, wxPaintDC &dc)
 		int w,h;
 		dc.GetSize(&w, &h);
 
-		// create a memory DC and bitmap to capture the DC
-		wxMemoryDC memDC;
-		wxBitmap memBmp(w, h);
-		memDC.SelectObject(memBmp);
-		memDC.Blit(0,0, w,h, &dc, 0,0);
+		//Save image directly from OpenGL
+		CImage frame(w, h, 3, false);
+		glReadBuffer(GL_FRONT);
+		glReadPixels(0, 0, w, h, GL_BGR_EXT, GL_UNSIGNED_BYTE, frame(0,0) );
 
 		string fileName( format("%s/screenshot_%07i.png",capturingDir.c_str(),captureCount++) );
 
-		memBmp.SaveFile(_U(fileName.c_str()),wxBITMAP_TYPE_PNG);
+		frame.saveToFile(fileName);
 	}
-
 
 	// Estimate FPS:
 	// --------------------------
@@ -1188,11 +1186,10 @@ void _DSceneViewerFrame::OnMenuItem14Selected(wxCommandEvent& event)
 	int w,h;
 	dc.GetSize(&w, &h);
 
-	// create a memory DC and bitmap to capture the DC
-	wxMemoryDC memDC;
-	wxBitmap memBmp(w, h);
-	memDC.SelectObject(memBmp);
-	memDC.Blit(0,0, w,h, &dc, 0,0);
+	//Save image directly from OpenGL
+	CImage frame(w, h, 3, false);
+	glReadBuffer(GL_FRONT);
+	glReadPixels(0, 0, w, h, GL_BGR_EXT, GL_UNSIGNED_BYTE, frame(0,0) );
 
 	// Save:
 	wxString caption = wxT("Save snapshot to file");
@@ -1205,7 +1202,7 @@ void _DSceneViewerFrame::OnMenuItem14Selected(wxCommandEvent& event)
 	if (dialog.ShowModal() != wxID_OK)
 		return;
 
-	memBmp.SaveFile( dialog.GetPath(), wxBITMAP_TYPE_PNG);
+	frame.saveToFile( std::string(dialog.GetPath().mb_str()) );
 }
 
 
