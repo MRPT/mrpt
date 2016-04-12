@@ -34,6 +34,9 @@
 				- New function mrpt::utils::compute_CRC32()
 				- New function mrpt::utils::saturate<>()
 				- mrpt::utils::CDynamicGrid<> now uses `double` instead of `float` for all dimensions and coordinate computations.
+				- Priority with these functions now work properly in GNU/Linux; though, see the notes in their documentation for required permissions:
+					- mrpt::system::changeCurrentProcessPriority()
+					- mrpt::system::changeThreadPriority()
 			- \ref mrpt_hwdrivers_grp
 				- New class mrpt::hwdrivers::CVelodyneScanner
 				- mrpt::hwdrivers::CNTRIPEmitter now has a parameter to enable/disable sending back the data from the serial port to the NTRIP caster.
