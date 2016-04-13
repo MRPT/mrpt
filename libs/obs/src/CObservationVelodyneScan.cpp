@@ -10,13 +10,13 @@
 #include "obs-precomp.h"   // Precompiled headers
 
 #include <mrpt/obs/CObservationVelodyneScan.h>
+#include <mrpt/poses/CPose3DInterpolator.h>
 #include <mrpt/utils/round.h>
 #include <mrpt/utils/CStream.h>
 
 using namespace std;
 using namespace mrpt::obs;
 
-MRPT_TODO("API for accurate reconstruction of the sensor path in SE(3) over time")
 
 // This must be added to any CSerializable class implementation file.
 IMPLEMENTS_SERIALIZABLE(CObservationVelodyneScan, CObservation,mrpt::obs)
@@ -66,6 +66,13 @@ CObservationVelodyneScan::TGeneratePointCloudParameters::TGeneratePointCloudPara
 	dualKeepLast(true)
 {
 }
+
+CObservationVelodyneScan::TGeneratePointCloudSE3Results::TGeneratePointCloudSE3Results() : 
+	num_packets (0),
+	num_correctly_inserted_packets(0)
+{
+}
+
 
 CObservationVelodyneScan::CObservationVelodyneScan( ) :
 	minRange(1.0),
@@ -178,8 +185,6 @@ double VLP16AdjustTimeStamp(int firingblock,int dsr,int firingwithinblock)
 void CObservationVelodyneScan::generatePointCloud(const TGeneratePointCloudParameters &params)
 {
 	// Initially based on code from ROS velodyne & from vtkVelodyneHDLReader::vtkInternal::ProcessHDLPacket(). 
-	// CODE FOR VLP-16 ====================
-
 	using mrpt::utils::round;
 
 	// Reset point cloud:
@@ -380,3 +385,11 @@ void CObservationVelodyneScan::generatePointCloud(const TGeneratePointCloudParam
 	} // end for each data packet
 }
 
+void CObservationVelodyneScan::generatePointCloudAlongSE3Trajectory(
+	const mrpt::poses::CPose3DInterpolator & vehicle_path,
+	std::vector<mrpt::math::TPoint3D>      & out_points,
+	TGeneratePointCloudSE3Results          & results_stats,
+	const TGeneratePointCloudParameters &params )
+{
+	MRPT_TODO("API for accurate reconstruction of the sensor path in SE(3) over time")
+}

@@ -17,6 +17,7 @@
 #include <vector>
 
 namespace mrpt {
+namespace poses { class CPose3DInterpolator; }
 namespace obs 
 {
 	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CObservationVelodyneScan, CObservation, OBS_IMPEXP)
@@ -34,8 +35,8 @@ namespace obs
 	  *
 	  * If it can be assumed that the sensor moves SLOWLY through the environment (i.e. its pose can be approximated to be the same since the beginning to the end of one complete scan)
 	  * then this observation can be converted / loaded into the following other classes:
-	  *  - Maps of points:
-	  *    - mrpt::maps::CPointsMap::loadFromRangeScan() (available in all derived classes)
+	  *  - Maps of points (these require first generating the pointcloud in this observation object with mrpt::obs::CObservationVelodyneScan::generatePointCloud() ):
+	  *    - mrpt::maps::CPointsMap::loadFromVelodyneScan() (available in all derived classes)
 	  *    - and the generic method:mrpt::maps::CPointsMap::insertObservation()
 	  *  - mrpt::opengl::CPointCloud and mrpt::opengl::CPointCloudColoured is supported by first converting 
 	  *    this scan to a mrpt::maps::CPointsMap-derived class, then loading it into the opengl object.
@@ -188,9 +189,34 @@ namespace obs
 		static const TGeneratePointCloudParameters defaultPointCloudParams;
 
 		/** Generates the point cloud into the point cloud data fields in \a CObservationVelodyneScan::point_cloud
-		  * \note Points with ranges out of [minRange,maxRange] are discarded.
+		  * where it is stored in local coordinates wrt the sensor (neither the vehicle nor the world).
+		  * So, this method does not take into account the possible motion of the sensor through the world as it collects LIDAR scans. 
+		  * For high dynamics, see the more costly API generatePointCloudAlongSE3Trajectory()
+		  * \note Points with ranges out of [minRange,maxRange] are discarded; as well, other filters are available in \a params.
+		  * \sa generatePointCloudAlongSE3Trajectory(), TGeneratePointCloudParameters
 		  */
 		void generatePointCloud(const TGeneratePointCloudParameters &params = defaultPointCloudParams );
+
+		/** Results for generatePointCloudAlongSE3Trajectory() */
+		struct OBS_IMPEXP TGeneratePointCloudSE3Results
+		{
+			size_t num_packets;                     //!< Number of point packets in the observation
+			size_t num_correctly_inserted_packets;  //!< Number of packets for which a valid interpolated SE(3) pose could be determined
+			TGeneratePointCloudSE3Results();
+		};
+
+		/** An alternative to generatePointCloud() for cases where the motion of the sensor as it grabs one scan (360 deg horiz FOV) cannot be ignored.
+		  * \param[in] vehicle_path Timestamped sequence of known poses for the VEHICLE. Recall that the sensor has a relative pose wrt the vehicle according to CObservationVelodyneScan::getSensorPose() & CObservationVelodyneScan::setSensorPose()
+		  * \param[out] out_points The generated points, in the same coordinates frame than \a vehicle_path
+		  * \param[out] results_stats Stats
+		  * \param[in] params Filtering and other parameters
+		  * \sa generatePointCloud(), TGeneratePointCloudParameters
+		  */
+		void generatePointCloudAlongSE3Trajectory(
+			const mrpt::poses::CPose3DInterpolator & vehicle_path,
+			std::vector<mrpt::math::TPoint3D>      & out_points,
+			TGeneratePointCloudSE3Results          & results_stats,
+			const TGeneratePointCloudParameters &params = defaultPointCloudParams );
 
 		/** @} */
 		
