@@ -200,6 +200,7 @@ void CObservationVelodyneScan::generatePointCloud(const TGeneratePointCloudParam
 	const int maxAzimuth_int = round( params.maxAzimuth_deg * 100 );
 	const float realMinDist = std::max(static_cast<float>(minRange),params.minDistance);
 	const float realMaxDist = std::min(params.maxDistance,static_cast<float>(maxRange));
+	const int16_t isolatedPointsFilterDistance_units = params.isolatedPointsFilterDistance/DISTANCE_RESOLUTION;
 
 	// This is: 16,32,64 depending on the LIDAR model
 	const size_t num_lasers = calibration.laser_corrections.size();
@@ -271,6 +272,23 @@ void CObservationVelodyneScan::generatePointCloud(const TGeneratePointCloudParam
 				const float distance = raw->blocks[block].laser_returns[k].distance * DISTANCE_RESOLUTION + calib.distanceCorrection;
 				if (distance<realMinDist || distance>realMaxDist)
 					continue;
+
+				// Isolated points filtering:
+				if (params.filterOutIsolatedPoints) {
+					bool pass_filter = true;
+					const int16_t dist_this = raw->blocks[block].laser_returns[k].distance;
+					if (k>0) {
+						const int16_t dist_prev = raw->blocks[block].laser_returns[k-1].distance;
+						if (!dist_prev || std::abs(dist_this-dist_prev)>isolatedPointsFilterDistance_units)
+							pass_filter=false;
+					}
+					if (k<(SCANS_PER_FIRING-1)) {
+						const int16_t dist_next = raw->blocks[block].laser_returns[k+1].distance;
+						if (!dist_next || std::abs(dist_this-dist_next)>isolatedPointsFilterDistance_units)
+							pass_filter=false;
+					}
+					if (!pass_filter) continue; // Filter out this point
+				}
 
 				// Azimuth correction: correct for the laser rotation as a function of timing during the firings
 				double timestampadjustment = 0.0;
@@ -356,7 +374,6 @@ void CObservationVelodyneScan::generatePointCloud(const TGeneratePointCloudParam
 				point_cloud.y.push_back( pt.y );
 				point_cloud.z.push_back( pt.z );
 				point_cloud.intensity.push_back( raw->blocks[block].laser_returns[k].intensity );
-				MRPT_TODO("filterOutIsolatedPoints")
 
 			} // end for k,dsr=[0,31]
 		} // end for each block [0,11]
