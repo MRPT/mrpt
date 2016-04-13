@@ -344,9 +344,9 @@ void CSwissRanger3DCamera::getNextObservation(
 	bool &there_is_obs,
 	bool &hardware_error )
 {
-#if MRPT_HAS_SWISSRANGE
 	there_is_obs=false;
 	hardware_error = false;
+#if MRPT_HAS_SWISSRANGE
 
 	int bytesRx = SR_Acquire( SRCAM(m_cam) );
 	if (!bytesRx)

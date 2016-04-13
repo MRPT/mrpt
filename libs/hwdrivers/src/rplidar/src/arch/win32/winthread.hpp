@@ -44,7 +44,7 @@ Thread Thread::create(thread_proc_t proc, void * data)
     Thread newborn(proc, data);
 
     newborn._handle = (_word_size_t)( 
-        _beginthreadex(NULL, 0, (unsigned int (_stdcall * )( void * ))proc,
+	_beginthreadex(NULL, 0, (unsigned int (__stdcall * )( void * ))proc,
                         data, 0, NULL));
     return newborn;
 }
@@ -55,7 +55,7 @@ u_result Thread::terminate()
     if (TerminateThread( reinterpret_cast<HANDLE>(this->_handle), -1))
     {
         CloseHandle(reinterpret_cast<HANDLE>(this->_handle));
-        this->_handle = NULL;
+	this->_handle = 0;
         return RESULT_OK;
     }else
     {
@@ -132,7 +132,7 @@ u_result Thread::join(unsigned long timeout)
     {
     case WAIT_OBJECT_0:
         CloseHandle(reinterpret_cast<HANDLE>(this->_handle));
-        this->_handle = NULL;
+	this->_handle = 0;
         return RESULT_OK;
     case WAIT_ABANDONED:
         return RESULT_OPERATION_FAIL;

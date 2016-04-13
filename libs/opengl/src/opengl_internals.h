@@ -22,7 +22,6 @@
 			#pragma warning(disable:4505)
 		#endif
 		#include <windows.h>
-
 		#include <GL/glew.h>
 	#endif	// MRPT_OS_WINDOWS
 

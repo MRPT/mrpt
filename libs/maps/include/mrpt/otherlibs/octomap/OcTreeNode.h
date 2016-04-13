@@ -64,7 +64,7 @@ namespace octomap {
    * createChild, getChild, and getChild const. See OcTreeNodeLabeled for an example.
    *
    */
-  class /*MAPS_IMPEXP*/ OcTreeNode : public OcTreeDataNode<float> {
+  class MAPS_IMPEXP OcTreeNode : public OcTreeDataNode<float> {
 
   public:
     OcTreeNode();

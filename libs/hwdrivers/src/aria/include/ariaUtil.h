@@ -24,6 +24,8 @@
 #if defined(_WIN32) || defined(WIN32)
 #include <sys/timeb.h>
 #include <sys/stat.h>
+#include <winsock2.h> // required before windows.h
+#include <windows.h> // timeGetTime()
 #else
 #include <sys/types.h>
 #include <sys/stat.h>

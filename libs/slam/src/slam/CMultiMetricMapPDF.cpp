@@ -372,7 +372,7 @@ void  CMultiMetricMapPDF::rebuildAverageMap()
 	}
 
 
-#if MRPT_HAS_SSE2 && defined(MRPT_OS_WINDOWS) && (MRPT_WORD_SIZE==32)
+#if MRPT_HAS_SSE2 && defined(_MSC_VER) && (MRPT_WORD_SIZE==32)
 	// Autodetect SSE support:
 	bool	SSE_SUPORTED = checkSuportSSE();
 	if (SSE_SUPORTED)

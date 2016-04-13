@@ -8,7 +8,7 @@
    +---------------------------------------------------------------------------+ */
 #include "xsthread.h"
 
-#ifdef _WIN32
+#ifdef _MSC_VER
 #define MS_VC_EXCEPTION 0x406D1388
 
 #pragma pack(push,8)

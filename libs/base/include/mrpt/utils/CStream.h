@@ -20,9 +20,9 @@ namespace mrpt
 {
 	namespace utils
 	{
-		class BASE_IMPEXP CSerializable;
-		struct BASE_IMPEXP  CSerializablePtr;
-		class BASE_IMPEXP CMessage;
+		class CSerializable;
+		struct CSerializablePtr;
+		class CMessage;
 
 		/** This base class is used to provide a unified interface to
 		 *    files,memory buffers,..Please see the derived classes. This class is

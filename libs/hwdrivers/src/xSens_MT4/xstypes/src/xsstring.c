@@ -118,7 +118,7 @@ void XsString_assignWCharArray(XsString* thisPtr, const wchar_t* src)
 {
 	if (src)
 	{
-#ifdef WIN32
+#ifdef _MSC_VER
 		int unicodeLength = lstrlenW( src ); // Convert all UNICODE characters
 		int required = WideCharToMultiByte(CP_UTF8, 0, src, unicodeLength, NULL, 0, NULL, NULL);
 		if (required != -1 && required > 0)
@@ -150,7 +150,7 @@ void XsString_assignWCharArray(XsString* thisPtr, const wchar_t* src)
 */
 XsSize XsString_copyToWCharArray(const XsString* thisPtr, wchar_t* dest, XsSize size)
 {
-#ifdef WIN32
+#ifdef _MSC_VER
 	return MultiByteToWideChar(CP_UTF8, 0, thisPtr->m_data, (int) thisPtr->m_size, dest, (int) size);
 #else
 	return mbstowcs(dest, thisPtr->m_data, size) + (dest?0:1);

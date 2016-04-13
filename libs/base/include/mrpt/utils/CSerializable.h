@@ -20,7 +20,7 @@ typedef struct mxArray_tag mxArray; //!< Forward declaration for mxArray (avoid 
 namespace mrpt
 {
 	namespace utils {
-		class BASE_IMPEXP CStream;
+		class CStream;
 	}
 
 	/** Classes for serialization, sockets, ini-file manipulation, streams, list of properties-values, timewatch, extensions to STL.

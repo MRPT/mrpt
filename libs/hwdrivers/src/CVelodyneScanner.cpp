@@ -19,6 +19,11 @@ MRPT_TODO("Add pose interpolation method for inserting in a point map")
 
 // socket's hdrs:
 #ifdef MRPT_OS_WINDOWS
+	#if defined(_WIN32_WINNT) && (_WIN32_WINNT<0x600)
+	#undef _WIN32_WINNT
+	#define _WIN32_WINNT 0x600 // Minimum: Windows Vista (required to pollfd)
+	#endif
+
 	#include <winsock2.h>
 	typedef int socklen_t;
 #else

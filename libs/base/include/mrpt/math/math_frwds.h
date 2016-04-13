@@ -23,7 +23,7 @@ namespace mrpt
 {
 	namespace utils
 	{
-		class BASE_IMPEXP CStream;
+		class CStream;
 		template<class T> inline T square(const T x);
 	}
 

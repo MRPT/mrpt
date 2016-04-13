@@ -11,7 +11,9 @@
 #if !(defined __ICCARM__) && !(defined _ADI_COMPILER) && !defined(__APPLE__) && !defined(__CRCC__)
 #include <malloc.h>
 #endif
-#define _POSIX_C_SOURCE 200809L
+#ifndef _POSIX_C_SOURCE
+#	define _POSIX_C_SOURCE 200809L
+#endif
 #include <stdlib.h>
 
 #if !(defined __ICCARM__) && !(defined _ADI_COMPILER) && defined(XSENS_DEBUG)
@@ -30,7 +32,8 @@ int lastAlignedFreeIdx = -1;
 void* lastAlignedFrees[TRACK_ALLOCS];
 #endif
 
-#ifndef _MSC_VER
+#include <mrpt/config.h>
+#ifndef HAVE_ALIGNED_MALLOC
 #	ifdef __ANDROID__
 #		define _aligned_malloc(size, align) memalign(align, size)
 #	elif (defined __ICCARM__) || (defined _ADI_COMPILER) || (defined __CRCC__) || (defined IAR_ARM_CM3) || (defined __ARMEL__)
@@ -51,7 +54,7 @@ void* __cdecl _aligned_malloc(size_t _Size, size_t _Alignment)
 #define _aligned_realloc(p, n, a)	realloc(p, n)
 #define _aligned_free(_Memory)		free(_Memory)
 
-#endif //!_MSC_VER
+#endif //!HAVE_ALIGNED_MALLOC  was: !_MSC_VER
 
 
 //! \brief Allocates \a sz bytes of memory, optionally tracking the allocation

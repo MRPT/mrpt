@@ -11,7 +11,7 @@
 #include "xsens_time.h"
 #include <sys/timeb.h>
 
-#ifdef WIN32
+#ifdef _WIN32
 #	include <windows.h>
 #else
 #	include <unistd.h>
@@ -28,7 +28,7 @@ namespace xsens {
 // A platform-independent clock.
 uint32_t getTimeOfDay(tm* date_, time_t* secs_)
 {
-#ifdef WIN32
+#ifdef _WIN32
 	_timeb tp;  //__timeb32 tp;
 
 	_ftime(&tp); //_ftime32_s(&tp);

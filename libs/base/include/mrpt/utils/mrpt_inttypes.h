@@ -13,6 +13,9 @@
 #include <mrpt/utils/mrpt_stdint.h>
 
 #if HAVE_INTTYPES_H
+#	ifndef __STDC_FORMAT_MACROS
+#		define __STDC_FORMAT_MACROS
+#	endif
 #	include <inttypes.h>
 #elif defined(_MSC_VER)
 #	include	<mrpt/utils/msvc_inttypes.h>

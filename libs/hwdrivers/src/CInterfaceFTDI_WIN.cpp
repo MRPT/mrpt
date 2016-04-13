@@ -152,7 +152,7 @@ CInterfaceFTDI::CInterfaceFTDI()  :
 {
 	MRPT_START
 
-	m_ftHandle = NULL;
+	m_ftHandle = 0;
 	loadDriver();
 
 	MRPT_END
@@ -195,7 +195,7 @@ CInterfaceFTDI& CInterfaceFTDI::operator =(const CInterfaceFTDI &o)
 -------------------------------------------------------------*/
 bool  CInterfaceFTDI::isOpen()
 {
-	return m_ftHandle!=NULL;
+	return m_ftHandle!=0;
 }
 
 /*-------------------------------------------------------------
@@ -308,7 +308,7 @@ void   CInterfaceFTDI::Close()
 	{
 		ASSERT_(m_pClose);
 		(*m_pClose)( m_ftHandle );
-		m_ftHandle = NULL;
+		m_ftHandle = 0;
 	}
 
 	m_readBuffer.clear();

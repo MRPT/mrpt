@@ -2165,9 +2165,12 @@ public:
 
 #define SI_Case     SI_GenericCase
 #define SI_NoCase   SI_GenericNoCase
+}}}  // end namespaces
 
 #include <wchar.h>
 #include "ConvertUTF.h"
+
+namespace mrpt { namespace utils { namespace simpleini {
 
 /**
  * Converts UTF-8 to a wchar_t (or equivalent) using the Unicode reference
@@ -2367,7 +2370,9 @@ public:
 #define SI_Case     SI_GenericCase
 #define SI_NoCase   SI_GenericNoCase
 
+}}} // end NS
 #include <unicode/ucnv.h>
+namespace mrpt { namespace utils { namespace simpleini {
 
 /**
  * Converts MBCS/UTF-8 to UChar using ICU. This can be used on all platforms.
@@ -2564,8 +2569,9 @@ public:
 #  define SI_NO_MBCS
 # endif
 #endif
-
+}}}
 #include <windows.h>
+namespace mrpt { namespace utils { namespace simpleini {
 #ifdef SI_NO_MBCS
 # define SI_NoCase   SI_GenericNoCase
 #else // !SI_NO_MBCS
@@ -2577,7 +2583,9 @@ public:
  * SI_CHAR == char and SetUnicode(true), then you need to use the generic
  * SI_NoCase class instead.
  */
+}}}
 #include <mbstring.h>
+namespace mrpt { namespace utils { namespace simpleini {
 template<class SI_CHAR>
 struct SI_NoCase {
     bool operator()(const SI_CHAR * pLeft, const SI_CHAR * pRight) const {
@@ -2749,8 +2757,8 @@ typedef CSimpleIniTempl<wchar_t,
 # define SI_NEWLINE      SI_NEWLINE_A
 #endif // _UNICODE
 
-	    }  // end namespace
-    }  // end namespace
+}  // end namespace
+}  // end namespace
 } // end namespace
 
 #endif // INCLUDED_SimpleIni_h

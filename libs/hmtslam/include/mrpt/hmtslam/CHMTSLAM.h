@@ -58,10 +58,10 @@ namespace mrpt
 		 */
 		class HMTSLAM_IMPEXP CHMTSLAM : public mrpt::utils::CDebugOutputCapable, public mrpt::utils::CSerializable
 		{
-			friend class HMTSLAM_IMPEXP CLocalMetricHypothesis;
-			friend class HMTSLAM_IMPEXP CLSLAM_RBPF_2DLASER;
-			friend class HMTSLAM_IMPEXP CTopLCDetector_GridMatching;
-			friend class HMTSLAM_IMPEXP CTopLCDetector_FabMap;
+			friend class CLocalMetricHypothesis;
+			friend class CLSLAM_RBPF_2DLASER;
+			friend class CTopLCDetector_GridMatching;
+			friend class CTopLCDetector_FabMap;
 
 			// This must be added to any CSerializable derived class:
 			DEFINE_SERIALIZABLE( CHMTSLAM )
@@ -460,7 +460,7 @@ namespace mrpt
 		  */
 		class HMTSLAM_IMPEXP CLSLAMAlgorithmBase
 		{
-			friend class HMTSLAM_IMPEXP CLocalMetricHypothesis;
+			friend class CLocalMetricHypothesis;
 		protected:
 			mrpt::utils::safe_ptr<CHMTSLAM>	m_parent;
 
@@ -511,7 +511,7 @@ namespace mrpt
 		  */
 		class HMTSLAM_IMPEXP CLSLAM_RBPF_2DLASER : public CLSLAMAlgorithmBase
 		{
-			friend class HMTSLAM_IMPEXP CLocalMetricHypothesis;
+			friend class CLocalMetricHypothesis;
 
 		public:
 			/** Constructor

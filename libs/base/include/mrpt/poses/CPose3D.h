@@ -20,8 +20,8 @@ namespace mrpt
 {
 namespace poses
 {
-	class BASE_IMPEXP CPose3DQuat;
-	class BASE_IMPEXP CPose3DRotVec;
+	class CPose3DQuat;
+	class CPose3DRotVec;
 
 	DEFINE_SERIALIZABLE_PRE( CPose3D )
 
