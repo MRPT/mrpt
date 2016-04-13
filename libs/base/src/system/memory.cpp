@@ -36,8 +36,8 @@ using namespace std;
 void* mrpt::system::os::aligned_malloc(size_t bytes, size_t alignment)
 {
 #if defined(HAVE_ALIGNED_MALLOC)
-#   if defined(__GNUC__)
-        return aligned_malloc(bytes,alignment);
+#   if defined(__GNUC__) && !defined(__MINGW32__)
+		return ::aligned_malloc(bytes,alignment);
 #   else
         return _aligned_malloc(bytes,alignment);
 #   endif
@@ -60,8 +60,8 @@ void* mrpt::system::os::aligned_malloc(size_t bytes, size_t alignment)
 void* mrpt::system::os::aligned_realloc(void* old_ptr, size_t bytes, size_t alignment)
 {
 #if defined(HAVE_ALIGNED_MALLOC)
-#   if defined(__GNUC__)
-	return aligned_realloc(old_ptr,bytes,alignment);
+#   if defined(__GNUC__) && !defined(__MINGW32__)
+	return ::aligned_realloc(old_ptr,bytes,alignment);
 #   else
 	return _aligned_realloc(old_ptr,bytes,alignment);
 #   endif
@@ -81,8 +81,8 @@ void* mrpt::system::os::aligned_realloc(void* old_ptr, size_t bytes, size_t alig
 void mrpt::system::os::aligned_free(void* p)
 {
 #if defined(HAVE_ALIGNED_MALLOC)
-#   if defined(__GNUC__)
-	aligned_free(p);
+#   if defined(__GNUC__) && !defined(__MINGW32__)
+	::aligned_free(p);
 #   else
 	_aligned_free(p);
 #   endif
