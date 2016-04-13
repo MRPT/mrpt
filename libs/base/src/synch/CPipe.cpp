@@ -111,16 +111,16 @@ CPipeBaseEndPoint::CPipeBaseEndPoint(const std::string &serialized)
 std::string CPipeBaseEndPoint::serialize()
 {
 	ASSERTMSG_(m_pipe_file!=0, "Pipe is closed, can't serialize!")
-	std::string ret;
+	std::stringstream ss;
 #ifdef MRPT_OS_WINDOWS
 	// Win32 pipes
-	ret = mrpt::format("%" PRIu64 ,reinterpret_cast<uint64_t>(m_pipe_file) );
+	ss << reinterpret_cast<uint64_t>(m_pipe_file);
 #else
 	// UNIX pipes
-	ret= mrpt::format("%i",m_pipe_file);
+	ss << m_pipe_file;
 #endif
 	m_pipe_file=0; // We don't own this file anymore...
-	return ret;
+	return ss.str();
 }
 
 // Methods that don't make sense in pipes:
