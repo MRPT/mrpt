@@ -56,6 +56,7 @@
 				- mrpt::obs::gnss: A new namespace with many new data structures for GPS-related messages
 			- \ref mrpt_opengl_grp
 				- New class mrpt::opengl::CMesh3D to render 3D models/meshes
+				- New method mrpt::opengl::CPointCloudColoured::recolorizeByCoordinate()
 			- \ref mrpt_slam_grp
 				- Small clean up of mrpt::slam::CICP API, add separate variable to select covariance estimation method.
 			- \ref mrpt_topography_grp

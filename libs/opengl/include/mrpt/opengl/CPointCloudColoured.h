@@ -14,17 +14,14 @@
 #include <mrpt/opengl/COctreePointRenderer.h>
 #include <mrpt/utils/PLY_import_export.h>
 #include <mrpt/utils/adapters.h>
+#include <mrpt/utils/color_maps.h>
 
 namespace mrpt
 {
 	namespace opengl
 	{
-
-
 		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CPointCloudColoured, CRenderizable, OPENGL_IMPEXP )
-
-
 		/** A cloud of points, each one with an individual colour (R,G,B). The alpha component is shared by all the points and is stored in the base member m_color_A.
 		  *
 		  *  To load from a points-map, CPointCloudColoured::loadFromPointsMap().
@@ -189,8 +186,9 @@ namespace mrpt
 			inline void disablePointSmooth() { m_pointSmooth=false; }
 			inline bool isPointSmoothEnabled() const { return m_pointSmooth; }
 
+			/** Regenerates the color of each point according the one coordinate (coord_index:0,1,2 for X,Y,Z) and the given color map. */
+			void recolorizeByCoordinate(const float coord_min, const float coord_max, const int coord_index = 2, const mrpt::utils::TColormap color_map = mrpt::utils::cmJET );
 			/** @} */
-
 
 			/** Render */
 			void  render() const MRPT_OVERRIDE;
@@ -308,9 +306,7 @@ namespace mrpt
 			}
 
 		}; // end of PointCloudAdapter<mrpt::opengl::CPointCloudColoured>
-
 	}
-
 	namespace opengl
 	{
 		// After declaring the adapter we can here implement this method:
@@ -329,8 +325,6 @@ namespace mrpt
 			}
 		}
 	}
-
 } // End of namespace
-
 
 #endif
