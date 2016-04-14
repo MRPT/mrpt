@@ -39,6 +39,8 @@
 				- Priority with these functions now work properly in GNU/Linux; though, see the notes in their documentation for required permissions:
 					- mrpt::system::changeCurrentProcessPriority()
 					- mrpt::system::changeThreadPriority()
+				- New classes/structures:
+					- mrpt::math::TPointXYZIu8, mrpt::math::TPointXYZRGBu8, mrpt::math::TPointXYZfIu8, mrpt::math::TPointXYZfRGBu8
 			- \ref mrpt_hwdrivers_grp
 				- New class mrpt::hwdrivers::CVelodyneScanner
 				- mrpt::hwdrivers::CNTRIPEmitter now has a parameter to enable/disable sending back the data from the serial port to the NTRIP caster.

@@ -353,6 +353,35 @@ namespace math	{
 		 static size_t size() { return 3; }
 	};
 
+	/** XYZ point (double) + Intensity(u8) \sa mrpt::math::TPoint3D */ 
+	struct BASE_IMPEXP TPointXYZIu8 {
+		mrpt::math::TPoint3D pt;
+		uint8_t intensity;
+		inline TPointXYZIu8() : pt(), intensity(0) {}
+		inline TPointXYZIu8(double x,double y,double z, uint8_t intensity_val) : pt(x,y,z),intensity(intensity_val) {}
+	};
+	/** XYZ point (double) + RGB(u8) \sa mrpt::math::TPoint3D */ 
+	struct BASE_IMPEXP TPointXYZRGBu8 {
+		mrpt::math::TPoint3D pt;
+		uint8_t R,G,B;
+		inline TPointXYZRGBu8() : pt(), R(0),G(0),B(0) {}
+		inline TPointXYZRGBu8(double x,double y,double z, uint8_t R_val, uint8_t G_val, uint8_t B_val) : pt(x,y,z),R(R_val),G(G_val),B(B_val) {}
+	};
+	/** XYZ point (float) + Intensity(u8) \sa mrpt::math::TPoint3D */ 
+	struct BASE_IMPEXP TPointXYZfIu8 {
+		mrpt::math::TPoint3Df pt;
+		uint8_t intensity;
+		inline TPointXYZfIu8() : pt(), intensity(0) {}
+		inline TPointXYZfIu8(float x,float y,float z, uint8_t intensity_val) : pt(x,y,z),intensity(intensity_val) {}
+	};
+	/** XYZ point (float) + RGB(u8) \sa mrpt::math::TPoint3D */ 
+	struct BASE_IMPEXP TPointXYZfRGBu8 {
+		mrpt::math::TPoint3Df pt;
+		uint8_t R,G,B;
+		inline TPointXYZfRGBu8() : pt(), R(0),G(0),B(0) {}
+		inline TPointXYZfRGBu8(float x,float y,float z, uint8_t R_val, uint8_t G_val, uint8_t B_val) : pt(x,y,z),R(R_val),G(G_val),B(B_val) {}
+	};
+
 	/**
 	  * Lightweight 3D pose (three spatial coordinates, plus three angular coordinates). Allows coordinate access using [] operator.
 	  * \sa mrpt::poses::CPose3D
