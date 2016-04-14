@@ -207,6 +207,11 @@ mrpt::system::TTimeStamp  mrpt::system::getCurrentLocalTime()
 #endif
 }
 
+mrpt::system::TTimeStamp mrpt::system::timestampAdd( const mrpt::system::TTimeStamp &tim, const double num_seconds)
+{
+	return static_cast<mrpt::system::TTimeStamp>(tim + static_cast<int64_t>(num_seconds*10000000.0));
+}
+
 /*---------------------------------------------------------------
 					timeDifference
   ---------------------------------------------------------------*/

@@ -31,8 +31,10 @@
 				- [ABI change] mrpt::system::tokenize() new parameter `skipBlankTokens`
 				- mrpt::utils::circular_buffer now has peek() methods
 				- Eigen::MatrixBase<Derived>::loadFromTextFile() now also accepts `,` as column separator.
-				- New function mrpt::utils::compute_CRC32()
-				- New function mrpt::utils::saturate<>()
+				- New functions:
+					- mrpt::system::timestampAdd()
+					- mrpt::utils::compute_CRC32()
+					- mrpt::utils::saturate<>()
 				- mrpt::utils::CDynamicGrid<> now uses `double` instead of `float` for all dimensions and coordinate computations.
 				- Priority with these functions now work properly in GNU/Linux; though, see the notes in their documentation for required permissions:
 					- mrpt::system::changeCurrentProcessPriority()
