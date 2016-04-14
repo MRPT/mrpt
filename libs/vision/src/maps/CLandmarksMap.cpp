@@ -329,7 +329,9 @@ double	 CLandmarksMap::internal_computeObservationLikelihood(
 					float	sensedDist    = it->sensedDistance;
 					if (sensedDist<0) sensedDist=0;
 					
-					ret += (-0.5f*square( ( expectedRange - sensedDist  ) / likelihoodOptions.beaconRangesStd ));
+					float sensorStd = likelihoodOptions.beaconRangesUseObservationStd ? 
+						o->stdError : likelihoodOptions.beaconRangesStd;
+					ret += (-0.5f*square( ( expectedRange - sensedDist  ) / sensorStd ));
 					found = true;
 				}
 			}
@@ -2127,8 +2129,7 @@ CLandmarksMap::TLikelihoodOptions::TLikelihoodOptions() :
 	SIFTnullCorrespondenceDistance  ( 4.0f ),
 	SIFTs_decimation				( 1 ),
 	beaconRangesStd					( 0.08f ),
-	alphaRatio						( 1.0f ),
-	beaconMaxRange					( 20.0f ),
+	beaconRangesUseObservationStd	(false),
 	GPSOrigin						(),
 	GPS_sigma						( 1.0f ),
 	SIFT_feat_options				( vision::featSIFT )
@@ -2160,8 +2161,8 @@ void  CLandmarksMap::TLikelihoodOptions::dumpToTextStream(mrpt::utils::CStream	&
 	out.printf("SIFTs_decimation                        = %i\n",SIFTs_decimation);
 	out.printf("SIFTnullCorrespondenceDistance          = %f\n",SIFTnullCorrespondenceDistance);
 	out.printf("beaconRangesStd                         = %f\n",beaconRangesStd);
-	out.printf("alphaRatio                              = %f\n",alphaRatio);
-	out.printf("beaconMaxRange                          = %f\n",beaconMaxRange);
+	out.printf("beaconRangesUseObservationStd           = %c\n",beaconRangesUseObservationStd ? 'Y':'N');
+	
 
 	out.printf("GPSOrigin:LATITUDE                      = %f\n",GPSOrigin.latitude);
 	out.printf("GPSOrigin:LONGITUDE                     = %f\n",GPSOrigin.longitude);
@@ -2203,8 +2204,7 @@ void  CLandmarksMap::TLikelihoodOptions::loadFromConfigFile(
 	GPS_sigma						= iniFile.read_float(section.c_str(),"GPSSigma",GPS_sigma);
 
 	beaconRangesStd					= iniFile.read_float(section.c_str(),"beaconRangesStd",beaconRangesStd);
-	alphaRatio						= iniFile.read_float(section.c_str(),"alphaRatio",alphaRatio);
-	beaconMaxRange					= iniFile.read_float(section.c_str(),"beaconMaxRange",beaconMaxRange);
+	beaconRangesUseObservationStd	= iniFile.read_bool(section.c_str(),"beaconRangesUseObservationStd",beaconRangesUseObservationStd);
 
 	SIFT_feat_options.loadFromConfigFile(iniFile,section);
 }

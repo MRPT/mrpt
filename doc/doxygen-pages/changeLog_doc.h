@@ -65,6 +65,9 @@
 				- New function mrpt::topography::geocentricToENU_WGS84()
 			- \ref mrpt_vision_grp
 				- mrpt::vision::CDifOdo has been refactored and now does faster image pyramid computation (By Mariano Jaimez)
+				- mrpt::maps::CLandmarksMap changes: 
+					- `beaconMaxRange` & `alphaRatio` parameters have been removed since they were not used.
+					- New likelihood parameter `beaconRangesUseObservationStd` to allow using different uncertainty values with each observation.
 		- Changes in build system:
 			- [Python bindings](https://github.com/MRPT/mrpt/wiki/PythonBindings) added for a subset of MRPT functionality (Thanks Peter Rudolph!)
 			- Code ported to support the new libftdi1-dev (Fixes Debian bug #810368, GitHub issue #176)
