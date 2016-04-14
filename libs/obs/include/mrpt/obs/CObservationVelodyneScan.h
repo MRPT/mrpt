@@ -42,7 +42,7 @@ namespace obs
 	  *    this scan to a mrpt::maps::CPointsMap-derived class, then loading it into the opengl object.
 	  *
 	  * Otherwise, the following API exists for accurate reconstruction of the sensor path in SE(3) over time:
-	  *  - **TO DO**
+	  *  - CObservationVelodyneScan::generatePointCloudAlongSE3Trajectory()
 	  *
 	  *  Note that this object has \b two timestamp fields:
 	  *  - The standard CObservation::timestamp field in the base class, which should contain the accurate satellite-based UTC timestamp, and
@@ -112,7 +112,7 @@ namespace obs
 		struct OBS_IMPEXP TVelodyneRawPacket
 		{
 			raw_block_t blocks[BLOCKS_PER_PACKET];
-			uint32_t gps_timestamp;
+			uint32_t gps_timestamp; //!< us from top of hour
 			uint8_t  laser_return_mode;  //!< 0x37: strongest, 0x38: last, 0x39: dual return
 			uint8_t  velodyne_model_ID;  //!< 0x21: HDL-32E, 0x22: VLP-16
 		};
@@ -200,21 +200,21 @@ namespace obs
 		/** Results for generatePointCloudAlongSE3Trajectory() */
 		struct OBS_IMPEXP TGeneratePointCloudSE3Results
 		{
-			size_t num_packets;                     //!< Number of point packets in the observation
-			size_t num_correctly_inserted_packets;  //!< Number of packets for which a valid interpolated SE(3) pose could be determined
+			size_t num_points;                     //!< Number of points in the observation
+			size_t num_correctly_inserted_points;  //!< Number of points for which a valid interpolated SE(3) pose could be determined
 			TGeneratePointCloudSE3Results();
 		};
 
 		/** An alternative to generatePointCloud() for cases where the motion of the sensor as it grabs one scan (360 deg horiz FOV) cannot be ignored.
 		  * \param[in] vehicle_path Timestamped sequence of known poses for the VEHICLE. Recall that the sensor has a relative pose wrt the vehicle according to CObservationVelodyneScan::getSensorPose() & CObservationVelodyneScan::setSensorPose()
-		  * \param[out] out_points The generated points, in the same coordinates frame than \a vehicle_path
+		  * \param[out] out_points The generated points, in the same coordinates frame than \a vehicle_path. Points are APPENDED to the list, so prevous contents are kept.
 		  * \param[out] results_stats Stats
 		  * \param[in] params Filtering and other parameters
 		  * \sa generatePointCloud(), TGeneratePointCloudParameters
 		  */
 		void generatePointCloudAlongSE3Trajectory(
 			const mrpt::poses::CPose3DInterpolator & vehicle_path,
-			std::vector<mrpt::math::TPoint3D>      & out_points,
+			std::vector<mrpt::math::TPointXYZIu8>      & out_points,
 			TGeneratePointCloudSE3Results          & results_stats,
 			const TGeneratePointCloudParameters &params = defaultPointCloudParams );
 

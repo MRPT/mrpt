@@ -52,7 +52,9 @@ TEST(CVelodyneScanner, sample_vlp16_dataset)
 		mrpt::obs::CObservationVelodyneScanPtr scan;
 		mrpt::obs::CObservationGPSPtr          gps;
 		rx_ok = velodyne.getNextObservation(scan,gps);
-		if (scan) nScans++;
+		if (scan) { nScans++;
+		scan->generatePointCloud();
+		}
 		if (gps)  nGPS++;
 	};
 	EXPECT_EQ(nScans,4);
