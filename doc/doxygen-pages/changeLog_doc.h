@@ -48,7 +48,9 @@
 				- New class mrpt::hwdrivers::CStereoGrabber_Bumblebee_libdc1394 for capturing without PGR Flycapture but directly through libdc1394.
 				- Removed class mrpt::hwdrivers::CStereoGrabber_Bumblebee , superseded by mrpt::hwdrivers::CImageGrabber_FlyCapture2 which is capable of both monocular and stereo grabbing.
 			- \ref mrpt_maps_grp
+				- New class mrpt::maps::CHeightGridMap2D_MRF
 				- New method mrpt::maps::COccupancyGridMap2D::copyMapContentFrom()
+				- New method mrpt::maps::CHeightGridMap2D::insertIndividualPoint()
 			- \ref mrpt_obs_grp
 				- New class mrpt::obs::CObservationVelodyneScan
 				- mrpt::obs::CSinCosLookUpTableFor2DScans now can build a table from a mrpt::obs::T2DScanProperties structure, which now also has its separate header file for better modularity.

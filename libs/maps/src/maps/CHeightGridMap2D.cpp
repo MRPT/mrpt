@@ -113,6 +113,31 @@ bool  CHeightGridMap2D::isEmpty() const
 	return false;
 }
 
+bool CHeightGridMap2D::insertIndividualPoint(const double x,const double y,const double z)
+{
+	THeightGridmapCell *cell = cellByPos(x,y);
+	if(!cell) return false; // Out of the map: Ignore if we've not resized before.
+
+	if (!insertionOptions.filterByHeight || (z>=insertionOptions.z_min && z<=insertionOptions.z_max ) )
+	{
+		cell->u += z;
+		cell->v += z*z;
+		if (!cell->w)
+		{
+			cell->h = z;	// First observation
+			cell->w = 1;
+		}
+		else
+		{
+			float W = cell->w++;	// W = N-1
+			cell->h = (cell->h*W + z)/cell->w;
+			if (W > 0)
+				cell->var = 1/(W) * (cell->v - pow(cell->u,2)/cell->w);
+		}
+	} // end if really inserted
+	return true;
+}
+
 /*---------------------------------------------------------------
 						insertObservation
   ---------------------------------------------------------------*/
@@ -167,32 +192,10 @@ bool  CHeightGridMap2D::internal_insertObservation(
 		{
 			float x,y,z;
 			thePointsMoved.getPoint(i, x,y,z);
-
-			THeightGridmapCell *cell = cellByPos(x,y);
-			if(!cell) continue; // Out of the map: Ignore if we've not resized before.
-
-			if (!insertionOptions.filterByHeight || (z>=insertionOptions.z_min && z<=insertionOptions.z_max ) )
-			{
-				cell->u += z;
-				cell->v += z*z;
-				if (!cell->w)
-				{
-					cell->h = z;	// First observation
-					cell->w = 1;
-				}
-				else
-				{
-					float W = cell->w++;	// W = N-1
-					cell->h = (cell->h*W + z)/cell->w;
-					if (W > 0)
-						cell->var = 1/(W) * (cell->v - pow(cell->u,2)/cell->w);
-				}
-			} // end if really inserted
+			insertIndividualPoint(x,y,z);
 		} // end for i
-
 		return true; // Done, new points inserted
 	}
-
 	return false; // No insertion done
 	MRPT_END
 }

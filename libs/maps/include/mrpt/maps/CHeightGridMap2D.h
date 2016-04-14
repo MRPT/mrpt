@@ -126,6 +126,11 @@ namespace mrpt
 			/** Return the number of cells with at least one height data inserted. */
 			size_t countObservedCells() const;
 
+			/** Update the DEM with one new point.
+			  * \sa mrpt::maps::CMetricMap::insertObservation() for inserting higher-level objects like 2D/3D LIDAR scans 
+			  * \return true if updated OK, false if (x,y) is out of bounds */
+			bool insertIndividualPoint(const double x,const double y,const double z);
+
 		protected:
 			TMapRepresentation  m_mapType;  //!< The map representation type of this map
 
