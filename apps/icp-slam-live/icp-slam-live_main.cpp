@@ -310,6 +310,7 @@ void MapBuilding_ICP_Live(const string &INI_FILENAME)
 			{
 				mrpt::synch::CCriticalSectionLocker csl(&cs_global_list_obs);
 				obs_copy = global_list_obs;
+				global_list_obs.clear();
 			}
 			// Keep the most recent laser scan:
 			for (mrpt::hwdrivers::CGenericSensor::TListObservations::reverse_iterator it = obs_copy.rbegin();!observation && it != obs_copy.rend();++it)
