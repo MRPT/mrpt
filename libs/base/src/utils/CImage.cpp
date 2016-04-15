@@ -109,11 +109,8 @@ CImage::CImage( const CImage &o ) :
 CImage& CImage::operator = (const CImage& o)
 {
 	MRPT_START
-
 	if (this==&o) return *this;
-
 	releaseIpl();
-
 	m_imgIsExternalStorage = o.m_imgIsExternalStorage;
 	m_imgIsReadOnly = false;
 
@@ -128,9 +125,7 @@ CImage& CImage::operator = (const CImage& o)
 	{ 	// An externally stored image:
 		m_externalFile = o.m_externalFile;
 	}
-
 	return *this;
-
 	MRPT_END
 }
 
@@ -172,9 +167,7 @@ void CImage::copyFromForceLoad(const CImage &o)
 void CImage::copyFastFrom( CImage &o )
 {
 	MRPT_START
-
 	if (this==&o) return;
-
 	if (o.m_imgIsExternalStorage)
 	{
 		// Just copy the reference to the ext. file:
@@ -214,15 +207,10 @@ CImage::CImage( void *iplImage ) :
 
 #if MRPT_HAS_OPENCV
 	if (!iplImage)
-	{
 		changeSize( 1, 1, 1, true );
-	}
 	else
-	{
 		img = cvCloneImage( (IplImage*) iplImage );
-	}
 #endif
-
 	MRPT_END
 }
 
@@ -288,16 +276,15 @@ void  CImage::changeSize(
  ---------------------------------------------------------------*/
 bool  CImage::loadFromFile( const std::string& fileName, int isColor )
 {
-    MRPT_START
-
+	MRPT_START
 	releaseIpl();
 
 #if MRPT_HAS_OPENCV
-    return (NULL!= (img=cvLoadImage(fileName.c_str(),isColor) ));
+	return (NULL!= (img=cvLoadImage(fileName.c_str(),isColor) ));
 #else
 	THROW_EXCEPTION("The MRPT has been compiled with MRPT_HAS_OPENCV=0 !");
 #endif
-    MRPT_END
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -332,9 +319,7 @@ void  CImage::loadFromIplImage( void* iplImage )
 {
 	MRPT_START
 	ASSERT_(iplImage!=NULL)
-
 	releaseIpl();
-
 	if (iplImage)
 	{
 #if MRPT_HAS_OPENCV
@@ -343,7 +328,6 @@ void  CImage::loadFromIplImage( void* iplImage )
 		THROW_EXCEPTION("The MRPT has been compiled with MRPT_HAS_OPENCV=0 !");
 #endif
 	}
-
 	MRPT_END
 }
 
@@ -353,9 +337,7 @@ void  CImage::loadFromIplImage( void* iplImage )
 void  CImage::setFromIplImageReadOnly( void* iplImage )
 {
 	MRPT_START
-
 	releaseIpl();
-
 #if MRPT_HAS_OPENCV
 	ASSERT_(iplImage!=NULL)
 	ASSERTMSG_(iplImage!=this->img,"Trying to assign read-only to itself.")
@@ -368,7 +350,6 @@ void  CImage::setFromIplImageReadOnly( void* iplImage )
 #endif
 	m_imgIsReadOnly = true;
 	m_imgIsExternalStorage=false;
-
 	MRPT_END
 }
 
@@ -408,10 +389,8 @@ void  CImage::loadFromMemoryBuffer(
 
 #if MRPT_HAS_OPENCV
 	resize(width,height,color ? 3:1, true);
-
 	m_imgIsReadOnly = false;
 	m_imgIsExternalStorage=false;
-
 
 	if (color && swapRedBlue)
 	{
@@ -449,7 +428,6 @@ void  CImage::loadFromMemoryBuffer(
 			for (unsigned int y=0;y<height;y++)
 			{
 				memcpy( ptr_dest, ptr_src, bytes_per_row );
-
 				ptr_src+=bytes_per_row;
 				ptr_dest+=bytes_per_row_out;
 			}
@@ -458,7 +436,6 @@ void  CImage::loadFromMemoryBuffer(
 #else
 	THROW_EXCEPTION("The MRPT has been compiled with MRPT_HAS_OPENCV=0 !");
 #endif
-
 	MRPT_END
 }
 
@@ -2234,7 +2211,7 @@ void CImage::scaleImage( unsigned int width, unsigned int height, TInterpolation
 {
 #if MRPT_HAS_OPENCV
 	makeSureImageIsLoaded();   // For delayed loaded images stored externally
-    ASSERT_(img!=NULL);
+	ASSERT_(img!=NULL);
 	IplImage *srcImg = getAs<IplImage>();	// Source Image
 
 	if( static_cast<unsigned int>(srcImg->width) == width && static_cast<unsigned int>(srcImg->height) == height )
@@ -2769,7 +2746,6 @@ bool CImage::loadTGA(const std::string& fileName, mrpt::utils::CImage &out_RGB, 
 		std::cerr << "[CImage::loadTGA] Only 32 bpp format supported!\n";
 		return false;
 	}
-
 
 	unsigned char desc;
 	desc = stream.get();
