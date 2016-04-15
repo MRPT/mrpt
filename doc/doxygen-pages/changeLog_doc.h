@@ -86,6 +86,7 @@
 			- Fix "gray images" grabbed in Windows when capturing the render output of 3D windows (Thanks Mariano J.T. & Christian Kerl from TUM!)
 			- Fix typos and wxWidgets align errors in RawLogViewer GUI (Closes #219)
 			- mrpt::nav::CHolonomicND & mrpt::nav::CHolonomicVFF didn't use the full range of output velocities.
+			- mrpt::utils::CImage::loadFromFile() now does not leave the image in undefined state if the load operation fails.
 
 <hr>
 <a name="1.3.2">

@@ -277,10 +277,16 @@ void  CImage::changeSize(
 bool  CImage::loadFromFile( const std::string& fileName, int isColor )
 {
 	MRPT_START
-	releaseIpl();
 
 #if MRPT_HAS_OPENCV
-	return (NULL!= (img=cvLoadImage(fileName.c_str(),isColor) ));
+	IplImage* newImg = cvLoadImage(fileName.c_str(),isColor);
+	if (newImg!=NULL) {
+		releaseIpl();
+		img = newImg;
+		return true;
+	} else {
+		return false;
+	}
 #else
 	THROW_EXCEPTION("The MRPT has been compiled with MRPT_HAS_OPENCV=0 !");
 #endif
@@ -1908,11 +1914,11 @@ void CImage::unload() const MRPT_NO_THROWS
 void CImage::releaseIpl(bool thisIsExternalImgUnload) MRPT_NO_THROWS
 {
 #if MRPT_HAS_OPENCV
-    if (img && !m_imgIsReadOnly)
-    {
+	if (img && !m_imgIsReadOnly)
+	{
 		IplImage *ptr=(IplImage*)img;
-	    cvReleaseImage( &ptr );
-    }
+		cvReleaseImage( &ptr );
+	}
 	img = NULL;
 	m_imgIsReadOnly = false;
 	if (!thisIsExternalImgUnload)
