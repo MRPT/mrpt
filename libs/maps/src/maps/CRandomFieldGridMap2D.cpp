@@ -2392,7 +2392,7 @@ bool CRandomFieldGridMap2D::ENABLE_GMRF_PROFILER  = false;
 void CRandomFieldGridMap2D::updateMapEstimation_GMRF()
 {
 #if EIGEN_VERSION_AT_LEAST(3,1,0)
-	size_t N = m_map.size();
+	const size_t N = m_map.size();
 
 
 	static mrpt::utils::CTimeLogger timelogger;
@@ -2408,12 +2408,14 @@ void CRandomFieldGridMap2D::updateMapEstimation_GMRF()
 	std::vector<Eigen::Triplet<double> > H_tri(H_prior.size());
 	H_tri.reserve( H_prior.size()+N );
 	std::copy( H_prior.begin(), H_prior.end(), H_tri.begin() );
-
+	
+	size_t numActiveObs = 0;
 	//Add H_obs
 	for (size_t j=0; j<N; j++)
 	{
 		//Sum the information of all observations on cell j
 		double Lambda_obs_j = 0.0;
+		numActiveObs+=activeObs[j].size();
 		for (std::vector<TobservationGMRF>::const_iterator ito = activeObs[j].begin(); ito !=activeObs[j].end(); ++ito)
 			Lambda_obs_j += ito->Lambda;
 
@@ -2428,8 +2430,13 @@ void CRandomFieldGridMap2D::updateMapEstimation_GMRF()
 	mrpt::math::saveEigenSparseTripletsToFile( "H_tri.txt", H_tri);
 #endif
 
-
 	timelogger.leave("GMRF.build_hessian");
+
+	if (!numActiveObs) {
+		if (m_rfgm_verbose) printf("[CRandomFieldGridMap2D] 0 active observations: skipping map update.\n");
+		return;
+	}
+
 	timelogger.enter("GMRF.build_grad");
 
 	//------------------
@@ -2474,7 +2481,6 @@ void CRandomFieldGridMap2D::updateMapEstimation_GMRF()
 						{
 							if (kr==0 || kc==0)      //only vertical and horizontal restrictions/constraints
 							{
-								//Resvisar!!
 								g[j] += ( m_map[j].gmrf_mean - (m_map[i].gmrf_mean * gauss_val[abs(kr+kc)-1])) * m_insertOptions_common->GMRF_lambdaPrior;
 							}
 						}
