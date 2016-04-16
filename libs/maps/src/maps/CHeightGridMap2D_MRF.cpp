@@ -93,52 +93,57 @@ CHeightGridMap2D_MRF::~CHeightGridMap2D_MRF()
 {
 }
 
-/*---------------------------------------------------------------
-						clear
-  ---------------------------------------------------------------*/
-void  CHeightGridMap2D_MRF::internal_clear()
+
+bool CHeightGridMap2D_MRF::insertIndividualPoint(const double x,const double y,const double z, const CHeightGridMap2D_Base::TPointInsertParams & params)
+{
+	const TRandomFieldCell *cell = cellByPos(x,y);
+	if (!cell) return false;
+
+	MRPT_TODO("insertIndividualPoint: allow different std values")
+	if (params.pt_z_std!=0.0)
+		throw std::runtime_error("CHeightGridMap2D_MRF::insertIndividualPoint() point variable variance not implemented yet!");
+
+	this->insertIndividualReading(z, mrpt::math::TPoint2D(x,y), params.update_map_after_insertion );
+	return true;
+}
+double CHeightGridMap2D_MRF::dem_get_resolution() const {
+	return m_resolution;
+}
+size_t CHeightGridMap2D_MRF::dem_get_size_x() const {
+	return m_size_x;
+}
+size_t CHeightGridMap2D_MRF::dem_get_size_y() const {
+	return m_size_y;
+}
+bool CHeightGridMap2D_MRF::dem_get_z_by_cell(const size_t cx, const size_t cy, double &z_out) const {
+	const TRandomFieldCell *cell = cellByIndex(cx,cy);
+	if (cell && cell->kf_mean) {
+		z_out = cell->kf_mean;
+		return true;
+	} else return false;
+}
+bool CHeightGridMap2D_MRF::dem_get_z(const double x, const double y, double &z_out) const {
+	const TRandomFieldCell *cell = cellByPos(x,y);
+	if (cell && cell->kf_mean) {
+		z_out = cell->kf_mean;
+		return true;
+	} else return false;
+}
+void CHeightGridMap2D_MRF::dem_update_map() {
+	this->updateMapEstimation();
+}
+
+void CHeightGridMap2D_MRF::internal_clear()
 {
 	// Just do the generic clear:
 	CRandomFieldGridMap2D::internal_clear();
-
 	// Anything else special for this derived class?
 }
 
 
-/*---------------------------------------------------------------
-						insertObservation
-  ---------------------------------------------------------------*/
-bool  CHeightGridMap2D_MRF::internal_insertObservation(
-	const CObservation	*obs,
-	const CPose3D		*robotPose )
+bool CHeightGridMap2D_MRF::internal_insertObservation(const CObservation *obs, const CPose3D *robotPose )
 {
-	MRPT_START
-#if 0
-	CPose2D robotPose2D;
-	CPose3D robotPose3D;
-
-	if (robotPose) {
-		robotPose2D = CPose2D(*robotPose);
-		robotPose3D = (*robotPose);
-	}
-	else {
-		// Default values are (0,0,0)
-	}
-
-	if ( IS_CLASS(obs, CObservation2DRangeScan ))
-	{
-		/********************************************************************
-					OBSERVATION TYPE: CObservation2DRangeScan
-		********************************************************************/
-		const CObservation2DRangeScan *o = static_cast<const CObservation2DRangeScan*>( obs );
-		// Finally, do the actual map update with that value:
-		this->insertIndividualReading(sensorReading, mrpt::math::TPoint2D(sensorPose.x(),sensorPose.y()) );
-		return true;	// Done!
-	}
-#endif
-
-	return false;
-	MRPT_END
+	return dem_internal_insertObservation(obs,robotPose);
 }
 
 /*---------------------------------------------------------------
@@ -179,7 +184,7 @@ void  CHeightGridMap2D_MRF::writeToStream(mrpt::utils::CStream &out, int *versio
 		}
 #else
 		// Little endian: just write all at once:
-		out.WriteBuffer( &m_map[0], sizeof(m_map[0])*m_map.size() );  // TODO: Do this endianness safe!!
+		out.WriteBuffer( &m_map[0], sizeof(m_map[0])*m_map.size() );
 #endif
 
 

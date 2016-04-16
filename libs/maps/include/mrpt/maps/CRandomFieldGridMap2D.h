@@ -85,8 +85,8 @@ namespace maps
 	/** CRandomFieldGridMap2D represents a 2D grid map where each cell is associated one real-valued property which is estimated by this map, either
 	  *   as a simple value or as a probility distribution (for each cell).
 	  *
-	  *  There are a number of methods available to build the gas grid-map, depending on the value of
-	  *    "TMapRepresentation maptype" passed in the constructor.
+	  *  There are a number of methods available to build the MRF grid-map, depending on the value of
+	  *    `TMapRepresentation maptype` passed in the constructor.
 	  *
 	  *  The following papers describe the mapping alternatives implemented here:
 	  *		- `mrKernelDM`: A Gaussian kernel-based method. See:
@@ -273,7 +273,6 @@ namespace maps
 			const bool update_map = true,        //!< [in] Run a global map update after inserting this observatin (algorithm-dependant)
 			const bool time_invariant = true     //!< [in] Whether the observation "vanishes" with time (false) or not (true) [Only for GMRF methods]
 			);
-
 
 		enum TGridInterpolationMethod {
 			gimNearest = 0,

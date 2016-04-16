@@ -11,6 +11,7 @@
 #define CHeightGridMap2D_MRF_MRF_H
 
 #include <mrpt/maps/CRandomFieldGridMap2D.h>
+#include <mrpt/maps/CHeightGridMap2D_Base.h>
 #include <mrpt/maps/link_pragmas.h>
 
 namespace mrpt
@@ -30,7 +31,7 @@ namespace maps
 	  * \note New in MRPT 1.4.0
 	  * \ingroup mrpt_maps_grp
 	  */
-	class MAPS_IMPEXP CHeightGridMap2D_MRF : public CRandomFieldGridMap2D
+	class MAPS_IMPEXP CHeightGridMap2D_MRF : public CRandomFieldGridMap2D, public CHeightGridMap2D_Base
 	{
 		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE( CHeightGridMap2D_MRF )
@@ -62,7 +63,14 @@ namespace maps
 		/** Returns two 3D objects representing the mean and variance maps */
 		virtual void  getAs3DObject ( mrpt::opengl::CSetOfObjectsPtr	&meanObj, mrpt::opengl::CSetOfObjectsPtr	&varObj ) const MRPT_OVERRIDE;
 
-	protected:
+		virtual bool insertIndividualPoint(const double x,const double y,const double z, const CHeightGridMap2D_Base::TPointInsertParams & params = CHeightGridMap2D_Base::TPointInsertParams() ) MRPT_OVERRIDE;
+		virtual double dem_get_resolution() const  MRPT_OVERRIDE;
+		virtual size_t dem_get_size_x() const  MRPT_OVERRIDE;
+		virtual size_t dem_get_size_y() const  MRPT_OVERRIDE;
+		virtual bool   dem_get_z_by_cell(const size_t cx, const size_t cy, double &z_out) const  MRPT_OVERRIDE;
+		virtual bool   dem_get_z(const double x, const double y, double &z_out) const  MRPT_OVERRIDE;
+		virtual void   dem_update_map() MRPT_OVERRIDE;
+
 		/** Get the part of the options common to all CRandomFieldGridMap2D classes */
 		virtual CRandomFieldGridMap2D::TInsertionOptionsCommon * getCommonInsertOptions()  MRPT_OVERRIDE {
 			return &insertionOptions;

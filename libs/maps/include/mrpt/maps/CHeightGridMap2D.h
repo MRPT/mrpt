@@ -10,14 +10,16 @@
 #ifndef CHeightGridMap2D_H
 #define CHeightGridMap2D_H
 
+#include <mrpt/maps/CHeightGridMap2D_Base.h>
+#include <mrpt/maps/CMetricMap.h>
 #include <mrpt/utils/CDynamicGrid.h>
 #include <mrpt/utils/CSerializable.h>
 #include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/utils/color_maps.h>
 #include <mrpt/utils/TEnumType.h>
-#include <mrpt/maps/CMetricMap.h>
 #include <mrpt/maps/link_pragmas.h>
 #include <mrpt/poses/poses_frwds.h>
+#include <mrpt/maps/link_pragmas.h>
 #include <mrpt/obs/obs_frwds.h>
 
 namespace mrpt
@@ -50,7 +52,10 @@ namespace mrpt
 		  *
 		  * \ingroup mrpt_maps_grp
 		  */
-		class MAPS_IMPEXP CHeightGridMap2D : public mrpt::maps::CMetricMap, public utils::CDynamicGrid<THeightGridmapCell>
+		class MAPS_IMPEXP CHeightGridMap2D :
+			public mrpt::maps::CMetricMap,
+			public utils::CDynamicGrid<THeightGridmapCell>,
+			public CHeightGridMap2D_Base
 		{
 			// This must be added to any CSerializable derived class:
 			DEFINE_SERIALIZABLE( CHeightGridMap2D )
@@ -93,7 +98,6 @@ namespace mrpt
 
 				bool   filterByHeight; //!< Whether to perform filtering by z-coordinate (default=false): coordinates are always RELATIVE to the robot for this filter.vvv
 				float  z_min,z_max; //!< Only when filterByHeight is true: coordinates are always RELATIVE to the robot for this filter.
-				float  minDistBetweenPointsWhenInserting; //!< When inserting a scan, a point cloud is first created with this minimum distance between the 3D points (default=0).
 
 				mrpt::utils::TColormap colorMap;
 			} insertionOptions;
@@ -115,23 +119,17 @@ namespace mrpt
 			/** Return the type of the gas distribution map, according to parameters passed on construction */
 			TMapRepresentation	 getMapType();
 
-			/** Gets the intersection between a 3D line and a Height Grid map (taking into account the different heights of each individual cell)  */
-			bool intersectLine3D(const mrpt::math::TLine3D &r1, mrpt::math::TObject3D &obj) const;
-
-			/** Computes the minimum and maximum height in the grid.
-			  * \return False if there is no observed cell yet.
-			  */
-			bool getMinMaxHeight(float &z_min, float &z_max) const;
-
 			/** Return the number of cells with at least one height data inserted. */
 			size_t countObservedCells() const;
 
-			/** Update the DEM with one new point.
-			  * \sa mrpt::maps::CMetricMap::insertObservation() for inserting higher-level objects like 2D/3D LIDAR scans 
-			  * \return true if updated OK, false if (x,y) is out of bounds */
-			bool insertIndividualPoint(const double x,const double y,const double z);
+			virtual bool insertIndividualPoint(const double x,const double y,const double z, const CHeightGridMap2D_Base::TPointInsertParams & params = CHeightGridMap2D_Base::TPointInsertParams() ) MRPT_OVERRIDE;
+			virtual double dem_get_resolution() const  MRPT_OVERRIDE;
+			virtual size_t dem_get_size_x() const  MRPT_OVERRIDE;
+			virtual size_t dem_get_size_y() const  MRPT_OVERRIDE;
+			virtual bool   dem_get_z_by_cell(const size_t cx, const size_t cy, double &z_out) const  MRPT_OVERRIDE;
+			virtual bool   dem_get_z(const double x, const double y, double &z_out) const  MRPT_OVERRIDE;
+			virtual void   dem_update_map() MRPT_OVERRIDE;
 
-		protected:
 			TMapRepresentation  m_mapType;  //!< The map representation type of this map
 
 			// See docs in base class
