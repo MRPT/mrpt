@@ -68,7 +68,7 @@ void CLMS100Eth::loadConfig_sensorSpecific( const mrpt::utils::CConfigFileBase &
     pose_x = configSource.read_float(iniSection,"pose_x",0,false);
     pose_y = configSource.read_float(iniSection,"pose_y",0,false);
     pose_z = configSource.read_float(iniSection,"pose_z",0,false);
-    pose_yaw = configSource.read_float(iniSection,"pose_yax",0,false);
+    pose_yaw = configSource.read_float(iniSection,"pose_yaw",0,false);
     pose_pitch = configSource.read_float(iniSection,"pose_pitch",0,false);
     pose_roll = configSource.read_float(iniSection,"pose_roll",0,false);
 	m_ip = configSource.read_string(iniSection, "ip_address", "192.168.0.1", false);

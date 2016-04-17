@@ -88,6 +88,7 @@
 			- Fix typos and wxWidgets align errors in RawLogViewer GUI (Closes #219)
 			- mrpt::nav::CHolonomicND & mrpt::nav::CHolonomicVFF didn't use the full range of output velocities.
 			- mrpt::utils::CImage::loadFromFile() now does not leave the image in undefined state if the load operation fails.
+			- mrpt::hwdrivers::CLMS100Eth failed to load "pose_yaw" parameter from config file.
 
 <hr>
 <a name="1.3.2">
