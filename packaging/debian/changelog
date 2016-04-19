@@ -1,4 +1,4 @@
-  * Lintian clean again: fix not-binnmuable-any-depends-all error and warnings.
+  * Lintian clean again: fix not-binnmuable-any-depends-all error and warnings (Closes: #821818)
   * Fix mrpt-common package overwriting files in mrpt-apps (Closes: #807662)
   * Fix building against libftdi1-dev (Closes: #810368)
   * Fix building with gcc 6.0 (Closes: #811812)
