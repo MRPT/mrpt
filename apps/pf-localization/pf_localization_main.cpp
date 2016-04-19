@@ -830,16 +830,16 @@ void do_pf_localization(const std::string &ini_fil, const std::string &cmdline_r
 					if (!SAVE_STATS_ONLY && SCENE3D_FREQ!=-1 && (step % SCENE3D_FREQ)==0)
 					{
 						// Save 3D scene:
-						CFileGZOutputStream(format("%s/progress_%03u.3Dscene",sOUT_DIR_3D.c_str(),(unsigned)step)) << scene;
+						CFileGZOutputStream(format("%s/progress_%05u.3Dscene",sOUT_DIR_3D.c_str(),(unsigned)step)) << scene;
 
 						// Generate text files for matlab:
 						// ------------------------------------
-						pdf.saveToTextFile(format("%s/particles_%03u.txt",sOUT_DIR_PARTS.c_str(),(unsigned)step));
+						pdf.saveToTextFile(format("%s/particles_%05u.txt",sOUT_DIR_PARTS.c_str(),(unsigned)step));
 
 						if (IS_CLASS(*observations->begin(),CObservation2DRangeScan))
 						{
 							CObservation2DRangeScanPtr o = CObservation2DRangeScanPtr( *observations->begin() );
-							vectorToTextFile(o->scan , format("%s/observation_scan_%03u.txt",sOUT_DIR_PARTS.c_str(),(unsigned)step) );
+							vectorToTextFile(o->scan , format("%s/observation_scan_%05u.txt",sOUT_DIR_PARTS.c_str(),(unsigned)step) );
 						}
 					}
 
