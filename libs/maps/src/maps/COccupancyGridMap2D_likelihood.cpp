@@ -525,7 +525,7 @@ double	 COccupancyGridMap2D::computeLikelihoodField_Thrun( const CPointsMap	*pm,
 	}
 
 	// Compute the likelihoods for each point:
-	ret = 0; //Product_T_OrSum_F ? 1e300:0;
+	ret = 0;
 
 	float		stdHit	= likelihoodOptions.LF_stdHit;
 	float		zHit	= likelihoodOptions.LF_zHit;
@@ -658,6 +658,9 @@ double	 COccupancyGridMap2D::computeLikelihoodField_Thrun( const CPointsMap	*pm,
 
 					occupiedMinDist = occupiedMinDistInt * constDist2DiscrUnits_INV ;
 				}
+
+				if (likelihoodOptions.LF_useSquareDist)
+					occupiedMinDist*=occupiedMinDist;
 
 				thisLik = zRandomTerm  + zHit * exp( Q * occupiedMinDist );
 
@@ -796,6 +799,7 @@ COccupancyGridMap2D::TLikelihoodOptions::TLikelihoodOptions() :
 	LF_maxRange						( 81.0f ),
 	LF_decimation					( 5 ),
 	LF_maxCorrsDistance				( 0.3f ),
+	LF_useSquareDist				( false ),
 	LF_alternateAverageMethod		( false ),
 
 	MI_exponent						( 2.5f ),
@@ -831,6 +835,7 @@ void  COccupancyGridMap2D::TLikelihoodOptions::loadFromConfigFile(
 	LF_maxRange							= iniFile.read_float(section,"LF_maxRange",LF_maxRange);
 	LF_decimation						= iniFile.read_int(section,"LF_decimation",LF_decimation);
 	LF_maxCorrsDistance					= iniFile.read_float(section,"LF_maxCorrsDistance",LF_maxCorrsDistance);
+	LF_useSquareDist					= iniFile.read_bool(section,"LF_useSquareDist",LF_useSquareDist);
 	LF_alternateAverageMethod			= iniFile.read_bool(section,"LF_alternateAverageMethod",LF_alternateAverageMethod);
 
 	MI_exponent							= iniFile.read_float(section,"MI_exponent",MI_exponent);
@@ -876,6 +881,7 @@ void  COccupancyGridMap2D::TLikelihoodOptions::dumpToTextStream(mrpt::utils::CSt
 	out.printf("LF_maxRange                             = %f\n",	LF_maxRange );
 	out.printf("LF_decimation                           = %u\n",	LF_decimation );
 	out.printf("LF_maxCorrsDistance                     = %f\n",	LF_maxCorrsDistance );
+	out.printf("LF_useSquareDist                        = %c\n",	LF_useSquareDist ? 'Y':'N');
 	out.printf("LF_alternateAverageMethod               = %c\n",	LF_alternateAverageMethod ? 'Y':'N');
 	out.printf("MI_exponent                             = %f\n",	MI_exponent );
 	out.printf("MI_skip_rays                            = %u\n",	MI_skip_rays );

@@ -50,7 +50,9 @@
 			- \ref mrpt_maps_grp
 				- New class mrpt::maps::CHeightGridMap2D_MRF
 				- New base class mrpt::maps::CHeightGridMap2D_Base
-				- New method mrpt::maps::COccupancyGridMap2D::copyMapContentFrom()
+				- mrpt::maps::COccupancyGridMap2D:
+					- New method mrpt::maps::COccupancyGridMap2D::copyMapContentFrom()
+					- New likelihood parameter `LF_useSquareDist`
 				- New method mrpt::maps::CHeightGridMap2D::insertIndividualPoint()
 			- \ref mrpt_obs_grp
 				- New class mrpt::obs::CObservationVelodyneScan

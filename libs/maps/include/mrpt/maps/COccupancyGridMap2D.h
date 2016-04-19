@@ -580,36 +580,16 @@ namespace maps
 			void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) MRPT_OVERRIDE; // See base docs
 			void dumpToTextStream(mrpt::utils::CStream &out) const MRPT_OVERRIDE; // See base docs
 
-			/** The selected method to compute an observation likelihood.
-			*/
-			TLikelihoodMethod	likelihoodMethod;
+			TLikelihoodMethod	likelihoodMethod;  //!< The selected method to compute an observation likelihood
+			float    LF_stdHit; //!< [LikelihoodField] The laser range "sigma" used in computations; Default value = 0.35
+			float    LF_zHit, LF_zRandom; //!< [LikelihoodField]
+			float    LF_maxRange; //!< [LikelihoodField] The max. range of the sensor (Default= 81 m)
+			uint32_t LF_decimation; //!< [LikelihoodField] The decimation of the points in a scan, default=1 == no decimation
+			float    LF_maxCorrsDistance; //!< [LikelihoodField] The max. distance for searching correspondences around each sensed point
+			bool     LF_useSquareDist;    //!< [LikelihoodField] (Default:false) Use `exp(dist^2/std^2)` instead of `exp(dist^2/std^2)`
+			bool     LF_alternateAverageMethod; //!< [LikelihoodField] Set this to "true" ot use an alternative method, where the likelihood of the whole range scan is computed by "averaging" of individual ranges, instead of by the "product".
 
-			/** [LikelihoodField] The laser range "sigma" used in computations; Default value = 0.35
-			*/
-			float	LF_stdHit;
-
-			/** [LikelihoodField] Ratios of the hit/random components of the likelihood; Default values=0.95/0.5
-			*/
-			float	LF_zHit, LF_zRandom;
-
-			/** [LikelihoodField] The max. range of the sensor (def=81meters)
-			*/
-			float	LF_maxRange;
-
-			/** [LikelihoodField] The decimation of the points in a scan, default=1 == no decimation.
-			*/
-			uint32_t LF_decimation;
-
-			/** [LikelihoodField] The max. distance for searching correspondences around each sensed point
-			*/
-			float	LF_maxCorrsDistance;
-
-			/** [LikelihoodField] Set this to "true" ot use an alternative method, where the likelihood of the whole range scan is computed by "averaging" of individual ranges, instead of by the "product".
-			  */
-			bool	LF_alternateAverageMethod;
-
-			/** [MI] The exponent in the MI likelihood computation. Default value = 5
-			*/
+			/** [MI] The exponent in the MI likelihood computation. Default value = 5 */
 			float	MI_exponent;
 
 			/** [MI] The scan rays decimation: at every N rays, one will be used to compute the MI:

@@ -128,7 +128,7 @@ inline void COccupancyGridMap2D::simulateScanRay(
 	const float threshold_free,
 	const double noiseStd, const double angleNoiseStd ) const
 {
-	const double A_ = angle_direction + randomGenerator.drawGaussian1D_normalized()*angleNoiseStd;
+	const double A_ = angle_direction + (angleNoiseStd>.0 ? randomGenerator.drawGaussian1D_normalized()*angleNoiseStd : .0);
 
 	// Unit vector in the directorion of the ray:
 #ifdef HAVE_SINCOS
