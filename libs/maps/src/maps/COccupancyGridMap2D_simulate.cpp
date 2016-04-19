@@ -146,14 +146,15 @@ inline void COccupancyGridMap2D::simulateScanRay(
 	unsigned int firstUnknownCellDist=max_ray_len+1;
 	double rx=start_x;
 	double ry=start_y;
-	float hitCellOcc = 0.5f;
+	cellType hitCellOcc_int = 0; // p2l(0.5f)
+	const cellType threshold_free_int = p2l(threshold_free);
 	int x, y=y2idx(ry);
 
 	while ( (x=x2idx(rx))>=0 && (y=y2idx(ry))>=0 &&
-			 x<static_cast<int>(size_x) && y<static_cast<int>(size_y) && (hitCellOcc=getCell(x,y))>threshold_free &&
+			 x<static_cast<int>(size_x) && y<static_cast<int>(size_y) && (hitCellOcc_int=map[x+y*size_x])>threshold_free_int &&
 			 ray_len<max_ray_len  )
 	{
-		if ( fabs(hitCellOcc-0.5)<0.01f )
+		if ( abs(hitCellOcc_int)<=1 )
 			mrpt::utils::keep_min(firstUnknownCellDist, ray_len );
 
 		rx+=Arx;
@@ -164,7 +165,7 @@ inline void COccupancyGridMap2D::simulateScanRay(
 	// Store:
 	// Check out of the grid?
 	// Tip: if x<0, (unsigned)(x) will also be >>> size_x ;-)
-	if (fabs(hitCellOcc-0.5)<0.01f || static_cast<unsigned>(x)>=size_x || static_cast<unsigned>(y)>=size_y )
+	if (abs(hitCellOcc_int)<=1 || static_cast<unsigned>(x)>=size_x || static_cast<unsigned>(y)>=size_y )
 	{
 		out_valid = false;
 
