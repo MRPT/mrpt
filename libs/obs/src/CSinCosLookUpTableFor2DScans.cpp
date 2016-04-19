@@ -19,7 +19,7 @@ using namespace mrpt::utils;
 /** Return two vectors with the cos and the sin of the angles for each of the
   * rays in a scan, computing them only the first time and returning a cached copy the rest.
   */
-const CSinCosLookUpTableFor2DScans::TSinCosValues & CSinCosLookUpTableFor2DScans::getSinCosForScan(const CObservation2DRangeScan &scan)
+const CSinCosLookUpTableFor2DScans::TSinCosValues & CSinCosLookUpTableFor2DScans::getSinCosForScan(const CObservation2DRangeScan &scan) const
 {
 	T2DScanProperties scan_prop;
 	scan.getScanProperties(scan_prop);
@@ -29,7 +29,7 @@ const CSinCosLookUpTableFor2DScans::TSinCosValues & CSinCosLookUpTableFor2DScans
 /** Return two vectors with the cos and the sin of the angles for each of the
   * rays in a scan, computing them only the first time and returning a cached copy the rest.
   */
-const CSinCosLookUpTableFor2DScans::TSinCosValues & CSinCosLookUpTableFor2DScans::getSinCosForScan(const T2DScanProperties &scan_prop)
+const CSinCosLookUpTableFor2DScans::TSinCosValues & CSinCosLookUpTableFor2DScans::getSinCosForScan(const T2DScanProperties &scan_prop) const
 {
 	std::map<T2DScanProperties,TSinCosValues>::const_iterator it = m_cache.find(scan_prop);
 	if (it!=m_cache.end())

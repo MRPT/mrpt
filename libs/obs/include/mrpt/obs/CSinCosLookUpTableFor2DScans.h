@@ -45,12 +45,12 @@ namespace obs
 		  *   const CSinCosLookUpTableFor2DScans::TSinCosValues & sincos_vals = cache.getSinCosForScan( scan );
 		  * \endcode
 		  */
-		const TSinCosValues & getSinCosForScan(const CObservation2DRangeScan &scan);
+		const TSinCosValues & getSinCosForScan(const CObservation2DRangeScan &scan) const;
 		/** \overload */
-		const TSinCosValues & getSinCosForScan(const T2DScanProperties &scan_prop);
+		const TSinCosValues & getSinCosForScan(const T2DScanProperties &scan_prop) const;
 
 	private:
-		std::map<T2DScanProperties,TSinCosValues>  m_cache; //!< The cache of known scans and their sin/cos tables.
+		mutable std::map<T2DScanProperties,TSinCosValues>  m_cache; //!< The cache of known scans and their sin/cos tables.
 	};
 
 
