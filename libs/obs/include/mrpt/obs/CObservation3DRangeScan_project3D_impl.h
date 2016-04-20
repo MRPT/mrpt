@@ -15,8 +15,8 @@ namespace mrpt {
 namespace obs {
 namespace detail {
 	// Auxiliary functions which implement SSE-optimized proyection of 3D point cloud:
-	template <class POINTMAP> void do_project_3d_pointcloud(const int H,const int W,const float *kys,const float *kzs,const mrpt::math::CMatrix &rangeImage, mrpt::utils::PointCloudAdapter<POINTMAP> &pca);
-	template <class POINTMAP> void do_project_3d_pointcloud_SSE2(const int H,const int W,const float *kys,const float *kzs,const mrpt::math::CMatrix &rangeImage, mrpt::utils::PointCloudAdapter<POINTMAP> &pca);
+	template <class POINTMAP> void do_project_3d_pointcloud(const int H,const int W,const float *kys,const float *kzs,const mrpt::math::CMatrix &rangeImage, mrpt::utils::PointCloudAdapter<POINTMAP> &pca, std::vector<uint16_t> &idxs_x, std::vector<uint16_t> &idxs_y);
+	template <class POINTMAP> void do_project_3d_pointcloud_SSE2(const int H,const int W,const float *kys,const float *kzs,const mrpt::math::CMatrix &rangeImage, mrpt::utils::PointCloudAdapter<POINTMAP> &pca, std::vector<uint16_t> &idxs_x, std::vector<uint16_t> &idxs_y);
 
 	template <class POINTMAP>
 	void project3DPointsFromDepthImageInto(
@@ -39,8 +39,7 @@ namespace detail {
 		const int H = src_obs.rangeImage.rows();
 		const size_t WH = W*H;
 
-		// Reserve memory for 3D points:
-		pca.resize(WH);
+		pca.resize(WH); // Reserve memory for 3D points. It will be later resized again to the actual number of valid points
 
 		if (src_obs.range_is_depth)
 		{
@@ -78,10 +77,10 @@ namespace detail {
 
 	#if MRPT_HAS_SSE2
 				if ((W & 0x07)==0)
-						do_project_3d_pointcloud_SSE2(H,W,kys,kzs,src_obs.rangeImage,pca);
-				else	do_project_3d_pointcloud(H,W,kys,kzs,src_obs.rangeImage,pca);  // if image width is not 8*N, use standard method
+				     do_project_3d_pointcloud_SSE2(H,W,kys,kzs,src_obs.rangeImage,pca, src_obs.points3D_idxs_x, src_obs.points3D_idxs_y );
+				else do_project_3d_pointcloud(H,W,kys,kzs,src_obs.rangeImage,pca, src_obs.points3D_idxs_x, src_obs.points3D_idxs_y );  // if image width is not 8*N, use standard method
 	#else
-				do_project_3d_pointcloud(H,W,kys,kzs,src_obs.rangeImage,pca);
+				do_project_3d_pointcloud(H,W,kys,kzs,src_obs.rangeImage,pca,src_obs.points3D_idxs_x, src_obs.points3D_idxs_y);
 	#endif
 			}
 			else
@@ -95,15 +94,21 @@ namespace detail {
 				for (int r=0;r<H;r++)
 					for (int c=0;c<W;c++)
 					{
-						const float Kz = (r_cy - r) * r_fy_inv;
-						const float Ky = (r_cx - c) * r_fx_inv;
 						const float D = src_obs.rangeImage.coeff(r,c);
-						pca.setPointXYZ(idx++,
-							D,        // x
-							Ky * D,   // y
-							Kz * D    // z
-							);
+						if (D!=.0f) {
+							const float Kz = (r_cy - r) * r_fy_inv;
+							const float Ky = (r_cx - c) * r_fx_inv;
+							pca.setPointXYZ(idx,
+								D,        // x
+								Ky * D,   // y
+								Kz * D    // z
+								);
+							src_obs.points3D_idxs_x[idx]=c;
+							src_obs.points3D_idxs_y[idx]=r;
+							++idx;
+						}
 					}
+				pca.resize(idx); // Actual number of valid pts
 			}
 		}
 		else
@@ -124,15 +129,21 @@ namespace detail {
 			for (int r=0;r<H;r++)
 				for (int c=0;c<W;c++)
 				{
-					const float Ky = (r_cx - c) * r_fx_inv;
-					const float Kz = (r_cy - r) * r_fy_inv;
 					const float D = src_obs.rangeImage.coeff(r,c);
-					pca.setPointXYZ(idx++,
-						D / std::sqrt(1+Ky*Ky+Kz*Kz), // x
-						Ky * D,   // y
-						Kz * D    // z
-						);
+					if (D!=.0f) {
+						const float Ky = (r_cx - c) * r_fx_inv;
+						const float Kz = (r_cy - r) * r_fy_inv;
+						pca.setPointXYZ(idx,
+							D / std::sqrt(1+Ky*Ky+Kz*Kz), // x
+							Ky * D,   // y
+							Kz * D    // z
+							);
+						src_obs.points3D_idxs_x[idx]=c;
+						src_obs.points3D_idxs_y[idx]=r;
+						++idx;
+					}
 				}
+			pca.resize(idx); // Actual number of valid pts
 		}
 
 		// -------------------------------------------------------------
@@ -154,7 +165,7 @@ namespace detail {
 
 			// ...precompute the inverse of the pose transformation out of the loop,
 			//  store as a 4x4 homogeneous matrix to exploit SSE optimizations below:
-		 mrpt::math::CMatrixFixedNumeric<float,4,4> T_inv;
+			mrpt::math::CMatrixFixedNumeric<float,4,4> T_inv;
 			if (!isDirectCorresp)
 			{
 			 mrpt::math::CMatrixFixedNumeric<double,3,3> R_inv;
@@ -171,21 +182,19 @@ namespace detail {
 			Eigen::Matrix<float,4,1>  pt_wrt_color, pt_wrt_depth;
 			pt_wrt_depth[3]=1;
 
-			int img_idx_x=0, img_idx_y=0; // projected pixel coordinates, in the RGB image plane
 			mrpt::utils::TColor pCol;
 
 			// For each local point:
-			for (size_t i=0;i<WH;i++)
+			const size_t nPts = pca.size();
+			for (size_t i=0;i<nPts;i++)
 			{
+				int img_idx_x, img_idx_y;  // projected pixel coordinates, in the RGB image plane
 				bool pointWithinImage = false;
 				if (isDirectCorresp)
 				{
 					pointWithinImage=true;
-					img_idx_x++;
-					if (img_idx_x>=imgW) {
-						img_idx_x=0;
-						img_idx_y++;
-					}
+					img_idx_x = src_obs.points3D_idxs_x[i];
+					img_idx_y = src_obs.points3D_idxs_y[i];
 				}
 				else
 				{
@@ -242,7 +251,8 @@ namespace detail {
 			Eigen::Matrix<float,4,1>  pt, pt_transf;
 			pt[3]=1;
 
-			for (size_t i=0;i<WH;i++)
+			const size_t nPts = pca.size();
+			for (size_t i=0;i<nPts;i++)
 			{
 				pca.getPointXYZ(i,pt[0],pt[1],pt[2]);
 				pt_transf.noalias() = HM*pt;
@@ -253,24 +263,26 @@ namespace detail {
 
 	// Auxiliary functions which implement proyection of 3D point clouds:
 	template <class POINTMAP>
-	inline void do_project_3d_pointcloud(const int H,const int W,const float *kys,const float *kzs,const mrpt::math::CMatrix &rangeImage, mrpt::utils::PointCloudAdapter<POINTMAP> &pca)
+	inline void do_project_3d_pointcloud(const int H,const int W,const float *kys,const float *kzs,const mrpt::math::CMatrix &rangeImage, mrpt::utils::PointCloudAdapter<POINTMAP> &pca, std::vector<uint16_t> &idxs_x, std::vector<uint16_t> &idxs_y)
 	{
 		size_t idx=0;
 		for (int r=0;r<H;r++)
 			for (int c=0;c<W;c++)
 			{
 				const float D = rangeImage.coeff(r,c);
-				pca.setPointXYZ(idx++,
-					D,          // x
-					*kys++ * D, // y
-					*kzs++ * D  // z
-					);
+				if (D!=.0f) {
+					pca.setPointXYZ(idx, D /*x*/, *kys++ * D /*y*/, *kzs++ * D /*z*/);
+					idxs_x[idx]=c;
+					idxs_y[idx]=r;
+					++idx;
+				}
 			}
+		pca.resize(idx);
 	}
 
 	// Auxiliary functions which implement proyection of 3D point clouds:
 	template <class POINTMAP>
-	inline void do_project_3d_pointcloud_SSE2(const int H,const int W,const float *kys,const float *kzs,const mrpt::math::CMatrix &rangeImage, mrpt::utils::PointCloudAdapter<POINTMAP> &pca)
+	inline void do_project_3d_pointcloud_SSE2(const int H,const int W,const float *kys,const float *kzs,const mrpt::math::CMatrix &rangeImage, mrpt::utils::PointCloudAdapter<POINTMAP> &pca, std::vector<uint16_t> &idxs_x, std::vector<uint16_t> &idxs_y)
 	{
 	#if MRPT_HAS_SSE2
 			// Use optimized version:
@@ -292,21 +304,23 @@ namespace detail {
 					_mm_storeu_ps(ys , _mm_mul_ps(KY,D));
 					_mm_storeu_ps(zs , _mm_mul_ps(KZ,D));
 
+					for (int q=0;q<4;q++)
+						if (xs[q]!=.0f) {
+							pca.setPointXYZ(idx,xs[q],ys[q],zs[q]);
+							idxs_x[idx]=(c<<2)+q;
+							idxs_y[idx]=r;
+							++idx;
+						}
 					D_ptr+=4;
 					kys+=4;
 					kzs+=4;
-					pca.setPointXYZ(idx++,xs[0],ys[0],zs[0]);
-					pca.setPointXYZ(idx++,xs[1],ys[1],zs[1]);
-					pca.setPointXYZ(idx++,xs[2],ys[2],zs[2]);
-					pca.setPointXYZ(idx++,xs[3],ys[3],zs[3]);
 				}
 			}
+			pca.resize(idx);
 	#endif
 	}
 
-
 } // End of namespace
 } // End of namespace
 } // End of namespace
-
 #endif

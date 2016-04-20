@@ -21,9 +21,11 @@
 #include <mrpt/utils/CConfigFile.h>
 #include <mrpt/utils/CTicTac.h>
 #include <mrpt/maps/CColouredPointsMap.h>
+#include <mrpt/maps/CColouredOctoMap.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/stock_objects.h>
 #include <mrpt/opengl/CPointCloudColoured.h>
+#include <mrpt/opengl/COctoMapVoxels.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/synch/CThreadSafeVariable.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
@@ -260,17 +262,13 @@ void Test_Kinect()
 			{
 #if !defined(VIEW_AS_OCTOMAP)
 				// For alternative ways to generate the 3D point cloud, read:
-				// http://www.mrpt.org/Generating_3D_point_clouds_from_RGB_D_observations
-				CColouredPointsMap pntsMap;
-				pntsMap.colorScheme.scheme = CColouredPointsMap::cmFromIntensityImage;
-				pntsMap.loadFromRangeScan(*last_obs);
-
+				// http://www.mrpt.org/tutorials/programming/miscellaneous/generating_3d_point_clouds_from_rgb_d_observations/
 				win3D.get3DSceneAndLock();
-					gl_points->loadFromPointsMap(&pntsMap);
+					last_obs->project3DPointsFromDepthImageInto( *gl_points, false /* without obs.sensorPose */ );
 				win3D.unlockAccess3DScene();
 #else
-				CColouredOctoMap  octoMap(0.10);
-				octoMap.setVoxelColourMethod( CColouredOctoMap::INTEGRATE );
+				mrpt::maps::CColouredOctoMap  octoMap(0.10);
+				octoMap.setVoxelColourMethod( mrpt::maps::CColouredOctoMap::INTEGRATE );
 				octoMap.insertObservationPtr( last_obs );
 
 				win3D.get3DSceneAndLock();

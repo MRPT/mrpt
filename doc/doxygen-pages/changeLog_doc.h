@@ -59,6 +59,8 @@
 				- mrpt::obs::CSinCosLookUpTableFor2DScans now can build a table from a mrpt::obs::T2DScanProperties structure, which now also has its separate header file for better modularity.
 				- <b>[API changed]</b> mrpt::obs::CObservationGPS now stores only one message per objects. API clean-up and extended so the number of GNSS message types is larger and more scalable.
 				- mrpt::obs::gnss: A new namespace with many new data structures for GPS-related messages
+				- mrpt::obs::CObservation3DRangeScan: projection of RGBD images to 3D points now correctly filters out invalid points, which were in previous versions mapped as (0,0,0) points (relative to the sensor). 
+				  In turn, this leads to point clouds of a dynamic number of points. In case of needing the (u,v) pixel coordinates of projected points, checkout the new fields `points3D_idxs_x` & `points3D_idxs_y`.
 			- \ref mrpt_opengl_grp
 				- New class mrpt::opengl::CMesh3D to render 3D models/meshes
 				- New method mrpt::opengl::CPointCloudColoured::recolorizeByCoordinate()
@@ -91,6 +93,7 @@
 			- mrpt::nav::CHolonomicND & mrpt::nav::CHolonomicVFF didn't use the full range of output velocities.
 			- mrpt::utils::CImage::loadFromFile() now does not leave the image in undefined state if the load operation fails.
 			- mrpt::hwdrivers::CLMS100Eth failed to load "pose_yaw" parameter from config file.
+			- mrpt::obs::CObservation3DRangeScan::doDepthAndIntensityCamerasCoincide() did not correctly return `false` for negative offsets between the camera poses.
 
 <hr>
 <a name="1.3.2">

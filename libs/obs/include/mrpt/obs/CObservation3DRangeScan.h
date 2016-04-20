@@ -37,7 +37,8 @@ namespace obs
 	/** Declares a class derived from "CObservation" that encapsules a 3D range scan measurement, as from a time-of-flight range camera or any other RGBD sensor.
 	 *
 	 *  This kind of observations can carry one or more of these data fields:
-	 *    - 3D point cloud (as float's).
+	 *    - 3D point cloud (as float's). 
+	 *    - Each 3D point has its associated (u,v) pixel coordinates in \a points3D_idxs_x & \a points3D_idxs_y (New in MRPT 1.4.0)
 	 *    - 2D range image (as a matrix): Each entry in the matrix "rangeImage(ROW,COLUMN)" contains a distance or a depth (in meters), depending on \a range_is_depth.
 	 *    - 2D intensity (grayscale or RGB) image (as a mrpt::utils::CImage): For SwissRanger cameras, a logarithmic A-law compression is used to convert the original 16bit intensity to a more standard 8bit graylevel.
 	 *    - 2D confidence image (as a mrpt::utils::CImage): For each pixel, a 0x00 and a 0xFF mean the lowest and highest confidence levels, respectively.
@@ -228,10 +229,9 @@ namespace obs
 			const double oversampling_ratio = 1.2 );
 
 
-		bool hasPoints3D; 								//!< true means the field points3D contains valid data.
-		std::vector<float> points3D_x;   //!< If hasPoints3D=true, the X coordinates of the 3D point cloud detected by the camera. \sa resizePoints3DVectors
-		std::vector<float> points3D_y;   //!< If hasPoints3D=true, the Y coordinates of the 3D point cloud detected by the camera. \sa resizePoints3DVectors
-		std::vector<float> points3D_z;   //!< If hasPoints3D=true, the Z coordinates of the 3D point cloud detected by the camera. \sa resizePoints3DVectors
+		bool hasPoints3D; //!< true means the field points3D contains valid data.
+		std::vector<float> points3D_x,points3D_y,points3D_z;  //!< If hasPoints3D=true, the (X,Y,Z) coordinates of the 3D point cloud detected by the camera. \sa resizePoints3DVectors
+		std::vector<uint16_t> points3D_idxs_x, points3D_idxs_y; //!< //!< If hasPoints3D=true, the (x,y) pixel coordinates for each (X,Y,Z) point in \a points3D_x, points3D_y, points3D_z
 
 		/** Use this method instead of resizing all three \a points3D_x, \a points3D_y & \a points3D_z to allow the usage of the internal memory pool. */
 		void resizePoints3DVectors(const size_t nPoints);

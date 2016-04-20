@@ -60,6 +60,7 @@ CObservation3DRangeScan::TCached3DProjTables CObservation3DRangeScan::m_3dproj_l
 	struct CObservation3DRangeScan_Points_MemPoolData
 	{
 		std::vector<float> pts_x,pts_y,pts_z;
+		std::vector<uint16_t> idxs_x, idxs_y; //!< for each point, the corresponding (x,y) pixel coordinates
 	};
 	typedef mrpt::system::CGenericMemoryPool<CObservation3DRangeScan_Points_MemPoolParams,CObservation3DRangeScan_Points_MemPoolData> TMyPointsMemPool;
 
@@ -86,12 +87,18 @@ CObservation3DRangeScan::TCached3DProjTables CObservation3DRangeScan::m_3dproj_l
 			if (pool)
 			{
 				CObservation3DRangeScan_Points_MemPoolParams mem_params;
-				mem_params.WH = obs.points3D_x.size();
+				mem_params.WH = obs.points3D_x.capacity();
+				if (obs.points3D_y.capacity()!=mem_params.WH) obs.points3D_y.resize(mem_params.WH);
+				if (obs.points3D_z.capacity()!=mem_params.WH) obs.points3D_z.resize(mem_params.WH);
+				if (obs.points3D_idxs_x.capacity()!=mem_params.WH) obs.points3D_idxs_x.resize(mem_params.WH);
+				if (obs.points3D_idxs_y.capacity()!=mem_params.WH) obs.points3D_idxs_y.resize(mem_params.WH);
 
 				CObservation3DRangeScan_Points_MemPoolData *mem_block = new CObservation3DRangeScan_Points_MemPoolData();
 				obs.points3D_x.swap( mem_block->pts_x );
 				obs.points3D_y.swap( mem_block->pts_y );
 				obs.points3D_z.swap( mem_block->pts_z );
+				obs.points3D_idxs_x.swap( mem_block->idxs_x );
+				obs.points3D_idxs_y.swap( mem_block->idxs_y );
 
 				pool->dump_to_pool(mem_params, mem_block);
 			}
@@ -116,8 +123,6 @@ CObservation3DRangeScan::TCached3DProjTables CObservation3DRangeScan::m_3dproj_l
 			}
 		}
 	}
-
-
 
 #endif
 
@@ -752,9 +757,20 @@ void CObservation3DRangeScan::resizePoints3DVectors(const size_t WH)
 		vector_strong_clear(points3D_x);
 		vector_strong_clear(points3D_y);
 		vector_strong_clear(points3D_z);
+		vector_strong_clear(points3D_idxs_x);
+		vector_strong_clear(points3D_idxs_y);
 		return;
 	}
 
+	if (WH<points3D_x.size()) // reduce size, don't realloc
+	{
+		points3D_x.resize( WH );
+		points3D_y.resize( WH );
+		points3D_z.resize( WH );
+		points3D_idxs_x.resize( WH );
+		points3D_idxs_y.resize( WH );
+		return;
+	}
 
 	// Request memory for the X,Y,Z buffers from the memory pool:
 	TMyPointsMemPool *pool = TMyPointsMemPool::getInstance();
@@ -770,6 +786,8 @@ void CObservation3DRangeScan::resizePoints3DVectors(const size_t WH)
 			points3D_x.swap( mem_block->pts_x );
 			points3D_y.swap( mem_block->pts_y );
 			points3D_z.swap( mem_block->pts_z );
+			points3D_idxs_x.swap( mem_block->idxs_x );
+			points3D_idxs_y.swap( mem_block->idxs_y );
 			delete mem_block;
 		}
 	}
@@ -779,8 +797,9 @@ void CObservation3DRangeScan::resizePoints3DVectors(const size_t WH)
 	points3D_x.resize( WH );
 	points3D_y.resize( WH );
 	points3D_z.resize( WH );
+	points3D_idxs_x.resize( WH );
+	points3D_idxs_y.resize( WH );
 }
-
 
 // Similar to calling "rangeImage.setSize(H,W)" but this method provides memory pooling to speed-up the memory allocation.
 void CObservation3DRangeScan::rangeImage_setSize(const int H, const int W)
@@ -816,7 +835,7 @@ bool CObservation3DRangeScan::doDepthAndIntensityCamerasCoincide() const
 	static mrpt::poses::CPose3D ref_pose(0,0,0,DEG2RAD(-90),0,DEG2RAD(-90));
 
 	return
-		(relativePoseIntensityWRTDepth.m_coords.array() < EPSILON ).all() &&
+		(relativePoseIntensityWRTDepth.m_coords.array().abs() < EPSILON ).all() &&
 		((ref_pose.getRotationMatrix() - relativePoseIntensityWRTDepth.getRotationMatrix()).array().abs() < EPSILON).all();
 }
 
