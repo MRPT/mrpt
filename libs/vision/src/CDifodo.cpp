@@ -311,15 +311,15 @@ void CDifodo::buildCoordinatesPyramidFast()
 							float weight = 0.f;
 
 							for (unsigned char k = 0; k<16; k++)
+							{
+								const float abs_dif = abs(d_block(k) - dcenter);
+								if (abs_dif < max_depth_dif)
 								{
-									const float abs_dif = abs(d_block(k) - dcenter);
-									if (abs_dif < max_depth_dif)
-									{
-										const float aux_w = f_mask(k)*(max_depth_dif - abs_dif);
-										weight += aux_w;
-										sum += aux_w*d_block(k);
-									}
+									const float aux_w = f_mask(k)*(max_depth_dif - abs_dif);
+									weight += aux_w;
+									sum += aux_w*d_block(k);
 								}
+							}
 							depth[i](v,u) = sum/weight;
 						}
 						else
@@ -795,14 +795,23 @@ void CDifodo::filterLevelSolution()
 	Matrix<float, 6, 1> kai_loc_fil = Bii.inverse().colPivHouseholderQr().solve(kai_b_fil);
 
 	//Compute the rigid transformation
-	Matrix<float,4,4> local_mat; local_mat.assign(0.f); 
-	local_mat(0,1) = -kai_loc_fil(5)/fps; local_mat(1,0) = kai_loc_fil(5)/fps;
-	local_mat(0,2) = kai_loc_fil(4)/fps; local_mat(2,0) = -kai_loc_fil(4)/fps;
-	local_mat(1,2) = -kai_loc_fil(3)/fps; local_mat(2,1) = kai_loc_fil(3)/fps;
-	local_mat(0,3) = kai_loc_fil(0)/fps;
-	local_mat(1,3) = kai_loc_fil(1)/fps;
-	local_mat(2,3) = kai_loc_fil(2)/fps;
-	transformations[level] = local_mat.exp();
+	mrpt::math::CArrayDouble<6> aux_vel = kai_loc_fil.cast<double>()/fps;
+	poses::CPose3D aux1, aux2; 
+	CMatrixDouble44 trans;
+	aux2 = aux1.exp(aux_vel);
+	aux2.getHomogeneousMatrix(trans);
+	transformations[level] = trans.cast<float>();
+
+	//Directly with Eigen 
+	//Matrix<float,4,4> local_mat; local_mat.assign(0.f); 
+	//local_mat(0,1) = -kai_loc_fil(5)/fps; local_mat(1,0) = kai_loc_fil(5)/fps;
+	//local_mat(0,2) = kai_loc_fil(4)/fps; local_mat(2,0) = -kai_loc_fil(4)/fps;
+	//local_mat(1,2) = -kai_loc_fil(3)/fps; local_mat(2,1) = kai_loc_fil(3)/fps;
+	//local_mat(0,3) = kai_loc_fil(0)/fps;
+	//local_mat(1,3) = kai_loc_fil(1)/fps;
+	//local_mat(2,3) = kai_loc_fil(2)/fps;
+	//transformations[level] = local_mat.exp();
+
 #else
 	THROW_EXCEPTION("This class requires Eigen 3.1.0 or above!")
 #endif
