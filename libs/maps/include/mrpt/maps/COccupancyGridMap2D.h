@@ -790,9 +790,8 @@ namespace maps
 				float						rangeNoiseStd = 0,
 				float						angleNoiseStd = mrpt::utils::DEG2RAD(0) ) const;
 
-		/** Simulate just one "ray" in the grid map. This method is used internally to sonarSimulator and laserScanSimulator.
-		  */
-		inline void simulateScanRay(
+		/** Simulate just one "ray" in the grid map. This method is used internally to sonarSimulator and laserScanSimulator */
+		void simulateScanRay(
 			const double x,const double y,const double angle_direction,
 			float &out_range,bool &out_valid,
 			const unsigned int max_ray_len,

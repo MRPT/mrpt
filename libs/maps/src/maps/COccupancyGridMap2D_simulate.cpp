@@ -24,27 +24,15 @@ using namespace mrpt::random;
 using namespace mrpt::poses;
 using namespace std;
 
-/*---------------------------------------------------------------
-						laserScanSimulator
-
- Simulates a range scan into the current grid map.
-   The simulated scan is stored in a CObservation2DRangeScan object, which is also used
-    to pass some parameters: all previously stored characteristics (as aperture,...) are
-	  taken into account for simulation. Only a few more parameters are needed. Additive gaussian noise can be optionally added to the simulated scan.
-		inout_Scan [IN/OUT] This must be filled with desired parameters before calling, and will contain the scan samples on return.
-		robotPose [IN] The robot pose in this map coordinates. Recall that sensor pose relative to this robot pose must be specified in the observation object.
-		threshold [IN] The minimum occupancy threshold to consider a cell to be occupied, for example 0.5.
-		N [IN] The count of range scan "rays", by default to 361.
-		noiseStd [IN] The standard deviation of measurement noise. If not desired, set to 0.
-  ---------------------------------------------------------------*/
+// See docs in header
 void  COccupancyGridMap2D::laserScanSimulator(
-		mrpt::obs::CObservation2DRangeScan	        &inout_Scan,
-		const CPose2D					&robotPose,
-		float						    threshold,
-		size_t							N,
-		float						    noiseStd,
-		unsigned int				    decimation,
-		float							angleNoiseStd ) const
+	mrpt::obs::CObservation2DRangeScan	        &inout_Scan,
+	const CPose2D					&robotPose,
+	float						    threshold,
+	size_t							N,
+	float						    noiseStd,
+	unsigned int				    decimation,
+	float							angleNoiseStd ) const
 {
 	MRPT_START
 
@@ -56,55 +44,55 @@ void  COccupancyGridMap2D::laserScanSimulator(
 	// Aproximation: grid is 2D !!!
 	CPose2D		sensorPose(sensorPose3D);
 
-    // Scan size:
+	// Scan size:
 
-    inout_Scan.scan.resize(N);
-    inout_Scan.validRange.resize(N);
+	inout_Scan.scan.resize(N);
+	inout_Scan.validRange.resize(N);
 
-    double  A = sensorPose.phi() + (inout_Scan.rightToLeft ? -0.5:+0.5) *inout_Scan.aperture;
+	double  A = sensorPose.phi() + (inout_Scan.rightToLeft ? -0.5:+0.5) *inout_Scan.aperture;
 	const double AA = (inout_Scan.rightToLeft ? 1.0:-1.0) * (inout_Scan.aperture / (N-1));
 
-    const float free_thres = 1.0f - threshold;
-    const unsigned int max_ray_len = round(inout_Scan.maxRange / resolution);
+	const float free_thres = 1.0f - threshold;
+	const unsigned int max_ray_len = round(inout_Scan.maxRange / resolution);
 
-    for (size_t i=0;i<N;i+=decimation,A+=AA*decimation)
-    {
-    	bool valid;
-    	simulateScanRay(
+	for (size_t i=0;i<N;i+=decimation,A+=AA*decimation)
+	{
+		bool valid;
+		simulateScanRay(
 			sensorPose.x(),sensorPose.y(),A,
 			inout_Scan.scan[i],valid,
 			max_ray_len, free_thres,
 			noiseStd, angleNoiseStd );
 		inout_Scan.validRange[i] = valid ? 1:0;
-    }
+	}
 
 	MRPT_END
 }
 
 void  COccupancyGridMap2D::sonarSimulator(
-		CObservationRange	        &inout_observation,
-		const CPose2D				&robotPose,
-		float						threshold,
-		float						rangeNoiseStd,
-		float						angleNoiseStd) const
+	CObservationRange	        &inout_observation,
+	const CPose2D				&robotPose,
+	float						threshold,
+	float						rangeNoiseStd,
+	float						angleNoiseStd) const
 {
-    const float free_thres = 1.0f - threshold;
-    const unsigned int max_ray_len = round(inout_observation.maxSensorDistance / resolution);
+	const float free_thres = 1.0f - threshold;
+	const unsigned int max_ray_len = round(inout_observation.maxSensorDistance / resolution);
 
 	for (CObservationRange::iterator itR=inout_observation.begin();itR!=inout_observation.end();++itR)
 	{
 		const CPose2D sensorAbsolutePose = CPose2D( CPose3D(robotPose) + CPose3D(itR->sensorPose) );
 
-    	// For each sonar cone, simulate several rays and keep the shortest distance:
-    	ASSERT_(inout_observation.sensorConeApperture>0)
-    	size_t nRays = round(1+ inout_observation.sensorConeApperture / DEG2RAD(1.0) );
+		// For each sonar cone, simulate several rays and keep the shortest distance:
+		ASSERT_(inout_observation.sensorConeApperture>0)
+		size_t nRays = round(1+ inout_observation.sensorConeApperture / DEG2RAD(1.0) );
 
-    	double direction = sensorAbsolutePose.phi() - 0.5*inout_observation.sensorConeApperture;
+		double direction = sensorAbsolutePose.phi() - 0.5*inout_observation.sensorConeApperture;
 		const double Adir = inout_observation.sensorConeApperture / nRays;
 
 		float min_detected_obs=0;
-    	for (size_t i=0;i<nRays;i++, direction+=Adir )
-    	{
+		for (size_t i=0;i<nRays;i++, direction+=Adir )
+		{
 			bool valid;
 			float sim_rang;
 			simulateScanRay(
@@ -115,13 +103,13 @@ void  COccupancyGridMap2D::sonarSimulator(
 
 			if (valid && (sim_rang<min_detected_obs || !i))
 				min_detected_obs = sim_rang;
-    	}
-    	// Save:
-    	itR->sensedDistance = min_detected_obs;
+		}
+		// Save:
+		itR->sensedDistance = min_detected_obs;
 	}
 }
 
-inline void COccupancyGridMap2D::simulateScanRay(
+void COccupancyGridMap2D::simulateScanRay(
 	const double start_x,const double start_y,const double angle_direction,
 	float &out_range,bool &out_valid,
 	const unsigned int max_ray_len,
@@ -151,8 +139,8 @@ inline void COccupancyGridMap2D::simulateScanRay(
 	int x, y=y2idx(ry);
 
 	while ( (x=x2idx(rx))>=0 && (y=y2idx(ry))>=0 &&
-			 x<static_cast<int>(size_x) && y<static_cast<int>(size_y) && (hitCellOcc_int=map[x+y*size_x])>threshold_free_int &&
-			 ray_len<max_ray_len  )
+		x<static_cast<int>(size_x) && y<static_cast<int>(size_y) && (hitCellOcc_int=map[x+y*size_x])>threshold_free_int &&
+		ray_len<max_ray_len  )
 	{
 		if ( abs(hitCellOcc_int)<=1 )
 			mrpt::utils::keep_min(firstUnknownCellDist, ray_len );
@@ -170,7 +158,7 @@ inline void COccupancyGridMap2D::simulateScanRay(
 		out_valid = false;
 
 		if (firstUnknownCellDist<ray_len)
-				out_range = firstUnknownCellDist*resolution;
+			out_range = firstUnknownCellDist*resolution;
 		else	out_range = ray_len*resolution;
 	}
 	else
