@@ -19,6 +19,7 @@
 #include <mrpt/maps/CLogOddsGridMap2D.h>
 #include <mrpt/utils/safe_pointers.h>
 #include <mrpt/poses/poses_frwds.h>
+#include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/obs/obs_frwds.h>
 
 #include <mrpt/maps/link_pragmas.h>
@@ -83,7 +84,7 @@ namespace maps
 	static const cellType OCCGRID_CELLTYPE_MAX  = CLogOddsGridMap2D<cellType>::CELLTYPE_MAX;
 	static const cellType OCCGRID_P2LTABLE_SIZE = CLogOddsGridMap2D<cellType>::P2LTABLE_SIZE;
 
-    static double RAYTRACE_STEP_SIZE_IN_CELL_UNITS; //!< (Default:1.0) Can be set to <1 if a more fine raytracing is needed in sonarSimulator() and laserScanSimulator(), or >1 to speed it up.
+	static double RAYTRACE_STEP_SIZE_IN_CELL_UNITS; //!< (Default:1.0) Can be set to <1 if a more fine raytracing is needed in sonarSimulator() and laserScanSimulator(), or >1 to speed it up.
 
 	protected:
 
@@ -748,8 +749,7 @@ namespace maps
 
 
 		/** \name Sensor simulators
-		    @{
-		   */
+		    @{ */
 
 		/** Simulates a laser range scan into the current grid map.
 		 *   The simulated scan is stored in a CObservation2DRangeScan object, which is also used
@@ -757,13 +757,13 @@ namespace maps
 		 *	  taken into account for simulation. Only a few more parameters are needed. Additive gaussian noise can be optionally added to the simulated scan.
 		 * \param inout_Scan [IN/OUT] This must be filled with desired parameters before calling, and will contain the scan samples on return.
 		 * \param robotPose [IN] The robot pose in this map coordinates. Recall that sensor pose relative to this robot pose must be specified in the observation object.
-		 * \param threshold [IN] The minimum occupancy threshold to consider a cell to be occupied, for example 0.5.
+		 * \param threshold [IN] The minimum occupancy threshold to consider a cell to be occupied (Default: 0.5f)
 		 * \param N [IN] The count of range scan "rays", by default to 361.
 		 * \param noiseStd [IN] The standard deviation of measurement noise. If not desired, set to 0.
 		 * \param decimation [IN] The rays that will be simulated are at indexes: 0, D, 2D, 3D, ... Default is D=1
 		 * \param angleNoiseStd [IN] The sigma of an optional Gaussian noise added to the angles at which ranges are measured (in radians).
 		 *
-		* \sa sonarSimulator, COccupancyGridMap2D::RAYTRACE_STEP_SIZE_IN_CELL_UNITS
+		* \sa laserScanSimulatorWithUncertainty(), sonarSimulator(), COccupancyGridMap2D::RAYTRACE_STEP_SIZE_IN_CELL_UNITS
 		 */
 		void  laserScanSimulator(
 				mrpt::obs::CObservation2DRangeScan	        &inout_Scan,
@@ -779,18 +779,18 @@ namespace maps
 		 *    to pass in some needed parameters, as the poses of the sonar sensors onto the mobile robot.
 		 * \param inout_observation [IN/OUT] This must be filled with desired parameters before calling, and will contain the simulated ranges on return.
 		 * \param robotPose [IN] The robot pose in this map coordinates. Recall that sensor pose relative to this robot pose must be specified in the observation object.
-		 * \param threshold [IN] The minimum occupancy threshold to consider a cell to be occupied, for example 0.5.
+		 * \param threshold [IN] The minimum occupancy threshold to consider a cell to be occupied (Default: 0.5f)
 		 * \param rangeNoiseStd [IN] The standard deviation of measurement noise. If not desired, set to 0.
 		 * \param angleNoiseStd [IN] The sigma of an optional Gaussian noise added to the angles at which ranges are measured (in radians).
 		 *
-		 * \sa laserScanSimulator, COccupancyGridMap2D::RAYTRACE_STEP_SIZE_IN_CELL_UNITS
+		 * \sa laserScanSimulator(), COccupancyGridMap2D::RAYTRACE_STEP_SIZE_IN_CELL_UNITS
 		 */
 		void  sonarSimulator(
 				mrpt::obs::CObservationRange &inout_observation,
 				const mrpt::poses::CPose2D				&robotPose,
 				float						threshold = 0.5f,
-				float						rangeNoiseStd = 0,
-				float						angleNoiseStd = mrpt::utils::DEG2RAD(0) ) const;
+				float						rangeNoiseStd = 0.f,
+				float						angleNoiseStd = mrpt::utils::DEG2RAD(0.f) ) const;
 
 		/** Simulate just one "ray" in the grid map. This method is used internally to sonarSimulator and laserScanSimulator. \sa COccupancyGridMap2D::RAYTRACE_STEP_SIZE_IN_CELL_UNITS */
 		void simulateScanRay(
@@ -798,8 +798,50 @@ namespace maps
 			float &out_range,bool &out_valid,
 			const double max_range_meters,
 			const float threshold_free=0.5f,
-			const double noiseStd=0, const double angleNoiseStd=0 ) const;
+			const double noiseStd=.0, const double angleNoiseStd=.0 ) const;
 
+		/** Methods for TLaserSimulUncertaintyParams in laserScanSimulatorWithUncertainty() */
+		enum TLaserSimulUncertaintyMethod {
+			sumUnscented = 0 //!< Performs an unscented transform
+		};
+
+		/** Input params for laserScanSimulatorWithUncertainty() */
+		struct MAPS_IMPEXP TLaserSimulUncertaintyParams
+		{
+			TLaserSimulUncertaintyMethod  method;    //!< (Default: sumUnscented) Select the method to do the uncertainty propagation
+			mrpt::poses::CPosePDFGaussian robotPose; //!< The robot pose Gaussian, in map coordinates. Recall that sensor pose relative to this robot pose must be specified in the observation object
+			size_t        nRays;
+			float         rangeNoiseStd;  //!< (Default: 0) The standard deviation of measurement noise. If not desired, set to 0
+			float         angleNoiseStd;  //!< (Default: 0) The sigma of an optional Gaussian noise added to the angles at which ranges are measured (in radians)
+			unsigned int  decimation;     //!< (Default: 1) The rays that will be simulated are at indexes: 0, D, 2D, 3D,...
+			float         threshold;     //!< (Default: 0.5f) The minimum occupancy threshold to consider a cell to be occupied
+
+			TLaserSimulUncertaintyParams();
+		};
+
+		/** Output params for laserScanSimulatorWithUncertainty() */
+		struct MAPS_IMPEXP TLaserSimulUncertaintyResult
+		{
+
+			TLaserSimulUncertaintyResult();
+		};
+		
+
+		/** Like laserScanSimulatorWithUncertainty() (see it for a discussion of most parameters) but taking into account 
+		 *  the robot pose uncertainty and generating a vector of predicted variances for each ray.
+		 *  Range uncertainty includes both, sensor noise and large non-linear effects caused by borders and discontinuities in the environment 
+		 *  as seen from different robot poses.
+		 * 
+		 * \param inout_Scan [IN/OUT] This must be filled with desired parameters (e.g. `maxRange`) before calling, and will contain the MEAN values of the Gaussian distribution of each range in the field `scan`
+		 * \param in_params [IN] Input settings. See TLaserSimulUncertaintyParams
+		 * \param in_params [OUT] Output values, mostly the variances for each range. Range means themselves are stored into \a inout_Scan
+		 *
+		* \sa laserScanSimulator(), COccupancyGridMap2D::RAYTRACE_STEP_SIZE_IN_CELL_UNITS
+		 */
+		void  laserScanSimulatorWithUncertainty(
+				mrpt::obs::CObservation2DRangeScan  &inout_Scan,
+				const TLaserSimulUncertaintyParams  &in_params,
+				const TLaserSimulUncertaintyResult  &out_results) const;
 
 		/** @} */
 

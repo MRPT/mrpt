@@ -45,7 +45,6 @@ void  COccupancyGridMap2D::laserScanSimulator(
 	CPose2D		sensorPose(sensorPose3D);
 
 	// Scan size:
-
 	inout_Scan.scan.resize(N);
 	inout_Scan.validRange.resize(N);
 
@@ -177,3 +176,27 @@ void COccupancyGridMap2D::simulateScanRay(
 			out_range+=  noiseStd*randomGenerator.drawGaussian1D_normalized();
 	}
 }
+
+
+COccupancyGridMap2D::TLaserSimulUncertaintyParams::TLaserSimulUncertaintyParams() : 
+	method(sumUnscented),
+	nRays(361),
+	rangeNoiseStd(.0f),
+	angleNoiseStd(.0f),
+	decimation(1),
+	threshold(.5f)
+{
+}
+
+COccupancyGridMap2D::TLaserSimulUncertaintyResult::TLaserSimulUncertaintyResult()
+{
+}
+
+void COccupancyGridMap2D::laserScanSimulatorWithUncertainty(
+		mrpt::obs::CObservation2DRangeScan  &inout_Scan,
+		const COccupancyGridMap2D::TLaserSimulUncertaintyParams  &in_params,
+		const COccupancyGridMap2D::TLaserSimulUncertaintyResult  &out_results) const
+{
+	MRPT_TODO("Implement");
+}
+
