@@ -132,21 +132,33 @@ void COccupancyGridMap2D::simulateScanRay(
 	// Ray tracing, until collision, out of the map or out of range:
 	unsigned int ray_len=0;
 	unsigned int firstUnknownCellDist=max_ray_len+1;
-	double rx=start_x;
-	double ry=start_y;
+	//double rx=start_x;
+	//double ry=start_y;
+
+	// Use integers for all ray tracing for efficiency
+#define INTPRECNUMBIT 10
+#define int_x2idx(_X) (_X>>INTPRECNUMBIT)
+#define int_y2idx(_X) (_X>>INTPRECNUMBIT)
+
+	int64_t rxi = static_cast<int64_t>( ((start_x-x_min)/resolution) * (1L <<INTPRECNUMBIT));
+	int64_t ryi = static_cast<int64_t>( ((start_y-y_min)/resolution) * (1L <<INTPRECNUMBIT));
+	
+	const int64_t Arxi = static_cast<int64_t>( Arx * (1L <<INTPRECNUMBIT) );
+	const int64_t Aryi = static_cast<int64_t>( Ary * (1L <<INTPRECNUMBIT) );
+
 	cellType hitCellOcc_int = 0; // p2l(0.5f)
 	const cellType threshold_free_int = p2l(threshold_free);
-	int x, y=y2idx(ry);
+	int x, y=int_y2idx(ryi);
 
-	while ( (x=x2idx(rx))>=0 && (y=y2idx(ry))>=0 &&
+	while ( (x=int_x2idx(rxi))>=0 && (y=int_y2idx(ryi))>=0 &&
 		x<static_cast<int>(size_x) && y<static_cast<int>(size_y) && (hitCellOcc_int=map[x+y*size_x])>threshold_free_int &&
-		ray_len<max_ray_len  )
+		ray_len<max_ray_len )
 	{
 		if ( abs(hitCellOcc_int)<=1 )
 			mrpt::utils::keep_min(firstUnknownCellDist, ray_len );
 
-		rx+=Arx;
-		ry+=Ary;
+		rxi+=Arxi;
+		ryi+=Aryi;
 		ray_len++;
 	}
 

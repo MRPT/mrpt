@@ -42,6 +42,7 @@
 #include <mrpt/utils/CFileOutputStream.h>
 #include <mrpt/utils/CFileGZInputStream.h>
 #include <mrpt/utils/CFileGZOutputStream.h>
+#include <mrpt/utils/CTimeLogger.h>
 #include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/opengl/CPlanarLaserScan.h>
 #include <mrpt/opengl/CPointCloud.h>
@@ -672,7 +673,11 @@ void gridmapSimulFrame::OntimRunTrigger(wxTimerEvent& event)
 		the_scan.aperture = LASER_APERTURE;
 		the_scan.stdError = LASER_STD_ERROR;
 
+		static CTimeLogger timlog;
+
+		timlog.enter("laserScanSimulator");
 		the_grid.laserScanSimulator( the_scan, p, 0.5f, LASER_N_RANGES, LASER_STD_ERROR, 1, LASER_BEARING_STD_ERROR );
+		timlog.leave("laserScanSimulator");
 
 		// Save rawlog?
 		// ----------------------------
