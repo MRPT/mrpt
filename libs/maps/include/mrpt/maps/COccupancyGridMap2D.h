@@ -763,7 +763,7 @@ namespace maps
 		 * \param decimation [IN] The rays that will be simulated are at indexes: 0, D, 2D, 3D, ... Default is D=1
 		 * \param angleNoiseStd [IN] The sigma of an optional Gaussian noise added to the angles at which ranges are measured (in radians).
 		 *
-         * \sa sonarSimulator, COccupancyGridMap2D::RAYTRACE_STEP_SIZE_IN_CELL_UNITS
+		* \sa sonarSimulator, COccupancyGridMap2D::RAYTRACE_STEP_SIZE_IN_CELL_UNITS
 		 */
 		void  laserScanSimulator(
 				mrpt::obs::CObservation2DRangeScan	        &inout_Scan,
@@ -783,7 +783,7 @@ namespace maps
 		 * \param rangeNoiseStd [IN] The standard deviation of measurement noise. If not desired, set to 0.
 		 * \param angleNoiseStd [IN] The sigma of an optional Gaussian noise added to the angles at which ranges are measured (in radians).
 		 *
-         * \sa laserScanSimulator, COccupancyGridMap2D::RAYTRACE_STEP_SIZE_IN_CELL_UNITS
+		 * \sa laserScanSimulator, COccupancyGridMap2D::RAYTRACE_STEP_SIZE_IN_CELL_UNITS
 		 */
 		void  sonarSimulator(
 				mrpt::obs::CObservationRange &inout_observation,
@@ -792,11 +792,11 @@ namespace maps
 				float						rangeNoiseStd = 0,
 				float						angleNoiseStd = mrpt::utils::DEG2RAD(0) ) const;
 
-        /** Simulate just one "ray" in the grid map. This method is used internally to sonarSimulator and laserScanSimulator. \sa COccupancyGridMap2D::RAYTRACE_STEP_SIZE_IN_CELL_UNITS */
+		/** Simulate just one "ray" in the grid map. This method is used internally to sonarSimulator and laserScanSimulator. \sa COccupancyGridMap2D::RAYTRACE_STEP_SIZE_IN_CELL_UNITS */
 		void simulateScanRay(
 			const double x,const double y,const double angle_direction,
 			float &out_range,bool &out_valid,
-            const double max_range_meters,
+			const double max_range_meters,
 			const float threshold_free=0.5f,
 			const double noiseStd=0, const double angleNoiseStd=0 ) const;
 
