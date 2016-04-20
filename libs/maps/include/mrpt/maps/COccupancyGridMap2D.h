@@ -83,6 +83,8 @@ namespace maps
 	static const cellType OCCGRID_CELLTYPE_MAX  = CLogOddsGridMap2D<cellType>::CELLTYPE_MAX;
 	static const cellType OCCGRID_P2LTABLE_SIZE = CLogOddsGridMap2D<cellType>::P2LTABLE_SIZE;
 
+    static double RAYTRACE_STEP_SIZE_IN_CELL_UNITS; //!< (Default:1.0) Can be set to <1 if a more fine raytracing is needed in sonarSimulator() and laserScanSimulator(), or >1 to speed it up.
+
 	protected:
 
 		friend class CMultiMetricMap;
@@ -761,7 +763,7 @@ namespace maps
 		 * \param decimation [IN] The rays that will be simulated are at indexes: 0, D, 2D, 3D, ... Default is D=1
 		 * \param angleNoiseStd [IN] The sigma of an optional Gaussian noise added to the angles at which ranges are measured (in radians).
 		 *
-		 * \sa sonarSimulator
+         * \sa sonarSimulator, COccupancyGridMap2D::RAYTRACE_STEP_SIZE_IN_CELL_UNITS
 		 */
 		void  laserScanSimulator(
 				mrpt::obs::CObservation2DRangeScan	        &inout_Scan,
@@ -781,7 +783,7 @@ namespace maps
 		 * \param rangeNoiseStd [IN] The standard deviation of measurement noise. If not desired, set to 0.
 		 * \param angleNoiseStd [IN] The sigma of an optional Gaussian noise added to the angles at which ranges are measured (in radians).
 		 *
-		 * \sa laserScanSimulator
+         * \sa laserScanSimulator, COccupancyGridMap2D::RAYTRACE_STEP_SIZE_IN_CELL_UNITS
 		 */
 		void  sonarSimulator(
 				mrpt::obs::CObservationRange &inout_observation,
@@ -790,11 +792,11 @@ namespace maps
 				float						rangeNoiseStd = 0,
 				float						angleNoiseStd = mrpt::utils::DEG2RAD(0) ) const;
 
-		/** Simulate just one "ray" in the grid map. This method is used internally to sonarSimulator and laserScanSimulator */
+        /** Simulate just one "ray" in the grid map. This method is used internally to sonarSimulator and laserScanSimulator. \sa COccupancyGridMap2D::RAYTRACE_STEP_SIZE_IN_CELL_UNITS */
 		void simulateScanRay(
 			const double x,const double y,const double angle_direction,
 			float &out_range,bool &out_valid,
-			const unsigned int max_ray_len,
+            const double max_range_meters,
 			const float threshold_free=0.5f,
 			const double noiseStd=0, const double angleNoiseStd=0 ) const;
 

@@ -53,7 +53,6 @@ void  COccupancyGridMap2D::laserScanSimulator(
 	const double AA = (inout_Scan.rightToLeft ? 1.0:-1.0) * (inout_Scan.aperture / (N-1));
 
 	const float free_thres = 1.0f - threshold;
-	const unsigned int max_ray_len = round(inout_Scan.maxRange / resolution);
 
 	for (size_t i=0;i<N;i+=decimation,A+=AA*decimation)
 	{
@@ -61,7 +60,7 @@ void  COccupancyGridMap2D::laserScanSimulator(
 		simulateScanRay(
 			sensorPose.x(),sensorPose.y(),A,
 			inout_Scan.scan[i],valid,
-			max_ray_len, free_thres,
+            inout_Scan.maxRange, free_thres,
 			noiseStd, angleNoiseStd );
 		inout_Scan.validRange[i] = valid ? 1:0;
 	}
@@ -77,7 +76,6 @@ void  COccupancyGridMap2D::sonarSimulator(
 	float						angleNoiseStd) const
 {
 	const float free_thres = 1.0f - threshold;
-	const unsigned int max_ray_len = round(inout_observation.maxSensorDistance / resolution);
 
 	for (CObservationRange::iterator itR=inout_observation.begin();itR!=inout_observation.end();++itR)
 	{
@@ -98,7 +96,7 @@ void  COccupancyGridMap2D::sonarSimulator(
 			simulateScanRay(
 				sensorAbsolutePose.x(), sensorAbsolutePose.y(), direction,
 				sim_rang, valid,
-				max_ray_len, free_thres,
+                inout_observation.maxSensorDistance, free_thres,
 				rangeNoiseStd, angleNoiseStd );
 
 			if (valid && (sim_rang<min_detected_obs || !i))
@@ -112,8 +110,8 @@ void  COccupancyGridMap2D::sonarSimulator(
 void COccupancyGridMap2D::simulateScanRay(
 	const double start_x,const double start_y,const double angle_direction,
 	float &out_range,bool &out_valid,
-	const unsigned int max_ray_len,
-	const float threshold_free,
+    const double max_range_meters,
+    const float threshold_free,
 	const double noiseStd, const double angleNoiseStd ) const
 {
 	const double A_ = angle_direction + (angleNoiseStd>.0 ? randomGenerator.drawGaussian1D_normalized()*angleNoiseStd : .0);
@@ -122,29 +120,26 @@ void COccupancyGridMap2D::simulateScanRay(
 #ifdef HAVE_SINCOS
 	double Arx,Ary;
 	::sincos(A_, &Ary,&Arx);
-	Arx*=resolution;
-	Ary*=resolution;
 #else
-	const double Arx =  cos(A_)*resolution;
-	const double Ary =  sin(A_)*resolution;
+    const double Arx =  cos(A_);
+    const double Ary =  sin(A_);
 #endif
 
 	// Ray tracing, until collision, out of the map or out of range:
-	unsigned int ray_len=0;
+    const unsigned int max_ray_len = mrpt::utils::round(max_range_meters/resolution);
+    unsigned int ray_len=0;
 	unsigned int firstUnknownCellDist=max_ray_len+1;
-	//double rx=start_x;
-	//double ry=start_y;
 
 	// Use integers for all ray tracing for efficiency
 #define INTPRECNUMBIT 10
 #define int_x2idx(_X) (_X>>INTPRECNUMBIT)
-#define int_y2idx(_X) (_X>>INTPRECNUMBIT)
+#define int_y2idx(_Y) (_Y>>INTPRECNUMBIT)
 
-	int64_t rxi = static_cast<int64_t>( ((start_x-x_min)/resolution) * (1L <<INTPRECNUMBIT));
-	int64_t ryi = static_cast<int64_t>( ((start_y-y_min)/resolution) * (1L <<INTPRECNUMBIT));
-	
-	const int64_t Arxi = static_cast<int64_t>( Arx * (1L <<INTPRECNUMBIT) );
-	const int64_t Aryi = static_cast<int64_t>( Ary * (1L <<INTPRECNUMBIT) );
+    int64_t rxi = static_cast<int64_t>( ((start_x-x_min)/resolution) * (1L <<INTPRECNUMBIT));
+    int64_t ryi = static_cast<int64_t>( ((start_y-y_min)/resolution) * (1L <<INTPRECNUMBIT));
+
+    const int64_t Arxi = static_cast<int64_t>( RAYTRACE_STEP_SIZE_IN_CELL_UNITS * Arx * (1L <<INTPRECNUMBIT) );
+    const int64_t Aryi = static_cast<int64_t>( RAYTRACE_STEP_SIZE_IN_CELL_UNITS * Ary * (1L <<INTPRECNUMBIT) );
 
 	cellType hitCellOcc_int = 0; // p2l(0.5f)
 	const cellType threshold_free_int = p2l(threshold_free);
@@ -152,7 +147,7 @@ void COccupancyGridMap2D::simulateScanRay(
 
 	while ( (x=int_x2idx(rxi))>=0 && (y=int_y2idx(ryi))>=0 &&
 		x<static_cast<int>(size_x) && y<static_cast<int>(size_y) && (hitCellOcc_int=map[x+y*size_x])>threshold_free_int &&
-		ray_len<max_ray_len )
+        ray_len<max_ray_len )
 	{
 		if ( abs(hitCellOcc_int)<=1 )
 			mrpt::utils::keep_min(firstUnknownCellDist, ray_len );
@@ -160,7 +155,7 @@ void COccupancyGridMap2D::simulateScanRay(
 		rxi+=Arxi;
 		ryi+=Aryi;
 		ray_len++;
-	}
+    }
 
 	// Store:
 	// Check out of the grid?
@@ -170,13 +165,13 @@ void COccupancyGridMap2D::simulateScanRay(
 		out_valid = false;
 
 		if (firstUnknownCellDist<ray_len)
-			out_range = firstUnknownCellDist*resolution;
-		else	out_range = ray_len*resolution;
+            out_range = RAYTRACE_STEP_SIZE_IN_CELL_UNITS*firstUnknownCellDist*resolution;
+        else	out_range = RAYTRACE_STEP_SIZE_IN_CELL_UNITS*ray_len*resolution;
 	}
 	else
 	{ 	// No: The normal case:
-		out_range = ray_len*resolution;
-		out_valid = ray_len<max_ray_len;
+        out_range = RAYTRACE_STEP_SIZE_IN_CELL_UNITS*ray_len*resolution;
+        out_valid = out_range<max_range_meters;
 		// Add additive Gaussian noise:
 		if (noiseStd>0 && out_valid)
 			out_range+=  noiseStd*randomGenerator.drawGaussian1D_normalized();
