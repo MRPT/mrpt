@@ -22,10 +22,10 @@ CObservation2DRangeScanWithUncertainty::TEvalParams::TEvalParams() :
 
 double CObservation2DRangeScanWithUncertainty::evaluateScanLikelihood(const CObservation2DRangeScan& otherScan, const TEvalParams &params) const
 {
-	ASSERT_EQUAL_( otherScan.scan.size(),otherScan.validRange.size() );
-	ASSERT_EQUAL_( otherScan.scan.size(), this->rangesMean.size() );
-	ASSERT_EQUAL_( otherScan.scan.size(), this->rangesCovar.rows() );
-	ASSERT_EQUAL_( otherScan.scan.size(), this->rangesCovar.cols() );
+	ASSERT_EQUAL_( (int)otherScan.scan.size(),(int)otherScan.validRange.size() );
+	ASSERT_EQUAL_( (int)otherScan.scan.size(), (int)this->rangesMean.size() );
+	ASSERT_EQUAL_( (int)otherScan.scan.size(), (int)this->rangesCovar.rows() );
+	ASSERT_EQUAL_( (int)otherScan.scan.size(), (int)this->rangesCovar.cols() );
 	ASSERT_(params.prob_outliers>=0.0 && params.prob_outliers<=1.0)
 	ASSERT_(otherScan.maxRange>0.0)
 
