@@ -13,34 +13,53 @@
 
 using namespace mrpt::obs;
 
-double CObservation2DRangeScanWithUncertainty::evaluateScanLikelihood(const CObservation2DRangeScan& otherScan, double outliers_prob) const
+CObservation2DRangeScanWithUncertainty::TEvalParams::TEvalParams() :
+	prob_outliers(0.5),
+	prob_lost_ray(0.3),
+	max_prediction_std_dev(1.0)
+{
+}
+
+double CObservation2DRangeScanWithUncertainty::evaluateScanLikelihood(const CObservation2DRangeScan& otherScan, const TEvalParams &params) const
 {
 	ASSERT_EQUAL_( otherScan.scan.size(),otherScan.validRange.size() );
 	ASSERT_EQUAL_( otherScan.scan.size(), this->rangesMean.size() );
 	ASSERT_EQUAL_( otherScan.scan.size(), this->rangesCovar.rows() );
 	ASSERT_EQUAL_( otherScan.scan.size(), this->rangesCovar.cols() );
-	ASSERT_(outliers_prob>=0.0 && outliers_prob<=1.0)
+	ASSERT_(params.prob_outliers>=0.0 && params.prob_outliers<=1.0)
 	ASSERT_(otherScan.maxRange>0.0)
 
+	const double sensorRangeVar = mrpt::utils::square(otherScan.stdError);
 	const size_t N = rangesMean.size();
-	double lik_prod = 1.0;
-	double lik_avrg = .0;
-	const double outlier_const_term = 1.0/otherScan.maxRange;
+
+	const double max_var = mrpt::utils::square(params.max_prediction_std_dev);
+	double lik_sum = .0;
+	size_t num_valid = 0;
+
 	for (size_t i=0;i<N;i++)
 	{
-		const double iLikGauss = exp( -0.5 * mrpt::utils::square( otherScan.scan[i] - rangesMean[i] )/ rangesCovar(i,i) );
+		const double prediction_total_var = rangesCovar(i,i)+sensorRangeVar;
+		
+		if (prediction_total_var>max_var)
+			continue;
 
-		double iLik;
+		num_valid++;
+		const double otherScanRange = otherScan.validRange[i] ? otherScan.scan[i] : otherScan.maxRange;
+
+		const double likGauss = exp(-0.5 * mrpt::utils::square( otherScanRange - rangesMean[i] )/ prediction_total_var );
+		double pi;
 		if (otherScan.scan[i] > rangesMean[i]) {
-			iLik = iLikGauss; 
-		} else {
-			iLik = std::max(outlier_const_term, iLikGauss);
+			if (otherScan.validRange[i])
+			     pi = likGauss;
+			else pi = std::max(likGauss, params.prob_lost_ray);
 		}
-		lik_prod *= iLik;
-		lik_avrg += iLik;
+		else {
+			pi = std::max( likGauss, std::min(1.0, params.prob_outliers *otherScanRange/rangesMean[i] ) );
+		}
+		lik_sum+=pi;
 	}
-	lik_avrg/=N;
+	if (num_valid) lik_sum/=num_valid;
 
-	return lik_avrg;
+	return lik_sum;
 }
 

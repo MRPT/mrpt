@@ -25,9 +25,6 @@ using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace std;
 
-double COccupancyGridMap2D::RAYTRACE_STEP_SIZE_IN_CELL_UNITS = 1.0;
-
-
 //  =========== Begin of Map definition ============
 MAP_DEFINITION_REGISTER("COccupancyGridMap2D,occupancyGrid", mrpt::maps::COccupancyGridMap2D)
 

@@ -683,7 +683,7 @@ void gridmapSimulFrame::OntimRunTrigger(wxTimerEvent& event)
 		static mrpt::utils::CTimeLogger timlog;
 
 		timlog.enter("laserScanSimulator");
-		the_grid.laserScanSimulator( the_scan, p, 0.5f, LASER_N_RANGES, LASER_STD_ERROR, 1, LASER_BEARING_STD_ERROR );
+		the_grid.laserScanSimulator( the_scan, p, 0.6f, LASER_N_RANGES, LASER_STD_ERROR, 1, LASER_BEARING_STD_ERROR );
 		timlog.leave("laserScanSimulator");
 
 #ifdef DO_SCAN_LIKELIHOOD_DEBUG
@@ -693,12 +693,12 @@ void gridmapSimulFrame::OntimRunTrigger(wxTimerEvent& event)
 			COccupancyGridMap2D::TLaserSimulUncertaintyResult  ssu_out;
 
 			ssu_params.robotPose.mean = p;
-			ssu_params.robotPose.cov << square(0.25) , 0.0 , 0.0 , 0.0 , square(0.25) , 0.0 , 0.0 , 0.0 , square(DEG2RAD(15.0));
+			ssu_params.robotPose.cov << square(0.25) , 0.0 , 0.0 , 0.0 , square(0.25) , 0.0 , 0.0 , 0.0 , square(DEG2RAD(5.0));
 
 			the_grid.laserScanSimulatorWithUncertainty(ssu_params, ssu_out);
 			timlog.leave("laserScanSimulatorWithUncertainty");
 
-#if 0
+#if 1
 			static mrpt::gui::CDisplayWindowPlots win;
 
 			win.plot(ssu_out.scanWithUncert.rangeScan.scan, "3k-", "mean");
@@ -710,7 +710,7 @@ void gridmapSimulFrame::OntimRunTrigger(wxTimerEvent& event)
 			win.plot(ci2, "k-", "CI-");
 
 			const double LIK = ssu_out.scanWithUncert.evaluateScanLikelihood(the_scan);
-			win.setWindowTitle( mrpt::format("LIK: %e",LIK) );
+			win.setWindowTitle( mrpt::format("LIK: %.05f",LIK) );
 
 			win.axis_fit();
 #endif

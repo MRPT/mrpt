@@ -25,6 +25,8 @@ using namespace mrpt::random;
 using namespace mrpt::poses;
 using namespace std;
 
+double COccupancyGridMap2D::RAYTRACE_STEP_SIZE_IN_CELL_UNITS = 0.8;
+
 // See docs in header
 void  COccupancyGridMap2D::laserScanSimulator(
 	mrpt::obs::CObservation2DRangeScan	        &inout_Scan,
@@ -128,7 +130,6 @@ void COccupancyGridMap2D::simulateScanRay(
 	// Ray tracing, until collision, out of the map or out of range:
 	const unsigned int max_ray_len = mrpt::utils::round(max_range_meters/resolution);
 	unsigned int ray_len=0;
-	unsigned int firstUnknownCellDist=max_ray_len+1;
 
 	// Use integers for all ray tracing for efficiency
 #define INTPRECNUMBIT 10
@@ -149,9 +150,6 @@ void COccupancyGridMap2D::simulateScanRay(
 		x<static_cast<int>(size_x) && y<static_cast<int>(size_y) && (hitCellOcc_int=map[x+y*size_x])>threshold_free_int &&
 		ray_len<max_ray_len )
 	{
-		if ( abs(hitCellOcc_int)<=1 )
-			mrpt::utils::keep_min(firstUnknownCellDist, ray_len );
-
 		rxi+=Arxi;
 		ryi+=Aryi;
 		ray_len++;
@@ -163,10 +161,7 @@ void COccupancyGridMap2D::simulateScanRay(
 	if (abs(hitCellOcc_int)<=1 || static_cast<unsigned>(x)>=size_x || static_cast<unsigned>(y)>=size_y )
 	{
 		out_valid = false;
-
-		if (firstUnknownCellDist<ray_len)
-			out_range = RAYTRACE_STEP_SIZE_IN_CELL_UNITS*firstUnknownCellDist*resolution;
-		else	out_range = RAYTRACE_STEP_SIZE_IN_CELL_UNITS*ray_len*resolution;
+		out_range = max_range_meters;
 	}
 	else
 	{ 	// No: The normal case:
@@ -181,6 +176,8 @@ void COccupancyGridMap2D::simulateScanRay(
 
 COccupancyGridMap2D::TLaserSimulUncertaintyParams::TLaserSimulUncertaintyParams() : 
 	method(sumUnscented),
+	UT_alpha(0.99), UT_kappa(.0), UT_beta(2.0),
+	MC_samples(10),
 	aperture(M_PIf),
 	rightToLeft(true),
 	maxRange(80.f),
@@ -188,7 +185,7 @@ COccupancyGridMap2D::TLaserSimulUncertaintyParams::TLaserSimulUncertaintyParams(
 	rangeNoiseStd(.0f),
 	angleNoiseStd(.0f),
 	decimation(1),
-	threshold(.5f)
+	threshold(.6f)
 {
 }
 
@@ -247,15 +244,33 @@ void COccupancyGridMap2D::laserScanSimulatorWithUncertainty(
 	simulData.grid = this;
 	simulData.params = &in_params;
 
-	mrpt::math::transform_gaussian_unscented(
-		robPoseMean,                // x_mean
-		in_params.robotPose.cov,    // x_cov
-		&func_laserSimul_callback,  // void  (*functor)(const VECTORLIKE1 &x,const USERPARAM &fixed_param, VECTORLIKE3 &y)
-		simulData,                  // const USERPARAM &fixed_param,
-		out_results.scanWithUncert.rangesMean, out_results.scanWithUncert.rangesCovar,
-		NULL, // elem_do_wrap2pi,
-		0.99, .0, 2.0 // alpha, K, beta
-		);
+	switch (in_params.method)
+	{
+	case sumUnscented:
+		mrpt::math::transform_gaussian_unscented(
+			robPoseMean,                // x_mean
+			in_params.robotPose.cov,    // x_cov
+			&func_laserSimul_callback,  // void  (*functor)(const VECTORLIKE1 &x,const USERPARAM &fixed_param, VECTORLIKE3 &y)
+			simulData,                  // const USERPARAM &fixed_param,
+			out_results.scanWithUncert.rangesMean, out_results.scanWithUncert.rangesCovar,
+			NULL, // elem_do_wrap2pi,
+			in_params.UT_alpha, in_params.UT_kappa, in_params.UT_beta // alpha, K, beta
+			);
+		break;
+	case sumMonteCarlo:
+		//
+		mrpt::math::transform_gaussian_montecarlo(
+			robPoseMean,                // x_mean
+			in_params.robotPose.cov,    // x_cov
+			&func_laserSimul_callback,  // void  (*functor)(const VECTORLIKE1 &x,const USERPARAM &fixed_param, VECTORLIKE3 &y)
+			simulData,                  // const USERPARAM &fixed_param,
+			out_results.scanWithUncert.rangesMean, out_results.scanWithUncert.rangesCovar,
+			in_params.MC_samples
+			);
+		break;
+	default:
+		throw std::runtime_error("[laserScanSimulatorWithUncertainty] Unknown `method` value"); break;
+	};
 
 	// Outputs:
 	out_results.scanWithUncert.rangeScan.aperture = in_params.aperture;

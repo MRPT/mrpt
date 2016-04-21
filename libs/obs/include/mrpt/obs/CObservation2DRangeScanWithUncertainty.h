@@ -26,8 +26,17 @@ namespace obs
 		Eigen::VectorXd          rangesMean;    //!< The same ranges than in rangeScan.scan[], for convenience as an Eigen container, and with `double` precision
 		Eigen::MatrixXd          rangesCovar;   //!< The covariance matrix for all the ranges in rangeScan.scan[]
 
+		struct OBS_IMPEXP TEvalParams
+		{
+			double prob_outliers;          //!< (Default: 0.5) Probability of having an outlier (dynamic obstacles, not mapped) in each scan ray.
+			double prob_lost_ray;          //!< (Default: 0.3) Conditional probability: how many of the "no return" ranges come from a failure to detect a real obstacle.
+			double max_prediction_std_dev; //!< (Default: 1.0m) Maximum std deviation of overall uncertainty for a range prediction to be considered as reliable for evaluation
+
+			TEvalParams();
+		};
+
 		/** Returns a measure of the likelihood of a given scan, compared to this scan variances */
-		double evaluateScanLikelihood(const CObservation2DRangeScan& otherScan, double outliers_prob = 0.5) const;
+		double evaluateScanLikelihood(const CObservation2DRangeScan& otherScan, const TEvalParams &params) const;
 	};
 
 } // End of namespace

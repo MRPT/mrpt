@@ -551,7 +551,7 @@ namespace maps
 		void  laserScanSimulator(
 				mrpt::obs::CObservation2DRangeScan	        &inout_Scan,
 				const mrpt::poses::CPose2D					&robotPose,
-				float						    threshold = 0.5f,
+				float						    threshold = 0.6f,
 				size_t						    N = 361,
 				float						    noiseStd = 0,
 				unsigned int				    decimation = 1,
@@ -580,18 +580,27 @@ namespace maps
 			const double x,const double y,const double angle_direction,
 			float &out_range,bool &out_valid,
 			const double max_range_meters,
-			const float threshold_free=0.5f,
+			const float threshold_free=0.4f,
 			const double noiseStd=.0, const double angleNoiseStd=.0 ) const;
 
 		/** Methods for TLaserSimulUncertaintyParams in laserScanSimulatorWithUncertainty() */
 		enum TLaserSimulUncertaintyMethod {
-			sumUnscented = 0 //!< Performs an unscented transform
+			sumUnscented = 0,  //!< Performs an unscented transform
+			sumMonteCarlo      //!< Montecarlo-based estimation
 		};
 
 		/** Input params for laserScanSimulatorWithUncertainty() */
 		struct MAPS_IMPEXP TLaserSimulUncertaintyParams
 		{
-			TLaserSimulUncertaintyMethod  method;    //!< (Default: sumUnscented) Select the method to do the uncertainty propagation
+			TLaserSimulUncertaintyMethod  method;    //!< (Default: sumMonteCarlo) Select the method to do the uncertainty propagation
+			/** @name Parameters for each uncertainty method
+			    @{ */
+			double UT_alpha, UT_kappa, UT_beta; //!< [sumUnscented] UT parameters. Defaults: alpha=0.99, kappa=0, betta=2.0
+			size_t MC_samples; //!< [sumMonteCarlo] MonteCarlo parameter: number of samples (Default: 10)
+			/** @} */
+
+			/** @name Generic parameters for all methods
+			    @{ */
 			mrpt::poses::CPosePDFGaussian robotPose; //!< The robot pose Gaussian, in map coordinates. Recall that sensor pose relative to this robot pose must be specified in the observation object
 			float                aperture; //!< (Default: M_PI) The "aperture" or field-of-view of the range finder, in radians (typically M_PI = 180 degrees).
 			bool                 rightToLeft; //!< (Default: true) The scanning direction: true=counterclockwise; false=clockwise
@@ -601,7 +610,8 @@ namespace maps
 			float         rangeNoiseStd;  //!< (Default: 0) The standard deviation of measurement noise. If not desired, set to 0
 			float         angleNoiseStd;  //!< (Default: 0) The sigma of an optional Gaussian noise added to the angles at which ranges are measured (in radians)
 			unsigned int  decimation;     //!< (Default: 1) The rays that will be simulated are at indexes: 0, D, 2D, 3D,...
-			float         threshold;     //!< (Default: 0.5f) The minimum occupancy threshold to consider a cell to be occupied
+			float         threshold;     //!< (Default: 0.6f) The minimum occupancy threshold to consider a cell to be occupied
+			/** @} */
 
 			TLaserSimulUncertaintyParams();
 		};
