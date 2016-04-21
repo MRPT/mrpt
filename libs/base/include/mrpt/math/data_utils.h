@@ -45,7 +45,8 @@ namespace mrpt
 			const size_t N = X.size();
 			Eigen::Matrix<typename MAT::Scalar,Eigen::Dynamic,1> X_MU(N);
 			for (size_t i=0;i<N;i++) X_MU[i]=X[i]-MU[i];
-			return multiply_HCHt_scalar(X_MU, COV.inv() );
+			const Eigen::Matrix<typename MAT::Scalar,Eigen::Dynamic,1>  z = COV.llt().solve(X_MU);
+			return z.dot(z);
 			MRPT_END
 		}
 

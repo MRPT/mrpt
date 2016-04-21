@@ -53,6 +53,9 @@
 				- mrpt::maps::COccupancyGridMap2D:
 					- New method mrpt::maps::COccupancyGridMap2D::copyMapContentFrom()
 					- New likelihood parameter `LF_useSquareDist`
+					- New parameter mrpt::maps::COccupancyGridMap2D::RAYTRACE_STEP_SIZE_IN_CELL_UNITS
+					- mrpt::maps::COccupancyGridMap2D::simulateScanRay() is now ~40% (GCC) to ~250% (MSVC) faster by default.
+					- New method mrpt::maps::COccupancyGridMap2D::laserScanSimulatorWithUncertainty()
 				- New method mrpt::maps::CHeightGridMap2D::insertIndividualPoint()
 			- \ref mrpt_obs_grp
 				- New class mrpt::obs::CObservationVelodyneScan
@@ -61,6 +64,7 @@
 				- mrpt::obs::gnss: A new namespace with many new data structures for GPS-related messages
 				- mrpt::obs::CObservation3DRangeScan: projection of RGBD images to 3D points now correctly filters out invalid points, which were in previous versions mapped as (0,0,0) points (relative to the sensor). 
 				  In turn, this leads to point clouds of a dynamic number of points. In case of needing the (u,v) pixel coordinates of projected points, checkout the new fields `points3D_idxs_x` & `points3D_idxs_y`.
+				- New class mrpt::obs::CObservation2DRangeScanWithUncertainty
 			- \ref mrpt_opengl_grp
 				- New class mrpt::opengl::CMesh3D to render 3D models/meshes
 				- New method mrpt::opengl::CPointCloudColoured::recolorizeByCoordinate()

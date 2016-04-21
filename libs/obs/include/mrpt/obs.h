@@ -19,6 +19,7 @@ MRPT_WARNING("Including <mrpt/obs.h> makes compilation much slower, consider inc
 // Observations:
 #include <mrpt/obs/CObservation.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
+#include <mrpt/obs/CObservation2DRangeScanWithUncertainty.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/obs/CObservationRGBD360.h>
 #include <mrpt/obs/CObservationRange.h>

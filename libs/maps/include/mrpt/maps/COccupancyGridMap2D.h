@@ -19,6 +19,8 @@
 #include <mrpt/maps/CLogOddsGridMap2D.h>
 #include <mrpt/utils/safe_pointers.h>
 #include <mrpt/poses/poses_frwds.h>
+#include <mrpt/poses/CPosePDFGaussian.h>
+#include <mrpt/obs/CObservation2DRangeScanWithUncertainty.h>
 #include <mrpt/obs/obs_frwds.h>
 
 #include <mrpt/maps/link_pragmas.h>
@@ -83,135 +85,72 @@ namespace maps
 	static const cellType OCCGRID_CELLTYPE_MAX  = CLogOddsGridMap2D<cellType>::CELLTYPE_MAX;
 	static const cellType OCCGRID_P2LTABLE_SIZE = CLogOddsGridMap2D<cellType>::P2LTABLE_SIZE;
 
+	static double RAYTRACE_STEP_SIZE_IN_CELL_UNITS; //!< (Default:1.0) Can be set to <1 if a more fine raytracing is needed in sonarSimulator() and laserScanSimulator(), or >1 to speed it up.
+
 	protected:
 
 		friend class CMultiMetricMap;
 		friend class CMultiMetricMapPDF;
 
+		void freeMap(); //!< Frees the dynamic memory buffers of map.
 		static CLogOddsGridMapLUT<cellType>  m_logodd_lut; //!< Lookup tables for log-odds
 
-		/** This is the buffer for storing the cells.In this dynamic
-		 *   size buffer are stored the cell values as
-		 *   "bytes", stored row by row, from left to right cells.
-		 */
-		std::vector<cellType>    map;
+		std::vector<cellType>    map;  //!< Store of cell occupancy values. Order: row by row, from left to right
+		uint32_t  size_x,size_y; //!< The size of the grid in cells
+		float     x_min,x_max,y_min,y_max; //!< The limits of the grid in "units" (meters)
+		float     resolution; //!< Cell size, i.e. resolution of the grid map.
 
-		/** The size of the grid in cells.
-		 */
-		uint32_t		size_x,size_y;
-
-		/** The limits of the grid in "units" (meters).
-		 */
-		float           x_min,x_max,y_min,y_max;
-
-		/** Cell size, i.e. resolution of the grid map.
-		 */
-		float           resolution;
-
-		/** These are auxiliary variables to speed up the computation of observation likelihood values for LF method among others, at a high cost in memory (see TLikelihoodOptions::enableLikelihoodCache).
-		  */
-		std::vector<double>		precomputedLikelihood;
-		bool					precomputedLikelihoodToBeRecomputed;
+		std::vector<double> precomputedLikelihood; //!< Auxiliary variables to speed up the computation of observation likelihood values for LF method among others, at a high cost in memory (see TLikelihoodOptions::enableLikelihoodCache).
+		bool precomputedLikelihoodToBeRecomputed;
 
 		/** Used for Voronoi calculation.Same struct as "map", but contains a "0" if not a basis point. */
 		mrpt::utils::CDynamicGrid<uint8_t>	m_basis_map;
 
 		/** Used to store the Voronoi diagram.
 		 *    Contains the distance of each cell to its closer obstacles
-		 *    in 1/100th distance units (i.e. in centimeters), or 0 if not into the Voronoi diagram.
-		 */
-		mrpt::utils::CDynamicGrid<uint16_t>	m_voronoi_diagram;
+		 *    in 1/100th distance units (i.e. in centimeters), or 0 if not into the Voronoi diagram  */
+		mrpt::utils::CDynamicGrid<uint16_t> m_voronoi_diagram;
 
 		bool m_is_empty; //!< True upon construction; used by isEmpty()
 
 		virtual void OnPostSuccesfulInsertObs(const mrpt::obs::CObservation *) MRPT_OVERRIDE; //!< See base class
 
-		/** The free-cells threshold used to compute the Voronoi diagram.
-		 */
-		float           voroni_free_threshold;
+		float voroni_free_threshold; //!< The free-cells threshold used to compute the Voronoi diagram.
 
-		/** Frees the dynamic memory buffers of map.
-		 */
-		void            freeMap();
+		static double H(double p); //!< Entropy computation internal function:
+		static std::vector<float> entropyTable; //!< Internally used to speed-up entropy calculation
 
-		/** Entropy computation internal function:
-		 */
-		static double  H(double p);
-
-		/** Change the contents [0,1] of a cell, given its index.
-		 */
-		inline void   setCell_nocheck(int x,int y,float value)
-		{
-				map[x+y*size_x]=p2l(value);
+		/** Change the contents [0,1] of a cell, given its index */
+		inline void   setCell_nocheck(int x,int y,float value) { 
+			map[x+y*size_x]=p2l(value);
 		}
 
-		/** Read the real valued [0,1] contents of a cell, given its index.
-		 */
-		inline float  getCell_nocheck(int x,int y) const
-		{
+		/** Read the real valued [0,1] contents of a cell, given its index */
+		inline float  getCell_nocheck(int x,int y) const {
 				return l2p(map[x+y*size_x]);
 		}
-
-		/** Changes a cell by its absolute index (Do not use it normally)
-		  */
-		inline void  setRawCell(unsigned int cellIndex, cellType b)
-		{
+		/** Changes a cell by its absolute index (Do not use it normally) */
+		inline void  setRawCell(unsigned int cellIndex, cellType b) {
 			if (cellIndex<size_x*size_y)
-			{
 				map[cellIndex] = b;
-			}
 		}
 
-		/** Internally used to speed-up entropy calculation
-		  */
-		static std::vector<float>		entropyTable;
+		/** One of the methods that can be selected for implementing "computeObservationLikelihood" (This method is the Range-Scan Likelihood Consensus for gridmaps, see the ICRA2007 paper by Blanco et al.)  */
+		double	 computeObservationLikelihood_Consensus(const mrpt::obs::CObservation *obs,const mrpt::poses::CPose2D &takenFrom );
+		/** One of the methods that can be selected for implementing "computeObservationLikelihood". TODO: This method is described in....  */
+		double	 computeObservationLikelihood_ConsensusOWA(const mrpt::obs::CObservation *obs, const mrpt::poses::CPose2D &takenFrom );
+		/** One of the methods that can be selected for implementing "computeObservationLikelihood"  */
+		double	 computeObservationLikelihood_CellsDifference(const mrpt::obs::CObservation *obs,const mrpt::poses::CPose2D &takenFrom );
+		/** One of the methods that can be selected for implementing "computeObservationLikelihood" */
+		double	 computeObservationLikelihood_MI(const mrpt::obs::CObservation *obs, const mrpt::poses::CPose2D &takenFrom );
+		/** One of the methods that can be selected for implementing "computeObservationLikelihood" */
+		double	 computeObservationLikelihood_rayTracing(const mrpt::obs::CObservation *obs,const mrpt::poses::CPose2D &takenFrom );
+		/** One of the methods that can be selected for implementing "computeObservationLikelihood".*/
+		double	 computeObservationLikelihood_likelihoodField_Thrun(const mrpt::obs::CObservation *obs, const mrpt::poses::CPose2D &takenFrom );
+		/** One of the methods that can be selected for implementing "computeObservationLikelihood". */
+		double	 computeObservationLikelihood_likelihoodField_II(const mrpt::obs::CObservation *obs,const mrpt::poses::CPose2D &takenFrom );
 
-		/** One of the methods that can be selected for implementing "computeObservationLikelihood" (This method is the Range-Scan Likelihood Consensus for gridmaps, see the ICRA2007 paper by Blanco et al.)
-		  */
-		double	 computeObservationLikelihood_Consensus(
-			const mrpt::obs::CObservation *obs,
-			const mrpt::poses::CPose2D &takenFrom );
-
-		/** One of the methods that can be selected for implementing "computeObservationLikelihood"
-		  *  TODO: This method is described in....
-		  */
-		double	 computeObservationLikelihood_ConsensusOWA(
-			const mrpt::obs::CObservation *obs,
-			const mrpt::poses::CPose2D &takenFrom );
-
-		/** One of the methods that can be selected for implementing "computeObservationLikelihood".
-		  */
-		double	 computeObservationLikelihood_CellsDifference(
-			const mrpt::obs::CObservation *obs,
-			const mrpt::poses::CPose2D &takenFrom );
-
-		/** One of the methods that can be selected for implementing "computeObservationLikelihood".
-		  */
-		double	 computeObservationLikelihood_MI(
-			const mrpt::obs::CObservation *obs,
-			const mrpt::poses::CPose2D &takenFrom );
-
-		/** One of the methods that can be selected for implementing "computeObservationLikelihood".
-		  */
-		double	 computeObservationLikelihood_rayTracing(
-			const mrpt::obs::CObservation *obs,
-			const mrpt::poses::CPose2D &takenFrom );
-
-		/** One of the methods that can be selected for implementing "computeObservationLikelihood".
-		  */
-		double	 computeObservationLikelihood_likelihoodField_Thrun(
-			const mrpt::obs::CObservation *obs,
-			const mrpt::poses::CPose2D &takenFrom );
-
-		/** One of the methods that can be selected for implementing "computeObservationLikelihood".
-		  */
-		double	 computeObservationLikelihood_likelihoodField_II(
-			const mrpt::obs::CObservation *obs,
-			const mrpt::poses::CPose2D &takenFrom );
-
-		/** Clear the map: It set all cells to their default occupancy value (0.5), without changing the resolution (the grid extension is reset to the default values).
-		  */
-		virtual void  internal_clear( ) MRPT_OVERRIDE;
+		virtual void  internal_clear( ) MRPT_OVERRIDE; //!< Clear the map: It set all cells to their default occupancy value (0.5), without changing the resolution (the grid extension is reset to the default values).
 
 		 /** Insert the observation information into this map.
 		  *
@@ -227,57 +166,26 @@ namespace maps
 	public:
 		/** Read-only access to the raw cell contents (cells are in log-odd units) */
 		const std::vector<cellType> & getRawMap() const { return this->map; }
-
-		/** Performs the Bayesian fusion of a new observation of a cell.
-		  * \sa updateInfoChangeOnly, updateCell_fast_occupied, updateCell_fast_free
-		 */
+		/** Performs the Bayesian fusion of a new observation of a cell  \sa updateInfoChangeOnly, updateCell_fast_occupied, updateCell_fast_free */
 		void  updateCell(int x,int y, float v);
 
-		/** An internal structure for storing data related to counting the new information apported by some observation.
-		  */
+		/** An internal structure for storing data related to counting the new information apported by some observation */
 		struct MAPS_IMPEXP TUpdateCellsInfoChangeOnly
 		{
-			TUpdateCellsInfoChangeOnly( bool	enabled = false,
-										double	I_change = 0,
-										int		cellsUpdated=0) :	enabled(enabled),
-																	I_change(I_change),
-																	cellsUpdated(cellsUpdated),
-																	laserRaysSkip(1)
+			TUpdateCellsInfoChangeOnly( bool enabled = false, double I_change = 0, int cellsUpdated=0) : enabled(enabled), I_change(I_change), cellsUpdated(cellsUpdated), laserRaysSkip(1) 
 			{
 			}
-
-			/** If set to false (default), this struct is not used. Set to true only when measuring the info of an observation.
-			  */
-			bool		enabled;
-
-			/** The cummulative change in Information: This is updated only from the "updateCell" method.
-			  */
-			double		I_change;
-
-			/** The cummulative updated cells count: This is updated only from the "updateCell" method.
-			  */
-			int			cellsUpdated;
-
-			/** In this mode, some laser rays can be skips to speep-up
-			  */
-			int			laserRaysSkip;
+			bool   enabled; //!< If set to false (default), this struct is not used. Set to true only when measuring the info of an observation.
+			double I_change; //!< The cummulative change in Information: This is updated only from the "updateCell" method.
+			int    cellsUpdated; //!< The cummulative updated cells count: This is updated only from the "updateCell" method.
+			int    laserRaysSkip; //!< In this mode, some laser rays can be skips to speep-up
 		} updateInfoChangeOnly;
 
-		/** Constructor.
-		 */
-		COccupancyGridMap2D( float min_x = -20.0f,
-							 float max_x = 20.0f,
-							 float min_y = -20.0f,
-							 float max_y = 20.0f,
-							 float resolution = 0.05f
-							 );
+		void fill(float default_value = 0.5f ); //!< Fills all the cells with a default value.
 
-		/** Fills all the cells with a default value.
-		  */
-		void  fill(float default_value = 0.5f );
-
-		/** Destructor.
-		 */
+		/** Constructor */
+		COccupancyGridMap2D( float min_x = -20.0f, float max_x = 20.0f, float min_y = -20.0f, float max_y = 20.0f, float resolution = 0.05f );
+		/** Destructor */
 		virtual ~COccupancyGridMap2D();
 
 		/** Change the size of gridmap, erasing all its previous contents.
@@ -305,76 +213,57 @@ namespace maps
 		/** Returns the area of the gridmap, in square meters */
 		inline double getArea() const { return size_x*size_y*mrpt::utils::square(resolution); }
 
-		/** Returns the horizontal size of grid map in cells count.
-		 */
+		/** Returns the horizontal size of grid map in cells count */
 		inline unsigned int   getSizeX() const { return size_x; }
 
-		/** Returns the vertical size of grid map in cells count.
-		 */
+		/** Returns the vertical size of grid map in cells count */
 		inline unsigned int   getSizeY() const { return size_y; }
 
-		/** Returns the "x" coordinate of left side of grid map.
-		 */
+		/** Returns the "x" coordinate of left side of grid map */
 		inline float  getXMin() const { return x_min; }
 
-		/** Returns the "x" coordinate of right side of grid map.
-		 */
+		/** Returns the "x" coordinate of right side of grid map */
 		inline float  getXMax() const { return x_max; }
 
-		/** Returns the "y" coordinate of top side of grid map.
-		 */
+		/** Returns the "y" coordinate of top side of grid map */
 		inline float  getYMin() const { return y_min; }
 
-		/** Returns the "y" coordinate of bottom side of grid map.
-		 */
+		/** Returns the "y" coordinate of bottom side of grid map */
 		inline float  getYMax() const { return y_max; }
 
-		/** Returns the resolution of the grid map.
-		 */
+		/** Returns the resolution of the grid map */
 		inline float  getResolution() const { return resolution; }
 
-		/** Transform a coordinate value into a cell index.
-		 */
+		/** Transform a coordinate value into a cell index */
 		inline int   x2idx(float x) const { return static_cast<int>((x-x_min)/resolution ); }
 		inline int   y2idx(float y) const { return static_cast<int>((y-y_min)/resolution ); }
 
 		inline int   x2idx(double x) const { return static_cast<int>((x-x_min)/resolution ); }
 		inline int   y2idx(double y) const { return static_cast<int>((y-y_min)/resolution ); }
 
-		/** Transform a cell index into a coordinate value.
-		 */
+		/** Transform a cell index into a coordinate value */
 		inline float   idx2x(const size_t cx) const { return x_min+(cx+0.5f)*resolution; }
 		inline float   idx2y(const size_t cy) const { return y_min+(cy+0.5f)*resolution; }
 
-		/** Transform a coordinate value into a cell index, using a diferent "x_min" value
-		 */
+		/** Transform a coordinate value into a cell index, using a diferent "x_min" value */
 		inline int   x2idx(float x,float x_min) const  { return static_cast<int>((x-x_min)/resolution ); }
 		inline int   y2idx(float y, float y_min) const { return static_cast<int>((y-y_min)/resolution ); }
 
-		/** Scales an integer representation of the log-odd into a real valued probability in [0,1], using p=exp(l)/(1+exp(l))
-		  */
-		static inline float l2p(const cellType  l)
-		{
+		/** Scales an integer representation of the log-odd into a real valued probability in [0,1], using p=exp(l)/(1+exp(l))  */
+		static inline float l2p(const cellType  l) {
 			return m_logodd_lut.l2p(l);
 		}
-
-		/** Scales an integer representation of the log-odd into a linear scale [0,255], using p=exp(l)/(1+exp(l))
-		  */
-		static inline uint8_t l2p_255(const cellType l)
-		{
+		/** Scales an integer representation of the log-odd into a linear scale [0,255], using p=exp(l)/(1+exp(l)) */
+		static inline uint8_t l2p_255(const cellType l) {
 			return m_logodd_lut.l2p_255(l);
 		}
-
-		/** Scales a real valued probability in [0,1] to an integer representation of: log(p)-log(1-p)  in the valid range of cellType.
-		  */
-		static inline cellType p2l(const float p)
-		{
+		/** Scales a real valued probability in [0,1] to an integer representation of: log(p)-log(1-p)  in the valid range of cellType */
+		static inline cellType p2l(const float p) {
 			return m_logodd_lut.p2l(p);
 		}
 
-		/** Change the contents [0,1] of a cell, given its index.
-		 */
-		inline void   setCell(int x,int y,float value)
+		/** Change the contents [0,1] of a cell, given its index */
+		inline void setCell(int x,int y,float value)
 		{
 			// The x> comparison implicitly holds if x<0
 			if (static_cast<unsigned int>(x)>=size_x ||	static_cast<unsigned int>(y)>=size_y)
@@ -382,8 +271,7 @@ namespace maps
 			else	map[x+y*size_x]=p2l(value);
 		}
 
-		/** Read the real valued [0,1] contents of a cell, given its index.
-		 */
+		/** Read the real valued [0,1] contents of a cell, given its index */
 		inline float  getCell(int x,int y) const
 		{
 			// The x> comparison implicitly holds if x<0
@@ -392,29 +280,23 @@ namespace maps
 			else	return l2p(map[x+y*size_x]);
 		}
 
-		/** Access to a "row": mainly used for drawing grid as a bitmap efficiently, do not use it normally.
-		  */
+		/** Access to a "row": mainly used for drawing grid as a bitmap efficiently, do not use it normally */
 		inline  cellType *getRow( int cy ) { if (cy<0 || static_cast<unsigned int>(cy)>=size_y) return NULL; else return &map[0+cy*size_x]; }
 
-		/** Access to a "row": mainly used for drawing grid as a bitmap efficiently, do not use it normally.
-		  */
+		/** Access to a "row": mainly used for drawing grid as a bitmap efficiently, do not use it normally */
 		inline  const cellType *getRow( int cy ) const { if (cy<0 || static_cast<unsigned int>(cy)>=size_y) return NULL; else return &map[0+cy*size_x]; }
 
-		/** Change the contents [0,1] of a cell, given its coordinates.
-		 */
+		/** Change the contents [0,1] of a cell, given its coordinates */
 		inline void   setPos(float x,float y,float value) { setCell(x2idx(x),y2idx(y),value); }
 
-		/** Read the real valued [0,1] contents of a cell, given its coordinates.
-		 */
+		/** Read the real valued [0,1] contents of a cell, given its coordinates */
 		inline float  getPos(float x,float y) const { return getCell(x2idx(x),y2idx(y)); }
 
-		/** Returns "true" if cell is "static", i.e.if its occupancy is below a given threshold.
-		 */
+		/** Returns "true" if cell is "static", i.e.if its occupancy is below a given threshold */
 		inline bool   isStaticPos(float x,float y,float threshold = 0.7f) const { return isStaticCell(x2idx(x),y2idx(y),threshold); }
 		inline bool   isStaticCell(int cx,int cy,float threshold = 0.7f) const { return (getCell(cx,cy)<=threshold); }
 
-		/** Change a cell in the "basis" maps.Used for Voronoi calculation.
-		 */
+		/** Change a cell in the "basis" maps.Used for Voronoi calculation */
 		inline void   setBasisCell(int x,int y,uint8_t value)
 		{
 			uint8_t *cell=m_basis_map.cellByIndex(x,y);
@@ -427,8 +309,7 @@ namespace maps
 			*cell = value;
 		}
 
-		/** Reads a cell in the "basis" maps.Used for Voronoi calculation.
-		 */
+		/** Reads a cell in the "basis" maps.Used for Voronoi calculation */
 		inline unsigned char  getBasisCell(int x,int y) const
 		{
 			const uint8_t *cell=m_basis_map.cellByIndex(x,y);
@@ -443,43 +324,22 @@ namespace maps
 
 		void copyMapContentFrom(const COccupancyGridMap2D &otherMap); //!< copy the gridmap contents, but not all the options, from another map instance
 
-		/** Used for returning entropy related information
-		 * \sa computeEntropy
-		 */
+		/** Used for returning entropy related information \sa computeEntropy */
 		struct MAPS_IMPEXP TEntropyInfo
 		{
 			TEntropyInfo() : H(0),I(0),mean_H(0),mean_I(0),effectiveMappedArea(0),effectiveMappedCells(0)
 			{
 			}
-
-			/** The target variable for absolute entropy, computed as:<br><center>H(map)=Sum<sub>x,y</sub>{ -p(x,y)*ln(p(x,y)) -(1-p(x,y))*ln(1-p(x,y)) }</center><br><br>
-			  */
-			double		H;
-
-			/** The target variable for absolute "information", defining I(x) = 1 - H(x)
-			  */
-			double		I;
-
-			/** The target variable for mean entropy, defined as entropy per cell: mean_H(map) = H(map) / (cells)
-			  */
-			double		mean_H;
-
-			/** The target variable for mean information, defined as information per cell: mean_I(map) = I(map) / (cells)
-			  */
-			double		mean_I;
-
-			/** The target variable for the area of cells with information, i.e. p(x)!=0.5
-			  */
-			double		effectiveMappedArea;
-
-			/** The mapped area in cells.
-			  */
-			unsigned long effectiveMappedCells;
+			double H; //!< The target variable for absolute entropy, computed as:<br><center>H(map)=Sum<sub>x,y</sub>{ -p(x,y)*ln(p(x,y)) -(1-p(x,y))*ln(1-p(x,y)) }</center><br><br>
+			double I; //!< The target variable for absolute "information", defining I(x) = 1 - H(x)
+			double mean_H; //!< The target variable for mean entropy, defined as entropy per cell: mean_H(map) = H(map) / (cells)
+			double mean_I; //!< The target variable for mean information, defined as information per cell: mean_I(map) = I(map) / (cells)
+			double effectiveMappedArea;//!< The target variable for the area of cells with information, i.e. p(x)!=0.5
+			unsigned long effectiveMappedCells; //!< The mapped area in cells.
 		};
 
 		/** With this struct options are provided to the observation insertion process.
-		* \sa CObservation::insertIntoGridMap
-		*/
+		* \sa CObservation::insertIntoGridMap */
 		class MAPS_IMPEXP TInsertionOptions : public mrpt::utils::CLoadableOptions
 		{
 		public:
@@ -501,51 +361,21 @@ namespace maps
 			void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) MRPT_OVERRIDE; // See base docs
 			void dumpToTextStream(mrpt::utils::CStream &out) const MRPT_OVERRIDE; // See base docs
 
-
-			/** The altitude (z-axis) of 2D scans (within a 0.01m tolerance) for they to be inserted in this map!
-			  */
-			float	mapAltitude;
-
-			/** The parameter "mapAltitude" has effect while inserting observations in the grid only if this is true.
-			  */
-			bool	useMapAltitude;
-
-			/** The largest distance at which cells will be updated (Default 15 meters)
-			*/
-			float	maxDistanceInsertion;
-
-			/** A value in the range [0.5,1] used for updating cell with a bayesian approach (default 0.8)
-			*/
-			float	maxOccupancyUpdateCertainty;
-
-			/** If set to true (default), invalid range values (no echo rays) as consider as free space until "maxOccupancyUpdateCertainty", but ONLY when the previous and next rays are also an invalid ray.
-			*/
-			bool	considerInvalidRangesAsFreeSpace;
-
-			/** Specify the decimation of the range scan (default=1 : take all the range values!)
-			  */
-			uint16_t	decimation;
-
-			/** The tolerance in rads in pitch & roll for a laser scan to be considered horizontal, then processed by calls to this class (default=0). */
-			float horizontalTolerance;
-
-			/** Gaussian sigma of the filter used in getAsImageFiltered (for features detection) (Default=1) (0:Disabled) */
-			float	CFD_features_gaussian_size;
-
-			/** Size of the Median filter used in getAsImageFiltered (for features detection) (Default=3) (0:Disabled) */
-			float	CFD_features_median_size;
-
-			bool	wideningBeamsWithDistance;	//!< Enabled: Rays widen with distance to approximate the real behavior of lasers, disabled: insert rays as simple lines (Default=false)
-
+			float    mapAltitude; //!< The altitude (z-axis) of 2D scans (within a 0.01m tolerance) for they to be inserted in this map!
+			bool     useMapAltitude; //!< The parameter "mapAltitude" has effect while inserting observations in the grid only if this is true.
+			float    maxDistanceInsertion; //!< The largest distance at which cells will be updated (Default 15 meters)
+			float    maxOccupancyUpdateCertainty; //!< A value in the range [0.5,1] used for updating cell with a bayesian approach (default 0.8)
+			bool     considerInvalidRangesAsFreeSpace; //!< If set to true (default), invalid range values (no echo rays) as consider as free space until "maxOccupancyUpdateCertainty", but ONLY when the previous and next rays are also an invalid ray.
+			uint16_t decimation; //!< Specify the decimation of the range scan (default=1 : take all the range values!)
+			float    horizontalTolerance; //!< The tolerance in rads in pitch & roll for a laser scan to be considered horizontal, then processed by calls to this class (default=0).
+			float    CFD_features_gaussian_size; //!< Gaussian sigma of the filter used in getAsImageFiltered (for features detection) (Default=1) (0:Disabled) 
+			float    CFD_features_median_size; //!< Size of the Median filter used in getAsImageFiltered (for features detection) (Default=3) (0:Disabled)
+			bool     wideningBeamsWithDistance;	//!< Enabled: Rays widen with distance to approximate the real behavior of lasers, disabled: insert rays as simple lines (Default=false)
 		};
 
-		/** With this struct options are provided to the observation insertion process.
-		* \sa CObservation::insertIntoGridMap
-		*/
-		TInsertionOptions	insertionOptions;
+		TInsertionOptions	insertionOptions; //!< With this struct options are provided to the observation insertion process \sa CObservation::insertIntoGridMap
 
-		/** The type for selecting a likelihood computation method
-		*/
+		/** The type for selecting a likelihood computation method */
 		enum TLikelihoodMethod
 		{
 			lmMeanInformation = 0,
@@ -557,14 +387,11 @@ namespace maps
 			lmConsensusOWA
 		};
 
-		/** With this struct options are provided to the observation likelihood computation process.
-		*/
+		/** With this struct options are provided to the observation likelihood computation process */
 		class MAPS_IMPEXP TLikelihoodOptions  : public mrpt::utils::CLoadableOptions
 		{
 		public:
-			/** Initilization of default parameters
-			*/
-			TLikelihoodOptions();
+			TLikelihoodOptions(); //!< Initilization of default parameters
 
 			/** This method load the options from a ".ini" file.
 			 *   Only those parameters found in the given "section" and having
@@ -588,78 +415,37 @@ namespace maps
 			float    LF_maxCorrsDistance; //!< [LikelihoodField] The max. distance for searching correspondences around each sensed point
 			bool     LF_useSquareDist;    //!< [LikelihoodField] (Default:false) Use `exp(dist^2/std^2)` instead of `exp(dist^2/std^2)`
 			bool     LF_alternateAverageMethod; //!< [LikelihoodField] Set this to "true" ot use an alternative method, where the likelihood of the whole range scan is computed by "averaging" of individual ranges, instead of by the "product".
+			float    MI_exponent;  //!< [MI] The exponent in the MI likelihood computation. Default value = 5
+			uint32_t MI_skip_rays; //!< [MI] The scan rays decimation: at every N rays, one will be used to compute the MI
+			float    MI_ratio_max_distance; //!< [MI] The ratio for the max. distance used in the MI computation and in the insertion of scans, e.g. if set to 2.0 the MI will use twice the distance that the update distance.
+			bool     rayTracing_useDistanceFilter; //!< [rayTracing] If true (default), the rayTracing method will ignore measured ranges shorter than the simulated ones.
+			int32_t  rayTracing_decimation; //!< [rayTracing] One out of "rayTracing_decimation" rays will be simulated and compared only: set to 1 to use all the sensed ranges.
+			float    rayTracing_stdHit; //!< [rayTracing] The laser range sigma.
+			int32_t  consensus_takeEachRange; //!< [Consensus] The down-sample ratio of ranges (default=1, consider all the ranges)
+			float    consensus_pow; //!< [Consensus] The power factor for the likelihood (default=5)
+			std::vector<float> OWA_weights; //!< [OWA] The sequence of weights to be multiplied to of the ordered list of likelihood values (first one is the largest); the size of this vector determines the number of highest likelihood values to fuse.
 
-			/** [MI] The exponent in the MI likelihood computation. Default value = 5 */
-			float	MI_exponent;
-
-			/** [MI] The scan rays decimation: at every N rays, one will be used to compute the MI:
-			 */
-			uint32_t MI_skip_rays;
-
-			/** [MI] The ratio for the max. distance used in the MI computation and in the insertion of scans, e.g. if set to 2.0 the MI will use twice the distance that the update distance.
-			  */
-			float	MI_ratio_max_distance;
-
-			/** [rayTracing] If true (default), the rayTracing method will ignore measured ranges shorter than the simulated ones.
-			  */
-			bool	rayTracing_useDistanceFilter;
-
-			/** [rayTracing] One out of "rayTracing_decimation" rays will be simulated and compared only: set to 1 to use all the sensed ranges.
-			  */
-			int32_t  rayTracing_decimation;
-
-			/** [rayTracing] The laser range sigma.
-			  */
-			float	rayTracing_stdHit;
-
-			/** [Consensus] The down-sample ratio of ranges (default=1, consider all the ranges)
-			  */
-			int32_t	consensus_takeEachRange;
-
-			/** [Consensus] The power factor for the likelihood (default=5)
-			  */
-			float	consensus_pow;
-
-			/** [OWA] The sequence of weights to be multiplied to of the ordered list of likelihood values (first one is the largest); the size of this vector determines the number of highest likelihood values to fuse.
-			  */
-			std::vector<float>	OWA_weights;
-
-			/** Enables the usage of a cache of likelihood values (for LF methods), if set to true (default=false).
-			  */
-			bool    enableLikelihoodCache;
-
+			bool    enableLikelihoodCache; //!< Enables the usage of a cache of likelihood values (for LF methods), if set to true (default=false).
 		} likelihoodOptions;
 
-		/** Auxiliary private class.
-		  */
-		typedef std::pair<double,mrpt::math::TPoint2D> TPairLikelihoodIndex;
+		typedef std::pair<double,mrpt::math::TPoint2D> TPairLikelihoodIndex; //!< Auxiliary private class.
 
-		/** Some members of this struct will contain intermediate or output data after calling "computeObservationLikelihood" for some likelihood functions.
-		  */
+		/** Some members of this struct will contain intermediate or output data after calling "computeObservationLikelihood" for some likelihood functions */
 		class TLikelihoodOutput
 		{
 		public:
 			TLikelihoodOutput() : OWA_pairList(), OWA_individualLikValues()
 			{}
 
-			/** [OWA method] This will contain the ascending-ordered list of pairs:(likelihood values, 2D point in map coordinates).
-			  */
-			std::vector<TPairLikelihoodIndex>	OWA_pairList;
-
-			/** [OWA method] This will contain the ascending-ordered list of likelihood values for individual range measurements in the scan.
-			  */
-			std::vector<double>	OWA_individualLikValues;
-
+			std::vector<TPairLikelihoodIndex>	OWA_pairList; //!< [OWA method] This will contain the ascending-ordered list of pairs:(likelihood values, 2D point in map coordinates).
+			std::vector<double>	OWA_individualLikValues; //!< [OWA method] This will contain the ascending-ordered list of likelihood values for individual range measurements in the scan.
 		} likelihoodOutputs;
 
-		 /** Performs a downsampling of the gridmap, by a given factor: resolution/=ratio
-		  */
-		 void  subSample( int downRatio );
+		 void  subSample( int downRatio ); //!< Performs a downsampling of the gridmap, by a given factor: resolution/=ratio
 
 		/** Computes the entropy and related values of this grid map.
 		 *  The entropy is computed as the summed entropy of each cell, taking them as discrete random variables following a Bernoulli distribution:
-		 * \param info The output information is returned here.
-		 */
+		 * \param info The output information is returned here */
 		void  computeEntropy( TEntropyInfo &info ) const;
 
 		/** @name Voronoi methods
@@ -746,8 +532,7 @@ namespace maps
 
 
 		/** \name Sensor simulators
-		    @{
-		   */
+		    @{ */
 
 		/** Simulates a laser range scan into the current grid map.
 		 *   The simulated scan is stored in a CObservation2DRangeScan object, which is also used
@@ -755,18 +540,18 @@ namespace maps
 		 *	  taken into account for simulation. Only a few more parameters are needed. Additive gaussian noise can be optionally added to the simulated scan.
 		 * \param inout_Scan [IN/OUT] This must be filled with desired parameters before calling, and will contain the scan samples on return.
 		 * \param robotPose [IN] The robot pose in this map coordinates. Recall that sensor pose relative to this robot pose must be specified in the observation object.
-		 * \param threshold [IN] The minimum occupancy threshold to consider a cell to be occupied, for example 0.5.
+		 * \param threshold [IN] The minimum occupancy threshold to consider a cell to be occupied (Default: 0.5f)
 		 * \param N [IN] The count of range scan "rays", by default to 361.
 		 * \param noiseStd [IN] The standard deviation of measurement noise. If not desired, set to 0.
 		 * \param decimation [IN] The rays that will be simulated are at indexes: 0, D, 2D, 3D, ... Default is D=1
 		 * \param angleNoiseStd [IN] The sigma of an optional Gaussian noise added to the angles at which ranges are measured (in radians).
 		 *
-		 * \sa sonarSimulator
+		* \sa laserScanSimulatorWithUncertainty(), sonarSimulator(), COccupancyGridMap2D::RAYTRACE_STEP_SIZE_IN_CELL_UNITS
 		 */
 		void  laserScanSimulator(
 				mrpt::obs::CObservation2DRangeScan	        &inout_Scan,
 				const mrpt::poses::CPose2D					&robotPose,
-				float						    threshold = 0.5f,
+				float						    threshold = 0.6f,
 				size_t						    N = 361,
 				float						    noiseStd = 0,
 				unsigned int				    decimation = 1,
@@ -777,28 +562,80 @@ namespace maps
 		 *    to pass in some needed parameters, as the poses of the sonar sensors onto the mobile robot.
 		 * \param inout_observation [IN/OUT] This must be filled with desired parameters before calling, and will contain the simulated ranges on return.
 		 * \param robotPose [IN] The robot pose in this map coordinates. Recall that sensor pose relative to this robot pose must be specified in the observation object.
-		 * \param threshold [IN] The minimum occupancy threshold to consider a cell to be occupied, for example 0.5.
+		 * \param threshold [IN] The minimum occupancy threshold to consider a cell to be occupied (Default: 0.5f)
 		 * \param rangeNoiseStd [IN] The standard deviation of measurement noise. If not desired, set to 0.
 		 * \param angleNoiseStd [IN] The sigma of an optional Gaussian noise added to the angles at which ranges are measured (in radians).
 		 *
-		 * \sa laserScanSimulator
+		 * \sa laserScanSimulator(), COccupancyGridMap2D::RAYTRACE_STEP_SIZE_IN_CELL_UNITS
 		 */
 		void  sonarSimulator(
 				mrpt::obs::CObservationRange &inout_observation,
 				const mrpt::poses::CPose2D				&robotPose,
 				float						threshold = 0.5f,
-				float						rangeNoiseStd = 0,
-				float						angleNoiseStd = mrpt::utils::DEG2RAD(0) ) const;
+				float						rangeNoiseStd = 0.f,
+				float						angleNoiseStd = mrpt::utils::DEG2RAD(0.f) ) const;
 
-		/** Simulate just one "ray" in the grid map. This method is used internally to sonarSimulator and laserScanSimulator.
-		  */
-		inline void simulateScanRay(
+		/** Simulate just one "ray" in the grid map. This method is used internally to sonarSimulator and laserScanSimulator. \sa COccupancyGridMap2D::RAYTRACE_STEP_SIZE_IN_CELL_UNITS */
+		void simulateScanRay(
 			const double x,const double y,const double angle_direction,
 			float &out_range,bool &out_valid,
-			const unsigned int max_ray_len,
-			const float threshold_free=0.5f,
-			const double noiseStd=0, const double angleNoiseStd=0 ) const;
+			const double max_range_meters,
+			const float threshold_free=0.4f,
+			const double noiseStd=.0, const double angleNoiseStd=.0 ) const;
 
+		/** Methods for TLaserSimulUncertaintyParams in laserScanSimulatorWithUncertainty() */
+		enum TLaserSimulUncertaintyMethod {
+			sumUnscented = 0,  //!< Performs an unscented transform
+			sumMonteCarlo      //!< Montecarlo-based estimation
+		};
+
+		/** Input params for laserScanSimulatorWithUncertainty() */
+		struct MAPS_IMPEXP TLaserSimulUncertaintyParams
+		{
+			TLaserSimulUncertaintyMethod  method;    //!< (Default: sumMonteCarlo) Select the method to do the uncertainty propagation
+			/** @name Parameters for each uncertainty method
+			    @{ */
+			double UT_alpha, UT_kappa, UT_beta; //!< [sumUnscented] UT parameters. Defaults: alpha=0.99, kappa=0, betta=2.0
+			size_t MC_samples; //!< [sumMonteCarlo] MonteCarlo parameter: number of samples (Default: 10)
+			/** @} */
+
+			/** @name Generic parameters for all methods
+			    @{ */
+			mrpt::poses::CPosePDFGaussian robotPose; //!< The robot pose Gaussian, in map coordinates. Recall that sensor pose relative to this robot pose must be specified in the observation object
+			float                aperture; //!< (Default: M_PI) The "aperture" or field-of-view of the range finder, in radians (typically M_PI = 180 degrees).
+			bool                 rightToLeft; //!< (Default: true) The scanning direction: true=counterclockwise; false=clockwise
+			float                maxRange; //!< (Default: 80) The maximum range allowed by the device, in meters (e.g. 80m, 50m,...)
+			mrpt::poses::CPose3D sensorPose; //!< (Default: at origin) The 6D pose of the sensor on the robot at the moment of starting the scan.
+			size_t        nRays;
+			float         rangeNoiseStd;  //!< (Default: 0) The standard deviation of measurement noise. If not desired, set to 0
+			float         angleNoiseStd;  //!< (Default: 0) The sigma of an optional Gaussian noise added to the angles at which ranges are measured (in radians)
+			unsigned int  decimation;     //!< (Default: 1) The rays that will be simulated are at indexes: 0, D, 2D, 3D,...
+			float         threshold;     //!< (Default: 0.6f) The minimum occupancy threshold to consider a cell to be occupied
+			/** @} */
+
+			TLaserSimulUncertaintyParams();
+		};
+
+		/** Output params for laserScanSimulatorWithUncertainty() */
+		struct MAPS_IMPEXP TLaserSimulUncertaintyResult
+		{
+			mrpt::obs::CObservation2DRangeScanWithUncertainty scanWithUncert; //!< The scan + its uncertainty
+
+			TLaserSimulUncertaintyResult();
+		};
+		
+
+		/** Like laserScanSimulatorWithUncertainty() (see it for a discussion of most parameters) but taking into account 
+		 *  the robot pose uncertainty and generating a vector of predicted variances for each ray.
+		 *  Range uncertainty includes both, sensor noise and large non-linear effects caused by borders and discontinuities in the environment 
+		 *  as seen from different robot poses.
+		 * 
+		 * \param in_params [IN] Input settings. See TLaserSimulUncertaintyParams
+		 * \param in_params [OUT] Output range + uncertainty.
+		 *
+		* \sa laserScanSimulator(), COccupancyGridMap2D::RAYTRACE_STEP_SIZE_IN_CELL_UNITS
+		 */
+		void laserScanSimulatorWithUncertainty(const TLaserSimulUncertaintyParams  &in_params, TLaserSimulUncertaintyResult  &out_results) const;
 
 		/** @} */
 
