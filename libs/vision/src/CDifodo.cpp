@@ -544,7 +544,6 @@ void CDifodo::calculateDepthDerivatives()
 
 void CDifodo::computeWeights()
 {
-#if EIGEN_VERSION_AT_LEAST(3,1,0)  // Eigen 3.1.0 needed for Matrix::log()
 	weights.resize(rows_i, cols_i);
 	weights.assign(0.f);
 
@@ -556,11 +555,13 @@ void CDifodo::computeWeights()
 	for (unsigned int i=0; i<level; i++)
 		acu_trans = transformations[i]*acu_trans;
 
-	Matrix<float, 4, 4> log_trans = fps*acu_trans.log();
-	kai_level(0) -= log_trans(0,3); kai_level(1) -= log_trans(1,3); kai_level(2) -= log_trans(2,3);
-	kai_level(3) += log_trans(1,2); kai_level(4) -= log_trans(0,2); kai_level(5) += log_trans(0,1);
+	//Alternative way to compute the log
+	CMatrixDouble44 mat_aux = acu_trans.cast<double>();
+	poses::CPose3D aux(mat_aux);
+	CArrayDouble<6> kai_level_acu = aux.ln()*fps;
+	kai_level -= kai_level_acu.cast<float>();
 
-	//Parameters for the measurmente error
+	//Parameters for the measurement error
 	const float f_inv = float(cols_i)/(2.f*tan(0.5f*fovh));
 	const float kz2 = 8.122e-12f;  //square(1.425e-5) / 25
 	
@@ -633,9 +634,6 @@ void CDifodo::computeWeights()
 	//Normalize weights in the range [0,1]
 	const float inv_max = 1.f/weights.maximum();
 	weights = inv_max*weights;
-#else
-	THROW_EXCEPTION("This class requires Eigen 3.1.0 or above!")
-#endif
 }
 
 void CDifodo::solveOneLevel()
@@ -749,7 +747,6 @@ void CDifodo::odometryCalculation()
 
 void CDifodo::filterLevelSolution()
 {
-#if EIGEN_VERSION_AT_LEAST(3,1,0)  // Eigen 3.1.0 needed for Matrix::log()
 	//		Calculate Eigenvalues and Eigenvectors
 	//----------------------------------------------------------
 	SelfAdjointEigenSolver<MatrixXf> eigensolver(est_cov);
@@ -776,9 +773,14 @@ void CDifodo::filterLevelSolution()
 	for (unsigned int i=0; i<level; i++)
 		acu_trans = transformations[i]*acu_trans;
 
-	Matrix<float, 4, 4> log_trans = fps*acu_trans.log();
-	kai_loc_sub(0) -= log_trans(0,3); kai_loc_sub(1) -= log_trans(1,3); kai_loc_sub(2) -= log_trans(2,3);
-	kai_loc_sub(3) += log_trans(1,2); kai_loc_sub(4) -= log_trans(0,2); kai_loc_sub(5) += log_trans(0,1);
+	CMatrixDouble44 mat_aux = acu_trans.cast<double>();
+	poses::CPose3D aux(mat_aux);
+	CArrayDouble<6> kai_level_acu = aux.ln()*fps;
+	kai_loc_sub -= kai_level_acu.cast<float>();
+
+	//Matrix<float, 4, 4> log_trans = fps*acu_trans.log();
+	//kai_loc_sub(0) -= log_trans(0,3); kai_loc_sub(1) -= log_trans(1,3); kai_loc_sub(2) -= log_trans(2,3);
+	//kai_loc_sub(3) += log_trans(1,2); kai_loc_sub(4) -= log_trans(0,2); kai_loc_sub(5) += log_trans(0,1);
 
 	//Transform that local representation to the "eigenvector" basis
 	Matrix<float,6,1> kai_b_old;
@@ -801,25 +803,10 @@ void CDifodo::filterLevelSolution()
 	aux2 = aux1.exp(aux_vel);
 	aux2.getHomogeneousMatrix(trans);
 	transformations[level] = trans.cast<float>();
-
-	//Directly with Eigen 
-	//Matrix<float,4,4> local_mat; local_mat.assign(0.f); 
-	//local_mat(0,1) = -kai_loc_fil(5)/fps; local_mat(1,0) = kai_loc_fil(5)/fps;
-	//local_mat(0,2) = kai_loc_fil(4)/fps; local_mat(2,0) = -kai_loc_fil(4)/fps;
-	//local_mat(1,2) = -kai_loc_fil(3)/fps; local_mat(2,1) = kai_loc_fil(3)/fps;
-	//local_mat(0,3) = kai_loc_fil(0)/fps;
-	//local_mat(1,3) = kai_loc_fil(1)/fps;
-	//local_mat(2,3) = kai_loc_fil(2)/fps;
-	//transformations[level] = local_mat.exp();
-
-#else
-	THROW_EXCEPTION("This class requires Eigen 3.1.0 or above!")
-#endif
 }
 
 void CDifodo::poseUpdate()
 {
-#if EIGEN_VERSION_AT_LEAST(3,1,0)  // Eigen 3.1.0 needed for Matrix::log()
 	//First, compute the overall transformation
 	//---------------------------------------------------
 	Matrix4f acu_trans;
@@ -830,9 +817,20 @@ void CDifodo::poseUpdate()
 
 	//Compute the new estimates in the local and absolutes reference frames
 	//---------------------------------------------------------------------
-	Matrix<float, 4, 4> log_trans = fps*acu_trans.log();
-	kai_loc(0) = log_trans(0,3); kai_loc(1) = log_trans(1,3); kai_loc(2) = log_trans(2,3);
-	kai_loc(3) = -log_trans(1,2); kai_loc(4) = log_trans(0,2); kai_loc(5) = -log_trans(0,1);
+	CMatrixDouble44 mat_aux = acu_trans.cast<double>();
+	poses::CPose3D aux(mat_aux);
+	CArrayDouble<6> kai_level_acu = aux.ln()*fps;
+	kai_loc = kai_level_acu.cast<float>();
+
+	//---------------------------------------------------------------------------------------------
+	//Directly from Eigen:
+	//- Eigen 3.1.0 needed for Matrix::log()
+	//- The line "#include <unsupported/Eigen/MatrixFunctions>" should be uncommented (CDifodo.h)
+	//
+	//Matrix<float, 4, 4> log_trans = fps*acu_trans.log();
+	//kai_loc(0) = log_trans(0,3); kai_loc(1) = log_trans(1,3); kai_loc(2) = log_trans(2,3);
+	//kai_loc(3) = -log_trans(1,2); kai_loc(4) = log_trans(0,2); kai_loc(5) = -log_trans(0,1);
+	//---------------------------------------------------------------------------------------------
 
 	CMatrixDouble33 inv_trans;
 	CMatrixFloat31 v_abs, w_abs;
@@ -857,9 +855,6 @@ void CDifodo::poseUpdate()
 	cam_pose.getRotationMatrix(inv_trans);
 	kai_loc_old.topRows<3>() = inv_trans.inverse().cast<float>()*kai_abs.topRows(3);
 	kai_loc_old.bottomRows<3>() = inv_trans.inverse().cast<float>()*kai_abs.bottomRows(3);
-#else
-	THROW_EXCEPTION("This class requires Eigen 3.1.0 or above!")
-#endif
 }
 
 void CDifodo::setFOV(float new_fovh, float new_fovv)

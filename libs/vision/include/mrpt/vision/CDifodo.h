@@ -14,7 +14,7 @@
 #include <mrpt/math/CMatrixFixedNumeric.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/vision/link_pragmas.h>
-#include <unsupported/Eigen/MatrixFunctions>
+//#include <unsupported/Eigen/MatrixFunctions>
 
 namespace mrpt
 {
