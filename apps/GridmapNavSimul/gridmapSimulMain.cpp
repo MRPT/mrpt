@@ -48,6 +48,13 @@
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/utils/CTimeLogger.h>
 
+//#define DO_SCAN_LIKELIHOOD_DEBUG
+
+#ifdef DO_SCAN_LIKELIHOOD_DEBUG
+#	include <mrpt/gui/CDisplayWindowPlots.h>
+#	include <mrpt/math/data_utils.h>
+#endif
+
 #if !wxUSE_GLCANVAS
 #error "OpenGL required: set wxUSE_GLCANVAS to 1 and rebuild wxWidgets"
 #endif
@@ -673,7 +680,42 @@ void gridmapSimulFrame::OntimRunTrigger(wxTimerEvent& event)
 		the_scan.aperture = LASER_APERTURE;
 		the_scan.stdError = LASER_STD_ERROR;
 
+		static mrpt::utils::CTimeLogger timlog;
+
+		timlog.enter("laserScanSimulator");
 		the_grid.laserScanSimulator( the_scan, p, 0.5f, LASER_N_RANGES, LASER_STD_ERROR, 1, LASER_BEARING_STD_ERROR );
+		timlog.leave("laserScanSimulator");
+
+#ifdef DO_SCAN_LIKELIHOOD_DEBUG
+		{
+			timlog.enter("laserScanSimulatorWithUncertainty");
+			COccupancyGridMap2D::TLaserSimulUncertaintyParams  ssu_params;
+			COccupancyGridMap2D::TLaserSimulUncertaintyResult  ssu_out;
+
+			ssu_params.robotPose.mean = p;
+			ssu_params.robotPose.cov << square(0.25) , 0.0 , 0.0 , 0.0 , square(0.25) , 0.0 , 0.0 , 0.0 , square(DEG2RAD(15.0));
+
+			the_grid.laserScanSimulatorWithUncertainty(ssu_params, ssu_out);
+			timlog.leave("laserScanSimulatorWithUncertainty");
+
+#if 0
+			static mrpt::gui::CDisplayWindowPlots win;
+
+			win.plot(ssu_out.scanWithUncert.rangeScan.scan, "3k-", "mean");
+			win.plot(the_scan.scan, "r-", "obs");
+
+			Eigen::VectorXd ci1 = ssu_out.scanWithUncert.rangesMean + 3*ssu_out.scanWithUncert.rangesCovar.diagonal().array().sqrt().matrix();
+			Eigen::VectorXd ci2 = ssu_out.scanWithUncert.rangesMean - 3*ssu_out.scanWithUncert.rangesCovar.diagonal().array().sqrt().matrix();
+			win.plot(ci1, "k-", "CI+");
+			win.plot(ci2, "k-", "CI-");
+
+			const double LIK = ssu_out.scanWithUncert.evaluateScanLikelihood(the_scan);
+			win.setWindowTitle( mrpt::format("LIK: %e",LIK) );
+
+			win.axis_fit();
+#endif
+		}
+#endif
 
 		// Save rawlog?
 		// ----------------------------

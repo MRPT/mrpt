@@ -13,6 +13,7 @@
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/CObservationRange.h>
 #include <mrpt/utils/round.h> // round()
+#include <mrpt/math/transform_gaussian.h>
 
 #include <mrpt/random.h>
 
@@ -180,6 +181,9 @@ void COccupancyGridMap2D::simulateScanRay(
 
 COccupancyGridMap2D::TLaserSimulUncertaintyParams::TLaserSimulUncertaintyParams() : 
 	method(sumUnscented),
+	aperture(M_PIf),
+	rightToLeft(true),
+	maxRange(80.f),
 	nRays(361),
 	rangeNoiseStd(.0f),
 	angleNoiseStd(.0f),
@@ -192,11 +196,79 @@ COccupancyGridMap2D::TLaserSimulUncertaintyResult::TLaserSimulUncertaintyResult(
 {
 }
 
-void COccupancyGridMap2D::laserScanSimulatorWithUncertainty(
-		mrpt::obs::CObservation2DRangeScan  &inout_Scan,
-		const COccupancyGridMap2D::TLaserSimulUncertaintyParams  &in_params,
-		const COccupancyGridMap2D::TLaserSimulUncertaintyResult  &out_results) const
+struct TFunctorLaserSimulData
 {
-	MRPT_TODO("Implement");
+	const COccupancyGridMap2D::TLaserSimulUncertaintyParams  *params;
+	const COccupancyGridMap2D *grid;
+};
+
+static void  func_laserSimul_callback(const Eigen::Vector3d &x_pose,const TFunctorLaserSimulData &fixed_param, Eigen::VectorXd &y_scanRanges)
+{
+	ASSERT_(fixed_param.params && fixed_param.grid)
+	ASSERT_(fixed_param.params->decimation>=1)
+	ASSERT_(fixed_param.params->nRays>=2)
+
+	const size_t N = fixed_param.params->nRays;
+
+	// Sensor pose in global coordinates
+	const CPose3D sensorPose3D = CPose3D(x_pose[0],x_pose[1],.0, x_pose[2], .0, .0) + fixed_param.params->sensorPose;
+	// Aproximation: grid is 2D !!!
+	const CPose2D sensorPose(sensorPose3D);
+
+	// Scan size:
+	y_scanRanges.resize(N);
+
+	double  A = sensorPose.phi() + (fixed_param.params->rightToLeft ? -0.5:+0.5) * fixed_param.params->aperture;
+	const double AA = (fixed_param.params->rightToLeft ? 1.0:-1.0) * (fixed_param.params->aperture / (N-1));
+
+	const float free_thres = 1.0f-fixed_param.params->threshold;
+
+	for (size_t i=0;i<N;i+=fixed_param.params->decimation,A+=AA*fixed_param.params->decimation)
+	{
+		bool valid;
+		float range;
+
+		fixed_param.grid->simulateScanRay(
+			sensorPose.x(),sensorPose.y(),A,
+			range, valid,
+			fixed_param.params->maxRange, free_thres,
+			.0 /*noiseStd*/, .0 /*angleNoiseStd*/ );
+		y_scanRanges[i] = valid ? range : fixed_param.params->maxRange;
+	}
+}
+
+void COccupancyGridMap2D::laserScanSimulatorWithUncertainty(
+	const COccupancyGridMap2D::TLaserSimulUncertaintyParams  &in_params,
+	COccupancyGridMap2D::TLaserSimulUncertaintyResult  &out_results) const
+{
+	const Eigen::Vector3d robPoseMean = in_params.robotPose.mean.getAsVectorVal();
+
+	TFunctorLaserSimulData simulData;
+	simulData.grid = this;
+	simulData.params = &in_params;
+
+	mrpt::math::transform_gaussian_unscented(
+		robPoseMean,                // x_mean
+		in_params.robotPose.cov,    // x_cov
+		&func_laserSimul_callback,  // void  (*functor)(const VECTORLIKE1 &x,const USERPARAM &fixed_param, VECTORLIKE3 &y)
+		simulData,                  // const USERPARAM &fixed_param,
+		out_results.scanWithUncert.rangesMean, out_results.scanWithUncert.rangesCovar,
+		NULL, // elem_do_wrap2pi,
+		0.99, .0, 2.0 // alpha, K, beta
+		);
+
+	// Outputs:
+	out_results.scanWithUncert.rangeScan.aperture = in_params.aperture;
+	out_results.scanWithUncert.rangeScan.maxRange = in_params.maxRange;
+	out_results.scanWithUncert.rangeScan.rightToLeft = in_params.rightToLeft;
+	out_results.scanWithUncert.rangeScan.sensorPose = in_params.sensorPose;
+	
+	out_results.scanWithUncert.rangeScan.scan.resize(in_params.nRays);
+	out_results.scanWithUncert.rangeScan.validRange.resize(in_params.nRays);
+	for (unsigned i=0;i<in_params.nRays;i++) {
+		out_results.scanWithUncert.rangeScan.scan[i] = (float)out_results.scanWithUncert.rangesMean[i];
+		out_results.scanWithUncert.rangeScan.validRange[i] = 1;
+	}
+
 }
 

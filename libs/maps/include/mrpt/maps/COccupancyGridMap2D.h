@@ -20,6 +20,7 @@
 #include <mrpt/utils/safe_pointers.h>
 #include <mrpt/poses/poses_frwds.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
+#include <mrpt/obs/CObservation2DRangeScanWithUncertainty.h>
 #include <mrpt/obs/obs_frwds.h>
 
 #include <mrpt/maps/link_pragmas.h>
@@ -592,6 +593,10 @@ namespace maps
 		{
 			TLaserSimulUncertaintyMethod  method;    //!< (Default: sumUnscented) Select the method to do the uncertainty propagation
 			mrpt::poses::CPosePDFGaussian robotPose; //!< The robot pose Gaussian, in map coordinates. Recall that sensor pose relative to this robot pose must be specified in the observation object
+			float                aperture; //!< (Default: M_PI) The "aperture" or field-of-view of the range finder, in radians (typically M_PI = 180 degrees).
+			bool                 rightToLeft; //!< (Default: true) The scanning direction: true=counterclockwise; false=clockwise
+			float                maxRange; //!< (Default: 80) The maximum range allowed by the device, in meters (e.g. 80m, 50m,...)
+			mrpt::poses::CPose3D sensorPose; //!< (Default: at origin) The 6D pose of the sensor on the robot at the moment of starting the scan.
 			size_t        nRays;
 			float         rangeNoiseStd;  //!< (Default: 0) The standard deviation of measurement noise. If not desired, set to 0
 			float         angleNoiseStd;  //!< (Default: 0) The sigma of an optional Gaussian noise added to the angles at which ranges are measured (in radians)
@@ -604,6 +609,7 @@ namespace maps
 		/** Output params for laserScanSimulatorWithUncertainty() */
 		struct MAPS_IMPEXP TLaserSimulUncertaintyResult
 		{
+			mrpt::obs::CObservation2DRangeScanWithUncertainty scanWithUncert; //!< The scan + its uncertainty
 
 			TLaserSimulUncertaintyResult();
 		};
@@ -614,16 +620,12 @@ namespace maps
 		 *  Range uncertainty includes both, sensor noise and large non-linear effects caused by borders and discontinuities in the environment 
 		 *  as seen from different robot poses.
 		 * 
-		 * \param inout_Scan [IN/OUT] This must be filled with desired parameters (e.g. `maxRange`) before calling, and will contain the MEAN values of the Gaussian distribution of each range in the field `scan`
 		 * \param in_params [IN] Input settings. See TLaserSimulUncertaintyParams
-		 * \param in_params [OUT] Output values, mostly the variances for each range. Range means themselves are stored into \a inout_Scan
+		 * \param in_params [OUT] Output range + uncertainty.
 		 *
 		* \sa laserScanSimulator(), COccupancyGridMap2D::RAYTRACE_STEP_SIZE_IN_CELL_UNITS
 		 */
-		void  laserScanSimulatorWithUncertainty(
-				mrpt::obs::CObservation2DRangeScan  &inout_Scan,
-				const TLaserSimulUncertaintyParams  &in_params,
-				const TLaserSimulUncertaintyResult  &out_results) const;
+		void laserScanSimulatorWithUncertainty(const TLaserSimulUncertaintyParams  &in_params, TLaserSimulUncertaintyResult  &out_results) const;
 
 		/** @} */
 
