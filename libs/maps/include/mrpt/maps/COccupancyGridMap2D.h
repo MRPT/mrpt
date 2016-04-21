@@ -768,12 +768,7 @@ namespace maps
 
 
 		/** See docs in base class: in this class this always returns 0 */
-		float  compute3DMatchingRatio(
-				const mrpt::maps::CMetricMap						*otherMap,
-				const mrpt::poses::CPose3D							&otherMapPose,
-				float									maxDistForCorr = 0.10f,
-				float									maxMahaDistForCorr = 2.0f
-				) const MRPT_OVERRIDE;
+		float compute3DMatchingRatio(const mrpt::maps::CMetricMap *otherMap, const mrpt::poses::CPose3D &otherMapPose, const TMatchingRatioParams &params) const MRPT_OVERRIDE;
 
 		/** This virtual method saves the map to a file "filNamePrefix"+< some_file_extension >, as an image or in any other applicable way (Notice that other methods to save the map may be implemented in classes implementing this virtual interface).  */
 		void  saveMetricMapRepresentationToFile(const std::string	&filNamePrefix) const MRPT_OVERRIDE;

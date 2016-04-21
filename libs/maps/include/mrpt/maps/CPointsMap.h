@@ -531,18 +531,11 @@ namespace maps
 			TMatchingExtraResults & extraResults ) const MRPT_OVERRIDE;
 
 		// See docs in base class
-		float  compute3DMatchingRatio(
-				const mrpt::maps::CMetricMap						*otherMap,
-				const mrpt::poses::CPose3D							&otherMapPose,
-				float									maxDistForCorr = 0.10f,
-				float									maxMahaDistForCorr = 2.0f
-				) const MRPT_OVERRIDE;
-
+		float compute3DMatchingRatio(const mrpt::maps::CMetricMap *otherMap, const mrpt::poses::CPose3D &otherMapPose, const TMatchingRatioParams &params) const MRPT_OVERRIDE;
 
 		/** Computes the matchings between this and another 3D points map.
 		   This method matches each point in the other map with the centroid of the 3 closest points in 3D
 		   from this map (if the distance is below a defined threshold).
-
 		 * \param  otherMap					  [IN] The other map to compute the matching with.
 		 * \param  otherMapPose				  [IN] The pose of the other map as seen from "this".
 		 * \param  maxDistForCorrespondence   [IN] Maximum 2D linear distance between two points to be matched.

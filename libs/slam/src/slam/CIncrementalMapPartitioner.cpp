@@ -182,6 +182,10 @@ unsigned int CIncrementalMapPartitioner::addMapFrame(
 	newMetricMap.m_pointsMaps[0]->insertionOptions.minDistBetweenLaserPoints = 0.20f;
 	options.minDistForCorrespondence = max(options.minDistForCorrespondence,1.3f*newMetricMap.m_pointsMaps[0]->insertionOptions.minDistBetweenLaserPoints);
 
+	TMatchingRatioParams mrp;
+	mrp.maxDistForCorr = options.minDistForCorrespondence;
+	mrp.maxMahaDistForCorr = options.minMahaDistForCorrespondence;
+
 	// JLBC,17/AGO/2006: "m_individualMaps" were created from the robot pose, but it is
 	//   more convenient now to save them as the robot being at (0,0,0).
 
@@ -245,11 +249,7 @@ unsigned int CIncrementalMapPartitioner::addMapFrame(
 			// Compute matching ratio:
 			if (useMapOrSF)
 			{
-				m_A(i,j) = map_i->compute3DMatchingRatio(
-					map_j,
-					relPose,
-					options.minDistForCorrespondence,
-					options.minMahaDistForCorrespondence );
+				m_A(i,j) = map_i->compute3DMatchingRatio(map_j,relPose,mrp);
 			}
 			else
 			{
@@ -285,11 +285,7 @@ unsigned int CIncrementalMapPartitioner::addMapFrame(
 			// Compute matching ratio:
 			if (useMapOrSF)
 			{
-				m_A(i,j) = map_i->compute3DMatchingRatio(
-					map_j,
-					CPose3D(relPose),
-					options.minDistForCorrespondence,
-					options.minMahaDistForCorrespondence );
+				m_A(i,j) = map_i->compute3DMatchingRatio(map_j,CPose3D(relPose),mrp);
 			}
 			else
 			{

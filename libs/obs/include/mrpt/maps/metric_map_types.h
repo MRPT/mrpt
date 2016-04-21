@@ -51,6 +51,16 @@ namespace mrpt
 			{}
 		};
 
+		/** Parameters for CMetricMap::compute3DMatchingRatio() */
+		struct OBS_IMPEXP TMatchingRatioParams
+		{
+			float maxDistForCorr;     //!< (Default: 0.10f) The minimum distance between 2 non-probabilistic map elements for counting them as a correspondence.
+			float maxMahaDistForCorr; //!< (Default: 2.0f) The minimum Mahalanobis distance between 2 probabilistic map elements for counting them as a correspondence.
+
+			TMatchingRatioParams() : maxDistForCorr(0.10f), maxMahaDistForCorr(2.0f)
+			{}
+		};
+
 		DEFINE_SERIALIZABLE_PRE_CUSTOM_LINKAGE ( TMapGenericParams, OBS_IMPEXP )
 		/** Common params to all maps derived from mrpt::maps::CMetricMap  */
 		class OBS_IMPEXP TMapGenericParams : public mrpt::utils::CLoadableOptions, public mrpt::utils::CSerializable

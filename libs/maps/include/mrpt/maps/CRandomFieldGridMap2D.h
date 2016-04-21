@@ -235,12 +235,7 @@ namespace maps
 		virtual void setSize(const double x_min, const double x_max, const double y_min, const double y_max, const double resolution, const TRandomFieldCell * fill_value = NULL);
 
 		/** See docs in base class: in this class this always returns 0 */
-		float  compute3DMatchingRatio(
-				const mrpt::maps::CMetricMap						*otherMap,
-				const mrpt::poses::CPose3D							&otherMapPose,
-				float									maxDistForCorr = 0.10f,
-				float									maxMahaDistForCorr = 2.0f
-				) const MRPT_OVERRIDE;
+		float compute3DMatchingRatio(const mrpt::maps::CMetricMap *otherMap, const mrpt::poses::CPose3D &otherMapPose, const TMatchingRatioParams &params) const MRPT_OVERRIDE;
 
 		/** The implementation in this class just calls all the corresponding method of the contained metric maps */
 		virtual void  saveMetricMapRepresentationToFile(const std::string &filNamePrefix) const MRPT_OVERRIDE;

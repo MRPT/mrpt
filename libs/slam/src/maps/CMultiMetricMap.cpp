@@ -435,12 +435,7 @@ void  CMultiMetricMap::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&outObj ) c
 }
 
 // See docs in base class
-float  CMultiMetricMap::compute3DMatchingRatio(
-		const mrpt::maps::CMetricMap								*otherMap,
-		const CPose3D							&otherMapPose,
-		float									maxDistForCorr,
-		float									maxMahaDistForCorr
-		) const
+float  CMultiMetricMap::compute3DMatchingRatio(const mrpt::maps::CMetricMap *otherMap, const mrpt::poses::CPose3D &otherMapPose, const TMatchingRatioParams &params) const
 {
 	MRPT_START
 
@@ -450,7 +445,7 @@ float  CMultiMetricMap::compute3DMatchingRatio(
 	{
 		const mrpt::maps::CMetricMap * m = maps[idx].pointer();
 		ASSERT_(m)
-		accumResult += m->compute3DMatchingRatio( otherMap, otherMapPose,maxDistForCorr,maxMahaDistForCorr );
+		accumResult += m->compute3DMatchingRatio( otherMap, otherMapPose,params);
 	}
 
 	// Return average:

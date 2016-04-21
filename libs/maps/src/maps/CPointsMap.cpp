@@ -792,32 +792,13 @@ void  CPointsMap::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&outObj ) const
 	outObj->insert(obj);
 }
 
-
-/*---------------------------------------------------------------
-   Computes the ratio in [0,1] of correspondences between "this" and the "otherMap" map, whose 6D pose relative to "this" is "otherMapPose"
- *   In the case of a multi-metric map, this returns the average between the maps. This method always return 0 for grid maps.
- * \param  otherMap					  [IN] The other map to compute the matching with.
- * \param  otherMapPose				  [IN] The 6D pose of the other map as seen from "this".
- * \param  maxDistForCorr			  [IN] The minimum distance between 2 non-probabilistic map elements for counting them as a correspondence.
- * \param  maxMahaDistForCorr		  [IN] The minimum Mahalanobis distance between 2 probabilistic map elements for counting them as a correspondence.
- *
- * \return The matching ratio [0,1]
- * \sa determineMatching2D
----------------------------------------------------------------*/
-float  CPointsMap::compute3DMatchingRatio(
-		const mrpt::maps::CMetricMap								*otherMap2,
-		const CPose3D							&otherMapPose,
-		float									maxDistForCorr,
-		float									maxMahaDistForCorr
-		) const
+float  CPointsMap::compute3DMatchingRatio(const mrpt::maps::CMetricMap *otherMap2, const mrpt::poses::CPose3D &otherMapPose, const TMatchingRatioParams &mrp) const
 {
-	MRPT_UNUSED_PARAM(maxMahaDistForCorr);
-
 	TMatchingPairList     correspondences;
 	TMatchingParams       params;
 	TMatchingExtraResults extraResults;
 
-	params.maxDistForCorrespondence = maxDistForCorr;
+	params.maxDistForCorrespondence = mrp.maxDistForCorr;
 
 	this->determineMatching3D(
 		otherMap2->getAsSimplePointsMap(),

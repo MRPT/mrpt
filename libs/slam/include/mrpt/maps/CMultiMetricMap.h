@@ -285,12 +285,7 @@ namespace maps
 			mrpt::maps::TMatchingExtraResults & extraResults ) const MRPT_OVERRIDE;
 
 		/** See the definition in the base class: Calls in this class become a call to every single map in this set. */
-		float  compute3DMatchingRatio(
-				const mrpt::maps::CMetricMap						*otherMap,
-				const mrpt::poses::CPose3D							&otherMapPose,
-				float									maxDistForCorr = 0.10f,
-				float									maxMahaDistForCorr = 2.0f
-				) const MRPT_OVERRIDE;
+		float compute3DMatchingRatio(const mrpt::maps::CMetricMap *otherMap, const mrpt::poses::CPose3D &otherMapPose, const TMatchingRatioParams &params) const MRPT_OVERRIDE;
 
 		/** The implementation in this class just calls all the corresponding method of the contained metric maps */
 		void  saveMetricMapRepresentationToFile(const std::string	&filNamePrefix ) const MRPT_OVERRIDE;

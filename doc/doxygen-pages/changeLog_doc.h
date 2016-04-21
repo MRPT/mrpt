@@ -57,6 +57,7 @@
 					- mrpt::maps::COccupancyGridMap2D::simulateScanRay() is now ~40% (GCC) to ~250% (MSVC) faster by default.
 					- New method mrpt::maps::COccupancyGridMap2D::laserScanSimulatorWithUncertainty()
 				- New method mrpt::maps::CHeightGridMap2D::insertIndividualPoint()
+				- mrpt::maps::CMetricMap::compute3DMatchingRatio() has a simplified API now
 			- \ref mrpt_obs_grp
 				- New class mrpt::obs::CObservationVelodyneScan
 				- mrpt::obs::CSinCosLookUpTableFor2DScans now can build a table from a mrpt::obs::T2DScanProperties structure, which now also has its separate header file for better modularity.

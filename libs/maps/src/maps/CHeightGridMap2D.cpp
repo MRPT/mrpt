@@ -415,17 +415,10 @@ void CHeightGridMap2D::dem_update_map() {
 	// Nothing to do in this class: estimate is always up-to-date
 }
 
-MRPT_TODO("Rewrite compute2DMatchingRatio() in virtual base with params struct")
-MRPT_TODO("Rewrite compute3DMatchingRatio() in virtual base with params struct")
-float  CHeightGridMap2D::compute3DMatchingRatio(
-	const mrpt::maps::CMetricMap						*otherMap,
-	const CPose3D							&otherMapPose,
-	float									maxDistForCorr,
-	float									maxMahaDistForCorr
-	) const
+float  CHeightGridMap2D::compute3DMatchingRatio(const mrpt::maps::CMetricMap *otherMap, const mrpt::poses::CPose3D &otherMapPose, const TMatchingRatioParams &params) const
 {
 	MRPT_UNUSED_PARAM(otherMap); MRPT_UNUSED_PARAM(otherMapPose);
-	MRPT_UNUSED_PARAM(maxDistForCorr); MRPT_UNUSED_PARAM(maxMahaDistForCorr);
+	MRPT_UNUSED_PARAM(params); 
 	return 0;
 }
 

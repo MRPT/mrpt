@@ -2383,14 +2383,8 @@ const CLandmark* 	CLandmarksMap::TCustomSequenceLandmarks::getByBeaconID( unsign
  * \return The matching ratio [0,1]
  * \sa computeMatchingWith2D
  ----------------------------------------------------------------*/
-float  CLandmarksMap::compute3DMatchingRatio(
-		const mrpt::maps::CMetricMap						*otherMap2,
-		const CPose3D							&otherMapPose,
-		float									maxDistForCorr,
-		float									maxMahaDistForCorr
-		) const
+float  CLandmarksMap::compute3DMatchingRatio(const mrpt::maps::CMetricMap *otherMap2, const mrpt::poses::CPose3D &otherMapPose, const TMatchingRatioParams &params) const
 {
-	MRPT_UNUSED_PARAM(maxDistForCorr);
 	MRPT_START
 
 	// Compare to a similar map only:
@@ -2461,7 +2455,7 @@ float  CLandmarksMap::compute3DMatchingRatio(
 
 			float	distMaha = sqrt(  d.multiply_HCHt_scalar(COV.inv()) );  //(d*COV.inv()*(~d))(0,0) );
 
-			if (distMaha<maxMahaDistForCorr )
+			if (distMaha<params.maxMahaDistForCorr )
 			{
 				// Now test the SIFT descriptors:
 				if ( !itThis->features.empty() && !itOther->features.empty() &&

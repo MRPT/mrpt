@@ -103,12 +103,7 @@ namespace mrpt
 			} insertionOptions;
 
 			/** See docs in base class: in this class it always returns 0 */
-			float  compute3DMatchingRatio(
-					const mrpt::maps::CMetricMap						*otherMap,
-					const mrpt::poses::CPose3D							&otherMapPose,
-					float									maxDistForCorr = 0.10f,
-					float									maxMahaDistForCorr = 2.0f
-					) const MRPT_OVERRIDE;
+			float compute3DMatchingRatio(const mrpt::maps::CMetricMap *otherMap, const mrpt::poses::CPose3D &otherMapPose, const TMatchingRatioParams &params) const MRPT_OVERRIDE;
 
 			void  saveMetricMapRepresentationToFile(const std::string &filNamePrefix) const MRPT_OVERRIDE; // See base class docs
 

@@ -399,14 +399,9 @@ void  CReflectivityGridMap2D::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&out
 	MRPT_END
 }
 
-float  CReflectivityGridMap2D::compute3DMatchingRatio(
-	const mrpt::maps::CMetricMap						*otherMap,
-	const CPose3D							&otherMapPose,
-	float									maxDistForCorr,
-	float									maxMahaDistForCorr
-	) const
+float  CReflectivityGridMap2D::compute3DMatchingRatio(const mrpt::maps::CMetricMap *otherMap, const mrpt::poses::CPose3D &otherMapPose, const TMatchingRatioParams &params) const
 {
 	MRPT_UNUSED_PARAM(otherMap); MRPT_UNUSED_PARAM(otherMapPose);
-	MRPT_UNUSED_PARAM(maxDistForCorr); MRPT_UNUSED_PARAM(maxMahaDistForCorr);
+	MRPT_UNUSED_PARAM(params);
 	return 0;
 }

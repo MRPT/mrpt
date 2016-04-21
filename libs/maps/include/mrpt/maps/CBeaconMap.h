@@ -97,15 +97,9 @@ namespace maps
 		}
 
 		// See docs in base class
-		float  compute3DMatchingRatio(
-				const mrpt::maps::CMetricMap	*otherMap,
-				const mrpt::poses::CPose3D		&otherMapPose,
-				float				maxDistForCorr = 0.10f,
-				float				maxMahaDistForCorr = 2.0f
-				) const MRPT_OVERRIDE;
+		float compute3DMatchingRatio(const mrpt::maps::CMetricMap *otherMap, const mrpt::poses::CPose3D &otherMapPose, const TMatchingRatioParams &params) const MRPT_OVERRIDE;
 
-		 /** With this struct options are provided to the likelihood computations.
-		  */
+		 /** With this struct options are provided to the likelihood computations */
 		 struct MAPS_IMPEXP TLikelihoodOptions : public utils::CLoadableOptions
 		 {
 		 public:
