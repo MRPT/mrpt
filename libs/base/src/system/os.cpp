@@ -155,7 +155,8 @@ void mrpt::system::registerFatalExceptionHandlers()
 ---------------------------------------------------------------*/
 #include <mrpt/version.h>
 #include <errno.h>
-#include <limits.h>
+#include <limits>
+#include <climits>
 #include <ctime>
 #include <cstdlib>
 
