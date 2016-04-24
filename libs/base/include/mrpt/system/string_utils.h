@@ -54,11 +54,11 @@ namespace mrpt
 		/**  Removes leading and trailing spaces */
 		std::string BASE_IMPEXP trim(const std::string &str);
 
-		/** Returns a lower-case version of a string.
+		/** Returns a upper-case version of a string.
 		  * \sa lowerCase  */
 		std::string  BASE_IMPEXP upperCase(const std::string& str);
 
-		/** Returns an upper-case version of a string.
+		/** Returns an lower-case version of a string.
 		  * \sa upperCase  */
 		std::string  BASE_IMPEXP lowerCase(const std::string& str);
 
