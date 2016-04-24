@@ -53,8 +53,15 @@
 #include <mrpt/math/ops_vectors.h> // << ops
 #include <mrpt/math/wrap2pi.h>
 
-#define MRPT_NO_WARN_BIG_HDR // It's ok to include ALL hdrs here.
-#include <mrpt/obs.h>
+#include <mrpt/obs/CObservationComment.h>
+#include <mrpt/obs/CObservationOdometry.h>
+#include <mrpt/obs/CObservation2DRangeScan.h>
+#include <mrpt/obs/CObservationBeaconRanges.h>
+#include <mrpt/obs/CObservationStereoImages.h>
+#include <mrpt/obs/CObservation3DRangeScan.h>
+#include <mrpt/obs/CObservationGasSensors.h>
+#include <mrpt/obs/CObservationBearingRange.h>
+#include <mrpt/obs/CObservationRange.h>
 
 #include <iomanip>
 
