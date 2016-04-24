@@ -15,7 +15,8 @@
 <hr>
 <a name="1.4.1">
   <h2>Version 1.4.1: (Under development)  </h2></a>
-	- (No changes yet!)
+	- Changes in apps:
+		- [RawLogViewer](http://www.mrpt.org/list-of-mrpt-apps/rawlogviewer/): Now displays a textual and graphical representation of all observation timestamps, useful to quickly detect sensor "shortages" or temporary failures.
 
 
 <hr>

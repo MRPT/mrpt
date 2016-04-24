@@ -17,7 +17,7 @@
 					<growablecols>14</growablecols>
 					<object class="sizeritem">
 						<object class="wxCustomButton" name="ID_BUTTON2" variable="btnToolbarOpen" member="yes">
-							<label>  Load...  </label>
+							<label>Load...</label>
 							<bitmap stock_id="wxART_FOLDER" stock_client="wxART_TOOLBAR" />
 							<disabled stock_id="wxART_FOLDER" stock_client="wxART_TOOLBAR" />
 							<margin>5,5</margin>
@@ -32,7 +32,7 @@
 					</object>
 					<object class="sizeritem">
 						<object class="wxCustomButton" name="ID_BUTTON3" variable="Button1" member="yes">
-							<label>  Save as...  </label>
+							<label>Save as...</label>
 							<bitmap stock_id="wxART_FILE_SAVE_AS" stock_client="wxART_TOOLBAR" />
 							<disabled stock_id="wxART_FILE_SAVE_AS" stock_client="wxART_TOOLBAR" />
 							<margin>5,5</margin>
@@ -56,7 +56,7 @@
 					</object>
 					<object class="sizeritem">
 						<object class="wxCustomButton" name="ID_BUTTON4" variable="Button2" member="yes">
-							<label>  Edit...  </label>
+							<label>Edit...</label>
 							<bitmap stock_id="wxART_COPY" stock_client="wxART_TOOLBAR" />
 							<disabled stock_id="wxART_COPY" stock_client="wxART_TOOLBAR" />
 							<margin>5,5</margin>
@@ -72,7 +72,7 @@
 					</object>
 					<object class="sizeritem">
 						<object class="wxCustomButton" name="ID_BUTTON5" variable="Button3" member="yes">
-							<label>  &quot;Raw-map&quot;...  </label>
+							<label>&quot;Raw-map&quot;...</label>
 							<bitmap stock_id="ICON_RAWMAP" stock_client="wxART_TOOLBAR" />
 							<disabled stock_id="ICON_RAWMAP" stock_client="wxART_TOOLBAR" />
 							<margin>5,5</margin>
@@ -87,7 +87,7 @@
 					</object>
 					<object class="sizeritem">
 						<object class="wxCustomButton" name="ID_BUTTON6" variable="Button4" member="yes">
-							<label>  Motion model  </label>
+							<label>Motion model</label>
 							<bitmap stock_id="ICON_MOTION" stock_client="wxART_TOOLBAR" />
 							<disabled stock_id="ICON_MOTION" stock_client="wxART_TOOLBAR" />
 							<margin>5,5</margin>
@@ -102,7 +102,7 @@
 					</object>
 					<object class="sizeritem">
 						<object class="wxCustomButton" name="ID_BUTTON7" variable="Button5" member="yes">
-							<label>  ICP...  </label>
+							<label>ICP...</label>
 							<bitmap stock_id="ICON_ICP" stock_client="wxART_TOOLBAR" />
 							<disabled stock_id="ICON_ICP" stock_client="wxART_TOOLBAR" />
 							<margin>5,5</margin>
@@ -126,7 +126,7 @@
 					</object>
 					<object class="sizeritem">
 						<object class="wxCustomButton" name="ID_BUTTON8" variable="Button6" member="yes">
-							<label>  Animate...  </label>
+							<label>Animate...</label>
 							<bitmap stock_id="ICON_ANIMATE_SCANS" stock_client="wxART_TOOLBAR" />
 							<disabled stock_id="ICON_ANIMATE_SCANS" stock_client="wxART_TOOLBAR" />
 							<margin>5,5</margin>
@@ -141,7 +141,7 @@
 					</object>
 					<object class="sizeritem">
 						<object class="wxCustomButton" name="ID_BUTTON9" variable="Button7" member="yes">
-							<label>  Video...  </label>
+							<label>Video...</label>
 							<bitmap stock_id="wxART_TIP" stock_client="wxART_TOOLBAR" />
 							<disabled stock_id="wxART_TIP" stock_client="wxART_TOOLBAR" />
 							<margin>5,5</margin>
@@ -165,7 +165,7 @@
 					</object>
 					<object class="sizeritem">
 						<object class="wxCustomButton" name="ID_BUTTON10" variable="Button8" member="yes">
-							<label>  About  </label>
+							<label>About</label>
 							<bitmap stock_id="ICON_ABOUT" stock_client="wxART_TOOLBAR" />
 							<disabled stock_id="ICON_ABOUT" stock_client="wxART_TOOLBAR" />
 							<margin>5,5</margin>
@@ -180,7 +180,7 @@
 					</object>
 					<object class="sizeritem">
 						<object class="wxCustomButton" name="ID_BUTTON11" variable="Button9" member="yes">
-							<label>  Quit  </label>
+							<label>Quit</label>
 							<bitmap stock_id="ICON_QUIT" stock_client="wxART_TOOLBAR" />
 							<disabled stock_id="ICON_QUIT" stock_client="wxART_TOOLBAR" />
 							<margin>5,5</margin>
@@ -262,8 +262,8 @@
 						<object class="wxBoxSizer" variable="BoxSizer1" member="yes">
 							<object class="sizeritem">
 								<object class="wxSplitterWindow" name="ID_SPLITTERWINDOW3" variable="SplitterWindow3" member="yes">
-									<minsize>10</minsize>
-									<minsize>10,10</minsize>
+									<minsize>150</minsize>
+									<minsize>150,150</minsize>
 									<object class="wxPanel" name="ID_PANEL3" variable="Panel3" member="yes">
 										<object class="wxBoxSizer" variable="BoxSizer2" member="yes">
 											<object class="sizeritem">
@@ -312,19 +312,37 @@
 																		<size>-1,150</size>
 																		<minsize>-1,150</minsize>
 																		<object class="notebookpage">
-																			<object class="wxTextCtrl" name="ID_TEXTCTRL2" variable="memStats" member="yes">
-																				<font>
-																					<size>10</size>
-																					<style>normal</style>
-																					<weight>normal</weight>
-																					<underlined>0</underlined>
-																					<family>teletype</family>
-																					<face>Monospace</face>
-																				</font>
-																				<tooltip>Statistics of the rawlog load</tooltip>
-																				<style>wxTE_MULTILINE|wxTE_READONLY|wxVSCROLL</style>
+																			<object class="wxSplitterWindow" name="ID_SPLITTERWINDOW2" variable="SplitterWindow2" member="yes">
+																				<minsize>50</minsize>
+																				<minsize>50,50</minsize>
+																				<object class="wxTextCtrl" name="ID_TEXTCTRL2" variable="memStats" member="yes">
+																					<font>
+																						<size>10</size>
+																						<style>normal</style>
+																						<weight>normal</weight>
+																						<underlined>0</underlined>
+																						<family>teletype</family>
+																						<face>Monospace</face>
+																					</font>
+																					<tooltip>Statistics of the rawlog load</tooltip>
+																					<style>wxTE_MULTILINE|wxTE_READONLY|wxVSCROLL</style>
+																				</object>
+																				<object class="wxPanel" name="ID_PANEL25" variable="Panel11" member="yes">
+																					<object class="wxBoxSizer" variable="BoxSizer6" member="no">
+																						<object class="sizeritem">
+																							<object class="Custom" name="ID_CUSTOM6" subclass="mpWindow" variable="plotRawlogSensorTimes" member="yes">
+																								<creating_code>$(THIS) = new $(CLASS)($(PARENT),$(ID),$(POS),$(SIZE),0);</creating_code>
+																								<style></style>
+																								<size>315,47</size>
+																								<minsize>-1,80</minsize>
+																							</object>
+																							<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+																							<option>1</option>
+																						</object>
+																					</object>
+																				</object>
 																			</object>
-																			<label>Loaded rawlog info</label>
+																			<label>Dataset statistics &amp;&amp; info</label>
 																		</object>
 																		<object class="notebookpage">
 																			<object class="wxTextCtrl" name="ID_TEXTCTRL3" variable="txtException" member="yes">
@@ -948,7 +966,7 @@
 					</object>
 					<object class="wxMenuItem" name="ID_MENUITEM90" variable="mnuItemEnable3DCamAutoGenPoints" member="yes">
 						<label>Enable on-the-fly generate 3D point cloud</label>
-						<checkable>1</checkable>
+						<check>1</check>
 					</object>
 				</object>
 				<object class="wxMenu" name="ID_MENUITEM21" variable="Menu23" member="yes">
