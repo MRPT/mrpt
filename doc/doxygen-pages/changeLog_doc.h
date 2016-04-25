@@ -17,7 +17,9 @@
   <h2>Version 1.4.1: (Under development)  </h2></a>
 	- Changes in apps:
 		- [RawLogViewer](http://www.mrpt.org/list-of-mrpt-apps/rawlogviewer/): Now displays a textual and graphical representation of all observation timestamps, useful to quickly detect sensor "shortages" or temporary failures.
-
+	- Changes in libraries:
+		- \ref mrpt_hwdrivers_grp
+			- mrpt::hwdrivers::CGenericSensor: external image format is now `png` by default instead of `jpg` to avoid losses.
 
 <hr>
 <a name="1.4.0">

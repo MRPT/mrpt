@@ -37,7 +37,7 @@ CGenericSensor::CGenericSensor() :
 	m_state( ssInitializing ),
 	m_verbose(false),
 	m_path_for_external_images	(),
-	m_external_images_format	("jpg"),
+	m_external_images_format	("png"),
 	m_external_images_jpeg_quality (95)
 {
 	const char * sVerbose = getenv("MRPT_HWDRIVERS_VERBOSE");
