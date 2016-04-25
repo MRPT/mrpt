@@ -125,6 +125,8 @@ namespace mrpt
 			int   m_rgb_format, m_depth_format;
 			bool  m_verbose;
 			void  showLog(const std::string& message)const;
+			/** The data that the RGBD sensors can return */
+			bool  m_grab_image, m_grab_depth, m_grab_3D_points ; //!< Default: all true
 		};	// End of class
 	} // End of NS
 } // End of NS
