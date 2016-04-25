@@ -682,7 +682,7 @@ void CPointsMap::TInsertionOptions::readFromStream(mrpt::utils::CStream &in)
 
 
 CPointsMap::TLikelihoodOptions::TLikelihoodOptions() :
-	sigma_dist          ( 0.05 ),
+    sigma_dist          ( 0.0025 ),
 	max_corr_distance   ( 1.0 ),
 	decimation          ( 10 )
 {
