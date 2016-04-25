@@ -371,6 +371,8 @@ void CObservation3DRangeScan::swap(CObservation3DRangeScan &o)
 	points3D_x.swap(o.points3D_x);
 	points3D_y.swap(o.points3D_y);
 	points3D_z.swap(o.points3D_z);
+	points3D_idxs_x.swap(o.points3D_idxs_x);
+	points3D_idxs_y.swap(o.points3D_idxs_y);
 	std::swap(m_points3D_external_stored,o.m_points3D_external_stored);
 	std::swap(m_points3D_external_file,o.m_points3D_external_file);
 

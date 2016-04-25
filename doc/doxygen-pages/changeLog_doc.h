@@ -21,6 +21,8 @@
 		- \ref mrpt_hwdrivers_grp
 			- mrpt::hwdrivers::CGenericSensor: external image format is now `png` by default instead of `jpg` to avoid losses.
 			- mrpt::hwdrivers::COpenNI2Generic refactored to expose more methods and allow changing parameters via its constructor.
+		- BUG FIXES:
+			- Fix inconsistent state after calling mrpt::obs::CObservation3DRangeScan::swap()
 
 <hr>
 <a name="1.4.0">
