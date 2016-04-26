@@ -27,6 +27,7 @@
 		- Debian package: depends on libopenni-dev
 	- BUG FIXES:
 		- Fix inconsistent state after calling mrpt::obs::CObservation3DRangeScan::swap()
+		- Fix SEGFAULT in mrpt::obs::CObservation3DRangeScan if trying to build a pointcloud in an external container (mrpt::opengl, mrpt::maps)
 
 <hr>
 <a name="1.4.0">

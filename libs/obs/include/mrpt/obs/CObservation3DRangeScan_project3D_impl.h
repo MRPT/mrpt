@@ -39,6 +39,7 @@ namespace detail {
 		const int H = src_obs.rangeImage.rows();
 		const size_t WH = W*H;
 
+		src_obs.resizePoints3DVectors(WH); // This is to make sure points3D_idxs_{x,y} have the expected sizes.
 		pca.resize(WH); // Reserve memory for 3D points. It will be later resized again to the actual number of valid points
 
 		if (src_obs.range_is_depth)
