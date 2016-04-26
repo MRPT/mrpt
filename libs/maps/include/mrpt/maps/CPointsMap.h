@@ -199,7 +199,7 @@ namespace maps
 			void writeToStream(mrpt::utils::CStream &out) const;		//!< Binary dump to stream - for usage in derived classes' serialization
 			void readFromStream(mrpt::utils::CStream &in);			//!< Binary dump to stream - for usage in derived classes' serialization
 
-			double 		sigma_dist; //!< Sigma (standard deviation, in meters) of the exponential used to model the likelihood (default= 0.5meters)
+            double 		sigma_dist; //!< Sigma squared (variance, in meters) of the exponential used to model the likelihood (default= 0.5^2 meters)
 			double 		max_corr_distance; //!< Maximum distance in meters to consider for the numerator divided by "sigma_dist", so that each point has a minimum (but very small) likelihood to avoid underflows (default=1.0 meters)
 			uint32_t	decimation; //!< Speed up the likelihood computation by considering only one out of N rays (default=10)
 		 };

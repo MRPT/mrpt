@@ -66,10 +66,15 @@
 // A list of sensor labels (and the times they appear) in the currently loaded rawlog.
 struct TInfoPerSensorLabel
 {
-	TInfoPerSensorLabel() : occurences(0), first(INVALID_TIMESTAMP) ,last(INVALID_TIMESTAMP)
+	TInfoPerSensorLabel() : max_ellapsed_tim_between_obs(.0), first(INVALID_TIMESTAMP) ,last(INVALID_TIMESTAMP)
 	{}
-	size_t					occurences;
-	mrpt::system::TTimeStamp	first,last;
+	std::vector<double> timOccurs;
+	double max_ellapsed_tim_between_obs;
+	mrpt::system::TTimeStamp first,last;
+
+	size_t getOccurences() const;
+	void addOcurrence(mrpt::system::TTimeStamp obs_tim, mrpt::system::TTimeStamp first_dataset_tim);
+
 };
 
 
@@ -278,6 +283,9 @@ private:
     static const long ID_BUTTON1;
     static const long ID_PANEL18;
     static const long ID_TEXTCTRL2;
+    static const long ID_CUSTOM6;
+    static const long ID_PANEL25;
+    static const long ID_SPLITTERWINDOW2;
     static const long ID_TEXTCTRL3;
     static const long ID_NOTEBOOK3;
     static const long ID_PANEL6;
@@ -460,12 +468,14 @@ private:
     wxMenuItem* MenuItem71;
     mpWindow* plotAct2D_PHI;
     wxMenu* MenuItem20;
+    wxSplitterWindow* SplitterWindow2;
     wxMenuItem* MenuItem46;
     wxStaticBitmapPopup* bmpObsStereoLeft;
     wxMenuItem* MenuItem4;
     wxMenuItem* MenuItem76;
     wxPanel* pn_Action;
     wxMenuItem* MenuItem14;
+    wxPanel* Panel11;
     wxMenuItem* MenuItem36;
     wxCustomButton* btnToolbarOpen;
     wxMenuItem* mnuItemEnable3DCamAutoGenPoints;
@@ -502,6 +512,7 @@ private:
     wxPanel* Panel3;
     wxStaticLine* StaticLine4;
     wxStaticLine* StaticLine2;
+    mpWindow* plotRawlogSensorTimes;
     wxMenuItem* MenuItem72;
     wxMenuItem* MenuItem44;
     wxPanel* pn_CObservationBearingRange;
@@ -585,16 +596,14 @@ private:
 
 	void showNextTip(bool forceShow = false);
 
-    // Layers for the 2D graphs:
-    mpFXYVector     *lyScan2D, *lyRangeBearingLandmarks;
-    mpFXYVector     *lyAction2D_XY,*lyAction2D_PHI;
+	// Layers for the 2D graphs:
+	mpFXYVector     *lyScan2D, *lyRangeBearingLandmarks;
+	mpFXYVector     *lyAction2D_XY,*lyAction2D_PHI;
 
-    wxImageList     *imgList;     // Image list for the tree view:
-
-
-    wxFileHistory	m_fileHistory;
+	wxImageList     *imgList;     // Image list for the tree view:
 
 
+	wxFileHistory	m_fileHistory;
 
 	std::map<std::string,TInfoPerSensorLabel>	listOfSensorLabels;
 

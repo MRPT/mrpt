@@ -53,8 +53,15 @@
 #include <mrpt/math/ops_vectors.h> // << ops
 #include <mrpt/math/wrap2pi.h>
 
-#define MRPT_NO_WARN_BIG_HDR // It's ok to include ALL hdrs here.
-#include <mrpt/obs.h>
+#include <mrpt/obs/CObservationComment.h>
+#include <mrpt/obs/CObservationOdometry.h>
+#include <mrpt/obs/CObservation2DRangeScan.h>
+#include <mrpt/obs/CObservationBeaconRanges.h>
+#include <mrpt/obs/CObservationStereoImages.h>
+#include <mrpt/obs/CObservation3DRangeScan.h>
+#include <mrpt/obs/CObservationGasSensors.h>
+#include <mrpt/obs/CObservationBearingRange.h>
+#include <mrpt/obs/CObservationRange.h>
 
 #include <iomanip>
 
@@ -63,7 +70,6 @@
 #include <wx/artprov.h>
 #include <wx/bitmap.h>
 #include <wx/tglbtn.h>
-#include <wx/icon.h>
 #include <wx/font.h>
 #include <wx/intl.h>
 #include <wx/image.h>
@@ -212,6 +218,9 @@ const long xRawLogViewerFrame::ID_PANEL3 = wxNewId();
 const long xRawLogViewerFrame::ID_BUTTON1 = wxNewId();
 const long xRawLogViewerFrame::ID_PANEL18 = wxNewId();
 const long xRawLogViewerFrame::ID_TEXTCTRL2 = wxNewId();
+const long xRawLogViewerFrame::ID_CUSTOM6 = wxNewId();
+const long xRawLogViewerFrame::ID_PANEL25 = wxNewId();
+const long xRawLogViewerFrame::ID_SPLITTERWINDOW2 = wxNewId();
 const long xRawLogViewerFrame::ID_TEXTCTRL3 = wxNewId();
 const long xRawLogViewerFrame::ID_NOTEBOOK3 = wxNewId();
 const long xRawLogViewerFrame::ID_PANEL6 = wxNewId();
@@ -371,6 +380,7 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent,wxWindowID id)
 
 	//(*Initialize(xRawLogViewerFrame)
 	wxMenu* Menu39;
+	wxBoxSizer* BoxSizer6;
 	wxFlexGridSizer* FlexGridSizer4;
 	wxFlexGridSizer* FlexGridSizer16;
 	wxMenuItem* MenuItem33;
@@ -414,7 +424,7 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent,wxWindowID id)
 	wxMenu* Menu2;
 	wxMenuItem* MenuItem18;
 	wxMenuItem* MenuItem19;
-
+	
 	Create(parent, id, _("RawlogViewer - Part of the MRPT project"), wxDefaultPosition, wxDefaultSize, wxCAPTION|wxDEFAULT_FRAME_STYLE|wxSYSTEM_MENU|wxRESIZE_BORDER|wxCLOSE_BOX|wxMAXIMIZE_BOX|wxMINIMIZE_BOX, _T("id"));
 	SetClientSize(wxSize(700,500));
 	{
@@ -427,49 +437,49 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent,wxWindowID id)
 	FlexGridSizer1->AddGrowableRow(1);
 	FlexGridSizer15 = new wxFlexGridSizer(1, 16, 0, 0);
 	FlexGridSizer15->AddGrowableCol(14);
-	btnToolbarOpen = new wxCustomButton(this,ID_BUTTON2,_("  Load...  "),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_FOLDER")),wxART_TOOLBAR),wxDefaultPosition,wxSize(-1,60),wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON2"));
+	btnToolbarOpen = new wxCustomButton(this,ID_BUTTON2,_("Load..."),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_FOLDER")),wxART_TOOLBAR),wxDefaultPosition,wxSize(-1,60),wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON2"));
 	btnToolbarOpen->SetBitmapDisabled(wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_FOLDER")),wxART_TOOLBAR));
 	btnToolbarOpen->SetMargins(wxSize(5,5));
 	FlexGridSizer15->Add(btnToolbarOpen, 1, wxALL|wxFIXED_MINSIZE|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 1);
-	Button1 = new wxCustomButton(this,ID_BUTTON3,_("  Save as...  "),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_FILE_SAVE_AS")),wxART_TOOLBAR),wxDefaultPosition,wxSize(-1,60),wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON3"));
+	Button1 = new wxCustomButton(this,ID_BUTTON3,_("Save as..."),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_FILE_SAVE_AS")),wxART_TOOLBAR),wxDefaultPosition,wxSize(-1,60),wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON3"));
 	Button1->SetBitmapDisabled(wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_FILE_SAVE_AS")),wxART_TOOLBAR));
 	Button1->SetMargins(wxSize(5,5));
 	FlexGridSizer15->Add(Button1, 1, wxALL|wxFIXED_MINSIZE|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 1);
 	StaticLine2 = new wxStaticLine(this, ID_STATICLINE2, wxDefaultPosition, wxSize(3,70), wxLI_VERTICAL, _T("ID_STATICLINE2"));
 	FlexGridSizer15->Add(StaticLine2, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 1);
-	Button2 = new wxCustomButton(this,ID_BUTTON4,_("  Edit...  "),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_COPY")),wxART_TOOLBAR),wxDefaultPosition,wxSize(-1,60),wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON4"));
+	Button2 = new wxCustomButton(this,ID_BUTTON4,_("Edit..."),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_COPY")),wxART_TOOLBAR),wxDefaultPosition,wxSize(-1,60),wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON4"));
 	Button2->SetBitmapDisabled(wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_COPY")),wxART_TOOLBAR));
 	Button2->SetMargins(wxSize(5,5));
 	FlexGridSizer15->Add(Button2, 1, wxALL|wxFIXED_MINSIZE|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 1);
-	Button3 = new wxCustomButton(this,ID_BUTTON5,_("  \"Raw-map\"...  "),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("ICON_RAWMAP")),wxART_TOOLBAR),wxDefaultPosition,wxSize(-1,60),wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON5"));
+	Button3 = new wxCustomButton(this,ID_BUTTON5,_("\"Raw-map\"..."),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("ICON_RAWMAP")),wxART_TOOLBAR),wxDefaultPosition,wxSize(-1,60),wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON5"));
 	Button3->SetBitmapDisabled(wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("ICON_RAWMAP")),wxART_TOOLBAR));
 	Button3->SetMargins(wxSize(5,5));
 	FlexGridSizer15->Add(Button3, 1, wxALL|wxFIXED_MINSIZE|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 1);
-	Button4 = new wxCustomButton(this,ID_BUTTON6,_("  Motion model  "),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("ICON_MOTION")),wxART_TOOLBAR),wxDefaultPosition,wxSize(-1,60),wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON6"));
+	Button4 = new wxCustomButton(this,ID_BUTTON6,_("Motion model"),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("ICON_MOTION")),wxART_TOOLBAR),wxDefaultPosition,wxSize(-1,60),wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON6"));
 	Button4->SetBitmapDisabled(wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("ICON_MOTION")),wxART_TOOLBAR));
 	Button4->SetMargins(wxSize(5,5));
 	FlexGridSizer15->Add(Button4, 1, wxALL|wxFIXED_MINSIZE|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 1);
-	Button5 = new wxCustomButton(this,ID_BUTTON7,_("  ICP...  "),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("ICON_ICP")),wxART_TOOLBAR),wxDefaultPosition,wxSize(-1,60),wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON7"));
+	Button5 = new wxCustomButton(this,ID_BUTTON7,_("ICP..."),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("ICON_ICP")),wxART_TOOLBAR),wxDefaultPosition,wxSize(-1,60),wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON7"));
 	Button5->SetBitmapDisabled(wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("ICON_ICP")),wxART_TOOLBAR));
 	Button5->SetMargins(wxSize(5,5));
 	FlexGridSizer15->Add(Button5, 1, wxALL|wxFIXED_MINSIZE|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 1);
 	StaticLine3 = new wxStaticLine(this, ID_STATICLINE3, wxDefaultPosition, wxSize(3,70), wxLI_VERTICAL, _T("ID_STATICLINE3"));
 	FlexGridSizer15->Add(StaticLine3, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 1);
-	Button6 = new wxCustomButton(this,ID_BUTTON8,_("  Animate...  "),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("ICON_ANIMATE_SCANS")),wxART_TOOLBAR),wxDefaultPosition,wxSize(-1,60),wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON8"));
+	Button6 = new wxCustomButton(this,ID_BUTTON8,_("Animate..."),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("ICON_ANIMATE_SCANS")),wxART_TOOLBAR),wxDefaultPosition,wxSize(-1,60),wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON8"));
 	Button6->SetBitmapDisabled(wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("ICON_ANIMATE_SCANS")),wxART_TOOLBAR));
 	Button6->SetMargins(wxSize(5,5));
 	FlexGridSizer15->Add(Button6, 1, wxALL|wxFIXED_MINSIZE|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 1);
-	Button7 = new wxCustomButton(this,ID_BUTTON9,_("  Video...  "),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_TIP")),wxART_TOOLBAR),wxDefaultPosition,wxSize(-1,60),wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON9"));
+	Button7 = new wxCustomButton(this,ID_BUTTON9,_("Video..."),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_TIP")),wxART_TOOLBAR),wxDefaultPosition,wxSize(-1,60),wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON9"));
 	Button7->SetBitmapDisabled(wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_TIP")),wxART_TOOLBAR));
 	Button7->SetMargins(wxSize(5,5));
 	FlexGridSizer15->Add(Button7, 1, wxALL|wxFIXED_MINSIZE|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 1);
 	StaticLine4 = new wxStaticLine(this, ID_STATICLINE4, wxDefaultPosition, wxSize(3,70), wxLI_VERTICAL, _T("ID_STATICLINE4"));
 	FlexGridSizer15->Add(StaticLine4, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 1);
-	Button8 = new wxCustomButton(this,ID_BUTTON10,_("  About  "),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("ICON_ABOUT")),wxART_TOOLBAR),wxDefaultPosition,wxSize(-1,60),wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON10"));
+	Button8 = new wxCustomButton(this,ID_BUTTON10,_("About"),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("ICON_ABOUT")),wxART_TOOLBAR),wxDefaultPosition,wxSize(-1,60),wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON10"));
 	Button8->SetBitmapDisabled(wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("ICON_ABOUT")),wxART_TOOLBAR));
 	Button8->SetMargins(wxSize(5,5));
 	FlexGridSizer15->Add(Button8, 1, wxALL|wxFIXED_MINSIZE|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 1);
-	Button9 = new wxCustomButton(this,ID_BUTTON11,_("  Quit  "),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("ICON_QUIT")),wxART_TOOLBAR),wxDefaultPosition,wxSize(-1,60),wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON11"));
+	Button9 = new wxCustomButton(this,ID_BUTTON11,_("Quit"),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("ICON_QUIT")),wxART_TOOLBAR),wxDefaultPosition,wxSize(-1,60),wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON11"));
 	Button9->SetBitmapDisabled(wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("ICON_QUIT")),wxART_TOOLBAR));
 	Button9->SetMargins(wxSize(5,5));
 	FlexGridSizer15->Add(Button9, 1, wxALL|wxFIXED_MINSIZE|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 1);
@@ -500,8 +510,8 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent,wxWindowID id)
 	Panel2 = new wxPanel(SplitterWindow1, ID_PANEL2, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL2"));
 	BoxSizer1 = new wxBoxSizer(wxHORIZONTAL);
 	SplitterWindow3 = new wxSplitterWindow(Panel2, ID_SPLITTERWINDOW3, wxDefaultPosition, wxDefaultSize, wxSP_3D, _T("ID_SPLITTERWINDOW3"));
-	SplitterWindow3->SetMinSize(wxSize(10,10));
-	SplitterWindow3->SetMinimumPaneSize(10);
+	SplitterWindow3->SetMinSize(wxSize(150,150));
+	SplitterWindow3->SetMinimumPaneSize(150);
 	Panel3 = new wxPanel(SplitterWindow3, ID_PANEL3, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL3"));
 	BoxSizer2 = new wxBoxSizer(wxHORIZONTAL);
 	memo = new wxTextCtrl(Panel3, ID_TEXTCTRL1, wxEmptyString, wxDefaultPosition, wxSize(327,140), wxTE_MULTILINE|wxTE_READONLY|wxTE_WORDWRAP|wxNO_BORDER|wxVSCROLL, wxDefaultValidator, _T("ID_TEXTCTRL1"));
@@ -523,14 +533,25 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent,wxWindowID id)
 	FlexGridSizer6->Add(Panel9, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
 	Notebook3 = new wxNotebook(pn_CSensorialFrame, ID_NOTEBOOK3, wxDefaultPosition, wxSize(-1,150), 0, _T("ID_NOTEBOOK3"));
 	Notebook3->SetMinSize(wxSize(-1,150));
-	memStats = new wxTextCtrl(Notebook3, ID_TEXTCTRL2, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE|wxTE_READONLY|wxVSCROLL, wxDefaultValidator, _T("ID_TEXTCTRL2"));
+	SplitterWindow2 = new wxSplitterWindow(Notebook3, ID_SPLITTERWINDOW2, wxDefaultPosition, wxDefaultSize, wxSP_3D, _T("ID_SPLITTERWINDOW2"));
+	SplitterWindow2->SetMinSize(wxSize(50,50));
+	SplitterWindow2->SetMinimumPaneSize(50);
+	memStats = new wxTextCtrl(SplitterWindow2, ID_TEXTCTRL2, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE|wxTE_READONLY|wxVSCROLL, wxDefaultValidator, _T("ID_TEXTCTRL2"));
 	wxFont memStatsFont(10,wxTELETYPE,wxFONTSTYLE_NORMAL,wxNORMAL,false,_T("Monospace"),wxFONTENCODING_DEFAULT);
 	memStats->SetFont(memStatsFont);
 	memStats->SetToolTip(_("Statistics of the rawlog load"));
+	Panel11 = new wxPanel(SplitterWindow2, ID_PANEL25, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL25"));
+	BoxSizer6 = new wxBoxSizer(wxHORIZONTAL);
+	plotRawlogSensorTimes = new mpWindow(Panel11,ID_CUSTOM6,wxDefaultPosition,wxSize(315,47),0);
+	BoxSizer6->Add(plotRawlogSensorTimes, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+	Panel11->SetSizer(BoxSizer6);
+	BoxSizer6->Fit(Panel11);
+	BoxSizer6->SetSizeHints(Panel11);
+	SplitterWindow2->SplitHorizontally(memStats, Panel11);
 	txtException = new wxTextCtrl(Notebook3, ID_TEXTCTRL3, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE|wxTE_READONLY, wxDefaultValidator, _T("ID_TEXTCTRL3"));
 	wxFont txtExceptionFont(10,wxTELETYPE,wxFONTSTYLE_NORMAL,wxNORMAL,false,_T("Monospace"),wxFONTENCODING_DEFAULT);
 	txtException->SetFont(txtExceptionFont);
-	Notebook3->AddPage(memStats, _("Loaded rawlog info"), false);
+	Notebook3->AddPage(SplitterWindow2, _("Dataset statistics && info"), false);
 	Notebook3->AddPage(txtException, _("End of load message"), false);
 	FlexGridSizer6->Add(Notebook3, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
 	pn_CSensorialFrame->SetSizer(FlexGridSizer6);
@@ -918,7 +939,7 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent,wxWindowID id)
 	timAutoLoad.SetOwner(this, ID_TIMER1);
 	timAutoLoad.Start(50, true);
 	FlexGridSizer1->SetSizeHints(this);
-
+	
 	Connect(ID_BUTTON2,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&xRawLogViewerFrame::OnFileOpen);
 	Connect(ID_BUTTON3,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&xRawLogViewerFrame::OnSaveFile);
 	Connect(ID_BUTTON4,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&xRawLogViewerFrame::OnEditRawlog);
@@ -1071,11 +1092,11 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent,wxWindowID id)
 	plotRangeBearing->AddLayer( new mpScaleY() );
 	plotRangeBearing->AddLayer( lyRangeBearingLandmarks );
 
-
 	plotScan2D->EnableDoubleBuffer(true);
 	plotAct2D_XY->EnableDoubleBuffer(true);
 	plotAct2D_PHI->EnableDoubleBuffer(true);
 	plotRangeBearing->EnableDoubleBuffer(true);
+	plotRawlogSensorTimes->EnableDoubleBuffer(true);
 
 
 	Maximize(); // Maximize the main window
@@ -1569,7 +1590,7 @@ void xRawLogViewerFrame::rebuildTreeView()
 	wxString		s;
 	float			totalDistance=0;
 	bool			firstSF = true;
-	TTimeStamp		t1=INVALID_TIMESTAMP,t2=INVALID_TIMESTAMP;
+	TTimeStamp		tim_start=INVALID_TIMESTAMP,tim_last=INVALID_TIMESTAMP;
 	int				countLoop=0;
 
 	Notebook1->ChangeSelection( 0 );
@@ -1604,7 +1625,8 @@ void xRawLogViewerFrame::rebuildTreeView()
 
 	size_t updateProgressBarSteps = (rawlog.size() / 20)+1;
 
-	std::map<const TRuntimeClassId*,size_t>		listOfObjects;
+	typedef std::map<const TRuntimeClassId*,size_t> TListOfObjectsOccurs;
+	TListOfObjectsOccurs listOfObjects;
 
 	// The elements:
 	for (unsigned int i=0;i<rawlog.size();i++)
@@ -1647,11 +1669,11 @@ void xRawLogViewerFrame::rebuildTreeView()
 					if (sf->size())
 					{
 						firstSF = false;
-						t1 = (*sf->begin())->timestamp;
+						tim_start = (*sf->begin())->timestamp;
 					}
 				}
 				if (sf->size())
-					t2 = (*sf->begin())->timestamp;     // Keep the last one
+					tim_last = (*sf->begin())->timestamp;     // Keep the last one
 
 				size_t  j,n = sf->size();
 
@@ -1662,7 +1684,7 @@ void xRawLogViewerFrame::rebuildTreeView()
 					// Stats:
 					listOfObjects[obs->GetRuntimeClass()]++;
 					TInfoPerSensorLabel	&dd = listOfSensorLabels[obs->sensorLabel];
-					dd.occurences++;
+					dd.addOcurrence(obs->timestamp, tim_start);
 					if (dd.first==INVALID_TIMESTAMP) dd.first = obs->timestamp;
 					dd.last = obs->timestamp;
 				}
@@ -1674,16 +1696,17 @@ void xRawLogViewerFrame::rebuildTreeView()
 			{
 				CObservationPtr obs = rawlog.getAsObservation(i);
 
-				if (t1==INVALID_TIMESTAMP)
-					t1 = obs->timestamp;
+				if (tim_start==INVALID_TIMESTAMP)
+					tim_start = obs->timestamp;
 
-				t2 = obs->timestamp;     // Keep the last one
+				tim_last = obs->timestamp;     // Keep the last one
 
 				// Stats:
 				listOfObjects[obs->GetRuntimeClass()]++;
 
+				// 0-based timestamp:
 				TInfoPerSensorLabel	&dd = listOfSensorLabels[obs->sensorLabel];
-				dd.occurences++;
+				dd.addOcurrence(obs->timestamp, tim_start);
 				if (dd.first==INVALID_TIMESTAMP) dd.first = obs->timestamp;
 				dd.last = obs->timestamp;
 
@@ -1716,8 +1739,8 @@ void xRawLogViewerFrame::rebuildTreeView()
 
 	} // end for i
 
-	if (t1!=INVALID_TIMESTAMP && t2!=INVALID_TIMESTAMP)
-		experimentLenght = timeDifference(t1,t2);
+	if (tim_start!=INVALID_TIMESTAMP && tim_last!=INVALID_TIMESTAMP)
+		experimentLenght = timeDifference(tim_start,tim_last);
 
 	// Statistics:
 	// ---------------------------
@@ -1740,7 +1763,7 @@ void xRawLogViewerFrame::rebuildTreeView()
 
 	if (experimentLenght==0) experimentLenght=1;
 
-	for (std::map<const TRuntimeClassId*,size_t>::iterator it=listOfObjects.begin();it!=listOfObjects.end();++it)
+	for (TListOfObjectsOccurs::const_iterator it=listOfObjects.begin();it!=listOfObjects.end();++it)
 	{
 		const char *className = it->first->className;
 		size_t      count = it->second;
@@ -1752,7 +1775,7 @@ void xRawLogViewerFrame::rebuildTreeView()
 
 	for (std::map<std::string,TInfoPerSensorLabel>::iterator it=listOfSensorLabels.begin();it!=listOfSensorLabels.end();++it)
 	{
-		size_t      count = it->second.occurences;
+		size_t      count = it->second.getOccurences();
 		TTimeStamp	tf = it->second.first;
 		TTimeStamp	tl = it->second.last;
 		double Hz = 0, dur = 0;
@@ -1762,7 +1785,7 @@ void xRawLogViewerFrame::rebuildTreeView()
 			Hz = double(count>1 ? count-1 : 1)/dur;
 		}
 
-		memStats->AppendText( _U(format(" %8u %25s : %5.03f Hz during %.04f seconds\n",(unsigned)count,it->first.c_str(), Hz, dur ).c_str() ) );
+		memStats->AppendText( _U(format(" %8u %25s : %5.03f Hz for %.04f s, with %.03f s max delay btw readings.\n",(unsigned)count,it->first.c_str(), Hz, dur, it->second.max_ellapsed_tim_between_obs ).c_str() ) );
 	}
 
 	memStats->ShowPosition(0);
@@ -1770,8 +1793,46 @@ void xRawLogViewerFrame::rebuildTreeView()
 	SelectObjectInTreeView( CSerializablePtr() );
 	tree_view->Refresh();
 
+	// Show plot of times:
+	{
+		plotRawlogSensorTimes->DelAllLayers(true /*delete objs*/, false /*dont refresh view*/);
+		plotRawlogSensorTimes->AddLayer( new mpScaleX() );
+		plotRawlogSensorTimes->AddLayer( new mpScaleY() );
+
+		wxPen   penBlue(wxColour(0,0,255),5);
+		unsigned int id=0;
+		double min_t=0.0, max_t=1.0;
+		for (std::map<std::string,TInfoPerSensorLabel>::iterator it=listOfSensorLabels.begin();it!=listOfSensorLabels.end();++it, ++id)
+		{
+			if (it->second.timOccurs.empty())
+				continue;
+
+			std::vector<double> yPts;
+			yPts.assign(it->second.timOccurs.size(), (double) id);
+
+			double this_min_t=0.0, this_max_t=1.0;
+			mrpt::math::minimum_maximum(it->second.timOccurs, this_min_t,this_max_t);
+			mrpt::utils::keep_max(max_t, this_max_t);
+			mrpt::utils::keep_max(min_t, this_min_t);
+
+			mpFXYVector     *lyRawlogInfo = new mpFXYVector();
+			lyRawlogInfo->SetPen( penBlue );
+			lyRawlogInfo->SetContinuity(false);
+			lyRawlogInfo->SetData(it->second.timOccurs,yPts);
+			lyRawlogInfo->SetName( _U( it->first.c_str() ));
+			lyRawlogInfo->ShowName(true);
+			plotRawlogSensorTimes->AddLayer(lyRawlogInfo, false /*dont refresh view*/);
+		}
+
+		const double At = std::max(1.0, max_t-min_t);
+
+		plotRawlogSensorTimes->Fit(min_t - At*0.15, max_t + At*0.15, -1.0, id+1.0);
+		plotRawlogSensorTimes->Refresh();
+	}
+
 	WX_END_TRY
 }
+
 
 // Selection has changed:
 void xRawLogViewerFrame::OntreeViewSelectionChanged(
@@ -5374,6 +5435,25 @@ void xRawLogViewerFrame::Onslid3DcamConfCmdScrollChanged(wxScrollEvent& event)
 {
 	// Refresh:
 	SelectObjectInTreeView(curSelectedObject);
+}
+
+
+size_t TInfoPerSensorLabel::getOccurences() const 
+{
+	return timOccurs.size();
+}
+void TInfoPerSensorLabel::addOcurrence(mrpt::system::TTimeStamp obs_tim, mrpt::system::TTimeStamp first_dataset_tim)
+{
+	double obs_t = .0; // 0-based timestamp:
+	if (first_dataset_tim!=INVALID_TIMESTAMP && obs_tim!=INVALID_TIMESTAMP)
+		obs_t = mrpt::system::timeDifference(first_dataset_tim, obs_tim);
+	
+	double ellapsed_tim = .0;
+	if (!timOccurs.empty())
+		ellapsed_tim = obs_t - timOccurs.back();
+
+	timOccurs.push_back(obs_t);
+	if (ellapsed_tim>max_ellapsed_tim_between_obs) max_ellapsed_tim_between_obs = ellapsed_tim;
 }
 
 

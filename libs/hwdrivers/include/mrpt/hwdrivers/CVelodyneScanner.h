@@ -20,7 +20,8 @@ namespace mrpt
 {
 	namespace hwdrivers
 	{
-		/** A C++ interface to Velodyne laser scanners (HDL-64, HDL-32, VLP-16), working on Windows and Linux.
+		/** A C++ interface to Velodyne laser scanners (HDL-64, HDL-32, VLP-16), working on Linux and Windows. 
+		  * (Using this class requires WinPCap as a run-time dependency in Windows).
 		  * It can receive data from real devices via an Ethernet connection or parse a WireShark PCAP file for offline processing.
 		  * The choice of online vs. offline operation is taken upon calling \a initialize(): if a PCAP input file has been defined,
 		  * offline operation takes place and network is not listened for incomming packets.
