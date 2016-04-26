@@ -21,8 +21,10 @@
 		- \ref mrpt_hwdrivers_grp
 			- mrpt::hwdrivers::CGenericSensor: external image format is now `png` by default instead of `jpg` to avoid losses.
 			- mrpt::hwdrivers::COpenNI2Generic refactored to expose more methods and allow changing parameters via its constructor.
-		- BUG FIXES:
-			- Fix inconsistent state after calling mrpt::obs::CObservation3DRangeScan::swap()
+    - Changes in build system:
+        - Debian package: depends on libopenni-dev
+	- BUG FIXES:
+		- Fix inconsistent state after calling mrpt::obs::CObservation3DRangeScan::swap()
 
 <hr>
 <a name="1.4.0">
@@ -76,7 +78,7 @@
 				- mrpt::obs::CSinCosLookUpTableFor2DScans now can build a table from a mrpt::obs::T2DScanProperties structure, which now also has its separate header file for better modularity.
 				- <b>[API changed]</b> mrpt::obs::CObservationGPS now stores only one message per objects. API clean-up and extended so the number of GNSS message types is larger and more scalable.
 				- mrpt::obs::gnss: A new namespace with many new data structures for GPS-related messages
-				- mrpt::obs::CObservation3DRangeScan: projection of RGBD images to 3D points now correctly filters out invalid points, which were in previous versions mapped as (0,0,0) points (relative to the sensor). 
+				- mrpt::obs::CObservation3DRangeScan: projection of RGBD images to 3D points now correctly filters out invalid points, which were in previous versions mapped as (0,0,0) points (relative to the sensor).
 				  In turn, this leads to point clouds of a dynamic number of points. In case of needing the (u,v) pixel coordinates of projected points, checkout the new fields `points3D_idxs_x` & `points3D_idxs_y`.
 				- New class mrpt::obs::CObservation2DRangeScanWithUncertainty
 			- \ref mrpt_opengl_grp
@@ -88,7 +90,7 @@
 				- New function mrpt::topography::geocentricToENU_WGS84()
 			- \ref mrpt_vision_grp
 				- mrpt::vision::CDifOdo has been refactored and now does faster image pyramid computation (By Mariano Jaimez)
-				- mrpt::maps::CLandmarksMap changes: 
+				- mrpt::maps::CLandmarksMap changes:
 					- `beaconMaxRange` & `alphaRatio` parameters have been removed since they were not used.
 					- New likelihood parameter `beaconRangesUseObservationStd` to allow using different uncertainty values with each observation.
 		- Changes in build system:
