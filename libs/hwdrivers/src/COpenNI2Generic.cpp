@@ -308,6 +308,7 @@ int COpenNI2Generic::getConnectedDevices()
 		const openni::DeviceInfo& info = oni2InfoArray[i];
 		showLog(mrpt::format("  Device[%d]\n", i));
 		showLog(oni2DevInfoStr(info, 3) + "\n");
+
 		bool isExist = false;
 		for(unsigned int j = 0, j_end = vDevices.size();j < j_end && isExist == false;++j){
 			if(cmpONI2Device(info, vDevices[j]->getInfo())){
@@ -323,6 +324,12 @@ int COpenNI2Generic::getConnectedDevices()
 		const openni::DeviceInfo& info = oni2InfoArray[*it];
 		CDevice::Ptr device = CDevice::create(info, (openni::PixelFormat)m_rgb_format, (openni::PixelFormat)m_depth_format, m_verbose);
 		vDevices.push_back(device);
+		{
+			unsigned int sn;
+			if (device->getSerialNumber(sn)) {
+				showLog(mrpt::format("Device[%d]: serial number: `%u`\n",*it,sn) );
+			}
+		}
 	}
 
 	if(getNumDevices() == 0){
@@ -395,13 +402,6 @@ void COpenNI2Generic::open(unsigned sensor_id)
 unsigned int COpenNI2Generic::openDevicesBySerialNum(const std::set<unsigned>& serial_required)
 {
 #if MRPT_HAS_OPENNI2
-  // Check that the serial numbers of all the devices are different
-  // for(unsigned i=0; i < v_serial_required.size()-1; i++)
-  //   for(unsigned j=i+1; j < v_serial_required.size(); j++)
-  //     if(v_serial_required[i] == v_serial_required[j])
-  //       THROW_EXCEPTION("The device serial numbers to open are the same")
-  /* The elements of 'std::set' are always unique. */
-
   showLog(mrpt::format("[%s]\n", __FUNCTION__));
   unsigned num_open_dev = 0;
   for(unsigned sensor_id=0; sensor_id < vDevices.size(); sensor_id++)
@@ -413,11 +413,11 @@ unsigned int COpenNI2Generic::openDevicesBySerialNum(const std::set<unsigned>& s
     }
     if (m_verbose) printf("[COpenNI2Generic::openDevicesBySerialNum] checking device with serial '%d'\n",serialNum);
 
-    if(serial_required.find(serialNum) == serial_required.end()){
-      vDevices[sensor_id]->close();
+	if(serial_required.find(serialNum) == serial_required.end()){
+	  vDevices[sensor_id]->close();
       continue;
     }
-    if(vDevices[sensor_id]->isOpen()){
+	if(vDevices[sensor_id]->isOpen()){
       num_open_dev++;
       continue;
     }
