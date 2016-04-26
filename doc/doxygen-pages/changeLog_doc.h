@@ -20,9 +20,11 @@
 	- Changes in libraries:
 		- \ref mrpt_hwdrivers_grp
 			- mrpt::hwdrivers::CGenericSensor: external image format is now `png` by default instead of `jpg` to avoid losses.
-			- mrpt::hwdrivers::COpenNI2Generic refactored to expose more methods and allow changing parameters via its constructor.
-    - Changes in build system:
-        - Debian package: depends on libopenni-dev
+			- mrpt::hwdrivers::COpenNI2Generic:
+				- refactored to expose more methods and allow changing parameters via its constructor.
+				- Now supports reading from an IR, RGB and Depth channels independenty.
+	- Changes in build system:
+		- Debian package: depends on libopenni-dev
 	- BUG FIXES:
 		- Fix inconsistent state after calling mrpt::obs::CObservation3DRangeScan::swap()
 
