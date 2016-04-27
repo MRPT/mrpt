@@ -42,6 +42,12 @@ if(COMMAND cmake_policy)
 endif()
 # -------------------------
 
+# Detect wordsize:
+IF(CMAKE_SIZEOF_VOID_P EQUAL 8)  # Size in bytes!
+	SET(CMAKE_MRPT_WORD_SIZE 64)
+ELSE(CMAKE_SIZEOF_VOID_P EQUAL 8)  # Size in bytes!
+	SET(CMAKE_MRPT_WORD_SIZE 32)
+ENDIF(CMAKE_SIZEOF_VOID_P EQUAL 8)
 
 include(cmakemodules/script_version_number.cmake REQUIRED)	#  Loads MRPT version number
 
@@ -99,14 +105,6 @@ include(cmakemodules/script_select_app_to_build.cmake REQUIRED)		# Build (or not
 # ----------------------------------------------------------------------------
 # 		CHECK FOR SYSTEM LIBRARIES, OPTIONS, ETC..
 # ----------------------------------------------------------------------------
-
-# Detect wordsize:
-# -------------------------------------------
-IF(CMAKE_SIZEOF_VOID_P EQUAL 8)  # Size in bytes!
-	SET(CMAKE_MRPT_WORD_SIZE 64)
-ELSE(CMAKE_SIZEOF_VOID_P EQUAL 8)  # Size in bytes!
-	SET(CMAKE_MRPT_WORD_SIZE 32)
-ENDIF(CMAKE_SIZEOF_VOID_P EQUAL 8)
 
 # Build static or dynamic libs?
 # ===================================================
