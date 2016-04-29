@@ -14,7 +14,7 @@
 #include <mrpt/detectors/CCascadeClassifierDetection.h>
 #include <mrpt/utils/CTimeLogger.h>
 #include <mrpt/system/threads.h>
-#include <mrpt/synch.h>
+#include <mrpt/synch/CSemaphore.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/obs/obs_frwds.h>
 

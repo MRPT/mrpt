@@ -40,7 +40,7 @@ namespace mrpt
 		  */
 		class BASE_IMPEXP CPipe
 		{
-        public:
+		public:
 			/** Creates a new pipe and returns the read & write end-points as newly allocated objects.
 			  * \exception std::exception On any error during the pipe creation
 			  */
@@ -51,8 +51,8 @@ namespace mrpt
 			static void initializePipe(CPipeReadEndPoint &outReadPipe, CPipeWriteEndPoint &outWritePipe);
 
 		private:
-            CPipe();  //!< No need to create any object of this class.
-            ~CPipe();
+			CPipe();  //!< No need to create any object of this class.
+			~CPipe();
 		}; // end of CPipe
 
 

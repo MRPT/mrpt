@@ -13,7 +13,7 @@
 #include <mrpt/system/string_utils.h>
 
 #include <mrpt/utils/CTicTac.h>
-#include <mrpt/synch.h>
+#include <mrpt/synch/CSemaphore.h>
 
 #ifdef MRPT_OS_WINDOWS
     #include <conio.h>
