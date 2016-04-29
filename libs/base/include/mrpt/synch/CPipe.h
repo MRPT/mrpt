@@ -44,7 +44,11 @@ namespace mrpt
 			/** Creates a new pipe and returns the read & write end-points as newly allocated objects.
 			  * \exception std::exception On any error during the pipe creation
 			  */
-			static void createPipe(std::auto_ptr<CPipeReadEndPoint>& outReadPipe,std::auto_ptr<CPipeWriteEndPoint>& outWritePipe);
+			/** Creates a new pipe and returns the read & write end-points as newly allocated objects. */
+			template <typename ReadPtr, typename WritePtr>
+			static void createPipe(ReadPtr& outReadPipe,WritePtr& outWritePipe);
+
+			static void initializePipe(CPipeReadEndPoint &outReadPipe, CPipeWriteEndPoint &outWritePipe);
 
 		private:
             CPipe();  //!< No need to create any object of this class.
@@ -122,6 +126,15 @@ namespace mrpt
 			size_t ReadBuffer(void *Buffer, size_t Count);  //!< Hide the read method in this write-only pipe.
 
 		}; // end of CPipeWriteEndPoint
+
+		template <typename ReadPtr, typename WritePtr>
+		void CPipe::createPipe(ReadPtr& outReadPipe,WritePtr& outWritePipe)
+		{
+			outReadPipe  = ReadPtr(new CPipeReadEndPoint);
+			outWritePipe = WritePtr(new CPipeWriteEndPoint);
+			CPipe::initializePipe(*outReadPipe, *outWritePipe);
+		}
+
 
 
 	} // End of namespace
