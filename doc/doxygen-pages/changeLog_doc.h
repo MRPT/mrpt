@@ -18,13 +18,17 @@
 	- Changes in apps:
 		- [RawLogViewer](http://www.mrpt.org/list-of-mrpt-apps/rawlogviewer/): Now displays a textual and graphical representation of all observation timestamps, useful to quickly detect sensor "shortages" or temporary failures.
 	- Changes in libraries:
+		- \ref mrpt_obs_grp
+			- mrpt::obs::CObservation3DRangeScan:
+				- Now uses more SSE2 optimized code
+				- Now allows filtering depth images by minimum depth mask in mrpt::obs::CObservation3DRangeScan::project3DPointsFromDepthImageInto() and  mrpt::obs::CObservation3DRangeScan::convertTo2DScan()
 		- \ref mrpt_hwdrivers_grp
 			- mrpt::hwdrivers::CGenericSensor: external image format is now `png` by default instead of `jpg` to avoid losses.
 			- mrpt::hwdrivers::COpenNI2Generic:
 				- refactored to expose more methods and allow changing parameters via its constructor.
 				- Now supports reading from an IR, RGB and Depth channels independenty.
 	- Changes in build system:
-    - [Windows only] `DLL`s/`LIB`s now have the signature `lib-${name}${2-digits-version}${compiler-name}_{x32|x64}.{dll/lib}`, allowing several MRPT versions to coexist in the system PATH.
+	- [Windows only] `DLL`s/`LIB`s now have the signature `lib-${name}${2-digits-version}${compiler-name}_{x32|x64}.{dll/lib}`, allowing several MRPT versions to coexist in the system PATH.
 		- Debian package: depends on libopenni-dev
 	- BUG FIXES:
 		- Fix inconsistent state after calling mrpt::obs::CObservation3DRangeScan::swap()

@@ -856,7 +856,8 @@ void CObservation3DRangeScan::convertTo2DScan(
 	const std::string &sensorLabel,
 	const double angle_sup,
 	const double angle_inf,
-	const double oversampling_ratio
+	const double oversampling_ratio,
+	const mrpt::math::CMatrix * minRangeMask
 	)
 {
 	out_scan2d.sensorLabel = sensorLabel;
@@ -871,6 +872,10 @@ void CObservation3DRangeScan::convertTo2DScan(
 
 	const size_t nCols = this->rangeImage.cols();
 	const size_t nRows = this->rangeImage.rows();
+	if (minRangeMask) { // sanity check:
+		ASSERT_EQUAL_(minRangeMask->cols(), rangeImage.cols());
+		ASSERT_EQUAL_(minRangeMask->rows(), rangeImage.rows());
+	}
 
 	// Compute the real horizontal FOV from the range camera intrinsic calib data:
 	// Note: this assumes the range image has been "undistorted", which is true for data
@@ -933,7 +938,7 @@ void CObservation3DRangeScan::convertTo2DScan(
 		for (size_t r=0;r<nRows;r++)
 		{
 			const float D = this->rangeImage.coeff(r,c);
-			if (D>0)
+			if (D>0 && (!minRangeMask || D>minRangeMask->coeff(r,c)))
 			{
 				const float this_point_tan = vert_ang_tan[r] * D;
 				if (this_point_tan>tan_min && this_point_tan<tan_max)

@@ -31,7 +31,7 @@ namespace obs
 	namespace detail {
 		// Implemented in CObservation3DRangeScan_project3D_impl.h
 		template <class POINTMAP>
-		void project3DPointsFromDepthImageInto(CObservation3DRangeScan    & src_obs,POINTMAP                   & dest_pointcloud,const bool                   takeIntoAccountSensorPoseOnRobot,const mrpt::poses::CPose3D * robotPoseInTheWorld,const bool                   PROJ3D_USE_LUT);
+		void project3DPointsFromDepthImageInto(CObservation3DRangeScan & src_obs,POINTMAP & dest_pointcloud,const bool takeIntoAccountSensorPoseOnRobot,const mrpt::poses::CPose3D * robotPoseInTheWorld,const bool PROJ3D_USE_LUT, const mrpt::math::CMatrix * minRangeMask);
 	}
 
 	/** Declares a class derived from "CObservation" that encapsules a 3D range scan measurement, as from a time-of-flight range camera or any other RGBD sensor.
@@ -172,6 +172,7 @@ namespace obs
 		  *  the points are transformed with \a sensorPose. Furthermore, if provided, those coordinates are transformed with \a robotPoseInTheWorld
 		  *
 		  * \param[in] PROJ3D_USE_LUT (Only when range_is_depth=true) Whether to use a Look-up-table (LUT) to speed up the conversion. It's thread safe in all situations <b>except</b> when you call this method from different threads <b>and</b> with different camera parameter matrices. In all other cases, it's a good idea to left it enabled.
+		  * \param[in] minRangeMask If provided, a matrix with the minimum range (in meters) allowed at each direction (row,col) for a range to be considered valid.
 		  * \tparam POINTMAP Supported maps are all those covered by mrpt::utils::PointCloudAdapter (mrpt::maps::CPointsMap and derived, mrpt::opengl::CPointCloudColoured, PCL point clouds,...)
 		  *
 		  * \note In MRPT < 0.9.5, this method always assumes that ranges were in Kinect-like format.
@@ -181,9 +182,11 @@ namespace obs
 			POINTMAP                   & dest_pointcloud,
 			const bool takeIntoAccountSensorPoseOnRobot,
 			const mrpt::poses::CPose3D *robotPoseInTheWorld=NULL,
-			const bool PROJ3D_USE_LUT=true)
+			const bool PROJ3D_USE_LUT=true,
+			const mrpt::math::CMatrix * minRangeMask = NULL
+			)
 		{
-			detail::project3DPointsFromDepthImageInto<POINTMAP>(*this,dest_pointcloud,takeIntoAccountSensorPoseOnRobot,robotPoseInTheWorld,PROJ3D_USE_LUT);
+			detail::project3DPointsFromDepthImageInto<POINTMAP>(*this,dest_pointcloud,takeIntoAccountSensorPoseOnRobot,robotPoseInTheWorld,PROJ3D_USE_LUT,minRangeMask);
 		}
 
 		/** This method is equivalent to \c project3DPointsFromDepthImageInto() storing the projected 3D points (without color, in local coordinates) in this same class.
@@ -218,6 +221,7 @@ namespace obs
 		  *  \param[in] angle_sup (Default=5deg) The upper half-FOV angle (in radians)
 		  *  \param[in] angle_sup (Default=5deg) The lower half-FOV angle (in radians)
 		  *  \param[in] oversampling_ratio (Default=1.2=120%) How many more laser scans rays to create (read above).
+		  *  \param[in] minRangeMask If provided, a matrix with the minimum range (in meters) allowed at each direction (row,col) for a range to be considered valid.
 		  *
 		  * \sa The example in http://www.mrpt.org/Example_Kinect_To_2D_laser_scan
 		  */
@@ -226,7 +230,9 @@ namespace obs
 			const std::string       & sensorLabel,
 			const double angle_sup = mrpt::utils::DEG2RAD(5),
 			const double angle_inf = mrpt::utils::DEG2RAD(5),
-			const double oversampling_ratio = 1.2 );
+			const double oversampling_ratio = 1.2,
+			const mrpt::math::CMatrix * minRangeMask = NULL
+			);
 
 
 		bool hasPoints3D; //!< true means the field points3D contains valid data.

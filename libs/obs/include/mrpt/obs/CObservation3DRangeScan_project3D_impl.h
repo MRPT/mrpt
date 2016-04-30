@@ -15,8 +15,8 @@ namespace mrpt {
 namespace obs {
 namespace detail {
 	// Auxiliary functions which implement SSE-optimized proyection of 3D point cloud:
-	template <class POINTMAP> void do_project_3d_pointcloud(const int H,const int W,const float *kys,const float *kzs,const mrpt::math::CMatrix &rangeImage, mrpt::utils::PointCloudAdapter<POINTMAP> &pca, std::vector<uint16_t> &idxs_x, std::vector<uint16_t> &idxs_y);
-	template <class POINTMAP> void do_project_3d_pointcloud_SSE2(const int H,const int W,const float *kys,const float *kzs,const mrpt::math::CMatrix &rangeImage, mrpt::utils::PointCloudAdapter<POINTMAP> &pca, std::vector<uint16_t> &idxs_x, std::vector<uint16_t> &idxs_y);
+	template <class POINTMAP> void do_project_3d_pointcloud(const int H,const int W,const float *kys,const float *kzs,const mrpt::math::CMatrix &rangeImage, mrpt::utils::PointCloudAdapter<POINTMAP> &pca, std::vector<uint16_t> &idxs_x, std::vector<uint16_t> &idxs_y,const mrpt::math::CMatrix * minRangeMask);
+	template <class POINTMAP> void do_project_3d_pointcloud_SSE2(const int H,const int W,const float *kys,const float *kzs,const mrpt::math::CMatrix &rangeImage, mrpt::utils::PointCloudAdapter<POINTMAP> &pca, std::vector<uint16_t> &idxs_x, std::vector<uint16_t> &idxs_y,const mrpt::math::CMatrix * minRangeMask);
 
 	template <class POINTMAP>
 	void project3DPointsFromDepthImageInto(
@@ -24,7 +24,8 @@ namespace detail {
 			POINTMAP                   & dest_pointcloud,
 			const bool                   takeIntoAccountSensorPoseOnRobot,
 			const mrpt::poses::CPose3D * robotPoseInTheWorld,
-			const bool                   PROJ3D_USE_LUT)
+			const bool                   PROJ3D_USE_LUT,
+			const mrpt::math::CMatrix * minRangeMask)
 	{
 		using namespace mrpt::math;
 
@@ -37,6 +38,7 @@ namespace detail {
 		// ------------------------------------------------------------
 		const int W = src_obs.rangeImage.cols();
 		const int H = src_obs.rangeImage.rows();
+		ASSERT_(W!=0 && H!=0);
 		const size_t WH = W*H;
 
 		src_obs.resizePoints3DVectors(WH); // This is to make sure points3D_idxs_{x,y} have the expected sizes.
@@ -76,12 +78,16 @@ namespace detail {
 				float *kys = &src_obs.m_3dproj_lut.Kys[0];
 				float *kzs = &src_obs.m_3dproj_lut.Kzs[0];
 
+				if (minRangeMask) { // sanity check:
+					ASSERT_EQUAL_(minRangeMask->cols(), src_obs.rangeImage.cols());
+					ASSERT_EQUAL_(minRangeMask->rows(), src_obs.rangeImage.rows());
+				}
 	#if MRPT_HAS_SSE2
 				if ((W & 0x07)==0)
-				     do_project_3d_pointcloud_SSE2(H,W,kys,kzs,src_obs.rangeImage,pca, src_obs.points3D_idxs_x, src_obs.points3D_idxs_y );
-				else do_project_3d_pointcloud(H,W,kys,kzs,src_obs.rangeImage,pca, src_obs.points3D_idxs_x, src_obs.points3D_idxs_y );  // if image width is not 8*N, use standard method
+				     do_project_3d_pointcloud_SSE2(H,W,kys,kzs,src_obs.rangeImage,pca, src_obs.points3D_idxs_x, src_obs.points3D_idxs_y,minRangeMask );
+				else do_project_3d_pointcloud(H,W,kys,kzs,src_obs.rangeImage,pca, src_obs.points3D_idxs_x, src_obs.points3D_idxs_y,minRangeMask );  // if image width is not 8*N, use standard method
 	#else
-				do_project_3d_pointcloud(H,W,kys,kzs,src_obs.rangeImage,pca,src_obs.points3D_idxs_x, src_obs.points3D_idxs_y);
+				do_project_3d_pointcloud(H,W,kys,kzs,src_obs.rangeImage,pca,src_obs.points3D_idxs_x, src_obs.points3D_idxs_y,minRangeMask);
 	#endif
 			}
 			else
@@ -264,14 +270,15 @@ namespace detail {
 
 	// Auxiliary functions which implement proyection of 3D point clouds:
 	template <class POINTMAP>
-	inline void do_project_3d_pointcloud(const int H,const int W,const float *kys,const float *kzs,const mrpt::math::CMatrix &rangeImage, mrpt::utils::PointCloudAdapter<POINTMAP> &pca, std::vector<uint16_t> &idxs_x, std::vector<uint16_t> &idxs_y)
+	inline void do_project_3d_pointcloud(const int H,const int W,const float *kys,const float *kzs,const mrpt::math::CMatrix &rangeImage, mrpt::utils::PointCloudAdapter<POINTMAP> &pca, std::vector<uint16_t> &idxs_x, std::vector<uint16_t> &idxs_y,const mrpt::math::CMatrix * minRangeMask)
 	{
+		// Preconditions: minRangeMask() has the right size
 		size_t idx=0;
 		for (int r=0;r<H;r++)
 			for (int c=0;c<W;c++)
 			{
 				const float D = rangeImage.coeff(r,c);
-				if (D!=.0f) {
+				if (D!=.0f && (!minRangeMask || D>minRangeMask->coeff(r,c)) ) {
 					pca.setPointXYZ(idx, D /*x*/, *kys++ * D /*y*/, *kzs++ * D /*z*/);
 					idxs_x[idx]=c;
 					idxs_y[idx]=r;
@@ -283,36 +290,49 @@ namespace detail {
 
 	// Auxiliary functions which implement proyection of 3D point clouds:
 	template <class POINTMAP>
-	inline void do_project_3d_pointcloud_SSE2(const int H,const int W,const float *kys,const float *kzs,const mrpt::math::CMatrix &rangeImage, mrpt::utils::PointCloudAdapter<POINTMAP> &pca, std::vector<uint16_t> &idxs_x, std::vector<uint16_t> &idxs_y)
+	inline void do_project_3d_pointcloud_SSE2(const int H,const int W,const float *kys,const float *kzs,const mrpt::math::CMatrix &rangeImage, mrpt::utils::PointCloudAdapter<POINTMAP> &pca, std::vector<uint16_t> &idxs_x, std::vector<uint16_t> &idxs_y,const mrpt::math::CMatrix * minRangeMask)
 	{
 	#if MRPT_HAS_SSE2
+			// Preconditions: minRangeMask() has the right size
 			// Use optimized version:
 			const int W_4 = W >> 2;  // /=4 , since we process 4 values at a time.
 			size_t idx=0;
 			MRPT_ALIGN16 float xs[4],ys[4],zs[4];
+			const __m128 D_zeros = _mm_set_ps(.0f,.0f,.0f,.0f);
 			for (int r=0;r<H;r++)
 			{
 				const float *D_ptr = &rangeImage.coeffRef(r,0);  // Matrices are 16-aligned
+				const float *Dmin_ptr = !minRangeMask ? NULL : &minRangeMask->coeffRef(r,0);
 
 				for (int c=0;c<W_4;c++)
 				{
 					const __m128 D = _mm_load_ps(D_ptr);
+					__m128 valid_range_mask = _mm_cmpgt_ps(D, D_zeros);
 
-					const __m128 KY = _mm_load_ps(kys);
-					const __m128 KZ = _mm_load_ps(kzs);
+					if (minRangeMask) {
+						const __m128 gt_mask = _mm_cmpgt_ps(D, _mm_load_ps(Dmin_ptr) );
+						valid_range_mask = _mm_and_ps(valid_range_mask, gt_mask );
+					}
+					const int valid_range_maski = _mm_movemask_epi8(_mm_castps_si128(valid_range_mask)); // 0x{f|0}{f|0}{f|0}{f|0}
+					if (valid_range_maski)  // Any of the 4 values is valid?
+					{
+						const __m128 KY = _mm_load_ps(kys);
+						const __m128 KZ = _mm_load_ps(kzs);
 
-					_mm_storeu_ps(xs , D);
-					_mm_storeu_ps(ys , _mm_mul_ps(KY,D));
-					_mm_storeu_ps(zs , _mm_mul_ps(KZ,D));
+						_mm_storeu_ps(xs , D);
+						_mm_storeu_ps(ys , _mm_mul_ps(KY,D));
+						_mm_storeu_ps(zs , _mm_mul_ps(KZ,D));
 
-					for (int q=0;q<4;q++)
-						if (xs[q]!=.0f) {
-							pca.setPointXYZ(idx,xs[q],ys[q],zs[q]);
-							idxs_x[idx]=(c<<2)+q;
-							idxs_y[idx]=r;
-							++idx;
-						}
+						for (int q=0;q<4;q++)
+							if ((valid_range_maski & (1<<(q*4))) !=0) {
+								pca.setPointXYZ(idx,xs[q],ys[q],zs[q]);
+								idxs_x[idx]=(c<<2)+q;
+								idxs_y[idx]=r;
+								++idx;
+							}
+					}
 					D_ptr+=4;
+					if (Dmin_ptr) Dmin_ptr+=4;
 					kys+=4;
 					kzs+=4;
 				}
