@@ -20,14 +20,6 @@
   */
 #define EIGEN_MATRIXBASE_PLUGIN_POST_IMPL ${EIGEN_MATRIXBASE_PLUGIN_POST_IMPL}
 
-/** A string with the 3 digits version number of MRPT - This is intended for
-  *  autolinking pragmas only, such as they know the complete name of DLLs.
-  * This is only for Windows. In Unix it should be an empty string.
-  * \sa MRPT_VERSION in <mrpt/version.h>
-  */
-#define MRPT_VERSION_POSTFIX "${MRPT_DLL_VERSION_POSTFIX}"
-
-
 /** If defined, security checks (ASSERT_'s) will be performed in many MRPT classes even
   *  if "_DEBUG" is not declared, which is then the default behavior.
   */
@@ -304,7 +296,7 @@ ${CMAKE_MRPT_BUILD_SHARED_LIB}
 #cmakedefine HAVE_ALIGNED_MALLOC
 #endif
 
-#ifndef HAVE_STRTOK_R 
+#ifndef HAVE_STRTOK_R
 #cmakedefine HAVE_STRTOK_R
 #endif
 
@@ -329,6 +321,3 @@ ${CMAKE_MRPT_BUILD_SHARED_LIB}
 
 
 #endif
-
-
-
