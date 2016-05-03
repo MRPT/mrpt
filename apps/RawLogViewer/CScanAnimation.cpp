@@ -235,7 +235,7 @@ void CScanAnimation::BuildMapAndRefresh(CSensoryFrame *sf)
 			CObservation3DRangeScanPtr o= CObservation3DRangeScanPtr(*it);
 			if (o->hasRangeImage && !o->hasPoints3D)
 			{
-				o->project3DPointsFromDepthImage();
+				o->project3DPointsFromDepthImageInto(*o, true /*use sensorPose */);
 				obs3D_to_clear.push_back(o);
 			}
 		}
