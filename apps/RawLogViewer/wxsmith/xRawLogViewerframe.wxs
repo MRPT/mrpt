@@ -314,7 +314,7 @@
 																		<object class="notebookpage">
 																			<object class="wxSplitterWindow" name="ID_SPLITTERWINDOW2" variable="SplitterWindow2" member="yes">
 																				<minsize>100</minsize>
-																				<minsize>50,50</minsize>
+																				<minsize>100,100</minsize>
 																				<object class="wxTextCtrl" name="ID_TEXTCTRL2" variable="memStats" member="yes">
 																					<font>
 																						<size>10</size>
@@ -837,6 +837,11 @@
 				<object class="wxMenuItem" name="ID_MENUITEM69" variable="MenuItem66" member="yes">
 					<label>Rename a sensor...</label>
 					<handler function="OnMenuRenameSensor" entry="EVT_MENU" />
+				</object>
+				<object class="wxMenuItem" name="ID_MENUITEM91" variable="MenuItem86" member="yes">
+					<label>Rename selected object only...</label>
+					<help>Change the sensorLabel of one single observation</help>
+					<handler function="OnMenuRenameSingleObs" entry="EVT_MENU" />
 				</object>
 				<object class="separator" />
 				<object class="wxMenuItem" name="ID_MENUITEM15" variable="MenuItem17" member="no">

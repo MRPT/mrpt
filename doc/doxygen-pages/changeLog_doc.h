@@ -16,7 +16,9 @@
 <a name="1.5.0">
 <h2>Version 1.5.0: (Under development)  </h2></a>
 	- Changes in apps:
-		- [RawLogViewer](http://www.mrpt.org/list-of-mrpt-apps/rawlogviewer/): Now displays a textual and graphical representation of all observation timestamps, useful to quickly detect sensor "shortages" or temporary failures.
+		- [RawLogViewer](http://www.mrpt.org/list-of-mrpt-apps/rawlogviewer/): 
+			- Now displays a textual and graphical representation of all observation timestamps, useful to quickly detect sensor "shortages" or temporary failures.
+			- New menu operation: "Edit" -> "Rename selected observation"
 	- Changes in libraries:
 		- \ref mrpt_maps_grp
 			- mrpt::maps::COccupancyGridMap2D::loadFromBitmapFile() correct description of `yCentralPixel` parameter.

@@ -257,6 +257,7 @@ private:
     void OnMenuItem3DObsRecoverParams(wxCommandEvent& event);
     void Onslid3DcamConfCmdScrollChanged(wxScrollEvent& event);
     void OnMenuItemImportBremenDLRLog(wxCommandEvent& event);
+    void OnMenuRenameSingleObs(wxCommandEvent& event);
     //*)
 
     //(*Identifiers(xRawLogViewerFrame)
@@ -357,6 +358,7 @@ private:
     static const long ID_MENUITEM14;
     static const long ID_MENUITEM51;
     static const long ID_MENUITEM69;
+    static const long ID_MENUITEM91;
     static const long ID_MENUITEM15;
     static const long ID_MENUITEM70;
     static const long ID_MENUITEM16;
@@ -467,6 +469,7 @@ private:
     wxMenu* Menu20;
     wxMenuItem* MenuItem71;
     mpWindow* plotAct2D_PHI;
+    wxMenuItem* MenuItem86;
     wxMenu* MenuItem20;
     wxSplitterWindow* SplitterWindow2;
     wxMenuItem* MenuItem46;
