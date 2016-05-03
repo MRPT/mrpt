@@ -542,8 +542,8 @@ bool CParameterizedTrajectoryGenerator::CColisionGrid::saveToFile( CStream *f, c
 		// and standard PTG data:
 		*f << m_parent->getDescription()
 			<< m_parent->getAlfaValuesCount()
-			<< m_parent->getMax_V()
-			<< m_parent->getMax_W();
+			<< static_cast<float>(m_parent->getMax_V())
+			<< static_cast<float>(m_parent->getMax_W());
 
 		*f << m_x_min << m_x_max << m_y_min << m_y_max;
 		*f << m_resolution;
@@ -615,18 +615,20 @@ bool CParameterizedTrajectoryGenerator::CColisionGrid::loadFromFile( CStream *f,
 		if (desc!=expected_desc) return false;
 
 		// and standard PTG data:
-		float	  ff;
-		uint16_t  nAlphaStored;
-		*f >> nAlphaStored; if (nAlphaStored!=m_parent->getAlfaValuesCount()) return false;
-		*f >> ff; if (ff!=m_parent->getMax_V()) return false;
-		*f >> ff; if (ff!=m_parent->getMax_W()) return false;
+#define READ_UINT16_CHECK_IT_MATCHES_STORED(_VAR) { uint16_t ff; *f >> ff; if (ff!=_VAR) return false; }
+#define READ_FLOAT_CHECK_IT_MATCHES_STORED(_VAR) { float ff; *f >> ff; if (std::abs(ff-_VAR)>1e-4f) return false; }
+#define READ_DOUBLE_CHECK_IT_MATCHES_STORED(_VAR) { double ff; *f >> ff; if (std::abs(ff-_VAR)>1e-6) return false; }
+
+		READ_UINT16_CHECK_IT_MATCHES_STORED(m_parent->getAlfaValuesCount())
+		READ_FLOAT_CHECK_IT_MATCHES_STORED(m_parent->getMax_V())
+		READ_FLOAT_CHECK_IT_MATCHES_STORED(m_parent->getMax_W())
 
 		// Cell dimensions:
-		*f >> ff; if(ff!=m_x_min) return false;
-		*f >> ff; if(ff!=m_x_max) return false;
-		*f >> ff; if(ff!=m_y_min) return false;
-		*f >> ff; if(ff!=m_y_max) return false;
-		*f >> ff; if(ff!=m_resolution) return false;
+		READ_DOUBLE_CHECK_IT_MATCHES_STORED(m_x_min)
+		READ_DOUBLE_CHECK_IT_MATCHES_STORED(m_x_max)
+		READ_DOUBLE_CHECK_IT_MATCHES_STORED(m_y_min)
+		READ_DOUBLE_CHECK_IT_MATCHES_STORED(m_y_max)
+		READ_DOUBLE_CHECK_IT_MATCHES_STORED(m_resolution)
 
 		// OK, all parameters seem to be exactly the same than when we precomputed the table: load it.
 		//v1 was:  *f >> m_map;
