@@ -39,6 +39,7 @@
 		- Fix SEGFAULT in mrpt::obs::CObservation3DRangeScan if trying to build a pointcloud in an external container (mrpt::opengl, mrpt::maps)
 		- Fix mrpt::hwdrivers::CHokuyoURG can return invalid ray returns as valid ranges.
 		- Fix PTG look-up-tables will always fail to load from cache files and will re-generate (Closes [GitHub #243](https://github.com/MRPT/mrpt/issues/243))
+		- Fix mrpt::maps::COccupancyGridMap2D::simulateScanRay() fails to mark out-of-range ranges as "invalid".
 
 <hr>
 <a name="1.4.0">
