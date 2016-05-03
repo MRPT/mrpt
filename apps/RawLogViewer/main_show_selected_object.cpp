@@ -285,14 +285,12 @@ void xRawLogViewerFrame::SelectObjectInTreeView( const CSerializablePtr & sel_ob
 
 			const bool generate3Donthefly = !obs->hasPoints3D && mnuItemEnable3DCamAutoGenPoints->IsChecked();
 			if (generate3Donthefly)
-			{
-				obs->project3DPointsFromDepthImage();
-			}
+				obs->project3DPointsFromDepthImageInto(*obs, true /* Use sensorPose*/ );
 
 			if (generate3Donthefly)
 				cout << "NOTICE: The stored observation didn't contain 3D points, but these have been generated on-the-fly just for visualization purposes.\n"
 				"(You can disable this behavior from the menu Sensors->3D depth cameras\n\n";
-														
+
 			// Update 3D view ==========
 #if RAWLOGVIEWER_HAS_3D
 			this->m_gl3DRangeScan->m_openGLScene->clear();

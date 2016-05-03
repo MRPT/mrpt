@@ -19,6 +19,7 @@
 		- [RawLogViewer](http://www.mrpt.org/list-of-mrpt-apps/rawlogviewer/): 
 			- Now displays a textual and graphical representation of all observation timestamps, useful to quickly detect sensor "shortages" or temporary failures.
 			- New menu operation: "Edit" -> "Rename selected observation"
+			- mrpt::obs::CObservation3DRangeScan pointclouds are now shown in local coordinates wrt to the vehicle/robot, not to the sensor.
 	- Changes in libraries:
 		- \ref mrpt_maps_grp
 			- mrpt::maps::COccupancyGridMap2D::loadFromBitmapFile() correct description of `yCentralPixel` parameter.
