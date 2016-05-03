@@ -965,6 +965,9 @@ void CObservation3DRangeScan::getDescriptionAsText(std::ostream &o) const
 
 	this->load(); // Make sure the 3D point cloud, etc... are all loaded in memory.
 
+	o << "Homogeneous matrix for the sensor's 3D pose, relative to robot base:\n";
+	o << sensorPose.getHomogeneousMatrixVal() << sensorPose << endl;
+
 	o << "maxRange = " << maxRange << " m" << endl;
 
 	o << "Has 3D point cloud? ";
