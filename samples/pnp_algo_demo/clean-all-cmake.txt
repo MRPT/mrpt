@@ -1,0 +1,16 @@
+# will be called if make clean-all is called (after make clean)
+# afterwards "make" doesn't work anylonger -> "cmake ."
+
+set(cmake_generated ${CMAKE_BINARY_DIR}/CMakeCache.txt
+                    ${CMAKE_BINARY_DIR}/cmake_install.cmake
+                    ${CMAKE_BINARY_DIR}/Makefile
+                    ${CMAKE_BINARY_DIR}/CMakeFiles
+)
+
+foreach(file ${cmake_generated})
+  if (EXISTS ${file})
+     file(REMOVE_RECURSE ${file})
+  endif()
+endforeach(file)
+
+MESSAGE ( STATUS "removed CMakeCache.txt, cmake_install.cmake, MakeFiles and CMakeFiles. Recreate by calling cmake." )
