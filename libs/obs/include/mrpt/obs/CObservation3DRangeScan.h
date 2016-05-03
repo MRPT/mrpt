@@ -88,7 +88,7 @@ namespace obs
 	 *    find out if the image was grabbed from the visible (RGB) or IR channels.
 	 *
 	 *  3D point clouds can be generated at any moment after grabbing with CObservation3DRangeScan::project3DPointsFromDepthImage() and CObservation3DRangeScan::project3DPointsFromDepthImageInto(), provided the correct
-	 *   calibration parameters.
+	 *   calibration parameters. Note that project3DPointsFromDepthImage() will store the point cloud in sensor-centric local coordinates. Use project3DPointsFromDepthImageInto() to directly obtain vehicle or world coordinates.
 	 *
 	 *  Example of how to assign labels to pixels (for object segmentation, semantic information, etc.):
 	 *
@@ -168,7 +168,7 @@ namespace obs
 		  *
 		  *  The color of each point is determined by projecting the 3D local point into the RGB image using \a cameraParamsIntensity.
 		  *
-		  *  By default the local coordinates of points are directly stored into the local map, but if indicated so in \a takeIntoAccountSensorPoseOnRobot
+		  *  By default the local (sensor-centric) coordinates of points are directly stored into the local map, but if indicated so in \a takeIntoAccountSensorPoseOnRobot
 		  *  the points are transformed with \a sensorPose. Furthermore, if provided, those coordinates are transformed with \a robotPoseInTheWorld
 		  *
 		  * \param[in] PROJ3D_USE_LUT (Only when range_is_depth=true) Whether to use a Look-up-table (LUT) to speed up the conversion. It's thread safe in all situations <b>except</b> when you call this method from different threads <b>and</b> with different camera parameter matrices. In all other cases, it's a good idea to left it enabled.
@@ -189,13 +189,11 @@ namespace obs
 			detail::project3DPointsFromDepthImageInto<POINTMAP>(*this,dest_pointcloud,takeIntoAccountSensorPoseOnRobot,robotPoseInTheWorld,PROJ3D_USE_LUT,minRangeMask);
 		}
 
-		/** This method is equivalent to \c project3DPointsFromDepthImageInto() storing the projected 3D points (without color, in local coordinates) in this same class.
-		  *  For new code it's recommended to use instead \c project3DPointsFromDepthImageInto() which is much more versatile.
-		  */
+		/** This method is equivalent to \c project3DPointsFromDepthImageInto() storing the projected 3D points (without color, in local sensor-centric coordinates) in this same class.
+		  *  For new code it's recommended to use instead \c project3DPointsFromDepthImageInto() which is much more versatile. */
 		inline void project3DPointsFromDepthImage(const bool PROJ3D_USE_LUT=true) {
 			this->project3DPointsFromDepthImageInto(*this,false,NULL,PROJ3D_USE_LUT);
 		}
-
 
 		/** Convert this 3D observation into an "equivalent 2D fake laser scan", with a configurable vertical FOV.
 		  *
