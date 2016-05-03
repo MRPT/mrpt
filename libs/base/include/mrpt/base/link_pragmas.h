@@ -18,18 +18,6 @@
 //  MRPT_XXX_EXPORT, MRPT_XXX_IMPORT
 //  BASE_IMPEXP, mrpt_xxx_EXPORTS
 
-// If we are building the DLL (_EXPORTS), do not link against the .lib files:
-#if !defined(mrpt_base_EXPORTS) && (defined(_MSC_VER) || defined(__BORLANDC__))
-#	if defined(_DEBUG)
-#		pragma comment (lib, BOOST_JOIN( BOOST_JOIN("libmrpt-base",MRPT_VERSION_POSTFIX),"-dbg.lib"))
-#	else
-#		pragma comment (lib, BOOST_JOIN( BOOST_JOIN("libmrpt-base",MRPT_VERSION_POSTFIX),".lib"))
-#	endif
-#endif
-
-
-
-
 /*   The macros below for DLL import/export are required for Windows only.
     Mostly all the definitions in this file are copied or at least based
      on the file wx/dlimpexp.h, written by Vadim Zeitlin and published

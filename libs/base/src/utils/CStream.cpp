@@ -15,7 +15,6 @@
 #include <mrpt/utils/CSerializable.h>
 #include <mrpt/utils/CStartUpClassesRegister.h>
 #include <mrpt/utils/types_math.h> // CVector* types
-#include <mrpt/synch.h>
 
 #include <map>
 #include <iostream>

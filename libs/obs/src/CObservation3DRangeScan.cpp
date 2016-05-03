@@ -166,7 +166,7 @@ CObservation3DRangeScan::~CObservation3DRangeScan()
 void  CObservation3DRangeScan::writeToStream(mrpt::utils::CStream &out, int *version) const
 {
 	if (version)
-		*version = 7;
+		*version = 8;
 	else
 	{
 		// The data
@@ -175,6 +175,7 @@ void  CObservation3DRangeScan::writeToStream(mrpt::utils::CStream &out, int *ver
 		out << hasPoints3D;
 		if (hasPoints3D)
 		{
+			ASSERT_(points3D_x.size()==points3D_y.size() && points3D_x.size()==points3D_z.size() && points3D_idxs_x.size()==points3D_x.size() && points3D_idxs_y.size()==points3D_x.size())
 			uint32_t N = points3D_x.size();
 			out << N;
 			if (N)
@@ -182,6 +183,8 @@ void  CObservation3DRangeScan::writeToStream(mrpt::utils::CStream &out, int *ver
 				out.WriteBufferFixEndianness( &points3D_x[0], N );
 				out.WriteBufferFixEndianness( &points3D_y[0], N );
 				out.WriteBufferFixEndianness( &points3D_z[0], N );
+				out.WriteBufferFixEndianness( &points3D_idxs_x[0], N );  // New in v8
+				out.WriteBufferFixEndianness( &points3D_idxs_y[0], N );  // New in v8
 			}
 		}
 
@@ -231,6 +234,7 @@ void  CObservation3DRangeScan::readFromStream(mrpt::utils::CStream &in, int vers
 	case 5:
 	case 6:
 	case 7:
+	case 8:
 		{
 			uint32_t		N;
 
@@ -251,10 +255,14 @@ void  CObservation3DRangeScan::readFromStream(mrpt::utils::CStream &in, int vers
 					in.ReadBufferFixEndianness( &points3D_y[0], N);
 					in.ReadBufferFixEndianness( &points3D_z[0], N);
 
-					if (version==0)
+					if (version==0) 
 					{
 						vector<char> validRange(N);  // for v0.
 						in.ReadBuffer( &validRange[0], sizeof(validRange[0])*N );
+					}
+					if (version>=8) {
+						in.ReadBufferFixEndianness( &points3D_idxs_x[0], N);
+						in.ReadBufferFixEndianness( &points3D_idxs_y[0], N);
 					}
 				}
 			}
@@ -363,6 +371,8 @@ void CObservation3DRangeScan::swap(CObservation3DRangeScan &o)
 	points3D_x.swap(o.points3D_x);
 	points3D_y.swap(o.points3D_y);
 	points3D_z.swap(o.points3D_z);
+	points3D_idxs_x.swap(o.points3D_idxs_x);
+	points3D_idxs_y.swap(o.points3D_idxs_y);
 	std::swap(m_points3D_external_stored,o.m_points3D_external_stored);
 	std::swap(m_points3D_external_file,o.m_points3D_external_file);
 
@@ -762,7 +772,7 @@ void CObservation3DRangeScan::resizePoints3DVectors(const size_t WH)
 		return;
 	}
 
-	if (WH<points3D_x.size()) // reduce size, don't realloc
+	if (WH<=points3D_x.size()) // reduce size, don't realloc
 	{
 		points3D_x.resize( WH );
 		points3D_y.resize( WH );
@@ -846,7 +856,8 @@ void CObservation3DRangeScan::convertTo2DScan(
 	const std::string &sensorLabel,
 	const double angle_sup,
 	const double angle_inf,
-	const double oversampling_ratio
+	const double oversampling_ratio,
+	const mrpt::math::CMatrix * minRangeMask
 	)
 {
 	out_scan2d.sensorLabel = sensorLabel;
@@ -861,6 +872,10 @@ void CObservation3DRangeScan::convertTo2DScan(
 
 	const size_t nCols = this->rangeImage.cols();
 	const size_t nRows = this->rangeImage.rows();
+	if (minRangeMask) { // sanity check:
+		ASSERT_EQUAL_(minRangeMask->cols(), rangeImage.cols());
+		ASSERT_EQUAL_(minRangeMask->rows(), rangeImage.rows());
+	}
 
 	// Compute the real horizontal FOV from the range camera intrinsic calib data:
 	// Note: this assumes the range image has been "undistorted", which is true for data
@@ -923,7 +938,7 @@ void CObservation3DRangeScan::convertTo2DScan(
 		for (size_t r=0;r<nRows;r++)
 		{
 			const float D = this->rangeImage.coeff(r,c);
-			if (D>0)
+			if (D>0 && (!minRangeMask || D>minRangeMask->coeff(r,c)))
 			{
 				const float this_point_tan = vert_ang_tan[r] * D;
 				if (this_point_tan>tan_min && this_point_tan<tan_max)

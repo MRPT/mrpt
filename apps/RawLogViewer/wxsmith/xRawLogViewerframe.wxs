@@ -313,7 +313,7 @@
 																		<minsize>-1,150</minsize>
 																		<object class="notebookpage">
 																			<object class="wxSplitterWindow" name="ID_SPLITTERWINDOW2" variable="SplitterWindow2" member="yes">
-																				<minsize>50</minsize>
+																				<minsize>100</minsize>
 																				<minsize>50,50</minsize>
 																				<object class="wxTextCtrl" name="ID_TEXTCTRL2" variable="memStats" member="yes">
 																					<font>
@@ -325,6 +325,7 @@
 																						<face>Monospace</face>
 																					</font>
 																					<tooltip>Statistics of the rawlog load</tooltip>
+																					<minsize>-1,150</minsize>
 																					<style>wxTE_MULTILINE|wxTE_READONLY|wxVSCROLL</style>
 																				</object>
 																				<object class="wxPanel" name="ID_PANEL25" variable="Panel11" member="yes">

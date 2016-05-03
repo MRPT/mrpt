@@ -13,11 +13,31 @@
 <p> <b>Note:</b> <i>If you are displaying a local version of this page and you have not built the whole HTML documentation, the links above will be broken. Either build the documentation invoking <code>make documentation_html</code> or [browse it on-line](http://www.mrpt.org/).</i></p>
 
 <hr>
-<a name="1.4.1">
-  <h2>Version 1.4.1: (Under development)  </h2></a>
+<a name="1.5.0">
+<h2>Version 1.5.0: (Under development)  </h2></a>
 	- Changes in apps:
 		- [RawLogViewer](http://www.mrpt.org/list-of-mrpt-apps/rawlogviewer/): Now displays a textual and graphical representation of all observation timestamps, useful to quickly detect sensor "shortages" or temporary failures.
-
+	- Changes in libraries:
+		- \ref mrpt_maps_grp
+			- mrpt::maps::COccupancyGridMap2D::loadFromBitmapFile() correct description of `yCentralPixel` parameter.
+		- \ref mrpt_obs_grp
+			- [ABI change] mrpt::obs::CObservation3DRangeScan:
+				- Now uses more SSE2 optimized code
+				- Now allows filtering depth images by minimum depth mask in mrpt::obs::CObservation3DRangeScan::project3DPointsFromDepthImageInto() and  mrpt::obs::CObservation3DRangeScan::convertTo2DScan()
+		- \ref mrpt_hwdrivers_grp
+			- mrpt::hwdrivers::CGenericSensor: external image format is now `png` by default instead of `jpg` to avoid losses.
+			- [ABI change] mrpt::hwdrivers::COpenNI2Generic:
+				- refactored to expose more methods and allow changing parameters via its constructor.
+				- Now supports reading from an IR, RGB and Depth channels independenty.
+	- Changes in build system:
+		- [Windows only] `DLL`s/`LIB`s now have the signature `lib-${name}${2-digits-version}${compiler-name}_{x32|x64}.{dll/lib}`, allowing several MRPT versions to coexist in the system PATH.
+		- [Visual Studio only] There are no longer `pragma comment(lib...)` in any MRPT header, so it is the user responsibility to correctly tell user projects to link against MRPT libraries.
+		  Normally, this is done with the standard command `TARGET_LINK_LIBRARIES(MYTARGET ${MRPT_LIBS})`.
+		- Debian package: depends on libopenni-dev
+	- BUG FIXES:
+		- Fix inconsistent state after calling mrpt::obs::CObservation3DRangeScan::swap()
+		- Fix SEGFAULT in mrpt::obs::CObservation3DRangeScan if trying to build a pointcloud in an external container (mrpt::opengl, mrpt::maps)
+		- Fix mrpt::hwdrivers::CHokuyoURG can return invalid ray returns as valid ranges.
 
 <hr>
 <a name="1.4.0">
@@ -71,7 +91,7 @@
 				- mrpt::obs::CSinCosLookUpTableFor2DScans now can build a table from a mrpt::obs::T2DScanProperties structure, which now also has its separate header file for better modularity.
 				- <b>[API changed]</b> mrpt::obs::CObservationGPS now stores only one message per objects. API clean-up and extended so the number of GNSS message types is larger and more scalable.
 				- mrpt::obs::gnss: A new namespace with many new data structures for GPS-related messages
-				- mrpt::obs::CObservation3DRangeScan: projection of RGBD images to 3D points now correctly filters out invalid points, which were in previous versions mapped as (0,0,0) points (relative to the sensor). 
+				- mrpt::obs::CObservation3DRangeScan: projection of RGBD images to 3D points now correctly filters out invalid points, which were in previous versions mapped as (0,0,0) points (relative to the sensor).
 				  In turn, this leads to point clouds of a dynamic number of points. In case of needing the (u,v) pixel coordinates of projected points, checkout the new fields `points3D_idxs_x` & `points3D_idxs_y`.
 				- New class mrpt::obs::CObservation2DRangeScanWithUncertainty
 			- \ref mrpt_opengl_grp
@@ -83,7 +103,7 @@
 				- New function mrpt::topography::geocentricToENU_WGS84()
 			- \ref mrpt_vision_grp
 				- mrpt::vision::CDifOdo has been refactored and now does faster image pyramid computation (By Mariano Jaimez)
-				- mrpt::maps::CLandmarksMap changes: 
+				- mrpt::maps::CLandmarksMap changes:
 					- `beaconMaxRange` & `alphaRatio` parameters have been removed since they were not used.
 					- New likelihood parameter `beaconRangesUseObservationStd` to allow using different uncertainty values with each observation.
 		- Changes in build system:

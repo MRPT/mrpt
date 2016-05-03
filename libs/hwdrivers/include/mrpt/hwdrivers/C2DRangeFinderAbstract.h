@@ -10,7 +10,7 @@
 #define C2DRangeFinderAbstract_H
 
 #include <mrpt/utils/CStream.h>
-#include <mrpt/synch.h>
+#include <mrpt/synch/CCriticalSection.h>
 #include <mrpt/utils/CDebugOutputCapable.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/utils/CConfigFileBase.h>

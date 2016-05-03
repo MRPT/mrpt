@@ -13,7 +13,7 @@
 #include <mrpt/utils/CImage.h>
 #include <mrpt/utils/CConfigFileBase.h>
 #include <mrpt/utils/CConfigFileMemory.h>
-#include <mrpt/synch.h>
+#include <mrpt/synch/CCriticalSection.h>
 #include <mrpt/gui/keycodes.h>
 
 #include <mrpt/gui/link_pragmas.h>

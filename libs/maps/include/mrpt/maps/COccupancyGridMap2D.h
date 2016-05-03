@@ -737,21 +737,15 @@ namespace maps
 		/** Load the gridmap from a image in a file (the format can be any supported by CImage::loadFromFile).
 		 * \param file The file to be loaded.
 		 * \param resolution The size of a pixel (cell), in meters. Recall cells are always squared, so just a dimension is needed.
-		 * \param xCentralPixel The "x" coordinate (0=first) for the pixel which will be taken at coordinates origin (0,0). If not supplied, it will be used the middle of the map.
-		 * \param yCentralPixel The "y" coordinate (0=first) for the pixel which will be taken at coordinates origin (0,0). If not supplied, it will be used the middle of the map.
+		 * \param xCentralPixel The `x` coordinate (0=first, increases <b>left to right</b> on the image) for the pixel which will be taken at coordinates origin (0,0). (Default: the center of the image)
+		 * \param yCentralPixel The `y` coordinate (0=first, increases <b>BOTTOM upwards</b> on the image) for the pixel which will be taken at coordinates origin (0,0). (Default: the center of the image)
 		 * \return False on any error.
 		 * \sa loadFromBitmap
 		 */
 		bool  loadFromBitmapFile(const std::string	&file, float resolution, float xCentralPixel = -1, float yCentralPixel =-1 );
 
 		/** Load the gridmap from a image in a file (the format can be any supported by CImage::loadFromFile).
-		 * \param img The image. Only a grayscale image will be used, so RGB components will be mixed if a color image is passed.
-		 * \param resolution The size of a pixel (cell), in meters. Recall cells are always squared, so just a dimension is needed.
-		 * \param xCentralPixel The "x" coordinate (0=first) for the pixel which will be taken at coordinates origin (0,0). If not supplied, it will be used the middle of the map.
-		 * \param yCentralPixel The "y" coordinate (0=first) for the pixel which will be taken at coordinates origin (0,0). If not supplied, it will be used the middle of the map.
-		 * \return False on any error.
-		 * \sa loadFromBitmapFile
-		 */
+		 *  See loadFromBitmapFile() for the meaning of parameters */
 		bool  loadFromBitmap(const mrpt::utils::CImage &img, float resolution, float xCentralPixel = -1, float yCentralPixel =-1 );
 
 		/** See the base class for more details: In this class it is implemented as correspondences of the passed points map to occupied cells.

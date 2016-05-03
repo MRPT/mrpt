@@ -535,8 +535,9 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent,wxWindowID id)
 	Notebook3->SetMinSize(wxSize(-1,150));
 	SplitterWindow2 = new wxSplitterWindow(Notebook3, ID_SPLITTERWINDOW2, wxDefaultPosition, wxDefaultSize, wxSP_3D, _T("ID_SPLITTERWINDOW2"));
 	SplitterWindow2->SetMinSize(wxSize(50,50));
-	SplitterWindow2->SetMinimumPaneSize(50);
+	SplitterWindow2->SetMinimumPaneSize(100);
 	memStats = new wxTextCtrl(SplitterWindow2, ID_TEXTCTRL2, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE|wxTE_READONLY|wxVSCROLL, wxDefaultValidator, _T("ID_TEXTCTRL2"));
+	memStats->SetMinSize(wxSize(-1,150));
 	wxFont memStatsFont(10,wxTELETYPE,wxFONTSTYLE_NORMAL,wxNORMAL,false,_T("Monospace"),wxFONTENCODING_DEFAULT);
 	memStats->SetFont(memStatsFont);
 	memStats->SetToolTip(_("Statistics of the rawlog load"));

@@ -11,7 +11,8 @@
 #define CNTRIPClient_H
 
 #include <mrpt/utils/utils_defs.h>
-#include <mrpt/synch.h>
+#include <mrpt/synch/CSemaphore.h>
+#include <mrpt/synch/MT_buffer.h>
 #include <mrpt/system/threads.h>
 
 #include <mrpt/hwdrivers/link_pragmas.h>
