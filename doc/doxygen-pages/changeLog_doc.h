@@ -26,7 +26,7 @@
 		- \ref mrpt_obs_grp
 			- [ABI change] mrpt::obs::CObservation3DRangeScan:
 				- Now uses more SSE2 optimized code
-				- Now allows filtering depth images by minimum depth mask in mrpt::obs::CObservation3DRangeScan::project3DPointsFromDepthImageInto() and  mrpt::obs::CObservation3DRangeScan::convertTo2DScan()
+				- Depth filters are now available for mrpt::obs::CObservation3DRangeScan::project3DPointsFromDepthImageInto() and  mrpt::obs::CObservation3DRangeScan::convertTo2DScan()
 		- \ref mrpt_hwdrivers_grp
 			- mrpt::hwdrivers::CGenericSensor: external image format is now `png` by default instead of `jpg` to avoid losses.
 			- [ABI change] mrpt::hwdrivers::COpenNI2Generic:

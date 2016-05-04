@@ -860,6 +860,18 @@ void CObservation3DRangeScan::convertTo2DScan(
 	const mrpt::math::CMatrix * minRangeMask
 	)
 {
+	T3DPointsTo2DScanParams sp;
+	sp.sensorLabel = sensorLabel;
+	sp.angle_sup = angle_sup;
+	sp.angle_inf = angle_inf;
+	sp.oversampling_ratio = oversampling_ratio;
+	T3DPointsFilterParams fp;
+	fp.minRangeMask = minRangeMask;
+	convertTo2DScan(out_scan2d, sp,fp);
+}
+
+void CObservation3DRangeScan::convertTo2DScan(mrpt::obs::CObservation2DRangeScan & out_scan2d, const T3DPointsTo2DScanParams &sp, const T3DPointsFilterParams &fp )
+{
 	out_scan2d.sensorLabel = sensorLabel;
 	out_scan2d.timestamp = this->timestamp;
 
@@ -872,9 +884,13 @@ void CObservation3DRangeScan::convertTo2DScan(
 
 	const size_t nCols = this->rangeImage.cols();
 	const size_t nRows = this->rangeImage.rows();
-	if (minRangeMask) { // sanity check:
-		ASSERT_EQUAL_(minRangeMask->cols(), rangeImage.cols());
-		ASSERT_EQUAL_(minRangeMask->rows(), rangeImage.rows());
+	if (fp.minRangeMask) { // sanity check:
+		ASSERT_EQUAL_(fp.minRangeMask->cols(), rangeImage.cols());
+		ASSERT_EQUAL_(fp.minRangeMask->rows(), rangeImage.rows());
+	}
+	if (fp.maxRangeMask) { // sanity check:
+		ASSERT_EQUAL_(fp.maxRangeMask->cols(), rangeImage.cols());
+		ASSERT_EQUAL_(fp.maxRangeMask->rows(), rangeImage.rows());
 	}
 
 	// Compute the real horizontal FOV from the range camera intrinsic calib data:
@@ -896,8 +912,8 @@ void CObservation3DRangeScan::convertTo2DScan(
 	// Now, we should create more "fake laser" points than columns in the image,
 	//  since laser scans are assumed to sample space at evenly-spaced angles,
 	//  while in images it is like ~tan(angle).
-	ASSERT_ABOVE_(oversampling_ratio,1.0)
-	const size_t nLaserRays = static_cast<size_t>( nCols * oversampling_ratio );
+	ASSERT_ABOVE_(sp.oversampling_ratio,1.0)
+	const size_t nLaserRays = static_cast<size_t>( nCols * sp.oversampling_ratio );
 
 
 	// Prepare 2D scan data fields:
@@ -915,8 +931,8 @@ void CObservation3DRangeScan::convertTo2DScan(
 		vert_ang_tan[r] = static_cast<float>( (cy-r)/fy );
 
 	// The vertical FOVs given by the user can be translated into limits of the tangents (tan>0 means above, i.e. z>0):
-	const float tan_min = -tan( std::abs(angle_inf) );
-	const float tan_max =  tan( std::abs(angle_sup) );
+	const float tan_min = -tan( std::abs(sp.angle_inf) );
+	const float tan_max =  tan( std::abs(sp.angle_sup) );
 
 	// Angle "counter" for the fake laser scan direction, and the increment:
 	double ang  = -FOV_equiv*0.5;
@@ -938,14 +954,25 @@ void CObservation3DRangeScan::convertTo2DScan(
 		for (size_t r=0;r<nRows;r++)
 		{
 			const float D = this->rangeImage.coeff(r,c);
-			if (D>0 && (!minRangeMask || D>minRangeMask->coeff(r,c)))
+			// Filters:
+			if (D<=.0f)
+				continue;
+			if (fp.minRangeMask) {
+				const float min_d = fp.minRangeMask->coeff(r,c);
+				if (min_d!=.0f && D<min_d)
+					continue; 
+			}
+			if (fp.maxRangeMask) {
+				const float max_d = fp.maxRangeMask->coeff(r,c);
+				if (max_d!=.0f && D>max_d)
+					continue;
+			}
+			// All filters passed:
+			const float this_point_tan = vert_ang_tan[r] * D;
+			if (this_point_tan>tan_min && this_point_tan<tan_max)
 			{
-				const float this_point_tan = vert_ang_tan[r] * D;
-				if (this_point_tan>tan_min && this_point_tan<tan_max)
-				{
-					any_valid = true;
-					mrpt::utils::keep_min(closest_range, D);
-				}
+				any_valid = true;
+				mrpt::utils::keep_min(closest_range, D);
 			}
 		}
 

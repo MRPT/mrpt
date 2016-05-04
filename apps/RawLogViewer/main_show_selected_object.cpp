@@ -284,8 +284,11 @@ void xRawLogViewerFrame::SelectObjectInTreeView( const CSerializablePtr & sel_ob
 			obs->load(); // Make sure the 3D point cloud, etc... are all loaded in memory.
 
 			const bool generate3Donthefly = !obs->hasPoints3D && mnuItemEnable3DCamAutoGenPoints->IsChecked();
-			if (generate3Donthefly)
-				obs->project3DPointsFromDepthImageInto(*obs, false /* Use sensorPose:false */ );
+			if (generate3Donthefly) {
+				mrpt::obs::T3DPointsProjectionParams pp;
+				pp.takeIntoAccountSensorPoseOnRobot = false;
+				obs->project3DPointsFromDepthImageInto(*obs, pp );
+			}
 
 			if (generate3Donthefly)
 				cout << "NOTICE: The stored observation didn't contain 3D points, but these have been generated on-the-fly just for visualization purposes.\n"

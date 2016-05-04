@@ -209,7 +209,10 @@ bool CColouredOctoMap::internal_insertObservation(const mrpt::obs::CObservation 
 
 		// Project 3D points & color:
 		mrpt::opengl::CPointCloudColouredPtr pts = mrpt::opengl::CPointCloudColoured::Create();
-		const_cast<CObservation3DRangeScan*>(o)->project3DPointsFromDepthImageInto(*pts,true,robotPose);
+		T3DPointsProjectionParams proj_params;
+		proj_params.PROJ3D_USE_LUT = true;
+		proj_params.robotPoseInTheWorld = robotPose;
+		const_cast<CObservation3DRangeScan*>(o)->project3DPointsFromDepthImageInto(*pts,proj_params);
 
 		// Sensor_pose = robot_pose (+) sensor_pose_on_robot
 		CPose3D sensorPose(UNINITIALIZED_POSE);
