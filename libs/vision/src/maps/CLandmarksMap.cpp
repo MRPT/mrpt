@@ -328,8 +328,8 @@ double	 CLandmarksMap::internal_computeObservationLikelihood(
 					const float	expectedRange = point3D.distanceTo( beacon3D );
 					float	sensedDist    = it->sensedDistance;
 					if (sensedDist<0) sensedDist=0;
-					
-					float sensorStd = likelihoodOptions.beaconRangesUseObservationStd ? 
+
+					float sensorStd = likelihoodOptions.beaconRangesUseObservationStd ?
 						o->stdError : likelihoodOptions.beaconRangesStd;
 					ret += (-0.5f*square( ( expectedRange - sensedDist  ) / sensorStd ));
 					found = true;
@@ -2128,11 +2128,11 @@ CLandmarksMap::TLikelihoodOptions::TLikelihoodOptions() :
 	SIFTs_mahaDist_std				( 4.0f ),
 	SIFTnullCorrespondenceDistance  ( 4.0f ),
 	SIFTs_decimation				( 1 ),
+	SIFT_feat_options				( vision::featSIFT ),
 	beaconRangesStd					( 0.08f ),
 	beaconRangesUseObservationStd	(false),
 	GPSOrigin						(),
-	GPS_sigma						( 1.0f ),
-	SIFT_feat_options				( vision::featSIFT )
+	GPS_sigma						( 1.0f )
 {
 }
 
@@ -2162,7 +2162,7 @@ void  CLandmarksMap::TLikelihoodOptions::dumpToTextStream(mrpt::utils::CStream	&
 	out.printf("SIFTnullCorrespondenceDistance          = %f\n",SIFTnullCorrespondenceDistance);
 	out.printf("beaconRangesStd                         = %f\n",beaconRangesStd);
 	out.printf("beaconRangesUseObservationStd           = %c\n",beaconRangesUseObservationStd ? 'Y':'N');
-	
+
 
 	out.printf("GPSOrigin:LATITUDE                      = %f\n",GPSOrigin.latitude);
 	out.printf("GPSOrigin:LONGITUDE                     = %f\n",GPSOrigin.longitude);
