@@ -28,7 +28,7 @@ namespace obs {
 		bool rangeCheckBetween;
 		const mrpt::math::CMatrix * rangeMask_GT; //!< (Default: NULL) If provided, each data range will be tested to be greater than (GT) each element in this matrix for each direction (row,col). Values of 0.0f mean no filtering at those directions. See 
 		const mrpt::math::CMatrix * rangeMask_LT; //!< (Default: NULL) If provided, a matrix with ranges (in meters) allowed at each direction (row,col) for a range to be considered valid. Values of 0.0f mean no filtering at those directions.
-		TRangeImageFilterParams() : rangeCheckBetween(true), rangeMask_LT(NULL), rangeMask_GT(NULL)
+		TRangeImageFilterParams() : rangeCheckBetween(true), rangeMask_GT(NULL), rangeMask_LT(NULL)
 		{}
 	};
 

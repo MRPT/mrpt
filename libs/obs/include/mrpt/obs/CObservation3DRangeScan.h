@@ -208,7 +208,7 @@ namespace obs
 			const bool takeIntoAccountSensorPoseOnRobot,
 			const mrpt::poses::CPose3D *robotPoseInTheWorld=NULL,
 			const bool PROJ3D_USE_LUT=true,
-			const mrpt::math::CMatrix * minRangeMask = NULL
+			const mrpt::math::CMatrix * rangeMask_GT = NULL
 			)
 		{
 			T3DPointsProjectionParams pp; 
@@ -216,7 +216,7 @@ namespace obs
 			pp.robotPoseInTheWorld = robotPoseInTheWorld;
 			pp.PROJ3D_USE_LUT = PROJ3D_USE_LUT;
 			TRangeImageFilterParams fp;
-			fp.minRangeMask=minRangeMask;
+			fp.rangeMask_GT=rangeMask_GT;
 			detail::project3DPointsFromDepthImageInto<POINTMAP>(*this,dest_pointcloud,pp,fp);
 		}
 		);
