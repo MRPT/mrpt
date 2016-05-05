@@ -13,6 +13,7 @@
 #include <mrpt/utils/CImage.h>
 #include <mrpt/obs/CObservation.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
+#include <mrpt/obs/TRangeImageFilter.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/math/CPolygon.h>
@@ -26,16 +27,6 @@ namespace mrpt
 {
 namespace obs
 {
-	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CObservation3DRangeScan, CObservation,OBS_IMPEXP )
-
-	/** Used in CObservation3DRangeScan::project3DPointsFromDepthImageInto() */
-	struct OBS_IMPEXP T3DPointsFilterParams
-	{
-		const mrpt::math::CMatrix * minRangeMask; //!<  (Default: NULL) If provided, a matrix with the minimum range (in meters) allowed at each direction (row,col) for a range to be considered valid. Values of 0.0f mean no filtering at those directions.
-		const mrpt::math::CMatrix * maxRangeMask; //!<  (Default: NULL) If provided, a matrix with the maximum range (in meters) allowed at each direction (row,col) for a range to be considered valid. Values of 0.0f mean no filtering at those directions.
-		T3DPointsFilterParams() : minRangeMask(NULL), maxRangeMask(NULL)
-		{}
-	};
 	/** Used in CObservation3DRangeScan::project3DPointsFromDepthImageInto() */
 	struct OBS_IMPEXP T3DPointsProjectionParams
 	{
@@ -59,8 +50,10 @@ namespace obs
 	namespace detail {
 		// Implemented in CObservation3DRangeScan_project3D_impl.h
 		template <class POINTMAP>
-		void project3DPointsFromDepthImageInto(mrpt::obs::CObservation3DRangeScan & src_obs,POINTMAP & dest_pointcloud, const mrpt::obs::T3DPointsProjectionParams & projectParams, const mrpt::obs::T3DPointsFilterParams &filterParams);
+		void project3DPointsFromDepthImageInto(mrpt::obs::CObservation3DRangeScan & src_obs,POINTMAP & dest_pointcloud, const mrpt::obs::T3DPointsProjectionParams & projectParams, const mrpt::obs::TRangeImageFilterParams &filterParams);
 	}
+
+	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CObservation3DRangeScan, CObservation,OBS_IMPEXP )
 
 	/** Declares a class derived from "CObservation" that encapsules a 3D range scan measurement, as from a time-of-flight range camera or any other RGBD sensor.
 	 *
@@ -204,7 +197,7 @@ namespace obs
 		  * \note In MRPT < 0.9.5, this method always assumes that ranges were in Kinect-like format.
 		  */
 		template <class POINTMAP>
-		inline void project3DPointsFromDepthImageInto(POINTMAP & dest_pointcloud, const T3DPointsProjectionParams & projectParams, const T3DPointsFilterParams &filterParams = T3DPointsFilterParams() ) {
+		inline void project3DPointsFromDepthImageInto(POINTMAP & dest_pointcloud, const T3DPointsProjectionParams & projectParams, const TRangeImageFilterParams &filterParams = TRangeImageFilterParams() ) {
 			detail::project3DPointsFromDepthImageInto<POINTMAP>(*this,dest_pointcloud,projectParams, filterParams);
 		}
 
@@ -222,7 +215,7 @@ namespace obs
 			pp.takeIntoAccountSensorPoseOnRobot = takeIntoAccountSensorPoseOnRobot;
 			pp.robotPoseInTheWorld = robotPoseInTheWorld;
 			pp.PROJ3D_USE_LUT = PROJ3D_USE_LUT;
-			T3DPointsFilterParams fp;
+			TRangeImageFilterParams fp;
 			fp.minRangeMask=minRangeMask;
 			detail::project3DPointsFromDepthImageInto<POINTMAP>(*this,dest_pointcloud,pp,fp);
 		}
@@ -260,7 +253,7 @@ namespace obs
 		  *
 		  * \sa The example in http://www.mrpt.org/Example_Kinect_To_2D_laser_scan
 		  */
-		void convertTo2DScan(mrpt::obs::CObservation2DRangeScan & out_scan2d, const T3DPointsTo2DScanParams &scanParams, const T3DPointsFilterParams &filterParams = T3DPointsFilterParams() );
+		void convertTo2DScan(mrpt::obs::CObservation2DRangeScan & out_scan2d, const T3DPointsTo2DScanParams &scanParams, const TRangeImageFilterParams &filterParams = TRangeImageFilterParams() );
 
 		MRPT_DECLARE_DEPRECATED_FUNCTION("DEPRECATED: Use the other method signature with structured parameters instead.",
 		void convertTo2DScan(
@@ -269,7 +262,7 @@ namespace obs
 			const double angle_sup = mrpt::utils::DEG2RAD(5),
 			const double angle_inf = mrpt::utils::DEG2RAD(5),
 			const double oversampling_ratio = 1.2,
-			const mrpt::math::CMatrix * minRangeMask = NULL
+			const mrpt::math::CMatrix * rangeMask_GT = NULL
 			)
 		);
 

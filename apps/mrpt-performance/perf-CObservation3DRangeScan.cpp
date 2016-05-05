@@ -51,15 +51,15 @@ double obs3d_test_depth_to_3d(int a, int b)
 	pp.PROJ3D_USE_LUT = (a & 0x01)!=0;
 	pp.USE_SSE2 = (a & 0x02)!=0;
 
-	T3DPointsFilterParams fp;
+	TRangeImageFilterParams fp;
 	mrpt::math::CMatrix minF, maxF;
 	if (b&0x01) {
 		generateRandomMaskImage(minF, obs1.rangeImage.rows(),obs1.rangeImage.cols());
-		fp.minRangeMask = &minF;
+		fp.rangeMask_GT = &minF;
 	}
 	if (b&0x02) {
 		generateRandomMaskImage(maxF, obs1.rangeImage.rows(),obs1.rangeImage.cols());
-		fp.maxRangeMask = &maxF;
+		fp.rangeMask_LT = &maxF;
 	}
 	
 	for (int i=0;i<100;i++) {
@@ -83,15 +83,15 @@ double obs3d_test_depth_to_2d_scan(int useMinFilter, int useMaxFilter)
 	T3DPointsTo2DScanParams sp;
 	sp.sensorLabel = "mysensor";
 
-	T3DPointsFilterParams fp;
+	TRangeImageFilterParams fp;
 	mrpt::math::CMatrix minF, maxF;
 	if (useMinFilter) {
 		generateRandomMaskImage(minF, obs1.rangeImage.rows(),obs1.rangeImage.cols());
-		fp.minRangeMask = &minF;
+		fp.rangeMask_GT = &minF;
 	}
 	if (useMaxFilter) {
 		generateRandomMaskImage(maxF, obs1.rangeImage.rows(),obs1.rangeImage.cols());
-		fp.maxRangeMask = &maxF;
+		fp.rangeMask_LT = &maxF;
 	}
 
 	for (int i=0;i<10;i++) {

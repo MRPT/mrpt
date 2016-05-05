@@ -857,7 +857,7 @@ void CObservation3DRangeScan::convertTo2DScan(
 	const double angle_sup,
 	const double angle_inf,
 	const double oversampling_ratio,
-	const mrpt::math::CMatrix * minRangeMask
+	const mrpt::math::CMatrix * rangeMask_GT
 	)
 {
 	T3DPointsTo2DScanParams sp;
@@ -865,12 +865,12 @@ void CObservation3DRangeScan::convertTo2DScan(
 	sp.angle_sup = angle_sup;
 	sp.angle_inf = angle_inf;
 	sp.oversampling_ratio = oversampling_ratio;
-	T3DPointsFilterParams fp;
-	fp.minRangeMask = minRangeMask;
+	TRangeImageFilterParams fp;
+	fp.rangeMask_GT = rangeMask_GT;
 	convertTo2DScan(out_scan2d, sp,fp);
 }
 
-void CObservation3DRangeScan::convertTo2DScan(mrpt::obs::CObservation2DRangeScan & out_scan2d, const T3DPointsTo2DScanParams &sp, const T3DPointsFilterParams &fp )
+void CObservation3DRangeScan::convertTo2DScan(mrpt::obs::CObservation2DRangeScan & out_scan2d, const T3DPointsTo2DScanParams &sp, const TRangeImageFilterParams &fp )
 {
 	out_scan2d.sensorLabel = sensorLabel;
 	out_scan2d.timestamp = this->timestamp;
@@ -884,13 +884,13 @@ void CObservation3DRangeScan::convertTo2DScan(mrpt::obs::CObservation2DRangeScan
 
 	const size_t nCols = this->rangeImage.cols();
 	const size_t nRows = this->rangeImage.rows();
-	if (fp.minRangeMask) { // sanity check:
-		ASSERT_EQUAL_(fp.minRangeMask->cols(), rangeImage.cols());
-		ASSERT_EQUAL_(fp.minRangeMask->rows(), rangeImage.rows());
+	if (fp.rangeMask_GT) { // sanity check:
+		ASSERT_EQUAL_(fp.rangeMask_GT->cols(), rangeImage.cols());
+		ASSERT_EQUAL_(fp.rangeMask_GT->rows(), rangeImage.rows());
 	}
-	if (fp.maxRangeMask) { // sanity check:
-		ASSERT_EQUAL_(fp.maxRangeMask->cols(), rangeImage.cols());
-		ASSERT_EQUAL_(fp.maxRangeMask->rows(), rangeImage.rows());
+	if (fp.rangeMask_LT) { // sanity check:
+		ASSERT_EQUAL_(fp.rangeMask_LT->cols(), rangeImage.cols());
+		ASSERT_EQUAL_(fp.rangeMask_LT->rows(), rangeImage.rows());
 	}
 
 	// Compute the real horizontal FOV from the range camera intrinsic calib data:
@@ -938,6 +938,9 @@ void CObservation3DRangeScan::convertTo2DScan(mrpt::obs::CObservation2DRangeScan
 	double ang  = -FOV_equiv*0.5;
 	const double A_ang = FOV_equiv/(nLaserRays-1);
 
+	TRangeImageFilter rif;
+	rif.fp = fp;
+
 	// Go thru columns, and keep the minimum distance (along the +X axis, not 3D distance!)
 	// for each direction (i.e. for each column) which also lies within the vertical FOV passed
 	// by the user.
@@ -954,19 +957,9 @@ void CObservation3DRangeScan::convertTo2DScan(mrpt::obs::CObservation2DRangeScan
 		for (size_t r=0;r<nRows;r++)
 		{
 			const float D = this->rangeImage.coeff(r,c);
-			// Filters:
-			if (D<=.0f)
+			if (!rif.do_range_filter(r,c,D))
 				continue;
-			if (fp.minRangeMask) {
-				const float min_d = fp.minRangeMask->coeff(r,c);
-				if (min_d!=.0f && D<min_d)
-					continue; 
-			}
-			if (fp.maxRangeMask) {
-				const float max_d = fp.maxRangeMask->coeff(r,c);
-				if (max_d!=.0f && D>max_d)
-					continue;
-			}
+
 			// All filters passed:
 			const float this_point_tan = vert_ang_tan[r] * D;
 			if (this_point_tan>tan_min && this_point_tan<tan_max)
