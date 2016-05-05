@@ -19,15 +19,17 @@ namespace obs {
 	/** Used in CObservation3DRangeScan::project3DPointsFromDepthImageInto() */
 	struct OBS_IMPEXP TRangeImageFilterParams
 	{
-		/** Only used if <b>both</b> rangeMask_GT and rangeMask_LT are present. 
+		/** Only used if <b>both</b> rangeMask_GT and rangeMask_LT are present.
 		  * This switches which condition must fulfill a range `D` to be accepted as valid:
 		  *  - `rangeCheckBetween=true` : valid = D>=rangeMask_GT && D<=rangeMask_LT
 		  *  - `rangeCheckBetween=false`: valid = D>=rangeMask_GT || D<=rangeMask_LT
 		  *
 		  * \note Default value:true */
 		bool rangeCheckBetween;
-		const mrpt::math::CMatrix * rangeMask_GT; //!< (Default: NULL) If provided, each data range will be tested to be greater than (GT) each element in this matrix for each direction (row,col). Values of 0.0f mean no filtering at those directions. See 
-		const mrpt::math::CMatrix * rangeMask_LT; //!< (Default: NULL) If provided, a matrix with ranges (in meters) allowed at each direction (row,col) for a range to be considered valid. Values of 0.0f mean no filtering at those directions.
+		/** (Default: NULL) If provided, each data range will be tested to be greater-than (GT) or less-than (LT) each element in these matrices
+		  * for each direction (row,col). Values of 0.0f mean no filtering at those directions.
+			* If both `rangeMask_GT` and `rangeMask_LT` are provided, the joint filtering operation is determined by `rangeCheckBetween` */
+		const mrpt::math::CMatrix * rangeMask_GT, * rangeMask_LT;
 		TRangeImageFilterParams() : rangeCheckBetween(true), rangeMask_GT(NULL), rangeMask_LT(NULL)
 		{}
 	};
