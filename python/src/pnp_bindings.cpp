@@ -90,8 +90,10 @@ int PnPAlgos::pnpalgo1_python(PyObject* obj_pts, PyObject* img_pts, int n, PyObj
 	return pnpalgo1(_obj_pts, _img_pts, n, _cam_intrinsic, _pose_mat);
 }
 using namespace boost::python;
-BOOST_PYTHON_MODULE(_PnPAlgos)
+//BOOST_PYTHON_MODULE(pnp)
+void export_pnp()
 {
+	//MAKE_SUBMODULE(pnp)
     class_<PnPAlgos>("PnPAlgos", init<int>(args("m")))
         .def("pnpalgo1", &PnPAlgos::pnpalgo1_python)
     ;

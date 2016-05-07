@@ -1,5 +1,7 @@
 #!/usr/bin/env python
-from PnPAlgos import PnPAlgos
+#import pymrpt
+
+from pymrpt import PnPAlgos
 
 import numpy as np
 

@@ -29,7 +29,7 @@ add_library(pymrpt
 )
 
 # disable eigen: python and eigen alignment seem not to be best friends
-add_definitions(-DEIGEN_DONT_VECTORIZE -DEIGEN_DISABLE_UNALIGNED_ARRAY_ASSERT)
+#add_definitions(-DEIGEN_DONT_VECTORIZE -DEIGEN_DISABLE_UNALIGNED_ARRAY_ASSERT)
 # uncomment to disable ROS support
 add_definitions(-DROS_EXTENSIONS)
 
@@ -41,7 +41,7 @@ target_link_libraries(pymrpt
 set_target_properties(pymrpt PROPERTIES PREFIX "")
 
 install(TARGETS pymrpt
-  LIBRARY DESTINATION ${PYMRPT_INSTALL_DIR} ${OPENCV_INSTALL_DIR}
+  LIBRARY DESTINATION ${PYMRPT_INSTALL_DIR}
 )
 
 DeclareAppDependencies(pymrpt mrpt-base mrpt-slam mrpt-obs mrpt-maps mrpt-nav mrpt-gui mrpt-opengl mrpt-vision) # Dependencies
