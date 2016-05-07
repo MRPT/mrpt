@@ -40,6 +40,13 @@ int main()
 			} else {
 				printf("failed!\n");
 			}
+
+#if 0
+			// Example for mrpt_recv_from_zmq_into():
+			mrpt::poses::CPose3D pose;
+			mrpt_recv_from_zmq_into(sub_sock, pose);
+			std::cout << "pose: "<< pose << std::endl;
+#endif
 		}
 
 		zmq_close (sub_sock);
