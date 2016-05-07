@@ -24,6 +24,7 @@ int main()
 		void *sub_sock = zmq_socket (context, ZMQ_SUB);
 		int rc = zmq_connect (sub_sock, "tcp://localhost:5555");
 		assert (rc == 0);
+		zmq_setsockopt( sub_sock, ZMQ_SUBSCRIBE, "", 0 ); // Subscribe to everything.
 		printf ("Subscribed.\n");
 
 		for (int i=0;i<10;i++)
@@ -35,11 +36,11 @@ int main()
 
 			// Block until a message is available to be received from socket
 			printf ("Waiting incomming pkt...");
-			rc = zmq_msg_recv(&msg,sub_sock, 0 /* block */);
-			assert (rc == 0);
+			int len = zmq_msg_recv(&msg,sub_sock, 0 /* block */);
+			assert (len >= 0);
 			printf ("Received!\n");
 
-			printf("%d msg received: \n", i);
+			printf("%d msg received [%d bytes]: \n", i, len);
 
 			zmq_msg_close (&msg); // Free msg
 		}
