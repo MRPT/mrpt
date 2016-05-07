@@ -80,44 +80,17 @@ namespace utils
 		void  write(const std::string &section, const std::string &name, const std::vector<bool> &value  , const int name_padding_width=-1, const int value_padding_width=-1, const std::string &comment = std::string() );
 		/** @} */
 
-		/** Reads a configuration parameter of type "double"
-         * \exception std::exception If the key name is not found and "failIfNotFound" is true. Otherwise the "defaultValue" is returned.
-		 */
+		/** @name Read a configuration parameter, launching exception if key name is not found and `failIfNotFound`=true
+		  * @{ */
 		double  read_double(const std::string &section, const std::string &name, double defaultValue, bool failIfNotFound = false) const;
-
-		/** Reads a configuration parameter of type "float"
-         * \exception std::exception If the key name is not found and "failIfNotFound" is true. Otherwise the "defaultValue" is returned.
-		 */
 		float  read_float(const std::string &section, const std::string &name, float defaultValue, bool failIfNotFound = false) const;
-
-		/** Reads a configuration parameter of type "bool", codified as "1"/"0" or "true"/"false" or "yes"/"no" for true/false, repectively.
-         * \exception std::exception If the key name is not found and "failIfNotFound" is true. Otherwise the "defaultValue" is returned.
-		 */
 		bool  read_bool(const std::string &section, const std::string &name, bool defaultValue, bool failIfNotFound = false) const;
-
-		/** Reads a configuration parameter of type "int"
-         * \exception std::exception If the key name is not found and "failIfNotFound" is true. Otherwise the "defaultValue" is returned.
-		 */
 		int  read_int(const std::string &section, const std::string &name, int defaultValue, bool failIfNotFound = false) const;
-
-		/** Reads a configuration parameter of type "uint64_t": As in all other methods, the numeric value can be in decimal or hexadecimal with the prefix "0x"
-         * \exception std::exception If the key name is not found and "failIfNotFound" is true. Otherwise the "defaultValue" is returned.
-		 */
 		uint64_t read_uint64_t(const std::string &section, const std::string &name, uint64_t defaultValue, bool failIfNotFound = false ) const;
-
-		/** Reads a configuration parameter of type "string"
-         * \exception std::exception If the key name is not found and "failIfNotFound" is true. Otherwise the "defaultValue" is returned.
-		 */
 		std::string  read_string(const std::string &section, const std::string &name, const std::string &defaultValue, bool failIfNotFound = false) const;
-
-		/** Reads a configuration parameter of type "string", and keeps only the first word (this can be used to eliminate possible comments at the end of the line)
-         * \exception std::exception If the key name is not found and "failIfNotFound" is true. Otherwise the "defaultValue" is returned.
-		 */
+		/** Reads a configuration parameter of type "string", and keeps only the first word (this can be used to eliminate possible comments at the end of the line) */
 		std::string  read_string_first_word(const std::string &section, const std::string &name, const std::string &defaultValue, bool failIfNotFound = false) const;
-
-		/** Reads a configuration parameter of type vector, stored in the file as a string: "[v1 v2 v3 ... ]", where spaces could also be commas.
-         * \exception std::exception If the key name is not found and "failIfNotFound" is true. Otherwise the "defaultValue" is returned.
-		 */
+		/** Reads a configuration parameter of type vector, stored in the file as a string: "[v1 v2 v3 ... ]", where spaces could also be commas. \exception std::exception If the key name is not found and "failIfNotFound" is true. Otherwise the "defaultValue" is returned. */
 		template <class VECTOR_TYPE>
 		void  read_vector(
 			const std::string  & section,
@@ -148,10 +121,9 @@ namespace utils
 			}
 		}
 
-
-		/** Reads a configuration parameter as a matrix written in a matlab-like format - for example: "[2 3 4 ; 7 8 9]"
-		 *  This template method can be instantiated for matrices of the types: int, long, unsinged int, unsigned long, float, double, long double
-         * \exception std::exception If the key name is not found and "failIfNotFound" is true. Otherwise the "defaultValue" is returned.
+		/** Reads a configuration parameter as a matrix written in a matlab-like format - for example: "[2 3 4 ; 7 8 9]".
+		 * This template method can be instantiated for matrices of the types: int, long, unsinged int, unsigned long, float, double, long double
+		 * \exception std::exception If the key name is not found and "failIfNotFound" is true. Otherwise the "defaultValue" is returned.
 		 */
 		 template <class MATRIX_TYPE>
 		 void read_matrix(
@@ -212,8 +184,7 @@ namespace utils
 			}
 			MRPT_END
 		}
-
-
+		/** @} */
 	}; // End of class def.
 
 	/** An useful macro for loading variables stored in a INI-like file under a key with the same name that the variable, and assigning the variable the current value if not found in the config file.

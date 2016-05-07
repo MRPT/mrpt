@@ -71,8 +71,8 @@ namespace mrpt
 
 		public:
 
-			/** Introduces a pure virtual method responsible for writing to a `mxArray` Matlab object, 
-			  * typically a MATLAB `struct` whose contents are documented in each derived class. 
+			/** Introduces a pure virtual method responsible for writing to a `mxArray` Matlab object,
+			  * typically a MATLAB `struct` whose contents are documented in each derived class.
 			  * \return A new `mxArray` (caller is responsible of memory freeing) or NULL is class does not support conversion to MATLAB.
 			  */
 #if MRPT_HAS_MATLAB
@@ -82,8 +82,9 @@ namespace mrpt
 
 		DEFINE_MRPT_OBJECT_POST( CSerializable )
 
-		/** @name Non-streaming serialization functions
-		@{ */
+		/** \addtogroup noncstream_serialization Non-CStream serialization functions (in #include <mrpt/utils/CSerializable.h>)
+		  * \ingroup mrpt_base_grp
+		  * @{ */
 
 		/** Used to pass MRPT objects into a CORBA-like object (strings). See doc about "Integration with BABEL".
 		 * \param o The object to be serialized.
@@ -154,7 +155,7 @@ namespace mrpt
 			_LINKAGE_ ::mrpt::utils::CStream& operator>>(mrpt::utils::CStream& in, class_name##Ptr &pObj);
 
 		#define DEFINE_SERIALIZABLE_POST_CUSTOM_LINKAGE(class_name,_LINKAGE_) \
-			DEFINE_MRPT_OBJECT_POST_CUSTOM_BASE_LINKAGE2(class_name, mrpt::utils::CSerializable, _LINKAGE_ class_name) 
+			DEFINE_MRPT_OBJECT_POST_CUSTOM_BASE_LINKAGE2(class_name, mrpt::utils::CSerializable, _LINKAGE_ class_name)
 
 		/**  This declaration must be inserted in all CSerializable classes definition, before the class declaration.
 		  */
@@ -163,7 +164,7 @@ namespace mrpt
 			BASE_IMPEXP ::mrpt::utils::CStream& operator>>(mrpt::utils::CStream& in, class_name##Ptr &pObj);
 
 		#define DEFINE_SERIALIZABLE_POST(class_name) \
-			DEFINE_MRPT_OBJECT_POST_CUSTOM_BASE_LINKAGE2(class_name, mrpt::utils::CSerializable, BASE_IMPEXP class_name) 
+			DEFINE_MRPT_OBJECT_POST_CUSTOM_BASE_LINKAGE2(class_name, mrpt::utils::CSerializable, BASE_IMPEXP class_name)
 
 		/**  This declaration must be inserted in all CSerializable classes definition, before the class declaration.
 		  */
@@ -172,13 +173,13 @@ namespace mrpt
 			_LINKAGE_ ::mrpt::utils::CStream& operator>>(mrpt::utils::CStream& in, class_name##Ptr &pObj);
 
 		#define DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(class_name, base_name, _LINKAGE_ ) \
-			DEFINE_MRPT_OBJECT_POST_CUSTOM_BASE_LINKAGE2(class_name, base_name, _LINKAGE_ class_name) 
+			DEFINE_MRPT_OBJECT_POST_CUSTOM_BASE_LINKAGE2(class_name, base_name, _LINKAGE_ class_name)
 
 		/**  This declaration must be inserted in all CSerializable classes definition, before the class declaration. */
 		#define DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE(class_name, base_name) \
 			DEFINE_MRPT_OBJECT_PRE_CUSTOM_BASE_LINKAGE(class_name, base_name, BASE_IMPEXP ) \
 			BASE_IMPEXP ::mrpt::utils::CStream& operator>>(mrpt::utils::CStream& in, class_name##Ptr &pObj);
-		
+
 		#define DEFINE_SERIALIZABLE_POST_CUSTOM_BASE(class_name, base_name) \
 			DEFINE_MRPT_OBJECT_POST_CUSTOM_BASE_LINKAGE(class_name, base_name, BASE_IMPEXP ) \
 

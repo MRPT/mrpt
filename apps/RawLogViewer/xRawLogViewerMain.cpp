@@ -292,6 +292,7 @@ const long xRawLogViewerFrame::idMenuQuit = wxNewId();
 const long xRawLogViewerFrame::ID_MENUITEM14 = wxNewId();
 const long xRawLogViewerFrame::ID_MENUITEM51 = wxNewId();
 const long xRawLogViewerFrame::ID_MENUITEM69 = wxNewId();
+const long xRawLogViewerFrame::ID_MENUITEM91 = wxNewId();
 const long xRawLogViewerFrame::ID_MENUITEM15 = wxNewId();
 const long xRawLogViewerFrame::ID_MENUITEM70 = wxNewId();
 const long xRawLogViewerFrame::ID_MENUITEM16 = wxNewId();
@@ -534,7 +535,7 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent,wxWindowID id)
 	Notebook3 = new wxNotebook(pn_CSensorialFrame, ID_NOTEBOOK3, wxDefaultPosition, wxSize(-1,150), 0, _T("ID_NOTEBOOK3"));
 	Notebook3->SetMinSize(wxSize(-1,150));
 	SplitterWindow2 = new wxSplitterWindow(Notebook3, ID_SPLITTERWINDOW2, wxDefaultPosition, wxDefaultSize, wxSP_3D, _T("ID_SPLITTERWINDOW2"));
-	SplitterWindow2->SetMinSize(wxSize(50,50));
+	SplitterWindow2->SetMinSize(wxSize(100,100));
 	SplitterWindow2->SetMinimumPaneSize(100);
 	memStats = new wxTextCtrl(SplitterWindow2, ID_TEXTCTRL2, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE|wxTE_READONLY|wxVSCROLL, wxDefaultValidator, _T("ID_TEXTCTRL2"));
 	memStats->SetMinSize(wxSize(-1,150));
@@ -785,6 +786,8 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent,wxWindowID id)
 	Menu3->Append(MenuItem48);
 	MenuItem66 = new wxMenuItem(Menu3, ID_MENUITEM69, _("Rename a sensor..."), wxEmptyString, wxITEM_NORMAL);
 	Menu3->Append(MenuItem66);
+	MenuItem86 = new wxMenuItem(Menu3, ID_MENUITEM91, _("Rename selected object only..."), _("Change the sensorLabel of one single observation"), wxITEM_NORMAL);
+	Menu3->Append(MenuItem86);
 	Menu3->AppendSeparator();
 	MenuItem17 = new wxMenuItem(Menu3, ID_MENUITEM15, _("Change sensor/camera parameters..."), _("Change the poses of the sensors"), wxITEM_NORMAL);
 	Menu3->Append(MenuItem17);
@@ -978,6 +981,7 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent,wxWindowID id)
 	Connect(ID_MENUITEM14,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&xRawLogViewerFrame::OnEditRawlog);
 	Connect(ID_MENUITEM51,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&xRawLogViewerFrame::OnMenuInsertComment);
 	Connect(ID_MENUITEM69,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&xRawLogViewerFrame::OnMenuRenameSensor);
+	Connect(ID_MENUITEM91,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&xRawLogViewerFrame::OnMenuRenameSingleObs);
 	Connect(ID_MENUITEM15,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&xRawLogViewerFrame::OnChangeSensorPositions);
 	Connect(ID_MENUITEM70,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&xRawLogViewerFrame::OnMenuChangePosesBatch);
 	Connect(ID_MENUITEM16,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&xRawLogViewerFrame::OnDecimateRecords);
@@ -5439,7 +5443,7 @@ void xRawLogViewerFrame::Onslid3DcamConfCmdScrollChanged(wxScrollEvent& event)
 }
 
 
-size_t TInfoPerSensorLabel::getOccurences() const 
+size_t TInfoPerSensorLabel::getOccurences() const
 {
 	return timOccurs.size();
 }
@@ -5448,7 +5452,7 @@ void TInfoPerSensorLabel::addOcurrence(mrpt::system::TTimeStamp obs_tim, mrpt::s
 	double obs_t = .0; // 0-based timestamp:
 	if (first_dataset_tim!=INVALID_TIMESTAMP && obs_tim!=INVALID_TIMESTAMP)
 		obs_t = mrpt::system::timeDifference(first_dataset_tim, obs_tim);
-	
+
 	double ellapsed_tim = .0;
 	if (!timOccurs.empty())
 		ellapsed_tim = obs_t - timOccurs.back();
@@ -5457,4 +5461,31 @@ void TInfoPerSensorLabel::addOcurrence(mrpt::system::TTimeStamp obs_tim, mrpt::s
 	if (ellapsed_tim>max_ellapsed_tim_between_obs) max_ellapsed_tim_between_obs = ellapsed_tim;
 }
 
+void xRawLogViewerFrame::OnMenuRenameSingleObs(wxCommandEvent& event)
+{
+	WX_START_TRY
+	
+	if (!curSelectedObject)
+		return;
+	
+	if (!curSelectedObject->GetRuntimeClass()->derivedFrom(CLASS_ID(CObservation)))
+		return;
 
+	CObservationPtr obj = CObservationPtr(curSelectedObject);
+	
+
+	const wxString new_label = wxGetTextFromUser(
+		_("Enter the new sensor label for selected object"),
+		_("New label:"),
+		_U(obj->sensorLabel.c_str()), this );
+	if (new_label.IsEmpty()) return;
+
+	const string  the_new_label = string(new_label.mb_str());
+
+	obj->sensorLabel = the_new_label;
+
+	// Update the views:
+	rebuildTreeView();
+
+	WX_END_TRY
+}
