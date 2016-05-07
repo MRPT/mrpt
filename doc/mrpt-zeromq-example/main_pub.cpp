@@ -8,24 +8,14 @@
    +---------------------------------------------------------------------------+ */
 
 #include <zmq.h>
+#include <mrpt/utils/serialization_zmq.h>
 #include <assert.h>
 #include <mrpt/poses/CPose3D.h>
+#include <mrpt/utils/CImage.h>
 #include <mrpt/utils/CTicTac.h>
 #include <mrpt/system/threads.h> // sleep()
 
 using mrpt::utils::DEG2RAD;
-
-
-//  Convert C string to 0MQ string and send to socket
-static int
-s_send (void *socket, char *string) {
-    zmq_msg_t message;
-    zmq_msg_init_size (&message, strlen (string));
-    memcpy (zmq_msg_data (&message), string, strlen (string));
-    int size = zmq_msg_send (&message, socket, 0);
-    zmq_msg_close (&message);
-    return (size);
-}
 
 int main()
 {
@@ -40,9 +30,14 @@ int main()
 
 		while (1)
 		{
-			//mrpt::poses::CPose3D  C(0.5f,0.5f,1.5f ,DEG2RAD(-90.0f),DEG2RAD(0),DEG2RAD(-90.0f)  );
-			printf("Publishing...\n");
-			s_send(pub_sock,"Hey there!");
+			mrpt::poses::CPose3D  my_pose(0.5f,0.5f,1.5f ,DEG2RAD(-90.0f),DEG2RAD(0),DEG2RAD(-90.0f)  );
+			printf("Publishing pose...\n");
+			mrpt::utils::mrpt_send_to_zmq(pub_sock, &my_pose);
+			mrpt::system::sleep(1000);
+
+			mrpt::utils::CImage my_img(800,600, CH_RGB);
+			printf("Publishing img...\n");
+			mrpt::utils::mrpt_send_to_zmq(pub_sock, &my_img);
 			mrpt::system::sleep(1000);
 		}
 

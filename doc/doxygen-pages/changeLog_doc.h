@@ -16,11 +16,13 @@
 <a name="1.5.0">
 <h2>Version 1.5.0: (Under development)  </h2></a>
 	- Changes in apps:
-		- [RawLogViewer](http://www.mrpt.org/list-of-mrpt-apps/rawlogviewer/): 
+		- [RawLogViewer](http://www.mrpt.org/list-of-mrpt-apps/rawlogviewer/):
 			- Now displays a textual and graphical representation of all observation timestamps, useful to quickly detect sensor "shortages" or temporary failures.
 			- New menu operation: "Edit" -> "Rename selected observation"
 			- mrpt::obs::CObservation3DRangeScan pointclouds are now shown in local coordinates wrt to the vehicle/robot, not to the sensor.
 	- Changes in libraries:
+		- \ref mrpt_base_grp
+			- New API to interface ZeroMQ: \ref noncstream_serialization_zmq
 		- \ref mrpt_maps_grp
 			- mrpt::maps::COccupancyGridMap2D::loadFromBitmapFile() correct description of `yCentralPixel` parameter.
 		- \ref mrpt_obs_grp

@@ -8,6 +8,7 @@
    +---------------------------------------------------------------------------+ */
 
 #include <zmq.h>
+#include <mrpt/utils/serialization_zmq.h>
 #include <assert.h>
 #include <stdio.h>
 #include <mrpt/poses/CPose3D.h>
@@ -29,20 +30,16 @@ int main()
 
 		for (int i=0;i<10;i++)
 		{
-			// Create an empty ZMQ message
-			zmq_msg_t msg;
-			rc = zmq_msg_init (&msg);
-			assert (rc == 0);
+			mrpt::utils::CSerializablePtr obj;
+			size_t rx_len;
 
-			// Block until a message is available to be received from socket
-			printf ("Waiting incomming pkt...");
-			int len = zmq_msg_recv(&msg,sub_sock, 0 /* block */);
-			assert (len >= 0);
-			printf ("Received!\n");
-
-			printf("%d msg received [%d bytes]: \n", i, len);
-
-			zmq_msg_close (&msg); // Free msg
+			printf ("Waiting %d-th incomming pkt...",i);
+			obj = mrpt::utils::mrpt_recv_from_zmq(sub_sock, false /*false:blocking call*/, &rx_len);
+			if (obj) {
+				printf("OK!. Type: `%s` (%u bytes)\n", obj->GetRuntimeClass()->className, static_cast<unsigned>(rx_len));
+			} else {
+				printf("failed!\n");
+			}
 		}
 
 		zmq_close (sub_sock);
