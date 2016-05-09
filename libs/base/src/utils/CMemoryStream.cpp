@@ -268,3 +268,11 @@ bool CMemoryStream::loadBufferFromFile( const std::string &file_name )
 	}
 }
 
+
+// Used in mrpt_send_to_zmq(). `hint` points to a `TFreeFnDataForZMQ` struct, to be freed here.
+void mrpt::utils::internal::free_fn_for_zmq(void *data, void *hint)
+{
+	mrpt::utils::internal::TFreeFnDataForZMQ* fd = reinterpret_cast<mrpt::utils::internal::TFreeFnDataForZMQ*>(hint);
+	if (fd->do_free) delete fd->buf;
+	delete fd;
+}

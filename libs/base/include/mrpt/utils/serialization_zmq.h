@@ -24,27 +24,33 @@ namespace mrpt
 		 * \param[in] obj The object to be serialized and sent to the socket.
 		 * \param[in] zmq_socket The zmq socket object.
 		 * \param[in] max_packet_len The object will be split into a series of ZMQ "message parts" of this maximum length (in bytes). Default=0, which means do not split in parts.
-		 * \return false on any error, true if all is ok.
 		 * \note Including `<mrpt/utils/serialization_zmq.h>` requires libzmq to be available in your system and linked
 		 *  to your user code. This function can be used even if MRPT was built without ZMQ support, thanks to the use of templates.
-		 * \exception std::exception If the object finds any critical error during serialization.
+		 * \exception std::exception If the object finds any critical error during serialization or on ZMQ errors.
 		 */
 		template <typename ZMQ_SOCKET_TYPE>
-		bool mrpt_send_to_zmq(
+		void mrpt_send_to_zmq(
 			ZMQ_SOCKET_TYPE zmq_socket,
 			const mrpt::utils::CSerializable *obj,
 			const size_t max_packet_len = 0)
 		{
-			mrpt::utils::CMemoryStream buf;
-			buf.WriteObject(obj);
-			const size_t nBytes = buf.getTotalBytesCount();
+			mrpt::utils::internal::TFreeFnDataForZMQ *fd = new mrpt::utils::internal::TFreeFnDataForZMQ();
+			if (!fd) throw std::bad_alloc();
+			fd->buf=new mrpt::utils::CMemoryStream();
+			fd->do_free = true;
+			if (!fd->buf) throw std::bad_alloc();
+
+			fd->buf->WriteObject(obj);
+			const size_t nBytes = fd->buf->getTotalBytesCount();
 
 			zmq_msg_t message;
-			zmq_msg_init_size (&message, nBytes);
-			memcpy (zmq_msg_data (&message), buf.getRawBufferData(), nBytes);
+			if (0!=zmq_msg_init_data(&message, fd->buf->getRawBufferData(), nBytes, &mrpt::utils::internal::free_fn_for_zmq, fd))
+				throw std::runtime_error("[mrpt_send_to_zmq] Error in zmq_msg_init_data()");
 			int size = zmq_msg_send (&message, zmq_socket, 0);
-			zmq_msg_close (&message);
-			return size==static_cast<int>(nBytes);
+			if (0!=zmq_msg_close (&message))
+				throw std::runtime_error("[mrpt_send_to_zmq] Error in zmq_msg_close()");
+			if (size!=static_cast<int>(nBytes))
+				throw std::runtime_error("[mrpt_send_to_zmq] Error in zmq_msg_send()");
 		}
 
 		/** Receives an MRPT object from a ZMQ socket, determining the type of the
