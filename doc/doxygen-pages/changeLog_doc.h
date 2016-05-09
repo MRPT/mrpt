@@ -45,6 +45,7 @@
 		- Fix mrpt::hwdrivers::CHokuyoURG can return invalid ray returns as valid ranges.
 		- Fix PTG look-up-tables will always fail to load from cache files and will re-generate (Closes [GitHub #243](https://github.com/MRPT/mrpt/issues/243))
 		- Fix mrpt::maps::COccupancyGridMap2D::simulateScanRay() fails to mark out-of-range ranges as "invalid".
+		- Fix mrpt::utils::CMemoryStream::Clear() after assigning read-only memory blocks.
 
 <hr>
 <a name="1.4.0">

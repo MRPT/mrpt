@@ -202,7 +202,18 @@ uint64_t CMemoryStream::getPosition()
  ---------------------------------------------------------------*/
 void  CMemoryStream::Clear()
 {
-	resize(0);
+	if (!m_read_only)
+	{
+		resize(0);
+	}
+	else
+	{
+		m_memory=0;
+		m_size = 0;
+		m_position=0;
+		m_bytesWritten=0;
+		m_read_only = false;
+	}
 }
 
 /*---------------------------------------------------------------
