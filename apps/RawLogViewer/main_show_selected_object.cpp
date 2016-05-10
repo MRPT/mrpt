@@ -284,15 +284,16 @@ void xRawLogViewerFrame::SelectObjectInTreeView( const CSerializablePtr & sel_ob
 			obs->load(); // Make sure the 3D point cloud, etc... are all loaded in memory.
 
 			const bool generate3Donthefly = !obs->hasPoints3D && mnuItemEnable3DCamAutoGenPoints->IsChecked();
-			if (generate3Donthefly)
-			{
-				obs->project3DPointsFromDepthImage();
+			if (generate3Donthefly) {
+				mrpt::obs::T3DPointsProjectionParams pp;
+				pp.takeIntoAccountSensorPoseOnRobot = false;
+				obs->project3DPointsFromDepthImageInto(*obs, pp );
 			}
 
 			if (generate3Donthefly)
 				cout << "NOTICE: The stored observation didn't contain 3D points, but these have been generated on-the-fly just for visualization purposes.\n"
 				"(You can disable this behavior from the menu Sensors->3D depth cameras\n\n";
-														
+
 			// Update 3D view ==========
 #if RAWLOGVIEWER_HAS_3D
 			this->m_gl3DRangeScan->m_openGLScene->clear();
@@ -311,8 +312,10 @@ void xRawLogViewerFrame::SelectObjectInTreeView( const CSerializablePtr & sel_ob
 				if (confThreshold==0) // This includes when there is no confidence image.
 				{
 					pointMap.insertionOptions.minDistBetweenLaserPoints = 0; // don't drop any point
-					pointMap.insertObservation(obs.pointer());
+					pointMap.insertObservation(obs.pointer());  // This transform points into vehicle-frame
 					pnts->loadFromPointsMap(&pointMap);
+
+					pnts->setPose( mrpt::poses::CPose3D() ); // No need to further transform 3D points
 				}
 				else
 				{
@@ -340,12 +343,12 @@ void xRawLogViewerFrame::SelectObjectInTreeView( const CSerializablePtr & sel_ob
 								pnts->push_back(obs_xs[i],obs_ys[i],obs_zs[i],1,1,1);
 						}
 					}
+					// Translate the 3D cloud since sensed points are relative to the camera, but the camera may be translated wrt the robot (our 0,0,0 here):
+					pnts->setPose( obs->sensorPose );
 				}
 
 				pnts->setPointSize(4.0);
 
-				// Translate the 3D cloud since sensed points are relative to the camera, but the camera may be translated wrt the robot (our 0,0,0 here):
-				pnts->setPose( obs->sensorPose );
 			}
 			this->m_gl3DRangeScan->m_openGLScene->insert(pnts);
 			this->m_gl3DRangeScan->Refresh();

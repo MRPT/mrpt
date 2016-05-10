@@ -18,18 +18,6 @@
 //  MRPT_XXX_EXPORT, MRPT_XXX_IMPORT
 //  VISION_IMPEXP, mrpt_xxx_EXPORTS
 
-// If we are building the DLL (_EXPORTS), do not link against the .lib files:
-#if !defined(mrpt_vision_EXPORTS) && (defined(_MSC_VER) || defined(__BORLANDC__))
-#	if defined(_DEBUG)
-#		pragma comment (lib, BOOST_JOIN( BOOST_JOIN("libmrpt-vision",MRPT_VERSION_POSTFIX),"-dbg.lib"))
-#	else
-#		pragma comment (lib, BOOST_JOIN( BOOST_JOIN("libmrpt-vision",MRPT_VERSION_POSTFIX),".lib"))
-#	endif
-#endif
-
-
-
-
 /*   The macros below for DLL import/export are required for Windows only.
     Mostly all the definitions in this file are copied or at least visiond
      on the file wx/dlimpexp.h, written by Vadim Zeitlin and published
@@ -87,7 +75,7 @@
 #		define VISION_IMPEXP MRPT_VISION_IMPORT
 #	endif
 #else /* not making nor using DLL */
-#    define VISION_IMPEXP 
+#    define VISION_IMPEXP
 #endif
 
 

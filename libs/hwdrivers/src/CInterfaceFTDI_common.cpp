@@ -10,11 +10,9 @@
 #include "hwdrivers-precomp.h"   // Precompiled headers
 
 #include <mrpt/hwdrivers/CInterfaceFTDI.h>
-#include <mrpt/synch.h>
 
 using namespace mrpt;
 using namespace mrpt::hwdrivers;
-using namespace mrpt::synch;
 
 /*-------------------------------------------------------------
 					Read

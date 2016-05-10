@@ -13,7 +13,6 @@
 #include <mrpt/hwdrivers/CInterfaceFTDI.h>
 #include <mrpt/hwdrivers/CInterfaceFTDIMessages.h>
 #include <mrpt/utils/CMessage.h>
-#include <mrpt/synch.h>
 #include <mrpt/math/CMatrixTemplate.h>
 #include <mrpt/utils/CDebugOutputCapable.h>
 #include <mrpt/utils/CConfigFileBase.h>

@@ -13,6 +13,7 @@
 #include <mrpt/utils/CImage.h>
 #include <mrpt/obs/CObservation.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
+#include <mrpt/obs/TRangeImageFilter.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/math/CPolygon.h>
@@ -26,13 +27,33 @@ namespace mrpt
 {
 namespace obs
 {
-	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CObservation3DRangeScan, CObservation,OBS_IMPEXP )
+	/** Used in CObservation3DRangeScan::project3DPointsFromDepthImageInto() */
+	struct OBS_IMPEXP T3DPointsProjectionParams
+	{
+		bool takeIntoAccountSensorPoseOnRobot;           //!< (Default: false) If false, local (sensor-centric) coordinates of points are generated. Otherwise, points are transformed with \a sensorPose. Furthermore, if provided, those coordinates are transformed with \a robotPoseInTheWorld
+		const mrpt::poses::CPose3D *robotPoseInTheWorld; //!< (Default: NULL) Read takeIntoAccountSensorPoseOnRobot
+		bool PROJ3D_USE_LUT; //!< (Default:true) [Only used when `range_is_depth`=true] Whether to use a Look-up-table (LUT) to speed up the conversion. It's thread safe in all situations <b>except</b> when you call this method from different threads <b>and</b> with different camera parameter matrices. In all other cases, it is a good idea to left it enabled.
+		bool USE_SSE2; //!< (Default:true) If possible, use SSE2 optimized code.
+		T3DPointsProjectionParams() :  takeIntoAccountSensorPoseOnRobot(false), robotPoseInTheWorld(NULL), PROJ3D_USE_LUT(true),USE_SSE2(true)
+		{}
+	};
+	/** Used in CObservation3DRangeScan::convertTo2DScan() */
+	struct OBS_IMPEXP T3DPointsTo2DScanParams
+	{
+		std::string  sensorLabel;    //!< The sensor label that will have the newly created observation.
+		double angle_sup, angle_inf; //!< (Default=5 degrees) The upper & lower half-FOV angle (in radians).
+		double oversampling_ratio;   //!< (Default=1.2=120%) How many more laser scans rays to create (read docs for CObservation3DRangeScan::convertTo2DScan()).
+		T3DPointsTo2DScanParams() : angle_sup(mrpt::utils::DEG2RAD(5)), angle_inf(mrpt::utils::DEG2RAD(5)),oversampling_ratio(1.2)
+		{}
+	};
 
 	namespace detail {
 		// Implemented in CObservation3DRangeScan_project3D_impl.h
 		template <class POINTMAP>
-		void project3DPointsFromDepthImageInto(CObservation3DRangeScan    & src_obs,POINTMAP                   & dest_pointcloud,const bool                   takeIntoAccountSensorPoseOnRobot,const mrpt::poses::CPose3D * robotPoseInTheWorld,const bool                   PROJ3D_USE_LUT);
+		void project3DPointsFromDepthImageInto(mrpt::obs::CObservation3DRangeScan & src_obs,POINTMAP & dest_pointcloud, const mrpt::obs::T3DPointsProjectionParams & projectParams, const mrpt::obs::TRangeImageFilterParams &filterParams);
 	}
+
+	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CObservation3DRangeScan, CObservation,OBS_IMPEXP )
 
 	/** Declares a class derived from "CObservation" that encapsules a 3D range scan measurement, as from a time-of-flight range camera or any other RGBD sensor.
 	 *
@@ -88,7 +109,7 @@ namespace obs
 	 *    find out if the image was grabbed from the visible (RGB) or IR channels.
 	 *
 	 *  3D point clouds can be generated at any moment after grabbing with CObservation3DRangeScan::project3DPointsFromDepthImage() and CObservation3DRangeScan::project3DPointsFromDepthImageInto(), provided the correct
-	 *   calibration parameters.
+	 *   calibration parameters. Note that project3DPointsFromDepthImage() will store the point cloud in sensor-centric local coordinates. Use project3DPointsFromDepthImageInto() to directly obtain vehicle or world coordinates.
 	 *
 	 *  Example of how to assign labels to pixels (for object segmentation, semantic information, etc.):
 	 *
@@ -168,31 +189,46 @@ namespace obs
 		  *
 		  *  The color of each point is determined by projecting the 3D local point into the RGB image using \a cameraParamsIntensity.
 		  *
-		  *  By default the local coordinates of points are directly stored into the local map, but if indicated so in \a takeIntoAccountSensorPoseOnRobot
+		  *  By default the local (sensor-centric) coordinates of points are directly stored into the local map, but if indicated so in \a takeIntoAccountSensorPoseOnRobot
 		  *  the points are transformed with \a sensorPose. Furthermore, if provided, those coordinates are transformed with \a robotPoseInTheWorld
 		  *
-		  * \param[in] PROJ3D_USE_LUT (Only when range_is_depth=true) Whether to use a Look-up-table (LUT) to speed up the conversion. It's thread safe in all situations <b>except</b> when you call this method from different threads <b>and</b> with different camera parameter matrices. In all other cases, it's a good idea to left it enabled.
 		  * \tparam POINTMAP Supported maps are all those covered by mrpt::utils::PointCloudAdapter (mrpt::maps::CPointsMap and derived, mrpt::opengl::CPointCloudColoured, PCL point clouds,...)
 		  *
 		  * \note In MRPT < 0.9.5, this method always assumes that ranges were in Kinect-like format.
 		  */
 		template <class POINTMAP>
+		inline void project3DPointsFromDepthImageInto(POINTMAP & dest_pointcloud, const T3DPointsProjectionParams & projectParams, const TRangeImageFilterParams &filterParams = TRangeImageFilterParams() ) {
+			detail::project3DPointsFromDepthImageInto<POINTMAP>(*this,dest_pointcloud,projectParams, filterParams);
+		}
+
+		template <class POINTMAP>
+		MRPT_DECLARE_DEPRECATED_FUNCTION("DEPRECATED: Use the other method signature with structured parameters instead.",
 		inline void project3DPointsFromDepthImageInto(
 			POINTMAP                   & dest_pointcloud,
 			const bool takeIntoAccountSensorPoseOnRobot,
 			const mrpt::poses::CPose3D *robotPoseInTheWorld=NULL,
-			const bool PROJ3D_USE_LUT=true)
+			const bool PROJ3D_USE_LUT=true,
+			const mrpt::math::CMatrix * rangeMask_GT = NULL
+			)
 		{
-			detail::project3DPointsFromDepthImageInto<POINTMAP>(*this,dest_pointcloud,takeIntoAccountSensorPoseOnRobot,robotPoseInTheWorld,PROJ3D_USE_LUT);
+			T3DPointsProjectionParams pp; 
+			pp.takeIntoAccountSensorPoseOnRobot = takeIntoAccountSensorPoseOnRobot;
+			pp.robotPoseInTheWorld = robotPoseInTheWorld;
+			pp.PROJ3D_USE_LUT = PROJ3D_USE_LUT;
+			TRangeImageFilterParams fp;
+			fp.rangeMask_GT=rangeMask_GT;
+			detail::project3DPointsFromDepthImageInto<POINTMAP>(*this,dest_pointcloud,pp,fp);
 		}
+		);
 
-		/** This method is equivalent to \c project3DPointsFromDepthImageInto() storing the projected 3D points (without color, in local coordinates) in this same class.
-		  *  For new code it's recommended to use instead \c project3DPointsFromDepthImageInto() which is much more versatile.
-		  */
+		/** This method is equivalent to \c project3DPointsFromDepthImageInto() storing the projected 3D points (without color, in local sensor-centric coordinates) in this same class.
+		  *  For new code it's recommended to use instead \c project3DPointsFromDepthImageInto() which is much more versatile. */
 		inline void project3DPointsFromDepthImage(const bool PROJ3D_USE_LUT=true) {
-			this->project3DPointsFromDepthImageInto(*this,false,NULL,PROJ3D_USE_LUT);
+			T3DPointsProjectionParams p;
+			p.takeIntoAccountSensorPoseOnRobot = false;
+			p.PROJ3D_USE_LUT = PROJ3D_USE_LUT;
+			this->project3DPointsFromDepthImageInto(*this,p);
 		}
-
 
 		/** Convert this 3D observation into an "equivalent 2D fake laser scan", with a configurable vertical FOV.
 		  *
@@ -214,20 +250,21 @@ namespace obs
 		  *  for this method to work.
 		  *
 		  *  \param[out] out_scan2d The resulting 2D equivalent scan.
-		  *  \param[in] sensorLabel The sensor label that will have the newly created observation.
-		  *  \param[in] angle_sup (Default=5deg) The upper half-FOV angle (in radians)
-		  *  \param[in] angle_sup (Default=5deg) The lower half-FOV angle (in radians)
-		  *  \param[in] oversampling_ratio (Default=1.2=120%) How many more laser scans rays to create (read above).
 		  *
 		  * \sa The example in http://www.mrpt.org/Example_Kinect_To_2D_laser_scan
 		  */
+		void convertTo2DScan(mrpt::obs::CObservation2DRangeScan & out_scan2d, const T3DPointsTo2DScanParams &scanParams, const TRangeImageFilterParams &filterParams = TRangeImageFilterParams() );
+
+		MRPT_DECLARE_DEPRECATED_FUNCTION("DEPRECATED: Use the other method signature with structured parameters instead.",
 		void convertTo2DScan(
 			mrpt::obs::CObservation2DRangeScan & out_scan2d,
 			const std::string       & sensorLabel,
 			const double angle_sup = mrpt::utils::DEG2RAD(5),
 			const double angle_inf = mrpt::utils::DEG2RAD(5),
-			const double oversampling_ratio = 1.2 );
-
+			const double oversampling_ratio = 1.2,
+			const mrpt::math::CMatrix * rangeMask_GT = NULL
+			)
+		);
 
 		bool hasPoints3D; //!< true means the field points3D contains valid data.
 		std::vector<float> points3D_x,points3D_y,points3D_z;  //!< If hasPoints3D=true, the (X,Y,Z) coordinates of the 3D point cloud detected by the camera. \sa resizePoints3DVectors

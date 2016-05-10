@@ -11,12 +11,13 @@
 
 #include <mrpt/opengl/CRenderizable.h>		// Include these before windows.h!!
 #include <mrpt/opengl/gl_utils.h>
-#include <mrpt/synch.h>
+#include <mrpt/synch/CCriticalSection.h>
 #include <mrpt/utils/CStringList.h>
 #include <mrpt/math/utils.h>
 #include <mrpt/poses/CPoint3D.h>
 #include <mrpt/poses/CPoint2D.h>
 #include <mrpt/poses/CPose3D.h>
+#include <mrpt/utils/CStream.h>
 
 #include "opengl_internals.h"
 

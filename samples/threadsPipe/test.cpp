@@ -9,7 +9,7 @@
 
 #include <mrpt/utils.h>
 #include <mrpt/system.h>
-#include <mrpt/synch.h>
+#include <mrpt/synch/CPipe.h>
 #include <mrpt/poses/CPose3D.h>
 
 using namespace mrpt;

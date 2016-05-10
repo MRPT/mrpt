@@ -224,8 +224,6 @@ unsigned long  mrpt::system::getMemoryUsage()
 		MEM=info.virtual_size;
 	}
 #endif
-
 	return MEM;
 	MRPT_END
 }
-

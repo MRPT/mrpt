@@ -27,26 +27,24 @@ using namespace mrpt::synch;
 // ------------------  CPipe ------------------
 
 /** Creates a new pipe and returns the read & write end-points as newly allocated objects. */
-void CPipe::createPipe(std::auto_ptr<CPipeReadEndPoint>& outReadPipe,std::auto_ptr<CPipeWriteEndPoint>& outWritePipe)
+void CPipe::initializePipe(CPipeReadEndPoint& outReadPipe, CPipeWriteEndPoint& outWritePipe)
 {
-	outReadPipe  = std::auto_ptr<CPipeReadEndPoint>(new CPipeReadEndPoint);
-	outWritePipe = std::auto_ptr<CPipeWriteEndPoint>(new CPipeWriteEndPoint);
 #	ifdef MRPT_OS_WINDOWS
 	// Win32 pipes
 	HANDLE hRead, hWrite;
 	if (!CreatePipe(&hRead, &hWrite, NULL, 0))
 		THROW_EXCEPTION("Win32 error creating pipe endpoints!")
 
-	outReadPipe->m_pipe_file = hRead;
-	outWritePipe->m_pipe_file = hWrite;
+	outReadPipe.m_pipe_file = hRead;
+	outWritePipe.m_pipe_file = hWrite;
 #else
 	// UNIX pipes
 	int fds[2];
 	if (::pipe(fds))
 		THROW_EXCEPTION("Unix error creating pipe endpoints!")
 
-	outReadPipe->m_pipe_file = fds[0];
-	outWritePipe->m_pipe_file = fds[1];
+	outReadPipe.m_pipe_file = fds[0];
+	outWritePipe.m_pipe_file = fds[1];
 #endif
 }
 

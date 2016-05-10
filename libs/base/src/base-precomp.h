@@ -10,7 +10,6 @@
 #pragma once
 
 #include <mrpt/config.h>
-#include <mrpt/version.h>
 #if MRPT_ENABLE_PRECOMPILED_HDRS
 
 #include <mrpt/utils/utils_defs.h>

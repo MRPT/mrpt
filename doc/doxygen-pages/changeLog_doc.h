@@ -13,21 +13,39 @@
 <p> <b>Note:</b> <i>If you are displaying a local version of this page and you have not built the whole HTML documentation, the links above will be broken. Either build the documentation invoking <code>make documentation_html</code> or [browse it on-line](http://www.mrpt.org/).</i></p>
 
 <hr>
-<a name="1.4.1">
-  <h2>Version 1.4.1: (Under development)  </h2></a>
+<a name="1.5.0">
+<h2>Version 1.5.0: (Under development)  </h2></a>
 	- Changes in apps:
-		- [RawLogViewer](http://www.mrpt.org/list-of-mrpt-apps/rawlogviewer/): Now displays a textual and graphical representation of all observation timestamps, useful to quickly detect sensor "shortages" or temporary failures.
+		- [RawLogViewer](http://www.mrpt.org/list-of-mrpt-apps/rawlogviewer/):
+			- Now displays a textual and graphical representation of all observation timestamps, useful to quickly detect sensor "shortages" or temporary failures.
+			- New menu operation: "Edit" -> "Rename selected observation"
+			- mrpt::obs::CObservation3DRangeScan pointclouds are now shown in local coordinates wrt to the vehicle/robot, not to the sensor.
 	- Changes in libraries:
+		- \ref mrpt_base_grp
+			- New API to interface ZeroMQ: \ref noncstream_serialization_zmq
+		- \ref mrpt_maps_grp
+			- mrpt::maps::COccupancyGridMap2D::loadFromBitmapFile() correct description of `yCentralPixel` parameter.
+		- \ref mrpt_obs_grp
+			- [ABI change] mrpt::obs::CObservation3DRangeScan:
+				- Now uses more SSE2 optimized code
+				- Depth filters are now available for mrpt::obs::CObservation3DRangeScan::project3DPointsFromDepthImageInto() and  mrpt::obs::CObservation3DRangeScan::convertTo2DScan()
 		- \ref mrpt_hwdrivers_grp
 			- mrpt::hwdrivers::CGenericSensor: external image format is now `png` by default instead of `jpg` to avoid losses.
-			- mrpt::hwdrivers::COpenNI2Generic:
+			- [ABI change] mrpt::hwdrivers::COpenNI2Generic:
 				- refactored to expose more methods and allow changing parameters via its constructor.
 				- Now supports reading from an IR, RGB and Depth channels independenty.
 	- Changes in build system:
+		- [Windows only] `DLL`s/`LIB`s now have the signature `lib-${name}${2-digits-version}${compiler-name}_{x32|x64}.{dll/lib}`, allowing several MRPT versions to coexist in the system PATH.
+		- [Visual Studio only] There are no longer `pragma comment(lib...)` in any MRPT header, so it is the user responsibility to correctly tell user projects to link against MRPT libraries.
+		  Normally, this is done with the standard command `TARGET_LINK_LIBRARIES(MYTARGET ${MRPT_LIBS})`.
 		- Debian package: depends on libopenni-dev
 	- BUG FIXES:
 		- Fix inconsistent state after calling mrpt::obs::CObservation3DRangeScan::swap()
 		- Fix SEGFAULT in mrpt::obs::CObservation3DRangeScan if trying to build a pointcloud in an external container (mrpt::opengl, mrpt::maps)
+		- Fix mrpt::hwdrivers::CHokuyoURG can return invalid ray returns as valid ranges.
+		- Fix PTG look-up-tables will always fail to load from cache files and will re-generate (Closes [GitHub #243](https://github.com/MRPT/mrpt/issues/243))
+		- Fix mrpt::maps::COccupancyGridMap2D::simulateScanRay() fails to mark out-of-range ranges as "invalid".
+		- Fix mrpt::utils::CMemoryStream::Clear() after assigning read-only memory blocks.
 
 <hr>
 <a name="1.4.0">

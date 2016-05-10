@@ -15,7 +15,8 @@
 #include <mrpt/utils/CTicTac.h>
 #include <mrpt/system/string_utils.h>
 #include <mrpt/system/threads.h>
-#include <mrpt/synch.h>
+#include <mrpt/synch/CSemaphore.h>
+#include <mrpt/synch/CThreadSafeVariable.h>
 #include <cstring>
 #include <stdio.h>
 

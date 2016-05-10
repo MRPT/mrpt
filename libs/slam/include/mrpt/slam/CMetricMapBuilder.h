@@ -12,7 +12,7 @@
 #include <mrpt/utils/CSerializable.h>
 #include <mrpt/utils/CListOfClasses.h>
 #include <mrpt/utils/CDebugOutputCapable.h>
-#include <mrpt/synch.h>
+#include <mrpt/synch/CCriticalSection.h>
 #include <mrpt/maps/CMultiMetricMap.h>
 #include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/maps/CSimpleMap.h>
@@ -35,18 +35,11 @@ namespace slam
 	class SLAM_IMPEXP CMetricMapBuilder : public mrpt::utils::CDebugOutputCapable
 	{
 	protected:
-		/** Critical zones
-		  */
-		synch::CCriticalSection	critZoneChangingMap;
-
-		/** Enter critical section for map updating:
-		  */
+		synch::CCriticalSection	critZoneChangingMap; //!< Critical zones
+		/** Enter critical section for map updating */
 		inline void  enterCriticalSection() { critZoneChangingMap.enter(); }
-
-		/** Leave critical section for map updating:
-		  */
+		/** Leave critical section for map updating */
 		inline void  leaveCriticalSection() { critZoneChangingMap.leave(); }
-
 	public:
 		CMetricMapBuilder();           //!< Constructor
 		virtual ~CMetricMapBuilder( ); //!< Destructor.

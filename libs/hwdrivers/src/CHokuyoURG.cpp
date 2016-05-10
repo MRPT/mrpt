@@ -172,7 +172,7 @@ void  CHokuyoURG::doProcessSimple(
 		int		range_mm = ( (b1 << 12) | (b2 << 6) | b3);
 
 		outObservation.scan[i]			= range_mm * 0.001f;
-		outObservation.validRange[i]	= range_mm>=20;
+		outObservation.validRange[i]	= range_mm>=20 &&  (outObservation.scan[i] <= outObservation.maxRange);
 	}
 
 	// Do filter:

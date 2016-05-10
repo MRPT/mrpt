@@ -47,6 +47,7 @@
 #include <mrpt/opengl.h>
 #include <mrpt/system/threads.h>
 #include <mrpt/vision/chessboard_stereo_camera_calib.h>
+#include <mrpt/synch/CThreadSafeVariable.h>
 
 // Thread for grabbing: Do this is another thread so we divide rendering and grabbing
 //   and exploit multicore CPUs.

@@ -235,12 +235,13 @@ void CScanAnimation::BuildMapAndRefresh(CSensoryFrame *sf)
 			CObservation3DRangeScanPtr o= CObservation3DRangeScanPtr(*it);
 			if (o->hasRangeImage && !o->hasPoints3D)
 			{
-				o->project3DPointsFromDepthImage();
+				mrpt::obs::T3DPointsProjectionParams pp;
+				pp.takeIntoAccountSensorPoseOnRobot = false,
+				o->project3DPointsFromDepthImageInto(*o, pp);
 				obs3D_to_clear.push_back(o);
 			}
 		}
 	}
-
 
 	// Mix?
 	if (!m_mixlasers)

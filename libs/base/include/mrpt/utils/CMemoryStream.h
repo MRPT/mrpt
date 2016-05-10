@@ -79,6 +79,16 @@ namespace utils
 			m_alloc_block_size = alloc_block_size;
 		}
 	}; // End of class def.
+
+	namespace internal {
+		struct BASE_IMPEXP TFreeFnDataForZMQ
+		{
+			CMemoryStream *buf;
+			bool do_free;
+			TFreeFnDataForZMQ() : buf(NULL), do_free(true) { }
+		};
+		void BASE_IMPEXP free_fn_for_zmq(void *data, void *hint); //!< Used in mrpt_send_to_zmq(). `hint` points to a `TFreeFnDataForZMQ` struct, to be freed here.
+	}
 	} // End of namespace
 } // end of namespace
 #endif

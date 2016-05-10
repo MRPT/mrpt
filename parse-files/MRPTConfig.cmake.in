@@ -3,7 +3,7 @@
 #
 #             ** File generated automatically, do not modify **
 #
-#  Usage from an external project: 
+#  Usage from an external project:
 #   In your CMakeLists.txt, add these lines:
 #
 #    FIND_PACKAGE( MRPT REQUIRED )  # Default: Use mrpt-slam & mrpt-topography
@@ -12,7 +12,7 @@
 #
 #    TARGET_LINK_LIBRARIES(MY_TARGET_NAME ${MRPT_LIBRARIES})
 #
-#   
+#
 #   The libraries or "modules" which can be included are
 #   (see the full list and description in: http://www.mrpt.org/Libraries )
 #     - base           --> libmrpt-base
@@ -25,12 +25,12 @@
 #    - MRPT_LIBRARIES        : The list of libraries to links against.
 #    - MRPT_LIBS             : Like MRPT_LIBRARIES, for backward compat.
 #    - MRPT_INCLUDE_DIRS     : The list of include directories
-#    - MRTP_LINK_DIRECTORIES : The list of link directories
-#    - MRPT_VERSION          : The MRPT version (e.g. "1.0.0"). 
+#    - MRPT_LINK_DIRECTORIES : The list of link directories
+#    - MRPT_VERSION          : The MRPT version (e.g. "1.0.0").
 #    - MRPT_VERSION_{MAJOR,MINOR,PATCH}: 3 variables for the version parts
 #
 #   Optional input variables:
-#    - MRPT_DONT_USE_DBG_LIBS: If defined at input, before the 
+#    - MRPT_DONT_USE_DBG_LIBS: If defined at input, before the
 #         "FIND_PACKAGE(MRPT...)", and set to "1", the release libraries
 #         will be used even for linking against "Debug" CMake builds.
 #
@@ -65,7 +65,7 @@ SET(MRPT_INCLUDE_DIRS "@THE_INCLUDE_DIRECTORIES@")
 SET(MRPT_LINK_DIRECTORIES "@THE_LINK_DIRECTORIES@")
 
 # ======================================================
-# Include directories where Eigen3 headers are... if 
+# Include directories where Eigen3 headers are... if
 #  they are not embedded under mrpt-base headers:
 # ======================================================
 IF (NOT @MRPT_CONFIGFILE_IS_INSTALL@ OR NOT @EIGEN_USE_EMBEDDED_VERSION_BOOL@)
@@ -87,7 +87,7 @@ LIST(APPEND MRPT_INCLUDE_DIRS ${MRPT_CONFIG_DIR})
 
 # OpenCV library:
 IF(@CMAKE_MRPT_HAS_OPENCV_SYSTEM@)    # CMAKE_MRPT_HAS_OPENCV_SYSTEM
-	# Using system opencv lib: 
+	# Using system opencv lib:
 	# Users must link against OpenCV only if MRPT is not a dynamic library:
 	IF (NOT @CMAKE_MRPT_BUILD_SHARED_LIB_ONOFF@)  # CMAKE_MRPT_BUILD_SHARED_LIB
 		LINK_DIRECTORIES("@OPENCV_LIBDIR@")  # OPENCV_LIBDIR
@@ -115,9 +115,9 @@ ENDIF ("${MRPT_FIND_COMPONENTS}" STREQUAL "")
 # The list of MRPT libs/modules in this build
 # ======================================================
 SET(ALL_MRPT_LIBS "@ALL_MRPT_LIBS@")
-#  Start of DECLARE_LIBS_DEPS 
+#  Start of DECLARE_LIBS_DEPS
 @DECLARE_LIBS_DEPS@
-#  End of DECLARE_LIBS_DEPS 
+#  End of DECLARE_LIBS_DEPS
 
 #  Start of DECLARE_LIBS_HDR_ONLY
 @DECLARE_LIBS_HDR_ONLY@
@@ -148,7 +148,7 @@ list(REMOVE_DUPLICATES MRPT_FIND_COMPONENTS)
 
 # ======================================================
 # Check:
-#  All libraries must exist in the MRPT build. 
+#  All libraries must exist in the MRPT build.
 #  Compare "MRPT_FIND_COMPONENTS" against "ALL_MRPT_LIBS":
 # ======================================================
 #MESSAGE(STATUS "LIBS: ${ALL_MRPT_LIBS}")
@@ -176,19 +176,19 @@ FOREACH(MRPTLIB ${MRPT_FIND_COMPONENTS})
 	INCLUDE_DIRECTORIES("${MRPT_LIBS_INCL_DIR}/${MRPTLIB}/include")
 	LIST(APPEND MRPT_INCLUDE_DIRS "${MRPT_LIBS_INCL_DIR}/${MRPTLIB}/include")
 
-	# List of link libs only needed in GCC. In MSVC we use pragma link libs.
-	IF(NOT MSVC AND NOT BORLAND)
-		# If the required lib is header-only, don't add to the list of libs to link!
-		get_property(_LIB_HDRONLY GLOBAL PROPERTY "mrpt-${MRPTLIB}_LIB_IS_HEADERS_ONLY")
-		IF(NOT _LIB_HDRONLY)
-			IF(NOT MRPT_DONT_USE_DBG_LIBS)
-				LIST(APPEND MRPT_LIBRARIES  optimized mrpt-${MRPTLIB}@MRPT_DLL_VERSION_POSTFIX@ debug mrpt-${MRPTLIB}@MRPT_DLL_VERSION_POSTFIX@-dbg)
-			ELSE(NOT MRPT_DONT_USE_DBG_LIBS)
-				LIST(APPEND MRPT_LIBRARIES  mrpt-${MRPTLIB}@MRPT_DLL_VERSION_POSTFIX@)
-			ENDIF(NOT MRPT_DONT_USE_DBG_LIBS)
-		ENDIF(NOT _LIB_HDRONLY)
-	ENDIF(NOT MSVC AND NOT BORLAND)
-	
+	# List of libs to link against:
+	# If the required lib is header-only, don't add to the list of libs to link!
+	get_property(_LIB_HDRONLY GLOBAL PROPERTY "mrpt-${MRPTLIB}_LIB_IS_HEADERS_ONLY")
+	IF(NOT _LIB_HDRONLY)
+		IF(NOT MRPT_DONT_USE_DBG_LIBS)
+			LIST(APPEND MRPT_LIBRARIES
+				optimized @MRPT_LIB_PREFIX@mrpt-${MRPTLIB}@MRPT_DLL_VERSION_POSTFIX@
+				debug     @MRPT_LIB_PREFIX@mrpt-${MRPTLIB}@MRPT_DLL_VERSION_POSTFIX@-dbg)
+		ELSE(NOT MRPT_DONT_USE_DBG_LIBS)
+			LIST(APPEND MRPT_LIBRARIES  @MRPT_LIB_PREFIX@mrpt-${MRPTLIB}@MRPT_DLL_VERSION_POSTFIX@)
+		ENDIF(NOT MRPT_DONT_USE_DBG_LIBS)
+	ENDIF(NOT _LIB_HDRONLY)
+
 	IF(MRPTLIB MATCHES "hwdrivers")
 		SET(MRPT_COMP_HWDRIVERS 1)
 	ENDIF(MRPTLIB MATCHES "hwdrivers")

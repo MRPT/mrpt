@@ -10,7 +10,7 @@
 #include "base-precomp.h"  // Precompiled headers 
 
 
-#include <mrpt/synch.h>
+#include <mrpt/synch/CCriticalSection.h>
 #include <mrpt/utils/CStream.h>
 
 #include <iostream>

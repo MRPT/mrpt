@@ -11,7 +11,6 @@
 
 #include <mrpt/hwdrivers/CInterfaceFTDIMessages.h>
 #include <mrpt/hwdrivers/CGenericSensor.h>
-#include <mrpt/synch.h>
 #include <mrpt/utils/CDebugOutputCapable.h>
 #include <mrpt/utils/CConfigFileBase.h>
 #include <mrpt/obs/CObservationRange.h>
