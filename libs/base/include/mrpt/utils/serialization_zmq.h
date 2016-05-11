@@ -17,7 +17,7 @@ namespace mrpt
 {
 	namespace utils
 	{
-		/** \addtogroup noncstream_serialization_zmq Serialization functions for ZMQ (in #include <mrpt/utils/serialization_zmq.h>)
+		/** \addtogroup noncstream_serialization_zmq Serialization functions for ZMQ (v3 or above) (in #include <mrpt/utils/serialization_zmq.h>)
 		  * \ingroup noncstream_serialization
 		  * @{ */
 
@@ -33,13 +33,13 @@ namespace mrpt
 		template <typename ZMQ_SOCKET_TYPE>
 		void mrpt_send_to_zmq(
 			ZMQ_SOCKET_TYPE zmq_socket,
-			const mrpt::utils::CSerializable *obj,
+			const mrpt::utils::CSerializable &obj,
 			const size_t max_packet_len = 0)
 		{
 			mrpt::utils::CMemoryStream *buf = new mrpt::utils::CMemoryStream();
 			if (!buf) throw std::bad_alloc();
 
-			buf->WriteObject(obj);
+			buf->WriteObject(&obj);
 			const size_t nBytes = buf->getTotalBytesCount();
 			if (!nBytes)
 				throw std::runtime_error("[mrpt_send_to_zmq] Serialized object has 0 bytes, which probably means something went wrong...");
