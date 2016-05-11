@@ -46,7 +46,7 @@ const double ERROR_IN_INCOMPATIBLE_EDGE = 0.3; // ratio [0,1]
 template <class GRAPH,bool EDGES_ARE_PDF = GRAPH::edge_t::is_PDF_val> struct EdgeAdders;
 
 /**
- * Specific templates based on the above EdgeAdders temptlate
+ * Specific templates based on the above EdgeAdders template
  * Non-PDF version:
  */
 template <class GRAPH> struct EdgeAdders<GRAPH,false>
@@ -157,7 +157,7 @@ struct ExampleDemoGraphSLAM
 			//inf_matrix.unit(square(1.0/(STD4EDGES_COV_MATRIX)));
 			edge_adder_t::addEdge(0,N_VERTEX/2,real_node_poses,graph,inf_matrix);
 
-			// Tweak this last node to make it incompatible with the rest
+			// Tweak this last node to make it incompatible with the rest:
       // It must exist, don't check errors...
 			typename my_graph_t::edge_t &ed = graph.edges.find(make_pair<TNodeID,TNodeID>(0,N_VERTEX/2))->second; 
 			ed.getPoseMean().x( (1-ERROR_IN_INCOMPATIBLE_EDGE) * ed.getPoseMean().x() );
