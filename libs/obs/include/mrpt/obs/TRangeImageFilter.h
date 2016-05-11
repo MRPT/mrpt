@@ -19,18 +19,18 @@ namespace obs {
 	/** Used in CObservation3DRangeScan::project3DPointsFromDepthImageInto() */
 	struct OBS_IMPEXP TRangeImageFilterParams
 	{
-		/** Only used if <b>both</b> rangeMask_GT and rangeMask_LT are present.
+		/** Only used if <b>both</b> rangeMask_min and rangeMask_max are present.
 		  * This switches which condition must fulfill a range `D` to be accepted as valid:
-		  *  - `rangeCheckBetween=true` : valid = D>=rangeMask_GT && D<=rangeMask_LT
-		  *  - `rangeCheckBetween=false`: valid = D>=rangeMask_GT || D<=rangeMask_LT
+		  *  - `rangeCheckBetween=true` : valid =  (D>=rangeMask_min && D<=rangeMask_max)
+		  *  - `rangeCheckBetween=false`: valid = !(D>=rangeMask_min && D<=rangeMask_max)
 		  *
 		  * \note Default value:true */
 		bool rangeCheckBetween;
-		/** (Default: NULL) If provided, each data range will be tested to be greater-than (GT) or less-than (LT) each element in these matrices
+		/** (Default: NULL) If provided, each data range will be tested to be greater-than (rangeMask_min) or less-than (rangeMask_max) each element in these matrices
 		  * for each direction (row,col). Values of 0.0f mean no filtering at those directions.
-			* If both `rangeMask_GT` and `rangeMask_LT` are provided, the joint filtering operation is determined by `rangeCheckBetween` */
-		const mrpt::math::CMatrix * rangeMask_GT, * rangeMask_LT;
-		TRangeImageFilterParams() : rangeCheckBetween(true), rangeMask_GT(NULL), rangeMask_LT(NULL)
+			* If both `rangeMask_min` and `rangeMask_max` are provided, the joint filtering operation is determined by `rangeCheckBetween` */
+		const mrpt::math::CMatrix * rangeMask_min, * rangeMask_max;
+		TRangeImageFilterParams() : rangeCheckBetween(true), rangeMask_min(NULL), rangeMask_max(NULL)
 		{}
 	};
 
@@ -50,20 +50,20 @@ namespace obs {
 			return false;
 		// Greater-than/Less-than filters:
 		bool pass_gt=true, pass_lt=true;
-		if (fp.rangeMask_GT) {
-			const float min_d = fp.rangeMask_GT->coeff(r,c);
+		if (fp.rangeMask_min) {
+			const float min_d = fp.rangeMask_min->coeff(r,c);
 			if (min_d!=.0f && D<min_d)
 				pass_gt=false;
 		}
-		if (fp.rangeMask_LT) {
-			const float max_d = fp.rangeMask_LT->coeff(r,c);
+		if (fp.rangeMask_max) {
+			const float max_d = fp.rangeMask_max->coeff(r,c);
 			if (max_d!=.0f && D>max_d)
 				pass_lt = false;
 		}
-		if (fp.rangeMask_GT && fp.rangeMask_LT) {
-			return fp.rangeCheckBetween ? (pass_gt && pass_lt) : (pass_gt || pass_lt);
+		if (fp.rangeMask_max && fp.rangeMask_min) {
+			return fp.rangeCheckBetween ? (pass_gt && pass_lt) : !(pass_gt && pass_lt);
 		}
-		else return pass_gt || pass_lt;
+		else return pass_gt && pass_lt;
 	} // do_range_filter()
 
 } } // End of namespaces

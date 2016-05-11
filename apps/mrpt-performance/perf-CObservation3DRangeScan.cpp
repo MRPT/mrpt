@@ -55,11 +55,11 @@ double obs3d_test_depth_to_3d(int a, int b)
 	mrpt::math::CMatrix minF, maxF;
 	if (b&0x01) {
 		generateRandomMaskImage(minF, obs1.rangeImage.rows(),obs1.rangeImage.cols());
-		fp.rangeMask_GT = &minF;
+		fp.rangeMask_min = &minF;
 	}
 	if (b&0x02) {
 		generateRandomMaskImage(maxF, obs1.rangeImage.rows(),obs1.rangeImage.cols());
-		fp.rangeMask_LT = &maxF;
+		fp.rangeMask_max = &maxF;
 	}
 	
 	for (int i=0;i<100;i++) {
@@ -87,11 +87,11 @@ double obs3d_test_depth_to_2d_scan(int useMinFilter, int useMaxFilter)
 	mrpt::math::CMatrix minF, maxF;
 	if (useMinFilter) {
 		generateRandomMaskImage(minF, obs1.rangeImage.rows(),obs1.rangeImage.cols());
-		fp.rangeMask_GT = &minF;
+		fp.rangeMask_min = &minF;
 	}
 	if (useMaxFilter) {
 		generateRandomMaskImage(maxF, obs1.rangeImage.rows(),obs1.rangeImage.cols());
-		fp.rangeMask_LT = &maxF;
+		fp.rangeMask_max = &maxF;
 	}
 
 	for (int i=0;i<10;i++) {
