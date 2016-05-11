@@ -39,10 +39,16 @@ const double STD4EDGES_COV_MATRIX       = 10;
 const double ERROR_IN_INCOMPATIBLE_EDGE = 0.3; // ratio [0,1]
 
 
-// Auxiliary class to add a new edge to the graph. The edge is annotated with the relative position of the two nodes
+/** 
+ * Generic struct template
+ * Auxiliary class to add a new edge to the graph. The edge is annotated with the relative position of the two nodes
+ */
 template <class GRAPH,bool EDGES_ARE_PDF = GRAPH::edge_t::is_PDF_val> struct EdgeAdders;
 
-// Non-PDF version:
+/**
+ * Specific templates based on the above EdgeAdders temptlate
+ * Non-PDF version:
+ */
 template <class GRAPH> struct EdgeAdders<GRAPH,false>
 {
 	static const int DIM = GRAPH::edge_t::type_value::static_size;
@@ -69,6 +75,7 @@ template <class GRAPH> struct EdgeAdders<GRAPH,true>
 	}
 };
 
+// Container to handle the propagation of the square root error of the problem
 vector<double>  log_sq_err_evolution;
 
 // This example lives inside this template class, which can be instanced for different kind of graphs (see main()):
@@ -95,9 +102,13 @@ struct ExampleDemoGraphSLAM
 		// The graph: nodes + edges:
 		my_graph_t  graph;
 
-		// The global poses of each node (without covariance):
+		// The global poses of the graph nodes (without covariance):
 		typename my_graph_t::global_poses_t  real_node_poses;
 
+    /**
+     * Initialize the PRNG from the given random seed.
+     * Method used to initially randomise the generator 
+     */
 		randomGenerator.randomize(123);
 
 		// ----------------------------
@@ -146,8 +157,9 @@ struct ExampleDemoGraphSLAM
 			//inf_matrix.unit(square(1.0/(STD4EDGES_COV_MATRIX)));
 			edge_adder_t::addEdge(0,N_VERTEX/2,real_node_poses,graph,inf_matrix);
 
-			// Tweak this last node to make it incompatible with the rest:
-			typename my_graph_t::edge_t &ed = graph.edges.find(make_pair<TNodeID,TNodeID>(0,N_VERTEX/2))->second; // It must exist, don't check errors...
+			// Tweak this last node to make it incompatible with the rest
+      // It must exist, don't check errors...
+			typename my_graph_t::edge_t &ed = graph.edges.find(make_pair<TNodeID,TNodeID>(0,N_VERTEX/2))->second; 
 			ed.getPoseMean().x( (1-ERROR_IN_INCOMPATIBLE_EDGE) * ed.getPoseMean().x() );
 		}
 
