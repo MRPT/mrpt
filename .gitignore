@@ -1,9 +1,0 @@
-*~
-samples/CMakeLists.txt
-build*
-install*
-*.layout
-CMakeFiles/
-CMakeLists.txt.user
-SOURCE_DATE_EPOCH
-*.backup
