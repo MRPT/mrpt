@@ -14,8 +14,8 @@
 
 #if MRPT_HAS_LIBLAS
 #   include <liblas/liblas.hpp>
-#	include <liblas/lasreader.hpp>
-#	include <liblas/laswriter.hpp>
+#	include <liblas/reader.hpp>
+#	include <liblas/writer.hpp>
 #endif
 
 using namespace mrpt::maps;
@@ -39,20 +39,20 @@ bool CPointsMap::saveLASFile(const std::string &filename, const LAS_WriteParams 
 
 	// Fill-in header:
 	// ---------------------------------
-	liblas::LASHeader header;
+	liblas::Header header;
 	const size_t nPts = this->size();
 
 	header.SetPointRecordsCount(nPts);
 
 	// Create writer:
 	// ---------------------------------
-	liblas::LASWriter writer(ofs,header);
+	liblas::Writer writer(ofs,header);
 
 	const bool has_color = this->hasColorPoints();
 	const float col_fract = 255.0f;
 
-	liblas::LASPoint pt;
-	liblas::LASColor col;
+	liblas::Point pt;
+	liblas::Color col;
 	for (size_t i=0;i<nPts;i++)
 	{
 		float x,y,z,R,G,B;
@@ -103,11 +103,11 @@ bool CPointsMap::loadLASFile(const std::string &filename, LAS_HeaderInfo &out_he
 
 	// Create LAS reader:
 	// ---------------------
-	liblas::LASReader reader(ifs);
+	liblas::Reader reader(ifs);
 
 	// Parse header info:
 	// ---------------------
-	liblas::LASHeader const& header = reader.GetHeader();
+	liblas::Header const& header = reader.GetHeader();
 	const size_t nPts = header.GetPointRecordsCount();
 	this->reserve(nPts);
 
@@ -125,11 +125,11 @@ bool CPointsMap::loadLASFile(const std::string &filename, LAS_HeaderInfo &out_he
 	const float col_fract = 1.0f/255.0f;
 	while (reader.ReadNextPoint())
 	{
-		liblas::LASPoint const& p = reader.GetPoint();
+		liblas::Point const& p = reader.GetPoint();
 
 		if (has_color)
 		{
-			liblas::LASColor const& col = p.GetColor();
+			liblas::Color const& col = p.GetColor();
 			this->insertPoint( p.GetX(),p.GetY(),p.GetZ(), col.GetRed()*col_fract,col.GetGreen()*col_fract,col.GetBlue()*col_fract );
 		}
 		else

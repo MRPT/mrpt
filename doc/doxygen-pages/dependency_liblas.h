@@ -22,6 +22,8 @@ If available, it will provide the following functionality:
 - The following methods:
 	- mrpt::maps::CPointsMap::saveLASFile()
 	- mrpt::maps::CPointsMap::loadLASFile()
-		
+
+Install this library in Ubuntu/Debian with: `sudo apt-get install liblas-dev liblas-c-dev`
+
 */
 
