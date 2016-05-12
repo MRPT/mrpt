@@ -51,7 +51,8 @@ bool CPointsMap::saveLASFile(const std::string &filename, const LAS_WriteParams 
 	const bool has_color = this->hasColorPoints();
 	const float col_fract = 255.0f;
 
-	liblas::Point pt;
+	//liblas::Point pt;
+	liblas::Point pt(&header);
 	liblas::Color col;
 	for (size_t i=0;i<nPts;i++)
 	{
@@ -114,7 +115,8 @@ bool CPointsMap::loadLASFile(const std::string &filename, LAS_HeaderInfo &out_he
 	out_headerInfo.FileSignature      = header.GetFileSignature();
 	out_headerInfo.SystemIdentifier   = header.GetSystemId();
 	out_headerInfo.SoftwareIdentifier = header.GetSoftwareId();
-	out_headerInfo.project_guid       = header.GetProjectId().to_string();
+	//out_headerInfo.project_guid       = header.GetProjectId().to_string();
+	out_headerInfo.project_guid       = boost::lexical_cast<std::string>(header.GetProjectId());
 	out_headerInfo.spatial_reference_proj4 = header.GetSRS().GetProj4();
 	out_headerInfo.creation_year = header.GetCreationYear();
 	out_headerInfo.creation_DOY  = header.GetCreationDOY();
