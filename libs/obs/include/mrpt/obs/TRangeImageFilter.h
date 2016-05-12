@@ -38,8 +38,9 @@ namespace obs {
 	struct OBS_IMPEXP TRangeImageFilter
 	{
 		TRangeImageFilterParams fp;
-
 		inline bool do_range_filter(size_t r, size_t c, const float D) const; //!< Returns true if the point (r,c) with depth D passes all filters.
+		inline TRangeImageFilter(const TRangeImageFilterParams &filter_params) : fp(filter_params) {}
+		inline TRangeImageFilter() {}
 	};
 
 
@@ -50,17 +51,22 @@ namespace obs {
 			return false;
 		// Greater-than/Less-than filters:
 		bool pass_gt=true, pass_lt=true;
+		bool has_min_filter = false, has_max_filter = false;
 		if (fp.rangeMask_min) {
 			const float min_d = fp.rangeMask_min->coeff(r,c);
-			if (min_d!=.0f && D<min_d)
-				pass_gt=false;
+			if (min_d!=.0f) {
+				has_min_filter = true;
+				pass_gt = (D>=min_d);
+			}
 		}
 		if (fp.rangeMask_max) {
 			const float max_d = fp.rangeMask_max->coeff(r,c);
-			if (max_d!=.0f && D>max_d)
-				pass_lt = false;
+			if (max_d!=.0f) {
+				has_max_filter=true;
+				pass_lt = (D<=max_d);
+			}
 		}
-		if (fp.rangeMask_max && fp.rangeMask_min) {
+		if (has_min_filter && has_max_filter) {
 			return fp.rangeCheckBetween ? (pass_gt && pass_lt) : !(pass_gt && pass_lt);
 		}
 		else return pass_gt && pass_lt;

@@ -99,12 +99,14 @@ namespace detail {
 				const float r_cy = src_obs.cameraParams.cy();
 				const float r_fx_inv = 1.0f/src_obs.cameraParams.fx();
 				const float r_fy_inv = 1.0f/src_obs.cameraParams.fy();
+				TRangeImageFilter rif(filterParams);
 				size_t idx=0;
 				for (int r=0;r<H;r++)
 					for (int c=0;c<W;c++)
 					{
 						const float D = src_obs.rangeImage.coeff(r,c);
-						if (D!=.0f) {
+						if (rif.do_range_filter(r,c,D))
+						{
 							const float Kz = (r_cy - r) * r_fy_inv;
 							const float Ky = (r_cx - c) * r_fx_inv;
 							pca.setPointXYZ(idx,
@@ -134,12 +136,14 @@ namespace detail {
 			const float r_cy = src_obs.cameraParams.cy();
 			const float r_fx_inv = 1.0f/src_obs.cameraParams.fx();
 			const float r_fy_inv = 1.0f/src_obs.cameraParams.fy();
+			TRangeImageFilter rif(filterParams);
 			size_t idx=0;
 			for (int r=0;r<H;r++)
 				for (int c=0;c<W;c++)
 				{
 					const float D = src_obs.rangeImage.coeff(r,c);
-					if (D!=.0f) {
+					if (rif.do_range_filter(r,c,D))
+					{
 						const float Ky = (r_cx - c) * r_fx_inv;
 						const float Kz = (r_cy - r) * r_fy_inv;
 						pca.setPointXYZ(idx,
@@ -274,8 +278,7 @@ namespace detail {
 	template <class POINTMAP>
 	inline void do_project_3d_pointcloud(const int H,const int W,const float *kys,const float *kzs,const mrpt::math::CMatrix &rangeImage, mrpt::utils::PointCloudAdapter<POINTMAP> &pca, std::vector<uint16_t> &idxs_x, std::vector<uint16_t> &idxs_y,const mrpt::obs::TRangeImageFilterParams &fp)
 	{
-		TRangeImageFilter rif;
-		rif.fp = fp;
+		TRangeImageFilter rif(fp);
 		// Preconditions: minRangeMask() has the right size
 		size_t idx=0;
 		for (int r=0;r<H;r++)
@@ -344,10 +347,14 @@ namespace detail {
 							const __m128 Dmin = _mm_load_ps(Dgt_ptr);
 							const __m128 Dmax = _mm_load_ps(Dlt_ptr);
 
-							const __m128 gt_mask = _mm_or_ps( _mm_cmpgt_ps(D, Dmin ), _mm_cmpeq_ps(Dmin,D_zeros) );
-							const __m128 lt_mask = _mm_and_ps( _mm_or_ps(_mm_cmplt_ps(D, Dmax),_mm_cmpeq_ps(Dmax,D_zeros) ), nz_mask ); // skip points at zero;
+							const __m128 gt_mask = _mm_cmpgt_ps(D, Dmin );
+							const __m128 lt_mask = _mm_and_ps( _mm_cmplt_ps(D, Dmax), nz_mask ); // skip points at zero
 							valid_range_mask = _mm_and_ps(gt_mask, lt_mask ); // (D>Dmin && D<Dmax)
 							valid_range_mask = _mm_xor_ps(valid_range_mask, xormask );
+							// Add the case of D_min & D_max = 0 (no filtering)
+							valid_range_mask = _mm_or_ps(valid_range_mask, _mm_and_ps(_mm_cmpeq_ps(Dmin,D_zeros),_mm_cmpeq_ps(Dmax,D_zeros)) );
+							// Finally, ensure no invalid ranges get thru:
+							valid_range_mask = _mm_and_ps(valid_range_mask, nz_mask );
 						}
 					}
 					const int valid_range_maski = _mm_movemask_epi8(_mm_castps_si128(valid_range_mask)); // 0x{f|0}{f|0}{f|0}{f|0}

@@ -938,8 +938,7 @@ void CObservation3DRangeScan::convertTo2DScan(mrpt::obs::CObservation2DRangeScan
 	double ang  = -FOV_equiv*0.5;
 	const double A_ang = FOV_equiv/(nLaserRays-1);
 
-	TRangeImageFilter rif;
-	rif.fp = fp;
+	TRangeImageFilter rif(fp);
 
 	// Go thru columns, and keep the minimum distance (along the +X axis, not 3D distance!)
 	// for each direction (i.e. for each column) which also lies within the vertical FOV passed
