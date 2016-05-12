@@ -1,29 +1,21 @@
-/* +---------------------------------------------------------------------------+
-   |                     Mobile Robot Programming Toolkit (MRPT)               |
-   |                          http://www.mrpt.org/                             |
-   |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
-   | See: http://www.mrpt.org/Authors - All rights reserved.                   |
-   | Released under BSD License. See details in http://www.mrpt.org/License    |
-   +---------------------------------------------------------------------------+ */
-
-/*---------------------------------------------------------------
-	APPLICATION: Graphsam Engine Application
-	FILE: graphslam_engine.cpp
-
-  ---------------------------------------------------------------*/
-
-
-#include <mrpt/obs.h>
+#include <mrpt/obs/CRawlog.h>
 #include <mrpt/graphslam.h>
+#include <mrpt/graphs.h>
 #include <mrpt/gui.h>
 #include <mrpt/opengl.h>
 #include <mrpt/utils.h>
 #include <mrpt/system/filesystem.h>
+#include <mrpt/system/os.h>
 #include <mrpt/utils/CLoadableOptions.h>
-#include <mrpt/opengl/CPlanarLaserScan.h> // This class is in mrpt-maps
+#include <mrpt/opengl/CPlanarLaserScan.h> 
+#include <mrpt/poses/CPoses2DSequence.h>
+#include <mrpt/poses/CPosePDF.h>
+#include <mrpt/graphs/CNetworkOfPoses.h>
 
-#include "sup_funs.h"
+#include <string>
+#include <cerrno>
+
+#include "GraphSlamEngine.h"
 
 using namespace mrpt::utils;
 using namespace mrpt::poses;
@@ -36,46 +28,34 @@ using namespace mrpt::utils;
 using namespace std;
 
 
-void runGraphslam(void) {
-  MRPT_START
-
-  cout << "In runGraphslam fun: " << endl;
-
-
-  MRPT_END
-}
-
 int main(int argc, char **argv)
 {
-
-  const string config_fname = "default_config.ini";
-
-  CConfigFile config_file(config_fname);
-  CParams problem_params(config_file);
-
+  
   try {
-    runGraphslam();
-    
+    const string laser_scans_fname = "../dataset_malaga20060121/20060121-Teleco_Faculty_Malaga_laser_only.rawlog";
+    GraphSlamEngine_t<CNetworkOfPoses2DInf> g_engine;
+    g_engine.parseLaserScansFile(laser_scans_fname);
+
+
   }
-  catch (exception &e)
-  {
-    setConsoleColor(CONCOL_RED,true);
+  catch (exception& e) {
+    setConsoleColor(CONCOL_RED, true);
     cerr << "Program finished with an exception!" << endl;
-    setConsoleColor(CONCOL_NORMAL,true);
+    setConsoleColor(CONCOL_NORMAL, true);
 
     cerr << e.what() << endl;
 
     mrpt::system::pause();
     return -1;
   }
-  catch (...)
-  {
-    setConsoleColor(CONCOL_RED,true);
+  catch (...) {
+    setConsoleColor(CONCOL_RED, true);
     cerr << "Program finished for an untyped exception!!" << endl;
-    setConsoleColor(CONCOL_NORMAL,true);
+    setConsoleColor(CONCOL_NORMAL, true);
 
     mrpt::system::pause();
     return -1;
   }
-}
 
+  return 0;
+}
