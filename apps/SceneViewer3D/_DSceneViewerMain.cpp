@@ -1767,6 +1767,7 @@ void _DSceneViewerFrame::OnmnuImportLASSelected(wxCommandEvent& event)
 {
 	try
 	{
+#if MRPT_HAS_LIBLAS
 		wxFileDialog dialog(
 			this,
 			_("Choose the LAS file to import"),
@@ -1913,7 +1914,10 @@ void _DSceneViewerFrame::OnmnuImportLASSelected(wxCommandEvent& event)
 			_("File info"),
 			wxOK,
 			this);
-    }
+#else
+		throw std::runtime_error("MRPT was built without libLAS support!");
+#endif
+	}
     catch(std::exception &e)
     {
         wxMessageBox( _U(e.what()), _("Exception"), wxOK, this);
