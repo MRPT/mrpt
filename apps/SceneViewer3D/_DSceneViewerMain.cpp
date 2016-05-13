@@ -64,6 +64,7 @@
 #include <mrpt/opengl/CAngularObservationMesh.h>	// It's in lib mrpt-maps
 
 #include <mrpt/maps/CColouredPointsMap.h>
+#include <mrpt/maps/CPointsMap.h>
 #if MRPT_HAS_LIBLAS
 #	include <mrpt/maps/CPointsMap_liblas.h>
 #endif
@@ -1799,12 +1800,12 @@ void _DSceneViewerFrame::OnmnuImportLASSelected(wxCommandEvent& event)
 			gl_points_col = opengl::CPointCloudColoured::Create();
 
 		mrpt::maps::CColouredPointsMap pts_map;
-		mrpt::maps::CPointsMap::LAS_HeaderInfo  las_hdr;
+		mrpt::maps::LAS_HeaderInfo  las_hdr;
 
 		bool res;
 		{
 			wxBusyCursor  busy;
-			res = pts_map.loadLASFile(fil,las_hdr);
+			res = mrpt::maps::loadLASFile(pts_map,fil,las_hdr);
 		}
 
 		if (!res)

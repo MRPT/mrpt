@@ -57,17 +57,18 @@ namespace maps
 
 	/** Save the point cloud as an ASPRS LAS binary file (requires MRPT built against liblas). Refer to http://www.liblas.org/
 		* \return false on any error */
-	inline bool saveLASFile(
-		const mrpt::maps::CPointsMaps &ptmap, 
+	template <class POINTSMAP>
+	bool saveLASFile(
+		const POINTSMAP &ptmap,
 		const std::string &filename, 
 		const LAS_WriteParams & params = LAS_WriteParams() )
 	{
 		std::ofstream ofs;
-		ofs.open(filename.c_str(), ios::out | ios::binary);
+		ofs.open(filename.c_str(), std::ios::out | std::ios::binary);
 
 		if (!ofs.is_open())
 		{
-			cerr << "[saveLASFile] Couldn't write to file: " << filename << endl;
+			std::cerr << "[saveLASFile] Couldn't write to file: " << filename << std::endl;
 			return false;
 		}
 
@@ -116,8 +117,9 @@ namespace maps
 	/** Load the point cloud from an ASPRS LAS binary file (requires MRPT built against liblas). Refer to http://www.liblas.org/
 		* \note Color (RGB) information will be taken into account if using the derived class mrpt::maps::CColouredPointsMap
 		* \return false on any error */
-	inline bool loadLASFile(
-		mrpt::maps::CPointsMaps &ptmap, 
+	template <class POINTSMAP>
+	bool loadLASFile(
+		POINTSMAP &ptmap,
 		const std::string &filename, 
 		LAS_HeaderInfo &out_headerInfo, 
 		const LAS_LoadParams &params = LAS_LoadParams() )
@@ -125,12 +127,12 @@ namespace maps
 		using namespace std;
 		ptmap.clear();
 
-		ifstream ifs;
-		ifs.open(filename.c_str(), ios::in | ios::binary);
+		std::ifstream ifs;
+		ifs.open(filename.c_str(), std::ios::in | std::ios::binary);
 
 		if (!ifs.is_open())
 		{
-			cerr << "[loadLASFile] Couldn't open file: " << filename << endl;
+			std::cerr << "[loadLASFile] Couldn't open file: " << filename << std::endl;
 			return false;
 		}
 
