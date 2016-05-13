@@ -76,7 +76,7 @@ public:
 		TPoint3D p1,p2,pint(0,0,0);
 		TObject3D pintobj;
 		TPlane ground(0,0,1,0);
-		vector <float> x, y, z;
+		std::vector <float> x, y, z;
 
 		m_points.getAllPoints(x,y,z,1);
 		p2.x = kinectrelpose[0];
@@ -111,7 +111,7 @@ public:
 		TPoint3D p1,p2,pint(0,0,0);
 		TObject3D pintobj;
 		TPlane ceiling(0,0,1,-height);
-		vector <float> x, y, z;
+		std::vector <float> x, y, z;
 
 		m_points.getAllPoints(x,y,z,1);
 
