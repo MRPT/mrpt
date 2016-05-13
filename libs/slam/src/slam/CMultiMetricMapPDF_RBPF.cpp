@@ -148,6 +148,20 @@ void  CMultiMetricMapPDF::prediction_and_update_pfAuxiliaryPFOptimal(
 	MRPT_END
 }
 
+/*----------------------------------------------------------------------------------
+			PF_SLAM_implementation_pfAuxiliaryPFStandard
+ ----------------------------------------------------------------------------------*/
+void  CMultiMetricMapPDF::prediction_and_update_pfAuxiliaryPFStandard(
+	const mrpt::obs::CActionCollection	* actions,
+	const mrpt::obs::CSensoryFrame		* sf,
+	const bayes::CParticleFilter::TParticleFilterOptions &PF_options )
+{
+	MRPT_START
+
+	PF_SLAM_implementation_pfAuxiliaryPFStandard<mrpt::slam::detail::TPoseBin2D>( actions, sf, PF_options,options.KLD_params);
+
+	MRPT_END
+}
 
 
 /*----------------------------------------------------------------------------------

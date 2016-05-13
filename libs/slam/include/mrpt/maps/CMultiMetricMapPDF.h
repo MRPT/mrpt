@@ -92,6 +92,13 @@ namespace maps
 			const mrpt::obs::CSensoryFrame		* observation,
 			const bayes::CParticleFilter::TParticleFilterOptions &PF_options );
 
+		/** The PF algorithm implementation.
+		  */
+		void  prediction_and_update_pfAuxiliaryPFStandard(
+			const mrpt::obs::CActionCollection	* action,
+			const mrpt::obs::CSensoryFrame		* observation,
+			const bayes::CParticleFilter::TParticleFilterOptions &PF_options );
+
 
 	private:
 		/** Internal buffer for the averaged map. */
