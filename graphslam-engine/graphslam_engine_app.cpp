@@ -42,16 +42,19 @@ int main(int argc, char **argv)
 {
   
   try {
-    const string laser_scans_fname = "../dataset_malaga20060121/20060121-Teleco_Faculty_Malaga_laser_only.rawlog";
-    const string config_fname = "../default_config.ini";
+    // Initialize the class
     GraphSlamEngine_t<CNetworkOfPoses2DInf> g_engine;
-    g_engine.parseLaserScansFile(laser_scans_fname);
 
+    // introductory actions
+    const string config_fname = "../default_config.ini";
     g_engine.readConfigFile(config_fname);
-    cout << "Config file read." << endl;
-
     g_engine.printProblemParams();
-    cout << "Config file printed." << endl;
+    g_engine.initOutputDir();
+
+    // read the scans file - build the fixed-intervals CNetworkOfPoses graph
+    // TODO
+    g_engine.parseLaserScansFile();
+
     
 
 
