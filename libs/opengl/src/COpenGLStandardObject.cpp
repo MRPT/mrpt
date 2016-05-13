@@ -59,7 +59,7 @@ void COpenGLStandardObject::render_dl()	const	{
 		for_each(vertices.begin(),vertices.end(),renderFunc);
 		glEnd();
 	}	else	{
-		vector<TPoint3D>::const_iterator it=vertices.begin();
+		std::vector<TPoint3D>::const_iterator it=vertices.begin();
 		do	{
 			glBegin(type);
 			for_each(it,it+chunkSize,renderFunc);

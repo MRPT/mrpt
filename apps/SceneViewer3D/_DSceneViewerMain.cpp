@@ -64,6 +64,9 @@
 #include <mrpt/opengl/CAngularObservationMesh.h>	// It's in lib mrpt-maps
 
 #include <mrpt/maps/CColouredPointsMap.h>
+#if MRPT_HAS_LIBLAS
+#	include <mrpt/maps/CPointsMap_liblas.h>
+#endif
 
 // A custom Art provider for customizing the icons:
 class MyArtProvider : public wxArtProvider

@@ -254,6 +254,7 @@ include(cmakemodules/script_wxwidgets.cmake REQUIRED)   # Check for wxWidgets + 
 include(cmakemodules/script_libdc1394.cmake REQUIRED)   # Check for libdc1394-2
 include(cmakemodules/script_assimp.cmake REQUIRED)      # Check for system assimp lib (3D models)
 include(cmakemodules/script_lib3ds.cmake REQUIRED)      # Check for system lib3ds
+include(cmakemodules/script_liblas.cmake REQUIRED)      # Check for the LAS LiDAR format library
 include(cmakemodules/script_libtclap.cmake REQUIRED)    # Check for system libtclap
 include(cmakemodules/script_zlib.cmake REQUIRED)        # Check for zlib
 include(cmakemodules/script_jpeg.cmake REQUIRED)        # Check for jpeg
