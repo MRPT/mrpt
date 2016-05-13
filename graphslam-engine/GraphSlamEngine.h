@@ -1,3 +1,13 @@
+/* +---------------------------------------------------------------------------+
+   |                     Mobile Robot Programming Toolkit (MRPT)               |
+   |                          http://www.mrpt.org/                             |
+   |                                                                           |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | See: http://www.mrpt.org/Authors - All rights reserved.                   |
+   | Released under BSD License. See details in http://www.mrpt.org/License    |
+   +---------------------------------------------------------------------------+ */
+
+
 #include <mrpt/obs/CRawlog.h>
 #include <mrpt/graphslam.h>
 #include <mrpt/graphs.h>
@@ -12,9 +22,11 @@
 #include <mrpt/poses/CPosePDF.h>
 #include <mrpt/graphs/CNetworkOfPoses.h>
 #include <mrpt/utils/mrpt_macros.h>
-
+#include <mrpt/utils/CConfigFile.h>
 
 #include <string>
+#include <sstream>
+#include <map>
 #include <cerrno>
 
 using namespace mrpt::utils;
@@ -35,15 +47,12 @@ class GraphSlamEngine_t {
   public:
     // Ctors, Dtors, init fun.
     //////////////////////////////////////////////////////////////
-    GraphSlamEngine_t() {};
+    GraphSlamEngine_t() {
+      initGraphSlamEngine();
+    };
     ~GraphSlamEngine_t() {};
 
     void initGraphSlamEngine() {
-      // TODO - read these from a configuration file on initialization of
-      // instance
-      m_distance_thresh = 1;
-      m_angle_thresh = DEG2RAD(60);
-      m_verbose = true;
       m_node_max = 0;
 
     }
@@ -60,9 +69,9 @@ class GraphSlamEngine_t {
     void dumpGraphToConsole() const {}
     /** 
      * Read the configuration file specified and fill in the corresponding
-     * variables
+     * class members
      */
-    void readConfigFile(const std::string& fname) {}
+   void readConfigFile(const std::string& fname);
     /**
      * Print the problem parameters (usually fetched from a configuration file)
      * to the console for verification
@@ -92,12 +101,26 @@ class GraphSlamEngine_t {
     GRAPH_t m_graph;
     size_t m_node_max;
 
-    string  m_rawlog_file;
-    bool m_verbose;
+    /**
+     * Problem parameters.
+     * Most are imported from a .ini config file
+     * See "readConfigFile" fun.
+     */
+    string m_config_fname;
 
-    // fixed thresholds values for adding poses to the graph
-    size_t m_distance_thresh;
-    size_t m_angle_thresh;
+    string m_rawlog_fname;
+    string m_output_dir_fname;
+    bool m_do_debug;
+    string m_debug_fname;
+    string m_robot_poses_fname;
+
+    bool m_do_pose_graph_only;
+
+    string m_loop_closing_alg;
+
+    string m_decider_alg;
+    double m_distance_threshold;
+    double m_angle_threshold;
 
 };
 
@@ -156,5 +179,64 @@ void GraphSlamEngine_t<GRAPH_T>::parseLaserScansFile(const std::string& fname) {
 
 
 template<class GRAPH_T>
-void GraphSlamEngine_t<GRAPH_T>::printProblemParams() {
+void GraphSlamEngine_t<GRAPH_T>::readConfigFile(const std::string& fname) {
+  CConfigFile cfg_file(fname);
+  m_config_fname = fname;
+
+  // Section: GeneralConfiguration 
+  // ////////////////////////////////
+  m_rawlog_fname = cfg_file.read_string(/*section_name = */ "GeneralConfiguration", 
+                                       /*var_name = */ "rawlog_fname",
+                                       /*default_value = */ "", 
+                                       /*failIfNotFound = */ true);
+  m_output_dir_fname = cfg_file.read_string("GeneralConfiguration", "output_dir_fname",
+      "graphslam_engine_results", false);
+  m_do_debug =  cfg_file.read_bool("GeneralConfiguration", "do_debug", 
+      true, false);
+  m_debug_fname = cfg_file.read_string("GeneralConfiguration", "debug_fname", 
+      "debug.log", false);
+  m_robot_poses_fname = cfg_file.read_string("GeneralConfiguration", "robot_poses_fname",
+      "poses.log", false);
+
+  // Section: GraphSLAMParameters 
+  // ////////////////////////////////
+  m_do_pose_graph_only = cfg_file.read_bool("GraphSLAMParameters", "do_pose_graph_only",
+      true, false);
+  
+  // Section: LoopClosingParameters 
+  // ////////////////////////////////
+  m_loop_closing_alg = cfg_file.read_string("LoopClosingParameters", "loop_closing_alg",
+      "", true);
+
+  // Section: DecidersConfiguration 
+  // ////////////////////////////////
+  m_decider_alg = cfg_file.read_string("DecidersConfiguration", "decider_alg",
+      "", true);
+  m_distance_threshold = cfg_file.read_double("DecidersConfiguration", "distance_threshold",
+      1 /* meter */, false);
+  m_angle_threshold = cfg_file.read_double("DecidersConfiguration", "angle_threshold",
+      60 /* degrees */, false);
+  m_angle_threshold = DEG2RAD(m_angle_threshold);
+
 }
+
+template<class GRAPH_T>
+void GraphSlamEngine_t<GRAPH_T>::printProblemParams() {
+  stringstream ss_out;
+
+  ss_out << "--------------------------------------------------------------------------" << endl;
+  ss_out << "Graphslam_engine: Problem Parameters "  << endl;
+  ss_out << " \t Config fname:       " << m_config_fname << endl;
+  ss_out << " \t Output dir:         " << m_output_dir_fname<< endl;
+  ss_out << " \t Debug mode:         " << m_do_debug << endl;
+  ss_out << " \t robot_poses_fname:  " << m_robot_poses_fname << endl;
+  ss_out << " \t do_pose_graph_only: " <<  m_do_pose_graph_only << endl;
+  ss_out << " \t Loop closing alg:   " << m_loop_closing_alg << endl;
+  ss_out << " \t Decider alg:        " << m_decider_alg << endl;
+  ss_out << " \t Distance Threshold: " << m_distance_threshold << endl;
+  ss_out << " \t Angle Threshold:    " << m_angle_threshold << endl;
+  ss_out << "--------------------------------------------------------------------------" << endl;
+
+  cout << ss_out.str();
+}
+
