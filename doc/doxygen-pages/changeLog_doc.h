@@ -25,6 +25,7 @@
 			- New API to interface ZeroMQ: \ref noncstream_serialization_zmq
 		- \ref mrpt_maps_grp
 			- mrpt::maps::COccupancyGridMap2D::loadFromBitmapFile() correct description of `yCentralPixel` parameter.
+			- mrpt::maps::CPointsMap `liblas` import/export methods are now in a separate header. See \ref mrpt_maps_liblas_grp and \ref dep-liblas
 		- \ref mrpt_obs_grp
 			- [ABI change] mrpt::obs::CObservation3DRangeScan:
 				- Now uses more SSE2 optimized code

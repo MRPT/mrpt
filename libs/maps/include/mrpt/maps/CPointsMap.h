@@ -48,7 +48,9 @@ namespace maps
 	 *   - mrpt::obs::CObservationRange: IRs, Sonars, etc.
 	 *   - mrpt::obs::CObservationVelodyneScan
 	 *
-	 * If built against liblas, this class also provides method for loading and saving in the standard LAS LiDAR point cloud format: saveLASFile(), loadLASFile()
+	 * Loading and saving in the standard LAS LiDAR point cloud format is supported by installing `libLAS` and including the 
+	 * header `<mrpt/maps/CPointsMaps_liblas.h>` in your program. Since MRPT 1.5.0 there is no need to build MRPT against libLAS to use this feature.
+	 * See LAS functions in \ref mrpt_maps_liblas_grp.
 	 *
 	 * \sa CMetricMap, CPoint, mrpt::utils::CSerializable
 	  * \ingroup mrpt_maps_grp
@@ -273,43 +275,6 @@ namespace maps
 
 		/** Load the point cloud from a PCL PCD file (requires MRPT built against PCL) \return false on any error */
 		virtual bool loadPCDFile(const std::string &filename);
-
-
-		/** Optional settings for saveLASFile() */
-		struct MAPS_IMPEXP LAS_WriteParams
-		{
-			// None.
-		};
-
-		/** Optional settings for loadLASFile() */
-		struct MAPS_IMPEXP LAS_LoadParams
-		{
-			// None.
-		};
-
-		/** Extra information gathered from the LAS file header */
-		struct MAPS_IMPEXP LAS_HeaderInfo
-		{
-			std::string FileSignature;
-			std::string SystemIdentifier;
-			std::string SoftwareIdentifier;
-			std::string project_guid;
-			std::string spatial_reference_proj4;  //!< Proj.4 string describing the Spatial Reference System.
-			uint16_t    creation_year;//!< Creation date (Year number)
-			uint16_t    creation_DOY; //!< Creation day of year
-
-			LAS_HeaderInfo() : creation_year(0),creation_DOY(0)
-			{}
-		};
-
-		/** Save the point cloud as an ASPRS LAS binary file (requires MRPT built against liblas). Refer to http://www.liblas.org/
-		  * \return false on any error */
-		virtual bool saveLASFile(const std::string &filename, const LAS_WriteParams & params = LAS_WriteParams() ) const;
-
-		/** Load the point cloud from an ASPRS LAS binary file (requires MRPT built against liblas). Refer to http://www.liblas.org/
-		  * \note Color (RGB) information will be taken into account if using the derived class mrpt::maps::CColouredPointsMap
-		  * \return false on any error */
-		virtual bool loadLASFile(const std::string &filename, LAS_HeaderInfo &out_headerInfo, const LAS_LoadParams &params = LAS_LoadParams() );
 
 		/** @} */ // End of: File input/output methods
 		// --------------------------------------------------
@@ -796,9 +761,15 @@ namespace maps
 			}
 			return true;
 		}
-
-
 		/** @} */
+
+		/** Users normally don't need to call this. Called by this class or children classes, set m_largestDistanceFromOriginIsUpdated=false, invalidates the kd-tree cache, and such. */
+		inline void mark_as_modified() const
+		{
+			m_largestDistanceFromOriginIsUpdated=false;
+			m_boundingBoxIsUpdated = false;
+			kdtree_mark_as_outdated();
+		}
 
 	protected:
 		std::vector<float>     x,y,z;        //!< The point coordinates
@@ -817,15 +788,6 @@ namespace maps
 
 		mutable bool	m_boundingBoxIsUpdated;
 		mutable float   m_bb_min_x,m_bb_max_x, m_bb_min_y,m_bb_max_y, m_bb_min_z,m_bb_max_z;
-
-
-		/** Called only by this class or children classes, set m_largestDistanceFromOriginIsUpdated=false and such. */
-		inline void mark_as_modified() const
-		{
-			m_largestDistanceFromOriginIsUpdated=false;
-			m_boundingBoxIsUpdated = false;
-			kdtree_mark_as_outdated();
-		}
 
 		/** This is a common version of CMetricMap::insertObservation() for point maps (actually, CMetricMap::internal_insertObservation),
 		  *   so derived classes don't need to worry implementing that method unless something special is really necesary.
