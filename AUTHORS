@@ -1,10 +1,10 @@
 This file contains the list of people involved in the development
-of MRPT along its history. If you feel someone is missing, please 
+of MRPT along its history. If you feel someone is missing, please
 fork and pull-request.
 
  DEVELOPERS
 ==========================================================
-MRPT development started at MAPIR lab, University of Malaga. 
+MRPT development started at MAPIR lab, University of Malaga.
 The following list is roughly sorted in reverse cronological order.
 
 * Jose-Luis Blanco-Claraco. Main developer.  http://www.ual.es/~jlblanco/
@@ -12,18 +12,18 @@ The following list is roughly sorted in reverse cronological order.
 * Jesus Briales (University of Malaga, 2014-)
   - Fixes in mrpt::hwdrivers::CImageGrabber_dc1394
   - MRPT to Matlab (MEX) wrappers.
-  
+
 * Mariano Jaimez Tarifa, University of Malaga (2012-)
-  - Several improvements and bug fixes in the mrpt-reactivenav library.
+  - Several improvements and bug fixes in the mrpt-nav library.
   - Development in octomap classes.
   - Some improvements and bug fixes in the mrpt-opengl library.
   - Visual Odometry based on depth images (mrpt::vision::CDifodo) and 2 applications to use it: DifOdometry-Camera and DifOdometry-Datasets
   - Examples to manage an RGB-D camera with openNI2
 
 * Eduardo Fernandez Moral , University of Malaga (2013-).
-  - OpenNI2 classes: COpenNI2Sensor, 
+  - OpenNI2 classes: COpenNI2Sensor,
   - The new library: mrpt-pbmap
-  - Driver for Rovio mobile robot with webcam. 
+  - Driver for Rovio mobile robot with webcam.
   - Some other functions.
 
 * Javier G. Monroy, University of Malaga (2013-).
@@ -47,7 +47,7 @@ The following list is roughly sorted in reverse cronological order.
 
 * Kenzaburo Miyawaki (Osaka Institute of Technology, 2014)
   - Refactoring of OpenNI2 classes in mrpt::hwdrivers
- 
+
 * Francisco-Angel Moreno-Dueñas (2010-). http://www.isa.uma.es/famoreno
   - Maintainer of vision-related classes (mrpt::vision namespace in libmrpt-core).
   - Visual odometry for stereo images.
@@ -84,10 +84,10 @@ The following list is roughly sorted in reverse cronological order.
   - Website documentation.
 
 * Emil Khatib, University of Malaga (2011-2012)
-  - A few new classes to handle WiFi-signal strength receivers and build 
-     maps out of such observations: mrpt::slam::CObservationWirelessPower, 
+  - A few new classes to handle WiFi-signal strength receivers and build
+     maps out of such observations: mrpt::slam::CObservationWirelessPower,
      mrpt::hwdrivers::CWirelessPower and mrpt::slam::CWirelessPowerGridMap2D.
-  - Classes for RFID observations and sensors: mrpt::slam::CObservationRFID, 
+  - Classes for RFID observations and sensors: mrpt::slam::CObservationRFID,
      mrpt::hwdrivers::CImpinjRFID.
   - Interface to PID sensor: mrpt::hwdrivers::CRaePID
 
@@ -115,9 +115,9 @@ The following list is roughly sorted in reverse cronological order.
 * Cipriano Galindo Andrades. University of Malaga.
   - New functionality in HMT maps.
   - Website documentation.
- 
+
 * mrhemali
-  - SWIG wrappers (Python) for MRPT.  
+  - SWIG wrappers (Python) for MRPT.
   - Fixes to build without freeglut, some bug fixes, ...
 
 * Cyril Gerber
@@ -128,7 +128,7 @@ The following list is roughly sorted in reverse cronological order.
   - Different improvements and bug fixes.
 
 * Jan Girlich, University of Hamburg.
-  - Added mrpt::hwdrivers::CIbeoLuxETH 
+  - Added mrpt::hwdrivers::CIbeoLuxETH
 
 *  Kasra Khosoussi (K.N.Toosi University, Iran)
   - Patches to improve the JCBB data association implementation.
