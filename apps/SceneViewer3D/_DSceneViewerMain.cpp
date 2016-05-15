@@ -64,6 +64,10 @@
 #include <mrpt/opengl/CAngularObservationMesh.h>	// It's in lib mrpt-maps
 
 #include <mrpt/maps/CColouredPointsMap.h>
+#include <mrpt/maps/CPointsMap.h>
+#if MRPT_HAS_LIBLAS
+#	include <mrpt/maps/CPointsMap_liblas.h>
+#endif
 
 // A custom Art provider for customizing the icons:
 class MyArtProvider : public wxArtProvider
@@ -1763,6 +1767,7 @@ void _DSceneViewerFrame::OnmnuImportLASSelected(wxCommandEvent& event)
 {
 	try
 	{
+#if MRPT_HAS_LIBLAS
 		wxFileDialog dialog(
 			this,
 			_("Choose the LAS file to import"),
@@ -1796,12 +1801,12 @@ void _DSceneViewerFrame::OnmnuImportLASSelected(wxCommandEvent& event)
 			gl_points_col = opengl::CPointCloudColoured::Create();
 
 		mrpt::maps::CColouredPointsMap pts_map;
-		mrpt::maps::CPointsMap::LAS_HeaderInfo  las_hdr;
+		mrpt::maps::LAS_HeaderInfo  las_hdr;
 
 		bool res;
 		{
 			wxBusyCursor  busy;
-			res = pts_map.loadLASFile(fil,las_hdr);
+			res = mrpt::maps::loadLASFile(pts_map,fil,las_hdr);
 		}
 
 		if (!res)
@@ -1909,7 +1914,10 @@ void _DSceneViewerFrame::OnmnuImportLASSelected(wxCommandEvent& event)
 			_("File info"),
 			wxOK,
 			this);
-    }
+#else
+		throw std::runtime_error("MRPT was built without libLAS support!");
+#endif
+	}
     catch(std::exception &e)
     {
         wxMessageBox( _U(e.what()), _("Exception"), wxOK, this);

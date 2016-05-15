@@ -76,17 +76,17 @@ namespace detail {
 				float *kys = &src_obs.m_3dproj_lut.Kys[0];
 				float *kzs = &src_obs.m_3dproj_lut.Kzs[0];
 
-				if (filterParams.rangeMask_GT) { // sanity check:
-					ASSERT_EQUAL_(filterParams.rangeMask_GT->cols(), src_obs.rangeImage.cols());
-					ASSERT_EQUAL_(filterParams.rangeMask_GT->rows(), src_obs.rangeImage.rows());
+				if (filterParams.rangeMask_min) { // sanity check:
+					ASSERT_EQUAL_(filterParams.rangeMask_min->cols(), src_obs.rangeImage.cols());
+					ASSERT_EQUAL_(filterParams.rangeMask_min->rows(), src_obs.rangeImage.rows());
 				}
-				if (filterParams.rangeMask_LT) { // sanity check:
-					ASSERT_EQUAL_(filterParams.rangeMask_LT->cols(), src_obs.rangeImage.cols());
-					ASSERT_EQUAL_(filterParams.rangeMask_LT->rows(), src_obs.rangeImage.rows());
+				if (filterParams.rangeMask_max) { // sanity check:
+					ASSERT_EQUAL_(filterParams.rangeMask_max->cols(), src_obs.rangeImage.cols());
+					ASSERT_EQUAL_(filterParams.rangeMask_max->rows(), src_obs.rangeImage.rows());
 				}
 	#if MRPT_HAS_SSE2
 				if ((W & 0x07)==0 && projectParams.USE_SSE2)
-				     do_project_3d_pointcloud_SSE2(H,W,kys,kzs,src_obs.rangeImage,pca, src_obs.points3D_idxs_x, src_obs.points3D_idxs_y,filterParams );
+					 do_project_3d_pointcloud_SSE2(H,W,kys,kzs,src_obs.rangeImage,pca, src_obs.points3D_idxs_x, src_obs.points3D_idxs_y,filterParams );
 				else do_project_3d_pointcloud(H,W,kys,kzs,src_obs.rangeImage,pca, src_obs.points3D_idxs_x, src_obs.points3D_idxs_y,filterParams );  // if image width is not 8*N, use standard method
 	#else
 				do_project_3d_pointcloud(H,W,kys,kzs,src_obs.rangeImage,pca,src_obs.points3D_idxs_x, src_obs.points3D_idxs_y,filterParams);
@@ -99,12 +99,14 @@ namespace detail {
 				const float r_cy = src_obs.cameraParams.cy();
 				const float r_fx_inv = 1.0f/src_obs.cameraParams.fx();
 				const float r_fy_inv = 1.0f/src_obs.cameraParams.fy();
+				TRangeImageFilter rif(filterParams);
 				size_t idx=0;
 				for (int r=0;r<H;r++)
 					for (int c=0;c<W;c++)
 					{
 						const float D = src_obs.rangeImage.coeff(r,c);
-						if (D!=.0f) {
+						if (rif.do_range_filter(r,c,D))
+						{
 							const float Kz = (r_cy - r) * r_fy_inv;
 							const float Ky = (r_cx - c) * r_fx_inv;
 							pca.setPointXYZ(idx,
@@ -134,12 +136,14 @@ namespace detail {
 			const float r_cy = src_obs.cameraParams.cy();
 			const float r_fx_inv = 1.0f/src_obs.cameraParams.fx();
 			const float r_fy_inv = 1.0f/src_obs.cameraParams.fy();
+			TRangeImageFilter rif(filterParams);
 			size_t idx=0;
 			for (int r=0;r<H;r++)
 				for (int c=0;c<W;c++)
 				{
 					const float D = src_obs.rangeImage.coeff(r,c);
-					if (D!=.0f) {
+					if (rif.do_range_filter(r,c,D))
+					{
 						const float Ky = (r_cx - c) * r_fx_inv;
 						const float Kz = (r_cy - r) * r_fy_inv;
 						pca.setPointXYZ(idx,
@@ -274,8 +278,7 @@ namespace detail {
 	template <class POINTMAP>
 	inline void do_project_3d_pointcloud(const int H,const int W,const float *kys,const float *kzs,const mrpt::math::CMatrix &rangeImage, mrpt::utils::PointCloudAdapter<POINTMAP> &pca, std::vector<uint16_t> &idxs_x, std::vector<uint16_t> &idxs_y,const mrpt::obs::TRangeImageFilterParams &fp)
 	{
-		TRangeImageFilter rif;
-		rif.fp = fp;
+		TRangeImageFilter rif(fp);
 		// Preconditions: minRangeMask() has the right size
 		size_t idx=0;
 		for (int r=0;r<H;r++)
@@ -304,27 +307,55 @@ namespace detail {
 			size_t idx=0;
 			MRPT_ALIGN16 float xs[4],ys[4],zs[4];
 			const __m128 D_zeros = _mm_set_ps(.0f,.0f,.0f,.0f);
+			const __m128 xormask = (filterParams.rangeCheckBetween) ?
+				_mm_cmpneq_ps(D_zeros,D_zeros) :	// want points BETWEEN min and max to be valid
+				_mm_cmpeq_ps(D_zeros,D_zeros);		// want points OUTSIDE of min and max to be valid
 			for (int r=0;r<H;r++)
 			{
 				const float *D_ptr = &rangeImage.coeffRef(r,0);  // Matrices are 16-aligned
-				const float *Dgt_ptr = !filterParams.rangeMask_GT ? NULL : &filterParams.rangeMask_GT->coeffRef(r,0);
-				const float *Dlt_ptr = !filterParams.rangeMask_LT ? NULL : &filterParams.rangeMask_LT->coeffRef(r,0);
+				const float *Dgt_ptr = !filterParams.rangeMask_min ? NULL : &filterParams.rangeMask_min->coeffRef(r,0);
+				const float *Dlt_ptr = !filterParams.rangeMask_max ? NULL : &filterParams.rangeMask_max->coeffRef(r,0);
 
 				for (int c=0;c<W_4;c++)
 				{
 					const __m128 D = _mm_load_ps(D_ptr);
-					__m128 valid_range_mask = _mm_cmpgt_ps(D, D_zeros);
-
-					if (filterParams.rangeMask_GT) {
-						const __m128 gt_mask = _mm_cmpgt_ps(D, _mm_load_ps(Dgt_ptr) );
-						valid_range_mask = _mm_and_ps(valid_range_mask, gt_mask );
+					const __m128 nz_mask = _mm_cmpgt_ps(D, D_zeros);
+					__m128 valid_range_mask;
+					if (!filterParams.rangeMask_min && !filterParams.rangeMask_max)
+					{	// No filter: just skip D=0 points
+						valid_range_mask = nz_mask;
 					}
-					if (filterParams.rangeMask_LT) {
-						const __m128 max_vals = _mm_load_ps(Dlt_ptr);
-						const __m128 lt_mask = _mm_or_ps( _mm_cmplt_ps(D,max_vals),_mm_cmpneq_ps(max_vals,D_zeros));
-						if (filterParams.rangeCheckBetween) 
-						     valid_range_mask = _mm_and_ps(valid_range_mask, lt_mask );
-						else valid_range_mask = _mm_or_ps(valid_range_mask, lt_mask );
+					else
+					{
+						if (!filterParams.rangeMask_min || !filterParams.rangeMask_max)
+						{	// Only one filter
+							if (filterParams.rangeMask_min)
+							{
+								const __m128 Dmin = _mm_load_ps(Dgt_ptr);
+								 valid_range_mask = _mm_and_ps(_mm_cmpgt_ps(D, Dmin ), _mm_cmpgt_ps(Dmin, D_zeros));
+							}
+							else
+							{
+								const __m128 Dmax = _mm_load_ps(Dlt_ptr);
+								valid_range_mask = _mm_and_ps(_mm_cmplt_ps(D, Dmax ), _mm_cmpgt_ps(Dmax, D_zeros));
+							}
+							valid_range_mask = _mm_and_ps(valid_range_mask, nz_mask ); // Filter out D=0 points
+						}
+						else
+						{
+							// We have both: D>Dmin and D<Dmax conditions, with XOR to optionally invert the selection:
+							const __m128 Dmin = _mm_load_ps(Dgt_ptr);
+							const __m128 Dmax = _mm_load_ps(Dlt_ptr);
+
+							const __m128 gt_mask = _mm_cmpgt_ps(D, Dmin );
+							const __m128 lt_mask = _mm_and_ps( _mm_cmplt_ps(D, Dmax), nz_mask ); // skip points at zero
+							valid_range_mask = _mm_and_ps(gt_mask, lt_mask ); // (D>Dmin && D<Dmax)
+							valid_range_mask = _mm_xor_ps(valid_range_mask, xormask );
+							// Add the case of D_min & D_max = 0 (no filtering)
+							valid_range_mask = _mm_or_ps(valid_range_mask, _mm_and_ps(_mm_cmpeq_ps(Dmin,D_zeros),_mm_cmpeq_ps(Dmax,D_zeros)) );
+							// Finally, ensure no invalid ranges get thru:
+							valid_range_mask = _mm_and_ps(valid_range_mask, nz_mask );
+						}
 					}
 					const int valid_range_maski = _mm_movemask_epi8(_mm_castps_si128(valid_range_mask)); // 0x{f|0}{f|0}{f|0}{f|0}
 					if (valid_range_maski!=0)  // Any of the 4 values is valid?

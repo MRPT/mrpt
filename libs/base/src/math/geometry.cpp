@@ -20,8 +20,6 @@
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/utils/stl_serialization.h>
 
-
-
 using namespace mrpt;
 using namespace mrpt::utils;
 using namespace std;

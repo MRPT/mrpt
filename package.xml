@@ -1,4 +1,8 @@
 <?xml version="1.0"?>
+<!-- This is a ROS package file, intended to allow MRPT to be built 
+     side-by-side to real ROS packages in a catkin environment. 
+     Real MRPT ROS packages are found elsewhere: https://github.com/mrpt-ros-pkg
+-->
 <package format="2">
   <name>mrpt</name>
   <version>1.4.0</version>

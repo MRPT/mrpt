@@ -32,13 +32,13 @@ int main()
 		{
 			mrpt::poses::CPose3D  my_pose(0.5f,0.5f,1.5f ,DEG2RAD(-90.0f),DEG2RAD(0),DEG2RAD(-90.0f)  );
 			printf("Publishing pose...\n");
-			mrpt::utils::mrpt_send_to_zmq(pub_sock, &my_pose);
-			mrpt::system::sleep(1000);
+			mrpt::utils::mrpt_send_to_zmq(pub_sock, my_pose);
+			mrpt::system::sleep(100);
 
 			mrpt::utils::CImage my_img(800,600, CH_RGB);
 			printf("Publishing img...\n");
-			mrpt::utils::mrpt_send_to_zmq(pub_sock, &my_img);
-			mrpt::system::sleep(1000);
+			mrpt::utils::mrpt_send_to_zmq(pub_sock, my_img, 0 /* max_packet_len: 0=no max size */);
+			mrpt::system::sleep(100);
 		}
 
 

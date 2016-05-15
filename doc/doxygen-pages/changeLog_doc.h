@@ -25,6 +25,7 @@
 			- New API to interface ZeroMQ: \ref noncstream_serialization_zmq
 		- \ref mrpt_maps_grp
 			- mrpt::maps::COccupancyGridMap2D::loadFromBitmapFile() correct description of `yCentralPixel` parameter.
+			- mrpt::maps::CPointsMap `liblas` import/export methods are now in a separate header. See \ref mrpt_maps_liblas_grp and \ref dep-liblas
 		- \ref mrpt_obs_grp
 			- [ABI change] mrpt::obs::CObservation3DRangeScan:
 				- Now uses more SSE2 optimized code
@@ -34,17 +35,21 @@
 			- [ABI change] mrpt::hwdrivers::COpenNI2Generic:
 				- refactored to expose more methods and allow changing parameters via its constructor.
 				- Now supports reading from an IR, RGB and Depth channels independenty.
+		- \ref mrpt_maps_grp
+			- mrpt::maps::CMultiMetricMapPDF added method CMultiMetricMapPDF::prediction_and_update_pfAuxiliaryPFStandard().
 	- Changes in build system:
 		- [Windows only] `DLL`s/`LIB`s now have the signature `lib-${name}${2-digits-version}${compiler-name}_{x32|x64}.{dll/lib}`, allowing several MRPT versions to coexist in the system PATH.
 		- [Visual Studio only] There are no longer `pragma comment(lib...)` in any MRPT header, so it is the user responsibility to correctly tell user projects to link against MRPT libraries.
 		  Normally, this is done with the standard command `TARGET_LINK_LIBRARIES(MYTARGET ${MRPT_LIBS})`.
 		- Debian package: depends on libopenni-dev
+		- Optional dependency `liblas`: minimum required version is now 1.6.0 (Ubuntu Trusty or above).
 	- BUG FIXES:
 		- Fix inconsistent state after calling mrpt::obs::CObservation3DRangeScan::swap()
 		- Fix SEGFAULT in mrpt::obs::CObservation3DRangeScan if trying to build a pointcloud in an external container (mrpt::opengl, mrpt::maps)
 		- Fix mrpt::hwdrivers::CHokuyoURG can return invalid ray returns as valid ranges.
 		- Fix PTG look-up-tables will always fail to load from cache files and will re-generate (Closes [GitHub #243](https://github.com/MRPT/mrpt/issues/243))
 		- Fix mrpt::maps::COccupancyGridMap2D::simulateScanRay() fails to mark out-of-range ranges as "invalid".
+		- Fix mrpt::utils::CMemoryStream::Clear() after assigning read-only memory blocks.
 
 <hr>
 <a name="1.4.0">

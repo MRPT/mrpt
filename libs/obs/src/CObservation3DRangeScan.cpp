@@ -857,7 +857,7 @@ void CObservation3DRangeScan::convertTo2DScan(
 	const double angle_sup,
 	const double angle_inf,
 	const double oversampling_ratio,
-	const mrpt::math::CMatrix * rangeMask_GT
+	const mrpt::math::CMatrix * rangeMask_min
 	)
 {
 	T3DPointsTo2DScanParams sp;
@@ -866,7 +866,7 @@ void CObservation3DRangeScan::convertTo2DScan(
 	sp.angle_inf = angle_inf;
 	sp.oversampling_ratio = oversampling_ratio;
 	TRangeImageFilterParams fp;
-	fp.rangeMask_GT = rangeMask_GT;
+	fp.rangeMask_min = rangeMask_min;
 	convertTo2DScan(out_scan2d, sp,fp);
 }
 
@@ -884,13 +884,13 @@ void CObservation3DRangeScan::convertTo2DScan(mrpt::obs::CObservation2DRangeScan
 
 	const size_t nCols = this->rangeImage.cols();
 	const size_t nRows = this->rangeImage.rows();
-	if (fp.rangeMask_GT) { // sanity check:
-		ASSERT_EQUAL_(fp.rangeMask_GT->cols(), rangeImage.cols());
-		ASSERT_EQUAL_(fp.rangeMask_GT->rows(), rangeImage.rows());
+	if (fp.rangeMask_min) { // sanity check:
+		ASSERT_EQUAL_(fp.rangeMask_min->cols(), rangeImage.cols());
+		ASSERT_EQUAL_(fp.rangeMask_min->rows(), rangeImage.rows());
 	}
-	if (fp.rangeMask_LT) { // sanity check:
-		ASSERT_EQUAL_(fp.rangeMask_LT->cols(), rangeImage.cols());
-		ASSERT_EQUAL_(fp.rangeMask_LT->rows(), rangeImage.rows());
+	if (fp.rangeMask_max) { // sanity check:
+		ASSERT_EQUAL_(fp.rangeMask_max->cols(), rangeImage.cols());
+		ASSERT_EQUAL_(fp.rangeMask_max->rows(), rangeImage.rows());
 	}
 
 	// Compute the real horizontal FOV from the range camera intrinsic calib data:
@@ -938,8 +938,7 @@ void CObservation3DRangeScan::convertTo2DScan(mrpt::obs::CObservation2DRangeScan
 	double ang  = -FOV_equiv*0.5;
 	const double A_ang = FOV_equiv/(nLaserRays-1);
 
-	TRangeImageFilter rif;
-	rif.fp = fp;
+	TRangeImageFilter rif(fp);
 
 	// Go thru columns, and keep the minimum distance (along the +X axis, not 3D distance!)
 	// for each direction (i.e. for each column) which also lies within the vertical FOV passed

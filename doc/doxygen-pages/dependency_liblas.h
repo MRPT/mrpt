@@ -17,11 +17,15 @@
 <hr>
 
 The <a href="http://www.liblas.org/" >ASPRS LiDAR LAS</a> file format for point cloud datasets. 
-If available, it will provide the following functionality:
+If available, it will provide the functionality of loading/saving mrpt::maps::CPointsMaps to LAS files.
 
-- The following methods:
-	- mrpt::maps::CPointsMap::saveLASFile()
-	- mrpt::maps::CPointsMap::loadLASFile()
-		
+See: \ref mrpt_maps_liblas_grp
+
+Since MRPT 1.5.0, building MRPT against liblas is not required. In turn, user programs requiring this feature 
+must make sure of adding the required compiler and linker flags to their programs, and including the 
+additional file `#include <mrpt/maps/CPointsMap_liblas.h>`. 
+
+Install libLAS in Ubuntu/Debian with: `sudo apt-get install liblas-dev liblas-c-dev`
+
 */
 

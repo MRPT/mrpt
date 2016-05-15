@@ -598,16 +598,14 @@ void do_pf_localization(const std::string &ini_fil, const std::string &cmdline_r
 								}
 
 								CSimplePointsMap	map;
-								static CSimplePointsMap	last_map;
 
 								CPose3D				robotPose3D( meanPose );
 
 								map.clear();
 								observations->insertObservationsInto( &map );
 
-								getAs<CPointCloud>(scanPts)->loadFromPointsMap( &last_map );
+								getAs<CPointCloud>(scanPts)->loadFromPointsMap( &map );
 								getAs<CPointCloud>(scanPts)->setPose( robotPose3D );
-								last_map = map;
 							}
 
 							// The camera:
@@ -848,16 +846,14 @@ void do_pf_localization(const std::string &ini_fil, const std::string &cmdline_r
 							}
 
 							CSimplePointsMap	map;
-							static CSimplePointsMap	last_map;
 
 							CPose3D				robotPose3D( meanPose );
 
 							map.clear();
 							observations->insertObservationsInto( &map );
 
-							getAs<CPointCloud>(scanPts)->loadFromPointsMap( &last_map );
+							getAs<CPointCloud>(scanPts)->loadFromPointsMap( &map );
 							getAs<CPointCloud>(scanPts)->setPose( robotPose3D );
-							last_map = map;
 						}
 
 						// The camera:
