@@ -24,7 +24,6 @@ add_library(pymrpt
   src/math_bindings.cpp
   src/bayes_bindings.cpp
   src/pnp_bindings.cpp
-  src/epnp.cpp
   src/bindings.cpp
 )
 

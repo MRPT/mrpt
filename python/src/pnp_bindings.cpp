@@ -1,13 +1,19 @@
 //#define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
-#define WRAP_PYTHON 1
-#if WRAP_PYTHON
 #include <Python.h>
 #include <boost/python.hpp>
-#include <numpy/arrayobject.h>
-#endif 
+#include <numpy/arrayobject.h> 
+using namespace boost::python;
 
+#include <eigen3/Eigen/Core>
+#include <eigen3/Eigen/Dense>
+using namespace Eigen;
 
+#include <mrpt/vision/epnp.h>
 #include <mrpt/vision/pnp_algos.h>
+
+#include <opencv2/opencv.hpp>
+#include <opencv2/core/eigen.hpp>
+using namespace cv;
 
 class PnPAlgos
 {
@@ -15,9 +21,7 @@ public:
 	PnPAlgos( int new_m );
 	~PnPAlgos();
 	
-#if WRAP_PYTHON
 	int epnp_solve(PyObject* obj_pts, PyObject* img_pts, int n, PyObject* cam_intrinsic, PyObject* pose_mat);
-#endif
 private:
 	int m;
 };
@@ -67,7 +71,6 @@ int pnpalgo_epnp(MatrixBase<Derived>& obj_pts, MatrixBase<Derived>& img_pts, int
 	return 1;
 }
 
-#if WRAP_PYTHON
 int PnPAlgos::epnp_solve(PyObject* obj_pts, PyObject* img_pts, int n, PyObject* cam_intrinsic, PyObject* pose_mat){
 	Map<MatrixXd> _obj_pts((double *) PyArray_DATA(obj_pts),3,n);
 	Map<MatrixXd> _img_pts((double *) PyArray_DATA(img_pts),n, 2);
@@ -76,13 +79,10 @@ int PnPAlgos::epnp_solve(PyObject* obj_pts, PyObject* img_pts, int n, PyObject* 
 	
 	return pnpalgo_epnp(_obj_pts, _img_pts, n, _cam_intrinsic, _pose_mat);
 }
-using namespace boost::python;
-//BOOST_PYTHON_MODULE(pnp)
+
 void export_pnp()
 {
-	//MAKE_SUBMODULE(pnp)
     class_<PnPAlgos>("pnp", init<int>(args("m")))
         .def("epnp_solve", &PnPAlgos::epnp_solve)
     ;
 }
-#endif
