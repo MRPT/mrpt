@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #import pymrpt
 
-from pymrpt import PnPAlgos
+import pymrpt
 
 import numpy as np
 
@@ -35,8 +35,8 @@ pose_mat_orig[0:3,0:3]=R
 cam_intrinsic=np.array([[f,0.0,cx],[0.0,f,cy],[0.0, 0.0, 1.0]])
 
 # Use the c-library to compute the pose 
-pnp_bundle = PnPAlgos(n)
-pnp_bundle.pnpalgo1(obj_pts,img_pts, 6, cam_intrinsic, pose_mat)
+pnp = pymrpt.pnp(n)
+pnp.epnp_solve(obj_pts,img_pts, 6, cam_intrinsic, pose_mat)
 pose_mat=np.transpose(pose_mat)
 
 # Display the results

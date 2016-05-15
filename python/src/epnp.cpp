@@ -1,10 +1,11 @@
 #include <iostream>
 using namespace std;
-//#include "precomp.hpp"
+
 #include <opencv2/opencv.hpp>
 #include <opencv2/opencv_modules.hpp>
 using namespace cv;
-#include "epnp.h"
+
+#include <mrpt/vision/pnp_algos.h>
 
 epnp::epnp(const cv::Mat& cameraMatrix, const cv::Mat& opoints, const cv::Mat& ipoints)
 {

@@ -6,9 +6,19 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
-#ifndef _pnp_algos_H
+#ifndef __pnp_algos_h
+#define __pnp_algos_h
+
+#include <iostream>
+using namespace std;
+
+#include <eigen3/Eigen/Core>
+#include <eigen3/Eigen/Dense>
+using namespace Eigen;
 
 #include <opencv2/opencv.hpp>
+#include <opencv2/opencv_modules.hpp>
+#include <opencv2/core/eigen.hpp>
 using namespace cv;
 
 class epnp {
@@ -85,7 +95,5 @@ class epnp {
   int max_nr;
   double * A1, * A2;
 };
-
-
 
 #endif
