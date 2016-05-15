@@ -6,19 +6,8 @@
 #include <numpy/arrayobject.h>
 #endif 
 
-#include <iostream>
-using namespace std;
 
-#include <eigen3/Eigen/Core>
-#include <eigen3/Eigen/Dense>
-using namespace Eigen;
-
-#include <opencv2/opencv.hpp>
-#include <opencv2/opencv_modules.hpp>
-#include <opencv2/core/eigen.hpp>
-using namespace cv;
-
-#include "epnp.h"
+#include <mrpt/vision/pnp_algos.h>
 
 class PnPAlgos
 {
@@ -26,10 +15,8 @@ public:
 	PnPAlgos( int new_m );
 	~PnPAlgos();
 	
-	template<typename Derived>
-	int pnpalgo1(MatrixBase<Derived>& obj_pts, MatrixBase<Derived>& img_pts, int n, MatrixBase<Derived>& cam_intrinsic, MatrixBase<Derived>& pose_mat);
 #if WRAP_PYTHON
-	int pnpalgo1_python(PyObject* obj_pts, PyObject* img_pts, int n, PyObject* cam_intrinsic, PyObject* pose_mat);
+	int epnp_solve(PyObject* obj_pts, PyObject* img_pts, int n, PyObject* cam_intrinsic, PyObject* pose_mat);
 #endif
 private:
 	int m;
@@ -42,7 +29,7 @@ PnPAlgos::~PnPAlgos(){
 }
 
 template<typename Derived>
-int PnPAlgos::pnpalgo1(MatrixBase<Derived>& obj_pts, MatrixBase<Derived>& img_pts, int n, MatrixBase<Derived>& cam_intrinsic, MatrixBase<Derived>& pose_mat){
+int pnpalgo_epnp(MatrixBase<Derived>& obj_pts, MatrixBase<Derived>& img_pts, int n, MatrixBase<Derived>& cam_intrinsic, MatrixBase<Derived>& pose_mat){
 	
 	MatrixXd cam_in_eig=cam_intrinsic.array().transpose(), img_pts_eig=img_pts.array().transpose(), obj_pts_eig=obj_pts.array().transpose(), R_eig, t_eig, pose_mat_eig=pose_mat; 
 	Mat cam_in_cv(3,3,CV_32F), img_pts_cv(n,2,CV_32F), obj_pts_cv(n,3,CV_32F), R_cv, t_cv;
@@ -81,21 +68,21 @@ int PnPAlgos::pnpalgo1(MatrixBase<Derived>& obj_pts, MatrixBase<Derived>& img_pt
 }
 
 #if WRAP_PYTHON
-int PnPAlgos::pnpalgo1_python(PyObject* obj_pts, PyObject* img_pts, int n, PyObject* cam_intrinsic, PyObject* pose_mat){
+int PnPAlgos::epnp_solve(PyObject* obj_pts, PyObject* img_pts, int n, PyObject* cam_intrinsic, PyObject* pose_mat){
 	Map<MatrixXd> _obj_pts((double *) PyArray_DATA(obj_pts),3,n);
 	Map<MatrixXd> _img_pts((double *) PyArray_DATA(img_pts),n, 2);
 	Map<MatrixXd> _pose_mat((double *) PyArray_DATA(pose_mat),4,4);
 	Map<MatrixXd> _cam_intrinsic((double *) PyArray_DATA(cam_intrinsic),3,3);
 	
-	return pnpalgo1(_obj_pts, _img_pts, n, _cam_intrinsic, _pose_mat);
+	return pnpalgo_epnp(_obj_pts, _img_pts, n, _cam_intrinsic, _pose_mat);
 }
 using namespace boost::python;
 //BOOST_PYTHON_MODULE(pnp)
 void export_pnp()
 {
 	//MAKE_SUBMODULE(pnp)
-    class_<PnPAlgos>("PnPAlgos", init<int>(args("m")))
-        .def("pnpalgo1", &PnPAlgos::pnpalgo1_python)
+    class_<PnPAlgos>("pnp", init<int>(args("m")))
+        .def("epnp_solve", &PnPAlgos::epnp_solve)
     ;
 }
 #endif
