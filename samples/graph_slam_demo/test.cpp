@@ -62,7 +62,8 @@ template <class GRAPH> struct EdgeAdders<GRAPH,false>
      * See also : https://groups.google.com/d/msg/mrpt-users/Sr9LSydArgY/vRNM5V_uA-oJ 
      * for a more detailed explanation on how it is treated
      */
-		typename GRAPH::edge_t RelativePose(real_poses.find(to)->second - real_poses.find(from)->second);
+		typename GRAPH::edge_t RelativePose(
+        real_poses.find(to)->second - real_poses.find(from)->second);
 		graph.insertEdge(from,to, RelativePose );
 	}
 };
@@ -75,8 +76,8 @@ template <class GRAPH> struct EdgeAdders<GRAPH,true>
 	static void addEdge(TNodeID from, TNodeID to, const typename GRAPH::global_poses_t &real_poses,GRAPH &graph, const cov_t &COV_MAT)
 	{
 		typename GRAPH::edge_t RelativePose(
-			real_poses.find(to)->second - real_poses.find(from)->second,
-			COV_MAT);
+        real_poses.find(to)->second - real_poses.find(from)->second, 
+        COV_MAT);
 		graph.insertEdge(from,to, RelativePose );
 	}
 };

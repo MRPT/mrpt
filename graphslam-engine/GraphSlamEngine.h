@@ -7,6 +7,9 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
+#ifndef GRAPHSLAMENGINE_H
+#define GRAPHSLAMENGINE_H
+
 
 #include <mrpt/obs/CRawlog.h>
 #include <mrpt/graphslam.h>
@@ -29,6 +32,10 @@
 #include <sstream>
 #include <map>
 #include <cerrno>
+#include <cmath> // fabs function
+
+
+
 
 using namespace mrpt::utils;
 using namespace mrpt::poses;
@@ -40,13 +47,15 @@ using namespace mrpt::utils;
 
 using namespace std;
 
-#define VERBOSE_COUT  if (verbose) std::cout << "[graphslam_engine] "
+
 bool verbose = true;
+#define VERBOSE_COUT  if (verbose) std::cout << "[graphslam_engine] "
 
 typedef std::map<string, CFileOutputStream*> fstreams;
 typedef std::map<string, CFileOutputStream*>::iterator fstreams_it;
 typedef std::map<string, CFileOutputStream*>::const_iterator fstreams_cit;
 
+// TODO - have CPOSE as a template parameter as well
 template <class GRAPH_t>
 class GraphSlamEngine_t {
   public:
@@ -58,19 +67,27 @@ class GraphSlamEngine_t {
     ~GraphSlamEngine_t();
 
     void initGraphSlamEngine() {
-      m_node_max = 0;
+      m_nodeID_max = 0;
 
     }
 
     // IO funs
     //////////////////////////////////////////////////////////////
     /**
-     * Wrapper fun around the GRAPH_t method
+     * Wrapper fun around the GRAPH_t corresponding method
      */
-    void saveGraphToTextFile(const std::string& fname) const {
-      m_graph.saveToTextFile(fname);
+    void saveGraph() const {
+      if (!m_has_read_config) {
+        THROW_EXCEPTION("Config file has not been provided yet.\nExiting...");
+      }
+      string fname = m_output_dir_fname + "/" + m_save_graph_fname;
+      this->saveGraph(fname);
+
+    }
+    void saveGraph(std::string fname) const {
+      graph.saveToTextFile(fname);
       VERBOSE_COUT << "Saved graph to text file: " << fname <<
-        " successfully" << endl;
+        " successfully." << endl;
     }
     void dumpGraphToConsole() const {}
     /** 
@@ -108,50 +125,48 @@ class GraphSlamEngine_t {
 
     // GRAPH_t manipulation methods
     //////////////////////////////////////////////////////////////
+    //
 
     /**
-     * TODO: Make this a template so that you mark HOW was this node created
-     * (ICP, odometry, camera etc.)
-     * Adds a nodes to graph
+     * Have the graph as a public variable so that you don't have to write all
+     * the setters and getters for it.
      */
-    //TODO Add the actual classes
-    //addNode
-    //adEdge
+    GRAPH_t graph;
 
   private:
-    GRAPH_t m_graph;
-    size_t m_node_max;
+    // max node number already in the graph
+    TNodeID m_nodeID_max;
 
     /**
      * Problem parameters.
      * Most are imported from a .ini config file
      * \sa GraphSlamEngine_t::readConfigFile
      */
-    string m_config_fname;
+    string   m_config_fname;
 
-    string m_rawlog_fname;
-    string m_output_dir_fname;
-    bool m_do_debug;
-    string m_debug_fname;
-    string m_robot_poses_fname;
+    string   m_rawlog_fname;
+    string   m_output_dir_fname;
+    bool     m_user_decides_about_output_dir;
+    bool     m_do_debug;
+    string   m_debug_fname;
+    string   m_save_graph_fname;
 
-    bool m_do_pose_graph_only;
+    bool     m_do_pose_graph_only;
 
-    string m_loop_closing_alg;
+    string   m_loop_closing_alg;
 
-    string m_decider_alg;
-    double m_distance_threshold;
-    double m_angle_threshold;
+    string   m_decider_alg;
+    double   m_distance_threshold;
+    double   m_angle_threshold;
 
-    bool m_has_read_config;
+    bool     m_has_read_config;
 
     /** 
      * FileStreams
-     * Class keeps track of these so that they can be closed (if still open) 
-     * in the class Dtor.
+     * variable that keeps track of the out streams so that they can be closed 
+     * (if still open) in the class Dtor.
      */
     fstreams m_out_streams;
-
 };
 
 
@@ -174,7 +189,7 @@ void GraphSlamEngine_t<GRAPH_t>::parseLaserScansFile(std::string fname = "") {
   MRPT_START
 
   if (!m_has_read_config) {
-    THROW_EXCEPTION("Config file has not been provided yet.");
+    THROW_EXCEPTION("Config file has not been provided yet.\nExiting...");
   }
   // if no fname is provided, use your own (standard behavior)
   if (fname.empty()) {
@@ -191,7 +206,9 @@ void GraphSlamEngine_t<GRAPH_t>::parseLaserScansFile(std::string fname = "") {
     size_t curr_rawlog_entry = 0;
 
     bool end = false;
-    CPose2D odom_pose2d_tot(0, 0, 0);
+    CPose2D odom_pose_tot(0, 0, 0); // current pose - given by odometry
+    CPose2D last_pose_inserted(0, 0, 0);
+    TNodeID from = TNodeID(0); // first node shall be the root - 0
 
 
 
@@ -206,24 +223,58 @@ void GraphSlamEngine_t<GRAPH_t>::parseLaserScansFile(std::string fname = "") {
       // process action & observations
       if (observation.present()) {
         // Read a single observation from the rawlog (Format #2 rawlog file)
-        VERBOSE_COUT << "Foramt #2: Found observation." << endl;
-        cout << "--------------------------------------------------" << endl;
+        VERBOSE_COUT << "Format #2: Found observation." << endl;
+        VERBOSE_COUT << "--------------------------------------------------" << endl;
         //TODO Implement 2nd format
       }
       else {
         // action, observations should contain a pair of valid data 
         // (Format #1 rawlog file)
+        VERBOSE_COUT << endl;
         VERBOSE_COUT << "Format #1: Found pair of action & observation" << endl;
-        cout << "-----------------------------------------------------------------" << endl;
+        VERBOSE_COUT << "-----------------------------------------------------------------" << endl;
+
+        /**
+         * ACTION PART - Handle the odometry information of the rawlog file
+         */
 
         CActionRobotMovement2DPtr robotMovement2D = action->getBestMovementEstimation();
-        CPose2D a = robotMovement2D->poseChange->getMeanVal();
-        cout << "a = " << a << endl;
-        odom_pose2d_tot += a;
+        CPose2D pose_incr = robotMovement2D->poseChange->getMeanVal();
+        odom_pose_tot += pose_incr;
 
+        /** 
+         * Fixed intervals node insertion
+         * Determine whether to insert a new pose in the graph given the
+         * distance and angle thresholds
+         */
+        // TODO add a time constraint as well - use the time information of the
+        // rawlog file
+        if ( (last_pose_inserted.distanceTo(odom_pose_tot) > m_distance_threshold) ||
+            fabs(last_pose_inserted.phi() - odom_pose_tot.phi()) > m_angle_threshold )
+        {
+          //TODO - remove these
+          double distance = (last_pose_inserted.distanceTo(odom_pose_tot));
+          double angle = fabs(last_pose_inserted.phi() - odom_pose_tot.phi());
+
+          VERBOSE_COUT << "Adding new edge to the graph (# " << m_nodeID_max + 1<< " )" << endl;
+          VERBOSE_COUT << "prev_pose = " << last_pose_inserted << endl;
+          VERBOSE_COUT << "new_pose  = " << odom_pose_tot << endl;
+          VERBOSE_COUT << "distance: " << distance << "m | " 
+            << "angle: " << RAD2DEG(angle) << " deg" << endl;
+
+
+          CPose2D rel_pose = odom_pose_tot - last_pose_inserted;
+          from = m_nodeID_max;
+          TNodeID to = ++m_nodeID_max;
+
+          graph.nodes[to] = odom_pose_tot;
+          // TODO consider calling insertEdgeAtEnd method?
+          graph.insertEdge(from, to, rel_pose);
+
+          last_pose_inserted = odom_pose_tot;
+        }
       }
     }
-    VERBOSE_COUT << "Final Pose - Odometry: " << odom_pose2d_tot << endl;
   }
   else {
     THROW_EXCEPTION("parseLaserScansFile: Inputted Rawlog file ( " << fname <<
@@ -249,11 +300,13 @@ void GraphSlamEngine_t<GRAPH_t>::readConfigFile(const std::string& fname) {
                                        /*failIfNotFound = */ true);
   m_output_dir_fname = cfg_file.read_string("GeneralConfiguration", "output_dir_fname",
       "graphslam_engine_results", false);
+  m_user_decides_about_output_dir = cfg_file.read_bool("GeneralConfiguration", "user_decides_about_output_dir",
+      true, false);
   m_do_debug =  cfg_file.read_bool("GeneralConfiguration", "do_debug", 
       true, false);
   m_debug_fname = cfg_file.read_string("GeneralConfiguration", "debug_fname", 
       "debug.log", false);
-  m_robot_poses_fname = cfg_file.read_string("GeneralConfiguration", "robot_poses_fname",
+  m_save_graph_fname = cfg_file.read_string("GeneralConfiguration", "save_graph_fname",
       "poses.log", false);
 
   // Section: GraphSLAMParameters 
@@ -266,7 +319,7 @@ void GraphSlamEngine_t<GRAPH_t>::readConfigFile(const std::string& fname) {
   m_loop_closing_alg = cfg_file.read_string("LoopClosingParameters", "loop_closing_alg",
       "", true);
 
-  // Section: DecidersConfiguration 
+  // Section: DecidersConfiguration  - When to insert new nodes?
   // ////////////////////////////////
   m_decider_alg = cfg_file.read_string("DecidersConfiguration", "decider_alg",
       "", true);
@@ -289,17 +342,18 @@ void GraphSlamEngine_t<GRAPH_t>::printProblemParams() {
   stringstream ss_out;
 
   ss_out << "--------------------------------------------------------------------------" << endl;
-  ss_out << "Graphslam_engine: Problem Parameters "  << endl;
-  ss_out << " \t Config fname:       " << m_config_fname << endl;
-  ss_out << " \t Rawlog fname:       " << m_rawlog_fname << endl;
-  ss_out << " \t Output dir:         " << m_output_dir_fname<< endl;
-  ss_out << " \t Debug mode:         " << m_do_debug << endl;
-  ss_out << " \t robot_poses_fname:  " << m_robot_poses_fname << endl;
-  ss_out << " \t do_pose_graph_only: " <<  m_do_pose_graph_only << endl;
-  ss_out << " \t Loop closing alg:   " << m_loop_closing_alg << endl;
-  ss_out << " \t Decider alg:        " << m_decider_alg << endl;
-  ss_out << " \t Distance Threshold: " << m_distance_threshold << endl;
-  ss_out << " \t Angle Threshold:    " << m_angle_threshold << endl;
+  ss_out << " Graphslam_engine: Problem Parameters " << endl;
+  ss_out << " \t Config fname:                     " << m_config_fname << endl;
+  ss_out << " \t Rawlog fname:                     " << m_rawlog_fname << endl;
+  ss_out << " \t Output dir:                       " << m_output_dir_fname << endl;
+  ss_out << " \t User decides about output dir? :  " << m_user_decides_about_output_dir << endl;
+  ss_out << " \t Debug mode:                       " << m_do_debug << endl;
+  ss_out << " \t save_graph_fname:                 " << m_save_graph_fname << endl;
+  ss_out << " \t do_pose_graph_only:               " <<  m_do_pose_graph_only << endl;
+  ss_out << " \t Loop closing alg:                 " << m_loop_closing_alg << endl;
+  ss_out << " \t Decider alg:                      " << m_decider_alg << endl;
+  ss_out << " \t Distance Threshold:               " << m_distance_threshold << " m" << endl;
+  ss_out << " \t Angle Threshold:                  " << RAD2DEG(m_angle_threshold) << " deg" << endl;
   ss_out << "--------------------------------------------------------------------------" << endl;
 
   cout << ss_out.str();
@@ -325,24 +379,30 @@ void GraphSlamEngine_t<GRAPH_t>::initOutputDir() {
     // Determine what to do with existing results if previous output directory
     // exists
     if (directoryExists(m_output_dir_fname)) {
-      /**
-       * Give the user 3 choices.
-       * - Remove the current directory contents
-       * - Rename (and keep) the current directory contents
-       */
-      stringstream question;
-      string answer;
+      int answer_int;
+      if (m_user_decides_about_output_dir) {
+        /**
+         * Give the user 3 choices.
+         * - Remove the current directory contents
+         * - Rename (and keep) the current directory contents
+         */
+        stringstream question;
+        string answer;
 
-      question << "Directory exists. Choose between the following options" << endl;
-      question << "\t 1: Rename current folder and start new output directory (default)" << endl;
-      question << "\t 2: Remove existing contents and continue execution" << endl;
-      question << "\t 3: Handle potential conflict manually (Halts program execution)" << endl;
-      question << "\t [ 1 | 2 | 3 ] --> ";
-      cout << question.str();
+        question << "Directory exists. Choose between the following options" << endl;
+        question << "\t 1: Rename current folder and start new output directory (default)" << endl;
+        question << "\t 2: Remove existing contents and continue execution" << endl;
+        question << "\t 3: Handle potential conflict manually (Halts program execution)" << endl;
+        question << "\t [ 1 | 2 | 3 ] --> ";
+        cout << question.str();
 
-      getline(cin, answer);
-      answer = mrpt::system::trim(answer);
-      int answer_int = atoi(&answer[0]);
+        getline(cin, answer);
+        answer = mrpt::system::trim(answer);
+        answer_int = atoi(&answer[0]);
+      }
+      else {
+        answer_int = 2;
+      }
       switch (answer_int) {
         case 2: {
           VERBOSE_COUT << "Deleting existing files..." << endl;
@@ -383,10 +443,6 @@ void GraphSlamEngine_t<GRAPH_t>::initOutputDir() {
       this->initResultsFile(cur_fname);
     }
 
-    // robot_poses_fname
-    cur_fname = m_output_dir_fname + "/" + m_robot_poses_fname;
-    this->initResultsFile(cur_fname);
-
     VERBOSE_COUT << "Finished initializing output directory." << endl;
   }
   
@@ -414,3 +470,5 @@ void GraphSlamEngine_t<GRAPH_t>::initResultsFile(const string& fname) {
 
   MRPT_END
 }
+
+#endif /* end of include guard: GRAPHSLAMENGINE_H */

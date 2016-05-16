@@ -37,6 +37,7 @@ using namespace mrpt::utils;
 
 using namespace std;
 
+#define VERBOSE_COUT  if (verbose) std::cout << "[graphslam_engine] "
 
 int main(int argc, char **argv)
 {
@@ -55,7 +56,21 @@ int main(int argc, char **argv)
     // TODO
     g_engine.parseLaserScansFile();
 
-    
+
+    //// make sure that we have added the nodes from odometry
+    //// and print the nodes
+    //std::set <TNodeID> lst_node_ids;
+    //g_engine.graph.getAllNodes(lst_node_ids);
+    //for (set<TNodeID>::iterator node_it = lst_node_ids.begin();
+        //node_it != lst_node_ids.end(); ++node_it) {
+      //cout << "id: " <<  *node_it << endl;
+    //}
+    VERBOSE_COUT << "Total num of nodes: " << g_engine.graph.nodeCount() << endl;
+
+    // saving the graph to external file
+    g_engine.saveGraph();
+    //g_engine.saveGraph("kalimera.txt");
+
 
 
   }
