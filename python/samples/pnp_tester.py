@@ -27,6 +27,7 @@ for i in range(0,6):
     img_pts[i,:]= np.array([pt[0]/pt[2] +random.uniform(-0.01,0.01), pt[1]/pt[2]+random.uniform(-0.01,0.01)])
     
 pose_mat=np.empty([4,4])
+pose_mat1=np.empty([4,4])
 pose_mat_orig=np.empty([4,4])
 
 pose_mat_orig[3,:]=np.array([0,0,0,1])
@@ -37,11 +38,14 @@ cam_intrinsic=np.array([[f,0.0,cx],[0.0,f,cy],[0.0, 0.0, 1.0]])
 # Use the c-library to compute the pose 
 pnp = pymrpt.pnp(n)
 pnp.epnp_solve(obj_pts,img_pts, 6, cam_intrinsic, pose_mat)
+pnp.dls_solve(obj_pts, img_pts, 6, cam_intrinsic, pose_mat1)
 pose_mat=np.transpose(pose_mat)
+pose_mat1=np.transpose(pose_mat1)
 
 # Display the results
 print "obj_pts=\n", obj_pts
 print "img_pts=\n",img_pts
 print "pose_mat_orig=\n", pose_mat_orig
 print "pose_mat_est=\n",pose_mat
+print "pose_mat_est1=\n",pose_mat1
 print "cam_mat=\n",cam_intrinsic
