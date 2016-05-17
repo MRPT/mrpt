@@ -526,7 +526,7 @@ void TestExtractFeatures()
 
 	return;
 }
-
+/*
 #if defined(HAVE_OPENCV_NONFREE)
 void TestORBTiled()
 {
@@ -589,7 +589,7 @@ void TestORBTiled()
 	mrpt::system::os::fclose(f);
 } // end-orb-tiled
 #endif
-
+*/
 // ------------------------------------------------------
 //				TestCapture
 // ------------------------------------------------------

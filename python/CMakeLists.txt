@@ -23,16 +23,17 @@ add_library(pymrpt
   src/opengl_bindings.cpp
   src/math_bindings.cpp
   src/bayes_bindings.cpp
+  src/pnp_bindings.cpp
   src/bindings.cpp
 )
 
 # disable eigen: python and eigen alignment seem not to be best friends
-add_definitions(-DEIGEN_DONT_VECTORIZE -DEIGEN_DISABLE_UNALIGNED_ARRAY_ASSERT)
+#add_definitions(-DEIGEN_DONT_VECTORIZE -DEIGEN_DISABLE_UNALIGNED_ARRAY_ASSERT)
 # uncomment to disable ROS support
 add_definitions(-DROS_EXTENSIONS)
 
 target_link_libraries(pymrpt
-  ${Boost_LIBRARIES}
+  ${Boost_LIBRARIES} ${Opencv_LIBRARIES}
 )
 
 # remove "lib" prefix from .so filename
@@ -42,4 +43,4 @@ install(TARGETS pymrpt
   LIBRARY DESTINATION ${PYMRPT_INSTALL_DIR}
 )
 
-DeclareAppDependencies(pymrpt mrpt-base mrpt-slam mrpt-obs mrpt-maps mrpt-nav mrpt-gui mrpt-opengl) # Dependencies
+DeclareAppDependencies(pymrpt mrpt-base mrpt-slam mrpt-obs mrpt-maps mrpt-nav mrpt-gui mrpt-opengl mrpt-vision) # Dependencies
