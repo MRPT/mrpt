@@ -317,7 +317,7 @@ bool CGPSInterface::parse_NMEA(const std::string &s, mrpt::obs::CObservationGPS 
 		// ---------------------------------------------
 		//					GPGLL
 		// ---------------------------------------------
-		bool all_fields_ok = true;
+		//bool all_fields_ok = true;
 		std::string token;
 
 		// Fill out the output structure:
@@ -330,7 +330,7 @@ bool CGPSInterface::parse_NMEA(const std::string &s, mrpt::obs::CObservationGPS 
 		// ---------------------------------------------
 		//					GPVTG
 		// ---------------------------------------------
-		bool all_fields_ok = true;
+		//bool all_fields_ok = true;
 		std::string token;
 
 		// Fill out the output structure:
@@ -343,7 +343,7 @@ bool CGPSInterface::parse_NMEA(const std::string &s, mrpt::obs::CObservationGPS 
 		// ---------------------------------------------
 		//					GPZDA
 		// ---------------------------------------------
-		bool all_fields_ok = true;
+		//bool all_fields_ok = true;
 		std::string token;
 
 		// Fill out the output structure:

@@ -11,7 +11,9 @@
 #if !(defined __ICCARM__) && !(defined _ADI_COMPILER) && !defined(__APPLE__) && !defined(__CRCC__)
 #include <malloc.h>
 #endif
+#ifndef _POSIX_C_SOURCE
 #define _POSIX_C_SOURCE 200809L
+#endif
 #include <stdlib.h>
 
 #if !(defined __ICCARM__) && !(defined _ADI_COMPILER) && defined(XSENS_DEBUG)
