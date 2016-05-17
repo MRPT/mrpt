@@ -101,5 +101,10 @@ BOOST_PYTHON_MODULE(pymrpt)
 //  slam  //
 ////////////
     export_slam();
+    
+////////////
+//  slam  //
+////////////
+    export_pnp();
 
 }
