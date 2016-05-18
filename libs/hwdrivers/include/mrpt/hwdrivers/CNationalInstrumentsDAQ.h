@@ -334,8 +334,8 @@ namespace mrpt
 
 				void * taskHandle;
 				mrpt::system::TThreadHandle hThread;
-				std::auto_ptr<mrpt::synch::CPipeReadEndPoint> read_pipe;
-				std::auto_ptr<mrpt::synch::CPipeWriteEndPoint> write_pipe;
+				std::unique_ptr<mrpt::synch::CPipeReadEndPoint> read_pipe;
+				std::unique_ptr<mrpt::synch::CPipeWriteEndPoint> write_pipe;
 				bool must_close, is_closed;
 				mrpt::synch::CAtomicCounter  new_obs_available;
 
