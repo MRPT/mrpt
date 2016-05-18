@@ -84,13 +84,13 @@ struct StlListLike
     }
     static void set(T & x, uint i, V const& v)
     {
-        if( i<0 ) i+=x.size();
+        //if( i<0 ) i+=x.size();
         if( i>=0 && i<x.size() ) x[i]=v;
         else IndexError();
     }
     static void del(T & x, uint i)
     {
-        if( i<0 ) i+=x.size();
+        //if( i<0 ) i+=x.size();
         if( i>=0 && i<x.size() ) x.erase(x.begin() + i);
         else IndexError();
     }
