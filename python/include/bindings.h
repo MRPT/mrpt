@@ -76,7 +76,7 @@ struct StlListLike
     typedef typename T::value_type V;
     static V& get(T & x, uint i)
     {
-        if( i<0 ) i+=x.size();
+        //if( i<0 ) i+=x.size();
         if( i>=0 && i<x.size() ) return x[i];
         IndexError();
         // only for removing the return-type warning; code is never reached:
