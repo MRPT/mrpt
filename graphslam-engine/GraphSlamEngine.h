@@ -44,6 +44,8 @@ using namespace mrpt::system;
 using namespace mrpt::graphs;
 using namespace mrpt::math;
 using namespace mrpt::utils;
+using namespace mrpt::gui;
+using namespace mrpt::opengl;
 
 using namespace std;
 
@@ -61,15 +63,13 @@ class GraphSlamEngine_t {
   public:
     // Ctors, Dtors, init fun.
     //////////////////////////////////////////////////////////////
-    GraphSlamEngine_t() {
+    GraphSlamEngine_t(CDisplayWindow3D* win) {
+      // TODO - Have flag to enable/disable visualization (in .ini)
+      m_win = win;
+
       initGraphSlamEngine();
     };
     ~GraphSlamEngine_t();
-
-    void initGraphSlamEngine() {
-      m_nodeID_max = 0;
-
-    }
 
     // IO funs
     //////////////////////////////////////////////////////////////
@@ -116,16 +116,8 @@ class GraphSlamEngine_t {
      * \sa GraphSlamEngine_t::initResultsFile
      */
     void initOutputDir();
-    /**
-     * Method to automate the creation of the output result files
-     * Open and write an introductory message using the provided fname
-     */
-    void initResultsFile(const string& fname);
 
 
-    // GRAPH_t manipulation methods
-    //////////////////////////////////////////////////////////////
-    //
 
     /**
      * Have the graph as a public variable so that you don't have to write all
@@ -134,6 +126,42 @@ class GraphSlamEngine_t {
     GRAPH_t graph;
 
   private:
+    // METHODS
+    //////////////////////////////////////////////////////////////
+
+    /**
+     * General initialization method to call from all the Ctors
+     */
+    void initGraphSlamEngine() {
+      m_nodeID_max = 0;
+
+    }
+
+
+    /**
+     * Method to automate the creation of the output result files
+     * Open and write an introductory message using the provided fname
+     */
+    void initResultsFile(const string& fname);
+
+
+
+
+    /**
+     * GraphSlamEngine_t::updateGraphVizualization
+     *
+     * Called internally for updating the vizualization scene for the graph
+     * building procedure
+     */
+    void updateGraphVizualization();
+
+    // VARIABLES
+    //////////////////////////////////////////////////////////////
+
+    // visualization objects
+    CDisplayWindow3D* m_win;
+    TParametersDouble m_graph_viz_params;
+
     // max node number already in the graph
     TNodeID m_nodeID_max;
 
@@ -272,18 +300,51 @@ void GraphSlamEngine_t<GRAPH_t>::parseLaserScansFile(std::string fname = "") {
           graph.insertEdge(from, to, rel_pose);
 
           last_pose_inserted = odom_pose_tot;
-        }
-      }
-    }
-  }
+
+          // update the visualization window
+          this->updateGraphVizualization();
+
+        } // IF ODOMETRY_CRITERIUM
+      } // ELSE FORMAT #1
+    } // WHILE CRAWLOG FILE
+  }  // IF FILE_EXISTS
   else {
     THROW_EXCEPTION("parseLaserScansFile: Inputted Rawlog file ( " << fname <<
         " ) not found");
   }
 
   MRPT_END
-}
+} // END OF FUNCTION
 
+template<class GRAPH_t>
+void GraphSlamEngine_t<GRAPH_t>::updateGraphVizualization() {
+
+  // update the graph (clear and rewrite..)
+  COpenGLScenePtr& m_scene = m_win->get3DSceneAndLock();
+  m_scene->clear(); 
+
+  // TODO - consider adding a custom extension to graph_visualize 
+  // (in case it is not fast or customisable enough)
+  CSetOfObjectsPtr m_graph_obj = graph_tools::graph_visualize(graph,
+      m_graph_viz_params);
+  m_scene->insert(m_graph_obj);
+  m_win->unlockAccess3DScene();
+
+  // set the view correctly
+  m_win->setCameraElevationDeg(75);
+  CGridPlaneXYPtr obj_grid = m_graph_obj->CSetOfObjects::getByClass<CGridPlaneXY>();
+  if (obj_grid)
+  {
+    float x_min,x_max, y_min,y_max;
+    obj_grid->getPlaneLimits(x_min,x_max, y_min,y_max);
+    const float z_min = obj_grid->getPlaneZcoord();
+    m_win->setCameraPointingToPoint( 0.5*(x_min+x_max), 0.5*(y_min+y_max), z_min );
+    m_win->setCameraZoom( 2.0f * std::max(10.0f, std::max(x_max-x_min, y_max-y_min) ) );
+  }
+
+  // push the changes
+  m_win->repaint();
+}
 
 template<class GRAPH_t>
 void GraphSlamEngine_t<GRAPH_t>::readConfigFile(const std::string& fname) {
@@ -294,52 +355,120 @@ void GraphSlamEngine_t<GRAPH_t>::readConfigFile(const std::string& fname) {
 
   // Section: GeneralConfiguration 
   // ////////////////////////////////
-  m_rawlog_fname = cfg_file.read_string(/*section_name = */ "GeneralConfiguration", 
-                                       /*var_name = */ "rawlog_fname",
-                                       /*default_value = */ "", 
-                                       /*failIfNotFound = */ true);
-  m_output_dir_fname = cfg_file.read_string("GeneralConfiguration", "output_dir_fname",
+  m_rawlog_fname = cfg_file.read_string(
+      /*section_name = */ "GeneralConfiguration", 
+      /*var_name = */ "rawlog_fname",
+      /*default_value = */ "", /*failIfNotFound = */ true);
+  m_output_dir_fname = cfg_file.read_string(
+      "GeneralConfiguration", 
+      "output_dir_fname",
       "graphslam_engine_results", false);
-  m_user_decides_about_output_dir = cfg_file.read_bool("GeneralConfiguration", "user_decides_about_output_dir",
+  m_user_decides_about_output_dir = cfg_file.read_bool(
+      "GeneralConfiguration", 
+      "user_decides_about_output_dir",
       true, false);
-  m_do_debug =  cfg_file.read_bool("GeneralConfiguration", "do_debug", 
+  m_do_debug =  cfg_file.read_bool(
+      "GeneralConfiguration", 
+      "do_debug", 
       true, false);
-  m_debug_fname = cfg_file.read_string("GeneralConfiguration", "debug_fname", 
+  m_debug_fname = cfg_file.read_string(
+      "GeneralConfiguration", 
+      "debug_fname", 
       "debug.log", false);
-  m_save_graph_fname = cfg_file.read_string("GeneralConfiguration", "save_graph_fname",
+  m_save_graph_fname = cfg_file.read_string(
+      "GeneralConfiguration",
+      "save_graph_fname",
       "poses.log", false);
 
   // Section: GraphSLAMParameters 
   // ////////////////////////////////
-  m_do_pose_graph_only = cfg_file.read_bool("GraphSLAMParameters", "do_pose_graph_only",
+  m_do_pose_graph_only = cfg_file.read_bool(
+      "GraphSLAMParameters",
+      "do_pose_graph_only",
       true, false);
-  
+
   // Section: LoopClosingParameters 
   // ////////////////////////////////
-  m_loop_closing_alg = cfg_file.read_string("LoopClosingParameters", "loop_closing_alg",
+  m_loop_closing_alg = cfg_file.read_string(
+      "LoopClosingParameters",
+      "loop_closing_alg",
       "", true);
 
   // Section: DecidersConfiguration  - When to insert new nodes?
   // ////////////////////////////////
-  m_decider_alg = cfg_file.read_string("DecidersConfiguration", "decider_alg",
+  m_decider_alg = cfg_file.read_string(
+      "DecidersConfiguration",
+      "decider_alg",
       "", true);
-  m_distance_threshold = cfg_file.read_double("DecidersConfiguration", "distance_threshold",
+  m_distance_threshold = cfg_file.read_double(
+      "DecidersConfiguration",
+      "distance_threshold",
       1 /* meter */, false);
-  m_angle_threshold = cfg_file.read_double("DecidersConfiguration", "angle_threshold",
+  m_angle_threshold = cfg_file.read_double(
+      "DecidersConfiguration",
+      "angle_threshold",
       60 /* degrees */, false);
   m_angle_threshold = DEG2RAD(m_angle_threshold);
 
-  // mark this, so that we know if we have valid input data to work with.
-  m_has_read_config = true;
+  // Section: GraphVisualizationParameters
+  // ////////////////////////////////
+  // http://reference.mrpt.org/devel/group__mrpt__opengl__grp.html#ga30efc9f6fcb49801e989d174e0f65a61
+  
+	m_graph_viz_params["show_ID_labels"] = cfg_file.read_bool(
+      "GraphVisualizationParameters",
+      "show_ID_labels",
+      0, false);
+	m_graph_viz_params["show_ground_grid"] = cfg_file.read_bool(
+      "GraphVisualizationParameters",
+      "show_ground_grid",
+      1, false);
+	m_graph_viz_params["show_edges"] = cfg_file.read_bool(
+      "GraphVisualizationParameters",
+      "show_edges",
+      1, false);
+	m_graph_viz_params["edge_color"] = cfg_file.read_int(
+      "GraphVisualizationParameters",
+      "edge_color",
+      4286611456, false);
+	m_graph_viz_params["edge_width"] = cfg_file.read_double(
+      "GraphVisualizationParameters",
+      "edge_width",
+      1.5, false);
+	m_graph_viz_params["show_node_corners"] = cfg_file.read_bool(
+      "GraphVisualizationParameters",
+      "show_node_corners",
+      1, false);
+	m_graph_viz_params["show_edge_rel_poses"] = cfg_file.read_bool(
+      "GraphVisualizationParameters",
+      "show_edge_rel_poses",
+      1, false);
+	m_graph_viz_params["edge_rel_poses_color"] = cfg_file.read_int(
+      "GraphVisualizationParameters",
+      "edge_rel_poses_color",
+      1090486272, false);
+	m_graph_viz_params["nodes_edges_corner_scale"] = cfg_file.read_double(
+      "GraphVisualizationParameters",
+      "nodes_edges_corner_scale",
+      0.4, false);
+	m_graph_viz_params["nodes_corner_scale"] = cfg_file.read_double(
+      "GraphVisualizationParameters",
+      "nodes_corner_scale",
+      0.7, false);
+	m_graph_viz_params["nodes_point_color"] = cfg_file.read_int(
+      "GraphVisualizationParameters",
+      "nodes_point_color",
+      10526880, false);
 
-  MRPT_END
+	m_has_read_config = true;
+	MRPT_END
 }
 
+// TODO - add the new values from visualization part
 template<class GRAPH_t>
 void GraphSlamEngine_t<GRAPH_t>::printProblemParams() {
   MRPT_START
 
-  stringstream ss_out;
+    stringstream ss_out;
 
   ss_out << "--------------------------------------------------------------------------" << endl;
   ss_out << " Graphslam_engine: Problem Parameters " << endl;

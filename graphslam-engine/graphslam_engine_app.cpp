@@ -39,12 +39,25 @@ using namespace std;
 
 #define VERBOSE_COUT  if (verbose) std::cout << "[graphslam_engine] "
 
+/** 
+ * Forward declaration
+ * display_graph function template provided in display_graph.cpp
+ */
+template <class GRAPHTYPE> void display_graph(const GRAPHTYPE & g);
+
+/**
+ * main
+ */
 int main(int argc, char **argv)
 {
   
   try {
+    // Initialize the visualization objects
+    CDisplayWindow3D	win("Graphslam building procedure",640,480);
+    win.setCameraElevationDeg(75);
+
     // Initialize the class
-    GraphSlamEngine_t<CNetworkOfPoses2DInf> g_engine;
+    GraphSlamEngine_t<CNetworkOfPoses2DInf> g_engine(&win);
 
     // introductory actions
     const string config_fname = "../default_config.ini";
@@ -52,25 +65,20 @@ int main(int argc, char **argv)
     g_engine.printProblemParams();
     g_engine.initOutputDir();
 
-    // read the scans file - build the fixed-intervals CNetworkOfPoses graph
-    // TODO
     g_engine.parseLaserScansFile();
 
-
-    //// make sure that we have added the nodes from odometry
-    //// and print the nodes
-    //std::set <TNodeID> lst_node_ids;
-    //g_engine.graph.getAllNodes(lst_node_ids);
-    //for (set<TNodeID>::iterator node_it = lst_node_ids.begin();
-        //node_it != lst_node_ids.end(); ++node_it) {
-      //cout << "id: " <<  *node_it << endl;
-    //}
-    VERBOSE_COUT << "Total num of nodes: " << g_engine.graph.nodeCount() << endl;
 
     // saving the graph to external file
     g_engine.saveGraph();
     //g_engine.saveGraph("kalimera.txt");
 
+    //display_graph(g_engine.graph);
+
+    // TODO
+    // add "keylogger" function to know when to exit..
+    while (win.isOpen()) {
+      ;;
+    }
 
 
   }

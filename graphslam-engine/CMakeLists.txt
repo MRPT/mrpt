@@ -60,13 +60,16 @@ set(MRPT_DIR "$ENV{mrpt}")
 set(PROJECT_PATH "$ENV{mrpt_project}")
 set(INIT_PATH "$ENV{PATH}")
 
-set(SRC_FILES graphslam_engine_app.cpp)
+set(SRC_FILES 
+    graphslam_engine_app.cpp
+    display_graph.cpp
+    )
 set(CMAKE_BINARY_DIR "./build/")
 set(REQUIRED_LIBS
     graphslam
     gui
     obs
-    hwdrivers
+    hwdrivers 
     opengl )
 
 # These commands are needed by modern versions of CMake:
@@ -118,6 +121,7 @@ IF(${CMAKE_PROJECT_NAME} STREQUAL "MRPT") # Fails if build outside of MRPT proje
         mrpt-graphslam
         mrpt-gui
         mrpt-obs
-        mrpt-hwdrivers
-        mrpt-opengl) # Dependencies
+        mrpt-hwdrivers #needed for CPlanarLaserScan.h
+        mrpt-opengl
+        ) # Dependencies
 ENDIF(${CMAKE_PROJECT_NAME} STREQUAL "MRPT")
