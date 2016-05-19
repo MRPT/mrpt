@@ -81,7 +81,8 @@ TEST(CVelodyneScanner, sample_hdl32_dataset)
 
 	velodyne.initialize();
 
-	size_t nScans = 0, nGPS=0;
+	size_t nScans = 0;
+//	size_t nGPS=0;
 	bool rx_ok = true;
 	for (size_t i=0;i<1000 && rx_ok;i++)
 	{
