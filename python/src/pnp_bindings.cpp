@@ -1,4 +1,4 @@
-//#define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
+#define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
 #include <Python.h>
 #include <boost/python.hpp>
 #include <numpy/arrayobject.h> 
@@ -72,10 +72,10 @@ int pnpalgo_epnp(MatrixBase<Derived>& obj_pts, MatrixBase<Derived>& img_pts, int
 }
 
 int PnPAlgos::epnp_solve(PyObject* obj_pts, PyObject* img_pts, int n, PyObject* cam_intrinsic, PyObject* pose_mat){
-	Map<MatrixXd> _obj_pts((double *) PyArray_DATA(obj_pts),3,n);
-	Map<MatrixXd> _img_pts((double *) PyArray_DATA(img_pts),n, 2);
-	Map<MatrixXd> _pose_mat((double *) PyArray_DATA(pose_mat),4,4);
-	Map<MatrixXd> _cam_intrinsic((double *) PyArray_DATA(cam_intrinsic),3,3);
+	Map<MatrixXd> _obj_pts((double *) PyArray_DATA((PyArrayObject*)obj_pts),3,n);
+	Map<MatrixXd> _img_pts((double *) PyArray_DATA((PyArrayObject*)img_pts),n, 2);
+	Map<MatrixXd> _pose_mat((double *) PyArray_DATA((PyArrayObject*)pose_mat),4,4);
+	Map<MatrixXd> _cam_intrinsic((double *) PyArray_DATA((PyArrayObject*)cam_intrinsic),3,3);
 	
 	return pnpalgo_epnp(_obj_pts, _img_pts, n, _cam_intrinsic, _pose_mat);
 }
