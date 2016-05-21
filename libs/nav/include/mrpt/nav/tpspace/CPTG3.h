@@ -6,10 +6,9 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
-#ifndef CPTG3_H
-#define CPTG3_H
+#pragma once
 
-#include <mrpt/nav/tpspace/CParameterizedTrajectoryGenerator.h>
+#include <mrpt/nav/tpspace/CPTG_DiffDrive_CollisionGridBased.h>
 
 namespace mrpt
 {
@@ -19,30 +18,21 @@ namespace mrpt
 	  *  See also "Obstacle Distance for Car-Like Robots", IEEE Trans. Rob. And Autom, 1999.
 	  *  \ingroup nav_tpspace
 	 */
-	class NAV_IMPEXP  CPTG3 : public CParameterizedTrajectoryGenerator
+	class NAV_IMPEXP  CPTG3 : public CPTG_DiffDrive_CollisionGridBased
 	{
 	 public:
-			/** Constructor: possible values in "params", those of CParameterizedTrajectoryGenerator plus:
-			 *   - K: Direction, +1 or -1
-			 */
-			CPTG3(const mrpt::utils::TParameters<double> &params );
-
-			/** Gets a short textual description of the PTG and its parameters.
+		/** Constructor: possible values in "params", those of CParameterizedTrajectoryGenerator plus:
+			*   - K: Direction, +1 or -1
 			*/
-			std::string getDescription() const;
+		CPTG3(const mrpt::utils::TParameters<double> &params );
 
-			bool PTG_IsIntoDomain( float x, float y );
-
-			void PTG_Generator( float alpha, float t,float x, float y, float phi, float &v, float &w );
+		std::string getDescription() const MRPT_OVERRIDE;
+		bool inverseMap_WS2TP(double x, double y, int &out_k, double &out_d, double tolerance_dist = 0.10) const MRPT_OVERRIDE;
+		bool PTG_IsIntoDomain( double x, double y ) const MRPT_OVERRIDE;
+		void ptgDiffDriveSteeringFunction( float alpha, float t,float x, float y, float phi, float &v, float &w ) const MRPT_OVERRIDE;
 
 	 protected:
-		 float		R,K;
-
-
+		double R,K;
 	};
   }
 }
-
-
-#endif
-

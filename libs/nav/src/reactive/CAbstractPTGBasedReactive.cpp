@@ -10,6 +10,7 @@
 #include "nav-precomp.h" // Precomp header
 
 #include <mrpt/nav/reactive/CAbstractPTGBasedReactive.h>
+#include <mrpt/nav/tpspace/CPTG_Dummy.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/math/ops_containers.h> // sum()
