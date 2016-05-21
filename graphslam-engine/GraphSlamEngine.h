@@ -125,6 +125,11 @@ class GraphSlamEngine_t {
      */
     GRAPH_t graph;
 
+    typedef typename GRAPH_t::constraint_t constraint_t;
+    size_t state_length;
+    typedef CMatrixFixedNumeric<double,
+            constraint_t::state_length, constraint_t::state_length> InfMat;
+
   private:
     // METHODS
     //////////////////////////////////////////////////////////////
@@ -134,7 +139,7 @@ class GraphSlamEngine_t {
      */
     void initGraphSlamEngine() {
       m_nodeID_max = 0;
-
+      state_length = constraint_t::state_length; // the dimensions of the problem (3 / 6)
     }
 
 
@@ -234,11 +239,19 @@ void GraphSlamEngine_t<GRAPH_t>::parseLaserScansFile(std::string fname = "") {
     size_t curr_rawlog_entry = 0;
 
     bool end = false;
-    CPose2D odom_pose_tot(0, 0, 0); // current pose - given by odometry
+
+    // Tracking the PDF of the current position of the robot - use a
+    // constraint_t. Its informatio matrix is the relative uncertainty between
+    // the current and the previous registered graph node.
+    
+    // I am sure of the initial position, set to identity matrix
+    double tmp[] = {1.0, 0.0, 0.0,
+                    0.0, 1.0 ,0.0,
+                    0.0, 0.0, 1.0 };
+    InfMat init_path_uncertainty(tmp);
     CPose2D last_pose_inserted(0, 0, 0);
     TNodeID from = TNodeID(0); // first node shall be the root - 0
-
-
+    constraint_t cur_pathPDF(last_pose_inserted, init_path_uncertainty); 
 
     // Read from the rawlog
     while (CRawlog::getActionObservationPairOrObservation(
@@ -258,46 +271,70 @@ void GraphSlamEngine_t<GRAPH_t>::parseLaserScansFile(std::string fname = "") {
       else {
         // action, observations should contain a pair of valid data 
         // (Format #1 rawlog file)
-        VERBOSE_COUT << endl;
-        VERBOSE_COUT << "Format #1: Found pair of action & observation" << endl;
-        VERBOSE_COUT << "-----------------------------------------------------------------" << endl;
+        //VERBOSE_COUT << endl;
+        //VERBOSE_COUT << "Format #1: Found pair of action & observation" << endl;
+        //VERBOSE_COUT << "-----------------------------------------------------------------" << endl;
 
         /**
          * ACTION PART - Handle the odometry information of the rawlog file
          */
 
-        CActionRobotMovement2DPtr robotMovement2D = action->getBestMovementEstimation();
-        CPose2D pose_incr = robotMovement2D->poseChange->getMeanVal();
-        odom_pose_tot += pose_incr;
+        CActionRobotMovement2DPtr robot_move2D = action->getBestMovementEstimation();
+        CPosePDFPtr increment = robot_move2D->poseChange;
+
+        // update the cur_pathPDF
+        // add the PDF of the incremental odometry update
+        {
+          CPose2D pose_increment = increment->getMeanVal();
+          InfMat inf_increment; increment->getInformationMatrix(inf_increment);
+          constraint_t incremental_constraint(pose_increment, inf_increment);
+          cur_pathPDF += incremental_constraint;
+        }
 
         /** 
          * Fixed intervals node insertion
          * Determine whether to insert a new pose in the graph given the
          * distance and angle thresholds
          */
-        // TODO add a time constraint as well - use the time information of the
-        // rawlog file
+        // TODO - manipulate the timestamp
+        // TODO - visualize the whole trajectory of the robot
+        // TODO - add different color to edges based on where they come from
+        CPose2D odom_pose_tot = cur_pathPDF.getMeanVal();
         if ( (last_pose_inserted.distanceTo(odom_pose_tot) > m_distance_threshold) ||
-            fabs(last_pose_inserted.phi() - odom_pose_tot.phi()) > m_angle_threshold )
+            fabs(wrapToPi(last_pose_inserted.phi() - odom_pose_tot.phi())) > m_angle_threshold )
         {
-          //TODO - remove these
-          double distance = (last_pose_inserted.distanceTo(odom_pose_tot));
-          double angle = fabs(last_pose_inserted.phi() - odom_pose_tot.phi());
 
-          VERBOSE_COUT << "Adding new edge to the graph (# " << m_nodeID_max + 1<< " )" << endl;
-          VERBOSE_COUT << "prev_pose = " << last_pose_inserted << endl;
-          VERBOSE_COUT << "new_pose  = " << odom_pose_tot << endl;
-          VERBOSE_COUT << "distance: " << distance << "m | " 
-            << "angle: " << RAD2DEG(angle) << " deg" << endl;
-
-
-          CPose2D rel_pose = odom_pose_tot - last_pose_inserted;
           from = m_nodeID_max;
           TNodeID to = ++m_nodeID_max;
 
-          graph.nodes[to] = odom_pose_tot;
-          // TODO consider calling insertEdgeAtEnd method?
-          graph.insertEdge(from, to, rel_pose);
+          // build the relative edge and isnert it
+          {
+            constraint_t rel_edge;
+            rel_edge.mean = cur_pathPDF.getMeanVal() - last_pose_inserted;
+            rel_edge.cov_inv = cur_pathPDF.cov_inv;
+
+            graph.nodes[to] = odom_pose_tot;
+            graph.insertEdgeAtEnd(from, to, rel_edge);
+            //graph.insertEdgeAtEnd(from, to, odom_pose_tot - last_pose_inserted);
+          }
+
+
+          
+          //TODO - remove these
+          double distance = (last_pose_inserted.distanceTo(odom_pose_tot));
+          double angle = fabs(last_pose_inserted.phi() - odom_pose_tot.phi());
+          VERBOSE_COUT << "Added new edge to the graph (# " << m_nodeID_max + 1<< " )" << endl;
+          VERBOSE_COUT << "prev_pose = " << last_pose_inserted << endl;
+          VERBOSE_COUT << "new_pose  = " << odom_pose_tot << endl;
+          VERBOSE_COUT << "distance: " << distance << "m | " 
+                       << "angle: " << RAD2DEG(wrapToPi(angle)) << " deg" << endl;
+          VERBOSE_COUT << "Relative uncertainty between nodes: " << endl
+                       << cur_pathPDF.cov_inv << endl;
+
+
+          // Change the curretn uncertainty of cur_pathPDF so that it measures
+          // the *relative* uncertainty from last_inserted_pose
+          cur_pathPDF.cov_inv = init_path_uncertainty;
 
           last_pose_inserted = odom_pose_tot;
 
@@ -318,6 +355,7 @@ void GraphSlamEngine_t<GRAPH_t>::parseLaserScansFile(std::string fname = "") {
 
 template<class GRAPH_t>
 void GraphSlamEngine_t<GRAPH_t>::updateGraphVizualization() {
+  // TODO - add preprocessor flags for compilation of visualization part 
 
   // update the graph (clear and rewrite..)
   COpenGLScenePtr& m_scene = m_win->get3DSceneAndLock();
