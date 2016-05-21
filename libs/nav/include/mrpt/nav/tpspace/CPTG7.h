@@ -6,10 +6,9 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
-#ifndef CPTG7_H
-#define CPTG7_H
+#pragma once
 
-#include <mrpt/nav/tpspace/CParameterizedTrajectoryGenerator.h>
+#include <mrpt/nav/tpspace/CPTG_DiffDrive_CollisionGridBased.h>
 
 namespace mrpt
 {
@@ -19,27 +18,18 @@ namespace mrpt
 	 *
 	 *  \ingroup nav_tpspace
 	 */
-	class NAV_IMPEXP  CPTG7 : public CParameterizedTrajectoryGenerator
+	class NAV_IMPEXP  CPTG7 : public CPTG_DiffDrive_CollisionGridBased
 	{
 	 public:
-			/** Constructor (this PTG has no parameters)
-			 */
-			CPTG7(const mrpt::utils::TParameters<double> &params );
+		/** Constructor (this PTG has no parameters) */
+		CPTG7(const mrpt::utils::TParameters<double> &params );
 
-			/** Gets a short textual description of the PTG and its parameters.
-			*/
-			std::string getDescription() const;
-
-			bool PTG_IsIntoDomain( float x, float y );
-
-			void PTG_Generator( float alpha, float t,float x, float y, float phi, float &v, float &w );
-
-		protected:
+		std::string getDescription() const MRPT_OVERRIDE;
+		bool inverseMap_WS2TP(double x, double y, int &out_k, double &out_d, double tolerance_dist = 0.10) const MRPT_OVERRIDE;
+		bool PTG_IsIntoDomain( double x, double y ) const MRPT_OVERRIDE;
+		void ptgDiffDriveSteeringFunction( float alpha, float t,float x, float y, float phi, float &v, float &w ) const MRPT_OVERRIDE;
 
 	};
   }
 }
-
-
-#endif
 

@@ -16,28 +16,18 @@ using namespace mrpt::nav;
 using namespace mrpt::utils;
 using namespace mrpt::system;
 
-/*---------------------------------------------------------------
-						Constructor
-  ---------------------------------------------------------------*/
 CPTG1::CPTG1(const mrpt::utils::TParameters<double> &params ) :
-	CParameterizedTrajectoryGenerator (params)
+	CPTG_DiffDrive_CollisionGridBased (params)
 {
 	this->K = params["K"];
 }
 
-/*---------------------------------------------------------------
-						getDescription
-  ---------------------------------------------------------------*/
 std::string CPTG1::getDescription() const
 {
 	return mrpt::format("Type#1PTG,circ.arcs,K=%i",(int)K);
 }
 
-
-/*---------------------------------------------------------------
-
-  ---------------------------------------------------------------*/
-void CPTG1::PTG_Generator( float alpha, float t,float x, float y, float phi, float &v, float &w )
+void CPTG1::ptgDiffDriveSteeringFunction( float alpha, float t,float x, float y, float phi, float &v, float &w ) const
 {
 	MRPT_UNUSED_PARAM(t); MRPT_UNUSED_PARAM(x); MRPT_UNUSED_PARAM(y); MRPT_UNUSED_PARAM(phi);
     // (v,w)
@@ -46,16 +36,13 @@ void CPTG1::PTG_Generator( float alpha, float t,float x, float y, float phi, flo
     w = (alpha/M_PI) * W_MAX * sign(K); 
 }
 
-/*---------------------------------------------------------------
-					PTG_IsIntoDomain
-  ---------------------------------------------------------------*/
-bool CPTG1::PTG_IsIntoDomain( float x, float y )
+bool CPTG1::PTG_IsIntoDomain( double x, double y ) const
 {
 	MRPT_UNUSED_PARAM(x); MRPT_UNUSED_PARAM(y);
 	return true;
 }
 
-bool CPTG1::inverseMap_WS2TP(float x, float y, int &k_out, float &d_out, float tolerance_dist) const
+bool CPTG1::inverseMap_WS2TP(double x, double y, int &k_out, double &d_out, double tolerance_dist) const
 {
 	MRPT_UNUSED_PARAM(tolerance_dist);
 	bool is_exact = true;

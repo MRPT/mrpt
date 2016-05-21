@@ -16,20 +16,13 @@ using namespace mrpt::nav;
 using namespace mrpt::system;
 using namespace mrpt::utils;
 
-/*---------------------------------------------------------------
-						Constructor
-  ---------------------------------------------------------------*/
-CPTG3::CPTG3(const mrpt::utils::TParameters<double> &params ) :
-	CParameterizedTrajectoryGenerator (params)
+CPTG3::CPTG3(const mrpt::utils::TParameters<double> &params ) : CPTG_DiffDrive_CollisionGridBased(params)
 {
 	this->K = params["K"];
 	// The constant curvature turning radius used in this PTG:
 	R = V_MAX / W_MAX;
 }
 
-/*---------------------------------------------------------------
-						getDescription
-  ---------------------------------------------------------------*/
 std::string CPTG3::getDescription() const
 {
 	char str[100];
@@ -37,10 +30,7 @@ std::string CPTG3::getDescription() const
 	return std::string(str);
 }
 
-/*---------------------------------------------------------------
-						PTG_Generator
-  ---------------------------------------------------------------*/
-void CPTG3::PTG_Generator( float alpha, float t,float x, float y, float phi, float &v, float &w )
+void CPTG3::ptgDiffDriveSteeringFunction( float alpha, float t,float x, float y, float phi, float &v, float &w ) const
 {
 	MRPT_UNUSED_PARAM(phi); MRPT_UNUSED_PARAM(x); MRPT_UNUSED_PARAM(y);
 	float	u = fabs(alpha) * 0.5f; //0.14758362f;  // u = atan(0.5)* alpha / PI;
@@ -73,10 +63,7 @@ void CPTG3::PTG_Generator( float alpha, float t,float x, float y, float phi, flo
 	w*=K;
 }
 
-/*---------------------------------------------------------------
-					PTG_IsIntoDomain
-  ---------------------------------------------------------------*/
-bool CPTG3::PTG_IsIntoDomain( float x, float y )
+bool CPTG3::PTG_IsIntoDomain( double x, double y ) const
 {
 	// If signs of K and X are different, it is into the domain:
 	if ((K*x)<0)

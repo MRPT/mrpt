@@ -16,18 +16,12 @@ using namespace mrpt::nav;
 using namespace mrpt::system;
 using namespace mrpt::utils;
 
-/*---------------------------------------------------------------
-						Constructor
-  ---------------------------------------------------------------*/
-CPTG2::CPTG2(const mrpt::utils::TParameters<double> &params ) : CParameterizedTrajectoryGenerator(params)
+CPTG2::CPTG2(const mrpt::utils::TParameters<double> &params ) : CPTG_DiffDrive_CollisionGridBased(params)
 {
 	cte_a0v = params["cte_a0v"];
 	cte_a0w = params["cte_a0w"];
 }
 
-/*---------------------------------------------------------------
-						getDescription
-  ---------------------------------------------------------------*/
 std::string CPTG2::getDescription() const
 {
 	char str[100];
@@ -37,9 +31,9 @@ std::string CPTG2::getDescription() const
 
 
 /*---------------------------------------------------------------
-						PTG_Generator
+						ptgDiffDriveSteeringFunction
   ---------------------------------------------------------------*/
-void CPTG2::PTG_Generator( float alpha, float t,float x, float y, float phi, float &v, float &w )
+void CPTG2::ptgDiffDriveSteeringFunction( float alpha, float t,float x, float y, float phi, float &v, float &w ) const
 {
 	MRPT_UNUSED_PARAM(t); MRPT_UNUSED_PARAM(x); MRPT_UNUSED_PARAM(y);
     float At_a = alpha - phi;
@@ -49,14 +43,5 @@ void CPTG2::PTG_Generator( float alpha, float t,float x, float y, float phi, flo
 
     v = V_MAX * exp(-square( At_a / cte_a0v ));
     w=  W_MAX * (-0.5f + (1/(1+exp(-At_a/cte_a0w))));
-}
-
-/*---------------------------------------------------------------
-					PTG_IsIntoDomain
-  ---------------------------------------------------------------*/
-bool CPTG2::PTG_IsIntoDomain( float x, float y )
-{
-	MRPT_UNUSED_PARAM(x); MRPT_UNUSED_PARAM(y);
-	return true;
 }
 
