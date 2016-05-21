@@ -23,6 +23,7 @@
 	- Changes in libraries:
 		- \ref mrpt_base_grp
 			- New API to interface ZeroMQ: \ref noncstream_serialization_zmq
+			- Deprecated function (since 1.3.0) deleted: mrpt::system::registerFatalExceptionHandlers()
 		- \ref mrpt_maps_grp
 			- mrpt::maps::COccupancyGridMap2D::loadFromBitmapFile() correct description of `yCentralPixel` parameter.
 			- mrpt::maps::CPointsMap `liblas` import/export methods are now in a separate header. See \ref mrpt_maps_liblas_grp and \ref dep-liblas
@@ -37,6 +38,8 @@
 				- Now supports reading from an IR, RGB and Depth channels independenty.
 		- \ref mrpt_maps_grp
 			- mrpt::maps::CMultiMetricMapPDF added method CMultiMetricMapPDF::prediction_and_update_pfAuxiliaryPFStandard().
+		- \ref mrpt_nav_grp
+			- Deprecated method of PTGs lambdaFunction() removed.
 	- Changes in build system:
 		- [Windows only] `DLL`s/`LIB`s now have the signature `lib-${name}${2-digits-version}${compiler-name}_{x32|x64}.{dll/lib}`, allowing several MRPT versions to coexist in the system PATH.
 		- [Visual Studio only] There are no longer `pragma comment(lib...)` in any MRPT header, so it is the user responsibility to correctly tell user projects to link against MRPT libraries.
