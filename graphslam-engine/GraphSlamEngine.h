@@ -7,6 +7,11 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
+// Sun May 22 12:48:25 EEST 2016, nickkouk
+// General TODO list:
+// TODO: Make class generic - so that it handles 3D datasets
+// TODO: Add functionality to be able to use different optimizers
+
 #ifndef GRAPHSLAMENGINE_H
 #define GRAPHSLAMENGINE_H
 
@@ -52,10 +57,6 @@ using namespace std;
 
 bool verbose = true;
 #define VERBOSE_COUT  if (verbose) std::cout << "[graphslam_engine] "
-
-typedef std::map<string, CFileOutputStream*> fstreams;
-typedef std::map<string, CFileOutputStream*>::iterator fstreams_it;
-typedef std::map<string, CFileOutputStream*>::const_iterator fstreams_cit;
 
 // TODO - have CPOSE as a template parameter as well
 template <class GRAPH_t>
@@ -125,8 +126,12 @@ class GraphSlamEngine_t {
      */
     GRAPH_t graph;
 
+    typedef std::map<string, CFileOutputStream*> fstreams;
+    typedef std::map<string, CFileOutputStream*>::iterator fstreams_it;
+    typedef std::map<string, CFileOutputStream*>::const_iterator fstreams_cit;
+
     typedef typename GRAPH_t::constraint_t constraint_t;
-    size_t state_length;
+    typedef typename GRAPH_t::constraint_t::type_value pose_t; // type of underlying poses (2D/3D)
     typedef CMatrixFixedNumeric<double,
             constraint_t::state_length, constraint_t::state_length> InfMat;
 
@@ -138,8 +143,17 @@ class GraphSlamEngine_t {
      * General initialization method to call from all the Ctors
      */
     void initGraphSlamEngine() {
-      m_nodeID_max = 0;
-      state_length = constraint_t::state_length; // the dimensions of the problem (3 / 6)
+      bool is_3D = constraint_t::is_3D_val;
+
+      // max node number already in the graph
+      TNodeID m_nodeID_max = 0;
+      graph.root = TNodeID(0);
+
+      size_t state_length = constraint_t::state_length; // the dimensions of the problem (3 / 6)
+
+      // register the available optimizers
+      optimizer_codes["levmarq"] = 0;
+      optimizer_codse["isam"] = 1;
     }
 
 
@@ -163,13 +177,6 @@ class GraphSlamEngine_t {
     // VARIABLES
     //////////////////////////////////////////////////////////////
 
-    // visualization objects
-    CDisplayWindow3D* m_win;
-    TParametersDouble m_graph_viz_params;
-
-    // max node number already in the graph
-    TNodeID m_nodeID_max;
-
     /**
      * Problem parameters.
      * Most are imported from a .ini config file
@@ -185,6 +192,7 @@ class GraphSlamEngine_t {
     string   m_save_graph_fname;
 
     bool     m_do_pose_graph_only;
+    string   m_optimizer;
 
     string   m_loop_closing_alg;
 
@@ -193,13 +201,19 @@ class GraphSlamEngine_t {
     double   m_angle_threshold;
 
     bool     m_has_read_config;
+    map<string, int> optimizer_codes; // use lookpu table to hold the optimizer codes
 
     /** 
      * FileStreams
-     * variable that keeps track of the out streams so that they can be closed 
+     * variable that keeps track of the out fstreams so that they can be closed 
      * (if still open) in the class Dtor.
      */
     fstreams m_out_streams;
+
+    // visualization objects
+    CDisplayWindow3D* m_win;
+    TParametersDouble m_graph_viz_params;
+
 };
 
 
@@ -249,9 +263,11 @@ void GraphSlamEngine_t<GRAPH_t>::parseLaserScansFile(std::string fname = "") {
                     0.0, 1.0 ,0.0,
                     0.0, 0.0, 1.0 };
     InfMat init_path_uncertainty(tmp);
-    CPose2D last_pose_inserted(0, 0, 0);
-    TNodeID from = TNodeID(0); // first node shall be the root - 0
+    pose_t last_pose_inserted;
     constraint_t cur_pathPDF(last_pose_inserted, init_path_uncertainty); 
+
+    TNodeID from = TNodeID(0); // first node shall be the root - 0
+    TNodeID to;
 
     // Read from the rawlog
     while (CRawlog::getActionObservationPairOrObservation(
@@ -285,7 +301,7 @@ void GraphSlamEngine_t<GRAPH_t>::parseLaserScansFile(std::string fname = "") {
         // update the cur_pathPDF
         // add the PDF of the incremental odometry update
         {
-          CPose2D pose_increment = increment->getMeanVal();
+          pose_t pose_increment = increment->getMeanVal();
           InfMat inf_increment; increment->getInformationMatrix(inf_increment);
           constraint_t incremental_constraint(pose_increment, inf_increment);
           cur_pathPDF += incremental_constraint;
@@ -299,15 +315,15 @@ void GraphSlamEngine_t<GRAPH_t>::parseLaserScansFile(std::string fname = "") {
         // TODO - manipulate the timestamp
         // TODO - visualize the whole trajectory of the robot
         // TODO - add different color to edges based on where they come from
-        CPose2D odom_pose_tot = cur_pathPDF.getMeanVal();
+        pose_t odom_pose_tot = cur_pathPDF.getMeanVal();
         if ( (last_pose_inserted.distanceTo(odom_pose_tot) > m_distance_threshold) ||
             fabs(wrapToPi(last_pose_inserted.phi() - odom_pose_tot.phi())) > m_angle_threshold )
         {
 
           from = m_nodeID_max;
-          TNodeID to = ++m_nodeID_max;
+          to = ++m_nodeID_max;
 
-          // build the relative edge and isnert it
+          // build the relative edge and insert it
           {
             constraint_t rel_edge;
             rel_edge.mean = cur_pathPDF.getMeanVal() - last_pose_inserted;
@@ -317,6 +333,8 @@ void GraphSlamEngine_t<GRAPH_t>::parseLaserScansFile(std::string fname = "") {
             graph.insertEdgeAtEnd(from, to, rel_edge);
             //graph.insertEdgeAtEnd(from, to, odom_pose_tot - last_pose_inserted);
           }
+
+          // optimize the graph - LM
 
 
           
@@ -338,6 +356,8 @@ void GraphSlamEngine_t<GRAPH_t>::parseLaserScansFile(std::string fname = "") {
 
           last_pose_inserted = odom_pose_tot;
 
+        
+
           // update the visualization window
           this->updateGraphVizualization();
 
@@ -346,8 +366,8 @@ void GraphSlamEngine_t<GRAPH_t>::parseLaserScansFile(std::string fname = "") {
     } // WHILE CRAWLOG FILE
   }  // IF FILE_EXISTS
   else {
-    THROW_EXCEPTION("parseLaserScansFile: Inputted Rawlog file ( " << fname <<
-        " ) not found");
+    THROW_EXCEPTION("parseLaserScansFile: Inputted Rawlog file ( " << fname 
+        << " ) not found");
   }
 
   MRPT_END
@@ -424,6 +444,10 @@ void GraphSlamEngine_t<GRAPH_t>::readConfigFile(const std::string& fname) {
       "GraphSLAMParameters",
       "do_pose_graph_only",
       true, false);
+  m_optimizer = cfg_file.read_string(
+      "GraphSLAMParameters",
+      "optimizer",
+      "levmarq", false);
 
   // Section: LoopClosingParameters 
   // ////////////////////////////////
@@ -517,6 +541,7 @@ void GraphSlamEngine_t<GRAPH_t>::printProblemParams() {
   ss_out << " \t Debug mode:                       " << m_do_debug << endl;
   ss_out << " \t save_graph_fname:                 " << m_save_graph_fname << endl;
   ss_out << " \t do_pose_graph_only:               " <<  m_do_pose_graph_only << endl;
+  ss_out << " \t optimizer:                        " << m_optimizer << endl;
   ss_out << " \t Loop closing alg:                 " << m_loop_closing_alg << endl;
   ss_out << " \t Decider alg:                      " << m_decider_alg << endl;
   ss_out << " \t Distance Threshold:               " << m_distance_threshold << " m" << endl;
@@ -639,3 +664,7 @@ void GraphSlamEngine_t<GRAPH_t>::initResultsFile(const string& fname) {
 }
 
 #endif /* end of include guard: GRAPHSLAMENGINE_H */
+
+id     =  db.Column(db.Integer, primary_key=True)
+status    =  db.Column(db.Integer, nullable=False, default=3)
+
