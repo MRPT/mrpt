@@ -56,14 +56,11 @@ int main(int argc, char **argv)
     CDisplayWindow3D	win("Graphslam building procedure",640,480);
     win.setCameraElevationDeg(75);
 
-    // Initialize the class
-    GraphSlamEngine_t<CNetworkOfPoses2DInf> g_engine(&win);
-
-    // introductory actions
     const string config_fname = "../default_config.ini";
-    g_engine.readConfigFile(config_fname);
-    g_engine.printProblemParams();
-    g_engine.initOutputDir();
+
+    // Initialize the class
+    GraphSlamEngine_t<CNetworkOfPoses2DInf> g_engine(config_fname, 
+        &win);
 
     g_engine.parseLaserScansFile();
 

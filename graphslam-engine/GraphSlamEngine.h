@@ -11,27 +11,30 @@
 // General TODO list:
 // TODO: Make class generic - so that it handles 3D datasets
 // TODO: Add functionality to be able to use different optimizers
+// TODO: Plot x^2 ,x^2/s, time, iteration in the viz. window
 
 #ifndef GRAPHSLAMENGINE_H
 #define GRAPHSLAMENGINE_H
 
-
-#include <mrpt/obs/CRawlog.h>
-#include <mrpt/graphslam.h>
-#include <mrpt/graphs.h>
-#include <mrpt/gui.h>
-#include <mrpt/opengl.h>
-#include <mrpt/utils.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/datetime.h>
 #include <mrpt/system/os.h>
-#include <mrpt/utils/CLoadableOptions.h>
-#include <mrpt/opengl/CPlanarLaserScan.h> 
 #include <mrpt/poses/CPoses2DSequence.h>
 #include <mrpt/poses/CPosePDF.h>
-#include <mrpt/graphs/CNetworkOfPoses.h>
+#include <mrpt/utils.h>
+#include <mrpt/utils/CLoadableOptions.h>
+#include <mrpt/utils/mrpt_stdint.h>
 #include <mrpt/utils/mrpt_macros.h>
 #include <mrpt/utils/CConfigFile.h>
+#include <mrpt/obs/CActionRobotMovement2D.h>
+#include <mrpt/obs/CActionRobotMovement3D.h>
+#include <mrpt/obs/CRawlog.h>
+#include <mrpt/graphslam.h>
+#include <mrpt/graphs.h>
+#include <mrpt/graphs/CNetworkOfPoses.h>
+#include <mrpt/gui.h>
+#include <mrpt/opengl.h>
+#include <mrpt/opengl/CPlanarLaserScan.h> // It's in the lib mrpt-maps now
 
 #include <string>
 #include <sstream>
@@ -42,7 +45,7 @@
 
 
 
-using namespace mrpt::utils;
+using namespace mrpt;
 using namespace mrpt::poses;
 using namespace mrpt::obs;
 using namespace mrpt::system;
@@ -62,13 +65,30 @@ bool verbose = true;
 template <class GRAPH_t>
 class GraphSlamEngine_t {
   public:
+
+    typedef std::map<string, CFileOutputStream*> fstreams;
+    typedef std::map<string, CFileOutputStream*>::iterator fstreams_it;
+    typedef std::map<string, CFileOutputStream*>::const_iterator fstreams_cit;
+
+    typedef typename GRAPH_t::constraint_t constraint_t;
+    typedef typename GRAPH_t::constraint_t::type_value pose_t; // type of underlying poses (2D/3D)
+    typedef CMatrixFixedNumeric<double,
+            constraint_t::state_length, constraint_t::state_length> InfMat;
+
+
     // Ctors, Dtors, init fun.
     //////////////////////////////////////////////////////////////
-    GraphSlamEngine_t(CDisplayWindow3D* win) {
-      // TODO - Have flag to enable/disable visualization (in .ini)
+    GraphSlamEngine_t(const string& config_file,
+        CDisplayWindow3D* win = NULL ):
+      kOffsetYStep(20), // textMessage vertical text position
+      kIndexTextStep(1), // textMessage index
+      kFontName("mono"), // font used in the textMessage 
+      kFontSize(11) // font size used in the textMessage 
+    {
       m_win = win;
 
-      initGraphSlamEngine();
+      m_config_fname = config_file;
+      this->initGraphSlamEngine();
     };
     ~GraphSlamEngine_t();
 
@@ -82,7 +102,7 @@ class GraphSlamEngine_t {
         THROW_EXCEPTION("Config file has not been provided yet.\nExiting...");
       }
       string fname = m_output_dir_fname + "/" + m_save_graph_fname;
-      this->saveGraph(fname);
+      saveGraph(fname);
 
     }
     void saveGraph(std::string fname) const {
@@ -109,7 +129,7 @@ class GraphSlamEngine_t {
      * Reads the file provided and builds the initial graph prior to loop
      * closure searches
      */
-    void parseLaserScansFile(std::string fname);
+    void parseLaserScansFile();
     /**
      * Initialize (clean up and create new files) the output directory
      * Also provides cmd line arguements for the user to choose the desired
@@ -126,35 +146,10 @@ class GraphSlamEngine_t {
      */
     GRAPH_t graph;
 
-    typedef std::map<string, CFileOutputStream*> fstreams;
-    typedef std::map<string, CFileOutputStream*>::iterator fstreams_it;
-    typedef std::map<string, CFileOutputStream*>::const_iterator fstreams_cit;
-
-    typedef typename GRAPH_t::constraint_t constraint_t;
-    typedef typename GRAPH_t::constraint_t::type_value pose_t; // type of underlying poses (2D/3D)
-    typedef CMatrixFixedNumeric<double,
-            constraint_t::state_length, constraint_t::state_length> InfMat;
 
   private:
     // METHODS
     //////////////////////////////////////////////////////////////
-
-    /**
-     * General initialization method to call from all the Ctors
-     */
-    void initGraphSlamEngine() {
-      bool is_3D = constraint_t::is_3D_val;
-
-      // max node number already in the graph
-      TNodeID m_nodeID_max = 0;
-      graph.root = TNodeID(0);
-
-      size_t state_length = constraint_t::state_length; // the dimensions of the problem (3 / 6)
-
-      // register the available optimizers
-      optimizer_codes["levmarq"] = 0;
-      optimizer_codse["isam"] = 1;
-    }
 
 
     /**
@@ -163,16 +158,117 @@ class GraphSlamEngine_t {
      */
     void initResultsFile(const string& fname);
 
-
-
-
     /**
-     * GraphSlamEngine_t::updateGraphVizualization
+     * GraphSlamEngine_t::visualizeGraph
      *
      * Called internally for updating the vizualization scene for the graph
      * building procedure
      */
-    void updateGraphVizualization();
+    void visualizeGraph(const GRAPH_t& gr);
+    /**
+     * assignTextMessageParameters
+     *
+     * Assign the next available offset_y and text_index for the textMessage under
+     * construction
+     */
+    void assignTextMessageParameters(int* offset_y, int* text_index) {
+      *offset_y = m_curr_offset_y;
+      m_curr_offset_y += kOffsetYStep;
+
+      *text_index = m_curr_text_index;
+      m_curr_text_index += kIndexTextStep;
+    }
+
+    /**
+     * General initialization method to call from all the Ctors
+     */
+    void initGraphSlamEngine() {
+
+      // Initialization of member variables
+      //////////////////////////////////////////////////////////////
+
+      m_is3D = constraint_t::is_3D_val;
+
+      // max node number already in the graph
+      m_nodeID_max = 0;
+
+      graph.root = TNodeID(0);
+
+      // register the available optimizers
+      optimizer_codes["levmarq"] = 0;
+      optimizer_codes["isam"] = 1;
+
+      // initialize the necessary maps for graph information
+      graph_to_name[&graph] = "optimized_graph";
+      graph_to_viz_params[&graph] = &m_optimized_graph_viz_params;
+
+      // Current Text Position
+      m_curr_offset_y = 30;
+      m_curr_text_index = 1;
+
+      // Calling of initalization-relevant functions
+      this->readConfigFile(m_config_fname);
+      this->initOutputDir();
+      this->printProblemParams();
+
+      // timestamp
+      this->assignTextMessageParameters(&m_offset_y_timestamp, 
+                                        &m_text_index_timestamp);
+
+
+      // optimized graph
+      assert(m_has_read_config);
+      if (m_visualize_optimized_graph) {
+        this->assignTextMessageParameters( /* offset_y*   = */ &m_offset_y_graph,
+                                     /* text_index* = */ &m_text_index_graph );
+      }
+
+
+      // odometry visualization
+      assert(m_has_read_config);
+      if (m_visualize_odom_poses) {
+        this->assignTextMessageParameters( /* offset_y*   = */ &m_offset_y_odometry,
+                                     /* text_index* = */ &m_text_index_odometry);
+
+        COpenGLScenePtr scene = m_win->get3DSceneAndLock();
+
+        CPointCloudPtr odom_poses_cloud = CPointCloud::Create();
+        scene->insert(odom_poses_cloud);
+        odom_poses_cloud->setPointSize(2.0);
+        odom_poses_cloud->enablePointSmooth();
+        odom_poses_cloud->enableColorFromY();
+        odom_poses_cloud->setName("odom_poses_cloud");
+
+        m_win->unlockAccess3DScene();
+
+        m_win->addTextMessage(5,-m_offset_y_odometry, 
+                              format("Odometry path"),
+                              TColorf(0.0, 0.0, 1.0),
+                              kFontName, kFontSize, // font name & size
+                              mrpt::opengl::NICE,
+                              /* unique_index = */ m_text_index_odometry );
+
+        m_win->forceRepaint(); 
+      }
+
+      // axis
+      {
+        COpenGLScenePtr scene = m_win->get3DSceneAndLock();
+
+        CAxisPtr obj = CAxis::Create();
+        obj->setFrequency(5);
+        obj->enableTickMarks();
+        obj->setAxisLimits(-10,-10,-10, 10,10,10);
+        obj->setName("axis");
+        scene->insert(obj);
+
+        m_win->unlockAccess3DScene();
+        m_win->forceRepaint();
+      }
+
+
+    }
+
 
     // VARIABLES
     //////////////////////////////////////////////////////////////
@@ -212,7 +308,44 @@ class GraphSlamEngine_t {
 
     // visualization objects
     CDisplayWindow3D* m_win;
-    TParametersDouble m_graph_viz_params;
+
+    TParametersDouble m_optimized_graph_viz_params;
+    bool m_visualize_optimized_graph;
+    bool m_visualize_odom_poses;
+
+    /**
+     * textMessage Parameters 
+     *
+     */
+    const string kFontName;
+    const int kFontSize;
+
+    // textMessage vertical text position
+    const int kOffsetYStep;
+    int m_curr_offset_y;
+    int m_offset_y_graph;
+    int m_offset_y_odometry;
+    int m_offset_y_timestamp;
+
+    // textMessage index
+    const int kIndexTextStep;
+    int m_curr_text_index;
+    int m_text_index_graph;
+    int m_text_index_odometry;
+    int m_text_index_timestamp;
+
+
+    /** 
+     * std::maps to store information about the graphs
+     */
+    map<const GRAPH_t*, string> graph_to_name;
+    map<const GRAPH_t*, TParametersDouble*> graph_to_viz_params;
+
+    // odometry visualization
+    vector<pose_t*> m_odom_poses;
+
+    bool m_is3D;
+    TNodeID m_nodeID_max;
 
 };
 
@@ -232,21 +365,17 @@ GraphSlamEngine_t<GRAPH_t>::~GraphSlamEngine_t() {
 
 
 template<class GRAPH_t>
-void GraphSlamEngine_t<GRAPH_t>::parseLaserScansFile(std::string fname = "") {
+void GraphSlamEngine_t<GRAPH_t>::parseLaserScansFile() {
   MRPT_START
 
   if (!m_has_read_config) {
     THROW_EXCEPTION("Config file has not been provided yet.\nExiting...");
   }
-  // if no fname is provided, use your own (standard behavior)
-  if (fname.empty()) {
-    fname = m_rawlog_fname;
-  }
 
-  // test whether the given fname is a valid file name. Otherwise throw
+  // test whether the given m_rawlog_fname is a valid file name. Otherwise throw
   // exception to the user
-  if (fileExists(fname)) {
-    CFileGZInputStream rawlog_file(fname);
+  if (fileExists(m_rawlog_fname)) {
+    CFileGZInputStream rawlog_file(m_rawlog_fname);
     CActionCollectionPtr action;
     CSensoryFramePtr observations;
     CObservationPtr observation;
@@ -255,7 +384,7 @@ void GraphSlamEngine_t<GRAPH_t>::parseLaserScansFile(std::string fname = "") {
     bool end = false;
 
     // Tracking the PDF of the current position of the robot - use a
-    // constraint_t. Its informatio matrix is the relative uncertainty between
+    // constraint_t. Its information matrix is the relative uncertainty between
     // the current and the previous registered graph node.
     
     // I am sure of the initial position, set to identity matrix
@@ -266,8 +395,7 @@ void GraphSlamEngine_t<GRAPH_t>::parseLaserScansFile(std::string fname = "") {
     pose_t last_pose_inserted;
     constraint_t cur_pathPDF(last_pose_inserted, init_path_uncertainty); 
 
-    TNodeID from = TNodeID(0); // first node shall be the root - 0
-    TNodeID to;
+    TNodeID from = graph.root; // first node shall be the root - 0
 
     // Read from the rawlog
     while (CRawlog::getActionObservationPairOrObservation(
@@ -295,33 +423,76 @@ void GraphSlamEngine_t<GRAPH_t>::parseLaserScansFile(std::string fname = "") {
          * ACTION PART - Handle the odometry information of the rawlog file
          */
 
-        CActionRobotMovement2DPtr robot_move2D = action->getBestMovementEstimation();
-        CPosePDFPtr increment = robot_move2D->poseChange;
+        CActionRobotMovement2DPtr robot_move = action->getBestMovementEstimation();
+        CPosePDFPtr increment = robot_move->poseChange;
+        
+        // timestamp textMessage
+        // use the dataset timestamp otherwise fallback to mrpt::system::now()
+        TTimeStamp  timestamp = robot_move->timestamp;
+        if (timestamp != INVALID_TIMESTAMP) {
+          m_win->addTextMessage(5,-m_offset_y_timestamp, 
+              format("Simulated time: %s", timeLocalToString(timestamp).c_str()),
+              TColorf(1.0, 1.0, 1.0),
+              kFontName, kFontSize, // font name & size
+              mrpt::opengl::NICE,
+              /* unique_index = */ m_text_index_timestamp );
+        }
+        else {
+          m_win->addTextMessage(5,-m_offset_y_timestamp, 
+              format("Wall time: %s", timeLocalToString(system::now()).c_str()),
+              TColorf(1.0, 1.0, 1.0),
+              kFontName, kFontSize, // font name & size
+              mrpt::opengl::NICE,
+              /* unique_index = */ m_text_index_timestamp );
+        }
+
+
+
+        // current pose of the robot - w/o PDF
+        pose_t odom_pose_tot = cur_pathPDF.getMeanVal();
 
         // update the cur_pathPDF
         // add the PDF of the incremental odometry update
+        pose_t pose_increment = increment->getMeanVal();
+        InfMat inf_increment; increment->getInformationMatrix(inf_increment);
+        constraint_t incremental_constraint(pose_increment, inf_increment);
+        cur_pathPDF += incremental_constraint;
+
+        // add to the odometry PointCloud and visualize it
         {
-          pose_t pose_increment = increment->getMeanVal();
-          InfMat inf_increment; increment->getInformationMatrix(inf_increment);
-          constraint_t incremental_constraint(pose_increment, inf_increment);
-          cur_pathPDF += incremental_constraint;
+          pose_t* odom_pose = new pose_t;
+          *odom_pose = odom_pose_tot;
+          m_odom_poses.push_back(odom_pose);
+
+          if (m_visualize_odom_poses) {
+            COpenGLScenePtr scene = m_win->get3DSceneAndLock();
+
+            CRenderizablePtr obj = scene->getByName("odom_poses_cloud");
+            CPointCloudPtr odom_poses_cloud = static_cast<CPointCloudPtr>(obj);
+            odom_poses_cloud->insertPoint(m_odom_poses.back()->x(),
+                                          m_odom_poses.back()->y(),
+                                          0 );
+
+            m_win->unlockAccess3DScene();
+
+            m_win->forceRepaint();
+          }
+          
         }
 
         /** 
-         * Fixed intervals node insertion
+         * Fixed intervals odometry edge insertion
          * Determine whether to insert a new pose in the graph given the
          * distance and angle thresholds
          */
         // TODO - manipulate the timestamp
-        // TODO - visualize the whole trajectory of the robot
         // TODO - add different color to edges based on where they come from
-        pose_t odom_pose_tot = cur_pathPDF.getMeanVal();
         if ( (last_pose_inserted.distanceTo(odom_pose_tot) > m_distance_threshold) ||
             fabs(wrapToPi(last_pose_inserted.phi() - odom_pose_tot.phi())) > m_angle_threshold )
         {
 
           from = m_nodeID_max;
-          to = ++m_nodeID_max;
+          TNodeID to = ++m_nodeID_max;
 
           // build the relative edge and insert it
           {
@@ -332,25 +503,31 @@ void GraphSlamEngine_t<GRAPH_t>::parseLaserScansFile(std::string fname = "") {
             graph.nodes[to] = odom_pose_tot;
             graph.insertEdgeAtEnd(from, to, rel_edge);
             //graph.insertEdgeAtEnd(from, to, odom_pose_tot - last_pose_inserted);
+            
           }
 
           // optimize the graph - LM
+          
 
+          // update the visualization window
+          if (m_visualize_optimized_graph) {
+            visualizeGraph(graph);
+          }
 
           
-          //TODO - remove these
-          double distance = (last_pose_inserted.distanceTo(odom_pose_tot));
-          double angle = fabs(last_pose_inserted.phi() - odom_pose_tot.phi());
-          VERBOSE_COUT << "Added new edge to the graph (# " << m_nodeID_max + 1<< " )" << endl;
-          VERBOSE_COUT << "prev_pose = " << last_pose_inserted << endl;
-          VERBOSE_COUT << "new_pose  = " << odom_pose_tot << endl;
-          VERBOSE_COUT << "distance: " << distance << "m | " 
-                       << "angle: " << RAD2DEG(wrapToPi(angle)) << " deg" << endl;
-          VERBOSE_COUT << "Relative uncertainty between nodes: " << endl
-                       << cur_pathPDF.cov_inv << endl;
+          ////TODO - remove these
+          //double distance = (last_pose_inserted.distanceTo(odom_pose_tot));
+          //double angle = fabs(last_pose_inserted.phi() - odom_pose_tot.phi());
+          //VERBOSE_COUT << "Added new odometry edge to the graph (# " << m_nodeID_max + 1<< " )" << endl;
+          //VERBOSE_COUT << "prev_pose = " << last_pose_inserted << endl;
+          //VERBOSE_COUT << "new_pose  = " << odom_pose_tot << endl;
+          //VERBOSE_COUT << "distance: " << distance << "m | " 
+                       //<< "angle: " << RAD2DEG(wrapToPi(angle)) << " deg" << endl;
+          //VERBOSE_COUT << "Relative uncertainty between nodes: " << endl
+                       //<< cur_pathPDF.cov_inv << endl;
 
 
-          // Change the curretn uncertainty of cur_pathPDF so that it measures
+          // Change the current uncertainty of cur_pathPDF so that it measures
           // the *relative* uncertainty from last_inserted_pose
           cur_pathPDF.cov_inv = init_path_uncertainty;
 
@@ -358,41 +535,58 @@ void GraphSlamEngine_t<GRAPH_t>::parseLaserScansFile(std::string fname = "") {
 
         
 
-          // update the visualization window
-          this->updateGraphVizualization();
-
         } // IF ODOMETRY_CRITERIUM
       } // ELSE FORMAT #1
     } // WHILE CRAWLOG FILE
   }  // IF FILE_EXISTS
   else {
-    THROW_EXCEPTION("parseLaserScansFile: Inputted Rawlog file ( " << fname 
-        << " ) not found");
+    THROW_EXCEPTION("parseLaserScansFile: Inputted rawlog file ( " 
+        << m_rawlog_fname << " ) not found");
   }
 
   MRPT_END
 } // END OF FUNCTION
 
 template<class GRAPH_t>
-void GraphSlamEngine_t<GRAPH_t>::updateGraphVizualization() {
+void GraphSlamEngine_t<GRAPH_t>::visualizeGraph(const GRAPH_t& gr) {
   // TODO - add preprocessor flags for compilation of visualization part 
+  
+  string gr_name = graph_to_name[&gr];
+  const TParametersDouble* viz_params = graph_to_viz_params[&gr];
 
+  //TODO: Delete this
+  //cout << "Visualization parameters: " << endl;
+  //for (map<string, double>::const_iterator it = viz_params->begin();
+      //it != viz_params->end(); ++it) {
+    //cout << it->first << " : " << it->second << endl;
+  //}
+  
   // update the graph (clear and rewrite..)
-  COpenGLScenePtr& m_scene = m_win->get3DSceneAndLock();
-  m_scene->clear(); 
+  COpenGLScenePtr& scene = m_win->get3DSceneAndLock();
 
-  // TODO - consider adding a custom extension to graph_visualize 
-  // (in case it is not fast or customisable enough)
-  CSetOfObjectsPtr m_graph_obj = graph_tools::graph_visualize(graph,
-      m_graph_viz_params);
-  m_scene->insert(m_graph_obj);
+  // remove previous graph
+  CRenderizablePtr prev_object = scene->getByName(gr_name);
+  scene->removeObject(prev_object);
+
+  // Insert the new instance of the graph
+  CSetOfObjectsPtr graph_obj = graph_tools::graph_visualize(gr, *viz_params);
+  graph_obj->setName(gr_name);
+  scene->insert(graph_obj);
+
   m_win->unlockAccess3DScene();
+  m_win->addTextMessage(5,-m_offset_y_graph, 
+      format("Optimized Graph (#%d)", static_cast<int>(gr.nodeCount())),
+      TColorf(0.0, 0.0, 0.0),
+      kFontName, kFontSize, // font name & size
+      mrpt::opengl::NICE,
+      /* unique_index = */ m_text_index_graph);
+
+  m_win->forceRepaint();
 
   // set the view correctly
   m_win->setCameraElevationDeg(75);
-  CGridPlaneXYPtr obj_grid = m_graph_obj->CSetOfObjects::getByClass<CGridPlaneXY>();
-  if (obj_grid)
-  {
+  CGridPlaneXYPtr obj_grid = graph_obj->CSetOfObjects::getByClass<CGridPlaneXY>();
+  if (obj_grid) {
     float x_min,x_max, y_min,y_max;
     obj_grid->getPlaneLimits(x_min,x_max, y_min,y_max);
     const float z_min = obj_grid->getPlaneZcoord();
@@ -409,7 +603,6 @@ void GraphSlamEngine_t<GRAPH_t>::readConfigFile(const std::string& fname) {
   MRPT_START
 
   CConfigFile cfg_file(fname);
-  m_config_fname = fname;
 
   // Section: GeneralConfiguration 
   // ////////////////////////////////
@@ -472,54 +665,74 @@ void GraphSlamEngine_t<GRAPH_t>::readConfigFile(const std::string& fname) {
       60 /* degrees */, false);
   m_angle_threshold = DEG2RAD(m_angle_threshold);
 
-  // Section: GraphVisualizationParameters
+  // Section: VisualizationParameters
   // ////////////////////////////////
   // http://reference.mrpt.org/devel/group__mrpt__opengl__grp.html#ga30efc9f6fcb49801e989d174e0f65a61
   
-	m_graph_viz_params["show_ID_labels"] = cfg_file.read_bool(
-      "GraphVisualizationParameters",
-      "show_ID_labels",
+  // Optimized graph
+  // TODO - have some of the parameters as non-configurable
+
+  m_visualize_optimized_graph = cfg_file.read_bool(
+      "VisualizationParameters",
+      "visualize_optimized_graph",
+      1, false);
+ 
+	m_optimized_graph_viz_params["show_ID_labels"] = cfg_file.read_bool(
+      "VisualizationParameters",
+      "optimized_show_ID_labels",
       0, false);
-	m_graph_viz_params["show_ground_grid"] = cfg_file.read_bool(
-      "GraphVisualizationParameters",
-      "show_ground_grid",
+	m_optimized_graph_viz_params["show_ground_grid"] = cfg_file.read_bool(
+      "VisualizationParameters",
+      "optimized_show_ground_grid",
       1, false);
-	m_graph_viz_params["show_edges"] = cfg_file.read_bool(
-      "GraphVisualizationParameters",
-      "show_edges",
+	m_optimized_graph_viz_params["show_edges"] = cfg_file.read_bool(
+      "VisualizationParameters",
+      "optimized_show_edges",
       1, false);
-	m_graph_viz_params["edge_color"] = cfg_file.read_int(
-      "GraphVisualizationParameters",
-      "edge_color",
+	m_optimized_graph_viz_params["edge_color"] = cfg_file.read_int(
+      "VisualizationParameters",
+      "optimized_edge_color",
       4286611456, false);
-	m_graph_viz_params["edge_width"] = cfg_file.read_double(
-      "GraphVisualizationParameters",
-      "edge_width",
+	m_optimized_graph_viz_params["edge_width"] = cfg_file.read_double(
+      "VisualizationParameters",
+      "optimized_edge_width",
       1.5, false);
-	m_graph_viz_params["show_node_corners"] = cfg_file.read_bool(
-      "GraphVisualizationParameters",
-      "show_node_corners",
+	m_optimized_graph_viz_params["show_node_corners"] = cfg_file.read_bool(
+      "VisualizationParameters",
+      "optimized_show_node_corners",
       1, false);
-	m_graph_viz_params["show_edge_rel_poses"] = cfg_file.read_bool(
-      "GraphVisualizationParameters",
-      "show_edge_rel_poses",
+	m_optimized_graph_viz_params["show_edge_rel_poses"] = cfg_file.read_bool(
+      "VisualizationParameters",
+      "optimized_show_edge_rel_poses",
       1, false);
-	m_graph_viz_params["edge_rel_poses_color"] = cfg_file.read_int(
-      "GraphVisualizationParameters",
-      "edge_rel_poses_color",
+	m_optimized_graph_viz_params["edge_rel_poses_color"] = cfg_file.read_int(
+      "VisualizationParameters",
+      "optimized_edge_rel_poses_color",
       1090486272, false);
-	m_graph_viz_params["nodes_edges_corner_scale"] = cfg_file.read_double(
-      "GraphVisualizationParameters",
-      "nodes_edges_corner_scale",
+	m_optimized_graph_viz_params["nodes_edges_corner_scale"] = cfg_file.read_double(
+      "VisualizationParameters",
+      "optimized_nodes_edges_corner_scale",
       0.4, false);
-	m_graph_viz_params["nodes_corner_scale"] = cfg_file.read_double(
-      "GraphVisualizationParameters",
-      "nodes_corner_scale",
+	m_optimized_graph_viz_params["nodes_corner_scale"] = cfg_file.read_double(
+      "VisualizationParameters",
+      "optimized_nodes_corner_scale",
       0.7, false);
-	m_graph_viz_params["nodes_point_color"] = cfg_file.read_int(
-      "GraphVisualizationParameters",
-      "nodes_point_color",
+	m_optimized_graph_viz_params["point_size"] = cfg_file.read_int(
+      "VisualizationParameters",
+      "optimized_point_size",
+      0, false);
+	m_optimized_graph_viz_params["point_color"] = cfg_file.read_int(
+      "VisualizationParameters",
+      "optimized_point_color",
       10526880, false);
+
+  // odometry-only visualization
+  
+  m_visualize_odom_poses = cfg_file.read_bool(
+      "VisualizationParameters",
+      "visualize_odom_poses",
+      1, false);
+
 
 	m_has_read_config = true;
 	MRPT_END
@@ -664,7 +877,3 @@ void GraphSlamEngine_t<GRAPH_t>::initResultsFile(const string& fname) {
 }
 
 #endif /* end of include guard: GRAPHSLAMENGINE_H */
-
-id     =  db.Column(db.Integer, primary_key=True)
-status    =  db.Column(db.Integer, nullable=False, default=3)
-
