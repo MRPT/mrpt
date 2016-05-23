@@ -13,6 +13,7 @@
 
 #include <mrpt/utils/CFileGZInputStream.h>
 #include <mrpt/utils/CFileGZOutputStream.h>
+#include <mrpt/utils/CTicTac.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
 #include <mrpt/math/geometry.h>
@@ -30,29 +31,22 @@ CPTG_DiffDrive_CollisionGridBased::CPTG_DiffDrive_CollisionGridBased(const mrpt:
 	CParameterizedTrajectoryGenerator(params),
 	m_collisionGrid(-1,1,-1,1,0.5,this),
 	V_MAX(.0), W_MAX(.0),
-	turningRadiusReference(.0)
+	turningRadiusReference(.10),
+	m_resolution(0.05)
 {
 	this->V_MAX = params["v_max"];
 	this->W_MAX = params["w_max"];
-
-	turningRadiusReference = 0.10f;
-
-	MRPT_TODO("Move to initialize()?")
-	initializeCollisionsGrid( refDistance, params["resolution"] );
-}
-
-void CPTG_DiffDrive_CollisionGridBased::initializeCollisionsGrid(float refDistance,float resolution)
-{
-	m_collisionGrid.setSize( -refDistance,refDistance,-refDistance,refDistance,resolution );
+	this->m_resolution = params["resolution"];
+	this->turningRadiusReference = params.getWithDefaultVal("turningRadiusReference",turningRadiusReference);
 }
 
 void CPTG_DiffDrive_CollisionGridBased::freeMemory()
 {
 	m_trajectory.clear(); // Free trajectories
-	m_alphaValuesCount = 0; // This means the PTG is not initialized
 }
 
-/** Saves the simulated trajectories and other parameters to a target stream */
+MRPT_TODO("Replace all this by making PTGs CSerializable and not storing trajectories but only the params");
+#if 0
 void CPTG_DiffDrive_CollisionGridBased::saveTrajectories( mrpt::utils::CStream &out ) const
 {
 	const uint8_t serial_version = 1;
@@ -61,30 +55,13 @@ void CPTG_DiffDrive_CollisionGridBased::saveTrajectories( mrpt::utils::CStream &
 	out << m_alphaValuesCount << V_MAX << W_MAX << turningRadiusReference << refDistance;
 	out << m_trajectory;
 }
-
 /** Loads the simulated trajectories and other parameters from a target stream */
 std::string CPTG_DiffDrive_CollisionGridBased::loadTrajectories( mrpt::utils::CStream &in )
 {
 	freeMemory(); // Free previous paths
 	uint8_t serial_version;
 	in >> serial_version;
-
-	std::string desc;
-	in >> desc;
-
-	switch (serial_version)
-	{
-	case 1:
-		in >> m_alphaValuesCount >>  V_MAX >> W_MAX >> turningRadiusReference >> refDistance;
-		in >> m_trajectory;
-		break;
-
-	default:
-		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(serial_version);
-	};
-
-	return desc;
-}
+#endif
 
 mrpt::utils::CStream & mrpt::nav::operator << (mrpt::utils::CStream& o, const mrpt::nav::TCPoint & p)
 {
@@ -104,7 +81,6 @@ mrpt::utils::CStream & mrpt::nav::operator >> (mrpt::utils::CStream& i, mrpt::na
 	Solve trajectories and fill cells.
   ---------------------------------------------------------------*/
 void CPTG_DiffDrive_CollisionGridBased::simulateTrajectories(
-		uint16_t	    alphaValuesCount,
 		float			max_time,
 		float			max_dist,
 		unsigned int	max_n,
@@ -116,9 +92,6 @@ void CPTG_DiffDrive_CollisionGridBased::simulateTrajectories(
 	using mrpt::utils::square;
 
 	freeMemory(); // Free previous paths
-
-	// The number of discreet values for ALPHA:
-	this->m_alphaValuesCount = alphaValuesCount;
 
 	// Reserve the size in the buffers:
 	m_trajectory.resize( m_alphaValuesCount );
@@ -753,4 +726,155 @@ void CPTG_DiffDrive_CollisionGridBased::renderPathAsSimpleLine(
 		if (max_path_distance!=0.0f && d>=max_path_distance) break;
 	}
 }
+
+void CPTG_DiffDrive_CollisionGridBased::setRefDistance(const double refDist) 
+{ 
+	ASSERTMSG_(m_trajectory.empty(), "Changing reference distance not allowed in this class after initialization!");
+	this->refDistance = refDist;
+}
+
+void CPTG_DiffDrive_CollisionGridBased::setRobotShape(const mrpt::math::CPolygon & robotShape)
+{
+	ASSERTMSG_(m_trajectory.empty(), "Changing robot shape not allowed in this class after initialization!");
+	m_robotShape = robotShape;
+}
+
+void CPTG_DiffDrive_CollisionGridBased::deinitialize()
+{
+	this->freeMemory();
+}
+
+void CPTG_DiffDrive_CollisionGridBased::initialize(const std::string & cacheFilename, const bool verbose)
+{
+	using namespace std;
+
+	MRPT_START
+
+	if (verbose)
+		cout << endl << "[CPTG_DiffDrive_CollisionGridBased::initialize] Starting... *** THIS MAY TAKE A WHILE, BUT MUST BE COMPUTED ONLY ONCE!! **" << endl;
+
+	// Sanity checks:
+	ASSERTMSG_(!m_robotShape.empty(),"Robot shape was not defined");
+	ASSERTMSG_(m_robotShape.size()>=3,"Robot shape must have 3 or more vertices");
+	ASSERT_(refDistance>0);
+	ASSERT_(V_MAX>0);
+	ASSERT_(W_MAX>0);
+	ASSERT_(m_resolution>0);
+
+	mrpt::utils::CTicTac tictac;
+	tictac.Tic();
+
+	if (verbose) cout << "Initilizing PTG '" << cacheFilename << "'...";
+
+	// Simulate paths:
+	const float min_dist = 0.015f;
+	simulateTrajectories(
+		75,						// max.tim,
+		refDistance,			// max.dist,
+		10*refDistance/min_dist,	// max.n,
+		0.0005f,				// diferencial_t
+		min_dist					// min_dist
+		);
+
+	// Just for debugging, etc.
+	//debugDumpInFiles(n);
+
+
+	// Check for collisions between the robot shape and the grid cells:
+	// ----------------------------------------------------------------------------
+	m_collisionGrid.setSize( -refDistance,refDistance,-refDistance,refDistance, m_resolution );
+
+	const size_t Ki = getAlfaValuesCount();
+	ASSERTMSG_(Ki>0, "The PTG seems to be not initialized!");
+
+	// Load the cached version, if possible
+	if ( loadColGridsFromFile( cacheFilename, m_robotShape ) )
+	{
+		if (verbose)
+			cout << "loaded from file OK" << endl;
+	}
+	else
+	{
+		// BUGFIX: In case we start reading the file and in the end detected an error,
+		//         we must make sure that there's space enough for the grid:
+		m_collisionGrid.setSize( -refDistance,refDistance,-refDistance,refDistance,m_collisionGrid.getResolution());
+
+		const int grid_cx_max = m_collisionGrid.getSizeX()-1;
+		const int grid_cy_max = m_collisionGrid.getSizeY()-1;
+
+		const size_t nVerts = m_robotShape.verticesCount();
+		std::vector<mrpt::math::TPoint2D> transf_shape(nVerts); // The robot shape at each location
+
+		// RECOMPUTE THE COLLISION GRIDS:
+		// ---------------------------------------
+		for (size_t k=0;k<Ki;k++)
+		{
+			const size_t nPoints = getPointsCountInCPath_k(k);
+			ASSERT_(nPoints>1)
+
+			for (size_t n=0;n<(nPoints-1);n++)
+			{
+				// Translate and rotate the robot shape at this C-Space pose:
+				const double x   = GetCPathPoint_x( k,n );
+				const double y   = GetCPathPoint_y( k,n );
+				const double phi = GetCPathPoint_phi( k,n );
+
+				mrpt::math::TPoint2D bb_min(std::numeric_limits<double>::max(),std::numeric_limits<double>::max());
+				mrpt::math::TPoint2D bb_max(-std::numeric_limits<double>::max(),-std::numeric_limits<double>::max());
+
+				for (size_t m = 0;m<nVerts;m++)
+				{
+					transf_shape[m].x = x + cos(phi)*m_robotShape.GetVertex_x(m)-sin(phi)*m_robotShape.GetVertex_y(m);
+					transf_shape[m].y = y + sin(phi)*m_robotShape.GetVertex_x(m)+cos(phi)*m_robotShape.GetVertex_y(m);
+					mrpt::utils::keep_max( bb_max.x, transf_shape[m].x); mrpt::utils::keep_max( bb_max.y, transf_shape[m].y);
+					mrpt::utils::keep_min( bb_min.x, transf_shape[m].x); mrpt::utils::keep_min( bb_min.y, transf_shape[m].y);
+				}
+
+				// Robot shape polygon:
+				const mrpt::math::TPolygon2D poly(transf_shape);
+
+				// Get the range of cells that may collide with this shape:
+				const int ix_min = std::max(0,m_collisionGrid.x2idx(bb_min.x)-1);
+				const int iy_min = std::max(0,m_collisionGrid.y2idx(bb_min.y)-1);
+				const int ix_max = std::min(m_collisionGrid.x2idx(bb_max.x)+1,grid_cx_max);
+				const int iy_max = std::min(m_collisionGrid.y2idx(bb_max.y)+1,grid_cy_max);
+
+				for (int ix=ix_min;ix<ix_max;ix++)
+				{
+					const float cx = m_collisionGrid.idx2x(ix);
+
+					for (int iy=iy_min;iy<iy_max;iy++)
+					{
+						const float cy = m_collisionGrid.idx2y(iy);
+
+						if ( poly.contains( mrpt::math::TPoint2D(cx,cy) ) )
+						{
+							// Colision!! Update cell info:
+							const float d = GetCPathPoint_d(k,n);
+							m_collisionGrid.updateCellInfo(ix  ,iy  ,  k,d);
+							m_collisionGrid.updateCellInfo(ix-1,iy  ,  k,d);
+							m_collisionGrid.updateCellInfo(ix  ,iy-1,  k,d);
+							m_collisionGrid.updateCellInfo(ix-1,iy-1,  k,d);
+						}
+					}	// for iy
+				}	// for ix
+
+			} // n
+
+			if (verbose)
+				cout << k << "/" << Ki << ",";
+		} // k
+
+		if (verbose)
+			cout << format("Done! [%.03f sec]\n",tictac.Tac() );
+
+		// save it to the cache file for the next run:
+		saveColGridsToFile( cacheFilename, m_robotShape );
+
+	}	// "else" recompute all PTG
+
+	MRPT_END
+}
+
+
 

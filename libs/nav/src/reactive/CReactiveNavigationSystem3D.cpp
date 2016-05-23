@@ -10,7 +10,6 @@
 #include "nav-precomp.h" // Precomp header
 
 #include <mrpt/nav/reactive/CReactiveNavigationSystem3D.h>
-#include <mrpt/nav/tpspace/motion_planning_utils.h>
 #include <mrpt/poses/CPose3D.h>
 #include <typeinfo>  // For typeid()
 

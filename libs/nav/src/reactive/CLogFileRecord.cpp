@@ -126,12 +126,15 @@ void  CLogFileRecord::writeToStream(mrpt::utils::CStream &out,int *version) cons
 			out << *infoPerPTG[i].HLFR;
 
 			// Version 9: Removed security distances. Added optional field with PTG info.
+			MRPT_TODO("Replace all this by making PTGs CSerializable and not storing trajectories but only the params");
+#if 0
 			const bool there_is_ptg_data = infoPerPTG[i].ptg_trajectory.present();
 			out << there_is_ptg_data;
 			if (there_is_ptg_data)
 			{
 				infoPerPTG[i].ptg_trajectory->saveTrajectories( out );
 			}
+#endif
 		}
 		out << nSelectedPTG << WS_Obstacles << robotOdometryPose << WS_target_relative /*v8*/ << v << w << executionTime;
 
@@ -228,8 +231,11 @@ void  CLogFileRecord::readFromStream(mrpt::utils::CStream &in,int version)
 					in >> there_is_ptg_data;
 					if (there_is_ptg_data) 
 					{
+					MRPT_TODO("Replace all this by making PTGs CSerializable and not storing trajectories but only the params");
+#if 0
 						infoPerPTG[i].ptg_trajectory = CParameterizedTrajectoryGeneratorPtr( new CPTG_Dummy );
 						infoPerPTG[i].ptg_trajectory->loadTrajectories(in);
+#endif
 					}
 				}
 			}

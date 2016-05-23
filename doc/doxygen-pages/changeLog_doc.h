@@ -39,7 +39,9 @@
 		- \ref mrpt_maps_grp
 			- mrpt::maps::CMultiMetricMapPDF added method CMultiMetricMapPDF::prediction_and_update_pfAuxiliaryPFStandard().
 		- \ref mrpt_nav_grp
-			- Deprecated method of PTGs lambdaFunction() removed.
+			- PTG classes refactored (see new virtual base class mrpt::nav::CParameterizedTrajectoryGenerator and its derived classes):
+				- New separate classes for PTGs based on numerically-integrated paths and on closed-form formulations.
+				- Old deprecated method of PTGs `lambdaFunction()` removed.
 	- Changes in build system:
 		- [Windows only] `DLL`s/`LIB`s now have the signature `lib-${name}${2-digits-version}${compiler-name}_{x32|x64}.{dll/lib}`, allowing several MRPT versions to coexist in the system PATH.
 		- [Visual Studio only] There are no longer `pragma comment(lib...)` in any MRPT header, so it is the user responsibility to correctly tell user projects to link against MRPT libraries.

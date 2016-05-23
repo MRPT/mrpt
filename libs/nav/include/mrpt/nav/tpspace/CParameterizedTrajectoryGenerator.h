@@ -46,8 +46,9 @@ namespace nav
 		MRPT_MAKE_ALIGNED_OPERATOR_NEW
 	protected:
 		/** Constructor: possible values in "params":
-		 *   - "ref_distance": The maximum distance in PTGs [meters]
-		 * See docs of derived classes for additional parameters:
+		 *   - `num_paths`: The number of different paths in this family (number of discrete `alpha` values).
+		 *   - `ref_distance`: The maximum distance in PTGs [meters]
+		 * See docs of derived classes for additional parameters.
 		 */
 		CParameterizedTrajectoryGenerator(const mrpt::utils::TParameters<double> &params);
 
@@ -59,7 +60,7 @@ namespace nav
 		  *  Possible values in "params" are:
 		  *	  - "PTG_type": It's an integer number such as "1" -> CPTG1, "2"-> CPTG2, etc...
 		  *	  - Those explained in CParameterizedTrajectoryGenerator::CParameterizedTrajectoryGenerator
-		  *	  - Those explained in the specific PTG being created (e.g. CPTG1, CPTG2, etc...)
+		  *	  - Those explained in the specific PTG being created (see list of derived classes)
 		  *
 		  * \exception std::logic_error On invalid or missing parameters.
 		  */
@@ -68,10 +69,12 @@ namespace nav
 		/** @name Virtual interface of each PTG implementation 
 		 *  @{ */
 		virtual std::string getDescription() const = 0 ; //!< Gets a short textual description of the PTG and its parameters 
+
+		/** Must be called after setting all PTG parameters and before requesting converting obstacles to TP-Space, inverseMap_WS2TP(), etc. */
+		virtual void initialize(const std::string & cacheFilename = std::string(), const bool verbose = true) = 0;
 		
-		/** Returns true if the PTG is not based on closed-form equations and needs 
-		  * saving/loading precomputed tables to speed-up initialization. */
-		virtual bool needsPersistentStorage() const = 0 ; 
+		/** This must be called to de-initialize the PTG if some parameter is to be changed. After changing it, call initialize again */
+		virtual void deinitialize() = 0;
 
 		/** Computes the closest (alpha,d) TP coordinates of the trajectory point closest to the Workspace (WS) Cartesian coordinates (x,y).
 		  * \param[in] x X coordinate of the query point.
@@ -133,9 +136,6 @@ namespace nav
 		inline double getRefDistance() const { return refDistance; }
 
 protected:
-		/** Protected constructor for CPTG_Dummy; does not init collision grid. Not for normal usage */
-		CParameterizedTrajectoryGenerator() { }
-
 		double refDistance;
 		uint16_t  m_alphaValuesCount; //!< The number of discrete values for "alpha" between -PI and +PI.
 	}; // end of class

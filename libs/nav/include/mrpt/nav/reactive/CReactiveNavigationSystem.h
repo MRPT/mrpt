@@ -68,7 +68,7 @@ namespace mrpt
 			/** Change the robot shape, which is taken into account for collision
 			  *  grid building.
 			  */
-			void changeRobotShape( const math::CPolygon &shape );
+			void changeRobotShape( const mrpt::math::CPolygon &shape );
 
 			/** Returns the number of different PTGs that have been setup */
 			virtual size_t getPTG_count() const { return PTGs.size(); }

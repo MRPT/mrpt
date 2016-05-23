@@ -18,6 +18,7 @@
 #include <mrpt/utils/CTimeLogger.h>
 #include <mrpt/system/datetime.h>
 #include <mrpt/synch/CCriticalSection.h>
+#include <mrpt/math/CPolygon.h>
 
 namespace mrpt
 {
