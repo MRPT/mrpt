@@ -10,7 +10,6 @@
 #include "nav-precomp.h" // Precomp header
 
 #include <mrpt/nav/reactive/CAbstractPTGBasedReactive.h>
-#include <mrpt/nav/tpspace/CPTG_Dummy.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/math/ops_containers.h> // sum()
@@ -266,6 +265,8 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 			prev_logfile=m_logFile;
 			for (size_t i=0;i<nPTGs;i++)
 			{
+				MRPT_TODO("Replace all this by making PTGs CSerializable and not storing trajectories but only the params");
+#if 0
 				const mrpt::nav::CParameterizedTrajectoryGenerator* ptg = this->getPTG(i);
 				mrpt::utils::CMemoryStream memstr;
 				ptg->saveTrajectories(memstr);
@@ -274,6 +275,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 				ptg_data->loadTrajectories(memstr);
 
 				newLogRec.infoPerPTG[i].ptg_trajectory = ptg_data;
+#endif
 			}
 		}
 	}
@@ -428,7 +430,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 					ipf.TP_Obstacles.resize( Ki );
 					for (size_t k=0;k<Ki;k++)
 					{
-						ipf.TP_Obstacles[k] = ptg->refDistance;
+						ipf.TP_Obstacles[k] = ptg->getRefDistance();
 						// if the robot ends the trajectory due to a >180deg turn, set that as the max. distance, not D_{max}:
 						float phi = ptg->GetCPathPoint_phi(k,ptg->getPointsCountInCPath_k(k)-1);
 						if (fabs(phi) >= M_PI* 0.95f )

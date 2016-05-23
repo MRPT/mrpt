@@ -48,10 +48,6 @@ namespace nav
 		 *  @{ */
 		// getDescription(): remains to be defined in derived classes.
 		
-		bool needsPersistentStorage() const MRPT_OVERRIDE {
-			return true; // we use expensive LUTs
-		}
-
 		/** The default implementation in this class relies on a look-up-table. Derived classes may redefine this to closed-form expressions, when they exist.
 		  * See full docs in base class CParameterizedTrajectoryGenerator::inverseMap_WS2TP() */
 		virtual bool inverseMap_WS2TP(double x, double y, int &out_k, double &out_d, double tolerance_dist = 0.10) const MRPT_OVERRIDE;
@@ -66,26 +62,23 @@ namespace nav
 		
 		/** Launches an exception in this class: it is not allowed in numerical integration-based PTGs to change the reference distance 
 		  * after initialization. */
-		virtual void setRefDistance(const double refDist) { refDistance=refDist; }
+		virtual void setRefDistance(const double refDist);
+
+		/** This this family of PTGs, this method builds the collision grid or load it from a cache file.
+		  * Collision grids must be calculated before calling getTPObstacle().
+		  * Robot shape must be set before initializing with setRobotShape(). 
+		  * The rest of PTG parameters should have been set at the constructor.
+		  *  \param cacheFilename The filename where the collision grids will be dumped to speed-up future recalculations. If it exists upon call, the collision grid will be loaded from here if all PTG parameters match. Example: "PTG_%03d.dat.gz".
+		  */
+		void initialize(const std::string & cacheFilename = std::string(), const bool verbose = true) MRPT_OVERRIDE;
+
+		void deinitialize() MRPT_OVERRIDE;
 
 		/** @} */  // --- end of virtual methods
 
-		/** Numerically solve the diferential equations to generate a family of trajectories */
-		void simulateTrajectories(
-				uint16_t	    alphaValuesCount,
-				float			max_time,
-				float			max_dist,
-				unsigned int	max_n,
-				float			diferencial_t,
-				float			min_dist,
-				float			*out_max_acc_v = NULL,
-				float			*out_max_acc_w = NULL);
+		/** Sets the robot shape. Must be called before initialize() */
+		void setRobotShape(const mrpt::math::CPolygon & robotShape);
 
-		/** Saves the simulated trajectories and other parameters to a target stream */
-		void saveTrajectories( mrpt::utils::CStream &out ) const;
-		/** Loads the simulated trajectories and other parameters from a target stream. \return The PTG textual description */
-		virtual std::string loadTrajectories( mrpt::utils::CStream &in );
-		
 		size_t getPointsCountInCPath_k(uint16_t k)  const { return m_trajectory[k].size(); };
 
 		float   getMax_V() const { return V_MAX; }
@@ -102,6 +95,31 @@ namespace nav
 		float  GetCPathPoint_d( uint16_t k, int n ) const { return m_trajectory[k][n].dist; }
 		float  GetCPathPoint_v( uint16_t k, int n ) const { return m_trajectory[k][n].v; }
 		float  GetCPathPoint_w( uint16_t k, int n ) const { return m_trajectory[k][n].w; }
+
+protected:
+		/** Constructor: possible values in "params":
+		 *   - resolution: The cell size
+		 *   - v_max, w_max: Maximum robot speeds.
+		 *
+		 * See docs of derived classes for additional parameters:
+		 */
+		CPTG_DiffDrive_CollisionGridBased(const mrpt::utils::TParameters<double> &params);
+
+		double V_MAX, W_MAX;
+		double turningRadiusReference;
+		std::vector<TCPointVector> m_trajectory;
+		mrpt::math::CPolygon       m_robotShape;
+		double                     m_resolution;
+
+		/** Numerically solve the diferential equations to generate a family of trajectories */
+		void simulateTrajectories(
+				float			max_time,
+				float			max_dist,
+				unsigned int	max_n,
+				float			diferencial_t,
+				float			min_dist,
+				float			*out_max_acc_v = NULL,
+				float			*out_max_acc_w = NULL);
 
 		/**  A list of all the pairs (alpha,distance) such as the robot collides at that cell.
 		  *  - map key   (uint16_t) -> alpha value (k)
@@ -138,33 +156,11 @@ namespace nav
 
 		}; // end of class CColisionGrid
 
-		/** The collision grid */
-		CColisionGrid	m_collisionGrid;
-
 		// Save/Load from files.
 		bool saveColGridsToFile( const std::string &filename, const mrpt::math::CPolygon & computed_robotShape ) const;	// true = OK
 		bool loadColGridsFromFile( const std::string &filename, const mrpt::math::CPolygon & current_robotShape ); // true = OK
-protected:
-		/** Constructor: possible values in "params":
-		 *   - resolution: The cell size
-		 *   - v_max, w_max: Maximum robot speeds.
-		 *
-		 * See docs of derived classes for additional parameters:
-		 */
-		CPTG_DiffDrive_CollisionGridBased(const mrpt::utils::TParameters<double> &params);
 
-		/** Private ctor, only for use within CPTG_Dummy */
-		CPTG_DiffDrive_CollisionGridBased() : 
-			CParameterizedTrajectoryGenerator(),
-			m_collisionGrid(-1,1,-1,1,0.5,this)
-		{}
-
-		/** Initialized the collision grid with the given size and resolution. */
-		void initializeCollisionsGrid(float refDistance,float resolution);
-
-		double V_MAX, W_MAX;
-		double turningRadiusReference;
-		std::vector<TCPointVector>	m_trajectory;
+		CColisionGrid	m_collisionGrid; //!< The collision grid
 
 		/** Specifies the min/max values for "k" and "n", respectively.
 		  * \sa m_lambdaFunctionOptimizer

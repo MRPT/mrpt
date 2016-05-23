@@ -16,9 +16,9 @@ using namespace mrpt::nav;
 std::string CParameterizedTrajectoryGenerator::OUTPUT_DEBUG_PATH_PREFIX = "./reactivenav.logs";
 
 
-CParameterizedTrajectoryGenerator::CParameterizedTrajectoryGenerator(const mrpt::utils::TParameters<double> &params) :
-	m_alphaValuesCount(0)
+CParameterizedTrajectoryGenerator::CParameterizedTrajectoryGenerator(const mrpt::utils::TParameters<double> &params)
 {
-	this->refDistance	= params["ref_distance"];
+	refDistance        = params["ref_distance"];
+	m_alphaValuesCount = params["num_paths"];
 }
 

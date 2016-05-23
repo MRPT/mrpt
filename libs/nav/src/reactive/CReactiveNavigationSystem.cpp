@@ -10,7 +10,7 @@
 #include "nav-precomp.h" // Precomp header
 
 #include <mrpt/nav/reactive/CReactiveNavigationSystem.h>
-#include <mrpt/nav/tpspace/motion_planning_utils.h>
+#include <mrpt/nav/tpspace/CPTG_DiffDrive_CollisionGridBased.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/utils/CConfigFileMemory.h>
 #include <typeinfo>  // For typeid()
@@ -143,7 +143,14 @@ void CReactiveNavigationSystem::loadConfigFile(const mrpt::utils::CConfigFileBas
 		params["cte_a0v"]	= DEG2RAD( ini.read_float(robotName,format("PTG%u_cte_a0v_deg", n ), 0, false) );
 		params["cte_a0w"]	= DEG2RAD( ini.read_float(robotName,format("PTG%u_cte_a0w_deg", n ), 0, false) );
 
-		const int nAlfas = ini.read_int(robotName,format("PTG%u_nAlfas", n ),100, true );
+		// For backwards compat with old config files:
+		const int num_paths1  = ini.read_int(robotName,format("PTG%u_nAlfas", n ),-1, false);
+		// New recommended param name:
+		const int num_paths2 = ini.read_int(robotName,format("PTG%u_num_paths", n ),-1,false);
+		if (num_paths1<=0 && num_paths2<=0)
+			THROW_EXCEPTION_CUSTOM_MSG1("Missing configuration parameter: `PTG%u_num_paths`",n);
+
+		params["num_paths"] = num_paths2 > 0 ? num_paths2 : num_paths1;
 
 		// Generate it:
 		printf_debug("[loadConfigFile] Generating PTG#%u...",n);
@@ -152,20 +159,17 @@ void CReactiveNavigationSystem::loadConfigFile(const mrpt::utils::CConfigFileBas
 
 		printf_debug(PTGs[n]->getDescription().c_str());
 
-		const float min_dist = 0.015f;
-		m_timelogger.enter("PTG.simulateTrajectories");
-		PTGs[n]->simulateTrajectories(
-		    nAlfas,					// alphas,
-		    75,						// max.tim,
-		    refDistance,			// max.dist,
-		    10*refDistance/min_dist,	// max.n,
-		    0.0005f,				// diferencial_t
-		    min_dist					// min_dist
-			);
-		m_timelogger.leave("PTG.simulateTrajectories");
+		// Set robot shape:
+		{
+			mrpt::nav::CPTG_DiffDrive_CollisionGridBased *ptg = dynamic_cast<mrpt::nav::CPTG_DiffDrive_CollisionGridBased *>(PTGs[n]);
+			if (ptg)
+				ptg->setRobotShape(m_robotShape);
+		}
 
-		// Just for debugging, etc.
-		//PTGs[n]->debugDumpInFiles(n);
+		PTGs[n]->initialize(
+			format("%s/ReacNavGrid_%s_%03u.dat.gz",ptg_cache_files_directory.c_str(), robotName.c_str(),n),
+			m_enableConsoleOutput /*verbose*/
+			);
 
 		printf_debug("...OK!\n");
 	}

@@ -13,7 +13,6 @@
 #if MRPT_ENABLE_PRECOMPILED_HDRS
 
 #include <mrpt/nav/reactive/CAbstractReactiveNavigationSystem.h>
-#include <mrpt/nav/tpspace/motion_planning_utils.h>
 
 #endif
 

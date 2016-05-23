@@ -17,7 +17,7 @@ namespace mrpt
   {
 		/** A 3D robot shape stored as a "sliced" stack of 2D polygons, used for CReactiveNavigationSystem3D */
 		struct TRobotShape {
-				std::vector<math::CPolygon>	polygons;		// The polygonal bases
+				std::vector<mrpt::math::CPolygon>	polygons;		// The polygonal bases
 				std::vector<float>			heights;		// Heights of the prisms
 		};
 		
