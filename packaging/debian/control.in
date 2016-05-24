@@ -33,7 +33,7 @@ Build-Depends: debhelper (>= 9),
 	libfreenect-dev (>= 0.2) | perl,
 	libpcap-dev,
 	libopenni2-dev | perl
-Standards-Version: 3.9.6
+Standards-Version: 3.9.7
 Homepage: http://www.mrpt.org/
 
 Package: mrpt-doc
