@@ -196,11 +196,11 @@ namespace mrpt
 			  */
 			typedef std::deque<CObservationPtr>::const_iterator	const_iterator;
 
-			/** Returns a iterator to the first observation: this is an example of usage:
+			/** Returns a constant iterator to the first observation: this is an example of usage:
 			  * \code
 			  *   CSensoryFrame  sf;
 			  *   ...
-			  *   for (CSensoryFrame::iterator it=sf.begin();it!=sf.end();++it)
+			  *   for (CSensoryFrame::const_iterator it=sf.begin();it!=sf.end();++it)
 			  *	  {
 			  *      (*it)->... // (*it) is a "CObservation*"
 			  *   }
@@ -209,11 +209,11 @@ namespace mrpt
 			  */
 			const_iterator begin() const { return m_observations.begin(); }
 
-			/** Returns a iterator to the end of the list of observations: this is an example of usage:
+			/** Returns a constant iterator to the end of the list of observations: this is an example of usage:
 			  * \code
 			  *   CSensoryFrame  sf;
 			  *   ...
-			  *   for (CSensoryFrame::iterator it=sf.begin();it!=sf.end();++it)
+			  *   for (CSensoryFrame::const_iterator it=sf.begin();it!=sf.end();++it)
 			  *	  {
 			  *      (*it)->... // (*it) is a "CObservation*"
 			  *   }
