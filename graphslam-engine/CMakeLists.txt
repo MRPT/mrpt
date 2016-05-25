@@ -69,7 +69,9 @@ set(REQUIRED_LIBS
     graphslam
     gui
     obs
+    maps
     hwdrivers 
+    slam
     opengl )
 
 # These commands are needed by modern versions of CMake:
@@ -123,5 +125,7 @@ IF(${CMAKE_PROJECT_NAME} STREQUAL "MRPT") # Fails if build outside of MRPT proje
         mrpt-obs
         mrpt-hwdrivers #needed for CPlanarLaserScan.h
         mrpt-opengl
+        mrpt-slam
+        mrpt-maps
         ) # Dependencies
 ENDIF(${CMAKE_PROJECT_NAME} STREQUAL "MRPT")
