@@ -87,7 +87,7 @@ int pnpalgo_dls(MatrixBase<Derived>& obj_pts, MatrixBase<Derived>& img_pts, int 
 	
 	MatrixXd cam_in_eig=cam_intrinsic.array().transpose(), img_pts_eig=img_pts.array().transpose(), obj_pts_eig=obj_pts.array().transpose(), t_eig;
 	Matrix3d R_eig; 
-	Mat cam_in_cv(3,3,CV_32F), img_pts_cv(n,2,CV_32F), obj_pts_cv(n,3,CV_32F), R_cv, t_cv;
+	Mat cam_in_cv(3,3,CV_32F), img_pts_cv(2,n,CV_32F), obj_pts_cv(3,n,CV_32F), R_cv(3,3,CV_32F), t_cv(3,1,CV_32F);
 	
 	//cout<<"cam_in="<<endl<<cam_in_eig<<endl<<endl;
 	//cout<<"obj_pts="<<endl<<obj_pts_eig<<endl<<endl;
