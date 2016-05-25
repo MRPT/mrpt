@@ -61,9 +61,10 @@ int main(int argc, char **argv)
     // Initialize the class
     GraphSlamEngine_t<CNetworkOfPoses2DInf> g_engine(config_fname, 
         &win);
+    
+    //g_engine.testEdgeCounterObject();
 
     g_engine.parseLaserScansFile();
-
 
     // saving the graph to external file
     g_engine.saveGraph();
