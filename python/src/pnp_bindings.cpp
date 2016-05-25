@@ -8,9 +8,10 @@ using namespace boost::python;
 #include <eigen3/Eigen/Dense>
 using namespace Eigen;
 
+#include <mrpt/vision/pnp_algos.h>
 #include <mrpt/vision/epnp.h>
 #include <mrpt/vision/dls.h>
-#include <mrpt/vision/pnp_algos.h>
+#include <mrpt/vision/upnp.h>
 
 #include <opencv2/opencv.hpp>
 #include <opencv2/core/eigen.hpp>
@@ -24,6 +25,8 @@ public:
 	
 	int epnp_solve(PyObject* obj_pts, PyObject* img_pts, int n, PyObject* cam_intrinsic, PyObject* pose_mat);
 	int dls_solve(PyObject* obj_pts, PyObject* img_pts, int n, PyObject* cam_intrinsic, PyObject* pose_mat);
+	int upnp_solve(PyObject* obj_pts, PyObject* img_pts, int n, PyObject* cam_intrinsic, PyObject* pose_mat);
+	
 private:
 	int m;
 };
@@ -33,6 +36,7 @@ PnPAlgos::PnPAlgos( int new_m ){
 }
 PnPAlgos::~PnPAlgos(){
 }
+
 
 template<typename Derived>
 int pnpalgo_epnp(MatrixBase<Derived>& obj_pts, MatrixBase<Derived>& img_pts, int n, MatrixBase<Derived>& cam_intrinsic, MatrixBase<Derived>& pose_mat){
@@ -124,6 +128,50 @@ int pnpalgo_dls(MatrixBase<Derived>& obj_pts, MatrixBase<Derived>& img_pts, int 
 	return 1;
 }
 
+template<typename Derived>
+int pnpalgo_upnp(MatrixBase<Derived>& obj_pts, MatrixBase<Derived>& img_pts, int n, MatrixBase<Derived>& cam_intrinsic, MatrixBase<Derived>& pose_mat){
+	
+	MatrixXd cam_in_eig=cam_intrinsic.array().transpose(), img_pts_eig=img_pts.array().transpose(), obj_pts_eig=obj_pts.array().transpose(), t_eig;
+	Matrix3d R_eig; 
+	Mat cam_in_cv(3,3,CV_32F), img_pts_cv(2,n,CV_32F), obj_pts_cv(3,n,CV_32F), R_cv, t_cv;
+	
+	//cout<<"cam_in="<<endl<<cam_in_eig<<endl<<endl;
+	//cout<<"obj_pts="<<endl<<obj_pts_eig<<endl<<endl;
+	//cout<<"img_pts="<<endl<<img_pts_eig<<endl<<endl;
+	
+	eigen2cv(cam_in_eig, cam_in_cv);
+	eigen2cv(img_pts_eig, img_pts_cv);
+	eigen2cv(obj_pts_eig, obj_pts_cv);
+	
+	//cout<<cam_in_cv<<endl;
+	//cout<<img_pts_cv<<endl;
+	//cout<<obj_pts_cv<<endl;
+	
+	upnp u(cam_in_cv, obj_pts_cv, img_pts_cv);
+	u.compute_pose(R_cv,t_cv);
+	
+	//cout<<R_cv<<endl;
+	//cout<<t_cv<<endl;
+	
+	cv2eigen(R_cv, R_eig);
+	cv2eigen(t_cv, t_eig);
+	
+	Quaterniond q(R_eig);
+	
+	pose_mat << t_eig,q.vec();
+	
+	//cout<<"R_eig="<<endl<<R_eig<<endl<<endl;
+	//cout<<"t_eig="<<endl<<t_eig<<endl<<endl;
+	
+	//pose_mat.block(0,0,3,3)=R_eig;
+	//pose_mat.block(0,3,3,1)=t_eig;
+	//pose_mat.row(3)<<0,0,0,1;
+	
+	//cout<<"pose_mat="<<endl<<pose_mat_eig<<endl<<endl;
+	
+	return 1;
+}
+
 int PnPAlgos::epnp_solve(PyObject* obj_pts, PyObject* img_pts, int n, PyObject* cam_intrinsic, PyObject* pose_mat){
 	Map<MatrixXd> _obj_pts((double *) PyArray_DATA((PyArrayObject*)obj_pts),3,n);
 	Map<MatrixXd> _img_pts((double *) PyArray_DATA((PyArrayObject*)img_pts),2,n);
@@ -142,10 +190,21 @@ int PnPAlgos::dls_solve(PyObject* obj_pts, PyObject* img_pts, int n, PyObject* c
 	return pnpalgo_dls(_obj_pts, _img_pts, n, _cam_intrinsic, _pose_mat);
 }
 
+
+int PnPAlgos::upnp_solve(PyObject* obj_pts, PyObject* img_pts, int n, PyObject* cam_intrinsic, PyObject* pose_mat){
+	Map<MatrixXd> _obj_pts((double *) PyArray_DATA((PyArrayObject*)obj_pts),3,n);
+	Map<MatrixXd> _img_pts((double *) PyArray_DATA((PyArrayObject*)img_pts),2,n);
+	Map<MatrixXd> _pose_mat((double *) PyArray_DATA((PyArrayObject*)pose_mat),6,1);
+	Map<MatrixXd> _cam_intrinsic((double *) PyArray_DATA((PyArrayObject*)cam_intrinsic),3,3);
+	
+	return pnpalgo_upnp(_obj_pts, _img_pts, n, _cam_intrinsic, _pose_mat);
+}
+
 void export_pnp()
 {
     class_<PnPAlgos>("pnp", init<int>(args("m")))
         .def("epnp_solve", &PnPAlgos::epnp_solve)
         .def("dls_solve", &PnPAlgos::dls_solve)
+        .def("upnp_solve", &PnPAlgos::upnp_solve)
     ;
 }
