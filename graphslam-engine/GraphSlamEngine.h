@@ -34,9 +34,9 @@
 #include <mrpt/slam/CICP.h>
 #include <mrpt/slam/CMetricMapBuilder.h>
 #include <mrpt/slam/CMetricMapBuilderICP.h>
-#include <mrpt/graphslam.h>
 #include <mrpt/graphs.h>
 #include <mrpt/graphs/CNetworkOfPoses.h>
+#include <mrpt/graphslam.h>
 #include <mrpt/gui.h>
 #include <mrpt/opengl.h>
 #include <mrpt/opengl/CPlanarLaserScan.h> // It's in the lib mrpt-maps now
@@ -61,13 +61,13 @@ using namespace mrpt::gui;
 using namespace mrpt::opengl;
 using namespace mrpt::slam;
 using namespace mrpt::maps;
+using namespace mrpt::graphslam;
 
 using namespace std;
 
 bool verbose = true;
 #define VERBOSE_COUT  if (verbose) std::cout << "[graphslam_engine] "
 
-// TODO - have CPOSE as a template parameter as well
 template <class GRAPH_t>
 class GraphSlamEngine_t {
   public:
@@ -82,236 +82,93 @@ class GraphSlamEngine_t {
             constraint_t::state_length, constraint_t::state_length> InfMat;
 
 
-    // Ctors, Dtors, init fun.
+    // Ctors, Dtors
     //////////////////////////////////////////////////////////////
     GraphSlamEngine_t(const string& config_file,
-        CDisplayWindow3D* win = NULL ):
-      kOffsetYStep(20.0), // textMessage vertical text position
-      kIndexTextStep(1) // textMessage index
-    {
-      m_win = win;
-
-      m_config_fname = config_file;
-      this->initGraphSlamEngine();
-    };
+        CDisplayWindow3D* win = NULL );
     ~GraphSlamEngine_t();
 
-    // IO funs
+    // Public function definitions
     //////////////////////////////////////////////////////////////
     /**
      * Wrapper fun around the GRAPH_t corresponding method
      */
     void saveGraph() const {
+      MRPT_START
+
       if (!m_has_read_config) {
         THROW_EXCEPTION("Config file has not been provided yet.\nExiting...");
       }
       string fname = m_output_dir_fname + "/" + m_save_graph_fname;
       saveGraph(fname);
 
+      MRPT_END
     }
-    void saveGraph(std::string fname) const {
-      graph.saveToTextFile(fname);
+    /**
+     * Wrapper fun around the GRAPH_t corresponding method
+     */
+    void saveGraph(const string& fname) const {
+      MRPT_START
+
+      m_graph.saveToTextFile(fname);
       VERBOSE_COUT << "Saved graph to text file: " << fname <<
         " successfully." << endl;
+
+      MRPT_END
     }
-    void dumpGraphToConsole() const {}
     /** 
      * Read the configuration file specified and fill in the corresponding
      * class members
      */
-   void readConfigFile(const std::string& fname);
+   void readConfigFile(const string& fname);
     /**
      * Print the problem parameters (usually fetched from a configuration file)
      * to the console for verification
      *
-     * \sa GraphSlamEngine_t::parseLaserScansFile
+     * \sa GraphSlamEngine_t::parseRawlogFile
      */
-    void printProblemParams();
+    void printProblemParams() const;
     /**
      * TODO - Make this a function template so that it can handle camera
      * images, laser scan files, etc.
      * Reads the file provided and builds the graph 
      */
-    void parseLaserScansFile();
+    void parseRawlogFile();
     /**
-     * Initialize (clean up and create new files) the output directory
-     * Also provides cmd line arguements for the user to choose the desired
-     * action.
-     * \sa GraphSlamEngine_t::initResultsFile
-     */
-    void initOutputDir();
-
-
-
-    /**
-     * Have the graph as a public variable so that you don't have to write all
-     * the setters and getters for it.
-     */
-    GRAPH_t graph;
-
-    // function for testing purposes
-    // TODO - delete/move this
-    void testEdgeCounterObject() {
-      MRPT_START
-
-      // create instance
-      EdgeCounter_t edge_counter(m_win);
-
-      int a;
-      edge_counter.addEdgeType("odometry");
-      edge_counter.getNumForEdgeType("odometry", &a);
-      cout << "a = " << a << endl;
-
-      int b = edge_counter.getNumForEdgeType("odometry");
-      cout << "b = " << a << endl;
-
-      // this throws correctly - already initialized
-      //edge_counter.addEdge("odometry", /* is_loop_closure = */ false, /*is_new = */ true);
-
-      // this throws correctly - both true
-      //edge_counter.addEdge("odometry", /* is_loop_closure = */ true, /*is_new = */ true);
-
-      // adding / removing edges of type odometry
-      cout << "Total Number of edges: " << edge_counter.getTotalNumOfEdges() << endl;
-      cout << "Odometry edges: " << edge_counter.getNumForEdgeType("odometry") << endl;
-      edge_counter.addEdge("odometry");
-      cout <<  "Odometry edges after another addition: "<< edge_counter.getNumForEdgeType("odometry") << endl;
-      cout << "Total Number of edges: " << edge_counter.getTotalNumOfEdges() << endl;
-
-
-      // works correctly
-      // initialize ICP constraints using addEdgeType method
-      edge_counter.addEdgeType("ICP");
-      edge_counter.addEdge("ICP");
-      edge_counter.addEdge("ICP");
-      edge_counter.addEdge("ICP");
-      edge_counter.addEdge("ICP");
-      cout << "Total Number of edges: " << edge_counter.getTotalNumOfEdges() << endl;
-      cout << "Odometry edges: " << edge_counter.getNumForEdgeType("odometry") << endl;
-      cout << "ICP edges: " << edge_counter.getNumForEdgeType("ICP") << endl;
-
-
-      // 3rd type of edge.
-      // works correctly
-      edge_counter.addEdgeType("Visual");
-      edge_counter.addEdge("Visual");
-      edge_counter.addEdge("Visual", /* is_loop_closure */ true);
-      edge_counter.addEdge("Visual", /* is_loop_closure */ true);
-      edge_counter.addEdge("Visual");
-
-      // works correctly
-      edge_counter.printEdgesSummary();
-      
-      // works correctly
-      //edge_counter.clearAllEdges();
-      //edge_counter.printEdgesSummary();
-      
-      // setTextMessageParams usage
-
-      // edges - general text
-      string edges_text = "Edges: ";
-      double offset_y_edges;
-      int text_index_edges;
-      this->assignTextMessageParameters(&offset_y_edges, &text_index_edges);
-      m_win->addTextMessage(5,-offset_y_edges, 
-          edges_text,
-          TColorf(1.0, 1.0, 1.0),
-          m_font_name, m_font_size, // font name & size
-          mrpt::opengl::NICE,
-          /* unique_index = */ text_index_edges );
-
-      // build each one of the others
-      map<string, double> name_to_offset_y;
-      map<string, int> name_to_text_index;
-      const char* strings[] = {"odometry", "ICP", "Visual"};
-      vector<string> vec_strings(strings, strings + 3);
-      for (vector<string>::const_iterator it = vec_strings.begin(); it != vec_strings.end();
-          ++it) {
-        this->assignTextMessageParameters(&name_to_offset_y[*it], &name_to_text_index[*it]);
-        cout << "in testEdgeCounterObject: " << endl;
-        cout << "name: " << *it << " | offset_y: " << name_to_offset_y[*it] << " | text_index: " << name_to_text_index[*it] << endl;
-      }
-      edge_counter.setTextMessageParams(name_to_offset_y, name_to_text_index, 
-          m_font_name, m_font_size);
-      edge_counter.updateTextMessages();
-
-      edge_counter.addEdge("Visual", /* is_loop_closure */ true);
-      edge_counter.addEdge("Visual");
-      edge_counter.printEdgesSummary();
-      edge_counter.updateTextMessages();
-
-      MRPT_END
-    }
-
-    
-
-
-  private:
-    // METHODS
-    //////////////////////////////////////////////////////////////
-
-
-    /**
-     * GraphSlamEngine_t::getICPEdge
+     * GraphslamEngine_t::optmizeGraph
      *
-     * Align the laser scans of the given poses and compute a constraint
-     * between them.
-     * 
+     * Optimize the under-construction graph
      */
-    bool getICPEdge(const TNodeID& from,
-        const TNodeID& to,
-        constraint_t *rel_edge ) {
+    inline void optimizeGraph(GRAPH_t graph) {
       MRPT_START
 
-      assert(m_has_read_config);
+      cout << "Executing the graph optimization" << endl;
 
-      // get the laser scan measurements
-      CObservation2DRangeScanPtr prev_laser_scan = m_nodes_to_laser_scans[from];
-      CObservation2DRangeScanPtr curr_laser_scan = m_nodes_to_laser_scans[to];
+      // TODO: read these throught the .ini file
+      // params for the optimization of the graph
+      TParametersDouble  optimization_params;
+      optimization_params["verbose"]  = 0;
+      optimization_params["profiler"] = 0;
+      optimization_params["max_iterations"] = 500;
+      optimization_params["scale_hessian"] = 0.1;  // If <1, will "exagerate" the scale of the gradient and, normally, will converge much faster.
+      optimization_params["tau"] = 1e-3;
+      // e2: Lev-marq algorithm iteration stopping criterion #2: |delta_incr| < e2*(x_norm+e2)
+      //optimization_params["e1"] = 1e-6;
+      //optimization_params["e2"] = 1e-6;
 
-      // Uses m_ICP member variable
-      CSimplePointsMap m1,m2;
-      float running_time;
-      CICP::TReturnInfo info;
+      graphslam::TResultInfoSpaLevMarq  levmarq_info;
 
-      // use the difference of the node positions as an initial alignment
-      // estimation
-      graph.dijkstra_nodes_estimate();
-      pose_t initial_pose = graph.nodes[to] - graph.nodes[from];
-      
-      //CPose2D initial_pose(0.0f,0.0f,(float)DEG2RAD(0.0f));
-
-
-      m1.insertObservation(&(*prev_laser_scan));
-      m2.insertObservation(&(*curr_laser_scan));
-
-      CPosePDFPtr pdf = m_ICP.Align(
-          &m1,
-          &m2,
-          initial_pose, 
-          &running_time,
-          (void*)&info);
-
-//      VERBOSE_COUT << "getICPEdge: goodness: " 
-//                   << info.goodness << endl;
-      if (info.goodness > m_ICP_goodness_thres) {
-        rel_edge->copyFrom(*pdf); 
-        
-//        VERBOSE_COUT << "initial estimate: " << endl 
-//                     << initial_pose << endl;
-//        VERBOSE_COUT << "relative edge: " << endl
-//                     << rel_edge->getMeanVal() << endl;
-        return true;
-      }
-      return false;
+      // Execute the optimization
+      optimize_graph_spa_levmarq(
+          graph,
+          levmarq_info,
+          NULL,  // List of nodes to optimize. NULL -> all but the root node.
+          optimization_params,
+          NULL); // functor feedback
+          //&optimization_feedback);
 
       MRPT_END
     }
-    /**
-     * Method to automate the creation of the output result files
-     * Open and write an introductory message using the provided fname
-     */
-    void initResultsFile(const string& fname);
 
     /**
      * GraphSlamEngine_t::visualizeGraph
@@ -319,14 +176,60 @@ class GraphSlamEngine_t {
      * Called internally for updating the vizualization scene for the graph
      * building procedure
      */
-    void visualizeGraph(const GRAPH_t& gr);
+    inline void visualizeGraph(const GRAPH_t& gr);
+    /**
+     * GRAPH_t getter function - return reference to own graph
+     * Handy function for visualization, printing purposes
+     */
+    const GRAPH_t& getGraph() const { return m_graph; } 
+
+  private:
+    // Private function definitions
+    //////////////////////////////////////////////////////////////
+
+    //static void optimization_feedback(
+        //const GRAPH_t& graph,
+        //const size_t iter,
+        //const size_t max_iter,
+        //const double cur_sq_error )
+    //{
+      //m_log_sq_err_evolution.push_back(std::log(cur_sq_error));
+      //if ((iter % 100)==0)
+        //cout << "Progress: " << iter << " / " << max_iter << ", total sq err = " << cur_sq_error << endl;
+    //}
+
+
+    /**
+     * General initialization method to call from the different Ctors
+     */
+    void initGraphSlamEngine();
+    /**
+     * Initialize (clean up and create new files) the output directory
+     * Also provides cmd line arguements for the user to choose the desired
+     * action.
+     * \sa GraphSlamEngine_t::initResultsFile
+     */
+    void initOutputDir();
+    /**
+     * Method to automate the creation of the output result files
+     * Open and write an introductory message using the provided fname
+     */
+    void initResultsFile(const string& fname);
+    /**
+     * GraphSlamEngine_t::getICPEdge
+     *
+     * Align the laser scans of the given poses and compute a constraint
+     * between them. Return the goodness of the ICP operation and let the user
+     * decide if they want to keep it as an edge or not
+     */
+    inline double getICPEdge(const TNodeID& from, const TNodeID& to, constraint_t *rel_edge );
     /**
      * assignTextMessageParameters
      *
      * Assign the next available offset_y and text_index for the textMessage under
-     * construction
+     * construction. Then increment the respective current counters
      */
-    void assignTextMessageParameters(double* offset_y, int* text_index) {
+    inline void assignTextMessageParameters(double* offset_y, int* text_index) {
       *offset_y = m_curr_offset_y;
       m_curr_offset_y += kOffsetYStep;
 
@@ -334,170 +237,11 @@ class GraphSlamEngine_t {
       m_curr_text_index += kIndexTextStep;
     }
 
-    /**
-     * General initialization method to call from all the Ctors
-     */
-    void initGraphSlamEngine() {
-
-      /**
-       * Initialization of member variables
-       */
-
-      m_is3D = constraint_t::is_3D_val;
-
-      // max node number already in the graph
-      m_nodeID_max = 0;
-
-      graph.root = TNodeID(0);
-
-      // register the available optimizers
-      optimizer_codes["levmarq"] = 0;
-      optimizer_codes["isam"] = 1;
-
-      // initialize the necessary maps for graph information
-      graph_to_name[&graph] = "optimized_graph";
-      graph_to_viz_params[&graph] = &m_optimized_graph_viz_params;
-
-      // Current Text Position
-      m_curr_offset_y = 30.0;
-      m_curr_text_index = 1;
-
-      // Calling of initalization-relevant functions
-      this->readConfigFile(m_config_fname);
-      this->initOutputDir();
-      this->printProblemParams();
-      
-      /**
-       * Visualization-related parameters initialization
-       */
-
-
-      // timestamp
-      this->assignTextMessageParameters(&m_offset_y_timestamp, 
-                                        &m_text_index_timestamp);
-
-      // optimized graph
-      assert(m_has_read_config);
-      if (m_visualize_optimized_graph) {
-        this->assignTextMessageParameters( /* offset_y*   = */ &m_offset_y_graph,
-            /* text_index* = */ &m_text_index_graph );
-      }
-
-
-      // odometry visualization
-      assert(m_has_read_config);
-      if (m_visualize_odom_poses) {
-        this->assignTextMessageParameters( /* offset_y*   = */ &m_offset_y_odometry,
-            /* text_index* = */ &m_text_index_odometry);
-
-        COpenGLScenePtr scene = m_win->get3DSceneAndLock();
-
-        CPointCloudPtr odom_poses_cloud = CPointCloud::Create();
-        scene->insert(odom_poses_cloud);
-        odom_poses_cloud->setPointSize(2.0);
-        odom_poses_cloud->enablePointSmooth();
-        odom_poses_cloud->enableColorFromY();
-        odom_poses_cloud->setName("odom_poses_cloud");
-
-        m_win->unlockAccess3DScene();
-
-        m_win->addTextMessage(5,-m_offset_y_odometry, 
-                              format("Odometry path"),
-                              TColorf(0.0, 0.0, 1.0),
-                              m_font_name, m_font_size, // font name & size
-                              mrpt::opengl::NICE,
-                              /* unique_index = */ m_text_index_odometry );
-
-        m_win->forceRepaint(); 
-      }
-
-      // axis
-      {
-        COpenGLScenePtr scene = m_win->get3DSceneAndLock();
-
-        CAxisPtr obj = CAxis::Create();
-        obj->setFrequency(5);
-        obj->enableTickMarks();
-        obj->setAxisLimits(-10,-10,-10, 10,10,10);
-        obj->setName("axis");
-        scene->insert(obj);
-
-        m_win->unlockAccess3DScene();
-        m_win->forceRepaint();
-      }
-
-      m_edge_counter.setVisualizationWindow(m_win);
-
-      {
-        // "Edges: " header text in the vizualization window
-        string edges_text = "Edges: ";
-        double offset_y_edges;
-        int text_index_edges;
-        this->assignTextMessageParameters(&offset_y_edges, &text_index_edges);
-        m_win->addTextMessage(5,-offset_y_edges, 
-            edges_text,
-            TColorf(1.0, 1.0, 1.0),
-            m_font_name, m_font_size, // font name & size
-            mrpt::opengl::NICE,
-            /* unique_index = */ text_index_edges );
-      }
-
-      // register the types of edges that are going to be displayed in the
-      // visualization window
-      {
-        // total edges / loop closures
-        double offset_y_total_edges, offset_y_loop_closures;
-        int text_index_total_edges, text_index_loop_closures;
-
-        this->assignTextMessageParameters(&offset_y_total_edges, &text_index_total_edges);
-        cout << "in GraphSlamEngine:  " << endl 
-             << "offset_y_total_edges: " << offset_y_total_edges << endl
-             << "text_index_total_edges: " << text_index_total_edges << endl;
-
-        // constraint types..
-        
-        const char* strings[] = {"odometry", "ICP", "Visual"};
-        //vector<string> vec_strings(strings, strings + 3);
-
-        // register all the edge types
-        vector<string> vec_edge_types;
-        vec_edge_types.push_back("Odometry"); m_edge_counter.addEdgeType("Odometry");
-        vec_edge_types.push_back("ICP");      m_edge_counter.addEdgeType("ICP");
-        vec_edge_types.push_back("Visual");   m_edge_counter.addEdgeType("Visual");
-
-        // build each one of these
-        map<string, double> name_to_offset_y;
-        map<string, int> name_to_text_index;
-        for (vector<string>::const_iterator it = vec_edge_types.begin(); it != vec_edge_types.end();
-            ++it) {
-          this->assignTextMessageParameters(&name_to_offset_y[*it], &name_to_text_index[*it]);
-          //cout << "in initGraphSlamEngine: " << endl;
-          //cout << "name: " << *it << " | offset_y: " 
-                           //<< name_to_offset_y[*it] << " | text_index: " 
-                           //<< name_to_text_index[*it] << endl;
-        }
-
-        this->assignTextMessageParameters(&offset_y_loop_closures, &text_index_loop_closures);
-        cout << "in GraphSlamEngine:  " << endl 
-             << "offset_y_loop_closures: " << offset_y_loop_closures << endl
-             << "text_index_loop_closures: " << text_index_loop_closures <<endl;
-
-        // add all the parameters to the EdgeCounter_t object
-        m_edge_counter.setTextMessageParams(name_to_offset_y, name_to_text_index, 
-            offset_y_total_edges, text_index_total_edges,
-            offset_y_loop_closures, text_index_loop_closures,
-            m_font_name, m_font_size);
-          //m_edge_counter.setTextMessageParams(name_to_offset_y, name_to_text_index,
-              //m_font_name, m_font_size);
-          
-      }
-
-
-    }
-
-
     // VARIABLES
     //////////////////////////////////////////////////////////////
+
+    // the graph object to be built and optimized
+    GRAPH_t m_graph;
 
     /**
      * Problem parameters.
@@ -564,9 +308,7 @@ class GraphSlamEngine_t {
     // functions
     EdgeCounter_t m_edge_counter;
 
-    /** 
-     * std::maps to store information about the graphs
-     */
+    // std::maps to store information about the graph(s)
     map<const GRAPH_t*, string> graph_to_name;
     map<const GRAPH_t*, TParametersDouble*> graph_to_viz_params;
 
@@ -578,18 +320,38 @@ class GraphSlamEngine_t {
 
     // ICP configuration
     float m_ICP_goodness_thres;
-    size_t m_prev_nodes_for_ICP; // add ICP constraints with m_prev_nodes_for_ICP nodes back
+    int m_prev_nodes_for_ICP; // add ICP constraints with m_prev_nodes_for_ICP nodes back
     map<TNodeID, CObservation2DRangeScanPtr> m_nodes_to_laser_scans;
     CICP m_ICP;
 
+    // graph optimization
+
+    // Container to handle the propagation of the square root error of the problem
+    vector<double> m_log_sq_err_evolution;
+
+    // TODO - Implement the map building procedure
     //CMetricMapBuilderICP map_builder;
 
 };
 
+// Ctors, Dtors
+//////////////////////////////////////////////////////////////
+
+template<class GRAPH_t>
+GraphSlamEngine_t<GRAPH_t>::GraphSlamEngine_t(const string& config_file,
+    CDisplayWindow3D* win /* = NULL */):
+  kOffsetYStep(20.0), // textMessage vertical text position
+  kIndexTextStep(1) // textMessage index
+{
+  m_win = win;
+
+  m_config_fname = config_file;
+  this->initGraphSlamEngine();
+};
 
 template<class GRAPH_t>
 GraphSlamEngine_t<GRAPH_t>::~GraphSlamEngine_t() {
-  VERBOSE_COUT << "Deleting GraphSlamEngine_t instance..." << endl;
+  //VERBOSE_COUT << "Deleting GraphSlamEngine_t instance..." << endl;
 
   // close all open files
   for (fstreams_it it  = m_out_streams.begin(); it != m_out_streams.end(); ++it) {
@@ -601,14 +363,185 @@ GraphSlamEngine_t<GRAPH_t>::~GraphSlamEngine_t() {
 }
 
 
+// Member functions implementations
+//////////////////////////////////////////////////////////////
+
 template<class GRAPH_t>
-void GraphSlamEngine_t<GRAPH_t>::parseLaserScansFile() {
+void GraphSlamEngine_t<GRAPH_t>::initGraphSlamEngine() {
+  MRPT_START
+
+  /**
+   * Optimization related parameters 
+   */
+
+  // register the available optimizers
+  optimizer_codes["levmarq"] = 0;
+  optimizer_codes["isam"] = 1;
+
+  m_log_sq_err_evolution.clear();
+
+  /**
+   * Initialization of various member variables
+   */
+
+  // initialize the necessary maps for graph information
+  graph_to_name[&m_graph] = "optimized_graph";
+  graph_to_viz_params[&m_graph] = &m_optimized_graph_viz_params;
+
+
+  m_is3D = constraint_t::is_3D_val;
+
+  // max node number already in the graph
+  m_nodeID_max = 0;
+
+  m_graph.root = TNodeID(0);
+
+
+  // Calling of initalization-relevant functions
+  this->readConfigFile(m_config_fname);
+  this->initOutputDir();
+  this->printProblemParams();
+
+  /**
+   * Visualization-related parameters initialization
+   */
+
+  // Current Text Position
+  m_curr_offset_y = 30.0;
+  m_curr_text_index = 1;
+
+  // timestamp
+  this->assignTextMessageParameters(&m_offset_y_timestamp, 
+      &m_text_index_timestamp);
+
+  // optimized graph
+  assert(m_has_read_config);
+  if (m_visualize_optimized_graph) {
+    this->assignTextMessageParameters( /* offset_y*   = */ &m_offset_y_graph,
+        /* text_index* = */ &m_text_index_graph );
+  }
+
+
+  // odometry visualization
+  assert(m_has_read_config);
+  if (m_visualize_odom_poses) {
+    this->assignTextMessageParameters( /* offset_y*   = */ &m_offset_y_odometry,
+        /* text_index* = */ &m_text_index_odometry);
+
+    COpenGLScenePtr scene = m_win->get3DSceneAndLock();
+
+    CPointCloudPtr odom_poses_cloud = CPointCloud::Create();
+    scene->insert(odom_poses_cloud);
+    odom_poses_cloud->setPointSize(2.0);
+    odom_poses_cloud->enablePointSmooth();
+    odom_poses_cloud->enableColorFromY();
+    odom_poses_cloud->setName("odom_poses_cloud");
+
+    m_win->unlockAccess3DScene();
+
+    m_win->addTextMessage(5,-m_offset_y_odometry, 
+        format("Odometry path"),
+        TColorf(0.0, 0.0, 1.0),
+        m_font_name, m_font_size, // font name & size
+        mrpt::opengl::NICE,
+        /* unique_index = */ m_text_index_odometry );
+
+    m_win->forceRepaint(); 
+  }
+
+  // axis
+  {
+    COpenGLScenePtr scene = m_win->get3DSceneAndLock();
+
+    CAxisPtr obj = CAxis::Create();
+    obj->setFrequency(5);
+    obj->enableTickMarks();
+    obj->setAxisLimits(-10,-10,-10, 10,10,10);
+    obj->setName("axis");
+    scene->insert(obj);
+
+    m_win->unlockAccess3DScene();
+    m_win->forceRepaint();
+  }
+
+  m_edge_counter.setVisualizationWindow(m_win);
+
+  {
+    // "Edges: " header text in the vizualization window
+    string edges_text = "Edges: ";
+    double offset_y_edges;
+    int text_index_edges;
+    this->assignTextMessageParameters(&offset_y_edges, &text_index_edges);
+    m_win->addTextMessage(5,-offset_y_edges, 
+        edges_text,
+        TColorf(1.0, 1.0, 1.0),
+        m_font_name, m_font_size, // font name & size
+        mrpt::opengl::NICE,
+        /* unique_index = */ text_index_edges );
+  }
+
+  // register the types of edges that are going to be displayed in the
+  // visualization window
+  {
+    // total edges / loop closures
+    double offset_y_total_edges, offset_y_loop_closures;
+    int text_index_total_edges, text_index_loop_closures;
+
+    this->assignTextMessageParameters(&offset_y_total_edges, &text_index_total_edges);
+    //cout << "in GraphSlamEngine:  " << endl 
+    //<< "offset_y_total_edges: " << offset_y_total_edges << endl
+    //<< "text_index_total_edges: " << text_index_total_edges << endl;
+
+    // constraint types..
+
+    const char* strings[] = {"odometry", "ICP", "Visual"};
+    //vector<string> vec_strings(strings, strings + 3);
+
+    // register all the edge types
+    vector<string> vec_edge_types;
+    vec_edge_types.push_back("Odometry"); m_edge_counter.addEdgeType("Odometry");
+    vec_edge_types.push_back("ICP");      m_edge_counter.addEdgeType("ICP");
+    vec_edge_types.push_back("Visual");   m_edge_counter.addEdgeType("Visual");
+
+    // build each one of these
+    map<string, double> name_to_offset_y;
+    map<string, int> name_to_text_index;
+    for (vector<string>::const_iterator it = vec_edge_types.begin(); it != vec_edge_types.end();
+        ++it) {
+      this->assignTextMessageParameters(&name_to_offset_y[*it], &name_to_text_index[*it]);
+      //cout << "in initGraphSlamEngine: " << endl;
+      //cout << "name: " << *it << " | offset_y: " 
+      //<< name_to_offset_y[*it] << " | text_index: " 
+      //<< name_to_text_index[*it] << endl;
+    }
+
+    this->assignTextMessageParameters(&offset_y_loop_closures, &text_index_loop_closures);
+    //cout << "in GraphSlamEngine:  " << endl 
+    //<< "offset_y_loop_closures: " << offset_y_loop_closures << endl
+    //<< "text_index_loop_closures: " << text_index_loop_closures <<endl;
+
+    // add all the parameters to the EdgeCounter_t object
+    m_edge_counter.setTextMessageParams(name_to_offset_y, name_to_text_index, 
+        offset_y_total_edges, text_index_total_edges,
+        offset_y_loop_closures, text_index_loop_closures,
+        m_font_name, m_font_size);
+    //m_edge_counter.setTextMessageParams(name_to_offset_y, name_to_text_index,
+    //m_font_name, m_font_size);
+
+  }
+
+
+  MRPT_END
+}
+
+template<class GRAPH_t>
+void GraphSlamEngine_t<GRAPH_t>::parseRawlogFile() {
   MRPT_START
 
   if (!m_has_read_config)
     THROW_EXCEPTION("Config file has not been provided yet.\nExiting...");
   if (!fileExists(m_rawlog_fname))
-    THROW_EXCEPTION("parseLaserScansFile: Inputted rawlog file ( " 
+    THROW_EXCEPTION("parseRawlogFile: Inputted rawlog file ( " 
         << m_rawlog_fname << " ) not found");
 
  // good to go.. 
@@ -619,6 +552,7 @@ void GraphSlamEngine_t<GRAPH_t>::parseLaserScansFile() {
   CObservationPtr observation;
   size_t curr_rawlog_entry = 0;
 
+  // TODO unused - delete it?
   bool end = false;
 
   // Tracking the PDF of the current position of the robot - use a
@@ -633,7 +567,7 @@ void GraphSlamEngine_t<GRAPH_t>::parseLaserScansFile() {
   pose_t last_pose_inserted;
   constraint_t cur_pathPDF(last_pose_inserted, init_path_uncertainty); 
 
-  TNodeID from = graph.root; // first node shall be the root - 0
+  TNodeID from = m_graph.root; // first node shall be the root - 0
 
 
   // Read the first rawlog pair / observation explicitly to registre the laser
@@ -651,14 +585,14 @@ void GraphSlamEngine_t<GRAPH_t>::parseLaserScansFile() {
     else {
       CObservation2DRangeScanPtr curr_laser_scan =
         observations->getObservationByClass<CObservation2DRangeScan>();
-      m_nodes_to_laser_scans[graph.root] = curr_laser_scan;
+      m_nodes_to_laser_scans[m_graph.root] = curr_laser_scan;
     }
   }
 
-    /** 
-     * Read the rest of the rawlog file
-     */
-    while (CRawlog::getActionObservationPairOrObservation(
+  /** 
+   * Read the rest of the rawlog file
+   */
+  while (CRawlog::getActionObservationPairOrObservation(
         rawlog_file,
         action,               // Possible out var: Action of a a pair action / obs
         observations,         // Possible out var: obs's of a pair actin     / obs
@@ -739,7 +673,7 @@ void GraphSlamEngine_t<GRAPH_t>::parseLaserScansFile() {
        * Determine whether to insert a new pose in the graph given the
        * distance and angle thresholds
        */
-      // TODO - add different color to edges based on where they come from
+      // TODO - consider adding different color to edges based on where they come from
       if ( (last_pose_inserted.distanceTo(odom_pose_tot) > m_distance_threshold) ||
           fabs(wrapToPi(last_pose_inserted.phi() - odom_pose_tot.phi())) > m_angle_threshold ) {
 
@@ -752,60 +686,85 @@ void GraphSlamEngine_t<GRAPH_t>::parseLaserScansFile() {
           rel_edge.mean = cur_pathPDF.getMeanVal() - last_pose_inserted;
           rel_edge.cov_inv = cur_pathPDF.cov_inv;
 
-          graph.nodes[to] = odom_pose_tot;
-          graph.insertEdgeAtEnd(from, to, rel_edge);
+          m_graph.nodes[to] = odom_pose_tot;
+          m_graph.insertEdgeAtEnd(from, to, rel_edge);
           m_edge_counter.addEdge("Odometry");
-          //graph.insertEdgeAtEnd(from, to, odom_pose_tot - last_pose_inserted);
+          //m_graph.insertEdgeAtEnd(from, to, odom_pose_tot - last_pose_inserted);
+
+          //TODO - remove these
+          //double distance = (last_pose_inserted.distanceTo(odom_pose_tot));
+          //double angle = fabs(last_pose_inserted.phi() - odom_pose_tot.phi());
+          //VERBOSE_COUT << "Added new odometry edge to the graph (# " << m_nodeID_max + 1<< " )" << endl;
+          //VERBOSE_COUT << "prev_pose = " << last_pose_inserted << endl;
+          //VERBOSE_COUT << "new_pose  = " << odom_pose_tot << endl;
+          //VERBOSE_COUT << "distance: " << distance << "m | " 
+          //<< "angle: " << RAD2DEG(wrapToPi(angle)) << " deg" << endl;
+          //VERBOSE_COUT << "Relative uncertainty between nodes: " << endl
+          //<< cur_pathPDF.cov_inv << endl;
+
         }
 
         /**
-         * add ICP constraint with each one of the previous nodes
+         * add ICP constraint with "some" of the previous nodes
          */
 
         CObservation2DRangeScanPtr curr_laser_scan =
           observations->getObservationByClass<CObservation2DRangeScan>();
         m_nodes_to_laser_scans[m_nodeID_max] = curr_laser_scan;
 
+        /**
+         * ICP constraints with previous nodes
+         */
         // try and add an ICP constraint between the current and some of the
-        // previous nodes
+        // previous nodes. If m_prev_nodes_for_ICP = -1 try adding with all of
+        // the other nodes
+        cout << "Testing ICP for node: " << m_nodeID_max << endl;
+        cout << endl;
+        
+        int nodes_to_check = 0; // how many nodes to check ICP against
+        switch ( m_prev_nodes_for_ICP ) {
+          case -1: {
+            nodes_to_check = m_graph.nodeCount() - 1;
+            cout << "Checking ICP against all other nodes in the graph." << endl;
+            break;
+          }
+          default: {
+            nodes_to_check = m_prev_nodes_for_ICP;
+            cout << "Checking ICP against " << nodes_to_check << " nodes in the graph." << endl;
+            break;
+          }
+        }
+
         for (TNodeID prev_node = m_nodeID_max-1; 
-            prev_node != (m_nodeID_max - m_prev_nodes_for_ICP - 1) ; --prev_node) {
+            prev_node != (m_nodeID_max - nodes_to_check - 1) ; --prev_node) {
 
           // make sure you have enough nodes to start adding edges
-          if (m_nodeID_max < m_prev_nodes_for_ICP)
+          if (m_nodeID_max < nodes_to_check)
             break;
 
           CObservation2DRangeScanPtr prev_laser_scan = m_nodes_to_laser_scans[prev_node]; 
           constraint_t rel_edge;
-          //cout << "prev_node: " << prev_node << endl;
-          bool success = this->getICPEdge(prev_node, to, &rel_edge);
-          if (success) {
-            VERBOSE_COUT << "successfully alligned laserscans." << endl;
+          double ICP_goodness = this->getICPEdge(prev_node, to, &rel_edge);
+          if (ICP_goodness > m_ICP_goodness_thres) {
+            VERBOSE_COUT << "Adding ICP constraints betwen nodes " 
+                        << to << ", " << prev_node << "." << endl;
             VERBOSE_COUT << "Adding edge: " << endl << rel_edge << endl;
-            graph.insertEdge(prev_node, to, rel_edge);
+            m_graph.insertEdge(prev_node, to, rel_edge);
+            VERBOSE_COUT << "ICP goodness: " << ICP_goodness << endl;
             m_edge_counter.addEdge("ICP");
           }
         }
 
         // optimize the graph - LM
+        this->optimizeGraph(m_graph);
 
 
         // update the visualization window
         if (m_visualize_optimized_graph) {
-          visualizeGraph(graph);
+          visualizeGraph(m_graph);
         }
 
 
-        ////TODO - remove these
-        //double distance = (last_pose_inserted.distanceTo(odom_pose_tot));
-        //double angle = fabs(last_pose_inserted.phi() - odom_pose_tot.phi());
-        //VERBOSE_COUT << "Added new odometry edge to the graph (# " << m_nodeID_max + 1<< " )" << endl;
-        //VERBOSE_COUT << "prev_pose = " << last_pose_inserted << endl;
-        //VERBOSE_COUT << "new_pose  = " << odom_pose_tot << endl;
-        //VERBOSE_COUT << "distance: " << distance << "m | " 
-        //<< "angle: " << RAD2DEG(wrapToPi(angle)) << " deg" << endl;
-        //VERBOSE_COUT << "Relative uncertainty between nodes: " << endl
-        //<< cur_pathPDF.cov_inv << endl;
 
 
         // Change the current uncertainty of cur_pathPDF so that it measures
@@ -824,7 +783,6 @@ MRPT_END
 
 template<class GRAPH_t>
 void GraphSlamEngine_t<GRAPH_t>::visualizeGraph(const GRAPH_t& gr) {
-  // TODO - add preprocessor flags for compilation of visualization part 
   
   string gr_name = graph_to_name[&gr];
   const TParametersDouble* viz_params = graph_to_viz_params[&gr];
@@ -874,7 +832,7 @@ void GraphSlamEngine_t<GRAPH_t>::visualizeGraph(const GRAPH_t& gr) {
 }
 
 template<class GRAPH_t>
-void GraphSlamEngine_t<GRAPH_t>::readConfigFile(const std::string& fname) {
+void GraphSlamEngine_t<GRAPH_t>::readConfigFile(const string& fname) {
   MRPT_START
 
   CConfigFile cfg_file(fname);
@@ -916,11 +874,6 @@ void GraphSlamEngine_t<GRAPH_t>::readConfigFile(const std::string& fname) {
       "GraphSLAMParameters",
       "optimizer",
       "levmarq", false);
-  m_prev_nodes_for_ICP = cfg_file.read_int(
-      "GraphSLAMParameters",
-      "prev_nodes_for_ICP",
-      3, false);
-
   // Section: LoopClosingParameters 
   // ////////////////////////////////
   m_loop_closing_alg = cfg_file.read_string(
@@ -958,6 +911,11 @@ void GraphSlamEngine_t<GRAPH_t>::readConfigFile(const std::string& fname) {
   //// ////////////////////////////////
   //mapBuilder.ICP_params.loadFromConfigFile ( iniFile, "ICP");
   m_ICP.options.loadFromConfigFile(cfg_file, "ICP");
+
+  m_prev_nodes_for_ICP = cfg_file.read_int(
+      "ICP",
+      "prev_nodes_for_ICP",
+      3, false);
   m_ICP_goodness_thres = cfg_file.read_double(
       "ICP",
       "goodness_to_accept",
@@ -1051,7 +1009,7 @@ void GraphSlamEngine_t<GRAPH_t>::readConfigFile(const std::string& fname) {
 
 // TODO - add the new values from visualization part
 template<class GRAPH_t>
-void GraphSlamEngine_t<GRAPH_t>::printProblemParams() {
+void GraphSlamEngine_t<GRAPH_t>::printProblemParams() const {
   MRPT_START
 
   assert(m_has_read_config);
@@ -1159,8 +1117,9 @@ void GraphSlamEngine_t<GRAPH_t>::initOutputDir() {
           }
           break;
         }
-      }
-    }
+      } // SWITCH (ANSWER_INT)
+    } // IF DIRECTORY EXISTS.. 
+
     // Now rebuild the directory from scratch
     VERBOSE_COUT << "Creating the new directory structure..." << endl;
     string cur_fname;
@@ -1176,7 +1135,7 @@ void GraphSlamEngine_t<GRAPH_t>::initOutputDir() {
   }
   
   MRPT_END
-}
+} // end of initOutputDir
 
 template <class GRAPH_t>
 void GraphSlamEngine_t<GRAPH_t>::initResultsFile(const string& fname) {
@@ -1196,6 +1155,53 @@ void GraphSlamEngine_t<GRAPH_t>::initResultsFile(const string& fname) {
   else {
     THROW_EXCEPTION("Error while trying to open " <<  fname)
   }
+
+  MRPT_END
+}
+
+template <class GRAPH_t>
+double GraphSlamEngine_t<GRAPH_t>::getICPEdge(const TNodeID& from,
+    const TNodeID& to,
+    constraint_t *rel_edge ) {
+  MRPT_START
+
+    assert(m_has_read_config);
+
+  // get the laser scan measurements
+  CObservation2DRangeScanPtr prev_laser_scan = m_nodes_to_laser_scans[from];
+  CObservation2DRangeScanPtr curr_laser_scan = m_nodes_to_laser_scans[to];
+
+  // Uses m_ICP member variable
+  CSimplePointsMap m1,m2;
+  float running_time;
+  CICP::TReturnInfo info;
+
+  // use the difference of the node positions as an initial alignment
+  // estimation
+  m_graph.dijkstra_nodes_estimate();
+  pose_t initial_pose = m_graph.nodes[to] - m_graph.nodes[from];
+
+  //CPose2D initial_pose(0.0f,0.0f,(float)DEG2RAD(0.0f));
+
+
+  m1.insertObservation(&(*prev_laser_scan));
+  m2.insertObservation(&(*curr_laser_scan));
+
+  CPosePDFPtr pdf = m_ICP.Align(
+      &m1,
+      &m2,
+      initial_pose, 
+      &running_time,
+      (void*)&info);
+
+  //VERBOSE_COUT << "getICPEdge: goodness: " 
+  //<< info.goodness << endl;
+  //VERBOSE_COUT << "initial estimate: " << endl 
+  //<< initial_pose << endl;
+  //VERBOSE_COUT << "relative edge: " << endl
+  //<< rel_edge->getMeanVal() << endl;
+  rel_edge->copyFrom(*pdf);  // return the edge regardless of the goodness of the alignment
+  return info.goodness;
 
   MRPT_END
 }

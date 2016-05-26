@@ -67,6 +67,7 @@ set(SRC_FILES
 set(CMAKE_BINARY_DIR "./build/")
 set(REQUIRED_LIBS
     graphslam
+    graphs
     gui
     obs
     maps
@@ -121,6 +122,7 @@ ENDIF(CMAKE_COMPILER_IS_GNUCXX AND NOT CMAKE_BUILD_TYPE MATCHES "Debug")
 IF(${CMAKE_PROJECT_NAME} STREQUAL "MRPT") # Fails if build outside of MRPT project.
     DeclareAppDependencies(${PROJECT_NAME} 
         mrpt-graphslam
+        mrpt-graphs
         mrpt-gui
         mrpt-obs
         mrpt-hwdrivers #needed for CPlanarLaserScan.h
