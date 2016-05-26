@@ -37,6 +37,15 @@ class EdgeCounter_t {
 
       this->clearAllEdges();
       m_has_read_textmessage_params = false;
+      
+      // default font-related variables
+      m_font_name = "Sans";
+      m_font_size = 20;
+
+      // visualization parameters for total edges / loop closures
+      m_display_total_edges = false; m_display_loop_closures = false;
+      m_offset_y_total_edges =   0.0; m_offset_y_loop_closures = 0.0;
+      m_text_index_total_edges = 0; m_text_index_loop_closures = 0;
 
     }
 
@@ -50,7 +59,7 @@ class EdgeCounter_t {
     }
     /**
      * Return the total amount of registered edges
-     * \sa getTotalNumberOfEdges(int* total_num_edges) 
+     * \sa getTotalNumOfEdges(int* total_num_edges) 
      */
     int getTotalNumOfEdges() const {
       int sum = 0;
@@ -178,6 +187,8 @@ class EdgeCounter_t {
       m_name_to_text_index.clear();
 
       m_has_read_textmessage_params = false;
+      m_display_total_edges         = false;
+      m_display_loop_closures       = false;
     }
 
     /**
@@ -191,12 +202,13 @@ class EdgeCounter_t {
       ss_out << "---------------------------" << endl;
 
       ss_out << "\t Total edges: " << this->getTotalNumOfEdges() << endl;
-      ss_out << "\t Loop closure edges: " << this->getLoopClosureEdges() << endl;
 
       for (map<string, int>::const_iterator it = m_name_to_edges_num.begin();
           it != m_name_to_edges_num.end(); ++it) {
         ss_out << "\t " << it->first << " edges: " << it->second << endl;
       }
+      ss_out << "\t Loop closure edges: " << this->getLoopClosureEdges() << endl;
+
       cout << ss_out.str() << endl;
     }
 
@@ -207,7 +219,7 @@ class EdgeCounter_t {
      * setVisualizationWindow
      *
      * Add the visualization window. Handy function for not having to
-     * explicitly specify it in the constructor
+     * specify it in the class constructor
      */
     void setVisualizationWindow(CDisplayWindow3D* win) { m_win = win; }
 
@@ -221,6 +233,14 @@ class EdgeCounter_t {
     void setTextMessageParams(const map<string, double>& name_to_offset_y,
         const map<string, int>& name_to_text_index,
         const string& font_name, const int& font_size) {
+
+      //cout << "in setTextMessageParams " << endl 
+        //<< "m_offset_y_total_edges: " << m_offset_y_total_edges << endl
+        //<< "m_text_index_total_edges: " << m_text_index_total_edges << endl;
+      //cout << "in setTextMessageParams:  " << endl 
+        //<< "m_offset_y_loop_closures: " << m_offset_y_loop_closures << endl
+        //<< "m_text_index_loop_closures" << m_text_index_loop_closures << endl;
+
 
       assert(m_win);
       assert(name_to_offset_y.size() == name_to_text_index.size());
@@ -257,16 +277,73 @@ class EdgeCounter_t {
     }
 
     /**
+     * setTextMessageParams
+     *
+     * Handles the extra visualization parameters for the total number of edges
+     * and for loop closures and then passes execution to the other
+     * setTextMessageParams function.
+     */
+    void setTextMessageParams(const map<string, double>& name_to_offset_y,
+        const map<string, int>& name_to_text_index,
+        const double& offset_y_total_edges, const int& text_index_total_edges, 
+        const double& offset_y_loop_closures, const int& text_index_loop_closures,
+        const string& font_name, const int& font_size) {
+
+        //cout << "in setTextMessageParams (extended) " << endl 
+             //<< "offset_y_total_edges: " << offset_y_total_edges << endl
+             //<< "text_index_total_edges" << text_index_total_edges <<endl;
+        //cout << "in setTextMessageParams (extended):  " << endl 
+             //<< "offset_y_loop_closures: " << offset_y_loop_closures << endl
+             //<< "text_index_loop_closures" << text_index_loop_closures << endl;
+
+      // set the parameters for total edges / loop closures
+      m_display_total_edges = true; 
+      m_display_loop_closures = true;
+
+      m_offset_y_total_edges = offset_y_total_edges;
+      m_offset_y_loop_closures = offset_y_loop_closures;
+      
+      m_text_index_total_edges = text_index_total_edges;
+      m_text_index_loop_closures = text_index_loop_closures;
+
+      // pass execution to the other setTextMessageParams
+      this->setTextMessageParams(name_to_offset_y, name_to_text_index, 
+          font_name, font_size);
+
+    }
+
+    /**
      * updateTextMessages
      *
      * Updates the given CDisplayWindow3D with the edges registered so far.
      */
     void updateTextMessages() const {
       //cout << "In updateTextMessages fun" << endl;
+      //cout << "m_display_total_edges: " << m_display_total_edges << endl;
+      //cout << "m_offset_y_total_edges: " << m_offset_y_total_edges << endl;
+      //cout << "m_text_index_total_edges: " << m_text_index_total_edges << endl;
+      //cout << "m_display_loop_closures: " << m_display_loop_closures << endl;
+      //cout << "m_offset_y_loop_closures: " << m_offset_y_loop_closures << endl;
+      //cout << "m_text_index_loop_closures: " << m_text_index_loop_closures << endl;
+      //cout << endl;
 
       assert(m_win);
       assert(m_has_read_textmessage_params);
       assert(m_name_to_offset_y.size() == m_name_to_text_index.size());
+      
+      //Add text message for the total amount of edges
+      if (m_display_total_edges) {
+        cout << "Updating total amount of edges" << endl;
+        stringstream title; 
+        title << "  " << "Total edges: " <<  this->getTotalNumOfEdges() << endl;
+        m_win->addTextMessage(5,-m_offset_y_total_edges,
+          title.str(),
+          TColorf(1.0, 1.0, 1.0),
+          m_font_name, m_font_size, // font name & size
+          mrpt::opengl::NICE,
+          /* unique_index = */ m_text_index_total_edges);
+        cout << "Updating total amount of edges" << endl;
+      }
 
       // add a textMessage for every stored edge type
       for (map<string, double>::const_iterator it = m_name_to_offset_y.begin(); 
@@ -288,6 +365,21 @@ class EdgeCounter_t {
             mrpt::opengl::NICE,
             /* unique_index = */ text_index);
       }
+
+
+      // add text message for the loop closures 
+      if (m_display_loop_closures) {
+        stringstream title; 
+        title << "  " << "Loop closing edges: " <<  m_num_loop_closures << endl;
+        m_win->addTextMessage(5,-m_offset_y_loop_closures,
+          title.str(),
+          TColorf(1.0, 1.0, 1.0),
+          m_font_name, m_font_size, // font name & size
+          mrpt::opengl::NICE,
+          /* unique_index = */ m_text_index_loop_closures);
+      }
+
+      m_win->forceRepaint();
     }
 
   private:
@@ -304,6 +396,11 @@ class EdgeCounter_t {
     string m_font_name;
     int m_font_size;
     bool m_has_read_textmessage_params;
+
+    // specifics to loop closures, total edges
+    bool m_display_total_edges, m_display_loop_closures; // whether to show them at all
+    int m_offset_y_total_edges, m_offset_y_loop_closures;
+    int m_text_index_total_edges, m_text_index_loop_closures;
 
 };
 

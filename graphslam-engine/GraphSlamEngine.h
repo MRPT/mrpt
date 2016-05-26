@@ -292,15 +292,15 @@ class GraphSlamEngine_t {
           &running_time,
           (void*)&info);
 
-      VERBOSE_COUT << "getICPEdge: goodness: " 
-                   << info.goodness << endl;
+//      VERBOSE_COUT << "getICPEdge: goodness: " 
+//                   << info.goodness << endl;
       if (info.goodness > m_ICP_goodness_thres) {
         rel_edge->copyFrom(*pdf); 
         
-        VERBOSE_COUT << "initial estimate: " << endl 
-                     << initial_pose << endl;
-        VERBOSE_COUT << "relative edge: " << endl
-                     << rel_edge->getMeanVal() << endl;
+//        VERBOSE_COUT << "initial estimate: " << endl 
+//                     << initial_pose << endl;
+//        VERBOSE_COUT << "relative edge: " << endl
+//                     << rel_edge->getMeanVal() << endl;
         return true;
       }
       return false;
@@ -445,6 +445,17 @@ class GraphSlamEngine_t {
       // register the types of edges that are going to be displayed in the
       // visualization window
       {
+        // total edges / loop closures
+        double offset_y_total_edges, offset_y_loop_closures;
+        int text_index_total_edges, text_index_loop_closures;
+
+        this->assignTextMessageParameters(&offset_y_total_edges, &text_index_total_edges);
+        cout << "in GraphSlamEngine:  " << endl 
+             << "offset_y_total_edges: " << offset_y_total_edges << endl
+             << "text_index_total_edges: " << text_index_total_edges << endl;
+
+        // constraint types..
+        
         const char* strings[] = {"odometry", "ICP", "Visual"};
         //vector<string> vec_strings(strings, strings + 3);
 
@@ -465,10 +476,20 @@ class GraphSlamEngine_t {
                            //<< name_to_offset_y[*it] << " | text_index: " 
                            //<< name_to_text_index[*it] << endl;
         }
+
+        this->assignTextMessageParameters(&offset_y_loop_closures, &text_index_loop_closures);
+        cout << "in GraphSlamEngine:  " << endl 
+             << "offset_y_loop_closures: " << offset_y_loop_closures << endl
+             << "text_index_loop_closures: " << text_index_loop_closures <<endl;
+
         // add all the parameters to the EdgeCounter_t object
-        // afterwards call the updateTextMessages function to update the window
         m_edge_counter.setTextMessageParams(name_to_offset_y, name_to_text_index, 
+            offset_y_total_edges, text_index_total_edges,
+            offset_y_loop_closures, text_index_loop_closures,
             m_font_name, m_font_size);
+          //m_edge_counter.setTextMessageParams(name_to_offset_y, name_to_text_index,
+              //m_font_name, m_font_size);
+          
       }
 
 
@@ -756,7 +777,7 @@ void GraphSlamEngine_t<GRAPH_t>::parseLaserScansFile() {
 
           CObservation2DRangeScanPtr prev_laser_scan = m_nodes_to_laser_scans[prev_node]; 
           constraint_t rel_edge;
-          cout << "prev_node: " << prev_node << endl;
+          //cout << "prev_node: " << prev_node << endl;
           bool success = this->getICPEdge(prev_node, to, &rel_edge);
           if (success) {
             VERBOSE_COUT << "successfully alligned laserscans." << endl;
@@ -829,7 +850,7 @@ void GraphSlamEngine_t<GRAPH_t>::visualizeGraph(const GRAPH_t& gr) {
 
   m_win->unlockAccess3DScene();
   m_win->addTextMessage(5,-m_offset_y_graph, 
-      format("Optimized Graph (#%d)", static_cast<int>(gr.nodeCount())),
+      format("Optimized Graph (#nodes %d)", static_cast<int>(gr.nodeCount())),
       TColorf(0.0, 0.0, 0.0),
       m_font_name, m_font_size, // font name & size
       mrpt::opengl::NICE,

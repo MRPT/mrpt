@@ -22,6 +22,8 @@
 #include <mrpt/poses/CPosePDF.h>
 #include <mrpt/graphs/CNetworkOfPoses.h>
 
+#include <mrpt/otherlibs/tclap/CmdLine.h>
+
 #include <string>
 #include <cerrno>
 
@@ -33,6 +35,7 @@ using namespace mrpt::obs;
 using namespace mrpt::system;
 using namespace mrpt::graphs;
 using namespace mrpt::math;
+using namespace mrpt::opengl;
 using namespace mrpt::utils;
 
 using namespace std;
@@ -45,6 +48,20 @@ using namespace std;
  */
 template <class GRAPHTYPE> void display_graph(const GRAPHTYPE & g);
 
+
+// /**
+//  * Command line options initialization
+//  * http://reference.mrpt.org/devel/class_t_c_l_a_p_1_1_cmd_line.html 
+//  */
+// // TODO - implement this, have the user input either the .ini file or have the
+// // demo .ini file used instead
+// TCLAP::CmdLine cmd(/*message = */ "GraphslamEngine",
+//     /* delimeter = */ ' ', 
+//     /* version =  */ MRPT_getVersion().c_str(),
+//     /* helpAndVersion = */ true);
+// 
+
+
 /**
  * main
  */
@@ -53,7 +70,7 @@ int main(int argc, char **argv)
   
   try {
     // Initialize the visualization objects
-    CDisplayWindow3D	win("Graphslam building procedure",640,480);
+    CDisplayWindow3D	win("Graphslam building procedure",800, 600);
     win.setCameraElevationDeg(75);
 
     const string config_fname = "../default_config.ini";
