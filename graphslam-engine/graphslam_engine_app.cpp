@@ -81,7 +81,7 @@ int main(int argc, char **argv)
     
     //g_engine.testEdgeCounterObject();
 
-    g_engine.parseLaserScansFile();
+    g_engine.parseRawlogFile();
 
     // saving the graph to external file
     g_engine.saveGraph();
@@ -91,6 +91,7 @@ int main(int argc, char **argv)
 
     // TODO
     // add "keylogger" function to know when to exit..
+
     while (win.isOpen()) {
       ;;
     }
