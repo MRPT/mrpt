@@ -236,6 +236,8 @@ class GraphSlamEngine_t {
       *text_index = m_curr_text_index;
       m_curr_text_index += kIndexTextStep;
     }
+    inline void updateCurPosViewport(const GRAPH_t& gr);
+    inline void updateTotalOdometryDistance() const;
 
     // VARIABLES
     //////////////////////////////////////////////////////////////

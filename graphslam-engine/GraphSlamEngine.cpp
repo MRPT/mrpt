@@ -28,6 +28,7 @@
 #include <string>
 #include <sstream>
 #include <map>
+#include <set>
 #include <cerrno>
 #include <cmath> // fabs function
 
@@ -119,27 +120,7 @@ void GraphSlamEngine_t<GRAPH_t>::initGraphSlamEngine() {
    * Visualization-related parameters initialization
    */
 
-  // Adding a viewport for close-up on graph construction
-	// Add a clone viewport, using [0,1] factor X,Y,Width,Height coordinates:
-	{
-    COpenGLScenePtr &scene = m_win->get3DSceneAndLock();
-
-		COpenGLViewportPtr viewp= scene->createViewport("current_pos");
-		viewp->setViewportPosition(0.1,0.05,0.28,0.28);
-		viewp->setCloneView("main");
-		viewp->getCamera().setAzimuthDegrees(45);
-		viewp->getCamera().setElevationDegrees(45);
-		viewp->getCamera().setZoomDistance(10);
-		viewp->setTransparent(false);
-    viewp->setCustomBackgroundColor(TColorf(TColor(205, 193, 197)));
-
-    viewp->getCamera().setPointingAt(0, 0, 0);
-    m_win->unlockAccess3DScene();
-    m_win->forceRepaint();
-    VERBOSE_COUT << "Initialized the \"current_pos\" viewport" << endl;
-	}
-
-
+ 
   // Current Text Position
   m_curr_offset_y = 30.0;
   m_curr_text_index = 1;
@@ -174,7 +155,7 @@ void GraphSlamEngine_t<GRAPH_t>::initGraphSlamEngine() {
     m_win->unlockAccess3DScene();
 
     m_win->addTextMessage(5,-m_offset_y_odometry, 
-        format("Odom. path"),
+        format("Odometry path"),
         TColorf(0.0, 0.0, 1.0),
         m_font_name, m_font_size, // font name & size
         mrpt::opengl::NICE,
@@ -487,6 +468,7 @@ void GraphSlamEngine_t<GRAPH_t>::parseRawlogFile() {
         // update the visualization window
         if (m_visualize_optimized_graph) {
           visualizeGraph(m_graph);
+          updateCurPosViewport(m_graph);
         }
 
         // reset the relative PDF
@@ -529,7 +511,8 @@ void GraphSlamEngine_t<GRAPH_t>::visualizeGraph(const GRAPH_t& gr) {
 
   m_win->unlockAccess3DScene();
   m_win->addTextMessage(5,-m_offset_y_graph, 
-      format("Optimized Graph (#nodes %d)", static_cast<int>(gr.nodeCount())),
+      format("Optimized Graph: #nodes %d", 
+        static_cast<int>(gr.nodeCount())),
       TColorf(0.0, 0.0, 0.0),
       m_font_name, m_font_size, // font name & size
       mrpt::opengl::NICE,
@@ -933,3 +916,36 @@ double GraphSlamEngine_t<GRAPH_t>::getICPEdge(const TNodeID& from,
 
   MRPT_END
 }
+
+/**
+ * updateCurPosViewport
+ *
+ * Udpate the viewport responsible for displaying the graph-building procedure
+ * in the estimated position of the robot
+ */
+template <class GRAPH_t>
+inline void GraphSlamEngine_t<GRAPH_t>::updateCurPosViewport(const GRAPH_t& gr) {
+  MRPT_START
+
+  pose_t curr_robot_pose = gr.nodes.find(gr.nodeCount()-1)->second; // get the last added pose
+  
+  COpenGLScenePtr &scene = m_win->get3DSceneAndLock();
+
+  COpenGLViewportPtr viewp= scene->createViewport("current_pos");
+  // Add a clone viewport, using [0,1] factor X,Y,Width,Height coordinates:
+  viewp->setViewportPosition(0.78,0.78,0.20,0.20);
+  viewp->setCloneView("main");
+  viewp->getCamera().setPointingAt(CPose3D(curr_robot_pose));
+  viewp->getCamera().setAzimuthDegrees(90);
+  viewp->getCamera().setElevationDegrees(90);
+  viewp->setTransparent(false);
+  viewp->setCustomBackgroundColor(TColorf(TColor(205, 193, 197)));
+  viewp->getCamera().setZoomDistance(40);
+
+  m_win->unlockAccess3DScene();
+  m_win->forceRepaint();
+  //VERBOSE_COUT << "Updated the \"current_pos\" viewport" << endl;
+
+  MRPT_END
+}
+
