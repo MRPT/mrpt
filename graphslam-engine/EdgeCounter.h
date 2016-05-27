@@ -335,7 +335,7 @@ class EdgeCounter_t {
       if (m_display_total_edges) {
         //cout << "Updating total amount of edges" << endl;
         stringstream title; 
-        title << "  " << "Total edges: " <<  this->getTotalNumOfEdges() << endl;
+        title << "Total edges: " <<  this->getTotalNumOfEdges() << endl;
         m_win->addTextMessage(5,-m_offset_y_total_edges,
           title.str(),
           TColorf(1.0, 1.0, 1.0),

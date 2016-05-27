@@ -284,7 +284,7 @@ class GraphSlamEngine_t {
 
     TParametersDouble m_optimized_graph_viz_params;
     bool m_visualize_optimized_graph;
-    bool m_visualize_odom_poses;
+    bool m_visualize_odometry_poses;
 
     /**
      * textMessage Parameters 
@@ -316,7 +316,7 @@ class GraphSlamEngine_t {
     map<const GRAPH_t*, TParametersDouble*> graph_to_viz_params;
 
     // odometry visualization
-    vector<pose_t*> m_odom_poses;
+    vector<pose_t*> m_odometry_poses;
 
     bool m_is3D;
     TNodeID m_nodeID_max;
@@ -332,8 +332,7 @@ class GraphSlamEngine_t {
     // Container to handle the propagation of the square root error of the problem
     vector<double> m_log_sq_err_evolution;
 
-    // TODO - Implement the map building procedure
-    //CMetricMapBuilderICP map_builder;
+    pose_t m_curr_estimated_pose;
 
 };
 
