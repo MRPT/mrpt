@@ -20,6 +20,8 @@
 #include <mrpt/utils/CFileGZOutputStream.h>
 #include <mrpt/utils/CTimeLogger.h>
 #include <mrpt/utils/CConfigFileMemory.h>
+#include <mrpt/system/filesystem.h>
+#include <mrpt/system/string_utils.h>
 
 using namespace std;
 using namespace mrpt::obs;
@@ -33,9 +35,8 @@ IMPLEMENTS_SERIALIZABLE(CObservation3DRangeScan, CObservation,mrpt::obs)
 // Static LUT:
 CObservation3DRangeScan::TCached3DProjTables CObservation3DRangeScan::m_3dproj_lut;
 
+bool CObservation3DRangeScan::EXTERNALS_AS_TEXT = false;
 
-// Whether external files for 3D points & range are text or binary.
-//#define EXTERNALS_AS_TEXT
 
 // Whether to use a memory pool for 3D points:
 #define COBS3DRANGE_USE_MEMPOOL
@@ -406,28 +407,35 @@ void CObservation3DRangeScan::load() const
 	if (hasPoints3D && m_points3D_external_stored)
 	{
 		const string fil = points3D_getExternalStorageFileAbsolutePath();
-#ifdef EXTERNALS_AS_TEXT
-		CMatrixFloat M;
-		M.loadFromTextFile(fil);
+		if (mrpt::system::strCmpI("txt",mrpt::system::extractFileExtension(fil,true)))
+		{
+			CMatrixFloat M;
+			M.loadFromTextFile(fil);
+			ASSERT_EQUAL_(M.rows(),3);
 
-		M.extractRow(0,const_cast<std::vector<float>&>(points3D_x));
-		M.extractRow(1,const_cast<std::vector<float>&>(points3D_y));
-		M.extractRow(2,const_cast<std::vector<float>&>(points3D_z));
-#else
-		mrpt::utils::CFileGZInputStream f(fil);
-		f >> const_cast<std::vector<float>&>(points3D_x) >> const_cast<std::vector<float>&>(points3D_y) >> const_cast<std::vector<float>&>(points3D_z);
-#endif
+			M.extractRow(0,const_cast<std::vector<float>&>(points3D_x));
+			M.extractRow(1,const_cast<std::vector<float>&>(points3D_y));
+			M.extractRow(2,const_cast<std::vector<float>&>(points3D_z));
+		}
+		else
+		{
+			mrpt::utils::CFileGZInputStream f(fil);
+			f >> const_cast<std::vector<float>&>(points3D_x) >> const_cast<std::vector<float>&>(points3D_y) >> const_cast<std::vector<float>&>(points3D_z);
+		}
 	}
 
 	if (hasRangeImage && m_rangeImage_external_stored)
 	{
 		const string fil = rangeImage_getExternalStorageFileAbsolutePath();
-#ifdef EXTERNALS_AS_TEXT
-		const_cast<CMatrix&>(rangeImage).loadFromTextFile(fil);
-#else
-		mrpt::utils::CFileGZInputStream f(fil);
-		f >> const_cast<CMatrix&>(rangeImage);
-#endif
+		if (mrpt::system::strCmpI("txt",mrpt::system::extractFileExtension(fil,true)))
+		{
+			const_cast<CMatrix&>(rangeImage).loadFromTextFile(fil);
+		}
+		else
+		{
+			mrpt::utils::CFileGZInputStream f(fil);
+			f >> const_cast<CMatrix&>(rangeImage);
+		}
 	}
 }
 
@@ -480,10 +488,14 @@ void CObservation3DRangeScan::points3D_getExternalStorageFileAbsolutePath(std::s
 	}
 }
 
-void CObservation3DRangeScan::points3D_convertToExternalStorage( const std::string &fileName, const std::string &use_this_base_dir )
+void CObservation3DRangeScan::points3D_convertToExternalStorage( const std::string &fileName_, const std::string &use_this_base_dir )
 {
 	ASSERT_(!points3D_isExternallyStored())
-	m_points3D_external_file = fileName;
+	ASSERT_(points3D_x.size()==points3D_y.size() && points3D_x.size()==points3D_z.size())
+
+	if (EXTERNALS_AS_TEXT)
+	     m_points3D_external_file = mrpt::system::fileNameChangeExtension(fileName_,"txt");
+	else m_points3D_external_file = mrpt::system::fileNameChangeExtension(fileName_,"bin");
 
 	// Use "use_this_base_dir" in "*_getExternalStorageFileAbsolutePath()" instead of CImage::IMAGES_PATH_BASE
 	const string savedDir = CImage::IMAGES_PATH_BASE;
@@ -491,23 +503,24 @@ void CObservation3DRangeScan::points3D_convertToExternalStorage( const std::stri
 	const string real_absolute_file_path = points3D_getExternalStorageFileAbsolutePath();
 	CImage::IMAGES_PATH_BASE = savedDir;
 
-	ASSERT_(points3D_x.size()==points3D_y.size() && points3D_x.size()==points3D_z.size())
+	if (EXTERNALS_AS_TEXT)
+	{
+		const size_t nPts = points3D_x.size();
 
-#ifdef EXTERNALS_AS_TEXT
-	const size_t nPts = points3D_x.size();
+		CMatrixFloat M(3,nPts);
+		M.insertRow(0,points3D_x);
+		M.insertRow(1,points3D_y);
+		M.insertRow(2,points3D_z);
 
-	CMatrixFloat M(3,nPts);
-	M.insertRow(0,points3D_x);
-	M.insertRow(1,points3D_y);
-	M.insertRow(2,points3D_z);
-
-	M.saveToTextFile(
-		real_absolute_file_path,
-		MATRIX_FORMAT_FIXED );
-#else
-	mrpt::utils::CFileGZOutputStream f(real_absolute_file_path);
-	f  << points3D_x << points3D_y << points3D_z;
-#endif
+		M.saveToTextFile(
+			real_absolute_file_path,
+			MATRIX_FORMAT_FIXED );
+	}
+	else
+	{
+		mrpt::utils::CFileGZOutputStream f(real_absolute_file_path);
+		f  << points3D_x << points3D_y << points3D_z;
+	}
 
 	m_points3D_external_stored = true;
 
@@ -516,10 +529,12 @@ void CObservation3DRangeScan::points3D_convertToExternalStorage( const std::stri
 	vector_strong_clear(points3D_y);
 	vector_strong_clear(points3D_z);
 }
-void CObservation3DRangeScan::rangeImage_convertToExternalStorage( const std::string &fileName, const std::string &use_this_base_dir )
+void CObservation3DRangeScan::rangeImage_convertToExternalStorage( const std::string &fileName_, const std::string &use_this_base_dir )
 {
 	ASSERT_(!rangeImage_isExternallyStored())
-	m_rangeImage_external_file = fileName;
+	if (EXTERNALS_AS_TEXT)
+	     m_rangeImage_external_file = mrpt::system::fileNameChangeExtension(fileName_,"txt");
+	else m_rangeImage_external_file = mrpt::system::fileNameChangeExtension(fileName_,"bin");
 
 	// Use "use_this_base_dir" in "*_getExternalStorageFileAbsolutePath()" instead of CImage::IMAGES_PATH_BASE
 	const string savedDir = CImage::IMAGES_PATH_BASE;
@@ -527,14 +542,17 @@ void CObservation3DRangeScan::rangeImage_convertToExternalStorage( const std::st
 	const string real_absolute_file_path = rangeImage_getExternalStorageFileAbsolutePath();
 	CImage::IMAGES_PATH_BASE = savedDir;
 
-#ifdef EXTERNALS_AS_TEXT
-	rangeImage.saveToTextFile(
-		real_absolute_file_path,
-		MATRIX_FORMAT_FIXED );
-#else
-	mrpt::utils::CFileGZOutputStream f(real_absolute_file_path);
-	f  << rangeImage;
-#endif
+	if (EXTERNALS_AS_TEXT)
+	{
+		rangeImage.saveToTextFile(
+			real_absolute_file_path,
+			MATRIX_FORMAT_FIXED );
+	}
+	else 
+	{
+		mrpt::utils::CFileGZOutputStream f(real_absolute_file_path);
+		f  << rangeImage;
+	}
 
 	m_rangeImage_external_stored = true;
 	rangeImage.setSize(0,0);
