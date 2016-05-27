@@ -333,7 +333,7 @@ class EdgeCounter_t {
       
       //Add text message for the total amount of edges
       if (m_display_total_edges) {
-        cout << "Updating total amount of edges" << endl;
+        //cout << "Updating total amount of edges" << endl;
         stringstream title; 
         title << "  " << "Total edges: " <<  this->getTotalNumOfEdges() << endl;
         m_win->addTextMessage(5,-m_offset_y_total_edges,
@@ -342,7 +342,6 @@ class EdgeCounter_t {
           m_font_name, m_font_size, // font name & size
           mrpt::opengl::NICE,
           /* unique_index = */ m_text_index_total_edges);
-        cout << "Updating total amount of edges" << endl;
       }
 
       // add a textMessage for every stored edge type
@@ -370,7 +369,7 @@ class EdgeCounter_t {
       // add text message for the loop closures 
       if (m_display_loop_closures) {
         stringstream title; 
-        title << "  " << "Loop closing edges: " <<  m_num_loop_closures << endl;
+        title << "  " << "Loop closures: " <<  m_num_loop_closures << endl;
         m_win->addTextMessage(5,-m_offset_y_loop_closures,
           title.str(),
           TColorf(1.0, 1.0, 1.0),
