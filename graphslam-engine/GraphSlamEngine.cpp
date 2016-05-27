@@ -31,6 +31,8 @@
 #include <cerrno>
 #include <cmath> // fabs function
 
+#include "supplementary_funs.h"
+
 using namespace mrpt;
 using namespace mrpt::poses;
 using namespace mrpt::obs;
@@ -108,7 +110,6 @@ void GraphSlamEngine_t<GRAPH_t>::initGraphSlamEngine() {
 
   m_graph.root = TNodeID(0);
 
-
   // Calling of initalization-relevant functions
   this->readConfigFile(m_config_fname);
   this->initOutputDir();
@@ -117,6 +118,27 @@ void GraphSlamEngine_t<GRAPH_t>::initGraphSlamEngine() {
   /**
    * Visualization-related parameters initialization
    */
+
+  // Adding a viewport for close-up on graph construction
+	// Add a clone viewport, using [0,1] factor X,Y,Width,Height coordinates:
+	{
+    COpenGLScenePtr &scene = m_win->get3DSceneAndLock();
+
+		COpenGLViewportPtr viewp= scene->createViewport("current_pos");
+		viewp->setViewportPosition(0.1,0.05,0.28,0.28);
+		viewp->setCloneView("main");
+		viewp->getCamera().setAzimuthDegrees(45);
+		viewp->getCamera().setElevationDegrees(45);
+		viewp->getCamera().setZoomDistance(10);
+		viewp->setTransparent(false);
+    viewp->setCustomBackgroundColor(TColorf(TColor(205, 193, 197)));
+
+    viewp->getCamera().setPointingAt(0, 0, 0);
+    m_win->unlockAccess3DScene();
+    m_win->forceRepaint();
+    VERBOSE_COUT << "Initialized the \"current_pos\" viewport" << endl;
+	}
+
 
   // Current Text Position
   m_curr_offset_y = 30.0;
@@ -136,18 +158,18 @@ void GraphSlamEngine_t<GRAPH_t>::initGraphSlamEngine() {
 
   // odometry visualization
   assert(m_has_read_config);
-  if (m_visualize_odom_poses) {
+  if (m_visualize_odometry_poses) {
     this->assignTextMessageParameters( /* offset_y*   = */ &m_offset_y_odometry,
         /* text_index* = */ &m_text_index_odometry);
 
     COpenGLScenePtr scene = m_win->get3DSceneAndLock();
 
-    CPointCloudPtr odom_poses_cloud = CPointCloud::Create();
-    scene->insert(odom_poses_cloud);
-    odom_poses_cloud->setPointSize(2.0);
-    odom_poses_cloud->enablePointSmooth();
-    odom_poses_cloud->enableColorFromY();
-    odom_poses_cloud->setName("odom_poses_cloud");
+    CPointCloudPtr odometry_poses_cloud = CPointCloud::Create();
+    scene->insert(odometry_poses_cloud);
+    odometry_poses_cloud->setPointSize(2.0);
+    odometry_poses_cloud->enablePointSmooth();
+    odometry_poses_cloud->enableColorFromY();
+    odometry_poses_cloud->setName("odometry_poses_cloud");
 
     m_win->unlockAccess3DScene();
 
@@ -177,20 +199,6 @@ void GraphSlamEngine_t<GRAPH_t>::initGraphSlamEngine() {
   }
 
   m_edge_counter.setVisualizationWindow(m_win);
-
-  {
-    // "Edges: " header text in the vizualization window
-    string edges_text = "Edges: ";
-    double offset_y_edges;
-    int text_index_edges;
-    this->assignTextMessageParameters(&offset_y_edges, &text_index_edges);
-    m_win->addTextMessage(5,-offset_y_edges, 
-        edges_text,
-        TColorf(1.0, 1.0, 1.0),
-        m_font_name, m_font_size, // font name & size
-        mrpt::opengl::NICE,
-        /* unique_index = */ text_index_edges );
-  }
 
   // register the types of edges that are going to be displayed in the
   // visualization window
@@ -267,17 +275,17 @@ void GraphSlamEngine_t<GRAPH_t>::parseRawlogFile() {
   // TODO unused - delete it?
   bool end = false;
 
-  // Tracking the PDF of the current position of the robot - use a
-  // constraint_t. Its information matrix is the relative uncertainty between
-  // the current and the previous registered graph node.
-
+  // Tracking the PDF of the current position of the robot with regards to the
+  // PREVIOUS registered node
   // I am sure of the initial position, set to identity matrix
-  double tmp[] = {1.0, 0.0, 0.0,
+  double tmp[] = {
+    1.0, 0.0, 0.0,
     0.0, 1.0 ,0.0,
     0.0, 0.0, 1.0 };
   InfMat init_path_uncertainty(tmp);
-  pose_t last_pose_inserted;
-  constraint_t cur_pathPDF(last_pose_inserted, init_path_uncertainty); 
+  pose_t last_pose_inserted; // defaults to all 0s
+  constraint_t since_prev_node_PDF(last_pose_inserted, init_path_uncertainty); 
+  pose_t curr_odometry_only_pose; // defaults to all 0s
 
   TNodeID from = m_graph.root; // first node shall be the root - 0
 
@@ -325,10 +333,23 @@ void GraphSlamEngine_t<GRAPH_t>::parseRawlogFile() {
        * ACTION PART - Handle the odometry information of the rawlog file
        */
 
+      // parse the current action  
       CActionRobotMovement2DPtr robot_move = action->getBestMovementEstimation();
       CPosePDFPtr increment = robot_move->poseChange;
+      pose_t increment_pose = increment->getMeanVal();
+      InfMat increment_inf_mat; 
+      increment->getInformationMatrix(increment_inf_mat);
 
-      // timestamp textMessage
+      curr_odometry_only_pose += increment_pose;
+
+      // update the relative uncertainty of the path since the LAST node was inserted
+      constraint_t incremental_constraint(increment_pose, increment_inf_mat);
+      since_prev_node_PDF += incremental_constraint;
+
+
+      /**
+       * Timestamp textMessage
+       */
       // use the dataset timestamp otherwise fallback to mrpt::system::now()
       TTimeStamp  timestamp = robot_move->timestamp;
       if (timestamp != INVALID_TIMESTAMP) {
@@ -348,29 +369,20 @@ void GraphSlamEngine_t<GRAPH_t>::parseRawlogFile() {
             /* unique_index = */ m_text_index_timestamp );
       }
 
-      // current pose of the robot - w/o PDF
-      pose_t odom_pose_tot = cur_pathPDF.getMeanVal();
-
-      // update the cur_pathPDF
-      // add the PDF of the incremental odometry update
-      pose_t pose_increment = increment->getMeanVal();
-      InfMat inf_increment; increment->getInformationMatrix(inf_increment);
-      constraint_t incremental_constraint(pose_increment, inf_increment);
-      cur_pathPDF += incremental_constraint;
-
       // add to the odometry PointCloud and visualize it
       {
-        pose_t* odom_pose = new pose_t;
-        *odom_pose = odom_pose_tot;
-        m_odom_poses.push_back(odom_pose);
+        pose_t* odometry_poses = new pose_t;
+        *odometry_poses = curr_odometry_only_pose;
+        m_odometry_poses.push_back(odometry_poses);
 
-        if (m_visualize_odom_poses) {
+        if (m_visualize_odometry_poses) {
           COpenGLScenePtr scene = m_win->get3DSceneAndLock();
 
-          CRenderizablePtr obj = scene->getByName("odom_poses_cloud");
-          CPointCloudPtr odom_poses_cloud = static_cast<CPointCloudPtr>(obj);
-          odom_poses_cloud->insertPoint(m_odom_poses.back()->x(),
-              m_odom_poses.back()->y(),
+          CRenderizablePtr obj = scene->getByName("odometry_poses_cloud");
+          CPointCloudPtr odometry_poses_cloud = static_cast<CPointCloudPtr>(obj);
+          odometry_poses_cloud->insertPoint(
+              m_odometry_poses.back()->x(),
+              m_odometry_poses.back()->y(),
               0 );
 
           m_win->unlockAccess3DScene();
@@ -378,6 +390,7 @@ void GraphSlamEngine_t<GRAPH_t>::parseRawlogFile() {
           m_win->forceRepaint();
         }
 
+        delete odometry_poses;
       }
 
       /** 
@@ -385,54 +398,50 @@ void GraphSlamEngine_t<GRAPH_t>::parseRawlogFile() {
        * Determine whether to insert a new pose in the graph given the
        * distance and angle thresholds
        */
-      // TODO - consider adding different color to edges based on where they come from
-      if ( (last_pose_inserted.distanceTo(odom_pose_tot) > m_distance_threshold) ||
-          fabs(wrapToPi(last_pose_inserted.phi() - odom_pose_tot.phi())) > m_angle_threshold ) {
+      //if ( (last_pose_inserted.distanceTo(curr_odometry_only_pose) > m_distance_threshold) ||
+          //fabs(wrapToPi(last_pose_inserted.phi() - curr_odometry_only_pose.phi())) > m_angle_threshold ) {
 
+      // update the current estimated pose of the robot
+      m_curr_estimated_pose = m_graph.nodes[from] + since_prev_node_PDF.getMeanVal();
+      if ( (last_pose_inserted.distanceTo(m_curr_estimated_pose) > m_distance_threshold) ||
+          fabs(wrapToPi(last_pose_inserted.phi() - m_curr_estimated_pose.phi())) > m_angle_threshold ) {
+          
         from = m_nodeID_max;
         TNodeID to = ++m_nodeID_max;
 
         // build the relative edge and insert it
         {
-          constraint_t rel_edge;
-          rel_edge.mean = cur_pathPDF.getMeanVal() - last_pose_inserted;
-          rel_edge.cov_inv = cur_pathPDF.cov_inv;
+          //constraint_t rel_edge;
 
-          m_graph.nodes[to] = odom_pose_tot;
-          m_graph.insertEdgeAtEnd(from, to, rel_edge);
+          //m_graph.nodes[to] = curr_odometry_only_pose;
+          m_graph.nodes[to] = m_graph.nodes[from] + since_prev_node_PDF.getMeanVal();
+          m_graph.insertEdgeAtEnd(from, to, since_prev_node_PDF);
           m_edge_counter.addEdge("Odometry");
-          //m_graph.insertEdgeAtEnd(from, to, odom_pose_tot - last_pose_inserted);
 
           //TODO - remove these
-          //double distance = (last_pose_inserted.distanceTo(odom_pose_tot));
-          //double angle = fabs(last_pose_inserted.phi() - odom_pose_tot.phi());
+          //double distance = (last_pose_inserted.distanceTo(curr_odometry_only_pose));
+          //double angle = fabs(last_pose_inserted.phi() - curr_odometry_only_pose.phi());
           //VERBOSE_COUT << "Added new odometry edge to the graph (# " << m_nodeID_max + 1<< " )" << endl;
           //VERBOSE_COUT << "prev_pose = " << last_pose_inserted << endl;
-          //VERBOSE_COUT << "new_pose  = " << odom_pose_tot << endl;
+          //VERBOSE_COUT << "new_pose  = " << curr_odometry_only_pose << endl;
           //VERBOSE_COUT << "distance: " << distance << "m | " 
           //<< "angle: " << RAD2DEG(wrapToPi(angle)) << " deg" << endl;
           //VERBOSE_COUT << "Relative uncertainty between nodes: " << endl
-          //<< cur_pathPDF.cov_inv << endl;
+          //<< since_prev_node_PDF.cov_inv << endl;
 
         }
 
         /**
          * add ICP constraint with "some" of the previous nodes
          */
-
+        cout << endl;
+        cout << "Testing ICP for node: " << m_nodeID_max << endl;
+ 
         CObservation2DRangeScanPtr curr_laser_scan =
           observations->getObservationByClass<CObservation2DRangeScan>();
         m_nodes_to_laser_scans[m_nodeID_max] = curr_laser_scan;
-
-        /**
-         * ICP constraints with previous nodes
-         */
-        // try and add an ICP constraint between the current and some of the
-        // previous nodes. If m_prev_nodes_for_ICP = -1 try adding with all of
-        // the other nodes
-        cout << endl;
-        cout << "Testing ICP for node: " << m_nodeID_max << endl;
-        
+       
+        //If m_prev_nodes_for_ICP = -1 try adding with all of the other nodes
         int nodes_to_check = 0; // how many nodes to check ICP against
         switch ( m_prev_nodes_for_ICP ) {
           case -1: {
@@ -480,14 +489,10 @@ void GraphSlamEngine_t<GRAPH_t>::parseRawlogFile() {
           visualizeGraph(m_graph);
         }
 
-
-
-
-        // Change the current uncertainty of cur_pathPDF so that it measures
-        // the *relative* uncertainty from last_inserted_pose
-        cur_pathPDF.cov_inv = init_path_uncertainty;
-
-        last_pose_inserted = odom_pose_tot;
+        // reset the relative PDF
+        since_prev_node_PDF.cov_inv = init_path_uncertainty;
+        since_prev_node_PDF.mean = pose_t(0, 0, 0);
+        last_pose_inserted = m_graph.nodes[to];
 
 
 
@@ -717,9 +722,9 @@ void GraphSlamEngine_t<GRAPH_t>::readConfigFile(const string& fname) {
 
   // odometry-only visualization
   
-  m_visualize_odom_poses = cfg_file.read_bool(
+  m_visualize_odometry_poses = cfg_file.read_bool(
       "VisualizationParameters",
-      "visualize_odom_poses",
+      "visualize_odometry_poses",
       1, false);
 
 

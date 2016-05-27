@@ -81,6 +81,7 @@ int main(int argc, char **argv)
     }
     if (arg_do_demo.isSet() && arg_ini_file.isSet()) {
       THROW_EXCEPTION("Either the demo option or the .ini file must be specified."
+          << "Use --help to see the list of possible operations."
           << "Exiting..")
     }
     // fetching the .ini file
