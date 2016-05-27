@@ -63,7 +63,7 @@ GraphSlamEngine_t<GRAPH_t>::GraphSlamEngine_t(const string& config_file,
 
 template<class GRAPH_t>
 GraphSlamEngine_t<GRAPH_t>::~GraphSlamEngine_t() {
-  //VERBOSE_COUT << "Deleting GraphSlamEngine_t instance..." << endl;
+  VERBOSE_COUT << "In Destructor: Deleting GraphSlamEngine_t instance..." << endl;
 
   // close all open files
   for (fstreams_it it  = m_out_streams.begin(); it != m_out_streams.end(); ++it) {
@@ -152,7 +152,7 @@ void GraphSlamEngine_t<GRAPH_t>::initGraphSlamEngine() {
     m_win->unlockAccess3DScene();
 
     m_win->addTextMessage(5,-m_offset_y_odometry, 
-        format("Odometry path"),
+        format("Odom. path"),
         TColorf(0.0, 0.0, 1.0),
         m_font_name, m_font_size, // font name & size
         mrpt::opengl::NICE,
@@ -430,8 +430,8 @@ void GraphSlamEngine_t<GRAPH_t>::parseRawlogFile() {
         // try and add an ICP constraint between the current and some of the
         // previous nodes. If m_prev_nodes_for_ICP = -1 try adding with all of
         // the other nodes
-        cout << "Testing ICP for node: " << m_nodeID_max << endl;
         cout << endl;
+        cout << "Testing ICP for node: " << m_nodeID_max << endl;
         
         int nodes_to_check = 0; // how many nodes to check ICP against
         switch ( m_prev_nodes_for_ICP ) {
@@ -463,7 +463,11 @@ void GraphSlamEngine_t<GRAPH_t>::parseRawlogFile() {
             VERBOSE_COUT << "Adding edge: " << endl << rel_edge << endl;
             m_graph.insertEdge(prev_node, to, rel_edge);
             VERBOSE_COUT << "ICP goodness: " << ICP_goodness << endl;
-            m_edge_counter.addEdge("ICP");
+
+            // register a loop closing constraint if distance of nodes larger
+            // than the predefined m_loop_closing_min_nodeid_diff 
+            bool is_loop_closure = (to - prev_node >= m_loop_closing_min_nodeid_diff) ? 1 : 0;
+            m_edge_counter.addEdge("ICP", is_loop_closure);
           }
         }
 
@@ -592,6 +596,10 @@ void GraphSlamEngine_t<GRAPH_t>::readConfigFile(const string& fname) {
       "LoopClosingParameters",
       "loop_closing_alg",
       "", true);
+  m_loop_closing_min_nodeid_diff = cfg_file.read_double(
+      "LoopClosingParameters",
+      "loop_closing_min_nodeid_diff",
+      5, true);
 
   // Section: DecidersConfiguration  - When to insert new nodes?
   // ////////////////////////////////
@@ -662,7 +670,7 @@ void GraphSlamEngine_t<GRAPH_t>::readConfigFile(const string& fname) {
       "VisualizationParameters",
       "optimized_show_ID_labels",
       0, false);
-	m_optimized_graph_viz_params["show_ground_grid"] = cfg_file.read_bool(
+	m_optimized_graph_viz_params["show_ground_grid"] = cfg_file.read_double(
       "VisualizationParameters",
       "optimized_show_ground_grid",
       1, false);
@@ -730,26 +738,29 @@ void GraphSlamEngine_t<GRAPH_t>::printProblemParams() const {
 
   ss_out << "--------------------------------------------------------------------------" << endl;
   ss_out << " Graphslam_engine: Problem Parameters " << endl;
-  ss_out << " Config fname                   = " << m_config_fname << endl;
-  ss_out << " Rawlog fname                   = " << m_rawlog_fname << endl;
-  ss_out << " Output dir                     = " << m_output_dir_fname << endl;
-  ss_out << " User decides about output dir? = " << m_user_decides_about_output_dir << endl;
-  ss_out << " Debug mode                     = " << m_do_debug << endl;
-  ss_out << " save_graph_fname               = " << m_save_graph_fname << endl;
-  ss_out << " do_pose_graph_only             = " <<  m_do_pose_graph_only << endl;
-  ss_out << " optimizer                      = " << m_optimizer << endl;
-  ss_out << " Loop closing alg               = " << m_loop_closing_alg << endl;
-  ss_out << " Decider alg                    = " << m_decider_alg << endl;
-  ss_out << " Distance Threshold             = " << m_distance_threshold << " m" << endl;
-  ss_out << " Angle Threshold                = " << RAD2DEG(m_angle_threshold) << " deg" << endl;
+  ss_out << " Config fname                    = " << m_config_fname << endl;
+  ss_out << " Rawlog fname                    = " << m_rawlog_fname << endl;
+  ss_out << " Output dir                      = " << m_output_dir_fname << endl;
+  ss_out << " User decides about output dir?  = " << m_user_decides_about_output_dir << endl;
+  ss_out << " Debug mode                      = " << m_do_debug << endl;
+  ss_out << " save_graph_fname                = " << m_save_graph_fname << endl;
+  ss_out << " do_pose_graph_only              = " <<  m_do_pose_graph_only << endl;
+  ss_out << " optimizer                       = " << m_optimizer << endl;
+  ss_out << " Loop closing alg                = " << m_loop_closing_alg << endl;
+  ss_out << " Loop Closing min. node distance = " << m_loop_closing_alg << endl;
+  ss_out << " Decider alg                     = " << m_decider_alg << endl;
+  ss_out << " Distance threshold              = " << m_distance_threshold << " m" << endl;
+  ss_out << " Angle threshold                 = " << RAD2DEG(m_angle_threshold) << " deg" << endl;
+  ss_out << "ICP Goodness threshold           = " << m_ICP_goodness_thres << endl;
   ss_out << "-------------------------------------------------------------------------" << endl;
   ss_out << endl;
 
   cout << ss_out.str(); ss_out.str("");
 
+  //m_optimized_graph_viz_params.dumpToConsole();
+
   m_ICP.options.dumpToConsole();
 
-  ss_out << "ICP Goodness threshold:            " << m_ICP_goodness_thres << endl;
   ss_out << "-------------------------------------------------------------------------" << endl;
   cout << ss_out.str(); ss_out.str("");
 

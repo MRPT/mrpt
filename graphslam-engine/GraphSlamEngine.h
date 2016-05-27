@@ -248,26 +248,29 @@ class GraphSlamEngine_t {
      * Most are imported from a .ini config file
      * \sa GraphSlamEngine_t::readConfigFile
      */
-    string   m_config_fname;
+    string  m_config_fname;
 
-    string   m_rawlog_fname;
-    string   m_output_dir_fname;
-    bool     m_user_decides_about_output_dir;
-    bool     m_do_debug;
-    string   m_debug_fname;
-    string   m_save_graph_fname;
+    string  m_rawlog_fname;
+    string  m_output_dir_fname;
+    bool    m_user_decides_about_output_dir;
+    bool    m_do_debug;
+    string  m_debug_fname;
+    string  m_save_graph_fname;
 
-    bool     m_do_pose_graph_only;
-    string   m_optimizer;
+    bool    m_do_pose_graph_only;
+    string  m_optimizer;
 
-    string   m_loop_closing_alg;
+    string  m_loop_closing_alg;
+    double  m_loop_closing_min_nodeid_diff;
 
-    string   m_decider_alg;
-    double   m_distance_threshold;
-    double   m_angle_threshold;
+    string  m_decider_alg;
+    double  m_distance_threshold;
+    double  m_angle_threshold;
 
-    bool     m_has_read_config;
-    map<string, int> optimizer_codes; // use lookpu table to hold the optimizer codes
+    bool    m_has_read_config;
+
+    // use lookup table to hold the optimizer codes
+    map<string, int> optimizer_codes; 
 
     /** 
      * FileStreams
