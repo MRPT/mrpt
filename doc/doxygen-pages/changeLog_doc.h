@@ -20,6 +20,7 @@
 			- Now displays a textual and graphical representation of all observation timestamps, useful to quickly detect sensor "shortages" or temporary failures.
 			- New menu operation: "Edit" -> "Rename selected observation"
 			- mrpt::obs::CObservation3DRangeScan pointclouds are now shown in local coordinates wrt to the vehicle/robot, not to the sensor.
+		- [rawlog-edit](http://www.mrpt.org/list-of-mrpt-apps/application-rawlog-edit/): New flag: `--txt-externals`
 	- Changes in libraries:
 		- \ref mrpt_base_grp
 			- New API to interface ZeroMQ: \ref noncstream_serialization_zmq
@@ -31,6 +32,7 @@
 			- [ABI change] mrpt::obs::CObservation3DRangeScan:
 				- Now uses more SSE2 optimized code
 				- Depth filters are now available for mrpt::obs::CObservation3DRangeScan::project3DPointsFromDepthImageInto() and  mrpt::obs::CObservation3DRangeScan::convertTo2DScan()
+				- New switch mrpt::obs::CObservation3DRangeScan::EXTERNALS_AS_TEXT for runtime selection of externals format.
 		- \ref mrpt_hwdrivers_grp
 			- mrpt::hwdrivers::CGenericSensor: external image format is now `png` by default instead of `jpg` to avoid losses.
 			- [ABI change] mrpt::hwdrivers::COpenNI2Generic:

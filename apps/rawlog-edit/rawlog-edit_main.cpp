@@ -67,7 +67,7 @@ DECLARE_OP_FUNCTION(op_list_timestamps);
 DECLARE_OP_FUNCTION(op_remap_timestamps);
 
 // Declare the supported command line switches ===========
-TCLAP::CmdLine cmd("rawlog-edit", ' ', MRPT_getVersion().c_str());
+TCLAP::CmdLine cmd("rawlog-edit", ' ', mrpt::format("%s - Sources timestamp: %s\n", MRPT_getVersion().c_str(), MRPT_getCompilationDate().c_str()) );
 
 TCLAP::ValueArg<std::string> arg_input_file ("i","input","Input dataset (required) (*.rawlog)",true,"","dataset.rawlog",cmd);
 TCLAP::ValueArg<std::string> arg_output_file("o","output","Output dataset (*.rawlog)",false,"","dataset_out.rawlog",cmd);
@@ -75,6 +75,7 @@ TCLAP::ValueArg<std::string> arg_output_file("o","output","Output dataset (*.raw
 TCLAP::ValueArg<std::string> arg_outdir ("","out-dir","Output directory (used by some commands only)",false,".",".",cmd);
 
 TCLAP::ValueArg<std::string> arg_external_img_extension("","image-format","External image format",false,"jpg","jpg,png,pgm,...",cmd);
+TCLAP::SwitchArg             arg_txt_externals("","txt-externals","When externalizing CObservation3DRangeScan objects, switched from binary files (default) to plain text.",cmd, false);
 TCLAP::ValueArg<std::string> arg_img_size("","image-size","Resize output images",false,"","COLSxROWS",cmd);
 TCLAP::SwitchArg             arg_rectify_centers("","rectify-centers-coincide","In stereo rectification, force that both image centers after coincide after rectifying.",cmd, false);
 
@@ -112,7 +113,7 @@ int main(int argc, char **argv)
 		arg_ops.push_back(new TCLAP::SwitchArg("","externalize",
 			"Op: convert to external storage.\n"
 			"Requires: -o (or --output)\n"
-			"Optional: --image-format",cmd, false) );
+			"Optional: --image-format, --txt-externals",cmd, false) );
 		ops_functors["externalize"] = &op_externalize;
 
 		arg_ops.push_back(new TCLAP::SwitchArg("","info",
