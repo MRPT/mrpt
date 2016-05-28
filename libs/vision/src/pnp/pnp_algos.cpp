@@ -22,7 +22,7 @@ using namespace Eigen;
 using namespace cv;
 
 template<typename Derived> 
-int pose_compute::CPnP_dls(MatrixBase<Derived>& obj_pts, MatrixBase<Derived>& img_pts, int n, MatrixBase<Derived>& cam_intrinsic, MatrixBase<Derived>& pose_mat){
+int CPnP::CPnP_dls(MatrixBase<Derived>& obj_pts, MatrixBase<Derived>& img_pts, int n, MatrixBase<Derived>& cam_intrinsic, MatrixBase<Derived>& pose_mat){
 	
 	MatrixXd cam_in_eig=cam_intrinsic.array().transpose(), img_pts_eig=img_pts.array().transpose(), obj_pts_eig=obj_pts.array().transpose(), t_eig;
 	Matrix3d R_eig; 
@@ -68,7 +68,7 @@ int pose_compute::CPnP_dls(MatrixBase<Derived>& obj_pts, MatrixBase<Derived>& im
 }
 
 template<typename Derived> 
-int pose_compute::CPnP_epnp(MatrixBase<Derived>& obj_pts, MatrixBase<Derived>& img_pts, int n, MatrixBase<Derived>& cam_intrinsic, MatrixBase<Derived>& pose_mat){
+int CPnP::CPnP_epnp(MatrixBase<Derived>& obj_pts, MatrixBase<Derived>& img_pts, int n, MatrixBase<Derived>& cam_intrinsic, MatrixBase<Derived>& pose_mat){
 	
 	MatrixXd cam_in_eig=cam_intrinsic.array().transpose(), img_pts_eig=img_pts.array().transpose(), obj_pts_eig=obj_pts.array().transpose(), t_eig;
 	Matrix3d R_eig; 
@@ -112,7 +112,7 @@ int pose_compute::CPnP_epnp(MatrixBase<Derived>& obj_pts, MatrixBase<Derived>& i
 }
 
 template<typename Derived> 
-int pose_compute::CPnP_upnp(MatrixBase<Derived>& obj_pts, MatrixBase<Derived>& img_pts, int n, MatrixBase<Derived>& cam_intrinsic, MatrixBase<Derived>& pose_mat){
+int CPnP::CPnP_upnp(MatrixBase<Derived>& obj_pts, MatrixBase<Derived>& img_pts, int n, MatrixBase<Derived>& cam_intrinsic, MatrixBase<Derived>& pose_mat){
 	
 	MatrixXd cam_in_eig=cam_intrinsic.array().transpose(), img_pts_eig=img_pts.array().transpose(), obj_pts_eig=obj_pts.array().transpose(), t_eig;
 	Matrix3d R_eig; 

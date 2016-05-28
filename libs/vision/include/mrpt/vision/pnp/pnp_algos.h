@@ -24,7 +24,7 @@ using namespace std;
 
 namespace pnp
 {
-	class pose_compute
+	class CPnP
 	{
 		public:
 			template<typename Derived>
