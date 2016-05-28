@@ -8,7 +8,7 @@ using namespace boost::python;
 #include <eigen3/Eigen/Dense>
 using namespace Eigen;
 
-#include <mrpt/vision/pnp_algos.h>
+#include <mrpt/vision/pnp/pnp_algos.h>
 using namespace pnp;
 #include <mrpt/vision/pnp/epnp.h>
 #include <mrpt/vision/pnp/dls.h>
