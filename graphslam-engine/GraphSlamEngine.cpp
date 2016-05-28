@@ -179,6 +179,23 @@ void GraphSlamEngine_t<GRAPH_t>::initGraphSlamEngine() {
     m_win->forceRepaint();
   }
 
+  // robot model
+  {
+    COpenGLScenePtr scene = m_win->get3DSceneAndLock();
+
+    opengl::CSetOfObjectsPtr obj = stock_objects::RobotPioneer();
+    pose_t initial_pose;
+    obj->setPose(initial_pose);
+    obj->setName("robot_model");
+    obj->setColor_u8(TColor(142, 142, 56));
+    obj->setScale(5);
+    scene->insert(obj);
+
+    m_win->unlockAccess3DScene();
+    m_win->forceRepaint();
+  }
+
+
   m_edge_counter.setVisualizationWindow(m_win);
 
   // register the types of edges that are going to be displayed in the
@@ -470,6 +487,21 @@ void GraphSlamEngine_t<GRAPH_t>::parseRawlogFile() {
           visualizeGraph(m_graph);
           updateCurPosViewport(m_graph);
         }
+
+
+        // update robot model position
+        {
+          COpenGLScenePtr scene = m_win->get3DSceneAndLock();
+
+          CRenderizablePtr obj = scene->getByName("robot_model");
+          CSetOfObjectsPtr robot_obj = static_cast<CSetOfObjectsPtr>(obj);
+          pose_t initial_pose;
+          robot_obj->setPose(m_graph.nodes[m_graph.nodeCount()-1]);
+          //scene->insert(obj);
+
+          m_win->unlockAccess3DScene();
+        }
+
 
         // reset the relative PDF
         since_prev_node_PDF.cov_inv = init_path_uncertainty;
@@ -941,6 +973,7 @@ inline void GraphSlamEngine_t<GRAPH_t>::updateCurPosViewport(const GRAPH_t& gr) 
   viewp->setTransparent(false);
   viewp->setCustomBackgroundColor(TColorf(TColor(205, 193, 197)));
   viewp->getCamera().setZoomDistance(40);
+  viewp->getCamera().setOrthogonal();
 
   m_win->unlockAccess3DScene();
   m_win->forceRepaint();
