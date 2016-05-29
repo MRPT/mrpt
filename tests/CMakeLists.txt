@@ -16,9 +16,13 @@ endif(MSVC)
 # Add the "make test" target:
 # -----------------------------
 ADD_CUSTOM_TARGET(test)
+ADD_CUSTOM_TARGET(tests_build_all)
 if(ENABLE_SOLUTION_FOLDERS)
 	set_target_properties(test PROPERTIES FOLDER "unit tests")
+	set_target_properties(tests_build_all PROPERTIES FOLDER "unit tests")
 endif(ENABLE_SOLUTION_FOLDERS)
+
+ADD_DEFINITIONS(-DCMAKE_MRPT_GLOBAL_UNITTEST_SRC_DIR="${MRPT_SOURCE_DIR}")
 
 # Tests based on Google gtest:
 # -----------------------------
@@ -51,7 +55,7 @@ IF (CMAKE_MRPT_HAS_GTEST_SYSTEM)
 	TARGET_LINK_LIBRARIES(test_${_TSTLIB} ${MRPT_LINKER_LIBS_RELorDEB} gtest)
 ELSE (CMAKE_MRPT_HAS_GTEST_SYSTEM)
 	# Own version:
-	TARGET_LINK_LIBRARIES(test_${_TSTLIB} ${MRPT_LINKER_LIBS_RELorDEB} mrptgtest) 
+	TARGET_LINK_LIBRARIES(test_${_TSTLIB} ${MRPT_LINKER_LIBS_RELorDEB} mrptgtest)
 	ADD_DEPENDENCIES(test_${_TSTLIB} mrptgtest)  # Assure the MRPT library is updated:
 ENDIF (CMAKE_MRPT_HAS_GTEST_SYSTEM)
 
@@ -74,20 +78,19 @@ ENDIF (CMAKE_MRPT_HAS_GTEST_SYSTEM)
 			TARGET_LINK_LIBRARIES(test_${_TSTLIB} ${_DEPLIB})
 		ENDIF(NOT _LIB_HDRONLY)
 	ENDFOREACH(_DEPLIB)
-	
 
-	
+
+
 	# Run it:
 	GET_TARGET_PROPERTY(GENERATED_EXE test_${_TSTLIB} LOCATION)
-	ADD_CUSTOM_TARGET(run_tests_${_TSTLIB} COMMAND "${GENERATED_EXE}" "${MRPT_SOURCE_DIR}")
+	ADD_CUSTOM_TARGET(run_tests_${_TSTLIB} COMMAND "${GENERATED_EXE}")
 	ADD_DEPENDENCIES(run_tests_${_TSTLIB} test_${_TSTLIB})
 	ADD_DEPENDENCIES(test run_tests_${_TSTLIB})
+	ADD_DEPENDENCIES(tests_build_all test_${_TSTLIB})
 
 if(ENABLE_SOLUTION_FOLDERS)
 	set_target_properties(test_${_TSTLIB} PROPERTIES FOLDER "unit tests")
 	set_target_properties(run_tests_${_TSTLIB} PROPERTIES FOLDER "unit tests")
 endif(ENABLE_SOLUTION_FOLDERS)
-	
+
 ENDFOREACH(_TSTLIB)
-
-
