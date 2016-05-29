@@ -27,7 +27,7 @@ function test ()
   mkdir $BUILD_DIR && cd $BUILD_DIR
   cmake $MRPT_DIR -DBUILD_APPLICATIONS=FALSE
   # The following is like "make test" but showing stack traces of failing unit tests.
-  make tests_gdb
+  make test_gdb
 }
 
 function doc ()
