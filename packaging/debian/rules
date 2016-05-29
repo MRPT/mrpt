@@ -67,8 +67,12 @@ override_dh_auto_install:
 override_dh_auto_test:
 	# Tests:
 	echo "[override_dh_auto_test]"
-	# test_gdb runs unit tests showing stack traces on failure:
-	dh_auto_build -O--buildsystem=cmake -- test_gdb -j1
+	ifeq ($(DEB_HOST_ARCH),armhf)  # "test_gdb" seems to make build farm machines crash in armhf...
+		dh_auto_build -O--buildsystem=cmake -- test -j1
+	else
+		# test_gdb runs unit tests showing stack traces on failure:
+		dh_auto_build -O--buildsystem=cmake -- test_gdb -j1
+	endif
 
 override_dh_install:
 	# Install:
