@@ -67,10 +67,8 @@ override_dh_auto_install:
 override_dh_auto_test:
 	# Tests:
 	echo "[override_dh_auto_test]"
-	#dh_auto_build -O--buildsystem=cmake -- test -j1
-	# This script replaces the standard "make test" with GDB stack traces
-	# in case of failure:
-	$(CURDIR)/tests/run_all_tests_gdb.sh
+	# test_gdb runs unit tests showing stack traces on failure:
+	dh_auto_build -O--buildsystem=cmake -- test_gdb -j1
 
 override_dh_install:
 	# Install:

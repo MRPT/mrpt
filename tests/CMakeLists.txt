@@ -21,6 +21,10 @@ if(ENABLE_SOLUTION_FOLDERS)
 	set_target_properties(test PROPERTIES FOLDER "unit tests")
 	set_target_properties(tests_build_all PROPERTIES FOLDER "unit tests")
 endif(ENABLE_SOLUTION_FOLDERS)
+IF (UNIX)
+	ADD_CUSTOM_TARGET(test_gdb)
+ENDIF()
+
 
 ADD_DEFINITIONS(-DCMAKE_MRPT_GLOBAL_UNITTEST_SRC_DIR="${MRPT_SOURCE_DIR}")
 
@@ -87,6 +91,12 @@ ENDIF (CMAKE_MRPT_HAS_GTEST_SYSTEM)
 	ADD_DEPENDENCIES(run_tests_${_TSTLIB} test_${_TSTLIB})
 	ADD_DEPENDENCIES(test run_tests_${_TSTLIB})
 	ADD_DEPENDENCIES(tests_build_all test_${_TSTLIB})
+
+	# test_gdb
+	ADD_CUSTOM_TARGET(run_tests_${_TSTLIB}_gdb
+	COMMAND "gdb" "-batch" "-ex" "\"run\"" "-ex" "\"bt\"" "-return-child-result" "${GENERATED_EXE}")
+	ADD_DEPENDENCIES(run_tests_${_TSTLIB}_gdb test_${_TSTLIB})
+	ADD_DEPENDENCIES(test_gdb run_tests_${_TSTLIB}_gdb)
 
 if(ENABLE_SOLUTION_FOLDERS)
 	set_target_properties(test_${_TSTLIB} PROPERTIES FOLDER "unit tests")
