@@ -389,10 +389,10 @@ ReactiveNavigationDemoFrame::ReactiveNavigationDemoFrame(wxWindow* parent,wxWind
 	// Create dialogs:
 	iniEditoreactivenav = new CIniEditor(this);
 
-	const std::string sAux = 
+	const std::string sAux =
 "# ----------------------------------------------------------------------\n"
 "# Example configuration file for MRPTs Reactive Navigation engine.\n"
-"# See C++ documentation: http://reference.mrpt.org/svn/classmrpt_1_1nav_1_1_c_reactive_navigation_system.html\n"
+"# See C++ documentation: http://reference.mrpt.org/devel/classmrpt_1_1nav_1_1_c_reactive_navigation_system.html\n"
 "# See ROS node documentation: http://wiki.ros.org/mrpt_reactivenav2d\n"
 "# ------------------------------------------------------------------------\n"
 "\n"
@@ -453,7 +453,7 @@ ReactiveNavigationDemoFrame::ReactiveNavigationDemoFrame(wxWindow* parent,wxWind
 "# i.e. can be used to impose a maximum acceleration.\n"
 "SPEEDFILTER_TAU         = 0         \n"
 "\n"
-"# PTGs: See classes derived from mrpt::nav::CParameterizedTrajectoryGenerator ( http://reference.mrpt.org/svn/classmrpt_1_1nav_1_1_c_parameterized_trajectory_generator.html)# refer to papers for details.\n"
+"# PTGs: See classes derived from mrpt::nav::CParameterizedTrajectoryGenerator ( http://reference.mrpt.org/devel/classmrpt_1_1nav_1_1_c_parameterized_trajectory_generator.html)# refer to papers for details.\n"
 "#------------------------------------------------------------------------------\n"
 "# Types:\n"
 "# 1 - Circular arcs \n\"\n"
