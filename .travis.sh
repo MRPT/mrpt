@@ -8,7 +8,7 @@ CMAKE_CXX_FLAGS="-Wall -Wextra -Wabi -O2"
 
 function build ()
 {
-  #env 
+  #env
   mkdir $BUILD_DIR && cd $BUILD_DIR
 
   # gcc is too slow and we have a time limit in Travis CI: exclude examples when building with gcc
@@ -26,8 +26,8 @@ function test ()
 {
   mkdir $BUILD_DIR && cd $BUILD_DIR
   cmake $MRPT_DIR -DBUILD_APPLICATIONS=FALSE
-  # The following script replaces "make test" by showing stack traces of failing unit tests.
-  $MRPT_DIR/tests/run_all_tests_gdb.sh  
+  # The following is like "make test" but showing stack traces of failing unit tests.
+  make tests_gdb
 }
 
 function doc ()
