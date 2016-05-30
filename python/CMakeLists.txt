@@ -33,7 +33,7 @@ add_library(pymrpt
 add_definitions(-DROS_EXTENSIONS)
 
 target_link_libraries(pymrpt
-  ${Boost_LIBRARIES} ${Opencv_LIBRARIES} ${MRPT_LIBS}
+  ${Boost_LIBRARIES} ${Opencv_LIBRARIES}
 )
 
 # remove "lib" prefix from .so filename
