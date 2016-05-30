@@ -17,10 +17,6 @@
          http://www.mrpt.org/Application:graph-slam
  ---------------------------------------------------------------*/
 
-#include <mrpt/graphs.h>
-#include <mrpt/graphslam.h>
-#include <mrpt/gui.h>
-
 #include <mrpt/otherlibs/tclap/CmdLine.h>
 
 using namespace mrpt;

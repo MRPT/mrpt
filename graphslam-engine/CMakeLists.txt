@@ -14,12 +14,12 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 #-------------------------------------------------------------------------------
 # Declare a new CMake Project:
 #-------------------------------------------------------------------------------
-set(PROJECT_NAME "graphslam_engine")
+set(PROJECT_NAME "graphslam-engine")
 project(${PROJECT_NAME})
 
 # version number
-set(graphslam_engine_VERSION_MAJOR 0)
-set(graphslam_engine_VERSION_MINOR 1)
+set(graphslam-engine_VERSION_MAJOR 0)
+set(graphslam-engine_VERSION_MINOR 1)
 
 #if (${UNIX})
   #set (DESKTOP $ENV{HOME})
@@ -61,8 +61,7 @@ set(PROJECT_PATH "$ENV{mrpt_project}")
 set(INIT_PATH "$ENV{PATH}")
 
 set(SRC_FILES 
-    graphslam_engine_app.cpp
-    display_graph.cpp
+    graphslam-engine_app.cpp
     )
 set(CMAKE_BINARY_DIR "./build/")
 set(REQUIRED_LIBS

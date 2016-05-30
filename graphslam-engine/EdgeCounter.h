@@ -4,7 +4,7 @@
 
 
 #include <mrpt/utils/mrpt_macros.h>
-#include <mrpt/gui.h>
+#include <mrpt/gui/CDisplayWindow3D.h>
 
 #include <iostream>
 #include <sstream>

@@ -5,11 +5,12 @@
 #include <mrpt/system/os.h>
 #include <mrpt/poses/CPoses2DSequence.h>
 #include <mrpt/poses/CPosePDF.h>
-#include <mrpt/utils.h>
 #include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/utils/mrpt_stdint.h>
 #include <mrpt/utils/mrpt_macros.h>
 #include <mrpt/utils/CConfigFile.h>
+#include <mrpt/utils/CFileOutputStream.h>
+#include <mrpt/utils/CFileInputStream.h>
 #include <mrpt/obs/CActionRobotMovement2D.h>
 #include <mrpt/obs/CActionRobotMovement3D.h>
 #include <mrpt/maps/CSimplePointsMap.h>
@@ -18,12 +19,18 @@
 #include <mrpt/slam/CICP.h>
 #include <mrpt/slam/CMetricMapBuilder.h>
 #include <mrpt/slam/CMetricMapBuilderICP.h>
-#include <mrpt/graphs.h>
+//#include <mrpt/graphs.h>
 #include <mrpt/graphs/CNetworkOfPoses.h>
 #include <mrpt/graphslam.h>
-#include <mrpt/gui.h>
-#include <mrpt/opengl.h>
+#include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/opengl/CPlanarLaserScan.h> // It's in the lib mrpt-maps now
+#include <mrpt/opengl/graph_tools.h>
+#include <mrpt/opengl/CPointCloud.h>
+#include <mrpt/opengl/CRenderizable.h>
+#include <mrpt/opengl/CAxis.h>
+#include <mrpt/opengl/CCamera.h>
+#include <mrpt/opengl/CGridPlaneXY.h>
+#include <mrpt/opengl/CSetOfObjects.h>
 
 #include <string>
 #include <sstream>
@@ -54,11 +61,16 @@ using namespace std;
 
 template<class GRAPH_t>
 GraphSlamEngine_t<GRAPH_t>::GraphSlamEngine_t(const string& config_file,
-    CDisplayWindow3D* win /* = NULL */):
+    CDisplayWindow3D* win /* = NULL */,
+    string rawlog_fname /* = "" */ ):
   kOffsetYStep(20.0), // textMessage vertical text position
   kIndexTextStep(1) // textMessage index
 {
   m_win = win;
+
+  // use the specified rawlog, if not given, it defaults to empty string
+  // Correct rawlog fname is resolved in the readConfigFile function
+  m_rawlog_fname = rawlog_fname;
 
   m_config_fname = config_file;
   this->initGraphSlamEngine();
@@ -322,6 +334,7 @@ void GraphSlamEngine_t<GRAPH_t>::parseRawlogFile() {
       // Read a single observation from the rawlog 
       // (Format #2 rawlog file)
       //TODO Implement 2nd format
+      THROW_EXCEPTION("Observation-only format is not yet supported");
     }
     else {
       // action, observations should contain a pair of valid data 
@@ -573,12 +586,16 @@ void GraphSlamEngine_t<GRAPH_t>::readConfigFile(const string& fname) {
 
   CConfigFile cfg_file(fname);
 
+  if (m_rawlog_fname.empty()) {
+    m_rawlog_fname = cfg_file.read_string(
+        /*section_name = */ "MappingApplication", 
+        /*var_name = */ "rawlog_file",
+        /*default_value = */ "", /*failIfNotFound = */ true);
+  }
+
+
   // Section: GeneralConfiguration 
   // ////////////////////////////////
-  m_rawlog_fname = cfg_file.read_string(
-      /*section_name = */ "MappingApplication", 
-      /*var_name = */ "rawlog_file",
-      /*default_value = */ "", /*failIfNotFound = */ true);
   m_output_dir_fname = cfg_file.read_string(
       "GeneralConfiguration", 
       "output_dir_fname",
