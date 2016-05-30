@@ -102,10 +102,10 @@ TEST(CGPSInterface, parse_NMEA_ZDA)
 
 	EXPECT_TRUE(msg!=NULL);
 	if (!msg) return;
-	EXPECT_EQ(msg->fields.date_day,14);
-	EXPECT_EQ(msg->fields.date_month,10);
-	EXPECT_EQ(msg->fields.date_year,2003);
-	EXPECT_EQ(msg->fields.UTCTime.hour,18);
-	EXPECT_EQ(msg->fields.UTCTime.minute,18);
-	EXPECT_EQ(msg->fields.UTCTime.sec,13);
+	EXPECT_TRUE(msg->fields.date_day==14);
+	EXPECT_TRUE(msg->fields.date_month==10);
+	EXPECT_TRUE(msg->fields.date_year==2003);
+	EXPECT_TRUE(msg->fields.UTCTime.hour==18);
+	EXPECT_TRUE(msg->fields.UTCTime.minute==18);
+	EXPECT_TRUE(msg->fields.UTCTime.sec==13.0); // Replaced from EXPECT_EQ() to avoid a "bus error" in a gtest template under armhf.
 }
