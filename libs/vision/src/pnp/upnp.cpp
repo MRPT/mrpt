@@ -52,7 +52,7 @@ using namespace std;
 #include <opencv2/opencv_modules.hpp>
 using namespace cv;
 
-#include <mrpt/vision/upnp.h>
+#include <mrpt/vision/pnp/upnp.h>
 #include <limits>
 
 upnp::upnp(const Mat& cameraMatrix, const Mat& opoints, const Mat& ipoints)

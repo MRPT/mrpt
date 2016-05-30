@@ -7,7 +7,8 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/vision/pnp_algos.h>
+#include <mrpt/vision/pnp/pnp_algos.h>
+using namespace pnp;
 
 #include <iostream>
 using namespace std;
@@ -20,12 +21,9 @@ using namespace Eigen;
 #include <opencv2/core/eigen.hpp>
 using namespace cv;
 
-#include <mrpt/vision/epnp.h>
-#include <mrpt/vision/dls.h>
-#include <mrpt/vision/upnp.h>
-
-template<typename Derived>
-int pnpalgo_dls(MatrixBase<Derived>& obj_pts, MatrixBase<Derived>& img_pts, int n, MatrixBase<Derived>& cam_intrinsic, MatrixBase<Derived>& pose_mat){
+/*
+template<typename Derived> 
+int CPnP::CPnP_dls(MatrixBase<Derived>& obj_pts, MatrixBase<Derived>& img_pts, int n, MatrixBase<Derived>& cam_intrinsic, MatrixBase<Derived>& pose_mat){
 	
 	MatrixXd cam_in_eig=cam_intrinsic.array().transpose(), img_pts_eig=img_pts.array().transpose(), obj_pts_eig=obj_pts.array().transpose(), t_eig;
 	Matrix3d R_eig; 
@@ -70,8 +68,8 @@ int pnpalgo_dls(MatrixBase<Derived>& obj_pts, MatrixBase<Derived>& img_pts, int 
 	return 1;
 }
 
-template<typename Derived>
-int pnpalgo_epnp(MatrixBase<Derived>& obj_pts, MatrixBase<Derived>& img_pts, int n, MatrixBase<Derived>& cam_intrinsic, MatrixBase<Derived>& pose_mat){
+template<typename Derived> 
+int CPnP::CPnP_epnp(MatrixBase<Derived>& obj_pts, MatrixBase<Derived>& img_pts, int n, MatrixBase<Derived>& cam_intrinsic, MatrixBase<Derived>& pose_mat){
 	
 	MatrixXd cam_in_eig=cam_intrinsic.array().transpose(), img_pts_eig=img_pts.array().transpose(), obj_pts_eig=obj_pts.array().transpose(), t_eig;
 	Matrix3d R_eig; 
@@ -114,8 +112,8 @@ int pnpalgo_epnp(MatrixBase<Derived>& obj_pts, MatrixBase<Derived>& img_pts, int
 	return 1;
 }
 
-template<typename Derived>
-int pnpalgo_upnp(MatrixBase<Derived>& obj_pts, MatrixBase<Derived>& img_pts, int n, MatrixBase<Derived>& cam_intrinsic, MatrixBase<Derived>& pose_mat){
+template<typename Derived> 
+int CPnP::CPnP_upnp(MatrixBase<Derived>& obj_pts, MatrixBase<Derived>& img_pts, int n, MatrixBase<Derived>& cam_intrinsic, MatrixBase<Derived>& pose_mat){
 	
 	MatrixXd cam_in_eig=cam_intrinsic.array().transpose(), img_pts_eig=img_pts.array().transpose(), obj_pts_eig=obj_pts.array().transpose(), t_eig;
 	Matrix3d R_eig; 
@@ -157,3 +155,7 @@ int pnpalgo_upnp(MatrixBase<Derived>& obj_pts, MatrixBase<Derived>& img_pts, int
 	
 	return 1;
 }
+
+
+*/
+

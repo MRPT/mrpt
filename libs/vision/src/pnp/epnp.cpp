@@ -4,7 +4,7 @@ using namespace std;
 #include <opencv2/opencv.hpp>
 #include <opencv2/opencv_modules.hpp>
 using namespace cv;
-#include <mrpt/vision/epnp.h>
+#include <mrpt/vision/pnp/epnp.h>
 
 epnp::epnp(const cv::Mat& cameraMatrix, const cv::Mat& opoints, const cv::Mat& ipoints)
 {

@@ -4,7 +4,7 @@
 #include <opencv2/opencv_modules.hpp>
 using namespace cv;
 
-#include <mrpt/vision/dls.h>
+#include <mrpt/vision/pnp/dls.h>
 
 #ifdef HAVE_EIGEN
 #  if defined __GNUC__ && defined __APPLE__
