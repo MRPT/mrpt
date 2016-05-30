@@ -21,7 +21,7 @@
 #include <mrpt/system/os.h>
 #include <mrpt/poses/CPoses2DSequence.h>
 #include <mrpt/poses/CPosePDF.h>
-#include <mrpt/utils.h>
+//#include <mrpt/utils.h>
 #include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/utils/mrpt_stdint.h>
 #include <mrpt/utils/mrpt_macros.h>
@@ -34,11 +34,10 @@
 #include <mrpt/slam/CICP.h>
 #include <mrpt/slam/CMetricMapBuilder.h>
 #include <mrpt/slam/CMetricMapBuilderICP.h>
-#include <mrpt/graphs.h>
+//#include <mrpt/graphs.h>
 #include <mrpt/graphs/CNetworkOfPoses.h>
 #include <mrpt/graphslam.h>
-#include <mrpt/gui.h>
-#include <mrpt/opengl.h>
+#include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/opengl/CPlanarLaserScan.h> // It's in the lib mrpt-maps now
 
 #include <string>
@@ -85,7 +84,8 @@ class GraphSlamEngine_t {
     // Ctors, Dtors
     //////////////////////////////////////////////////////////////
     GraphSlamEngine_t(const string& config_file,
-        CDisplayWindow3D* win = NULL );
+        CDisplayWindow3D* win = NULL,
+        string rawlog_fname = "");
     ~GraphSlamEngine_t();
 
     // Public function definitions
@@ -159,7 +159,7 @@ class GraphSlamEngine_t {
       graphslam::TResultInfoSpaLevMarq  levmarq_info;
 
       // Execute the optimization
-      optimize_graph_spa_levmarq(
+      graphslam::optimize_graph_spa_levmarq(
           graph,
           levmarq_info,
           NULL,  // List of nodes to optimize. NULL -> all but the root node.
