@@ -1,3 +1,4 @@
+  * Fix FTBFS (unit tests) in armhf (Closes: #825844).
   * Removed manual -dbg packages, as they are now generated automatically.
 
 mrpt (1:1.4.0-1) unstable; urgency=medium
