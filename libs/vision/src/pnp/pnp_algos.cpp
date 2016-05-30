@@ -21,6 +21,7 @@ using namespace Eigen;
 #include <opencv2/core/eigen.hpp>
 using namespace cv;
 
+/*
 template<typename Derived> 
 int CPnP::CPnP_dls(MatrixBase<Derived>& obj_pts, MatrixBase<Derived>& img_pts, int n, MatrixBase<Derived>& cam_intrinsic, MatrixBase<Derived>& pose_mat){
 	
@@ -156,5 +157,5 @@ int CPnP::CPnP_upnp(MatrixBase<Derived>& obj_pts, MatrixBase<Derived>& img_pts, 
 }
 
 
-
+*/
 

@@ -8,7 +8,7 @@ import random
 import pymrpt
 
 def vector2RotMat(vec, theta=0):
-    """Rodrigues rotation formula"""
+    #Rodrigues rotation formula
     n_check=np.linalg.norm(vec)
     
     kx=vec[0]/n_check
