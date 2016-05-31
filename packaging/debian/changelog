@@ -1,11 +1,13 @@
   * Fix FTBFS (unit tests) in armhf (Closes: #825844).
-  * Removed manual -dbg packages, as they are now generated automatically.
+  * Removed manual -dbg packages, as they are now
+    generated automatically.
 
 mrpt (1:1.4.0-1) unstable; urgency=medium
 
   * New version of upstream sources.
-  * Lintian clean again: fix not-binnmuable-any-depends-all (Closes: #821818)
-  * Fix mrpt-common package overwriting files in mrpt-apps (Closes: #807662)
+  * Lintian clean: fix not-binnmuable-any-depends-all (Closes: #821818)
+  * Fix mrpt-common package overwriting files
+    in mrpt-apps (Closes: #807662)
   * Fix building against libftdi1-dev (Closes: #810368)
   * Fix building with gcc 6.0 (Closes: #811812)
 
