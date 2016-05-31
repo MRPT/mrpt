@@ -6,10 +6,10 @@
 #-------------------------------------------------------------------------------
 
 # Sat Apr 30 15:07:52 EEST 2016, nickkouk
-#j
 # see https://app.asana.com/0/68404150701387/107235506964376
 
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
+
 
 #-------------------------------------------------------------------------------
 # Declare a new CMake Project:
@@ -17,40 +17,10 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 set(PROJECT_NAME "graphslam-engine")
 project(${PROJECT_NAME})
 
-# version number
-set(graphslam-engine_VERSION_MAJOR 0)
-set(graphslam-engine_VERSION_MINOR 1)
-
-#if (${UNIX})
-  #set (DESKTOP $ENV{HOME})
-#else()
-  #set (DESKTOP $ENV{USERPROFILE}/Desktop)
-#endif()
-#message(${DESKTOP})
-
-message("Starting CMake Compilation!")
+message("----------------------------------------------------")
+message("Starting CMake Project Compilation: ${PROJECT_NAME}")
 message("Project: ${PROJECT_NAME}")
-message("---------------------------")
-
-## Loops in CMake
-#set(a 1)
-#set(b "kalimera")
-#set(c "kalinuxta")
-#foreach(F ${a} ${b} ${c})
-    #message(${F})
-#endforeach(F)
-
-## macros in cmake
-#macro(kalimera name) #macro(macro_name arg1 arg2 ..)
-    #message("kalimera ${name}")
-    #message("kalinuxta ${name}")
-    #message("kalispera ${name}")
-    #message("ARGV = ${ARGV}")
-    #message("ARGC = ${ARGC}")
-    #message("ARGN = ${ARGN}")
-#endmacro(kalimera name)
-#kalimera("Niko")
-#kalimera("Niko" "George" "Spyros") # providing extra arguments
+message("----------------------------------------------------")
 
 
 #-------------------------------------------------------------------------------
