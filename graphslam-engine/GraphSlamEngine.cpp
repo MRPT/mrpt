@@ -3,6 +3,8 @@
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/datetime.h>
 #include <mrpt/system/os.h>
+#include <mrpt/system/threads.h>
+#include <mrpt/synch/CCriticalSection.h>
 #include <mrpt/poses/CPoses2DSequence.h>
 #include <mrpt/poses/CPosePDF.h>
 #include <mrpt/utils/CLoadableOptions.h>
@@ -19,7 +21,6 @@
 #include <mrpt/slam/CICP.h>
 #include <mrpt/slam/CMetricMapBuilder.h>
 #include <mrpt/slam/CMetricMapBuilderICP.h>
-//#include <mrpt/graphs.h>
 #include <mrpt/graphs/CNetworkOfPoses.h>
 #include <mrpt/graphslam.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
@@ -42,6 +43,7 @@
 #include "supplementary_funs.h"
 
 using namespace mrpt;
+using namespace mrpt::synch;
 using namespace mrpt::poses;
 using namespace mrpt::obs;
 using namespace mrpt::system;
@@ -53,6 +55,8 @@ using namespace mrpt::opengl;
 using namespace mrpt::slam;
 using namespace mrpt::maps;
 using namespace mrpt::graphslam;
+
+using namespace supplementary_funs;
 
 using namespace std;
 
@@ -176,6 +180,25 @@ void GraphSlamEngine_t<GRAPH_t>::initGraphSlamEngine() {
 		m_win->forceRepaint();
 	}
 
+	// second viewport
+	{
+		COpenGLScenePtr scene = m_win->get3DSceneAndLock();
+		COpenGLViewportPtr viewp= scene->createViewport("curr_robot_pose_viewport");
+		// Add a clone viewport, using [0,1] factor X,Y,Width,Height coordinates:
+		viewp->setCloneView("main");
+		viewp->setViewportPosition(0.78,0.78,0.20,0.20);
+		viewp->getCamera().setAzimuthDegrees(90);
+		viewp->getCamera().setElevationDegrees(90);
+		viewp->setTransparent(false);
+		viewp->setCustomBackgroundColor(TColorf(TColor(205, 193, 197)));
+		viewp->getCamera().setZoomDistance(30);
+		viewp->getCamera().setOrthogonal();
+
+		m_win->unlockAccess3DScene();
+		m_win->forceRepaint();
+
+	}
+	
 	// axis
 	{
 		COpenGLScenePtr scene = m_win->get3DSceneAndLock();
@@ -261,6 +284,8 @@ void GraphSlamEngine_t<GRAPH_t>::initGraphSlamEngine() {
 	}
 
 
+
+
 	MRPT_END
 }
 
@@ -300,7 +325,7 @@ void GraphSlamEngine_t<GRAPH_t>::parseRawlogFile() {
 	TNodeID from = m_graph.root; // first node shall be the root - 0
 
 
-	// Read the first rawlog pair / observation explicitly to registre the laser
+	// Read the first rawlog pair / observation explicitly to register the laser
 	// scan of the root node
 	{
 		CRawlog::getActionObservationPairOrObservation(
@@ -397,7 +422,6 @@ void GraphSlamEngine_t<GRAPH_t>::parseRawlogFile() {
 							0 );
 
 					m_win->unlockAccess3DScene();
-
 					m_win->forceRepaint();
 				}
 
@@ -409,11 +433,13 @@ void GraphSlamEngine_t<GRAPH_t>::parseRawlogFile() {
 			 * Determine whether to insert a new pose in the graph given the
 			 * distance and angle thresholds
 			 */
-			//if ( (last_pose_inserted.distanceTo(curr_odometry_only_pose) > m_distance_threshold) ||
-					//fabs(wrapToPi(last_pose_inserted.phi() - curr_odometry_only_pose.phi())) > m_angle_threshold ) {
 
 			// update the current estimated pose of the robot
-			m_curr_estimated_pose = m_graph.nodes[from] + since_prev_node_PDF.getMeanVal();
+			{
+				CCriticalSectionLocker m_graph_lock(&m_graph_section);
+				
+				m_curr_estimated_pose = m_graph.nodes[from] + since_prev_node_PDF.getMeanVal();
+			}
 			if ( (last_pose_inserted.distanceTo(m_curr_estimated_pose) > m_distance_threshold) ||
 					fabs(wrapToPi(last_pose_inserted.phi() - m_curr_estimated_pose.phi())) > m_angle_threshold ) {
 				
@@ -424,10 +450,13 @@ void GraphSlamEngine_t<GRAPH_t>::parseRawlogFile() {
 				{
 					//constraint_t rel_edge;
 
-					//m_graph.nodes[to] = curr_odometry_only_pose;
-					m_graph.nodes[to] = m_graph.nodes[from] + since_prev_node_PDF.getMeanVal();
-					m_graph.insertEdgeAtEnd(from, to, since_prev_node_PDF);
-					m_edge_counter.addEdge("Odometry");
+					{
+						CCriticalSectionLocker m_graph_lock(&m_graph_section);
+
+						m_graph.nodes[to] = m_graph.nodes[from] + since_prev_node_PDF.getMeanVal();
+						m_graph.insertEdgeAtEnd(from, to, since_prev_node_PDF);
+						m_edge_counter.addEdge("Odometry");
+					}
 
 					//TODO - remove these
 					//double distance = (last_pose_inserted.distanceTo(curr_odometry_only_pose));
@@ -456,6 +485,8 @@ void GraphSlamEngine_t<GRAPH_t>::parseRawlogFile() {
 				int nodes_to_check = 0; // how many nodes to check ICP against
 				switch ( m_prev_nodes_for_ICP ) {
 					case -1: {
+						CCriticalSectionLocker m_graph_lock(&m_graph_section);
+
 						nodes_to_check = m_graph.nodeCount() - 1;
 						cout << "Checking ICP against all other nodes in the graph." << endl;
 						break;
@@ -478,11 +509,15 @@ void GraphSlamEngine_t<GRAPH_t>::parseRawlogFile() {
 					constraint_t rel_edge;
 					double ICP_goodness = this->getICPEdge(prev_node, to, &rel_edge);
 					if (ICP_goodness > m_ICP_goodness_thres) {
-						VERBOSE_COUT << "Adding ICP constraint betwen nodes "
-												<< to << ", " << prev_node << "." << endl;
-						VERBOSE_COUT << "Adding edge: " << endl << rel_edge << endl;
-						m_graph.insertEdge(prev_node, to, rel_edge);
-						VERBOSE_COUT << "ICP goodness: " << ICP_goodness << endl;
+						{
+							CCriticalSectionLocker m_graph_lock(&m_graph_section);
+
+							VERBOSE_COUT << "Adding ICP constraint betwen nodes "
+								<< to << ", " << prev_node << "." << endl;
+							VERBOSE_COUT << "Adding edge: " << endl << rel_edge << endl;
+							VERBOSE_COUT << "ICP goodness: " << ICP_goodness << endl;
+							m_graph.insertEdge(prev_node, to, rel_edge);
+						}
 
 						// register a loop closing constraint if distance of nodes larger
 						// than the predefined m_loop_closing_min_nodeid_diff
@@ -491,9 +526,14 @@ void GraphSlamEngine_t<GRAPH_t>::parseRawlogFile() {
 					}
 				}
 
-				// optimize the graph - LM
-				this->optimizeGraph(m_graph);
+				// join the previous optimization thread
+				joinThread(m_thread_optimize);
 
+				// optimize the graph - multithreaded implementation
+				//this->optimizeGraph(&m_graph);
+				m_thread_optimize = createThreadFromObjectMethod(/*obj = */this, 
+						/* func = */&GraphSlamEngine_t::optimizeGraph,
+						&m_graph);
 
 				// update the visualization window
 				if (m_visualize_optimized_graph) {
@@ -509,6 +549,9 @@ void GraphSlamEngine_t<GRAPH_t>::parseRawlogFile() {
 					CRenderizablePtr obj = scene->getByName("robot_model");
 					CSetOfObjectsPtr robot_obj = static_cast<CSetOfObjectsPtr>(obj);
 					pose_t initial_pose;
+
+					CCriticalSectionLocker m_graph_lock(&m_graph_section);
+
 					robot_obj->setPose(m_graph.nodes[m_graph.nodeCount()-1]);
 					//scene->insert(obj);
 
@@ -517,9 +560,13 @@ void GraphSlamEngine_t<GRAPH_t>::parseRawlogFile() {
 
 
 				// reset the relative PDF
-				since_prev_node_PDF.cov_inv = init_path_uncertainty;
-				since_prev_node_PDF.mean = pose_t(0, 0, 0);
-				last_pose_inserted = m_graph.nodes[to];
+				{
+					CCriticalSectionLocker m_graph_lock(&m_graph_section);
+
+					since_prev_node_PDF.cov_inv = init_path_uncertainty;
+					since_prev_node_PDF.mean = pose_t(0, 0, 0);
+					last_pose_inserted = m_graph.nodes[to];
+				}
 
 
 
@@ -530,17 +577,36 @@ MRPT_END
 } // END OF FUNCTION
 
 template<class GRAPH_t>
+void GraphSlamEngine_t<GRAPH_t>::optimizeGraph(GRAPH_t* gr) {
+	MRPT_START
+
+	CCriticalSectionLocker m_graph_lock(&m_graph_section);
+
+	cout << "In optimizeGraph: threadID: " << getCurrentThreadId()<< endl;
+
+	//cout << "Executing the graph optimization" << endl;
+	graphslam::TResultInfoSpaLevMarq	levmarq_info;
+
+	// Execute the optimization
+	graphslam::optimize_graph_spa_levmarq(
+			*gr,
+			levmarq_info,
+			NULL,  // List of nodes to optimize. NULL -> all but the root node.
+			m_optimization_params,
+			&levMarqFeedback<GRAPH_t>); // functor feedback
+	//&optimization_feedback);
+
+	MRPT_END
+}
+
+template<class GRAPH_t>
 void GraphSlamEngine_t<GRAPH_t>::visualizeGraph(const GRAPH_t& gr) {
+	MRPT_START
+	
+	CCriticalSectionLocker m_graph_lock(&m_graph_section);
 
 	string gr_name = graph_to_name[&gr];
 	const TParametersDouble* viz_params = graph_to_viz_params[&gr];
-
-	//TODO: Delete this
-	//cout << "Visualization parameters: " << endl;
-	//for (map<string, double>::const_iterator it = viz_params->begin();
-			//it != viz_params->end(); ++it) {
-		//cout << it->first << " : " << it->second << endl;
-	//}
 
 	// update the graph (clear and rewrite..)
 	COpenGLScenePtr& scene = m_win->get3DSceneAndLock();
@@ -578,6 +644,8 @@ void GraphSlamEngine_t<GRAPH_t>::visualizeGraph(const GRAPH_t& gr) {
 
 	// push the changes
 	m_win->repaint();
+
+	MRPT_END
 }
 
 template<class GRAPH_t>
@@ -616,6 +684,30 @@ void GraphSlamEngine_t<GRAPH_t>::readConfigFile(const string& fname) {
 			"GeneralConfiguration",
 			"save_graph_fname",
 			"poses.log", false);
+
+	// Section: Optimization
+	// ////////////////////////////
+	m_optimization_params["verbose"] = cfg_file.read_bool(
+			"Optimization",
+			"verbose",
+			0, false);
+	m_optimization_params["profiler"] = cfg_file.read_bool(
+			"Optimization",
+			"profiler",
+			0, false);
+		m_optimization_params["max_iterations"] = cfg_file.read_double(
+			"Optimization",
+			"max_iterations",
+			100, false);
+	m_optimization_params["scale_hessian"] = cfg_file.read_double(
+			"Optimization",
+			"scale_hessian",
+			0.2, false);
+	m_optimization_params["tau"] = cfg_file.read_double(
+			"Optimization",
+			"tau",
+			1e-3, false);
+
 
 	// Section: GraphSLAMParameters
 	// ////////////////////////////////
@@ -695,9 +787,6 @@ void GraphSlamEngine_t<GRAPH_t>::readConfigFile(const string& fname) {
 
 
 	// Optimized graph
-
-	// TODO - have some of the parameters as non-configurable
-
 	m_visualize_optimized_graph = cfg_file.read_bool(
 			"VisualizationParameters",
 			"visualize_optimized_graph",
@@ -773,34 +862,37 @@ void GraphSlamEngine_t<GRAPH_t>::printProblemParams() const {
 
 	stringstream ss_out;
 
-	ss_out << "--------------------------------------------------------------------------" << endl;
+	ss_out << "-------------------------------------------------------------------------" << endl;
 	ss_out << " Graphslam_engine: Problem Parameters " << endl;
-	ss_out << " Config fname										= " << m_config_fname << endl;
-	ss_out << " Rawlog fname										= " << m_rawlog_fname << endl;
-	ss_out << " Output dir											= " << m_output_dir_fname << endl;
-	ss_out << " User decides about output dir?	= " << m_user_decides_about_output_dir << endl;
-	ss_out << " Debug mode											= " << m_do_debug << endl;
-	ss_out << " save_graph_fname								= " << m_save_graph_fname << endl;
-	ss_out << " do_pose_graph_only							= " <<	m_do_pose_graph_only << endl;
-	ss_out << " optimizer												= " << m_optimizer << endl;
-	ss_out << " Loop closing alg								= " << m_loop_closing_alg << endl;
+	ss_out << " Config fname                    = " << m_config_fname << endl;
+	ss_out << " Rawlog fname                    = " << m_rawlog_fname << endl;
+	ss_out << " Output dir                      = " << m_output_dir_fname << endl;
+	ss_out << " User decides about output dir   = " << m_user_decides_about_output_dir << endl;
+	ss_out << " Debug mode                      = " << m_do_debug << endl;
+	ss_out << " save_graph_fname                = " << m_save_graph_fname << endl;
+	ss_out << " do_pose_graph_only              = " <<	m_do_pose_graph_only << endl;
+	ss_out << " optimizer                       = " << m_optimizer << endl;
+	ss_out << " Loop closing alg                = " << m_loop_closing_alg << endl;
 	ss_out << " Loop Closing min. node distance = " << m_loop_closing_alg << endl;
-	ss_out << " Decider alg											= " << m_decider_alg << endl;
-	ss_out << " Distance threshold							= " << m_distance_threshold << " m" << endl;
-	ss_out << " Angle threshold									= " << RAD2DEG(m_angle_threshold) << " deg" << endl;
-	ss_out << "ICP Goodness threshold						= " << m_ICP_goodness_thres << endl;
+	ss_out << " Decider alg                     = " << m_decider_alg << endl;
+	ss_out << " Distance threshold              = " << m_distance_threshold << " m" << endl;
+	ss_out << " Angle threshold                 = " << RAD2DEG(m_angle_threshold) << " deg" << endl;
+	ss_out << "ICP Goodness threshold           = " << m_ICP_goodness_thres << endl;
 	ss_out << "-------------------------------------------------------------------------" << endl;
 	ss_out << endl;
 
 	cout << ss_out.str(); ss_out.str("");
 
-	//m_optimized_graph_viz_params.dumpToConsole();
-
 	m_ICP.options.dumpToConsole();
+	cout << "-----------[ Optimization Parameters ]-----------" << endl;
+	m_optimization_params.dumpToConsole();
+	cout << "-----------[ Graph Visualization Parameters ]-----------" << endl;
+	m_optimized_graph_viz_params.dumpToConsole();
 
 	ss_out << "-------------------------------------------------------------------------" << endl;
 	cout << ss_out.str(); ss_out.str("");
 
+	// TODO - resolve this
 	//map_builder.ICP_params.dumpToConsole();
 	//map_builder.ICP_options.dumpToConsole();
 
@@ -936,10 +1028,15 @@ double GraphSlamEngine_t<GRAPH_t>::getICPEdge(const TNodeID& from,
 	float running_time;
 	CICP::TReturnInfo info;
 
-	// use the difference of the node positions as an initial alignment
-	// estimation
-	m_graph.dijkstra_nodes_estimate();
-	pose_t initial_pose = m_graph.nodes[to] - m_graph.nodes[from];
+	pose_t initial_pose;
+	{
+		CCriticalSectionLocker m_graph_lock(&m_graph_section);
+
+		// use the difference of the node positions as an initial alignment
+		// estimation
+		m_graph.dijkstra_nodes_estimate();
+		initial_pose = m_graph.nodes[to] - m_graph.nodes[from];
+	}
 
 	//CPose2D initial_pose(0.0f,0.0f,(float)DEG2RAD(0.0f));
 
@@ -976,21 +1073,16 @@ template <class GRAPH_t>
 inline void GraphSlamEngine_t<GRAPH_t>::updateCurPosViewport(const GRAPH_t& gr) {
 	MRPT_START
 
-	pose_t curr_robot_pose = gr.nodes.find(gr.nodeCount()-1)->second; // get the last added pose
+	pose_t curr_robot_pose;
+	{
+		CCriticalSectionLocker m_graph_lock(&m_graph_section);
+		curr_robot_pose = gr.nodes.find(gr.nodeCount()-1)->second; // get the last added pose
+	}
 
-	COpenGLScenePtr &scene = m_win->get3DSceneAndLock();
+	COpenGLScenePtr scene = m_win->get3DSceneAndLock();
 
-	COpenGLViewportPtr viewp= scene->createViewport("current_pos");
-	// Add a clone viewport, using [0,1] factor X,Y,Width,Height coordinates:
-	viewp->setViewportPosition(0.78,0.78,0.20,0.20);
-	viewp->setCloneView("main");
+	COpenGLViewportPtr viewp = scene->getViewport("curr_robot_pose_viewport");
 	viewp->getCamera().setPointingAt(CPose3D(curr_robot_pose));
-	viewp->getCamera().setAzimuthDegrees(90);
-	viewp->getCamera().setElevationDegrees(90);
-	viewp->setTransparent(false);
-	viewp->setCustomBackgroundColor(TColorf(TColor(205, 193, 197)));
-	viewp->getCamera().setZoomDistance(40);
-	viewp->getCamera().setOrthogonal();
 
 	m_win->unlockAccess3DScene();
 	m_win->forceRepaint();

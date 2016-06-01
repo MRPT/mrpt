@@ -19,6 +19,8 @@
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/datetime.h>
 #include <mrpt/system/os.h>
+#include <mrpt/system/threads.h>
+#include <mrpt/synch/CCriticalSection.h>
 #include <mrpt/poses/CPoses2DSequence.h>
 #include <mrpt/poses/CPosePDF.h>
 #include <mrpt/utils/CLoadableOptions.h>
@@ -51,6 +53,7 @@ using namespace mrpt;
 using namespace mrpt::poses;
 using namespace mrpt::obs;
 using namespace mrpt::system;
+using namespace mrpt::synch;
 using namespace mrpt::graphs;
 using namespace mrpt::math;
 using namespace mrpt::utils;
@@ -137,37 +140,7 @@ class GraphSlamEngine_t {
 		 *
 		 * Optimize the under-construction graph
 		 */
-		inline void optimizeGraph(GRAPH_t graph) {
-			MRPT_START
-
-			cout << "Executing the graph optimization" << endl;
-
-			// TODO: read these throught the .ini file
-			// params for the optimization of the graph
-			TParametersDouble  optimization_params;
-			optimization_params["verbose"]	= 0;
-			optimization_params["profiler"] = 0;
-			optimization_params["max_iterations"] = 500;
-			optimization_params["scale_hessian"] = 0.1;  // If <1, will "exagerate" the scale of the gradient and, normally, will converge much faster.
-			optimization_params["tau"] = 1e-3;
-			// e2: Lev-marq algorithm iteration stopping criterion #2: |delta_incr| < e2*(x_norm+e2)
-			//optimization_params["e1"] = 1e-6;
-			//optimization_params["e2"] = 1e-6;
-
-			graphslam::TResultInfoSpaLevMarq	levmarq_info;
-
-			// Execute the optimization
-			graphslam::optimize_graph_spa_levmarq(
-					graph,
-					levmarq_info,
-					NULL,  // List of nodes to optimize. NULL -> all but the root node.
-					optimization_params,
-					NULL); // functor feedback
-					//&optimization_feedback);
-
-			MRPT_END
-		}
-
+		inline void optimizeGraph(GRAPH_t* graph);
 		/**
 		 * GraphSlamEngine_t::visualizeGraph
 		 *
@@ -324,15 +297,23 @@ class GraphSlamEngine_t {
 		// ICP configuration
 		float m_ICP_goodness_thres;
 		int m_prev_nodes_for_ICP; // add ICP constraints with m_prev_nodes_for_ICP nodes back
-		map<TNodeID, CObservation2DRangeScanPtr> m_nodes_to_laser_scans;
+		map<const TNodeID, CObservation2DRangeScanPtr> m_nodes_to_laser_scans;
 		CICP m_ICP;
 
 		// graph optimization
+		TParametersDouble m_optimization_params;
 
 		// Container to handle the propagation of the square root error of the problem
 		vector<double> m_log_sq_err_evolution;
 
 		pose_t m_curr_estimated_pose;
+
+		// Use mutliple threads for visualization and graph optimization
+		TThreadHandle m_thread_optimize;
+		TThreadHandle m_thread_visualize;
+
+		// mark graph modification/accessing explicitly for multithreaded implementation
+		CCriticalSection m_graph_section;
 
 };
 
