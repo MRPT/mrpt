@@ -92,11 +92,13 @@ ENDIF (CMAKE_MRPT_HAS_GTEST_SYSTEM)
 	ADD_DEPENDENCIES(test run_tests_${_TSTLIB})
 	ADD_DEPENDENCIES(tests_build_all test_${_TSTLIB})
 
+IF (UNIX)
 	# test_gdb
 	ADD_CUSTOM_TARGET(run_tests_${_TSTLIB}_gdb
 	COMMAND "gdb" "-batch" "-ex" "\"run\"" "-ex" "\"bt\"" "-return-child-result" "${GENERATED_EXE}")
 	ADD_DEPENDENCIES(run_tests_${_TSTLIB}_gdb test_${_TSTLIB})
 	ADD_DEPENDENCIES(test_gdb run_tests_${_TSTLIB}_gdb)
+ENDIF()
 
 if(ENABLE_SOLUTION_FOLDERS)
 	set_target_properties(test_${_TSTLIB} PROPERTIES FOLDER "unit tests")
