@@ -66,7 +66,7 @@ namespace mrpt
 			 /** Reset the PDF to a single point: All m_particles will be set exactly to the supplied pose.
 			  * \param location The location to set all the m_particles.
 			  * \param particlesCount If this is set to 0 the number of m_particles remains unchanged.
-			  *  \sa resetUniform, resetUniformFreeSpace
+			  *  \sa resetUniform, resetUniformFreeSpace, resetAroundSetOfPoses
 			  */
 			void  resetDeterministic(
 				const CPose2D &location,
@@ -74,7 +74,7 @@ namespace mrpt
 
 			/** Reset the PDF to an uniformly distributed one, inside of the defined cube.
 			  * If particlesCount is set to -1 the number of m_particles remains unchanged.
-			  *  \sa resetDeterministic, resetUniformFreeSpace
+			  *  \sa resetDeterministic, resetUniformFreeSpace, resetAroundSetOfPoses
 			  */
 			void  resetUniform(
 				const double & x_min,
@@ -84,6 +84,23 @@ namespace mrpt
 				const double & phi_min = -M_PI,
 				const double & phi_max = M_PI,
 				const int	&particlesCount = -1);
+
+			/** Reset the PDF to a multimodal distribution over a set of "spots" (x,y,phi)
+			  * The total number of particles will be `list_poses.size() * num_particles_per_pose`.
+			  * \param[in] list_poses The poses (x,y,phi) around which particles will be spread. Must contains at least one pose.
+			  * \param[in] num_particles_per_pose Number of particles to be spread around each of the "spots" in list_poses. Must be >=1.
+			  * 
+			  * Particles will be spread uniformly in a box of width `spread_{x,y,phi_rad}` in each of 
+			  * the three coordinates (meters, radians), so it can be understood as the "initial uncertainty".
+			  *
+			  *  \sa resetDeterministic, resetUniformFreeSpace
+			  */
+			void  resetAroundSetOfPoses(
+				const std::vector<mrpt::math::TPose2D> & list_poses,
+				const size_t num_particles_per_pose,
+				const double spread_x,
+				const double spread_y,
+				const double spread_phi_rad);
 
 			 /** Returns an estimate of the pose, (the mean, or mathematical expectation of the PDF).
 			   * \sa getCovariance
