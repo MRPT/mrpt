@@ -18,7 +18,7 @@ using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace std;
 
-template class CTraitsTest<CPose3D>;
+template class mrpt::utils::CTraitsTest<CPose3D>;
 
 class Pose3DTests : public ::testing::Test {
 protected:

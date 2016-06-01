@@ -16,5 +16,5 @@ using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace std;
 
-template class CTraitsTest<CPoint2DPDF>;
+template class mrpt::utils::CTraitsTest<CPoint2DPDF>;
 

@@ -19,7 +19,7 @@ using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace std;
 
-template class CTraitsTest<CPosePDFGaussian>;
+template class mrpt::utils::CTraitsTest<CPosePDFGaussian>;
 
 class PosePDFGaussTests : public ::testing::Test {
 protected:

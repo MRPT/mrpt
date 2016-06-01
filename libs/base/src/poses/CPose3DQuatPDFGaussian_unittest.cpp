@@ -22,7 +22,7 @@ using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace std;
 
-template class CTraitsTest<CPose3DQuatPDFGaussian>;
+template class mrpt::utils::CTraitsTest<CPose3DQuatPDFGaussian>;
 
 class Pose3DQuatPDFGaussTests : public ::testing::Test {
 protected:

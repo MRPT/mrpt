@@ -20,7 +20,7 @@ using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace std;
 
-template class CTraitsTest<CPose3DQuat>;
+template class mrpt::utils::CTraitsTest<CPose3DQuat>;
 
 class Pose3DQuatTests : public ::testing::Test {
 protected:

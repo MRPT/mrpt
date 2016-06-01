@@ -19,7 +19,7 @@ using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace std;
 
-template class CTraitsTest<CPose3DRotVec>;
+template class mrpt::utils::CTraitsTest<CPose3DRotVec>;
 
 class Pose3DRotVecTests : public ::testing::Test {
 protected:
