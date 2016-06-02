@@ -29,4 +29,5 @@ namespace supplementary_funs {
 
 }
 
+
 #endif /* end of include guard: SUPPLEMENTARY_FUNS_H */

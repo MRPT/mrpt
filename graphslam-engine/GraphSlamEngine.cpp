@@ -13,6 +13,7 @@
 #include <mrpt/utils/CConfigFile.h>
 #include <mrpt/utils/CFileOutputStream.h>
 #include <mrpt/utils/CFileInputStream.h>
+#include <mrpt/utils/TColor.h>
 #include <mrpt/obs/CActionRobotMovement2D.h>
 #include <mrpt/obs/CActionRobotMovement3D.h>
 #include <mrpt/maps/CSimplePointsMap.h>
@@ -39,6 +40,7 @@
 #include <set>
 #include <cerrno>
 #include <cmath> // fabs function
+#include <cstdlib>
 
 #include "supplementary_funs.h"
 
@@ -68,7 +70,9 @@ GraphSlamEngine_t<GRAPH_t>::GraphSlamEngine_t(const string& config_file,
 		CDisplayWindow3D* win /* = NULL */,
 		string rawlog_fname /* = "" */ ):
 	kOffsetYStep(20.0), // textMessage vertical text position
-	kIndexTextStep(1) // textMessage index
+	kIndexTextStep(1), // textMessage index
+	m_odometry_color(0, 0, 1),
+	m_GT_color(0, 1, 0)
 {
 	m_win = win;
 
@@ -85,12 +89,21 @@ GraphSlamEngine_t<GRAPH_t>::~GraphSlamEngine_t() {
 	VERBOSE_COUT << "In Destructor: Deleting GraphSlamEngine_t instance..." << endl;
 
 	// close all open files
-	for (fstreams_it it  = m_out_streams.begin(); it != m_out_streams.end(); ++it) {
+	for (fstreams_out_it it  = m_out_streams.begin(); it != m_out_streams.end(); 
+			++it) {
 		if ((it->second)->fileOpenCorrectly()) {
 			VERBOSE_COUT << "Closing file: " << (it->first).c_str() << endl;
 			(it->second)->close();
 		}
 	}
+	for (fstreams_in_it it  = m_in_streams.begin(); it != m_in_streams.end(); 
+			++it) {
+		if ((it->second)->fileOpenCorrectly()) {
+			VERBOSE_COUT << "Closing file: " << (it->first).c_str() << endl;
+			(it->second)->close();
+		}
+	}
+
 }
 
 
@@ -135,8 +148,7 @@ void GraphSlamEngine_t<GRAPH_t>::initGraphSlamEngine() {
 	/**
 	 * Visualization-related parameters initialization
 	 */
-
-
+	
 	// Current Text Position
 	m_curr_offset_y = 30.0;
 	m_curr_text_index = 1;
@@ -163,19 +175,60 @@ void GraphSlamEngine_t<GRAPH_t>::initGraphSlamEngine() {
 
 		CPointCloudPtr odometry_poses_cloud = CPointCloud::Create();
 		scene->insert(odometry_poses_cloud);
+
 		odometry_poses_cloud->setPointSize(2.0);
 		odometry_poses_cloud->enablePointSmooth();
-		odometry_poses_cloud->enableColorFromY();
+		odometry_poses_cloud->enableColorFromX(false);
+		odometry_poses_cloud->enableColorFromY(false);
+		odometry_poses_cloud->enableColorFromZ(false);
+		odometry_poses_cloud->setColor(m_odometry_color);
 		odometry_poses_cloud->setName("odometry_poses_cloud");
 
 		m_win->unlockAccess3DScene();
 
 		m_win->addTextMessage(5,-m_offset_y_odometry,
 				format("Odometry path"),
-				TColorf(0.0, 0.0, 1.0),
+				m_odometry_color,
 				m_font_name, m_font_size, // font name & size
 				mrpt::opengl::NICE,
 				/* unique_index = */ m_text_index_odometry );
+
+		m_win->forceRepaint();
+	}
+
+	// GT visualization
+	assert(m_has_read_config);
+	if (m_visualize_GT) {
+		if (m_fname_GT.empty()) {
+			THROW_EXCEPTION("Visualization of Ground Truth is TRUE, but no ground"
+					<< " truth file was specified") 
+		}
+		this->BuildGroundTruthMap(m_fname_GT);
+
+		this->assignTextMessageParameters( /* offset_y*		= */ &m_offset_y_GT,
+				/* text_index* = */ &m_text_index_GT);
+
+		COpenGLScenePtr scene = m_win->get3DSceneAndLock();
+
+		CPointCloudPtr GT_cloud = CPointCloud::Create();
+		scene->insert(GT_cloud);
+
+		GT_cloud->setPointSize(2.0);
+		GT_cloud->enablePointSmooth();
+		GT_cloud->enableColorFromX(false);
+		GT_cloud->enableColorFromY(false);
+		GT_cloud->enableColorFromZ(false);
+		GT_cloud->setColor(m_GT_color);
+		GT_cloud->setName("GT_cloud");
+
+		m_win->unlockAccess3DScene();
+
+		m_win->addTextMessage(5,-m_offset_y_GT,
+				format("Ground truth path"),
+				m_GT_color,
+				m_font_name, m_font_size, // font name & size
+				mrpt::opengl::NICE,
+				/* unique_index = */ m_text_index_GT );
 
 		m_win->forceRepaint();
 	}
@@ -187,10 +240,10 @@ void GraphSlamEngine_t<GRAPH_t>::initGraphSlamEngine() {
 		// Add a clone viewport, using [0,1] factor X,Y,Width,Height coordinates:
 		viewp->setCloneView("main");
 		viewp->setViewportPosition(0.78,0.78,0.20,0.20);
+		viewp->setTransparent(false);
 		viewp->getCamera().setAzimuthDegrees(90);
 		viewp->getCamera().setElevationDegrees(90);
-		viewp->setTransparent(false);
-		viewp->setCustomBackgroundColor(TColorf(TColor(205, 193, 197)));
+		viewp->setCustomBackgroundColor(TColorf(205, 193, 197, /*alpha = */ 255));
 		viewp->getCamera().setZoomDistance(30);
 		viewp->getCamera().setOrthogonal();
 
@@ -284,8 +337,6 @@ void GraphSlamEngine_t<GRAPH_t>::initGraphSlamEngine() {
 	}
 
 
-
-
 	MRPT_END
 }
 
@@ -298,8 +349,11 @@ void GraphSlamEngine_t<GRAPH_t>::parseRawlogFile() {
 	if (!fileExists(m_rawlog_fname))
 		THROW_EXCEPTION("parseRawlogFile: Inputted rawlog file ( "
 				<< m_rawlog_fname << " ) not found");
-
  // good to go..
+
+	/**
+	 * Variables initialization
+	 */
 
 	CFileGZInputStream rawlog_file(m_rawlog_fname);
 	CActionCollectionPtr action;
@@ -324,6 +378,7 @@ void GraphSlamEngine_t<GRAPH_t>::parseRawlogFile() {
 
 	TNodeID from = m_graph.root; // first node shall be the root - 0
 
+	size_t curr_GT_poses_index = 0;
 
 	// Read the first rawlog pair / observation explicitly to register the laser
 	// scan of the root node
@@ -407,26 +462,46 @@ void GraphSlamEngine_t<GRAPH_t>::parseRawlogFile() {
 
 			// add to the odometry PointCloud and visualize it
 			{
-				pose_t* odometry_poses = new pose_t;
-				*odometry_poses = curr_odometry_only_pose;
-				m_odometry_poses.push_back(odometry_poses);
+				// fill in the odometry_poses vecotr
+				pose_t* odometry_pose = new pose_t;
+				*odometry_pose = curr_odometry_only_pose;
+				m_odometry_poses.push_back(odometry_pose);
 
 				if (m_visualize_odometry_poses) {
 					COpenGLScenePtr scene = m_win->get3DSceneAndLock();
 
 					CRenderizablePtr obj = scene->getByName("odometry_poses_cloud");
 					CPointCloudPtr odometry_poses_cloud = static_cast<CPointCloudPtr>(obj);
-					odometry_poses_cloud->insertPoint(
-							m_odometry_poses.back()->x(),
-							m_odometry_poses.back()->y(),
-							0 );
+					odometry_poses_cloud->insertPoint(m_odometry_poses.back()->x(),
+																						m_odometry_poses.back()->y(),
+																						0 );
 
 					m_win->unlockAccess3DScene();
 					m_win->forceRepaint();
 				}
 
-				delete odometry_poses;
+				delete odometry_pose;
 			}
+
+			// add to the GT PointCloud and visualize it
+			// check that GT vector is not depleted
+			if (m_visualize_GT && 
+					curr_GT_poses_index < m_GT_poses.size()) {
+				COpenGLScenePtr scene = m_win->get3DSceneAndLock();
+
+				CRenderizablePtr obj = scene->getByName("GT_cloud");
+				CPointCloudPtr GT_cloud = static_cast<CPointCloudPtr>(obj);
+
+				// get current point by matching the timestamp
+				pose_t* curr_pose = m_GT_poses[curr_GT_poses_index++];
+				GT_cloud->insertPoint(curr_pose->x(),
+															curr_pose->y(),
+															0 );
+
+				m_win->unlockAccess3DScene();
+				m_win->forceRepaint();
+			}
+
 
 			/**
 			 * Fixed intervals odometry edge insertion
@@ -652,6 +727,8 @@ template<class GRAPH_t>
 void GraphSlamEngine_t<GRAPH_t>::readConfigFile(const string& fname) {
 	MRPT_START
 
+	VERBOSE_COUT << "Reading the .ini file... " << endl;
+
 	CConfigFile cfg_file(fname);
 
 	if (m_rawlog_fname.empty()) {
@@ -746,16 +823,6 @@ void GraphSlamEngine_t<GRAPH_t>::readConfigFile(const string& fname) {
 			60 /* degrees */, false);
 	m_angle_threshold = DEG2RAD(m_angle_threshold);
 
-	//// Section: MappingApplication
-	//// ////////////////////////////////
-	//const unsigned int rawlog_offset		 = iniFile.read_int("MappingApplication","rawlog_offset",0,  [>Force existence:<] true);
-	//const string OUT_DIR_STD			 = iniFile.read_string("MappingApplication","logOutput_dir","log_out",	[>Force existence:<] true);
-	//const int LOG_FREQUENCY		 = iniFile.read_int("MappingApplication","LOG_FREQUENCY",5,  [>Force existence:<] true);
-	//const bool	SAVE_POSE_LOG		 = iniFile.read_bool("MappingApplication","SAVE_POSE_LOG", false,  [>Force existence:<] true);
-	//const bool	SAVE_3D_SCENE				 = iniFile.read_bool("MappingApplication","SAVE_3D_SCENE", false,  [>Force existence:<] true);
-	//const bool	CAMERA_3DSCENE_FOLLOWS_ROBOT = iniFile.read_bool("MappingApplication","CAMERA_3DSCENE_FOLLOWS_ROBOT", true,  [>Force existence:<] true);
-	//mapBuilder.ICP_options.loadFromConfigFile( iniFile, "MappingApplication");
-
 	//// Section: ICP
 	//// ////////////////////////////////
 	//mapBuilder.ICP_params.loadFromConfigFile ( iniFile, "ICP");
@@ -848,12 +915,26 @@ void GraphSlamEngine_t<GRAPH_t>::readConfigFile(const string& fname) {
 			"visualize_odometry_poses",
 			1, false);
 
+	// GT configuration / visualization
+	m_visualize_GT = cfg_file.read_bool(
+			"VisualizationParameters",
+			"visualize_ground_truth",
+			1, false);
+	m_fname_GT = cfg_file.read_string(
+			"VisualizationParameters",
+			"ground_truth_file",
+			"", false);
+
+	cout << "m_fname_GT: " << m_fname_GT << endl;
+	// TODO - implement the colors - odometry, GT
+
+
 
 	m_has_read_config = true;
 	MRPT_END
 }
 
-// TODO - add the new values from visualization part
+// TODO - check for new value from above
 template<class GRAPH_t>
 void GraphSlamEngine_t<GRAPH_t>::printProblemParams() const {
 	MRPT_START
@@ -862,23 +943,45 @@ void GraphSlamEngine_t<GRAPH_t>::printProblemParams() const {
 
 	stringstream ss_out;
 
-	ss_out << "-------------------------------------------------------------------------" << endl;
+	ss_out << "-----------------------------------------------------------" << endl;
 	ss_out << " Graphslam_engine: Problem Parameters " << endl;
-	ss_out << " Config fname                    = " << m_config_fname << endl;
-	ss_out << " Rawlog fname                    = " << m_rawlog_fname << endl;
-	ss_out << " Output dir                      = " << m_output_dir_fname << endl;
-	ss_out << " User decides about output dir   = " << m_user_decides_about_output_dir << endl;
-	ss_out << " Debug mode                      = " << m_do_debug << endl;
-	ss_out << " save_graph_fname                = " << m_save_graph_fname << endl;
-	ss_out << " do_pose_graph_only              = " <<	m_do_pose_graph_only << endl;
-	ss_out << " optimizer                       = " << m_optimizer << endl;
-	ss_out << " Loop closing alg                = " << m_loop_closing_alg << endl;
-	ss_out << " Loop Closing min. node distance = " << m_loop_closing_alg << endl;
-	ss_out << " Decider alg                     = " << m_decider_alg << endl;
-	ss_out << " Distance threshold              = " << m_distance_threshold << " m" << endl;
-	ss_out << " Angle threshold                 = " << RAD2DEG(m_angle_threshold) << " deg" << endl;
-	ss_out << "ICP Goodness threshold           = " << m_ICP_goodness_thres << endl;
-	ss_out << "-------------------------------------------------------------------------" << endl;
+	ss_out << " Config filename                 = " 
+		<< m_config_fname << endl;
+	ss_out << " Rawlog filename                 = " 
+		<< m_rawlog_fname << endl;
+	ss_out << " Output directory                = " 
+		<< m_output_dir_fname << endl;
+	ss_out << " User decides about output dir   = " 
+		<< m_user_decides_about_output_dir << endl;
+	ss_out << " Debug mode                      = " 
+		<< m_do_debug << endl;
+	ss_out << " save_graph_fname                = " 
+		<< m_save_graph_fname << endl;
+	ss_out << " do_pose_graph_only              = " 
+		<<	m_do_pose_graph_only << endl;
+	ss_out << " optimizer                       = " 
+		<< m_optimizer << endl;
+	ss_out << " Loop closing alg                = " 
+		<< m_loop_closing_alg << endl;
+	ss_out << " Loop Closing min. node distance = " 
+		<< m_loop_closing_alg << endl;
+	ss_out << " Decider alg                     = " 
+		<< m_decider_alg << endl;
+	ss_out << " Distance threshold              = " 
+		<< m_distance_threshold << " m" << endl;
+	ss_out << " Angle threshold                 = " 
+		<< RAD2DEG(m_angle_threshold) << " deg" << endl;
+	ss_out << "ICP Goodness threshold           = " 
+		<< m_ICP_goodness_thres << endl;
+	ss_out << "Visualize odometry               = " 
+		<< m_visualize_odometry_poses << endl;
+	ss_out << "Visualize optimized path         = " 
+		<< m_visualize_odometry_poses << endl;
+	ss_out << "Visualize Ground Truth           = " 
+		<< m_visualize_odometry_poses << endl;
+	ss_out << "Ground Truth filename            = "
+		<< m_fname_GT << endl;
+	ss_out << "-----------------------------------------------------------" << endl;
 	ss_out << endl;
 
 	cout << ss_out.str(); ss_out.str("");
@@ -889,7 +992,7 @@ void GraphSlamEngine_t<GRAPH_t>::printProblemParams() const {
 	cout << "-----------[ Graph Visualization Parameters ]-----------" << endl;
 	m_optimized_graph_viz_params.dumpToConsole();
 
-	ss_out << "-------------------------------------------------------------------------" << endl;
+	ss_out << "-----------------------------------------------------------" << endl;
 	cout << ss_out.str(); ss_out.str("");
 
 	// TODO - resolve this
@@ -903,6 +1006,8 @@ void GraphSlamEngine_t<GRAPH_t>::printProblemParams() const {
 template<class GRAPH_t>
 void GraphSlamEngine_t<GRAPH_t>::initOutputDir() {
 	MRPT_START
+
+	VERBOSE_COUT << "Setting up Output directory: " << m_output_dir_fname << endl;
 
 	// current time vars - handy in the rest of the function.
 	TTimeStamp cur_date(getCurrentTime());
@@ -993,6 +1098,8 @@ template <class GRAPH_t>
 void GraphSlamEngine_t<GRAPH_t>::initResultsFile(const string& fname) {
 	MRPT_START
 
+	VERBOSE_COUT << "Setting up file: " << fname << endl;
+
 	// current time vars - handy in the rest of the function.
 	TTimeStamp cur_date(getCurrentTime());
 	string cur_date_str(dateTimeToString(cur_date));
@@ -1015,6 +1122,7 @@ template <class GRAPH_t>
 double GraphSlamEngine_t<GRAPH_t>::getICPEdge(const TNodeID& from,
 		const TNodeID& to,
 		constraint_t *rel_edge ) {
+
 	MRPT_START
 
 		assert(m_has_read_config);
@@ -1057,8 +1165,9 @@ double GraphSlamEngine_t<GRAPH_t>::getICPEdge(const TNodeID& from,
 	//<< initial_pose << endl;
 	//VERBOSE_COUT << "relative edge: " << endl
 	//<< rel_edge->getMeanVal() << endl;
-	rel_edge->copyFrom(*pdf);  // return the edge regardless of the goodness of the alignment
-	return info.goodness;
+	
+	// return the edge regardless of the goodness of the alignment
+	rel_edge->copyFrom(*pdf);  	return info.goodness;
 
 	MRPT_END
 }
@@ -1091,3 +1200,41 @@ inline void GraphSlamEngine_t<GRAPH_t>::updateCurPosViewport(const GRAPH_t& gr) 
 	MRPT_END
 }
 
+template <class GRAPH_t>
+void GraphSlamEngine_t<GRAPH_t>::BuildGroundTruthMap(const std::string& fname_GT) {
+	MRPT_START
+
+	VERBOSE_COUT << "Parsing the ground truth file textfile.." << endl;
+	assert(fileExists(fname_GT) && "Ground truth file was not found.");
+
+	// open the file, throw exception 
+	CFileInputStream* file_GT = new CFileInputStream(fname_GT);
+	m_in_streams[fname_GT] = file_GT;
+
+
+	if (file_GT->fileOpenCorrectly()) {
+		string curr_line; 
+		size_t line_num = 0;
+
+		// parse the file - get timestamp and pose and fill in the pose_t vector
+		for (size_t line_num = 1; file_GT->readLine(curr_line); line_num++) {
+			vector<string> curr_tokens;
+			system::tokenize(curr_line, " ", curr_tokens);
+
+			// check the current pose dimensions
+			if (curr_tokens.size() != constraint_t::state_length + 1) {
+				THROW_EXCEPTION("Wrong length of curent pose at line " << line_num);
+			}
+			pose_t *curr_pose = new pose_t(atof(curr_tokens[1].c_str()),
+					atof(curr_tokens[2].c_str()),
+					atof(curr_tokens[3].c_str()) );
+			m_GT_poses.push_back(curr_pose);
+		}
+	}
+	else {
+		THROW_EXCEPTION("BuildGroundTruthMap: Can't open GT file (" << fname_GT
+				<< ")")
+	}
+
+	MRPT_END
+}

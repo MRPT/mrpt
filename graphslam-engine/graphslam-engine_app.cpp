@@ -97,8 +97,8 @@ int main(int argc, char **argv)
 		// fetching the .ini file
 		string config_fname;
 		if ( arg_do_demo.isSet() ) {
-			VERBOSE_COUT << "Using the demo file: " << config_fname << endl;
 			config_fname = "../default_config.ini";
+			VERBOSE_COUT << "Using the demo file: " << config_fname << endl;
 		}
 		else {
 			config_fname = arg_ini_file.getValue();

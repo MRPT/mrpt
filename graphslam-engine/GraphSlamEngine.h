@@ -24,6 +24,8 @@
 #include <mrpt/poses/CPoses2DSequence.h>
 #include <mrpt/poses/CPosePDF.h>
 #include <mrpt/utils/CLoadableOptions.h>
+#include <mrpt/utils/CFileOutputStream.h>
+#include <mrpt/utils/CFileInputStream.h>
 #include <mrpt/utils/mrpt_stdint.h>
 #include <mrpt/utils/mrpt_macros.h>
 #include <mrpt/utils/CConfigFile.h>
@@ -72,9 +74,14 @@ template <class GRAPH_t>
 class GraphSlamEngine_t {
 	public:
 
-		typedef std::map<string, CFileOutputStream*> fstreams;
-		typedef std::map<string, CFileOutputStream*>::iterator fstreams_it;
-		typedef std::map<string, CFileOutputStream*>::const_iterator fstreams_cit;
+		typedef std::map<string, CFileOutputStream*> fstreams_out;
+		typedef std::map<string, CFileOutputStream*>::iterator fstreams_out_it;
+		typedef std::map<string, CFileOutputStream*>::const_iterator fstreams_out_cit;
+
+		typedef std::map<string, CFileInputStream*> fstreams_in;
+		typedef std::map<string, CFileInputStream*>::iterator fstreams_in_it;
+		typedef std::map<string, CFileInputStream*>::const_iterator fstreams_in_cit;
+
 
 		typedef typename GRAPH_t::constraint_t constraint_t;
 		typedef typename GRAPH_t::constraint_t::type_value pose_t; // type of underlying poses (2D/3D)
@@ -210,6 +217,16 @@ class GraphSlamEngine_t {
 		inline void updateCurPosViewport(const GRAPH_t& gr);
 		inline void updateTotalOdometryDistance() const;
 
+		/**
+		 * BuildGroundTruthMap
+		 *
+		 * Parse the ground truth .txt file and fill in the corresponding
+		 * timestamp_to_pose2d map. Return true if operation was successful
+		 * Call the function in the constructor if the visualize_GT flag is set to
+		 * true. 
+		 */
+		inline void BuildGroundTruthMap(const std::string& rawlog_fname_GT);
+
 		// VARIABLES
 		//////////////////////////////////////////////////////////////
 
@@ -224,6 +241,7 @@ class GraphSlamEngine_t {
 		string	m_config_fname;
 
 		string	m_rawlog_fname;
+		string	m_fname_GT;
 		string	m_output_dir_fname;
 		bool		m_user_decides_about_output_dir;
 		bool		m_do_debug;
@@ -247,10 +265,11 @@ class GraphSlamEngine_t {
 
 		/**
 		 * FileStreams
-		 * variable that keeps track of the out fstreams so that they can be closed
+		 * variables that keeps track of the out fstreams so that they can be closed
 		 * (if still open) in the class Dtor.
 		 */
-		fstreams m_out_streams;
+		fstreams_out m_out_streams;
+		fstreams_in m_in_streams;
 
 		// visualization objects
 		CDisplayWindow3D* m_win;
@@ -258,6 +277,7 @@ class GraphSlamEngine_t {
 		TParametersDouble m_optimized_graph_viz_params;
 		bool m_visualize_optimized_graph;
 		bool m_visualize_odometry_poses;
+		bool m_visualize_GT;
 
 		/**
 		 * textMessage Parameters
@@ -272,6 +292,7 @@ class GraphSlamEngine_t {
 		double m_offset_y_graph;
 		double m_offset_y_odometry;
 		double m_offset_y_timestamp;
+		double m_offset_y_GT;
 
 		// textMessage index
 		const int kIndexTextStep;
@@ -279,6 +300,7 @@ class GraphSlamEngine_t {
 		int m_text_index_graph;
 		int m_text_index_odometry;
 		int m_text_index_timestamp;
+		int m_text_index_GT;
 
 		// instance to keep track of all the edges + visualization related
 		// functions
@@ -288,8 +310,13 @@ class GraphSlamEngine_t {
 		map<const GRAPH_t*, string> graph_to_name;
 		map<const GRAPH_t*, TParametersDouble*> graph_to_viz_params;
 
-		// odometry visualization
+		// pose_t vectors
 		vector<pose_t*> m_odometry_poses;
+		vector<pose_t*> m_GT_poses;
+
+		// PointCloud colors
+		TColorf m_odometry_color; // see Ctor for initialization
+		TColorf m_GT_color;
 
 		bool m_is3D;
 		TNodeID m_nodeID_max;
