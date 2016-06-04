@@ -39,6 +39,7 @@
 #include <mrpt/slam/CMetricMapBuilderICP.h>
 #include <mrpt/graphs/CNetworkOfPoses.h>
 #include <mrpt/graphslam.h>
+#include <mrpt/gui/CBaseGUIWindow.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/opengl/CPlanarLaserScan.h> // It's in the lib mrpt-maps now
 
@@ -49,6 +50,7 @@
 #include <cmath> // fabs function
 
 #include "EdgeCounter.h"
+#include "CWindowObserver.h"
 
 
 using namespace mrpt;
@@ -93,6 +95,7 @@ class GraphSlamEngine_t {
 		//////////////////////////////////////////////////////////////
 		GraphSlamEngine_t(const string& config_file,
 				CDisplayWindow3D* win = NULL,
+				CWindowObserver* win_observer = NULL,
 				string rawlog_fname = "");
 		~GraphSlamEngine_t();
 
@@ -341,6 +344,10 @@ class GraphSlamEngine_t {
 
 		// mark graph modification/accessing explicitly for multithreaded implementation
 		CCriticalSection m_graph_section;
+
+		// Interaction with the CDisplayWindow
+		bool m_autozoom_active;
+		CWindowObserver* m_win_observer;
 
 };
 
