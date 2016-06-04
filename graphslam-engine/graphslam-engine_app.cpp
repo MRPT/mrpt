@@ -25,6 +25,7 @@
 #include <cerrno>
 
 #include "GraphSlamEngine.h"
+#include "CWindowObserver.h"
 
 using namespace mrpt::utils;
 using namespace mrpt::poses;
@@ -64,6 +65,7 @@ TCLAP::SwitchArg arg_do_demo(/*flag = */ "d", /*name = */ "demo",
 		/* parser = */ cmd, /* default = */ false);
 
 
+CWindowObserver  win_observer;
 
 /**
  * main
@@ -109,28 +111,34 @@ int main(int argc, char **argv)
 		 * Objects initialization
 		 */
 
-		// Initialize the visualization objects
+		// Visualization
 		CDisplayWindow3D	win("Graphslam building procedure",800, 600);
-		win.setCameraElevationDeg(75);
+		win_observer.observeBegin(win);
+		{
+			COpenGLScenePtr &scene = win.get3DSceneAndLock();
+			opengl::COpenGLViewportPtr main_view = scene->getViewport("main");
+			win_observer.observeBegin( *main_view );
+			win.unlockAccess3DScene();
+		}
+		VERBOSE_COUT << "Listening to Window events..." << endl;
 
-
-		// Initialize the class
+		// Initialize the GraphSlamEngine_t class
 		string rawlog_fname;
 		if (arg_rawlog_file.isSet()) {
 			rawlog_fname = arg_rawlog_file.getValue();
-			//VERBOSE_COUT << "Explicitly specified rawlog file:" << rawlog_fname << endl;;
 		}
-		GraphSlamEngine_t<CNetworkOfPoses2DInf> g_engine(config_fname, &win, rawlog_fname);
+		GraphSlamEngine_t<CNetworkOfPoses2DInf> g_engine(config_fname, 
+				NULL, //&win, 
+				&win_observer,
+				rawlog_fname);
 
 		g_engine.parseRawlogFile();
 
 		// saving the graph to external file
 		g_engine.saveGraph();
 
-		// TODO add "keylogger" function to know when to exit..
-
 		while (win.isOpen()) {
-			;;
+			mrpt::system::sleep(100);
 		}
 
 

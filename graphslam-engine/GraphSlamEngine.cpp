@@ -24,6 +24,7 @@
 #include <mrpt/slam/CMetricMapBuilderICP.h>
 #include <mrpt/graphs/CNetworkOfPoses.h>
 #include <mrpt/graphslam.h>
+#include <mrpt/gui/CBaseGUIWindow.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/opengl/CPlanarLaserScan.h> // It's in the lib mrpt-maps now
 #include <mrpt/opengl/graph_tools.h>
@@ -43,6 +44,7 @@
 #include <cstdlib>
 
 #include "supplementary_funs.h"
+#include "CWindowObserver.h"
 
 using namespace mrpt;
 using namespace mrpt::synch;
@@ -68,19 +70,21 @@ using namespace std;
 template<class GRAPH_t>
 GraphSlamEngine_t<GRAPH_t>::GraphSlamEngine_t(const string& config_file,
 		CDisplayWindow3D* win /* = NULL */,
+		CWindowObserver* win_observer /* = NULL */,
 		string rawlog_fname /* = "" */ ):
+	m_config_fname(config_file),
+	m_win(win),
+	m_win_observer(win_observer),
+	m_rawlog_fname(rawlog_fname),
 	kOffsetYStep(20.0), // textMessage vertical text position
 	kIndexTextStep(1), // textMessage index
 	m_odometry_color(0, 0, 1),
 	m_GT_color(0, 1, 0)
 {
-	m_win = win;
-
-	// use the specified rawlog, if not given, it defaults to empty string
-	// Correct rawlog fname is resolved in the readConfigFile function
-	m_rawlog_fname = rawlog_fname;
-
-	m_config_fname = config_file;
+	//m_win = win;
+	//m_rawlog_fname = rawlog_fname;
+	//m_config_fname = config_file;
+	
 	this->initGraphSlamEngine();
 };
 
@@ -113,6 +117,12 @@ GraphSlamEngine_t<GRAPH_t>::~GraphSlamEngine_t() {
 template<class GRAPH_t>
 void GraphSlamEngine_t<GRAPH_t>::initGraphSlamEngine() {
 	MRPT_START
+
+	/** 
+	 * Input validation
+	 */
+	assert(!(!m_win && m_win_observer) && 
+			"CObsever was provided even though no CDisplayWindow3D was not");
 
 	/**
 	 * Optimization related parameters
@@ -336,6 +346,9 @@ void GraphSlamEngine_t<GRAPH_t>::initGraphSlamEngine() {
 
 	}
 
+	// various flags initialization
+	m_autozoom_active = true;
+	
 
 	MRPT_END
 }
@@ -502,7 +515,6 @@ void GraphSlamEngine_t<GRAPH_t>::parseRawlogFile() {
 				m_win->forceRepaint();
 			}
 
-
 			/**
 			 * Fixed intervals odometry edge insertion
 			 * Determine whether to insert a new pose in the graph given the
@@ -532,25 +544,13 @@ void GraphSlamEngine_t<GRAPH_t>::parseRawlogFile() {
 						m_graph.insertEdgeAtEnd(from, to, since_prev_node_PDF);
 						m_edge_counter.addEdge("Odometry");
 					}
-
-					//TODO - remove these
-					//double distance = (last_pose_inserted.distanceTo(curr_odometry_only_pose));
-					//double angle = fabs(last_pose_inserted.phi() - curr_odometry_only_pose.phi());
-					//VERBOSE_COUT << "Added new odometry edge to the graph (# " << m_nodeID_max + 1<< " )" << endl;
-					//VERBOSE_COUT << "prev_pose = " << last_pose_inserted << endl;
-					//VERBOSE_COUT << "new_pose  = " << curr_odometry_only_pose << endl;
-					//VERBOSE_COUT << "distance: " << distance << "m | "
-					//<< "angle: " << RAD2DEG(wrapToPi(angle)) << " deg" << endl;
-					//VERBOSE_COUT << "Relative uncertainty between nodes: " << endl
-					//<< since_prev_node_PDF.cov_inv << endl;
-
 				}
 
 				/**
 				 * add ICP constraint with "some" of the previous nodes
 				 */
-				cout << endl;
-				cout << "Testing ICP for node: " << m_nodeID_max << endl;
+				//cout << endl;
+				//cout << "Testing ICP for node: " << m_nodeID_max << endl;
 
 				CObservation2DRangeScanPtr curr_laser_scan =
 					observations->getObservationByClass<CObservation2DRangeScan>();
@@ -563,12 +563,12 @@ void GraphSlamEngine_t<GRAPH_t>::parseRawlogFile() {
 						CCriticalSectionLocker m_graph_lock(&m_graph_section);
 
 						nodes_to_check = m_graph.nodeCount() - 1;
-						cout << "Checking ICP against all other nodes in the graph." << endl;
+						//cout << "Checking ICP against all other nodes in the graph." << endl;
 						break;
 					}
 					default: {
 						nodes_to_check = m_prev_nodes_for_ICP;
-						cout << "Checking ICP against " << nodes_to_check << " nodes in the graph." << endl;
+						//cout << "Checking ICP against " << nodes_to_check << " nodes in the graph." << endl;
 						break;
 					}
 				}
@@ -586,12 +586,12 @@ void GraphSlamEngine_t<GRAPH_t>::parseRawlogFile() {
 					if (ICP_goodness > m_ICP_goodness_thres) {
 						{
 							CCriticalSectionLocker m_graph_lock(&m_graph_section);
-
-							VERBOSE_COUT << "Adding ICP constraint betwen nodes "
-								<< to << ", " << prev_node << "." << endl;
-							VERBOSE_COUT << "Adding edge: " << endl << rel_edge << endl;
-							VERBOSE_COUT << "ICP goodness: " << ICP_goodness << endl;
 							m_graph.insertEdge(prev_node, to, rel_edge);
+
+							//VERBOSE_COUT << "Added ICP constraint betwen nodes "
+								//<< to << ", " << prev_node << "." << endl;
+							//VERBOSE_COUT << "Edge: " << endl << rel_edge << endl;
+							//VERBOSE_COUT << "ICP goodness: " << ICP_goodness << endl;
 						}
 
 						// register a loop closing constraint if distance of nodes larger
@@ -657,7 +657,7 @@ void GraphSlamEngine_t<GRAPH_t>::optimizeGraph(GRAPH_t* gr) {
 
 	CCriticalSectionLocker m_graph_lock(&m_graph_section);
 
-	cout << "In optimizeGraph: threadID: " << getCurrentThreadId()<< endl;
+	//cout << "In optimizeGraph: threadID: " << getCurrentThreadId()<< endl;
 
 	//cout << "Executing the graph optimization" << endl;
 	graphslam::TResultInfoSpaLevMarq	levmarq_info;
@@ -669,7 +669,6 @@ void GraphSlamEngine_t<GRAPH_t>::optimizeGraph(GRAPH_t* gr) {
 			NULL,  // List of nodes to optimize. NULL -> all but the root node.
 			m_optimization_params,
 			&levMarqFeedback<GRAPH_t>); // functor feedback
-	//&optimization_feedback);
 
 	MRPT_END
 }
@@ -677,6 +676,8 @@ void GraphSlamEngine_t<GRAPH_t>::optimizeGraph(GRAPH_t* gr) {
 template<class GRAPH_t>
 void GraphSlamEngine_t<GRAPH_t>::visualizeGraph(const GRAPH_t& gr) {
 	MRPT_START
+
+	//cout << "Inside the visualizeGraph function" << endl;
 	
 	CCriticalSectionLocker m_graph_lock(&m_graph_section);
 
@@ -706,15 +707,21 @@ void GraphSlamEngine_t<GRAPH_t>::visualizeGraph(const GRAPH_t& gr) {
 
 	m_win->forceRepaint();
 
-	// set the view correctly
-	m_win->setCameraElevationDeg(75);
-	CGridPlaneXYPtr obj_grid = graph_obj->CSetOfObjects::getByClass<CGridPlaneXY>();
-	if (obj_grid) {
-		float x_min,x_max, y_min,y_max;
-		obj_grid->getPlaneLimits(x_min,x_max, y_min,y_max);
-		const float z_min = obj_grid->getPlaneZcoord();
-		m_win->setCameraPointingToPoint( 0.5*(x_min+x_max), 0.5*(y_min+y_max), z_min );
-		m_win->setCameraZoom( 2.0f * std::max(10.0f, std::max(x_max-x_min, y_max-y_min) ) );
+	// set the zoom view automatically?
+	if (m_win_observer) {
+		m_autozoom_active = !m_win_observer->clickedMouseBtn();
+	}
+
+	if (m_autozoom_active) {
+		m_win->setCameraElevationDeg(75);
+		CGridPlaneXYPtr obj_grid = graph_obj->CSetOfObjects::getByClass<CGridPlaneXY>();
+		if (obj_grid) {
+			float x_min,x_max, y_min,y_max;
+			obj_grid->getPlaneLimits(x_min,x_max, y_min,y_max);
+			const float z_min = obj_grid->getPlaneZcoord();
+			m_win->setCameraPointingToPoint( 0.5*(x_min+x_max), 0.5*(y_min+y_max), z_min );
+			m_win->setCameraZoom( 2.0f * std::max(10.0f, std::max(x_max-x_min, y_max-y_min) ) );
+		}
 	}
 
 	// push the changes
@@ -924,10 +931,6 @@ void GraphSlamEngine_t<GRAPH_t>::readConfigFile(const string& fname) {
 			"VisualizationParameters",
 			"ground_truth_file",
 			"", false);
-
-	cout << "m_fname_GT: " << m_fname_GT << endl;
-	// TODO - implement the colors - odometry, GT
-
 
 
 	m_has_read_config = true;
