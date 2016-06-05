@@ -158,7 +158,13 @@ void GraphSlamEngine_t<GRAPH_t>::initGraphSlamEngine() {
 	/**
 	 * Visualization-related parameters initialization
 	 */
-	
+
+	if (!m_win) {
+		m_visualize_optimized_graph = 0;
+		m_visualize_odometry_poses = 0;
+		m_visualize_GT = 0;
+	}
+
 	// Current Text Position
 	m_curr_offset_y = 30.0;
 	m_curr_text_index = 1;
@@ -178,6 +184,9 @@ void GraphSlamEngine_t<GRAPH_t>::initGraphSlamEngine() {
 	// odometry visualization
 	assert(m_has_read_config);
 	if (m_visualize_odometry_poses) {
+		assert(m_win && 
+				"Visualization of data was requested but no CDisplayWindow3D pointer was given");
+
 		this->assignTextMessageParameters( /* offset_y*		= */ &m_offset_y_odometry,
 				/* text_index* = */ &m_text_index_odometry);
 
@@ -209,6 +218,9 @@ void GraphSlamEngine_t<GRAPH_t>::initGraphSlamEngine() {
 	// GT visualization
 	assert(m_has_read_config);
 	if (m_visualize_GT) {
+		assert(m_win && 
+				"Visualization of data was requested but no CDisplayWindow3D pointer was given");
+
 		if (m_fname_GT.empty()) {
 			THROW_EXCEPTION("Visualization of Ground Truth is TRUE, but no ground"
 					<< " truth file was specified") 
@@ -244,7 +256,7 @@ void GraphSlamEngine_t<GRAPH_t>::initGraphSlamEngine() {
 	}
 
 	// second viewport
-	{
+	if (m_win) {
 		COpenGLScenePtr scene = m_win->get3DSceneAndLock();
 		COpenGLViewportPtr viewp= scene->createViewport("curr_robot_pose_viewport");
 		// Add a clone viewport, using [0,1] factor X,Y,Width,Height coordinates:
@@ -263,7 +275,7 @@ void GraphSlamEngine_t<GRAPH_t>::initGraphSlamEngine() {
 	}
 	
 	// axis
-	{
+	if (m_win) {
 		COpenGLScenePtr scene = m_win->get3DSceneAndLock();
 
 		CAxisPtr obj = CAxis::Create();
@@ -278,7 +290,7 @@ void GraphSlamEngine_t<GRAPH_t>::initGraphSlamEngine() {
 	}
 
 	// robot model
-	{
+	if (m_win) {
 		COpenGLScenePtr scene = m_win->get3DSceneAndLock();
 
 		opengl::CSetOfObjectsPtr obj = stock_objects::RobotPioneer();
@@ -293,8 +305,9 @@ void GraphSlamEngine_t<GRAPH_t>::initGraphSlamEngine() {
 		m_win->forceRepaint();
 	}
 
-
-	m_edge_counter.setVisualizationWindow(m_win);
+	if (m_win) {
+		m_edge_counter.setVisualizationWindow(m_win);
+	}
 
 	// register the types of edges that are going to be displayed in the
 	// visualization window
@@ -336,25 +349,23 @@ void GraphSlamEngine_t<GRAPH_t>::initGraphSlamEngine() {
 		//<< "offset_y_loop_closures: " << offset_y_loop_closures << endl
 		//<< "text_index_loop_closures: " << text_index_loop_closures <<endl;
 
-		// add all the parameters to the EdgeCounter_t object
-		m_edge_counter.setTextMessageParams(name_to_offset_y, name_to_text_index,
-				offset_y_total_edges, text_index_total_edges,
-				offset_y_loop_closures, text_index_loop_closures,
-				m_font_name, m_font_size);
-		//m_edge_counter.setTextMessageParams(name_to_offset_y, name_to_text_index,
-		//m_font_name, m_font_size);
-
+		if (m_win) {
+			// add all the parameters to the EdgeCounter_t object
+			m_edge_counter.setTextMessageParams(name_to_offset_y, name_to_text_index,
+					offset_y_total_edges, text_index_total_edges,
+					offset_y_loop_closures, text_index_loop_closures,
+					m_font_name, m_font_size);
+		}
 	}
 
 	// various flags initialization
 	m_autozoom_active = true;
-	
 
 	MRPT_END
 }
 
 template<class GRAPH_t>
-void GraphSlamEngine_t<GRAPH_t>::parseRawlogFile() {
+bool GraphSlamEngine_t<GRAPH_t>::parseRawlogFile() {
 	MRPT_START
 
 	if (!m_has_read_config)
@@ -450,13 +461,12 @@ void GraphSlamEngine_t<GRAPH_t>::parseRawlogFile() {
 			constraint_t incremental_constraint(increment_pose, increment_inf_mat);
 			since_prev_node_PDF += incremental_constraint;
 
-
 			/**
 			 * Timestamp textMessage
 			 */
 			// use the dataset timestamp otherwise fallback to mrpt::system::now()
 			TTimeStamp	timestamp = robot_move->timestamp;
-			if (timestamp != INVALID_TIMESTAMP) {
+			if (timestamp != INVALID_TIMESTAMP && m_win) {
 				m_win->addTextMessage(5,-m_offset_y_timestamp,
 						format("Simulated time: %s", timeLocalToString(timestamp).c_str()),
 						TColorf(1.0, 1.0, 1.0),
@@ -464,7 +474,7 @@ void GraphSlamEngine_t<GRAPH_t>::parseRawlogFile() {
 						mrpt::opengl::NICE,
 						/* unique_index = */ m_text_index_timestamp );
 			}
-			else {
+			else if (m_win) {
 				m_win->addTextMessage(5,-m_offset_y_timestamp,
 						format("Wall time: %s", timeLocalToString(system::now()).c_str()),
 						TColorf(1.0, 1.0, 1.0),
@@ -481,6 +491,9 @@ void GraphSlamEngine_t<GRAPH_t>::parseRawlogFile() {
 				m_odometry_poses.push_back(odometry_pose);
 
 				if (m_visualize_odometry_poses) {
+					assert(m_win && 
+							"Visualization of data was requested but no CDisplayWindow3D pointer was given");
+
 					COpenGLScenePtr scene = m_win->get3DSceneAndLock();
 
 					CRenderizablePtr obj = scene->getByName("odometry_poses_cloud");
@@ -500,6 +513,9 @@ void GraphSlamEngine_t<GRAPH_t>::parseRawlogFile() {
 			// check that GT vector is not depleted
 			if (m_visualize_GT && 
 					curr_GT_poses_index < m_GT_poses.size()) {
+				assert(m_win &&
+						"Visualization of data was requested but no CDisplayWindow3D pointer was given");
+
 				COpenGLScenePtr scene = m_win->get3DSceneAndLock();
 
 				CRenderizablePtr obj = scene->getByName("GT_cloud");
@@ -558,7 +574,8 @@ void GraphSlamEngine_t<GRAPH_t>::parseRawlogFile() {
 			
 				//If m_prev_nodes_for_ICP = -1 try adding with all of the other nodes
 				int nodes_to_check = 0; // how many nodes to check ICP against
-				switch ( m_prev_nodes_for_ICP ) {
+				switch ( m_prev_nodes_for_ICP ) 
+				{
 					case -1: {
 						CCriticalSectionLocker m_graph_lock(&m_graph_section);
 
@@ -604,21 +621,22 @@ void GraphSlamEngine_t<GRAPH_t>::parseRawlogFile() {
 				// join the previous optimization thread
 				joinThread(m_thread_optimize);
 
-				// optimize the graph - multithreaded implementation
-				//this->optimizeGraph(&m_graph);
+				// optimize the graph - run on a seperate thread
 				m_thread_optimize = createThreadFromObjectMethod(/*obj = */this, 
-						/* func = */&GraphSlamEngine_t::optimizeGraph,
-						&m_graph);
+						/* func = */&GraphSlamEngine_t::optimizeGraph, &m_graph);
 
 				// update the visualization window
 				if (m_visualize_optimized_graph) {
+					assert(m_win && 
+							"Visualization of data was requested but no CDisplayWindow3D pointer was given");
+
 					visualizeGraph(m_graph);
 					updateCurPosViewport(m_graph);
 				}
 
 
 				// update robot model position
-				{
+				if (m_win) {
 					COpenGLScenePtr scene = m_win->get3DSceneAndLock();
 
 					CRenderizablePtr obj = scene->getByName("robot_model");
@@ -647,13 +665,32 @@ void GraphSlamEngine_t<GRAPH_t>::parseRawlogFile() {
 
 			} // IF ODOMETRY_CRITERIUM
 		} // ELSE FORMAT #1
+
+
+		/** 
+		 * query for events and take coresponding actions
+		 */
+		this->queryObserverForEvents();
+
+		if (m_request_to_exit) {
+			cout << "Halting execution... " << endl;
+			joinThread(m_thread_optimize);
+			return false; // exit the parseRawlogFile method
+		}
+
+
+
 	} // WHILE CRAWLOG FILE
+	return true; // function execution completed successfully
 MRPT_END
 } // END OF FUNCTION
 
 template<class GRAPH_t>
 void GraphSlamEngine_t<GRAPH_t>::optimizeGraph(GRAPH_t* gr) {
 	MRPT_START
+
+	CTicTac optimization_timer;
+	optimization_timer.Tic();
 
 	CCriticalSectionLocker m_graph_lock(&m_graph_section);
 
@@ -670,12 +707,18 @@ void GraphSlamEngine_t<GRAPH_t>::optimizeGraph(GRAPH_t* gr) {
 			m_optimization_params,
 			&levMarqFeedback<GRAPH_t>); // functor feedback
 
+	double elapsed_time = optimization_timer.Tac();
+	VERBOSE_COUT << "Optimization of graph took: " << elapsed_time << "s" << endl;
+
 	MRPT_END
 }
 
 template<class GRAPH_t>
 void GraphSlamEngine_t<GRAPH_t>::visualizeGraph(const GRAPH_t& gr) {
 	MRPT_START
+
+	assert(m_win &&
+			"Visualization of data was requested but no CDisplayWindow3D pointer was given");
 
 	//cout << "Inside the visualizeGraph function" << endl;
 	
@@ -707,25 +750,11 @@ void GraphSlamEngine_t<GRAPH_t>::visualizeGraph(const GRAPH_t& gr) {
 
 	m_win->forceRepaint();
 
-	// set the zoom view automatically?
-	if (m_win_observer) {
-		m_autozoom_active = !m_win_observer->clickedMouseBtn();
-	}
-
+	// Autozoom to the graph?
 	if (m_autozoom_active) {
-		m_win->setCameraElevationDeg(75);
-		CGridPlaneXYPtr obj_grid = graph_obj->CSetOfObjects::getByClass<CGridPlaneXY>();
-		if (obj_grid) {
-			float x_min,x_max, y_min,y_max;
-			obj_grid->getPlaneLimits(x_min,x_max, y_min,y_max);
-			const float z_min = obj_grid->getPlaneZcoord();
-			m_win->setCameraPointingToPoint( 0.5*(x_min+x_max), 0.5*(y_min+y_max), z_min );
-			m_win->setCameraZoom( 2.0f * std::max(10.0f, std::max(x_max-x_min, y_max-y_min) ) );
-		}
+		cout << "Autozoom disabled. " << endl;
+		this->autofitObjectInView(graph_obj);
 	}
-
-	// push the changes
-	m_win->repaint();
 
 	MRPT_END
 }
@@ -1050,7 +1079,8 @@ void GraphSlamEngine_t<GRAPH_t>::initOutputDir() {
 			else {
 				answer_int = 2;
 			}
-			switch (answer_int) {
+			switch (answer_int) 
+			{
 				case 2: {
 					VERBOSE_COUT << "Deleting existing files..." << endl;
 					// purge directory
@@ -1185,6 +1215,9 @@ template <class GRAPH_t>
 inline void GraphSlamEngine_t<GRAPH_t>::updateCurPosViewport(const GRAPH_t& gr) {
 	MRPT_START
 
+	assert(m_win &&
+			"Visualization of data was requested but no CDisplayWindow3D pointer was given");
+
 	pose_t curr_robot_pose;
 	{
 		CCriticalSectionLocker m_graph_lock(&m_graph_section);
@@ -1241,3 +1274,38 @@ void GraphSlamEngine_t<GRAPH_t>::BuildGroundTruthMap(const std::string& fname_GT
 
 	MRPT_END
 }
+
+template <class GRAPH_t>
+void GraphSlamEngine_t<GRAPH_t>::autofitObjectInView(const CSetOfObjectsPtr& graph_obj) {
+	MRPT_START
+
+		
+	assert(m_win &&
+			"Visualization of data was requested but no CDisplayWindow3D pointer was given");
+
+	CGridPlaneXYPtr obj_grid = graph_obj->CSetOfObjects::getByClass<CGridPlaneXY>();
+	if (obj_grid) {
+		float x_min,x_max, y_min,y_max;
+		obj_grid->getPlaneLimits(x_min,x_max, y_min,y_max);
+		const float z_min = obj_grid->getPlaneZcoord();
+		m_win->setCameraPointingToPoint( 0.5*(x_min+x_max), 0.5*(y_min+y_max), z_min );
+		m_win->setCameraZoom( 2.0f * std::max(10.0f, std::max(x_max-x_min, y_max-y_min) ) );
+	}
+	m_win->setCameraAzimuthDeg(0);
+	m_win->setCameraElevationDeg(75);
+
+	MRPT_END
+}
+
+template <class GRAPH_t>
+void GraphSlamEngine_t<GRAPH_t>::queryObserverForEvents() {
+	assert(m_win_observer &&
+			"queryObserverForEvents method was called even though no Observer object was provided");
+
+	const TParameters<bool>* events_occurred = m_win_observer->returnEventsStruct();
+	m_autozoom_active = !(*events_occurred)["mouse_clicked"];
+	m_request_to_exit = (*events_occurred)["request_to_exit"];
+
+}
+
+

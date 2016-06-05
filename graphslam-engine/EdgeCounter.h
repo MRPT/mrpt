@@ -156,7 +156,7 @@ class EdgeCounter_t {
 
 			// Update the visualization if the user has already set the vizualization
 			// parameters
-			if (m_has_read_textmessage_params) {
+			if (m_has_read_textmessage_params && m_win) {
 				updateTextMessages();
 			}
 		}
@@ -241,8 +241,8 @@ class EdgeCounter_t {
 			//<< "m_offset_y_loop_closures: " << m_offset_y_loop_closures << endl
 			//<< "m_text_index_loop_closures" << m_text_index_loop_closures << endl;
 
-
-			assert(m_win);
+			assert(m_win &&
+					"Visualization of data was requested but no CDisplayWindow pointer was given");
 			assert(name_to_offset_y.size() == name_to_text_index.size());
 
 			for (map<string, double>::const_iterator it = name_to_offset_y.begin();
@@ -289,13 +289,6 @@ class EdgeCounter_t {
 				const double& offset_y_loop_closures, const int& text_index_loop_closures,
 				const string& font_name, const int& font_size) {
 
-			//cout << "in setTextMessageParams (extended) " << endl
-			//<< "offset_y_total_edges: " << offset_y_total_edges << endl
-			//<< "text_index_total_edges" << text_index_total_edges <<endl;
-			//cout << "in setTextMessageParams (extended):	" << endl
-			//<< "offset_y_loop_closures: " << offset_y_loop_closures << endl
-			//<< "text_index_loop_closures" << text_index_loop_closures << endl;
-
 			// set the parameters for total edges / loop closures
 			m_display_total_edges = true;
 			m_display_loop_closures = true;
@@ -318,15 +311,6 @@ class EdgeCounter_t {
 		 * Updates the given CDisplayWindow3D with the edges registered so far.
 		 */
 		void updateTextMessages() const {
-			//cout << "In updateTextMessages fun" << endl;
-			//cout << "m_display_total_edges: " << m_display_total_edges << endl;
-			//cout << "m_offset_y_total_edges: " << m_offset_y_total_edges << endl;
-			//cout << "m_text_index_total_edges: " << m_text_index_total_edges << endl;
-			//cout << "m_display_loop_closures: " << m_display_loop_closures << endl;
-			//cout << "m_offset_y_loop_closures: " << m_offset_y_loop_closures << endl;
-			//cout << "m_text_index_loop_closures: " << m_text_index_loop_closures << endl;
-			//cout << endl;
-
 			assert(m_win);
 			assert(m_has_read_textmessage_params);
 			assert(m_name_to_offset_y.size() == m_name_to_text_index.size());
