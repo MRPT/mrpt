@@ -142,9 +142,10 @@ class GraphSlamEngine_t {
 		/**
 		 * TODO - Make this a function template so that it can handle camera
 		 * images, laser scan files, etc.
-		 * Reads the file provided and builds the graph
-		 */
-		void parseRawlogFile();
+		 * Reads the file provided and builds the graph. Method returns false if
+		 * user issues termination coe (Ctrl+c) otherwise true
+		 **/
+		bool parseRawlogFile();
 		/**
 		 * GraphslamEngine_t::optmizeGraph
 		 *
@@ -167,18 +168,6 @@ class GraphSlamEngine_t {
 	private:
 		// Private function definitions
 		//////////////////////////////////////////////////////////////
-
-		//static void optimization_feedback(
-				//const GRAPH_t& graph,
-				//const size_t iter,
-				//const size_t max_iter,
-				//const double cur_sq_error )
-		//{
-			//m_log_sq_err_evolution.push_back(std::log(cur_sq_error));
-			//if ((iter % 100)==0)
-				//cout << "Progress: " << iter << " / " << max_iter << ", total sq err = " << cur_sq_error << endl;
-		//}
-
 
 		/**
 		 * General initialization method to call from the different Ctors
@@ -229,6 +218,22 @@ class GraphSlamEngine_t {
 		 * true. 
 		 */
 		inline void BuildGroundTruthMap(const std::string& rawlog_fname_GT);
+		/**
+		 * autofitObjectInView
+		 *
+		 * Set the camera parameters of the CDisplayWindow3D so that the whole
+		 * graph is viewed in the window.
+		 */
+		inline void autofitObjectInView(const CSetOfObjectsPtr& gr);
+		/**
+		 * queryObserverForEvents
+		 *
+		 * Query the given observer for any events (keystrokes, mouse clicks, that
+		 * may have occured in the CDisplayWindow3D  and fill in the corresponding
+		 * class variables
+		 */
+		inline void queryObserverForEvents();
+
 
 		// VARIABLES
 		//////////////////////////////////////////////////////////////
@@ -345,8 +350,8 @@ class GraphSlamEngine_t {
 		// mark graph modification/accessing explicitly for multithreaded implementation
 		CCriticalSection m_graph_section;
 
-		// Interaction with the CDisplayWindow
-		bool m_autozoom_active;
+		// Interaction with the CDisplayWindow - use of CWindowObserver
+		bool m_autozoom_active, m_request_to_exit;
 		CWindowObserver* m_win_observer;
 
 };

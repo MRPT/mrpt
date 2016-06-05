@@ -40,13 +40,6 @@ using namespace std;
 
 #define VERBOSE_COUT	if (verbose) std::cout << "[graphslam_engine] "
 
-/**
- * Forward declaration
- * display_graph function template provided in display_graph.cpp
- */
-template <class GRAPHTYPE> void display_graph(const GRAPHTYPE & g);
-
-
 /*
  * Command line options initialization
  */
@@ -128,16 +121,16 @@ int main(int argc, char **argv)
 			rawlog_fname = arg_rawlog_file.getValue();
 		}
 		GraphSlamEngine_t<CNetworkOfPoses2DInf> g_engine(config_fname, 
-				NULL, //&win, 
+				&win,
 				&win_observer,
 				rawlog_fname);
 
-		g_engine.parseRawlogFile();
+		bool exit_normally = g_engine.parseRawlogFile();
 
 		// saving the graph to external file
 		g_engine.saveGraph();
 
-		while (win.isOpen()) {
+		while (win.isOpen() && exit_normally) {
 			mrpt::system::sleep(100);
 		}
 
