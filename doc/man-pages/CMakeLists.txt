@@ -12,7 +12,7 @@ FIND_PROGRAM(PROG_GZIP gzip)
 IF (PROG_GZIP AND PROG_POD2MAN)
 	MARK_AS_ADVANCED(PROG_POD2MAN)
 	MARK_AS_ADVANCED(PROG_GZIP)
-	
+
 	# Make sure the output dir exists:
 	FILE(MAKE_DIRECTORY "${MRPT_BINARY_DIR}/man-pages")
 
@@ -26,7 +26,7 @@ IF (PROG_GZIP AND PROG_POD2MAN)
 		add_dependencies(man_pages_all man_page_${appname})
 		if (UNIX)
 			INSTALL(FILES "${MRPT_BINARY_DIR}/man-pages/${appname}.1.gz" DESTINATION ${mrpt_apps_INSTALL_PREFIX}share/man/man1/ )
-		endif(UNIX)
+		endif()
 	ENDMACRO(CREATE_MANPAGE_PROJECT)
 
 	# The main (empty) target:
@@ -76,5 +76,4 @@ IF (PROG_GZIP AND PROG_POD2MAN)
 	CREATE_MANPAGE_PROJECT(DifOdometry-Datasets)
 	CREATE_MANPAGE_PROJECT(DifOdometry-Camera)
 
-ENDIF (PROG_GZIP AND PROG_POD2MAN)
-
+ENDIF ()

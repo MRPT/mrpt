@@ -49,6 +49,5 @@ IF(BUILD_mrpt-nav)
 		mrpt-opengl
 		mrpt-base
 		)
-		
-ENDIF(BUILD_mrpt-nav) 
 
+ENDIF() 

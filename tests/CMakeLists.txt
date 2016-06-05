@@ -10,7 +10,7 @@ SET(EXECUTABLE_OUTPUT_PATH "${${PROJECT_NAME}_BINARY_DIR}")
 # Fix a "bug" in VS11 (MSVC 2012):
 if(MSVC)
 	add_definitions(-D_VARIADIC_MAX=10)
-endif(MSVC)
+endif()
 
 # -----------------------------
 # Add the "make test" target:
@@ -20,7 +20,7 @@ ADD_CUSTOM_TARGET(tests_build_all)
 if(ENABLE_SOLUTION_FOLDERS)
 	set_target_properties(test PROPERTIES FOLDER "unit tests")
 	set_target_properties(tests_build_all PROPERTIES FOLDER "unit tests")
-endif(ENABLE_SOLUTION_FOLDERS)
+endif()
 IF (UNIX)
 	ADD_CUSTOM_TARGET(test_gdb)
 ENDIF()
@@ -34,12 +34,12 @@ ADD_DEFINITIONS(-DCMAKE_MRPT_GLOBAL_UNITTEST_SRC_DIR="${MRPT_SOURCE_DIR}")
 # Include gtest from embeded lib:
 IF (NOT CMAKE_MRPT_HAS_GTEST_SYSTEM)
 	INCLUDE_DIRECTORIES("${CMAKE_MRPT_GTEST_SRC_DIR}/fused-src/")
-ENDIF(NOT CMAKE_MRPT_HAS_GTEST_SYSTEM)
+ENDIF()
 
 # If using system library, add C++ flags:
 IF (NOT "${CMAKE_GTEST_CFLAGS}" STREQUAL "")
 	ADD_DEFINITIONS(${CMAKE_GTEST_CFLAGS})
-ENDIF (NOT "${CMAKE_GTEST_CFLAGS}" STREQUAL "")
+ENDIF ()
 
 
 get_property(LST_LIB_TESTS GLOBAL PROPERTY "MRPT_TEST_LIBS")
@@ -57,11 +57,11 @@ FOREACH(_TSTLIB ${LST_LIB_TESTS})
 IF (CMAKE_MRPT_HAS_GTEST_SYSTEM)
 	# System vesion:
 	TARGET_LINK_LIBRARIES(test_${_TSTLIB} ${MRPT_LINKER_LIBS_RELorDEB} gtest)
-ELSE (CMAKE_MRPT_HAS_GTEST_SYSTEM)
+ELSE ()
 	# Own version:
 	TARGET_LINK_LIBRARIES(test_${_TSTLIB} ${MRPT_LINKER_LIBS_RELorDEB} mrptgtest)
 	ADD_DEPENDENCIES(test_${_TSTLIB} mrptgtest)  # Assure the MRPT library is updated:
-ENDIF (CMAKE_MRPT_HAS_GTEST_SYSTEM)
+ENDIF ()
 
 
 	set_target_properties(test_${_TSTLIB} PROPERTIES "COMPILE_DEFINITIONS" "MRPT_TEST_LIB=${_TSTLIB}")
@@ -103,6 +103,6 @@ ENDIF()
 if(ENABLE_SOLUTION_FOLDERS)
 	set_target_properties(test_${_TSTLIB} PROPERTIES FOLDER "unit tests")
 	set_target_properties(run_tests_${_TSTLIB} PROPERTIES FOLDER "unit tests")
-endif(ENABLE_SOLUTION_FOLDERS)
+endif()
 
 ENDFOREACH(_TSTLIB)

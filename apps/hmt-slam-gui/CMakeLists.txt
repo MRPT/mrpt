@@ -26,7 +26,7 @@ IF(CMAKE_MRPT_HAS_WXWIDGETS AND CMAKE_MRPT_HAS_OPENGL_GLUT)
 		)
 	IF(WIN32)
 		SET(SRCS ${SRCS} resource.rc)
-	ENDIF(WIN32)
+	ENDIF()
 
 	# Define the executable target:
 	SET(TMP_TARGET_NAME "hmt-slam-gui")
@@ -35,27 +35,27 @@ IF(CMAKE_MRPT_HAS_WXWIDGETS AND CMAKE_MRPT_HAS_OPENGL_GLUT)
 
 	ADD_EXECUTABLE(${TMP_TARGET_NAME} WIN32 ${SRCS} ${MRPT_VERSION_RC_FILE})
 
-	
+
 
 	# Add the required libraries for linking:
 	INCLUDE_DIRECTORIES( ${wxWidgets_INCLUDE_DIRS} )
 	TARGET_LINK_LIBRARIES(${TMP_TARGET_NAME} ${wxWidgets_LIBRARIES} )
 
 	TARGET_LINK_LIBRARIES(${TMP_TARGET_NAME} ${MRPT_LINKER_LIBS})
-	
+
 	#   FabMap module for HMT-SLAM? (optional)
 	IF(FabMap_FOUND)
 		TARGET_LINK_LIBRARIES(${TMP_TARGET_NAME} ${FabMap_LIBRARIES})
-	ENDIF(FabMap_FOUND)
+	ENDIF()
 
 	IF(UNIX)
 		TARGET_LINK_LIBRARIES(${TMP_TARGET_NAME} mrpt-hmtslam )
-	ENDIF(UNIX)
-	
+	ENDIF()
+
 	TARGET_LINK_LIBRARIES(${TMP_TARGET_NAME} mrptwxthings)
 
 	# Dependencies on MRPT libraries:
-	#  Just mention the top-level dependency, the rest will be detected automatically, 
+	#  Just mention the top-level dependency, the rest will be detected automatically,
 	#  and all the needed #include<> dirs added (see the script DeclareAppDependencies.cmake for further details)
 	DeclareAppDependencies(${TMP_TARGET_NAME} mrpt-gui mrpt-hmtslam mrpt-slam mrpt-bayes)
 
@@ -69,5 +69,3 @@ ELSE()
 	# ----------------------------------------------------------------------------------
     MESSAGE(STATUS "wxWidgets and/or GL/GLUT not found!: **This target will not be included in the Makefiles**")
 ENDIF()
-
-

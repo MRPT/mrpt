@@ -14,7 +14,7 @@ IF(CMAKE_MRPT_HAS_WXWIDGETS)
 	# ---------------------------------------------
 	# TARGET:
 	# ---------------------------------------------
-	SET(SRCS 
+	SET(SRCS
 		slamdemoApp.cpp   slamdemoApp.h
 		slamdemoMain.cpp  slamdemoMain.h
 		batch_experiments.cpp
@@ -23,10 +23,10 @@ IF(CMAKE_MRPT_HAS_WXWIDGETS)
 		CLogView.cpp CLogView.h
 	 	../wx-common/CMyRedirector.h
 	 )
-	 
+
 	IF(WIN32)
 		SET(SRCS ${SRCS} resource.rc)
-	ENDIF(WIN32)
+	ENDIF()
 
 	# Define the executable target:
 	ADD_EXECUTABLE(2d-slam-demo WIN32 ${SRCS} ${MRPT_VERSION_RC_FILE})
@@ -34,7 +34,7 @@ IF(CMAKE_MRPT_HAS_WXWIDGETS)
 	SET(TMP_TARGET_NAME "2d-slam-demo")
 
 
-	
+
 
 	# Add the required libraries for linking:
 	INCLUDE_DIRECTORIES( ${wxWidgets_INCLUDE_DIRS} )
@@ -42,10 +42,10 @@ IF(CMAKE_MRPT_HAS_WXWIDGETS)
 	TARGET_LINK_LIBRARIES(${TMP_TARGET_NAME} ${MRPT_LINKER_LIBS})
 
 	# Dependencies on MRPT libraries:
-	#  Just mention the top-level dependency, the rest will be detected automatically, 
+	#  Just mention the top-level dependency, the rest will be detected automatically,
 	#  and all the needed #include<> dirs added (see the script DeclareAppDependencies.cmake for further details)
 	DeclareAppDependencies(${TMP_TARGET_NAME} mrpt-slam mrpt-gui)
-	
+
 	DeclareAppForInstall(${TMP_TARGET_NAME})
 
 	AppStartMenuLink(${TMP_TARGET_NAME} "2D KF-SLAM Simulator")   # Add link to the Start menu (in Windows Installable packages)
@@ -56,5 +56,3 @@ ELSE()
 	# ----------------------------------------------------------------------------------
     MESSAGE(STATUS "wxWidgets not found!: **This target will not be included in the Makefiles**")
 ENDIF()
-
-
