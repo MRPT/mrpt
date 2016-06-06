@@ -313,6 +313,7 @@ class GraphSlamEngine_t {
 		// instance to keep track of all the edges + visualization related
 		// functions
 		EdgeCounter_t m_edge_counter;
+		int m_num_of_edges_for_collapse;
 
 		// std::maps to store information about the graph(s)
 		map<const GRAPH_t*, string> graph_to_name;

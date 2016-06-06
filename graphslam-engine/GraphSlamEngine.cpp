@@ -133,6 +133,8 @@ void GraphSlamEngine_t<GRAPH_t>::initGraphSlamEngine() {
 	optimizer_codes["isam"] = 1;
 
 	m_log_sq_err_evolution.clear();
+	// check for duplicated edges every..
+	m_num_of_edges_for_collapse = 100;
 
 	/**
 	 * Initialization of various member variables
@@ -141,7 +143,6 @@ void GraphSlamEngine_t<GRAPH_t>::initGraphSlamEngine() {
 	// initialize the necessary maps for graph information
 	graph_to_name[&m_graph] = "optimized_graph";
 	graph_to_viz_params[&m_graph] = &m_optimized_graph_viz_params;
-
 
 	m_is3D = constraint_t::is_3D_val;
 
@@ -543,6 +544,7 @@ bool GraphSlamEngine_t<GRAPH_t>::parseRawlogFile() {
 				
 				m_curr_estimated_pose = m_graph.nodes[from] + since_prev_node_PDF.getMeanVal();
 			}
+			// odometry criterium
 			if ( (last_pose_inserted.distanceTo(m_curr_estimated_pose) > m_distance_threshold) ||
 					fabs(wrapToPi(last_pose_inserted.phi() - m_curr_estimated_pose.phi())) > m_angle_threshold ) {
 				
@@ -565,9 +567,6 @@ bool GraphSlamEngine_t<GRAPH_t>::parseRawlogFile() {
 				/**
 				 * add ICP constraint with "some" of the previous nodes
 				 */
-				//cout << endl;
-				//cout << "Testing ICP for node: " << m_nodeID_max << endl;
-
 				CObservation2DRangeScanPtr curr_laser_scan =
 					observations->getObservationByClass<CObservation2DRangeScan>();
 				m_nodes_to_laser_scans[m_nodeID_max] = curr_laser_scan;
@@ -576,19 +575,29 @@ bool GraphSlamEngine_t<GRAPH_t>::parseRawlogFile() {
 				int nodes_to_check = 0; // how many nodes to check ICP against
 				switch ( m_prev_nodes_for_ICP ) 
 				{
-					case -1: {
-						CCriticalSectionLocker m_graph_lock(&m_graph_section);
-
-						nodes_to_check = m_graph.nodeCount() - 1;
-						//cout << "Checking ICP against all other nodes in the graph." << endl;
-						break;
-					}
-					default: {
-						nodes_to_check = m_prev_nodes_for_ICP;
-						//cout << "Checking ICP against " << nodes_to_check << " nodes in the graph." << endl;
-						break;
-					}
+					case -1: 
+						{
+							nodes_to_check = m_nodeID_max - 1;
+							//cout << "Checking ICP against all other nodes in the graph." << endl;
+							break;
+						}
+					default: 
+						{
+							nodes_to_check = m_prev_nodes_for_ICP;
+							//cout << "Checking ICP against " << nodes_to_check << " nodes in the graph." << endl;
+							break;
+						}
 				}
+				// TODO - have the nodes to check against as a std::vector that you
+				// build based on a criterium - distance / node num / etc
+				//{
+					//CCriticalSectionLocker m_graph_lock(&m_graph_section);
+
+					//std::vector<TNodeID> nodes_to_check_ICP;
+					//for (TNodeID nodeID = 0; nodeID <= m_nodeID_max; ++nodeID) {
+						//if m_graph.nodes[nodeID].distanceTo(m_graph.nodes[
+					//}
+				//}
 
 				for (TNodeID prev_node = m_nodeID_max-1;
 						prev_node != (m_nodeID_max - nodes_to_check - 1) ; --prev_node) {
@@ -676,6 +685,17 @@ bool GraphSlamEngine_t<GRAPH_t>::parseRawlogFile() {
 			cout << "Halting execution... " << endl;
 			joinThread(m_thread_optimize);
 			return false; // exit the parseRawlogFile method
+		}
+
+		/**
+		 * Reduce edges
+		 */
+		if (m_edge_counter.getTotalNumOfEdges() % m_num_of_edges_for_collapse == 0) {
+			CCriticalSectionLocker m_graph_lock(&m_graph_section);
+			cout << "Collapsing duplicated edges..." << endl;
+
+			int removed_edges = m_graph.collapseDuplicatedEdges();
+			m_edge_counter.setRemovedEdges(removed_edges);
 		}
 
 

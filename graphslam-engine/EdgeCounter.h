@@ -47,8 +47,20 @@ class EdgeCounter_t {
 			m_offset_y_total_edges = 0.0; m_offset_y_loop_closures = 0.0;
 			m_text_index_total_edges = 0; m_text_index_loop_closures = 0;
 
+			m_unique_edges = 0;
+
 		}
 
+		/**
+		 * setRemovedEdges
+		 *
+		 * Function to be called after call to CNetworkOfPoses::collapseDuplicatedEdges 
+		 * method. States how many of the existing edges have been removed.
+		 */
+		void setRemovedEdges(int removed_edges) { 
+			m_unique_edges = this->getTotalNumOfEdges() - removed_edges; 
+			cout << "setRemovedEdges: Unique edges: " << m_unique_edges << endl;
+		}
 		/**
 		 * getLoopClosureEdges()
 		 *
@@ -315,11 +327,15 @@ class EdgeCounter_t {
 			assert(m_has_read_textmessage_params);
 			assert(m_name_to_offset_y.size() == m_name_to_text_index.size());
 
+			//cout << "Updating total amount of edges" << endl;
+
 			//Add text message for the total amount of edges
+			stringstream title;
+			title << "Total edges: " <<  this->getTotalNumOfEdges();
+			//if (m_unique_edges) {
+				//title << " |Unique: " << m_unique_edges << endl;
+			//}
 			if (m_display_total_edges) {
-				//cout << "Updating total amount of edges" << endl;
-				stringstream title;
-				title << "Total edges: " <<  this->getTotalNumOfEdges() << endl;
 				m_win->addTextMessage(5,-m_offset_y_total_edges,
 						title.str(),
 						TColorf(1.0, 1.0, 1.0),
@@ -371,8 +387,9 @@ class EdgeCounter_t {
 		// Tracking number of edges
 		map<string, int> m_name_to_edges_num;;
 		int m_num_loop_closures;
+		int m_unique_edges;
 
-		// visualization parameters
+		// visualization maps
 		map<string, double> m_name_to_offset_y;
 		map<string, int> m_name_to_text_index;
 
