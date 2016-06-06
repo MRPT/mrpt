@@ -281,11 +281,13 @@ namespace mrpt
 			  *  Internally, the texture is drawn using a mrpt::opengl::CTexturedPlane
 			  *  The viewport can be reverted to behave like a normal viewport by calling setNormalMode()
 			  * \sa setImageView_fast, COpenGLViewport
+				* \note This method already locks/unlocks the 3D scene of the window, so the user must NOT call get3DSceneAndLock() / unlockAccess3DScene() before/after calling it.
 			  */
 			void setImageView(const mrpt::utils::CImage &img);
 
 			/** Just like \a setImageView but moves the internal image memory instead of making a copy, so it's faster but empties the input image.
 			  * \sa setImageView, COpenGLViewport
+				* \note This method already locks/unlocks the 3D scene of the window, so the user must NOT call get3DSceneAndLock() / unlockAccess3DScene() before/after calling it.
 			  */
 			void setImageView_fast(mrpt::utils::CImage &img);
 
