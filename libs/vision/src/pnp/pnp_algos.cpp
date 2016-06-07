@@ -8,6 +8,9 @@
    +---------------------------------------------------------------------------+ */
 
 #include <mrpt/vision/pnp/pnp_algos.h>
+#include <mrpt/vision/pnp/dls.h>
+#include <mrpt/vision/pnp/epnp.h>
+#include <mrpt/vision/pnp/upnp.h>
 using namespace pnp;
 
 #include <iostream>
@@ -21,21 +24,19 @@ using namespace Eigen;
 #include <opencv2/core/eigen.hpp>
 using namespace cv;
 
-/*
-template<typename Derived> 
-int CPnP::CPnP_dls(MatrixBase<Derived>& obj_pts, MatrixBase<Derived>& img_pts, int n, MatrixBase<Derived>& cam_intrinsic, MatrixBase<Derived>& pose_mat){
+int CPnP::CPnP_dls(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<Eigen::MatrixXd> img_pts, int n, const Eigen::Ref<Eigen::MatrixXd> cam_intrinsic, Eigen::Ref<Eigen::MatrixXd> pose_mat){
 	
-	MatrixXd cam_in_eig=cam_intrinsic.array().transpose(), img_pts_eig=img_pts.array().transpose(), obj_pts_eig=obj_pts.array().transpose(), t_eig;
-	Matrix3d R_eig; 
-	Mat cam_in_cv(3,3,CV_32F), img_pts_cv(2,n,CV_32F), obj_pts_cv(3,n,CV_32F), R_cv(3,3,CV_32F), t_cv(3,1,CV_32F);
+	Eigen::MatrixXd cam_in_eig=cam_intrinsic.array().transpose(), img_pts_eig=img_pts.array().transpose(), obj_pts_eig=obj_pts.array().transpose(), t_eig;
+	Eigen::Matrix3d R_eig; 
+	cv::Mat cam_in_cv(3,3,CV_32F), img_pts_cv(2,n,CV_32F), obj_pts_cv(3,n,CV_32F), R_cv(3,3,CV_32F), t_cv(3,1,CV_32F);
 	
 	//cout<<"cam_in="<<endl<<cam_in_eig<<endl<<endl;
 	//cout<<"obj_pts="<<endl<<obj_pts_eig<<endl<<endl;
 	//cout<<"img_pts="<<endl<<img_pts_eig<<endl<<endl;
 	
-	eigen2cv(cam_in_eig, cam_in_cv);
-	eigen2cv(img_pts_eig, img_pts_cv);
-	eigen2cv(obj_pts_eig, obj_pts_cv);
+	cv::eigen2cv(cam_in_eig, cam_in_cv);
+	cv::eigen2cv(img_pts_eig, img_pts_cv);
+	cv::eigen2cv(obj_pts_eig, obj_pts_cv);
 	
 	//cout<<cam_in_cv<<endl;
 	//cout<<img_pts_cv<<endl;
@@ -47,13 +48,13 @@ int CPnP::CPnP_dls(MatrixBase<Derived>& obj_pts, MatrixBase<Derived>& img_pts, i
 	//cout<<R_cv<<endl;
 	//cout<<t_cv<<endl;
 	
-	cv2eigen(R_cv, R_eig);
-	cv2eigen(t_cv, t_eig);
+	cv::cv2eigen(R_cv, R_eig);
+	cv::cv2eigen(t_cv, t_eig);
 	
 	//cout<<"R_eig="<<endl<<R_eig<<endl<<endl;
 	//cout<<"t_eig="<<endl<<t_eig<<endl<<endl;
 	
-	Quaterniond q(R_eig);
+	Eigen::Quaterniond q(R_eig);
 	
 	pose_mat << t_eig,q.vec();
 	
@@ -68,20 +69,19 @@ int CPnP::CPnP_dls(MatrixBase<Derived>& obj_pts, MatrixBase<Derived>& img_pts, i
 	return 1;
 }
 
-template<typename Derived> 
-int CPnP::CPnP_epnp(MatrixBase<Derived>& obj_pts, MatrixBase<Derived>& img_pts, int n, MatrixBase<Derived>& cam_intrinsic, MatrixBase<Derived>& pose_mat){
+int CPnP::CPnP_epnp(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<Eigen::MatrixXd> img_pts, int n, const Eigen::Ref<Eigen::MatrixXd> cam_intrinsic, Eigen::Ref<Eigen::MatrixXd> pose_mat){
 	
-	MatrixXd cam_in_eig=cam_intrinsic.array().transpose(), img_pts_eig=img_pts.array().transpose(), obj_pts_eig=obj_pts.array().transpose(), t_eig;
-	Matrix3d R_eig; 
-	Mat cam_in_cv(3,3,CV_32F), img_pts_cv(2,n,CV_32F), obj_pts_cv(3,n,CV_32F), R_cv, t_cv;
+	Eigen::MatrixXd cam_in_eig=cam_intrinsic.array().transpose(), img_pts_eig=img_pts.array().transpose(), obj_pts_eig=obj_pts.array().transpose(), t_eig;
+	Eigen::Matrix3d R_eig; 
+	cv::Mat cam_in_cv(3,3,CV_32F), img_pts_cv(2,n,CV_32F), obj_pts_cv(3,n,CV_32F), R_cv, t_cv;
 	
 	//cout<<"cam_in="<<endl<<cam_in_eig<<endl<<endl;
 	//cout<<"obj_pts="<<endl<<obj_pts_eig<<endl<<endl;
 	//cout<<"img_pts="<<endl<<img_pts_eig<<endl<<endl;
 	
-	eigen2cv(cam_in_eig, cam_in_cv);
-	eigen2cv(img_pts_eig, img_pts_cv);
-	eigen2cv(obj_pts_eig, obj_pts_cv);
+	cv::eigen2cv(cam_in_eig, cam_in_cv);
+	cv::eigen2cv(img_pts_eig, img_pts_cv);
+	cv::eigen2cv(obj_pts_eig, obj_pts_cv);
 	
 	//cout<<cam_in_cv<<endl;
 	//cout<<img_pts_cv<<endl;
@@ -93,10 +93,10 @@ int CPnP::CPnP_epnp(MatrixBase<Derived>& obj_pts, MatrixBase<Derived>& img_pts, 
 	//cout<<R_cv<<endl;
 	//cout<<t_cv<<endl;
 	
-	cv2eigen(R_cv, R_eig);
-	cv2eigen(t_cv, t_eig);
+	cv::cv2eigen(R_cv, R_eig);
+	cv::cv2eigen(t_cv, t_eig);
 	
-	Quaterniond q(R_eig);
+	Eigen::Quaterniond q(R_eig);
 	
 	pose_mat << t_eig,q.vec();
 	
@@ -112,20 +112,19 @@ int CPnP::CPnP_epnp(MatrixBase<Derived>& obj_pts, MatrixBase<Derived>& img_pts, 
 	return 1;
 }
 
-template<typename Derived> 
-int CPnP::CPnP_upnp(MatrixBase<Derived>& obj_pts, MatrixBase<Derived>& img_pts, int n, MatrixBase<Derived>& cam_intrinsic, MatrixBase<Derived>& pose_mat){
+int CPnP::CPnP_upnp(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<Eigen::MatrixXd> img_pts, int n, const Eigen::Ref<Eigen::MatrixXd> cam_intrinsic, Eigen::Ref<Eigen::MatrixXd> pose_mat){
 	
-	MatrixXd cam_in_eig=cam_intrinsic.array().transpose(), img_pts_eig=img_pts.array().transpose(), obj_pts_eig=obj_pts.array().transpose(), t_eig;
-	Matrix3d R_eig; 
-	Mat cam_in_cv(3,3,CV_32F), img_pts_cv(2,n,CV_32F), obj_pts_cv(3,n,CV_32F), R_cv, t_cv;
+	Eigen::MatrixXd cam_in_eig=cam_intrinsic.array().transpose(), img_pts_eig=img_pts.array().transpose(), obj_pts_eig=obj_pts.array().transpose(), t_eig;
+	Eigen::Matrix3d R_eig; 
+	cv::Mat cam_in_cv(3,3,CV_32F), img_pts_cv(2,n,CV_32F), obj_pts_cv(3,n,CV_32F), R_cv, t_cv;
 	
 	//cout<<"cam_in="<<endl<<cam_in_eig<<endl<<endl;
 	//cout<<"obj_pts="<<endl<<obj_pts_eig<<endl<<endl;
 	//cout<<"img_pts="<<endl<<img_pts_eig<<endl<<endl;
 	
-	eigen2cv(cam_in_eig, cam_in_cv);
-	eigen2cv(img_pts_eig, img_pts_cv);
-	eigen2cv(obj_pts_eig, obj_pts_cv);
+	cv::eigen2cv(cam_in_eig, cam_in_cv);
+	cv::eigen2cv(img_pts_eig, img_pts_cv);
+	cv::eigen2cv(obj_pts_eig, obj_pts_cv);
 	
 	//cout<<cam_in_cv<<endl;
 	//cout<<img_pts_cv<<endl;
@@ -137,10 +136,10 @@ int CPnP::CPnP_upnp(MatrixBase<Derived>& obj_pts, MatrixBase<Derived>& img_pts, 
 	//cout<<R_cv<<endl;
 	//cout<<t_cv<<endl;
 	
-	cv2eigen(R_cv, R_eig);
-	cv2eigen(t_cv, t_eig);
+	cv::cv2eigen(R_cv, R_eig);
+	cv::cv2eigen(t_cv, t_eig);
 	
-	Quaterniond q(R_eig);
+	Eigen::Quaterniond q(R_eig);
 	
 	pose_mat << t_eig,q.vec();
 	
@@ -156,6 +155,4 @@ int CPnP::CPnP_upnp(MatrixBase<Derived>& obj_pts, MatrixBase<Derived>& img_pts, 
 	return 1;
 }
 
-
-*/
 
