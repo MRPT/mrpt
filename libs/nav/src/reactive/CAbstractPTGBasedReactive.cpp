@@ -426,22 +426,14 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 					CTimeLoggerEntry tle(m_timelogger,"navigationStep.STEP3_WSpaceToTPSpace");
 
 					// Initialize TP-Obstacles:
-					const size_t Ki = ptg->getAlfaValuesCount();
-					ipf.TP_Obstacles.resize( Ki );
-					for (size_t k=0;k<Ki;k++)
-					{
-						ipf.TP_Obstacles[k] = ptg->getRefDistance();
-						// if the robot ends the trajectory due to a >180deg turn, set that as the max. distance, not D_{max}:
-						float phi = ptg->GetCPathPoint_phi(k,ptg->getPointsCountInCPath_k(k)-1);
-						if (fabs(phi) >= M_PI* 0.95f )
-							ipf.TP_Obstacles[k]= ptg->GetCPathPoint_d(k,ptg->getPointsCountInCPath_k(k)-1);
-					}
+					const size_t Ki = ptg->getAlphaValuesCount();
+					ipf.TP_Obstacles.assign( Ki, ptg->getRefDistance());
 
 					// Implementation-dependent conversion:
 					STEP3_WSpaceToTPSpace(indexPTG,ipf.TP_Obstacles);
 
 					// Distances in TP-Space are normalized to [0,1]:
-					const double _refD = 1.0/ptg->refDistance;
+					const double _refD = 1.0/ptg->getRefDistance();
 					for (size_t i=0;i<Ki;i++) ipf.TP_Obstacles[i] *= _refD;
 				}
 
