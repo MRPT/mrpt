@@ -9,12 +9,7 @@ using namespace boost::python;
 using namespace Eigen;
 
 #include <mrpt/vision/pnp/pnp_algos.h>
-using namespace pnp;
-CPnP pnp_algos;
-
-#include <mrpt/vision/pnp/epnp.h>
-#include <mrpt/vision/pnp/dls.h>
-#include <mrpt/vision/pnp/upnp.h>
+pnp::CPnP pnp_algos;
 
 #include <opencv2/opencv.hpp>
 #include <opencv2/core/eigen.hpp>
