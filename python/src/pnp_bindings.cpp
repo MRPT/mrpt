@@ -26,11 +26,11 @@ public:
 	int upnp_solve(PyObject* obj_pts, PyObject* img_pts, int n, PyObject* cam_intrinsic, PyObject* pose_mat);
 	
 private:
-	int m;
+	int dummy;
 };
 
 PnPAlgos::PnPAlgos( int new_m ){
-	m = new_m;
+	dummy = new_m;
 }
 PnPAlgos::~PnPAlgos(){
 }
