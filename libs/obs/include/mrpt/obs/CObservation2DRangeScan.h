@@ -70,7 +70,7 @@ namespace obs
 
 		void getScanProperties(T2DScanProperties& p) const;  //!< Fill out a T2DScanProperties structure with the parameters of this scan
 		/** @} */
-		
+
 		/** @name Cached points map
 		    @{  */
 	protected:
@@ -116,6 +116,9 @@ namespace obs
 		/** Return true if the laser scanner is "horizontal", so it has an absolute value of "pitch" and "roll" less or equal to the given tolerance (in rads, default=0) (with the normal vector either upwards or downwards).
 		  */
 		bool isPlanarScan(const double tolerance = 0) const;
+
+		/** Return true if scan has intensity*/
+		bool hasIntensity() const;
 
 		// See base class docs
 		void getSensorPose( mrpt::poses::CPose3D &out_sensorPose ) const MRPT_OVERRIDE { out_sensorPose = sensorPose; }
