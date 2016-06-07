@@ -57,7 +57,8 @@ namespace obs
 
 		/** @name Scan data
 		    @{ */
-		std::vector<float>   scan; //!< The range values of the scan, in meters. Must have same length than \a validRange 
+		std::vector<float>   scan; //!< The range values of the scan, in meters. Must have same length than \a validRange
+		std::vector<int>     intensity; //!< The intensity values of the scan. If available, must have same length than \a validRange
 		std::vector<char>    validRange;  //!< It's false (=0) on no reflected rays, referenced to elements in \a scan
 		float                aperture; //!< The "aperture" or field-of-view of the range finder, in radians (typically M_PI = 180 degrees).
 		bool                 rightToLeft; //!< The scanning direction: true=counterclockwise; false=clockwise
