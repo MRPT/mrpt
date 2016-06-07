@@ -8,6 +8,9 @@
    +---------------------------------------------------------------------------+ */
 
 #include <mrpt/vision/pnp/pnp_algos.h>
+#include <mrpt/vision/pnp/dls.h>
+#include <mrpt/vision/pnp/epnp.h>
+#include <mrpt/vision/pnp/upnp.h>
 using namespace pnp;
 
 #include <iostream>
@@ -21,7 +24,7 @@ using namespace Eigen;
 #include <opencv2/core/eigen.hpp>
 using namespace cv;
 
-int CPnP::CPnP_dls(Eigen::MatrixXd& obj_pts, Eigen::MatrixXd& img_pts, int n, Eigen::MatrixXd& cam_intrinsic, Eigen::MatrixXd& pose_mat){
+int CPnP::CPnP_dls(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<Eigen::MatrixXd> img_pts, int n, const Eigen::Ref<Eigen::MatrixXd> cam_intrinsic, Eigen::Ref<Eigen::MatrixXd> pose_mat){
 	
 	Eigen::MatrixXd cam_in_eig=cam_intrinsic.array().transpose(), img_pts_eig=img_pts.array().transpose(), obj_pts_eig=obj_pts.array().transpose(), t_eig;
 	Eigen::Matrix3d R_eig; 
@@ -66,7 +69,7 @@ int CPnP::CPnP_dls(Eigen::MatrixXd& obj_pts, Eigen::MatrixXd& img_pts, int n, Ei
 	return 1;
 }
 
-int CPnP::CPnP_epnp(Eigen::MatrixXd& obj_pts, Eigen::MatrixXd& img_pts, int n, Eigen::MatrixXd& cam_intrinsic, Eigen::MatrixXd& pose_mat){
+int CPnP::CPnP_epnp(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<Eigen::MatrixXd> img_pts, int n, const Eigen::Ref<Eigen::MatrixXd> cam_intrinsic, Eigen::Ref<Eigen::MatrixXd> pose_mat){
 	
 	Eigen::MatrixXd cam_in_eig=cam_intrinsic.array().transpose(), img_pts_eig=img_pts.array().transpose(), obj_pts_eig=obj_pts.array().transpose(), t_eig;
 	Eigen::Matrix3d R_eig; 
@@ -109,7 +112,7 @@ int CPnP::CPnP_epnp(Eigen::MatrixXd& obj_pts, Eigen::MatrixXd& img_pts, int n, E
 	return 1;
 }
 
-int CPnP::CPnP_upnp(Eigen::MatrixXd& obj_pts, Eigen::MatrixXd& img_pts, int n, Eigen::MatrixXd& cam_intrinsic, Eigen::MatrixXd& pose_mat){
+int CPnP::CPnP_upnp(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<Eigen::MatrixXd> img_pts, int n, const Eigen::Ref<Eigen::MatrixXd> cam_intrinsic, Eigen::Ref<Eigen::MatrixXd> pose_mat){
 	
 	Eigen::MatrixXd cam_in_eig=cam_intrinsic.array().transpose(), img_pts_eig=img_pts.array().transpose(), obj_pts_eig=obj_pts.array().transpose(), t_eig;
 	Eigen::Matrix3d R_eig; 

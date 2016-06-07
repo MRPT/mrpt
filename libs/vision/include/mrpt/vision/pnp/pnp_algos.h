@@ -20,11 +20,11 @@ namespace pnp
 	class CPnP
 	{
 		public:
-			int CPnP_dls(Eigen::MatrixXd& obj_pts, Eigen::MatrixXd& img_pts, int n, Eigen::MatrixXd& cam_intrinsic, Eigen::MatrixXd& pose_mat);
+			int CPnP_dls(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<Eigen::MatrixXd> img_pts, int n, const Eigen::Ref<Eigen::MatrixXd> cam_intrinsic, Eigen::Ref<Eigen::MatrixXd> pose_mat);
 
-			int CPnP_epnp(Eigen::MatrixXd& obj_pts, Eigen::MatrixXd& img_pts, int n, Eigen::MatrixXd& cam_intrinsic, Eigen::MatrixXd& pose_mat);
+			int CPnP_epnp(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<Eigen::MatrixXd> img_pts, int n, const Eigen::Ref<Eigen::MatrixXd> cam_intrinsic, Eigen::Ref<Eigen::MatrixXd> pose_mat);
 
-			int CPnP_upnp(Eigen::MatrixXd& obj_pts, Eigen::MatrixXd& img_pts, int n, Eigen::MatrixXd& cam_intrinsic, Eigen::MatrixXd& pose_mat);
+			int CPnP_upnp(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<Eigen::MatrixXd> img_pts, int n, const Eigen::Ref<Eigen::MatrixXd> cam_intrinsic, Eigen::Ref<Eigen::MatrixXd> pose_mat);
 	};
 	
 }
