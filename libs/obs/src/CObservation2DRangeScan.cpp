@@ -78,8 +78,8 @@ void  CObservation2DRangeScan::writeToStream(mrpt::utils::CStream &out, int *ver
 
 		out << deltaPitch;
 
-		out << !intensity.empty();
-		if(!intensity.empty())
+		out << hasIntensity();
+		if(hasIntensity())
 		{
 			out.WriteBufferFixEndianness( &intensity[0], N );
 		}
