@@ -57,7 +57,7 @@ CObservation2DRangeScan::~CObservation2DRangeScan()
 void  CObservation2DRangeScan::writeToStream(mrpt::utils::CStream &out, int *version) const
 {
 	if (version)
-		*version = 6;
+		*version = 7;
 	else
 	{
 		// The data
@@ -77,6 +77,12 @@ void  CObservation2DRangeScan::writeToStream(mrpt::utils::CStream &out, int *ver
 		out << sensorLabel;
 
 		out << deltaPitch;
+
+		out << !intensity.empty();
+		if(!intensity.empty())
+		{
+			out.WriteBufferFixEndianness( &intensity[0], N );
+		}
 	}
 }
 
@@ -173,6 +179,7 @@ void  CObservation2DRangeScan::readFromStream(mrpt::utils::CStream &in, int vers
 	case 4:
 	case 5:
 	case 6:
+	case 7:
 		{
 			uint32_t		N;
 
@@ -196,13 +203,23 @@ void  CObservation2DRangeScan::readFromStream(mrpt::utils::CStream &in, int vers
 
 			if (version>=5)
 			{
-					in >> sensorLabel;
-					in >> deltaPitch;
+				in >> sensorLabel;
+				in >> deltaPitch;
 			}
 			else
 			{
 				sensorLabel = "";
 				deltaPitch  = 0;
+			}
+			if (version>=7)
+			{
+				bool hasIntensity;
+				in >> hasIntensity;
+				if (hasIntensity && N)
+				{
+					intensity.resize(N);
+					in.ReadBufferFixEndianness( &intensity[0], N);
+				}
 			}
 		} break;
 	default:
