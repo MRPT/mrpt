@@ -120,9 +120,9 @@ namespace nav
 
 		static std::string OUTPUT_DEBUG_PATH_PREFIX; //!< The path used as defaul output in, for example, debugDumpInFiles. (Default="./reactivenav.logs/")
 
-		uint16_t getAlfaValuesCount() const { return m_alphaValuesCount; };
+		uint16_t getAlphaValuesCount() const { return m_alphaValuesCount; };
 
-		/** Alfa value for the discrete corresponding value \sa alpha2index */
+		/** Alpha value for the discrete corresponding value \sa alpha2index */
 		double index2alpha( uint16_t k ) const {
 			return M_PI * (-1.0 + 2.0 * (k+0.5)/m_alphaValuesCount );
 		}

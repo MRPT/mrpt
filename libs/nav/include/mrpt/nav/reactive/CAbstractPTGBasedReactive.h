@@ -247,10 +247,9 @@ namespace mrpt
 		{
 			bool                 valid_TP;   //!< For each PTG, whether the target falls into the PTG domain.
 			mrpt::math::TPoint2D TP_Target; //!< The Target, in TP-Space (x,y)
-			float                target_alpha,target_dist;  //!< TP-Target
-			int                  target_k;
-
-			std::vector<float>        TP_Obstacles; //!< One distance per discretized alpha value, describing the "polar plot" of TP obstacles.
+			double               target_alpha,target_dist;  //!< TP-Target
+			int                  target_k; //!< The discrete version of target_alpha
+			std::vector<float>   TP_Obstacles; //!< One distance per discretized alpha value, describing the "polar plot" of TP obstacles.
 		};
 
 		std::vector<TInfoPerPTG> m_infoPerPTG; //!< Temporary buffers for working with each PTG during a navigationStep()
