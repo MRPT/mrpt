@@ -24,13 +24,14 @@ public:
 	int epnp_solve(PyObject* obj_pts, PyObject* img_pts, int n, PyObject* cam_intrinsic, PyObject* pose_mat);
 	int dls_solve(PyObject* obj_pts, PyObject* img_pts, int n, PyObject* cam_intrinsic, PyObject* pose_mat);
 	int upnp_solve(PyObject* obj_pts, PyObject* img_pts, int n, PyObject* cam_intrinsic, PyObject* pose_mat);
+	int p3p_solve(PyObject* obj_pts, PyObject* img_pts, int n, PyObject* cam_intrinsic, PyObject* pose_mat);
 	
 private:
-	int m;
+	int dummy;
 };
 
 PnPAlgos::PnPAlgos( int new_m ){
-	m = new_m;
+	dummy = new_m;
 }
 PnPAlgos::~PnPAlgos(){
 }
@@ -63,11 +64,21 @@ int PnPAlgos::upnp_solve(PyObject* obj_pts, PyObject* img_pts, int n, PyObject* 
 	return pnp_algos.CPnP_upnp(_obj_pts, _img_pts, n, _cam_intrinsic, _pose_mat);
 }
 
+int PnPAlgos::p3p_solve(PyObject* obj_pts, PyObject* img_pts, int n, PyObject* cam_intrinsic, PyObject* pose_mat){
+	Map<MatrixXd> _obj_pts((double *) PyArray_DATA((PyArrayObject*)obj_pts),3,n);
+	Map<MatrixXd> _img_pts((double *) PyArray_DATA((PyArrayObject*)img_pts),2,n);
+	Map<MatrixXd> _pose_mat((double *) PyArray_DATA((PyArrayObject*)pose_mat),6,1);
+	Map<MatrixXd> _cam_intrinsic((double *) PyArray_DATA((PyArrayObject*)cam_intrinsic),3,3);
+	
+	return pnp_algos.CPnP_p3p(_obj_pts, _img_pts, n, _cam_intrinsic, _pose_mat);
+}
+
 void export_pnp()
 {
     class_<PnPAlgos>("pnp", init<int>(args("m")))
         .def("epnp_solve", &PnPAlgos::epnp_solve)
         .def("dls_solve", &PnPAlgos::dls_solve)
         .def("upnp_solve", &PnPAlgos::upnp_solve)
+        .def("p3p_solve", &PnPAlgos::p3p_solve)
     ;
 }

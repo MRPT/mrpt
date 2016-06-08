@@ -11,6 +11,7 @@
 #include <mrpt/vision/pnp/dls.h>
 #include <mrpt/vision/pnp/epnp.h>
 #include <mrpt/vision/pnp/upnp.h>
+#include <mrpt/vision/pnp/p3p.h>
 using namespace pnp;
 
 #include <iostream>
@@ -132,6 +133,49 @@ int CPnP::CPnP_upnp(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<
 	
 	upnp u(cam_in_cv, obj_pts_cv, img_pts_cv);
 	u.compute_pose(R_cv,t_cv);
+	
+	//cout<<R_cv<<endl;
+	//cout<<t_cv<<endl;
+	
+	cv::cv2eigen(R_cv, R_eig);
+	cv::cv2eigen(t_cv, t_eig);
+	
+	Eigen::Quaterniond q(R_eig);
+	
+	pose_mat << t_eig,q.vec();
+	
+	//cout<<"R_eig="<<endl<<R_eig<<endl<<endl;
+	//cout<<"t_eig="<<endl<<t_eig<<endl<<endl;
+	
+	//pose_mat.block(0,0,3,3)=R_eig;
+	//pose_mat.block(0,3,3,1)=t_eig;
+	//pose_mat.row(3)<<0,0,0,1;
+	
+	//cout<<"pose_mat="<<endl<<pose_mat_eig<<endl<<endl;
+	
+	return 1;
+}
+
+int CPnP::CPnP_p3p(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<Eigen::MatrixXd> img_pts, int n, const Eigen::Ref<Eigen::MatrixXd> cam_intrinsic, Eigen::Ref<Eigen::MatrixXd> pose_mat){
+	
+	Eigen::MatrixXd cam_in_eig=cam_intrinsic.array().transpose(), img_pts_eig=img_pts.array().transpose(), obj_pts_eig=obj_pts.array().transpose(), t_eig;
+	Eigen::Matrix3d R_eig; 
+	cv::Mat cam_in_cv(3,3,CV_32F), img_pts_cv(2,3,CV_32F), obj_pts_cv(3,3,CV_32F), R_cv, t_cv;
+	
+	//cout<<"cam_in="<<endl<<cam_in_eig<<endl<<endl;
+	//cout<<"obj_pts="<<endl<<obj_pts_eig<<endl<<endl;
+	//cout<<"img_pts="<<endl<<img_pts_eig<<endl<<endl;
+	
+	cv::eigen2cv(cam_in_eig, cam_in_cv);
+	cv::eigen2cv(img_pts_eig, img_pts_cv);
+	cv::eigen2cv(obj_pts_eig, obj_pts_cv);
+	
+	//cout<<cam_in_cv<<endl;
+	//cout<<img_pts_cv<<endl;
+	//cout<<obj_pts_cv<<endl;
+	
+	p3p p(cam_in_cv);
+	p.solve(R_cv,t_cv, obj_pts_cv, img_pts_cv);
 	
 	//cout<<R_cv<<endl;
 	//cout<<t_cv<<endl;

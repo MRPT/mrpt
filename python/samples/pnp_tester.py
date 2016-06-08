@@ -48,14 +48,16 @@ img_pts=np.empty([n,2])
 pose_epnp=np.empty([6,1])
 pose_upnp=np.empty([6,1])
 pose_dls=np.empty([6,1])
+pose_p3p=np.empty([6,1])
 pose_mat_orig=np.empty([4,4])
 
 n_iter=100
-n_algos=3
+n_algos=4
 
 err_t_epnp=[]
 err_t_dls=[]
 err_t_upnp=[]
+err_t_p3p=[]
 
 for it in np.arange(0,n_iter):
 
@@ -82,22 +84,25 @@ for it in np.arange(0,n_iter):
     pnp.epnp_solve(obj_pts,img_pts, 6, cam_intrinsic, pose_epnp)
     pnp.dls_solve(obj_pts, img_pts, 6, cam_intrinsic, pose_dls)
     pnp.upnp_solve(obj_pts,img_pts, 6, cam_intrinsic, pose_upnp)
+    pnp.p3p_solve(obj_pts[1:4,:], img_pts[1:4,:],6, cam_intrinsic, pose_p3p)
 
     t_epnp=np.concatenate(pose_epnp[0:3])
     t_dls=np.concatenate(pose_dls[0:3])
     t_upnp=np.concatenate(pose_upnp[0:3])
+    t_p3p=np.concatenate(pose_p3p[0:3])
     
     err_t_epnp.append(np.linalg.norm(t-t_epnp))
     err_t_dls.append(np.linalg.norm(t-t_dls))
     err_t_upnp.append(np.linalg.norm(t-t_upnp))
+    err_t_p3p.append(np.linalg.norm(t-t_p3p))
 
-err_algos=np.array(err_t_epnp + err_t_dls + err_t_upnp)
+err_algos=np.array(err_t_epnp + err_t_dls + err_t_upnp + err_t_p3p)
 err_algos=err_algos.reshape(n_algos,n_iter)
 
 it=np.arange(0,n_iter)
 
 plt.figure(1)
-display_comparison_plot(it, err_algos, names=['epnp','dls','upnp'], title='Translation Error Plot', xtitle='Iteration', ytitle='e')
+display_comparison_plot(it, err_algos, names=['epnp','dls','upnp','p3p'], title='Translation Error Plot', xtitle='Iteration', ytitle='e')
 plt.legend()
 plt.show()
 
