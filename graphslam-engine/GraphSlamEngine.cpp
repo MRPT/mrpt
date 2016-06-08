@@ -83,9 +83,6 @@ GraphSlamEngine_t<GRAPH_t>::GraphSlamEngine_t(const string& config_file,
 	m_odometry_color(0, 0, 1),
 	m_GT_color(0, 1, 0)
 {
-	//m_win = win;
-	//m_rawlog_fname = rawlog_fname;
-	//m_config_fname = config_file;
 	
 	this->initGraphSlamEngine();
 };
@@ -805,6 +802,7 @@ void GraphSlamEngine_t<GRAPH_t>::readConfigFile(const string& fname) {
 				/*var_name = */ "rawlog_file",
 				/*default_value = */ "", /*failIfNotFound = */ true);
 	}
+	m_fname_GT = m_rawlog_fname + ".GT.txt"; // default output of GridmapNavSimul tool
 
 
 	// Section: GeneralConfiguration
@@ -1015,10 +1013,6 @@ void GraphSlamEngine_t<GRAPH_t>::readConfigFile(const string& fname) {
 			"VisualizationParameters",
 			"visualize_ground_truth",
 			1, false);
-	m_fname_GT = cfg_file.read_string(
-			"VisualizationParameters",
-			"ground_truth_file",
-			"", false);
 
 
 	m_has_read_config = true;
