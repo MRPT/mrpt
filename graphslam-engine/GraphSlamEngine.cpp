@@ -554,8 +554,8 @@ bool GraphSlamEngine_t<GRAPH_t>::parseRawlogFile() {
 				m_curr_estimated_pose = m_graph.nodes[from] + since_prev_node_PDF.getMeanVal();
 			}
 			// odometry criterion
-			if ( (last_pose_inserted.distanceTo(m_curr_estimated_pose) > m_distance_threshold) ||
-					fabs(wrapToPi(last_pose_inserted.phi() - m_curr_estimated_pose.phi())) > m_angle_threshold ) {
+			if ( (last_pose_inserted.distanceTo(m_curr_estimated_pose) > m_registration_distance_thres) ||
+					fabs(wrapToPi(last_pose_inserted.phi() - m_curr_estimated_pose.phi())) > m_registration_angle_thres ) {
 				
 				from = m_nodeID_max;
 				TNodeID to = ++m_nodeID_max;
@@ -879,15 +879,15 @@ void GraphSlamEngine_t<GRAPH_t>::readConfigFile(const string& fname) {
 			"DecidersConfiguration",
 			"decider_alg",
 			"", true);
-	m_distance_threshold = cfg_file.read_double(
+	m_registration_distance_thres = cfg_file.read_double(
 			"DecidersConfiguration",
-			"distance_threshold",
+			"registration_distance_thres",
 			1 /* meter */, false);
-	m_angle_threshold = cfg_file.read_double(
+	m_registration_angle_thres= cfg_file.read_double(
 			"DecidersConfiguration",
-			"angle_threshold",
+			"registration_angle_thres",
 			60 /* degrees */, false);
-	m_angle_threshold = DEG2RAD(m_angle_threshold);
+	m_registration_angle_thres = DEG2RAD(m_registration_angle_thres);
 
 	//// Section: ICP
 	//// ////////////////////////////////
@@ -1028,42 +1028,43 @@ void GraphSlamEngine_t<GRAPH_t>::printProblemParams() const {
 
 	stringstream ss_out;
 
-	ss_out << "-----------------------------------------------------------" << endl;
-	ss_out << " Graphslam_engine: Problem Parameters " << endl;
-	ss_out << " Config filename                 = "
+	ss_out << "------------[ Graphslamm_engine Problem Parameters ]------------" 
+		<< endl;
+	ss_out << "Graphslam_engine: Problem Parameters " << endl;
+	ss_out << "Config filename                 = "
 		<< m_config_fname << endl;
-	ss_out << " Rawlog filename                 = "
+	ss_out << "Rawlog filename                 = "
 		<< m_rawlog_fname << endl;
-	ss_out << " Output directory                = "
+	ss_out << "Output directory                = "
 		<< m_output_dir_fname << endl;
-	ss_out << " User decides about output dir   = "
+	ss_out << "User decides about output dir   = "
 		<< m_user_decides_about_output_dir << endl;
-	ss_out << " Debug mode                      = "
+	ss_out << "Debug mode                      = "
 		<< m_do_debug << endl;
-	ss_out << " save_graph_fname                = "
+	ss_out << "save_graph_fname                = "
 		<< m_save_graph_fname << endl;
-	ss_out << " do_pose_graph_only              = "
+	ss_out << "do_pose_graph_only              = "
 		<<	m_do_pose_graph_only << endl;
-	ss_out << " optimizer                       = "
+	ss_out << "optimizer                       = "
 		<< m_optimizer << endl;
-	ss_out << " Loop closing alg                = "
+	ss_out << "Loop closing alg                = "
 		<< m_loop_closing_alg << endl;
-	ss_out << " Loop Closing min. node distance = "
+	ss_out << "Loop Closing min. node distance = "
 		<< m_loop_closing_alg << endl;
-	ss_out << " Decider alg                     = "
+	ss_out << "Decider alg                     = "
 		<< m_decider_alg << endl;
-	ss_out << " Distance threshold              = "
-		<< m_distance_threshold << " m" << endl;
-	ss_out << " Angle threshold                 = "
-		<< RAD2DEG(m_angle_threshold) << " deg" << endl;
+	ss_out << "Registration distance threshold = "
+		<< m_registration_distance_thres << " m" << endl;
+	ss_out << "Registration angle threshold    = "
+		<< RAD2DEG(m_registration_angle_thres) << " deg" << endl;
 	ss_out << "ICP Goodness threshold           = "
 		<< m_ICP_goodness_thres << endl;
 	if (m_ICP_use_distance_criterion) {
-		ss_out << "Maximum distance for ICP check  = "
+		ss_out << "Maximum distance for ICP check   = "
 			<< m_ICP_max_distance << endl;
 	}
 	else {
-		ss_out << "Num of previous nodes  for ICP  = "
+		ss_out << "Num of previous nodes  for ICP   = "
 			<< m_ICP_prev_nodes << endl;
 	}
 	ss_out << "Visualize odometry               = " 
@@ -1074,7 +1075,8 @@ void GraphSlamEngine_t<GRAPH_t>::printProblemParams() const {
 		<< m_visualize_odometry_poses << endl;
 	ss_out << "Ground Truth filename            = "
 		<< m_fname_GT << endl;
-	ss_out << "-----------------------------------------------------------" << endl;
+	ss_out << "-----------------------------------------------------------" 
+		<< endl;
 	ss_out << endl;
 
 	cout << ss_out.str(); ss_out.str("");
@@ -1085,7 +1087,8 @@ void GraphSlamEngine_t<GRAPH_t>::printProblemParams() const {
 	cout << "-----------[ Graph Visualization Parameters ]-----------" << endl;
 	m_optimized_graph_viz_params.dumpToConsole();
 
-	ss_out << "-----------------------------------------------------------" << endl;
+	ss_out << "-----------------------------------------------------------" 
+		<< endl;
 	cout << ss_out.str(); ss_out.str("");
 
 	//mrpt::system::pause();
@@ -1357,6 +1360,8 @@ void GraphSlamEngine_t<GRAPH_t>::autofitObjectInView(const CSetOfObjectsPtr& gra
 
 template <class GRAPH_t>
 void GraphSlamEngine_t<GRAPH_t>::queryObserverForEvents() {
+	MRPT_START
+
 	assert(m_win_observer &&
 			"queryObserverForEvents method was called even though no Observer object was provided");
 
@@ -1364,6 +1369,7 @@ void GraphSlamEngine_t<GRAPH_t>::queryObserverForEvents() {
 	m_autozoom_active = !(*events_occurred)["mouse_clicked"];
 	m_request_to_exit = (*events_occurred)["request_to_exit"];
 
+	MRPT_END
 }
 
 template <class GRAPH_t>
@@ -1371,6 +1377,7 @@ void GraphSlamEngine_t<GRAPH_t>::getNearbyNodesOf(set<TNodeID> *lstNodes,
 		const TNodeID& cur_nodeID,
 		void* num_nodes_or_distance, 
 		bool use_distance_criterion /* = true */) {
+	MRPT_START
 
 	CCriticalSectionLocker m_graph_lock(&m_graph_section);
 
@@ -1415,5 +1422,7 @@ void GraphSlamEngine_t<GRAPH_t>::getNearbyNodesOf(set<TNodeID> *lstNodes,
 			m_graph.getAllNodes(*lstNodes);
 		}
 	}
+
+	MRPT_END
 }
 

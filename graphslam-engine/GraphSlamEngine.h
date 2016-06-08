@@ -52,6 +52,7 @@
 #include "EdgeCounter.h"
 #include "CWindowObserver.h"
 
+#include "CNodeRegistrationDecider.h" // TODO - remove this
 
 bool verbose = true;
 #define VERBOSE_COUT	if (verbose) std::cout << "[graphslam_engine] "
@@ -258,8 +259,8 @@ class GraphSlamEngine_t {
 		double	m_loop_closing_min_nodeid_diff;
 
 		std::string	m_decider_alg;
-		double	m_distance_threshold;
-		double	m_angle_threshold;
+		double	m_registration_distance_thres;
+		double	m_registration_angle_thres;
 
 		bool		m_has_read_config;
 
