@@ -113,7 +113,7 @@ namespace mrpt
 			  */
 			global_poses_t  nodes;
 
-			/** The ID of the node that is the origin of coordinates, used as reference by all coordinates in \nodes. By default, root is the ID "0". */
+			/** The ID of the node that is the origin of coordinates, used as reference by all coordinates in \a nodes. By default, root is the ID "0". */
 			mrpt::utils::TNodeID         root;
 
 			/** False (default) if an edge i->j stores the normal relative pose of j as seen from i: \f$ \Delta_i^j = j \ominus i \f$
@@ -169,7 +169,7 @@ namespace mrpt
 			  */
 			inline size_t collapseDuplicatedEdges() { return detail::graph_ops<self_t>::graph_of_poses_collapse_dup_edges(this); }
 
-			/** Computes the overall square error from all the pose constraints (edges) with respect to the global poses in \nodes
+			/** Computes the overall square error from all the pose constraints (edges) with respect to the global poses in \a nodes
 			  *  If \a ignoreCovariances is false, the squared Mahalanobis distance will be computed instead of the straight square error.
 			  * \sa getEdgeSquareError
 			  * \exception std::exception On global poses not in \a nodes
@@ -182,13 +182,13 @@ namespace mrpt
 				return sqErr;
 			}
 
-			/** Computes the square error of one pose constraints (edge) with respect to the global poses in \nodes
+			/** Computes the square error of one pose constraints (edge) with respect to the global poses in \a nodes
 			  *  If \a ignoreCovariances is false, the squared Mahalanobis distance will be computed instead of the straight square error.
 			  * \exception std::exception On global poses not in \a nodes
 			  */
 			inline double getEdgeSquareError(const typename BASE::edges_map_t::const_iterator &itEdge, bool ignoreCovariances = true) const { return detail::graph_ops<self_t>::graph_edge_sqerror(this,itEdge,ignoreCovariances); }
 
-			/** Computes the square error of one pose constraints (edge) with respect to the global poses in \nodes
+			/** Computes the square error of one pose constraints (edge) with respect to the global poses in \a nodes
 			  *  If \a ignoreCovariances is false, the squared Mahalanobis distance will be computed instead of the straight square error.
 			  * \exception std::exception On edge not existing or global poses not in \a nodes
 			  */
@@ -208,10 +208,14 @@ namespace mrpt
 			}
 
 <<<<<<< HEAD
-			/** Return number of nodes in the list \nodes of global coordinates (may be differente that all nodes appearing in edges)
+<<<<<<< HEAD
+			/** Return number of nodes in the list \a nodes of global coordinates (may be different that all nodes appearing in edges)
 =======
 			/** Return number of nodes in the list \a nodes of global coordinates (may be different that all nodes appearing in edges)
 >>>>>>> 68c2654... Correct minor documentation typos
+=======
+			/** Return number of nodes in the list \a nodes of global coordinates (may be different that all nodes appearing in edges)
+>>>>>>> 3915a40... Correct \a nodes doxygen typo to \a nodes
 			  * \sa mrpt::graphs::CDirectedGraph::countDifferentNodesInEdges
 			  */
 			inline size_t nodeCount() const { return nodes.size(); }
