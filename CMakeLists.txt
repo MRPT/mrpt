@@ -378,6 +378,12 @@ SET(MRPT_ENABLE_PROFILING OFF CACHE BOOL "Enable profiling (add -g -pg in GCC/CL
 IF(MSVC)
 	SET(EXTRA_CPP_FLAGS "/W3 /D _CRT_SECURE_NO_DEPRECATE /D _CRT_NONSTDC_NO_DEPRECATE")
 
+	SET( BUILD_WITH_DEBUG_INFO ON CACHE BOOL "Include debug info in binaries")
+	MARK_AS_ADVANCED(BUILD_WITH_DEBUG_INFO)
+	if(BUILD_WITH_DEBUG_INFO)
+		SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /debug ")
+	endif()
+
 	# "In earlier versions of Visual C++, the compiler used several discrete
 	#   heaps, and each had a finite limit. Currently, the compiler dynamically
 	#   grows the heaps as necessary up to a total heap size limit, and requires
