@@ -93,17 +93,26 @@ TPoint2D				curCursorPos;
 class CMyReactInterface : public CReactiveInterfaceImplementation
 {
 public:
-	bool getCurrentPoseAndSpeeds( mrpt::poses::CPose2D &curPose, float &curV, float &curW)
+	bool getCurrentPoseAndSpeeds(mrpt::math::TPose2D &curPose, std::vector<double> &curVel)
 	{
 		robotSim.getRealPose( curPose );
-		curV = robotSim.getV();
-		curW = robotSim.getW();
+		curVel.resize(2);
+		curVel[0] = robotSim.getV();
+		curVel[1] = robotSim.getW();
 		return true;
 	}
 
-	bool changeSpeeds( float v, float w )
+	bool changeSpeeds(const std::vector<double> &vel_cmd)
 	{
-		robotSim.movementCommand(v,w);
+		ASSERT_(vel_cmd.size()==2);
+
+		robotSim.movementCommand(vel_cmd[0], vel_cmd[1]);
+		return true;
+	}
+
+	bool stop()
+	{
+		robotSim.movementCommand(0,0);
 		return true;
 	}
 

@@ -23,6 +23,9 @@ namespace mrpt
 	  *
 	  *  The user must define a new class derived from CReactiveInterfaceImplementation and reimplement
 	  *   all pure virtual and the desired virtual methods according to the documentation in this class.
+	  * 
+	  * This class does not make assumptions about the kinematic model of the robot, so it can work with either 
+	  *  Ackermann, differential-driven or holonomic robots [New in MRPT 1.5.0].
 	  *
 	  * \sa CReactiveNavigationSystem, CAbstractReactiveNavigationSystem
 	  *  \ingroup nav_reactive
@@ -30,27 +33,28 @@ namespace mrpt
 	class NAV_IMPEXP CReactiveInterfaceImplementation
 	{
 	public:
-		/** Get the current pose and speeds of the robot.
-		 *   \param curPose Current robot pose.
-		 *   \param curV Current linear speed, in meters per second.
-		 *	 \param curW Current angular speed, in radians per second.
-		 * \return false on any error.
-		 */
-		virtual bool getCurrentPoseAndSpeeds( mrpt::poses::CPose2D &curPose, float &curV, float &curW) = 0;
+		/** Get the current pose and speeds of the robot. The implementation should not take too much time to return,
+		*   so if it might take more than ~10ms to ask the robot for the instantaneous data, it may be good enough to
+		*   return the latest values from a cache which is updated in a parallel thread.
+		*
+		* \param[out] curPose The latest robot pose, in world coordinates. (x,y: meters, phi: radians)
+		* \param[out] curVel The latest robot velocity vector. Length and meaning of this vector is user implementation-dependent.
+		* \return false on any error retrieving these values from the robot.
+		*/
+		virtual bool getCurrentPoseAndSpeeds(mrpt::math::TPose2D &curPose,std::vector<double> &curVel) = 0;
 
-		/** Change the instantaneous speeds of robot.
-		 *   \param v Linear speed, in meters per second.
-		 *	 \param w Angular speed, in radians per second.
+		MRPT_TODO("Cross-link to PTG vel cmd reference");
+		/** Sends a velocity command to the robot.
+		 * Length and meaning of this vector is PTG-dependent.
+		 * See: XXX
 		 * \return false on any error.
 		 */
-		virtual bool changeSpeeds( float v, float w ) = 0;
+		virtual bool changeSpeeds(const std::vector<double> &vel_cmd) = 0;
 
 		/** Stop the robot right now.
 		 * \return false on any error.
 		 */
-		virtual bool stop() {
-			return changeSpeeds(0,0);
-		}
+		virtual bool stop() = 0;
 
 		/** Start the watchdog timer of the robot platform, if any.
 		 * \param T_ms Period, in ms.
@@ -69,7 +73,7 @@ namespace mrpt
 		/** Return the current set of obstacle points, as seen from the local coordinate frame of the robot.
 		  * \return false on any error.
 		  */
-		virtual bool senseObstacles( mrpt::maps::CSimplePointsMap 		&obstacles ) = 0;
+		virtual bool senseObstacles( mrpt::maps::CSimplePointsMap &obstacles ) = 0;
 
 		virtual void sendNavigationStartEvent () { std::cout << "[sendNavigationStartEvent] Not implemented by the user." << std::endl; }
 		virtual void sendNavigationEndEvent() {	std::cout << "[sendNavigationEndEvent] Not implemented by the user." << std::endl; }

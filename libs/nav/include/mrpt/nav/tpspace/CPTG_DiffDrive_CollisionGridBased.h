@@ -71,30 +71,22 @@ namespace nav
 		  *  \param cacheFilename The filename where the collision grids will be dumped to speed-up future recalculations. If it exists upon call, the collision grid will be loaded from here if all PTG parameters match. Example: "PTG_%03d.dat.gz".
 		  */
 		void initialize(const std::string & cacheFilename = std::string(), const bool verbose = true) MRPT_OVERRIDE;
-
 		void deinitialize() MRPT_OVERRIDE;
+
+		// Access to PTG paths (see docs in base class)
+		size_t getPathStepCount(uint16_t k) const MRPT_OVERRIDE;
+		void getPathPose(uint16_t k, uint16_t step, mrpt::math::TPose2D &p) const MRPT_OVERRIDE;
+		double getPathDist(uint16_t k, uint16_t step) const MRPT_OVERRIDE;
+		bool getPathStepForDist(uint16_t k, double dist, uint16_t &out_step) const MRPT_OVERRIDE;
 
 		/** @} */  // --- end of virtual methods
 
 		/** Sets the robot shape. Must be called before initialize() */
 		void setRobotShape(const mrpt::math::CPolygon & robotShape);
 
-		size_t getPointsCountInCPath_k(uint16_t k)  const { return m_trajectory[k].size(); };
-
 		float   getMax_V() const { return V_MAX; }
 		float   getMax_W() const { return W_MAX; }
-		float   getMax_V_inTPSpace() const { return maxV_inTPSpace; }
-		
-		/** Returns the C-Space coordinates (pose) when the robot has transversed a distance \a d along trajectory index \k. Returns (0,0,0) if out of bounds. */
-		void   getCPointWhen_d_Is ( float d, uint16_t k, float &x, float &y, float &phi, float &t, float *v = NULL, float *w = NULL );
 
-		float  GetCPathPoint_x( uint16_t k, int n ) const { return m_trajectory[k][n].x; }
-		float  GetCPathPoint_y( uint16_t k, int n ) const { return m_trajectory[k][n].y; }
-		float  GetCPathPoint_phi(uint16_t k, int n ) const { return m_trajectory[k][n].phi; }
-		float  GetCPathPoint_t( uint16_t k, int n ) const { return m_trajectory[k][n].t; }
-		float  GetCPathPoint_d( uint16_t k, int n ) const { return m_trajectory[k][n].dist; }
-		float  GetCPathPoint_v( uint16_t k, int n ) const { return m_trajectory[k][n].v; }
-		float  GetCPathPoint_w( uint16_t k, int n ) const { return m_trajectory[k][n].w; }
 
 protected:
 		/** Constructor: possible values in "params":
@@ -183,7 +175,6 @@ protected:
 		/** This grid will contain indexes data for speeding-up the default, brute-force lambda function */
 		mrpt::utils::CDynamicGrid<TCellForLambdaFunction>	m_lambdaFunctionOptimizer;
 
-		float	maxV_inTPSpace; //!< Computed from simulations while generating trajectories:
 		void freeMemory(); //!< Free all the memory buffers
 	};
 

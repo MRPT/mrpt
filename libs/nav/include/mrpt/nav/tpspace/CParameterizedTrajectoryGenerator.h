@@ -116,6 +116,25 @@ namespace nav
 		}
 		virtual void setRefDistance(const double refDist) { refDistance=refDist; }
 
+		/** Access path `k` ([0,N-1]=>[-pi,pi] in alpha): number of discrete "steps" along the trajectory.
+		  * May be actual steps from a numerical integration or an arbitrary small length for analytical PTGs.
+		  * \sa getAlphaValuesCount() */
+		virtual size_t getPathStepCount(uint16_t k) const = 0;
+
+		/** Access path `k` ([0,N-1]=>[-pi,pi] in alpha): pose of the vehicle at discrete step `step`.
+		  * \sa getPathStepCount(), getAlphaValuesCount() */
+		virtual void getPathPose(uint16_t k, uint16_t step, mrpt::math::TPose2D &p) const = 0;
+
+		/** Access path `k` ([0,N-1]=>[-pi,pi] in alpha): traversed distance at discrete step `step`.
+		* \sa getPathStepCount(), getAlphaValuesCount() */
+		virtual double getPathDist(uint16_t k, uint16_t step) const = 0;
+
+		/** Access path `k` ([0,N-1]=>[-pi,pi] in alpha): largest step count for which the traversed distance is < `dist`
+		  * \return false if no step fulfills the condition for the given trajectory `k` (e.g. out of reference distance). 
+		  * Note that, anyway, the maximum distance (closest point) is returned in `out_step`.
+		  * \sa getPathStepCount(), getAlphaValuesCount() */
+		virtual bool getPathStepForDist(uint16_t k, double dist, uint16_t &out_step) const = 0;
+
 		/** @} */  // --- end of virtual methods
 
 		static std::string OUTPUT_DEBUG_PATH_PREFIX; //!< The path used as defaul output in, for example, debugDumpInFiles. (Default="./reactivenav.logs/")
