@@ -2,19 +2,12 @@
 #define CWINDOWOBSERVER_H
 
 #include <mrpt/gui/CBaseGUIWindow.h>
-#include <mrpt/utils/CObserver.h>
 #include <mrpt/utils/CTicTac.h>
 #include <mrpt/utils/TParameters.h>
+#include <mrpt/utils/CObserver.h>
 #include <mrpt/opengl/gl_utils.h>
 
 #include <iostream>
-
-using namespace std;
-using namespace mrpt;
-using namespace mrpt::gui;
-using namespace mrpt::opengl;
-using namespace mrpt::utils;
-
 
 class CWindowObserver : public mrpt::utils::CObserver
 {
@@ -25,11 +18,11 @@ public:
 		m_mouse_clicked(false),
 		m_request_to_exit(false) {
 
-			std::cout << "WindowObserver initialized." << endl;
+			std::cout << "WindowObserver initialized." << std::endl;
 		}
 
-	const TParameters<bool>* returnEventsStruct() {
-		TParameters<bool>* params = new TParameters<bool>;
+	const mrpt::utils::TParameters<bool>* returnEventsStruct() {
+		mrpt::utils::TParameters<bool>* params = new mrpt::utils::TParameters<bool>;
 		(*params)["mouse_clicked"] = m_mouse_clicked;
 		(*params)["request_to_exit"] = m_request_to_exit;
 		
@@ -37,20 +30,20 @@ public:
 	}
 
 protected:	
-	virtual void OnEvent(const mrptEvent &e) {
-		if (e.isOfType<mrptEventOnDestroy>()) {
-			const mrptEventOnDestroy &ev = static_cast<const mrptEventOnDestroy &>(e);
-			std::cout  << "Event received: mrptEventOnDestroy" << endl;
+	virtual void OnEvent(const mrpt::utils::mrptEvent &e) {
+		if (e.isOfType<mrpt::utils::mrptEventOnDestroy>()) {
+			const mrpt::utils::mrptEventOnDestroy &ev = static_cast<const mrpt::utils::mrptEventOnDestroy &>(e);
+			std::cout  << "Event received: mrptEventOnDestroy" << std::endl;
 		}
-		else if (e.isOfType<mrptEventWindowResize>()) {
-			const mrptEventWindowResize &ev = static_cast<const mrptEventWindowResize &>(e);
+		else if (e.isOfType<mrpt::gui::mrptEventWindowResize>()) {
+			const mrpt::gui::mrptEventWindowResize &ev = static_cast<const mrpt::gui::mrptEventWindowResize &>(e);
 			std::cout  << "Resize event received from: " << ev.source_object
-				<< ", new size: " << ev.new_width << " x " << ev.new_height << endl;
+				<< ", new size: " << ev.new_width << " x " << ev.new_height << std::endl;
 		}
-		else if (e.isOfType<mrptEventWindowChar>()) {
-			const mrptEventWindowChar &ev = static_cast<const mrptEventWindowChar &>(e);
+		else if (e.isOfType<mrpt::gui::mrptEventWindowChar>()) {
+			const mrpt::gui::mrptEventWindowChar &ev = static_cast<const mrpt::gui::mrptEventWindowChar &>(e);
 			std::cout  << "Char event received from: " << ev.source_object
-				<< ". Char code: " <<  ev.char_code << " modif: " << ev.key_modifiers << endl;;
+				<< ". Char code: " <<  ev.char_code << " modif: " << ev.key_modifiers << std::endl;;
 
 			switch (ev.char_code)
 			{
@@ -58,7 +51,7 @@ protected:
 				case 'H':
 					if (!m_showing_help) {
 						m_showing_help = true;
-						cout << "h was pressed!" << endl;
+						std::cout << "h was pressed!" << std::endl;
 					}
 					else {
 						m_showing_help = false;
@@ -67,7 +60,7 @@ protected:
 					break;
 				case 3: // <C-c>
 					if (ev.key_modifiers == 8192) {
-						cout << "Pressed C-c! inside CDisplayWindow3D" << endl;
+						std::cout << "Pressed C-c! inside CDisplayWindow3D" << std::endl;
 						m_request_to_exit = true;
 					}
 					break;
@@ -76,25 +69,25 @@ protected:
 			}
 
 		} // end of e.isOftype<mrptEventWindowChar>
-		else if (e.isOfType<mrptEventWindowClosed>()) {
-			const mrptEventWindowClosed &ev = static_cast<const mrptEventWindowClosed &>(e);
+		else if (e.isOfType<mrpt::gui::mrptEventWindowClosed>()) {
+			const mrpt::gui::mrptEventWindowClosed &ev = static_cast<const mrpt::gui::mrptEventWindowClosed &>(e);
 			std::cout  << "Window closed event received from: "
 				<< ev.source_object<< "\n";
 		}
-		else if (e.isOfType<mrptEventMouseDown>()) {
-			const mrptEventMouseDown &ev = static_cast<const mrptEventMouseDown&>(e);
+		else if (e.isOfType<mrpt::gui::mrptEventMouseDown>()) {
+			const mrpt::gui::mrptEventMouseDown &ev = static_cast<const mrpt::gui::mrptEventMouseDown&>(e);
 			m_mouse_clicked = true;
 
 			std::cout  << "Mouse down event received from: "
 				<< ev.source_object<< "pt: " <<ev.coords.x << "," << ev.coords.y << "\n";
 		}
-		else if (e.isOfType<mrptEventGLPostRender>()) {
+		else if (e.isOfType<mrpt::opengl::mrptEventGLPostRender>()) {
 			/**
 			 * An event sent by an mrpt::opengl::COpenGLViewport AFTER calling the
 			 * SCENE OPENGL DRAWING PRIMITIVES and before doing a glSwapBuffers. 
 			 */
 
-			//cout << "mrpptEventGLPostRender received." << endl;
+			//std::cout << "mrpt::opengl::mrpptEventGLPostRender received." << std::endl;
 
 			mrpt::opengl::gl_utils::renderMessageBox(
 				0.70f,  0.05f,  // x,y (in screen "ratios")
@@ -105,7 +98,7 @@ protected:
 			
 			// Also showing help?
 			if (m_showing_help || m_hiding_help) {
-				cout << "In the m_showing_help ... if-clause" << endl;
+				std::cout << "In the m_showing_help ... if-clause" << std::endl;
 				static const double TRANSP_ANIMATION_TIME_SEC = 0.5;
 
 				const double show_tim = m_tim_show_start.Tac();
@@ -148,8 +141,8 @@ private:
 	bool m_mouse_clicked, m_request_to_exit;
 
 	bool m_showing_help, m_hiding_help;
-	CTicTac  m_tim_show_start, m_tim_show_end;
-	string m_help_text; 
+	mrpt::utils::CTicTac  m_tim_show_start, m_tim_show_end;
+	std::string m_help_text; 
 };
 
 #endif /* end of include guard: CWINDOWOBSERVER_H */

@@ -11,14 +11,6 @@
 #include <string>
 #include <map>
 
-using namespace mrpt;
-using namespace mrpt::utils;
-using namespace mrpt::gui;
-
-using namespace std;
-
-// TODO - make it case-insensitive
-
 /**
  * Generic class for tracking the total number of edges for different tpes of
  * edges and for storing visualization-related information for each type
@@ -27,7 +19,7 @@ using namespace std;
 class EdgeCounter_t {
 	public:
 
-		EdgeCounter_t(CDisplayWindow3D* win = NULL) {
+		EdgeCounter_t(mrpt::gui::CDisplayWindow3D* win = NULL) {
 			m_win = win;
 			initEdgeCounter_t();
 		}
@@ -59,7 +51,7 @@ class EdgeCounter_t {
 		 */
 		void setRemovedEdges(int removed_edges) { 
 			m_unique_edges = this->getTotalNumOfEdges() - removed_edges; 
-			cout << "setRemovedEdges: Unique edges: " << m_unique_edges << endl;
+			//std::cout << "setRemovedEdges: Unique edges: " << m_unique_edges << std::endl;
 		}
 		/**
 		 * getLoopClosureEdges()
@@ -76,7 +68,7 @@ class EdgeCounter_t {
 		int getTotalNumOfEdges() const {
 			int sum = 0;
 
-			for (map<string, int>::const_iterator it = m_name_to_edges_num.begin();
+			for (std::map<std::string, int>::const_iterator it = m_name_to_edges_num.begin();
 					it != m_name_to_edges_num.end(); ++it) {
 				sum += it->second;
 			}
@@ -89,7 +81,7 @@ class EdgeCounter_t {
 		int getTotalNumOfEdges(int* total_num_edges) const {
 			int sum = 0;
 
-			for (map<string, int>::const_iterator it = m_name_to_edges_num.begin();
+			for (std::map<std::string, int>::const_iterator it = m_name_to_edges_num.begin();
 					it != m_name_to_edges_num.end(); ++it) {
 				sum += it->second;
 			}
@@ -99,10 +91,10 @@ class EdgeCounter_t {
 		 * getNumForEdgeType
 		 *
 		 * Return the number of edges for the specified type
-		 * \sa getNumForEdgeType(const string& name, int* total_num)
+		 * \sa getNumForEdgeType(const std::string& name, int* total_num)
 		 */
-		int getNumForEdgeType(const string& name) const {
-			map<string, int>::const_iterator search = m_name_to_edges_num.find(name);
+		int getNumForEdgeType(const std::string& name) const {
+			std::map<std::string, int>::const_iterator search = m_name_to_edges_num.find(name);
 			if ( search != m_name_to_edges_num.end() ) {
 				return search->second;
 			}
@@ -116,10 +108,10 @@ class EdgeCounter_t {
 		 * Return the number of edges for the specified type. If edge is not found,
 		 * throw an exception
 		 *
-		 * \sa getNumForEdgeType(const string& name)
+		 * \sa getNumForEdgeType(const std::string& name)
 		 */
-		void getNumForEdgeType(const string& name, int* total_num) {
-			map<string, int>::const_iterator search = m_name_to_edges_num.find(name);
+		void getNumForEdgeType(const std::string& name, int* total_num) {
+			std::map<std::string, int>::const_iterator search = m_name_to_edges_num.find(name);
 			if ( search != m_name_to_edges_num.end() ) {
 				*total_num = search->second;
 			}
@@ -134,23 +126,23 @@ class EdgeCounter_t {
 		 * Increment the number of edges for the specified type.
 		 * If edge exists and is_new is_also true, throw exception
 		 */
-		void addEdge(const string& name, bool is_loop_closure=false, bool is_new=false) {
-			map<string, int>::iterator search = m_name_to_edges_num.find(name);
+		void addEdge(const std::string& name, bool is_loop_closure=false, bool is_new=false) {
+			std::map<std::string, int>::iterator search = m_name_to_edges_num.find(name);
 			if ( search != m_name_to_edges_num.end() ) {
 				(search->second)++; // increment to the found element
 
 				// specify warning if is_new = true
 				if (is_new) {
-					string str_err = "Specified edge type already exists but is_new is also specified!";
+					std::string str_err = "Specified edge type already exists but is_new is also specified!";
 					THROW_EXCEPTION(str_err)
-						//stringstream ss_warn;
-						//ss_warn << "Commencing with the increment normally" << endl;
+						//std::stringstream ss_warn;
+						//ss_warn << "Commencing with the increment normally" << std::endl;
 						//MRPT_WARNING(ss_warn.str())
 				}
 				if (is_loop_closure) {
 					// throw if user has also specified the is new boolean flag
 					if (is_new) {
-						string str_err = "Both is_new and is_loop_closure flags are true. Exiting...";
+						std::string str_err = "Both is_new and is_loop_closure flags are true. Exiting...";
 						THROW_EXCEPTION(str_err)
 					}
 					m_num_loop_closures++;
@@ -161,7 +153,7 @@ class EdgeCounter_t {
 					m_name_to_edges_num[name] = 1;
 				}
 				else {
-					string str_err = "No edge with such name exists. Specify is_new parameter if you want to add it";
+					std::string str_err = "No edge with such name exists. Specify is_new parameter if you want to add it";
 					THROW_EXCEPTION(str_err)
 				}
 			}
@@ -177,10 +169,10 @@ class EdgeCounter_t {
 		 *
 		 * Explicitly register a new edge type.
 		 */
-		void addEdgeType(const string& name) {
-			map<string, int>::const_iterator search = m_name_to_edges_num.find(name);
+		void addEdgeType(const std::string& name) {
+			std::map<std::string, int>::const_iterator search = m_name_to_edges_num.find(name);
 			if ( search != m_name_to_edges_num.end() ) {
-				THROW_EXCEPTION(format("Specified edge type %s already exists", name.c_str()))
+				THROW_EXCEPTION(mrpt::format("Specified edge type %s already exists", name.c_str()))
 			}
 			else {
 				m_name_to_edges_num[name] = 0;
@@ -209,19 +201,19 @@ class EdgeCounter_t {
 		 * Dump a detailed report for all the edges registered thus far
 		 */
 		void printEdgesSummary() const {
-			stringstream ss_out;
-			ss_out << "Summary of Edges: " << endl;
-			ss_out << "---------------------------" << endl;
+			std::stringstream ss_out;
+			ss_out << "Summary of Edges: " << std::endl;
+			ss_out << "---------------------------" << std::endl;
 
-			ss_out << "\t Total edges: " << this->getTotalNumOfEdges() << endl;
+			ss_out << "\t Total edges: " << this->getTotalNumOfEdges() << std::endl;
 
-			for (map<string, int>::const_iterator it = m_name_to_edges_num.begin();
+			for (std::map<std::string, int>::const_iterator it = m_name_to_edges_num.begin();
 					it != m_name_to_edges_num.end(); ++it) {
-				ss_out << "\t " << it->first << " edges: " << it->second << endl;
+				ss_out << "\t " << it->first << " edges: " << it->second << std::endl;
 			}
-			ss_out << "\t Loop closure edges: " << this->getLoopClosureEdges() << endl;
+			ss_out << "\t Loop closure edges: " << this->getLoopClosureEdges() << std::endl;
 
-			cout << ss_out.str() << endl;
+			std::cout << ss_out.str() << std::endl;
 		}
 
 		// VISUALIZATION RELATED METHODS
@@ -233,39 +225,39 @@ class EdgeCounter_t {
 		 * Add the visualization window. Handy function for not having to
 		 * specify it in the class constructor
 		 */
-		void setVisualizationWindow(CDisplayWindow3D* win) { m_win = win; }
+		void setVisualizationWindow(mrpt::gui::CDisplayWindow3D* win) { m_win = win; }
 
 		/**
 		 * setTextMessageParams
 		 *
 		 * Add the textMessage parameters to the object - used during visualization
-		 * All the names in the given maps have to be already specified and added in
+		 * All the names in the given std::maps have to be already specified and added in
 		 * the object via addEdge with is_new=true or addEdgeType
 		 */
-		void setTextMessageParams(const map<string, double>& name_to_offset_y,
-				const map<string, int>& name_to_text_index,
-				const string& font_name, const int& font_size) {
+		void setTextMessageParams(const std::map<std::string, double>& name_to_offset_y,
+				const std::map<std::string, int>& name_to_text_index,
+				const std::string& font_name, const int& font_size) {
 
-			//cout << "in setTextMessageParams " << endl
-			//<< "m_offset_y_total_edges: " << m_offset_y_total_edges << endl
-			//<< "m_text_index_total_edges: " << m_text_index_total_edges << endl;
-			//cout << "in setTextMessageParams:  " << endl
-			//<< "m_offset_y_loop_closures: " << m_offset_y_loop_closures << endl
-			//<< "m_text_index_loop_closures" << m_text_index_loop_closures << endl;
+			//std::cout << "in setTextMessageParams " << std::endl
+			//<< "m_offset_y_total_edges: " << m_offset_y_total_edges << std::endl
+			//<< "m_text_index_total_edges: " << m_text_index_total_edges << std::endl;
+			//std::cout << "in setTextMessageParams:  " << std::endl
+			//<< "m_offset_y_loop_closures: " << m_offset_y_loop_closures << std::endl
+			//<< "m_text_index_loop_closures" << m_text_index_loop_closures << std::endl;
 
 			assert(m_win &&
 					"Visualization of data was requested but no CDisplayWindow pointer was given");
 			assert(name_to_offset_y.size() == name_to_text_index.size());
 
-			for (map<string, double>::const_iterator it = name_to_offset_y.begin();
+			for (std::map<std::string, double>::const_iterator it = name_to_offset_y.begin();
 					it != name_to_offset_y.end(); ++it) {
-				string name = it->first;
+				std::string name = it->first;
 
 				// check if name already exist, otherwise throw exception
-				map<string, int>::const_iterator search = m_name_to_edges_num.find(name);
+				std::map<std::string, int>::const_iterator search = m_name_to_edges_num.find(name);
 				if ( search == m_name_to_edges_num.end() ) {
-					stringstream ss_err;
-					ss_err << "Name " << name << " is not recognized as an Edge type." << endl;
+					std::stringstream ss_err;
+					ss_err << "Name " << name << " is not recognized as an Edge type." << std::endl;
 					THROW_EXCEPTION(ss_err.str())
 				}
 				// name exists ...
@@ -273,8 +265,8 @@ class EdgeCounter_t {
 				double offset_y = it->second;
 				int text_index = name_to_text_index.find(name)->second;
 
-				//cout << "in setTextMessageParams: " << endl;
-				//cout << "name: " << name << " | offset_y: " << offset_y << " | text_index: " << text_index << endl;
+				//std::cout << "in setTextMessageParams: " << std::endl;
+				//std::cout << "name: " << name << " | offset_y: " << offset_y << " | text_index: " << text_index << std::endl;
 
 				m_name_to_offset_y[name] = offset_y;
 				m_name_to_text_index[name] = text_index;
@@ -295,11 +287,11 @@ class EdgeCounter_t {
 		 * and for loop closures and then passes execution to the other
 		 * setTextMessageParams function.
 		 */
-		void setTextMessageParams(const map<string, double>& name_to_offset_y,
-				const map<string, int>& name_to_text_index,
+		void setTextMessageParams(const std::map<std::string, double>& name_to_offset_y,
+				const std::map<std::string, int>& name_to_text_index,
 				const double& offset_y_total_edges, const int& text_index_total_edges,
 				const double& offset_y_loop_closures, const int& text_index_loop_closures,
-				const string& font_name, const int& font_size) {
+				const std::string& font_name, const int& font_size) {
 
 			// set the parameters for total edges / loop closures
 			m_display_total_edges = true;
@@ -327,39 +319,39 @@ class EdgeCounter_t {
 			assert(m_has_read_textmessage_params);
 			assert(m_name_to_offset_y.size() == m_name_to_text_index.size());
 
-			//cout << "Updating total amount of edges" << endl;
+			//std::cout << "Updating total amount of edges" << std::endl;
 
 			//Add text message for the total amount of edges
-			stringstream title;
+			std::stringstream title;
 			title << "Total edges: " <<  this->getTotalNumOfEdges();
 			//if (m_unique_edges) {
-				//title << " |Unique: " << m_unique_edges << endl;
+				//title << " |Unique: " << m_unique_edges << std::endl;
 			//}
 			if (m_display_total_edges) {
 				m_win->addTextMessage(5,-m_offset_y_total_edges,
 						title.str(),
-						TColorf(1.0, 1.0, 1.0),
+						mrpt::utils::TColorf(1.0, 1.0, 1.0),
 						m_font_name, m_font_size, // font name & size
 						mrpt::opengl::NICE,
 						/* unique_index = */ m_text_index_total_edges);
 			}
 
 			// add a textMessage for every stored edge type
-			for (map<string, double>::const_iterator it = m_name_to_offset_y.begin();
+			for (std::map<std::string, double>::const_iterator it = m_name_to_offset_y.begin();
 					it != m_name_to_offset_y.end(); ++it) {
 
-				string name = it->first;
+				std::string name = it->first;
 				double offset_y = it->second;
 				int text_index = m_name_to_text_index.find(name)->second;
 				int edges_num = m_name_to_edges_num.find(name)->second;
 
-				//cout << "name: " << name << " | offset_y: " << offset_y << " | text_index: " << text_index << endl;
+				//std::cout << "name: " << name << " | offset_y: " << offset_y << " | text_index: " << text_index << std::endl;
 
-				stringstream title;
-				title << "  " << name << ": " <<	edges_num << endl;
+				std::stringstream title;
+				title << "  " << name << ": " <<	edges_num << std::endl;
 				m_win->addTextMessage(5,-offset_y,
 						title.str(),
-						TColorf(1.0, 1.0, 1.0),
+						mrpt::utils::TColorf(1.0, 1.0, 1.0),
 						m_font_name, m_font_size, // font name & size
 						mrpt::opengl::NICE,
 						/* unique_index = */ text_index);
@@ -368,11 +360,11 @@ class EdgeCounter_t {
 
 			// add text message for the loop closures
 			if (m_display_loop_closures) {
-				stringstream title;
-				title << "  " << "Loop closures: " <<  m_num_loop_closures << endl;
+				std::stringstream title;
+				title << "  " << "Loop closures: " <<  m_num_loop_closures << std::endl;
 				m_win->addTextMessage(5,-m_offset_y_loop_closures,
 						title.str(),
-						TColorf(1.0, 1.0, 1.0),
+						mrpt::utils::TColorf(1.0, 1.0, 1.0),
 						m_font_name, m_font_size, // font name & size
 						mrpt::opengl::NICE,
 						/* unique_index = */ m_text_index_loop_closures);
@@ -382,18 +374,18 @@ class EdgeCounter_t {
 		}
 
 	private:
-		CDisplayWindow3D* m_win;
+		mrpt::gui::CDisplayWindow3D* m_win;
 
 		// Tracking number of edges
-		map<string, int> m_name_to_edges_num;;
+		std::map<std::string, int> m_name_to_edges_num;;
 		int m_num_loop_closures;
 		int m_unique_edges;
 
-		// visualization maps
-		map<string, double> m_name_to_offset_y;
-		map<string, int> m_name_to_text_index;
+		// visualization std::maps
+		std::map<std::string, double> m_name_to_offset_y;
+		std::map<std::string, int> m_name_to_text_index;
 
-		string m_font_name;
+		std::string m_font_name;
 		int m_font_size;
 		bool m_has_read_textmessage_params;
 
@@ -401,7 +393,6 @@ class EdgeCounter_t {
 		bool m_display_total_edges, m_display_loop_closures; // whether to show them at all
 		int m_offset_y_total_edges, m_offset_y_loop_closures;
 		int m_text_index_total_edges, m_text_index_loop_closures;
-
 };
 
 
