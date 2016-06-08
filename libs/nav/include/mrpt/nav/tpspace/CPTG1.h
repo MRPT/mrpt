@@ -14,10 +14,11 @@ namespace mrpt
 {
   namespace nav
   {
+	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE(CPTG1, CParameterizedTrajectoryGenerator, NAV_IMPEXP)
 
 	/** A PTG for circular paths ("C" type PTG in papers). 
 	 * 
-	 * Accepted parameters in the constructor:
+	 * Accepted parameters in setParams()
 	 * - params["ref_distance"]: Maximum trayectory distance (meters).
 	 * - params["v_max"]: Maximum linear velocity (m/s)
 	 * - params["w_max"]: Maximum angular velocity (rad/s)
@@ -41,12 +42,13 @@ namespace mrpt
 	 */
 	class NAV_IMPEXP CPTG1 : public CPTG_DiffDrive_CollisionGridBased
 	{
+		DEFINE_SERIALIZABLE(CPTG1)
 	 public:
-		/** Constructor: possible values in "params", those of CParameterizedTrajectoryGenerator plus:
-			*   - K: Direction, +1 or -1
-			*/
-		CPTG1(const mrpt::utils::TParameters<double> &params );
-
+		CPTG1() : K(0) { }
+		CPTG1(const mrpt::utils::TParameters<double> &params) {
+			setParams(params);
+		}
+		void setParams(const mrpt::utils::TParameters<double> &params) MRPT_OVERRIDE;
 		std::string getDescription() const MRPT_OVERRIDE;
 		bool inverseMap_WS2TP(double x, double y, int &out_k, double &out_d, double tolerance_dist = 0.10) const MRPT_OVERRIDE;
 		bool PTG_IsIntoDomain( double x, double y ) const MRPT_OVERRIDE;
@@ -56,6 +58,8 @@ namespace mrpt
 		/** A generation parameter */
 		double K;
 	};
+	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(CPTG1, CParameterizedTrajectoryGenerator, NAV_IMPEXP)
+
   }
 }
 

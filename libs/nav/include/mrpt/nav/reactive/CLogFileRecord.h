@@ -49,7 +49,7 @@ namespace nav
 			float						desiredDirection,desiredSpeed, evaluation;          //!< The results from the holonomic method.
 			mrpt::math::CVectorFloat   evalFactors;   //!< Evaluation factors
 			CHolonomicLogFileRecordPtr HLFR;          //!< Other useful info about holonomic method execution.
-			mrpt::utils::CMemoryStream ptg; //!< Only for the FIRST entry in a log file, this will contain a binary dump of the PTG, suitable to render trajectories, etc.
+			mrpt::nav::CParameterizedTrajectoryGeneratorPtr ptg; //!< Only for the FIRST entry in a log file, this will contain a copy of the PTG with trajectories, suitable to render trajectories, etc.
 		};
 
 		mrpt::system::TTimeStamp   timestamp;  //!< The timestamp of when this log was processed by the reactive algorithm (It can be INVALID_TIMESTAMP for navigation logs in MRPT <0.9.5)

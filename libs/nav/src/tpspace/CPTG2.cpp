@@ -16,10 +16,14 @@ using namespace mrpt::nav;
 using namespace mrpt::system;
 using namespace mrpt::utils;
 
-CPTG2::CPTG2(const mrpt::utils::TParameters<double> &params ) : CPTG_DiffDrive_CollisionGridBased(params)
+IMPLEMENTS_SERIALIZABLE(CPTG2,CParameterizedTrajectoryGenerator,mrpt::nav)
+
+void CPTG2::setParams(const mrpt::utils::TParameters<double> &params)
 {
 	cte_a0v = params["cte_a0v"];
 	cte_a0w = params["cte_a0w"];
+
+	CPTG_DiffDrive_CollisionGridBased::setParamsCommon(params);
 }
 
 std::string CPTG2::getDescription() const
@@ -30,6 +34,34 @@ std::string CPTG2::getDescription() const
 }
 
 
+void CPTG2::readFromStream(mrpt::utils::CStream &in, int version)
+{
+	CPTG_DiffDrive_CollisionGridBased::internal_readFromStream(in);
+
+	switch (version)
+	{
+	case 0:
+		MRPT_TODO("continue")
+		break;
+	default:
+		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
+	};
+}
+
+void CPTG2::writeToStream(mrpt::utils::CStream &out, int *version) const
+{
+	if (version) 
+	{
+		*version = 0;
+		return;
+	}
+
+	CPTG_DiffDrive_CollisionGridBased::internal_writeToStream(out);
+
+//	out << V_MAX << W_MAX
+	MRPT_TODO("continue")
+
+}
 /*---------------------------------------------------------------
 						ptgDiffDriveSteeringFunction
   ---------------------------------------------------------------*/

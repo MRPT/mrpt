@@ -14,6 +14,8 @@ namespace mrpt
 {
   namespace nav
   {
+	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE(CPTG2, CParameterizedTrajectoryGenerator, NAV_IMPEXP)
+
 	/** The "alpha-PTG", as named in PTG papers.
 	 * 
 	 * Accepted parameters in the constructor:
@@ -36,18 +38,21 @@ namespace mrpt
 	 */
 	class NAV_IMPEXP  CPTG2 : public CPTG_DiffDrive_CollisionGridBased
 	{
+		DEFINE_SERIALIZABLE(CPTG2)
 	 public:
-		/** Constructor: possible values in "params", those of CParameterizedTrajectoryGenerator plus:
-			*   - cte_a0v, cte_a0w: Parameters of this PTG (both are angles in radians).
-			*/
-		CPTG2(const mrpt::utils::TParameters<double> &params );
-
+		CPTG2() : cte_a0v(0),cte_a0w(0) { }
+		CPTG2(const mrpt::utils::TParameters<double> &params) {
+			setParams(params);
+		}
+		void setParams(const mrpt::utils::TParameters<double> &params) MRPT_OVERRIDE;
 		std::string getDescription() const MRPT_OVERRIDE;
 		void ptgDiffDriveSteeringFunction( float alpha, float t,float x, float y, float phi, float &v, float &w ) const MRPT_OVERRIDE;
 
 	 protected:
 		double cte_a0v, cte_a0w;
 	};
+	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(CPTG2, CParameterizedTrajectoryGenerator, NAV_IMPEXP)
+
   }
 }
 
