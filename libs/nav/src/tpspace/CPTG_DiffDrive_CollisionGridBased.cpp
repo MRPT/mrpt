@@ -110,7 +110,6 @@ void CPTG_DiffDrive_CollisionGridBased::simulateTrajectories(
 	// Para averiguar las maximas ACELERACIONES lineales y angulares:
 	float			max_acc_lin, max_acc_ang;
 
-	maxV_inTPSpace = 0;
 	max_acc_lin = max_acc_ang = 0;
 
 	try
@@ -145,9 +144,6 @@ void CPTG_DiffDrive_CollisionGridBased::simulateTrajectories(
 
 				// Compute new movement command (v,w):
 				ptgDiffDriveSteeringFunction( alpha,t, x, y, phi, v,w );
-
-				if (t==0)
-					mrpt::utils::keep_max(maxV_inTPSpace, (float)( std::sqrt( square(v) + square(w*turningRadiusReference) ) ) );
 
 				// History of v/w ----------------------------------
 				last_vs[1]=last_vs[0];
@@ -251,35 +247,6 @@ void CPTG_DiffDrive_CollisionGridBased::directionToMotionCommand( uint16_t k, st
 	out_action_cmd[1] = w;
 }
 
-/*---------------------------------------------------------------
-					getCPointWhen_d_Is
-  ---------------------------------------------------------------*/
-void CPTG_DiffDrive_CollisionGridBased::getCPointWhen_d_Is (
-	float d, uint16_t k,
-	float &x, float &y, float &phi, float &t,
-	float *v, float *w)
-{
-	if (k>=m_alphaValuesCount) {
-		x=y=phi=0;
-		return;  // Just in case...
-	}
-
-	unsigned int n=0;
-	const unsigned int numPoints = m_trajectory[k].size();
-	for ( ; (n+1) < numPoints ; n++)
-	{
-		if (m_trajectory[k][n+1].dist>=d)
-			break;
-	}
-
-	x=m_trajectory[k][n].x;
-	y=m_trajectory[k][n].y;
-	phi=m_trajectory[k][n].phi;
-	t=m_trajectory[k][n].t;
-	if (v) *v =m_trajectory[k][n].v;
-	if (w) *w =m_trajectory[k][n].w;
-}
-
 bool CPTG_DiffDrive_CollisionGridBased::debugDumpInFiles( const std::string &ptg_name ) const 
 {
 	using namespace mrpt::system;
@@ -307,7 +274,7 @@ bool CPTG_DiffDrive_CollisionGridBased::debugDumpInFiles( const std::string &ptg
 	FILE* fbin = os::fopen(sFilBin.c_str(),"wb");
 	if (!fbin) return false;
 
-	const size_t nPaths = getAlfaValuesCount();
+	const size_t nPaths = getAlphaValuesCount();
 
 	// Text version:
 	fx << "% PTG data file for 'x'. Each row is the trajectory for a different 'alpha' parameter value." << endl;
@@ -318,18 +285,18 @@ bool CPTG_DiffDrive_CollisionGridBased::debugDumpInFiles( const std::string &ptg
 
 	size_t maxPoints=0;
 	for (size_t k=0;k<nPaths;k++)
-		maxPoints = std::max( maxPoints, getPointsCountInCPath_k(k) );
+		maxPoints = std::max( maxPoints, getPathStepCount(k) );
 
 	for (size_t k=0;k<nPaths;k++)
 	{
 		for (size_t n=0;n< maxPoints;n++)
 		{
-				const size_t nn = std::min( n, getPointsCountInCPath_k(k)-1 );
-				fx << GetCPathPoint_x(k,nn) << " ";
-				fy << GetCPathPoint_y(k,nn) << " ";
-				fp << GetCPathPoint_phi(k,nn) << " ";
-				ft << GetCPathPoint_t(k,nn) << " ";
-				fd << GetCPathPoint_d(k,nn) << " ";
+				const size_t nn = std::min( n, getPathStepCount(k)-1 );
+				fx << m_trajectory[k][nn].x << " ";
+				fy << m_trajectory[k][nn].y << " ";
+				fp << m_trajectory[k][nn].phi << " ";
+				ft << m_trajectory[k][nn].t << " ";
+				fd << m_trajectory[k][nn].dist << " ";
 		}
 		fx << endl;
 		fy << endl;
@@ -341,18 +308,18 @@ bool CPTG_DiffDrive_CollisionGridBased::debugDumpInFiles( const std::string &ptg
 	// Binary dump:
 	for (size_t k=0;k<nPaths;k++)
 	{
-		const size_t nPoints = getPointsCountInCPath_k(k);
+		const size_t nPoints = getPathStepCount(k);
 		if (!fwrite( &nPoints ,sizeof(int),1 , fbin ))
 			return false;
 
 		float fls[5];
 		for (size_t n=0;n<nPoints;n++)
 		{
-			fls[0] = GetCPathPoint_x(k,n);
-			fls[1] = GetCPathPoint_y(k,n);
-			fls[2] = GetCPathPoint_phi(k,n);
-			fls[3] = GetCPathPoint_t(k,n);
-			fls[4] = GetCPathPoint_d(k,n);
+			fls[0] = m_trajectory[k][n].x;
+			fls[1] = m_trajectory[k][n].y;
+			fls[2] = m_trajectory[k][n].phi;
+			fls[3] = m_trajectory[k][n].t;
+			fls[4] = m_trajectory[k][n].dist;
 
 			if (!fwrite(&fls[0],sizeof(float),5,fbin)) return false;
 		}
@@ -471,7 +438,7 @@ bool CPTG_DiffDrive_CollisionGridBased::CColisionGrid::saveToFile( mrpt::utils::
 
 		// and standard PTG data:
 		*f << m_parent->getDescription()
-			<< m_parent->getAlfaValuesCount()
+			<< m_parent->getAlphaValuesCount()
 			<< static_cast<float>(m_parent->getMax_V())
 			<< static_cast<float>(m_parent->getMax_W());
 
@@ -549,7 +516,7 @@ bool CPTG_DiffDrive_CollisionGridBased::CColisionGrid::loadFromFile( mrpt::utils
 #define READ_FLOAT_CHECK_IT_MATCHES_STORED(_VAR) { float ff; *f >> ff; if (std::abs(ff-_VAR)>1e-4f) return false; }
 #define READ_DOUBLE_CHECK_IT_MATCHES_STORED(_VAR) { double ff; *f >> ff; if (std::abs(ff-_VAR)>1e-6) return false; }
 
-		READ_UINT16_CHECK_IT_MATCHES_STORED(m_parent->getAlfaValuesCount())
+		READ_UINT16_CHECK_IT_MATCHES_STORED(m_parent->getAlphaValuesCount())
 		READ_FLOAT_CHECK_IT_MATCHES_STORED(m_parent->getMax_V())
 		READ_FLOAT_CHECK_IT_MATCHES_STORED(m_parent->getMax_W())
 
@@ -702,25 +669,25 @@ void CPTG_DiffDrive_CollisionGridBased::renderPathAsSimpleLine(
 	const float decimate_distance, 
 	const float max_path_distance) const
 {
-	const size_t nPointsInPath = getPointsCountInCPath_k(k);
+	const size_t nPointsInPath = getPathStepCount(k);
 
 	// Decimate trajectories: we don't need centimeter resolution!
 	float last_added_dist = 0.0f;
 	for (size_t n=0;n<nPointsInPath;n++)
 	{
-		const float d = GetCPathPoint_d(k, n); // distance thru path "k" until timestep "n"
+		const float d = this->getPathDist(k, n); // distance thru path "k" until timestep "n"
 
 		if (d<last_added_dist+decimate_distance && n!=0)
 			continue; // skip: decimation
 
 		last_added_dist = d;
 
-		const float x = GetCPathPoint_x(k, n);
-		const float y = GetCPathPoint_y(k, n);
+		mrpt::math::TPose2D p;
+		this->getPathPose(k, n, p);
 
 		if (gl_obj.empty())
-		     gl_obj.appendLine(0,0,0, x,y,0);
-		else gl_obj.appendLineStrip(x,y,0);
+		     gl_obj.appendLine(0,0,0, p.x, p.y,0);
+		else gl_obj.appendLineStrip(p.x, p.y,0);
 
 		// Draw the TP only until we reach the target of the "motion" segment:
 		if (max_path_distance!=0.0f && d>=max_path_distance) break;
@@ -784,7 +751,7 @@ void CPTG_DiffDrive_CollisionGridBased::initialize(const std::string & cacheFile
 	// ----------------------------------------------------------------------------
 	m_collisionGrid.setSize( -refDistance,refDistance,-refDistance,refDistance, m_resolution );
 
-	const size_t Ki = getAlfaValuesCount();
+	const size_t Ki = getAlphaValuesCount();
 	ASSERTMSG_(Ki>0, "The PTG seems to be not initialized!");
 
 	// Load the cached version, if possible
@@ -809,23 +776,22 @@ void CPTG_DiffDrive_CollisionGridBased::initialize(const std::string & cacheFile
 		// ---------------------------------------
 		for (size_t k=0;k<Ki;k++)
 		{
-			const size_t nPoints = getPointsCountInCPath_k(k);
+			const size_t nPoints = getPathStepCount(k);
 			ASSERT_(nPoints>1)
 
 			for (size_t n=0;n<(nPoints-1);n++)
 			{
 				// Translate and rotate the robot shape at this C-Space pose:
-				const double x   = GetCPathPoint_x( k,n );
-				const double y   = GetCPathPoint_y( k,n );
-				const double phi = GetCPathPoint_phi( k,n );
+				mrpt::math::TPose2D p;
+				getPathPose(k, n, p);
 
 				mrpt::math::TPoint2D bb_min(std::numeric_limits<double>::max(),std::numeric_limits<double>::max());
 				mrpt::math::TPoint2D bb_max(-std::numeric_limits<double>::max(),-std::numeric_limits<double>::max());
 
 				for (size_t m = 0;m<nVerts;m++)
 				{
-					transf_shape[m].x = x + cos(phi)*m_robotShape.GetVertex_x(m)-sin(phi)*m_robotShape.GetVertex_y(m);
-					transf_shape[m].y = y + sin(phi)*m_robotShape.GetVertex_x(m)+cos(phi)*m_robotShape.GetVertex_y(m);
+					transf_shape[m].x = p.x + cos(p.phi)*m_robotShape.GetVertex_x(m)-sin(p.phi)*m_robotShape.GetVertex_y(m);
+					transf_shape[m].y = p.y + sin(p.phi)*m_robotShape.GetVertex_x(m)+cos(p.phi)*m_robotShape.GetVertex_y(m);
 					mrpt::utils::keep_max( bb_max.x, transf_shape[m].x); mrpt::utils::keep_max( bb_max.y, transf_shape[m].y);
 					mrpt::utils::keep_min( bb_min.x, transf_shape[m].x); mrpt::utils::keep_min( bb_min.y, transf_shape[m].y);
 				}
@@ -850,7 +816,7 @@ void CPTG_DiffDrive_CollisionGridBased::initialize(const std::string & cacheFile
 						if ( poly.contains( mrpt::math::TPoint2D(cx,cy) ) )
 						{
 							// Colision!! Update cell info:
-							const float d = GetCPathPoint_d(k,n);
+							const float d = this->getPathDist(k, n);
 							m_collisionGrid.updateCellInfo(ix  ,iy  ,  k,d);
 							m_collisionGrid.updateCellInfo(ix-1,iy  ,  k,d);
 							m_collisionGrid.updateCellInfo(ix  ,iy-1,  k,d);
@@ -876,5 +842,48 @@ void CPTG_DiffDrive_CollisionGridBased::initialize(const std::string & cacheFile
 	MRPT_END
 }
 
+size_t CPTG_DiffDrive_CollisionGridBased::getPathStepCount(uint16_t k) const
+{
+	ASSERT_(k<m_trajectory.size());
 
+	return m_trajectory[k].size();
+}
+
+void CPTG_DiffDrive_CollisionGridBased::getPathPose(uint16_t k, uint16_t step, mrpt::math::TPose2D &p) const
+{
+	ASSERT_(k<m_trajectory.size());
+	ASSERT_(step<m_trajectory[k].size());
+
+	p.x = m_trajectory[k][step].x;
+	p.y = m_trajectory[k][step].y;
+	p.phi = m_trajectory[k][step].phi;
+}
+
+double CPTG_DiffDrive_CollisionGridBased::getPathDist(uint16_t k, uint16_t step) const 
+{
+	ASSERT_(k<m_trajectory.size());
+	ASSERT_(step<m_trajectory[k].size());
+
+	return m_trajectory[k][step].dist;
+}
+
+bool CPTG_DiffDrive_CollisionGridBased::getPathStepForDist(uint16_t k, double dist, uint16_t &out_step) const 
+{
+	ASSERT_(k<m_trajectory.size());
+	const size_t numPoints = m_trajectory[k].size();
+
+	ASSERT_(numPoints > 0);
+
+	for (size_t n=0; n < numPoints-1; n++)
+	{
+		if (m_trajectory[k][n + 1].dist >= dist)
+		{
+			out_step = n;
+			return true;
+		}
+	}
+
+	out_step = numPoints-1;
+	return false;
+}
 

@@ -29,74 +29,9 @@ CLogFileRecord::CLogFileRecord() :
 	WS_Obstacles.clear();
 }
 
-/*---------------------------------------------------------------
-					Copy constructor
-  ---------------------------------------------------------------*/
-void CLogFileRecord::operator =( CLogFileRecord &o)
-{
-	// Free CHolonomicLogFileRecord objects:
-	// ----------------------------------------
-	freeInfoPerPTGs();
-
-	// Copy
-	// --------------------------
-	infoPerPTG.resize( o.infoPerPTG.size() );
-	for (unsigned int i=0;i<o.infoPerPTG.size();i++)
-	{
-		infoPerPTG[i] = o.infoPerPTG[i];
-		// Copy the pointer only:
-		infoPerPTG[i].HLFR = o.infoPerPTG[i].HLFR;
-		o.infoPerPTG[i].HLFR.clear_unique();
-	}
-
-	WS_Obstacles = o.WS_Obstacles;
-	WS_target_relative = o.WS_target_relative;
-	robotOdometryPose = o.robotOdometryPose;
-	v = o.v;
-	w = o.w;
-	nSelectedPTG = o.nSelectedPTG;
-	executionTime = o.executionTime;
-	estimatedExecutionPeriod = o.estimatedExecutionPeriod;
-
-	robotShape_x=o.robotShape_x;
-	robotShape_y=o.robotShape_y;
-
-	actual_v = o.actual_v;
-	actual_w = o.actual_w;
-
-    timestamp = o.timestamp;
-	nPTGs = o.nPTGs;
-
-	navigatorBehavior = o.navigatorBehavior;
-}
-
-
-/*---------------------------------------------------------------
-					freeInfoPerPTGs
-  ---------------------------------------------------------------*/
-void  CLogFileRecord::freeInfoPerPTGs()
-{
-	int	i,n;
-	try
-	{
-		n = infoPerPTG.size();
-		for (i=0;i<n;i++)
-		{
-			infoPerPTG[i].HLFR.clear_unique();
-		}
-	} catch(...) { };
-
-	infoPerPTG.clear();
-}
-
-/*---------------------------------------------------------------
-					Destructor
-  ---------------------------------------------------------------*/
 CLogFileRecord::~CLogFileRecord()
 {
-	freeInfoPerPTGs();
 }
-
 
 /*---------------------------------------------------------------
 						writeToStream
@@ -104,7 +39,7 @@ CLogFileRecord::~CLogFileRecord()
 void  CLogFileRecord::writeToStream(mrpt::utils::CStream &out,int *version) const
 {
 	if (version)
-		*version = 9;
+		*version = 10;
 	else
 	{
 		uint32_t	i,n;
@@ -136,7 +71,7 @@ void  CLogFileRecord::writeToStream(mrpt::utils::CStream &out,int *version) cons
 			}
 #endif
 		}
-		out << nSelectedPTG << WS_Obstacles << robotOdometryPose << WS_target_relative /*v8*/ << v << w << executionTime;
+		out << nSelectedPTG << WS_Obstacles << robotOdometryPose << WS_target_relative /*v8*/ << cmd_vel /*v10*/ << executionTime;
 
 		// Previous values: REMOVED IN VERSION #6
 
@@ -148,7 +83,7 @@ void  CLogFileRecord::writeToStream(mrpt::utils::CStream &out,int *version) cons
 		}
 
 		// Version 1 ---------
-		out << actual_v << actual_w;
+		out << cur_vel /*v10*/;
 
 		// Version 2 ----------
 		out << estimatedExecutionPeriod;
@@ -165,9 +100,6 @@ void  CLogFileRecord::writeToStream(mrpt::utils::CStream &out,int *version) cons
 
 		// Version 4 ----------
 		out << nPTGs;
-
-		// Version 5 -----------
-		out << navigatorBehavior; // Removed in version 6: << doorCrossing_P1 << doorCrossing_P2;
 
 		// version 7:
 		out << timestamp;
@@ -191,13 +123,12 @@ void  CLogFileRecord::readFromStream(mrpt::utils::CStream &in,int version)
 	case 7:
 	case 8:
 	case 9:
+	case 10:
 		{
 			// Version 0 --------------
 			uint32_t  i,n;
 
-			// Free previous if required:
-			freeInfoPerPTGs();
-
+			infoPerPTG.clear();
 
 			in >> n;
 			infoPerPTG.resize(n);
@@ -251,8 +182,17 @@ void  CLogFileRecord::readFromStream(mrpt::utils::CStream &in,int version)
 				WS_target_relative = mrpt::math::TPoint2D(pos);
 			}
 			
-			in >> v >> w >> executionTime;
-
+			if (version >= 10) {
+				in >> cmd_vel;
+			}
+			else {
+				float v, w;
+				in >> v >> w;
+				cmd_vel.resize(2);
+				cmd_vel[0] = v;
+				cmd_vel[1] = w;
+			}
+			in >> executionTime;
 
 			if (version<6)
 			{
@@ -282,11 +222,20 @@ void  CLogFileRecord::readFromStream(mrpt::utils::CStream &in,int version)
 
 			if (version > 0)
 			{	// Version 1 --------------
-				in >> actual_v >> actual_w;
+				if (version >= 10) {
+					in >> cur_vel;
+				}
+				else {
+					float actual_v, actual_w;
+					in >> actual_v >> actual_w;
+					cur_vel.resize(2);
+					cur_vel[0] = actual_v;
+					cur_vel[1] = actual_w;
+				}
 			}
 			else
 			{	// Default values for old versions:
-				actual_v = actual_w = 0;
+				cur_vel.resize(2, 0.0);
 			}
 
 			if (version > 1)
@@ -336,8 +285,11 @@ void  CLogFileRecord::readFromStream(mrpt::utils::CStream &in,int version)
 
 			if (version > 4)
 			{
-				// Version 5 ----------
-				in >> navigatorBehavior;
+				if (version < 10)
+				{
+					int32_t navigatorBehavior; // removed in v10
+					in >> navigatorBehavior;
+				}
 
 				if (version<6)  // Removed in version 6:
 				{
@@ -345,18 +297,12 @@ void  CLogFileRecord::readFromStream(mrpt::utils::CStream &in,int version)
 					in >> doorCrossing_P1 >> doorCrossing_P2;
 				}
 			}
-			else
-			{
-				navigatorBehavior = 0;
-			}
 
-			if (version>6)
-			{
-			    in >> timestamp;
+			if (version>6) {
+				in >> timestamp;
 			}
-			else
-			{
-			    timestamp = INVALID_TIMESTAMP;
+			else {
+				timestamp = INVALID_TIMESTAMP;
 			}
 
 		} break;

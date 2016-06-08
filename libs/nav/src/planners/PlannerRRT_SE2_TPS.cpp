@@ -520,7 +520,7 @@ void PlannerRRT_SE2_TPS::spaceTransformer(
 	using namespace mrpt::nav;
 	try
 	{
-		const size_t Ki = in_PTG->getAlfaValuesCount();  //getAlfaValuesCount is 0!
+		const size_t Ki = in_PTG->getAlphaValuesCount();  //getAlphaValuesCount is 0!
 
 		// check space already reserved to TP-Obstacles:
 		if ( size_t(out_TPObstacles.size()) != Ki )
@@ -537,12 +537,12 @@ void PlannerRRT_SE2_TPS::spaceTransformer(
 		for (size_t k_rand=0;k_rand<Ki;k_rand++)
 		{
 			// Initiate at the max distance or up to abs(phi)=pi
-			out_TPObstacles[k_rand] = in_PTG->refDistance;
+			out_TPObstacles[k_rand] = in_PTG->getRefDistance();
 			// If you just turned 180deg, end there:
-			float phi = in_PTG->GetCPathPoint_phi(k_rand,in_PTG->getPointsCountInCPath_k(k_rand)-1);
+			float phi = in_PTG->GetCPathPoint_phi(k_rand,in_PTG->getPathStepCount(k_rand)-1);
 
 			if (fabs(phi) >= M_PI* 0.95 )
-				out_TPObstacles[k_rand]= in_PTG->GetCPathPoint_d(k_rand,in_PTG->getPointsCountInCPath_k(k_rand)-1);
+				out_TPObstacles[k_rand]= in_PTG->GetCPathPoint_d(k_rand,in_PTG->getPathStepCount(k_rand)-1);
 		}
 
 		for (size_t obs=0;obs<nObs;obs++)
