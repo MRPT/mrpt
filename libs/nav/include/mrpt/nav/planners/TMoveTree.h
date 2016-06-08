@@ -225,13 +225,13 @@ namespace mrpt
 			}
 			double distance(const TNodeSE2_TP &src, const TNodeSE2_TP& dst) const
 			{
-				float d;
+				double d;
 				int   k;
 				mrpt::poses::CPose2D relPose(mrpt::poses::UNINITIALIZED_POSE);
 				relPose.inverseComposeFrom(mrpt::poses::CPose2D(dst.state),mrpt::poses::CPose2D(src.state));
 				bool tp_point_is_exact = m_ptg.inverseMap_WS2TP(relPose.x(),relPose.y(),k,d);
 				if (tp_point_is_exact)
-				     return d * m_ptg.refDistance; // de-normalize distance
+				     return d * m_ptg.getRefDistance(); // de-normalize distance
 				else return std::numeric_limits<double>::max(); // not in range: we can't evaluate this distance!
 			}
 			PoseDistanceMetric(const mrpt::nav::CParameterizedTrajectoryGenerator &ptg) : m_ptg(ptg) {}

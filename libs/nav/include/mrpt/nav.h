@@ -12,7 +12,6 @@
 #include <mrpt/nav/reactive/CReactiveNavigationSystem.h>
 #include <mrpt/nav/reactive/CReactiveNavigationSystem3D.h>
 #include <mrpt/nav/reactive/CAbstractReactiveNavigationSystem.h>
-#include <mrpt/nav/tpspace/motion_planning_utils.h>
 #include <mrpt/nav/tpspace/CPTG1.h>
 #include <mrpt/nav/tpspace/CPTG2.h>
 #include <mrpt/nav/tpspace/CPTG3.h>

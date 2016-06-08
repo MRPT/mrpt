@@ -105,13 +105,13 @@ namespace mrpt
 
 			// Steps for the reactive navigation sytem.
 			// ----------------------------------------------------------------------------
-			virtual void STEP1_CollisionGridsBuilder();
+			virtual void STEP1_InitPTGs();
 
 			// See docs in parent class
 			virtual bool STEP2_SenseObstacles();
 
 			// See docs in parent class
-			virtual void STEP3_WSpaceToTPSpace(const size_t ptg_idx,std::vector<float> &out_TPObstacles);
+			virtual void STEP3_WSpaceToTPSpace(const size_t ptg_idx,std::vector<double> &out_TPObstacles);
 
 			/** Generates a pointcloud of obstacles, and the robot shape, to be saved in the logging record for the current timestep */
 			virtual void loggingGetWSObstaclesAndShape(CLogFileRecord &out_log);

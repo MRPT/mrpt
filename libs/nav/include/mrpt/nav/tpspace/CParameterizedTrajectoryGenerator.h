@@ -135,6 +135,15 @@ namespace nav
 		  * \sa getPathStepCount(), getAlphaValuesCount() */
 		virtual bool getPathStepForDist(uint16_t k, double dist, uint16_t &out_step) const = 0;
 
+		/** Updates the radial map of closest TP-Obstacles given a single obstacle point at (ox,oy)
+		  * \param [in,out] tp_obstacles A vector of length `getAlphaValuesCount()`, initially set to getRefDistance().
+		  * \param [in] ox Obstacle point (X), relative coordinates wrt origin of the PTG.
+		  * \param [in] oy Obstacle point (Y), relative coordinates wrt origin of the PTG.
+		  * \note The length of tp_obstacles is not checked for efficiency since this method is potentially called thousands of times per 
+		  *  navigation timestap, so it is left to the user responsibility to provide a valid buffer.
+		  */
+		virtual void updateTPObstacle(double ox, double oy, std::vector<double> &tp_obstacles) const = 0;
+
 		/** @} */  // --- end of virtual methods
 
 		static std::string OUTPUT_DEBUG_PATH_PREFIX; //!< The path used as defaul output in, for example, debugDumpInFiles. (Default="./reactivenav.logs/")

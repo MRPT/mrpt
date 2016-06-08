@@ -79,10 +79,13 @@ namespace nav
 		double getPathDist(uint16_t k, uint16_t step) const MRPT_OVERRIDE;
 		bool getPathStepForDist(uint16_t k, double dist, uint16_t &out_step) const MRPT_OVERRIDE;
 
+		void updateTPObstacle(double ox, double oy, std::vector<double> &tp_obstacles) const MRPT_OVERRIDE;
+
 		/** @} */  // --- end of virtual methods
 
-		/** Sets the robot shape. Must be called before initialize() */
+		/** Robot shape must be set before initialization, either from ctor params or via this method. */
 		void setRobotShape(const mrpt::math::CPolygon & robotShape);
+		const mrpt::math::CPolygon & getRobotShape() const { return m_robotShape; }
 
 		float   getMax_V() const { return V_MAX; }
 		float   getMax_W() const { return W_MAX; }
@@ -92,6 +95,7 @@ protected:
 		/** Constructor: possible values in "params":
 		 *   - resolution: The cell size
 		 *   - v_max, w_max: Maximum robot speeds.
+		 *   - shape_x{0,1,2..}, shape_y{0,1,2..}: Polygonal robot shape [Optional, can be also set via `setRobotPolygonShape()`]
 		 *
 		 * See docs of derived classes for additional parameters:
 		 */
