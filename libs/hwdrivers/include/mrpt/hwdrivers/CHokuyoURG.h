@@ -198,6 +198,13 @@ namespace mrpt
 			  */
 			bool  setHighSensitivityMode(bool enabled);
 
+			/** If true scans will capture intensity. (default: false)
+			  * Should not be called while scanning.
+			  * \return false on any error
+			  */
+                        bool  setIntensityMode(bool enabled);
+
+
 			void setVerbose(bool enable = true) { m_verbose = enable; }
 
 

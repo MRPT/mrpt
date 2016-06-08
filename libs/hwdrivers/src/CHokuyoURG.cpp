@@ -96,7 +96,12 @@ void  CHokuyoURG::doProcessSimple(
 	int				nRanges = m_lastRange-m_firstRange+1;
 	int				expectedSize = nRanges*3 + 4;
 
-    m_state = ssWorking;
+	if(m_intensity)
+	{
+		expectedSize += nRanges*3;
+	}
+
+	m_state = ssWorking;
 	if (!receiveResponse( m_lastSentMeasCmd.c_str(), rcv_status0,rcv_status1, (char*)&rcv_data[0], rcv_dataLength ) )
 	{
 		// No new data
@@ -777,6 +782,14 @@ bool  CHokuyoURG::setHighSensitivityMode(bool enabled)
 	return true;
 }
 
+/*-------------------------------------------------------------
+                                                setIntensityMode
+-------------------------------------------------------------*/
+bool  CHokuyoURG::setIntensityMode(bool enabled)
+{
+	m_intensity = enabled;
+	return true;
+}
 
 /*-------------------------------------------------------------
 						displayVersionInfo
