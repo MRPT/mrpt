@@ -326,12 +326,14 @@ class GraphSlamEngine_t {
 		// PointCloud colors
 		TColorf m_odometry_color; // see Ctor for initialization
 		TColorf m_GT_color;
+		TColor m_robot_model_color;
 
 		bool m_is3D;
 		TNodeID m_nodeID_max;
 
 		// ICP configuration
 		float m_ICP_goodness_thres;
+		double m_ICP_max_distance;
 		int m_prev_nodes_for_ICP; // add ICP constraints with m_prev_nodes_for_ICP nodes back
 		map<const TNodeID, CObservation2DRangeScanPtr> m_nodes_to_laser_scans;
 		CICP m_ICP;
