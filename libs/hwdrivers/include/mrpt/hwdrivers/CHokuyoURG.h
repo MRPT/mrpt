@@ -222,6 +222,7 @@ namespace mrpt
 			int                      m_timeStartSynchDelay;  //!< Counter to discard to first few packets before setting the correspondence between device and computer timestamps.
 			mrpt::system::TTimeStamp m_timeStartTT;
 			bool                     m_disable_firmware_timestamp;
+			bool                     m_intensity;  //!< Get intensity from lidar scan (default: false)
 
 			/** See the class documentation at the top for expected parameters */
 			void  loadConfig_sensorSpecific(
