@@ -98,7 +98,7 @@ protected:
 			
 			// Also showing help?
 			if (m_showing_help || m_hiding_help) {
-				std::cout << "In the m_showing_help ... if-clause" << std::endl;
+				//std::cout << "In the m_showing_help ... if-clause" << std::endl;
 				static const double TRANSP_ANIMATION_TIME_SEC = 0.5;
 
 				const double show_tim = m_tim_show_start.Tac();

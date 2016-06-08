@@ -78,22 +78,22 @@ int main(int argc, char **argv)
 			return 0;
 		}
 		else if (argc == 1 || (!arg_do_demo.isSet() && !arg_ini_file.isSet())) {
-			THROW_EXCEPTION("Neither .ini file or demo option was specified."
-					<< "Use -h [--help] flag for list of available options"
+			THROW_EXCEPTION("Neither .ini file or demo option was specified." << endl
+					<< "Use -h [--help] flag for list of available options" << endl
 					<< "Exiting..");
 		}
 		else if (arg_do_demo.isSet()) {
 			if (arg_rawlog_file.isSet() || arg_ini_file.isSet()) {
-				THROW_EXCEPTION("-d [--demo] flag cannot be specified alongside other flags"
-						<< "Use -h [--help] flag for list of available options"
-						<< "Exiting..");
+				THROW_EXCEPTION("-d [--demo] flag cannot be specified alongside other flags." << endl
+						<< "Use -h [--help] flag for list of available options" << endl
+						<< "Exiting.." << endl);
 			}
 		}
 		// fetching the .ini file
 		string config_fname;
 		if ( arg_do_demo.isSet() ) {
 			config_fname = "../default_config.ini";
-			VERBOSE_COUT << "Using the demo file: " << config_fname << endl;
+			VERBOSE_COUT << "Using the demo .ini file: " << config_fname << endl;
 		}
 		else {
 			config_fname = arg_ini_file.getValue();
