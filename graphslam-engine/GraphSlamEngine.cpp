@@ -135,12 +135,6 @@ void GraphSlamEngine_t<GRAPH_t>::initGraphSlamEngine() {
 	 * Initialization of various member variables
 	 */
 
-	// TODO remove these
-	// register the available optimizers
-	optimizer_codes["levmarq"] = 0;
-	optimizer_codes["isam"] = 1;
-
-	m_log_sq_err_evolution.clear();
 	// check for duplicated edges every..
 	m_num_of_edges_for_collapse = 100;
 
@@ -595,19 +589,17 @@ bool GraphSlamEngine_t<GRAPH_t>::parseRawlogFile() {
 				{
 					CCriticalSectionLocker m_graph_lock(&m_graph_section);
 
-					cout << "m_nodeID_max = " << m_nodeID_max << endl;
-					cout << "nodeCount = " << m_graph.nodeCount() << endl;
-					// call it here and call it once every iteration
+					// call it once every iteration
 					m_graph.dijkstra_nodes_estimate(); 
 				}
 				if (m_ICP_use_distance_criterion) {
-					this->getNeighborsOfNode(&nodes_to_check_ICP,
+					this->getNearbyNodesOf(&nodes_to_check_ICP,
 							m_nodeID_max,
 							&m_ICP_max_distance,
 							m_ICP_use_distance_criterion);
 				}
 				else {
-					this->getNeighborsOfNode(&nodes_to_check_ICP,
+					this->getNearbyNodesOf(&nodes_to_check_ICP,
 							m_nodeID_max,
 							&m_ICP_prev_nodes,
 							m_ICP_use_distance_criterion);
@@ -713,7 +705,7 @@ bool GraphSlamEngine_t<GRAPH_t>::parseRawlogFile() {
 		 */
 		if (m_edge_counter.getTotalNumOfEdges() % m_num_of_edges_for_collapse == 0) {
 			CCriticalSectionLocker m_graph_lock(&m_graph_section);
-			cout << "Collapsing duplicated edges..." << endl;
+			//cout << "Collapsing duplicated edges..." << endl;
 
 			int removed_edges = m_graph.collapseDuplicatedEdges();
 			m_edge_counter.setRemovedEdges(removed_edges);
@@ -749,7 +741,7 @@ void GraphSlamEngine_t<GRAPH_t>::optimizeGraph(GRAPH_t* gr) {
 			&levMarqFeedback<GRAPH_t>); // functor feedback
 
 	double elapsed_time = optimization_timer.Tac();
-	VERBOSE_COUT << "Optimization of graph took: " << elapsed_time << "s" << endl;
+	//VERBOSE_COUT << "Optimization of graph took: " << elapsed_time << "s" << endl;
 
 	MRPT_END
 }
@@ -1381,7 +1373,7 @@ void GraphSlamEngine_t<GRAPH_t>::queryObserverForEvents() {
 }
 
 template <class GRAPH_t>
-void GraphSlamEngine_t<GRAPH_t>::getNeighborsOfNode(set<TNodeID> *lstNodes, 
+void GraphSlamEngine_t<GRAPH_t>::getNearbyNodesOf(set<TNodeID> *lstNodes, 
 		const TNodeID& cur_nodeID,
 		void* num_nodes_or_distance, 
 		bool use_distance_criterion /* = true */) {

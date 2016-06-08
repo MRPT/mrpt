@@ -53,22 +53,6 @@
 #include "CWindowObserver.h"
 
 
-using namespace mrpt;
-using namespace mrpt::poses;
-using namespace mrpt::obs;
-using namespace mrpt::system;
-using namespace mrpt::synch;
-using namespace mrpt::graphs;
-using namespace mrpt::math;
-using namespace mrpt::utils;
-using namespace mrpt::gui;
-using namespace mrpt::opengl;
-using namespace mrpt::slam;
-using namespace mrpt::maps;
-using namespace mrpt::graphslam;
-
-using namespace std;
-
 bool verbose = true;
 #define VERBOSE_COUT	if (verbose) std::cout << "[graphslam_engine] "
 
@@ -76,27 +60,27 @@ template <class GRAPH_t>
 class GraphSlamEngine_t {
 	public:
 
-		typedef std::map<string, CFileOutputStream*> fstreams_out;
-		typedef std::map<string, CFileOutputStream*>::iterator fstreams_out_it;
-		typedef std::map<string, CFileOutputStream*>::const_iterator fstreams_out_cit;
+		typedef std::map<std::string, mrpt::utils::CFileOutputStream*> fstreams_out;
+		typedef std::map<std::string, mrpt::utils::CFileOutputStream*>::iterator fstreams_out_it;
+		typedef std::map<std::string, mrpt::utils::CFileOutputStream*>::const_iterator fstreams_out_cit;
 
-		typedef std::map<string, CFileInputStream*> fstreams_in;
-		typedef std::map<string, CFileInputStream*>::iterator fstreams_in_it;
-		typedef std::map<string, CFileInputStream*>::const_iterator fstreams_in_cit;
+		typedef std::map<std::string, mrpt::utils::CFileInputStream*> fstreams_in;
+		typedef std::map<std::string, mrpt::utils::CFileInputStream*>::iterator fstreams_in_it;
+		typedef std::map<std::string, mrpt::utils::CFileInputStream*>::const_iterator fstreams_in_cit;
 
 
 		typedef typename GRAPH_t::constraint_t constraint_t;
 		typedef typename GRAPH_t::constraint_t::type_value pose_t; // type of underlying poses (2D/3D)
-		typedef CMatrixFixedNumeric<double,
+		typedef mrpt::math::CMatrixFixedNumeric<double,
 						constraint_t::state_length, constraint_t::state_length> InfMat;
 
 
 		// Ctors, Dtors
 		//////////////////////////////////////////////////////////////
-		GraphSlamEngine_t(const string& config_file,
-				CDisplayWindow3D* win = NULL,
+		GraphSlamEngine_t(const std::string& config_file,
+				mrpt::gui::CDisplayWindow3D* win = NULL,
 				CWindowObserver* win_observer = NULL,
-				string rawlog_fname = "");
+				std::string rawlog_fname = "");
 		~GraphSlamEngine_t();
 
 		// Public function definitions
@@ -110,7 +94,7 @@ class GraphSlamEngine_t {
 			if (!m_has_read_config) {
 				THROW_EXCEPTION("Config file has not been provided yet.\nExiting...");
 			}
-			string fname = m_output_dir_fname + "/" + m_save_graph_fname;
+			std::string fname = m_output_dir_fname + "/" + m_save_graph_fname;
 			saveGraph(fname);
 
 			MRPT_END
@@ -118,12 +102,12 @@ class GraphSlamEngine_t {
 		/**
 		 * Wrapper fun around the GRAPH_t corresponding method
 		 */
-		void saveGraph(const string& fname) const {
+		void saveGraph(const std::string& fname) const {
 			MRPT_START
 
 			m_graph.saveToTextFile(fname);
 			VERBOSE_COUT << "Saved graph to text file: " << fname <<
-				" successfully." << endl;
+				" successfully." << std::endl;
 
 			MRPT_END
 		}
@@ -131,7 +115,7 @@ class GraphSlamEngine_t {
 		 * Read the configuration file specified and fill in the corresponding
 		 * class members
 		 */
-	 void readConfigFile(const string& fname);
+	 void readConfigFile(const std::string& fname);
 		/**
 		 * Print the problem parameters (usually fetched from a configuration file)
 		 * to the console for verification
@@ -184,7 +168,7 @@ class GraphSlamEngine_t {
 		 * Method to automate the creation of the output result files
 		 * Open and write an introductory message using the provided fname
 		 */
-		void initResultsFile(const string& fname);
+		void initResultsFile(const std::string& fname);
 		/**
 		 * GraphSlamEngine_t::getICPEdge
 		 *
@@ -192,7 +176,8 @@ class GraphSlamEngine_t {
 		 * between them. Return the goodness of the ICP operation and let the user
 		 * decide if they want to keep it as an edge or not
 		 */
-		inline double getICPEdge(const TNodeID& from, const TNodeID& to, constraint_t *rel_edge );
+		inline double getICPEdge(const mrpt::utils::TNodeID& from, 
+				const mrpt::utils::TNodeID& to, constraint_t *rel_edge );
 		/**
 		 * assignTextMessageParameters
 		 *
@@ -224,7 +209,7 @@ class GraphSlamEngine_t {
 		 * Set the camera parameters of the CDisplayWindow3D so that the whole
 		 * graph is viewed in the window.
 		 */
-		inline void autofitObjectInView(const CSetOfObjectsPtr& gr);
+		inline void autofitObjectInView(const mrpt::opengl::CSetOfObjectsPtr& gr);
 		/**
 		 * queryObserverForEvents
 		 *
@@ -239,8 +224,8 @@ class GraphSlamEngine_t {
 		 * Fetch a set of neighborhood nodes given either a number of nodes or a
 		 * distance relative to the current node.
 		 */
-		 void getNeighborsOfNode(set<TNodeID> *lstNodes, 
-				const TNodeID& cur_nodeID,
+		 void getNearbyNodesOf(std::set<mrpt::utils::TNodeID> *lstNodes, 
+				const mrpt::utils::TNodeID& cur_nodeID,
 				void* num_nodes_or_distance, 
 				bool use_distance_criterion = true);
 
@@ -256,30 +241,27 @@ class GraphSlamEngine_t {
 		 * Most are imported from a .ini config file
 		 * \sa GraphSlamEngine_t::readConfigFile
 		 */
-		string	m_config_fname;
+		std::string	m_config_fname;
 
-		string	m_rawlog_fname;
-		string	m_fname_GT;
-		string	m_output_dir_fname;
+		std::string	m_rawlog_fname;
+		std::string	m_fname_GT;
+		std::string	m_output_dir_fname;
 		bool		m_user_decides_about_output_dir;
 		bool		m_do_debug;
-		string	m_debug_fname;
-		string	m_save_graph_fname;
+		std::string	m_debug_fname;
+		std::string	m_save_graph_fname;
 
 		bool		m_do_pose_graph_only;
-		string	m_optimizer;
+		std::string	m_optimizer;
 
-		string	m_loop_closing_alg;
+		std::string	m_loop_closing_alg;
 		double	m_loop_closing_min_nodeid_diff;
 
-		string	m_decider_alg;
+		std::string	m_decider_alg;
 		double	m_distance_threshold;
 		double	m_angle_threshold;
 
 		bool		m_has_read_config;
-
-		// use lookup table to hold the optimizer codes
-		map<string, int> optimizer_codes;
 
 		/**
 		 * FileStreams
@@ -290,9 +272,9 @@ class GraphSlamEngine_t {
 		fstreams_in m_in_streams;
 
 		// visualization objects
-		CDisplayWindow3D* m_win;
+		mrpt::gui::CDisplayWindow3D* m_win;
 
-		TParametersDouble m_optimized_graph_viz_params;
+		mrpt::utils::TParametersDouble m_optimized_graph_viz_params;
 		bool m_visualize_optimized_graph;
 		bool m_visualize_odometry_poses;
 		bool m_visualize_GT;
@@ -301,7 +283,7 @@ class GraphSlamEngine_t {
 		 * textMessage Parameters
 		 *
 		 */
-		string m_font_name;
+		std::string m_font_name;
 		int m_font_size;
 
 		// textMessage vertical text position
@@ -326,20 +308,20 @@ class GraphSlamEngine_t {
 		int m_num_of_edges_for_collapse;
 
 		// std::maps to store information about the graph(s)
-		map<const GRAPH_t*, string> graph_to_name;
-		map<const GRAPH_t*, TParametersDouble*> graph_to_viz_params;
+		std::map<const GRAPH_t*, std::string> graph_to_name;
+		std::map<const GRAPH_t*, mrpt::utils::TParametersDouble*> graph_to_viz_params;
 
 		// pose_t vectors
-		vector<pose_t*> m_odometry_poses;
-		vector<pose_t*> m_GT_poses;
+		std::vector<pose_t*> m_odometry_poses;
+		std::vector<pose_t*> m_GT_poses;
 
 		// PointCloud colors
-		TColorf m_odometry_color; // see Ctor for initialization
-		TColorf m_GT_color;
-		TColor m_robot_model_color;
+		mrpt::utils::TColorf m_odometry_color; // see Ctor for initialization
+		mrpt::utils::TColorf m_GT_color;
+		mrpt::utils::TColor m_robot_model_color;
 
 		bool m_is3D;
-		TNodeID m_nodeID_max;
+		mrpt::utils::TNodeID m_nodeID_max;
 
 		// ICP configuration
 		float m_ICP_goodness_thres;
@@ -347,24 +329,20 @@ class GraphSlamEngine_t {
 		double m_ICP_max_distance;
 		int m_ICP_prev_nodes; // add ICP constraints with m_prev_nodes_for_ICP nodes back
 		bool m_ICP_use_distance_criterion;
-		map<const TNodeID, CObservation2DRangeScanPtr> m_nodes_to_laser_scans;
-		CICP m_ICP;
+		std::map<const mrpt::utils::TNodeID, mrpt::obs::CObservation2DRangeScanPtr> m_nodes_to_laser_scans;
+		mrpt::slam::CICP m_ICP;
 
 
 		// graph optimization
-		TParametersDouble m_optimization_params;
-
-		// Container to handle the propagation of the square root error of the problem
-		vector<double> m_log_sq_err_evolution;
-
+		mrpt::utils::TParametersDouble m_optimization_params;
 		pose_t m_curr_estimated_pose;
 
 		// Use mutliple threads for visualization and graph optimization
-		TThreadHandle m_thread_optimize;
-		TThreadHandle m_thread_visualize;
+		mrpt::system::TThreadHandle m_thread_optimize;
+		mrpt::system::TThreadHandle m_thread_visualize;
 
 		// mark graph modification/accessing explicitly for multithreaded implementation
-		CCriticalSection m_graph_section;
+		mrpt::synch::CCriticalSection m_graph_section;
 
 		// Interaction with the CDisplayWindow - use of CWindowObserver
 		bool m_autozoom_active, m_request_to_exit;

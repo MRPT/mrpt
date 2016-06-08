@@ -58,7 +58,7 @@ TCLAP::SwitchArg arg_do_demo(/*flag = */ "d", /*name = */ "demo",
 		/* parser = */ cmd, /* default = */ false);
 
 
-CWindowObserver  win_observer;
+CWindowObserver  graph_win_observer;
 
 /**
  * main
@@ -105,15 +105,18 @@ int main(int argc, char **argv)
 		 */
 
 		// Visualization
-		CDisplayWindow3D	win("Graphslam building procedure",800, 600);
-		win_observer.observeBegin(win);
+		CDisplayWindow3D	graph_win("Graphslam building procedure",800, 600);
+		graph_win.setPos(0, 0);
+		graph_win_observer.observeBegin(graph_win);
 		{
-			COpenGLScenePtr &scene = win.get3DSceneAndLock();
+			COpenGLScenePtr &scene = graph_win.get3DSceneAndLock();
 			opengl::COpenGLViewportPtr main_view = scene->getViewport("main");
-			win_observer.observeBegin( *main_view );
-			win.unlockAccess3DScene();
+			graph_win_observer.observeBegin( *main_view );
+			graph_win.unlockAccess3DScene();
 		}
-		VERBOSE_COUT << "Listening to Window events..." << endl;
+		VERBOSE_COUT << "Listening to graph_window events..." << endl;
+
+		// Global square root erro plot
 
 		// Initialize the GraphSlamEngine_t class
 		string rawlog_fname;
@@ -121,8 +124,8 @@ int main(int argc, char **argv)
 			rawlog_fname = arg_rawlog_file.getValue();
 		}
 		GraphSlamEngine_t<CNetworkOfPoses2DInf> g_engine(config_fname, 
-				&win,
-				&win_observer,
+				&graph_win,
+				&graph_win_observer,
 				rawlog_fname);
 
 		bool exit_normally = g_engine.parseRawlogFile();
@@ -130,8 +133,9 @@ int main(int argc, char **argv)
 		// saving the graph to external file
 		g_engine.saveGraph();
 
-		while (win.isOpen() && exit_normally) {
+		while (graph_win.isOpen() && exit_normally) {
 			mrpt::system::sleep(100);
+			graph_win.forceRepaint();
 		}
 
 
