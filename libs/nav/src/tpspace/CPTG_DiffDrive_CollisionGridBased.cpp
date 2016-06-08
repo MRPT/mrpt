@@ -38,6 +38,20 @@ CPTG_DiffDrive_CollisionGridBased::CPTG_DiffDrive_CollisionGridBased(const mrpt:
 	this->W_MAX = params["w_max"];
 	this->m_resolution = params["resolution"];
 	this->turningRadiusReference = params.getWithDefaultVal("turningRadiusReference",turningRadiusReference);
+
+	for (unsigned int nPt = 0; ; ++nPt)
+	{
+		const std::string sPtx = mrpt::format("shape_x%u", nPt);
+		const std::string sPty = mrpt::format("shape_y%u", nPt);
+
+		const bool has_x = params.count(sPtx)!=0;
+		const bool has_y = params.count(sPty)!=0;
+		if (!has_x && !has_y) break;
+		ASSERTMSG_( (has_x && has_y), "Error: mismatch between number of pts in {x,y} defining robot shape");
+
+		this->m_robotShape.AddVertex(params[sPtx], params[sPty]);
+	}
+
 }
 
 void CPTG_DiffDrive_CollisionGridBased::freeMemory()
@@ -887,3 +901,13 @@ bool CPTG_DiffDrive_CollisionGridBased::getPathStepForDist(uint16_t k, double di
 	return false;
 }
 
+void CPTG_DiffDrive_CollisionGridBased::updateTPObstacle(
+	double ox, double oy,
+	std::vector<double> &tp_obstacles) const
+{
+	ASSERTMSG_(!m_trajectory.empty(), "PTG has not been initialized!");
+	const TCollisionCell & cell = m_collisionGrid.getTPObstacle(ox, oy);
+	// Keep the minimum distance:
+	for (TCollisionCell::const_iterator i = cell.begin(); i != cell.end(); ++i)
+		mrpt::utils::keep_min(tp_obstacles[i->first], i->second);
+}

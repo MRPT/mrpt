@@ -63,7 +63,7 @@ MRPT_TODO("Make generic from kinematic class")
 	meanExecutionPeriod          (0.1f),
 	m_timelogger                 (false), // default: disabled
 	badNavAlarm_AlarmTimeout     (30.0f),
-	m_collisionGridsMustBeUpdated(true),
+	m_PTGsMustBeReInitialized    (true),
 	meanExecutionTime            (0.1f),
 	meanTotalExecutionTime       (0.1f),
 	m_closing_navigator          (false)
@@ -98,7 +98,7 @@ CAbstractPTGBasedReactive::~CAbstractPTGBasedReactive()
 void CAbstractPTGBasedReactive::initialize()
 {
 	// Compute collision grids:
-	STEP1_CollisionGridsBuilder();
+	STEP1_InitPTGs();
 }
 
 /*---------------------------------------------------------------
@@ -359,9 +359,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 		// ---------------------------------------------------------------------
 		const CPose2D relTarget = CPose2D(m_navigationParams->target.x,m_navigationParams->target.y,m_navigationParams->targetHeading) - curPose;
 
-		// STEP1: Collision Grids Builder.
-		// -----------------------------------------------------------------------------
-		STEP1_CollisionGridsBuilder(); // Will only recompute if "m_collisionGridsMustBeUpdated==true"
+		STEP1_InitPTGs(); // Will only recompute if "m_PTGsMustBeReInitialized==true"
 
 		// STEP2: Load the obstacles and sort them in height bands.
 		// -----------------------------------------------------------------------------
@@ -614,7 +612,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 
 void CAbstractPTGBasedReactive::STEP5_PTGEvaluator(
 	THolonomicMovement         & holonomicMovement,
-	const std::vector<float>        & in_TPObstacles,
+	const std::vector<double>        & in_TPObstacles,
 	const mrpt::math::TPose2D  & WS_Target,
 	const mrpt::math::TPoint2D & TP_Target,
 	CLogFileRecord::TInfoPerPTG & log )
@@ -622,12 +620,12 @@ void CAbstractPTGBasedReactive::STEP5_PTGEvaluator(
 	const double   refDist	    = holonomicMovement.PTG->getRefDistance();
 	const double   TargetDir    = (TP_Target.x!=0 || TP_Target.y!=0) ? atan2( TP_Target.y, TP_Target.x) : 0.0;
 	const int      TargetSector = static_cast<int>( holonomicMovement.PTG->alpha2index( TargetDir ) );
-	const float    TargetDist   = TP_Target.norm();
+	const double   TargetDist   = TP_Target.norm();
 	// Picked movement direction:
 	const int      kDirection   = static_cast<int>( holonomicMovement.PTG->alpha2index( holonomicMovement.direction ) );
 
 	// Coordinates of the trajectory end for the given PTG and "alpha":
-	const float d = min( in_TPObstacles[ kDirection ], 0.90f*TargetDist);
+	const double d = min( in_TPObstacles[ kDirection ], 0.90*TargetDist);
 	uint16_t nStep;
 	bool pt_in_range = holonomicMovement.PTG->getPathStepForDist(kDirection, d, nStep);
 	

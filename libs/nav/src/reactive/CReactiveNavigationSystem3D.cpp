@@ -10,6 +10,7 @@
 #include "nav-precomp.h" // Precomp header
 
 #include <mrpt/nav/reactive/CReactiveNavigationSystem3D.h>
+#include <mrpt/nav/tpspace/CPTG_DiffDrive_CollisionGridBased.h>
 #include <mrpt/poses/CPose3D.h>
 #include <typeinfo>  // For typeid()
 
@@ -61,7 +62,7 @@ CReactiveNavigationSystem3D::~CReactiveNavigationSystem3D()
   ---------------------------------------------------------------*/
 void CReactiveNavigationSystem3D::changeRobotShape( TRobotShape robotShape )
 {
-	m_collisionGridsMustBeUpdated = true;
+	m_PTGsMustBeReInitialized = true;
 
 	for (unsigned int i=0; i<robotShape.polygons.size(); i++)
 	{
@@ -81,7 +82,7 @@ void CReactiveNavigationSystem3D::loadConfigFile(const mrpt::utils::CConfigFileB
 {
 	MRPT_START
 
-	m_collisionGridsMustBeUpdated = true;
+	m_PTGsMustBeReInitialized = true;
 
 	// Load config from INI file:
 	// ------------------------------------------------------------
@@ -125,7 +126,7 @@ void CReactiveNavigationSystem3D::loadConfigFile(const mrpt::utils::CConfigFileB
 	// Load PTGs from file:
 	// ---------------------------------------------
 
-	unsigned int num_ptgs, num_alfas; // levels = m_robotShape.heights.size()
+	unsigned int num_ptgs; // levels = m_robotShape.heights.size()
 	TParameters<double> params;
 	CParameterizedTrajectoryGenerator *ptgaux;
 
@@ -150,7 +151,7 @@ void CReactiveNavigationSystem3D::loadConfigFile(const mrpt::utils::CConfigFileB
 		params["K"] = ini.read_int("NAVIGATION_CONFIG",format("PTG%d_K",j),1,true);
 		params["cte_a0v"] = DEG2RAD(ini.read_float("NAVIGATION_CONFIG",format("PTG%d_AV",j),1,true));
 		params["cte_a0w"] = DEG2RAD(ini.read_float("NAVIGATION_CONFIG",format("PTG%d_AW",j),1,true));
-		num_alfas = ini.read_int("NAVIGATION_CONFIG",format("PTG%d_NALFAS",j),30,true);
+		params["num_paths"] = ini.read_int("NAVIGATION_CONFIG",format("PTG%d_NALFAS",j),30,true);
 
 		for (unsigned int i=1; i<=m_robotShape.heights.size(); i++)
 		{
@@ -158,21 +159,10 @@ void CReactiveNavigationSystem3D::loadConfigFile(const mrpt::utils::CConfigFileB
 			printf_debug("[loadConfigFile] Generating PTG#%u at level %u...",j,i);
 			ptgaux = CParameterizedTrajectoryGenerator::CreatePTG(params);
 			m_ptgmultilevel[j-1].PTGs.push_back(ptgaux);
-
-
-			const float min_dist = 0.015f;
-			m_timelogger.enter("PTG.simulateTrajectories");
-			m_ptgmultilevel[j-1].PTGs[i-1]->simulateTrajectories(num_alfas,75, refDistance, 10*refDistance/min_dist, 0.0005f, min_dist);
-			//Arguments -> n_alfas, max.tim, max.dist (ref_distance), max.n, diferencial_t, min_dist
-			m_timelogger.leave("PTG.simulateTrajectories");
-
-			// Just for debugging, etc.
-			//m_ptgmultilevel[j-1].PTGs[i-1]->debugDumpInFiles(j);
-
-			printf_debug("...OK!\n");
-
 		}
 	}
+
+	this->STEP1_InitPTGs();
 
 	//Load holonomic method params
 	this->loadHolonomicMethodConfig(ini,"NAVIGATION_CONFIG");
@@ -197,33 +187,37 @@ void CReactiveNavigationSystem3D::loadConfigFile(const mrpt::utils::CConfigFileB
 	MRPT_END
 }
 
-/*************************************************************************
-                         STEP1_CollisionGridsBuilder
-     -> C-Paths generation.
-     -> Build the collision grids
-*************************************************************************/
-void CReactiveNavigationSystem3D::STEP1_CollisionGridsBuilder()
+void CReactiveNavigationSystem3D::STEP1_InitPTGs()
 {
-	if (m_collisionGridsMustBeUpdated)
+	if (m_PTGsMustBeReInitialized)
 	{
-		m_collisionGridsMustBeUpdated = false;
+		m_PTGsMustBeReInitialized = false;
 
-		m_timelogger.enter("build_PTG_collision_grids");
+		mrpt::utils::CTimeLoggerEntry tle(m_timelogger, "STEP1_InitPTGs");
 
 		for (unsigned int j=0; j<m_ptgmultilevel.size(); j++)
 		{
 			for (unsigned int i=0; i<m_robotShape.heights.size(); i++)
 			{
-				mrpt::nav::build_PTG_collision_grids(
-					m_ptgmultilevel[j].PTGs[i],
-					m_robotShape.polygons[i],
-					format("%s/ReacNavGrid_%s_%03u_L%02u.dat.gz",ptg_cache_files_directory.c_str(),robotName.c_str(),i,j),
-					m_enableConsoleOutput /*VERBOSE*/
-					);
+				m_ptgmultilevel[j].PTGs[i]->deinitialize();
+
+				printf_debug("[loadConfigFile] Initializing PTG#%u.%u...", j,i);
+				printf_debug(m_ptgmultilevel[j].PTGs[i]->getDescription().c_str());
+
+				// Set robot shape:
+				{
+					mrpt::nav::CPTG_DiffDrive_CollisionGridBased *ptg = dynamic_cast<mrpt::nav::CPTG_DiffDrive_CollisionGridBased *>(m_ptgmultilevel[j].PTGs[i]);
+					if (ptg)
+						ptg->setRobotShape(m_robotShape.polygons[i]);
+				}
+
+				m_ptgmultilevel[j].PTGs[i]->initialize(
+					format("%s/ReacNavGrid_%s_%03u_L%02u.dat.gz", ptg_cache_files_directory.c_str(), robotName.c_str(), i, j),
+					m_enableConsoleOutput /*verbose*/
+				);
+				printf_debug("...Done!\n");
 			}
 		}
-
-		m_timelogger.leave("build_PTG_collision_grids");
 	}
 }
 
@@ -292,7 +286,7 @@ bool CReactiveNavigationSystem3D::STEP2_SenseObstacles()
 *************************************************************************/
 void CReactiveNavigationSystem3D::STEP3_WSpaceToTPSpace(
 	const size_t ptg_idx,
-	std::vector<float> &out_TPObstacles )
+	std::vector<double> &out_TPObstacles )
 {
 	ASSERT_EQUAL_(m_WS_Obstacles_inlevels.size(),m_robotShape.heights.size())
 
@@ -305,13 +299,7 @@ void CReactiveNavigationSystem3D::STEP3_WSpaceToTPSpace(
 		for (size_t obs=0;obs<nObs;obs++)
 		{
 			const float ox = xs[obs], oy = ys[obs];
-			// Get TP-Obstacles:
-			const CParameterizedTrajectoryGenerator::TCollisionCell &cell = m_ptgmultilevel[ptg_idx].PTGs[j]->m_collisionGrid.getTPObstacle(ox,oy);
-
-			// Keep the minimum distance:
-			for (CParameterizedTrajectoryGenerator::TCollisionCell::const_iterator i=cell.begin();i!=cell.end();++i)
-				if ( i->second < out_TPObstacles[i->first] )
-					out_TPObstacles[i->first] = i->second;
+			m_ptgmultilevel[ptg_idx].PTGs[j]->updateTPObstacle(ox, oy, out_TPObstacles);
 		}
 	}
 

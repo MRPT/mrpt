@@ -166,7 +166,7 @@ namespace mrpt
 		// PTG params loaded from INI file:
 		std::string ptg_cache_files_directory; //!< (Default: ".")
 		std::string robotName;       //!< Robot name
-		float  refDistance;          //!< "D_{max}" in papers.
+		double refDistance;          //!< "D_{max}" in papers.
 		float  colGridRes;           //!< CollisionGrid resolution
 		float  robotMax_V_mps;       //!< Max. linear speed (m/s)
 		float  robotMax_W_degps;     //!< Max. angular speed (deg/s)
@@ -201,7 +201,7 @@ namespace mrpt
 		mrpt::system::TTimeStamp badNavAlarm_lastMinDistTime;
 		float                    badNavAlarm_AlarmTimeout;
 
-		bool m_collisionGridsMustBeUpdated;
+		bool  m_PTGsMustBeReInitialized;
 
 		/** Stops the robot and set navigation state to error */
 		void			doEmergencyStop( const char *msg );
@@ -214,7 +214,7 @@ namespace mrpt
 
 		// Steps for the reactive navigation sytem.
 		// ----------------------------------------------------------------------------
-		virtual void STEP1_CollisionGridsBuilder() = 0;
+		virtual void STEP1_InitPTGs() = 0;
 
 		/** Return false on any fatal error */
 		virtual bool STEP2_SenseObstacles() = 0;
@@ -222,7 +222,7 @@ namespace mrpt
 		/** Builds TP-Obstacles from Workspace obstacles for the given PTG.
 		  * "out_TPObstacles" is already initialized to the proper length and maximum collision-free distance for each "k" trajectory index.
 		  * Distances are in "pseudo-meters". They will be normalized automatically to [0,1] upon return. */
-		virtual void STEP3_WSpaceToTPSpace(const size_t ptg_idx,std::vector<float> &out_TPObstacles) = 0;
+		virtual void STEP3_WSpaceToTPSpace(const size_t ptg_idx,std::vector<double> &out_TPObstacles) = 0;
 
 		/** Generates a pointcloud of obstacles, and the robot shape, to be saved in the logging record for the current timestep */
 		virtual void loggingGetWSObstaclesAndShape(CLogFileRecord &out_log) = 0;
@@ -231,7 +231,7 @@ namespace mrpt
 		/** Scores \a holonomicMovement */
 		void STEP5_PTGEvaluator(
 			THolonomicMovement         & holonomicMovement,
-			const std::vector<float>        & in_TPObstacles,
+			const std::vector<double>        & in_TPObstacles,
 			const mrpt::math::TPose2D  & WS_Target,
 			const mrpt::math::TPoint2D & TP_Target,
 			CLogFileRecord::TInfoPerPTG & log );
@@ -251,7 +251,7 @@ namespace mrpt
 			mrpt::math::TPoint2D TP_Target; //!< The Target, in TP-Space (x,y)
 			double               target_alpha,target_dist;  //!< TP-Target
 			int                  target_k; //!< The discrete version of target_alpha
-			std::vector<float>   TP_Obstacles; //!< One distance per discretized alpha value, describing the "polar plot" of TP obstacles.
+			std::vector<double>  TP_Obstacles; //!< One distance per discretized alpha value, describing the "polar plot" of TP obstacles.
 		};
 
 		std::vector<TInfoPerPTG> m_infoPerPTG; //!< Temporary buffers for working with each PTG during a navigationStep()

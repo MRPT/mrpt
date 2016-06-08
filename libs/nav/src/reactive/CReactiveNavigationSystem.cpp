@@ -53,7 +53,7 @@ CReactiveNavigationSystem::~CReactiveNavigationSystem()
   ---------------------------------------------------------------*/
 void CReactiveNavigationSystem::changeRobotShape( const math::CPolygon &shape )
 {
-	m_collisionGridsMustBeUpdated = true;
+	m_PTGsMustBeReInitialized = true;
 
 	if ( shape.verticesCount()<3 )
 		THROW_EXCEPTION("The robot shape has less than 3 vertices!!")
@@ -76,7 +76,7 @@ void CReactiveNavigationSystem::loadConfigFile(const mrpt::utils::CConfigFileBas
 {
 	MRPT_START
 
-	m_collisionGridsMustBeUpdated = true;
+	m_PTGsMustBeReInitialized = true;
 
 	// Load config from INI file:
 	// ------------------------------------------------------------
@@ -152,28 +152,13 @@ void CReactiveNavigationSystem::loadConfigFile(const mrpt::utils::CConfigFileBas
 
 		params["num_paths"] = num_paths2 > 0 ? num_paths2 : num_paths1;
 
-		// Generate it:
-		printf_debug("[loadConfigFile] Generating PTG#%u...",n);
-
+		// Factory:
 		PTGs[n] = CParameterizedTrajectoryGenerator::CreatePTG(params);
-
-		printf_debug(PTGs[n]->getDescription().c_str());
-
-		// Set robot shape:
-		{
-			mrpt::nav::CPTG_DiffDrive_CollisionGridBased *ptg = dynamic_cast<mrpt::nav::CPTG_DiffDrive_CollisionGridBased *>(PTGs[n]);
-			if (ptg)
-				ptg->setRobotShape(m_robotShape);
-		}
-
-		PTGs[n]->initialize(
-			format("%s/ReacNavGrid_%s_%03u.dat.gz",ptg_cache_files_directory.c_str(), robotName.c_str(),n),
-			m_enableConsoleOutput /*verbose*/
-			);
-
-		printf_debug("...OK!\n");
 	}
 	printf_debug("\n");
+
+	this->STEP1_InitPTGs();
+
 
 	this->loadHolonomicMethodConfig(ini,"GLOBAL_CONFIG");
 
@@ -197,34 +182,33 @@ void CReactiveNavigationSystem::loadConfigFile(const mrpt::utils::CConfigFileBas
 	MRPT_END
 }
 
-/*************************************************************************
-
-                         STEP1_CollisionGridsBuilder
-
-     -> C-Paths generation.
-     -> Check de colision entre cada celda de la rejilla y el contorno
-          del robot
-
-*************************************************************************/
-void CReactiveNavigationSystem::STEP1_CollisionGridsBuilder()
+void CReactiveNavigationSystem::STEP1_InitPTGs()
 {
-	if (m_collisionGridsMustBeUpdated)
+	if (m_PTGsMustBeReInitialized)
 	{
-		m_collisionGridsMustBeUpdated = false;
+		m_PTGsMustBeReInitialized = false;
 
-		m_timelogger.enter("build_PTG_collision_grids");
-
+		mrpt::utils::CTimeLoggerEntry tle(m_timelogger,"STEP1_InitPTGs");
+		
 		for (unsigned int i=0;i<PTGs.size();i++)
 		{
-			mrpt::nav::build_PTG_collision_grids(
-				PTGs[i],
-				m_robotShape,
-				format("%s/ReacNavGrid_%s_%03u.dat.gz",ptg_cache_files_directory.c_str(), robotName.c_str(),i),
-				m_enableConsoleOutput /*verbose*/
-				);
-		}
+			PTGs[i]->deinitialize();
 
-		m_timelogger.leave("build_PTG_collision_grids");
+			printf_debug("[loadConfigFile] Initializing PTG#%u...", i);
+			printf_debug(PTGs[i]->getDescription().c_str());
+
+			// Set robot shape:
+			{
+				mrpt::nav::CPTG_DiffDrive_CollisionGridBased *ptg = dynamic_cast<mrpt::nav::CPTG_DiffDrive_CollisionGridBased *>(PTGs[i]);
+				if (ptg)
+					ptg->setRobotShape(m_robotShape);
+			}
+			PTGs[i]->initialize(
+				format("%s/ReacNavGrid_%s_%03u.dat.gz", ptg_cache_files_directory.c_str(), robotName.c_str(), i),
+				m_enableConsoleOutput /*verbose*/
+			);
+			printf_debug("...Done!\n");
+		}
 	}
 }
 
@@ -258,7 +242,7 @@ bool CReactiveNavigationSystem::STEP2_SenseObstacles()
 /*************************************************************************
 				STEP3_WSpaceToTPSpace
 *************************************************************************/
-void CReactiveNavigationSystem::STEP3_WSpaceToTPSpace(const size_t ptg_idx,std::vector<float> &out_TPObstacles)
+void CReactiveNavigationSystem::STEP3_WSpaceToTPSpace(const size_t ptg_idx,std::vector<double> &out_TPObstacles)
 {
 	CParameterizedTrajectoryGenerator	*ptg = this->PTGs[ptg_idx];
 
@@ -277,12 +261,7 @@ void CReactiveNavigationSystem::STEP3_WSpaceToTPSpace(const size_t ptg_idx,std::
 			oy>-OBS_MAX_XY && oy<OBS_MAX_XY &&
 			oz>=minObstaclesHeight && oz<=maxObstaclesHeight)
 		{
-			const CParameterizedTrajectoryGenerator::TCollisionCell & cell = ptg->m_collisionGrid.getTPObstacle(ox,oy);
-
-			// Keep the minimum distance:
-			for (CParameterizedTrajectoryGenerator::TCollisionCell::const_iterator i=cell.begin();i!=cell.end();++i)
-				if ( i->second < out_TPObstacles[ i->first ] )
-					out_TPObstacles[i->first] = i->second;
+			ptg->updateTPObstacle(ox, oy, out_TPObstacles);
 		}
 	}
 }

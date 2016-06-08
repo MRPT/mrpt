@@ -10,7 +10,7 @@
 #include "nav-precomp.h" // Precomp header
 
 #include <mrpt/nav/planners/PlannerRRT_SE2_TPS.h>
-#include <mrpt/nav/tpspace/motion_planning_utils.h>
+#include <mrpt/nav/tpspace/CPTG_DiffDrive_CollisionGridBased.h>
 #include <mrpt/utils/CTicTac.h>
 #include <mrpt/random.h>
 #include <mrpt/system/filesystem.h>
@@ -74,37 +74,12 @@ void PlannerRRT_SE2_TPS::loadConfig(const mrpt::utils::CConfigFileBase &ini, con
 		ptg_parameters["K"]			= ini.read_int(sSect,format("PTG%u_K", n ), 1, false);
 		ptg_parameters["cte_a0v"]	= DEG2RAD( ini.read_float(sSect,format("PTG%u_cte_a0v_deg", n ), 0, false) );
 		ptg_parameters["cte_a0w"]	= DEG2RAD( ini.read_float(sSect,format("PTG%u_cte_a0w_deg", n ), 0, false) );
-		const int nAlfas = ini.read_int(sSect,format("PTG%u_nAlfas", n ),100, true );
-#if 0
-		cout << "PTRRT_Navigator::initializePTG - message: READ : ref_distance   " << ptg_parameters["ref_distance"] << " [m] " << endl;
-		cout << "PTRRT_Navigator::initializePTG - message: READ : resolution     " << ptg_parameters["resolution"] << " [m] " << endl;
-		cout << "PTRRT_Navigator::initializePTG - message: READ : PTG_type       " << ptg_parameters["PTG_type"] << endl;
-		cout << "PTRRT_Navigator::initializePTG - message: READ : v_max          " << ptg_parameters["v_max"] << " [m/s] " << endl;
-		cout << "PTRRT_Navigator::initializePTG - message: READ : w_max          " << ptg_parameters["w_max"] << " [rad/s] "  << endl;
-		cout << "PTRRT_Navigator::initializePTG - message: READ : K              " << ptg_parameters["K"] << endl;
-		cout << "PTRRT_Navigator::initializePTG - message: READ : cte_a0v        " << ptg_parameters["cte_a0v"] << endl;
-		cout << "PTRRT_Navigator::initializePTG - message: READ : cte_a0w        " << ptg_parameters["cte_a0w"] << endl;
-		cout << "PTRRT_Navigator::initializePTG - message: READ : nAlfas         " << nAlfas << "\n\n" << endl;
-#endif
+
+		ptg_parameters["num_paths"] = ini.read_int(sSect, format("PTG%u_nAlfas", n), 100, true);
 
 		// Generate it:
 		m_PTGs.push_back( CParameterizedTrajectoryGeneratorPtr( CParameterizedTrajectoryGenerator::CreatePTG(ptg_parameters) ) );
 
-		const float min_dist = 0.015f;
-		const float max_time = 75.0;
-
-		{
-			mrpt::utils::CTimeLoggerEntry tle(m_timelogger,"PTG.simulateTrajectories");
-
-			m_PTGs[n]->simulateTrajectories(
-				nAlfas,       // alphas,
-				max_time,     // max.tim,
-				refDistance,  // max.dist,
-				10*refDistance/min_dist, // max.n,
-				0.5e-3,       // diferencial_t
-				15e-3         // min_dist
-				);
-		}
 	}
 
 }
@@ -125,12 +100,16 @@ void PlannerRRT_SE2_TPS::initialize()
 
 	for (size_t i=0;i<m_PTGs.size();i++)
 	{
-		mrpt::utils::CTimeLoggerEntry tle(m_timelogger, "build_PTG_collision_grids");
+		mrpt::utils::CTimeLoggerEntry tle(m_timelogger, "PTG_initialization");
 
-		mrpt::nav::build_PTG_collision_grids(
-			m_PTGs[i].pointer(),
-			poly_robot_shape,
-			mrpt::format("%s/TPRRT_PTG_%03u.dat.gz",params.ptg_cache_files_directory.c_str(),static_cast<unsigned int>(i)),
+		{
+			mrpt::nav::CPTG_DiffDrive_CollisionGridBased * diff_ptg = dynamic_cast<mrpt::nav::CPTG_DiffDrive_CollisionGridBased *>(m_PTGs[i].pointer());
+			if (diff_ptg)
+				diff_ptg->setRobotShape(poly_robot_shape);
+		}
+
+		m_PTGs[i]->initialize(
+			mrpt::format("%s/TPRRT_PTG_%03u.dat.gz", params.ptg_cache_files_directory.c_str(), static_cast<unsigned int>(i)),
 			params.ptg_verbose
 			);
 	}
@@ -263,15 +242,15 @@ void PlannerRRT_SE2_TPS::solve(
 
 			// [Algo `tp_space_rrt`: Line 7]: Relative target in TP-Space
 			// ------------------------------------------------------------
-			const float D_max = std::min(static_cast<float>(params.maxLength), m_PTGs[idxPTG]->refDistance );
+			const double D_max = std::min(params.maxLength, m_PTGs[idxPTG]->getRefDistance() );
 
-			float d_rand; // Coordinates in TP-space
+			double d_rand; // Coordinates in TP-space
 			int   k_rand; // k_rand is the index of target_alpha in PTGs corresponding to a specific d_rand
 			//bool tp_point_is_exact =
 			m_PTGs[idxPTG]->inverseMap_WS2TP(
 				x_rand_rel.x(), x_rand_rel.y(),
 				k_rand, d_rand );
-			d_rand *= m_PTGs[idxPTG]->refDistance; // distance to target, in "real meters"
+			d_rand *= m_PTGs[idxPTG]->getRefDistance(); // distance to target, in "real meters"
 
 			float d_free;
 			//bool local_obs_ok = false; // Just for 3D log files: indicates whether obstacle points have been recomputed
@@ -279,10 +258,10 @@ void PlannerRRT_SE2_TPS::solve(
 			// [Algo `tp_space_rrt`: Line 8]: TP-Obstacles
 			// ------------------------------------------------------------
 			// Transform obstacles as seen from x_nearest_node -> TP_obstacles
-			vector<float> TP_Obstacles;
-			const double MAX_DIST_FOR_OBSTACLES = 1.5*m_PTGs[idxPTG]->refDistance; // Maximum Euclidean distance (radius) for considering obstacles around the current robot pose
+			vector<double> TP_Obstacles;
+			const double MAX_DIST_FOR_OBSTACLES = 1.5*m_PTGs[idxPTG]->getRefDistance(); // Maximum Euclidean distance (radius) for considering obstacles around the current robot pose
 			
-			ASSERT_ABOVE_(m_PTGs[idxPTG]->refDistance,1.1*max_veh_radius); // Make sure the PTG covers at least a bit more than the vehicle shape!! (should be much, much higher)
+			ASSERT_ABOVE_(m_PTGs[idxPTG]->getRefDistance(),1.1*max_veh_radius); // Make sure the PTG covers at least a bit more than the vehicle shape!! (should be much, much higher)
 
 			{
 				CTimeLoggerEntry tle(m_timelogger,"PT_RRT::solve.changeCoordinatesReference");
@@ -316,16 +295,18 @@ void PlannerRRT_SE2_TPS::solve(
 			{
 				// [Algo `tp_space_rrt`: Line 14]: PTG function
 				// ------------------------------------------------------------
-				float x,y,phi,t;//, v, w;
-				float v,w;
-
 				//given d_rand and k_rand provides x,y,phi of the point in c-space
-				m_PTGs[idxPTG]->getCPointWhen_d_Is(d_new, k_rand,  x,y,phi,t,&v,&w);
-				phi=mrpt::math::wrapToPi(phi); // wrap to [-pi,pi] -->avoid out of bounds errors
+				uint16_t nStep;
+				m_PTGs[idxPTG]->getPathStepForDist(k_rand, d_new, nStep);
+
+				mrpt::math::TPose2D rel_pose;
+				m_PTGs[idxPTG]->getPathPose(k_rand, nStep, rel_pose);
+
+				mrpt::math::wrapToPiInPlace(rel_pose.phi); // wrap to [-pi,pi] -->avoid out of bounds errors
 
 				// [Algo `tp_space_rrt`: Line 15]: pose composition
 				// ------------------------------------------------------------
-				const mrpt::poses::CPose2D new_state_rel(x, y, phi);
+				const mrpt::poses::CPose2D new_state_rel(rel_pose);
 				mrpt::poses::CPose2D new_state = x_nearest_pose+new_state_rel; //compose the new_motion as the last nmotion and the new state
 				//log_new_state_ptr = &new_state;
 
@@ -514,7 +495,7 @@ void PlannerRRT_SE2_TPS::spaceTransformer(
 	const mrpt::maps::CSimplePointsMap &in_obstacles,
 	const mrpt::nav::CParameterizedTrajectoryGenerator *in_PTG,
 	const double MAX_DIST,
-	std::vector<float> &out_TPObstacles
+	std::vector<double> &out_TPObstacles
 	)
 {
 	using namespace mrpt::nav;
@@ -534,15 +515,13 @@ void PlannerRRT_SE2_TPS::spaceTransformer(
 		// = in_obstacles.getPointsCount();
 		in_obstacles.getPointsBuffer(nObs, obs_xs, obs_ys, obs_zs);
 
+		// Init at the max distance:
 		for (size_t k_rand=0;k_rand<Ki;k_rand++)
 		{
-			// Initiate at the max distance or up to abs(phi)=pi
-			out_TPObstacles[k_rand] = in_PTG->getRefDistance();
-			// If you just turned 180deg, end there:
-			float phi = in_PTG->GetCPathPoint_phi(k_rand,in_PTG->getPathStepCount(k_rand)-1);
-
-			if (fabs(phi) >= M_PI* 0.95 )
-				out_TPObstacles[k_rand]= in_PTG->GetCPathPoint_d(k_rand,in_PTG->getPathStepCount(k_rand)-1);
+			out_TPObstacles[k_rand] = std::min(
+				in_PTG->getRefDistance(),
+				in_PTG->getPathDist(k_rand, in_PTG->getPathStepCount(k_rand) - 1)
+				);
 		}
 
 		for (size_t obs=0;obs<nObs;obs++)
@@ -553,12 +532,7 @@ void PlannerRRT_SE2_TPS::spaceTransformer(
 			if (std::abs(ox)>MAX_DIST || std::abs(oy)>MAX_DIST)
 				continue;   // ignore this obstacle: anyway, I don't know how to map it to TP-Obs!
 
-			const CParameterizedTrajectoryGenerator::TCollisionCell & cell = in_PTG->m_collisionGrid.getTPObstacle(ox,oy);
-
-			// Keep the minimum distance:
-			for (CParameterizedTrajectoryGenerator::TCollisionCell::const_iterator i=cell.begin();i!=cell.end();i++)
-				if ( i->second < out_TPObstacles[ i->first ] )
-					out_TPObstacles[i->first] = i->second;
+			in_PTG->updateTPObstacle(ox, oy, out_TPObstacles);
 		}
 
 		// Leave distances in out_TPObstacles un-normalized ([0,1]), so they just represent real distances in meters.
