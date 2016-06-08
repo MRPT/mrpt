@@ -79,5 +79,6 @@ void export_pnp()
         .def("epnp_solve", &PnPAlgos::epnp_solve)
         .def("dls_solve", &PnPAlgos::dls_solve)
         .def("upnp_solve", &PnPAlgos::upnp_solve)
+        .def("p3p_solve", &PnPAlgos::p3p_solve)
     ;
 }

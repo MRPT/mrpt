@@ -11,6 +11,7 @@
 #include <mrpt/vision/pnp/dls.h>
 #include <mrpt/vision/pnp/epnp.h>
 #include <mrpt/vision/pnp/upnp.h>
+#include <mrpt/vision/pnp/p3p.h>
 using namespace pnp;
 
 #include <iostream>
@@ -173,8 +174,8 @@ int CPnP::CPnP_p3p(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<E
 	//cout<<img_pts_cv<<endl;
 	//cout<<obj_pts_cv<<endl;
 	
-	upnp u(cam_in_cv, obj_pts_cv, img_pts_cv);
-	u.compute_pose(R_cv,t_cv);
+	p3p p(cam_in_cv);
+	p.solve(R_cv,t_cv, obj_pts_cv, img_pts_cv);
 	
 	//cout<<R_cv<<endl;
 	//cout<<t_cv<<endl;
