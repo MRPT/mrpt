@@ -47,6 +47,7 @@ namespace nav
 		/** @name Virtual interface of each PTG implementation 
 		 *  @{ */
 		// getDescription(): remains to be defined in derived classes.
+		// setParams() to be defined in derived classses.
 		
 		/** The default implementation in this class relies on a look-up-table. Derived classes may redefine this to closed-form expressions, when they exist.
 		  * See full docs in base class CParameterizedTrajectoryGenerator::inverseMap_WS2TP() */
@@ -92,20 +93,25 @@ namespace nav
 
 
 protected:
-		/** Constructor: possible values in "params":
+		CPTG_DiffDrive_CollisionGridBased();
+
+		/** Possible values in "params" (those in CParameterizedTrajectoryGenerator, which is called internally, plus):
 		 *   - resolution: The cell size
 		 *   - v_max, w_max: Maximum robot speeds.
 		 *   - shape_x{0,1,2..}, shape_y{0,1,2..}: Polygonal robot shape [Optional, can be also set via `setRobotPolygonShape()`]
 		 *
-		 * See docs of derived classes for additional parameters:
+		 * See docs of derived classes for additional parameters in setParams()
 		 */
-		CPTG_DiffDrive_CollisionGridBased(const mrpt::utils::TParameters<double> &params);
+		void setParamsCommon(const mrpt::utils::TParameters<double> &params) MRPT_OVERRIDE;
 
 		double V_MAX, W_MAX;
 		double turningRadiusReference;
 		std::vector<TCPointVector> m_trajectory;
 		mrpt::math::CPolygon       m_robotShape;
 		double                     m_resolution;
+
+		void internal_readFromStream(mrpt::utils::CStream &in) MRPT_OVERRIDE;
+		void internal_writeToStream(mrpt::utils::CStream &out) const  MRPT_OVERRIDE;
 
 		/** Numerically solve the diferential equations to generate a family of trajectories */
 		void simulateTrajectories(

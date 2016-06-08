@@ -9,6 +9,7 @@
 #pragma once
 
 #include <mrpt/math/wrap2pi.h>
+#include <mrpt/utils/CSerializable.h>
 #include <mrpt/utils/round.h>
 #include <mrpt/utils/TParameters.h>
 #include <mrpt/utils/mrpt_stdint.h>    // compiler-independent version of "stdint.h"
@@ -24,6 +25,7 @@ namespace nav
 	/** \defgroup nav_tpspace TP-Space and PTG classes
 	  * \ingroup mrpt_nav_grp
 	  */
+	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE(CParameterizedTrajectoryGenerator, mrpt::utils::CSerializable, NAV_IMPEXP)
 
 	/** This is the base class for any user-defined PTG.
 	 *  There is a class factory interface in CParameterizedTrajectoryGenerator::CreatePTG.
@@ -40,34 +42,32 @@ namespace nav
 	 *
 	 *  \ingroup nav_tpspace
 	 */
-	class NAV_IMPEXP CParameterizedTrajectoryGenerator
+	class NAV_IMPEXP CParameterizedTrajectoryGenerator : public mrpt::utils::CSerializable
 	{
+		DEFINE_VIRTUAL_SERIALIZABLE(CParameterizedTrajectoryGenerator)
 	public:
-		MRPT_MAKE_ALIGNED_OPERATOR_NEW
-	protected:
-		/** Constructor: possible values in "params":
-		 *   - `num_paths`: The number of different paths in this family (number of discrete `alpha` values).
-		 *   - `ref_distance`: The maximum distance in PTGs [meters]
-		 * See docs of derived classes for additional parameters.
-		 */
-		CParameterizedTrajectoryGenerator(const mrpt::utils::TParameters<double> &params);
-
-	public:
+		CParameterizedTrajectoryGenerator() //!< Default ctor. Must call `setParams()` before initialization
+		{ }
 		virtual ~CParameterizedTrajectoryGenerator() //!<  Destructor 
 		{ }
 
 		/** The class factory for creating a PTG from a list of parameters "params".
 		  *  Possible values in "params" are:
-		  *	  - "PTG_type": It's an integer number such as "1" -> CPTG1, "2"-> CPTG2, etc...
-		  *	  - Those explained in CParameterizedTrajectoryGenerator::CParameterizedTrajectoryGenerator
+		  *	  - Those explained in CParameterizedTrajectoryGenerator::setParamsCommon()
 		  *	  - Those explained in the specific PTG being created (see list of derived classes)
+		  *
+		  * `ptgClassName` can be any PTG class name.
 		  *
 		  * \exception std::logic_error On invalid or missing parameters.
 		  */
-		static CParameterizedTrajectoryGenerator * CreatePTG(const mrpt::utils::TParameters<double> &params);
+		static CParameterizedTrajectoryGenerator * CreatePTG(const std::string &ptgClassName, mrpt::utils::TParameters<double> &params);
 
 		/** @name Virtual interface of each PTG implementation 
 		 *  @{ */
+
+		/** See docs of derived classes for additional parameters to those in setParamsCommon() */
+		virtual void setParams(const mrpt::utils::TParameters<double> &params) = 0;
+
 		virtual std::string getDescription() const = 0 ; //!< Gets a short textual description of the PTG and its parameters 
 
 		/** Must be called after setting all PTG parameters and before requesting converting obstacles to TP-Space, inverseMap_WS2TP(), etc. */
@@ -166,9 +166,19 @@ namespace nav
 protected:
 		double refDistance;
 		uint16_t  m_alphaValuesCount; //!< The number of discrete values for "alpha" between -PI and +PI.
-	}; // end of class
 
-	typedef stlplus::smart_ptr<CParameterizedTrajectoryGenerator> CParameterizedTrajectoryGeneratorPtr; //!< Smart pointer to a PTG
+		/** Possible values in "params" accepted by this base class:
+		 *   - `num_paths`: The number of different paths in this family (number of discrete `alpha` values).
+		 *   - `ref_distance`: The maximum distance in PTGs [meters]
+		 */
+		virtual void setParamsCommon(const mrpt::utils::TParameters<double> &params);
+
+		virtual void internal_readFromStream(mrpt::utils::CStream &in);
+		virtual void internal_writeToStream(mrpt::utils::CStream &out) const;
+
+	}; // end of class
+	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CParameterizedTrajectoryGenerator, mrpt::utils::CSerializable, NAV_IMPEXP )
+
 
 	typedef std::vector<mrpt::nav::CParameterizedTrajectoryGenerator*>  TListPTGs;      //!< A list of PTGs (bare pointers)
 	typedef std::vector<mrpt::nav::CParameterizedTrajectoryGeneratorPtr>  TListPTGPtr;  //!< A list of PTGs (smart pointers)

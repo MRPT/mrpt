@@ -267,17 +267,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 			prev_logfile=m_logFile;
 			for (size_t i=0;i<nPTGs;i++)
 			{
-				MRPT_TODO("Replace all this by making PTGs CSerializable and not storing trajectories but only the params");
-#if 0
-				const mrpt::nav::CParameterizedTrajectoryGenerator* ptg = this->getPTG(i);
-				mrpt::utils::CMemoryStream memstr;
-				ptg->saveTrajectories(memstr);
-				memstr.Seek(0);
-				mrpt::nav::CParameterizedTrajectoryGeneratorPtr ptg_data = mrpt::nav::CParameterizedTrajectoryGeneratorPtr( new CPTG_Dummy );
-				ptg_data->loadTrajectories(memstr);
-
-				newLogRec.infoPerPTG[i].ptg_trajectory = ptg_data;
-#endif
+				newLogRec.infoPerPTG[i].ptg = mrpt::nav::CParameterizedTrajectoryGeneratorPtr( dynamic_cast<mrpt::nav::CParameterizedTrajectoryGenerator*>( this->getPTG(i)->clone() ) );
 			}
 		}
 	}

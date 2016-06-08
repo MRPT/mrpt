@@ -23,11 +23,12 @@ using namespace mrpt::nav;
 /*---------------------------------------------------------------
 					Class factory
   ---------------------------------------------------------------*/
-MRPT_TODO("rewrite with text-based ptg names");
-CParameterizedTrajectoryGenerator * CParameterizedTrajectoryGenerator::CreatePTG(const mrpt::utils::TParameters<double> &params)
+CParameterizedTrajectoryGenerator * CParameterizedTrajectoryGenerator::CreatePTG(const std::string &ptgClassName, mrpt::utils::TParameters<double> &params)
 {
 	MRPT_START
-	const int nPTG = static_cast<int>( params["PTG_type"] );
+
+	MRPT_TODO("rewrite with text-based ptg names");
+#if 0
 	switch(nPTG)
 	{
 	case 1: return new CPTG1(params);
@@ -41,5 +42,6 @@ CParameterizedTrajectoryGenerator * CParameterizedTrajectoryGenerator::CreatePTG
 	default:
 		THROW_EXCEPTION_CUSTOM_MSG1("Unknown PTG_type=%i",nPTG)
 	};
+#endif
 	MRPT_END
 }

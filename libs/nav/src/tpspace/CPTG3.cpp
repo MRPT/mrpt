@@ -16,11 +16,43 @@ using namespace mrpt::nav;
 using namespace mrpt::system;
 using namespace mrpt::utils;
 
-CPTG3::CPTG3(const mrpt::utils::TParameters<double> &params ) : CPTG_DiffDrive_CollisionGridBased(params)
+IMPLEMENTS_SERIALIZABLE(CPTG3,CParameterizedTrajectoryGenerator,mrpt::nav)
+
+void CPTG3::setParams(const mrpt::utils::TParameters<double> &params)
 {
 	this->K = params["K"];
+	CPTG_DiffDrive_CollisionGridBased::setParamsCommon(params);
 	// The constant curvature turning radius used in this PTG:
 	R = V_MAX / W_MAX;
+}
+
+void CPTG3::readFromStream(mrpt::utils::CStream &in, int version)
+{
+	CPTG_DiffDrive_CollisionGridBased::internal_readFromStream(in);
+
+	switch (version)
+	{
+	case 0:
+		MRPT_TODO("continue")
+		break;
+	default:
+		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
+	};
+}
+
+void CPTG3::writeToStream(mrpt::utils::CStream &out, int *version) const
+{
+	if (version) 
+	{
+		*version = 0;
+		return;
+	}
+
+	CPTG_DiffDrive_CollisionGridBased::internal_writeToStream(out);
+
+//	out << V_MAX << W_MAX
+	MRPT_TODO("continue")
+
 }
 
 std::string CPTG3::getDescription() const

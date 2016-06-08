@@ -68,7 +68,6 @@ void PlannerRRT_SE2_TPS::loadConfig(const mrpt::utils::CConfigFileBase &ini, con
 		TParameters<double> ptg_parameters;
 		ptg_parameters["ref_distance"] = refDistance;
 		ptg_parameters["resolution"]   = colGridRes;
-		ptg_parameters["PTG_type"]	= ini.read_int(sSect,format("PTG%u_Type", n ),1, true );
 		ptg_parameters["v_max"]		= ini.read_float(sSect,format("PTG%u_v_max_mps", n ), 5, true);
 		ptg_parameters["w_max"]		= DEG2RAD(ini.read_float(sSect,format("PTG%u_w_max_gps", n ), 0, true));
 		ptg_parameters["K"]			= ini.read_int(sSect,format("PTG%u_K", n ), 1, false);
@@ -78,7 +77,8 @@ void PlannerRRT_SE2_TPS::loadConfig(const mrpt::utils::CConfigFileBase &ini, con
 		ptg_parameters["num_paths"] = ini.read_int(sSect, format("PTG%u_nAlfas", n), 100, true);
 
 		// Generate it:
-		m_PTGs.push_back( CParameterizedTrajectoryGeneratorPtr( CParameterizedTrajectoryGenerator::CreatePTG(ptg_parameters) ) );
+		const std::string sPTGName = ini.read_string(sSect,format("PTG%u_Type", n ),"", true );
+		m_PTGs.push_back( CParameterizedTrajectoryGeneratorPtr( CParameterizedTrajectoryGenerator::CreatePTG(sPTGName,ptg_parameters) ) );
 
 	}
 

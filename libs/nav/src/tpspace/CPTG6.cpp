@@ -16,8 +16,41 @@ using namespace mrpt::nav;
 using namespace mrpt::system;
 using namespace mrpt::utils;
 
-CPTG6::CPTG6(const mrpt::utils::TParameters<double> &params ) : CPTG_DiffDrive_CollisionGridBased(params)
+IMPLEMENTS_SERIALIZABLE(CPTG6,CParameterizedTrajectoryGenerator,mrpt::nav)
+
+void CPTG6::setParams(const mrpt::utils::TParameters<double> &params)
 {
+	CPTG_DiffDrive_CollisionGridBased::setParamsCommon(params);
+}
+
+
+void CPTG6::readFromStream(mrpt::utils::CStream &in, int version)
+{
+	CPTG_DiffDrive_CollisionGridBased::internal_readFromStream(in);
+
+	switch (version)
+	{
+	case 0:
+		MRPT_TODO("continue")
+		break;
+	default:
+		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
+	};
+}
+
+void CPTG6::writeToStream(mrpt::utils::CStream &out, int *version) const
+{
+	if (version) 
+	{
+		*version = 0;
+		return;
+	}
+
+	CPTG_DiffDrive_CollisionGridBased::internal_writeToStream(out);
+
+//	out << V_MAX << W_MAX
+	MRPT_TODO("continue")
+
 }
 
 std::string CPTG6::getDescription() const

@@ -145,7 +145,6 @@ void CReactiveNavigationSystem3D::loadConfigFile(const mrpt::utils::CConfigFileB
 
 	for (unsigned int j=1; j<=num_ptgs; j++)
 	{
-		params["PTG_type"]	= ini.read_int("NAVIGATION_CONFIG",format("PTG%d_TYPE",j),1,true);
 		params["v_max"] = ini.read_float("NAVIGATION_CONFIG",format("PTG%d_VMAX",j),1,true);
 		params["w_max"] = DEG2RAD(ini.read_float("NAVIGATION_CONFIG",format("PTG%d_WMAX",j),1,true));
 		params["K"] = ini.read_int("NAVIGATION_CONFIG",format("PTG%d_K",j),1,true);
@@ -157,7 +156,8 @@ void CReactiveNavigationSystem3D::loadConfigFile(const mrpt::utils::CConfigFileB
 		{
 
 			printf_debug("[loadConfigFile] Generating PTG#%u at level %u...",j,i);
-			ptgaux = CParameterizedTrajectoryGenerator::CreatePTG(params);
+			const std::string sPTGName = ini.read_string("NAVIGATION_CONFIG",format("PTG%d_TYPE",j),"",true);
+			ptgaux = CParameterizedTrajectoryGenerator::CreatePTG(sPTGName,params);
 			m_ptgmultilevel[j-1].PTGs.push_back(ptgaux);
 		}
 	}

@@ -25,6 +25,17 @@ CStartUpClassesRegister  mrpt_reactivenav_class_reg(&registerAllNavigationClasse
 
 void registerAllNavigationClasses()
 {
+	// PTGs:
+	registerClass(CLASS_ID( CPTG1 ));
+	registerClass(CLASS_ID( CPTG2 ));
+	registerClass(CLASS_ID( CPTG3 ));
+	registerClass(CLASS_ID( CPTG4 ));
+	registerClass(CLASS_ID( CPTG5 ));
+	registerClass(CLASS_ID( CPTG6 ));
+	registerClass(CLASS_ID( CPTG7 ));
+
+
+	// Logs:
 	registerClass(CLASS_ID( CLogFileRecord ));
 	registerClass(CLASS_ID( CLogFileRecord_ND ));
 	registerClass(CLASS_ID( CLogFileRecord_VFF ));

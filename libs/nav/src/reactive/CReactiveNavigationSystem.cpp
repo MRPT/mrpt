@@ -136,7 +136,6 @@ void CReactiveNavigationSystem::loadConfigFile(const mrpt::utils::CConfigFileBas
 		params["ref_distance"] = refDistance;
 		params["resolution"]   = colGridRes;
 
-		params["PTG_type"]	= ini.read_int(robotName,format("PTG%u_Type", n ),1, true );
 		params["v_max"]		= ini.read_float(robotName,format("PTG%u_v_max_mps", n ), 5, true);
 		params["w_max"]		= DEG2RAD(ini.read_float(robotName,format("PTG%u_w_max_gps", n ), 0, true));
 		params["K"]			= ini.read_int(robotName,format("PTG%u_K", n ), 1, false);
@@ -153,7 +152,8 @@ void CReactiveNavigationSystem::loadConfigFile(const mrpt::utils::CConfigFileBas
 		params["num_paths"] = num_paths2 > 0 ? num_paths2 : num_paths1;
 
 		// Factory:
-		PTGs[n] = CParameterizedTrajectoryGenerator::CreatePTG(params);
+		const std::string sPTGName = ini.read_string(robotName,format("PTG%u_Type", n ),"", true );
+		PTGs[n] = CParameterizedTrajectoryGenerator::CreatePTG(sPTGName,params);
 	}
 	printf_debug("\n");
 

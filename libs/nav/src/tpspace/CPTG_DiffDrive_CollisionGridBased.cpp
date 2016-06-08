@@ -27,13 +27,18 @@ using namespace mrpt::nav;
  *   - resolution: The cell size
  *   - v_max, w_max: Maximum robot speeds.
  */
-CPTG_DiffDrive_CollisionGridBased::CPTG_DiffDrive_CollisionGridBased(const mrpt::utils::TParameters<double> &params) :
-	CParameterizedTrajectoryGenerator(params),
+CPTG_DiffDrive_CollisionGridBased::CPTG_DiffDrive_CollisionGridBased() :
 	m_collisionGrid(-1,1,-1,1,0.5,this),
 	V_MAX(.0), W_MAX(.0),
 	turningRadiusReference(.10),
 	m_resolution(0.05)
 {
+}
+
+void CPTG_DiffDrive_CollisionGridBased::setParamsCommon(const mrpt::utils::TParameters<double> &params)
+{
+	CParameterizedTrajectoryGenerator::setParamsCommon(params);
+
 	this->V_MAX = params["v_max"];
 	this->W_MAX = params["w_max"];
 	this->m_resolution = params["resolution"];
@@ -51,31 +56,13 @@ CPTG_DiffDrive_CollisionGridBased::CPTG_DiffDrive_CollisionGridBased(const mrpt:
 
 		this->m_robotShape.AddVertex(params[sPtx], params[sPty]);
 	}
-
 }
+
 
 void CPTG_DiffDrive_CollisionGridBased::freeMemory()
 {
 	m_trajectory.clear(); // Free trajectories
 }
-
-MRPT_TODO("Replace all this by making PTGs CSerializable and not storing trajectories but only the params");
-#if 0
-void CPTG_DiffDrive_CollisionGridBased::saveTrajectories( mrpt::utils::CStream &out ) const
-{
-	const uint8_t serial_version = 1;
-	out << serial_version;
-	out << this->getDescription();
-	out << m_alphaValuesCount << V_MAX << W_MAX << turningRadiusReference << refDistance;
-	out << m_trajectory;
-}
-/** Loads the simulated trajectories and other parameters from a target stream */
-std::string CPTG_DiffDrive_CollisionGridBased::loadTrajectories( mrpt::utils::CStream &in )
-{
-	freeMemory(); // Free previous paths
-	uint8_t serial_version;
-	in >> serial_version;
-#endif
 
 mrpt::utils::CStream & mrpt::nav::operator << (mrpt::utils::CStream& o, const mrpt::nav::TCPoint & p)
 {
@@ -750,7 +737,7 @@ void CPTG_DiffDrive_CollisionGridBased::initialize(const std::string & cacheFile
 	// Simulate paths:
 	const float min_dist = 0.015f;
 	simulateTrajectories(
-		75,						// max.tim,
+		100,						// max.tim,
 		refDistance,			// max.dist,
 		10*refDistance/min_dist,	// max.n,
 		0.0005f,				// diferencial_t
@@ -911,3 +898,39 @@ void CPTG_DiffDrive_CollisionGridBased::updateTPObstacle(
 	for (TCollisionCell::const_iterator i = cell.begin(); i != cell.end(); ++i)
 		mrpt::utils::keep_min(tp_obstacles[i->first], i->second);
 }
+
+void CPTG_DiffDrive_CollisionGridBased::internal_readFromStream(mrpt::utils::CStream &in)
+{
+	CParameterizedTrajectoryGenerator::internal_readFromStream(in);
+
+	uint8_t version;
+	in >> version;
+	switch (version)
+	{
+	case 0:
+		freeMemory();
+		in >>V_MAX >> W_MAX
+			>> turningRadiusReference
+			>> m_robotShape 
+			>> m_resolution
+			>> m_trajectory;
+		break;
+	default:
+		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
+	};
+}
+
+void CPTG_DiffDrive_CollisionGridBased::internal_writeToStream(mrpt::utils::CStream &out) const
+{
+	CParameterizedTrajectoryGenerator::internal_writeToStream(out);
+
+	const uint8_t version = 0;
+	out << version;
+
+	out << V_MAX << W_MAX
+		<< turningRadiusReference
+		<< m_robotShape 
+		<< m_resolution
+		<< m_trajectory;
+}
+
