@@ -30,7 +30,8 @@ namespace obs
 	  *
 	  *  These are the most important data fields:
 	  *    - CObservation2DRangeScan::scan -> A vector of float values with all the range measurements (in meters).
-	  *    - CObservation2DRangeScan::validRange -> A vector (of <b>identical size</b> than <i>scan<i>), has non-zeros for those ranges than are valid (i.e. will be zero for non-reflected rays, etc.)
+	  *    - CObservation2DRangeScan::intensity -> A vector (of <b>identical size</b> to <i>scan<i>) a unitless int values representing the relative strength of each return. Higher values indicate a more intense return. This is useful for filtering out low intensity(noisy) returns or detecting intense landmarks.
+	  *    - CObservation2DRangeScan::validRange -> A vector (of <b>identical size</b> to <i>scan<i>), has non-zeros for those ranges than are valid (i.e. will be zero for non-reflected rays, etc.)
 	  *    - CObservation2DRangeScan::aperture -> The field-of-view of the scanner, in radians (typically, M_PI = 180deg).
 	  *    - CObservation2DRangeScan::sensorPose -> The 6D location of the sensor on the robot reference frame (default=at the origin).
 	  *
