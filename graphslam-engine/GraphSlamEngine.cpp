@@ -31,6 +31,7 @@
 #include <mrpt/opengl/CPointCloud.h>
 #include <mrpt/opengl/CRenderizable.h>
 #include <mrpt/opengl/CAxis.h>
+#include <mrpt/opengl/CDisk.h>
 #include <mrpt/opengl/CCamera.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/CSetOfObjects.h>
@@ -305,6 +306,21 @@ void GraphSlamEngine_t<GRAPH_t>::initGraphSlamEngine() {
 		m_win->unlockAccess3DScene();
 		m_win->forceRepaint();
 	}
+	// ICP_max_distance disk
+	if (m_win) {
+		COpenGLScenePtr scene = m_win->get3DSceneAndLock();
+
+		CDiskPtr obj = CDisk::Create();
+		pose_t initial_pose;
+		obj->setPose(initial_pose);
+		obj->setName("ICP_max_distance");
+		obj->setColor_u8(TColor(142, 142, 56));
+		obj->setDiskRadius(m_ICP_max_distance, m_ICP_max_distance-0.5);
+		scene->insert(obj);
+
+		m_win->unlockAccess3DScene();
+		m_win->forceRepaint();
+	}
 
 	if (m_win) {
 		m_edge_counter.setVisualizationWindow(m_win);
@@ -464,8 +480,8 @@ bool GraphSlamEngine_t<GRAPH_t>::parseRawlogFile() {
 
 			/**
 			 * Timestamp textMessage
+			 * Use the dataset timestamp otherwise fallback to mrpt::system::now()
 			 */
-			// use the dataset timestamp otherwise fallback to mrpt::system::now()
 			TTimeStamp	timestamp = robot_move->timestamp;
 			if (timestamp != INVALID_TIMESTAMP && m_win) {
 				m_win->addTextMessage(5,-m_offset_y_timestamp,
@@ -571,58 +587,68 @@ bool GraphSlamEngine_t<GRAPH_t>::parseRawlogFile() {
 					observations->getObservationByClass<CObservation2DRangeScan>();
 				m_nodes_to_laser_scans[m_nodeID_max] = curr_laser_scan;
 			
-				//If m_prev_nodes_for_ICP = -1 try adding with all of the other nodes
-				int nodes_to_check = 0; // how many nodes to check ICP against
-				switch ( m_prev_nodes_for_ICP ) 
-				{
-					case -1: 
-						{
-							nodes_to_check = m_nodeID_max - 1;
-							//cout << "Checking ICP against all other nodes in the graph." << endl;
-							break;
-						}
-					default: 
-						{
-							nodes_to_check = m_prev_nodes_for_ICP;
-							//cout << "Checking ICP against " << nodes_to_check << " nodes in the graph." << endl;
-							break;
-						}
-				}
-				// TODO - have the nodes to check against as a std::vector that you
-				// build based on a criterium - distance / node num / etc
+				////If m_prev_nodes_for_ICP = -1 try adding with all of the other nodes
+				//int nodes_to_check = 0; // how many nodes to check ICP against
+				//switch ( m_prev_nodes_for_ICP ) 
 				//{
-					//CCriticalSectionLocker m_graph_lock(&m_graph_section);
-
-					//std::vector<TNodeID> nodes_to_check_ICP;
-					//for (TNodeID nodeID = 0; nodeID <= m_nodeID_max; ++nodeID) {
-						//if m_graph.nodes[nodeID].distanceTo(m_graph.nodes[
-					//}
+					//case -1: 
+						//{
+							//nodes_to_check = m_nodeID_max - 1;
+							////cout << "Checking ICP against all other nodes in the graph." << endl;
+							//break;
+						//}
+					//default: 
+						//{
+							//nodes_to_check = m_prev_nodes_for_ICP;
+							////cout << "Checking ICP against " << nodes_to_check << " nodes in the graph." << endl;
+							//break;
+						//}
 				//}
 
-				for (TNodeID prev_node = m_nodeID_max-1;
-						prev_node != (m_nodeID_max - nodes_to_check - 1) ; --prev_node) {
+				// distance criterium for checking ICP
+				std::vector<TNodeID> nodes_to_check_ICP;
+				{
+					CCriticalSectionLocker m_graph_lock(&m_graph_section);
 
-					// make sure you have enough nodes to start adding edges
-					if (m_nodeID_max < nodes_to_check)
-						break;
+					// call it here and call it once every iteration
+					m_graph.dijkstra_nodes_estimate(); 
 
-					CObservation2DRangeScanPtr prev_laser_scan = m_nodes_to_laser_scans[prev_node];
+					for (TNodeID nodeID = 0; nodeID <= m_nodeID_max; ++nodeID) {
+						double curr_distance = m_graph.nodes[nodeID].distanceTo(
+								m_graph.nodes[m_nodeID_max-1]);
+						cout << "Distance for ICP is: " << curr_distance << endl;
+						if (curr_distance <= m_ICP_max_distance) {
+							nodes_to_check_ICP.push_back(nodeID);
+						}
+					}
+				}
+
+				//for (TNodeID prev_node = m_nodeID_max-1;
+						//prev_node != (m_nodeID_max - nodes_to_check - 1) ; --prev_node) {
+					//// make sure you have enough nodes to start adding edges
+					//if (m_nodeID_max < nodes_to_check)
+						//break;
+
+				for (vector<TNodeID>::const_iterator node_it = nodes_to_check_ICP.begin();
+						node_it != nodes_to_check_ICP.end(); ++node_it) {
+
+					CObservation2DRangeScanPtr prev_laser_scan = m_nodes_to_laser_scans[*node_it];
 					constraint_t rel_edge;
-					double ICP_goodness = this->getICPEdge(prev_node, to, &rel_edge);
+					double ICP_goodness = this->getICPEdge(*node_it, to, &rel_edge);
 					if (ICP_goodness > m_ICP_goodness_thres) {
 						{
 							CCriticalSectionLocker m_graph_lock(&m_graph_section);
-							m_graph.insertEdge(prev_node, to, rel_edge);
+							m_graph.insertEdge(*node_it, to, rel_edge);
 
 							//VERBOSE_COUT << "Added ICP constraint betwen nodes "
-								//<< to << ", " << prev_node << "." << endl;
+								//<< to << ", " << *node_it << "." << endl;
 							//VERBOSE_COUT << "Edge: " << endl << rel_edge << endl;
 							//VERBOSE_COUT << "ICP goodness: " << ICP_goodness << endl;
 						}
 
 						// register a loop closing constraint if distance of nodes larger
 						// than the predefined m_loop_closing_min_nodeid_diff
-						bool is_loop_closure = (to - prev_node >= m_loop_closing_min_nodeid_diff) ? 1 : 0;
+						bool is_loop_closure = (to - *node_it >= m_loop_closing_min_nodeid_diff) ? 1 : 0;
 						m_edge_counter.addEdge("ICP", is_loop_closure);
 					}
 				}
@@ -644,18 +670,29 @@ bool GraphSlamEngine_t<GRAPH_t>::parseRawlogFile() {
 				}
 
 
-				// update robot model position
+				// update robot model
 				if (m_win) {
 					COpenGLScenePtr scene = m_win->get3DSceneAndLock();
 
 					CRenderizablePtr obj = scene->getByName("robot_model");
 					CSetOfObjectsPtr robot_obj = static_cast<CSetOfObjectsPtr>(obj);
-					pose_t initial_pose;
 
 					CCriticalSectionLocker m_graph_lock(&m_graph_section);
 
 					robot_obj->setPose(m_graph.nodes[m_graph.nodeCount()-1]);
-					//scene->insert(obj);
+
+					m_win->unlockAccess3DScene();
+				}
+				// update ICP_max_distance Disk
+				if (m_win) {
+					COpenGLScenePtr scene = m_win->get3DSceneAndLock();
+
+					CRenderizablePtr obj = scene->getByName("ICP_max_distance");
+					CDiskPtr disk_obj = static_cast<CDiskPtr>(obj);
+
+					CCriticalSectionLocker m_graph_lock(&m_graph_section);
+
+					disk_obj->setPose(m_graph.nodes[m_graph.nodeCount()-1]);
 
 					m_win->unlockAccess3DScene();
 				}
@@ -884,15 +921,14 @@ void GraphSlamEngine_t<GRAPH_t>::readConfigFile(const string& fname) {
 	//mapBuilder.ICP_params.loadFromConfigFile ( iniFile, "ICP");
 	m_ICP.options.loadFromConfigFile(cfg_file, "ICP");
 
-	m_prev_nodes_for_ICP = cfg_file.read_int(
+	m_ICP_max_distance = cfg_file.read_double(
 			"ICP",
-			"prev_nodes_for_ICP",
-			3, false);
+			"ICP_max_distance",
+			5, false);
 	m_ICP_goodness_thres = cfg_file.read_double(
 			"ICP",
-			"goodness_to_accept",
+			"ICP_goodness_thres",
 			0.80, false);
-
 
 
 	// Section: VisualizationParameters
@@ -1025,6 +1061,8 @@ void GraphSlamEngine_t<GRAPH_t>::printProblemParams() const {
 		<< RAD2DEG(m_angle_threshold) << " deg" << endl;
 	ss_out << "ICP Goodness threshold           = " 
 		<< m_ICP_goodness_thres << endl;
+	ss_out << "Maximum distance for ICP check   = "
+		<< m_ICP_max_distance << endl;
 	ss_out << "Visualize odometry               = " 
 		<< m_visualize_odometry_poses << endl;
 	ss_out << "Visualize optimized path         = " 
@@ -1194,8 +1232,8 @@ double GraphSlamEngine_t<GRAPH_t>::getICPEdge(const TNodeID& from,
 		CCriticalSectionLocker m_graph_lock(&m_graph_section);
 
 		// use the difference of the node positions as an initial alignment
-		// estimation
-		m_graph.dijkstra_nodes_estimate();
+		// estimation (dijkstra_nodes_estimate has to be run from the caller
+		// function
 		initial_pose = m_graph.nodes[to] - m_graph.nodes[from];
 	}
 
