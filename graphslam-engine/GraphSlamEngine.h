@@ -233,6 +233,16 @@ class GraphSlamEngine_t {
 		 * class variables
 		 */
 		inline void queryObserverForEvents();
+		/**
+		 * getSetOfNodes
+		 *
+		 * Fetch a set of neighborhood nodes given either a number of nodes or a
+		 * distance relative to the current node.
+		 */
+		 void getNeighborsOfNode(set<TNodeID> *lstNodes, 
+				const TNodeID& cur_nodeID,
+				void* num_nodes_or_distance, 
+				bool use_distance_criterion = true);
 
 
 		// VARIABLES
@@ -333,10 +343,13 @@ class GraphSlamEngine_t {
 
 		// ICP configuration
 		float m_ICP_goodness_thres;
+
 		double m_ICP_max_distance;
-		int m_prev_nodes_for_ICP; // add ICP constraints with m_prev_nodes_for_ICP nodes back
+		int m_ICP_prev_nodes; // add ICP constraints with m_prev_nodes_for_ICP nodes back
+		bool m_ICP_use_distance_criterion;
 		map<const TNodeID, CObservation2DRangeScanPtr> m_nodes_to_laser_scans;
 		CICP m_ICP;
+
 
 		// graph optimization
 		TParametersDouble m_optimization_params;

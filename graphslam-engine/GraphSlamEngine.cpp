@@ -40,6 +40,7 @@
 #include <sstream>
 #include <map>
 #include <set>
+#include <algorithm>
 #include <cerrno>
 #include <cmath> // fabs function
 #include <cstdlib>
@@ -120,15 +121,21 @@ void GraphSlamEngine_t<GRAPH_t>::initGraphSlamEngine() {
 	MRPT_START
 
 	/** 
-	 * Input validation
+	 * Parameters validation
 	 */
 	assert(!(!m_win && m_win_observer) && 
 			"CObsever was provided even though no CDisplayWindow3D was not");
 
+	// Calling of initalization-relevant functions
+	this->readConfigFile(m_config_fname);
+	this->initOutputDir();
+	this->printProblemParams();
+	
 	/**
-	 * Optimization related parameters
+	 * Initialization of various member variables
 	 */
 
+	// TODO remove these
 	// register the available optimizers
 	optimizer_codes["levmarq"] = 0;
 	optimizer_codes["isam"] = 1;
@@ -137,25 +144,18 @@ void GraphSlamEngine_t<GRAPH_t>::initGraphSlamEngine() {
 	// check for duplicated edges every..
 	m_num_of_edges_for_collapse = 100;
 
-	/**
-	 * Initialization of various member variables
-	 */
+	m_is3D = constraint_t::is_3D_val;
+
 
 	// initialize the necessary maps for graph information
 	graph_to_name[&m_graph] = "optimized_graph";
 	graph_to_viz_params[&m_graph] = &m_optimized_graph_viz_params;
 
-	m_is3D = constraint_t::is_3D_val;
 
 	// max node number already in the graph
 	m_nodeID_max = 0;
-
 	m_graph.root = TNodeID(0);
 
-	// Calling of initalization-relevant functions
-	this->readConfigFile(m_config_fname);
-	this->initOutputDir();
-	this->printProblemParams();
 
 	/**
 	 * Visualization-related parameters initialization
@@ -306,8 +306,10 @@ void GraphSlamEngine_t<GRAPH_t>::initGraphSlamEngine() {
 		m_win->unlockAccess3DScene();
 		m_win->forceRepaint();
 	}
+
 	// ICP_max_distance disk
-	if (m_win) {
+	assert(m_has_read_config);
+	if (m_win && m_ICP_use_distance_criterion && m_ICP_max_distance > 0) {
 		COpenGLScenePtr scene = m_win->get3DSceneAndLock();
 
 		CDiskPtr obj = CDisk::Create();
@@ -560,7 +562,7 @@ bool GraphSlamEngine_t<GRAPH_t>::parseRawlogFile() {
 				
 				m_curr_estimated_pose = m_graph.nodes[from] + since_prev_node_PDF.getMeanVal();
 			}
-			// odometry criterium
+			// odometry criterion
 			if ( (last_pose_inserted.distanceTo(m_curr_estimated_pose) > m_distance_threshold) ||
 					fabs(wrapToPi(last_pose_inserted.phi() - m_curr_estimated_pose.phi())) > m_angle_threshold ) {
 				
@@ -586,50 +588,32 @@ bool GraphSlamEngine_t<GRAPH_t>::parseRawlogFile() {
 				CObservation2DRangeScanPtr curr_laser_scan =
 					observations->getObservationByClass<CObservation2DRangeScan>();
 				m_nodes_to_laser_scans[m_nodeID_max] = curr_laser_scan;
-			
-				////If m_prev_nodes_for_ICP = -1 try adding with all of the other nodes
-				//int nodes_to_check = 0; // how many nodes to check ICP against
-				//switch ( m_prev_nodes_for_ICP ) 
-				//{
-					//case -1: 
-						//{
-							//nodes_to_check = m_nodeID_max - 1;
-							////cout << "Checking ICP against all other nodes in the graph." << endl;
-							//break;
-						//}
-					//default: 
-						//{
-							//nodes_to_check = m_prev_nodes_for_ICP;
-							////cout << "Checking ICP against " << nodes_to_check << " nodes in the graph." << endl;
-							//break;
-						//}
-				//}
 
-				// distance criterium for checking ICP
-				std::vector<TNodeID> nodes_to_check_ICP;
+				// build the list of nodes against which we check possible ICP
+				// constraint
+				std::set<TNodeID> nodes_to_check_ICP;
 				{
 					CCriticalSectionLocker m_graph_lock(&m_graph_section);
 
+					cout << "m_nodeID_max = " << m_nodeID_max << endl;
+					cout << "nodeCount = " << m_graph.nodeCount() << endl;
 					// call it here and call it once every iteration
 					m_graph.dijkstra_nodes_estimate(); 
-
-					for (TNodeID nodeID = 0; nodeID <= m_nodeID_max; ++nodeID) {
-						double curr_distance = m_graph.nodes[nodeID].distanceTo(
-								m_graph.nodes[m_nodeID_max-1]);
-						cout << "Distance for ICP is: " << curr_distance << endl;
-						if (curr_distance <= m_ICP_max_distance) {
-							nodes_to_check_ICP.push_back(nodeID);
-						}
-					}
+				}
+				if (m_ICP_use_distance_criterion) {
+					this->getNeighborsOfNode(&nodes_to_check_ICP,
+							m_nodeID_max,
+							&m_ICP_max_distance,
+							m_ICP_use_distance_criterion);
+				}
+				else {
+					this->getNeighborsOfNode(&nodes_to_check_ICP,
+							m_nodeID_max,
+							&m_ICP_prev_nodes,
+							m_ICP_use_distance_criterion);
 				}
 
-				//for (TNodeID prev_node = m_nodeID_max-1;
-						//prev_node != (m_nodeID_max - nodes_to_check - 1) ; --prev_node) {
-					//// make sure you have enough nodes to start adding edges
-					//if (m_nodeID_max < nodes_to_check)
-						//break;
-
-				for (vector<TNodeID>::const_iterator node_it = nodes_to_check_ICP.begin();
+				for (set<TNodeID>::const_iterator node_it = nodes_to_check_ICP.begin();
 						node_it != nodes_to_check_ICP.end(); ++node_it) {
 
 					CObservation2DRangeScanPtr prev_laser_scan = m_nodes_to_laser_scans[*node_it];
@@ -684,7 +668,7 @@ bool GraphSlamEngine_t<GRAPH_t>::parseRawlogFile() {
 					m_win->unlockAccess3DScene();
 				}
 				// update ICP_max_distance Disk
-				if (m_win) {
+				if (m_win && m_ICP_use_distance_criterion && m_ICP_max_distance > 0) {
 					COpenGLScenePtr scene = m_win->get3DSceneAndLock();
 
 					CRenderizablePtr obj = scene->getByName("ICP_max_distance");
@@ -709,7 +693,7 @@ bool GraphSlamEngine_t<GRAPH_t>::parseRawlogFile() {
 
 
 
-			} // IF ODOMETRY_CRITERIUM
+			} // IF ODOMETRY_CRITERION
 		} // ELSE FORMAT #1
 
 
@@ -809,7 +793,6 @@ void GraphSlamEngine_t<GRAPH_t>::visualizeGraph(const GRAPH_t& gr) {
 
 	// Autozoom to the graph?
 	if (m_autozoom_active) {
-		cout << "Autozoom disabled. " << endl;
 		this->autofitObjectInView(graph_obj);
 	}
 
@@ -921,10 +904,38 @@ void GraphSlamEngine_t<GRAPH_t>::readConfigFile(const string& fname) {
 	//mapBuilder.ICP_params.loadFromConfigFile ( iniFile, "ICP");
 	m_ICP.options.loadFromConfigFile(cfg_file, "ICP");
 
-	m_ICP_max_distance = cfg_file.read_double(
-			"ICP",
-			"ICP_max_distance",
-			5, false);
+	/** 
+	 * Criterion for building the list of nodes for ICP checks. Uses either
+	 * distance from current node or number of nodes prior/after current node
+	 * If none, or both of ICP_max_distance, ICP_prev_nodes parameters are
+	 * defined in the .ini file, throw exception
+	 */
+	bool ICP_max_distance_exists = false;
+	bool ICP_prev_nodes_exists = false;
+	vector<string> keys;
+	cfg_file.getAllKeys("ICP", keys);
+	if (std::find(keys.begin(), keys.end(), "ICP_max_distance") != keys.end()) {
+		m_ICP_max_distance = cfg_file.read_double(
+				"ICP",
+				"ICP_max_distance",
+				5, false);
+		ICP_max_distance_exists = true;
+	}
+	if (std::find(keys.begin(), keys.end(), "ICP_prev_nodes") != keys.end()) {
+		m_ICP_prev_nodes = cfg_file.read_int(
+				"ICP",
+				"ICP_prev_nodes",
+				5, false);
+		ICP_prev_nodes_exists = true;
+	}
+
+	if (ICP_max_distance_exists && ICP_prev_nodes_exists ||
+			!ICP_max_distance_exists && !ICP_prev_nodes_exists) {
+		THROW_EXCEPTION("User should specify either the ICP_prev_nodes"
+				<< "or the ICP_max distance parameter")
+	}
+	m_ICP_use_distance_criterion = ICP_max_distance_exists;
+
 	m_ICP_goodness_thres = cfg_file.read_double(
 			"ICP",
 			"ICP_goodness_thres",
@@ -1033,36 +1044,42 @@ void GraphSlamEngine_t<GRAPH_t>::printProblemParams() const {
 
 	ss_out << "-----------------------------------------------------------" << endl;
 	ss_out << " Graphslam_engine: Problem Parameters " << endl;
-	ss_out << " Config filename                 = " 
+	ss_out << " Config filename                 = "
 		<< m_config_fname << endl;
-	ss_out << " Rawlog filename                 = " 
+	ss_out << " Rawlog filename                 = "
 		<< m_rawlog_fname << endl;
-	ss_out << " Output directory                = " 
+	ss_out << " Output directory                = "
 		<< m_output_dir_fname << endl;
-	ss_out << " User decides about output dir   = " 
+	ss_out << " User decides about output dir   = "
 		<< m_user_decides_about_output_dir << endl;
-	ss_out << " Debug mode                      = " 
+	ss_out << " Debug mode                      = "
 		<< m_do_debug << endl;
-	ss_out << " save_graph_fname                = " 
+	ss_out << " save_graph_fname                = "
 		<< m_save_graph_fname << endl;
-	ss_out << " do_pose_graph_only              = " 
+	ss_out << " do_pose_graph_only              = "
 		<<	m_do_pose_graph_only << endl;
-	ss_out << " optimizer                       = " 
+	ss_out << " optimizer                       = "
 		<< m_optimizer << endl;
-	ss_out << " Loop closing alg                = " 
+	ss_out << " Loop closing alg                = "
 		<< m_loop_closing_alg << endl;
-	ss_out << " Loop Closing min. node distance = " 
+	ss_out << " Loop Closing min. node distance = "
 		<< m_loop_closing_alg << endl;
-	ss_out << " Decider alg                     = " 
+	ss_out << " Decider alg                     = "
 		<< m_decider_alg << endl;
-	ss_out << " Distance threshold              = " 
+	ss_out << " Distance threshold              = "
 		<< m_distance_threshold << " m" << endl;
-	ss_out << " Angle threshold                 = " 
+	ss_out << " Angle threshold                 = "
 		<< RAD2DEG(m_angle_threshold) << " deg" << endl;
-	ss_out << "ICP Goodness threshold           = " 
+	ss_out << "ICP Goodness threshold           = "
 		<< m_ICP_goodness_thres << endl;
-	ss_out << "Maximum distance for ICP check   = "
-		<< m_ICP_max_distance << endl;
+	if (m_ICP_use_distance_criterion) {
+		ss_out << "Maximum distance for ICP check  = "
+			<< m_ICP_max_distance << endl;
+	}
+	else {
+		ss_out << "Num of previous nodes  for ICP  = "
+			<< m_ICP_prev_nodes << endl;
+	}
 	ss_out << "Visualize odometry               = " 
 		<< m_visualize_odometry_poses << endl;
 	ss_out << "Visualize optimized path         = " 
@@ -1085,10 +1102,7 @@ void GraphSlamEngine_t<GRAPH_t>::printProblemParams() const {
 	ss_out << "-----------------------------------------------------------" << endl;
 	cout << ss_out.str(); ss_out.str("");
 
-	// TODO - resolve this
-	//map_builder.ICP_params.dumpToConsole();
-	//map_builder.ICP_options.dumpToConsole();
-
+	//mrpt::system::pause();
 
 	MRPT_END
 }
@@ -1366,4 +1380,54 @@ void GraphSlamEngine_t<GRAPH_t>::queryObserverForEvents() {
 
 }
 
+template <class GRAPH_t>
+void GraphSlamEngine_t<GRAPH_t>::getNeighborsOfNode(set<TNodeID> *lstNodes, 
+		const TNodeID& cur_nodeID,
+		void* num_nodes_or_distance, 
+		bool use_distance_criterion /* = true */) {
+
+	CCriticalSectionLocker m_graph_lock(&m_graph_section);
+
+	if (use_distance_criterion) {
+		double* p_distance = static_cast<double*>(num_nodes_or_distance);
+
+		if (*p_distance > 0) {
+			for (TNodeID nodeID = 0; nodeID <= m_nodeID_max; ++nodeID) {
+				double curr_distance = m_graph.nodes[nodeID].distanceTo(
+						m_graph.nodes[cur_nodeID]);
+				//cout << "Distance for ICP is: " << curr_distance << endl;
+				if (curr_distance <= *p_distance) {
+					lstNodes->insert(nodeID);
+				}
+			}
+		}
+		else { // check against all nodes 
+			m_graph.getAllNodes(*lstNodes);
+		}
+
+	}
+	else  {
+		int* p_num_nodes = static_cast<int*>(num_nodes_or_distance);
+
+		if (*p_num_nodes > 0) {
+			// add nodes previous to the current 
+			for (int a_node = cur_nodeID-1; // should be int, and not unsigned int as it may get < 0 
+					(a_node != (cur_nodeID-1 - *p_num_nodes)) && (a_node >= 0); --a_node) {
+				lstNodes->insert(a_node);
+			}
+			// add nodes after the current - if any in the graph
+			if (m_graph.nodeCount()-1  > cur_nodeID) {
+				for (TNodeID a_node = cur_nodeID+1;
+						a_node < cur_nodeID+1 + *p_num_nodes && a_node <= m_graph.nodeCount()-1;
+						a_node++) {
+					cout << "Adding node after current!" << endl;
+					lstNodes->insert(a_node);
+				}
+			}
+		}
+		else { // check against all nodes
+			m_graph.getAllNodes(*lstNodes);
+		}
+	}
+}
 
