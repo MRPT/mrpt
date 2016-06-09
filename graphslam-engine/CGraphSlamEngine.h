@@ -58,21 +58,26 @@
 bool verbose = true;
 #define VERBOSE_COUT	if (verbose) std::cout << "[graphslam_engine] "
 
-template<class GRAPH_t>
+template< class GRAPH_t, class NODE_REGISTRATOR >
 class CGraphSlamEngine_t {
 	public:
 
 		typedef std::map<std::string, mrpt::utils::CFileOutputStream*> fstreams_out;
-		typedef std::map<std::string, mrpt::utils::CFileOutputStream*>::iterator fstreams_out_it;
-		typedef std::map<std::string, mrpt::utils::CFileOutputStream*>::const_iterator fstreams_out_cit;
+		typedef std::map<std::string, mrpt::utils::CFileOutputStream*>::
+			iterator fstreams_out_it;
+		typedef std::map<std::string, mrpt::utils::CFileOutputStream*>::
+			const_iterator fstreams_out_cit;
 
 		typedef std::map<std::string, mrpt::utils::CFileInputStream*> fstreams_in;
-		typedef std::map<std::string, mrpt::utils::CFileInputStream*>::iterator fstreams_in_it;
-		typedef std::map<std::string, mrpt::utils::CFileInputStream*>::const_iterator fstreams_in_cit;
-
+		typedef std::map<std::string, mrpt::utils::CFileInputStream*>::
+			iterator fstreams_in_it;
+		typedef std::map<std::string, mrpt::utils::CFileInputStream*>::
+			const_iterator fstreams_in_cit;
 
 		typedef typename GRAPH_t::constraint_t constraint_t;
-		typedef typename GRAPH_t::constraint_t::type_value pose_t; // type of underlying poses (2D/3D)
+		// type of underlying poses (2D/3D)
+		typedef typename GRAPH_t::constraint_t::type_value pose_t; 
+
 		typedef mrpt::math::CMatrixFixedNumeric<double,
 						constraint_t::state_length, constraint_t::state_length> InfMat;
 
@@ -237,7 +242,7 @@ class CGraphSlamEngine_t {
 
 		// the graph object to be built and optimized
 		GRAPH_t m_graph;
-		CFixedIntervalsNRD_t<GRAPH_t>  m_node_registrator; // TODO make this a template argument
+		NODE_REGISTRATOR m_node_registrator; 
 
 		/**
 		 * Problem parameters.
@@ -259,10 +264,6 @@ class CGraphSlamEngine_t {
 
 		std::string	m_loop_closing_alg;
 		double	m_loop_closing_min_nodeid_diff;
-
-		std::string	m_decider_alg;
-		double	m_registration_max_distance;
-		double	m_registration_max_angle;
 
 		bool		m_has_read_config;
 

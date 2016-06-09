@@ -71,8 +71,9 @@ using namespace std;
 // Ctors, Dtors implementations
 //////////////////////////////////////////////////////////////
 
-template<class GRAPH_t>
-CGraphSlamEngine_t<GRAPH_t>::CGraphSlamEngine_t(const string& config_file,
+template<class GRAPH_t, class NODE_REGISTRATOR>
+CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR>::CGraphSlamEngine_t(
+		const string& config_file,
 		CDisplayWindow3D* win /* = NULL */,
 		CWindowObserver* win_observer /* = NULL */,
 		string rawlog_fname /* = "" */ ):
@@ -89,34 +90,38 @@ CGraphSlamEngine_t<GRAPH_t>::CGraphSlamEngine_t(const string& config_file,
 	this->initGraphSlamEngine();
 };
 
-template<class GRAPH_t>
-CGraphSlamEngine_t<GRAPH_t>::~CGraphSlamEngine_t() {
-	VERBOSE_COUT << "In Destructor: Deleting CGraphSlamEngine_t instance..." << endl;
+template<class GRAPH_t, class NODE_REGISTRATOR>
+CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR>::~CGraphSlamEngine_t() {
+	MRPT_START
+
+	VERBOSE_COUT << "In Destructor: Deleting CGraphSlamEngine_t instance..." 
+		<< std::endl;
 
 	// close all open files
 	for (fstreams_out_it it  = m_out_streams.begin(); it != m_out_streams.end(); 
 			++it) {
 		if ((it->second)->fileOpenCorrectly()) {
-			VERBOSE_COUT << "Closing file: " << (it->first).c_str() << endl;
+			VERBOSE_COUT << "Closing file: " << (it->first).c_str() << std::endl;
 			(it->second)->close();
 		}
 	}
 	for (fstreams_in_it it  = m_in_streams.begin(); it != m_in_streams.end(); 
 			++it) {
 		if ((it->second)->fileOpenCorrectly()) {
-			VERBOSE_COUT << "Closing file: " << (it->first).c_str() << endl;
+			VERBOSE_COUT << "Closing file: " << (it->first).c_str() << std::endl;
 			(it->second)->close();
 		}
 	}
 
+	MRPT_END
 }
 
 
 // Member functions implementations
 //////////////////////////////////////////////////////////////
 
-template<class GRAPH_t>
-void CGraphSlamEngine_t<GRAPH_t>::initGraphSlamEngine() {
+template<class GRAPH_t, class NODE_REGISTRATOR>
+void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR>::initGraphSlamEngine() {
 	MRPT_START
 
 	/** 
@@ -151,7 +156,7 @@ void CGraphSlamEngine_t<GRAPH_t>::initGraphSlamEngine() {
 	this->printProblemParams();
 	this->m_node_registrator.params.dumpToConsole();
 
-	mrpt::system::pause();
+	//mrpt::system::pause();
 
 	/**
 	 * Visualization-related parameters initialization
@@ -174,7 +179,7 @@ void CGraphSlamEngine_t<GRAPH_t>::initGraphSlamEngine() {
 	// optimized graph
 	assert(m_has_read_config);
 	if (m_visualize_optimized_graph) {
-		this->assignTextMessageParameters( /* offset_y*		= */ &m_offset_y_graph,
+		this->assignTextMessageParameters( /* offset_y*	= */ &m_offset_y_graph,
 				/* text_index* = */ &m_text_index_graph );
 	}
 
@@ -185,7 +190,7 @@ void CGraphSlamEngine_t<GRAPH_t>::initGraphSlamEngine() {
 		assert(m_win && 
 				"Visualization of data was requested but no CDisplayWindow3D pointer was given");
 
-		this->assignTextMessageParameters( /* offset_y*		= */ &m_offset_y_odometry,
+		this->assignTextMessageParameters( /* offset_y* = */ &m_offset_y_odometry,
 				/* text_index* = */ &m_text_index_odometry);
 
 		COpenGLScenePtr scene = m_win->get3DSceneAndLock();
@@ -331,10 +336,11 @@ void CGraphSlamEngine_t<GRAPH_t>::initGraphSlamEngine() {
 		double offset_y_total_edges, offset_y_loop_closures;
 		int text_index_total_edges, text_index_loop_closures;
 
-		this->assignTextMessageParameters(&offset_y_total_edges, &text_index_total_edges);
-		//cout << "in GraphSlamEngine:	" << endl
-		//<< "offset_y_total_edges: " << offset_y_total_edges << endl
-		//<< "text_index_total_edges: " << text_index_total_edges << endl;
+		this->assignTextMessageParameters(&offset_y_total_edges, 
+				&text_index_total_edges);
+		//std::cout << "in GraphSlamEngine:	" << std::endl
+		//<< "offset_y_total_edges: " << offset_y_total_edges << std::endl
+		//<< "text_index_total_edges: " << text_index_total_edges << std::endl;
 
 		// constraint types..
 
@@ -343,26 +349,29 @@ void CGraphSlamEngine_t<GRAPH_t>::initGraphSlamEngine() {
 
 		// register all the edge types
 		vector<string> vec_edge_types;
-		vec_edge_types.push_back("Odometry"); m_edge_counter.addEdgeType("Odometry");
-		vec_edge_types.push_back("ICP");			m_edge_counter.addEdgeType("ICP");
-		vec_edge_types.push_back("Visual");		m_edge_counter.addEdgeType("Visual");
+		vec_edge_types.push_back("Odometry");m_edge_counter.addEdgeType("Odometry");
+		vec_edge_types.push_back("ICP"); m_edge_counter.addEdgeType("ICP");
+		vec_edge_types.push_back("Visual"); m_edge_counter.addEdgeType("Visual");
 
 		// build each one of these
 		map<string, double> name_to_offset_y;
 		map<string, int> name_to_text_index;
-		for (vector<string>::const_iterator it = vec_edge_types.begin(); it != vec_edge_types.end();
+		for (vector<string>::const_iterator it = vec_edge_types.begin(); 
+				it != vec_edge_types.end();
 				++it) {
-			this->assignTextMessageParameters(&name_to_offset_y[*it], &name_to_text_index[*it]);
-			//cout << "in initGraphSlamEngine: " << endl;
-			//cout << "name: " << *it << " | offset_y: "
+			this->assignTextMessageParameters(&name_to_offset_y[*it], 
+					&name_to_text_index[*it]);
+			//std::cout << "in initGraphSlamEngine: " << std::endl;
+			//std::cout << "name: " << *it << " | offset_y: "
 			//<< name_to_offset_y[*it] << " | text_index: "
-			//<< name_to_text_index[*it] << endl;
+			//<< name_to_text_index[*it] << std::endl;
 		}
 
-		this->assignTextMessageParameters(&offset_y_loop_closures, &text_index_loop_closures);
-		//cout << "in GraphSlamEngine:	" << endl
-		//<< "offset_y_loop_closures: " << offset_y_loop_closures << endl
-		//<< "text_index_loop_closures: " << text_index_loop_closures <<endl;
+		this->assignTextMessageParameters(&offset_y_loop_closures, 
+				&text_index_loop_closures);
+		//std::cout << "in GraphSlamEngine:	" << std::endl
+		//<< "offset_y_loop_closures: " << offset_y_loop_closures << std::endl
+		//<< "text_index_loop_closures: " << text_index_loop_closures <<std::endl;
 
 		if (m_win) {
 			// add all the parameters to the EdgeCounter_t object
@@ -379,8 +388,8 @@ void CGraphSlamEngine_t<GRAPH_t>::initGraphSlamEngine() {
 	MRPT_END
 }
 
-template<class GRAPH_t>
-bool CGraphSlamEngine_t<GRAPH_t>::parseRawlogFile() {
+template<class GRAPH_t, class NODE_REGISTRATOR>
+bool CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR>::parseRawlogFile() {
 	MRPT_START
 
 	if (!m_has_read_config)
@@ -421,9 +430,9 @@ bool CGraphSlamEngine_t<GRAPH_t>::parseRawlogFile() {
 	{
 		CRawlog::getActionObservationPairOrObservation(
 				rawlog_file,
-				action,								// Possible out var: Action of a a pair action / obs
-				observations,					// Possible out var: obs's of a pair actin		 / obs
-				observation,					// Possible out var
+				action,	// Possible out var: Action of a a pair action / obs
+				observations, // Possible out var: obs's of a pair actin		 / obs
+				observation, // Possible out var
 				curr_rawlog_entry );
 		if (observation.present()) {
 			// TODO - add here..
@@ -440,9 +449,9 @@ bool CGraphSlamEngine_t<GRAPH_t>::parseRawlogFile() {
 	 */
 	while (CRawlog::getActionObservationPairOrObservation(
 				rawlog_file,
-				action,								// Possible out var: Action of a a pair action / obs
-				observations,					// Possible out var: obs's of a pair actin		 / obs
-				observation,					// Possible out var
+				action,	// Possible out var: Action of a a pair action / obs
+				observations,	// Possible out var: obs's of a pair actin		 / obs
+				observation, // Possible out var
 				curr_rawlog_entry ) ) {
 
 		// process action & observations
@@ -460,18 +469,11 @@ bool CGraphSlamEngine_t<GRAPH_t>::parseRawlogFile() {
 			 * ACTION PART - Handle the odometry information of the rawlog file
 			 */
 
-			// parse the current action
+			//// parse the current action
 			CActionRobotMovement2DPtr robot_move = action->getBestMovementEstimation();
 			CPosePDFPtr increment = robot_move->poseChange;
 			pose_t increment_pose = increment->getMeanVal();
-			InfMat increment_inf_mat;
-			increment->getInformationMatrix(increment_inf_mat);
-
 			curr_odometry_only_pose += increment_pose;
-
-			// update the relative uncertainty of the path since the LAST node was inserted
-			constraint_t incremental_constraint(increment_pose, increment_inf_mat);
-			since_prev_node_PDF += incremental_constraint;
 
 			/**
 			 * Timestamp textMessage
@@ -543,37 +545,24 @@ bool CGraphSlamEngine_t<GRAPH_t>::parseRawlogFile() {
 				m_win->forceRepaint();
 			}
 
-			/**
-			 * Fixed intervals odometry edge insertion
-			 * Determine whether to insert a new pose in the graph given the
-			 * distance and angle thresholds
-			 */
-
-			// update the current estimated pose of the robot
+			bool registered_new_node;
 			{
 				CCriticalSectionLocker m_graph_lock(&m_graph_section);
-				
-				m_curr_estimated_pose = m_graph.nodes[from] + since_prev_node_PDF.getMeanVal();
-			}
-			// odometry criterion
-			if ( (last_pose_inserted.distanceTo(m_curr_estimated_pose) > m_registration_max_distance) ||
-					fabs(wrapToPi(last_pose_inserted.phi() - m_curr_estimated_pose.phi())) > m_registration_max_angle ) {
-				
-				from = m_nodeID_max;
-				TNodeID to = ++m_nodeID_max;
-
-				// build the relative edge and insert it
-				{
-					//constraint_t rel_edge;
-
-					{
-						CCriticalSectionLocker m_graph_lock(&m_graph_section);
-
-						m_graph.nodes[to] = m_graph.nodes[from] + since_prev_node_PDF.getMeanVal();
-						m_graph.insertEdgeAtEnd(from, to, since_prev_node_PDF);
-						m_edge_counter.addEdge("Odometry");
-					}
+				registered_new_node = m_node_registrator.updateDeciderState(
+						action, observations, observation);
+				if (registered_new_node) {
+					m_edge_counter.addEdge("Odometry");
 				}
+			}
+
+			if (registered_new_node) {
+
+				{
+					CCriticalSectionLocker m_graph_lock(&m_graph_section);
+					m_nodeID_max = m_graph.nodeCount()-1;
+				}
+				//std::cout << "Trying to add new edges with current node: " 
+					//<< m_nodeID_max<< std::endl;
 
 				/**
 				 * add ICP constraint with "some" of the previous nodes
@@ -603,27 +592,30 @@ bool CGraphSlamEngine_t<GRAPH_t>::parseRawlogFile() {
 							&m_ICP_prev_nodes,
 							m_ICP_use_distance_criterion);
 				}
+				//mrpt::system::pause();
 
+				// try adding ICP constraints with each node in the previous list
 				for (set<TNodeID>::const_iterator node_it = nodes_to_check_ICP.begin();
 						node_it != nodes_to_check_ICP.end(); ++node_it) {
 
 					CObservation2DRangeScanPtr prev_laser_scan = m_nodes_to_laser_scans[*node_it];
 					constraint_t rel_edge;
-					double ICP_goodness = this->getICPEdge(*node_it, to, &rel_edge);
+					double ICP_goodness = this->getICPEdge(*node_it, m_nodeID_max, &rel_edge);
 					if (ICP_goodness > m_ICP_goodness_thres) {
 						{
 							CCriticalSectionLocker m_graph_lock(&m_graph_section);
-							m_graph.insertEdge(*node_it, to, rel_edge);
+							m_graph.insertEdge(*node_it, m_nodeID_max, rel_edge);
 
 							//VERBOSE_COUT << "Added ICP constraint betwen nodes "
-								//<< to << ", " << *node_it << "." << endl;
-							//VERBOSE_COUT << "Edge: " << endl << rel_edge << endl;
-							//VERBOSE_COUT << "ICP goodness: " << ICP_goodness << endl;
+								//<< m_nodeID_max << ", " << *node_it << "." << std::endl;
+							//VERBOSE_COUT << "Edge: " << std::endl << rel_edge << std::endl;
+							//VERBOSE_COUT << "ICP goodness: " << ICP_goodness << std::endl;
 						}
 
 						// register a loop closing constraint if distance of nodes larger
 						// than the predefined m_loop_closing_min_nodeid_diff
-						bool is_loop_closure = (to - *node_it >= m_loop_closing_min_nodeid_diff) ? 1 : 0;
+						bool is_loop_closure = (m_nodeID_max - *node_it 
+								>= m_loop_closing_min_nodeid_diff) ? 1 : 0;
 						m_edge_counter.addEdge("ICP", is_loop_closure);
 					}
 				}
@@ -643,7 +635,6 @@ bool CGraphSlamEngine_t<GRAPH_t>::parseRawlogFile() {
 					visualizeGraph(m_graph);
 					updateCurPosViewport(m_graph);
 				}
-
 
 				// update robot model
 				if (m_win) {
@@ -672,18 +663,6 @@ bool CGraphSlamEngine_t<GRAPH_t>::parseRawlogFile() {
 					m_win->unlockAccess3DScene();
 				}
 
-
-				// reset the relative PDF
-				{
-					CCriticalSectionLocker m_graph_lock(&m_graph_section);
-
-					since_prev_node_PDF.cov_inv = init_path_uncertainty;
-					since_prev_node_PDF.mean = pose_t();
-					last_pose_inserted = m_graph.nodes[to];
-				}
-
-
-
 			} // IF ODOMETRY_CRITERION
 		} // ELSE FORMAT #1
 
@@ -694,7 +673,7 @@ bool CGraphSlamEngine_t<GRAPH_t>::parseRawlogFile() {
 		this->queryObserverForEvents();
 
 		if (m_request_to_exit) {
-			cout << "Halting execution... " << endl;
+			std::cout << "Halting execution... " << std::endl;
 			joinThread(m_thread_optimize);
 			return false; // exit the parseRawlogFile method
 		}
@@ -704,21 +683,19 @@ bool CGraphSlamEngine_t<GRAPH_t>::parseRawlogFile() {
 		 */
 		if (m_edge_counter.getTotalNumOfEdges() % m_num_of_edges_for_collapse == 0) {
 			CCriticalSectionLocker m_graph_lock(&m_graph_section);
-			//cout << "Collapsing duplicated edges..." << endl;
+			//std::cout << "Collapsing duplicated edges..." << std::endl;
 
 			int removed_edges = m_graph.collapseDuplicatedEdges();
 			m_edge_counter.setRemovedEdges(removed_edges);
 		}
-
-
 
 	} // WHILE CRAWLOG FILE
 	return true; // function execution completed successfully
 MRPT_END
 } // END OF FUNCTION
 
-template<class GRAPH_t>
-void CGraphSlamEngine_t<GRAPH_t>::optimizeGraph(GRAPH_t* gr) {
+template<class GRAPH_t, class NODE_REGISTRATOR>
+void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR>::optimizeGraph(GRAPH_t* gr) {
 	MRPT_START
 
 	CTicTac optimization_timer;
@@ -726,9 +703,9 @@ void CGraphSlamEngine_t<GRAPH_t>::optimizeGraph(GRAPH_t* gr) {
 
 	CCriticalSectionLocker m_graph_lock(&m_graph_section);
 
-	//cout << "In optimizeGraph: threadID: " << getCurrentThreadId()<< endl;
+	//std::cout << "In optimizeGraph: threadID: " << getCurrentThreadId()<< std::endl;
 
-	//cout << "Executing the graph optimization" << endl;
+	//std::cout << "Executing the graph optimization" << std::endl;
 	graphslam::TResultInfoSpaLevMarq	levmarq_info;
 
 	// Execute the optimization
@@ -737,22 +714,23 @@ void CGraphSlamEngine_t<GRAPH_t>::optimizeGraph(GRAPH_t* gr) {
 			levmarq_info,
 			NULL,  // List of nodes to optimize. NULL -> all but the root node.
 			m_optimization_params,
-			&levMarqFeedback<GRAPH_t>); // functor feedback
+			&levMarqFeedback<GRAPH_t, NODE_REGISTRATOR>); // functor feedback
 
 	double elapsed_time = optimization_timer.Tac();
-	//VERBOSE_COUT << "Optimization of graph took: " << elapsed_time << "s" << endl;
+	//VERBOSE_COUT << "Optimization of graph took: " << elapsed_time << "s" << std::endl;
 
 	MRPT_END
 }
 
-template<class GRAPH_t>
-void CGraphSlamEngine_t<GRAPH_t>::visualizeGraph(const GRAPH_t& gr) {
+template<class GRAPH_t, class NODE_REGISTRATOR>
+void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR>::visualizeGraph(
+		const GRAPH_t& gr) {
 	MRPT_START
 
 	assert(m_win &&
 			"Visualization of data was requested but no CDisplayWindow3D pointer was given");
 
-	//cout << "Inside the visualizeGraph function" << endl;
+	//std::cout << "Inside the visualizeGraph function" << std::endl;
 	
 	CCriticalSectionLocker m_graph_lock(&m_graph_section);
 
@@ -790,11 +768,12 @@ void CGraphSlamEngine_t<GRAPH_t>::visualizeGraph(const GRAPH_t& gr) {
 	MRPT_END
 }
 
-template<class GRAPH_t>
-void CGraphSlamEngine_t<GRAPH_t>::readConfigFile(const string& fname) {
+template<class GRAPH_t, class NODE_REGISTRATOR>
+void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR>::readConfigFile(
+		const string& fname) {
 	MRPT_START
 
-	VERBOSE_COUT << "Reading the .ini file... " << endl;
+	VERBOSE_COUT << "Reading the .ini file... " << std::endl;
 
 	CConfigFile cfg_file(fname);
 
@@ -866,26 +845,10 @@ void CGraphSlamEngine_t<GRAPH_t>::readConfigFile(const string& fname) {
 			"levmarq", false);
 	// Section: LoopClosingParameters
 	// ////////////////////////////////
-	m_loop_closing_alg = cfg_file.read_string(
-			"LoopClosingParameters",
-			"loop_closing_alg",
-			"", true);
 	m_loop_closing_min_nodeid_diff = cfg_file.read_double(
 			"LoopClosingParameters",
 			"loop_closing_min_nodeid_diff",
 			5, true);
-
-	// Section: DecidersConfiguration  - When to insert new nodes?
-	// ////////////////////////////////
-	m_registration_max_distance = cfg_file.read_double(
-			"NodeRegistrationDecidersParameters",
-			"registration_max_distance",
-			5 /* meter */, false);
-	m_registration_max_angle= cfg_file.read_double(
-			"NodeRegistrationDecidersParameters",
-			"registration_max_angle",
-			60 /* degrees */, false);
-	m_registration_max_angle = DEG2RAD(m_registration_max_angle);
 
 	//// Section: ICP
 	//// ////////////////////////////////
@@ -1018,8 +981,8 @@ void CGraphSlamEngine_t<GRAPH_t>::readConfigFile(const string& fname) {
 }
 
 // TODO - check for new value from above
-template<class GRAPH_t>
-void CGraphSlamEngine_t<GRAPH_t>::printProblemParams() const {
+template<class GRAPH_t, class NODE_REGISTRATOR>
+void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR>::printProblemParams() const {
 	MRPT_START
 
 	assert(m_has_read_config);
@@ -1027,76 +990,70 @@ void CGraphSlamEngine_t<GRAPH_t>::printProblemParams() const {
 	stringstream ss_out;
 
 	ss_out << "------------[ Graphslamm_engine Problem Parameters ]------------" 
-		<< endl;
-	ss_out << "Graphslam_engine: Problem Parameters " << endl;
+		<< std::endl;
+	ss_out << "Graphslam_engine: Problem Parameters " << std::endl;
 	ss_out << "Config filename                 = "
-		<< m_config_fname << endl;
+		<< m_config_fname << std::endl;
 	ss_out << "Rawlog filename                 = "
-		<< m_rawlog_fname << endl;
+		<< m_rawlog_fname << std::endl;
 	ss_out << "Output directory                = "
-		<< m_output_dir_fname << endl;
+		<< m_output_dir_fname << std::endl;
 	ss_out << "User decides about output dir   = "
-		<< m_user_decides_about_output_dir << endl;
+		<< m_user_decides_about_output_dir << std::endl;
 	ss_out << "Debug mode                      = "
-		<< m_do_debug << endl;
+		<< m_do_debug << std::endl;
 	ss_out << "save_graph_fname                = "
-		<< m_save_graph_fname << endl;
+		<< m_save_graph_fname << std::endl;
 	ss_out << "do_pose_graph_only              = "
-		<<	m_do_pose_graph_only << endl;
+		<<	m_do_pose_graph_only << std::endl;
 	ss_out << "optimizer                       = "
-		<< m_optimizer << endl;
+		<< m_optimizer << std::endl;
 	ss_out << "Loop closing alg                = "
-		<< m_loop_closing_alg << endl;
+		<< m_loop_closing_alg << std::endl;
 	ss_out << "Loop Closing min. node distance = "
-		<< m_loop_closing_alg << endl;
-	ss_out << "Decider alg                     = "
-		<< m_decider_alg << endl;
-	ss_out << "Registration - maximum distance = "
-		<< m_registration_max_distance << " m" << endl;
-	ss_out << "Registration - maximum angle    = "
-		<< RAD2DEG(m_registration_max_angle) << " deg" << endl;
+		<< m_loop_closing_alg << std::endl;
 	ss_out << "ICP Goodness threshold          = "
-		<< m_ICP_goodness_thres << endl;
+		<< m_ICP_goodness_thres << std::endl;
 	if (m_ICP_use_distance_criterion) {
 		ss_out << "Maximum distance for ICP check  = "
-			<< m_ICP_max_distance << endl;
+			<< m_ICP_max_distance << std::endl;
 	}
 	else {
 		ss_out << "Num of previous nodes  for ICP  = "
-			<< m_ICP_prev_nodes << endl;
+			<< m_ICP_prev_nodes << std::endl;
 	}
 	ss_out << "Visualize odometry              = " 
-		<< m_visualize_odometry_poses << endl;
+		<< m_visualize_odometry_poses << std::endl;
 	ss_out << "Visualize optimized path        = " 
-		<< m_visualize_odometry_poses << endl;
+		<< m_visualize_odometry_poses << std::endl;
 	ss_out << "Visualize Ground Truth          = " 
-		<< m_visualize_odometry_poses << endl;
+		<< m_visualize_odometry_poses << std::endl;
 	ss_out << "Ground Truth filename           = "
-		<< m_fname_GT << endl;
+		<< m_fname_GT << std::endl;
 	ss_out << "-----------------------------------------------------------" 
-		<< endl;
-	ss_out << endl;
+		<< std::endl;
+	ss_out << std::endl;
 
-	cout << ss_out.str(); ss_out.str("");
+	std::cout << ss_out.str(); ss_out.str("");
 
 	m_ICP.options.dumpToConsole();
-	cout << "-----------[ Optimization Parameters ]-----------" << endl;
+	std::cout << "-----------[ Optimization Parameters ]-----------" << std::endl;
 	m_optimization_params.dumpToConsole();
-	cout << "-----------[ Graph Visualization Parameters ]-----------" << endl;
+	std::cout << "-----------[ Graph Visualization Parameters ]-----------" << std::endl;
 	m_optimized_graph_viz_params.dumpToConsole();
 
-	cout << ss_out.str(); ss_out.str("");
+	std::cout << ss_out.str(); ss_out.str("");
 
 	//mrpt::system::pause();
 
 	MRPT_END
 }
 
-template<class GRAPH_t>
-void CGraphSlamEngine_t<GRAPH_t>::initOutputDir() {
+template<class GRAPH_t, class NODE_REGISTRATOR>
+void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR>::initOutputDir() {
 	MRPT_START
 
-	VERBOSE_COUT << "Setting up Output directory: " << m_output_dir_fname << endl;
+	VERBOSE_COUT << "Setting up Output directory: " << m_output_dir_fname << std::endl;
 
 	// current time vars - handy in the rest of the function.
 	TTimeStamp cur_date(getCurrentTime());
@@ -1122,12 +1079,16 @@ void CGraphSlamEngine_t<GRAPH_t>::initOutputDir() {
 				stringstream question;
 				string answer;
 
-				question << "Directory exists. Choose between the following options" << endl;
-				question << "\t 1: Rename current folder and start new output directory (default)" << endl;
-				question << "\t 2: Remove existing contents and continue execution" << endl;
-				question << "\t 3: Handle potential conflict manually (Halts program execution)" << endl;
+				question << "Directory exists. Choose between the "
+					<< "following options" << std::endl;
+				question << "\t 1: Rename current folder and start new "
+					<< "output directory (default)" << std::endl;
+				question << "\t 2: Remove existing contents and continue execution " 
+					<< std::endl;
+				question << "\t 3: Handle potential conflict manually "
+					"(Halts program execution)" << std::endl;
 				question << "\t [ 1 | 2 | 3 ] --> ";
-				cout << question.str();
+				std::cout << question.str();
 
 				getline(cin, answer);
 				answer = mrpt::system::trim(answer);
@@ -1139,7 +1100,7 @@ void CGraphSlamEngine_t<GRAPH_t>::initOutputDir() {
 			switch (answer_int) 
 			{
 				case 2: {
-					VERBOSE_COUT << "Deleting existing files..." << endl;
+					VERBOSE_COUT << "Deleting existing files..." << std::endl;
 					// purge directory
 					deleteFilesInDirectory(m_output_dir_fname,
 							/*deleteDirectoryAsWell = */ true);
@@ -1153,7 +1114,7 @@ void CGraphSlamEngine_t<GRAPH_t>::initOutputDir() {
 				default: {
 					// rename the whole directory to DATE_TIME_${OUTPUT_DIR_NAME}
 					string dst_fname = m_output_dir_fname + cur_date_validstr;
-					VERBOSE_COUT << "Renaming directory to: " << dst_fname << endl;
+					VERBOSE_COUT << "Renaming directory to: " << dst_fname << std::endl;
 					string* error_msg = NULL;
 					bool did_rename = renameFile(m_output_dir_fname,
 							dst_fname,
@@ -1168,7 +1129,7 @@ void CGraphSlamEngine_t<GRAPH_t>::initOutputDir() {
 		} // IF DIRECTORY EXISTS..
 
 		// Now rebuild the directory from scratch
-		VERBOSE_COUT << "Creating the new directory structure..." << endl;
+		VERBOSE_COUT << "Creating the new directory structure..." << std::endl;
 		string cur_fname;
 	
 		// debug_fname
@@ -1178,17 +1139,18 @@ void CGraphSlamEngine_t<GRAPH_t>::initOutputDir() {
 			this->initResultsFile(cur_fname);
 		}
 
-		VERBOSE_COUT << "Finished initializing output directory." << endl;
+		VERBOSE_COUT << "Finished initializing output directory." << std::endl;
 	}
 
 	MRPT_END
 } // end of initOutputDir
 
-template<class GRAPH_t>
-void CGraphSlamEngine_t<GRAPH_t>::initResultsFile(const string& fname) {
+template<class GRAPH_t, class NODE_REGISTRATOR>
+void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR>::initResultsFile(
+		const string& fname) {
 	MRPT_START
 
-	VERBOSE_COUT << "Setting up file: " << fname << endl;
+	VERBOSE_COUT << "Setting up file: " << fname << std::endl;
 
 	// current time vars - handy in the rest of the function.
 	TTimeStamp cur_date(getCurrentTime());
@@ -1208,8 +1170,9 @@ void CGraphSlamEngine_t<GRAPH_t>::initResultsFile(const string& fname) {
 	MRPT_END
 }
 
-template<class GRAPH_t>
-double CGraphSlamEngine_t<GRAPH_t>::getICPEdge(const TNodeID& from,
+template<class GRAPH_t, class NODE_REGISTRATOR>
+double CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR>::getICPEdge(
+		const TNodeID& from,
 		const TNodeID& to,
 		constraint_t *rel_edge ) {
 
@@ -1250,11 +1213,11 @@ double CGraphSlamEngine_t<GRAPH_t>::getICPEdge(const TNodeID& from,
 			(void*)&info);
 
 	//VERBOSE_COUT << "getICPEdge: goodness: "
-	//<< info.goodness << endl;
-	//VERBOSE_COUT << "initial estimate: " << endl
-	//<< initial_pose << endl;
-	//VERBOSE_COUT << "relative edge: " << endl
-	//<< rel_edge->getMeanVal() << endl;
+	//<< info.goodness << std::endl;
+	//VERBOSE_COUT << "initial estimate: " << std::endl
+	//<< initial_pose << std::endl;
+	//VERBOSE_COUT << "relative edge: " << std::endl
+	//<< rel_edge->getMeanVal() << std::endl;
 	
 	// return the edge regardless of the goodness of the alignment
 	rel_edge->copyFrom(*pdf);  	return info.goodness;
@@ -1268,8 +1231,9 @@ double CGraphSlamEngine_t<GRAPH_t>::getICPEdge(const TNodeID& from,
  * Udpate the viewport responsible for displaying the graph-building procedure
  * in the estimated position of the robot
  */
-template<class GRAPH_t>
-inline void CGraphSlamEngine_t<GRAPH_t>::updateCurPosViewport(const GRAPH_t& gr) {
+template<class GRAPH_t, class NODE_REGISTRATOR>
+inline void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR>::updateCurPosViewport(
+		const GRAPH_t& gr) {
 	MRPT_START
 
 	assert(m_win &&
@@ -1278,7 +1242,8 @@ inline void CGraphSlamEngine_t<GRAPH_t>::updateCurPosViewport(const GRAPH_t& gr)
 	pose_t curr_robot_pose;
 	{
 		CCriticalSectionLocker m_graph_lock(&m_graph_section);
-		curr_robot_pose = gr.nodes.find(gr.nodeCount()-1)->second; // get the last added pose
+		// get the last added pose
+		curr_robot_pose = gr.nodes.find(gr.nodeCount()-1)->second; 
 	}
 
 	COpenGLScenePtr scene = m_win->get3DSceneAndLock();
@@ -1288,22 +1253,20 @@ inline void CGraphSlamEngine_t<GRAPH_t>::updateCurPosViewport(const GRAPH_t& gr)
 
 	m_win->unlockAccess3DScene();
 	m_win->forceRepaint();
-	//VERBOSE_COUT << "Updated the \"current_pos\" viewport" << endl;
+	//VERBOSE_COUT << "Updated the \"current_pos\" viewport" << std::endl;
 
 	MRPT_END
 }
 
-template<class GRAPH_t>
-void CGraphSlamEngine_t<GRAPH_t>::BuildGroundTruthMap(const std::string& fname_GT) {
+template<class GRAPH_t, class NODE_REGISTRATOR>
+void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR>::BuildGroundTruthMap(const std::string& fname_GT) {
 	MRPT_START
 
-	VERBOSE_COUT << "Parsing the ground truth file textfile.." << endl;
+	VERBOSE_COUT << "Parsing the ground truth file textfile.." << std::endl;
 	assert(fileExists(fname_GT) && "Ground truth file was not found.");
 
-	// open the file, throw exception 
 	CFileInputStream* file_GT = new CFileInputStream(fname_GT);
 	m_in_streams[fname_GT] = file_GT;
-
 
 	if (file_GT->fileOpenCorrectly()) {
 		string curr_line; 
@@ -1332,10 +1295,10 @@ void CGraphSlamEngine_t<GRAPH_t>::BuildGroundTruthMap(const std::string& fname_G
 	MRPT_END
 }
 
-template<class GRAPH_t>
-void CGraphSlamEngine_t<GRAPH_t>::autofitObjectInView(const CSetOfObjectsPtr& graph_obj) {
+template<class GRAPH_t, class NODE_REGISTRATOR>
+void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR>::autofitObjectInView(
+		const CSetOfObjectsPtr& graph_obj) {
 	MRPT_START
-
 
 	assert(m_win &&
 			"Visualization of data was requested but no CDisplayWindow3D pointer was given");
@@ -1354,8 +1317,8 @@ void CGraphSlamEngine_t<GRAPH_t>::autofitObjectInView(const CSetOfObjectsPtr& gr
 	MRPT_END
 }
 
-template<class GRAPH_t>
-void CGraphSlamEngine_t<GRAPH_t>::queryObserverForEvents() {
+template<class GRAPH_t, class NODE_REGISTRATOR>
+void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR>::queryObserverForEvents() {
 	MRPT_START
 
 	assert(m_win_observer &&
@@ -1368,8 +1331,9 @@ void CGraphSlamEngine_t<GRAPH_t>::queryObserverForEvents() {
 	MRPT_END
 }
 
-template<class GRAPH_t>
-void CGraphSlamEngine_t<GRAPH_t>::getNearbyNodesOf(set<TNodeID> *lstNodes,
+template<class GRAPH_t, class NODE_REGISTRATOR>
+void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR>::getNearbyNodesOf(
+		set<TNodeID> *lstNodes,
 		const TNodeID& cur_nodeID,
 		void* num_nodes_or_distance, 
 		bool use_distance_criterion /* = true */) {
@@ -1380,11 +1344,18 @@ void CGraphSlamEngine_t<GRAPH_t>::getNearbyNodesOf(set<TNodeID> *lstNodes,
 	if (use_distance_criterion) {
 		double* p_distance = static_cast<double*>(num_nodes_or_distance);
 
+		//std::cout << std::endl;
+		//std::cout << "In getNearbyNodes of..." << std::endl;
+		//std::cout << "*p_distance: " << *p_distance << std::endl;
+		//std::cout << "cur_nodeID: " << cur_nodeID << std::endl;
+		//std::cout << "m_nodeID_max: " << m_nodeID_max << std::endl;
 		if (*p_distance > 0) {
-			for (TNodeID nodeID = 0; nodeID <= m_nodeID_max; ++nodeID) {
+			for (TNodeID nodeID = 0; nodeID <= m_graph.nodeCount()-1; ++nodeID) {
 				double curr_distance = m_graph.nodes[nodeID].distanceTo(
 						m_graph.nodes[cur_nodeID]);
-				//cout << "Distance for ICP is: " << curr_distance << endl;
+				//std::cout << "testing against node: " << nodeID << std::endl;
+				//std::cout << "\tdistance: " << curr_distance << std::endl;
+				//mrpt::system::pause();
 				if (curr_distance <= *p_distance) {
 					lstNodes->insert(nodeID);
 				}
@@ -1409,7 +1380,7 @@ void CGraphSlamEngine_t<GRAPH_t>::getNearbyNodesOf(set<TNodeID> *lstNodes,
 				for (TNodeID a_node = cur_nodeID+1;
 						a_node < cur_nodeID+1 + *p_num_nodes && a_node <= m_graph.nodeCount()-1;
 						a_node++) {
-					cout << "Adding node after current!" << endl;
+					std::cout << "Adding node after current!" << std::endl;
 					lstNodes->insert(a_node);
 				}
 			}

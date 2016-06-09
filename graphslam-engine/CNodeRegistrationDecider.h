@@ -15,21 +15,6 @@ class CNodeRegistrationDecider_t {
     CNodeRegistrationDecider_t() {}
     virtual ~CNodeRegistrationDecider_t() {};
 
-
-    /**
-     * Generic member class for storing/reading the necessary configuration
-     * parameters
-     */
-    struct TParams: public mrpt::utils::CLoadableOptions {
-    	TParams();
-    	~TParams();
-
-    	void loadFromConfigFile(
-    			const mrpt::utils::CConfigFileBase &source,
-    			const std::string &section) = 0;
-			void 	dumpToTextStream (mrpt::utils::CStream &out) const;
-    };
-
 		/**
 		 * Generic method for fetching the incremental action/observation readings
 		 * from the calling function. Implementations of this interface should use
@@ -60,12 +45,6 @@ class CNodeRegistrationDecider_t {
 		 * otherwise
      */
     virtual bool registerNewNode() = 0;
-
-		GRAPH_t* m_graph;
-		pose_t current_estimated_pose;
-		
-
-  private:
     
 };
 
