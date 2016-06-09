@@ -6,6 +6,8 @@
 #include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/math/CMatrixFixedNumeric.h>
 
+namespace mrpt { namespace graphslam { namespace deciders {
+
 template<class GRAPH_t>
 class CNodeRegistrationDecider_t {
   public:
@@ -47,5 +49,7 @@ class CNodeRegistrationDecider_t {
     virtual bool registerNewNode() = 0;
     
 };
+
+} } } // end of namespaces
 
 #endif /* end of include guard: CNODEREGISTRATIONDECIDER_H */
