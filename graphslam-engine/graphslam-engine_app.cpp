@@ -28,6 +28,7 @@
 #include "CWindowObserver.h"
 #include "CFixedIntervalsNRD.h"
 
+using namespace mrpt;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace mrpt::obs;
@@ -36,6 +37,7 @@ using namespace mrpt::graphs;
 using namespace mrpt::math;
 using namespace mrpt::opengl;
 using namespace mrpt::utils;
+using namespace mrpt::graphslam::deciders;
 
 using namespace std;
 

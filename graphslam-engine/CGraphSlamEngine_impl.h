@@ -1,6 +1,8 @@
 #ifndef CGRAPHSLAMENGINE_IMPL_H
 #define CGRAPHSLAMENGINE_IMPL_H
 
+using namespace mrpt::graphslam;
+
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/datetime.h>
 #include <mrpt/system/os.h>
@@ -600,7 +602,8 @@ bool CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR>::parseRawlogFile() {
 
 					CObservation2DRangeScanPtr prev_laser_scan = m_nodes_to_laser_scans[*node_it];
 					constraint_t rel_edge;
-					double ICP_goodness = this->getICPEdge(*node_it, m_nodeID_max, &rel_edge);
+					double ICP_goodness = this->getICPEdge(*node_it, m_nodeID_max, 
+							&rel_edge);
 					if (ICP_goodness > m_ICP_goodness_thres) {
 						{
 							CCriticalSectionLocker m_graph_lock(&m_graph_section);
