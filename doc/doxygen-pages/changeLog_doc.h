@@ -24,6 +24,11 @@
 		- \ref mrpt_base_grp
 			- New API to interface ZeroMQ: \ref noncstream_serialization_zmq
 			- Deprecated function (since 1.3.0) deleted: mrpt::system::registerFatalExceptionHandlers()
+			- Class mrpt::utils::CRobotSimulator renamed ==> mrpt::kinematics::CVehicleSimul_DiffDriven
+		- \ref mrpt_kinematics_grp
+			- New classes for 2D robot simulation:
+				- mrpt::kinematics::CVehicleSimul_DiffDriven
+				- mrpt::kinematics::CVehicleSimul_Holo
 		- \ref mrpt_maps_grp
 			- mrpt::maps::COccupancyGridMap2D::loadFromBitmapFile() correct description of `yCentralPixel` parameter.
 			- mrpt::maps::CPointsMap `liblas` import/export methods are now in a separate header. See \ref mrpt_maps_liblas_grp and \ref dep-liblas
