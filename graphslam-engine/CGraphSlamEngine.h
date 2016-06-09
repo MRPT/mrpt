@@ -29,6 +29,7 @@
 #include <mrpt/utils/mrpt_stdint.h>
 #include <mrpt/utils/mrpt_macros.h>
 #include <mrpt/utils/CConfigFile.h>
+#include <mrpt/utils/types_simple.h>
 #include <mrpt/obs/CActionRobotMovement2D.h>
 #include <mrpt/obs/CActionRobotMovement3D.h>
 #include <mrpt/maps/CSimplePointsMap.h>
@@ -51,14 +52,14 @@
 
 #include "EdgeCounter.h"
 #include "CWindowObserver.h"
-
-#include "CNodeRegistrationDecider.h" // TODO - remove this
+//#include "CNodeRegistrationDecider.h"
+#include "CFixedIntervalsNRD.h"
 
 bool verbose = true;
 #define VERBOSE_COUT	if (verbose) std::cout << "[graphslam_engine] "
 
-template <class GRAPH_t>
-class GraphSlamEngine_t {
+template<class GRAPH_t>
+class CGraphSlamEngine_t {
 	public:
 
 		typedef std::map<std::string, mrpt::utils::CFileOutputStream*> fstreams_out;
@@ -78,11 +79,11 @@ class GraphSlamEngine_t {
 
 		// Ctors, Dtors
 		//////////////////////////////////////////////////////////////
-		GraphSlamEngine_t(const std::string& config_file,
+		CGraphSlamEngine_t(const std::string& config_file,
 				mrpt::gui::CDisplayWindow3D* win = NULL,
 				CWindowObserver* win_observer = NULL,
 				std::string rawlog_fname = "");
-		~GraphSlamEngine_t();
+		~CGraphSlamEngine_t();
 
 		// Public function definitions
 		//////////////////////////////////////////////////////////////
@@ -121,7 +122,7 @@ class GraphSlamEngine_t {
 		 * Print the problem parameters (usually fetched from a configuration file)
 		 * to the console for verification
 		 *
-		 * \sa GraphSlamEngine_t::parseRawlogFile
+		 * \sa CGraphSlamEngine_t::parseRawlogFile
 		 */
 		void printProblemParams() const;
 		/**
@@ -132,13 +133,13 @@ class GraphSlamEngine_t {
 		 **/
 		bool parseRawlogFile();
 		/**
-		 * GraphslamEngine_t::optmizeGraph
+		 * CGraphSlamEngine_t::optmizeGraph
 		 *
 		 * Optimize the under-construction graph
 		 */
 		inline void optimizeGraph(GRAPH_t* graph);
 		/**
-		 * GraphSlamEngine_t::visualizeGraph
+		 * CGraphSlamEngine_t::visualizeGraph
 		 *
 		 * Called internally for updating the vizualization scene for the graph
 		 * building procedure
@@ -162,7 +163,7 @@ class GraphSlamEngine_t {
 		 * Initialize (clean up and create new files) the output directory
 		 * Also provides cmd line arguements for the user to choose the desired
 		 * action.
-		 * \sa GraphSlamEngine_t::initResultsFile
+		 * \sa CGraphSlamEngine_t::initResultsFile
 		 */
 		void initOutputDir();
 		/**
@@ -171,7 +172,7 @@ class GraphSlamEngine_t {
 		 */
 		void initResultsFile(const std::string& fname);
 		/**
-		 * GraphSlamEngine_t::getICPEdge
+		 * CGraphSlamEngine_t::getICPEdge
 		 *
 		 * Align the laser scans of the given poses and compute a constraint
 		 * between them. Return the goodness of the ICP operation and let the user
@@ -236,11 +237,12 @@ class GraphSlamEngine_t {
 
 		// the graph object to be built and optimized
 		GRAPH_t m_graph;
+		CFixedIntervalsNRD_t<GRAPH_t>  m_node_registrator; // TODO make this a template argument
 
 		/**
 		 * Problem parameters.
 		 * Most are imported from a .ini config file
-		 * \sa GraphSlamEngine_t::readConfigFile
+		 * \sa CGraphSlamEngine_t::readConfigFile
 		 */
 		std::string	m_config_fname;
 
@@ -259,8 +261,8 @@ class GraphSlamEngine_t {
 		double	m_loop_closing_min_nodeid_diff;
 
 		std::string	m_decider_alg;
-		double	m_registration_distance_thres;
-		double	m_registration_angle_thres;
+		double	m_registration_max_distance;
+		double	m_registration_max_angle;
 
 		bool		m_has_read_config;
 
@@ -352,6 +354,6 @@ class GraphSlamEngine_t {
 };
 
 // pseudo-split the definition and implementation of template
-#include "GraphSlamEngine.cpp"
+#include "CGraphSlamEngine_impl.h"
 
 #endif /* end of include guard: GRAPHSLAMENGINE_H */

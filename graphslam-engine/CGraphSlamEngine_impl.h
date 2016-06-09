@@ -1,4 +1,5 @@
-#include "GraphSlamEngine.h"
+#ifndef CGRAPHSLAMENGINE_IMPL_H
+#define CGRAPHSLAMENGINE_IMPL_H
 
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/datetime.h>
@@ -10,6 +11,7 @@
 #include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/utils/mrpt_stdint.h>
 #include <mrpt/utils/mrpt_macros.h>
+#include <mrpt/utils/types_simple.h>
 #include <mrpt/utils/CConfigFile.h>
 #include <mrpt/utils/CFileOutputStream.h>
 #include <mrpt/utils/CFileInputStream.h>
@@ -70,7 +72,7 @@ using namespace std;
 //////////////////////////////////////////////////////////////
 
 template<class GRAPH_t>
-GraphSlamEngine_t<GRAPH_t>::GraphSlamEngine_t(const string& config_file,
+CGraphSlamEngine_t<GRAPH_t>::CGraphSlamEngine_t(const string& config_file,
 		CDisplayWindow3D* win /* = NULL */,
 		CWindowObserver* win_observer /* = NULL */,
 		string rawlog_fname /* = "" */ ):
@@ -88,8 +90,8 @@ GraphSlamEngine_t<GRAPH_t>::GraphSlamEngine_t(const string& config_file,
 };
 
 template<class GRAPH_t>
-GraphSlamEngine_t<GRAPH_t>::~GraphSlamEngine_t() {
-	VERBOSE_COUT << "In Destructor: Deleting GraphSlamEngine_t instance..." << endl;
+CGraphSlamEngine_t<GRAPH_t>::~CGraphSlamEngine_t() {
+	VERBOSE_COUT << "In Destructor: Deleting CGraphSlamEngine_t instance..." << endl;
 
 	// close all open files
 	for (fstreams_out_it it  = m_out_streams.begin(); it != m_out_streams.end(); 
@@ -114,7 +116,7 @@ GraphSlamEngine_t<GRAPH_t>::~GraphSlamEngine_t() {
 //////////////////////////////////////////////////////////////
 
 template<class GRAPH_t>
-void GraphSlamEngine_t<GRAPH_t>::initGraphSlamEngine() {
+void CGraphSlamEngine_t<GRAPH_t>::initGraphSlamEngine() {
 	MRPT_START
 
 	/** 
@@ -123,30 +125,33 @@ void GraphSlamEngine_t<GRAPH_t>::initGraphSlamEngine() {
 	assert(!(!m_win && m_win_observer) && 
 			"CObsever was provided even though no CDisplayWindow3D was not");
 
-	// Calling of initalization-relevant functions
-	this->readConfigFile(m_config_fname);
-	this->initOutputDir();
-	this->printProblemParams();
-	
 	/**
 	 * Initialization of various member variables
 	 */
-
 	// check for duplicated edges every..
 	m_num_of_edges_for_collapse = 100;
 
 	m_is3D = constraint_t::is_3D_val;
 
-
 	// initialize the necessary maps for graph information
 	graph_to_name[&m_graph] = "optimized_graph";
 	graph_to_viz_params[&m_graph] = &m_optimized_graph_viz_params;
-
 
 	// max node number already in the graph
 	m_nodeID_max = 0;
 	m_graph.root = TNodeID(0);
 
+	m_node_registrator.getGraphPtr(&m_graph);
+
+	// Calling of initalization-relevant functions
+	this->readConfigFile(m_config_fname);
+	this->m_node_registrator.params.loadFromConfigFileName(m_config_fname, 
+			"NodeRegistrationDecidersParameters");
+	this->initOutputDir();
+	this->printProblemParams();
+	this->m_node_registrator.params.dumpToConsole();
+
+	mrpt::system::pause();
 
 	/**
 	 * Visualization-related parameters initialization
@@ -216,7 +221,7 @@ void GraphSlamEngine_t<GRAPH_t>::initGraphSlamEngine() {
 
 		if (m_fname_GT.empty()) {
 			THROW_EXCEPTION("Visualization of Ground Truth is TRUE, but no ground"
-					<< " truth file was specified") 
+					<< " truth file was specified");
 		}
 		this->BuildGroundTruthMap(m_fname_GT);
 
@@ -375,7 +380,7 @@ void GraphSlamEngine_t<GRAPH_t>::initGraphSlamEngine() {
 }
 
 template<class GRAPH_t>
-bool GraphSlamEngine_t<GRAPH_t>::parseRawlogFile() {
+bool CGraphSlamEngine_t<GRAPH_t>::parseRawlogFile() {
 	MRPT_START
 
 	if (!m_has_read_config)
@@ -394,9 +399,6 @@ bool GraphSlamEngine_t<GRAPH_t>::parseRawlogFile() {
 	CSensoryFramePtr observations;
 	CObservationPtr observation;
 	size_t curr_rawlog_entry = 0;
-
-	// TODO unused - delete it?
-	bool end = false;
 
 	// Tracking the PDF of the current position of the robot with regards to the
 	// PREVIOUS registered node
@@ -495,7 +497,7 @@ bool GraphSlamEngine_t<GRAPH_t>::parseRawlogFile() {
 
 			// add to the odometry PointCloud and visualize it
 			{
-				// fill in the odometry_poses vecotr
+				// fill in the odometry_poses vector
 				pose_t* odometry_pose = new pose_t;
 				*odometry_pose = curr_odometry_only_pose;
 				m_odometry_poses.push_back(odometry_pose);
@@ -554,8 +556,8 @@ bool GraphSlamEngine_t<GRAPH_t>::parseRawlogFile() {
 				m_curr_estimated_pose = m_graph.nodes[from] + since_prev_node_PDF.getMeanVal();
 			}
 			// odometry criterion
-			if ( (last_pose_inserted.distanceTo(m_curr_estimated_pose) > m_registration_distance_thres) ||
-					fabs(wrapToPi(last_pose_inserted.phi() - m_curr_estimated_pose.phi())) > m_registration_angle_thres ) {
+			if ( (last_pose_inserted.distanceTo(m_curr_estimated_pose) > m_registration_max_distance) ||
+					fabs(wrapToPi(last_pose_inserted.phi() - m_curr_estimated_pose.phi())) > m_registration_max_angle ) {
 				
 				from = m_nodeID_max;
 				TNodeID to = ++m_nodeID_max;
@@ -631,7 +633,7 @@ bool GraphSlamEngine_t<GRAPH_t>::parseRawlogFile() {
 
 				// optimize the graph - run on a seperate thread
 				m_thread_optimize = createThreadFromObjectMethod(/*obj = */this, 
-						/* func = */&GraphSlamEngine_t::optimizeGraph, &m_graph);
+						/* func = */&CGraphSlamEngine_t::optimizeGraph, &m_graph);
 
 				// update the visualization window
 				if (m_visualize_optimized_graph) {
@@ -676,7 +678,7 @@ bool GraphSlamEngine_t<GRAPH_t>::parseRawlogFile() {
 					CCriticalSectionLocker m_graph_lock(&m_graph_section);
 
 					since_prev_node_PDF.cov_inv = init_path_uncertainty;
-					since_prev_node_PDF.mean = pose_t(0, 0, 0);
+					since_prev_node_PDF.mean = pose_t();
 					last_pose_inserted = m_graph.nodes[to];
 				}
 
@@ -716,7 +718,7 @@ MRPT_END
 } // END OF FUNCTION
 
 template<class GRAPH_t>
-void GraphSlamEngine_t<GRAPH_t>::optimizeGraph(GRAPH_t* gr) {
+void CGraphSlamEngine_t<GRAPH_t>::optimizeGraph(GRAPH_t* gr) {
 	MRPT_START
 
 	CTicTac optimization_timer;
@@ -744,7 +746,7 @@ void GraphSlamEngine_t<GRAPH_t>::optimizeGraph(GRAPH_t* gr) {
 }
 
 template<class GRAPH_t>
-void GraphSlamEngine_t<GRAPH_t>::visualizeGraph(const GRAPH_t& gr) {
+void CGraphSlamEngine_t<GRAPH_t>::visualizeGraph(const GRAPH_t& gr) {
 	MRPT_START
 
 	assert(m_win &&
@@ -789,7 +791,7 @@ void GraphSlamEngine_t<GRAPH_t>::visualizeGraph(const GRAPH_t& gr) {
 }
 
 template<class GRAPH_t>
-void GraphSlamEngine_t<GRAPH_t>::readConfigFile(const string& fname) {
+void CGraphSlamEngine_t<GRAPH_t>::readConfigFile(const string& fname) {
 	MRPT_START
 
 	VERBOSE_COUT << "Reading the .ini file... " << endl;
@@ -875,19 +877,15 @@ void GraphSlamEngine_t<GRAPH_t>::readConfigFile(const string& fname) {
 
 	// Section: DecidersConfiguration  - When to insert new nodes?
 	// ////////////////////////////////
-	m_decider_alg = cfg_file.read_string(
-			"DecidersConfiguration",
-			"decider_alg",
-			"", true);
-	m_registration_distance_thres = cfg_file.read_double(
-			"DecidersConfiguration",
-			"registration_distance_thres",
-			1 /* meter */, false);
-	m_registration_angle_thres= cfg_file.read_double(
-			"DecidersConfiguration",
-			"registration_angle_thres",
+	m_registration_max_distance = cfg_file.read_double(
+			"NodeRegistrationDecidersParameters",
+			"registration_max_distance",
+			5 /* meter */, false);
+	m_registration_max_angle= cfg_file.read_double(
+			"NodeRegistrationDecidersParameters",
+			"registration_max_angle",
 			60 /* degrees */, false);
-	m_registration_angle_thres = DEG2RAD(m_registration_angle_thres);
+	m_registration_max_angle = DEG2RAD(m_registration_max_angle);
 
 	//// Section: ICP
 	//// ////////////////////////////////
@@ -922,7 +920,7 @@ void GraphSlamEngine_t<GRAPH_t>::readConfigFile(const string& fname) {
 	if (ICP_max_distance_exists && ICP_prev_nodes_exists ||
 			!ICP_max_distance_exists && !ICP_prev_nodes_exists) {
 		THROW_EXCEPTION("User should specify either the ICP_prev_nodes"
-				<< "or the ICP_max distance parameter")
+				<< "or the ICP_max distance parameter");
 	}
 	m_ICP_use_distance_criterion = ICP_max_distance_exists;
 
@@ -1021,7 +1019,7 @@ void GraphSlamEngine_t<GRAPH_t>::readConfigFile(const string& fname) {
 
 // TODO - check for new value from above
 template<class GRAPH_t>
-void GraphSlamEngine_t<GRAPH_t>::printProblemParams() const {
+void CGraphSlamEngine_t<GRAPH_t>::printProblemParams() const {
 	MRPT_START
 
 	assert(m_has_read_config);
@@ -1053,27 +1051,27 @@ void GraphSlamEngine_t<GRAPH_t>::printProblemParams() const {
 		<< m_loop_closing_alg << endl;
 	ss_out << "Decider alg                     = "
 		<< m_decider_alg << endl;
-	ss_out << "Registration distance threshold = "
-		<< m_registration_distance_thres << " m" << endl;
-	ss_out << "Registration angle threshold    = "
-		<< RAD2DEG(m_registration_angle_thres) << " deg" << endl;
-	ss_out << "ICP Goodness threshold           = "
+	ss_out << "Registration - maximum distance = "
+		<< m_registration_max_distance << " m" << endl;
+	ss_out << "Registration - maximum angle    = "
+		<< RAD2DEG(m_registration_max_angle) << " deg" << endl;
+	ss_out << "ICP Goodness threshold          = "
 		<< m_ICP_goodness_thres << endl;
 	if (m_ICP_use_distance_criterion) {
-		ss_out << "Maximum distance for ICP check   = "
+		ss_out << "Maximum distance for ICP check  = "
 			<< m_ICP_max_distance << endl;
 	}
 	else {
-		ss_out << "Num of previous nodes  for ICP   = "
+		ss_out << "Num of previous nodes  for ICP  = "
 			<< m_ICP_prev_nodes << endl;
 	}
-	ss_out << "Visualize odometry               = " 
+	ss_out << "Visualize odometry              = " 
 		<< m_visualize_odometry_poses << endl;
-	ss_out << "Visualize optimized path         = " 
+	ss_out << "Visualize optimized path        = " 
 		<< m_visualize_odometry_poses << endl;
-	ss_out << "Visualize Ground Truth           = " 
+	ss_out << "Visualize Ground Truth          = " 
 		<< m_visualize_odometry_poses << endl;
-	ss_out << "Ground Truth filename            = "
+	ss_out << "Ground Truth filename           = "
 		<< m_fname_GT << endl;
 	ss_out << "-----------------------------------------------------------" 
 		<< endl;
@@ -1087,8 +1085,6 @@ void GraphSlamEngine_t<GRAPH_t>::printProblemParams() const {
 	cout << "-----------[ Graph Visualization Parameters ]-----------" << endl;
 	m_optimized_graph_viz_params.dumpToConsole();
 
-	ss_out << "-----------------------------------------------------------" 
-		<< endl;
 	cout << ss_out.str(); ss_out.str("");
 
 	//mrpt::system::pause();
@@ -1097,7 +1093,7 @@ void GraphSlamEngine_t<GRAPH_t>::printProblemParams() const {
 }
 
 template<class GRAPH_t>
-void GraphSlamEngine_t<GRAPH_t>::initOutputDir() {
+void CGraphSlamEngine_t<GRAPH_t>::initOutputDir() {
 	MRPT_START
 
 	VERBOSE_COUT << "Setting up Output directory: " << m_output_dir_fname << endl;
@@ -1164,7 +1160,7 @@ void GraphSlamEngine_t<GRAPH_t>::initOutputDir() {
 							error_msg);
 					if (!did_rename) {
 						THROW_EXCEPTION("Error while trying to rename the output directory:" <<
-								*error_msg)
+								*error_msg);
 					}
 					break;
 				}
@@ -1188,8 +1184,8 @@ void GraphSlamEngine_t<GRAPH_t>::initOutputDir() {
 	MRPT_END
 } // end of initOutputDir
 
-template <class GRAPH_t>
-void GraphSlamEngine_t<GRAPH_t>::initResultsFile(const string& fname) {
+template<class GRAPH_t>
+void CGraphSlamEngine_t<GRAPH_t>::initResultsFile(const string& fname) {
 	MRPT_START
 
 	VERBOSE_COUT << "Setting up file: " << fname << endl;
@@ -1206,14 +1202,14 @@ void GraphSlamEngine_t<GRAPH_t>::initResultsFile(const string& fname) {
 		m_out_streams[fname]->printf("---------------------------------------------");
 	}
 	else {
-		THROW_EXCEPTION("Error while trying to open " <<	fname)
+		THROW_EXCEPTION("Error while trying to open " <<	fname);
 	}
 
 	MRPT_END
 }
 
-template <class GRAPH_t>
-double GraphSlamEngine_t<GRAPH_t>::getICPEdge(const TNodeID& from,
+template<class GRAPH_t>
+double CGraphSlamEngine_t<GRAPH_t>::getICPEdge(const TNodeID& from,
 		const TNodeID& to,
 		constraint_t *rel_edge ) {
 
@@ -1272,8 +1268,8 @@ double GraphSlamEngine_t<GRAPH_t>::getICPEdge(const TNodeID& from,
  * Udpate the viewport responsible for displaying the graph-building procedure
  * in the estimated position of the robot
  */
-template <class GRAPH_t>
-inline void GraphSlamEngine_t<GRAPH_t>::updateCurPosViewport(const GRAPH_t& gr) {
+template<class GRAPH_t>
+inline void CGraphSlamEngine_t<GRAPH_t>::updateCurPosViewport(const GRAPH_t& gr) {
 	MRPT_START
 
 	assert(m_win &&
@@ -1297,8 +1293,8 @@ inline void GraphSlamEngine_t<GRAPH_t>::updateCurPosViewport(const GRAPH_t& gr) 
 	MRPT_END
 }
 
-template <class GRAPH_t>
-void GraphSlamEngine_t<GRAPH_t>::BuildGroundTruthMap(const std::string& fname_GT) {
+template<class GRAPH_t>
+void CGraphSlamEngine_t<GRAPH_t>::BuildGroundTruthMap(const std::string& fname_GT) {
 	MRPT_START
 
 	VERBOSE_COUT << "Parsing the ground truth file textfile.." << endl;
@@ -1330,17 +1326,17 @@ void GraphSlamEngine_t<GRAPH_t>::BuildGroundTruthMap(const std::string& fname_GT
 	}
 	else {
 		THROW_EXCEPTION("BuildGroundTruthMap: Can't open GT file (" << fname_GT
-				<< ")")
+				<< ")");
 	}
 
 	MRPT_END
 }
 
-template <class GRAPH_t>
-void GraphSlamEngine_t<GRAPH_t>::autofitObjectInView(const CSetOfObjectsPtr& graph_obj) {
+template<class GRAPH_t>
+void CGraphSlamEngine_t<GRAPH_t>::autofitObjectInView(const CSetOfObjectsPtr& graph_obj) {
 	MRPT_START
 
-		
+
 	assert(m_win &&
 			"Visualization of data was requested but no CDisplayWindow3D pointer was given");
 
@@ -1358,8 +1354,8 @@ void GraphSlamEngine_t<GRAPH_t>::autofitObjectInView(const CSetOfObjectsPtr& gra
 	MRPT_END
 }
 
-template <class GRAPH_t>
-void GraphSlamEngine_t<GRAPH_t>::queryObserverForEvents() {
+template<class GRAPH_t>
+void CGraphSlamEngine_t<GRAPH_t>::queryObserverForEvents() {
 	MRPT_START
 
 	assert(m_win_observer &&
@@ -1372,8 +1368,8 @@ void GraphSlamEngine_t<GRAPH_t>::queryObserverForEvents() {
 	MRPT_END
 }
 
-template <class GRAPH_t>
-void GraphSlamEngine_t<GRAPH_t>::getNearbyNodesOf(set<TNodeID> *lstNodes, 
+template<class GRAPH_t>
+void CGraphSlamEngine_t<GRAPH_t>::getNearbyNodesOf(set<TNodeID> *lstNodes,
 		const TNodeID& cur_nodeID,
 		void* num_nodes_or_distance, 
 		bool use_distance_criterion /* = true */) {
@@ -1425,4 +1421,6 @@ void GraphSlamEngine_t<GRAPH_t>::getNearbyNodesOf(set<TNodeID> *lstNodes,
 
 	MRPT_END
 }
+
+#endif /* end of include guard: CGRAPHSLAMENGINE_IMPL_H */
 

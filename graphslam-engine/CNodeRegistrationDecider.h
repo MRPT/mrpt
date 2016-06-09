@@ -1,52 +1,72 @@
+#ifndef CNODEREGISTRATIONDECIDER_H
+#define CNODEREGISTRATIONDECIDER_H
+
+
 #include <mrpt/obs/CActionCollection.h>
 #include <mrpt/utils/CLoadableOptions.h>
+#include <mrpt/math/CMatrixFixedNumeric.h>
 
 template<class GRAPH_t>
-class NodeRegistrationDecider_t {
+class CNodeRegistrationDecider_t {
   public:
 		typedef typename GRAPH_t::constraint_t constraint_t;
 		typedef typename GRAPH_t::constraint_t::type_value pose_t; // type of underlying poses (2D/3D)
 
-    NodeRegistrationDecider_t(GRAPH_t graph):
-    	m_graph(graph) {
+    CNodeRegistrationDecider_t() {}
+    virtual ~CNodeRegistrationDecider_t() {};
 
-    	};
-    virtual ~NodeRegistrationDecider_t();
 
-		/**
-		 * Generic way of adding new poses to the graph. Returns true if node was
-		 * successfully added in the graph.
+    /**
+     * Generic member class for storing/reading the necessary configuration
+     * parameters
      */
-    virtual bool registerNewNode() = 0;
+    struct TParams: public mrpt::utils::CLoadableOptions {
+    	TParams();
+    	~TParams();
 
-    class TDeciderParameters: public mrpt::utils::CLoadableOptions {
-    	TDeciderParameters();
-    	~TDeciderParameters();
-
-    	virtual void loadFromConfigFile(
+    	void loadFromConfigFile(
     			const mrpt::utils::CConfigFileBase &source,
     			const std::string &section) = 0;
-			void dumpToConsole () const;
-			virtual void 	dumpToTextStream (mrpt::utils::CStream &out) const;
+			void 	dumpToTextStream (mrpt::utils::CStream &out) const;
     };
 
 		/**
-		 * Generic way of reading observations - Rawlog format #1
+		 * Generic method for fetching the incremental action/observation readings
+		 * from the calling function. Implementations of this interface should use
+		 * part of the specified parameters and call the checkRegistrationCondition
+		 * to check for potential node registration
+		 *
+		 * Returns true upon successful node registration in the graph
 		 */
-    virtual void readObservation(mrpt::obs::CObservationPtr obs) = 0;
+		virtual bool updateDeciderState( mrpt::obs::CActionCollectionPtr action,
+				mrpt::obs::CSensoryFramePtr observations,
+				mrpt::obs::CObservationPtr observation ) = 0;
 
-    /**
-     * Generic way of reading CAction, CSensoryFrame pairs - Rawlog format #2
-     */
-    virtual void readActionObservationPair(
-				mrpt::obs::CActionCollectionPtr action,
-				mrpt::obs::CSensoryFramePtr observations );
 
   protected:
-		GRAPH_t m_graph;
+		/**
+		 * Method for checking whether a new node should be registered in the
+		 * graph. This should be the key-method in any implementation of this
+		 * interface. Should call registerNewNode method if the registration
+		 * condition is satisfied.
+		 *
+		 * Returns true upon successful node registration in the graph
+		 */
+		virtual bool checkRegistrationCondition() = 0;
+		/**
+		 * Generic method of adding new poses to the graph. Returns true if node was
+		 *
+		 * Returns true upon successful node registration in the graph, false
+		 * otherwise
+     */
+    virtual bool registerNewNode() = 0;
+
+		GRAPH_t* m_graph;
 		pose_t current_estimated_pose;
 		
 
   private:
     
 };
+
+#endif /* end of include guard: CNODEREGISTRATIONDECIDER_H */
