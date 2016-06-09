@@ -26,6 +26,7 @@
 
 #include "CGraphSlamEngine.h"
 #include "CWindowObserver.h"
+#include "CFixedIntervalsNRD.h"
 
 using namespace mrpt::utils;
 using namespace mrpt::poses;
@@ -116,28 +117,27 @@ int main(int argc, char **argv)
 		}
 		VERBOSE_COUT << "Listening to graph_window events..." << endl;
 
-		// Global square root erro plot
-
 		// Initialize the CGraphSlamEngine_t class
 		string rawlog_fname;
 		if (arg_rawlog_file.isSet()) {
 			rawlog_fname = arg_rawlog_file.getValue();
 		}
-		CGraphSlamEngine_t<CNetworkOfPoses2DInf> g_engine(config_fname, 
-				&graph_win,
-				&graph_win_observer,
-				rawlog_fname);
+		CGraphSlamEngine_t< CNetworkOfPoses2DInf, CFixedIntervalsNRD_t<CNetworkOfPoses2DInf> > 
+			graph_engine(
+					config_fname, 
+					&graph_win,
+					&graph_win_observer,
+					rawlog_fname);
 
-		bool exit_normally = g_engine.parseRawlogFile();
+		bool exit_normally = graph_engine.parseRawlogFile();
 
 		// saving the graph to external file
-		g_engine.saveGraph();
+		graph_engine.saveGraph();
 
 		while (graph_win.isOpen() && exit_normally) {
 			mrpt::system::sleep(100);
 			graph_win.forceRepaint();
 		}
-
 
 	}
 	catch (exception& e) {

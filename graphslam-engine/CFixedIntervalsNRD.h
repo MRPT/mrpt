@@ -127,7 +127,9 @@ CFixedIntervalsNRD_t<GRAPH_t>::CFixedIntervalsNRD_t() {
 template<class GRAPH_t>
 void CFixedIntervalsNRD_t<GRAPH_t>::initCFixedIntervalsNRD_t() {
 	m_initialized_graph = false;
-	//
+
+	m_prev_registered_node = INVALID_NODEID;
+	
 	// Tracking the PDF of the current position of the robot with regards to the
 	// PREVIOUS registered node
 	// I am sure of the initial position, set to identity matrix
@@ -157,6 +159,8 @@ bool CFixedIntervalsNRD_t<GRAPH_t>::updateDeciderState(
 	// don't use the measurements in this implementation
 	MRPT_UNUSED_PARAM(observations);
 
+	//cout << "in updateDeciderState..." << endl;
+
 	if (observation.present()) { // FORMAT #2
 		// TODO - implement this
 	}
@@ -185,6 +189,8 @@ template<class GRAPH_t>
 bool CFixedIntervalsNRD_t<GRAPH_t>::checkRegistrationCondition() {
 	bool registered = false;
 
+	//cout << "in checkRegistrationCondition..." << endl;
+
 	pose_t last_pose_inserted = m_graph->nodes[m_prev_registered_node];
 
 	// odometry criterion
@@ -203,6 +209,9 @@ bool CFixedIntervalsNRD_t<GRAPH_t>::checkRegistrationCondition() {
 template<class GRAPH_t>
 bool CFixedIntervalsNRD_t<GRAPH_t>::registerNewNode() {
 	bool registered = true; // By default it should be able to register the node
+
+	//cout << "in registerNewNode..." << endl;
+
 	mrpt::utils::TNodeID from = m_prev_registered_node;
 	mrpt::utils::TNodeID to = ++m_prev_registered_node;
 
@@ -220,10 +229,11 @@ void CFixedIntervalsNRD_t<GRAPH_t>::getGraphPtr(GRAPH_t* graph) {
 	m_graph = graph;
 
 	// get the last registrered node + corresponding pose - root
-	m_prev_registered_node = m_graph->nodeCount()-1;
+	m_prev_registered_node = m_graph->root;
 
 	m_initialized_graph = true;
-	std::cout << "CFixedIntervalsNRD: Initialized the graph successfully" << std::endl;
+	std::cout << "CFixedIntervalsNRD: Initialized the graph successfully" 
+		<< std::endl;
 }
 
 // TParams

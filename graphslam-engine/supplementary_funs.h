@@ -10,7 +10,6 @@
 
 #include <mrpt/graphslam.h>
 
-
 namespace supplementary_funs {
 
 	/** 
@@ -18,7 +17,7 @@ namespace supplementary_funs {
 	 *
 	 * Feedback fucntion for the graph optimization
 	 */
-	template <class GRAPH_T>
+	template <class GRAPH_T, class NODE_REGISTRATOR>
 		void levMarqFeedback(
 				const GRAPH_T &graph,
 				const size_t iter,
