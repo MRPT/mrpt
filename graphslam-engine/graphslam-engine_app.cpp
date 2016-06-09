@@ -24,7 +24,7 @@
 #include <string>
 #include <cerrno>
 
-#include "GraphSlamEngine.h"
+#include "CGraphSlamEngine.h"
 #include "CWindowObserver.h"
 
 using namespace mrpt::utils;
@@ -118,12 +118,12 @@ int main(int argc, char **argv)
 
 		// Global square root erro plot
 
-		// Initialize the GraphSlamEngine_t class
+		// Initialize the CGraphSlamEngine_t class
 		string rawlog_fname;
 		if (arg_rawlog_file.isSet()) {
 			rawlog_fname = arg_rawlog_file.getValue();
 		}
-		GraphSlamEngine_t<CNetworkOfPoses2DInf> g_engine(config_fname, 
+		CGraphSlamEngine_t<CNetworkOfPoses2DInf> g_engine(config_fname, 
 				&graph_win,
 				&graph_win_observer,
 				rawlog_fname);
