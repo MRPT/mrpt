@@ -10,13 +10,6 @@
 #include "nav-precomp.h" // Precomp header
 
 #include <mrpt/nav/tpspace/CParameterizedTrajectoryGenerator.h>
-#include <mrpt/nav/tpspace/CPTG1.h>
-#include <mrpt/nav/tpspace/CPTG2.h>
-#include <mrpt/nav/tpspace/CPTG3.h>
-#include <mrpt/nav/tpspace/CPTG4.h>
-#include <mrpt/nav/tpspace/CPTG5.h>
-#include <mrpt/nav/tpspace/CPTG6.h>
-#include <mrpt/nav/tpspace/CPTG7.h>
 
 using namespace mrpt::nav;
 
@@ -27,21 +20,17 @@ CParameterizedTrajectoryGenerator * CParameterizedTrajectoryGenerator::CreatePTG
 {
 	MRPT_START
 
-	MRPT_TODO("rewrite with text-based ptg names");
-#if 0
-	switch(nPTG)
-	{
-	case 1: return new CPTG1(params);
-	case 2: return new CPTG2(params);
-	case 3: return new CPTG3(params);
-	case 4: return new CPTG4(params);
-	case 5: return new CPTG5(params);
-	case 6: return new CPTG6(params);
-	case 7: return new CPTG7(params);
+	const mrpt::utils::TRuntimeClassId *classId = mrpt::utils::findRegisteredClass( ptgClassName );
+	if (!classId) {
+		THROW_EXCEPTION_CUSTOM_MSG1("[CreatePTG] No PTG named `%s` is registered!",ptgClassName.c_str());
+	}
+	
+	CParameterizedTrajectoryGenerator *ptg = dynamic_cast<CParameterizedTrajectoryGenerator*>( classId->createObject() );
+	if (!ptg) {
+		THROW_EXCEPTION_CUSTOM_MSG1("[CreatePTG] Object of type `%s` seems not to be a PTG!",ptgClassName.c_str());
+	}
 
-	default:
-		THROW_EXCEPTION_CUSTOM_MSG1("Unknown PTG_type=%i",nPTG)
-	};
-#endif
+	ptg->setParams(params);
+	return ptg;
 	MRPT_END
 }

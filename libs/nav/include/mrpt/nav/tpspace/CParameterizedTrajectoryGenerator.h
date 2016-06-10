@@ -56,7 +56,8 @@ namespace nav
 		  *	  - Those explained in CParameterizedTrajectoryGenerator::setParamsCommon()
 		  *	  - Those explained in the specific PTG being created (see list of derived classes)
 		  *
-		  * `ptgClassName` can be any PTG class name.
+		  * `ptgClassName` can be any PTG class name which has been registered as any other 
+		  * mrpt::utils::CSerializable class.
 		  *
 		  * \exception std::logic_error On invalid or missing parameters.
 		  */
