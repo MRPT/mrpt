@@ -25,6 +25,7 @@
 			- New API to interface ZeroMQ: \ref noncstream_serialization_zmq
 			- Deprecated function (since 1.3.0) deleted: mrpt::system::registerFatalExceptionHandlers()
 			- Class mrpt::utils::CRobotSimulator renamed ==> mrpt::kinematics::CVehicleSimul_DiffDriven
+			- New twist (linear + angular velocity state) classes: mrpt::math::TTwist2D, mrpt::math::TTwist3D
 		- \ref mrpt_kinematics_grp
 			- New classes for 2D robot simulation:
 				- mrpt::kinematics::CVehicleSimul_DiffDriven

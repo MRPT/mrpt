@@ -74,6 +74,34 @@ void TPose2D::fromString(const std::string &s)
 	phi = DEG2RAD(m.get_unsafe(0,2));
 }
 
+// ----
+void TTwist2D::asString(std::string &s) const {
+	s = mrpt::format("[%f %f %f]",vx,vy,mrpt::utils::RAD2DEG(omega));
+}
+void TTwist2D::fromString(const std::string &s)
+{
+	CMatrixDouble  m;
+	if (!m.fromMatlabStringFormat(s)) THROW_EXCEPTION("Malformed expression in ::fromString");
+	ASSERTMSG_(mrpt::math::size(m,1)==1 && mrpt::math::size(m,2)==3, "Wrong size of vector in ::fromString");
+	vx = m.get_unsafe(0,0);
+	vy = m.get_unsafe(0,1);
+	omega = DEG2RAD(m.get_unsafe(0,2));
+}
+
+// ----
+void TTwist3D::asString(std::string &s) const {
+	s = mrpt::format("[%f %f %f  %f %f %f]",vx,vy,vz, mrpt::utils::RAD2DEG(wx),mrpt::utils::RAD2DEG(wy),mrpt::utils::RAD2DEG(wz));
+}
+void TTwist3D::fromString(const std::string &s)
+{
+	CMatrixDouble  m;
+	if (!m.fromMatlabStringFormat(s)) THROW_EXCEPTION("Malformed expression in ::fromString");
+	ASSERTMSG_(mrpt::math::size(m,1)==1 && mrpt::math::size(m,2)==6, "Wrong size of vector in ::fromString");
+	for (int i=0;i<3;i++) (*this)[i] = m.get_unsafe(0,i);
+	for (int i=0;i<3;i++) (*this)[3+i] = DEG2RAD(m.get_unsafe(0,3+i));
+}
+
+
 TPoint3D::TPoint3D(const TPoint2D &p):x(p.x),y(p.y),z(0.0)	{}
 TPoint3D::TPoint3D(const TPose2D &p):x(p.x),y(p.y),z(0.0)	{}
 TPoint3D::TPoint3D(const TPose3D &p):x(p.x),y(p.y),z(p.z)	{}
@@ -909,6 +937,35 @@ mrpt::utils::CStream& operator<<(mrpt::utils::CStream& out,const mrpt::math::TPo
 	out << o.x << o.y << o.phi;
 	return out;
 }
+
+mrpt::utils::CStream& operator>>(mrpt::utils::CStream& in,mrpt::math::TTwist2D &o)
+{
+	for (int i=0;i<o.size();i++) in >> o[i];
+	return in;
+}
+mrpt::utils::CStream& operator<<(mrpt::utils::CStream& out,const mrpt::math::TTwist2D &o)
+{
+	for (int i=0;i<o.size();i++) out << o[i];
+	return out;
+}
+
+mrpt::utils::CStream& operator>>(mrpt::utils::CStream& in,mrpt::math::TTwist3D &o)
+{
+	for (int i=0;i<o.size();i++) in >> o[i];
+	return in;
+}
+mrpt::utils::CStream& operator<<(mrpt::utils::CStream& out,const mrpt::math::TTwist3D &o)
+{
+	for (int i=0;i<o.size();i++) out << o[i];
+	return out;
+}
+
+	BASE_IMPEXP mrpt::utils::CStream& operator>>(mrpt::utils::CStream& in,mrpt::math::TTwist2D &o);
+	BASE_IMPEXP mrpt::utils::CStream& operator<<(mrpt::utils::CStream& out,const mrpt::math::TTwist2D &o);
+
+	BASE_IMPEXP mrpt::utils::CStream& operator>>(mrpt::utils::CStream& in,mrpt::math::TTwist3D &o);
+	BASE_IMPEXP mrpt::utils::CStream& operator<<(mrpt::utils::CStream& out,const mrpt::math::TTwist3D &o);
+
 
 mrpt::utils::CStream& operator>>(mrpt::utils::CStream& in,mrpt::math::TPose3D &o)
 {
