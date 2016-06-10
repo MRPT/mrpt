@@ -14,25 +14,30 @@ namespace mrpt
 {
   namespace nav
   {
-	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE(CPTG6, CParameterizedTrajectoryGenerator, NAV_IMPEXP)
+	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE(CPTG_DiffDrive_CS, CParameterizedTrajectoryGenerator, NAV_IMPEXP)
 
-	/** A variation of the alpha-PTG (with fixed parameters, for now)
+	/** A PTG for optimal paths of type "CS", as named in PTG papers.
+	  *  See "Obstacle Distance for Car-Like Robots", IEEE Trans. Rob. And Autom, 1999.
+	 * \note [Before MRPT 1.5.0 this was named CPTG5]
 	  *  \ingroup nav_tpspace
 	 */
-	class NAV_IMPEXP  CPTG6 : public CPTG_DiffDrive_CollisionGridBased
+	class NAV_IMPEXP  CPTG_DiffDrive_CS : public CPTG_DiffDrive_CollisionGridBased
 	{
-		DEFINE_SERIALIZABLE(CPTG6)
+		DEFINE_SERIALIZABLE(CPTG_DiffDrive_CS)
 	 public:
-		CPTG6() {}
-		CPTG6(const mrpt::utils::TParameters<double> &params) {
+		CPTG_DiffDrive_CS() : R(0),K(0) {}
+		CPTG_DiffDrive_CS(const mrpt::utils::TParameters<double> &params) {
 			setParams(params);
 		}
 		void setParams(const mrpt::utils::TParameters<double> &params) MRPT_OVERRIDE;
 		std::string getDescription() const MRPT_OVERRIDE;
 		bool PTG_IsIntoDomain( double x, double y ) const MRPT_OVERRIDE;
 		void ptgDiffDriveSteeringFunction( float alpha, float t,float x, float y, float phi, float &v, float &w ) const MRPT_OVERRIDE;
+
+	 protected:
+		 double R,K;
 	};
-	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(CPTG6, CParameterizedTrajectoryGenerator, NAV_IMPEXP)
+	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(CPTG_DiffDrive_CS, CParameterizedTrajectoryGenerator, NAV_IMPEXP)
+
   }
 }
-

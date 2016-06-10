@@ -8,7 +8,7 @@
    +---------------------------------------------------------------------------+ */
 
 #include "nav-precomp.h" // Precomp header
-#include <mrpt/nav/tpspace/CPTG1.h>
+#include <mrpt/nav/tpspace/CPTG_DiffDrive_C.h>
 #include <mrpt/math/wrap2pi.h>
 
 using namespace mrpt;
@@ -16,16 +16,16 @@ using namespace mrpt::nav;
 using namespace mrpt::utils;
 using namespace mrpt::system;
 
-IMPLEMENTS_SERIALIZABLE(CPTG1,CParameterizedTrajectoryGenerator,mrpt::nav)
+IMPLEMENTS_SERIALIZABLE(CPTG_DiffDrive_C,CParameterizedTrajectoryGenerator,mrpt::nav)
 
-void CPTG1::setParams(const mrpt::utils::TParameters<double> &params)
+void CPTG_DiffDrive_C::setParams(const mrpt::utils::TParameters<double> &params)
 {
 	this->K = params["K"];
 
 	CPTG_DiffDrive_CollisionGridBased::setParamsCommon(params);
 }
 
-void CPTG1::readFromStream(mrpt::utils::CStream &in, int version)
+void CPTG_DiffDrive_C::readFromStream(mrpt::utils::CStream &in, int version)
 {
 	CPTG_DiffDrive_CollisionGridBased::internal_readFromStream(in);
 
@@ -39,7 +39,7 @@ void CPTG1::readFromStream(mrpt::utils::CStream &in, int version)
 	};
 }
 
-void CPTG1::writeToStream(mrpt::utils::CStream &out, int *version) const
+void CPTG_DiffDrive_C::writeToStream(mrpt::utils::CStream &out, int *version) const
 {
 	if (version) 
 	{
@@ -56,12 +56,12 @@ void CPTG1::writeToStream(mrpt::utils::CStream &out, int *version) const
 
 
 
-std::string CPTG1::getDescription() const
+std::string CPTG_DiffDrive_C::getDescription() const
 {
 	return mrpt::format("Type#1PTG,circ.arcs,K=%i",(int)K);
 }
 
-void CPTG1::ptgDiffDriveSteeringFunction( float alpha, float t,float x, float y, float phi, float &v, float &w ) const
+void CPTG_DiffDrive_C::ptgDiffDriveSteeringFunction( float alpha, float t,float x, float y, float phi, float &v, float &w ) const
 {
 	MRPT_UNUSED_PARAM(t); MRPT_UNUSED_PARAM(x); MRPT_UNUSED_PARAM(y); MRPT_UNUSED_PARAM(phi);
     // (v,w)
@@ -70,13 +70,13 @@ void CPTG1::ptgDiffDriveSteeringFunction( float alpha, float t,float x, float y,
     w = (alpha/M_PI) * W_MAX * sign(K); 
 }
 
-bool CPTG1::PTG_IsIntoDomain( double x, double y ) const
+bool CPTG_DiffDrive_C::PTG_IsIntoDomain( double x, double y ) const
 {
 	MRPT_UNUSED_PARAM(x); MRPT_UNUSED_PARAM(y);
 	return true;
 }
 
-bool CPTG1::inverseMap_WS2TP(double x, double y, int &k_out, double &d_out, double tolerance_dist) const
+bool CPTG_DiffDrive_C::inverseMap_WS2TP(double x, double y, int &k_out, double &d_out, double tolerance_dist) const
 {
 	MRPT_UNUSED_PARAM(tolerance_dist);
 	bool is_exact = true;

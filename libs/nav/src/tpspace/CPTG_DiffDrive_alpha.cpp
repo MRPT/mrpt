@@ -8,7 +8,7 @@
    +---------------------------------------------------------------------------+ */
 
 #include "nav-precomp.h" // Precomp header
-#include <mrpt/nav/tpspace/CPTG2.h>
+#include <mrpt/nav/tpspace/CPTG_DiffDrive_alpha.h>
 #include <mrpt/system/os.h>
 
 using namespace mrpt;
@@ -16,9 +16,9 @@ using namespace mrpt::nav;
 using namespace mrpt::system;
 using namespace mrpt::utils;
 
-IMPLEMENTS_SERIALIZABLE(CPTG2,CParameterizedTrajectoryGenerator,mrpt::nav)
+IMPLEMENTS_SERIALIZABLE(CPTG_DiffDrive_alpha,CParameterizedTrajectoryGenerator,mrpt::nav)
 
-void CPTG2::setParams(const mrpt::utils::TParameters<double> &params)
+void CPTG_DiffDrive_alpha::setParams(const mrpt::utils::TParameters<double> &params)
 {
 	cte_a0v = params["cte_a0v"];
 	cte_a0w = params["cte_a0w"];
@@ -26,7 +26,7 @@ void CPTG2::setParams(const mrpt::utils::TParameters<double> &params)
 	CPTG_DiffDrive_CollisionGridBased::setParamsCommon(params);
 }
 
-std::string CPTG2::getDescription() const
+std::string CPTG_DiffDrive_alpha::getDescription() const
 {
 	char str[100];
 	os::sprintf(str,100,"Type#2PTG,av=%udeg,aw=%udeg",(int)RAD2DEG(cte_a0v),(int)RAD2DEG(cte_a0w) );
@@ -34,7 +34,7 @@ std::string CPTG2::getDescription() const
 }
 
 
-void CPTG2::readFromStream(mrpt::utils::CStream &in, int version)
+void CPTG_DiffDrive_alpha::readFromStream(mrpt::utils::CStream &in, int version)
 {
 	CPTG_DiffDrive_CollisionGridBased::internal_readFromStream(in);
 
@@ -48,7 +48,7 @@ void CPTG2::readFromStream(mrpt::utils::CStream &in, int version)
 	};
 }
 
-void CPTG2::writeToStream(mrpt::utils::CStream &out, int *version) const
+void CPTG_DiffDrive_alpha::writeToStream(mrpt::utils::CStream &out, int *version) const
 {
 	if (version) 
 	{
@@ -65,7 +65,7 @@ void CPTG2::writeToStream(mrpt::utils::CStream &out, int *version) const
 /*---------------------------------------------------------------
 						ptgDiffDriveSteeringFunction
   ---------------------------------------------------------------*/
-void CPTG2::ptgDiffDriveSteeringFunction( float alpha, float t,float x, float y, float phi, float &v, float &w ) const
+void CPTG_DiffDrive_alpha::ptgDiffDriveSteeringFunction( float alpha, float t,float x, float y, float phi, float &v, float &w ) const
 {
 	MRPT_UNUSED_PARAM(t); MRPT_UNUSED_PARAM(x); MRPT_UNUSED_PARAM(y);
     float At_a = alpha - phi;

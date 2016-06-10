@@ -19,21 +19,17 @@ using namespace mrpt::nav;
 using namespace std;
 
 void registerAllNavigationClasses();
-
-CStartUpClassesRegister  mrpt_reactivenav_class_reg(&registerAllNavigationClasses);
+static CStartUpClassesRegister mrpt_reactivenav_class_reg(&registerAllNavigationClasses);
 
 
 void registerAllNavigationClasses()
 {
 	// PTGs:
-	registerClass(CLASS_ID( CPTG1 ));
-	registerClass(CLASS_ID( CPTG2 ));
-	registerClass(CLASS_ID( CPTG3 ));
-	registerClass(CLASS_ID( CPTG4 ));
-	registerClass(CLASS_ID( CPTG5 ));
-	registerClass(CLASS_ID( CPTG6 ));
-	registerClass(CLASS_ID( CPTG7 ));
-
+	registerClass(CLASS_ID( CPTG_DiffDrive_C ));
+	registerClass(CLASS_ID( CPTG_DiffDrive_alpha ));
+	registerClass(CLASS_ID( CPTG_DiffDrive_CCS ));
+	registerClass(CLASS_ID( CPTG_DiffDrive_CC ));
+	registerClass(CLASS_ID( CPTG_DiffDrive_CS ));
 
 	// Logs:
 	registerClass(CLASS_ID( CLogFileRecord ));

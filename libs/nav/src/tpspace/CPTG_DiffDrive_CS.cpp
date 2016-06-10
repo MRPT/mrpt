@@ -8,7 +8,7 @@
    +---------------------------------------------------------------------------+ */
 
 #include "nav-precomp.h" // Precomp header
-#include <mrpt/nav/tpspace/CPTG5.h>
+#include <mrpt/nav/tpspace/CPTG_DiffDrive_CS.h>
 #include <mrpt/system/os.h>
 
 using namespace mrpt;
@@ -17,9 +17,9 @@ using namespace std;
 using namespace mrpt::system;
 using namespace mrpt::utils;
 
-IMPLEMENTS_SERIALIZABLE(CPTG5,CParameterizedTrajectoryGenerator,mrpt::nav)
+IMPLEMENTS_SERIALIZABLE(CPTG_DiffDrive_CS,CParameterizedTrajectoryGenerator,mrpt::nav)
 
-void CPTG5::setParams(const mrpt::utils::TParameters<double> &params)
+void CPTG_DiffDrive_CS::setParams(const mrpt::utils::TParameters<double> &params)
 {
 	this->K = params["K"];
 	CPTG_DiffDrive_CollisionGridBased::setParamsCommon(params);
@@ -28,7 +28,7 @@ void CPTG5::setParams(const mrpt::utils::TParameters<double> &params)
 }
 
 
-void CPTG5::readFromStream(mrpt::utils::CStream &in, int version)
+void CPTG_DiffDrive_CS::readFromStream(mrpt::utils::CStream &in, int version)
 {
 	CPTG_DiffDrive_CollisionGridBased::internal_readFromStream(in);
 
@@ -42,7 +42,7 @@ void CPTG5::readFromStream(mrpt::utils::CStream &in, int version)
 	};
 }
 
-void CPTG5::writeToStream(mrpt::utils::CStream &out, int *version) const
+void CPTG_DiffDrive_CS::writeToStream(mrpt::utils::CStream &out, int *version) const
 {
 	if (version) 
 	{
@@ -56,14 +56,14 @@ void CPTG5::writeToStream(mrpt::utils::CStream &out, int *version) const
 	MRPT_TODO("continue")
 
 }
-std::string CPTG5::getDescription() const
+std::string CPTG_DiffDrive_CS::getDescription() const
 {
 	char str[100];
 	os::sprintf(str,100,"Type#5PTG:CS");
 	return std::string(str);
 }
 
-void CPTG5::ptgDiffDriveSteeringFunction( float alpha, float t,float x, float y, float phi, float &v, float &w ) const
+void CPTG_DiffDrive_CS::ptgDiffDriveSteeringFunction( float alpha, float t,float x, float y, float phi, float &v, float &w ) const
 {
 	MRPT_UNUSED_PARAM(x); MRPT_UNUSED_PARAM(y); MRPT_UNUSED_PARAM(phi);
 	const float T = 0.847f*std::sqrt(std::abs(alpha))*R/V_MAX;
@@ -90,7 +90,7 @@ void CPTG5::ptgDiffDriveSteeringFunction( float alpha, float t,float x, float y,
 
 }
 
-bool CPTG5::PTG_IsIntoDomain( double x, double y ) const
+bool CPTG_DiffDrive_CS::PTG_IsIntoDomain( double x, double y ) const
 {
 	// If signs of K and X are different, it is not into the domain:
 	if ((K*x)<0)

@@ -12,13 +12,11 @@
 #include <mrpt/nav/reactive/CReactiveNavigationSystem.h>
 #include <mrpt/nav/reactive/CReactiveNavigationSystem3D.h>
 #include <mrpt/nav/reactive/CAbstractReactiveNavigationSystem.h>
-#include <mrpt/nav/tpspace/CPTG1.h>
-#include <mrpt/nav/tpspace/CPTG2.h>
-#include <mrpt/nav/tpspace/CPTG3.h>
-#include <mrpt/nav/tpspace/CPTG4.h>
-#include <mrpt/nav/tpspace/CPTG5.h>
-#include <mrpt/nav/tpspace/CPTG6.h>
-#include <mrpt/nav/tpspace/CPTG7.h>
+#include <mrpt/nav/tpspace/CPTG_DiffDrive_C.h>
+#include <mrpt/nav/tpspace/CPTG_DiffDrive_alpha.h>
+#include <mrpt/nav/tpspace/CPTG_DiffDrive_CCS.h>
+#include <mrpt/nav/tpspace/CPTG_DiffDrive_CC.h>
+#include <mrpt/nav/tpspace/CPTG_DiffDrive_CS.h>
 
 #include <mrpt/nav/planners/PlannerSimple2D.h>
 #include <mrpt/nav/planners/PlannerRRT_SE2_TPS.h>
