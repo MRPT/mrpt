@@ -14,51 +14,45 @@ namespace mrpt
 {
   namespace nav
   {
-	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE(CPTG1, CParameterizedTrajectoryGenerator, NAV_IMPEXP)
+	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE(CPTG_DiffDrive_alpha, CParameterizedTrajectoryGenerator, NAV_IMPEXP)
 
-	/** A PTG for circular paths ("C" type PTG in papers). 
+	/** The "a(symptotic)-alpha PTG", as named in PTG papers.
 	 * 
-	 * Accepted parameters in setParams()
+	 * Accepted parameters in the constructor:
 	 * - params["ref_distance"]: Maximum trayectory distance (meters).
 	 * - params["v_max"]: Maximum linear velocity (m/s)
 	 * - params["w_max"]: Maximum angular velocity (rad/s)
-	 * - params["K"]: Can be "+1" for forward paths, or "-1" for backward paths.
+	 * - params["cte_a0v"]: Constant related to the generation of linear velocities, read below (in radians).
+	 * - params["cte_a0w"]: Constant related to the generation of angular velocities, read below  (in radians).
 	 * 
 	 * This PT generator functions are: 
 	 *
-	 * \f[ v(\alpha) = V_{MAX} sign(K) \f]
-	 * \f[ \omega(\alpha) = \dfrac{\alpha}{\pi} W_{MAX} sign(K) \f]
+	 * \f[ v(\alpha) = V_{MAX} e^{ -\left( \dfrac{\alpha-\phi}{cte_{a0v}} \right)^2} \f]
+	 * \f[ \omega(\alpha) = W_{MAX} \left( -\dfrac{1}{2} +\dfrac{1}{1+ e^{ - \dfrac{\alpha-\phi}{cte_{a0w}} } } \right) \f]
 	 *
-	 * So, the radius of curvature of each trajectory is constant for each "alpha" value (the trajectory parameter):
+	 * So, the radius of curvature of each trajectory is NOT constant for each "alpha" value in this PTG:
 	 *
-	 *  \f[ R(\alpha) = \dfrac{v}{\omega} = \dfrac{V_{MAX}}{W_{MAX}} \dfrac{\pi}{\alpha} \f]
+	 *  ![C-PTG path examples](PTG2_paths.png)
 	 *
-	 * from which a minimum radius of curvature can be set by selecting the appropriate values of V_MAX and W_MAX, 
-	 * knowning that \f$ \alpha \in (-\pi,\pi) \f$.
-	 *
-	 *  ![C-PTG path examples](PTG1_paths.png)
-	 *
+	 * \note [Before MRPT 1.5.0 this was named CPTG2]
 	 *  \ingroup nav_tpspace
 	 */
-	class NAV_IMPEXP CPTG1 : public CPTG_DiffDrive_CollisionGridBased
+	class NAV_IMPEXP  CPTG_DiffDrive_alpha : public CPTG_DiffDrive_CollisionGridBased
 	{
-		DEFINE_SERIALIZABLE(CPTG1)
+		DEFINE_SERIALIZABLE(CPTG_DiffDrive_alpha)
 	 public:
-		CPTG1() : K(0) { }
-		CPTG1(const mrpt::utils::TParameters<double> &params) {
+		CPTG_DiffDrive_alpha() : cte_a0v(0),cte_a0w(0) { }
+		CPTG_DiffDrive_alpha(const mrpt::utils::TParameters<double> &params) {
 			setParams(params);
 		}
 		void setParams(const mrpt::utils::TParameters<double> &params) MRPT_OVERRIDE;
 		std::string getDescription() const MRPT_OVERRIDE;
-		bool inverseMap_WS2TP(double x, double y, int &out_k, double &out_d, double tolerance_dist = 0.10) const MRPT_OVERRIDE;
-		bool PTG_IsIntoDomain( double x, double y ) const MRPT_OVERRIDE;
 		void ptgDiffDriveSteeringFunction( float alpha, float t,float x, float y, float phi, float &v, float &w ) const MRPT_OVERRIDE;
 
 	 protected:
-		/** A generation parameter */
-		double K;
+		double cte_a0v, cte_a0w;
 	};
-	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(CPTG1, CParameterizedTrajectoryGenerator, NAV_IMPEXP)
+	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(CPTG_DiffDrive_alpha, CParameterizedTrajectoryGenerator, NAV_IMPEXP)
 
   }
 }

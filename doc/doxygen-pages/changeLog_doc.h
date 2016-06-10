@@ -45,8 +45,10 @@
 			- mrpt::maps::CMultiMetricMapPDF added method CMultiMetricMapPDF::prediction_and_update_pfAuxiliaryPFStandard().
 		- \ref mrpt_nav_grp
 			- PTG classes refactored (see new virtual base class mrpt::nav::CParameterizedTrajectoryGenerator and its derived classes):
+				- Old classes `CPTG%d` have been renamed to describe each path type. Old PTGs #6 and #7 have been removed for lack of practical use.
 				- New separate classes for PTGs based on numerically-integrated paths and on closed-form formulations.
 				- Old deprecated method of PTGs `lambdaFunction()` removed.
+				- 
 	- Changes in build system:
 		- [Windows only] `DLL`s/`LIB`s now have the signature `lib-${name}${2-digits-version}${compiler-name}_{x32|x64}.{dll/lib}`, allowing several MRPT versions to coexist in the system PATH.
 		- [Visual Studio only] There are no longer `pragma comment(lib...)` in any MRPT header, so it is the user responsibility to correctly tell user projects to link against MRPT libraries.
@@ -689,7 +691,7 @@
 				- mrpt::reactivenav::CParameterizedTrajectoryGenerator::debugDumpInFiles() now also saves text files which can be used to visualize PTGs from MATLAB (see scripts/viewPTG.m) - <a href="http://code.google.com/p/mrpt/source/detail?r=3009" >r3009</a>
 				- mrpt::reactivenav::CHolonomicVFF and mrpt::reactivenav::CHolonomicND now have more configurable parameters, loadable from config files. See their documentation.
 				- Repulsive forces from obstacles in mrpt::reactivenav::CHolonomicVFF are now automatically normalized wrt the density of the 360deg view of obstacles and forces follow a "1/range" law instead of the old "exp(-range)".
-				- Solved a stability issue in C-S paths, in mrpt::reactivenav::CPTG5 (By Mariano Jaimez Tarifa) - <a href="http://code.google.com/p/mrpt/source/detail?r=3085" >r3085</a>
+				- Solved a stability issue in C-S paths, in mrpt::reactivenav::CPTG_DiffDrive_CS (By Mariano Jaimez Tarifa) - <a href="http://code.google.com/p/mrpt/source/detail?r=3085" >r3085</a>
 			- [mrpt-scanmatching]
 				- mrpt::scanmatching::robustRigidTransformation():
 					- Changed behavior not to allow features to appear in duplicated pairings.

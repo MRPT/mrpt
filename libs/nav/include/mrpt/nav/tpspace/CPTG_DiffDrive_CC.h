@@ -14,18 +14,19 @@ namespace mrpt
 {
   namespace nav
   {
-	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE(CPTG4, CParameterizedTrajectoryGenerator, NAV_IMPEXP)
+	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE(CPTG_DiffDrive_CC, CParameterizedTrajectoryGenerator, NAV_IMPEXP)
 
 	/** A PTG for optimal paths of type "C|C" , as named in PTG papers.
 	  *  See also "Obstacle Distance for Car-Like Robots", IEEE Trans. Rob. And Autom, 1999.
+	 * \note [Before MRPT 1.5.0 this was named CPTG4]
 	  *  \ingroup nav_tpspace
 	 */
-	class NAV_IMPEXP  CPTG4 : public CPTG_DiffDrive_CollisionGridBased
+	class NAV_IMPEXP  CPTG_DiffDrive_CC : public CPTG_DiffDrive_CollisionGridBased
 	{
-		DEFINE_SERIALIZABLE(CPTG4)
+		DEFINE_SERIALIZABLE(CPTG_DiffDrive_CC)
 	 public:
-		CPTG4() : R(0),K(0) {}
-		CPTG4(const mrpt::utils::TParameters<double> &params) {
+		CPTG_DiffDrive_CC() : R(0),K(0) {}
+		CPTG_DiffDrive_CC(const mrpt::utils::TParameters<double> &params) {
 			setParams(params);
 		}
 		void setParams(const mrpt::utils::TParameters<double> &params) MRPT_OVERRIDE;
@@ -36,7 +37,7 @@ namespace mrpt
 	 protected:
 		 double R,K;
 	};
-	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(CPTG4, CParameterizedTrajectoryGenerator, NAV_IMPEXP)
+	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(CPTG_DiffDrive_CC, CParameterizedTrajectoryGenerator, NAV_IMPEXP)
 
   }
 }
