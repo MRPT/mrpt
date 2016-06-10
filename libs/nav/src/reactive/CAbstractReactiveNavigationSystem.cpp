@@ -16,8 +16,7 @@ using namespace std;
 
 // Ctor: CAbstractReactiveNavigationSystem::TNavigationParams 
 CAbstractReactiveNavigationSystem::TNavigationParams::TNavigationParams() :
-	target(0,0), 
-	targetHeading(0),
+	target(0,0,0), 
 	targetAllowedDistance(0.5),
 	targetIsRelative(false)
 {
@@ -27,7 +26,7 @@ CAbstractReactiveNavigationSystem::TNavigationParams::TNavigationParams() :
 std::string CAbstractReactiveNavigationSystem::TNavigationParams::getAsText() const 
 {
 	string s;
-	s+= mrpt::format("navparams.target = (%.03f,%.03f)\n", target.x, target.y );
+	s+= mrpt::format("navparams.target = (%.03f,%.03f,%.03f deg)\n", target.x, target.y,target.phi );
 	s+= mrpt::format("navparams.targetAllowedDistance = %.03f\n", targetAllowedDistance );
 	s+= mrpt::format("navparams.targetIsRelative = %s\n", targetIsRelative ? "YES":"NO");
 
