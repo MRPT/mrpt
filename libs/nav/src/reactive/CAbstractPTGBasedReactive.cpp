@@ -171,8 +171,8 @@ void CAbstractPTGBasedReactive::navigate(const CAbstractReactiveNavigationSystem
 	// Transform: relative -> absolute, if needed.
 	if ( m_navigationParams->targetIsRelative )
 	{
-		mrpt::math::TPose2D currentPose;
-		std::vector<double> cur_vel;
+		mrpt::math::TPose2D  currentPose;
+		mrpt::math::TTwist2D cur_vel;
 
 		if ( !m_robot.getCurrentPoseAndSpeeds(currentPose, cur_vel) )
 		{
@@ -180,12 +180,11 @@ void CAbstractPTGBasedReactive::navigate(const CAbstractReactiveNavigationSystem
 			return;
 		}
 
-		const mrpt::poses::CPose2D relTarget(m_navigationParams->target.x,m_navigationParams->target.y,m_navigationParams->targetHeading);
+		const mrpt::poses::CPose2D relTarget(m_navigationParams->target);
 		mrpt::poses::CPose2D absTarget;
 		absTarget.composeFrom(currentPose, relTarget);
 
-		m_navigationParams->target = mrpt::math::TPoint2D(absTarget.x(),absTarget.y());
-		m_navigationParams->targetHeading = absTarget.phi();
+		m_navigationParams->target = mrpt::math::TPose2D(absTarget);
 
 		m_navigationParams->targetIsRelative = false; // Now it's not relative
 	}
@@ -287,8 +286,8 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 		/* ----------------------------------------------------------------
 		 	  Request current robot pose and velocities
 		   ---------------------------------------------------------------- */
-		mrpt::math::TPose2D curPose;
-		std::vector<double> curVel;
+		mrpt::math::TPose2D  curPose;
+		mrpt::math::TTwist2D curVel;
 		{
 			CTimeLoggerEntry tle2(m_timelogger,"navigationStep.getCurrentPoseAndSpeeds");
 			if ( !m_robot.getCurrentPoseAndSpeeds(curPose, curVel) )
@@ -301,7 +300,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 		/* ----------------------------------------------------------------
 		 	  Have we reached the target location?
 		   ---------------------------------------------------------------- */
-		const double targetDist = mrpt::math::distance( mrpt::math::TPoint2D(curPose), m_navigationParams->target);
+		const double targetDist = mrpt::math::distance( mrpt::math::TPoint2D(curPose), mrpt::math::TPoint2D(m_navigationParams->target));
 
 		// Should "End of navigation" event be sent??
 		if (!navigationEndEventSent && targetDist < DIST_TO_TARGET_FOR_SENDING_EVENT)
@@ -347,7 +346,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 
 		// Compute target location relative to current robot pose:
 		// ---------------------------------------------------------------------
-		const CPose2D relTarget = CPose2D(m_navigationParams->target.x,m_navigationParams->target.y,m_navigationParams->targetHeading) - curPose;
+		const CPose2D relTarget = CPose2D(m_navigationParams->target) - curPose;
 
 		STEP1_InitPTGs(); // Will only recompute if "m_PTGsMustBeReInitialized==true"
 

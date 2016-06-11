@@ -421,11 +421,10 @@ public:
 	gui::CDisplayWindow3D			window;
 	COpenGLScenePtr					scene;
 	
-	bool getCurrentPoseAndSpeeds( poses::CPose2D &curPose, float &curV, float &curW)
+	bool getCurrentPoseAndSpeeds( mrpt::math::TPose2D &curPose, mrpt::math::TTwist2D &curVel)
 	{
-		robotSim.getRealPose( curPose );
-		curV = robotSim.getV();
-		curW = robotSim.getW();
+		curPose = robotSim.getCurrentGTPose();
+		curVel  = robotSim.getCurrentGTVel();
 		return true;
 	}
 

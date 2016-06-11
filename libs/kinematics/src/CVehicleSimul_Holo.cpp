@@ -18,9 +18,9 @@ using namespace mrpt::kinematics;
 void CVehicleSimul_Holo::internal_simulStep(const double dt)
 {
 	// Update state (forward Euler integration):
-	m_pose.x   += m_vel.x   * dt;
-	m_pose.y   += m_vel.y   * dt;
-	m_pose.phi += m_vel.phi * dt;
+	m_pose.x   += m_vel.vx   * dt;
+	m_pose.y   += m_vel.vy   * dt;
+	m_pose.phi += m_vel.omega* dt;
 	mrpt::math::wrapToPi(m_pose.phi);
 
 	// Control:
@@ -36,13 +36,13 @@ void CVehicleSimul_Holo::internal_simulStep(const double dt)
 		// "Blending" for vx,vy
 		if (t<=m_vel_ramp_cmd.ramp_time)
 		{
-			m_vel.x = vxi + t*(vxf-vxi) /T;
-			m_vel.y = vyi + t*(vyf-vyi) /T;
+			m_vel.vx = vxi + t*(vxf-vxi) /T;
+			m_vel.vy = vyi + t*(vyf-vyi) /T;
 		}
 		else 
 		{
-			m_vel.x = m_vel_ramp_cmd.target_vel_x;
-			m_vel.y = m_vel_ramp_cmd.target_vel_y;
+			m_vel.vx = m_vel_ramp_cmd.target_vel_x;
+			m_vel.vy = m_vel_ramp_cmd.target_vel_y;
 		}
 #if 0
 		// Proportional controller in angle:
@@ -51,7 +51,7 @@ void CVehicleSimul_Holo::internal_simulStep(const double dt)
 #else
 		// Constant rotational velocity:
 		const double Aang = mrpt::math::wrapToPi(m_vel_ramp_cmd.dir - m_pose.phi);
-		m_vel.phi = ( std::abs(Aang)<mrpt::utils::DEG2RAD(1.0) ? 0.0 : mrpt::utils::sign(Aang) )  * m_vel_ramp_cmd.rot_speed;
+		m_vel.omega = ( std::abs(Aang)<mrpt::utils::DEG2RAD(1.0) ? 0.0 : mrpt::utils::sign(Aang) )  * m_vel_ramp_cmd.rot_speed;
 #endif
 	}
 }
