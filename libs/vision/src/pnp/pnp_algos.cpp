@@ -12,6 +12,8 @@
 #include <mrpt/vision/pnp/epnp.h>
 #include <mrpt/vision/pnp/upnp.h>
 #include <mrpt/vision/pnp/p3p.h>
+#include <mrpt/vision/pnp/ppnp.h>
+
 using namespace pnp;
 
 #include <iostream>
@@ -19,11 +21,9 @@ using namespace std;
 
 #include <eigen3/Eigen/Core>
 #include <eigen3/Eigen/Dense>
-using namespace Eigen;
 
 #include <opencv2/opencv.hpp>
 #include <opencv2/core/eigen.hpp>
-using namespace cv;
 
 int CPnP::CPnP_dls(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<Eigen::MatrixXd> img_pts, int n, const Eigen::Ref<Eigen::MatrixXd> cam_intrinsic, Eigen::Ref<Eigen::MatrixXd> pose_mat){
 	
@@ -199,4 +199,20 @@ int CPnP::CPnP_p3p(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<E
 	return 1;
 }
 
+int CPnP::CPnP_ppnp(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<Eigen::MatrixXd> img_pts, int n, const Eigen::Ref<Eigen::MatrixXd> cam_intrinsic, Eigen::Ref<Eigen::MatrixXd> pose_mat)
+{	
+	Eigen::Matrix3d R(3,3);
+	Eigen::VectorXd t(3);
+	
+	Eigen::MatrixXd obj_pts_=obj_pts.array().transpose(), img_pts_=img_pts.array().transpose();
 
+	ppnp p(obj_pts_,img_pts_, cam_intrinsic);
+	
+	p.compute_pose(R,t,n);
+	
+	Eigen::Quaterniond q(R);
+	
+	pose_mat << t,q.vec();
+	
+	return 1;
+}
