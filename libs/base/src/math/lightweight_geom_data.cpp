@@ -87,6 +87,14 @@ void TTwist2D::fromString(const std::string &s)
 	vy = m.get_unsafe(0,1);
 	omega = DEG2RAD(m.get_unsafe(0,2));
 }
+// Transform the (vx,vy) components for a counterclockwise rotation of `ang` radians
+void TTwist2D::rotate(const double ang)
+{
+	const double nvx = vx * cos(ang) - vy * sin(ang);
+	const double nvy = vx * sin(ang) + vy * cos(ang);
+	vx = nvx;
+	vy = nvy;
+}
 
 // ----
 void TTwist3D::asString(std::string &s) const {
@@ -99,6 +107,20 @@ void TTwist3D::fromString(const std::string &s)
 	ASSERTMSG_(mrpt::math::size(m,1)==1 && mrpt::math::size(m,2)==6, "Wrong size of vector in ::fromString");
 	for (int i=0;i<3;i++) (*this)[i] = m.get_unsafe(0,i);
 	for (int i=0;i<3;i++) (*this)[3+i] = DEG2RAD(m.get_unsafe(0,3+i));
+}
+// Transform all 6 components for a change of reference frame from "A" to 
+// another frame "B" whose rotation with respect to "A" is given by `rot`. The translational part of the pose is ignored
+void TTwist3D::rotate(const mrpt::poses::CPose3D & rot)
+{
+	const TTwist3D t = *this;
+	const mrpt::math::CMatrixDouble33 & R = rot.getRotationMatrix();
+	vx=R(0,0)*t.vx+R(0,1)*t.vy+R(0,2)*t.vz;
+	vy=R(1,0)*t.vx+R(1,1)*t.vy+R(1,2)*t.vz;
+	vz=R(2,0)*t.vx+R(2,1)*t.vy+R(2,2)*t.vz;
+
+	wx=R(0,0)*t.wx+R(0,1)*t.wy+R(0,2)*t.wz;
+	wy=R(1,0)*t.wx+R(1,1)*t.wy+R(1,2)*t.wz;
+	wz=R(2,0)*t.wx+R(2,1)*t.wy+R(2,2)*t.wz;
 }
 
 
