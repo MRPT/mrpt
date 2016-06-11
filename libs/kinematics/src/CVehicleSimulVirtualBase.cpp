@@ -10,7 +10,6 @@
 #include "kinematics-precomp.h"  // Precompiled header
 
 #include <mrpt/kinematics/CVehicleSimulVirtualBase.h>
-//#include <mrpt/random.h>
 
 using namespace mrpt::kinematics;
 
@@ -43,7 +42,7 @@ void CVehicleSimulVirtualBase::simulateOneTimeStep(const double dt)
 void CVehicleSimulVirtualBase::resetStatus()
 {
 	m_pose= mrpt::math::TPose2D(.0,.0,.0);
-	m_vel = mrpt::math::TPose2D(.0,.0,.0);
+	m_vel = mrpt::math::TTwist2D(.0,.0,.0);
 	m_odometry = mrpt::math::TPose2D(.0,.0,.0);	
 	internal_clear();
 }
@@ -51,4 +50,11 @@ void CVehicleSimulVirtualBase::resetStatus()
 void CVehicleSimulVirtualBase::resetTime()
 {
 	m_time = .0;
+}
+
+mrpt::math::TTwist2D CVehicleSimulVirtualBase::getCurrentGTVelLocal() const
+{
+	mrpt::math::TTwist2D tl = this->m_vel;
+	tl.rotate(m_pose.phi);
+	return tl;
 }

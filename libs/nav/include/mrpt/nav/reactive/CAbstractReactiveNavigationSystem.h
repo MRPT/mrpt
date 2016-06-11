@@ -19,13 +19,13 @@ namespace mrpt
 {
   namespace nav
   {
-	/** The pure virtual class that a user of CAbstractReactiveNavigationSystem-derived classes must implement in order to allow the navigator sense the world and send motion commands to the robot.
+	/** The pure virtual interface between a real or simulated robot and any `CAbstractReactiveNavigationSystem`-derived class.
 	  *
-	  *  The user must define a new class derived from CReactiveInterfaceImplementation and reimplement
+	  *  The user must define a new class derived from `CReactiveInterfaceImplementation` and reimplement
 	  *   all pure virtual and the desired virtual methods according to the documentation in this class.
 	  * 
 	  * [New in MRPT 1.5.0] This class does not make assumptions about the kinematic model of the robot, so it can work with either 
-	  *  Ackermann, differential-driven or holonomic robots. It will depend on the used PTG, so checkout 
+	  *  Ackermann, differential-driven or holonomic robots. It will depend on the used PTGs, so checkout 
 	  *  each PTG documentation for the lenght and meaning of velocity commands.
 	  *
 	  * \sa CReactiveNavigationSystem, CAbstractReactiveNavigationSystem
@@ -39,10 +39,10 @@ namespace mrpt
 		*   return the latest values from a cache which is updated in a parallel thread.
 		*
 		* \param[out] curPose The latest robot pose, in world coordinates. (x,y: meters, phi: radians)
-		* \param[out] curVel The latest robot velocity vector. Length and meaning of this vector is user implementation-dependent.
+		* \param[out] curVel  The latest robot velocity vector, in world coordinates. (vx,vy: m/s, omega: rad/s)
 		* \return false on any error retrieving these values from the robot.
 		*/
-		virtual bool getCurrentPoseAndSpeeds(mrpt::math::TPose2D &curPose,std::vector<double> &curVel) = 0;
+		virtual bool getCurrentPoseAndSpeeds(mrpt::math::TPose2D &curPose, mrpt::math::TTwist2D &curVel) = 0;
 
 		/** Sends a velocity command to the robot.
 		 * Length and meaning of this vector is PTG-dependent.

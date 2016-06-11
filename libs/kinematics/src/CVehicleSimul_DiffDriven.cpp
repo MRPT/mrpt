@@ -55,9 +55,9 @@ void CVehicleSimul_DiffDriven::internal_simulStep(const double AAt)
 	}
 
 	// Local to global frame:
-	m_vel.x   = cos(m_pose.phi) * m_v;
-	m_vel.y   = sin(m_pose.phi) * m_v;
-	m_vel.phi = m_w;
+	m_vel.vx   = cos(m_pose.phi) * m_v;
+	m_vel.vy   = sin(m_pose.phi) * m_v;
+	m_vel.omega = m_w;
 
 	// Simulate movement during At:
 	const CPose2D  dP( m_v*AAt,  0, m_w*AAt );

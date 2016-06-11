@@ -78,7 +78,7 @@ void  CLogFileRecord::writeToStream(mrpt::utils::CStream &out,int *version) cons
 		}
 
 		// Version 1 ---------
-		out << cur_vel /*v10*/;
+		out << cur_vel<< cur_vel_local; /*v10*/ 
 
 		// Version 2 ----------
 		out << estimatedExecutionPeriod;
@@ -214,19 +214,18 @@ void  CLogFileRecord::readFromStream(mrpt::utils::CStream &in,int version)
 			if (version > 0)
 			{	// Version 1 --------------
 				if (version >= 10) {
-					in >> cur_vel;
+					in >> cur_vel >> cur_vel_local;
 				}
 				else {
 					float actual_v, actual_w;
 					in >> actual_v >> actual_w;
-					cur_vel.resize(2);
-					cur_vel[0] = actual_v;
-					cur_vel[1] = actual_w;
+					cur_vel = mrpt::math::TTwist2D(0,0,0);
+					cur_vel_local= mrpt::math::TTwist2D(actual_v, .0, actual_w );
 				}
 			}
 			else
 			{	// Default values for old versions:
-				cur_vel.resize(2, 0.0);
+				cur_vel = mrpt::math::TTwist2D(0,0,0);
 			}
 
 			if (version > 1)

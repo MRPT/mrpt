@@ -67,7 +67,8 @@ namespace nav
 		mrpt::math::TPoint2D          WS_target_relative;  //!< The relative location of target point in WS.
 
 		std::vector<double>    cmd_vel;  //!< The final motion command sent to robot, in "m/sec" and "rad/sec".
-		std::vector<double>    cur_vel; //!< The actual robot velocities, as read from sensors, in "m/sec" and "rad/sec".
+		mrpt::math::TTwist2D   cur_vel; //!< The actual robot velocities in global (map) coordinates, as read from sensors, in "m/sec" and "rad/sec".
+		mrpt::math::TTwist2D   cur_vel_local; //!< The actual robot velocities in local (robot) coordinates, as read from sensors, in "m/sec" and "rad/sec".
 
 		mrpt::math::CVectorFloat robotShape_x,robotShape_y;  //!< The robot shape in WS.
 	};

@@ -42,16 +42,16 @@ namespace kinematics
 		/** Brute-force move robot to target coordinates ("teleport") */
 		void setCurrentGTPose(const mrpt::math::TPose2D  &pose);
 
-		/** Returns the instantaneous, ground truth velocity vector (vx,vy,v,omega) in world coordinates. 
-		  * Set a parameter to NULL if you are not interested in it */
-		void getCurrentGTVel(double *vx, double *vy, double *v, double *w) const;
+		/** Returns the instantaneous, ground truth velocity vector (vx,vy,omega) in world coordinates */
+		const mrpt::math::TTwist2D & getCurrentGTVel() const { return m_vel; }
+		/** Returns the instantaneous, ground truth velocity vector (vx,vy,omega) in the robot local frame */
+		mrpt::math::TTwist2D getCurrentGTVelLocal() const;
 
 		/** Get the current simulation time */
 		double getTime() const { return m_time;}
 
 		/** Sends a velocity command to the robot. The number of components and their meaning depends on the derived class */
 		virtual void sendVelCmd(const std::vector<double> &cmd_vel) = 0;
-
 		virtual size_t getVelCmdLength() const = 0;
 		virtual std::string getVelCmdDescription() const = 0;
 
@@ -87,7 +87,7 @@ namespace kinematics
 		 *  @{ */
 		double                m_time;  //!< simulation running time
 		mrpt::math::TPose2D   m_pose;  //!< ground truth pose in world coordinates.
-		mrpt::math::TPose2D   m_vel;   //!< Velocity in (x,y,omega)
+		mrpt::math::TTwist2D  m_vel;   //!< Velocity in (x,y,omega)
 		mrpt::math::TPose2D   m_odometry;
 		/** @} */
 		double m_firmware_control_period;  //!< The period at which the low-level controller updates velocities (Default: 0.5 ms)
