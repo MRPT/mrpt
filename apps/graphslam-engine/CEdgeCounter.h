@@ -7,8 +7,8 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#ifndef EDGECOUNTER_H
-#define EDGECOUNTER_H
+#ifndef CEDGECOUNTER_H
+#define CEDGECOUNTER_H
 
 
 
@@ -25,16 +25,16 @@
  * edges and for storing visualization-related information for each type
  *
  */
-class EdgeCounter_t {
+class CEdgeCounter_t {
 	public:
 
-		EdgeCounter_t(mrpt::gui::CDisplayWindow3D* win = NULL) {
+		CEdgeCounter_t(mrpt::gui::CDisplayWindow3D* win = NULL) {
 			m_win = win;
-			initEdgeCounter_t();
+			initCEdgeCounter_t();
 		}
-		~EdgeCounter_t() {}
+		~CEdgeCounter_t() {}
 
-		void initEdgeCounter_t() {
+		void initCEdgeCounter_t() {
 
 			this->clearAllEdges();
 			m_has_read_textmessage_params = false;
@@ -435,4 +435,4 @@ class EdgeCounter_t {
 };
 
 
-#endif /* end of include guard: EDGECOUNTER_H */
+#endif /* end of include guard: CEDGECOUNTER_H */
