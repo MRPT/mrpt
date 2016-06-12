@@ -96,7 +96,7 @@ class CEdgeCounter_t {
 		 * Return the total amount of registered edges
 		 * \sa getTotalNumOfEdges()
 		 */
-		int getTotalNumOfEdges(int* total_num_edges) const {
+		void getTotalNumOfEdges(int* total_num_edges) const {
 			int sum = 0;
 
 			for (std::map<std::string, int>::const_iterator it = m_name_to_edges_num.begin();

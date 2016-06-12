@@ -43,7 +43,7 @@ namespace mrpt { namespace graphslam { namespace deciders {
 				virtual void updateDeciderState(
 						mrpt::obs::CActionCollectionPtr action,
 						mrpt::obs::CSensoryFramePtr observations,
-						mrpt::obs::CObservationPtr observation )=0;
+						mrpt::obs::CObservationPtr observation ) = 0;
 				/**
 				 * method for fetching the graph after the instance initialization
 				 */
@@ -76,20 +76,17 @@ namespace mrpt { namespace graphslam { namespace deciders {
 
   		protected:
 				/**
-		 		 * Methods for checking whether new edges should be registered in the
+		 		 * Method for checking whether a new edge should be registered in the
 		 		 * graph. If condition(s) for edge registration is satisfied, method
 		 		 * should call the registerNewEdge method.
-		 		 *
-		 		 * Returns true upon successful Edge registration in the graph
 		 		 */
-				virtual bool checkRegistrationCondition(
+				virtual void checkRegistrationCondition(
 						mrpt::utils::TNodeID from,
 						mrpt::utils::TNodeID to ) {}
 		 		/**
-		 		 * Methods for checking whether new edges should be registered in the
+		 		 * Method for checking whether new edges should be registered in the
 		 		 * graph. If condition(s) for edge registration is satisfied, method
-		 		 * should call the registerNewEdge method. If given, method fills a map
-		 		 * of edge type to number of registered edges of that type.
+		 		 * should call the registerNewEdge method.
 		 		 */
 				virtual void checkRegistrationCondition(
 						const std::set<mrpt::utils::TNodeID>&) {}
@@ -99,7 +96,7 @@ namespace mrpt { namespace graphslam { namespace deciders {
     		virtual void registerNewEdge(
     				const mrpt::utils::TNodeID& from, 
     				const mrpt::utils::TNodeID& to,
-    				const constraint_t& rel_edge)= 0;
+    				const constraint_t& rel_edge) = 0;
 		};
 
 } } } // end of namespaces
