@@ -1,3 +1,12 @@
+/* +---------------------------------------------------------------------------+
+   |                     Mobile Robot Programming Toolkit (MRPT)               |
+   |                          http://www.mrpt.org/                             |
+   |                                                                           |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | See: http://www.mrpt.org/Authors - All rights reserved.                   |
+   | Released under BSD License. See details in http://www.mrpt.org/License    |
+   +---------------------------------------------------------------------------+ */
+
 #ifndef CGRAPHSLAMENGINE_IMPL_H
 #define CGRAPHSLAMENGINE_IMPL_H
 
@@ -35,7 +44,6 @@ using namespace mrpt::graphslam;
 #include <mrpt/opengl/CPointCloud.h>
 #include <mrpt/opengl/CRenderizable.h>
 #include <mrpt/opengl/CAxis.h>
-#include <mrpt/opengl/CDisk.h>
 #include <mrpt/opengl/CCamera.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/CSetOfObjects.h>
@@ -52,6 +60,7 @@ using namespace mrpt::graphslam;
 #include "supplementary_funs.h"
 #include "CWindowObserver.h"
 
+// todo - remove these
 using namespace mrpt;
 using namespace mrpt::synch;
 using namespace mrpt::poses;
@@ -73,8 +82,8 @@ using namespace std;
 // Ctors, Dtors implementations
 //////////////////////////////////////////////////////////////
 
-template<class GRAPH_t, class NODE_REGISTRATOR>
-CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR>::CGraphSlamEngine_t(
+template<class GRAPH_t, class NODE_REGISTRATOR, class EDGE_REGISTRATOR>
+CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR, EDGE_REGISTRATOR>::CGraphSlamEngine_t(
 		const string& config_file,
 		CDisplayWindow3D* win /* = NULL */,
 		CWindowObserver* win_observer /* = NULL */,
@@ -92,9 +101,9 @@ CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR>::CGraphSlamEngine_t(
 	this->initGraphSlamEngine();
 };
 
-template<class GRAPH_t, class NODE_REGISTRATOR>
-CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR>::~CGraphSlamEngine_t() {
-	MRPT_START
+template<class GRAPH_t, class NODE_REGISTRATOR, class EDGE_REGISTRATOR>
+CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR, EDGE_REGISTRATOR>::~CGraphSlamEngine_t() {
+	MRPT_START;
 
 	VERBOSE_COUT << "In Destructor: Deleting CGraphSlamEngine_t instance..." 
 		<< std::endl;
@@ -115,16 +124,16 @@ CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR>::~CGraphSlamEngine_t() {
 		}
 	}
 
-	MRPT_END
+	MRPT_END;
 }
 
 
 // Member functions implementations
 //////////////////////////////////////////////////////////////
 
-template<class GRAPH_t, class NODE_REGISTRATOR>
-void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR>::initGraphSlamEngine() {
-	MRPT_START
+template<class GRAPH_t, class NODE_REGISTRATOR, class EDGE_REGISTRATOR>
+void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR, EDGE_REGISTRATOR>::initGraphSlamEngine() {
+	MRPT_START;
 
 	/** 
 	 * Parameters validation
@@ -148,21 +157,32 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR>::initGraphSlamEngine() {
 	m_nodeID_max = 0;
 	m_graph.root = TNodeID(0);
 
-	m_node_registrator.getGraphPtr(&m_graph);
+	// pass a graph ptr after the instance initialization
+	m_node_registrator.setGraphPtr(&m_graph);
+	m_edge_registrator.setGraphPtr(&m_graph);
+
+	// pass a cdisplaywindowptr after the instance initialization
+	m_node_registrator.setCDisplayWindowPtr(m_win);
+	m_edge_registrator.setCDisplayWindowPtr(m_win);
 
 	// Calling of initalization-relevant functions
 	this->readConfigFile(m_config_fname);
 	this->m_node_registrator.params.loadFromConfigFileName(m_config_fname, 
 			"NodeRegistrationDecidersParameters");
+	this->m_edge_registrator.params.loadFromConfigFileName(m_config_fname, 
+			"EdgeRegistrationDecidersParameters");
+
 	this->initOutputDir();
 	this->printProblemParams();
-	this->m_node_registrator.params.dumpToConsole();
 
 	//mrpt::system::pause();
 
 	/**
 	 * Visualization-related parameters initialization
 	 */
+
+	// TODO - split the functions below to edge_registrator, node_registrator
+	// instances
 
 	if (!m_win) {
 		m_visualize_optimized_graph = 0;
@@ -310,23 +330,6 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR>::initGraphSlamEngine() {
 		m_win->forceRepaint();
 	}
 
-	// ICP_max_distance disk
-	assert(m_has_read_config);
-	if (m_win && m_ICP_use_distance_criterion && m_ICP_max_distance > 0) {
-		COpenGLScenePtr scene = m_win->get3DSceneAndLock();
-
-		CDiskPtr obj = CDisk::Create();
-		pose_t initial_pose;
-		obj->setPose(initial_pose);
-		obj->setName("ICP_max_distance");
-		obj->setColor_u8(TColor(142, 142, 56));
-		obj->setDiskRadius(m_ICP_max_distance, m_ICP_max_distance-0.5);
-		scene->insert(obj);
-
-		m_win->unlockAccess3DScene();
-		m_win->forceRepaint();
-	}
-
 	if (m_win) {
 		m_edge_counter.setVisualizationWindow(m_win);
 	}
@@ -384,15 +387,21 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR>::initGraphSlamEngine() {
 		}
 	}
 
+	{
+		CCriticalSectionLocker m_graph_lock(&m_graph_section);
+		m_node_registrator.initializeVisuals();
+		m_edge_registrator.initializeVisuals();
+	}
+
 	// various flags initialization
 	m_autozoom_active = true;
 
-	MRPT_END
+	MRPT_END;
 }
 
-template<class GRAPH_t, class NODE_REGISTRATOR>
-bool CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR>::parseRawlogFile() {
-	MRPT_START
+template<class GRAPH_t, class NODE_REGISTRATOR, class EDGE_REGISTRATOR>
+bool CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR, EDGE_REGISTRATOR>::parseRawlogFile() {
+	MRPT_START;
 
 	if (!m_has_read_config)
 		THROW_EXCEPTION("Config file has not been provided yet.\nExiting...");
@@ -436,14 +445,23 @@ bool CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR>::parseRawlogFile() {
 				observations, // Possible out var: obs's of a pair actin		 / obs
 				observation, // Possible out var
 				curr_rawlog_entry );
-		if (observation.present()) {
-			// TODO - add here..
-		}
-		else {
-			CObservation2DRangeScanPtr curr_laser_scan =
-				observations->getObservationByClass<CObservation2DRangeScan>();
-			m_nodes_to_laser_scans[m_graph.root] = curr_laser_scan;
-		}
+		// // TODO - remove these - handled by the edge registrator now
+		//if (observation.present()) {
+			//// TODO - add here..
+		//}
+		//else {
+			//CObservation2DRangeScanPtr curr_laser_scan =
+				//observations->getObservationByClass<CObservation2DRangeScan>();
+			//m_nodes_to_laser_scans[m_graph.root] = curr_laser_scan;
+
+		//}
+
+		std::cout << "Updating edge_registrator for nodeID " << from << std::endl;
+		CCriticalSectionLocker m_graph_lock(&m_graph_section);
+		m_edge_registrator.updateDeciderState(
+				action, 
+				observations,
+				observation);
 	}
 
 	/**
@@ -467,20 +485,14 @@ bool CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR>::parseRawlogFile() {
 			// action, observations should contain a pair of valid data
 			// (Format #1 rawlog file)
 
-			/**
-			 * ACTION PART - Handle the odometry information of the rawlog file
-			 */
-
-			//// parse the current action
+			// parse the current action
 			CActionRobotMovement2DPtr robot_move = action->getBestMovementEstimation();
 			CPosePDFPtr increment = robot_move->poseChange;
 			pose_t increment_pose = increment->getMeanVal();
 			curr_odometry_only_pose += increment_pose;
 
-			/**
-			 * Timestamp textMessage
-			 * Use the dataset timestamp otherwise fallback to mrpt::system::now()
-			 */
+			// Timestamp textMessage
+			// Use the dataset timestamp otherwise fallback to mrpt::system::now()
 			TTimeStamp	timestamp = robot_move->timestamp;
 			if (timestamp != INVALID_TIMESTAMP && m_win) {
 				m_win->addTextMessage(5,-m_offset_y_timestamp,
@@ -514,9 +526,10 @@ bool CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR>::parseRawlogFile() {
 
 					CRenderizablePtr obj = scene->getByName("odometry_poses_cloud");
 					CPointCloudPtr odometry_poses_cloud = static_cast<CPointCloudPtr>(obj);
-					odometry_poses_cloud->insertPoint(m_odometry_poses.back()->x(),
-																						m_odometry_poses.back()->y(),
-																						0 );
+					odometry_poses_cloud->insertPoint(
+							m_odometry_poses.back()->x(),
+							m_odometry_poses.back()->y(),
+							0 );
 
 					m_win->unlockAccess3DScene();
 					m_win->forceRepaint();
@@ -539,14 +552,16 @@ bool CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR>::parseRawlogFile() {
 
 				// get current point by matching the timestamp
 				pose_t* curr_pose = m_GT_poses[curr_GT_poses_index++];
-				GT_cloud->insertPoint(curr_pose->x(),
-															curr_pose->y(),
-															0 );
+				GT_cloud->insertPoint(
+						curr_pose->x(),
+						curr_pose->y(),
+						0 );
 
 				m_win->unlockAccess3DScene();
 				m_win->forceRepaint();
 			}
 
+			// new node registration procedure
 			bool registered_new_node;
 			{
 				CCriticalSectionLocker m_graph_lock(&m_graph_section);
@@ -559,68 +574,15 @@ bool CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR>::parseRawlogFile() {
 
 			if (registered_new_node) {
 
-				{
+				// Edge registration procedure
+				{ 
 					CCriticalSectionLocker m_graph_lock(&m_graph_section);
-					m_nodeID_max = m_graph.nodeCount()-1;
-				}
-				//std::cout << "Trying to add new edges with current node: " 
-					//<< m_nodeID_max<< std::endl;
-
-				/**
-				 * add ICP constraint with "some" of the previous nodes
-				 */
-				CObservation2DRangeScanPtr curr_laser_scan =
-					observations->getObservationByClass<CObservation2DRangeScan>();
-				m_nodes_to_laser_scans[m_nodeID_max] = curr_laser_scan;
-
-				// build the list of nodes against which we check possible ICP
-				// constraint
-				std::set<TNodeID> nodes_to_check_ICP;
-				{
-					CCriticalSectionLocker m_graph_lock(&m_graph_section);
-
-					// call it once every iteration
 					m_graph.dijkstra_nodes_estimate(); 
-				}
-				if (m_ICP_use_distance_criterion) {
-					this->getNearbyNodesOf(&nodes_to_check_ICP,
-							m_nodeID_max,
-							&m_ICP_max_distance,
-							m_ICP_use_distance_criterion);
-				}
-				else {
-					this->getNearbyNodesOf(&nodes_to_check_ICP,
-							m_nodeID_max,
-							&m_ICP_prev_nodes,
-							m_ICP_use_distance_criterion);
-				}
-				//mrpt::system::pause();
 
-				// try adding ICP constraints with each node in the previous list
-				for (set<TNodeID>::const_iterator node_it = nodes_to_check_ICP.begin();
-						node_it != nodes_to_check_ICP.end(); ++node_it) {
-
-					CObservation2DRangeScanPtr prev_laser_scan = m_nodes_to_laser_scans[*node_it];
-					constraint_t rel_edge;
-					double ICP_goodness = this->getICPEdge(*node_it, m_nodeID_max, 
-							&rel_edge);
-					if (ICP_goodness > m_ICP_goodness_thres) {
-						{
-							CCriticalSectionLocker m_graph_lock(&m_graph_section);
-							m_graph.insertEdge(*node_it, m_nodeID_max, rel_edge);
-
-							//VERBOSE_COUT << "Added ICP constraint betwen nodes "
-								//<< m_nodeID_max << ", " << *node_it << "." << std::endl;
-							//VERBOSE_COUT << "Edge: " << std::endl << rel_edge << std::endl;
-							//VERBOSE_COUT << "ICP goodness: " << ICP_goodness << std::endl;
-						}
-
-						// register a loop closing constraint if distance of nodes larger
-						// than the predefined m_loop_closing_min_nodeid_diff
-						bool is_loop_closure = (m_nodeID_max - *node_it 
-								>= m_loop_closing_min_nodeid_diff) ? 1 : 0;
-						m_edge_counter.addEdge("ICP", is_loop_closure);
-					}
+					m_edge_registrator.updateDeciderState(
+							action,
+							observations,
+							observation );
 				}
 
 				// join the previous optimization thread
@@ -652,21 +614,31 @@ bool CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR>::parseRawlogFile() {
 
 					m_win->unlockAccess3DScene();
 				}
-				// update ICP_max_distance Disk
-				if (m_win && m_ICP_use_distance_criterion && m_ICP_max_distance > 0) {
-					COpenGLScenePtr scene = m_win->get3DSceneAndLock();
 
-					CRenderizablePtr obj = scene->getByName("ICP_max_distance");
-					CDiskPtr disk_obj = static_cast<CDiskPtr>(obj);
-
+				{
 					CCriticalSectionLocker m_graph_lock(&m_graph_section);
-
-					disk_obj->setPose(m_graph.nodes[m_graph.nodeCount()-1]);
-
-					m_win->unlockAccess3DScene();
+					m_node_registrator.updateVisuals();
+					m_edge_registrator.updateVisuals();
 				}
 
-			} // IF ODOMETRY_CRITERION
+				// update the edge counter
+				std::map<const std::string, int> edge_types_to_nums;
+				m_edge_registrator.getEdgesStats(&edge_types_to_nums);
+				if (edge_types_to_nums.size()) {
+					for (std::map<std::string, int>::const_iterator it = 
+							edge_types_to_nums.begin(); it != edge_types_to_nums.end();
+							++it) {
+
+						// loop closure
+						if (mrpt::system::strCmpI(it->first, "lc")) {
+							m_edge_counter.setLoopClosureEdgesManually(it->second);
+						}
+						else {
+							m_edge_counter.setEdgesManually(it->first, it->second);
+						}
+					}
+				}
+			} // IF REGISTERED_NEW_NODE
 		} // ELSE FORMAT #1
 
 
@@ -694,12 +666,12 @@ bool CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR>::parseRawlogFile() {
 
 	} // WHILE CRAWLOG FILE
 	return true; // function execution completed successfully
-MRPT_END
+MRPT_END;
 } // END OF FUNCTION
 
-template<class GRAPH_t, class NODE_REGISTRATOR>
-void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR>::optimizeGraph(GRAPH_t* gr) {
-	MRPT_START
+template<class GRAPH_t, class NODE_REGISTRATOR, class EDGE_REGISTRATOR>
+void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR, EDGE_REGISTRATOR>::optimizeGraph(GRAPH_t* gr) {
+	MRPT_START;
 
 	CTicTac optimization_timer;
 	optimization_timer.Tic();
@@ -717,18 +689,18 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR>::optimizeGraph(GRAPH_t* gr) {
 			levmarq_info,
 			NULL,  // List of nodes to optimize. NULL -> all but the root node.
 			m_optimization_params,
-			&levMarqFeedback<GRAPH_t, NODE_REGISTRATOR>); // functor feedback
+			&levMarqFeedback<GRAPH_t, NODE_REGISTRATOR, EDGE_REGISTRATOR>); // functor feedback
 
 	double elapsed_time = optimization_timer.Tac();
 	//VERBOSE_COUT << "Optimization of graph took: " << elapsed_time << "s" << std::endl;
 
-	MRPT_END
+	MRPT_END;
 }
 
-template<class GRAPH_t, class NODE_REGISTRATOR>
-void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR>::visualizeGraph(
+template<class GRAPH_t, class NODE_REGISTRATOR, class EDGE_REGISTRATOR>
+void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR, EDGE_REGISTRATOR>::visualizeGraph(
 		const GRAPH_t& gr) {
-	MRPT_START
+	MRPT_START;
 
 	assert(m_win &&
 			"Visualization of data was requested but no CDisplayWindow3D pointer was given");
@@ -768,13 +740,13 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR>::visualizeGraph(
 		this->autofitObjectInView(graph_obj);
 	}
 
-	MRPT_END
+	MRPT_END;
 }
 
-template<class GRAPH_t, class NODE_REGISTRATOR>
-void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR>::readConfigFile(
+template<class GRAPH_t, class NODE_REGISTRATOR, class EDGE_REGISTRATOR>
+void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR, EDGE_REGISTRATOR>::readConfigFile(
 		const string& fname) {
-	MRPT_START
+	MRPT_START;
 
 	VERBOSE_COUT << "Reading the .ini file... " << std::endl;
 
@@ -846,54 +818,46 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR>::readConfigFile(
 			"GraphSLAMParameters",
 			"optimizer",
 			"levmarq", false);
-	// Section: LoopClosingParameters
-	// ////////////////////////////////
-	m_loop_closing_min_nodeid_diff = cfg_file.read_double(
-			"LoopClosingParameters",
-			"loop_closing_min_nodeid_diff",
-			5, true);
+	// TODO - remove this
+	//m_ICP.options.loadFromConfigFile(cfg_file, "ICP");
 
-	//// Section: ICP
-	//// ////////////////////////////////
-	//mapBuilder.ICP_params.loadFromConfigFile ( iniFile, "ICP");
-	m_ICP.options.loadFromConfigFile(cfg_file, "ICP");
-
+	// TODO - remove these
 	/** 
 	 * Criterion for building the list of nodes for ICP checks. Uses either
 	 * distance from current node or number of nodes prior/after current node
 	 * If none, or both of ICP_max_distance, ICP_prev_nodes parameters are
 	 * defined in the .ini file, throw exception
 	 */
-	bool ICP_max_distance_exists = false;
-	bool ICP_prev_nodes_exists = false;
-	vector<string> keys;
-	cfg_file.getAllKeys("ICP", keys);
-	if (std::find(keys.begin(), keys.end(), "ICP_max_distance") != keys.end()) {
-		m_ICP_max_distance = cfg_file.read_double(
-				"ICP",
-				"ICP_max_distance",
-				5, false);
-		ICP_max_distance_exists = true;
-	}
-	if (std::find(keys.begin(), keys.end(), "ICP_prev_nodes") != keys.end()) {
-		m_ICP_prev_nodes = cfg_file.read_int(
-				"ICP",
-				"ICP_prev_nodes",
-				5, false);
-		ICP_prev_nodes_exists = true;
-	}
+	//bool ICP_max_distance_exists = false;
+	//bool ICP_prev_nodes_exists = false;
+	//vector<string> keys;
+	//cfg_file.getAllKeys("ICP", keys);
+	//if (std::find(keys.begin(), keys.end(), "ICP_max_distance") != keys.end()) {
+		//m_ICP_max_distance = cfg_file.read_double(
+				//"ICP",
+				//"ICP_max_distance",
+				//5, false);
+		//ICP_max_distance_exists = true;
+	//}
+	//if (std::find(keys.begin(), keys.end(), "ICP_prev_nodes") != keys.end()) {
+		//m_ICP_prev_nodes = cfg_file.read_int(
+				//"ICP",
+				//"ICP_prev_nodes",
+				//5, false);
+		//ICP_prev_nodes_exists = true;
+	//}
 
-	if (ICP_max_distance_exists && ICP_prev_nodes_exists ||
-			!ICP_max_distance_exists && !ICP_prev_nodes_exists) {
-		THROW_EXCEPTION("User should specify either the ICP_prev_nodes"
-				<< "or the ICP_max distance parameter");
-	}
-	m_ICP_use_distance_criterion = ICP_max_distance_exists;
+	//if (ICP_max_distance_exists && ICP_prev_nodes_exists ||
+			//!ICP_max_distance_exists && !ICP_prev_nodes_exists) {
+		//THROW_EXCEPTION("User should specify either the ICP_prev_nodes"
+				//<< "or the ICP_max distance parameter");
+	//}
+	//m_ICP_use_distance_criterion = ICP_max_distance_exists;
 
-	m_ICP_goodness_thres = cfg_file.read_double(
-			"ICP",
-			"ICP_goodness_thres",
-			0.80, false);
+	//m_ICP_goodness_thres = cfg_file.read_double(
+			//"ICP",
+			//"ICP_goodness_thres",
+			//0.80, false);
 
 
 	// Section: VisualizationParameters
@@ -980,13 +944,13 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR>::readConfigFile(
 
 
 	m_has_read_config = true;
-	MRPT_END
+	MRPT_END;
 }
 
 // TODO - check for new value from above
-template<class GRAPH_t, class NODE_REGISTRATOR>
-void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR>::printProblemParams() const {
-	MRPT_START
+template<class GRAPH_t, class NODE_REGISTRATOR, class EDGE_REGISTRATOR>
+void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR, EDGE_REGISTRATOR>::printProblemParams() const {
+	MRPT_START;
 
 	assert(m_has_read_config);
 
@@ -1011,20 +975,17 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR>::printProblemParams() const {
 		<<	m_do_pose_graph_only << std::endl;
 	ss_out << "optimizer                       = "
 		<< m_optimizer << std::endl;
-	ss_out << "Loop closing alg                = "
-		<< m_loop_closing_alg << std::endl;
-	ss_out << "Loop Closing min. node distance = "
-		<< m_loop_closing_alg << std::endl;
-	ss_out << "ICP Goodness threshold          = "
-		<< m_ICP_goodness_thres << std::endl;
-	if (m_ICP_use_distance_criterion) {
-		ss_out << "Maximum distance for ICP check  = "
-			<< m_ICP_max_distance << std::endl;
-	}
-	else {
-		ss_out << "Num of previous nodes  for ICP  = "
-			<< m_ICP_prev_nodes << std::endl;
-	}
+	// TODO - remove these
+	//ss_out << "ICP Goodness threshold          = "
+		//<< m_ICP_goodness_thres << std::endl;
+	//if (m_ICP_use_distance_criterion) {
+		//ss_out << "Maximum distance for ICP check  = "
+			//<< m_ICP_max_distance << std::endl;
+	//}
+	//else {
+		//ss_out << "Num of previous nodes  for ICP  = "
+			//<< m_ICP_prev_nodes << std::endl;
+	//}
 	ss_out << "Visualize odometry              = " 
 		<< m_visualize_odometry_poses << std::endl;
 	ss_out << "Visualize optimized path        = " 
@@ -1039,7 +1000,6 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR>::printProblemParams() const {
 
 	std::cout << ss_out.str(); ss_out.str("");
 
-	m_ICP.options.dumpToConsole();
 	std::cout << "-----------[ Optimization Parameters ]-----------" << std::endl;
 	m_optimization_params.dumpToConsole();
 	std::cout << "-----------[ Graph Visualization Parameters ]-----------" << std::endl;
@@ -1047,14 +1007,17 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR>::printProblemParams() const {
 
 	std::cout << ss_out.str(); ss_out.str("");
 
+	this->m_node_registrator.params.dumpToConsole();
+	this->m_edge_registrator.params.dumpToConsole();
+
 	//mrpt::system::pause();
 
-	MRPT_END
+	MRPT_END;
 }
 
-template<class GRAPH_t, class NODE_REGISTRATOR>
-void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR>::initOutputDir() {
-	MRPT_START
+template<class GRAPH_t, class NODE_REGISTRATOR, class EDGE_REGISTRATOR>
+void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR, EDGE_REGISTRATOR>::initOutputDir() {
+	MRPT_START;
 
 	VERBOSE_COUT << "Setting up Output directory: " << m_output_dir_fname << std::endl;
 
@@ -1145,13 +1108,13 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR>::initOutputDir() {
 		VERBOSE_COUT << "Finished initializing output directory." << std::endl;
 	}
 
-	MRPT_END
+	MRPT_END;
 } // end of initOutputDir
 
-template<class GRAPH_t, class NODE_REGISTRATOR>
-void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR>::initResultsFile(
+template<class GRAPH_t, class NODE_REGISTRATOR, class EDGE_REGISTRATOR>
+void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR, EDGE_REGISTRATOR>::initResultsFile(
 		const string& fname) {
-	MRPT_START
+	MRPT_START;
 
 	VERBOSE_COUT << "Setting up file: " << fname << std::endl;
 
@@ -1170,62 +1133,7 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR>::initResultsFile(
 		THROW_EXCEPTION("Error while trying to open " <<	fname);
 	}
 
-	MRPT_END
-}
-
-template<class GRAPH_t, class NODE_REGISTRATOR>
-double CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR>::getICPEdge(
-		const TNodeID& from,
-		const TNodeID& to,
-		constraint_t *rel_edge ) {
-
-	MRPT_START
-
-		assert(m_has_read_config);
-
-	// get the laser scan measurements
-	CObservation2DRangeScanPtr prev_laser_scan = m_nodes_to_laser_scans[from];
-	CObservation2DRangeScanPtr curr_laser_scan = m_nodes_to_laser_scans[to];
-
-	// Uses m_ICP member variable
-	CSimplePointsMap m1,m2;
-	float running_time;
-	CICP::TReturnInfo info;
-
-	pose_t initial_pose;
-	{
-		CCriticalSectionLocker m_graph_lock(&m_graph_section);
-
-		// use the difference of the node positions as an initial alignment
-		// estimation (dijkstra_nodes_estimate has to be run from the caller
-		// function
-		initial_pose = m_graph.nodes[to] - m_graph.nodes[from];
-	}
-
-	//CPose2D initial_pose(0.0f,0.0f,(float)DEG2RAD(0.0f));
-
-
-	m1.insertObservation(&(*prev_laser_scan));
-	m2.insertObservation(&(*curr_laser_scan));
-
-	CPosePDFPtr pdf = m_ICP.Align(
-			&m1,
-			&m2,
-			initial_pose,
-			&running_time,
-			(void*)&info);
-
-	//VERBOSE_COUT << "getICPEdge: goodness: "
-	//<< info.goodness << std::endl;
-	//VERBOSE_COUT << "initial estimate: " << std::endl
-	//<< initial_pose << std::endl;
-	//VERBOSE_COUT << "relative edge: " << std::endl
-	//<< rel_edge->getMeanVal() << std::endl;
-	
-	// return the edge regardless of the goodness of the alignment
-	rel_edge->copyFrom(*pdf);  	return info.goodness;
-
-	MRPT_END
+	MRPT_END;
 }
 
 /**
@@ -1234,10 +1142,10 @@ double CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR>::getICPEdge(
  * Udpate the viewport responsible for displaying the graph-building procedure
  * in the estimated position of the robot
  */
-template<class GRAPH_t, class NODE_REGISTRATOR>
-inline void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR>::updateCurPosViewport(
+template<class GRAPH_t, class NODE_REGISTRATOR, class EDGE_REGISTRATOR>
+inline void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR, EDGE_REGISTRATOR>::updateCurPosViewport(
 		const GRAPH_t& gr) {
-	MRPT_START
+	MRPT_START;
 
 	assert(m_win &&
 			"Visualization of data was requested but no CDisplayWindow3D pointer was given");
@@ -1258,12 +1166,12 @@ inline void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR>::updateCurPosViewport(
 	m_win->forceRepaint();
 	//VERBOSE_COUT << "Updated the \"current_pos\" viewport" << std::endl;
 
-	MRPT_END
+	MRPT_END;
 }
 
-template<class GRAPH_t, class NODE_REGISTRATOR>
-void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR>::BuildGroundTruthMap(const std::string& fname_GT) {
-	MRPT_START
+template<class GRAPH_t, class NODE_REGISTRATOR, class EDGE_REGISTRATOR>
+void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR, EDGE_REGISTRATOR>::BuildGroundTruthMap(const std::string& fname_GT) {
+	MRPT_START;
 
 	VERBOSE_COUT << "Parsing the ground truth file textfile.." << std::endl;
 	assert(fileExists(fname_GT) && "Ground truth file was not found.");
@@ -1295,13 +1203,13 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR>::BuildGroundTruthMap(const st
 				<< ")");
 	}
 
-	MRPT_END
+	MRPT_END;
 }
 
-template<class GRAPH_t, class NODE_REGISTRATOR>
-void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR>::autofitObjectInView(
+template<class GRAPH_t, class NODE_REGISTRATOR, class EDGE_REGISTRATOR>
+void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR, EDGE_REGISTRATOR>::autofitObjectInView(
 		const CSetOfObjectsPtr& graph_obj) {
-	MRPT_START
+	MRPT_START;
 
 	assert(m_win &&
 			"Visualization of data was requested but no CDisplayWindow3D pointer was given");
@@ -1317,12 +1225,12 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR>::autofitObjectInView(
 	m_win->setCameraAzimuthDeg(0);
 	m_win->setCameraElevationDeg(75);
 
-	MRPT_END
+	MRPT_END;
 }
 
-template<class GRAPH_t, class NODE_REGISTRATOR>
-void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR>::queryObserverForEvents() {
-	MRPT_START
+template<class GRAPH_t, class NODE_REGISTRATOR, class EDGE_REGISTRATOR>
+void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR, EDGE_REGISTRATOR>::queryObserverForEvents() {
+	MRPT_START;
 
 	assert(m_win_observer &&
 			"queryObserverForEvents method was called even though no Observer object was provided");
@@ -1331,69 +1239,7 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR>::queryObserverForEvents() {
 	m_autozoom_active = !(*events_occurred)["mouse_clicked"];
 	m_request_to_exit = (*events_occurred)["request_to_exit"];
 
-	MRPT_END
-}
-
-template<class GRAPH_t, class NODE_REGISTRATOR>
-void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR>::getNearbyNodesOf(
-		set<TNodeID> *lstNodes,
-		const TNodeID& cur_nodeID,
-		void* num_nodes_or_distance, 
-		bool use_distance_criterion /* = true */) {
-	MRPT_START
-
-	CCriticalSectionLocker m_graph_lock(&m_graph_section);
-
-	if (use_distance_criterion) {
-		double* p_distance = static_cast<double*>(num_nodes_or_distance);
-
-		//std::cout << std::endl;
-		//std::cout << "In getNearbyNodes of..." << std::endl;
-		//std::cout << "*p_distance: " << *p_distance << std::endl;
-		//std::cout << "cur_nodeID: " << cur_nodeID << std::endl;
-		//std::cout << "m_nodeID_max: " << m_nodeID_max << std::endl;
-		if (*p_distance > 0) {
-			for (TNodeID nodeID = 0; nodeID <= m_graph.nodeCount()-1; ++nodeID) {
-				double curr_distance = m_graph.nodes[nodeID].distanceTo(
-						m_graph.nodes[cur_nodeID]);
-				//std::cout << "testing against node: " << nodeID << std::endl;
-				//std::cout << "\tdistance: " << curr_distance << std::endl;
-				//mrpt::system::pause();
-				if (curr_distance <= *p_distance) {
-					lstNodes->insert(nodeID);
-				}
-			}
-		}
-		else { // check against all nodes 
-			m_graph.getAllNodes(*lstNodes);
-		}
-
-	}
-	else  {
-		int* p_num_nodes = static_cast<int*>(num_nodes_or_distance);
-
-		if (*p_num_nodes > 0) {
-			// add nodes previous to the current 
-			for (int a_node = cur_nodeID-1; // should be int, and not unsigned int as it may get < 0 
-					(a_node != (cur_nodeID-1 - *p_num_nodes)) && (a_node >= 0); --a_node) {
-				lstNodes->insert(a_node);
-			}
-			// add nodes after the current - if any in the graph
-			if (m_graph.nodeCount()-1  > cur_nodeID) {
-				for (TNodeID a_node = cur_nodeID+1;
-						a_node < cur_nodeID+1 + *p_num_nodes && a_node <= m_graph.nodeCount()-1;
-						a_node++) {
-					std::cout << "Adding node after current!" << std::endl;
-					lstNodes->insert(a_node);
-				}
-			}
-		}
-		else { // check against all nodes
-			m_graph.getAllNodes(*lstNodes);
-		}
-	}
-
-	MRPT_END
+	MRPT_END;
 }
 
 #endif /* end of include guard: CGRAPHSLAMENGINE_IMPL_H */

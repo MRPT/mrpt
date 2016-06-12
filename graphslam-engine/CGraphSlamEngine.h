@@ -8,11 +8,6 @@
    +---------------------------------------------------------------------------+ */
 
 // Sun May 22 12:48:25 EEST 2016, nickkouk
-// General TODO list:
-// TODO: Make class generic - so that it handles 3D datasets
-// TODO: Add functionality to be able to use different optimizers
-// TODO: Plot x^2 ,x^2/s, time, iteration in the viz. window
-
 #ifndef GRAPHSLAMENGINE_H
 #define GRAPHSLAMENGINE_H
 
@@ -20,6 +15,7 @@
 #include <mrpt/system/datetime.h>
 #include <mrpt/system/os.h>
 #include <mrpt/system/threads.h>
+#include <mrpt/system/string_utils.h>
 #include <mrpt/synch/CCriticalSection.h>
 #include <mrpt/poses/CPoses2DSequence.h>
 #include <mrpt/poses/CPosePDF.h>
@@ -52,15 +48,18 @@
 
 #include "EdgeCounter.h"
 #include "CWindowObserver.h"
-//#include "CNodeRegistrationDecider.h"
 #include "CFixedIntervalsNRD.h"
+#include "CICPDistanceERD.h"
 
 namespace mrpt { namespace graphslam {
 
 	bool verbose = true;
 #define VERBOSE_COUT	if (verbose) std::cout << "[graphslam_engine] "
 
-	template< class GRAPH_t, class NODE_REGISTRATOR >
+	template< 
+  		class GRAPH_t=typename mrpt::graphs::CNetworkOfPoses2DInf,
+  		class NODE_REGISTRATOR=typename mrpt::graphslam::deciders::CFixedIntervalsNRD_t<GRAPH_t>, 
+  		class EDGE_REGISTRATOR=typename mrpt::graphslam::deciders::CICPDistanceERD_t<GRAPH_t> >
 		class CGraphSlamEngine_t {
 			public:
 
@@ -98,27 +97,27 @@ namespace mrpt { namespace graphslam {
 		 		 * Wrapper fun around the GRAPH_t corresponding method
 		 		 */
 				void saveGraph() const {
-					MRPT_START
+					MRPT_START;
 
-						if (!m_has_read_config) {
-							THROW_EXCEPTION("Config file has not been provided yet.\nExiting...");
-						}
+					if (!m_has_read_config) {
+						THROW_EXCEPTION("Config file has not been provided yet.\nExiting...");
+					}
 					std::string fname = m_output_dir_fname + "/" + m_save_graph_fname;
 					saveGraph(fname);
 
-					MRPT_END
+					MRPT_END;
 				}
 				/**
 		 		 * Wrapper fun around the GRAPH_t corresponding method
 		 		 */
 				void saveGraph(const std::string& fname) const {
-					MRPT_START
+					MRPT_START;
 
-						m_graph.saveToTextFile(fname);
+					m_graph.saveToTextFile(fname);
 					VERBOSE_COUT << "Saved graph to text file: " << fname <<
 						" successfully." << std::endl;
 
-					MRPT_END
+					MRPT_END;
 				}
 				/**
 		 		 * Read the configuration file specified and fill in the corresponding
@@ -179,15 +178,6 @@ namespace mrpt { namespace graphslam {
 		 		 */
 				void initResultsFile(const std::string& fname);
 				/**
-		 		 * CGraphSlamEngine_t::getICPEdge
-		 		 *
-		 		 * Align the laser scans of the given poses and compute a constraint
-		 		 * between them. Return the goodness of the ICP operation and let the user
-		 		 * decide if they want to keep it as an edge or not
-		 		 */
-				inline double getICPEdge(const mrpt::utils::TNodeID& from, 
-						const mrpt::utils::TNodeID& to, constraint_t *rel_edge );
-				/**
 		 		 * assignTextMessageParameters
 		 		 *
 		 		 * Assign the next available offset_y and text_index for the textMessage under
@@ -227,24 +217,16 @@ namespace mrpt { namespace graphslam {
 		 		 * class variables
 		 		 */
 				inline void queryObserverForEvents();
-				/**
-		 		 * getSetOfNodes
-		 		 *
-		 		 * Fetch a set of neighborhood nodes given either a number of nodes or a
-		 		 * distance relative to the current node.
-		 		 */
-		 		void getNearbyNodesOf(std::set<mrpt::utils::TNodeID> *lstNodes, 
-						const mrpt::utils::TNodeID& cur_nodeID,
-						void* num_nodes_or_distance, 
-						bool use_distance_criterion = true);
-
 
 				// VARIABLES
 				//////////////////////////////////////////////////////////////
 
 				// the graph object to be built and optimized
 				GRAPH_t m_graph;
+
+				// registrator instances
 				NODE_REGISTRATOR m_node_registrator; 
+				EDGE_REGISTRATOR m_edge_registrator; 
 
 				/**
 		 		 * Problem parameters.
@@ -264,15 +246,12 @@ namespace mrpt { namespace graphslam {
 				bool		m_do_pose_graph_only;
 				std::string	m_optimizer;
 
-				std::string	m_loop_closing_alg;
-				double	m_loop_closing_min_nodeid_diff;
-
 				bool		m_has_read_config;
 
 				/**
 		 		 * FileStreams
-		 		 * variables that keeps track of the out fstreams so that they can be closed
-		 		 * (if still open) in the class Dtor.
+		 		 * variables that keeps track of the out fstreams so that they can be
+		 		 * closed (if still open) in the class Dtor.
 		 		 */
 				fstreams_out m_out_streams;
 				fstreams_in m_in_streams;
@@ -327,18 +306,19 @@ namespace mrpt { namespace graphslam {
 				mrpt::utils::TColor m_robot_model_color;
 
 				bool m_is3D;
-				mrpt::utils::TNodeID m_nodeID_max;
+				// internal counter for querrying for the number of nodeIDs.
+				// Handy for not locking the m_graph resource
+				mrpt::utils::TNodeID m_nodeID_max; 
 
-				// ICP configuration
-				float m_ICP_goodness_thres;
-
+				// TODO - remove these
+				//// ICP configuration
+				//float m_ICP_goodness_thres;
 				double m_ICP_max_distance;
-				int m_ICP_prev_nodes; // add ICP constraints with m_prev_nodes_for_ICP nodes back
+				////int m_ICP_prev_nodes; // add ICP constraints with m_prev_nodes_for_ICP nodes back
 				bool m_ICP_use_distance_criterion;
-				std::map<const mrpt::utils::TNodeID, mrpt::obs::CObservation2DRangeScanPtr> 
-					m_nodes_to_laser_scans;
-				mrpt::slam::CICP m_ICP;
-
+				//std::map<const mrpt::utils::TNodeID, mrpt::obs::CObservation2DRangeScanPtr> 
+					//m_nodes_to_laser_scans;
+				//mrpt::slam::CICP m_ICP;
 
 				// graph optimization
 				mrpt::utils::TParametersDouble m_optimization_params;

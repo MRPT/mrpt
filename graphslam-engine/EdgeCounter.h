@@ -1,3 +1,12 @@
+/* +---------------------------------------------------------------------------+
+   |                     Mobile Robot Programming Toolkit (MRPT)               |
+   |                          http://www.mrpt.org/                             |
+   |                                                                           |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | See: http://www.mrpt.org/Authors - All rights reserved.                   |
+   | Released under BSD License. See details in http://www.mrpt.org/License    |
+   +---------------------------------------------------------------------------+ */
+
 #ifndef EDGECOUNTER_H
 #define EDGECOUNTER_H
 
@@ -46,12 +55,21 @@ class EdgeCounter_t {
 		/**
 		 * setRemovedEdges
 		 *
-		 * Function to be called after call to CNetworkOfPoses::collapseDuplicatedEdges 
+		 * Method to be called after call to CNetworkOfPoses::collapseDuplicatedEdges 
 		 * method. States how many of the existing edges have been removed.
 		 */
 		void setRemovedEdges(int removed_edges) { 
 			m_unique_edges = this->getTotalNumOfEdges() - removed_edges; 
 			//std::cout << "setRemovedEdges: Unique edges: " << m_unique_edges << std::endl;
+		}
+		/**
+		 * setLoopClosureEdgesManually()
+		 *
+		 * Method for manually setting the number of loop closures registered so
+		 * far
+		 */
+		void setLoopClosureEdgesManually(int num_loop_closures) {
+			m_num_loop_closures = num_loop_closures;
 		}
 		/**
 		 * getLoopClosureEdges()
@@ -119,7 +137,28 @@ class EdgeCounter_t {
 				THROW_EXCEPTION("No edge with such name exists")
 			}
 		}
-
+		/**
+		 * setEdgesManually
+		 *
+		 * Set number of a specific edge type manually. Handy for not having to
+		 * call addEdge multiple times in a row.
+		 */
+		void setEdgesManually(const std::string& name, int num_of_edges) {
+			std::map<std::string, int>::iterator search = m_name_to_edges_num.find(name);
+			std::cout << "Setting edges manually" << std::endl;
+			if ( search != m_name_to_edges_num.end() ) {
+				search->second = num_of_edges;
+			}
+			else {
+				std::string str_err = "No edge with such name exists.";
+				THROW_EXCEPTION(str_err)
+			}
+			// Update the visualization if the user has already set the vizualization
+			// parameters
+			if (m_has_read_textmessage_params && m_win) {
+				updateTextMessages();
+			}
+		}
 		/**
 		 * addEdge
 		 *
