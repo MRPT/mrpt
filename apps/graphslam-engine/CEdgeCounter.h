@@ -10,8 +10,6 @@
 #ifndef CEDGECOUNTER_H
 #define CEDGECOUNTER_H
 
-
-
 #include <mrpt/utils/mrpt_macros.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
 
