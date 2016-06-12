@@ -26,7 +26,7 @@ CICPDistanceERD_t<GRAPH_t>::CICPDistanceERD_t()  {
 }
 template<class GRAPH_t>
 CICPDistanceERD_t<GRAPH_t>::CICPDistanceERD_t(GRAPH_t* graph):
-	m_graph(graph) 
+	m_graph(graph)
 {
 	MRPT_START;
 
@@ -67,7 +67,7 @@ template<class GRAPH_t> void CICPDistanceERD_t<GRAPH_t>::updateDeciderState(
 	}
 	else {
 		// TODO - validate data here
-		
+
 		// append current laser scan
 		CObservation2DRangeScanPtr curr_laser_scan =
 			observations->getObservationByClass<CObservation2DRangeScan>();
@@ -79,7 +79,7 @@ template<class GRAPH_t> void CICPDistanceERD_t<GRAPH_t>::updateDeciderState(
 		}
 		else {
 			m_nodes_to_laser_scans[m_graph->nodeCount()-1] = curr_laser_scan;
-			//std::cout << "Added laser scans of nodeID: " 
+			//std::cout << "Added laser scans of nodeID: "
 				//<< m_graph->nodeCount()-1 << std::endl;
 		}
 
@@ -129,8 +129,8 @@ void CICPDistanceERD_t<GRAPH_t>::checkRegistrationCondition(
 				m_edge_types_to_nums["LC"]++;
 				std::cout << "\t[ Loop Closure ]";
 			}
+			std::cout << std::endl;
 		}
-		std::cout << std::endl;
 	}
 
 	MRPT_END;
