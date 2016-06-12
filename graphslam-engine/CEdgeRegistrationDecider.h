@@ -10,7 +10,12 @@
 #ifndef CEDGEREGISTRATIONDECIDER_H
 #define CEDGEREGISTRATIONDECIDER_H
 
+#include <mrpt/gui/CDisplayWindow3D.h>
+#include <mrpt/graphs/CNetworkOfPoses.h>
 #include <mrpt/utils/types_simple.h>
+
+#include <map>
+#include <string>
 
 namespace mrpt { namespace graphslam { namespace deciders {
 
@@ -32,12 +37,42 @@ namespace mrpt { namespace graphslam { namespace deciders {
 		 		 * (part of) the specified parameters and call the
 		 		 * checkRegistrationCondition to check for potential Edge registration
 		 		 *
-		 		 * Returns true upon successful Edge registration in the graph
+		 		 * Returns map of edge types to number of edges for each corresponding
+		 		 * type.
 		 		 */
-				virtual bool updateDeciderState( 
+				virtual void updateDeciderState(
 						mrpt::obs::CActionCollectionPtr action,
 						mrpt::obs::CSensoryFramePtr observations,
-						mrpt::obs::CObservationPtr observation ) = 0;
+						mrpt::obs::CObservationPtr observation )=0;
+				/**
+				 * method for fetching the graph after the instance initialization
+				 */
+				virtual void setGraphPtr(GRAPH_t* graph) {}
+				/**
+				 * Method for fetching the CDisplayWindow3D after the instance
+				 * initialization. Handy so that the node registrator may add visual
+				 * information.
+				 */
+				virtual void setCDisplayWindowPtr(mrpt::gui::CDisplayWindow3D* win){}
+				/**
+				 * Fill the given map with the type of registered edges as well as
+				 * the corresponding number of registration of each edge.
+				 */
+    		virtual void getEdgesStats(
+    				std::map<const std::string, int>* edge_type_to_num) {};
+				/**
+				 * Method responsible for initially inserting visual objects in
+				 * CDisplayWindow (e.g. add an object to scene).  For the method to
+				 * have an effect user should first make a call to
+				 * CEdgeRegistrationDEcider_t::setCDisplayWindowPtr method.
+				 */
+    		virtual void initializeVisuals() {}
+				/**
+				 * Method responsible for rendering visual objects in CDisplayWindow.
+				 * For the method to have an effect user should first make a call to
+				 * CEdgeRegistrationDEcider_t::setCDisplayWindowPtr method.
+				 */
+    		virtual void updateVisuals() {}
 
   		protected:
 				/**
@@ -48,16 +83,23 @@ namespace mrpt { namespace graphslam { namespace deciders {
 		 		 * Returns true upon successful Edge registration in the graph
 		 		 */
 				virtual bool checkRegistrationCondition(
-						mrpt::utils::TNodeID from
+						mrpt::utils::TNodeID from,
 						mrpt::utils::TNodeID to ) {}
-				virtual bool checkRegistrationCondition(std::set<mrpt::utils::TNodeID>){}
+		 		/**
+		 		 * Methods for checking whether new edges should be registered in the
+		 		 * graph. If condition(s) for edge registration is satisfied, method
+		 		 * should call the registerNewEdge method. If given, method fills a map
+		 		 * of edge type to number of registered edges of that type.
+		 		 */
+				virtual void checkRegistrationCondition(
+						const std::set<mrpt::utils::TNodeID>&) {}
 				/**
-		 		 * Generic method of adding new poses to the graph. 
-		 		 *
-		 		 * Returns true upon successful Edge registration in the graph, false
-		 		 * otherwise
+		 		 * Wrapper around GRAPH_t::insertEdge method
      		 */
-    		virtual bool registerNewEdge() = 0;
+    		virtual void registerNewEdge(
+    				const mrpt::utils::TNodeID& from, 
+    				const mrpt::utils::TNodeID& to,
+    				const constraint_t& rel_edge)= 0;
 		};
 
 } } } // end of namespaces

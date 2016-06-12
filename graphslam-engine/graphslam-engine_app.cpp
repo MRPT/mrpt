@@ -27,6 +27,7 @@
 #include "CGraphSlamEngine.h"
 #include "CWindowObserver.h"
 #include "CFixedIntervalsNRD.h"
+#include "CICPDistanceERD.h"
 
 using namespace mrpt;
 using namespace mrpt::utils;
@@ -124,7 +125,10 @@ int main(int argc, char **argv)
 		if (arg_rawlog_file.isSet()) {
 			rawlog_fname = arg_rawlog_file.getValue();
 		}
-		CGraphSlamEngine_t< CNetworkOfPoses2DInf, CFixedIntervalsNRD_t<CNetworkOfPoses2DInf> > 
+		CGraphSlamEngine_t< 
+			CNetworkOfPoses2DInf, 
+			CFixedIntervalsNRD_t<CNetworkOfPoses2DInf>,
+			CICPDistanceERD_t<CNetworkOfPoses2DInf> >
 			graph_engine(
 					config_fname, 
 					&graph_win,

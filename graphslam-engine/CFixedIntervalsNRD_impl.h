@@ -27,7 +27,9 @@ CFixedIntervalsNRD_t<GRAPH_t>::CFixedIntervalsNRD_t() {
 }
 template<class GRAPH_t>
 void CFixedIntervalsNRD_t<GRAPH_t>::initCFixedIntervalsNRD_t() {
-	m_initialized_graph = false;
+
+	m_win = NULL;
+	m_graph = NULL;
 
 	m_prev_registered_node = INVALID_NODEID;
 
@@ -45,8 +47,7 @@ void CFixedIntervalsNRD_t<GRAPH_t>::initCFixedIntervalsNRD_t() {
 	std::cout << "CFixedIntervalsNRD: Initialized class object" << std::endl;
 }
 template<class GRAPH_t>
-CFixedIntervalsNRD_t<GRAPH_t>::~CFixedIntervalsNRD_t() {
-}
+CFixedIntervalsNRD_t<GRAPH_t>::~CFixedIntervalsNRD_t() { }
 
 // Member function implementations
 //////////////////////////////////////////////////////////////
@@ -126,14 +127,13 @@ bool CFixedIntervalsNRD_t<GRAPH_t>::registerNewNode() {
 	return registered;
 }
 template<class GRAPH_t>
-void CFixedIntervalsNRD_t<GRAPH_t>::getGraphPtr(GRAPH_t* graph) {
+void CFixedIntervalsNRD_t<GRAPH_t>::setGraphPtr(GRAPH_t* graph) {
 	m_graph = graph;
 
 	// get the last registrered node + corresponding pose - root
 	m_prev_registered_node = m_graph->root;
 
-	m_initialized_graph = true;
-	std::cout << "CFixedIntervalsNRD: Initialized the graph successfully" 
+	std::cout << "CFixedIntervalsNRD: Fetched the graph successfully" 
 		<< std::endl;
 }
 
