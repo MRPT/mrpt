@@ -10,6 +10,9 @@
 #ifndef CEDGEREGISTRATIONDECIDER_H
 #define CEDGEREGISTRATIONDECIDER_H
 
+#include <mrpt/obs/CActionCollection.h>
+#include <mrpt/obs/CSensoryFrame.h>
+#include <mrpt/obs/CObservation.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/graphs/CNetworkOfPoses.h>
 #include <mrpt/utils/types_simple.h>

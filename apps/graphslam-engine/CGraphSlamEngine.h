@@ -11,14 +11,33 @@
 #ifndef GRAPHSLAMENGINE_H
 #define GRAPHSLAMENGINE_H
 
+#include <mrpt/maps/CSimplePointsMap.h>
+#include <mrpt/graphs/CNetworkOfPoses.h>
+#include <mrpt/graphslam.h>
+#include <mrpt/gui/CBaseGUIWindow.h>
+#include <mrpt/gui/CDisplayWindow3D.h>
+#include <mrpt/opengl/CPlanarLaserScan.h> // It's in the lib mrpt-maps now
+#include <mrpt/opengl/graph_tools.h>
+#include <mrpt/opengl/CPointCloud.h>
+#include <mrpt/opengl/CRenderizable.h>
+#include <mrpt/opengl/CAxis.h>
+#include <mrpt/opengl/CCamera.h>
+#include <mrpt/opengl/CGridPlaneXY.h>
+#include <mrpt/opengl/CSetOfObjects.h>
+#include <mrpt/obs/CActionRobotMovement2D.h>
+#include <mrpt/obs/CActionRobotMovement3D.h>
+#include <mrpt/obs/CObservation2DRangeScan.h>
+#include <mrpt/obs/CRawlog.h>
+#include <mrpt/poses/CPosePDF.h>
+#include <mrpt/slam/CICP.h>
+#include <mrpt/slam/CMetricMapBuilder.h>
+#include <mrpt/slam/CMetricMapBuilderICP.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/datetime.h>
 #include <mrpt/system/os.h>
 #include <mrpt/system/threads.h>
 #include <mrpt/system/string_utils.h>
 #include <mrpt/synch/CCriticalSection.h>
-#include <mrpt/poses/CPoses2DSequence.h>
-#include <mrpt/poses/CPosePDF.h>
 #include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/utils/CFileOutputStream.h>
 #include <mrpt/utils/CFileInputStream.h>
@@ -26,30 +45,24 @@
 #include <mrpt/utils/mrpt_macros.h>
 #include <mrpt/utils/CConfigFile.h>
 #include <mrpt/utils/types_simple.h>
-#include <mrpt/obs/CActionRobotMovement2D.h>
-#include <mrpt/obs/CActionRobotMovement3D.h>
-#include <mrpt/maps/CSimplePointsMap.h>
-#include <mrpt/obs/CObservation2DRangeScan.h>
-#include <mrpt/obs/CRawlog.h>
-#include <mrpt/slam/CICP.h>
-#include <mrpt/slam/CMetricMapBuilder.h>
-#include <mrpt/slam/CMetricMapBuilderICP.h>
-#include <mrpt/graphs/CNetworkOfPoses.h>
-#include <mrpt/graphslam.h>
-#include <mrpt/gui/CBaseGUIWindow.h>
-#include <mrpt/gui/CDisplayWindow3D.h>
-#include <mrpt/opengl/CPlanarLaserScan.h> // It's in the lib mrpt-maps now
+#include <mrpt/utils/TColor.h>
 
 #include <string>
 #include <sstream>
 #include <map>
 #include <cerrno>
 #include <cmath> // fabs function
+#include <set>
+#include <algorithm>
+#include <cstdlib>
 
 #include "CEdgeCounter.h"
 #include "CWindowObserver.h"
 #include "CFixedIntervalsNRD.h"
 #include "CICPDistanceERD.h"
+#include "supplementary_funs.h"
+#include "CWindowObserver.h"
+
 
 namespace mrpt { namespace graphslam {
 
