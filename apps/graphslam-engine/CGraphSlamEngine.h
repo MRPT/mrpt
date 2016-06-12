@@ -101,7 +101,8 @@ namespace mrpt { namespace graphslam {
 				CGraphSlamEngine_t(const std::string& config_file,
 						mrpt::gui::CDisplayWindow3D* win = NULL,
 						CWindowObserver* win_observer = NULL,
-						std::string rawlog_fname = "");
+						std::string rawlog_fname = "",
+						std::string fname_GT = "");
 				~CGraphSlamEngine_t();
 
 				// Public function definitions
@@ -111,10 +112,8 @@ namespace mrpt { namespace graphslam {
 		 		 */
 				void saveGraph() const {
 					MRPT_START;
+					assert(m_has_read_config);
 
-					if (!m_has_read_config) {
-						THROW_EXCEPTION("Config file has not been provided yet.\nExiting...");
-					}
 					std::string fname = m_output_dir_fname + "/" + m_save_graph_fname;
 					saveGraph(fname);
 
