@@ -53,13 +53,12 @@ TCLAP::CmdLine cmd(/*output message = */ " graphslam-engine - Part of the MRPT\n
 		/* delimeter = */ ' ', /* version = */ MRPT_getVersion().c_str());
 
 TCLAP::ValueArg<string> arg_ini_file(/*flag = */ "i", /*name = */ "ini_file",
-		/*desc = */ ".ini configuration file", /* required = */ false,
+		/*desc = */ ".ini configuration file", /* required = */ true,
 		/* default value = */ "", /*typeDesc = */ "config.ini", /*parser = */ cmd);
 TCLAP::ValueArg<string> arg_rawlog_file( "r", "rawlog",
-		"Rawlog dataset file",	false, "", "captured_observations.rawlog", cmd);
-TCLAP::SwitchArg arg_do_demo(/*flag = */ "d", /*name = */ "demo",
-		/*desc = */ "Default file for demonstration purposes",
-		/* parser = */ cmd, /* default = */ false);
+		"Rawlog dataset file",	true, "", "captured_observations.rawlog", cmd);
+TCLAP::ValueArg<string> arg_ground_truth_file( "g", "ground-truth",
+		"Ground-truth textfile",	false, "", "captured_observations.rawlog.GT.txt", cmd);
 
 
 CWindowObserver  graph_win_observer;
@@ -81,27 +80,13 @@ int main(int argc, char **argv)
 		if (!cmd.parse( argc, argv ) ||  showVersion || showHelp) {
 			return 0;
 		}
-		else if (argc == 1 || (!arg_do_demo.isSet() && !arg_ini_file.isSet())) {
-			THROW_EXCEPTION("Neither .ini file or demo option was specified." << endl
-					<< "Use -h [--help] flag for list of available options" << endl
-					<< "Exiting..");
-		}
-		else if (arg_do_demo.isSet()) {
-			if (arg_rawlog_file.isSet() || arg_ini_file.isSet()) {
-				THROW_EXCEPTION("-d [--demo] flag cannot be specified alongside other flags." << endl
-						<< "Use -h [--help] flag for list of available options" << endl
-						<< "Exiting.." << endl);
-			}
-		}
-		// fetching the .ini file
-		string config_fname;
-		if ( arg_do_demo.isSet() ) {
-			config_fname = "../demo_config.ini";
-			VERBOSE_COUT << "Using the demo .ini file: " << config_fname << endl;
-		}
-		else {
-			config_fname = arg_ini_file.getValue();
-			//VERBOSE_COUT << "Rawlog file: " << config_fname << endl;
+
+		// fetch the command line options
+		string config_fname = arg_ini_file.getValue();
+		string ground_truth_fname;
+		string rawlog_fname = arg_rawlog_file.getValue();
+		if ( arg_ground_truth_file.isSet() ) {
+			ground_truth_fname = arg_ground_truth_file.getValue();
 		}
 
 		/**
@@ -121,10 +106,6 @@ int main(int argc, char **argv)
 		VERBOSE_COUT << "Listening to graph_window events..." << endl;
 
 		// Initialize the CGraphSlamEngine_t class
-		string rawlog_fname;
-		if (arg_rawlog_file.isSet()) {
-			rawlog_fname = arg_rawlog_file.getValue();
-		}
 		CGraphSlamEngine_t< 
 			CNetworkOfPoses2DInf, 
 			CFixedIntervalsNRD_t<CNetworkOfPoses2DInf>,
@@ -133,7 +114,8 @@ int main(int argc, char **argv)
 					config_fname, 
 					&graph_win,
 					&graph_win_observer,
-					rawlog_fname);
+					rawlog_fname,
+					ground_truth_fname);
 
 		bool exit_normally = graph_engine.parseRawlogFile();
 

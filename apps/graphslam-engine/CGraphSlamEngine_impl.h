@@ -38,9 +38,11 @@ CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR, EDGE_REGISTRATOR>::CGraphSlamEngin
 		const string& config_file,
 		CDisplayWindow3D* win /* = NULL */,
 		CWindowObserver* win_observer /* = NULL */,
-		string rawlog_fname /* = "" */ ):
+		std::string rawlog_fname /* = "" */, 
+		std::string fname_GT /* = "" */ ):
 	m_config_fname(config_file),
 	m_rawlog_fname(rawlog_fname),
+	m_fname_GT(fname_GT),
 	m_win(win),
 	kOffsetYStep(20.0), // textMessage vertical text position
 	kIndexTextStep(1), // textMessage index
@@ -189,10 +191,10 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR, EDGE_REGISTRATOR>::initGraphS
 	if (m_visualize_GT) {
 		assert(m_win && 
 				"Visualization of data was requested but no CDisplayWindow3D pointer was given");
-
-		if (m_fname_GT.empty()) {
-			THROW_EXCEPTION("Visualization of Ground Truth is TRUE, but no ground"
-					<< " truth file was specified");
+		if (!fileExists(m_fname_GT)) {
+			THROW_EXCEPTION("\nGround-truth file " << m_fname_GT << " was not found." 
+					<< "Either specify a valid ground-truth filename or set set the "
+					<< "m_visualize_GT flag to false"); 
 		}
 		this->BuildGroundTruthMap(m_fname_GT);
 
@@ -343,10 +345,10 @@ bool CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR, EDGE_REGISTRATOR>::parseRawlo
 	MRPT_START;
 
 	if (!m_has_read_config)
-		THROW_EXCEPTION("Config file has not been provided yet.\nExiting...");
+		THROW_EXCEPTION("\nConfig file has not been provided yet.\nExiting...");
 	if (!fileExists(m_rawlog_fname))
-		THROW_EXCEPTION("parseRawlogFile: Inputted rawlog file ( "
-				<< m_rawlog_fname << " ) not found");
+		THROW_EXCEPTION("\nparseRawlogFile: Rawlog file "
+				<< m_rawlog_fname << " was not found.\n");
  // good to go..
 
 	/**
@@ -406,7 +408,7 @@ bool CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR, EDGE_REGISTRATOR>::parseRawlo
 			// Read a single observation from the rawlog
 			// (Format #2 rawlog file)
 			//TODO Implement 2nd format
-			THROW_EXCEPTION("Observation-only format is not yet supported");
+			THROW_EXCEPTION("\nObservation-only format is not yet supported");
 		}
 		else {
 			// action, observations should contain a pair of valid data
@@ -678,6 +680,10 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR, EDGE_REGISTRATOR>::readConfig
 
 	VERBOSE_COUT << "Reading the .ini file... " << std::endl;
 
+	// validation of .ini fname
+	if (!fileExists(fname)) {
+		THROW_EXCEPTION("\nConfiguration file not found: " << fname);
+	}
 	CConfigFile cfg_file(fname);
 
 	if (m_rawlog_fname.empty()) {
@@ -686,7 +692,9 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR, EDGE_REGISTRATOR>::readConfig
 				/*var_name = */ "rawlog_file",
 				/*default_value = */ "", /*failIfNotFound = */ true);
 	}
-	m_fname_GT = m_rawlog_fname + ".GT.txt"; // default output of GridmapNavSimul tool
+	if (m_fname_GT.empty()) {
+		m_fname_GT = m_rawlog_fname + ".GT.txt"; // default output of GridmapNavSimul tool
+	}
 
 
 	// Section: GeneralConfiguration
@@ -886,7 +894,7 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR, EDGE_REGISTRATOR>::initOutput
 
 
 	if (!m_has_read_config) {
-		THROW_EXCEPTION("Cannot initialize output directory. " <<
+		THROW_EXCEPTION("\nCannot initialize output directory. " <<
 				"Make sure you have parsed the configuration file first");
 	}
 	else {
@@ -944,7 +952,7 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR, EDGE_REGISTRATOR>::initOutput
 							dst_fname,
 							error_msg);
 					if (!did_rename) {
-						THROW_EXCEPTION("Error while trying to rename the output directory:" <<
+						THROW_EXCEPTION("\nError while trying to rename the output directory:" <<
 								*error_msg);
 					}
 					break;
@@ -1028,7 +1036,8 @@ inline void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR, EDGE_REGISTRATOR>::upd
 }
 
 template<class GRAPH_t, class NODE_REGISTRATOR, class EDGE_REGISTRATOR>
-void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR, EDGE_REGISTRATOR>::BuildGroundTruthMap(const std::string& fname_GT) {
+void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR, EDGE_REGISTRATOR>::BuildGroundTruthMap(
+		const std::string& fname_GT) {
 	MRPT_START;
 
 	VERBOSE_COUT << "Parsing the ground truth file textfile.." << std::endl;
@@ -1047,7 +1056,7 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR, EDGE_REGISTRATOR>::BuildGroun
 
 			// check the current pose dimensions
 			if (curr_tokens.size() != constraint_t::state_length + 1) {
-				THROW_EXCEPTION("Wrong length of curent pose at line " << line_num);
+				THROW_EXCEPTION("\nWrong length of curent pose at line " << line_num);
 			}
 			pose_t *curr_pose = new pose_t(atof(curr_tokens[1].c_str()),
 					atof(curr_tokens[2].c_str()),
@@ -1056,7 +1065,7 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR, EDGE_REGISTRATOR>::BuildGroun
 		}
 	}
 	else {
-		THROW_EXCEPTION("BuildGroundTruthMap: Can't open GT file (" << fname_GT
+		THROW_EXCEPTION("\nBuildGroundTruthMap: Can't open GT file (" << fname_GT
 				<< ")");
 	}
 
