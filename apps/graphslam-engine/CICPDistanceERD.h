@@ -14,13 +14,13 @@
 #include <mrpt/utils/CConfigFileBase.h>
 #include <mrpt/utils/CStream.h>
 #include <mrpt/utils/types_simple.h>
-#include <mrpt/obs/CRawlog.h>
-#include <mrpt/obs/CObservation2DRangeScan.h>
-#include <mrpt/slam/CICP.h>
 #include <mrpt/utils/TColor.h>
+#include <mrpt/obs/CObservation2DRangeScan.h>
+#include <mrpt/obs/CRawlog.h>
 #include <mrpt/opengl/CDisk.h>
 #include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/opengl/CRenderizable.h>
+#include <mrpt/slam/CICP.h>
 
 #include <map>
 #include <string>
@@ -52,7 +52,7 @@ namespace mrpt { namespace graphslam { namespace deciders {
 	 * Register new edges in the graph with the last added node. Criterion for
 	 * adding new nodes should  be the goodness of the potential ICP edge. The
 	 * nodes for ICP should be picked based on the distance from the last
-	 * inserted node. 
+	 * inserted node.
 	 */
 	template<
 		  class GRAPH_t=typename mrpt::graphs::CNetworkOfPoses2DInf >

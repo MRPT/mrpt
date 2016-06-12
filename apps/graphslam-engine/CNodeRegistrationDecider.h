@@ -12,7 +12,8 @@
 
 
 #include <mrpt/obs/CActionCollection.h>
-#include <mrpt/math/CMatrixFixedNumeric.h>
+#include <mrpt/obs/CSensoryFrame.h>
+#include <mrpt/obs/CObservation.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/graphs/CNetworkOfPoses.h>
 

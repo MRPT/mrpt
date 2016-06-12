@@ -12,57 +12,8 @@
 
 using namespace mrpt::graphslam;
 
-#include <mrpt/system/filesystem.h>
-#include <mrpt/system/datetime.h>
-#include <mrpt/system/os.h>
-#include <mrpt/system/threads.h>
-#include <mrpt/synch/CCriticalSection.h>
-#include <mrpt/poses/CPoses2DSequence.h>
-#include <mrpt/poses/CPosePDF.h>
-#include <mrpt/utils/CLoadableOptions.h>
-#include <mrpt/utils/mrpt_stdint.h>
-#include <mrpt/utils/mrpt_macros.h>
-#include <mrpt/utils/types_simple.h>
-#include <mrpt/utils/CConfigFile.h>
-#include <mrpt/utils/CFileOutputStream.h>
-#include <mrpt/utils/CFileInputStream.h>
-#include <mrpt/utils/TColor.h>
-#include <mrpt/obs/CActionRobotMovement2D.h>
-#include <mrpt/obs/CActionRobotMovement3D.h>
-#include <mrpt/maps/CSimplePointsMap.h>
-#include <mrpt/obs/CObservation2DRangeScan.h>
-#include <mrpt/obs/CRawlog.h>
-#include <mrpt/slam/CICP.h>
-#include <mrpt/slam/CMetricMapBuilder.h>
-#include <mrpt/slam/CMetricMapBuilderICP.h>
-#include <mrpt/graphs/CNetworkOfPoses.h>
-#include <mrpt/graphslam.h>
-#include <mrpt/gui/CBaseGUIWindow.h>
-#include <mrpt/gui/CDisplayWindow3D.h>
-#include <mrpt/opengl/CPlanarLaserScan.h> // It's in the lib mrpt-maps now
-#include <mrpt/opengl/graph_tools.h>
-#include <mrpt/opengl/CPointCloud.h>
-#include <mrpt/opengl/CRenderizable.h>
-#include <mrpt/opengl/CAxis.h>
-#include <mrpt/opengl/CCamera.h>
-#include <mrpt/opengl/CGridPlaneXY.h>
-#include <mrpt/opengl/CSetOfObjects.h>
-
-#include <string>
-#include <sstream>
-#include <map>
-#include <set>
-#include <algorithm>
-#include <cerrno>
-#include <cmath> // fabs function
-#include <cstdlib>
-
-#include "supplementary_funs.h"
-#include "CWindowObserver.h"
-
 // todo - remove these
 using namespace mrpt;
-using namespace mrpt::synch;
 using namespace mrpt::poses;
 using namespace mrpt::obs;
 using namespace mrpt::system;
@@ -376,7 +327,7 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR, EDGE_REGISTRATOR>::initGraphS
 	}
 
 	{
-		CCriticalSectionLocker m_graph_lock(&m_graph_section);
+		mrpt::synch::CCriticalSectionLocker m_graph_lock(&m_graph_section);
 		m_node_registrator.initializeVisuals();
 		m_edge_registrator.initializeVisuals();
 	}
@@ -435,7 +386,7 @@ bool CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR, EDGE_REGISTRATOR>::parseRawlo
 				curr_rawlog_entry );
 
 		std::cout << "Updating edge_registrator for nodeID " << from << std::endl;
-		CCriticalSectionLocker m_graph_lock(&m_graph_section);
+		mrpt::synch::CCriticalSectionLocker m_graph_lock(&m_graph_section);
 		m_edge_registrator.updateDeciderState(
 				action, 
 				observations,
@@ -540,7 +491,7 @@ bool CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR, EDGE_REGISTRATOR>::parseRawlo
 			// new node registration procedure
 			bool registered_new_node;
 			{
-				CCriticalSectionLocker m_graph_lock(&m_graph_section);
+				mrpt::synch::CCriticalSectionLocker m_graph_lock(&m_graph_section);
 				registered_new_node = m_node_registrator.updateDeciderState(
 						action, observations, observation);
 				if (registered_new_node) {
@@ -552,7 +503,7 @@ bool CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR, EDGE_REGISTRATOR>::parseRawlo
 
 				// Edge registration procedure
 				{ 
-					CCriticalSectionLocker m_graph_lock(&m_graph_section);
+					mrpt::synch::CCriticalSectionLocker m_graph_lock(&m_graph_section);
 					m_graph.dijkstra_nodes_estimate(); 
 
 					m_edge_registrator.updateDeciderState(
@@ -584,7 +535,7 @@ bool CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR, EDGE_REGISTRATOR>::parseRawlo
 					CRenderizablePtr obj = scene->getByName("robot_model");
 					CSetOfObjectsPtr robot_obj = static_cast<CSetOfObjectsPtr>(obj);
 
-					CCriticalSectionLocker m_graph_lock(&m_graph_section);
+					mrpt::synch::CCriticalSectionLocker m_graph_lock(&m_graph_section);
 
 					robot_obj->setPose(m_graph.nodes[m_graph.nodeCount()-1]);
 
@@ -592,7 +543,7 @@ bool CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR, EDGE_REGISTRATOR>::parseRawlo
 				}
 
 				{
-					CCriticalSectionLocker m_graph_lock(&m_graph_section);
+					mrpt::synch::CCriticalSectionLocker m_graph_lock(&m_graph_section);
 					m_node_registrator.updateVisuals();
 					m_edge_registrator.updateVisuals();
 				}
@@ -633,7 +584,7 @@ bool CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR, EDGE_REGISTRATOR>::parseRawlo
 		 * Reduce edges
 		 */
 		if (m_edge_counter.getTotalNumOfEdges() % m_num_of_edges_for_collapse == 0) {
-			CCriticalSectionLocker m_graph_lock(&m_graph_section);
+			mrpt::synch::CCriticalSectionLocker m_graph_lock(&m_graph_section);
 			//std::cout << "Collapsing duplicated edges..." << std::endl;
 
 			int removed_edges = m_graph.collapseDuplicatedEdges();
@@ -652,7 +603,7 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR, EDGE_REGISTRATOR>::optimizeGr
 	CTicTac optimization_timer;
 	optimization_timer.Tic();
 
-	CCriticalSectionLocker m_graph_lock(&m_graph_section);
+	mrpt::synch::CCriticalSectionLocker m_graph_lock(&m_graph_section);
 
 	//std::cout << "In optimizeGraph: threadID: " << getCurrentThreadId()<< std::endl;
 
@@ -684,7 +635,7 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR, EDGE_REGISTRATOR>::visualizeG
 
 	//std::cout << "Inside the visualizeGraph function" << std::endl;
 	
-	CCriticalSectionLocker m_graph_lock(&m_graph_section);
+	mrpt::synch::CCriticalSectionLocker m_graph_lock(&m_graph_section);
 
 	string gr_name = graph_to_name[&gr];
 	const TParametersDouble* viz_params = graph_to_viz_params[&gr];
@@ -1060,7 +1011,7 @@ inline void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR, EDGE_REGISTRATOR>::upd
 
 	pose_t curr_robot_pose;
 	{
-		CCriticalSectionLocker m_graph_lock(&m_graph_section);
+		mrpt::synch::CCriticalSectionLocker m_graph_lock(&m_graph_section);
 		// get the last added pose
 		curr_robot_pose = gr.nodes.find(gr.nodeCount()-1)->second; 
 	}
