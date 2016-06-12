@@ -42,6 +42,7 @@ protected:
 	virtual void OnEvent(const mrpt::utils::mrptEvent &e) {
 		if (e.isOfType<mrpt::utils::mrptEventOnDestroy>()) {
 			const mrpt::utils::mrptEventOnDestroy &ev = static_cast<const mrpt::utils::mrptEventOnDestroy &>(e);
+			MRPT_UNUSED_PARAM(ev);
 			std::cout  << "Event received: mrptEventOnDestroy" << std::endl;
 		}
 		else if (e.isOfType<mrpt::gui::mrptEventWindowResize>()) {
@@ -147,9 +148,9 @@ protected:
 	}
 
 private:
+	bool m_showing_help, m_hiding_help;
 	bool m_mouse_clicked, m_request_to_exit;
 
-	bool m_showing_help, m_hiding_help;
 	mrpt::utils::CTicTac  m_tim_show_start, m_tim_show_end;
 	std::string m_help_text; 
 };

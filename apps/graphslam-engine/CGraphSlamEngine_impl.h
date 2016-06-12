@@ -89,13 +89,13 @@ CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR, EDGE_REGISTRATOR>::CGraphSlamEngin
 		CWindowObserver* win_observer /* = NULL */,
 		string rawlog_fname /* = "" */ ):
 	m_config_fname(config_file),
-	m_win(win),
-	m_win_observer(win_observer),
 	m_rawlog_fname(rawlog_fname),
+	m_win(win),
 	kOffsetYStep(20.0), // textMessage vertical text position
 	kIndexTextStep(1), // textMessage index
 	m_odometry_color(0, 0, 1),
-	m_GT_color(0, 1, 0)
+	m_GT_color(0, 1, 0),
+	m_win_observer(win_observer)
 {
 	
 	this->initGraphSlamEngine();
@@ -167,10 +167,6 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR, EDGE_REGISTRATOR>::initGraphS
 
 	// Calling of initalization-relevant functions
 	this->readConfigFile(m_config_fname);
-	this->m_node_registrator.params.loadFromConfigFileName(m_config_fname, 
-			"NodeRegistrationDecidersParameters");
-	this->m_edge_registrator.params.loadFromConfigFileName(m_config_fname, 
-			"EdgeRegistrationDecidersParameters");
 
 	this->initOutputDir();
 	this->printProblemParams();
@@ -180,9 +176,6 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR, EDGE_REGISTRATOR>::initGraphS
 	/**
 	 * Visualization-related parameters initialization
 	 */
-
-	// TODO - split the functions below to edge_registrator, node_registrator
-	// instances
 
 	if (!m_win) {
 		m_visualize_optimized_graph = 0;
@@ -347,11 +340,6 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR, EDGE_REGISTRATOR>::initGraphS
 		//<< "offset_y_total_edges: " << offset_y_total_edges << std::endl
 		//<< "text_index_total_edges: " << text_index_total_edges << std::endl;
 
-		// constraint types..
-
-		const char* strings[] = {"odometry", "ICP", "Visual"};
-		//vector<string> vec_strings(strings, strings + 3);
-
 		// register all the edge types
 		vector<string> vec_edge_types;
 		vec_edge_types.push_back("Odometry");m_edge_counter.addEdgeType("Odometry");
@@ -445,16 +433,6 @@ bool CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR, EDGE_REGISTRATOR>::parseRawlo
 				observations, // Possible out var: obs's of a pair actin		 / obs
 				observation, // Possible out var
 				curr_rawlog_entry );
-		// // TODO - remove these - handled by the edge registrator now
-		//if (observation.present()) {
-			//// TODO - add here..
-		//}
-		//else {
-			//CObservation2DRangeScanPtr curr_laser_scan =
-				//observations->getObservationByClass<CObservation2DRangeScan>();
-			//m_nodes_to_laser_scans[m_graph.root] = curr_laser_scan;
-
-		//}
 
 		std::cout << "Updating edge_registrator for nodeID " << from << std::endl;
 		CCriticalSectionLocker m_graph_lock(&m_graph_section);
@@ -464,9 +442,7 @@ bool CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR, EDGE_REGISTRATOR>::parseRawlo
 				observation);
 	}
 
-	/**
-	 * Read the rest of the rawlog file
-	 */
+	// Read the rest of the rawlog file
 	while (CRawlog::getActionObservationPairOrObservation(
 				rawlog_file,
 				action,	// Possible out var: Action of a a pair action / obs
@@ -694,6 +670,7 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR, EDGE_REGISTRATOR>::optimizeGr
 	double elapsed_time = optimization_timer.Tac();
 	//VERBOSE_COUT << "Optimization of graph took: " << elapsed_time << "s" << std::endl;
 
+	MRPT_UNUSED_PARAM(elapsed_time);
 	MRPT_END;
 }
 
@@ -754,7 +731,7 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR, EDGE_REGISTRATOR>::readConfig
 
 	if (m_rawlog_fname.empty()) {
 		m_rawlog_fname = cfg_file.read_string(
-				/*section_name = */ "MappingApplication",
+				/*section_name = */ "GeneralConfiguration",
 				/*var_name = */ "rawlog_file",
 				/*default_value = */ "", /*failIfNotFound = */ true);
 	}
@@ -770,10 +747,6 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR, EDGE_REGISTRATOR>::readConfig
 	m_user_decides_about_output_dir = cfg_file.read_bool(
 			"GeneralConfiguration",
 			"user_decides_about_output_dir",
-			true, false);
-	m_do_debug =	cfg_file.read_bool(
-			"GeneralConfiguration",
-			"do_debug",
 			true, false);
 	m_debug_fname = cfg_file.read_string(
 			"GeneralConfiguration",
@@ -806,58 +779,6 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR, EDGE_REGISTRATOR>::readConfig
 			"Optimization",
 			"tau",
 			1e-3, false);
-
-
-	// Section: GraphSLAMParameters
-	// ////////////////////////////////
-	m_do_pose_graph_only = cfg_file.read_bool(
-			"GraphSLAMParameters",
-			"do_pose_graph_only",
-			true, false);
-	m_optimizer = cfg_file.read_string(
-			"GraphSLAMParameters",
-			"optimizer",
-			"levmarq", false);
-	// TODO - remove this
-	//m_ICP.options.loadFromConfigFile(cfg_file, "ICP");
-
-	// TODO - remove these
-	/** 
-	 * Criterion for building the list of nodes for ICP checks. Uses either
-	 * distance from current node or number of nodes prior/after current node
-	 * If none, or both of ICP_max_distance, ICP_prev_nodes parameters are
-	 * defined in the .ini file, throw exception
-	 */
-	//bool ICP_max_distance_exists = false;
-	//bool ICP_prev_nodes_exists = false;
-	//vector<string> keys;
-	//cfg_file.getAllKeys("ICP", keys);
-	//if (std::find(keys.begin(), keys.end(), "ICP_max_distance") != keys.end()) {
-		//m_ICP_max_distance = cfg_file.read_double(
-				//"ICP",
-				//"ICP_max_distance",
-				//5, false);
-		//ICP_max_distance_exists = true;
-	//}
-	//if (std::find(keys.begin(), keys.end(), "ICP_prev_nodes") != keys.end()) {
-		//m_ICP_prev_nodes = cfg_file.read_int(
-				//"ICP",
-				//"ICP_prev_nodes",
-				//5, false);
-		//ICP_prev_nodes_exists = true;
-	//}
-
-	//if (ICP_max_distance_exists && ICP_prev_nodes_exists ||
-			//!ICP_max_distance_exists && !ICP_prev_nodes_exists) {
-		//THROW_EXCEPTION("User should specify either the ICP_prev_nodes"
-				//<< "or the ICP_max distance parameter");
-	//}
-	//m_ICP_use_distance_criterion = ICP_max_distance_exists;
-
-	//m_ICP_goodness_thres = cfg_file.read_double(
-			//"ICP",
-			//"ICP_goodness_thres",
-			//0.80, false);
 
 
 	// Section: VisualizationParameters
@@ -942,6 +863,10 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR, EDGE_REGISTRATOR>::readConfig
 			"visualize_ground_truth",
 			1, false);
 
+	this->m_node_registrator.params.loadFromConfigFileName(m_config_fname, 
+			"NodeRegistrationDecidersParameters");
+	this->m_edge_registrator.params.loadFromConfigFileName(m_config_fname, 
+			"EdgeRegistrationDecidersParameters");
 
 	m_has_read_config = true;
 	MRPT_END;
@@ -967,25 +892,8 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR, EDGE_REGISTRATOR>::printProbl
 		<< m_output_dir_fname << std::endl;
 	ss_out << "User decides about output dir   = "
 		<< m_user_decides_about_output_dir << std::endl;
-	ss_out << "Debug mode                      = "
-		<< m_do_debug << std::endl;
 	ss_out << "save_graph_fname                = "
 		<< m_save_graph_fname << std::endl;
-	ss_out << "do_pose_graph_only              = "
-		<<	m_do_pose_graph_only << std::endl;
-	ss_out << "optimizer                       = "
-		<< m_optimizer << std::endl;
-	// TODO - remove these
-	//ss_out << "ICP Goodness threshold          = "
-		//<< m_ICP_goodness_thres << std::endl;
-	//if (m_ICP_use_distance_criterion) {
-		//ss_out << "Maximum distance for ICP check  = "
-			//<< m_ICP_max_distance << std::endl;
-	//}
-	//else {
-		//ss_out << "Num of previous nodes  for ICP  = "
-			//<< m_ICP_prev_nodes << std::endl;
-	//}
 	ss_out << "Visualize odometry              = " 
 		<< m_visualize_odometry_poses << std::endl;
 	ss_out << "Visualize optimized path        = " 
@@ -1100,10 +1008,10 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR, EDGE_REGISTRATOR>::initOutput
 	
 		// debug_fname
 		createDirectory(m_output_dir_fname);
-		if (m_do_debug) {
-			cur_fname = m_output_dir_fname + "/" + m_debug_fname;
-			this->initResultsFile(cur_fname);
-		}
+		//if (m_do_debug) {
+			//cur_fname = m_output_dir_fname + "/" + m_debug_fname;
+			//this->initResultsFile(cur_fname);
+		//}
 
 		VERBOSE_COUT << "Finished initializing output directory." << std::endl;
 	}
@@ -1181,10 +1089,9 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR, EDGE_REGISTRATOR>::BuildGroun
 
 	if (file_GT->fileOpenCorrectly()) {
 		string curr_line; 
-		size_t line_num = 0;
 
 		// parse the file - get timestamp and pose and fill in the pose_t vector
-		for (size_t line_num = 1; file_GT->readLine(curr_line); line_num++) {
+		for (size_t line_num = 0; file_GT->readLine(curr_line); line_num++) {
 			vector<string> curr_tokens;
 			system::tokenize(curr_line, " ", curr_tokens);
 

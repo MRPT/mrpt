@@ -239,7 +239,6 @@ namespace mrpt { namespace graphslam {
 				std::string	m_fname_GT;
 				std::string	m_output_dir_fname;
 				bool		m_user_decides_about_output_dir;
-				bool		m_do_debug;
 				std::string	m_debug_fname;
 				std::string	m_save_graph_fname;
 
@@ -309,16 +308,6 @@ namespace mrpt { namespace graphslam {
 				// internal counter for querrying for the number of nodeIDs.
 				// Handy for not locking the m_graph resource
 				mrpt::utils::TNodeID m_nodeID_max; 
-
-				// TODO - remove these
-				//// ICP configuration
-				//float m_ICP_goodness_thres;
-				double m_ICP_max_distance;
-				////int m_ICP_prev_nodes; // add ICP constraints with m_prev_nodes_for_ICP nodes back
-				bool m_ICP_use_distance_criterion;
-				//std::map<const mrpt::utils::TNodeID, mrpt::obs::CObservation2DRangeScanPtr> 
-					//m_nodes_to_laser_scans;
-				//mrpt::slam::CICP m_ICP;
 
 				// graph optimization
 				mrpt::utils::TParametersDouble m_optimization_params;
