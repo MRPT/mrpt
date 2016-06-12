@@ -379,7 +379,7 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR, EDGE_REGISTRATOR>::initGraphS
 		//<< "text_index_loop_closures: " << text_index_loop_closures <<std::endl;
 
 		if (m_win) {
-			// add all the parameters to the EdgeCounter_t object
+			// add all the parameters to the CEdgeCounter_t object
 			m_edge_counter.setTextMessageParams(name_to_offset_y, name_to_text_index,
 					offset_y_total_edges, text_index_total_edges,
 					offset_y_loop_closures, text_index_loop_closures,

@@ -46,7 +46,7 @@
 #include <cerrno>
 #include <cmath> // fabs function
 
-#include "EdgeCounter.h"
+#include "CEdgeCounter.h"
 #include "CWindowObserver.h"
 #include "CFixedIntervalsNRD.h"
 #include "CICPDistanceERD.h"
@@ -289,7 +289,7 @@ namespace mrpt { namespace graphslam {
 
 				// instance to keep track of all the edges + visualization related
 				// functions
-				EdgeCounter_t m_edge_counter;
+				CEdgeCounter_t m_edge_counter;
 				int m_num_of_edges_for_collapse;
 
 				// std::maps to store information about the graph(s)
