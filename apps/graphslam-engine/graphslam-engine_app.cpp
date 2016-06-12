@@ -96,7 +96,7 @@ int main(int argc, char **argv)
 		// fetching the .ini file
 		string config_fname;
 		if ( arg_do_demo.isSet() ) {
-			config_fname = "../default_config.ini";
+			config_fname = "../demo_config.ini";
 			VERBOSE_COUT << "Using the demo .ini file: " << config_fname << endl;
 		}
 		else {

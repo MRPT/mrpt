@@ -823,7 +823,6 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR, EDGE_REGISTRATOR>::readConfig
 	MRPT_END;
 }
 
-// TODO - check for new value from above
 template<class GRAPH_t, class NODE_REGISTRATOR, class EDGE_REGISTRATOR>
 void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRATOR, EDGE_REGISTRATOR>::printProblemParams() const {
 	MRPT_START;

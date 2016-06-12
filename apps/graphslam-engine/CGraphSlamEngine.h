@@ -145,8 +145,6 @@ namespace mrpt { namespace graphslam {
 		 		 */
 				void printProblemParams() const;
 				/**
-		 		 * TODO - Make this a function template so that it can handle camera
-		 		 * images, laser scan files, etc.
 		 		 * Reads the file provided and builds the graph. Method returns false if
 		 		 * user issues termination coe (Ctrl+c) otherwise true
 		 		 **/
