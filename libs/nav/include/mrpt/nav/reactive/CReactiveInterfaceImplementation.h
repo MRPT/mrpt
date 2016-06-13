@@ -220,9 +220,15 @@ namespace mrpt
 
 		// See base class docs.
 		void cmdVel_limits(std::vector<double> &vel_cmd, const std::vector<double> &prev_vel_cmd, const double beta)
-		{
-			MRPT_TODO("Implement me!");
-			THROW_EXCEPTION("Implement me!");
+		{ // remember:  `vel_cmd=[vel dir ramp_time rot_speed]`
+			double f=1.0;
+			if (vel_cmd[0]>robotMax_V_mps) f = vel_cmd[0]/robotMax_V_mps;
+
+			vel_cmd[0] *= f; // |(vx,vy)|
+			vel_cmd[2] *= f; // ramp_time
+			vel_cmd[3] *= f; // rot_speed
+			
+			// Blending with "beta" not required, since the ramp_time already blends cmds for holo robots.
 		}
 
 		/** This class recognizes these parameters: `robotMax_V_mps` */
