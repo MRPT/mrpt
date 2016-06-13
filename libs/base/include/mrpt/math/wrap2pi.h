@@ -43,7 +43,7 @@ namespace mrpt
 			return a;
 		}
 
-		/** Modifies the given angle to translate it into the ]-pi,pi] range.
+		/** Modifies the given angle to translate it into the [-pi,pi] range.
 		  * \note Take care of not instancing this template for integer numbers, since it only works for float, double and long double.
 		  * \sa wrapTo2Pi, wrapToPiInPlace, unwrap2PiSequence
 		  */
@@ -53,7 +53,7 @@ namespace mrpt
 			return wrapTo2Pi( a + static_cast<T>(M_PI) )-static_cast<T>(M_PI);
 		}
 
-		/** Modifies the given angle to translate it into the ]-pi,pi] range.
+		/** Modifies the given angle to translate it into the [-pi,pi] range.
 		  * \note Take care of not instancing this template for integer numbers, since it only works for float, double and long double.
 		  * \sa wrapToPi,wrapTo2Pi, unwrap2PiSequence
 		  */

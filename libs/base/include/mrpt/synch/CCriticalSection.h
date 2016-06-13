@@ -49,7 +49,7 @@ namespace mrpt
 			void  enter() const;
 
 			/** Leave
-			  * \exception If the calling thread is not the current owener of the critical section.
+			  * \exception If the calling thread is not the current owner of the critical section.
 			  */
 			void  leave() const;
 
