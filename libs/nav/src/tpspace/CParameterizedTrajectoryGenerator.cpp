@@ -657,12 +657,6 @@ bool CParameterizedTrajectoryGenerator::CColisionGrid::loadFromFile( CStream *f,
 	}
 }
 
-// Deprecated:         
-void CParameterizedTrajectoryGenerator::lambdaFunction( float x, float y, int &out_k, float &out_d )
-{
-	this->inverseMap_WS2TP(x,y,out_k,out_d);
-}
-
 bool CParameterizedTrajectoryGenerator::inverseMap_WS2TP( float x, float y, int &k_out, float &d_out, float tolerance_dist ) const
 {
     ASSERTMSG_(m_alphaValuesCount>0, "Have you called simulateTrajectories() first?")

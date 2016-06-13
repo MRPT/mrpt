@@ -23,7 +23,7 @@ IF(CMAKE_MRPT_HAS_WXWIDGETS)
 
 	IF(WIN32)
 		SET(SRCS ${SRCS} resource.rc)
-	ENDIF(WIN32)
+	ENDIF()
 
 	# Define the executable target:
 	ADD_EXECUTABLE(kinect-stereo-calib WIN32 ${SRCS} ${MRPT_VERSION_RC_FILE})

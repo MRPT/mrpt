@@ -132,7 +132,7 @@ int XsMath_isFinite(XsReal x)
 #elif defined(APPLE)
 	return isfinite(x);
 #elif defined(__GNUC__)
-	return finite(x);
+	return isfinite(x);
 #else
 	return 1;
 #endif

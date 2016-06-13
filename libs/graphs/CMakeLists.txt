@@ -8,7 +8,6 @@ define_mrpt_lib_header_only(
 	mrpt-base
 	)
 
-IF(BUILD_mrpt-graphs) 
+IF(BUILD_mrpt-graphs)
 
-ENDIF(BUILD_mrpt-graphs) 
-
+ENDIF() 

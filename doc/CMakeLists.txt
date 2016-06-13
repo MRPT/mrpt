@@ -8,7 +8,7 @@ PROJECT(documentation)
 
 IF(UNIX)
 	add_subdirectory(man-pages)
-ENDIF(UNIX)
+ENDIF()
 
 FIND_PACKAGE(Doxygen)
 
@@ -34,10 +34,10 @@ IF(DOXYGEN_EXECUTABLE)
 	# --------------------------------
 	IF(WIN32)
 		SET(CMD build_docs-HTML.bat)
-	ELSE(WIN32)
+	ELSE()
 		SET(CMD "build_docs.sh")
 		SET(PARAM "-h")
-	ENDIF(WIN32)
+	ENDIF()
 	add_custom_target(documentation_html
 		COMMAND 		${MRPT_SOURCE_DIR}/scripts/${CMD} ${PARAM}
 		WORKING_DIRECTORY	${MRPT_SOURCE_DIR}/
@@ -45,17 +45,17 @@ IF(DOXYGEN_EXECUTABLE)
 		)
 	if(ENABLE_SOLUTION_FOLDERS)
 		set_target_properties(documentation_html PROPERTIES FOLDER "documentation")
-	endif(ENABLE_SOLUTION_FOLDERS)
+	endif()
 
 	# --------------------------------
 	#   documentation_chm
 	# --------------------------------
 	IF(WIN32)
 		SET(CMD build_docs-CHM.bat)
-	ELSE(WIN32)
+	ELSE()
 		SET(CMD "build_docs.sh")
 		SET(PARAM "-c")
-	ENDIF(WIN32)
+	ENDIF()
 	add_custom_target(documentation_chm
 		COMMAND 		${MRPT_SOURCE_DIR}/scripts/${CMD} ${PARAM}
 		WORKING_DIRECTORY	${MRPT_SOURCE_DIR}/
@@ -63,17 +63,17 @@ IF(DOXYGEN_EXECUTABLE)
 		)
 	if(ENABLE_SOLUTION_FOLDERS)
 		set_target_properties(documentation_chm PROPERTIES FOLDER "documentation")
-	endif(ENABLE_SOLUTION_FOLDERS)
+	endif()
 
 	# --------------------------------
 	#   documentation_html_chm
 	# --------------------------------
 	IF(WIN32)
 		SET(CMD build_docs-HTML-CHM.bat)
-	ELSE(WIN32)
+	ELSE()
 		SET(CMD "build_docs.sh")
 		SET(PARAM "-ch")
-	ENDIF(WIN32)
+	ENDIF()
 	add_custom_target(documentation_html_chm
 		COMMAND 		${MRPT_SOURCE_DIR}/scripts/${CMD} ${PARAM}
 		WORKING_DIRECTORY	${MRPT_SOURCE_DIR}/
@@ -81,9 +81,9 @@ IF(DOXYGEN_EXECUTABLE)
 		)
 	if(ENABLE_SOLUTION_FOLDERS)
 		set_target_properties(documentation_html_chm PROPERTIES FOLDER "documentation")
-	endif(ENABLE_SOLUTION_FOLDERS)
-		
-ENDIF(DOXYGEN_EXECUTABLE)
+	endif()
+
+ENDIF()
 
 
 # Compile Latex targets:
@@ -99,7 +99,6 @@ IF(LATEXMK_PROGRAM)
 		COMMENT 		"Generating pbmap-guide (ps.gz)"
 		)
 	add_dependencies(documentation_psgz_guides documentation_pbmap-guide)
-	
-ENDIF(LATEXMK_PROGRAM)
-ENDIF(NOT WIN32)
 
+ENDIF()
+ENDIF()

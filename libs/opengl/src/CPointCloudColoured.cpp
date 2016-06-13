@@ -262,7 +262,6 @@ void CPointCloudColoured::recolorizeByCoordinate(const float coord_min, const fl
 		case 1: coord = m_points[i].y; break;
 		case 2: coord = m_points[i].z; break;
 		};
-		mrpt::math::TPoint3Df pt = this->getPointf(i);
 		const float col_idx = std::max(0.0f, std::min(1.0f,(coord-coord_min)*coord_range_1 ) );
 		float r,g,b;
 		mrpt::utils::colormap( mrpt::utils::cmJET, col_idx,r,g,b);

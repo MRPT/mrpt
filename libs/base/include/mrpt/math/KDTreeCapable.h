@@ -726,7 +726,7 @@ namespace mrpt
 					m_kdtree2d_data.query_point.resize(2);
 					if (N)
 					{
-						m_kdtree2d_data.index = new tree2d_t(2, derived(),  nanoflann::KDTreeSingleIndexAdaptorParams(kdtree_search_params.leaf_max_size, 2 ) );
+						m_kdtree2d_data.index = new tree2d_t(2, derived(),  nanoflann::KDTreeSingleIndexAdaptorParams(kdtree_search_params.leaf_max_size) );
 						m_kdtree2d_data.index->buildIndex();
 					}
 					m_kdtree_is_uptodate = true;
@@ -751,7 +751,7 @@ namespace mrpt
 					m_kdtree3d_data.query_point.resize(3);
 					if (N)
 					{
-						m_kdtree3d_data.index = new tree3d_t(3, derived(),  nanoflann::KDTreeSingleIndexAdaptorParams(kdtree_search_params.leaf_max_size, 3 ) );
+						m_kdtree3d_data.index = new tree3d_t(3, derived(),  nanoflann::KDTreeSingleIndexAdaptorParams(kdtree_search_params.leaf_max_size) );
 						m_kdtree3d_data.index->buildIndex();
 					}
 					m_kdtree_is_uptodate = true;

@@ -20,9 +20,12 @@
 			- Now displays a textual and graphical representation of all observation timestamps, useful to quickly detect sensor "shortages" or temporary failures.
 			- New menu operation: "Edit" -> "Rename selected observation"
 			- mrpt::obs::CObservation3DRangeScan pointclouds are now shown in local coordinates wrt to the vehicle/robot, not to the sensor.
+		- [rawlog-edit](http://www.mrpt.org/list-of-mrpt-apps/application-rawlog-edit/): New flag: `--txt-externals`
 	- Changes in libraries:
 		- \ref mrpt_base_grp
 			- New API to interface ZeroMQ: \ref noncstream_serialization_zmq
+			- Deprecated function (since 1.3.0) deleted: mrpt::system::registerFatalExceptionHandlers()
+			- New method mrpt::poses::CPosePDFParticles::resetAroundSetOfPoses()
 		- \ref mrpt_maps_grp
 			- mrpt::maps::COccupancyGridMap2D::loadFromBitmapFile() correct description of `yCentralPixel` parameter.
 			- mrpt::maps::CPointsMap `liblas` import/export methods are now in a separate header. See \ref mrpt_maps_liblas_grp and \ref dep-liblas
@@ -30,19 +33,26 @@
 			- [ABI change] mrpt::obs::CObservation3DRangeScan:
 				- Now uses more SSE2 optimized code
 				- Depth filters are now available for mrpt::obs::CObservation3DRangeScan::project3DPointsFromDepthImageInto() and  mrpt::obs::CObservation3DRangeScan::convertTo2DScan()
+				- New switch mrpt::obs::CObservation3DRangeScan::EXTERNALS_AS_TEXT for runtime selection of externals format.
+			- mrpt::obs::CObservation2DRangeScan now has an optional field for intensity.
 		- \ref mrpt_hwdrivers_grp
 			- mrpt::hwdrivers::CGenericSensor: external image format is now `png` by default instead of `jpg` to avoid losses.
 			- [ABI change] mrpt::hwdrivers::COpenNI2Generic:
 				- refactored to expose more methods and allow changing parameters via its constructor.
 				- Now supports reading from an IR, RGB and Depth channels independenty.
+			-  mrpt::hwdrivers::CHokuyoURG now can optionally return intensity values.
 		- \ref mrpt_maps_grp
 			- mrpt::maps::CMultiMetricMapPDF added method CMultiMetricMapPDF::prediction_and_update_pfAuxiliaryPFStandard().
+		- \ref mrpt_nav_grp
+			- Deprecated method of PTGs lambdaFunction() removed.
 	- Changes in build system:
 		- [Windows only] `DLL`s/`LIB`s now have the signature `lib-${name}${2-digits-version}${compiler-name}_{x32|x64}.{dll/lib}`, allowing several MRPT versions to coexist in the system PATH.
 		- [Visual Studio only] There are no longer `pragma comment(lib...)` in any MRPT header, so it is the user responsibility to correctly tell user projects to link against MRPT libraries.
 		  Normally, this is done with the standard command `TARGET_LINK_LIBRARIES(MYTARGET ${MRPT_LIBS})`.
 		- Debian package: depends on libopenni-dev
 		- Optional dependency `liblas`: minimum required version is now 1.6.0 (Ubuntu Trusty or above).
+		- Update of embedded copy of nanoflann to version 1.2.0.
+		- New script for automated dumping stack traces on unit tests failures (`tests/run_all_tests_gdb.sh`)
 	- BUG FIXES:
 		- Fix inconsistent state after calling mrpt::obs::CObservation3DRangeScan::swap()
 		- Fix SEGFAULT in mrpt::obs::CObservation3DRangeScan if trying to build a pointcloud in an external container (mrpt::opengl, mrpt::maps)

@@ -319,7 +319,7 @@ void mrpt::slam::data_association_full_covariance(
 	KDTreeMatrixPtr  kd_tree;
 	const size_t N_KD_RESULTS = nPredictions;
 	std::vector<double>	kd_result_distances(DAT_ASOC_USE_KDTREE ? N_KD_RESULTS : 0);
-	std::vector<size_t>	kd_result_indices(DAT_ASOC_USE_KDTREE ? N_KD_RESULTS : 0);
+	std::vector<CMatrixDouble::Index> kd_result_indices(DAT_ASOC_USE_KDTREE ? N_KD_RESULTS : 0);
 	std::vector<double>	kd_queryPoint(DAT_ASOC_USE_KDTREE ? length_O : 0);
 
 	if (DAT_ASOC_USE_KDTREE)
