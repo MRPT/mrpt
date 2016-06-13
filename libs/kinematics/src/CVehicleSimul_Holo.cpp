@@ -15,6 +15,12 @@
 
 using namespace mrpt::kinematics;
 
+CVehicleSimul_Holo::CVehicleSimul_Holo()
+{
+	resetStatus();
+	resetTime();
+}
+
 void CVehicleSimul_Holo::internal_simulStep(const double dt)
 {
 	// Update state (forward Euler integration):
@@ -28,8 +34,8 @@ void CVehicleSimul_Holo::internal_simulStep(const double dt)
 	{
 		const double t = m_time - m_vel_ramp_cmd.issue_time;
 		const double T = m_vel_ramp_cmd.ramp_time;
-		const double vxi = m_vel_ramp_cmd.init_vel.x;
-		const double vyi = m_vel_ramp_cmd.init_vel.y;
+		const double vxi = m_vel_ramp_cmd.init_vel.vx;
+		const double vyi = m_vel_ramp_cmd.init_vel.vy;
 		const double vxf = m_vel_ramp_cmd.target_vel_x;
 		const double vyf = m_vel_ramp_cmd.target_vel_y;
 
@@ -62,3 +68,15 @@ void CVehicleSimul_Holo::internal_clear()
 }
 
 
+void CVehicleSimul_Holo::sendVelRampCmd(double vel, double dir, double ramp_time, double rot_speed)
+{
+	ASSERT_ABOVE_(ramp_time,0);
+
+	m_vel_ramp_cmd.issue_time = m_time;
+	m_vel_ramp_cmd.ramp_time = ramp_time;
+	m_vel_ramp_cmd.rot_speed = rot_speed;
+	m_vel_ramp_cmd.init_vel = m_vel;
+	m_vel_ramp_cmd.target_vel_x = cos(dir) * vel;
+	m_vel_ramp_cmd.target_vel_y = sin(dir) * vel;
+	m_vel_ramp_cmd.dir = dir;
+}

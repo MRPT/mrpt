@@ -19,6 +19,8 @@ CVehicleSimul_DiffDriven::CVehicleSimul_DiffDriven() :
 	cTAU(.0),
 	cDELAY(.0)
 {
+	resetStatus();
+	resetTime();
 }
 CVehicleSimul_DiffDriven::~CVehicleSimul_DiffDriven()
 {

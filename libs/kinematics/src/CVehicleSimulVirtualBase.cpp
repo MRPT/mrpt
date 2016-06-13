@@ -16,8 +16,6 @@ using namespace mrpt::kinematics;
 CVehicleSimulVirtualBase::CVehicleSimulVirtualBase() :
 	m_firmware_control_period(500e-6)
 {
-	resetStatus();
-	resetTime();
 }
 
 CVehicleSimulVirtualBase::~CVehicleSimulVirtualBase()
