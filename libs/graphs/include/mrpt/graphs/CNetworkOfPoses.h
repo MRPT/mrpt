@@ -207,7 +207,11 @@ namespace mrpt
 				edges_store_inverse_poses = false;
 			}
 
+<<<<<<< HEAD
 			/** Return number of nodes in the list \nodes of global coordinates (may be differente that all nodes appearing in edges)
+=======
+			/** Return number of nodes in the list \a nodes of global coordinates (may be different that all nodes appearing in edges)
+>>>>>>> 68c2654... Correct minor documentation typos
 			  * \sa mrpt::graphs::CDirectedGraph::countDifferentNodesInEdges
 			  */
 			inline size_t nodeCount() const { return nodes.size(); }
