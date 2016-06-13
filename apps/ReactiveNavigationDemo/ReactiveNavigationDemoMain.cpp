@@ -63,11 +63,13 @@ wxBitmap MyArtProvider::CreateBitmap(const wxArtID& id,
 // General global variables:
 #include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
-#include <mrpt/utils/CRobotSimulator.h>
 #include <mrpt/utils/CFileGZInputStream.h>
 #include <mrpt/utils/CConfigFile.h>
 #include <mrpt/utils/CMemoryStream.h>
 #include <mrpt/system/filesystem.h>
+
+#include <mrpt/kinematics/CVehicleSimul_DiffDriven.h>
+#include <mrpt/kinematics/CVehicleSimul_Holo.h>
 
 using namespace mrpt;
 using namespace mrpt::obs;
@@ -78,49 +80,49 @@ using namespace mrpt::poses;
 using namespace mrpt::utils;
 using namespace std;
 
-//wxImage * auxMRPTImage2wxImage( const CImage &img );
-
 #include <mrpt/nav/reactive/CReactiveNavigationSystem.h>
-using namespace mrpt::nav;
 
-CReactiveNavigationSystem		*reacNavObj=NULL;
+mrpt::nav::CReactiveNavigationSystem		*reacNavObj=NULL;
+mrpt::kinematics::CVehicleSimulVirtualBase  *robotSim = NULL;
 
 // The obstacles map:
 COccupancyGridMap2D		gridMap;
-CRobotSimulator			robotSim(1e-9f,0);
 TPoint2D				curCursorPos;
 
-class CMyReactInterface : public CReactiveInterfaceImplementation
+class CMyReactInterface : public mrpt::nav::CReactiveInterfaceImplementation_DiffDriven
 {
 public:
-	bool getCurrentPoseAndSpeeds(mrpt::math::TPose2D &curPose, std::vector<double> &curVel)
+
+	// See docs in base class.
+	bool getCurrentPoseAndSpeeds(mrpt::math::TPose2D &curPose, mrpt::math::TTwist2D &curVel) MRPT_OVERRIDE
 	{
-		robotSim.getRealPose( curPose );
-		curVel.resize(2);
-		curVel[0] = robotSim.getV();
-		curVel[1] = robotSim.getW();
+		ASSERT_(robotSim);
+		curPose = robotSim->getCurrentGTPose( );
+		curVel  = robotSim->getCurrentGTVel();
 		return true;
 	}
 
-	bool changeSpeeds(const std::vector<double> &vel_cmd)
+	// (see docs in base class) vel_cmd will be:
+	// - [v w] for diff driven robots.
+	// - [vel dir ramp_time rot_speed] for holo
+	bool changeSpeeds(const std::vector<double> &vel_cmd) MRPT_OVERRIDE
 	{
-		ASSERT_(vel_cmd.size()==2);
-
-		robotSim.movementCommand(vel_cmd[0], vel_cmd[1]);
+		ASSERT_(robotSim);
+		robotSim->sendVelCmd(vel_cmd);
 		return true;
 	}
 
-	bool stop()
+	bool stop() MRPT_OVERRIDE
 	{
-		robotSim.movementCommand(0,0);
-		return true;
+		ASSERT_(robotSim);
+		std::vector<double> zero_vel_cmd(robotSim->getVelCmdLength(), .0);
+		return changeSpeeds(zero_vel_cmd);
 	}
 
-	bool senseObstacles( mrpt::maps::CSimplePointsMap 		&obstacles )
+	bool senseObstacles( mrpt::maps::CSimplePointsMap  &obstacles ) MRPT_OVERRIDE
 	{
-		CPose2D  robotPose;
-
-		robotSim.getRealPose(robotPose);
+		ASSERT_(robotSim);
+		const mrpt::math::TPose2D &robotPose = robotSim->getCurrentGTPose();
 
 		CObservation2DRangeScan    laserScan;
 		laserScan.aperture = M_2PIf;
@@ -149,17 +151,8 @@ public:
 		obstacles.getAllPoints(xs,ys,zs);
 
 		the_frame->lyLaserPoints->setPoints(xs,ys);
-		the_frame->lyLaserPoints->SetCoordinateBase(
-			robotSim.getX(),
-			robotSim.getY(),
-			robotSim.getPHI() );
-
+		the_frame->lyLaserPoints->SetCoordinateBase(robotPose.x,robotPose.y,robotPose.phi );
 		return true;
-	}
-
-	void notifyHeadingDirection(const double heading_dir_angle)
-	{
-
 	}
 
 	ReactiveNavigationDemoFrame *the_frame;
@@ -607,12 +600,19 @@ void ReactiveNavigationDemoFrame::tryConstructReactiveNavigator()
 		createConfigSources(this, iniReactive);
 		if (!iniReactive) return;
 
+		// Init simulator:
+		if (robotSim) { 
+			delete robotSim;
+			robotSim=NULL;
+		}
+		robotSim = new mrpt::kinematics::CVehicleSimul_DiffDriven();
+
 		if (!reacNavObj)
 		{
 			const bool ENABLE_reactivenav_LOG_FILES = cbLog->GetValue();
 
 			// Create reactive nav. object:
-			reacNavObj = new CReactiveNavigationSystem(
+			reacNavObj = new mrpt::nav::CReactiveNavigationSystem(
 				myReactiveInterface,
 				true,
 				ENABLE_reactivenav_LOG_FILES );
@@ -622,6 +622,7 @@ void ReactiveNavigationDemoFrame::tryConstructReactiveNavigator()
 
 		// Reload config:
 		reacNavObj->loadConfigFile(*iniReactive);
+		myReactiveInterface.loadConfigFile(*iniReactive,"ReactiveParams");
 
 		delete iniReactive;
 
@@ -667,7 +668,7 @@ void ReactiveNavigationDemoFrame::OnbtnNavigateClick(wxCommandEvent& event)
 	if (reacNavObj)
 	{
 		//CAbstractReactiveNavigationSystem::TNavigationParams   navParams;
-		CAbstractPTGBasedReactive::TNavigationParamsPTG   navParams;
+		mrpt::nav::CAbstractPTGBasedReactive::TNavigationParamsPTG   navParams;
 		navParams.target.x = x ;
 		navParams.target.y = y ;
 		navParams.targetAllowedDistance = 0.40f;
@@ -786,7 +787,7 @@ void ReactiveNavigationDemoFrame::OntimSimulateTrigger(wxTimerEvent& event)
 	reacNavObj->enableLogFile( cbLog->GetValue() );
 
 	// Navigation end?
-	if (reacNavObj->getCurrentState() != CAbstractReactiveNavigationSystem::NAVIGATING )
+	if (reacNavObj->getCurrentState() != mrpt::nav::CAbstractReactiveNavigationSystem::NAVIGATING )
 	{
 		reacNavObj->getTimeLogger().dumpAllStats();
 
@@ -805,31 +806,30 @@ void ReactiveNavigationDemoFrame::OntimSimulateTrigger(wxTimerEvent& event)
 
 	// Go on, simulate one time step:
 	// Robot sim:
-	robotSim.simulateInterval( 0.001 * SIMULATION_TIME_STEPS );
+	robotSim->simulateOneTimeStep( 0.001 * SIMULATION_TIME_STEPS );
 
 	reacNavObj->navigationStep();
 
 	// Update the target & robot pose & redraw:
+	const mrpt::math::TPose2D & curPose = robotSim->getCurrentGTPose(); 
+	lyVehicle->SetCoordinateBase(curPose.x,curPose.y,curPose.phi);
 
-	lyVehicle->SetCoordinateBase(
-		robotSim.getX(),
-		robotSim.getY(),
-		robotSim.getPHI() );
-
+	const mrpt::math::TTwist2D curVelGlob = robotSim->getCurrentGTVel();
+	const mrpt::math::TTwist2D curVelLoc = robotSim->getCurrentGTVelLocal();
 
 	plot->Refresh();
 
 	StatusBar1->SetStatusText(
-		_U(format("Pose=(%.03f,%.03f,%.02fdeg) (v,w)=(%.03f,%.02f)",
-		robotSim.getX(),
-		robotSim.getY(),
-		RAD2DEG(robotSim.getPHI()),
-		robotSim.getV(),
-		RAD2DEG(robotSim.getW()) ).c_str() ), 1 );
-
+		_U(format("Pose=(%.03f,%.03f,%.02fdeg) (vx,vy,v,w)=(%.03f,%.03f,%.03f,%.02f)",
+		curPose.x,
+		curPose.y,
+		RAD2DEG(curPose.phi),
+		curVelGlob.vx, curVelGlob.vy,
+		curVelLoc.vx,
+		RAD2DEG(curVelGlob.omega)).c_str() ), 1 );
 
 	// Set timer to continue simulation:
-    //timSimulate.Start(SIMULATION_TIME_STEPS, true); // One-shot
+	//timSimulate.Start(SIMULATION_TIME_STEPS, true); // One-shot
 
 	WX_END_TRY
 	IamIN=false;

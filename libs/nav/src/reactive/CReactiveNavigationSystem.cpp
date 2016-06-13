@@ -89,8 +89,6 @@ void CReactiveNavigationSystem::loadConfigFile(const mrpt::utils::CConfigFileBas
 	// backwards compt config file:
 	if (!colGridRes) colGridRes = ini.read_float(robotName,"RESOLUCION_REJILLA_X",0.02f );
 
-	MRPT_LOAD_CONFIG_VAR_NO_DEFAULT(robotMax_V_mps,float,  ini,robotName);
-	MRPT_LOAD_CONFIG_VAR_NO_DEFAULT(robotMax_W_degps,float,  ini,robotName);
 	MRPT_LOAD_CONFIG_VAR(SPEEDFILTER_TAU,float,  ini,robotName);
 
 	ini.read_vector( robotName, "weights", vector<float>(0), weights, true );
@@ -170,7 +168,6 @@ void CReactiveNavigationSystem::loadConfigFile(const mrpt::utils::CConfigFileBas
 	printf_debug("\n  GPT Count\t\t\t= %u\n", (int)PTG_COUNT );
 	printf_debug("  Max. ref. distance\t\t= %f\n", refDistance );
 	printf_debug("  Cells resolution \t= %.04f\n", colGridRes );
-	printf_debug("  Max. speed (v,w)\t\t= (%.04f m/sec, %.04f deg/sec)\n", robotMax_V_mps, robotMax_W_degps );
 	printf_debug("  Robot Shape Points Count \t= %u\n", m_robotShape.verticesCount() );
 	printf_debug("  Obstacles 'z' axis range \t= [%.03f,%.03f]\n", minObstaclesHeight, maxObstaclesHeight );
 	printf_debug("\n\n");

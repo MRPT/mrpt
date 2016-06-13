@@ -9,7 +9,7 @@
 #ifndef CAbstractReactiveNavigationSystem_H
 #define CAbstractReactiveNavigationSystem_H
 
-#include <mrpt/poses/CPose2D.h>
+#include <mrpt/nav/reactive/CReactiveInterfaceImplementation.h>
 #include <mrpt/utils/CDebugOutputCapable.h>
 #include <mrpt/obs/obs_frwds.h>
 
@@ -19,73 +19,6 @@ namespace mrpt
 {
   namespace nav
   {
-	/** The pure virtual interface between a real or simulated robot and any `CAbstractReactiveNavigationSystem`-derived class.
-	  *
-	  *  The user must define a new class derived from `CReactiveInterfaceImplementation` and reimplement
-	  *   all pure virtual and the desired virtual methods according to the documentation in this class.
-	  * 
-	  * [New in MRPT 1.5.0] This class does not make assumptions about the kinematic model of the robot, so it can work with either 
-	  *  Ackermann, differential-driven or holonomic robots. It will depend on the used PTGs, so checkout 
-	  *  each PTG documentation for the lenght and meaning of velocity commands.
-	  *
-	  * \sa CReactiveNavigationSystem, CAbstractReactiveNavigationSystem
-	  *  \ingroup nav_reactive
-	  */
-	class NAV_IMPEXP CReactiveInterfaceImplementation
-	{
-	public:
-		/** Get the current pose and speeds of the robot. The implementation should not take too much time to return,
-		*   so if it might take more than ~10ms to ask the robot for the instantaneous data, it may be good enough to
-		*   return the latest values from a cache which is updated in a parallel thread.
-		*
-		* \param[out] curPose The latest robot pose, in world coordinates. (x,y: meters, phi: radians)
-		* \param[out] curVel  The latest robot velocity vector, in world coordinates. (vx,vy: m/s, omega: rad/s)
-		* \return false on any error retrieving these values from the robot.
-		*/
-		virtual bool getCurrentPoseAndSpeeds(mrpt::math::TPose2D &curPose, mrpt::math::TTwist2D &curVel) = 0;
-
-		/** Sends a velocity command to the robot.
-		 * Length and meaning of this vector is PTG-dependent.
-		 * See children classes of mrpt::nav::CParameterizedTrajectoryGenerator
-		 * \return false on any error.
-		 */
-		virtual bool changeSpeeds(const std::vector<double> &vel_cmd) = 0;
-
-		/** Stop the robot right now.
-		 * \return false on any error.
-		 */
-		virtual bool stop() = 0;
-
-		/** Start the watchdog timer of the robot platform, if any.
-		 * \param T_ms Period, in ms.
-		 * \return false on any error.
-		 */
-		virtual bool startWatchdog(float T_ms) {
-			MRPT_UNUSED_PARAM(T_ms);
-			return true;
-		}
-
-		/** Stop the watchdog timer.
-		 * \return false on any error.
-		 */
-		virtual bool stopWatchdog() { return true; }
-
-		/** Return the current set of obstacle points, as seen from the local coordinate frame of the robot.
-		  * \return false on any error.
-		  */
-		virtual bool senseObstacles( mrpt::maps::CSimplePointsMap &obstacles ) = 0;
-
-		virtual void sendNavigationStartEvent () { std::cout << "[sendNavigationStartEvent] Not implemented by the user." << std::endl; }
-		virtual void sendNavigationEndEvent() {	std::cout << "[sendNavigationEndEvent] Not implemented by the user." << std::endl; }
-		virtual void sendNavigationEndDueToErrorEvent() { std::cout << "[sendNavigationEndDueToErrorEvent] Not implemented by the user." << std::endl; }
-		virtual void sendWaySeemsBlockedEvent() { std::cout << "[sendWaySeemsBlockedEvent] Not implemented by the user." << std::endl; }
-		virtual void notifyHeadingDirection(const double heading_dir_angle) {
-			MRPT_UNUSED_PARAM(heading_dir_angle);
-		}
-	};
-
-
-
 	/** This is the base class for any reactive navigation system. Here is defined
 	 *   the interface that users will use with derived classes where algorithms are really implemented.
 	 *

@@ -109,8 +109,6 @@ void CReactiveNavigationSystem3D::loadConfigFile(const mrpt::utils::CConfigFileB
 
 	//Read navigation params
 	refDistance = ini.read_float("NAVIGATION_CONFIG","MAX_DISTANCE_PTG", 1, true);
-	robotMax_V_mps = ini.read_float("NAVIGATION_CONFIG","VMAX_MPS", 1, true);
-	robotMax_W_degps = ini.read_float("NAVIGATION_CONFIG","WMAX_DEGPS", 60, true);
 	SPEEDFILTER_TAU =  ini.read_float("NAVIGATION_CONFIG","SPEEDFILTER_TAU", 0, true);
 
 	DIST_TO_TARGET_FOR_SENDING_EVENT = ini.read_float("NAVIGATION_CONFIG", "DIST_TO_TARGET_FOR_SENDING_EVENT", DIST_TO_TARGET_FOR_SENDING_EVENT, false);
@@ -178,7 +176,6 @@ void CReactiveNavigationSystem3D::loadConfigFile(const mrpt::utils::CConfigFileB
 	printf_debug("  PTG Count\t\t\t= %u\n", num_ptgs );
 	printf_debug("  Max. ref. distance\t\t= %f\n", refDistance );
 	printf_debug("  Cells resolution \t\t= %.04f\n", colGridRes );
-	printf_debug("  Max. speed (v,w)\t\t= (%.04f m/sec, %.04f deg/sec)\n", robotMax_V_mps, robotMax_W_degps );
 	printf_debug("  Robot Height Sections \t= %u\n", m_robotShape.heights.size() );
 	printf_debug("\n\n");
 

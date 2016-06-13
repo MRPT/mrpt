@@ -168,8 +168,6 @@ namespace mrpt
 		std::string robotName;       //!< Robot name
 		double refDistance;          //!< "D_{max}" in papers.
 		float  colGridRes;           //!< CollisionGrid resolution
-		float  robotMax_V_mps;       //!< Max. linear speed (m/s)
-		float  robotMax_W_degps;     //!< Max. angular speed (deg/s)
 		double SPEEDFILTER_TAU;     //!< Time constant (in seconds) for the low-pass filter applied to kinematic velocity commands (default=0: no filtering)
 		std::vector<float> weights;  //!< length: 6 [0,5]
 
