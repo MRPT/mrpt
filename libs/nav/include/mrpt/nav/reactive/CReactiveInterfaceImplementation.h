@@ -206,9 +206,8 @@ namespace mrpt
 		// See base class docs.
 		size_t getVelCmdLength() const MRPT_OVERRIDE { return 4;}
 
-		/** See docs of method in base class. The implementation for holonomic robots of this method 
-		  * just multiplies (vx,vy) times vel_scale.
-		  * `vel_cmd=[vel dir ramp_time rot_speed]`
+		/** See docs of method in base class. 
+		  * For holonomic robots, `vel_cmd=[vel dir ramp_time rot_speed]`
 		  */
 		void cmdVel_scale(std::vector<double> &vel_cmd, double vel_scale) MRPT_OVERRIDE
 		{
