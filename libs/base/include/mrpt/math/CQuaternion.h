@@ -134,7 +134,7 @@ namespace mrpt
 			if (out_ln.size()!=3) out_ln.resize(3);
 			this->ln_noresize(out_ln);
 		}
-		/** \overload that returns by value */
+		/** overload that returns by value */
 		template <class ARRAYLIKE3>
 		inline ARRAYLIKE3 ln() const
 		{

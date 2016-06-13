@@ -12,7 +12,7 @@
 using namespace std;
 
 namespace mrpt { namespace utils {
-	std::string MRPT_GLOBAL_UNITTEST_SRC_DIR = ".";
+	std::string MRPT_GLOBAL_UNITTEST_SRC_DIR = CMAKE_MRPT_GLOBAL_UNITTEST_SRC_DIR;
   }
 }
 

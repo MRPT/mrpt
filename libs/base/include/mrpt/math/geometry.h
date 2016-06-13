@@ -36,7 +36,7 @@ namespace mrpt
 		class BASE_IMPEXP TPolygonWithPlane	{
 		public:
 			TPolygon3D poly; //!< Actual polygon.
-			TPlane plane; //!< Plane containing the polygon. 
+			TPlane plane; //!< Plane containing the polygon.
 			mrpt::poses::CPose3D pose; //!< Plane's pose.  \sa inversePose
 			mrpt::poses::CPose3D inversePose; //!< Plane's inverse pose. \sa pose
 			TPolygon2D poly2D; //!< Polygon, after being projected to the plane using inversePose. \sa inversePose
@@ -282,8 +282,8 @@ namespace mrpt
 			project3D(segment.point1,newXYpose,newSegment.point1);
 			project3D(segment.point2,newXYpose,newSegment.point2);
 		}
-		
-		void BASE_IMPEXP project3D(const TLine3D &line,const mrpt::poses::CPose3D &newXYpose,TLine3D &newLine); //!< Uses the given pose 3D to project a line into a new base 
+
+		void BASE_IMPEXP project3D(const TLine3D &line,const mrpt::poses::CPose3D &newXYpose,TLine3D &newLine); //!< Uses the given pose 3D to project a line into a new base
 		void BASE_IMPEXP project3D(const TPlane &plane,const mrpt::poses::CPose3D &newXYpose,TPlane &newPlane); //!< Uses the given pose 3D to project a plane into a new base
 		void BASE_IMPEXP project3D(const TPolygon3D &polygon,const mrpt::poses::CPose3D &newXYpose,TPolygon3D &newPolygon); //!< Uses the given pose 3D to project a polygon into a new base
 		void BASE_IMPEXP project3D(const TObject3D &object,const mrpt::poses::CPose3D &newXYPose,TObject3D &newObject); //!< Uses the given pose 3D to project any 3D object into a new base.
@@ -319,8 +319,8 @@ namespace mrpt
 			project2D(segment.point2,newXpose,newSegment.point2);
 		}
 
-		
-		void BASE_IMPEXP project2D(const TLine2D &line,const mrpt::poses::CPose2D &newXpose,TLine2D &newLine); //!< Uses the given pose 2D to project a line into a new base 
+
+		void BASE_IMPEXP project2D(const TLine2D &line,const mrpt::poses::CPose2D &newXpose,TLine2D &newLine); //!< Uses the given pose 2D to project a line into a new base
 		void BASE_IMPEXP project2D(const TPolygon2D &polygon,const mrpt::poses::CPose2D &newXpose,TPolygon2D &newPolygon); //!< Uses the given pose 2D to project a polygon into a new base.
 		void BASE_IMPEXP project2D(const TObject2D &object,const mrpt::poses::CPose2D &newXpose,TObject2D &newObject); //!< Uses the given pose 2D to project any 2D object into a new base
 
@@ -644,7 +644,7 @@ namespace mrpt
 			v_out[2] =  v0[0]*v1[1] - v0[1]*v1[0];
 		}
 
-		//! \overload (returning a vector of size 3 by value).
+		//! overload (returning a vector of size 3 by value).
 		template<class VEC1,class VEC2>
 		inline Eigen::Matrix<double,3,1> crossProduct3D(const VEC1 &v0,const VEC2 &v1)	{
 			Eigen::Matrix<double,3,1> vOut;

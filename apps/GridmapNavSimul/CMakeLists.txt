@@ -21,7 +21,7 @@ IF(CMAKE_MRPT_HAS_WXWIDGETS AND CMAKE_MRPT_HAS_OPENGL_GLUT)
 		)
 	IF(WIN32)
 		SET(SRCS ${SRCS} resource.rc)
-	ENDIF(WIN32)
+	ENDIF()
 
 	# Define the executable target:
 	ADD_EXECUTABLE(GridmapNavSimul WIN32 ${SRCS}  ${MRPT_VERSION_RC_FILE})

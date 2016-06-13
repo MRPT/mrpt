@@ -84,7 +84,7 @@ CPanelCameraSelection::CPanelCameraSelection(wxWindow* parent,wxWindowID id)
 	wxStaticBoxSizer* StaticBoxSizer1;
 	wxFlexGridSizer* FlexGridSizer1;
 	wxFlexGridSizer* FlexGridSizer11;
-	
+
 	Create(parent, id, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("id"));
 	FlexGridSizer1 = new wxFlexGridSizer(0, 1, 0, 0);
 	FlexGridSizer1->AddGrowableCol(0);
@@ -133,7 +133,7 @@ CPanelCameraSelection::CPanelCameraSelection(wxWindow* parent,wxWindowID id)
 	FlexGridSizer16 = new wxFlexGridSizer(0, 1, 0, 0);
 	FlexGridSizer16->AddGrowableCol(0);
 	FlexGridSizer16->AddGrowableRow(0);
-	edCustomCamConfig = new wxTextCtrl(Panel4, ID_TEXTCTRL6, _("// Configuration block for the CCameraSensor object.\n// Check out its documentation at:\n// http://reference.mrpt.org/svn/classmrpt_1_1hwdrivers_1_1_c_camera_sensor.html\n\n[CONFIG]\ngrabber_type = opencv \ncv_camera_index = 0\ncv_camera_type = CAMERA_CV_AUTODETECT\n\n"), wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE|wxHSCROLL|wxTE_DONTWRAP|wxVSCROLL|wxALWAYS_SHOW_SB, wxDefaultValidator, _T("ID_TEXTCTRL6"));
+	edCustomCamConfig = new wxTextCtrl(Panel4, ID_TEXTCTRL6, _("// Configuration block for the CCameraSensor object.\n// Check out its documentation at:\n// http://reference.mrpt.org/devel/classmrpt_1_1hwdrivers_1_1_c_camera_sensor.html\n\n[CONFIG]\ngrabber_type = opencv \ncv_camera_index = 0\ncv_camera_type = CAMERA_CV_AUTODETECT\n\n"), wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE|wxHSCROLL|wxTE_DONTWRAP|wxVSCROLL|wxALWAYS_SHOW_SB, wxDefaultValidator, _T("ID_TEXTCTRL6"));
 	wxFont edCustomCamConfigFont = wxSystemSettings::GetFont(wxSYS_OEM_FIXED_FONT);
 	if ( !edCustomCamConfigFont.Ok() ) edCustomCamConfigFont = wxSystemSettings::GetFont(wxSYS_DEFAULT_GUI_FONT);
 	edCustomCamConfigFont.SetPointSize(7);
@@ -180,7 +180,7 @@ CPanelCameraSelection::CPanelCameraSelection(wxWindow* parent,wxWindowID id)
 	FlexGridSizer13->SetSizeHints(Panel6);
 	Panel1 = new wxPanel(pagesCameras, ID_PANEL7, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL7"));
 	FlexGridSizer18 = new wxFlexGridSizer(2, 2, 0, 0);
-	wxString __wxRadioBoxChoices_1[2] = 
+	wxString __wxRadioBoxChoices_1[2] =
 	{
 		_("Left"),
 		_("Right")
@@ -199,7 +199,7 @@ CPanelCameraSelection::CPanelCameraSelection(wxWindow* parent,wxWindowID id)
 	FlexGridSizer18->SetSizeHints(Panel1);
 	pnSwissRanger = new wxPanel(pagesCameras, ID_PANEL1, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL1"));
 	FlexGridSizer2 = new wxFlexGridSizer(2, 3, 0, 0);
-	wxString __wxRadioBoxChoices_2[2] = 
+	wxString __wxRadioBoxChoices_2[2] =
 	{
 		_("USB"),
 		_("Ethernet")
@@ -246,7 +246,7 @@ CPanelCameraSelection::CPanelCameraSelection(wxWindow* parent,wxWindowID id)
 	FlexGridSizer5->Add(cbKinect_Depth, 1, wxALL|wxALIGN_LEFT|wxALIGN_BOTTOM, 5);
 	StaticBoxSizer2->Add(FlexGridSizer5, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_BOTTOM, 0);
 	FlexGridSizer4->Add(StaticBoxSizer2, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_BOTTOM, 5);
-	wxString __wxRadioBoxChoices_3[2] = 
+	wxString __wxRadioBoxChoices_3[2] =
 	{
 		_("RGB camera"),
 		_("IR camera")
@@ -272,7 +272,7 @@ CPanelCameraSelection::CPanelCameraSelection(wxWindow* parent,wxWindowID id)
 	SetSizer(FlexGridSizer1);
 	FlexGridSizer1->Fit(this);
 	FlexGridSizer1->SetSizeHints(this);
-	
+
 	Connect(ID_BUTTON7,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&CPanelCameraSelection::OnbtnBrowseVideoClick);
 	Connect(ID_BUTTON8,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&CPanelCameraSelection::OnbtnBrowseRawlogClick);
 	Connect(ID_BUTTON9,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&CPanelCameraSelection::OnbtnBrowseRawlogDirClick);
@@ -284,4 +284,3 @@ CPanelCameraSelection::~CPanelCameraSelection()
 	//(*Destroy(CPanelCameraSelection)
 	//*)
 }
-

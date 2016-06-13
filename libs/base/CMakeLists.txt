@@ -21,7 +21,7 @@ LIST(APPEND base_EXTRA_SRCS_NAME  "utils/simpleini")
 IF(NOT CMAKE_MRPT_HAS_CLANG_SYSTEM)
 	LIST(APPEND base_EXTRA_SRCS       "${MRPT_LIBS_ROOT}/base/src/utils/simpleini/*.c")
 	LIST(APPEND base_EXTRA_SRCS_NAME  "utils/simpleini")
-ENDIF(NOT CMAKE_MRPT_HAS_CLANG_SYSTEM)
+ENDIF()
 
 LIST(APPEND base_EXTRA_SRCS			"${MRPT_LIBS_ROOT}/base/src/utils/xmlparser/*.cpp" "${MRPT_LIBS_ROOT}/base/src/utils/xmlparser/*.h")
 LIST(APPEND base_EXTRA_SRCS_NAME 	"utils/xmlparser" "utils/xmlparser")
@@ -31,7 +31,7 @@ IF(NOT CMAKE_MRPT_HAS_SUITESPARSE)
 	LIST(APPEND base_EXTRA_SRCS		"${MRPT_LIBS_ROOT}/base/src/math/CSparse/*.c" "${MRPT_LIBS_ROOT}/base/include/mrpt/otherlibs/CSparse/*.h")
 	LIST(APPEND base_EXTRA_SRCS_NAME 	"math/CSparse" "math/CSparse")
 	INCLUDE_DIRECTORIES("${MRPT_LIBS_ROOT}/base/include/mrpt/otherlibs/CSparse/")
-ENDIF(NOT CMAKE_MRPT_HAS_SUITESPARSE)
+ENDIF()
 
 # Eigen library
 LIST(APPEND base_EXTRA_SRCS		"${MRPT_LIBS_ROOT}/base/include/Eigen/*")
@@ -45,7 +45,7 @@ LIST(APPEND base_EXTRA_SRCS_NAME 	"math/kmeans" "math/kmeans")
 IF (CMAKE_MRPT_HAS_JPEG AND NOT CMAKE_MRPT_HAS_JPEG_SYSTEM)
 	LIST(APPEND base_EXTRA_SRCS			"${MRPT_LIBS_ROOT}/base/src/utils/jpeglib/*.cpp" "${MRPT_LIBS_ROOT}/base/src/utils/jpeglib/*.h")
 	LIST(APPEND base_EXTRA_SRCS_NAME 	"utils/jpeglib" "utils/jpeglib")
-ENDIF (CMAKE_MRPT_HAS_JPEG AND NOT CMAKE_MRPT_HAS_JPEG_SYSTEM)
+ENDIF ()
 
 # Embedded version of zlib, if really needed:
 # Only include zlib if not available as system library OR it's already in wxWidgets:
@@ -61,7 +61,7 @@ ENDIF()
 
 IF(CMAKE_MRPT_HAS_OPENCV)
 	INCLUDE_DIRECTORIES(${OpenCV_INCLUDE_DIR} ${OpenCV_INCLUDE_DIRS} ${OPENCV_INCLUDE_DIRS} ${OPENCV_INCLUDEDIR})
-ENDIF(CMAKE_MRPT_HAS_OPENCV)
+ENDIF()
 
 # Documentation files:
 LIST(APPEND base_EXTRA_SRCS			"${CMAKE_SOURCE_DIR}/doc/doxygen-pages/*.h")
@@ -75,7 +75,7 @@ define_mrpt_lib(
 				# Dependencies: None
 	)
 
-IF(BUILD_mrpt-base) 
+IF(BUILD_mrpt-base)
 	# Ignore precompiled headers in some sources:
 	IF(MRPT_ENABLE_PRECOMPILED_HDRS)
 		IF (MSVC)
@@ -83,26 +83,26 @@ IF(BUILD_mrpt-base)
 				${math/CSparse_FILES}
 				${math/kmeans_FILES}
 				${utils/xmlparser_FILES}
-				${utils/simpleini_FILES}	
+				${utils/simpleini_FILES}
 				${utils/jpeglib_FILES}
 				${compress/zlib_FILES}
 				PROPERTIES COMPILE_FLAGS "/Y-"
 				)
 
-		ENDIF (MSVC)
-	ENDIF(MRPT_ENABLE_PRECOMPILED_HDRS)
+		ENDIF ()
+	ENDIF()
 
 	IF(CMAKE_MRPT_HAS_OPENCV)
 		target_link_libraries(mrpt-base ${OpenCV_LIBRARIES})
-	ENDIF(CMAKE_MRPT_HAS_OPENCV)
+	ENDIF()
 
 	if (NOT "${SuiteSparse_LIBRARIES}" STREQUAL "")
 		target_link_libraries(mrpt-base ${SuiteSparse_LIBRARIES})
-	endif (NOT "${SuiteSparse_LIBRARIES}" STREQUAL "")
+	endif ()
 
 	IF(CMAKE_MRPT_HAS_WXWIDGETS)
 		target_link_libraries(mrpt-base ${wxWidgets_LIBRARIES})
-	ENDIF(CMAKE_MRPT_HAS_WXWIDGETS)
+	ENDIF()
 
 	IF(CMAKE_MRPT_HAS_ZLIB)
 		IF(NOT CMAKE_MRPT_HAS_ZLIB_SYSTEM_IS_WX AND CMAKE_MRPT_HAS_ZLIB_SYSTEM)
@@ -114,5 +114,4 @@ IF(BUILD_mrpt-base)
             target_link_libraries(mrpt-base ${JPEG_LIBS})
         ENDIF()
 
-ENDIF(BUILD_mrpt-base) 
-
+ENDIF()

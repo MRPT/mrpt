@@ -133,7 +133,11 @@ int main ( int argc, char** argv )
 			// Convert to scan:
 			obs_2d = CObservation2DRangeScan::Create();
 
-			newObs->convertTo2DScan(*obs_2d, "KINECT_2D_SCAN", .5f*vert_FOV, .5f*vert_FOV );
+			T3DPointsTo2DScanParams p2s;
+			p2s.angle_sup = .5f*vert_FOV;
+			p2s.angle_inf = .5f*vert_FOV;
+			p2s.sensorLabel = "KINECT_2D_SCAN";
+			newObs->convertTo2DScan(*obs_2d, p2s);
 		}
 
 

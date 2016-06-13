@@ -130,10 +130,10 @@ namespace mrpt
 			  */
 			void trackFeatures(const mrpt::utils::CImage &old_img,const mrpt::utils::CImage &new_img,TSimpleFeatureList &inout_featureList );
 
-			/** \overload with subpixel precision */
+			/** overload with subpixel precision */
 			void trackFeatures(const mrpt::utils::CImage &old_img,const mrpt::utils::CImage &new_img,TSimpleFeaturefList &inout_featureList );
 
-			/** \overload This overload version uses the old (and much slower) CFeatureList  */
+			/** overload This overload version uses the old (and much slower) CFeatureList  */
 			void trackFeatures(const mrpt::utils::CImage &old_img,const mrpt::utils::CImage &new_img,CFeatureList &inout_featureList );
 
 			/** A wrapper around the basic trackFeatures() method, but keeping the original list of features unmodified and returns the tracked ones in a new list. */

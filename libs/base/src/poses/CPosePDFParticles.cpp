@@ -300,6 +300,40 @@ void  CPosePDFParticles::resetUniform(
 	MRPT_END
 }
 
+void  CPosePDFParticles::resetAroundSetOfPoses(
+	const std::vector<mrpt::math::TPose2D> & list_poses,
+	const size_t num_particles_per_pose,
+	const double spread_x,
+	const double spread_y,
+	const double spread_phi_rad)
+{
+	MRPT_START
+	ASSERT_(!list_poses.empty());
+	ASSERT_(num_particles_per_pose>=1);
+
+	const size_t N = list_poses.size() * num_particles_per_pose;
+
+	clear();
+	m_particles.resize(N);
+	size_t i,nSpot;
+	for (i=0,nSpot=0;nSpot<list_poses.size();nSpot++)
+	{
+		const mrpt::math::TPose2D & p = list_poses[nSpot];
+		for (size_t k=0;k<num_particles_per_pose;k++,i++)
+		{
+			m_particles[i].d = new CPose2D();
+			m_particles[i].d->x( randomGenerator.drawUniform( p.x - spread_x*0.5, p.x + spread_x*0.5 ) );
+			m_particles[i].d->y( randomGenerator.drawUniform( p.y - spread_y*0.5, p.y + spread_y*0.5 ) );
+			m_particles[i].d->phi( randomGenerator.drawUniform( p.phi - spread_phi_rad*0.5, p.phi + spread_phi_rad*0.5 ) );
+			m_particles[i].log_w=0;
+		}
+	}
+
+	ASSERT_EQUAL_(i,N);
+
+	MRPT_END
+}
+
 /*---------------------------------------------------------------
 						saveToTextFile
    Save PDF's m_particles to a text file. In each line it

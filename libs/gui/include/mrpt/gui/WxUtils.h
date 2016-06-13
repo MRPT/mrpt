@@ -66,6 +66,10 @@ namespace mrpt
 {
 	namespace gui
 	{
+		/** \addtogroup mrpt_gui_wxutils Utilities for MRPT-wxWidgets interfacing (in #include <mrpt/gui/WxUtils.h>)
+		  * \ingroup mrpt_gui_grp
+
+			* @{ */
 #if MRPT_HAS_WXWIDGETS
 
 
@@ -292,7 +296,7 @@ namespace mrpt
 		}
 
 #endif
-
+		/** @} */
     } // End of namespace
 } // End of namespace
 
