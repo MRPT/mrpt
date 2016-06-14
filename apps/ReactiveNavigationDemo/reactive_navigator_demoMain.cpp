@@ -375,6 +375,7 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(wxWindow* parent,wxWi
 	this->updateMap3DView();
 
 	// Robot viz is built in OnrbKinTypeSelect()
+	gl_robot_local = mrpt::opengl::CSetOfObjects::Create();
 	gl_robot = mrpt::opengl::CSetOfObjects::Create();
 	m_plot3D->m_openGLScene->insert(gl_robot);
 
@@ -463,6 +464,7 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(wxWindow* parent,wxWi
 	m_plotScan->m_openGLScene->insert(gl_rel_target);
 
 	m_plotScan->m_openGLScene->insert( mrpt::opengl::stock_objects::CornerXYSimple(0.1,2) );
+	m_plotScan->m_openGLScene->insert( gl_robot_local );
 
 	gl_nd_gaps = mrpt::opengl::CSetOfLines::Create();
 	gl_nd_gaps->setLineWidth(2);
@@ -1008,23 +1010,43 @@ void reactive_navigator_demoframe::OnbtnQuitClick(wxCommandEvent& event)
 	Close();
 }
 
+void create_viz_robot_holo( mrpt::opengl::CSetOfObjects &objs )
+{
+	objs.clear();
+	{
+		mrpt::opengl::CSetOfObjectsPtr gl_xyz = mrpt::opengl::stock_objects::CornerXYZSimple(1.0f, 2.0f);
+		gl_xyz->setLocation(0.0,0.0, 1.25);
+		objs.insert( gl_xyz );
+	}
+
+	mrpt::opengl::CCylinderPtr obj = mrpt::opengl::CCylinder::Create(0.6 /*base radius*/,0.3 /*top radius */,1.2 /*height*/);
+	obj->setColor_u8( TColor::red );
+	objs.insert( obj );
+}
+void create_viz_robot_diff( mrpt::opengl::CSetOfObjects &objs )
+{
+	objs.clear();
+	objs.insert( mrpt::opengl::stock_objects::RobotPioneer() );
+}
+
 void reactive_navigator_demoframe::OnrbKinTypeSelect(wxCommandEvent& event)
 {
 	// Delete old & build new simulator:
 	m_robotSimul2NavInterface.reset();
 	m_robotSimul.reset();
+
 	if (gl_robot_path) gl_robot_path->clear();
 
 	switch ( rbKinType->GetSelection() )
 	{
-	case 0: 
+	case 0:
 		{
 			mrpt::kinematics::CVehicleSimul_DiffDriven *sim = new mrpt::kinematics::CVehicleSimul_DiffDriven();
 			m_robotSimul.reset(sim);
 			m_robotSimul2NavInterface.reset( new MyRobot2NavInterface_Diff( *sim ) );
 			// Opengl viz:
-			gl_robot->clear();
-			gl_robot->insert( mrpt::opengl::stock_objects::RobotPioneer() );
+			create_viz_robot_diff(*gl_robot);
+			create_viz_robot_diff(*gl_robot_local);
 		}
 		break;
 	case 1: 
@@ -1033,18 +1055,8 @@ void reactive_navigator_demoframe::OnrbKinTypeSelect(wxCommandEvent& event)
 			m_robotSimul.reset(sim);
 			m_robotSimul2NavInterface.reset( new MyRobot2NavInterface_Holo( *sim ) );
 			// Opengl viz:
-			gl_robot->clear();
-			{
-				{
-					mrpt::opengl::CSetOfObjectsPtr gl_xyz = mrpt::opengl::stock_objects::CornerXYZSimple(1.0f, 2.0f);
-					gl_xyz->setLocation(0.0,0.0, 1.25);
-					gl_robot->insert( gl_xyz );
-				}
-
-				mrpt::opengl::CCylinderPtr obj = mrpt::opengl::CCylinder::Create(0.6 /*base radius*/,0.3 /*top radius */,1.2 /*height*/);
-				obj->setColor_u8( TColor::red );
-				gl_robot->insert( obj );
-			}
+			create_viz_robot_holo(*gl_robot);
+			create_viz_robot_holo(*gl_robot_local);
 		}
 		break;
 	default:
