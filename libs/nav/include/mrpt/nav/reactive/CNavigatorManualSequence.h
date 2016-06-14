@@ -26,8 +26,8 @@ namespace nav
 
 		/** @name Initialization API
 		  * @{ */
-		virtual void loadConfigFile(const mrpt::utils::CConfigFileBase &ini); //!< Reload the configuration from a cfg source
-		virtual void initialize(); //!< Must be called for loading collision grids, etc. before invoking any navigation command
+		void loadConfigFile(const mrpt::utils::CConfigFileBase &ini, const std::string &section_prefix="") MRPT_OVERRIDE; //!< Reload the configuration from a cfg source
+		void initialize() MRPT_OVERRIDE; //!< Must be called for loading collision grids, etc. before invoking any navigation command
 		/** @} */
 
 		/** Overriden in this class to ignore the cancel/pause/... commands */

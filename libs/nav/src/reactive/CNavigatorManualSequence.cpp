@@ -25,15 +25,17 @@ CNavigatorManualSequence::~CNavigatorManualSequence()
 {
 }
 
-void CNavigatorManualSequence::loadConfigFile(const mrpt::utils::CConfigFileBase &cfg)
+void CNavigatorManualSequence::loadConfigFile(const mrpt::utils::CConfigFileBase &cfg, const std::string &section_prefix)
 {
+	const std::string sSect = section_prefix+std::string("CMDS");
+
 	programmed_orders.clear();
 	mrpt::vector_string lstKeys;
-	cfg.getAllKeys("CMDS", lstKeys);
+	cfg.getAllKeys(sSect, lstKeys);
 
 	for (size_t i=0;i<lstKeys.size();i++)
 	{
-		std::string s = cfg.read_string("CMDS",lstKeys[i],"",true);
+		std::string s = cfg.read_string(sSect,lstKeys[i],"",true);
 		std::vector<std::string> toks;
 		mrpt::system::tokenize(s," \t\r\n",toks);
 		ASSERTMSG_(toks.size()>2,std::string("Wrong format while parsing CNavigatorManualSequence cfg file in entry: ")+lstKeys[i]);

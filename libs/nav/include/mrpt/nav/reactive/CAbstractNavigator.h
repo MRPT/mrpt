@@ -51,7 +51,7 @@ namespace mrpt
 
 		/** \name Navigation control API
 		  * @{ */
-		virtual void loadConfigFile(const mrpt::utils::CConfigFileBase &cfg) = 0; //!< Loads the configuration from a file. To be called before initialize()
+		virtual void loadConfigFile(const mrpt::utils::CConfigFileBase &cfg, const std::string &section_prefix="") = 0; //!< Loads the configuration from a file. To be called before initialize()
 		virtual void initialize() = 0; //!<  Must be called before any other navigation command
 
 		virtual void navigationStep(); //!< This method must be called periodically in order to effectively run the navigation
