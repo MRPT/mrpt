@@ -94,11 +94,16 @@ const long reactive_navigator_demoframe::ID_TEXTCTRL3 = wxNewId();
 const long reactive_navigator_demoframe::ID_PANEL3 = wxNewId();
 const long reactive_navigator_demoframe::ID_NOTEBOOK1 = wxNewId();
 const long reactive_navigator_demoframe::ID_PANEL1 = wxNewId();
+const long reactive_navigator_demoframe::ID_STATICTEXT3 = wxNewId();
+const long reactive_navigator_demoframe::ID_TEXTCTRL5 = wxNewId();
+const long reactive_navigator_demoframe::ID_PANEL7 = wxNewId();
 const long reactive_navigator_demoframe::ID_STATICTEXT2 = wxNewId();
 const long reactive_navigator_demoframe::ID_STATICTEXT1 = wxNewId();
 const long reactive_navigator_demoframe::ID_XY_GLCANVAS = wxNewId();
 const long reactive_navigator_demoframe::ID_CUSTOM1 = wxNewId();
 const long reactive_navigator_demoframe::ID_TEXTCTRL2 = wxNewId();
+const long reactive_navigator_demoframe::ID_PANEL8 = wxNewId();
+const long reactive_navigator_demoframe::ID_SPLITTERWINDOW2 = wxNewId();
 const long reactive_navigator_demoframe::ID_PANEL5 = wxNewId();
 const long reactive_navigator_demoframe::ID_SPLITTERWINDOW1 = wxNewId();
 const long reactive_navigator_demoframe::ID_MENUITEM4 = wxNewId();
@@ -118,7 +123,7 @@ END_EVENT_TABLE()
 
 reactive_navigator_demoframe::reactive_navigator_demoframe(wxWindow* parent,wxWindowID id) :
 	m_gridMap(),
-	m_targetPoint(-5,-7),
+	m_targetPoint(.0,.0),
 	m_is_running(false),
 	m_curCursorPos(0,0),
 	m_cursorPickState(cpsNone)
@@ -134,6 +139,7 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(wxWindow* parent,wxWi
     //(*Initialize(reactive_navigator_demoframe)
     wxFlexGridSizer* FlexGridSizer4;
     wxMenuItem* MenuItem2;
+    wxFlexGridSizer* FlexGridSizer10;
     wxFlexGridSizer* FlexGridSizer3;
     wxMenuItem* MenuItem1;
     wxFlexGridSizer* FlexGridSizer5;
@@ -147,6 +153,7 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(wxWindow* parent,wxWi
     wxBoxSizer* BoxSizer1;
     wxMenuBar* MenuBar1;
     wxFlexGridSizer* FlexGridSizer6;
+    wxBoxSizer* BoxSizer3;
     wxMenu* Menu2;
     
     Create(parent, id, _("Reactive Navigation Tester - Part of MRPT"), wxDefaultPosition, wxDefaultSize, wxDEFAULT_FRAME_STYLE, _T("id"));
@@ -240,7 +247,7 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(wxWindow* parent,wxWi
     FlexGridSizer8 = new wxFlexGridSizer(1, 1, 0, 0);
     FlexGridSizer8->AddGrowableCol(0);
     FlexGridSizer8->AddGrowableRow(0);
-    edParamsReactive = new wxTextCtrl(pnParamsReactive, ID_TEXTCTRL4, wxEmptyString, wxDefaultPosition, wxSize(226,111), wxTE_PROCESS_ENTER|wxTE_PROCESS_TAB|wxTE_MULTILINE|wxHSCROLL|wxVSCROLL|wxALWAYS_SHOW_SB, wxDefaultValidator, _T("ID_TEXTCTRL4"));
+    edParamsReactive = new wxTextCtrl(pnParamsReactive, ID_TEXTCTRL4, _("# ------------------------------------------------------------------------\n# Example configuration file for MRPT Reactive Navigation engine.\n# See C++ documentation: http://reference.mrpt.org/svn/classmrpt_1_1nav_1_1_c_reactive_navigation_system.html\n# See ROS node documentation: http://wiki.ros.org/mrpt_reactivenav2d\n# ------------------------------------------------------------------------\n\n[GLOBAL_CONFIG]\n# 0 or `hmVIRTUAL_FORCE_FIELDS`: Virtual Force Field\n# 1 or `hmSEARCH_FOR_BEST_GAP`: Nearness Diagram (ND)\nHOLONOMIC_METHOD = hmSEARCH_FOR_BEST_GAP\nALARM_SEEMS_NOT_APPROACHING_TARGET_TIMEOUT=100 # (seconds)\n\nrobotMax_V_mps = 1.0\t\t# Speed limits\nrobotMax_W_degps = 60\n\n\n#\tParameters for the \"VFF\" Holonomic method\n# ----------------------------------------------------\n[VFF_CONFIG]\nTARGET_SLOW_APPROACHING_DISTANCE = 1.000000e-001 // For stopping gradually\nTARGET_ATTRACTIVE_FORCE = 2.000000e+001 // Dimension-less (may have to be tuned depending on the density of obstacle sampling)\n\n#\tParameters for the \"Nearness diagram\" Holonomic method\n# ----------------------------------------------------\n[ND_CONFIG]\nWIDE_GAP_SIZE_PERCENT = 2.500000e-001 \nMAX_SECTOR_DIST_FOR_D2_PERCENT = 2.500000e-001 \nRISK_EVALUATION_SECTORS_PERCENT = 1.000000e-001 \nRISK_EVALUATION_DISTANCE = 4.000000e-001 // In normalized ps-meters [0,1]\nTOO_CLOSE_OBSTACLE = 1.500000e-001 // For stopping gradually\nTARGET_SLOW_APPROACHING_DISTANCE = 6.000000e-001 // In normalized ps-meters\nfactorWeights = 1.00 0.50 2.00 0.40 // [0]=Free space, [1]=Dist. in sectors, [2]=Closer to target (Euclidean), [3]=Hysteresis\n\n# ----------------------------------------------------\n#\tParameters for navigation: DIFFERENTIAL DRIVEN Robot\n# ----------------------------------------------------\n[DIFF_ReactiveParams]\nweights=0.5 0.05 0.5 2.0 0.2 0.1\n# 1: Free space\n# 2: Dist. in sectors\t\t\t\n# 3: Heading toward target\n# 4: Closer to target (euclidean)\n# 5: Hysteresis\n# 6: Security Distance\n\nDIST_TO_TARGET_FOR_SENDING_EVENT=0.6\t# Minimum. distance to target for sending the end event. Set to 0 to send it just on navigation end\n\nMinObstaclesHeight=0.0 \t\t# Minimum coordinate in the \"z\" axis for an obstacle to be taken into account.\nMaxObstaclesHeight=1.40 \t# Maximum coordinate in the \"z\" axis for an obstacle to be taken into account.\n\nMAX_REFERENCE_DISTANCE = 8.0 # Maximum distance to build PTGs (in meters), i.e. the visibility \"range\" of tentative paths\nLUT_CELL_SIZE = 0.05 # Look-up-table cell size, or resolution (in meters)\n\n# The constant time of a first-order low-pass filter of outgoing speed commands, \n# i.e. can be used to impose a maximum acceleration.\nSPEEDFILTER_TAU = 0 \n\n# PTGs: See classes derived from mrpt::nav::CParameterizedTrajectoryGenerator ( http://reference.mrpt.org/svn/classmrpt_1_1nav_1_1_c_parameterized_trajectory_generator.html)# refer to papers for details.\n#------------------------------------------------------------------------------\nPTG_COUNT = 3\n\nPTG0_Type = CPTG_DiffDrive_C\nPTG0_nAlfas = 121\nPTG0_v_max_mps = 1.0\nPTG0_w_max_gps = 60\nPTG0_K = 1.0\n\nPTG1_Type = CPTG_DiffDrive_alpha\nPTG1_nAlfas = 121\nPTG1_v_max_mps = 1.0\nPTG1_w_max_gps = 60\nPTG1_cte_a0v_deg = 57\nPTG1_cte_a0w_deg = 57\n\nPTG2_Type = 1\nPTG2_nAlfas = 121\nPTG2_v_max_mps = 1.0\nPTG2_w_max_gps = 60\nPTG2_K = -1.0\n\n\n# Default 2D robot shape for collision checks: (ignored in ROS, superseded by node parameters)\nRobotModel_shape2D_xs=-0.2 0.5 0.5 -0.2\nRobotModel_shape2D_ys=0.3 0.3 -0.3 -0.3\n\n\n# ----------------------------------------------------\n#\tParameters for navigation: DIFFERENTIAL DRIVEN Robot\n# ----------------------------------------------------\n[HOLO_ReactiveParams]\nweights=0.5 0.05 0.5 2.0 0.2 0.1\n# 1: Free space\n# 2: Dist. in sectors\t\t\t\n# 3: Heading toward target\n# 4: Closer to target (euclidean)\n# 5: Hysteresis\n# 6: Security Distance\n\nDIST_TO_TARGET_FOR_SENDING_EVENT=0.6\t# Minimum. distance to target for sending the end event. Set to 0 to send it just on navigation end\n\nMinObstaclesHeight=0.0 \t\t# Minimum coordinate in the \"z\" axis for an obstacle to be taken into account.\nMaxObstaclesHeight=1.40 \t# Maximum coordinate in the \"z\" axis for an obstacle to be taken into account.\n\nMAX_REFERENCE_DISTANCE = 8.0 # Maximum distance to build PTGs (in meters), i.e. the visibility \"range\" of tentative paths\nLUT_CELL_SIZE = 0.05 # Look-up-table cell size, or resolution (in meters)\n\n# The constant time of a first-order low-pass filter of outgoing speed commands, \n# i.e. can be used to impose a maximum acceleration.\nSPEEDFILTER_TAU = 0 \n\n# PTGs: See classes derived from mrpt::nav::CParameterizedTrajectoryGenerator ( http://reference.mrpt.org/svn/classmrpt_1_1nav_1_1_c_parameterized_trajectory_generator.html)# refer to papers for details.\n#------------------------------------------------------------------------------\nPTG_COUNT = 1\n\nPTG0_Type = 1\nPTG0_nAlfas = 121\nPTG0_v_max_mps = 1.0\nPTG0_w_max_gps = 60\nPTG0_K = 1.0\n\n\n# Default 2D robot shape for collision checks: (ignored in ROS, superseded by node parameters)\nRobotModel_shape2D_xs=-0.2 0.5 0.5 -0.2\nRobotModel_shape2D_ys=0.3 0.3 -0.3 -0.3\n\nROBOTMODEL_DELAY=0 # (un-used param, must be present for compat. with old mrpt versions)\nROBOTMODEL_TAU=0 # (un-used param, must be present for compat. with old mrpt versions)\n\n"), wxDefaultPosition, wxSize(226,111), wxTE_PROCESS_ENTER|wxTE_PROCESS_TAB|wxTE_MULTILINE|wxHSCROLL|wxVSCROLL|wxALWAYS_SHOW_SB, wxDefaultValidator, _T("ID_TEXTCTRL4"));
     edParamsReactive->SetMinSize(wxSize(-1,100));
     wxFont edParamsReactiveFont(8,wxTELETYPE,wxFONTSTYLE_NORMAL,wxNORMAL,false,wxEmptyString,wxFONTENCODING_DEFAULT);
     edParamsReactive->SetFont(edParamsReactiveFont);
@@ -267,31 +274,56 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(wxWindow* parent,wxWi
     Panel1->SetSizer(FlexGridSizer2);
     FlexGridSizer2->SetSizeHints(Panel1);
     Panel5 = new wxPanel(SplitterWindow1, ID_PANEL5, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL5"));
+    BoxSizer3 = new wxBoxSizer(wxHORIZONTAL);
+    SplitterWindow2 = new wxSplitterWindow(Panel5, ID_SPLITTERWINDOW2, wxDefaultPosition, wxDefaultSize, wxSP_3D, _T("ID_SPLITTERWINDOW2"));
+    SplitterWindow2->SetMinSize(wxSize(10,10));
+    SplitterWindow2->SetMinimumPaneSize(10);
+    Panel2 = new wxPanel(SplitterWindow2, ID_PANEL7, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL7"));
+    FlexGridSizer10 = new wxFlexGridSizer(1, 2, 0, 0);
+    FlexGridSizer10->AddGrowableCol(1);
+    FlexGridSizer10->AddGrowableRow(0);
+    StaticText3 = new wxStaticText(Panel2, ID_STATICTEXT3, _("Log:"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT3"));
+    FlexGridSizer10->Add(StaticText3, 1, wxALL|wxALIGN_TOP|wxALIGN_CENTER_HORIZONTAL, 5);
+    edLog = new wxTextCtrl(Panel2, ID_TEXTCTRL5, wxEmptyString, wxDefaultPosition, wxSize(612,85), wxTE_AUTO_SCROLL|wxTE_MULTILINE|wxTE_READONLY|wxTE_DONTWRAP|wxALWAYS_SHOW_SB, wxDefaultValidator, _T("ID_TEXTCTRL5"));
+    edLog->SetMinSize(wxSize(-1,70));
+    edLog->SetBackgroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_BTNFACE));
+    wxFont edLogFont(8,wxTELETYPE,wxFONTSTYLE_NORMAL,wxNORMAL,false,wxEmptyString,wxFONTENCODING_DEFAULT);
+    edLog->SetFont(edLogFont);
+    FlexGridSizer10->Add(edLog, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+    Panel2->SetSizer(FlexGridSizer10);
+    FlexGridSizer10->Fit(Panel2);
+    FlexGridSizer10->SetSizeHints(Panel2);
+    Panel3 = new wxPanel(SplitterWindow2, ID_PANEL8, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL8"));
     FlexGridSizer3 = new wxFlexGridSizer(2, 2, 0, 0);
     FlexGridSizer3->AddGrowableCol(0);
     FlexGridSizer3->AddGrowableCol(1);
     FlexGridSizer3->AddGrowableRow(1);
-    StaticText2 = new wxStaticText(Panel5, ID_STATICTEXT2, _("[3D view of the simulated world]"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT2"));
+    StaticText2 = new wxStaticText(Panel3, ID_STATICTEXT2, _("[3D view of the simulated world]"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT2"));
     FlexGridSizer3->Add(StaticText2, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-    StaticText1 = new wxStaticText(Panel5, ID_STATICTEXT1, _("[Local view]"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT1"));
+    StaticText1 = new wxStaticText(Panel3, ID_STATICTEXT1, _("[Local view]"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT1"));
     FlexGridSizer3->Add(StaticText1, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-    m_plot3D = new CMyGLCanvas(Panel5,ID_XY_GLCANVAS,wxDefaultPosition,wxSize(450,350),wxTAB_TRAVERSAL,_T("ID_XY_GLCANVAS"));
+    m_plot3D = new CMyGLCanvas(Panel3,ID_XY_GLCANVAS,wxDefaultPosition,wxSize(450,350),wxTAB_TRAVERSAL,_T("ID_XY_GLCANVAS"));
     FlexGridSizer3->Add(m_plot3D, 1, wxALL|wxEXPAND|wxFIXED_MINSIZE|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 1);
     FlexGridSizer5 = new wxFlexGridSizer(2, 1, 0, 0);
     FlexGridSizer5->AddGrowableCol(0);
     FlexGridSizer5->AddGrowableRow(0);
-    m_plotScan = new CMyGLCanvas(Panel5,ID_CUSTOM1,wxDefaultPosition,wxSize(150,150),wxTAB_TRAVERSAL,_T("ID_CUSTOM1"));
+    m_plotScan = new CMyGLCanvas(Panel3,ID_CUSTOM1,wxDefaultPosition,wxSize(150,150),wxTAB_TRAVERSAL,_T("ID_CUSTOM1"));
     FlexGridSizer5->Add(m_plotScan, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 1);
-    edInfoLocalView = new wxTextCtrl(Panel5, ID_TEXTCTRL2, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE|wxTE_READONLY|wxTE_DONTWRAP|wxALWAYS_SHOW_SB, wxDefaultValidator, _T("ID_TEXTCTRL2"));
+    edInfoLocalView = new wxTextCtrl(Panel3, ID_TEXTCTRL2, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE|wxTE_READONLY|wxTE_DONTWRAP|wxALWAYS_SHOW_SB, wxDefaultValidator, _T("ID_TEXTCTRL2"));
     edInfoLocalView->SetMinSize(wxSize(-1,50));
     edInfoLocalView->SetBackgroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_BTNFACE));
     wxFont edInfoLocalViewFont(8,wxTELETYPE,wxFONTSTYLE_NORMAL,wxNORMAL,false,wxEmptyString,wxFONTENCODING_DEFAULT);
     edInfoLocalView->SetFont(edInfoLocalViewFont);
     FlexGridSizer5->Add(edInfoLocalView, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 2);
     FlexGridSizer3->Add(FlexGridSizer5, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
-    Panel5->SetSizer(FlexGridSizer3);
-    FlexGridSizer3->Fit(Panel5);
-    FlexGridSizer3->SetSizeHints(Panel5);
+    Panel3->SetSizer(FlexGridSizer3);
+    FlexGridSizer3->Fit(Panel3);
+    FlexGridSizer3->SetSizeHints(Panel3);
+    SplitterWindow2->SplitHorizontally(Panel2, Panel3);
+    BoxSizer3->Add(SplitterWindow2, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+    Panel5->SetSizer(BoxSizer3);
+    BoxSizer3->Fit(Panel5);
+    BoxSizer3->SetSizeHints(Panel5);
     SplitterWindow1->SplitHorizontally(Panel1, Panel5);
     GridSizer1->Add(SplitterWindow1, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
     SetSizer(GridSizer1);
@@ -345,6 +377,7 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(wxWindow* parent,wxWi
     //*)
 
 	SplitterWindow1->SetSashPosition(200);
+	SplitterWindow2->SetSashPosition(60);
 
 	m_plot3D->Connect(wxEVT_MOTION,(wxObjectEventFunction)&reactive_navigator_demoframe::Onplot3DMouseMove,0,this);
 	m_plot3D->Connect(wxEVT_LEFT_DOWN,(wxObjectEventFunction)&reactive_navigator_demoframe::Onplot3DMouseClick,0,this);
@@ -354,6 +387,8 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(wxWindow* parent,wxWi
 
 	btnStart->Enable(true);
 	btnStop->Enable(false);
+
+	// Redirect all output to control:
 
 	WX_START_TRY
 
@@ -498,19 +533,7 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(wxWindow* parent,wxWi
 		edParamsGeneral->SetValue( _U( cfg.getContent().c_str() ) );
 	}
 
-	{
-		mrpt::utils::CConfigFileMemory cfg;
-		mrpt::nav::CHolonomicVFF holo_VFF;
-		holo_VFF.options.saveToConfigFile(cfg,"VFF_CONFIG");
-
-		mrpt::nav::CHolonomicND holo_ND;
-		holo_ND.options.saveToConfigFile(cfg,"ND_CONFIG");
-
-		this->edParamsReactive->SetValue( _U( cfg.getContent().c_str() ) );
-	}
-
 	WX_END_TRY
-
 
 	this->Maximize();
 }
@@ -522,6 +545,9 @@ reactive_navigator_demoframe::~reactive_navigator_demoframe()
 
 	// Destroy this first to avoid problems, since it may contain a ref of the simulator object:
 	m_navMethod.reset();
+
+	delete m_myRedirector;
+	m_myRedirector=NULL;
 }
 
 void reactive_navigator_demoframe::OnQuit(wxCommandEvent& event)
@@ -601,8 +627,13 @@ void reactive_navigator_demoframe::OntimRunSimulTrigger(wxTimerEvent& event)
 {
 	try
 	{
-		if (m_is_running)
-		{
+		static int decim_call_dump_log = 0;
+		if (decim_call_dump_log++>10) {
+			decim_call_dump_log = 0;
+			if (m_myRedirector) m_myRedirector->dumpNow();
+		}
+
+		if (m_is_running) {
 			simulateOneStep( NAV_SIMUL_TIMESTEP );
 		}
 		updateViewsDynamicObjects();
@@ -621,6 +652,14 @@ void reactive_navigator_demoframe::OntimRunSimulTrigger(wxTimerEvent& event)
 bool reactive_navigator_demoframe::reinitSimulator()
 {
 	WX_START_TRY
+
+	if (m_robotSimul2NavInterface)
+	{
+		// Params for simulator-to-nav interface:
+		CConfigFileMemory cfg;
+		cfg.setContent( std::string(edParamsReactive->GetValue().mb_str() ) );
+		m_robotSimul2NavInterface->loadConfigFile(cfg, "GLOBAL_CONFIG");
+	}
 
 	// Delete old & build new navigator:
 	m_navMethod.reset();
@@ -865,6 +904,19 @@ void reactive_navigator_demoframe::Onplot3DMouseClick(wxMouseEvent& event)
 			btnPlaceTarget->SetValue(false);
 			btnPlaceTarget->Refresh();
 			m_gl_placing_nav_target->setVisibility(false);
+
+			// Issue a new navigation cmd:
+			CAbstractPTGBasedReactive::TNavigationParamsPTG   navParams;
+			navParams.target.x = m_targetPoint.x ;
+			navParams.target.y = m_targetPoint.y ;
+			navParams.targetAllowedDistance = 0.40f;
+			navParams.targetIsRelative = false;
+
+			// Optional: restrict the PTGs to use
+			//navParams.restrict_PTG_indices.push_back(1);
+
+			m_navMethod->navigate( &navParams );
+
 			break;
 		}
 	case cpsPlaceRobot:
