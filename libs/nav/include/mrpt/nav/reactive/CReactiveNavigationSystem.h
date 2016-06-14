@@ -38,7 +38,7 @@ namespace mrpt
 		* Next we provide a self-documented template config file: 
 		* \verbinclude reactive2d_config.ini
 		*
-		*  \sa CAbstractReactiveNavigationSystem, CParameterizedTrajectoryGenerator, CAbstractHolonomicReactiveMethod
+		*  \sa CAbstractNavigator, CParameterizedTrajectoryGenerator, CAbstractHolonomicReactiveMethod
 		*  \ingroup nav_reactive
 		*/
 		class NAV_IMPEXP  CReactiveNavigationSystem : public CAbstractPTGBasedReactive
@@ -48,7 +48,7 @@ namespace mrpt
 		public:
 			/** See docs in ctor of base class */
 			CReactiveNavigationSystem(
-				CReactiveInterfaceImplementation &react_iterf_impl,
+				CRobot2NavInterface &react_iterf_impl,
 				bool enableConsoleOutput = true,
 				bool enableLogFile = false);
 
@@ -63,7 +63,7 @@ namespace mrpt
 			void loadConfigFile(const mrpt::utils::CConfigFileBase &ini, const mrpt::utils::CConfigFileBase &robotIni);
 
 			/** Reload the configuration from a file. See details in CReactiveNavigationSystem docs. */
-			void loadConfigFile(const mrpt::utils::CConfigFileBase &ini);
+			void loadConfigFile(const mrpt::utils::CConfigFileBase &ini) MRPT_OVERRIDE;
 
 			/** Change the robot shape, which is taken into account for collision
 			  *  grid building.

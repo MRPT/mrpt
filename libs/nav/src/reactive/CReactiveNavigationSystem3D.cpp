@@ -39,7 +39,7 @@ CReactiveNavigationSystem3D::TPTGmultilevel::~TPTGmultilevel()
 					Constructor
   ---------------------------------------------------------------*/
 CReactiveNavigationSystem3D::CReactiveNavigationSystem3D(
-	CReactiveInterfaceImplementation   &react_iterf_impl,
+	CRobot2NavInterface   &react_iterf_impl,
     bool					enableConsoleOutput,
     bool					enableLogToFile)
 	:

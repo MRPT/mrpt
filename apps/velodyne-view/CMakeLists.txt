@@ -22,3 +22,5 @@ TARGET_LINK_LIBRARIES(${TMP_TARGET_NAME} ${MRPT_LINKER_LIBS})
 DeclareAppDependencies(${TMP_TARGET_NAME} mrpt-hwdrivers mrpt-gui mrpt-maps)
 
 DeclareAppForInstall(${TMP_TARGET_NAME})
+
+AppStartMenuLink(${TMP_TARGET_NAME} "Velodyne viewer (VLP-16 mode)")   # Add link to the Start menu (in Windows Installable packages)

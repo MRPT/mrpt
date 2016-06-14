@@ -6,10 +6,9 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
-#ifndef CAbstractReactiveNavigationSystem_H
-#define CAbstractReactiveNavigationSystem_H
+#pragma once
 
-#include <mrpt/nav/reactive/CReactiveInterfaceImplementation.h>
+#include <mrpt/nav/reactive/CRobot2NavInterface.h>
 #include <mrpt/utils/CDebugOutputCapable.h>
 #include <mrpt/obs/obs_frwds.h>
 
@@ -19,24 +18,16 @@ namespace mrpt
 {
   namespace nav
   {
-	/** This is the base class for any reactive navigation system. Here is defined
-	 *   the interface that users will use with derived classes where algorithms are really implemented.
+	/** This is the base class for any reactive/planned navigation system. See derived classes.
 	 *
-	 * Changes history:
-	 *		- 30/JUN/2004: Creation (JLBC)
-     *		- 16/SEP/2004: Totally redesigned.
-	 *		- 15/SEP/2005: Totally rewritten again, for integration into MRPT Applications Repository.
-	 *		-  3/NOV/2009: All functors are finally replaced by the new virtual class CReactiveInterfaceImplementation
-	 *		- 16/DEC/2013: Refactoring of code in 2D & 2.5D navigators.
+	 * How to use:
+	 *  - A class derived from `CRobot2NavInterface` with callbacks must be defined by the user and provided to the constructor.
+	 *  - `navigationStep()` must be called periodically in order to effectively run the navigation. This method will internally call the callbacks to gather sensor data and robot positioning data.
 	 *
-	 *   How to use:
-	 *      - A class with callbacks must be defined by the user and provided to the constructor.
-	 *      - navigationStep() must be called periodically in order to effectively run the navigation. This method will internally call the callbacks to gather sensor data and robot positioning data.
-	 *
-	 * \sa CReactiveNavigationSystem, CReactiveInterfaceImplementation
+	 * \sa CReactiveNavigationSystem, CRobot2NavInterface, all children classes
 	 *  \ingroup nav_reactive
 	 */
-	class NAV_IMPEXP CAbstractReactiveNavigationSystem : public mrpt::utils::CDebugOutputCapable
+	class NAV_IMPEXP CAbstractNavigator : public mrpt::utils::CDebugOutputCapable
 	{
 	public:
 		/** The struct for configuring navigation requests. Used in CAbstractPTGBasedReactive::navigate() */
@@ -53,17 +44,21 @@ namespace mrpt
 		};
 		
 		/** Constructor */
-		CAbstractReactiveNavigationSystem( CReactiveInterfaceImplementation &react_iterf_impl );
+		CAbstractNavigator( CRobot2NavInterface &robot_interface_impl );
 
 		/** Destructor */
-		virtual ~CAbstractReactiveNavigationSystem();
+		virtual ~CAbstractNavigator();
 
 		/** \name Navigation control API
 		  * @{ */
-		void navigationStep(); //!< This method must be called periodically in order to effectively run the navigation
+		virtual void loadConfigFile(const mrpt::utils::CConfigFileBase &cfg) = 0; //!< Loads the configuration from a file. To be called before initialize()
+		virtual void initialize() = 0; //!<  Must be called before any other navigation command
+
+		virtual void navigationStep(); //!< This method must be called periodically in order to effectively run the navigation
 		
 		/** Navigation request. It starts a new navigation.
 		  * \param[in] params Pointer to structure with navigation info (its contents will be copied, so the original can be freely destroyed upon return.)
+		  * \note A pointer is used so the passed object can be polymorphic with derived types.
 		  */
 		virtual void  navigate( const TNavigationParams *params )=0;
 
@@ -94,14 +89,11 @@ namespace mrpt
 		TState             m_navigationState;  //!< Current internal state of navigator:
 		TNavigationParams  *m_navigationParams;  //!< Current navigation parameters
 
-		CReactiveInterfaceImplementation   &m_robot; //!< The navigator-robot interface.
+		CRobot2NavInterface   &m_robot; //!< The navigator-robot interface.
 
 	public:
 		MRPT_MAKE_ALIGNED_OPERATOR_NEW
 	};
   }
 }
-
-
-#endif
 

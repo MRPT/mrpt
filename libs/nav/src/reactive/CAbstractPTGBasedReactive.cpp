@@ -38,8 +38,8 @@ std::string CAbstractPTGBasedReactive::TNavigationParamsPTG::getAsText() const
 }
 
 // Ctor:
-CAbstractPTGBasedReactive::CAbstractPTGBasedReactive(CReactiveInterfaceImplementation &react_iterf_impl, bool enableConsoleOutput, bool enableLogFile):
-	CAbstractReactiveNavigationSystem(react_iterf_impl),
+CAbstractPTGBasedReactive::CAbstractPTGBasedReactive(CRobot2NavInterface &react_iterf_impl, bool enableConsoleOutput, bool enableLogFile):
+	CAbstractNavigator(react_iterf_impl),
 	m_holonomicMethod            (),
 	m_logFile                    (NULL),
 	m_enableKeepLogRecords       (false),
@@ -157,7 +157,7 @@ void CAbstractPTGBasedReactive::getLastLogRecord( CLogFileRecord &o )
 	o = lastLogRecord;
 }
 
-void CAbstractPTGBasedReactive::navigate(const CAbstractReactiveNavigationSystem::TNavigationParams *params )
+void CAbstractPTGBasedReactive::navigate(const CAbstractNavigator::TNavigationParams *params )
 {
 	navigationEndEventSent = false;
 

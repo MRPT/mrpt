@@ -11,7 +11,10 @@
 
 #include <mrpt/nav/reactive/CReactiveNavigationSystem.h>
 #include <mrpt/nav/reactive/CReactiveNavigationSystem3D.h>
-#include <mrpt/nav/reactive/CAbstractReactiveNavigationSystem.h>
+#include <mrpt/nav/reactive/CNavigatorManualSequence.h>
+#include <mrpt/nav/reactive/CAbstractNavigator.h>
+#include <mrpt/nav/reactive/CRobot2NavInterfaceForSimulator.h>
+
 #include <mrpt/nav/tpspace/CPTG_DiffDrive_C.h>
 #include <mrpt/nav/tpspace/CPTG_DiffDrive_alpha.h>
 #include <mrpt/nav/tpspace/CPTG_DiffDrive_CCS.h>
