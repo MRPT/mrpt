@@ -170,7 +170,7 @@ namespace mrpt
 		} // end detail
 
 		/** Creates a new thread from a function (or static method) with one generic parameter.
-		  *  This function creates, and start, a new thread running some code given by a function.
+		  *  This function creates, and starts a new thread running some code given by a function.
 		  *  The thread function should end by returning as normal.
 		  * \param func The function with the code to run in the thread.
 		  * \param param The parameter to be passed to the new thread function.
@@ -191,7 +191,7 @@ namespace mrpt
 		}
 
 		/** Creates a new thread running a non-static method (so it will have access to "this") from another method of the same class - with one generic parameter.
-		  *  This function creates, and start, a new thread running some code given by a function.
+		  *  This function creates, and starts a new thread running some code given by a function.
 		  *  The thread function should end by returning as normal.
 		  *  Example of usage:
 		  *
