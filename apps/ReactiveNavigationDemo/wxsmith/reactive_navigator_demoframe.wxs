@@ -3,6 +3,7 @@
 	<object class="wxFrame" name="reactive_navigator_demoframe">
 		<title>Reactive Navigation Tester - Part of MRPT</title>
 		<centered>1</centered>
+		<icon stock_id="MAIN_ICON" stock_client="wxART_OTHER" />
 		<size>893,576</size>
 		<object class="wxGridSizer" variable="GridSizer1" member="no">
 			<cols>1</cols>
