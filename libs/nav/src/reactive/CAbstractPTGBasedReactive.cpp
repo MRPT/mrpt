@@ -78,7 +78,9 @@ void CAbstractPTGBasedReactive::preDestructor()
 	m_critZoneNavigating.leave();
 
 	// Just in case.
-	m_robot.stop();
+	try {
+		m_robot.stop();
+	} catch (...) { }
 
 	mrpt::utils::delete_safe(m_logFile);
 

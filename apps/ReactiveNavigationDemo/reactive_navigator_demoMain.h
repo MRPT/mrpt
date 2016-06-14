@@ -161,7 +161,7 @@ class reactive_navigator_demoframe: public wxFrame
 
 		/* Methods: */
 		void updateMap3DView();
-		void reinitSimulator();  // Create navigator object & load params from GUI
+		bool reinitSimulator();  // Create navigator object & load params from GUI. Return false on error
 		void simulateOneStep(double time_step);
 		void updateViewsDynamicObjects(); // Update 3D object positions and refresh views.
 

@@ -151,6 +151,11 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(wxWindow* parent,wxWi
     
     Create(parent, id, _("Reactive Navigation Tester - Part of MRPT"), wxDefaultPosition, wxDefaultSize, wxDEFAULT_FRAME_STYLE, _T("id"));
     SetClientSize(wxSize(893,576));
+    {
+    	wxIcon FrameIcon;
+    	FrameIcon.CopyFromBitmap(wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("MAIN_ICON")),wxART_OTHER));
+    	SetIcon(FrameIcon);
+    }
     GridSizer1 = new wxGridSizer(1, 1, 0, 0);
     SplitterWindow1 = new wxSplitterWindow(this, ID_SPLITTERWINDOW1, wxDefaultPosition, wxDefaultSize, wxSP_3D, _T("ID_SPLITTERWINDOW1"));
     SplitterWindow1->SetMinSize(wxSize(10,10));
@@ -352,8 +357,6 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(wxWindow* parent,wxWi
 
 	WX_START_TRY
 
-	OnrbKinTypeSelect(wxCommandEvent()); // Init simulator
-
 	// Initialize gridmap:
 	// -------------------------------
 	CMemoryStream  s( DEFAULT_GRIDMAP_DATA, sizeof(DEFAULT_GRIDMAP_DATA) );
@@ -371,18 +374,8 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(wxWindow* parent,wxWi
 	m_plot3D->m_openGLScene->insert(gl_grid);
 	this->updateMap3DView();
 
+	// Robot viz is built in OnrbKinTypeSelect()
 	gl_robot = mrpt::opengl::CSetOfObjects::Create();
-	{
-		{
-			mrpt::opengl::CSetOfObjectsPtr gl_xyz = mrpt::opengl::stock_objects::CornerXYZSimple(1.0f, 2.0f);
-			gl_xyz->setLocation(0.0,0.0, 1.25);
-			gl_robot->insert( gl_xyz );
-		}
-
-		mrpt::opengl::CCylinderPtr obj = mrpt::opengl::CCylinder::Create(0.6 /*base radius*/,0.3 /*top radius */,1.2 /*height*/);
-		obj->setColor_u8( TColor::red );
-		gl_robot->insert( obj );
-	}
 	m_plot3D->m_openGLScene->insert(gl_robot);
 
 	gl_scan3D = mrpt::opengl::CPlanarLaserScan::Create();
@@ -442,6 +435,8 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(wxWindow* parent,wxWi
 	m_plot3D->cameraAzimuthDeg = -100;
 	m_plot3D->cameraIsProjective = true;
 
+	// Init simulator & its adaptor to the navigator
+	OnrbKinTypeSelect(wxCommandEvent()); 
 
 	// 2D view ==============
 	{
@@ -498,7 +493,11 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(wxWindow* parent,wxWi
 		mrpt::utils::CConfigFileMemory cfg;
 
 		m_simul_options.saveToConfigFile(cfg,"SIMULATOR");
+		edParamsGeneral->SetValue( _U( cfg.getContent().c_str() ) );
+	}
 
+	{
+		mrpt::utils::CConfigFileMemory cfg;
 		mrpt::nav::CHolonomicVFF holo_VFF;
 		holo_VFF.options.saveToConfigFile(cfg,"VFF_CONFIG");
 
@@ -518,6 +517,9 @@ reactive_navigator_demoframe::~reactive_navigator_demoframe()
 {
     //(*Destroy(reactive_navigator_demoframe)
     //*)
+
+	// Destroy this first to avoid problems, since it may contain a ref of the simulator object:
+	m_navMethod.reset();
 }
 
 void reactive_navigator_demoframe::OnQuit(wxCommandEvent& event)
@@ -574,7 +576,7 @@ void reactive_navigator_demoframe::OnbtnPlaceTargetClick(wxCommandEvent& event)
 
 void reactive_navigator_demoframe::OnbtnStartClick(wxCommandEvent& event)
 {
-	reinitSimulator();
+	if (!reinitSimulator()) return;
 
 	btnStart->Enable(false); btnStart->Refresh();
 	btnStop->Enable(true);   btnStop->Refresh();
@@ -602,6 +604,7 @@ void reactive_navigator_demoframe::OntimRunSimulTrigger(wxTimerEvent& event)
 			simulateOneStep( NAV_SIMUL_TIMESTEP );
 		}
 		updateViewsDynamicObjects();
+		timRunSimul.Start(10, true); // execute the simulation step by step ("one shot" timer) so in the event of an exception, we don't output an endless stream of errors.
 	}
 	catch (std::exception &e)
 	{
@@ -613,7 +616,7 @@ void reactive_navigator_demoframe::OntimRunSimulTrigger(wxTimerEvent& event)
 }
 
 // Create navigator object & load params from GUI:
-void reactive_navigator_demoframe::reinitSimulator()
+bool reactive_navigator_demoframe::reinitSimulator()
 {
 	WX_START_TRY
 
@@ -640,29 +643,31 @@ void reactive_navigator_demoframe::reinitSimulator()
 	ASSERT_(m_navMethod.get())
 
 	// Load params:
-	if (m_navMethod)
+	std::string sKinPrefix;
+	switch ( rbKinType->GetSelection() )
 	{
-		std::string sKinPrefix;
-		switch ( rbKinType->GetSelection() )
-		{
-		case 0: sKinPrefix="DIFF_"; break;
-		case 1: sKinPrefix="HOLO_"; break;
-		default:
-			throw std::runtime_error("Invalid kinematic model selected!");
-		};
+	case 0: sKinPrefix="DIFF_"; break;
+	case 1: sKinPrefix="HOLO_"; break;
+	default:
+		throw std::runtime_error("Invalid kinematic model selected!");
+	};
 
-		m_navMethod->loadConfigFile(cfg,sKinPrefix);
-		m_navMethod->initialize();
+	m_navMethod->loadConfigFile(cfg,sKinPrefix);
+	m_navMethod->initialize();
 
-		// params for simulator itself:
-		m_simul_options.loadFromConfigFile(cfg,"SIMULATOR");
+	// params for simulator itself:
+	{
+		CConfigFileMemory cfgGeneral;
+		cfgGeneral.setContent( std::string(edParamsGeneral->GetValue().mb_str() ) );
+		m_simul_options.loadFromConfigFile(cfgGeneral,"SIMULATOR");
 	}
 
 	// Update GUI stuff:
 	gl_robot_sensor_range->setDiskRadius(m_simul_options.MAX_SENSOR_RADIUS*1.01,m_simul_options.MAX_SENSOR_RADIUS*0.99);
-
+	return true;
 
 	WX_END_TRY
+	return false;
 }
 
 void reactive_navigator_demoframe::simulateOneStep(double time_step)
@@ -1008,6 +1013,7 @@ void reactive_navigator_demoframe::OnrbKinTypeSelect(wxCommandEvent& event)
 	// Delete old & build new simulator:
 	m_robotSimul2NavInterface.reset();
 	m_robotSimul.reset();
+	if (gl_robot_path) gl_robot_path->clear();
 
 	switch ( rbKinType->GetSelection() )
 	{
@@ -1016,6 +1022,9 @@ void reactive_navigator_demoframe::OnrbKinTypeSelect(wxCommandEvent& event)
 			mrpt::kinematics::CVehicleSimul_DiffDriven *sim = new mrpt::kinematics::CVehicleSimul_DiffDriven();
 			m_robotSimul.reset(sim);
 			m_robotSimul2NavInterface.reset( new MyRobot2NavInterface_Diff( *sim ) );
+			// Opengl viz:
+			gl_robot->clear();
+			gl_robot->insert( mrpt::opengl::stock_objects::RobotPioneer() );
 		}
 		break;
 	case 1: 
@@ -1023,6 +1032,19 @@ void reactive_navigator_demoframe::OnrbKinTypeSelect(wxCommandEvent& event)
 			mrpt::kinematics::CVehicleSimul_Holo *sim = new mrpt::kinematics::CVehicleSimul_Holo();
 			m_robotSimul.reset(sim);
 			m_robotSimul2NavInterface.reset( new MyRobot2NavInterface_Holo( *sim ) );
+			// Opengl viz:
+			gl_robot->clear();
+			{
+				{
+					mrpt::opengl::CSetOfObjectsPtr gl_xyz = mrpt::opengl::stock_objects::CornerXYZSimple(1.0f, 2.0f);
+					gl_xyz->setLocation(0.0,0.0, 1.25);
+					gl_robot->insert( gl_xyz );
+				}
+
+				mrpt::opengl::CCylinderPtr obj = mrpt::opengl::CCylinder::Create(0.6 /*base radius*/,0.3 /*top radius */,1.2 /*height*/);
+				obj->setColor_u8( TColor::red );
+				gl_robot->insert( obj );
+			}
 		}
 		break;
 	default:
