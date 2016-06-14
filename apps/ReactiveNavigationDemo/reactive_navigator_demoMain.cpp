@@ -85,12 +85,13 @@ const long reactive_navigator_demoframe::ID_BUTTON5 = wxNewId();
 const long reactive_navigator_demoframe::ID_RADIOBOX2 = wxNewId();
 const long reactive_navigator_demoframe::ID_RADIOBOX1 = wxNewId();
 const long reactive_navigator_demoframe::ID_CHECKBOX1 = wxNewId();
+const long reactive_navigator_demoframe::ID_PANEL6 = wxNewId();
 const long reactive_navigator_demoframe::ID_TEXTCTRL1 = wxNewId();
 const long reactive_navigator_demoframe::ID_PANEL2 = wxNewId();
-const long reactive_navigator_demoframe::ID_TEXTCTRL3 = wxNewId();
-const long reactive_navigator_demoframe::ID_PANEL3 = wxNewId();
 const long reactive_navigator_demoframe::ID_TEXTCTRL4 = wxNewId();
 const long reactive_navigator_demoframe::ID_PANEL4 = wxNewId();
+const long reactive_navigator_demoframe::ID_TEXTCTRL3 = wxNewId();
+const long reactive_navigator_demoframe::ID_PANEL3 = wxNewId();
 const long reactive_navigator_demoframe::ID_NOTEBOOK1 = wxNewId();
 const long reactive_navigator_demoframe::ID_PANEL1 = wxNewId();
 const long reactive_navigator_demoframe::ID_STATICTEXT2 = wxNewId();
@@ -119,9 +120,6 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(wxWindow* parent,wxWi
 	m_gridMap(),
 	m_targetPoint(-5,-7),
 	m_is_running(false),
-	m_robotSimul(),
-	m_robotSimul2NavInterface(m_robotSimul),
-	m_navMethod(),
 	m_curCursorPos(0,0),
 	m_cursorPickState(cpsNone)
 {
@@ -152,6 +150,7 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(wxWindow* parent,wxWi
     wxMenu* Menu2;
     
     Create(parent, id, _("Reactive Navigation Tester - Part of MRPT"), wxDefaultPosition, wxDefaultSize, wxDEFAULT_FRAME_STYLE, _T("id"));
+    SetClientSize(wxSize(893,576));
     GridSizer1 = new wxGridSizer(1, 1, 0, 0);
     SplitterWindow1 = new wxSplitterWindow(this, ID_SPLITTERWINDOW1, wxDefaultPosition, wxDefaultSize, wxSP_3D, _T("ID_SPLITTERWINDOW1"));
     SplitterWindow1->SetMinSize(wxSize(10,10));
@@ -195,7 +194,8 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(wxWindow* parent,wxWi
     btnStop->SetBitmapMargin(wxSize(2,4));
     BoxSizer2->Add(btnStop, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 2);
     FlexGridSizer4->Add(BoxSizer2, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
-    FlexGridSizer2->Add(FlexGridSizer4, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+    FlexGridSizer2->Add(FlexGridSizer4, 1, wxALL|wxALIGN_LEFT|wxALIGN_TOP, 0);
+    pnNavSelButtons = new wxPanel(Panel1, ID_PANEL6, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL6"));
     FlexGridSizer9 = new wxFlexGridSizer(0, 1, 0, 0);
     FlexGridSizer9->AddGrowableCol(0);
     wxString __wxRadioBoxChoices_1[2] = 
@@ -203,59 +203,61 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(wxWindow* parent,wxWi
     	_("Autonavigation (reactive)"),
     	_("Preprogrammed sequences")
     };
-    rbNavMode = new wxRadioBox(Panel1, ID_RADIOBOX2, _("Navigator"), wxDefaultPosition, wxSize(-1,99), 2, __wxRadioBoxChoices_1, 1, wxRA_SPECIFY_COLS, wxDefaultValidator, _T("ID_RADIOBOX2"));
+    rbNavMode = new wxRadioBox(pnNavSelButtons, ID_RADIOBOX2, _("Navigator"), wxDefaultPosition, wxDefaultSize, 2, __wxRadioBoxChoices_1, 1, wxRA_SPECIFY_COLS, wxDefaultValidator, _T("ID_RADIOBOX2"));
     FlexGridSizer9->Add(rbNavMode, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 2);
     wxString __wxRadioBoxChoices_2[2] = 
     {
     	_("Differential (Ackermann) drive"),
     	_("Holonomic")
     };
-    rbKinType = new wxRadioBox(Panel1, ID_RADIOBOX1, _("Robot kinematics type"), wxDefaultPosition, wxSize(-1,99), 2, __wxRadioBoxChoices_2, 1, wxRA_SPECIFY_COLS, wxDefaultValidator, _T("ID_RADIOBOX1"));
-    FlexGridSizer9->Add(rbKinType, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 2);
-    cbEnableLog = new wxCheckBox(Panel1, ID_CHECKBOX1, _("Log trajectory"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX1"));
+    rbKinType = new wxRadioBox(pnNavSelButtons, ID_RADIOBOX1, _("Robot kinematics type"), wxDefaultPosition, wxDefaultSize, 2, __wxRadioBoxChoices_2, 1, wxRA_SPECIFY_COLS, wxDefaultValidator, _T("ID_RADIOBOX1"));
+    FlexGridSizer9->Add(rbKinType, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 2);
+    cbEnableLog = new wxCheckBox(pnNavSelButtons, ID_CHECKBOX1, _("Log trajectory"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX1"));
     cbEnableLog->SetValue(false);
     FlexGridSizer9->Add(cbEnableLog, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-    FlexGridSizer2->Add(FlexGridSizer9, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+    pnNavSelButtons->SetSizer(FlexGridSizer9);
+    FlexGridSizer9->Fit(pnNavSelButtons);
+    FlexGridSizer9->SetSizeHints(pnNavSelButtons);
+    FlexGridSizer2->Add(pnNavSelButtons, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
     Notebook1 = new wxNotebook(Panel1, ID_NOTEBOOK1, wxDefaultPosition, wxDefaultSize, 0, _T("ID_NOTEBOOK1"));
-    Panel2 = new wxPanel(Notebook1, ID_PANEL2, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL2"));
+    pnParamsGeneral = new wxPanel(Notebook1, ID_PANEL2, wxDefaultPosition, wxSize(474,170), wxTAB_TRAVERSAL, _T("ID_PANEL2"));
     FlexGridSizer7 = new wxFlexGridSizer(1, 1, 0, 0);
     FlexGridSizer7->AddGrowableCol(0);
     FlexGridSizer7->AddGrowableRow(0);
-    edHoloParams = new wxTextCtrl(Panel2, ID_TEXTCTRL1, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_PROCESS_ENTER|wxTE_PROCESS_TAB|wxTE_MULTILINE|wxHSCROLL|wxVSCROLL|wxALWAYS_SHOW_SB, wxDefaultValidator, _T("ID_TEXTCTRL1"));
-    edHoloParams->SetMinSize(wxSize(-1,100));
-    wxFont edHoloParamsFont(8,wxTELETYPE,wxFONTSTYLE_NORMAL,wxNORMAL,false,wxEmptyString,wxFONTENCODING_DEFAULT);
-    edHoloParams->SetFont(edHoloParamsFont);
-    FlexGridSizer7->Add(edHoloParams, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 2);
-    Panel2->SetSizer(FlexGridSizer7);
-    FlexGridSizer7->Fit(Panel2);
-    FlexGridSizer7->SetSizeHints(Panel2);
-    Panel3 = new wxPanel(Notebook1, ID_PANEL3, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL3"));
-    FlexGridSizer6 = new wxFlexGridSizer(1, 1, 0, 0);
-    FlexGridSizer6->AddGrowableCol(0);
-    FlexGridSizer6->AddGrowableRow(0);
-    edManualKinRamps = new wxTextCtrl(Panel3, ID_TEXTCTRL3, _("# Params for mode \"Manual kin ramop cmds\" \n# Used for debug / testing.\n# Enter below a list of velocity ramps and they will be executed\n# sequentially. \n# Format: \n# cmd{%d} = {time_of_the_cmd_sec} {velocity_mps} {global_orientation_deg} {ramp_time_secs} {rot_speed_dps}\n[CMDS]\ncmd1= 1.0 0.5 30.0 1.0 30.0\ncmd2= 4.0 1.0 60.0 1.0 30.0\ncmd3= 6.0 0.0 0.0 1.0 0.0\n"), wxDefaultPosition, wxSize(230,167), wxTE_PROCESS_ENTER|wxTE_PROCESS_TAB|wxTE_MULTILINE|wxHSCROLL|wxVSCROLL|wxALWAYS_SHOW_SB, wxDefaultValidator, _T("ID_TEXTCTRL3"));
-    edManualKinRamps->SetMinSize(wxSize(-1,100));
-    wxFont edManualKinRampsFont(8,wxTELETYPE,wxFONTSTYLE_NORMAL,wxNORMAL,false,wxEmptyString,wxFONTENCODING_DEFAULT);
-    edManualKinRamps->SetFont(edManualKinRampsFont);
-    FlexGridSizer6->Add(edManualKinRamps, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
-    Panel3->SetSizer(FlexGridSizer6);
-    FlexGridSizer6->Fit(Panel3);
-    FlexGridSizer6->SetSizeHints(Panel3);
-    Panel4 = new wxPanel(Notebook1, ID_PANEL4, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL4"));
+    edParamsGeneral = new wxTextCtrl(pnParamsGeneral, ID_TEXTCTRL1, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_PROCESS_ENTER|wxTE_PROCESS_TAB|wxTE_MULTILINE|wxHSCROLL|wxVSCROLL|wxALWAYS_SHOW_SB, wxDefaultValidator, _T("ID_TEXTCTRL1"));
+    edParamsGeneral->SetMinSize(wxSize(-1,100));
+    wxFont edParamsGeneralFont(8,wxTELETYPE,wxFONTSTYLE_NORMAL,wxNORMAL,false,wxEmptyString,wxFONTENCODING_DEFAULT);
+    edParamsGeneral->SetFont(edParamsGeneralFont);
+    FlexGridSizer7->Add(edParamsGeneral, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 2);
+    pnParamsGeneral->SetSizer(FlexGridSizer7);
+    FlexGridSizer7->SetSizeHints(pnParamsGeneral);
+    pnParamsReactive = new wxPanel(Notebook1, ID_PANEL4, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL4"));
     FlexGridSizer8 = new wxFlexGridSizer(1, 1, 0, 0);
     FlexGridSizer8->AddGrowableCol(0);
     FlexGridSizer8->AddGrowableRow(0);
-    TextCtrl1 = new wxTextCtrl(Panel4, ID_TEXTCTRL4, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_PROCESS_ENTER|wxTE_PROCESS_TAB|wxTE_MULTILINE|wxHSCROLL|wxVSCROLL|wxALWAYS_SHOW_SB, wxDefaultValidator, _T("ID_TEXTCTRL4"));
-    TextCtrl1->SetMinSize(wxSize(-1,100));
-    wxFont TextCtrl1Font(8,wxTELETYPE,wxFONTSTYLE_NORMAL,wxNORMAL,false,wxEmptyString,wxFONTENCODING_DEFAULT);
-    TextCtrl1->SetFont(TextCtrl1Font);
-    FlexGridSizer8->Add(TextCtrl1, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 2);
-    Panel4->SetSizer(FlexGridSizer8);
-    FlexGridSizer8->Fit(Panel4);
-    FlexGridSizer8->SetSizeHints(Panel4);
-    Notebook1->AddPage(Panel2, _("Global simulation params"), true);
-    Notebook1->AddPage(Panel3, _("Preprogrammed sequences"), false);
-    Notebook1->AddPage(Panel4, _("ReactiveNav params"), false);
+    edParamsReactive = new wxTextCtrl(pnParamsReactive, ID_TEXTCTRL4, wxEmptyString, wxDefaultPosition, wxSize(226,111), wxTE_PROCESS_ENTER|wxTE_PROCESS_TAB|wxTE_MULTILINE|wxHSCROLL|wxVSCROLL|wxALWAYS_SHOW_SB, wxDefaultValidator, _T("ID_TEXTCTRL4"));
+    edParamsReactive->SetMinSize(wxSize(-1,100));
+    wxFont edParamsReactiveFont(8,wxTELETYPE,wxFONTSTYLE_NORMAL,wxNORMAL,false,wxEmptyString,wxFONTENCODING_DEFAULT);
+    edParamsReactive->SetFont(edParamsReactiveFont);
+    FlexGridSizer8->Add(edParamsReactive, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 2);
+    pnParamsReactive->SetSizer(FlexGridSizer8);
+    FlexGridSizer8->Fit(pnParamsReactive);
+    FlexGridSizer8->SetSizeHints(pnParamsReactive);
+    pnParamsPreprog = new wxPanel(Notebook1, ID_PANEL3, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL3"));
+    FlexGridSizer6 = new wxFlexGridSizer(1, 1, 0, 0);
+    FlexGridSizer6->AddGrowableCol(0);
+    FlexGridSizer6->AddGrowableRow(0);
+    edManualSeqs = new wxTextCtrl(pnParamsPreprog, ID_TEXTCTRL3, _("# Params for mode \"Preprogrammed sequences\" \n# Used for debug / testing. Separate sections for different robot kinematic models. # Enter below a list of velocity cmds and they will be executed sequentially. \n\n# Kinematics: Diff driven \n# Format: cmd{%d} = {time_of_the_cmd_sec} {lin_vel_mps} {rot_speed_radps}\n[DIFF_CMDS]\ncmd1= 1.0 0.5 0.0\ncmd2= 4.0 1.0 0.5\ncmd3= 6.0 0.0 0.0\n\n\n# Kinematics: Holonomic \n# Format: cmd{%d} = {time_of_the_cmd_sec} {velocity_mps} {global_orientation_rad} {ramp_time_secs} {rot_speed_radps}\n[HOLO_CMDS]\ncmd1= 1.0 0.5 0.1.0 1.0 0.9\ncmd2= 4.0 1.0 0.4 1.0 0.9\ncmd3= 6.0 0.0 0.0 1.0 0.0\n"), wxDefaultPosition, wxSize(230,167), wxTE_PROCESS_ENTER|wxTE_PROCESS_TAB|wxTE_MULTILINE|wxHSCROLL|wxVSCROLL|wxALWAYS_SHOW_SB, wxDefaultValidator, _T("ID_TEXTCTRL3"));
+    edManualSeqs->SetMinSize(wxSize(-1,100));
+    wxFont edManualSeqsFont(8,wxTELETYPE,wxFONTSTYLE_NORMAL,wxNORMAL,false,wxEmptyString,wxFONTENCODING_DEFAULT);
+    edManualSeqs->SetFont(edManualSeqsFont);
+    FlexGridSizer6->Add(edManualSeqs, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+    pnParamsPreprog->SetSizer(FlexGridSizer6);
+    FlexGridSizer6->Fit(pnParamsPreprog);
+    FlexGridSizer6->SetSizeHints(pnParamsPreprog);
+    Notebook1->AddPage(pnParamsGeneral, _("Params: Simulation"), true);
+    Notebook1->AddPage(pnParamsReactive, _("Params: Reactive navigator"), false);
+    Notebook1->AddPage(pnParamsPreprog, _("Params: Preprogrammed seq."), false);
     FlexGridSizer2->Add(Notebook1, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 2);
     Panel1->SetSizer(FlexGridSizer2);
     FlexGridSizer2->SetSizeHints(Panel1);
@@ -317,14 +319,17 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(wxWindow* parent,wxWi
     SetStatusBar(StatusBar1);
     timRunSimul.SetOwner(this, ID_TIMER1);
     timRunSimul.Start(10, false);
-    GridSizer1->Fit(this);
     GridSizer1->SetSizeHints(this);
     Center();
     
     Connect(ID_BUTTON2,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&reactive_navigator_demoframe::OnAbout);
+    Connect(ID_BUTTON3,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&reactive_navigator_demoframe::OnbtnQuitClick);
     Connect(ID_BUTTON7,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&reactive_navigator_demoframe::OnbtnPlaceTargetClick);
     Connect(ID_BUTTON4,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&reactive_navigator_demoframe::OnbtnStartClick);
     Connect(ID_BUTTON5,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&reactive_navigator_demoframe::OnbtnStopClick);
+    Connect(ID_RADIOBOX1,wxEVT_COMMAND_RADIOBOX_SELECTED,(wxObjectEventFunction)&reactive_navigator_demoframe::OnrbKinTypeSelect);
+    Connect(ID_TEXTCTRL3,wxEVT_COMMAND_TEXT_UPDATED,(wxObjectEventFunction)&reactive_navigator_demoframe::OnedManualKinRampsText);
+    Connect(ID_NOTEBOOK1,wxEVT_COMMAND_NOTEBOOK_PAGE_CHANGED,(wxObjectEventFunction)&reactive_navigator_demoframe::OnNotebook1PageChanged1);
     Connect(ID_MENUITEM4,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&reactive_navigator_demoframe::OnbtnLoadMapClick);
     Connect(idMenuQuit,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&reactive_navigator_demoframe::OnQuit);
     Connect(ID_MENUITEM1,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&reactive_navigator_demoframe::OnMenuItemChangeVisibleStuff);
@@ -333,6 +338,8 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(wxWindow* parent,wxWi
     Connect(idMenuAbout,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&reactive_navigator_demoframe::OnAbout);
     Connect(ID_TIMER1,wxEVT_TIMER,(wxObjectEventFunction)&reactive_navigator_demoframe::OntimRunSimulTrigger);
     //*)
+
+	SplitterWindow1->SetSashPosition(200);
 
 	m_plot3D->Connect(wxEVT_MOTION,(wxObjectEventFunction)&reactive_navigator_demoframe::Onplot3DMouseMove,0,this);
 	m_plot3D->Connect(wxEVT_LEFT_DOWN,(wxObjectEventFunction)&reactive_navigator_demoframe::Onplot3DMouseClick,0,this);
@@ -344,6 +351,8 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(wxWindow* parent,wxWi
 	btnStop->Enable(false);
 
 	WX_START_TRY
+
+	OnrbKinTypeSelect(wxCommandEvent()); // Init simulator
 
 	// Initialize gridmap:
 	// -------------------------------
@@ -496,7 +505,7 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(wxWindow* parent,wxWi
 		mrpt::nav::CHolonomicND holo_ND;
 		holo_ND.options.saveToConfigFile(cfg,"ND_CONFIG");
 
-		this->edHoloParams->SetValue( _U( cfg.getContent().c_str() ) );
+		this->edParamsReactive->SetValue( _U( cfg.getContent().c_str() ) );
 	}
 
 	WX_END_TRY
@@ -570,6 +579,7 @@ void reactive_navigator_demoframe::OnbtnStartClick(wxCommandEvent& event)
 	btnStart->Enable(false); btnStart->Refresh();
 	btnStop->Enable(true);   btnStop->Refresh();
 	Notebook1->Enable(false);
+	pnNavSelButtons->Enable(false);
 	m_is_running = true;
 }
 
@@ -578,6 +588,7 @@ void reactive_navigator_demoframe::OnbtnStopClick(wxCommandEvent& event)
 	btnStart->Enable(true); btnStart->Refresh();
 	btnStop->Enable(false);   btnStop->Refresh();
 	Notebook1->Enable(true);
+	pnNavSelButtons->Enable(true);
 	m_is_running=false;
 }
 
@@ -613,8 +624,14 @@ void reactive_navigator_demoframe::reinitSimulator()
 	{
 	case 0:
 		{
-			m_navMethod.reset( new mrpt::nav::CNavigatorManualSequence(m_robotSimul2NavInterface) );
-			cfg.setContent( std::string(edManualKinRamps->GetValue().mb_str() ) );
+			m_navMethod.reset( new mrpt::nav::CReactiveNavigationSystem(*m_robotSimul2NavInterface) );
+			cfg.setContent( std::string(edParamsReactive->GetValue().mb_str() ) );
+			break;
+		}
+	case 1:
+		{
+			m_navMethod.reset( new mrpt::nav::CNavigatorManualSequence(*m_robotSimul2NavInterface) );
+			cfg.setContent( std::string(edManualSeqs->GetValue().mb_str() ) );
 			break;
 		}
 	default:
@@ -625,7 +642,16 @@ void reactive_navigator_demoframe::reinitSimulator()
 	// Load params:
 	if (m_navMethod)
 	{
-		m_navMethod->loadConfigFile(cfg);
+		std::string sKinPrefix;
+		switch ( rbKinType->GetSelection() )
+		{
+		case 0: sKinPrefix="DIFF_"; break;
+		case 1: sKinPrefix="HOLO_"; break;
+		default:
+			throw std::runtime_error("Invalid kinematic model selected!");
+		};
+
+		m_navMethod->loadConfigFile(cfg,sKinPrefix);
 		m_navMethod->initialize();
 
 		// params for simulator itself:
@@ -649,7 +675,7 @@ void reactive_navigator_demoframe::simulateOneStep(double time_step)
 	simulatedScan.maxRange = m_simul_options.MAX_SENSOR_RADIUS;
 	simulatedScan.sensorPose = CPose2D(0,0,0);
 
-	m_gridMap.laserScanSimulator( simulatedScan, m_robotSimul.getCurrentGTPose(),0.5, m_simul_options.SENSOR_NUM_RANGES, m_simul_options.SENSOR_RANGE_NOISE_STD );
+	m_gridMap.laserScanSimulator( simulatedScan, m_robotSimul->getCurrentGTPose(),0.5, m_simul_options.SENSOR_NUM_RANGES, m_simul_options.SENSOR_RANGE_NOISE_STD );
 
 	gl_scan3D->setScan( simulatedScan );  // Draw real scan in 3D view
 
@@ -659,17 +685,17 @@ void reactive_navigator_demoframe::simulateOneStep(double time_step)
 	gl_scan2D->setScan( simulatedScan ); // Draw scaled scan in right-hand view
 
 	// Navigate:
-//	mrpt::math::TPoint2D relTargetPose = mrpt::math::TPoint2D( mrpt::poses::CPoint2D(m_targetPoint) - mrpt::poses::CPose2D(m_robotSimul.getCurrentPose()) );
+//	mrpt::math::TPoint2D relTargetPose = mrpt::math::TPoint2D( mrpt::poses::CPoint2D(m_targetPoint) - mrpt::poses::CPose2D(m_robotSimul->getCurrentPose()) );
 //	relTargetPose*= 1.0/simulatedScan.maxRange;     // Normalized relative target:
 //	gl_rel_target->setLocation(relTargetPose.x, relTargetPose.y,0);
 
 	m_navMethod->navigationStep();
 
 	// Run robot simulator:
-	m_robotSimul.simulateOneTimeStep(time_step);
+	m_robotSimul->simulateOneTimeStep(time_step);
 
 	// Update path graph:
-	const TPoint3D  cur_pt(m_robotSimul.getCurrentGTPose().x,m_robotSimul.getCurrentGTPose().y,0.01);
+	const TPoint3D  cur_pt(m_robotSimul->getCurrentGTPose().x,m_robotSimul->getCurrentGTPose().y,0.01);
 
 	static int decim_path = 0;
 	if (gl_robot_path->empty() || ++decim_path>10) {
@@ -692,12 +718,12 @@ void reactive_navigator_demoframe::simulateOneStep(double time_step)
 		}
 		if (m_log_trajectory_file.is_open())  // just in case there was any error opening
 		{
-			const mrpt::math::TPose2D pose = m_robotSimul.getCurrentGTPose();
-			const mrpt::math::TTwist2D vel = m_robotSimul.getCurrentGTVel();
-			m_log_trajectory_file.printf("%8.03f  %7.03f %7.03f %7.03f   %7.03f %7.03f %7.03f\n", 
-				m_robotSimul.getTime(), 
-				pose.x, pose.y, mrpt::utils::RAD2DEG(pose.phi), 
-				vel.vx, vel.vy, mrpt::utils::RAD2DEG(vel.omega) 
+			const mrpt::math::TPose2D pose = m_robotSimul->getCurrentGTPose();
+			const mrpt::math::TTwist2D vel = m_robotSimul->getCurrentGTVel();
+			m_log_trajectory_file.printf("%8.03f  %7.03f %7.03f %7.03f   %7.03f %7.03f %7.03f\n",
+				m_robotSimul->getTime(),
+				pose.x, pose.y, mrpt::utils::RAD2DEG(pose.phi),
+				vel.vx, vel.vy, mrpt::utils::RAD2DEG(vel.omega)
 				);
 		}
 	}
@@ -752,7 +778,7 @@ void reactive_navigator_demoframe::simulateOneStep(double time_step)
 
 void reactive_navigator_demoframe::updateViewsDynamicObjects()
 {
-	gl_robot->setPose( m_robotSimul.getCurrentGTPose() );
+	gl_robot->setPose( m_robotSimul->getCurrentGTPose() );
 
 	// animate target:
 	{
@@ -770,8 +796,8 @@ void reactive_navigator_demoframe::updateViewsDynamicObjects()
 	}
 
 	// Labels:
-	StatusBar1->SetStatusText( _U( mrpt::format("Robot pose: %s vel: %s", m_robotSimul.getCurrentGTPose().asString().c_str(),m_robotSimul.getCurrentGTVel().asString().c_str() ).c_str() ), 0 );
-	StatusBar1->SetStatusText( _U( mrpt::format("Simul time: %.03f Target: (%.03f,%.03f)", m_robotSimul.getTime(), m_targetPoint.x, m_targetPoint.y ).c_str()  ), 1 );
+	StatusBar1->SetStatusText( _U( mrpt::format("Robot pose: %s vel: %s", m_robotSimul->getCurrentGTPose().asString().c_str(),m_robotSimul->getCurrentGTVel().asString().c_str() ).c_str() ), 0 );
+	StatusBar1->SetStatusText( _U( mrpt::format("Simul time: %.03f Target: (%.03f,%.03f)", m_robotSimul->getTime(), m_targetPoint.x, m_targetPoint.y ).c_str()  ), 1 );
 
 	// Show/hide:
 	gl_robot_sensor_range->setVisibility( mnuViewMaxRange->IsChecked() );
@@ -836,7 +862,7 @@ void reactive_navigator_demoframe::Onplot3DMouseClick(wxMouseEvent& event)
 		}
 	case cpsPlaceRobot:
 		{
-			m_robotSimul.setCurrentGTPose( mrpt::math::TPose2D(m_curCursorPos.x,m_curCursorPos.y, .0 ) );
+			m_robotSimul->setCurrentGTPose( mrpt::math::TPose2D(m_curCursorPos.x,m_curCursorPos.y, .0 ) );
 
 			btnPlaceRobot->SetValue(false);
 			btnPlaceRobot->Refresh();
@@ -962,4 +988,45 @@ void reactive_navigator_demoframe::OnbtnLoadMapClick(wxCommandEvent& event)
 
 void reactive_navigator_demoframe::OnNotebook1PageChanged(wxNotebookEvent& event)
 {
+}
+
+void reactive_navigator_demoframe::OnNotebook1PageChanged1(wxNotebookEvent& event)
+{
+}
+
+void reactive_navigator_demoframe::OnedManualKinRampsText(wxCommandEvent& event)
+{
+}
+
+void reactive_navigator_demoframe::OnbtnQuitClick(wxCommandEvent& event)
+{
+	Close();
+}
+
+void reactive_navigator_demoframe::OnrbKinTypeSelect(wxCommandEvent& event)
+{
+	// Delete old & build new simulator:
+	m_robotSimul2NavInterface.reset();
+	m_robotSimul.reset();
+
+	switch ( rbKinType->GetSelection() )
+	{
+	case 0: 
+		{
+			mrpt::kinematics::CVehicleSimul_DiffDriven *sim = new mrpt::kinematics::CVehicleSimul_DiffDriven();
+			m_robotSimul.reset(sim);
+			m_robotSimul2NavInterface.reset( new MyRobot2NavInterface_Diff( *sim ) );
+		}
+		break;
+	case 1: 
+		{
+			mrpt::kinematics::CVehicleSimul_Holo *sim = new mrpt::kinematics::CVehicleSimul_Holo();
+			m_robotSimul.reset(sim);
+			m_robotSimul2NavInterface.reset( new MyRobot2NavInterface_Holo( *sim ) );
+		}
+		break;
+	default:
+		throw std::runtime_error("Invalid kinematic model selected!");
+	};
+
 }

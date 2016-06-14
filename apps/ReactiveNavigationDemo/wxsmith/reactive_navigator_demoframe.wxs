@@ -3,11 +3,13 @@
 	<object class="wxFrame" name="reactive_navigator_demoframe">
 		<title>Reactive Navigation Tester - Part of MRPT</title>
 		<centered>1</centered>
+		<size>893,576</size>
 		<object class="wxGridSizer" variable="GridSizer1" member="no">
 			<cols>1</cols>
 			<rows>1</rows>
 			<object class="sizeritem">
 				<object class="wxSplitterWindow" name="ID_SPLITTERWINDOW1" variable="SplitterWindow1" member="yes">
+					<sashpos>200</sashpos>
 					<minsize>10</minsize>
 					<minsize>10,10</minsize>
 					<object class="wxPanel" name="ID_PANEL1" variable="Panel1" member="yes">
@@ -56,6 +58,7 @@
 													<bitmap stock_id="wxART_QUIT" />
 													<minsize>-1,-1</minsize>
 													<maxsize>-1,-1</maxsize>
+													<handler function="OnbtnQuitClick" entry="EVT_BUTTON" />
 												</object>
 												<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
 												<border>1</border>
@@ -124,50 +127,51 @@
 										<option>1</option>
 									</object>
 								</object>
-								<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+								<flag>wxALL|wxALIGN_LEFT|wxALIGN_TOP</flag>
 								<option>1</option>
 							</object>
 							<object class="sizeritem">
-								<object class="wxFlexGridSizer" variable="FlexGridSizer9" member="no">
-									<cols>1</cols>
-									<growablecols>0</growablecols>
-									<object class="sizeritem">
-										<object class="wxRadioBox" name="ID_RADIOBOX2" variable="rbNavMode" member="yes">
-											<label>Navigator</label>
-											<content>
-												<item>Autonavigation (reactive)</item>
-												<item>Preprogrammed sequences</item>
-											</content>
-											<default>-1</default>
-											<size>-1,99</size>
-											<style>wxRA_SPECIFY_COLS</style>
+								<object class="wxPanel" name="ID_PANEL6" variable="pnNavSelButtons" member="yes">
+									<object class="wxFlexGridSizer" variable="FlexGridSizer9" member="no">
+										<cols>1</cols>
+										<growablecols>0</growablecols>
+										<object class="sizeritem">
+											<object class="wxRadioBox" name="ID_RADIOBOX2" variable="rbNavMode" member="yes">
+												<label>Navigator</label>
+												<content>
+													<item>Autonavigation (reactive)</item>
+													<item>Preprogrammed sequences</item>
+												</content>
+												<default>-1</default>
+												<style>wxRA_SPECIFY_COLS</style>
+											</object>
+											<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+											<border>2</border>
+											<option>1</option>
 										</object>
-										<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
-										<border>2</border>
-										<option>1</option>
-									</object>
-									<object class="sizeritem">
-										<object class="wxRadioBox" name="ID_RADIOBOX1" variable="rbKinType" member="yes">
-											<label>Robot kinematics type</label>
-											<content>
-												<item>Differential (Ackermann) drive</item>
-												<item>Holonomic</item>
-											</content>
-											<default>-1</default>
-											<size>-1,99</size>
-											<style>wxRA_SPECIFY_COLS</style>
+										<object class="sizeritem">
+											<object class="wxRadioBox" name="ID_RADIOBOX1" variable="rbKinType" member="yes">
+												<label>Robot kinematics type</label>
+												<content>
+													<item>Differential (Ackermann) drive</item>
+													<item>Holonomic</item>
+												</content>
+												<default>-1</default>
+												<style>wxRA_SPECIFY_COLS</style>
+												<handler function="OnrbKinTypeSelect" entry="EVT_RADIOBOX" />
+											</object>
+											<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+											<border>2</border>
+											<option>1</option>
 										</object>
-										<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
-										<border>2</border>
-										<option>1</option>
-									</object>
-									<object class="sizeritem">
-										<object class="wxCheckBox" name="ID_CHECKBOX1" variable="cbEnableLog" member="yes">
-											<label>Log trajectory</label>
+										<object class="sizeritem">
+											<object class="wxCheckBox" name="ID_CHECKBOX1" variable="cbEnableLog" member="yes">
+												<label>Log trajectory</label>
+											</object>
+											<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+											<border>5</border>
+											<option>1</option>
 										</object>
-										<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
-										<border>5</border>
-										<option>1</option>
 									</object>
 								</object>
 								<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
@@ -175,15 +179,17 @@
 							</object>
 							<object class="sizeritem">
 								<object class="wxNotebook" name="ID_NOTEBOOK1" variable="Notebook1" member="yes">
+									<handler function="OnNotebook1PageChanged1" entry="EVT_NOTEBOOK_PAGE_CHANGED" />
 									<object class="notebookpage">
-										<object class="wxPanel" name="ID_PANEL2" variable="Panel2" member="yes">
+										<object class="wxPanel" name="ID_PANEL2" variable="pnParamsGeneral" member="yes">
+											<size>474,170</size>
 											<object class="wxFlexGridSizer" variable="FlexGridSizer7" member="no">
 												<cols>1</cols>
 												<rows>1</rows>
 												<growablecols>0</growablecols>
 												<growablerows>0</growablerows>
 												<object class="sizeritem">
-													<object class="wxTextCtrl" name="ID_TEXTCTRL1" variable="edHoloParams" member="yes">
+													<object class="wxTextCtrl" name="ID_TEXTCTRL1" variable="edParamsGeneral" member="yes">
 														<font>
 															<size>8</size>
 															<family>teletype</family>
@@ -197,19 +203,44 @@
 												</object>
 											</object>
 										</object>
-										<label>Global simulation params</label>
+										<label>Params: Simulation</label>
 										<selected>1</selected>
 									</object>
 									<object class="notebookpage">
-										<object class="wxPanel" name="ID_PANEL3" variable="Panel3" member="yes">
+										<object class="wxPanel" name="ID_PANEL4" variable="pnParamsReactive" member="yes">
+											<object class="wxFlexGridSizer" variable="FlexGridSizer8" member="no">
+												<cols>1</cols>
+												<rows>1</rows>
+												<growablecols>0</growablecols>
+												<growablerows>0</growablerows>
+												<object class="sizeritem">
+													<object class="wxTextCtrl" name="ID_TEXTCTRL4" variable="edParamsReactive" member="yes">
+														<size>226,111</size>
+														<font>
+															<size>8</size>
+															<family>teletype</family>
+														</font>
+														<minsize>-1,100</minsize>
+														<style>wxTE_PROCESS_ENTER|wxTE_PROCESS_TAB|wxTE_MULTILINE|wxHSCROLL|wxVSCROLL|wxALWAYS_SHOW_SB</style>
+													</object>
+													<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+													<border>2</border>
+													<option>1</option>
+												</object>
+											</object>
+										</object>
+										<label>Params: Reactive navigator</label>
+									</object>
+									<object class="notebookpage">
+										<object class="wxPanel" name="ID_PANEL3" variable="pnParamsPreprog" member="yes">
 											<object class="wxFlexGridSizer" variable="FlexGridSizer6" member="no">
 												<cols>1</cols>
 												<rows>1</rows>
 												<growablecols>0</growablecols>
 												<growablerows>0</growablerows>
 												<object class="sizeritem">
-													<object class="wxTextCtrl" name="ID_TEXTCTRL3" variable="edManualKinRamps" member="yes">
-														<value># Params for mode &quot;Manual kin ramop cmds&quot; &#x0A;# Used for debug / testing.&#x0A;# Enter below a list of velocity ramps and they will be executed&#x0A;# sequentially. &#x0A;# Format: &#x0A;# cmd{%d} = {time__of__the__cmd__sec} {velocity__mps} {global__orientation__deg} {ramp__time__secs} {rot__speed__dps}&#x0A;[CMDS]&#x0A;cmd1= 1.0 0.5 30.0 1.0 30.0&#x0A;cmd2= 4.0 1.0 60.0 1.0 30.0&#x0A;cmd3= 6.0 0.0 0.0 1.0 0.0&#x0A;</value>
+													<object class="wxTextCtrl" name="ID_TEXTCTRL3" variable="edManualSeqs" member="yes">
+														<value># Params for mode &quot;Preprogrammed sequences&quot; &#x0A;# Used for debug / testing. Separate sections for different robot kinematic models. # Enter below a list of velocity cmds and they will be executed sequentially. &#x0A;&#x0A;# Kinematics: Diff driven &#x0A;# Format: cmd{%d} = {time__of__the__cmd__sec} {lin__vel__mps} {rot__speed__radps}&#x0A;[DIFF__CMDS]&#x0A;cmd1= 1.0 0.5 0.0&#x0A;cmd2= 4.0 1.0 0.5&#x0A;cmd3= 6.0 0.0 0.0&#x0A;&#x0A;&#x0A;# Kinematics: Holonomic &#x0A;# Format: cmd{%d} = {time__of__the__cmd__sec} {velocity__mps} {global__orientation__rad} {ramp__time__secs} {rot__speed__radps}&#x0A;[HOLO__CMDS]&#x0A;cmd1= 1.0 0.5 0.1.0 1.0 0.9&#x0A;cmd2= 4.0 1.0 0.4 1.0 0.9&#x0A;cmd3= 6.0 0.0 0.0 1.0 0.0&#x0A;</value>
 														<size>230,167</size>
 														<font>
 															<size>8</size>
@@ -217,37 +248,14 @@
 														</font>
 														<minsize>-1,100</minsize>
 														<style>wxTE_PROCESS_ENTER|wxTE_PROCESS_TAB|wxTE_MULTILINE|wxHSCROLL|wxVSCROLL|wxALWAYS_SHOW_SB</style>
+														<handler function="OnedManualKinRampsText" entry="EVT_TEXT" />
 													</object>
 													<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
 													<option>1</option>
 												</object>
 											</object>
 										</object>
-										<label>Preprogrammed sequences</label>
-									</object>
-									<object class="notebookpage">
-										<object class="wxPanel" name="ID_PANEL4" variable="Panel4" member="yes">
-											<object class="wxFlexGridSizer" variable="FlexGridSizer8" member="no">
-												<cols>1</cols>
-												<rows>1</rows>
-												<growablecols>0</growablecols>
-												<growablerows>0</growablerows>
-												<object class="sizeritem">
-													<object class="wxTextCtrl" name="ID_TEXTCTRL4" variable="TextCtrl1" member="yes">
-														<font>
-															<size>8</size>
-															<family>teletype</family>
-														</font>
-														<minsize>-1,100</minsize>
-														<style>wxTE_PROCESS_ENTER|wxTE_PROCESS_TAB|wxTE_MULTILINE|wxHSCROLL|wxVSCROLL|wxALWAYS_SHOW_SB</style>
-													</object>
-													<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
-													<border>2</border>
-													<option>1</option>
-												</object>
-											</object>
-										</object>
-										<label>ReactiveNav params</label>
+										<label>Params: Preprogrammed seq.</label>
 									</object>
 								</object>
 								<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>

@@ -78,6 +78,10 @@ class reactive_navigator_demoframe: public wxFrame
         void OnMenuItemClearRobotPath(wxCommandEvent& event);
         void OnbtnLoadMapClick(wxCommandEvent& event);
         void OnNotebook1PageChanged(wxNotebookEvent& event);
+        void OnNotebook1PageChanged1(wxNotebookEvent& event);
+        void OnedManualKinRampsText(wxCommandEvent& event);
+        void OnbtnQuitClick(wxCommandEvent& event);
+        void OnrbKinTypeSelect(wxCommandEvent& event);
         //*)
 
         //(*Identifiers(reactive_navigator_demoframe)
@@ -91,12 +95,13 @@ class reactive_navigator_demoframe: public wxFrame
         static const long ID_RADIOBOX2;
         static const long ID_RADIOBOX1;
         static const long ID_CHECKBOX1;
+        static const long ID_PANEL6;
         static const long ID_TEXTCTRL1;
         static const long ID_PANEL2;
-        static const long ID_TEXTCTRL3;
-        static const long ID_PANEL3;
         static const long ID_TEXTCTRL4;
         static const long ID_PANEL4;
+        static const long ID_TEXTCTRL3;
+        static const long ID_PANEL3;
         static const long ID_NOTEBOOK1;
         static const long ID_PANEL1;
         static const long ID_STATICTEXT2;
@@ -120,33 +125,34 @@ class reactive_navigator_demoframe: public wxFrame
         wxTimer timRunSimul;
         wxTextCtrl* edInfoLocalView;
         wxPanel* Panel5;
+        wxTextCtrl* edParamsReactive;
         wxCustomButton* btnStop;
         wxNotebook* Notebook1;
         wxMenuItem* MenuItem5;
+        wxTextCtrl* edManualSeqs;
         wxStaticText* StaticText2;
-        wxPanel* Panel4;
+        wxTextCtrl* edParamsGeneral;
         wxRadioBox* rbKinType;
         wxCustomButton* btnStart;
+        wxPanel* pnParamsReactive;
         wxRadioBox* rbNavMode;
         wxMenu* Menu3;
-        wxTextCtrl* edHoloParams;
         wxCustomButton* btnLoadMap;
         wxCustomButton* btnQuit;
         wxPanel* Panel1;
         wxStaticText* StaticText1;
-        wxPanel* Panel3;
-        wxTextCtrl* edManualKinRamps;
+        wxPanel* pnParamsGeneral;
         wxMenuItem* MenuItem3;
         wxMenuItem* mnuViewRobotPath;
         wxStatusBar* StatusBar1;
+        wxPanel* pnParamsPreprog;
         wxCustomButton* btnHelp;
         wxCustomButton* btnPlaceRobot;
-        wxTextCtrl* TextCtrl1;
-        wxPanel* Panel2;
         wxSplitterWindow* SplitterWindow1;
         wxMenuItem* mnuViewMaxRange;
         wxCustomButton* btnPlaceTarget;
         CMyGLCanvas* m_plotScan;
+        wxPanel* pnNavSelButtons;
         wxCheckBox* cbEnableLog;
         CMyGLCanvas* m_plot3D;
         //*)
@@ -189,27 +195,36 @@ class reactive_navigator_demoframe: public wxFrame
 		mrpt::math::TPoint2D             m_targetPoint;
 		bool                             m_is_running; //!< is simulator running or paused?
 
-		MRPT_TODO("Allow 2 simulator options");
-		mrpt::kinematics::CVehicleSimul_DiffDriven m_robotSimul;
+		struct MyNavIFBase
+		{
+			mrpt::maps::CSimplePointsMap latest_obstacles;
+		};
 
-
-		class MyRobot2NavInterface : public mrpt::nav::CRobot2NavInterfaceForSimulator_DiffDriven
+		class MyRobot2NavInterface_Diff : public mrpt::nav::CRobot2NavInterfaceForSimulator_DiffDriven, public MyNavIFBase
 		{
 		public:
-			MyRobot2NavInterface(mrpt::kinematics::CVehicleSimul_DiffDriven &simul) :  mrpt::nav::CRobot2NavInterfaceForSimulator_DiffDriven(simul) 
+			MyRobot2NavInterface_Diff(mrpt::kinematics::CVehicleSimul_DiffDriven &simul) :  mrpt::nav::CRobot2NavInterfaceForSimulator_DiffDriven(simul) 
 			{}
-			mrpt::maps::CSimplePointsMap latest_obstacles;
-		
-			virtual bool senseObstacles( mrpt::maps::CSimplePointsMap &obstacles ) 
-			{
+			virtual bool senseObstacles( mrpt::maps::CSimplePointsMap &obstacles ) {
+				obstacles = latest_obstacles;
+				return true;
+			}
+		};
+		class MyRobot2NavInterface_Holo : public mrpt::nav::CRobot2NavInterfaceForSimulator_Holo, public MyNavIFBase
+		{
+		public:
+			MyRobot2NavInterface_Holo(mrpt::kinematics::CVehicleSimul_Holo &simul) :  mrpt::nav::CRobot2NavInterfaceForSimulator_Holo(simul) 
+			{}
+			virtual bool senseObstacles( mrpt::maps::CSimplePointsMap &obstacles ) {
 				obstacles = latest_obstacles;
 				return true;
 			}
 		};
 
-		MyRobot2NavInterface m_robotSimul2NavInterface;
+		std::unique_ptr<mrpt::nav::CAbstractNavigator>  m_navMethod;
 
-		std::unique_ptr<mrpt::nav::CAbstractNavigator> m_navMethod;
+		std::unique_ptr<mrpt::nav::CRobot2NavInterface> m_robotSimul2NavInterface;
+		std::unique_ptr<mrpt::kinematics::CVehicleSimulVirtualBase> m_robotSimul;
 
 		mrpt::utils::CTicTac             m_runtime; // just for animations, this is not robot time
 		mrpt::math::TPoint2D             m_curCursorPos; //!< Of the cursor on the 3D view (in world coordinates at Z=0)

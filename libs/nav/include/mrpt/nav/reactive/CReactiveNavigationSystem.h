@@ -63,7 +63,7 @@ namespace mrpt
 			void loadConfigFile(const mrpt::utils::CConfigFileBase &ini, const mrpt::utils::CConfigFileBase &robotIni);
 
 			/** Reload the configuration from a file. See details in CReactiveNavigationSystem docs. */
-			void loadConfigFile(const mrpt::utils::CConfigFileBase &ini) MRPT_OVERRIDE;
+			void loadConfigFile(const mrpt::utils::CConfigFileBase &ini, const std::string &sect_prefix) MRPT_OVERRIDE;
 
 			/** Change the robot shape, which is taken into account for collision
 			  *  grid building.

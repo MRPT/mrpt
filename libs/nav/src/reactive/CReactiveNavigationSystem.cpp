@@ -63,9 +63,10 @@ void CReactiveNavigationSystem::changeRobotShape( const math::CPolygon &shape )
 
 
 /** Reload the configuration from a file. See details in CReactiveNavigationSystem docs. */
-void CReactiveNavigationSystem::loadConfigFile(const mrpt::utils::CConfigFileBase &ini)
+void CReactiveNavigationSystem::loadConfigFile(const mrpt::utils::CConfigFileBase &ini, const std::string &sect_prefix)
 {
 	mrpt::utils::CConfigFileMemory dummyRobotParams;
+	dummyRobotParams.write("ROBOT_NAME","Name",sect_prefix.empty() ? std::string("ReactiveParams") : sect_prefix );
 	this->loadConfigFile(ini,dummyRobotParams);
 }
 

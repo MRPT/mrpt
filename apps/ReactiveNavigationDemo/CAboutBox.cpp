@@ -138,7 +138,7 @@ void CAboutBox::OnInit(wxInitDialogEvent& event)
     {
 		CMyRedirector myRedirector( lbInfo );
 
-		cout << "  MRPT4ITH Nav Tester\n";
+		cout << "  Reactive Navigation Demo\n";
 		cout << "--------------------------------\n";
 		cout << "Jose Luis Blanco\n";
 		cout << "\n";
@@ -149,7 +149,7 @@ void CAboutBox::OnInit(wxInitDialogEvent& event)
 		cout << "wxWidgets version:      " <<std::string(wxVer.mb_str()) << endl;
     }
 
-	lbProgName->SetLabel( wxT("MRPT4ITH Nav Tester"));
+	lbProgName->SetLabel( wxT("Reactive Navigation Demo"));
 	lbProgName->SetForegroundColour( wxColour(0,0,128) );
 
     FlexGridSizer1->RecalcSizes();
