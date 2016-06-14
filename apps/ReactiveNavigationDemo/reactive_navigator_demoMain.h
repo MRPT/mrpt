@@ -234,7 +234,7 @@ class reactive_navigator_demoframe: public wxFrame
 
 		// ========= Opengl View: Map & robot  =======
 		mrpt::opengl::CSetOfObjectsPtr		gl_grid;
-		mrpt::opengl::CSetOfObjectsPtr		gl_robot, gl_target;
+		mrpt::opengl::CSetOfObjectsPtr		gl_robot,gl_robot_local, gl_target;
 		mrpt::opengl::CSetOfObjectsPtr		m_gl_placing_nav_target;
 		mrpt::opengl::CSetOfObjectsPtr		m_gl_placing_robot;
 		mrpt::opengl::CDiskPtr		        gl_robot_sensor_range;
