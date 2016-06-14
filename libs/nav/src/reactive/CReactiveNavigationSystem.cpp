@@ -27,7 +27,7 @@ using namespace std;
 					Constructor
   ---------------------------------------------------------------*/
 CReactiveNavigationSystem::CReactiveNavigationSystem(
-	CReactiveInterfaceImplementation   &react_iterf_impl,
+	CRobot2NavInterface   &react_iterf_impl,
     bool					enableConsoleOutput,
     bool					enableLogToFile)
 	:

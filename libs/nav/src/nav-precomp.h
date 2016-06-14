@@ -12,7 +12,7 @@
 #include <mrpt/config.h>
 #if MRPT_ENABLE_PRECOMPILED_HDRS
 
-#include <mrpt/nav/reactive/CAbstractReactiveNavigationSystem.h>
+#include <mrpt/nav/reactive/CAbstractNavigator.h>
 
 #endif
 

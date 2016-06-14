@@ -9,7 +9,7 @@
 #ifndef CAbstractPTGBasedReactive_H
 #define CAbstractPTGBasedReactive_H
 
-#include <mrpt/nav/reactive/CAbstractReactiveNavigationSystem.h>
+#include <mrpt/nav/reactive/CAbstractNavigator.h>
 #include <mrpt/nav/tpspace/CParameterizedTrajectoryGenerator.h>
 #include <mrpt/nav/reactive/CLogFileRecord.h>
 #include <mrpt/nav/holonomic/CAbstractHolonomicReactiveMethod.h>
@@ -30,7 +30,7 @@ namespace mrpt
 	  *
 	  * How to use:
 	  *  - Instantiate a reactive navigation object (one of the derived classes of this virtual class).
-	  *  - A class with callbacks must be defined by the user and provided to the constructor (derived from CReactiveInterfaceImplementation)
+	  *  - A class with callbacks must be defined by the user and provided to the constructor (derived from CRobot2NavInterface)
 	  *  - loadConfigFile() must be called to set up the bunch of parameters from a config file (could be a memory-based virtual config file).
 	  *  - navigationStep() must be called periodically in order to effectively run the navigation. This method will internally call the callbacks to gather sensor data and robot positioning data.
 	  *
@@ -44,13 +44,13 @@ namespace mrpt
 	  * \sa CReactiveNavigationSystem, CReactiveNavigationSystem3D
 	  *  \ingroup nav_reactive
 	  */
-	class NAV_IMPEXP CAbstractPTGBasedReactive: public CAbstractReactiveNavigationSystem
+	class NAV_IMPEXP CAbstractPTGBasedReactive: public CAbstractNavigator
 	{
 	public:
 		MRPT_MAKE_ALIGNED_OPERATOR_NEW
 
 		/** The struct for configuring navigation requests to CAbstractPTGBasedReactive and derived classes. */
-		struct NAV_IMPEXP TNavigationParamsPTG : public CAbstractReactiveNavigationSystem::TNavigationParams
+		struct NAV_IMPEXP TNavigationParamsPTG : public CAbstractNavigator::TNavigationParams
 		{
 			/** (Default=empty) Optionally, a list of PTG indices can be sent such that
 			 *  the navigator will restrict itself to only employ those PTGs. */
@@ -69,7 +69,7 @@ namespace mrpt
 		  * \param[in] enableLogFile Set to true to enable creation of navigation log files, useful for inspection and debugging.
 		  */
 		CAbstractPTGBasedReactive(
-			CReactiveInterfaceImplementation &react_iterf_impl,
+			CRobot2NavInterface &react_iterf_impl,
 			bool enableConsoleOutput = true,
 			bool enableLogFile = false);
 
@@ -78,7 +78,7 @@ namespace mrpt
 		/** Must be called for loading collision grids, or the first navigation command may last a long time to be executed.
 		  * Internally, it just calls STEP1_CollisionGridsBuilder().
 		  */
-		void initialize();
+		void initialize() MRPT_OVERRIDE;
 
 		/** Selects which one from the set of available holonomic methods will be used
 			*  into transformed TP-Space, and sets its configuration from a configuration file.*/

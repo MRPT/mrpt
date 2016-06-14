@@ -7,32 +7,28 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include "ReactiveNavigationDemoApp.h"
-#include <wx/msgdlg.h>
+#include "reactive_navigator_demoApp.h"
 
 //(*AppHeaders
-#include "ReactiveNavigationDemoMain.h"
+#include "reactive_navigator_demoMain.h"
 #include <wx/image.h>
 //*)
 
-#include <wx/log.h>
+IMPLEMENT_APP(reactive_navigator_demoApp)
 
-IMPLEMENT_APP(ReactiveNavigationDemoApp)
-
-
-bool ReactiveNavigationDemoApp::OnInit()
+bool reactive_navigator_demoApp::OnInit()
 {
 	// Starting in wxWidgets 2.9.0, we must reset numerics locale to "C",
 	//  if we want numbers to use "." in all countries. The App::OnInit() is a perfect place to undo
 	//  the default wxWidgets settings. (JL @ Sep-2009)
 	wxSetlocale(LC_NUMERIC,wxString(wxT("C")));
 
-	//(*AppInitialize
+    //(*AppInitialize
     bool wxsOK = true;
     wxInitAllImageHandlers();
     if ( wxsOK )
     {
-    	ReactiveNavigationDemoFrame* Frame = new ReactiveNavigationDemoFrame(0);
+    	reactive_navigator_demoframe* Frame = new reactive_navigator_demoframe(0);
     	Frame->Show();
     	SetTopWindow(Frame);
     }
@@ -40,4 +36,3 @@ bool ReactiveNavigationDemoApp::OnInit()
     return wxsOK;
 
 }
-

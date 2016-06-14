@@ -40,7 +40,7 @@ namespace mrpt
 		* Next we provide a self-documented template config file: 
 		* \verbinclude reactive3d_config.ini
 		*
-		*  \sa CAbstractReactiveNavigationSystem, CParameterizedTrajectoryGenerator, CAbstractHolonomicReactiveMethod
+		*  \sa CAbstractNavigator, CParameterizedTrajectoryGenerator, CAbstractHolonomicReactiveMethod
 		*  \ingroup nav_reactive
 		*/
 		class NAV_IMPEXP CReactiveNavigationSystem3D : public CAbstractPTGBasedReactive
@@ -50,7 +50,7 @@ namespace mrpt
 		public:
 			/** See docs in ctor of base class */
 			CReactiveNavigationSystem3D(
-				CReactiveInterfaceImplementation &react_iterf_impl,
+				CRobot2NavInterface &react_iterf_impl,
 				bool enableConsoleOutput = true,
 				bool enableLogFile = false);
 

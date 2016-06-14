@@ -68,4 +68,5 @@ digraph MRPT_LIBS {
 
 	nav -> maps;
 	nav -> graphs;
+	nav -> kinematics;
 }

@@ -18,7 +18,7 @@ namespace kinematics
 	  * velocity profiles.
 	 * \ingroup mrpt_kinematics_grp
 	  */
-	class CVehicleSimul_Holo : public CVehicleSimulVirtualBase
+	class KINEMATICS_IMPEXP CVehicleSimul_Holo : public CVehicleSimulVirtualBase
 	{
 	public:
 		enum { VEL_CMD_LENGTH = 4 };

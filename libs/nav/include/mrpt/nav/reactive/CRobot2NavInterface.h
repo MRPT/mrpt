@@ -12,6 +12,7 @@
 #include <mrpt/nav/link_pragmas.h>
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/utils/CConfigFileBase.h>
+#include <mrpt/utils/CTicTac.h>
 
 #include <vector>
 
@@ -19,9 +20,9 @@ namespace mrpt
 {
   namespace nav
   {
-	/** The pure virtual interface between a real or simulated robot and any `CAbstractReactiveNavigationSystem`-derived class.
+	/** The pure virtual interface between a real or simulated robot and any `CAbstractNavigator`-derived class.
 	  *
-	  *  The user must define a new class derived from `CReactiveInterfaceImplementation` and reimplement
+	  *  The user must define a new class derived from `CRobot2NavInterface` and reimplement
 	  *   all pure virtual and the desired virtual methods according to the documentation in this class.
 	  * 
 	  * [New in MRPT 1.5.0] This class does not make assumptions about the kinematic model of the robot, so it can work with either 
@@ -32,12 +33,15 @@ namespace mrpt
 	  *  - CReactiveInterfaceImplementation_DiffDriven 
 	  *  - CReactiveInterfaceImplementation_Holo
 	  *
-	  * \sa CReactiveNavigationSystem, CAbstractReactiveNavigationSystem
+	  * \sa CReactiveNavigationSystem, CAbstractNavigator
 	  *  \ingroup nav_reactive
 	  */
-	class NAV_IMPEXP CReactiveInterfaceImplementation
+	class NAV_IMPEXP CRobot2NavInterface
 	{
 	public:
+		CRobot2NavInterface() {}
+		virtual ~CRobot2NavInterface() {}
+
 		/** Get the current pose and speeds of the robot. The implementation should not take too much time to return,
 		*   so if it might take more than ~10ms to ask the robot for the instantaneous data, it may be good enough to
 		*   return the latest values from a cache which is updated in a parallel thread.
@@ -86,6 +90,15 @@ namespace mrpt
 		virtual void sendNavigationEndDueToErrorEvent() { std::cout << "[sendNavigationEndDueToErrorEvent] Not implemented by the user." << std::endl; }
 		virtual void sendWaySeemsBlockedEvent() { std::cout << "[sendWaySeemsBlockedEvent] Not implemented by the user." << std::endl; }
 
+		/** Returns the number of seconds ellapsed since the constructor of this class was invoked, or since 
+		  * the last call of resetNavigationTimer(). This will be normally wall-clock time, except in simulators where this method will return simulation time. */
+		virtual double getNavigationTime() {
+			return m_navtime.Tac();
+		}
+		/** see getNavigationTime() */
+		virtual void resetNavigationTimer() {
+			m_navtime.Tic();
+		}
 
 		/** @name Methods implemented in CReactiveInterfaceImplementation_DiffDriven / CReactiveInterfaceImplementation_Holo
 		   @{ */
@@ -114,12 +127,14 @@ namespace mrpt
 		virtual void loadConfigFile(const mrpt::utils::CConfigFileBase &cfg, const std::string &section) = 0;
 
 		/** @} */
+	private:
+		mrpt::utils::CTicTac  m_navtime; //!< For getNavigationTime
 	};
 
-	/** Partial implementation of CReactiveInterfaceImplementation for differential-driven robots
+	/** Partial implementation of CRobot2NavInterface for differential-driven robots
 	  *  \ingroup nav_reactive
 	  */
-	class NAV_IMPEXP CReactiveInterfaceImplementation_DiffDriven : public CReactiveInterfaceImplementation
+	class NAV_IMPEXP CRobot2NavInterface_DiffDriven : public CRobot2NavInterface
 	{
 	public:
 		// See base class docs.
@@ -169,7 +184,7 @@ namespace mrpt
 		double  robotMax_V_mps;       //!< Max. linear speed (m/s)
 		double  robotMax_W_radps;     //!< Max. angular speed (rad/s)
 
-		CReactiveInterfaceImplementation_DiffDriven() : 
+		CRobot2NavInterface_DiffDriven() : 
 			robotMax_V_mps(-1.0),
 			robotMax_W_radps(-1.0)
 		{}
@@ -197,10 +212,10 @@ namespace mrpt
 
 	};
 
-	/** Partial implementation of CReactiveInterfaceImplementation for holonomic robots
+	/** Partial implementation of CRobot2NavInterface for holonomic robots
 	  *  \ingroup nav_reactive
 	  */
-	class NAV_IMPEXP CReactiveInterfaceImplementation_Holo : public CReactiveInterfaceImplementation
+	class NAV_IMPEXP CRobot2NavInterface_Holo : public CRobot2NavInterface
 	{
 	public:
 		// See base class docs.
@@ -238,7 +253,7 @@ namespace mrpt
 
 		double  robotMax_V_mps;       //!< Max. instantaneous linear speed (m/s)
 
-		CReactiveInterfaceImplementation_Holo() :
+		CRobot2NavInterface_Holo() :
 			robotMax_V_mps(-1.0)
 		{
 		}

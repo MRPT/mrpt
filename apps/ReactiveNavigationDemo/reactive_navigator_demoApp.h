@@ -7,15 +7,15 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#ifndef REACTIVENAVIGATIONDEMOAPP_H
-#define REACTIVENAVIGATIONDEMOAPP_H
+#ifndef HOLONOMIC_NAVIGATOR_DEMOAPP_H
+#define HOLONOMIC_NAVIGATOR_DEMOAPP_H
 
 #include <wx/app.h>
 
-class ReactiveNavigationDemoApp : public wxApp
+class reactive_navigator_demoApp : public wxApp
 {
     public:
         virtual bool OnInit();
 };
 
-#endif // REACTIVENAVIGATIONDEMOAPP_H
+#endif // HOLONOMIC_NAVIGATOR_DEMOAPP_H
