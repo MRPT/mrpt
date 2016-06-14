@@ -66,7 +66,7 @@ void CReactiveNavigationSystem::changeRobotShape( const math::CPolygon &shape )
 void CReactiveNavigationSystem::loadConfigFile(const mrpt::utils::CConfigFileBase &ini, const std::string &sect_prefix)
 {
 	mrpt::utils::CConfigFileMemory dummyRobotParams;
-	dummyRobotParams.write("ROBOT_NAME","Name",sect_prefix.empty() ? std::string("ReactiveParams") : sect_prefix );
+	dummyRobotParams.write("ROBOT_NAME","Name",sect_prefix.empty() ? std::string("ReactiveParams") : ( sect_prefix+std::string("ReactiveParams")) );
 	this->loadConfigFile(ini,dummyRobotParams);
 }
 

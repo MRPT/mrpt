@@ -40,6 +40,7 @@
 #include <memory> // unique_ptr<>
 
 #include <mrpt/kinematics/CVehicleSimul_DiffDriven.h>
+#include "../wx-common/CMyRedirector.h"
 
 // JLBC: Unix X headers have these funny things...
 #ifdef Button1
@@ -104,11 +105,16 @@ class reactive_navigator_demoframe: public wxFrame
         static const long ID_PANEL3;
         static const long ID_NOTEBOOK1;
         static const long ID_PANEL1;
+        static const long ID_STATICTEXT3;
+        static const long ID_TEXTCTRL5;
+        static const long ID_PANEL7;
         static const long ID_STATICTEXT2;
         static const long ID_STATICTEXT1;
         static const long ID_XY_GLCANVAS;
         static const long ID_CUSTOM1;
         static const long ID_TEXTCTRL2;
+        static const long ID_PANEL8;
+        static const long ID_SPLITTERWINDOW2;
         static const long ID_PANEL5;
         static const long ID_SPLITTERWINDOW1;
         static const long ID_MENUITEM4;
@@ -137,17 +143,22 @@ class reactive_navigator_demoframe: public wxFrame
         wxPanel* pnParamsReactive;
         wxRadioBox* rbNavMode;
         wxMenu* Menu3;
+        wxSplitterWindow* SplitterWindow2;
         wxCustomButton* btnLoadMap;
         wxCustomButton* btnQuit;
         wxPanel* Panel1;
         wxStaticText* StaticText1;
+        wxStaticText* StaticText3;
         wxPanel* pnParamsGeneral;
+        wxPanel* Panel3;
         wxMenuItem* MenuItem3;
         wxMenuItem* mnuViewRobotPath;
+        wxTextCtrl* edLog;
         wxStatusBar* StatusBar1;
         wxPanel* pnParamsPreprog;
         wxCustomButton* btnHelp;
         wxCustomButton* btnPlaceRobot;
+        wxPanel* Panel2;
         wxSplitterWindow* SplitterWindow1;
         wxMenuItem* mnuViewMaxRange;
         wxCustomButton* btnPlaceTarget;
@@ -231,6 +242,8 @@ class reactive_navigator_demoframe: public wxFrame
 		TCursorPickState                 m_cursorPickState;   //!< The state of the cursor onto the 3D view:
 
 		mrpt::utils::CFileOutputStream   m_log_trajectory_file;
+
+		CMyRedirector *m_myRedirector;
 
 		// ========= Opengl View: Map & robot  =======
 		mrpt::opengl::CSetOfObjectsPtr		gl_grid;
