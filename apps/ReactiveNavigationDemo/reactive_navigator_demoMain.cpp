@@ -389,6 +389,7 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(wxWindow* parent,wxWi
 	btnStop->Enable(false);
 
 	// Redirect all output to control:
+	m_myRedirector = new CMyRedirector( edLog, true, 1,true, false );
 
 	WX_START_TRY
 
