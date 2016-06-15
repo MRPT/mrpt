@@ -12,6 +12,7 @@
 #include <mrpt/utils/CSerializable.h>
 #include <mrpt/utils/round.h>
 #include <mrpt/utils/TParameters.h>
+#include <mrpt/math/CPolygon.h>
 #include <mrpt/utils/mrpt_stdint.h>    // compiler-independent version of "stdint.h"
 #include <mrpt/nav/link_pragmas.h>
 #include <mrpt/otherlibs/stlplus/smart_ptr.hpp>  // STL+ library
@@ -183,6 +184,53 @@ protected:
 
 	typedef std::vector<mrpt::nav::CParameterizedTrajectoryGenerator*>  TListPTGs;      //!< A list of PTGs (bare pointers)
 	typedef std::vector<mrpt::nav::CParameterizedTrajectoryGeneratorPtr>  TListPTGPtr;  //!< A list of PTGs (smart pointers)
+
+
+	/** Base class for all PTGs using a 2D polygonal robot shape model.
+	 *  \ingroup nav_tpspace
+	 */
+	class NAV_IMPEXP CPTG_RobotShape_Polygonal
+	{
+	public:
+		CPTG_RobotShape_Polygonal() : m_robotShape() {}
+		virtual ~CPTG_RobotShape_Polygonal() {}
+
+		/** @name Robot shape  
+		  * @{ **/
+		/** Robot shape must be set before initialization, either from ctor params or via this method. */
+		void setRobotShape(const mrpt::math::CPolygon & robotShape) {
+			m_robotShape = robotShape;
+			internal_processNewRobotShape();
+		}
+		const mrpt::math::CPolygon & getRobotShape() const { return m_robotShape; }
+		/** @} */
+	protected:
+		virtual void internal_processNewRobotShape() = 0; //!< Will be called whenever the robot shape is set / updated
+		mrpt::math::CPolygon m_robotShape;
+	};
+
+	/** Base class for all PTGs using a 2D circular robot shape model.
+	 *  \ingroup nav_tpspace
+	 */
+	class NAV_IMPEXP CPTG_RobotShape_Circular
+	{
+	public:
+		CPTG_RobotShape_Circular() : m_robotRadius(.0) {}
+		virtual ~CPTG_RobotShape_Circular() {}
+
+		/** @name Robot shape  
+		  * @{ **/
+		/** Robot shape must be set before initialization, either from ctor params or via this method. */
+		void setRobotShapeRadius(const double robot_radius) {
+			m_robotRadius = robot_radius;
+			internal_processNewRobotShape();
+		}
+		double getRobotShapeRadius() const { return m_robotRadius; }
+		/** @} */
+	protected:
+		virtual void internal_processNewRobotShape() = 0; //!< Will be called whenever the robot shape is set / updated
+		double m_robotRadius;
+	};
 
 }
 }

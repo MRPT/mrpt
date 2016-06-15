@@ -66,10 +66,10 @@ namespace mrpt
 			  * Section to be read is "{sect_prefix}ReactiveParams". */
 			void loadConfigFile(const mrpt::utils::CConfigFileBase &ini, const std::string &sect_prefix="") MRPT_OVERRIDE;
 
-			/** Change the robot shape, which is taken into account for collision
-			  *  grid building.
-			  */
+			/** Defines the 2D polygonal robot shape, used for some PTGs for collision checking. */
 			void changeRobotShape( const mrpt::math::CPolygon &shape );
+			/** Defines the 2D circular robot shape radius, used for some PTGs for collision checking. */
+			void changeRobotCircularShapeRadius( const double R );
 
 			/** Returns the number of different PTGs that have been setup */
 			virtual size_t getPTG_count() const { return PTGs.size(); }
@@ -81,19 +81,13 @@ namespace mrpt
 				return PTGs[i];
 			}
 
-
 		private:
-			// ------------------------------------------------------
-			//					PRIVATE	VARIABLES
-			// ------------------------------------------------------
 			float	minObstaclesHeight, maxObstaclesHeight; // The range of "z" coordinates for obstacles to be considered
 
-			/** The robot 2D shape model */
-			math::CPolygon		m_robotShape;
+			math::CPolygon m_robotShape;               //!< The robot 2D shape model. Only one of `m_robotShape` or `m_robotShape` will be used in each PTG
+			double         m_robotShapeCircularRadius; //!< Radius of the robot if approximated as a circle. Only one of `m_robotShape` or `m_robotShape` will be used in each PTG
 
-			/** The set of transformations to be used:
-			  */
-			std::vector<CParameterizedTrajectoryGenerator*>	PTGs;
+			std::vector<CParameterizedTrajectoryGenerator*>	PTGs;  //!< The list of PTGs to use for navigation
 
 			// Steps for the reactive navigation sytem.
 			// ----------------------------------------------------------------------------

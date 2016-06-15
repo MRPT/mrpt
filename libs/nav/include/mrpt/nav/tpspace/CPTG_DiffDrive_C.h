@@ -17,6 +17,8 @@ namespace mrpt
 	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE(CPTG_DiffDrive_C, CParameterizedTrajectoryGenerator, NAV_IMPEXP)
 
 	/** A PTG for circular paths ("C" type PTG in papers). 
+	 * - **Compatible kinematics**: differential-driven / Ackermann steering
+	 * - **Compatible robot shape**: Arbitrary 2D polygon
 	 * 
 	 * Accepted parameters in setParams()
 	 * - params["ref_distance"]: Maximum trayectory distance (meters).

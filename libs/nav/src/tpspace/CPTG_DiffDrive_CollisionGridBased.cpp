@@ -701,10 +701,9 @@ void CPTG_DiffDrive_CollisionGridBased::setRefDistance(const double refDist)
 	this->refDistance = refDist;
 }
 
-void CPTG_DiffDrive_CollisionGridBased::setRobotShape(const mrpt::math::CPolygon & robotShape)
+void CPTG_DiffDrive_CollisionGridBased::internal_processNewRobotShape()
 {
 	ASSERTMSG_(m_trajectory.empty(), "Changing robot shape not allowed in this class after initialization!");
-	m_robotShape = robotShape;
 }
 
 void CPTG_DiffDrive_CollisionGridBased::deinitialize()

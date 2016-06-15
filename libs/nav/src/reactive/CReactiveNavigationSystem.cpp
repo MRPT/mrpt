@@ -28,8 +28,8 @@ using namespace std;
   ---------------------------------------------------------------*/
 CReactiveNavigationSystem::CReactiveNavigationSystem(
 	CRobot2NavInterface   &react_iterf_impl,
-    bool					enableConsoleOutput,
-    bool					enableLogToFile)
+	bool					enableConsoleOutput,
+	bool					enableLogToFile)
 	:
 	CAbstractPTGBasedReactive(react_iterf_impl,enableConsoleOutput,enableLogToFile),
 	minObstaclesHeight           (-1.0),
@@ -54,11 +54,15 @@ CReactiveNavigationSystem::~CReactiveNavigationSystem()
 void CReactiveNavigationSystem::changeRobotShape( const math::CPolygon &shape )
 {
 	m_PTGsMustBeReInitialized = true;
-
 	if ( shape.verticesCount()<3 )
 		THROW_EXCEPTION("The robot shape has less than 3 vertices!!")
-
 	m_robotShape = shape;
+}
+void CReactiveNavigationSystem::changeRobotCircularShapeRadius( const double R )
+{
+	m_PTGsMustBeReInitialized = true;
+	ASSERT_(R>0);
+	m_robotShapeCircularRadius = R;
 }
 
 
@@ -102,20 +106,28 @@ void CReactiveNavigationSystem::loadConfigFile(const mrpt::utils::CConfigFileBas
 
 	badNavAlarm_AlarmTimeout = ini.read_float("GLOBAL_CONFIG","ALARM_SEEMS_NOT_APPROACHING_TARGET_TIMEOUT", badNavAlarm_AlarmTimeout, true);
 
-	// Load robot shape:
+	// Load robot shape: 1/2 polygon
 	// ---------------------------------------------
-	math::CPolygon		shape;
 	vector<float>        xs,ys;
+	ini.read_vector(robotName,"RobotModel_shape2D_xs",vector<float>(0), xs, false );
+	ini.read_vector(robotName,"RobotModel_shape2D_ys",vector<float>(0), ys, false );
+	ASSERTMSG_(xs.size()==ys.size(),"Config parameters `RobotModel_shape2D_xs` and `RobotModel_shape2D_ys` must have the same length!");
+	if (!xs.empty())
+	{
+		math::CPolygon shape;
+		for (size_t i=0;i<xs.size();i++)
+			shape.AddVertex(xs[i],ys[i]);
+		changeRobotShape( shape );
+	}
 
-	ini.read_vector(robotName,"RobotModel_shape2D_xs",vector<float>(0), xs, true );
-	ini.read_vector(robotName,"RobotModel_shape2D_ys",vector<float>(0), ys, true );
-	ASSERT_(xs.size()==ys.size());
-
-	// Add to polygon
-	for (size_t i=0;i<xs.size();i++)
-		shape.AddVertex(xs[i],ys[i]);
-
-	changeRobotShape( shape );
+	// Load robot shape: 2/2 circle
+	// ---------------------------------------------
+	const double robot_shape_radius = ini.read_double(robotName,"RobotModel_circular_shape_radius",.0, false );
+	ASSERT_(robot_shape_radius>=.0);
+	if (robot_shape_radius!=.0) 
+	{
+		changeRobotCircularShapeRadius( robot_shape_radius );
+	}
 
 	// Load PTGs from file:
 	// ---------------------------------------------
@@ -170,6 +182,7 @@ void CReactiveNavigationSystem::loadConfigFile(const mrpt::utils::CConfigFileBas
 	printf_debug("  Max. ref. distance\t\t= %f\n", refDistance );
 	printf_debug("  Cells resolution \t= %.04f\n", colGridRes );
 	printf_debug("  Robot Shape Points Count \t= %u\n", m_robotShape.verticesCount() );
+	printf_debug("  Robot Shape Circular Radius \t= %.02f\n", m_robotShapeCircularRadius );
 	printf_debug("  Obstacles 'z' axis range \t= [%.03f,%.03f]\n", minObstaclesHeight, maxObstaclesHeight );
 	printf_debug("\n\n");
 
@@ -193,12 +206,20 @@ void CReactiveNavigationSystem::STEP1_InitPTGs()
 			printf_debug("[loadConfigFile] Initializing PTG#%u...", i);
 			printf_debug(PTGs[i]->getDescription().c_str());
 
-			// Set robot shape:
+			// Polygonal robot shape?
 			{
-				mrpt::nav::CPTG_DiffDrive_CollisionGridBased *ptg = dynamic_cast<mrpt::nav::CPTG_DiffDrive_CollisionGridBased *>(PTGs[i]);
+				mrpt::nav::CPTG_RobotShape_Polygonal *ptg = dynamic_cast<mrpt::nav::CPTG_RobotShape_Polygonal *>(PTGs[i]);
 				if (ptg)
 					ptg->setRobotShape(m_robotShape);
 			}
+			// Circular robot shape?
+			{
+				mrpt::nav::CPTG_RobotShape_Circular *ptg = dynamic_cast<mrpt::nav::CPTG_RobotShape_Circular*>(PTGs[i]);
+				if (ptg)
+					ptg->setRobotShapeRadius(m_robotShapeCircularRadius);
+			}
+
+			// Init:
 			PTGs[i]->initialize(
 				format("%s/ReacNavGrid_%s_%03u.dat.gz", ptg_cache_files_directory.c_str(), robotName.c_str(), i),
 				m_enableConsoleOutput /*verbose*/
@@ -269,12 +290,12 @@ void CReactiveNavigationSystem::loggingGetWSObstaclesAndShape(CLogFileRecord &ou
 	out_log.WS_Obstacles = m_WS_Obstacles;
 
 	const size_t nVerts = m_robotShape.size();
-    out_log.robotShape_x.resize(nVerts);
-    out_log.robotShape_y.resize(nVerts);
+	out_log.robotShape_x.resize(nVerts);
+	out_log.robotShape_y.resize(nVerts);
 
-    for (size_t i=0;i<nVerts;i++)
-    {
+	for (size_t i=0;i<nVerts;i++)
+	{
 		out_log.robotShape_x[i]= m_robotShape.GetVertex_x(i);
 		out_log.robotShape_y[i]= m_robotShape.GetVertex_y(i);
-    }
+	}
 }
