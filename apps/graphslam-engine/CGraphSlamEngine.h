@@ -26,7 +26,9 @@
 #include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/obs/CActionRobotMovement2D.h>
 #include <mrpt/obs/CActionRobotMovement3D.h>
+#include <mrpt/obs/CObservationOdometry.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
+#include <mrpt/obs/CObservationImage.h>
 #include <mrpt/obs/CRawlog.h>
 #include <mrpt/poses/CPosePDF.h>
 #include <mrpt/slam/CICP.h>
@@ -71,22 +73,16 @@ namespace mrpt { namespace graphslam {
 
 	template< 
   		class GRAPH_t=typename mrpt::graphs::CNetworkOfPoses2DInf,
-  		class NODE_REGISTRATOR=typename mrpt::graphslam::deciders::CFixedIntervalsNRD_t<GRAPH_t>, 
-  		class EDGE_REGISTRATOR=typename mrpt::graphslam::deciders::CICPDistanceERD_t<GRAPH_t> >
+  		class NODE_REGISTRAR=typename mrpt::graphslam::deciders::CFixedIntervalsNRD_t<GRAPH_t>, 
+  		class EDGE_REGISTRAR=typename mrpt::graphslam::deciders::CICPDistanceERD_t<GRAPH_t> >
 		class CGraphSlamEngine_t {
 			public:
 
 				typedef std::map<std::string, mrpt::utils::CFileOutputStream*> fstreams_out;
-				typedef std::map<std::string, mrpt::utils::CFileOutputStream*>::
-					iterator fstreams_out_it;
-				typedef std::map<std::string, mrpt::utils::CFileOutputStream*>::
-					const_iterator fstreams_out_cit;
+				typedef std::map<std::string, mrpt::utils::CFileOutputStream*>::iterator fstreams_out_it;
 
 				typedef std::map<std::string, mrpt::utils::CFileInputStream*> fstreams_in;
-				typedef std::map<std::string, mrpt::utils::CFileInputStream*>::
-					iterator fstreams_in_it;
-				typedef std::map<std::string, mrpt::utils::CFileInputStream*>::
-					const_iterator fstreams_in_cit;
+				typedef std::map<std::string, mrpt::utils::CFileInputStream*>::iterator fstreams_in_it;
 
 				typedef typename GRAPH_t::constraint_t constraint_t;
 				// type of underlying poses (2D/3D)
@@ -174,7 +170,7 @@ namespace mrpt { namespace graphslam {
 				/**
 		 		 * General initialization method to call from the different Ctors
 		 		 */
-				void initGraphSlamEngine();
+				void initCGraphSlamEngine();
 				/**
 		 		 * Initialize (clean up and create new files) the output directory
 		 		 * Also provides cmd line arguements for the user to choose the desired
@@ -200,18 +196,34 @@ namespace mrpt { namespace graphslam {
 					*text_index = m_curr_text_index;
 					m_curr_text_index += kIndexTextStep;
 				}
-				inline void updateCurPosViewport(const GRAPH_t& gr);
-				inline void updateTotalOdometryDistance() const;
-
 				/**
-		 		 * BuildGroundTruthMap
+ 				 * updateCurrPosViewport
+ 				 *
+ 				 * Udpate the viewport responsible for displaying the graph-building procedure
+ 				 * in the estimated position of the robot
+ 				 */
+				inline void updateCurrPosViewport(const GRAPH_t& gr);
+				/**
+				 * visualizeEstimatedRobotTrajectory
+				 *
+				 * Visualize the estimated trajectory of the robot 
+				 */
+				void updateEstimatedTrajectoryVisualization(const GRAPH_t& gr);
+				/**
+		 		 * buildGroundTruthMap
 		 		 *
 		 		 * Parse the ground truth .txt file and fill in the corresponding
 		 		 * timestamp_to_pose2d map. Return true if operation was successful
 		 		 * Call the function in the constructor if the visualize_GT flag is set to
 		 		 * true. 
 		 		 */
-				inline void BuildGroundTruthMap(const std::string& rawlog_fname_GT);
+				inline void buildGroundTruthMap(const std::string& rawlog_fname_GT);
+				/**
+				 * updateGTVisualization
+				 *
+				 * Display the next ground truth position in the visualization window
+				 */
+				void updateGTVisualization();
 				/**
 		 		 * autofitObjectInView
 		 		 *
@@ -235,8 +247,8 @@ namespace mrpt { namespace graphslam {
 				GRAPH_t m_graph;
 
 				// registrator instances
-				NODE_REGISTRATOR m_node_registrator; 
-				EDGE_REGISTRATOR m_edge_registrator; 
+				NODE_REGISTRAR m_node_registrar; 
+				EDGE_REGISTRAR m_edge_registrar; 
 
 				/**
 		 		 * Problem parameters.
@@ -247,15 +259,16 @@ namespace mrpt { namespace graphslam {
 
 				std::string	m_rawlog_fname;
 				std::string	m_fname_GT;
+				size_t m_curr_GT_poses_index; // counter for reading back the GT_poses
 				std::string	m_output_dir_fname;
-				bool		m_user_decides_about_output_dir;
-				std::string	m_debug_fname;
+				bool m_user_decides_about_output_dir;
 				std::string	m_save_graph_fname;
 
-				bool		m_do_pose_graph_only;
+				bool m_do_pose_graph_only;
 				std::string	m_optimizer;
 
-				bool		m_has_read_config;
+				bool m_has_read_config;
+				bool m_observation_only_rawlog;
 
 				/**
 		 		 * FileStreams
@@ -263,7 +276,6 @@ namespace mrpt { namespace graphslam {
 		 		 * closed (if still open) in the class Dtor.
 		 		 */
 				fstreams_out m_out_streams;
-				fstreams_in m_in_streams;
 
 				// visualization objects
 				mrpt::gui::CDisplayWindow3D* m_win;

@@ -99,6 +99,7 @@ namespace mrpt { namespace graphslam { namespace deciders {
 							// threshold for accepting an ICP constraint in the graph
 							double ICP_goodness_thresh;
 							int LC_min_nodeid_diff;
+
     			};
 
 
@@ -121,9 +122,10 @@ namespace mrpt { namespace graphslam { namespace deciders {
     					const constraint_t& rel_edge );
     			/**
     			 * Run ICP for the laser scans of the given nodeIDs and fill the
-    			 * potential constraint between them. Returns the goodness threshold
-    			 * so that the caller can decide if they want to keep the constraint
-    			 * or not
+    			 * potential constraint between them. Returns the goodness of the
+    			 * potential constraint so that the caller can decide if they want to
+    			 * keep the constraint or not. Returns 0 if laser scans have not been
+    			 * registered at one of the give node positions
     			 */
 					double getICPEdge(
 							const mrpt::utils::TNodeID& from,
@@ -147,6 +149,9 @@ namespace mrpt { namespace graphslam { namespace deciders {
 					std::map<const mrpt::utils::TNodeID, 
 						mrpt::obs::CObservation2DRangeScanPtr> m_nodes_to_laser_scans;
 					std::map<const std::string, int> m_edge_types_to_nums;
+
+    			int m_last_total_num_of_nodes;
+    			CObservation2DRangeScanPtr m_last_laser_scan;
 
 
 			};

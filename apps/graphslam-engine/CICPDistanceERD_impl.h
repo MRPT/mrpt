@@ -41,6 +41,8 @@ void CICPDistanceERD_t<GRAPH_t>::initCICPDistanceERD_t() {
 	m_win = NULL;
 	m_graph = NULL;
 
+	m_last_total_num_of_nodes = 0;
+
 	m_edge_types_to_nums["ICP"] = 0;
 	m_edge_types_to_nums["LC"] = 0;
 
@@ -60,41 +62,54 @@ template<class GRAPH_t> void CICPDistanceERD_t<GRAPH_t>::updateDeciderState(
 		mrpt::obs::CObservationPtr observation ) {
 	MRPT_START;
 	MRPT_UNUSED_PARAM(action);
-
-
-	if (observation.present()) {
-		// TODO - implement this
+	
+	// check possible prior node registration
+	bool registered_new_node = false;
+	if (m_last_total_num_of_nodes < m_graph->nodeCount()) {
+		registered_new_node = true;
+		m_last_total_num_of_nodes = m_graph->nodeCount();
+		//std::cout << "CICPDistanceERD: Registered new node. " << std::endl;
 	}
-	else {
-		// TODO - validate data here
 
+	if (observation.present()) { // observation-only rawlog format
+			if (IS_CLASS(observation, CObservation2DRangeScan)) {
+				m_last_laser_scan =
+					static_cast<mrpt::obs::CObservation2DRangeScanPtr>(observation);
+			}
+
+			// add the last laser_scan
+			if (registered_new_node && m_last_laser_scan) {
+				m_nodes_to_laser_scans[m_graph->nodeCount()-1] = m_last_laser_scan;
+				//std::cout << "Added laser scans of nodeID: "
+					//<< m_graph->nodeCount()-1 << std::endl;
+			}
+
+	}
+	else { // action-observations rawlog format
 		// append current laser scan
 		CObservation2DRangeScanPtr curr_laser_scan =
 			observations->getObservationByClass<CObservation2DRangeScan>();
-
-		if (m_graph->nodeCount() == 0) {
-			m_nodes_to_laser_scans[m_graph->root] = curr_laser_scan;
-			//std::cout << "Added laser scans of root: " << m_graph->root << std::endl;
-			return;
-		}
-		else {
+		if (registered_new_node && curr_laser_scan) {
 			m_nodes_to_laser_scans[m_graph->nodeCount()-1] = curr_laser_scan;
 			//std::cout << "Added laser scans of nodeID: "
-				//<< m_graph->nodeCount()-1 << std::endl;
+			//<< m_graph->nodeCount()-1 << std::endl;
 		}
+	}
 
+	// edge registration procedure - same for both rawlog formats
+	if (registered_new_node) {
 		// get set of nodes within predefined distance for ICP
 		std::set<mrpt::utils::TNodeID> nodes_to_check_ICP;
 		this->getNearbyNodesOf(
 				&nodes_to_check_ICP,
 				m_graph->nodeCount()-1,
 				params.ICP_max_distance);
-		std::cout << "Found * " << nodes_to_check_ICP.size() 
-			<< " * nodes close to nodeID: " << m_graph->nodeCount()-1 << endl;
+		//std::cout << "Found * " << nodes_to_check_ICP.size() 
+			//<< " * nodes close to nodeID: " << m_graph->nodeCount()-1 << endl;
 
 		checkRegistrationCondition(nodes_to_check_ICP);
-
 	}
+
 	MRPT_END;
 }
 
@@ -107,15 +122,14 @@ void CICPDistanceERD_t<GRAPH_t>::checkRegistrationCondition(
 	for (set<mrpt::utils::TNodeID>::const_iterator 
 			node_it = nodes_set.begin();
 			node_it != nodes_set.end(); ++node_it) {
-
-		CObservation2DRangeScanPtr prev_laser_scan = 
-			m_nodes_to_laser_scans[*node_it];
+		//std::cout << "Checking ICP against node: " << *node_it << std::endl;
+		//mrpt::system::pause();
 
 		// get the ICP edge between current and last node
 		constraint_t rel_edge;
 		double ICP_goodness = this->getICPEdge(
 				*node_it,
-				m_graph->nodeCount()-1, 
+				m_graph->nodeCount()-1,
 				&rel_edge);
 
 		// criterion for registering a new node
@@ -123,13 +137,13 @@ void CICPDistanceERD_t<GRAPH_t>::checkRegistrationCondition(
 			this->registerNewEdge(
 					*node_it, m_graph->nodeCount()-1, rel_edge);
 			m_edge_types_to_nums["ICP"]++;
-			std::cout << "Added ICP constraint: "
-				<< *node_it << " -> " << m_graph->nodeCount()-1 << ".";
+			//std::cout << "Added ICP constraint: "
+				//<< *node_it << " -> " << m_graph->nodeCount()-1 << ".";
 			if (abs(m_graph->nodeCount()-1 - *node_it) > params.LC_min_nodeid_diff) {
 				m_edge_types_to_nums["LC"]++;
-				std::cout << "\t[ Loop Closure ]";
+				//std::cout << "\t[ Loop Closure ]";
 			}
-			std::cout << std::endl;
+			//std::cout << std::endl;
 		}
 	}
 
@@ -155,9 +169,30 @@ double CICPDistanceERD_t<GRAPH_t>::getICPEdge(
 		constraint_t* rel_edge ) {
 	MRPT_START;
 
-	// get the laser scan measurements
-	CObservation2DRangeScanPtr prev_laser_scan = m_nodes_to_laser_scans[from];
-	CObservation2DRangeScanPtr curr_laser_scan = m_nodes_to_laser_scans[to];
+	// get the laser scan measurements - first check if they exist
+	CObservation2DRangeScanPtr prev_laser_scan;
+	CObservation2DRangeScanPtr curr_laser_scan;
+
+	std::map<const mrpt::utils::TNodeID, 
+		mrpt::obs::CObservation2DRangeScanPtr>::const_iterator search =
+			m_nodes_to_laser_scans.find(from); 
+	if (search != m_nodes_to_laser_scans.end()) {
+		prev_laser_scan = search->second;
+	}
+	else {
+		std::cout << "Unable to find laser scan of NodeID: " 
+			<< from << std::endl;
+		return 0.0;
+	}
+	search =	m_nodes_to_laser_scans.find(to); 
+	if (search != m_nodes_to_laser_scans.end()) {
+		curr_laser_scan = search->second;
+	}
+	else {
+		std::cout << "Unable to find laser scan of NodeID: " 
+			<< to << std::endl;
+		return 0.0;
+	}
 
 	// Uses TParams::ICP member variable
 	CSimplePointsMap m1,m2;
@@ -167,7 +202,7 @@ double CICPDistanceERD_t<GRAPH_t>::getICPEdge(
 	pose_t initial_pose;
 	// use the difference of the node positions as an initial alignment
 	// estimation (dijkstra_nodes_estimate has to be run from the caller
-	// function
+	// function)
 	initial_pose = m_graph->nodes[to] - m_graph->nodes[from];
 
 	m1.insertObservation(&(*prev_laser_scan));
@@ -180,13 +215,6 @@ double CICPDistanceERD_t<GRAPH_t>::getICPEdge(
 			&running_time,
 			(void*)&info);
 
-	//VERBOSE_COUT << "getICPEdge: goodness: "
-	//<< info.goodness << std::endl;
-	//VERBOSE_COUT << "initial estimate: " << std::endl
-	//<< initial_pose << std::endl;
-	//VERBOSE_COUT << "relative edge: " << std::endl
-	//<< rel_edge->getMeanVal() << std::endl;
-	
 	// return the edge regardless of the goodness of the alignment
 	rel_edge->copyFrom(*pdf);  	
 	return info.goodness;
@@ -200,10 +228,6 @@ void CICPDistanceERD_t<GRAPH_t>::getNearbyNodesOf(
 		double distance ) {
 	MRPT_START;
 
-	std::cout << std::endl;
-	std::cout << "In getNearbyNodes of..." << std::endl;
-	std::cout << "distance for addition: " << distance << std::endl;
-	std::cout << "number of nodes: " << m_graph->nodeCount()-1 << std::endl;
 	if (distance > 0) {
 		// check all but the last node.
 		for (TNodeID nodeID = 0; nodeID < m_graph->nodeCount()-1; ++nodeID) {
@@ -284,7 +308,7 @@ void CICPDistanceERD_t<GRAPH_t>::initializeVisuals() {
 template<class GRAPH_t>
 void CICPDistanceERD_t<GRAPH_t>::updateVisuals() {
 	MRPT_START;
-	std::cout << "Updating CICPDistanceERD visuals" << std::endl;
+	//std::cout << "Updating CICPDistanceERD visuals" << std::endl;
 
 	// update ICP_max_distance Disk
 	if (m_win && params.ICP_max_distance > 0) {

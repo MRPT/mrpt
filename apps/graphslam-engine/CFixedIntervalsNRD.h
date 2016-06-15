@@ -12,11 +12,12 @@
 
 
 
+#include <mrpt/obs/CObservationOdometry.h>
+#include <mrpt/obs/CRawlog.h>
 #include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/utils/CConfigFileBase.h>
 #include <mrpt/utils/CStream.h>
 #include <mrpt/utils/types_simple.h>
-#include <mrpt/obs/CRawlog.h>
 
 #include "CNodeRegistrationDecider.h"
 
@@ -27,6 +28,7 @@ using namespace mrpt;
 using namespace mrpt::utils;
 using namespace mrpt::graphs;
 using namespace mrpt::math;
+using namespace mrpt::obs;
 
 using namespace std;
 
@@ -117,9 +119,15 @@ namespace mrpt { namespace graphslam { namespace deciders {
 			TNodeID m_prev_registered_node;
 
 			constraint_t	m_since_prev_node_PDF;
-	  	InfMat m_init_path_uncertainty;
 
 			pose_t m_curr_estimated_pose;
+			// pose_t using only odometry information. Handy for observation-only
+			// rawlogs.
+			pose_t m_curr_odometry_only_pose; 
+			pose_t m_last_odometry_only_pose; 
+			// variable to keep track of whether we are reading from an
+			// observation-only rawlog file or from an action-observation rawlog
+			bool m_observation_only_rawlog;
 	};
 
 } } } // end of namespaces

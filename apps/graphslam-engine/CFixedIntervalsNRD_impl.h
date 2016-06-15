@@ -40,8 +40,8 @@ void CFixedIntervalsNRD_t<GRAPH_t>::initCFixedIntervalsNRD_t() {
 		1.0, 0.0, 0.0,
 		0.0, 1.0 ,0.0,
 		0.0, 0.0, 1.0 };
-	InfMat m_init_path_uncertainty(tmp);
-	m_since_prev_node_PDF.cov_inv = m_init_path_uncertainty;
+	InfMat init_path_uncertainty(tmp);
+	m_since_prev_node_PDF.cov_inv = init_path_uncertainty;
 	m_since_prev_node_PDF.mean = pose_t();
 
 	std::cout << "CFixedIntervalsNRD: Initialized class object" << std::endl;
@@ -64,11 +64,24 @@ bool CFixedIntervalsNRD_t<GRAPH_t>::updateDeciderState(
 	//cout << "in updateDeciderState..." << endl;
 
 	if (observation.present()) { // FORMAT #2
-		// TODO - implement this
-	}
+		m_observation_only_rawlog = true;
+
+		if (IS_CLASS(observation, CObservationOdometry)) {
+			CObservationOdometryPtr obs_odometry = 
+				static_cast<CObservationOdometryPtr>(observation);
+			// not incremental - gives the absolute odometry reading
+			m_curr_odometry_only_pose = obs_odometry->odometry;
+			//std::cout << "Current odometry-only" << m_curr_odometry_only_pose << std::endl;
+
+			// I don't have any information about the covariane of the move in
+			// observation-only format
+			m_since_prev_node_PDF.mean =
+				m_curr_odometry_only_pose - m_last_odometry_only_pose;
+		}
+	} // IF FORMAT #2 - observation-only
 	else { // FORMAT #1
-		// TODO - add input validation for the CActionRobotMovement2D -
-		// GetRuntimeClass?
+		m_observation_only_rawlog = false;
+
 		mrpt::obs::CActionRobotMovement2DPtr robot_move = action->getBestMovementEstimation();
 		mrpt::poses::CPosePDFPtr increment = robot_move->poseChange;
 		pose_t increment_pose = increment->getMeanVal();
@@ -78,12 +91,21 @@ bool CFixedIntervalsNRD_t<GRAPH_t>::updateDeciderState(
 		// update the relative PDF of the path since the LAST node was inserted
 		constraint_t incremental_constraint(increment_pose, increment_inf_mat);
 		m_since_prev_node_PDF += incremental_constraint;
+	} // ELSE - FORMAT #1
 
-	}
 	m_curr_estimated_pose = m_graph->nodes[m_prev_registered_node] + 
 		m_since_prev_node_PDF.getMeanVal();
 
 	bool registered = this->checkRegistrationCondition();
+
+	if (registered) {
+		if (m_observation_only_rawlog) {
+			// keep track of the odometry-only pose_t at the last inserted graph node
+			m_last_odometry_only_pose = m_curr_odometry_only_pose;
+		}
+		m_since_prev_node_PDF = constraint_t();
+	}
+
 	return registered;
 }
 
@@ -112,7 +134,7 @@ template<class GRAPH_t>
 bool CFixedIntervalsNRD_t<GRAPH_t>::registerNewNode() {
 	bool registered = true; // By default it should be able to register the node
 
-	//cout << "in registerNewNode..." << endl;
+	//std::cout << "in registerNewNode..." << endl;
 
 	mrpt::utils::TNodeID from = m_prev_registered_node;
 	mrpt::utils::TNodeID to = ++m_prev_registered_node;
@@ -120,10 +142,7 @@ bool CFixedIntervalsNRD_t<GRAPH_t>::registerNewNode() {
 	m_graph->nodes[to] = m_graph->nodes[from] + m_since_prev_node_PDF.getMeanVal();
   m_graph->insertEdgeAtEnd(from, to, m_since_prev_node_PDF);
 
-	// reset the relative PDF
-	m_since_prev_node_PDF.cov_inv = m_init_path_uncertainty;
-	m_since_prev_node_PDF.mean = pose_t();
-
+	//std::cout << "Registered new Odometry edge: " << m_since_prev_node_PDF << std::endl;
 	return registered;
 }
 template<class GRAPH_t>
