@@ -99,7 +99,7 @@ namespace mrpt
 
 		/** Provides a copy of the last log record with information about execution.
 			* \param o An object where the log will be stored into.
-			* \note Log records are not prepared unless either "enableLogFile" is enabled in the constructor or "enableKeepLogRecords()" has been called.
+			* \note Log records are not prepared unless either "enableLogFile" is enabled in the constructor or "enableLogFile()" has been called.
 			*/
 		void getLastLogRecord( CLogFileRecord &o );
 

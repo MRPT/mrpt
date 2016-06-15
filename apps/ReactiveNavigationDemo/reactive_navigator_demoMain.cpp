@@ -389,7 +389,7 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(wxWindow* parent,wxWi
 	btnStop->Enable(false);
 
 	// Redirect all output to control:
-	m_myRedirector = new CMyRedirector( edLog, true, 1,true, false );
+	m_myRedirector = new CMyRedirector( edLog, true, 100, true);
 
 	WX_START_TRY
 
@@ -631,7 +631,8 @@ void reactive_navigator_demoframe::OntimRunSimulTrigger(wxTimerEvent& event)
 		static int decim_call_dump_log = 0;
 		if (decim_call_dump_log++>10) {
 			decim_call_dump_log = 0;
-			if (m_myRedirector) m_myRedirector->dumpNow();
+			std::cout.flush();
+			std::cerr.flush();
 		}
 
 		if (m_is_running) {
@@ -669,7 +670,11 @@ bool reactive_navigator_demoframe::reinitSimulator()
 	{
 	case 0:
 		{
-			m_navMethod.reset( new mrpt::nav::CReactiveNavigationSystem(*m_robotSimul2NavInterface) );
+			mrpt::nav::CReactiveNavigationSystem *react = new mrpt::nav::CReactiveNavigationSystem(*m_robotSimul2NavInterface);
+			m_navMethod.reset(react);
+
+			react->enableKeepLogRecords(true);
+			
 			cfg.setContent( std::string(edParamsReactive->GetValue().mb_str() ) );
 			break;
 		}
@@ -732,10 +737,6 @@ void reactive_navigator_demoframe::simulateOneStep(double time_step)
 	gl_scan2D->setScan( simulatedScan ); // Draw scaled scan in right-hand view
 
 	// Navigate:
-//	mrpt::math::TPoint2D relTargetPose = mrpt::math::TPoint2D( mrpt::poses::CPoint2D(m_targetPoint) - mrpt::poses::CPose2D(m_robotSimul->getCurrentPose()) );
-//	relTargetPose*= 1.0/simulatedScan.maxRange;     // Normalized relative target:
-//	gl_rel_target->setLocation(relTargetPose.x, relTargetPose.y,0);
-
 	m_navMethod->navigationStep();
 
 	// Run robot simulator:
@@ -753,7 +754,6 @@ void reactive_navigator_demoframe::simulateOneStep(double time_step)
 		decim_path=0;
 	}
 
-	// log file:
 	if (cbEnableLog->IsChecked())
 	{
 		if (!m_log_trajectory_file.is_open())
@@ -780,15 +780,20 @@ void reactive_navigator_demoframe::simulateOneStep(double time_step)
 			m_log_trajectory_file.close();
 	}
 
+	mrpt::nav::CAbstractPTGBasedReactive *ptg_nav = dynamic_cast<mrpt::nav::CAbstractPTGBasedReactive * >(m_navMethod.get());
+
+
 	// Clear stuff which will be updated if used below:
 	edInfoLocalView->Clear();
 	gl_nd_gaps->clear();
 
-#if 0
 	// Update 2D view graphs:
-	if (out_log && IS_CLASS(out_log, CLogFileRecord_ND))
+	mrpt::nav::CLogFileRecord lfr;
+	if (ptg_nav) ptg_nav->getLastLogRecord(lfr);
+	MRPT_TODO("Show for all PTGs!");
+	if (lfr.infoPerPTG.size()>0 && IS_CLASS(lfr.infoPerPTG[0].HLFR, CLogFileRecord_ND))
 	{
-		CLogFileRecord_NDPtr log = CLogFileRecord_NDPtr(out_log);
+		CLogFileRecord_NDPtr log = CLogFileRecord_NDPtr(lfr.infoPerPTG[0].HLFR);
 		const size_t nGaps = log->gaps_ini.size();
 
 		const string sSitu = mrpt::utils::TEnumType<CHolonomicND::TSituations>::value2name(log->situation);
@@ -815,11 +820,10 @@ void reactive_navigator_demoframe::simulateOneStep(double time_step)
 		}
 	}
 	// Movement direction:
-	const double d = desiredSpeed/m_simul_options.ROBOT_MAX_SPEED;
-	gl_line_direction->setLineCoords(
-		0,0,0,
-		cos(desiredDirection) * d, sin(desiredDirection) * d, 0 );
-#endif
+	//const double d = desiredSpeed/m_simul_options.ROBOT_MAX_SPEED;
+	//gl_line_direction->setLineCoords(
+	//	0,0,0,
+	//	cos(desiredDirection) * d, sin(desiredDirection) * d, 0 );
 
 }
 
