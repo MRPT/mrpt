@@ -39,9 +39,6 @@ namespace mrpt { namespace graphslam { namespace deciders {
 		 		 * interface should use
 		 		 * (part of) the specified parameters and call the
 		 		 * checkRegistrationCondition to check for potential Edge registration
-		 		 *
-		 		 * Returns map of edge types to number of edges for each corresponding
-		 		 * type.
 		 		 */
 				virtual void updateDeciderState(
 						mrpt::obs::CActionCollectionPtr action,

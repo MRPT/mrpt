@@ -143,7 +143,7 @@ class CEdgeCounter_t {
 		 */
 		void setEdgesManually(const std::string& name, int num_of_edges) {
 			std::map<std::string, int>::iterator search = m_name_to_edges_num.find(name);
-			std::cout << "Setting edges manually" << std::endl;
+			//std::cout << "Setting edges manually" << std::endl;
 			if ( search != m_name_to_edges_num.end() ) {
 				search->second = num_of_edges;
 			}
