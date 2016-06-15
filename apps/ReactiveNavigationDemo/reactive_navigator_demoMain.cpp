@@ -85,6 +85,7 @@ const long reactive_navigator_demoframe::ID_BUTTON5 = wxNewId();
 const long reactive_navigator_demoframe::ID_RADIOBOX2 = wxNewId();
 const long reactive_navigator_demoframe::ID_RADIOBOX1 = wxNewId();
 const long reactive_navigator_demoframe::ID_CHECKBOX1 = wxNewId();
+const long reactive_navigator_demoframe::ID_CHECKBOX2 = wxNewId();
 const long reactive_navigator_demoframe::ID_PANEL6 = wxNewId();
 const long reactive_navigator_demoframe::ID_TEXTCTRL1 = wxNewId();
 const long reactive_navigator_demoframe::ID_PANEL2 = wxNewId();
@@ -145,14 +146,13 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(wxWindow* parent,wxWi
     wxFlexGridSizer* FlexGridSizer5;
     wxFlexGridSizer* FlexGridSizer9;
     wxFlexGridSizer* FlexGridSizer2;
-    wxBoxSizer* BoxSizer2;
     wxMenu* Menu1;
     wxFlexGridSizer* FlexGridSizer7;
-    wxGridSizer* GridSizer1;
     wxFlexGridSizer* FlexGridSizer8;
-    wxBoxSizer* BoxSizer1;
     wxMenuBar* MenuBar1;
     wxFlexGridSizer* FlexGridSizer6;
+    wxFlexGridSizer* FlexGridSizer1;
+    wxFlexGridSizer* FlexGridSizer11;
     wxBoxSizer* BoxSizer3;
     wxMenu* Menu2;
     
@@ -163,50 +163,46 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(wxWindow* parent,wxWi
     	FrameIcon.CopyFromBitmap(wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("MAIN_ICON")),wxART_OTHER));
     	SetIcon(FrameIcon);
     }
-    GridSizer1 = new wxGridSizer(1, 1, 0, 0);
+    FlexGridSizer1 = new wxFlexGridSizer(1, 2, 0, 0);
+    FlexGridSizer1->AddGrowableCol(1);
+    FlexGridSizer1->AddGrowableRow(0);
+    FlexGridSizer4 = new wxFlexGridSizer(0, 1, 0, 0);
+    FlexGridSizer4->AddGrowableCol(0);
+    btnLoadMap = new wxCustomButton(this,ID_BUTTON1,_("Load map..."),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_FOLDER")),wxART_MAKE_CLIENT_ID_FROM_STR(wxString(wxEmptyString))),wxDefaultPosition,wxDefaultSize,wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON1"));
+    btnLoadMap->SetBitmapDisabled(btnLoadMap->CreateBitmapDisabled(btnLoadMap->GetBitmapLabel()));
+    btnLoadMap->SetBitmapMargin(wxSize(2,4));
+    FlexGridSizer4->Add(btnLoadMap, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 2);
+    btnHelp = new wxCustomButton(this,ID_BUTTON2,_("About..."),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_QUESTION")),wxART_MAKE_CLIENT_ID_FROM_STR(wxString(wxEmptyString))),wxDefaultPosition,wxDefaultSize,wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON2"));
+    btnHelp->SetBitmapDisabled(btnHelp->CreateBitmapDisabled(btnHelp->GetBitmapLabel()));
+    btnHelp->SetBitmapMargin(wxSize(5,4));
+    FlexGridSizer4->Add(btnHelp, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 2);
+    btnQuit = new wxCustomButton(this,ID_BUTTON3,_("Exit"),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_QUIT")),wxART_MAKE_CLIENT_ID_FROM_STR(wxString(wxEmptyString))),wxDefaultPosition,wxDefaultSize,wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON3"));
+    btnQuit->SetBitmapDisabled(btnQuit->CreateBitmapDisabled(btnQuit->GetBitmapLabel()));
+    FlexGridSizer4->Add(btnQuit, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 2);
+    btnPlaceRobot = new wxCustomButton(this,ID_BUTTON6,_("Robot..."),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_FIND")),wxART_MAKE_CLIENT_ID_FROM_STR(wxString(wxEmptyString))),wxDefaultPosition,wxDefaultSize,wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON6"));
+    btnPlaceRobot->SetBitmapDisabled(btnPlaceRobot->CreateBitmapDisabled(btnPlaceRobot->GetBitmapLabel()));
+    btnPlaceRobot->SetBitmapMargin(wxSize(2,4));
+    FlexGridSizer4->Add(btnPlaceRobot, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 2);
+    btnPlaceTarget = new wxCustomButton(this,ID_BUTTON7,_("Target..."),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_FIND")),wxART_MAKE_CLIENT_ID_FROM_STR(wxString(wxEmptyString))),wxDefaultPosition,wxDefaultSize,wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON7"));
+    btnPlaceTarget->SetBitmapDisabled(btnPlaceTarget->CreateBitmapDisabled(btnPlaceTarget->GetBitmapLabel()));
+    btnPlaceTarget->SetBitmapMargin(wxSize(2,4));
+    FlexGridSizer4->Add(btnPlaceTarget, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 2);
+    btnStart = new wxCustomButton(this,ID_BUTTON4,_("START"),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_GO_FORWARD")),wxART_MAKE_CLIENT_ID_FROM_STR(wxString(wxEmptyString))),wxDefaultPosition,wxDefaultSize,wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON4"));
+    btnStart->SetBitmapDisabled(btnStart->CreateBitmapDisabled(btnStart->GetBitmapLabel()));
+    btnStart->SetBitmapMargin(wxSize(2,4));
+    FlexGridSizer4->Add(btnStart, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 2);
+    btnStop = new wxCustomButton(this,ID_BUTTON5,_("STOP"),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_CROSS_MARK")),wxART_MAKE_CLIENT_ID_FROM_STR(wxString(wxEmptyString))),wxDefaultPosition,wxDefaultSize,wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON5"));
+    btnStop->SetBitmapDisabled(btnStop->CreateBitmapDisabled(btnStop->GetBitmapLabel()));
+    btnStop->SetBitmapMargin(wxSize(2,4));
+    FlexGridSizer4->Add(btnStop, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 2);
+    FlexGridSizer1->Add(FlexGridSizer4, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
     SplitterWindow1 = new wxSplitterWindow(this, ID_SPLITTERWINDOW1, wxDefaultPosition, wxDefaultSize, wxSP_3D, _T("ID_SPLITTERWINDOW1"));
     SplitterWindow1->SetMinSize(wxSize(10,10));
     SplitterWindow1->SetMinimumPaneSize(10);
     Panel1 = new wxPanel(SplitterWindow1, ID_PANEL1, wxDefaultPosition, wxSize(400,143), wxTAB_TRAVERSAL, _T("ID_PANEL1"));
-    FlexGridSizer2 = new wxFlexGridSizer(1, 3, 0, 0);
-    FlexGridSizer2->AddGrowableCol(2);
+    FlexGridSizer2 = new wxFlexGridSizer(1, 2, 0, 0);
+    FlexGridSizer2->AddGrowableCol(1);
     FlexGridSizer2->AddGrowableRow(0);
-    FlexGridSizer4 = new wxFlexGridSizer(2, 1, 0, 0);
-    FlexGridSizer4->AddGrowableCol(0);
-    FlexGridSizer4->AddGrowableRow(0);
-    FlexGridSizer4->AddGrowableRow(1);
-    BoxSizer1 = new wxBoxSizer(wxHORIZONTAL);
-    btnLoadMap = new wxCustomButton(Panel1,ID_BUTTON1,_("Load map..."),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_FOLDER")),wxART_MAKE_CLIENT_ID_FROM_STR(wxString(wxEmptyString))),wxDefaultPosition,wxDefaultSize,wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON1"));
-    btnLoadMap->SetBitmapDisabled(btnLoadMap->CreateBitmapDisabled(btnLoadMap->GetBitmapLabel()));
-    btnLoadMap->SetBitmapMargin(wxSize(2,4));
-    BoxSizer1->Add(btnLoadMap, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 1);
-    btnHelp = new wxCustomButton(Panel1,ID_BUTTON2,_("About..."),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_QUESTION")),wxART_MAKE_CLIENT_ID_FROM_STR(wxString(wxEmptyString))),wxDefaultPosition,wxDefaultSize,wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON2"));
-    btnHelp->SetBitmapDisabled(btnHelp->CreateBitmapDisabled(btnHelp->GetBitmapLabel()));
-    btnHelp->SetBitmapMargin(wxSize(5,4));
-    BoxSizer1->Add(btnHelp, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 1);
-    btnQuit = new wxCustomButton(Panel1,ID_BUTTON3,_("Exit"),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_QUIT")),wxART_MAKE_CLIENT_ID_FROM_STR(wxString(wxEmptyString))),wxDefaultPosition,wxDefaultSize,wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON3"));
-    btnQuit->SetBitmapDisabled(btnQuit->CreateBitmapDisabled(btnQuit->GetBitmapLabel()));
-    BoxSizer1->Add(btnQuit, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 1);
-    FlexGridSizer4->Add(BoxSizer1, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
-    BoxSizer2 = new wxBoxSizer(wxHORIZONTAL);
-    btnPlaceRobot = new wxCustomButton(Panel1,ID_BUTTON6,_("Robot..."),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_FIND")),wxART_MAKE_CLIENT_ID_FROM_STR(wxString(wxEmptyString))),wxDefaultPosition,wxDefaultSize,wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON6"));
-    btnPlaceRobot->SetBitmapDisabled(btnPlaceRobot->CreateBitmapDisabled(btnPlaceRobot->GetBitmapLabel()));
-    btnPlaceRobot->SetBitmapMargin(wxSize(2,4));
-    BoxSizer2->Add(btnPlaceRobot, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 2);
-    btnPlaceTarget = new wxCustomButton(Panel1,ID_BUTTON7,_("Target..."),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_FIND")),wxART_MAKE_CLIENT_ID_FROM_STR(wxString(wxEmptyString))),wxDefaultPosition,wxDefaultSize,wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON7"));
-    btnPlaceTarget->SetBitmapDisabled(btnPlaceTarget->CreateBitmapDisabled(btnPlaceTarget->GetBitmapLabel()));
-    btnPlaceTarget->SetBitmapMargin(wxSize(2,4));
-    BoxSizer2->Add(btnPlaceTarget, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 2);
-    btnStart = new wxCustomButton(Panel1,ID_BUTTON4,_("START"),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_GO_FORWARD")),wxART_MAKE_CLIENT_ID_FROM_STR(wxString(wxEmptyString))),wxDefaultPosition,wxDefaultSize,wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON4"));
-    btnStart->SetBitmapDisabled(btnStart->CreateBitmapDisabled(btnStart->GetBitmapLabel()));
-    btnStart->SetBitmapMargin(wxSize(2,4));
-    BoxSizer2->Add(btnStart, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 2);
-    btnStop = new wxCustomButton(Panel1,ID_BUTTON5,_("STOP"),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_CROSS_MARK")),wxART_MAKE_CLIENT_ID_FROM_STR(wxString(wxEmptyString))),wxDefaultPosition,wxDefaultSize,wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON5"));
-    btnStop->SetBitmapDisabled(btnStop->CreateBitmapDisabled(btnStop->GetBitmapLabel()));
-    btnStop->SetBitmapMargin(wxSize(2,4));
-    BoxSizer2->Add(btnStop, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 2);
-    FlexGridSizer4->Add(BoxSizer2, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
-    FlexGridSizer2->Add(FlexGridSizer4, 1, wxALL|wxALIGN_LEFT|wxALIGN_TOP, 0);
     pnNavSelButtons = new wxPanel(Panel1, ID_PANEL6, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL6"));
     FlexGridSizer9 = new wxFlexGridSizer(0, 1, 0, 0);
     FlexGridSizer9->AddGrowableCol(0);
@@ -224,9 +220,15 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(wxWindow* parent,wxWi
     };
     rbKinType = new wxRadioBox(pnNavSelButtons, ID_RADIOBOX1, _("Robot kinematics type"), wxDefaultPosition, wxDefaultSize, 2, __wxRadioBoxChoices_2, 1, wxRA_SPECIFY_COLS, wxDefaultValidator, _T("ID_RADIOBOX1"));
     FlexGridSizer9->Add(rbKinType, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 2);
+    FlexGridSizer3 = new wxFlexGridSizer(0, 2, 0, 0);
     cbEnableLog = new wxCheckBox(pnNavSelButtons, ID_CHECKBOX1, _("Log trajectory"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX1"));
     cbEnableLog->SetValue(false);
-    FlexGridSizer9->Add(cbEnableLog, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    FlexGridSizer3->Add(cbEnableLog, 1, wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
+    FlexGridSizer3->Add(-1,-1,1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    cbNavLog = new wxCheckBox(pnNavSelButtons, ID_CHECKBOX2, _("Record .navlog files"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX2"));
+    cbNavLog->SetValue(false);
+    FlexGridSizer3->Add(cbNavLog, 1, wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
+    FlexGridSizer9->Add(FlexGridSizer3, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
     pnNavSelButtons->SetSizer(FlexGridSizer9);
     FlexGridSizer9->Fit(pnNavSelButtons);
     FlexGridSizer9->SetSizeHints(pnNavSelButtons);
@@ -247,7 +249,7 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(wxWindow* parent,wxWi
     FlexGridSizer8 = new wxFlexGridSizer(1, 1, 0, 0);
     FlexGridSizer8->AddGrowableCol(0);
     FlexGridSizer8->AddGrowableRow(0);
-    edParamsReactive = new wxTextCtrl(pnParamsReactive, ID_TEXTCTRL4, _("# ------------------------------------------------------------------------\n# Example configuration file for MRPT Reactive Navigation engine.\n# See C++ documentation: http://reference.mrpt.org/svn/classmrpt_1_1nav_1_1_c_reactive_navigation_system.html\n# See ROS node documentation: http://wiki.ros.org/mrpt_reactivenav2d\n# ------------------------------------------------------------------------\n\n[GLOBAL_CONFIG]\n# 0 or `hmVIRTUAL_FORCE_FIELDS`: Virtual Force Field\n# 1 or `hmSEARCH_FOR_BEST_GAP`: Nearness Diagram (ND)\nHOLONOMIC_METHOD = hmSEARCH_FOR_BEST_GAP\nALARM_SEEMS_NOT_APPROACHING_TARGET_TIMEOUT=100 # (seconds)\n\nrobotMax_V_mps = 1.0\t\t# Speed limits\nrobotMax_W_degps = 60\n\n\n#\tParameters for the \"VFF\" Holonomic method\n# ----------------------------------------------------\n[VFF_CONFIG]\nTARGET_SLOW_APPROACHING_DISTANCE = 1.000000e-001 // For stopping gradually\nTARGET_ATTRACTIVE_FORCE = 2.000000e+001 // Dimension-less (may have to be tuned depending on the density of obstacle sampling)\n\n#\tParameters for the \"Nearness diagram\" Holonomic method\n# ----------------------------------------------------\n[ND_CONFIG]\nWIDE_GAP_SIZE_PERCENT = 2.500000e-001 \nMAX_SECTOR_DIST_FOR_D2_PERCENT = 2.500000e-001 \nRISK_EVALUATION_SECTORS_PERCENT = 1.000000e-001 \nRISK_EVALUATION_DISTANCE = 4.000000e-001 // In normalized ps-meters [0,1]\nTOO_CLOSE_OBSTACLE = 1.500000e-001 // For stopping gradually\nTARGET_SLOW_APPROACHING_DISTANCE = 6.000000e-001 // In normalized ps-meters\nfactorWeights = 1.00 0.50 2.00 0.40 // [0]=Free space, [1]=Dist. in sectors, [2]=Closer to target (Euclidean), [3]=Hysteresis\n\n# ----------------------------------------------------\n#\tParameters for navigation: DIFFERENTIAL DRIVEN Robot\n# ----------------------------------------------------\n[DIFF_ReactiveParams]\nweights=0.5 0.05 0.5 2.0 0.2 0.1\n# 1: Free space\n# 2: Dist. in sectors\t\t\t\n# 3: Heading toward target\n# 4: Closer to target (euclidean)\n# 5: Hysteresis\n# 6: Security Distance\n\nDIST_TO_TARGET_FOR_SENDING_EVENT=0.6\t# Minimum. distance to target for sending the end event. Set to 0 to send it just on navigation end\n\nMinObstaclesHeight=0.0 \t\t# Minimum coordinate in the \"z\" axis for an obstacle to be taken into account.\nMaxObstaclesHeight=1.40 \t# Maximum coordinate in the \"z\" axis for an obstacle to be taken into account.\n\nMAX_REFERENCE_DISTANCE = 8.0 # Maximum distance to build PTGs (in meters), i.e. the visibility \"range\" of tentative paths\nLUT_CELL_SIZE = 0.05 # Look-up-table cell size, or resolution (in meters)\n\n# The constant time of a first-order low-pass filter of outgoing speed commands, \n# i.e. can be used to impose a maximum acceleration.\nSPEEDFILTER_TAU = 0 \n\n# PTGs: See classes derived from mrpt::nav::CParameterizedTrajectoryGenerator ( http://reference.mrpt.org/svn/classmrpt_1_1nav_1_1_c_parameterized_trajectory_generator.html)# refer to papers for details.\n#------------------------------------------------------------------------------\nPTG_COUNT = 3\n\nPTG0_Type = CPTG_DiffDrive_C\nPTG0_nAlfas = 121\nPTG0_v_max_mps = 1.0\nPTG0_w_max_gps = 60\nPTG0_K = 1.0\n\nPTG1_Type = CPTG_DiffDrive_alpha\nPTG1_nAlfas = 121\nPTG1_v_max_mps = 1.0\nPTG1_w_max_gps = 60\nPTG1_cte_a0v_deg = 57\nPTG1_cte_a0w_deg = 57\n\nPTG2_Type = 1\nPTG2_nAlfas = 121\nPTG2_v_max_mps = 1.0\nPTG2_w_max_gps = 60\nPTG2_K = -1.0\n\n\n# Default 2D robot shape for collision checks: (ignored in ROS, superseded by node parameters)\nRobotModel_shape2D_xs=-0.2 0.5 0.5 -0.2\nRobotModel_shape2D_ys=0.3 0.3 -0.3 -0.3\n\n\n# ----------------------------------------------------\n#\tParameters for navigation: DIFFERENTIAL DRIVEN Robot\n# ----------------------------------------------------\n[HOLO_ReactiveParams]\nweights=0.5 0.05 0.5 2.0 0.2 0.1\n# 1: Free space\n# 2: Dist. in sectors\t\t\t\n# 3: Heading toward target\n# 4: Closer to target (euclidean)\n# 5: Hysteresis\n# 6: Security Distance\n\nDIST_TO_TARGET_FOR_SENDING_EVENT=0.6\t# Minimum. distance to target for sending the end event. Set to 0 to send it just on navigation end\n\nMinObstaclesHeight=0.0 \t\t# Minimum coordinate in the \"z\" axis for an obstacle to be taken into account.\nMaxObstaclesHeight=1.40 \t# Maximum coordinate in the \"z\" axis for an obstacle to be taken into account.\n\nMAX_REFERENCE_DISTANCE = 8.0 # Maximum distance to build PTGs (in meters), i.e. the visibility \"range\" of tentative paths\nLUT_CELL_SIZE = 0.05 # Look-up-table cell size, or resolution (in meters)\n\n# The constant time of a first-order low-pass filter of outgoing speed commands, \n# i.e. can be used to impose a maximum acceleration.\nSPEEDFILTER_TAU = 0 \n\n# PTGs: See classes derived from mrpt::nav::CParameterizedTrajectoryGenerator ( http://reference.mrpt.org/svn/classmrpt_1_1nav_1_1_c_parameterized_trajectory_generator.html)# refer to papers for details.\n#------------------------------------------------------------------------------\nPTG_COUNT = 1\n\nPTG0_Type = 1\nPTG0_nAlfas = 121\nPTG0_v_max_mps = 1.0\nPTG0_w_max_gps = 60\nPTG0_K = 1.0\n\n\n# Default 2D robot shape for collision checks: (ignored in ROS, superseded by node parameters)\nRobotModel_shape2D_xs=-0.2 0.5 0.5 -0.2\nRobotModel_shape2D_ys=0.3 0.3 -0.3 -0.3\n\nROBOTMODEL_DELAY=0 # (un-used param, must be present for compat. with old mrpt versions)\nROBOTMODEL_TAU=0 # (un-used param, must be present for compat. with old mrpt versions)\n\n"), wxDefaultPosition, wxSize(226,111), wxTE_PROCESS_ENTER|wxTE_PROCESS_TAB|wxTE_MULTILINE|wxHSCROLL|wxVSCROLL|wxALWAYS_SHOW_SB, wxDefaultValidator, _T("ID_TEXTCTRL4"));
+    edParamsReactive = new wxTextCtrl(pnParamsReactive, ID_TEXTCTRL4, _("# ------------------------------------------------------------------------\n# Example configuration file for MRPT Reactive Navigation engine.\n# See C++ documentation: http://reference.mrpt.org/svn/classmrpt_1_1nav_1_1_c_reactive_navigation_system.html\n# See ROS node documentation: http://wiki.ros.org/mrpt_reactivenav2d\n# ------------------------------------------------------------------------\n\n[GLOBAL_CONFIG]\n# 0 or `hmVIRTUAL_FORCE_FIELDS`: Virtual Force Field\n# 1 or `hmSEARCH_FOR_BEST_GAP`: Nearness Diagram (ND)\nHOLONOMIC_METHOD = hmSEARCH_FOR_BEST_GAP\nALARM_SEEMS_NOT_APPROACHING_TARGET_TIMEOUT=100 # (seconds)\n\nrobotMax_V_mps = 1.0\t\t# Speed limits\nrobotMax_W_degps = 60\n\n\n#\tParameters for the \"VFF\" Holonomic method\n# ----------------------------------------------------\n[VFF_CONFIG]\nTARGET_SLOW_APPROACHING_DISTANCE = 0.1 // For stopping gradually\nTARGET_ATTRACTIVE_FORCE = 2.000000e+001 // Dimension-less (may have to be tuned depending on the density of obstacle sampling)\n\n#\tParameters for the \"Nearness diagram\" Holonomic method\n# ----------------------------------------------------\n[ND_CONFIG]\nWIDE_GAP_SIZE_PERCENT = 2.500000e-001 \nMAX_SECTOR_DIST_FOR_D2_PERCENT = 2.500000e-001 \nRISK_EVALUATION_SECTORS_PERCENT = 1.000000e-001 \nRISK_EVALUATION_DISTANCE = 4.000000e-001 // In normalized ps-meters [0,1]\nTOO_CLOSE_OBSTACLE = 1.500000e-001 // For stopping gradually\nTARGET_SLOW_APPROACHING_DISTANCE = 0.1 // In normalized ps-meters\nfactorWeights = 1.00 0.50 2.00 0.40 // [0]=Free space, [1]=Dist. in sectors, [2]=Closer to target (Euclidean), [3]=Hysteresis\n\n# ----------------------------------------------------\n#\tParameters for navigation: DIFFERENTIAL DRIVEN Robot\n# ----------------------------------------------------\n[DIFF_ReactiveParams]\nweights=0.5 0.05 0.5 2.0 0.2 0.1\n# 1: Free space\n# 2: Dist. in sectors\t\t\t\n# 3: Heading toward target\n# 4: Closer to target (euclidean)\n# 5: Hysteresis\n# 6: Security Distance\n\nDIST_TO_TARGET_FOR_SENDING_EVENT=0.6\t# Minimum. distance to target for sending the end event. Set to 0 to send it just on navigation end\n\nMinObstaclesHeight=0.0 \t\t# Minimum coordinate in the \"z\" axis for an obstacle to be taken into account.\nMaxObstaclesHeight=1.40 \t# Maximum coordinate in the \"z\" axis for an obstacle to be taken into account.\n\nMAX_REFERENCE_DISTANCE = 8.0 # Maximum distance to build PTGs (in meters), i.e. the visibility \"range\" of tentative paths\nLUT_CELL_SIZE = 0.05 # Look-up-table cell size, or resolution (in meters)\n\n# The constant time of a first-order low-pass filter of outgoing speed commands, \n# i.e. can be used to impose a maximum acceleration.\nSPEEDFILTER_TAU = 0 \n\n# PTGs: See classes derived from mrpt::nav::CParameterizedTrajectoryGenerator ( http://reference.mrpt.org/svn/classmrpt_1_1nav_1_1_c_parameterized_trajectory_generator.html)# refer to papers for details.\n#------------------------------------------------------------------------------\nPTG_COUNT = 3\n\nPTG0_Type = CPTG_DiffDrive_C\nPTG0_nAlfas = 121\nPTG0_v_max_mps = 1.0\nPTG0_w_max_gps = 60\nPTG0_K = 1.0\n\nPTG1_Type = CPTG_DiffDrive_alpha\nPTG1_nAlfas = 121\nPTG1_v_max_mps = 1.0\nPTG1_w_max_gps = 60\nPTG1_cte_a0v_deg = 57\nPTG1_cte_a0w_deg = 57\n\nPTG2_Type = 1\nPTG2_nAlfas = 121\nPTG2_v_max_mps = 1.0\nPTG2_w_max_gps = 60\nPTG2_K = -1.0\n\n\n# Default 2D robot shape for collision checks: (ignored in ROS, superseded by node parameters)\nRobotModel_shape2D_xs=-0.2 0.5 0.5 -0.2\nRobotModel_shape2D_ys=0.3 0.3 -0.3 -0.3\n\n\n# ----------------------------------------------------\n#\tParameters for navigation: DIFFERENTIAL DRIVEN Robot\n# ----------------------------------------------------\n[HOLO_ReactiveParams]\nweights=0.5 0.05 0.5 2.0 0.2 0.1\n# 1: Free space\n# 2: Dist. in sectors\t\t\t\n# 3: Heading toward target\n# 4: Closer to target (euclidean)\n# 5: Hysteresis\n# 6: Security Distance\n\nDIST_TO_TARGET_FOR_SENDING_EVENT=0.6\t# Minimum. distance to target for sending the end event. Set to 0 to send it just on navigation end\n\nMinObstaclesHeight=0.0 \t\t# Minimum coordinate in the \"z\" axis for an obstacle to be taken into account.\nMaxObstaclesHeight=1.40 \t# Maximum coordinate in the \"z\" axis for an obstacle to be taken into account.\n\nMAX_REFERENCE_DISTANCE = 8.0 # Maximum distance to build PTGs (in meters), i.e. the visibility \"range\" of tentative paths\nLUT_CELL_SIZE = 0.05 # Look-up-table cell size, or resolution (in meters)\n\n# The constant time of a first-order low-pass filter of outgoing speed commands, \n# i.e. can be used to impose a maximum acceleration.\nSPEEDFILTER_TAU = 0 \n\n# PTGs: See classes derived from mrpt::nav::CParameterizedTrajectoryGenerator ( http://reference.mrpt.org/svn/classmrpt_1_1nav_1_1_c_parameterized_trajectory_generator.html)# refer to papers for details.\n#------------------------------------------------------------------------------\nPTG_COUNT = 1\n\nPTG0_Type = 1\nPTG0_nAlfas = 121\nPTG0_v_max_mps = 1.0\nPTG0_w_max_gps = 60\nPTG0_K = 1.0\n\n\n# Default 2D robot shape for collision checks: (ignored in ROS, superseded by node parameters)\nRobotModel_shape2D_xs=-0.2 0.5 0.5 -0.2\nRobotModel_shape2D_ys=0.3 0.3 -0.3 -0.3\n\nROBOTMODEL_DELAY=0 # (un-used param, must be present for compat. with old mrpt versions)\nROBOTMODEL_TAU=0 # (un-used param, must be present for compat. with old mrpt versions)\n\n"), wxDefaultPosition, wxSize(226,111), wxTE_PROCESS_ENTER|wxTE_PROCESS_TAB|wxTE_MULTILINE|wxHSCROLL|wxVSCROLL|wxALWAYS_SHOW_SB, wxDefaultValidator, _T("ID_TEXTCTRL4"));
     edParamsReactive->SetMinSize(wxSize(-1,100));
     wxFont edParamsReactiveFont(8,wxTELETYPE,wxFONTSTYLE_NORMAL,wxNORMAL,false,wxEmptyString,wxFONTENCODING_DEFAULT);
     edParamsReactive->SetFont(edParamsReactiveFont);
@@ -294,39 +296,39 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(wxWindow* parent,wxWi
     FlexGridSizer10->Fit(Panel2);
     FlexGridSizer10->SetSizeHints(Panel2);
     Panel3 = new wxPanel(SplitterWindow2, ID_PANEL8, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL8"));
-    FlexGridSizer3 = new wxFlexGridSizer(2, 2, 0, 0);
-    FlexGridSizer3->AddGrowableCol(0);
-    FlexGridSizer3->AddGrowableCol(1);
-    FlexGridSizer3->AddGrowableRow(1);
-    StaticText2 = new wxStaticText(Panel3, ID_STATICTEXT2, _("[3D view of the simulated world]"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT2"));
-    FlexGridSizer3->Add(StaticText2, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-    StaticText1 = new wxStaticText(Panel3, ID_STATICTEXT1, _("[Local view]"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT1"));
-    FlexGridSizer3->Add(StaticText1, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-    m_plot3D = new CMyGLCanvas(Panel3,ID_XY_GLCANVAS,wxDefaultPosition,wxSize(450,350),wxTAB_TRAVERSAL,_T("ID_XY_GLCANVAS"));
-    FlexGridSizer3->Add(m_plot3D, 1, wxALL|wxEXPAND|wxFIXED_MINSIZE|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 1);
-    FlexGridSizer5 = new wxFlexGridSizer(2, 1, 0, 0);
+    FlexGridSizer5 = new wxFlexGridSizer(2, 2, 0, 0);
     FlexGridSizer5->AddGrowableCol(0);
-    FlexGridSizer5->AddGrowableRow(0);
+    FlexGridSizer5->AddGrowableCol(1);
+    FlexGridSizer5->AddGrowableRow(1);
+    StaticText2 = new wxStaticText(Panel3, ID_STATICTEXT2, _("[3D view of the simulated world]"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT2"));
+    FlexGridSizer5->Add(StaticText2, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    StaticText1 = new wxStaticText(Panel3, ID_STATICTEXT1, _("[Local view]"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT1"));
+    FlexGridSizer5->Add(StaticText1, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    m_plot3D = new CMyGLCanvas(Panel3,ID_XY_GLCANVAS,wxDefaultPosition,wxSize(450,350),wxTAB_TRAVERSAL,_T("ID_XY_GLCANVAS"));
+    FlexGridSizer5->Add(m_plot3D, 1, wxALL|wxEXPAND|wxFIXED_MINSIZE|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 1);
+    FlexGridSizer11 = new wxFlexGridSizer(2, 1, 0, 0);
+    FlexGridSizer11->AddGrowableCol(0);
+    FlexGridSizer11->AddGrowableRow(0);
     m_plotScan = new CMyGLCanvas(Panel3,ID_CUSTOM1,wxDefaultPosition,wxSize(150,150),wxTAB_TRAVERSAL,_T("ID_CUSTOM1"));
-    FlexGridSizer5->Add(m_plotScan, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 1);
+    FlexGridSizer11->Add(m_plotScan, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 1);
     edInfoLocalView = new wxTextCtrl(Panel3, ID_TEXTCTRL2, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE|wxTE_READONLY|wxTE_DONTWRAP|wxALWAYS_SHOW_SB, wxDefaultValidator, _T("ID_TEXTCTRL2"));
     edInfoLocalView->SetMinSize(wxSize(-1,50));
     edInfoLocalView->SetBackgroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_BTNFACE));
     wxFont edInfoLocalViewFont(8,wxTELETYPE,wxFONTSTYLE_NORMAL,wxNORMAL,false,wxEmptyString,wxFONTENCODING_DEFAULT);
     edInfoLocalView->SetFont(edInfoLocalViewFont);
-    FlexGridSizer5->Add(edInfoLocalView, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 2);
-    FlexGridSizer3->Add(FlexGridSizer5, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
-    Panel3->SetSizer(FlexGridSizer3);
-    FlexGridSizer3->Fit(Panel3);
-    FlexGridSizer3->SetSizeHints(Panel3);
+    FlexGridSizer11->Add(edInfoLocalView, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 2);
+    FlexGridSizer5->Add(FlexGridSizer11, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+    Panel3->SetSizer(FlexGridSizer5);
+    FlexGridSizer5->Fit(Panel3);
+    FlexGridSizer5->SetSizeHints(Panel3);
     SplitterWindow2->SplitHorizontally(Panel2, Panel3);
     BoxSizer3->Add(SplitterWindow2, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
     Panel5->SetSizer(BoxSizer3);
     BoxSizer3->Fit(Panel5);
     BoxSizer3->SetSizeHints(Panel5);
     SplitterWindow1->SplitHorizontally(Panel1, Panel5);
-    GridSizer1->Add(SplitterWindow1, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
-    SetSizer(GridSizer1);
+    FlexGridSizer1->Add(SplitterWindow1, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+    SetSizer(FlexGridSizer1);
     MenuBar1 = new wxMenuBar();
     Menu1 = new wxMenu();
     MenuItem3 = new wxMenuItem(Menu1, ID_MENUITEM4, _("Load map..."), wxEmptyString, wxITEM_NORMAL);
@@ -356,7 +358,7 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(wxWindow* parent,wxWi
     SetStatusBar(StatusBar1);
     timRunSimul.SetOwner(this, ID_TIMER1);
     timRunSimul.Start(10, false);
-    GridSizer1->SetSizeHints(this);
+    FlexGridSizer1->SetSizeHints(this);
     Center();
     
     Connect(ID_BUTTON2,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&reactive_navigator_demoframe::OnAbout);
@@ -385,8 +387,7 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(wxWindow* parent,wxWi
 	mnuViewMaxRange->Check(true);
 	mnuViewRobotPath->Check(true);
 
-	btnStart->Enable(true);
-	btnStop->Enable(false);
+	updateButtonsEnableState(false);
 
 	// Redirect all output to control:
 	m_myRedirector = new CMyRedirector( edLog, true, 100, true);
@@ -484,7 +485,7 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(wxWindow* parent,wxWi
 
 	gl_scan2D = mrpt::opengl::CPlanarLaserScan::Create();
 	gl_scan2D->enableLine(false);
-	gl_scan2D->enableSurface(false);
+	gl_scan2D->enableSurface(true);
 	gl_scan2D->setPointsWidth(3.0);
 	m_plotScan->m_openGLScene->insert(gl_scan2D);
 
@@ -603,23 +604,26 @@ void reactive_navigator_demoframe::OnbtnPlaceTargetClick(wxCommandEvent& event)
 	btnPlaceTarget->Refresh();
 }
 
+void reactive_navigator_demoframe::updateButtonsEnableState(bool is_running)
+{
+	btnStart->Enable(!is_running); btnStart->Refresh();
+	btnStop->Enable(is_running);   btnStop->Refresh();
+	btnPlaceTarget->Enable(is_running); btnPlaceTarget->Refresh();
+	Notebook1->Enable(!is_running);
+	pnNavSelButtons->Enable(!is_running);
+}
+
 void reactive_navigator_demoframe::OnbtnStartClick(wxCommandEvent& event)
 {
-	if (!reinitSimulator()) return;
-
-	btnStart->Enable(false); btnStart->Refresh();
-	btnStop->Enable(true);   btnStop->Refresh();
-	Notebook1->Enable(false);
-	pnNavSelButtons->Enable(false);
+	if (!reinitSimulator()) 
+		return;
+	updateButtonsEnableState(true);
 	m_is_running = true;
 }
 
 void reactive_navigator_demoframe::OnbtnStopClick(wxCommandEvent& event)
 {
-	btnStart->Enable(true); btnStart->Refresh();
-	btnStop->Enable(false);   btnStop->Refresh();
-	Notebook1->Enable(true);
-	pnNavSelButtons->Enable(true);
+	updateButtonsEnableState(false);
 	m_is_running=false;
 }
 
@@ -670,7 +674,8 @@ bool reactive_navigator_demoframe::reinitSimulator()
 	{
 	case 0:
 		{
-			mrpt::nav::CReactiveNavigationSystem *react = new mrpt::nav::CReactiveNavigationSystem(*m_robotSimul2NavInterface);
+			const bool save_nav_log = cbNavLog->IsChecked();
+			mrpt::nav::CReactiveNavigationSystem *react = new mrpt::nav::CReactiveNavigationSystem(*m_robotSimul2NavInterface, true /* enable console output */, save_nav_log);
 			m_navMethod.reset(react);
 
 			react->enableKeepLogRecords(true);
@@ -729,9 +734,20 @@ void reactive_navigator_demoframe::simulateOneStep(double time_step)
 
 	m_gridMap.laserScanSimulator( simulatedScan, m_robotSimul->getCurrentGTPose(),0.5, m_simul_options.SENSOR_NUM_RANGES, m_simul_options.SENSOR_RANGE_NOISE_STD );
 
+	// Build the obstacles points map for the reactive:
+	{
+		m_latest_obstacles.insertionOptions.minDistBetweenLaserPoints = 0.005f;
+		m_latest_obstacles.insertionOptions.also_interpolate = false;
+
+		m_latest_obstacles.clear(); // erase old points
+		m_latest_obstacles.insertObservation( &simulatedScan );
+		// m_latest_obstacles is ref-copied into the robot2nav interface.
+	}
+
+
 	gl_scan3D->setScan( simulatedScan );  // Draw real scan in 3D view
 
-	// Normalize:
+	// Normalize for plotting it into the local view:
 	for (size_t j=0;j<simulatedScan.scan.size();j++) simulatedScan.scan[j] /= simulatedScan.maxRange;
 
 	gl_scan2D->setScan( simulatedScan ); // Draw scaled scan in right-hand view
@@ -1100,20 +1116,22 @@ void reactive_navigator_demoframe::OnrbKinTypeSelect(wxCommandEvent& event)
 		{
 			mrpt::kinematics::CVehicleSimul_DiffDriven *sim = new mrpt::kinematics::CVehicleSimul_DiffDriven();
 			m_robotSimul.reset(sim);
-			m_robotSimul2NavInterface.reset( new MyRobot2NavInterface_Diff( *sim ) );
+			m_robotSimul2NavInterface.reset( new MyRobot2NavInterface_Diff( *sim, m_latest_obstacles ) );
 			// Opengl viz:
 			create_viz_robot_diff(*gl_robot);
 			create_viz_robot_diff(*gl_robot_local);
+			gl_robot_local->setScale( 1.0 / m_simul_options.MAX_SENSOR_RADIUS );
 		}
 		break;
 	case 1: 
 		{
 			mrpt::kinematics::CVehicleSimul_Holo *sim = new mrpt::kinematics::CVehicleSimul_Holo();
 			m_robotSimul.reset(sim);
-			m_robotSimul2NavInterface.reset( new MyRobot2NavInterface_Holo( *sim ) );
+			m_robotSimul2NavInterface.reset( new MyRobot2NavInterface_Holo( *sim, m_latest_obstacles ) );
 			// Opengl viz:
 			create_viz_robot_holo(*gl_robot);
 			create_viz_robot_holo(*gl_robot_local);
+			gl_robot_local->setScale( 1.0 / m_simul_options.MAX_SENSOR_RADIUS );
 		}
 		break;
 	default:
