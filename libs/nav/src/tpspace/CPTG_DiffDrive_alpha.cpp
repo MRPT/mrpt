@@ -29,7 +29,7 @@ void CPTG_DiffDrive_alpha::setParams(const mrpt::utils::TParameters<double> &par
 std::string CPTG_DiffDrive_alpha::getDescription() const
 {
 	char str[100];
-	os::sprintf(str,100,"Type#2PTG,av=%udeg,aw=%udeg",(int)RAD2DEG(cte_a0v),(int)RAD2DEG(cte_a0w) );
+	os::sprintf(str,100,"CPTG_DiffDrive_alpha,av=%udeg,aw=%udeg",(int)RAD2DEG(cte_a0v),(int)RAD2DEG(cte_a0w) );
 	return std::string(str);
 }
 
@@ -41,7 +41,7 @@ void CPTG_DiffDrive_alpha::readFromStream(mrpt::utils::CStream &in, int version)
 	switch (version)
 	{
 	case 0:
-		MRPT_TODO("continue")
+		in  >> cte_a0v >> cte_a0w;
 		break;
 	default:
 		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
@@ -57,10 +57,7 @@ void CPTG_DiffDrive_alpha::writeToStream(mrpt::utils::CStream &out, int *version
 	}
 
 	CPTG_DiffDrive_CollisionGridBased::internal_writeToStream(out);
-
-//	out << V_MAX << W_MAX
-	MRPT_TODO("continue")
-
+	out << cte_a0v << cte_a0w;
 }
 /*---------------------------------------------------------------
 						ptgDiffDriveSteeringFunction

@@ -265,7 +265,13 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 			prev_logfile=m_logFile;
 			for (size_t i=0;i<nPTGs;i++)
 			{
-				newLogRec.infoPerPTG[i].ptg = mrpt::nav::CParameterizedTrajectoryGeneratorPtr( dynamic_cast<mrpt::nav::CParameterizedTrajectoryGenerator*>( this->getPTG(i)->clone() ) );
+				// If we make a direct copy (=) we will store the entire, heavy, collision grid. 
+				// Let's just store the parameters of each PTG by serializing it, so paths can be reconstructed
+				// by invoking initialize()
+				mrpt::utils::CMemoryStream buf;
+				buf << *this->getPTG(i);
+				buf.Seek(0);
+				newLogRec.infoPerPTG[i].ptg = mrpt::nav::CParameterizedTrajectoryGeneratorPtr ( buf.ReadObject() );
 			}
 		}
 	}
@@ -295,6 +301,8 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 				return;
 			}
 		}
+		mrpt::math::TTwist2D curVelLocal = curVel;
+		curVelLocal.rotate(-curPose.phi);
 
 		/* ----------------------------------------------------------------
 		 	  Have we reached the target location?
@@ -566,6 +574,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 			newLogRec.nSelectedPTG        = nSelectedPTG;
 			newLogRec.executionTime       = executionTimeValue;
 			newLogRec.cur_vel             = curVel;
+			newLogRec.cur_vel_local       = curVelLocal;
 			newLogRec.estimatedExecutionPeriod = meanExecutionPeriod;
 			newLogRec.timestamp = tim_start_iteration;
 			newLogRec.nPTGs = nPTGs;
