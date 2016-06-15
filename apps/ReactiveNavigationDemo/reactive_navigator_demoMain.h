@@ -186,7 +186,6 @@ class reactive_navigator_demoframe: public wxFrame
 		/* Vars: */
 		struct TOptions : public mrpt::utils::CLoadableOptions
 		{
-			double ROBOT_MAX_SPEED;
 			double MAX_SENSOR_RADIUS;
 			uint64_t SENSOR_NUM_RANGES;
 			double SENSOR_RANGE_NOISE_STD;

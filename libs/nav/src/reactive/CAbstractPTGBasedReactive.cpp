@@ -65,8 +65,7 @@ CAbstractPTGBasedReactive::CAbstractPTGBasedReactive(CRobot2NavInterface &react_
 	meanTotalExecutionTime       (0.1f),
 	m_closing_navigator          (false)
 {
-	MRPT_UNUSED_PARAM(enableLogFile);
-	this->enableLogFile( m_enableConsoleOutput );
+	this->enableLogFile( enableLogFile );
 }
 
 void CAbstractPTGBasedReactive::preDestructor()
