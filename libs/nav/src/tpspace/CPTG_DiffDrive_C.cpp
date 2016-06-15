@@ -124,7 +124,7 @@ bool CPTG_DiffDrive_C::inverseMap_WS2TP(double x, double y, int &k_out, double &
 		}
 		else
 		{
-			k_out = alpha2index((float)M_PI);
+			k_out = m_alphaValuesCount-1;
 			d_out = 1e+3;
 			is_exact=false;
 		}
@@ -134,7 +134,7 @@ bool CPTG_DiffDrive_C::inverseMap_WS2TP(double x, double y, int &k_out, double &
 	d_out = d_out / refDistance;
 
 	ASSERT_ABOVEEQ_(k_out,0)
-	ASSERT_BELOW_(k_out,this->m_alphaValuesCount)
+	ASSERT_BELOW_(k_out,m_alphaValuesCount)
 
 	return is_exact;
 }

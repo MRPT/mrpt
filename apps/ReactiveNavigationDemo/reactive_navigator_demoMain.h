@@ -87,16 +87,16 @@ class reactive_navigator_demoframe: public wxFrame
 
         //(*Identifiers(reactive_navigator_demoframe)
         static const long ID_BUTTON1;
-        static const long ID_BUTTON2;
-        static const long ID_BUTTON3;
-        static const long ID_BUTTON6;
-        static const long ID_BUTTON7;
         static const long ID_BUTTON4;
         static const long ID_BUTTON5;
+        static const long ID_BUTTON7;
+        static const long ID_BUTTON6;
+        static const long ID_BUTTON2;
+        static const long ID_BUTTON3;
         static const long ID_RADIOBOX2;
-        static const long ID_RADIOBOX1;
         static const long ID_CHECKBOX1;
         static const long ID_CHECKBOX2;
+        static const long ID_RADIOBOX1;
         static const long ID_PANEL6;
         static const long ID_TEXTCTRL1;
         static const long ID_PANEL2;

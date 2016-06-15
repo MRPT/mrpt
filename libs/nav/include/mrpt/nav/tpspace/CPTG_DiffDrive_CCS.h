@@ -17,9 +17,12 @@ namespace mrpt
 	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE(CPTG_DiffDrive_CCS, CParameterizedTrajectoryGenerator, NAV_IMPEXP)
 
 	/** A PTG for optimal paths of type "C|C,S" (as named in PTG papers).
-	  *  See also "Obstacle Distance for Car-Like Robots", IEEE Trans. Rob. And Autom, 1999.
+	 * - **Compatible kinematics**: differential-driven / Ackermann steering
+	 * - **Compatible robot shape**: Arbitrary 2D polygon
+	 *
+	 *  See also "Obstacle Distance for Car-Like Robots", IEEE Trans. Rob. And Autom, 1999.
 	 * \note [Before MRPT 1.5.0 this was named CPTG3]
-	  *  \ingroup nav_tpspace
+	 *  \ingroup nav_tpspace
 	 */
 	class NAV_IMPEXP  CPTG_DiffDrive_CCS : public CPTG_DiffDrive_CollisionGridBased
 	{

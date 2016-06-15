@@ -38,7 +38,9 @@ namespace nav
 	/** Base class for all PTGs suitable to non-holonomic, differentially-driven (or Ackermann) vehicles
 	  * based on numerical integration of the trajectories and collision look-up-table.
 	  */
-	class NAV_IMPEXP CPTG_DiffDrive_CollisionGridBased : public CParameterizedTrajectoryGenerator
+	class NAV_IMPEXP CPTG_DiffDrive_CollisionGridBased : 
+		public CParameterizedTrajectoryGenerator, 
+		public CPTG_RobotShape_Polygonal
 	{
 	public:
 		/** The main method to be implemented in derived classes: it defines the differential-driven differential equation */
@@ -84,16 +86,13 @@ namespace nav
 
 		/** @} */  // --- end of virtual methods
 
-		/** Robot shape must be set before initialization, either from ctor params or via this method. */
-		void setRobotShape(const mrpt::math::CPolygon & robotShape);
-		const mrpt::math::CPolygon & getRobotShape() const { return m_robotShape; }
-
 		float   getMax_V() const { return V_MAX; }
 		float   getMax_W() const { return W_MAX; }
 
-
 protected:
 		CPTG_DiffDrive_CollisionGridBased();
+
+		void internal_processNewRobotShape() MRPT_OVERRIDE;
 
 		/** Possible values in "params" (those in CParameterizedTrajectoryGenerator, which is called internally, plus):
 		 *   - resolution: The cell size
@@ -107,7 +106,6 @@ protected:
 		double V_MAX, W_MAX;
 		double turningRadiusReference;
 		std::vector<TCPointVector> m_trajectory;
-		mrpt::math::CPolygon       m_robotShape;
 		double                     m_resolution;
 
 		void internal_readFromStream(mrpt::utils::CStream &in) MRPT_OVERRIDE;
