@@ -32,7 +32,7 @@ void CPTG_DiffDrive_C::readFromStream(mrpt::utils::CStream &in, int version)
 	switch (version)
 	{
 	case 0:
-		MRPT_TODO("continue")
+		in >> K; 
 		break;
 	default:
 		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
@@ -48,17 +48,14 @@ void CPTG_DiffDrive_C::writeToStream(mrpt::utils::CStream &out, int *version) co
 	}
 
 	CPTG_DiffDrive_CollisionGridBased::internal_writeToStream(out);
-
-//	out << V_MAX << W_MAX
-	MRPT_TODO("continue")
-
+	out << K;
 }
 
 
 
 std::string CPTG_DiffDrive_C::getDescription() const
 {
-	return mrpt::format("Type#1PTG,circ.arcs,K=%i",(int)K);
+	return mrpt::format("CPTG_DiffDrive_C,K=%i",(int)K);
 }
 
 void CPTG_DiffDrive_C::ptgDiffDriveSteeringFunction( float alpha, float t,float x, float y, float phi, float &v, float &w ) const

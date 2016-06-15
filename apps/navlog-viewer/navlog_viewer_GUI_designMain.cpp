@@ -628,9 +628,12 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 
 		win1->addTextMessage(5.0, 5+0*Ay, mrpt::format("Timestamp: %s",mrpt::system::dateTimeLocalToString( log.timestamp ).c_str()),
 				mrpt::utils::TColorf(1,1,1), "mono", fy, mrpt::opengl::NICE,  0 /*unique txt index*/ );
-		MRPT_TODO("Show vel cmds");
-//		win1->addTextMessage(5.0, 5+1*Ay, mrpt::format("cmd_vel={%5.02f m/s,%5.02f deg/s} current_{v,w}={%5.02f m/s,%5.02f deg/s}",log.v, RAD2DEG(log.w), log.actual_v,RAD2DEG(log.actual_w) ),
-//				mrpt::utils::TColorf(1,1,1), "mono", fy, mrpt::opengl::NICE,  1 /*unique txt index*/ );
+
+		win1->addTextMessage(5.0, 5+1*Ay, mrpt::format("cmd_vel=[%s] cur_vel=[%.02f m/s, %0.2f m/s, %.02f dps] cur_vel_local=[%.02f m/s, %0.2f m/s, %.02f dps]",
+			mrpt::utils::sprintf_vector("%.02f,",log.cmd_vel).c_str(),
+			log.cur_vel.vx, log.cur_vel.vy, mrpt::utils::RAD2DEG(log.cur_vel.omega),
+			log.cur_vel_local.vx, log.cur_vel_local.vy, mrpt::utils::RAD2DEG(log.cur_vel_local.omega) ),
+			mrpt::utils::TColorf(1,1,1), "mono", fy, mrpt::opengl::NICE,  1 /*unique txt index*/ );
 		for (unsigned int nPTG=0;nPTG<log.nPTGs;nPTG++)
 		{
 			const CLogFileRecord::TInfoPerPTG &pI = log.infoPerPTG[nPTG];

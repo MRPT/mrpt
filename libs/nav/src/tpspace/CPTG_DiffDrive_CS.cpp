@@ -35,7 +35,7 @@ void CPTG_DiffDrive_CS::readFromStream(mrpt::utils::CStream &in, int version)
 	switch (version)
 	{
 	case 0:
-		MRPT_TODO("continue")
+		in >> K;
 		break;
 	default:
 		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
@@ -51,15 +51,12 @@ void CPTG_DiffDrive_CS::writeToStream(mrpt::utils::CStream &out, int *version) c
 	}
 
 	CPTG_DiffDrive_CollisionGridBased::internal_writeToStream(out);
-
-//	out << V_MAX << W_MAX
-	MRPT_TODO("continue")
-
+	out << K;
 }
 std::string CPTG_DiffDrive_CS::getDescription() const
 {
 	char str[100];
-	os::sprintf(str,100,"Type#5PTG:CS");
+	os::sprintf(str,100,"CPTG_DiffDrive_CS,K=%i",(int)K);
 	return std::string(str);
 }
 
