@@ -323,8 +323,8 @@ void navlog_viewer_GUI_designDialog::loadLogfile(const std::string &filName)
 					size_t nPTGs = logptr->infoPerPTG.size();
 					m_logdata_ptg_paths.resize(nPTGs);
 					for (size_t i=0;i<nPTGs;i++)
-						if (logptr->infoPerPTG[i].ptg_trajectory)
-							m_logdata_ptg_paths[i] = logptr->infoPerPTG[i].ptg_trajectory;
+						if (logptr->infoPerPTG[i].ptg)
+							m_logdata_ptg_paths[i] = logptr->infoPerPTG[i].ptg;
 				}
 			}
 
@@ -416,17 +416,27 @@ void navlog_viewer_GUI_designDialog::UpdateInfoFromLoadedLog()
 			win->axis(-5,5,-5,5, true);
 		}
 
-		std::vector<double> vs(N),ws(N);
+		std::vector<std::vector<double> > cmd_vels;
 		for (size_t i=0;i<N;i++)
 		{
 			CLogFileRecordPtr logptr = CLogFileRecordPtr(m_logdata[i]);
 			const CLogFileRecord &log = *logptr;
-			vs[i] = log.v;
-			ws[i] = log.w;
+			const size_t vel_len = log.cmd_vel.size();
+			if (i==0) {
+				cmd_vels.resize( vel_len );
+				for (size_t k=0;k<vel_len;k++) 
+					cmd_vels[k].resize(N);
+			}
+			for (size_t k=0;k<vel_len;k++) 
+				cmd_vels[k][i] = log.cmd_vel[k];
 		}
 		win->clf();
-		win->plot(vs,"r-","v1"); win->plot(vs,"r2.","v2");
-		win->plot(ws,"b-","w1"); win->plot(ws,"b2.","w2");
+		const char cols [4] = {'r','b','k','g'};
+		for (size_t i=0;i<cmd_vels.size();i++) 
+		{
+			win->plot(cmd_vels[i],mrpt::format("%c-",cols[i%4]),mrpt::format("vc%u",(unsigned int)i)); 
+			win->plot(cmd_vels[i],mrpt::format("%c.",cols[i%4]),mrpt::format("vp%u",(unsigned int)i)); 
+		}
 		win->axis_fit();
 	}
 
@@ -549,7 +559,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 					{
 						// Draw path:
 						const int selected_k = ptg->alpha2index( log.infoPerPTG[log.nSelectedPTG].desiredDirection );
-						float max_dist = ptg->refDistance;
+						float max_dist = ptg->getRefDistance();
 						gl_path->clear();
 						ptg->renderPathAsSimpleLine(selected_k,*gl_path,0.10, max_dist);
 						gl_path->setColor_u8( mrpt::utils::TColor(0xff,0x00,0x00) );
@@ -562,10 +572,12 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 
 							for (double d=min_shape_dists;d<max_dist;d+=min_shape_dists)
 							{
-								float x,y,phi,t;
-								ptg->getCPointWhen_d_Is(d,selected_k,x,y,phi,t);
-								mrpt::poses::CPose2D pose(x,y,phi);
-								add_robotShape_to_setOfLines(shap_x,shap_y, *gl_path, pose);
+								uint16_t step;
+								if (!ptg->getPathStepForDist(selected_k, d, step))
+									continue;
+								mrpt::math::TPose2D p;
+								ptg->getPathPose(selected_k, step, p);
+								add_robotShape_to_setOfLines(shap_x,shap_y, *gl_path, mrpt::poses::CPose2D(p) );
 							}
 						}
 					}
@@ -616,8 +628,9 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 
 		win1->addTextMessage(5.0, 5+0*Ay, mrpt::format("Timestamp: %s",mrpt::system::dateTimeLocalToString( log.timestamp ).c_str()),
 				mrpt::utils::TColorf(1,1,1), "mono", fy, mrpt::opengl::NICE,  0 /*unique txt index*/ );
-		win1->addTextMessage(5.0, 5+1*Ay, mrpt::format("cmd_{v,w}={%5.02f m/s,%5.02f deg/s} current_{v,w}={%5.02f m/s,%5.02f deg/s}",log.v, RAD2DEG(log.w), log.actual_v,RAD2DEG(log.actual_w) ),
-				mrpt::utils::TColorf(1,1,1), "mono", fy, mrpt::opengl::NICE,  1 /*unique txt index*/ );
+		MRPT_TODO("Show vel cmds");
+//		win1->addTextMessage(5.0, 5+1*Ay, mrpt::format("cmd_vel={%5.02f m/s,%5.02f deg/s} current_{v,w}={%5.02f m/s,%5.02f deg/s}",log.v, RAD2DEG(log.w), log.actual_v,RAD2DEG(log.actual_w) ),
+//				mrpt::utils::TColorf(1,1,1), "mono", fy, mrpt::opengl::NICE,  1 /*unique txt index*/ );
 		for (unsigned int nPTG=0;nPTG<log.nPTGs;nPTG++)
 		{
 			const CLogFileRecord::TInfoPerPTG &pI = log.infoPerPTG[nPTG];
@@ -717,7 +730,11 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 void navlog_viewer_GUI_designDialog::OntimAutoloadTrigger(wxTimerEvent& event)
 {
 	if (!global_fileToOpen.empty() && mrpt::system::fileExists(global_fileToOpen))
-		loadLogfile(global_fileToOpen);
+	{
+		const std::string sFil = global_fileToOpen;
+		global_fileToOpen.clear();
+		loadLogfile(sFil);
+	}
 }
 
 void navlog_viewer_GUI_designDialog::OnbtnMoreOpsClick(wxCommandEvent& event)

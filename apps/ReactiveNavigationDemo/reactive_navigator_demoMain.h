@@ -96,6 +96,7 @@ class reactive_navigator_demoframe: public wxFrame
         static const long ID_RADIOBOX2;
         static const long ID_RADIOBOX1;
         static const long ID_CHECKBOX1;
+        static const long ID_CHECKBOX2;
         static const long ID_PANEL6;
         static const long ID_TEXTCTRL1;
         static const long ID_PANEL2;
@@ -151,6 +152,7 @@ class reactive_navigator_demoframe: public wxFrame
         wxStaticText* StaticText3;
         wxPanel* pnParamsGeneral;
         wxPanel* Panel3;
+        wxCheckBox* cbNavLog;
         wxMenuItem* MenuItem3;
         wxMenuItem* mnuViewRobotPath;
         wxTextCtrl* edLog;
@@ -175,6 +177,8 @@ class reactive_navigator_demoframe: public wxFrame
 		bool reinitSimulator();  // Create navigator object & load params from GUI. Return false on error
 		void simulateOneStep(double time_step);
 		void updateViewsDynamicObjects(); // Update 3D object positions and refresh views.
+
+		void updateButtonsEnableState(bool is_running);
 
 		void Onplot3DMouseClick(wxMouseEvent& event);
 		void Onplot3DMouseMove(wxMouseEvent& event);
@@ -205,16 +209,22 @@ class reactive_navigator_demoframe: public wxFrame
 		mrpt::maps::COccupancyGridMap2D  m_gridMap;
 		mrpt::math::TPoint2D             m_targetPoint;
 		bool                             m_is_running; //!< is simulator running or paused?
+		mrpt::maps::CSimplePointsMap     m_latest_obstacles;
 
 		struct MyNavIFBase
 		{
-			mrpt::maps::CSimplePointsMap latest_obstacles;
+			MyNavIFBase(mrpt::maps::CSimplePointsMap &ref_latest_obstacles ) : latest_obstacles(ref_latest_obstacles) 
+			{
+			}
+			mrpt::maps::CSimplePointsMap & latest_obstacles;
 		};
 
 		class MyRobot2NavInterface_Diff : public mrpt::nav::CRobot2NavInterfaceForSimulator_DiffDriven, public MyNavIFBase
 		{
 		public:
-			MyRobot2NavInterface_Diff(mrpt::kinematics::CVehicleSimul_DiffDriven &simul) :  mrpt::nav::CRobot2NavInterfaceForSimulator_DiffDriven(simul) 
+			MyRobot2NavInterface_Diff(mrpt::kinematics::CVehicleSimul_DiffDriven &simul,mrpt::maps::CSimplePointsMap &ref_latest_obstacles) : 
+				mrpt::nav::CRobot2NavInterfaceForSimulator_DiffDriven(simul),
+				MyNavIFBase(ref_latest_obstacles)
 			{}
 			virtual bool senseObstacles( mrpt::maps::CSimplePointsMap &obstacles ) {
 				obstacles = latest_obstacles;
@@ -224,7 +234,9 @@ class reactive_navigator_demoframe: public wxFrame
 		class MyRobot2NavInterface_Holo : public mrpt::nav::CRobot2NavInterfaceForSimulator_Holo, public MyNavIFBase
 		{
 		public:
-			MyRobot2NavInterface_Holo(mrpt::kinematics::CVehicleSimul_Holo &simul) :  mrpt::nav::CRobot2NavInterfaceForSimulator_Holo(simul) 
+			MyRobot2NavInterface_Holo(mrpt::kinematics::CVehicleSimul_Holo &simul,mrpt::maps::CSimplePointsMap &ref_latest_obstacles) :  
+				mrpt::nav::CRobot2NavInterfaceForSimulator_Holo(simul),
+				MyNavIFBase(ref_latest_obstacles)
 			{}
 			virtual bool senseObstacles( mrpt::maps::CSimplePointsMap &obstacles ) {
 				obstacles = latest_obstacles;
