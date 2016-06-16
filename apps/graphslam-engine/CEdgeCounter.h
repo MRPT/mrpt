@@ -13,6 +13,8 @@
 #include <mrpt/utils/mrpt_macros.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
 
+#include "CWindowManager.h"
+
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -37,10 +39,6 @@ class CEdgeCounter_t {
 			this->clearAllEdges();
 			m_has_read_textmessage_params = false;
 
-			// default font-related variables
-			m_font_name = "Sans";
-			m_font_size = 20;
-
 			// visualization parameters for total edges / loop closures
 			m_display_total_edges = false; m_display_loop_closures = false;
 			m_offset_y_total_edges = 0.0; m_offset_y_loop_closures = 0.0;
@@ -49,7 +47,13 @@ class CEdgeCounter_t {
 			m_unique_edges = 0;
 
 		}
-
+		/**
+		 * setWindowManagerPtr
+		 *
+		 */
+		void setWindowManagerPtr(mrpt::gui::CWindowManager_t* win_manager) {
+			m_win_manager = win_manager;
+		}
 		/**
 		 * setRemovedEdges
 		 *
@@ -272,8 +276,7 @@ class CEdgeCounter_t {
 		 * the object via addEdge with is_new=true or addEdgeType
 		 */
 		void setTextMessageParams(const std::map<std::string, double>& name_to_offset_y,
-				const std::map<std::string, int>& name_to_text_index,
-				const std::string& font_name, const int& font_size) {
+				const std::map<std::string, int>& name_to_text_index) {
 
 			//std::cout << "in setTextMessageParams " << std::endl
 			//<< "m_offset_y_total_edges: " << m_offset_y_total_edges << std::endl
@@ -310,10 +313,6 @@ class CEdgeCounter_t {
 
 			}
 
-			// font parameters
-			m_font_name = font_name;
-			m_font_size = font_size;
-
 			m_has_read_textmessage_params = true;
 		}
 
@@ -327,8 +326,7 @@ class CEdgeCounter_t {
 		void setTextMessageParams(const std::map<std::string, double>& name_to_offset_y,
 				const std::map<std::string, int>& name_to_text_index,
 				const double& offset_y_total_edges, const int& text_index_total_edges,
-				const double& offset_y_loop_closures, const int& text_index_loop_closures,
-				const std::string& font_name, const int& font_size) {
+				const double& offset_y_loop_closures, const int& text_index_loop_closures) {
 
 			// set the parameters for total edges / loop closures
 			m_display_total_edges = true;
@@ -341,8 +339,7 @@ class CEdgeCounter_t {
 			m_text_index_loop_closures = text_index_loop_closures;
 
 			// pass execution to the other setTextMessageParams
-			this->setTextMessageParams(name_to_offset_y, name_to_text_index,
-					font_name, font_size);
+			this->setTextMessageParams(name_to_offset_y, name_to_text_index);
 
 		}
 
@@ -364,12 +361,10 @@ class CEdgeCounter_t {
 			//if (m_unique_edges) {
 				//title << " |Unique: " << m_unique_edges << std::endl;
 			//}
-			if (m_display_total_edges) {
-				m_win->addTextMessage(5,-m_offset_y_total_edges,
+			if (m_display_total_edges && m_win_manager) {
+				m_win_manager->addTextMessage(5,-m_offset_y_total_edges,
 						title.str(),
 						mrpt::utils::TColorf(1.0, 1.0, 1.0),
-						m_font_name, m_font_size, // font name & size
-						mrpt::opengl::NICE,
 						/* unique_index = */ m_text_index_total_edges);
 			}
 
@@ -386,11 +381,9 @@ class CEdgeCounter_t {
 
 				std::stringstream title;
 				title << "  " << name << ": " <<	edges_num << std::endl;
-				m_win->addTextMessage(5,-offset_y,
+				m_win_manager->addTextMessage(5,-offset_y,
 						title.str(),
 						mrpt::utils::TColorf(1.0, 1.0, 1.0),
-						m_font_name, m_font_size, // font name & size
-						mrpt::opengl::NICE,
 						/* unique_index = */ text_index);
 			}
 
@@ -399,11 +392,9 @@ class CEdgeCounter_t {
 			if (m_display_loop_closures) {
 				std::stringstream title;
 				title << "  " << "Loop closures: " <<  m_num_loop_closures << std::endl;
-				m_win->addTextMessage(5,-m_offset_y_loop_closures,
+				m_win_manager->addTextMessage(5,-m_offset_y_loop_closures,
 						title.str(),
 						mrpt::utils::TColorf(1.0, 1.0, 1.0),
-						m_font_name, m_font_size, // font name & size
-						mrpt::opengl::NICE,
 						/* unique_index = */ m_text_index_loop_closures);
 			}
 
@@ -412,6 +403,7 @@ class CEdgeCounter_t {
 
 	private:
 		mrpt::gui::CDisplayWindow3D* m_win;
+		mrpt::gui::CWindowManager_t* m_win_manager;
 
 		// Tracking number of edges
 		std::map<std::string, int> m_name_to_edges_num;;
@@ -422,8 +414,6 @@ class CEdgeCounter_t {
 		std::map<std::string, double> m_name_to_offset_y;
 		std::map<std::string, int> m_name_to_text_index;
 
-		std::string m_font_name;
-		int m_font_size;
 		bool m_has_read_textmessage_params;
 
 		// specifics to loop closures, total edges

@@ -44,11 +44,10 @@ CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::CGraphSlamEngine_t(
 	m_rawlog_fname(rawlog_fname),
 	m_fname_GT(fname_GT),
 	m_win(win),
-	kOffsetYStep(20.0), // textMessage vertical text position
-	kIndexTextStep(1), // textMessage index
+	m_win_observer(win_observer),
+	m_win_manager(m_win),
 	m_odometry_color(0, 0, 1),
-	m_GT_color(0, 1, 0),
-	m_win_observer(win_observer)
+	m_GT_color(0, 1, 0)
 {
 	
 	this->initCGraphSlamEngine();
@@ -113,6 +112,10 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::initCGraphSlam
 	m_node_registrar.setGraphPtr(&m_graph);
 	m_edge_registrar.setGraphPtr(&m_graph);
 
+	// pass the window manager ptr after the instance initialization
+	m_node_registrar.setWindowManagerPtr(&m_win_manager);
+	m_edge_registrar.setWindowManagerPtr(&m_win_manager);
+
 	// pass a cdisplaywindowptr after the instance initialization
 	m_node_registrar.setCDisplayWindowPtr(m_win);
 	m_edge_registrar.setCDisplayWindowPtr(m_win);
@@ -140,13 +143,14 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::initCGraphSlam
 	m_curr_text_index = 1;
 
 	// timestamp
-	this->assignTextMessageParameters(&m_offset_y_timestamp,
+	m_win_manager.assignTextMessageParameters(&m_offset_y_timestamp,
 			&m_text_index_timestamp);
 
 	// optimized graph
 	assert(m_has_read_config);
 	if (m_visualize_optimized_graph) {
-		this->assignTextMessageParameters( /* offset_y*	= */ &m_offset_y_graph,
+		m_win_manager.assignTextMessageParameters( 
+				/* offset_y*	= */ &m_offset_y_graph,
 				/* text_index* = */ &m_text_index_graph );
 	}
 
@@ -156,7 +160,7 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::initCGraphSlam
 		assert(m_win && 
 				"Visualization of data was requested but no CDisplayWindow3D pointer was given");
 
-		this->assignTextMessageParameters( /* offset_y* = */ &m_offset_y_odometry,
+		m_win_manager.assignTextMessageParameters( /* offset_y* = */ &m_offset_y_odometry,
 				/* text_index* = */ &m_text_index_odometry);
 
 		COpenGLScenePtr scene = m_win->get3DSceneAndLock();
@@ -174,11 +178,9 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::initCGraphSlam
 
 		m_win->unlockAccess3DScene();
 
-		m_win->addTextMessage(5,-m_offset_y_odometry,
+		m_win_manager.addTextMessage(5,-m_offset_y_odometry,
 				format("Odometry path"),
 				m_odometry_color,
-				m_font_name, m_font_size, // font name & size
-				mrpt::opengl::NICE,
 				/* unique_index = */ m_text_index_odometry );
 
 		m_win->forceRepaint();
@@ -200,7 +202,8 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::initCGraphSlam
 		this->buildGroundTruthMap(m_fname_GT);
 		m_curr_GT_poses_index = 0; // counter for reading back the GT_poses
 
-		this->assignTextMessageParameters( /* offset_y*		= */ &m_offset_y_GT,
+		m_win_manager.assignTextMessageParameters( 
+				/* offset_y*		= */ &m_offset_y_GT,
 				/* text_index* = */ &m_text_index_GT);
 
 		COpenGLScenePtr scene = m_win->get3DSceneAndLock();
@@ -218,11 +221,9 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::initCGraphSlam
 
 		m_win->unlockAccess3DScene();
 
-		m_win->addTextMessage(5,-m_offset_y_GT,
+		m_win_manager.addTextMessage(5,-m_offset_y_GT,
 				format("Ground truth path"),
 				m_GT_color,
-				m_font_name, m_font_size, // font name & size
-				mrpt::opengl::NICE,
 				/* unique_index = */ m_text_index_GT );
 
 		m_win->forceRepaint();
@@ -289,7 +290,7 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::initCGraphSlam
 		double offset_y_total_edges, offset_y_loop_closures;
 		int text_index_total_edges, text_index_loop_closures;
 
-		this->assignTextMessageParameters(&offset_y_total_edges, 
+		m_win_manager.assignTextMessageParameters(&offset_y_total_edges, 
 				&text_index_total_edges);
 		//std::cout << "in GraphSlamEngine:	" << std::endl
 		//<< "offset_y_total_edges: " << offset_y_total_edges << std::endl
@@ -307,7 +308,7 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::initCGraphSlam
 		for (vector<string>::const_iterator it = vec_edge_types.begin(); 
 				it != vec_edge_types.end();
 				++it) {
-			this->assignTextMessageParameters(&name_to_offset_y[*it], 
+			m_win_manager.assignTextMessageParameters(&name_to_offset_y[*it], 
 					&name_to_text_index[*it]);
 			//std::cout << "in initCGraphSlamEngine: " << std::endl;
 			//std::cout << "name: " << *it << " | offset_y: "
@@ -315,7 +316,7 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::initCGraphSlam
 			//<< name_to_text_index[*it] << std::endl;
 		}
 
-		this->assignTextMessageParameters(&offset_y_loop_closures, 
+		m_win_manager.assignTextMessageParameters(&offset_y_loop_closures, 
 				&text_index_loop_closures);
 		//std::cout << "in GraphSlamEngine:	" << std::endl
 		//<< "offset_y_loop_closures: " << offset_y_loop_closures << std::endl
@@ -325,8 +326,8 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::initCGraphSlam
 			// add all the parameters to the CEdgeCounter_t object
 			m_edge_counter.setTextMessageParams(name_to_offset_y, name_to_text_index,
 					offset_y_total_edges, text_index_total_edges,
-					offset_y_loop_closures, text_index_loop_closures,
-					m_font_name, m_font_size);
+					offset_y_loop_closures, text_index_loop_closures);
+			m_edge_counter.setWindowManagerPtr(&m_win_manager);
 		}
 	}
 
@@ -531,19 +532,15 @@ bool CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::parseRawlogFil
 		// Use the dataset timestamp otherwise fallback to mrpt::system::now()
 		if (m_win) {
 			if (timestamp != INVALID_TIMESTAMP) {
-				m_win->addTextMessage(5,-m_offset_y_timestamp,
+				m_win_manager.addTextMessage(5,-m_offset_y_timestamp,
 						format("Simulated time: %s", timeLocalToString(timestamp).c_str()),
 						TColorf(1.0, 1.0, 1.0),
-						m_font_name, m_font_size, // font name & size
-						mrpt::opengl::NICE,
 						/* unique_index = */ m_text_index_timestamp );
 			}
 			else {
-				m_win->addTextMessage(5,-m_offset_y_timestamp,
+				m_win_manager.addTextMessage(5,-m_offset_y_timestamp,
 						format("Wall time: %s", timeLocalToString(system::now()).c_str()),
 						TColorf(1.0, 1.0, 1.0),
-						m_font_name, m_font_size, // font name & size
-						mrpt::opengl::NICE,
 						/* unique_index = */ m_text_index_timestamp );
 			}
 		}
@@ -677,12 +674,10 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::visualizeGraph
 	scene->insert(graph_obj);
 
 	m_win->unlockAccess3DScene();
-	m_win->addTextMessage(5,-m_offset_y_graph,
+	m_win_manager.addTextMessage(5,-m_offset_y_graph,
 			format("Optimized Graph: #nodes %d",
 				static_cast<int>(gr.nodeCount())),
 			TColorf(0.0, 0.0, 0.0),
-			m_font_name, m_font_size, // font name & size
-			mrpt::opengl::NICE,
 			/* unique_index = */ m_text_index_graph);
 
 	m_win->forceRepaint();
@@ -765,16 +760,6 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::readConfigFile
 	// Section: VisualizationParameters
 	// ////////////////////////////////
 	// http://reference.mrpt.org/devel/group__mrpt__opengl__grp.html#ga30efc9f6fcb49801e989d174e0f65a61
-
-	m_font_name = cfg_file.read_string(
-			"VisualizationParameters",
-			"font_name",
-			"sans", false);
-	m_font_size = cfg_file.read_int(
-			"VisualizationParameters",
-			"font_size",
-			12, false);
-
 
 	// Optimized graph
 	m_visualize_optimized_graph = cfg_file.read_bool(

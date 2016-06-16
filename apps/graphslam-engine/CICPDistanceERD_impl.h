@@ -17,16 +17,8 @@ using namespace mrpt::graphslam::deciders;
 // //////////////////////////////////
 
 template<class GRAPH_t>
-CICPDistanceERD_t<GRAPH_t>::CICPDistanceERD_t()  {
-	MRPT_START;
-
-	this->initCICPDistanceERD_t();
-
-	MRPT_END;
-}
-template<class GRAPH_t>
-CICPDistanceERD_t<GRAPH_t>::CICPDistanceERD_t(GRAPH_t* graph):
-	m_graph(graph)
+CICPDistanceERD_t<GRAPH_t>::CICPDistanceERD_t():
+	m_search_disk_color(TColor(142, 142, 56))
 {
 	MRPT_START;
 
@@ -39,7 +31,10 @@ void CICPDistanceERD_t<GRAPH_t>::initCICPDistanceERD_t() {
 	MRPT_START;
 
 	m_win = NULL;
+	m_win_manager = NULL;
 	m_graph = NULL;
+
+	m_initialized_visuals = false;
 
 	m_last_total_num_of_nodes = 0;
 
@@ -260,6 +255,11 @@ void CICPDistanceERD_t<GRAPH_t>::setGraphPtr(GRAPH_t* graph) {
 
 	MRPT_END;
 }
+template<class GRAPH_t>
+void CICPDistanceERD_t<GRAPH_t>::setWindowManagerPtr(
+		mrpt::gui::CWindowManager_t* win_manager) {
+	m_win_manager = win_manager;
+}
 template<class GRAPH_t> void
 CICPDistanceERD_t<GRAPH_t>::setCDisplayWindowPtr(
 		mrpt::gui::CDisplayWindow3D* win) {
@@ -295,12 +295,25 @@ void CICPDistanceERD_t<GRAPH_t>::initializeVisuals() {
 		pose_t initial_pose;
 		obj->setPose(initial_pose);
 		obj->setName("ICP_max_distance");
-		obj->setColor_u8(TColor(142, 142, 56));
+		obj->setColor(m_search_disk_color);
 		obj->setDiskRadius(params.ICP_max_distance, params.ICP_max_distance-0.5);
 		scene->insert(obj);
 
 		m_win->unlockAccess3DScene();
 		m_win->forceRepaint();
+	}
+
+	m_initialized_visuals = true;
+
+	if (m_win && m_win_manager && params.ICP_max_distance > 0) {
+		m_win_manager->assignTextMessageParameters(
+				&m_offset_y_search_disk,
+				&m_text_index_search_disk);
+
+		m_win_manager->addTextMessage(5,-m_offset_y_search_disk,
+				format("ICP Edges search radius"),
+				mrpt::utils::TColorf(m_search_disk_color),
+				/* unique_index = */ m_text_index_search_disk );
 	}
 
 	MRPT_END;

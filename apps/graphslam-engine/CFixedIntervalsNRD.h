@@ -57,7 +57,6 @@ namespace mrpt { namespace graphslam { namespace deciders {
 							constraint_t::state_length,
 							constraint_t::state_length> InfMat;
 
-			CFixedIntervalsNRD_t(GRAPH_t* graph);
 			CFixedIntervalsNRD_t();
 			~CFixedIntervalsNRD_t();
 
@@ -65,7 +64,6 @@ namespace mrpt { namespace graphslam { namespace deciders {
 		 	 * Initialize the graph to be used for the node registration procedure
 		 	 */
 			void setGraphPtr(GRAPH_t* graph);
-
 			/**
 		 	 * Make use of the CActionCollection to update the odometry estimation from
 		 	 * the last inserted pose

@@ -60,6 +60,7 @@
 
 #include "CEdgeCounter.h"
 #include "CWindowObserver.h"
+#include "CWindowManager.h"
 #include "CFixedIntervalsNRD.h"
 #include "CICPDistanceERD.h"
 #include "supplementary_funs.h"
@@ -184,23 +185,10 @@ namespace mrpt { namespace graphslam {
 		 		 */
 				void initResultsFile(const std::string& fname);
 				/**
-		 		 * assignTextMessageParameters
-		 		 *
-		 		 * Assign the next available offset_y and text_index for the textMessage under
-		 		 * construction. Then increment the respective current counters
-		 		 */
-				inline void assignTextMessageParameters(double* offset_y, int* text_index) {
-					*offset_y = m_curr_offset_y;
-					m_curr_offset_y += kOffsetYStep;
-
-					*text_index = m_curr_text_index;
-					m_curr_text_index += kIndexTextStep;
-				}
-				/**
  				 * updateCurrPosViewport
  				 *
- 				 * Udpate the viewport responsible for displaying the graph-building procedure
- 				 * in the estimated position of the robot
+ 				 * Udpate the viewport responsible for displaying the graph-building
+ 				 * procedure in the estimated position of the robot
  				 */
 				inline void updateCurrPosViewport(const GRAPH_t& gr);
 				/**
@@ -279,21 +267,15 @@ namespace mrpt { namespace graphslam {
 
 				// visualization objects
 				mrpt::gui::CDisplayWindow3D* m_win;
+				CWindowObserver* m_win_observer;
+				mrpt::gui::CWindowManager_t m_win_manager;
 
 				mrpt::utils::TParametersDouble m_optimized_graph_viz_params;
 				bool m_visualize_optimized_graph;
 				bool m_visualize_odometry_poses;
 				bool m_visualize_GT;
 
-				/**
-		 		 * textMessage Parameters
-		 		 *
-		 		 */
-				std::string m_font_name;
-				int m_font_size;
-
 				// textMessage vertical text position
-				const double kOffsetYStep;
 				double m_curr_offset_y;
 				double m_offset_y_graph;
 				double m_offset_y_odometry;
@@ -301,7 +283,6 @@ namespace mrpt { namespace graphslam {
 				double m_offset_y_GT;
 
 				// textMessage index
-				const int kIndexTextStep;
 				int m_curr_text_index;
 				int m_text_index_graph;
 				int m_text_index_odometry;
@@ -344,7 +325,6 @@ namespace mrpt { namespace graphslam {
 
 				// Interaction with the CDisplayWindow - use of CWindowObserver
 				bool m_autozoom_active, m_request_to_exit;
-				CWindowObserver* m_win_observer;
 
 		};
 
