@@ -64,9 +64,9 @@ void CReactiveNavigationSystem3D::changeRobotShape( TRobotShape robotShape )
 {
 	m_PTGsMustBeReInitialized = true;
 
-	for (unsigned int i=0; i<robotShape.polygons.size(); i++)
+	for (unsigned int i=0; i<robotShape.size(); i++)
 	{
-		if ( robotShape.polygons[i].verticesCount() < 3 )
+		if ( robotShape.polygon(i).verticesCount() < 3 )
 			THROW_EXCEPTION("The robot shape has less than 3 vertices!!")
 	}
 
@@ -78,47 +78,48 @@ void CReactiveNavigationSystem3D::changeRobotShape( TRobotShape robotShape )
 /*---------------------------------------------------------------
 						loadConfigFile
   ---------------------------------------------------------------*/
-void CReactiveNavigationSystem3D::loadConfigFile(const mrpt::utils::CConfigFileBase &ini)
+void CReactiveNavigationSystem3D::loadConfigFile(const mrpt::utils::CConfigFileBase &ini, const std::string &section_prefix)
 {
 	MRPT_START
 
 	m_PTGsMustBeReInitialized = true;
 
+	const std::string sectRob = section_prefix + std::string("ROBOT_CONFIG");
+	const std::string sectCfg = section_prefix + std::string("NAVIGATION_CONFIG");
+
 	// Load config from INI file:
 	// ------------------------------------------------------------
-	robotName = ini.read_string("ROBOT_CONFIG","Name", "MyRobot", false );
+	robotName = ini.read_string(sectRob,"Name", "MyRobot", false );
 
 	unsigned int num_levels;
 	vector <float> xaux,yaux;
 
 	//Read config params which describe the robot shape
-	num_levels = ini.read_int("ROBOT_CONFIG","HEIGHT_LEVELS", 1, true);
-	m_robotShape.polygons.resize(num_levels);
-	m_robotShape.heights.resize(num_levels);
+	num_levels = ini.read_int(sectRob,"HEIGHT_LEVELS", 1, true);
+	m_robotShape.resize(num_levels);
 	for (unsigned int i=1;i<=num_levels;i++)
 	{
-		m_robotShape.heights[i-1] = ini.read_float("ROBOT_CONFIG",format("LEVEL%d_HEIGHT",i), 1, true);
-		ini.read_vector("ROBOT_CONFIG",format("LEVEL%d_VECTORX",i), vector<float> (0), xaux, false);
-		ini.read_vector("ROBOT_CONFIG",format("LEVEL%d_VECTORY",i), vector<float> (0), yaux, false);
+		m_robotShape.setHeight(i-1, ini.read_float(sectRob,format("LEVEL%d_HEIGHT",i), 1.0, true) );
+		m_robotShape.setRadius(i-1, ini.read_float(sectRob,format("LEVEL%d_RADIUS",i), 0.5, false) );
+		ini.read_vector(sectRob,format("LEVEL%d_VECTORX",i), vector<float> (0), xaux, false);
+		ini.read_vector(sectRob,format("LEVEL%d_VECTORY",i), vector<float> (0), yaux, false);
 		ASSERT_(xaux.size() == yaux.size());
 		for (unsigned int j=0;j<xaux.size();j++)
-		{
-			m_robotShape.polygons[i-1].AddVertex(xaux[j], yaux[j]);
-		}
+			m_robotShape.polygon(i-1).AddVertex(xaux[j], yaux[j]);
 	}
 
 	//Read navigation params
-	refDistance = ini.read_float("NAVIGATION_CONFIG","MAX_DISTANCE_PTG", 1, true);
-	SPEEDFILTER_TAU =  ini.read_float("NAVIGATION_CONFIG","SPEEDFILTER_TAU", 0, true);
+	refDistance = ini.read_float(sectCfg,"MAX_DISTANCE_PTG", 1, true);
+	SPEEDFILTER_TAU =  ini.read_float(sectCfg,"SPEEDFILTER_TAU", 0, true);
 
-	DIST_TO_TARGET_FOR_SENDING_EVENT = ini.read_float("NAVIGATION_CONFIG", "DIST_TO_TARGET_FOR_SENDING_EVENT", DIST_TO_TARGET_FOR_SENDING_EVENT, false);
+	DIST_TO_TARGET_FOR_SENDING_EVENT = ini.read_float(sectCfg, "DIST_TO_TARGET_FOR_SENDING_EVENT", DIST_TO_TARGET_FOR_SENDING_EVENT, false);
 
-	ini.read_vector("NAVIGATION_CONFIG", "weights", vector<float> (0), weights, 1);
+	ini.read_vector(sectCfg, "weights", vector<float> (0), weights, 1);
 	ASSERT_(weights.size()==6);
 
-	badNavAlarm_AlarmTimeout = ini.read_float("NAVIGATION_CONFIG","ALARM_SEEMS_NOT_APPROACHING_TARGET_TIMEOUT", badNavAlarm_AlarmTimeout, false);
+	badNavAlarm_AlarmTimeout = ini.read_float(sectCfg,"ALARM_SEEMS_NOT_APPROACHING_TARGET_TIMEOUT", badNavAlarm_AlarmTimeout, false);
 
-	//m_reactiveparam.m_reload_ptgfiles = ini.read_bool("NAVIGATION_CONFIG","RELOAD_PTGFILES", 1, true);
+	//m_reactiveparam.m_reload_ptgfiles = ini.read_bool(sectCfg,"RELOAD_PTGFILES", 1, true);
 
 
 	// Load PTGs from file:
@@ -129,9 +130,9 @@ void CReactiveNavigationSystem3D::loadConfigFile(const mrpt::utils::CConfigFileB
 	CParameterizedTrajectoryGenerator *ptgaux;
 
 
-	num_ptgs = ini.read_int("NAVIGATION_CONFIG","PTG_COUNT", 1, true);
-	params["ref_distance"] = ini.read_float("NAVIGATION_CONFIG","MAX_DISTANCE_PTG", 1, true);
-	colGridRes = ini.read_float("NAVIGATION_CONFIG","GRID_RESOLUTION", 0.03, true);
+	num_ptgs = ini.read_int(sectCfg,"PTG_COUNT", 1, true);
+	params["ref_distance"] = ini.read_float(sectCfg,"MAX_DISTANCE_PTG", 1, true);
+	colGridRes = ini.read_float(sectCfg,"GRID_RESOLUTION", 0.03, true);
 	params["resolution"] = colGridRes;
 
 	m_ptgmultilevel.resize(num_ptgs);
@@ -143,18 +144,18 @@ void CReactiveNavigationSystem3D::loadConfigFile(const mrpt::utils::CConfigFileB
 
 	for (unsigned int j=1; j<=num_ptgs; j++)
 	{
-		params["v_max"] = ini.read_float("NAVIGATION_CONFIG",format("PTG%d_VMAX",j),1,true);
-		params["w_max"] = DEG2RAD(ini.read_float("NAVIGATION_CONFIG",format("PTG%d_WMAX",j),1,true));
-		params["K"] = ini.read_int("NAVIGATION_CONFIG",format("PTG%d_K",j),1,true);
-		params["cte_a0v"] = DEG2RAD(ini.read_float("NAVIGATION_CONFIG",format("PTG%d_AV",j),1,true));
-		params["cte_a0w"] = DEG2RAD(ini.read_float("NAVIGATION_CONFIG",format("PTG%d_AW",j),1,true));
-		params["num_paths"] = ini.read_int("NAVIGATION_CONFIG",format("PTG%d_NALFAS",j),30,true);
+		params["v_max"] = ini.read_float(sectCfg,format("PTG%d_VMAX",j),1,true);
+		params["w_max"] = DEG2RAD(ini.read_float(sectCfg,format("PTG%d_WMAX",j),1,true));
+		params["K"] = ini.read_int(sectCfg,format("PTG%d_K",j),1,true);
+		params["cte_a0v"] = DEG2RAD(ini.read_float(sectCfg,format("PTG%d_AV",j),1,true));
+		params["cte_a0w"] = DEG2RAD(ini.read_float(sectCfg,format("PTG%d_AW",j),1,true));
+		params["num_paths"] = ini.read_int(sectCfg,format("PTG%d_NALFAS",j),30,true);
 
-		for (unsigned int i=1; i<=m_robotShape.heights.size(); i++)
+		for (unsigned int i=1; i<=m_robotShape.size(); i++)
 		{
 
 			printf_debug("[loadConfigFile] Generating PTG#%u at level %u...",j,i);
-			const std::string sPTGName = ini.read_string("NAVIGATION_CONFIG",format("PTG%d_TYPE",j),"",true);
+			const std::string sPTGName = ini.read_string(sectCfg,format("PTG%d_TYPE",j),"",true);
 			ptgaux = CParameterizedTrajectoryGenerator::CreatePTG(sPTGName,params);
 			m_ptgmultilevel[j-1].PTGs.push_back(ptgaux);
 		}
@@ -163,7 +164,7 @@ void CReactiveNavigationSystem3D::loadConfigFile(const mrpt::utils::CConfigFileB
 	this->STEP1_InitPTGs();
 
 	//Load holonomic method params
-	this->loadHolonomicMethodConfig(ini,"NAVIGATION_CONFIG");
+	this->loadHolonomicMethodConfig(ini,sectCfg);
 
 
 	// Show configuration parameters:
@@ -176,7 +177,7 @@ void CReactiveNavigationSystem3D::loadConfigFile(const mrpt::utils::CConfigFileB
 	printf_debug("  PTG Count\t\t\t= %u\n", num_ptgs );
 	printf_debug("  Max. ref. distance\t\t= %f\n", refDistance );
 	printf_debug("  Cells resolution \t\t= %.04f\n", colGridRes );
-	printf_debug("  Robot Height Sections \t= %u\n", m_robotShape.heights.size() );
+	printf_debug("  Robot Height Sections \t= %u\n", m_robotShape.size() );
 	printf_debug("\n\n");
 
 	m_init_done = true;
@@ -194,18 +195,24 @@ void CReactiveNavigationSystem3D::STEP1_InitPTGs()
 
 		for (unsigned int j=0; j<m_ptgmultilevel.size(); j++)
 		{
-			for (unsigned int i=0; i<m_robotShape.heights.size(); i++)
+			for (unsigned int i=0; i<m_robotShape.size(); i++)
 			{
 				m_ptgmultilevel[j].PTGs[i]->deinitialize();
 
 				printf_debug("[loadConfigFile] Initializing PTG#%u.%u...", j,i);
 				printf_debug(m_ptgmultilevel[j].PTGs[i]->getDescription().c_str());
 
-				// Set robot shape:
+				// Polygonal robot shape?
 				{
-					mrpt::nav::CPTG_DiffDrive_CollisionGridBased *ptg = dynamic_cast<mrpt::nav::CPTG_DiffDrive_CollisionGridBased *>(m_ptgmultilevel[j].PTGs[i]);
+					mrpt::nav::CPTG_RobotShape_Polygonal *ptg = dynamic_cast<mrpt::nav::CPTG_RobotShape_Polygonal *>(m_ptgmultilevel[j].PTGs[i]);
 					if (ptg)
-						ptg->setRobotShape(m_robotShape.polygons[i]);
+						ptg->setRobotShape(m_robotShape.polygon(i));
+				}
+				// Circular robot shape?
+				{
+					mrpt::nav::CPTG_RobotShape_Circular *ptg = dynamic_cast<mrpt::nav::CPTG_RobotShape_Circular*>(m_ptgmultilevel[j].PTGs[i]);
+					if (ptg)
+						ptg->setRobotShapeRadius(m_robotShape.getRadius(i));
 				}
 
 				m_ptgmultilevel[j].PTGs[i]->initialize(
@@ -240,7 +247,7 @@ bool CReactiveNavigationSystem3D::STEP2_SenseObstacles()
 	m_robot.senseObstacles( m_WS_Obstacles_unsorted );
 
 	// Empty slice maps:
-	const size_t nSlices = m_robotShape.heights.size();
+	const size_t nSlices = m_robotShape.size();
 	m_WS_Obstacles_inlevels.resize(nSlices);
 	for (size_t i=0;i<nSlices;i++)
 		m_WS_Obstacles_inlevels[i].clear();
@@ -260,7 +267,7 @@ bool CReactiveNavigationSystem3D::STEP2_SenseObstacles()
 			if (zs[j] < 0.01)
 				break; // skip this points
 
-			h += m_robotShape.heights[idxH];
+			h += m_robotShape.getHeight(idxH);
 			if (zs[j] < h)
 			{
 				// Speed-up: If the obstacle is, for sure, out of the collision grid,
@@ -285,9 +292,9 @@ void CReactiveNavigationSystem3D::STEP3_WSpaceToTPSpace(
 	const size_t ptg_idx,
 	std::vector<double> &out_TPObstacles )
 {
-	ASSERT_EQUAL_(m_WS_Obstacles_inlevels.size(),m_robotShape.heights.size())
+	ASSERT_EQUAL_(m_WS_Obstacles_inlevels.size(),m_robotShape.size())
 
-	for (size_t j=0;j<m_robotShape.heights.size();j++)
+	for (size_t j=0;j<m_robotShape.size();j++)
 	{
 		size_t nObs;
 		const float *xs,*ys,*zs;
@@ -320,23 +327,23 @@ void CReactiveNavigationSystem3D::loggingGetWSObstaclesAndShape(CLogFileRecord &
 		size_t nVerts = 0;
 		TPoint2D paux;
 		size_t cuenta = 0;
-		for (unsigned int i=0; i < m_robotShape.heights.size(); i++)
-			nVerts += m_robotShape.polygons[i].size() + 1;
+		for (unsigned int i=0; i < m_robotShape.size(); i++)
+			nVerts += m_robotShape.polygon(i).size() + 1;
 		if (size_t(out_log.robotShape_x.size()) != nVerts)
 		{
 			out_log.robotShape_x.resize(nVerts);
 			out_log.robotShape_y.resize(nVerts);
 		}
-		for (unsigned int i=0; i<m_robotShape.heights.size(); i++)
+		for (unsigned int i=0; i<m_robotShape.size(); i++)
 		{
-			for (unsigned int j=0; j<m_robotShape.polygons[i].size(); j++)
+			for (unsigned int j=0; j<m_robotShape.polygon(i).size(); j++)
 			{
-				paux = m_robotShape.polygons[i][j];
+				paux = m_robotShape.polygon(i)[j];
 				out_log.robotShape_x[cuenta]= paux.x;
 				out_log.robotShape_y[cuenta]= paux.y;
 				cuenta++;
 			}
-			paux = m_robotShape.polygons[i][0];
+			paux = m_robotShape.polygon(i)[0];
 			out_log.robotShape_x[cuenta]= paux.x;
 			out_log.robotShape_y[cuenta]= paux.y;
 			cuenta++;

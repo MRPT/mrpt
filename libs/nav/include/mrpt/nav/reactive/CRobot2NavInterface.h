@@ -171,7 +171,7 @@ namespace mrpt
 
 				vel_cmd[0] = new_cmd_v; vel_cmd[1] = new_cmd_w;
 			}
-		}
+		} 
 
 		/** This class recognizes these parameters: `robotMax_V_mps`, `robotMax_W_degps` */
 		virtual void loadConfigFile(const mrpt::utils::CConfigFileBase &cfg, const std::string &section) MRPT_OVERRIDE 
