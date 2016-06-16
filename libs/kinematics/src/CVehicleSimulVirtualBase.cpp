@@ -14,7 +14,7 @@
 using namespace mrpt::kinematics;
 
 CVehicleSimulVirtualBase::CVehicleSimulVirtualBase() :
-	m_firmware_control_period(500e-6)
+m_firmware_control_period(500e-6)
 {
 }
 
@@ -22,8 +22,8 @@ CVehicleSimulVirtualBase::~CVehicleSimulVirtualBase()
 {
 }
 
-void CVehicleSimulVirtualBase::setCurrentGTPose(const mrpt::math::TPose2D  &pose) 
-{ 
+void CVehicleSimulVirtualBase::setCurrentGTPose(const mrpt::math::TPose2D  &pose)
+{
 	m_pose=pose;
 }
 
@@ -41,7 +41,7 @@ void CVehicleSimulVirtualBase::resetStatus()
 {
 	m_pose= mrpt::math::TPose2D(.0,.0,.0);
 	m_vel = mrpt::math::TTwist2D(.0,.0,.0);
-	m_odometry = mrpt::math::TPose2D(.0,.0,.0);	
+	m_odometry = mrpt::math::TPose2D(.0,.0,.0);
 	internal_clear();
 }
 
@@ -53,6 +53,6 @@ void CVehicleSimulVirtualBase::resetTime()
 mrpt::math::TTwist2D CVehicleSimulVirtualBase::getCurrentGTVelLocal() const
 {
 	mrpt::math::TTwist2D tl = this->m_vel;
-	tl.rotate(m_pose.phi);
+	tl.rotate(-m_pose.phi);
 	return tl;
 }

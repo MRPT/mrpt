@@ -99,7 +99,7 @@ wxBitmap MyArtProvider::CreateBitmap(const wxArtID& id,
 #include <mrpt/gui/CMyGLCanvasBase.h>
 
 #include <mrpt/utils/CTicTac.h>
-#include <mrpt/utils/CRobotSimulator.h>
+#include <mrpt/kinematics/CVehicleSimul_DiffDriven.h>
 #include <mrpt/obs/CRawlog.h>
 #include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/obs/CActionRobotMovement2D.h>
@@ -124,9 +124,9 @@ using namespace mrpt::poses;
 using namespace std;
 
 
-CRobotSimulator			the_robot(0,0);
-COccupancyGridMap2D		the_grid;
-CJoystick				joystick;
+mrpt::kinematics::CVehicleSimul_DiffDriven  the_robot;
+COccupancyGridMap2D          the_grid;
+CJoystick                    joystick;
 
 StdVector_CPose2D		robot_path_GT, robot_path_ODO;
 CPose2D					lastOdo, pose_start;
@@ -186,13 +186,14 @@ void CMyGLCanvas::OnPostRenderSwapBuffers(double At, wxPaintDC &dc)
 
 void CMyGLCanvas::OnPostRender()
 {
-	CPose2D p;
-	the_robot.getRealPose(p);
+	CPose2D p = the_robot.getCurrentGTPose();
 
 	string s = format("Pose: (%.03f,%.03f,%.02fdeg)", p.x(),p.y(), RAD2DEG(p.phi()) );
 	mrpt::opengl::CRenderizable::renderTextBitmap( 20,20, s.c_str(), 1,0,0 , MRPT_GLUT_BITMAP_HELVETICA_18);
 
-	s = format("V=%.03fm/s  W=%.02fdeg/s", the_robot.getV(), RAD2DEG(the_robot.getW()) );
+
+	const mrpt::math::TTwist2D vel_local = the_robot.getCurrentGTVelLocal();
+	s = format("V=%.03fm/s  W=%.02fdeg/s", vel_local.vx, RAD2DEG(vel_local.omega) );
 	mrpt::opengl::CRenderizable::renderTextBitmap( 20,45, s.c_str(), 1,0,0 , MRPT_GLUT_BITMAP_HELVETICA_18);
 }
 
@@ -596,7 +597,7 @@ void gridmapSimulFrame::OntimRunTrigger(wxTimerEvent& event)
 	tictac.Tic();
 
 	// Simul robot:
-	the_robot.simulateInterval(At);
+	the_robot.simulateOneTimeStep(At);
 
 	try
 	{
@@ -609,10 +610,11 @@ void gridmapSimulFrame::OntimRunTrigger(wxTimerEvent& event)
 			if (joystick.getJoystickPosition(0,x,y,z,btns))
 			{
 				const float V_MAX_ACC = 1;
-				const float W_MAX_ACC = DEG2RAD(45.0f);
+				const float W_MAX_ACC =
+						DEG2RAD(45.0f);
 
-				float v = the_robot.getV();
-				float w = the_robot.getW();
+				const mrpt::math::TTwist2D vel_local = the_robot.getCurrentGTVelLocal();
+				double v = vel_local.vx, w = vel_local.omega;
 
 				v -= y* V_MAX_ACC*At;
 				w -= x* W_MAX_ACC*At;
@@ -638,8 +640,8 @@ void gridmapSimulFrame::OntimRunTrigger(wxTimerEvent& event)
 			const float V_MAX_ACC = 1;
 			const float W_MAX_ACC = DEG2RAD(45.0f);
 
-			float v = the_robot.getV();
-			float w = the_robot.getW();
+			const mrpt::math::TTwist2D vel_local = the_robot.getCurrentGTVelLocal();
+			double v = vel_local.vx, w = vel_local.omega;
 
 			float x=0,y=0;
 
@@ -669,8 +671,7 @@ void gridmapSimulFrame::OntimRunTrigger(wxTimerEvent& event)
 			last_pressed_key=0;
 		}
 
-		CPose2D p;
-		the_robot.getRealPose(p);
+		CPose2D p = the_robot.getCurrentGTPose();
 
 		// Simulate scan:
 		mrpt::obs::CObservation2DRangeScan the_scan;
@@ -765,8 +766,7 @@ void gridmapSimulFrame::OntimRunTrigger(wxTimerEvent& event)
 				const bool  is_sf_format = cbRawlogSFformat->GetValue();
 
 				const TTimeStamp	tim_now = mrpt::system::now();
-				CPose2D  odo_now;
-				the_robot.getOdometry(odo_now);
+				CPose2D  odo_now = the_robot.getCurrentOdometricPose();
 
 				if(is_sf_format)
 				{
@@ -802,9 +802,11 @@ void gridmapSimulFrame::OntimRunTrigger(wxTimerEvent& event)
 
 					odo_obs.odometry = odo_now;
 
+					const mrpt::math::TTwist2D vel_local = the_robot.getCurrentGTVelLocal();
+
 					odo_obs.hasVelocities = true;
-					odo_obs.velocityLin = the_robot.getV();
-					odo_obs.velocityAng = the_robot.getW();
+					odo_obs.velocityLin = vel_local.vx;
+					odo_obs.velocityAng = vel_local.omega;
 
 					outs << odo_obs << the_scan;
 				}
@@ -884,8 +886,8 @@ void gridmapSimulFrame::OnbtnStartClick(wxCommandEvent& event)
 	gl_path_GT->clear();
 	gl_path_ODO->clear();
 
-	the_robot.getRealPose( pose_start );
-	the_robot.resetOdometry( CPose2D(0,0,0) );
+	pose_start = the_robot.getCurrentGTPose( );
+	the_robot.setCurrentOdometricPose( TPose2D(0,0,0) );
 	lastOdo = CPose2D(0,0,0);
 
 
@@ -912,7 +914,6 @@ void gridmapSimulFrame::OnbtnStartClick(wxCommandEvent& event)
 		Ax_err_bias, Ax_err_std,
 		Ay_err_bias, Ay_err_std,
 		Aphi_err_bias, Aphi_err_std );
-
 
 	// Get decimation:
 	decimation = edDecimate->GetValue();

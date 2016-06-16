@@ -44,7 +44,7 @@ void CVehicleSimul_DiffDriven::internal_simulStep(const double AAt)
 	double elapsed_time = this->m_time - Command_Time;
 	elapsed_time-=cDELAY;
 	elapsed_time = std::max(0.0,elapsed_time);
-	
+
 	if (cTAU==0 && cDELAY==0)
 	{
 		m_v = Command_v;
@@ -69,16 +69,16 @@ void CVehicleSimul_DiffDriven::internal_simulStep(const double AAt)
 	CPose2D dPodo = dP;
 	if (m_use_odo_error)
 	{
-		dPodo.x( dP.x() + m_Ax_err_bias + m_Ax_err_std * randomGenerator.drawGaussian1D_normalized() );
-		dPodo.y( dP.y() + m_Ay_err_bias + m_Ay_err_std * randomGenerator.drawGaussian1D_normalized() );
-		dPodo.phi( dP.phi() + m_Aphi_err_bias + m_Aphi_err_std * randomGenerator.drawGaussian1D_normalized() );
+		dPodo.x( dP.x() + AAt*m_Ax_err_bias + AAt*m_Ax_err_std * randomGenerator.drawGaussian1D_normalized() );
+		dPodo.y( dP.y() + AAt*m_Ay_err_bias + AAt*m_Ay_err_std * randomGenerator.drawGaussian1D_normalized() );
+		dPodo.phi( dP.phi() + AAt*m_Aphi_err_bias + AAt*m_Aphi_err_std * randomGenerator.drawGaussian1D_normalized() );
 	}
 	m_odometry = CPose2D(m_odometry) + dPodo;
 }
 
 /*************************************************************************
-        Gives a movement command to the robot: 
- This actually saves the command for execution later on, if we have 
+        Gives a movement command to the robot:
+ This actually saves the command for execution later on, if we have
  to take into account the robot low-pass behavior in velocities.
 *************************************************************************/
 void CVehicleSimul_DiffDriven::movementCommand ( double lin_vel, double ang_vel )
@@ -92,5 +92,3 @@ void CVehicleSimul_DiffDriven::movementCommand ( double lin_vel, double ang_vel 
 	Command_v0 = m_v;
 	Command_w0 = m_w;
 }
-
-
