@@ -55,6 +55,11 @@ namespace mrpt { namespace graphslam { namespace deciders {
 				 */
 				virtual void setCDisplayWindowPtr(mrpt::gui::CDisplayWindow3D* win){}
 				/**
+				 * Method for fetching the CWindowManager pointer, responsible for
+				 * various parameters configuration in the CDisplayWindow
+				 */
+    		virtual void setWindowManagerPtr(mrpt::gui::CWindowManager_t* win_manager){}
+				/**
 				 * Fill the given map with the type of registered edges as well as
 				 * the corresponding number of registration of each edge.
 				 */

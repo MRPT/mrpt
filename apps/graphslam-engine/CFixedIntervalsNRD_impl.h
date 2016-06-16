@@ -16,12 +16,6 @@ using namespace mrpt::graphslam::deciders;
 //////////////////////////////////////////////////////////////
 
 template<class GRAPH_t>
-CFixedIntervalsNRD_t<GRAPH_t>::CFixedIntervalsNRD_t(GRAPH_t* graph):
-	m_graph(graph)
-{
-	this->initCFixedIntervalsNRD_t();
-}
-template<class GRAPH_t>
 CFixedIntervalsNRD_t<GRAPH_t>::CFixedIntervalsNRD_t() {
 	this->initCFixedIntervalsNRD_t();
 }

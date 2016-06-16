@@ -21,6 +21,7 @@
 
 namespace supplementary_funs {
 
+	// TODO - make this a part of the optimizer
 	/** 
 	 * levMarqFeedback
 	 *

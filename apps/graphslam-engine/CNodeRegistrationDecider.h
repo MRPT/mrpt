@@ -54,6 +54,11 @@ namespace mrpt { namespace graphslam { namespace deciders {
 				 */
 				virtual void setCDisplayWindowPtr(mrpt::gui::CDisplayWindow3D* win) {}
 				/**
+				 * Method for fetching the CWindowManager pointer, responsible for
+				 * various parameters configuration in the CDisplayWindow
+				 */
+    		virtual void setWindowManagerPtr(mrpt::gui::CWindowManager_t* win_manager){}
+				/**
 				 * Method responsible for initially inserting visual objects in
 				 * CDisplayWindow (e.g. add an object to scene).  For the method to
 				 * have an effect user should first make a call to

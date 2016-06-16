@@ -66,7 +66,6 @@ namespace mrpt { namespace graphslam { namespace deciders {
 					// Public methods
 					//////////////////////////////////////////////////////////////
 	    		CICPDistanceERD_t();
-					CICPDistanceERD_t(GRAPH_t* graph);
 	    		~CICPDistanceERD_t();
 
 					void updateDeciderState(
@@ -77,6 +76,7 @@ namespace mrpt { namespace graphslam { namespace deciders {
 
 					void setGraphPtr(GRAPH_t* graph);
 					void setCDisplayWindowPtr(mrpt::gui::CDisplayWindow3D* win);
+    			void setWindowManagerPtr(mrpt::gui::CWindowManager_t* win_manager);
     			void getEdgesStats(
     					std::map<const std::string, int>* edge_types_to_nums);
 
@@ -145,6 +145,14 @@ namespace mrpt { namespace graphslam { namespace deciders {
 
 					GRAPH_t* m_graph;
 					mrpt::gui::CDisplayWindow3D* m_win;
+					mrpt::gui::CWindowManager_t* m_win_manager;
+
+					bool m_initialized_visuals;
+
+					mrpt::utils::TColorf m_search_disk_color; // see Ctor for initialization
+					double m_offset_y_search_disk;
+					int m_text_index_search_disk;
+					
 
 					std::map<const mrpt::utils::TNodeID, 
 						mrpt::obs::CObservation2DRangeScanPtr> m_nodes_to_laser_scans;
@@ -152,7 +160,6 @@ namespace mrpt { namespace graphslam { namespace deciders {
 
     			int m_last_total_num_of_nodes;
     			CObservation2DRangeScanPtr m_last_laser_scan;
-
 
 			};
 
