@@ -82,6 +82,7 @@ namespace mrpt { namespace graphslam { namespace deciders {
 
     			void initializeVisuals();
     			void updateVisuals();
+    			bool justInsertedLoopClosure();
 
     			struct TParams: public mrpt::utils::CLoadableOptions {
     				public:
@@ -148,6 +149,7 @@ namespace mrpt { namespace graphslam { namespace deciders {
 					mrpt::gui::CWindowManager_t* m_win_manager;
 
 					bool m_initialized_visuals;
+					bool m_just_inserted_loop_closure;
 
 					mrpt::utils::TColorf m_search_disk_color; // see Ctor for initialization
 					double m_offset_y_search_disk;

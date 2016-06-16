@@ -1,26 +1,8 @@
 #ifndef CWINDOWMANAGER_H
 #define CWINDOWMANAGER_H
 
-
-
 #include <mrpt/gui/CBaseGUIWindow.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
-
-// todo - remove these
-using namespace mrpt;
-using namespace mrpt::poses;
-using namespace mrpt::obs;
-using namespace mrpt::system;
-using namespace mrpt::graphs;
-using namespace mrpt::math;
-using namespace mrpt::utils;
-using namespace mrpt::gui;
-using namespace mrpt::opengl;
-using namespace mrpt::slam;
-using namespace mrpt::maps;
-using namespace mrpt::graphslam;
-
-using namespace std;
 
 namespace mrpt { namespace gui {
 

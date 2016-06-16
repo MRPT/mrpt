@@ -199,7 +199,7 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::initCGraphSlam
 					<< "m_visualize_GT flag to false"
 					<< std::endl); 
 		}
-		this->buildGroundTruthMap(m_fname_GT);
+		this->readGT(m_fname_GT);
 		m_curr_GT_poses_index = 0; // counter for reading back the GT_poses
 
 		m_win_manager.assignTextMessageParameters( 
@@ -247,7 +247,7 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::initCGraphSlam
 		m_win->forceRepaint();
 
 	}
-	
+
 	// axis
 	if (m_win) {
 		COpenGLScenePtr scene = m_win->get3DSceneAndLock();
@@ -359,7 +359,7 @@ bool CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::parseRawlogFil
 				<< "parseRawlogFile: Rawlog file "
 				<< m_rawlog_fname << " was not found."
 				<< std::endl);
- // good to go..
+ 	// good to go..
 
 	/**
 	 * Variables initialization
@@ -398,6 +398,29 @@ bool CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::parseRawlogFil
 				observation, // Possible out var
 				curr_rawlog_entry ) ) {
 
+		// node registration procedure
+		bool registered_new_node;
+		{
+			mrpt::synch::CCriticalSectionLocker m_graph_lock(&m_graph_section);
+			registered_new_node = m_node_registrar.updateDeciderState(
+					action, observations, observation);
+			if (registered_new_node) {
+				m_edge_counter.addEdge("Odometry");
+				m_nodeID_max++;
+			}
+		}
+		// Edge registration procedure
+		// run this so that the decider can be updated with the latest
+		// obsesrvations even when no new nodes have been added to the graph
+		{ 
+			mrpt::synch::CCriticalSectionLocker m_graph_lock(&m_graph_section);
+
+			m_edge_registrar.updateDeciderState(
+					action,
+					observations,
+					observation );
+		}
+
 		if (observation.present()) {
 			// Read a single observation from the rawlog
 			// (Format #2 rawlog file)
@@ -415,18 +438,18 @@ bool CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::parseRawlogFil
 					pose_t* odometry_pose = new pose_t;
 					*odometry_pose = curr_odometry_only_pose;
 					m_odometry_poses.push_back(odometry_pose);
-					//cout << "Added odometry pose to vector" << endl;
 				}
 			} // IF ODOMETRY OBSERVATION
 			// laser scans
 			else if (IS_CLASS(observation, CObservation2DRangeScan)) {
-				//std::cout << "Processing Laser Scan. " << std::endl;
+				m_last_laser_scan =
+					static_cast<mrpt::obs::CObservation2DRangeScanPtr>(observation);
 
 			} // ELSE IF LASER SCAN
 			// Camera images
 			else if (IS_CLASS(observation, CObservationImage)) {
 				//std::cout << "Processing Camera Image. " << std::endl;
-			
+
 			} // ELSE IF CAMERA IMAGE
 			else {
 				std::cout << "Received unsupported type of observation:" 
@@ -439,7 +462,8 @@ bool CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::parseRawlogFil
 			// (Format #1 rawlog file)
 
 			// parse the current action
-			CActionRobotMovement2DPtr robot_move = action->getBestMovementEstimation();
+			CActionRobotMovement2DPtr robot_move = 
+				action->getBestMovementEstimation();
 			CPosePDFPtr increment = robot_move->poseChange;
 			pose_t increment_pose = increment->getMeanVal();
 			curr_odometry_only_pose += increment_pose;
@@ -453,32 +477,22 @@ bool CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::parseRawlogFil
 				m_odometry_poses.push_back(odometry_pose);
 			}
 
+			// get the last laser scan
+			m_last_laser_scan =
+				observations->getObservationByClass<CObservation2DRangeScan>();
+
 		} // ELSE FORMAT #1 - Action/Observations
 
-		// node registration procedure
-		bool registered_new_node;
-		{
-			mrpt::synch::CCriticalSectionLocker m_graph_lock(&m_graph_section);
-			registered_new_node = m_node_registrar.updateDeciderState(
-					action, observations, observation);
-			if (registered_new_node) {
-				m_edge_counter.addEdge("Odometry");
-			}
-		}
-
-		// Edge registration procedure
-		// run this so that the decider can be updated with the latest
-		// obsesrvations even when no new nodes have been added to the graph
-		{ 
-			mrpt::synch::CCriticalSectionLocker m_graph_lock(&m_graph_section);
-
-			m_edge_registrar.updateDeciderState(
-					action,
-					observations,
-					observation );
-		}
-
 		if (registered_new_node) {
+			// keep track of the laser scans so that I can later visualize the map
+			m_nodes_to_laser_scans[m_nodeID_max] = m_last_laser_scan;
+
+			if (m_win && m_visualize_map) {
+				mrpt::synch::CCriticalSectionLocker m_graph_lock(&m_graph_section);
+				//bool full_update = m_edge_registrar.justInsertedLoopClosure();
+				bool full_update=true;
+				this->updateMap(m_graph, m_nodes_to_laser_scans, full_update);
+			}
 
 			// join the previous optimization thread
 			joinThread(m_thread_optimize);
@@ -572,10 +586,9 @@ bool CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::parseRawlogFil
 			}
 		}
 		else {
-			std::cout << "is action_observation" << std::endl;
-				this->updateGTVisualization();
+			this->updateGTVisualization();
 		}
-	
+
 		// update robot mode
 		if (m_win) {
 			COpenGLScenePtr scene = m_win->get3DSceneAndLock();
@@ -614,7 +627,7 @@ bool CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::parseRawlogFil
 	rawlog_file.close();
 
 	return true; // function execution completed successfully
-MRPT_END;
+	MRPT_END;
 } // END OF FUNCTION
 
 template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR>
@@ -655,7 +668,7 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::visualizeGraph
 			"Visualization of data was requested but no CDisplayWindow3D pointer was given");
 
 	//std::cout << "Inside the visualizeGraph function" << std::endl;
-	
+
 	mrpt::synch::CCriticalSectionLocker m_graph_lock(&m_graph_section);
 
 	string gr_name = graph_to_name[&gr];
@@ -728,7 +741,7 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::readConfigFile
 			"GeneralConfiguration",
 			"user_decides_about_output_dir",
 			true, false);
-		m_save_graph_fname = cfg_file.read_string(
+	m_save_graph_fname = cfg_file.read_string(
 			"GeneralConfiguration",
 			"save_graph_fname",
 			"poses.log", false);
@@ -743,7 +756,7 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::readConfigFile
 			"Optimization",
 			"profiler",
 			0, false);
-		m_optimization_params["max_iterations"] = cfg_file.read_double(
+	m_optimization_params["max_iterations"] = cfg_file.read_double(
 			"Optimization",
 			"max_iterations",
 			100, false);
@@ -766,7 +779,10 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::readConfigFile
 			"VisualizationParameters",
 			"visualize_optimized_graph",
 			1, false);
-
+	m_visualize_map = cfg_file.read_bool(
+			"VisualizationParameters",
+			"visualize_map",
+			1, false);
 	m_optimized_graph_viz_params["show_ID_labels"] = cfg_file.read_bool(
 			"VisualizationParameters",
 			"optimized_show_ID_labels",
@@ -863,6 +879,8 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::printProblemPa
 		<< m_visualize_odometry_poses << std::endl;
 	ss_out << "Visualize optimized path        = " 
 		<< m_visualize_odometry_poses << std::endl;
+	ss_out << "Visualize map                   = " 
+		<< m_visualize_map << std::endl;
 	ss_out << "Visualize Ground Truth          = " 
 		<< m_visualize_odometry_poses << std::endl;
 	ss_out << "Ground Truth filename           = "
@@ -942,41 +960,41 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::initOutputDir(
 			switch (answer_int) 
 			{
 				case 2: {
-					VERBOSE_COUT << "Deleting existing files..." << std::endl;
-					// purge directory
-					deleteFilesInDirectory(m_output_dir_fname,
-							/*deleteDirectoryAsWell = */ true);
-					break;
-				}
+									VERBOSE_COUT << "Deleting existing files..." << std::endl;
+									// purge directory
+									deleteFilesInDirectory(m_output_dir_fname,
+											/*deleteDirectoryAsWell = */ true);
+									break;
+								}
 				case 3: {
-					// Exit gracefully - call Dtor implicitly
-					return;
-				}
+									// Exit gracefully - call Dtor implicitly
+									return;
+								}
 				case 1:
 				default: {
-					// rename the whole directory to DATE_TIME_${OUTPUT_DIR_NAME}
-					string dst_fname = m_output_dir_fname + cur_date_validstr;
-					VERBOSE_COUT << "Renaming directory to: " << dst_fname << std::endl;
-					string* error_msg = NULL;
-					bool did_rename = renameFile(m_output_dir_fname,
-							dst_fname,
-							error_msg);
-					if (!did_rename) {
-						THROW_EXCEPTION(
-								std::endl
-								<< "Error while trying to rename the output directory:"
-								<< *error_msg
-								<< std::endl);
-					}
-					break;
-				}
+									 // rename the whole directory to DATE_TIME_${OUTPUT_DIR_NAME}
+									 string dst_fname = m_output_dir_fname + cur_date_validstr;
+									 VERBOSE_COUT << "Renaming directory to: " << dst_fname << std::endl;
+									 string* error_msg = NULL;
+									 bool did_rename = renameFile(m_output_dir_fname,
+											 dst_fname,
+											 error_msg);
+									 if (!did_rename) {
+										 THROW_EXCEPTION(
+												 std::endl
+												 << "Error while trying to rename the output directory:"
+												 << *error_msg
+												 << std::endl);
+									 }
+									 break;
+								 }
 			} // SWITCH (ANSWER_INT)
 		} // IF DIRECTORY EXISTS..
 
 		// Now rebuild the directory from scratch
 		VERBOSE_COUT << "Creating the new directory structure..." << std::endl;
 		string cur_fname;
-	
+
 		// debug_fname
 		createDirectory(m_output_dir_fname);
 		VERBOSE_COUT << "Finished initializing output directory." << std::endl;
@@ -1040,34 +1058,9 @@ inline void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::updateC
 
 	MRPT_END;
 }
-template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR>
-void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::updateEstimatedTrajectoryVisualization(
-		const GRAPH_t& gr) {
-	MRPT_START;
-	assert(m_win &&
-			"Visualization of data was requested but no CDisplayWindow3D pointer was given");
-
-	// TODO - implement this
-	{
-		mrpt::synch::CCriticalSectionLocker m_graph_lock(&m_graph_section);
-	}
-
-	COpenGLScenePtr scene = m_win->get3DSceneAndLock();
-	CRenderizablePtr obj = scene->getByName("estimated_trajectory_cloud");
-	CPointCloudPtr cloud = static_cast<CPointCloudPtr>(obj);
-	
-	// TODO - add here
-
-	m_win->unlockAccess3DScene();
-	m_win->forceRepaint();
-
-
-
-	MRPT_END;
-}
 
 template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR>
-void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::buildGroundTruthMap(
+void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::readGT(
 		const std::string& fname_GT) {
 	MRPT_START;
 
@@ -1172,6 +1165,133 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::queryObserverF
 
 	MRPT_END;
 }
+
+template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR>
+void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::updateMap(
+		const GRAPH_t& gr, 
+		std::map<const mrpt::utils::TNodeID, 
+		mrpt::obs::CObservation2DRangeScanPtr> m_nodes_to_laser_scans,
+		bool full_update /*= false */) {
+	MRPT_START;
+
+	CTicTac map_update_timer;
+	map_update_timer.Tic();
+
+	assert(m_win && 
+			"Visualization of data was requested but no CDisplayWindow3D pointer was given");
+
+
+	// TODO - move it out 
+	mrpt::utils::TColor m_optimized_map_color(255, 0, 0);
+
+	// get set of nodes to run the update for
+	std::set<mrpt::utils::TNodeID> nodes_set;
+	{
+		if (full_update) {
+			// for all the nodes get the node position and the corresponding laser scan
+			// if they were recorded and visualize them
+			m_graph.getAllNodes(nodes_set);
+			std::cout << "Commencing with map *full update*..." << std::endl;
+
+		} // IF FULL UPDATE
+		else { // add only current CSimplePointMap
+			nodes_set.insert(m_nodeID_max);
+		} // if PARTIAL_UPDATE
+	}
+
+	// for all the nodes
+	for (set<mrpt::utils::TNodeID>::const_iterator 
+			node_it = nodes_set.begin();
+			node_it != nodes_set.end(); ++node_it) {
+
+		// get the node pose - thread safe
+		pose_t scan_pose = m_graph.nodes[*node_it];
+
+		// name of gui object
+		stringstream scan_name("");
+		scan_name << "laser_scan_";
+		scan_name << *node_it;
+
+		// get the node laser scan
+		CObservation2DRangeScanPtr scan_content;
+		std::map<const mrpt::utils::TNodeID, 
+			mrpt::obs::CObservation2DRangeScanPtr>::const_iterator search =
+				m_nodes_to_laser_scans.find(*node_it); 
+
+		// make sure that the laser scan exists and is valid
+		if (search != m_nodes_to_laser_scans.end() && !(search->second.null())) {
+			scan_content = search->second;
+			//this->decimateLaserScan(&(*scan_content));
+
+			// if the scan already doesn't exist, add it to the scene, otherwise just
+			// adjust its pose
+			COpenGLScenePtr scene = m_win->get3DSceneAndLock();
+			CRenderizablePtr obj = scene->getByName(scan_name.str());
+
+			CSetOfObjectsPtr scan_obj;
+			if (obj.null()) {
+				cout << "CSetOfObjects for nodeID " << *node_it << " doesn't exist. "
+					<< "Creating it.." << endl;
+
+				scan_obj = CSetOfObjects::Create();
+
+				// creating and inserting the observation in the CSetOfObjects
+				CSimplePointsMap m;
+				m.insertObservation(&(*scan_content));
+				m.getAs3DObject(scan_obj);
+
+				scan_obj->setName(scan_name.str());
+				scan_obj->setColor_u8(m_optimized_map_color);
+				scene->insert(scan_obj);
+			}
+			else {
+				scan_obj = static_cast<CSetOfObjectsPtr>(obj);
+			}
+
+			// finally set the pose correctly - as computed by graphSLAM
+			scan_obj->setPose(CPose3D(scan_pose));
+
+			m_win->unlockAccess3DScene();
+			m_win->forceRepaint();
+		}
+		else {
+			cout << "Laser scans of NodeID " << *node_it << " are empty/invalid." << endl;
+		}
+	}
+
+
+	double elapsed_time = map_update_timer.Tac();
+	std::cout << "updateMap took: " << elapsed_time << " s" << std::endl;
+	MRPT_END;
+
+}
+// TODO - can this be const?
+// TODO - implement this correctly..
+template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR>
+void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::decimateLaserScan(
+		mrpt::obs::CObservation2DRangeScan* laser_scan,
+		int keep_every_n_entries /*= 2*/) {
+
+	size_t scan_size = laser_scan->scan.size();
+	std::cout << "scan_size_in = " << scan_size << std::endl;
+
+	std::vector<float> new_scan;
+	std::vector<char> new_validRange;
+	for (size_t i=0; i != scan_size; i++) {
+		if (i % keep_every_n_entries == 0) {
+			new_scan.push_back(laser_scan->scan[i]);
+			new_validRange.push_back(laser_scan->validRange[i]);
+		}
+	}
+	
+	// assign the decimated scans, ranges
+	laser_scan->scan = new_scan;
+	laser_scan->validRange = new_validRange;
+
+	scan_size = laser_scan->scan.size();
+	std::cout << "scan_size_out = " << scan_size << std::endl;
+}
+
 
 #endif /* end of include guard: CGRAPHSLAMENGINE_IMPL_H */
 
