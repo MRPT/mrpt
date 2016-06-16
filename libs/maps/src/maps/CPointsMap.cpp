@@ -63,7 +63,7 @@ float CPointsMap::COLOR_3DSCENE_G = 0;
 float CPointsMap::COLOR_3DSCENE_B = 1;
 
 extern CStartUpClassesRegister  mrpt_maps_class_reg;
-const int dumm = mrpt_maps_class_reg.do_nothing(); // Avoid compiler removing this class in static linking
+static const int dumm = mrpt_maps_class_reg.do_nothing(); // Avoid compiler removing this class in static linking
 
 /*---------------------------------------------------------------
 						Constructor

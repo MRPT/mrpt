@@ -478,7 +478,10 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(wxWindow* parent,wxWi
 	m_plot3D->cameraIsProjective = true;
 
 	// Init simulator & its adaptor to the navigator
-	OnrbKinTypeSelect(wxCommandEvent()); 
+    {
+        wxCommandEvent ev;
+        OnrbKinTypeSelect(ev);
+    }
 
 	// 2D view ==============
 	{
