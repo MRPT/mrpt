@@ -877,23 +877,23 @@ mrpt::utils::CStream& operator<<(mrpt::utils::CStream& out,const mrpt::math::TPo
 
 mrpt::utils::CStream& operator>>(mrpt::utils::CStream& in,mrpt::math::TTwist2D &o)
 {
-	for (int i=0;i<o.size();i++) in >> o[i];
+    for (unsigned int i=0;i<o.size();i++) in >> o[i];
 	return in;
 }
 mrpt::utils::CStream& operator<<(mrpt::utils::CStream& out,const mrpt::math::TTwist2D &o)
 {
-	for (int i=0;i<o.size();i++) out << o[i];
+    for (unsigned int i=0;i<o.size();i++) out << o[i];
 	return out;
 }
 
 mrpt::utils::CStream& operator>>(mrpt::utils::CStream& in,mrpt::math::TTwist3D &o)
 {
-	for (int i=0;i<o.size();i++) in >> o[i];
+    for (unsigned int i=0;i<o.size();i++) in >> o[i];
 	return in;
 }
 mrpt::utils::CStream& operator<<(mrpt::utils::CStream& out,const mrpt::math::TTwist3D &o)
 {
-	for (int i=0;i<o.size();i++) out << o[i];
+    for (unsigned int i=0;i<o.size();i++) out << o[i];
 	return out;
 }
 

@@ -343,7 +343,7 @@ CStream& utils::operator>>(mrpt::utils::CStream&in, char *s)
 
 extern CStartUpClassesRegister  mrpt_base_class_reg;
 
-const int dumm = mrpt_base_class_reg.do_nothing(); // Avoid compiler removing this class in static linking
+static const int dumm = mrpt_base_class_reg.do_nothing(); // Avoid compiler removing this class in static linking
 
 
 template <bool EXISTING_OBJ>

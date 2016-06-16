@@ -567,6 +567,7 @@ public:
 		}
 
 		//Read other params associated with the robot model and its navigation
+		CRobot2NavInterface_DiffDriven::loadConfigFile(ini, "NAVIGATION_CONFIG");
 		float tau = 0.f; //ini.read_float("NAVIGATION_CONFIG","ROBOTMODEL_TAU", 0, true);
 		float delay = 0.f; //ini.read_float("NAVIGATION_CONFIG","ROBOTMODEL_DELAY", 0, true);
 		float x_ini = ini.read_float("NAVIGATION_CONFIG","X0", 0, true);
