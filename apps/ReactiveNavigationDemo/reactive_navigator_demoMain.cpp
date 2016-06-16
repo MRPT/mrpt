@@ -85,6 +85,8 @@ const long reactive_navigator_demoframe::ID_BUTTON3 = wxNewId();
 const long reactive_navigator_demoframe::ID_RADIOBOX2 = wxNewId();
 const long reactive_navigator_demoframe::ID_CHECKBOX1 = wxNewId();
 const long reactive_navigator_demoframe::ID_CHECKBOX2 = wxNewId();
+const long reactive_navigator_demoframe::ID_CHECKBOX3 = wxNewId();
+const long reactive_navigator_demoframe::ID_CHECKBOX4 = wxNewId();
 const long reactive_navigator_demoframe::ID_RADIOBOX1 = wxNewId();
 const long reactive_navigator_demoframe::ID_PANEL6 = wxNewId();
 const long reactive_navigator_demoframe::ID_TEXTCTRL1 = wxNewId();
@@ -121,6 +123,53 @@ BEGIN_EVENT_TABLE(reactive_navigator_demoframe,wxFrame)
     //(*EventTable(reactive_navigator_demoframe)
     //*)
 END_EVENT_TABLE()
+
+
+// Aux function
+void add_robotShapeCirc_to_setOfLines(
+	const double R,
+	mrpt::opengl::CSetOfLines &gl_shape, 
+	const mrpt::poses::CPose2D &origin = mrpt::poses::CPose2D () )
+{
+	const int N = 10;
+	// Transform coordinates:
+	CVectorDouble shap_x(N), shap_y(N),shap_z(N);
+	for (int i=0;i<N;i++) {
+		origin.composePoint(
+			R*cos(i*2*M_PI/N-1),R*sin(i*2*M_PI/N-1), 0,
+			shap_x[i],  shap_y[i],  shap_z[i]);
+	}
+	gl_shape.appendLine( shap_x[0], shap_y[0], shap_z[0], shap_x[1],shap_y[1],shap_z[1] );
+	for (int i=0;i<=shap_x.size();i++) {
+		const int idx = i % shap_x.size();
+		gl_shape.appendLineStrip( shap_x[idx],shap_y[idx], shap_z[idx]);
+	}
+}
+
+void add_robotShape_to_setOfLines(
+	const CVectorFloat &shap_x_,
+	const CVectorFloat &shap_y_, 
+	mrpt::opengl::CSetOfLines &gl_shape, 
+	const mrpt::poses::CPose2D &origin = mrpt::poses::CPose2D () )
+{
+	const int N = shap_x_.size();
+	if (N>=2 && N==shap_y_.size() )
+	{
+		// Transform coordinates:
+		CVectorDouble shap_x(N), shap_y(N),shap_z(N);
+		for (int i=0;i<N;i++) {
+			origin.composePoint(
+				shap_x_[i], shap_y_[i], 0,
+				shap_x[i],  shap_y[i],  shap_z[i]);
+		}
+
+		gl_shape.appendLine( shap_x[0], shap_y[0], shap_z[0], shap_x[1],shap_y[1],shap_z[1] );
+		for (int i=0;i<=shap_x.size();i++) {
+			const int idx = i % shap_x.size();
+			gl_shape.appendLineStrip( shap_x[idx],shap_y[idx], shap_z[idx]);
+		}
+	}
+}
 
 reactive_navigator_demoframe::reactive_navigator_demoframe(wxWindow* parent,wxWindowID id) :
 	m_gridMap(),
@@ -224,6 +273,13 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(wxWindow* parent,wxWi
     cbNavLog = new wxCheckBox(pnNavSelButtons, ID_CHECKBOX2, _("Record .navlog files"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX2"));
     cbNavLog->SetValue(false);
     FlexGridSizer3->Add(cbNavLog, 1, wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
+    FlexGridSizer3->Add(-1,-1,1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    cbShowPredictedPTG = new wxCheckBox(pnNavSelButtons, ID_CHECKBOX3, _("Show selected PTG prediction"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX3"));
+    cbShowPredictedPTG->SetValue(true);
+    FlexGridSizer3->Add(cbShowPredictedPTG, 1, wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
+    cbDrawShapePath = new wxCheckBox(pnNavSelButtons, ID_CHECKBOX4, _("and draw robot shape"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX4"));
+    cbDrawShapePath->SetValue(true);
+    FlexGridSizer3->Add(cbDrawShapePath, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     FlexGridSizer9->Add(FlexGridSizer3, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     wxString __wxRadioBoxChoices_2[2] = 
     {
@@ -473,6 +529,12 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(wxWindow* parent,wxWi
 	}
 
 	m_plot3D->m_openGLScene->insert( mrpt::opengl::stock_objects::CornerXYZ(1) );
+
+	gl_robot_ptg_prediction = mrpt::opengl::CSetOfLines::Create();
+	gl_robot_ptg_prediction->setName("ptg_prediction");
+	gl_robot_ptg_prediction->setLineWidth(2.0);
+	gl_robot_ptg_prediction->setColor_u8( mrpt::utils::TColor(0x00,0x00,0xff) );
+	gl_robot->insert(gl_robot_ptg_prediction);
 
 	// Set camera:
 	m_plot3D->cameraPointingX=0;
@@ -852,6 +914,45 @@ void reactive_navigator_demoframe::simulateOneStep(double time_step)
 	//gl_line_direction->setLineCoords(
 	//	0,0,0,
 	//	cos(desiredDirection) * d, sin(desiredDirection) * d, 0 );
+
+	// Draw predicted path along selected PTG:
+	if (cbShowPredictedPTG->IsChecked() && ptg_nav)
+	{
+		// Selected PTG path:
+		if (lfr.nSelectedPTG<(int)ptg_nav->getPTG_count())
+		{
+			const mrpt::nav::CParameterizedTrajectoryGenerator* ptg = ptg_nav-> getPTG(lfr.nSelectedPTG);
+			if (ptg)
+			{
+				// Draw path:
+				const int selected_k = ptg->alpha2index( lfr.infoPerPTG[lfr.nSelectedPTG].desiredDirection );
+				float max_dist = ptg->getRefDistance();
+				gl_robot_ptg_prediction->clear();
+				ptg->renderPathAsSimpleLine(selected_k,*gl_robot_ptg_prediction,0.10, max_dist);
+				gl_robot_ptg_prediction->setColor_u8( mrpt::utils::TColor(0xff,0x00,0x00) );
+
+				// Overlay a sequence of robot shapes:
+				if (cbDrawShapePath->IsChecked())
+				{
+					const bool ptg_uses_polygon_shape  = dynamic_cast<const mrpt::nav::CPTG_RobotShape_Polygonal *>(ptg)!=NULL;
+					const bool ptg_uses_circular_shape = dynamic_cast<const mrpt::nav::CPTG_RobotShape_Circular *>(ptg)!=NULL;
+
+					double min_shape_dists = 1.0;
+					for (double d=min_shape_dists;d<max_dist;d+=min_shape_dists)
+					{
+						uint16_t step;
+						if (!ptg->getPathStepForDist(selected_k, d, step))
+							continue;
+						mrpt::math::TPose2D p;
+						ptg->getPathPose(selected_k, step, p);
+						if (ptg_uses_polygon_shape)  add_robotShape_to_setOfLines(lfr.robotShape_x,lfr.robotShape_y, *gl_robot_ptg_prediction, mrpt::poses::CPose2D(p) );
+						if (ptg_uses_circular_shape) add_robotShapeCirc_to_setOfLines(lfr.robotShape_radius, *gl_robot_ptg_prediction, mrpt::poses::CPose2D(p) );
+					}
+				}
+			}
+		}
+	}
+
 
 }
 

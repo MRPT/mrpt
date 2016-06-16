@@ -39,7 +39,7 @@ CLogFileRecord::~CLogFileRecord()
 void  CLogFileRecord::writeToStream(mrpt::utils::CStream &out,int *version) const
 {
 	if (version)
-		*version = 10;
+		*version = 11;
 	else
 	{
 		uint32_t	i,n;
@@ -98,6 +98,8 @@ void  CLogFileRecord::writeToStream(mrpt::utils::CStream &out,int *version) cons
 
 		// version 7:
 		out << timestamp;
+
+		out << robotShape_radius; // v11
 	}
 }
 
@@ -119,6 +121,7 @@ void  CLogFileRecord::readFromStream(mrpt::utils::CStream &in,int version)
 	case 8:
 	case 9:
 	case 10:
+	case 11:
 		{
 			// Version 0 --------------
 			uint32_t  i,n;
@@ -293,6 +296,12 @@ void  CLogFileRecord::readFromStream(mrpt::utils::CStream &in,int version)
 			}
 			else {
 				timestamp = INVALID_TIMESTAMP;
+			}
+
+			if (version>=11) {
+				in >> robotShape_radius;
+			} else {
+				robotShape_radius = 0.5;
 			}
 
 		} break;

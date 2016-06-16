@@ -292,6 +292,7 @@ void CReactiveNavigationSystem::loggingGetWSObstaclesAndShape(CLogFileRecord &ou
 	const size_t nVerts = m_robotShape.size();
 	out_log.robotShape_x.resize(nVerts);
 	out_log.robotShape_y.resize(nVerts);
+	out_log.robotShape_radius = m_robotShapeCircularRadius;
 
 	for (size_t i=0;i<nVerts;i++)
 	{
