@@ -13,6 +13,7 @@
 #include <mrpt/vision/pnp/upnp.h>
 #include <mrpt/vision/pnp/p3p.h>
 #include <mrpt/vision/pnp/ppnp.h>
+#include <mrpt/vision/pnp/posit.h>
 
 using namespace pnp;
 
@@ -216,3 +217,23 @@ int CPnP::CPnP_ppnp(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<
 	
 	return 1;
 }
+
+int CPnP::CPnP_posit(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<Eigen::MatrixXd> img_pts, int n, const Eigen::Ref<Eigen::MatrixXd> cam_intrinsic, Eigen::Ref<Eigen::MatrixXd> pose_mat)
+{	
+	Eigen::Matrix3d R;
+	Eigen::Vector3d t;
+	
+	Eigen::MatrixXd obj_pts_=obj_pts.array().transpose(), img_pts_=img_pts.array().transpose();
+
+	POSIT p(obj_pts_,img_pts_, cam_intrinsic, n);
+	
+	p.compute_pose(R,t);
+	
+	Eigen::Quaterniond q(R);
+	
+	pose_mat << t,q.vec();
+	
+	return 1;
+}
+
+
