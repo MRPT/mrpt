@@ -35,6 +35,7 @@ void CICPDistanceERD_t<GRAPH_t>::initCICPDistanceERD_t() {
 	m_graph = NULL;
 
 	m_initialized_visuals = false;
+	m_just_inserted_loop_closure = false;
 
 	m_last_total_num_of_nodes = 0;
 
@@ -102,6 +103,8 @@ template<class GRAPH_t> void CICPDistanceERD_t<GRAPH_t>::updateDeciderState(
 		//std::cout << "Found * " << nodes_to_check_ICP.size() 
 			//<< " * nodes close to nodeID: " << m_graph->nodeCount()-1 << endl;
 
+		// reset the loop_closure flag and run registration
+		m_just_inserted_loop_closure = false;
 		checkRegistrationCondition(nodes_to_check_ICP);
 	}
 
@@ -132,13 +135,11 @@ void CICPDistanceERD_t<GRAPH_t>::checkRegistrationCondition(
 			this->registerNewEdge(
 					*node_it, m_graph->nodeCount()-1, rel_edge);
 			m_edge_types_to_nums["ICP"]++;
-			//std::cout << "Added ICP constraint: "
-				//<< *node_it << " -> " << m_graph->nodeCount()-1 << ".";
+			// in case of loop closure
 			if (abs(m_graph->nodeCount()-1 - *node_it) > params.LC_min_nodeid_diff) {
 				m_edge_types_to_nums["LC"]++;
-				//std::cout << "\t[ Loop Closure ]";
+				m_just_inserted_loop_closure = true;
 			}
-			//std::cout << std::endl;
 		}
 	}
 
@@ -337,7 +338,10 @@ void CICPDistanceERD_t<GRAPH_t>::updateVisuals() {
 
 	MRPT_END;
 }
-
+template<class GRAPH_t>
+bool CICPDistanceERD_t<GRAPH_t>::justInsertedLoopClosure() {
+	return m_just_inserted_loop_closure;
+}
 
 
 

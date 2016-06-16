@@ -31,6 +31,8 @@
 #include <mrpt/obs/CObservationImage.h>
 #include <mrpt/obs/CRawlog.h>
 #include <mrpt/poses/CPosePDF.h>
+#include <mrpt/poses/CPose2D.h>
+#include <mrpt/poses/CPose3D.h>
 #include <mrpt/slam/CICP.h>
 #include <mrpt/slam/CMetricMapBuilder.h>
 #include <mrpt/slam/CMetricMapBuilderICP.h>
@@ -134,8 +136,8 @@ namespace mrpt { namespace graphslam {
 		 		 */
 	 			void readConfigFile(const std::string& fname);
 				/**
-		 		 * Print the problem parameters (usually fetched from a configuration file)
-		 		 * to the console for verification
+		 		 * Print the problem parameters (usually fetched from a configuration
+		 		 * file) to the console for verification
 		 		 *
 		 		 * \sa CGraphSlamEngine_t::parseRawlogFile
 		 		 */
@@ -191,21 +193,35 @@ namespace mrpt { namespace graphslam {
  				 * procedure in the estimated position of the robot
  				 */
 				inline void updateCurrPosViewport(const GRAPH_t& gr);
+				// TODO - move it into a map builder template class
 				/**
-				 * visualizeEstimatedRobotTrajectory
+				 * updateMap
 				 *
-				 * Visualize the estimated trajectory of the robot 
+				 * Visualize the estimated path of the robot along with the produced
+				 * map
 				 */
-				void updateEstimatedTrajectoryVisualization(const GRAPH_t& gr);
+				void updateMap(const GRAPH_t& gr, 
+						std::map<const mrpt::utils::TNodeID, 
+						mrpt::obs::CObservation2DRangeScanPtr> m_nodes_to_laser_scans,
+						bool full_update=false );
 				/**
-		 		 * buildGroundTruthMap
+				 * decimateLaserScan
+				 *
+				 * Cut down on the size of the given laser scan. Handy for reducing the
+				 * size of the resulting CSetOfObject that would be inserted in the
+				 * visualization scene
+				 */
+				 void decimateLaserScan(mrpt::obs::CObservation2DRangeScan* scan,
+				 		 int keep_every_n_entries=20);
+				/**
+		 		 * readGT
 		 		 *
 		 		 * Parse the ground truth .txt file and fill in the corresponding
-		 		 * timestamp_to_pose2d map. Return true if operation was successful
-		 		 * Call the function in the constructor if the visualize_GT flag is set to
-		 		 * true. 
+		 		 * m_GT_poses vector. Return true if operation was successful Call the
+		 		 * function in the constructor if the visualize_GT flag is set
+		 		 * to true. 
 		 		 */
-				inline void buildGroundTruthMap(const std::string& rawlog_fname_GT);
+				inline void readGT(const std::string& rawlog_fname_GT);
 				/**
 				 * updateGTVisualization
 				 *
@@ -222,9 +238,9 @@ namespace mrpt { namespace graphslam {
 				/**
 		 		 * queryObserverForEvents
 		 		 *
-		 		 * Query the given observer for any events (keystrokes, mouse clicks, that
-		 		 * may have occured in the CDisplayWindow3D  and fill in the corresponding
-		 		 * class variables
+		 		 * Query the given observer for any events (keystrokes, mouse clicks,
+		 		 * that may have occured in the CDisplayWindow3D  and fill in the
+		 		 * corresponding class variables
 		 		 */
 				inline void queryObserverForEvents();
 
@@ -258,11 +274,8 @@ namespace mrpt { namespace graphslam {
 				bool m_has_read_config;
 				bool m_observation_only_rawlog;
 
-				/**
-		 		 * FileStreams
-		 		 * variables that keeps track of the out fstreams so that they can be
-		 		 * closed (if still open) in the class Dtor.
-		 		 */
+		 		// keeps track of the out fstreams so that they can be
+		 		// closed (if still open) in the class Dtor.
 				fstreams_out m_out_streams;
 
 				// visualization objects
@@ -270,10 +283,14 @@ namespace mrpt { namespace graphslam {
 				CWindowObserver* m_win_observer;
 				mrpt::gui::CWindowManager_t m_win_manager;
 
+				// Interaction with the CDisplayWindow - use of CWindowObserver
+				bool m_autozoom_active, m_request_to_exit;
+
 				mrpt::utils::TParametersDouble m_optimized_graph_viz_params;
 				bool m_visualize_optimized_graph;
 				bool m_visualize_odometry_poses;
 				bool m_visualize_GT;
+				bool m_visualize_map;
 
 				// textMessage vertical text position
 				double m_curr_offset_y;
@@ -302,6 +319,11 @@ namespace mrpt { namespace graphslam {
 				std::vector<pose_t*> m_odometry_poses;
 				std::vector<pose_t*> m_GT_poses;
 
+				std::map<const mrpt::utils::TNodeID, 
+					mrpt::obs::CObservation2DRangeScanPtr> m_nodes_to_laser_scans;
+				mrpt::obs::CObservation2DRangeScanPtr m_last_laser_scan;
+
+
 				// PointCloud colors
 				mrpt::utils::TColorf m_odometry_color; // see Ctor for initialization
 				mrpt::utils::TColorf m_GT_color;
@@ -320,11 +342,9 @@ namespace mrpt { namespace graphslam {
 				mrpt::system::TThreadHandle m_thread_optimize;
 				mrpt::system::TThreadHandle m_thread_visualize;
 
-				// mark graph modification/accessing explicitly for multithreaded implementation
+				// mark graph modification/accessing explicitly for multithreaded
+				// implementation
 				mrpt::synch::CCriticalSection m_graph_section;
-
-				// Interaction with the CDisplayWindow - use of CWindowObserver
-				bool m_autozoom_active, m_request_to_exit;
 
 		};
 

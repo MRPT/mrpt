@@ -78,6 +78,11 @@ namespace mrpt { namespace graphslam { namespace deciders {
 				 * CEdgeRegistrationDEcider_t::setCDisplayWindowPtr method.
 				 */
     		virtual void updateVisuals() {}
+    		/**
+    		 * Method for the caller to query for possible loop closures in the
+    		 * last edge registration procedure.
+    		 */
+    		virtual bool justInsertedLoopClosure() = 0;
 
   		protected:
 				/**

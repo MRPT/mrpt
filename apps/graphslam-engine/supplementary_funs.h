@@ -29,8 +29,8 @@ namespace supplementary_funs {
 	 */
 	template <
 		class GRAPH_T,
-		class NODE_REGISTRATOR, 
-		class EDGE_REGISTRATOR>
+		class NODE_REGISTRAR, 
+		class EDGE_REGISTRAR>
 			void levMarqFeedback(
 					const GRAPH_T &graph,
 					const size_t iter,
