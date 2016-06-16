@@ -15,10 +15,32 @@ namespace mrpt
 {
   namespace nav
   {
-		/** A 3D robot shape stored as a "sliced" stack of 2D polygons, used for CReactiveNavigationSystem3D */
-		struct TRobotShape {
-				std::vector<mrpt::math::CPolygon>	polygons;		// The polygonal bases
-				std::vector<float>			heights;		// Heights of the prisms
+		/** A 3D robot shape stored as a "sliced" stack of 2D polygons, used for CReactiveNavigationSystem3D 
+		  * Depending on each PTG, only the 2D polygon or the circular radius will be taken into account
+		  *  \ingroup nav_reactive
+		  */
+		struct NAV_IMPEXP TRobotShape 
+		{
+			size_t size() const { return polygons.size(); }
+			void resize(size_t num_levels)
+			{ 
+				polygons.resize(num_levels); 
+				radius.resize(num_levels);
+				heights.resize(num_levels);
+			}
+
+			const mrpt::math::CPolygon & polygon(size_t level) const { return polygons[level]; }
+			const double & getRadius(size_t level) const { return radius[level]; }
+			const double & getHeight(size_t level) const { return heights[level]; }
+			mrpt::math::CPolygon & polygon(size_t level) { return polygons[level]; }
+			void setRadius(size_t level, double r) { radius[level]=r; }
+			void setHeight(size_t level, double h) { heights[level]=h; }
+			
+			const std::vector<double> &getHeights() const { return heights; }
+		private:
+			std::vector<mrpt::math::CPolygon> polygons;  // The polygonal bases
+			std::vector<double>               radius;    // The radius of each prism.
+			std::vector<double>               heights;   // Heights of the prisms
 		};
 		
 		/** See base class CAbstractPTGBasedReactive for a description and instructions of use.
@@ -58,7 +80,7 @@ namespace mrpt
 			virtual ~CReactiveNavigationSystem3D();
 
 			/** Reload the configuration from a file. See CReactiveNavigationSystem3D for details. */
-			void loadConfigFile(const mrpt::utils::CConfigFileBase &ini);
+			void loadConfigFile(const mrpt::utils::CConfigFileBase &ini, const std::string &section_prefix="") MRPT_OVERRIDE;
 
 			/** Change the robot shape, which is taken into account for collision grid building. */
 			void changeRobotShape( TRobotShape robotShape );
