@@ -42,6 +42,11 @@ namespace kinematics
 		/** Brute-force move robot to target coordinates ("teleport") */
 		void setCurrentGTPose(const mrpt::math::TPose2D  &pose);
 
+		/** Returns the current pose according to (noisy) odometry \sa setOdometryErrors */
+		const mrpt::math::TPose2D  & getCurrentOdometricPose() const { return m_odometry; }
+		/** Brute-force overwrite robot odometry  */
+		void setCurrentOdometricPose(const mrpt::math::TPose2D  &pose) { m_odometry = pose; }
+
 		/** Returns the instantaneous, ground truth velocity vector (vx,vy,omega) in world coordinates */
 		const mrpt::math::TTwist2D & getCurrentGTVel() const { return m_vel; }
 		/** Returns the instantaneous, ground truth velocity vector (vx,vy,omega) in the robot local frame */
@@ -55,17 +60,15 @@ namespace kinematics
 		virtual size_t getVelCmdLength() const = 0;
 		virtual std::string getVelCmdDescription() const = 0;
 
-		/** Enable/Disable odometry errors
-			*  Errors in odometry are introduced per millisecond.
-			*/
+		/** Enable/Disable odometry errors. Errors in odometry are 1 sigma Gaussian values per second */
 		void setOdometryErrors(
 			bool enabled,
-			double Ax_err_bias  =  1e-6,
-			double Ax_err_std   = 10e-6,
-			double Ay_err_bias =  1e-6,
-			double Ay_err_std  = 10e-6,
-			double Aphi_err_bias =  mrpt::utils::DEG2RAD(1e-6),
-			double Aphi_err_std  = mrpt::utils::DEG2RAD(10e-6)
+			double Ax_err_bias  =  1e-3,
+			double Ax_err_std   = 10e-3,
+			double Ay_err_bias =  1e-3,
+			double Ay_err_std  = 10e-3,
+			double Aphi_err_bias =  mrpt::utils::DEG2RAD(1e-3),
+			double Aphi_err_std  = mrpt::utils::DEG2RAD(10e-3)
 			)
 		{
 			m_use_odo_error=enabled;
@@ -91,7 +94,7 @@ namespace kinematics
 		mrpt::math::TPose2D   m_odometry;
 		/** @} */
 		double m_firmware_control_period;  //!< The period at which the low-level controller updates velocities (Default: 0.5 ms)
-	
+
 		bool    m_use_odo_error; //!< Whether to corrupt odometry with noise
 		double m_Ax_err_bias, m_Ax_err_std;
 		double m_Ay_err_bias, m_Ay_err_std;
@@ -105,4 +108,3 @@ namespace kinematics
 
 	} // End of namespace
 } // End of namespace
-

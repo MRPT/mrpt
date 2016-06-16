@@ -12,6 +12,7 @@
 
 #include <mrpt/kinematics/CVehicleSimul_Holo.h>
 #include <mrpt/math/wrap2pi.h>
+#include <mrpt/random.h>
 
 using namespace mrpt::kinematics;
 
@@ -29,6 +30,19 @@ void CVehicleSimul_Holo::internal_simulStep(const double dt)
 	m_pose.phi += m_vel.omega* dt;
 	mrpt::math::wrapToPi(m_pose.phi);
 
+	// odometry:
+	mrpt::math::TPose2D dPodo(m_vel.vx * dt,m_vel.vy*dt,m_vel.omega*dt);
+	if (m_use_odo_error)
+	{
+		dPodo.x += dt*m_Ax_err_bias + dt*m_Ax_err_std * mrpt::random::randomGenerator.drawGaussian1D_normalized();
+		dPodo.y += dt*m_Ay_err_bias + dt*m_Ay_err_std * mrpt::random::randomGenerator.drawGaussian1D_normalized();
+		dPodo.phi += dt*m_Aphi_err_bias + dt*m_Aphi_err_std * mrpt::random::randomGenerator.drawGaussian1D_normalized();
+	m_odometry.x += dPodo.x;
+}
+	m_odometry.y += dPodo.y;
+	m_odometry.phi += dPodo.phi;
+	mrpt::math::wrapToPi(m_odometry.phi);
+
 	// Control:
 	if (m_vel_ramp_cmd.issue_time>=0 && m_time>m_vel_ramp_cmd.issue_time) // are we executing any cmd?
 	{
@@ -45,14 +59,14 @@ void CVehicleSimul_Holo::internal_simulStep(const double dt)
 			m_vel.vx = vxi + t*(vxf-vxi) /T;
 			m_vel.vy = vyi + t*(vyf-vyi) /T;
 		}
-		else 
+		else
 		{
 			m_vel.vx = m_vel_ramp_cmd.target_vel_x;
 			m_vel.vy = m_vel_ramp_cmd.target_vel_y;
 		}
 #if 0
 		// Proportional controller in angle:
-		//const double KP = 1.0; 
+		//const double KP = 1.0;
 		//m_vel.phi = KP* mrpt::math::wrapToPi(m_vel_ramp_cmd.dir - m_pose.phi) * m_vel_ramp_cmd.rot_speed;
 #else
 		// Constant rotational velocity:
