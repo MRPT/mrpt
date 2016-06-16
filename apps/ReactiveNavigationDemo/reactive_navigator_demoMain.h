@@ -96,6 +96,8 @@ class reactive_navigator_demoframe: public wxFrame
         static const long ID_RADIOBOX2;
         static const long ID_CHECKBOX1;
         static const long ID_CHECKBOX2;
+        static const long ID_CHECKBOX3;
+        static const long ID_CHECKBOX4;
         static const long ID_RADIOBOX1;
         static const long ID_PANEL6;
         static const long ID_TEXTCTRL1;
@@ -142,6 +144,7 @@ class reactive_navigator_demoframe: public wxFrame
         wxRadioBox* rbKinType;
         wxCustomButton* btnStart;
         wxPanel* pnParamsReactive;
+        wxCheckBox* cbDrawShapePath;
         wxRadioBox* rbNavMode;
         wxMenu* Menu3;
         wxSplitterWindow* SplitterWindow2;
@@ -156,6 +159,7 @@ class reactive_navigator_demoframe: public wxFrame
         wxMenuItem* MenuItem3;
         wxMenuItem* mnuViewRobotPath;
         wxTextCtrl* edLog;
+        wxCheckBox* cbShowPredictedPTG;
         wxStatusBar* StatusBar1;
         wxPanel* pnParamsPreprog;
         wxCustomButton* btnHelp;
@@ -265,6 +269,7 @@ class reactive_navigator_demoframe: public wxFrame
 		mrpt::opengl::CSetOfLinesPtr        gl_robot_path;
 		mrpt::opengl::CPlanarLaserScanPtr   gl_scan3D, gl_scan2D;
 		mrpt::opengl::CPointCloudPtr 		gl_path;
+		mrpt::opengl::CSetOfLinesPtr        gl_robot_ptg_prediction;
 
 		// ========= Opengl View: Local view (holonomic)  =======
 		mrpt::opengl::CSimpleLinePtr        gl_line_direction;
