@@ -150,6 +150,7 @@ void CReactiveNavigationSystem::loadConfigFile(const mrpt::utils::CConfigFileBas
 		params["K"]			= ini.read_int(robotName,format("PTG%u_K", n ), 1, false);
 		params["cte_a0v"]	= DEG2RAD( ini.read_float(robotName,format("PTG%u_cte_a0v_deg", n ), 0, false) );
 		params["cte_a0w"]	= DEG2RAD( ini.read_float(robotName,format("PTG%u_cte_a0w_deg", n ), 0, false) );
+		params["score_priority"] = ini.read_double(robotName,format("PTG%u_score_priority", n ), 1.0, false);
 
 		// For backwards compat with old config files:
 		const int num_paths1  = ini.read_int(robotName,format("PTG%u_nAlfas", n ),-1, false);

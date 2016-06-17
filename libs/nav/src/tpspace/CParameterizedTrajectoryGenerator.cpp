@@ -18,10 +18,19 @@ std::string CParameterizedTrajectoryGenerator::OUTPUT_DEBUG_PATH_PREFIX = "./rea
 
 IMPLEMENTS_VIRTUAL_SERIALIZABLE(CParameterizedTrajectoryGenerator, CSerializable, mrpt::nav)
 
+
+CParameterizedTrajectoryGenerator::CParameterizedTrajectoryGenerator() :
+	refDistance(.0),
+	m_alphaValuesCount(0),
+	m_score_priority(1.0)
+{ }
+
+
 void CParameterizedTrajectoryGenerator::setParamsCommon(const mrpt::utils::TParameters<double> &params)
 {
 	refDistance        = params["ref_distance"];
 	m_alphaValuesCount = params["num_paths"];
+	m_score_priority   = params.getWithDefaultVal("score_priority",m_score_priority);
 }
 
 void CParameterizedTrajectoryGenerator::internal_readFromStream(mrpt::utils::CStream &in)
@@ -31,7 +40,7 @@ void CParameterizedTrajectoryGenerator::internal_readFromStream(mrpt::utils::CSt
 	switch (version)
 	{
 	case 0:
-		in >> refDistance >> m_alphaValuesCount;
+		in >> refDistance >> m_alphaValuesCount >> m_score_priority;
 		break;
 	default:
 		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
@@ -43,6 +52,6 @@ void CParameterizedTrajectoryGenerator::internal_writeToStream(mrpt::utils::CStr
 	const uint8_t version = 0;
 	out << version;
 
-	out << refDistance << m_alphaValuesCount;
+	out << refDistance << m_alphaValuesCount << m_score_priority;
 }
 

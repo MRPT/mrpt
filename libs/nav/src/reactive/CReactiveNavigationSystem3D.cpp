@@ -150,6 +150,7 @@ void CReactiveNavigationSystem3D::loadConfigFile(const mrpt::utils::CConfigFileB
 		params["cte_a0v"] = DEG2RAD(ini.read_float(sectCfg,format("PTG%d_AV",j),1,true));
 		params["cte_a0w"] = DEG2RAD(ini.read_float(sectCfg,format("PTG%d_AW",j),1,true));
 		params["num_paths"] = ini.read_int(sectCfg,format("PTG%d_NALFAS",j),30,true);
+		params["score_priority"] = ini.read_double(sectCfg,format("PTG%d_score_priority", j ), 1.0, false);
 
 		for (unsigned int i=1; i<=m_robotShape.size(); i++)
 		{

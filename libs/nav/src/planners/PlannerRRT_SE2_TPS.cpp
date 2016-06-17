@@ -65,6 +65,7 @@ void PlannerRRT_SE2_TPS::loadConfig(const mrpt::utils::CConfigFileBase &ini, con
 	{
 		// load ptg_parameters of this PTG:
 
+		MRPT_TODO("Refactor the 3 times it is implemented the fill-in of this TParameters<> struct")
 		TParameters<double> ptg_parameters;
 		ptg_parameters["ref_distance"] = refDistance;
 		ptg_parameters["resolution"]   = colGridRes;
@@ -73,6 +74,7 @@ void PlannerRRT_SE2_TPS::loadConfig(const mrpt::utils::CConfigFileBase &ini, con
 		ptg_parameters["K"]			= ini.read_int(sSect,format("PTG%u_K", n ), 1, false);
 		ptg_parameters["cte_a0v"]	= DEG2RAD( ini.read_float(sSect,format("PTG%u_cte_a0v_deg", n ), 0, false) );
 		ptg_parameters["cte_a0w"]	= DEG2RAD( ini.read_float(sSect,format("PTG%u_cte_a0w_deg", n ), 0, false) );
+		ptg_parameters["score_priority"] = ini.read_double(sSect,format("PTG%u_score_priority", n ), 1.0, false);
 
 		ptg_parameters["num_paths"] = ini.read_int(sSect, format("PTG%u_nAlfas", n), 100, true);
 
