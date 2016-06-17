@@ -29,9 +29,7 @@ namespace mrpt
 		DEFINE_SERIALIZABLE(CPTG_Holo_Blend)
 	 public:
 		CPTG_Holo_Blend();
-		CPTG_Holo_Blend(const mrpt::utils::CConfigFileBase &cfg,const std::string &sSection,  const std::string &sKeyPrefix) {
-			setParams(cfg,sSection, sKeyPrefix);
-		}
+		CPTG_Holo_Blend(const mrpt::utils::CConfigFileBase &cfg,const std::string &sSection,  const std::string &sKeyPrefix);
 
 		void setParams(const mrpt::utils::CConfigFileBase &cfg,const std::string &sSection,  const std::string &sKeyPrefix) MRPT_OVERRIDE;
 		std::string getDescription() const MRPT_OVERRIDE;
@@ -39,6 +37,7 @@ namespace mrpt
 		bool PTG_IsIntoDomain( double x, double y ) const MRPT_OVERRIDE;
 		void initialize(const std::string & cacheFilename = std::string(), const bool verbose = true) MRPT_OVERRIDE;
 		void deinitialize() MRPT_OVERRIDE;
+		void updateCurrentRobotVel(const mrpt::math::TTwist2D &curVelLocal);
 
 		/** Converts a discretized "alpha" value into a feasible motion command or action. See derived classes for the meaning of these actions */
 		void directionToMotionCommand( uint16_t k, std::vector<double> &out_action_cmd ) const MRPT_OVERRIDE;
@@ -56,6 +55,7 @@ namespace mrpt
 		double T_ramp;
 		double V_MAX, W_MAX; 
 		double turningRadiusReference;
+		mrpt::math::TTwist2D curVelLocal;
 
 		void internal_processNewRobotShape() MRPT_OVERRIDE;
 	};

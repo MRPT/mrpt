@@ -19,8 +19,6 @@ using namespace mrpt::system;
 
 IMPLEMENTS_SERIALIZABLE(CPTG_Holo_Blend,CParameterizedTrajectoryGenerator,mrpt::nav)
 
-CPTG_Holo_Blend a;
-
 /* ===============
 equation for "t" values of closest approach to obstacle (x0,y0):
 
@@ -42,9 +40,23 @@ CPTG_Holo_Blend::CPTG_Holo_Blend() :
 	T_ramp(-1.0),
 	V_MAX(-1.0), 
 	W_MAX(-1.0),
-	turningRadiusReference(0.30)
+	turningRadiusReference(0.30),
+	curVelLocal(0,0,0)
 { 
 }
+
+CPTG_Holo_Blend::CPTG_Holo_Blend(const mrpt::utils::CConfigFileBase &cfg,const std::string &sSection,  const std::string &sKeyPrefix) :
+	turningRadiusReference(0.30),
+	curVelLocal(0,0,0)
+{
+	setParams(cfg,sSection, sKeyPrefix);
+}
+
+void CPTG_Holo_Blend::updateCurrentRobotVel(const mrpt::math::TTwist2D &curVelLocal)
+{
+	this->curVelLocal = curVelLocal;
+}
+
 void CPTG_Holo_Blend::setParams(const mrpt::utils::CConfigFileBase &cfg,const std::string &sSection,  const std::string &sKeyPrefix)
 {
 	this->T_ramp      = cfg.read_double  (sSection, sKeyPrefix+std::string("T_ramp"), .0, true );
@@ -94,9 +106,9 @@ bool CPTG_Holo_Blend::inverseMap_WS2TP(double x, double y, int &out_k, double &o
 
 bool CPTG_Holo_Blend::PTG_IsIntoDomain(double x, double y ) const
 {
-	THROW_EXCEPTION("todo");
-	MRPT_TODO("impl");
-	return false;
+	int k; 
+	double d;
+	return inverseMap_WS2TP(x,y,k,d);
 }
 
 void CPTG_Holo_Blend::initialize(const std::string & cacheFilename, const bool verbose )
