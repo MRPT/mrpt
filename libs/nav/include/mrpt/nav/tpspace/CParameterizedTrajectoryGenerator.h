@@ -47,8 +47,7 @@ namespace nav
 	{
 		DEFINE_VIRTUAL_SERIALIZABLE(CParameterizedTrajectoryGenerator)
 	public:
-		CParameterizedTrajectoryGenerator() //!< Default ctor. Must call `setParams()` before initialization
-		{ }
+		CParameterizedTrajectoryGenerator(); //!< Default ctor. Must call `setParams()` before initialization
 		virtual ~CParameterizedTrajectoryGenerator() //!<  Destructor 
 		{ }
 
@@ -165,13 +164,19 @@ namespace nav
 
 		inline double getRefDistance() const { return refDistance; }
 
+		/** When used in path planning, a multiplying factor (default=1.0) for the scores for this PTG. Assign values <1 to PTGs with low priority. */
+		double getScorePriority() const { return m_score_priority; }
+		void setScorePriorty(double prior) { m_score_priority = prior; }
+
 protected:
-		double refDistance;
+		double    refDistance;
 		uint16_t  m_alphaValuesCount; //!< The number of discrete values for "alpha" between -PI and +PI.
+		double    m_score_priority;
 
 		/** Possible values in "params" accepted by this base class:
 		 *   - `num_paths`: The number of different paths in this family (number of discrete `alpha` values).
 		 *   - `ref_distance`: The maximum distance in PTGs [meters]
+		 *   - `score_priority`: When used in path planning, a multiplying factor (default=1.0) for the scores for this PTG. Assign values <1 to PTGs with low priority.
 		 */
 		virtual void setParamsCommon(const mrpt::utils::TParameters<double> &params);
 

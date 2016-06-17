@@ -709,7 +709,7 @@ void CAbstractPTGBasedReactive::STEP5_PTGEvaluator(
 		else
 		{
 		// General case:
-		holonomicMovement.evaluation = (
+		holonomicMovement.evaluation = holonomicMovement.PTG->getScorePriority() *(
 			factor1 * weights[0] +
 			factor2 * weights[1] +
 			factor3 * weights[2] +

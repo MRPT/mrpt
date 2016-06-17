@@ -83,14 +83,16 @@ class reactive_navigator_demoframe: public wxFrame
         void OnedManualKinRampsText(wxCommandEvent& event);
         void OnbtnQuitClick(wxCommandEvent& event);
         void OnrbKinTypeSelect(wxCommandEvent& event);
+        void OnbtnDrawMapObsClick(wxCommandEvent& event);
         //*)
 
         //(*Identifiers(reactive_navigator_demoframe)
-        static const long ID_BUTTON1;
         static const long ID_BUTTON4;
         static const long ID_BUTTON5;
         static const long ID_BUTTON7;
         static const long ID_BUTTON6;
+        static const long ID_BUTTON1;
+        static const long ID_BUTTON8;
         static const long ID_BUTTON2;
         static const long ID_BUTTON3;
         static const long ID_RADIOBOX2;
@@ -154,6 +156,7 @@ class reactive_navigator_demoframe: public wxFrame
         wxStaticText* StaticText1;
         wxStaticText* StaticText3;
         wxPanel* pnParamsGeneral;
+        wxCustomButton* btnDrawMapObs;
         wxPanel* Panel3;
         wxCheckBox* cbNavLog;
         wxMenuItem* MenuItem3;

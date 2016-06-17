@@ -50,6 +50,7 @@
 				- Old classes `CPTG%d` have been renamed to describe each path type. Old PTGs #6 and #7 have been removed for lack of practical use.
 				- New separate classes for PTGs based on numerically-integrated paths and on closed-form formulations.
 				- Old deprecated method of PTGs `lambdaFunction()` removed.
+				- PTGs now have a score_priority field to manually set hints about preferences for path planning.
 	- Changes in build system:
 		- [Windows only] `DLL`s/`LIB`s now have the signature `lib-${name}${2-digits-version}${compiler-name}_{x32|x64}.{dll/lib}`, allowing several MRPT versions to coexist in the system PATH.
 		- [Visual Studio only] There are no longer `pragma comment(lib...)` in any MRPT header, so it is the user responsibility to correctly tell user projects to link against MRPT libraries.
