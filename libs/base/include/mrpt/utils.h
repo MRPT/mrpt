@@ -69,8 +69,6 @@
 #include <mrpt/utils/CListOfClasses.h>
 #include <mrpt/utils/CTextFileLinesParser.h>
 
-#include <mrpt/utils/CRobotSimulator.h>
-
 #include <mrpt/utils/TCamera.h>
 #include <mrpt/utils/TStereoCamera.h>
 #include <mrpt/utils/TMatchingPair.h>

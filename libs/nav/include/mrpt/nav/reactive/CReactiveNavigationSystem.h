@@ -38,7 +38,7 @@ namespace mrpt
 		* Next we provide a self-documented template config file: 
 		* \verbinclude reactive2d_config.ini
 		*
-		*  \sa CAbstractReactiveNavigationSystem, CParameterizedTrajectoryGenerator, CAbstractHolonomicReactiveMethod
+		*  \sa CAbstractNavigator, CParameterizedTrajectoryGenerator, CAbstractHolonomicReactiveMethod
 		*  \ingroup nav_reactive
 		*/
 		class NAV_IMPEXP  CReactiveNavigationSystem : public CAbstractPTGBasedReactive
@@ -48,7 +48,7 @@ namespace mrpt
 		public:
 			/** See docs in ctor of base class */
 			CReactiveNavigationSystem(
-				CReactiveInterfaceImplementation &react_iterf_impl,
+				CRobot2NavInterface &react_iterf_impl,
 				bool enableConsoleOutput = true,
 				bool enableLogFile = false);
 
@@ -62,13 +62,14 @@ namespace mrpt
 			 */
 			void loadConfigFile(const mrpt::utils::CConfigFileBase &ini, const mrpt::utils::CConfigFileBase &robotIni);
 
-			/** Reload the configuration from a file. See details in CReactiveNavigationSystem docs. */
-			void loadConfigFile(const mrpt::utils::CConfigFileBase &ini);
+			/** Reload the configuration from a file. See details in CReactiveNavigationSystem docs. 
+			  * Section to be read is "{sect_prefix}ReactiveParams". */
+			void loadConfigFile(const mrpt::utils::CConfigFileBase &ini, const std::string &sect_prefix="") MRPT_OVERRIDE;
 
-			/** Change the robot shape, which is taken into account for collision
-			  *  grid building.
-			  */
-			void changeRobotShape( const math::CPolygon &shape );
+			/** Defines the 2D polygonal robot shape, used for some PTGs for collision checking. */
+			void changeRobotShape( const mrpt::math::CPolygon &shape );
+			/** Defines the 2D circular robot shape radius, used for some PTGs for collision checking. */
+			void changeRobotCircularShapeRadius( const double R );
 
 			/** Returns the number of different PTGs that have been setup */
 			virtual size_t getPTG_count() const { return PTGs.size(); }
@@ -80,29 +81,23 @@ namespace mrpt
 				return PTGs[i];
 			}
 
-
 		private:
-			// ------------------------------------------------------
-			//					PRIVATE	VARIABLES
-			// ------------------------------------------------------
 			float	minObstaclesHeight, maxObstaclesHeight; // The range of "z" coordinates for obstacles to be considered
 
-			/** The robot 2D shape model */
-			math::CPolygon		m_robotShape;
+			math::CPolygon m_robotShape;               //!< The robot 2D shape model. Only one of `m_robotShape` or `m_robotShape` will be used in each PTG
+			double         m_robotShapeCircularRadius; //!< Radius of the robot if approximated as a circle. Only one of `m_robotShape` or `m_robotShape` will be used in each PTG
 
-			/** The set of transformations to be used:
-			  */
-			std::vector<CParameterizedTrajectoryGenerator*>	PTGs;
+			std::vector<CParameterizedTrajectoryGenerator*>	PTGs;  //!< The list of PTGs to use for navigation
 
 			// Steps for the reactive navigation sytem.
 			// ----------------------------------------------------------------------------
-			virtual void STEP1_CollisionGridsBuilder();
+			virtual void STEP1_InitPTGs();
 
 			// See docs in parent class
 			virtual bool STEP2_SenseObstacles();
 
 			// See docs in parent class
-			virtual void STEP3_WSpaceToTPSpace(const size_t ptg_idx,std::vector<float> &out_TPObstacles);
+			virtual void STEP3_WSpaceToTPSpace(const size_t ptg_idx,std::vector<double> &out_TPObstacles);
 
 			/** Generates a pointcloud of obstacles, and the robot shape, to be saved in the logging record for the current timestep */
 			virtual void loggingGetWSObstaclesAndShape(CLogFileRecord &out_log);

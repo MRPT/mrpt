@@ -16,11 +16,6 @@ namespace mrpt
 {
 	namespace utils
 	{
-		/** Register all pending classes - to be called just before de-serializing an object, for example.
-		  * After calling this method, pending_class_registers_modified is set to false until pending_class_registers() is invoked.
- 		  */
-		void BASE_IMPEXP registerAllPendingClasses();
-
 		typedef void (*TRegisterFunction)(); // A void(void) function
 
 		// Use a queue for the pending register issues, but also an atomic counter, which is much faster to check than a CS.

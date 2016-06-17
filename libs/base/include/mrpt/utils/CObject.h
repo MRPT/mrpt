@@ -289,6 +289,13 @@ namespace mrpt
 
 		/** @}  */   // end of RTTI
 
+		/** Register all pending classes - to be called just before de-serializing an object, for example.
+		  * After calling this method, pending_class_registers_modified is set to false until pending_class_registers() is invoked.
+		  * This function actually register all the classes which has been marked as "to be registered" by mrpt::utils::CStartUpClassesRegister instances
+		  * \sa mrpt::utils::CStartUpClassesRegister
+ 		  */
+		void BASE_IMPEXP registerAllPendingClasses();
+
 	} // End of namespace
 } // End of namespace
 

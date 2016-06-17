@@ -34,7 +34,7 @@ CHolonomicVFF::CHolonomicVFF(const mrpt::utils::CConfigFileBase *INI_FILE)
   ---------------------------------------------------------------*/
 void  CHolonomicVFF::navigate(
 	const mrpt::math::TPoint2D &target,
-	const std::vector<float>	&obstacles,
+	const std::vector<double>	&obstacles,
 	double			maxRobotSpeed,
 	double			&desiredDirection,
 	double			&desiredSpeed,

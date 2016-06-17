@@ -151,7 +151,5 @@ class navlog_viewer_GUI_designDialog: public wxFrame //wxDialog
     }
 
 
-#define NAVLOGVIEWER_VERSION  "1.0"
-
 
 #endif // NAVLOG_VIEWER_GUI_DESIGNMAIN_H
