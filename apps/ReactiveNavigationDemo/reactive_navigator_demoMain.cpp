@@ -1242,7 +1242,7 @@ void reactive_navigator_demoframe::OnrbKinTypeSelect(wxCommandEvent& event)
 			m_robotSimul.reset(sim);
 			m_robotSimul2NavInterface.reset( new MyRobot2NavInterface_Diff( *sim, m_latest_obstacles ) );
 			// Opengl viz:
-			create_viz_robot_diff( *mrpt::opengl::CSetOfObjectsPtr( gl_robot->getByName("robot_render") ));
+			create_viz_robot_diff( *mrpt::opengl::CSetOfObjectsPtr( gl_robot->getByName("robot_render") ) );
 			create_viz_robot_diff(*gl_robot_local);
 			gl_robot_local->setScale( 1.0 / m_simul_options.MAX_SENSOR_RADIUS );
 		}
@@ -1253,7 +1253,7 @@ void reactive_navigator_demoframe::OnrbKinTypeSelect(wxCommandEvent& event)
 			m_robotSimul.reset(sim);
 			m_robotSimul2NavInterface.reset( new MyRobot2NavInterface_Holo( *sim, m_latest_obstacles ) );
 			// Opengl viz:
-			create_viz_robot_holo(*gl_robot);
+			create_viz_robot_holo(*mrpt::opengl::CSetOfObjectsPtr( gl_robot->getByName("robot_render") ));
 			create_viz_robot_holo(*gl_robot_local);
 			gl_robot_local->setScale( 1.0 / m_simul_options.MAX_SENSOR_RADIUS );
 		}
