@@ -660,7 +660,11 @@ bool CPTG_DiffDrive_CollisionGridBased::inverseMap_WS2TP(double x, double y, int
 
 	out_k = selected_k;
 	out_d = selected_d / refDistance;
-	return false;
+
+	// If the target dist. > refDistance, then it's normal that we had to extrapolate. 
+	// Otherwise, it may actually mean that the target is not reachable by this set of paths:
+	const float target_dist = std::sqrt( x*x+y*y );
+	return (target_dist>target_dist);  
 }
 
 
