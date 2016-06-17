@@ -18,11 +18,11 @@ using namespace mrpt::system;
 
 IMPLEMENTS_SERIALIZABLE(CPTG_DiffDrive_C,CParameterizedTrajectoryGenerator,mrpt::nav)
 
-void CPTG_DiffDrive_C::setParams(const mrpt::utils::TParameters<double> &params)
+void CPTG_DiffDrive_C::setParams(const mrpt::utils::CConfigFileBase &cfg,const std::string &sSection,  const std::string &sKeyPrefix)
 {
-	this->K = params["K"];
+	this->K = cfg.read_double(sSection, sKeyPrefix+std::string("K"), .0, true );
 
-	CPTG_DiffDrive_CollisionGridBased::setParamsCommon(params);
+	CPTG_DiffDrive_CollisionGridBased::setParamsCommon(cfg,sSection,sKeyPrefix);
 }
 
 void CPTG_DiffDrive_C::readFromStream(mrpt::utils::CStream &in, int version)

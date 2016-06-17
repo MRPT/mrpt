@@ -25,12 +25,11 @@ CParameterizedTrajectoryGenerator::CParameterizedTrajectoryGenerator() :
 	m_score_priority(1.0)
 { }
 
-
-void CParameterizedTrajectoryGenerator::setParamsCommon(const mrpt::utils::TParameters<double> &params)
+void CParameterizedTrajectoryGenerator::setParamsCommon(const mrpt::utils::CConfigFileBase &cfg,const std::string &sSection,  const std::string &sKeyPrefix)
 {
-	refDistance        = params["ref_distance"];
-	m_alphaValuesCount = params["num_paths"];
-	m_score_priority   = params.getWithDefaultVal("score_priority",m_score_priority);
+	this->refDistance        = cfg.read_double  (sSection, sKeyPrefix+std::string("refDistance"), .0, true );
+	this->m_alphaValuesCount = cfg.read_uint64_t(sSection, sKeyPrefix+std::string("num_paths"), 0, true );
+	this->m_score_priority   = cfg.read_double  (sSection, sKeyPrefix+std::string("score_priority"), m_score_priority );
 }
 
 void CParameterizedTrajectoryGenerator::internal_readFromStream(mrpt::utils::CStream &in)
@@ -55,3 +54,11 @@ void CParameterizedTrajectoryGenerator::internal_writeToStream(mrpt::utils::CStr
 	out << refDistance << m_alphaValuesCount << m_score_priority;
 }
 
+uint16_t CParameterizedTrajectoryGenerator::alpha2index( double alpha ) const 
+{
+	mrpt::math::wrapToPi(alpha);
+	int k = mrpt::utils::round(0.5*(m_alphaValuesCount*(1.0+alpha/M_PI) - 1.0));
+	if (k<0) k=0;
+	if (k>=m_alphaValuesCount) k=m_alphaValuesCount-1;
+	return (uint16_t)k;
+}

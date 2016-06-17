@@ -52,7 +52,6 @@ CAbstractPTGBasedReactive::CAbstractPTGBasedReactive(CRobot2NavInterface &react_
 	m_init_done                  (false),
 	ptg_cache_files_directory    ("."),
 	refDistance                  (4.0f),
-	colGridRes                   (0.10f),
 	SPEEDFILTER_TAU              (0.0),
 	secureDistanceStart          (0.05f),
 	secureDistanceEnd            (0.20f),

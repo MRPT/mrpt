@@ -19,12 +19,7 @@ namespace mrpt
 	/** A PTG for circular paths ("C" type PTG in papers). 
 	 * - **Compatible kinematics**: differential-driven / Ackermann steering
 	 * - **Compatible robot shape**: Arbitrary 2D polygon
-	 * 
-	 * Accepted parameters in setParams()
-	 * - params["ref_distance"]: Maximum trayectory distance (meters).
-	 * - params["v_max"]: Maximum linear velocity (m/s)
-	 * - params["w_max"]: Maximum angular velocity (rad/s)
-	 * - params["K"]: Can be "+1" for forward paths, or "-1" for backward paths.
+	 * - **PTG parameters**: use "PTG configurator" tool in the app ReactiveNavigationDemo
 	 * 
 	 * This PT generator functions are: 
 	 *
@@ -48,10 +43,10 @@ namespace mrpt
 		DEFINE_SERIALIZABLE(CPTG_DiffDrive_C)
 	 public:
 		CPTG_DiffDrive_C() : K(0) { }
-		CPTG_DiffDrive_C(const mrpt::utils::TParameters<double> &params) {
-			setParams(params);
+		CPTG_DiffDrive_C(const mrpt::utils::CConfigFileBase &cfg,const std::string &sSection,  const std::string &sKeyPrefix) {
+			setParams(cfg,sSection, sKeyPrefix);
 		}
-		void setParams(const mrpt::utils::TParameters<double> &params) MRPT_OVERRIDE;
+		void setParams(const mrpt::utils::CConfigFileBase &cfg,const std::string &sSection,  const std::string &sKeyPrefix) MRPT_OVERRIDE;
 		std::string getDescription() const MRPT_OVERRIDE;
 		bool inverseMap_WS2TP(double x, double y, int &out_k, double &out_d, double tolerance_dist = 0.10) const MRPT_OVERRIDE;
 		bool PTG_IsIntoDomain( double x, double y ) const MRPT_OVERRIDE;
