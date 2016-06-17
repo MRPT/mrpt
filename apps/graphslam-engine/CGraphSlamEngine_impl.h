@@ -489,8 +489,7 @@ bool CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::parseRawlogFil
 
 			if (m_win && m_visualize_map) {
 				mrpt::synch::CCriticalSectionLocker m_graph_lock(&m_graph_section);
-				//bool full_update = m_edge_registrar.justInsertedLoopClosure();
-				bool full_update=true;
+				bool full_update = m_edge_registrar.justInsertedLoopClosure();
 				this->updateMap(m_graph, m_nodes_to_laser_scans, full_update);
 			}
 
@@ -1221,7 +1220,11 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::updateMap(
 		// make sure that the laser scan exists and is valid
 		if (search != m_nodes_to_laser_scans.end() && !(search->second.null())) {
 			scan_content = search->second;
-			//this->decimateLaserScan(&(*scan_content));
+
+			CObservation2DRangeScan scan_decimated;
+			this->decimateLaserScan(*scan_content, 
+					&scan_decimated,
+					/*keep_every_n_entries = */ 20);
 
 			// if the scan already doesn't exist, add it to the scene, otherwise just
 			// adjust its pose
@@ -1237,7 +1240,7 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::updateMap(
 
 				// creating and inserting the observation in the CSetOfObjects
 				CSimplePointsMap m;
-				m.insertObservation(&(*scan_content));
+				m.insertObservation(&scan_decimated);
 				m.getAs3DObject(scan_obj);
 
 				scan_obj->setName(scan_name.str());
@@ -1269,26 +1272,27 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::updateMap(
 // TODO - implement this correctly..
 template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR>
 void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::decimateLaserScan(
-		mrpt::obs::CObservation2DRangeScan* laser_scan,
-		int keep_every_n_entries /*= 2*/) {
+		mrpt::obs::CObservation2DRangeScan& laser_scan_in,
+		mrpt::obs::CObservation2DRangeScan* laser_scan_out,
+		const int keep_every_n_entries /*= 2*/) {
 
-	size_t scan_size = laser_scan->scan.size();
+	size_t scan_size = laser_scan_in.scan.size();
 	std::cout << "scan_size_in = " << scan_size << std::endl;
 
 	std::vector<float> new_scan;
 	std::vector<char> new_validRange;
 	for (size_t i=0; i != scan_size; i++) {
 		if (i % keep_every_n_entries == 0) {
-			new_scan.push_back(laser_scan->scan[i]);
-			new_validRange.push_back(laser_scan->validRange[i]);
+			new_scan.push_back(laser_scan_in.scan[i]);
+			new_validRange.push_back(laser_scan_in.validRange[i]);
 		}
 	}
 	
 	// assign the decimated scans, ranges
-	laser_scan->scan = new_scan;
-	laser_scan->validRange = new_validRange;
+	laser_scan_out->scan = new_scan;
+	laser_scan_out->validRange = new_validRange;
 
-	scan_size = laser_scan->scan.size();
+	scan_size = laser_scan_out->scan.size();
 	std::cout << "scan_size_out = " << scan_size << std::endl;
 }
 

@@ -211,8 +211,10 @@ namespace mrpt { namespace graphslam {
 				 * size of the resulting CSetOfObject that would be inserted in the
 				 * visualization scene
 				 */
-				 void decimateLaserScan(mrpt::obs::CObservation2DRangeScan* scan,
-				 		 int keep_every_n_entries=20);
+				void decimateLaserScan(
+						mrpt::obs::CObservation2DRangeScan& laser_scan_in,
+						mrpt::obs::CObservation2DRangeScan* laser_scan_out,
+						const int keep_every_n_entries = 2); 
 				/**
 		 		 * readGT
 		 		 *
