@@ -26,7 +26,7 @@ IF(CMAKE_MRPT_HAS_WXWIDGETS)
 
 	IF(WIN32)
 		SET(SRCS ${SRCS} resource.rc)
-	ENDIF(WIN32)
+	ENDIF()
 	
 	INCLUDE_DIRECTORIES("${MRPT_SOURCE_DIR}/otherlibs/wxThings/")
 

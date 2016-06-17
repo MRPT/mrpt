@@ -198,6 +198,13 @@ namespace mrpt
 			  */
 			bool  setHighSensitivityMode(bool enabled);
 
+			/** If true scans will capture intensity. (default: false)
+			  * Should not be called while scanning.
+			  * \return false on any error
+			  */
+                        bool  setIntensityMode(bool enabled);
+
+
 			void setVerbose(bool enable = true) { m_verbose = enable; }
 
 
@@ -222,6 +229,7 @@ namespace mrpt
 			int                      m_timeStartSynchDelay;  //!< Counter to discard to first few packets before setting the correspondence between device and computer timestamps.
 			mrpt::system::TTimeStamp m_timeStartTT;
 			bool                     m_disable_firmware_timestamp;
+			bool                     m_intensity;  //!< Get intensity from lidar scan (default: false)
 
 			/** See the class documentation at the top for expected parameters */
 			void  loadConfig_sensorSpecific(

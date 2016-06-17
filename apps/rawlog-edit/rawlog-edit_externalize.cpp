@@ -30,11 +30,9 @@ DECLARE_OP_FUNCTION(op_externalize)
 	{
 	protected:
 		TOutputRawlogCreator	outrawlog;
-		//CFileGZOutputStream out_rawlog;
-		//string output_rawlog;
 
-		string	imgFileExtension;
-		string 	outDir;
+		string imgFileExtension;
+		string outDir;
 
 	public:
 		size_t  entries_converted;
@@ -46,6 +44,8 @@ DECLARE_OP_FUNCTION(op_externalize)
 			entries_converted = 0;
 			entries_skipped  = 0;
 			getArgValue<string>(cmdline,"image-format",imgFileExtension);
+
+			mrpt::obs::CObservation3DRangeScan::EXTERNALS_AS_TEXT = isFlagSet(cmdline,"txt-externals");
 
 			// Create the default "/Images" directory.
 			const string out_rawlog_basedir = extractFileDirectory(outrawlog.out_rawlog_filename);

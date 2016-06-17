@@ -188,7 +188,7 @@ void CPose2D::composePoint(const mrpt::math::TPoint2D &l, mrpt::math::TPoint2D &
 	this->composePoint(l.x,l.y, g.x,g.y);
 }
 
-/** \overload \f$ G = P \oplus L \f$ with G and L being 3D points and P this 2D pose (the "z" coordinate remains unmodified) */
+/** overload \f$ G = P \oplus L \f$ with G and L being 3D points and P this 2D pose (the "z" coordinate remains unmodified) */
 void CPose2D::composePoint(const mrpt::math::TPoint3D &l, mrpt::math::TPoint3D &g) const
 {
 	this->composePoint(l.x,l.y,l.z, g.x,g.y,g.z);

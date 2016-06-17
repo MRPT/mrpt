@@ -20,6 +20,14 @@ else
 CMAKE_ARCH_FLAGS = -DMRPT_AUTODETECT_SSE=OFF -DDISABLE_SSE2=ON -DDISABLE_SSE3=ON -DDISABLE_SSE4_1=ON -DDISABLE_SSE4_2=ON  -DDISABLE_SSE4_A=ON
 endif
 
+# test_gdb runs unit tests showing stack traces on failure:
+# "test_gdb" seems to make build farm machines crash in armhf...
+#ifeq ($(DEB_HOST_ARCH),armhf)
+MRPT_TEST_TARGET = test
+#else
+#MRPT_TEST_TARGET = test_gdb
+#endif
+
 CMAKE_FLAGS = \
 	-DCMAKE_INSTALL_PREFIX="$(CURDIR)/debian/" \
 	-DCMAKE_INSTALL_LIBDIR="lib/$(DEB_HOST_MULTIARCH)" \
@@ -34,9 +42,9 @@ CMAKE_FLAGS = \
 	-DCMAKE_SHARED_LINKER_FLAGS_RELEASE="$(LDFLAGS)" \
 	-DCMAKE_EXE_LINKER_FLAGS_RELEASE="$(LDFLAGS)" \
 	$(CMAKE_ARCH_FLAGS) \
-	REPLACE_HERE_EXTRA_CMAKE_PARAMS 
+	REPLACE_HERE_EXTRA_CMAKE_PARAMS
 
-# Don't set: CMAKE_SKIP_RPATH=ON --> it makes unit tests to fail, 
+# Don't set: CMAKE_SKIP_RPATH=ON --> it makes unit tests to fail,
 # and the rpath is removed anyway by cmake's install target.
 
 
@@ -67,7 +75,7 @@ override_dh_auto_install:
 override_dh_auto_test:
 	# Tests:
 	echo "[override_dh_auto_test]"
-	dh_auto_build -O--buildsystem=cmake -- test -j1
+	dh_auto_build -O--buildsystem=cmake -- $(MRPT_TEST_TARGET) -j1
 
 override_dh_install:
 	# Install:
@@ -80,7 +88,3 @@ override_dh_install:
 	# Fix Doxygen's embedded JQuery lib:
 	rm $(CURDIR)/debian/mrpt-doc/usr/share/doc/mrpt-doc/html/jquery.js || true
 	ln -s /usr/share/javascript/jquery/jquery.js $(CURDIR)/debian/mrpt-doc/usr/share/doc/mrpt-doc/html/jquery.js  || true
-
-override_dh_strip:
-	dh_strip --dbg-package=libmrpt-dbg
-

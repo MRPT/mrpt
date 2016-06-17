@@ -29,6 +29,11 @@ The following list is roughly sorted in reverse cronological order.
 * Javier G. Monroy, University of Malaga (2013-).
   - Driver for Rovio mobile robot with webcam.
   - New algorithms in gas maps.
+  
+* Hunter (https://github.com/jolting) (2016-)
+  - Add-ons to 2D range scan observations.
+  - Port towards C++11 for MRPT 2.0
+  - Code clean ups
 
 * Nikolaus Demmel, Robert Bosch Start-up GmbH (2016)
   - Additions to python bindings.

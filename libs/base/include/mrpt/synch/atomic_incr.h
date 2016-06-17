@@ -13,6 +13,10 @@
 #include <mrpt/utils/compiler_fixes.h>
 #include <mrpt/base/link_pragmas.h>  // DLL import/export definitions
 
+#if defined( __GNUC__ )
+#  include <ext/atomicity.h>
+#endif
+
 namespace mrpt
 {
 namespace synch
@@ -26,10 +30,10 @@ namespace synch
 class BASE_IMPEXP CAtomicCounter
 {
 public:
-#ifdef MRPT_OS_WINDOWS
+#if defined( __GNUC__ )
+	typedef _Atomic_word atomic_num_t;
+#else // mostly for MSVC in Windows
 	typedef long atomic_num_t;
-#else
-	typedef int atomic_num_t;
 #endif
 
 	explicit CAtomicCounter( long v ): m_value( static_cast<atomic_num_t>(v) )

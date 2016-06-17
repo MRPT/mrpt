@@ -41,51 +41,6 @@ using namespace std;
 IMPLEMENTS_SERIALIZABLE( CMultiMetricMapPDF, CSerializable, mrpt::maps )
 IMPLEMENTS_SERIALIZABLE( CRBPFParticleData,  CSerializable, mrpt::maps )
 
-
-#if MRPT_HAS_SSE2
-	/*---------------------------------------------------------------
-	Auxiliary function: Detect the processor support of SSE.
-		Only executed the first time.
-	---------------------------------------------------------------*/
-	bool checkSuportSSE()
-	{
-		return false;
-
-/*		static	bool	firstTime = true;
-		static	bool	SSE_Supported;
-
-		// Already checked:
-		if (!firstTime)
-			return SSE_Supported;
-
-		printf("[MRPT] Probing processor support for SSE...");
-
-		firstTime = false;
-
-		try
-		{
-			__asm
-				{
-					xorps xmm0, xmm0
-				}
-		}
-		catch(...)
-		{
-			// Error: Not supported:
-			printf("*NOT PASS*\n");
-			SSE_Supported = false;
-			return SSE_Supported;
-		}
-
-		// Ok, SSE suported:
-		printf("PASS!\n");
-		SSE_Supported = true;
-		return SSE_Supported;
-*/
-	}
-#endif
-
-
 /*---------------------------------------------------------------
 				Constructor
   ---------------------------------------------------------------*/
@@ -313,16 +268,11 @@ CMultiMetricMap *  CMultiMetricMapPDF::getCurrentMetricMapEstimation( )
  ---------------------------------------------------------------*/
 void  CMultiMetricMapPDF::rebuildAverageMap()
 {
-	//size_t				M = particlesCount();
 	float				min_x = 1e6, max_x=-1e6, min_y = 1e6, max_y = -1e6;
 	CParticleList::iterator	part;
 
 	if (averageMapIsUpdated)
 		return;
-
-//	CTicTac		tictac;
-//	tictac.Tic();
-//	printf("[EM...");
 
 	// ---------------------------------------------------------
 	//					GRID
@@ -371,108 +321,10 @@ void  CMultiMetricMapPDF::rebuildAverageMap()
 		ASSERT_(part->d->mapTillNow.m_gridMaps[0]->getSizeY() == averageMap.m_gridMaps[0]->getSizeY());
 	}
 
-
-#if MRPT_HAS_SSE2 && defined(_MSC_VER) && (MRPT_WORD_SIZE==32)
-	// Autodetect SSE support:
-	bool	SSE_SUPORTED = checkSuportSSE();
-	if (SSE_SUPORTED)
-	{
-        MRPT_START
-
-		// ******************************************************
-		//     Implementation with the SSE Instructions Set
-		//  http://www.rz.uni-karlsruhe.de/rz/docs/VTune/reference/
-		//  JLBC - 16/MAR/2006
-		// ******************************************************
-
-		// For each particle in the RBPF:
-		part=m_particles.begin();
-		do
-		{
-			// The cells in the source map:
-			unsigned short*		srcCell;
-			unsigned short*		firstSrcCell = (unsigned short*)&(*part->d->mapTillNow.m_gridMaps[0]->map.begin());
-			unsigned short*		lastSrcCell = (unsigned short*)&(*part->d->mapTillNow.m_gridMaps[0]->map.end());
-
-			// Assure sizes:
-			ASSERT_(0==(part->d->mapTillNow.m_gridMaps[0]->size_x % 8));
-			ASSERT_(0==(averageMap.m_gridMaps[0]->size_x % 8));
-			ASSERT_(averageMap.m_gridMaps[0]->map.size()==part->d->mapTillNow.m_gridMaps[0]->map.size());
-
-			// The destination cells:
-			unsigned short*		destCell;
-			unsigned short*		firstDestCell = (unsigned short*)&averageMap.m_gridMaps[0]->map[0];
-
-			// The weight of particle:
-			MRPT_ALIGN16 unsigned short weights_array[8];
-			weights_array[0] = weights_array[1] = weights_array[2] = weights_array[3] =
-			weights_array[4] = weights_array[5] = weights_array[6] = weights_array[7] = (unsigned short)(exp(part->log_w) * 65535 / sumLinearWeights);
-			unsigned short*		weights_8 = weights_array;
-
-			srcCell = firstSrcCell;
-			destCell = firstDestCell;
-			//size_t	cellsCount = averageMap.gridMap->map.size();
-
-			// For each cell in individual maps:
-			__asm
-			{
-				push	eax
-				push	edx
-				push	ecx
-
-				mov		eax, dword ptr[srcCell]
-				mov		edx, dword ptr[destCell]
-				mov     ecx, dword ptr[weights_8]
-
-				_loop:
-
-				// Load 8 cells from the particle's map:
-				movdqu	xmm0, [eax]
-
-				// Move 8 copies of the weight to XMM1
-				movdqu	xmm1, [ecx]
-
-				// Packed multiply, Unsigned, 16bits
-				//  Multiply the 8 cells in XMM1 with the associated weight in XMM0, and save it in XMM1
-				pmulhuw	xmm1, xmm0
-
-				// Packed ADD with saturation, Unsigned, 16bits
-				//  Accumulate the Expected Map in XMM3:
-				paddusw	xmm1, [edx]
-
-				// Store again in the expected map:
-				movdqu	[edx],xmm1
-
-				// Increment pointers:
-				add		eax, 16
-				add		edx, 16
-
-				// End of loop:
-				cmp		eax, dword ptr[lastSrcCell]
-				jnz		_loop
-
-				// Clear MMX flags
-				emms
-
-				pop		ecx
-				pop		edx
-				pop		eax
-			}
-
-			// Next particle:
-			part++;
-		}  while (part!=m_particles.end());
-
-		MRPT_END_WITH_CLEAN_UP( printf("Exception in Expected Map computation with SSE!! Dumping variables:\n EM size in cells: %ux%u\n",averageMap.m_gridMaps[0]->size_x,averageMap.m_gridMaps[0]->size_y); printf("Particle map: %ux%u\n",part->d->mapTillNow.m_gridMaps[0]->size_x,part->d->mapTillNow.m_gridMaps[0]->size_y); );
-
-	}	// End of SSE supported
-	else
-#endif
 	{
 		// ******************************************************
 		//     Implementation WITHOUT the SSE Instructions Set
 		// ******************************************************
-
 		MRPT_START
 
 		// Reserve a float grid-map, add weight all maps
@@ -517,21 +369,6 @@ void  CMultiMetricMapPDF::rebuildAverageMap()
 
 		MRPT_END
 	}	// End of SSE not supported
-
-	// ---------------------------------------------------------
-	//					POINTS
-	// ---------------------------------------------------------
-/*	averageMap.pointsMap->clear();
-	averageMap.pointsMap->insertionOptions.fuseWithExisting = false;
-	averageMap.pointsMap->insertionOptions.matchStaticPointsOnly = false;
-
-	for (i=0;i<M;i++)
-	{
-		averageMap.pointsMap->fuseWith( m_particles[i].d->mapTillNow.pointsMap );
-	}
-*/
-
-//	printf("%.03fms]",1000*tictac.Tac());
 
 	// Don't calculate again until really necesary.
 	averageMapIsUpdated = true;
