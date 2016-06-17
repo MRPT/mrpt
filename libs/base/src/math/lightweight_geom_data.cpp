@@ -74,6 +74,56 @@ void TPose2D::fromString(const std::string &s)
 	phi = DEG2RAD(m.get_unsafe(0,2));
 }
 
+// ----
+void TTwist2D::asString(std::string &s) const {
+	s = mrpt::format("[%f %f %f]",vx,vy,mrpt::utils::RAD2DEG(omega));
+}
+void TTwist2D::fromString(const std::string &s)
+{
+	CMatrixDouble  m;
+	if (!m.fromMatlabStringFormat(s)) THROW_EXCEPTION("Malformed expression in ::fromString");
+	ASSERTMSG_(mrpt::math::size(m,1)==1 && mrpt::math::size(m,2)==3, "Wrong size of vector in ::fromString");
+	vx = m.get_unsafe(0,0);
+	vy = m.get_unsafe(0,1);
+	omega = DEG2RAD(m.get_unsafe(0,2));
+}
+// Transform the (vx,vy) components for a counterclockwise rotation of `ang` radians
+void TTwist2D::rotate(const double ang)
+{
+	const double nvx = vx * cos(ang) - vy * sin(ang);
+	const double nvy = vx * sin(ang) + vy * cos(ang);
+	vx = nvx;
+	vy = nvy;
+}
+
+// ----
+void TTwist3D::asString(std::string &s) const {
+	s = mrpt::format("[%f %f %f  %f %f %f]",vx,vy,vz, mrpt::utils::RAD2DEG(wx),mrpt::utils::RAD2DEG(wy),mrpt::utils::RAD2DEG(wz));
+}
+void TTwist3D::fromString(const std::string &s)
+{
+	CMatrixDouble  m;
+	if (!m.fromMatlabStringFormat(s)) THROW_EXCEPTION("Malformed expression in ::fromString");
+	ASSERTMSG_(mrpt::math::size(m,1)==1 && mrpt::math::size(m,2)==6, "Wrong size of vector in ::fromString");
+	for (int i=0;i<3;i++) (*this)[i] = m.get_unsafe(0,i);
+	for (int i=0;i<3;i++) (*this)[3+i] = DEG2RAD(m.get_unsafe(0,3+i));
+}
+// Transform all 6 components for a change of reference frame from "A" to 
+// another frame "B" whose rotation with respect to "A" is given by `rot`. The translational part of the pose is ignored
+void TTwist3D::rotate(const mrpt::poses::CPose3D & rot)
+{
+	const TTwist3D t = *this;
+	const mrpt::math::CMatrixDouble33 & R = rot.getRotationMatrix();
+	vx=R(0,0)*t.vx+R(0,1)*t.vy+R(0,2)*t.vz;
+	vy=R(1,0)*t.vx+R(1,1)*t.vy+R(1,2)*t.vz;
+	vz=R(2,0)*t.vx+R(2,1)*t.vy+R(2,2)*t.vz;
+
+	wx=R(0,0)*t.wx+R(0,1)*t.wy+R(0,2)*t.wz;
+	wy=R(1,0)*t.wx+R(1,1)*t.wy+R(1,2)*t.wz;
+	wz=R(2,0)*t.wx+R(2,1)*t.wy+R(2,2)*t.wz;
+}
+
+
 TPoint3D::TPoint3D(const TPoint2D &p):x(p.x),y(p.y),z(0.0)	{}
 TPoint3D::TPoint3D(const TPose2D &p):x(p.x),y(p.y),z(0.0)	{}
 TPoint3D::TPoint3D(const TPose3D &p):x(p.x),y(p.y),z(p.z)	{}
@@ -709,90 +759,6 @@ inline void TPolygon3D::createRegularPolygon(size_t numEdges,double radius,TPoly
 	for (size_t i=0;i<numEdges;i++) pose.composePoint(poly[i][0],poly[i][1],poly[i][2],poly[i][0],poly[i][1],poly[i][2]);
 }
 
-#ifdef TOBJECTS_USE_UNIONS
-void TObject2D::generate3DObject(TObject3D &obj) const	{
-	switch (type)	{
-		case GEOMETRIC_TYPE_POINT:
-			obj=TPoint3D(*(data.point));
-			break;
-		case GEOMETRIC_TYPE_SEGMENT:
-			obj=TSegment3D(*(data.segment));
-			break;
-		case GEOMETRIC_TYPE_LINE:
-			obj=TLine3D(*(data.line));
-			break;
-		case GEOMETRIC_TYPE_POLYGON:
-			obj=TPolygon3D(*(data.polygon));
-			break;
-		default:
-			obj=TObject3D();
-			break;
-	}
-}
-void TObject2D::getPoints(const std::vector<TObject2D> &objs,std::vector<TPoint2D> &pnts)	{
-	for (vector<TObject2D>::const_iterator it=objs.begin();it!=objs.end();++it) if (it->isPoint()) pnts.push_back(*(it->data.point));
-}
-void TObject2D::getSegments(const std::vector<TObject2D> &objs,std::vector<TSegment2D> &sgms)	{
-	for (vector<TObject2D>::const_iterator it=objs.begin();it!=objs.end();++it) if (it->isSegment()) sgms.push_back(*(it->data.segment));
-}
-void TObject2D::getLines(const std::vector<TObject2D> &objs,std::vector<TLine2D> &lins)	{
-	for (vector<TObject2D>::const_iterator it=objs.begin();it!=objs.end();++it) if (it->isLine()) lins.push_back(*(it->data.line));
-}
-void TObject2D::getPolygons(const std::vector<TObject2D> &objs,std::vector<TPolygon2D> &polys)	{
-	for (vector<TObject2D>::const_iterator it=objs.begin();it!=objs.end();++it) if (it->isPolygon()) polys.push_back(*(it->data.polygon));
-}
-void TObject2D::getPoints(const std::vector<TObject2D> &objs,std::vector<TPoint2D> &pnts,std::vector<TObject2D> &remainder)	{
-	for (vector<TObject2D>::const_iterator it=objs.begin();it!=objs.end();++it) if (it->isPoint()) pnts.push_back(*(it->data.point));
-	else remainder.push_back(*it);
-}
-void TObject2D::getSegments(const std::vector<TObject2D> &objs,std::vector<TSegment2D> &sgms,std::vector<TObject2D> &remainder)	{
-	for (vector<TObject2D>::const_iterator it=objs.begin();it!=objs.end();++it) if (it->isSegment()) sgms.push_back(*(it->data.segment));
-	else remainder.push_back(*it);
-}
-void TObject2D::getLines(const std::vector<TObject2D> &objs,std::vector<TLine2D> &lins,std::vector<TObject2D> &remainder)	{
-	for (vector<TObject2D>::const_iterator it=objs.begin();it!=objs.end();++it) if (it->isLine()) lins.push_back(*(it->data.line));
-	else remainder.push_back(*it);
-}
-void TObject2D::getPolygons(const std::vector<TObject2D> &objs,std::vector<TPolygon2D> &polys,vector<TObject2D> &remainder)	{
-	for (vector<TObject2D>::const_iterator it=objs.begin();it!=objs.end();++it) if (it->isPolygon()) polys.push_back(*(it->data.polygon));
-	else remainder.push_back(*it);
-}
-void TObject3D::getPoints(const std::vector<TObject3D> &objs,std::vector<TPoint3D> &pnts)	{
-	for (vector<TObject3D>::const_iterator it=objs.begin();it!=objs.end();++it) if (it->isPoint()) pnts.push_back(*(it->data.point));
-}
-void TObject3D::getSegments(const std::vector<TObject3D> &objs,std::vector<TSegment3D> &sgms)	{
-	for (vector<TObject3D>::const_iterator it=objs.begin();it!=objs.end();++it) if (it->isSegment()) sgms.push_back(*(it->data.segment));
-}
-void TObject3D::getLines(const std::vector<TObject3D> &objs,std::vector<TLine3D> &lins)	{
-	for (vector<TObject3D>::const_iterator it=objs.begin();it!=objs.end();++it) if (it->isLine()) lins.push_back(*(it->data.line));
-}
-void TObject3D::getPlanes(const std::vector<TObject3D> &objs,std::vector<TPlane> &plns)	{
-	for (vector<TObject3D>::const_iterator it=objs.begin();it!=objs.end();++it) if (it->isPlane()) plns.push_back(*(it->data.plane));
-}
-void TObject3D::getPolygons(const std::vector<TObject3D> &objs,std::vector<TPolygon3D> &polys)	{
-	for (vector<TObject3D>::const_iterator it=objs.begin();it!=objs.end();++it) if (it->isPolygon()) polys.push_back(*(it->data.polygon));
-}
-void TObject3D::getPoints(const std::vector<TObject3D> &objs,std::vector<TPoint3D> &pnts,std::vector<TObject3D> &remainder)	{
-	for (vector<TObject3D>::const_iterator it=objs.begin();it!=objs.end();++it) if (it->isPoint()) pnts.push_back(*(it->data.point));
-	else remainder.push_back(*it);
-}
-void TObject3D::getSegments(const std::vector<TObject3D> &objs,std::vector<TSegment3D> &sgms,std::vector<TObject3D> &remainder)	{
-	for (vector<TObject3D>::const_iterator it=objs.begin();it!=objs.end();++it) if (it->isSegment()) sgms.push_back(*(it->data.segment));
-	else remainder.push_back(*it);
-}
-void TObject3D::getLines(const std::vector<TObject3D> &objs,std::vector<TLine3D> &lins,std::vector<TObject3D> &remainder)	{
-	for (vector<TObject3D>::const_iterator it=objs.begin();it!=objs.end();++it) if (it->isLine()) lins.push_back(*(it->data.line));
-	else remainder.push_back(*it);
-}
-void TObject3D::getPlanes(const std::vector<TObject3D> &objs,std::vector<TPlane> &plns,std::vector<TObject3D> &remainder)	{
-	for (vector<TObject3D>::const_iterator it=objs.begin();it!=objs.end();++it) if (it->isPlane()) plns.push_back(*(it->data.plane));
-	else remainder.push_back(*it);
-}
-void TObject3D::getPolygons(const std::vector<TObject3D> &objs,std::vector<TPolygon3D> &polys,vector<TObject3D> &remainder)	{
-	for (vector<TObject3D>::const_iterator it=objs.begin();it!=objs.end();++it) if (it->isPolygon()) polys.push_back(*(it->data.polygon));
-	else remainder.push_back(*it);
-}
-#else
 void TObject2D::generate3DObject(TObject3D &obj) const	{
 	switch (type)	{
 		case GEOMETRIC_TYPE_POINT:
@@ -875,7 +841,6 @@ void TObject3D::getPolygons(const std::vector<TObject3D> &objs,std::vector<TPoly
 	for (vector<TObject3D>::const_iterator it=objs.begin();it!=objs.end();++it) if (it->isPolygon()) polys.push_back(*(it->data.polygon));
 	else remainder.push_back(*it);
 }
-#endif
 
 mrpt::utils::CStream& operator>>(mrpt::utils::CStream& in,mrpt::math::TPoint2D &o)
 {
@@ -909,6 +874,35 @@ mrpt::utils::CStream& operator<<(mrpt::utils::CStream& out,const mrpt::math::TPo
 	out << o.x << o.y << o.phi;
 	return out;
 }
+
+mrpt::utils::CStream& operator>>(mrpt::utils::CStream& in,mrpt::math::TTwist2D &o)
+{
+    for (unsigned int i=0;i<o.size();i++) in >> o[i];
+	return in;
+}
+mrpt::utils::CStream& operator<<(mrpt::utils::CStream& out,const mrpt::math::TTwist2D &o)
+{
+    for (unsigned int i=0;i<o.size();i++) out << o[i];
+	return out;
+}
+
+mrpt::utils::CStream& operator>>(mrpt::utils::CStream& in,mrpt::math::TTwist3D &o)
+{
+    for (unsigned int i=0;i<o.size();i++) in >> o[i];
+	return in;
+}
+mrpt::utils::CStream& operator<<(mrpt::utils::CStream& out,const mrpt::math::TTwist3D &o)
+{
+    for (unsigned int i=0;i<o.size();i++) out << o[i];
+	return out;
+}
+
+	BASE_IMPEXP mrpt::utils::CStream& operator>>(mrpt::utils::CStream& in,mrpt::math::TTwist2D &o);
+	BASE_IMPEXP mrpt::utils::CStream& operator<<(mrpt::utils::CStream& out,const mrpt::math::TTwist2D &o);
+
+	BASE_IMPEXP mrpt::utils::CStream& operator>>(mrpt::utils::CStream& in,mrpt::math::TTwist3D &o);
+	BASE_IMPEXP mrpt::utils::CStream& operator<<(mrpt::utils::CStream& out,const mrpt::math::TTwist3D &o);
+
 
 mrpt::utils::CStream& operator>>(mrpt::utils::CStream& in,mrpt::math::TPose3D &o)
 {

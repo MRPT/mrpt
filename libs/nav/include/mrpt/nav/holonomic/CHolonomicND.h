@@ -69,7 +69,7 @@ namespace mrpt
 		   *     <br><center><code>pseudometer<sup>2</sup>= meter<sup>2</sup> + (rad * r)<sup>2</sup></code><br></center>
 		   */
 		 void  navigate(	const mrpt::math::TPoint2D &target,
-							const std::vector<float>	&obstacles,
+							const std::vector<double>	&obstacles,
 							double			maxRobotSpeed,
 							double			&desiredDirection,
 							double			&desiredSpeed,
@@ -129,7 +129,7 @@ namespace mrpt
 		/**  Find gaps in the obtacles.
 		  */
 		void  gapsEstimator(
-			const std::vector<float>         & obstacles,
+			const std::vector<double>         & obstacles,
 			const mrpt::math::TPoint2D  & in_target,
 			TGapArray                   & gaps );
 
@@ -137,7 +137,7 @@ namespace mrpt
 		/** Search the best gap.
 		  */
 		void  searchBestGap(
-			const std::vector<float>         & in_obstacles,
+			const std::vector<double>         & in_obstacles,
 			const double                  in_maxObsRange,
 			const TGapArray             & in_gaps,
 			const mrpt::math::TPoint2D  & in_target,
@@ -152,13 +152,13 @@ namespace mrpt
 		void  calcRepresentativeSectorForGap(
 			TGap                        & gap,
 			const mrpt::math::TPoint2D  & target,
-			const std::vector<float>         & obstacles);
+			const std::vector<double>         & obstacles);
 
 		/** Evaluate each gap:
 		  */
 		void  evaluateGaps(
-			const std::vector<float> & in_obstacles,
-			const float          in_maxObsRange,
+			const std::vector<double> & in_obstacles,
+			const double          in_maxObsRange,
 			const TGapArray     & in_gaps,
 			const unsigned int	  TargetSector,
 			const float          TargetDist,

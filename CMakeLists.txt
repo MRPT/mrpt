@@ -378,6 +378,12 @@ SET(MRPT_ENABLE_PROFILING OFF CACHE BOOL "Enable profiling (add -g -pg in GCC/CL
 IF(MSVC)
 	SET(EXTRA_CPP_FLAGS "/W3 /D _CRT_SECURE_NO_DEPRECATE /D _CRT_NONSTDC_NO_DEPRECATE")
 
+	SET( BUILD_WITH_DEBUG_INFO ON CACHE BOOL "Include debug info in binaries")
+	MARK_AS_ADVANCED(BUILD_WITH_DEBUG_INFO)
+	if(BUILD_WITH_DEBUG_INFO)
+		SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /debug ")
+	endif()
+
 	# "In earlier versions of Visual C++, the compiler used several discrete
 	#   heaps, and each had a finite limit. Currently, the compiler dynamically
 	#   grows the heaps as necessary up to a total heap size limit, and requires
@@ -385,9 +391,9 @@ IF(MSVC)
 	#   the /Zm compiler option is rarely necessary."
  	# http://msdn.microsoft.com/en-us/library/bdscwf1c.aspx
 	#
-	#if(MSVC_VERSION LESS 1700) # <=VS 2012 (from my experience, in VS2012 this isn't needed).
+	if(MSVC_VERSION LESS 1700) # <=VS 2012 (from my experience, in VS2012 this isn't needed).
 		SET(EXTRA_CPP_FLAGS "${EXTRA_CPP_FLAGS} /Zm1000")
-	#endif()
+	endif()
 
 	# Whole program optimization
 	IF(MRPT_WHOLE_PROGRAM_OPTIMIZATION)

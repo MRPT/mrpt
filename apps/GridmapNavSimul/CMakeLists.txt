@@ -36,14 +36,10 @@ IF(CMAKE_MRPT_HAS_WXWIDGETS AND CMAKE_MRPT_HAS_OPENGL_GLUT)
 
 	TARGET_LINK_LIBRARIES(${TMP_TARGET_NAME} ${MRPT_LINKER_LIBS})
 
-	IF(UNIX)
-		TARGET_LINK_LIBRARIES(${TMP_TARGET_NAME} mrpt-hwdrivers)
-	ENDIF(UNIX)
-
 	# Dependencies on MRPT libraries:
 	#  Just mention the top-level dependency, the rest will be detected automatically, 
 	#  and all the needed #include<> dirs added (see the script DeclareAppDependencies.cmake for further details)
-	DeclareAppDependencies(${TMP_TARGET_NAME} mrpt-maps mrpt-hwdrivers)
+        DeclareAppDependencies(${TMP_TARGET_NAME} mrpt-maps mrpt-hwdrivers mrpt-kinematics)
 
 	DeclareAppForInstall(${TMP_TARGET_NAME})
 

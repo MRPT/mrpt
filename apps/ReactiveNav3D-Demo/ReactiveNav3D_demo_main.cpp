@@ -127,8 +127,8 @@ const char *default_cfg_txt =
 	"X0 = 2						; Initial location (meters) \n"
 	"Y0 = 0 \n"
 	"PHI0 = -90					; In degrees \n"
-	"VMAX_MPS = 0.70			; Speed limits - mps \n"
-	"WMAX_DEGPS = 60			; dps \n"
+	"robotMax_V_mps = 0.70			; Speed limits - mps \n"
+	"robotMax_W_degps = 60			; dps \n"
 	"SPEEDFILTER_TAU = 0.1		; The 'TAU' time constant of a first order lowpass filter for speed commands (s) \n"
 	"ROBOTMODEL_DELAY = 0		; un-used param, must be present for compat. with old mrpt versions \n"
 	"ROBOTMODEL_TAU = 0			; un-used param, must be present for compat. with old mrpt versions \n"
@@ -345,14 +345,14 @@ int main(int num_arg, char *argv[])
 				if (moving_target == 1)
 				{
 					moving_target = 0;
-					const CAbstractReactiveNavigationSystem::TNavigationParams  nav_params = ReactInterface.createNewTarget(last_Target_Pos.x, last_Target_Pos.y, 0.3, 0);
+					const CAbstractNavigator::TNavigationParams  nav_params = ReactInterface.createNewTarget(last_Target_Pos.x, last_Target_Pos.y, 0.3, 0);
 					rn3d.navigate(&nav_params);
 				}
 			}
 
 			//Execute navigation
 			rn3d.navigationStep();
-			ReactInterface.robotSim.simulateInterval( reactive_period.Tac() );
+			ReactInterface.robotSim.simulateOneTimeStep( reactive_period.Tac() );
 			reactive_period.Tic();
 
 			if ((rn3d.IDLE == rn3d.getCurrentState())||(rn3d.SUSPENDED == rn3d.getCurrentState()))

@@ -278,7 +278,7 @@ namespace mrpt
 				const mrpt::maps::CSimplePointsMap &in_obstacles,
 				const mrpt::nav::CParameterizedTrajectoryGenerator *in_PTG,
 				const double MAX_DIST,
-				std::vector<float> &out_TPObstacles
+				std::vector<double> &out_TPObstacles
 				);
 
 		}; // end class PlannerRRT_SE2_TPS

@@ -24,7 +24,7 @@ using namespace mrpt::system;
 #include <cstdio>
 
 extern CStartUpClassesRegister  mrpt_base_class_reg;
-const int dumm = mrpt_base_class_reg.do_nothing(); // Avoid compiler removing this class in static linking
+static const int dumm = mrpt_base_class_reg.do_nothing(); // Avoid compiler removing this class in static linking
 
 /*---------------------------------------------------------------
 					TRuntimeClassId::derivedFrom

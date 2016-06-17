@@ -16,6 +16,7 @@
 <a name="1.5.0">
 <h2>Version 1.5.0: (Under development)  </h2></a>
 	- Changes in apps:
+		- [ReactiveNavigationDemo](http://www.mrpt.org/list-of-mrpt-apps/application-reactivenavigationdemo/) has been totally rebuilt as a 3D visualizer capable of testing different navigation algorithms and robot kinematics.
 		- [RawLogViewer](http://www.mrpt.org/list-of-mrpt-apps/rawlogviewer/):
 			- Now displays a textual and graphical representation of all observation timestamps, useful to quickly detect sensor "shortages" or temporary failures.
 			- New menu operation: "Edit" -> "Rename selected observation"
@@ -26,6 +27,12 @@
 			- New API to interface ZeroMQ: \ref noncstream_serialization_zmq
 			- Deprecated function (since 1.3.0) deleted: mrpt::system::registerFatalExceptionHandlers()
 			- New method mrpt::poses::CPosePDFParticles::resetAroundSetOfPoses()
+			- Class mrpt::utils::CRobotSimulator renamed ==> mrpt::kinematics::CVehicleSimul_DiffDriven
+			- New twist (linear + angular velocity state) classes: mrpt::math::TTwist2D, mrpt::math::TTwist3D
+		- \ref mrpt_kinematics_grp
+			- New classes for 2D robot simulation:
+				- mrpt::kinematics::CVehicleSimul_DiffDriven
+				- mrpt::kinematics::CVehicleSimul_Holo
 		- \ref mrpt_maps_grp
 			- mrpt::maps::COccupancyGridMap2D::loadFromBitmapFile() correct description of `yCentralPixel` parameter.
 			- mrpt::maps::CPointsMap `liblas` import/export methods are now in a separate header. See \ref mrpt_maps_liblas_grp and \ref dep-liblas
@@ -44,7 +51,11 @@
 		- \ref mrpt_maps_grp
 			- mrpt::maps::CMultiMetricMapPDF added method CMultiMetricMapPDF::prediction_and_update_pfAuxiliaryPFStandard().
 		- \ref mrpt_nav_grp
-			- Deprecated method of PTGs lambdaFunction() removed.
+			- PTG classes refactored (see new virtual base class mrpt::nav::CParameterizedTrajectoryGenerator and its derived classes):
+				- Old classes `CPTG%d` have been renamed to describe each path type. Old PTGs #6 and #7 have been removed for lack of practical use.
+				- New separate classes for PTGs based on numerically-integrated paths and on closed-form formulations.
+				- Old deprecated method of PTGs `lambdaFunction()` removed.
+				- PTGs now have a score_priority field to manually set hints about preferences for path planning.
 	- Changes in build system:
 		- [Windows only] `DLL`s/`LIB`s now have the signature `lib-${name}${2-digits-version}${compiler-name}_{x32|x64}.{dll/lib}`, allowing several MRPT versions to coexist in the system PATH.
 		- [Visual Studio only] There are no longer `pragma comment(lib...)` in any MRPT header, so it is the user responsibility to correctly tell user projects to link against MRPT libraries.
@@ -688,7 +699,7 @@
 				- mrpt::reactivenav::CParameterizedTrajectoryGenerator::debugDumpInFiles() now also saves text files which can be used to visualize PTGs from MATLAB (see scripts/viewPTG.m) - <a href="http://code.google.com/p/mrpt/source/detail?r=3009" >r3009</a>
 				- mrpt::reactivenav::CHolonomicVFF and mrpt::reactivenav::CHolonomicND now have more configurable parameters, loadable from config files. See their documentation.
 				- Repulsive forces from obstacles in mrpt::reactivenav::CHolonomicVFF are now automatically normalized wrt the density of the 360deg view of obstacles and forces follow a "1/range" law instead of the old "exp(-range)".
-				- Solved a stability issue in C-S paths, in mrpt::reactivenav::CPTG5 (By Mariano Jaimez Tarifa) - <a href="http://code.google.com/p/mrpt/source/detail?r=3085" >r3085</a>
+				- Solved a stability issue in C-S paths, in mrpt::reactivenav::CPTG_DiffDrive_CS (By Mariano Jaimez Tarifa) - <a href="http://code.google.com/p/mrpt/source/detail?r=3085" >r3085</a>
 			- [mrpt-scanmatching]
 				- mrpt::scanmatching::robustRigidTransformation():
 					- Changed behavior not to allow features to appear in duplicated pairings.
