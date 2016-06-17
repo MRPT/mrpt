@@ -167,7 +167,6 @@ namespace mrpt
 		std::string ptg_cache_files_directory; //!< (Default: ".")
 		std::string robotName;       //!< Robot name
 		double refDistance;          //!< "D_{max}" in papers.
-		float  colGridRes;           //!< CollisionGrid resolution
 		double SPEEDFILTER_TAU;     //!< Time constant (in seconds) for the low-pass filter applied to kinematic velocity commands (default=0: no filtering)
 		std::vector<float> weights;  //!< length: 6 [0,5]
 

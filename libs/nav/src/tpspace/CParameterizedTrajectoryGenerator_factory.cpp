@@ -17,7 +17,7 @@ using namespace mrpt::nav;
 /*---------------------------------------------------------------
 					Class factory
   ---------------------------------------------------------------*/
-CParameterizedTrajectoryGenerator * CParameterizedTrajectoryGenerator::CreatePTG(const std::string &ptgClassName_, mrpt::utils::TParameters<double> &params)
+CParameterizedTrajectoryGenerator * CParameterizedTrajectoryGenerator::CreatePTG(const std::string &ptgClassName_, const mrpt::utils::CConfigFileBase &cfg,const std::string &sSection,  const std::string &sKeyPrefix)
 {
 	MRPT_START
 
@@ -47,7 +47,7 @@ CParameterizedTrajectoryGenerator * CParameterizedTrajectoryGenerator::CreatePTG
 		THROW_EXCEPTION_CUSTOM_MSG1("[CreatePTG] Object of type `%s` seems not to be a PTG!",ptgClassName.c_str());
 	}
 
-	ptg->setParams(params);
+	ptg->setParams(cfg,sSection,sKeyPrefix);
 	return ptg;
 	MRPT_END
 }

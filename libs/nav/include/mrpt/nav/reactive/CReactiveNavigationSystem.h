@@ -20,10 +20,10 @@ namespace mrpt
 	  */
 	  
 		/** See base class CAbstractPTGBasedReactive for a description and instructions of use.
-		* This particular implementation assumes a 2D robot shape.
+		* This particular implementation assumes a 2D robot shape which can be polygonal or circular (depending on the selected PTGs).
 		*
 		* Publications:
-		*  - Blanco, Jose-Luis, Javier Gonzalez, and Juan-Antonio Fernandez-Madrigal. "[Extending obstacle avoidance methods through multiple parameter-space transformations](http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.190.4672&rep=rep1&type=pdf)." Autonomous Robots 24.1 (2008): 29-48.
+		*  - Blanco, Jose-Luis, Javier Gonzalez, and Juan-Antonio Fernandez-Madrigal. ["Extending obstacle avoidance methods through multiple parameter-space transformations"](http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.190.4672&rep=rep1&type=pdf). Autonomous Robots 24.1 (2008): 29-48.
 		*
 		* Class history:
 		* - 17/JUN/2004: First design.

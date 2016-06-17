@@ -19,13 +19,7 @@ namespace mrpt
 	/** The "a(symptotic)-alpha PTG", as named in PTG papers.
 	 * - **Compatible kinematics**: differential-driven / Ackermann steering
 	 * - **Compatible robot shape**: Arbitrary 2D polygon
-	 * 
-	 * Accepted parameters in the constructor:
-	 * - params["ref_distance"]: Maximum trayectory distance (meters).
-	 * - params["v_max"]: Maximum linear velocity (m/s)
-	 * - params["w_max"]: Maximum angular velocity (rad/s)
-	 * - params["cte_a0v"]: Constant related to the generation of linear velocities, read below (in radians).
-	 * - params["cte_a0w"]: Constant related to the generation of angular velocities, read below  (in radians).
+	 * - **PTG parameters**: use "PTG configurator" tool in the app ReactiveNavigationDemo
 	 * 
 	 * This PT generator functions are: 
 	 *
@@ -44,10 +38,10 @@ namespace mrpt
 		DEFINE_SERIALIZABLE(CPTG_DiffDrive_alpha)
 	 public:
 		CPTG_DiffDrive_alpha() : cte_a0v(0),cte_a0w(0) { }
-		CPTG_DiffDrive_alpha(const mrpt::utils::TParameters<double> &params) {
-			setParams(params);
+		CPTG_DiffDrive_alpha(const mrpt::utils::CConfigFileBase &cfg,const std::string &sSection,  const std::string &sKeyPrefix) {
+			setParams(cfg,sSection, sKeyPrefix);
 		}
-		void setParams(const mrpt::utils::TParameters<double> &params) MRPT_OVERRIDE;
+		void setParams(const mrpt::utils::CConfigFileBase &cfg,const std::string &sSection,  const std::string &sKeyPrefix) MRPT_OVERRIDE;
 		std::string getDescription() const MRPT_OVERRIDE;
 		void ptgDiffDriveSteeringFunction( float alpha, float t,float x, float y, float phi, float &v, float &w ) const MRPT_OVERRIDE;
 

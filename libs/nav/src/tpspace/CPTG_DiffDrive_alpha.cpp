@@ -18,12 +18,12 @@ using namespace mrpt::utils;
 
 IMPLEMENTS_SERIALIZABLE(CPTG_DiffDrive_alpha,CParameterizedTrajectoryGenerator,mrpt::nav)
 
-void CPTG_DiffDrive_alpha::setParams(const mrpt::utils::TParameters<double> &params)
+void CPTG_DiffDrive_alpha::setParams(const mrpt::utils::CConfigFileBase &cfg,const std::string &sSection,  const std::string &sKeyPrefix)
 {
-	cte_a0v = params["cte_a0v"];
-	cte_a0w = params["cte_a0w"];
+	this->cte_a0v        = mrpt::utils::DEG2RAD( cfg.read_double  (sSection, sKeyPrefix+std::string("cte_a0v_deg"), .0, true ) );
+	this->cte_a0w        = mrpt::utils::DEG2RAD( cfg.read_double  (sSection, sKeyPrefix+std::string("cte_a0w_deg"), .0, true ) );
 
-	CPTG_DiffDrive_CollisionGridBased::setParamsCommon(params);
+	CPTG_DiffDrive_CollisionGridBased::setParamsCommon(cfg,sSection,sKeyPrefix);
 }
 
 std::string CPTG_DiffDrive_alpha::getDescription() const

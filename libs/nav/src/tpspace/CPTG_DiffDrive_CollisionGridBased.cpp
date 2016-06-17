@@ -35,26 +35,27 @@ CPTG_DiffDrive_CollisionGridBased::CPTG_DiffDrive_CollisionGridBased() :
 {
 }
 
-void CPTG_DiffDrive_CollisionGridBased::setParamsCommon(const mrpt::utils::TParameters<double> &params)
+void CPTG_DiffDrive_CollisionGridBased::setParamsCommon(const mrpt::utils::CConfigFileBase &cfg,const std::string &sSection, const std::string &sKeyPrefix)
 {
-	CParameterizedTrajectoryGenerator::setParamsCommon(params);
+	CParameterizedTrajectoryGenerator::setParamsCommon(cfg,sSection,sKeyPrefix);
 
-	this->V_MAX = params["v_max"];
-	this->W_MAX = params["w_max"];
-	this->m_resolution = params["resolution"];
-	this->turningRadiusReference = params.getWithDefaultVal("turningRadiusReference",turningRadiusReference);
+	this->m_resolution  = cfg.read_double  (sSection, sKeyPrefix+std::string("resolution"), .0, true );
+	this->V_MAX   = cfg.read_double  (sSection, sKeyPrefix+std::string("v_max_mps"), .0, true );
+	this->W_MAX   = mrpt::utils::DEG2RAD( cfg.read_double  (sSection, sKeyPrefix+std::string("w_max_dps"), .0, true ) );
+	this->turningRadiusReference   = cfg.read_double  (sSection, sKeyPrefix+std::string("turningRadiusReference"), turningRadiusReference);
 
+	const double BADNUM = std::numeric_limits<double>::max();
 	for (unsigned int nPt = 0; ; ++nPt)
 	{
-		const std::string sPtx = mrpt::format("shape_x%u", nPt);
-		const std::string sPty = mrpt::format("shape_y%u", nPt);
+		const std::string sPtx = mrpt::format("%sshape_x%u",sKeyPrefix.c_str(), nPt);
+		const std::string sPty = mrpt::format("%sshape_y%u",sKeyPrefix.c_str(), nPt);
 
-		const bool has_x = params.count(sPtx)!=0;
-		const bool has_y = params.count(sPty)!=0;
-		if (!has_x && !has_y) break;
-		ASSERTMSG_( (has_x && has_y), "Error: mismatch between number of pts in {x,y} defining robot shape");
+		const double ptx = cfg.read_double(sSection, sPtx,BADNUM, false);
+		const double pty = cfg.read_double(sSection, sPty,BADNUM, false);
+		if (ptx==BADNUM && pty==BADNUM) break;
+		ASSERTMSG_( (ptx!=BADNUM && pty!=BADNUM), "Error: mismatch between number of pts in {x,y} defining robot shape");
 
-		this->m_robotShape.AddVertex(params[sPtx], params[sPty]);
+		this->m_robotShape.AddVertex(ptx,pty);
 	}
 }
 
