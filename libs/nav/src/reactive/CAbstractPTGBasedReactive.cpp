@@ -355,6 +355,10 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 
 		STEP1_InitPTGs(); // Will only recompute if "m_PTGsMustBeReInitialized==true"
 
+		// Update kinematic state in all PTGs:
+		for (size_t i=0;i<nPTGs;i++)
+			getPTG(i)->updateCurrentRobotVel(curVelLocal);
+
 		// STEP2: Load the obstacles and sort them in height bands.
 		// -----------------------------------------------------------------------------
 		if (! STEP2_SenseObstacles() )

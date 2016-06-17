@@ -93,9 +93,13 @@ namespace nav
 			int k; double d;
 			return inverseMap_WS2TP(x,y,k,d);
 		}
-		
+
 		/** Converts a discretized "alpha" value into a feasible motion command or action. See derived classes for the meaning of these actions */
 		virtual void directionToMotionCommand( uint16_t k, std::vector<double> &out_action_cmd ) const = 0;
+
+		/** Callback whenever we have new info about the velocity state of the robot right now. May be used by some PTGs and discarded by others. 
+		  * \param[in] curVelLocal The current robot velocities in the local frame of reference (+X: forwards, omega: clockwise rotation) */
+		virtual void updateCurrentRobotVel(const mrpt::math::TTwist2D &curVelLocal) = 0;
 
 		/** Returns the representation of one trajectory of this PTG as a 3D OpenGL object (a simple curved line).
 		  * \param[in] k The 0-based index of the selected trajectory (discrete "alpha" parameter).
