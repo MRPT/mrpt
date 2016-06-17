@@ -152,7 +152,7 @@ bool CTextMessageCapable::updateTextMessage(const size_t  unique_index, const st
 }
 
 
-/// \overload with more font parameters - refer to mrpt::opengl::gl_utils::glDrawText()
+/// overload with more font parameters - refer to mrpt::opengl::gl_utils::glDrawText()
 void CTextMessageCapable::addTextMessage(
 	const double x_frac,
 	const double y_frac,

@@ -8,7 +8,6 @@ define_mrpt_lib_header_only(
 	mrpt-base
 	)
 
-IF(BUILD_mrpt-bayes) 
+IF(BUILD_mrpt-bayes)
 
-ENDIF(BUILD_mrpt-bayes) 
-
+ENDIF( )

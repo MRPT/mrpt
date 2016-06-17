@@ -188,6 +188,7 @@ namespace maps
 		void  getEstimatedPosePDF( mrpt::poses::CPose3DPDFParticles	&out_estimation ) const;
 
 		/** Returns the weighted averaged map based on the current best estimation. If you need a persistent copy of this object, please use "CSerializable::duplicate" and use the copy.
+		  * \sa Almost 100% sure you would prefer the best current map, given by getCurrentMostLikelyMetricMap()
 		  */
 		CMultiMetricMap * getCurrentMetricMapEstimation( );
 

@@ -90,12 +90,12 @@ namespace mrpt
 			inline T & operator[](const std::string &s) { return BASE::operator[](s); }
 
 			/** Dumps to console the output from getAsString() */
-			inline void dumpToConsole() const { ::fputs(getAsString(),stdout); }
+			inline void dumpToConsole() const { ::fputs(getAsString().c_str(),stdout); }
 
-			/** Returns a multi-like string representation of the parameters like : 'nam   = val\nnam2   = val2...' */
+			/** Returns a multi-line string representation of the parameters like : 'nam   = val\nnam2   = val2...' */
 			inline std::string getAsString() const { std::string s; getAsString(s); return s; }
 
-			/** Returns a multi-like string representation of the parameters like : 'nam   = val\nnam2   = val2...' */
+			/** Returns a multi-line string representation of the parameters like : 'nam   = val\nnam2   = val2...' */
 			void getAsString(std::string &s) const {
 				size_t maxStrLen = 10;
 				for (typename BASE::const_iterator it=BASE::begin();it!=BASE::end();++it) maxStrLen = std::max(maxStrLen, it->first.size() );

@@ -30,7 +30,8 @@ namespace obs
 	  *
 	  *  These are the most important data fields:
 	  *    - CObservation2DRangeScan::scan -> A vector of float values with all the range measurements (in meters).
-	  *    - CObservation2DRangeScan::validRange -> A vector (of <b>identical size</b> than <i>scan<i>), has non-zeros for those ranges than are valid (i.e. will be zero for non-reflected rays, etc.)
+	  *    - CObservation2DRangeScan::intensity -> A vector (of <b>identical size</b> to <i>scan<i>) a unitless int values representing the relative strength of each return. Higher values indicate a more intense return. This is useful for filtering out low intensity(noisy) returns or detecting intense landmarks.
+	  *    - CObservation2DRangeScan::validRange -> A vector (of <b>identical size</b> to <i>scan<i>), has non-zeros for those ranges than are valid (i.e. will be zero for non-reflected rays, etc.)
 	  *    - CObservation2DRangeScan::aperture -> The field-of-view of the scanner, in radians (typically, M_PI = 180deg).
 	  *    - CObservation2DRangeScan::sensorPose -> The 6D location of the sensor on the robot reference frame (default=at the origin).
 	  *
@@ -57,7 +58,8 @@ namespace obs
 
 		/** @name Scan data
 		    @{ */
-		std::vector<float>   scan; //!< The range values of the scan, in meters. Must have same length than \a validRange 
+		std::vector<float>   scan; //!< The range values of the scan, in meters. Must have same length than \a validRange
+		std::vector<int>     intensity; //!< The intensity values of the scan. If available, must have same length than \a validRange
 		std::vector<char>    validRange;  //!< It's false (=0) on no reflected rays, referenced to elements in \a scan
 		float                aperture; //!< The "aperture" or field-of-view of the range finder, in radians (typically M_PI = 180 degrees).
 		bool                 rightToLeft; //!< The scanning direction: true=counterclockwise; false=clockwise
@@ -69,7 +71,7 @@ namespace obs
 
 		void getScanProperties(T2DScanProperties& p) const;  //!< Fill out a T2DScanProperties structure with the parameters of this scan
 		/** @} */
-		
+
 		/** @name Cached points map
 		    @{  */
 	protected:
@@ -115,6 +117,9 @@ namespace obs
 		/** Return true if the laser scanner is "horizontal", so it has an absolute value of "pitch" and "roll" less or equal to the given tolerance (in rads, default=0) (with the normal vector either upwards or downwards).
 		  */
 		bool isPlanarScan(const double tolerance = 0) const;
+
+		/** Return true if scan has intensity*/
+		bool hasIntensity() const;
 
 		// See base class docs
 		void getSensorPose( mrpt::poses::CPose3D &out_sensorPose ) const MRPT_OVERRIDE { out_sensorPose = sensorPose; }

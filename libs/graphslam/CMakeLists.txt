@@ -9,7 +9,6 @@ define_mrpt_lib_header_only(
 	mrpt-base
 	)
 
-IF(BUILD_mrpt-graphslam) 
+IF(BUILD_mrpt-graphslam)
 
-ENDIF(BUILD_mrpt-graphslam) 
-
+ENDIF() 

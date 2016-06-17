@@ -116,7 +116,7 @@ void mrpt::system::timestampToParts( TTimeStamp t, TTimeParts &p , bool localTim
 	double T = mrpt::system::timestampTotime_t(t);
 	time_t tt = time_t(T);
 
-	double sec_frac = T - tt;
+	double sec_frac = T - uint64_t(tt);
 	ASSERT_(sec_frac<1.0);
 
 	struct tm * parts =  localTime ? localtime(&tt) : gmtime(&tt);

@@ -57,7 +57,7 @@ namespace mrpt
 				const mrpt::opengl::TOpenGLFont font = mrpt::opengl::MRPT_GLUT_BITMAP_TIMES_ROMAN_24
 				);
 
-			/// \overload with more font parameters - refer to mrpt::opengl::gl_utils::glDrawText()
+			/// overload with more font parameters - refer to mrpt::opengl::gl_utils::glDrawText()
 			void addTextMessage(
 				const double x_frac,
 				const double y_frac,

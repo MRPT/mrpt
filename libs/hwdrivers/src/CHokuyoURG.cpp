@@ -45,7 +45,8 @@ CHokuyoURG::CHokuyoURG() :
 	m_I_am_owner_serial_port(false),
 	m_timeStartUI( 0 ),
 	m_timeStartSynchDelay(0),
-	m_disable_firmware_timestamp(false)
+	m_disable_firmware_timestamp(false),
+	m_intensity(false)
 {
 	m_sensorLabel = "Hokuyo";
 }
@@ -95,7 +96,12 @@ void  CHokuyoURG::doProcessSimple(
 	int				nRanges = m_lastRange-m_firstRange+1;
 	int				expectedSize = nRanges*3 + 4;
 
-    m_state = ssWorking;
+	if(m_intensity)
+	{
+		expectedSize += nRanges*3;
+	}
+
+	m_state = ssWorking;
 	if (!receiveResponse( m_lastSentMeasCmd.c_str(), rcv_status0,rcv_status1, (char*)&rcv_data[0], rcv_dataLength ) )
 	{
 		// No new data
@@ -163,16 +169,28 @@ void  CHokuyoURG::doProcessSimple(
 	outObservation.scan.resize(nRanges);
 	outObservation.validRange.resize(nRanges);
 	char		*ptr = (char*) &rcv_data[4];
+
+	if(m_intensity)
+		outObservation.intensity.resize(nRanges);
+
 	for (int i=0;i<nRanges;i++)
 	{
-		int		b1 = (*ptr++)-0x30;
-		int		b2 = (*ptr++)-0x30;
-		int		b3 = (*ptr++)-0x30;
+		int b1 = (*ptr++)-0x30;
+		int b2 = (*ptr++)-0x30;
+		int b3 = (*ptr++)-0x30;
 
-		int		range_mm = ( (b1 << 12) | (b2 << 6) | b3);
+		int range_mm = ( (b1 << 12) | (b2 << 6) | b3);
 
-		outObservation.scan[i]			= range_mm * 0.001f;
-		outObservation.validRange[i]	= range_mm>=20 &&  (outObservation.scan[i] <= outObservation.maxRange);
+		outObservation.scan[i]       = range_mm * 0.001f;
+		outObservation.validRange[i] = range_mm>=20 &&  (outObservation.scan[i] <= outObservation.maxRange);
+
+		if(m_intensity)
+		{
+			int b4 = (*ptr++)-0x30;
+			int b5 = (*ptr++)-0x30;
+			int b6 = (*ptr++)-0x30;
+			outObservation.intensity[i] = ( (b4 << 12) | (b5 << 6) | b6);
+		}
 	}
 
 	// Do filter:
@@ -218,9 +236,8 @@ void  CHokuyoURG::loadConfig_sensorSpecific(
 	ASSERTMSG_(m_com_port.empty() || m_ip_dir.empty(), "Both COM_port and IP_DIR set! Please, define only one of them.");
 	if (!m_ip_dir.empty()) { ASSERTMSG_(m_port_dir,"A TCP/IP port number `PORT_DIR` must be specified for Ethernet connection"); }
 
-	
-
 	m_disable_firmware_timestamp = configSource.read_bool(iniSection, "disable_firmware_timestamp", m_disable_firmware_timestamp);
+	m_intensity = configSource.read_bool(iniSection,"intensity",m_intensity),
 
 	// Parent options:
 	C2DRangeFinderAbstract::loadCommonParams(configSource, iniSection);
@@ -765,6 +782,14 @@ bool  CHokuyoURG::setHighSensitivityMode(bool enabled)
 	return true;
 }
 
+/*-------------------------------------------------------------
+                                                setIntensityMode
+-------------------------------------------------------------*/
+bool  CHokuyoURG::setIntensityMode(bool enabled)
+{
+	m_intensity = enabled;
+	return true;
+}
 
 /*-------------------------------------------------------------
 						displayVersionInfo
@@ -928,7 +953,10 @@ bool  CHokuyoURG::startScanningMode()
 	printf_debug("[CHokuyoURG::startScanningMode] Starting scanning mode...");
 
 	// Send command:
-	os::sprintf(cmd,50, "MD%04u%04u01000\x0A", m_firstRange,m_lastRange);
+	if(m_intensity)
+		os::sprintf(cmd,50, "ME%04u%04u01000\x0A", m_firstRange,m_lastRange);
+	else
+		os::sprintf(cmd,50, "MD%04u%04u01000\x0A", m_firstRange,m_lastRange);
 	toWrite = 16;
 
 	m_lastSentMeasCmd = cmd;
@@ -1128,5 +1156,3 @@ void CHokuyoURG::purgeBuffers()
 		}
 	}
 }
-
-

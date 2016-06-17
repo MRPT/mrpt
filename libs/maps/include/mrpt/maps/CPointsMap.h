@@ -48,7 +48,7 @@ namespace maps
 	 *   - mrpt::obs::CObservationRange: IRs, Sonars, etc.
 	 *   - mrpt::obs::CObservationVelodyneScan
 	 *
-	 * Loading and saving in the standard LAS LiDAR point cloud format is supported by installing `libLAS` and including the 
+	 * Loading and saving in the standard LAS LiDAR point cloud format is supported by installing `libLAS` and including the
 	 * header `<mrpt/maps/CPointsMaps_liblas.h>` in your program. Since MRPT 1.5.0 there is no need to build MRPT against libLAS to use this feature.
 	 * See LAS functions in \ref mrpt_maps_liblas_grp.
 	 *
@@ -331,7 +331,7 @@ namespace maps
 		inline void  setPoint(size_t index,mrpt::math::TPoint3D &p)  { setPoint(index,p.x,p.y,p.z); }
 		/// \overload
 		inline void  setPoint(size_t index,float x, float y) { setPoint(index,x,y,0); }
-		/// \overload (RGB data is ignored in classes without color information)
+		/// overload (RGB data is ignored in classes without color information)
 		virtual void setPoint(size_t index,float x, float y, float z, float R, float G, float B)
 		{
 			MRPT_UNUSED_PARAM(R); MRPT_UNUSED_PARAM(G); MRPT_UNUSED_PARAM(B);
@@ -413,9 +413,9 @@ namespace maps
 		  * classes (color, weight, etc) are left to their default values
 		  */
 		inline void  insertPoint( float x, float y, float z=0 ) { insertPointFast(x,y,z); mark_as_modified(); }
-		/// \overload of \a insertPoint()
+		/// \overload
 		inline void  insertPoint( const mrpt::math::TPoint3D &p ) { insertPoint(p.x,p.y,p.z); }
-		/// \overload (RGB data is ignored in classes without color information)
+		/// overload (RGB data is ignored in classes without color information)
 		virtual void  insertPoint( float x, float y, float z, float R, float G, float B )
 		{
 			MRPT_UNUSED_PARAM(R); MRPT_UNUSED_PARAM(G); MRPT_UNUSED_PARAM(B);

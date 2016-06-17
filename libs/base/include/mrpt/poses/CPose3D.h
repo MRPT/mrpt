@@ -254,7 +254,7 @@ namespace poses
 			inverseComposePoint(g.x,g.y,g.z, l.x,l.y,l.z);
 		}
 
-		/** \overload for 2D points \exception If the z component of the result is greater than some epsilon */
+		/** overload for 2D points \exception If the z component of the result is greater than some epsilon */
 		inline void inverseComposePoint(const mrpt::math::TPoint2D &g, mrpt::math::TPoint2D &l, const double eps=1e-6) const {
 			double lz;
 			inverseComposePoint(g.x,g.y,0, l.x,l.y,lz);
