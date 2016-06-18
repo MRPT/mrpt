@@ -56,7 +56,7 @@ namespace mrpt
 		 * Length and meaning of this vector is PTG-dependent.
 		 * See children classes of mrpt::nav::CParameterizedTrajectoryGenerator, but the most common cases will be:
 		 * - Differential/Ackerman vehicle: `vel_cmd=[v w]`. See mrpt::kinematics::CVehicleSimul_DiffDriven::movementCommand() for more details.
-		 * - Holonomic vehicle: `vel_cmd=[vel dir ramp_time rot_speed]`. See mrpt::kinematics::CVehicleSimul_Holo::movementCommand() for more details.
+		 * - Holonomic vehicle: `vel_cmd=[vel dir_local ramp_time rot_speed]`. See mrpt::kinematics::CVehicleSimul_Holo::sendVelCmd() for more details.
 		 * \return false on any error.
 		 */
 		virtual bool changeSpeeds(const std::vector<double> &vel_cmd) = 0;
@@ -222,7 +222,7 @@ namespace mrpt
 		size_t getVelCmdLength() const MRPT_OVERRIDE { return 4;}
 
 		/** See docs of method in base class. 
-		  * For holonomic robots, `vel_cmd=[vel dir ramp_time rot_speed]`
+		  * For holonomic robots, `vel_cmd=[vel dir_local ramp_time rot_speed]`
 		  */
 		void cmdVel_scale(std::vector<double> &vel_cmd, double vel_scale) MRPT_OVERRIDE
 		{
@@ -234,7 +234,7 @@ namespace mrpt
 
 		// See base class docs.
 		void cmdVel_limits(std::vector<double> &vel_cmd, const std::vector<double> &prev_vel_cmd, const double beta)
-		{ // remember:  `vel_cmd=[vel dir ramp_time rot_speed]`
+		{ // remember:  `vel_cmd=[vel dir_local ramp_time rot_speed]`
 			ASSERTMSG_(robotMax_V_mps>=.0, "[CReactiveInterfaceImplementation_Holo] `robotMax_V_mps` must be set to valid values: either assign values programatically or call loadConfigFile()")
 			double f=1.0;
 			if (vel_cmd[0]>robotMax_V_mps) f = robotMax_V_mps/vel_cmd[0];
