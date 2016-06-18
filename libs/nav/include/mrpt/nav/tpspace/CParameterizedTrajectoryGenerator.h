@@ -12,6 +12,7 @@
 #include <mrpt/utils/CSerializable.h>
 #include <mrpt/utils/round.h>
 #include <mrpt/utils/TParameters.h>
+#include <mrpt/utils/CConfigFileBase.h>
 #include <mrpt/math/CPolygon.h>
 #include <mrpt/utils/mrpt_stdint.h>    // compiler-independent version of "stdint.h"
 #include <mrpt/nav/link_pragmas.h>
@@ -48,7 +49,7 @@ namespace nav
 		DEFINE_VIRTUAL_SERIALIZABLE(CParameterizedTrajectoryGenerator)
 	public:
 		CParameterizedTrajectoryGenerator(); //!< Default ctor. Must call `setParams()` before initialization
-		virtual ~CParameterizedTrajectoryGenerator() //!<  Destructor 
+		virtual ~CParameterizedTrajectoryGenerator() //!<  Destructor
 		{ }
 
 		/** The class factory for creating a PTG from a list of parameters in a section of a given config file (physical file or in memory).
@@ -56,24 +57,24 @@ namespace nav
 		  *	  - Those explained in CParameterizedTrajectoryGenerator::setParamsCommon()
 		  *	  - Those explained in the specific PTG being created (see list of derived classes)
 		  *
-		  * `ptgClassName` can be any PTG class name which has been registered as any other 
+		  * `ptgClassName` can be any PTG class name which has been registered as any other
 		  * mrpt::utils::CSerializable class.
 		  *
 		  * \exception std::logic_error On invalid or missing parameters.
 		  */
 		static CParameterizedTrajectoryGenerator * CreatePTG(const std::string &ptgClassName, const mrpt::utils::CConfigFileBase &cfg,const std::string &sSection,  const std::string &sKeyPrefix);
 
-		/** @name Virtual interface of each PTG implementation 
+		/** @name Virtual interface of each PTG implementation
 		 *  @{ */
 
 		/** See docs of derived classes for additional parameters to those in setParamsCommon() */
 		virtual void setParams(const mrpt::utils::CConfigFileBase &cfg,const std::string &sSection,  const std::string &sKeyPrefix) = 0;
 
-		virtual std::string getDescription() const = 0 ; //!< Gets a short textual description of the PTG and its parameters 
+		virtual std::string getDescription() const = 0 ; //!< Gets a short textual description of the PTG and its parameters
 
 		/** Must be called after setting all PTG parameters and before requesting converting obstacles to TP-Space, inverseMap_WS2TP(), etc. */
 		virtual void initialize(const std::string & cacheFilename = std::string(), const bool verbose = true) = 0;
-		
+
 		/** This must be called to de-initialize the PTG if some parameter is to be changed. After changing it, call initialize again */
 		virtual void deinitialize() = 0;
 
@@ -87,7 +88,7 @@ namespace nav
 		  */
 		virtual bool inverseMap_WS2TP(double x, double y, int &out_k, double &out_d, double tolerance_dist = 0.10) const = 0;
 
-		/** Returns the same than inverseMap_WS2TP() but without any additional cost. The default implementation 
+		/** Returns the same than inverseMap_WS2TP() but without any additional cost. The default implementation
 		  * just calls inverseMap_WS2TP() and discards (k,d). */
 		virtual bool PTG_IsIntoDomain(double x, double y ) const {
 			int k; double d;
@@ -97,7 +98,7 @@ namespace nav
 		/** Converts a discretized "alpha" value into a feasible motion command or action. See derived classes for the meaning of these actions */
 		virtual void directionToMotionCommand( uint16_t k, std::vector<double> &out_action_cmd ) const = 0;
 
-		/** Callback whenever we have new info about the velocity state of the robot right now. May be used by some PTGs and discarded by others. 
+		/** Callback whenever we have new info about the velocity state of the robot right now. May be used by some PTGs and discarded by others.
 		  * \param[in] curVelLocal The current robot velocities in the local frame of reference (+X: forwards, omega: clockwise rotation) */
 		virtual void updateCurrentRobotVel(const mrpt::math::TTwist2D &curVelLocal) = 0;
 
@@ -135,7 +136,7 @@ namespace nav
 		virtual double getPathDist(uint16_t k, uint16_t step) const = 0;
 
 		/** Access path `k` ([0,N-1]=>[-pi,pi] in alpha): largest step count for which the traversed distance is < `dist`
-		  * \return false if no step fulfills the condition for the given trajectory `k` (e.g. out of reference distance). 
+		  * \return false if no step fulfills the condition for the given trajectory `k` (e.g. out of reference distance).
 		  * Note that, anyway, the maximum distance (closest point) is returned in `out_step`.
 		  * \sa getPathStepCount(), getAlphaValuesCount() */
 		virtual bool getPathStepForDist(uint16_t k, double dist, uint16_t &out_step) const = 0;
@@ -144,7 +145,7 @@ namespace nav
 		  * \param [in,out] tp_obstacles A vector of length `getAlphaValuesCount()`, initially set to getRefDistance().
 		  * \param [in] ox Obstacle point (X), relative coordinates wrt origin of the PTG.
 		  * \param [in] oy Obstacle point (Y), relative coordinates wrt origin of the PTG.
-		  * \note The length of tp_obstacles is not checked for efficiency since this method is potentially called thousands of times per 
+		  * \note The length of tp_obstacles is not checked for efficiency since this method is potentially called thousands of times per
 		  *  navigation timestap, so it is left to the user responsibility to provide a valid buffer.
 		  */
 		virtual void updateTPObstacle(double ox, double oy, std::vector<double> &tp_obstacles) const = 0;
@@ -201,7 +202,7 @@ protected:
 		CPTG_RobotShape_Polygonal() : m_robotShape() {}
 		virtual ~CPTG_RobotShape_Polygonal() {}
 
-		/** @name Robot shape  
+		/** @name Robot shape
 		  * @{ **/
 		/** Robot shape must be set before initialization, either from ctor params or via this method. */
 		void setRobotShape(const mrpt::math::CPolygon & robotShape) {
@@ -224,7 +225,7 @@ protected:
 		CPTG_RobotShape_Circular() : m_robotRadius(.0) {}
 		virtual ~CPTG_RobotShape_Circular() {}
 
-		/** @name Robot shape  
+		/** @name Robot shape
 		  * @{ **/
 		/** Robot shape must be set before initialization, either from ctor params or via this method. */
 		void setRobotShapeRadius(const double robot_radius) {
