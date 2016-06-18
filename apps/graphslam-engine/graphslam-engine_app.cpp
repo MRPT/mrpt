@@ -27,7 +27,7 @@
 #include "CGraphSlamEngine.h"
 #include "CWindowObserver.h"
 #include "CFixedIntervalsNRD.h"
-#include "CICPDistanceERD.h"
+#include "CICPGoodnessERD.h"
 
 using namespace mrpt;
 using namespace mrpt::utils;
@@ -109,7 +109,7 @@ int main(int argc, char **argv)
 		CGraphSlamEngine_t< 
 			CNetworkOfPoses2DInf, 
 			CFixedIntervalsNRD_t<CNetworkOfPoses2DInf>,
-			CICPDistanceERD_t<CNetworkOfPoses2DInf> >
+			CICPGoodnessERD_t<CNetworkOfPoses2DInf> >
 			graph_engine(
 					config_fname, 
 					&graph_win,

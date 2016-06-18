@@ -64,7 +64,7 @@
 #include "CWindowObserver.h"
 #include "CWindowManager.h"
 #include "CFixedIntervalsNRD.h"
-#include "CICPDistanceERD.h"
+#include "CICPGoodnessERD.h"
 #include "supplementary_funs.h"
 #include "CWindowObserver.h"
 
@@ -77,7 +77,7 @@ namespace mrpt { namespace graphslam {
 	template< 
   		class GRAPH_t=typename mrpt::graphs::CNetworkOfPoses2DInf,
   		class NODE_REGISTRAR=typename mrpt::graphslam::deciders::CFixedIntervalsNRD_t<GRAPH_t>, 
-  		class EDGE_REGISTRAR=typename mrpt::graphslam::deciders::CICPDistanceERD_t<GRAPH_t> >
+  		class EDGE_REGISTRAR=typename mrpt::graphslam::deciders::CICPGoodnessERD_t<GRAPH_t> >
 		class CGraphSlamEngine_t {
 			public:
 
