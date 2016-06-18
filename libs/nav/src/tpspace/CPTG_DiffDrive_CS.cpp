@@ -19,10 +19,11 @@ using namespace mrpt::utils;
 
 IMPLEMENTS_SERIALIZABLE(CPTG_DiffDrive_CS,CParameterizedTrajectoryGenerator,mrpt::nav)
 
-void CPTG_DiffDrive_CS::setParams(const mrpt::utils::TParameters<double> &params)
+void CPTG_DiffDrive_CS::setParams(const mrpt::utils::CConfigFileBase &cfg,const std::string &sSection,  const std::string &sKeyPrefix)
 {
-	this->K = params["K"];
-	CPTG_DiffDrive_CollisionGridBased::setParamsCommon(params);
+	this->K        = cfg.read_double  (sSection, sKeyPrefix+std::string("K"), .0, true );
+
+	CPTG_DiffDrive_CollisionGridBased::setParamsCommon(cfg,sSection,sKeyPrefix);
 	// The constant curvature turning radius used in this PTG:
 	R = V_MAX / W_MAX;
 }

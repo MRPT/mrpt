@@ -20,6 +20,7 @@
 #include <mrpt/nav/tpspace/CPTG_DiffDrive_CCS.h>
 #include <mrpt/nav/tpspace/CPTG_DiffDrive_CC.h>
 #include <mrpt/nav/tpspace/CPTG_DiffDrive_CS.h>
+#include <mrpt/nav/tpspace/CPTG_Holo_Blend.h>
 
 #include <mrpt/nav/planners/PlannerSimple2D.h>
 #include <mrpt/nav/planners/PlannerRRT_SE2_TPS.h>
