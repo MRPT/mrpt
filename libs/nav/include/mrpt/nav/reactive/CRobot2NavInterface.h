@@ -235,8 +235,9 @@ namespace mrpt
 		// See base class docs.
 		void cmdVel_limits(std::vector<double> &vel_cmd, const std::vector<double> &prev_vel_cmd, const double beta)
 		{ // remember:  `vel_cmd=[vel dir ramp_time rot_speed]`
+			ASSERTMSG_(robotMax_V_mps>=.0, "[CReactiveInterfaceImplementation_Holo] `robotMax_V_mps` must be set to valid values: either assign values programatically or call loadConfigFile()")
 			double f=1.0;
-			if (vel_cmd[0]>robotMax_V_mps) f = vel_cmd[0]/robotMax_V_mps;
+			if (vel_cmd[0]>robotMax_V_mps) f = robotMax_V_mps/vel_cmd[0];
 
 			vel_cmd[0] *= f; // |(vx,vy)|
 			vel_cmd[2] *= f; // ramp_time
