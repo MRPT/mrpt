@@ -1190,7 +1190,7 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::updateMap(
 			// for all the nodes get the node position and the corresponding laser scan
 			// if they were recorded and visualize them
 			m_graph.getAllNodes(nodes_set);
-			std::cout << "Commencing with map *full update*..." << std::endl;
+			std::cout << "Executing full update of the map" << std::endl;
 
 		} // IF FULL UPDATE
 		else { // add only current CSimplePointMap
@@ -1224,7 +1224,7 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::updateMap(
 			CObservation2DRangeScan scan_decimated;
 			this->decimateLaserScan(*scan_content, 
 					&scan_decimated,
-					/*keep_every_n_entries = */ 20);
+					/*keep_every_n_entries = */ 5);
 
 			// if the scan already doesn't exist, add it to the scene, otherwise just
 			// adjust its pose
@@ -1233,8 +1233,8 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::updateMap(
 
 			CSetOfObjectsPtr scan_obj;
 			if (obj.null()) {
-				cout << "CSetOfObjects for nodeID " << *node_it << " doesn't exist. "
-					<< "Creating it.." << endl;
+				//cout << "CSetOfObjects for nodeID " << *node_it << " doesn't exist. "
+					//<< "Creating it.." << endl;
 
 				scan_obj = CSetOfObjects::Create();
 
@@ -1258,13 +1258,13 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::updateMap(
 			m_win->forceRepaint();
 		}
 		else {
-			cout << "Laser scans of NodeID " << *node_it << " are empty/invalid." << endl;
+			//cout << "Laser scans of NodeID " << *node_it << " are empty/invalid." << endl;
 		}
 	}
 
 
-	double elapsed_time = map_update_timer.Tac();
-	std::cout << "updateMap took: " << elapsed_time << " s" << std::endl;
+	//double elapsed_time = map_update_timer.Tac();
+	//std::cout << "updateMap took: " << elapsed_time << " s" << std::endl;
 	MRPT_END;
 
 }
@@ -1277,7 +1277,6 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::decimateLaserS
 		const int keep_every_n_entries /*= 2*/) {
 
 	size_t scan_size = laser_scan_in.scan.size();
-	std::cout << "scan_size_in = " << scan_size << std::endl;
 
 	std::vector<float> new_scan;
 	std::vector<char> new_validRange;
@@ -1293,7 +1292,6 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::decimateLaserS
 	laser_scan_out->validRange = new_validRange;
 
 	scan_size = laser_scan_out->scan.size();
-	std::cout << "scan_size_out = " << scan_size << std::endl;
 }
 
 

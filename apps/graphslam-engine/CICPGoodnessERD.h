@@ -7,8 +7,8 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#ifndef CICPDistanceERD_H
-#define CICPDistanceERD_H
+#ifndef CICPGoodnessERD_H
+#define CICPGoodnessERD_H
 
 #include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/utils/CConfigFileBase.h>
@@ -56,7 +56,7 @@ namespace mrpt { namespace graphslam { namespace deciders {
 	 */
 	template<
 		  class GRAPH_t=typename mrpt::graphs::CNetworkOfPoses2DInf >
-		class CICPDistanceERD_t :
+		class CICPGoodnessERD_t :
 			public mrpt::graphslam::deciders::CEdgeRegistrationDecider_t<GRAPH_t> {
 	  		public:
 					typedef typename GRAPH_t::constraint_t constraint_t;
@@ -65,8 +65,8 @@ namespace mrpt { namespace graphslam { namespace deciders {
 
 					// Public methods
 					//////////////////////////////////////////////////////////////
-	    		CICPDistanceERD_t();
-	    		~CICPDistanceERD_t();
+	    		CICPGoodnessERD_t();
+	    		~CICPGoodnessERD_t();
 
 					void updateDeciderState(
 							mrpt::obs::CActionCollectionPtr action,
@@ -114,7 +114,7 @@ namespace mrpt { namespace graphslam { namespace deciders {
 					/**
 		 	 	 	 * Initialization function to be called from the various constructors
 		 	 	 	 */
-					void initCICPDistanceERD_t();
+					void initCICPGoodnessERD_t();
 					void checkRegistrationCondition(
 							const std::set<mrpt::utils::TNodeID>& nodes_set);
     			void registerNewEdge(
@@ -167,6 +167,6 @@ namespace mrpt { namespace graphslam { namespace deciders {
 
 } } } // end of namespaces
 
-#include "CICPDistanceERD_impl.h"
-#endif /* end of include guard: CICPDistanceERD_H */
+#include "CICPGoodnessERD_impl.h"
+#endif /* end of include guard: CICPGoodnessERD_H */
 

@@ -7,8 +7,8 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#ifndef CICPDistanceERD_IMPL_H
-#define CICPDistanceERD_IMPL_H
+#ifndef CICPGoodnessERD_IMPL_H
+#define CICPGoodnessERD_IMPL_H
 
 
 using namespace mrpt::graphslam::deciders;
@@ -17,17 +17,17 @@ using namespace mrpt::graphslam::deciders;
 // //////////////////////////////////
 
 template<class GRAPH_t>
-CICPDistanceERD_t<GRAPH_t>::CICPDistanceERD_t():
+CICPGoodnessERD_t<GRAPH_t>::CICPGoodnessERD_t():
 	m_search_disk_color(TColor(142, 142, 56))
 {
 	MRPT_START;
 
-	this->initCICPDistanceERD_t();
+	this->initCICPGoodnessERD_t();
 
 	MRPT_END;
 }
 template<class GRAPH_t>
-void CICPDistanceERD_t<GRAPH_t>::initCICPDistanceERD_t() {
+void CICPGoodnessERD_t<GRAPH_t>::initCICPGoodnessERD_t() {
 	MRPT_START;
 
 	m_win = NULL;
@@ -42,17 +42,17 @@ void CICPDistanceERD_t<GRAPH_t>::initCICPDistanceERD_t() {
 	m_edge_types_to_nums["ICP"] = 0;
 	m_edge_types_to_nums["LC"] = 0;
 
-	std::cout << "CCICPDistanceERD: Initialized class object" << std::endl;
+	std::cout << "CCICPGoodnessERD: Initialized class object" << std::endl;
 
 	MRPT_END;
 }
 template<class GRAPH_t>
-CICPDistanceERD_t<GRAPH_t>::~CICPDistanceERD_t() { }
+CICPGoodnessERD_t<GRAPH_t>::~CICPGoodnessERD_t() { }
 
 // Method implementations
 // //////////////////////////////////
 
-template<class GRAPH_t> void CICPDistanceERD_t<GRAPH_t>::updateDeciderState(
+template<class GRAPH_t> void CICPGoodnessERD_t<GRAPH_t>::updateDeciderState(
 		mrpt::obs::CActionCollectionPtr action,
 		mrpt::obs::CSensoryFramePtr observations,
 		mrpt::obs::CObservationPtr observation ) {
@@ -64,7 +64,7 @@ template<class GRAPH_t> void CICPDistanceERD_t<GRAPH_t>::updateDeciderState(
 	if (m_last_total_num_of_nodes < m_graph->nodeCount()) {
 		registered_new_node = true;
 		m_last_total_num_of_nodes = m_graph->nodeCount();
-		//std::cout << "CICPDistanceERD: Registered new node. " << std::endl;
+		//std::cout << "CICPGoodnessERD: Registered new node. " << std::endl;
 	}
 
 	if (observation.present()) { // observation-only rawlog format
@@ -112,7 +112,7 @@ template<class GRAPH_t> void CICPDistanceERD_t<GRAPH_t>::updateDeciderState(
 }
 
 template<class GRAPH_t>
-void CICPDistanceERD_t<GRAPH_t>::checkRegistrationCondition(
+void CICPGoodnessERD_t<GRAPH_t>::checkRegistrationCondition(
 		const std::set<mrpt::utils::TNodeID>& nodes_set) {
 	MRPT_START;
 
@@ -148,7 +148,7 @@ void CICPDistanceERD_t<GRAPH_t>::checkRegistrationCondition(
 
 
 template<class GRAPH_t>
-void CICPDistanceERD_t<GRAPH_t>::registerNewEdge(
+void CICPGoodnessERD_t<GRAPH_t>::registerNewEdge(
     const mrpt::utils::TNodeID& from, 
     const mrpt::utils::TNodeID& to,
     const constraint_t& rel_edge ) {
@@ -159,7 +159,7 @@ void CICPDistanceERD_t<GRAPH_t>::registerNewEdge(
 	MRPT_END;
 }
 template<class GRAPH_t>
-double CICPDistanceERD_t<GRAPH_t>::getICPEdge(
+double CICPGoodnessERD_t<GRAPH_t>::getICPEdge(
 		const mrpt::utils::TNodeID& from,
 		const mrpt::utils::TNodeID& to,
 		constraint_t* rel_edge ) {
@@ -218,7 +218,7 @@ double CICPDistanceERD_t<GRAPH_t>::getICPEdge(
 	MRPT_END;
 }
 template<class GRAPH_t>
-void CICPDistanceERD_t<GRAPH_t>::getNearbyNodesOf(
+void CICPGoodnessERD_t<GRAPH_t>::getNearbyNodesOf(
 		set<TNodeID> *nodes_set,
 		const TNodeID& cur_nodeID,
 		double distance ) {
@@ -246,35 +246,35 @@ void CICPDistanceERD_t<GRAPH_t>::getNearbyNodesOf(
 
 
 template<class GRAPH_t>
-void CICPDistanceERD_t<GRAPH_t>::setGraphPtr(GRAPH_t* graph) {
+void CICPGoodnessERD_t<GRAPH_t>::setGraphPtr(GRAPH_t* graph) {
 	MRPT_START;
 
 	m_graph = graph;
 
-	std::cout << "CICPDistanceERD: Fetched the graph successfully" 
+	std::cout << "CICPGoodnessERD: Fetched the graph successfully" 
 		<< std::endl;
 
 	MRPT_END;
 }
 template<class GRAPH_t>
-void CICPDistanceERD_t<GRAPH_t>::setWindowManagerPtr(
+void CICPGoodnessERD_t<GRAPH_t>::setWindowManagerPtr(
 		mrpt::gui::CWindowManager_t* win_manager) {
 	m_win_manager = win_manager;
 }
 template<class GRAPH_t> void
-CICPDistanceERD_t<GRAPH_t>::setCDisplayWindowPtr(
+CICPGoodnessERD_t<GRAPH_t>::setCDisplayWindowPtr(
 		mrpt::gui::CDisplayWindow3D* win) {
 	MRPT_START;
 
 	m_win = win;
 
-	std::cout << "CICPDistanceERD: Fetched the CDisplayWindow successfully" 
+	std::cout << "CICPGoodnessERD: Fetched the CDisplayWindow successfully" 
 		<< std::endl;
 
 	MRPT_END;
 }
 template<class GRAPH_t>
-void CICPDistanceERD_t<GRAPH_t>::getEdgesStats(
+void CICPGoodnessERD_t<GRAPH_t>::getEdgesStats(
 		std::map<const std::string, int>* edge_types_to_nums) {
 	MRPT_START;
 
@@ -284,9 +284,9 @@ void CICPDistanceERD_t<GRAPH_t>::getEdgesStats(
 }
 
 template<class GRAPH_t>
-void CICPDistanceERD_t<GRAPH_t>::initializeVisuals() {
+void CICPGoodnessERD_t<GRAPH_t>::initializeVisuals() {
 	MRPT_START;
-	std::cout << "Initializing CICPDistanceERD visuals" << std::endl;
+	std::cout << "Initializing CICPGoodnessERD visuals" << std::endl;
 
 	// ICP_max_distance disk
 	if (m_win &&  params.ICP_max_distance > 0) {
@@ -320,9 +320,9 @@ void CICPDistanceERD_t<GRAPH_t>::initializeVisuals() {
 	MRPT_END;
 }
 template<class GRAPH_t>
-void CICPDistanceERD_t<GRAPH_t>::updateVisuals() {
+void CICPGoodnessERD_t<GRAPH_t>::updateVisuals() {
 	MRPT_START;
-	//std::cout << "Updating CICPDistanceERD visuals" << std::endl;
+	//std::cout << "Updating CICPGoodnessERD visuals" << std::endl;
 
 	// update ICP_max_distance Disk
 	if (m_win && params.ICP_max_distance > 0) {
@@ -339,7 +339,7 @@ void CICPDistanceERD_t<GRAPH_t>::updateVisuals() {
 	MRPT_END;
 }
 template<class GRAPH_t>
-bool CICPDistanceERD_t<GRAPH_t>::justInsertedLoopClosure() {
+bool CICPGoodnessERD_t<GRAPH_t>::justInsertedLoopClosure() {
 	return m_just_inserted_loop_closure;
 }
 
@@ -349,19 +349,19 @@ bool CICPDistanceERD_t<GRAPH_t>::justInsertedLoopClosure() {
 // //////////////////////////////////
 
 template<class GRAPH_t>
-CICPDistanceERD_t<GRAPH_t>::TParams::TParams() {
+CICPGoodnessERD_t<GRAPH_t>::TParams::TParams() {
 }
 
 template<class GRAPH_t>
-CICPDistanceERD_t<GRAPH_t>::TParams::~TParams() {
+CICPGoodnessERD_t<GRAPH_t>::TParams::~TParams() {
 }
 
 template<class GRAPH_t>
-void CICPDistanceERD_t<GRAPH_t>::TParams::dumpToTextStream(
+void CICPGoodnessERD_t<GRAPH_t>::TParams::dumpToTextStream(
 		mrpt::utils::CStream &out) const {
 	MRPT_START;
 
-	out.printf("------------------[ Distance-based ICP Edge Registration ]------------------\n");
+	out.printf("------------------[ Goodness-based ICP Edge Registration ]------------------\n");
 	out.printf("ICP goodness threshold         = %.2f%% \n", 
 			ICP_goodness_thresh*100);
 	out.printf("ICP max radius for edge search = %.2f\n", 
@@ -374,7 +374,7 @@ void CICPDistanceERD_t<GRAPH_t>::TParams::dumpToTextStream(
 	MRPT_END;
 }
 template<class GRAPH_t>
-void CICPDistanceERD_t<GRAPH_t>::TParams::loadFromConfigFile(
+void CICPGoodnessERD_t<GRAPH_t>::TParams::loadFromConfigFile(
 		const mrpt::utils::CConfigFileBase& source,
     const std::string& section) {
   MRPT_START;
@@ -400,4 +400,4 @@ void CICPDistanceERD_t<GRAPH_t>::TParams::loadFromConfigFile(
 	MRPT_END;
 }
 
-#endif /* end of include guard: CICPDistanceERD_IMPL_H */
+#endif /* end of include guard: CICPGoodnessERD_IMPL_H */
