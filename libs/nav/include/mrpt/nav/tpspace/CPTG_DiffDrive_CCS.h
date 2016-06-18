@@ -19,6 +19,7 @@ namespace mrpt
 	/** A PTG for optimal paths of type "C|C,S" (as named in PTG papers).
 	 * - **Compatible kinematics**: differential-driven / Ackermann steering
 	 * - **Compatible robot shape**: Arbitrary 2D polygon
+	 * - **PTG parameters**: use "PTG configurator" tool in the app ReactiveNavigationDemo
 	 *
 	 *  See also "Obstacle Distance for Car-Like Robots", IEEE Trans. Rob. And Autom, 1999.
 	 * \note [Before MRPT 1.5.0 this was named CPTG3]
@@ -29,10 +30,10 @@ namespace mrpt
 		DEFINE_SERIALIZABLE(CPTG_DiffDrive_CCS)
 	 public:
 		CPTG_DiffDrive_CCS() : R(0),K(0) {}
-		CPTG_DiffDrive_CCS(const mrpt::utils::TParameters<double> &params) {
-			setParams(params);
+		CPTG_DiffDrive_CCS(const mrpt::utils::CConfigFileBase &cfg,const std::string &sSection,  const std::string &sKeyPrefix) {
+			setParams(cfg,sSection, sKeyPrefix);
 		}
-		void setParams(const mrpt::utils::TParameters<double> &params) MRPT_OVERRIDE;
+		void setParams(const mrpt::utils::CConfigFileBase &cfg,const std::string &sSection,  const std::string &sKeyPrefix) MRPT_OVERRIDE;
 		std::string getDescription() const MRPT_OVERRIDE;
 		bool PTG_IsIntoDomain( double x, double y ) const MRPT_OVERRIDE;
 		void ptgDiffDriveSteeringFunction( float alpha, float t,float x, float y, float phi, float &v, float &w ) const MRPT_OVERRIDE;

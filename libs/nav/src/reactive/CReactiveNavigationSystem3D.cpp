@@ -126,38 +126,22 @@ void CReactiveNavigationSystem3D::loadConfigFile(const mrpt::utils::CConfigFileB
 	// ---------------------------------------------
 
 	unsigned int num_ptgs; // levels = m_robotShape.heights.size()
-	TParameters<double> params;
 	CParameterizedTrajectoryGenerator *ptgaux;
 
 
 	num_ptgs = ini.read_int(sectCfg,"PTG_COUNT", 1, true);
-	params["ref_distance"] = ini.read_float(sectCfg,"MAX_DISTANCE_PTG", 1, true);
-	colGridRes = ini.read_float(sectCfg,"GRID_RESOLUTION", 0.03, true);
-	params["resolution"] = colGridRes;
-
 	m_ptgmultilevel.resize(num_ptgs);
-
 
 	// Read each PTG parameters, and generate K x N collisiongrids
 	//	K - Number of PTGs
 	//	N - Number of height sections
-
 	for (unsigned int j=1; j<=num_ptgs; j++)
 	{
-		params["v_max"] = ini.read_float(sectCfg,format("PTG%d_VMAX",j),1,true);
-		params["w_max"] = DEG2RAD(ini.read_float(sectCfg,format("PTG%d_WMAX",j),1,true));
-		params["K"] = ini.read_int(sectCfg,format("PTG%d_K",j),1,true);
-		params["cte_a0v"] = DEG2RAD(ini.read_float(sectCfg,format("PTG%d_AV",j),1,true));
-		params["cte_a0w"] = DEG2RAD(ini.read_float(sectCfg,format("PTG%d_AW",j),1,true));
-		params["num_paths"] = ini.read_int(sectCfg,format("PTG%d_NALFAS",j),30,true);
-		params["score_priority"] = ini.read_double(sectCfg,format("PTG%d_score_priority", j ), 1.0, false);
-
 		for (unsigned int i=1; i<=m_robotShape.size(); i++)
 		{
-
 			printf_debug("[loadConfigFile] Generating PTG#%u at level %u...",j,i);
 			const std::string sPTGName = ini.read_string(sectCfg,format("PTG%d_TYPE",j),"",true);
-			ptgaux = CParameterizedTrajectoryGenerator::CreatePTG(sPTGName,params);
+			ptgaux = CParameterizedTrajectoryGenerator::CreatePTG(sPTGName,ini,sectCfg,format("PTG%d_",j));
 			m_ptgmultilevel[j-1].PTGs.push_back(ptgaux);
 		}
 	}
@@ -177,7 +161,6 @@ void CReactiveNavigationSystem3D::loadConfigFile(const mrpt::utils::CConfigFileB
 	printf_debug("  Holonomic method \t\t= %s\n",typeid(m_holonomicMethod[0]).name());
 	printf_debug("  PTG Count\t\t\t= %u\n", num_ptgs );
 	printf_debug("  Max. ref. distance\t\t= %f\n", refDistance );
-	printf_debug("  Cells resolution \t\t= %.04f\n", colGridRes );
 	printf_debug("  Robot Height Sections \t= %u\n", m_robotShape.size() );
 	printf_debug("\n\n");
 

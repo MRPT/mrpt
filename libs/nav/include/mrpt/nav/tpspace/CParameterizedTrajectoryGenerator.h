@@ -51,8 +51,8 @@ namespace nav
 		virtual ~CParameterizedTrajectoryGenerator() //!<  Destructor 
 		{ }
 
-		/** The class factory for creating a PTG from a list of parameters "params".
-		  *  Possible values in "params" are:
+		/** The class factory for creating a PTG from a list of parameters in a section of a given config file (physical file or in memory).
+		  *  Possible parameters are:
 		  *	  - Those explained in CParameterizedTrajectoryGenerator::setParamsCommon()
 		  *	  - Those explained in the specific PTG being created (see list of derived classes)
 		  *
@@ -61,13 +61,13 @@ namespace nav
 		  *
 		  * \exception std::logic_error On invalid or missing parameters.
 		  */
-		static CParameterizedTrajectoryGenerator * CreatePTG(const std::string &ptgClassName, mrpt::utils::TParameters<double> &params);
+		static CParameterizedTrajectoryGenerator * CreatePTG(const std::string &ptgClassName, const mrpt::utils::CConfigFileBase &cfg,const std::string &sSection,  const std::string &sKeyPrefix);
 
 		/** @name Virtual interface of each PTG implementation 
 		 *  @{ */
 
 		/** See docs of derived classes for additional parameters to those in setParamsCommon() */
-		virtual void setParams(const mrpt::utils::TParameters<double> &params) = 0;
+		virtual void setParams(const mrpt::utils::CConfigFileBase &cfg,const std::string &sSection,  const std::string &sKeyPrefix) = 0;
 
 		virtual std::string getDescription() const = 0 ; //!< Gets a short textual description of the PTG and its parameters 
 
@@ -93,9 +93,13 @@ namespace nav
 			int k; double d;
 			return inverseMap_WS2TP(x,y,k,d);
 		}
-		
+
 		/** Converts a discretized "alpha" value into a feasible motion command or action. See derived classes for the meaning of these actions */
 		virtual void directionToMotionCommand( uint16_t k, std::vector<double> &out_action_cmd ) const = 0;
+
+		/** Callback whenever we have new info about the velocity state of the robot right now. May be used by some PTGs and discarded by others. 
+		  * \param[in] curVelLocal The current robot velocities in the local frame of reference (+X: forwards, omega: clockwise rotation) */
+		virtual void updateCurrentRobotVel(const mrpt::math::TTwist2D &curVelLocal) = 0;
 
 		/** Returns the representation of one trajectory of this PTG as a 3D OpenGL object (a simple curved line).
 		  * \param[in] k The 0-based index of the selected trajectory (discrete "alpha" parameter).
@@ -157,10 +161,7 @@ namespace nav
 		}
 
 		/** Discrete index value for the corresponding alpha value \sa index2alpha */
-		uint16_t alpha2index( double alpha ) const {
-			mrpt::math::wrapToPi(alpha);
-			return (uint16_t)mrpt::utils::round(0.5*(m_alphaValuesCount*(1.0+alpha/M_PI) - 1.0));
-		}
+		uint16_t alpha2index( double alpha ) const;
 
 		inline double getRefDistance() const { return refDistance; }
 
@@ -173,12 +174,12 @@ protected:
 		uint16_t  m_alphaValuesCount; //!< The number of discrete values for "alpha" between -PI and +PI.
 		double    m_score_priority;
 
-		/** Possible values in "params" accepted by this base class:
-		 *   - `num_paths`: The number of different paths in this family (number of discrete `alpha` values).
-		 *   - `ref_distance`: The maximum distance in PTGs [meters]
-		 *   - `score_priority`: When used in path planning, a multiplying factor (default=1.0) for the scores for this PTG. Assign values <1 to PTGs with low priority.
+		/** Parameters accepted by this base class:
+		 *   - `${sKeyPrefix}num_paths`: The number of different paths in this family (number of discrete `alpha` values).
+		 *   - `${sKeyPrefix}ref_distance`: The maximum distance in PTGs [meters]
+		 *   - `${sKeyPrefix}score_priority`: When used in path planning, a multiplying factor (default=1.0) for the scores for this PTG. Assign values <1 to PTGs with low priority.
 		 */
-		virtual void setParamsCommon(const mrpt::utils::TParameters<double> &params);
+		virtual void setParamsCommon(const mrpt::utils::CConfigFileBase &cfg,const std::string &sSection, const std::string &sKeyPrefix);
 
 		virtual void internal_readFromStream(mrpt::utils::CStream &in);
 		virtual void internal_writeToStream(mrpt::utils::CStream &out) const;

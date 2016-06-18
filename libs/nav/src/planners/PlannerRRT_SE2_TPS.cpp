@@ -58,32 +58,12 @@ void PlannerRRT_SE2_TPS::loadConfig(const mrpt::utils::CConfigFileBase &ini, con
 	m_PTGs.clear();
 
 	const size_t PTG_COUNT = ini.read_int(sSect,"PTG_COUNT",0, true );  //load the number of PTGs
-	const float refDistance = ini.read_float(sSect,"MAX_REFERENCE_DISTANCE",5 );  //attempt to read a parameter from the file, otherwise it return the default value
-	const float colGridRes = ini.read_float(sSect,"GRID_RESOLUTION",0.02f );
-
 	for ( unsigned int n=0;n<PTG_COUNT;n++ )
 	{
-		// load ptg_parameters of this PTG:
-
-		MRPT_TODO("Refactor the 3 times it is implemented the fill-in of this TParameters<> struct")
-		TParameters<double> ptg_parameters;
-		ptg_parameters["ref_distance"] = refDistance;
-		ptg_parameters["resolution"]   = colGridRes;
-		ptg_parameters["v_max"]		= ini.read_float(sSect,format("PTG%u_v_max_mps", n ), 5, true);
-		ptg_parameters["w_max"]		= DEG2RAD(ini.read_float(sSect,format("PTG%u_w_max_gps", n ), 0, true));
-		ptg_parameters["K"]			= ini.read_int(sSect,format("PTG%u_K", n ), 1, false);
-		ptg_parameters["cte_a0v"]	= DEG2RAD( ini.read_float(sSect,format("PTG%u_cte_a0v_deg", n ), 0, false) );
-		ptg_parameters["cte_a0w"]	= DEG2RAD( ini.read_float(sSect,format("PTG%u_cte_a0w_deg", n ), 0, false) );
-		ptg_parameters["score_priority"] = ini.read_double(sSect,format("PTG%u_score_priority", n ), 1.0, false);
-
-		ptg_parameters["num_paths"] = ini.read_int(sSect, format("PTG%u_nAlfas", n), 100, true);
-
 		// Generate it:
 		const std::string sPTGName = ini.read_string(sSect,format("PTG%u_Type", n ),"", true );
-		m_PTGs.push_back( CParameterizedTrajectoryGeneratorPtr( CParameterizedTrajectoryGenerator::CreatePTG(sPTGName,ptg_parameters) ) );
-
+		m_PTGs.push_back( CParameterizedTrajectoryGeneratorPtr( CParameterizedTrajectoryGenerator::CreatePTG(sPTGName,ini,sSect,format("PTG%u_", n)) ) );
 	}
-
 }
 
 /** Must be called after setting all params (see `loadConfig()`) and before calling `solve()` */

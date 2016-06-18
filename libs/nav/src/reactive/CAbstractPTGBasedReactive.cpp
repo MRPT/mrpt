@@ -52,7 +52,6 @@ CAbstractPTGBasedReactive::CAbstractPTGBasedReactive(CRobot2NavInterface &react_
 	m_init_done                  (false),
 	ptg_cache_files_directory    ("."),
 	refDistance                  (4.0f),
-	colGridRes                   (0.10f),
 	SPEEDFILTER_TAU              (0.0),
 	secureDistanceStart          (0.05f),
 	secureDistanceEnd            (0.20f),
@@ -355,6 +354,10 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 		const CPose2D relTarget = CPose2D(m_navigationParams->target) - curPose;
 
 		STEP1_InitPTGs(); // Will only recompute if "m_PTGsMustBeReInitialized==true"
+
+		// Update kinematic state in all PTGs:
+		for (size_t i=0;i<nPTGs;i++)
+			getPTG(i)->updateCurrentRobotVel(curVelLocal);
 
 		// STEP2: Load the obstacles and sort them in height bands.
 		// -----------------------------------------------------------------------------

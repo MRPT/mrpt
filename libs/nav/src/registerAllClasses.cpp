@@ -30,6 +30,7 @@ void registerAllNavigationClasses()
 	registerClass(CLASS_ID( CPTG_DiffDrive_CCS ));
 	registerClass(CLASS_ID( CPTG_DiffDrive_CC ));
 	registerClass(CLASS_ID( CPTG_DiffDrive_CS ));
+	registerClass(CLASS_ID( CPTG_Holo_Blend ));
 
 	// Logs:
 	registerClass(CLASS_ID( CLogFileRecord ));

@@ -90,9 +90,6 @@ void CReactiveNavigationSystem::loadConfigFile(const mrpt::utils::CConfigFileBas
 	unsigned int PTG_COUNT = ini.read_int(robotName,"PTG_COUNT",0, true );
 
 	refDistance = ini.read_float(robotName,"MAX_REFERENCE_DISTANCE",5 );
-	colGridRes = ini.read_float(robotName,"LUT_CELL_SIZE",0.0f );
-	// backwards compt config file:
-	if (!colGridRes) colGridRes = ini.read_float(robotName,"RESOLUCION_REJILLA_X",0.02f );
 
 	MRPT_LOAD_CONFIG_VAR(SPEEDFILTER_TAU,float,  ini,robotName);
 
@@ -137,38 +134,15 @@ void CReactiveNavigationSystem::loadConfigFile(const mrpt::utils::CConfigFileBas
 
 	printf_debug("\n");
 
-	for ( unsigned int n=0;n<PTG_COUNT;n++ )
+	for ( unsigned int n=0;n<PTG_COUNT;n++)
 	{
-		// load params of this PTG:
-
-		TParameters<double> params;
-		params["ref_distance"] = refDistance;
-		params["resolution"]   = colGridRes;
-
-		params["v_max"]		= ini.read_float(robotName,format("PTG%u_v_max_mps", n ), 5, true);
-		params["w_max"]		= DEG2RAD(ini.read_float(robotName,format("PTG%u_w_max_gps", n ), 0, true));
-		params["K"]			= ini.read_int(robotName,format("PTG%u_K", n ), 1, false);
-		params["cte_a0v"]	= DEG2RAD( ini.read_float(robotName,format("PTG%u_cte_a0v_deg", n ), 0, false) );
-		params["cte_a0w"]	= DEG2RAD( ini.read_float(robotName,format("PTG%u_cte_a0w_deg", n ), 0, false) );
-		params["score_priority"] = ini.read_double(robotName,format("PTG%u_score_priority", n ), 1.0, false);
-
-		// For backwards compat with old config files:
-		const int num_paths1  = ini.read_int(robotName,format("PTG%u_nAlfas", n ),-1, false);
-		// New recommended param name:
-		const int num_paths2 = ini.read_int(robotName,format("PTG%u_num_paths", n ),-1,false);
-		if (num_paths1<=0 && num_paths2<=0)
-			THROW_EXCEPTION_CUSTOM_MSG1("Missing configuration parameter: `PTG%u_num_paths`",n);
-
-		params["num_paths"] = num_paths2 > 0 ? num_paths2 : num_paths1;
-
 		// Factory:
 		const std::string sPTGName = ini.read_string(robotName,format("PTG%u_Type", n ),"", true );
-		PTGs[n] = CParameterizedTrajectoryGenerator::CreatePTG(sPTGName,params);
+		PTGs[n] = CParameterizedTrajectoryGenerator::CreatePTG(sPTGName,ini,robotName, format("PTG%u_",n) );
 	}
 	printf_debug("\n");
 
 	this->STEP1_InitPTGs();
-
 
 	this->loadHolonomicMethodConfig(ini,"GLOBAL_CONFIG");
 
@@ -181,7 +155,6 @@ void CReactiveNavigationSystem::loadConfigFile(const mrpt::utils::CConfigFileBas
 	printf_debug("  Holonomic method \t\t= %s\n",typeid(m_holonomicMethod[0]).name());
 	printf_debug("\n  GPT Count\t\t\t= %u\n", (int)PTG_COUNT );
 	printf_debug("  Max. ref. distance\t\t= %f\n", refDistance );
-	printf_debug("  Cells resolution \t= %.04f\n", colGridRes );
 	printf_debug("  Robot Shape Points Count \t= %u\n", m_robotShape.verticesCount() );
 	printf_debug("  Robot Shape Circular Radius \t= %.02f\n", m_robotShapeCircularRadius );
 	printf_debug("  Obstacles 'z' axis range \t= [%.03f,%.03f]\n", minObstaclesHeight, maxObstaclesHeight );

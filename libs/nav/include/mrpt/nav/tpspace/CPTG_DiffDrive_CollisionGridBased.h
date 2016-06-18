@@ -83,6 +83,9 @@ namespace nav
 		bool getPathStepForDist(uint16_t k, double dist, uint16_t &out_step) const MRPT_OVERRIDE;
 
 		void updateTPObstacle(double ox, double oy, std::vector<double> &tp_obstacles) const MRPT_OVERRIDE;
+		/** This family of PTGs ignore the kinematic state of the robot */
+		void updateCurrentRobotVel(const mrpt::math::TTwist2D &curVelLocal)  MRPT_OVERRIDE 
+		{}
 
 		/** @} */  // --- end of virtual methods
 
@@ -95,13 +98,13 @@ protected:
 		void internal_processNewRobotShape() MRPT_OVERRIDE;
 
 		/** Possible values in "params" (those in CParameterizedTrajectoryGenerator, which is called internally, plus):
-		 *   - resolution: The cell size
-		 *   - v_max, w_max: Maximum robot speeds.
-		 *   - shape_x{0,1,2..}, shape_y{0,1,2..}: Polygonal robot shape [Optional, can be also set via `setRobotPolygonShape()`]
+		 *   - `${sKeyPrefix}resolution`: The cell size
+		 *   - `${sKeyPrefix}v_max`, ``${sKeyPrefix}w_max`: Maximum robot speeds.
+		 *   - `${sKeyPrefix}shape_x{0,1,2..}`, ``${sKeyPrefix}shape_y{0,1,2..}`: Polygonal robot shape [Optional, can be also set via `setRobotPolygonShape()`]
 		 *
 		 * See docs of derived classes for additional parameters in setParams()
 		 */
-		void setParamsCommon(const mrpt::utils::TParameters<double> &params) MRPT_OVERRIDE;
+		void setParamsCommon(const mrpt::utils::CConfigFileBase &cfg,const std::string &sSection, const std::string &sKeyPrefix) MRPT_OVERRIDE;
 
 		double V_MAX, W_MAX;
 		double turningRadiusReference;
