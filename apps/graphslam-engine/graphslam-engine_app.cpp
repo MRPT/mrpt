@@ -26,8 +26,12 @@
 
 #include "CGraphSlamEngine.h"
 #include "CWindowObserver.h"
+
+// node/edge registration deciders
 #include "CFixedIntervalsNRD.h"
 #include "CICPGoodnessERD.h"
+#include "CICPGoodnessNRD.h"
+//#include "CEmptyNRD.h"
 
 using namespace mrpt;
 using namespace mrpt::utils;
@@ -106,16 +110,21 @@ int main(int argc, char **argv)
 		VERBOSE_COUT << "Listening to graph_window events..." << endl;
 
 		// Initialize the CGraphSlamEngine_t class
-		CGraphSlamEngine_t< 
-			CNetworkOfPoses2DInf, 
-			CFixedIntervalsNRD_t<CNetworkOfPoses2DInf>,
-			CICPGoodnessERD_t<CNetworkOfPoses2DInf> >
-			graph_engine(
-					config_fname, 
-					&graph_win,
-					&graph_win_observer,
-					rawlog_fname,
-					ground_truth_fname);
+		CGraphSlamEngine_t
+			<
+			CNetworkOfPoses2DInf,                         // graph type
+			//CEmptyNRD_t<CNetworkOfPoses2DInf>, // empty node decider
+			CFixedIntervalsNRD_t<CNetworkOfPoses2DInf>,   // node decider
+			//CICPGoodnessNRD_t<CNetworkOfPoses2DInf>,   // edge decider
+			//CEmptyERD_t<CNetworkOfPoses2DInf> // empty edge decider
+			CICPGoodnessERD_t<CNetworkOfPoses2DInf>     // edge decider
+			>
+				graph_engine(
+						config_fname, 
+						&graph_win,
+						&graph_win_observer,
+						rawlog_fname,
+						ground_truth_fname);
 
 		bool exit_normally = graph_engine.parseRawlogFile();
 

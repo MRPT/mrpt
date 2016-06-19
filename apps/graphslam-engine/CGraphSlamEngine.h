@@ -65,6 +65,10 @@
 #include "CWindowManager.h"
 #include "CFixedIntervalsNRD.h"
 #include "CICPGoodnessERD.h"
+#include "CICPGoodnessNRD.h"
+#include "CEmptyNRD.h"
+#include "CEmptyERD.h"
+
 #include "supplementary_funs.h"
 #include "CWindowObserver.h"
 

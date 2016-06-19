@@ -107,6 +107,14 @@ namespace mrpt { namespace graphslam { namespace deciders {
     				const mrpt::utils::TNodeID& from, 
     				const mrpt::utils::TNodeID& to,
     				const constraint_t& rel_edge) = 0;
+				/**
+			 	 * Check if the current decider is inappropriate for the given dataset /
+			 	 * provided observatins
+			 	 */
+				virtual void checkIfInvalidDataset(
+						mrpt::obs::CActionCollectionPtr action,
+						mrpt::obs::CSensoryFramePtr observations,
+						mrpt::obs::CObservationPtr observation ) {}
 		};
 
 } } } // end of namespaces

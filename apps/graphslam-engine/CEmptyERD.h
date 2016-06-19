@@ -7,8 +7,8 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#ifndef CICPGoodnessERD_H
-#define CICPGoodnessERD_H
+#ifndef CEmptyERD_H
+#define CEmptyERD_H
 
 #include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/utils/CConfigFileBase.h>
@@ -57,7 +57,7 @@ namespace mrpt { namespace graphslam { namespace deciders {
 	 */
 	template<
 		  class GRAPH_t=typename mrpt::graphs::CNetworkOfPoses2DInf >
-		class CICPGoodnessERD_t :
+		class CEmptyERD_t :
 			public mrpt::graphslam::deciders::CEdgeRegistrationDecider_t<GRAPH_t> {
 	  		public:
 					typedef typename GRAPH_t::constraint_t constraint_t;
@@ -66,8 +66,8 @@ namespace mrpt { namespace graphslam { namespace deciders {
 
 					// Public methods
 					//////////////////////////////////////////////////////////////
-	    		CICPGoodnessERD_t();
-	    		~CICPGoodnessERD_t();
+	    		CEmptyERD_t();
+	    		~CEmptyERD_t();
 
 					void updateDeciderState(
 							mrpt::obs::CActionCollectionPtr action,
@@ -95,18 +95,7 @@ namespace mrpt { namespace graphslam { namespace deciders {
     							const std::string &section);
 							void 	dumpToTextStream(mrpt::utils::CStream &out) const;
 
-							mrpt::slam::CICP icp;
- 							// maximum distance for checking other nodes for ICP constraints
-							double ICP_max_distance;
-							// threshold for accepting an ICP constraint in the graph
-							double ICP_goodness_thresh;
-							int LC_min_nodeid_diff;
-
     			};
-
-
-					// Public variables
-					// ////////////////////////////
     			TParams params;
 
 	  		private:
@@ -115,7 +104,7 @@ namespace mrpt { namespace graphslam { namespace deciders {
 					/**
 		 	 	 	 * Initialization function to be called from the various constructors
 		 	 	 	 */
-					void initCICPGoodnessERD_t();
+					void initCEmptyERD_t();
 					void checkRegistrationCondition(
 							const std::set<mrpt::utils::TNodeID>& nodes_set);
     			void registerNewEdge(
@@ -148,34 +137,97 @@ namespace mrpt { namespace graphslam { namespace deciders {
 					// Private variables
 					//////////////////////////////////////////////////////////////
 
-					GRAPH_t* m_graph;
-					mrpt::gui::CDisplayWindow3D* m_win;
-					mrpt::gui::CWindowManager_t* m_win_manager;
-
-					bool m_initialized_visuals;
-					bool m_just_inserted_loop_closure;
-
-					mrpt::utils::TColorf m_search_disk_color; // see Ctor for initialization
-					double m_offset_y_search_disk;
-					int m_text_index_search_disk;
-					
-
-					std::map<const mrpt::utils::TNodeID, 
-						mrpt::obs::CObservation2DRangeScanPtr> m_nodes_to_laser_scans;
-					std::map<const std::string, int> m_edge_types_to_nums;
-
-    			int m_last_total_num_of_nodes;
-    			CObservation2DRangeScanPtr m_last_laser_scan;
-
-					// find out if decider is invalid for the given dataset
-					bool m_checked_for_usuable_dataset;
-					size_t m_consecutive_invalid_format_instances;
-					const size_t m_consecutive_invalid_format_instances_thres;
-
 			};
 
 } } } // end of namespaces
 
-#include "CICPGoodnessERD_impl.h"
-#endif /* end of include guard: CICPGoodnessERD_H */
+using namespace mrpt::graphslam::deciders;
+
+// Ctors, Dtors
+// //////////////////////////////////
+
+template<class GRAPH_t>
+CEmptyERD_t<GRAPH_t>::CEmptyERD_t() { }
+template<class GRAPH_t>
+void CEmptyERD_t<GRAPH_t>::initCEmptyERD_t() { }
+template<class GRAPH_t>
+CEmptyERD_t<GRAPH_t>::~CEmptyERD_t() { }
+
+// Method implementations
+// //////////////////////////////////
+
+template<class GRAPH_t> 
+void CEmptyERD_t<GRAPH_t>::updateDeciderState(
+		mrpt::obs::CActionCollectionPtr action,
+		mrpt::obs::CSensoryFramePtr observations,
+		mrpt::obs::CObservationPtr observation ) { }
+
+template<class GRAPH_t>
+void CEmptyERD_t<GRAPH_t>::checkRegistrationCondition(
+		const std::set<mrpt::utils::TNodeID>& nodes_set) { }
+
+
+template<class GRAPH_t>
+void CEmptyERD_t<GRAPH_t>::registerNewEdge(
+    const mrpt::utils::TNodeID& from, 
+    const mrpt::utils::TNodeID& to,
+    const constraint_t& rel_edge ) { }
+template<class GRAPH_t>
+double CEmptyERD_t<GRAPH_t>::getICPEdge(
+		const mrpt::utils::TNodeID& from,
+		const mrpt::utils::TNodeID& to,
+		constraint_t* rel_edge ) {return 0;}
+
+template<class GRAPH_t>
+void CEmptyERD_t<GRAPH_t>::getNearbyNodesOf(
+		set<TNodeID> *nodes_set,
+		const TNodeID& cur_nodeID,
+		double distance ) { }
+
+
+template<class GRAPH_t>
+void CEmptyERD_t<GRAPH_t>::setGraphPtr(GRAPH_t* graph) { }
+
+template<class GRAPH_t>
+void CEmptyERD_t<GRAPH_t>::setWindowManagerPtr(
+		mrpt::gui::CWindowManager_t* win_manager) { }
+template<class GRAPH_t> void
+CEmptyERD_t<GRAPH_t>::setCDisplayWindowPtr(
+		mrpt::gui::CDisplayWindow3D* win) { }
+template<class GRAPH_t>
+void CEmptyERD_t<GRAPH_t>::getEdgesStats(
+		std::map<const std::string, int>* edge_types_to_nums) { }
+
+template<class GRAPH_t>
+void CEmptyERD_t<GRAPH_t>::initializeVisuals() { }
+template<class GRAPH_t>
+void CEmptyERD_t<GRAPH_t>::updateVisuals() { }
+
+template<class GRAPH_t>
+bool CEmptyERD_t<GRAPH_t>::justInsertedLoopClosure() {return false;}
+
+template<class GRAPH_t>
+void CEmptyERD_t<GRAPH_t>::checkIfInvalidDataset(mrpt::obs::CActionCollectionPtr action,
+		mrpt::obs::CSensoryFramePtr observations,
+		mrpt::obs::CObservationPtr observation ) { }
+
+// TParameter
+// //////////////////////////////////
+
+template<class GRAPH_t>
+CEmptyERD_t<GRAPH_t>::TParams::TParams() { }
+
+template<class GRAPH_t>
+CEmptyERD_t<GRAPH_t>::TParams::~TParams() { }
+
+template<class GRAPH_t>
+void CEmptyERD_t<GRAPH_t>::TParams::dumpToTextStream(
+		mrpt::utils::CStream &out) const { }
+template<class GRAPH_t>
+void CEmptyERD_t<GRAPH_t>::TParams::loadFromConfigFile(
+		const mrpt::utils::CConfigFileBase& source,
+    const std::string& section) { }
+
+
+#endif /* end of include guard: CEmptyERD_H */
 

@@ -18,7 +18,8 @@ using namespace mrpt::graphslam::deciders;
 
 template<class GRAPH_t>
 CICPGoodnessERD_t<GRAPH_t>::CICPGoodnessERD_t():
-	m_search_disk_color(TColor(142, 142, 56))
+	m_search_disk_color(TColor(142, 142, 56)),
+	m_consecutive_invalid_format_instances_thres(20) // large threshold just to make sure
 {
 	MRPT_START;
 
@@ -37,10 +38,15 @@ void CICPGoodnessERD_t<GRAPH_t>::initCICPGoodnessERD_t() {
 	m_initialized_visuals = false;
 	m_just_inserted_loop_closure = false;
 
-	m_last_total_num_of_nodes = 0;
+	// start ICP constraint registration only when 
+	// nodeCount > m_last_total_num_of_nodes
+	m_last_total_num_of_nodes = 2;
 
 	m_edge_types_to_nums["ICP"] = 0;
 	m_edge_types_to_nums["LC"] = 0;
+
+	m_checked_for_usuable_dataset = false;
+	m_consecutive_invalid_format_instances = 0;
 
 	std::cout << "CCICPGoodnessERD: Initialized class object" << std::endl;
 
@@ -61,6 +67,7 @@ template<class GRAPH_t> void CICPGoodnessERD_t<GRAPH_t>::updateDeciderState(
 	
 	// check possible prior node registration
 	bool registered_new_node = false;
+
 	if (m_last_total_num_of_nodes < m_graph->nodeCount()) {
 		registered_new_node = true;
 		m_last_total_num_of_nodes = m_graph->nodeCount();
@@ -76,10 +83,9 @@ template<class GRAPH_t> void CICPGoodnessERD_t<GRAPH_t>::updateDeciderState(
 			// add the last laser_scan
 			if (registered_new_node && m_last_laser_scan) {
 				m_nodes_to_laser_scans[m_graph->nodeCount()-1] = m_last_laser_scan;
-				//std::cout << "Added laser scans of nodeID: "
-					//<< m_graph->nodeCount()-1 << std::endl;
+				std::cout << "CICPGoodnessERD: Added laser scans of nodeID: "
+					<< m_graph->nodeCount()-1 << std::endl;
 			}
-
 	}
 	else { // action-observations rawlog format
 		// append current laser scan
@@ -100,12 +106,17 @@ template<class GRAPH_t> void CICPGoodnessERD_t<GRAPH_t>::updateDeciderState(
 				&nodes_to_check_ICP,
 				m_graph->nodeCount()-1,
 				params.ICP_max_distance);
-		//std::cout << "Found * " << nodes_to_check_ICP.size() 
-			//<< " * nodes close to nodeID: " << m_graph->nodeCount()-1 << endl;
+		std::cout << "Found * " << nodes_to_check_ICP.size() 
+			<< " * nodes close to nodeID: " << m_graph->nodeCount()-1 << endl;
 
 		// reset the loop_closure flag and run registration
 		m_just_inserted_loop_closure = false;
+		registered_new_node = false;
 		checkRegistrationCondition(nodes_to_check_ICP);
+	}
+
+	if (!m_checked_for_usuable_dataset) {
+		this->checkIfInvalidDataset(action, observations, observation);
 	}
 
 	MRPT_END;
@@ -120,8 +131,6 @@ void CICPGoodnessERD_t<GRAPH_t>::checkRegistrationCondition(
 	for (set<mrpt::utils::TNodeID>::const_iterator 
 			node_it = nodes_set.begin();
 			node_it != nodes_set.end(); ++node_it) {
-		//std::cout << "Checking ICP against node: " << *node_it << std::endl;
-		//mrpt::system::pause();
 
 		// get the ICP edge between current and last node
 		constraint_t rel_edge;
@@ -154,6 +163,7 @@ void CICPGoodnessERD_t<GRAPH_t>::registerNewEdge(
     const constraint_t& rel_edge ) {
   MRPT_START;
 
+  //cout << "CICPGoodnessERD: Inserting new Edge: " << from << " -> " << to << endl;
 	m_graph->insertEdge(from,  to, rel_edge);
 
 	MRPT_END;
@@ -231,7 +241,6 @@ void CICPGoodnessERD_t<GRAPH_t>::getNearbyNodesOf(
 					m_graph->nodes[cur_nodeID]);
 			//std::cout << "testing against node: " << nodeID << std::endl;
 			//std::cout << "\tcurr_distance: " << curr_distance << std::endl;
-			//mrpt::system::pause();
 			if (curr_distance <= distance) {
 				nodes_set->insert(nodeID);
 			}
@@ -343,6 +352,38 @@ bool CICPGoodnessERD_t<GRAPH_t>::justInsertedLoopClosure() {
 	return m_just_inserted_loop_closure;
 }
 
+template<class GRAPH_t>
+void CICPGoodnessERD_t<GRAPH_t>::checkIfInvalidDataset(
+		mrpt::obs::CActionCollectionPtr action,
+		mrpt::obs::CSensoryFramePtr observations,
+		mrpt::obs::CObservationPtr observation ) {
+	MRPT_START;
+	MRPT_UNUSED_PARAM(action);
+
+	if (observation.present()) { // FORMAT #2
+		if (IS_CLASS(observation, CObservation2DRangeScan)) {
+			m_checked_for_usuable_dataset = true;
+			return;
+		}
+		else {
+			m_consecutive_invalid_format_instances++;
+		}
+	}
+	else {
+		m_checked_for_usuable_dataset = true;
+		return;
+	}
+	if (m_consecutive_invalid_format_instances > m_consecutive_invalid_format_instances_thres) {
+		std::cout << "CICPGoodnessERD: Can't find usuable data in the given dataset." 
+			<< std::endl;
+		std::cout << "Make sure dataset contains valid CObservation2DRangeScan/CObservation3DRangeScan data." 
+			<< std::endl;
+		mrpt::system::sleep(5000);
+		m_checked_for_usuable_dataset = true;
+	}
+
+	MRPT_END;
+}
 
 
 // TParameter
@@ -362,12 +403,10 @@ void CICPGoodnessERD_t<GRAPH_t>::TParams::dumpToTextStream(
 	MRPT_START;
 
 	out.printf("------------------[ Goodness-based ICP Edge Registration ]------------------\n");
-	out.printf("ICP goodness threshold         = %.2f%% \n", 
-			ICP_goodness_thresh*100);
-	out.printf("ICP max radius for edge search = %.2f\n", 
-			ICP_max_distance);
-	out.printf("Min. node difference for LC    = %d\n", 
-			LC_min_nodeid_diff);
+	out.printf("ICP goodness threshold         = %.2f%% \n", ICP_goodness_thresh*100);
+	out.printf("ICP max radius for edge search = %.2f\n", ICP_max_distance);
+	out.printf("Min. node difference for LC    = %d\n", LC_min_nodeid_diff);
+	out.printf("ICP Configuration:\n");
 
 	icp.options.dumpToTextStream(out);
 
@@ -392,9 +431,10 @@ void CICPGoodnessERD_t<GRAPH_t>::TParams::loadFromConfigFile(
  			"LC_min_nodeid_diff",
  			10, false);
 
-	icp.options.loadFromConfigFile(source, section);
+	// load the icp parameters - from "ICP" section explicitly
+	icp.options.loadFromConfigFile(source, "ICP");
 
-	std::cout << "Successfully loaded CICPDinstanceERD parameters. " 
+	std::cout << "Successfully loaded CICPGoodnessERD parameters. " 
 		<< std::endl;
 
 	MRPT_END;
