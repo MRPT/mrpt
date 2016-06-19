@@ -20,6 +20,7 @@
 #include <mrpt/opengl/CDisk.h>
 #include <mrpt/opengl/CSetOfObjects.h> // TODO - is it needed?
 #include <mrpt/opengl/CRenderizable.h>
+#include <mrpt/opengl/CPlanarLaserScan.h>
 #include <mrpt/slam/CICP.h>
 #include <mrpt/system/os.h>
 
@@ -101,6 +102,9 @@ namespace mrpt { namespace graphslam { namespace deciders {
 							// threshold for accepting an ICP constraint in the graph
 							double ICP_goodness_thresh;
 							int LC_min_nodeid_diff;
+							bool visualize_laser_scans;
+
+							bool has_read_config;
 
     			};
 

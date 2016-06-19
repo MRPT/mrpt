@@ -295,6 +295,8 @@ void CICPGoodnessERD_t<GRAPH_t>::getEdgesStats(
 template<class GRAPH_t>
 void CICPGoodnessERD_t<GRAPH_t>::initializeVisuals() {
 	MRPT_START;
+	assert(has_read_config &&
+			"CICPGoodnessERD: Configuration parameters aren't loaded yet");
 	std::cout << "Initializing CICPGoodnessERD visuals" << std::endl;
 
 	// ICP_max_distance disk
@@ -313,8 +315,23 @@ void CICPGoodnessERD_t<GRAPH_t>::initializeVisuals() {
 		m_win->forceRepaint();
 	}
 
-	m_initialized_visuals = true;
+	// laser scan visualization
+	if (params.visualize_laser_scans) {
+		COpenGLScenePtr scene = m_win->get3DSceneAndLock();
 
+		CPlanarLaserScanPtr laser_scan_viz = mrpt::opengl::CPlanarLaserScan::Create();
+		laser_scan_viz->enablePoints();
+		laser_scan_viz->enableLine();
+		laser_scan_viz->enableSurface();
+
+		laser_scan_viz->setName("laser_scan_viz");
+
+		scene->insert(laser_scan_viz);
+		m_win->unlockAccess3DScene();
+		m_win->forceRepaint();
+	}
+
+	// max distance disk - textMessage
 	if (m_win && m_win_manager && params.ICP_max_distance > 0) {
 		m_win_manager->assignTextMessageParameters(
 				&m_offset_y_search_disk,
@@ -326,11 +343,13 @@ void CICPGoodnessERD_t<GRAPH_t>::initializeVisuals() {
 				/* unique_index = */ m_text_index_search_disk );
 	}
 
+	m_initialized_visuals = true;
 	MRPT_END;
 }
 template<class GRAPH_t>
 void CICPGoodnessERD_t<GRAPH_t>::updateVisuals() {
 	MRPT_START;
+	assert(m_initialized_visuals);
 	//std::cout << "Updating CICPGoodnessERD visuals" << std::endl;
 
 	// update ICP_max_distance Disk
@@ -343,6 +362,28 @@ void CICPGoodnessERD_t<GRAPH_t>::updateVisuals() {
 		disk_obj->setPose(m_graph->nodes[m_graph->nodeCount()-1]);
 
 		m_win->unlockAccess3DScene();
+		m_win->forceRepaint();
+	}
+	
+	// update laser scan visual
+	if (params.visualize_laser_scans && m_last_laser_scan) {
+		COpenGLScenePtr scene = m_win->get3DSceneAndLock();
+		
+		CRenderizablePtr obj = scene->getByName("laser_scan_viz");
+		CPlanarLaserScanPtr laser_scan_viz = static_cast<CPlanarLaserScanPtr>(obj);
+
+		// set the scan contents
+		laser_scan_viz->setScan(*m_last_laser_scan);
+
+		// set the pose of the laser scan
+		typename GRAPH_t::global_poses_t::const_iterator search = 
+			m_graph->nodes.find(m_graph->nodeCount()-1);
+		if (search != m_graph->nodes.end()) {
+			laser_scan_viz->setPose(m_graph->nodes[m_graph->nodeCount()-1]);
+		}
+
+		m_win->unlockAccess3DScene();
+		m_win->forceRepaint();
 	}
 
 	MRPT_END;
@@ -390,8 +431,9 @@ void CICPGoodnessERD_t<GRAPH_t>::checkIfInvalidDataset(
 // //////////////////////////////////
 
 template<class GRAPH_t>
-CICPGoodnessERD_t<GRAPH_t>::TParams::TParams() {
-}
+CICPGoodnessERD_t<GRAPH_t>::TParams::TParams():
+	has_read_config(false)
+{ }
 
 template<class GRAPH_t>
 CICPGoodnessERD_t<GRAPH_t>::TParams::~TParams() {
@@ -406,6 +448,7 @@ void CICPGoodnessERD_t<GRAPH_t>::TParams::dumpToTextStream(
 	out.printf("ICP goodness threshold         = %.2f%% \n", ICP_goodness_thresh*100);
 	out.printf("ICP max radius for edge search = %.2f\n", ICP_max_distance);
 	out.printf("Min. node difference for LC    = %d\n", LC_min_nodeid_diff);
+	out.printf("Visualize laser scans          = %d\n", visualize_laser_scans);
 	out.printf("ICP Configuration:\n");
 
 	icp.options.dumpToTextStream(out);
@@ -430,12 +473,17 @@ void CICPGoodnessERD_t<GRAPH_t>::TParams::loadFromConfigFile(
   		section,
  			"LC_min_nodeid_diff",
  			10, false);
+  visualize_laser_scans = source.read_bool(
+  		"VisualizationParameters",
+ 			"visualize_laser_scans",
+ 			true, false);
 
 	// load the icp parameters - from "ICP" section explicitly
 	icp.options.loadFromConfigFile(source, "ICP");
 
 	std::cout << "Successfully loaded CICPGoodnessERD parameters. " 
 		<< std::endl;
+	has_read_config = true;
 
 	MRPT_END;
 }
