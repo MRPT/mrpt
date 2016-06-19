@@ -33,11 +33,17 @@ namespace kinematics
 		 */
 		void sendVelRampCmd(double vel, double dir, double ramp_time, double rot_speed);
 
-		/** Sends a velocity command to the robot. The number of components and their meaning depends on the derived class */
+		/** Sends a velocity command to the robot:
+		  * `cmd_vel=[vel dir_local ramp_time rot_speed]`:
+		  * - vel: speed (m/s)
+		  * - dir_local: direction, relative to the current robot heading (radians). 0 means forward.
+		  * - ramp_time: Blending time between current and target time.
+		  * - rot_speed: (rad/s) rotational speed for rotating such as the robot slowly faces forward.
+		  */
 		void sendVelCmd(const std::vector<double> &cmd_vel) MRPT_OVERRIDE
 		{
 			ASSERT_EQUAL_(cmd_vel.size(), getVelCmdLength());
-			sendVelRampCmd(cmd_vel[0],cmd_vel[1],cmd_vel[2],cmd_vel[3]);
+			sendVelRampCmd(cmd_vel[0],cmd_vel[1]+m_pose.phi,cmd_vel[2],cmd_vel[3]);
 		}
 
 		size_t getVelCmdLength() const  MRPT_OVERRIDE {
