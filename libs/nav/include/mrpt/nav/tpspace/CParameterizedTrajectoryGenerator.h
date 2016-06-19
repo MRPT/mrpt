@@ -11,7 +11,7 @@
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/utils/CSerializable.h>
 #include <mrpt/utils/round.h>
-#include <mrpt/utils/TParameters.h>
+#include <mrpt/utils/CConfigFileBase.h>
 #include <mrpt/math/CPolygon.h>
 #include <mrpt/utils/mrpt_stdint.h>    // compiler-independent version of "stdint.h"
 #include <mrpt/nav/link_pragmas.h>
