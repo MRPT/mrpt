@@ -126,8 +126,6 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::initCGraphSlam
 	this->initOutputDir();
 	this->printProblemParams();
 
-	//mrpt::system::pause();
-
 	/**
 	 * Visualization-related parameters initialization
 	 */
@@ -402,6 +400,7 @@ bool CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::parseRawlogFil
 		bool registered_new_node;
 		{
 			mrpt::synch::CCriticalSectionLocker m_graph_lock(&m_graph_section);
+			//cout << "m_graph.nodeCount(): " << m_graph.nodeCount() << endl;
 			registered_new_node = m_node_registrar.updateDeciderState(
 					action, observations, observation);
 			if (registered_new_node) {
@@ -487,6 +486,7 @@ bool CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::parseRawlogFil
 			// keep track of the laser scans so that I can later visualize the map
 			m_nodes_to_laser_scans[m_nodeID_max] = m_last_laser_scan;
 
+			// TODO - have this as a class of its own
 			if (m_win && m_visualize_map) {
 				mrpt::synch::CCriticalSectionLocker m_graph_lock(&m_graph_section);
 				bool full_update = m_edge_registrar.justInsertedLoopClosure();
@@ -597,7 +597,12 @@ bool CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::parseRawlogFil
 
 			mrpt::synch::CCriticalSectionLocker m_graph_lock(&m_graph_section);
 
-			robot_obj->setPose(m_graph.nodes[m_graph.nodeCount()-1]);
+			// set the robot position to the last recorded pose in the graph
+			typename GRAPH_t::global_poses_t::const_iterator search = 
+				m_graph.nodes.find(m_graph.nodeCount()-1);
+			if (search != m_graph.nodes.end()) {
+				robot_obj->setPose(m_graph.nodes[m_graph.nodeCount()-1]);
+			}
 
 			m_win->unlockAccess3DScene();
 		}
@@ -640,7 +645,6 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::optimizeGraph(
 
 	//std::cout << "In optimizeGraph: threadID: " << getCurrentThreadId()<< std::endl;
 
-	//std::cout << "Executing the graph optimization" << std::endl;
 	graphslam::TResultInfoSpaLevMarq	levmarq_info;
 
 	// Execute the optimization
@@ -1179,6 +1183,7 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::updateMap(
 	assert(m_win && 
 			"Visualization of data was requested but no CDisplayWindow3D pointer was given");
 
+	cout << "Updating the map" << endl;
 
 	// TODO - move it out 
 	mrpt::utils::TColor m_optimized_map_color(255, 0, 0);
@@ -1204,6 +1209,7 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::updateMap(
 			node_it != nodes_set.end(); ++node_it) {
 
 		// get the node pose - thread safe
+		// TODO just find it 
 		pose_t scan_pose = m_graph.nodes[*node_it];
 
 		// name of gui object
@@ -1296,4 +1302,3 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::decimateLaserS
 
 
 #endif /* end of include guard: CGRAPHSLAMENGINE_IMPL_H */
-

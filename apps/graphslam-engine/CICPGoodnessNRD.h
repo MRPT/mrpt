@@ -7,21 +7,25 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#ifndef CFIXEDINTERVALSNRD_H
-#define CFIXEDINTERVALSNRD_H
+#ifndef CICPGOODNESSNRD_H
+#define CICPGOODNESSNRD_H
 
-#include <mrpt/obs/CObservationOdometry.h>
+#include <mrpt/obs/CRawlog.h>
+#include <mrpt/obs/CObservation2DRangeScan.h>
+#include <mrpt/obs/CObservation3DRangeScan.h>
+#include <mrpt/poses/CPosePDF.h>
+#include <mrpt/poses/CPose3DPDF.h>
+#include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/obs/CRawlog.h>
 #include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/utils/CConfigFileBase.h>
 #include <mrpt/utils/CStream.h>
 #include <mrpt/utils/types_simple.h>
+#include <mrpt/slam/CICP.h>
+#include <mrpt/system/os.h>
 
 #include "CNodeRegistrationDecider.h"
 
-#include <iostream>
-
-// TODO - change these
 using namespace mrpt;
 using namespace mrpt::utils;
 using namespace mrpt::graphs;
@@ -33,40 +37,40 @@ using namespace std;
 namespace mrpt { namespace graphslam { namespace deciders {
 
 	/**
- 	 * Fixed intervals odometry edge insertion. Determine whether to insert a new
- 	 * pose in the graph given the distance and angle thresholds. If used offline,
+	 * Node Registration scheme based on fixed intervals node regitration,
+	 * provided range scans (either standard 2D, or RGB-D 3D). If used offline,
 	 * use it with datasets in observation-only rawlog format.
- 	 *
- 	 * Current Decider is a minimal, simple implementation of the
- 	 * CNodeRegistrationDecider_t interface which can be used for 2D datasets.
- 	 * Decider *does not guarrantee* thread safety when accessing the GRAPH_t
+	 *
+	 * Current Decider is meant for adding nodes in 2D datasets recorded using
+	 * a laser range finder or RGB-D camera (e.g. Kinect). No odometry data from
+	 * encoders is needed.
+	 * Decider *does not guarrantee* thread safety when accessing the GRAPH_t
  	 * resource. This is handled by the CGraphSlamEngine_t class.
- 	 */
+
+	 * TODO - implement a filter for using the Odometry data as well, if given
+	 * TODO - add to this description
+	 */
 	template<class GRAPH_t>
-		class CFixedIntervalsNRD_t:
+		class CICPGoodnessNRD_t:
 			public mrpt::graphslam::deciders::CNodeRegistrationDecider_t<GRAPH_t>
 	{
 		public:
 			// Public functions
 			//////////////////////////////////////////////////////////////
-
 			typedef typename GRAPH_t::constraint_t constraint_t;
 			typedef typename GRAPH_t::constraint_t::type_value pose_t; // type of underlying poses (2D/3D)
 			typedef mrpt::math::CMatrixFixedNumeric<double,
 							constraint_t::state_length,
 							constraint_t::state_length> InfMat;
 
-			CFixedIntervalsNRD_t();
-			~CFixedIntervalsNRD_t();
+
+		  CICPGoodnessNRD_t();
+		  ~CICPGoodnessNRD_t();
 
 			/**
 		 	 * Initialize the graph to be used for the node registration procedure
 		 	 */
 			void setGraphPtr(GRAPH_t* graph);
-			/**
-		 	 * Method makes use of the CActionCollection/CObservation to update the odometry estimation from
-		 	 * the last inserted pose
-		 	 */
 			bool updateDeciderState( mrpt::obs::CActionCollectionPtr action,
 					mrpt::obs::CSensoryFramePtr observations,
 					mrpt::obs::CObservationPtr observation );
@@ -83,61 +87,79 @@ namespace mrpt { namespace graphslam { namespace deciders {
 
 					// max values for new node registration
 					double registration_max_distance;
-					double registration_max_angle;
+
+					// ICP object for aligning laser scans
+					mrpt::slam::CICP icp;
+					// threshold for considering the ICP procedure as correct
+					double ICP_goodness_thresh;
+
+
     	};
+
 
 			// Public members
 			// ////////////////////////////
-    	TParams params;
+			TParams params;
 
 		private:
 			// Private functions
 			//////////////////////////////////////////////////////////////
-			/**
-		 	 * If estimated position surpasses the registration max values since the
-		 	 * previous registered node, register a new node in the graph.
-		 	 *
-		 	 * Returns new on successful registration.
-		 	 */
-			bool checkRegistrationCondition();
+			bool checkRegistrationCondition(const CObservation2DRangeScanPtr& curr_laser_scan2D);
+			//bool checkRegistrationCondition(const CObservation3DRangeScan& curr_laser_scan3D);
+
 			void registerNewNode();
+			void initCICPGoodnessNRD_t();
 			/**
-		 	 * Initialization function to be called from the various constructors
-		 	 */
-			void initCFixedIntervalsNRD_t();
-			void checkIfInvalidDataset(mrpt::obs::CActionCollectionPtr action,
-					mrpt::obs::CSensoryFramePtr observations,
-					mrpt::obs::CObservationPtr observation );
+			 * allign the 2D range scans provided and fill the potential edge that
+			 * can transform the one into the other
+			 */
+			double getICPEdge(
+					const CObservation2DRangeScan& prev_laser_scan,
+					const CObservation2DRangeScan& curr_laser_scan,
+					constraint_t* rel_edge );
+			/**
+			 * allign the 3D range scans provided and fill the potential edge that
+			 * can transform the one into the other
+			 */
+			double getICPEdge(
+					const CObservation3DRangeScan& prev_laser_scan,
+					const CObservation3DRangeScan& curr_laser_scan,
+					constraint_t* rel_edge );
 
 			// Private members
 			//////////////////////////////////////////////////////////////
 			GRAPH_t* m_graph;
 			mrpt::gui::CDisplayWindow3D* m_win;
-			// store the last registered node - not his pose since it will most likely
-			// change during calls to the graph-optimization procedure /
-			// dijkstra_node_estimation
-			TNodeID m_prev_registered_node;
 
 			// Tracking the PDF of the current position of the robot with regards to the
 			// *previous* registered node
 			constraint_t	m_since_prev_node_PDF;
 
 			pose_t m_curr_estimated_pose;
-			// pose_t using only odometry information. Handy for observation-only
-			// rawlogs.
-			pose_t m_curr_odometry_only_pose; 
-			pose_t m_last_odometry_only_pose; 
 			// variable to keep track of whether we are reading from an
 			// observation-only rawlog file or from an action-observation rawlog
 			bool m_observation_only_rawlog;
+			// if invalid format instance number surpasses this threshold print a
+			// warning message to the user
+			bool m_num_invalid_format_instances;
 
-			// find out if decider is invalid for the given dataset
-			bool m_checked_for_usuable_dataset;
-			size_t m_consecutive_invalid_format_instances;
-			const size_t m_consecutive_invalid_format_instances_thres;
+			bool m_first_time_called;
+
+			// handy laser scans to use in the class methods
+    	CObservation2DRangeScanPtr m_last_laser_scan2D;
+    	CObservation2DRangeScanPtr m_curr_laser_scan2D;
+
+    	CObservation3DRangeScanPtr m_last_laser_scan3D;
+    	CObservation3DRangeScanPtr m_curr_laser_scan3D;
+    	
+    	// last insertede node in the graph
+			mrpt::utils::TNodeID m_nodeID_max;
+
+
 	};
 
-} } } // end of namespaces
 
-#include "CFixedIntervalsNRD_impl.h"
-#endif /* end of include guard: CFIXEDINTERVALSNRD_H */
+} } }
+
+#include "CICPGoodnessNRD_impl.h"
+#endif /* end of include guard: CICPGOODNESSNRD_H */

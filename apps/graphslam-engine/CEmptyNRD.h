@@ -7,8 +7,8 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#ifndef CFIXEDINTERVALSNRD_H
-#define CFIXEDINTERVALSNRD_H
+#ifndef CEMPTYNTERVALSNRD_H
+#define CEMPTYNTERVALSNRD_H
 
 #include <mrpt/obs/CObservationOdometry.h>
 #include <mrpt/obs/CRawlog.h>
@@ -43,7 +43,7 @@ namespace mrpt { namespace graphslam { namespace deciders {
  	 * resource. This is handled by the CGraphSlamEngine_t class.
  	 */
 	template<class GRAPH_t>
-		class CFixedIntervalsNRD_t:
+		class CEmptyNRD_t:
 			public mrpt::graphslam::deciders::CNodeRegistrationDecider_t<GRAPH_t>
 	{
 		public:
@@ -56,8 +56,8 @@ namespace mrpt { namespace graphslam { namespace deciders {
 							constraint_t::state_length,
 							constraint_t::state_length> InfMat;
 
-			CFixedIntervalsNRD_t();
-			~CFixedIntervalsNRD_t();
+			CEmptyNRD_t();
+			~CEmptyNRD_t();
 
 			/**
 		 	 * Initialize the graph to be used for the node registration procedure
@@ -104,7 +104,7 @@ namespace mrpt { namespace graphslam { namespace deciders {
 			/**
 		 	 * Initialization function to be called from the various constructors
 		 	 */
-			void initCFixedIntervalsNRD_t();
+			void initCEmptyNRD_t();
 			void checkIfInvalidDataset(mrpt::obs::CActionCollectionPtr action,
 					mrpt::obs::CSensoryFramePtr observations,
 					mrpt::obs::CObservationPtr observation );
@@ -139,5 +139,56 @@ namespace mrpt { namespace graphslam { namespace deciders {
 
 } } } // end of namespaces
 
-#include "CFixedIntervalsNRD_impl.h"
-#endif /* end of include guard: CFIXEDINTERVALSNRD_H */
+using namespace mrpt::graphslam::deciders;
+
+// Ctors, Dtors
+//////////////////////////////////////////////////////////////
+
+template<class GRAPH_t>
+CEmptyNRD_t<GRAPH_t>::CEmptyNRD_t():
+	m_consecutive_invalid_format_instances_thres(20) // large threshold just to make sure
+{ }
+template<class GRAPH_t>
+void CEmptyNRD_t<GRAPH_t>::initCEmptyNRD_t() { }
+template<class GRAPH_t>
+CEmptyNRD_t<GRAPH_t>::~CEmptyNRD_t() { }
+
+// Member function implementations
+//////////////////////////////////////////////////////////////
+
+template<class GRAPH_t>
+bool CEmptyNRD_t<GRAPH_t>::updateDeciderState(
+		mrpt::obs::CActionCollectionPtr action,
+		mrpt::obs::CSensoryFramePtr observations,
+		mrpt::obs::CObservationPtr observation )  {return false;}
+
+template<class GRAPH_t>
+bool CEmptyNRD_t<GRAPH_t>::checkRegistrationCondition() {return false; }
+
+template<class GRAPH_t>
+void CEmptyNRD_t<GRAPH_t>::registerNewNode() { }
+template<class GRAPH_t>
+void CEmptyNRD_t<GRAPH_t>::setGraphPtr(GRAPH_t* graph) { }
+
+template<class GRAPH_t>
+void CEmptyNRD_t<GRAPH_t>::checkIfInvalidDataset(
+		mrpt::obs::CActionCollectionPtr action,
+		mrpt::obs::CSensoryFramePtr observations,
+		mrpt::obs::CObservationPtr observation ) { }
+
+
+// TParams
+//////////////////////////////////////////////////////////////
+template<class GRAPH_t>
+CEmptyNRD_t<GRAPH_t>::TParams::TParams() { }
+template<class GRAPH_t>
+CEmptyNRD_t<GRAPH_t>::TParams::~TParams() { }
+template<class GRAPH_t>
+void CEmptyNRD_t<GRAPH_t>::TParams::dumpToTextStream(
+		mrpt::utils::CStream &out) const { }
+template<class GRAPH_t>
+void CEmptyNRD_t<GRAPH_t>::TParams::loadFromConfigFile(
+		const mrpt::utils::CConfigFileBase &source,
+    const std::string &section) { }
+
+#endif /* end of include guard: CEmptyNRD_H */

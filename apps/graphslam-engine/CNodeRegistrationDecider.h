@@ -40,14 +40,14 @@ namespace mrpt { namespace graphslam { namespace deciders {
 		 		 *
 		 		 * Returns true upon successful node registration in the graph
 		 		 */
-				virtual bool updateDeciderState( 
+				virtual bool updateDeciderState(
 						mrpt::obs::CActionCollectionPtr action,
 						mrpt::obs::CSensoryFramePtr observations,
 						mrpt::obs::CObservationPtr observation ) = 0;
 
 				// method for fetching the graph after the instance initialization
 				virtual void setGraphPtr(GRAPH_t* graph) {}
-				/** 
+				/**
 				 * method for fetching the CDisplayWindow3D after the instance
 				 * initialization. Handy so that the node registrator can add visual
 				 * information.
@@ -81,14 +81,20 @@ namespace mrpt { namespace graphslam { namespace deciders {
 		 		 *
 		 		 * Returns true upon successful node registration in the graph
 		 		 */
-				virtual bool checkRegistrationCondition() = 0;
+				virtual bool checkRegistrationCondition() {return false;}
 				/**
 		 		 * Generic method of adding new poses to the graph.
-		 		 *
-		 		 * Returns true upon successful node registration in the graph, false
-		 		 * otherwise
      		 */
-    		virtual bool registerNewNode() = 0;
+    		virtual void registerNewNode() = 0;
+				/**
+			 	 * Check if the current decider is inappropriate for the given dataset /
+			 	 * provided observatins
+			 	 */
+				void checkIfInvalidDataset(
+						mrpt::obs::CActionCollectionPtr action,
+						mrpt::obs::CSensoryFramePtr observations,
+						mrpt::obs::CObservationPtr observation ) {}
+
 		};
 
 } } } // end of namespaces
