@@ -15,7 +15,7 @@ namespace mrpt
 namespace kinematics 
 {
 	/** Kinematic simulator of a holonomic 2D robot capable of moving in any direction, with "blended"
-	  * velocity profiles.
+	  * velocity profiles. See CVehicleSimul_Holo::sendVelCmd() for a description of the velocity commands in this kinematic model.
 	 * \ingroup mrpt_kinematics_grp
 	  */
 	class KINEMATICS_IMPEXP CVehicleSimul_Holo : public CVehicleSimulVirtualBase
@@ -36,7 +36,7 @@ namespace kinematics
 		/** Sends a velocity command to the robot:
 		  * `cmd_vel=[vel dir_local ramp_time rot_speed]`:
 		  * - vel: speed (m/s)
-		  * - dir_local: direction, relative to the current robot heading (radians). 0 means forward.
+		  * - dir_local: direction, **relative** to the current robot heading (radians). 0 means forward.
 		  * - ramp_time: Blending time between current and target time.
 		  * - rot_speed: (rad/s) rotational speed for rotating such as the robot slowly faces forward.
 		  */

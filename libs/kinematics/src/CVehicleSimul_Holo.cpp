@@ -9,10 +9,10 @@
 
 #include "kinematics-precomp.h"  // Precompiled header
 
-
 #include <mrpt/kinematics/CVehicleSimul_Holo.h>
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/random.h>
+#include <mrpt/utils/CDebugOutputCapable.h>
 
 using namespace mrpt::kinematics;
 
@@ -37,8 +37,9 @@ void CVehicleSimul_Holo::internal_simulStep(const double dt)
 		dPodo.x += dt*m_Ax_err_bias + dt*m_Ax_err_std * mrpt::random::randomGenerator.drawGaussian1D_normalized();
 		dPodo.y += dt*m_Ay_err_bias + dt*m_Ay_err_std * mrpt::random::randomGenerator.drawGaussian1D_normalized();
 		dPodo.phi += dt*m_Aphi_err_bias + dt*m_Aphi_err_std * mrpt::random::randomGenerator.drawGaussian1D_normalized();
+	}
+
 	m_odometry.x += dPodo.x;
-}
 	m_odometry.y += dPodo.y;
 	m_odometry.phi += dPodo.phi;
 	mrpt::math::wrapToPi(m_odometry.phi);

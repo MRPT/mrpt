@@ -18,13 +18,24 @@ using namespace mrpt::utils;
 
 IMPLEMENTS_SERIALIZABLE(CPTG_DiffDrive_CC,CParameterizedTrajectoryGenerator,mrpt::nav)
 
-void CPTG_DiffDrive_CC::setParams(const mrpt::utils::CConfigFileBase &cfg,const std::string &sSection,  const std::string &sKeyPrefix)
+void CPTG_DiffDrive_CC::loadFromConfigFile(const mrpt::utils::CConfigFileBase &cfg,const std::string &sSection)
 {
-	this->K        = cfg.read_double  (sSection, sKeyPrefix+std::string("K"), .0, true );
+	CPTG_DiffDrive_CollisionGridBased ::loadFromConfigFile(cfg,sSection);
+	
+	MRPT_LOAD_CONFIG_VAR_NO_DEFAULT(K,double, cfg,sSection);
 
-	CPTG_DiffDrive_CollisionGridBased::setParamsCommon(cfg,sSection,sKeyPrefix);
 	// The constant curvature turning radius used in this PTG:
 	R = V_MAX / W_MAX;
+}
+void CPTG_DiffDrive_CC::saveToConfigFile(mrpt::utils::CConfigFileBase &cfg,const std::string &sSection) const
+{
+	MRPT_START
+	const int WN = 40, WV = 20;
+	CPTG_DiffDrive_CollisionGridBased::saveToConfigFile(cfg,sSection);
+
+	cfg.write(sSection,"K",K,   WN,WV, "K=+1 forward paths; K=-1 for backwards paths.");
+
+	MRPT_END
 }
 
 
