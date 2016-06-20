@@ -35,27 +35,33 @@ Number of steps "d" for each PTG path "k":
 
 const double PATH_TIME_STEP = 10e-3;   // 10 ms
 const double eps = 1e-5;               // epsilon for detecting 1/0 situation
-const double eps_distance = 0.01;      // epsilon for distances (1cm)
 
 // Axiliary function for computing the line-integral distance along the trajectory, handling special cases of 1/0:
 inline double calc_trans_distance_t_below_Tramp(double k2, double k4, double vxi,double vyi, double t)
 {
-	double dsq=0;
-	if (std::abs(k2)>eps) {
-		const double num1 = vxi+2*t*k2;
-		dsq+=num1*num1*num1/k2;
+/*
+dd = sqrt( (4*k2^2 + 4*k4^2)*t^2 + (4*k2*vxi + 4*k4*vyi)*t + vxi^2 + vyi^2 ) dt
+a t^2 + b t + c 
+*/
+	const double c = (vxi*vxi+vyi*vyi);
+	if (std::abs(k2)>eps || std::abs(k4)>eps)
+	{
+		const double a = ((k2*k2)*4.0+(k4*k4)*4.0);
+		const double b = (k2*vxi*4.0+k4*vyi*4.0);
+	
+		const double d_t = (t*(1.0/2.0)+(b*(1.0/4.0))/a)*sqrt(c+b*t+a*(t*t))+1.0/pow(a,3.0/2.0)*log(1.0/sqrt(a)*(b*(1.0/2.0)+a*t)+sqrt(c+b*t+a*(t*t)))*(a*c-(b*b)*(1.0/4.0))*(1.0/2.0);
+		const double log_arg = 1.0/sqrt(a)*(0.5*b)+sqrt(c);
+		if (std::abs(log_arg)<eps)
+			return d_t;
+		else {
+			const double d_0 = ((b*(1.0/4.0))/a)*sqrt(c)+1.0/pow(a,3.0/2.0)*log(log_arg)*(a*c-(b*b)*(1.0/4.0))*(1.0/2.0);
+			return d_t-d_0;
+		}
 	}
-	else {
-		dsq+=vxi*vxi*vxi/3.0;
+	else
+	{
+		return std::sqrt(c)*t;
 	}
-	if (std::abs(k4)>eps) {
-		const double num2 = vyi+2*t*k4;
-		dsq+=num2*num2*num2/k4;
-	}
-	else {
-		dsq+=vyi*vyi*vyi/3.0;
-	}	
-	return std::sqrt(dsq/6.0);
 }
 
 
@@ -132,6 +138,7 @@ bool CPTG_Holo_Blend::inverseMap_WS2TP(double x, double y, int &out_k, double &o
 	ASSERT_(x!=0 || y!=0);
 
 	const double TIME_MISMATCH_TOLERANCE = 4.0*((2*M_PI/m_alphaValuesCount) * std::sqrt(x*x+y*y))/V_MAX;
+	const double eps_distance            = 2.1*((2*M_PI/m_alphaValuesCount) * std::sqrt(x*x+y*y));
 
 	double found_min_dist = std::numeric_limits<double>::max();
 	int    found_k        = -1; // invalid
@@ -289,17 +296,16 @@ void CPTG_Holo_Blend::initialize(const std::string & cacheFilename, const bool v
 
 
 	// DEBUG TESTS
-#if 0
+#if 1
 	//debugDumpInFiles("1");
 	uint16_t step; 
 	double d;
 	
-	getPathStepForDist(170,0.3,step);
-	d = getPathDist(170,step);
-
 	getPathStepForDist(170,1.3,step);
 	d = getPathDist(170,step);
-	std::cout << d;
+
+	getPathStepForDist(170,0.3,step);
+	d = getPathDist(170,step);
 	{
 		int k;
 		double d;
@@ -412,6 +418,7 @@ bool CPTG_Holo_Blend::getPathStepForDist(uint16_t k, double dist, uint16_t &out_
 	}
 
 	// 3 roots for possible solutions within t < T_ramp:
+	MRPT_TODO("Re-solve these solutions for dd=sqrt(dx^2+dy^2)dt !!");
 	double root1;
 	{
 		const double d = dist;
