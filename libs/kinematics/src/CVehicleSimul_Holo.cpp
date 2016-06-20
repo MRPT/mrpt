@@ -24,8 +24,6 @@ CVehicleSimul_Holo::CVehicleSimul_Holo()
 
 void CVehicleSimul_Holo::internal_simulStep(const double dt)
 {
-	mrpt::utils::CDebugOutputCapable::printf_debug("dt=%f m_vel.vx=%.02f\n",dt,m_vel.vx);
-
 	// Update state (forward Euler integration):
 	m_pose.x   += m_vel.vx   * dt;
 	m_pose.y   += m_vel.vy   * dt;
