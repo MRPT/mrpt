@@ -19,7 +19,7 @@ namespace mrpt
 	/** A PTG for optimal paths of type "CS", as named in PTG papers.
 	 * - **Compatible kinematics**: differential-driven / Ackermann steering
 	 * - **Compatible robot shape**: Arbitrary 2D polygon
-	 * - **PTG parameters**: use "PTG configurator" tool in the app ReactiveNavigationDemo
+	 * - **PTG parameters**: Use the app `ptg-configurator`
 	 *
 	 *  See "Obstacle Distance for Car-Like Robots", IEEE Trans. Rob. And Autom, 1999.
 	 * \note [Before MRPT 1.5.0 this was named CPTG5]

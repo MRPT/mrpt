@@ -19,7 +19,7 @@ namespace mrpt
 	/** The "a(symptotic)-alpha PTG", as named in PTG papers.
 	 * - **Compatible kinematics**: differential-driven / Ackermann steering
 	 * - **Compatible robot shape**: Arbitrary 2D polygon
-	 * - **PTG parameters**: use "PTG configurator" tool in the app ReactiveNavigationDemo
+	 * - **PTG parameters**: Use the app `ptg-configurator`
 	 * 
 	 * This PT generator functions are: 
 	 *
