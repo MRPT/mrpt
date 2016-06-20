@@ -19,23 +19,6 @@ using namespace mrpt::system;
 
 IMPLEMENTS_SERIALIZABLE(CPTG_Holo_Blend,CParameterizedTrajectoryGenerator,mrpt::nav)
 
-/* ===============
-equation for "t" values of closest approach to obstacle (x0,y0):
-
-(4*k2^2 + 4*k4^2)*t^3 + (6*k1*k2 + 6*k3*k4)*t^2 + (2*k1^2 + 2*k3^2 - 4*k2*x0 - 4*k4*y0)*t - 2*k1*x0 - 2*k3*y0
- 
-k1=vxi;
-k3=vyi;
-
-k2=( vxf - vxi )/(2*T_ramp)
-k4=( vyf - vyi )/(2*T_ramp)
- 
->> pretty(ans)
-     2       2   3                        2        2       2
-(4 k2  + 4 k4 ) t  + (6 k1 k2 + 6 k3 k4) t  + (2 k1  + 2 k3  - 4 k2 x0 - 4 k4 y0) t - 2 k1 x0 - 2 k3 y0
-
-================== */
-
 CPTG_Holo_Blend::CPTG_Holo_Blend() : 
 	T_ramp(-1.0),
 	V_MAX(-1.0), 
@@ -67,7 +50,7 @@ void CPTG_Holo_Blend::setParams(const mrpt::utils::CConfigFileBase &cfg,const st
 
 std::string CPTG_Holo_Blend::getDescription() const
 {
-	return mrpt::format("PTG_Holo_Blend_Tramp=%.03f",T_ramp);
+	return mrpt::format("PTG_Holo_Blend_Tramp=%.03f_Vmax=%.03f_Wmax=%.03f",T_ramp,V_MAX,W_MAX);
 }
 
 
@@ -124,10 +107,16 @@ void CPTG_Holo_Blend::deinitialize()
 	// Nothing to do in a closed-form PTG.
 }
 
-void CPTG_Holo_Blend::directionToMotionCommand( uint16_t k, std::vector<double> &out_action_cmd ) const
+void CPTG_Holo_Blend::directionToMotionCommand( uint16_t k, std::vector<double> &cmd_vel ) const
 {
-	THROW_EXCEPTION("todo");
-	MRPT_TODO("impl");
+	const double dir_local = CParameterizedTrajectoryGenerator::index2alpha(k);
+
+	// cmd_vel=[vel dir_local ramp_time rot_speed]:
+	cmd_vel.resize(4);
+	cmd_vel[0] = V_MAX;
+	cmd_vel[1] = dir_local;
+	cmd_vel[2] = T_ramp;
+	cmd_vel[3] = W_MAX;
 }
 
 void CPTG_Holo_Blend::renderPathAsSimpleLine(const uint16_t k,mrpt::opengl::CSetOfLines &gl_obj,const float decimate_distance,const float max_path_distance) const
@@ -160,6 +149,24 @@ bool CPTG_Holo_Blend::getPathStepForDist(uint16_t k, double dist, uint16_t &out_
 	MRPT_TODO("impl");
 }
 
+
+/* ===============
+equation for "t" values of closest approach to obstacle (x0,y0):
+
+(4*k2^2 + 4*k4^2)*t^3 + (6*k1*k2 + 6*k3*k4)*t^2 + (2*k1^2 + 2*k3^2 - 4*k2*x0 - 4*k4*y0)*t - 2*k1*x0 - 2*k3*y0
+ 
+k1=vxi;
+k3=vyi;
+
+k2=( vxf - vxi )/(2*T_ramp)
+k4=( vyf - vyi )/(2*T_ramp)
+ 
+>> pretty(ans)
+     2       2   3                        2        2       2
+(4 k2  + 4 k4 ) t  + (6 k1 k2 + 6 k3 k4) t  + (2 k1  + 2 k3  - 4 k2 x0 - 4 k4 y0) t - 2 k1 x0 - 2 k3 y0
+
+================== */
+
 void CPTG_Holo_Blend::updateTPObstacle(double ox, double oy, std::vector<double> &tp_obstacles) const
 {
 	THROW_EXCEPTION("todo");
@@ -168,5 +175,6 @@ void CPTG_Holo_Blend::updateTPObstacle(double ox, double oy, std::vector<double>
 
 void CPTG_Holo_Blend::internal_processNewRobotShape()
 {
+	// Nothing to do in a closed-form PTG.
 }
 

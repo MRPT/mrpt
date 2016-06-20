@@ -25,6 +25,7 @@ CParameterizedTrajectoryGenerator::CParameterizedTrajectoryGenerator() :
 	m_score_priority(1.0)
 { }
 
+MRPT_TODO("Add virtual method to get required params");
 void CParameterizedTrajectoryGenerator::setParamsCommon(const mrpt::utils::CConfigFileBase &cfg,const std::string &sSection,  const std::string &sKeyPrefix)
 {
 	this->refDistance        = cfg.read_double  (sSection, sKeyPrefix+std::string("refDistance"), .0, true );

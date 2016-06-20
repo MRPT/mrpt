@@ -17,9 +17,9 @@ namespace mrpt
 	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE(CPTG_Holo_Blend, CParameterizedTrajectoryGenerator, NAV_IMPEXP)
 
 	/** A PTG for circular-shaped robots with holonomic kinematics.
-	 * - **Compatible kinematics**: Holonomic robot capable of velocity commands with a linear interpolation ("ramp "or "blending") time
+	 * - **Compatible kinematics**: Holonomic robot capable of velocity commands with a linear interpolation ("ramp "or "blending") time. See mrpt::kinematics::CVehicleSimul_Holo
 	 * - **Compatible robot shape**: Circular robots
-	 * - **PTG parameters**: use "PTG configurator" tool in the app ReactiveNavigationDemo
+	 * - **PTG parameters**: Use the app `ptg-configurator`
 	 * 
 	 * \note [New in MRPT 1.5.0]
 	 *  \ingroup nav_tpspace
