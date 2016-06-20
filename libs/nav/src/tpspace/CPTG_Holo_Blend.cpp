@@ -11,6 +11,7 @@
 #include <mrpt/nav/tpspace/CPTG_Holo_Blend.h>
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/utils/CStream.h>
+#include <mrpt/utils/round.h>
 #include "poly34.h"
 
 using namespace mrpt::nav;
@@ -124,8 +125,14 @@ void CPTG_Holo_Blend::initialize(const std::string & cacheFilename, const bool v
 	ASSERT_(W_MAX>0);
 	ASSERT_(m_alphaValuesCount>0);
 
-	// DEBUG:
+
+	// DEBUG TESTS
+#if 0
 	//debugDumpInFiles("1");
+	uint16_t step;
+	getPathStepForDist(170,1.3,step);
+	const double d = getPathDist(170,step);
+#endif
 
 }
 
@@ -219,16 +226,48 @@ bool CPTG_Holo_Blend::getPathStepForDist(uint16_t k, double dist, uint16_t &out_
 	const double k2 = (vxf-vxi)*TR2_;
 	const double k4 = (vyf-vyi)*TR2_;
 
-	// 3 roots for possible solutions within 0<t<t_ramp:
+	// Possible solutions within  t > T_ramp:
 	{
-		double r[3];
-		const double d = dist;
-		r[0] = (pow((k2*k2)*k4*vxi*1.2E1+k2*(k4*k4)*vyi*1.2E1,2.0)*1.0/pow(k2*(k4*k4*k4)*8.0+(k2*k2*k2)*k4*8.0,2.0)*(1.0/9.0)-(k2*k4*(vxi*vxi)*2.0+k2*k4*(vyi*vyi)*2.0)/(k2*(k4*k4*k4)*8.0+(k2*k2*k2)*k4*8.0))*1.0/pow(pow((k2*k2)*k4*vxi*1.2E1+k2*(k4*k4)*vyi*1.2E1,3.0)*1.0/pow(k2*(k4*k4*k4)*8.0+(k2*k2*k2)*k4*8.0,3.0)*(-1.0/2.7E1)+sqrt(-pow(pow((k2*k2)*k4*vxi*1.2E1+k2*(k4*k4)*vyi*1.2E1,2.0)*1.0/pow(k2*(k4*k4*k4)*8.0+(k2*k2*k2)*k4*8.0,2.0)*(1.0/9.0)-(k2*k4*(vxi*vxi)*2.0+k2*k4*(vyi*vyi)*2.0)/(k2*(k4*k4*k4)*8.0+(k2*k2*k2)*k4*8.0),3.0)+pow(pow((k2*k2)*k4*vxi*1.2E1+k2*(k4*k4)*vyi*1.2E1,3.0)*1.0/pow(k2*(k4*k4*k4)*8.0+(k2*k2*k2)*k4*8.0,3.0)*(1.0/2.7E1)+(k4*(vxi*vxi*vxi)*(1.0/2.0)+k2*(vyi*vyi*vyi)*(1.0/2.0)-(d*d)*k2*k4*3.0)/(k2*(k4*k4*k4)*8.0+(k2*k2*k2)*k4*8.0)-(k2*k4*(vxi*vxi)*6.0+k2*k4*(vyi*vyi)*6.0)*((k2*k2)*k4*vxi*1.2E1+k2*(k4*k4)*vyi*1.2E1)*1.0/pow(k2*(k4*k4*k4)*8.0+(k2*k2*k2)*k4*8.0,2.0)*(1.0/6.0),2.0))-(k4*(vxi*vxi*vxi)*(1.0/2.0)+k2*(vyi*vyi*vyi)*(1.0/2.0)-(d*d)*k2*k4*3.0)/(k2*(k4*k4*k4)*8.0+(k2*k2*k2)*k4*8.0)+(k2*k4*(vxi*vxi)*6.0+k2*k4*(vyi*vyi)*6.0)*((k2*k2)*k4*vxi*1.2E1+k2*(k4*k4)*vyi*1.2E1)*1.0/pow(k2*(k4*k4*k4)*8.0+(k2*k2*k2)*k4*8.0,2.0)*(1.0/6.0),1.0/3.0)+pow(pow((k2*k2)*k4*vxi*1.2E1+k2*(k4*k4)*vyi*1.2E1,3.0)*1.0/pow(k2*(k4*k4*k4)*8.0+(k2*k2*k2)*k4*8.0,3.0)*(-1.0/2.7E1)+sqrt(-pow(pow((k2*k2)*k4*vxi*1.2E1+k2*(k4*k4)*vyi*1.2E1,2.0)*1.0/pow(k2*(k4*k4*k4)*8.0+(k2*k2*k2)*k4*8.0,2.0)*(1.0/9.0)-(k2*k4*(vxi*vxi)*2.0+k2*k4*(vyi*vyi)*2.0)/(k2*(k4*k4*k4)*8.0+(k2*k2*k2)*k4*8.0),3.0)+pow(pow((k2*k2)*k4*vxi*1.2E1+k2*(k4*k4)*vyi*1.2E1,3.0)*1.0/pow(k2*(k4*k4*k4)*8.0+(k2*k2*k2)*k4*8.0,3.0)*(1.0/2.7E1)+(k4*(vxi*vxi*vxi)*(1.0/2.0)+k2*(vyi*vyi*vyi)*(1.0/2.0)-(d*d)*k2*k4*3.0)/(k2*(k4*k4*k4)*8.0+(k2*k2*k2)*k4*8.0)-(k2*k4*(vxi*vxi)*6.0+k2*k4*(vyi*vyi)*6.0)*((k2*k2)*k4*vxi*1.2E1+k2*(k4*k4)*vyi*1.2E1)*1.0/pow(k2*(k4*k4*k4)*8.0+(k2*k2*k2)*k4*8.0,2.0)*(1.0/6.0),2.0))-(k4*(vxi*vxi*vxi)*(1.0/2.0)+k2*(vyi*vyi*vyi)*(1.0/2.0)-(d*d)*k2*k4*3.0)/(k2*(k4*k4*k4)*8.0+(k2*k2*k2)*k4*8.0)+(k2*k4*(vxi*vxi)*6.0+k2*k4*(vyi*vyi)*6.0)*((k2*k2)*k4*vxi*1.2E1+k2*(k4*k4)*vyi*1.2E1)*1.0/pow(k2*(k4*k4*k4)*8.0+(k2*k2*k2)*k4*8.0,2.0)*(1.0/6.0),1.0/3.0)-((k2*k2)*k4*vxi*4.0+k2*(k4*k4)*vyi*4.0)/(k2*(k4*k4*k4)*8.0+(k2*k2*k2)*k4*8.0);
-		r[1] = (pow((k2*k2)*k4*vxi*1.2E1+k2*(k4*k4)*vyi*1.2E1,2.0)*1.0/pow(k2*(k4*k4*k4)*8.0+(k2*k2*k2)*k4*8.0,2.0)*(1.0/9.0)-(k2*k4*(vxi*vxi)*2.0+k2*k4*(vyi*vyi)*2.0)/(k2*(k4*k4*k4)*8.0+(k2*k2*k2)*k4*8.0))*1.0/pow(pow((k2*k2)*k4*vxi*1.2E1+k2*(k4*k4)*vyi*1.2E1,3.0)*1.0/pow(k2*(k4*k4*k4)*8.0+(k2*k2*k2)*k4*8.0,3.0)*(-1.0/2.7E1)+sqrt(-pow(pow((k2*k2)*k4*vxi*1.2E1+k2*(k4*k4)*vyi*1.2E1,2.0)*1.0/pow(k2*(k4*k4*k4)*8.0+(k2*k2*k2)*k4*8.0,2.0)*(1.0/9.0)-(k2*k4*(vxi*vxi)*2.0+k2*k4*(vyi*vyi)*2.0)/(k2*(k4*k4*k4)*8.0+(k2*k2*k2)*k4*8.0),3.0)+pow(pow((k2*k2)*k4*vxi*1.2E1+k2*(k4*k4)*vyi*1.2E1,3.0)*1.0/pow(k2*(k4*k4*k4)*8.0+(k2*k2*k2)*k4*8.0,3.0)*(1.0/2.7E1)+(k4*(vxi*vxi*vxi)*(1.0/2.0)+k2*(vyi*vyi*vyi)*(1.0/2.0)-(d*d)*k2*k4*3.0)/(k2*(k4*k4*k4)*8.0+(k2*k2*k2)*k4*8.0)-(k2*k4*(vxi*vxi)*6.0+k2*k4*(vyi*vyi)*6.0)*((k2*k2)*k4*vxi*1.2E1+k2*(k4*k4)*vyi*1.2E1)*1.0/pow(k2*(k4*k4*k4)*8.0+(k2*k2*k2)*k4*8.0,2.0)*(1.0/6.0),2.0))-(k4*(vxi*vxi*vxi)*(1.0/2.0)+k2*(vyi*vyi*vyi)*(1.0/2.0)-(d*d)*k2*k4*3.0)/(k2*(k4*k4*k4)*8.0+(k2*k2*k2)*k4*8.0)+(k2*k4*(vxi*vxi)*6.0+k2*k4*(vyi*vyi)*6.0)*((k2*k2)*k4*vxi*1.2E1+k2*(k4*k4)*vyi*1.2E1)*1.0/pow(k2*(k4*k4*k4)*8.0+(k2*k2*k2)*k4*8.0,2.0)*(1.0/6.0),1.0/3.0)*(-1.0/2.0)-sqrt(3.0)*((pow((k2*k2)*k4*vxi*1.2E1+k2*(k4*k4)*vyi*1.2E1,2.0)*1.0/pow(k2*(k4*k4*k4)*8.0+(k2*k2*k2)*k4*8.0,2.0)*(1.0/9.0)-(k2*k4*(vxi*vxi)*2.0+k2*k4*(vyi*vyi)*2.0)/(k2*(k4*k4*k4)*8.0+(k2*k2*k2)*k4*8.0))*1.0/pow(pow((k2*k2)*k4*vxi*1.2E1+k2*(k4*k4)*vyi*1.2E1,3.0)*1.0/pow(k2*(k4*k4*k4)*8.0+(k2*k2*k2)*k4*8.0,3.0)*(-1.0/2.7E1)+sqrt(-pow(pow((k2*k2)*k4*vxi*1.2E1+k2*(k4*k4)*vyi*1.2E1,2.0)*1.0/pow(k2*(k4*k4*k4)*8.0+(k2*k2*k2)*k4*8.0,2.0)*(1.0/9.0)-(k2*k4*(vxi*vxi)*2.0+k2*k4*(vyi*vyi)*2.0)/(k2*(k4*k4*k4)*8.0+(k2*k2*k2)*k4*8.0),3.0)+pow(pow((k2*k2)*k4*vxi*1.2E1+k2*(k4*k4)*vyi*1.2E1,3.0)*1.0/pow(k2*(k4*k4*k4)*8.0+(k2*k2*k2)*k4*8.0,3.0)*(1.0/2.7E1)+(k4*(vxi*vxi*vxi)*(1.0/2.0)+k2*(vyi*vyi*vyi)*(1.0/2.0)-(d*d)*k2*k4*3.0)/(k2*(k4*k4*k4)*8.0+(k2*k2*k2)*k4*8.0)-(k2*k4*(vxi*vxi)*6.0+k2*k4*(vyi*vyi)*6.0)*((k2*k2)*k4*vxi*1.2E1+k2*(k4*k4)*vyi*1.2E1)*1.0/pow(k2*(k4*k4*k4)*8.0+(k2*k2*k2)*k4*8.0,2.0)*(1.0/6.0),2.0))-(k4*(vxi*vxi*vxi)*(1.0/2.0)+k2*(vyi*vyi*vyi)*(1.0/2.0)-(d*d)*k2*k4*3.0)/(k2*(k4*k4*k4)*8.0+(k2*k2*k2)*k4*8.0)+(k2*k4*(vxi*vxi)*6.0+k2*k4*(vyi*vyi)*6.0)*((k2*k2)*k4*vxi*1.2E1+k2*(k4*k4)*vyi*1.2E1)*1.0/pow(k2*(k4*k4*k4)*8.0+(k2*k2*k2)*k4*8.0,2.0)*(1.0/6.0),1.0/3.0)-pow(pow((k2*k2)*k4*vxi*1.2E1+k2*(k4*k4)*vyi*1.2E1,3.0)*1.0/pow(k2*(k4*k4*k4)*8.0+(k2*k2*k2)*k4*8.0,3.0)*(-1.0/2.7E1)+sqrt(-pow(pow((k2*k2)*k4*vxi*1.2E1+k2*(k4*k4)*vyi*1.2E1,2.0)*1.0/pow(k2*(k4*k4*k4)*8.0+(k2*k2*k2)*k4*8.0,2.0)*(1.0/9.0)-(k2*k4*(vxi*vxi)*2.0+k2*k4*(vyi*vyi)*2.0)/(k2*(k4*k4*k4)*8.0+(k2*k2*k2)*k4*8.0),3.0)+pow(pow((k2*k2)*k4*vxi*1.2E1+k2*(k4*k4)*vyi*1.2E1,3.0)*1.0/pow(k2*(k4*k4*k4)*8.0+(k2*k2*k2)*k4*8.0,3.0)*(1.0/2.7E1)+(k4*(vxi*vxi*vxi)*(1.0/2.0)+k2*(vyi*vyi*vyi)*(1.0/2.0)-(d*d)*k2*k4*3.0)/(k2*(k4*k4*k4)*8.0+(k2*k2*k2)*k4*8.0)-(k2*k4*(vxi*vxi)*6.0+k2*k4*(vyi*vyi)*6.0)*((k2*k2)*k4*vxi*1.2E1+k2*(k4*k4)*vyi*1.2E1)*1.0/pow(k2*(k4*k4*k4)*8.0+(k2*k2*k2)*k4*8.0,2.0)*(1.0/6.0),2.0))-(k4*(vxi*vxi*vxi)*(1.0/2.0)+k2*(vyi*vyi*vyi)*(1.0/2.0)-(d*d)*k2*k4*3.0)/(k2*(k4*k4*k4)*8.0+(k2*k2*k2)*k4*8.0)+(k2*k4*(vxi*vxi)*6.0+k2*k4*(vyi*vyi)*6.0)*((k2*k2)*k4*vxi*1.2E1+k2*(k4*k4)*vyi*1.2E1)*1.0/pow(k2*(k4*k4*k4)*8.0+(k2*k2*k2)*k4*8.0,2.0)*(1.0/6.0),1.0/3.0))*5.0E-1*sqrt(-1.0)-pow(pow((k2*k2)*k4*vxi*1.2E1+k2*(k4*k4)*vyi*1.2E1,3.0)*1.0/pow(k2*(k4*k4*k4)*8.0+(k2*k2*k2)*k4*8.0,3.0)*(-1.0/2.7E1)+sqrt(-pow(pow((k2*k2)*k4*vxi*1.2E1+k2*(k4*k4)*vyi*1.2E1,2.0)*1.0/pow(k2*(k4*k4*k4)*8.0+(k2*k2*k2)*k4*8.0,2.0)*(1.0/9.0)-(k2*k4*(vxi*vxi)*2.0+k2*k4*(vyi*vyi)*2.0)/(k2*(k4*k4*k4)*8.0+(k2*k2*k2)*k4*8.0),3.0)+pow(pow((k2*k2)*k4*vxi*1.2E1+k2*(k4*k4)*vyi*1.2E1,3.0)*1.0/pow(k2*(k4*k4*k4)*8.0+(k2*k2*k2)*k4*8.0,3.0)*(1.0/2.7E1)+(k4*(vxi*vxi*vxi)*(1.0/2.0)+k2*(vyi*vyi*vyi)*(1.0/2.0)-(d*d)*k2*k4*3.0)/(k2*(k4*k4*k4)*8.0+(k2*k2*k2)*k4*8.0)-(k2*k4*(vxi*vxi)*6.0+k2*k4*(vyi*vyi)*6.0)*((k2*k2)*k4*vxi*1.2E1+k2*(k4*k4)*vyi*1.2E1)*1.0/pow(k2*(k4*k4*k4)*8.0+(k2*k2*k2)*k4*8.0,2.0)*(1.0/6.0),2.0))-(k4*(vxi*vxi*vxi)*(1.0/2.0)+k2*(vyi*vyi*vyi)*(1.0/2.0)-(d*d)*k2*k4*3.0)/(k2*(k4*k4*k4)*8.0+(k2*k2*k2)*k4*8.0)+(k2*k4*(vxi*vxi)*6.0+k2*k4*(vyi*vyi)*6.0)*((k2*k2)*k4*vxi*1.2E1+k2*(k4*k4)*vyi*1.2E1)*1.0/pow(k2*(k4*k4*k4)*8.0+(k2*k2*k2)*k4*8.0,2.0)*(1.0/6.0),1.0/3.0)*(1.0/2.0)-((k2*k2)*k4*vxi*4.0+k2*(k4*k4)*vyi*4.0)/(k2*(k4*k4*k4)*8.0+(k2*k2*k2)*k4*8.0);
-		r[2] = (pow((k2*k2)*k4*vxi*1.2E1+k2*(k4*k4)*vyi*1.2E1,2.0)*1.0/pow(k2*(k4*k4*k4)*8.0+(k2*k2*k2)*k4*8.0,2.0)*(1.0/9.0)-(k2*k4*(vxi*vxi)*2.0+k2*k4*(vyi*vyi)*2.0)/(k2*(k4*k4*k4)*8.0+(k2*k2*k2)*k4*8.0))*1.0/pow(pow((k2*k2)*k4*vxi*1.2E1+k2*(k4*k4)*vyi*1.2E1,3.0)*1.0/pow(k2*(k4*k4*k4)*8.0+(k2*k2*k2)*k4*8.0,3.0)*(-1.0/2.7E1)+sqrt(-pow(pow((k2*k2)*k4*vxi*1.2E1+k2*(k4*k4)*vyi*1.2E1,2.0)*1.0/pow(k2*(k4*k4*k4)*8.0+(k2*k2*k2)*k4*8.0,2.0)*(1.0/9.0)-(k2*k4*(vxi*vxi)*2.0+k2*k4*(vyi*vyi)*2.0)/(k2*(k4*k4*k4)*8.0+(k2*k2*k2)*k4*8.0),3.0)+pow(pow((k2*k2)*k4*vxi*1.2E1+k2*(k4*k4)*vyi*1.2E1,3.0)*1.0/pow(k2*(k4*k4*k4)*8.0+(k2*k2*k2)*k4*8.0,3.0)*(1.0/2.7E1)+(k4*(vxi*vxi*vxi)*(1.0/2.0)+k2*(vyi*vyi*vyi)*(1.0/2.0)-(d*d)*k2*k4*3.0)/(k2*(k4*k4*k4)*8.0+(k2*k2*k2)*k4*8.0)-(k2*k4*(vxi*vxi)*6.0+k2*k4*(vyi*vyi)*6.0)*((k2*k2)*k4*vxi*1.2E1+k2*(k4*k4)*vyi*1.2E1)*1.0/pow(k2*(k4*k4*k4)*8.0+(k2*k2*k2)*k4*8.0,2.0)*(1.0/6.0),2.0))-(k4*(vxi*vxi*vxi)*(1.0/2.0)+k2*(vyi*vyi*vyi)*(1.0/2.0)-(d*d)*k2*k4*3.0)/(k2*(k4*k4*k4)*8.0+(k2*k2*k2)*k4*8.0)+(k2*k4*(vxi*vxi)*6.0+k2*k4*(vyi*vyi)*6.0)*((k2*k2)*k4*vxi*1.2E1+k2*(k4*k4)*vyi*1.2E1)*1.0/pow(k2*(k4*k4*k4)*8.0+(k2*k2*k2)*k4*8.0,2.0)*(1.0/6.0),1.0/3.0)*(-1.0/2.0)+sqrt(3.0)*((pow((k2*k2)*k4*vxi*1.2E1+k2*(k4*k4)*vyi*1.2E1,2.0)*1.0/pow(k2*(k4*k4*k4)*8.0+(k2*k2*k2)*k4*8.0,2.0)*(1.0/9.0)-(k2*k4*(vxi*vxi)*2.0+k2*k4*(vyi*vyi)*2.0)/(k2*(k4*k4*k4)*8.0+(k2*k2*k2)*k4*8.0))*1.0/pow(pow((k2*k2)*k4*vxi*1.2E1+k2*(k4*k4)*vyi*1.2E1,3.0)*1.0/pow(k2*(k4*k4*k4)*8.0+(k2*k2*k2)*k4*8.0,3.0)*(-1.0/2.7E1)+sqrt(-pow(pow((k2*k2)*k4*vxi*1.2E1+k2*(k4*k4)*vyi*1.2E1,2.0)*1.0/pow(k2*(k4*k4*k4)*8.0+(k2*k2*k2)*k4*8.0,2.0)*(1.0/9.0)-(k2*k4*(vxi*vxi)*2.0+k2*k4*(vyi*vyi)*2.0)/(k2*(k4*k4*k4)*8.0+(k2*k2*k2)*k4*8.0),3.0)+pow(pow((k2*k2)*k4*vxi*1.2E1+k2*(k4*k4)*vyi*1.2E1,3.0)*1.0/pow(k2*(k4*k4*k4)*8.0+(k2*k2*k2)*k4*8.0,3.0)*(1.0/2.7E1)+(k4*(vxi*vxi*vxi)*(1.0/2.0)+k2*(vyi*vyi*vyi)*(1.0/2.0)-(d*d)*k2*k4*3.0)/(k2*(k4*k4*k4)*8.0+(k2*k2*k2)*k4*8.0)-(k2*k4*(vxi*vxi)*6.0+k2*k4*(vyi*vyi)*6.0)*((k2*k2)*k4*vxi*1.2E1+k2*(k4*k4)*vyi*1.2E1)*1.0/pow(k2*(k4*k4*k4)*8.0+(k2*k2*k2)*k4*8.0,2.0)*(1.0/6.0),2.0))-(k4*(vxi*vxi*vxi)*(1.0/2.0)+k2*(vyi*vyi*vyi)*(1.0/2.0)-(d*d)*k2*k4*3.0)/(k2*(k4*k4*k4)*8.0+(k2*k2*k2)*k4*8.0)+(k2*k4*(vxi*vxi)*6.0+k2*k4*(vyi*vyi)*6.0)*((k2*k2)*k4*vxi*1.2E1+k2*(k4*k4)*vyi*1.2E1)*1.0/pow(k2*(k4*k4*k4)*8.0+(k2*k2*k2)*k4*8.0,2.0)*(1.0/6.0),1.0/3.0)-pow(pow((k2*k2)*k4*vxi*1.2E1+k2*(k4*k4)*vyi*1.2E1,3.0)*1.0/pow(k2*(k4*k4*k4)*8.0+(k2*k2*k2)*k4*8.0,3.0)*(-1.0/2.7E1)+sqrt(-pow(pow((k2*k2)*k4*vxi*1.2E1+k2*(k4*k4)*vyi*1.2E1,2.0)*1.0/pow(k2*(k4*k4*k4)*8.0+(k2*k2*k2)*k4*8.0,2.0)*(1.0/9.0)-(k2*k4*(vxi*vxi)*2.0+k2*k4*(vyi*vyi)*2.0)/(k2*(k4*k4*k4)*8.0+(k2*k2*k2)*k4*8.0),3.0)+pow(pow((k2*k2)*k4*vxi*1.2E1+k2*(k4*k4)*vyi*1.2E1,3.0)*1.0/pow(k2*(k4*k4*k4)*8.0+(k2*k2*k2)*k4*8.0,3.0)*(1.0/2.7E1)+(k4*(vxi*vxi*vxi)*(1.0/2.0)+k2*(vyi*vyi*vyi)*(1.0/2.0)-(d*d)*k2*k4*3.0)/(k2*(k4*k4*k4)*8.0+(k2*k2*k2)*k4*8.0)-(k2*k4*(vxi*vxi)*6.0+k2*k4*(vyi*vyi)*6.0)*((k2*k2)*k4*vxi*1.2E1+k2*(k4*k4)*vyi*1.2E1)*1.0/pow(k2*(k4*k4*k4)*8.0+(k2*k2*k2)*k4*8.0,2.0)*(1.0/6.0),2.0))-(k4*(vxi*vxi*vxi)*(1.0/2.0)+k2*(vyi*vyi*vyi)*(1.0/2.0)-(d*d)*k2*k4*3.0)/(k2*(k4*k4*k4)*8.0+(k2*k2*k2)*k4*8.0)+(k2*k4*(vxi*vxi)*6.0+k2*k4*(vyi*vyi)*6.0)*((k2*k2)*k4*vxi*1.2E1+k2*(k4*k4)*vyi*1.2E1)*1.0/pow(k2*(k4*k4*k4)*8.0+(k2*k2*k2)*k4*8.0,2.0)*(1.0/6.0),1.0/3.0))*5.0E-1*sqrt(-1.0)-pow(pow((k2*k2)*k4*vxi*1.2E1+k2*(k4*k4)*vyi*1.2E1,3.0)*1.0/pow(k2*(k4*k4*k4)*8.0+(k2*k2*k2)*k4*8.0,3.0)*(-1.0/2.7E1)+sqrt(-pow(pow((k2*k2)*k4*vxi*1.2E1+k2*(k4*k4)*vyi*1.2E1,2.0)*1.0/pow(k2*(k4*k4*k4)*8.0+(k2*k2*k2)*k4*8.0,2.0)*(1.0/9.0)-(k2*k4*(vxi*vxi)*2.0+k2*k4*(vyi*vyi)*2.0)/(k2*(k4*k4*k4)*8.0+(k2*k2*k2)*k4*8.0),3.0)+pow(pow((k2*k2)*k4*vxi*1.2E1+k2*(k4*k4)*vyi*1.2E1,3.0)*1.0/pow(k2*(k4*k4*k4)*8.0+(k2*k2*k2)*k4*8.0,3.0)*(1.0/2.7E1)+(k4*(vxi*vxi*vxi)*(1.0/2.0)+k2*(vyi*vyi*vyi)*(1.0/2.0)-(d*d)*k2*k4*3.0)/(k2*(k4*k4*k4)*8.0+(k2*k2*k2)*k4*8.0)-(k2*k4*(vxi*vxi)*6.0+k2*k4*(vyi*vyi)*6.0)*((k2*k2)*k4*vxi*1.2E1+k2*(k4*k4)*vyi*1.2E1)*1.0/pow(k2*(k4*k4*k4)*8.0+(k2*k2*k2)*k4*8.0,2.0)*(1.0/6.0),2.0))-(k4*(vxi*vxi*vxi)*(1.0/2.0)+k2*(vyi*vyi*vyi)*(1.0/2.0)-(d*d)*k2*k4*3.0)/(k2*(k4*k4*k4)*8.0+(k2*k2*k2)*k4*8.0)+(k2*k4*(vxi*vxi)*6.0+k2*k4*(vyi*vyi)*6.0)*((k2*k2)*k4*vxi*1.2E1+k2*(k4*k4)*vyi*1.2E1)*1.0/pow(k2*(k4*k4*k4)*8.0+(k2*k2*k2)*k4*8.0,2.0)*(1.0/6.0),1.0/3.0)*(1.0/2.0)-((k2*k2)*k4*vxi*4.0+k2*(k4*k4)*vyi*4.0)/(k2*(k4*k4*k4)*8.0+(k2*k2*k2)*k4*8.0);
+		const double num1 = vxi+2*T_ramp*k2;
+		const double num2 = vyi+2*T_ramp*k4;
+		const double dist_trans_T_ramp = std::sqrt( ( num1*num1*num1/k2 + num2*num2*num2/k4 )/6.0  );
+		
+		if (dist>dist_trans_T_ramp)
+		{
+			// Good solution:
+			const double t_solved = T_ramp + (dist-dist_trans_T_ramp)/V_MAX;
+			out_step = mrpt::utils::round( t_solved / PATH_TIME_STEP );
+			return true;
+		}
 	}
- 
-	return 0;
+
+	// 3 roots for possible solutions within t < T_ramp:
+	double root1;
+	{
+		const double d = dist;
+
+		const double z0 = ((k2*k2)*k4*vxi*4.0+k2*(k4*k4)*vyi*4.0);
+		const double z4 = (k2*(k4*k4*k4)*8.0+(k2*k2*k2)*k4*8.0);
+		const double z1 =z0/z4;
+		const double z2 = (pow((k2*k2)*k4*vxi*1.2E1+k2*(k4*k4)*vyi*1.2E1,2.0)*1.0/pow(k2*(k4*k4*k4)*8.0+(k2*k2*k2)*k4*8.0,2.0)*(1.0/9.0)-(k2*k4*(vxi*vxi)*2.0+k2*k4*(vyi*vyi)*2.0)/z4);
+		const double z3 = pow(pow((k2*k2)*k4*vxi*1.2E1+k2*(k4*k4)*vyi*1.2E1,3.0)*1.0/pow(k2*(k4*k4*k4)*8.0+(k2*k2*k2)*k4*8.0,3.0)*(-1.0/2.7E1)+sqrt(-pow(pow((k2*k2)*k4*vxi*1.2E1+k2*(k4*k4)*vyi*1.2E1,2.0)*1.0/pow(k2*(k4*k4*k4)*8.0+(k2*k2*k2)*k4*8.0,2.0)*(1.0/9.0)-(k2*k4*(vxi*vxi)*2.0+k2*k4*(vyi*vyi)*2.0)/z4,3.0)+pow(pow((k2*k2)*k4*vxi*1.2E1+k2*(k4*k4)*vyi*1.2E1,3.0)*1.0/pow(k2*(k4*k4*k4)*8.0+(k2*k2*k2)*k4*8.0,3.0)*(1.0/2.7E1)+(k4*(vxi*vxi*vxi)*(1.0/2.0)+k2*(vyi*vyi*vyi)*(1.0/2.0)-(d*d)*k2*k4*3.0)/z4-(k2*k4*(vxi*vxi)*6.0+k2*k4*(vyi*vyi)*6.0)*((k2*k2)*k4*vxi*1.2E1+k2*(k4*k4)*vyi*1.2E1)*1.0/pow(k2*(k4*k4*k4)*8.0+(k2*k2*k2)*k4*8.0,2.0)*(1.0/6.0),2.0))-(k4*(vxi*vxi*vxi)*(1.0/2.0)+k2*(vyi*vyi*vyi)*(1.0/2.0)-(d*d)*k2*k4*3.0)/z4+(k2*k4*(vxi*vxi)*6.0+k2*k4*(vyi*vyi)*6.0)*((k2*k2)*k4*vxi*1.2E1+k2*(k4*k4)*vyi*1.2E1)*1.0/pow(k2*(k4*k4*k4)*8.0+(k2*k2*k2)*k4*8.0,2.0)*(1.0/6.0),1.0/3.0);
+
+		root1 = z2/z3+z3-z0/z4;
+		// root 2 & 3 are always complex numbers: discarded
+	}
+
+	if (root1==root1 && // NAN
+		mrpt::math::isFinite(root1) && // IND
+		root1>=0 && 
+		root1<=T_ramp )
+	{
+		// Good solution:
+		out_step = mrpt::utils::round( root1 / PATH_TIME_STEP );
+		return true;
+	}
+
+
+	return false;
 }
 
 
