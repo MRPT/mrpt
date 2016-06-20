@@ -33,7 +33,7 @@
 
 MRPT_TODO("Add PTG configurator tool");
 
-const double NAV_SIMUL_TIMESTEP = 25e-3;
+const double NAV_SIMUL_TIMESTEP_MS = 25;
 
 
 // A custom Art provider for customizing the icons:
@@ -423,7 +423,7 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(wxWindow* parent,wxWi
     StatusBar1->SetStatusStyles(3,__wxStatusBarStyles_1);
     SetStatusBar(StatusBar1);
     timRunSimul.SetOwner(this, ID_TIMER1);
-    timRunSimul.Start(10, false);
+    timRunSimul.Start(250, false);
     FlexGridSizer1->SetSizeHints(this);
     Center();
     
@@ -728,10 +728,10 @@ void reactive_navigator_demoframe::OntimRunSimulTrigger(wxTimerEvent& event)
 		}
 
 		if (m_is_running) {
-			simulateOneStep( NAV_SIMUL_TIMESTEP );
+			simulateOneStep( NAV_SIMUL_TIMESTEP_MS*1e-3 );
 		}
 		updateViewsDynamicObjects();
-		timRunSimul.Start(10, true); // execute the simulation step by step ("one shot" timer) so in the event of an exception, we don't output an endless stream of errors.
+		timRunSimul.Start(NAV_SIMUL_TIMESTEP_MS, true); // execute the simulation step by step ("one shot" timer) so in the event of an exception, we don't output an endless stream of errors.
 	}
 	catch (std::exception &e)
 	{
@@ -812,35 +812,50 @@ bool reactive_navigator_demoframe::reinitSimulator()
 
 void reactive_navigator_demoframe::simulateOneStep(double time_step)
 {
-	// Simulate 360deg range scan:
-	CObservation2DRangeScan      simulatedScan;
+	const double simul_time = m_robotSimul->getTime();
 
-	simulatedScan.aperture = M_2PI;
-	simulatedScan.rightToLeft = true;
-	simulatedScan.maxRange = m_simul_options.MAX_SENSOR_RADIUS;
-	simulatedScan.sensorPose = CPose2D(0,0,0.10);
+	static double LAST_TIM_LIDAR    = -1e6;
+	static double LAST_TIM_REACTIVE = -1e6;
 
-	m_gridMap.laserScanSimulator( simulatedScan, m_robotSimul->getCurrentGTPose(),0.5, m_simul_options.SENSOR_NUM_RANGES, m_simul_options.SENSOR_RANGE_NOISE_STD );
-
-	// Build the obstacles points map for the reactive:
+	if (simul_time-LAST_TIM_LIDAR > 1.0/m_simul_options.SENSOR_RATE )
 	{
-		m_latest_obstacles.insertionOptions.minDistBetweenLaserPoints = 0.005f;
-		m_latest_obstacles.insertionOptions.also_interpolate = false;
+		LAST_TIM_LIDAR = simul_time;
 
-		m_latest_obstacles.clear(); // erase old points
-		m_latest_obstacles.insertObservation( &simulatedScan );
-		// m_latest_obstacles is ref-copied into the robot2nav interface.
+		// Simulate 360deg range scan:
+		CObservation2DRangeScan      simulatedScan;
+
+		simulatedScan.aperture = M_2PI;
+		simulatedScan.rightToLeft = true;
+		simulatedScan.maxRange = m_simul_options.MAX_SENSOR_RADIUS;
+		simulatedScan.sensorPose = CPose2D(0,0,0.10);
+
+		m_gridMap.laserScanSimulator( simulatedScan, m_robotSimul->getCurrentGTPose(),0.5, m_simul_options.SENSOR_NUM_RANGES, m_simul_options.SENSOR_RANGE_NOISE_STD );
+
+		// Build the obstacles points map for the reactive:
+		{
+			m_latest_obstacles.insertionOptions.minDistBetweenLaserPoints = 0.005f;
+			m_latest_obstacles.insertionOptions.also_interpolate = false;
+
+			m_latest_obstacles.clear(); // erase old points
+			m_latest_obstacles.insertObservation( &simulatedScan );
+			// m_latest_obstacles is ref-copied into the robot2nav interface.
+		}
+
+		gl_scan3D->setScan( simulatedScan );  // Draw real scan in 3D view
+
+		// Normalize for plotting it into the local view:
+		for (size_t j=0;j<simulatedScan.scan.size();j++) simulatedScan.scan[j] /= simulatedScan.maxRange;
+
+		gl_scan2D->setScan( simulatedScan ); // Draw scaled scan in right-hand view
 	}
 
-	gl_scan3D->setScan( simulatedScan );  // Draw real scan in 3D view
-
-	// Normalize for plotting it into the local view:
-	for (size_t j=0;j<simulatedScan.scan.size();j++) simulatedScan.scan[j] /= simulatedScan.maxRange;
-
-	gl_scan2D->setScan( simulatedScan ); // Draw scaled scan in right-hand view
-
 	// Navigate:
-	m_navMethod->navigationStep();
+	if (simul_time-LAST_TIM_REACTIVE > 1.0/m_simul_options.NAVIGATION_RATE )
+	{
+		LAST_TIM_REACTIVE = simul_time;
+
+		m_navMethod->navigationStep();
+	}
 
 	// Run robot simulator:
 	m_robotSimul->simulateOneTimeStep(time_step);
@@ -915,7 +930,7 @@ void reactive_navigator_demoframe::simulateOneStep(double time_step)
 			for (size_t j=0;j<N_STEPS;j++)
 			{
 				const double sec = log->gaps_ini[i] + j*(log->gaps_end[i]-log->gaps_ini[i])/static_cast<double>(N_STEPS-1);
-				const double ang = M_PI *( -1 + 2*sec/((float)simulatedScan.scan.size()) );
+				const double ang = M_PI *( -1 + 2*sec/((float)lfr.infoPerPTG[0].TP_Obstacles.size()) );
 				const double d = lfr.infoPerPTG[0].TP_Obstacles[sec]-0.05;
 				gl_nd_gaps->appendLineStrip(d*cos(ang),d*sin(ang),0);
 			}
@@ -1091,7 +1106,9 @@ void reactive_navigator_demoframe::Onplot3DMouseClick(wxMouseEvent& event)
 reactive_navigator_demoframe::TOptions::TOptions() :
 	MAX_SENSOR_RADIUS ( 10.0 ),
 	SENSOR_NUM_RANGES ( 181),
-	SENSOR_RANGE_NOISE_STD (0.02)
+	SENSOR_RANGE_NOISE_STD (0.02),
+	SENSOR_RATE(10.0),
+	NAVIGATION_RATE(10.0)
 {
 }
 void reactive_navigator_demoframe::TOptions::loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section)
@@ -1102,6 +1119,8 @@ void reactive_navigator_demoframe::TOptions::loadFromConfigFile(const mrpt::util
 	MRPT_LOAD_CONFIG_VAR(MAX_SENSOR_RADIUS,double,  source,section );
 	MRPT_LOAD_CONFIG_VAR(SENSOR_NUM_RANGES, uint64_t,  source,section );
 	MRPT_LOAD_CONFIG_VAR(SENSOR_RANGE_NOISE_STD,double,  source,section );
+	MRPT_LOAD_CONFIG_VAR(SENSOR_RATE,double,  source,section );
+	MRPT_LOAD_CONFIG_VAR(NAVIGATION_RATE,double,  source,section );
 
 	MRPT_END
 }
@@ -1114,6 +1133,8 @@ void reactive_navigator_demoframe::TOptions::saveToConfigFile(mrpt::utils::CConf
 	cfg.write(section,"MAX_SENSOR_RADIUS",MAX_SENSOR_RADIUS,   WN,WV, "Maximum range of the 360deg sensor (meters)");
 	cfg.write(section,"SENSOR_NUM_RANGES",SENSOR_NUM_RANGES,   WN,WV, "Number of ranges in the 360deg sensor FOV");
 	cfg.write(section,"SENSOR_RANGE_NOISE_STD",SENSOR_RANGE_NOISE_STD,   WN,WV, "Sensor noise (one sigma, in meters)");
+	cfg.write(section,"SENSOR_RATE",SENSOR_RATE,   WN,WV, "Sensor rate (Hz)");
+	cfg.write(section,"NAVIGATION_RATE",NAVIGATION_RATE,   WN,WV, "Navigation algorithm rate (Hz)");
 
 	MRPT_END
 }

@@ -131,7 +131,7 @@ bool CPTG_Holo_Blend::inverseMap_WS2TP(double x, double y, int &out_k, double &o
 	MRPT_UNUSED_PARAM(tolerance_dist);
 	ASSERT_(x!=0 || y!=0);
 
-	const double TIME_MISMATCH_TOLERANCE = 1.2*((2*M_PI/m_alphaValuesCount) * refDistance)/V_MAX;
+	const double TIME_MISMATCH_TOLERANCE = 4.0*((2*M_PI/m_alphaValuesCount) * std::sqrt(x*x+y*y))/V_MAX;
 
 	double found_min_dist = std::numeric_limits<double>::max();
 	int    found_k        = -1; // invalid
@@ -265,7 +265,7 @@ bool CPTG_Holo_Blend::inverseMap_WS2TP(double x, double y, int &out_k, double &o
 
 	if (found_k>=0)
 	{
-		out_d = found_min_dist;
+		out_d = found_min_dist / this->refDistance;
 		out_k =  found_k;
 		return true;
 	}
@@ -289,7 +289,7 @@ void CPTG_Holo_Blend::initialize(const std::string & cacheFilename, const bool v
 
 
 	// DEBUG TESTS
-#if 1
+#if 0
 	//debugDumpInFiles("1");
 	uint16_t step; 
 	double d;
@@ -300,13 +300,13 @@ void CPTG_Holo_Blend::initialize(const std::string & cacheFilename, const bool v
 	getPathStepForDist(170,1.3,step);
 	d = getPathDist(170,step);
 	std::cout << d;
-#endif
-
 	{
 		int k;
 		double d;
 		bool valid=inverseMap_WS2TP(1,5,k,d);
 	}
+#endif
+
 
 }
 
@@ -460,6 +460,7 @@ k4=( vyf - vyi )/(2*T_ramp)
 
 void CPTG_Holo_Blend::updateTPObstacle(double ox, double oy, std::vector<double> &tp_obstacles) const
 {
+	ox++;
 	MRPT_TODO("impl");
 }
 

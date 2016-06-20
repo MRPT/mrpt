@@ -406,12 +406,23 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 			}
 
 			// Normal PTG validity filter: check if target falls into the PTG domain:
-			ipf.valid_TP = ipf.valid_TP && ptg->PTG_IsIntoDomain( relTarget.x(),relTarget.y() );
-
 			if (ipf.valid_TP)
 			{
-				ptg->inverseMap_WS2TP(relTarget.x(),relTarget.y(),ipf.target_k,ipf.target_dist);
+				ipf.valid_TP = ptg->inverseMap_WS2TP(relTarget.x(),relTarget.y(),ipf.target_k,ipf.target_dist);
+			}
 
+			if (!ipf.valid_TP)
+			{
+				ipf.target_k=0;
+				ipf.target_dist=0;
+
+				{   // Invalid PTG (target out of reachable space):
+					// - holonomicMovement= Leave default values
+					HLFR = CLogFileRecord_VFF::Create();
+				}
+			}
+			else
+			{
 				ipf.target_alpha = ptg->index2alpha(ipf.target_k);
 				ipf.TP_Target.x = cos(ipf.target_alpha) * ipf.target_dist;
 				ipf.TP_Target.y = sin(ipf.target_alpha) * ipf.target_dist;
@@ -479,11 +490,6 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 
 
 			} // end "valid_TP"
-			else
-			{   // Invalid PTG (target out of reachable space):
-				// - holonomicMovement= Leave default values
-				HLFR = CLogFileRecord_VFF::Create();
-			}
 
 			// Logging:
 			if (fill_log_record)
