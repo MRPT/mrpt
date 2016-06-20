@@ -42,8 +42,6 @@ namespace mrpt
 		/** Converts a discretized "alpha" value into a feasible motion command or action. See derived classes for the meaning of these actions */
 		void directionToMotionCommand( uint16_t k, std::vector<double> &out_action_cmd ) const MRPT_OVERRIDE;
 
-		void renderPathAsSimpleLine(const uint16_t k,mrpt::opengl::CSetOfLines &gl_obj,const float decimate_distance = 0.1f,const float max_path_distance = 0.0f) const MRPT_OVERRIDE;
-
 		size_t getPathStepCount(uint16_t k) const MRPT_OVERRIDE;
 		void getPathPose(uint16_t k, uint16_t step, mrpt::math::TPose2D &p) const MRPT_OVERRIDE;
 		double getPathDist(uint16_t k, uint16_t step) const  MRPT_OVERRIDE;
