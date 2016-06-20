@@ -74,11 +74,11 @@ CPTG_Holo_Blend::CPTG_Holo_Blend() :
 { 
 }
 
-CPTG_Holo_Blend::CPTG_Holo_Blend(const mrpt::utils::CConfigFileBase &cfg,const std::string &sSection,  const std::string &sKeyPrefix) :
+CPTG_Holo_Blend::CPTG_Holo_Blend(const mrpt::utils::CConfigFileBase &cfg,const std::string &sSection) :
 	turningRadiusReference(0.30),
 	curVelLocal(0,0,0)
 {
-	setParams(cfg,sSection, sKeyPrefix);
+	this->loadFromConfigFile(cfg,sSection);
 }
 
 void CPTG_Holo_Blend::updateCurrentRobotVel(const mrpt::math::TTwist2D &curVelLocal)
@@ -86,19 +86,34 @@ void CPTG_Holo_Blend::updateCurrentRobotVel(const mrpt::math::TTwist2D &curVelLo
 	this->curVelLocal = curVelLocal;
 }
 
-void CPTG_Holo_Blend::setParams(const mrpt::utils::CConfigFileBase &cfg,const std::string &sSection,  const std::string &sKeyPrefix)
+void CPTG_Holo_Blend::loadFromConfigFile(const mrpt::utils::CConfigFileBase &cfg,const std::string &sSection)
 {
-	this->T_ramp      = cfg.read_double  (sSection, sKeyPrefix+std::string("T_ramp"), .0, true );
-	this->V_MAX   = cfg.read_double  (sSection, sKeyPrefix+std::string("v_max_mps"), .0, true );
-	this->W_MAX   = mrpt::utils::DEG2RAD( cfg.read_double  (sSection, sKeyPrefix+std::string("w_max_dps"), .0, true ) );
-	this->turningRadiusReference   = cfg.read_double  (sSection, sKeyPrefix+std::string("turningRadiusReference"), turningRadiusReference);
+	CParameterizedTrajectoryGenerator::loadFromConfigFile(cfg,sSection);
 
-	// Initial velocity, for debugging (in runtime this will be update to the current robot vel)
-	curVelLocal.vx = cfg.read_double  (sSection, sKeyPrefix+std::string("vxi"), curVelLocal.vx);
-	curVelLocal.vy = cfg.read_double  (sSection, sKeyPrefix+std::string("vyi"), curVelLocal.vy);
+	MRPT_LOAD_HERE_CONFIG_VAR_NO_DEFAULT(T_ramp ,double, T_ramp, cfg,sSection);
+	MRPT_LOAD_HERE_CONFIG_VAR_NO_DEFAULT(v_max_mps  ,double, V_MAX, cfg,sSection);
+	MRPT_LOAD_HERE_CONFIG_VAR_DEGREES_NO_DEFAULT(w_max_dps  ,double, W_MAX, cfg,sSection);
+	MRPT_LOAD_CONFIG_VAR(turningRadiusReference  ,double, cfg,sSection);
 
-	CParameterizedTrajectoryGenerator::setParamsCommon(cfg,sSection,sKeyPrefix);
+	// For debugging only
+	MRPT_LOAD_HERE_CONFIG_VAR(vxi  ,double, curVelLocal.vx, cfg,sSection);
+	MRPT_LOAD_HERE_CONFIG_VAR(vyi  ,double, curVelLocal.vy, cfg,sSection);
 }
+void CPTG_Holo_Blend::saveToConfigFile(mrpt::utils::CConfigFileBase &cfg,const std::string &sSection) const
+{
+	MRPT_START
+	const int WN = 40, WV = 20;
+
+	CParameterizedTrajectoryGenerator::saveToConfigFile(cfg,sSection);
+
+	cfg.write(sSection,"T_ramp",T_ramp,   WN,WV, "Duration of the velocity interpolation since a vel_cmd is issued [s].");
+	cfg.write(sSection,"v_max_mps",V_MAX,   WN,WV, "Maximum linear velocity for trajectories [m/s].");
+	cfg.write(sSection,"w_max_dps",mrpt::utils::RAD2DEG(W_MAX),   WN,WV, "Maximum angular velocity for trajectories [deg/s].");
+	cfg.write(sSection,"turningRadiusReference",turningRadiusReference,   WN,WV, "An approximate dimension of the robot (not a critical parameter) [m].");
+
+	MRPT_END
+}
+
 
 std::string CPTG_Holo_Blend::getDescription() const
 {

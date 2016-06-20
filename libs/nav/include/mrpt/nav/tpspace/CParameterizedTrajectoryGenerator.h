@@ -12,6 +12,7 @@
 #include <mrpt/utils/CSerializable.h>
 #include <mrpt/utils/round.h>
 #include <mrpt/utils/CConfigFileBase.h>
+#include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/math/CPolygon.h>
 #include <mrpt/utils/mrpt_stdint.h>    // compiler-independent version of "stdint.h"
 #include <mrpt/nav/link_pragmas.h>
@@ -43,7 +44,9 @@ namespace nav
 	 *
 	 *  \ingroup nav_tpspace
 	 */
-	class NAV_IMPEXP CParameterizedTrajectoryGenerator : public mrpt::utils::CSerializable
+	class NAV_IMPEXP CParameterizedTrajectoryGenerator : 
+		public mrpt::utils::CSerializable,
+		public mrpt::utils::CLoadableOptions
 	{
 		DEFINE_VIRTUAL_SERIALIZABLE(CParameterizedTrajectoryGenerator)
 	public:
@@ -65,9 +68,6 @@ namespace nav
 
 		/** @name Virtual interface of each PTG implementation 
 		 *  @{ */
-
-		/** See docs of derived classes for additional parameters to those in setParamsCommon() */
-		virtual void setParams(const mrpt::utils::CConfigFileBase &cfg,const std::string &sSection,  const std::string &sKeyPrefix) = 0;
 
 		virtual std::string getDescription() const = 0 ; //!< Gets a short textual description of the PTG and its parameters 
 
@@ -178,7 +178,8 @@ protected:
 		 *   - `${sKeyPrefix}ref_distance`: The maximum distance in PTGs [meters]
 		 *   - `${sKeyPrefix}score_priority`: When used in path planning, a multiplying factor (default=1.0) for the scores for this PTG. Assign values <1 to PTGs with low priority.
 		 */
-		virtual void setParamsCommon(const mrpt::utils::CConfigFileBase &cfg,const std::string &sSection, const std::string &sKeyPrefix);
+		virtual void loadFromConfigFile(const mrpt::utils::CConfigFileBase &cfg,const std::string &sSection) MRPT_OVERRIDE;
+		virtual void saveToConfigFile(mrpt::utils::CConfigFileBase &cfg,const std::string &sSection) const MRPT_OVERRIDE;
 
 		virtual void internal_readFromStream(mrpt::utils::CStream &in);
 		virtual void internal_writeToStream(mrpt::utils::CStream &out) const;
