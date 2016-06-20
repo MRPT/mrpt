@@ -18,12 +18,24 @@ using namespace mrpt::utils;
 
 IMPLEMENTS_SERIALIZABLE(CPTG_DiffDrive_alpha,CParameterizedTrajectoryGenerator,mrpt::nav)
 
-void CPTG_DiffDrive_alpha::setParams(const mrpt::utils::CConfigFileBase &cfg,const std::string &sSection,  const std::string &sKeyPrefix)
-{
-	this->cte_a0v        = mrpt::utils::DEG2RAD( cfg.read_double  (sSection, sKeyPrefix+std::string("cte_a0v_deg"), .0, true ) );
-	this->cte_a0w        = mrpt::utils::DEG2RAD( cfg.read_double  (sSection, sKeyPrefix+std::string("cte_a0w_deg"), .0, true ) );
 
-	CPTG_DiffDrive_CollisionGridBased::setParamsCommon(cfg,sSection,sKeyPrefix);
+void CPTG_DiffDrive_alpha::loadFromConfigFile(const mrpt::utils::CConfigFileBase &cfg,const std::string &sSection)
+{
+	CPTG_DiffDrive_CollisionGridBased ::loadFromConfigFile(cfg,sSection);
+	
+	MRPT_LOAD_HERE_CONFIG_VAR_DEGREES_NO_DEFAULT(cte_a0v_deg,double, cte_a0v, cfg,sSection);
+	MRPT_LOAD_HERE_CONFIG_VAR_DEGREES_NO_DEFAULT(cte_a0w_deg,double, cte_a0w, cfg,sSection);
+}
+void CPTG_DiffDrive_alpha::saveToConfigFile(mrpt::utils::CConfigFileBase &cfg,const std::string &sSection) const
+{
+	MRPT_START
+	const int WN = 40, WV = 20;
+	CPTG_DiffDrive_CollisionGridBased::saveToConfigFile(cfg,sSection);
+
+	cfg.write(sSection,"cte_a0v_deg",mrpt::utils::RAD2DEG(cte_a0v),   WN,WV, "Contant for vel profile [deg].");
+	cfg.write(sSection,"cte_a0w_deg",mrpt::utils::RAD2DEG(cte_a0v),   WN,WV, "Contant for omega profile [deg].");
+
+	MRPT_END
 }
 
 std::string CPTG_DiffDrive_alpha::getDescription() const

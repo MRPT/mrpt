@@ -19,7 +19,7 @@ namespace mrpt
 	/** The "a(symptotic)-alpha PTG", as named in PTG papers.
 	 * - **Compatible kinematics**: differential-driven / Ackermann steering
 	 * - **Compatible robot shape**: Arbitrary 2D polygon
-	 * - **PTG parameters**: use "PTG configurator" tool in the app ReactiveNavigationDemo
+	 * - **PTG parameters**: Use the app `ptg-configurator`
 	 * 
 	 * This PT generator functions are: 
 	 *
@@ -38,10 +38,12 @@ namespace mrpt
 		DEFINE_SERIALIZABLE(CPTG_DiffDrive_alpha)
 	 public:
 		CPTG_DiffDrive_alpha() : cte_a0v(0),cte_a0w(0) { }
-		CPTG_DiffDrive_alpha(const mrpt::utils::CConfigFileBase &cfg,const std::string &sSection,  const std::string &sKeyPrefix) {
-			setParams(cfg,sSection, sKeyPrefix);
+		CPTG_DiffDrive_alpha(const mrpt::utils::CConfigFileBase &cfg,const std::string &sSection) {
+			loadFromConfigFile(cfg,sSection);
 		}
-		void setParams(const mrpt::utils::CConfigFileBase &cfg,const std::string &sSection,  const std::string &sKeyPrefix) MRPT_OVERRIDE;
+		virtual void loadFromConfigFile(const mrpt::utils::CConfigFileBase &cfg,const std::string &sSection) MRPT_OVERRIDE;
+		virtual void saveToConfigFile(mrpt::utils::CConfigFileBase &cfg,const std::string &sSection) const MRPT_OVERRIDE;
+
 		std::string getDescription() const MRPT_OVERRIDE;
 		void ptgDiffDriveSteeringFunction( float alpha, float t,float x, float y, float phi, float &v, float &w ) const MRPT_OVERRIDE;
 

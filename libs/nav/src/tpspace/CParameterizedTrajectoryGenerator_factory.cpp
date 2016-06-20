@@ -11,6 +11,7 @@
 
 #include <mrpt/nav/tpspace/CParameterizedTrajectoryGenerator.h>
 #include <mrpt/system/string_utils.h>
+#include <mrpt/utils/CConfigFilePrefixer.h>
 
 using namespace mrpt::nav;
 
@@ -47,7 +48,12 @@ CParameterizedTrajectoryGenerator * CParameterizedTrajectoryGenerator::CreatePTG
 		THROW_EXCEPTION_CUSTOM_MSG1("[CreatePTG] Object of type `%s` seems not to be a PTG!",ptgClassName.c_str());
 	}
 
-	ptg->setParams(cfg,sSection,sKeyPrefix);
+	// Wrapper to transparently add prefixes to all config keys:
+	mrpt::utils::CConfigFilePrefixer cfp;
+	cfp.bind(cfg);
+	cfp.setPrefixes("", sKeyPrefix );
+
+	ptg->loadFromConfigFile(cfp,sSection);
 	return ptg;
 	MRPT_END
 }

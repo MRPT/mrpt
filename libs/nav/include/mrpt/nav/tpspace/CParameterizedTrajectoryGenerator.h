@@ -12,6 +12,7 @@
 #include <mrpt/utils/CSerializable.h>
 #include <mrpt/utils/round.h>
 #include <mrpt/utils/CConfigFileBase.h>
+#include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/math/CPolygon.h>
 #include <mrpt/utils/mrpt_stdint.h>    // compiler-independent version of "stdint.h"
 #include <mrpt/nav/link_pragmas.h>
@@ -43,7 +44,9 @@ namespace nav
 	 *
 	 *  \ingroup nav_tpspace
 	 */
-	class NAV_IMPEXP CParameterizedTrajectoryGenerator : public mrpt::utils::CSerializable
+	class NAV_IMPEXP CParameterizedTrajectoryGenerator : 
+		public mrpt::utils::CSerializable,
+		public mrpt::utils::CLoadableOptions
 	{
 		DEFINE_VIRTUAL_SERIALIZABLE(CParameterizedTrajectoryGenerator)
 	public:
@@ -65,10 +68,6 @@ namespace nav
 
 		/** @name Virtual interface of each PTG implementation
 		 *  @{ */
-
-		/** See docs of derived classes for additional parameters to those in setParamsCommon() */
-		virtual void setParams(const mrpt::utils::CConfigFileBase &cfg,const std::string &sSection,  const std::string &sKeyPrefix) = 0;
-
 		virtual std::string getDescription() const = 0 ; //!< Gets a short textual description of the PTG and its parameters
 
 		/** Must be called after setting all PTG parameters and before requesting converting obstacles to TP-Space, inverseMap_WS2TP(), etc. */
@@ -101,24 +100,6 @@ namespace nav
 		  * \param[in] curVelLocal The current robot velocities in the local frame of reference (+X: forwards, omega: clockwise rotation) */
 		virtual void updateCurrentRobotVel(const mrpt::math::TTwist2D &curVelLocal) = 0;
 
-		/** Returns the representation of one trajectory of this PTG as a 3D OpenGL object (a simple curved line).
-		  * \param[in] k The 0-based index of the selected trajectory (discrete "alpha" parameter).
-		  * \param[out] gl_obj Output object.
-		  * \param[in] decimate_distance Minimum distance between path points (in meters).
-		  * \param[in] max_path_distance If >0, cut the path at this distance (in meters).
-		  */
-		virtual void renderPathAsSimpleLine(const uint16_t k,mrpt::opengl::CSetOfLines &gl_obj,const float decimate_distance = 0.1f,const float max_path_distance = 0.0f) const = 0;
-
-		/** Dump PTG trajectories in a binary file "./reactivenav.logs/PTGs/PTG%s.dat", with "%s" being the user-supplied parameter,
-		  * and in FIVE text files: "./reactivenav.logs/PTGs/PTG%i_{x,y,phi,t,d}.txt".
-		  * Text files are loadable from MATLAB/Octave, and can be visualized with the script [MRPT_DIR]/scripts/viewPTG.m
-		  * \note The directory "./reactivenav.logs/PTGs" will be created if doesn't exist.
-		  * \return false on any error writing to disk.
-		  * \sa OUTPUT_DEBUG_PATH_PREFIX
-		  */
-		virtual bool debugDumpInFiles(const std::string &ptg_name) const {
-			return true; // Default: do nothing
-		}
 		virtual void setRefDistance(const double refDist) { refDistance=refDist; }
 
 		/** Access path `k` ([0,N-1]=>[-pi,pi] in alpha): number of discrete "steps" along the trajectory.
@@ -157,6 +138,7 @@ namespace nav
 
 		/** Alpha value for the discrete corresponding value \sa alpha2index */
 		double index2alpha( uint16_t k ) const {
+			if (k>=m_alphaValuesCount) throw std::runtime_error("PTG: alpha value out of range!");
 			return M_PI * (-1.0 + 2.0 * (k+0.5)/m_alphaValuesCount );
 		}
 
@@ -169,6 +151,22 @@ namespace nav
 		double getScorePriority() const { return m_score_priority; }
 		void setScorePriorty(double prior) { m_score_priority = prior; }
 
+		/** Returns the representation of one trajectory of this PTG as a 3D OpenGL object (a simple curved line).
+		  * \param[in] k The 0-based index of the selected trajectory (discrete "alpha" parameter).
+		  * \param[out] gl_obj Output object.
+		  * \param[in] decimate_distance Minimum distance between path points (in meters).
+		  * \param[in] max_path_distance If >0, cut the path at this distance (in meters).
+		  */
+		virtual void renderPathAsSimpleLine(const uint16_t k,mrpt::opengl::CSetOfLines &gl_obj,const float decimate_distance = 0.1f,const float max_path_distance = 0.0f) const;
+
+		/** Dump PTG trajectories in four text files: `./reactivenav.logs/PTGs/PTG%i_{x,y,phi,d}.txt`
+		  * Text files are loadable from MATLAB/Octave, and can be visualized with the script `[MRPT_DIR]/scripts/viewPTG.m` 
+		  * \note The directory "./reactivenav.logs/PTGs" will be created if doesn't exist.
+		  * \return false on any error writing to disk.
+		  * \sa OUTPUT_DEBUG_PATH_PREFIX
+		  */
+		bool debugDumpInFiles(const std::string &ptg_name) const;
+
 protected:
 		double    refDistance;
 		uint16_t  m_alphaValuesCount; //!< The number of discrete values for "alpha" between -PI and +PI.
@@ -179,7 +177,8 @@ protected:
 		 *   - `${sKeyPrefix}ref_distance`: The maximum distance in PTGs [meters]
 		 *   - `${sKeyPrefix}score_priority`: When used in path planning, a multiplying factor (default=1.0) for the scores for this PTG. Assign values <1 to PTGs with low priority.
 		 */
-		virtual void setParamsCommon(const mrpt::utils::CConfigFileBase &cfg,const std::string &sSection, const std::string &sKeyPrefix);
+		virtual void loadFromConfigFile(const mrpt::utils::CConfigFileBase &cfg,const std::string &sSection) MRPT_OVERRIDE;
+		virtual void saveToConfigFile(mrpt::utils::CConfigFileBase &cfg,const std::string &sSection) const MRPT_OVERRIDE;
 
 		virtual void internal_readFromStream(mrpt::utils::CStream &in);
 		virtual void internal_writeToStream(mrpt::utils::CStream &out) const;
