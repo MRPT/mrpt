@@ -916,7 +916,7 @@ void reactive_navigator_demoframe::simulateOneStep(double time_step)
 			{
 				const double sec = log->gaps_ini[i] + j*(log->gaps_end[i]-log->gaps_ini[i])/static_cast<double>(N_STEPS-1);
 				const double ang = M_PI *( -1 + 2*sec/((float)simulatedScan.scan.size()) );
-				const double d = simulatedScan.scan[sec]-0.05;
+				const double d = lfr.infoPerPTG[0].TP_Obstacles[sec]-0.05;
 				gl_nd_gaps->appendLineStrip(d*cos(ang),d*sin(ang),0);
 			}
 			gl_nd_gaps->appendLineStrip(0,0,0);
