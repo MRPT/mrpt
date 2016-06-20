@@ -59,10 +59,6 @@ namespace nav
 		  * See more docs in CParameterizedTrajectoryGenerator::directionToMotionCommand() */
 		virtual void directionToMotionCommand( uint16_t k, std::vector<double> &out_action_cmd ) const MRPT_OVERRIDE;
 
-		virtual void renderPathAsSimpleLine(const uint16_t k,mrpt::opengl::CSetOfLines &gl_obj,const float decimate_distance = 0.1f,const float max_path_distance = 0.0f) const MRPT_OVERRIDE;
-
-		bool debugDumpInFiles(const std::string &ptg_name) const MRPT_OVERRIDE;
-		
 		/** Launches an exception in this class: it is not allowed in numerical integration-based PTGs to change the reference distance 
 		  * after initialization. */
 		virtual void setRefDistance(const double refDist);

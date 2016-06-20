@@ -14,10 +14,7 @@
 #include <mrpt/utils/CFileGZInputStream.h>
 #include <mrpt/utils/CFileGZOutputStream.h>
 #include <mrpt/utils/CTicTac.h>
-#include <mrpt/system/filesystem.h>
-#include <mrpt/system/os.h>
 #include <mrpt/math/geometry.h>
-#include <mrpt/opengl/CSetOfLines.h>
 #include <mrpt/utils/stl_serialization.h>
 
 using namespace mrpt::nav;
@@ -247,89 +244,6 @@ void CPTG_DiffDrive_CollisionGridBased::directionToMotionCommand( uint16_t k, st
 	out_action_cmd.resize(2);
 	out_action_cmd[0] = v;
 	out_action_cmd[1] = w;
-}
-
-bool CPTG_DiffDrive_CollisionGridBased::debugDumpInFiles( const std::string &ptg_name ) const 
-{
-	using namespace mrpt::system;
-	using namespace std;
-
-	const char *sPath = CParameterizedTrajectoryGenerator::OUTPUT_DEBUG_PATH_PREFIX.c_str();
-	
-	mrpt::system::createDirectory( sPath );
-	mrpt::system::createDirectory( mrpt::format("%s/PTGs",sPath) );
-
-	const std::string sFilBin = mrpt::format("%s/PTGs/PTG%s.dat",sPath,ptg_name.c_str() );
-
-	const std::string sFilTxt_x   = mrpt::format("%s/PTGs/PTG%s_x.txt",sPath,ptg_name.c_str() );
-	const std::string sFilTxt_y   = mrpt::format("%s/PTGs/PTG%s_y.txt",sPath,ptg_name.c_str() );
-	const std::string sFilTxt_phi = mrpt::format("%s/PTGs/PTG%s_phi.txt",sPath,ptg_name.c_str() );
-	const std::string sFilTxt_t   = mrpt::format("%s/PTGs/PTG%s_t.txt",sPath,ptg_name.c_str() );
-	const std::string sFilTxt_d   = mrpt::format("%s/PTGs/PTG%s_d.txt",sPath,ptg_name.c_str() );
-
-	std::ofstream fx(sFilTxt_x.c_str());  if (!fx.is_open()) return false;
-	std::ofstream fy(sFilTxt_y.c_str());  if (!fy.is_open()) return false;
-	std::ofstream fp(sFilTxt_phi.c_str());if (!fp.is_open()) return false;
-	std::ofstream ft(sFilTxt_t.c_str());  if (!ft.is_open()) return false;
-	std::ofstream fd(sFilTxt_d.c_str());  if (!fd.is_open()) return false;
-
-	FILE* fbin = os::fopen(sFilBin.c_str(),"wb");
-	if (!fbin) return false;
-
-	const size_t nPaths = getAlphaValuesCount();
-
-	// Text version:
-	fx << "% PTG data file for 'x'. Each row is the trajectory for a different 'alpha' parameter value." << endl;
-	fy << "% PTG data file for 'y'. Each row is the trajectory for a different 'alpha' parameter value." << endl;
-	fp << "% PTG data file for 'phi'. Each row is the trajectory for a different 'alpha' parameter value." << endl;
-	ft << "% PTG data file for 't'. Each row is the trajectory for a different 'alpha' parameter value." << endl;
-	fd << "% PTG data file for 'd'. Each row is the trajectory for a different 'alpha' parameter value." << endl;
-
-	size_t maxPoints=0;
-	for (size_t k=0;k<nPaths;k++)
-		maxPoints = std::max( maxPoints, getPathStepCount(k) );
-
-	for (size_t k=0;k<nPaths;k++)
-	{
-		for (size_t n=0;n< maxPoints;n++)
-		{
-				const size_t nn = std::min( n, getPathStepCount(k)-1 );
-				fx << m_trajectory[k][nn].x << " ";
-				fy << m_trajectory[k][nn].y << " ";
-				fp << m_trajectory[k][nn].phi << " ";
-				ft << m_trajectory[k][nn].t << " ";
-				fd << m_trajectory[k][nn].dist << " ";
-		}
-		fx << endl;
-		fy << endl;
-		fp << endl;
-		ft << endl;
-		fd << endl;
-	}
-
-	// Binary dump:
-	for (size_t k=0;k<nPaths;k++)
-	{
-		const size_t nPoints = getPathStepCount(k);
-		if (!fwrite( &nPoints ,sizeof(int),1 , fbin ))
-			return false;
-
-		float fls[5];
-		for (size_t n=0;n<nPoints;n++)
-		{
-			fls[0] = m_trajectory[k][n].x;
-			fls[1] = m_trajectory[k][n].y;
-			fls[2] = m_trajectory[k][n].phi;
-			fls[3] = m_trajectory[k][n].t;
-			fls[4] = m_trajectory[k][n].dist;
-
-			if (!fwrite(&fls[0],sizeof(float),5,fbin)) return false;
-		}
-	}
-
-	os::fclose(fbin);
-
-	return true;
 }
 
 /*---------------------------------------------------------------
@@ -666,38 +580,6 @@ bool CPTG_DiffDrive_CollisionGridBased::inverseMap_WS2TP(double x, double y, int
 	// Otherwise, it may actually mean that the target is not reachable by this set of paths:
 	const float target_dist = std::sqrt( x*x+y*y );
 	return (target_dist>target_dist);  
-}
-
-
-void CPTG_DiffDrive_CollisionGridBased::renderPathAsSimpleLine(
-	const uint16_t k, 
-	mrpt::opengl::CSetOfLines &gl_obj, 
-	const float decimate_distance, 
-	const float max_path_distance) const
-{
-	const size_t nPointsInPath = getPathStepCount(k);
-
-	// Decimate trajectories: we don't need centimeter resolution!
-	float last_added_dist = 0.0f;
-	for (size_t n=0;n<nPointsInPath;n++)
-	{
-		const float d = this->getPathDist(k, n); // distance thru path "k" until timestep "n"
-
-		if (d<last_added_dist+decimate_distance && n!=0)
-			continue; // skip: decimation
-
-		last_added_dist = d;
-
-		mrpt::math::TPose2D p;
-		this->getPathPose(k, n, p);
-
-		if (gl_obj.empty())
-		     gl_obj.appendLine(0,0,0, p.x, p.y,0);
-		else gl_obj.appendLineStrip(p.x, p.y,0);
-
-		// Draw the TP only until we reach the target of the "motion" segment:
-		if (max_path_distance!=0.0f && d>=max_path_distance) break;
-	}
 }
 
 void CPTG_DiffDrive_CollisionGridBased::setRefDistance(const double refDist) 
