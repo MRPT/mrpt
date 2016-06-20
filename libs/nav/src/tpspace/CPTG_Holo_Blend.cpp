@@ -34,6 +34,29 @@ Number of steps "d" for each PTG path "k":
 */
 
 const double PATH_TIME_STEP = 10e-3;   // 10 ms
+const double eps = 1e-5;               // epsilon for detecting 1/0 situation
+const double eps_distance = 0.01;      // epsilon for distances (1cm)
+
+// Axiliary function for computing the line-integral distance along the trajectory, handling special cases of 1/0:
+inline double calc_trans_distance_t_below_Tramp(double k2, double k4, double vxi,double vyi, double t)
+{
+	double dsq=0;
+	if (std::abs(k2)>eps) {
+		const double num1 = vxi+2*t*k2;
+		dsq+=num1*num1*num1/k2;
+	}
+	else {
+		dsq+=vxi*vxi*vxi/3.0;
+	}
+	if (std::abs(k4)>eps) {
+		const double num2 = vyi+2*t*k4;
+		dsq+=num2*num2*num2/k4;
+	}
+	else {
+		dsq+=vyi*vyi*vyi/3.0;
+	}	
+	return std::sqrt(dsq/6.0);
+}
 
 
 CPTG_Holo_Blend::CPTG_Holo_Blend() : 
@@ -105,9 +128,148 @@ void CPTG_Holo_Blend::writeToStream(mrpt::utils::CStream &out, int *version) con
 
 bool CPTG_Holo_Blend::inverseMap_WS2TP(double x, double y, int &out_k, double &out_d, double tolerance_dist) const
 {
-	THROW_EXCEPTION("todo");
-	MRPT_TODO("impl");
-	return false;
+	MRPT_UNUSED_PARAM(tolerance_dist);
+	ASSERT_(x!=0 || y!=0);
+
+	const double TIME_MISMATCH_TOLERANCE = 1.2*((2*M_PI/m_alphaValuesCount) * refDistance)/V_MAX;
+
+	double found_min_dist = std::numeric_limits<double>::max();
+	int    found_k        = -1; // invalid
+
+	const double TR2_ = 1.0/(2*T_ramp);
+	const double vxi = curVelLocal.vx, vyi = curVelLocal.vy;
+
+	// General idea: get the shortest path for all alpha values.
+	for (uint16_t k=0;k<m_alphaValuesCount;k++)
+	{
+		const double dir = CParameterizedTrajectoryGenerator::index2alpha(k);
+		const double vxf = V_MAX * cos(dir), vyf = V_MAX * sin(dir);
+
+		const double k2 = (vxf-vxi)*TR2_;
+		const double k4 = (vyf-vyi)*TR2_;
+
+		double tx_solve, ty_solve;
+		bool  tx_any = false, ty_any = false;
+
+		//  Attempt to solve for t < T_ramp
+		// -----------------------------------
+		if (std::abs(vxf-vxi)<eps)
+		{
+			if (std::abs(vxi)<eps) {
+				if (std::abs(x)<eps_distance)
+				     tx_any = true;
+				else tx_solve = -1.0;
+			}
+			else { // x = vxi * t  ->  t = x / vxi;
+				tx_solve = x / vxi;
+			}
+		}
+		else
+		{
+			const double discr_x = (vxf*x*2.0-vxi*x*2.0+T_ramp*(vxi*vxi))/T_ramp;
+			if (discr_x<0) continue; // No solution
+			const double sqrx = sqrt(discr_x);
+			double tx_solved[2];
+			tx_solved[0] = -(T_ramp*(vxi+sqrx))/(vxf-vxi);
+			tx_solved[1] = -(T_ramp*(vxi-sqrx))/(vxf-vxi);
+			tx_solve = tx_solved[0]>0 ? tx_solved[0] : tx_solved[1];
+			if (!(tx_solve==tx_solve && mrpt::math::isFinite(tx_solve) && tx_solve>=0 && tx_solve<=T_ramp))
+				tx_solve = -1.0;
+		}
+
+		if (std::abs(vyf-vyi)<eps) {
+			if (std::abs(vyi)<eps) {
+				if (std::abs(y)<eps_distance)
+				     ty_any = true;
+				else ty_solve = -1.0;
+			}
+			else { // y = vyi * t  ->  t = y / vyi;
+				ty_solve = y / vyi;
+			}
+		}
+		else
+		{
+			const double discr_y = (vyf*y*2.0-vyi*y*2.0+T_ramp*(vyi*vyi))/T_ramp;
+			if (discr_y<0) continue; // No solution
+			const double sqry = sqrt(discr_y);
+			double ty_solved[2];
+			ty_solved[0] = -(T_ramp*(vyi+sqry))/(vyf-vyi);
+			ty_solved[1] = -(T_ramp*(vyi-sqry))/(vyf-vyi);
+			ty_solve = ty_solved[0]>0 ? ty_solved[0] : ty_solved[1];
+			if (!(ty_solve==ty_solve && mrpt::math::isFinite(ty_solve) && ty_solve>=0 && ty_solve<=T_ramp))
+				ty_solve = -1.0;
+		}
+		
+		if ((tx_any || (tx_solve>=0 && tx_solve<=T_ramp)) && 
+			(ty_any || (ty_solve>=0 && ty_solve<=T_ramp)) )
+		{
+			// Good solution found for t < T_ramp
+		}
+		else
+		{
+			//  Attempt to solve for t > T_ramp
+			// -----------------------------------
+			if (std::abs(vxf)<eps)
+			{
+				const double final_x = vxi * T_ramp + T_ramp*T_ramp * TR2_ * (vxf-vxi);
+				if (std::abs(x-final_x)<eps_distance)
+					 tx_any = true;
+				else tx_solve=-1.0; // No solution found for t>T_ramp
+			}
+			else {
+				tx_solve = (x-T_ramp*(vxf+vxi)*(1.0/2.0)+T_ramp*vxf)/vxf;
+			}
+
+			if (std::abs(vyf)<eps)
+			{
+				const double final_y = vyi * T_ramp + T_ramp*T_ramp * TR2_ * (vyf-vyi);
+				if (std::abs(y-final_y)<eps_distance)
+					 ty_any = true;
+				else ty_solve=-1.0; // No solution found for t>T_ramp
+			}
+			else ty_solve = (y-T_ramp*(vyf+vyi)*(1.0/2.0)+T_ramp*vyf)/vyf;
+		}
+
+		// Get the final solution:
+		double t_solve;
+		// The most common case:
+		if (!tx_any && !ty_any) {
+			if ( std::abs(tx_solve-ty_solve) > TIME_MISMATCH_TOLERANCE)
+				continue; // No solution
+			t_solve = tx_solve;
+		}
+		// Degenerate case: init = final velocity
+		if (tx_any && ty_any) {
+			t_solve = sqrt(x*x+y*y) / V_MAX;
+		}
+		// Special cases:
+		if (!tx_any && ty_any) {
+			t_solve = tx_solve;
+		}
+		if (tx_any && !ty_any) {
+			t_solve = ty_solve;
+		}
+
+		// Good solution: save if better
+		if (t_solve>=0)
+		{
+			const double dist_trans = calc_trans_distance_t_below_Tramp(k2,k4,vxi,vyi,t_solve);
+
+			if (dist_trans<found_min_dist)
+			{
+				found_min_dist = dist_trans;
+				found_k = k;
+			}
+		}
+	} // end for each k
+
+	if (found_k>=0)
+	{
+		out_d = found_min_dist;
+		out_k =  found_k;
+		return true;
+	}
+	return false; // No solution found
 }
 
 bool CPTG_Holo_Blend::PTG_IsIntoDomain(double x, double y ) const
@@ -127,12 +289,24 @@ void CPTG_Holo_Blend::initialize(const std::string & cacheFilename, const bool v
 
 
 	// DEBUG TESTS
-#if 0
+#if 1
 	//debugDumpInFiles("1");
-	uint16_t step;
+	uint16_t step; 
+	double d;
+	
+	getPathStepForDist(170,0.3,step);
+	d = getPathDist(170,step);
+
 	getPathStepForDist(170,1.3,step);
-	const double d = getPathDist(170,step);
+	d = getPathDist(170,step);
+	std::cout << d;
 #endif
+
+	{
+		int k;
+		double d;
+		bool valid=inverseMap_WS2TP(1,5,k,d);
+	}
 
 }
 
@@ -155,8 +329,11 @@ void CPTG_Holo_Blend::directionToMotionCommand( uint16_t k, std::vector<double> 
 
 size_t CPTG_Holo_Blend::getPathStepCount(uint16_t k) const
 {
-	MRPT_TODO("impl");
-	return 600;
+	uint16_t step;
+	if (!getPathStepForDist(k,this->refDistance,step)) {
+		THROW_EXCEPTION_CUSTOM_MSG1("Could not solve closed-form distance for k=%u",static_cast<unsigned>(k));
+	}
+	return step;
 }
 
 void CPTG_Holo_Blend::getPathPose(uint16_t k, uint16_t step, mrpt::math::TPose2D &p) const
@@ -201,16 +378,11 @@ double CPTG_Holo_Blend::getPathDist(uint16_t k, uint16_t step) const
 
 	if (t<T_ramp)
 	{
-		const double num1 = vxi+2*t*k2;
-		const double num2 = vyi+2*t*k4;
-		const double dist_trans = std::sqrt( ( num1*num1*num1/k2 + num2*num2*num2/k4 )/6.0  );
-		return dist_trans;
+		return calc_trans_distance_t_below_Tramp(k2,k4,vxi,vyi,t);
 	}
 	else
 	{
-		const double num1 = vxi+2*T_ramp*k2;
-		const double num2 = vyi+2*T_ramp*k4;
-		const double dist_trans = std::sqrt( ( num1*num1*num1/k2 + num2*num2*num2/k4 )/6.0  ) + (t-T_ramp) * V_MAX;
+		const double dist_trans = (t-T_ramp) * V_MAX + calc_trans_distance_t_below_Tramp(k2,k4,vxi,vyi,T_ramp);
 		return dist_trans;
 	}
 }
@@ -228,9 +400,7 @@ bool CPTG_Holo_Blend::getPathStepForDist(uint16_t k, double dist, uint16_t &out_
 
 	// Possible solutions within  t > T_ramp:
 	{
-		const double num1 = vxi+2*T_ramp*k2;
-		const double num2 = vyi+2*T_ramp*k4;
-		const double dist_trans_T_ramp = std::sqrt( ( num1*num1*num1/k2 + num2*num2*num2/k4 )/6.0  );
+		const double dist_trans_T_ramp = calc_trans_distance_t_below_Tramp(k2,k4,vxi,vyi,T_ramp);
 		
 		if (dist>dist_trans_T_ramp)
 		{
@@ -290,7 +460,6 @@ k4=( vyf - vyi )/(2*T_ramp)
 
 void CPTG_Holo_Blend::updateTPObstacle(double ox, double oy, std::vector<double> &tp_obstacles) const
 {
-	THROW_EXCEPTION("todo");
 	MRPT_TODO("impl");
 }
 

@@ -139,6 +139,7 @@ namespace nav
 
 		/** Alpha value for the discrete corresponding value \sa alpha2index */
 		double index2alpha( uint16_t k ) const {
+			if (k>=m_alphaValuesCount) throw std::runtime_error("PTG: alpha value out of range!");
 			return M_PI * (-1.0 + 2.0 * (k+0.5)/m_alphaValuesCount );
 		}
 
