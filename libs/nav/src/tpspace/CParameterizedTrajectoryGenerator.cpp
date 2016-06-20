@@ -28,13 +28,24 @@ CParameterizedTrajectoryGenerator::CParameterizedTrajectoryGenerator() :
 	m_score_priority(1.0)
 { }
 
-MRPT_TODO("Add virtual method to get required params");
-void CParameterizedTrajectoryGenerator::setParamsCommon(const mrpt::utils::CConfigFileBase &cfg,const std::string &sSection,  const std::string &sKeyPrefix)
+void CParameterizedTrajectoryGenerator::loadFromConfigFile(const mrpt::utils::CConfigFileBase &cfg,const std::string &sSection)
 {
-	this->refDistance        = cfg.read_double  (sSection, sKeyPrefix+std::string("refDistance"), .0, true );
-	this->m_alphaValuesCount = cfg.read_uint64_t(sSection, sKeyPrefix+std::string("num_paths"), 0, true );
-	this->m_score_priority   = cfg.read_double  (sSection, sKeyPrefix+std::string("score_priority"), m_score_priority );
+	MRPT_LOAD_HERE_CONFIG_VAR_NO_DEFAULT(num_paths   , uint64_t, m_alphaValuesCount, cfg,sSection);
+	MRPT_LOAD_CONFIG_VAR_NO_DEFAULT     (refDistance , double,  cfg,sSection);
+	MRPT_LOAD_HERE_CONFIG_VAR(score_priority , double, m_score_priority, cfg,sSection);
 }
+void CParameterizedTrajectoryGenerator::saveToConfigFile(mrpt::utils::CConfigFileBase &cfg,const std::string &sSection) const
+{
+	MRPT_START
+	const int WN = 40, WV = 20;
+
+	cfg.write(sSection,"num_paths",m_alphaValuesCount,   WN,WV, "Number of discrete paths (`resolution`) in the PTG");
+	cfg.write(sSection,"refDistance",refDistance,   WN,WV, "Maximum distance (meters) for building trajectories (visibility range)");
+	cfg.write(sSection,"score_priority",m_score_priority,   WN,WV, "When used in path planning, a multiplying factor (default=1.0) for the scores for this PTG. Assign values <1 to PTGs with low priority.");
+
+	MRPT_END
+}
+
 
 void CParameterizedTrajectoryGenerator::internal_readFromStream(mrpt::utils::CStream &in)
 {

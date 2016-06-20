@@ -100,7 +100,8 @@ protected:
 		 *
 		 * See docs of derived classes for additional parameters in setParams()
 		 */
-		void setParamsCommon(const mrpt::utils::CConfigFileBase &cfg,const std::string &sSection, const std::string &sKeyPrefix) MRPT_OVERRIDE;
+		virtual void loadFromConfigFile(const mrpt::utils::CConfigFileBase &cfg,const std::string &sSection) MRPT_OVERRIDE;
+		virtual void saveToConfigFile(mrpt::utils::CConfigFileBase &cfg,const std::string &sSection) const MRPT_OVERRIDE;
 
 		double V_MAX, W_MAX;
 		double turningRadiusReference;

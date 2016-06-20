@@ -30,10 +30,12 @@ namespace mrpt
 		DEFINE_SERIALIZABLE(CPTG_DiffDrive_CC)
 	 public:
 		CPTG_DiffDrive_CC() : R(0),K(0) {}
-		CPTG_DiffDrive_CC(const mrpt::utils::CConfigFileBase &cfg,const std::string &sSection,  const std::string &sKeyPrefix) {
-			setParams(cfg,sSection, sKeyPrefix);
+		CPTG_DiffDrive_CC(const mrpt::utils::CConfigFileBase &cfg,const std::string &sSection) {
+			loadFromConfigFile(cfg,sSection);
 		}
-		void setParams(const mrpt::utils::CConfigFileBase &cfg,const std::string &sSection,  const std::string &sKeyPrefix) MRPT_OVERRIDE;
+		virtual void loadFromConfigFile(const mrpt::utils::CConfigFileBase &cfg,const std::string &sSection) MRPT_OVERRIDE;
+		virtual void saveToConfigFile(mrpt::utils::CConfigFileBase &cfg,const std::string &sSection) const MRPT_OVERRIDE;
+
 		std::string getDescription() const MRPT_OVERRIDE;
 		bool PTG_IsIntoDomain( double x, double y ) const MRPT_OVERRIDE;
 		void ptgDiffDriveSteeringFunction( float alpha, float t,float x, float y, float phi, float &v, float &w ) const MRPT_OVERRIDE;

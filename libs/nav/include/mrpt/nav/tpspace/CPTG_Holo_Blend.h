@@ -29,9 +29,11 @@ namespace mrpt
 		DEFINE_SERIALIZABLE(CPTG_Holo_Blend)
 	 public:
 		CPTG_Holo_Blend();
-		CPTG_Holo_Blend(const mrpt::utils::CConfigFileBase &cfg,const std::string &sSection,  const std::string &sKeyPrefix);
+		CPTG_Holo_Blend(const mrpt::utils::CConfigFileBase &cfg,const std::string &sSection);
 
-		void setParams(const mrpt::utils::CConfigFileBase &cfg,const std::string &sSection,  const std::string &sKeyPrefix) MRPT_OVERRIDE;
+		virtual void loadFromConfigFile(const mrpt::utils::CConfigFileBase &cfg,const std::string &sSection) MRPT_OVERRIDE;
+		virtual void saveToConfigFile(mrpt::utils::CConfigFileBase &cfg,const std::string &sSection) const MRPT_OVERRIDE;
+
 		std::string getDescription() const MRPT_OVERRIDE;
 		bool inverseMap_WS2TP(double x, double y, int &out_k, double &out_d, double tolerance_dist = 0.10) const MRPT_OVERRIDE;
 		bool PTG_IsIntoDomain( double x, double y ) const MRPT_OVERRIDE;
