@@ -99,7 +99,7 @@ int main(int argc, char **argv)
 
 		// Visualization
 		CDisplayWindow3D	graph_win("Graphslam building procedure",800, 600);
-		graph_win.setPos(400, 300);
+		graph_win.setPos(800, 800);
 		graph_win_observer.observeBegin(graph_win);
 		{
 			COpenGLScenePtr &scene = graph_win.get3DSceneAndLock();
@@ -114,8 +114,8 @@ int main(int argc, char **argv)
 			<
 			CNetworkOfPoses2DInf,                         // graph type
 			//CEmptyNRD_t<CNetworkOfPoses2DInf>, // empty node decider
-			//CFixedIntervalsNRD_t<CNetworkOfPoses2DInf>,   // node decider
-			CICPGoodnessNRD_t<CNetworkOfPoses2DInf>,   // edge decider
+			CFixedIntervalsNRD_t<CNetworkOfPoses2DInf>,   // node decider
+			//CICPGoodnessNRD_t<CNetworkOfPoses2DInf>,   // edge decider
 			//CEmptyERD_t<CNetworkOfPoses2DInf> // empty edge decider
 			CICPGoodnessERD_t<CNetworkOfPoses2DInf>     // edge decider
 			>

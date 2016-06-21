@@ -125,7 +125,7 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::initCGraphSlam
 
 	this->initOutputDir();
 	this->printProblemParams();
-	//mrpt::system::pause();
+	mrpt::system::pause();
 
 	// pass the rawlog filename after the instance initialization
 	m_node_registrar.setRawlogFname(m_rawlog_fname);
@@ -210,11 +210,9 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::initCGraphSlam
 				/* offset_y*		= */ &m_offset_y_GT,
 				/* text_index* = */ &m_text_index_GT);
 
-		COpenGLScenePtr scene = m_win->get3DSceneAndLock();
+
 
 		CPointCloudPtr GT_cloud = CPointCloud::Create();
-		scene->insert(GT_cloud);
-
 		GT_cloud->setPointSize(2.0);
 		GT_cloud->enablePointSmooth();
 		GT_cloud->enableColorFromX(false);
@@ -223,6 +221,8 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::initCGraphSlam
 		GT_cloud->setColor(m_GT_color);
 		GT_cloud->setName("GT_cloud");
 
+		COpenGLScenePtr scene = m_win->get3DSceneAndLock();
+		scene->insert(GT_cloud);
 		m_win->unlockAccess3DScene();
 
 		m_win_manager.addTextMessage(5,-m_offset_y_GT,
@@ -233,8 +233,8 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::initCGraphSlam
 		m_win->forceRepaint();
 	}
 
-	// second viewport
-	if (m_win) {
+	// current robot pose  viewport
+	if (m_win && m_enable_curr_pos_viewport) {
 		COpenGLScenePtr scene = m_win->get3DSceneAndLock();
 		COpenGLViewportPtr viewp= scene->createViewport("curr_robot_pose_viewport");
 		// Add a clone viewport, using [0,1] factor X,Y,Width,Height coordinates:
@@ -267,14 +267,14 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::initCGraphSlam
 		m_win->forceRepaint();
 	}
 
-	// robot model
+	// robot model - estimated position
 	if (m_win) {
 		COpenGLScenePtr scene = m_win->get3DSceneAndLock();
 
 		opengl::CSetOfObjectsPtr obj = stock_objects::RobotPioneer();
 		pose_t initial_pose;
 		obj->setPose(initial_pose);
-		obj->setName("robot_model");
+		obj->setName("robot_estimated_pos");
 		obj->setColor_u8(TColor(142, 142, 56));
 		obj->setScale(5);
 		scene->insert(obj);
@@ -512,7 +512,10 @@ bool CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::parseRawlogFil
 						"Visualization of data was requested but no CDisplayWindow3D pointer was given");
 
 				visualizeGraph(m_graph);
-				updateCurrPosViewport(m_graph);
+
+				if (m_enable_curr_pos_viewport) {
+					updateCurrPosViewport(m_graph);
+				}
 			}
 
 			// query node/edge deciders for visual objects update
@@ -598,7 +601,7 @@ bool CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::parseRawlogFil
 		if (m_win) {
 			COpenGLScenePtr scene = m_win->get3DSceneAndLock();
 
-			CRenderizablePtr obj = scene->getByName("robot_model");
+			CRenderizablePtr obj = scene->getByName("robot_estimated_pos");
 			CSetOfObjectsPtr robot_obj = static_cast<CSetOfObjectsPtr>(obj);
 
 			mrpt::synch::CCriticalSectionLocker m_graph_lock(&m_graph_section);
@@ -788,10 +791,6 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::readConfigFile
 			"VisualizationParameters",
 			"visualize_optimized_graph",
 			1, false);
-	m_visualize_map = cfg_file.read_bool(
-			"VisualizationParameters",
-			"visualize_map",
-			1, false);
 	m_optimized_graph_viz_params["show_ID_labels"] = cfg_file.read_bool(
 			"VisualizationParameters",
 			"optimized_show_ID_labels",
@@ -841,18 +840,31 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::readConfigFile
 			"optimized_point_color",
 			10526880, false);
 
-	// odometry-only visualization
+	// map visualization
+	m_visualize_map = cfg_file.read_bool(
+			"VisualizationParameters",
+			"visualize_map",
+			true, false);
 
+	// odometry-only visualization
 	m_visualize_odometry_poses = cfg_file.read_bool(
 			"VisualizationParameters",
 			"visualize_odometry_poses",
-			1, false);
+			true, false);
 
 	// GT configuration / visualization
 	m_visualize_GT = cfg_file.read_bool(
 			"VisualizationParameters",
 			"visualize_ground_truth",
-			1, false);
+			true, false);
+
+	// current robot pose  viewport
+	m_enable_curr_pos_viewport = cfg_file.read_bool(
+			"VisualizationParameters",
+			"enable_curr_pos_viewport",
+			true, false);
+
+
 
 	this->m_node_registrar.params.loadFromConfigFileName(m_config_fname, 
 			"NodeRegistrationDecidersParameters");
@@ -891,7 +903,7 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::printProblemPa
 	ss_out << "Visualize map                   = " 
 		<< m_visualize_map << std::endl;
 	ss_out << "Visualize Ground Truth          = " 
-		<< m_visualize_odometry_poses << std::endl;
+		<< m_visualize_GT<< std::endl;
 	ss_out << "Ground Truth filename           = "
 		<< m_fname_GT << std::endl;
 	ss_out << "-----------------------------------------------------------" 
@@ -1132,6 +1144,8 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::updateGTVisual
 				curr_pose->x(),
 				curr_pose->y(),
 				0 );
+
+		// place robot model there
 
 		m_win->unlockAccess3DScene();
 		m_win->forceRepaint();

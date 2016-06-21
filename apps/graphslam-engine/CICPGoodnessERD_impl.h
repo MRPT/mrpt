@@ -88,6 +88,9 @@ template<class GRAPH_t> void CICPGoodnessERD_t<GRAPH_t>::updateDeciderState(
 			if (IS_CLASS(observation, CObservation3DRangeScan)) {
 				m_last_laser_scan3D =
 					static_cast<mrpt::obs::CObservation3DRangeScanPtr>(observation);
+				// just load the range/intensity images - CGraphSlanEngine takes care
+				// of the path
+				m_last_laser_scan3D->load();
 				this->convert3DTo2DRangeScan(
 						/*from = */ m_last_laser_scan3D,
 						/*to   = */ &m_last_laser_scan2D);
@@ -105,10 +108,10 @@ template<class GRAPH_t> void CICPGoodnessERD_t<GRAPH_t>::updateDeciderState(
 	}
 	else { // action-observations rawlog format
 		// append current laser scan
-		CObservation2DRangeScanPtr curr_laser_scan =
+		m_last_laser_scan2D =
 			observations->getObservationByClass<CObservation2DRangeScan>();
-		if (registered_new_node && curr_laser_scan) {
-			m_nodes_to_laser_scans[m_graph->nodeCount()-1] = curr_laser_scan;
+		if (registered_new_node && m_last_laser_scan2D) {
+			m_nodes_to_laser_scans[m_graph->nodeCount()-1] = m_last_laser_scan2D;
 			//std::cout << "Added laser scans of nodeID: "
 			//<< m_graph->nodeCount()-1 << std::endl;
 		}
@@ -427,6 +430,14 @@ void CICPGoodnessERD_t<GRAPH_t>::updateVisuals() {
 			m_graph->nodes.find(m_graph->nodeCount()-1);
 		if (search != m_graph->nodes.end()) {
 			laser_scan_viz->setPose(m_graph->nodes[m_graph->nodeCount()-1]);
+			// put the laser scan underneath the graph, so that you can still
+			// visualize the loop closures with the nodes ahead
+			laser_scan_viz->setPose(CPose3D(
+						laser_scan_viz->getPoseX(), laser_scan_viz->getPoseY(), -0.5,
+						DEG2RAD(laser_scan_viz->getPoseYaw()), 
+						DEG2RAD(laser_scan_viz->getPosePitch()), 
+						DEG2RAD(laser_scan_viz->getPoseRoll())
+						));
 		}
 
 		m_win->unlockAccess3DScene();
@@ -440,7 +451,7 @@ void CICPGoodnessERD_t<GRAPH_t>::updateVisuals() {
 			cout << "Initializing the RGBD viewports..." << endl;
 
 			// intensity viewport
-			{
+			if (params.enable_intensity_viewport) {
 				COpenGLScenePtr scene = m_win->get3DSceneAndLock();
 				opengl::COpenGLViewportPtr viewp_intensity;
 
@@ -453,7 +464,7 @@ void CICPGoodnessERD_t<GRAPH_t>::updateVisuals() {
 			}
 
 			// range viewport
-			{
+			if (params.enable_range_viewport) {
 				COpenGLScenePtr scene = m_win->get3DSceneAndLock();
 				opengl::COpenGLViewportPtr viewp_range;
 
@@ -473,7 +484,7 @@ void CICPGoodnessERD_t<GRAPH_t>::updateVisuals() {
 
 		// in either case update them..
 		// Show intensity image:
-		if (m_last_laser_scan3D->hasIntensityImage) {
+		if (m_last_laser_scan3D->hasIntensityImage && params.enable_intensity_viewport) {
 			mrpt::utils::CImage img  = m_last_laser_scan3D->intensityImage;
 
 			// in case it is externally stored - find the correct file name
@@ -488,7 +499,7 @@ void CICPGoodnessERD_t<GRAPH_t>::updateVisuals() {
 		}
 
 		//// show the range image
-		//if (m_last_laser_scan3D->hasRangeImage) {
+		//if (m_last_laser_scan3D->hasRangeImage && params.enable_range_viewport) {
 
 			//// make this a static class member
 			//CMatrixFloat range2D;
@@ -606,6 +617,9 @@ void CICPGoodnessERD_t<GRAPH_t>::TParams::dumpToTextStream(
 	out.printf("ICP max radius for edge search = %.2f\n", ICP_max_distance);
 	out.printf("Min. node difference for LC    = %d\n", LC_min_nodeid_diff);
 	out.printf("Visualize laser scans          = %d\n", visualize_laser_scans);
+	out.printf("Enable intensity img viewport  = %d\n", enable_intensity_viewport);
+	out.printf("Enable range img viewport      = %d\n", enable_range_viewport);
+	out.printf("Visualize laser scans          = %d\n", visualize_laser_scans);
 	out.printf("3DScans Image Directory        = %s\n", scans_img_external_dir.c_str());
 	out.printf("ICP Configuration:\n");
 
@@ -634,6 +648,14 @@ void CICPGoodnessERD_t<GRAPH_t>::TParams::loadFromConfigFile(
   visualize_laser_scans = source.read_bool(
   		"VisualizationParameters",
  			"visualize_laser_scans",
+ 			true, false);
+  enable_intensity_viewport= source.read_bool(
+  		"VisualizationParameters",
+ 			"enable_intensity_viewport",
+ 			true, false);
+  enable_range_viewport = source.read_bool(
+  		"VisualizationParameters",
+ 			"enable_range_viewport",
  			true, false);
  	scans_img_external_dir = source.read_string(
  			section,
