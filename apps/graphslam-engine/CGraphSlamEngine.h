@@ -249,6 +249,12 @@ namespace mrpt { namespace graphslam {
 		 		 * corresponding class variables
 		 		 */
 				inline void queryObserverForEvents();
+				/**
+				 * getRawlogFname
+				 *
+				 * return the filename of the rawlog file
+				 */
+				inline std::string getRawlogFname() {return m_rawlog_fname;}
 
 				// VARIABLES
 				//////////////////////////////////////////////////////////////

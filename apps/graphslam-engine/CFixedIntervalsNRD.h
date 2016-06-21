@@ -33,6 +33,12 @@ using namespace std;
 namespace mrpt { namespace graphslam { namespace deciders {
 
 	/**
+	 * Map type: 2D
+	 * MRPT rawlog format: #1, #2
+	 * Observations: CObservationOdometry, CActionRobotMovement2D
+	 * Edge Registration Strategy: Goodnesss threshold
+	 *
+
  	 * Fixed intervals odometry edge insertion. Determine whether to insert a new
  	 * pose in the graph given the distance and angle thresholds. If used offline,
 	 * use it with datasets in observation-only rawlog format.

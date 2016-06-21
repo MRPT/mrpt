@@ -125,6 +125,12 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::initCGraphSlam
 
 	this->initOutputDir();
 	this->printProblemParams();
+	//mrpt::system::pause();
+
+	// pass the rawlog filename after the instance initialization
+	m_node_registrar.setRawlogFname(m_rawlog_fname);
+	m_edge_registrar.setRawlogFname(m_rawlog_fname);
+
 
 	/**
 	 * Visualization-related parameters initialization
@@ -450,11 +456,11 @@ bool CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::parseRawlogFil
 				//std::cout << "Processing Camera Image. " << std::endl;
 
 			} // ELSE IF CAMERA IMAGE
-			else {
-				std::cout << "Received unsupported type of observation:" 
-					<< observation->GetRuntimeClass()->className
-					<< endl;
-			} // ELSE UNSUPPORTED TYPE OF OBSERVATION
+			//else {
+				//std::cout << "Received unsupported type of observation:" 
+					//<< observation->GetRuntimeClass()->className
+					//<< endl;
+			//} // ELSE UNSUPPORTED TYPE OF OBSERVATION
 		} // IF FORMAT #2 (Observation-only)
 		else {
 			// action, observations should contain a pair of valid data
@@ -1149,8 +1155,9 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::autofitObjectI
 		m_win->setCameraPointingToPoint( 0.5*(x_min+x_max), 0.5*(y_min+y_max), z_min );
 		m_win->setCameraZoom( 2.0f * std::max(10.0f, std::max(x_max-x_min, y_max-y_min) ) );
 	}
-	m_win->setCameraAzimuthDeg(0);
+	m_win->setCameraAzimuthDeg(60);
 	m_win->setCameraElevationDeg(75);
+	m_win->setCameraProjective(true);
 
 	MRPT_END;
 }
