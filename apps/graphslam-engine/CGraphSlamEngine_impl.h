@@ -38,7 +38,7 @@ CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::CGraphSlamEngine_t(
 		const string& config_file,
 		CDisplayWindow3D* win /* = NULL */,
 		CWindowObserver* win_observer /* = NULL */,
-		std::string rawlog_fname /* = "" */, 
+		std::string rawlog_fname /* = "" */,
 		std::string fname_GT /* = "" */ ):
 	m_config_fname(config_file),
 	m_rawlog_fname(rawlog_fname),
@@ -46,10 +46,11 @@ CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::CGraphSlamEngine_t(
 	m_win(win),
 	m_win_observer(win_observer),
 	m_win_manager(m_win),
-	m_odometry_color(0, 0, 1),
-	m_GT_color(0, 1, 0)
+	m_odometry_color(0, 0, 255),
+	m_GT_color(0, 255, 0),
+	m_estimated_trajectory_color(128, 128, 0)
 {
-	
+
 	this->initCGraphSlamEngine();
 };
 
@@ -57,11 +58,11 @@ template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR>
 CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::~CGraphSlamEngine_t() {
 	MRPT_START;
 
-	VERBOSE_COUT << "In Destructor: Deleting CGraphSlamEngine_t instance..." 
+	VERBOSE_COUT << "In Destructor: Deleting CGraphSlamEngine_t instance..."
 		<< std::endl;
 
 	// close all open files
-	for (fstreams_out_it it  = m_out_streams.begin(); it != m_out_streams.end(); 
+	for (fstreams_out_it it  = m_out_streams.begin(); it != m_out_streams.end();
 			++it) {
 		if ((it->second)->fileOpenCorrectly()) {
 			VERBOSE_COUT << "Closing file: " << (it->first).c_str() << std::endl;
@@ -70,9 +71,16 @@ CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::~CGraphSlamEngine_t
 	}
 
 	// delete m_odometry_poses
+	VERBOSE_COUT << "Releasing m_odometry_poses vector" << std::endl;
 	for (int i = 0; i < m_odometry_poses.size(); ++i) {
 		delete m_odometry_poses[i];
 	}
+	// delete m_GT_poses
+	VERBOSE_COUT << "Releasing m_GT_poses vector" << std::endl;
+	for (int i = 0; i < m_GT_poses.size(); ++i) {
+		delete m_GT_poses[i];
+	}
+
 
 	MRPT_END;
 }
@@ -85,10 +93,10 @@ template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR>
 void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::initCGraphSlamEngine() {
 	MRPT_START;
 
-	/** 
+	/**
 	 * Parameters validation
 	 */
-	assert(!(!m_win && m_win_observer) && 
+	assert(!(!m_win && m_win_observer) &&
 			"CObsever was provided even though no CDisplayWindow3D was not");
 
 	/**
@@ -125,7 +133,7 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::initCGraphSlam
 
 	this->initOutputDir();
 	this->printProblemParams();
-	mrpt::system::pause();
+	//mrpt::system::pause();
 
 	// pass the rawlog filename after the instance initialization
 	m_node_registrar.setRawlogFname(m_rawlog_fname);
@@ -153,7 +161,7 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::initCGraphSlam
 	// optimized graph
 	assert(m_has_read_config);
 	if (m_visualize_optimized_graph) {
-		m_win_manager.assignTextMessageParameters( 
+		m_win_manager.assignTextMessageParameters(
 				/* offset_y*	= */ &m_offset_y_graph,
 				/* text_index* = */ &m_text_index_graph );
 	}
@@ -161,7 +169,7 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::initCGraphSlam
 	// odometry visualization
 	assert(m_has_read_config);
 	if (m_visualize_odometry_poses) {
-		assert(m_win && 
+		assert(m_win &&
 				"Visualization of data was requested but no CDisplayWindow3D pointer was given");
 
 		m_win_manager.assignTextMessageParameters( /* offset_y* = */ &m_offset_y_odometry,
@@ -177,14 +185,14 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::initCGraphSlam
 		odometry_poses_cloud->enableColorFromX(false);
 		odometry_poses_cloud->enableColorFromY(false);
 		odometry_poses_cloud->enableColorFromZ(false);
-		odometry_poses_cloud->setColor(m_odometry_color);
+		odometry_poses_cloud->setColor_u8(m_odometry_color);
 		odometry_poses_cloud->setName("odometry_poses_cloud");
 
 		m_win->unlockAccess3DScene();
 
 		m_win_manager.addTextMessage(5,-m_offset_y_odometry,
 				format("Odometry path"),
-				m_odometry_color,
+				TColorf(m_odometry_color),
 				/* unique_index = */ m_text_index_odometry );
 
 		m_win->forceRepaint();
@@ -218,7 +226,7 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::initCGraphSlam
 		GT_cloud->enableColorFromX(false);
 		GT_cloud->enableColorFromY(false);
 		GT_cloud->enableColorFromZ(false);
-		GT_cloud->setColor(m_GT_color);
+		GT_cloud->setColor_u8(m_GT_color);
 		GT_cloud->setName("GT_cloud");
 
 		COpenGLScenePtr scene = m_win->get3DSceneAndLock();
@@ -227,7 +235,7 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::initCGraphSlam
 
 		m_win_manager.addTextMessage(5,-m_offset_y_GT,
 				format("Ground truth path"),
-				m_GT_color,
+				TColorf(m_GT_color),
 				/* unique_index = */ m_text_index_GT );
 
 		m_win->forceRepaint();
@@ -269,16 +277,47 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::initCGraphSlam
 
 	// robot model - estimated position
 	if (m_win) {
-		COpenGLScenePtr scene = m_win->get3DSceneAndLock();
 
 		opengl::CSetOfObjectsPtr obj = stock_objects::RobotPioneer();
 		pose_t initial_pose;
 		obj->setPose(initial_pose);
 		obj->setName("robot_estimated_pos");
-		obj->setColor_u8(TColor(142, 142, 56));
-		obj->setScale(5);
-		scene->insert(obj);
+		obj->setColor_u8(m_estimated_trajectory_color);
+		obj->setScale(3);
 
+		COpenGLScenePtr scene = m_win->get3DSceneAndLock();
+		scene->insert(obj);
+		m_win->unlockAccess3DScene();
+		m_win->forceRepaint();
+	}
+
+	// robot model - GT
+	if (m_win && m_visualize_GT) {
+		opengl::CSetOfObjectsPtr obj = stock_objects::RobotPioneer();
+		pose_t initial_pose;
+		obj->setPose(initial_pose);
+		obj->setName("robot_GT");
+		obj->setColor_u8(m_GT_color);
+		obj->setScale(3);
+
+		COpenGLScenePtr scene = m_win->get3DSceneAndLock();
+		scene->insert(obj);
+		m_win->unlockAccess3DScene();
+		m_win->forceRepaint();
+	}
+
+	// robot model - odometry only
+	if (m_win && m_visualize_odometry_poses) {
+
+		opengl::CSetOfObjectsPtr obj = stock_objects::RobotPioneer();
+		pose_t initial_pose;
+		obj->setPose(initial_pose);
+		obj->setName("robot_odometry_poses");
+		obj->setColor_u8(m_odometry_color);
+		obj->setScale(3);
+
+		COpenGLScenePtr scene = m_win->get3DSceneAndLock();
+		scene->insert(obj);
 		m_win->unlockAccess3DScene();
 		m_win->forceRepaint();
 	}
@@ -294,7 +333,7 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::initCGraphSlam
 		double offset_y_total_edges, offset_y_loop_closures;
 		int text_index_total_edges, text_index_loop_closures;
 
-		m_win_manager.assignTextMessageParameters(&offset_y_total_edges, 
+		m_win_manager.assignTextMessageParameters(&offset_y_total_edges,
 				&text_index_total_edges);
 		//std::cout << "in GraphSlamEngine:	" << std::endl
 		//<< "offset_y_total_edges: " << offset_y_total_edges << std::endl
@@ -309,10 +348,10 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::initCGraphSlam
 		// build each one of these
 		map<string, double> name_to_offset_y;
 		map<string, int> name_to_text_index;
-		for (vector<string>::const_iterator it = vec_edge_types.begin(); 
+		for (vector<string>::const_iterator it = vec_edge_types.begin();
 				it != vec_edge_types.end();
 				++it) {
-			m_win_manager.assignTextMessageParameters(&name_to_offset_y[*it], 
+			m_win_manager.assignTextMessageParameters(&name_to_offset_y[*it],
 					&name_to_text_index[*it]);
 			//std::cout << "in initCGraphSlamEngine: " << std::endl;
 			//std::cout << "name: " << *it << " | offset_y: "
@@ -320,7 +359,7 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::initCGraphSlam
 			//<< name_to_text_index[*it] << std::endl;
 		}
 
-		m_win_manager.assignTextMessageParameters(&offset_y_loop_closures, 
+		m_win_manager.assignTextMessageParameters(&offset_y_loop_closures,
 				&text_index_loop_closures);
 		//std::cout << "in GraphSlamEngine:	" << std::endl
 		//<< "offset_y_loop_closures: " << offset_y_loop_closures << std::endl
@@ -548,6 +587,26 @@ bool CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::parseRawlogFil
 				mrpt::synch::CCriticalSectionLocker m_graph_lock(&m_graph_section);
 				m_graph.dijkstra_nodes_estimate();
 			}
+
+			// update robot model - estimated position
+			if (m_win) {
+				COpenGLScenePtr scene = m_win->get3DSceneAndLock();
+
+				CRenderizablePtr obj = scene->getByName("robot_estimated_pos");
+				CSetOfObjectsPtr robot_obj = static_cast<CSetOfObjectsPtr>(obj);
+
+				mrpt::synch::CCriticalSectionLocker m_graph_lock(&m_graph_section);
+
+				// set the robot position to the last recorded pose in the graph
+				typename GRAPH_t::global_poses_t::const_iterator search =
+					m_graph.nodes.find(m_graph.nodeCount()-1);
+				if (search != m_graph.nodes.end()) {
+					robot_obj->setPose(m_graph.nodes[m_graph.nodeCount()-1]);
+				}
+
+				m_win->unlockAccess3DScene();
+			}
+
 		} // IF REGISTERED_NEW_NODE
 
 		// Timestamp textMessage
@@ -569,18 +628,24 @@ bool CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::parseRawlogFil
 
 		// Odometry visualization
 		if (m_visualize_odometry_poses && m_odometry_poses.size()) {
-			assert(m_win && 
+			assert(m_win &&
 					"Visualization of data was requested but no CDisplayWindow3D pointer was given");
 
 			COpenGLScenePtr scene = m_win->get3DSceneAndLock();
 
 			CRenderizablePtr obj = scene->getByName("odometry_poses_cloud");
 			CPointCloudPtr odometry_poses_cloud = static_cast<CPointCloudPtr>(obj);
+			pose_t* odometry_pose = m_odometry_poses.back();
 
 			odometry_poses_cloud->insertPoint(
-					m_odometry_poses.back()->x(),
-					m_odometry_poses.back()->y(),
+					odometry_pose->x(),
+					odometry_pose->y(),
 					0 );
+
+			// update robot model - odometry
+			obj = scene->getByName("robot_odometry_poses");
+			CSetOfObjectsPtr robot_obj = static_cast<CSetOfObjectsPtr>(obj);
+			robot_obj->setPose(*odometry_pose);
 
 			m_win->unlockAccess3DScene();
 			m_win->forceRepaint();
@@ -595,25 +660,6 @@ bool CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::parseRawlogFil
 		}
 		else {
 			this->updateGTVisualization();
-		}
-
-		// update robot mode
-		if (m_win) {
-			COpenGLScenePtr scene = m_win->get3DSceneAndLock();
-
-			CRenderizablePtr obj = scene->getByName("robot_estimated_pos");
-			CSetOfObjectsPtr robot_obj = static_cast<CSetOfObjectsPtr>(obj);
-
-			mrpt::synch::CCriticalSectionLocker m_graph_lock(&m_graph_section);
-
-			// set the robot position to the last recorded pose in the graph
-			typename GRAPH_t::global_poses_t::const_iterator search = 
-				m_graph.nodes.find(m_graph.nodeCount()-1);
-			if (search != m_graph.nodes.end()) {
-				robot_obj->setPose(m_graph.nodes[m_graph.nodeCount()-1]);
-			}
-
-			m_win->unlockAccess3DScene();
 		}
 
 		// Query for events and take coresponding actions
@@ -1129,7 +1175,7 @@ template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR>
 void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::updateGTVisualization() {
 	// add to the GT PointCloud and visualize it
 	// check that GT vector is not depleted
-	if (m_visualize_GT && 
+	if (m_visualize_GT &&
 			m_curr_GT_poses_index < m_GT_poses.size()) {
 		assert(m_win &&
 				"Visualization of data was requested but no CDisplayWindow3D pointer was given");
@@ -1139,14 +1185,16 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::updateGTVisual
 		CRenderizablePtr obj = scene->getByName("GT_cloud");
 		CPointCloudPtr GT_cloud = static_cast<CPointCloudPtr>(obj);
 
-		pose_t* curr_pose = m_GT_poses[m_curr_GT_poses_index++];
+		pose_t* gt_pose = m_GT_poses[m_curr_GT_poses_index++];
 		GT_cloud->insertPoint(
-				curr_pose->x(),
-				curr_pose->y(),
+				gt_pose->x(),
+				gt_pose->y(),
 				0 );
 
-		// place robot model there
-
+		// update robot model - GT
+		obj = scene->getByName("robot_GT");
+		CSetOfObjectsPtr robot_obj = static_cast<CSetOfObjectsPtr>(obj);
+		robot_obj->setPose(*gt_pose);
 		m_win->unlockAccess3DScene();
 		m_win->forceRepaint();
 	}
@@ -1313,7 +1361,7 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::decimateLaserS
 			new_validRange.push_back(laser_scan_in.validRange[i]);
 		}
 	}
-	
+
 	// assign the decimated scans, ranges
 	laser_scan_out->scan = new_scan;
 	laser_scan_out->validRange = new_validRange;
