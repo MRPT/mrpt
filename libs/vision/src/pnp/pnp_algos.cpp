@@ -45,7 +45,7 @@ int CPnP::CPnP_dls(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<E
 	//cout<<obj_pts_cv<<endl;
 	
 	dls d(obj_pts_cv, img_pts_cv);
-	d.compute_pose(R_cv,t_cv);
+	int ret = d.compute_pose(R_cv,t_cv);
 	
 	//cout<<R_cv<<endl;
 	//cout<<t_cv<<endl;
@@ -68,7 +68,7 @@ int CPnP::CPnP_dls(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<E
 	//cout<<"pose_eig="<<endl<<pose_mat<<endl<<endl;
 	//cout<<"pose_cv="<<endl<<R_cv<<endl<<endl;
 	
-	return 1;
+	return ret;
 }
 
 int CPnP::CPnP_epnp(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<Eigen::MatrixXd> img_pts, int n, const Eigen::Ref<Eigen::MatrixXd> cam_intrinsic, Eigen::Ref<Eigen::MatrixXd> pose_mat){
@@ -176,7 +176,7 @@ int CPnP::CPnP_p3p(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<E
 	//cout<<obj_pts_cv<<endl;
 	
 	p3p p(cam_in_cv);
-	p.solve(R_cv,t_cv, obj_pts_cv, img_pts_cv);
+	int ret = p.solve(R_cv,t_cv, obj_pts_cv, img_pts_cv);
 	
 	//cout<<R_cv<<endl;
 	//cout<<t_cv<<endl;
@@ -197,7 +197,7 @@ int CPnP::CPnP_p3p(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<E
 	
 	//cout<<"pose_mat="<<endl<<pose_mat_eig<<endl<<endl;
 	
-	return 1;
+	return ret;
 }
 
 int CPnP::CPnP_ppnp(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<Eigen::MatrixXd> img_pts, int n, const Eigen::Ref<Eigen::MatrixXd> cam_intrinsic, Eigen::Ref<Eigen::MatrixXd> pose_mat)
@@ -209,13 +209,13 @@ int CPnP::CPnP_ppnp(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<
 
 	ppnp p(obj_pts_,img_pts_, cam_intrinsic);
 	
-	p.compute_pose(R,t,n);
+	int ret = p.compute_pose(R,t,n);
 	
 	Eigen::Quaterniond q(R);
 	
 	pose_mat << t,q.vec();
 	
-	return 1;
+	return ret;
 }
 
 int CPnP::CPnP_posit(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<Eigen::MatrixXd> img_pts, int n, const Eigen::Ref<Eigen::MatrixXd> cam_intrinsic, Eigen::Ref<Eigen::MatrixXd> pose_mat)
@@ -227,13 +227,13 @@ int CPnP::CPnP_posit(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref
 
 	POSIT p(obj_pts_,img_pts_, cam_intrinsic, n);
 	
-	p.compute_pose(R,t);
+	int ret = p.compute_pose(R,t);
 	
 	Eigen::Quaterniond q(R);
 	
 	pose_mat << t,q.vec();
 	
-	return 1;
+	return ret;
 }
 
 
