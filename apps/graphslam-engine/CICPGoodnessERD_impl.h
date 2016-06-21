@@ -19,7 +19,11 @@ using namespace mrpt::graphslam::deciders;
 template<class GRAPH_t>
 CICPGoodnessERD_t<GRAPH_t>::CICPGoodnessERD_t():
 	m_search_disk_color(TColor(142, 142, 56)),
-	m_consecutive_invalid_format_instances_thres(20) // large threshold just to make sure
+	m_consecutive_invalid_format_instances_thres(20), // large threshold just to make sure
+	kConversionSensorLabel("RGBD_TO_2D_SCAN"), // 3D=>2D conversion parameter
+	kConversionAngleSup(DEG2RAD(5)),           // 3D=>2D conversion parameter
+	kConversionAngleInf(DEG2RAD(5)),           // 3D=>2D conversion parameter
+	kConversionOversamplingRatio(1.2)          // 3D=>2D conversion parameter
 {
 	MRPT_START;
 
@@ -36,7 +40,9 @@ void CICPGoodnessERD_t<GRAPH_t>::initCICPGoodnessERD_t() {
 	m_graph = NULL;
 
 	m_initialized_visuals = false;
+	m_initialized_rgbd_viewports = false;
 	m_just_inserted_loop_closure = false;
+	m_contains_scans3D = false;
 
 	// start ICP constraint registration only when 
 	// nodeCount > m_last_total_num_of_nodes
@@ -71,19 +77,29 @@ template<class GRAPH_t> void CICPGoodnessERD_t<GRAPH_t>::updateDeciderState(
 	if (m_last_total_num_of_nodes < m_graph->nodeCount()) {
 		registered_new_node = true;
 		m_last_total_num_of_nodes = m_graph->nodeCount();
-		//std::cout << "CICPGoodnessERD: Registered new node. " << std::endl;
+		//std::cout << "[CICPGoodnessERD:] Registered new node. " << std::endl;
 	}
 
 	if (observation.present()) { // observation-only rawlog format
 			if (IS_CLASS(observation, CObservation2DRangeScan)) {
-				m_last_laser_scan =
+				m_last_laser_scan2D =
 					static_cast<mrpt::obs::CObservation2DRangeScanPtr>(observation);
+			}
+			if (IS_CLASS(observation, CObservation3DRangeScan)) {
+				m_last_laser_scan3D =
+					static_cast<mrpt::obs::CObservation3DRangeScanPtr>(observation);
+				this->convert3DTo2DRangeScan(
+						/*from = */ m_last_laser_scan3D,
+						/*to   = */ &m_last_laser_scan2D);
+				//cout << "Conversion successful: 3DRangeScan=>2DRangeScan.. " << endl;
+
+				m_contains_scans3D = true;
 			}
 
 			// add the last laser_scan
-			if (registered_new_node && m_last_laser_scan) {
-				m_nodes_to_laser_scans[m_graph->nodeCount()-1] = m_last_laser_scan;
-				std::cout << "CICPGoodnessERD: Added laser scans of nodeID: "
+			if (registered_new_node && m_last_laser_scan2D) {
+				m_nodes_to_laser_scans[m_graph->nodeCount()-1] = m_last_laser_scan2D;
+				std::cout << "[CICPGoodnessERD:] Added laser scans of nodeID: "
 					<< m_graph->nodeCount()-1 << std::endl;
 			}
 	}
@@ -163,7 +179,7 @@ void CICPGoodnessERD_t<GRAPH_t>::registerNewEdge(
     const constraint_t& rel_edge ) {
   MRPT_START;
 
-  //cout << "CICPGoodnessERD: Inserting new Edge: " << from << " -> " << to << endl;
+  //cout << "[CICPGoodnessERD:] Inserting new Edge: " << from << " -> " << to << endl;
 	m_graph->insertEdge(from,  to, rel_edge);
 
 	MRPT_END;
@@ -260,8 +276,38 @@ void CICPGoodnessERD_t<GRAPH_t>::setGraphPtr(GRAPH_t* graph) {
 
 	m_graph = graph;
 
-	std::cout << "CICPGoodnessERD: Fetched the graph successfully" 
+	std::cout << "[CICPGoodnessERD:] Fetched the graph successfully" 
 		<< std::endl;
+
+	MRPT_END;
+}
+template<class GRAPH_t>
+void CICPGoodnessERD_t<GRAPH_t>::setRawlogFname(const std::string& rawlog_fname){
+	MRPT_START;
+
+	m_rawlog_fname = rawlog_fname;
+	std::cout << "[CICPGoodnessERD:] Fetched the rawlog filename successfully: "
+		<< m_rawlog_fname << std::endl;
+
+	// find the directory of the 3Dscan images in case we are working with
+	// Cobservation3DRangeScans
+	cout << "Trying to fetch 3D scans external storage directory.. " << endl;
+	std::string rawlog_fname_noext = system::extractFileName(m_rawlog_fname);
+	std::string rawlog_dir = system::extractFileDirectory(rawlog_fname);
+	std::string img_external_storage_dir = 
+		rawlog_dir + rawlog_fname_noext + "_Images/";
+
+	if (system::directoryExists(img_external_storage_dir)) {
+		params.scans_img_external_dir = img_external_storage_dir;
+		cout << "3D scans external storage: " << params.scans_img_external_dir 
+			<< endl;
+	}
+	else {
+		cout << "Couldn't find 3D scans external storage: " << img_external_storage_dir << endl;
+	}
+
+
+
 
 	MRPT_END;
 }
@@ -277,7 +323,7 @@ CICPGoodnessERD_t<GRAPH_t>::setCDisplayWindowPtr(
 
 	m_win = win;
 
-	std::cout << "CICPGoodnessERD: Fetched the CDisplayWindow successfully" 
+	std::cout << "[CICPGoodnessERD:] Fetched the CDisplayWindow successfully" 
 		<< std::endl;
 
 	MRPT_END;
@@ -295,8 +341,8 @@ void CICPGoodnessERD_t<GRAPH_t>::getEdgesStats(
 template<class GRAPH_t>
 void CICPGoodnessERD_t<GRAPH_t>::initializeVisuals() {
 	MRPT_START;
-	assert(has_read_config &&
-			"CICPGoodnessERD: Configuration parameters aren't loaded yet");
+	assert(params.has_read_config &&
+			"[CICPGoodnessERD:] Configuration parameters aren't loaded yet");
 	std::cout << "Initializing CICPGoodnessERD visuals" << std::endl;
 
 	// ICP_max_distance disk
@@ -320,9 +366,10 @@ void CICPGoodnessERD_t<GRAPH_t>::initializeVisuals() {
 		COpenGLScenePtr scene = m_win->get3DSceneAndLock();
 
 		CPlanarLaserScanPtr laser_scan_viz = mrpt::opengl::CPlanarLaserScan::Create();
-		laser_scan_viz->enablePoints();
-		laser_scan_viz->enableLine();
-		laser_scan_viz->enableSurface();
+		laser_scan_viz->enablePoints(true);
+		laser_scan_viz->enableLine(true);
+		laser_scan_viz->enableSurface(true);
+		laser_scan_viz->setSurfaceColor(0, 0.2, 0.8);
 
 		laser_scan_viz->setName("laser_scan_viz");
 
@@ -366,14 +413,14 @@ void CICPGoodnessERD_t<GRAPH_t>::updateVisuals() {
 	}
 	
 	// update laser scan visual
-	if (params.visualize_laser_scans && m_last_laser_scan) {
+	if (params.visualize_laser_scans && m_last_laser_scan2D) {
 		COpenGLScenePtr scene = m_win->get3DSceneAndLock();
 		
 		CRenderizablePtr obj = scene->getByName("laser_scan_viz");
 		CPlanarLaserScanPtr laser_scan_viz = static_cast<CPlanarLaserScanPtr>(obj);
 
 		// set the scan contents
-		laser_scan_viz->setScan(*m_last_laser_scan);
+		laser_scan_viz->setScan(*m_last_laser_scan2D);
 
 		// set the pose of the laser scan
 		typename GRAPH_t::global_poses_t::const_iterator search = 
@@ -386,6 +433,78 @@ void CICPGoodnessERD_t<GRAPH_t>::updateVisuals() {
 		m_win->forceRepaint();
 	}
 
+	// RGB image visual
+	if (m_contains_scans3D) {
+		// initialize the viewport if not there
+		if (!m_initialized_rgbd_viewports) {
+			cout << "Initializing the RGBD viewports..." << endl;
+
+			// intensity viewport
+			{
+				COpenGLScenePtr scene = m_win->get3DSceneAndLock();
+				opengl::COpenGLViewportPtr viewp_intensity;
+
+				viewp_intensity = scene->createViewport("viewp_intensity");
+				// TODO - assign position using window_manager
+				viewp_intensity->setViewportPosition(0.78,0.56,0.20,0.20);
+
+				m_win->unlockAccess3DScene();
+				m_win->forceRepaint();
+			}
+
+			// range viewport
+			{
+				COpenGLScenePtr scene = m_win->get3DSceneAndLock();
+				opengl::COpenGLViewportPtr viewp_range;
+
+				viewp_range = scene->createViewport("viewp_range");
+				// TODO - assign position using window_manager
+				viewp_range->setViewportPosition(0.78,0.34,0.20,0.20);
+
+				m_win->unlockAccess3DScene();
+				m_win->forceRepaint();
+			}
+
+			m_initialized_rgbd_viewports = true;
+		}
+
+		//// load the externally stored images
+		//m_last_laser_scan3D->load();
+
+		// in either case update them..
+		// Show intensity image:
+		if (m_last_laser_scan3D->hasIntensityImage) {
+			mrpt::utils::CImage img  = m_last_laser_scan3D->intensityImage;
+
+			// in case it is externally stored - find the correct file name
+			this->correct3DScanImageFname(&img, ".png");
+
+			COpenGLScenePtr scene = m_win->get3DSceneAndLock();
+			COpenGLViewportPtr viewp_intensity = scene->getViewport("viewp_intensity");
+			//viewp_intensity->setImageView_fast(m_last_laser_scan3D->intensityImage);
+			viewp_intensity->setImageView_fast(img);
+			m_win->unlockAccess3DScene();
+			m_win->forceRepaint();
+		}
+
+		//// show the range image
+		//if (m_last_laser_scan3D->hasRangeImage) {
+
+			//// make this a static class member
+			//CMatrixFloat range2D;
+			//mrpt::utils::CImage img;
+	
+			//range2D = m_last_laser_scan3D->rangeImage * (1.0/5.0); // TODO - without the magic number?
+			//img.setFromMatrix(range2D);
+
+			//COpenGLScenePtr scene = m_win->get3DSceneAndLock();
+			//COpenGLViewportPtr viewp_range = scene->getViewport("viewp_range");
+			//viewp_range->setImageView_fast(img);
+			//m_win->unlockAccess3DScene();
+			//m_win->forceRepaint();
+		//}
+
+	}
 	MRPT_END;
 }
 template<class GRAPH_t>
@@ -402,7 +521,8 @@ void CICPGoodnessERD_t<GRAPH_t>::checkIfInvalidDataset(
 	MRPT_UNUSED_PARAM(action);
 
 	if (observation.present()) { // FORMAT #2
-		if (IS_CLASS(observation, CObservation2DRangeScan)) {
+		if (IS_CLASS(observation, CObservation2DRangeScan) || 
+				IS_CLASS(observation, CObservation3DRangeScan)) {
 			m_checked_for_usuable_dataset = true;
 			return;
 		}
@@ -411,11 +531,12 @@ void CICPGoodnessERD_t<GRAPH_t>::checkIfInvalidDataset(
 		}
 	}
 	else {
+		// TODO - what if it's in this format but only has odometry information?
 		m_checked_for_usuable_dataset = true;
 		return;
 	}
 	if (m_consecutive_invalid_format_instances > m_consecutive_invalid_format_instances_thres) {
-		std::cout << "CICPGoodnessERD: Can't find usuable data in the given dataset." 
+		std::cout << "[CICPGoodnessERD:] Can't find usuable data in the given dataset." 
 			<< std::endl;
 		std::cout << "Make sure dataset contains valid CObservation2DRangeScan/CObservation3DRangeScan data." 
 			<< std::endl;
@@ -426,6 +547,42 @@ void CICPGoodnessERD_t<GRAPH_t>::checkIfInvalidDataset(
 	MRPT_END;
 }
 
+template<class GRAPH_t>
+void CICPGoodnessERD_t<GRAPH_t>::convert3DTo2DRangeScan(
+		CObservation3DRangeScanPtr& scan3D_in,
+		CObservation2DRangeScanPtr* scan2D_out /*= NULL*/) {
+
+	// create the 2D laser scan first
+	*scan2D_out = CObservation2DRangeScan::Create();
+
+	// TODO - does it change the 3D range scan? const .. 
+	if (scan3D_in->hasRangeImage) {
+		scan3D_in->convertTo2DScan(**scan2D_out, 
+				kConversionSensorLabel, 
+				kConversionAngleSup, 
+				kConversionAngleInf, 
+				kConversionOversamplingRatio);
+	}
+
+}
+
+
+
+template<class GRAPH_t>
+void CICPGoodnessERD_t<GRAPH_t>::correct3DScanImageFname(
+		mrpt::utils::CImage* img,
+		std::string extension /*= ".png" */ ) {
+
+	if (!params.scans_img_external_dir.empty()) {
+		// fetch the correct absolute path of the image
+		string relative_fname = img->getExternalStorageFile();
+		string fname = system::extractFileName(relative_fname);
+		fname = params.scans_img_external_dir + fname + extension;
+
+		// set the image file path appropriately
+		img->setExternalStorage(fname);
+	}
+}
 
 // TParameter
 // //////////////////////////////////
@@ -449,6 +606,7 @@ void CICPGoodnessERD_t<GRAPH_t>::TParams::dumpToTextStream(
 	out.printf("ICP max radius for edge search = %.2f\n", ICP_max_distance);
 	out.printf("Min. node difference for LC    = %d\n", LC_min_nodeid_diff);
 	out.printf("Visualize laser scans          = %d\n", visualize_laser_scans);
+	out.printf("3DScans Image Directory        = %s\n", scans_img_external_dir.c_str());
 	out.printf("ICP Configuration:\n");
 
 	icp.options.dumpToTextStream(out);
@@ -477,15 +635,20 @@ void CICPGoodnessERD_t<GRAPH_t>::TParams::loadFromConfigFile(
   		"VisualizationParameters",
  			"visualize_laser_scans",
  			true, false);
+ 	scans_img_external_dir = source.read_string(
+ 			section,
+ 			"scan_images_external_directory",
+ 			"", false);
 
 	// load the icp parameters - from "ICP" section explicitly
 	icp.options.loadFromConfigFile(source, "ICP");
 
-	std::cout << "Successfully loaded CICPGoodnessERD parameters. " 
+	std::cout << "[CICPGoodnessERD:] Successfully loaded CICPGoodnessERD parameters. " 
 		<< std::endl;
 	has_read_config = true;
 
 	MRPT_END;
 }
+
 
 #endif /* end of include guard: CICPGoodnessERD_IMPL_H */

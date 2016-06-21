@@ -48,6 +48,8 @@ namespace mrpt { namespace graphslam { namespace deciders {
 				 * method for fetching the graph after the instance initialization
 				 */
 				virtual void setGraphPtr(GRAPH_t* graph) {}
+				// set the rawlog fname - may be needed in the derived classes
+				virtual void setRawlogFname(const std::string& rawlog_fname) {}
 				/**
 				 * Method for fetching the CDisplayWindow3D after the instance
 				 * initialization. Handy so that the node registrator may add visual

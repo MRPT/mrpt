@@ -10,17 +10,21 @@
 #ifndef CICPGoodnessERD_H
 #define CICPGoodnessERD_H
 
+#include <mrpt/math/CMatrix.h>
+#include <mrpt/utils/CImage.h>
 #include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/utils/CConfigFileBase.h>
 #include <mrpt/utils/CStream.h>
 #include <mrpt/utils/types_simple.h>
 #include <mrpt/utils/TColor.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
+#include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/obs/CRawlog.h>
 #include <mrpt/opengl/CDisk.h>
 #include <mrpt/opengl/CSetOfObjects.h> // TODO - is it needed?
 #include <mrpt/opengl/CRenderizable.h>
 #include <mrpt/opengl/CPlanarLaserScan.h>
+#include <mrpt/opengl/COpenGLViewport.h>
 #include <mrpt/slam/CICP.h>
 #include <mrpt/system/os.h>
 
@@ -51,7 +55,12 @@ using namespace mrpt::maps;
 namespace mrpt { namespace graphslam { namespace deciders {
 
 	/**
-	 * Register new edges in the graph with the last added node. Criterion for
+	 * Map type: 2D
+	 * MRPT rawlog format: #1, #2
+	 * Observations: CObservation2DRangeScan, CObservation3DRangeScan
+	 * Edge Registration Strategy: Goodnesss threshold
+	 *
+ 	 * Register new edges in the graph with the last added node. Criterion for
 	 * adding new nodes should  be the goodness of the potential ICP edge. The
 	 * nodes for ICP should be picked based on the distance from the last
 	 * inserted node.
@@ -77,6 +86,7 @@ namespace mrpt { namespace graphslam { namespace deciders {
 
 
 					void setGraphPtr(GRAPH_t* graph);
+					void setRawlogFname(const std::string& rawlog_fname);
 					void setCDisplayWindowPtr(mrpt::gui::CDisplayWindow3D* win);
     			void setWindowManagerPtr(mrpt::gui::CWindowManager_t* win_manager);
     			void getEdgesStats(
@@ -103,6 +113,7 @@ namespace mrpt { namespace graphslam { namespace deciders {
 							double ICP_goodness_thresh;
 							int LC_min_nodeid_diff;
 							bool visualize_laser_scans;
+							std::string scans_img_external_dir;
 
 							bool has_read_config;
 
@@ -148,6 +159,22 @@ namespace mrpt { namespace graphslam { namespace deciders {
 		 					std::set<mrpt::utils::TNodeID> *nodes_set, 
 							const mrpt::utils::TNodeID& cur_nodeID,
 							double distance );
+					/**
+					 * Method that updates the m_last_laser_scan2D variable given a
+					 * CObservation3DRangeScan acquired from an RGB-D camera
+					 */
+					void convert3DTo2DRangeScan(
+							/*from = */ CObservation3DRangeScanPtr& scan3D_in,
+							/*to   = */ CObservation2DRangeScanPtr* scan2D_out=NULL);
+					/**
+					 * In case of 3DScan images, method sets the path of each image
+					 * either to ${rawlog_path_wo_extension}_Images/img_name (default
+					 * choice) or to the  param.scans_img_external_storage directory specified
+					 * by the user in the .ini configuration file.
+					 */
+					void correct3DScanImageFname(
+							mrpt::utils::CImage* img,
+							std::string extension = ".png");
 
 					// Private variables
 					//////////////////////////////////////////////////////////////
@@ -156,8 +183,12 @@ namespace mrpt { namespace graphslam { namespace deciders {
 					mrpt::gui::CDisplayWindow3D* m_win;
 					mrpt::gui::CWindowManager_t* m_win_manager;
 
+					std::string m_rawlog_fname;
+
 					bool m_initialized_visuals;
+					bool m_initialized_rgbd_viewports;
 					bool m_just_inserted_loop_closure;
+					bool m_contains_scans3D;
 
 					mrpt::utils::TColorf m_search_disk_color; // see Ctor for initialization
 					double m_offset_y_search_disk;
@@ -169,13 +200,19 @@ namespace mrpt { namespace graphslam { namespace deciders {
 					std::map<const std::string, int> m_edge_types_to_nums;
 
     			int m_last_total_num_of_nodes;
-    			CObservation2DRangeScanPtr m_last_laser_scan;
+    			CObservation2DRangeScanPtr m_last_laser_scan2D;
+    			CObservation3DRangeScanPtr m_last_laser_scan3D;
 
 					// find out if decider is invalid for the given dataset
 					bool m_checked_for_usuable_dataset;
 					size_t m_consecutive_invalid_format_instances;
 					const size_t m_consecutive_invalid_format_instances_thres;
 
+					// 3D=>2D scan conversion parameters
+					const string kConversionSensorLabel;
+					const double kConversionAngleSup;
+					const double kConversionAngleInf;
+					const double kConversionOversamplingRatio;
 			};
 
 } } } // end of namespaces
