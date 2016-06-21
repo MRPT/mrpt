@@ -113,6 +113,8 @@ namespace mrpt { namespace graphslam { namespace deciders {
 							double ICP_goodness_thresh;
 							int LC_min_nodeid_diff;
 							bool visualize_laser_scans;
+							bool enable_intensity_viewport;
+							bool enable_range_viewport;
 							std::string scans_img_external_dir;
 
 							bool has_read_config;
@@ -208,6 +210,7 @@ namespace mrpt { namespace graphslam { namespace deciders {
 					size_t m_consecutive_invalid_format_instances;
 					const size_t m_consecutive_invalid_format_instances_thres;
 
+					// TODO - Remove these
 					// 3D=>2D scan conversion parameters
 					const string kConversionSensorLabel;
 					const double kConversionAngleSup;

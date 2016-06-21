@@ -303,6 +303,7 @@ namespace mrpt { namespace graphslam {
 				bool m_visualize_odometry_poses;
 				bool m_visualize_GT;
 				bool m_visualize_map;
+				bool m_enable_curr_pos_viewport;
 
 				// textMessage vertical text position
 				double m_curr_offset_y;
