@@ -338,9 +338,9 @@ namespace mrpt { namespace graphslam {
 
 
 				// PointCloud colors
-				mrpt::utils::TColorf m_odometry_color; // see Ctor for initialization
-				mrpt::utils::TColorf m_GT_color;
-				mrpt::utils::TColor m_robot_model_color;
+				mrpt::utils::TColor m_odometry_color; // see Ctor for initialization
+				mrpt::utils::TColor m_GT_color;
+				mrpt::utils::TColor m_estimated_trajectory_color;
 
 				bool m_is3D;
 				// internal counter for querrying for the number of nodeIDs.
