@@ -152,23 +152,23 @@ namespace mrpt { namespace graphslam {
 		 		 **/
 				bool parseRawlogFile();
 				/**
-		 		 * CGraphSlamEngine_t::optmizeGraph
-		 		 *
 		 		 * Optimize the under-construction graph
 		 		 */
 				inline void optimizeGraph(GRAPH_t* graph);
 				/**
-		 		 * CGraphSlamEngine_t::visualizeGraph
-		 		 *
 		 		 * Called internally for updating the vizualization scene for the graph
 		 		 * building procedure
 		 		 */
-				inline void visualizeGraph(const GRAPH_t& gr);
+				inline void updateGraphVisualization(const GRAPH_t& gr);
 				/**
 		 		 * GRAPH_t getter function - return reference to own graph
 		 		 * Handy function for visualization, printing purposes
 		 		 */
 				const GRAPH_t& getGraph() const { return m_graph; }
+				/**
+				 * Return the filename of the rawlog file
+				 */
+				inline std::string getRawlogFname() {return m_rawlog_fname;}
 
 			private:
 				// Private function definitions
@@ -190,27 +190,21 @@ namespace mrpt { namespace graphslam {
 		 		 * Open and write an introductory message using the provided fname
 		 		 */
 				void initResultsFile(const std::string& fname);
+				void initCurrPosViewport();
 				/**
- 				 * updateCurrPosViewport
- 				 *
  				 * Udpate the viewport responsible for displaying the graph-building
  				 * procedure in the estimated position of the robot
  				 */
-				inline void updateCurrPosViewport(const GRAPH_t& gr);
-				// TODO - move it into a map builder template class
+				inline void updateCurrPosViewport();
 				/**
-				 * updateMap
-				 *
 				 * Visualize the estimated path of the robot along with the produced
 				 * map
 				 */
-				void updateMap(const GRAPH_t& gr, 
+				void updateMapVisualization(const GRAPH_t& gr, 
 						std::map<const mrpt::utils::TNodeID, 
 						mrpt::obs::CObservation2DRangeScanPtr> m_nodes_to_laser_scans,
 						bool full_update=false );
 				/**
-				 * decimateLaserScan
-				 *
 				 * Cut down on the size of the given laser scan. Handy for reducing the
 				 * size of the resulting CSetOfObject that would be inserted in the
 				 * visualization scene
@@ -220,41 +214,39 @@ namespace mrpt { namespace graphslam {
 						mrpt::obs::CObservation2DRangeScan* laser_scan_out,
 						const int keep_every_n_entries = 2); 
 				/**
-		 		 * readGT
-		 		 *
 		 		 * Parse the ground truth .txt file and fill in the corresponding
-		 		 * m_GT_poses vector. Return true if operation was successful Call the
-		 		 * function in the constructor if the visualize_GT flag is set
-		 		 * to true. 
+		 		 * m_GT_poses vector.
 		 		 */
-				inline void readGT(const std::string& rawlog_fname_GT);
+				inline void readGTFile(const std::string& rawlog_fname_GT);
+				void initGTVisualization();
 				/**
-				 * updateGTVisualization
-				 *
 				 * Display the next ground truth position in the visualization window
 				 */
 				void updateGTVisualization();
+				void initOdometryVisualization();
 				/**
-		 		 * autofitObjectInView
-		 		 *
+				 * Update odometry-only cloud with latest odometry estimation
+				 */
+				void updateOdometryVisualization();
+				void initEstimatedTrajectoryVisualization();
+				/**
+				 * update CSetOfLines viuslization object with the latest graph node
+				 * position. If full update is asked, method clears the CSetOfLines
+				 * object and redraws all the lines based on the updated (optimized)
+				 * positions of the nodes
+				 */
+				void updateEstimatedTrajectoryVisualization(bool full_update=false);
+				/**
 		 		 * Set the camera parameters of the CDisplayWindow3D so that the whole
 		 		 * graph is viewed in the window.
 		 		 */
 				inline void autofitObjectInView(const mrpt::opengl::CSetOfObjectsPtr& gr);
 				/**
-		 		 * queryObserverForEvents
-		 		 *
 		 		 * Query the given observer for any events (keystrokes, mouse clicks,
 		 		 * that may have occured in the CDisplayWindow3D  and fill in the
 		 		 * corresponding class variables
 		 		 */
 				inline void queryObserverForEvents();
-				/**
-				 * getRawlogFname
-				 *
-				 * return the filename of the rawlog file
-				 */
-				inline std::string getRawlogFname() {return m_rawlog_fname;}
 
 				// VARIABLES
 				//////////////////////////////////////////////////////////////
@@ -306,18 +298,18 @@ namespace mrpt { namespace graphslam {
 				bool m_enable_curr_pos_viewport;
 
 				// textMessage vertical text position
-				double m_curr_offset_y;
 				double m_offset_y_graph;
 				double m_offset_y_odometry;
-				double m_offset_y_timestamp;
 				double m_offset_y_GT;
+				double m_offset_y_estimated_traj;
+				double m_offset_y_timestamp;
 
 				// textMessage index
-				int m_curr_text_index;
 				int m_text_index_graph;
 				int m_text_index_odometry;
-				int m_text_index_timestamp;
 				int m_text_index_GT;
+				int m_text_index_estimated_traj;
+				int m_text_index_timestamp;
 
 				// instance to keep track of all the edges + visualization related
 				// functions
@@ -337,10 +329,12 @@ namespace mrpt { namespace graphslam {
 				mrpt::obs::CObservation2DRangeScanPtr m_last_laser_scan;
 
 
-				// PointCloud colors
+				// Trajectories colors
 				mrpt::utils::TColor m_odometry_color; // see Ctor for initialization
 				mrpt::utils::TColor m_GT_color;
-				mrpt::utils::TColor m_estimated_trajectory_color;
+				mrpt::utils::TColor m_estimated_traj_color;
+
+				size_t m_robot_model_size;
 
 				bool m_is3D;
 				// internal counter for querrying for the number of nodeIDs.
