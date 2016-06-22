@@ -250,7 +250,7 @@ bool CPTG_Holo_Blend::inverseMap_WS2TP(double x, double y, int &out_k, double &o
 				else tx_solve=-1.0; // No solution found for t>T_ramp
 			}
 			else {
-				tx_solve = (x-T_ramp*(vxf+vxi)*0.5)/vxf;
+				tx_solve = (x-T_ramp*(-vxf+vxi)*0.5)/vxf;
 			}
 
 			if (std::abs(vyf)<eps)
@@ -260,7 +260,7 @@ bool CPTG_Holo_Blend::inverseMap_WS2TP(double x, double y, int &out_k, double &o
 					 ty_any = true;
 				else ty_solve=-1.0; // No solution found for t>T_ramp
 			}
-			else ty_solve = (y-T_ramp*(vyf+vyi)*0.5)/vyf;
+			else ty_solve = (y-T_ramp*(-vyf+vyi)*0.5)/vyf;
 		}
 
 		// Get the final solution:
@@ -466,12 +466,11 @@ bool CPTG_Holo_Blend::getPathStepForDist(uint16_t k, double dist, uint16_t &out_
 				for (int iters=0;iters<10;iters++)
 				{
 					double err = calc_trans_distance_t_below_Tramp_abc(t_solved,a,b,c) - dist;
-					if (std::abs(err)<1e-3)
-						break; // Good enough!
-
 					const double diff = std::sqrt(a*t_solved*t_solved+b*t_solved+c);
 					ASSERT_(std::abs(diff)>1e-14);
 					t_solved -= (err) / diff;
+					if (std::abs(err)<1e-3)
+						break; // Good enough!
 				}
 			}
 		}
