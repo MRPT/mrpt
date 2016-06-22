@@ -77,15 +77,16 @@ namespace nav
 		/** This must be called to de-initialize the PTG if some parameter is to be changed. After changing it, call initialize again */
 		virtual void deinitialize() = 0;
 
-		/** Computes the closest (alpha,d) TP coordinates of the trajectory point closest to the Workspace (WS) Cartesian coordinates (x,y).
-		  * \param[in] x X coordinate of the query point.
-		  * \param[in] y Y coordinate of the query point.
+		/** Computes the closest (alpha,d) TP coordinates of the trajectory point closest to the Workspace (WS) 
+		 *   Cartesian coordinates (x,y), relative to the current robot frame.
+		  * \param[in] x X coordinate of the query point, relative to the robot frame.
+		  * \param[in] y Y coordinate of the query point, relative to the robot frame.
 		  * \param[out] out_k Trajectory parameter index (discretized alpha value, 0-based index).
 		  * \param[out] out_d Trajectory distance, normalized such that D_max becomes 1.
 		  *
 		  * \return true if the distance between (x,y) and the actual trajectory point is below the given tolerance (in meters).
 		  */
-		virtual bool inverseMap_WS2TP(double x, double y, int &out_k, double &out_d, double tolerance_dist = 0.10) const = 0;
+		virtual bool inverseMap_WS2TP(double x, double y, int &out_k, double &out_normalized_d, double tolerance_dist = 0.10) const = 0;
 
 		/** Returns the same than inverseMap_WS2TP() but without any additional cost. The default implementation 
 		  * just calls inverseMap_WS2TP() and discards (k,d). */
@@ -113,10 +114,12 @@ namespace nav
 		virtual void getPathPose(uint16_t k, uint16_t step, mrpt::math::TPose2D &p) const = 0;
 
 		/** Access path `k` ([0,N-1]=>[-pi,pi] in alpha): traversed distance at discrete step `step`.
-		* \sa getPathStepCount(), getAlphaValuesCount() */
+		  * \return Distance in pseudometers (real distance, NOT normalized to [0,1] for [0,refDist])
+		  * \sa getPathStepCount(), getAlphaValuesCount() */
 		virtual double getPathDist(uint16_t k, uint16_t step) const = 0;
 
 		/** Access path `k` ([0,N-1]=>[-pi,pi] in alpha): largest step count for which the traversed distance is < `dist`
+		  * \param[in] dist Distance in pseudometers (real distance, NOT normalized to [0,1] for [0,refDist])
 		  * \return false if no step fulfills the condition for the given trajectory `k` (e.g. out of reference distance). 
 		  * Note that, anyway, the maximum distance (closest point) is returned in `out_step`.
 		  * \sa getPathStepCount(), getAlphaValuesCount() */
@@ -135,7 +138,10 @@ namespace nav
 
 		static std::string OUTPUT_DEBUG_PATH_PREFIX; //!< The path used as defaul output in, for example, debugDumpInFiles. (Default="./reactivenav.logs/")
 
-		uint16_t getAlphaValuesCount() const { return m_alphaValuesCount; };
+		/** Get the number of different, discrete paths in this family */
+		uint16_t getAlphaValuesCount() const { return m_alphaValuesCount; }
+		/** Get the number of different, discrete paths in this family */
+		uint16_t getPathCount() const { return m_alphaValuesCount; }
 
 		/** Alpha value for the discrete corresponding value \sa alpha2index */
 		double index2alpha( uint16_t k ) const {
@@ -213,6 +219,7 @@ protected:
 	protected:
 		virtual void internal_processNewRobotShape() = 0; //!< Will be called whenever the robot shape is set / updated
 		mrpt::math::CPolygon m_robotShape;
+		void loadShapeFromConfigFile(const mrpt::utils::CConfigFileBase & source,const std::string & section);
 	};
 
 	/** Base class for all PTGs using a 2D circular robot shape model.
@@ -236,6 +243,7 @@ protected:
 	protected:
 		virtual void internal_processNewRobotShape() = 0; //!< Will be called whenever the robot shape is set / updated
 		double m_robotRadius;
+		void loadShapeFromConfigFile(const mrpt::utils::CConfigFileBase & source,const std::string & section);
 	};
 
 }
