@@ -22,6 +22,7 @@
 #include <wx/splitter.h>
 #include "MyGLCanvas.h"
 #include <wx/panel.h>
+#include <wx/choice.h>
 #include <wx/frame.h>
 #include <wx/timer.h>
 #include <wx/statusbr.h>
@@ -116,6 +117,8 @@ class reactive_navigator_demoframe: public wxFrame
         static const long ID_STATICTEXT2;
         static const long ID_STATICTEXT1;
         static const long ID_XY_GLCANVAS;
+        static const long ID_STATICTEXT4;
+        static const long ID_CHOICE1;
         static const long ID_CUSTOM1;
         static const long ID_TEXTCTRL2;
         static const long ID_PANEL8;
@@ -139,6 +142,7 @@ class reactive_navigator_demoframe: public wxFrame
         wxTextCtrl* edParamsReactive;
         wxCustomButton* btnStop;
         wxNotebook* Notebook1;
+        wxChoice* cbSelPTG;
         wxMenuItem* MenuItem5;
         wxTextCtrl* edManualSeqs;
         wxStaticText* StaticText2;
@@ -170,6 +174,7 @@ class reactive_navigator_demoframe: public wxFrame
         wxPanel* Panel2;
         wxSplitterWindow* SplitterWindow1;
         wxMenuItem* mnuViewMaxRange;
+        wxStaticText* StaticText4;
         wxCustomButton* btnPlaceTarget;
         CMyGLCanvas* m_plotScan;
         wxPanel* pnNavSelButtons;
@@ -272,7 +277,7 @@ class reactive_navigator_demoframe: public wxFrame
 		mrpt::opengl::CSetOfObjectsPtr		m_gl_placing_robot;
 		mrpt::opengl::CDiskPtr		        gl_robot_sensor_range;
 		mrpt::opengl::CSetOfLinesPtr        gl_robot_path;
-		mrpt::opengl::CPlanarLaserScanPtr   gl_scan3D, gl_scan2D;
+		mrpt::opengl::CPlanarLaserScanPtr   gl_scan3D;
 		mrpt::opengl::CPointCloudPtr 		gl_path;
 		mrpt::opengl::CSetOfLinesPtr        gl_robot_ptg_prediction;
 
