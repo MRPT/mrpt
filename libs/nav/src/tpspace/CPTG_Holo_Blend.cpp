@@ -162,7 +162,8 @@ bool CPTG_Holo_Blend::inverseMap_WS2TP(double x, double y, int &out_k, double &o
 {
 	MRPT_UNUSED_PARAM(tolerance_dist);
 	ASSERT_(x!=0 || y!=0);
-
+	
+	// General idea: keep the shortest path for all alpha values
 	const double TIME_MISMATCH_TOLERANCE = 4.0*((2*M_PI/m_alphaValuesCount) * std::sqrt(x*x+y*y))/V_MAX;
 	const double eps_distance            = 2.1*((2*M_PI/m_alphaValuesCount) * std::sqrt(x*x+y*y));
 
@@ -172,7 +173,6 @@ bool CPTG_Holo_Blend::inverseMap_WS2TP(double x, double y, int &out_k, double &o
 	const double TR2_ = 1.0/(2*T_ramp);
 	const double vxi = curVelLocal.vx, vyi = curVelLocal.vy;
 
-	// General idea: get the shortest path for all alpha values.
 	for (uint16_t k=0;k<m_alphaValuesCount;k++)
 	{
 		const double dir = CParameterizedTrajectoryGenerator::index2alpha(k);
@@ -319,31 +319,6 @@ void CPTG_Holo_Blend::initialize(const std::string & cacheFilename, const bool v
 	ASSERT_(V_MAX>0);
 	ASSERT_(W_MAX>0);
 	ASSERT_(m_alphaValuesCount>0);
-
-
-	// DEBUG TESTS
-#if 1
-	//debugDumpInFiles("1");
-	uint16_t step;
-	double d;
-	
-	this->curVelLocal.vx = 0.1;
-	this->curVelLocal.vy = 0.2;
-	getPathStepForDist(170,0.3,step);
-	d = getPathDist(170,step);
-
-	getPathStepForDist(170,1.3,step);
-	d = getPathDist(170,step);
-	std::cout << d;
-
-	{
-		int k;
-		double d;
-		bool valid=inverseMap_WS2TP(1,5,k,d);
-	}
-#endif
-
-
 }
 
 void CPTG_Holo_Blend::deinitialize()
