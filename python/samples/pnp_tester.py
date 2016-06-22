@@ -34,7 +34,7 @@ def display_comparison_plot(t, arr, names, title, xtitle, ytitle):
     ax.set_ylim([0,10])
 
 # Define number of points and camera parameters
-n=6
+n=10
 f=1.0
 cx=0.0
 cy=0.0
@@ -43,7 +43,7 @@ cy=0.0
 pnp = pymrpt.pnp(n)
 
 # Define object points and image points
-obj_pts=np.array([[0,0,0],[0,0,-50.0],[2,0,35],[5,-40,25],[10,15,9],[-20,50,7]])
+obj_pts=np.array([[0,0,0],[0,0,-50.0],[2,0,35],[5,-40,25],[10,15,9],[-20,50,7],[-12,32,43],[21,-2, 123], [2,3,154], [13, -21, 139]])
 img_pts=np.empty([n,2])
 img_pts_=np.empty([n,3])
 img_pts_[:,2]=1
@@ -77,7 +77,7 @@ for it in np.arange(0,n_iter):
     t=np.array([0.0,0.0,100.0])
     
     # Compute image points based on actual extrinsic matrix and add noise to measurements
-    for i in range(0,6):
+    for i in range(0,n):
         pt=np.dot(R,obj_pts[i,:])+t
         img_pts[i,:]= np.array([pt[0]/pt[2] +random.uniform(-0.01,0.01), pt[1]/pt[2]+random.uniform(-0.01,0.01)])
     
