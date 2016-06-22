@@ -60,9 +60,9 @@ TCLAP::ValueArg<string> arg_ini_file(/*flag = */ "i", /*name = */ "ini_file",
 		/*desc = */ ".ini configuration file", /* required = */ true,
 		/* default value = */ "", /*typeDesc = */ "config.ini", /*parser = */ cmd);
 TCLAP::ValueArg<string> arg_rawlog_file( "r", "rawlog",
-		"Rawlog dataset file",	true, "", "captured_observations.rawlog", cmd);
+		"Rawlog dataset file",	true, "", "contents.rawlog", cmd);
 TCLAP::ValueArg<string> arg_ground_truth_file( "g", "ground-truth",
-		"Ground-truth textfile",	false, "", "captured_observations.rawlog.GT.txt", cmd);
+		"Ground-truth textfile",	false, "", "contents.rawlog.GT.txt", cmd);
 
 
 CWindowObserver  graph_win_observer;
@@ -114,10 +114,10 @@ int main(int argc, char **argv)
 			<
 			CNetworkOfPoses2DInf,                         // graph type
 			//CEmptyNRD_t<CNetworkOfPoses2DInf>, // empty node decider
-			CFixedIntervalsNRD_t<CNetworkOfPoses2DInf>,   // node decider
-			//CICPGoodnessNRD_t<CNetworkOfPoses2DInf>,   // edge decider
-			//CEmptyERD_t<CNetworkOfPoses2DInf> // empty edge decider
-			CICPGoodnessERD_t<CNetworkOfPoses2DInf>     // edge decider
+			//CFixedIntervalsNRD_t<CNetworkOfPoses2DInf>,   // node decider
+			CICPGoodnessNRD_t<CNetworkOfPoses2DInf>,   // edge decider
+			CEmptyERD_t<CNetworkOfPoses2DInf> // empty edge decider
+			//CICPGoodnessERD_t<CNetworkOfPoses2DInf>     // edge decider
 			>
 				graph_engine(
 						config_fname, 
