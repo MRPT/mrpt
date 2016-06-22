@@ -18,7 +18,8 @@ using namespace mrpt::graphslam::deciders;
 
 template<class GRAPH_t>
 CICPGoodnessERD_t<GRAPH_t>::CICPGoodnessERD_t():
-	m_search_disk_color(TColor(142, 142, 56)),
+	m_search_disk_color(142, 142, 56),
+	m_laser_scans_color(0, 206, 209),
 	m_consecutive_invalid_format_instances_thres(20), // large threshold just to make sure
 	kConversionSensorLabel("RGBD_TO_2D_SCAN"), // 3D=>2D conversion parameter
 	kConversionAngleSup(DEG2RAD(5)),           // 3D=>2D conversion parameter
@@ -356,7 +357,7 @@ void CICPGoodnessERD_t<GRAPH_t>::initializeVisuals() {
 		pose_t initial_pose;
 		obj->setPose(initial_pose);
 		obj->setName("ICP_max_distance");
-		obj->setColor(m_search_disk_color);
+		obj->setColor_u8(m_search_disk_color);
 		obj->setDiskRadius(params.ICP_max_distance, params.ICP_max_distance-0.5);
 		scene->insert(obj);
 
@@ -372,7 +373,11 @@ void CICPGoodnessERD_t<GRAPH_t>::initializeVisuals() {
 		laser_scan_viz->enablePoints(true);
 		laser_scan_viz->enableLine(true);
 		laser_scan_viz->enableSurface(true);
-		laser_scan_viz->setSurfaceColor(0, 0.2, 0.8);
+		laser_scan_viz->setSurfaceColor(
+				m_laser_scans_color.R,
+				m_laser_scans_color.G,
+				m_laser_scans_color.B,
+				m_laser_scans_color.A);
 
 		laser_scan_viz->setName("laser_scan_viz");
 

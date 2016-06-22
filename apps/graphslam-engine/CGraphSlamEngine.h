@@ -11,6 +11,7 @@
 #ifndef GRAPHSLAMENGINE_H
 #define GRAPHSLAMENGINE_H
 
+#include <mrpt/math/CQuaternion.h>
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/graphs/CNetworkOfPoses.h>
 #include <mrpt/graphslam.h>
@@ -51,6 +52,7 @@
 #include <mrpt/utils/types_simple.h>
 #include <mrpt/utils/TColor.h>
 
+#include <cstdlib>
 #include <string>
 #include <sstream>
 #include <map>
@@ -59,6 +61,7 @@
 #include <set>
 #include <algorithm>
 #include <cstdlib>
+#include <cassert>
 
 #include "CEdgeCounter.h"
 #include "CWindowObserver.h"
@@ -70,7 +73,6 @@
 #include "CEmptyERD.h"
 
 #include "supplementary_funs.h"
-#include "CWindowObserver.h"
 
 
 namespace mrpt { namespace graphslam {
@@ -215,9 +217,22 @@ namespace mrpt { namespace graphslam {
 						const int keep_every_n_entries = 2); 
 				/**
 		 		 * Parse the ground truth .txt file and fill in the corresponding
-		 		 * m_GT_poses vector.
+		 		 * m_GT_poses vector. Ground Truth file has to be generated from the
+		 		 * GridMapNavSimul MRPT application.
 		 		 */
-				inline void readGTFile(const std::string& rawlog_fname_GT);
+				void readGTFileNavSimulOutput(
+						const std::string& fname_GT, 
+						std::vector<pose_t>* gt_poses=NULL,
+						std::vector<mrpt::system::TTimeStamp>* gt_timestamps=NULL) ;
+				/**
+		 		 * Parse the ground truth .txt file and fill in the corresponding
+		 		 * m_GT_poses vector. Ground Truth file has to be generated from the
+		 		 * rgbd_dataset2rawlog MRPT tool
+		 		 */
+				void readGTFileRGBD_TUM(
+						const std::string& fname_GT, 
+						std::vector<pose_t>* gt_poses=NULL,
+						std::vector<mrpt::system::TTimeStamp>* gt_timestamps=NULL) ;
 				void initGTVisualization();
 				/**
 				 * Display the next ground truth position in the visualization window
@@ -264,16 +279,15 @@ namespace mrpt { namespace graphslam {
 		 		 * \sa CGraphSlamEngine_t::readConfigFile
 		 		 */
 				std::string	m_config_fname;
-
 				std::string	m_rawlog_fname;
+
 				std::string	m_fname_GT;
-				size_t m_curr_GT_poses_index; // counter for reading back the GT_poses
+				size_t m_GT_poses_index; // counter for reading back the GT_poses
+				size_t m_GT_poses_step; // rate at which to read the GT poses
+
 				std::string	m_output_dir_fname;
 				bool m_user_decides_about_output_dir;
 				std::string	m_save_graph_fname;
-
-				bool m_do_pose_graph_only;
-				std::string	m_optimizer;
 
 				bool m_has_read_config;
 				bool m_observation_only_rawlog;
@@ -296,6 +310,7 @@ namespace mrpt { namespace graphslam {
 				bool m_visualize_GT;
 				bool m_visualize_map;
 				bool m_enable_curr_pos_viewport;
+				bool m_visualize_estimated_trajectory;
 
 				// textMessage vertical text position
 				double m_offset_y_graph;
@@ -322,7 +337,8 @@ namespace mrpt { namespace graphslam {
 
 				// pose_t vectors
 				std::vector<pose_t*> m_odometry_poses;
-				std::vector<pose_t*> m_GT_poses;
+				std::vector<pose_t> m_GT_poses;
+				std::string m_GT_file_format;
 
 				std::map<const mrpt::utils::TNodeID, 
 					mrpt::obs::CObservation2DRangeScanPtr> m_nodes_to_laser_scans;
@@ -352,6 +368,31 @@ namespace mrpt { namespace graphslam {
 				// mark graph modification/accessing explicitly for multithreaded
 				// implementation
 				mrpt::synch::CCriticalSection m_graph_section;
+
+
+				// struct to hold the parameters of the info file generated during the
+				// conversion of RGBD TUM dataset .rosbags to rawlog format
+				struct TRGBDInfoFileParams {
+
+					TRGBDInfoFileParams();
+					TRGBDInfoFileParams(std::string rawlog_fname);
+
+					void initTRGBDInfoFileParams();
+					/**
+				 	 * Parse the RGBD information file to gain information about the rawlog
+				 	 * file contents
+				 	 */
+					void parseFile();
+					void setRawlogFile(std::string rawlog_fname);
+
+					// format for the parameters in the info file:
+					// string literal - related value (kept in a string)
+					std::map<std::string, std::string> fields;
+
+					std::string info_fname;
+
+				} m_info_params;
+
 
 		};
 

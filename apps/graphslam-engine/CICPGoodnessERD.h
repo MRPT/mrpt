@@ -192,7 +192,8 @@ namespace mrpt { namespace graphslam { namespace deciders {
 					bool m_just_inserted_loop_closure;
 					bool m_contains_scans3D;
 
-					mrpt::utils::TColorf m_search_disk_color; // see Ctor for initialization
+					mrpt::utils::TColor m_search_disk_color; // see Ctor for initialization
+					mrpt::utils::TColor m_laser_scans_color; // see Ctor for initialization
 					double m_offset_y_search_disk;
 					int m_text_index_search_disk;
 					

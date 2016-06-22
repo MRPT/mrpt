@@ -65,6 +65,7 @@ bool CICPGoodnessNRD_t<GRAPH_t>::updateDeciderState(
 			if (IS_CLASS(observation, CObservation3DRangeScan)) {
 				m_curr_laser_scan3D =
 					static_cast<mrpt::obs::CObservation3DRangeScanPtr>(observation);
+				// TODO deal with this..
 				m_curr_laser_scan3D->load();
 				this->convert3DTo2DRangeScan(
 						/*from = */ m_curr_laser_scan3D,
@@ -83,6 +84,7 @@ bool CICPGoodnessNRD_t<GRAPH_t>::updateDeciderState(
 				return false;
 			}
 			registered_new_node = this->checkRegistrationCondition();
+			//mrpt::system::pause();
 		}
 	}
 	else { // FORMAT #1
@@ -118,19 +120,12 @@ bool CICPGoodnessNRD_t<GRAPH_t>::checkRegistrationCondition() {
 		m_since_prev_node_PDF += rel_edge;
 		m_last_laser_scan2D = m_curr_laser_scan2D;
 
-		bool distance_crit = 
-			( m_since_prev_node_PDF.getMeanVal().norm() > params.registration_max_distance );
-
-		bool angle_crit = false;
-		if (m_graph->nodeCount()) {
-			pose_t last_pose_inserted = m_graph->nodes[m_graph->nodeCount()-1];
-			pose_t curr_estimated_pose = last_pose_inserted + m_since_prev_node_PDF.getMeanVal();
-			angle_crit = (fabs(wrapToPi(last_pose_inserted.phi() - curr_estimated_pose.phi())) > params.registration_max_angle ); 
-			cout << "CICPGoodnessNRD: angle diff = " << wrapToPi(last_pose_inserted.phi() - curr_estimated_pose.phi()) << endl;
-		}
-		
 		cout << "CICPGoodnessNRD: norm = " << m_since_prev_node_PDF.getMeanVal().norm() << endl;
-		if (distance_crit || angle_crit) {
+		cout << "CICPGoodnessNRD: angle = " << 
+			RAD2DEG(fabs(wrapToPi(m_since_prev_node_PDF.getMeanVal().phi()))) << endl;
+		// check if distance or angle difference is good enough for new node
+		if ( m_since_prev_node_PDF.getMeanVal().norm() > params.registration_max_distance || 
+				fabs(wrapToPi(m_since_prev_node_PDF.getMeanVal().phi())) > params.registration_max_angle ) {
 			registered_new_node = true;
 			this->registerNewNode();
 		}
@@ -240,12 +235,12 @@ void CICPGoodnessNRD_t<GRAPH_t>::TParams::dumpToTextStream(
 
 	out.printf("------------------[ ICP Fixed Intervals Node Registration ]------------------\n");
 	out.printf("Max distance for registration = %.2f m\n", registration_max_distance);
-	out.printf("Max Angle for registration    = %.2f m\n", registration_max_angle);
+	out.printf("Max Angle for registration    = %.2f deg\n", RAD2DEG(registration_max_angle));
 	out.printf("ICP goodness threshold        = %.2f%% \n", ICP_goodness_thresh*100);
 	out.printf("ICP Configuration:\n");
 	out.printf("Conversion Sensor label       = %s\n", conversion_sensor_label.c_str());
-	out.printf("Conversion angle sup          = %.2f\n", conversion_angle_sup);
-	out.printf("Conversion angle inf          = %.2f\n", conversion_angle_inf);
+	out.printf("Conversion angle sup          = %.2f deg\n", RAD2DEG(conversion_angle_sup));
+	out.printf("Conversion angle inf          = %.2f deg\n", RAD2DEG(conversion_angle_inf));
 	out.printf("Conversion oversampling ratio = %.2f\n", conversion_oversampling_ratio);
 
 	icp.options.dumpToTextStream(out);
@@ -260,7 +255,7 @@ void CICPGoodnessNRD_t<GRAPH_t>::TParams::loadFromConfigFile(
 
 	registration_max_distance = source.read_double( section,
 			"registration_max_distance",
-			5 /* meter */, false);
+			0.5 /* meter */, false);
 	registration_max_angle = source.read_double( section,
 			"registration_max_angle",
 			10 /* degrees */, false);
@@ -272,7 +267,7 @@ void CICPGoodnessNRD_t<GRAPH_t>::TParams::loadFromConfigFile(
 
 	conversion_sensor_label = source.read_string(
 			section,
-			"convesrion_sensor_label",
+			"conversion_sensor_label",
 			"KINECT_TO_2D_SCAN", false);
 	conversion_angle_sup = source.read_double(
 			section,
@@ -282,7 +277,7 @@ void CICPGoodnessNRD_t<GRAPH_t>::TParams::loadFromConfigFile(
 	conversion_angle_inf = source.read_double(
 			section,
 			"conversion_angle_inf",
-			5, false);
+			10, false);
 	conversion_angle_inf = DEG2RAD(conversion_angle_inf);
 	conversion_oversampling_ratio = source.read_double(
 			section,

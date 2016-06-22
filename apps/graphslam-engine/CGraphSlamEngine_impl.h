@@ -16,7 +16,6 @@ using namespace mrpt::graphslam;
 using namespace mrpt;
 using namespace mrpt::poses;
 using namespace mrpt::obs;
-using namespace mrpt::system;
 using namespace mrpt::graphs;
 using namespace mrpt::math;
 using namespace mrpt::utils;
@@ -76,12 +75,6 @@ CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::~CGraphSlamEngine_t
 	for (int i = 0; i < m_odometry_poses.size(); ++i) {
 		delete m_odometry_poses[i];
 	}
-	// delete m_GT_poses
-	VERBOSE_COUT << "Releasing m_GT_poses vector" << std::endl;
-	for (int i = 0; i < m_GT_poses.size(); ++i) {
-		delete m_GT_poses[i];
-	}
-
 
 	MRPT_END;
 }
@@ -97,7 +90,7 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::initCGraphSlam
 	/**
 	 * Parameters validation
 	 */
-	assert(!(!m_win && m_win_observer) &&
+	ASSERT_(!(!m_win && m_win_observer) &&
 			"CObsever was provided even though no CDisplayWindow3D was not");
 
 	/**
@@ -134,7 +127,7 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::initCGraphSlam
 
 	this->initOutputDir();
 	this->printProblemParams();
-	//mrpt::system::pause();
+	mrpt::system::pause();
 
 	// pass the rawlog filename after the instance initialization
 	m_node_registrar.setRawlogFname(m_rawlog_fname);
@@ -158,7 +151,7 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::initCGraphSlam
 			&m_text_index_timestamp);
 
 	// optimized graph
-	assert(m_has_read_config);
+	ASSERT_(m_has_read_config);
 	if (m_visualize_optimized_graph) {
 		m_win_manager.assignTextMessageParameters(
 				/* offset_y*	= */ &m_offset_y_graph,
@@ -166,7 +159,7 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::initCGraphSlam
 	}
 
 	// Configuration of various trajectories visualization
-	assert(m_has_read_config);
+	ASSERT_(m_has_read_config);
 	if (m_win) {
 		// odometry visualization
 		if (m_visualize_odometry_poses) {
@@ -174,7 +167,13 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::initCGraphSlam
 		}
 		// GT Visualization
 		if (m_visualize_GT) {
-			this->readGTFile(m_fname_GT);
+			if (mrpt::system::strCmpI(m_GT_file_format, "rgbd_tum")) {
+				this->readGTFileRGBD_TUM(m_fname_GT, &m_GT_poses);
+			}
+			else if (mrpt::system::strCmpI(m_GT_file_format, "navsimul")) {
+				this->readGTFileNavSimulOutput(m_fname_GT, &m_GT_poses);
+			}
+
 			this->initGTVisualization();
 		}
 		// estimated trajectory visualization
@@ -215,9 +214,6 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::initCGraphSlam
 
 		m_win_manager.assignTextMessageParameters(&offset_y_total_edges,
 				&text_index_total_edges);
-		//std::cout << "in GraphSlamEngine:	" << std::endl
-		//<< "offset_y_total_edges: " << offset_y_total_edges << std::endl
-		//<< "text_index_total_edges: " << text_index_total_edges << std::endl;
 
 		// register all the edge types
 		vector<string> vec_edge_types;
@@ -233,17 +229,10 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::initCGraphSlam
 				++it) {
 			m_win_manager.assignTextMessageParameters(&name_to_offset_y[*it],
 					&name_to_text_index[*it]);
-			//std::cout << "in initCGraphSlamEngine: " << std::endl;
-			//std::cout << "name: " << *it << " | offset_y: "
-			//<< name_to_offset_y[*it] << " | text_index: "
-			//<< name_to_text_index[*it] << std::endl;
 		}
 
 		m_win_manager.assignTextMessageParameters(&offset_y_loop_closures,
 				&text_index_loop_closures);
-		//std::cout << "in GraphSlamEngine:	" << std::endl
-		//<< "offset_y_loop_closures: " << offset_y_loop_closures << std::endl
-		//<< "text_index_loop_closures: " << text_index_loop_closures <<std::endl;
 
 		if (m_win) {
 			// add all the parameters to the CEdgeCounter_t object
@@ -261,8 +250,27 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::initCGraphSlam
 		m_edge_registrar.initializeVisuals();
 	}
 
-	// various flags initialization
 	m_autozoom_active = true;
+	m_GT_poses_index = 0;
+
+
+
+	// In case we are given an RGBD TUM Dataset - try and read the info file so
+	// that we know how to play back the GT poses. 
+	try {
+		m_info_params.setRawlogFile(m_rawlog_fname);
+		m_info_params.parseFile();
+		// set the rate at which we read from the GT poses vector
+		int num_of_objects = std::atoi(
+				m_info_params.fields["Overall number of objects"].c_str());
+		m_GT_poses_step = m_GT_poses.size() / num_of_objects;
+
+		VERBOSE_COUT << "Overall number of objects in rawlog: " << num_of_objects << endl;
+		VERBOSE_COUT << "Setting the Ground truth read step to: " << m_GT_poses_step << endl;
+	}
+	catch (std::exception& e) {
+		VERBOSE_COUT << "RGBD_TUM info file was not found." << endl;
+	}
 
 	MRPT_END;
 }
@@ -276,7 +284,7 @@ bool CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::parseRawlogFil
 				std::endl
 				<< "Config file has not been provided yet.\n" << "Exiting..."
 				<< std::endl);
-	if (!fileExists(m_rawlog_fname))
+	if (!mrpt::system::fileExists(m_rawlog_fname))
 		THROW_EXCEPTION(
 				std::endl
 				<< "parseRawlogFile: Rawlog file "
@@ -363,24 +371,19 @@ bool CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::parseRawlogFil
 					*odometry_pose = curr_odometry_only_pose;
 					m_odometry_poses.push_back(odometry_pose);
 				}
-			} // IF ODOMETRY OBSERVATION
+			}
 			// laser scans
 			else if (IS_CLASS(observation, CObservation2DRangeScan)) {
 				m_last_laser_scan =
 					static_cast<mrpt::obs::CObservation2DRangeScanPtr>(observation);
 
-			} // ELSE IF LASER SCAN
+			}
 			// Camera images
 			else if (IS_CLASS(observation, CObservationImage)) {
 				//std::cout << "Processing Camera Image. " << std::endl;
 
-			} // ELSE IF CAMERA IMAGE
-			//else {
-				//std::cout << "Received unsupported type of observation:" 
-					//<< observation->GetRuntimeClass()->className
-					//<< endl;
-			//} // ELSE UNSUPPORTED TYPE OF OBSERVATION
-		} // IF FORMAT #2 (Observation-only)
+			}
+		}
 		else {
 			// action, observations should contain a pair of valid data
 			// (Format #1 rawlog file)
@@ -411,7 +414,6 @@ bool CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::parseRawlogFil
 			// keep track of the laser scans so that I can later visualize the map
 			m_nodes_to_laser_scans[m_nodeID_max] = m_last_laser_scan;
 
-			// TODO - have this as a class of its own
 			if (m_win && m_visualize_map) {
 				mrpt::synch::CCriticalSectionLocker m_graph_lock(&m_graph_section);
 				bool full_update = m_edge_registrar.justInsertedLoopClosure();
@@ -427,11 +429,10 @@ bool CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::parseRawlogFil
 
 			// update the visualization window
 			if (m_visualize_optimized_graph) {
-				assert(m_win && 
+				ASSERTMSG_(m_win, 
 						"Visualization of data was requested but no CDisplayWindow3D pointer was given");
 
 				updateGraphVisualization(m_graph);
-
 				if (m_enable_curr_pos_viewport) {
 					updateCurrPosViewport();
 				}
@@ -569,7 +570,7 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::updateGraphVis
 		const GRAPH_t& gr) {
 	MRPT_START;
 
-	assert(m_win &&
+	ASSERTMSG_(m_win,
 			"Visualization of data was requested but no CDisplayWindow3D pointer was given");
 
 	//std::cout << "Inside the updateGraphVisualization function" << std::endl;
@@ -616,7 +617,7 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::readConfigFile
 	VERBOSE_COUT << "Reading the .ini file... " << std::endl;
 
 	// validation of .ini fname
-	if (!fileExists(fname)) {
+	if (!mrpt::system::fileExists(fname)) {
 		THROW_EXCEPTION(
 				std::endl 
 				<< "Configuration file not found: " 
@@ -631,6 +632,8 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::readConfigFile
 				/*var_name = */ "rawlog_file",
 				/*default_value = */ "", /*failIfNotFound = */ true);
 	}
+	ASSERT_FILE_EXISTS_(m_rawlog_fname)
+
 	if (m_fname_GT.empty()) {
 		m_fname_GT = m_rawlog_fname + ".GT.txt"; // default output of GridmapNavSimul tool
 	}
@@ -650,6 +653,10 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::readConfigFile
 			"GeneralConfiguration",
 			"save_graph_fname",
 			"poses.log", false);
+	m_GT_file_format = cfg_file.read_string(
+			"GeneralConfiguration",
+			"ground_truth_file_format",
+			"NavSimul", false);
 
 	// Section: Optimization
 	// ////////////////////////////
@@ -744,8 +751,12 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::readConfigFile
 			"VisualizationParameters",
 			"visualize_odometry_poses",
 			true, false);
+	m_visualize_estimated_trajectory = cfg_file.read_bool(
+			"VisualizationParameters",
+			"visualize_estimated_trajectory",
+			true, false);
 
-	// GT configuration / visualization
+	// GT configuration visualization
 	m_visualize_GT = cfg_file.read_bool(
 			"VisualizationParameters",
 			"visualize_ground_truth",
@@ -772,7 +783,7 @@ template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR>
 void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::printProblemParams() const {
 	MRPT_START;
 
-	assert(m_has_read_config);
+	ASSERT_(m_has_read_config);
 
 	stringstream ss_out;
 
@@ -787,12 +798,16 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::printProblemPa
 		<< m_output_dir_fname << std::endl;
 	ss_out << "User decides about output dir   = "
 		<< m_user_decides_about_output_dir << std::endl;
+	ss_out << "Ground Truth File format        = "
+		<< m_GT_file_format << std::endl;
 	ss_out << "save_graph_fname                = "
 		<< m_save_graph_fname << std::endl;
 	ss_out << "Visualize odometry              = " 
 		<< m_visualize_odometry_poses << std::endl;
 	ss_out << "Visualize optimized path        = " 
-		<< m_visualize_odometry_poses << std::endl;
+		<< m_visualize_estimated_trajectory << std::endl;
+	ss_out << "Visualize estimated trajectory  = " 
+		<< m_visualize_optimized_graph << std::endl;
 	ss_out << "Visualize map                   = " 
 		<< m_visualize_map << std::endl;
 	ss_out << "Visualize Ground Truth          = " 
@@ -968,7 +983,7 @@ template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR>
 inline void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::updateCurrPosViewport() {
 	MRPT_START;
 
-	assert(m_win &&
+	ASSERT_(m_win &&
 			"Visualization of data was requested but no CDisplayWindow3D pointer was given");
 
 	pose_t curr_robot_pose;
@@ -991,68 +1006,155 @@ inline void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::updateC
 }
 
 template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR>
-void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::readGTFile(
-		const std::string& fname_GT) {
+void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::readGTFileNavSimulOutput(
+		const std::string& fname_GT, 
+		vector<pose_t>* gt_poses /* = NULL */,
+		vector<TTimeStamp>* gt_timestamps /* = NULL */) {
 	MRPT_START;
 
-	VERBOSE_COUT << "Parsing the ground truth file textfile.." << std::endl;
-
+	VERBOSE_COUT << "Parsing the ground truth textfile.." << std::endl; 
 	// make sure file exists
-	if (!fileExists(fname_GT)) {
-		THROW_EXCEPTION(
-				std::endl
-				<< "Ground-truth file " << fname_GT << " was not found." 
-				<< "Either specify a valid ground-truth filename or set set the "
-				<< "m_visualize_GT flag to false"
-				<< std::endl); 
-	}
+	ASSERTMSG_(fileExists(fname_GT),
+			format("\nGround-truth file %s was not found.\n"
+				"Either specify a valid ground-truth filename or set set the "
+				"m_visualize_GT flag to false\n", fname_GT.c_str()));
 
-	CFileInputStream* file_GT = new CFileInputStream(fname_GT);
+	CFileInputStream file_GT(fname_GT);
+	ASSERT_(file_GT.fileOpenCorrectly() &&
+			"\nreadGTFileNavSimulOutput: Couldn't open GT file\n");
 
-	m_curr_GT_poses_index = 0; // counter for reading back the GT_poses
-	if (file_GT->fileOpenCorrectly()) {
-		string curr_line; 
+	string curr_line; 
 
-		// parse the file - get timestamp and pose and fill in the pose_t vector
-		for (size_t line_num = 0; file_GT->readLine(curr_line); line_num++) {
-			vector<string> curr_tokens;
-			system::tokenize(curr_line, " ", curr_tokens);
+	// parse the file - get timestamp and pose and fill in the pose_t vector
+	for (size_t line_num = 0; file_GT.readLine(curr_line); line_num++) {
+		vector<string> curr_tokens;
+		system::tokenize(curr_line, " ", curr_tokens);
 
-			// check the current pose dimensions
-			if (curr_tokens.size() != constraint_t::state_length + 1) {
-				THROW_EXCEPTION(
-						std::endl
-						<< "Wrong length of curent pose at line " 
-						<< line_num
-						<< std::endl);
-			}
-			pose_t *curr_pose = new pose_t(atof(curr_tokens[1].c_str()),
-					atof(curr_tokens[2].c_str()),
-					atof(curr_tokens[3].c_str()) );
-			m_GT_poses.push_back(curr_pose);
+		// check the current pose dimensions
+		ASSERT_EQUAL_(curr_tokens.size(), constraint_t::state_length + 1);
+
+		// timestamp
+		if (gt_timestamps) {
+			TTimeStamp timestamp(atof(curr_tokens[0].c_str()));
+			gt_timestamps->push_back(timestamp);
 		}
 
-		file_GT->close();
+		// pose
+		if (gt_poses) {
+			pose_t curr_pose(
+					atof(curr_tokens[1].c_str()),
+					atof(curr_tokens[2].c_str()),
+					atof(curr_tokens[3].c_str()) );
+			gt_poses->push_back(curr_pose);
+		}
 	}
-	else {
-		THROW_EXCEPTION(
-				std::endl
-				<< "buildGroundTruthMap: Can't open GT file (" 
-				<< fname_GT << ")"
-				<< std::endl);
-	}
+
+	file_GT.close();
 
 	MRPT_END;
 }
 
+template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR>
+void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::readGTFileRGBD_TUM(
+		const std::string& fname_GT,
+		std::vector<pose_t>* gt_poses/*= NULL */,
+		std::vector<mrpt::system::TTimeStamp>* gt_timestamps/*= NULL */) {
+	MRPT_START;
 
+	VERBOSE_COUT << "Parsing the ground truth textfile.." << std::endl;
+
+	// make sure file exists
+	ASSERTMSG_(fileExists(fname_GT),
+			format("\nGround-truth file %s was not found.\n"
+				"Either specify a valid ground-truth filename or set set the "
+				"m_visualize_GT flag to false\n", fname_GT.c_str()));
+
+	CFileInputStream file_GT(fname_GT);
+	ASSERTMSG_(file_GT.fileOpenCorrectly(), 
+			"\nreadGTFileRGBD_TUM: Couldn't openGT file\n");
+
+	string curr_line; 
+
+	// move to the fourth line immediately - comments before this..
+	for (size_t i = 0; i != 3; i++)
+		file_GT.readLine(curr_line);
+
+	// handle the first pose seperately
+	// make sure that the ground-truth starts at 0.
+	pose_t pose_diff;
+	if (gt_poses) {
+		file_GT.readLine(curr_line);
+		vector<string> curr_tokens;
+		system::tokenize(curr_line, " ", curr_tokens);
+		ASSERT_EQUAL_(curr_tokens.size(), 8);
+
+		// quaternion
+		CQuaternionDouble quat;
+		quat.r(atof(curr_tokens[7].c_str()));
+		quat.x(atof(curr_tokens[4].c_str()));
+		quat.y(atof(curr_tokens[5].c_str()));
+		quat.z(atof(curr_tokens[6].c_str()));
+
+		// 3D pose
+		CPose3D pose3D_full(
+				quat,
+				atof(curr_tokens[1].c_str()),
+				atof(curr_tokens[2].c_str()),
+				atof(curr_tokens[3].c_str()));
+
+		// explicit constructor from 3D pose
+		pose_t curr_pose(pose3D_full);
+		pose_diff = curr_pose;
+	}
+
+
+	// parse the file - get timestamp and pose and fill in the pose_t vector
+	for (; file_GT.readLine(curr_line) ;) {
+		vector<string> curr_tokens;
+		system::tokenize(curr_line, " ", curr_tokens);
+		ASSERT_EQUAL_(curr_tokens.size(), 8);
+
+		// timestamp
+		if (gt_timestamps) {
+			TTimeStamp timestamp(atof(curr_tokens[0].c_str()));
+			gt_timestamps->push_back(timestamp);
+		}
+
+		// pose
+		if (gt_poses) {
+			// quaternion
+			CQuaternionDouble quat;
+			quat.r(atof(curr_tokens[7].c_str()));
+			quat.x(atof(curr_tokens[4].c_str()));
+			quat.y(atof(curr_tokens[5].c_str()));
+			quat.z(atof(curr_tokens[6].c_str()));
+
+			// 3D pose
+			CPose3D pose3D_full(
+					quat,
+					atof(curr_tokens[1].c_str()),
+					atof(curr_tokens[2].c_str()),
+					atof(curr_tokens[3].c_str()));
+
+			// explicit constructor from 3D pose
+			pose_t curr_pose(pose3D_full);
+			curr_pose = curr_pose - pose_diff;
+			gt_poses->push_back(curr_pose);
+		}
+
+	}
+
+	file_GT.close();
+
+	MRPT_END;
+}
 
 template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR>
 void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::autofitObjectInView(
 		const CSetOfObjectsPtr& graph_obj) {
 	MRPT_START;
 
-	assert(m_win &&
+	ASSERT_(m_win &&
 			"Visualization of data was requested but no CDisplayWindow3D pointer was given");
 
 	CGridPlaneXYPtr obj_grid = graph_obj->CSetOfObjects::getByClass<CGridPlaneXY>();
@@ -1074,7 +1176,7 @@ template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR>
 void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::queryObserverForEvents() {
 	MRPT_START;
 
-	assert(m_win_observer &&
+	ASSERT_(m_win_observer &&
 			"queryObserverForEvents method was called even though no Observer object was provided");
 
 	const TParameters<bool>* events_occurred = m_win_observer->returnEventsStruct();
@@ -1095,7 +1197,7 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::updateMapVisua
 	CTicTac map_update_timer;
 	map_update_timer.Tic();
 
-	assert(m_win &&
+	ASSERT_(m_win &&
 			"Visualization of data was requested but no CDisplayWindow3D pointer was given");
 
 	//cout << "Updating the map" << endl;
@@ -1223,8 +1325,8 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::initGTVisualiz
 	MRPT_START;
 
 	// assertions
-	assert(m_has_read_config);
-	assert(m_win && 
+	ASSERT_(m_has_read_config);
+	ASSERT_(m_win && 
 			"Visualization of data was requested but no CDisplayWindow3D pointer was provided");
 
 	// point cloud
@@ -1271,8 +1373,8 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::updateGTVisual
 	// add to the GT PointCloud and visualize it
 	// check that GT vector is not depleted
 	if (m_visualize_GT &&
-			m_curr_GT_poses_index < m_GT_poses.size()) {
-		assert(m_win &&
+			m_GT_poses_index < m_GT_poses.size()) {
+		ASSERT_(m_win &&
 				"Visualization of data was requested but no CDisplayWindow3D pointer was given");
 		//cout << "Updating the GT visualization" << endl;
 
@@ -1281,16 +1383,20 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::updateGTVisual
 		CRenderizablePtr obj = scene->getByName("GT_cloud");
 		CPointCloudPtr GT_cloud = static_cast<CPointCloudPtr>(obj);
 
-		pose_t* gt_pose = m_GT_poses[m_curr_GT_poses_index++];
+		// add the latest GT pose
+		pose_t gt_pose = m_GT_poses[m_GT_poses_index];
+		m_GT_poses_index += m_GT_poses_step;
 		GT_cloud->insertPoint(
-				gt_pose->x(),
-				gt_pose->y(),
+				gt_pose.x(),
+				gt_pose.y(),
 				0 );
+
+		cout << gt_pose << endl;
 
 		// robot model of GT trajectory
 		obj = scene->getByName("robot_GT");
 		CSetOfObjectsPtr robot_obj = static_cast<CSetOfObjectsPtr>(obj);
-		robot_obj->setPose(*gt_pose);
+		robot_obj->setPose(gt_pose);
 		m_win->unlockAccess3DScene();
 		m_win->forceRepaint();
 	}
@@ -1302,8 +1408,8 @@ template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR>
 void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::initOdometryVisualization() {
 	MRPT_START;
 
-	assert(m_has_read_config);
-	assert(m_win &&
+	ASSERT_(m_has_read_config);
+	ASSERT_(m_win &&
 			"Visualization of data was requested but no CDisplayWindow3D pointer was given");
 
 	// point cloud
@@ -1346,7 +1452,7 @@ template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR>
 void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::updateOdometryVisualization() {
 	MRPT_START;
 
-	assert(m_win &&
+	ASSERT_(m_win &&
 			"Visualization of data was requested but no CDisplayWindow3D pointer was given");
 
 	//cout << "Updating the odometry visualization" << endl;
@@ -1376,7 +1482,7 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::updateOdometry
 template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR>
 void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::initEstimatedTrajectoryVisualization() {
 	MRPT_START;
-	// remove these
+
 	// SetOfLines
 	CSetOfLinesPtr estimated_traj_setoflines = CSetOfLines::Create();
 	estimated_traj_setoflines->setColor_u8(m_estimated_traj_color);
@@ -1398,7 +1504,9 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::initEstimatedT
 
 	// insert objects in the graph
 	COpenGLScenePtr scene = m_win->get3DSceneAndLock();
-	scene->insert(estimated_traj_setoflines);
+	if (m_visualize_estimated_trajectory) {
+		scene->insert(estimated_traj_setoflines);
+	}
 	scene->insert(obj);
 	m_win->unlockAccess3DScene();
 
@@ -1421,38 +1529,42 @@ updateEstimatedTrajectoryVisualization(bool full_update) {
 	MRPT_START;
 
 	mrpt::synch::CCriticalSectionLocker m_graph_lock(&m_graph_section);
-	assert(m_graph.nodeCount() != 0);
+	ASSERT_(m_graph.nodeCount() != 0);
 
 	COpenGLScenePtr scene = m_win->get3DSceneAndLock();
-	// set of lines
-	CRenderizablePtr obj = scene->getByName("estimated_traj_setoflines");
-	CSetOfLinesPtr estimated_traj_setoflines = static_cast<CSetOfLinesPtr>(obj);
 
-	// gather set of nodes for which to append lines - all of the nodes in the
-	// graph or just the last inserted..
-	std::set<mrpt::utils::TNodeID> nodes_set;
-	{
-		if (full_update) {
-			m_graph.getAllNodes(nodes_set);
-			estimated_traj_setoflines->clear();
-			estimated_traj_setoflines->appendLine(
-					/* 1st */ 0, 0, 0,
-					/* 2nd */ 0, 0, 0);
+	CRenderizablePtr obj;
+	if (m_visualize_estimated_trajectory) {
+		// set of lines
+		obj = scene->getByName("estimated_traj_setoflines");
+		CSetOfLinesPtr estimated_traj_setoflines = static_cast<CSetOfLinesPtr>(obj);
+
+		// gather set of nodes for which to append lines - all of the nodes in the
+		// graph or just the last inserted..
+		std::set<mrpt::utils::TNodeID> nodes_set;
+		{
+			if (full_update) {
+				m_graph.getAllNodes(nodes_set);
+				estimated_traj_setoflines->clear();
+				estimated_traj_setoflines->appendLine(
+						/* 1st */ 0, 0, 0,
+						/* 2nd */ 0, 0, 0);
+			}
+			else {
+				nodes_set.insert(m_graph.nodeCount()-1);
+			}
+
 		}
-		else {
-			nodes_set.insert(m_graph.nodeCount()-1);
+		// append line for each node in the set
+		for (set<mrpt::utils::TNodeID>::const_iterator
+				nodeID_it = nodes_set.begin();
+				nodeID_it != nodes_set.end(); ++nodeID_it) {
+
+			estimated_traj_setoflines->appendLineStrip(
+					m_graph.nodes[*nodeID_it].x(),
+					m_graph.nodes[*nodeID_it].y(),
+					0.1);
 		}
-
-	}
-	// append line for each node in the set
-	for (set<mrpt::utils::TNodeID>::const_iterator
-			nodeID_it = nodes_set.begin();
-			nodeID_it != nodes_set.end(); ++nodeID_it) {
-
-		estimated_traj_setoflines->appendLineStrip(
-				m_graph.nodes[*nodeID_it].x(),
-				m_graph.nodes[*nodeID_it].y(),
-				0.1);
 	}
 
 	// robot model
@@ -1466,6 +1578,85 @@ updateEstimatedTrajectoryVisualization(bool full_update) {
 	m_win->unlockAccess3DScene();
 	m_win->forceRepaint();
 	MRPT_END;
+}
+
+// TRGBDInfoFileParams
+// ////////////////////////////////
+template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR>
+CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::
+TRGBDInfoFileParams::TRGBDInfoFileParams(std::string rawlog_fname) {
+
+	this->setRawlogFile(rawlog_fname);
+	this->initTRGBDInfoFileParams();
+}
+template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR>
+CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::
+TRGBDInfoFileParams::TRGBDInfoFileParams() {
+	this->initTRGBDInfoFileParams();
+}
+template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR>
+void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::TRGBDInfoFileParams::setRawlogFile(
+		std::string rawlog_fname) {
+
+	// get the correct info filename from the rawlog_fname
+	std::string dir = mrpt::system::extractFileDirectory(rawlog_fname);
+	std::string rawlog_filename = mrpt::system::extractFileName(rawlog_fname);
+	std::string name_prefix = "rawlog_";
+	std::string name_suffix = "_info.txt";
+	info_fname = dir + name_prefix + rawlog_filename + name_suffix;
+}
+
+template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR>
+void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::
+TRGBDInfoFileParams::initTRGBDInfoFileParams() {
+	// fields to use
+	fields["Overall number of objects"] = "";
+	fields["Observations format"] = "";
+}
+
+template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR>
+void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::TRGBDInfoFileParams::parseFile() {
+	ASSERT_FILE_EXISTS_(info_fname);
+
+	// open file
+	CFileInputStream info_file(info_fname);
+	ASSERTMSG_(info_file.fileOpenCorrectly(),
+			"\nTRGBDInfoFileParams::parseFile: Couldn't open info file\n");
+
+	string curr_line; 
+	size_t line_cnt;
+
+	// parse until you find an empty line.
+	while (true) {
+		info_file.readLine(curr_line);
+		line_cnt++;
+		if (curr_line.size() == 0)
+			break;
+	}
+
+	// parse the meaningfull data
+	while (info_file.readLine(curr_line)) {
+		// split current line at ":"
+		vector<string> curr_tokens;
+		mrpt::system::tokenize(curr_line, ":", curr_tokens);
+
+		ASSERT_EQUAL_(curr_tokens.size(), 2);
+
+		// evaluate the name. if name in info struct then fill the corresponding
+		// info struct parameter with the value_part in the file.
+		std::string literal_part = mrpt::system::trim(curr_tokens[0]);
+		std::string value_part   = mrpt::system::trim(curr_tokens[1]);
+
+		for (std::map<std::string, std::string>::iterator it = fields.begin();
+				it != fields.end(); ++it) {
+			if (mrpt::system::strCmpI(it->first, literal_part)) {
+				it->second = value_part;
+			}
+		}
+
+		line_cnt++;
+	}
+	
 }
 
 #endif /* end of include guard: CGRAPHSLAMENGINE_IMPL_H */
