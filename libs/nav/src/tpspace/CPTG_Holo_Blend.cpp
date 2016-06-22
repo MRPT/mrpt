@@ -12,6 +12,7 @@
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/utils/CStream.h>
 #include <mrpt/utils/round.h>
+#include <mrpt/utils/CTimeLogger.h>
 #include "poly34.h"
 
 using namespace mrpt::nav;
@@ -30,8 +31,14 @@ Closed-form PTG. Parameters:
 Number of steps "d" for each PTG path "k": 
 - Step = time increment PATH_TIME_STEP
 
-
 */
+
+//#define DO_PERFORMANCE_BENCHMARK
+
+#ifdef DO_PERFORMANCE_BENCHMARK
+	mrpt::utils::CTimeLogger tl;
+	#define PERFORMANCE_BENCHMARK  CTimeLoggerEntry  tle(tl, __CURRENT_FUNCTION_NAME__);
+#endif
 
 const double PATH_TIME_STEP = 10e-3;   // 10 ms
 const double eps = 1e-5;               // epsilon for detecting 1/0 situation
@@ -160,152 +167,105 @@ void CPTG_Holo_Blend::writeToStream(mrpt::utils::CStream &out, int *version) con
 
 bool CPTG_Holo_Blend::inverseMap_WS2TP(double x, double y, int &out_k, double &out_d, double tolerance_dist) const
 {
+	PERFORMANCE_BENCHMARK;
+
 	MRPT_UNUSED_PARAM(tolerance_dist);
 	ASSERT_(x!=0 || y!=0);
 	
-	// General idea: keep the shortest path for all alpha values
-	const double TIME_MISMATCH_TOLERANCE = 2.0*((2*M_PI/m_alphaValuesCount) * std::sqrt(x*x+y*y))/V_MAX;
-	const double eps_distance            = 2.1*((2*M_PI/m_alphaValuesCount) * std::sqrt(x*x+y*y));
+	const double err_threshold = 1e-3;
 
-	double found_min_dist = std::numeric_limits<double>::max();
-	int    found_k        = -1; // invalid
-
-	const double TR2_ = 1.0/(2*T_ramp);
 	const double vxi = curVelLocal.vx, vyi = curVelLocal.vy;
+	const double TR_ =  1.0/(T_ramp);
+	const double TR2_ = 1.0/(2*T_ramp);
+	const double V_MAXsq = V_MAX*V_MAX;
 
-	for (uint16_t k=0;k<m_alphaValuesCount;k++)
+	// Use a Newton iterative non-linear optimizer to find the "exact" solution for (t,alpha) 
+	// in each case: (1) t<T_ramp and (2) t>T_ramp
+
+	// Initial value:
+	Eigen::Vector3d  q; // [t vxf vyf]
+	q[0]=T_ramp;
+	q[1]=V_MAX;
+	q[2]=0;
+
+	// Iterate: case (2) t > T_ramp
+	double err_mod=1e7;
+	bool sol_found = false;
+	for (int iters=0;!sol_found && iters<20;iters++)
 	{
-		const double dir = CParameterizedTrajectoryGenerator::index2alpha(k);
-		const double vxf = V_MAX * cos(dir), vyf = V_MAX * sin(dir);
+		// Eval residual:
+		Eigen::Vector3d  r;
+		r[0] = 0.5*T_ramp *( vxi + q[1] ) + (q[0]-T_ramp)*q[1] - x;
+		r[1] = 0.5*T_ramp *( vyi + q[2] ) + (q[0]-T_ramp)*q[2]   - y;
+		r[2] = q[1]*q[1]+q[2]*q[2]   - V_MAXsq;
 
-		const double k2 = (vxf-vxi)*TR2_;
-		const double k4 = (vyf-vyi)*TR2_;
+		// Jacobian:
+		//  dx/dt  dx/dvxf  dx/dvyf
+		//  dy/dt  dy/dvxf  dy/dvyf
+		//  dVF/dt  dVF/dvxf  dVF/dvyf
+		Eigen::Matrix3d J;
+		J(0,0) = q[1];  J(0,1) = 0.5*T_ramp+q[0]; J(0,2) = 0.0;
+		J(1,0) = q[2];  J(1,1) = 0.0;             J(1,2) = 0.5*T_ramp+q[0];
+		J(2,0) = 0.0; J(2,1) = 2*q[1]; J(2,2) = 2*q[2];
 
-		double tx_solve, ty_solve;
-		bool  tx_any = false, ty_any = false;
+		Eigen::Vector3d q_incr = J.householderQr().solve(r);
+		q-=q_incr;
 
-		//  Attempt to solve for t < T_ramp
-		// -----------------------------------
-		if (std::abs(vxf-vxi)<eps)
+		err_mod = r.norm();
+		sol_found = (err_mod<err_threshold);
+	}
+
+	if (!sol_found || q[0]<T_ramp*0.98)
+	{
+		// Try with the alternative function for case (1):
+		// Iterate: case (1) t < T_ramp
+		q[0]=T_ramp;
+		q[1]=V_MAX;
+		q[2]=0;
+		sol_found=false;
+		for (int iters=0;!sol_found && iters<20;iters++)
 		{
-			if (std::abs(vxi)<eps) {
-				if (std::abs(x)<eps_distance)
-				     tx_any = true;
-				else tx_solve = -1.0;
-			}
-			else { // x = vxi * t  ->  t = x / vxi;
-				tx_solve = x / vxi;
-			}
-		}
-		else
-		{
-			const double discr_x = (vxf*x*2.0-vxi*x*2.0+T_ramp*(vxi*vxi))/T_ramp;
-			if (discr_x<0) continue; // No solution
-			const double sqrx = sqrt(discr_x);
-			double tx_solved[2];
-			tx_solved[0] = -(T_ramp*(vxi+sqrx))/(vxf-vxi);
-			tx_solved[1] = -(T_ramp*(vxi-sqrx))/(vxf-vxi);
-			tx_solve = tx_solved[0]>0 ? tx_solved[0] : tx_solved[1];
-			if (!(tx_solve==tx_solve && mrpt::math::isFinite(tx_solve) && tx_solve>=0 && tx_solve<=T_ramp))
-				tx_solve = -1.0;
-		}
+			// Eval residual:
+			Eigen::Vector3d  r;
+			r[0] = vxi * q[0] + q[0]*q[0] * TR2_ * (q[1]-vxi)   - x;
+			r[1] = vyi * q[0] + q[0]*q[0] * TR2_ * (q[2]-vyi)   - y;
+			r[2] = q[1]*q[1]+q[2]*q[2]   - V_MAXsq;
 
-		if (std::abs(vyf-vyi)<eps) {
-			if (std::abs(vyi)<eps) {
-				if (std::abs(y)<eps_distance)
-				     ty_any = true;
-				else ty_solve = -1.0;
-			}
-			else { // y = vyi * t  ->  t = y / vyi;
-				ty_solve = y / vyi;
-			}
-		}
-		else
-		{
-			const double discr_y = (vyf*y*2.0-vyi*y*2.0+T_ramp*(vyi*vyi))/T_ramp;
-			if (discr_y<0) continue; // No solution
-			const double sqry = sqrt(discr_y);
-			double ty_solved[2];
-			ty_solved[0] = -(T_ramp*(vyi+sqry))/(vyf-vyi);
-			ty_solved[1] = -(T_ramp*(vyi-sqry))/(vyf-vyi);
-			ty_solve = ty_solved[0]>0 ? ty_solved[0] : ty_solved[1];
-			if (!(ty_solve==ty_solve && mrpt::math::isFinite(ty_solve) && ty_solve>=0 && ty_solve<=T_ramp))
-				ty_solve = -1.0;
+			// Jacobian:
+			//  dx/dt  dx/dvxf  dx/dvyf
+			//  dy/dt  dy/dvxf  dy/dvyf
+			//  dVF/dt  dVF/dvxf  dVF/dvyf
+			Eigen::Matrix3d J;
+			J(0,0) = vxi + q[0]*TR_*(q[1]-vxi);  J(0,1) = TR2_*q[0]*q[0];   J(0,2) = 0.0;
+			J(1,0) = vyi + q[0]*TR_*(q[2]-vyi);  J(1,1) = 0.0;              J(1,2) = TR2_*q[0]*q[0];
+			J(2,0) = 0.0;                        J(2,1) = 2*q[1];           J(2,2) = 2*q[2];
+
+			Eigen::Vector3d q_incr = J.householderQr().solve(r);
+			q-=q_incr;
+
+			const double err_mod = r.norm();
+			sol_found = (err_mod<err_threshold);
 		}
 		
-		if ((tx_any || (tx_solve>=0 && tx_solve<=T_ramp)) && 
-			(ty_any || (ty_solve>=0 && ty_solve<=T_ramp)) )
-		{
-			// Good solution found for t < T_ramp
-		}
-		else
-		{
-			//  Attempt to solve for t > T_ramp
-			// -----------------------------------
-			if (std::abs(vxf)<eps)
-			{
-				const double final_x = vxi * T_ramp + T_ramp*T_ramp * TR2_ * (vxf-vxi);
-				if (std::abs(x-final_x)<eps_distance)
-					 tx_any = true;
-				else tx_solve=-1.0; // No solution found for t>T_ramp
-			}
-			else {
-				tx_solve = (x-T_ramp*(-vxf+vxi)*0.5)/vxf;
-			}
+		if (sol_found && (q[0]<.0 || q[0]>T_ramp*1.02) )
+			sol_found = false;
+	}
 
-			if (std::abs(vyf)<eps)
-			{
-				const double final_y = vyi * T_ramp + T_ramp*T_ramp * TR2_ * (vyf-vyi);
-				if (std::abs(y-final_y)<eps_distance)
-					 ty_any = true;
-				else ty_solve=-1.0; // No solution found for t>T_ramp
-			}
-			else ty_solve = (y-T_ramp*(-vyf+vyi)*0.5)/vyf;
-		}
-
-		// Get the final solution:
-		double t_solve;
-		// The most common case:
-		if (!tx_any && !ty_any) {
-			if ( std::abs(tx_solve-ty_solve) > TIME_MISMATCH_TOLERANCE)
-				continue; // No solution
-			t_solve = tx_solve;
-		}
-		// Degenerate case: init = final velocity
-		if (tx_any && ty_any) {
-			t_solve = sqrt(x*x+y*y) / V_MAX;
-		}
-		// Special cases:
-		if (!tx_any && ty_any) {
-			t_solve = tx_solve;
-		}
-		if (tx_any && !ty_any) {
-			t_solve = ty_solve;
-		}
-
-		// Good solution: save if better
-		if (t_solve>=0)
-		{
-			double dist_trans;
-			if (t_solve<T_ramp)
-			     dist_trans = calc_trans_distance_t_below_Tramp(k2,k4,vxi,vyi,t_solve);
-			else dist_trans = (t_solve-T_ramp) * V_MAX + calc_trans_distance_t_below_Tramp(k2,k4,vxi,vyi,T_ramp);
-
-			if (dist_trans<found_min_dist)
-			{
-				found_min_dist = dist_trans;
-				found_k = k;
-			}
-		}
-	} // end for each k
-
-	if (found_k>=0)
+	if (sol_found)
 	{
-		out_d = found_min_dist / this->refDistance;
-		out_k =  found_k;
+		const double alpha = atan2(q[2],q[1]);
+		out_k =  CParameterizedTrajectoryGenerator::alpha2index( alpha );
+		
+		const double solved_t = q[0];
+		const unsigned int solved_step = solved_t/PATH_TIME_STEP;
+		const double found_dist = this->getPathDist(out_k, solved_step);
+
+		out_d = found_dist / this->refDistance;
 		return true;
 	}
-	return false; // No solution found
+	else {
+		return false;
+	}
 }
 
 bool CPTG_Holo_Blend::PTG_IsIntoDomain(double x, double y ) const
@@ -403,6 +363,8 @@ double CPTG_Holo_Blend::getPathDist(uint16_t k, uint16_t step) const
 
 bool CPTG_Holo_Blend::getPathStepForDist(uint16_t k, double dist, uint16_t &out_step) const
 {
+	PERFORMANCE_BENCHMARK;
+
 	const double dir = CParameterizedTrajectoryGenerator::index2alpha(k);
 
 	const double TR2_ = 1.0/(2*T_ramp);
