@@ -62,6 +62,7 @@ TEST(NavTests, PTGs_tests)
 		const std::string sPTGDesc = ptg->getDescription();
 		const double refDist   = ptg->getRefDistance();
 		const size_t num_paths = ptg->getPathCount();
+		size_t num_tests_run = 0;
 
 		// TEST: step <-> dist match
 		{
@@ -76,10 +77,11 @@ TEST(NavTests, PTGs_tests)
 					{
 						any_good = true;
 						double d = ptg->getPathDist(k,step);
-						EXPECT_NEAR(d,dist, 0.05) << "PTG: " << sPTGDesc << endl << "dist:" << dist << endl;
+						EXPECT_NEAR(d,dist, 0.05) << "Test: step <-> dist match\n PTG: " << sPTGDesc << endl << "dist:" << dist << endl;
+						num_tests_run++;
 					}
 				}
-				EXPECT_TRUE(any_good) << "PTG: " << sPTGDesc << endl << "dist:" << dist << endl;
+				EXPECT_TRUE(any_good) << "Test: step <-> dist match\n PTG: " << sPTGDesc << endl << "dist:" << dist << endl;
 			}
 		}
 
@@ -94,7 +96,7 @@ TEST(NavTests, PTGs_tests)
 					if (std::abs(tx)<1e-2 && std::abs(ty)<1e-2)
 						continue; // TP-Space does not include the WS point (0,0) in its domain
 
-					const double tolerance_dist = 10.0 * std::sqrt( tx*tx+ty*ty ) * M_PI *2 / ptg->getPathCount();
+					const double tolerance_dist = std::max(0.10,  10.0 * std::sqrt( tx*tx+ty*ty ) * M_PI *2 / ptg->getPathCount() );
 
 					int k;
 					double normalized_d;
@@ -110,17 +112,20 @@ TEST(NavTests, PTGs_tests)
 						{
 							mrpt::math::TPose2D pose;
 							ptg->getPathPose(k,step,pose);
-							EXPECT_NEAR(pose.x, tx, tolerance_dist)  << "PTG: " << sPTGDesc << endl << "(tx,ty): " << tx << " " << ty << " k= " << k << " normalized_d=" << normalized_d << endl;
-							EXPECT_NEAR(pose.y, ty, tolerance_dist)  << "PTG: " << sPTGDesc << endl << "(tx,ty): " << tx << " " << ty << " k= " << k << " normalized_d=" << normalized_d << endl;
+							EXPECT_NEAR(pose.x, tx, tolerance_dist)  << "Test: inverseMap_WS2TP\n PTG#"<<n<< ": " << sPTGDesc << endl << "(tx,ty): " << tx << " " << ty << " k= " << k << " normalized_d=" << normalized_d << endl;
+							EXPECT_NEAR(pose.y, ty, tolerance_dist)  << "Test: inverseMap_WS2TP\n PTG#"<<n<< ": " << sPTGDesc << endl << "(tx,ty): " << tx << " " << ty << " k= " << k << " normalized_d=" << normalized_d << endl;
 							
 							if (std::abs(pose.x-tx)>=tolerance_dist ||std::abs(pose.y-ty)>=tolerance_dist)
-								skip_this_ptg = true;
+							     skip_this_ptg = true;
+							else num_tests_run++;
 						}
 					}
 				}
 			}
 			EXPECT_TRUE(any_ok) << "PTG: " << sPTGDesc << endl;
 		}
+
+		printf("PTG `%50s` run %6u tests.\n", sPTGDesc.c_str(), (unsigned int)num_tests_run );
 
 	} // for each ptg
 
