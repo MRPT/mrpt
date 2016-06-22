@@ -36,30 +36,41 @@ Number of steps "d" for each PTG path "k":
 const double PATH_TIME_STEP = 10e-3;   // 10 ms
 const double eps = 1e-5;               // epsilon for detecting 1/0 situation
 
+// Axiliary function for calc_trans_distance_t_below_Tramp() and others:
+inline double calc_trans_distance_t_below_Tramp_abc(double t, double a,double b, double c)
+{
+	// Indefinite integral of sqrt(a*t^2+b*t+c):
+	const double int_t = (t*(1.0/2.0)+(b*(1.0/4.0))/a)*sqrt(c+b*t+a*(t*t))+1.0/pow(a,3.0/2.0)*log(1.0/sqrt(a)*(b*(1.0/2.0)+a*t)+sqrt(c+b*t+a*(t*t)))*(a*c-(b*b)*(1.0/4.0))*(1.0/2.0);
+	// Limit when t->0:
+	const double int_t0 = (b*sqrt(c)*(1.0/4.0))/a+1.0/pow(a,3.0/2.0)*log(1.0/sqrt(a)*(b+sqrt(a)*sqrt(c)*2.0)*(1.0/2.0))*(a*c-(b*b)*(1.0/4.0))*(1.0/2.0);
+	return int_t - int_t0;// Definite integral [0,t]
+}
+
+
 // Axiliary function for computing the line-integral distance along the trajectory, handling special cases of 1/0:
-inline double calc_trans_distance_t_below_Tramp(double k2, double k4, double vxi,double vyi, double t)
+double calc_trans_distance_t_below_Tramp(double k2, double k4, double vxi,double vyi, double t)
 {
 /*
 dd = sqrt( (4*k2^2 + 4*k4^2)*t^2 + (4*k2*vxi + 4*k4*vyi)*t + vxi^2 + vyi^2 ) dt
-a t^2 + b t + c 
+            a t^2 + b t + c 
 */
 	const double c = (vxi*vxi+vyi*vyi);
 	if (std::abs(k2)>eps || std::abs(k4)>eps)
 	{
 		const double a = ((k2*k2)*4.0+(k4*k4)*4.0);
 		const double b = (k2*vxi*4.0+k4*vyi*4.0);
-	
-		const double d_t = (t*(1.0/2.0)+(b*(1.0/4.0))/a)*sqrt(c+b*t+a*(t*t))+1.0/pow(a,3.0/2.0)*log(1.0/sqrt(a)*(b*(1.0/2.0)+a*t)+sqrt(c+b*t+a*(t*t)))*(a*c-(b*b)*(1.0/4.0))*(1.0/2.0);
-		const double log_arg = 1.0/sqrt(a)*(0.5*b)+sqrt(c);
-		if (std::abs(log_arg)<eps)
-			return d_t;
+
+		// Numerically-ill case: b=c=0 (initial vel=0)
+		if (std::abs(b)<eps && std::abs(c)<eps) {
+			// Indefinite integral of simplified case: sqrt(a)*t
+			const double int_t = sqrt(a)*(t*t)*0.5;
+			return int_t; // Definite integral [0,t]
+		}
 		else {
-			const double d_0 = ((b*(1.0/4.0))/a)*sqrt(c)+1.0/pow(a,3.0/2.0)*log(log_arg)*(a*c-(b*b)*(1.0/4.0))*(1.0/2.0);
-			return d_t-d_0;
+			return calc_trans_distance_t_below_Tramp_abc(t,a,b,c);
 		}
 	}
-	else
-	{
+	else {
 		return std::sqrt(c)*t;
 	}
 }
@@ -313,14 +324,18 @@ void CPTG_Holo_Blend::initialize(const std::string & cacheFilename, const bool v
 	// DEBUG TESTS
 #if 1
 	//debugDumpInFiles("1");
-	uint16_t step; 
+	uint16_t step;
 	double d;
 	
-	getPathStepForDist(170,1.3,step);
-	d = getPathDist(170,step);
-
+	this->curVelLocal.vx = 0.1;
+	this->curVelLocal.vy = 0.2;
 	getPathStepForDist(170,0.3,step);
 	d = getPathDist(170,step);
+
+	getPathStepForDist(170,1.3,step);
+	d = getPathDist(170,step);
+	std::cout << d;
+
 	{
 		int k;
 		double d;
@@ -419,47 +434,76 @@ bool CPTG_Holo_Blend::getPathStepForDist(uint16_t k, double dist, uint16_t &out_
 	const double k2 = (vxf-vxi)*TR2_;
 	const double k4 = (vyf-vyi)*TR2_;
 
-	// Possible solutions within  t > T_ramp:
-	{
-		const double dist_trans_T_ramp = calc_trans_distance_t_below_Tramp(k2,k4,vxi,vyi,T_ramp);
+	// --------------------------------------
+	// Solution within  t >= T_ramp ??
+	// --------------------------------------
+	const double dist_trans_T_ramp = calc_trans_distance_t_below_Tramp(k2,k4,vxi,vyi,T_ramp);
+	double t_solved = -1;
 		
-		if (dist>dist_trans_T_ramp)
-		{
-			// Good solution:
-			const double t_solved = T_ramp + (dist-dist_trans_T_ramp)/V_MAX;
-			out_step = mrpt::utils::round( t_solved / PATH_TIME_STEP );
-			return true;
-		}
-	}
-
-	// 3 roots for possible solutions within t < T_ramp:
-	MRPT_TODO("Re-solve these solutions for dd=sqrt(dx^2+dy^2)dt !!");
-	double root1;
-	{
-		const double d = dist;
-
-		const double z0 = ((k2*k2)*k4*vxi*4.0+k2*(k4*k4)*vyi*4.0);
-		const double z4 = (k2*(k4*k4*k4)*8.0+(k2*k2*k2)*k4*8.0);
-		const double z1 =z0/z4;
-		const double z2 = (pow((k2*k2)*k4*vxi*1.2E1+k2*(k4*k4)*vyi*1.2E1,2.0)*1.0/pow(k2*(k4*k4*k4)*8.0+(k2*k2*k2)*k4*8.0,2.0)*(1.0/9.0)-(k2*k4*(vxi*vxi)*2.0+k2*k4*(vyi*vyi)*2.0)/z4);
-		const double z3 = pow(pow((k2*k2)*k4*vxi*1.2E1+k2*(k4*k4)*vyi*1.2E1,3.0)*1.0/pow(k2*(k4*k4*k4)*8.0+(k2*k2*k2)*k4*8.0,3.0)*(-1.0/2.7E1)+sqrt(-pow(pow((k2*k2)*k4*vxi*1.2E1+k2*(k4*k4)*vyi*1.2E1,2.0)*1.0/pow(k2*(k4*k4*k4)*8.0+(k2*k2*k2)*k4*8.0,2.0)*(1.0/9.0)-(k2*k4*(vxi*vxi)*2.0+k2*k4*(vyi*vyi)*2.0)/z4,3.0)+pow(pow((k2*k2)*k4*vxi*1.2E1+k2*(k4*k4)*vyi*1.2E1,3.0)*1.0/pow(k2*(k4*k4*k4)*8.0+(k2*k2*k2)*k4*8.0,3.0)*(1.0/2.7E1)+(k4*(vxi*vxi*vxi)*(1.0/2.0)+k2*(vyi*vyi*vyi)*(1.0/2.0)-(d*d)*k2*k4*3.0)/z4-(k2*k4*(vxi*vxi)*6.0+k2*k4*(vyi*vyi)*6.0)*((k2*k2)*k4*vxi*1.2E1+k2*(k4*k4)*vyi*1.2E1)*1.0/pow(k2*(k4*k4*k4)*8.0+(k2*k2*k2)*k4*8.0,2.0)*(1.0/6.0),2.0))-(k4*(vxi*vxi*vxi)*(1.0/2.0)+k2*(vyi*vyi*vyi)*(1.0/2.0)-(d*d)*k2*k4*3.0)/z4+(k2*k4*(vxi*vxi)*6.0+k2*k4*(vyi*vyi)*6.0)*((k2*k2)*k4*vxi*1.2E1+k2*(k4*k4)*vyi*1.2E1)*1.0/pow(k2*(k4*k4*k4)*8.0+(k2*k2*k2)*k4*8.0,2.0)*(1.0/6.0),1.0/3.0);
-
-		root1 = z2/z3+z3-z0/z4;
-		// root 2 & 3 are always complex numbers: discarded
-	}
-
-	if (root1==root1 && // NAN
-		mrpt::math::isFinite(root1) && // IND
-		root1>=0 && 
-		root1<=T_ramp )
+	if (dist>=dist_trans_T_ramp)
 	{
 		// Good solution:
-		out_step = mrpt::utils::round( root1 / PATH_TIME_STEP );
+		t_solved = T_ramp + (dist-dist_trans_T_ramp)/V_MAX;
+	}
+	else
+	{
+		// ------------------------------------
+		// Solutions within t < T_ramp
+		//
+		// Cases:
+		// 1) k2=k4=0  --> vi=vf. Path is straight line
+		// 2) b=c=0     -> vi=0
+		// 3) Otherwise, general case
+		// ------------------------------------
+		if (std::abs(k2)<eps && std::abs(k4)<eps)
+		{
+			// Case 1
+			t_solved = (dist)/V_MAX;
+		}
+		else
+		{
+			const double a = ((k2*k2)*4.0+(k4*k4)*4.0);
+			const double b = (k2*vxi*4.0+k4*vyi*4.0);
+			const double c = (vxi*vxi+vyi*vyi);
+
+			// Numerically-ill case: b=c=0 (initial vel=0)
+			if (std::abs(b)<eps && std::abs(c)<eps)
+			{
+				// Case 2:
+				t_solved = sqrt(2.0)*1.0/pow(a,1.0/4.0)*sqrt(dist);
+			}
+			else
+			{
+				// Case 3: general case with non-linear equation:
+				// dist = (t/2 + b/(4*a))*(a*t^2 + b*t + c)^(1/2) - (b*c^(1/2))/(4*a) + (log((b/2 + a*t)/a^(1/2) + (a*t^2 + b*t + c)^(1/2))*(- b^2/4 + a*c))/(2*a^(3/2)) - (log((b + 2*a^(1/2)*c^(1/2))/(2*a^(1/2)))*(- b^2/4 + a*c))/(2*a^(3/2))
+				// dist = (t*(1.0/2.0)+(b*(1.0/4.0))/a)*sqrt(c+b*t+a*(t*t))-(b*sqrt(c)*(1.0/4.0))/a+1.0/pow(a,3.0/2.0)*log(1.0/sqrt(a)*(b*(1.0/2.0)+a*t)+sqrt(c+b*t+a*(t*t)))*(a*c-(b*b)*(1.0/4.0))*(1.0/2.0)-1.0/pow(a,3.0/2.0)*log(1.0/sqrt(a)*(b+sqrt(a)*sqrt(c)*2.0)*(1.0/2.0))*(a*c-(b*b)*(1.0/4.0))*(1.0/2.0);
+
+				// We must solve this by iterating:
+				// Newton method:
+				// Minimize f(t)-dist = 0
+				//  with: f(t)=calc_trans_distance_t_below_Tramp_abc(t)
+				//  and:  f'(t) = sqrt(a*t^2+b*t+c)
+
+				t_solved = T_ramp*0.6; // Initial value for starting interation inside the valid domain of the function t=[0,T_ramp]
+				for (int iters=0;iters<10;iters++)
+				{
+					double err = calc_trans_distance_t_below_Tramp_abc(t_solved,a,b,c) - dist;
+					if (std::abs(err)<1e-4)
+						break; // Good enough!
+
+					const double diff = std::sqrt(a*t_solved*t_solved+b*t_solved+c);
+					ASSERT_(std::abs(diff)>1e-14);
+					t_solved -= (err) / diff;
+				}
+			}
+		}
+	}
+	if (t_solved>=0)
+	{
+		out_step = mrpt::utils::round( t_solved / PATH_TIME_STEP );
 		return true;
 	}
-
-
-	return false;
+	else return false;
 }
 
 
