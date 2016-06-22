@@ -38,6 +38,8 @@ Number of steps "d" for each PTG path "k":
 #ifdef DO_PERFORMANCE_BENCHMARK
 	mrpt::utils::CTimeLogger tl;
 	#define PERFORMANCE_BENCHMARK  CTimeLoggerEntry  tle(tl, __CURRENT_FUNCTION_NAME__);
+#else 
+	#define PERFORMANCE_BENCHMARK  
 #endif
 
 const double PATH_TIME_STEP = 10e-3;   // 10 ms
