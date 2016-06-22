@@ -186,29 +186,47 @@ bool CPTG_Holo_Blend::inverseMap_WS2TP(double x, double y, int &out_k, double &o
 
 	// Initial value:
 	Eigen::Vector3d  q; // [t vxf vyf]
-	q[0]=T_ramp;
-	q[1]=V_MAX;
-	q[2]=0;
+	q[0]=T_ramp*1.1;
+	q[1]=V_MAX*x/sqrt(x*x+y*y);
+	q[2]=V_MAX*y/sqrt(x*x+y*y);
 
 	// Iterate: case (2) t > T_ramp
 	double err_mod=1e7;
 	bool sol_found = false;
-	for (int iters=0;!sol_found && iters<20;iters++)
+	for (int iters=0;!sol_found && iters<25;iters++)
 	{
 		// Eval residual:
 		Eigen::Vector3d  r;
-		r[0] = 0.5*T_ramp *( vxi + q[1] ) + (q[0]-T_ramp)*q[1] - x;
-		r[1] = 0.5*T_ramp *( vyi + q[2] ) + (q[0]-T_ramp)*q[2]   - y;
-		r[2] = q[1]*q[1]+q[2]*q[2]   - V_MAXsq;
+		if (q[0]>=T_ramp)
+		{
+			r[0] = 0.5*T_ramp *( vxi + q[1] ) + (q[0]-T_ramp)*q[1] - x;
+			r[1] = 0.5*T_ramp *( vyi + q[2] ) + (q[0]-T_ramp)*q[2]   - y;
+			r[2] = q[1]*q[1]+q[2]*q[2]   - V_MAXsq;
+		}
+		else
+		{
+			r[0] = vxi * q[0] + q[0]*q[0] * TR2_ * (q[1]-vxi)   - x;
+			r[1] = vyi * q[0] + q[0]*q[0] * TR2_ * (q[2]-vyi)   - y;
+			r[2] = q[1]*q[1]+q[2]*q[2]   - V_MAXsq;
+		}
 
 		// Jacobian:
 		//  dx/dt  dx/dvxf  dx/dvyf
 		//  dy/dt  dy/dvxf  dy/dvyf
 		//  dVF/dt  dVF/dvxf  dVF/dvyf
 		Eigen::Matrix3d J;
-		J(0,0) = q[1];  J(0,1) = 0.5*T_ramp+q[0]; J(0,2) = 0.0;
-		J(1,0) = q[2];  J(1,1) = 0.0;             J(1,2) = 0.5*T_ramp+q[0];
-		J(2,0) = 0.0; J(2,1) = 2*q[1]; J(2,2) = 2*q[2];
+		if (q[0]>=T_ramp)
+		{
+			J(0,0) = q[1];  J(0,1) = 0.5*T_ramp+q[0]; J(0,2) = 0.0;
+			J(1,0) = q[2];  J(1,1) = 0.0;             J(1,2) = 0.5*T_ramp+q[0];
+			J(2,0) = 0.0; J(2,1) = 2*q[1]; J(2,2) = 2*q[2];
+		}
+		else
+		{
+			J(0,0) = vxi + q[0]*TR_*(q[1]-vxi);  J(0,1) = TR2_*q[0]*q[0];   J(0,2) = 0.0;
+			J(1,0) = vyi + q[0]*TR_*(q[2]-vyi);  J(1,1) = 0.0;              J(1,2) = TR2_*q[0]*q[0];
+			J(2,0) = 0.0;                        J(2,1) = 2*q[1];           J(2,2) = 2*q[2];
+		}
 
 		Eigen::Vector3d q_incr = J.householderQr().solve(r);
 		q-=q_incr;
@@ -217,43 +235,7 @@ bool CPTG_Holo_Blend::inverseMap_WS2TP(double x, double y, int &out_k, double &o
 		sol_found = (err_mod<err_threshold);
 	}
 
-	if (!sol_found || q[0]<T_ramp*0.98)
-	{
-		// Try with the alternative function for case (1):
-		// Iterate: case (1) t < T_ramp
-		q[0]=T_ramp;
-		q[1]=V_MAX;
-		q[2]=0;
-		sol_found=false;
-		for (int iters=0;!sol_found && iters<20;iters++)
-		{
-			// Eval residual:
-			Eigen::Vector3d  r;
-			r[0] = vxi * q[0] + q[0]*q[0] * TR2_ * (q[1]-vxi)   - x;
-			r[1] = vyi * q[0] + q[0]*q[0] * TR2_ * (q[2]-vyi)   - y;
-			r[2] = q[1]*q[1]+q[2]*q[2]   - V_MAXsq;
-
-			// Jacobian:
-			//  dx/dt  dx/dvxf  dx/dvyf
-			//  dy/dt  dy/dvxf  dy/dvyf
-			//  dVF/dt  dVF/dvxf  dVF/dvyf
-			Eigen::Matrix3d J;
-			J(0,0) = vxi + q[0]*TR_*(q[1]-vxi);  J(0,1) = TR2_*q[0]*q[0];   J(0,2) = 0.0;
-			J(1,0) = vyi + q[0]*TR_*(q[2]-vyi);  J(1,1) = 0.0;              J(1,2) = TR2_*q[0]*q[0];
-			J(2,0) = 0.0;                        J(2,1) = 2*q[1];           J(2,2) = 2*q[2];
-
-			Eigen::Vector3d q_incr = J.householderQr().solve(r);
-			q-=q_incr;
-
-			const double err_mod = r.norm();
-			sol_found = (err_mod<err_threshold);
-		}
-		
-		if (sol_found && (q[0]<.0 || q[0]>T_ramp*1.02) )
-			sol_found = false;
-	}
-
-	if (sol_found)
+	if (sol_found && q[0]>=.0)
 	{
 		const double alpha = atan2(q[2],q[1]);
 		out_k =  CParameterizedTrajectoryGenerator::alpha2index( alpha );
@@ -467,7 +449,26 @@ k4=( vyf - vyi )/(2*T_ramp)
 
 void CPTG_Holo_Blend::updateTPObstacle(double ox, double oy, std::vector<double> &tp_obstacles) const
 {
-	ox++;
+	const double R = m_robotRadius;
+	const double TR2_ = 1.0/(2*T_ramp);
+	const double vxi = curVelLocal.vx, vyi = curVelLocal.vy;
+
+	for (unsigned int k=0;k<m_alphaValuesCount;k++)
+	{
+		const double dir = CParameterizedTrajectoryGenerator::index2alpha(k);
+		const double vxf = V_MAX * cos(dir), vyf = V_MAX * sin(dir);
+		const double k2 = (vxf-vxi)*TR2_;
+		const double k4 = (vyf-vyi)*TR2_;
+
+		// Solve for t>T_ramp:
+		const double discr = (ox*ox)*(vyf*vyf)*-4.0-(oy*oy)*(vxf*vxf)*4.0+(R*R)*(vxf*vxf)*4.0+(R*R)*(vyf*vyf)*4.0-(T_ramp*T_ramp)*(vxf*vxf)*(vyi*vyi)-(T_ramp*T_ramp)*(vxi*vxi)*(vyf*vyf)+ox*oy*vxf*vyf*8.0+T_ramp*ox*vxi*(vyf*vyf)*4.0+T_ramp*oy*(vxf*vxf)*vyi*4.0-T_ramp*ox*vxf*vyf*vyi*4.0-T_ramp*oy*vxf*vxi*vyf*4.0+(T_ramp*T_ramp)*vxf*vxi*vyf*vyi*2.0;
+		if (discr<0)
+			continue; // No collision for this path
+
+		//const double sol_t0 = (sqrt(discr)*(1.0/2.0)+ox*vxf+oy*vyf+T_ramp*(vxf*vxf)*(1.0/2.0)+T_ramp*(vyf*vyf)*(1.0/2.0)-T_ramp*vxf*vxi*(1.0/2.0)-T_ramp*vyf*vyi*(1.0/2.0))/(vxf*vxf+vyf*vyf);
+		//const double sol_t1 = (sqrt(discr)*(-1.0/2.0)+ox*vxf+oy*vyf+T_ramp*(vxf*vxf)*(1.0/2.0)+T_ramp*(vyf*vyf)*(1.0/2.0)-T_ramp*vxf*vxi*(1.0/2.0)-T_ramp*vyf*vyi*(1.0/2.0))/(vxf*vxf+vyf*vyf);
+
+	} // end for each "k" alpha
 	MRPT_TODO("impl");
 }
 
