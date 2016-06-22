@@ -164,7 +164,7 @@ bool CPTG_Holo_Blend::inverseMap_WS2TP(double x, double y, int &out_k, double &o
 	ASSERT_(x!=0 || y!=0);
 	
 	// General idea: keep the shortest path for all alpha values
-	const double TIME_MISMATCH_TOLERANCE = 4.0*((2*M_PI/m_alphaValuesCount) * std::sqrt(x*x+y*y))/V_MAX;
+	const double TIME_MISMATCH_TOLERANCE = 2.0*((2*M_PI/m_alphaValuesCount) * std::sqrt(x*x+y*y))/V_MAX;
 	const double eps_distance            = 2.1*((2*M_PI/m_alphaValuesCount) * std::sqrt(x*x+y*y));
 
 	double found_min_dist = std::numeric_limits<double>::max();
@@ -250,7 +250,7 @@ bool CPTG_Holo_Blend::inverseMap_WS2TP(double x, double y, int &out_k, double &o
 				else tx_solve=-1.0; // No solution found for t>T_ramp
 			}
 			else {
-				tx_solve = (x-T_ramp*(vxf+vxi)*(1.0/2.0)+T_ramp*vxf)/vxf;
+				tx_solve = (x-T_ramp*(vxf+vxi)*0.5)/vxf;
 			}
 
 			if (std::abs(vyf)<eps)
@@ -260,7 +260,7 @@ bool CPTG_Holo_Blend::inverseMap_WS2TP(double x, double y, int &out_k, double &o
 					 ty_any = true;
 				else ty_solve=-1.0; // No solution found for t>T_ramp
 			}
-			else ty_solve = (y-T_ramp*(vyf+vyi)*(1.0/2.0)+T_ramp*vyf)/vyf;
+			else ty_solve = (y-T_ramp*(vyf+vyi)*0.5)/vyf;
 		}
 
 		// Get the final solution:
@@ -286,7 +286,10 @@ bool CPTG_Holo_Blend::inverseMap_WS2TP(double x, double y, int &out_k, double &o
 		// Good solution: save if better
 		if (t_solve>=0)
 		{
-			const double dist_trans = calc_trans_distance_t_below_Tramp(k2,k4,vxi,vyi,t_solve);
+			double dist_trans;
+			if (t_solve<T_ramp)
+			     dist_trans = calc_trans_distance_t_below_Tramp(k2,k4,vxi,vyi,t_solve);
+			else dist_trans = (t_solve-T_ramp) * V_MAX + calc_trans_distance_t_below_Tramp(k2,k4,vxi,vyi,T_ramp);
 
 			if (dist_trans<found_min_dist)
 			{
@@ -463,7 +466,7 @@ bool CPTG_Holo_Blend::getPathStepForDist(uint16_t k, double dist, uint16_t &out_
 				for (int iters=0;iters<10;iters++)
 				{
 					double err = calc_trans_distance_t_below_Tramp_abc(t_solved,a,b,c) - dist;
-					if (std::abs(err)<1e-4)
+					if (std::abs(err)<1e-3)
 						break; // Good enough!
 
 					const double diff = std::sqrt(a*t_solved*t_solved+b*t_solved+c);
