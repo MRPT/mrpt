@@ -125,6 +125,39 @@ TEST(NavTests, PTGs_tests)
 			EXPECT_TRUE(any_ok) << "PTG: " << sPTGDesc << endl;
 		}
 
+		// TEST: inverseMap_WS2TP
+		{
+			bool skip_this_ptg = false;
+			bool any_change_all = false;
+			for (double tx=-refDist*0.5;!skip_this_ptg && tx<refDist*0.5;tx+=0.1)
+			{
+				for (double ty=-refDist*0.5;!skip_this_ptg && ty<refDist*0.5;ty+=0.1)
+				{
+					if (std::abs(tx)<1e-2 && std::abs(ty)<1e-2)
+						continue; // TP-Space does not include the WS point (0,0) in its domain
+
+					MRPT_TODO("Refactor as PTG method")
+					std::vector<double> TP_obstacles(ptg->getPathCount());
+					for (size_t k=0;k<ptg->getPathCount();k++)
+					{
+						TP_obstacles[k] = std::min(
+							ptg->getRefDistance(),
+							ptg->getPathDist(k, ptg->getPathStepCount(k)-1)
+							);
+					}
+
+					const std::vector<double> TP_obstacles_org = TP_obstacles;
+					ptg->updateTPObstacle(tx,ty, TP_obstacles);
+
+					const bool any_change = (TP_obstacles_org!=TP_obstacles);
+					if (any_change) any_change_all=true;
+					num_tests_run++;
+				}
+			}
+			EXPECT_TRUE(any_change_all);
+		}
+
+
 		printf("PTG `%50s` run %6u tests.\n", sPTGDesc.c_str(), (unsigned int)num_tests_run );
 
 	} // for each ptg

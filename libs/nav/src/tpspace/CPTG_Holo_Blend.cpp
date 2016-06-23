@@ -109,6 +109,7 @@ void CPTG_Holo_Blend::updateCurrentRobotVel(const mrpt::math::TTwist2D &curVelLo
 void CPTG_Holo_Blend::loadFromConfigFile(const mrpt::utils::CConfigFileBase &cfg,const std::string &sSection)
 {
 	CParameterizedTrajectoryGenerator::loadFromConfigFile(cfg,sSection);
+	CPTG_RobotShape_Circular::loadShapeFromConfigFile(cfg,sSection);
 
 	MRPT_LOAD_HERE_CONFIG_VAR_NO_DEFAULT(T_ramp ,double, T_ramp, cfg,sSection);
 	MRPT_LOAD_HERE_CONFIG_VAR_NO_DEFAULT(v_max_mps  ,double, V_MAX, cfg,sSection);
@@ -266,6 +267,7 @@ void CPTG_Holo_Blend::initialize(const std::string & cacheFilename, const bool v
 	ASSERT_(V_MAX>0);
 	ASSERT_(W_MAX>0);
 	ASSERT_(m_alphaValuesCount>0);
+	ASSERT_(m_robotRadius>0);
 }
 
 void CPTG_Holo_Blend::deinitialize()
@@ -450,6 +452,8 @@ k4=( vyf - vyi )/(2*T_ramp)
 void CPTG_Holo_Blend::updateTPObstacle(double ox, double oy, std::vector<double> &tp_obstacles) const
 {
 	const double R = m_robotRadius;
+
+	const double TR_2 = T_ramp*0.5;
 	const double TR2_ = 1.0/(2*T_ramp);
 	const double vxi = curVelLocal.vx, vyi = curVelLocal.vy;
 
@@ -457,19 +461,48 @@ void CPTG_Holo_Blend::updateTPObstacle(double ox, double oy, std::vector<double>
 	{
 		const double dir = CParameterizedTrajectoryGenerator::index2alpha(k);
 		const double vxf = V_MAX * cos(dir), vyf = V_MAX * sin(dir);
-		const double k2 = (vxf-vxi)*TR2_;
-		const double k4 = (vyf-vyi)*TR2_;
+
+		MRPT_TODO("Handle the case t<tramp");
 
 		// Solve for t>T_ramp:
-		const double discr = (ox*ox)*(vyf*vyf)*-4.0-(oy*oy)*(vxf*vxf)*4.0+(R*R)*(vxf*vxf)*4.0+(R*R)*(vyf*vyf)*4.0-(T_ramp*T_ramp)*(vxf*vxf)*(vyi*vyi)-(T_ramp*T_ramp)*(vxi*vxi)*(vyf*vyf)+ox*oy*vxf*vyf*8.0+T_ramp*ox*vxi*(vyf*vyf)*4.0+T_ramp*oy*(vxf*vxf)*vyi*4.0-T_ramp*ox*vxf*vyf*vyi*4.0-T_ramp*oy*vxf*vxi*vyf*4.0+(T_ramp*T_ramp)*vxf*vxi*vyf*vyi*2.0;
+		const double c1 = TR_2*(vxi-vxf)-ox;
+		const double c2 = TR_2*(vyi-vyf)-oy;
+
+		const double a = V_MAX*V_MAX;
+		const double b = 2*(c1*vxf+c2*vyf);
+		const double c = c1*c1+c2*c2-R*R;
+
+		const double discr = b*b-4*a*c;
 		if (discr<0)
 			continue; // No collision for this path
 
-		//const double sol_t0 = (sqrt(discr)*(1.0/2.0)+ox*vxf+oy*vyf+T_ramp*(vxf*vxf)*(1.0/2.0)+T_ramp*(vyf*vyf)*(1.0/2.0)-T_ramp*vxf*vxi*(1.0/2.0)-T_ramp*vyf*vyi*(1.0/2.0))/(vxf*vxf+vyf*vyf);
-		//const double sol_t1 = (sqrt(discr)*(-1.0/2.0)+ox*vxf+oy*vyf+T_ramp*(vxf*vxf)*(1.0/2.0)+T_ramp*(vyf*vyf)*(1.0/2.0)-T_ramp*vxf*vxi*(1.0/2.0)-T_ramp*vyf*vyi*(1.0/2.0))/(vxf*vxf+vyf*vyf);
+		const double sol_t0 = (-b+sqrt(discr))/(2*a);
+		const double sol_t1 = (-b-sqrt(discr))/(2*a);
+
+		// Identify the shortes valid colission time:
+		double sol_t;
+		if (sol_t0<0 && sol_t1<0) 
+			continue;
+		if (sol_t0<0 && sol_t1>=0) sol_t = sol_t1;
+		if (sol_t1<0 && sol_t0>=0) sol_t = sol_t0;
+		if (sol_t1>=0 && sol_t0>=0) sol_t = std::min(sol_t0,sol_t1);
+		if (sol_t<0) continue; // just in case, shouldn't happen
+
+		// Compute the transversed distance:
+		double dist;
+		const double k2 = (vxf-vxi)*TR2_;
+		const double k4 = (vyf-vyi)*TR2_;
+
+		if (sol_t<T_ramp)
+			dist = calc_trans_distance_t_below_Tramp(k2,k4,vxi,vyi,sol_t);
+		else
+			dist = (sol_t-T_ramp) * V_MAX + calc_trans_distance_t_below_Tramp(k2,k4,vxi,vyi,T_ramp);
+
+		const double norm_dist = dist / refDistance;
+
+		mrpt::utils::keep_min( tp_obstacles[k], norm_dist );
 
 	} // end for each "k" alpha
-	MRPT_TODO("impl");
 }
 
 void CPTG_Holo_Blend::internal_processNewRobotShape()
