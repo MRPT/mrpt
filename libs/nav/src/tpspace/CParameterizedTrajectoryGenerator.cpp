@@ -109,7 +109,19 @@ void CParameterizedTrajectoryGenerator::renderPathAsSimpleLine(
 	}
 }
 
-bool CParameterizedTrajectoryGenerator::debugDumpInFiles( const std::string &ptg_name ) const 
+
+void CParameterizedTrajectoryGenerator::initTPObstacles(std::vector<double> &TP_Obstacles) const
+{
+	TP_Obstacles.resize(m_alphaValuesCount);
+	for (size_t k=0;k<m_alphaValuesCount;k++)
+	{
+		TP_Obstacles[k] = std::min(
+			refDistance, 
+			this->getPathDist(k, this->getPathStepCount(k)-1) );
+	}
+}
+
+bool CParameterizedTrajectoryGenerator::debugDumpInFiles( const std::string &ptg_name ) const
 {
 	using namespace mrpt::system;
 	using namespace std;
@@ -202,5 +214,6 @@ void CPTG_RobotShape_Circular::loadShapeFromConfigFile(const mrpt::utils::CConfi
 	if (m_robotRadius!=old_R)
 		internal_processNewRobotShape();
 }
+
 
 

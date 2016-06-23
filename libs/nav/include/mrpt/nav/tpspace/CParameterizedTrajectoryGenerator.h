@@ -131,6 +131,7 @@ namespace nav
 		  * \param [in] oy Obstacle point (Y), relative coordinates wrt origin of the PTG.
 		  * \note The length of tp_obstacles is not checked for efficiency since this method is potentially called thousands of times per 
 		  *  navigation timestap, so it is left to the user responsibility to provide a valid buffer.
+		  * \sa initTPObstacles()
 		  */
 		virtual void updateTPObstacle(double ox, double oy, std::vector<double> &tp_obstacles) const = 0;
 
@@ -153,6 +154,10 @@ namespace nav
 		uint16_t alpha2index( double alpha ) const;
 
 		inline double getRefDistance() const { return refDistance; }
+
+		/** Resizes and populates the initial appropriate contents in a vector of tp-obstacles (collision-free ranges). 
+		  * \sa updateTPObstacle()  */
+		void initTPObstacles(std::vector<double> &TP_Obstacles) const;
 
 		/** When used in path planning, a multiplying factor (default=1.0) for the scores for this PTG. Assign values <1 to PTGs with low priority. */
 		double getScorePriority() const { return m_score_priority; }

@@ -485,10 +485,6 @@ void PlannerRRT_SE2_TPS::spaceTransformer(
 	{
 		const size_t Ki = in_PTG->getAlphaValuesCount();  //getAlphaValuesCount is 0!
 
-		// check space already reserved to TP-Obstacles:
-		if ( size_t(out_TPObstacles.size()) != Ki )
-			out_TPObstacles.resize( Ki );
-
 		// Take "k_rand"s and "distances" such that the collision hits the obstacles
 		// in the "grid" of the given PT
 		// --------------------------------------------------------------------
@@ -497,14 +493,8 @@ void PlannerRRT_SE2_TPS::spaceTransformer(
 		// = in_obstacles.getPointsCount();
 		in_obstacles.getPointsBuffer(nObs, obs_xs, obs_ys, obs_zs);
 
-		// Init at the max distance:
-		for (size_t k_rand=0;k_rand<Ki;k_rand++)
-		{
-			out_TPObstacles[k_rand] = std::min(
-				in_PTG->getRefDistance(),
-				in_PTG->getPathDist(k_rand, in_PTG->getPathStepCount(k_rand) - 1)
-				);
-		}
+		// Init obs ranges: 
+		in_PTG->initTPObstacles(out_TPObstacles);
 
 		for (size_t obs=0;obs<nObs;obs++)
 		{
