@@ -139,6 +139,7 @@ class reactive_navigator_demoframe: public wxFrame
         wxTimer timRunSimul;
         wxTextCtrl* edInfoLocalView;
         wxPanel* Panel5;
+        CMyGLCanvas* m_plotLocalView;
         wxTextCtrl* edParamsReactive;
         wxCustomButton* btnStop;
         wxNotebook* Notebook1;
@@ -176,7 +177,6 @@ class reactive_navigator_demoframe: public wxFrame
         wxMenuItem* mnuViewMaxRange;
         wxStaticText* StaticText4;
         wxCustomButton* btnPlaceTarget;
-        CMyGLCanvas* m_plotScan;
         wxPanel* pnNavSelButtons;
         wxCheckBox* cbEnableLog;
         CMyGLCanvas* m_plot3D;
@@ -284,7 +284,7 @@ class reactive_navigator_demoframe: public wxFrame
 		// ========= Opengl View: Local view (holonomic)  =======
 		mrpt::opengl::CSimpleLinePtr        gl_line_direction;
 		mrpt::opengl::CPointCloudPtr        gl_rel_target;
-		mrpt::opengl::CSetOfLinesPtr        gl_nd_gaps;
+		mrpt::opengl::CSetOfLinesPtr        gl_nd_gaps, gl_tp_obstacles;
 
 };
 
