@@ -13,6 +13,7 @@
 #include <mrpt/vision/pnp/upnp.h>
 #include <mrpt/vision/pnp/p3p.h>
 #include <mrpt/vision/pnp/ppnp.h>
+#include <mrpt/vision/pnp/posit.h>
 
 using namespace pnp;
 
@@ -44,7 +45,7 @@ int CPnP::CPnP_dls(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<E
 	//cout<<obj_pts_cv<<endl;
 	
 	dls d(obj_pts_cv, img_pts_cv);
-	d.compute_pose(R_cv,t_cv);
+	int ret = d.compute_pose(R_cv,t_cv);
 	
 	//cout<<R_cv<<endl;
 	//cout<<t_cv<<endl;
@@ -67,7 +68,7 @@ int CPnP::CPnP_dls(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<E
 	//cout<<"pose_eig="<<endl<<pose_mat<<endl<<endl;
 	//cout<<"pose_cv="<<endl<<R_cv<<endl<<endl;
 	
-	return 1;
+	return ret;
 }
 
 int CPnP::CPnP_epnp(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<Eigen::MatrixXd> img_pts, int n, const Eigen::Ref<Eigen::MatrixXd> cam_intrinsic, Eigen::Ref<Eigen::MatrixXd> pose_mat){
@@ -115,7 +116,7 @@ int CPnP::CPnP_epnp(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<
 
 int CPnP::CPnP_upnp(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<Eigen::MatrixXd> img_pts, int n, const Eigen::Ref<Eigen::MatrixXd> cam_intrinsic, Eigen::Ref<Eigen::MatrixXd> pose_mat){
 	
-	Eigen::MatrixXd cam_in_eig=cam_intrinsic.array().transpose(), img_pts_eig=img_pts.array().transpose(), obj_pts_eig=obj_pts.array().transpose(), t_eig;
+	Eigen::MatrixXd cam_in_eig=cam_intrinsic, img_pts_eig=img_pts, obj_pts_eig=obj_pts, t_eig;
 	Eigen::Matrix3d R_eig; 
 	cv::Mat cam_in_cv(3,3,CV_32F), img_pts_cv(2,n,CV_32F), obj_pts_cv(3,n,CV_32F), R_cv, t_cv;
 	
@@ -175,7 +176,7 @@ int CPnP::CPnP_p3p(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<E
 	//cout<<obj_pts_cv<<endl;
 	
 	p3p p(cam_in_cv);
-	p.solve(R_cv,t_cv, obj_pts_cv, img_pts_cv);
+	int ret = p.solve(R_cv,t_cv, obj_pts_cv, img_pts_cv);
 	
 	//cout<<R_cv<<endl;
 	//cout<<t_cv<<endl;
@@ -196,7 +197,7 @@ int CPnP::CPnP_p3p(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<E
 	
 	//cout<<"pose_mat="<<endl<<pose_mat_eig<<endl<<endl;
 	
-	return 1;
+	return ret;
 }
 
 int CPnP::CPnP_ppnp(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<Eigen::MatrixXd> img_pts, int n, const Eigen::Ref<Eigen::MatrixXd> cam_intrinsic, Eigen::Ref<Eigen::MatrixXd> pose_mat)
@@ -208,11 +209,31 @@ int CPnP::CPnP_ppnp(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<
 
 	ppnp p(obj_pts_,img_pts_, cam_intrinsic);
 	
-	p.compute_pose(R,t,n);
+	int ret = p.compute_pose(R,t,n);
 	
 	Eigen::Quaterniond q(R);
 	
 	pose_mat << t,q.vec();
 	
-	return 1;
+	return ret;
 }
+
+int CPnP::CPnP_posit(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<Eigen::MatrixXd> img_pts, int n, const Eigen::Ref<Eigen::MatrixXd> cam_intrinsic, Eigen::Ref<Eigen::MatrixXd> pose_mat)
+{	
+	Eigen::Matrix3d R;
+	Eigen::Vector3d t;
+	
+	Eigen::MatrixXd obj_pts_=obj_pts.array().transpose(), img_pts_=img_pts.array().transpose();
+
+	POSIT p(obj_pts_,img_pts_, cam_intrinsic, n);
+	
+	int ret = p.compute_pose(R,t);
+	
+	Eigen::Quaterniond q(R);
+	
+	pose_mat << t,q.vec();
+	
+	return ret;
+}
+
+

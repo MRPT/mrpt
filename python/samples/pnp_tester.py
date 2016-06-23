@@ -34,7 +34,7 @@ def display_comparison_plot(t, arr, names, title, xtitle, ytitle):
     ax.set_ylim([0,10])
 
 # Define number of points and camera parameters
-n=6
+n=10
 f=1.0
 cx=0.0
 cy=0.0
@@ -43,7 +43,7 @@ cy=0.0
 pnp = pymrpt.pnp(n)
 
 # Define object points and image points
-obj_pts=np.array([[0,-15,-3],[0,0,-50.0],[2,0,35],[5,-40,25],[10,15,9],[-20,50,7]])
+obj_pts=np.array([[0,0,0],[0,0,-50.0],[2,0,35],[5,-40,25],[10,15,9],[-20,50,7],[-12,32,43],[21,-2, 123], [2,3,154], [13, -21, 139]])
 img_pts=np.empty([n,2])
 img_pts_=np.empty([n,3])
 img_pts_[:,2]=1
@@ -53,16 +53,18 @@ pose_upnp=np.empty([6,1])
 pose_dls=np.empty([6,1])
 pose_p3p=np.empty([6,1])
 pose_ppnp=np.empty([6,1])
+pose_posit=np.empty([6,1])
 pose_mat_orig=np.empty([4,4])
 
 n_iter=100
-n_algos=5
+n_algos=6
 
 err_t_epnp=[]
 err_t_dls=[]
 err_t_upnp=[]
 err_t_p3p=[]
 err_t_ppnp=[]
+err_t_posit=[]
 
 for it in np.arange(0,n_iter):
 
@@ -75,7 +77,7 @@ for it in np.arange(0,n_iter):
     t=np.array([0.0,0.0,100.0])
     
     # Compute image points based on actual extrinsic matrix and add noise to measurements
-    for i in range(0,6):
+    for i in range(0,n):
         pt=np.dot(R,obj_pts[i,:])+t
         img_pts[i,:]= np.array([pt[0]/pt[2] +random.uniform(-0.01,0.01), pt[1]/pt[2]+random.uniform(-0.01,0.01)])
     
@@ -92,26 +94,29 @@ for it in np.arange(0,n_iter):
     pnp.upnp_solve(obj_pts,img_pts, 6, cam_intrinsic, pose_upnp)
     pnp.p3p_solve(obj_pts[1:4,:], img_pts[1:4,:],6, cam_intrinsic, pose_p3p)
     pnp.ppnp_solve(obj_pts,img_pts_, 6, cam_intrinsic, pose_ppnp)
+    pnp.posit_solve(obj_pts,img_pts,6,cam_intrinsic, pose_posit)
 
     t_epnp=np.concatenate(pose_epnp[0:3])
     t_dls=np.concatenate(pose_dls[0:3])
     t_upnp=np.concatenate(pose_upnp[0:3])
     t_p3p=np.concatenate(pose_p3p[0:3])
     t_ppnp=np.concatenate(pose_ppnp[0:3])
+    t_posit=np.concatenate(pose_posit[0:3])
     
     err_t_epnp.append(np.linalg.norm(t-t_epnp))
     err_t_dls.append(np.linalg.norm(t-t_dls))
     err_t_upnp.append(np.linalg.norm(t-t_upnp))
     err_t_p3p.append(np.linalg.norm(t-t_p3p))
     err_t_ppnp.append(np.linalg.norm(t-t_ppnp))
+    err_t_posit.append(np.linalg.norm(t-t_posit))
 
-err_algos=np.array(err_t_epnp + err_t_dls + err_t_upnp + err_t_p3p + err_t_ppnp)
+err_algos=np.array(err_t_epnp + err_t_dls + err_t_upnp + err_t_p3p + err_t_ppnp + err_t_posit)
 err_algos=err_algos.reshape(n_algos,n_iter)
 
 it=np.arange(0,n_iter)
 
 plt.figure(1)
-display_comparison_plot(it, err_algos, names=['epnp','dls','upnp','p3p','ppnp'], title='Translation Error Plot', xtitle='Iteration', ytitle='e')
+display_comparison_plot(it, err_algos, names=['epnp','dls','upnp','p3p','ppnp','posit'], title='Translation Error Plot', xtitle='Iteration', ytitle='e')
 plt.legend()
 plt.show()
 
