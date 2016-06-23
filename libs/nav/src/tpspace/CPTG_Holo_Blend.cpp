@@ -437,23 +437,6 @@ bool CPTG_Holo_Blend::getPathStepForDist(uint16_t k, double dist, uint16_t &out_
 }
 
 
-/* ===============
-equation for "t" values of closest approach to obstacle (x0,y0):
-
-(4*k2^2 + 4*k4^2)*t^3 + (6*k1*k2 + 6*k3*k4)*t^2 + (2*k1^2 + 2*k3^2 - 4*k2*x0 - 4*k4*y0)*t - 2*k1*x0 - 2*k3*y0
- 
-k1=vxi;
-k3=vyi;
-
-k2=( vxf - vxi )/(2*T_ramp)
-k4=( vyf - vyi )/(2*T_ramp)
- 
->> pretty(ans)
-     2       2   3                        2        2       2
-(4 k2  + 4 k4 ) t  + (6 k1 k2 + 6 k3 k4) t  + (2 k1  + 2 k3  - 4 k2 x0 - 4 k4 y0) t - 2 k1 x0 - 2 k3 y0
-
-================== */
-
 void CPTG_Holo_Blend::updateTPObstacle(double ox, double oy, std::vector<double> &tp_obstacles) const
 {
 	PERFORMANCE_BENCHMARK;
@@ -549,13 +532,10 @@ void CPTG_Holo_Blend::updateTPObstacle(double ox, double oy, std::vector<double>
 		double dist;
 
 		if (sol_t<T_ramp)
-			dist = calc_trans_distance_t_below_Tramp(k2,k4,vxi,vyi,sol_t);
-		else
-			dist = (sol_t-T_ramp) * V_MAX + calc_trans_distance_t_below_Tramp(k2,k4,vxi,vyi,T_ramp);
+		     dist = calc_trans_distance_t_below_Tramp(k2,k4,vxi,vyi,sol_t);
+		else dist = (sol_t-T_ramp) * V_MAX + calc_trans_distance_t_below_Tramp(k2,k4,vxi,vyi,T_ramp);
 
-		const double norm_dist = dist / refDistance;
-
-		mrpt::utils::keep_min( tp_obstacles[k], norm_dist );
+		mrpt::utils::keep_min( tp_obstacles[k], dist);  // TP_Obstacles buffer in un-normalized distances: use "dist" directly
 
 	} // end for each "k" alpha
 }

@@ -129,18 +129,18 @@ TEST(NavTests, PTGs_tests)
 		{
 			bool skip_this_ptg = false;
 			bool any_change_all = false;
-			for (double tx=-refDist*0.5;!skip_this_ptg && tx<refDist*0.5;tx+=0.1)
+			for (double ox=-refDist*0.5;!skip_this_ptg && ox<refDist*0.5;ox+=0.1)
 			{
-				for (double ty=-refDist*0.5;!skip_this_ptg && ty<refDist*0.5;ty+=0.1)
+				for (double oy=-refDist*0.5;!skip_this_ptg && oy<refDist*0.5;oy+=0.1)
 				{
-					if (std::abs(tx)<1e-2 && std::abs(ty)<1e-2)
+					if (std::abs(ox)<1e-2 && std::abs(oy)<1e-2)
 						continue; // TP-Space does not include the WS point (0,0) in its domain
 
 					std::vector<double> TP_obstacles;
 					ptg->initTPObstacles(TP_obstacles);
 
 					const std::vector<double> TP_obstacles_org = TP_obstacles;
-					ptg->updateTPObstacle(tx,ty, TP_obstacles);
+					ptg->updateTPObstacle(ox,oy, TP_obstacles);
 
 					const bool any_change = (TP_obstacles_org!=TP_obstacles);
 					if (any_change) any_change_all=true;
