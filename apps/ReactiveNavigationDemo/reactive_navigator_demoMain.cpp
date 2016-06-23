@@ -381,8 +381,8 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(wxWindow* parent,wxWi
     FlexGridSizer11->Add(StaticText4, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     cbSelPTG = new wxChoice(Panel3, ID_CHOICE1, wxDefaultPosition, wxDefaultSize, 0, 0, 0, wxDefaultValidator, _T("ID_CHOICE1"));
     FlexGridSizer11->Add(cbSelPTG, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-    m_plotScan = new CMyGLCanvas(Panel3,ID_CUSTOM1,wxDefaultPosition,wxSize(150,150),wxTAB_TRAVERSAL,_T("ID_CUSTOM1"));
-    FlexGridSizer11->Add(m_plotScan, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 1);
+    m_plotLocalView = new CMyGLCanvas(Panel3,ID_CUSTOM1,wxDefaultPosition,wxSize(150,150),wxTAB_TRAVERSAL,_T("ID_CUSTOM1"));
+    FlexGridSizer11->Add(m_plotLocalView, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 1);
     edInfoLocalView = new wxTextCtrl(Panel3, ID_TEXTCTRL2, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE|wxTE_READONLY|wxTE_DONTWRAP|wxALWAYS_SHOW_SB, wxDefaultValidator, _T("ID_TEXTCTRL2"));
     edInfoLocalView->SetMinSize(wxSize(-1,50));
     edInfoLocalView->SetBackgroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_BTNFACE));
@@ -571,40 +571,45 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(wxWindow* parent,wxWi
 	{
 		mrpt::opengl::CGridPlaneXYPtr obj = mrpt::opengl::CGridPlaneXY::Create(-1,1.001, -1,1.001, 0, 1);
 		obj->setColor_u8(TColor(30,30,30,50));
-		m_plotScan->m_openGLScene->insert( obj );
+		m_plotLocalView->m_openGLScene->insert( obj );
 	}
 
 	gl_line_direction = mrpt::opengl::CSimpleLine::Create();
 	gl_line_direction->setLineWidth(4);
 	gl_line_direction->setColor_u8(TColor(0,0,0));
-	m_plotScan->m_openGLScene->insert(gl_line_direction);
+	m_plotLocalView->m_openGLScene->insert(gl_line_direction);
 
 	gl_rel_target = mrpt::opengl::CPointCloud::Create();
 	gl_rel_target->setPointSize(7);
 	gl_rel_target->setColor_u8(TColor(0,0,255));
 	gl_rel_target->insertPoint(0,0,0);
-	m_plotScan->m_openGLScene->insert(gl_rel_target);
+	m_plotLocalView->m_openGLScene->insert(gl_rel_target);
 
-	m_plotScan->m_openGLScene->insert( mrpt::opengl::stock_objects::CornerXYSimple(0.1,2) );
-	m_plotScan->m_openGLScene->insert( gl_robot_local );
+	m_plotLocalView->m_openGLScene->insert( mrpt::opengl::stock_objects::CornerXYSimple(0.1,2) );
+	m_plotLocalView->m_openGLScene->insert( gl_robot_local );
+
+	gl_tp_obstacles = mrpt::opengl::CSetOfLines::Create();
+	gl_tp_obstacles->setLineWidth(3);
+	gl_tp_obstacles->setColor_u8( TColor(0,0,0) );
+	m_plotLocalView->m_openGLScene->insert(gl_tp_obstacles);
 
 	gl_nd_gaps = mrpt::opengl::CSetOfLines::Create();
-	gl_nd_gaps->setLineWidth(2);
-	gl_nd_gaps->setColor_u8( TColor(204,102,51) );
-	m_plotScan->m_openGLScene->insert(gl_nd_gaps);
+	gl_nd_gaps->setLineWidth(1);
+	gl_nd_gaps->setColor_u8( TColor(255,0,0) );
+	m_plotLocalView->m_openGLScene->insert(gl_nd_gaps);
 
-	m_plotScan->clearColorR = 0.9f;
-	m_plotScan->clearColorG = 0.9f;
-	m_plotScan->clearColorB = 0.9f;
+	m_plotLocalView->clearColorR = 0.9f;
+	m_plotLocalView->clearColorG = 0.9f;
+	m_plotLocalView->clearColorB = 0.9f;
 
 	// Set camera:
-	m_plotScan->cameraPointingX=0;
-	m_plotScan->cameraPointingY=0;
-	m_plotScan->cameraPointingZ=0;
-	m_plotScan->cameraZoomDistance = 2.2;
-	m_plotScan->cameraElevationDeg = 90;
-	m_plotScan->cameraAzimuthDeg = -90;
-	m_plotScan->cameraIsProjective = false;
+	m_plotLocalView->cameraPointingX=0;
+	m_plotLocalView->cameraPointingY=0;
+	m_plotLocalView->cameraPointingZ=0;
+	m_plotLocalView->cameraZoomDistance = 2.2;
+	m_plotLocalView->cameraElevationDeg = 90;
+	m_plotLocalView->cameraAzimuthDeg = -90;
+	m_plotLocalView->cameraIsProjective = false;
 
 
 	// Update positions of stuff:
@@ -949,6 +954,25 @@ void reactive_navigator_demoframe::simulateOneStep(double time_step)
 				}
 				gl_nd_gaps->appendLineStrip(0,0,0);
 			}
+
+			// TP-Obstacles:
+			gl_tp_obstacles->clear();
+			{
+				const size_t nObs = lfr.infoPerPTG[sel_PTG].TP_Obstacles.size();
+				if (nObs>1)
+				{
+					for (size_t i=0;i<=nObs;i++)
+					{
+						const double d0 = lfr.infoPerPTG[sel_PTG].TP_Obstacles[i % nObs];
+						const double a0 = M_PI * (-1.0 + 2.0 * ((i % nObs)+0.5)/nObs );
+						const double d1 = lfr.infoPerPTG[sel_PTG].TP_Obstacles[(i+1) % nObs];
+						const double a1 = M_PI * (-1.0 + 2.0 * (((i+1) % nObs)+0.5)/nObs );
+						gl_nd_gaps->appendLine(
+							d0*cos(a0),d0*sin(a0),0.0,
+							d1*cos(a1),d1*sin(a1),0.0 );
+					}
+				}
+			}
 		}
 		// Movement direction:
 		{
@@ -1035,7 +1059,7 @@ void reactive_navigator_demoframe::updateViewsDynamicObjects()
 
 	// Refresh:
 	m_plot3D->Refresh();
-	m_plotScan->Refresh();
+	m_plotLocalView->Refresh();
 }
 
 void reactive_navigator_demoframe::Onplot3DMouseMove(wxMouseEvent& event)
