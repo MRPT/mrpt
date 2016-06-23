@@ -89,12 +89,12 @@ for it in np.arange(0,n_iter):
     cam_intrinsic=np.array([[f,0.0,cx],[0.0,f,cy],[0.0, 0.0, 1.0]])
     
     # Use the c-library to compute the pose 
-    pnp.epnp_solve(obj_pts,img_pts, 6, cam_intrinsic, pose_epnp)
-    pnp.dls_solve(obj_pts, img_pts, 6, cam_intrinsic, pose_dls)
-    pnp.upnp_solve(obj_pts,img_pts, 6, cam_intrinsic, pose_upnp)
-    pnp.p3p_solve(obj_pts[1:4,:], img_pts[1:4,:],6, cam_intrinsic, pose_p3p)
-    pnp.ppnp_solve(obj_pts,img_pts_, 6, cam_intrinsic, pose_ppnp)
-    pnp.posit_solve(obj_pts,img_pts,6,cam_intrinsic, pose_posit)
+    pnp.epnp_solve(obj_pts,img_pts, n, cam_intrinsic, pose_epnp)
+    pnp.dls_solve(obj_pts, img_pts, n, cam_intrinsic, pose_dls)
+    pnp.upnp_solve(obj_pts,img_pts, n, cam_intrinsic, pose_upnp)
+    pnp.p3p_solve(obj_pts[1:4,:], img_pts[1:4,:],n, cam_intrinsic, pose_p3p)
+    pnp.ppnp_solve(obj_pts,img_pts_, n, cam_intrinsic, pose_ppnp)
+    pnp.posit_solve(obj_pts,img_pts,n,cam_intrinsic, pose_posit)
 
     t_epnp=np.concatenate(pose_epnp[0:3])
     t_dls=np.concatenate(pose_dls[0:3])
