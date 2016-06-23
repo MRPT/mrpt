@@ -1259,7 +1259,7 @@ void create_viz_robot_holo( mrpt::opengl::CSetOfObjects &objs )
 		objs.insert( gl_xyz );
 	}
 
-	mrpt::opengl::CCylinderPtr obj = mrpt::opengl::CCylinder::Create(0.6 /*base radius*/,0.3 /*top radius */,1.2 /*height*/);
+	mrpt::opengl::CCylinderPtr obj = mrpt::opengl::CCylinder::Create(0.36 /*base radius*/,0.20 /*top radius */,1.2 /*height*/);
 	obj->setColor_u8( TColor::red );
 	objs.insert( obj );
 }

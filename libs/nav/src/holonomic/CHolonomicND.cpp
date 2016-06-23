@@ -307,26 +307,15 @@ void  CHolonomicND::searchBestGap(
 
 	// D1 : Straight path?
 	// --------------------------------------------------------
-	const int freeSectorsNearTarget = 0.05*obstacles.size();
+	const int freeSectorsNearTarget = ceil(0.02*obstacles.size());
 	bool theyAreFree = true, caseD1 = false;
 	if (target_sector>static_cast<unsigned int>(freeSectorsNearTarget) &&
 		target_sector<static_cast<unsigned int>(obstacles.size()-freeSectorsNearTarget) )
 	{
 		const double min_free_dist = std::min(1.05*target_dist, 0.95*maxObsRange);
-		int index_obstacles;
-
-		for (int j=-freeSectorsNearTarget;j<=freeSectorsNearTarget;j++)
-		{
-			if (int(target_sector) + j < 0)
-				index_obstacles = obstacles.size() + (target_sector + j);
-			else if (target_sector + j >= obstacles.size())
-				index_obstacles = (target_sector + j) - obstacles.size();
-			else
-				index_obstacles = target_sector + j;
-
-			if (obstacles[ index_obstacles ]<min_free_dist)
-						theyAreFree = false;
-		}
+		for (int j=-freeSectorsNearTarget;theyAreFree && j<=freeSectorsNearTarget;j++)
+			if (obstacles[ (int(target_sector) + j) % obstacles.size()]<min_free_dist)
+				theyAreFree = false;
 		caseD1 = theyAreFree;
 	}
 
