@@ -557,6 +557,9 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 					mrpt::nav::CParameterizedTrajectoryGeneratorPtr ptg = m_logdata_ptg_paths[log.nSelectedPTG];
 					if (ptg)
 					{
+						// Set instantaneous kinematic state:
+						ptg->updateCurrentRobotVel(log.cur_vel_local);
+
 						// Draw path:
 						const int selected_k = ptg->alpha2index( log.infoPerPTG[log.nSelectedPTG].desiredDirection );
 						float max_dist = ptg->getRefDistance();
