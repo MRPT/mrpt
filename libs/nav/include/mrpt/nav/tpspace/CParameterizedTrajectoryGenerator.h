@@ -126,12 +126,11 @@ namespace nav
 		virtual bool getPathStepForDist(uint16_t k, double dist, uint16_t &out_step) const = 0;
 
 		/** Updates the radial map of closest TP-Obstacles given a single obstacle point at (ox,oy)
-		  * \param [in,out] tp_obstacles A vector of length `getAlphaValuesCount()`, initially set to getRefDistance().
+		  * \param [in,out] tp_obstacles A vector of length `getAlphaValuesCount()`, initialized with `initTPObstacles()` (collision-free ranges, in "pseudometers", un-normalized).
 		  * \param [in] ox Obstacle point (X), relative coordinates wrt origin of the PTG.
 		  * \param [in] oy Obstacle point (Y), relative coordinates wrt origin of the PTG.
 		  * \note The length of tp_obstacles is not checked for efficiency since this method is potentially called thousands of times per 
 		  *  navigation timestap, so it is left to the user responsibility to provide a valid buffer.
-		  * \sa initTPObstacles()
 		  */
 		virtual void updateTPObstacle(double ox, double oy, std::vector<double> &tp_obstacles) const = 0;
 
@@ -155,8 +154,7 @@ namespace nav
 
 		inline double getRefDistance() const { return refDistance; }
 
-		/** Resizes and populates the initial appropriate contents in a vector of tp-obstacles (collision-free ranges). 
-		  * \sa updateTPObstacle()  */
+		/** Resizes and populates the initial appropriate contents in a vector of tp-obstacles (collision-free ranges, in "pseudometers", un-normalized). \sa updateTPObstacle()  */
 		void initTPObstacles(std::vector<double> &TP_Obstacles) const;
 
 		/** When used in path planning, a multiplying factor (default=1.0) for the scores for this PTG. Assign values <1 to PTGs with low priority. */
