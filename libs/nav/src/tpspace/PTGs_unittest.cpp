@@ -125,7 +125,7 @@ TEST(NavTests, PTGs_tests)
 			EXPECT_TRUE(any_ok) << "PTG: " << sPTGDesc << endl;
 		}
 
-		// TEST: inverseMap_WS2TP
+		// TEST: TP_obstacles
 		{
 			bool skip_this_ptg = false;
 			bool any_change_all = false;
@@ -136,15 +136,8 @@ TEST(NavTests, PTGs_tests)
 					if (std::abs(tx)<1e-2 && std::abs(ty)<1e-2)
 						continue; // TP-Space does not include the WS point (0,0) in its domain
 
-					MRPT_TODO("Refactor as PTG method")
-					std::vector<double> TP_obstacles(ptg->getPathCount());
-					for (size_t k=0;k<ptg->getPathCount();k++)
-					{
-						TP_obstacles[k] = std::min(
-							ptg->getRefDistance(),
-							ptg->getPathDist(k, ptg->getPathStepCount(k)-1)
-							);
-					}
+					std::vector<double> TP_obstacles;
+					ptg->initTPObstacles(TP_obstacles);
 
 					const std::vector<double> TP_obstacles_org = TP_obstacles;
 					ptg->updateTPObstacle(tx,ty, TP_obstacles);
