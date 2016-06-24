@@ -72,7 +72,6 @@ void CRangeScanRegistrationDecider_t<GRAPH_t>::getICPEdge(
 		mrpt::slam::CICP::TReturnInfo* icp_info /* =NULL */) {
 	MRPT_START;
 
-	// assert that valid 3D range scans are given
 	ASSERTMSG_(from.hasRangeImage, 
 			mrpt::format("Laser scan doesn't contain valid range image"));
 	ASSERTMSG_(to.hasRangeImage, 
