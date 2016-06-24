@@ -43,6 +43,8 @@
 				- Depth filters are now available for mrpt::obs::CObservation3DRangeScan::project3DPointsFromDepthImageInto() and  mrpt::obs::CObservation3DRangeScan::convertTo2DScan()
 				- New switch mrpt::obs::CObservation3DRangeScan::EXTERNALS_AS_TEXT for runtime selection of externals format.
 			- mrpt::obs::CObservation2DRangeScan now has an optional field for intensity.
+		- \ref mrpt_opengl_grp
+			- [ABI change] mrpt::opengl::CAxis now has many new options exposed to configure its look.
 		- \ref mrpt_hwdrivers_grp
 			- mrpt::hwdrivers::CGenericSensor: external image format is now `png` by default instead of `jpg` to avoid losses.
 			- [ABI change] mrpt::hwdrivers::COpenNI2Generic:
