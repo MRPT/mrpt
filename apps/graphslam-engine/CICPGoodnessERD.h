@@ -123,15 +123,8 @@ namespace mrpt { namespace graphslam { namespace deciders {
 							bool enable_range_viewport;
 							std::string scans_img_external_dir;
 							
-							// parameters for conversion 3D=>2D Range Scan
-							std::string conversion_sensor_label;
-							double conversion_angle_sup;
-							double conversion_angle_inf;
-							double conversion_oversampling_ratio;
-
 							bool has_read_config;
     			};
-
 
 					// Public variables
 					// ////////////////////////////
@@ -144,7 +137,9 @@ namespace mrpt { namespace graphslam { namespace deciders {
 		 	 	 	 * Initialization function to be called from the various constructors
 		 	 	 	 */
 					void initCICPGoodnessERD_t();
-					void checkRegistrationCondition(
+					void checkRegistrationCondition2D(
+							const std::set<mrpt::utils::TNodeID>& nodes_set);
+					void checkRegistrationCondition3D(
 							const std::set<mrpt::utils::TNodeID>& nodes_set);
     			void registerNewEdge(
     					const mrpt::utils::TNodeID& from, 
@@ -158,15 +153,6 @@ namespace mrpt { namespace graphslam { namespace deciders {
 		 					std::set<mrpt::utils::TNodeID> *nodes_set, 
 							const mrpt::utils::TNodeID& cur_nodeID,
 							double distance );
-					/**
-			 		 * Method that updates the m_last_laser_scan2D variable given a
-			 		 * CObservation3DRangeScan acquired from an RGB-D camera. If inserted
-			 		 * 3DRangeScan does not contain valid data, a warning message is
-			 		 * printed.
-			 		 */
-					void convert3DTo2DRangeScan(
-							/*from = */ CObservation3DRangeScanPtr& scan3D_in,
-							/*to   = */ CObservation2DRangeScanPtr* scan2D_out=NULL);
 					/**
 					 * In case of 3DScan images, method sets the path of each image
 					 * either to ${rawlog_path_wo_extension}_Images/img_name (default
@@ -189,7 +175,7 @@ namespace mrpt { namespace graphslam { namespace deciders {
 					bool m_initialized_visuals;
 					bool m_initialized_rgbd_viewports;
 					bool m_just_inserted_loop_closure;
-					bool m_contains_scans3D;
+					bool m_is_using_3DScan;
 
 					mrpt::utils::TColor m_search_disk_color; // see Ctor for initialization
 					mrpt::utils::TColor m_laser_scans_color; // see Ctor for initialization
@@ -198,12 +184,17 @@ namespace mrpt { namespace graphslam { namespace deciders {
 					
 
 					std::map<const mrpt::utils::TNodeID, 
-						mrpt::obs::CObservation2DRangeScanPtr> m_nodes_to_laser_scans;
+						mrpt::obs::CObservation2DRangeScanPtr> m_nodes_to_laser_scans2D;
+					std::map<const mrpt::utils::TNodeID, 
+						mrpt::obs::CObservation3DRangeScanPtr> m_nodes_to_laser_scans3D;
 					std::map<const std::string, int> m_edge_types_to_nums;
 
     			int m_last_total_num_of_nodes;
     			CObservation2DRangeScanPtr m_last_laser_scan2D;
     			CObservation3DRangeScanPtr m_last_laser_scan3D;
+    			// fake 2D laser scan generated from corresponding 3DRangeScan for
+    			// visualization reasons
+    			CObservation2DRangeScanPtr m_fake_laser_scan2D;
 
 					// find out if decider is invalid for the given dataset
 					bool m_checked_for_usuable_dataset;
