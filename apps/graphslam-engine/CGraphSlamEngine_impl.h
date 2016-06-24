@@ -42,6 +42,7 @@ CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::CGraphSlamEngine_t(
 	m_config_fname(config_file),
 	m_rawlog_fname(rawlog_fname),
 	m_fname_GT(fname_GT),
+	m_GT_poses_step(1),
 	m_win(win),
 	m_win_observer(win_observer),
 	m_win_manager(m_win),
@@ -804,9 +805,9 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::printProblemPa
 		<< m_save_graph_fname << std::endl;
 	ss_out << "Visualize odometry              = " 
 		<< m_visualize_odometry_poses << std::endl;
-	ss_out << "Visualize optimized path        = " 
-		<< m_visualize_estimated_trajectory << std::endl;
 	ss_out << "Visualize estimated trajectory  = " 
+		<< m_visualize_estimated_trajectory << std::endl;
+	ss_out << "Visualize optimized graph       = " 
 		<< m_visualize_optimized_graph << std::endl;
 	ss_out << "Visualize map                   = " 
 		<< m_visualize_map << std::endl;
@@ -1390,8 +1391,6 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::updateGTVisual
 				gt_pose.x(),
 				gt_pose.y(),
 				0 );
-
-		cout << gt_pose << endl;
 
 		// robot model of GT trajectory
 		obj = scene->getByName("robot_GT");

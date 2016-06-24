@@ -16,13 +16,16 @@ using namespace mrpt::graphslam::deciders;
 //////////////////////////////////////////////////////////////
 
 template<class GRAPH_t>
-CICPGoodnessNRD_t<GRAPH_t>::CICPGoodnessNRD_t() {
+CICPGoodnessNRD_t<GRAPH_t>::CICPGoodnessNRD_t():
+	params(*this) // pass reference to self when initializing the parameters
+{
 	this->initCICPGoodnessNRD_t();
 }
 template<class GRAPH_t>
 void CICPGoodnessNRD_t<GRAPH_t>::initCICPGoodnessNRD_t() {
 
-	m_first_time_call = true;
+	m_first_time_call2D = true;
+	m_first_time_call3D = true;
 
 	m_win = NULL;
 	m_graph = NULL;
@@ -61,28 +64,39 @@ bool CICPGoodnessNRD_t<GRAPH_t>::updateDeciderState(
 	if (observation.present()) {
 		if (IS_CLASS(observation, CObservation2DRangeScan) || 
 				IS_CLASS(observation, CObservation3DRangeScan)) {
-			// if 3D then just update the 2D counterpart
+			// 3D Range Scan
 			if (IS_CLASS(observation, CObservation3DRangeScan)) {
 				m_curr_laser_scan3D =
 					static_cast<mrpt::obs::CObservation3DRangeScanPtr>(observation);
 				// TODO deal with this..
 				m_curr_laser_scan3D->load();
-				this->convert3DTo2DRangeScan(
-						/*from = */ m_curr_laser_scan3D,
-						/*to   = */ &m_curr_laser_scan2D); 
+
+				// if first_time in initialize the m_last_laser_scan as well
+				if (m_first_time_call3D) {
+					cout << "CICPGoodnessNRD: Registering first laser scan.." << endl;
+					m_last_laser_scan3D = m_curr_laser_scan3D;
+					m_first_time_call3D = false;
+					return false;
+				}
+
+				m_is_using_3DScan = true;
 			}
+			// 2D Range Scan
 			else if (IS_CLASS(observation, CObservation2DRangeScan)) {
 				m_curr_laser_scan2D = 
 					static_cast<mrpt::obs::CObservation2DRangeScanPtr>(observation);
+
+				// if first_time in initialize the m_last_laser_scan as well
+				if (m_first_time_call2D) {
+					cout << "CICPGoodnessNRD: Registering first laser scan.." << endl;
+					m_last_laser_scan2D = m_curr_laser_scan2D;
+					m_first_time_call2D = false;
+					return false;
+				}
+
+				m_is_using_3DScan = false;
 			}
 
-			// if first_time in initialize the m_last_laser_scan as well
-			if (m_first_time_call) {
-				cout << "CICPGoodnessNRD: Registering first laser scan.." << endl;
-				m_last_laser_scan2D = m_curr_laser_scan2D;
-				m_first_time_call = false;
-				return false;
-			}
 			registered_new_node = this->checkRegistrationCondition();
 			//mrpt::system::pause();
 		}
@@ -110,22 +124,45 @@ bool CICPGoodnessNRD_t<GRAPH_t>::checkRegistrationCondition() {
 	bool registered_new_node = false;
 
 	constraint_t rel_edge;
-	double goodness = this->getICPEdge(
-			*m_last_laser_scan2D,
-			*m_curr_laser_scan2D,
-			&rel_edge );
-	cout << "CICPGoodnessNRD: ICP goodness: " << goodness << endl;
+	mrpt::slam::CICP::TReturnInfo icp_info;
+	// decide on which data to use.
+	if ( m_is_using_3DScan ) {
+		this->getICPEdge(
+				*m_last_laser_scan3D,
+				*m_curr_laser_scan3D,
+				&rel_edge,
+				NULL, 
+				&icp_info);
+	}
+	else {
+		this->getICPEdge(
+				*m_last_laser_scan2D,
+				*m_curr_laser_scan2D,
+				&rel_edge,
+				NULL,
+				&icp_info);
+	}
 
-	if (goodness > params.ICP_goodness_thresh) {
+	if (icp_info.goodness > params.ICP_goodness_thresh) {
 		m_since_prev_node_PDF += rel_edge;
-		m_last_laser_scan2D = m_curr_laser_scan2D;
 
-		cout << "CICPGoodnessNRD: norm = " << m_since_prev_node_PDF.getMeanVal().norm() << endl;
+		// udpate the last laser scan
+		if (m_is_using_3DScan) {
+			//m_last_laser_scan3D = m_curr_laser_scan3D;
+		}
+		else {
+			m_last_laser_scan2D = m_curr_laser_scan2D;
+		}
+
+		cout << "CICPGoodnessNRD: norm = " 
+			<< m_since_prev_node_PDF.getMeanVal().norm() << endl;
 		cout << "CICPGoodnessNRD: angle = " << 
 			RAD2DEG(fabs(wrapToPi(m_since_prev_node_PDF.getMeanVal().phi()))) << endl;
 		// check if distance or angle difference is good enough for new node
-		if ( m_since_prev_node_PDF.getMeanVal().norm() > params.registration_max_distance || 
-				fabs(wrapToPi(m_since_prev_node_PDF.getMeanVal().phi())) > params.registration_max_angle ) {
+		if ( m_since_prev_node_PDF.getMeanVal().norm() > 
+				params.registration_max_distance || 
+				fabs(wrapToPi(m_since_prev_node_PDF.getMeanVal().phi())) > 
+				params.registration_max_angle ) {
 			registered_new_node = true;
 			this->registerNewNode();
 		}
@@ -163,69 +200,12 @@ void CICPGoodnessNRD_t<GRAPH_t>::setGraphPtr(GRAPH_t* graph) {
 		<< std::endl;
 }
 
-template<class GRAPH_t>
-double CICPGoodnessNRD_t<GRAPH_t>::getICPEdge(
-		const CObservation2DRangeScan& prev_laser_scan,
-		const CObservation2DRangeScan& curr_laser_scan,
-		constraint_t* rel_edge )
-{
-	MRPT_START;
-
-	// Uses TParams::ICP member variable
-	CSimplePointsMap m1,m2;
-	float running_time;
-	CICP::TReturnInfo info;
-
-	// TODO - initial estimation?
-	pose_t initial_pose;
-
-	m1.insertObservation(&prev_laser_scan);
-	m2.insertObservation(&curr_laser_scan);
-
-	CPosePDFPtr pdf = params.icp.Align(
-			&m1,
-			&m2,
-			initial_pose,
-			&running_time,
-			(void*)&info);
-
-	// return the edge regardless of the goodness of the alignment
-	rel_edge->copyFrom(*pdf);
-
-	cout << "rel_edge: " << *rel_edge << endl;
-	return info.goodness;
-
-	MRPT_END;
-}
-
-template<class GRAPH_t>
-void CICPGoodnessNRD_t<GRAPH_t>::convert3DTo2DRangeScan(
-		CObservation3DRangeScanPtr& scan3D_in,
-		CObservation2DRangeScanPtr* scan2D_out /*= NULL*/) {
-
-	//if ( ((*scan2D_out).null()) ) {
-		//// create the 2D laser scan first
-		*scan2D_out = CObservation2DRangeScan::Create();
-	//}
-
-	if (scan3D_in->hasRangeImage) {
-		scan3D_in->convertTo2DScan(**scan2D_out, 
-				params.conversion_sensor_label, 
-				params.conversion_angle_sup, 
-				params.conversion_angle_inf, 
-				params.conversion_oversampling_ratio);
-	}
-	else {
-		cout << "Current 3DRangeScan does not contain valid data." << endl;
-	}
-	cout << "scan2D size: " << (*scan2D_out)->scan.size() << endl;
-}
-
-
 // TParams
 //////////////////////////////////////////////////////////////
 template<class GRAPH_t>
-CICPGoodnessNRD_t<GRAPH_t>::TParams::TParams() { }
+CICPGoodnessNRD_t<GRAPH_t>::TParams::TParams(decider_t& d):
+	decider(d)
+{ }
 template<class GRAPH_t>
 CICPGoodnessNRD_t<GRAPH_t>::TParams::~TParams() { }
 template<class GRAPH_t>
@@ -234,16 +214,24 @@ void CICPGoodnessNRD_t<GRAPH_t>::TParams::dumpToTextStream(
 	MRPT_START;
 
 	out.printf("------------------[ ICP Fixed Intervals Node Registration ]------------------\n");
-	out.printf("Max distance for registration = %.2f m\n", registration_max_distance);
-	out.printf("Max Angle for registration    = %.2f deg\n", RAD2DEG(registration_max_angle));
-	out.printf("ICP goodness threshold        = %.2f%% \n", ICP_goodness_thresh*100);
+	out.printf("Max distance for registration = %.2f m\n", 
+			registration_max_distance);
+	out.printf("Max Angle for registration    = %.2f deg\n",
+			RAD2DEG(registration_max_angle));
+	out.printf("ICP goodness threshold        = %.2f%% \n",
+			ICP_goodness_thresh*100);
 	out.printf("ICP Configuration:\n");
-	out.printf("Conversion Sensor label       = %s\n", conversion_sensor_label.c_str());
-	out.printf("Conversion angle sup          = %.2f deg\n", RAD2DEG(conversion_angle_sup));
-	out.printf("Conversion angle inf          = %.2f deg\n", RAD2DEG(conversion_angle_inf));
-	out.printf("Conversion oversampling ratio = %.2f\n", conversion_oversampling_ratio);
+	out.printf("Conversion Sensor label       = %s\n",
+			conversion_sensor_label.c_str());
+	out.printf("Conversion angle sup          = %.2f deg\n",
+			RAD2DEG(conversion_angle_sup));
+	out.printf("Conversion angle inf          = %.2f deg\n",
+			RAD2DEG(conversion_angle_inf));
+	out.printf("Conversion oversampling ratio = %.2f\n",
+			conversion_oversampling_ratio);
 
-	icp.options.dumpToTextStream(out);
+
+	decider.range_scanner_t::params.dumpToTextStream(out);
 
 	MRPT_END;
 }
@@ -284,14 +272,10 @@ void CICPGoodnessNRD_t<GRAPH_t>::TParams::loadFromConfigFile(
 			"conversion_oversampling_ratio",
 			1.1, false);
 
-
 	// load the icp parameters - from "ICP" section explicitly
-	icp.options.loadFromConfigFile(source, "ICP");
-
+	decider.range_scanner_t::params.loadFromConfigFile(source, "ICP");
 
 	std::cout << "Successfully loaded CICPGoodnessNRD parameters. " << std::endl;
-
-
 	MRPT_END;
 }
 

@@ -33,6 +33,7 @@
 #include <stdlib.h> // abs
 
 #include "CEdgeRegistrationDecider.h"
+#include "CRangeScanRegistrationDecider.h"
 
 #include <iostream>
 
@@ -68,11 +69,14 @@ namespace mrpt { namespace graphslam { namespace deciders {
 	template<
 		  class GRAPH_t=typename mrpt::graphs::CNetworkOfPoses2DInf >
 		class CICPGoodnessERD_t :
-			public mrpt::graphslam::deciders::CEdgeRegistrationDecider_t<GRAPH_t> {
+			public mrpt::graphslam::deciders::CEdgeRegistrationDecider_t<GRAPH_t>,
+			public mrpt::graphslam::deciders::CRangeScanRegistrationDecider_t<GRAPH_t> {
 	  		public:
 					typedef typename GRAPH_t::constraint_t constraint_t;
 					// type of underlying poses (2D/3D)
 					typedef typename GRAPH_t::constraint_t::type_value pose_t; 
+					typedef mrpt::graphslam::deciders::CRangeScanRegistrationDecider_t<GRAPH_t> range_scanner_t;
+					typedef CICPGoodnessERD_t<GRAPH_t> decider_t;
 
 					// Public methods
 					//////////////////////////////////////////////////////////////
@@ -98,8 +102,10 @@ namespace mrpt { namespace graphslam { namespace deciders {
 
     			struct TParams: public mrpt::utils::CLoadableOptions {
     				public:
-    					TParams();
+    					TParams(decider_t& d);
     					~TParams();
+
+							decider_t& decider;
 
     					void loadFromConfigFile(
     							const mrpt::utils::CConfigFileBase &source,
@@ -116,9 +122,14 @@ namespace mrpt { namespace graphslam { namespace deciders {
 							bool enable_intensity_viewport;
 							bool enable_range_viewport;
 							std::string scans_img_external_dir;
+							
+							// parameters for conversion 3D=>2D Range Scan
+							std::string conversion_sensor_label;
+							double conversion_angle_sup;
+							double conversion_angle_inf;
+							double conversion_oversampling_ratio;
 
 							bool has_read_config;
-
     			};
 
 
@@ -142,29 +153,17 @@ namespace mrpt { namespace graphslam { namespace deciders {
 					void checkIfInvalidDataset(mrpt::obs::CActionCollectionPtr action,
 							mrpt::obs::CSensoryFramePtr observations,
 							mrpt::obs::CObservationPtr observation );
-    			/**
-    			 * Run ICP for the laser scans of the given nodeIDs and fill the
-    			 * potential constraint between them. Returns the goodness of the
-    			 * potential constraint so that the caller can decide if they want to
-    			 * keep the constraint or not. Returns 0 if laser scans have not been
-    			 * registered at one of the give node positions
-    			 */
-					double getICPEdge(
-							const mrpt::utils::TNodeID& from,
-							const mrpt::utils::TNodeID& to,
-							constraint_t* rel_edge );
-					/**
-					 * fill list of nodes that are within certain distance from a given
-					 * node
-					 */
+
 		 			void getNearbyNodesOf(
 		 					std::set<mrpt::utils::TNodeID> *nodes_set, 
 							const mrpt::utils::TNodeID& cur_nodeID,
 							double distance );
 					/**
-					 * Method that updates the m_last_laser_scan2D variable given a
-					 * CObservation3DRangeScan acquired from an RGB-D camera
-					 */
+			 		 * Method that updates the m_last_laser_scan2D variable given a
+			 		 * CObservation3DRangeScan acquired from an RGB-D camera. If inserted
+			 		 * 3DRangeScan does not contain valid data, a warning message is
+			 		 * printed.
+			 		 */
 					void convert3DTo2DRangeScan(
 							/*from = */ CObservation3DRangeScanPtr& scan3D_in,
 							/*to   = */ CObservation2DRangeScanPtr* scan2D_out=NULL);
@@ -211,12 +210,6 @@ namespace mrpt { namespace graphslam { namespace deciders {
 					size_t m_consecutive_invalid_format_instances;
 					const size_t m_consecutive_invalid_format_instances_thres;
 
-					// TODO - Remove these
-					// 3D=>2D scan conversion parameters
-					const string kConversionSensorLabel;
-					const double kConversionAngleSup;
-					const double kConversionAngleInf;
-					const double kConversionOversamplingRatio;
 			};
 
 } } } // end of namespaces
