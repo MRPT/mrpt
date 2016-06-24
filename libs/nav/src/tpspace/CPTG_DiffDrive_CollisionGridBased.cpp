@@ -35,25 +35,12 @@ CPTG_DiffDrive_CollisionGridBased::CPTG_DiffDrive_CollisionGridBased() :
 void CPTG_DiffDrive_CollisionGridBased::loadFromConfigFile(const mrpt::utils::CConfigFileBase &cfg,const std::string &sSection)
 {
 	CParameterizedTrajectoryGenerator::loadFromConfigFile(cfg,sSection);
+	CPTG_RobotShape_Polygonal::loadShapeFromConfigFile(cfg,sSection);
 
 	MRPT_LOAD_HERE_CONFIG_VAR_NO_DEFAULT(resolution  ,double, m_resolution, cfg,sSection);
 	MRPT_LOAD_HERE_CONFIG_VAR_NO_DEFAULT(v_max_mps  ,double, V_MAX, cfg,sSection);
 	MRPT_LOAD_HERE_CONFIG_VAR_DEGREES_NO_DEFAULT(w_max_dps  ,double, W_MAX, cfg,sSection);
 	MRPT_LOAD_CONFIG_VAR(turningRadiusReference  ,double, cfg,sSection);
-
-	const double BADNUM = std::numeric_limits<double>::max();
-	for (unsigned int nPt = 0; ; ++nPt)
-	{
-		const std::string sPtx = mrpt::format("shape_x%u", nPt);
-		const std::string sPty = mrpt::format("shape_y%u", nPt);
-
-		const double ptx = cfg.read_double(sSection, sPtx,BADNUM, false);
-		const double pty = cfg.read_double(sSection, sPty,BADNUM, false);
-		if (ptx==BADNUM && pty==BADNUM) break;
-		ASSERTMSG_( (ptx!=BADNUM && pty!=BADNUM), "Error: mismatch between number of pts in {x,y} defining robot shape");
-
-		this->m_robotShape.AddVertex(ptx,pty);
-	}
 }
 void CPTG_DiffDrive_CollisionGridBased::saveToConfigFile(mrpt::utils::CConfigFileBase &cfg,const std::string &sSection) const
 {

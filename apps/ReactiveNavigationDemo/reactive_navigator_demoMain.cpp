@@ -105,6 +105,8 @@ const long reactive_navigator_demoframe::ID_PANEL7 = wxNewId();
 const long reactive_navigator_demoframe::ID_STATICTEXT2 = wxNewId();
 const long reactive_navigator_demoframe::ID_STATICTEXT1 = wxNewId();
 const long reactive_navigator_demoframe::ID_XY_GLCANVAS = wxNewId();
+const long reactive_navigator_demoframe::ID_STATICTEXT4 = wxNewId();
+const long reactive_navigator_demoframe::ID_CHOICE1 = wxNewId();
 const long reactive_navigator_demoframe::ID_CUSTOM1 = wxNewId();
 const long reactive_navigator_demoframe::ID_TEXTCTRL2 = wxNewId();
 const long reactive_navigator_demoframe::ID_PANEL8 = wxNewId();
@@ -315,7 +317,7 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(wxWindow* parent,wxWi
     FlexGridSizer8 = new wxFlexGridSizer(1, 1, 0, 0);
     FlexGridSizer8->AddGrowableCol(0);
     FlexGridSizer8->AddGrowableRow(0);
-    edParamsReactive = new wxTextCtrl(pnParamsReactive, ID_TEXTCTRL4, _("# ------------------------------------------------------------------------\n# Example configuration file for MRPT Reactive Navigation engine.\n# See C++ documentation: http://reference.mrpt.org/svn/classmrpt_1_1nav_1_1_c_reactive_navigation_system.html\n# See ROS node documentation: http://wiki.ros.org/mrpt_reactivenav2d\n# ------------------------------------------------------------------------\n\n[GLOBAL_CONFIG]\n# 0 or `hmVIRTUAL_FORCE_FIELDS`: Virtual Force Field\n# 1 or `hmSEARCH_FOR_BEST_GAP`: Nearness Diagram (ND)\nHOLONOMIC_METHOD = hmSEARCH_FOR_BEST_GAP\nALARM_SEEMS_NOT_APPROACHING_TARGET_TIMEOUT=100 # (seconds)\n\nrobotMax_V_mps = 1.0\t\t# Speed limits\nrobotMax_W_degps = 60\n\n\n#\tParameters for the \"VFF\" Holonomic method\n# ----------------------------------------------------\n[VFF_CONFIG]\nTARGET_SLOW_APPROACHING_DISTANCE = 0.1 // For stopping gradually\nTARGET_ATTRACTIVE_FORCE = 2.000000e+001 // Dimension-less (may have to be tuned depending on the density of obstacle sampling)\n\n#\tParameters for the \"Nearness diagram\" Holonomic method\n# ----------------------------------------------------\n[ND_CONFIG]\nWIDE_GAP_SIZE_PERCENT = 2.500000e-001 \nMAX_SECTOR_DIST_FOR_D2_PERCENT = 2.500000e-001 \nRISK_EVALUATION_SECTORS_PERCENT = 1.000000e-001 \nRISK_EVALUATION_DISTANCE = 4.000000e-001 // In normalized ps-meters [0,1]\nTOO_CLOSE_OBSTACLE = 1.500000e-001 // For stopping gradually\nTARGET_SLOW_APPROACHING_DISTANCE = 0.1 // In normalized ps-meters\nfactorWeights = 1.00 0.50 2.00 0.40 // [0]=Free space, [1]=Dist. in sectors, [2]=Closer to target (Euclidean), [3]=Hysteresis\n\n# ----------------------------------------------------\n#\tParameters for navigation: DIFFERENTIAL DRIVEN Robot\n# ----------------------------------------------------\n[DIFF_ReactiveParams]\nweights=0.5 0.05 0.5 2.0 0.5 0.3\n# 1: Free space\n# 2: Dist. in sectors\t\t\t\n# 3: Heading toward target\n# 4: Closer to target (euclidean)\n# 5: Hysteresis\n# 6: Security Distance\n\nDIST_TO_TARGET_FOR_SENDING_EVENT=0.6\t# Minimum. distance to target for sending the end event. Set to 0 to send it just on navigation end\n\nMinObstaclesHeight=0.0 \t\t# Minimum coordinate in the \"z\" axis for an obstacle to be taken into account.\nMaxObstaclesHeight=1.40 \t# Maximum coordinate in the \"z\" axis for an obstacle to be taken into account.\n\nMAX_REFERENCE_DISTANCE = 10.0 # Maximum distance to build PTGs (in meters), i.e. the visibility \"range\" of tentative paths\n\n# The constant time of a first-order low-pass filter of outgoing speed commands, \n# i.e. can be used to impose a maximum acceleration.\nSPEEDFILTER_TAU = 0.5 // seconds\n\n# PTGs: See classes derived from mrpt::nav::CParameterizedTrajectoryGenerator ( http://reference.mrpt.org/svn/classmrpt_1_1nav_1_1_c_parameterized_trajectory_generator.html)# refer to papers for details.\n#------------------------------------------------------------------------------\nPTG_COUNT = 3\n\nPTG0_Type = CPTG_DiffDrive_C\nPTG0_resolution = 0.05    # Look-up-table cell size or resolution (in meters)\nPTG0_refDistance= 10.0    # Maximum distance to build PTGs (in meters), i.e. the visibility \"range\" of tentative paths\nPTG0_num_paths= 121\nPTG0_v_max_mps = 1.0\nPTG0_w_max_dps = 60\nPTG0_K = 1.0\nPTG0_score_priority = 1.0\n\nPTG1_Type = CPTG_DiffDrive_alpha\nPTG1_resolution = 0.05    # Look-up-table cell size or resolution (in meters)\nPTG1_refDistance= 10.0    # Maximum distance to build PTGs (in meters), i.e. the visibility \"range\" of tentative paths\nPTG1_num_paths = 121\nPTG1_v_max_mps = 1.0\nPTG1_w_max_dps = 60\nPTG1_cte_a0v_deg = 57\nPTG1_cte_a0w_deg = 57\nPTG1_score_priority = 1.0\n\nPTG2_Type = CPTG_DiffDrive_C\nPTG2_resolution = 0.05    # Look-up-table cell size or resolution (in meters)\nPTG2_refDistance= 10.0    # Maximum distance to build PTGs (in meters), i.e. the visibility \"range\" of tentative paths\nPTG2_num_paths = 121\nPTG2_v_max_mps = 1.0\nPTG2_w_max_dps = 60\nPTG2_K = -1.0\nPTG2_score_priority = 0.5\n\n\n# Default 2D robot shape for collision checks: (ignored in ROS, superseded by node parameters)\n# Each PTG will use only one of either (a) polygonal 2D shape or, (b) radius of a circular shape\nRobotModel_shape2D_xs=-0.2 0.5 0.5 -0.2\nRobotModel_shape2D_ys=0.3 0.3 -0.3 -0.3\nRobotModel_circular_shape_radius = 0.5\n\n# ----------------------------------------------------\n#\tParameters for navigation: DIFFERENTIAL DRIVEN Robot\n# ----------------------------------------------------\n[HOLO_ReactiveParams]\nweights=0.5 0.05 0.5 2.0 0.5 0.3\n# 1: Free space\n# 2: Dist. in sectors\t\t\t\n# 3: Heading toward target\n# 4: Closer to target (euclidean)\n# 5: Hysteresis\n# 6: Security Distance\n\nDIST_TO_TARGET_FOR_SENDING_EVENT=0.6\t# Minimum. distance to target for sending the end event. Set to 0 to send it just on navigation end\n\nMinObstaclesHeight=0.0 \t\t# Minimum coordinate in the \"z\" axis for an obstacle to be taken into account.\nMaxObstaclesHeight=1.40 \t# Maximum coordinate in the \"z\" axis for an obstacle to be taken into account.\n\nMAX_REFERENCE_DISTANCE = 10.0 # Maximum distance to build PTGs (in meters), i.e. the visibility \"range\" of tentative paths\n\n# PTGs: See classes derived from mrpt::nav::CParameterizedTrajectoryGenerator ( http://reference.mrpt.org/svn/classmrpt_1_1nav_1_1_c_parameterized_trajectory_generator.html)# refer to papers for details.\n#------------------------------------------------------------------------------\nPTG_COUNT = 1\n\nPTG0_Type = CPTG_Holo_Blend\nPTG0_refDistance= 10.0    # Maximum distance to build PTGs (in meters), i.e. the visibility \"range\" of tentative paths\nPTG0_num_paths  = 361\nPTG0_v_max_mps = 1.0\nPTG0_w_max_dps = 60\nPTG0_T_ramp = 0.8\nPTG0_score_priority = 1.0\n\n# Each PTG will use only one of either (a) polygonal 2D shape or, (b) radius of a circular shape\nRobotModel_circular_shape_radius = 0.36\n\n"), wxDefaultPosition, wxSize(226,111), wxTE_PROCESS_ENTER|wxTE_PROCESS_TAB|wxTE_MULTILINE|wxHSCROLL|wxVSCROLL|wxALWAYS_SHOW_SB, wxDefaultValidator, _T("ID_TEXTCTRL4"));
+    edParamsReactive = new wxTextCtrl(pnParamsReactive, ID_TEXTCTRL4, _("# ------------------------------------------------------------------------\n# Example configuration file for MRPT Reactive Navigation engine.\n# See C++ documentation: http://reference.mrpt.org/svn/classmrpt_1_1nav_1_1_c_reactive_navigation_system.html\n# See ROS node documentation: http://wiki.ros.org/mrpt_reactivenav2d\n# ------------------------------------------------------------------------\n\n[GLOBAL_CONFIG]\n# 0 or `hmVIRTUAL_FORCE_FIELDS`: Virtual Force Field\n# 1 or `hmSEARCH_FOR_BEST_GAP`: Nearness Diagram (ND)\nHOLONOMIC_METHOD = hmSEARCH_FOR_BEST_GAP\nALARM_SEEMS_NOT_APPROACHING_TARGET_TIMEOUT=100 # (seconds)\n\nrobotMax_V_mps = 1.0\t\t# Speed limits\nrobotMax_W_degps = 60\n\n\n#\tParameters for the \"VFF\" Holonomic method\n# ----------------------------------------------------\n[VFF_CONFIG]\nTARGET_SLOW_APPROACHING_DISTANCE = 0.1 // For stopping gradually\nTARGET_ATTRACTIVE_FORCE = 2.000000e+001 // Dimension-less (may have to be tuned depending on the density of obstacle sampling)\n\n#\tParameters for the \"Nearness diagram\" Holonomic method\n# ----------------------------------------------------\n[ND_CONFIG]\nWIDE_GAP_SIZE_PERCENT = 2.500000e-001 \nMAX_SECTOR_DIST_FOR_D2_PERCENT = 2.500000e-001 \nRISK_EVALUATION_SECTORS_PERCENT = 1.000000e-001 \nRISK_EVALUATION_DISTANCE = 4.000000e-001 // In normalized ps-meters [0,1]\nTOO_CLOSE_OBSTACLE = 1.500000e-001 // For stopping gradually\nTARGET_SLOW_APPROACHING_DISTANCE = 0.1 // In normalized ps-meters\nfactorWeights = 1.00 0.50 2.00 0.40 // [0]=Free space, [1]=Dist. in sectors, [2]=Closer to target (Euclidean), [3]=Hysteresis\n\n# ----------------------------------------------------\n#\tParameters for navigation: DIFFERENTIAL DRIVEN Robot\n# ----------------------------------------------------\n[DIFF_ReactiveParams]\nweights=0.5 0.05 0.5 2.0 0.5 0.3\n# 1: Free space\n# 2: Dist. in sectors\t\t\t\n# 3: Heading toward target\n# 4: Closer to target (euclidean)\n# 5: Hysteresis\n# 6: Security Distance\n\nDIST_TO_TARGET_FOR_SENDING_EVENT=0.6\t# Minimum. distance to target for sending the end event. Set to 0 to send it just on navigation end\n\nMinObstaclesHeight=0.0 \t\t# Minimum coordinate in the \"z\" axis for an obstacle to be taken into account.\nMaxObstaclesHeight=1.40 \t# Maximum coordinate in the \"z\" axis for an obstacle to be taken into account.\n\nMAX_REFERENCE_DISTANCE = 10.0 # Maximum distance to build PTGs (in meters), i.e. the visibility \"range\" of tentative paths\n\n# The constant time of a first-order low-pass filter of outgoing speed commands, \n# i.e. can be used to impose a maximum acceleration.\nSPEEDFILTER_TAU = 0.5 // seconds\n\n# PTGs: See classes derived from mrpt::nav::CParameterizedTrajectoryGenerator ( http://reference.mrpt.org/svn/classmrpt_1_1nav_1_1_c_parameterized_trajectory_generator.html)# refer to papers for details.\n#------------------------------------------------------------------------------\nPTG_COUNT = 3\n\nPTG0_Type = CPTG_DiffDrive_C\nPTG0_resolution = 0.05 # Look-up-table cell size or resolution (in meters)\nPTG0_refDistance= 10.0 # Maximum distance to build PTGs (in meters), i.e. the visibility \"range\" of tentative paths\nPTG0_num_paths= 121\nPTG0_v_max_mps = 1.0\nPTG0_w_max_dps = 60\nPTG0_K = 1.0\nPTG0_score_priority = 1.0\n\nPTG1_Type = CPTG_DiffDrive_alpha\nPTG1_resolution = 0.05 # Look-up-table cell size or resolution (in meters)\nPTG1_refDistance= 10.0 # Maximum distance to build PTGs (in meters), i.e. the visibility \"range\" of tentative paths\nPTG1_num_paths = 121\nPTG1_v_max_mps = 1.0\nPTG1_w_max_dps = 60\nPTG1_cte_a0v_deg = 57\nPTG1_cte_a0w_deg = 57\nPTG1_score_priority = 1.0\n\nPTG2_Type = CPTG_DiffDrive_C\nPTG2_resolution = 0.05 # Look-up-table cell size or resolution (in meters)\nPTG2_refDistance= 10.0 # Maximum distance to build PTGs (in meters), i.e. the visibility \"range\" of tentative paths\nPTG2_num_paths = 121\nPTG2_v_max_mps = 1.0\nPTG2_w_max_dps = 60\nPTG2_K = -1.0\nPTG2_score_priority = 0.5\n\n\n# Default 2D robot shape for collision checks: (ignored in ROS, superseded by node parameters)\n# Each PTG will use only one of either (a) polygonal 2D shape or, (b) radius of a circular shape\nRobotModel_shape2D_xs=-0.2 0.5 0.5 -0.2\nRobotModel_shape2D_ys=0.3 0.3 -0.3 -0.3\nRobotModel_circular_shape_radius = 0.5\n\n# ----------------------------------------------------\n#\tParameters for navigation: DIFFERENTIAL DRIVEN Robot\n# ----------------------------------------------------\n[HOLO_ReactiveParams]\nweights=0.5 0.05 0.5 2.0 0.5 0.3\n# 1: Free space\n# 2: Dist. in sectors\t\t\t\n# 3: Heading toward target\n# 4: Closer to target (euclidean)\n# 5: Hysteresis\n# 6: Security Distance\n\nDIST_TO_TARGET_FOR_SENDING_EVENT=0.6\t# Minimum. distance to target for sending the end event. Set to 0 to send it just on navigation end\n\nMinObstaclesHeight=0.0 \t\t# Minimum coordinate in the \"z\" axis for an obstacle to be taken into account.\nMaxObstaclesHeight=1.40 \t# Maximum coordinate in the \"z\" axis for an obstacle to be taken into account.\n\nMAX_REFERENCE_DISTANCE = 10.0 # Maximum distance to build PTGs (in meters), i.e. the visibility \"range\" of tentative paths\n\n# PTGs: See classes derived from mrpt::nav::CParameterizedTrajectoryGenerator ( http://reference.mrpt.org/svn/classmrpt_1_1nav_1_1_c_parameterized_trajectory_generator.html)# refer to papers for details.\n#------------------------------------------------------------------------------\nPTG_COUNT = 1\n\nPTG0_Type = CPTG_Holo_Blend\nPTG0_refDistance= 10.0 # Maximum distance to build PTGs (in meters), i.e. the visibility \"range\" of tentative paths\nPTG0_num_paths = 361\nPTG0_v_max_mps = 1.0\nPTG0_w_max_dps = 60\nPTG0_T_ramp = 0.8\nPTG0_score_priority = 1.0\n\n# Each PTG will use only one of either (a) polygonal 2D shape or, (b) radius of a circular shape\nRobotModel_circular_shape_radius = 0.36\n\n"), wxDefaultPosition, wxSize(226,111), wxTE_PROCESS_ENTER|wxTE_PROCESS_TAB|wxTE_MULTILINE|wxHSCROLL|wxVSCROLL|wxALWAYS_SHOW_SB, wxDefaultValidator, _T("ID_TEXTCTRL4"));
     edParamsReactive->SetMinSize(wxSize(-1,100));
     wxFont edParamsReactiveFont(8,wxTELETYPE,wxFONTSTYLE_NORMAL,wxNORMAL,false,wxEmptyString,wxFONTENCODING_DEFAULT);
     edParamsReactive->SetFont(edParamsReactiveFont);
@@ -372,11 +374,15 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(wxWindow* parent,wxWi
     FlexGridSizer5->Add(StaticText1, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     m_plot3D = new CMyGLCanvas(Panel3,ID_XY_GLCANVAS,wxDefaultPosition,wxSize(450,350),wxTAB_TRAVERSAL,_T("ID_XY_GLCANVAS"));
     FlexGridSizer5->Add(m_plot3D, 1, wxALL|wxEXPAND|wxFIXED_MINSIZE|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 1);
-    FlexGridSizer11 = new wxFlexGridSizer(2, 1, 0, 0);
+    FlexGridSizer11 = new wxFlexGridSizer(4, 1, 0, 0);
     FlexGridSizer11->AddGrowableCol(0);
-    FlexGridSizer11->AddGrowableRow(0);
-    m_plotScan = new CMyGLCanvas(Panel3,ID_CUSTOM1,wxDefaultPosition,wxSize(150,150),wxTAB_TRAVERSAL,_T("ID_CUSTOM1"));
-    FlexGridSizer11->Add(m_plotScan, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 1);
+    FlexGridSizer11->AddGrowableRow(2);
+    StaticText4 = new wxStaticText(Panel3, ID_STATICTEXT4, _("Show for PTG:"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT4"));
+    FlexGridSizer11->Add(StaticText4, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    cbSelPTG = new wxChoice(Panel3, ID_CHOICE1, wxDefaultPosition, wxDefaultSize, 0, 0, 0, wxDefaultValidator, _T("ID_CHOICE1"));
+    FlexGridSizer11->Add(cbSelPTG, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    m_plotLocalView = new CMyGLCanvas(Panel3,ID_CUSTOM1,wxDefaultPosition,wxSize(150,150),wxTAB_TRAVERSAL,_T("ID_CUSTOM1"));
+    FlexGridSizer11->Add(m_plotLocalView, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 1);
     edInfoLocalView = new wxTextCtrl(Panel3, ID_TEXTCTRL2, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE|wxTE_READONLY|wxTE_DONTWRAP|wxALWAYS_SHOW_SB, wxDefaultValidator, _T("ID_TEXTCTRL2"));
     edInfoLocalView->SetMinSize(wxSize(-1,50));
     edInfoLocalView->SetBackgroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_BTNFACE));
@@ -423,7 +429,7 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(wxWindow* parent,wxWi
     StatusBar1->SetStatusStyles(3,__wxStatusBarStyles_1);
     SetStatusBar(StatusBar1);
     timRunSimul.SetOwner(this, ID_TIMER1);
-    timRunSimul.Start(250, false);
+    timRunSimul.Start(10, false);
     FlexGridSizer1->SetSizeHints(this);
     Center();
     
@@ -565,46 +571,45 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(wxWindow* parent,wxWi
 	{
 		mrpt::opengl::CGridPlaneXYPtr obj = mrpt::opengl::CGridPlaneXY::Create(-1,1.001, -1,1.001, 0, 1);
 		obj->setColor_u8(TColor(30,30,30,50));
-		m_plotScan->m_openGLScene->insert( obj );
+		m_plotLocalView->m_openGLScene->insert( obj );
 	}
-
-	gl_scan2D = mrpt::opengl::CPlanarLaserScan::Create();
-	gl_scan2D->enableLine(false);
-	gl_scan2D->enableSurface(true);
-	gl_scan2D->setPointsWidth(3.0);
-	m_plotScan->m_openGLScene->insert(gl_scan2D);
 
 	gl_line_direction = mrpt::opengl::CSimpleLine::Create();
 	gl_line_direction->setLineWidth(4);
 	gl_line_direction->setColor_u8(TColor(0,0,0));
-	m_plotScan->m_openGLScene->insert(gl_line_direction);
+	m_plotLocalView->m_openGLScene->insert(gl_line_direction);
 
 	gl_rel_target = mrpt::opengl::CPointCloud::Create();
 	gl_rel_target->setPointSize(7);
 	gl_rel_target->setColor_u8(TColor(0,0,255));
 	gl_rel_target->insertPoint(0,0,0);
-	m_plotScan->m_openGLScene->insert(gl_rel_target);
+	m_plotLocalView->m_openGLScene->insert(gl_rel_target);
 
-	m_plotScan->m_openGLScene->insert( mrpt::opengl::stock_objects::CornerXYSimple(0.1,2) );
-	m_plotScan->m_openGLScene->insert( gl_robot_local );
+	m_plotLocalView->m_openGLScene->insert( mrpt::opengl::stock_objects::CornerXYSimple(0.1,2) );
+	m_plotLocalView->m_openGLScene->insert( gl_robot_local );
+
+	gl_tp_obstacles = mrpt::opengl::CSetOfLines::Create();
+	gl_tp_obstacles->setLineWidth(3);
+	gl_tp_obstacles->setColor_u8( TColor(0,0,0) );
+	m_plotLocalView->m_openGLScene->insert(gl_tp_obstacles);
 
 	gl_nd_gaps = mrpt::opengl::CSetOfLines::Create();
-	gl_nd_gaps->setLineWidth(2);
-	gl_nd_gaps->setColor_u8( TColor(204,102,51) );
-	m_plotScan->m_openGLScene->insert(gl_nd_gaps);
+	gl_nd_gaps->setLineWidth(1);
+	gl_nd_gaps->setColor_u8( TColor(255,0,0) );
+	m_plotLocalView->m_openGLScene->insert(gl_nd_gaps);
 
-	m_plotScan->clearColorR = 0.9f;
-	m_plotScan->clearColorG = 0.9f;
-	m_plotScan->clearColorB = 0.9f;
+	m_plotLocalView->clearColorR = 0.9f;
+	m_plotLocalView->clearColorG = 0.9f;
+	m_plotLocalView->clearColorB = 0.9f;
 
 	// Set camera:
-	m_plotScan->cameraPointingX=0;
-	m_plotScan->cameraPointingY=0;
-	m_plotScan->cameraPointingZ=0;
-	m_plotScan->cameraZoomDistance = 2.2;
-	m_plotScan->cameraElevationDeg = 90;
-	m_plotScan->cameraAzimuthDeg = -90;
-	m_plotScan->cameraIsProjective = false;
+	m_plotLocalView->cameraPointingX=0;
+	m_plotLocalView->cameraPointingY=0;
+	m_plotLocalView->cameraPointingZ=0;
+	m_plotLocalView->cameraZoomDistance = 2.2;
+	m_plotLocalView->cameraElevationDeg = 90;
+	m_plotLocalView->cameraAzimuthDeg = -90;
+	m_plotLocalView->cameraIsProjective = false;
 
 
 	// Update positions of stuff:
@@ -802,8 +807,23 @@ bool reactive_navigator_demoframe::reinitSimulator()
 		m_simul_options.loadFromConfigFile(cfgGeneral,"SIMULATOR");
 	}
 
+
 	// Update GUI stuff:
 	gl_robot_sensor_range->setDiskRadius(m_simul_options.MAX_SENSOR_RADIUS*1.01,m_simul_options.MAX_SENSOR_RADIUS*0.99);
+	
+	cbSelPTG->Clear();
+	{
+		mrpt::nav::CAbstractPTGBasedReactive *ptg_nav = dynamic_cast<mrpt::nav::CAbstractPTGBasedReactive *>(m_navMethod.get() );
+		if (ptg_nav) 
+		{
+			for (size_t i=0;i<ptg_nav->getPTG_count();i++)
+				cbSelPTG->Append(_U( ptg_nav->getPTG(i)->getDescription().c_str() ));
+			
+			if (ptg_nav->getPTG_count()>0)
+				cbSelPTG->SetSelection(0);
+		}
+	}
+
 	return true;
 
 	WX_END_TRY
@@ -842,11 +862,6 @@ void reactive_navigator_demoframe::simulateOneStep(double time_step)
 		}
 
 		gl_scan3D->setScan( simulatedScan );  // Draw real scan in 3D view
-
-		// Normalize for plotting it into the local view:
-		for (size_t j=0;j<simulatedScan.scan.size();j++) simulatedScan.scan[j] /= simulatedScan.maxRange;
-
-		gl_scan2D->setScan( simulatedScan ); // Draw scaled scan in right-hand view
 	}
 
 	// Navigate:
@@ -908,40 +923,70 @@ void reactive_navigator_demoframe::simulateOneStep(double time_step)
 	// Update 2D view graphs:
 	mrpt::nav::CLogFileRecord lfr;
 	if (ptg_nav) ptg_nav->getLastLogRecord(lfr);
-	MRPT_TODO("Show for all PTGs!");
-	if (lfr.infoPerPTG.size()>0 && IS_CLASS(lfr.infoPerPTG[0].HLFR, CLogFileRecord_ND))
+	
+	const int sel_PTG = cbSelPTG->GetSelection();
+	if (sel_PTG>=0 && sel_PTG<lfr.infoPerPTG.size())
 	{
-		CLogFileRecord_NDPtr log = CLogFileRecord_NDPtr(lfr.infoPerPTG[0].HLFR);
-		const size_t nGaps = log->gaps_ini.size();
-
-		const string sSitu = mrpt::utils::TEnumType<CHolonomicND::TSituations>::value2name(log->situation);
-
-		string sLog =
-		      mrpt::format("ND situation : %s\n",sSitu.c_str());
-		sLog+=mrpt::format("Gap count    : %u\n", static_cast<unsigned int>(nGaps) );
-
-		edInfoLocalView->SetValue(_U(sLog.c_str()));
-
-		gl_nd_gaps->appendLine(0,0,0, 0,0,0);
-
-		for (size_t i=0;i<nGaps;i++)
+		if (lfr.infoPerPTG.size()>0 && IS_CLASS(lfr.infoPerPTG[sel_PTG].HLFR, CLogFileRecord_ND))
 		{
-			const size_t N_STEPS = 20;
-			for (size_t j=0;j<N_STEPS;j++)
+			CLogFileRecord_NDPtr log = CLogFileRecord_NDPtr(lfr.infoPerPTG[sel_PTG].HLFR);
+			const size_t nGaps = log->gaps_ini.size();
+
+			const string sSitu = mrpt::utils::TEnumType<CHolonomicND::TSituations>::value2name(log->situation);
+
+			string sLog =
+				  mrpt::format("ND situation : %s\n",sSitu.c_str());
+			sLog+=mrpt::format("Gap count    : %u\n", static_cast<unsigned int>(nGaps) );
+
+			edInfoLocalView->SetValue(_U(sLog.c_str()));
+
+			gl_nd_gaps->appendLine(0,0,0, 0,0,0);
+
+			for (size_t i=0;i<nGaps;i++)
 			{
-				const double sec = log->gaps_ini[i] + j*(log->gaps_end[i]-log->gaps_ini[i])/static_cast<double>(N_STEPS-1);
-				const double ang = M_PI *( -1 + 2*sec/((float)lfr.infoPerPTG[0].TP_Obstacles.size()) );
-				const double d = lfr.infoPerPTG[0].TP_Obstacles[sec]-0.05;
-				gl_nd_gaps->appendLineStrip(d*cos(ang),d*sin(ang),0);
+				const size_t N_STEPS = 20;
+				for (size_t j=0;j<N_STEPS;j++)
+				{
+					const double sec = log->gaps_ini[i] + j*(log->gaps_end[i]-log->gaps_ini[i])/static_cast<double>(N_STEPS-1);
+					const double ang = M_PI *( -1 + 2*sec/((float)lfr.infoPerPTG[sel_PTG].TP_Obstacles.size()) );
+					const double d = lfr.infoPerPTG[sel_PTG].TP_Obstacles[sec]-0.05;
+					gl_nd_gaps->appendLineStrip(d*cos(ang),d*sin(ang),0);
+				}
+				gl_nd_gaps->appendLineStrip(0,0,0);
 			}
-			gl_nd_gaps->appendLineStrip(0,0,0);
+
+			// TP-Obstacles:
+			gl_tp_obstacles->clear();
+			{
+				const size_t nObs = lfr.infoPerPTG[sel_PTG].TP_Obstacles.size();
+				if (nObs>1)
+				{
+					for (size_t i=0;i<=nObs;i++)
+					{
+						const double d0 = lfr.infoPerPTG[sel_PTG].TP_Obstacles[i % nObs];
+						const double a0 = M_PI * (-1.0 + 2.0 * ((i % nObs)+0.5)/nObs );
+						const double d1 = lfr.infoPerPTG[sel_PTG].TP_Obstacles[(i+1) % nObs];
+						const double a1 = M_PI * (-1.0 + 2.0 * (((i+1) % nObs)+0.5)/nObs );
+						gl_nd_gaps->appendLine(
+							d0*cos(a0),d0*sin(a0),0.0,
+							d1*cos(a1),d1*sin(a1),0.0 );
+					}
+				}
+			}
 		}
-	}
-	// Movement direction:
-	//const double d = desiredSpeed/m_simul_options.ROBOT_MAX_SPEED;
-	//gl_line_direction->setLineCoords(
-	//	0,0,0,
-	//	cos(desiredDirection) * d, sin(desiredDirection) * d, 0 );
+		// Movement direction:
+		{
+			const double desiredDirection = lfr.infoPerPTG[sel_PTG].desiredDirection;
+			const double d = lfr.infoPerPTG[sel_PTG].desiredSpeed; ///ROBOT_MAX_SPEED;
+			gl_line_direction->setLineCoords(
+				0,0,0,
+				cos(desiredDirection) * d, sin(desiredDirection) * d, 0 );
+		}
+
+		// TP Target:
+		gl_rel_target->setLocation( lfr.infoPerPTG[sel_PTG].TP_Target );
+
+	} // end valid PTG selected
 
 	// Draw predicted path along selected PTG:
 	if (cbShowPredictedPTG->IsChecked() && lfr.infoPerPTG.size()>0 && ptg_nav)
@@ -982,6 +1027,7 @@ void reactive_navigator_demoframe::simulateOneStep(double time_step)
 	}
 
 
+
 }
 
 void reactive_navigator_demoframe::updateViewsDynamicObjects()
@@ -1013,7 +1059,7 @@ void reactive_navigator_demoframe::updateViewsDynamicObjects()
 
 	// Refresh:
 	m_plot3D->Refresh();
-	m_plotScan->Refresh();
+	m_plotLocalView->Refresh();
 }
 
 void reactive_navigator_demoframe::Onplot3DMouseMove(wxMouseEvent& event)
@@ -1237,7 +1283,7 @@ void create_viz_robot_holo( mrpt::opengl::CSetOfObjects &objs )
 		objs.insert( gl_xyz );
 	}
 
-	mrpt::opengl::CCylinderPtr obj = mrpt::opengl::CCylinder::Create(0.6 /*base radius*/,0.3 /*top radius */,1.2 /*height*/);
+	mrpt::opengl::CCylinderPtr obj = mrpt::opengl::CCylinder::Create(0.36 /*base radius*/,0.20 /*top radius */,1.2 /*height*/);
 	obj->setColor_u8( TColor::red );
 	objs.insert( obj );
 }
@@ -1249,6 +1295,9 @@ void create_viz_robot_diff( mrpt::opengl::CSetOfObjects &objs )
 
 void reactive_navigator_demoframe::OnrbKinTypeSelect(wxCommandEvent& event)
 {
+	// We must first detach the simulator from the navigator object before deleting it:
+	m_navMethod.reset();
+
 	// Delete old & build new simulator:
 	m_robotSimul2NavInterface.reset();
 	m_robotSimul.reset();

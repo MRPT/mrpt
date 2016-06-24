@@ -109,7 +109,19 @@ void CParameterizedTrajectoryGenerator::renderPathAsSimpleLine(
 	}
 }
 
-bool CParameterizedTrajectoryGenerator::debugDumpInFiles( const std::string &ptg_name ) const 
+
+void CParameterizedTrajectoryGenerator::initTPObstacles(std::vector<double> &TP_Obstacles) const
+{
+	TP_Obstacles.resize(m_alphaValuesCount);
+	for (size_t k=0;k<m_alphaValuesCount;k++)
+	{
+		TP_Obstacles[k] = std::min(
+			refDistance, 
+			this->getPathDist(k, this->getPathStepCount(k)-1) );
+	}
+}
+
+bool CParameterizedTrajectoryGenerator::debugDumpInFiles( const std::string &ptg_name ) const
 {
 	using namespace mrpt::system;
 	using namespace std;
@@ -166,3 +178,42 @@ bool CParameterizedTrajectoryGenerator::debugDumpInFiles( const std::string &ptg
 
 	return true;
 }
+
+void CPTG_RobotShape_Polygonal::loadShapeFromConfigFile(const mrpt::utils::CConfigFileBase & cfg,const std::string & sSection)
+{
+	bool any_pt= false;
+	const double BADNUM = std::numeric_limits<double>::max();
+
+	for (unsigned int nPt = 0; ; ++nPt)
+	{
+		const std::string sPtx = mrpt::format("shape_x%u", nPt);
+		const std::string sPty = mrpt::format("shape_y%u", nPt);
+
+		const double ptx = cfg.read_double(sSection, sPtx,BADNUM, false);
+		const double pty = cfg.read_double(sSection, sPty,BADNUM, false);
+		if (ptx==BADNUM && pty==BADNUM) break;
+		ASSERTMSG_( (ptx!=BADNUM && pty!=BADNUM), "Error: mismatch between number of pts in {x,y} defining robot shape");
+
+		if (!any_pt) {
+			m_robotShape.clear();
+			any_pt=true;
+		}
+
+		m_robotShape.AddVertex(ptx,pty);
+	}
+
+	if (any_pt)
+		internal_processNewRobotShape();
+}
+
+void CPTG_RobotShape_Circular::loadShapeFromConfigFile(const mrpt::utils::CConfigFileBase & cfg,const std::string & sSection)
+{
+	const double old_R = m_robotRadius;
+	MRPT_LOAD_HERE_CONFIG_VAR(robot_radius, double, m_robotRadius, cfg,sSection);
+	
+	if (m_robotRadius!=old_R)
+		internal_processNewRobotShape();
+}
+
+
+
