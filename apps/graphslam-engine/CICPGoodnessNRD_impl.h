@@ -70,7 +70,7 @@ bool CICPGoodnessNRD_t<GRAPH_t>::updateDeciderState(
 					static_cast<mrpt::obs::CObservation3DRangeScanPtr>(observation);
 				// TODO deal with this..
 				m_curr_laser_scan3D->load();
-
+				m_curr_laser_scan3D->project3DPointsFromDepthImage();
 				// if first_time in initialize the m_last_laser_scan as well
 				if (m_first_time_call3D) {
 					cout << "CICPGoodnessNRD: Registering first laser scan.." << endl;
@@ -148,16 +148,16 @@ bool CICPGoodnessNRD_t<GRAPH_t>::checkRegistrationCondition() {
 
 		// udpate the last laser scan
 		if (m_is_using_3DScan) {
-			//m_last_laser_scan3D = m_curr_laser_scan3D;
+			m_last_laser_scan3D = m_curr_laser_scan3D;
 		}
 		else {
 			m_last_laser_scan2D = m_curr_laser_scan2D;
 		}
 
-		cout << "CICPGoodnessNRD: norm = " 
-			<< m_since_prev_node_PDF.getMeanVal().norm() << endl;
-		cout << "CICPGoodnessNRD: angle = " << 
-			RAD2DEG(fabs(wrapToPi(m_since_prev_node_PDF.getMeanVal().phi()))) << endl;
+		//cout << "CICPGoodnessNRD: norm = " 
+			//<< m_since_prev_node_PDF.getMeanVal().norm() << " | angle = "
+			//<< RAD2DEG(fabs(wrapToPi(m_since_prev_node_PDF.getMeanVal().phi()))) << endl;
+
 		// check if distance or angle difference is good enough for new node
 		if ( m_since_prev_node_PDF.getMeanVal().norm() > 
 				params.registration_max_distance || 
@@ -220,16 +220,6 @@ void CICPGoodnessNRD_t<GRAPH_t>::TParams::dumpToTextStream(
 			RAD2DEG(registration_max_angle));
 	out.printf("ICP goodness threshold        = %.2f%% \n",
 			ICP_goodness_thresh*100);
-	out.printf("ICP Configuration:\n");
-	out.printf("Conversion Sensor label       = %s\n",
-			conversion_sensor_label.c_str());
-	out.printf("Conversion angle sup          = %.2f deg\n",
-			RAD2DEG(conversion_angle_sup));
-	out.printf("Conversion angle inf          = %.2f deg\n",
-			RAD2DEG(conversion_angle_inf));
-	out.printf("Conversion oversampling ratio = %.2f\n",
-			conversion_oversampling_ratio);
-
 
 	decider.range_scanner_t::params.dumpToTextStream(out);
 
@@ -252,25 +242,6 @@ void CICPGoodnessNRD_t<GRAPH_t>::TParams::loadFromConfigFile(
 			section,
 			"ICP_goodness_thresh",
 	 		0.75, false);
-
-	conversion_sensor_label = source.read_string(
-			section,
-			"conversion_sensor_label",
-			"KINECT_TO_2D_SCAN", false);
-	conversion_angle_sup = source.read_double(
-			section,
-			"conversion_angle_sup",
-			10, false);
-	conversion_angle_sup = DEG2RAD(conversion_angle_sup);
-	conversion_angle_inf = source.read_double(
-			section,
-			"conversion_angle_inf",
-			10, false);
-	conversion_angle_inf = DEG2RAD(conversion_angle_inf);
-	conversion_oversampling_ratio = source.read_double(
-			section,
-			"conversion_oversampling_ratio",
-			1.1, false);
 
 	// load the icp parameters - from "ICP" section explicitly
 	decider.range_scanner_t::params.loadFromConfigFile(source, "ICP");

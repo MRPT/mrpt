@@ -29,6 +29,7 @@
 #include <mrpt/obs/CActionRobotMovement3D.h>
 #include <mrpt/obs/CObservationOdometry.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
+#include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/obs/CObservationImage.h>
 #include <mrpt/obs/CRawlog.h>
 #include <mrpt/poses/CPosePDF.h>
@@ -66,11 +67,11 @@
 #include "CEdgeCounter.h"
 #include "CWindowObserver.h"
 #include "CWindowManager.h"
+#include "CEmptyNRD.h"
+#include "CICPGoodnessNRD.h"
+#include "CEmptyERD.h"
 #include "CFixedIntervalsNRD.h"
 #include "CICPGoodnessERD.h"
-#include "CICPGoodnessNRD.h"
-#include "CEmptyNRD.h"
-#include "CEmptyERD.h"
 
 #include "supplementary_funs.h"
 
@@ -222,8 +223,8 @@ namespace mrpt { namespace graphslam {
 		 		 */
 				void readGTFileNavSimulOutput(
 						const std::string& fname_GT, 
-						std::vector<pose_t>* gt_poses=NULL,
-						std::vector<mrpt::system::TTimeStamp>* gt_timestamps=NULL) ;
+						std::vector<pose_t>* gt_poses,
+						std::vector<mrpt::system::TTimeStamp>* gt_timestamps=NULL);
 				/**
 		 		 * Parse the ground truth .txt file and fill in the corresponding
 		 		 * m_GT_poses vector. Ground Truth file has to be generated from the
@@ -231,8 +232,8 @@ namespace mrpt { namespace graphslam {
 		 		 */
 				void readGTFileRGBD_TUM(
 						const std::string& fname_GT, 
-						std::vector<pose_t>* gt_poses=NULL,
-						std::vector<mrpt::system::TTimeStamp>* gt_timestamps=NULL) ;
+						std::vector<pose_t>* gt_poses,
+						std::vector<mrpt::system::TTimeStamp>* gt_timestamps=NULL);
 				void initGTVisualization();
 				/**
 				 * Display the next ground truth position in the visualization window
@@ -341,8 +342,11 @@ namespace mrpt { namespace graphslam {
 				std::string m_GT_file_format;
 
 				std::map<const mrpt::utils::TNodeID, 
-					mrpt::obs::CObservation2DRangeScanPtr> m_nodes_to_laser_scans;
-				mrpt::obs::CObservation2DRangeScanPtr m_last_laser_scan;
+					mrpt::obs::CObservation2DRangeScanPtr> m_nodes_to_laser_scans2D;
+				mrpt::obs::CObservation2DRangeScanPtr m_last_laser_scan2D;
+				std::map<const mrpt::utils::TNodeID, 
+					mrpt::obs::CObservation3DRangeScanPtr> m_nodes_to_laser_scans3D;
+				mrpt::obs::CObservation3DRangeScanPtr m_last_laser_scan3D;
 
 
 				// Trajectories colors

@@ -55,9 +55,6 @@ namespace mrpt { namespace graphslam { namespace deciders {
 	 * encoders is needed.
 	 * Decider *does not guarrantee* thread safety when accessing the GRAPH_t
  	 * resource. This is handled by the CGraphSlamEngine_t class.
-
-	 * TODO - implement a filter for using the Odometry data as well, if given
-	 * TODO - add to this description
 	 */
 	template<class GRAPH_t>
 		class CICPGoodnessNRD_t:
@@ -105,12 +102,6 @@ namespace mrpt { namespace graphslam { namespace deciders {
 
 					// threshold for considering the ICP procedure as correct
 					double ICP_goodness_thresh;
-
-					// parameters for conversion 3D=>2D Range Scan
-					std::string conversion_sensor_label;
-					double conversion_angle_sup;
-					double conversion_angle_inf;
-					double conversion_oversampling_ratio;
 
     	};
 
