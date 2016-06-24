@@ -378,7 +378,7 @@ void CICPGoodnessERD_t<GRAPH_t>::getEdgesStats(
 template<class GRAPH_t>
 void CICPGoodnessERD_t<GRAPH_t>::initializeVisuals() {
 	MRPT_START;
-	assert(params.has_read_config &&
+	ASSERTMSG_(params.has_read_config,
 			"[CICPGoodnessERD:] Configuration parameters aren't loaded yet");
 	std::cout << "Initializing CICPGoodnessERD visuals" << std::endl;
 
@@ -437,7 +437,7 @@ void CICPGoodnessERD_t<GRAPH_t>::initializeVisuals() {
 template<class GRAPH_t>
 void CICPGoodnessERD_t<GRAPH_t>::updateVisuals() {
 	MRPT_START;
-	assert(m_initialized_visuals);
+	ASSERT_(m_initialized_visuals);
 	//std::cout << "Updating CICPGoodnessERD visuals" << std::endl;
 
 	// update ICP_max_distance Disk

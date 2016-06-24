@@ -285,9 +285,9 @@ class CEdgeCounter_t {
 			//<< "m_offset_y_loop_closures: " << m_offset_y_loop_closures << std::endl
 			//<< "m_text_index_loop_closures" << m_text_index_loop_closures << std::endl;
 
-			assert(m_win &&
+			ASSERTMSG_(m_win, 
 					"Visualization of data was requested but no CDisplayWindow pointer was given");
-			assert(name_to_offset_y.size() == name_to_text_index.size());
+			ASSERT_EQUAL_(name_to_offset_y.size(), name_to_text_index.size());
 
 			for (std::map<std::string, double>::const_iterator it = name_to_offset_y.begin();
 					it != name_to_offset_y.end(); ++it) {
@@ -349,9 +349,9 @@ class CEdgeCounter_t {
 		 * Updates the given CDisplayWindow3D with the edges registered so far.
 		 */
 		void updateTextMessages() const {
-			assert(m_win);
-			assert(m_has_read_textmessage_params);
-			assert(m_name_to_offset_y.size() == m_name_to_text_index.size());
+			ASSERT_(m_win);
+			ASSERT_(m_has_read_textmessage_params);
+			ASSERT_EQUAL_(m_name_to_offset_y.size(), m_name_to_text_index.size());
 
 			//std::cout << "Updating total amount of edges" << std::endl;
 

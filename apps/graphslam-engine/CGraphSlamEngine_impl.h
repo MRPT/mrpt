@@ -1299,8 +1299,6 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::updateMapVisua
 	MRPT_END;
 }
 
-// TODO - can this be const?
-// TODO - implement this correctly..
 template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR>
 void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::decimateLaserScan(
 		mrpt::obs::CObservation2DRangeScan& laser_scan_in,
