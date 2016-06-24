@@ -18,13 +18,10 @@ using namespace mrpt::graphslam::deciders;
 
 template<class GRAPH_t>
 CICPGoodnessERD_t<GRAPH_t>::CICPGoodnessERD_t():
+	params(*this), // pass reference to self when initializing the parameters
 	m_search_disk_color(142, 142, 56),
-	m_laser_scans_color(0, 206, 209),
-	m_consecutive_invalid_format_instances_thres(20), // large threshold just to make sure
-	kConversionSensorLabel("RGBD_TO_2D_SCAN"), // 3D=>2D conversion parameter
-	kConversionAngleSup(DEG2RAD(5)),           // 3D=>2D conversion parameter
-	kConversionAngleInf(DEG2RAD(5)),           // 3D=>2D conversion parameter
-	kConversionOversamplingRatio(1.2)          // 3D=>2D conversion parameter
+	m_laser_scans_color(0, 20, 255),
+	m_consecutive_invalid_format_instances_thres(20) // large threshold just to make sure
 {
 	MRPT_START;
 
@@ -147,27 +144,49 @@ void CICPGoodnessERD_t<GRAPH_t>::checkRegistrationCondition(
 		const std::set<mrpt::utils::TNodeID>& nodes_set) {
 	MRPT_START;
 
-	// try adding ICP constraints with each node in the previous set
-	for (set<mrpt::utils::TNodeID>::const_iterator 
-			node_it = nodes_set.begin();
-			node_it != nodes_set.end(); ++node_it) {
+  CObservation2DRangeScanPtr curr_laser_scan;
+  std::map<const mrpt::utils::TNodeID, 
+    mrpt::obs::CObservation2DRangeScanPtr>::const_iterator search;
+	// search for curr_laser_scan
+  search = m_nodes_to_laser_scans.find(m_graph->nodeCount()-1); 
+  if (search != m_nodes_to_laser_scans.end()) {
+    curr_laser_scan = search->second;
+  }
 
-		// get the ICP edge between current and last node
-		constraint_t rel_edge;
-		double ICP_goodness = this->getICPEdge(
-				*node_it,
-				m_graph->nodeCount()-1,
-				&rel_edge);
+	// commence only if I have the current laser scan
+  if (curr_laser_scan) {
+		// try adding ICP constraints with each node in the previous set
+		for (set<mrpt::utils::TNodeID>::const_iterator 
+				node_it = nodes_set.begin();
+				node_it != nodes_set.end(); ++node_it) {
 
-		// criterion for registering a new node
-		if (ICP_goodness > params.ICP_goodness_thresh) {
-			this->registerNewEdge(
-					*node_it, m_graph->nodeCount()-1, rel_edge);
-			m_edge_types_to_nums["ICP"]++;
-			// in case of loop closure
-			if (abs(m_graph->nodeCount()-1 - *node_it) > params.LC_min_nodeid_diff) {
-				m_edge_types_to_nums["LC"]++;
-				m_just_inserted_loop_closure = true;
+			// get the ICP edge between current and last node
+			constraint_t rel_edge;
+			mrpt::slam::CICP::TReturnInfo icp_info;
+    	CObservation2DRangeScanPtr prev_laser_scan;
+
+    	// saerch for prev_laser_scan
+			search = m_nodes_to_laser_scans.find(*node_it); 
+    	if (search != m_nodes_to_laser_scans.end()) {
+        prev_laser_scan = search->second;
+
+				this->getICPEdge(
+						*prev_laser_scan,
+						*curr_laser_scan,
+						&rel_edge,
+						NULL,
+						&icp_info);
+
+				// criterion for registering a new node
+				if (icp_info.goodness > params.ICP_goodness_thresh) {
+					this->registerNewEdge(*node_it, m_graph->nodeCount()-1, rel_edge);
+					m_edge_types_to_nums["ICP"]++;
+					// in case of loop closure
+					if (abs(m_graph->nodeCount()-1 - *node_it) > params.LC_min_nodeid_diff) {
+						m_edge_types_to_nums["LC"]++;
+						m_just_inserted_loop_closure = true;
+					}
+				}
 			}
 		}
 	}
@@ -188,65 +207,7 @@ void CICPGoodnessERD_t<GRAPH_t>::registerNewEdge(
 
 	MRPT_END;
 }
-template<class GRAPH_t>
-double CICPGoodnessERD_t<GRAPH_t>::getICPEdge(
-		const mrpt::utils::TNodeID& from,
-		const mrpt::utils::TNodeID& to,
-		constraint_t* rel_edge ) {
-	MRPT_START;
 
-	// get the laser scan measurements - first check if they exist
-	CObservation2DRangeScanPtr prev_laser_scan;
-	CObservation2DRangeScanPtr curr_laser_scan;
-
-	std::map<const mrpt::utils::TNodeID, 
-		mrpt::obs::CObservation2DRangeScanPtr>::const_iterator search =
-			m_nodes_to_laser_scans.find(from); 
-	if (search != m_nodes_to_laser_scans.end()) {
-		prev_laser_scan = search->second;
-	}
-	else {
-		std::cout << "Unable to find laser scan of NodeID: " 
-			<< from << std::endl;
-		return 0.0;
-	}
-	search =	m_nodes_to_laser_scans.find(to); 
-	if (search != m_nodes_to_laser_scans.end()) {
-		curr_laser_scan = search->second;
-	}
-	else {
-		std::cout << "Unable to find laser scan of NodeID: " 
-			<< to << std::endl;
-		return 0.0;
-	}
-
-	// Uses TParams::ICP member variable
-	CSimplePointsMap m1,m2;
-	float running_time;
-	CICP::TReturnInfo info;
-
-	pose_t initial_pose;
-	// use the difference of the node positions as an initial alignment
-	// estimation (dijkstra_nodes_estimate has to be run from the caller
-	// function)
-	initial_pose = m_graph->nodes[to] - m_graph->nodes[from];
-
-	m1.insertObservation(&(*prev_laser_scan));
-	m2.insertObservation(&(*curr_laser_scan));
-
-	CPosePDFPtr pdf = params.icp.Align(
-			&m1,
-			&m2,
-			initial_pose,
-			&running_time,
-			(void*)&info);
-
-	// return the edge regardless of the goodness of the alignment
-	rel_edge->copyFrom(*pdf);  	
-	return info.goodness;
-
-	MRPT_END;
-}
 template<class GRAPH_t>
 void CICPGoodnessERD_t<GRAPH_t>::getNearbyNodesOf(
 		set<TNodeID> *nodes_set,
@@ -569,17 +530,20 @@ void CICPGoodnessERD_t<GRAPH_t>::convert3DTo2DRangeScan(
 		CObservation2DRangeScanPtr* scan2D_out /*= NULL*/) {
 
 	// create the 2D laser scan first
-	*scan2D_out = CObservation2DRangeScan::Create();
-
-	// TODO - does it change the 3D range scan? const .. 
-	if (scan3D_in->hasRangeImage) {
-		scan3D_in->convertTo2DScan(**scan2D_out, 
-				kConversionSensorLabel, 
-				kConversionAngleSup, 
-				kConversionAngleInf, 
-				kConversionOversamplingRatio);
+	if ( (*scan2D_out).null() ) {
+		*scan2D_out = CObservation2DRangeScan::Create();
 	}
 
+	if (scan3D_in->hasRangeImage) {
+		scan3D_in->convertTo2DScan(**scan2D_out, 
+				params.conversion_sensor_label, 
+				params.conversion_angle_sup, 
+				params.conversion_angle_inf, 
+				params.conversion_oversampling_ratio);
+	}
+	else {
+		cout << "No valid range image found" << endl;
+	}
 }
 
 
@@ -604,7 +568,8 @@ void CICPGoodnessERD_t<GRAPH_t>::correct3DScanImageFname(
 // //////////////////////////////////
 
 template<class GRAPH_t>
-CICPGoodnessERD_t<GRAPH_t>::TParams::TParams():
+CICPGoodnessERD_t<GRAPH_t>::TParams::TParams(decider_t& d):
+	decider(d),
 	has_read_config(false)
 { }
 
@@ -626,9 +591,14 @@ void CICPGoodnessERD_t<GRAPH_t>::TParams::dumpToTextStream(
 	out.printf("Enable range img viewport      = %d\n", enable_range_viewport);
 	out.printf("Visualize laser scans          = %d\n", visualize_laser_scans);
 	out.printf("3DScans Image Directory        = %s\n", scans_img_external_dir.c_str());
+	out.printf("Conversion Sensor label       = %s\n", conversion_sensor_label.c_str());
+	out.printf("Conversion angle sup          = %.2f deg\n", RAD2DEG(conversion_angle_sup));
+	out.printf("Conversion angle inf          = %.2f deg\n", RAD2DEG(conversion_angle_inf));
+	out.printf("Conversion oversampling ratio = %.2f\n", conversion_oversampling_ratio);
+
 	out.printf("ICP Configuration:\n");
 
-	icp.options.dumpToTextStream(out);
+	decider.range_scanner_t::params.dumpToTextStream(out);
 
 	MRPT_END;
 }
@@ -666,9 +636,27 @@ void CICPGoodnessERD_t<GRAPH_t>::TParams::loadFromConfigFile(
  			section,
  			"scan_images_external_directory",
  			"", false);
+	conversion_sensor_label = source.read_string(
+			section,
+			"conversion_sensor_label",
+			"KINECT_TO_2D_SCAN", false);
+	conversion_angle_sup = source.read_double(
+			section,
+			"conversion_angle_sup",
+			10, false);
+	conversion_angle_sup = DEG2RAD(conversion_angle_sup);
+	conversion_angle_inf = source.read_double(
+			section,
+			"conversion_angle_inf",
+			10, false);
+	conversion_angle_inf = DEG2RAD(conversion_angle_inf);
+	conversion_oversampling_ratio = source.read_double(
+			section,
+			"conversion_oversampling_ratio",
+			1.1, false);
 
 	// load the icp parameters - from "ICP" section explicitly
-	icp.options.loadFromConfigFile(source, "ICP");
+	decider.range_scanner_t::params.loadFromConfigFile(source, "ICP");
 
 	std::cout << "[CICPGoodnessERD:] Successfully loaded CICPGoodnessERD parameters. " 
 		<< std::endl;

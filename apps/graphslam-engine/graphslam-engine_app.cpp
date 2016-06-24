@@ -114,10 +114,10 @@ int main(int argc, char **argv)
 			<
 			CNetworkOfPoses2DInf,                         // graph type
 			//CEmptyNRD_t<CNetworkOfPoses2DInf>, // empty node decider
-			//CFixedIntervalsNRD_t<CNetworkOfPoses2DInf>,   // node decider
-			CICPGoodnessNRD_t<CNetworkOfPoses2DInf>,   // edge decider
-			CEmptyERD_t<CNetworkOfPoses2DInf> // empty edge decider
-			//CICPGoodnessERD_t<CNetworkOfPoses2DInf>     // edge decider
+			CFixedIntervalsNRD_t<CNetworkOfPoses2DInf>,   // node decider
+			//CICPGoodnessNRD_t<CNetworkOfPoses2DInf>,   // edge decider
+			//CEmptyERD_t<CNetworkOfPoses2DInf> // empty edge decider
+			CICPGoodnessERD_t<CNetworkOfPoses2DInf>     // edge decider
 			>
 				graph_engine(
 						config_fname, 

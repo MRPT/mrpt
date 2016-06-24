@@ -27,6 +27,7 @@
 #include <mrpt/system/os.h>
 
 #include "CNodeRegistrationDecider.h"
+#include "CRangeScanRegistrationDecider.h"
 
 using namespace mrpt;
 using namespace mrpt::utils;
@@ -60,7 +61,8 @@ namespace mrpt { namespace graphslam { namespace deciders {
 	 */
 	template<class GRAPH_t>
 		class CICPGoodnessNRD_t:
-			public mrpt::graphslam::deciders::CNodeRegistrationDecider_t<GRAPH_t>
+			public mrpt::graphslam::deciders::CNodeRegistrationDecider_t<GRAPH_t>,
+			public mrpt::graphslam::deciders::CRangeScanRegistrationDecider_t<GRAPH_t>
 	{
 		public:
 			// Public functions
@@ -70,6 +72,8 @@ namespace mrpt { namespace graphslam { namespace deciders {
 			typedef mrpt::math::CMatrixFixedNumeric<double,
 							constraint_t::state_length,
 							constraint_t::state_length> InfMat;
+			typedef mrpt::graphslam::deciders::CRangeScanRegistrationDecider_t<GRAPH_t> range_scanner_t;
+			typedef CICPGoodnessNRD_t<GRAPH_t> decider_t;
 
 
 		  CICPGoodnessNRD_t();
@@ -85,8 +89,10 @@ namespace mrpt { namespace graphslam { namespace deciders {
 
     	struct TParams: public mrpt::utils::CLoadableOptions {
     		public:
-    			TParams();
+    			TParams(decider_t& d);
     			~TParams();
+
+					decider_t& decider; // reference to outer class
 
     			void loadFromConfigFile(
     					const mrpt::utils::CConfigFileBase &source,
@@ -97,8 +103,6 @@ namespace mrpt { namespace graphslam { namespace deciders {
 					double registration_max_distance;
 					double registration_max_angle;
 
-					// ICP object for aligning laser scans
-					mrpt::slam::CICP icp;
 					// threshold for considering the ICP procedure as correct
 					double ICP_goodness_thresh;
 
@@ -109,7 +113,6 @@ namespace mrpt { namespace graphslam { namespace deciders {
 					double conversion_oversampling_ratio;
 
     	};
-
 
 			// Public members
 			// ////////////////////////////
@@ -122,22 +125,6 @@ namespace mrpt { namespace graphslam { namespace deciders {
 
 			void registerNewNode();
 			void initCICPGoodnessNRD_t();
-			/**
-			 * allign the 2D range scans provided and fill the potential edge that
-			 * can transform the one into the other
-			 */
-			double getICPEdge(
-					const CObservation2DRangeScan& prev_laser_scan,
-					const CObservation2DRangeScan& curr_laser_scan,
-					constraint_t* rel_edge );
-			/**
-			 * Method that updates the m_last_laser_scan2D variable given a
-			 * CObservation3DRangeScan acquired from an RGB-D camera. If inserted
-			 * 3DRangeScan does not contain valid data, a warning message is printed.
-			 */
-			void convert3DTo2DRangeScan(
-					/*from = */ CObservation3DRangeScanPtr& scan3D_in,
-					/*to   = */ CObservation2DRangeScanPtr* scan2D_out=NULL);
 
 			// Private members
 			//////////////////////////////////////////////////////////////
@@ -156,12 +143,15 @@ namespace mrpt { namespace graphslam { namespace deciders {
 			// warning message to the user
 			bool m_num_invalid_format_instances;
 
-			bool m_first_time_call;
+			bool m_first_time_call2D;
+			bool m_first_time_call3D;
+			bool m_is_using_3DScan;
 
 			// handy laser scans to use in the class methods
     	CObservation2DRangeScanPtr m_last_laser_scan2D;
     	CObservation2DRangeScanPtr m_curr_laser_scan2D;
 
+    	CObservation3DRangeScanPtr m_last_laser_scan3D;
     	CObservation3DRangeScanPtr m_curr_laser_scan3D;
     	
     	// last insertede node in the graph
