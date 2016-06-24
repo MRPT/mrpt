@@ -16,6 +16,7 @@
 <a name="1.5.0">
 <h2>Version 1.5.0: (Under development)  </h2></a>
 	- Changes in apps:
+		- New app [PTG-configurator](http://www.mrpt.org/list-of-mrpt-apps/application-ptg-configurator/)
 		- [ReactiveNavigationDemo](http://www.mrpt.org/list-of-mrpt-apps/application-reactivenavigationdemo/) has been totally rebuilt as a 3D visualizer capable of testing different navigation algorithms and robot kinematics.
 		- [RawLogViewer](http://www.mrpt.org/list-of-mrpt-apps/rawlogviewer/):
 			- Now displays a textual and graphical representation of all observation timestamps, useful to quickly detect sensor "shortages" or temporary failures.

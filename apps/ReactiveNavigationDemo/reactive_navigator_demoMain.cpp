@@ -31,10 +31,7 @@
 
 #include "DEFAULT_GRIDMAP_DATA.h"
 
-MRPT_TODO("Add PTG configurator tool");
-
 const double NAV_SIMUL_TIMESTEP_MS = 25;
-
 
 // A custom Art provider for customizing the icons:
 class MyArtProvider : public wxArtProvider
