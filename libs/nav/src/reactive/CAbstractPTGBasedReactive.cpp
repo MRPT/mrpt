@@ -434,7 +434,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 
 					// Initialize TP-Obstacles:
 					const size_t Ki = ptg->getAlphaValuesCount();
-					ipf.TP_Obstacles.assign( Ki, ptg->getRefDistance());
+					ptg->initTPObstacles(ipf.TP_Obstacles);
 
 					// Implementation-dependent conversion:
 					STEP3_WSpaceToTPSpace(indexPTG,ipf.TP_Obstacles);
