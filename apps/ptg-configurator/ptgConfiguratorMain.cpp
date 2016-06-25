@@ -53,6 +53,7 @@ wxBitmap MyArtProvider::CreateBitmap(const wxArtID& id,
 #include <mrpt/utils/CConfigFileMemory.h>
 #include <mrpt/utils/CConfigFilePrefixer.h>
 #include <mrpt/math/geometry.h>
+#include <mrpt/system/os.h>
 
 mrpt::nav::CParameterizedTrajectoryGenerator  * ptg = NULL;
 
@@ -160,7 +161,7 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent,wxWindowID id) :
     wxFlexGridSizer* FlexGridSizer6;
     wxFlexGridSizer* FlexGridSizer1;
     wxMenu* Menu2;
-    
+
     Create(parent, id, _("PTG configurator - Part of the MRPT project"), wxDefaultPosition, wxDefaultSize, wxDEFAULT_FRAME_STYLE, _T("id"));
     SetClientSize(wxSize(893,576));
     {
@@ -262,7 +263,7 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent,wxWindowID id) :
     SetStatusBar(StatusBar1);
     FlexGridSizer1->SetSizeHints(this);
     Center();
-    
+
     Connect(ID_CHOICE1,wxEVT_COMMAND_CHOICE_SELECTED,(wxObjectEventFunction)&ptgConfiguratorframe::OncbPTGClassSelect);
     Connect(ID_SPINCTRL1,wxEVT_COMMAND_SPINCTRL_UPDATED,(wxObjectEventFunction)&ptgConfiguratorframe::OnedPTGIndexChange);
     Connect(ID_BUTTON1,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&ptgConfiguratorframe::OnbtnReloadParamsClick);
@@ -346,7 +347,7 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent,wxWindowID id) :
 		for (size_t i=0;i<lstClasses.size();i++)
 		{
 			if (!lstClasses[i]->derivedFrom( "CParameterizedTrajectoryGenerator") ||
-				!strcmpi(lstClasses[i]->className,"CParameterizedTrajectoryGenerator") )
+				!mrpt::system::os::_strcmpi(lstClasses[i]->className,"CParameterizedTrajectoryGenerator") )
 				continue;
 			cbPTGClass->AppendString( _U( lstClasses[i]->className ));
 		}
