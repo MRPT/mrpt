@@ -18,11 +18,10 @@ using namespace mrpt::utils;
 using namespace mrpt::nav;
 using namespace std;
 
-void registerAllNavigationClasses();
-static CStartUpClassesRegister mrpt_reactivenav_class_reg(&registerAllNavigationClasses);
+CStartUpClassesRegister mrpt_reactivenav_class_reg(&registerAllNavigationClasses);
 
 
-void registerAllNavigationClasses()
+void mrpt::nav::registerAllNavigationClasses()
 {
 	// PTGs:
 	registerClass(CLASS_ID( CPTG_DiffDrive_C ));

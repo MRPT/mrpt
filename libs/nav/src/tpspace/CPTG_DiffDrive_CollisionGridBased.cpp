@@ -32,6 +32,17 @@ CPTG_DiffDrive_CollisionGridBased::CPTG_DiffDrive_CollisionGridBased() :
 {
 }
 
+void CPTG_DiffDrive_CollisionGridBased::loadDefaultParams()
+{
+	CParameterizedTrajectoryGenerator::loadDefaultParams();
+	CPTG_RobotShape_Polygonal::loadDefaultParams();
+	
+	m_resolution = 0.10;
+	V_MAX = 1.0;
+	W_MAX = mrpt::utils::DEG2RAD(120);
+
+}
+
 void CPTG_DiffDrive_CollisionGridBased::loadFromConfigFile(const mrpt::utils::CConfigFileBase &cfg,const std::string &sSection)
 {
 	CParameterizedTrajectoryGenerator::loadFromConfigFile(cfg,sSection);
@@ -53,6 +64,8 @@ void CPTG_DiffDrive_CollisionGridBased::saveToConfigFile(mrpt::utils::CConfigFil
 	cfg.write(sSection,"v_max_mps",V_MAX,   WN,WV, "Maximum linear velocity for trajectories [m/s].");
 	cfg.write(sSection,"w_max_dps", mrpt::utils::RAD2DEG(W_MAX),   WN,WV, "Maximum angular velocity for trajectories [deg/s].");
 	cfg.write(sSection,"turningRadiusReference",turningRadiusReference,   WN,WV, "An approximate dimension of the robot (not a critical parameter) [m].");
+
+	CPTG_RobotShape_Polygonal::saveToConfigFile(cfg,sSection);
 
 	MRPT_END
 }
