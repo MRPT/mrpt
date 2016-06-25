@@ -14,6 +14,7 @@
 #include <mrpt/opengl/CSetOfLines.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
+#include <mrpt/utils/CStartUpClassesRegister.h>
 
 using namespace mrpt::nav;
 
@@ -21,12 +22,22 @@ std::string CParameterizedTrajectoryGenerator::OUTPUT_DEBUG_PATH_PREFIX = "./rea
 
 IMPLEMENTS_VIRTUAL_SERIALIZABLE(CParameterizedTrajectoryGenerator, CSerializable, mrpt::nav)
 
+extern mrpt::utils::CStartUpClassesRegister  mrpt_reactivenav_class_reg;
+static const int dumm = mrpt_reactivenav_class_reg.do_nothing(); // Avoid compiler removing this class in static linking
+
 
 CParameterizedTrajectoryGenerator::CParameterizedTrajectoryGenerator() :
 	refDistance(.0),
 	m_alphaValuesCount(0),
 	m_score_priority(1.0)
 { }
+
+void CParameterizedTrajectoryGenerator::loadDefaultParams()
+{
+	m_alphaValuesCount = 121;
+	refDistance = 6.0;
+	m_score_priority = 1.0;
+}
 
 void CParameterizedTrajectoryGenerator::loadFromConfigFile(const mrpt::utils::CConfigFileBase &cfg,const std::string &sSection)
 {
@@ -86,6 +97,7 @@ void CParameterizedTrajectoryGenerator::renderPathAsSimpleLine(
 {
 	const size_t nPointsInPath = getPathStepCount(k);
 
+	bool first=true;
 	// Decimate trajectories: we don't need centimeter resolution!
 	float last_added_dist = 0.0f;
 	for (size_t n=0;n<nPointsInPath;n++)
@@ -100,8 +112,10 @@ void CParameterizedTrajectoryGenerator::renderPathAsSimpleLine(
 		mrpt::math::TPose2D p;
 		this->getPathPose(k, n, p);
 
-		if (gl_obj.empty())
-		     gl_obj.appendLine(0,0,0, p.x, p.y,0);
+		if (first) {
+			first=false;
+			gl_obj.appendLine(0,0,0, p.x, p.y,0);
+		}
 		else gl_obj.appendLineStrip(p.x, p.y,0);
 
 		// Draw the TP only until we reach the target of the "motion" segment:
@@ -179,6 +193,15 @@ bool CParameterizedTrajectoryGenerator::debugDumpInFiles( const std::string &ptg
 	return true;
 }
 
+void CPTG_RobotShape_Polygonal::loadDefaultParams()
+{
+	m_robotShape.clear();
+	m_robotShape.AddVertex(-0.15, 0.15);
+	m_robotShape.AddVertex( 0.2, 0.1);
+	m_robotShape.AddVertex( 0.2,-0.1);
+	m_robotShape.AddVertex(-0.15,-0.15);
+}
+
 void CPTG_RobotShape_Polygonal::loadShapeFromConfigFile(const mrpt::utils::CConfigFileBase & cfg,const std::string & sSection)
 {
 	bool any_pt= false;
@@ -206,6 +229,26 @@ void CPTG_RobotShape_Polygonal::loadShapeFromConfigFile(const mrpt::utils::CConf
 		internal_processNewRobotShape();
 }
 
+void CPTG_RobotShape_Polygonal::saveToConfigFile(mrpt::utils::CConfigFileBase &cfg,const std::string &sSection) const
+{
+	const int WN = 40, WV = 20;
+
+	for (unsigned int i=0;i<m_robotShape.size();i++)
+	{
+		const std::string sPtx = mrpt::format("shape_x%u", i);
+		const std::string sPty = mrpt::format("shape_y%u", i);
+	
+		cfg.write(sSection,sPtx,m_robotShape[i].x,   WN,WV, "Robot polygonal shape, `x` [m].");
+		cfg.write(sSection,sPty,m_robotShape[i].y,   WN,WV, "Robot polygonal shape, `y` [m].");
+	}
+}
+
+
+void CPTG_RobotShape_Circular::loadDefaultParams()
+{
+	m_robotRadius = 0.2;
+}
+
 void CPTG_RobotShape_Circular::loadShapeFromConfigFile(const mrpt::utils::CConfigFileBase & cfg,const std::string & sSection)
 {
 	const double old_R = m_robotRadius;
@@ -213,6 +256,12 @@ void CPTG_RobotShape_Circular::loadShapeFromConfigFile(const mrpt::utils::CConfi
 	
 	if (m_robotRadius!=old_R)
 		internal_processNewRobotShape();
+}
+void CPTG_RobotShape_Circular::saveToConfigFile(mrpt::utils::CConfigFileBase &cfg,const std::string &sSection) const
+{
+	const int WN = 40, WV = 20;
+
+	cfg.write(sSection,"robot_radius",m_robotRadius,   WN,WV, "Robot radius [m].");
 }
 
 

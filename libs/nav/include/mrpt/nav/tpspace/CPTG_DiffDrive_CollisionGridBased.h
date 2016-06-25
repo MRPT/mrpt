@@ -103,6 +103,8 @@ protected:
 		virtual void loadFromConfigFile(const mrpt::utils::CConfigFileBase &cfg,const std::string &sSection) MRPT_OVERRIDE;
 		virtual void saveToConfigFile(mrpt::utils::CConfigFileBase &cfg,const std::string &sSection) const MRPT_OVERRIDE;
 
+		virtual void loadDefaultParams() MRPT_OVERRIDE;
+
 		double V_MAX, W_MAX;
 		double turningRadiusReference;
 		std::vector<TCPointVector> m_trajectory;
