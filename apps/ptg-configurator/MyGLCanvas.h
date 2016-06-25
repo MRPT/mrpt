@@ -12,6 +12,7 @@
 
 #include <mrpt/gui/CMyGLCanvasBase.h>
 
+
 using namespace mrpt::gui;
 
 // Allow RawlogViewer to build without 3D:
