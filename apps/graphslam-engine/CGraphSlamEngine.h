@@ -79,7 +79,7 @@
 namespace mrpt { namespace graphslam {
 
 	bool verbose = true;
-#define VERBOSE_COUT	if (verbose) std::cout << "[graphslam_engine] "
+#define VERBOSE_COUT	if (verbose) std::cout << "[graphslam_engine:] "
 
 	template< 
   		class GRAPH_t=typename mrpt::graphs::CNetworkOfPoses2DInf,

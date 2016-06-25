@@ -1499,27 +1499,29 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::initEstimatedT
 			/* 2nd */ 0, 0, 0);
 
 	// robot model
-	opengl::CSetOfObjectsPtr obj = stock_objects::RobotPioneer();
+	opengl::CSetOfObjectsPtr robot_model = stock_objects::RobotPioneer();
 	pose_t initial_pose;
-	obj->setPose(initial_pose);
-	obj->setName("robot_estimated_traj");
-	obj->setColor_u8(m_estimated_traj_color);
-	obj->setScale(m_robot_model_size);
+	robot_model->setPose(initial_pose);
+	robot_model->setName("robot_estimated_traj");
+	robot_model->setColor_u8(m_estimated_traj_color);
+	robot_model->setScale(m_robot_model_size);
 
 	// insert objects in the graph
 	COpenGLScenePtr scene = m_win->get3DSceneAndLock();
 	if (m_visualize_estimated_trajectory) {
 		scene->insert(estimated_traj_setoflines);
 	}
-	scene->insert(obj);
+	scene->insert(robot_model);
 	m_win->unlockAccess3DScene();
 
-	m_win_manager.assignTextMessageParameters( /* offset_y* = */ &m_offset_y_estimated_traj,
-			/* text_index* = */ &m_text_index_estimated_traj);
-	m_win_manager.addTextMessage(5,-m_offset_y_estimated_traj,
-			format("Estimated trajectory"),
-			TColorf(m_estimated_traj_color),
-			/* unique_index = */ m_text_index_estimated_traj );
+	if (m_visualize_estimated_trajectory) {
+		m_win_manager.assignTextMessageParameters( /* offset_y* = */ &m_offset_y_estimated_traj,
+				/* text_index* = */ &m_text_index_estimated_traj);
+		m_win_manager.addTextMessage(5,-m_offset_y_estimated_traj,
+				format("Estimated trajectory"),
+				TColorf(m_estimated_traj_color),
+				/* unique_index = */ m_text_index_estimated_traj );
+	}
 
 
 	m_win->forceRepaint();

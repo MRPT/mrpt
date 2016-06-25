@@ -42,12 +42,12 @@ void CRangeScanRegistrationDecider_t<GRAPH_t>::getICPEdge(
 			&running_time,
 			(void*)&info);
 
-	//std::cout << "ICP Alignment operation: \n" 
-		//<< "\n\t nIterations: " << info.nIterations
-		//<< "\n\t quality: " << info.quality
-		//<< "\n\t goodness: " << info.goodness
-		//<< std::endl;
-	//std::cout << "Alignemnt took: " << running_time << " s" << std::endl;
+	std::cout << "ICP Alignment operation: \n" 
+		<< "\n\t nIterations: " << info.nIterations
+		<< "\n\t quality: " << info.quality
+		<< "\n\t goodness: " << info.goodness
+		<< std::endl;
+	std::cout << "Alignemnt took: " << running_time << " s" << std::endl;
 
 
 	// return the edge regardless of the goodness of the alignment

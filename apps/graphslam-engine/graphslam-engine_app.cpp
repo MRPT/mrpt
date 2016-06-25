@@ -50,7 +50,7 @@ using namespace mrpt::graphslam::deciders;
 
 using namespace std;
 
-#define VERBOSE_COUT	if (verbose) std::cout << "[graphslam_engine] "
+#define VERBOSE_COUT	if (verbose) std::cout << "[graphslam_engine:] "
 
 // command line arguments
 // ////////////////////////////////////////////////////////////
@@ -76,7 +76,7 @@ TCLAP::ValueArg<string> arg_node_reg("n", "node-reg",
 TCLAP::ValueArg<string> arg_edge_reg("e", "edge-reg",
 		"Specify Edge registration decider",	false, "CICPGoodnessERD", "CICPGoodnessERD", cmd);
 
-// list available graphs, deciders_vec
+// list available deciders
 TCLAP::SwitchArg list_node_registrars("","list-node-regs","List available node registration decider classes",cmd, false);
 TCLAP::SwitchArg list_edge_registrars("","list-edge-regs","List available edge registration decider classes",cmd, false);
 TCLAP::SwitchArg list_all_registrars("","list-regs","List (all) available registration decider classes",cmd, false);
@@ -205,11 +205,11 @@ int main(int argc, char **argv)
 		}
 		VERBOSE_COUT << "Listening to graph_window events..." << endl;
 
-		bool exit_normally;
+		bool has_exited_normally = false;
 		// take all the different combinations of node / edge registration deciders
 		// one-by-one. 
-		cout << "Node registration decider: " << node_reg << endl;
-		cout << "Edge registration decider: " << edge_reg << endl;
+		VERBOSE_COUT << "Node registration decider: " << node_reg << endl;
+		VERBOSE_COUT << "Edge registration decider: " << edge_reg << endl;
 		if (system::strCmpI(node_reg, "CFixedIntervalsNRD")) {
 			if (system::strCmpI(edge_reg, "CICPGoodnessERD")) {
 				// Initialize the CGraphSlamEngine_t class
@@ -225,7 +225,7 @@ int main(int argc, char **argv)
 							&graph_win_observer,
 							rawlog_fname,
 							ground_truth_fname);
-				exit_normally = graph_engine.parseRawlogFile();
+				has_exited_normally = graph_engine.parseRawlogFile();
 			}
 		}
 		else if (system::strCmpI(node_reg, "CICPGoodnessNRD")) {
@@ -243,13 +243,15 @@ int main(int argc, char **argv)
 							&graph_win_observer,
 							rawlog_fname,
 							ground_truth_fname);
-				exit_normally = graph_engine.parseRawlogFile();
+				has_exited_normally = graph_engine.parseRawlogFile();
 			}
 		}
 
-		while (graph_win.isOpen() && exit_normally) {
-			mrpt::system::sleep(100);
-			graph_win.forceRepaint();
+		if (has_exited_normally) {
+			while (graph_win.isOpen()) {
+				mrpt::system::sleep(100);
+				graph_win.forceRepaint();
+			}
 		}
 
 	}

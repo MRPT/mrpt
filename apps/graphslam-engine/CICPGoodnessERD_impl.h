@@ -84,12 +84,6 @@ template<class GRAPH_t> void CICPGoodnessERD_t<GRAPH_t>::updateDeciderState(
 			m_last_laser_scan2D =
 				static_cast<mrpt::obs::CObservation2DRangeScanPtr>(observation);
 
-			// add the last laser_scan
-			if (registered_new_node && m_last_laser_scan2D) {
-				m_nodes_to_laser_scans2D[m_graph->nodeCount()-1] = m_last_laser_scan2D;
-				std::cout << "[CICPGoodnessERD:] Added laser scans of nodeID: "
-					<< m_graph->nodeCount()-1 << std::endl;
-			}
 
 			m_is_using_3DScan = false;
 		}
@@ -105,14 +99,23 @@ template<class GRAPH_t> void CICPGoodnessERD_t<GRAPH_t>::updateDeciderState(
 					/*from = */ m_last_laser_scan3D,
 					/*to   = */ &m_fake_laser_scan2D);
 
-			// add the last laser_scan
-			if (registered_new_node && !m_last_laser_scan3D.null()) {
+
+			m_is_using_3DScan = true;
+		}
+
+		// New node has been registered.
+		// add the last laser_scan
+		if (registered_new_node) {
+			if (!m_last_laser_scan2D.null()) {
+				m_nodes_to_laser_scans2D[m_graph->nodeCount()-1] = m_last_laser_scan2D;
+				std::cout << "[CICPGoodnessERD:] Added laser scans of nodeID: "
+					<< m_graph->nodeCount()-1 << std::endl;
+			}
+			if (!m_last_laser_scan3D.null()) {
 				m_nodes_to_laser_scans3D[m_graph->nodeCount()-1] = m_last_laser_scan3D;
 				std::cout << "[CICPGoodnessERD:] Added laser scans of nodeID: "
 					<< m_graph->nodeCount()-1 << std::endl;
 			}
-
-			m_is_using_3DScan = true;
 		}
 	}
 	else { // action-observations rawlog format
@@ -160,6 +163,8 @@ template<class GRAPH_t>
 void CICPGoodnessERD_t<GRAPH_t>::checkRegistrationCondition2D(
 		const std::set<mrpt::utils::TNodeID>& nodes_set) {
 	MRPT_START;
+
+	//cout << "CICPGoodnessERD: Checking 2D Registration Condition... " << endl;
 
   CObservation2DRangeScanPtr curr_laser_scan;
   std::map<const mrpt::utils::TNodeID, 
