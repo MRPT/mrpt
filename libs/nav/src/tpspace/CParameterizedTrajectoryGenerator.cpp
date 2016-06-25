@@ -97,6 +97,7 @@ void CParameterizedTrajectoryGenerator::renderPathAsSimpleLine(
 {
 	const size_t nPointsInPath = getPathStepCount(k);
 
+	bool first=true;
 	// Decimate trajectories: we don't need centimeter resolution!
 	float last_added_dist = 0.0f;
 	for (size_t n=0;n<nPointsInPath;n++)
@@ -111,8 +112,10 @@ void CParameterizedTrajectoryGenerator::renderPathAsSimpleLine(
 		mrpt::math::TPose2D p;
 		this->getPathPose(k, n, p);
 
-		if (gl_obj.empty())
-		     gl_obj.appendLine(0,0,0, p.x, p.y,0);
+		if (first) {
+			first=false;
+			gl_obj.appendLine(0,0,0, p.x, p.y,0);
+		}
 		else gl_obj.appendLineStrip(p.x, p.y,0);
 
 		// Draw the TP only until we reach the target of the "motion" segment:
@@ -193,10 +196,10 @@ bool CParameterizedTrajectoryGenerator::debugDumpInFiles( const std::string &ptg
 void CPTG_RobotShape_Polygonal::loadDefaultParams()
 {
 	m_robotShape.clear();
-	m_robotShape.AddVertex(-0.3, 0.4);
-	m_robotShape.AddVertex( 0.5, 0.4);
-	m_robotShape.AddVertex( 0.5,-0.4);
-	m_robotShape.AddVertex(-0.3,-0.4);
+	m_robotShape.AddVertex(-0.15, 0.15);
+	m_robotShape.AddVertex( 0.2, 0.1);
+	m_robotShape.AddVertex( 0.2,-0.1);
+	m_robotShape.AddVertex(-0.15,-0.15);
 }
 
 void CPTG_RobotShape_Polygonal::loadShapeFromConfigFile(const mrpt::utils::CConfigFileBase & cfg,const std::string & sSection)
@@ -243,7 +246,7 @@ void CPTG_RobotShape_Polygonal::saveToConfigFile(mrpt::utils::CConfigFileBase &c
 
 void CPTG_RobotShape_Circular::loadDefaultParams()
 {
-	m_robotRadius = 0.4;
+	m_robotRadius = 0.2;
 }
 
 void CPTG_RobotShape_Circular::loadShapeFromConfigFile(const mrpt::utils::CConfigFileBase & cfg,const std::string & sSection)

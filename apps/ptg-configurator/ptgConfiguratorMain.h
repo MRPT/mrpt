@@ -14,6 +14,7 @@
 #include <wx/stattext.h>
 #include <wx/menu.h>
 #include <wx/textctrl.h>
+#include <wx/checkbox.h>
 #include <wx/spinctrl.h>
 #include "MyGLCanvas.h"
 #include <wx/panel.h>
@@ -61,6 +62,10 @@ class ptgConfiguratorframe: public wxFrame
         void OnbtnReloadParamsClick(wxCommandEvent& event);
         void OncbPTGClassSelect(wxCommandEvent& event);
         void OnedPTGIndexChange(wxSpinEvent& event);
+        void OncbDrawShapePathClick(wxCommandEvent& event);
+        void OncbBuildTPObsClick(wxCommandEvent& event);
+        void OnbtnRebuildTPObsClick(wxCommandEvent& event);
+        void OnbtnPlaceObsClick(wxCommandEvent& event);
         //*)
 
         //(*Identifiers(ptgConfiguratorframe)
@@ -69,6 +74,15 @@ class ptgConfiguratorframe: public wxFrame
         static const long ID_STATICTEXT2;
         static const long ID_SPINCTRL1;
         static const long ID_BUTTON1;
+        static const long ID_CHECKBOX1;
+        static const long ID_STATICTEXT4;
+        static const long ID_TEXTCTRL5;
+        static const long ID_CHECKBOX2;
+        static const long ID_TEXTCTRL3;
+        static const long ID_STATICTEXT3;
+        static const long ID_TEXTCTRL4;
+        static const long ID_BUTTON3;
+        static const long ID_BUTTON2;
         static const long ID_TEXTCTRL1;
         static const long ID_PANEL1;
         static const long ID_XY_GLCANVAS;
@@ -79,19 +93,31 @@ class ptgConfiguratorframe: public wxFrame
         //*)
 
         //(*Declarations(ptgConfiguratorframe)
+        wxTextCtrl* edObsY;
         wxStaticText* StaticText2;
+        wxCheckBox* cbDrawShapePath;
         wxSpinCtrl* edPTGIndex;
+        wxCheckBox* cbBuildTPObs;
+        wxButton* btnPlaceObs;
+        wxButton* btnRebuildTPObs;
         wxPanel* Panel1;
         wxStaticText* StaticText1;
+        wxStaticText* StaticText3;
         wxChoice* cbPTGClass;
         CMyGLCanvas* m_plot;
         wxTextCtrl* edLog;
         wxStatusBar* StatusBar1;
+        wxTextCtrl* edObsX;
         wxButton* btnReloadParams;
         wxTextCtrl* edCfg;
+        wxTextCtrl* edMinDistBtwShapes;
+        wxStaticText* StaticText4;
         //*)
 
         DECLARE_EVENT_TABLE()
+
+		void Onplot3DMouseMove(wxMouseEvent& event);
+		void Onplot3DMouseClick(wxMouseEvent& event);
 
 		void rebuild3Dview();
 		void dumpPTGcfgToTextBox();
@@ -99,18 +125,22 @@ class ptgConfiguratorframe: public wxFrame
 		/* Methods: */
 		CMyRedirector *m_myRedirector;
 
+		/**  The state of the cursor onto the 3D view */
+		enum TCursorPickState
+		{
+			cpsNone = 0,
+			cpsPickObstacle
+		};
+
+		mrpt::math::TPoint2D             m_curCursorPos; //!< Of the cursor on the 3D view (in world coordinates at Z=0)
+		TCursorPickState                 m_cursorPickState;   //!< The state of the cursor onto the 3D view:
+
 		// ========= Opengl View =======
 		mrpt::opengl::COpenGLViewportPtr  gl_view_PTG, gl_view_TPSpace;
 		mrpt::opengl::CCameraPtr          gl_view_TPSpace_cam;
 		mrpt::opengl::CAxisPtr            gl_axis_WS, gl_axis_TPS;
-
-		mrpt::opengl::CSetOfObjectsPtr		gl_grid;
-		mrpt::opengl::CSetOfObjectsPtr		gl_robot,gl_robot_local, gl_target;
-		mrpt::opengl::CSetOfObjectsPtr		m_gl_placing_nav_target;
-		mrpt::opengl::CSetOfObjectsPtr		m_gl_placing_robot;
-		mrpt::opengl::CSetOfLinesPtr        gl_robot_path;
-		mrpt::opengl::CPointCloudPtr 		gl_path;
-		mrpt::opengl::CSetOfLinesPtr        gl_robot_ptg_prediction;
+		mrpt::opengl::CSetOfLinesPtr      gl_robot_ptg_prediction;
+		mrpt::opengl::CPointCloudPtr      gl_WS_obs;
 
 };
 
