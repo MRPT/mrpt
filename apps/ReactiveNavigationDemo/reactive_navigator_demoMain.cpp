@@ -938,14 +938,15 @@ void reactive_navigator_demoframe::simulateOneStep(double time_step)
 			edInfoLocalView->SetValue(_U(sLog.c_str()));
 
 			gl_nd_gaps->appendLine(0,0,0, 0,0,0);
-
+			const size_t nObs = lfr.infoPerPTG[sel_PTG].TP_Obstacles.size();
 			for (size_t i=0;i<nGaps;i++)
 			{
 				const size_t N_STEPS = 20;
 				for (size_t j=0;j<N_STEPS;j++)
 				{
 					const double sec = log->gaps_ini[i] + j*(log->gaps_end[i]-log->gaps_ini[i])/static_cast<double>(N_STEPS-1);
-					const double ang = M_PI *( -1 + 2*sec/((float)lfr.infoPerPTG[sel_PTG].TP_Obstacles.size()) );
+					const double ang = M_PI *(-1.0 + 2.0 * sec/nObs );
+
 					const double d = lfr.infoPerPTG[sel_PTG].TP_Obstacles[sec]-0.05;
 					gl_nd_gaps->appendLineStrip(d*cos(ang),d*sin(ang),0);
 				}
@@ -954,20 +955,17 @@ void reactive_navigator_demoframe::simulateOneStep(double time_step)
 
 			// TP-Obstacles:
 			gl_tp_obstacles->clear();
+			if (nObs>1)
 			{
-				const size_t nObs = lfr.infoPerPTG[sel_PTG].TP_Obstacles.size();
-				if (nObs>1)
+				for (size_t i=0;i<=nObs;i++)
 				{
-					for (size_t i=0;i<=nObs;i++)
-					{
-						const double d0 = lfr.infoPerPTG[sel_PTG].TP_Obstacles[i % nObs];
-						const double a0 = M_PI * (-1.0 + 2.0 * ((i % nObs)+0.5)/nObs );
-						const double d1 = lfr.infoPerPTG[sel_PTG].TP_Obstacles[(i+1) % nObs];
-						const double a1 = M_PI * (-1.0 + 2.0 * (((i+1) % nObs)+0.5)/nObs );
-						gl_nd_gaps->appendLine(
-							d0*cos(a0),d0*sin(a0),0.0,
-							d1*cos(a1),d1*sin(a1),0.0 );
-					}
+					const double d0 = lfr.infoPerPTG[sel_PTG].TP_Obstacles[i % nObs];
+					const double a0 = M_PI * (-1.0 + 2.0 * ((i % nObs)+0.5)/nObs );
+					const double d1 = lfr.infoPerPTG[sel_PTG].TP_Obstacles[(i+1) % nObs];
+					const double a1 = M_PI * (-1.0 + 2.0 * (((i+1) % nObs)+0.5)/nObs );
+					gl_tp_obstacles->appendLine(
+						d0*cos(a0),d0*sin(a0),0.0,
+						d1*cos(a1),d1*sin(a1),0.0 );
 				}
 			}
 		}
