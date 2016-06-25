@@ -1,12 +1,9 @@
 INCLUDE(../../cmakemodules/AssureCMakeRootFile.cmake) # Avoid user mistake in CMake source directory
-set(MRPT_DIR, "/home/bergercookie/mrpt_build_dir/")
 
 #-----------------------------------------------------------------
 # CMake file for the MRPT application:  graph_slam
 #
 #  Run with "cmake ." at the root directory
-#
-#  Aug 2010, Jose Luis Blanco <jlblanco@ctima.uma.es>
 #-----------------------------------------------------------------
 
 #-------------------------------------------------------------------------------
@@ -14,11 +11,6 @@ set(MRPT_DIR, "/home/bergercookie/mrpt_build_dir/")
 #-------------------------------------------------------------------------------
 set(PROJECT_NAME "graphslam-engine")
 project(${PROJECT_NAME})
-
-message("----------------------------------------------------")
-message("Starting CMake Project Compilation: ${PROJECT_NAME}")
-message("Project: ${PROJECT_NAME}")
-message("----------------------------------------------------")
 
 # ---------------------------------------------
 # TARGET:
