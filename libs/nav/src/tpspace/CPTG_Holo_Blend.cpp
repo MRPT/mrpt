@@ -10,6 +10,7 @@
 #include "nav-precomp.h" // Precomp header
 #include <mrpt/nav/tpspace/CPTG_Holo_Blend.h>
 #include <mrpt/math/wrap2pi.h>
+#include <mrpt/utils/types_math.h>
 #include <mrpt/utils/CStream.h>
 #include <mrpt/utils/round.h>
 #include <mrpt/utils/CTimeLogger.h>
