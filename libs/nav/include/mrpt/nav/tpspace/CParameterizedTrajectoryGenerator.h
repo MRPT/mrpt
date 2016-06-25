@@ -50,13 +50,13 @@ namespace nav
 	{
 		DEFINE_VIRTUAL_SERIALIZABLE(CParameterizedTrajectoryGenerator)
 	public:
-		CParameterizedTrajectoryGenerator(); //!< Default ctor. Must call `setParams()` before initialization
+		CParameterizedTrajectoryGenerator(); //!< Default ctor. Must call `loadFromConfigFile()` before initialization
 		virtual ~CParameterizedTrajectoryGenerator() //!<  Destructor 
 		{ }
 
 		/** The class factory for creating a PTG from a list of parameters in a section of a given config file (physical file or in memory).
 		  *  Possible parameters are:
-		  *	  - Those explained in CParameterizedTrajectoryGenerator::setParamsCommon()
+		  *	  - Those explained in CParameterizedTrajectoryGenerator::loadFromConfigFile()
 		  *	  - Those explained in the specific PTG being created (see list of derived classes)
 		  *
 		  * `ptgClassName` can be any PTG class name which has been registered as any other 
@@ -134,6 +134,10 @@ namespace nav
 		  */
 		virtual void updateTPObstacle(double ox, double oy, std::vector<double> &tp_obstacles) const = 0;
 
+		/** Loads a set of default parameters into the PTG. Users normally will call `loadFromConfigFile()` instead, this method is provided 
+		  * exclusively for the PTG-configurator tool. */
+		virtual void loadDefaultParams();
+
 		/** @} */  // --- end of virtual methods
 
 		static std::string OUTPUT_DEBUG_PATH_PREFIX; //!< The path used as defaul output in, for example, debugDumpInFiles. (Default="./reactivenav.logs/")
@@ -177,11 +181,6 @@ namespace nav
 		  */
 		bool debugDumpInFiles(const std::string &ptg_name) const;
 
-protected:
-		double    refDistance;
-		uint16_t  m_alphaValuesCount; //!< The number of discrete values for "alpha" between -PI and +PI.
-		double    m_score_priority;
-
 		/** Parameters accepted by this base class:
 		 *   - `${sKeyPrefix}num_paths`: The number of different paths in this family (number of discrete `alpha` values).
 		 *   - `${sKeyPrefix}ref_distance`: The maximum distance in PTGs [meters]
@@ -189,6 +188,11 @@ protected:
 		 */
 		virtual void loadFromConfigFile(const mrpt::utils::CConfigFileBase &cfg,const std::string &sSection) MRPT_OVERRIDE;
 		virtual void saveToConfigFile(mrpt::utils::CConfigFileBase &cfg,const std::string &sSection) const MRPT_OVERRIDE;
+
+protected:
+		double    refDistance;
+		uint16_t  m_alphaValuesCount; //!< The number of discrete values for "alpha" between -PI and +PI.
+		double    m_score_priority;
 
 		virtual void internal_readFromStream(mrpt::utils::CStream &in);
 		virtual void internal_writeToStream(mrpt::utils::CStream &out) const;
@@ -223,6 +227,9 @@ protected:
 		virtual void internal_processNewRobotShape() = 0; //!< Will be called whenever the robot shape is set / updated
 		mrpt::math::CPolygon m_robotShape;
 		void loadShapeFromConfigFile(const mrpt::utils::CConfigFileBase & source,const std::string & section);
+		void saveToConfigFile(mrpt::utils::CConfigFileBase &cfg,const std::string &sSection) const;
+		/** Loads a set of default parameters; provided  exclusively for the PTG-configurator tool. */
+		void loadDefaultParams();
 	};
 
 	/** Base class for all PTGs using a 2D circular robot shape model.
@@ -247,6 +254,9 @@ protected:
 		virtual void internal_processNewRobotShape() = 0; //!< Will be called whenever the robot shape is set / updated
 		double m_robotRadius;
 		void loadShapeFromConfigFile(const mrpt::utils::CConfigFileBase & source,const std::string & section);
+		void saveToConfigFile(mrpt::utils::CConfigFileBase &cfg,const std::string &sSection) const;
+		/** Loads a set of default parameters; provided  exclusively for the PTG-configurator tool. */
+		void loadDefaultParams();
 	};
 
 }

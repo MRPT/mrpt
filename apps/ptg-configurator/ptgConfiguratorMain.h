@@ -17,9 +17,9 @@
 #include <wx/spinctrl.h>
 #include "MyGLCanvas.h"
 #include <wx/panel.h>
+#include <wx/choice.h>
 #include <wx/button.h>
 #include <wx/frame.h>
-#include <wx/combobox.h>
 #include <wx/statusbr.h>
 //*)
 
@@ -28,6 +28,8 @@
 #include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/opengl/CSetOfLines.h>
 #include <mrpt/opengl/CPointCloud.h>
+#include <mrpt/opengl/COpenGLViewport.h>
+#include <mrpt/opengl/CAxis.h>
 
 // JLBC: Unix X headers have these funny things...
 #ifdef Button1
@@ -57,17 +59,20 @@ class ptgConfiguratorframe: public wxFrame
         void OnAbout(wxCommandEvent& event);
         void OnQuit(wxCommandEvent& event);
         void OnbtnReloadParamsClick(wxCommandEvent& event);
+        void OncbPTGClassSelect(wxCommandEvent& event);
+        void OnedPTGIndexChange(wxSpinEvent& event);
         //*)
 
         //(*Identifiers(ptgConfiguratorframe)
         static const long ID_STATICTEXT1;
-        static const long ID_COMBOBOX1;
+        static const long ID_CHOICE1;
         static const long ID_STATICTEXT2;
         static const long ID_SPINCTRL1;
-        static const long ID_TEXTCTRL1;
         static const long ID_BUTTON1;
+        static const long ID_TEXTCTRL1;
         static const long ID_PANEL1;
         static const long ID_XY_GLCANVAS;
+        static const long ID_TEXTCTRL2;
         static const long idMenuQuit;
         static const long idMenuAbout;
         static const long ID_STATUSBAR1;
@@ -78,19 +83,27 @@ class ptgConfiguratorframe: public wxFrame
         wxSpinCtrl* edPTGIndex;
         wxPanel* Panel1;
         wxStaticText* StaticText1;
+        wxChoice* cbPTGClass;
         CMyGLCanvas* m_plot;
+        wxTextCtrl* edLog;
         wxStatusBar* StatusBar1;
         wxButton* btnReloadParams;
         wxTextCtrl* edCfg;
-        wxComboBox* cbPTGClass;
         //*)
 
         DECLARE_EVENT_TABLE()
+
+		void rebuild3Dview();
+		void dumpPTGcfgToTextBox();
 
 		/* Methods: */
 		CMyRedirector *m_myRedirector;
 
 		// ========= Opengl View =======
+		mrpt::opengl::COpenGLViewportPtr  gl_view_PTG, gl_view_TPSpace;
+		mrpt::opengl::CCameraPtr          gl_view_TPSpace_cam;
+		mrpt::opengl::CAxisPtr            gl_axis_WS, gl_axis_TPS;
+
 		mrpt::opengl::CSetOfObjectsPtr		gl_grid;
 		mrpt::opengl::CSetOfObjectsPtr		gl_robot,gl_robot_local, gl_target;
 		mrpt::opengl::CSetOfObjectsPtr		m_gl_placing_nav_target;

@@ -28,6 +28,13 @@ CParameterizedTrajectoryGenerator::CParameterizedTrajectoryGenerator() :
 	m_score_priority(1.0)
 { }
 
+void CParameterizedTrajectoryGenerator::loadDefaultParams()
+{
+	m_alphaValuesCount = 121;
+	refDistance = 6.0;
+	m_score_priority = 1.0;
+}
+
 void CParameterizedTrajectoryGenerator::loadFromConfigFile(const mrpt::utils::CConfigFileBase &cfg,const std::string &sSection)
 {
 	MRPT_LOAD_HERE_CONFIG_VAR_NO_DEFAULT(num_paths   , uint64_t, m_alphaValuesCount, cfg,sSection);
@@ -179,6 +186,15 @@ bool CParameterizedTrajectoryGenerator::debugDumpInFiles( const std::string &ptg
 	return true;
 }
 
+void CPTG_RobotShape_Polygonal::loadDefaultParams()
+{
+	m_robotShape.clear();
+	m_robotShape.AddVertex(-0.3, 0.4);
+	m_robotShape.AddVertex( 0.5, 0.4);
+	m_robotShape.AddVertex( 0.5,-0.4);
+	m_robotShape.AddVertex(-0.3,-0.4);
+}
+
 void CPTG_RobotShape_Polygonal::loadShapeFromConfigFile(const mrpt::utils::CConfigFileBase & cfg,const std::string & sSection)
 {
 	bool any_pt= false;
@@ -206,6 +222,26 @@ void CPTG_RobotShape_Polygonal::loadShapeFromConfigFile(const mrpt::utils::CConf
 		internal_processNewRobotShape();
 }
 
+void CPTG_RobotShape_Polygonal::saveToConfigFile(mrpt::utils::CConfigFileBase &cfg,const std::string &sSection) const
+{
+	const int WN = 40, WV = 20;
+
+	for (unsigned int i=0;i<m_robotShape.size();i++)
+	{
+		const std::string sPtx = mrpt::format("shape_x%u", i);
+		const std::string sPty = mrpt::format("shape_y%u", i);
+	
+		cfg.write(sSection,sPtx,m_robotShape[i].x,   WN,WV, "Robot polygonal shape, `x` [m].");
+		cfg.write(sSection,sPty,m_robotShape[i].y,   WN,WV, "Robot polygonal shape, `y` [m].");
+	}
+}
+
+
+void CPTG_RobotShape_Circular::loadDefaultParams()
+{
+	m_robotRadius = 0.4;
+}
+
 void CPTG_RobotShape_Circular::loadShapeFromConfigFile(const mrpt::utils::CConfigFileBase & cfg,const std::string & sSection)
 {
 	const double old_R = m_robotRadius;
@@ -213,6 +249,12 @@ void CPTG_RobotShape_Circular::loadShapeFromConfigFile(const mrpt::utils::CConfi
 	
 	if (m_robotRadius!=old_R)
 		internal_processNewRobotShape();
+}
+void CPTG_RobotShape_Circular::saveToConfigFile(mrpt::utils::CConfigFileBase &cfg,const std::string &sSection) const
+{
+	const int WN = 40, WV = 20;
+
+	cfg.write(sSection,"robot_radius",m_robotRadius,   WN,WV, "Robot radius [m].");
 }
 
 

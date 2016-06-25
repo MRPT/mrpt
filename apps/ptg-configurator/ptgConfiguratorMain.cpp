@@ -49,17 +49,23 @@ wxBitmap MyArtProvider::CreateBitmap(const wxArtID& id,
 #include <mrpt/nav/tpspace/CParameterizedTrajectoryGenerator.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
+#include <mrpt/opengl/CAxis.h>
+#include <mrpt/utils/CConfigFileMemory.h>
+#include <mrpt/utils/CConfigFilePrefixer.h>
+
+mrpt::nav::CParameterizedTrajectoryGenerator  * ptg = NULL;
 
 
 //(*IdInit(ptgConfiguratorframe)
 const long ptgConfiguratorframe::ID_STATICTEXT1 = wxNewId();
-const long ptgConfiguratorframe::ID_COMBOBOX1 = wxNewId();
+const long ptgConfiguratorframe::ID_CHOICE1 = wxNewId();
 const long ptgConfiguratorframe::ID_STATICTEXT2 = wxNewId();
 const long ptgConfiguratorframe::ID_SPINCTRL1 = wxNewId();
-const long ptgConfiguratorframe::ID_TEXTCTRL1 = wxNewId();
 const long ptgConfiguratorframe::ID_BUTTON1 = wxNewId();
+const long ptgConfiguratorframe::ID_TEXTCTRL1 = wxNewId();
 const long ptgConfiguratorframe::ID_PANEL1 = wxNewId();
 const long ptgConfiguratorframe::ID_XY_GLCANVAS = wxNewId();
+const long ptgConfiguratorframe::ID_TEXTCTRL2 = wxNewId();
 const long ptgConfiguratorframe::idMenuQuit = wxNewId();
 const long ptgConfiguratorframe::idMenuAbout = wxNewId();
 const long ptgConfiguratorframe::ID_STATUSBAR1 = wxNewId();
@@ -132,12 +138,14 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent,wxWindowID id)
     wxMenuItem* MenuItem2;
     wxFlexGridSizer* FlexGridSizer3;
     wxMenuItem* MenuItem1;
+    wxFlexGridSizer* FlexGridSizer5;
     wxFlexGridSizer* FlexGridSizer2;
     wxMenu* Menu1;
     wxMenuBar* MenuBar1;
+    wxFlexGridSizer* FlexGridSizer6;
     wxFlexGridSizer* FlexGridSizer1;
     wxMenu* Menu2;
-    
+
     Create(parent, id, _("PTG configurator - Part of the MRPT project"), wxDefaultPosition, wxDefaultSize, wxDEFAULT_FRAME_STYLE, _T("id"));
     SetClientSize(wxSize(893,576));
     {
@@ -145,41 +153,56 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent,wxWindowID id)
     	FrameIcon.CopyFromBitmap(wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("MAIN_ICON")),wxART_OTHER));
     	SetIcon(FrameIcon);
     }
-    FlexGridSizer1 = new wxFlexGridSizer(1, 2, 0, 0);
-    FlexGridSizer1->AddGrowableCol(1);
-    FlexGridSizer1->AddGrowableRow(0);
+    FlexGridSizer1 = new wxFlexGridSizer(0, 1, 0, 0);
+    FlexGridSizer1->AddGrowableCol(0);
+    FlexGridSizer1->AddGrowableRow(1);
     Panel1 = new wxPanel(this, ID_PANEL1, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL1"));
-    FlexGridSizer2 = new wxFlexGridSizer(0, 1, 0, 0);
+    FlexGridSizer2 = new wxFlexGridSizer(1, 2, 0, 0);
     FlexGridSizer2->AddGrowableCol(0);
-    FlexGridSizer2->AddGrowableRow(3);
+    FlexGridSizer2->AddGrowableRow(0);
+    FlexGridSizer3 = new wxFlexGridSizer(0, 1, 0, 0);
+    FlexGridSizer3->AddGrowableCol(0);
+    FlexGridSizer3->AddGrowableRow(3);
     StaticText1 = new wxStaticText(Panel1, ID_STATICTEXT1, _("Select a PTG class:"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT1"));
-    FlexGridSizer2->Add(StaticText1, 1, wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
-    cbPTGClass = new wxComboBox(Panel1, ID_COMBOBOX1, wxEmptyString, wxDefaultPosition, wxSize(200,-1), 0, 0, 0, wxDefaultValidator, _T("ID_COMBOBOX1"));
-    FlexGridSizer2->Add(cbPTGClass, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-    FlexGridSizer3 = new wxFlexGridSizer(1, 2, 0, 0);
+    FlexGridSizer3->Add(StaticText1, 1, wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
+    cbPTGClass = new wxChoice(Panel1, ID_CHOICE1, wxDefaultPosition, wxDefaultSize, 0, 0, wxCB_SORT, wxDefaultValidator, _T("ID_CHOICE1"));
+    FlexGridSizer3->Add(cbPTGClass, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    FlexGridSizer4 = new wxFlexGridSizer(1, 0, 0, 0);
     StaticText2 = new wxStaticText(Panel1, ID_STATICTEXT2, _("PTG index for cfg file:"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT2"));
-    FlexGridSizer3->Add(StaticText2, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    FlexGridSizer4->Add(StaticText2, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     edPTGIndex = new wxSpinCtrl(Panel1, ID_SPINCTRL1, _T("0"), wxDefaultPosition, wxDefaultSize, 0, 0, 100, 0, _T("ID_SPINCTRL1"));
     edPTGIndex->SetValue(_T("0"));
-    FlexGridSizer3->Add(edPTGIndex, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-    FlexGridSizer2->Add(FlexGridSizer3, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
-    edCfg = new wxTextCtrl(Panel1, ID_TEXTCTRL1, wxEmptyString, wxDefaultPosition, wxSize(-1,200), wxTE_PROCESS_ENTER|wxTE_PROCESS_TAB|wxTE_MULTILINE|wxHSCROLL|wxTE_DONTWRAP|wxALWAYS_SHOW_SB, wxDefaultValidator, _T("ID_TEXTCTRL1"));
+    FlexGridSizer4->Add(edPTGIndex, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    btnReloadParams = new wxButton(Panel1, ID_BUTTON1, _("Initialize PTG from params..."), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON1"));
+    wxFont btnReloadParamsFont(wxDEFAULT,wxDEFAULT,wxFONTSTYLE_NORMAL,wxBOLD,false,wxEmptyString,wxFONTENCODING_DEFAULT);
+    btnReloadParams->SetFont(btnReloadParamsFont);
+    FlexGridSizer4->Add(btnReloadParams, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    FlexGridSizer3->Add(FlexGridSizer4, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+    edCfg = new wxTextCtrl(Panel1, ID_TEXTCTRL1, wxEmptyString, wxDefaultPosition, wxSize(-1,150), wxTE_PROCESS_ENTER|wxTE_PROCESS_TAB|wxTE_MULTILINE|wxHSCROLL|wxTE_DONTWRAP|wxALWAYS_SHOW_SB, wxDefaultValidator, _T("ID_TEXTCTRL1"));
     wxFont edCfgFont = wxSystemSettings::GetFont(wxSYS_OEM_FIXED_FONT);
     if ( !edCfgFont.Ok() ) edCfgFont = wxSystemSettings::GetFont(wxSYS_DEFAULT_GUI_FONT);
     edCfgFont.SetPointSize(8);
     edCfgFont.SetFamily(wxTELETYPE);
     edCfg->SetFont(edCfgFont);
-    FlexGridSizer2->Add(edCfg, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 2);
-    FlexGridSizer4 = new wxFlexGridSizer(0, 3, 0, 0);
-    btnReloadParams = new wxButton(Panel1, ID_BUTTON1, _("Reload PTG from params"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON1"));
-    FlexGridSizer4->Add(btnReloadParams, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-    FlexGridSizer2->Add(FlexGridSizer4, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+    FlexGridSizer3->Add(edCfg, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 2);
+    FlexGridSizer5 = new wxFlexGridSizer(0, 3, 0, 0);
+    FlexGridSizer3->Add(FlexGridSizer5, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+    FlexGridSizer2->Add(FlexGridSizer3, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+    FlexGridSizer6 = new wxFlexGridSizer(0, 3, 0, 0);
+    FlexGridSizer2->Add(FlexGridSizer6, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
     Panel1->SetSizer(FlexGridSizer2);
     FlexGridSizer2->Fit(Panel1);
     FlexGridSizer2->SetSizeHints(Panel1);
     FlexGridSizer1->Add(Panel1, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
-    m_plot = new CMyGLCanvas(this,ID_XY_GLCANVAS,wxDefaultPosition,wxSize(600,550),wxTAB_TRAVERSAL,_T("ID_XY_GLCANVAS"));
+    m_plot = new CMyGLCanvas(this,ID_XY_GLCANVAS,wxDefaultPosition,wxSize(600,450),wxTAB_TRAVERSAL,_T("ID_XY_GLCANVAS"));
     FlexGridSizer1->Add(m_plot, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+    edLog = new wxTextCtrl(this, ID_TEXTCTRL2, wxEmptyString, wxDefaultPosition, wxSize(-1,100), wxTE_PROCESS_ENTER|wxTE_PROCESS_TAB|wxTE_MULTILINE|wxTE_READONLY|wxHSCROLL|wxTE_DONTWRAP|wxALWAYS_SHOW_SB, wxDefaultValidator, _T("ID_TEXTCTRL2"));
+    wxFont edLogFont = wxSystemSettings::GetFont(wxSYS_OEM_FIXED_FONT);
+    if ( !edLogFont.Ok() ) edLogFont = wxSystemSettings::GetFont(wxSYS_DEFAULT_GUI_FONT);
+    edLogFont.SetPointSize(8);
+    edLogFont.SetFamily(wxTELETYPE);
+    edLog->SetFont(edLogFont);
+    FlexGridSizer1->Add(edLog, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
     SetSizer(FlexGridSizer1);
     MenuBar1 = new wxMenuBar();
     Menu1 = new wxMenu();
@@ -199,7 +222,9 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent,wxWindowID id)
     SetStatusBar(StatusBar1);
     FlexGridSizer1->SetSizeHints(this);
     Center();
-    
+
+    Connect(ID_CHOICE1,wxEVT_COMMAND_CHOICE_SELECTED,(wxObjectEventFunction)&ptgConfiguratorframe::OncbPTGClassSelect);
+    Connect(ID_SPINCTRL1,wxEVT_COMMAND_SPINCTRL_UPDATED,(wxObjectEventFunction)&ptgConfiguratorframe::OnedPTGIndexChange);
     Connect(ID_BUTTON1,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&ptgConfiguratorframe::OnbtnReloadParamsClick);
     Connect(idMenuQuit,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&ptgConfiguratorframe::OnQuit);
     Connect(idMenuAbout,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&ptgConfiguratorframe::OnAbout);
@@ -209,22 +234,43 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent,wxWindowID id)
 //	m_plot->Connect(wxEVT_LEFT_DOWN,(wxObjectEventFunction)&ptgConfiguratorframe::Onplot3DMouseClick,0,this);
 
 	// Redirect all output to control:
-//	m_myRedirector = new CMyRedirector( edLog, true, 100, true);
+	m_myRedirector = new CMyRedirector( edLog, true, 100, true);
 
 	WX_START_TRY
 
-	// Populate 3D view:
-	{
-		mrpt::opengl::CGridPlaneXYPtr obj = mrpt::opengl::CGridPlaneXY::Create(-50,50, -50,50, 0, 1);
-		obj->setColor_u8(mrpt::utils::TColor(30,30,30,50));
-		m_plot->m_openGLScene->insert( obj );
-	}
+
+	// Populate 3D views:
+	// Split in 2 views:
+	gl_view_PTG      = m_plot->m_openGLScene->createViewport("main");
+	gl_view_TPSpace  = m_plot->m_openGLScene->createViewport("TPSpace");
+
+	gl_view_PTG->setViewportPosition(0,0,0.5,1.0);
+	gl_view_TPSpace->setViewportPosition(0.5,0.0,0.5,1.0);
 
 	gl_robot_path = mrpt::opengl::CSetOfLines::Create();
 	gl_robot_path->setLineWidth(1);
 	gl_robot_path->setColor_u8( mrpt::utils::TColor(40,40,40, 200));
-	m_plot->m_openGLScene->insert(gl_robot_path);
+	gl_view_PTG->insert(gl_robot_path);
 
+	{
+		gl_axis_WS = mrpt::opengl::CAxis::Create(-10.0,-10.0,0,10.0,10.0,0.0, 1.0 ,2.0);
+		gl_axis_WS->setTextScale(0.20);
+		gl_axis_WS->enableTickMarks(true,true,true);
+		gl_axis_WS->setColor_u8(mrpt::utils::TColor(30,30,30,50));
+		gl_axis_WS->setTextLabelOrientation(0,0,0,0);
+		gl_axis_WS->setTextLabelOrientation(1,0,0,0);
+
+		gl_view_PTG->insert( gl_axis_WS );
+	}
+	{
+		gl_axis_TPS= mrpt::opengl::CAxis::Create(-1.0,-1.0,0,1.0,1.0,0.0, 0.1 ,2.0);
+		gl_axis_TPS->setTextScale(0.02);
+		gl_axis_TPS->enableTickMarks(true,true,false);
+		gl_axis_TPS->setColor_u8(mrpt::utils::TColor(30,30,30,50));
+		gl_axis_TPS->setTextLabelOrientation(0,0,0,0);
+		gl_axis_TPS->setTextLabelOrientation(1,0,0,0);
+		gl_view_TPSpace->insert( gl_axis_TPS );
+	}
 
 	// Set camera:
 	m_plot->cameraPointingX=0;
@@ -235,6 +281,34 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent,wxWindowID id)
 	m_plot->cameraAzimuthDeg = -100;
 	m_plot->cameraIsProjective = true;
 
+	gl_view_TPSpace_cam = mrpt::opengl::CCamera::Create();
+	gl_view_TPSpace->insert ( gl_view_TPSpace_cam );
+	gl_view_TPSpace_cam->setAzimuthDegrees( -90 );
+	gl_view_TPSpace_cam->setElevationDegrees(90);
+	gl_view_TPSpace_cam->setProjectiveModel( false );
+	gl_view_TPSpace_cam->setZoomDistance(1.5);
+
+
+	// Populate list of existing PTGs:
+	{
+		mrpt::utils::registerAllPendingClasses();
+		const std::vector<const mrpt::utils::TRuntimeClassId*> &lstClasses = mrpt::utils::getAllRegisteredClasses();
+		for (size_t i=0;i<lstClasses.size();i++)
+		{
+			if (!lstClasses[i]->derivedFrom( "CParameterizedTrajectoryGenerator") ||
+				!strcmpi(lstClasses[i]->className,"CParameterizedTrajectoryGenerator") )
+				continue;
+			cbPTGClass->AppendString( _U( lstClasses[i]->className ));
+		}
+		if (cbPTGClass->GetCount()>0)
+			cbPTGClass->SetSelection(0);
+	}
+	{
+		wxCommandEvent e;
+		OncbPTGClassSelect(e);
+	}
+
+	this->Maximize();
 
 	WX_END_TRY
 }
@@ -243,6 +317,10 @@ ptgConfiguratorframe::~ptgConfiguratorframe()
 {
     //(*Destroy(ptgConfiguratorframe)
     //*)
+	if (ptg) {
+		delete ptg;
+		ptg=NULL;
+	}
 }
 
 
@@ -257,4 +335,101 @@ void ptgConfiguratorframe::OnQuit(wxCommandEvent& event)
 
 void ptgConfiguratorframe::OnbtnReloadParamsClick(wxCommandEvent& event)
 {
+	WX_START_TRY;
+	if (!ptg) return;
+
+	ptg->deinitialize();
+
+	const std::string sKeyPrefix = mrpt::format("PTG%d_", (int)edPTGIndex->GetValue() );
+	const std::string sSection = "PTG_PARAMS";
+
+	mrpt::utils::CConfigFileMemory  cfg;
+	mrpt::utils::CConfigFilePrefixer cfp;
+	cfp.bind(cfg);
+	cfp.setPrefixes("", sKeyPrefix );
+
+	cfg.setContent( std::string( edCfg->GetValue().mb_str() ) );
+
+	ptg->loadFromConfigFile(cfp,sSection);
+
+	ptg->initialize();
+
+	rebuild3Dview();
+
+	WX_END_TRY;
+}
+
+
+void ptgConfiguratorframe::OncbPTGClassSelect(wxCommandEvent& event)
+{
+	WX_START_TRY;
+
+	const int sel = cbPTGClass->GetSelection();
+	if (sel<0) return;
+
+	const std::string sSelPTG = std::string( cbPTGClass->GetString(sel).mb_str() );
+
+	if (ptg) {
+		delete ptg;
+	}
+
+	// Factory:
+	const mrpt::utils::TRuntimeClassId *classId = mrpt::utils::findRegisteredClass( sSelPTG );
+	if (!classId) {
+		THROW_EXCEPTION_CUSTOM_MSG1("[CreatePTG] No PTG named `%s` is registered!",sSelPTG.c_str());
+	}
+
+	ptg = dynamic_cast<mrpt::nav::CParameterizedTrajectoryGenerator*>( classId->createObject() );
+	if (!ptg) {
+		THROW_EXCEPTION_CUSTOM_MSG1("[CreatePTG] Object of type `%s` seems not to be a PTG!",sSelPTG.c_str());
+	}
+
+	// Set some common defaults:
+	ptg->loadDefaultParams();
+
+	dumpPTGcfgToTextBox();
+
+	WX_END_TRY;
+
+	// Update graphs:
+	rebuild3Dview();
+}
+
+void ptgConfiguratorframe::rebuild3Dview()
+{
+	WX_START_TRY;
+
+	const double refDist = ptg ? ptg->getRefDistance() : 10.0;
+
+	gl_axis_WS->setAxisLimits(-refDist,-refDist,.0f, refDist,refDist,.0f);
+
+	m_plot->Refresh();
+	WX_END_TRY;
+}
+
+void ptgConfiguratorframe::OnedPTGIndexChange(wxSpinEvent& event)
+{
+	dumpPTGcfgToTextBox();
+}
+
+void ptgConfiguratorframe::dumpPTGcfgToTextBox()
+{
+	if (!ptg) return;
+
+	// Wrapper to transparently add prefixes to all config keys:
+	const std::string sKeyPrefix = mrpt::format("PTG%d_", (int)edPTGIndex->GetValue() );
+	const std::string sSection = "PTG_PARAMS";
+
+	mrpt::utils::CConfigFileMemory  cfg;
+	mrpt::utils::CConfigFilePrefixer cfp;
+	cfp.bind(cfg);
+	cfp.setPrefixes("", sKeyPrefix );
+
+	const int WN = 40, WV = 20;
+	cfp.write(sSection,"Type", ptg->GetRuntimeClass()->className,   WN,WV, "PTG C++ class name");
+
+	// Dump default params:
+	ptg->saveToConfigFile(cfp,sSection);
+
+	edCfg->SetValue( _U( cfg.getContent().c_str() ));
 }
