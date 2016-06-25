@@ -54,6 +54,7 @@ wxBitmap MyArtProvider::CreateBitmap(const wxArtID& id,
 #include <mrpt/utils/CConfigFilePrefixer.h>
 #include <mrpt/math/geometry.h>
 #include <mrpt/system/os.h>
+#include <mrpt/utils/CTicTac.h>
 
 mrpt::nav::CParameterizedTrajectoryGenerator  * ptg = NULL;
 
@@ -287,7 +288,13 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent,wxWindowID id) :
 	// Populate 3D views:
 	// Split in 2 views:
 	gl_view_PTG      = m_plot->m_openGLScene->createViewport("main");
+	gl_view_PTG->setBorderSize(1);
+
 	gl_view_TPSpace  = m_plot->m_openGLScene->createViewport("TPSpace");
+	gl_view_TPSpace->setBorderSize(1);
+
+	m_plot->addTextMessage(0.01,5,"Workspace", mrpt::utils::TColorf(1,1,1,0.75), "sans", 15,mrpt::opengl::NICE, 1);
+	m_plot->addTextMessage(0.51,5,"TP-Space", mrpt::utils::TColorf(1,1,1,0.75), "sans", 15,mrpt::opengl::NICE, 2);
 
 	gl_view_PTG->setViewportPosition(0,0,0.5,1.0);
 	gl_view_TPSpace->setViewportPosition(0.5,0.0,0.5,1.0);
@@ -323,14 +330,20 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent,wxWindowID id) :
 		gl_view_TPSpace->insert( gl_axis_TPS );
 	}
 
+	gl_tp_obstacles = mrpt::opengl::CSetOfLines::Create();
+	gl_tp_obstacles->setName("tp_obstacles");
+	gl_tp_obstacles->setLineWidth(2.0);
+	gl_tp_obstacles->setColor_u8( mrpt::utils::TColor(0x00,0x00,0x00,0xff) );
+	gl_view_TPSpace->insert(gl_tp_obstacles);
+
 	// Set camera:
 	m_plot->cameraPointingX=0;
 	m_plot->cameraPointingY=0;
 	m_plot->cameraPointingZ=0;
-	m_plot->cameraZoomDistance = 40;
-	m_plot->cameraElevationDeg = 70;
-	m_plot->cameraAzimuthDeg = -100;
-	m_plot->cameraIsProjective = true;
+	m_plot->cameraZoomDistance = 10;
+	m_plot->cameraElevationDeg = 90;
+	m_plot->cameraAzimuthDeg = -90;
+	m_plot->cameraIsProjective = false;
 
 	gl_view_TPSpace_cam = mrpt::opengl::CCamera::Create();
 	gl_view_TPSpace->insert ( gl_view_TPSpace_cam );
@@ -449,8 +462,9 @@ void ptgConfiguratorframe::OncbPTGClassSelect(wxCommandEvent& event)
 void ptgConfiguratorframe::rebuild3Dview()
 {
 	WX_START_TRY;
-
+	static mrpt::utils::CTicTac timer;
 	const double refDist = ptg ? ptg->getRefDistance() : 10.0;
+	ASSERT_(refDist>0);
 
 	// Limits:
 	gl_axis_WS->setAxisLimits(-refDist,-refDist,.0f, refDist,refDist,.0f);
@@ -472,7 +486,10 @@ void ptgConfiguratorframe::rebuild3Dview()
 				if (ok_x && ok_y)
 				{
 					gl_WS_obs->insertPoint(ox,oy,0);
+					timer.Tic();
 					ptg->updateTPObstacle(ox,oy, TP_Obstacles);
+					const double t =timer.Tac();
+					StatusBar1->SetStatusText(wxString::Format(wxT("TP-Obstacle build time: %.06f ms"),t*1e3), 2);
 				}
 			}
 
@@ -492,7 +509,7 @@ void ptgConfiguratorframe::rebuild3Dview()
 
 					double min_shape_dists = 1.0;
 					edMinDistBtwShapes->GetValue().ToDouble(&min_shape_dists);
-					for (double d=max_dist;d>=min_shape_dists;d-=min_shape_dists)
+					for (double d=max_dist;d>=0;d-=min_shape_dists)
 					{
 						uint16_t step;
 						if (!ptg->getPathStepForDist(k, d, step))
@@ -504,6 +521,27 @@ void ptgConfiguratorframe::rebuild3Dview()
 					}
 				}
 			}
+
+
+			// TP-Obstacles:
+			gl_tp_obstacles->clear();
+			{
+				const size_t nObs = TP_Obstacles.size();
+				if (nObs>1)
+				{
+					for (size_t i=0;i<=nObs;i++)
+					{
+						const double d0 = TP_Obstacles[i % nObs] / refDist;
+						const double a0 = M_PI * (-1.0 + 2.0 * ((i % nObs)+0.5)/nObs );
+						const double d1 = TP_Obstacles[(i+1) % nObs] / refDist;
+						const double a1 = M_PI * (-1.0 + 2.0 * (((i+1) % nObs)+0.5)/nObs );
+						gl_tp_obstacles->appendLine(
+							d0*cos(a0),d0*sin(a0),0.0,
+							d1*cos(a1),d1*sin(a1),0.0 );
+					}
+				}
+			}
+
 		} catch (...)
 		{
 			// Ignore errors if PTG is not initialized
