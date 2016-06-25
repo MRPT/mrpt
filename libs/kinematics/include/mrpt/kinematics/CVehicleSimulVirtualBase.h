@@ -45,7 +45,8 @@ namespace kinematics
 		/** Returns the current pose according to (noisy) odometry \sa setOdometryErrors */
 		const mrpt::math::TPose2D  & getCurrentOdometricPose() const { return m_odometry; }
 		/** Brute-force overwrite robot odometry  */
-		void setCurrentOdometricPose(const mrpt::math::TPose2D  &pose) { m_odometry = pose; }
+		template<typename T>
+		void setCurrentOdometricPose(const T &pose) { m_odometry = pose; }
 
 		/** Returns the instantaneous, ground truth velocity vector (vx,vy,omega) in world coordinates */
 		const mrpt::math::TTwist2D & getCurrentGTVel() const { return m_vel; }

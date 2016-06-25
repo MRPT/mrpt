@@ -35,6 +35,9 @@ namespace kinematics
 		void setV(double v) { m_v=v; }
 		void setW(double w) { m_w=w; }
 
+		double getV() {return m_v;}
+		double getW() {return m_w;}
+
 		/** Used to command the robot a desired movement: 
 			* \param lin_vel Linar velocity (m/s)
 			* \param ang_vel Angular velocity (rad/s)
