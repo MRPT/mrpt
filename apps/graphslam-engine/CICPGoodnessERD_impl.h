@@ -465,6 +465,9 @@ void CICPGoodnessERD_t<GRAPH_t>::updateVisuals() {
 			// set the scan contents
 			laser_scan_viz->setScan(*m_fake_laser_scan2D);
 		}
+		else {
+			laser_scan_viz->setScan(*m_last_laser_scan2D);
+		}
 
 		// set the pose of the laser scan
 		typename GRAPH_t::global_poses_t::const_iterator search = 
@@ -639,7 +642,6 @@ void CICPGoodnessERD_t<GRAPH_t>::TParams::dumpToTextStream(
 	out.printf("Visualize laser scans          = %d\n", visualize_laser_scans);
 	out.printf("Enable intensity img viewport  = %d\n", enable_intensity_viewport);
 	out.printf("Enable range img viewport      = %d\n", enable_range_viewport);
-	out.printf("Visualize laser scans          = %d\n", visualize_laser_scans);
 	out.printf("3DScans Image Directory        = %s\n", scans_img_external_dir.c_str());
 
 	decider.range_scanner_t::params.dumpToTextStream(out);
