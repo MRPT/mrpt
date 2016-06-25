@@ -141,11 +141,12 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent,wxWindowID id)
     wxFlexGridSizer* FlexGridSizer5;
     wxFlexGridSizer* FlexGridSizer2;
     wxMenu* Menu1;
+    wxFlexGridSizer* FlexGridSizer7;
     wxMenuBar* MenuBar1;
     wxFlexGridSizer* FlexGridSizer6;
     wxFlexGridSizer* FlexGridSizer1;
     wxMenu* Menu2;
-
+    
     Create(parent, id, _("PTG configurator - Part of the MRPT project"), wxDefaultPosition, wxDefaultSize, wxDEFAULT_FRAME_STYLE, _T("id"));
     SetClientSize(wxSize(893,576));
     {
@@ -162,11 +163,14 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent,wxWindowID id)
     FlexGridSizer2->AddGrowableRow(0);
     FlexGridSizer3 = new wxFlexGridSizer(0, 1, 0, 0);
     FlexGridSizer3->AddGrowableCol(0);
-    FlexGridSizer3->AddGrowableRow(3);
+    FlexGridSizer3->AddGrowableRow(2);
+    FlexGridSizer7 = new wxFlexGridSizer(1, 2, 0, 0);
+    FlexGridSizer7->AddGrowableCol(1);
     StaticText1 = new wxStaticText(Panel1, ID_STATICTEXT1, _("Select a PTG class:"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT1"));
-    FlexGridSizer3->Add(StaticText1, 1, wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
+    FlexGridSizer7->Add(StaticText1, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     cbPTGClass = new wxChoice(Panel1, ID_CHOICE1, wxDefaultPosition, wxDefaultSize, 0, 0, wxCB_SORT, wxDefaultValidator, _T("ID_CHOICE1"));
-    FlexGridSizer3->Add(cbPTGClass, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    FlexGridSizer7->Add(cbPTGClass, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    FlexGridSizer3->Add(FlexGridSizer7, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
     FlexGridSizer4 = new wxFlexGridSizer(1, 0, 0, 0);
     StaticText2 = new wxStaticText(Panel1, ID_STATICTEXT2, _("PTG index for cfg file:"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT2"));
     FlexGridSizer4->Add(StaticText2, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
@@ -222,7 +226,7 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent,wxWindowID id)
     SetStatusBar(StatusBar1);
     FlexGridSizer1->SetSizeHints(this);
     Center();
-
+    
     Connect(ID_CHOICE1,wxEVT_COMMAND_CHOICE_SELECTED,(wxObjectEventFunction)&ptgConfiguratorframe::OncbPTGClassSelect);
     Connect(ID_SPINCTRL1,wxEVT_COMMAND_SPINCTRL_UPDATED,(wxObjectEventFunction)&ptgConfiguratorframe::OnedPTGIndexChange);
     Connect(ID_BUTTON1,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&ptgConfiguratorframe::OnbtnReloadParamsClick);
@@ -291,7 +295,7 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent,wxWindowID id)
 
 	// Populate list of existing PTGs:
 	{
-		mrpt::utils::registerAllPendingClasses();
+		mrpt::nav::registerAllNavigationClasses();
 		const std::vector<const mrpt::utils::TRuntimeClassId*> &lstClasses = mrpt::utils::getAllRegisteredClasses();
 		for (size_t i=0;i<lstClasses.size();i++)
 		{

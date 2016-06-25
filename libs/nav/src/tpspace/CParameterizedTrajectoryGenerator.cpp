@@ -14,12 +14,16 @@
 #include <mrpt/opengl/CSetOfLines.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
+#include <mrpt/utils/CStartUpClassesRegister.h>
 
 using namespace mrpt::nav;
 
 std::string CParameterizedTrajectoryGenerator::OUTPUT_DEBUG_PATH_PREFIX = "./reactivenav.logs";
 
 IMPLEMENTS_VIRTUAL_SERIALIZABLE(CParameterizedTrajectoryGenerator, CSerializable, mrpt::nav)
+
+extern mrpt::utils::CStartUpClassesRegister  mrpt_reactivenav_class_reg;
+static const int dumm = mrpt_reactivenav_class_reg.do_nothing(); // Avoid compiler removing this class in static linking
 
 
 CParameterizedTrajectoryGenerator::CParameterizedTrajectoryGenerator() :

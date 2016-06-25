@@ -20,22 +20,31 @@
 							<object class="wxFlexGridSizer" variable="FlexGridSizer3" member="no">
 								<cols>1</cols>
 								<growablecols>0</growablecols>
-								<growablerows>3</growablerows>
+								<growablerows>2</growablerows>
 								<object class="sizeritem">
-									<object class="wxStaticText" name="ID_STATICTEXT1" variable="StaticText1" member="yes">
-										<label>Select a PTG class:</label>
-									</object>
-									<flag>wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL</flag>
-									<border>5</border>
-									<option>1</option>
-								</object>
-								<object class="sizeritem">
-									<object class="wxChoice" name="ID_CHOICE1" variable="cbPTGClass" member="yes">
-										<style>wxCB_SORT</style>
-										<handler function="OncbPTGClassSelect" entry="EVT_CHOICE" />
+									<object class="wxFlexGridSizer" variable="FlexGridSizer7" member="no">
+										<cols>2</cols>
+										<rows>1</rows>
+										<growablecols>1</growablecols>
+										<object class="sizeritem">
+											<object class="wxStaticText" name="ID_STATICTEXT1" variable="StaticText1" member="yes">
+												<label>Select a PTG class:</label>
+											</object>
+											<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+											<border>5</border>
+											<option>1</option>
+										</object>
+										<object class="sizeritem">
+											<object class="wxChoice" name="ID_CHOICE1" variable="cbPTGClass" member="yes">
+												<style>wxCB_SORT</style>
+												<handler function="OncbPTGClassSelect" entry="EVT_CHOICE" />
+											</object>
+											<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+											<border>5</border>
+											<option>1</option>
+										</object>
 									</object>
 									<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
-									<border>5</border>
 									<option>1</option>
 								</object>
 								<object class="sizeritem">
