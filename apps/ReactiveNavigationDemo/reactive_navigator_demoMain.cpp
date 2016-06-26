@@ -926,7 +926,7 @@ void reactive_navigator_demoframe::simulateOneStep(double time_step)
 	if (ptg_nav) ptg_nav->getLastLogRecord(lfr);
 	
 	const int sel_PTG = cbSelPTG->GetSelection();
-	if (sel_PTG>=0 && sel_PTG<lfr.infoPerPTG.size())
+	if (sel_PTG>=0 && sel_PTG<(int)lfr.infoPerPTG.size())
 	{
 		const size_t nObs = lfr.infoPerPTG[sel_PTG].TP_Obstacles.size();
 		if (lfr.infoPerPTG.size()>0 && IS_CLASS(lfr.infoPerPTG[sel_PTG].HLFR, CLogFileRecord_ND))

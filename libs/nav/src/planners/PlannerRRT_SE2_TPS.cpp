@@ -483,8 +483,6 @@ void PlannerRRT_SE2_TPS::spaceTransformer(
 	using namespace mrpt::nav;
 	try
 	{
-		const size_t Ki = in_PTG->getAlphaValuesCount();  //getAlphaValuesCount is 0!
-
 		// Take "k_rand"s and "distances" such that the collision hits the obstacles
 		// in the "grid" of the given PT
 		// --------------------------------------------------------------------
