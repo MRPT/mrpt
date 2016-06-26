@@ -227,8 +227,9 @@ namespace mrpt
 		void cmdVel_scale(std::vector<double> &vel_cmd, double vel_scale) MRPT_OVERRIDE
 		{
 			vel_cmd[0] *= vel_scale; // |(vx,vy)|
-			vel_cmd[2] *= vel_scale; // ramp_time
 			vel_cmd[3] *= vel_scale; // rot_speed
+			if (vel_scale!=0)
+				vel_cmd[2] /= vel_scale; // ramp_time
 		}
 
 		// See base class docs.
@@ -239,9 +240,10 @@ namespace mrpt
 			if (vel_cmd[0]>robotMax_V_mps) f = robotMax_V_mps/vel_cmd[0];
 
 			vel_cmd[0] *= f; // |(vx,vy)|
-			vel_cmd[2] *= f; // ramp_time
 			vel_cmd[3] *= f; // rot_speed
-			
+			if (f!=0)
+				vel_cmd[2] /= f; // ramp_time
+
 			// Blending with "beta" not required, since the ramp_time already blends cmds for holo robots.
 		}
 
