@@ -30,6 +30,8 @@
 			- New method mrpt::poses::CPosePDFParticles::resetAroundSetOfPoses()
 			- Class mrpt::utils::CRobotSimulator renamed ==> mrpt::kinematics::CVehicleSimul_DiffDriven
 			- New twist (linear + angular velocity state) classes: mrpt::math::TTwist2D, mrpt::math::TTwist3D
+		- \ref mrpt_gui_grp
+			- mrpt::gui::CMyGLCanvasBase is now derived from mrpt::opengl::CTextMessageCapable so they can draw text labels
 		- \ref mrpt_kinematics_grp
 			- New classes for 2D robot simulation:
 				- mrpt::kinematics::CVehicleSimul_DiffDriven

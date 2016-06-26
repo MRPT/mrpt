@@ -53,6 +53,7 @@ namespace mrpt
 		bool inverseMap_WS2TP(double x, double y, int &out_k, double &out_d, double tolerance_dist = 0.10) const MRPT_OVERRIDE;
 		bool PTG_IsIntoDomain( double x, double y ) const MRPT_OVERRIDE;
 		void ptgDiffDriveSteeringFunction( float alpha, float t,float x, float y, float phi, float &v, float &w ) const MRPT_OVERRIDE;
+		void loadDefaultParams() MRPT_OVERRIDE;
 
 	 protected:
 		/** A generation parameter */

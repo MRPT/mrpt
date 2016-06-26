@@ -9,7 +9,6 @@
 
 #include "MyGLCanvas.h"
 
-
 using namespace std;
 
 #if APP_HAS_3D
@@ -46,7 +45,10 @@ void CMyGLCanvas::OnPostRenderSwapBuffers(double At, wxPaintDC &dc)
 
 void CMyGLCanvas::OnPostRender()
 {
-	// Show credits on the screen? renderTextBitmap(20, 20, "" );
+	// If any, draw the 2D text messages:
+	int w,h;
+	this->GetSize(&w,&h);
+	this->render_text_messages(w,h);
 }
 
 #endif
