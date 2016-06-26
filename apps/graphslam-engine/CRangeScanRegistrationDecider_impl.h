@@ -89,8 +89,8 @@ void CRangeScanRegistrationDecider_t<GRAPH_t>::getICPEdge(
 	m1.insertObservation(&from);
 	m2.insertObservation(&to);
 
-	this->decimatePointsMap(&m1, /* keep every = */ 20, /* low_lim = */ 6000);
-	this->decimatePointsMap(&m2, /* keep every = */ 20, /* low_lim = */ 6000);
+//	this->decimatePointsMap(&m1, /* keep every = */ 20, /* low_lim = */ 6000);
+//	this->decimatePointsMap(&m2, /* keep every = */ 20, /* low_lim = */ 6000);
 
 	//from.project3DPointsFromDepthImageInto(m1, false);
 	//to.project3DPointsFromDepthImageInto(m2, false);
@@ -114,12 +114,12 @@ void CRangeScanRegistrationDecider_t<GRAPH_t>::getICPEdge(
 	//std::cout << "For second laser scan: " << endl;
 	//to.getDescriptionAsText(std::cout);
 
-	//std::cout << "ICP Alignment operation: \n" 
-		//<< "\t nIterations: " << info.nIterations
-		//<< "\t quality: " << info.quality
-		//<< "\t goodness: " << info.goodness
-		//<< std::endl;
-	//std::cout << "Alignemnt took: " << running_time << " s" << std::endl;
+	std::cout << "ICP Alignment operation: \n" 
+		<< "\t nIterations: " << info.nIterations
+		<< "\t quality: " << info.quality
+		<< "\t goodness: " << info.goodness
+		<< std::endl;
+	std::cout << "Alignemnt took: " << running_time << " s" << std::endl;
 
 	// return the edge regardless of the goodness of the alignment
 	// copy fro the 3D PDF

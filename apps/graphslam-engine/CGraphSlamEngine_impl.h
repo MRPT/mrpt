@@ -185,6 +185,16 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::initCGraphSlam
 		}
 	}
 
+	// change the CImage path in case of RGBD datasets
+	if (mrpt::system::strCmpI(m_GT_file_format, "rgbd_tum")) {
+		m_img_prev_path_base = CImage::IMAGES_PATH_BASE;
+
+		std::string rawlog_fname_noext = system::extractFileName(m_rawlog_fname);
+		std::string rawlog_dir = system::extractFileDirectory(m_rawlog_fname);
+		std::string m_img_external_storage_dir = rawlog_dir + rawlog_fname_noext + "_Images/";
+		CImage::IMAGES_PATH_BASE = m_img_external_storage_dir;
+	}
+
 	// axis
 	if (m_win) {
 		COpenGLScenePtr scene = m_win->get3DSceneAndLock();

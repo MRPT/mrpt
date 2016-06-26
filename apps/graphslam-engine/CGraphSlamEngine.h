@@ -52,6 +52,7 @@
 #include <mrpt/utils/CConfigFile.h>
 #include <mrpt/utils/types_simple.h>
 #include <mrpt/utils/TColor.h>
+#include <mrpt/utils/CImage.h>
 
 #include <cstdlib>
 #include <string>
@@ -373,6 +374,8 @@ namespace mrpt { namespace graphslam {
 				// implementation
 				mrpt::synch::CCriticalSection m_graph_section;
 
+				std::string m_img_external_storage_dir;
+				std::string m_img_prev_path_base;
 
 				// struct to hold the parameters of the info file generated during the
 				// conversion of RGBD TUM dataset .rosbags to rawlog format
