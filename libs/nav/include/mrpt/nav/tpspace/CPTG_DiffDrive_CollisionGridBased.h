@@ -37,6 +37,9 @@ namespace nav
 
 	/** Base class for all PTGs suitable to non-holonomic, differentially-driven (or Ackermann) vehicles
 	  * based on numerical integration of the trajectories and collision look-up-table.
+	  * Regarding `initialize()`: in this this family of PTGs, the method builds the collision grid or load it from a cache file.
+	  * Collision grids must be calculated before calling getTPObstacle(). Robot shape must be set before initializing with setRobotShape().
+	  * The rest of PTG parameters should have been set at the constructor.
 	  */
 	class NAV_IMPEXP CPTG_DiffDrive_CollisionGridBased : 
 		public CParameterizedTrajectoryGenerator, 
@@ -63,15 +66,6 @@ namespace nav
 		  * after initialization. */
 		virtual void setRefDistance(const double refDist);
 
-		/** This this family of PTGs, this method builds the collision grid or load it from a cache file.
-		  * Collision grids must be calculated before calling getTPObstacle().
-		  * Robot shape must be set before initializing with setRobotShape(). 
-		  * The rest of PTG parameters should have been set at the constructor.
-		  *  \param cacheFilename The filename where the collision grids will be dumped to speed-up future recalculations. If it exists upon call, the collision grid will be loaded from here if all PTG parameters match. Example: "PTG_%03d.dat.gz".
-		  */
-		void initialize(const std::string & cacheFilename = std::string(), const bool verbose = true) MRPT_OVERRIDE;
-		void deinitialize() MRPT_OVERRIDE;
-
 		// Access to PTG paths (see docs in base class)
 		size_t getPathStepCount(uint16_t k) const MRPT_OVERRIDE;
 		void getPathPose(uint16_t k, uint16_t step, mrpt::math::TPose2D &p) const MRPT_OVERRIDE;
@@ -92,6 +86,8 @@ protected:
 		CPTG_DiffDrive_CollisionGridBased();
 
 		void internal_processNewRobotShape() MRPT_OVERRIDE;
+		void internal_initialize(const std::string & cacheFilename = std::string(), const bool verbose = true) MRPT_OVERRIDE;
+		void internal_deinitialize() MRPT_OVERRIDE;
 
 		/** Possible values in "params" (those in CParameterizedTrajectoryGenerator, which is called internally, plus):
 		 *   - `${sKeyPrefix}resolution`: The cell size
@@ -184,8 +180,6 @@ protected:
 
 		/** This grid will contain indexes data for speeding-up the default, brute-force lambda function */
 		mrpt::utils::CDynamicGrid<TCellForLambdaFunction>	m_lambdaFunctionOptimizer;
-
-		void freeMemory(); //!< Free all the memory buffers
 	};
 
 	/** @} */

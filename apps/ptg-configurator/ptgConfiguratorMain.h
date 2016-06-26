@@ -71,6 +71,7 @@ class ptgConfiguratorframe: public wxFrame
         //(*Identifiers(ptgConfiguratorframe)
         static const long ID_STATICTEXT1;
         static const long ID_CHOICE1;
+        static const long ID_STATICTEXT5;
         static const long ID_STATICTEXT2;
         static const long ID_SPINCTRL1;
         static const long ID_BUTTON1;
@@ -106,6 +107,7 @@ class ptgConfiguratorframe: public wxFrame
         wxChoice* cbPTGClass;
         CMyGLCanvas* m_plot;
         wxTextCtrl* edLog;
+        wxStaticText* StaticText5;
         wxStatusBar* StatusBar1;
         wxTextCtrl* edObsX;
         wxButton* btnReloadParams;

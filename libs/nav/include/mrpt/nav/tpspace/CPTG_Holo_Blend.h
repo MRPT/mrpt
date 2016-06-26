@@ -40,8 +40,6 @@ namespace mrpt
 		std::string getDescription() const MRPT_OVERRIDE;
 		bool inverseMap_WS2TP(double x, double y, int &out_k, double &out_d, double tolerance_dist = 0.10) const MRPT_OVERRIDE;
 		bool PTG_IsIntoDomain( double x, double y ) const MRPT_OVERRIDE;
-		void initialize(const std::string & cacheFilename = std::string(), const bool verbose = true) MRPT_OVERRIDE;
-		void deinitialize() MRPT_OVERRIDE;
 		void updateCurrentRobotVel(const mrpt::math::TTwist2D &curVelLocal);
 
 		/** Converts a discretized "alpha" value into a feasible motion command or action. See derived classes for the meaning of these actions */
@@ -61,6 +59,8 @@ namespace mrpt
 		mrpt::math::TTwist2D curVelLocal;
 
 		void internal_processNewRobotShape() MRPT_OVERRIDE;
+		void internal_initialize(const std::string & cacheFilename = std::string(), const bool verbose = true) MRPT_OVERRIDE;
+		void internal_deinitialize() MRPT_OVERRIDE;
 	};
 	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(CPTG_Holo_Blend, CParameterizedTrajectoryGenerator, NAV_IMPEXP)
 

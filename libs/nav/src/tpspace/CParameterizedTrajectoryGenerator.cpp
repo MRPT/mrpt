@@ -29,7 +29,8 @@ static const int dumm = mrpt_reactivenav_class_reg.do_nothing(); // Avoid compil
 CParameterizedTrajectoryGenerator::CParameterizedTrajectoryGenerator() :
 	refDistance(.0),
 	m_alphaValuesCount(0),
-	m_score_priority(1.0)
+	m_score_priority(1.0),
+	m_is_initialized(false)
 { }
 
 void CParameterizedTrajectoryGenerator::loadDefaultParams()
@@ -60,6 +61,8 @@ void CParameterizedTrajectoryGenerator::saveToConfigFile(mrpt::utils::CConfigFil
 
 void CParameterizedTrajectoryGenerator::internal_readFromStream(mrpt::utils::CStream &in)
 {
+	this->deinitialize();
+
 	uint8_t version;
 	in >> version;
 	switch (version)
@@ -264,5 +267,22 @@ void CPTG_RobotShape_Circular::saveToConfigFile(mrpt::utils::CConfigFileBase &cf
 	cfg.write(sSection,"robot_radius",m_robotRadius,   WN,WV, "Robot radius [m].");
 }
 
+bool CParameterizedTrajectoryGenerator::isInitialized() const 
+{ 
+	return m_is_initialized; 
+}
+
+void CParameterizedTrajectoryGenerator::initialize(const std::string & cacheFilename, const bool verbose)
+{
+	if (m_is_initialized) return;
+	this->internal_initialize(cacheFilename,verbose);
+	m_is_initialized = true;
+}
+void CParameterizedTrajectoryGenerator::deinitialize()
+{
+	if (!m_is_initialized) return;
+	this->internal_deinitialize();
+	m_is_initialized = false;
+}
 
 

@@ -62,6 +62,7 @@ mrpt::nav::CParameterizedTrajectoryGenerator  * ptg = NULL;
 //(*IdInit(ptgConfiguratorframe)
 const long ptgConfiguratorframe::ID_STATICTEXT1 = wxNewId();
 const long ptgConfiguratorframe::ID_CHOICE1 = wxNewId();
+const long ptgConfiguratorframe::ID_STATICTEXT5 = wxNewId();
 const long ptgConfiguratorframe::ID_STATICTEXT2 = wxNewId();
 const long ptgConfiguratorframe::ID_SPINCTRL1 = wxNewId();
 const long ptgConfiguratorframe::ID_BUTTON1 = wxNewId();
@@ -162,7 +163,7 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent,wxWindowID id) :
     wxFlexGridSizer* FlexGridSizer6;
     wxFlexGridSizer* FlexGridSizer1;
     wxMenu* Menu2;
-
+    
     Create(parent, id, _("PTG configurator - Part of the MRPT project"), wxDefaultPosition, wxDefaultSize, wxDEFAULT_FRAME_STYLE, _T("id"));
     SetClientSize(wxSize(893,576));
     {
@@ -180,12 +181,14 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent,wxWindowID id) :
     FlexGridSizer3 = new wxFlexGridSizer(0, 1, 0, 0);
     FlexGridSizer3->AddGrowableCol(0);
     FlexGridSizer3->AddGrowableRow(3);
-    FlexGridSizer7 = new wxFlexGridSizer(1, 2, 0, 0);
+    FlexGridSizer7 = new wxFlexGridSizer(1, 0, 0, 0);
     FlexGridSizer7->AddGrowableCol(1);
     StaticText1 = new wxStaticText(Panel1, ID_STATICTEXT1, _("Select a PTG class:"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT1"));
     FlexGridSizer7->Add(StaticText1, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     cbPTGClass = new wxChoice(Panel1, ID_CHOICE1, wxDefaultPosition, wxDefaultSize, 0, 0, wxCB_SORT, wxDefaultValidator, _T("ID_CHOICE1"));
     FlexGridSizer7->Add(cbPTGClass, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    StaticText5 = new wxStaticText(Panel1, ID_STATICTEXT5, _("After selecting a PTG, clhange params. as desired, then click `Initialize PTG`"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT5"));
+    FlexGridSizer7->Add(StaticText5, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     FlexGridSizer3->Add(FlexGridSizer7, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
     FlexGridSizer4 = new wxFlexGridSizer(1, 0, 0, 0);
     StaticText2 = new wxStaticText(Panel1, ID_STATICTEXT2, _("PTG index for cfg file:"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT2"));
@@ -193,7 +196,7 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent,wxWindowID id) :
     edPTGIndex = new wxSpinCtrl(Panel1, ID_SPINCTRL1, _T("0"), wxDefaultPosition, wxDefaultSize, 0, 0, 100, 0, _T("ID_SPINCTRL1"));
     edPTGIndex->SetValue(_T("0"));
     FlexGridSizer4->Add(edPTGIndex, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-    btnReloadParams = new wxButton(Panel1, ID_BUTTON1, _("Initialize PTG from params..."), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON1"));
+    btnReloadParams = new wxButton(Panel1, ID_BUTTON1, _("Initialize PTG"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON1"));
     wxFont btnReloadParamsFont(wxDEFAULT,wxDEFAULT,wxFONTSTYLE_NORMAL,wxBOLD,false,wxEmptyString,wxFONTENCODING_DEFAULT);
     btnReloadParams->SetFont(btnReloadParamsFont);
     FlexGridSizer4->Add(btnReloadParams, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
@@ -264,7 +267,7 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent,wxWindowID id) :
     SetStatusBar(StatusBar1);
     FlexGridSizer1->SetSizeHints(this);
     Center();
-
+    
     Connect(ID_CHOICE1,wxEVT_COMMAND_CHOICE_SELECTED,(wxObjectEventFunction)&ptgConfiguratorframe::OncbPTGClassSelect);
     Connect(ID_SPINCTRL1,wxEVT_COMMAND_SPINCTRL_UPDATED,(wxObjectEventFunction)&ptgConfiguratorframe::OnedPTGIndexChange);
     Connect(ID_BUTTON1,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&ptgConfiguratorframe::OnbtnReloadParamsClick);
@@ -469,85 +472,77 @@ void ptgConfiguratorframe::rebuild3Dview()
 	// Limits:
 	gl_axis_WS->setAxisLimits(-refDist,-refDist,.0f, refDist,refDist,.0f);
 
-	if (ptg)
+	if (ptg && ptg->isInitialized())
 	{
-		try
+		// TP-Obstacles:
+		std::vector<double> TP_Obstacles;
+		ptg->initTPObstacles(TP_Obstacles);
+
+		gl_WS_obs->clear();
+		if (cbBuildTPObs->IsChecked())
 		{
-			// TP-Obstacles:
-			std::vector<double> TP_Obstacles;
-			ptg->initTPObstacles(TP_Obstacles);
-
-			gl_WS_obs->clear();
-			if (cbBuildTPObs->IsChecked())
+			double ox,oy;
+			bool ok_x = edObsX->GetValue().ToDouble(&ox);
+			bool ok_y = edObsY->GetValue().ToDouble(&oy);
+			if (ok_x && ok_y)
 			{
-				double ox,oy;
-				bool ok_x = edObsX->GetValue().ToDouble(&ox);
-				bool ok_y = edObsY->GetValue().ToDouble(&oy);
-				if (ok_x && ok_y)
-				{
-					gl_WS_obs->insertPoint(ox,oy,0);
-					timer.Tic();
-					ptg->updateTPObstacle(ox,oy, TP_Obstacles);
-					const double t =timer.Tac();
-					StatusBar1->SetStatusText(wxString::Format(wxT("TP-Obstacle build time: %.06f ms"),t*1e3), 2);
-				}
+				gl_WS_obs->insertPoint(ox,oy,0);
+				timer.Tic();
+				ptg->updateTPObstacle(ox,oy, TP_Obstacles);
+				const double t =timer.Tac();
+				StatusBar1->SetStatusText(wxString::Format(wxT("TP-Obstacle build time: %.06f ms"),t*1e3), 2);
 			}
+		}
 
-			// All paths:
-			gl_robot_ptg_prediction->clear();
-			gl_robot_ptg_prediction->clear();
-			for (int k=0;k<ptg->getPathCount();k++)
-			{
-				const double max_dist = TP_Obstacles[k];
-				ptg->renderPathAsSimpleLine(k,*gl_robot_ptg_prediction,0.10, max_dist);
-
-				// Overlay a sequence of robot shapes:
-				if (cbDrawShapePath->IsChecked())
-				{
-					const mrpt::nav::CPTG_RobotShape_Polygonal * ptg_shape_poly = dynamic_cast<const mrpt::nav::CPTG_RobotShape_Polygonal *>(ptg);
-					const mrpt::nav::CPTG_RobotShape_Circular  * ptg_shape_circ = dynamic_cast<const mrpt::nav::CPTG_RobotShape_Circular *>(ptg);
-
-					double min_shape_dists = 1.0;
-					edMinDistBtwShapes->GetValue().ToDouble(&min_shape_dists);
-					for (double d=max_dist;d>=0;d-=min_shape_dists)
-					{
-						uint16_t step;
-						if (!ptg->getPathStepForDist(k, d, step))
-							continue;
-						mrpt::math::TPose2D p;
-						ptg->getPathPose(k, step, p);
-						if (ptg_shape_poly) add_robotShape_to_setOfLines(ptg_shape_poly, *gl_robot_ptg_prediction, mrpt::poses::CPose2D(p) );
-						if (ptg_shape_circ) add_robotShapeCirc_to_setOfLines(ptg_shape_circ, *gl_robot_ptg_prediction, mrpt::poses::CPose2D(p) );
-					}
-				}
-			}
-
-
-			// TP-Obstacles:
-			gl_tp_obstacles->clear();
-			{
-				const size_t nObs = TP_Obstacles.size();
-				if (nObs>1)
-				{
-					for (size_t i=0;i<=nObs;i++)
-					{
-						const double d0 = TP_Obstacles[i % nObs] / refDist;
-						const double a0 = M_PI * (-1.0 + 2.0 * ((i % nObs)+0.5)/nObs );
-						const double d1 = TP_Obstacles[(i+1) % nObs] / refDist;
-						const double a1 = M_PI * (-1.0 + 2.0 * (((i+1) % nObs)+0.5)/nObs );
-						gl_tp_obstacles->appendLine(
-							d0*cos(a0),d0*sin(a0),0.0,
-							d1*cos(a1),d1*sin(a1),0.0 );
-					}
-				}
-			}
-
-		} catch (...)
+		// All paths:
+		gl_robot_ptg_prediction->clear();
+		gl_robot_ptg_prediction->clear();
+		for (int k=0;k<ptg->getPathCount();k++)
 		{
-			// Ignore errors if PTG is not initialized
+			const double max_dist = TP_Obstacles[k];
+			ptg->renderPathAsSimpleLine(k,*gl_robot_ptg_prediction,0.10, max_dist);
+
+			// Overlay a sequence of robot shapes:
+			if (cbDrawShapePath->IsChecked())
+			{
+				const mrpt::nav::CPTG_RobotShape_Polygonal * ptg_shape_poly = dynamic_cast<const mrpt::nav::CPTG_RobotShape_Polygonal *>(ptg);
+				const mrpt::nav::CPTG_RobotShape_Circular  * ptg_shape_circ = dynamic_cast<const mrpt::nav::CPTG_RobotShape_Circular *>(ptg);
+
+				double min_shape_dists = 1.0;
+				edMinDistBtwShapes->GetValue().ToDouble(&min_shape_dists);
+				for (double d=max_dist;d>=0;d-=min_shape_dists)
+				{
+					uint16_t step;
+					if (!ptg->getPathStepForDist(k, d, step))
+						continue;
+					mrpt::math::TPose2D p;
+					ptg->getPathPose(k, step, p);
+					if (ptg_shape_poly) add_robotShape_to_setOfLines(ptg_shape_poly, *gl_robot_ptg_prediction, mrpt::poses::CPose2D(p) );
+					if (ptg_shape_circ) add_robotShapeCirc_to_setOfLines(ptg_shape_circ, *gl_robot_ptg_prediction, mrpt::poses::CPose2D(p) );
+				}
+			}
+		}
+
+
+		// TP-Obstacles:
+		gl_tp_obstacles->clear();
+		{
+			const size_t nObs = TP_Obstacles.size();
+			if (nObs>1)
+			{
+				for (size_t i=0;i<=nObs;i++)
+				{
+					const double d0 = TP_Obstacles[i % nObs] / refDist;
+					const double a0 = M_PI * (-1.0 + 2.0 * ((i % nObs)+0.5)/nObs );
+					const double d1 = TP_Obstacles[(i+1) % nObs] / refDist;
+					const double a1 = M_PI * (-1.0 + 2.0 * (((i+1) % nObs)+0.5)/nObs );
+					gl_tp_obstacles->appendLine(
+						d0*cos(a0),d0*sin(a0),0.0,
+						d1*cos(a1),d1*sin(a1),0.0 );
+				}
+			}
 		}
 	}
-
 
 	m_plot->Refresh();
 	WX_END_TRY;
@@ -623,7 +618,7 @@ void ptgConfiguratorframe::Onplot3DMouseMove(wxMouseEvent& event)
 			edObsY->SetValue( _U( mrpt::format("%.03f",m_curCursorPos.y).c_str() ) );
 			rebuild3Dview();
 		}
-		//StatusBar1->SetStatusText(wxString::Format(wxT("X=%.03f Y=%.04f Z=0"),m_curCursorPos.x,m_curCursorPos.y), 2);
+		StatusBar1->SetStatusText(wxString::Format(wxT("Cursor: X=%.03f Y=%.04f"),m_curCursorPos.x,m_curCursorPos.y), 0);
 	}
 
 	// Do normal process in that class:

@@ -9,6 +9,7 @@
 #include "poly34.h"     // solution of cubic and quartic equation
 #define	TwoPi  6.28318530717958648
 const double eps=1e-14;
+
 //---------------------------------------------------------------------------
 // x - array of size 3
 // In case 3 real roots: => x[0], x[1], x[2], return 3
