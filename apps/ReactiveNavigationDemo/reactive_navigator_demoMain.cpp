@@ -845,7 +845,7 @@ void reactive_navigator_demoframe::simulateOneStep(double time_step)
 		// Simulate 360deg range scan:
 		CObservation2DRangeScan      simulatedScan;
 
-		simulatedScan.aperture = M_2PI;
+		simulatedScan.aperture = m_simul_options.SENSOR_FOV;
 		simulatedScan.rightToLeft = true;
 		simulatedScan.maxRange = m_simul_options.MAX_SENSOR_RADIUS;
 		simulatedScan.sensorPose = CPose2D(0,0,0.10);
@@ -1151,6 +1151,7 @@ void reactive_navigator_demoframe::Onplot3DMouseClick(wxMouseEvent& event)
 // ==== reactive_navigator_demoframe::TOptions ======
 reactive_navigator_demoframe::TOptions::TOptions() :
 	MAX_SENSOR_RADIUS ( 10.0 ),
+	SENSOR_FOV        (M_PI*2.0),
 	SENSOR_NUM_RANGES ( 181),
 	SENSOR_RANGE_NOISE_STD (0.02),
 	SENSOR_RATE(10.0),
@@ -1163,6 +1164,7 @@ void reactive_navigator_demoframe::TOptions::loadFromConfigFile(const mrpt::util
 
 	// Load from config text:
 	MRPT_LOAD_CONFIG_VAR(MAX_SENSOR_RADIUS,double,  source,section );
+	MRPT_LOAD_CONFIG_VAR_DEGREES(SENSOR_FOV,source,section );
 	MRPT_LOAD_CONFIG_VAR(SENSOR_NUM_RANGES, uint64_t,  source,section );
 	MRPT_LOAD_CONFIG_VAR(SENSOR_RANGE_NOISE_STD,double,  source,section );
 	MRPT_LOAD_CONFIG_VAR(SENSOR_RATE,double,  source,section );
@@ -1176,7 +1178,8 @@ void reactive_navigator_demoframe::TOptions::saveToConfigFile(mrpt::utils::CConf
 	MRPT_START
 	const int WN = 40, WV = 20;
 
-	cfg.write(section,"MAX_SENSOR_RADIUS",MAX_SENSOR_RADIUS,   WN,WV, "Maximum range of the 360deg sensor (meters)");
+	cfg.write(section,"MAX_SENSOR_RADIUS",MAX_SENSOR_RADIUS,   WN,WV, "Maximum range of the LiDAR sensor (meters)");
+	cfg.write(section,"SENSOR_FOV",180.0/M_PI*SENSOR_FOV,   WN,WV, "Horizontal Field of view of the LiDAR (deg)");
 	cfg.write(section,"SENSOR_NUM_RANGES",SENSOR_NUM_RANGES,   WN,WV, "Number of ranges in the 360deg sensor FOV");
 	cfg.write(section,"SENSOR_RANGE_NOISE_STD",SENSOR_RANGE_NOISE_STD,   WN,WV, "Sensor noise (one sigma, in meters)");
 	cfg.write(section,"SENSOR_RATE",SENSOR_RATE,   WN,WV, "Sensor rate (Hz)");
