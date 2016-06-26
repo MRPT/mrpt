@@ -48,13 +48,42 @@ const double PATH_TIME_STEP = 10e-3;   // 10 ms
 const double eps = 1e-8;               // epsilon for detecting 1/0 situation
 
 // Axiliary function for calc_trans_distance_t_below_Tramp() and others:
-inline double calc_trans_distance_t_below_Tramp_abc(double t, double a,double b, double c)
+double calc_trans_distance_t_below_Tramp_abc(double t, double a,double b, double c)
 {
-	// Indefinite integral of sqrt(a*t^2+b*t+c):
-	const double int_t = (t*(1.0/2.0)+(b*(1.0/4.0))/a)*sqrt(c+b*t+a*(t*t))+1.0/pow(a,3.0/2.0)*log(1.0/sqrt(a)*(b*(1.0/2.0)+a*t)+sqrt(c+b*t+a*(t*t)))*(a*c-(b*b)*(1.0/4.0))*(1.0/2.0);
-	// Limit when t->0:
-	const double int_t0 = (b*sqrt(c)*(1.0/4.0))/a+1.0/pow(a,3.0/2.0)*log(1.0/sqrt(a)*(b+sqrt(a)*sqrt(c)*2.0)*(1.0/2.0))*(a*c-(b*b)*(1.0/4.0))*(1.0/2.0);
-	return int_t - int_t0;// Definite integral [0,t]
+	ASSERT_(t>=0);
+	if (t==0.0) return .0;
+
+	double dist;
+	// Handle special case: degenerate (a*t^2+b*t+c) =  (t-r)^2
+	const double discr = b*b-4*a*c;
+	if (std::abs(discr)<1e-6)
+	{
+		const double r = -b/2*a;
+		// dist= definite integral [0,t] of: |t-r| dt
+		if (r<0) {
+			dist=+0.5*t*t-r*t;
+		} else if (r>t) {
+			dist=-0.5*t*t+r*t;
+		} else {
+			// r in [0,t]
+			dist=0.5*(r*r+(t-r)*(t-r));
+		}
+	}
+	else 
+	{
+		// General case:
+		// Indefinite integral of sqrt(a*t^2+b*t+c):
+		const double int_t = (t*(1.0/2.0)+(b*(1.0/4.0))/a)*sqrt(c+b*t+a*(t*t))+1.0/pow(a,3.0/2.0)*log(1.0/sqrt(a)*(b*(1.0/2.0)+a*t)+sqrt(c+b*t+a*(t*t)))*(a*c-(b*b)*(1.0/4.0))*(1.0/2.0);
+		// Limit when t->0:
+		const double int_t0 = (b*sqrt(c)*(1.0/4.0))/a+1.0/pow(a,3.0/2.0)*log(1.0/sqrt(a)*(b+sqrt(a)*sqrt(c)*2.0)*(1.0/2.0))*(a*c-(b*b)*(1.0/4.0))*(1.0/2.0);
+		dist=int_t - int_t0;// Definite integral [0,t]
+	}
+#ifdef _DEBUG
+	using namespace mrpt;
+	MRPT_CHECK_NORMAL_NUMBER(dist);
+	ASSERT_(dist>=.0);
+#endif
+	return dist;
 }
 
 
@@ -113,6 +142,7 @@ void CPTG_Holo_Blend::loadDefaultParams()
 	CParameterizedTrajectoryGenerator::loadDefaultParams();
 	CPTG_RobotShape_Circular::loadDefaultParams();
 
+	m_alphaValuesCount = 100;
 	T_ramp = 0.9;
 	V_MAX = 1.0;
 	W_MAX = mrpt::utils::DEG2RAD(120);
@@ -284,6 +314,7 @@ void CPTG_Holo_Blend::internal_initialize(const std::string & cacheFilename, con
 	ASSERT_(W_MAX>0);
 	ASSERT_(m_alphaValuesCount>0);
 	ASSERT_(m_robotRadius>0);
+	ASSERTMSG_((m_alphaValuesCount%2)==0,"This PTG requires an even number of paths in the family");
 
 #ifdef DO_PERFORMANCE_BENCHMARK
 	tl.dumpAllStats();
@@ -435,8 +466,10 @@ bool CPTG_Holo_Blend::getPathStepForDist(uint16_t k, double dist, uint16_t &out_
 				{
 					double err = calc_trans_distance_t_below_Tramp_abc(t_solved,a,b,c) - dist;
 					const double diff = std::sqrt(a*t_solved*t_solved+b*t_solved+c);
-					ASSERT_(std::abs(diff)>1e-14);
+					ASSERT_(std::abs(diff)>1e-40);
 					t_solved -= (err) / diff;
+					if (t_solved<0) 
+						t_solved=.0;
 					if (std::abs(err)<1e-3)
 						break; // Good enough!
 				}
@@ -455,6 +488,8 @@ bool CPTG_Holo_Blend::getPathStepForDist(uint16_t k, double dist, uint16_t &out_
 void CPTG_Holo_Blend::updateTPObstacle(double ox, double oy, std::vector<double> &tp_obstacles) const
 {
 	PERFORMANCE_BENCHMARK;
+
+	MRPT_TODO("Fix one pending case: --> stop <-- in same dir. Wrong estimated distance to obstacle.")
 
 	const double R = m_robotRadius;
 
