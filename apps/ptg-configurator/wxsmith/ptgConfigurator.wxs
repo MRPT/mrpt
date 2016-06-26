@@ -23,7 +23,6 @@
 								<growablerows>3</growablerows>
 								<object class="sizeritem">
 									<object class="wxFlexGridSizer" variable="FlexGridSizer7" member="no">
-										<cols>2</cols>
 										<rows>1</rows>
 										<growablecols>1</growablecols>
 										<object class="sizeritem">
@@ -40,6 +39,14 @@
 												<handler function="OncbPTGClassSelect" entry="EVT_CHOICE" />
 											</object>
 											<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+											<border>5</border>
+											<option>1</option>
+										</object>
+										<object class="sizeritem">
+											<object class="wxStaticText" name="ID_STATICTEXT5" variable="StaticText5" member="yes">
+												<label>After selecting a PTG, clhange params. as desired, then click `Initialize PTG`</label>
+											</object>
+											<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
 											<border>5</border>
 											<option>1</option>
 										</object>
@@ -69,7 +76,7 @@
 										</object>
 										<object class="sizeritem">
 											<object class="wxButton" name="ID_BUTTON1" variable="btnReloadParams" member="yes">
-												<label>Initialize PTG from params...</label>
+												<label>Initialize PTG</label>
 												<font>
 													<weight>bold</weight>
 												</font>

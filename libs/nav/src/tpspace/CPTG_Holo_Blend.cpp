@@ -276,7 +276,7 @@ bool CPTG_Holo_Blend::PTG_IsIntoDomain(double x, double y ) const
 	return inverseMap_WS2TP(x,y,k,d);
 }
 
-void CPTG_Holo_Blend::initialize(const std::string & cacheFilename, const bool verbose )
+void CPTG_Holo_Blend::internal_initialize(const std::string & cacheFilename, const bool verbose )
 {
 	// No need to initialize anything, just do some params sanity checks:
 	ASSERT_(T_ramp>0);
@@ -290,7 +290,7 @@ void CPTG_Holo_Blend::initialize(const std::string & cacheFilename, const bool v
 #endif
 }
 
-void CPTG_Holo_Blend::deinitialize()
+void CPTG_Holo_Blend::internal_deinitialize()
 {
 	// Nothing to do in a closed-form PTG.
 }
@@ -498,31 +498,35 @@ void CPTG_Holo_Blend::updateTPObstacle(double ox, double oy, std::vector<double>
 			// Attempt to solve with the equations for t<T_ramp
 			sol_t = -1.0;
 
-			// equation: p4*t^4+p3*t^3+p2*t^2+p1*t+p0 = 0
-			const double p4 = (k2*k2+k4*k4);
-			const double p3 = (k2*vxi*2.0+k4*vyi*2.0);
-			const double p2 = -(k2*ox*2.0+k4*oy*2.0-vxi*vxi-vyi*vyi);
-			const double p1 = (ox*vxi*2.0+oy*vyi*2.0);
-			const double p0 = -R*R+ox*ox+oy*oy;
+			// equation: a*t^4 + b*t^3 + c*t^2 + d*t + e = 0
+			const double a = (k2*k2+k4*k4);
+			const double b = (k2*vxi*2.0+k4*vyi*2.0);
+			const double c = -(k2*ox*2.0+k4*oy*2.0-vxi*vxi-vyi*vyi);
+			const double d = -(ox*vxi*2.0+oy*vyi*2.0);
+			const double e = -R*R+ox*ox+oy*oy;
 
 			double roots[4];
-			int num_real_sols;
-			if (std::abs(p4)>eps) {
+			int num_real_sols=0;
+			if (std::abs(a)>eps) 
+			{
 				// General case: 4th order equation
-				num_real_sols = SolveP4(roots, p3/p4,p2/p4,p1/p4,p0/p4);
-			} 
-			else if (std::abs(p3)>eps) {
+				// a * x^4 + b * x^3 + c * x^2 + d * x + e
+				num_real_sols = SolveP4(roots, b/a,c/a,d/a,e/a);
+			}
+			else if (std::abs(b)>eps) {
 				// Special case: k2=k4=0 (straight line path, no blend)
-				// 3rd order equation
-				num_real_sols = SolveP3(roots, p2/p3,p1/p3,p0/p3);
-			} else {
-				// Special case: 2nd order equation (p4=p3=0)
-				const double discr = p1*p1-4*p2*p0;
+				// 3rd order equation: 
+				// b * x^3 + c * x^2 + d * x + e
+				num_real_sols = SolveP3(roots, c/b,d/b,e/b);
+			} else 
+			{
+				// Special case: 2nd order equation (a=b=0)
+				const double discr = d*d-4*c*e;  // c*t^2 + d*t + e = 0
 				if (discr>=0)
 				{
 					num_real_sols = 2;
-					roots[0] = (-p1+sqrt(discr))/(2*p2);
-					roots[1] = (-p1-sqrt(discr))/(2*p2);
+					roots[0] = (-d+sqrt(discr))/(2*c);
+					roots[1] = (-d-sqrt(discr))/(2*c);
 				} else {
 					num_real_sols = 0;
 				}

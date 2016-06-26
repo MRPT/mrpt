@@ -2,7 +2,6 @@
 // (c) Khashin S.I. http://math.ivanovo.ac.ru/dalgebra/Khashin/index.html
 // khash2 (at) gmail.com
 
-
 int   SolveP3(double *x,double a,double b,double c);			// solve cubic equation x^3 + a*x^2 + b*x + c = 0
 int   SolveP4(double *x,double a,double b,double c,double d);	// solve equation x^4 + a*x^3 + b*x^2 + c*x + d = 0 by Dekart-Euler method
 // x - array of size 4

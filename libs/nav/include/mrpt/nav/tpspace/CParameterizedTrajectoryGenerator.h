@@ -71,11 +71,12 @@ namespace nav
 		 *  @{ */
 		virtual std::string getDescription() const = 0 ; //!< Gets a short textual description of the PTG and its parameters
 
+	protected:
 		/** Must be called after setting all PTG parameters and before requesting converting obstacles to TP-Space, inverseMap_WS2TP(), etc. */
-		virtual void initialize(const std::string & cacheFilename = std::string(), const bool verbose = true) = 0;
-
+		virtual void internal_initialize(const std::string & cacheFilename = std::string(), const bool verbose = true) = 0;
 		/** This must be called to de-initialize the PTG if some parameter is to be changed. After changing it, call initialize again */
-		virtual void deinitialize() = 0;
+		virtual void internal_deinitialize() = 0;
+	public:
 
 		/** Computes the closest (alpha,d) TP coordinates of the trajectory point closest to the Workspace (WS) 
 		 *   Cartesian coordinates (x,y), relative to the current robot frame.
@@ -142,6 +143,13 @@ namespace nav
 
 		static std::string OUTPUT_DEBUG_PATH_PREFIX; //!< The path used as defaul output in, for example, debugDumpInFiles. (Default="./reactivenav.logs/")
 
+		/** Must be called after setting all PTG parameters and before requesting converting obstacles to TP-Space, inverseMap_WS2TP(), etc. */
+		void initialize(const std::string & cacheFilename = std::string(), const bool verbose = true);
+		/** This must be called to de-initialize the PTG if some parameter is to be changed. After changing it, call initialize again */
+		void deinitialize();
+		/** Returns true if `initialize()` has been called and there was no errors, so the PTG is ready to be queried for paths, obstacles, etc. */
+		bool isInitialized() const;
+
 		/** Get the number of different, discrete paths in this family */
 		uint16_t getAlphaValuesCount() const { return m_alphaValuesCount; }
 		/** Get the number of different, discrete paths in this family */
@@ -193,6 +201,8 @@ protected:
 		double    refDistance;
 		uint16_t  m_alphaValuesCount; //!< The number of discrete values for "alpha" between -PI and +PI.
 		double    m_score_priority;
+
+		bool      m_is_initialized;
 
 		virtual void internal_readFromStream(mrpt::utils::CStream &in);
 		virtual void internal_writeToStream(mrpt::utils::CStream &out) const;
