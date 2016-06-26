@@ -39,6 +39,7 @@ namespace mrpt
 		std::string getDescription() const MRPT_OVERRIDE;
 		bool PTG_IsIntoDomain( double x, double y ) const MRPT_OVERRIDE;
 		void ptgDiffDriveSteeringFunction( float alpha, float t,float x, float y, float phi, float &v, float &w ) const MRPT_OVERRIDE;
+		void loadDefaultParams() MRPT_OVERRIDE;
 
 	 protected:
 		double R,K;

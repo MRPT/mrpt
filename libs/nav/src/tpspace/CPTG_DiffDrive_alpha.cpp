@@ -18,7 +18,6 @@ using namespace mrpt::utils;
 
 IMPLEMENTS_SERIALIZABLE(CPTG_DiffDrive_alpha,CParameterizedTrajectoryGenerator,mrpt::nav)
 
-
 void CPTG_DiffDrive_alpha::loadFromConfigFile(const mrpt::utils::CConfigFileBase &cfg,const std::string &sSection)
 {
 	CPTG_DiffDrive_CollisionGridBased ::loadFromConfigFile(cfg,sSection);
@@ -86,3 +85,11 @@ void CPTG_DiffDrive_alpha::ptgDiffDriveSteeringFunction( float alpha, float t,fl
     w=  W_MAX * (-0.5f + (1/(1+exp(-At_a/cte_a0w))));
 }
 
+
+void CPTG_DiffDrive_alpha::loadDefaultParams()
+{
+	CPTG_DiffDrive_CollisionGridBased::loadDefaultParams();
+
+	cte_a0v = mrpt::utils::DEG2RAD(45.0);
+	cte_a0w = mrpt::utils::DEG2RAD(45.0);
+}

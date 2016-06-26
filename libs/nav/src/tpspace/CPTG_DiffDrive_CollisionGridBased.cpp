@@ -71,11 +71,6 @@ void CPTG_DiffDrive_CollisionGridBased::saveToConfigFile(mrpt::utils::CConfigFil
 }
 
 
-void CPTG_DiffDrive_CollisionGridBased::freeMemory()
-{
-	m_trajectory.clear(); // Free trajectories
-}
-
 mrpt::utils::CStream & mrpt::nav::operator << (mrpt::utils::CStream& o, const mrpt::nav::TCPoint & p)
 {
 	o << p.x<< p.y<< p.phi<< p.t<< p.dist<< p.v<< p.w;
@@ -104,7 +99,7 @@ void CPTG_DiffDrive_CollisionGridBased::simulateTrajectories(
 {
 	using mrpt::utils::square;
 
-	freeMemory(); // Free previous paths
+	internal_deinitialize(); // Free previous paths
 
 	// Reserve the size in the buffers:
 	m_trajectory.resize( m_alphaValuesCount );
@@ -607,12 +602,12 @@ void CPTG_DiffDrive_CollisionGridBased::internal_processNewRobotShape()
 	ASSERTMSG_(m_trajectory.empty(), "Changing robot shape not allowed in this class after initialization!");
 }
 
-void CPTG_DiffDrive_CollisionGridBased::deinitialize()
+void CPTG_DiffDrive_CollisionGridBased::internal_deinitialize()
 {
-	this->freeMemory();
+	m_trajectory.clear(); // Free trajectories
 }
 
-void CPTG_DiffDrive_CollisionGridBased::initialize(const std::string & cacheFilename, const bool verbose)
+void CPTG_DiffDrive_CollisionGridBased::internal_initialize(const std::string & cacheFilename, const bool verbose)
 {
 	using namespace std;
 
@@ -808,7 +803,7 @@ void CPTG_DiffDrive_CollisionGridBased::internal_readFromStream(mrpt::utils::CSt
 	switch (version)
 	{
 	case 0:
-		freeMemory();
+		internal_deinitialize();
 		in >>V_MAX >> W_MAX
 			>> turningRadiusReference
 			>> m_robotShape 

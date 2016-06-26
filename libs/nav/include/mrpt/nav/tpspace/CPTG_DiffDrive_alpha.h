@@ -46,6 +46,7 @@ namespace mrpt
 
 		std::string getDescription() const MRPT_OVERRIDE;
 		void ptgDiffDriveSteeringFunction( float alpha, float t,float x, float y, float phi, float &v, float &w ) const MRPT_OVERRIDE;
+		void loadDefaultParams() MRPT_OVERRIDE;
 
 	 protected:
 		double cte_a0v, cte_a0w;

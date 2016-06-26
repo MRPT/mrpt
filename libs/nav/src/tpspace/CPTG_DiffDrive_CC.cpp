@@ -112,4 +112,8 @@ bool CPTG_DiffDrive_CC::PTG_IsIntoDomain( double x, double y ) const
 	return (square(x)+square(fabs(y)-R))<=R;
 }
 
-
+void CPTG_DiffDrive_CC::loadDefaultParams()
+{
+	CPTG_DiffDrive_CollisionGridBased::loadDefaultParams();
+	K = +1.0;
+}
