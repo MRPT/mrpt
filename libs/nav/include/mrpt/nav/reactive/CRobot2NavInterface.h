@@ -146,9 +146,9 @@ namespace mrpt
 		  */
 		void cmdVel_scale(std::vector<double> &vel_cmd, double vel_scale) MRPT_OVERRIDE
 		{
-			ASSERTMSG_(robotMax_V_mps>=.0 && robotMax_W_radps>=.0, "[CReactiveInterfaceImplementation_DiffDriven] `robotMax_V_mps` and `robotMax_W_radps` must be set to valid values: either assign values programatically or call loadConfigFile()")
-			for (size_t i=0;i<vel_cmd.size();++i)
-				vel_cmd[i] *= vel_scale;
+			ASSERT_(vel_cmd.size()==2);
+			vel_cmd[0] *= vel_scale;
+			vel_cmd[1] *= vel_scale;
 		}
 
 		// See base class docs.
@@ -226,7 +226,6 @@ namespace mrpt
 		  */
 		void cmdVel_scale(std::vector<double> &vel_cmd, double vel_scale) MRPT_OVERRIDE
 		{
-			ASSERTMSG_(robotMax_V_mps>=.0, "[CReactiveInterfaceImplementation_Holo] `robotMax_V_mps` must be set to valid values: either assign values programatically or call loadConfigFile()")
 			vel_cmd[0] *= vel_scale; // |(vx,vy)|
 			vel_cmd[2] *= vel_scale; // ramp_time
 			vel_cmd[3] *= vel_scale; // rot_speed
