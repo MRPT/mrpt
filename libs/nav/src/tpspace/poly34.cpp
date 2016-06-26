@@ -35,7 +35,7 @@ int SolveP3(double *x,double a,double b,double c) {	// solve cubic equation x^3 
 	} else {
 		A =-pow(fabs(r)+sqrt(r2-q3),1./3);
 		if( r<0 ) A=-A;
-		B = A==0? 0 : B=q/A;
+		B = A==0? 0 : q/A;
 
 		a/=3;
 		x[0] =(A+B)-a;
@@ -241,7 +241,7 @@ double SolveP5_1(double a,double b,double c,double d,double e)	// return real ro
 	double x0, f0;					// less, than root
 	double x1, f1;					// greater, than root
 	double x2, f2, f2s;				// next values, f(x2), f'(x2)
-	double dx;
+	double dx=1e8;
 
 	if( e<0 ) { x0 =   0; x1 = brd; f0=e; f1=F5(x1); x2 = 0.01*brd; }
 	else	  { x0 =-brd; x1 =   0; f0=F5(x0); f1=e; x2 =-0.01*brd; }
