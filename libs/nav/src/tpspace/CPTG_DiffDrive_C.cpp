@@ -149,3 +149,9 @@ bool CPTG_DiffDrive_C::inverseMap_WS2TP(double x, double y, int &k_out, double &
 
 	return is_exact;
 }
+
+void CPTG_DiffDrive_C::loadDefaultParams()
+{
+	CPTG_DiffDrive_CollisionGridBased::loadDefaultParams();
+	K = +1.0;
+}

@@ -116,3 +116,8 @@ bool CPTG_DiffDrive_CS::PTG_IsIntoDomain( double x, double y ) const
 	}
 }
 
+void CPTG_DiffDrive_CS::loadDefaultParams()
+{
+	CPTG_DiffDrive_CollisionGridBased::loadDefaultParams();
+	K = +1.0;
+}
