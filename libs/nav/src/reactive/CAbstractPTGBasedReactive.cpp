@@ -633,6 +633,7 @@ void CAbstractPTGBasedReactive::STEP5_PTGEvaluator(
 	const double d = min( in_TPObstacles[ kDirection ], 0.90*TargetDist);
 	uint16_t nStep;
 	bool pt_in_range = holonomicMovement.PTG->getPathStepForDist(kDirection, d, nStep);
+	ASSERT_(pt_in_range)
 	
 	mrpt::math::TPose2D pose;
 	holonomicMovement.PTG->getPathPose(kDirection, nStep,pose);
