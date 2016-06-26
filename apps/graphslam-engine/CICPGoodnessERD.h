@@ -153,6 +153,7 @@ namespace mrpt { namespace graphslam { namespace deciders {
 		 					std::set<mrpt::utils::TNodeID> *nodes_set, 
 							const mrpt::utils::TNodeID& cur_nodeID,
 							double distance );
+					// TODO - remove this..
 					/**
 					 * In case of 3DScan images, method sets the path of each image
 					 * either to ${rawlog_path_wo_extension}_Images/img_name (default

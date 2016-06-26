@@ -533,9 +533,6 @@ void CICPGoodnessERD_t<GRAPH_t>::updateVisuals() {
 		if (m_last_laser_scan3D->hasIntensityImage && params.enable_intensity_viewport) {
 			mrpt::utils::CImage img  = m_last_laser_scan3D->intensityImage;
 
-			//// in case it is externally stored - find the correct file name
-			//this->correct3DScanImageFname(&img, ".png");
-
 			COpenGLScenePtr scene = m_win->get3DSceneAndLock();
 			COpenGLViewportPtr viewp_intensity = scene->getViewport("viewp_intensity");
 			//viewp_intensity->setImageView_fast(m_last_laser_scan3D->intensityImage);
@@ -606,6 +603,7 @@ void CICPGoodnessERD_t<GRAPH_t>::checkIfInvalidDataset(
 
 
 
+// TODO - remove this
 template<class GRAPH_t>
 void CICPGoodnessERD_t<GRAPH_t>::correct3DScanImageFname(
 		mrpt::utils::CImage* img,

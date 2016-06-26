@@ -68,7 +68,6 @@ bool CICPGoodnessNRD_t<GRAPH_t>::updateDeciderState(
 			if (IS_CLASS(observation, CObservation3DRangeScan)) {
 				m_curr_laser_scan3D =
 					static_cast<mrpt::obs::CObservation3DRangeScanPtr>(observation);
-				// TODO deal with this..
 				m_curr_laser_scan3D->load();
 				m_curr_laser_scan3D->project3DPointsFromDepthImage();
 				// if first_time in initialize the m_last_laser_scan as well
