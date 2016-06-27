@@ -96,11 +96,25 @@
 						<option>1</option>
 					</object>
 					<object class="sizeritem">
+						<object class="wxCustomButton" name="ID_BUTTON9" variable="btnEmptyMap" member="yes">
+							<label>New map...</label>
+							<bitmap stock_id="wxART_NEW" />
+							<bitmap_margin>2,4</bitmap_margin>
+							<size>-1,45</size>
+							<minsize>-1,-1</minsize>
+							<maxsize>-1,-1</maxsize>
+							<handler function="OnbtnEmptyMapClick" entry="EVT_BUTTON" />
+						</object>
+						<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+						<border>2</border>
+						<option>1</option>
+					</object>
+					<object class="sizeritem">
 						<object class="wxCustomButton" name="ID_BUTTON8" variable="btnDrawMapObs" member="yes">
 							<label>Draw obstacles...</label>
 							<bitmap stock_id="wxART_GO_FORWARD" />
 							<bitmap_margin>2,4</bitmap_margin>
-							<size>-1,64</size>
+							<size>-1,45</size>
 							<minsize>-1,-1</minsize>
 							<maxsize>-1,-1</maxsize>
 							<handler function="OnbtnDrawMapObsClick" entry="EVT_BUTTON" />
