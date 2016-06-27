@@ -12,8 +12,6 @@
 #include "CAboutBox.h"
 
 MRPT_TODO("Implement 'draw obstacles'");
-MRPT_TODO("Verify that holonomic vel scale equation conserves path shape");
-
 
 //(*InternalHeaders(reactive_navigator_demoframe)
 #include <wx/artprov.h>
@@ -130,51 +128,6 @@ BEGIN_EVENT_TABLE(reactive_navigator_demoframe,wxFrame)
 END_EVENT_TABLE()
 
 
-// Aux function
-void add_robotShapeCirc_to_setOfLines(
-	const double R,
-	mrpt::opengl::CSetOfLines &gl_shape,
-	const mrpt::poses::CPose2D &origin = mrpt::poses::CPose2D () )
-{
-	const int N = 10;
-	// Transform coordinates:
-	CVectorDouble shap_x(N), shap_y(N),shap_z(N);
-	for (int i=0;i<N;i++) {
-		origin.composePoint(
-			R*cos(i*2*M_PI/N-1),R*sin(i*2*M_PI/N-1), 0,
-			shap_x[i],  shap_y[i],  shap_z[i]);
-	}
-	gl_shape.appendLine( shap_x[0], shap_y[0], shap_z[0], shap_x[1],shap_y[1],shap_z[1] );
-	for (int i=0;i<=shap_x.size();i++) {
-		const int idx = i % shap_x.size();
-		gl_shape.appendLineStrip( shap_x[idx],shap_y[idx], shap_z[idx]);
-	}
-}
-
-void add_robotShape_to_setOfLines(
-	const CVectorFloat &shap_x_,
-	const CVectorFloat &shap_y_,
-	mrpt::opengl::CSetOfLines &gl_shape,
-	const mrpt::poses::CPose2D &origin = mrpt::poses::CPose2D () )
-{
-	const int N = shap_x_.size();
-	if (N>=2 && N==shap_y_.size() )
-	{
-		// Transform coordinates:
-		CVectorDouble shap_x(N), shap_y(N),shap_z(N);
-		for (int i=0;i<N;i++) {
-			origin.composePoint(
-				shap_x_[i], shap_y_[i], 0,
-				shap_x[i],  shap_y[i],  shap_z[i]);
-		}
-
-		gl_shape.appendLine( shap_x[0], shap_y[0], shap_z[0], shap_x[1],shap_y[1],shap_z[1] );
-		for (int i=0;i<=shap_x.size();i++) {
-			const int idx = i % shap_x.size();
-			gl_shape.appendLineStrip( shap_x[idx],shap_y[idx], shap_z[idx]);
-		}
-	}
-}
 
 reactive_navigator_demoframe::reactive_navigator_demoframe(wxWindow* parent,wxWindowID id) :
 	m_gridMap(),
@@ -1007,9 +960,6 @@ void reactive_navigator_demoframe::simulateOneStep(double time_step)
 				// Overlay a sequence of robot shapes:
 				if (cbDrawShapePath->IsChecked())
 				{
-					const bool ptg_uses_polygon_shape  = dynamic_cast<const mrpt::nav::CPTG_RobotShape_Polygonal *>(ptg)!=NULL;
-					const bool ptg_uses_circular_shape = dynamic_cast<const mrpt::nav::CPTG_RobotShape_Circular *>(ptg)!=NULL;
-
 					double min_shape_dists = 1.0;
 					for (double d=min_shape_dists;d<max_dist;d+=min_shape_dists)
 					{
@@ -1018,15 +968,12 @@ void reactive_navigator_demoframe::simulateOneStep(double time_step)
 							continue;
 						mrpt::math::TPose2D p;
 						ptg->getPathPose(selected_k, step, p);
-						if (ptg_uses_polygon_shape)  add_robotShape_to_setOfLines(lfr.robotShape_x,lfr.robotShape_y, *gl_robot_ptg_prediction, mrpt::poses::CPose2D(p) );
-						if (ptg_uses_circular_shape) add_robotShapeCirc_to_setOfLines(lfr.robotShape_radius, *gl_robot_ptg_prediction, mrpt::poses::CPose2D(p) );
+						ptg->add_robotShape_to_setOfLines( *gl_robot_ptg_prediction, mrpt::poses::CPose2D(p) );
 					}
 				}
 			}
 		}
 	}
-
-
 
 }
 
