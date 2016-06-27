@@ -132,9 +132,10 @@ void  CHolonomicND::gapsEstimator(
 	TGapArray                   & gaps_out)
 {
 	const size_t n = obstacles.size();
+	ASSERT_(n>2);
 
 	// ================ Parameters ================
-	const int		GAPS_MIN_WIDTH = 3;
+	const int		GAPS_MIN_WIDTH = ceil(n*0.01); // was: 3
 	const double	GAPS_MIN_DEPTH_CONSIDERED = 0.6;
 	const double	GAPS_MAX_RELATIVE_DEPTH = 0.5;
 	// ============================================
