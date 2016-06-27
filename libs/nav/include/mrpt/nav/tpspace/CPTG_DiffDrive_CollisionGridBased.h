@@ -41,9 +41,7 @@ namespace nav
 	  * Collision grids must be calculated before calling getTPObstacle(). Robot shape must be set before initializing with setRobotShape().
 	  * The rest of PTG parameters should have been set at the constructor.
 	  */
-	class NAV_IMPEXP CPTG_DiffDrive_CollisionGridBased : 
-		public CParameterizedTrajectoryGenerator, 
-		public CPTG_RobotShape_Polygonal
+	class NAV_IMPEXP CPTG_DiffDrive_CollisionGridBased : public CPTG_RobotShape_Polygonal
 	{
 	public:
 		/** The main method to be implemented in derived classes: it defines the differential-driven differential equation */

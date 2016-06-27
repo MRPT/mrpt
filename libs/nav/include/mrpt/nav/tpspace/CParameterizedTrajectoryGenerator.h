@@ -16,6 +16,7 @@
 #include <mrpt/math/CPolygon.h>
 #include <mrpt/utils/mrpt_stdint.h>    // compiler-independent version of "stdint.h"
 #include <mrpt/nav/link_pragmas.h>
+#include <mrpt/poses/CPose2D.h>
 #include <mrpt/otherlibs/stlplus/smart_ptr.hpp>  // STL+ library
 
 namespace mrpt { namespace opengl { class CSetOfLines; } }
@@ -197,6 +198,10 @@ namespace nav
 		virtual void loadFromConfigFile(const mrpt::utils::CConfigFileBase &cfg,const std::string &sSection) MRPT_OVERRIDE;
 		virtual void saveToConfigFile(mrpt::utils::CConfigFileBase &cfg,const std::string &sSection) const MRPT_OVERRIDE;
 
+
+		/** Auxiliary function for rendering */
+		virtual void add_robotShape_to_setOfLines(mrpt::opengl::CSetOfLines &gl_shape, const mrpt::poses::CPose2D &origin = mrpt::poses::CPose2D ()) const  = 0;
+
 protected:
 		double    refDistance;
 		uint16_t  m_alphaValuesCount; //!< The number of discrete values for "alpha" between -PI and +PI.
@@ -218,7 +223,7 @@ protected:
 	/** Base class for all PTGs using a 2D polygonal robot shape model.
 	 *  \ingroup nav_tpspace
 	 */
-	class NAV_IMPEXP CPTG_RobotShape_Polygonal
+	class NAV_IMPEXP CPTG_RobotShape_Polygonal : public CParameterizedTrajectoryGenerator
 	{
 	public:
 		CPTG_RobotShape_Polygonal() : m_robotShape() {}
@@ -233,6 +238,8 @@ protected:
 		}
 		const mrpt::math::CPolygon & getRobotShape() const { return m_robotShape; }
 		/** @} */
+
+		void add_robotShape_to_setOfLines(mrpt::opengl::CSetOfLines &gl_shape, const mrpt::poses::CPose2D &origin = mrpt::poses::CPose2D ()) const  MRPT_OVERRIDE;
 	protected:
 		virtual void internal_processNewRobotShape() = 0; //!< Will be called whenever the robot shape is set / updated
 		mrpt::math::CPolygon m_robotShape;
@@ -245,7 +252,7 @@ protected:
 	/** Base class for all PTGs using a 2D circular robot shape model.
 	 *  \ingroup nav_tpspace
 	 */
-	class NAV_IMPEXP CPTG_RobotShape_Circular
+	class NAV_IMPEXP CPTG_RobotShape_Circular : public CParameterizedTrajectoryGenerator
 	{
 	public:
 		CPTG_RobotShape_Circular() : m_robotRadius(.0) {}
@@ -260,6 +267,7 @@ protected:
 		}
 		double getRobotShapeRadius() const { return m_robotRadius; }
 		/** @} */
+		void add_robotShape_to_setOfLines(mrpt::opengl::CSetOfLines &gl_shape, const mrpt::poses::CPose2D &origin = mrpt::poses::CPose2D ()) const  MRPT_OVERRIDE;
 	protected:
 		virtual void internal_processNewRobotShape() = 0; //!< Will be called whenever the robot shape is set / updated
 		double m_robotRadius;

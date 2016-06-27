@@ -286,3 +286,48 @@ void CParameterizedTrajectoryGenerator::deinitialize()
 }
 
 
+
+void CPTG_RobotShape_Circular::add_robotShape_to_setOfLines(
+	mrpt::opengl::CSetOfLines &gl_shape,
+	const mrpt::poses::CPose2D &origin) const 
+{
+	const double R = m_robotRadius;
+	const int N = 21;
+	// Transform coordinates:
+	mrpt::math::CVectorDouble shap_x(N), shap_y(N),shap_z(N);
+	for (int i=0;i<N;i++) {
+		origin.composePoint(
+			R*cos(i*2*M_PI/(N-1)),R*sin(i*2*M_PI/(N-1)), 0,
+			shap_x[i],  shap_y[i],  shap_z[i]);
+	}
+	// Draw a "radius" to identify the "forward" orientation (phi=0)
+	gl_shape.appendLine( origin.x(), origin.y(), .0, shap_x[0],shap_y[0],shap_z[0] );
+	for (int i=1;i<=shap_x.size();i++) {
+		const int idx = i % shap_x.size();
+		gl_shape.appendLineStrip( shap_x[idx],shap_y[idx], shap_z[idx]);
+	}
+}
+
+void CPTG_RobotShape_Polygonal::add_robotShape_to_setOfLines(
+	mrpt::opengl::CSetOfLines &gl_shape,
+	const mrpt::poses::CPose2D &origin  ) const 
+{
+	const int N = m_robotShape.size();
+	if (N>=2)
+	{
+		// Transform coordinates:
+		mrpt::math::CVectorDouble shap_x(N), shap_y(N),shap_z(N);
+		for (int i=0;i<N;i++) {
+			origin.composePoint(
+				m_robotShape[i].x, m_robotShape[i].y, 0,
+				shap_x[i],  shap_y[i],  shap_z[i]);
+		}
+
+		gl_shape.appendLine( shap_x[0], shap_y[0], shap_z[0], shap_x[1],shap_y[1],shap_z[1] );
+		for (int i=0;i<=shap_x.size();i++) {
+			const int idx = i % shap_x.size();
+			gl_shape.appendLineStrip( shap_x[idx],shap_y[idx], shap_z[idx]);
+		}
+	}
+}
+
