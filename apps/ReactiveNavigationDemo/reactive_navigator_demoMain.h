@@ -86,6 +86,8 @@ class reactive_navigator_demoframe: public wxFrame
         void OnrbKinTypeSelect(wxCommandEvent& event);
         void OnbtnDrawMapObsClick(wxCommandEvent& event);
         void OnbtnEmptyMapClick(wxCommandEvent& event);
+        void OnbtnSaveMapClick(wxCommandEvent& event);
+        void OnbtnDrawEmptyClick(wxCommandEvent& event);
         //*)
 
         //(*Identifiers(reactive_navigator_demoframe)
@@ -96,6 +98,8 @@ class reactive_navigator_demoframe: public wxFrame
         static const long ID_BUTTON1;
         static const long ID_BUTTON9;
         static const long ID_BUTTON8;
+        static const long ID_BUTTON11;
+        static const long ID_BUTTON10;
         static const long ID_BUTTON2;
         static const long ID_BUTTON3;
         static const long ID_RADIOBOX2;
@@ -169,12 +173,14 @@ class reactive_navigator_demoframe: public wxFrame
         wxCheckBox* cbNavLog;
         wxMenuItem* MenuItem3;
         wxMenuItem* mnuViewRobotPath;
+        wxCustomButton* btnDrawEmpty;
         wxTextCtrl* edLog;
         wxCheckBox* cbShowPredictedPTG;
         wxStatusBar* StatusBar1;
         wxPanel* pnParamsPreprog;
         wxCustomButton* btnHelp;
         wxCustomButton* btnPlaceRobot;
+        wxCustomButton* btnSaveMap;
         wxPanel* Panel2;
         wxSplitterWindow* SplitterWindow1;
         wxMenuItem* mnuViewMaxRange;
@@ -222,7 +228,8 @@ class reactive_navigator_demoframe: public wxFrame
 			cpsNone = 0,
 			cpsPickTarget,
 			cpsPlaceRobot,
-			cpsDrawObstacles
+			cpsDrawObstacles,
+			cpsDrawClear
 		};
 
 		mrpt::maps::COccupancyGridMap2D  m_gridMap;
