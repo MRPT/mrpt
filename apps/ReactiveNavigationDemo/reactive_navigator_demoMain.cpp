@@ -9,9 +9,8 @@
 
 #include "reactive_navigator_demoMain.h"
 #include <wx/msgdlg.h>
+#include <wx/textdlg.h>
 #include "CAboutBox.h"
-
-MRPT_TODO("Implement 'draw obstacles'");
 
 //(*InternalHeaders(reactive_navigator_demoframe)
 #include <wx/artprov.h>
@@ -80,6 +79,7 @@ const long reactive_navigator_demoframe::ID_BUTTON5 = wxNewId();
 const long reactive_navigator_demoframe::ID_BUTTON7 = wxNewId();
 const long reactive_navigator_demoframe::ID_BUTTON6 = wxNewId();
 const long reactive_navigator_demoframe::ID_BUTTON1 = wxNewId();
+const long reactive_navigator_demoframe::ID_BUTTON9 = wxNewId();
 const long reactive_navigator_demoframe::ID_BUTTON8 = wxNewId();
 const long reactive_navigator_demoframe::ID_BUTTON2 = wxNewId();
 const long reactive_navigator_demoframe::ID_BUTTON3 = wxNewId();
@@ -197,7 +197,11 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(wxWindow* parent,wxWi
     btnLoadMap->SetBitmapDisabled(btnLoadMap->CreateBitmapDisabled(btnLoadMap->GetBitmapLabel()));
     btnLoadMap->SetBitmapMargin(wxSize(2,4));
     FlexGridSizer4->Add(btnLoadMap, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 2);
-    btnDrawMapObs = new wxCustomButton(this,ID_BUTTON8,_("Draw obstacles..."),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_GO_FORWARD")),wxART_MAKE_CLIENT_ID_FROM_STR(wxString(wxEmptyString))),wxDefaultPosition,wxSize(-1,64),wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON8"));
+    btnEmptyMap = new wxCustomButton(this,ID_BUTTON9,_("New map..."),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_NEW")),wxART_MAKE_CLIENT_ID_FROM_STR(wxString(wxEmptyString))),wxDefaultPosition,wxSize(-1,45),wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON9"));
+    btnEmptyMap->SetBitmapDisabled(btnEmptyMap->CreateBitmapDisabled(btnEmptyMap->GetBitmapLabel()));
+    btnEmptyMap->SetBitmapMargin(wxSize(2,4));
+    FlexGridSizer4->Add(btnEmptyMap, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 2);
+    btnDrawMapObs = new wxCustomButton(this,ID_BUTTON8,_("Draw obstacles..."),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_GO_FORWARD")),wxART_MAKE_CLIENT_ID_FROM_STR(wxString(wxEmptyString))),wxDefaultPosition,wxSize(-1,45),wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON8"));
     btnDrawMapObs->SetBitmapDisabled(btnDrawMapObs->CreateBitmapDisabled(btnDrawMapObs->GetBitmapLabel()));
     btnDrawMapObs->SetBitmapMargin(wxSize(2,4));
     FlexGridSizer4->Add(btnDrawMapObs, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 2);
@@ -392,6 +396,7 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(wxWindow* parent,wxWi
     Connect(ID_BUTTON7,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&reactive_navigator_demoframe::OnbtnPlaceTargetClick);
     Connect(ID_BUTTON6,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&reactive_navigator_demoframe::OnbtnPlaceRobotClick);
     Connect(ID_BUTTON1,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&reactive_navigator_demoframe::OnbtnLoadMapClick);
+    Connect(ID_BUTTON9,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&reactive_navigator_demoframe::OnbtnEmptyMapClick);
     Connect(ID_BUTTON8,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&reactive_navigator_demoframe::OnbtnDrawMapObsClick);
     Connect(ID_BUTTON2,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&reactive_navigator_demoframe::OnAbout);
     Connect(ID_BUTTON3,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&reactive_navigator_demoframe::OnbtnQuitClick);
@@ -496,6 +501,16 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(wxWindow* parent,wxWi
 
 		m_gl_placing_robot->setVisibility(false); // Start invisible.
 		m_plot3D->m_openGLScene->insert(m_gl_placing_robot);
+	}
+	{	// Sign of "drawing obstacles":
+		m_gl_drawing_obs = opengl::CSetOfObjects::Create();
+
+		mrpt::opengl::CCylinderPtr obj = mrpt::opengl::CCylinder::Create(0.05, 0.10,1.0);
+		obj->setColor_u8( mrpt::utils::TColor(0xff,0x00,0x00,0x70) );
+		m_gl_drawing_obs->insert(obj);
+
+		m_gl_drawing_obs->setVisibility(false); // Start invisible.
+		m_plot3D->m_openGLScene->insert(m_gl_drawing_obs);
 	}
 
 	m_plot3D->m_openGLScene->insert( mrpt::opengl::stock_objects::CornerXYZ(1) );
@@ -764,15 +779,15 @@ bool reactive_navigator_demoframe::reinitSimulator()
 
 	// Update GUI stuff:
 	gl_robot_sensor_range->setDiskRadius(m_simul_options.MAX_SENSOR_RADIUS*1.01,m_simul_options.MAX_SENSOR_RADIUS*0.99);
-	
+
 	cbSelPTG->Clear();
 	{
 		mrpt::nav::CAbstractPTGBasedReactive *ptg_nav = dynamic_cast<mrpt::nav::CAbstractPTGBasedReactive *>(m_navMethod.get() );
-		if (ptg_nav) 
+		if (ptg_nav)
 		{
 			for (size_t i=0;i<ptg_nav->getPTG_count();i++)
 				cbSelPTG->Append(_U( ptg_nav->getPTG(i)->getDescription().c_str() ));
-			
+
 			if (ptg_nav->getPTG_count()>0)
 				cbSelPTG->SetSelection(0);
 		}
@@ -877,7 +892,7 @@ void reactive_navigator_demoframe::simulateOneStep(double time_step)
 	// Update 2D view graphs:
 	mrpt::nav::CLogFileRecord lfr;
 	if (ptg_nav) ptg_nav->getLastLogRecord(lfr);
-	
+
 	const int sel_PTG = cbSelPTG->GetSelection();
 	if (sel_PTG>=0 && sel_PTG<(int)lfr.infoPerPTG.size())
 	{
@@ -1013,6 +1028,7 @@ void reactive_navigator_demoframe::Onplot3DMouseMove(wxMouseEvent& event)
 {
 	int X, Y;
 	event.GetPosition(&X,&Y);
+	bool skip_normal_process = false;
 
 	// Intersection of 3D ray with ground plane ====================
 	TLine3D ray;
@@ -1029,27 +1045,52 @@ void reactive_navigator_demoframe::Onplot3DMouseMove(wxMouseEvent& event)
 		m_curCursorPos.x = inters_pt.x;
 		m_curCursorPos.y = inters_pt.y;
 
-		if (m_cursorPickState==cpsPickTarget)
+		switch (m_cursorPickState)
 		{
-			m_gl_placing_nav_target->setVisibility(true);
-			m_gl_placing_nav_target->setLocation(m_curCursorPos.x,m_curCursorPos.y,0.05);
-		}
-		else
-		if (m_cursorPickState==cpsPlaceRobot)
-		{
-			m_gl_placing_robot->setVisibility(true);
-			m_gl_placing_robot->setLocation(m_curCursorPos.x,m_curCursorPos.y,0.05);
-		}
+		case cpsPickTarget:
+			{
+				m_gl_placing_nav_target->setVisibility(true);
+				m_gl_placing_nav_target->setLocation(m_curCursorPos.x,m_curCursorPos.y,0.01);
+			}
+			break;
+		case cpsPlaceRobot:
+			{
+				m_gl_placing_robot->setVisibility(true);
+				m_gl_placing_robot->setLocation(m_curCursorPos.x,m_curCursorPos.y,0.01);
+			}
+			break;
+		case cpsDrawObstacles:
+			{
+				m_gl_drawing_obs->setLocation(m_curCursorPos.x,m_curCursorPos.y,0.01);
+				if (event.ButtonIsDown( wxMOUSE_BTN_LEFT ))
+				{
+					const int cx = m_gridMap.x2idx(m_curCursorPos.x);
+					const int cy = m_gridMap.y2idx(m_curCursorPos.y);
+					if (cx>=0 && cy>=0 && cx<(int)m_gridMap.getSizeX() && cy<(int)m_gridMap.getSizeY()) {
+						m_gridMap.setCell(cx,cy,0.01f);
+						updateMap3DView();
+						m_plot3D->Refresh();
+					}
+					skip_normal_process=true;
+				}
+			}
+			break;
+		};
 
 		StatusBar1->SetStatusText(wxString::Format(wxT("X=%.03f Y=%.04f Z=0"),m_curCursorPos.x,m_curCursorPos.y), 2);
 	}
 
-	// Do normal process in that class:
-	m_plot3D->OnMouseMove(event);
+	if (!skip_normal_process)
+	{
+		// Do normal process in that class:
+		m_plot3D->OnMouseMove(event);
+	}
 }
 
 void reactive_navigator_demoframe::Onplot3DMouseClick(wxMouseEvent& event)
 {
+	bool skip_normal_process = false;
+
 	switch (m_cursorPickState)
 	{
 	case cpsPickTarget:
@@ -1073,6 +1114,9 @@ void reactive_navigator_demoframe::Onplot3DMouseClick(wxMouseEvent& event)
 			m_navMethod->navigate( &navParams );
 			gl_target->setVisibility(true);
 
+			m_plot3D->SetCursor( *wxSTANDARD_CURSOR ); // End of cross cursor
+			m_cursorPickState = cpsNone; // end of mode
+
 			break;
 		}
 	case cpsPlaceRobot:
@@ -1082,17 +1126,31 @@ void reactive_navigator_demoframe::Onplot3DMouseClick(wxMouseEvent& event)
 			btnPlaceRobot->SetValue(false);
 			btnPlaceRobot->Refresh();
 			m_gl_placing_robot->setVisibility(false);
+			m_plot3D->SetCursor( *wxSTANDARD_CURSOR ); // End of cross cursor
+			m_cursorPickState = cpsNone; // end of mode
+			break;
+		}
+	case cpsDrawObstacles:
+		{
+			const int cx = m_gridMap.x2idx(m_curCursorPos.x);
+			const int cy = m_gridMap.y2idx(m_curCursorPos.y);
+			if (cx>=0 && cy>=0 && cx<(int)m_gridMap.getSizeX() && cy<(int)m_gridMap.getSizeY()) {
+				m_gridMap.setCell(cx,cy,0.01f);
+				updateMap3DView();
+				m_plot3D->Refresh();
+			}
+			skip_normal_process = true;
 			break;
 		}
 	default:
 		break;
 	}
 
-	m_plot3D->SetCursor( *wxSTANDARD_CURSOR ); // End of cross cursor
-	m_cursorPickState = cpsNone; // end of mode
 
-	// Do normal process in that class:
-	m_plot3D->OnMouseDown(event);
+	if (!skip_normal_process) {
+		// Do normal process in that class:
+		m_plot3D->OnMouseDown(event);
+	}
 }
 
 // ==== reactive_navigator_demoframe::TOptions ======
@@ -1287,4 +1345,47 @@ void reactive_navigator_demoframe::OnrbKinTypeSelect(wxCommandEvent& event)
 
 void reactive_navigator_demoframe::OnbtnDrawMapObsClick(wxCommandEvent& event)
 {
+	if (m_cursorPickState!=cpsDrawObstacles)
+	{
+		m_cursorPickState = cpsDrawObstacles;
+		m_plot3D->SetCursor( *wxCROSS_CURSOR );
+	}
+	else
+	{	// Cancel:
+		m_cursorPickState = cpsNone;
+		m_plot3D->SetCursor( *wxSTANDARD_CURSOR );
+	}
+	btnDrawMapObs->SetValue( m_cursorPickState == cpsPickTarget );
+	btnDrawMapObs->Refresh();
+
+	m_gl_drawing_obs->setVisibility(m_cursorPickState==cpsDrawObstacles);
+	m_plot3D->Refresh();
+}
+
+void reactive_navigator_demoframe::OnbtnEmptyMapClick(wxCommandEvent& event)
+{
+	WX_START_TRY
+
+	double lx= 30.,ly=30.;
+	double res = 0.25;
+	wxString s;
+	s = wxGetTextFromUser( _("Width (x) [meters]:"), _("New map"), _("40.0"), this );
+	if (s.IsEmpty()) return;
+	if (!s.ToDouble(&lx)) { wxMessageBox(_("Invalid number")); return; }
+	
+	s = wxGetTextFromUser( _("Height (y) [meters]:"), _("New map"), _("30.0"), this );
+	if (s.IsEmpty()) return;
+	if (!s.ToDouble(&ly)) { wxMessageBox(_("Invalid number")); return; }
+	
+	s = wxGetTextFromUser( _("Grid resolution [meters]:"), _("New map"), _("0.25"), this );
+	if (s.IsEmpty()) return;
+	if (!s.ToDouble(&res)) { wxMessageBox(_("Invalid number")); return; }
+	
+	m_gridMap.setSize(-.5*lx,.5*lx, -.5*ly, .5*ly, res, 0.99f );
+
+	updateMap3DView();
+	m_plot3D->Refresh();
+
+	WX_END_TRY
+
 }

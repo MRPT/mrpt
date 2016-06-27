@@ -85,6 +85,7 @@ class reactive_navigator_demoframe: public wxFrame
         void OnbtnQuitClick(wxCommandEvent& event);
         void OnrbKinTypeSelect(wxCommandEvent& event);
         void OnbtnDrawMapObsClick(wxCommandEvent& event);
+        void OnbtnEmptyMapClick(wxCommandEvent& event);
         //*)
 
         //(*Identifiers(reactive_navigator_demoframe)
@@ -93,6 +94,7 @@ class reactive_navigator_demoframe: public wxFrame
         static const long ID_BUTTON7;
         static const long ID_BUTTON6;
         static const long ID_BUTTON1;
+        static const long ID_BUTTON9;
         static const long ID_BUTTON8;
         static const long ID_BUTTON2;
         static const long ID_BUTTON3;
@@ -162,6 +164,7 @@ class reactive_navigator_demoframe: public wxFrame
         wxStaticText* StaticText3;
         wxPanel* pnParamsGeneral;
         wxCustomButton* btnDrawMapObs;
+        wxCustomButton* btnEmptyMap;
         wxPanel* Panel3;
         wxCheckBox* cbNavLog;
         wxMenuItem* MenuItem3;
@@ -218,7 +221,8 @@ class reactive_navigator_demoframe: public wxFrame
 		{
 			cpsNone = 0,
 			cpsPickTarget,
-			cpsPlaceRobot
+			cpsPlaceRobot,
+			cpsDrawObstacles
 		};
 
 		mrpt::maps::COccupancyGridMap2D  m_gridMap;
@@ -275,8 +279,7 @@ class reactive_navigator_demoframe: public wxFrame
 		// ========= Opengl View: Map & robot  =======
 		mrpt::opengl::CSetOfObjectsPtr		gl_grid;
 		mrpt::opengl::CSetOfObjectsPtr		gl_robot,gl_robot_local, gl_target;
-		mrpt::opengl::CSetOfObjectsPtr		m_gl_placing_nav_target;
-		mrpt::opengl::CSetOfObjectsPtr		m_gl_placing_robot;
+		mrpt::opengl::CSetOfObjectsPtr		m_gl_placing_nav_target, m_gl_placing_robot, m_gl_drawing_obs;
 		mrpt::opengl::CDiskPtr		        gl_robot_sensor_range;
 		mrpt::opengl::CSetOfLinesPtr        gl_robot_path;
 		mrpt::opengl::CPlanarLaserScanPtr   gl_scan3D;
