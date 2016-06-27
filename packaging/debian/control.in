@@ -32,7 +32,9 @@ Build-Depends: debhelper (>= 9),
 	libfreenect-dev (>= 0.2) | perl,
 	libpcap-dev,
 	libopenni2-dev | perl,
-	gdb
+	gdb,
+	lib3ds-dev,
+	libsuitesparse-dev
 Standards-Version: 3.9.8
 Homepage: http://www.mrpt.org/
 
