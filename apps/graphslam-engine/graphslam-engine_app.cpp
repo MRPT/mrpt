@@ -100,7 +100,7 @@ vector<TRegistrationDeciderProps*> deciders_vec;
 
 // Used Functions
 // ////////////////////////////////////////////////////////////
-void dumpRegistrarsToConsole(string reg_type); 
+void dumpRegistrarsToConsole(string reg_type);
 bool checkRegistrationDeciderExists(string node_reg, string reg_type);
 // Main
 // ////////////////////////////////////////////////////////////
@@ -144,7 +144,24 @@ int main(int argc, char **argv)
 
 			deciders_vec.push_back(dec);
 		}
+		{
+			TRegistrationDeciderProps* dec = new TRegistrationDeciderProps;
+			dec->name = "CEmptyNRD";
+			dec->description = "Empty Decider - does nothing when its class methods are called";
+			dec->type = "Node";
+			dec->rawlog_format = "Both";
 
+			deciders_vec.push_back(dec);
+		}
+		{
+			TRegistrationDeciderProps* dec = new TRegistrationDeciderProps;
+			dec->name = "CEmptyERD";
+			dec->description = "Empty Decider - does nothing when its class methods are called";
+			dec->type = "Edge";
+			dec->rawlog_format = "Both";
+
+			deciders_vec.push_back(dec);
+		}
 
 		// Input Validation
 		if (!cmd.parse( argc, argv ) ||  showVersion || showHelp) {
@@ -179,10 +196,10 @@ int main(int argc, char **argv)
 		// fetch which registration deciders to use
 		string node_reg = arg_node_reg.getValue();
 		string edge_reg = arg_edge_reg.getValue();
-		ASSERTMSG_(checkRegistrationDeciderExists(node_reg, "node"), 
+		ASSERTMSG_(checkRegistrationDeciderExists(node_reg, "node"),
 				format("Node Registration Decider %s is not available. ", node_reg.c_str()) );
 		checkRegistrationDeciderExists(edge_reg, "edge");
-		ASSERTMSG_(checkRegistrationDeciderExists(edge_reg, "edge"), 
+		ASSERTMSG_(checkRegistrationDeciderExists(edge_reg, "edge"),
 				format("Edge Registration Decider %s is not available. ", edge_reg.c_str()) );
 
 		// fetch the filenames
@@ -207,29 +224,81 @@ int main(int argc, char **argv)
 
 		bool has_exited_normally = false;
 		// take all the different combinations of node / edge registration deciders
-		// one-by-one. 
+		// one-by-one.
 		VERBOSE_COUT << "Node registration decider: " << node_reg << endl;
 		VERBOSE_COUT << "Edge registration decider: " << edge_reg << endl;
 		if (system::strCmpI(node_reg, "CFixedIntervalsNRD")) {
-			if (system::strCmpI(edge_reg, "CICPGoodnessERD")) {
+			if (system::strCmpI(edge_reg, "CICPGoodnessERD")) { // CFixedIntervalsNRD - CICPGoodnessERD
 				// Initialize the CGraphSlamEngine_t class
 				CGraphSlamEngine_t
 					<
 					CNetworkOfPoses2DInf,
 					CFixedIntervalsNRD_t<CNetworkOfPoses2DInf>,
-					CICPGoodnessERD_t<CNetworkOfPoses2DInf> 
+					CICPGoodnessERD_t<CNetworkOfPoses2DInf>
 					>
 					graph_engine(
-							ini_fname, 
+							ini_fname,
 							&graph_win,
 							&graph_win_observer,
 							rawlog_fname,
 							ground_truth_fname);
 				has_exited_normally = graph_engine.parseRawlogFile();
 			}
+			else if (system::strCmpI(edge_reg, "CEmptyERD")) { // CFixedIntervalsNRD - CEmptyERD
+				// Initialize the CGraphSlamEngine_t class
+				CGraphSlamEngine_t
+					<
+					CNetworkOfPoses2DInf,
+					CFixedIntervalsNRD_t<CNetworkOfPoses2DInf>,
+					CEmptyERD_t<CNetworkOfPoses2DInf>
+					>
+					graph_engine(
+							ini_fname,
+							&graph_win,
+							&graph_win_observer,
+							rawlog_fname,
+							ground_truth_fname);
+				has_exited_normally = graph_engine.parseRawlogFile();
+			}
+
+		}
+		if (system::strCmpI(node_reg, "CEmptyNRD")) {
+			if (system::strCmpI(edge_reg, "CICPGoodnessERD")) { // CEmptyNRD - CICPGoodnessERD
+				// Initialize the CGraphSlamEngine_t class
+				CGraphSlamEngine_t
+					<
+					CNetworkOfPoses2DInf,
+					CEmptyNRD_t<CNetworkOfPoses2DInf>,
+					CICPGoodnessERD_t<CNetworkOfPoses2DInf>
+					>
+					graph_engine(
+							ini_fname,
+							&graph_win,
+							&graph_win_observer,
+							rawlog_fname,
+							ground_truth_fname);
+				has_exited_normally = graph_engine.parseRawlogFile();
+			}
+			else if (system::strCmpI(edge_reg, "CEmptyERD")) { // CEmtpyNRD - CEmptyERD
+				// Initialize the CGraphSlamEngine_t class
+				CGraphSlamEngine_t
+					<
+					CNetworkOfPoses2DInf,
+					CEmptyNRD_t<CNetworkOfPoses2DInf>,
+					CEmptyERD_t<CNetworkOfPoses2DInf>
+					>
+					graph_engine(
+							ini_fname,
+							&graph_win,
+							&graph_win_observer,
+							rawlog_fname,
+							ground_truth_fname);
+				has_exited_normally = graph_engine.parseRawlogFile();
+			}
+
 		}
 		else if (system::strCmpI(node_reg, "CICPGoodnessNRD")) {
-			if (system::strCmpI(edge_reg, "CICPGoodnessERD")) {
+			if (system::strCmpI(edge_reg, "CICPGoodnessERD")) { // CICPGooodnessNRD - CICPGoodnessERD
 				// Initialize the CGraphSlamEngine_t class
 				CGraphSlamEngine_t
 					<
@@ -238,13 +307,31 @@ int main(int argc, char **argv)
 					CICPGoodnessERD_t<CNetworkOfPoses2DInf>
 					>
 					graph_engine(
-							ini_fname, 
+							ini_fname,
 							&graph_win,
 							&graph_win_observer,
 							rawlog_fname,
 							ground_truth_fname);
 				has_exited_normally = graph_engine.parseRawlogFile();
 			}
+			else if (system::strCmpI(edge_reg, "CEmptyERD")) { // CICPGooodnessNRD - CEmptyERD
+
+				// Initialize the CGraphSlamEngine_t class
+				CGraphSlamEngine_t
+					<
+					CNetworkOfPoses2DInf,
+					CICPGoodnessNRD_t<CNetworkOfPoses2DInf>,
+					CEmptyERD_t<CNetworkOfPoses2DInf>
+					>
+					graph_engine(
+							ini_fname,
+							&graph_win,
+							&graph_win_observer,
+							rawlog_fname,
+							ground_truth_fname);
+				has_exited_normally = graph_engine.parseRawlogFile();
+			}
+
 		}
 
 		if (has_exited_normally) {
@@ -281,8 +368,8 @@ int main(int argc, char **argv)
 void dumpRegistrarsToConsole(string reg_type="all") {
 	MRPT_START;
 
-	ASSERTMSG_((strCmpI(reg_type, "node") || 
-			system::strCmpI(reg_type, "edge") || 
+	ASSERTMSG_((strCmpI(reg_type, "node") ||
+			system::strCmpI(reg_type, "edge") ||
 			system::strCmpI(reg_type, "all")),
 			format("Registrar string '%s' does not match a known registrar name.\n"
 				"Specify 'node' 'edge' or 'all'", reg_type.c_str()));
@@ -320,8 +407,8 @@ void dumpRegistrarsToConsole(string reg_type="all") {
 // check if the given registration decider is implemented
 bool checkRegistrationDeciderExists(string given_reg, string reg_type) {
 	MRPT_START;
-	ASSERTMSG_((strCmpI(reg_type, "node") || 
-			system::strCmpI(reg_type, "edge")), 
+	ASSERTMSG_((strCmpI(reg_type, "node") ||
+			system::strCmpI(reg_type, "edge")),
 			format("Registrar string '%s' does not match a known registrar name.\n"
 				"Specify 'node' or 'edge' ", reg_type.c_str()));
 	bool found = false;

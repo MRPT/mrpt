@@ -131,8 +131,8 @@ namespace mrpt { namespace graphslam { namespace deciders {
 			pose_t m_curr_estimated_pose;
 			// pose_t using only odometry information. Handy for observation-only
 			// rawlogs.
-			pose_t m_curr_odometry_only_pose; 
-			pose_t m_last_odometry_only_pose; 
+			pose_t m_curr_odometry_only_pose;
+			pose_t m_last_odometry_only_pose;
 			// variable to keep track of whether we are reading from an
 			// observation-only rawlog file or from an action-observation rawlog
 			bool m_observation_only_rawlog;

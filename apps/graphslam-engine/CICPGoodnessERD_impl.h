@@ -42,7 +42,7 @@ void CICPGoodnessERD_t<GRAPH_t>::initCICPGoodnessERD_t() {
 	m_just_inserted_loop_closure = false;
 	m_is_using_3DScan = false;
 
-	// start ICP constraint registration only when 
+	// start ICP constraint registration only when
 	// nodeCount > m_last_total_num_of_nodes
 	m_last_total_num_of_nodes = 2;
 
@@ -69,7 +69,7 @@ template<class GRAPH_t> void CICPGoodnessERD_t<GRAPH_t>::updateDeciderState(
 		mrpt::obs::CObservationPtr observation ) {
 	MRPT_START;
 	MRPT_UNUSED_PARAM(action);
-	
+
 	// check possible prior node registration
 	bool registered_new_node = false;
 
@@ -137,7 +137,7 @@ template<class GRAPH_t> void CICPGoodnessERD_t<GRAPH_t>::updateDeciderState(
 				&nodes_to_check_ICP,
 				m_graph->nodeCount()-1,
 				params.ICP_max_distance);
-		std::cout << "Found * " << nodes_to_check_ICP.size() 
+		std::cout << "Found * " << nodes_to_check_ICP.size()
 			<< " * nodes close to nodeID: " << m_graph->nodeCount()-1 << endl;
 
 		// reset the loop_closure flag and run registration
@@ -167,10 +167,10 @@ void CICPGoodnessERD_t<GRAPH_t>::checkRegistrationCondition2D(
 	//cout << "CICPGoodnessERD: Checking 2D Registration Condition... " << endl;
 
   CObservation2DRangeScanPtr curr_laser_scan;
-  std::map<const mrpt::utils::TNodeID, 
+  std::map<const mrpt::utils::TNodeID,
     mrpt::obs::CObservation2DRangeScanPtr>::const_iterator search;
 	// search for curr_laser_scan
-  search = m_nodes_to_laser_scans2D.find(m_graph->nodeCount()-1); 
+  search = m_nodes_to_laser_scans2D.find(m_graph->nodeCount()-1);
   if (search != m_nodes_to_laser_scans2D.end()) {
     curr_laser_scan = search->second;
   }
@@ -178,7 +178,7 @@ void CICPGoodnessERD_t<GRAPH_t>::checkRegistrationCondition2D(
 	// commence only if I have the current laser scan
   if (curr_laser_scan) {
 		// try adding ICP constraints with each node in the previous set
-		for (set<mrpt::utils::TNodeID>::const_iterator 
+		for (set<mrpt::utils::TNodeID>::const_iterator
 				node_it = nodes_set.begin();
 				node_it != nodes_set.end(); ++node_it) {
 
@@ -188,7 +188,7 @@ void CICPGoodnessERD_t<GRAPH_t>::checkRegistrationCondition2D(
     	CObservation2DRangeScanPtr prev_laser_scan;
 
     	// search for prev_laser_scan
-			search = m_nodes_to_laser_scans2D.find(*node_it); 
+			search = m_nodes_to_laser_scans2D.find(*node_it);
     	if (search != m_nodes_to_laser_scans2D.end()) {
         prev_laser_scan = search->second;
 
@@ -222,10 +222,10 @@ void CICPGoodnessERD_t<GRAPH_t>::checkRegistrationCondition3D(
 	MRPT_START;
 
   CObservation3DRangeScanPtr curr_laser_scan;
-  std::map<const mrpt::utils::TNodeID, 
+  std::map<const mrpt::utils::TNodeID,
     mrpt::obs::CObservation3DRangeScanPtr>::const_iterator search;
 	// search for curr_laser_scan
-  search = m_nodes_to_laser_scans3D.find(m_graph->nodeCount()-1); 
+  search = m_nodes_to_laser_scans3D.find(m_graph->nodeCount()-1);
   if (search != m_nodes_to_laser_scans3D.end()) {
     curr_laser_scan = search->second;
   }
@@ -233,7 +233,7 @@ void CICPGoodnessERD_t<GRAPH_t>::checkRegistrationCondition3D(
 	// commence only if I have the current laser scan
   if (curr_laser_scan) {
 		// try adding ICP constraints with each node in the previous set
-		for (set<mrpt::utils::TNodeID>::const_iterator 
+		for (set<mrpt::utils::TNodeID>::const_iterator
 				node_it = nodes_set.begin();
 				node_it != nodes_set.end(); ++node_it) {
 
@@ -243,7 +243,7 @@ void CICPGoodnessERD_t<GRAPH_t>::checkRegistrationCondition3D(
     	CObservation3DRangeScanPtr prev_laser_scan;
 
     	// search for prev_laser_scan
-			search = m_nodes_to_laser_scans3D.find(*node_it); 
+			search = m_nodes_to_laser_scans3D.find(*node_it);
     	if (search != m_nodes_to_laser_scans3D.end()) {
         prev_laser_scan = search->second;
 
@@ -274,7 +274,7 @@ void CICPGoodnessERD_t<GRAPH_t>::checkRegistrationCondition3D(
 
 template<class GRAPH_t>
 void CICPGoodnessERD_t<GRAPH_t>::registerNewEdge(
-    const mrpt::utils::TNodeID& from, 
+    const mrpt::utils::TNodeID& from,
     const mrpt::utils::TNodeID& to,
     const constraint_t& rel_edge ) {
   MRPT_START;
@@ -304,7 +304,7 @@ void CICPGoodnessERD_t<GRAPH_t>::getNearbyNodesOf(
 			}
 		}
 	}
-	else { // check against all nodes 
+	else { // check against all nodes
 		m_graph->getAllNodes(*nodes_set);
 	}
 
@@ -318,7 +318,7 @@ void CICPGoodnessERD_t<GRAPH_t>::setGraphPtr(GRAPH_t* graph) {
 
 	m_graph = graph;
 
-	std::cout << "[CICPGoodnessERD:] Fetched the graph successfully" 
+	std::cout << "[CICPGoodnessERD:] Fetched the graph successfully"
 		<< std::endl;
 
 	MRPT_END;
@@ -336,12 +336,12 @@ void CICPGoodnessERD_t<GRAPH_t>::setRawlogFname(const std::string& rawlog_fname)
 	cout << "Trying to fetch 3D scans external storage directory.. " << endl;
 	std::string rawlog_fname_noext = system::extractFileName(m_rawlog_fname);
 	std::string rawlog_dir = system::extractFileDirectory(rawlog_fname);
-	std::string img_external_storage_dir = 
+	std::string img_external_storage_dir =
 		rawlog_dir + rawlog_fname_noext + "_Images/";
 
 	if (system::directoryExists(img_external_storage_dir)) {
 		params.scans_img_external_dir = img_external_storage_dir;
-		cout << "3D scans external storage: " << params.scans_img_external_dir 
+		cout << "3D scans external storage: " << params.scans_img_external_dir
 			<< endl;
 	}
 	else {
@@ -365,7 +365,7 @@ CICPGoodnessERD_t<GRAPH_t>::setCDisplayWindowPtr(
 
 	m_win = win;
 
-	std::cout << "[CICPGoodnessERD:] Fetched the CDisplayWindow successfully" 
+	std::cout << "[CICPGoodnessERD:] Fetched the CDisplayWindow successfully"
 		<< std::endl;
 
 	MRPT_END;
@@ -475,7 +475,7 @@ void CICPGoodnessERD_t<GRAPH_t>::updateVisuals() {
 		}
 
 		// set the pose of the laser scan
-		typename GRAPH_t::global_poses_t::const_iterator search = 
+		typename GRAPH_t::global_poses_t::const_iterator search =
 			m_graph->nodes.find(m_graph->nodeCount()-1);
 		if (search != m_graph->nodes.end()) {
 			laser_scan_viz->setPose(m_graph->nodes[m_graph->nodeCount()-1]);
@@ -483,8 +483,8 @@ void CICPGoodnessERD_t<GRAPH_t>::updateVisuals() {
 			// visualize the loop closures with the nodes ahead
 			laser_scan_viz->setPose(CPose3D(
 						laser_scan_viz->getPoseX(), laser_scan_viz->getPoseY(), -0.5,
-						DEG2RAD(laser_scan_viz->getPoseYaw()), 
-						DEG2RAD(laser_scan_viz->getPosePitch()), 
+						DEG2RAD(laser_scan_viz->getPoseYaw()),
+						DEG2RAD(laser_scan_viz->getPosePitch()),
 						DEG2RAD(laser_scan_viz->getPoseRoll())
 						));
 		}
@@ -547,7 +547,7 @@ void CICPGoodnessERD_t<GRAPH_t>::updateVisuals() {
 			// make this a static class member
 			CMatrixFloat range2D;
 			mrpt::utils::CImage img;
-	
+
 			range2D = m_last_laser_scan3D->rangeImage * (1.0/5.0); // TODO - without the magic number?
 			img.setFromMatrix(range2D);
 
@@ -575,7 +575,7 @@ void CICPGoodnessERD_t<GRAPH_t>::checkIfInvalidDataset(
 	MRPT_UNUSED_PARAM(action);
 
 	if (observation.present()) { // FORMAT #2
-		if (IS_CLASS(observation, CObservation2DRangeScan) || 
+		if (IS_CLASS(observation, CObservation2DRangeScan) ||
 				IS_CLASS(observation, CObservation3DRangeScan)) {
 			m_checked_for_usuable_dataset = true;
 			return;
@@ -590,9 +590,9 @@ void CICPGoodnessERD_t<GRAPH_t>::checkIfInvalidDataset(
 		return;
 	}
 	if (m_consecutive_invalid_format_instances > m_consecutive_invalid_format_instances_thres) {
-		std::cout << "[CICPGoodnessERD:] Can't find usuable data in the given dataset." 
+		std::cout << "[CICPGoodnessERD:] Can't find usuable data in the given dataset."
 			<< std::endl;
-		std::cout << "Make sure dataset contains valid CObservation2DRangeScan/CObservation3DRangeScan data." 
+		std::cout << "Make sure dataset contains valid CObservation2DRangeScan/CObservation3DRangeScan data."
 			<< std::endl;
 		mrpt::system::sleep(5000);
 		m_checked_for_usuable_dataset = true;
@@ -689,7 +689,7 @@ void CICPGoodnessERD_t<GRAPH_t>::TParams::loadFromConfigFile(
 	// load the icp parameters - from "ICP" section explicitly
 	decider.range_scanner_t::params.loadFromConfigFile(source, "ICP");
 
-	std::cout << "[CICPGoodnessERD:] Successfully loaded CICPGoodnessERD parameters. " 
+	std::cout << "[CICPGoodnessERD:] Successfully loaded CICPGoodnessERD parameters. "
 		<< std::endl;
 	has_read_config = true;
 

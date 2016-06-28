@@ -62,7 +62,7 @@ bool CICPGoodnessNRD_t<GRAPH_t>::updateDeciderState(
 	MRPT_UNUSED_PARAM(observations);
 
 	if (observation.present()) {
-		if (IS_CLASS(observation, CObservation2DRangeScan) || 
+		if (IS_CLASS(observation, CObservation2DRangeScan) ||
 				IS_CLASS(observation, CObservation3DRangeScan)) {
 			// 3D Range Scan
 			if (IS_CLASS(observation, CObservation3DRangeScan)) {
@@ -82,7 +82,7 @@ bool CICPGoodnessNRD_t<GRAPH_t>::updateDeciderState(
 			}
 			// 2D Range Scan
 			else if (IS_CLASS(observation, CObservation2DRangeScan)) {
-				m_curr_laser_scan2D = 
+				m_curr_laser_scan2D =
 					static_cast<mrpt::obs::CObservation2DRangeScanPtr>(observation);
 
 				// if first_time in initialize the m_last_laser_scan as well
@@ -106,12 +106,12 @@ bool CICPGoodnessNRD_t<GRAPH_t>::updateDeciderState(
 
 	if (registered_new_node) {
 		// reset the relative PDF since the previous registered node
-		// maybe put the covariance tmp here as well? 
+		// maybe put the covariance tmp here as well?
 		m_since_prev_node_PDF = constraint_t();
 	}
 
 	// TODO - implement checkIfInvalidDataset
-	
+
 	return registered_new_node;
 	MRPT_END;
 }
@@ -130,7 +130,7 @@ bool CICPGoodnessNRD_t<GRAPH_t>::checkRegistrationCondition() {
 				*m_last_laser_scan3D,
 				*m_curr_laser_scan3D,
 				&rel_edge,
-				NULL, 
+				NULL,
 				&icp_info);
 	}
 	else {
@@ -153,14 +153,14 @@ bool CICPGoodnessNRD_t<GRAPH_t>::checkRegistrationCondition() {
 			m_last_laser_scan2D = m_curr_laser_scan2D;
 		}
 
-		//cout << "CICPGoodnessNRD: norm = " 
+		//cout << "CICPGoodnessNRD: norm = "
 			//<< m_since_prev_node_PDF.getMeanVal().norm() << " | angle = "
 			//<< RAD2DEG(fabs(wrapToPi(m_since_prev_node_PDF.getMeanVal().phi()))) << endl;
 
 		// check if distance or angle difference is good enough for new node
-		if ( m_since_prev_node_PDF.getMeanVal().norm() > 
-				params.registration_max_distance || 
-				fabs(wrapToPi(m_since_prev_node_PDF.getMeanVal().phi())) > 
+		if ( m_since_prev_node_PDF.getMeanVal().norm() >
+				params.registration_max_distance ||
+				fabs(wrapToPi(m_since_prev_node_PDF.getMeanVal().phi())) >
 				params.registration_max_angle ) {
 			registered_new_node = true;
 			this->registerNewNode();
@@ -195,7 +195,7 @@ void CICPGoodnessNRD_t<GRAPH_t>::setGraphPtr(GRAPH_t* graph) {
 	m_nodeID_max = m_graph->root;
 	cout << "m_nodeID_max = " << m_nodeID_max << endl;
 
-	std::cout << "CICPGoodnessNRD: Fetched the graph successfully" 
+	std::cout << "CICPGoodnessNRD: Fetched the graph successfully"
 		<< std::endl;
 }
 
@@ -213,7 +213,7 @@ void CICPGoodnessNRD_t<GRAPH_t>::TParams::dumpToTextStream(
 	MRPT_START;
 
 	out.printf("------------------[ ICP Fixed Intervals Node Registration ]------------------\n");
-	out.printf("Max distance for registration = %.2f m\n", 
+	out.printf("Max distance for registration = %.2f m\n",
 			registration_max_distance);
 	out.printf("Max Angle for registration    = %.2f deg\n",
 			RAD2DEG(registration_max_angle));

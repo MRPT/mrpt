@@ -46,7 +46,7 @@ Sample calls to the graphslam-engine application are given below:
 
 
 The following commands should be working without any modification to the .ini
-file - independently of the current working directory (modify paths to MRPT.
+file - independently of the current working directory (modify paths to MRPT,
 graphslam-engine accordingly):
 - graphslam-engine -i
 	MRPT/share/config_files/graphslam-engine/odometry_2DRangeScans.ini -r

@@ -57,11 +57,11 @@ class CEdgeCounter_t {
 		/**
 		 * setRemovedEdges
 		 *
-		 * Method to be called after call to CNetworkOfPoses::collapseDuplicatedEdges 
+		 * Method to be called after call to CNetworkOfPoses::collapseDuplicatedEdges
 		 * method. States how many of the existing edges have been removed.
 		 */
-		void setRemovedEdges(int removed_edges) { 
-			m_unique_edges = this->getTotalNumOfEdges() - removed_edges; 
+		void setRemovedEdges(int removed_edges) {
+			m_unique_edges = this->getTotalNumOfEdges() - removed_edges;
 			//std::cout << "setRemovedEdges: Unique edges: " << m_unique_edges << std::endl;
 		}
 		/**
@@ -285,7 +285,7 @@ class CEdgeCounter_t {
 			//<< "m_offset_y_loop_closures: " << m_offset_y_loop_closures << std::endl
 			//<< "m_text_index_loop_closures" << m_text_index_loop_closures << std::endl;
 
-			ASSERTMSG_(m_win, 
+			ASSERTMSG_(m_win,
 					"Visualization of data was requested but no CDisplayWindow pointer was given");
 			ASSERT_EQUAL_(name_to_offset_y.size(), name_to_text_index.size());
 
