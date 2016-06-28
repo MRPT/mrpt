@@ -45,7 +45,7 @@ namespace mrpt { namespace gui {
 		  inline void addTextMessage(
 		  		const double x, const double y,
 		  		const std::string& text,
-		  		const mrpt::utils::TColorf& color=mrpt::utils::TColorf(1.0, 1.0, 1.0), 
+		  		const mrpt::utils::TColorf& color=mrpt::utils::TColorf(1.0, 1.0, 1.0),
 		  		const size_t unique_index=0) {
 
 		  	if (m_win) {

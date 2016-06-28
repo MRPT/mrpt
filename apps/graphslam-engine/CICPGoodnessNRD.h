@@ -144,7 +144,7 @@ namespace mrpt { namespace graphslam { namespace deciders {
 
     	CObservation3DRangeScanPtr m_last_laser_scan3D;
     	CObservation3DRangeScanPtr m_curr_laser_scan3D;
-    	
+
     	// last insertede node in the graph
 			mrpt::utils::TNodeID m_nodeID_max;
 

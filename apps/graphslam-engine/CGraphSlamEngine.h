@@ -63,7 +63,6 @@
 #include <set>
 #include <algorithm>
 #include <cstdlib>
-#include <cassert>
 
 #include "CEdgeCounter.h"
 #include "CWindowObserver.h"
@@ -119,7 +118,7 @@ namespace mrpt { namespace graphslam {
 		 		 */
 				void saveGraph() const {
 					MRPT_START;
-					assert(m_has_read_config);
+					ASSERT_(m_has_read_config);
 
 					std::string fname = m_output_dir_fname + "/" + m_save_graph_fname;
 					saveGraph(fname);
@@ -228,8 +227,11 @@ namespace mrpt { namespace graphslam {
 						std::vector<mrpt::system::TTimeStamp>* gt_timestamps=NULL);
 				/**
 		 		 * Parse the ground truth .txt file and fill in the corresponding
-		 		 * m_GT_poses vector. Ground Truth file has to be generated from the
-		 		 * rgbd_dataset2rawlog MRPT tool
+		 		 * m_GT_poses vector. The poses returned are given with regards to the
+		 		 * MRPT reference frame. Transformation from the RGB-D optical frame to
+		 		 * the MRPT frame is applied.
+		 		 * Ground Truth file has to be generated from the rgbd_dataset2rawlog
+		 		 * MRPT tool.
 		 		 */
 				void readGTFileRGBD_TUM(
 						const std::string& fname_GT, 
@@ -354,6 +356,10 @@ namespace mrpt { namespace graphslam {
 				mrpt::utils::TColor m_odometry_color; // see Ctor for initialization
 				mrpt::utils::TColor m_GT_color;
 				mrpt::utils::TColor m_estimated_traj_color;
+
+				// frame transformation from the RGBD_TUM GrountTruth to the MRPT
+				// reference frame
+				CMatrixDouble33  m_rot_TUM_to_MRPT;
 
 				size_t m_robot_model_size;
 

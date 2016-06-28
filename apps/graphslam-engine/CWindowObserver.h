@@ -34,11 +34,11 @@ public:
 		mrpt::utils::TParameters<bool>* params = new mrpt::utils::TParameters<bool>;
 		(*params)["mouse_clicked"] = m_mouse_clicked;
 		(*params)["request_to_exit"] = m_request_to_exit;
-		
+
 		return params;
 	}
 
-protected:	
+protected:
 	virtual void OnEvent(const mrpt::utils::mrptEvent &e) {
 		if (e.isOfType<mrpt::utils::mrptEventOnDestroy>()) {
 			const mrpt::utils::mrptEventOnDestroy &ev = static_cast<const mrpt::utils::mrptEventOnDestroy &>(e);
@@ -94,7 +94,7 @@ protected:
 		else if (e.isOfType<mrpt::opengl::mrptEventGLPostRender>()) {
 			/**
 			 * An event sent by an mrpt::opengl::COpenGLViewport AFTER calling the
-			 * SCENE OPENGL DRAWING PRIMITIVES and before doing a glSwapBuffers. 
+			 * SCENE OPENGL DRAWING PRIMITIVES and before doing a glSwapBuffers.
 			 */
 
 			//std::cout << "mrpt::opengl::mrpptEventGLPostRender received." << std::endl;
@@ -105,7 +105,7 @@ protected:
 				"Press 'h' for help",
 				0.02f  // text size
 				);
-			
+
 			// Also showing help?
 			if (m_showing_help || m_hiding_help) {
 				//std::cout << "In the m_showing_help ... if-clause" << std::endl;
@@ -152,7 +152,7 @@ private:
 	bool m_mouse_clicked, m_request_to_exit;
 
 	mrpt::utils::CTicTac  m_tim_show_start, m_tim_show_end;
-	std::string m_help_text; 
+	std::string m_help_text;
 };
 
 #endif /* end of include guard: CWINDOWOBSERVER_H */

@@ -8,7 +8,7 @@
    +---------------------------------------------------------------------------+ */
 
 /**
- * List of, supplementary to the problem functions. 
+ * List of, supplementary to the problem functions.
  * TODO: Consider integrating them into their respective
  * namespaces/implementation files..
  */
@@ -22,7 +22,7 @@
 namespace supplementary_funs {
 
 	// TODO - make this a part of the optimizer
-	/** 
+	/**
 	 * levMarqFeedback
 	 *
 	 * Feedback fucntion for the graph optimization

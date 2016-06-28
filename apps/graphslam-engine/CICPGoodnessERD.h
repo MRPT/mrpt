@@ -74,7 +74,7 @@ namespace mrpt { namespace graphslam { namespace deciders {
 	  		public:
 					typedef typename GRAPH_t::constraint_t constraint_t;
 					// type of underlying poses (2D/3D)
-					typedef typename GRAPH_t::constraint_t::type_value pose_t; 
+					typedef typename GRAPH_t::constraint_t::type_value pose_t;
 					typedef mrpt::graphslam::deciders::CRangeScanRegistrationDecider_t<GRAPH_t> range_scanner_t;
 					typedef CICPGoodnessERD_t<GRAPH_t> decider_t;
 
@@ -122,7 +122,7 @@ namespace mrpt { namespace graphslam { namespace deciders {
 							bool enable_intensity_viewport;
 							bool enable_range_viewport;
 							std::string scans_img_external_dir;
-							
+
 							bool has_read_config;
     			};
 
@@ -142,7 +142,7 @@ namespace mrpt { namespace graphslam { namespace deciders {
 					void checkRegistrationCondition3D(
 							const std::set<mrpt::utils::TNodeID>& nodes_set);
     			void registerNewEdge(
-    					const mrpt::utils::TNodeID& from, 
+    					const mrpt::utils::TNodeID& from,
     					const mrpt::utils::TNodeID& to,
     					const constraint_t& rel_edge );
 					void checkIfInvalidDataset(mrpt::obs::CActionCollectionPtr action,
@@ -150,7 +150,7 @@ namespace mrpt { namespace graphslam { namespace deciders {
 							mrpt::obs::CObservationPtr observation );
 
 		 			void getNearbyNodesOf(
-		 					std::set<mrpt::utils::TNodeID> *nodes_set, 
+		 					std::set<mrpt::utils::TNodeID> *nodes_set,
 							const mrpt::utils::TNodeID& cur_nodeID,
 							double distance );
 					// TODO - remove this..
@@ -182,11 +182,11 @@ namespace mrpt { namespace graphslam { namespace deciders {
 					mrpt::utils::TColor m_laser_scans_color; // see Ctor for initialization
 					double m_offset_y_search_disk;
 					int m_text_index_search_disk;
-					
 
-					std::map<const mrpt::utils::TNodeID, 
+
+					std::map<const mrpt::utils::TNodeID,
 						mrpt::obs::CObservation2DRangeScanPtr> m_nodes_to_laser_scans2D;
-					std::map<const mrpt::utils::TNodeID, 
+					std::map<const mrpt::utils::TNodeID,
 						mrpt::obs::CObservation3DRangeScanPtr> m_nodes_to_laser_scans3D;
 					std::map<const std::string, int> m_edge_types_to_nums;
 

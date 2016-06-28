@@ -79,7 +79,7 @@ namespace mrpt { namespace graphslam { namespace deciders {
 			 * contain at least low_lim measurements, regardless of keep_point_every
 			 * value. Set low_lim to 0 if no lower limit is to be specified
 			 */
-			void decimatePointsMap(mrpt::maps::CPointsMap* m, 
+			void decimatePointsMap(mrpt::maps::CPointsMap* m,
 					size_t keep_point_every=4,
 					size_t low_lim=0);
 			/**

@@ -106,7 +106,7 @@ namespace mrpt { namespace graphslam { namespace deciders {
 		 		 * Wrapper around GRAPH_t::insertEdge method
      		 */
     		virtual void registerNewEdge(
-    				const mrpt::utils::TNodeID& from, 
+    				const mrpt::utils::TNodeID& from,
     				const mrpt::utils::TNodeID& to,
     				const constraint_t& rel_edge) = 0;
 				/**
