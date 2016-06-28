@@ -135,9 +135,9 @@ void  CHolonomicND::gapsEstimator(
 	ASSERT_(n>2);
 
 	// ================ Parameters ================
-	const int		GAPS_MIN_WIDTH = ceil(n*0.01); // was: 3
-	const double	GAPS_MIN_DEPTH_CONSIDERED = 0.6;
-	const double	GAPS_MAX_RELATIVE_DEPTH = 0.5;
+	const int     GAPS_MIN_WIDTH = ceil(n*0.01); // was: 3
+	const double  GAPS_MIN_DEPTH_CONSIDERED = 0.6;
+	const double  GAPS_MAX_RELATIVE_DEPTH = 0.5;
 	// ============================================
 
 	// Find the maximum distances to obstacles:
@@ -180,7 +180,7 @@ void  CHolonomicND::gapsEstimator(
 
 					is_inside = false;
 
-					if ( (sec_end-sec_ini) >= GAPS_MIN_WIDTH )
+					if ( (sec_end-sec_ini) >= (size_t)GAPS_MIN_WIDTH )
 					{
 						// Add new gap:
 						gaps_temp.resize( gaps_temp.size() + 1 );
