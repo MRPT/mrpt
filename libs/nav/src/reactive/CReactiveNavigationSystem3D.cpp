@@ -111,6 +111,7 @@ void CReactiveNavigationSystem3D::loadConfigFile(const mrpt::utils::CConfigFileB
 	//Read navigation params
 	refDistance = ini.read_float(sectCfg,"MAX_DISTANCE_PTG", 1, true);
 	SPEEDFILTER_TAU =  ini.read_float(sectCfg,"SPEEDFILTER_TAU", 0, true);
+	this->m_robot.loadConfigFile(ini,sectCfg);
 
 	DIST_TO_TARGET_FOR_SENDING_EVENT = ini.read_float(sectCfg, "DIST_TO_TARGET_FOR_SENDING_EVENT", DIST_TO_TARGET_FOR_SENDING_EVENT, false);
 
