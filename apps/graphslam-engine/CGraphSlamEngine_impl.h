@@ -72,6 +72,7 @@ CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::~CGraphSlamEngine_t
 	}
 
 	// delete m_odometry_poses
+	if (m_odometry_poses.size())
 	VERBOSE_COUT << "Releasing m_odometry_poses vector" << std::endl;
 	for (int i = 0; i < m_odometry_poses.size(); ++i) {
 		delete m_odometry_poses[i];
@@ -621,6 +622,23 @@ bool CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::parseRawlogFil
 	} // WHILE CRAWLOG FILE
 	rawlog_file.close();
 
+	// exiting actions
+	if (m_save_graph) { this->saveGraph(); }
+	// remove the CPlanarLaserScan if it exists
+	{
+		COpenGLScenePtr& scene = m_win->get3DSceneAndLock();
+		CPlanarLaserScanPtr laser_scan;
+		for (; laser_scan = scene->getByClass<CPlanarLaserScan>() ;) {
+			VERBOSE_COUT << "Removing CPlanarlaserScan from generated 3DScene..." << std::endl;
+			scene->removeObject(laser_scan);
+		}
+
+		m_win->unlockAccess3DScene();
+		m_win->forceRepaint();
+	}
+	
+	if (m_save_3DScene) { this->save3DScene(); }
+
 	return true; // function execution completed successfully
 	MRPT_END;
 } // END OF FUNCTION
@@ -737,10 +755,22 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::readConfigFile
 			"GeneralConfiguration",
 			"user_decides_about_output_dir",
 			true, false);
+	m_save_graph = cfg_file.read_bool(
+			"GeneralConfiguration",
+			"save_graph",
+			true, false);
+	m_save_3DScene = cfg_file.read_bool(
+			"GeneralConfiguration",
+			"save_3DScene",
+			true, false);
 	m_save_graph_fname = cfg_file.read_string(
 			"GeneralConfiguration",
 			"save_graph_fname",
-			"poses.log", false);
+			"output_graph.graph", false);
+	m_save_3DScene_fname = cfg_file.read_string(
+			"GeneralConfiguration",
+			"save_3DScene_fname",
+			"scene.3DScene", false);
 	m_GT_file_format = cfg_file.read_string(
 			"GeneralConfiguration",
 			"ground_truth_file_format",
@@ -889,14 +919,28 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::printProblemPa
 		<< m_config_fname << std::endl;
 	ss_out << "Rawlog filename                 = "
 		<< m_rawlog_fname << std::endl;
+	ss_out << "User decides about output dir?  = "
+		<< m_user_decides_about_output_dir << std::endl;
 	ss_out << "Output directory                = "
 		<< m_output_dir_fname << std::endl;
-	ss_out << "User decides about output dir   = "
-		<< m_user_decides_about_output_dir << std::endl;
+
+	ss_out << "Generated .graph file?          = "
+		<< m_save_graph << std::endl;
+	ss_out << "Generate .3DScene file?         = "
+		<< m_save_3DScene << std::endl;
+	if (m_save_graph) {
+		ss_out << "Generated .graph filename       = "
+			<< m_save_graph_fname << std::endl;
+	}
+	if (m_save_3DScene) {
+		ss_out << "Generated .3DScene filename     = "
+			<< m_save_3DScene_fname << std::endl;
+	}
+
 	ss_out << "Ground Truth File format        = "
 		<< m_GT_file_format << std::endl;
-	ss_out << "save_graph_fname                = "
-		<< m_save_graph_fname << std::endl;
+	ss_out << "Ground Truth filename           = "
+		<< m_fname_GT << std::endl;
 	ss_out << "Visualize odometry              = "
 		<< m_visualize_odometry_poses << std::endl;
 	ss_out << "Visualize estimated trajectory  = "
@@ -907,8 +951,6 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::printProblemPa
 		<< m_visualize_map << std::endl;
 	ss_out << "Visualize Ground Truth          = "
 		<< m_visualize_GT<< std::endl;
-	ss_out << "Ground Truth filename           = "
-		<< m_fname_GT << std::endl;
 	ss_out << "Enable curr. position viewport  = " 
 		<< m_enable_curr_pos_viewport << endl;
 	ss_out << "Enable range img viewport       = " 
@@ -929,7 +971,7 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::printProblemPa
 	this->m_node_registrar.params.dumpToConsole();
 	this->m_edge_registrar.params.dumpToConsole();
 
-	//mrpt::system::pause();
+	mrpt::system::pause();
 
 	MRPT_END;
 }
@@ -1874,5 +1916,57 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::TRGBDInfoFileP
 	}
 
 }
+
+template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR>
+void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::saveGraph() const {
+	MRPT_START;
+	ASSERT_(m_has_read_config);
+
+	std::string fname = m_output_dir_fname + "/" + m_save_graph_fname;
+	saveGraph(fname);
+
+	MRPT_END;
+}
+
+template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR>
+void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::saveGraph(const std::string& fname) const {
+	MRPT_START;
+	// assertions are handled in the caller function
+
+	m_graph.saveToTextFile(fname);
+	VERBOSE_COUT << "Saved graph to text file: " << fname <<
+		" successfully." << std::endl;
+
+	MRPT_END;
+}
+
+template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR>
+void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::save3DScene() const {
+	MRPT_START;
+	ASSERT_(m_has_read_config);
+	ASSERT_(m_win);
+
+	std::string fname = m_output_dir_fname + "/" + m_save_3DScene_fname;
+	save3DScene(fname);
+
+	MRPT_END;
+}
+
+template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR>
+void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::save3DScene(const std::string& fname) const {
+	MRPT_START;
+	// assertions are handled in the caller function
+
+	COpenGLScenePtr scene = m_win->get3DSceneAndLock();
+	scene->saveToFile(fname);
+	m_win->unlockAccess3DScene();
+	m_win->forceRepaint();
+
+	VERBOSE_COUT << "Saved 3DScene to external file: " << fname <<
+		" successfully." << std::endl;
+
+	MRPT_END;
+}
+
 
 #endif /* end of include guard: CGRAPHSLAMENGINE_IMPL_H */
