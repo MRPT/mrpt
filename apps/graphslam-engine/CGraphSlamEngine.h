@@ -193,6 +193,19 @@ namespace mrpt { namespace graphslam {
 		 		 * Open and write an introductory message using the provided fname
 		 		 */
 				void initResultsFile(const std::string& fname);
+				void initRangeImageViewport();
+				/**
+				 * In RGB-D TUM Datasets update the Range image displayed in a seperate
+				 * viewport
+				 */
+				void updateRangeImageViewport();
+				void initIntensityImageViewport();
+				/**
+				 * In RGB-D TUM Datasets update the Intensity image displayed in a seperate
+				 * viewport
+				 */
+				void updateIntensityImageViewport();
+
 				void initCurrPosViewport();
 				/**
  				 * Udpate the viewport responsible for displaying the graph-building
@@ -313,8 +326,10 @@ namespace mrpt { namespace graphslam {
 				bool m_visualize_odometry_poses;
 				bool m_visualize_GT;
 				bool m_visualize_map;
-				bool m_enable_curr_pos_viewport;
 				bool m_visualize_estimated_trajectory;
+				bool m_enable_curr_pos_viewport;
+				bool m_enable_intensity_viewport;
+				bool m_enable_range_viewport;
 
 				// textMessage vertical text position
 				double m_offset_y_graph;

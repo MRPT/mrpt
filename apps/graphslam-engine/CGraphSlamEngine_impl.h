@@ -145,6 +145,8 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::initCGraphSlam
 		m_visualize_GT = 0;
 		m_visualize_map = 0;
 		m_enable_curr_pos_viewport = 0;
+		m_enable_range_viewport = 0;
+		m_enable_intensity_viewport = 0;
 	}
 
 	// timestamp
@@ -166,6 +168,7 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::initCGraphSlam
 	ASSERT_(m_has_read_config);
 	if (mrpt::system::strCmpI(m_GT_file_format, "rgbd_tum") && m_visualize_GT) {
 		// rotz
+		//double anglez = DEG2RAD(0);
 		double anglez = DEG2RAD(0);
 		const double tmpz[] = {
 			cos(anglez),     -sin(anglez), 0,
@@ -174,7 +177,8 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::initCGraphSlam
 		CMatrixDouble rotz(3, 3, tmpz);
 
 		// roty
-		double angley = DEG2RAD(-90);
+		//double angley = DEG2RAD(-90);
+		double angley = DEG2RAD(0);
 		const double tmpy[] = {
 			cos(angley),      0,      sin(angley),
 			0,                1,      0,
@@ -182,7 +186,8 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::initCGraphSlam
 		CMatrixDouble roty(3, 3, tmpy);
 
 		// rotx
-		double anglex = DEG2RAD(-90);
+		//double anglex = DEG2RAD(-90);
+		double anglex = DEG2RAD(0);
 		const double tmpx[] = {
 			1,        0,               0,
 			0,        cos(anglex),     -sin(anglex),
@@ -235,6 +240,15 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::initCGraphSlam
 		CImage::IMAGES_PATH_BASE = m_img_external_storage_dir;
 	}
 
+	// 3DRangeScans viewports initialization
+	if (mrpt::system::strCmpI(m_GT_file_format, "rgbd_tum")) {
+		if (m_enable_range_viewport) {
+			this->initRangeImageViewport();
+		}
+		if (m_enable_intensity_viewport) {
+			this->initIntensityImageViewport();
+		}
+	}
 	// axis
 	if (m_win) {
 		COpenGLScenePtr scene = m_win->get3DSceneAndLock();
@@ -573,6 +587,16 @@ bool CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::parseRawlogFil
 				this->updateGTVisualization(); // get both action and observation at a single step - same rate as GT
 			}
 		}
+		// 3DRangeScans viewports update
+		if (mrpt::system::strCmpI(m_GT_file_format, "rgbd_tum")) {
+			if (m_enable_range_viewport && !m_last_laser_scan3D.null()) {
+				this->updateRangeImageViewport();
+			}
+			
+			if (m_enable_intensity_viewport && !m_last_laser_scan3D.null()) {
+				this->updateIntensityImageViewport();
+			}
+		}
 
 		// Query for events and take coresponding actions
 		this->queryObserverForEvents();
@@ -826,12 +850,19 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::readConfigFile
 			"visualize_ground_truth",
 			true, false);
 
-	// current robot pose  viewport
+	// Viewports flags
 	m_enable_curr_pos_viewport = cfg_file.read_bool(
 			"VisualizationParameters",
 			"enable_curr_pos_viewport",
 			true, false);
-
+	m_enable_range_viewport = cfg_file.read_bool(
+			"VisualizationParameters",
+			"enable_range_viewport",
+			false, false);
+	m_enable_intensity_viewport = cfg_file.read_bool(
+			"VisualizationParameters",
+			"enable_intensity_viewport",
+			false, false);
 
 
 	this->m_node_registrar.params.loadFromConfigFileName(m_config_fname,
@@ -878,6 +909,12 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::printProblemPa
 		<< m_visualize_GT<< std::endl;
 	ss_out << "Ground Truth filename           = "
 		<< m_fname_GT << std::endl;
+	ss_out << "Enable curr. position viewport  = " 
+		<< m_enable_curr_pos_viewport << endl;
+	ss_out << "Enable range img viewport       = " 
+		<< m_enable_range_viewport << endl;
+	ss_out << "Enable intensity img viewport   = " 
+		<< m_enable_intensity_viewport << endl;
 	ss_out << "-----------------------------------------------------------"
 		<< std::endl;
 	ss_out << std::endl;
@@ -888,8 +925,6 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::printProblemPa
 	m_optimization_params.dumpToConsole();
 	std::cout << "-----------[ Graph Visualization Parameters ]-----------" << std::endl;
 	m_optimized_graph_viz_params.dumpToConsole();
-
-	std::cout << ss_out.str(); ss_out.str("");
 
 	this->m_node_registrar.params.dumpToConsole();
 	this->m_edge_registrar.params.dumpToConsole();
@@ -1026,11 +1061,93 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::initResultsFil
 }
 
 template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR>
+void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::initRangeImageViewport() {
+	MRPT_START;
+
+	COpenGLScenePtr scene = m_win->get3DSceneAndLock();
+	opengl::COpenGLViewportPtr viewp_range;
+
+	viewp_range = scene->createViewport("viewp_range");
+	// TODO - assign position using window_manager
+	viewp_range->setViewportPosition(0.78,0.34,0.20,0.20);
+
+	m_win->unlockAccess3DScene();
+	m_win->forceRepaint();
+
+	MRPT_END;
+}
+template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR>
+void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::updateRangeImageViewport() {
+	MRPT_START;
+
+	if (m_last_laser_scan3D->hasRangeImage) {
+
+	// TODO - make this a static class member - or at least a private member of the class
+	CMatrixFloat range2D;
+	mrpt::utils::CImage img;
+
+	// load the image if not already loaded..
+	m_last_laser_scan3D->load();
+	range2D = m_last_laser_scan3D->rangeImage * (1.0/5.0); // TODO - without the magic number?
+	img.setFromMatrix(range2D);
+
+	COpenGLScenePtr scene = m_win->get3DSceneAndLock();
+	COpenGLViewportPtr viewp_range = scene->getViewport("viewp_range");
+	viewp_range->setImageView(img);
+	m_win->unlockAccess3DScene();
+	m_win->forceRepaint();
+
+	}
+
+	MRPT_END;
+}
+
+template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR>
+void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::initIntensityImageViewport() {
+	MRPT_START;
+
+	COpenGLScenePtr scene = m_win->get3DSceneAndLock();
+	opengl::COpenGLViewportPtr viewp_intensity;
+
+	viewp_intensity = scene->createViewport("viewp_intensity");
+	// TODO - assign position using window_manager
+	viewp_intensity->setViewportPosition(0.78,0.56,0.20,0.20);
+
+	m_win->unlockAccess3DScene();
+	m_win->forceRepaint();
+	
+	MRPT_END;
+}
+template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR>
+void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::updateIntensityImageViewport() {
+	MRPT_START;
+
+	if (m_last_laser_scan3D->hasIntensityImage) {
+	mrpt::utils::CImage img ;
+
+	// load the image if not already loaded..
+	m_last_laser_scan3D->load();
+	img = m_last_laser_scan3D->intensityImage;
+
+	COpenGLScenePtr scene = m_win->get3DSceneAndLock();
+	COpenGLViewportPtr viewp_intensity = scene->getViewport("viewp_intensity");
+	viewp_intensity->setImageView(img);
+	m_win->unlockAccess3DScene();
+	m_win->forceRepaint();
+
+	}
+
+	MRPT_END;
+}
+
+
+template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR>
 void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::initCurrPosViewport() {
 	COpenGLScenePtr scene = m_win->get3DSceneAndLock();
 	COpenGLViewportPtr viewp= scene->createViewport("curr_robot_pose_viewport");
 	// Add a clone viewport, using [0,1] factor X,Y,Width,Height coordinates:
 	viewp->setCloneView("main");
+	// TODO - assign position  using window_manager
 	viewp->setViewportPosition(0.78,0.78,0.20,0.20);
 	viewp->setTransparent(false);
 	viewp->getCamera().setAzimuthDegrees(90);
@@ -1042,6 +1159,8 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::initCurrPosVie
 	m_win->unlockAccess3DScene();
 	m_win->forceRepaint();
 }
+
+
 
 template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR>
 inline void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::updateCurrPosViewport() {
@@ -1142,14 +1261,16 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::readGTFileRGBD
 
 	string curr_line;
 
-	// move to the fourth line immediately - comments before this..
-	for (size_t i = 0; i != 3; i++)
-		file_GT.readLine(curr_line);
+	// move to the first non-commented immediately - comments before this..
+	for (size_t i = 0; file_GT.readLine(curr_line) ; i++) {
+		if (curr_line.at(0) != '#') {
+			break;
+		}
+	}
 
 	// handle the first pose seperately
 	// make sure that the ground-truth starts at 0.
 	pose_t pose_diff;
-	file_GT.readLine(curr_line);
 	vector<string> curr_tokens;
 	system::tokenize(curr_line, " ", curr_tokens);
 
@@ -1175,8 +1296,7 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::readGTFileRGBD
 
 	// coordinates - MRPT reference frame
 	CVectorDouble curr_coords_MRPT_fr;
-	//m_rot_TUM_to_MRPT.multiply_Ab(curr_coords_optical_fr, curr_coords_MRPT_fr);
-	curr_coords_MRPT_fr = curr_coords_optical_fr;
+	m_rot_TUM_to_MRPT.multiply_Ab(curr_coords_optical_fr, curr_coords_MRPT_fr);
 
 
 	// TODO Add GT pose orientation
@@ -1221,8 +1341,7 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::readGTFileRGBD
 
 		// coordinates - MRPT reference frame
 		CVectorDouble curr_coords_MRPT_fr;
-		//m_rot_TUM_to_MRPT.multiply_Ab(curr_coords_optical_fr, curr_coords_MRPT_fr);
-		curr_coords_MRPT_fr = curr_coords_optical_fr;
+		m_rot_TUM_to_MRPT.multiply_Ab(curr_coords_optical_fr, curr_coords_MRPT_fr);
 
 		// TODO Add GT pose orientation
 		// initial pose
@@ -1660,7 +1779,7 @@ updateEstimatedTrajectoryVisualization(bool full_update) {
 			estimated_traj_setoflines->appendLineStrip(
 					m_graph.nodes[*nodeID_it].x(),
 					m_graph.nodes[*nodeID_it].y(),
-					0.1);
+					0.05);
 		}
 	}
 

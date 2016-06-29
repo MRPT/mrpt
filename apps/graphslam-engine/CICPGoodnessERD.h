@@ -119,8 +119,6 @@ namespace mrpt { namespace graphslam { namespace deciders {
 							double ICP_goodness_thresh;
 							int LC_min_nodeid_diff;
 							bool visualize_laser_scans;
-							bool enable_intensity_viewport;
-							bool enable_range_viewport;
 							std::string scans_img_external_dir;
 
 							bool has_read_config;
@@ -174,7 +172,6 @@ namespace mrpt { namespace graphslam { namespace deciders {
 					std::string m_rawlog_fname;
 
 					bool m_initialized_visuals;
-					bool m_initialized_rgbd_viewports;
 					bool m_just_inserted_loop_closure;
 					bool m_is_using_3DScan;
 
