@@ -89,7 +89,6 @@ void CReactiveNavigationSystem::loadConfigFile(const mrpt::utils::CConfigFileBas
 
 	unsigned int PTG_COUNT = ini.read_int(robotName,"PTG_COUNT",0, true );
 
-	this->m_robot.loadConfigFile(ini,robotName);
 	refDistance = ini.read_float(robotName,"MAX_REFERENCE_DISTANCE",5 );
 
 	MRPT_LOAD_CONFIG_VAR(SPEEDFILTER_TAU,float,  ini,robotName);
@@ -103,6 +102,7 @@ void CReactiveNavigationSystem::loadConfigFile(const mrpt::utils::CConfigFileBas
 	MRPT_LOAD_CONFIG_VAR_NO_DEFAULT(DIST_TO_TARGET_FOR_SENDING_EVENT,float,  ini,robotName);
 
 	badNavAlarm_AlarmTimeout = ini.read_float("GLOBAL_CONFIG","ALARM_SEEMS_NOT_APPROACHING_TARGET_TIMEOUT", badNavAlarm_AlarmTimeout, true);
+	this->m_robot.loadConfigFile(ini,"GLOBAL_CONFIG");
 
 	// Load robot shape: 1/2 polygon
 	// ---------------------------------------------
