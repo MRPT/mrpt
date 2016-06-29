@@ -154,6 +154,8 @@ namespace mrpt
 		// See base class docs.
 		void cmdVel_limits(std::vector<double> &vel_cmd, const std::vector<double> &prev_vel_cmd, const double beta)
 		{
+			ASSERT_(robotMax_V_mps>0);
+			ASSERT_(robotMax_W_radps>0);
 			double new_cmd_v=vel_cmd[0], new_cmd_w=vel_cmd[1];
 			filter_max_vw(new_cmd_v, new_cmd_w);
 			if (fabs(new_cmd_v) < 0.01) // i.e. new behavior is nearly a pure rotation
@@ -171,7 +173,7 @@ namespace mrpt
 
 				vel_cmd[0] = new_cmd_v; vel_cmd[1] = new_cmd_w;
 			}
-		} 
+		}
 
 		/** This class recognizes these parameters: `robotMax_V_mps`, `robotMax_W_degps` */
 		virtual void loadConfigFile(const mrpt::utils::CConfigFileBase &cfg, const std::string &section) MRPT_OVERRIDE 

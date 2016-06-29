@@ -89,6 +89,7 @@ void CReactiveNavigationSystem::loadConfigFile(const mrpt::utils::CConfigFileBas
 
 	unsigned int PTG_COUNT = ini.read_int(robotName,"PTG_COUNT",0, true );
 
+	this->m_robot.loadConfigFile(ini,robotName);
 	refDistance = ini.read_float(robotName,"MAX_REFERENCE_DISTANCE",5 );
 
 	MRPT_LOAD_CONFIG_VAR(SPEEDFILTER_TAU,float,  ini,robotName);
@@ -153,7 +154,7 @@ void CReactiveNavigationSystem::loadConfigFile(const mrpt::utils::CConfigFileBas
 
 	ASSERT_(!m_holonomicMethod.empty())
 	printf_debug("  Holonomic method \t\t= %s\n",typeid(m_holonomicMethod[0]).name());
-	printf_debug("\n  GPT Count\t\t\t= %u\n", (int)PTG_COUNT );
+	printf_debug("\n  Ptg Count\t\t\t= %u\n", (int)PTG_COUNT );
 	printf_debug("  Max. ref. distance\t\t= %f\n", refDistance );
 	printf_debug("  Robot Shape Points Count \t= %u\n", m_robotShape.verticesCount() );
 	printf_debug("  Robot Shape Circular Radius \t= %.02f\n", m_robotShapeCircularRadius );
