@@ -212,7 +212,7 @@ int main(int argc, char **argv)
 
 		// Visualization
 		CDisplayWindow3D	graph_win("Graphslam building procedure",800, 600);
-		graph_win.setPos(800, 1400);
+		graph_win.setPos(400, 200);
 		graph_win_observer.observeBegin(graph_win);
 		{
 			COpenGLScenePtr &scene = graph_win.get3DSceneAndLock();

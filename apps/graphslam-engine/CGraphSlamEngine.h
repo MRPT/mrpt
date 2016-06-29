@@ -114,29 +114,21 @@ namespace mrpt { namespace graphslam {
 				// Public function definitions
 				//////////////////////////////////////////////////////////////
 				/**
-		 		 * Wrapper fun around the GRAPH_t corresponding method
+		 		 * Wrapper method around the GRAPH_t corresponding method
 		 		 */
-				void saveGraph() const {
-					MRPT_START;
-					ASSERT_(m_has_read_config);
-
-					std::string fname = m_output_dir_fname + "/" + m_save_graph_fname;
-					saveGraph(fname);
-
-					MRPT_END;
-				}
+				void saveGraph() const;
 				/**
-		 		 * Wrapper fun around the GRAPH_t corresponding method
+		 		 * Wrapper method around the GRAPH_t corresponding method
 		 		 */
-				void saveGraph(const std::string& fname) const {
-					MRPT_START;
-
-					m_graph.saveToTextFile(fname);
-					VERBOSE_COUT << "Saved graph to text file: " << fname <<
-						" successfully." << std::endl;
-
-					MRPT_END;
-				}
+				void saveGraph(const std::string& fname) const;
+				/**
+				 * Wrapper method around the COpenGLScene::saveToFile method
+				 */
+				void save3DScene() const;
+				/**
+				 * Wrapper method around the COpenGLScene::saveToFile method
+				 */
+				void save3DScene(const std::string& fname) const;
 				/**
 		 		 * Read the configuration file specified and fill in the corresponding
 		 		 * class members
@@ -302,9 +294,13 @@ namespace mrpt { namespace graphslam {
 				size_t m_GT_poses_index; // counter for reading back the GT_poses
 				size_t m_GT_poses_step; // rate at which to read the GT poses
 
+				// parameters related to the application generated files
 				std::string	m_output_dir_fname;
 				bool m_user_decides_about_output_dir;
+				bool m_save_graph;
 				std::string	m_save_graph_fname;
+				bool m_save_3DScene;
+				std::string	m_save_3DScene_fname;
 
 				bool m_has_read_config;
 				bool m_observation_only_rawlog;
