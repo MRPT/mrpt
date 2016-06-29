@@ -18,6 +18,8 @@
 
 #include <iostream>
 
+namespace mrpt { namespace gui {
+
 class CWindowObserver : public mrpt::utils::CObserver
 {
 public:
@@ -154,5 +156,7 @@ private:
 	mrpt::utils::CTicTac  m_tim_show_start, m_tim_show_end;
 	std::string m_help_text;
 };
+
+} } // END OF NAMESPACES
 
 #endif /* end of include guard: CWINDOWOBSERVER_H */
