@@ -32,8 +32,8 @@ using namespace std;
 // Ctors, Dtors implementations
 //////////////////////////////////////////////////////////////
 
-template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR>
-CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::CGraphSlamEngine_t(
+template< class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR, class OPTIMIZER>
+CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::CGraphSlamEngine_t(
 		const string& config_file,
 		CDisplayWindow3D* win /* = NULL */,
 		CWindowObserver* win_observer /* = NULL */,
@@ -55,8 +55,8 @@ CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::CGraphSlamEngine_t(
 	this->initCGraphSlamEngine();
 };
 
-template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR>
-CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::~CGraphSlamEngine_t() {
+template< class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR, class OPTIMIZER>
+CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::~CGraphSlamEngine_t() {
 	MRPT_START;
 
 	VERBOSE_COUT << "In Destructor: Deleting CGraphSlamEngine_t instance..."
@@ -85,8 +85,8 @@ CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::~CGraphSlamEngine_t
 // Member functions implementations
 //////////////////////////////////////////////////////////////
 
-template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR>
-void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::initCGraphSlamEngine() {
+template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR, class OPTIMIZER>
+void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::initCGraphSlamEngine() {
 	MRPT_START;
 
 	/**
@@ -342,8 +342,8 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::initCGraphSlam
 	MRPT_END;
 }
 
-template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR>
-bool CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::parseRawlogFile() {
+template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR, class OPTIMIZER>
+bool CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::parseRawlogFile() {
 	MRPT_START;
 
 	if (!m_has_read_config)
@@ -639,12 +639,15 @@ bool CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::parseRawlogFil
 	
 	if (m_save_3DScene) { this->save3DScene(); }
 
+	if (mrpt::system::strCmpI(m_GT_file_format, "rgbd_tum")) {
+		CImage::IMAGES_PATH_BASE = m_img_prev_path_base;
+	}
 	return true; // function execution completed successfully
 	MRPT_END;
 } // END OF FUNCTION
 
-template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR>
-void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::optimizeGraph(GRAPH_t* gr) {
+template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR, class OPTIMIZER>
+void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::optimizeGraph(GRAPH_t* gr) {
 	MRPT_START;
 
 	CTicTac optimization_timer;
@@ -662,7 +665,7 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::optimizeGraph(
 			levmarq_info,
 			NULL,  // List of nodes to optimize. NULL -> all but the root node.
 			m_optimization_params,
-			&levMarqFeedback<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>); // functor feedback
+			&levMarqFeedback<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>); // functor feedback
 
 	double elapsed_time = optimization_timer.Tac();
 	//VERBOSE_COUT << "Optimization of graph took: " << elapsed_time << "s" << std::endl;
@@ -671,8 +674,8 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::optimizeGraph(
 	MRPT_END;
 }
 
-template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR>
-void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::updateGraphVisualization(
+template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR, class OPTIMIZER>
+void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::updateGraphVisualization(
 		const GRAPH_t& gr) {
 	MRPT_START;
 
@@ -715,8 +718,8 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::updateGraphVis
 	MRPT_END;
 }
 
-template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR>
-void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::readConfigFile(
+template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR, class OPTIMIZER>
+void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::readConfigFile(
 		const string& fname) {
 	MRPT_START;
 
@@ -904,8 +907,8 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::readConfigFile
 	MRPT_END;
 }
 
-template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR>
-void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::printProblemParams() const {
+template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR, class OPTIMIZER>
+void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::printProblemParams() const {
 	MRPT_START;
 
 	ASSERT_(m_has_read_config);
@@ -976,8 +979,8 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::printProblemPa
 	MRPT_END;
 }
 
-template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR>
-void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::initOutputDir() {
+template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR, class OPTIMIZER>
+void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::initOutputDir() {
 	MRPT_START;
 
 	VERBOSE_COUT << "Setting up Output directory: " << m_output_dir_fname << std::endl;
@@ -1073,8 +1076,8 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::initOutputDir(
 	MRPT_END;
 } // end of initOutputDir
 
-template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR>
-void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::initResultsFile(
+template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR, class OPTIMIZER>
+void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::initResultsFile(
 		const string& fname) {
 	MRPT_START;
 
@@ -1102,8 +1105,8 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::initResultsFil
 	MRPT_END;
 }
 
-template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR>
-void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::initRangeImageViewport() {
+template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR, class OPTIMIZER>
+void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::initRangeImageViewport() {
 	MRPT_START;
 
 	COpenGLScenePtr scene = m_win->get3DSceneAndLock();
@@ -1118,8 +1121,8 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::initRangeImage
 
 	MRPT_END;
 }
-template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR>
-void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::updateRangeImageViewport() {
+template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR, class OPTIMIZER>
+void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::updateRangeImageViewport() {
 	MRPT_START;
 
 	if (m_last_laser_scan3D->hasRangeImage) {
@@ -1144,8 +1147,8 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::updateRangeIma
 	MRPT_END;
 }
 
-template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR>
-void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::initIntensityImageViewport() {
+template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR, class OPTIMIZER>
+void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::initIntensityImageViewport() {
 	MRPT_START;
 
 	COpenGLScenePtr scene = m_win->get3DSceneAndLock();
@@ -1160,8 +1163,8 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::initIntensityI
 	
 	MRPT_END;
 }
-template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR>
-void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::updateIntensityImageViewport() {
+template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR, class OPTIMIZER>
+void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::updateIntensityImageViewport() {
 	MRPT_START;
 
 	if (m_last_laser_scan3D->hasIntensityImage) {
@@ -1183,8 +1186,8 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::updateIntensit
 }
 
 
-template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR>
-void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::initCurrPosViewport() {
+template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR, class OPTIMIZER>
+void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::initCurrPosViewport() {
 	COpenGLScenePtr scene = m_win->get3DSceneAndLock();
 	COpenGLViewportPtr viewp= scene->createViewport("curr_robot_pose_viewport");
 	// Add a clone viewport, using [0,1] factor X,Y,Width,Height coordinates:
@@ -1204,8 +1207,8 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::initCurrPosVie
 
 
 
-template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR>
-inline void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::updateCurrPosViewport() {
+template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR, class OPTIMIZER>
+inline void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::updateCurrPosViewport() {
 	MRPT_START;
 
 	ASSERT_(m_win &&
@@ -1230,8 +1233,8 @@ inline void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::updateC
 	MRPT_END;
 }
 
-template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR>
-void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::readGTFileNavSimulOutput(
+template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR, class OPTIMIZER>
+void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::readGTFileNavSimulOutput(
 		const std::string& fname_GT,
 		vector<pose_t>* gt_poses,
 		vector<TTimeStamp>* gt_timestamps /* = NULL */) {
@@ -1281,8 +1284,8 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::readGTFileNavS
 	MRPT_END;
 }
 
-template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR>
-void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::readGTFileRGBD_TUM(
+template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR, class OPTIMIZER>
+void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::readGTFileRGBD_TUM(
 		const std::string& fname_GT,
 		std::vector<pose_t>* gt_poses,
 		std::vector<mrpt::system::TTimeStamp>* gt_timestamps/*= NULL */) {
@@ -1408,8 +1411,8 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::readGTFileRGBD
 	MRPT_END;
 }
 
-template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR>
-void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::autofitObjectInView(
+template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR, class OPTIMIZER>
+void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::autofitObjectInView(
 		const CSetOfObjectsPtr& graph_obj) {
 	MRPT_START;
 
@@ -1431,8 +1434,8 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::autofitObjectI
 	MRPT_END;
 }
 
-template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR>
-void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::queryObserverForEvents() {
+template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR, class OPTIMIZER>
+void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::queryObserverForEvents() {
 	MRPT_START;
 
 	ASSERT_(m_win_observer &&
@@ -1445,8 +1448,8 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::queryObserverF
 	MRPT_END;
 }
 
-template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR>
-void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::updateMapVisualization(
+template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR, class OPTIMIZER>
+void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::updateMapVisualization(
 		const GRAPH_t& gr,
 		std::map<const mrpt::utils::TNodeID,
 		mrpt::obs::CObservation2DRangeScanPtr> m_nodes_to_laser_scans2D,
@@ -1550,8 +1553,8 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::updateMapVisua
 	MRPT_END;
 }
 
-template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR>
-void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::decimateLaserScan(
+template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR, class OPTIMIZER>
+void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::decimateLaserScan(
 		mrpt::obs::CObservation2DRangeScan& laser_scan_in,
 		mrpt::obs::CObservation2DRangeScan* laser_scan_out,
 		const int keep_every_n_entries /*= 2*/) {
@@ -1577,8 +1580,8 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::decimateLaserS
 	MRPT_END;
 }
 
-template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR>
-void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::initGTVisualization() {
+template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR, class OPTIMIZER>
+void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::initGTVisualization() {
 	MRPT_START;
 
 	// assertions
@@ -1623,8 +1626,8 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::initGTVisualiz
 	MRPT_END;
 }
 
-template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR>
-void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::updateGTVisualization() {
+template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR, class OPTIMIZER>
+void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::updateGTVisualization() {
 	MRPT_START;
 
 	// add to the GT PointCloud and visualize it
@@ -1660,8 +1663,8 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::updateGTVisual
 	MRPT_END;
 }
 
-template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR>
-void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::initOdometryVisualization() {
+template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR, class OPTIMIZER>
+void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::initOdometryVisualization() {
 	MRPT_START;
 
 	ASSERT_(m_has_read_config);
@@ -1704,8 +1707,8 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::initOdometryVi
 	MRPT_END;
 }
 
-template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR>
-void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::updateOdometryVisualization() {
+template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR, class OPTIMIZER>
+void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::updateOdometryVisualization() {
 	MRPT_START;
 
 	ASSERT_(m_win &&
@@ -1735,8 +1738,8 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::updateOdometry
 	MRPT_END;
 }
 
-template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR>
-void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::initEstimatedTrajectoryVisualization() {
+template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR, class OPTIMIZER>
+void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::initEstimatedTrajectoryVisualization() {
 	MRPT_START;
 
 	// SetOfLines
@@ -1781,8 +1784,8 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::initEstimatedT
 	MRPT_END;
 }
 
-template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR>
-void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::
+template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR, class OPTIMIZER>
+void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::
 updateEstimatedTrajectoryVisualization(bool full_update) {
 	MRPT_START;
 
@@ -1840,20 +1843,20 @@ updateEstimatedTrajectoryVisualization(bool full_update) {
 
 // TRGBDInfoFileParams
 // ////////////////////////////////
-template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR>
-CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::
+template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR, class OPTIMIZER>
+CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::
 TRGBDInfoFileParams::TRGBDInfoFileParams(std::string rawlog_fname) {
 
 	this->setRawlogFile(rawlog_fname);
 	this->initTRGBDInfoFileParams();
 }
-template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR>
-CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::
+template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR, class OPTIMIZER>
+CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::
 TRGBDInfoFileParams::TRGBDInfoFileParams() {
 	this->initTRGBDInfoFileParams();
 }
-template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR>
-void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::TRGBDInfoFileParams::setRawlogFile(
+template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR, class OPTIMIZER>
+void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::TRGBDInfoFileParams::setRawlogFile(
 		std::string rawlog_fname) {
 
 	// get the correct info filename from the rawlog_fname
@@ -1864,16 +1867,16 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::TRGBDInfoFileP
 	info_fname = dir + name_prefix + rawlog_filename + name_suffix;
 }
 
-template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR>
-void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::
+template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR, class OPTIMIZER>
+void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::
 TRGBDInfoFileParams::initTRGBDInfoFileParams() {
 	// fields to use
 	fields["Overall number of objects"] = "";
 	fields["Observations format"] = "";
 }
 
-template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR>
-void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::TRGBDInfoFileParams::parseFile() {
+template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR, class OPTIMIZER>
+void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::TRGBDInfoFileParams::parseFile() {
 	ASSERT_FILE_EXISTS_(info_fname);
 
 	// open file
@@ -1917,8 +1920,8 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::TRGBDInfoFileP
 
 }
 
-template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR>
-void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::saveGraph() const {
+template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR, class OPTIMIZER>
+void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::saveGraph() const {
 	MRPT_START;
 	ASSERT_(m_has_read_config);
 
@@ -1928,8 +1931,8 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::saveGraph() co
 	MRPT_END;
 }
 
-template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR>
-void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::saveGraph(const std::string& fname) const {
+template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR, class OPTIMIZER>
+void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::saveGraph(const std::string& fname) const {
 	MRPT_START;
 	// assertions are handled in the caller function
 
@@ -1940,8 +1943,8 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::saveGraph(cons
 	MRPT_END;
 }
 
-template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR>
-void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::save3DScene() const {
+template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR, class OPTIMIZER>
+void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::save3DScene() const {
 	MRPT_START;
 	ASSERT_(m_has_read_config);
 	ASSERT_(m_win);
@@ -1952,8 +1955,8 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::save3DScene() 
 	MRPT_END;
 }
 
-template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR>
-void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR>::save3DScene(const std::string& fname) const {
+template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR, class OPTIMIZER>
+void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::save3DScene(const std::string& fname) const {
 	MRPT_START;
 	// assertions are handled in the caller function
 

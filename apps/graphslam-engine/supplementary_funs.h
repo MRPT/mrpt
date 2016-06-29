@@ -21,20 +21,20 @@
 
 namespace supplementary_funs {
 
-	// TODO - make this a part of the optimizer
-	/**
-	 * levMarqFeedback
-	 *
-	 * Feedback fucntion for the graph optimization
-	 */
-	template <
-		class GRAPH_T, class NODE_REGISTRAR, class EDGE_REGISTRAR>
-		void levMarqFeedback(
-				const GRAPH_T &graph,
-				const size_t iter,
-				const size_t max_iter,
-				const double cur_sq_error )
-		{ }
+// TODO - make this a part of the optimizer
+/**
+	* levMarqFeedback
+	*
+	* Feedback fucntion for the graph optimization
+	*/
+template <
+	class GRAPH_T, class NODE_REGISTRAR, class EDGE_REGISTRAR, class OPTIMIZER>
+	void levMarqFeedback(
+			const GRAPH_T &graph,
+			const size_t iter,
+			const size_t max_iter,
+			const double cur_sq_error )
+	{ }
 
 
 } // end of namespace

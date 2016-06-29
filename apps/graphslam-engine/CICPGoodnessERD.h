@@ -27,6 +27,7 @@
 #include <mrpt/opengl/COpenGLViewport.h>
 #include <mrpt/slam/CICP.h>
 #include <mrpt/system/os.h>
+#include <mrpt/system/threads.h>
 
 #include <map>
 #include <string>
@@ -55,151 +56,151 @@ using namespace mrpt::maps;
 
 namespace mrpt { namespace graphslam { namespace deciders {
 
-	/**
-	 * Map type: 2D
-	 * MRPT rawlog format: #1, #2
-	 * Observations: CObservation2DRangeScan, CObservation3DRangeScan
-	 * Edge Registration Strategy: Goodnesss threshold
-	 *
- 	 * Register new edges in the graph with the last added node. Criterion for
-	 * adding new nodes should  be the goodness of the potential ICP edge. The
-	 * nodes for ICP should be picked based on the distance from the last
-	 * inserted node.
-	 */
-	template<
-		  class GRAPH_t=typename mrpt::graphs::CNetworkOfPoses2DInf >
-		class CICPGoodnessERD_t :
-			public mrpt::graphslam::deciders::CEdgeRegistrationDecider_t<GRAPH_t>,
-			public mrpt::graphslam::deciders::CRangeScanRegistrationDecider_t<GRAPH_t> {
-	  		public:
-					typedef typename GRAPH_t::constraint_t constraint_t;
-					// type of underlying poses (2D/3D)
-					typedef typename GRAPH_t::constraint_t::type_value pose_t;
-					typedef mrpt::graphslam::deciders::CRangeScanRegistrationDecider_t<GRAPH_t> range_scanner_t;
-					typedef CICPGoodnessERD_t<GRAPH_t> decider_t;
+/**
+	* Map type: 2D
+	* MRPT rawlog format: #1, #2
+	* Observations: CObservation2DRangeScan, CObservation3DRangeScan
+	* Edge Registration Strategy: Goodnesss threshold
+	*
+ 	* Register new edges in the graph with the last added node. Criterion for
+	* adding new nodes should  be the goodness of the potential ICP edge. The
+	* nodes for ICP should be picked based on the distance from the last
+	* inserted node.
+	*/
+template<
+		class GRAPH_t=typename mrpt::graphs::CNetworkOfPoses2DInf >
+	class CICPGoodnessERD_t :
+		public mrpt::graphslam::deciders::CEdgeRegistrationDecider_t<GRAPH_t>,
+		public mrpt::graphslam::deciders::CRangeScanRegistrationDecider_t<GRAPH_t> {
+	  	public:
+				typedef typename GRAPH_t::constraint_t constraint_t;
+				// type of underlying poses (2D/3D)
+				typedef typename GRAPH_t::constraint_t::type_value pose_t;
+				typedef mrpt::graphslam::deciders::CRangeScanRegistrationDecider_t<GRAPH_t> range_scanner_t;
+				typedef CICPGoodnessERD_t<GRAPH_t> decider_t;
 
-					// Public methods
-					//////////////////////////////////////////////////////////////
-	    		CICPGoodnessERD_t();
-	    		~CICPGoodnessERD_t();
+				// Public methods
+				//////////////////////////////////////////////////////////////
+	    	CICPGoodnessERD_t();
+	    	~CICPGoodnessERD_t();
 
-					void updateDeciderState(
-							mrpt::obs::CActionCollectionPtr action,
-							mrpt::obs::CSensoryFramePtr observations,
-							mrpt::obs::CObservationPtr observation );
-
-
-					void setGraphPtr(GRAPH_t* graph);
-					void setRawlogFname(const std::string& rawlog_fname);
-					void setCDisplayWindowPtr(mrpt::gui::CDisplayWindow3D* win);
-    			void setWindowManagerPtr(mrpt::gui::CWindowManager_t* win_manager);
-    			void getEdgesStats(
-    					std::map<const std::string, int>* edge_types_to_nums);
-
-    			void initializeVisuals();
-    			void updateVisuals();
-    			bool justInsertedLoopClosure();
-
-    			struct TParams: public mrpt::utils::CLoadableOptions {
-    				public:
-    					TParams(decider_t& d);
-    					~TParams();
-
-							decider_t& decider;
-
-    					void loadFromConfigFile(
-    							const mrpt::utils::CConfigFileBase &source,
-    							const std::string &section);
-							void 	dumpToTextStream(mrpt::utils::CStream &out) const;
-
-							mrpt::slam::CICP icp;
- 							// maximum distance for checking other nodes for ICP constraints
-							double ICP_max_distance;
-							// threshold for accepting an ICP constraint in the graph
-							double ICP_goodness_thresh;
-							int LC_min_nodeid_diff;
-							bool visualize_laser_scans;
-							std::string scans_img_external_dir;
-
-							bool has_read_config;
-    			};
-
-					// Public variables
-					// ////////////////////////////
-    			TParams params;
-
-	  		private:
-					// Private functions
-					//////////////////////////////////////////////////////////////
-					/**
-		 	 	 	 * Initialization function to be called from the various constructors
-		 	 	 	 */
-					void initCICPGoodnessERD_t();
-					void checkRegistrationCondition2D(
-							const std::set<mrpt::utils::TNodeID>& nodes_set);
-					void checkRegistrationCondition3D(
-							const std::set<mrpt::utils::TNodeID>& nodes_set);
-    			void registerNewEdge(
-    					const mrpt::utils::TNodeID& from,
-    					const mrpt::utils::TNodeID& to,
-    					const constraint_t& rel_edge );
-					void checkIfInvalidDataset(mrpt::obs::CActionCollectionPtr action,
-							mrpt::obs::CSensoryFramePtr observations,
-							mrpt::obs::CObservationPtr observation );
-
-		 			void getNearbyNodesOf(
-		 					std::set<mrpt::utils::TNodeID> *nodes_set,
-							const mrpt::utils::TNodeID& cur_nodeID,
-							double distance );
-					// TODO - remove this..
-					/**
-					 * In case of 3DScan images, method sets the path of each image
-					 * either to ${rawlog_path_wo_extension}_Images/img_name (default
-					 * choice) or to the  param.scans_img_external_storage directory specified
-					 * by the user in the .ini configuration file.
-					 */
-					void correct3DScanImageFname(
-							mrpt::utils::CImage* img,
-							std::string extension = ".png");
-
-					// Private variables
-					//////////////////////////////////////////////////////////////
-
-					GRAPH_t* m_graph;
-					mrpt::gui::CDisplayWindow3D* m_win;
-					mrpt::gui::CWindowManager_t* m_win_manager;
-
-					std::string m_rawlog_fname;
-
-					bool m_initialized_visuals;
-					bool m_just_inserted_loop_closure;
-					bool m_is_using_3DScan;
-
-					mrpt::utils::TColor m_search_disk_color; // see Ctor for initialization
-					mrpt::utils::TColor m_laser_scans_color; // see Ctor for initialization
-					double m_offset_y_search_disk;
-					int m_text_index_search_disk;
+				void updateDeciderState(
+						mrpt::obs::CActionCollectionPtr action,
+						mrpt::obs::CSensoryFramePtr observations,
+						mrpt::obs::CObservationPtr observation );
 
 
-					std::map<const mrpt::utils::TNodeID,
-						mrpt::obs::CObservation2DRangeScanPtr> m_nodes_to_laser_scans2D;
-					std::map<const mrpt::utils::TNodeID,
-						mrpt::obs::CObservation3DRangeScanPtr> m_nodes_to_laser_scans3D;
-					std::map<const std::string, int> m_edge_types_to_nums;
+				void setGraphPtr(GRAPH_t* graph);
+				void setRawlogFname(const std::string& rawlog_fname);
+				void setCDisplayWindowPtr(mrpt::gui::CDisplayWindow3D* win);
+    		void setWindowManagerPtr(mrpt::gui::CWindowManager_t* win_manager);
+    		void getEdgesStats(
+    				std::map<const std::string, int>* edge_types_to_nums);
 
-    			int m_last_total_num_of_nodes;
-    			CObservation2DRangeScanPtr m_last_laser_scan2D;
-    			CObservation3DRangeScanPtr m_last_laser_scan3D;
-    			// fake 2D laser scan generated from corresponding 3DRangeScan for
-    			// visualization reasons
-    			CObservation2DRangeScanPtr m_fake_laser_scan2D;
+    		void initializeVisuals();
+    		void updateVisuals();
+    		bool justInsertedLoopClosure();
 
-					// find out if decider is invalid for the given dataset
-					bool m_checked_for_usuable_dataset;
-					size_t m_consecutive_invalid_format_instances;
-					const size_t m_consecutive_invalid_format_instances_thres;
+    		struct TParams: public mrpt::utils::CLoadableOptions {
+    			public:
+    				TParams(decider_t& d);
+    				~TParams();
 
-			};
+						decider_t& decider;
+
+    				void loadFromConfigFile(
+    						const mrpt::utils::CConfigFileBase &source,
+    						const std::string &section);
+						void 	dumpToTextStream(mrpt::utils::CStream &out) const;
+
+						mrpt::slam::CICP icp;
+ 						// maximum distance for checking other nodes for ICP constraints
+						double ICP_max_distance;
+						// threshold for accepting an ICP constraint in the graph
+						double ICP_goodness_thresh;
+						int LC_min_nodeid_diff;
+						bool visualize_laser_scans;
+						std::string scans_img_external_dir;
+
+						bool has_read_config;
+    		};
+
+				// Public variables
+				// ////////////////////////////
+    		TParams params;
+
+	  	private:
+				// Private functions
+				//////////////////////////////////////////////////////////////
+				/**
+		 	 	 	* Initialization function to be called from the various constructors
+		 	 	 	*/
+				void initCICPGoodnessERD_t();
+				void checkRegistrationCondition2D(
+						const std::set<mrpt::utils::TNodeID>& nodes_set);
+				void checkRegistrationCondition3D(
+						const std::set<mrpt::utils::TNodeID>& nodes_set);
+    		void registerNewEdge(
+    				const mrpt::utils::TNodeID& from,
+    				const mrpt::utils::TNodeID& to,
+    				const constraint_t& rel_edge );
+				void checkIfInvalidDataset(mrpt::obs::CActionCollectionPtr action,
+						mrpt::obs::CSensoryFramePtr observations,
+						mrpt::obs::CObservationPtr observation );
+
+		 		void getNearbyNodesOf(
+		 				std::set<mrpt::utils::TNodeID> *nodes_set,
+						const mrpt::utils::TNodeID& cur_nodeID,
+						double distance );
+				// TODO - remove this..
+				/**
+					* In case of 3DScan images, method sets the path of each image
+					* either to ${rawlog_path_wo_extension}_Images/img_name (default
+					* choice) or to the  param.scans_img_external_storage directory
+					* specified by the user in the .ini configuration file.
+					*/
+				void correct3DScanImageFname(
+						mrpt::utils::CImage* img,
+						std::string extension = ".png");
+
+				// Private variables
+				//////////////////////////////////////////////////////////////
+
+				GRAPH_t* m_graph;
+				mrpt::gui::CDisplayWindow3D* m_win;
+				mrpt::gui::CWindowManager_t* m_win_manager;
+
+				std::string m_rawlog_fname;
+
+				bool m_initialized_visuals;
+				bool m_just_inserted_loop_closure;
+				bool m_is_using_3DScan;
+
+				mrpt::utils::TColor m_search_disk_color; // see Ctor for initialization
+				mrpt::utils::TColor m_laser_scans_color; // see Ctor for initialization
+				double m_offset_y_search_disk;
+				int m_text_index_search_disk;
+
+
+				std::map<const mrpt::utils::TNodeID,
+					mrpt::obs::CObservation2DRangeScanPtr> m_nodes_to_laser_scans2D;
+				std::map<const mrpt::utils::TNodeID,
+					mrpt::obs::CObservation3DRangeScanPtr> m_nodes_to_laser_scans3D;
+				std::map<const std::string, int> m_edge_types_to_nums;
+
+    		int m_last_total_num_of_nodes;
+    		CObservation2DRangeScanPtr m_last_laser_scan2D;
+    		CObservation3DRangeScanPtr m_last_laser_scan3D;
+    		// fake 2D laser scan generated from corresponding 3DRangeScan for
+    		// visualization reasons
+    		CObservation2DRangeScanPtr m_fake_laser_scan2D;
+
+				// find out if decider is invalid for the given dataset
+				bool m_checked_for_usuable_dataset;
+				size_t m_consecutive_invalid_format_instances;
+				const size_t m_consecutive_invalid_format_instances_thres;
+
+		};
 
 } } } // end of namespaces
 

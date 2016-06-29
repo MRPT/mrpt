@@ -28,14 +28,20 @@
 #include <sstream>
 #include <cerrno>
 
-#include "CGraphSlamEngine.h"
 #include "CWindowObserver.h"
+#include "CWindowManager.h"
 
-// node/edge registration deciders
+// deciders
+#include "CEmptyNRD.h"
+#include "CICPGoodnessNRD.h"
+#include "CEmptyERD.h"
 #include "CFixedIntervalsNRD.h"
 #include "CICPGoodnessERD.h"
-#include "CICPGoodnessNRD.h"
-#include "CEmptyNRD.h"
+
+// optimizers
+#include "CLevMarqGSO.h"
+
+#include "CGraphSlamEngine.h"
 
 using namespace mrpt;
 using namespace mrpt::utils;
@@ -47,6 +53,7 @@ using namespace mrpt::math;
 using namespace mrpt::opengl;
 using namespace mrpt::utils;
 using namespace mrpt::graphslam::deciders;
+using namespace mrpt::graphslam::optimizers;
 
 using namespace std;
 
@@ -234,7 +241,8 @@ int main(int argc, char **argv)
 					<
 					CNetworkOfPoses2DInf,
 					CFixedIntervalsNRD_t<CNetworkOfPoses2DInf>,
-					CICPGoodnessERD_t<CNetworkOfPoses2DInf>
+					CICPGoodnessERD_t<CNetworkOfPoses2DInf>,
+					CLevMarqGSO_t<CNetworkOfPoses2DInf>
 					>
 					graph_engine(
 							ini_fname,
@@ -250,7 +258,8 @@ int main(int argc, char **argv)
 					<
 					CNetworkOfPoses2DInf,
 					CFixedIntervalsNRD_t<CNetworkOfPoses2DInf>,
-					CEmptyERD_t<CNetworkOfPoses2DInf>
+					CEmptyERD_t<CNetworkOfPoses2DInf>,
+					CLevMarqGSO_t<CNetworkOfPoses2DInf>
 					>
 					graph_engine(
 							ini_fname,
@@ -269,7 +278,8 @@ int main(int argc, char **argv)
 					<
 					CNetworkOfPoses2DInf,
 					CEmptyNRD_t<CNetworkOfPoses2DInf>,
-					CICPGoodnessERD_t<CNetworkOfPoses2DInf>
+					CICPGoodnessERD_t<CNetworkOfPoses2DInf>,
+					CLevMarqGSO_t<CNetworkOfPoses2DInf>
 					>
 					graph_engine(
 							ini_fname,
@@ -285,7 +295,8 @@ int main(int argc, char **argv)
 					<
 					CNetworkOfPoses2DInf,
 					CEmptyNRD_t<CNetworkOfPoses2DInf>,
-					CEmptyERD_t<CNetworkOfPoses2DInf>
+					CEmptyERD_t<CNetworkOfPoses2DInf>,
+					CLevMarqGSO_t<CNetworkOfPoses2DInf>
 					>
 					graph_engine(
 							ini_fname,
@@ -304,7 +315,8 @@ int main(int argc, char **argv)
 					<
 					CNetworkOfPoses2DInf,
 					CICPGoodnessNRD_t<CNetworkOfPoses2DInf>,
-					CICPGoodnessERD_t<CNetworkOfPoses2DInf>
+					CICPGoodnessERD_t<CNetworkOfPoses2DInf>,
+					CLevMarqGSO_t<CNetworkOfPoses2DInf>
 					>
 					graph_engine(
 							ini_fname,
@@ -321,7 +333,8 @@ int main(int argc, char **argv)
 					<
 					CNetworkOfPoses2DInf,
 					CICPGoodnessNRD_t<CNetworkOfPoses2DInf>,
-					CEmptyERD_t<CNetworkOfPoses2DInf>
+					CEmptyERD_t<CNetworkOfPoses2DInf>,
+					CLevMarqGSO_t<CNetworkOfPoses2DInf>
 					>
 					graph_engine(
 							ini_fname,
