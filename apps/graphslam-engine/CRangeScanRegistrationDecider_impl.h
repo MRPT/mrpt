@@ -82,18 +82,11 @@ void CRangeScanRegistrationDecider_t<GRAPH_t>::getICPEdge(
 	float running_time;
 	mrpt::slam::CICP::TReturnInfo info;
 
-	//mrpt::obs::T3DPointsProjectionParams projection_params;
-	//projection_params.takeIntoAccountSensorPoseOnRobot = false;
-	//projection_params.PROJ3D_USE_LUT = true;
-
 	m1.insertObservation(&from);
 	m2.insertObservation(&to);
 
-//	this->decimatePointsMap(&m1, /* keep every = */ 20, /* low_lim = */ 6000);
-//	this->decimatePointsMap(&m2, /* keep every = */ 20, /* low_lim = */ 6000);
-
-	//from.project3DPointsFromDepthImageInto(m1, false);
-	//to.project3DPointsFromDepthImageInto(m2, false);
+	this->decimatePointsMap(&m1, /* keep every = */ 40, /* low_lim = */ 5000);
+	this->decimatePointsMap(&m2, /* keep every = */ 40, /* low_lim = */ 5000);
 
 	// If given, use initial_pose_in as a first guess for the ICP
 	mrpt::poses::CPose3D initial_pose;
@@ -116,14 +109,18 @@ void CRangeScanRegistrationDecider_t<GRAPH_t>::getICPEdge(
 
 	std::cout << "ICP Alignment operation: \n" 
 		<< "\t nIterations: " << info.nIterations
-		<< "\t quality: " << info.quality
+		//<< "\t quality: " << info.quality
 		<< "\t goodness: " << info.goodness
 		<< std::endl;
 	std::cout << "Alignemnt took: " << running_time << " s" << std::endl;
 
+
 	// return the edge regardless of the goodness of the alignment
 	// copy fro the 3D PDF
 	rel_edge->copyFrom(*pdf);
+
+	//cout << "3D Pose from alignment: " << pdf->getMeanVal() << endl;
+	//cout << "2D corresponding pose : " << rel_edge->getMeanVal() << endl;
 
 	// if given, fill the TReturnInfo Struct
 	if (icp_info) {

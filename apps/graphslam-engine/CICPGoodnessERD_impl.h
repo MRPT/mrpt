@@ -38,7 +38,6 @@ void CICPGoodnessERD_t<GRAPH_t>::initCICPGoodnessERD_t() {
 	m_graph = NULL;
 
 	m_initialized_visuals = false;
-	m_initialized_rgbd_viewports = false;
 	m_just_inserted_loop_closure = false;
 	m_is_using_3DScan = false;
 
@@ -396,7 +395,7 @@ void CICPGoodnessERD_t<GRAPH_t>::initializeVisuals() {
 		obj->setPose(initial_pose);
 		obj->setName("ICP_max_distance");
 		obj->setColor_u8(m_search_disk_color);
-		obj->setDiskRadius(params.ICP_max_distance, params.ICP_max_distance-0.5);
+		obj->setDiskRadius(params.ICP_max_distance, params.ICP_max_distance-0.1);
 		scene->insert(obj);
 
 		m_win->unlockAccess3DScene();
@@ -459,7 +458,8 @@ void CICPGoodnessERD_t<GRAPH_t>::updateVisuals() {
 	}
 
 	// update laser scan visual
-	if (params.visualize_laser_scans && (!m_last_laser_scan2D.null() || !m_fake_laser_scan2D.null())) {
+	if (m_win && params.visualize_laser_scans && 
+			(!m_last_laser_scan2D.null() || !m_fake_laser_scan2D.null())) {
 		COpenGLScenePtr scene = m_win->get3DSceneAndLock();
 
 		CRenderizablePtr obj = scene->getByName("laser_scan_viz");
@@ -467,7 +467,6 @@ void CICPGoodnessERD_t<GRAPH_t>::updateVisuals() {
 
 		// if fake 2D exists use it
 		if (!m_fake_laser_scan2D.null()) {
-			// set the scan contents
 			laser_scan_viz->setScan(*m_fake_laser_scan2D);
 		}
 		else {
@@ -482,7 +481,7 @@ void CICPGoodnessERD_t<GRAPH_t>::updateVisuals() {
 			// put the laser scan underneath the graph, so that you can still
 			// visualize the loop closures with the nodes ahead
 			laser_scan_viz->setPose(CPose3D(
-						laser_scan_viz->getPoseX(), laser_scan_viz->getPoseY(), -0.5,
+						laser_scan_viz->getPoseX(), laser_scan_viz->getPoseY(), -0.1,
 						DEG2RAD(laser_scan_viz->getPoseYaw()),
 						DEG2RAD(laser_scan_viz->getPosePitch()),
 						DEG2RAD(laser_scan_viz->getPoseRoll())
@@ -493,72 +492,6 @@ void CICPGoodnessERD_t<GRAPH_t>::updateVisuals() {
 		m_win->forceRepaint();
 	}
 
-	// RGB image visual
-	if (m_is_using_3DScan) {
-		// initialize the viewport if not there
-		if (!m_initialized_rgbd_viewports) {
-			cout << "Initializing the RGBD viewports..." << endl;
-
-			// intensity viewport
-			if (params.enable_intensity_viewport) {
-				COpenGLScenePtr scene = m_win->get3DSceneAndLock();
-				opengl::COpenGLViewportPtr viewp_intensity;
-
-				viewp_intensity = scene->createViewport("viewp_intensity");
-				// TODO - assign position using window_manager
-				viewp_intensity->setViewportPosition(0.78,0.56,0.20,0.20);
-
-				m_win->unlockAccess3DScene();
-				m_win->forceRepaint();
-			}
-
-			// range viewport
-			if (params.enable_range_viewport) {
-				COpenGLScenePtr scene = m_win->get3DSceneAndLock();
-				opengl::COpenGLViewportPtr viewp_range;
-
-				viewp_range = scene->createViewport("viewp_range");
-				// TODO - assign position using window_manager
-				viewp_range->setViewportPosition(0.78,0.34,0.20,0.20);
-
-				m_win->unlockAccess3DScene();
-				m_win->forceRepaint();
-			}
-
-			m_initialized_rgbd_viewports = true;
-		}
-
-		// in either case update them..
-		// Show intensity image:
-		if (m_last_laser_scan3D->hasIntensityImage && params.enable_intensity_viewport) {
-			mrpt::utils::CImage img  = m_last_laser_scan3D->intensityImage;
-
-			COpenGLScenePtr scene = m_win->get3DSceneAndLock();
-			COpenGLViewportPtr viewp_intensity = scene->getViewport("viewp_intensity");
-			//viewp_intensity->setImageView_fast(m_last_laser_scan3D->intensityImage);
-			viewp_intensity->setImageView_fast(img);
-			m_win->unlockAccess3DScene();
-			m_win->forceRepaint();
-		}
-
-		// show the range image
-		if (m_last_laser_scan3D->hasRangeImage && params.enable_range_viewport) {
-
-			// make this a static class member
-			CMatrixFloat range2D;
-			mrpt::utils::CImage img;
-
-			range2D = m_last_laser_scan3D->rangeImage * (1.0/5.0); // TODO - without the magic number?
-			img.setFromMatrix(range2D);
-
-			COpenGLScenePtr scene = m_win->get3DSceneAndLock();
-			COpenGLViewportPtr viewp_range = scene->getViewport("viewp_range");
-			viewp_range->setImageView_fast(img);
-			m_win->unlockAccess3DScene();
-			m_win->forceRepaint();
-		}
-
-	}
 	MRPT_END;
 }
 template<class GRAPH_t>
@@ -643,8 +576,6 @@ void CICPGoodnessERD_t<GRAPH_t>::TParams::dumpToTextStream(
 	out.printf("ICP max radius for edge search = %.2f\n", ICP_max_distance);
 	out.printf("Min. node difference for LC    = %d\n", LC_min_nodeid_diff);
 	out.printf("Visualize laser scans          = %d\n", visualize_laser_scans);
-	out.printf("Enable intensity img viewport  = %d\n", enable_intensity_viewport);
-	out.printf("Enable range img viewport      = %d\n", enable_range_viewport);
 	out.printf("3DScans Image Directory        = %s\n", scans_img_external_dir.c_str());
 
 	decider.range_scanner_t::params.dumpToTextStream(out);
@@ -673,18 +604,10 @@ void CICPGoodnessERD_t<GRAPH_t>::TParams::loadFromConfigFile(
   		"VisualizationParameters",
  			"visualize_laser_scans",
  			true, false);
-  enable_intensity_viewport= source.read_bool(
-  		"VisualizationParameters",
- 			"enable_intensity_viewport",
- 			true, false);
-  enable_range_viewport = source.read_bool(
-  		"VisualizationParameters",
- 			"enable_range_viewport",
- 			true, false);
  	scans_img_external_dir = source.read_string(
  			section,
  			"scan_images_external_directory",
- 			"", false);
+ 			"./", false);
 
 	// load the icp parameters - from "ICP" section explicitly
 	decider.range_scanner_t::params.loadFromConfigFile(source, "ICP");
