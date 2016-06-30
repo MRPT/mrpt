@@ -75,6 +75,15 @@ class CNodeRegistrationDecider_t {
 		 	* CNodeRegistrationDEcider_t::setCDisplayWindowPtr method.
 		 	*/
     virtual void updateVisuals() {}
+    /**
+     * Load the necessary for the decider parameters 
+     */
+		virtual void loadParams(const std::string& source_fname) {}
+    /** 
+     * Print the problem parameters to the screen in a unified way
+     */
+		virtual void printParams() const {} 
+
 
   protected:
 		/**

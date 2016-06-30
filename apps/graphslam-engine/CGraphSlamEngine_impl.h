@@ -104,10 +104,6 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::ini
 	m_is3D = constraint_t::is_3D_val;
 	m_observation_only_rawlog = false;
 
-	// initialize the necessary maps for graph information
-	graph_to_name[&m_graph] = "optimized_graph";
-	graph_to_viz_params[&m_graph] = &m_optimized_graph_viz_params;
-
 	// max node number already in the graph
 	m_nodeID_max = 0;
 	m_graph.root = TNodeID(0);
@@ -115,14 +111,17 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::ini
 	// pass a graph ptr after the instance initialization
 	m_node_registrar.setGraphPtr(&m_graph);
 	m_edge_registrar.setGraphPtr(&m_graph);
+	m_optimizer.setGraphPtr(&m_graph);
 
 	// pass the window manager ptr after the instance initialization
 	m_node_registrar.setWindowManagerPtr(&m_win_manager);
 	m_edge_registrar.setWindowManagerPtr(&m_win_manager);
+	m_optimizer.setWindowManagerPtr(&m_win_manager);
 
 	// pass a cdisplaywindowptr after the instance initialization
 	m_node_registrar.setCDisplayWindowPtr(m_win);
 	m_edge_registrar.setCDisplayWindowPtr(m_win);
+	m_optimizer.setCDisplayWindowPtr(m_win);
 
 	// Calling of initalization-relevant functions
 	this->readConfigFile(m_config_fname);
@@ -134,6 +133,7 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::ini
 	// pass the rawlog filename after the instance initialization
 	m_node_registrar.setRawlogFname(m_rawlog_fname);
 	m_edge_registrar.setRawlogFname(m_rawlog_fname);
+	m_optimizer.setRawlogFname(m_rawlog_fname);
 
 
 	/**
@@ -141,7 +141,6 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::ini
 	 */
 
 	if (!m_win) {
-		m_visualize_optimized_graph = 0;
 		m_visualize_odometry_poses = 0;
 		m_visualize_GT = 0;
 		m_visualize_map = 0;
@@ -154,13 +153,6 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::ini
 	m_win_manager.assignTextMessageParameters(&m_offset_y_timestamp,
 			&m_text_index_timestamp);
 
-	// optimized graph
-	ASSERT_(m_has_read_config);
-	if (m_visualize_optimized_graph) {
-		m_win_manager.assignTextMessageParameters(
-				/* offset_y*	= */ &m_offset_y_graph,
-				/* text_index* = */ &m_text_index_graph );
-	}
 
 	// aligning GT (optical) frame with the MRPT frame
 	// Set the rotation matrix from the corresponding RPY angles
@@ -314,6 +306,7 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::ini
 		mrpt::synch::CCriticalSectionLocker m_graph_lock(&m_graph_section);
 		m_node_registrar.initializeVisuals();
 		m_edge_registrar.initializeVisuals();
+		m_optimizer.initializeVisuals();
 	}
 
 	m_autozoom_active = true;
@@ -418,6 +411,11 @@ bool CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::par
 					action,
 					observations,
 					observation );
+
+			m_optimizer.updateOptimizerState(
+					action,
+					observations,
+					observation );
 		}
 
 		if (observation.present()) {
@@ -494,18 +492,13 @@ bool CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::par
 				this->updateMapVisualization(m_graph, m_nodes_to_laser_scans2D, full_update);
 			}
 
-			// join the previous optimization thread
-			joinThread(m_thread_optimize);
-
-			// optimize the graph - run on a seperate thread
-			m_thread_optimize = createThreadFromObjectMethod(/*obj = */this,
-					/* func = */&CGraphSlamEngine_t::optimizeGraph, &m_graph);
 
 			// query node/edge deciders for visual objects update
 			if (m_win) {
 				mrpt::synch::CCriticalSectionLocker m_graph_lock(&m_graph_section);
 				m_node_registrar.updateVisuals();
 				m_edge_registrar.updateVisuals();
+				m_optimizer.updateVisuals();
 			}
 
 			// update the edge counter
@@ -526,14 +519,10 @@ bool CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::par
 				}
 			}
 			// update the graph visualization
-			if (m_visualize_optimized_graph) {
-				ASSERTMSG_(m_win,
-						"Visualization of data was requested but no CDisplayWindow3D pointer was given");
 
-				updateGraphVisualization(m_graph);
-				if (m_enable_curr_pos_viewport) {
-					updateCurrPosViewport();
-				}
+			// TODO - remove this
+			if (m_enable_curr_pos_viewport) {
+				updateCurrPosViewport();
 			}
 
 			// update the global position of the nodes
@@ -604,7 +593,6 @@ bool CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::par
 
 		if (m_request_to_exit) {
 			std::cout << "Halting execution... " << std::endl;
-			joinThread(m_thread_optimize);
 
 			rawlog_file.close();
 			return false; // exit the parseRawlogFile method
@@ -645,78 +633,6 @@ bool CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::par
 	return true; // function execution completed successfully
 	MRPT_END;
 } // END OF FUNCTION
-
-template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR, class OPTIMIZER>
-void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::optimizeGraph(GRAPH_t* gr) {
-	MRPT_START;
-
-	CTicTac optimization_timer;
-	optimization_timer.Tic();
-
-	mrpt::synch::CCriticalSectionLocker m_graph_lock(&m_graph_section);
-
-	//std::cout << "In optimizeGraph: threadID: " << getCurrentThreadId()<< std::endl;
-
-	graphslam::TResultInfoSpaLevMarq	levmarq_info;
-
-	// Execute the optimization
-	graphslam::optimize_graph_spa_levmarq(
-			*gr,
-			levmarq_info,
-			NULL,  // List of nodes to optimize. NULL -> all but the root node.
-			m_optimization_params,
-			&levMarqFeedback<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>); // functor feedback
-
-	double elapsed_time = optimization_timer.Tac();
-	//VERBOSE_COUT << "Optimization of graph took: " << elapsed_time << "s" << std::endl;
-
-	MRPT_UNUSED_PARAM(elapsed_time);
-	MRPT_END;
-}
-
-template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR, class OPTIMIZER>
-void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::updateGraphVisualization(
-		const GRAPH_t& gr) {
-	MRPT_START;
-
-	ASSERTMSG_(m_win,
-			"Visualization of data was requested but no CDisplayWindow3D pointer was given");
-
-	//std::cout << "Inside the updateGraphVisualization function" << std::endl;
-
-	mrpt::synch::CCriticalSectionLocker m_graph_lock(&m_graph_section);
-
-	string gr_name = graph_to_name[&gr];
-	const TParametersDouble* viz_params = graph_to_viz_params[&gr];
-
-	// update the graph (clear and rewrite..)
-	COpenGLScenePtr& scene = m_win->get3DSceneAndLock();
-
-	// remove previous graph
-	CRenderizablePtr prev_object = scene->getByName(gr_name);
-	scene->removeObject(prev_object);
-
-	// Insert the new instance of the graph
-	CSetOfObjectsPtr graph_obj = graph_tools::graph_visualize(gr, *viz_params);
-	graph_obj->setName(gr_name);
-	scene->insert(graph_obj);
-
-	m_win->unlockAccess3DScene();
-	m_win_manager.addTextMessage(5,-m_offset_y_graph,
-			format("Optimized Graph: #nodes %d",
-				static_cast<int>(gr.nodeCount())),
-			TColorf(0.0, 0.0, 0.0),
-			/* unique_index = */ m_text_index_graph);
-
-	m_win->forceRepaint();
-
-	// Autozoom to the graph?
-	if (m_autozoom_active) {
-		this->autofitObjectInView(graph_obj);
-	}
-
-	MRPT_END;
-}
 
 template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR, class OPTIMIZER>
 void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::readConfigFile(
@@ -779,87 +695,8 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::rea
 			"ground_truth_file_format",
 			"NavSimul", false);
 
-	// Section: Optimization
-	// ////////////////////////////
-	m_optimization_params["verbose"] = cfg_file.read_bool(
-			"Optimization",
-			"verbose",
-			0, false);
-	m_optimization_params["profiler"] = cfg_file.read_bool(
-			"Optimization",
-			"profiler",
-			0, false);
-	m_optimization_params["max_iterations"] = cfg_file.read_double(
-			"Optimization",
-			"max_iterations",
-			100, false);
-	m_optimization_params["scale_hessian"] = cfg_file.read_double(
-			"Optimization",
-			"scale_hessian",
-			0.2, false);
-	m_optimization_params["tau"] = cfg_file.read_double(
-			"Optimization",
-			"tau",
-			1e-3, false);
-
-
 	// Section: VisualizationParameters
 	// ////////////////////////////////
-	// http://reference.mrpt.org/devel/group__mrpt__opengl__grp.html#ga30efc9f6fcb49801e989d174e0f65a61
-
-	// Optimized graph
-	m_visualize_optimized_graph = cfg_file.read_bool(
-			"VisualizationParameters",
-			"visualize_optimized_graph",
-			1, false);
-	m_optimized_graph_viz_params["show_ID_labels"] = cfg_file.read_bool(
-			"VisualizationParameters",
-			"optimized_show_ID_labels",
-			0, false);
-	m_optimized_graph_viz_params["show_ground_grid"] = cfg_file.read_double(
-			"VisualizationParameters",
-			"optimized_show_ground_grid",
-			1, false);
-	m_optimized_graph_viz_params["show_edges"] = cfg_file.read_bool(
-			"VisualizationParameters",
-			"optimized_show_edges",
-			1, false);
-	m_optimized_graph_viz_params["edge_color"] = cfg_file.read_int(
-			"VisualizationParameters",
-			"optimized_edge_color",
-			4286611456, false);
-	m_optimized_graph_viz_params["edge_width"] = cfg_file.read_double(
-			"VisualizationParameters",
-			"optimized_edge_width",
-			1.5, false);
-	m_optimized_graph_viz_params["show_node_corners"] = cfg_file.read_bool(
-			"VisualizationParameters",
-			"optimized_show_node_corners",
-			1, false);
-	m_optimized_graph_viz_params["show_edge_rel_poses"] = cfg_file.read_bool(
-			"VisualizationParameters",
-			"optimized_show_edge_rel_poses",
-			1, false);
-	m_optimized_graph_viz_params["edge_rel_poses_color"] = cfg_file.read_int(
-			"VisualizationParameters",
-			"optimized_edge_rel_poses_color",
-			1090486272, false);
-	m_optimized_graph_viz_params["nodes_edges_corner_scale"] = cfg_file.read_double(
-			"VisualizationParameters",
-			"optimized_nodes_edges_corner_scale",
-			0.4, false);
-	m_optimized_graph_viz_params["nodes_corner_scale"] = cfg_file.read_double(
-			"VisualizationParameters",
-			"optimized_nodes_corner_scale",
-			0.7, false);
-	m_optimized_graph_viz_params["point_size"] = cfg_file.read_int(
-			"VisualizationParameters",
-			"optimized_point_size",
-			0, false);
-	m_optimized_graph_viz_params["point_color"] = cfg_file.read_int(
-			"VisualizationParameters",
-			"optimized_point_color",
-			10526880, false);
 
 	// map visualization
 	m_visualize_map = cfg_file.read_bool(
@@ -897,11 +734,9 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::rea
 			"enable_intensity_viewport",
 			false, false);
 
-
-	this->m_node_registrar.params.loadFromConfigFileName(m_config_fname,
-			"NodeRegistrationDecidersParameters");
-	this->m_edge_registrar.params.loadFromConfigFileName(m_config_fname,
-			"EdgeRegistrationDecidersParameters");
+	m_node_registrar.loadParams(m_config_fname);
+	m_edge_registrar.loadParams(m_config_fname);
+	m_optimizer.loadParams(m_config_fname);
 
 	m_has_read_config = true;
 	MRPT_END;
@@ -948,8 +783,6 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::pri
 		<< m_visualize_odometry_poses << std::endl;
 	ss_out << "Visualize estimated trajectory  = "
 		<< m_visualize_estimated_trajectory << std::endl;
-	ss_out << "Visualize optimized graph       = "
-		<< m_visualize_optimized_graph << std::endl;
 	ss_out << "Visualize map                   = "
 		<< m_visualize_map << std::endl;
 	ss_out << "Visualize Ground Truth          = "
@@ -966,13 +799,9 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::pri
 
 	std::cout << ss_out.str(); ss_out.str("");
 
-	std::cout << "-----------[ Optimization Parameters ]-----------" << std::endl;
-	m_optimization_params.dumpToConsole();
-	std::cout << "-----------[ Graph Visualization Parameters ]-----------" << std::endl;
-	m_optimized_graph_viz_params.dumpToConsole();
-
-	this->m_node_registrar.params.dumpToConsole();
-	this->m_edge_registrar.params.dumpToConsole();
+	m_node_registrar.printParams();
+	m_edge_registrar.printParams();
+	m_optimizer.printParams();
 
 	mrpt::system::pause();
 
@@ -1695,7 +1524,8 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::ini
 	scene->insert(robot_model);
 	m_win->unlockAccess3DScene();
 
-	m_win_manager.assignTextMessageParameters( /* offset_y* = */ &m_offset_y_odometry,
+	m_win_manager.assignTextMessageParameters(
+			/* offset_y* = */ &m_offset_y_odometry,
 			/* text_index* = */ &m_text_index_odometry);
 	m_win_manager.addTextMessage(5,-m_offset_y_odometry,
 			format("Odometry path"),

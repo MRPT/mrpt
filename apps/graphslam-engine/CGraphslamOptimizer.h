@@ -48,7 +48,6 @@ class CGraphSlamOptimizer_t {
 		 	* CGraphSlamOptimizer_t::setCDisplayWindowPtr method.
 		 	*/
     virtual void updateVisuals() {}
-
 		/**
 		 	* Generic method for fetching the incremental action/observation
 		 	* readings from the calling function. Implementations of this
@@ -78,6 +77,14 @@ class CGraphSlamOptimizer_t {
 		 	* various parameters configuration in the CDisplayWindow
 		 	*/
     virtual void setWindowManagerPtr(mrpt::gui::CWindowManager_t* win_manager){}
+    /**
+     * Load the necessary for the optimizer parameters 
+     */
+		virtual void loadParams(const std::string& source_fname) {}
+    /** 
+     * Print the problem parameters to the screen in a unified way
+     */
+		virtual void printParams() const {}
 
 	protected:
 		/**

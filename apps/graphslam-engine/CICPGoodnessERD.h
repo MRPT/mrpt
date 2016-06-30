@@ -19,6 +19,8 @@
 #include <mrpt/utils/TColor.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
+#include <mrpt/obs/CActionCollection.h>
+#include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/obs/CRawlog.h>
 #include <mrpt/opengl/CDisk.h>
 #include <mrpt/opengl/CSetOfObjects.h> // TODO - is it needed?
@@ -100,6 +102,8 @@ template<
     		void initializeVisuals();
     		void updateVisuals();
     		bool justInsertedLoopClosure();
+				void loadParams(const std::string& source_fname);
+				void printParams() const; 
 
     		struct TParams: public mrpt::utils::CLoadableOptions {
     			public:

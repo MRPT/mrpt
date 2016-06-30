@@ -11,6 +11,8 @@
 #define CFIXEDINTERVALSNRD_H
 
 #include <mrpt/obs/CObservationOdometry.h>
+#include <mrpt/obs/CSensoryFrame.h>
+#include <mrpt/obs/CActionCollection.h>
 #include <mrpt/obs/CRawlog.h>
 #include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/utils/CConfigFileBase.h>
@@ -39,7 +41,6 @@ namespace mrpt { namespace graphslam { namespace deciders {
 	* Observations: CObservationOdometry, CActionRobotMovement2D
 	* Edge Registration Strategy: Goodnesss threshold
 	*
-
  	* Fixed intervals odometry edge insertion. Determine whether to insert a new
  	* pose in the graph given the distance and angle thresholds. If used offline,
 	* use it with datasets in observation-only rawlog format.
@@ -70,6 +71,10 @@ class CFixedIntervalsNRD_t:
 		 	* Initialize the graph to be used for the node registration procedure
 		 	*/
 		void setGraphPtr(GRAPH_t* graph);
+
+		void loadParams(const std::string& source_fname);
+		void printParams() const; 
+
 		/**
 		 	* Method makes use of the CActionCollection/CObservation to update the odometry estimation from
 		 	* the last inserted pose
