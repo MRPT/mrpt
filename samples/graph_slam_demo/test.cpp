@@ -114,7 +114,7 @@ struct ExampleDemoGraphSLAM
 
     /**
      * Initialize the PRNG from the given random seed.
-     * Method used to initially randomise the generator 
+     * Method used to initially randomise the generator
      */
 		randomGenerator.randomize(123);
 
