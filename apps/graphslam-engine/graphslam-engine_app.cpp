@@ -82,11 +82,14 @@ TCLAP::ValueArg<string> arg_node_reg("n", "node-reg",
 		"Specify Node registration decider",	false, "CFixedIntervalsNRD", "CICPGoodnessNRD", cmd);
 TCLAP::ValueArg<string> arg_edge_reg("e", "edge-reg",
 		"Specify Edge registration decider",	false, "CICPGoodnessERD", "CICPGoodnessERD", cmd);
+TCLAP::ValueArg<string> arg_optimizer("o", "optimizer",
+		"Specify GraphSlam Optimizer",	false, "CLevMarqGSO", "CLevMarqGSO", cmd);
 
 // list available deciders
 TCLAP::SwitchArg list_node_registrars("","list-node-regs","List available node registration decider classes",cmd, false);
 TCLAP::SwitchArg list_edge_registrars("","list-edge-regs","List available edge registration decider classes",cmd, false);
 TCLAP::SwitchArg list_all_registrars("","list-regs","List (all) available registration decider classes",cmd, false);
+TCLAP::SwitchArg list_optimizers("","list-optimizers","List (all) available graphslam optimizer classes",cmd, false);
 
 CWindowObserver  graph_win_observer;
 
@@ -102,13 +105,27 @@ struct TRegistrationDeciderProps {
   string rawlog_format; // rawlog formats that the decider can be used in
   vector<string> observations_used;
 };
-
 vector<TRegistrationDeciderProps*> deciders_vec;
+
+// Properties struct for the Optimizer Classes
+// ////////////////////////////////////////////////////////////
+struct TOptimizerProps {
+	TOptimizerProps() {}
+	~TOptimizerProps() {}
+
+	string name;
+	string description;
+
+};
+vector<TOptimizerProps*> optimizers_vec;
+
 
 // Used Functions
 // ////////////////////////////////////////////////////////////
 void dumpRegistrarsToConsole(string reg_type);
 bool checkRegistrationDeciderExists(string node_reg, string reg_type);
+void dumpOptimizersToConsole();
+bool checkOptimizerExists(string opt_name);
 // Main
 // ////////////////////////////////////////////////////////////
 int main(int argc, char **argv)
@@ -118,6 +135,7 @@ int main(int argc, char **argv)
 		bool showHelp		 = argc>1 && !os::_strcmp(argv[1],"--help");
 		bool showVersion = argc>1 && !os::_strcmp(argv[1],"--version");
 
+		// registering the available deciders
 		{
 			TRegistrationDeciderProps* dec = new TRegistrationDeciderProps;
 			dec->name = "CFixedIntervalsNRD";
@@ -169,6 +187,15 @@ int main(int argc, char **argv)
 
 			deciders_vec.push_back(dec);
 		}
+		// registering the available optimizers
+		{
+			TOptimizerProps* opt = new TOptimizerProps;
+			opt->name = "CLevMarqGSO";
+			opt->description = "Levenberg-Marqurdt non-linear graphSLAM solver";
+
+			optimizers_vec.push_back(opt);
+		}
+
 
 		// Input Validation
 		if (!cmd.parse( argc, argv ) ||  showVersion || showHelp) {
@@ -177,7 +204,7 @@ int main(int argc, char **argv)
 		// fetch the command line options
 		// ////////////////////////////////////////////////////////////
 
-		// list_*registrars switch args
+		// decide on the SwitchArgs
 		{
 			bool list_registrars = false;
 
@@ -194,20 +221,27 @@ int main(int argc, char **argv)
 				list_registrars = true;
 			}
 
-			if (list_registrars) {
+			if (list_optimizers.getValue()) {
+				dumpOptimizersToConsole();
+			}
+
+			if (list_registrars || list_optimizers.getValue()) {
 				VERBOSE_COUT << "Exiting.. " << endl;
 				return 0;
 			}
 		}
 
-		// fetch which registration deciders to use
+		// fetch which registration deciders / optimizer to use
 		string node_reg = arg_node_reg.getValue();
 		string edge_reg = arg_edge_reg.getValue();
+		string optimizer = arg_optimizer.getValue();
 		ASSERTMSG_(checkRegistrationDeciderExists(node_reg, "node"),
 				format("Node Registration Decider %s is not available. ", node_reg.c_str()) );
 		checkRegistrationDeciderExists(edge_reg, "edge");
 		ASSERTMSG_(checkRegistrationDeciderExists(edge_reg, "edge"),
 				format("Edge Registration Decider %s is not available. ", edge_reg.c_str()) );
+		ASSERTMSG_(checkOptimizerExists(optimizer),
+				format("Optimizer %s is not available", optimizer.c_str()) );
 
 		// fetch the filenames
 		string ini_fname = arg_ini_file.getValue();
@@ -377,6 +411,9 @@ int main(int argc, char **argv)
 	return 0;
 }
 
+string sep_header(40, '=');
+string sep_subheader(20, '-');
+
 // Print the properties of the available registars
 void dumpRegistrarsToConsole(string reg_type="all") {
 	MRPT_START;
@@ -387,8 +424,6 @@ void dumpRegistrarsToConsole(string reg_type="all") {
 			format("Registrar string '%s' does not match a known registrar name.\n"
 				"Specify 'node' 'edge' or 'all'", reg_type.c_str()));
 
-	string sep_header(40, '=');
-	string sep_subheader(20, '-');
 	if ( system::strCmpI(reg_type, "node") || system::strCmpI(reg_type, "edge") ) {
 
 		cout << endl << "Available " << system::upperCase(reg_type) << " Registration Deciders: " << endl;
@@ -417,9 +452,28 @@ void dumpRegistrarsToConsole(string reg_type="all") {
 	MRPT_END;
 }
 
+// Print the properties of the available registars
+void dumpOptimizersToConsole() {
+	MRPT_START;
+
+	cout << endl << "Available GraphSlam Optimizer classes: " << endl;
+	cout << sep_header << endl;
+
+	for (vector<TOptimizerProps*>::const_iterator opt_it = optimizers_vec.begin();
+			opt_it != optimizers_vec.end(); ++opt_it) {
+		TOptimizerProps* opt = *opt_it;
+		cout << opt->name << endl;
+		cout << sep_subheader << endl;
+		cout << "\t- " << "Description: " <<  opt->description << endl;
+	}
+
+	MRPT_END;
+}
+
 // check if the given registration decider is implemented
 bool checkRegistrationDeciderExists(string given_reg, string reg_type) {
 	MRPT_START;
+
 	ASSERTMSG_((strCmpI(reg_type, "node") ||
 			system::strCmpI(reg_type, "edge")),
 			format("Registrar string '%s' does not match a known registrar name.\n"
@@ -434,6 +488,25 @@ bool checkRegistrationDeciderExists(string given_reg, string reg_type) {
 				found = true;
 				return found;
 			}
+		}
+	}
+
+	return found;
+	MRPT_END;
+}
+
+// check if the given optimizer is implemented
+bool checkOptimizerExists(string given_opt) {
+	MRPT_START;
+
+	bool found = false;
+
+	for (vector<TOptimizerProps*>::const_iterator opt_it = optimizers_vec.begin();
+			opt_it != optimizers_vec.end(); ++opt_it) {
+		TOptimizerProps* opt = *opt_it;
+		if ( system::strCmpI(opt->name, given_opt) ) {
+			found = true;
+			return found;
 		}
 	}
 

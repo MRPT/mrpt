@@ -25,8 +25,6 @@ using namespace mrpt::slam;
 using namespace mrpt::maps;
 using namespace mrpt::graphslam;
 
-using namespace supplementary_funs;
-
 using namespace std;
 
 // Ctors, Dtors implementations
