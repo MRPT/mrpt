@@ -18,7 +18,6 @@
 #include <mrpt/gui/CBaseGUIWindow.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/opengl/CPlanarLaserScan.h> // It's in the lib mrpt-maps now
-#include <mrpt/opengl/graph_tools.h>
 #include <mrpt/opengl/CPointCloud.h>
 #include <mrpt/opengl/CRenderizable.h>
 #include <mrpt/opengl/CAxis.h>
@@ -32,6 +31,7 @@
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/obs/CObservationImage.h>
 #include <mrpt/obs/CRawlog.h>
+#include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/poses/CPosePDF.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPose3D.h>
@@ -47,6 +47,7 @@
 #include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/utils/CFileOutputStream.h>
 #include <mrpt/utils/CFileInputStream.h>
+#include <mrpt/utils/CTicTac.h>
 #include <mrpt/utils/mrpt_stdint.h>
 #include <mrpt/utils/mrpt_macros.h>
 #include <mrpt/utils/CConfigFile.h>
@@ -67,7 +68,6 @@
 #include "CEdgeCounter.h"
 #include "CWindowObserver.h"
 #include "CWindowManager.h"
-#include "supplementary_funs.h"
 
 namespace mrpt { namespace graphslam {
 
@@ -84,7 +84,6 @@ template<
 
 			typedef std::map<std::string, mrpt::utils::CFileOutputStream*> fstreams_out;
 			typedef std::map<std::string, mrpt::utils::CFileOutputStream*>::iterator fstreams_out_it;
-
 			typedef std::map<std::string, mrpt::utils::CFileInputStream*> fstreams_in;
 			typedef std::map<std::string, mrpt::utils::CFileInputStream*>::iterator fstreams_in_it;
 
@@ -94,7 +93,6 @@ template<
 
 			typedef mrpt::math::CMatrixFixedNumeric<double,
 							constraint_t::state_length, constraint_t::state_length> InfMat;
-
 
 			// Ctors, Dtors
 			//////////////////////////////////////////////////////////////
@@ -140,15 +138,6 @@ template<
 		 		* user issues termination coe (Ctrl+c) otherwise true
 		 		**/
 			bool parseRawlogFile();
-			/**
-		 		* Optimize the under-construction graph
-		 		*/
-			inline void optimizeGraph(GRAPH_t* graph);
-			/**
-		 		* Called internally for updating the vizualization scene for the graph
-		 		* building procedure
-		 		*/
-			inline void updateGraphVisualization(const GRAPH_t& gr);
 			/**
 		 		* GRAPH_t getter function - return reference to own graph
 		 		* Handy function for visualization, printing purposes
@@ -312,8 +301,6 @@ template<
 			// Interaction with the CDisplayWindow - use of CWindowObserver
 			bool m_autozoom_active, m_request_to_exit;
 
-			mrpt::utils::TParametersDouble m_optimized_graph_viz_params;
-			bool m_visualize_optimized_graph;
 			bool m_visualize_odometry_poses;
 			bool m_visualize_GT;
 			bool m_visualize_map;
@@ -323,14 +310,12 @@ template<
 			bool m_enable_range_viewport;
 
 			// textMessage vertical text position
-			double m_offset_y_graph;
 			double m_offset_y_odometry;
 			double m_offset_y_GT;
 			double m_offset_y_estimated_traj;
 			double m_offset_y_timestamp;
 
 			// textMessage index
-			int m_text_index_graph;
 			int m_text_index_odometry;
 			int m_text_index_GT;
 			int m_text_index_estimated_traj;
@@ -340,10 +325,6 @@ template<
 			// functions
 			CEdgeCounter_t m_edge_counter;
 			int m_num_of_edges_for_collapse;
-
-			// std::maps to store information about the graph(s)
-			std::map<const GRAPH_t*, std::string> graph_to_name;
-			std::map<const GRAPH_t*, mrpt::utils::TParametersDouble*> graph_to_viz_params;
 
 			// pose_t vectors
 			std::vector<pose_t*> m_odometry_poses;
@@ -374,18 +355,12 @@ template<
 			// Handy for not locking the m_graph resource
 			mrpt::utils::TNodeID m_nodeID_max; 
 
-			// graph optimization
-			mrpt::utils::TParametersDouble m_optimization_params;
-			pose_t m_curr_estimated_pose;
-
-			// Use mutliple threads for visualization and graph optimization
-			mrpt::system::TThreadHandle m_thread_optimize;
-			mrpt::system::TThreadHandle m_thread_visualize;
-
 			// mark graph modification/accessing explicitly for multithreaded
 			// implementation
 			mrpt::synch::CCriticalSection m_graph_section;
 
+			// keep track of the storage directory for the 3DRangeScan depth/range
+			// images
 			std::string m_img_external_storage_dir;
 			std::string m_img_prev_path_base;
 

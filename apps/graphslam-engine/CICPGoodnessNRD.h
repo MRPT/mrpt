@@ -11,6 +11,8 @@
 #define CICPGOODNESSNRD_H
 
 #include <mrpt/obs/CRawlog.h>
+#include <mrpt/obs/CActionCollection.h>
+#include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/poses/CPosePDF.h>
@@ -80,6 +82,9 @@ template<class GRAPH_t>
 		 	* Initialize the graph to be used for the node registration procedure
 		 	*/
 		void setGraphPtr(GRAPH_t* graph);
+		void loadParams(const std::string& source_fname);
+		void printParams() const; 
+
 		bool updateDeciderState( mrpt::obs::CActionCollectionPtr action,
 				mrpt::obs::CSensoryFramePtr observations,
 				mrpt::obs::CObservationPtr observation );
@@ -122,11 +127,10 @@ template<class GRAPH_t>
 		GRAPH_t* m_graph;
 		mrpt::gui::CDisplayWindow3D* m_win;
 
-		// Tracking the PDF of the current position of the robot with regards to the
-		// *previous* registered node
+		// Tracking the PDF of the current position of the robot with regards to
+		// the *previous* registered node
 		constraint_t	m_since_prev_node_PDF;
 
-		pose_t m_curr_estimated_pose;
 		// variable to keep track of whether we are reading from an
 		// observation-only rawlog file or from an action-observation rawlog
 		bool m_observation_only_rawlog;

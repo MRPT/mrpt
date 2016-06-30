@@ -55,8 +55,8 @@ template< class GRAPH_t=typename mrpt::graphs::CNetworkOfPoses2DInf>
 			* additional information be returned in a TReturnInfo struct
 			*/
 		void getICPEdge(
-				const CObservation2DRangeScan& from,
-				const CObservation2DRangeScan& to,
+				const mrpt::obs::CObservation2DRangeScan& from,
+				const mrpt::obs::CObservation2DRangeScan& to,
 				constraint_t* rel_edge,
 				mrpt::poses::CPose2D* initial_pose=NULL,
 				mrpt::slam::CICP::TReturnInfo* icp_info=NULL);
@@ -68,8 +68,8 @@ template< class GRAPH_t=typename mrpt::graphs::CNetworkOfPoses2DInf>
 			* information be returned in a TReturnInfo struct
 			*/
 		void getICPEdge(
-				CObservation3DRangeScan& from,
-				CObservation3DRangeScan& to,
+				mrpt::obs::CObservation3DRangeScan& from,
+				mrpt::obs::CObservation3DRangeScan& to,
 				constraint_t* rel_edge,
 				mrpt::poses::CPose2D* initial_pose=NULL,
 				mrpt::slam::CICP::TReturnInfo* icp_info=NULL);
@@ -86,8 +86,8 @@ template< class GRAPH_t=typename mrpt::graphs::CNetworkOfPoses2DInf>
 			* Wrapper around the CObservation3DRangeScan::convertTo2DScan method
 			*/
 		void convert3DTo2DRangeScan(
-				/*from = */ CObservation3DRangeScanPtr& scan3D_in,
-				/*to   = */ CObservation2DRangeScanPtr* scan2D_out=NULL);
+				/*from = */ mrpt::obs::CObservation3DRangeScanPtr& scan3D_in,
+				/*to   = */ mrpt::obs::CObservation2DRangeScanPtr* scan2D_out=NULL);
 
     struct TParams: public mrpt::utils::CLoadableOptions {
     	public:

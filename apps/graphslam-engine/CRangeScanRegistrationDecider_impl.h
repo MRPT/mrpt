@@ -14,8 +14,8 @@ using namespace mrpt::graphslam::deciders;
 
 template<class GRAPH_t>
 void CRangeScanRegistrationDecider_t<GRAPH_t>::getICPEdge(
-		const CObservation2DRangeScan& from,
-		const CObservation2DRangeScan& to,
+		const mrpt::obs::CObservation2DRangeScan& from,
+		const mrpt::obs::CObservation2DRangeScan& to,
 		constraint_t* rel_edge,
 		mrpt::poses::CPose2D* initial_pose_in/* = NULL */,
 		mrpt::slam::CICP::TReturnInfo* icp_info/* = NULL */) {
@@ -119,8 +119,8 @@ void CRangeScanRegistrationDecider_t<GRAPH_t>::getICPEdge(
 	// copy fro the 3D PDF
 	rel_edge->copyFrom(*pdf);
 
-	//cout << "3D Pose from alignment: " << pdf->getMeanVal() << endl;
-	//cout << "2D corresponding pose : " << rel_edge->getMeanVal() << endl;
+	//std::cout << "3D Pose from alignment: " << pdf->getMeanVal() << endl;
+	//std::cout << "2D corresponding pose : " << rel_edge->getMeanVal() << endl;
 
 	// if given, fill the TReturnInfo Struct
 	if (icp_info) {
@@ -181,7 +181,7 @@ void CRangeScanRegistrationDecider_t<GRAPH_t>::convert3DTo2DRangeScan(
 				params.conversion_oversampling_ratio);
 	}
 	else {
-		cout << "No valid range image found" << endl;
+		std::cout << "No valid rangeImage found" << std::endl;
 	}
 }
 
@@ -206,9 +206,9 @@ void CRangeScanRegistrationDecider_t<GRAPH_t>::TParams::dumpToTextStream(
 	out.printf("Conversion Sensor label       = %s\n",
 			conversion_sensor_label.c_str());
 	out.printf("Conversion angle sup          = %.2f deg\n",
-			RAD2DEG(conversion_angle_sup));
+			mrpt::utils::RAD2DEG(conversion_angle_sup));
 	out.printf("Conversion angle inf          = %.2f deg\n",
-			RAD2DEG(conversion_angle_inf));
+			mrpt::utils::RAD2DEG(conversion_angle_inf));
 	out.printf("Conversion oversampling ratio = %.2f\n",
 			conversion_oversampling_ratio);
 
@@ -230,12 +230,12 @@ void CRangeScanRegistrationDecider_t<GRAPH_t>::TParams::loadFromConfigFile(
 			section,
 			"conversion_angle_sup",
 			10, false);
-	conversion_angle_sup = DEG2RAD(conversion_angle_sup);
+	conversion_angle_sup = mrpt::utils::DEG2RAD(conversion_angle_sup);
 	conversion_angle_inf = source.read_double(
 			section,
 			"conversion_angle_inf",
 			10, false);
-	conversion_angle_inf = DEG2RAD(conversion_angle_inf);
+	conversion_angle_inf = mrpt::utils::DEG2RAD(conversion_angle_inf);
 	conversion_oversampling_ratio = source.read_double(
 			section,
 			"conversion_oversampling_ratio",

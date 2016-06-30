@@ -552,6 +552,24 @@ void CICPGoodnessERD_t<GRAPH_t>::correct3DScanImageFname(
 		img->setExternalStorage(fname);
 	}
 }
+template<class GRAPH_t>
+void CICPGoodnessERD_t<GRAPH_t>::loadParams(const std::string& source_fname) {
+	MRPT_START;
+
+	params.loadFromConfigFileName(source_fname, 
+			"EdgeRegistrationDecidersParameters");
+
+	MRPT_END;
+}
+template<class GRAPH_t>
+void CICPGoodnessERD_t<GRAPH_t>::printParams() const {
+	MRPT_START;
+
+	params.dumpToConsole();
+
+	MRPT_END;
+}
+
 
 // TParameter
 // //////////////////////////////////

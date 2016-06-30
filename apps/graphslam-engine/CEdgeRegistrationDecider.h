@@ -86,7 +86,15 @@ namespace mrpt { namespace graphslam { namespace deciders {
     	 * Method for the caller to query for possible loop closures in the
     	 * last edge registration procedure.
     	 */
-    	virtual bool justInsertedLoopClosure() = 0;
+    	virtual bool justInsertedLoopClosure() {return false;}
+    	/**
+     	 * Load the necessary for the decider parameters 
+     	 */
+			virtual void loadParams(const std::string& source_fname) {}
+    	/** 
+     	 * Print the problem parameters to the screen in a unified way
+     	 */
+			virtual void printParams() const {} 
 
   	protected:
 			/**
