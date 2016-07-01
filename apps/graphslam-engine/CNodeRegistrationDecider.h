@@ -17,6 +17,7 @@
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/graphs/CNetworkOfPoses.h>
 #include <mrpt/synch/CCriticalSection.h>
+#include <mrpt/utils/TParameters.h>
 
 #include "CWindowManager.h"
 
@@ -53,12 +54,6 @@ class CNodeRegistrationDecider_t {
 		// set the rawlog fname - may be needed in the derived classes
 		virtual void setRawlogFname(const std::string& rawlog_fname) {}
 		/**
-		 	* method for fetching the CDisplayWindow3D after the instance
-		 	* initialization. Handy so that the node registration decider can add visual
-		 	* information.
-		 	*/
-		virtual void setCDisplayWindowPtr(mrpt::gui::CDisplayWindow3D* win) {}
-		/**
 		 	* Method for fetching the CWindowManager pointer, responsible for
 		 	* various parameters configuration in the CDisplayWindow
 		 	*/
@@ -76,17 +71,25 @@ class CNodeRegistrationDecider_t {
 		/**
 		 	* Method responsible for initially inserting visual objects in
 		 	* CDisplayWindow (e.g. add an object to scene).  For the method to
-		 	* have an effect user should first make a call to
-		 	* CEdgeRegistrationDEcider_t::setCDisplayWindowPtr method.
+		 	* have an effect user should first initialize the m_win variable
+		 	* \sa setWindowManagerPtr
 		 	*/
-
     virtual void initializeVisuals() {}
 		/**
-		 	* Method responsible for rendering visual objects in CDisplayWindow.
-		 	* For the method to have an effect user should first make a call to
-		 	* CNodeRegistrationDEcider_t::setCDisplayWindowPtr method.
+		 	* Method responsible for rendering visual objects in CDisplayWindow.For
+		 	* the method to have an effect user should first initialize the m_win
+		 	* variable 
+		 	* \sa setWindowManagerPtr
 		 	*/
     virtual void updateVisuals() {}
+		/**
+		 * Get a list of the window events that happened since the last call.
+		 * Method in derived  classes is automatically called from the
+		 * CGraphSlamEngine_t instance. Optimizer should just fetch the parameters
+		 * that it is interested in.
+		 */
+		virtual void notifyOfWindowEvents(
+				const std::map<std::string, bool>& events_occurred) { }
     /**
      * Load the necessary for the decider parameters 
      */

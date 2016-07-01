@@ -94,8 +94,9 @@ template<
 
 				void setGraphPtr(GRAPH_t* graph);
 				void setRawlogFname(const std::string& rawlog_fname);
-				void setCDisplayWindowPtr(mrpt::gui::CDisplayWindow3D* win);
     		void setWindowManagerPtr(mrpt::gui::CWindowManager_t* win_manager);
+				void notifyOfWindowEvents(
+						const std::map<std::string, bool>& events_occurred); 
     		void getEdgesStats(
     				std::map<const std::string, int>* edge_types_to_nums);
 
@@ -110,13 +111,13 @@ template<
     				TParams(decider_t& d);
     				~TParams();
 
-						decider_t& decider;
 
     				void loadFromConfigFile(
     						const mrpt::utils::CConfigFileBase &source,
     						const std::string &section);
 						void 	dumpToTextStream(mrpt::utils::CStream &out) const;
 
+						decider_t& decider;
 						mrpt::slam::CICP icp;
  						// maximum distance for checking other nodes for ICP constraints
 						double ICP_max_distance;
@@ -124,6 +125,10 @@ template<
 						double ICP_goodness_thresh;
 						int LC_min_nodeid_diff;
 						bool visualize_laser_scans;
+						// keystroke to be used for the user to toogle the LaserScans from
+						// the CDisplayWindow
+						std::string keystroke_laser_scans;
+						
 						std::string scans_img_external_dir;
 
 						bool has_read_config;
@@ -156,7 +161,9 @@ template<
 		 				std::set<mrpt::utils::TNodeID> *nodes_set,
 						const mrpt::utils::TNodeID& cur_nodeID,
 						double distance );
-				// TODO - remove this..
+				void toogleLaserScansVisualization();
+				void dumpVisibilityErrorMsg(std::string viz_flag, 
+						int sleep_time=500 /* ms */);
 				/**
 					* In case of 3DScan images, method sets the path of each image
 					* either to ${rawlog_path_wo_extension}_Images/img_name (default
@@ -173,6 +180,7 @@ template<
 				GRAPH_t* m_graph;
 				mrpt::gui::CDisplayWindow3D* m_win;
 				mrpt::gui::CWindowManager_t* m_win_manager;
+				mrpt::gui::CWindowObserver* m_win_observer;
 
 				std::string m_rawlog_fname;
 

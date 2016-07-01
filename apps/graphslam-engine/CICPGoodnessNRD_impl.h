@@ -27,7 +27,6 @@ void CICPGoodnessNRD_t<GRAPH_t>::initCICPGoodnessNRD_t() {
 	m_first_time_call2D = true;
 	m_first_time_call3D = true;
 
-	m_win = NULL;
 	m_graph = NULL;
 
 	// Current node registration decider *decides* how many nodes are there

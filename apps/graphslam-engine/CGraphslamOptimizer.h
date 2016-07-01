@@ -16,6 +16,7 @@
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/graphs/CNetworkOfPoses.h>
 #include <mrpt/synch/CCriticalSection.h>
+#include <mrpt/utils/TParameters.h>
 
 #include "CWindowManager.h"
 
@@ -50,6 +51,14 @@ class CGraphSlamOptimizer_t {
 		 	*/
     virtual void updateVisuals() {}
 		/**
+		 * Get a list of the window events that happened since the last call.
+		 * Method in derived  classes is automatically called from the
+		 * CGraphSlamEngine_t instance. Optimizer should just fetch the parameters
+		 * that it is interested in.
+		 */
+		virtual void notifyOfWindowEvents(
+				const std::map<std::string, bool>& events_occurred) { }
+		/**
 		 	* Generic method for fetching the incremental action/observation
 		 	* readings from the calling function. Implementations of this
 		 	* interface should use (part of) the specified parameters and call the
@@ -71,12 +80,6 @@ class CGraphSlamOptimizer_t {
 		 * set the rawlog fname - may be needed in the derived classes
 		 */
 		virtual void setRawlogFname(const std::string& rawlog_fname) {}
-		/**
-		 	* method for fetching the CDisplayWindow3D after the instance
-		 	* initialization. Handy so that the node registrator can add visual
-		 	* information.
-		 	*/
-		virtual void setCDisplayWindowPtr(mrpt::gui::CDisplayWindow3D* win) {}
 		/**
 		 	* Method for fetching the CWindowManager pointer, responsible for
 		 	* various parameters configuration in the CDisplayWindow
