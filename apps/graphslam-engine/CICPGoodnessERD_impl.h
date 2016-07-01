@@ -347,28 +347,60 @@ void CICPGoodnessERD_t<GRAPH_t>::setRawlogFname(const std::string& rawlog_fname)
 		cout << "Couldn't find 3D scans external storage: " << img_external_storage_dir << endl;
 	}
 
-
-
-
 	MRPT_END;
 }
 template<class GRAPH_t>
 void CICPGoodnessERD_t<GRAPH_t>::setWindowManagerPtr(
 		mrpt::gui::CWindowManager_t* win_manager) {
 	m_win_manager = win_manager;
+
+	// may still be null..
+	if (m_win_manager) {
+		m_win = m_win_manager->win;
+
+		m_win_observer = m_win_manager->observer;
+		if (m_win_observer) {
+			m_win_observer->registerKeystroke("l", "Toogle LaserScans Visualization");
+		}
+	}
+
 }
-template<class GRAPH_t> void
-CICPGoodnessERD_t<GRAPH_t>::setCDisplayWindowPtr(
-		mrpt::gui::CDisplayWindow3D* win) {
+template<class GRAPH_t>
+void CICPGoodnessERD_t<GRAPH_t>::notifyOfWindowEvents(
+		const std::map<std::string, bool>& events_occurred) {
 	MRPT_START;
 
-	m_win = win;
-
-	std::cout << "[CICPGoodnessERD:] Fetched the CDisplayWindow successfully"
-		<< std::endl;
+	// I know the key exists - I put it there explicitly
+	if (events_occurred.find(params.keystroke_laser_scans)->second) {
+		this->toogleLaserScansVisualization();
+	}
 
 	MRPT_END;
 }
+
+template<class GRAPH_t>
+void CICPGoodnessERD_t<GRAPH_t>::toogleLaserScansVisualization() {
+	MRPT_START;
+	std::cout << "Toogling LaserScans visualization..." << std::endl;
+ 
+	COpenGLScenePtr scene = m_win->get3DSceneAndLock();
+
+	if (params.visualize_laser_scans) {
+		CRenderizablePtr obj = scene->getByName("laser_scan_viz");
+		obj->setVisibility(!obj->isVisible());
+	}
+	else {
+		dumpVisibilityErrorMsg("visualize_laser_scans");
+	}
+
+	m_win->unlockAccess3DScene();
+	m_win->forceRepaint();
+
+	MRPT_END;
+
+}
+
+
 template<class GRAPH_t>
 void CICPGoodnessERD_t<GRAPH_t>::getEdgesStats(
 		std::map<const std::string, int>* edge_types_to_nums) {
@@ -534,9 +566,21 @@ void CICPGoodnessERD_t<GRAPH_t>::checkIfInvalidDataset(
 	MRPT_END;
 }
 
+template<class GRAPH_t>
+void CICPGoodnessERD_t<GRAPH_t>::dumpVisibilityErrorMsg(
+		std::string viz_flag, int sleep_time /* = 500 milliseconds */) {
+	MRPT_START;
+	
+	std::cout << format("Cannot toogle visibility of specified object.\n "
+			"Make sure that the corresponding visualization flag ( %s "
+			") is set to true in the .ini file.\n", 
+			viz_flag.c_str()).c_str() << std::endl;
+	mrpt::system::sleep(sleep_time);
+
+	MRPT_END;
+}
 
 
-// TODO - remove this
 template<class GRAPH_t>
 void CICPGoodnessERD_t<GRAPH_t>::correct3DScanImageFname(
 		mrpt::utils::CImage* img,
@@ -577,6 +621,7 @@ void CICPGoodnessERD_t<GRAPH_t>::printParams() const {
 template<class GRAPH_t>
 CICPGoodnessERD_t<GRAPH_t>::TParams::TParams(decider_t& d):
 	decider(d),
+	keystroke_laser_scans("l"),
 	has_read_config(false)
 { }
 

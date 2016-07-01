@@ -35,7 +35,6 @@ void CLevMarqGSO_t<GRAPH_t>::initCLevMarqGSO_t() {
 	MRPT_START;
 
 	m_graph = NULL;
-	m_win = NULL;
 	m_win_manager = NULL;
 	m_graph_section = NULL;
 
@@ -93,24 +92,15 @@ void CLevMarqGSO_t<GRAPH_t>::setRawlogFname(const std::string& rawlog_fname) {
 }
 
 
-template<class GRAPH_t> void
-CLevMarqGSO_t<GRAPH_t>::setCDisplayWindowPtr(
-		mrpt::gui::CDisplayWindow3D* win) {
-	MRPT_START;
-
-	m_win = win;
-
-	std::cout << "[CLevMarqGSO:] Fetched the CDisplayWindow successfully"
-		<< std::endl;
-
-	MRPT_END;
-}
 template<class GRAPH_t>
 void CLevMarqGSO_t<GRAPH_t>::setWindowManagerPtr(
 		mrpt::gui::CWindowManager_t* win_manager) {
 	MRPT_START;
 
 	m_win_manager = win_manager;
+	if (m_win_manager) {
+		m_win = m_win_manager->win;
+	}
 	std::cout << "[CLevMarqGSO:] Fetched the CDisplayWindow successfully"
 		<< std::endl;
 
@@ -149,6 +139,7 @@ template<class GRAPH_t>
 void CLevMarqGSO_t<GRAPH_t>::updateVisuals() {
 	MRPT_START;
 	ASSERT_(m_initialized_visuals);
+	ASSERTMSG_(m_win_manager, "No CWindowManager* is given");
 	ASSERTMSG_(m_win,
 			"Visualization of data was requested but no CDisplayWindow3D pointer "
 			" was given.");
@@ -158,6 +149,13 @@ void CLevMarqGSO_t<GRAPH_t>::updateVisuals() {
 	MRPT_END;
 }
 
+// TODO - implement this
+template<class GRAPH_t>
+void CLevMarqGSO_t<GRAPH_t>::notifyOfWindowEvents(
+		const std::map<std::string, bool> events_occurred)
+{
+
+}
 template<class GRAPH_t>
 inline void CLevMarqGSO_t<GRAPH_t>::updateGraphVisualization() {
 	MRPT_START;

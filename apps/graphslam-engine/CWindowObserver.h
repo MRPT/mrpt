@@ -15,8 +15,11 @@
 #include <mrpt/utils/TParameters.h>
 #include <mrpt/utils/CObserver.h>
 #include <mrpt/opengl/gl_utils.h>
+#include <mrpt/system/string_utils.h>
 
 #include <iostream>
+#include <string>
+#include <map>
 
 namespace mrpt { namespace gui {
 
@@ -25,19 +28,46 @@ class CWindowObserver : public mrpt::utils::CObserver
 public:
 	CWindowObserver() :
 		m_showing_help(false),
-		m_hiding_help(false),
-		m_mouse_clicked(false),
-		m_request_to_exit(false) {
+		m_hiding_help(false)
+	{
+		help_msg = "User options:\n"
+			" - h/H: Toogle help message\n"
+			" - Alt+Enter: Toogle fullscreen\n"
+			" - Mouse click: Set camera manually\n"
+			" - Ctrl+c: Halt program execution";
 
-			std::cout << "WindowObserver initialized." << std::endl;
+		// register the default keystrokes
+		m_key_codes_to_pressed["h"] = false;
+		m_key_codes_to_pressed["Alt+Enter"] = false;
+		m_key_codes_to_pressed["Ctrl+c"] = false;
+		m_key_codes_to_pressed["mouse_clicked"] = false;
+
+		std::cout << "WindowObserver initialized." << std::endl;
+	}
+
+	void returnEventsStruct(std::map<std::string, bool>* codes_to_pressed) {
+	
+		*codes_to_pressed = m_key_codes_to_pressed;
+
+		// reset the code flags
+		for ( std::map<std::string, bool>::iterator map_it = 
+				m_key_codes_to_pressed.begin(); map_it != m_key_codes_to_pressed.end();
+				++map_it ) {
+			map_it->second = false;
 		}
+	}
 
-	const mrpt::utils::TParameters<bool>* returnEventsStruct() {
-		mrpt::utils::TParameters<bool>* params = new mrpt::utils::TParameters<bool>;
-		(*params)["mouse_clicked"] = m_mouse_clicked;
-		(*params)["request_to_exit"] = m_request_to_exit;
+	/**
+	 * Method for making new keystrokes available in the help message box.
+	 * Classes with a pointer to the CWindowObserver can use this method to add
+	 * keystrokes according to their needs 
+	 */
+	void registerKeystroke(const std::string key_str, const std::string key_desc) {
+		help_msg += std::string("\n") + " - " + 
+			key_str + "/" + mrpt::system::upperCase(key_str) +
+			": " + key_desc;
 
-		return params;
+		m_key_codes_to_pressed[key_str] = false;
 	}
 
 protected:
@@ -63,20 +93,56 @@ protected:
 				case 'H':
 					if (!m_showing_help) {
 						m_showing_help = true;
-						std::cout << "h was pressed!" << std::endl;
+						std::cout << "h/H was pressed!" << std::endl;
 					}
 					else {
 						m_showing_help = false;
 						m_hiding_help = true;
 					}
+					m_key_codes_to_pressed["h"] = true;
 					break;
 				case 3: // <C-c>
 					if (ev.key_modifiers == 8192) {
-						std::cout << "Pressed C-c! inside CDisplayWindow3D" << std::endl;
-						m_request_to_exit = true;
+						std::cout << "Pressed C-c inside CDisplayWindow3D" << std::endl;
+						m_key_codes_to_pressed["Ctrl+c"] = true;
 					}
 					break;
+					// TODO - remove these
+				//case 'o':
+				//case 'O':
+					//std::cout << "Pressed o/O inside CDisplayWindow3D" << std::endl;
+					//m_toogle_odometry_viz = true;
+					//break;
+				//case 'g':
+				//case 'G':
+					//std::cout << "Pressed g/G inside CDisplayWindow3D" << std::endl;
+					//m_toogle_GT_viz = true;
+					//break;
+
+				//case 'm':
+				//case 'M':
+					//std::cout << "Pressed m/M inside CDisplayWindow3D" << std::endl;
+					//m_toogle_map_viz = true;
+					//break;
+
+				//case 't':
+				//case 'T':
+					//std::cout << "Pressed t/T inside CDisplayWindow3D" << std::endl;
+					//m_toogle_estimated_traj_viz = true;
+					//break;
+
+				//case 'l':
+				//case 'L':
+					//std::cout << "Pressed l/L inside CDisplayWindow3D" << std::endl;
+					//m_toogle_laser_scans_viz = true;
+					//break;
+
 				default:
+					// just raise the corresponding flag. Let the class which actually
+					// cares translate the character to its corresponding meaning.
+					// Pressed letter is stored in lower case form only to make it easier
+					// to check afterwards
+					m_key_codes_to_pressed[mrpt::system::lowerCase(std::string(1, ev.char_code))] = true;
 					break;
 			}
 
@@ -88,7 +154,7 @@ protected:
 		}
 		else if (e.isOfType<mrpt::gui::mrptEventMouseDown>()) {
 			const mrpt::gui::mrptEventMouseDown &ev = static_cast<const mrpt::gui::mrptEventMouseDown&>(e);
-			m_mouse_clicked = true;
+			m_key_codes_to_pressed["mouse_clicked"] = true;
 
 			std::cout  << "Mouse down event received from: "
 				<< ev.source_object<< "pt: " <<ev.coords.x << "," << ev.coords.y << "\n";
@@ -124,11 +190,7 @@ protected:
 				mrpt::opengl::gl_utils::renderMessageBox(
 						0.25f,  0.25f,  // x,y (in screen "ratios")
 						0.50f, 0.50f, // width, height (in screen "ratios")
-						"User options:\n"
-						" - h: Toogle help message\n"
-						" - Alt+Enter: Toogle fullscreen\n"
-						" - Mouse click: Set camera manually\n"
-						" - Ctrl+c: Halt program execution",
+						help_msg.c_str(),
 						0.02f,  // text size
 						mrpt::utils::TColor(190,190,190, 200*tranparency),   // background
 						mrpt::utils::TColor(0,0,0, 200*tranparency),  // border
@@ -151,7 +213,13 @@ protected:
 
 private:
 	bool m_showing_help, m_hiding_help;
-	bool m_mouse_clicked, m_request_to_exit;
+
+	std::string help_msg;
+
+	// map from registered char_code (std::string to support <C-c>) to boolean
+	// true/false indicating whether it has been pressed since previous time
+	// checked
+	std::map<std::string, bool> m_key_codes_to_pressed;
 
 	mrpt::utils::CTicTac  m_tim_show_start, m_tim_show_end;
 	std::string m_help_text;

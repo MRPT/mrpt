@@ -125,7 +125,6 @@ template<class GRAPH_t>
 		// Private members
 		//////////////////////////////////////////////////////////////
 		GRAPH_t* m_graph;
-		mrpt::gui::CDisplayWindow3D* m_win;
 
 		// Tracking the PDF of the current position of the robot with regards to
 		// the *previous* registered node

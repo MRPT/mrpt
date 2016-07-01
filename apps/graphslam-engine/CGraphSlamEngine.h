@@ -255,6 +255,22 @@ template<
 		 		*/
 			inline void queryObserverForEvents();
 
+			// methods related with the toogling of specific visualization objects in
+			// the CDisplayWindow3D
+			void toogleOdometryVisualization();
+			void toogleGTVisualization();
+			void toogleMapVisualization();
+			void toogleEstimatedTrajectoryVisualization();
+			
+			// wrapper around std::cout for specifically printing error messages in
+			// the visibility toogling from the CDisplayWindow3D
+			void dumpVisibilityErrorMsg(std::string viz_flag, 
+					int sleep_time=500 /* ms */);
+
+			// TODO - implement this
+			void autofitObjectsInScene() {}
+
+
 			// VARIABLES
 			//////////////////////////////////////////////////////////////
 
@@ -301,6 +317,10 @@ template<
 			// Interaction with the CDisplayWindow - use of CWindowObserver
 			bool m_autozoom_active, m_request_to_exit;
 
+			// flags for visualizing various trajectories/objects of interest. These
+			// are set from the .ini configuration file. The actual visualization of
+			// these objects can be overriden if the user issues the corresponding
+			// keystrokes in the CDisplayWindow3D.
 			bool m_visualize_odometry_poses;
 			bool m_visualize_GT;
 			bool m_visualize_map;
@@ -320,6 +340,13 @@ template<
 			int m_text_index_GT;
 			int m_text_index_estimated_traj;
 			int m_text_index_timestamp;
+
+			// keystrokes for toogling the corresponding objects in the
+			// CDisplayWindow when user issues the specified keystroke
+			std::string m_keystroke_odometry;
+			std::string m_keystroke_GT;
+			std::string m_keystroke_estimated_trajectory;
+			std::string m_keystroke_map;
 
 			// instance to keep track of all the edges + visualization related
 			// functions

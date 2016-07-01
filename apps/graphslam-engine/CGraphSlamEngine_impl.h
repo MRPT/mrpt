@@ -43,7 +43,7 @@ CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::CGraphSl
 	m_GT_poses_step(1),
 	m_win(win),
 	m_win_observer(win_observer),
-	m_win_manager(m_win),
+	m_win_manager(m_win, m_win_observer), // pass window and observer in Ctor
 	m_odometry_color(0, 0, 255),
 	m_GT_color(0, 255, 0),
 	m_estimated_traj_color(255, 165, 0),
@@ -111,15 +111,11 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::ini
 	m_edge_registrar.setGraphPtr(&m_graph);
 	m_optimizer.setGraphPtr(&m_graph);
 
-	// pass the window manager ptr after the instance initialization
+	// pass the window manager ptr after the instance initialization.
+	// m_win_manager contains a pointer to the CDisplayWindow3D instance
 	m_node_registrar.setWindowManagerPtr(&m_win_manager);
 	m_edge_registrar.setWindowManagerPtr(&m_win_manager);
 	m_optimizer.setWindowManagerPtr(&m_win_manager);
-
-	// pass a cdisplaywindowptr after the instance initialization
-	m_node_registrar.setCDisplayWindowPtr(m_win);
-	m_edge_registrar.setCDisplayWindowPtr(m_win);
-	m_optimizer.setCDisplayWindowPtr(m_win);
 
 	// pass a lock in case of multithreaded implementation
 	m_node_registrar.setCriticalSectionPtr(&m_graph_section);
@@ -190,7 +186,8 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::ini
 			0,        sin(anglex),     cos(anglex)  };
 		CMatrixDouble rotx(3, 3, tmpx);
 
-		cout << "Constructing the rotation matrix for the GroundTruth Data..." << endl;
+		cout << "Constructing the rotation matrix for the GroundTruth Data..." 
+			<< endl;
 		m_rot_TUM_to_MRPT = rotz * roty * rotx;
 
 		cout << "Rotation matrices for optical=>MRPT transformation" << endl;
@@ -260,7 +257,23 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::ini
 		m_win->forceRepaint();
 	}
 
+	// keystrokes initialization
+	m_keystroke_odometry = "o";
+	m_keystroke_GT = "g";
+	m_keystroke_estimated_trajectory = "t";
+	m_keystroke_map = "m";
 
+	// Add additional keystrokes in the CDisplayWindow3D message box
+	if (m_win_observer) { 
+		m_win_observer->registerKeystroke(m_keystroke_odometry,
+				"Toogle Odometry visualization");
+		m_win_observer->registerKeystroke(m_keystroke_GT,
+				"Toogle Ground-Truth visualization");
+		m_win_observer->registerKeystroke(m_keystroke_estimated_trajectory,
+				"Toogle Estimated trajectory visualization");
+		m_win_observer->registerKeystroke(m_keystroke_map,
+				"Toogle Map visualization");
+	}
 
 	if (m_win) {
 		m_edge_counter.setVisualizationWindow(m_win);
@@ -592,7 +605,9 @@ bool CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::par
 		}
 
 		// Query for events and take coresponding actions
-		this->queryObserverForEvents();
+		if (m_win && m_win_observer) {
+			this->queryObserverForEvents();
+		}
 
 		if (m_request_to_exit) {
 			std::cout << "Halting execution... " << std::endl;
@@ -1270,15 +1285,160 @@ template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR, class OPTIMI
 void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::queryObserverForEvents() {
 	MRPT_START;
 
-	ASSERT_(m_win_observer &&
-			"queryObserverForEvents method was called even though no Observer object was provided");
+	ASSERT_(m_win);
+	ASSERTMSG_(m_win_observer,
+			"queryObserverForEvents method was called even though no Observer "
+			"object was provided");
 
-	const TParameters<bool>* events_occurred = m_win_observer->returnEventsStruct();
-	m_autozoom_active = !(*events_occurred)["mouse_clicked"];
-	m_request_to_exit = (*events_occurred)["request_to_exit"];
+	std::map<std::string, bool> events_occurred;
+	m_win_observer->returnEventsStruct(&events_occurred);
+	m_autozoom_active = !events_occurred["mouse_clicked"];
+	m_request_to_exit = events_occurred["Ctrl+c"];
+
+	// odometry visualization
+	if (events_occurred[m_keystroke_odometry]) {
+		this->toogleOdometryVisualization();
+	}
+	// GT visualization
+	if (events_occurred[m_keystroke_GT]) {
+		this->toogleGTVisualization();
+	}
+	// Map visualization
+	if (events_occurred[m_keystroke_map]) {
+		this->toogleMapVisualization();
+	}
+	// Estimated Trajectory Visualization
+	if (events_occurred[m_keystroke_estimated_trajectory]) {
+		this->toogleEstimatedTrajectoryVisualization();
+	}
+
+	// notify the deciders/optimizer of any events they may be interested in
+	m_node_registrar.notifyOfWindowEvents(events_occurred);
+	m_edge_registrar.notifyOfWindowEvents(events_occurred);
+	m_optimizer.notifyOfWindowEvents(events_occurred);
 
 	MRPT_END;
 }
+
+template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR, class OPTIMIZER>
+void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::toogleOdometryVisualization() {
+	MRPT_START;
+	std::cout << "Toogling Odometry visualization..." << std::endl;
+ 
+	COpenGLScenePtr scene = m_win->get3DSceneAndLock();
+
+	if (m_visualize_odometry_poses) {
+		CRenderizablePtr obj = scene->getByName("odometry_poses_cloud");
+		obj->setVisibility(!obj->isVisible());
+
+		obj = scene->getByName("robot_odometry_poses");
+		obj->setVisibility(!obj->isVisible());
+	}
+	else {
+		dumpVisibilityErrorMsg("visualize_odometry_poses");
+	}
+
+	m_win->unlockAccess3DScene();
+	m_win->forceRepaint();
+
+	MRPT_END;
+}
+template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR, class OPTIMIZER>
+void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::toogleGTVisualization() {
+	MRPT_START;
+	std::cout << "Toogling Ground Truth visualization" << std::endl;
+
+	COpenGLScenePtr scene = m_win->get3DSceneAndLock();
+
+	if (m_visualize_GT) {
+
+		CRenderizablePtr obj = scene->getByName("GT_cloud");
+		obj->setVisibility(!obj->isVisible());
+
+		obj = scene->getByName("robot_GT");
+		obj->setVisibility(!obj->isVisible());
+	}
+	else {
+		dumpVisibilityErrorMsg("visualize_ground_truth");
+	}
+
+	m_win->unlockAccess3DScene();
+	m_win->forceRepaint();
+
+	MRPT_END;
+}
+template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR, class OPTIMIZER>
+void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::toogleMapVisualization() {
+	MRPT_START;
+	std::cout << "Toogling Map visualization... " << std::endl;
+
+	COpenGLScenePtr scene = m_win->get3DSceneAndLock();
+
+	// get total number of nodes
+	int num_of_nodes;
+	{
+		mrpt::synch::CCriticalSectionLocker m_graph_lock(&m_graph_section);
+		num_of_nodes = m_graph.nodeCount();
+	}
+
+	// name of gui object
+	stringstream scan_name("");
+
+	for (int node_cnt = 0; node_cnt  != num_of_nodes; ++node_cnt) {
+		// build the name of the potential corresponding object in the scene
+		scan_name.str("");
+		scan_name << "laser_scan_";
+		scan_name << node_cnt;
+
+		CRenderizablePtr obj = scene->getByName(scan_name.str());
+		// current node may not have laserScans => may not have corresponding obj
+		if (obj) { 
+			obj->setVisibility(!obj->isVisible());
+		}
+	}
+	m_win->unlockAccess3DScene();
+	m_win->forceRepaint();
+
+	MRPT_END;
+}
+template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR, class OPTIMIZER>
+void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::toogleEstimatedTrajectoryVisualization() {
+	MRPT_START;
+	std::cout << "Toogling Estimated Trajectory visualization... " << std::endl;
+
+	COpenGLScenePtr scene = m_win->get3DSceneAndLock();
+
+	if (m_visualize_estimated_trajectory) {
+
+		CRenderizablePtr obj = scene->getByName("estimated_traj_setoflines");
+		obj->setVisibility(!obj->isVisible());
+
+		obj = scene->getByName("robot_estimated_traj");
+		obj->setVisibility(!obj->isVisible());
+	}
+	else {
+		dumpVisibilityErrorMsg("visualize_estimated_trajectory");
+	}
+
+	m_win->unlockAccess3DScene();
+	m_win->forceRepaint();
+
+	MRPT_END;
+}
+template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR, class OPTIMIZER>
+void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::dumpVisibilityErrorMsg(
+		std::string viz_flag, int sleep_time /* = 500 milliseconds */) {
+	MRPT_START;
+	
+	std::cout << format("Cannot toogle visibility of specified object.\n "
+			"Make sure that the corresponding visualization flag ( %s "
+			") is set to true in the .ini file.\n", 
+			viz_flag.c_str()).c_str() << std::endl;
+	mrpt::system::sleep(sleep_time);
+
+	MRPT_END;
+}
+
 
 template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR, class OPTIMIZER>
 void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::updateMapVisualization(
@@ -1314,13 +1474,13 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::upd
 		} // if PARTIAL_UPDATE
 	}
 
-	// for all the nodes
+	// for all the nodes in the previously populated set
 	for (set<mrpt::utils::TNodeID>::const_iterator
 			node_it = nodes_set.begin();
 			node_it != nodes_set.end(); ++node_it) {
 
 		// get the node pose - thread safe
-		// TODO just find it
+		// TODO just *find* it 
 		pose_t scan_pose = m_graph.nodes[*node_it];
 
 		// name of gui object
@@ -1362,6 +1522,20 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::upd
 
 				scan_obj->setName(scan_name.str());
 				scan_obj->setColor_u8(m_optimized_map_color);
+
+				// set the visibility of the object the same value as the visibility of
+				// the previous - Needed for proper toogling of the visibility of the
+				// whole map
+				{
+					stringstream prev_scan_name("");
+					prev_scan_name << "laser_scan_" << *node_it - 1;
+					CRenderizablePtr prev_obj = scene->getByName(prev_scan_name.str());
+					if (prev_obj) {
+						scan_obj->setVisibility(prev_obj->isVisible());
+					}
+				}
+
+
 				scene->insert(scan_obj);
 			}
 			else {

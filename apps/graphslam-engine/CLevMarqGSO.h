@@ -25,8 +25,11 @@
 
 #include "CGraphslamOptimizer.h"
 #include "CWindowManager.h"
+#include "CWindowObserver.h"
 
 #include <iostream>
+#include <string>
+#include <map>
 
 namespace mrpt { namespace graphslam { namespace optimizers {
 
@@ -58,12 +61,14 @@ class CLevMarqGSO_t:
 
 		void setGraphPtr(GRAPH_t* graph);
 		void setRawlogFname(const std::string& rawlog_fname);
-		void setCDisplayWindowPtr(mrpt::gui::CDisplayWindow3D* win); 
     void setWindowManagerPtr(mrpt::gui::CWindowManager_t* win_manager);
 		void setCriticalSectionPtr(mrpt::synch::CCriticalSection* graph_section);
     void initializeVisuals();
     void updateVisuals();
-
+		/**
+		 * Get a list of the window events that happened since the last call.
+		 */
+		void notifyOfWindowEvents(const std::map<std::string, bool> events_occurred); 
 		// struct for holding the optimization-related variables in a compact form
     struct OptimizationParams: public mrpt::utils::CLoadableOptions {
     	public:
