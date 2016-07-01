@@ -34,9 +34,10 @@ template<class GRAPH_t>
 void CLevMarqGSO_t<GRAPH_t>::initCLevMarqGSO_t() {
 	MRPT_START;
 
+	m_graph = NULL;
 	m_win = NULL;
 	m_win_manager = NULL;
-	m_graph = NULL;
+	m_graph_section = NULL;
 
 	m_initialized_visuals = false;
 	m_just_inserted_loop_closure = false;
@@ -59,16 +60,13 @@ bool CLevMarqGSO_t<GRAPH_t>::updateOptimizerState(
 		m_last_total_num_of_nodes = m_graph->nodeCount();
 		registered_new_node = true;
 
-		// TODO - run this in second thread
-// 		// join the previous optimization thread
-// 		mrpt::system::joinThread(m_thread_optimize);
-// 
-// 		// optimize the graph - run on a seperate thread
-// 		m_thread_optimize = createThreadFromObjectMethod(
-// 				/*obj = */ this,
-// 				/* func = */ &CLevMarqGSO_t::optimizeGraph );
-
-		this->optimizeGraph();
+		 // join the previous optimization thread
+		 mrpt::system::joinThread(m_thread_optimize);
+ 
+		 // optimize the graph - run on a seperate thread
+		 m_thread_optimize = createThreadFromObjectMethod(
+				 /*obj = */ this,
+				 /* func = */ &CLevMarqGSO_t::optimizeGraph );
 	}
 
 	return false;
@@ -118,6 +116,19 @@ void CLevMarqGSO_t<GRAPH_t>::setWindowManagerPtr(
 
 	MRPT_END;
 }
+
+template <class GRAPH_t>
+void CLevMarqGSO_t<GRAPH_t>::setCriticalSectionPtr(
+		mrpt::synch::CCriticalSection* graph_section) {
+	MRPT_START;
+
+	m_graph_section = graph_section;
+
+	std::cout << "[CLevMarqGSO:] Fetched the CCRiticalSection successfully"
+		<< std::endl;
+	MRPT_END;
+}
+
 
 template<class GRAPH_t>
 void CLevMarqGSO_t<GRAPH_t>::initializeVisuals() {
@@ -188,13 +199,16 @@ void CLevMarqGSO_t<GRAPH_t>::optimizeGraph() {
 
 	graphslam::TResultInfoSpaLevMarq	levmarq_info;
 
-	// Execute the optimization
-	mrpt::graphslam::optimize_graph_spa_levmarq(
-			*m_graph,
-			levmarq_info,
-			NULL,  // List of nodes to optimize. NULL -> all but the root node.
-			opt_params.cfg,
-			&CLevMarqGSO_t<GRAPH_t>::levMarqFeedback); // functor feedback
+	{
+		mrpt::synch::CCriticalSectionLocker m_graph_lock(m_graph_section);
+		// Execute the optimization
+		mrpt::graphslam::optimize_graph_spa_levmarq(
+				*m_graph,
+				levmarq_info,
+				NULL,  // List of nodes to optimize. NULL -> all but the root node.
+				opt_params.cfg,
+				&CLevMarqGSO_t<GRAPH_t>::levMarqFeedback); // functor feedback
+	}
 
 	double elapsed_time = optimization_timer.Tac();
 	//VERBOSE_COUT << "Optimization of graph took: " << elapsed_time << "s" << std::endl;

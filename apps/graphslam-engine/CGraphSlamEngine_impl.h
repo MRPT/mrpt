@@ -121,6 +121,11 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::ini
 	m_edge_registrar.setCDisplayWindowPtr(m_win);
 	m_optimizer.setCDisplayWindowPtr(m_win);
 
+	// pass a lock in case of multithreaded implementation
+	m_node_registrar.setCriticalSectionPtr(&m_graph_section);
+	m_edge_registrar.setCriticalSectionPtr(&m_graph_section);
+	m_optimizer.setCriticalSectionPtr(&m_graph_section);
+
 	// Calling of initalization-relevant functions
 	this->readConfigFile(m_config_fname);
 

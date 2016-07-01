@@ -16,6 +16,7 @@
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/graphs/CNetworkOfPoses.h>
 #include <mrpt/utils/types_simple.h>
+#include <mrpt/synch/CCriticalSection.h>
 
 #include "CWindowManager.h"
 
@@ -69,6 +70,16 @@ namespace mrpt { namespace graphslam { namespace deciders {
 			 */
     	virtual void getEdgesStats(
     			std::map<const std::string, int>* edge_type_to_num) {};
+    	/**
+     	 * Fetch a mrpt::synch::CCriticalSection for locking the GRAPH_t resource.
+     	 * Handy for realising multithreading in the derived classes. Beware that
+     	 * prior to the decider public method call, the CCriticalSection will
+     	 * already be locked by the CGraphSlamEngine instance, but this isn't
+     	 * effective in multithreaded implementations where the decider itself
+     	 * has to lock the function at which the extra thread runs.
+     	 */
+			virtual void setCriticalSectionPtr(
+					mrpt::synch::CCriticalSection* graph_section) { }
 			/**
 			 * Method responsible for initially inserting visual objects in
 			 * CDisplayWindow (e.g. add an object to scene).  For the method to
