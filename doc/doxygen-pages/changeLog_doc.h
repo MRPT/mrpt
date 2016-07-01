@@ -78,6 +78,7 @@
 		- Fix PTG look-up-tables will always fail to load from cache files and will re-generate (Closes [GitHub #243](https://github.com/MRPT/mrpt/issues/243))
 		- Fix mrpt::maps::COccupancyGridMap2D::simulateScanRay() fails to mark out-of-range ranges as "invalid".
 		- Fix mrpt::utils::CMemoryStream::Clear() after assigning read-only memory blocks.
+		- Fix point into polygon checking not working for concave polygons. Now, mrpt::math::TPolygon2D::contains() uses the winding number test which works for any geometry.
 
 <hr>
 <a name="1.4.0">

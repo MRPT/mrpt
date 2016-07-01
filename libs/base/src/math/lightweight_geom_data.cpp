@@ -588,19 +588,86 @@ double TPolygon2D::distance(const TPoint2D &point) const	{
 	return distance;
 }
 
-bool TPolygon2D::contains(const TPoint2D &point) const	{
-	//Inefficient, but exact, method
-	std::vector<TSegment2D> sgs;
-	getAsSegmentList(sgs);
-	TPoint2D cntr;
-	getCenter(cntr);
-	for (vector<TSegment2D>::const_iterator it=sgs.begin();it!=sgs.end();++it)	{
-		TLine2D l=TLine2D(*it);
-		double val=l.evaluatePoint(point);
-		if (abs(val)<geometryEpsilon) continue;
-		else if (sign(val)!=sign(l.evaluatePoint(cntr))) return false;
+void TPolygon2D::getBoundingBox(TPoint2D &min_coords, TPoint2D&max_coords) const
+{
+	ASSERTMSG_(!this->empty(),"getBoundingBox() called on an empty polygon!");
+	min_coords.x = min_coords.y =  std::numeric_limits<double>::max();
+	max_coords.x = max_coords.y = -std::numeric_limits<double>::max();
+	for (size_t i=0;i<size();i++)
+	{
+		mrpt::utils::keep_min( min_coords.x, (*this)[i].x);
+		mrpt::utils::keep_min( min_coords.y, (*this)[i].y);
+		mrpt::utils::keep_max( max_coords.x, (*this)[i].x);
+		mrpt::utils::keep_max( max_coords.y, (*this)[i].y);
 	}
-	return true;
+}
+
+// isLeft(): tests if a point is Left|On|Right of an infinite line.
+//    Input:  three points P0, P1, and P2
+//    Return: >0 for P2 left of the line through P0 and P1
+//            =0 for P2  on the line
+//            <0 for P2  right of the line
+//    See: Algorithm 1 "Area of Triangles and Polygons"
+inline double isLeft( const mrpt::math::TPoint2D &P0, const mrpt::math::TPoint2D &P1, const mrpt::math::TPoint2D &P2 )
+{
+	return ( (P1.x - P0.x) * (P2.y - P0.y) - (P2.x -  P0.x) * (P1.y - P0.y) );
+}
+
+bool TPolygon2D::contains(const TPoint2D &P) const	
+{
+	int wn = 0;    // the  winding number counter
+
+	// loop through all edges of the polygon
+	const size_t n = this->size();
+	for (size_t i=0; i<n; i++) // edge from V[i] to  V[i+1]
+	{
+		if ((*this)[i].y <= P.y) 
+		{
+			// start y <= P.y
+			if ((*this)[(i+1) % n].y  > P.y)      // an upward crossing
+				if (isLeft( (*this)[i], (*this)[(i+1)%n], P) > 0)  // P left of  edge
+					++wn;            // have  a valid up intersect
+	}
+	else 
+	{
+		// start y > P.y (no test needed)
+		if ((*this)[(i+1)%n].y  <= P.y)     // a downward crossing
+			if (isLeft( (*this)[i], (*this)[(i+1)%n], P) < 0)  // P right of  edge
+				--wn;            // have  a valid down intersect
+		}
+	}
+
+	return wn!=0;
+
+	//// Create ray from the outside of the poly to the test point:
+	//const TSegment2D ray(point, TPoint2D(bb_min.x-2.0,point.y));
+
+	//int num_crossings = 0;
+
+	//std::vector<bool> intersect_with_vertex(this->size(), false);
+	//for (vector<TSegment2D>::const_iterator it=sgs.begin();it!=sgs.end();++it)	{
+	//	mrpt::math::TObject2D intersect;
+	//	if (mrpt::math::intersect(*it,ray, intersect))
+	//	{
+	//		bool do_count_this_one = true;
+	//		// If the intersection is exactly on a vertex, count it only once for the entire polygon:
+	//		if (intersect.isPoint())
+	//		{
+	//			TPoint2D ipt;
+	//			intersect.getPoint(ipt);
+	//			for (size_t i=0;i<size();i++)
+	//			{
+	//				const bool do_match = (ipt - (*this)[i]).norm()<1e-6;  // geometryEpsilon
+	//				if (do_match && intersect_with_vertex[i])
+	//					do_count_this_one=false;
+	//				if (do_match) intersect_with_vertex[i] = true;
+	//			}
+	//		}
+	//		if (do_count_this_one) 
+	//			num_crossings++;
+	//	}
+	//}
+	//return (num_crossings %2)!=0;
 }
 void TPolygon2D::getAsSegmentList(vector<TSegment2D> &v) const	{
 	size_t N=size();

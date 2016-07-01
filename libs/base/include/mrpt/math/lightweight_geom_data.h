@@ -680,7 +680,7 @@ namespace math	{
 		/**
 		  * Constructor from 2D object. Sets the z to zero.
 		  */
-		TSegment3D(const TSegment2D &s):point1(s.point1),point2(s.point2)	{}
+		explicit TSegment3D(const TSegment2D &s):point1(s.point1),point2(s.point2)	{}
 
 		bool operator<(const TSegment3D &s) const;
 	};
@@ -855,10 +855,8 @@ namespace math	{
 		  * Fast default constructor. Initializes to garbage.
 		  */
 		TLine3D()	{}
-		/**
-		  * Implicit constructor from 2D object. Zeroes the z.
-		  */
-		TLine3D(const TLine2D &l);
+		/** Constructor from 2D object. Zeroes the z. */
+		explicit TLine3D(const TLine2D &l);
 	};
 
 	/**
@@ -980,68 +978,29 @@ namespace math	{
 	  */
 	class BASE_IMPEXP TPolygon2D:public std::vector<TPoint2D>	{
 	public:
-		/**
-		  * Distance to a point.
-		  */
-		double distance(const TPoint2D &point) const;
-		/**
-		  * Check whether a point is inside the polygon.
-		  */
-		bool contains(const TPoint2D &point) const;
-		/**
-		  * Gets as set of segments, instead of points.
-		  */
-		void getAsSegmentList(std::vector<TSegment2D> &v) const;
-		/**
-		  * Projects into 3D space, zeroing the z.
-		  */
-		void generate3DObject(TPolygon3D &p) const;
-		/**
-		  * Polygon's central point.
-		  */
-		void getCenter(TPoint2D &p) const;
-		/**
-		  * Checks whether is convex.
-		  */
-		bool isConvex() const;
-		/**
-		  * Erase repeated vertices.
-		  * \sa removeRedundantVertices
-		  */
-		void removeRepeatedVertices();
-		/**
-		  * Erase every redundant vertex from the polygon, saving space.
-		  * \sa removeRepeatedVertices
-		  */
-		void removeRedundantVertices();
-		/**
-		  * Gets plot data, ready to use on a 2D plot.
-		  * \sa mrpt::gui::CDisplayWindowPlots
-		  */
-		void getPlotData(std::vector<double> &x,std::vector<double> &y) const;
-		/**
-		  * Default constructor.
-		  */
-		TPolygon2D():std::vector<TPoint2D>()	{}
-		/**
-		  * Constructor for a given number of vertices, intializing them as garbage.
-		  */
+		double distance(const TPoint2D &point) const;            //!< Distance to a point (always >=0)
+		bool contains(const TPoint2D &point) const;              //!< Check whether a point is inside (or within geometryEpsilon of a polygon edge). This works for concave or convex polygons.
+		void getAsSegmentList(std::vector<TSegment2D> &v) const; //!< Gets as set of segments, instead of points.
+		void generate3DObject(TPolygon3D &p) const;              //!< Projects into 3D space, zeroing the z.
+		void getCenter(TPoint2D &p) const;                       //!< Polygon's central point.
+		bool isConvex() const;                                   //!< Checks whether is convex.
+		void removeRepeatedVertices();   //!< Erase repeated vertices.  \sa removeRedundantVertices
+		void removeRedundantVertices();  //!< Erase every redundant vertex from the polygon, saving space. \sa removeRepeatedVertices
+		void getPlotData(std::vector<double> &x,std::vector<double> &y) const; //!< Gets plot data, ready to use on a 2D plot. \sa mrpt::gui::CDisplayWindowPlots
+		void getBoundingBox(TPoint2D &min_coords, TPoint2D&max_coords) const;  //!< Get polygon bounding box. \exception On empty polygon
+		/** Default constructor  */
+		TPolygon2D():std::vector<TPoint2D>() {}
+		/** Constructor for a given number of vertices, intializing them as garbage. */
 		explicit TPolygon2D(size_t N):std::vector<TPoint2D>(N)	{}
-		/**
-		  * Implicit constructor from a vector of 2D points.
-		  */
+		/** Implicit constructor from a vector of 2D points */
 		TPolygon2D(const std::vector<TPoint2D> &v):std::vector<TPoint2D>(v)	{}
-		/**
-		  * Constructor from a 3D object.
-		  */
+		/** Constructor from a 3D object. */
 		explicit TPolygon2D(const TPolygon3D &p);
-		/**
-		  * Static method to create a regular polygon, given its size and radius.
+		/** Static method to create a regular polygon, given its size and radius.
 		  * \throw std::logic_error if radius is near zero or the number of edges is less than three.
 		  */
 		static void createRegularPolygon(size_t numEdges,double radius,TPolygon2D &poly);
-		/**
-		  * Static method to create a regular polygon from its size and radius. The center will correspond to the given pose.
+		/** Static method to create a regular polygon from its size and radius. The center will correspond to the given pose.
 		  * \throw std::logic_error if radius is near zero or the number of edges is less than three.
 		  */
 		static inline void createRegularPolygon(size_t numEdges,double radius,TPolygon2D &poly,const mrpt::poses::CPose2D &pose);
@@ -1053,74 +1012,32 @@ namespace math	{
 	  */
 	class BASE_IMPEXP TPolygon3D:public std::vector<TPoint3D>	{
 	public:
-		/**
-		  * Distance to point.
-		  */
-		double distance(const TPoint3D &point) const;
-		/**
-		  * Check whether a point is inside the polygon.
-		  */
-		bool contains(const TPoint3D &point) const;
-		/**
-		  * Gets as set of segments, instead of set of points.
-		  */
-		void getAsSegmentList(std::vector<TSegment3D> &v) const;
-		/**
-		  * Gets a plane which contains the polygon. Returns false if the polygon is skew and cannot be fit inside a plane.
-		  */
-		bool getPlane(TPlane &p) const;
-		/**
-		  * Gets the best fitting plane, disregarding whether the polygon actually fits inside or not.
-		  * \sa getBestFittingPlane
-		  */
+		double distance(const TPoint3D &point) const;  //!< Distance to point (always >=0)
+		bool contains(const TPoint3D &point) const;    //!< Check whether a point is inside (or within geometryEpsilon of a polygon edge). This works for concave or convex polygons.
+		void getAsSegmentList(std::vector<TSegment3D> &v) const; //!< Gets as set of segments, instead of set of points.
+		bool getPlane(TPlane &p) const; //!< Gets a plane which contains the polygon. Returns false if the polygon is skew and cannot be fit inside a plane.
+		/** Gets the best fitting plane, disregarding whether the polygon actually fits inside or not. \sa getBestFittingPlane */
 		void getBestFittingPlane(TPlane &p) const;
-		/**
-		  * Projects into a 2D space, discarding the z.
-		  * \get getPlane,isSkew
-		  */
+		/** Projects into a 2D space, discarding the z. \sa getPlane,isSkew */
 		inline void generate2DObject(TPolygon2D &p) const	{
 			p=TPolygon2D(*this);
 		}
-		/**
-		  * Get polygon's central point.
-		  */
-		void getCenter(TPoint3D &p) const;
-		/**
-		  * Check whether the polygon is skew. Returns true if there doesn't exist a plane in which the polygon can fit.
-		  * \sa getBestFittingPlane
-		  */
-		bool isSkew() const;
-		/**
-		  * Remove polygon's repeated vertices.
-		  */
-		void removeRepeatedVertices();
-		/**
-		  * Erase every redundant vertex, thus saving space.
-		  */
-		void removeRedundantVertices();
-		/**
-		  * Default constructor. Creates a polygon with no vertices.
-		  */
+		void getCenter(TPoint3D &p) const; //!< Get polygon's central point.
+		bool isSkew() const; //!< Check whether the polygon is skew. Returns true if there doesn't exist a plane in which the polygon can fit. \sa getBestFittingPlane
+		void removeRepeatedVertices(); //!< Remove polygon's repeated vertices.
+		void removeRedundantVertices(); //!< Erase every redundant vertex, thus saving space.
+		/** Default constructor. Creates a polygon with no vertices.  */
 		TPolygon3D():std::vector<TPoint3D>()	{}
-		/**
-		  * Constructor for a given size. Creates a polygon with a fixed number of vertices, which are initialized to garbage.
-		  */
+		/** Constructor for a given size. Creates a polygon with a fixed number of vertices, which are initialized to garbage. */
 		explicit TPolygon3D(size_t N):std::vector<TPoint3D>(N)	{}
-		/**
-		  * Implicit constructor from a 3D points vector.
-		  */
+		/** Implicit constructor from a 3D points vector. */
 		TPolygon3D(const std::vector<TPoint3D> &v):std::vector<TPoint3D>(v)	{}
-		/**
-		  * Constructor from a 2D object. Zeroes the z.
-		  */
-		TPolygon3D(const TPolygon2D &p);
-		/**
-		  * Static method to create a regular polygon, given its size and radius.
-		  * \throw std::logic_error if number of edges is less than three, or radius is near zero.
-		  */
+		/** Constructor from a 2D object. Zeroes the z. */
+		explicit TPolygon3D(const TPolygon2D &p);
+		/** Static method to create a regular polygon, given its size and radius.
+		  * \throw std::logic_error if number of edges is less than three, or radius is near zero. */
 		static void createRegularPolygon(size_t numEdges,double radius,TPolygon3D &poly);
-		/**
-		  * Static method to create a regular polygon, given its size and radius. The center will be located on the given pose.
+		/** Static method to create a regular polygon, given its size and radius. The center will be located on the given pose.
 		  * \throw std::logic_error if number of edges is less than three, or radius is near zero.
 		  */
 		static inline void createRegularPolygon(size_t numEdges,double radius,TPolygon3D &poly,const mrpt::poses::CPose3D &pose);
