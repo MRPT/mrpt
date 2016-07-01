@@ -792,6 +792,8 @@ bool reactive_navigator_demoframe::reinitSimulator()
 
 	// Update GUI stuff:
 	gl_robot_sensor_range->setDiskRadius(m_simul_options.MAX_SENSOR_RADIUS*1.01,m_simul_options.MAX_SENSOR_RADIUS*0.99);
+	gl_target->setVisibility(false);
+	gl_robot_ptg_prediction->clear();
 
 	cbSelPTG->Clear();
 	{
