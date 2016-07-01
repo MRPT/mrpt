@@ -28,7 +28,7 @@ namespace mrpt
 		  *  \ingroup mrpt_base_grp
 		  * @{ */
 
-		extern double BASE_IMPEXP geometryEpsilon; //!< Global epsilon to overcome small precision errors
+		extern double BASE_IMPEXP geometryEpsilon; //!< Global epsilon to overcome small precision errors (Default=1e-5)
 
 		/** Slightly heavyweight type to speed-up calculations with polygons in 3D
 		  * \sa TPolygon3D,TPlane

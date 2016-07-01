@@ -26,7 +26,7 @@ using namespace std;
 using namespace mrpt::poses;
 using namespace mrpt::math;
 
-double mrpt::math::geometryEpsilon=1e-3;
+double mrpt::math::geometryEpsilon=1e-5;
 
 /*---------------------------------------------------------------
 	Returns the minimum distance between a point and a line.
