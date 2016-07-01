@@ -60,7 +60,7 @@ class CLevMarqGSO_t:
 		void setRawlogFname(const std::string& rawlog_fname);
 		void setCDisplayWindowPtr(mrpt::gui::CDisplayWindow3D* win); 
     void setWindowManagerPtr(mrpt::gui::CWindowManager_t* win_manager);
-
+		void setCriticalSectionPtr(mrpt::synch::CCriticalSection* graph_section);
     void initializeVisuals();
     void updateVisuals();
 
@@ -128,6 +128,7 @@ class CLevMarqGSO_t:
 		GRAPH_t* m_graph;
 		mrpt::gui::CDisplayWindow3D* m_win;
 		mrpt::gui::CWindowManager_t* m_win_manager;
+		mrpt::synch::CCriticalSection* m_graph_section;
 
 		std::string m_rawlog_fname;
 

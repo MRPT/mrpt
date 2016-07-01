@@ -15,6 +15,7 @@
 #include <mrpt/obs/CObservation.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/graphs/CNetworkOfPoses.h>
+#include <mrpt/synch/CCriticalSection.h>
 
 #include "CWindowManager.h"
 
@@ -62,9 +63,13 @@ class CGraphSlamOptimizer_t {
 				mrpt::obs::CSensoryFramePtr observations,
 				mrpt::obs::CObservationPtr observation ) = 0;
 
-		// method for fetching the graph after the instance initialization
+		/**
+		 * Fetch the graph after the instance initialization
+		 */
 		virtual void setGraphPtr(GRAPH_t* graph) {}
-		// set the rawlog fname - may be needed in the derived classes
+		/**
+		 * set the rawlog fname - may be needed in the derived classes
+		 */
 		virtual void setRawlogFname(const std::string& rawlog_fname) {}
 		/**
 		 	* method for fetching the CDisplayWindow3D after the instance
@@ -77,6 +82,16 @@ class CGraphSlamOptimizer_t {
 		 	* various parameters configuration in the CDisplayWindow
 		 	*/
     virtual void setWindowManagerPtr(mrpt::gui::CWindowManager_t* win_manager){}
+    /**
+     * Fetch a mrpt::synch::CCriticalSection for locking the GRAPH_t resource.
+     * Handy for realising multithreading in the derived classes. Beware that
+     * prior to the optimizer public method call, the CCriticalSection will
+     * already be locked, but this isn't effective in multithreaded
+     * implementations where the decider itself has to lock the function at
+     * which the extra thread runs.
+     */
+		virtual void setCriticalSetionPtr(
+				mrpt::synch::CCriticalSection* graph_section) { }
     /**
      * Load the necessary for the optimizer parameters 
      */

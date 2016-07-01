@@ -16,6 +16,7 @@
 #include <mrpt/obs/CObservation.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/graphs/CNetworkOfPoses.h>
+#include <mrpt/synch/CCriticalSection.h>
 
 #include "CWindowManager.h"
 
@@ -62,12 +63,23 @@ class CNodeRegistrationDecider_t {
 		 	* various parameters configuration in the CDisplayWindow
 		 	*/
     virtual void setWindowManagerPtr(mrpt::gui::CWindowManager_t* win_manager){}
+    /**
+     * Fetch a mrpt::synch::CCriticalSection for locking the GRAPH_t resource.
+     * Handy for realising multithreading in the derived classes. Beware that
+     * prior to the optimizer public method call, the CCriticalSection will
+     * already be locked, but this isn't effective in multithreaded
+     * implementations where the decider itself has to lock the function at
+     * which the extra thread runs.
+     */
+		virtual void setCriticalSectionPtr(
+				mrpt::synch::CCriticalSection* graph_section) { }
 		/**
 		 	* Method responsible for initially inserting visual objects in
 		 	* CDisplayWindow (e.g. add an object to scene).  For the method to
 		 	* have an effect user should first make a call to
 		 	* CEdgeRegistrationDEcider_t::setCDisplayWindowPtr method.
 		 	*/
+
     virtual void initializeVisuals() {}
 		/**
 		 	* Method responsible for rendering visual objects in CDisplayWindow.
