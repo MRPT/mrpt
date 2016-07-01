@@ -290,7 +290,6 @@ class reactive_navigator_demoframe: public wxFrame
 		mrpt::opengl::CDiskPtr		        gl_robot_sensor_range;
 		mrpt::opengl::CSetOfLinesPtr        gl_robot_path;
 		mrpt::opengl::CPlanarLaserScanPtr   gl_scan3D;
-		mrpt::opengl::CPointCloudPtr 		gl_path;
 		mrpt::opengl::CSetOfLinesPtr        gl_robot_ptg_prediction;
 
 		// ========= Opengl View: Local view (holonomic)  =======
