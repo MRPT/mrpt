@@ -639,35 +639,6 @@ bool TPolygon2D::contains(const TPoint2D &P) const
 
 	return wn!=0;
 
-	//// Create ray from the outside of the poly to the test point:
-	//const TSegment2D ray(point, TPoint2D(bb_min.x-2.0,point.y));
-
-	//int num_crossings = 0;
-
-	//std::vector<bool> intersect_with_vertex(this->size(), false);
-	//for (vector<TSegment2D>::const_iterator it=sgs.begin();it!=sgs.end();++it)	{
-	//	mrpt::math::TObject2D intersect;
-	//	if (mrpt::math::intersect(*it,ray, intersect))
-	//	{
-	//		bool do_count_this_one = true;
-	//		// If the intersection is exactly on a vertex, count it only once for the entire polygon:
-	//		if (intersect.isPoint())
-	//		{
-	//			TPoint2D ipt;
-	//			intersect.getPoint(ipt);
-	//			for (size_t i=0;i<size();i++)
-	//			{
-	//				const bool do_match = (ipt - (*this)[i]).norm()<1e-6;  // geometryEpsilon
-	//				if (do_match && intersect_with_vertex[i])
-	//					do_count_this_one=false;
-	//				if (do_match) intersect_with_vertex[i] = true;
-	//			}
-	//		}
-	//		if (do_count_this_one) 
-	//			num_crossings++;
-	//	}
-	//}
-	//return (num_crossings %2)!=0;
 }
 void TPolygon2D::getAsSegmentList(vector<TSegment2D> &v) const	{
 	size_t N=size();
