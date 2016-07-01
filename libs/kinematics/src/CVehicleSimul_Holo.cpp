@@ -72,7 +72,7 @@ void CVehicleSimul_Holo::internal_simulStep(const double dt)
 #else
 		// Constant rotational velocity:
 		const double Aang = mrpt::math::wrapToPi(m_vel_ramp_cmd.dir - m_pose.phi);
-		m_vel.omega = ( std::abs(Aang)<mrpt::utils::DEG2RAD(1.0) ? 0.0 : mrpt::utils::sign(Aang) )  * m_vel_ramp_cmd.rot_speed;
+		m_vel.omega = ( std::abs(Aang)<mrpt::utils::DEG2RAD(1.0) ? 0.0 : mrpt::utils::sign(Aang) )  * std::abs(m_vel_ramp_cmd.rot_speed);
 #endif
 	}
 }
