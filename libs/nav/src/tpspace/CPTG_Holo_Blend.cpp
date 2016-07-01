@@ -314,7 +314,6 @@ void CPTG_Holo_Blend::internal_initialize(const std::string & cacheFilename, con
 	ASSERT_(W_MAX>0);
 	ASSERT_(m_alphaValuesCount>0);
 	ASSERT_(m_robotRadius>0);
-	ASSERTMSG_((m_alphaValuesCount%2)==0,"This PTG requires an even number of paths in the family");
 
 #ifdef DO_PERFORMANCE_BENCHMARK
 	tl.dumpAllStats();
@@ -335,7 +334,7 @@ void CPTG_Holo_Blend::directionToMotionCommand( uint16_t k, std::vector<double> 
 	cmd_vel[0] = V_MAX;
 	cmd_vel[1] = dir_local;
 	cmd_vel[2] = T_ramp;
-	cmd_vel[3] = W_MAX;
+	cmd_vel[3] = W_MAX * dir_local / M_PI;
 }
 
 size_t CPTG_Holo_Blend::getPathStepCount(uint16_t k) const
@@ -489,13 +488,13 @@ void CPTG_Holo_Blend::updateTPObstacle(double ox, double oy, std::vector<double>
 {
 	PERFORMANCE_BENCHMARK;
 
-	MRPT_TODO("Fix one pending case: --> stop <-- in same dir. Wrong estimated distance to obstacle.")
-
 	const double R = m_robotRadius;
 
 	const double TR_2 = T_ramp*0.5;
 	const double TR2_ = 1.0/(2*T_ramp);
 	const double vxi = curVelLocal.vx, vyi = curVelLocal.vy;
+	const double T_ramp_thres099 = T_ramp*0.99;
+	const double T_ramp_thres101 = T_ramp*1.01;
 
 	for (unsigned int k=0;k<m_alphaValuesCount;k++)
 	{
@@ -504,83 +503,85 @@ void CPTG_Holo_Blend::updateTPObstacle(double ox, double oy, std::vector<double>
 
 		double sol_t=-1.0; // candidate solution for shortest time to collision
 
-		// Solve for t>T_ramp:
-		const double c1 = TR_2*(vxi-vxf)-ox;
-		const double c2 = TR_2*(vyi-vyf)-oy;
-
-		const double a = V_MAX*V_MAX;
-		const double b = 2*(c1*vxf+c2*vyf);
-		const double c = c1*c1+c2*c2-R*R;
-
-		const double discr = b*b-4*a*c;
-		if (discr>=0)
-		{
-			const double sol_t0 = (-b+sqrt(discr))/(2*a);
-			const double sol_t1 = (-b-sqrt(discr))/(2*a);
-
-			// Identify the shortest valid colission time:
-			if (sol_t0<0 && sol_t1<0) sol_t = -1.0;
-			else if (sol_t0<0 && sol_t1>=0) sol_t = sol_t1;
-			else if (sol_t1<0 && sol_t0>=0) sol_t = sol_t0;
-			else if (sol_t1>=0 && sol_t0>=0) sol_t = std::min(sol_t0,sol_t1);
-		}
-		
-		// Invalid with these equations?
+		// Try to solve first for t<T_ramp:
 		const double k2 = (vxf-vxi)*TR2_;
 		const double k4 = (vyf-vyi)*TR2_;
-		if (sol_t<T_ramp)
+
+		// equation: a*t^4 + b*t^3 + c*t^2 + d*t + e = 0
+		const double a = (k2*k2+k4*k4);
+		const double b = (k2*vxi*2.0+k4*vyi*2.0);
+		const double c = -(k2*ox*2.0+k4*oy*2.0-vxi*vxi-vyi*vyi);
+		const double d = -(ox*vxi*2.0+oy*vyi*2.0);
+		const double e = -R*R+ox*ox+oy*oy;
+
+		double roots[4];
+		int num_real_sols=0;
+		if (std::abs(a)>eps) 
+		{
+			// General case: 4th order equation
+			// a * x^4 + b * x^3 + c * x^2 + d * x + e
+			num_real_sols = SolveP4(roots, b/a,c/a,d/a,e/a);
+		}
+		else if (std::abs(b)>eps) {
+			// Special case: k2=k4=0 (straight line path, no blend)
+			// 3rd order equation: 
+			// b * x^3 + c * x^2 + d * x + e
+			num_real_sols = SolveP3(roots, c/b,d/b,e/b);
+		} else 
+		{
+			// Special case: 2nd order equation (a=b=0)
+			const double discr = d*d-4*c*e;  // c*t^2 + d*t + e = 0
+			if (discr>=0)
+			{
+				num_real_sols = 2;
+				roots[0] = (-d+sqrt(discr))/(2*c);
+				roots[1] = (-d-sqrt(discr))/(2*c);
+			} else {
+				num_real_sols = 0;
+			}
+		}
+
+		for (int i=0;i<num_real_sols;i++)
+		{
+			if (roots[i]==roots[i] && // not NaN
+				mrpt::math::isFinite(roots[i]) &&
+				roots[i]>=.0 && 
+				roots[i]<=T_ramp*1.01)
+			{
+				if (sol_t<0) sol_t=roots[i];
+				else mrpt::utils::keep_min(sol_t, roots[i]);
+			}
+		}
+
+		// Invalid with these equations?
+		if (sol_t<0 || sol_t>T_ramp_thres101)
 		{
 			// Attempt to solve with the equations for t<T_ramp
 			sol_t = -1.0;
 
-			// equation: a*t^4 + b*t^3 + c*t^2 + d*t + e = 0
-			const double a = (k2*k2+k4*k4);
-			const double b = (k2*vxi*2.0+k4*vyi*2.0);
-			const double c = -(k2*ox*2.0+k4*oy*2.0-vxi*vxi-vyi*vyi);
-			const double d = -(ox*vxi*2.0+oy*vyi*2.0);
-			const double e = -R*R+ox*ox+oy*oy;
+			// Solve for t>T_ramp:
+			const double c1 = TR_2*(vxi-vxf)-ox;
+			const double c2 = TR_2*(vyi-vyf)-oy;
 
-			double roots[4];
-			int num_real_sols=0;
-			if (std::abs(a)>eps) 
-			{
-				// General case: 4th order equation
-				// a * x^4 + b * x^3 + c * x^2 + d * x + e
-				num_real_sols = SolveP4(roots, b/a,c/a,d/a,e/a);
-			}
-			else if (std::abs(b)>eps) {
-				// Special case: k2=k4=0 (straight line path, no blend)
-				// 3rd order equation: 
-				// b * x^3 + c * x^2 + d * x + e
-				num_real_sols = SolveP3(roots, c/b,d/b,e/b);
-			} else 
-			{
-				// Special case: 2nd order equation (a=b=0)
-				const double discr = d*d-4*c*e;  // c*t^2 + d*t + e = 0
-				if (discr>=0)
-				{
-					num_real_sols = 2;
-					roots[0] = (-d+sqrt(discr))/(2*c);
-					roots[1] = (-d-sqrt(discr))/(2*c);
-				} else {
-					num_real_sols = 0;
-				}
-			}
+			const double a = V_MAX*V_MAX;
+			const double b = 2*(c1*vxf+c2*vyf);
+			const double c = c1*c1+c2*c2-R*R;
 
-			for (int i=0;i<num_real_sols;i++)
+			const double discr = b*b-4*a*c;
+			if (discr>=0)
 			{
-				if (roots[i]==roots[i] && // not NaN
-					mrpt::math::isFinite(roots[i]) &&
-					roots[i]>=.0 && 
-					roots[i]<=T_ramp*1.01)
-				{
-					if (sol_t<0) sol_t=roots[i];
-					else mrpt::utils::keep_min(sol_t, roots[i]);
-				}
+				const double sol_t0 = (-b+sqrt(discr))/(2*a);
+				const double sol_t1 = (-b-sqrt(discr))/(2*a);
+
+				// Identify the shortest valid colission time:
+				if (sol_t0<T_ramp && sol_t1<T_ramp) sol_t = -1.0;
+				else if (sol_t0<T_ramp && sol_t1>=T_ramp_thres099) sol_t = sol_t1;
+				else if (sol_t1<T_ramp && sol_t0>=T_ramp_thres099) sol_t = sol_t0;
+				else if (sol_t1>=T_ramp_thres099 && sol_t0>=T_ramp_thres099) sol_t = std::min(sol_t0,sol_t1);
 			}
 		}
 
-		// Valid solution? 
+		// Valid solution?
 		if (sol_t<0) continue;
 		// Compute the transversed distance:
 		double dist;
