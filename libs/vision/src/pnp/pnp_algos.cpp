@@ -7,14 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/vision/pnp/pnp_algos.h>
-#include <mrpt/vision/pnp/dls.h>
-#include <mrpt/vision/pnp/epnp.h>
-#include <mrpt/vision/pnp/upnp.h>
-#include <mrpt/vision/pnp/p3p.h>
-#include <mrpt/vision/pnp/ppnp.h>
-#include <mrpt/vision/pnp/posit.h>
-
+#include <mrpt/vision/pnp_algos.h>
 using namespace pnp;
 
 #include <iostream>
@@ -26,7 +19,14 @@ using namespace std;
 #include <opencv2/opencv.hpp>
 #include <opencv2/core/eigen.hpp>
 
+#include "dls.h"
+#include "epnp.h"
+#include "upnp.h"
+#include "p3p.h"
+#include "ppnp.h"
+#include "posit.h"
 #include "lhm.h"
+
 
 int CPnP::CPnP_dls(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<Eigen::MatrixXd> img_pts, int n, const Eigen::Ref<Eigen::MatrixXd> cam_intrinsic, Eigen::Ref<Eigen::MatrixXd> pose_mat){
 	
@@ -46,7 +46,7 @@ int CPnP::CPnP_dls(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<E
 	//cout<<img_pts_cv<<endl;
 	//cout<<obj_pts_cv<<endl;
 	
-	dls d(obj_pts_cv, img_pts_cv);
+	mrpt::vision::dls d(obj_pts_cv, img_pts_cv);
 	int ret = d.compute_pose(R_cv,t_cv);
 	
 	//cout<<R_cv<<endl;
@@ -91,7 +91,7 @@ int CPnP::CPnP_epnp(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<
 	//cout<<img_pts_cv<<endl;
 	//cout<<obj_pts_cv<<endl;
 	
-	epnp e(cam_in_cv, obj_pts_cv, img_pts_cv);
+	mrpt::vision::epnp e(cam_in_cv, obj_pts_cv, img_pts_cv);
 	e.compute_pose(R_cv,t_cv);
 	
 	//cout<<R_cv<<endl;
@@ -134,7 +134,7 @@ int CPnP::CPnP_upnp(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<
 	//cout<<img_pts_cv<<endl;
 	//cout<<obj_pts_cv<<endl;
 	
-	upnp u(cam_in_cv, obj_pts_cv, img_pts_cv);
+	mrpt::vision::upnp u(cam_in_cv, obj_pts_cv, img_pts_cv);
 	u.compute_pose(R_cv,t_cv);
 	
 	//cout<<R_cv<<endl;
@@ -177,7 +177,7 @@ int CPnP::CPnP_p3p(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<E
 	//cout<<img_pts_cv<<endl;
 	//cout<<obj_pts_cv<<endl;
 	
-	p3p p(cam_in_cv);
+	mrpt::vision::p3p p(cam_in_cv);
 	int ret = p.solve(R_cv,t_cv, obj_pts_cv, img_pts_cv);
 	
 	//cout<<R_cv<<endl;
@@ -209,7 +209,7 @@ int CPnP::CPnP_ppnp(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<
 	
 	Eigen::MatrixXd obj_pts_=obj_pts.array().transpose(), img_pts_=img_pts.array().transpose();
 
-	ppnp p(obj_pts_,img_pts_, cam_intrinsic);
+	mrpt::vision::ppnp p(obj_pts_,img_pts_, cam_intrinsic);
 	
 	int ret = p.compute_pose(R,t,n);
 	
@@ -227,7 +227,7 @@ int CPnP::CPnP_posit(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref
 	
 	Eigen::MatrixXd obj_pts_=obj_pts.array().transpose(), img_pts_=img_pts.array().transpose();
 
-	POSIT p(obj_pts_,img_pts_, cam_intrinsic, n);
+	mrpt::vision::POSIT p(obj_pts_,img_pts_, cam_intrinsic, n);
 	
 	int ret = p.compute_pose(R,t);
 	

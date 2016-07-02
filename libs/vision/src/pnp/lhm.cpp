@@ -5,17 +5,18 @@
 #include <eigen3/Eigen/StdVector>
 
 #include "lhm.h"
+using namespace mrpt::vision;
 
-mrpt::vision::lhm::lhm(Eigen::MatrixXd obj_pts_, Eigen::MatrixXd img_pts_, Eigen::MatrixXd cam_, int n0) : F(n0)
+lhm::lhm(Eigen::MatrixXd obj_pts_, Eigen::MatrixXd img_pts_, Eigen::MatrixXd cam_, int n0) : F(n0)
 {
 	obj_pts = obj_pts_;
 	img_pts = img_pts_;
 	cam_intrinsic = cam_;
 	n = n0;
 
-	std::cout << "obj_pts_=" << std::endl << obj_pts_ << std::endl << std::endl;
-	std::cout << "img_pts_=" << std::endl << img_pts_ << std::endl << std::endl;
-	std::cout << "cam_=" << std::endl << cam_ << std::endl << std::endl;
+	//std::cout << "obj_pts_=" << std::endl << obj_pts_ << std::endl << std::endl;
+	//std::cout << "img_pts_=" << std::endl << img_pts_ << std::endl << std::endl;
+	//std::cout << "cam_=" << std::endl << cam_ << std::endl << std::endl;
 
 
 	// Store obj_pts as 3XN and img_projections as 2XN matrices 
@@ -24,13 +25,13 @@ mrpt::vision::lhm::lhm(Eigen::MatrixXd obj_pts_, Eigen::MatrixXd img_pts_, Eigen
 
 	Q = img_pts.transpose();
 
-	std::cout << "P=" << std::endl << P << std::endl << std::endl;
-	std::cout << "Q=" << std::endl << Q << std::endl << std::endl;
+	//std::cout << "P=" << std::endl << P << std::endl << std::endl;
+	//std::cout << "Q=" << std::endl << Q << std::endl << std::endl;
 
 	t.setZero();
 }
 
-void mrpt::vision::lhm::estimate_t()
+void lhm::estimate_t()
 {
 	Eigen::Vector3d sum_;
 	sum_.setZero();
@@ -39,15 +40,15 @@ void mrpt::vision::lhm::estimate_t()
 	t = G*sum_;
 }
 
-void mrpt::vision::lhm::xform()
+void lhm::xform()
 {
 	for (int i = 0; i < n; i++)
 		Q.col(i) = R*P.col(i) + t;
 
-	std::cout << "Q_xform =" << std::endl << Q << std::endl << std::endl;
+	//std::cout << "Q_xform =" << std::endl << Q << std::endl << std::endl;
 }
 
-Eigen::Matrix4d mrpt::vision::lhm::qMatQ(Eigen::VectorXd q)
+Eigen::Matrix4d lhm::qMatQ(Eigen::VectorXd q)
 {
 	Eigen::Matrix4d Q_(4, 4);
 
@@ -59,7 +60,7 @@ Eigen::Matrix4d mrpt::vision::lhm::qMatQ(Eigen::VectorXd q)
 	return Q_;
 }
 
-Eigen::Matrix4d mrpt::vision::lhm::qMatW(Eigen::VectorXd q)
+Eigen::Matrix4d lhm::qMatW(Eigen::VectorXd q)
 {
 	Eigen::Matrix4d Q_(4, 4);
 
@@ -71,7 +72,7 @@ Eigen::Matrix4d mrpt::vision::lhm::qMatW(Eigen::VectorXd q)
 	return Q_;
 }
 
-void mrpt::vision::lhm::absKernel()
+void lhm::absKernel()
 {
 	int i;
 
@@ -210,7 +211,7 @@ void mrpt::vision::lhm::absKernel()
 
 }
 
-bool mrpt::vision::lhm::compute_pose(Eigen::Ref<Eigen::Matrix3d> R_, Eigen::Ref<Eigen::Vector3d> t_)
+bool lhm::compute_pose(Eigen::Ref<Eigen::Matrix3d> R_, Eigen::Ref<Eigen::Vector3d> t_)
 {
 	int i, j = 0;
 
@@ -221,7 +222,7 @@ bool mrpt::vision::lhm::compute_pose(Eigen::Ref<Eigen::Matrix3d> R_, Eigen::Ref<
 
 	p_bar = P.rowwise().mean();
 
-	std::cout<<"p_bar="<< std::endl << p_bar<<std::endl<<std::endl;
+	//std::cout<<"p_bar="<< std::endl << p_bar<<std::endl<<std::endl;
 
 	for (i = 0; i<n; i++)
 	{
@@ -233,11 +234,11 @@ bool mrpt::vision::lhm::compute_pose(Eigen::Ref<Eigen::Matrix3d> R_, Eigen::Ref<
 		//cout << F[i] << endl << endl;
 	}
 
-	std::cout << "sum_F=" << std::endl << sum_F << std::endl << std::endl;
+	//std::cout << "sum_F=" << std::endl << sum_F << std::endl << std::endl;
 
 	G = (I3 - sum_F / n).inverse() / n;
 
-	std::cout << "G=" << std::endl << G << std::endl << std::endl;
+	//std::cout << "G=" << std::endl << G << std::endl << std::endl;
 
 	err = 0;
 	err2 = 1000;
@@ -260,8 +261,8 @@ bool mrpt::vision::lhm::compute_pose(Eigen::Ref<Eigen::Matrix3d> R_, Eigen::Ref<
 	R_ = R;
 	t_ = t - R*p_bar;
     
-    std::cout<< "R=" << std::endl << R_ << std::endl << std::endl;
-    std::cout<< "t=" << std::endl << t_ << std::endl << std::endl;
+    //std::cout<< "R=" << std::endl << R_ << std::endl << std::endl;
+    //std::cout<< "t=" << std::endl << t_ << std::endl << std::endl;
     
 
 	return 1;

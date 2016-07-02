@@ -2,22 +2,12 @@
 
 #include <opencv2/opencv.hpp>
 #include <opencv2/opencv_modules.hpp>
-using namespace cv;
-
-#include <mrpt/vision/pnp/dls.h>
-
-#ifdef HAVE_EIGEN
-#  if defined __GNUC__ && defined __APPLE__
-#    pragma GCC diagnostic ignored "-Wshadow"
-#  endif
-#  include <Eigen/Core>
-#  include <Eigen/Eigenvalues>
-#  include "opencv2/core/eigen.hpp"
-#endif
 
 using namespace std;
 
-dls::dls(const cv::Mat& opoints, const cv::Mat& ipoints)
+#include "dls.h"
+
+mrpt::vision::dls::dls(const cv::Mat& opoints, const cv::Mat& ipoints)
 {
 
     N =  std::max(opoints.checkVector(3, CV_32F), opoints.checkVector(3, CV_64F));
@@ -44,12 +34,12 @@ dls::dls(const cv::Mat& opoints, const cv::Mat& ipoints)
         init_points<cv::Point3d, cv::Point2f>(opoints, ipoints);
 }
 
-dls::~dls()
+mrpt::vision::dls::~dls()
 {
   // TODO Auto-generated destructor stub
 }
 
-bool dls::compute_pose(cv::Mat& R, cv::Mat& t)
+bool mrpt::vision::dls::compute_pose(cv::Mat& R, cv::Mat& t)
 {
 
     std::vector<cv::Mat> R_;
@@ -93,7 +83,7 @@ bool dls::compute_pose(cv::Mat& R, cv::Mat& t)
     return false;
 }
 
-void dls::run_kernel(const cv::Mat& pp)
+void mrpt::vision::dls::run_kernel(const cv::Mat& pp)
 {
     cv::Mat Mtilde(27, 27, CV_64F);
     cv::Mat D = cv::Mat::zeros(9, 9, CV_64F);
@@ -207,7 +197,7 @@ void dls::run_kernel(const cv::Mat& pp)
 
 }
 
-void dls::build_coeff_matrix(const cv::Mat& pp, cv::Mat& Mtilde, cv::Mat& D)
+void mrpt::vision::dls::build_coeff_matrix(const cv::Mat& pp, cv::Mat& Mtilde, cv::Mat& D)
 {
     cv::Mat eye = cv::Mat::eye(3, 3, CV_64F);
 
@@ -266,7 +256,7 @@ void dls::build_coeff_matrix(const cv::Mat& pp, cv::Mat& Mtilde, cv::Mat& D)
 
 }
 
-void dls::compute_eigenvec(const cv::Mat& Mtilde, cv::Mat& eigenval_real, cv::Mat& eigenval_imag,
+void mrpt::vision::dls::compute_eigenvec(const cv::Mat& Mtilde, cv::Mat& eigenval_real, cv::Mat& eigenval_imag,
                                                   cv::Mat& eigenvec_real, cv::Mat& eigenvec_imag)
 {
 #ifdef HAVE_EIGEN
@@ -299,7 +289,7 @@ void dls::compute_eigenvec(const cv::Mat& Mtilde, cv::Mat& eigenval_real, cv::Ma
 
 }
 
-void dls::fill_coeff(const cv::Mat * D_mat)
+void mrpt::vision::dls::fill_coeff(const cv::Mat * D_mat)
 {
     // TODO: shift D and coefficients one position to left
 
@@ -387,7 +377,7 @@ void dls::fill_coeff(const cv::Mat * D_mat)
 
 }
 
-cv::Mat dls::LeftMultVec(const cv::Mat& v)
+cv::Mat mrpt::vision::dls::LeftMultVec(const cv::Mat& v)
 {
     cv::Mat mat_ = cv::Mat::zeros(3, 9, CV_64F);
 
@@ -400,7 +390,7 @@ cv::Mat dls::LeftMultVec(const cv::Mat& v)
     return mat_;
 }
 
-cv::Mat dls::cayley_LS_M(const std::vector<double>& a, const std::vector<double>& b, const std::vector<double>& c, const std::vector<double>& u)
+cv::Mat mrpt::vision::dls::cayley_LS_M(const std::vector<double>& a, const std::vector<double>& b, const std::vector<double>& c, const std::vector<double>& u)
 {
     // TODO: input matrix pointer
     // TODO: shift coefficients one position to left
@@ -531,7 +521,7 @@ cv::Mat dls::cayley_LS_M(const std::vector<double>& a, const std::vector<double>
     return M.t();
 }
 
-cv::Mat dls::Hessian(const double s[])
+cv::Mat mrpt::vision::dls::Hessian(const double s[])
 {
     // the vector of monomials is
     // m = [ const ; s1^2 * s2 ; s1 * s2 ; s1 * s3 ; s2 * s3 ; s2^2 * s3 ; s2^3 ; ...
@@ -586,7 +576,7 @@ cv::Mat dls::Hessian(const double s[])
     return H;
 }
 
-cv::Mat dls::cayley2rotbar(const cv::Mat& s)
+cv::Mat mrpt::vision::dls::cayley2rotbar(const cv::Mat& s)
 {
     double s_mul1 = cv::Mat(s.t()*s).at<double>(0,0);
     cv::Mat s_mul2 = s*s.t();
@@ -595,7 +585,7 @@ cv::Mat dls::cayley2rotbar(const cv::Mat& s)
     return cv::Mat( eye.mul(1.-s_mul1) + skewsymm(&s).mul(2.) + s_mul2.mul(2.) ).t();
 }
 
-cv::Mat dls::skewsymm(const cv::Mat * X1)
+cv::Mat mrpt::vision::dls::skewsymm(const cv::Mat * X1)
 {
     cv::MatConstIterator_<double> it = X1->begin<double>();
     return (cv::Mat_<double>(3,3) <<        0, -*(it+2),  *(it+1),
@@ -603,7 +593,7 @@ cv::Mat dls::skewsymm(const cv::Mat * X1)
                                      -*(it+1),  *(it+0),       0);
 }
 
-cv::Mat dls::rotx(const double t)
+cv::Mat mrpt::vision::dls::rotx(const double t)
 {
     // rotx: rotation about y-axis
     double ct = cos(t);
@@ -611,7 +601,7 @@ cv::Mat dls::rotx(const double t)
     return (cv::Mat_<double>(3,3) << 1, 0, 0, 0, ct, -st, 0, st, ct);
 }
 
-cv::Mat dls::roty(const double t)
+cv::Mat mrpt::vision::dls::roty(const double t)
 {
     // roty: rotation about y-axis
     double ct = cos(t);
@@ -619,7 +609,7 @@ cv::Mat dls::roty(const double t)
     return (cv::Mat_<double>(3,3) << ct, 0, st, 0, 1, 0, -st, 0, ct);
 }
 
-cv::Mat dls::rotz(const double t)
+cv::Mat mrpt::vision::dls::rotz(const double t)
 {
     // rotz: rotation about y-axis
     double ct = cos(t);
@@ -627,14 +617,14 @@ cv::Mat dls::rotz(const double t)
     return (cv::Mat_<double>(3,3) << ct, -st, 0, st, ct, 0, 0, 0, 1);
 }
 
-cv::Mat dls::mean(const cv::Mat& M)
+cv::Mat mrpt::vision::dls::mean(const cv::Mat& M)
 {
     cv::Mat m = cv::Mat::zeros(3, 1, CV_64F);
     for (int i = 0; i < M.cols; ++i) m += M.col(i);
     return m.mul(1./(double)M.cols);
 }
 
-bool dls::is_empty(const cv::Mat * M)
+bool mrpt::vision::dls::is_empty(const cv::Mat * M)
 {
     cv::MatConstIterator_<double> it = M->begin<double>(), it_end = M->end<double>();
     for(; it != it_end; ++it)
@@ -644,7 +634,7 @@ bool dls::is_empty(const cv::Mat * M)
     return true;
 }
 
-bool dls::positive_eigenvalues(const cv::Mat * eigenvalues)
+bool mrpt::vision::dls::positive_eigenvalues(const cv::Mat * eigenvalues)
 {
     cv::MatConstIterator_<double> it = eigenvalues->begin<double>();
     return *(it) > 0 && *(it+1) > 0 && *(it+2) > 0;

@@ -4,9 +4,9 @@ using namespace std;
 #include <opencv2/opencv.hpp>
 #include <opencv2/opencv_modules.hpp>
 using namespace cv;
-#include <mrpt/vision/pnp/epnp.h>
+#include "epnp.h"
 
-epnp::epnp(const cv::Mat& cameraMatrix, const cv::Mat& opoints, const cv::Mat& ipoints)
+mrpt::vision::epnp::epnp(const cv::Mat& cameraMatrix, const cv::Mat& opoints, const cv::Mat& ipoints)
 {
   if (cameraMatrix.depth() == CV_32F)
       init_camera_parameters<float>(cameraMatrix);
@@ -38,7 +38,7 @@ epnp::epnp(const cv::Mat& cameraMatrix, const cv::Mat& opoints, const cv::Mat& i
   A2 = NULL;
 }
 
-epnp::~epnp()
+mrpt::vision::epnp::~epnp()
 {
     if (A1)
         delete[] A1;
@@ -46,7 +46,7 @@ epnp::~epnp()
         delete[] A2;
 }
 
-void epnp::choose_control_points(void)
+void mrpt::vision::epnp::choose_control_points(void)
 {
   // Take C0 as the reference points centroid:
   cws[0][0] = cws[0][1] = cws[0][2] = 0;
@@ -82,7 +82,7 @@ void epnp::choose_control_points(void)
   }
 }
 
-void epnp::compute_barycentric_coordinates(void)
+void mrpt::vision::epnp::compute_barycentric_coordinates(void)
 {
   double cc[3 * 3], cc_inv[3 * 3];
   CvMat CC     = cvMat(3, 3, CV_64F, cc);
@@ -107,7 +107,7 @@ void epnp::compute_barycentric_coordinates(void)
   }
 }
 
-void epnp::fill_M(CvMat * M,
+void mrpt::vision::epnp::fill_M(CvMat * M,
       const int row, const double * as, const double u, const double v)
 {
   double * M1 = M->data.db + row * 12;
@@ -124,7 +124,7 @@ void epnp::fill_M(CvMat * M,
   }
 }
 
-void epnp::compute_ccs(const double * betas, const double * ut)
+void mrpt::vision::epnp::compute_ccs(const double * betas, const double * ut)
 {
   for(int i = 0; i < 4; i++)
     ccs[i][0] = ccs[i][1] = ccs[i][2] = 0.0f;
@@ -137,7 +137,7 @@ void epnp::compute_ccs(const double * betas, const double * ut)
   }
 }
 
-void epnp::compute_pcs(void)
+void mrpt::vision::epnp::compute_pcs(void)
 {
   for(int i = 0; i < number_of_correspondences; i++) {
     double * a = &alphas[0] + 4 * i;
@@ -148,7 +148,7 @@ void epnp::compute_pcs(void)
   }
 }
 
-void epnp::compute_pose(cv::Mat& R, cv::Mat& t)
+void mrpt::vision::epnp::compute_pose(cv::Mat& R, cv::Mat& t)
 {
   choose_control_points();
   compute_barycentric_coordinates();
@@ -197,7 +197,7 @@ void epnp::compute_pose(cv::Mat& R, cv::Mat& t)
   cv::Mat(3, 3, CV_64F, Rs[N]).copyTo(R);
 }
 
-void epnp::copy_R_and_t(const double R_src[3][3], const double t_src[3],
+void mrpt::vision::epnp::copy_R_and_t(const double R_src[3][3], const double t_src[3],
       double R_dst[3][3], double t_dst[3])
 {
   for(int i = 0; i < 3; i++) {
@@ -207,7 +207,7 @@ void epnp::copy_R_and_t(const double R_src[3][3], const double t_src[3],
   }
 }
 
-double epnp::dist2(const double * p1, const double * p2)
+double mrpt::vision::epnp::dist2(const double * p1, const double * p2)
 {
   return
     (p1[0] - p2[0]) * (p1[0] - p2[0]) +
@@ -215,12 +215,12 @@ double epnp::dist2(const double * p1, const double * p2)
     (p1[2] - p2[2]) * (p1[2] - p2[2]);
 }
 
-double epnp::dot(const double * v1, const double * v2)
+double mrpt::vision::epnp::dot(const double * v1, const double * v2)
 {
   return v1[0] * v2[0] + v1[1] * v2[1] + v1[2] * v2[2];
 }
 
-void epnp::estimate_R_and_t(double R[3][3], double t[3])
+void mrpt::vision::epnp::estimate_R_and_t(double R[3][3], double t[3])
 {
   double pc0[3], pw0[3];
 
@@ -280,7 +280,7 @@ void epnp::estimate_R_and_t(double R[3][3], double t[3])
   t[2] = pc0[2] - dot(R[2], pw0);
 }
 
-void epnp::solve_for_sign(void)
+void mrpt::vision::epnp::solve_for_sign(void)
 {
   if (pcs[2] < 0.0) {
     for(int i = 0; i < 4; i++)
@@ -295,7 +295,7 @@ void epnp::solve_for_sign(void)
   }
 }
 
-double epnp::compute_R_and_t(const double * ut, const double * betas,
+double mrpt::vision::epnp::compute_R_and_t(const double * ut, const double * betas,
            double R[3][3], double t[3])
 {
   compute_ccs(betas, ut);
@@ -308,7 +308,7 @@ double epnp::compute_R_and_t(const double * ut, const double * betas,
   return reprojection_error(R, t);
 }
 
-double epnp::reprojection_error(const double R[3][3], const double t[3])
+double mrpt::vision::epnp::reprojection_error(const double R[3][3], const double t[3])
 {
   double sum2 = 0.0;
 
@@ -330,7 +330,7 @@ double epnp::reprojection_error(const double R[3][3], const double t[3])
 // betas10        = [B11 B12 B22 B13 B23 B33 B14 B24 B34 B44]
 // betas_approx_1 = [B11 B12     B13         B14]
 
-void epnp::find_betas_approx_1(const CvMat * L_6x10, const CvMat * Rho,
+void mrpt::vision::epnp::find_betas_approx_1(const CvMat * L_6x10, const CvMat * Rho,
              double * betas)
 {
   double l_6x4[6 * 4], b4[4];
@@ -362,7 +362,7 @@ void epnp::find_betas_approx_1(const CvMat * L_6x10, const CvMat * Rho,
 // betas10        = [B11 B12 B22 B13 B23 B33 B14 B24 B34 B44]
 // betas_approx_2 = [B11 B12 B22                            ]
 
-void epnp::find_betas_approx_2(const CvMat * L_6x10, const CvMat * Rho,
+void mrpt::vision::epnp::find_betas_approx_2(const CvMat * L_6x10, const CvMat * Rho,
              double * betas)
 {
   double l_6x3[6 * 3], b3[3];
@@ -394,7 +394,7 @@ void epnp::find_betas_approx_2(const CvMat * L_6x10, const CvMat * Rho,
 // betas10        = [B11 B12 B22 B13 B23 B33 B14 B24 B34 B44]
 // betas_approx_3 = [B11 B12 B22 B13 B23                    ]
 
-void epnp::find_betas_approx_3(const CvMat * L_6x10, const CvMat * Rho,
+void mrpt::vision::epnp::find_betas_approx_3(const CvMat * L_6x10, const CvMat * Rho,
              double * betas)
 {
   double l_6x5[6 * 5], b5[5];
@@ -423,7 +423,7 @@ void epnp::find_betas_approx_3(const CvMat * L_6x10, const CvMat * Rho,
   betas[3] = 0.0;
 }
 
-void epnp::compute_L_6x10(const double * ut, double * l_6x10)
+void mrpt::vision::epnp::compute_L_6x10(const double * ut, double * l_6x10)
 {
   const double * v[4];
 
@@ -465,7 +465,7 @@ void epnp::compute_L_6x10(const double * ut, double * l_6x10)
   }
 }
 
-void epnp::compute_rho(double * rho)
+void mrpt::vision::epnp::compute_rho(double * rho)
 {
   rho[0] = dist2(cws[0], cws[1]);
   rho[1] = dist2(cws[0], cws[2]);
@@ -475,7 +475,7 @@ void epnp::compute_rho(double * rho)
   rho[5] = dist2(cws[2], cws[3]);
 }
 
-void epnp::compute_A_and_b_gauss_newton(const double * l_6x10, const double * rho,
+void mrpt::vision::epnp::compute_A_and_b_gauss_newton(const double * l_6x10, const double * rho,
           const double betas[4], CvMat * A, CvMat * b)
 {
   for(int i = 0; i < 6; i++) {
@@ -503,7 +503,7 @@ void epnp::compute_A_and_b_gauss_newton(const double * l_6x10, const double * rh
   }
 }
 
-void epnp::gauss_newton(const CvMat * L_6x10, const CvMat * Rho, double betas[4])
+void mrpt::vision::epnp::gauss_newton(const CvMat * L_6x10, const CvMat * Rho, double betas[4])
 {
   const int iterations_number = 5;
 
@@ -522,7 +522,7 @@ void epnp::gauss_newton(const CvMat * L_6x10, const CvMat * Rho, double betas[4]
   }
 }
 
-void epnp::qr_solve(CvMat * A, CvMat * b, CvMat * X)
+void mrpt::vision::epnp::qr_solve(CvMat * A, CvMat * b, CvMat * X)
 {
   const int nr = A->rows;
   const int nc = A->cols;
