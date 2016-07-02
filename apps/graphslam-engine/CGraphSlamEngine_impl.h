@@ -47,7 +47,8 @@ CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::CGraphSl
 	m_odometry_color(0, 0, 255),
 	m_GT_color(0, 255, 0),
 	m_estimated_traj_color(255, 165, 0),
-	m_robot_model_size(3)
+	m_robot_model_size(3),
+	m_graph_section("graph_sec")
 {
 
 	this->initCGraphSlamEngine();
@@ -96,6 +97,7 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::ini
 	/**
 	 * Initialization of various member variables
 	 */
+
 	// check for duplicated edges every..
 	m_num_of_edges_for_collapse = 100;
 
@@ -266,13 +268,13 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::ini
 	// Add additional keystrokes in the CDisplayWindow3D message box
 	if (m_win_observer) { 
 		m_win_observer->registerKeystroke(m_keystroke_odometry,
-				"Toogle Odometry visualization");
+				"Toggle Odometry visualization");
 		m_win_observer->registerKeystroke(m_keystroke_GT,
-				"Toogle Ground-Truth visualization");
+				"Toggle Ground-Truth visualization");
 		m_win_observer->registerKeystroke(m_keystroke_estimated_trajectory,
-				"Toogle Estimated trajectory visualization");
+				"Toggle Estimated trajectory visualization");
 		m_win_observer->registerKeystroke(m_keystroke_map,
-				"Toogle Map visualization");
+				"Toggle Map visualization");
 	}
 
 	if (m_win) {
@@ -326,6 +328,7 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::ini
 	}
 
 	m_autozoom_active = true;
+	m_request_to_exit = false;
 	m_GT_poses_index = 0;
 
 
@@ -433,6 +436,8 @@ bool CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::par
 					observations,
 					observation );
 		}
+		std::cout << "After updating state of edge decider, optimizer... " 
+			<< std::endl;
 
 		if (observation.present()) {
 			// Read a single observation from the rawlog
@@ -536,7 +541,6 @@ bool CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::par
 			}
 			// update the graph visualization
 
-			// TODO - remove this
 			if (m_enable_curr_pos_viewport) {
 				updateCurrPosViewport();
 			}
@@ -577,7 +581,6 @@ bool CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::par
 			this->updateOdometryVisualization();
 		}
 
-
 		// ensure that the GT is visualized at the same rate as the SLAM procedure
 		// handle RGBD-TUM datasets manually
 		if (mrpt::system::strCmpI(m_GT_file_format, "rgbd_tum")) {
@@ -586,7 +589,7 @@ bool CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::par
 		else if (mrpt::system::strCmpI(m_GT_file_format, "navsimul")) {
 			if (m_observation_only_rawlog) {
 				if (curr_rawlog_entry % 2 == 0) {
-					this->updateGTVisualization(); // Assumption: We only have odometry & laser scans
+					this->updateGTVisualization();
 				}
 			}
 			else {
@@ -606,7 +609,7 @@ bool CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::par
 
 		// Query for events and take coresponding actions
 		if (m_win && m_win_observer) {
-			this->queryObserverForEvents();
+			//this->queryObserverForEvents();
 		}
 
 		if (m_request_to_exit) {
@@ -619,7 +622,6 @@ bool CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::par
 		// Reduce edges
 		if (m_edge_counter.getTotalNumOfEdges() % m_num_of_edges_for_collapse == 0) {
 			mrpt::synch::CCriticalSectionLocker m_graph_lock(&m_graph_section);
-			//std::cout << "Collapsing duplicated edges..." << std::endl;
 
 			int removed_edges = m_graph.collapseDuplicatedEdges();
 			m_edge_counter.setRemovedEdges(removed_edges);
@@ -635,7 +637,7 @@ bool CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::par
 		COpenGLScenePtr& scene = m_win->get3DSceneAndLock();
 		CPlanarLaserScanPtr laser_scan;
 		for (; laser_scan = scene->getByClass<CPlanarLaserScan>() ;) {
-			VERBOSE_COUT << "Removing CPlanarlaserScan from generated 3DScene..." << std::endl;
+			std::cout << "Removing CPlanarlaserScan from generated 3DScene..." << std::endl;
 			scene->removeObject(laser_scan);
 		}
 
@@ -820,8 +822,6 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::pri
 	m_node_registrar.printParams();
 	m_edge_registrar.printParams();
 	m_optimizer.printParams();
-
-	mrpt::system::pause();
 
 	MRPT_END;
 }
@@ -1297,19 +1297,19 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::que
 
 	// odometry visualization
 	if (events_occurred[m_keystroke_odometry]) {
-		this->toogleOdometryVisualization();
+		this->toggleOdometryVisualization();
 	}
 	// GT visualization
 	if (events_occurred[m_keystroke_GT]) {
-		this->toogleGTVisualization();
+		this->toggleGTVisualization();
 	}
 	// Map visualization
 	if (events_occurred[m_keystroke_map]) {
-		this->toogleMapVisualization();
+		this->toggleMapVisualization();
 	}
 	// Estimated Trajectory Visualization
 	if (events_occurred[m_keystroke_estimated_trajectory]) {
-		this->toogleEstimatedTrajectoryVisualization();
+		this->toggleEstimatedTrajectoryVisualization();
 	}
 
 	// notify the deciders/optimizer of any events they may be interested in
@@ -1321,9 +1321,9 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::que
 }
 
 template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR, class OPTIMIZER>
-void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::toogleOdometryVisualization() {
+void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::toggleOdometryVisualization() {
 	MRPT_START;
-	std::cout << "Toogling Odometry visualization..." << std::endl;
+	std::cout << "Toggling Odometry visualization..." << std::endl;
  
 	COpenGLScenePtr scene = m_win->get3DSceneAndLock();
 
@@ -1344,9 +1344,9 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::too
 	MRPT_END;
 }
 template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR, class OPTIMIZER>
-void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::toogleGTVisualization() {
+void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::toggleGTVisualization() {
 	MRPT_START;
-	std::cout << "Toogling Ground Truth visualization" << std::endl;
+	std::cout << "Toggling Ground Truth visualization" << std::endl;
 
 	COpenGLScenePtr scene = m_win->get3DSceneAndLock();
 
@@ -1368,9 +1368,9 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::too
 	MRPT_END;
 }
 template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR, class OPTIMIZER>
-void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::toogleMapVisualization() {
+void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::toggleMapVisualization() {
 	MRPT_START;
-	std::cout << "Toogling Map visualization... " << std::endl;
+	std::cout << "Toggling Map visualization... " << std::endl;
 
 	COpenGLScenePtr scene = m_win->get3DSceneAndLock();
 
@@ -1402,9 +1402,9 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::too
 	MRPT_END;
 }
 template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR, class OPTIMIZER>
-void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::toogleEstimatedTrajectoryVisualization() {
+void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::toggleEstimatedTrajectoryVisualization() {
 	MRPT_START;
-	std::cout << "Toogling Estimated Trajectory visualization... " << std::endl;
+	std::cout << "Toggling Estimated Trajectory visualization... " << std::endl;
 
 	COpenGLScenePtr scene = m_win->get3DSceneAndLock();
 
@@ -1430,7 +1430,7 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::dum
 		std::string viz_flag, int sleep_time /* = 500 milliseconds */) {
 	MRPT_START;
 	
-	std::cout << format("Cannot toogle visibility of specified object.\n "
+	std::cout << format("Cannot toggle visibility of specified object.\n "
 			"Make sure that the corresponding visualization flag ( %s "
 			") is set to true in the .ini file.\n", 
 			viz_flag.c_str()).c_str() << std::endl;
@@ -1524,7 +1524,7 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::upd
 				scan_obj->setColor_u8(m_optimized_map_color);
 
 				// set the visibility of the object the same value as the visibility of
-				// the previous - Needed for proper toogling of the visibility of the
+				// the previous - Needed for proper toggling of the visibility of the
 				// whole map
 				{
 					stringstream prev_scan_name("");

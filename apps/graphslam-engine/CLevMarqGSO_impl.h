@@ -36,6 +36,7 @@ void CLevMarqGSO_t<GRAPH_t>::initCLevMarqGSO_t() {
 
 	m_graph = NULL;
 	m_win_manager = NULL;
+	m_win_observer = NULL;
 	m_graph_section = NULL;
 
 	m_initialized_visuals = false;
@@ -53,19 +54,26 @@ bool CLevMarqGSO_t<GRAPH_t>::updateOptimizerState(
 		mrpt::obs::CSensoryFramePtr observations,
 		mrpt::obs::CObservationPtr observation ) {
 	MRPT_START;
-	//cout << "[CLevMarqGSO:] In updateOptimizerState... " << endl;
+	cout << "[CLevMarqGSO:] In updateOptimizerState... " << endl;
 	
 	if (m_graph->nodeCount() > m_last_total_num_of_nodes) {
 		m_last_total_num_of_nodes = m_graph->nodeCount();
 		registered_new_node = true;
 
-		 // join the previous optimization thread
-		 mrpt::system::joinThread(m_thread_optimize);
- 
-		 // optimize the graph - run on a seperate thread
-		 m_thread_optimize = createThreadFromObjectMethod(
-				 /*obj = */ this,
-				 /* func = */ &CLevMarqGSO_t::optimizeGraph );
+		if (opt_params.optimization_on_second_thread) {
+			//join the previous optimization thread
+			mrpt::system::joinThread(m_thread_optimize);
+
+			// optimize the graph - run on a seperate thread
+			m_thread_optimize = mrpt::system::createThreadFromObjectMethod(
+					/*obj = */ this,
+					/* func = */ &CLevMarqGSO_t::optimizeGraph_2ndThread);
+
+		}
+		else { // single threaded implementation
+			this->optimizeGraph();
+		}
+
 	}
 
 	return false;
@@ -100,6 +108,12 @@ void CLevMarqGSO_t<GRAPH_t>::setWindowManagerPtr(
 	m_win_manager = win_manager;
 	if (m_win_manager) {
 		m_win = m_win_manager->win;
+
+		m_win_observer = m_win_manager->observer;
+		if (m_win_observer) {
+			m_win_observer->registerKeystroke("s", "Toggle Graph visualization");
+		}
+
 	}
 	std::cout << "[CLevMarqGSO:] Fetched the CDisplayWindow successfully"
 		<< std::endl;
@@ -125,11 +139,7 @@ void CLevMarqGSO_t<GRAPH_t>::initializeVisuals() {
 	MRPT_START;
 	std::cout << "CLevMarqGSO:] Initializing visuals" << std::endl;
 
-	if (viz_params.visualize_optimized_graph) {
-		m_win_manager->assignTextMessageParameters(
-				/* offset_y*	= */ &viz_params.offset_y_graph,
-				/* text_index* = */ &viz_params.text_index_graph );
-	}
+	this->initGraphVisualization();
 
 	m_initialized_visuals = true;
 	MRPT_END;
@@ -138,6 +148,7 @@ void CLevMarqGSO_t<GRAPH_t>::initializeVisuals() {
 template<class GRAPH_t>
 void CLevMarqGSO_t<GRAPH_t>::updateVisuals() {
 	MRPT_START;
+
 	ASSERT_(m_initialized_visuals);
 	ASSERTMSG_(m_win_manager, "No CWindowManager* is given");
 	ASSERTMSG_(m_win,
@@ -155,23 +166,48 @@ void CLevMarqGSO_t<GRAPH_t>::notifyOfWindowEvents(
 		const std::map<std::string, bool> events_occurred)
 {
 
+	// I know the key exists - I put it there explicitly
+	if (events_occurred.find(viz_params.keystroke_graph)->second) {
+		this->toggleGraphVisualization();
+	}
+
+
+}
+
+template<class GRAPH_t>
+inline void CLevMarqGSO_t<GRAPH_t>::initGraphVisualization() {
+	MRPT_START;
+
+	if (viz_params.visualize_optimized_graph) {
+		m_win_manager->assignTextMessageParameters(
+				/* offset_y*	= */ &viz_params.offset_y_graph,
+				/* text_index* = */ &viz_params.text_index_graph );
+	}
+
+
+	MRPT_END;
 }
 template<class GRAPH_t>
 inline void CLevMarqGSO_t<GRAPH_t>::updateGraphVisualization() {
 	MRPT_START;
 
-	//std::cout << "[CLevMarqGSO:] In the updateGraphVisualization function" 
-		//<< std::endl;
+	std::cout << "[CLevMarqGSO:] In the updateGraphVisualization function" 
+		<< std::endl;
 
 	// update the graph (clear and rewrite..)
 	COpenGLScenePtr& scene = m_win->get3DSceneAndLock();
 
 	// remove previous graph and insert the its new instance
 	CRenderizablePtr prev_object = scene->getByName("optimized_graph");
+	bool prev_visibility = true;
+	if (prev_object) {
+		prev_visibility = prev_object->isVisible();
+	}
 	scene->removeObject(prev_object);
 
 	CSetOfObjectsPtr graph_obj = graph_tools::graph_visualize(*m_graph, viz_params.cfg);
 	graph_obj->setName("optimized_graph");
+	graph_obj->setVisibility(prev_visibility);
 	scene->insert(graph_obj);
 	m_win->unlockAccess3DScene();
 
@@ -186,30 +222,55 @@ inline void CLevMarqGSO_t<GRAPH_t>::updateGraphVisualization() {
 	MRPT_END;
 }
 
+template<class GRAPH_t>
+void CLevMarqGSO_t<GRAPH_t>::toggleGraphVisualization() {
+	COpenGLScenePtr& scene = m_win->get3DSceneAndLock();
+
+	CRenderizablePtr graph_obj = scene->getByName("optimized_graph");
+	graph_obj->setVisibility(!graph_obj->isVisible());
+
+	m_win->unlockAccess3DScene();
+	m_win->forceRepaint();
+}
+
+template<class GRAPH_t>
+void CLevMarqGSO_t<GRAPH_t>::optimizeGraph_2ndThread() {
+	MRPT_START;
+
+	std::cout << "[CLevMarqGSO:] In optimizeGraph_2ndThread" << std::endl;
+	std::cout << "\tThreadID: " << mrpt::system::getCurrentThreadId() << std::endl;
+	std::cout << "\tTrying to grab lock... " << std::endl;
+
+	mrpt::synch::CCriticalSectionLocker m_graph_lock(m_graph_section);
+	this->optimizeGraph();
+
+	std::cout << "\t2nd thread grabbed the lock.." << std::endl;
+
+	MRPT_END;
+}
+
 // TODO - do something meaningful with these parameters
 template<class GRAPH_t>
 void CLevMarqGSO_t<GRAPH_t>::optimizeGraph() {
 	MRPT_START;
-	std::cout << "[CLevMarqGSO:] In optimizeGraph method... " << std::endl;
+	std::cout << "[CLevMarqGSO:] In optimizeGraph" << std::endl;
 
 	CTicTac optimization_timer;
 	optimization_timer.Tic();
 
 	graphslam::TResultInfoSpaLevMarq	levmarq_info;
 
-	{
-		mrpt::synch::CCriticalSectionLocker m_graph_lock(m_graph_section);
-		// Execute the optimization
-		mrpt::graphslam::optimize_graph_spa_levmarq(
-				*m_graph,
-				levmarq_info,
-				NULL,  // List of nodes to optimize. NULL -> all but the root node.
-				opt_params.cfg,
-				&CLevMarqGSO_t<GRAPH_t>::levMarqFeedback); // functor feedback
-	}
+	// Execute the optimization
+	mrpt::graphslam::optimize_graph_spa_levmarq(
+			*m_graph,
+			levmarq_info,
+			NULL,  // List of nodes to optimize. NULL -> all but the root node.
+			opt_params.cfg,
+			&CLevMarqGSO_t<GRAPH_t>::levMarqFeedback); // functor feedback
 
 	double elapsed_time = optimization_timer.Tac();
-	//VERBOSE_COUT << "Optimization of graph took: " << elapsed_time << "s" << std::endl;
+	std::cout << "Optimization of graph took: " << elapsed_time << "s" 
+		<< std::endl;
 
 	MRPT_UNUSED_PARAM(elapsed_time);
 	MRPT_END;
@@ -249,6 +310,8 @@ void CLevMarqGSO_t<GRAPH_t>::OptimizationParams::dumpToTextStream(
 	MRPT_START;
 
 	out.printf("------------------[ Levenberg-Marquardt Optimization ]------------------\n");
+	out.printf("Optimization on second thread   = %s\n",
+			optimization_on_second_thread ? "true" : "false");
 	cfg.dumpToConsole();
 
 	std::cout << std::endl;
@@ -260,6 +323,10 @@ void CLevMarqGSO_t<GRAPH_t>::OptimizationParams::loadFromConfigFile(
 		const mrpt::utils::CConfigFileBase &source,
     const std::string &section) {
   MRPT_START;
+  optimization_on_second_thread = source.read_bool(
+  		section,
+  		"optimization_on_second_thread",
+  		1, false);
 
 	// optimization parameters
 	cfg["verbose"] = source.read_bool(
@@ -292,7 +359,9 @@ void CLevMarqGSO_t<GRAPH_t>::OptimizationParams::loadFromConfigFile(
 // GraphVisualizationParams
 //////////////////////////////////////////////////////////////
 template<class GRAPH_t>
-CLevMarqGSO_t<GRAPH_t>::GraphVisualizationParams::GraphVisualizationParams() {
+CLevMarqGSO_t<GRAPH_t>::GraphVisualizationParams::GraphVisualizationParams():
+	keystroke_graph("s")
+{
 }
 template<class GRAPH_t>
 CLevMarqGSO_t<GRAPH_t>::GraphVisualizationParams::~GraphVisualizationParams() {
@@ -302,7 +371,8 @@ void CLevMarqGSO_t<GRAPH_t>::GraphVisualizationParams::dumpToTextStream(
 		mrpt::utils::CStream &out) const {
 	MRPT_START;
 
-	std::cout << "-----------[ Graph Visualization Parameters ]-----------" << std::endl;
+	std::cout << "-----------[ Graph Visualization Parameters ]-----------" 
+		<< std::endl;
 
 	stringstream ss_out("");
 	ss_out << "Visualize optimized graph = "

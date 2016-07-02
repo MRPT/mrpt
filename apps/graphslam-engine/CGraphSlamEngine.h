@@ -255,15 +255,15 @@ template<
 		 		*/
 			inline void queryObserverForEvents();
 
-			// methods related with the toogling of specific visualization objects in
+			// methods related with the toggling of specific visualization objects in
 			// the CDisplayWindow3D
-			void toogleOdometryVisualization();
-			void toogleGTVisualization();
-			void toogleMapVisualization();
-			void toogleEstimatedTrajectoryVisualization();
+			void toggleOdometryVisualization();
+			void toggleGTVisualization();
+			void toggleMapVisualization();
+			void toggleEstimatedTrajectoryVisualization();
 			
 			// wrapper around std::cout for specifically printing error messages in
-			// the visibility toogling from the CDisplayWindow3D
+			// the visibility toggling from the CDisplayWindow3D
 			void dumpVisibilityErrorMsg(std::string viz_flag, 
 					int sleep_time=500 /* ms */);
 
@@ -341,7 +341,7 @@ template<
 			int m_text_index_estimated_traj;
 			int m_text_index_timestamp;
 
-			// keystrokes for toogling the corresponding objects in the
+			// keystrokes for toggling the corresponding objects in the
 			// CDisplayWindow when user issues the specified keystroke
 			std::string m_keystroke_odometry;
 			std::string m_keystroke_GT;
@@ -413,7 +413,6 @@ template<
 				std::string info_fname;
 
 			} m_info_params;
-
 
 	};
 

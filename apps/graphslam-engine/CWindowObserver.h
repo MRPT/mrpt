@@ -31,8 +31,8 @@ public:
 		m_hiding_help(false)
 	{
 		help_msg = "User options:\n"
-			" - h/H: Toogle help message\n"
-			" - Alt+Enter: Toogle fullscreen\n"
+			" - h/H: Toggle help message\n"
+			" - Alt+Enter: Toggle fullscreen\n"
 			" - Mouse click: Set camera manually\n"
 			" - Ctrl+c: Halt program execution";
 
@@ -111,30 +111,30 @@ protected:
 				//case 'o':
 				//case 'O':
 					//std::cout << "Pressed o/O inside CDisplayWindow3D" << std::endl;
-					//m_toogle_odometry_viz = true;
+					//m_toggle_odometry_viz = true;
 					//break;
 				//case 'g':
 				//case 'G':
 					//std::cout << "Pressed g/G inside CDisplayWindow3D" << std::endl;
-					//m_toogle_GT_viz = true;
+					//m_toggle_GT_viz = true;
 					//break;
 
 				//case 'm':
 				//case 'M':
 					//std::cout << "Pressed m/M inside CDisplayWindow3D" << std::endl;
-					//m_toogle_map_viz = true;
+					//m_toggle_map_viz = true;
 					//break;
 
 				//case 't':
 				//case 'T':
 					//std::cout << "Pressed t/T inside CDisplayWindow3D" << std::endl;
-					//m_toogle_estimated_traj_viz = true;
+					//m_toggle_estimated_traj_viz = true;
 					//break;
 
 				//case 'l':
 				//case 'L':
 					//std::cout << "Pressed l/L inside CDisplayWindow3D" << std::endl;
-					//m_toogle_laser_scans_viz = true;
+					//m_toggle_laser_scans_viz = true;
 					//break;
 
 				default:

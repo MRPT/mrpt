@@ -360,7 +360,7 @@ void CICPGoodnessERD_t<GRAPH_t>::setWindowManagerPtr(
 
 		m_win_observer = m_win_manager->observer;
 		if (m_win_observer) {
-			m_win_observer->registerKeystroke("l", "Toogle LaserScans Visualization");
+			m_win_observer->registerKeystroke("l", "Toggle LaserScans Visualization");
 		}
 	}
 
@@ -372,16 +372,16 @@ void CICPGoodnessERD_t<GRAPH_t>::notifyOfWindowEvents(
 
 	// I know the key exists - I put it there explicitly
 	if (events_occurred.find(params.keystroke_laser_scans)->second) {
-		this->toogleLaserScansVisualization();
+		this->toggleLaserScansVisualization();
 	}
 
 	MRPT_END;
 }
 
 template<class GRAPH_t>
-void CICPGoodnessERD_t<GRAPH_t>::toogleLaserScansVisualization() {
+void CICPGoodnessERD_t<GRAPH_t>::toggleLaserScansVisualization() {
 	MRPT_START;
-	std::cout << "Toogling LaserScans visualization..." << std::endl;
+	std::cout << "Toggling LaserScans visualization..." << std::endl;
  
 	COpenGLScenePtr scene = m_win->get3DSceneAndLock();
 
@@ -571,7 +571,7 @@ void CICPGoodnessERD_t<GRAPH_t>::dumpVisibilityErrorMsg(
 		std::string viz_flag, int sleep_time /* = 500 milliseconds */) {
 	MRPT_START;
 	
-	std::cout << format("Cannot toogle visibility of specified object.\n "
+	std::cout << format("Cannot toggle visibility of specified object.\n "
 			"Make sure that the corresponding visualization flag ( %s "
 			") is set to true in the .ini file.\n", 
 			viz_flag.c_str()).c_str() << std::endl;

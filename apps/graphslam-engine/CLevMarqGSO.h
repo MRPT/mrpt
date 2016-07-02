@@ -81,6 +81,7 @@ class CLevMarqGSO_t:
 				void 	dumpToTextStream(mrpt::utils::CStream &out) const;
 
 				TParametersDouble cfg;
+				bool optimization_on_second_thread;
     };
 
 		void loadParams(const std::string& source_fname);
@@ -101,6 +102,7 @@ class CLevMarqGSO_t:
 				TParametersDouble cfg;
 				bool visualize_optimized_graph;
 				// textMessage parameters
+				std::string keystroke_graph;
  				int text_index_graph;
  				double offset_y_graph;
 
@@ -121,18 +123,29 @@ class CLevMarqGSO_t:
 
   	// Private methods
 		void optimizeGraph();
-
+		/**
+		 * Wrapper around optimizeGraph which first locks the section and then
+		 * calls the optimizeGraph method
+		 * \sa optimizegraph()
+		 */
+  	void optimizeGraph_2ndThread();
+		void initGraphVisualization();
 		/**
 		 * Called internally for updating the vizualization scene for the graph
 		 * building procedure
 		 */
 		inline void updateGraphVisualization();
+		/**
+		 * togle the graph visualization on and off
+		 */
+		void toggleGraphVisualization();
 
 		// Private members
 		//////////////////////////////////////////////////////////////
 		GRAPH_t* m_graph;
 		mrpt::gui::CDisplayWindow3D* m_win;
 		mrpt::gui::CWindowManager_t* m_win_manager;
+		mrpt::gui::CWindowObserver* m_win_observer;
 		mrpt::synch::CCriticalSection* m_graph_section;
 
 		std::string m_rawlog_fname;
