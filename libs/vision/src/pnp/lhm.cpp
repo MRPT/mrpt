@@ -13,9 +13,9 @@ mrpt::vision::lhm::lhm(Eigen::MatrixXd obj_pts_, Eigen::MatrixXd img_pts_, Eigen
 	cam_intrinsic = cam_;
 	n = n0;
 
-	//cout << "obj_pts_=" << endl << obj_pts_ << endl << endl;
-	//cout << "img_pts_=" << endl << img_pts_ << endl << endl;
-	//cout << "cam_=" << endl << cam_ << endl << endl;
+	std::cout << "obj_pts_=" << std::endl << obj_pts_ << std::endl << std::endl;
+	std::cout << "img_pts_=" << std::endl << img_pts_ << std::endl << std::endl;
+	std::cout << "cam_=" << std::endl << cam_ << std::endl << std::endl;
 
 
 	// Store obj_pts as 3XN and img_projections as 2XN matrices 
@@ -24,8 +24,8 @@ mrpt::vision::lhm::lhm(Eigen::MatrixXd obj_pts_, Eigen::MatrixXd img_pts_, Eigen
 
 	Q = img_pts.transpose();
 
-	//cout << "P=" << endl << P << endl << endl;
-	//cout << "Q=" << endl << Q << endl << endl;
+	std::cout << "P=" << std::endl << P << std::endl << std::endl;
+	std::cout << "Q=" << std::endl << Q << std::endl << std::endl;
 
 	t.setZero();
 }
@@ -44,7 +44,7 @@ void mrpt::vision::lhm::xform()
 	for (int i = 0; i < n; i++)
 		Q.col(i) = R*P.col(i) + t;
 
-	//cout << "Q_xform =" << endl << Q << endl << endl;
+	std::cout << "Q_xform =" << std::endl << Q << std::endl << std::endl;
 }
 
 Eigen::Matrix4d mrpt::vision::lhm::qMatQ(Eigen::VectorXd q)
@@ -82,8 +82,8 @@ void mrpt::vision::lhm::absKernel()
 	P_bar = P.rowwise().mean();
 	Q_bar = Q.rowwise().mean();
 
-	//cout<<"P_bar="<<endl<<P_bar<<endl<<endl;
-	//cout<<"Q_bar="<<endl<<Q_bar<<endl<<endl;
+	//std::cout<<"P_bar="<<std::endl<<P_bar<<std::endl<<std::endl;
+	//std::cout<<"Q_bar="<<std::endl<<Q_bar<<std::endl<<std::endl;
 
 	for (i = 0; i < n; i++)
 	{
@@ -91,8 +91,8 @@ void mrpt::vision::lhm::absKernel()
 		Q.col(i) = Q.col(i) - Q_bar;
 	}
 
-	//cout<<"P="<<endl<<P<<endl<<endl;
-	//cout<<"Q="<<endl<<Q<<endl<<endl;
+	//std::cout<<"P="<<std::endl<<P<<std::endl<<std::endl;
+	//std::cout<<"Q="<<std::endl<<Q<<std::endl<<std::endl;
 
 	//<------------------- Use SVD Solution ------------------->//
 	/*
@@ -179,17 +179,17 @@ void mrpt::vision::lhm::absKernel()
 
 	V = V_mat.col(max_index);
 
-	//cout << "D=" << endl << D << endl << endl;
-	//cout << "V=" << endl << V << endl << endl;
+	//std::cout << "D=" << std::endl << D << std::endl << std::endl;
+	//std::cout << "V=" << std::endl << V << std::endl << std::endl;
 
 	Eigen::Quaterniond q(V(0), V(1), V(2), V(3));
 
 	R = q.toRotationMatrix();
 
-	//cout << "R=" << endl << R << endl << endl;
+	//std::cout << "R=" << std::endl << R << std::endl << std::endl;
 
 	estimate_t();
-	//cout << "t=" << endl << t << endl << endl;
+	//std::cout << "t=" << std::endl << t << std::endl << std::endl;
 
 
 	err2 = 0;
@@ -198,7 +198,7 @@ void mrpt::vision::lhm::absKernel()
 	Eigen::Vector3d vec;
 	Eigen::Matrix3d I3 = Eigen::MatrixXd::Identity(3, 3);
 
-	//cout << "Q_out=" << endl << Q << endl << endl;
+	//std::cout << "Q_out=" << std::endl << Q << std::endl << std::endl;
 
 	for (i = 0; i < n; i++)
 	{
@@ -206,7 +206,7 @@ void mrpt::vision::lhm::absKernel()
 		err2 += vec.squaredNorm();
 	}
 
-	//cout << "err2=" << err2 << endl << endl;
+	//std::cout << "err2=" << err2 << std::endl << std::endl;
 
 }
 
@@ -221,13 +221,11 @@ bool mrpt::vision::lhm::compute_pose(Eigen::Ref<Eigen::Matrix3d> R_, Eigen::Ref<
 
 	p_bar = P.rowwise().mean();
 
-	//cout<<"p_bar="<<endl << p_bar<<endl<<endl;
+	std::cout<<"p_bar="<< std::endl << p_bar<<std::endl<<std::endl;
 
-	//Q.setZero();
 	for (i = 0; i<n; i++)
 	{
 		P.col(i) -= p_bar;
-		//Q.col(i) << img_pts(i, 0), img_pts(i, 1), 1;
 		F[i] = Q.col(i)*Q.col(i).transpose() / Q.col(i).squaredNorm();
 		sum_F = sum_F + F[i];
 
@@ -235,11 +233,11 @@ bool mrpt::vision::lhm::compute_pose(Eigen::Ref<Eigen::Matrix3d> R_, Eigen::Ref<
 		//cout << F[i] << endl << endl;
 	}
 
-	//cout << "sum_F=" << endl << sum_F << endl << endl;
+	std::cout << "sum_F=" << std::endl << sum_F << std::endl << std::endl;
 
 	G = (I3 - sum_F / n).inverse() / n;
 
-	//cout << "G=" << endl << G << endl << endl;
+	std::cout << "G=" << std::endl << G << std::endl << std::endl;
 
 	err = 0;
 	err2 = 1000;
@@ -255,12 +253,16 @@ bool mrpt::vision::lhm::compute_pose(Eigen::Ref<Eigen::Matrix3d> R_, Eigen::Ref<
 		//cout << abs(err2 - err) << endl << err2 << endl << endl;
 
 		j += 1;
-		if (j > 20)
+		if (j > 100)
 			break;
 	}
 
 	R_ = R;
 	t_ = t - R*p_bar;
+    
+    std::cout<< "R=" << std::endl << R_ << std::endl << std::endl;
+    std::cout<< "t=" << std::endl << t_ << std::endl << std::endl;
+    
 
 	return 1;
 
