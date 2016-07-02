@@ -195,6 +195,11 @@ void CPTG_Holo_Blend::readFromStream(mrpt::utils::CStream &in, int version)
 	switch (version)
 	{
 	case 0:
+	case 1:
+		if (version>=1) {
+			CPTG_RobotShape_Circular::internal_shape_loadFromStream(in);
+		}
+
 		in >> T_ramp >> V_MAX >> W_MAX >> turningRadiusReference;
 		break;
 	default:
@@ -206,11 +211,13 @@ void CPTG_Holo_Blend::writeToStream(mrpt::utils::CStream &out, int *version) con
 {
 	if (version) 
 	{
-		*version = 0;
+		*version = 1;
 		return;
 	}
 
 	CParameterizedTrajectoryGenerator::internal_writeToStream(out);
+	CPTG_RobotShape_Circular::internal_shape_saveToStream(out);
+
 	out << T_ramp << V_MAX << W_MAX << turningRadiusReference;
 }
 
