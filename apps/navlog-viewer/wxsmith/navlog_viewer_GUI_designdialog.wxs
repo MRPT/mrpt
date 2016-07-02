@@ -285,6 +285,10 @@
 			<handler function="OntimAutoloadTrigger" entry="EVT_TIMER" />
 		</object>
 		<object class="wxMenu" variable="mnuMoreOps" member="yes">
+			<object class="wxMenuItem" name="ID_MENUITEM2" variable="mnuSeePTGParams" member="yes">
+				<label>See PTG params...</label>
+				<handler function="OnmnuSeePTGParamsSelected" entry="EVT_MENU" />
+			</object>
 			<object class="wxMenuItem" name="ID_MENUITEM1" variable="mnuMatlabPlots" member="yes">
 				<label>Export map plot to MATLAB...</label>
 				<handler function="OnmnuMatlabPlotsSelected" entry="EVT_MENU" />

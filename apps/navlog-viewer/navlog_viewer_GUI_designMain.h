@@ -59,6 +59,7 @@ class navlog_viewer_GUI_designDialog: public wxFrame //wxDialog
 		void OntimAutoloadTrigger(wxTimerEvent& event);
 		void OnbtnMoreOpsClick(wxCommandEvent& event);
 		void OnmnuMatlabPlotsSelected(wxCommandEvent& event);
+		void OnmnuSeePTGParamsSelected(wxCommandEvent& event);
 		//*)
 
 		//(*Identifiers(navlog_viewer_GUI_designDialog)
@@ -85,6 +86,7 @@ class navlog_viewer_GUI_designDialog: public wxFrame //wxDialog
 		static const long ID_PANEL1;
 		static const long ID_TIMER1;
 		static const long ID_TIMER2;
+		static const long ID_MENUITEM2;
 		static const long ID_MENUITEM1;
 		//*)
 

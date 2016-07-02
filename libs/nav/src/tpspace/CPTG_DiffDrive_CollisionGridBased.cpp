@@ -798,6 +798,7 @@ void CPTG_DiffDrive_CollisionGridBased::updateTPObstacle(
 void CPTG_DiffDrive_CollisionGridBased::internal_readFromStream(mrpt::utils::CStream &in)
 {
 	CParameterizedTrajectoryGenerator::internal_readFromStream(in);
+	CPTG_RobotShape_Polygonal::internal_shape_loadFromStream(in);
 
 	uint8_t version;
 	in >> version;
@@ -819,6 +820,7 @@ void CPTG_DiffDrive_CollisionGridBased::internal_readFromStream(mrpt::utils::CSt
 void CPTG_DiffDrive_CollisionGridBased::internal_writeToStream(mrpt::utils::CStream &out) const
 {
 	CParameterizedTrajectoryGenerator::internal_writeToStream(out);
+	CPTG_RobotShape_Polygonal::internal_shape_saveToStream(out);
 
 	const uint8_t version = 0;
 	out << version;

@@ -32,6 +32,8 @@
 
 #include <mrpt/system.h>
 #include <mrpt/utils/CFileInputStream.h>
+#include <mrpt/utils/CConfigFileMemory.h>
+#include <mrpt/utils/CConfigFilePrefixer.h>
 #include <mrpt/math/utils.h>
 #include <mrpt/utils/printf_vector.h>
 #include <mrpt/opengl/CSetOfLines.h>
@@ -75,6 +77,7 @@ const long navlog_viewer_GUI_designDialog::ID_BUTTON6 = wxNewId();
 const long navlog_viewer_GUI_designDialog::ID_PANEL1 = wxNewId();
 const long navlog_viewer_GUI_designDialog::ID_TIMER1 = wxNewId();
 const long navlog_viewer_GUI_designDialog::ID_TIMER2 = wxNewId();
+const long navlog_viewer_GUI_designDialog::ID_MENUITEM2 = wxNewId();
 const long navlog_viewer_GUI_designDialog::ID_MENUITEM1 = wxNewId();
 //*)
 
@@ -116,6 +119,7 @@ navlog_viewer_GUI_designDialog::navlog_viewer_GUI_designDialog(wxWindow* parent,
     //(*Initialize(navlog_viewer_GUI_designDialog)
     wxStaticBoxSizer* StaticBoxSizer2;
     wxFlexGridSizer* FlexGridSizer4;
+    wxMenuItem* mnuSeePTGParams;
     wxFlexGridSizer* FlexGridSizer3;
     wxFlexGridSizer* FlexGridSizer5;
     wxFlexGridSizer* FlexGridSizer2;
@@ -217,7 +221,9 @@ navlog_viewer_GUI_designDialog::navlog_viewer_GUI_designDialog(wxWindow* parent,
     SetSizer(FlexGridSizer1);
     timPlay.SetOwner(this, ID_TIMER1);
     timAutoload.SetOwner(this, ID_TIMER2);
-    timAutoload.Start(900, false);
+    timAutoload.Start(20, false);
+    mnuSeePTGParams = new wxMenuItem((&mnuMoreOps), ID_MENUITEM2, _("See PTG params..."), wxEmptyString, wxITEM_NORMAL);
+    mnuMoreOps.Append(mnuSeePTGParams);
     mnuMatlabPlots = new wxMenuItem((&mnuMoreOps), ID_MENUITEM1, _("Export map plot to MATLAB..."), wxEmptyString, wxITEM_NORMAL);
     mnuMoreOps.Append(mnuMatlabPlots);
     FlexGridSizer1->Fit(this);
@@ -233,6 +239,7 @@ navlog_viewer_GUI_designDialog::navlog_viewer_GUI_designDialog(wxWindow* parent,
     Connect(ID_BUTTON6,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&navlog_viewer_GUI_designDialog::OnbtnMoreOpsClick);
     Connect(ID_TIMER1,wxEVT_TIMER,(wxObjectEventFunction)&navlog_viewer_GUI_designDialog::OntimPlayTrigger);
     Connect(ID_TIMER2,wxEVT_TIMER,(wxObjectEventFunction)&navlog_viewer_GUI_designDialog::OntimAutoloadTrigger);
+    Connect(ID_MENUITEM2,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&navlog_viewer_GUI_designDialog::OnmnuSeePTGParamsSelected);
     Connect(ID_MENUITEM1,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&navlog_viewer_GUI_designDialog::OnmnuMatlabPlotsSelected);
     //*)
 
@@ -424,18 +431,18 @@ void navlog_viewer_GUI_designDialog::UpdateInfoFromLoadedLog()
 			const size_t vel_len = log.cmd_vel.size();
 			if (i==0) {
 				cmd_vels.resize( vel_len );
-				for (size_t k=0;k<vel_len;k++) 
+				for (size_t k=0;k<vel_len;k++)
 					cmd_vels[k].resize(N);
 			}
-			for (size_t k=0;k<vel_len;k++) 
+			for (size_t k=0;k<vel_len;k++)
 				cmd_vels[k][i] = log.cmd_vel[k];
 		}
 		win->clf();
 		const char cols [4] = {'r','b','k','g'};
-		for (size_t i=0;i<cmd_vels.size();i++) 
+		for (size_t i=0;i<cmd_vels.size();i++)
 		{
-			win->plot(cmd_vels[i],mrpt::format("%c-",cols[i%4]),mrpt::format("vc%u",(unsigned int)i)); 
-			win->plot(cmd_vels[i],mrpt::format("%c.",cols[i%4]),mrpt::format("vp%u",(unsigned int)i)); 
+			win->plot(cmd_vels[i],mrpt::format("%c-",cols[i%4]),mrpt::format("vc%u",(unsigned int)i));
+			win->plot(cmd_vels[i],mrpt::format("%c.",cols[i%4]),mrpt::format("vp%u",(unsigned int)i));
 		}
 		win->axis_fit();
 		switch (cmd_vels.size())
@@ -443,7 +450,7 @@ void navlog_viewer_GUI_designDialog::UpdateInfoFromLoadedLog()
 		case 2:
 			win->setWindowTitle("Commanded v (red)/w (blue)");
 			break;
-		case 4: 
+		case 4:
 			win->setWindowTitle("Commanded vel (red)/dir (blue)/T_ramp (black)/W (green)");
 			break;
 		};
@@ -458,32 +465,6 @@ void navlog_viewer_GUI_designDialog::UpdateInfoFromLoadedLog()
 
 	flexGridRightHand->RecalcSizes();
 	this->Fit();
-}
-
-// Aux function
-void add_robotShape_to_setOfLines(
-	const CVectorFloat &shap_x_,
-	const CVectorFloat &shap_y_, 
-	mrpt::opengl::CSetOfLines &gl_shape, 
-	const mrpt::poses::CPose2D &origin = mrpt::poses::CPose2D () )
-{
-	const int N = shap_x_.size();
-	if (N>=2 && N==shap_y_.size() )
-	{
-		// Transform coordinates:
-		CVectorDouble shap_x(N), shap_y(N),shap_z(N);
-		for (int i=0;i<N;i++) {
-			origin.composePoint(
-				shap_x_[i], shap_y_[i], 0,
-				shap_x[i],  shap_y[i],  shap_z[i]);
-		}
-
-		gl_shape.appendLine( shap_x[0], shap_y[0], shap_z[0], shap_x[1],shap_y[1],shap_z[1] );
-		for (int i=0;i<=shap_x.size();i++) {
-			const int idx = i % shap_x.size();
-			gl_shape.appendLineStrip( shap_x[idx],shap_y[idx], shap_z[idx]);
-		}
-	}
 }
 
 // ---------------------------------------------
@@ -510,7 +491,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 			win1->setPos(600,20);
 			win1->setCameraAzimuthDeg(-90);
 			win1->setCameraElevationDeg(90);
-			
+
 			{
 				mrpt::opengl::COpenGLScenePtr &scene = win1->get3DSceneAndLock();
 
@@ -573,6 +554,8 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 						const int selected_k = ptg->alpha2index( log.infoPerPTG[log.nSelectedPTG].desiredDirection );
 						float max_dist = ptg->getRefDistance();
 						gl_path->clear();
+						ptg->add_robotShape_to_setOfLines(*gl_path);
+
 						ptg->renderPathAsSimpleLine(selected_k,*gl_path,0.10, max_dist);
 						gl_path->setColor_u8( mrpt::utils::TColor(0xff,0x00,0x00) );
 
@@ -589,27 +572,27 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 									continue;
 								mrpt::math::TPose2D p;
 								ptg->getPathPose(selected_k, step, p);
-								add_robotShape_to_setOfLines(shap_x,shap_y, *gl_path, mrpt::poses::CPose2D(p) );
+								ptg->add_robotShape_to_setOfLines(*gl_path, mrpt::poses::CPose2D(p) );
 							}
 						}
 					}
+					{
+						// Robot shape:
+						mrpt::opengl::CSetOfLinesPtr   gl_shape;
+						mrpt::opengl::CRenderizablePtr gl_shape_r = scene->getByName("shape");  // Get or create if new
+						if (!gl_shape_r) {
+							gl_shape = mrpt::opengl::CSetOfLines::Create();
+							gl_shape->setName("shape");
+							gl_shape->setLineWidth(4.0);
+							gl_shape->setColor_u8( mrpt::utils::TColor(0xff,0x00,0x00) );
+							scene->insert(gl_shape);
+						} else {
+							gl_shape = mrpt::opengl::CSetOfLinesPtr(gl_shape_r);
+						}
+						gl_shape->clear();
+						ptg->add_robotShape_to_setOfLines(*gl_shape);
+					}
 				}
-			}
-			{
-				// Robot shape:
-				mrpt::opengl::CSetOfLinesPtr   gl_shape;
-				mrpt::opengl::CRenderizablePtr gl_shape_r = scene->getByName("shape");  // Get or create if new
-				if (!gl_shape_r) {
-					gl_shape = mrpt::opengl::CSetOfLines::Create();
-					gl_shape->setName("shape");
-					gl_shape->setLineWidth(4.0);
-					gl_shape->setColor_u8( mrpt::utils::TColor(0xff,0x00,0x00) );
-					scene->insert(gl_shape);
-				} else {
-					gl_shape = mrpt::opengl::CSetOfLinesPtr(gl_shape_r);
-				}
-				gl_shape->clear();
-				add_robotShape_to_setOfLines(shap_x,shap_y, *gl_shape);
 			}
 			{
 				// Target:
@@ -650,7 +633,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 		{
 			const CLogFileRecord::TInfoPerPTG &pI = log.infoPerPTG[nPTG];
 
-			mrpt::utils::TColorf col; 
+			mrpt::utils::TColorf col;
 			if (((int)nPTG)==log.nSelectedPTG)
 			     col = mrpt::utils::TColorf(1,1,1);
 			else col = mrpt::utils::TColorf(.8,.8,.8);
@@ -730,8 +713,8 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 		if (win)
 		{
 			std::vector<double> xs(2),ys(2);
-			xs[0] = i; xs[1] = i; 
-			ys[0] = -2.0; ys[1] = 2.0; 
+			xs[0] = i; xs[1] = i;
+			ys[0] = -2.0; ys[1] = 2.0;
 			win->plot(xs,ys,"k-3","cursor_time");
 		}
 	}
@@ -860,6 +843,36 @@ void navlog_viewer_GUI_designDialog::OnmnuMatlabPlotsSelected(wxCommandEvent& ev
     << "    Pts=[Pts;x+cc*sh(j,1)-ss*sh(j,2) y+ss*sh(j,1)+cc*sh(j,2) ];\n"
     << "end\n"
     << "plot(Pts(:,1),Pts(:,2)); hold on;\n";
+
+	WX_END_TRY
+}
+
+void navlog_viewer_GUI_designDialog::OnmnuSeePTGParamsSelected(wxCommandEvent& event)
+{
+	WX_START_TRY
+	
+	const std::string sSection = "PTG_PARAMS";
+	mrpt::utils::CConfigFileMemory cfg;
+
+	cfg.write(sSection,"PTG_COUNT",m_logdata_ptg_paths.size() );
+
+	CConfigFilePrefixer cfg_pre;
+	cfg_pre.bind(cfg);
+
+	for (size_t i=0;i<m_logdata_ptg_paths.size();i++)
+	{
+		mrpt::nav::CParameterizedTrajectoryGeneratorPtr ptg = m_logdata_ptg_paths[i];
+		if (!ptg) continue;
+
+		const std::string sKeyPrefix = mrpt::format("PTG%d_", (int)i );
+		cfg_pre.setPrefixes("",sKeyPrefix);
+
+		ptg->saveToConfigFile(cfg_pre, sSection);
+	}
+
+	const std::string sCfgText = cfg.getContent();
+
+	wxMessageBox( _U( sCfgText.c_str() ), _("PTG parameters as stored in the log:"), wxOK, this);
 
 	WX_END_TRY
 }

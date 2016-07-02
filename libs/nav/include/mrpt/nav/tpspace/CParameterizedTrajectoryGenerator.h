@@ -245,6 +245,8 @@ protected:
 		mrpt::math::CPolygon m_robotShape;
 		void loadShapeFromConfigFile(const mrpt::utils::CConfigFileBase & source,const std::string & section);
 		void saveToConfigFile(mrpt::utils::CConfigFileBase &cfg,const std::string &sSection) const;
+		void internal_shape_loadFromStream(mrpt::utils::CStream &in);
+		void internal_shape_saveToStream(mrpt::utils::CStream &out) const;
 		/** Loads a set of default parameters; provided  exclusively for the PTG-configurator tool. */
 		void loadDefaultParams();
 	};
@@ -273,6 +275,8 @@ protected:
 		double m_robotRadius;
 		void loadShapeFromConfigFile(const mrpt::utils::CConfigFileBase & source,const std::string & section);
 		void saveToConfigFile(mrpt::utils::CConfigFileBase &cfg,const std::string &sSection) const;
+		void internal_shape_loadFromStream(mrpt::utils::CStream &in);
+		void internal_shape_saveToStream(mrpt::utils::CStream &out) const;
 		/** Loads a set of default parameters; provided  exclusively for the PTG-configurator tool. */
 		void loadDefaultParams();
 	};
