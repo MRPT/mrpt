@@ -629,6 +629,10 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 			log.cur_vel.vx, log.cur_vel.vy, mrpt::utils::RAD2DEG(log.cur_vel.omega),
 			log.cur_vel_local.vx, log.cur_vel_local.vy, mrpt::utils::RAD2DEG(log.cur_vel_local.omega) ),
 			mrpt::utils::TColorf(1,1,1), "mono", fy, mrpt::opengl::NICE,  1 /*unique txt index*/ );
+		
+		win1->addTextMessage(5.0, 5+2*Ay, mrpt::format("robot_pose=%s",log.robotOdometryPose.asString().c_str()),
+			mrpt::utils::TColorf(1,1,1), "mono", fy, mrpt::opengl::NICE,  2 /*unique txt index*/ );
+
 		for (unsigned int nPTG=0;nPTG<log.nPTGs;nPTG++)
 		{
 			const CLogFileRecord::TInfoPerPTG &pI = log.infoPerPTG[nPTG];
@@ -638,7 +642,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 			     col = mrpt::utils::TColorf(1,1,1);
 			else col = mrpt::utils::TColorf(.8,.8,.8);
 
-			win1->addTextMessage(5.0, 5+ Ay*(2+nPTG),
+			win1->addTextMessage(5.0, 5+ Ay*(3+nPTG),
 				mrpt::format("PTG#%u: Eval=%5.03f factors=%s", nPTG, pI.evaluation, sprintf_vector("%5.02f ", pI.evalFactors).c_str() ),
 				col, "mono", fy, mrpt::opengl::NICE,  10+nPTG /*unique txt index*/ );
 
