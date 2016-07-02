@@ -438,6 +438,15 @@ void navlog_viewer_GUI_designDialog::UpdateInfoFromLoadedLog()
 			win->plot(cmd_vels[i],mrpt::format("%c.",cols[i%4]),mrpt::format("vp%u",(unsigned int)i)); 
 		}
 		win->axis_fit();
+		switch (cmd_vels.size())
+		{
+		case 2:
+			win->setWindowTitle("Commanded v (red)/w (blue)");
+			break;
+		case 4: 
+			win->setWindowTitle("Commanded vel (red)/dir (blue)/T_ramp (black)/W (green)");
+			break;
+		};
 	}
 
 	std::string sDuration("???");
