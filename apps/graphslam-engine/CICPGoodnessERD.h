@@ -125,7 +125,7 @@ template<
 						double ICP_goodness_thresh;
 						int LC_min_nodeid_diff;
 						bool visualize_laser_scans;
-						// keystroke to be used for the user to toogle the LaserScans from
+						// keystroke to be used for the user to toggle the LaserScans from
 						// the CDisplayWindow
 						std::string keystroke_laser_scans;
 						
@@ -161,7 +161,7 @@ template<
 		 				std::set<mrpt::utils::TNodeID> *nodes_set,
 						const mrpt::utils::TNodeID& cur_nodeID,
 						double distance );
-				void toogleLaserScansVisualization();
+				void toggleLaserScansVisualization();
 				void dumpVisibilityErrorMsg(std::string viz_flag, 
 						int sleep_time=500 /* ms */);
 				/**
