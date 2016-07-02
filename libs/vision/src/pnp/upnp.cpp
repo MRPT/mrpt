@@ -46,14 +46,15 @@
 \****************************************************************************************/
 
 #include <iostream>
+#include <limits>
 using namespace std;
 
 #include <opencv2/opencv.hpp>
 #include <opencv2/opencv_modules.hpp>
 using namespace cv;
 
-#include <mrpt/vision/pnp/upnp.h>
-#include <limits>
+#include "upnp.h"
+using namespace mrpt::vision;
 
 upnp::upnp(const Mat& cameraMatrix, const Mat& opoints, const Mat& ipoints)
 {

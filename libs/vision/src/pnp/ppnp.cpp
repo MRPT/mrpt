@@ -1,23 +1,24 @@
 #include <iostream>
 #include <eigen3/Eigen/Dense>
-#include <eigen3/Eigen/SVD>
-#include <mrpt/vision/pnp/ppnp.h>
+#include <eigen3/Eigen/SVD> 
 
-ppnp::ppnp(const Eigen::MatrixXd& obj_pts, const Eigen::MatrixXd& img_pts, const Eigen::MatrixXd& cam_intrinsic)
+#include "ppnp.h"
+
+mrpt::vision::ppnp::ppnp(const Eigen::MatrixXd& obj_pts, const Eigen::MatrixXd& img_pts, const Eigen::MatrixXd& cam_intrinsic)
 {
 	P = img_pts;
 	S = obj_pts;
 	C = cam_intrinsic;
 }
 
-ppnp::~ppnp()
+mrpt::vision::ppnp::~ppnp()
 {
 	P.resize(0,0);
 	S.resize(0,0);
 	C.resize(0,0);
 }
 
-bool ppnp::compute_pose(Eigen::Matrix3d& R, Eigen::VectorXd& t, int n)
+bool mrpt::vision::ppnp::compute_pose(Eigen::Matrix3d& R, Eigen::VectorXd& t, int n)
 {
 	double tol=0.01;
 	

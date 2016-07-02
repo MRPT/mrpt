@@ -2,10 +2,10 @@
 #include <cmath>
 #include <iostream>
 
-#include <mrpt/vision/pnp/polynom_solver.h>
-#include <mrpt/vision/pnp/p3p.h>
+#include "polynom_solver.h"
+#include "p3p.h"
 
-void p3p::init_inverse_parameters()
+void mrpt::vision::p3p::init_inverse_parameters()
 {
     inv_fx = 1. / fx;
     inv_fy = 1. / fy;
@@ -13,7 +13,7 @@ void p3p::init_inverse_parameters()
     cy_fy = cy / fy;
 }
 
-p3p::p3p(cv::Mat cameraMatrix)
+mrpt::vision::p3p::p3p(cv::Mat cameraMatrix)
 {
     if (cameraMatrix.depth() == CV_32F)
         init_camera_parameters<float>(cameraMatrix);
@@ -22,7 +22,7 @@ p3p::p3p(cv::Mat cameraMatrix)
     init_inverse_parameters();
 }
 
-p3p::p3p(double _fx, double _fy, double _cx, double _cy)
+mrpt::vision::p3p::p3p(double _fx, double _fy, double _cx, double _cy)
 {
     fx = _fx;
     fy = _fy;
@@ -31,7 +31,7 @@ p3p::p3p(double _fx, double _fy, double _cx, double _cy)
     init_inverse_parameters();
 }
 
-bool p3p::solve(cv::Mat& R, cv::Mat& tvec, const cv::Mat& opoints, const cv::Mat& ipoints)
+bool mrpt::vision::p3p::solve(cv::Mat& R, cv::Mat& tvec, const cv::Mat& opoints, const cv::Mat& ipoints)
 {
     double rotation_matrix[3][3], translation[3];
     std::vector<double> points;
@@ -55,7 +55,7 @@ bool p3p::solve(cv::Mat& R, cv::Mat& tvec, const cv::Mat& opoints, const cv::Mat
     return result;
 }
 
-bool p3p::solve(double R[3][3], double t[3],
+bool mrpt::vision::p3p::solve(double R[3][3], double t[3],
     double mu0, double mv0,   double X0, double Y0, double Z0,
     double mu1, double mv1,   double X1, double Y1, double Z1,
     double mu2, double mv2,   double X2, double Y2, double Z2,
@@ -92,7 +92,7 @@ bool p3p::solve(double R[3][3], double t[3],
     return true;
 }
 
-int p3p::solve(double R[4][3][3], double t[4][3],
+int mrpt::vision::p3p::solve(double R[4][3][3], double t[4][3],
     double mu0, double mv0,   double X0, double Y0, double Z0,
     double mu1, double mv1,   double X1, double Y1, double Z1,
     double mu2, double mv2,   double X2, double Y2, double Z2)
@@ -166,7 +166,7 @@ int p3p::solve(double R[4][3][3], double t[4][3],
 /// \returns Number of solutions.
 /// WARNING: NOT ALL THE DEGENERATE CASES ARE IMPLEMENTED
 
-int p3p::solve_for_lengths(double lengths[4][3], double distances[3], double cosines[3])
+int mrpt::vision::p3p::solve_for_lengths(double lengths[4][3], double distances[3], double cosines[3])
 {
     double p = cosines[0] * 2;
     double q = cosines[1] * 2;
@@ -258,7 +258,7 @@ int p3p::solve_for_lengths(double lengths[4][3], double distances[3], double cos
     return nb_solutions;
 }
 
-bool p3p::align(double M_end[3][3],
+bool mrpt::vision::p3p::align(double M_end[3][3],
     double X0, double Y0, double Z0,
     double X1, double Y1, double Z1,
     double X2, double Y2, double Z2,
@@ -330,7 +330,7 @@ bool p3p::align(double M_end[3][3],
     return true;
 }
 
-bool p3p::jacobi_4x4(double * A, double * D, double * U)
+bool mrpt::vision::p3p::jacobi_4x4(double * A, double * D, double * U)
 {
     double B[4], Z[4];
     double Id[16] = {1., 0., 0., 0.,

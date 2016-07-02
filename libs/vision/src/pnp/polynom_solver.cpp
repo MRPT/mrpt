@@ -1,4 +1,4 @@
-#include <mrpt/vision/pnp/polynom_solver.h>
+#include "polynom_solver.h"
 
 #include <math.h>
 #include <iostream>

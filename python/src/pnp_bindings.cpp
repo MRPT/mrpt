@@ -8,7 +8,7 @@ using namespace boost::python;
 #include <eigen3/Eigen/Dense>
 using namespace Eigen;
 
-#include <mrpt/vision/pnp/pnp_algos.h>
+#include <mrpt/vision/pnp_algos.h>
 pnp::CPnP pnp_algos;
 
 #include <opencv2/opencv.hpp>
