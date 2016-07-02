@@ -26,6 +26,8 @@ using namespace std;
 #include <opencv2/opencv.hpp>
 #include <opencv2/core/eigen.hpp>
 
+#include "lhm.h"
+
 int CPnP::CPnP_dls(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<Eigen::MatrixXd> img_pts, int n, const Eigen::Ref<Eigen::MatrixXd> cam_intrinsic, Eigen::Ref<Eigen::MatrixXd> pose_mat){
 	
 	Eigen::MatrixXd cam_in_eig=cam_intrinsic.array().transpose(), img_pts_eig=img_pts.array().transpose(), obj_pts_eig=obj_pts.array().transpose(), t_eig;
@@ -237,3 +239,21 @@ int CPnP::CPnP_posit(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref
 }
 
 
+int CPnP::CPnP_lhm(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<Eigen::MatrixXd> img_pts, int n, const Eigen::Ref<Eigen::MatrixXd> cam_intrinsic, Eigen::Ref<Eigen::MatrixXd> pose_mat)
+{
+    Eigen::Matrix3d R;
+	Eigen::Vector3d t;
+	
+	Eigen::MatrixXd obj_pts_=obj_pts.array().transpose(), img_pts_=img_pts.array().transpose();
+    
+    mrpt::vision::lhm l(obj_pts_, img_pts_, cam_intrinsic, n);
+    
+    int ret = l.compute_pose(R,t);
+    
+    Eigen::Quaterniond q(R);
+    
+    pose_mat<<t,q.vec();
+    
+    return ret;
+    
+}
