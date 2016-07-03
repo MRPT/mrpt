@@ -43,10 +43,10 @@ namespace mrpt
 		  *   and it must always consist of these steps:
 		  *
 		  * \code
-		  *   CDisplayWindow3D	win("My window");
+		  *   mrpt::gui::CDisplayWindow3D	win("My window");
 		  *
 		  *   // Adquire the scene:
-		  *   opengl::COpenGLScenePtr &ptrScene = win.get3DSceneAndLock();
+		  *   mrpt::opengl::COpenGLScenePtr &ptrScene = win.get3DSceneAndLock();
 		  *
 		  *   // Modify the scene:
 		  *   ptrScene->...
@@ -64,6 +64,22 @@ namespace mrpt
 		  *  of class COpenGLScene, then locking the window only for replacing the smart pointer. This may be
 		  *  advantageous is generating the 3D scene takes a long time, since while the window
 		  *  is locked it will not be responsive to the user input or window redraw.
+		  *
+		  * It is safer against exceptions to use the auxiliary class CDisplayWindow3DLocker. 
+		  * \code
+		  *   mrpt::gui::CDisplayWindow3D	win("My window");
+		  *   // ...
+		  *   { // The scene is adquired in this scope
+		  *      mrpt::opengl::COpenGLScenePtr ptrScene;
+		  *      mrpt::gui::CDisplayWindow3DLocker  locker(win,ptrScene);
+		  *      //...
+		  *      
+		  *   } // scene is unlocked upon dtor of `locker`
+		  * \endcode
+		  *
+		  * Notice however that a copy of the smart pointer is made, so replacement of the entire scene 
+		  * via `operator =` is not possible if using this method. Still, in general it should be preferred because 
+		  * the mutexes are automatically released in case of unexpected exceptions.
 		  *
 		  * The window can also display a set of 2D text messages overlapped to the 3D scene.
 		  *  See CDisplayWindow3D::addTextMessage
@@ -130,10 +146,11 @@ namespace mrpt
 			virtual ~CDisplayWindow3D();
 
 			/** Gets a reference to the smart shared pointer that holds the internal scene (carefuly read introduction in gui::CDisplayWindow3D before use!)
-			  *  This also locks the critical section for accesing the scene, thus the window will not be repainted until it is unlocked. */
-			opengl::COpenGLScenePtr & get3DSceneAndLock( );
+			  *  This also locks the critical section for accesing the scene, thus the window will not be repainted until it is unlocked. 
+			  * \note It is safer to use mrpt::gui::CDisplayWindow3DLocker instead.*/
+			mrpt::opengl::COpenGLScenePtr & get3DSceneAndLock( );
 
-			/** Unlocks the access to the internal 3D scene.
+			/** Unlocks the access to the internal 3D scene. It is safer to use mrpt::gui::CDisplayWindow3DLocker instead.
 			  *  Typically user will want to call forceRepaint after updating the scene. */
 			void  unlockAccess3DScene();
 
@@ -324,6 +341,25 @@ namespace mrpt
 
 		/** @} */
 
+		/** Auxiliary class for safely claiming the 3DScene of a mrpt::gui::CDisplayWindow3D. 
+		  * The mutex will be hold between ctor and dtor calls of objects of this class, safely releasing 
+		  * the lock upon exceptions. See example usage code in docs of mrpt::gui::CDisplayWindow3D
+		  *
+		  * \ingroup mrpt_gui_grp
+		  * \note New in MRPT 1.5.0
+		  */
+		class GUI_IMPEXP CDisplayWindow3DLocker
+		{
+		public:
+			/** Acquires the lock of the 3D scene of the referenced window, and returns a copy of the smart pointer to it. */
+			CDisplayWindow3DLocker(CDisplayWindow3D &win, mrpt::opengl::COpenGLScenePtr &out_scene_ptr);
+			/** Acquires the lock of the 3D scene of the referenced window. Use this signature when the scene object is not required. */
+			CDisplayWindow3DLocker(CDisplayWindow3D &win);
+			~CDisplayWindow3DLocker();
+
+		private:
+			CDisplayWindow3D &  m_win;
+		};
 
 	} // End of namespace
 } // End of namespace
