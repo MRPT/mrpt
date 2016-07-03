@@ -494,7 +494,9 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 			win1->setCameraElevationDeg(90);
 
 			{
-				mrpt::opengl::COpenGLScenePtr &scene = win1->get3DSceneAndLock();
+				mrpt::opengl::COpenGLScenePtr scene;
+				mrpt::gui::CDisplayWindow3DLocker  locker(*win1,scene);
+
 
 				// XY ground plane:
 				mrpt::opengl::CGridPlaneXYPtr gl_grid = mrpt::opengl::CGridPlaneXY::Create(-20,20, -20,20, 0, 1, 0.75f);
@@ -503,14 +505,13 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 
 				// XYZ corner at origin:
 				scene->insert( mrpt::opengl::stock_objects::CornerXYZSimple(1.0, 2.0) );
-
-				win1->unlockAccess3DScene();
 			}
 		}
 
 		// Update 3D view:
 		{
-			mrpt::opengl::COpenGLScenePtr &scene = win1->get3DSceneAndLock();
+			mrpt::opengl::COpenGLScenePtr scene;
+			mrpt::gui::CDisplayWindow3DLocker  locker(*win1,scene);
 
 			const CVectorFloat shap_x = log.robotShape_x, shap_y = log.robotShape_y;
 
@@ -614,8 +615,6 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 				gl_trg->setLocation(log.WS_target_relative.x,log.WS_target_relative.y,0);
 				gl_trg->insertPoint(0,0,0);
 			}
-
-			win1->unlockAccess3DScene();
 		}
 
 		// Show extra info as text msgs:

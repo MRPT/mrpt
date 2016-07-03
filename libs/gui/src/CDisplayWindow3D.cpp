@@ -1027,3 +1027,18 @@ void CDisplayWindow3D::setImageView_fast(mrpt::utils::CImage &img)
 }
 
 
+CDisplayWindow3DLocker::CDisplayWindow3DLocker(CDisplayWindow3D &win, mrpt::opengl::COpenGLScenePtr &out_scene_ptr) :
+	m_win(win)
+{
+	out_scene_ptr = m_win.get3DSceneAndLock();
+}
+CDisplayWindow3DLocker::CDisplayWindow3DLocker(CDisplayWindow3D &win) : 
+	m_win(win)
+{
+	m_win.get3DSceneAndLock();
+}
+CDisplayWindow3DLocker::~CDisplayWindow3DLocker()
+{
+	m_win.unlockAccess3DScene();
+}
+
