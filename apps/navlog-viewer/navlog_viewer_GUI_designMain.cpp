@@ -576,22 +576,22 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 								ptg->add_robotShape_to_setOfLines(*gl_path, mrpt::poses::CPose2D(p) );
 							}
 						}
-					}
-					{
-						// Robot shape:
-						mrpt::opengl::CSetOfLinesPtr   gl_shape;
-						mrpt::opengl::CRenderizablePtr gl_shape_r = scene->getByName("shape");  // Get or create if new
-						if (!gl_shape_r) {
-							gl_shape = mrpt::opengl::CSetOfLines::Create();
-							gl_shape->setName("shape");
-							gl_shape->setLineWidth(4.0);
-							gl_shape->setColor_u8( mrpt::utils::TColor(0xff,0x00,0x00) );
-							scene->insert(gl_shape);
-						} else {
-							gl_shape = mrpt::opengl::CSetOfLinesPtr(gl_shape_r);
+						{
+							// Robot shape:
+							mrpt::opengl::CSetOfLinesPtr   gl_shape;
+							mrpt::opengl::CRenderizablePtr gl_shape_r = scene->getByName("shape");  // Get or create if new
+							if (!gl_shape_r) {
+								gl_shape = mrpt::opengl::CSetOfLines::Create();
+								gl_shape->setName("shape");
+								gl_shape->setLineWidth(4.0);
+								gl_shape->setColor_u8( mrpt::utils::TColor(0xff,0x00,0x00) );
+								scene->insert(gl_shape);
+							} else {
+								gl_shape = mrpt::opengl::CSetOfLinesPtr(gl_shape_r);
+							}
+							gl_shape->clear();
+							ptg->add_robotShape_to_setOfLines(*gl_shape);
 						}
-						gl_shape->clear();
-						ptg->add_robotShape_to_setOfLines(*gl_shape);
 					}
 				}
 			}
