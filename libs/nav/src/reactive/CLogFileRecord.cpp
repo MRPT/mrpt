@@ -12,6 +12,7 @@
 #include <mrpt/nav/reactive/CLogFileRecord.h>
 #include <mrpt/poses/CPoint2D.h>
 #include <mrpt/utils/CStream.h>
+#include <mrpt/utils/stl_serialization.h>
 
 using namespace mrpt::nav;
 
@@ -39,7 +40,7 @@ CLogFileRecord::~CLogFileRecord()
 void  CLogFileRecord::writeToStream(mrpt::utils::CStream &out,int *version) const
 {
 	if (version)
-		*version = 11;
+		*version = 12;
 	else
 	{
 		uint32_t	i,n;
@@ -56,8 +57,8 @@ void  CLogFileRecord::writeToStream(mrpt::utils::CStream &out,int *version) cons
 			if (m) out.WriteBuffer((const void*)&(*infoPerPTG[i].TP_Obstacles.begin()), m * sizeof(infoPerPTG[i].TP_Obstacles[0]));
 
 			out << infoPerPTG[i].TP_Target;  // v8: CPoint2D -> TPoint2D
-			out << infoPerPTG[i].timeForTPObsTransformation << infoPerPTG[i].timeForHolonomicMethod;
-			out << infoPerPTG[i].desiredDirection << infoPerPTG[i].desiredSpeed << infoPerPTG[i].evaluation;
+			out << infoPerPTG[i].timeForTPObsTransformation << infoPerPTG[i].timeForHolonomicMethod; // made double in v12
+			out << infoPerPTG[i].desiredDirection << infoPerPTG[i].desiredSpeed << infoPerPTG[i].evaluation; // made double in v12
 			out << *infoPerPTG[i].HLFR;
 
 			// Version 9: Removed security distances. Added optional field with PTG info.
@@ -100,6 +101,8 @@ void  CLogFileRecord::writeToStream(mrpt::utils::CStream &out,int *version) cons
 		out << timestamp;
 
 		out << robotShape_radius; // v11
+
+		out << cmd_vel_filterings; // v12
 	}
 }
 
@@ -122,6 +125,7 @@ void  CLogFileRecord::readFromStream(mrpt::utils::CStream &in,int version)
 	case 9:
 	case 10:
 	case 11:
+	case 12:
 		{
 			// Version 0 --------------
 			uint32_t  i,n;
@@ -150,8 +154,17 @@ void  CLogFileRecord::readFromStream(mrpt::utils::CStream &in,int version)
 					infoPerPTG[i].TP_Target = mrpt::math::TPoint2D(pos);
 				}
 
-				in >> infoPerPTG[i].timeForTPObsTransformation >> infoPerPTG[i].timeForHolonomicMethod;
-				in >> infoPerPTG[i].desiredDirection >> infoPerPTG[i].desiredSpeed >> infoPerPTG[i].evaluation;
+				if (version>=12) {
+					in >> infoPerPTG[i].timeForTPObsTransformation >> infoPerPTG[i].timeForHolonomicMethod;
+					in >> infoPerPTG[i].desiredDirection >> infoPerPTG[i].desiredSpeed >> infoPerPTG[i].evaluation;
+				} else {
+					in.ReadAsAndCastTo<float,double>(infoPerPTG[i].timeForTPObsTransformation);
+					in.ReadAsAndCastTo<float,double>(infoPerPTG[i].timeForHolonomicMethod);
+					in.ReadAsAndCastTo<float,double>(infoPerPTG[i].desiredDirection);
+					in.ReadAsAndCastTo<float,double>(infoPerPTG[i].desiredSpeed);
+					in.ReadAsAndCastTo<float,double>(infoPerPTG[i].evaluation);
+				}
+
 				in >> infoPerPTG[i].HLFR;
 
 				if (version>=9) // Extra PTG info
@@ -302,6 +315,12 @@ void  CLogFileRecord::readFromStream(mrpt::utils::CStream &in,int version)
 				in >> robotShape_radius;
 			} else {
 				robotShape_radius = 0.5;
+			}
+
+			if (version>=12) {
+				in >> cmd_vel_filterings;
+			} else {
+				cmd_vel_filterings.clear();
 			}
 
 		} break;

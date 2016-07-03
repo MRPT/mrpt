@@ -155,6 +155,7 @@ namespace mrpt
 		CLogFileRecord lastLogRecord;  //!< The last log
 		//float last_cmd_v, last_cmd_w, new_cmd_v, new_cmd_w;  //!< Speed actual and last commands
 		std::vector<double> m_last_vel_cmd, m_new_vel_cmd; //!< Actual and last velocity commands
+		std::vector<std::vector<double> > m_cmd_vel_filterings; //!< Logged values of temporary vel cmds before reaching at the final value sent to the robot (for logging)
 
 		bool  navigationEndEventSent; //!< Will be false until the navigation end is sent, and it is reset with each new command
 		synch::CCriticalSection  m_critZoneLastLog,m_critZoneNavigating; //!< Critical zones
@@ -192,7 +193,7 @@ namespace mrpt
 		float  DIST_TO_TARGET_FOR_SENDING_EVENT;
 		float  meanExecutionPeriod;	//!< Runtime estimation of execution period of the method.
 		mrpt::utils::CTimeLogger m_timelogger;			//!< A complete time logger \sa enableTimeLog()
-
+		
 		/** For sending an alarm (error event) when it seems that we are not approaching toward the target in a while... */
 		float                    badNavAlarm_minDistTarget;
 		mrpt::system::TTimeStamp badNavAlarm_lastMinDistTime;
