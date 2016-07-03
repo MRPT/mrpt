@@ -405,6 +405,8 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 				}
 			}
 
+			double timeForTPObsTransformation=.0, timeForHolonomicMethod=.0;
+
 			// Normal PTG validity filter: check if target falls into the PTG domain:
 			if (ipf.valid_TP)
 			{
@@ -430,7 +432,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 				//  STEP3(b): Build TP-Obstacles
 				// -----------------------------------------------------------------------------
 				{
-					CTimeLoggerEntry tle(m_timelogger,"navigationStep.STEP3_WSpaceToTPSpace");
+					tictac.Tic();
 
 					// Initialize TP-Obstacles:
 					const size_t Ki = ptg->getAlphaValuesCount();
@@ -442,12 +444,16 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 					// Distances in TP-Space are normalized to [0,1]:
 					const double _refD = 1.0/ptg->getRefDistance();
 					for (size_t i=0;i<Ki;i++) ipf.TP_Obstacles[i] *= _refD;
+
+					timeForTPObsTransformation= tictac.Tac();
+					if (m_timelogger.isEnabled())
+						m_timelogger.registerUserMeasure("navigationStep.STEP3_WSpaceToTPSpace",timeForTPObsTransformation);
 				}
 
 				//  STEP4: Holonomic navigation method
 				// -----------------------------------------------------------------------------
 				{
-					CTimeLoggerEntry tle(m_timelogger,"navigationStep.STEP4_HolonomicMethod");
+					tictac.Tic();
 
 					ASSERT_(m_holonomicMethod[indexPTG])
 					m_holonomicMethod[indexPTG]->navigate(
@@ -473,6 +479,10 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 
 					// Scale:
 					holonomicMovement.speed *= velScale;
+
+					timeForHolonomicMethod = tictac.Tac();
+					if (m_timelogger.isEnabled())
+						m_timelogger.registerUserMeasure("navigationStep.STEP4_HolonomicMethod",timeForHolonomicMethod);
 				}
 
 				// STEP5: Evaluate each movement to assign them a "evaluation" value.
@@ -502,8 +512,8 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 				ipp.desiredDirection = holonomicMovement.direction;
 				ipp.desiredSpeed     = holonomicMovement.speed;
 				ipp.evaluation       = holonomicMovement.evaluation;
-				ipp.timeForTPObsTransformation = 0;  // XXX
-				ipp.timeForHolonomicMethod     = 0; // XXX
+				ipp.timeForTPObsTransformation = timeForTPObsTransformation;
+				ipp.timeForHolonomicMethod     = timeForHolonomicMethod;
 			}
 
 		} // end for each PTG
@@ -579,6 +589,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 			newLogRec.robotOdometryPose   = curPose;
 			newLogRec.WS_target_relative  = TPoint2D(relTarget.x(), relTarget.y());
 			newLogRec.cmd_vel             = m_new_vel_cmd;
+			newLogRec.cmd_vel_filterings  = m_cmd_vel_filterings;
 			newLogRec.nSelectedPTG        = nSelectedPTG;
 			newLogRec.executionTime       = executionTimeValue;
 			newLogRec.cur_vel             = curVel;
@@ -736,22 +747,27 @@ void CAbstractPTGBasedReactive::STEP7_GenerateSpeedCommands( const THolonomicMov
 	mrpt::utils::CTimeLoggerEntry tle(m_timelogger, "STEP7_GenerateSpeedCommands");
 	try
 	{
+		m_cmd_vel_filterings.clear();
 		if (in_movement.speed == 0)
 		{
 			// The robot will stop:
 			m_new_vel_cmd.assign(m_new_vel_cmd.size(), 0.0);
+			m_cmd_vel_filterings.push_back( m_new_vel_cmd );
 		}
 		else
 		{
 			// Take the normalized movement command:
 			in_movement.PTG->directionToMotionCommand( in_movement.PTG->alpha2index( in_movement.direction ), m_new_vel_cmd);
+			m_cmd_vel_filterings.push_back(m_new_vel_cmd);
 
 			// Scale holonomic speeds to real-world one:
 			m_robot.cmdVel_scale(m_new_vel_cmd, in_movement.speed);
+			m_cmd_vel_filterings.push_back(m_new_vel_cmd);
 
 			// Honor user speed limits & "blending":
 			const double beta = meanExecutionPeriod / (meanExecutionPeriod + SPEEDFILTER_TAU);
 			m_robot.cmdVel_limits(m_new_vel_cmd, m_last_vel_cmd, beta);
+			m_cmd_vel_filterings.push_back(m_new_vel_cmd);
 		}
 		
 		m_last_vel_cmd = m_new_vel_cmd; // Save for filtering in next step

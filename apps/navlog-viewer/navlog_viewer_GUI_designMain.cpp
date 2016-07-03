@@ -36,6 +36,7 @@
 #include <mrpt/utils/CConfigFilePrefixer.h>
 #include <mrpt/math/utils.h>
 #include <mrpt/utils/printf_vector.h>
+#include <mrpt/system/string_utils.h>
 #include <mrpt/opengl/CSetOfLines.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/CPointCloud.h>
@@ -621,7 +622,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 		// ---------------------------------
 		const double fy = 10, Ay = 15;   // Font size & line spaces
 
-		win1->addTextMessage(5.0, 5+0*Ay, mrpt::format("Timestamp: %s",mrpt::system::dateTimeLocalToString( log.timestamp ).c_str()),
+		win1->addTextMessage(5.0, 5+0*Ay, mrpt::format("Timestamp: %s",mrpt::system::dateTimeLocalToString( log.timestamp ).c_str() ),
 				mrpt::utils::TColorf(1,1,1), "mono", fy, mrpt::opengl::NICE,  0 /*unique txt index*/ );
 
 		win1->addTextMessage(5.0, 5+1*Ay, mrpt::format("cmd_vel=%s cur_vel=[%.02f m/s, %0.2f m/s, %.02f dps] cur_vel_local=[%.02f m/s, %0.2f m/s, %.02f dps]",
@@ -633,6 +634,23 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 		win1->addTextMessage(5.0, 5+2*Ay, mrpt::format("robot_pose=%s",log.robotOdometryPose.asString().c_str()),
 			mrpt::utils::TColorf(1,1,1), "mono", fy, mrpt::opengl::NICE,  2 /*unique txt index*/ );
 
+		{
+			std::stringstream ss;
+			ss << "filtered versions of cmd_vel: ";
+			for (size_t i=0;i<log.cmd_vel_filterings.size();i++)
+				ss << "#" << i << mrpt::utils::sprintf_vector("%.02f",log.cmd_vel_filterings[i]) << " ";
+
+			win1->addTextMessage(5.0, 5+3*Ay, ss.str(), mrpt::utils::TColorf(1,1,1), "mono", fy, mrpt::opengl::NICE,  3 /*unique txt index*/ );
+		}
+		
+		{
+			std::stringstream ss;
+			ss << "Performance: ";
+			for (size_t i=0;i<log.infoPerPTG.size();i++)
+				ss << "PTG#" << i << mrpt::format(" TPObs:%ss HoloNav:%ss |", mrpt::system::unitsFormat(log.infoPerPTG[i].timeForTPObsTransformation).c_str(),mrpt::system::unitsFormat(log.infoPerPTG[i].timeForHolonomicMethod).c_str());
+			win1->addTextMessage(5.0, 5+4*Ay, ss.str(), mrpt::utils::TColorf(1,1,1), "mono", fy, mrpt::opengl::NICE,  4 /*unique txt index*/ );
+		}
+
 		for (unsigned int nPTG=0;nPTG<log.nPTGs;nPTG++)
 		{
 			const CLogFileRecord::TInfoPerPTG &pI = log.infoPerPTG[nPTG];
@@ -642,7 +660,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 			     col = mrpt::utils::TColorf(1,1,1);
 			else col = mrpt::utils::TColorf(.8,.8,.8);
 
-			win1->addTextMessage(5.0, 5+ Ay*(3+nPTG),
+			win1->addTextMessage(5.0, 5+ Ay*(5+nPTG),
 				mrpt::format("PTG#%u: Eval=%5.03f factors=%s", nPTG, pI.evaluation, sprintf_vector("%5.02f ", pI.evalFactors).c_str() ),
 				col, "mono", fy, mrpt::opengl::NICE,  10+nPTG /*unique txt index*/ );
 
