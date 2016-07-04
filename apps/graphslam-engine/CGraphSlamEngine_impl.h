@@ -162,7 +162,6 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::ini
 	ASSERT_(m_has_read_config);
 	if (mrpt::system::strCmpI(m_GT_file_format, "rgbd_tum") && m_visualize_GT) {
 		// rotz
-		//double anglez = DEG2RAD(0);
 		double anglez = DEG2RAD(0);
 		const double tmpz[] = {
 			cos(anglez),     -sin(anglez), 0,
@@ -260,6 +259,7 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::ini
 	}
 
 	// keystrokes initialization
+	m_keystroke_pause_exec = "p";
 	m_keystroke_odometry = "o";
 	m_keystroke_GT = "g";
 	m_keystroke_estimated_trajectory = "t";
@@ -267,6 +267,8 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::ini
 
 	// Add additional keystrokes in the CDisplayWindow3D message box
 	if (m_win_observer) { 
+		m_win_observer->registerKeystroke(m_keystroke_pause_exec,
+				"Pause program execution");
 		m_win_observer->registerKeystroke(m_keystroke_odometry,
 				"Toggle Odometry visualization");
 		m_win_observer->registerKeystroke(m_keystroke_GT,
@@ -609,7 +611,7 @@ bool CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::par
 
 		// Query for events and take coresponding actions
 		if (m_win && m_win_observer) {
-			//this->queryObserverForEvents();
+			this->queryObserverForEvents();
 		}
 
 		if (m_request_to_exit) {
@@ -960,8 +962,9 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::ini
 	opengl::COpenGLViewportPtr viewp_range;
 
 	viewp_range = scene->createViewport("viewp_range");
-	// TODO - assign position using window_manager
-	viewp_range->setViewportPosition(0.78,0.34,0.20,0.20);
+	double x,y,h,w;
+	m_win_manager.assignViewportParameters(&x, &y, &w, &h);
+	viewp_range->setViewportPosition(x, y, h, w);
 
 	m_win->unlockAccess3DScene();
 	m_win->forceRepaint();
@@ -1002,8 +1005,9 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::ini
 	opengl::COpenGLViewportPtr viewp_intensity;
 
 	viewp_intensity = scene->createViewport("viewp_intensity");
-	// TODO - assign position using window_manager
-	viewp_intensity->setViewportPosition(0.78,0.56,0.20,0.20);
+	double x, y, w, h;
+	m_win_manager.assignViewportParameters(&x, &y, &w, &h);
+	viewp_intensity->setViewportPosition(x, y, w, h);
 
 	m_win->unlockAccess3DScene();
 	m_win->forceRepaint();
@@ -1039,8 +1043,9 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::ini
 	COpenGLViewportPtr viewp= scene->createViewport("curr_robot_pose_viewport");
 	// Add a clone viewport, using [0,1] factor X,Y,Width,Height coordinates:
 	viewp->setCloneView("main");
-	// TODO - assign position  using window_manager
-	viewp->setViewportPosition(0.78,0.78,0.20,0.20);
+	double x,y,h,w;
+	m_win_manager.assignViewportParameters(&x, &y, &w, &h);
+	viewp->setViewportPosition(x, y, h, w);
 	viewp->setTransparent(false);
 	viewp->getCamera().setAzimuthDegrees(90);
 	viewp->getCamera().setElevationDegrees(90);
@@ -1310,6 +1315,11 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::que
 	// Estimated Trajectory Visualization
 	if (events_occurred[m_keystroke_estimated_trajectory]) {
 		this->toggleEstimatedTrajectoryVisualization();
+	}
+	// pause program execution
+	if (events_occurred[m_keystroke_pause_exec]) {
+		std::cout << "*** Program paused.. Press any key in the *terminal* window to continue***" << std::endl;
+		mrpt::system::pause();
 	}
 
 	// notify the deciders/optimizer of any events they may be interested in

@@ -343,6 +343,7 @@ template<
 
 			// keystrokes for toggling the corresponding objects in the
 			// CDisplayWindow when user issues the specified keystroke
+			std::string m_keystroke_pause_exec;
 			std::string m_keystroke_odometry;
 			std::string m_keystroke_GT;
 			std::string m_keystroke_estimated_trajectory;

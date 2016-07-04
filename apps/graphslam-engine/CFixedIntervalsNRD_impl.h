@@ -205,7 +205,7 @@ void CFixedIntervalsNRD_t<GRAPH_t>::loadParams(const std::string& source_fname) 
 	MRPT_START;
 
 	params.loadFromConfigFileName(source_fname,
-			"NodeRegistrationDecidersParameters");
+			"NodeRegistrationDeciderParameters");
 
 	MRPT_END;
 }

@@ -75,6 +75,10 @@ template<
 		public mrpt::graphslam::deciders::CEdgeRegistrationDecider_t<GRAPH_t>,
 		public mrpt::graphslam::deciders::CRangeScanRegistrationDecider_t<GRAPH_t> {
 	  	public:
+				typedef mrpt::graphslam::deciders::CNodeRegistrationDecider_t<GRAPH_t> superA;
+				typedef mrpt::graphslam::deciders::CRangeScanRegistrationDecider_t<GRAPH_t> superB;
+
+
 				typedef typename GRAPH_t::constraint_t constraint_t;
 				// type of underlying poses (2D/3D)
 				typedef typename GRAPH_t::constraint_t::type_value pose_t;
@@ -211,6 +215,8 @@ template<
 				bool m_checked_for_usuable_dataset;
 				size_t m_consecutive_invalid_format_instances;
 				const size_t m_consecutive_invalid_format_instances_thres;
+
+				typename superB::TSlidingWindow sliding_win;
 
 		};
 

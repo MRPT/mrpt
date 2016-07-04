@@ -102,9 +102,9 @@ void CRangeScanRegistrationDecider_t<GRAPH_t>::getICPEdge(
 			(void*)&info);
 
 	//CStdOutStream cout_stream;
-	//std::cout << "For first laser scan: " << endl;
+	//std::cout << "For first laser scan: " << std::endl;
 	//from.getDescriptionAsText(std::cout);
-	//std::cout << "For second laser scan: " << endl;
+	//std::cout << "For second laser scan: " << std::endl;
 	//to.getDescriptionAsText(std::cout);
 
 	std::cout << "ICP Alignment operation: \n" 
@@ -119,8 +119,8 @@ void CRangeScanRegistrationDecider_t<GRAPH_t>::getICPEdge(
 	// copy fro the 3D PDF
 	rel_edge->copyFrom(*pdf);
 
-	//std::cout << "3D Pose from alignment: " << pdf->getMeanVal() << endl;
-	//std::cout << "2D corresponding pose : " << rel_edge->getMeanVal() << endl;
+	//std::cout << "3D Pose from alignment: " << pdf->getMeanVal() << std::endl;
+	//std::cout << "2D corresponding pose : " << rel_edge->getMeanVal() << std::endl;
 
 	// if given, fill the TReturnInfo Struct
 	if (icp_info) {
@@ -185,6 +185,205 @@ void CRangeScanRegistrationDecider_t<GRAPH_t>::convert3DTo2DRangeScan(
 	}
 }
 
+// TSlidingWindow
+// //////////////////////////////////
+
+template<class GRAPH_t>
+CRangeScanRegistrationDecider_t<GRAPH_t>::TSlidingWindow::TSlidingWindow(
+		double win_size /* = 10 */ ) {
+	MRPT_START;
+
+	m_win_size = win_size;
+
+	// use mean by default for deciding whether to accept an ICP goodenss value (
+	// goodness > getMean() )
+	m_evaluate_using_mean = true;
+
+	m_is_initialized = false;
+	m_mean_updated = false;
+	m_median_updated = false;
+	
+	MRPT_END;
+}
+template<class GRAPH_t>
+CRangeScanRegistrationDecider_t<GRAPH_t>::TSlidingWindow::~TSlidingWindow() { }
+template<class GRAPH_t>
+inline double CRangeScanRegistrationDecider_t<GRAPH_t>::TSlidingWindow::getMedian() {
+	MRPT_START;
+
+	double median_out = 0.0;
+	if (m_goodness_vec.empty()) {
+		return 0.0;
+	}
+	if (m_median_updated) {
+		median_out = m_median_cached;
+	}
+	else {
+		// copy the current goodness vector, sort it and return value in middle
+		std::vector<double> goodness_vec_sorted(m_goodness_vec);
+		std::sort(goodness_vec_sorted.begin(), goodness_vec_sorted.end());
+
+		//for (std::vector<double>::const_iterator it = m_goodness_vec.begin();
+				//it != m_goodness_vec.end(); ++it ) {
+			//std::cout << "vector sorted: " << std::endl;
+			//ss_out << "\t" << *it << std::endl;
+		//}
+
+		median_out = goodness_vec_sorted.at(goodness_vec_sorted.size()/2);
+
+		m_median_cached = median_out;
+		m_median_updated = true;
+	}
+
+	return median_out;
+
+	MRPT_END;
+}
+template<class GRAPH_t>
+inline double CRangeScanRegistrationDecider_t<GRAPH_t>::TSlidingWindow::getMean() {
+	MRPT_START;
+
+	double m_mean_out = 0.0;
+
+	if (m_mean_updated) {
+		m_mean_out = m_mean_cached;
+	}
+	else {
+		m_mean_out = std::accumulate(m_goodness_vec.begin(), m_goodness_vec.end(), 0.0);
+		m_mean_out /= m_goodness_vec.size();
+
+		m_mean_cached = m_mean_out;
+		m_mean_updated = true;
+	}
+
+	return m_mean_out;
+
+	MRPT_END;
+}
+template<class GRAPH_t>
+inline bool CRangeScanRegistrationDecider_t<GRAPH_t>::TSlidingWindow::evaluateICPgoodness( 
+		double goodness) {
+	MRPT_START;
+
+	double threshold = 0;
+
+	if (m_evaluate_using_mean) {
+		threshold = this->getMean();
+	}
+	else  {
+		threshold = this->getMedian();
+	}
+
+	return (goodness > threshold);
+
+	MRPT_END;
+}
+
+template<class GRAPH_t>
+inline void CRangeScanRegistrationDecider_t<GRAPH_t>::TSlidingWindow::addNewMeasurement(
+		double goodness_val ) {
+	MRPT_START;
+
+	m_is_initialized = true;
+
+	// if I haven't already filled up to win_size the vector, just add it
+	if ( m_win_size > m_goodness_vec.size() ) {
+		m_goodness_vec.push_back(goodness_val);
+	}
+	else {
+		// remove first element - add it as last element
+		m_goodness_vec.erase(m_goodness_vec.begin());
+		m_goodness_vec.push_back(goodness_val);
+	}
+
+	m_mean_updated = false;
+	m_median_updated = false;
+
+	MRPT_END;
+}
+template<class GRAPH_t>
+void CRangeScanRegistrationDecider_t<GRAPH_t>::TSlidingWindow::resizeWindow(
+		size_t new_size ) {
+	MRPT_START;
+
+	size_t curr_size = m_goodness_vec.size();
+	if ( new_size < curr_size ) {
+		// remove (curr_size - new_size) elements from the beginning of the
+		// goodness vector
+		m_goodness_vec.erase(m_goodness_vec.begin(), 
+				m_goodness_vec.begin() + (curr_size - new_size));
+
+		m_mean_updated = false;
+		m_median_updated = false;
+	}
+
+	m_win_size = new_size;
+
+	MRPT_END;
+}
+template<class GRAPH_t>
+void CRangeScanRegistrationDecider_t<GRAPH_t>::TSlidingWindow::loadFromConfigFile(
+		const mrpt::utils::CConfigFileBase& source,
+    const std::string& section) {
+  MRPT_START;
+	
+	size_t sliding_win_size = source.read_int(
+			section,
+			"sliding_win_size",
+			10, false);
+	std::string compute_ICP_threshold_using  = source.read_string(
+			section,
+			"compute_ICP_threshold_using",
+			"mean", false);
+
+	this->resizeWindow(sliding_win_size);
+	this->setEvaluationCriterion(compute_ICP_threshold_using);
+
+	std::cout << "section: " << section << std::endl;
+	std::cout << "sliding_win_size: " << sliding_win_size << std::endl;
+	std::cout << "m_win_size: " << m_win_size << std::endl;
+
+  MRPT_END;
+}
+template<class GRAPH_t>
+void CRangeScanRegistrationDecider_t<GRAPH_t>::TSlidingWindow::dumpToTextStream(
+		mrpt::utils::CStream &out) const {
+	MRPT_START;
+
+	out.printf("-----------[ Sliding Window Properties ]-----------\n");
+	out.printf("Goodness Vector: \n");
+	for (std::vector<double>::const_iterator it = m_goodness_vec.begin();
+			it != m_goodness_vec.end(); ++it ) {
+		out.printf("\t%.2f\n", *it);
+	}
+	out.printf("\n");
+
+	out.printf("m_mean_cached       : %.2f\n" , m_mean_cached);
+	out.printf("m_median_cached     : %.2f\n" , m_median_cached);
+	out.printf("m_mean_updated      : %d\n"   , m_mean_updated);
+	out.printf("m_median_updated    : %d\n"   , m_median_updated);
+	out.printf("m_win_size          : %lu\n"  , m_win_size);
+	out.printf("m_is_initialized    : %d\n"   , m_is_initialized);
+	out.printf("Evaluate using mean : %d\n"   , m_evaluate_using_mean);
+
+	MRPT_END;
+}
+template<class GRAPH_t>
+void CRangeScanRegistrationDecider_t<GRAPH_t>::TSlidingWindow::setEvaluationCriterion(std::string criterion) {
+	MRPT_START;
+
+	ASSERTMSG_(mrpt::system::strCmpI(criterion, "mean") ||
+			mrpt::system::strCmpI(criterion, "median"),
+			format("\nEvaluation criterion %s is not available\n", 
+				criterion.c_str()));
+
+	m_evaluate_using_mean = 
+		mrpt::system::strCmpI(criterion, "mean") ? true : false;
+
+
+	MRPT_END;
+}
+
 
 // TParameter
 // //////////////////////////////////
@@ -202,14 +401,13 @@ template<class GRAPH_t>
 void CRangeScanRegistrationDecider_t<GRAPH_t>::TParams::dumpToTextStream(
 		mrpt::utils::CStream &out) const {
 	MRPT_START;
-	out.printf("------------------[ RangeScanRegistrationDecider ]------------------\n");
-	out.printf("Conversion Sensor label       = %s\n",
+	out.printf("3D=>2D LaserScan Conversion Sensor label       = %s\n",
 			conversion_sensor_label.c_str());
-	out.printf("Conversion angle sup          = %.2f deg\n",
+	out.printf("3D=>2D LaserScan Conversion angle sup          = %.2f deg\n",
 			mrpt::utils::RAD2DEG(conversion_angle_sup));
-	out.printf("Conversion angle inf          = %.2f deg\n",
+	out.printf("3D=>2D LaserScan Conversion angle inf          = %.2f deg\n",
 			mrpt::utils::RAD2DEG(conversion_angle_inf));
-	out.printf("Conversion oversampling ratio = %.2f\n",
+	out.printf("3D=>2D LaserScan Conversion oversampling ratio = %.2f\n",
 			conversion_oversampling_ratio);
 
 	icp.options.dumpToTextStream(out);
@@ -244,12 +442,12 @@ void CRangeScanRegistrationDecider_t<GRAPH_t>::TParams::loadFromConfigFile(
 	// load the icp parameters - from "ICP" section explicitly
 	icp.options.loadFromConfigFile(source, "ICP");
 
-	std::cout << "[CRangeScanRegistrationDecider:] Successfully loaded parameters. " 
-		<< std::endl;
 	has_read_config = true;
 
 	MRPT_END;
 }
+
+
 
 
 #endif /* end of include guard: CRANGESCANREGISTRATIONDECIDER_IMPL_H */
