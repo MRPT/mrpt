@@ -122,13 +122,17 @@ class CLevMarqGSO_t:
 				const double cur_sq_error );
 
   	// Private methods
-		void optimizeGraph();
+  	/**
+  	 * Optimize the given graph. Wrapper around the
+  	 * graphslam::optimize_spa_levmarq method
+  	 */
+		void _optimizeGraph();
 		/**
-		 * Wrapper around optimizeGraph which first locks the section and then
-		 * calls the optimizeGraph method
-		 * \sa optimizegraph()
+		 * Wrapper around _optimizeGraph which first locks the section and then
+		 * calls the _optimizeGraph method. Used in multithreaded optimization
+		 * \sa optimizeGraph()
 		 */
-  	void optimizeGraph_2ndThread();
+  	void optimizeGraph();
 		void initGraphVisualization();
 		/**
 		 * Called internally for updating the vizualization scene for the graph

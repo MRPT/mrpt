@@ -67,11 +67,11 @@ bool CLevMarqGSO_t<GRAPH_t>::updateOptimizerState(
 			// optimize the graph - run on a seperate thread
 			m_thread_optimize = mrpt::system::createThreadFromObjectMethod(
 					/*obj = */ this,
-					/* func = */ &CLevMarqGSO_t::optimizeGraph_2ndThread);
+					/* func = */ &CLevMarqGSO_t::optimizeGraph);
 
 		}
 		else { // single threaded implementation
-			this->optimizeGraph();
+			this->_optimizeGraph();
 		}
 
 	}
@@ -234,15 +234,15 @@ void CLevMarqGSO_t<GRAPH_t>::toggleGraphVisualization() {
 }
 
 template<class GRAPH_t>
-void CLevMarqGSO_t<GRAPH_t>::optimizeGraph_2ndThread() {
+void CLevMarqGSO_t<GRAPH_t>::optimizeGraph() {
 	MRPT_START;
 
-	std::cout << "[CLevMarqGSO:] In optimizeGraph_2ndThread" << std::endl;
+	std::cout << "[CLevMarqGSO:] In optimizeGraph" << std::endl;
 	std::cout << "\tThreadID: " << mrpt::system::getCurrentThreadId() << std::endl;
 	std::cout << "\tTrying to grab lock... " << std::endl;
 
 	mrpt::synch::CCriticalSectionLocker m_graph_lock(m_graph_section);
-	this->optimizeGraph();
+	this->_optimizeGraph();
 
 	std::cout << "\t2nd thread grabbed the lock.." << std::endl;
 
@@ -251,9 +251,9 @@ void CLevMarqGSO_t<GRAPH_t>::optimizeGraph_2ndThread() {
 
 // TODO - do something meaningful with these parameters
 template<class GRAPH_t>
-void CLevMarqGSO_t<GRAPH_t>::optimizeGraph() {
+void CLevMarqGSO_t<GRAPH_t>::_optimizeGraph() {
 	MRPT_START;
-	std::cout << "[CLevMarqGSO:] In optimizeGraph" << std::endl;
+	std::cout << "[CLevMarqGSO:] In _optimizeGraph" << std::endl;
 
 	CTicTac optimization_timer;
 	optimization_timer.Tic();

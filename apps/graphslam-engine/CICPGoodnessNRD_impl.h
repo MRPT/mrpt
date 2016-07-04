@@ -69,11 +69,14 @@ bool CICPGoodnessNRD_t<GRAPH_t>::updateDeciderState(
 					static_cast<mrpt::obs::CObservation3DRangeScanPtr>(observation);
 				m_curr_laser_scan3D->load();
 				m_curr_laser_scan3D->project3DPointsFromDepthImage();
-				// if first_time in initialize the m_last_laser_scan as well
+
+				// first_time call 
+				// Initialize the m_last_laser_scan as well
 				if (m_first_time_call3D) {
 					cout << "CICPGoodnessNRD: Registering first laser scan.." << endl;
 					m_last_laser_scan3D = m_curr_laser_scan3D;
 					m_first_time_call3D = false;
+
 					return false;
 				}
 
@@ -84,11 +87,13 @@ bool CICPGoodnessNRD_t<GRAPH_t>::updateDeciderState(
 				m_curr_laser_scan2D =
 					static_cast<mrpt::obs::CObservation2DRangeScanPtr>(observation);
 
-				// if first_time in initialize the m_last_laser_scan as well
+				// first_time call 
+				// Initialize the m_last_laser_scan as well
 				if (m_first_time_call2D) {
 					cout << "CICPGoodnessNRD: Registering first laser scan.." << endl;
 					m_last_laser_scan2D = m_curr_laser_scan2D;
 					m_first_time_call2D = false;
+
 					return false;
 				}
 
@@ -96,11 +101,13 @@ bool CICPGoodnessNRD_t<GRAPH_t>::updateDeciderState(
 			}
 
 			registered_new_node = this->checkRegistrationCondition();
+
 			//mrpt::system::pause();
 		}
 	}
 	else { // FORMAT #1
-		// TODO - implement this
+		
+
 	}
 
 	if (registered_new_node) {
@@ -141,7 +148,11 @@ bool CICPGoodnessNRD_t<GRAPH_t>::checkRegistrationCondition() {
 				&icp_info);
 	}
 
-	if (icp_info.goodness > params.ICP_goodness_thresh) {
+	// append current ICP edge to the sliding window to adjust the 
+	sliding_win.addNewMeasurement(icp_info.goodness);
+	sliding_win.dumpToConsole();
+
+	if (sliding_win.evaluateICPgoodness(icp_info.goodness)) {
 		m_since_prev_node_PDF += rel_edge;
 
 		// udpate the last laser scan
@@ -202,7 +213,12 @@ void CICPGoodnessNRD_t<GRAPH_t>::loadParams(const std::string& source_fname) {
 	MRPT_START;
 
 	params.loadFromConfigFileName(source_fname, 
-			"NodeRegistrationDecidersParameters");
+			"NodeRegistrationDeciderParameters");
+	sliding_win.loadFromConfigFileName(source_fname,
+			"NodeRegistrationDeciderParameters");
+
+	std::cout << "source_fname: " << source_fname << std::endl;
+	std::cout << "[CICPGoodnessNRD:] Successfully loaded parameters." << std::endl;
 
 	MRPT_END;
 }
@@ -211,6 +227,7 @@ void CICPGoodnessNRD_t<GRAPH_t>::printParams() const {
 	MRPT_START;
 
 	params.dumpToConsole();
+	sliding_win.dumpToConsole();
 
 	MRPT_END;
 }
@@ -233,8 +250,6 @@ void CICPGoodnessNRD_t<GRAPH_t>::TParams::dumpToTextStream(
 			registration_max_distance);
 	out.printf("Max Angle for registration    = %.2f deg\n",
 			RAD2DEG(registration_max_angle));
-	out.printf("ICP goodness threshold        = %.2f%% \n",
-			ICP_goodness_thresh*100);
 
 	decider.range_scanner_t::params.dumpToTextStream(out);
 
@@ -253,15 +268,10 @@ void CICPGoodnessNRD_t<GRAPH_t>::TParams::loadFromConfigFile(
 			"registration_max_angle",
 			10 /* degrees */, false);
 	registration_max_angle = DEG2RAD(registration_max_angle);
-	ICP_goodness_thresh = source.read_double(
-			section,
-			"ICP_goodness_thresh",
-	 		0.75, false);
 
 	// load the icp parameters - from "ICP" section explicitly
 	decider.range_scanner_t::params.loadFromConfigFile(source, "ICP");
 
-	std::cout << "Successfully loaded CICPGoodnessNRD parameters. " << std::endl;
 	MRPT_END;
 }
 

@@ -199,6 +199,8 @@ void CICPGoodnessERD_t<GRAPH_t>::checkRegistrationCondition2D(
 						NULL,
 						&icp_info);
 
+				sliding_win.addNewMeasurement(icp_info.goodness);
+
 				// criterion for registering a new node
 				if (icp_info.goodness > params.ICP_goodness_thresh) {
 					this->registerNewEdge(*node_it, m_graph->nodeCount()-1, rel_edge);
@@ -601,7 +603,7 @@ void CICPGoodnessERD_t<GRAPH_t>::loadParams(const std::string& source_fname) {
 	MRPT_START;
 
 	params.loadFromConfigFileName(source_fname, 
-			"EdgeRegistrationDecidersParameters");
+			"EdgeRegistrationDeciderParameters");
 
 	MRPT_END;
 }

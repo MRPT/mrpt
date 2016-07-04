@@ -31,6 +31,8 @@
 #include "CNodeRegistrationDecider.h"
 #include "CRangeScanRegistrationDecider.h"
 
+#include <string>
+
 using namespace mrpt;
 using namespace mrpt::utils;
 using namespace mrpt::graphs;
@@ -66,6 +68,10 @@ template<class GRAPH_t>
 	public:
 		// Public functions
 		//////////////////////////////////////////////////////////////
+
+		typedef mrpt::graphslam::deciders::CNodeRegistrationDecider_t<GRAPH_t> superA;
+		typedef mrpt::graphslam::deciders::CRangeScanRegistrationDecider_t<GRAPH_t> superB;
+
 		typedef typename GRAPH_t::constraint_t constraint_t;
 		typedef typename GRAPH_t::constraint_t::type_value pose_t; // type of underlying poses (2D/3D)
 		typedef mrpt::math::CMatrixFixedNumeric<double,
@@ -104,9 +110,6 @@ template<class GRAPH_t>
 				// max values for new node registration
 				double registration_max_distance;
 				double registration_max_angle;
-
-				// threshold for considering the ICP procedure as correct
-				double ICP_goodness_thresh;
 
     };
 
@@ -150,6 +153,8 @@ template<class GRAPH_t>
 
     // last insertede node in the graph
 		mrpt::utils::TNodeID m_nodeID_max;
+
+		typename superB::TSlidingWindow sliding_win;
 
 };
 
