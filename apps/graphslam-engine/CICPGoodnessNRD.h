@@ -49,10 +49,6 @@ namespace mrpt { namespace graphslam { namespace deciders {
 	* Observations: CObservation2DRangeScan, CObservation3DRangeScan
 	* Node Registration Strategy: Fixed space intervals
 	*
-	* Node Registration scheme based on fixed intervals node regitration,
-	* provided range scans (either standard 2D, or RGB-D 3D). If used offline,
-	* use it with datasets in observation-only rawlog format.
-	*
 	* Current Decider is meant for adding nodes in 2D datasets recorded using
 	* a laser range finder or RGB-D camera (e.g. Kinect). No odometry data from
 	* encoders is needed.
@@ -153,7 +149,8 @@ template<class GRAPH_t>
     // last insertede node in the graph
 		mrpt::utils::TNodeID m_nodeID_max;
 
-		typename superB::TSlidingWindow sliding_win;
+		// sliding window for managing the ICP goodness values
+		typename superB::TSlidingWindow m_ICP_sliding_win;
 
 };
 
