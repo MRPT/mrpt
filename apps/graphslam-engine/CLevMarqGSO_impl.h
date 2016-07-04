@@ -54,7 +54,7 @@ bool CLevMarqGSO_t<GRAPH_t>::updateOptimizerState(
 		mrpt::obs::CSensoryFramePtr observations,
 		mrpt::obs::CObservationPtr observation ) {
 	MRPT_START;
-	cout << "[CLevMarqGSO:] In updateOptimizerState... " << endl;
+	//cout << "[CLevMarqGSO:] In updateOptimizerState... " << endl;
 	
 	if (m_graph->nodeCount() > m_last_total_num_of_nodes) {
 		m_last_total_num_of_nodes = m_graph->nodeCount();

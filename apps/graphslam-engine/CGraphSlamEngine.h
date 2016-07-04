@@ -314,9 +314,6 @@ template<
 			mrpt::gui::CWindowObserver* m_win_observer;
 			mrpt::gui::CWindowManager_t m_win_manager;
 
-			// Interaction with the CDisplayWindow - use of CWindowObserver
-			bool m_autozoom_active, m_request_to_exit;
-
 			// flags for visualizing various trajectories/objects of interest. These
 			// are set from the .ini configuration file. The actual visualization of
 			// these objects can be overriden if the user issues the corresponding
@@ -328,6 +325,10 @@ template<
 			bool m_enable_curr_pos_viewport;
 			bool m_enable_intensity_viewport;
 			bool m_enable_range_viewport;
+
+			bool m_autozoom_active;
+			bool m_request_to_exit;
+			bool m_program_paused;
 
 			// textMessage vertical text position
 			double m_offset_y_odometry;
@@ -412,6 +413,7 @@ template<
 				std::map<std::string, std::string> fields;
 
 				std::string info_fname;
+
 
 			} m_info_params;
 

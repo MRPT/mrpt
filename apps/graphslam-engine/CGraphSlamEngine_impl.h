@@ -330,6 +330,7 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::ini
 	}
 
 	m_autozoom_active = true;
+	m_program_paused = false;
 	m_request_to_exit = false;
 	m_GT_poses_index = 0;
 
@@ -438,8 +439,6 @@ bool CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::par
 					observations,
 					observation );
 		}
-		std::cout << "After updating state of edge decider, optimizer... " 
-			<< std::endl;
 
 		if (observation.present()) {
 			// Read a single observation from the rawlog
@@ -1316,10 +1315,23 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::que
 	if (events_occurred[m_keystroke_estimated_trajectory]) {
 		this->toggleEstimatedTrajectoryVisualization();
 	}
-	// pause program execution
+	// pause/unpause program execution
 	if (events_occurred[m_keystroke_pause_exec]) {
-		std::cout << "*** Program paused.. Press any key in the *terminal* window to continue***" << std::endl;
-		mrpt::system::pause();
+		m_program_paused = !m_program_paused;
+
+		// message to the user
+		if (m_program_paused) {
+			std::cout << "Program was paused. Press \"p\" or \"P\" in the dipslay window to resume" 
+				<< std::endl;
+		}
+		else {
+			std::cout << "Program resumed." << std::endl;
+		}
+
+		while (m_program_paused) {
+			mrpt::system::sleep(1000);
+			this->queryObserverForEvents();
+		}
 	}
 
 	// notify the deciders/optimizer of any events they may be interested in

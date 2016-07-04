@@ -42,7 +42,6 @@ void CICPGoodnessNRD_t<GRAPH_t>::initCICPGoodnessNRD_t() {
 	m_since_prev_node_PDF.cov_inv = init_path_uncertainty;
 	m_since_prev_node_PDF.mean = pose_t();
 
-
 	std::cout << "CICPGoodnessNRD: Initialized class object" << std::endl;
 }
 template<class GRAPH_t>
@@ -175,10 +174,16 @@ bool CICPGoodnessNRD_t<GRAPH_t>::checkRegistrationCondition() {
 	}
 
 	// append current ICP edge to the sliding window to adjust the 
-	sliding_win.addNewMeasurement(icp_info.goodness);
-	sliding_win.dumpToConsole();
+	m_ICP_sliding_win.addNewMeasurement(icp_info.goodness);
+	//m_ICP_sliding_win.dumpToConsole();
 
-	if (sliding_win.evaluateICPgoodness(icp_info.goodness)) {
+	std::cout << "Current ICP constraint: " << std::endl;
+	std::cout << "\tEdge: " << rel_edge.getMeanVal() << std::endl;
+	std::cout << "\tNorm: " << rel_edge.getMeanVal().norm() << std::endl;
+
+	// Criterions for updating PDF since last registered node
+	// - ICP goodness > threshold goodness
+	if (m_ICP_sliding_win.evaluateICPgoodness(icp_info.goodness) ) {
 		m_since_prev_node_PDF += rel_edge;
 
 		// udpate the last laser scan
@@ -193,7 +198,9 @@ bool CICPGoodnessNRD_t<GRAPH_t>::checkRegistrationCondition() {
 			//<< m_since_prev_node_PDF.getMeanVal().norm() << " | angle = "
 			//<< RAD2DEG(fabs(wrapToPi(m_since_prev_node_PDF.getMeanVal().phi()))) << endl;
 
-		// check if distance or angle difference is large enough for new node
+		// Criterions for adding a new node
+		// - Covered distance since last node > registration_max_distance
+		// - Angle difference since last node > registration_max_angle
 		if ( m_since_prev_node_PDF.getMeanVal().norm() >
 				params.registration_max_distance ||
 				fabs(wrapToPi(m_since_prev_node_PDF.getMeanVal().phi())) >
@@ -241,7 +248,7 @@ void CICPGoodnessNRD_t<GRAPH_t>::loadParams(const std::string& source_fname) {
 
 	params.loadFromConfigFileName(source_fname, 
 			"NodeRegistrationDeciderParameters");
-	sliding_win.loadFromConfigFileName(source_fname,
+	m_ICP_sliding_win.loadFromConfigFileName(source_fname,
 			"NodeRegistrationDeciderParameters");
 
 	std::cout << "source_fname: " << source_fname << std::endl;
@@ -254,7 +261,7 @@ void CICPGoodnessNRD_t<GRAPH_t>::printParams() const {
 	MRPT_START;
 
 	params.dumpToConsole();
-	sliding_win.dumpToConsole();
+	m_ICP_sliding_win.dumpToConsole();
 
 	MRPT_END;
 }
