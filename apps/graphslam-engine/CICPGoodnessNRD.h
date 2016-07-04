@@ -46,7 +46,6 @@ namespace mrpt { namespace graphslam { namespace deciders {
 /**
 	* Map type: 2D
 	* MRPT rawlog format: #1, #2
-	* TODO - update this.
 	* Observations: CObservation2DRangeScan, CObservation3DRangeScan
 	* Node Registration Strategy: Fixed space intervals
 	*
