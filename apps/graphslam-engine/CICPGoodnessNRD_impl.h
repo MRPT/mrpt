@@ -58,61 +58,87 @@ bool CICPGoodnessNRD_t<GRAPH_t>::updateDeciderState(
 	bool registered_new_node = false;
 
 	MRPT_UNUSED_PARAM(action);
-	MRPT_UNUSED_PARAM(observations);
 
-	if (observation.present()) {
-		if (IS_CLASS(observation, CObservation2DRangeScan) ||
-				IS_CLASS(observation, CObservation3DRangeScan)) {
-			// 3D Range Scan
-			if (IS_CLASS(observation, CObservation3DRangeScan)) {
-				m_curr_laser_scan3D =
-					static_cast<mrpt::obs::CObservation3DRangeScanPtr>(observation);
-				m_curr_laser_scan3D->load();
-				m_curr_laser_scan3D->project3DPointsFromDepthImage();
+	if (observation.present()) { // Observation-Only Rawlog
+		// 3D Range Scan
+		if (IS_CLASS(observation, CObservation3DRangeScan)) {
+			m_curr_laser_scan3D =
+				static_cast<mrpt::obs::CObservation3DRangeScanPtr>(observation);
+			m_curr_laser_scan3D->load();
+			m_curr_laser_scan3D->project3DPointsFromDepthImage();
 
-				// first_time call 
-				// Initialize the m_last_laser_scan as well
-				if (m_first_time_call3D) {
-					cout << "CICPGoodnessNRD: Registering first laser scan.." << endl;
-					m_last_laser_scan3D = m_curr_laser_scan3D;
-					m_first_time_call3D = false;
+			// first_time call 
+			// Initialize the m_last_laser_scan as well
+			if (m_first_time_call3D) {
+				m_last_laser_scan3D = m_curr_laser_scan3D;
+				m_first_time_call3D = false;
 
-					return false;
-				}
-
-				m_is_using_3DScan = true;
-			}
-			// 2D Range Scan
-			else if (IS_CLASS(observation, CObservation2DRangeScan)) {
-				m_curr_laser_scan2D =
-					static_cast<mrpt::obs::CObservation2DRangeScanPtr>(observation);
-
-				// first_time call 
-				// Initialize the m_last_laser_scan as well
-				if (m_first_time_call2D) {
-					cout << "CICPGoodnessNRD: Registering first laser scan.." << endl;
-					m_last_laser_scan2D = m_curr_laser_scan2D;
-					m_first_time_call2D = false;
-
-					return false;
-				}
-
-				m_is_using_3DScan = false;
+				// do not check for node registration - not enough data yet.
+				return false;
 			}
 
-			registered_new_node = this->checkRegistrationCondition();
+			m_is_using_3DScan = true;
+		}
+		// 2D Range Scan
+		else if (IS_CLASS(observation, CObservation2DRangeScan)) {
+			m_curr_laser_scan2D =
+				static_cast<mrpt::obs::CObservation2DRangeScanPtr>(observation);
 
-			//mrpt::system::pause();
+			// first_time call 
+			// Initialize the m_last_laser_scan as well
+			if (m_first_time_call2D) {
+				m_last_laser_scan2D = m_curr_laser_scan2D;
+				m_first_time_call2D = false;
+
+				// do not check for node registration - not enough data yet.
+				return false;
+			}
+
+			m_is_using_3DScan = false;
 		}
 	}
-	else { // FORMAT #1
-		
+	else { // Action/Observations Rawlog
+		// 2D Range Scan
+		m_curr_laser_scan2D =
+			observations->getObservationByClass<CObservation2DRangeScan>();
+		if (m_curr_laser_scan2D) {
+
+			// first_time call 
+			// Initialize the m_last_laser_scan as well
+			if (m_first_time_call2D) {
+				m_last_laser_scan2D = m_curr_laser_scan2D;
+				m_first_time_call2D = false;
+
+				// do not check for node registration - not enough data yet.
+				return false;
+			}
+
+			m_is_using_3DScan = false;
+		}
+		// 3D Range Scan
+		m_curr_laser_scan3D =
+			observations->getObservationByClass<CObservation3DRangeScan>();
+		if (m_curr_laser_scan3D) {
+
+			// first_time call 
+			// Initialize the m_last_laser_scan as well
+			if (m_first_time_call3D) {
+				m_last_laser_scan3D = m_curr_laser_scan3D;
+				m_first_time_call3D = false;
+
+				// do not check for node registration - not enough data yet.
+				return false;
+			}
+
+			m_is_using_3DScan = true;
+		}
 
 	}
 
+	registered_new_node = this->checkRegistrationCondition();
+
+	// reset the relative PDF since the previous registered node
 	if (registered_new_node) {
-		// reset the relative PDF since the previous registered node
-		// maybe put the covariance tmp here as well?
 		m_since_prev_node_PDF = constraint_t();
 	}
 
@@ -167,11 +193,12 @@ bool CICPGoodnessNRD_t<GRAPH_t>::checkRegistrationCondition() {
 			//<< m_since_prev_node_PDF.getMeanVal().norm() << " | angle = "
 			//<< RAD2DEG(fabs(wrapToPi(m_since_prev_node_PDF.getMeanVal().phi()))) << endl;
 
-		// check if distance or angle difference is good enough for new node
+		// check if distance or angle difference is large enough for new node
 		if ( m_since_prev_node_PDF.getMeanVal().norm() >
 				params.registration_max_distance ||
 				fabs(wrapToPi(m_since_prev_node_PDF.getMeanVal().phi())) >
 				params.registration_max_angle ) {
+
 			registered_new_node = true;
 			this->registerNewNode();
 		}
