@@ -129,7 +129,7 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::ini
 
 	this->initOutputDir();
 	this->printProblemParams();
-	//mrpt::system::pause();
+	mrpt::system::pause();
 
 	// pass the rawlog filename after the instance initialization
 	m_node_registrar.setRawlogFname(m_rawlog_fname);
@@ -268,7 +268,7 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::ini
 	// Add additional keystrokes in the CDisplayWindow3D message box
 	if (m_win_observer) { 
 		m_win_observer->registerKeystroke(m_keystroke_pause_exec,
-				"Pause program execution");
+				"Pause/Resume program execution");
 		m_win_observer->registerKeystroke(m_keystroke_odometry,
 				"Toggle Odometry visualization");
 		m_win_observer->registerKeystroke(m_keystroke_GT,
@@ -773,20 +773,19 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::pri
 
 	ss_out << "------------[ Graphslamm_engine Problem Parameters ]------------"
 		<< std::endl;
-	ss_out << "Graphslam_engine: Problem Parameters " << std::endl;
 	ss_out << "Config filename                 = "
 		<< m_config_fname << std::endl;
 	ss_out << "Rawlog filename                 = "
 		<< m_rawlog_fname << std::endl;
 	ss_out << "User decides about output dir?  = "
-		<< m_user_decides_about_output_dir << std::endl;
+		<< (m_user_decides_about_output_dir ? "TRUE" : "FALSE")  << std::endl;
 	ss_out << "Output directory                = "
 		<< m_output_dir_fname << std::endl;
 
-	ss_out << "Generated .graph file?          = "
-		<< m_save_graph << std::endl;
+	ss_out << "Generate .graph file?           = "
+		<< ( m_save_graph? "TRUE" : "FALSE" )  << std::endl;
 	ss_out << "Generate .3DScene file?         = "
-		<< m_save_3DScene << std::endl;
+		<< ( m_save_3DScene? "TRUE" : "FALSE" ) << std::endl;
 	if (m_save_graph) {
 		ss_out << "Generated .graph filename       = "
 			<< m_save_graph_fname << std::endl;
@@ -800,20 +799,23 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::pri
 		<< m_GT_file_format << std::endl;
 	ss_out << "Ground Truth filename           = "
 		<< m_fname_GT << std::endl;
+
 	ss_out << "Visualize odometry              = "
-		<< m_visualize_odometry_poses << std::endl;
+		<< ( m_visualize_odometry_poses ? "TRUE" : "FALSE" ) << std::endl;
 	ss_out << "Visualize estimated trajectory  = "
-		<< m_visualize_estimated_trajectory << std::endl;
+		<< ( m_visualize_estimated_trajectory ? "TRUE" : "FALSE" ) << std::endl;
 	ss_out << "Visualize map                   = "
-		<< m_visualize_map << std::endl;
+		<< ( m_visualize_map ? "TRUE" : "FALSE" ) << std::endl;
 	ss_out << "Visualize Ground Truth          = "
-		<< m_visualize_GT<< std::endl;
+		<< ( m_visualize_GT ? "TRUE" : "FALSE" ) << std::endl;
+
 	ss_out << "Enable curr. position viewport  = " 
-		<< m_enable_curr_pos_viewport << endl;
+		<< ( m_enable_curr_pos_viewport ? "TRUE" : "FALSE" ) << endl;
 	ss_out << "Enable range img viewport       = " 
-		<< m_enable_range_viewport << endl;
+		<< ( m_enable_range_viewport ? "TRUE" : "FALSE" ) << endl;
 	ss_out << "Enable intensity img viewport   = " 
-		<< m_enable_intensity_viewport << endl;
+		<< ( m_enable_intensity_viewport ? "TRUE" : "FALSE" ) << endl;
+
 	ss_out << "-----------------------------------------------------------"
 		<< std::endl;
 	ss_out << std::endl;
@@ -831,95 +833,89 @@ template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR, class OPTIMI
 void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::initOutputDir() {
 	MRPT_START;
 
-	VERBOSE_COUT << "Setting up Output directory: " << m_output_dir_fname << std::endl;
+	VERBOSE_COUT << "Setting up Output directory: " << m_output_dir_fname 
+		<< std::endl;
 
 	// current time vars - handy in the rest of the function.
 	TTimeStamp cur_date(getCurrentTime());
 	string cur_date_str(dateTimeToString(cur_date));
 	string cur_date_validstr(fileNameStripInvalidChars(cur_date_str));
 
+	ASSERTMSG_(m_has_read_config, "\nCannot initialize output directory, \nMake sure that you have parsed the configuration file first\n");
 
-	if (!m_has_read_config) {
-		THROW_EXCEPTION(
-				std::endl
-				<< "Cannot initialize output directory. "
-				<< "Make sure you have parsed the configuration file first"
-				<< std::endl);
-	}
-	else {
-		// Determine what to do with existing results if previous output directory
-		// exists
-		if (directoryExists(m_output_dir_fname)) {
-			int answer_int;
-			if (m_user_decides_about_output_dir) {
-				/**
-				 * Give the user 3 choices.
-				 * - Remove the current directory contents
-				 * - Rename (and keep) the current directory contents
-				 */
-				stringstream question;
-				string answer;
+	// Determine what to do with existing results if previous output directory
+	// exists
+	if (directoryExists(m_output_dir_fname)) {
+		int answer_int;
+		if (m_user_decides_about_output_dir) {
+			/**
+			 * Give the user 3 choices.
+			 * - Remove the current directory contents
+			 * - Rename (and keep) the current directory contents
+			 */
+			stringstream question;
+			string answer;
 
-				question << "Directory exists. Choose between the "
-					<< "following options" << std::endl;
-				question << "\t 1: Rename current folder and start new "
-					<< "output directory (default)" << std::endl;
-				question << "\t 2: Remove existing contents and continue execution "
-					<< std::endl;
-				question << "\t 3: Handle potential conflict manually "
-					"(Halts program execution)" << std::endl;
-				question << "\t [ 1 | 2 | 3 ] --> ";
-				std::cout << question.str();
+			question << "Directory exists. Choose between the "
+				<< "following options" << std::endl;
+			question << "\t 1: Rename current folder and start new "
+				<< "output directory (default)" << std::endl;
+			question << "\t 2: Remove existing contents and continue execution "
+				<< std::endl;
+			question << "\t 3: Handle potential conflict manually "
+				"(Halts program execution)" << std::endl;
+			question << "\t [ 1 | 2 | 3 ] --> ";
+			std::cout << question.str();
 
-				getline(cin, answer);
-				answer = mrpt::system::trim(answer);
-				answer_int = atoi(&answer[0]);
-			}
-			else {
-				answer_int = 2;
-			}
-			switch (answer_int)
-			{
-				case 2: {
-									VERBOSE_COUT << "Deleting existing files..." << std::endl;
-									// purge directory
-									deleteFilesInDirectory(m_output_dir_fname,
-											/*deleteDirectoryAsWell = */ true);
-									break;
-								}
-				case 3: {
-									// Exit gracefully - call Dtor implicitly
-									return;
-								}
-				case 1:
-				default: {
-									 // rename the whole directory to DATE_TIME_${OUTPUT_DIR_NAME}
-									 string dst_fname = m_output_dir_fname + cur_date_validstr;
-									 VERBOSE_COUT << "Renaming directory to: " << dst_fname << std::endl;
-									 string* error_msg = NULL;
-									 bool did_rename = renameFile(m_output_dir_fname,
-											 dst_fname,
-											 error_msg);
-									 if (!did_rename) {
-										 THROW_EXCEPTION(
-												 std::endl
-												 << "Error while trying to rename the output directory:"
-												 << *error_msg
-												 << std::endl);
-									 }
-									 break;
-								 }
-			} // SWITCH (ANSWER_INT)
-		} // IF DIRECTORY EXISTS..
+			getline(cin, answer);
+			answer = mrpt::system::trim(answer);
+			answer_int = atoi(&answer[0]);
+		}
+		else {
+			answer_int = 2;
+		}
 
-		// Now rebuild the directory from scratch
-		VERBOSE_COUT << "Creating the new directory structure..." << std::endl;
-		string cur_fname;
+		switch (answer_int)
+		{
+			case 2: 
+				{
+					VERBOSE_COUT << "Deleting existing files..." << std::endl;
+					// purge directory
+					deleteFilesInDirectory(m_output_dir_fname,
+							/*deleteDirectoryAsWell = */ true);
+					break;
+				}
+			case 3: 
+				{
+					// Exit gracefully - call Dtor implicitly
+					return;
+				}
+			case 1:
+			default: 
+				{
+					// rename the whole directory to DATE_TIME_${OUTPUT_DIR_NAME}
+					string dst_fname = m_output_dir_fname + cur_date_validstr;
+					VERBOSE_COUT << "Renaming directory to: " << dst_fname 
+						<< std::endl;
+					string* error_msg = NULL;
+					bool did_rename = renameFile(m_output_dir_fname,
+							dst_fname,
+							error_msg);
+					ASSERTMSG_(did_rename, 
+							format("\nError while trying to rename the output directory: %s", 
+								error_msg->c_str()) );
+					break;
+				}
+		} // SWITCH (ANSWER_INT)
+	} // IF DIRECTORY EXISTS..
 
-		// debug_fname
-		createDirectory(m_output_dir_fname);
-		VERBOSE_COUT << "Finished initializing output directory." << std::endl;
-	}
+	// Now rebuild the directory from scratch
+	VERBOSE_COUT << "Creating the new directory structure..." << std::endl;
+	string cur_fname;
+
+	// debug_fname
+	createDirectory(m_output_dir_fname);
+	VERBOSE_COUT << "Finished initializing output directory." << std::endl;
 
 	MRPT_END;
 } // end of initOutputDir

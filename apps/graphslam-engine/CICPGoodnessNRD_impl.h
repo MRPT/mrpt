@@ -201,10 +201,21 @@ bool CICPGoodnessNRD_t<GRAPH_t>::checkRegistrationCondition() {
 		// Criterions for adding a new node
 		// - Covered distance since last node > registration_max_distance
 		// - Angle difference since last node > registration_max_angle
-		if ( m_since_prev_node_PDF.getMeanVal().norm() >
-				params.registration_max_distance ||
-				fabs(wrapToPi(m_since_prev_node_PDF.getMeanVal().phi())) >
-				params.registration_max_angle ) {
+		bool use_angle_difference_node_reg = false;
+		bool use_distance_node_reg = true;
+
+		bool angle_crit = false;
+		if (use_angle_difference_node_reg) {
+			angle_crit = fabs(wrapToPi(m_since_prev_node_PDF.getMeanVal().phi())) >
+				params.registration_max_angle;
+		}
+		bool max_registration_distance_crit = false;
+		if (use_distance_node_reg) {
+			max_registration_distance_crit =
+				m_since_prev_node_PDF.getMeanVal().norm() > params.registration_max_distance;
+		}
+
+		if (max_registration_distance_crit || angle_crit) {
 
 			registered_new_node = true;
 			this->registerNewNode();
