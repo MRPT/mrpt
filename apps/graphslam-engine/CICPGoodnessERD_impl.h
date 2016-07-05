@@ -361,9 +361,6 @@ void CICPGoodnessERD_t<GRAPH_t>::setWindowManagerPtr(
 		m_win = m_win_manager->win;
 
 		m_win_observer = m_win_manager->observer;
-		if (m_win_observer) {
-			m_win_observer->registerKeystroke("l", "Toggle LaserScans Visualization");
-		}
 	}
 
 }
@@ -416,12 +413,18 @@ void CICPGoodnessERD_t<GRAPH_t>::getEdgesStats(
 template<class GRAPH_t>
 void CICPGoodnessERD_t<GRAPH_t>::initializeVisuals() {
 	MRPT_START;
-	ASSERTMSG_(params.has_read_config,
-			"[CICPGoodnessERD:] Configuration parameters aren't loaded yet");
 	std::cout << "Initializing CICPGoodnessERD visuals" << std::endl;
 
+	ASSERTMSG_(params.has_read_config,
+			"[CICPGoodnessERD:] Configuration parameters aren't loaded yet");
+	ASSERTMSG_(m_win, "No CDisplayWindow3D* was provided");
+	ASSERTMSG_(m_win_manager, "No CWindowManager* was provided");
+
+	m_win_observer->registerKeystroke(params.keystroke_laser_scans,
+			"Toggle LaserScans Visualization");
+
 	// ICP_max_distance disk
-	if (m_win &&  params.ICP_max_distance > 0) {
+	if (params.ICP_max_distance > 0) {
 		COpenGLScenePtr scene = m_win->get3DSceneAndLock();
 
 		CDiskPtr obj = CDisk::Create();
@@ -653,6 +656,10 @@ void CICPGoodnessERD_t<GRAPH_t>::TParams::loadFromConfigFile(
     const std::string& section) {
   MRPT_START;
 
+  LC_min_nodeid_diff = source.read_int(
+ 			"GeneralConfiguration",
+ 			"LC_min_nodeid_diff",
+ 			30, false);
 	ICP_max_distance = source.read_double(
 			section,
 			"ICP_max_distance",
@@ -661,10 +668,6 @@ void CICPGoodnessERD_t<GRAPH_t>::TParams::loadFromConfigFile(
 			section,
 			"ICP_goodness_thresh",
 	 		0.75, false);
-  LC_min_nodeid_diff = source.read_int(
-  		section,
- 			"LC_min_nodeid_diff",
- 			10, false);
   visualize_laser_scans = source.read_bool(
   		"VisualizationParameters",
  			"visualize_laser_scans",

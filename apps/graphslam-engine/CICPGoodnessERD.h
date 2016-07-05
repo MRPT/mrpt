@@ -160,7 +160,6 @@ template<
 				void checkIfInvalidDataset(mrpt::obs::CActionCollectionPtr action,
 						mrpt::obs::CSensoryFramePtr observations,
 						mrpt::obs::CObservationPtr observation );
-
 		 		void getNearbyNodesOf(
 		 				std::set<mrpt::utils::TNodeID> *nodes_set,
 						const mrpt::utils::TNodeID& cur_nodeID,

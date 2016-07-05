@@ -22,6 +22,9 @@
 #include <mrpt/utils/TColor.h>
 #include <mrpt/system/threads.h>
 #include <mrpt/opengl/graph_tools.h>
+#include <mrpt/opengl/CDisk.h>
+#include <mrpt/opengl/CRenderizable.h>
+#include <mrpt/utils/TColor.h>
 
 #include "CGraphslamOptimizer.h"
 #include "CWindowManager.h"
@@ -30,6 +33,7 @@
 #include <iostream>
 #include <string>
 #include <map>
+#include <cmath> // fabs function
 
 namespace mrpt { namespace graphslam { namespace optimizers {
 
@@ -81,7 +85,23 @@ class CLevMarqGSO_t:
 				void 	dumpToTextStream(mrpt::utils::CStream &out) const;
 
 				TParametersDouble cfg;
+				// True if optimization procedure is to run in a multithreading fashion
 				bool optimization_on_second_thread;
+
+				// optimize only for the nodes found in a certain distance from the
+				// current position. Optimize for the entire graph if set to -1
+				double optimization_distance;
+				double offset_y_optimization_distance;
+				int text_index_optimization_distance;
+				mrpt::utils::TColor optimization_distance_color;
+				std::string keystroke_optimization_distance;
+				
+				// nodeID difference for an edge to be considered loop closure
+				int LC_min_nodeid_diff;
+
+				// Map of TPairNodesID to their corresponding edge as recorded in the
+				// last update of the optimizer state
+				typename GRAPH_t::edges_map_t last_pair_nodes_to_edge;
     };
 
 		void loadParams(const std::string& source_fname);
@@ -115,13 +135,18 @@ class CLevMarqGSO_t:
 
   private:
 
+  	// Private methods
+  	// ////////////////////////////
+		
+		/**
+		 * Feedback of the levenberg-marquardt graph optimization procedure
+		 */
 		static void levMarqFeedback(
 				const GRAPH_t& graph,
 				const size_t iter,
 				const size_t max_iter,
 				const double cur_sq_error );
 
-  	// Private methods
   	/**
   	 * Optimize the given graph. Wrapper around the
   	 * graphslam::optimize_spa_levmarq method
@@ -133,6 +158,13 @@ class CLevMarqGSO_t:
 		 * \sa optimizeGraph()
 		 */
   	void optimizeGraph();
+  	/**
+  	 * Match the previously registered edges in the graph with the current.
+  	 * If there is a node difference in any new edge greater than
+  	 * LC_min_nodeid_diff (see .ini parameter) then a full graph optimization
+  	 * is issued. Returns true on new loop closure
+  	 */
+  	bool checkForLoopClosures();
 		void initGraphVisualization();
 		/**
 		 * Called internally for updating the vizualization scene for the graph
@@ -143,6 +175,18 @@ class CLevMarqGSO_t:
 		 * togle the graph visualization on and off
 		 */
 		void toggleGraphVisualization();
+		void initOptDistanceVisualization();
+		/**
+		 * Update the position of the disk indicating the distance in which
+		 * Levenberg-Marquardt graph optimization is executed
+		 */
+		inline void updateOptDistanceVisualization();
+		void toggleOptDistanceVisualization();
+
+		void getNearbyNodesOf(
+		 		std::set<mrpt::utils::TNodeID> *nodes_set,
+				const mrpt::utils::TNodeID& cur_nodeID,
+				double distance );
 
 		// Private members
 		//////////////////////////////////////////////////////////////
@@ -154,7 +198,9 @@ class CLevMarqGSO_t:
 
 		std::string m_rawlog_fname;
 
+		bool m_first_time_call;
 		bool m_initialized_visuals;
+		bool m_has_read_config;
 		bool m_just_inserted_loop_closure;
 		bool registered_new_node;
 
@@ -164,6 +210,9 @@ class CLevMarqGSO_t:
 
 		// Use second thread for graph optimization
 		mrpt::system::TThreadHandle m_thread_optimize;
+
+		
+
 
 };
 
