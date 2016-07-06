@@ -212,14 +212,14 @@ namespace utils
 	{ try { \
 		targetVariable = configFileObject.read_##variableType(sectionNameStr,#variableName,targetVariable,true); \
 	} catch (std::exception &) { \
-		THROW_EXCEPTION( format( "Value for '%s' not found in config file", static_cast<const char*>(#variableName ) )); \
+		THROW_EXCEPTION( format( "Value for '%s' not found in config file in section '%s'", static_cast<const char*>(#variableName ), std::string(sectionNameStr).c_str() )); \
 	} }
 
 #define MRPT_LOAD_HERE_CONFIG_VAR_DEGREES_NO_DEFAULT(variableName,variableType,targetVariable,configFileObject,sectionNameStr) \
 	{ try { \
 		targetVariable = mrpt::utils::DEG2RAD( configFileObject.read_##variableType(sectionNameStr,#variableName,targetVariable,true)); \
 	} catch (std::exception &) { \
-		THROW_EXCEPTION( format( "Value for '%s' not found in config file", static_cast<const char*>(#variableName ) )); \
+		THROW_EXCEPTION( format( "Value for '%s' not found in config file in section '%s'", static_cast<const char*>(#variableName ), std::string(sectionNameStr).c_str() )); \
 	} }
 
 
@@ -228,7 +228,7 @@ namespace utils
 		variableName = configFileObject.read_##variableType(sectionNameStr,#variableName,variableName,true); \
     } catch (std::exception &) \
     { \
-		THROW_EXCEPTION( format( "Value for '%s' not found in config file", static_cast<const char*>(#variableName ) )); \
+		THROW_EXCEPTION( format( "Value for '%s' not found in config file in section '%s'", static_cast<const char*>(#variableName ), std::string(sectionNameStr).c_str() )); \
 	} }\
 
 #define MRPT_LOAD_CONFIG_VAR_CAST_NO_DEFAULT(variableName,variableType,variableTypeCast,configFileObject,sectionNameStr) \
@@ -236,7 +236,7 @@ namespace utils
 		variableName = static_cast<variableTypeCast>(configFileObject.read_##variableType(sectionNameStr,#variableName,variableName,true)); \
     } catch (std::exception &) \
     { \
-		THROW_EXCEPTION( format( "Value for '%s' not found in config file", static_cast<const char*>(#variableName ) )); \
+		THROW_EXCEPTION( format( "Value for '%s' not found in config file in section '%s'", static_cast<const char*>(#variableName ), std::string(sectionNameStr).c_str() )); \
 	} }\
 
 
@@ -248,7 +248,7 @@ namespace utils
 		targetVariable = static_cast<variableTypeCast>(configFileObject.read_##variableType(sectionNameStr,#variableName,targetVariable,true)); \
     } catch (std::exception &) \
     { \
-		THROW_EXCEPTION( format( "Value for '%s' not found in config file", static_cast<const char*>(#variableName ) )); \
+		THROW_EXCEPTION( format( "Value for '%s' not found in config file in section '%s'", static_cast<const char*>(#variableName ), std::string(sectionNameStr).c_str() )); \
 	} }\
 
 

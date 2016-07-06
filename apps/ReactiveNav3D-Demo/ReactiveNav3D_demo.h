@@ -567,12 +567,12 @@ public:
 		}
 
 		//Read other params associated with the robot model and its navigation
-		CRobot2NavInterface_DiffDriven::loadConfigFile(ini, "NAVIGATION_CONFIG");
-		float tau = 0.f; //ini.read_float("NAVIGATION_CONFIG","ROBOTMODEL_TAU", 0, true);
-		float delay = 0.f; //ini.read_float("NAVIGATION_CONFIG","ROBOTMODEL_DELAY", 0, true);
-		float x_ini = ini.read_float("NAVIGATION_CONFIG","X0", 0, true);
-		float y_ini = ini.read_float("NAVIGATION_CONFIG","Y0", 0, true);
-		float phi_ini = DEG2RAD(ini.read_float("NAVIGATION_CONFIG","PHI0", 0, true));
+		CRobot2NavInterface_DiffDriven::loadConfigFile(ini, "ReactiveParams");
+		float tau = 0.f; //ini.read_float("ReactiveParams","ROBOTMODEL_TAU", 0, true);
+		float delay = 0.f; //ini.read_float("ReactiveParams","ROBOTMODEL_DELAY", 0, true);
+		float x_ini = ini.read_float("ReactiveParams","X0", 0, true);
+		float y_ini = ini.read_float("ReactiveParams","Y0", 0, true);
+		float phi_ini = DEG2RAD(ini.read_float("ReactiveParams","PHI0", 0, true));
 		robotSim.setDelayModelParams(tau, delay);
 		robotSim.resetStatus();
 		robotSim.setOdometryErrors(0);

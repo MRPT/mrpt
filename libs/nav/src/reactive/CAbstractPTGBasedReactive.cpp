@@ -225,6 +225,7 @@ void CAbstractPTGBasedReactive::setHolonomicMethod(
 	this->deleteHolonomicObjects();
 
 	const size_t nPTGs = this->getPTG_count();
+	ASSERT_(nPTGs!=0);
 	m_holonomicMethod.resize(nPTGs);
 
 	for (size_t i=0; i<nPTGs; i++)
@@ -342,6 +343,8 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 			if ( system::timeDifference( badNavAlarm_lastMinDistTime, system::getCurrentTime() ) > badNavAlarm_AlarmTimeout)
 			{
 				std::cout << "\n--------------------------------------------\nWARNING: Timeout for approaching toward the target expired!! Aborting navigation!! \n---------------------------------\n";
+				MRPT_TODO("check events!");
+				//m_robot.sendNavigationEndDueToErrorEvent(); XXX
 
 				m_navigationState = NAV_ERROR;
 				return;
@@ -777,4 +780,49 @@ void CAbstractPTGBasedReactive::STEP7_GenerateSpeedCommands( const THolonomicMov
 		printf_debug("[CReactiveNavigationSystem::STEP7_NonHolonomicMovement] Exception:");
 		printf_debug((char*)(e.what()));
 	}
+}
+
+void CAbstractPTGBasedReactive::loadConfigFile(const mrpt::utils::CConfigFileBase &cfg, const std::string &section_prefix)
+{
+	MRPT_START;
+	m_PTGsMustBeReInitialized = true;
+
+	// ========= Config file section name:
+	const std::string sectRob = section_prefix + std::string("ROBOT_CONFIG");
+	const std::string sectCfg = section_prefix + std::string("ReactiveParams");
+	const std::string sectGlobal("GLOBAL_CONFIG");
+
+	// ========= Load parameters of this base class:
+	robotName = cfg.read_string(sectRob,"Name", "MyRobot", false );
+
+	refDistance = cfg.read_double(sectCfg,"MAX_REFERENCE_DISTANCE", refDistance, true);
+	SPEEDFILTER_TAU =  cfg.read_float(sectCfg,"SPEEDFILTER_TAU", .0);
+
+	DIST_TO_TARGET_FOR_SENDING_EVENT = cfg.read_float(sectCfg, "DIST_TO_TARGET_FOR_SENDING_EVENT", DIST_TO_TARGET_FOR_SENDING_EVENT, false);
+	badNavAlarm_AlarmTimeout = cfg.read_float(sectCfg,"ALARM_SEEMS_NOT_APPROACHING_TARGET_TIMEOUT", badNavAlarm_AlarmTimeout, false);
+
+	cfg.read_vector(sectCfg, "weights", vector<float> (0), weights, 1);
+	ASSERT_(weights.size()==6);
+	
+	// =========  Show configuration parameters:
+	printf_debug("-------------------------------------------------------------\n");
+	printf_debug("       PTG-based Reactive Navigation parameters               \n");
+	printf_debug("-------------------------------------------------------------\n");
+
+	// ========= Load Derived class-specific params:
+	this->internal_loadConfigFile(cfg, section_prefix);
+
+	// ========= Load "Global params" (must be called after initialization of PTGs in `internal_loadConfigFile()`)
+	this->m_robot.loadConfigFile(cfg,sectGlobal); // robot interface params
+	this->loadHolonomicMethodConfig(cfg,sectGlobal); // Load holonomic method params
+	ASSERT_(!m_holonomicMethod.empty())
+
+	printf_debug(" Holonomic method   = %s\n", typeid(m_holonomicMethod[0]).name());
+	printf_debug(" PTG Count          = %u\n", static_cast<unsigned int>( this->getPTG_count() ) );
+	printf_debug(" Reference distance = %f\n", refDistance );
+
+	// ========= If we reached this point without an exception, all is good.
+	m_init_done = true;
+
+	MRPT_END;
 }
