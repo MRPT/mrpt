@@ -15,8 +15,6 @@
 #include <mrpt/hwdrivers/CGPSInterface.h>
 #include <mrpt/system/filesystem.h>
 
-MRPT_TODO("Add pose interpolation method for inserting in a point map")
-
 // socket's hdrs:
 #ifdef MRPT_OS_WINDOWS
 	#if defined(_WIN32_WINNT) && (_WIN32_WINNT<0x600)
@@ -26,6 +24,11 @@ MRPT_TODO("Add pose interpolation method for inserting in a point map")
 
 	#include <winsock2.h>
 	typedef int socklen_t;
+
+#	if defined(__BORLANDC__) || defined(_MSC_VER)
+#	pragma comment (lib,"WS2_32.LIB")
+#	endif
+
 #else
 	#define  INVALID_SOCKET  (-1)
 	#include <sys/time.h>  // gettimeofday()
