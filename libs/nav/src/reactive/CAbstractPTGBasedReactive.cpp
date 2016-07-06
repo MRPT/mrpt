@@ -141,9 +141,7 @@ void CAbstractPTGBasedReactive::enableLogFile(bool enable)
 			// Open log file:
 			m_logFile = new CFileOutputStream(aux);
 
-			printf_debug("[CAbstractPTGBasedReactive::enableLogFile] Logging to file:");
-			printf_debug(aux);
-			printf_debug("\n");
+			printf_debug("[CAbstractPTGBasedReactive::enableLogFile] Logging to file `%s`\n",aux);
 
 		}
 	} catch (...) {
@@ -199,8 +197,7 @@ void CAbstractPTGBasedReactive::doEmergencyStop( const char *msg )
 {
 	m_navigationState = NAV_ERROR;
 	m_robot.stop();
-	printf_debug(msg);
-	printf_debug("\n");
+	printf_debug("%s\n",msg);
 }
 
 
@@ -777,8 +774,7 @@ void CAbstractPTGBasedReactive::STEP7_GenerateSpeedCommands( const THolonomicMov
 	}
 	catch (std::exception &e)
 	{
-		printf_debug("[CReactiveNavigationSystem::STEP7_NonHolonomicMovement] Exception:");
-		printf_debug((char*)(e.what()));
+		printf_debug("[CReactiveNavigationSystem::STEP7_NonHolonomicMovement] Exception: %s",e.what());
 	}
 }
 

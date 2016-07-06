@@ -146,7 +146,7 @@ void CReactiveNavigationSystem3D::STEP1_InitPTGs()
 				m_ptgmultilevel[j].PTGs[i]->deinitialize();
 
 				printf_debug("[loadConfigFile] Initializing PTG#%u.%u...", j,i);
-				printf_debug(m_ptgmultilevel[j].PTGs[i]->getDescription().c_str());
+				printf_debug("%s",m_ptgmultilevel[j].PTGs[i]->getDescription().c_str());
 
 				// Polygonal robot shape?
 				{
