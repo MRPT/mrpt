@@ -36,7 +36,7 @@ namespace mrpt
 			virtual ~CDebugOutputCapable() { }
 
 			/** Sends a formated text to "debugOut" if not NULL, or to cout otherwise. */
-			static void printf_debug( const char *frmt, ... );
+			static void printf_debug( const char *frmt, ... ) MRPT_printf_format_check(1,2);
 
 		}; // End of class def.
 
