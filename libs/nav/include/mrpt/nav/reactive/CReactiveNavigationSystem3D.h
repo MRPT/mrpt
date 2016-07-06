@@ -79,9 +79,6 @@ namespace mrpt
 			/** Destructor */
 			virtual ~CReactiveNavigationSystem3D();
 
-			/** Reload the configuration from a file. See CReactiveNavigationSystem3D for details. */
-			void loadConfigFile(const mrpt::utils::CConfigFileBase &ini, const std::string &section_prefix="") MRPT_OVERRIDE;
-
 			/** Change the robot shape, which is taken into account for collision grid building. */
 			void changeRobotShape( TRobotShape robotShape );
 
@@ -138,7 +135,8 @@ namespace mrpt
 			/** Generates a pointcloud of obstacles, and the robot shape, to be saved in the logging record for the current timestep */
 			virtual void loggingGetWSObstaclesAndShape(CLogFileRecord &out_log);
 
-
+		protected:
+			void internal_loadConfigFile(const mrpt::utils::CConfigFileBase &ini, const std::string &section_prefix="") MRPT_OVERRIDE;
 
 		}; // end class
 	}

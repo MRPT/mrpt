@@ -127,6 +127,10 @@ namespace mrpt
 		/** Gets the i'th PTG */
 		virtual CParameterizedTrajectoryGenerator* getPTG(size_t i) = 0;
 
+		/** Reload the configuration from a file. See details in CReactiveNavigationSystem docs.
+			* Section to be read is "{sect_prefix}ReactiveParams". */
+		void loadConfigFile(const mrpt::utils::CConfigFileBase &cfg, const std::string &section_prefix="") MRPT_OVERRIDE;
+
 	protected:
 		// ------------------------------------------------------
 		//					INTERNAL DEFINITIONS
@@ -209,6 +213,9 @@ namespace mrpt
 		mrpt::utils::CTicTac totalExecutionTime, executionTime, tictac;
 		float meanExecutionTime, meanTotalExecutionTime;
 		/** @} */
+
+		/** Loads derived-class specific parameters */
+		virtual void internal_loadConfigFile(const mrpt::utils::CConfigFileBase &cfg, const std::string &section_prefix="") = 0;
 
 		// Steps for the reactive navigation sytem.
 		// ----------------------------------------------------------------------------
