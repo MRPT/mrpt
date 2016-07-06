@@ -391,7 +391,7 @@ IF(MSVC)
 	#   the /Zm compiler option is rarely necessary."
  	# http://msdn.microsoft.com/en-us/library/bdscwf1c.aspx
 	#
-	if(MSVC_VERSION LESS 1700) # <=VS 2012 (from my experience, in VS2012 this isn't needed).
+	if(MSVC_VERSION LESS 1800) # <=VS 2012
 		SET(EXTRA_CPP_FLAGS "${EXTRA_CPP_FLAGS} /Zm1000")
 	endif()
 
