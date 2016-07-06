@@ -199,9 +199,9 @@ namespace mrpt
 		mrpt::utils::CTimeLogger m_timelogger;			//!< A complete time logger \sa enableTimeLog()
 		
 		/** For sending an alarm (error event) when it seems that we are not approaching toward the target in a while... */
-		float                    badNavAlarm_minDistTarget;
+		double                   badNavAlarm_minDistTarget;
 		mrpt::system::TTimeStamp badNavAlarm_lastMinDistTime;
-		float                    badNavAlarm_AlarmTimeout;
+		double                   badNavAlarm_AlarmTimeout;
 
 		bool  m_PTGsMustBeReInitialized;
 

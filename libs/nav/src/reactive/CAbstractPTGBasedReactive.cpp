@@ -18,6 +18,7 @@
 #include <mrpt/utils/metaprogramming.h>
 #include <mrpt/utils/CFileOutputStream.h>
 #include <mrpt/utils/CMemoryStream.h>
+#include <limits>
 
 using namespace mrpt;
 using namespace mrpt::poses;
@@ -58,7 +59,7 @@ CAbstractPTGBasedReactive::CAbstractPTGBasedReactive(CRobot2NavInterface &react_
 	DIST_TO_TARGET_FOR_SENDING_EVENT(0.4f),
 	meanExecutionPeriod          (0.1f),
 	m_timelogger                 (false), // default: disabled
-	badNavAlarm_AlarmTimeout     (30.0f),
+	badNavAlarm_AlarmTimeout     (30.0),
 	m_PTGsMustBeReInitialized    (true),
 	meanExecutionTime            (0.1f),
 	meanTotalExecutionTime       (0.1f),
@@ -190,7 +191,7 @@ void CAbstractPTGBasedReactive::navigate(const CAbstractNavigator::TNavigationPa
 	m_navigationState = NAVIGATING;
 
 	// Reset the bad navigation alarm:
-	badNavAlarm_minDistTarget = 1e10f;
+	badNavAlarm_minDistTarget = std::numeric_limits<double>::max();
 	badNavAlarm_lastMinDistTime = system::getCurrentTime();
 }
 
@@ -798,7 +799,7 @@ void CAbstractPTGBasedReactive::loadConfigFile(const mrpt::utils::CConfigFileBas
 	SPEEDFILTER_TAU =  cfg.read_float(sectCfg,"SPEEDFILTER_TAU", .0);
 
 	DIST_TO_TARGET_FOR_SENDING_EVENT = cfg.read_float(sectCfg, "DIST_TO_TARGET_FOR_SENDING_EVENT", DIST_TO_TARGET_FOR_SENDING_EVENT, false);
-	badNavAlarm_AlarmTimeout = cfg.read_float(sectCfg,"ALARM_SEEMS_NOT_APPROACHING_TARGET_TIMEOUT", badNavAlarm_AlarmTimeout, false);
+	badNavAlarm_AlarmTimeout = cfg.read_double(sectCfg,"ALARM_SEEMS_NOT_APPROACHING_TARGET_TIMEOUT", badNavAlarm_AlarmTimeout, false);
 
 	cfg.read_vector(sectCfg, "weights", vector<float> (0), weights, 1);
 	ASSERT_(weights.size()==6);
