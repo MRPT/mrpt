@@ -121,13 +121,15 @@ CPTG_Holo_Blend::CPTG_Holo_Blend() :
 	V_MAX(-1.0), 
 	W_MAX(-1.0),
 	turningRadiusReference(0.30),
-	curVelLocal(0,0,0)
+	curVelLocal(0,0,0),
+	maxAllowedDirAngle(2.0*M_PI)
 { 
 }
 
 CPTG_Holo_Blend::CPTG_Holo_Blend(const mrpt::utils::CConfigFileBase &cfg,const std::string &sSection) :
 	turningRadiusReference(0.30),
-	curVelLocal(0,0,0)
+	curVelLocal(0,0,0),
+	maxAllowedDirAngle(M_PI)
 {
 	this->loadFromConfigFile(cfg,sSection);
 }
@@ -146,6 +148,7 @@ void CPTG_Holo_Blend::loadDefaultParams()
 	T_ramp = 0.9;
 	V_MAX = 1.0;
 	W_MAX = mrpt::utils::DEG2RAD(120);
+	maxAllowedDirAngle = M_PI;
 }
 
 void CPTG_Holo_Blend::loadFromConfigFile(const mrpt::utils::CConfigFileBase &cfg,const std::string &sSection)
@@ -157,6 +160,7 @@ void CPTG_Holo_Blend::loadFromConfigFile(const mrpt::utils::CConfigFileBase &cfg
 	MRPT_LOAD_HERE_CONFIG_VAR_NO_DEFAULT(v_max_mps  ,double, V_MAX, cfg,sSection);
 	MRPT_LOAD_HERE_CONFIG_VAR_DEGREES_NO_DEFAULT(w_max_dps  ,double, W_MAX, cfg,sSection);
 	MRPT_LOAD_CONFIG_VAR(turningRadiusReference  ,double, cfg,sSection);
+	MRPT_LOAD_CONFIG_VAR_DEGREES(maxAllowedDirAngle, cfg,sSection);
 
 	// For debugging only
 	MRPT_LOAD_HERE_CONFIG_VAR(vxi  ,double, curVelLocal.vx, cfg,sSection);
@@ -173,6 +177,7 @@ void CPTG_Holo_Blend::saveToConfigFile(mrpt::utils::CConfigFileBase &cfg,const s
 	cfg.write(sSection,"v_max_mps",V_MAX,   WN,WV, "Maximum linear velocity for trajectories [m/s].");
 	cfg.write(sSection,"w_max_dps",mrpt::utils::RAD2DEG(W_MAX),   WN,WV, "Maximum angular velocity for trajectories [deg/s].");
 	cfg.write(sSection,"turningRadiusReference",turningRadiusReference,   WN,WV, "An approximate dimension of the robot (not a critical parameter) [m].");
+	cfg.write(sSection,"maxAllowedDirAngle",mrpt::utils::RAD2DEG(maxAllowedDirAngle),   WN,WV, "Maximum allowed angle between heading and motion direction [deg].");
 
 	cfg.write(sSection,"vxi",curVelLocal.vx,   WN,WV, "(Only for debugging) Current robot velocity vx [m/s].");
 	cfg.write(sSection,"vyi",curVelLocal.vy,   WN,WV, "(Only for debugging) Current robot velocity vy [m/s].");
@@ -184,7 +189,7 @@ void CPTG_Holo_Blend::saveToConfigFile(mrpt::utils::CConfigFileBase &cfg,const s
 
 std::string CPTG_Holo_Blend::getDescription() const
 {
-	return mrpt::format("PTG_Holo_Blend_Tramp=%.03f_Vmax=%.03f_Wmax=%.03f",T_ramp,V_MAX,W_MAX);
+	return mrpt::format("PTG_Holo_Blend_Tramp=%.03f_Vmax=%.03f_Wmax=%.03f_MaxAng=%.02f",T_ramp,V_MAX,W_MAX,maxAllowedDirAngle);
 }
 
 
@@ -196,11 +201,14 @@ void CPTG_Holo_Blend::readFromStream(mrpt::utils::CStream &in, int version)
 	{
 	case 0:
 	case 1:
+	case 2:
 		if (version>=1) {
 			CPTG_RobotShape_Circular::internal_shape_loadFromStream(in);
 		}
 
 		in >> T_ramp >> V_MAX >> W_MAX >> turningRadiusReference;
+		if (version>=2)
+			in >> maxAllowedDirAngle;
 		break;
 	default:
 		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
@@ -211,7 +219,7 @@ void CPTG_Holo_Blend::writeToStream(mrpt::utils::CStream &out, int *version) con
 {
 	if (version) 
 	{
-		*version = 1;
+		*version = 2;
 		return;
 	}
 
@@ -219,6 +227,7 @@ void CPTG_Holo_Blend::writeToStream(mrpt::utils::CStream &out, int *version) con
 	CPTG_RobotShape_Circular::internal_shape_saveToStream(out);
 
 	out << T_ramp << V_MAX << W_MAX << turningRadiusReference;
+	out << maxAllowedDirAngle; // v2
 }
 
 bool CPTG_Holo_Blend::inverseMap_WS2TP(double x, double y, int &out_k, double &out_d, double tolerance_dist) const
@@ -321,6 +330,7 @@ void CPTG_Holo_Blend::internal_initialize(const std::string & cacheFilename, con
 	ASSERT_(W_MAX>0);
 	ASSERT_(m_alphaValuesCount>0);
 	ASSERT_(m_robotRadius>0);
+	ASSERT_(maxAllowedDirAngle>.0);
 
 #ifdef DO_PERFORMANCE_BENCHMARK
 	tl.dumpAllStats();
@@ -338,7 +348,11 @@ void CPTG_Holo_Blend::directionToMotionCommand( uint16_t k, std::vector<double> 
 
 	// cmd_vel=[vel dir_local ramp_time rot_speed]:
 	cmd_vel.resize(4);
-	cmd_vel[0] = V_MAX;
+	if (std::abs(dir_local)<=maxAllowedDirAngle) {
+		cmd_vel[0] = V_MAX;
+	} else {
+		cmd_vel[0] = .0;
+	}
 	cmd_vel[1] = dir_local;
 	cmd_vel[2] = T_ramp;
 	cmd_vel[3] = W_MAX * dir_local / M_PI;
