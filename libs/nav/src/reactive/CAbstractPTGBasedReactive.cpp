@@ -342,9 +342,8 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 			// Too much time have passed?
 			if ( system::timeDifference( badNavAlarm_lastMinDistTime, system::getCurrentTime() ) > badNavAlarm_AlarmTimeout)
 			{
-				std::cout << "\n--------------------------------------------\nWARNING: Timeout for approaching toward the target expired!! Aborting navigation!! \n---------------------------------\n";
-				MRPT_TODO("check events!");
-				//m_robot.sendNavigationEndDueToErrorEvent(); XXX
+				printf_debug("\n--------------------------------------------\nWARNING: Timeout for approaching toward the target expired!! Aborting navigation!! \n---------------------------------\n");
+				m_robot.sendWaySeemsBlockedEvent();
 
 				m_navigationState = NAV_ERROR;
 				return;
