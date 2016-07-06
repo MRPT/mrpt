@@ -10,6 +10,7 @@
 #define  CDebugOutputCapable_H
 
 #include <mrpt/base/link_pragmas.h>
+#include <mrpt/utils/mrpt_macros.h>
 
 /*---------------------------------------------------------------
 	Class
