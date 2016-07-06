@@ -122,7 +122,7 @@ CPTG_Holo_Blend::CPTG_Holo_Blend() :
 	W_MAX(-1.0),
 	turningRadiusReference(0.30),
 	curVelLocal(0,0,0),
-	maxAllowedDirAngle(2.0*M_PI)
+	maxAllowedDirAngle(M_PI)
 { 
 }
 
