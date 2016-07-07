@@ -14,6 +14,7 @@
 #include <mrpt/utils/net_utils.h>
 #include <mrpt/hwdrivers/CGPSInterface.h>
 #include <mrpt/system/filesystem.h>
+#include <mrpt/utils/bits.h> // for reverseBytesInPlace()
 
 // socket's hdrs:
 #ifdef MRPT_OS_WINDOWS
@@ -587,6 +588,29 @@ bool CVelodyneScanner::receivePackets(
 		}
 	}
 #endif
+
+	// Convert from Velodyne's standard little-endian ordering to host byte ordering:
+	// (done AFTER saving the pckg as is to pcap above)
+#if MRPT_IS_BIG_ENDIAN
+	if (data_pkt_timestamp!=INVALID_TIMESTAMP)
+	{
+		mrpt::utils::reverseBytesInPlace( out_data_pkt.gps_timestamp );
+		for (int i=0;i<CObservationVelodyneScan::BLOCKS_PER_PACKET;i++)
+		{
+			mrpt::utils::reverseBytesInPlace( out_data_pkt.blocks[i].header );
+			mrpt::utils::reverseBytesInPlace( out_data_pkt.blocks[i].rotation );
+			for (int k=0;k<CObservationVelodyneScan::SCANS_PER_BLOCK;k++) {
+				mrpt::utils::reverseBytesInPlace( out_data_pkt.blocks[i].laser_returns[k].distance );
+			}
+		}
+	}
+	if (pos_pkt_timestamp!=INVALID_TIMESTAMP)
+	{
+		mrpt::utils::reverseBytesInPlace( out_pos_pkt.gps_timestamp );
+		mrpt::utils::reverseBytesInPlace( out_pos_pkt.unused2 );
+	}
+#endif
+
 
 	// Position packet decimation:
 	if (pos_pkt_timestamp!=INVALID_TIMESTAMP) {
