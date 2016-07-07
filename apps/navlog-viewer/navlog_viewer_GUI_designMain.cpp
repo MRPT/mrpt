@@ -71,6 +71,7 @@ const long navlog_viewer_GUI_designDialog::ID_STATICTEXT5 = wxNewId();
 const long navlog_viewer_GUI_designDialog::ID_STATICTEXT6 = wxNewId();
 const long navlog_viewer_GUI_designDialog::ID_STATICTEXT7 = wxNewId();
 const long navlog_viewer_GUI_designDialog::ID_CHECKBOX1 = wxNewId();
+const long navlog_viewer_GUI_designDialog::ID_CHECKBOX2 = wxNewId();
 const long navlog_viewer_GUI_designDialog::ID_STATICTEXT8 = wxNewId();
 const long navlog_viewer_GUI_designDialog::ID_TEXTCTRL2 = wxNewId();
 const long navlog_viewer_GUI_designDialog::ID_PANEL3 = wxNewId();
@@ -120,7 +121,6 @@ navlog_viewer_GUI_designDialog::navlog_viewer_GUI_designDialog(wxWindow* parent,
     //(*Initialize(navlog_viewer_GUI_designDialog)
     wxStaticBoxSizer* StaticBoxSizer2;
     wxFlexGridSizer* FlexGridSizer4;
-    wxMenuItem* mnuSeePTGParams;
     wxFlexGridSizer* FlexGridSizer3;
     wxFlexGridSizer* FlexGridSizer5;
     wxFlexGridSizer* FlexGridSizer2;
@@ -128,7 +128,7 @@ navlog_viewer_GUI_designDialog::navlog_viewer_GUI_designDialog(wxWindow* parent,
     wxFlexGridSizer* FlexGridSizer6;
     wxStaticBoxSizer* StaticBoxSizer1;
     wxFlexGridSizer* FlexGridSizer1;
-
+    
     Create(parent, wxID_ANY, _("Navigation log viewer - Part of the MRPT project"), wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE, _T("wxID_ANY"));
     Move(wxPoint(20,20));
     FlexGridSizer1 = new wxFlexGridSizer(1, 1, 0, 0);
@@ -202,6 +202,10 @@ navlog_viewer_GUI_designDialog::navlog_viewer_GUI_designDialog(wxWindow* parent,
     cbDrawShapePath->SetValue(true);
     FlexGridSizer9->Add(cbDrawShapePath, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     FlexGridSizer9->Add(-1,-1,1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    cbGlobalFrame = new wxCheckBox(Panel3, ID_CHECKBOX2, _("Represent in global frame"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX2"));
+    cbGlobalFrame->SetValue(true);
+    FlexGridSizer9->Add(cbGlobalFrame, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    FlexGridSizer9->Add(-1,-1,1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     StaticText5 = new wxStaticText(Panel3, ID_STATICTEXT8, _("Shape draw min. dist:"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT8"));
     FlexGridSizer9->Add(StaticText5, 1, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5);
     edShapeMinDist = new wxTextCtrl(Panel3, ID_TEXTCTRL2, _("1.0"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_TEXTCTRL2"));
@@ -229,7 +233,7 @@ navlog_viewer_GUI_designDialog::navlog_viewer_GUI_designDialog(wxWindow* parent,
     mnuMoreOps.Append(mnuMatlabPlots);
     FlexGridSizer1->Fit(this);
     FlexGridSizer1->SetSizeHints(this);
-
+    
     Connect(ID_BUTTON1,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&navlog_viewer_GUI_designDialog::OnbtnLoadClick);
     Connect(ID_BUTTON2,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&navlog_viewer_GUI_designDialog::OnbtnHelpClick);
     Connect(ID_BUTTON3,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&navlog_viewer_GUI_designDialog::OnbtnQuitClick);
@@ -237,6 +241,7 @@ navlog_viewer_GUI_designDialog::navlog_viewer_GUI_designDialog(wxWindow* parent,
     Connect(ID_SLIDER1,wxEVT_SCROLL_CHANGED,(wxObjectEventFunction)&navlog_viewer_GUI_designDialog::OnslidLogCmdScroll);
     Connect(ID_BUTTON4,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&navlog_viewer_GUI_designDialog::OnbtnPlayClick);
     Connect(ID_BUTTON5,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&navlog_viewer_GUI_designDialog::OnbtnStopClick);
+    Connect(ID_CHECKBOX2,wxEVT_COMMAND_CHECKBOX_CLICKED,(wxObjectEventFunction)&navlog_viewer_GUI_designDialog::OncbGlobalFrameClick);
     Connect(ID_BUTTON6,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&navlog_viewer_GUI_designDialog::OnbtnMoreOpsClick);
     Connect(ID_TIMER1,wxEVT_TIMER,(wxObjectEventFunction)&navlog_viewer_GUI_designDialog::OntimPlayTrigger);
     Connect(ID_TIMER2,wxEVT_TIMER,(wxObjectEventFunction)&navlog_viewer_GUI_designDialog::OntimAutoloadTrigger);
@@ -515,16 +520,41 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 
 			const CVectorFloat shap_x = log.robotShape_x, shap_y = log.robotShape_y;
 
+			// Robot frame of reference:
+			mrpt::opengl::CSetOfObjectsPtr gl_robot_frame;
+			{
+				mrpt::opengl::CRenderizablePtr gl_rbframe_r = scene->getByName("robot_frame");  // Get or create if new
+				if (!gl_rbframe_r) {
+					gl_robot_frame = mrpt::opengl::CSetOfObjects::Create();
+					gl_robot_frame->setName("robot_frame");
+					scene->insert(gl_robot_frame);
+				} else {
+					gl_robot_frame = mrpt::opengl::CSetOfObjectsPtr(gl_rbframe_r);
+				}
+				// Global or local coordinates?
+				if (this->cbGlobalFrame->IsChecked()) {
+					gl_robot_frame->setPose(  mrpt::poses::CPose3D(log.robotOdometryPose) );
+					// Move the window focus:
+					float px,py,pz;
+					win1->getCameraPointingToPoint(px,py,pz);
+					const float cam_zoom = win1->getCameraZoom();
+					if ( log.robotOdometryPose.distance2DTo(px,py)>.4*cam_zoom )
+						win1->setCameraPointingToPoint(log.robotOdometryPose.x(),log.robotOdometryPose.y(),0.0);
+				} else {
+					gl_robot_frame->setPose( mrpt::poses::CPose3D() );
+				}
+			}
+
 			{
 				// Obstacles:  Was: win1->plot(log.WS_Obstacles.getPointsBufferRef_x(),log.WS_Obstacles.getPointsBufferRef_y(),"b.4");
 				mrpt::opengl::CPointCloudPtr gl_obs;
-				mrpt::opengl::CRenderizablePtr gl_obs_r = scene->getByName("obs");  // Get or create if new
+				mrpt::opengl::CRenderizablePtr gl_obs_r = gl_robot_frame->getByName("obs");  // Get or create if new
 				if (!gl_obs_r) {
 					gl_obs = mrpt::opengl::CPointCloud::Create();
 					gl_obs->setName("obs");
 					gl_obs->setPointSize(3.0);
 					gl_obs->setColor_u8( mrpt::utils::TColor(0x00,0x00,0xff));
-					scene->insert(gl_obs);
+					gl_robot_frame->insert(gl_obs);
 				} else {
 					gl_obs = mrpt::opengl::CPointCloudPtr(gl_obs_r);
 				}
@@ -534,13 +564,13 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 			{
 				// Selected PTG path:
 				mrpt::opengl::CSetOfLinesPtr   gl_path;
-				mrpt::opengl::CRenderizablePtr gl_path_r = scene->getByName("path");  // Get or create if new
+				mrpt::opengl::CRenderizablePtr gl_path_r = gl_robot_frame->getByName("path");  // Get or create if new
 				if (!gl_path_r) {
 					gl_path = mrpt::opengl::CSetOfLines::Create();
 					gl_path->setName("path");
 					gl_path->setLineWidth(2.0);
 					gl_path->setColor_u8( mrpt::utils::TColor(0x00,0x00,0xff) );
-					scene->insert(gl_path);
+					gl_robot_frame->insert(gl_path);
 				} else {
 					gl_path = mrpt::opengl::CSetOfLinesPtr(gl_path_r);
 				}
@@ -580,13 +610,13 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 						{
 							// Robot shape:
 							mrpt::opengl::CSetOfLinesPtr   gl_shape;
-							mrpt::opengl::CRenderizablePtr gl_shape_r = scene->getByName("shape");  // Get or create if new
+							mrpt::opengl::CRenderizablePtr gl_shape_r = gl_robot_frame->getByName("shape");  // Get or create if new
 							if (!gl_shape_r) {
 								gl_shape = mrpt::opengl::CSetOfLines::Create();
 								gl_shape->setName("shape");
 								gl_shape->setLineWidth(4.0);
 								gl_shape->setColor_u8( mrpt::utils::TColor(0xff,0x00,0x00) );
-								scene->insert(gl_shape);
+								gl_robot_frame->insert(gl_shape);
 							} else {
 								gl_shape = mrpt::opengl::CSetOfLinesPtr(gl_shape_r);
 							}
@@ -599,14 +629,14 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 			{
 				// Target:
 				mrpt::opengl::CPointCloudPtr   gl_trg;
-				mrpt::opengl::CRenderizablePtr gl_trg_r = scene->getByName("target");  // Get or create if new
+				mrpt::opengl::CRenderizablePtr gl_trg_r = gl_robot_frame->getByName("target");  // Get or create if new
 				if (!gl_trg_r) {
 					gl_trg = mrpt::opengl::CPointCloud::Create();
 					gl_trg->setName("target");
 					gl_trg->enableShowName(true);
 					gl_trg->setPointSize(9.0);
 					gl_trg->setColor_u8( mrpt::utils::TColor(0x00,0x00,0x00) );
-					scene->insert(gl_trg);
+					gl_robot_frame->insert(gl_trg);
 				} else {
 					gl_trg = mrpt::opengl::CPointCloudPtr(gl_trg_r);
 				}
@@ -629,7 +659,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 			log.cur_vel.vx, log.cur_vel.vy, mrpt::utils::RAD2DEG(log.cur_vel.omega),
 			log.cur_vel_local.vx, log.cur_vel_local.vy, mrpt::utils::RAD2DEG(log.cur_vel_local.omega) ),
 			mrpt::utils::TColorf(1,1,1), "mono", fy, mrpt::opengl::NICE,  1 /*unique txt index*/ );
-		
+
 		win1->addTextMessage(5.0, 5+2*Ay, mrpt::format("robot_pose=%s",log.robotOdometryPose.asString().c_str()),
 			mrpt::utils::TColorf(1,1,1), "mono", fy, mrpt::opengl::NICE,  2 /*unique txt index*/ );
 
@@ -641,7 +671,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 
 			win1->addTextMessage(5.0, 5+3*Ay, ss.str(), mrpt::utils::TColorf(1,1,1), "mono", fy, mrpt::opengl::NICE,  3 /*unique txt index*/ );
 		}
-		
+
 		{
 			std::stringstream ss;
 			ss << "Performance: ";
@@ -871,7 +901,7 @@ void navlog_viewer_GUI_designDialog::OnmnuMatlabPlotsSelected(wxCommandEvent& ev
 void navlog_viewer_GUI_designDialog::OnmnuSeePTGParamsSelected(wxCommandEvent& event)
 {
 	WX_START_TRY
-	
+
 	const std::string sSection = "PTG_PARAMS";
 	mrpt::utils::CConfigFileMemory cfg;
 
@@ -896,4 +926,10 @@ void navlog_viewer_GUI_designDialog::OnmnuSeePTGParamsSelected(wxCommandEvent& e
 	wxMessageBox( _U( sCfgText.c_str() ), _("PTG parameters as stored in the log:"), wxOK, this);
 
 	WX_END_TRY
+}
+
+void navlog_viewer_GUI_designDialog::OncbGlobalFrameClick(wxCommandEvent& event)
+{
+	wxScrollEvent d;
+	OnslidLogCmdScroll(d);
 }

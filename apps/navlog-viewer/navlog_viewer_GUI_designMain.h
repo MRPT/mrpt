@@ -60,6 +60,7 @@ class navlog_viewer_GUI_designDialog: public wxFrame //wxDialog
 		void OnbtnMoreOpsClick(wxCommandEvent& event);
 		void OnmnuMatlabPlotsSelected(wxCommandEvent& event);
 		void OnmnuSeePTGParamsSelected(wxCommandEvent& event);
+		void OncbGlobalFrameClick(wxCommandEvent& event);
 		//*)
 
 		//(*Identifiers(navlog_viewer_GUI_designDialog)
@@ -79,6 +80,7 @@ class navlog_viewer_GUI_designDialog: public wxFrame //wxDialog
 		static const long ID_STATICTEXT6;
 		static const long ID_STATICTEXT7;
 		static const long ID_CHECKBOX1;
+		static const long ID_CHECKBOX2;
 		static const long ID_STATICTEXT8;
 		static const long ID_TEXTCTRL2;
 		static const long ID_PANEL3;
@@ -94,6 +96,7 @@ class navlog_viewer_GUI_designDialog: public wxFrame //wxDialog
 		wxButton* btnStop;
 		wxTextCtrl* edShapeMinDist;
 		wxButton* btnMoreOps;
+		wxMenuItem* mnuSeePTGParams;
 		wxPanel* Panel_AUX;
 		wxStaticText* txtLogDuration;
 		wxStaticText* StaticText2;
@@ -109,6 +112,7 @@ class navlog_viewer_GUI_designDialog: public wxFrame //wxDialog
 		wxSlider* slidLog;
 		wxTimer timPlay;
 		wxStaticText* StaticText5;
+		wxCheckBox* cbGlobalFrame;
 		wxStaticText* txtLogEntries;
 		wxMenuItem* mnuMatlabPlots;
 		wxFlexGridSizer* flexGridRightHand;
