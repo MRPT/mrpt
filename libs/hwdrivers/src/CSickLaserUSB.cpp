@@ -184,8 +184,7 @@ bool  CSickLaserUSB::checkControllerIsConnected()
 	}
 	catch(std::exception &e)
 	{
-		printf_debug(e.what());
-		printf_debug("[CSickLaserUSB] ERROR TRYING TO OPEN USB DEVICE S/N:'%s'\n",m_serialNumber.c_str() );
+		printf_debug("[CSickLaserUSB] ERROR TRYING TO OPEN USB DEVICE S/N:'%s'\n%s",m_serialNumber.c_str(),e.what() );
 		return false;
 	}
 }
