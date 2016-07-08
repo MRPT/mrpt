@@ -13,12 +13,12 @@ void mrpt::vision::p3p::init_inverse_parameters()
     cy_fy = cy / fy;
 }
 
-mrpt::vision::p3p::p3p(cv::Mat cameraMatrix)
+mrpt::vision::p3p::p3p(Eigen::MatrixXd cam_intrinsic)
 {
-    if (cameraMatrix.depth() == CV_32F)
-        init_camera_parameters<float>(cameraMatrix);
-    else
-        init_camera_parameters<double>(cameraMatrix);
+    fx = cam_intrinsic(0,0);
+    fy = cam_intrinsic(1,1);
+    cx = cam_intrinsic(0,2);
+    cy = cam_intrinsic(1,2);
     init_inverse_parameters();
 }
 
@@ -30,31 +30,56 @@ mrpt::vision::p3p::p3p(double _fx, double _fy, double _cx, double _cy)
     cy = _cy;
     init_inverse_parameters();
 }
+#if MRPT_HAS_OPENCV
 
-bool mrpt::vision::p3p::solve(cv::Mat& R, cv::Mat& tvec, const cv::Mat& opoints, const cv::Mat& ipoints)
+    mrpt::vision::p3p::p3p(cv::Mat cameraMatrix)
+    {
+        if (cameraMatrix.depth() == CV_32F)
+            init_camera_parameters<float>(cameraMatrix);
+        else
+            init_camera_parameters<double>(cameraMatrix);
+        init_inverse_parameters();
+    }
+    
+    bool mrpt::vision::p3p::solve(cv::Mat& R, cv::Mat& tvec, const cv::Mat& opoints, const cv::Mat& ipoints)
+    {
+        double rotation_matrix[3][3], translation[3];
+        std::vector<double> points;
+        if (opoints.depth() == ipoints.depth())
+        {
+            if (opoints.depth() == CV_32F)
+                extract_points<cv::Point3f,cv::Point2f>(opoints, ipoints, points);
+            else
+                extract_points<cv::Point3d,cv::Point2d>(opoints, ipoints, points);
+        }
+        else if (opoints.depth() == CV_32F)
+            extract_points<cv::Point3f,cv::Point2d>(opoints, ipoints, points);
+        else
+            extract_points<cv::Point3d,cv::Point2f>(opoints, ipoints, points);
+
+        bool result = solve(rotation_matrix, translation, points[0], points[1], points[2], points[3], points[4], points[5],
+              points[6], points[7], points[8], points[9], points[10], points[11], points[12], points[13], points[14],
+              points[15], points[16], points[17], points[18], points[19]);
+        cv::Mat(3, 1, CV_64F, translation).copyTo(tvec);
+        cv::Mat(3, 3, CV_64F, rotation_matrix).copyTo(R);
+        return result;
+    }
+    
+#endif
+
+bool mrpt::vision::p3p::solve(Eigen::Ref<Eigen::Matrix3d> R, Eigen::Ref<Eigen::Vector3d> t, Eigen::MatrixXd obj_pts, Eigen::MatrixXd img_pts)
 {
     double rotation_matrix[3][3], translation[3];
     std::vector<double> points;
-    if (opoints.depth() == ipoints.depth())
-    {
-        if (opoints.depth() == CV_32F)
-            extract_points<cv::Point3f,cv::Point2f>(opoints, ipoints, points);
-        else
-            extract_points<cv::Point3d,cv::Point2d>(opoints, ipoints, points);
-    }
-    else if (opoints.depth() == CV_32F)
-        extract_points<cv::Point3f,cv::Point2d>(opoints, ipoints, points);
-    else
-        extract_points<cv::Point3d,cv::Point2f>(opoints, ipoints, points);
-
+    extract_points(obj_pts, img_pts, points);
     bool result = solve(rotation_matrix, translation, points[0], points[1], points[2], points[3], points[4], points[5],
           points[6], points[7], points[8], points[9], points[10], points[11], points[12], points[13], points[14],
           points[15], points[16], points[17], points[18], points[19]);
-    cv::Mat(3, 1, CV_64F, translation).copyTo(tvec);
-    cv::Mat(3, 3, CV_64F, rotation_matrix).copyTo(R);
+    R = Eigen::Map<Eigen::Matrix3d>((double*)rotation_matrix);
+    t = Eigen::Map<Eigen::Vector3d>(translation);
+    
     return result;
 }
-
 bool mrpt::vision::p3p::solve(double R[3][3], double t[3],
     double mu0, double mv0,   double X0, double Y0, double Z0,
     double mu1, double mv1,   double X1, double Y1, double Z1,
@@ -329,7 +354,7 @@ bool mrpt::vision::p3p::align(double M_end[3][3],
 
     return true;
 }
-
+    
 bool mrpt::vision::p3p::jacobi_4x4(double * A, double * D, double * U)
 {
     double B[4], Z[4];
