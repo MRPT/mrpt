@@ -56,7 +56,7 @@ CAbstractNavigator::~CAbstractNavigator()
   ---------------------------------------------------------------*/
 void CAbstractNavigator::cancel()
 {
-	printf_debug("\n[CAbstractNavigator::Cancel()]\n");
+	printf_debug("\n[CAbstractNavigator::cancel()]\n");
 	m_navigationState = IDLE;
 }
 
@@ -66,7 +66,7 @@ void CAbstractNavigator::cancel()
   ---------------------------------------------------------------*/
 void CAbstractNavigator::resume()
 {
-	printf_debug("\n[CAbstractNavigator::Continue()]\n");
+	printf_debug("\n[CAbstractNavigator::resume()]\n");
 	if ( m_navigationState == SUSPENDED )
 		m_navigationState = NAVIGATING;
 }
@@ -77,9 +77,16 @@ void CAbstractNavigator::resume()
   ---------------------------------------------------------------*/
 void  CAbstractNavigator::suspend()
 {
-	printf_debug("\n[CAbstractNavigator::Suspend()]\n");
+	printf_debug("\n[CAbstractNavigator::suspend()]\n");
 	if ( m_navigationState == NAVIGATING )
 		m_navigationState  = SUSPENDED;
+}
+
+void CAbstractNavigator::resetNavError()
+{
+	printf_debug("\n[CAbstractNavigator::resetNavError()]\n");
+	if ( m_navigationState == NAV_ERROR )
+		m_navigationState  = IDLE;
 }
 
 /*---------------------------------------------------------------
