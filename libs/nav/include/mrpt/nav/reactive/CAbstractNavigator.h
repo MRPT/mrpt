@@ -24,12 +24,30 @@ namespace mrpt
 	 *  - A class derived from `CRobot2NavInterface` with callbacks must be defined by the user and provided to the constructor.
 	 *  - `navigationStep()` must be called periodically in order to effectively run the navigation. This method will internally call the callbacks to gather sensor data and robot positioning data.
 	 *
+	 * It implements the following state machine (see CAbstractNavigator::getCurrentState() )
+	 *  \dot
+	 *  digraph CAbstractNavigator_States {
+	 *      IDLE; NAVIGATING; SUSPENDED; NAV_ERROR;
+	 *      IDLE -> NAVIGATING [ label="CAbstractNavigator::navigate()"];
+	 *      IDLE -> NAVIGATING [ label="CAbstractWaypointsNavigator::navigateWaypoints()" ];
+	 *      NAVIGATING -> IDLE [ label="Final target reached" ];
+	 *      NAVIGATING -> IDLE [ label="CAbstractNavigator::cancel()" ];
+	 *      NAVIGATING -> NAV_ERROR [ label="Upon sensor errors, timeout,..." ];
+	 *      NAVIGATING -> SUSPENDED [ label="CAbstractNavigator::suspend()" ];
+	 *      SUSPENDED -> NAVIGATING [ label="CAbstractNavigator::resume()" ];
+	 *      NAV_ERROR -> IDLE [ label="CAbstractNavigator::resetNavError()" ];
+	 *  }
+	 *  \enddot
+	 *
 	 * \sa CReactiveNavigationSystem, CRobot2NavInterface, all children classes
 	 *  \ingroup nav_reactive
 	 */
 	class NAV_IMPEXP CAbstractNavigator : public mrpt::utils::CDebugOutputCapable
 	{
 	public:
+		CAbstractNavigator( CRobot2NavInterface &robot_interface_impl );  //!< ctor
+		virtual ~CAbstractNavigator(); //!< dtor
+
 		/** The struct for configuring navigation requests. Used in CAbstractPTGBasedReactive::navigate() */
 		struct NAV_IMPEXP TNavigationParams
 		{
@@ -42,12 +60,6 @@ namespace mrpt
 			virtual std::string getAsText() const; //!< Gets navigation params as a human-readable format
 			virtual TNavigationParams* clone() const { return new TNavigationParams(*this); }
 		};
-		
-		/** Constructor */
-		CAbstractNavigator( CRobot2NavInterface &robot_interface_impl );
-
-		/** Destructor */
-		virtual ~CAbstractNavigator();
 
 		/** \name Navigation control API
 		  * @{ */
@@ -55,16 +67,17 @@ namespace mrpt
 		virtual void initialize() = 0; //!<  Must be called before any other navigation command
 
 		virtual void navigationStep(); //!< This method must be called periodically in order to effectively run the navigation
-		
-		/** Navigation request. It starts a new navigation.
-		  * \param[in] params Pointer to structure with navigation info (its contents will be copied, so the original can be freely destroyed upon return.)
+
+		/** Navigation request to a single target location. It starts a new navigation.
+		  * \param[in] params Pointer to structure with navigation info (its contents will be copied, so the original can be freely destroyed upon return if it was dynamically allocated.)
 		  * \note A pointer is used so the passed object can be polymorphic with derived types.
 		  */
 		virtual void  navigate( const TNavigationParams *params )=0;
 
-		void cancel(); //!< Cancel current navegation.
-		void resume(); //!< Continues with suspended navigation. \sa suspend
-		virtual void  suspend(); //!< Suspend current navegation. \sa resume
+		virtual void cancel(); //!< Cancel current navegation.
+		virtual void resume(); //!< Continues with suspended navigation. \sa suspend
+		virtual void suspend(); //!< Suspend current navegation. \sa resume
+		virtual void resetNavError(); //!< Resets a `NAV_ERROR` state back to `IDLE`
 
 		/** The different states for the navigation system. */
 		enum TState {
