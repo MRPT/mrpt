@@ -136,7 +136,7 @@ void CReactiveNavigationSystem::STEP1_InitPTGs()
 			PTGs[i]->deinitialize();
 
 			printf_debug("[loadConfigFile] Initializing PTG#%u...", i);
-			printf_debug(PTGs[i]->getDescription().c_str());
+			printf_debug("%s",PTGs[i]->getDescription().c_str());
 
 			// Polygonal robot shape?
 			{
@@ -177,7 +177,7 @@ bool CReactiveNavigationSystem::STEP2_SenseObstacles()
 	catch (std::exception &e)
 	{
 		printf_debug("[CReactiveNavigationSystem::STEP2_Sense] Exception:");
-		printf_debug((char*)(e.what()));
+		printf_debug("%s",(char*)(e.what()));
 		return false;
 	}
 	catch (...)
