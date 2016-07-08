@@ -3,6 +3,7 @@
     generated automatically.
   * Fix wrong "Breaks/Replace" fields (Closes: #807662).
   * Fix FTBFS on sparc64 (Closes: #825846).
+  * Fix FTBFS on big endian due unit test errors (Closes: #825845)
 
 mrpt (1:1.4.0-1) unstable; urgency=medium
 
