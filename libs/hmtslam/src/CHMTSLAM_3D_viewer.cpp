@@ -59,7 +59,7 @@ void CHMTSLAM::thread_3D_viewer(  )
 
 		// Release semaphores:
 
-		obj->printf_debug( (char*)e.what() );
+		obj->printf_debug("%s", e.what() );
 
 		// DEBUG: Terminate application:
 		obj->m_terminateThreads	= true;
