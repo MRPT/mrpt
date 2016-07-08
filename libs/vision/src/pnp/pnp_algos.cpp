@@ -165,43 +165,15 @@ int CPnP::CPnP_p3p(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<E
     Eigen::MatrixXd cam_in_eig=cam_intrinsic.array().transpose(), img_pts_eig=img_pts.array().transpose(), obj_pts_eig=obj_pts.array().transpose();
     Eigen::Matrix3d R_eig; 
     Eigen::Vector3d t_eig;
-    //cv::Mat cam_in_cv(3,3,CV_32F), img_pts_cv(2,3,CV_32F), obj_pts_cv(3,3,CV_32F), R_cv, t_cv;
-    
-    //cout<<"cam_in="<<endl<<cam_in_eig<<endl<<endl;
-    //cout<<"obj_pts="<<endl<<obj_pts_eig<<endl<<endl;
-    //cout<<"img_pts="<<endl<<img_pts_eig<<endl<<endl;
-    
-    //cv::eigen2cv(cam_in_eig, cam_in_cv);
-    //cv::eigen2cv(img_pts_eig, img_pts_cv);
-    //cv::eigen2cv(obj_pts_eig, obj_pts_cv);
-    
-    //cout<<cam_in_cv<<endl;
-    //cout<<img_pts_cv<<endl;
-    //cout<<obj_pts_cv<<endl;
     
     //mrpt::vision::p3p p(cam_in_cv);
-    mrpt::vision::p3p p(cam_in_eig);
     //int ret = p.solve(R_cv,t_cv, obj_pts_cv, img_pts_cv);
+    mrpt::vision::p3p p(cam_in_eig);
     int ret = p.solve(R_eig,t_eig, obj_pts_eig, img_pts_eig);
-    
-    //cout<<R_cv<<endl;
-    //cout<<t_cv<<endl;
-    
-    //cv::cv2eigen(R_cv, R_eig);
-    //cv::cv2eigen(t_cv, t_eig);
     
     Eigen::Quaterniond q(R_eig);
     
     pose_mat << t_eig,q.vec();
-    
-    //cout<<"R_eig="<<endl<<R_eig<<endl<<endl;
-    //cout<<"t_eig="<<endl<<t_eig<<endl<<endl;
-    
-    //pose_mat.block(0,0,3,3)=R_eig;
-    //pose_mat.block(0,3,3,1)=t_eig;
-    //pose_mat.row(3)<<0,0,0,1;
-    
-    //cout<<"pose_mat="<<endl<<pose_mat_eig<<endl<<endl;
     
     return ret;
 }
