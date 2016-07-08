@@ -13,6 +13,7 @@
 #include <mrpt/utils/types_math.h>
 #include <mrpt/math/num_jacobian.h>
 #include <mrpt/utils/printf_vector.h>
+#include <mrpt/math/ops_containers.h>
 
 /*---------------------------------------------------------------
 	Class
