@@ -1,6 +1,11 @@
   * Removed manual -dbg packages, as they are now
     generated automatically.
+
+mrpt (1:1.4.0-3) unstable; urgency=medium
+
   * Fix FTBFS on sparc64 (Closes: #825846).
+
+ -- Jose Luis Blanco (University of Malaga) <joseluisblancoc@gmail.com>  Sun, 10 Jul 2016 00:07:40 +0200
 
 mrpt (1:1.4.0-2) unstable; urgency=medium
 
