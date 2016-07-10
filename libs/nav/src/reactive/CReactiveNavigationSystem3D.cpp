@@ -75,22 +75,17 @@ void CReactiveNavigationSystem3D::changeRobotShape( TRobotShape robotShape )
 
 
 
-/*---------------------------------------------------------------
-						loadConfigFile
-  ---------------------------------------------------------------*/
-void CReactiveNavigationSystem3D::loadConfigFile(const mrpt::utils::CConfigFileBase &ini, const std::string &section_prefix)
+void CReactiveNavigationSystem3D::internal_loadConfigFile(const mrpt::utils::CConfigFileBase &ini, const std::string &section_prefix)
 {
 	MRPT_START
 
 	m_PTGsMustBeReInitialized = true;
 
 	const std::string sectRob = section_prefix + std::string("ROBOT_CONFIG");
-	const std::string sectCfg = section_prefix + std::string("NAVIGATION_CONFIG");
+	const std::string sectCfg = section_prefix + std::string("ReactiveParams"); // Was: "NAVIGATION_CONFIG". JLB changed this to make it consistent with 2D version and allow refactoring this method.
 
 	// Load config from INI file:
 	// ------------------------------------------------------------
-	robotName = ini.read_string(sectRob,"Name", "MyRobot", false );
-
 	unsigned int num_levels;
 	vector <float> xaux,yaux;
 
@@ -108,29 +103,11 @@ void CReactiveNavigationSystem3D::loadConfigFile(const mrpt::utils::CConfigFileB
 			m_robotShape.polygon(i-1).AddVertex(xaux[j], yaux[j]);
 	}
 
-	//Read navigation params
-	refDistance = ini.read_float(sectCfg,"MAX_DISTANCE_PTG", 1, true);
-	SPEEDFILTER_TAU =  ini.read_float(sectCfg,"SPEEDFILTER_TAU", 0, true);
-	this->m_robot.loadConfigFile(ini,sectCfg);
-
-	DIST_TO_TARGET_FOR_SENDING_EVENT = ini.read_float(sectCfg, "DIST_TO_TARGET_FOR_SENDING_EVENT", DIST_TO_TARGET_FOR_SENDING_EVENT, false);
-
-	ini.read_vector(sectCfg, "weights", vector<float> (0), weights, 1);
-	ASSERT_(weights.size()==6);
-
-	m_badNavAlarm_AlarmTimeout = ini.read_float(sectCfg,"ALARM_SEEMS_NOT_APPROACHING_TARGET_TIMEOUT", m_badNavAlarm_AlarmTimeout, false);
-
-	//m_reactiveparam.m_reload_ptgfiles = ini.read_bool(sectCfg,"RELOAD_PTGFILES", 1, true);
-
-
 	// Load PTGs from file:
 	// ---------------------------------------------
+	// levels = m_robotShape.heights.size()
 
-	unsigned int num_ptgs; // levels = m_robotShape.heights.size()
-	CParameterizedTrajectoryGenerator *ptgaux;
-
-
-	num_ptgs = ini.read_int(sectCfg,"PTG_COUNT", 1, true);
+	unsigned int num_ptgs = ini.read_int(sectCfg,"PTG_COUNT", 1, true);
 	m_ptgmultilevel.resize(num_ptgs);
 
 	// Read each PTG parameters, and generate K x N collisiongrids
@@ -142,30 +119,14 @@ void CReactiveNavigationSystem3D::loadConfigFile(const mrpt::utils::CConfigFileB
 		{
 			printf_debug("[loadConfigFile] Generating PTG#%u at level %u...",j,i);
 			const std::string sPTGName = ini.read_string(sectCfg,format("PTG%d_TYPE",j),"",true);
-			ptgaux = CParameterizedTrajectoryGenerator::CreatePTG(sPTGName,ini,sectCfg,format("PTG%d_",j));
+			CParameterizedTrajectoryGenerator *ptgaux = CParameterizedTrajectoryGenerator::CreatePTG(sPTGName,ini,sectCfg,format("PTG%d_",j));
 			m_ptgmultilevel[j-1].PTGs.push_back(ptgaux);
 		}
 	}
 
-	this->STEP1_InitPTGs();
+	printf_debug(" Robot height sections = %u\n", static_cast<unsigned int>(m_robotShape.size()) );
 
-	//Load holonomic method params
-	this->loadHolonomicMethodConfig(ini,sectCfg);
-
-
-	// Show configuration parameters:
-	// -------------------------------------------------------------------
-	printf_debug("\tLOADED CONFIGURATION:\n");
-	printf_debug("-------------------------------------------------------------\n");
-
-	ASSERT_(!m_holonomicMethod.empty())
-	printf_debug("  Holonomic method \t\t= %s\n",typeid(m_holonomicMethod[0]).name());
-	printf_debug("  PTG Count\t\t\t= %u\n", num_ptgs );
-	printf_debug("  Max. ref. distance\t\t= %f\n", refDistance );
-	printf_debug("  Robot Height Sections \t= %u\n", m_robotShape.size() );
-	printf_debug("\n\n");
-
-	m_init_done = true;
+	//this->STEP1_InitPTGs();
 
 	MRPT_END
 }
@@ -185,7 +146,7 @@ void CReactiveNavigationSystem3D::STEP1_InitPTGs()
 				m_ptgmultilevel[j].PTGs[i]->deinitialize();
 
 				printf_debug("[loadConfigFile] Initializing PTG#%u.%u...", j,i);
-				printf_debug(m_ptgmultilevel[j].PTGs[i]->getDescription().c_str());
+				printf_debug("%s",m_ptgmultilevel[j].PTGs[i]->getDescription().c_str());
 
 				// Polygonal robot shape?
 				{
@@ -336,4 +297,3 @@ void CReactiveNavigationSystem3D::loggingGetWSObstaclesAndShape(CLogFileRecord &
 	}
 	out_log.robotShape_radius = m_robotShape.getRadius(0);
 }
-

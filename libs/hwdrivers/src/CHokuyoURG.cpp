@@ -836,10 +836,10 @@ bool  CHokuyoURG::displayVersionInfo( )
 	}
 	rcv_data[rcv_dataLength]=0;
 
-	printf_debug("\n------------- HOKUYO Scanner: Version Information ------\n");
-	printf_debug(rcv_data);
-	printf_debug("-------------------------------------------------------\n\n");
-
+	printf_debug(
+		"\n------------- HOKUYO Scanner: Version Information ------\n"
+		"%s\n"
+		"-------------------------------------------------------\n\n",rcv_data);
 	return true;
 }
 
@@ -888,9 +888,10 @@ bool  CHokuyoURG::displaySensorInfo( TSensorInfo * out_data)
 	}
 	rcv_data[rcv_dataLength]=0;
 
-	printf_debug("\n------------- HOKUYO Scanner: Product Information ------\n");
-	printf_debug(rcv_data);
-	printf_debug("-------------------------------------------------------\n\n");
+	printf_debug(
+		"\n------------- HOKUYO Scanner: Product Information  ------\n"
+		"%s\n"
+		"-------------------------------------------------------\n\n",rcv_data);
 
 	// Parse the data:
 	if (out_data)

@@ -70,6 +70,7 @@ namespace mrpt
 			void clear(bool deep_clear=false); //!< Resets all stats. By default (deep_clear=false), all section names are remembered (not freed) so the cost of creating upon the first next call is avoided.
 			void enable(bool enabled = true) { m_enabled = enabled; }
 			void disable() { m_enabled = false; }
+			bool isEnabled() const { return m_enabled;}
 			void saveToCSVFile(const std::string &csv_file)  const; 	//!< Dump all stats to a Comma Separated Values (CSV) file. \sa dumpAllStats
 			void registerUserMeasure(const char *event_name, const double value);
 

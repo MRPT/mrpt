@@ -134,8 +134,8 @@ namespace mrpt
 			/*** Changes the default object color \return a ref to this */
 			virtual CRenderizable& setColor_u8( const mrpt::utils::TColor &c);
 
-			/** Set the color components of this object (R,G,B,Alpha, in the range 0-1)  \return a ref to this */
-			inline CRenderizable& setColor_u8( uint8_t R, uint8_t G, uint8_t B, uint8_t A=255) { return setColor_u8(mrpt::utils::TColor(R,G,B,A)); }
+			/** Set the color components of this object (R,G,B,Alpha, in the range 0-255)  \return a ref to this */
+			CRenderizable& setColor_u8( uint8_t R, uint8_t G, uint8_t B, uint8_t A=255) { return setColor_u8(mrpt::utils::TColor(R,G,B,A)); }
 
 			/** @} */
 

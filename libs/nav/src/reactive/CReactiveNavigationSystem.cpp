@@ -67,48 +67,22 @@ void CReactiveNavigationSystem::changeRobotCircularShapeRadius( const double R )
 
 
 /** Reload the configuration from a file. See details in CReactiveNavigationSystem docs. */
-void CReactiveNavigationSystem::loadConfigFile(const mrpt::utils::CConfigFileBase &ini, const std::string &sect_prefix)
-{
-	mrpt::utils::CConfigFileMemory dummyRobotParams;
-	dummyRobotParams.write("ROBOT_NAME","Name",sect_prefix.empty() ? std::string("ReactiveParams") : ( sect_prefix+std::string("ReactiveParams")) );
-	this->loadConfigFile(ini,dummyRobotParams);
-}
-
-/*---------------------------------------------------------------
-						loadConfigFile
-  ---------------------------------------------------------------*/
-void CReactiveNavigationSystem::loadConfigFile(const mrpt::utils::CConfigFileBase &ini, const mrpt::utils::CConfigFileBase &robotIni )
+void CReactiveNavigationSystem::internal_loadConfigFile(const mrpt::utils::CConfigFileBase &ini, const std::string &sect_prefix)
 {
 	MRPT_START
 
-	m_PTGsMustBeReInitialized = true;
+	const std::string sectCfg = sect_prefix + std::string("ReactiveParams"); // Was: "NAVIGATION_CONFIG". JLB changed this to make it consistent with 2D version and allow refactoring this method.
 
-	// Load config from INI file:
-	// ------------------------------------------------------------
-	robotName = robotIni.read_string("ROBOT_NAME","Name", "ReactiveParams" /* Default section for the rest of params */);
+	unsigned int PTG_COUNT = ini.read_int(sectCfg,"PTG_COUNT",0, true );
 
-	unsigned int PTG_COUNT = ini.read_int(robotName,"PTG_COUNT",0, true );
-
-	refDistance = ini.read_float(robotName,"MAX_REFERENCE_DISTANCE",5 );
-
-	MRPT_LOAD_CONFIG_VAR(SPEEDFILTER_TAU,float,  ini,robotName);
-
-	ini.read_vector( robotName, "weights", vector<float>(0), weights, true );
-	ASSERT_(weights.size()==6);
-
-	MRPT_LOAD_CONFIG_VAR_NO_DEFAULT(minObstaclesHeight,float,  ini,robotName);
-	MRPT_LOAD_CONFIG_VAR_NO_DEFAULT(maxObstaclesHeight,float,  ini,robotName);
-
-	MRPT_LOAD_CONFIG_VAR_NO_DEFAULT(DIST_TO_TARGET_FOR_SENDING_EVENT,float,  ini,robotName);
-
-	m_badNavAlarm_AlarmTimeout = ini.read_float("GLOBAL_CONFIG","ALARM_SEEMS_NOT_APPROACHING_TARGET_TIMEOUT", m_badNavAlarm_AlarmTimeout, true);
-	this->m_robot.loadConfigFile(ini,"GLOBAL_CONFIG");
+	MRPT_LOAD_CONFIG_VAR_NO_DEFAULT(minObstaclesHeight,float,  ini,sectCfg);
+	MRPT_LOAD_CONFIG_VAR_NO_DEFAULT(maxObstaclesHeight,float,  ini,sectCfg);
 
 	// Load robot shape: 1/2 polygon
 	// ---------------------------------------------
 	vector<float>        xs,ys;
-	ini.read_vector(robotName,"RobotModel_shape2D_xs",vector<float>(0), xs, false );
-	ini.read_vector(robotName,"RobotModel_shape2D_ys",vector<float>(0), ys, false );
+	ini.read_vector(sectCfg,"RobotModel_shape2D_xs",vector<float>(0), xs, false );
+	ini.read_vector(sectCfg,"RobotModel_shape2D_ys",vector<float>(0), ys, false );
 	ASSERTMSG_(xs.size()==ys.size(),"Config parameters `RobotModel_shape2D_xs` and `RobotModel_shape2D_ys` must have the same length!");
 	if (!xs.empty())
 	{
@@ -120,9 +94,9 @@ void CReactiveNavigationSystem::loadConfigFile(const mrpt::utils::CConfigFileBas
 
 	// Load robot shape: 2/2 circle
 	// ---------------------------------------------
-	const double robot_shape_radius = ini.read_double(robotName,"RobotModel_circular_shape_radius",.0, false );
+	const double robot_shape_radius = ini.read_double(sectCfg,"RobotModel_circular_shape_radius",.0, false );
 	ASSERT_(robot_shape_radius>=.0);
-	if (robot_shape_radius!=.0) 
+	if (robot_shape_radius!=.0)
 	{
 		changeRobotCircularShapeRadius( robot_shape_radius );
 	}
@@ -138,30 +112,13 @@ void CReactiveNavigationSystem::loadConfigFile(const mrpt::utils::CConfigFileBas
 	for ( unsigned int n=0;n<PTG_COUNT;n++)
 	{
 		// Factory:
-		const std::string sPTGName = ini.read_string(robotName,format("PTG%u_Type", n ),"", true );
-		PTGs[n] = CParameterizedTrajectoryGenerator::CreatePTG(sPTGName,ini,robotName, format("PTG%u_",n) );
+		const std::string sPTGName = ini.read_string(sectCfg,format("PTG%u_Type", n ),"", true );
+		PTGs[n] = CParameterizedTrajectoryGenerator::CreatePTG(sPTGName,ini,sectCfg, format("PTG%u_",n) );
 	}
-	printf_debug("\n");
 
-	this->STEP1_InitPTGs();
+	printf_debug(" Obstacles 'z' axis range = [%.03f,%.03f]\n", minObstaclesHeight, maxObstaclesHeight );
 
-	this->loadHolonomicMethodConfig(ini,"GLOBAL_CONFIG");
-
-	// Mostrar configuracion cargada de fichero:
-	// --------------------------------------------------------
-	printf_debug("\tLOADED CONFIGURATION:\n");
-	printf_debug("-------------------------------------------------------------\n");
-
-	ASSERT_(!m_holonomicMethod.empty())
-	printf_debug("  Holonomic method \t\t= %s\n",typeid(m_holonomicMethod[0]).name());
-	printf_debug("\n  Ptg Count\t\t\t= %u\n", (int)PTG_COUNT );
-	printf_debug("  Max. ref. distance\t\t= %f\n", refDistance );
-	printf_debug("  Robot Shape Points Count \t= %u\n", m_robotShape.verticesCount() );
-	printf_debug("  Robot Shape Circular Radius \t= %.02f\n", m_robotShapeCircularRadius );
-	printf_debug("  Obstacles 'z' axis range \t= [%.03f,%.03f]\n", minObstaclesHeight, maxObstaclesHeight );
-	printf_debug("\n\n");
-
-	m_init_done = true;
+//	this->STEP1_InitPTGs();
 
 	MRPT_END
 }
@@ -173,13 +130,13 @@ void CReactiveNavigationSystem::STEP1_InitPTGs()
 		m_PTGsMustBeReInitialized = false;
 
 		mrpt::utils::CTimeLoggerEntry tle(m_timelogger,"STEP1_InitPTGs");
-		
+
 		for (unsigned int i=0;i<PTGs.size();i++)
 		{
 			PTGs[i]->deinitialize();
 
 			printf_debug("[loadConfigFile] Initializing PTG#%u...", i);
-			printf_debug(PTGs[i]->getDescription().c_str());
+			printf_debug("%s",PTGs[i]->getDescription().c_str());
 
 			// Polygonal robot shape?
 			{
@@ -220,7 +177,7 @@ bool CReactiveNavigationSystem::STEP2_SenseObstacles()
 	catch (std::exception &e)
 	{
 		printf_debug("[CReactiveNavigationSystem::STEP2_Sense] Exception:");
-		printf_debug((char*)(e.what()));
+		printf_debug("%s",(char*)(e.what()));
 		return false;
 	}
 	catch (...)

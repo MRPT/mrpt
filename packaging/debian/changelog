@@ -1,8 +1,19 @@
-  * Fix FTBFS (unit tests) in armhf (Closes: #825844).
   * Removed manual -dbg packages, as they are now
     generated automatically.
-  * Fix wrong "Breaks/Replace" fields (Closes: #807662).
+
+mrpt (1:1.4.0-3) unstable; urgency=medium
+
   * Fix FTBFS on sparc64 (Closes: #825846).
+
+ -- Jose Luis Blanco (University of Malaga) <joseluisblancoc@gmail.com>  Sun, 10 Jul 2016 00:07:40 +0200
+
+mrpt (1:1.4.0-2) unstable; urgency=medium
+
+  * Fix FTBFS (unit tests) in armhf (Closes: #825844).
+  * Fix wrong "Breaks/Replace" fields (Closes: #807662).
+  * Fix FTBFS on big endian due unit test errors (Closes: #825845).
+
+ -- Jose Luis Blanco (University of Malaga) <joseluisblancoc@gmail.com>  Fri, 08 Jul 2016 23:52:47 +0200
 
 mrpt (1:1.4.0-1) unstable; urgency=medium
 

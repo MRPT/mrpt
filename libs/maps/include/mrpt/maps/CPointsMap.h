@@ -382,14 +382,19 @@ namespace maps
 			MRPT_END
 		}
 
-		inline void getAllPoints(std::vector<mrpt::math::TPoint3D> &ps,size_t decimation=1) const	{
+		/** Gets all points as a STL-like container.
+		  * \tparam CONTAINER Any STL-like container of mrpt::math::TPoint3D, mrpt::math::TPoint3Df or anything having members `x`,`y`,`z`.
+		  * Note that this method is not efficient for large point clouds. Fastest methods are getPointsBuffer() or getPointsBufferRef_x(), getPointsBufferRef_y(), getPointsBufferRef_z()
+		  */
+		template <class CONTAINER>
+		void getAllPoints(CONTAINER &ps,size_t decimation=1) const	{
 			std::vector<float> dmy1,dmy2,dmy3;
 			getAllPoints(dmy1,dmy2,dmy3,decimation);
 			ps.resize(dmy1.size());
 			for (size_t i=0;i<dmy1.size();i++)	{
-				ps[i].x=static_cast<double>(dmy1[i]);
-				ps[i].y=static_cast<double>(dmy2[i]);
-				ps[i].z=static_cast<double>(dmy3[i]);
+				ps[i].x=dmy1[i];
+				ps[i].y=dmy2[i];
+				ps[i].z=dmy3[i];
 			}
 		}
 

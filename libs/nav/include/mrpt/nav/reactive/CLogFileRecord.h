@@ -45,8 +45,8 @@ namespace nav
 			std::string				PTG_desc;      //!< A short description for the applied PTG
 			mrpt::math::CVectorFloat				TP_Obstacles;  //!< Distances until obstacles, in "pseudometers", first index for -PI direction, last one for PI direction.
 			mrpt::math::TPoint2D		TP_Target;     //!< Target location in TP-Space
-			float						timeForTPObsTransformation,timeForHolonomicMethod;  //!< Time, in seconds.
-			float						desiredDirection,desiredSpeed, evaluation;          //!< The results from the holonomic method.
+			double  timeForTPObsTransformation,timeForHolonomicMethod;  //!< Time, in seconds.
+			double  desiredDirection,desiredSpeed, evaluation;          //!< The results from the holonomic method.
 			mrpt::math::CVectorFloat   evalFactors;   //!< Evaluation factors
 			CHolonomicLogFileRecordPtr HLFR;          //!< Other useful info about holonomic method execution.
 			mrpt::nav::CParameterizedTrajectoryGeneratorPtr ptg; //!< Only for the FIRST entry in a log file, this will contain a copy of the PTG with trajectories, suitable to render trajectories, etc.
@@ -66,6 +66,7 @@ namespace nav
 		mrpt::math::TPoint2D          WS_target_relative;  //!< The relative location of target point in WS.
 
 		std::vector<double>    cmd_vel;  //!< The final motion command sent to robot, in "m/sec" and "rad/sec".
+		std::vector<std::vector<double> > cmd_vel_filterings;  //!< Motion command as comes out from the PTG, after scaling and after speed limit filtering.
 		mrpt::math::TTwist2D   cur_vel; //!< The actual robot velocities in global (map) coordinates, as read from sensors, in "m/sec" and "rad/sec".
 		mrpt::math::TTwist2D   cur_vel_local; //!< The actual robot velocities in local (robot) coordinates, as read from sensors, in "m/sec" and "rad/sec".
 

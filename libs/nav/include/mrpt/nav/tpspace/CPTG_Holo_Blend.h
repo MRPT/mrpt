@@ -52,9 +52,10 @@ namespace mrpt
 
 	 protected:
 		double T_ramp;
-		double V_MAX, W_MAX; 
+		double V_MAX, W_MAX;
 		double turningRadiusReference;
 		mrpt::math::TTwist2D curVelLocal;
+		double maxAllowedDirAngle; //!< [rad] (default: PI)
 
 		void internal_processNewRobotShape() MRPT_OVERRIDE;
 		void internal_initialize(const std::string & cacheFilename = std::string(), const bool verbose = true) MRPT_OVERRIDE;

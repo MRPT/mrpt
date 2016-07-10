@@ -308,6 +308,31 @@ void CPTG_RobotShape_Circular::add_robotShape_to_setOfLines(
 	}
 }
 
+
+void CPTG_RobotShape_Circular::internal_shape_loadFromStream(mrpt::utils::CStream &in)
+{
+	uint8_t version;
+	in >> version;
+	
+	switch (version)
+	{
+	case 0:
+		in >> m_robotRadius;
+		break;
+	default:
+		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+	}
+}
+
+void CPTG_RobotShape_Circular::internal_shape_saveToStream(mrpt::utils::CStream &out) const
+{
+	uint8_t version = 0;
+	out << version;
+
+	out << m_robotRadius;
+}
+
+
 void CPTG_RobotShape_Polygonal::add_robotShape_to_setOfLines(
 	mrpt::opengl::CSetOfLines &gl_shape,
 	const mrpt::poses::CPose2D &origin  ) const 
@@ -329,5 +354,28 @@ void CPTG_RobotShape_Polygonal::add_robotShape_to_setOfLines(
 			gl_shape.appendLineStrip( shap_x[idx],shap_y[idx], shap_z[idx]);
 		}
 	}
+}
+
+void CPTG_RobotShape_Polygonal::internal_shape_loadFromStream(mrpt::utils::CStream &in)
+{
+	uint8_t version;
+	in >> version;
+	
+	switch (version)
+	{
+	case 0:
+		in >> m_robotShape;
+		break;
+	default:
+		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+	}
+}
+
+void CPTG_RobotShape_Polygonal::internal_shape_saveToStream(mrpt::utils::CStream &out) const
+{
+	uint8_t version = 0;
+	out << version;
+
+	out << m_robotShape;
 }
 
