@@ -9,6 +9,7 @@
 #pragma once
 
 #include <mrpt/nav/reactive/CAbstractNavigator.h>
+#include <mrpt/nav/reactive/TWaypoint.h>
 
 namespace mrpt
 {
@@ -24,29 +25,20 @@ namespace mrpt
 		CAbstractWaypointsNavigator( CRobot2NavInterface &robot_interface_impl );  //!< ctor
 		virtual ~CAbstractWaypointsNavigator(); //!< dtor
 
-		/** The struct for requesting waypoint navigation requests. Used in CAbstractWaypointsNavigator::navigateWaypoints() */
-		struct NAV_IMPEXP TWaypointNavigationCommand
-		{
-			MRPT_TODO("cont");
-			// mrpt::math::TPose2D target;  //!< Coordinates of desired target location. Heading may be ignored by some reactive implementations.
-			float               targetAllowedDistance;    //!< (Default=0.5 meters) Allowed distance to target in order to end the navigation.
-
-			TWaypointNavigationCommand(); //!< Ctor with default values
-			virtual std::string getAsText() const; //!< Gets navigation params as a human-readable format
-		};
-
 		/** \name Waypoint navigation control API
 		  * @{ */
 
 		/** Waypoint navigation request.
 		  * \sa CAbstractNavigator::navigate() for single waypoint navigation requests.
 		  */
-		virtual void  navigate( const TWaypointNavigationCommand &params );
+		void navigateWaypoints( const TWaypointSequence &params );
 
+		/** Get a copy of the control structure which describes the progress status of the waypoint navigation. */
+		void getWaypointNavStatus(TWaypointStatusSequence & out_nav_status) const;
 		/** @}*/
 
-
 	protected:
+		TWaypointStatusSequence  m_waypoint_nav_status; //!< The latest waypoints navigation command and the up-to-date control status.
 
 	};
   }
