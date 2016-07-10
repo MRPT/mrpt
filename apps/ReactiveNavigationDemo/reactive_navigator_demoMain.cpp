@@ -78,6 +78,7 @@ using namespace std;
 const long reactive_navigator_demoframe::ID_BUTTON4 = wxNewId();
 const long reactive_navigator_demoframe::ID_BUTTON5 = wxNewId();
 const long reactive_navigator_demoframe::ID_BUTTON7 = wxNewId();
+const long reactive_navigator_demoframe::ID_BUTTON12 = wxNewId();
 const long reactive_navigator_demoframe::ID_BUTTON6 = wxNewId();
 const long reactive_navigator_demoframe::ID_BUTTON1 = wxNewId();
 const long reactive_navigator_demoframe::ID_BUTTON9 = wxNewId();
@@ -166,7 +167,7 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(wxWindow* parent,wxWi
     wxBoxSizer* BoxSizer3;
     wxMenu* Menu2;
     
-    Create(parent, id, _("Reactive Navigation Tester - Part of MRPT"), wxDefaultPosition, wxDefaultSize, wxDEFAULT_FRAME_STYLE, _T("id"));
+    Create(parent, wxID_ANY, _("Reactive Navigation Tester - Part of MRPT"), wxDefaultPosition, wxDefaultSize, wxDEFAULT_FRAME_STYLE, _T("wxID_ANY"));
     SetClientSize(wxSize(893,576));
     {
     	wxIcon FrameIcon;
@@ -178,37 +179,41 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(wxWindow* parent,wxWi
     FlexGridSizer1->AddGrowableRow(0);
     FlexGridSizer4 = new wxFlexGridSizer(0, 1, 0, 0);
     FlexGridSizer4->AddGrowableCol(0);
-    btnStart = new wxCustomButton(this,ID_BUTTON4,_("RUN"),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_GO_FORWARD")),wxART_MAKE_CLIENT_ID_FROM_STR(wxString(wxEmptyString))),wxDefaultPosition,wxSize(-1,64),wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON4"));
+    btnStart = new wxCustomButton(this,ID_BUTTON4,_("RUN"),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_GO_FORWARD")),wxART_MAKE_CLIENT_ID_FROM_STR(wxString(wxEmptyString))),wxDefaultPosition,wxSize(-1,60),wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON4"));
     btnStart->SetBitmapDisabled(btnStart->CreateBitmapDisabled(btnStart->GetBitmapLabel()));
     btnStart->SetBitmapMargin(wxSize(2,4));
     FlexGridSizer4->Add(btnStart, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 2);
-    btnStop = new wxCustomButton(this,ID_BUTTON5,_("STOP"),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_CROSS_MARK")),wxART_MAKE_CLIENT_ID_FROM_STR(wxString(wxEmptyString))),wxDefaultPosition,wxSize(-1,64),wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON5"));
+    btnStop = new wxCustomButton(this,ID_BUTTON5,_("STOP"),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_CROSS_MARK")),wxART_MAKE_CLIENT_ID_FROM_STR(wxString(wxEmptyString))),wxDefaultPosition,wxSize(-1,60),wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON5"));
     btnStop->SetBitmapDisabled(btnStop->CreateBitmapDisabled(btnStop->GetBitmapLabel()));
     btnStop->SetBitmapMargin(wxSize(2,4));
     FlexGridSizer4->Add(btnStop, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 2);
     FlexGridSizer4->Add(-1,-1,1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 1);
-    btnPlaceTarget = new wxCustomButton(this,ID_BUTTON7,_("Set target..."),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_FIND")),wxART_MAKE_CLIENT_ID_FROM_STR(wxString(wxEmptyString))),wxDefaultPosition,wxSize(-1,64),wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON7"));
+    btnPlaceTarget = new wxCustomButton(this,ID_BUTTON7,_("Set target..."),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_FIND")),wxART_MAKE_CLIENT_ID_FROM_STR(wxString(wxEmptyString))),wxDefaultPosition,wxSize(-1,60),wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON7"));
     btnPlaceTarget->SetBitmapDisabled(btnPlaceTarget->CreateBitmapDisabled(btnPlaceTarget->GetBitmapLabel()));
     btnPlaceTarget->SetBitmapMargin(wxSize(2,4));
     FlexGridSizer4->Add(btnPlaceTarget, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 2);
-    btnPlaceRobot = new wxCustomButton(this,ID_BUTTON6,_("Replace robot..."),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_FIND")),wxART_MAKE_CLIENT_ID_FROM_STR(wxString(wxEmptyString))),wxDefaultPosition,wxSize(-1,64),wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON6"));
+    btnSetWaypointSeq = new wxCustomButton(this,ID_BUTTON12,_("Waypoint list..."),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_FIND")),wxART_MAKE_CLIENT_ID_FROM_STR(wxString(wxEmptyString))),wxDefaultPosition,wxSize(-1,60),wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON12"));
+    btnSetWaypointSeq->SetBitmapDisabled(btnSetWaypointSeq->CreateBitmapDisabled(btnSetWaypointSeq->GetBitmapLabel()));
+    btnSetWaypointSeq->SetBitmapMargin(wxSize(2,4));
+    FlexGridSizer4->Add(btnSetWaypointSeq, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 2);
+    btnPlaceRobot = new wxCustomButton(this,ID_BUTTON6,_("Replace robot..."),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_FIND")),wxART_MAKE_CLIENT_ID_FROM_STR(wxString(wxEmptyString))),wxDefaultPosition,wxSize(-1,60),wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON6"));
     btnPlaceRobot->SetBitmapDisabled(btnPlaceRobot->CreateBitmapDisabled(btnPlaceRobot->GetBitmapLabel()));
     btnPlaceRobot->SetBitmapMargin(wxSize(2,4));
     FlexGridSizer4->Add(btnPlaceRobot, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 2);
     FlexGridSizer4->Add(-1,-1,1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 1);
-    btnLoadMap = new wxCustomButton(this,ID_BUTTON1,_("Load map..."),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_FILE_OPEN")),wxART_BUTTON),wxDefaultPosition,wxSize(-1,64),wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON1"));
+    btnLoadMap = new wxCustomButton(this,ID_BUTTON1,_("Load map..."),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_FILE_OPEN")),wxART_BUTTON),wxDefaultPosition,wxSize(-1,60),wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON1"));
     btnLoadMap->SetBitmapDisabled(btnLoadMap->CreateBitmapDisabled(btnLoadMap->GetBitmapLabel()));
     btnLoadMap->SetBitmapMargin(wxSize(2,4));
     FlexGridSizer4->Add(btnLoadMap, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 2);
-    btnEmptyMap = new wxCustomButton(this,ID_BUTTON9,_("New map..."),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_NEW")),wxART_MAKE_CLIENT_ID_FROM_STR(wxString(wxEmptyString))),wxDefaultPosition,wxSize(-1,45),wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON9"));
+    btnEmptyMap = new wxCustomButton(this,ID_BUTTON9,_("New map..."),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_NEW")),wxART_MAKE_CLIENT_ID_FROM_STR(wxString(wxEmptyString))),wxDefaultPosition,wxSize(-1,50),wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON9"));
     btnEmptyMap->SetBitmapDisabled(btnEmptyMap->CreateBitmapDisabled(btnEmptyMap->GetBitmapLabel()));
     btnEmptyMap->SetBitmapMargin(wxSize(2,4));
     FlexGridSizer4->Add(btnEmptyMap, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 2);
-    btnDrawMapObs = new wxCustomButton(this,ID_BUTTON8,_("Draw occupied..."),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_GO_FORWARD")),wxART_MAKE_CLIENT_ID_FROM_STR(wxString(wxEmptyString))),wxDefaultPosition,wxSize(-1,45),wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON8"));
+    btnDrawMapObs = new wxCustomButton(this,ID_BUTTON8,_("Draw occupied..."),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_GO_FORWARD")),wxART_MAKE_CLIENT_ID_FROM_STR(wxString(wxEmptyString))),wxDefaultPosition,wxSize(-1,50),wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON8"));
     btnDrawMapObs->SetBitmapDisabled(btnDrawMapObs->CreateBitmapDisabled(btnDrawMapObs->GetBitmapLabel()));
     btnDrawMapObs->SetBitmapMargin(wxSize(2,4));
     FlexGridSizer4->Add(btnDrawMapObs, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 2);
-    btnDrawEmpty = new wxCustomButton(this,ID_BUTTON11,_("Draw empty..."),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_GO_FORWARD")),wxART_MAKE_CLIENT_ID_FROM_STR(wxString(wxEmptyString))),wxDefaultPosition,wxSize(-1,45),wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON11"));
+    btnDrawEmpty = new wxCustomButton(this,ID_BUTTON11,_("Draw empty..."),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_GO_FORWARD")),wxART_MAKE_CLIENT_ID_FROM_STR(wxString(wxEmptyString))),wxDefaultPosition,wxSize(-1,50),wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON11"));
     btnDrawEmpty->SetBitmapDisabled(btnDrawEmpty->CreateBitmapDisabled(btnDrawEmpty->GetBitmapLabel()));
     btnDrawEmpty->SetBitmapMargin(wxSize(2,4));
     FlexGridSizer4->Add(btnDrawEmpty, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 2);
@@ -217,11 +222,11 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(wxWindow* parent,wxWi
     btnSaveMap->SetBitmapMargin(wxSize(2,4));
     FlexGridSizer4->Add(btnSaveMap, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 2);
     FlexGridSizer4->Add(-1,-1,1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 1);
-    btnHelp = new wxCustomButton(this,ID_BUTTON2,_("About..."),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_QUESTION")),wxART_MAKE_CLIENT_ID_FROM_STR(wxString(wxEmptyString))),wxDefaultPosition,wxSize(-1,64),wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON2"));
+    btnHelp = new wxCustomButton(this,ID_BUTTON2,_("About..."),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_QUESTION")),wxART_MAKE_CLIENT_ID_FROM_STR(wxString(wxEmptyString))),wxDefaultPosition,wxSize(-1,60),wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON2"));
     btnHelp->SetBitmapDisabled(btnHelp->CreateBitmapDisabled(btnHelp->GetBitmapLabel()));
     btnHelp->SetBitmapMargin(wxSize(5,4));
     FlexGridSizer4->Add(btnHelp, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 2);
-    btnQuit = new wxCustomButton(this,ID_BUTTON3,_("Exit"),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_QUIT")),wxART_MAKE_CLIENT_ID_FROM_STR(wxString(wxEmptyString))),wxDefaultPosition,wxSize(-1,64),wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON3"));
+    btnQuit = new wxCustomButton(this,ID_BUTTON3,_("Exit"),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_QUIT")),wxART_MAKE_CLIENT_ID_FROM_STR(wxString(wxEmptyString))),wxDefaultPosition,wxSize(-1,60),wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON3"));
     btnQuit->SetBitmapDisabled(btnQuit->CreateBitmapDisabled(btnQuit->GetBitmapLabel()));
     FlexGridSizer4->Add(btnQuit, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 2);
     FlexGridSizer1->Add(FlexGridSizer4, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
@@ -405,6 +410,7 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(wxWindow* parent,wxWi
     Connect(ID_BUTTON4,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&reactive_navigator_demoframe::OnbtnStartClick);
     Connect(ID_BUTTON5,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&reactive_navigator_demoframe::OnbtnStopClick);
     Connect(ID_BUTTON7,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&reactive_navigator_demoframe::OnbtnPlaceTargetClick);
+    Connect(ID_BUTTON12,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&reactive_navigator_demoframe::OnbtnSetWaypointSeqClick);
     Connect(ID_BUTTON6,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&reactive_navigator_demoframe::OnbtnPlaceRobotClick);
     Connect(ID_BUTTON1,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&reactive_navigator_demoframe::OnbtnLoadMapClick);
     Connect(ID_BUTTON9,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&reactive_navigator_demoframe::OnbtnEmptyMapClick);
@@ -425,11 +431,17 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(wxWindow* parent,wxWi
     Connect(ID_TIMER1,wxEVT_TIMER,(wxObjectEventFunction)&reactive_navigator_demoframe::OntimRunSimulTrigger);
     //*)
 
+	btnStart->SetToolTip(wxT("Initializes and starts the simulator."));
+	btnPlaceTarget->SetToolTip(wxT("Left-click on the map to place a navigation command."));
+	btnStop->SetToolTip(wxT("Stops the simulation."));
+	btnSetWaypointSeq->SetToolTip(wxT("Left-click on the map to place waypoints, right click to end and start navigation."));
+
 	SplitterWindow1->SetSashPosition(200);
 	SplitterWindow2->SetSashPosition(90);
 
 	m_plot3D->Connect(wxEVT_MOTION,(wxObjectEventFunction)&reactive_navigator_demoframe::Onplot3DMouseMove,0,this);
 	m_plot3D->Connect(wxEVT_LEFT_DOWN,(wxObjectEventFunction)&reactive_navigator_demoframe::Onplot3DMouseClick,0,this);
+	m_plot3D->Connect(wxEVT_RIGHT_DOWN,(wxObjectEventFunction)&reactive_navigator_demoframe::Onplot3DMouseClick,0,this);
 
 	mnuViewMaxRange->Check(true);
 	mnuViewRobotPath->Check(true);
@@ -493,6 +505,14 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(wxWindow* parent,wxWi
 		obj = mrpt::opengl::CArrow::Create( 0,1,0,  0,0.2,0, 0.4,0.05, 0.15 ); obj->setColor_u8( TColor(0,0,255) ); gl_target->insert(obj);
 		obj = mrpt::opengl::CArrow::Create(0,-1,0,  0,-0.2,0, 0.4,0.05, 0.15 ); obj->setColor_u8( TColor(0,0,255) ); gl_target->insert(obj);
 		m_plot3D->m_openGLScene->insert(gl_target);
+	}
+
+	{
+		gl_waypoints_clicking = opengl::CSetOfObjects::Create();
+		m_plot3D->m_openGLScene->insert(gl_waypoints_clicking);
+
+		gl_waypoints_status= opengl::CSetOfObjects::Create();
+		m_plot3D->m_openGLScene->insert(gl_waypoints_status);
 	}
 
 	{	// Sign of "picking a navigation target":
@@ -681,6 +701,7 @@ void reactive_navigator_demoframe::updateButtonsEnableState(bool is_running)
 	btnStart->Enable(!is_running); btnStart->Refresh();
 	btnStop->Enable(is_running);   btnStop->Refresh();
 	btnPlaceTarget->Enable(is_running); btnPlaceTarget->Refresh();
+	btnSetWaypointSeq->Enable(is_running); btnSetWaypointSeq->Refresh();
 	Notebook1->Enable(!is_running);
 	pnNavSelButtons->Enable(!is_running);
 }
@@ -1005,6 +1026,63 @@ void reactive_navigator_demoframe::simulateOneStep(double time_step)
 		}
 	}
 
+	CAbstractWaypointsNavigator *wp_nav = dynamic_cast<CAbstractWaypointsNavigator *>(m_navMethod.get());
+	if (wp_nav)
+	{
+		static wxFrame *wxFrWpInfo = nullptr; 
+		static wxTextCtrl * edWpLog = nullptr;
+		if (!wxFrWpInfo)
+		{
+			wxFrWpInfo= new wxFrame(this, -1, wxT("Waypoints info"), wxDefaultPosition, wxSize(400,150), wxRESIZE_BORDER | wxMINIMIZE_BOX | wxMAXIMIZE_BOX | wxCAPTION | wxCLIP_CHILDREN | wxSTAY_ON_TOP );
+			
+			edWpLog = new wxTextCtrl(wxFrWpInfo,wxNewId(), wxEmptyString, wxDefaultPosition, wxSize(400,150), wxTE_AUTO_SCROLL|wxTE_MULTILINE|wxTE_READONLY|wxTE_DONTWRAP|wxALWAYS_SHOW_SB, wxDefaultValidator, _T("ID_TEXTCTRL_WP"));
+			edWpLog->SetMinSize(wxSize(190,60));
+			wxFont edLogFont(8,wxTELETYPE,wxFONTSTYLE_NORMAL,wxNORMAL,false,wxEmptyString,wxFONTENCODING_DEFAULT);
+			edWpLog->SetFont(edLogFont);
+		}
+
+		TWaypointStatusSequence wp_status;
+		wp_nav->getWaypointNavStatus(wp_status);
+		const std::string sWpLog = wp_status.getAsText();
+
+		if (!wp_status.waypoints.empty())
+		{
+			if (!wxFrWpInfo->IsShown()) wxFrWpInfo->Show();
+			edWpLog->SetValue( _U(sWpLog.c_str()) );
+		}
+
+		// Plot waypoints being clicked by the user graphically:
+		gl_waypoints_clicking->clear();
+		for (const auto &p : m_waypoints_clicked.waypoints)
+		{
+			mrpt::opengl::CDiskPtr gl_pt = mrpt::opengl::CDisk::Create(0.3,0.0, 20);
+			gl_pt->setLocation(p.target.x,p.target.y,0.01);
+			gl_pt->setColor_u8(mrpt::utils::TColor(0x00,0x00,0xff));
+			gl_waypoints_clicking->insert(gl_pt);
+		}
+
+		// Plot firmly set waypoints and their status:
+		gl_waypoints_status->clear();
+		{
+			const mrpt::utils::TColor colNormal (0x00,0x00,0xff);
+			const mrpt::utils::TColor colCurrent(0xff,0x00,0x20);
+			unsigned int idx=0;
+			for (const auto &p : wp_status.waypoints)
+			{
+				const bool is_cur_goal = idx==wp_status.waypoint_index_current_goal;
+
+				mrpt::opengl::CDiskPtr gl_pt = mrpt::opengl::CDisk::Create(is_cur_goal ? 0.4 : 0.3,0.0, 20);
+				gl_pt->setLocation(p.target.x,p.target.y,0.01);
+				gl_pt->setName(mrpt::format("WayPt #%2u Reach:%s Skipped:%s",idx, p.reached ? "YES":"NO", p.skipped ? "YES":"NO"));
+				gl_pt->enableShowName(true);
+				gl_pt->setColor_u8( is_cur_goal ? colCurrent : colNormal );
+				gl_waypoints_clicking->insert(gl_pt);
+
+				++idx;
+			}
+		}
+
+	}
 }
 
 void reactive_navigator_demoframe::updateViewsDynamicObjects()
@@ -1063,6 +1141,7 @@ void reactive_navigator_demoframe::Onplot3DMouseMove(wxMouseEvent& event)
 		switch (m_cursorPickState)
 		{
 		case cpsPickTarget:
+		case cpsPickWaypoints:
 			{
 				m_gl_placing_nav_target->setVisibility(true);
 				m_gl_placing_nav_target->setLocation(m_curCursorPos.x,m_curCursorPos.y,0.01);
@@ -1109,7 +1188,29 @@ void reactive_navigator_demoframe::Onplot3DMouseClick(wxMouseEvent& event)
 
 	switch (m_cursorPickState)
 	{
+	case cpsPickWaypoints:
+		{
+			if (event.ButtonIsDown( wxMOUSE_BTN_LEFT ))
+			{
+				m_waypoints_clicked.waypoints.push_back( TWaypoint( m_curCursorPos.x,m_curCursorPos.y, 0.2 /* allowed dist */) );
+			}
+			if (event.ButtonIsDown( wxMOUSE_BTN_RIGHT ))
+			{
+				btnPlaceTarget->SetValue(false); btnPlaceTarget->Refresh();
+				m_gl_placing_nav_target->setVisibility(false);
+
+				CAbstractWaypointsNavigator *wp_nav = dynamic_cast<CAbstractWaypointsNavigator *>(m_navMethod.get());
+				if (wp_nav)
+					wp_nav->navigateWaypoints(m_waypoints_clicked);
+
+				m_plot3D->SetCursor( *wxSTANDARD_CURSOR ); // End of cross cursor
+				m_cursorPickState = cpsNone; // end of mode
+			}
+		}
+		break;
+
 	case cpsPickTarget:
+		if (event.ButtonIsDown( wxMOUSE_BTN_LEFT ))
 		{
 			m_targetPoint = m_curCursorPos;
 
@@ -1132,10 +1233,10 @@ void reactive_navigator_demoframe::Onplot3DMouseClick(wxMouseEvent& event)
 
 			m_plot3D->SetCursor( *wxSTANDARD_CURSOR ); // End of cross cursor
 			m_cursorPickState = cpsNone; // end of mode
-
 			break;
 		}
 	case cpsPlaceRobot:
+		if (event.ButtonIsDown( wxMOUSE_BTN_LEFT ))
 		{
 			m_robotSimul->setCurrentGTPose( mrpt::math::TPose2D(m_curCursorPos.x,m_curCursorPos.y, .0 ) );
 
@@ -1147,7 +1248,8 @@ void reactive_navigator_demoframe::Onplot3DMouseClick(wxMouseEvent& event)
 			break;
 		}
 	case cpsDrawObstacles:
-		case cpsDrawClear:
+	case cpsDrawClear:
+		if (event.ButtonIsDown( wxMOUSE_BTN_LEFT ))
 		{
 			const int cx = m_gridMap.x2idx(m_curCursorPos.x);
 			const int cy = m_gridMap.y2idx(m_curCursorPos.y);
@@ -1441,5 +1543,28 @@ void reactive_navigator_demoframe::OnbtnDrawEmptyClick(wxCommandEvent& event)
 	btnDrawMapObs->SetValue( m_cursorPickState == cpsDrawObstacles ); btnDrawMapObs->Refresh();
 	btnDrawEmpty->SetValue( m_cursorPickState == cpsDrawClear ); btnDrawEmpty->Refresh();
 	m_gl_drawing_obs->setVisibility(m_cursorPickState==cpsDrawObstacles || m_cursorPickState==cpsDrawClear);
+	m_plot3D->Refresh();
+}
+
+void reactive_navigator_demoframe::OnbtnSetWaypointSeqClick(wxCommandEvent& event)
+{
+	CAbstractWaypointsNavigator *wp_nav = dynamic_cast<CAbstractWaypointsNavigator *>(m_navMethod.get());
+	if (!wp_nav)
+	{
+		wxMessageBox(wxT("Navigator class does not support waypoints sequences!"));
+		return;
+	}
+
+	if (m_cursorPickState!=cpsPickWaypoints) {
+		m_cursorPickState = cpsPickWaypoints;
+		m_plot3D->SetCursor( *wxCROSS_CURSOR );
+		m_waypoints_clicked.clear();
+	}
+	else {	// Cancel:
+		m_cursorPickState = cpsNone;
+		m_plot3D->SetCursor( *wxSTANDARD_CURSOR );
+	}
+	btnSetWaypointSeq->SetValue( m_cursorPickState == cpsPickWaypoints ); btnSetWaypointSeq->Refresh();
+	m_gl_placing_nav_target->setVisibility(m_cursorPickState==cpsPickWaypoints);
 	m_plot3D->Refresh();
 }

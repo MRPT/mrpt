@@ -56,6 +56,8 @@ CAbstractNavigator::~CAbstractNavigator()
   ---------------------------------------------------------------*/
 void CAbstractNavigator::cancel()
 {
+	mrpt::synch::CCriticalSectionLocker csl(&m_nav_cs);
+
 	printf_debug("\n[CAbstractNavigator::cancel()]\n");
 	m_navigationState = IDLE;
 }
@@ -66,6 +68,8 @@ void CAbstractNavigator::cancel()
   ---------------------------------------------------------------*/
 void CAbstractNavigator::resume()
 {
+	mrpt::synch::CCriticalSectionLocker csl(&m_nav_cs);
+
 	printf_debug("\n[CAbstractNavigator::resume()]\n");
 	if ( m_navigationState == SUSPENDED )
 		m_navigationState = NAVIGATING;
@@ -77,6 +81,8 @@ void CAbstractNavigator::resume()
   ---------------------------------------------------------------*/
 void  CAbstractNavigator::suspend()
 {
+	mrpt::synch::CCriticalSectionLocker csl(&m_nav_cs);
+
 	printf_debug("\n[CAbstractNavigator::suspend()]\n");
 	if ( m_navigationState == NAVIGATING )
 		m_navigationState  = SUSPENDED;
@@ -84,6 +90,8 @@ void  CAbstractNavigator::suspend()
 
 void CAbstractNavigator::resetNavError()
 {
+	mrpt::synch::CCriticalSectionLocker csl(&m_nav_cs);
+
 	printf_debug("\n[CAbstractNavigator::resetNavError()]\n");
 	if ( m_navigationState == NAV_ERROR )
 		m_navigationState  = IDLE;
@@ -94,6 +102,8 @@ void CAbstractNavigator::resetNavError()
   ---------------------------------------------------------------*/
 void CAbstractNavigator::navigationStep()
 {
+	mrpt::synch::CCriticalSectionLocker csl(&m_nav_cs);
+
 	const TState prevState = m_navigationState;
 	switch ( m_navigationState )
 	{
@@ -128,9 +138,6 @@ void CAbstractNavigator::navigationStep()
 		} catch (...) { }
 		break;
 
-	//------------------------------------------------------------------
-	//						ALGORITMO DE NAVEGACION
-	//------------------------------------------------------------------
 	case NAVIGATING:
 		try
 		{
@@ -162,4 +169,12 @@ void CAbstractNavigator::navigationStep()
 		break;	// End case NAVIGATING
 	};
 	m_lastNavigationState = prevState;
+}
+
+void CAbstractNavigator::doEmergencyStop( const char *msg )
+{
+	m_navigationState = NAV_ERROR;
+	m_robot.stop();
+	printf_debug(msg);
+	printf_debug("\n");
 }

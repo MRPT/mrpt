@@ -25,13 +25,17 @@ namespace mrpt
 		CAbstractWaypointsNavigator( CRobot2NavInterface &robot_interface_impl );  //!< ctor
 		virtual ~CAbstractWaypointsNavigator(); //!< dtor
 
+		// Overriden to call the general navigationStep(), plus waypoint selection logic.
+		virtual void navigationStep() MRPT_OVERRIDE;
+		virtual void cancel() MRPT_OVERRIDE; //!< Cancel current navegation.
+
 		/** \name Waypoint navigation control API
 		  * @{ */
 
-		/** Waypoint navigation request.
+		/** Waypoint navigation request. This immediately cancels any other previous on-going navigation.
 		  * \sa CAbstractNavigator::navigate() for single waypoint navigation requests.
 		  */
-		void navigateWaypoints( const TWaypointSequence &params );
+		void navigateWaypoints( const TWaypointSequence & nav_request );
 
 		/** Get a copy of the control structure which describes the progress status of the waypoint navigation. */
 		void getWaypointNavStatus(TWaypointStatusSequence & out_nav_status) const;
@@ -39,6 +43,7 @@ namespace mrpt
 
 	protected:
 		TWaypointStatusSequence  m_waypoint_nav_status; //!< The latest waypoints navigation command and the up-to-date control status.
+		mrpt::synch::CCriticalSection m_nav_waypoints_cs;
 
 	};
   }
