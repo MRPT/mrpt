@@ -9,7 +9,7 @@
 #ifndef CAbstractPTGBasedReactive_H
 #define CAbstractPTGBasedReactive_H
 
-#include <mrpt/nav/reactive/CAbstractNavigator.h>
+#include <mrpt/nav/reactive/CAbstractWaypointsNavigator.h>
 #include <mrpt/nav/tpspace/CParameterizedTrajectoryGenerator.h>
 #include <mrpt/nav/reactive/CLogFileRecord.h>
 #include <mrpt/nav/holonomic/CAbstractHolonomicReactiveMethod.h>
@@ -44,7 +44,7 @@ namespace mrpt
 	  * \sa CReactiveNavigationSystem, CReactiveNavigationSystem3D
 	  *  \ingroup nav_reactive
 	  */
-	class NAV_IMPEXP CAbstractPTGBasedReactive: public CAbstractNavigator
+	class NAV_IMPEXP CAbstractPTGBasedReactive: public CAbstractWaypointsNavigator
 	{
 	public:
 		MRPT_MAKE_ALIGNED_OPERATOR_NEW
@@ -157,7 +157,7 @@ namespace mrpt
 		std::vector<double> m_last_vel_cmd, m_new_vel_cmd; //!< Actual and last velocity commands
 
 		bool  navigationEndEventSent; //!< Will be false until the navigation end is sent, and it is reset with each new command
-		synch::CCriticalSection  m_critZoneLastLog,m_critZoneNavigating; //!< Critical zones
+		synch::CCriticalSection  m_critZoneLastLog; //!< Critical zones
 
 		bool    m_enableConsoleOutput;  //!< Enables / disables the console debug output.
 		bool    m_init_done;            //!< Whether \a loadConfigFile() has been called or not.
@@ -199,9 +199,6 @@ namespace mrpt
 		float                    badNavAlarm_AlarmTimeout;
 
 		bool  m_PTGsMustBeReInitialized;
-
-		/** Stops the robot and set navigation state to error */
-		void			doEmergencyStop( const char *msg );
 
 		/** @name Variables for CReactiveNavigationSystem::performNavigationStep
 			@{ */

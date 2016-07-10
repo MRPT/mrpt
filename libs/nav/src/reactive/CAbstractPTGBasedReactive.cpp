@@ -39,7 +39,7 @@ std::string CAbstractPTGBasedReactive::TNavigationParamsPTG::getAsText() const
 
 // Ctor:
 CAbstractPTGBasedReactive::CAbstractPTGBasedReactive(CRobot2NavInterface &react_iterf_impl, bool enableConsoleOutput, bool enableLogFile):
-	CAbstractNavigator(react_iterf_impl),
+	CAbstractWaypointsNavigator(react_iterf_impl),
 	m_holonomicMethod            (),
 	m_logFile                    (NULL),
 	m_enableKeepLogRecords       (false),
@@ -72,8 +72,8 @@ void CAbstractPTGBasedReactive::preDestructor()
 	m_closing_navigator = true;
 
 	// Wait to end of navigation (multi-thread...)
-	m_critZoneNavigating.enter();
-	m_critZoneNavigating.leave();
+	m_nav_cs.enter();
+	m_nav_cs.leave();
 
 	// Just in case.
 	try {
@@ -94,6 +94,8 @@ CAbstractPTGBasedReactive::~CAbstractPTGBasedReactive()
 
 void CAbstractPTGBasedReactive::initialize()
 {
+	mrpt::synch::CCriticalSectionLocker csl(&m_nav_cs);
+
 	// Compute collision grids:
 	STEP1_InitPTGs();
 }
@@ -103,6 +105,8 @@ void CAbstractPTGBasedReactive::initialize()
   ---------------------------------------------------------------*/
 void CAbstractPTGBasedReactive::enableLogFile(bool enable)
 {
+	mrpt::synch::CCriticalSectionLocker csl(&m_nav_cs);
+
 	try
 	{
 		// Disable:
@@ -159,6 +163,8 @@ void CAbstractPTGBasedReactive::getLastLogRecord( CLogFileRecord &o )
 
 void CAbstractPTGBasedReactive::navigate(const CAbstractNavigator::TNavigationParams *params )
 {
+	mrpt::synch::CCriticalSectionLocker csl(&m_nav_cs);
+
 	navigationEndEventSent = false;
 
 	// Copy data:
@@ -194,15 +200,6 @@ void CAbstractPTGBasedReactive::navigate(const CAbstractNavigator::TNavigationPa
 	badNavAlarm_lastMinDistTime = system::getCurrentTime();
 }
 
-void CAbstractPTGBasedReactive::doEmergencyStop( const char *msg )
-{
-	m_navigationState = NAV_ERROR;
-	m_robot.stop();
-	printf_debug(msg);
-	printf_debug("\n");
-}
-
-
 void CAbstractPTGBasedReactive::loadHolonomicMethodConfig(
 	const mrpt::utils::CConfigFileBase &ini,
 	const std::string &section )
@@ -222,6 +219,8 @@ void CAbstractPTGBasedReactive::setHolonomicMethod(
     const THolonomicMethod method,
 	const mrpt::utils::CConfigFileBase &ini)
 {
+	mrpt::synch::CCriticalSectionLocker csl(&m_nav_cs);
+
 	this->deleteHolonomicObjects();
 
 	const size_t nPTGs = this->getPTG_count();
@@ -275,9 +274,6 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 	}
 
 
-	// Lock
-	mrpt::synch::CCriticalSectionLocker lock( &m_critZoneNavigating );
-
 	CTimeLoggerEntry tle1(m_timelogger,"navigationStep");
 
 	try
@@ -314,6 +310,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 			m_robot.sendNavigationEndEvent();
 		}
 
+		MRPT_TODO("Move these 2 to AbstractNav base methods");
 		// Have we really reached the target?
 		if ( targetDist < m_navigationParams->targetAllowedDistance )
 		{

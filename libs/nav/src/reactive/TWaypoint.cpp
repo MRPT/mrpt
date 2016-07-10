@@ -15,13 +15,21 @@
 using namespace mrpt::nav;
 using namespace std;
 
-const double INVALID_NUM = std::numeric_limits<double>::max();
+const double TWaypoint::INVALID_NUM = std::numeric_limits<double>::max();
 
 // TWaypoint  ========== 
 TWaypoint::TWaypoint() :
 	target(INVALID_NUM,INVALID_NUM),
 	target_heading(INVALID_NUM),
 	allowed_distance(INVALID_NUM),
+	allow_skip(true)
+{
+}
+
+TWaypoint::TWaypoint(double target_x, double target_y, double allowed_distance_) : 
+	target(target_x,target_y),
+	target_heading(INVALID_NUM),
+	allowed_distance(allowed_distance_),
 	allow_skip(true)
 {
 }
@@ -66,7 +74,7 @@ std::string TWaypointSequence::getAsText() const
 	string s;
 	s+=mrpt::format("List of %u waypoints:\n", static_cast<unsigned int>(waypoints.size()) );
 	unsigned int i=0;
-	for (auto &wp : waypoints) {
+	for (const auto &wp : waypoints) {
 		s+= mrpt::format(" #%3u: ",i++);
 		s+= wp.getAsText();
 		s+= "\n";
@@ -89,7 +97,7 @@ TWaypointStatus & TWaypointStatus::operator =(const TWaypoint &wp)
 std::string TWaypointStatus::getAsText() const 
 {
 	std::string s = TWaypoint::getAsText();
-	s += mrpt::format("reached=%s skipped=%s", (reached ? "YES":"NO "), (skipped ? "YES":"NO ") );;
+	s += mrpt::format(" reached=%s skipped=%s", (reached ? "YES":"NO "), (skipped ? "YES":"NO ") );;
 	return s;
 }
 
@@ -107,12 +115,12 @@ std::string TWaypointStatusSequence::getAsText() const
 	string s;
 	s+=mrpt::format("Status for %u waypoints:\n", static_cast<unsigned int>(waypoints.size()) );
 	unsigned int i=0;
-	for (auto &wp : waypoints) {
+	for (const auto &wp : waypoints) {
 		s+= mrpt::format(" #%3u: ",i++);
 		s+= wp.getAsText();
 		s+= "\n";
 	}
-	s+=mrpt::format("final_goal_reached:%s  waypoint_index_current_goal=%d\n", (final_goal_reached ? "YES":"NO "), waypoint_index_current_goal );
+	s+=mrpt::format(" final_goal_reached:%s  waypoint_index_current_goal=%d\n", (final_goal_reached ? "YES":"NO "), waypoint_index_current_goal );
 	return s;
 }
 

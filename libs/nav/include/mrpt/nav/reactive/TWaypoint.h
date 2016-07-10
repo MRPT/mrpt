@@ -40,7 +40,10 @@ namespace mrpt
 
 		bool isValid() const; //!< Check whether all the minimum mandatory fields have been filled by the user.
 		TWaypoint(); //!< Ctor with default values
+		TWaypoint(double target_x, double target_y, double allowed_distance);
 		std::string getAsText() const; //!< get in human-readable format
+
+		static const double INVALID_NUM; //!< The default value of fields (used to detect non-set values)
 	};
 
 	/** The struct for requesting navigation requests for a sequence of waypoints.
@@ -79,7 +82,10 @@ namespace mrpt
 		std::vector<TWaypointStatus> waypoints; //!< Waypoints parameters and status (reached, skipped, etc.)
 		mrpt::system::TTimeStamp     timestamp_nav_started; //!< Timestamp of user navigation command.
 		bool final_goal_reached; //!< Whether the final waypoint has been reached successfuly.
-		int  waypoint_index_current_goal;  //!< Index in `waypoints` of the waypoint the navigator is currently trying to reach, or `-1` if navigation already ended for any reason.
+		/** Index in `waypoints` of the waypoint the navigator is currently trying to reach.
+		  * This will point to the last waypoint after navigation ends successfully. 
+		  * Its value is `-1` if navigation has not started yet */
+		int  waypoint_index_current_goal;
 
 		TWaypointStatusSequence(); //!< Ctor with default values
 		std::string getAsText() const; //!< Gets navigation params as a human-readable format

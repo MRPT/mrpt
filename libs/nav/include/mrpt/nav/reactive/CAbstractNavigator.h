@@ -10,6 +10,7 @@
 
 #include <mrpt/nav/reactive/CRobot2NavInterface.h>
 #include <mrpt/utils/CDebugOutputCapable.h>
+#include <mrpt/synch/CCriticalSection.h>
 #include <mrpt/obs/obs_frwds.h>
 
 #include <mrpt/nav/link_pragmas.h>
@@ -99,10 +100,15 @@ namespace mrpt
 		/** To be implemented in derived classes */
 		virtual void  performNavigationStep( )=0;
 
+		/** Stops the robot and set navigation state to error */
+		void doEmergencyStop( const char *msg );
+
 		TState             m_navigationState;  //!< Current internal state of navigator:
 		TNavigationParams  *m_navigationParams;  //!< Current navigation parameters
 
 		CRobot2NavInterface   &m_robot; //!< The navigator-robot interface.
+
+		mrpt::synch::CCriticalSection m_nav_cs; //!< mutex for all navigation methods
 
 	public:
 		MRPT_MAKE_ALIGNED_OPERATOR_NEW
