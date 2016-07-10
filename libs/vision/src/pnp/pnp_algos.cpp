@@ -208,6 +208,13 @@ int CPnP::CPnP_posit(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref
 	mrpt::vision::POSIT p(obj_pts_,img_pts_, cam_intrinsic, n);
 	
 	int ret = p.compute_pose(R,t);
+    
+    //cout<<"cam_in="<<endl<<cam_intrinsic<<endl<<endl;
+    //cout<<"obj_pts="<<endl<<obj_pts<<endl<<endl;
+    //cout<<"img_pts="<<endl<<img_pts<<endl<<endl;
+    
+    //cout<<"R_est="<< endl << R << endl << endl;
+    //cout<<"t_est="<< endl << t << endl << endl;
 	
 	Eigen::Quaterniond q(R);
 	
