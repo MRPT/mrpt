@@ -55,6 +55,12 @@ namespace mrpt
 			mrpt::math::TPose2D target;  //!< Coordinates of desired target location. Heading may be ignored by some reactive implementations.
 			float               targetAllowedDistance;    //!< (Default=0.5 meters) Allowed distance to target in order to end the navigation.
 			bool                targetIsRelative;  //!< (Default=false) Whether the \a target coordinates are in global coordinates (false) or are relative to the current robot pose (true).
+			
+			/** (Default=false) If true, the behavior changes in these aspects:
+			 * - The robot will *not* slow down when approaching the target.
+			 * - Event callback `sendWaypointReachedEvent()` will be called instead of `sendNavigationEndEvent()`
+			 */
+			bool  targetIsIntermediaryWaypoint;
 
 			TNavigationParams(); //!< Ctor with default values
 			virtual ~TNavigationParams() {}

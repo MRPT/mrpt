@@ -1073,7 +1073,7 @@ void reactive_navigator_demoframe::simulateOneStep(double time_step)
 
 				mrpt::opengl::CDiskPtr gl_pt = mrpt::opengl::CDisk::Create(is_cur_goal ? 0.4 : 0.3,0.0, 20);
 				gl_pt->setLocation(p.target.x,p.target.y,0.01);
-				gl_pt->setName(mrpt::format("WayPt #%2u Reach:%s Skipped:%s",idx, p.reached ? "YES":"NO", p.skipped ? "YES":"NO"));
+				gl_pt->setName(mrpt::format("WayPt #%2u Reach:%s",idx, p.reached ? "YES":"NO"));
 				gl_pt->enableShowName(true);
 				gl_pt->setColor_u8( is_cur_goal ? colCurrent : colNormal );
 				gl_waypoints_clicking->insert(gl_pt);
@@ -1184,6 +1184,8 @@ void reactive_navigator_demoframe::Onplot3DMouseMove(wxMouseEvent& event)
 
 void reactive_navigator_demoframe::Onplot3DMouseClick(wxMouseEvent& event)
 {
+	WX_START_TRY
+
 	bool skip_normal_process = false;
 
 	switch (m_cursorPickState)
@@ -1270,6 +1272,7 @@ void reactive_navigator_demoframe::Onplot3DMouseClick(wxMouseEvent& event)
 		// Do normal process in that class:
 		m_plot3D->OnMouseDown(event);
 	}
+	WX_END_TRY
 }
 
 // ==== reactive_navigator_demoframe::TOptions ======

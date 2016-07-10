@@ -66,10 +66,6 @@ namespace mrpt
 		bool reached; //!< Whether this waypoint has been reached already (to within the allowed distance as per user specifications).
 		mrpt::system::TTimeStamp  timestamp_reach; //!< Timestamp of when this waypoint was reached. (Default=INVALID_TIMESTAMP means not reached so far)
 
-		/** Whether this waypoint has been definitively skipped, that is, whether a more 
-		  * advanced waypoint has been reached and no further attempt will be done to reach this one. */
-		bool skipped;
-
 		TWaypointStatus();
 		TWaypointStatus & operator =(const TWaypoint &wp);
 		std::string getAsText() const; //!< Gets navigation params as a human-readable format
@@ -86,6 +82,8 @@ namespace mrpt
 		  * This will point to the last waypoint after navigation ends successfully. 
 		  * Its value is `-1` if navigation has not started yet */
 		int  waypoint_index_current_goal;
+
+		mrpt::math::TPose2D  last_robot_pose; //!< Robot pose at last time step (has INVALID_NUM fields upon initialization)
 
 		TWaypointStatusSequence(); //!< Ctor with default values
 		std::string getAsText() const; //!< Gets navigation params as a human-readable format

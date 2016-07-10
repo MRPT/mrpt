@@ -85,8 +85,7 @@ std::string TWaypointSequence::getAsText() const
 // TWaypointStatus ========== 
 TWaypointStatus::TWaypointStatus() :
 	reached(false),
-	timestamp_reach(INVALID_TIMESTAMP),
-	skipped(false)
+	timestamp_reach(INVALID_TIMESTAMP)
 {
 }
 TWaypointStatus & TWaypointStatus::operator =(const TWaypoint &wp)
@@ -97,7 +96,7 @@ TWaypointStatus & TWaypointStatus::operator =(const TWaypoint &wp)
 std::string TWaypointStatus::getAsText() const 
 {
 	std::string s = TWaypoint::getAsText();
-	s += mrpt::format(" reached=%s skipped=%s", (reached ? "YES":"NO "), (skipped ? "YES":"NO ") );;
+	s += mrpt::format(" reached=%s skipped=%s", (reached ? "YES":"NO ") );;
 	return s;
 }
 
@@ -106,7 +105,8 @@ TWaypointStatusSequence::TWaypointStatusSequence() :
 	waypoints(),
 	timestamp_nav_started(INVALID_TIMESTAMP),
 	final_goal_reached(false),
-	waypoint_index_current_goal(-1)
+	waypoint_index_current_goal(-1),
+	last_robot_pose(TWaypoint::INVALID_NUM,TWaypoint::INVALID_NUM,TWaypoint::INVALID_NUM)
 {
 }
 

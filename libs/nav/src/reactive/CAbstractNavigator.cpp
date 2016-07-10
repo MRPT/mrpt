@@ -21,7 +21,8 @@ using namespace std;
 CAbstractNavigator::TNavigationParams::TNavigationParams() :
 	target(0,0,0), 
 	targetAllowedDistance(0.5),
-	targetIsRelative(false)
+	targetIsRelative(false),
+	targetIsIntermediaryWaypoint(false)
 {
 }
 
@@ -32,6 +33,7 @@ std::string CAbstractNavigator::TNavigationParams::getAsText() const
 	s+= mrpt::format("navparams.target = (%.03f,%.03f,%.03f deg)\n", target.x, target.y,target.phi );
 	s+= mrpt::format("navparams.targetAllowedDistance = %.03f\n", targetAllowedDistance );
 	s+= mrpt::format("navparams.targetIsRelative = %s\n", targetIsRelative ? "YES":"NO");
+	s+= mrpt::format("navparams.targetIsIntermediaryWaypoint = %s\n", targetIsIntermediaryWaypoint ? "YES":"NO");
 
 	return s;
 }
@@ -66,9 +68,9 @@ CAbstractNavigator::~CAbstractNavigator()
 void CAbstractNavigator::cancel()
 {
 	mrpt::synch::CCriticalSectionLocker csl(&m_nav_cs);
-
 	printf_debug("\n[CAbstractNavigator::cancel()]\n");
 	m_navigationState = IDLE;
+	m_robot.stop();
 }
 
 
@@ -124,7 +126,7 @@ void CAbstractNavigator::navigationStep()
 			if ( m_lastNavigationState == NAVIGATING )
 			{
 				printf_debug("\n[CAbstractNavigator::navigationStep()] Navigation stopped\n");
-				m_robot.stop();
+				// m_robot.stop();  stop() is called by the method switching the "state", so we have more flexibility
 				m_robot.stopWatchdog();
 			}
 		} catch (...) { }
@@ -191,7 +193,9 @@ void CAbstractNavigator::navigationStep()
 			// Have we really reached the target?
 			if ( targetDist < m_navigationParams->targetAllowedDistance )
 			{
-				m_robot.stop();
+				if (!m_navigationParams->targetIsIntermediaryWaypoint) {
+					m_robot.stop();
+				}
 				m_navigationState = IDLE;
 				printf_debug("Navigation target (%.03f,%.03f) was reached\n", m_navigationParams->target.x,m_navigationParams->target.y);
 
