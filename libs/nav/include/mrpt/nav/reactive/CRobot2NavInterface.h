@@ -85,9 +85,22 @@ namespace mrpt
 		  */
 		virtual bool senseObstacles( mrpt::maps::CSimplePointsMap &obstacles ) = 0;
 
+		/** Callback: Start of navigation command */
 		virtual void sendNavigationStartEvent () { std::cout << "[sendNavigationStartEvent] Not implemented by the user." << std::endl; }
+		
+		/** Callback: End of navigation command (reach of single goal, or final waypoint of waypoint list) */
 		virtual void sendNavigationEndEvent() {	std::cout << "[sendNavigationEndEvent] Not implemented by the user." << std::endl; }
+
+		/** Callback: Reached an intermediary waypoint in waypoint list navigation */
+		virtual void sendWaypointReachedEvent(int waypoint_index) { std::cout << "[sendWaypointReachedEvent] Not implemented by the user. Reached waypoint #" << waypoint_index << std::endl; }
+
+		/** Callback: Heading towards a new intermediary/final waypoint in waypoint list navigation */
+		virtual void sendNewWaypointTargetEvent(int waypoint_index) { std::cout << "[sendNewWaypointTargetEvent] Not implemented by the user. Navigating towards waypoint #" << waypoint_index << std::endl; }
+
+		/** Callback: Error asking sensory data from robot or sending motor commands. */
 		virtual void sendNavigationEndDueToErrorEvent() { std::cout << "[sendNavigationEndDueToErrorEvent] Not implemented by the user." << std::endl; }
+
+		/** Callback: No progression made towards target for a predefined period of time. */
 		virtual void sendWaySeemsBlockedEvent() { std::cout << "[sendWaySeemsBlockedEvent] Not implemented by the user." << std::endl; }
 
 		/** Returns the number of seconds ellapsed since the constructor of this class was invoked, or since 

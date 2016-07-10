@@ -97,14 +97,25 @@ void CWaypointsNavigator::navigationStep()
 		// 1) default policy: go thru WPs one by one
 		const int prev_wp_index = wps.waypoint_index_current_goal;
 
+		mrpt::math::TSegment2D robot_move_seg;
+		robot_move_seg.point1.x = currentPose.x;
+		robot_move_seg.point1.y = currentPose.y;
+		if (wps.last_robot_pose.x==TWaypoint::INVALID_NUM) 
+		{
+			robot_move_seg.point2 = robot_move_seg.point1;
+		}
+		else
+		{
+			robot_move_seg.point2.x = wps.last_robot_pose.x;
+			robot_move_seg.point2.y = wps.last_robot_pose.y;
+		}
+		wps.last_robot_pose = currentPose; // save for next iters
+
 		if (wps.waypoint_index_current_goal>=0 && 
-			std::sqrt( 
-			square(wps.waypoints[wps.waypoint_index_current_goal].target.x - currentPose.x)+ 
-			square(wps.waypoints[wps.waypoint_index_current_goal].target.y - currentPose.y)
-			) < wps.waypoints[wps.waypoint_index_current_goal].allowed_distance )
+			robot_move_seg.distance( wps.waypoints[wps.waypoint_index_current_goal].target ) < wps.waypoints[wps.waypoint_index_current_goal].allowed_distance )
 		{
 			wps.waypoints[wps.waypoint_index_current_goal].reached = true;
-			MRPT_TODO("Callback for waypoint reached.")
+			m_robot.sendWaypointReachedEvent(wps.waypoint_index_current_goal);
 
 			// Was this the final goal??
 			if ( wps.waypoint_index_current_goal < (wps.waypoints.size()-1) ) {
@@ -115,11 +126,29 @@ void CWaypointsNavigator::navigationStep()
 			}
 		}
 
-		// 2) More advance policy: if available, use children class methods to decide 
+		// 2) More advanced policy: if available, use children class methods to decide 
 		//     which is the best candidate for the next waypoint, if we can skip current one:
 		if (!wps.final_goal_reached)
 		{
-			MRPT_TODO("to do")
+			int most_advanced_wp = wps.waypoint_index_current_goal;
+			for (int idx=wps.waypoint_index_current_goal;idx<(int)wps.waypoints.size();idx++)
+			{
+				if (idx<0) continue;
+
+				// Is it reachable?
+				bool is_reachable = true;
+
+				if (is_reachable) {
+					most_advanced_wp = idx;
+				}
+
+				// Is allowed to skip it?
+				if (!wps.waypoints[idx].allow_skip)
+					break; // Do not keep trying, since we are now allowed to skip this one.
+			}
+
+			if (most_advanced_wp>=0)
+				wps.waypoint_index_current_goal = most_advanced_wp;
 		}
 
 		// Still not started and no better guess? Start with the first waypoint:
@@ -128,11 +157,13 @@ void CWaypointsNavigator::navigationStep()
 
 		// 3) Should I request a new (single target) navigation command? 
 		//    Only if the temporary goal changed:
-		if (prev_wp_index!=wps.waypoint_index_current_goal)
+		if (wps.waypoint_index_current_goal>=0 && prev_wp_index!=wps.waypoint_index_current_goal)
 		{
 			ASSERT_( wps.waypoint_index_current_goal < wps.waypoints.size() );
 			TWaypointStatus &wp = wps.waypoints[wps.waypoint_index_current_goal];
-			MRPT_TODO("Callback for heading new waypoint.")
+			const bool is_final_wp =  ( (wps.waypoint_index_current_goal+1)==wps.waypoints.size() );
+			
+			m_robot.sendNewWaypointTargetEvent(wps.waypoint_index_current_goal);
 
 			CAbstractNavigator::TNavigationParams nav_cmd;
 			nav_cmd.target.x = wp.target.x;
@@ -140,6 +171,8 @@ void CWaypointsNavigator::navigationStep()
 			nav_cmd.target.phi = (wp.target_heading!=TWaypoint::INVALID_NUM ? wp.target_heading : .0);
 			nav_cmd.targetAllowedDistance = wp.allowed_distance;
 			nav_cmd.targetIsRelative = false;
+			nav_cmd.targetIsIntermediaryWaypoint = !is_final_wp;
+
 			this->navigate( &nav_cmd );
 		}
 	}

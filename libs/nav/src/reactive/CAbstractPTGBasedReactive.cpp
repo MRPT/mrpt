@@ -350,6 +350,8 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 						holonomicMovement.speed,
 						HLFR);
 
+					MRPT_TODO("Honor targetIsIntermediaryWaypoint wrt approaching slow down")
+
 					// Security: Scale down the velocity when heading towards obstacles,
 					//  such that it's assured that we never go thru an obstacle!
 					const int kDirection = static_cast<int>( holonomicMovement.PTG->alpha2index( holonomicMovement.direction ) );
