@@ -47,7 +47,7 @@ namespace mrpt
 	};
 
 	/** The struct for requesting navigation requests for a sequence of waypoints.
-	 * Used in CAbstractWaypointsNavigator::navigateWaypoints(). 
+	 * Used in CWaypointsNavigator::navigateWaypoints(). 
 	 * Users can directly fill in the list of waypoints manipulating the public field `waypoints`.
 	 *  \ingroup nav_reactive */
 	struct NAV_IMPEXP TWaypointSequence
@@ -75,7 +75,7 @@ namespace mrpt
 		std::string getAsText() const; //!< Gets navigation params as a human-readable format
 	};
 
-	/** The struct for querying the status of waypoints navigation. Used in CAbstractWaypointsNavigator::getWaypointNavStatus().
+	/** The struct for querying the status of waypoints navigation. Used in CWaypointsNavigator::getWaypointNavStatus().
 	 *  \ingroup nav_reactive */
 	struct NAV_IMPEXP TWaypointStatusSequence
 	{

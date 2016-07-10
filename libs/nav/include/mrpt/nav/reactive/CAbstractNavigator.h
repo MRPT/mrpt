@@ -30,7 +30,7 @@ namespace mrpt
 	 *  digraph CAbstractNavigator_States {
 	 *      IDLE; NAVIGATING; SUSPENDED; NAV_ERROR;
 	 *      IDLE -> NAVIGATING [ label="CAbstractNavigator::navigate()"];
-	 *      IDLE -> NAVIGATING [ label="CAbstractWaypointsNavigator::navigateWaypoints()" ];
+	 *      IDLE -> NAVIGATING [ label="CWaypointsNavigator::navigateWaypoints()" ];
 	 *      NAVIGATING -> IDLE [ label="Final target reached" ];
 	 *      NAVIGATING -> IDLE [ label="CAbstractNavigator::cancel()" ];
 	 *      NAVIGATING -> NAV_ERROR [ label="Upon sensor errors, timeout,..." ];
@@ -73,7 +73,7 @@ namespace mrpt
 		  * \param[in] params Pointer to structure with navigation info (its contents will be copied, so the original can be freely destroyed upon return if it was dynamically allocated.)
 		  * \note A pointer is used so the passed object can be polymorphic with derived types.
 		  */
-		virtual void  navigate( const TNavigationParams *params )=0;
+		virtual void navigate( const TNavigationParams *params );
 
 		virtual void cancel(); //!< Cancel current navegation.
 		virtual void resume(); //!< Continues with suspended navigation. \sa suspend
@@ -95,6 +95,7 @@ namespace mrpt
 
 	private:
 		TState  m_lastNavigationState; //!< Last internal state of navigator:
+		bool    m_navigationEndEventSent; //!< Will be false until the navigation end is sent, and it is reset with each new command
 
 	protected:
 		/** To be implemented in derived classes */
@@ -109,6 +110,15 @@ namespace mrpt
 		CRobot2NavInterface   &m_robot; //!< The navigator-robot interface.
 
 		mrpt::synch::CCriticalSection m_nav_cs; //!< mutex for all navigation methods
+
+		mrpt::math::TPose2D  m_curPose;   //!< Current robot pose (updated in CAbstractNavigator::navigationStep() )
+		mrpt::math::TTwist2D m_curVel, m_curVelLocal; //!< Current robot velocities (updated in CAbstractNavigator::navigationStep() )
+
+		/** For sending an alarm (error event) when it seems that we are not approaching toward the target in a while... */
+		double                   m_badNavAlarm_minDistTarget;
+		mrpt::system::TTimeStamp m_badNavAlarm_lastMinDistTime;
+		double                   m_badNavAlarm_AlarmTimeout;
+		double DIST_TO_TARGET_FOR_SENDING_EVENT;
 
 	public:
 		MRPT_MAKE_ALIGNED_OPERATOR_NEW

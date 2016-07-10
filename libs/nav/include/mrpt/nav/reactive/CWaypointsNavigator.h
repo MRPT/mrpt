@@ -15,15 +15,17 @@ namespace mrpt
 {
   namespace nav
   {
-	/** Base virtual class for reactive/planned navigation system capable of following a list of waypoints. See derived classes.
-	 * \sa base class CAbstractNavigator, CAbstractWaypointsNavigator::navigateWaypoints(), and derived classes.
+	/** This class extends `CAbstractNavigator` with the capability of following a list of waypoints. By default, waypoints are followed one by one, 
+	 *  but, if they are tagged with `allow_skip=true` **and** the derived navigator class supports it, the navigator may choose to skip some to 
+	 *  make a smoother, safer and shorter navigation.
+	 * \sa Base class CAbstractNavigator, CWaypointsNavigator::navigateWaypoints(), and derived classes.
 	 *  \ingroup nav_reactive
 	 */
-	class NAV_IMPEXP CAbstractWaypointsNavigator : public  mrpt::nav::CAbstractNavigator
+	class NAV_IMPEXP CWaypointsNavigator : public  mrpt::nav::CAbstractNavigator
 	{
 	public:
-		CAbstractWaypointsNavigator( CRobot2NavInterface &robot_interface_impl );  //!< ctor
-		virtual ~CAbstractWaypointsNavigator(); //!< dtor
+		CWaypointsNavigator( CRobot2NavInterface &robot_interface_impl );  //!< ctor
+		virtual ~CWaypointsNavigator(); //!< dtor
 
 		// Overriden to call the general navigationStep(), plus waypoint selection logic.
 		virtual void navigationStep() MRPT_OVERRIDE;

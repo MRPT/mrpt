@@ -1026,7 +1026,7 @@ void reactive_navigator_demoframe::simulateOneStep(double time_step)
 		}
 	}
 
-	CAbstractWaypointsNavigator *wp_nav = dynamic_cast<CAbstractWaypointsNavigator *>(m_navMethod.get());
+	CWaypointsNavigator *wp_nav = dynamic_cast<CWaypointsNavigator *>(m_navMethod.get());
 	if (wp_nav)
 	{
 		static wxFrame *wxFrWpInfo = nullptr; 
@@ -1199,7 +1199,7 @@ void reactive_navigator_demoframe::Onplot3DMouseClick(wxMouseEvent& event)
 				btnPlaceTarget->SetValue(false); btnPlaceTarget->Refresh();
 				m_gl_placing_nav_target->setVisibility(false);
 
-				CAbstractWaypointsNavigator *wp_nav = dynamic_cast<CAbstractWaypointsNavigator *>(m_navMethod.get());
+				CWaypointsNavigator *wp_nav = dynamic_cast<CWaypointsNavigator *>(m_navMethod.get());
 				if (wp_nav)
 					wp_nav->navigateWaypoints(m_waypoints_clicked);
 
@@ -1548,7 +1548,7 @@ void reactive_navigator_demoframe::OnbtnDrawEmptyClick(wxCommandEvent& event)
 
 void reactive_navigator_demoframe::OnbtnSetWaypointSeqClick(wxCommandEvent& event)
 {
-	CAbstractWaypointsNavigator *wp_nav = dynamic_cast<CAbstractWaypointsNavigator *>(m_navMethod.get());
+	CWaypointsNavigator *wp_nav = dynamic_cast<CWaypointsNavigator *>(m_navMethod.get());
 	if (!wp_nav)
 	{
 		wxMessageBox(wxT("Navigator class does not support waypoints sequences!"));

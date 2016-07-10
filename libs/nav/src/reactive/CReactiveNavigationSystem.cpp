@@ -101,7 +101,7 @@ void CReactiveNavigationSystem::loadConfigFile(const mrpt::utils::CConfigFileBas
 
 	MRPT_LOAD_CONFIG_VAR_NO_DEFAULT(DIST_TO_TARGET_FOR_SENDING_EVENT,float,  ini,robotName);
 
-	badNavAlarm_AlarmTimeout = ini.read_float("GLOBAL_CONFIG","ALARM_SEEMS_NOT_APPROACHING_TARGET_TIMEOUT", badNavAlarm_AlarmTimeout, true);
+	m_badNavAlarm_AlarmTimeout = ini.read_float("GLOBAL_CONFIG","ALARM_SEEMS_NOT_APPROACHING_TARGET_TIMEOUT", m_badNavAlarm_AlarmTimeout, true);
 	this->m_robot.loadConfigFile(ini,"GLOBAL_CONFIG");
 
 	// Load robot shape: 1/2 polygon
