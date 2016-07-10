@@ -40,7 +40,7 @@ std::string CAbstractPTGBasedReactive::TNavigationParamsPTG::getAsText() const
 
 // Ctor:
 CAbstractPTGBasedReactive::CAbstractPTGBasedReactive(CRobot2NavInterface &react_iterf_impl, bool enableConsoleOutput, bool enableLogFile):
-	CAbstractNavigator(react_iterf_impl),
+	CWaypointsNavigator(react_iterf_impl),
 	m_holonomicMethod            (),
 	m_logFile                    (NULL),
 	m_enableKeepLogRecords       (false),
@@ -48,7 +48,6 @@ CAbstractPTGBasedReactive::CAbstractPTGBasedReactive(CRobot2NavInterface &react_
 	m_last_vel_cmd               (react_iterf_impl.getVelCmdLength()  , 0.0),
 	m_new_vel_cmd                (react_iterf_impl.getVelCmdLength(), 0.0),
 
-	navigationEndEventSent       (false),
 	m_enableConsoleOutput        (enableConsoleOutput),
 	m_init_done                  (false),
 	ptg_cache_files_directory    ("."),
@@ -56,7 +55,6 @@ CAbstractPTGBasedReactive::CAbstractPTGBasedReactive(CRobot2NavInterface &react_
 	SPEEDFILTER_TAU              (0.0),
 	secureDistanceStart          (0.05f),
 	secureDistanceEnd            (0.20f),
-	DIST_TO_TARGET_FOR_SENDING_EVENT(0.4f),
 	meanExecutionPeriod          (0.1f),
 	m_timelogger                 (false), // default: disabled
 	badNavAlarm_AlarmTimeout     (30.0),
@@ -73,8 +71,8 @@ void CAbstractPTGBasedReactive::preDestructor()
 	m_closing_navigator = true;
 
 	// Wait to end of navigation (multi-thread...)
-	m_critZoneNavigating.enter();
-	m_critZoneNavigating.leave();
+	m_nav_cs.enter();
+	m_nav_cs.leave();
 
 	// Just in case.
 	try {
@@ -95,6 +93,8 @@ CAbstractPTGBasedReactive::~CAbstractPTGBasedReactive()
 
 void CAbstractPTGBasedReactive::initialize()
 {
+	mrpt::synch::CCriticalSectionLocker csl(&m_nav_cs);
+
 	// Compute collision grids:
 	STEP1_InitPTGs();
 }
@@ -104,6 +104,8 @@ void CAbstractPTGBasedReactive::initialize()
   ---------------------------------------------------------------*/
 void CAbstractPTGBasedReactive::enableLogFile(bool enable)
 {
+	mrpt::synch::CCriticalSectionLocker csl(&m_nav_cs);
+
 	try
 	{
 		// Disable:
@@ -200,7 +202,6 @@ void CAbstractPTGBasedReactive::doEmergencyStop( const char *msg )
 	printf_debug("%s\n",msg);
 }
 
-
 void CAbstractPTGBasedReactive::loadHolonomicMethodConfig(
 	const mrpt::utils::CConfigFileBase &ini,
 	const std::string &section )
@@ -220,6 +221,8 @@ void CAbstractPTGBasedReactive::setHolonomicMethod(
     const THolonomicMethod method,
 	const mrpt::utils::CConfigFileBase &ini)
 {
+	mrpt::synch::CCriticalSectionLocker csl(&m_nav_cs);
+
 	this->deleteHolonomicObjects();
 
 	const size_t nPTGs = this->getPTG_count();
@@ -262,7 +265,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 			prev_logfile=m_logFile;
 			for (size_t i=0;i<nPTGs;i++)
 			{
-				// If we make a direct copy (=) we will store the entire, heavy, collision grid. 
+				// If we make a direct copy (=) we will store the entire, heavy, collision grid.
 				// Let's just store the parameters of each PTG by serializing it, so paths can be reconstructed
 				// by invoking initialize()
 				mrpt::utils::CMemoryStream buf;
@@ -273,9 +276,6 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 		}
 	}
 
-
-	// Lock
-	mrpt::synch::CCriticalSectionLocker lock( &m_critZoneNavigating );
 
 	CTimeLoggerEntry tle1(m_timelogger,"navigationStep");
 
@@ -348,16 +348,15 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 			}
 		}
 
-
 		// Compute target location relative to current robot pose:
 		// ---------------------------------------------------------------------
-		const CPose2D relTarget = CPose2D(m_navigationParams->target) - curPose;
+		const CPose2D relTarget = CPose2D(m_navigationParams->target) - CPose2D(m_curPose);
 
 		STEP1_InitPTGs(); // Will only recompute if "m_PTGsMustBeReInitialized==true"
 
 		// Update kinematic state in all PTGs:
 		for (size_t i=0;i<nPTGs;i++)
-			getPTG(i)->updateCurrentRobotVel(curVelLocal);
+			getPTG(i)->updateCurrentRobotVel(m_curVelLocal);
 
 		// STEP2: Load the obstacles and sort them in height bands.
 		// -----------------------------------------------------------------------------
@@ -463,6 +462,8 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 						holonomicMovement.direction,
 						holonomicMovement.speed,
 						HLFR);
+
+					MRPT_TODO("Honor targetIsIntermediaryWaypoint wrt approaching slow down")
 
 					// Security: Scale down the velocity when heading towards obstacles,
 					//  such that it's assured that we never go thru an obstacle!
@@ -586,14 +587,14 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 
 			this->loggingGetWSObstaclesAndShape(newLogRec);
 
-			newLogRec.robotOdometryPose   = curPose;
+			newLogRec.robotOdometryPose   = m_curPose;
 			newLogRec.WS_target_relative  = TPoint2D(relTarget.x(), relTarget.y());
 			newLogRec.cmd_vel             = m_new_vel_cmd;
 			newLogRec.cmd_vel_filterings  = m_cmd_vel_filterings;
 			newLogRec.nSelectedPTG        = nSelectedPTG;
 			newLogRec.executionTime       = executionTimeValue;
-			newLogRec.cur_vel             = curVel;
-			newLogRec.cur_vel_local       = curVelLocal;
+			newLogRec.cur_vel             = m_curVel;
+			newLogRec.cur_vel_local       = m_curVelLocal;
 			newLogRec.estimatedExecutionPeriod = meanExecutionPeriod;
 			newLogRec.timestamp = tim_start_iteration;
 			newLogRec.nPTGs = nPTGs;
@@ -645,7 +646,7 @@ void CAbstractPTGBasedReactive::STEP5_PTGEvaluator(
 	uint16_t nStep;
 	bool pt_in_range = holonomicMovement.PTG->getPathStepForDist(kDirection, d, nStep);
 	ASSERT_(pt_in_range)
-	
+
 	mrpt::math::TPose2D pose;
 	holonomicMovement.PTG->getPathPose(kDirection, nStep,pose);
 
@@ -769,7 +770,7 @@ void CAbstractPTGBasedReactive::STEP7_GenerateSpeedCommands( const THolonomicMov
 			m_robot.cmdVel_limits(m_new_vel_cmd, m_last_vel_cmd, beta);
 			m_cmd_vel_filterings.push_back(m_new_vel_cmd);
 		}
-		
+
 		m_last_vel_cmd = m_new_vel_cmd; // Save for filtering in next step
 	}
 	catch (std::exception &e)
@@ -799,7 +800,7 @@ void CAbstractPTGBasedReactive::loadConfigFile(const mrpt::utils::CConfigFileBas
 
 	cfg.read_vector(sectCfg, "weights", vector<float> (0), weights, 1);
 	ASSERT_(weights.size()==6);
-	
+
 	// =========  Show configuration parameters:
 	printf_debug("-------------------------------------------------------------\n");
 	printf_debug("       PTG-based Reactive Navigation parameters               \n");

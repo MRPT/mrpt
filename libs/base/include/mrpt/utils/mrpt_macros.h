@@ -163,14 +163,10 @@
 #define THROW_STACKED_EXCEPTION(e)	\
 	{\
 		std::string str( e.what() );\
-		if (str.find("MRPT stack trace")==std::string::npos) \
-		{ \
-			str+= __CURRENT_FUNCTION_NAME__;\
-			str+= mrpt::format(", line %i:\n", __LINE__ );\
-			throw std::logic_error( str );\
-		} \
-		else throw std::logic_error( e.what() );\
-	}\
+		str+= __CURRENT_FUNCTION_NAME__;\
+		str+= mrpt::format(", line %i:\n", __LINE__ );\
+		throw std::logic_error( str );\
+	}
 
 /** \def THROW_STACKED_EXCEPTION_CUSTOM_MSG
   * \param e The caught exception.

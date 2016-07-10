@@ -72,7 +72,7 @@ void CReactiveNavigationSystem::internal_loadConfigFile(const mrpt::utils::CConf
 	MRPT_START
 
 	const std::string sectCfg = sect_prefix + std::string("ReactiveParams"); // Was: "NAVIGATION_CONFIG". JLB changed this to make it consistent with 2D version and allow refactoring this method.
-	
+
 	unsigned int PTG_COUNT = ini.read_int(sectCfg,"PTG_COUNT",0, true );
 
 	MRPT_LOAD_CONFIG_VAR_NO_DEFAULT(minObstaclesHeight,float,  ini,sectCfg);
@@ -96,7 +96,7 @@ void CReactiveNavigationSystem::internal_loadConfigFile(const mrpt::utils::CConf
 	// ---------------------------------------------
 	const double robot_shape_radius = ini.read_double(sectCfg,"RobotModel_circular_shape_radius",.0, false );
 	ASSERT_(robot_shape_radius>=.0);
-	if (robot_shape_radius!=.0) 
+	if (robot_shape_radius!=.0)
 	{
 		changeRobotCircularShapeRadius( robot_shape_radius );
 	}
@@ -130,7 +130,7 @@ void CReactiveNavigationSystem::STEP1_InitPTGs()
 		m_PTGsMustBeReInitialized = false;
 
 		mrpt::utils::CTimeLoggerEntry tle(m_timelogger,"STEP1_InitPTGs");
-		
+
 		for (unsigned int i=0;i<PTGs.size();i++)
 		{
 			PTGs[i]->deinitialize();

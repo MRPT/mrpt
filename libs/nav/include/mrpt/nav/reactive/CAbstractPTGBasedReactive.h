@@ -9,7 +9,7 @@
 #ifndef CAbstractPTGBasedReactive_H
 #define CAbstractPTGBasedReactive_H
 
-#include <mrpt/nav/reactive/CAbstractNavigator.h>
+#include <mrpt/nav/reactive/CWaypointsNavigator.h>
 #include <mrpt/nav/tpspace/CParameterizedTrajectoryGenerator.h>
 #include <mrpt/nav/reactive/CLogFileRecord.h>
 #include <mrpt/nav/holonomic/CAbstractHolonomicReactiveMethod.h>
@@ -44,7 +44,7 @@ namespace mrpt
 	  * \sa CReactiveNavigationSystem, CReactiveNavigationSystem3D
 	  *  \ingroup nav_reactive
 	  */
-	class NAV_IMPEXP CAbstractPTGBasedReactive: public CAbstractNavigator
+	class NAV_IMPEXP CAbstractPTGBasedReactive: public CWaypointsNavigator
 	{
 	public:
 		MRPT_MAKE_ALIGNED_OPERATOR_NEW
@@ -90,12 +90,6 @@ namespace mrpt
 		void loadHolonomicMethodConfig(
 			const mrpt::utils::CConfigFileBase &ini,
 			const std::string &section );
-
-
-		/** Start navigation:
-			* \param[in] params Pointer to structure with navigation info (its contents will be copied, so the original can be freely destroyed upon return.)
-			*/
-		virtual void navigate( const TNavigationParams *params );
 
 		/** Provides a copy of the last log record with information about execution.
 			* \param o An object where the log will be stored into.
@@ -161,8 +155,7 @@ namespace mrpt
 		std::vector<double> m_last_vel_cmd, m_new_vel_cmd; //!< Actual and last velocity commands
 		std::vector<std::vector<double> > m_cmd_vel_filterings; //!< Logged values of temporary vel cmds before reaching at the final value sent to the robot (for logging)
 
-		bool  navigationEndEventSent; //!< Will be false until the navigation end is sent, and it is reset with each new command
-		synch::CCriticalSection  m_critZoneLastLog,m_critZoneNavigating; //!< Critical zones
+		synch::CCriticalSection  m_critZoneLastLog; //!< Critical zones
 
 		bool    m_enableConsoleOutput;  //!< Enables / disables the console debug output.
 		bool    m_init_done;            //!< Whether \a loadConfigFile() has been called or not.
@@ -193,20 +186,18 @@ namespace mrpt
 		  */
 		float secureDistanceStart,secureDistanceEnd;
 
-
-		float  DIST_TO_TARGET_FOR_SENDING_EVENT;
 		float  meanExecutionPeriod;	//!< Runtime estimation of execution period of the method.
 		mrpt::utils::CTimeLogger m_timelogger;			//!< A complete time logger \sa enableTimeLog()
+<<<<<<< HEAD
+=======
 		
 		/** For sending an alarm (error event) when it seems that we are not approaching toward the target in a while... */
 		double                   badNavAlarm_minDistTarget;
 		mrpt::system::TTimeStamp badNavAlarm_lastMinDistTime;
 		double                   badNavAlarm_AlarmTimeout;
+>>>>>>> master
 
 		bool  m_PTGsMustBeReInitialized;
-
-		/** Stops the robot and set navigation state to error */
-		void			doEmergencyStop( const char *msg );
 
 		/** @name Variables for CReactiveNavigationSystem::performNavigationStep
 			@{ */

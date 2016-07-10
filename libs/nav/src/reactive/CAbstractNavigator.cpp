@@ -10,6 +10,9 @@
 #include "nav-precomp.h" // Precomp header
 
 #include <mrpt/nav/reactive/CAbstractNavigator.h>
+#include <mrpt/poses/CPose2D.h>
+#include <mrpt/math/geometry.h>
+#include <limits>
 
 using namespace mrpt::nav;
 using namespace std;
@@ -18,7 +21,8 @@ using namespace std;
 CAbstractNavigator::TNavigationParams::TNavigationParams() :
 	target(0,0,0), 
 	targetAllowedDistance(0.5),
-	targetIsRelative(false)
+	targetIsRelative(false),
+	targetIsIntermediaryWaypoint(false)
 {
 }
 
@@ -29,6 +33,7 @@ std::string CAbstractNavigator::TNavigationParams::getAsText() const
 	s+= mrpt::format("navparams.target = (%.03f,%.03f,%.03f deg)\n", target.x, target.y,target.phi );
 	s+= mrpt::format("navparams.targetAllowedDistance = %.03f\n", targetAllowedDistance );
 	s+= mrpt::format("navparams.targetIsRelative = %s\n", targetIsRelative ? "YES":"NO");
+	s+= mrpt::format("navparams.targetIsIntermediaryWaypoint = %s\n", targetIsIntermediaryWaypoint ? "YES":"NO");
 
 	return s;
 }
@@ -41,7 +46,13 @@ CAbstractNavigator::CAbstractNavigator(CRobot2NavInterface &react_iterf_impl) :
 	m_lastNavigationState ( IDLE ),
 	m_navigationState     ( IDLE ),
 	m_navigationParams    ( NULL ),
-	m_robot               ( react_iterf_impl )
+	m_robot               ( react_iterf_impl ),
+	m_curPose             (0,0,0),
+	m_curVel              (0,0,0),
+	m_curVelLocal         (0,0,0),
+	m_navigationEndEventSent(false),
+	m_badNavAlarm_AlarmTimeout(30.0),
+	DIST_TO_TARGET_FOR_SENDING_EVENT(0.4)
 {
 }
 
@@ -56,8 +67,10 @@ CAbstractNavigator::~CAbstractNavigator()
   ---------------------------------------------------------------*/
 void CAbstractNavigator::cancel()
 {
-	printf_debug("\n[CAbstractNavigator::Cancel()]\n");
+	mrpt::synch::CCriticalSectionLocker csl(&m_nav_cs);
+	printf_debug("\n[CAbstractNavigator::cancel()]\n");
 	m_navigationState = IDLE;
+	m_robot.stop();
 }
 
 
@@ -66,7 +79,9 @@ void CAbstractNavigator::cancel()
   ---------------------------------------------------------------*/
 void CAbstractNavigator::resume()
 {
-	printf_debug("\n[CAbstractNavigator::Continue()]\n");
+	mrpt::synch::CCriticalSectionLocker csl(&m_nav_cs);
+
+	printf_debug("\n[CAbstractNavigator::resume()]\n");
 	if ( m_navigationState == SUSPENDED )
 		m_navigationState = NAVIGATING;
 }
@@ -77,9 +92,20 @@ void CAbstractNavigator::resume()
   ---------------------------------------------------------------*/
 void  CAbstractNavigator::suspend()
 {
-	printf_debug("\n[CAbstractNavigator::Suspend()]\n");
+	mrpt::synch::CCriticalSectionLocker csl(&m_nav_cs);
+
+	printf_debug("\n[CAbstractNavigator::suspend()]\n");
 	if ( m_navigationState == NAVIGATING )
 		m_navigationState  = SUSPENDED;
+}
+
+void CAbstractNavigator::resetNavError()
+{
+	mrpt::synch::CCriticalSectionLocker csl(&m_nav_cs);
+
+	printf_debug("\n[CAbstractNavigator::resetNavError()]\n");
+	if ( m_navigationState == NAV_ERROR )
+		m_navigationState  = IDLE;
 }
 
 /*---------------------------------------------------------------
@@ -87,6 +113,8 @@ void  CAbstractNavigator::suspend()
   ---------------------------------------------------------------*/
 void CAbstractNavigator::navigationStep()
 {
+	mrpt::synch::CCriticalSectionLocker csl(&m_nav_cs);
+
 	const TState prevState = m_navigationState;
 	switch ( m_navigationState )
 	{
@@ -98,7 +126,7 @@ void CAbstractNavigator::navigationStep()
 			if ( m_lastNavigationState == NAVIGATING )
 			{
 				printf_debug("\n[CAbstractNavigator::navigationStep()] Navigation stopped\n");
-				m_robot.stop();
+				// m_robot.stop();  stop() is called by the method switching the "state", so we have more flexibility
 				m_robot.stopWatchdog();
 			}
 		} catch (...) { }
@@ -121,9 +149,6 @@ void CAbstractNavigator::navigationStep()
 		} catch (...) { }
 		break;
 
-	//------------------------------------------------------------------
-	//						ALGORITMO DE NAVEGACION
-	//------------------------------------------------------------------
 	case NAVIGATING:
 		try
 		{
@@ -136,11 +161,72 @@ void CAbstractNavigator::navigationStep()
 				m_robot.startWatchdog( 1000 );	// Watchdog = 1 seg
 			}
 
-			// Start navigation??
+			// Have we just started the navigation?
 			if ( m_lastNavigationState == IDLE )
 				m_robot.sendNavigationStartEvent();
 
-			// The normal execution of the navigation: Execute one step
+			/* ----------------------------------------------------------------
+			        Get current robot dyn state:
+				---------------------------------------------------------------- */
+			if ( !m_robot.getCurrentPoseAndSpeeds(m_curPose, m_curVel) )
+			{
+				m_navigationState = NAV_ERROR;
+				m_robot.stop();
+				throw std::runtime_error("ERROR calling m_robot.getCurrentPoseAndSpeeds, stopping robot and finishing navigation");
+			}
+			m_curVelLocal = m_curVel;
+			m_curVelLocal.rotate(-m_curPose.phi);
+
+			/* ----------------------------------------------------------------
+		 			Have we reached the target location?
+				---------------------------------------------------------------- */
+			const double targetDist = mrpt::math::distance( mrpt::math::TPoint2D(m_curPose), mrpt::math::TPoint2D(m_navigationParams->target));
+			MRPT_TODO("Use segment distance");
+
+			// Should "End of navigation" event be sent??
+			if (!m_navigationEndEventSent && targetDist < DIST_TO_TARGET_FOR_SENDING_EVENT)
+			{
+				m_navigationEndEventSent = true;
+				m_robot.sendNavigationEndEvent();
+			}
+
+			// Have we really reached the target?
+			if ( targetDist < m_navigationParams->targetAllowedDistance )
+			{
+				if (!m_navigationParams->targetIsIntermediaryWaypoint) {
+					m_robot.stop();
+				}
+				m_navigationState = IDLE;
+				printf_debug("Navigation target (%.03f,%.03f) was reached\n", m_navigationParams->target.x,m_navigationParams->target.y);
+
+				if (!m_navigationEndEventSent)
+				{
+					m_navigationEndEventSent = true;
+					m_robot.sendNavigationEndEvent();
+				}
+				break;
+			}
+
+			// Check the "no approaching the target"-alarm:
+			// -----------------------------------------------------------
+			if (targetDist < m_badNavAlarm_minDistTarget )
+			{
+				m_badNavAlarm_minDistTarget = targetDist;
+				m_badNavAlarm_lastMinDistTime =  mrpt::system::getCurrentTime();
+			}
+			else
+			{
+				// Too much time have passed?
+				if (mrpt::system::timeDifference( m_badNavAlarm_lastMinDistTime, mrpt::system::getCurrentTime() ) > m_badNavAlarm_AlarmTimeout)
+				{
+					printf_debug("\n--------------------------------------------\nWARNING: Timeout for approaching toward the target expired!! Aborting navigation!! \n---------------------------------\n");
+					m_navigationState = NAV_ERROR;
+					m_robot.sendWaySeemsBlockedEvent();
+					break;
+				}
+			}
+
+			// ==== The normal execution of the navigation: Execute one step ==== 
 			performNavigationStep();
 
 		}
@@ -155,4 +241,51 @@ void CAbstractNavigator::navigationStep()
 		break;	// End case NAVIGATING
 	};
 	m_lastNavigationState = prevState;
+}
+
+void CAbstractNavigator::doEmergencyStop( const char *msg )
+{
+	m_navigationState = NAV_ERROR;
+	m_robot.stop();
+	printf_debug(msg);
+	printf_debug("\n");
+}
+
+
+void CAbstractNavigator::navigate(const CAbstractNavigator::TNavigationParams *params )
+{
+	mrpt::synch::CCriticalSectionLocker csl(&m_nav_cs);
+
+	m_navigationEndEventSent = false;
+
+	// Copy data:
+	mrpt::utils::delete_safe(m_navigationParams);
+	m_navigationParams = params->clone();
+
+	// Transform: relative -> absolute, if needed.
+	if ( m_navigationParams->targetIsRelative )
+	{
+		mrpt::math::TPose2D  currentPose;
+		mrpt::math::TTwist2D cur_vel;
+		if ( !m_robot.getCurrentPoseAndSpeeds(currentPose, cur_vel) )
+		{
+			doEmergencyStop("\n[CAbstractNavigator] Error querying current robot pose to resolve relative coordinates\n");
+			return;
+		}
+
+		const mrpt::poses::CPose2D relTarget(m_navigationParams->target);
+		mrpt::poses::CPose2D absTarget;
+		absTarget.composeFrom(currentPose, relTarget);
+
+		m_navigationParams->target = mrpt::math::TPose2D(absTarget);
+
+		m_navigationParams->targetIsRelative = false; // Now it's not relative
+	}
+
+	// new state:
+	m_navigationState = NAVIGATING;
+
+	// Reset the bad navigation alarm:
+	m_badNavAlarm_minDistTarget = std::numeric_limits<double>::max();
+	m_badNavAlarm_lastMinDistTime = mrpt::system::getCurrentTime();
 }

@@ -88,12 +88,14 @@ class reactive_navigator_demoframe: public wxFrame
         void OnbtnEmptyMapClick(wxCommandEvent& event);
         void OnbtnSaveMapClick(wxCommandEvent& event);
         void OnbtnDrawEmptyClick(wxCommandEvent& event);
+        void OnbtnSetWaypointSeqClick(wxCommandEvent& event);
         //*)
 
         //(*Identifiers(reactive_navigator_demoframe)
         static const long ID_BUTTON4;
         static const long ID_BUTTON5;
         static const long ID_BUTTON7;
+        static const long ID_BUTTON12;
         static const long ID_BUTTON6;
         static const long ID_BUTTON1;
         static const long ID_BUTTON9;
@@ -165,6 +167,7 @@ class reactive_navigator_demoframe: public wxFrame
         wxCustomButton* btnQuit;
         wxPanel* Panel1;
         wxStaticText* StaticText1;
+        wxCustomButton* btnSetWaypointSeq;
         wxStaticText* StaticText3;
         wxPanel* pnParamsGeneral;
         wxCustomButton* btnDrawMapObs;
@@ -229,13 +232,15 @@ class reactive_navigator_demoframe: public wxFrame
 			cpsPickTarget,
 			cpsPlaceRobot,
 			cpsDrawObstacles,
-			cpsDrawClear
+			cpsDrawClear,
+			cpsPickWaypoints
 		};
 
 		mrpt::maps::COccupancyGridMap2D  m_gridMap;
 		mrpt::math::TPoint2D             m_targetPoint;
 		bool                             m_is_running; //!< is simulator running or paused?
 		mrpt::maps::CSimplePointsMap     m_latest_obstacles;
+		mrpt::nav::TWaypointSequence     m_waypoints_clicked;
 
 		struct MyNavIFBase
 		{
@@ -290,8 +295,8 @@ class reactive_navigator_demoframe: public wxFrame
 		mrpt::opengl::CDiskPtr		        gl_robot_sensor_range;
 		mrpt::opengl::CSetOfLinesPtr        gl_robot_path;
 		mrpt::opengl::CPlanarLaserScanPtr   gl_scan3D;
-		mrpt::opengl::CPointCloudPtr 		gl_path;
 		mrpt::opengl::CSetOfLinesPtr        gl_robot_ptg_prediction;
+		mrpt::opengl::CSetOfObjectsPtr      gl_waypoints_clicking, gl_waypoints_status;
 
 		// ========= Opengl View: Local view (holonomic)  =======
 		mrpt::opengl::CSimpleLinePtr        gl_line_direction;

@@ -297,4 +297,3 @@ void CReactiveNavigationSystem3D::loggingGetWSObstaclesAndShape(CLogFileRecord &
 	}
 	out_log.robotShape_radius = m_robotShape.getRadius(0);
 }
-
