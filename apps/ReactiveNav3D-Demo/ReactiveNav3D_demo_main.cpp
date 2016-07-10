@@ -108,7 +108,7 @@ const char *default_cfg_txt =
 	"MAP_RESOLUTION = 0.02 \n\n\n"
 
 
-	"[NAVIGATION_CONFIG] \n"
+	"[ReactiveParams] \n"
 	"; 0: VFF,  1: ND \n"
 	"HOLONOMIC_METHOD = 1 \n\n"
 
@@ -130,7 +130,7 @@ const char *default_cfg_txt =
 	"robotMax_V_mps = 0.70			; Speed limits - mps \n"
 	"robotMax_W_degps = 60			; dps \n"
 	"SPEEDFILTER_TAU = 0.1		; The 'TAU' time constant of a first order lowpass filter for speed commands (s) \n"
-	"MAX_DISTANCE_PTG = 2		; Marks the maximum distance regarded by the reactive navigator (m) \n"
+	"MAX_REFERENCE_DISTANCE = 2		; Marks the maximum distance regarded by the reactive navigator (m) \n"
 
 	";	PTGs	.All of them has the same fields to fill, but they don't use all of them. \n"
 	";----------------------------------------------------------------------------------- \n"

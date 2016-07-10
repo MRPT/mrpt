@@ -121,6 +121,10 @@ namespace mrpt
 		/** Gets the i'th PTG */
 		virtual CParameterizedTrajectoryGenerator* getPTG(size_t i) = 0;
 
+		/** Reload the configuration from a file. See details in CReactiveNavigationSystem docs.
+			* Section to be read is "{sect_prefix}ReactiveParams". */
+		void loadConfigFile(const mrpt::utils::CConfigFileBase &cfg, const std::string &section_prefix="") MRPT_OVERRIDE;
+
 	protected:
 		// ------------------------------------------------------
 		//					INTERNAL DEFINITIONS
@@ -149,6 +153,7 @@ namespace mrpt
 		CLogFileRecord lastLogRecord;  //!< The last log
 		//float last_cmd_v, last_cmd_w, new_cmd_v, new_cmd_w;  //!< Speed actual and last commands
 		std::vector<double> m_last_vel_cmd, m_new_vel_cmd; //!< Actual and last velocity commands
+		std::vector<std::vector<double> > m_cmd_vel_filterings; //!< Logged values of temporary vel cmds before reaching at the final value sent to the robot (for logging)
 
 		synch::CCriticalSection  m_critZoneLastLog; //!< Critical zones
 
@@ -183,6 +188,14 @@ namespace mrpt
 
 		float  meanExecutionPeriod;	//!< Runtime estimation of execution period of the method.
 		mrpt::utils::CTimeLogger m_timelogger;			//!< A complete time logger \sa enableTimeLog()
+<<<<<<< HEAD
+=======
+		
+		/** For sending an alarm (error event) when it seems that we are not approaching toward the target in a while... */
+		double                   badNavAlarm_minDistTarget;
+		mrpt::system::TTimeStamp badNavAlarm_lastMinDistTime;
+		double                   badNavAlarm_AlarmTimeout;
+>>>>>>> master
 
 		bool  m_PTGsMustBeReInitialized;
 
@@ -191,6 +204,9 @@ namespace mrpt
 		mrpt::utils::CTicTac totalExecutionTime, executionTime, tictac;
 		float meanExecutionTime, meanTotalExecutionTime;
 		/** @} */
+
+		/** Loads derived-class specific parameters */
+		virtual void internal_loadConfigFile(const mrpt::utils::CConfigFileBase &cfg, const std::string &section_prefix="") = 0;
 
 		// Steps for the reactive navigation sytem.
 		// ----------------------------------------------------------------------------

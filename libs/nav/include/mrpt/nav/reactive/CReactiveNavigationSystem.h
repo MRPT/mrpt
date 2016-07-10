@@ -56,16 +56,6 @@ namespace mrpt
 			 */
 			virtual ~CReactiveNavigationSystem();
 
-			/** Reload the configuration from a file. See details in CReactiveNavigationSystem docs. 
-			 * \param[in] ini The main source of configuration parameters.
-			 * \param[in] robotIni Deprecated (kept for backwards compatibility). It is recommended to use the newer loadConfigFile() method with one argument in new code.
-			 */
-			void loadConfigFile(const mrpt::utils::CConfigFileBase &ini, const mrpt::utils::CConfigFileBase &robotIni);
-
-			/** Reload the configuration from a file. See details in CReactiveNavigationSystem docs. 
-			  * Section to be read is "{sect_prefix}ReactiveParams". */
-			void loadConfigFile(const mrpt::utils::CConfigFileBase &ini, const std::string &sect_prefix="") MRPT_OVERRIDE;
-
 			/** Defines the 2D polygonal robot shape, used for some PTGs for collision checking. */
 			void changeRobotShape( const mrpt::math::CPolygon &shape );
 			/** Defines the 2D circular robot shape radius, used for some PTGs for collision checking. */
@@ -102,8 +92,10 @@ namespace mrpt
 			/** Generates a pointcloud of obstacles, and the robot shape, to be saved in the logging record for the current timestep */
 			virtual void loggingGetWSObstaclesAndShape(CLogFileRecord &out_log);
 
-
 			mrpt::maps::CSimplePointsMap m_WS_Obstacles;  //!< The obstacle points, as seen from the local robot frame.
+
+		protected:
+			void internal_loadConfigFile(const mrpt::utils::CConfigFileBase &ini, const std::string &section_prefix="") MRPT_OVERRIDE;
 
 		}; // end class
 	}

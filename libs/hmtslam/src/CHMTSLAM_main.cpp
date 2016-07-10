@@ -131,8 +131,7 @@ CHMTSLAM::~CHMTSLAM()
 		}
 		catch(std::exception &e)
 		{
-			printf_debug("Ignoring exception at ~CHMTSLAM():\n");
-			printf_debug(e.what());
+			printf_debug("Ignoring exception at ~CHMTSLAM():\n%s",e.what());
 		}
 		catch(...)
 		{
