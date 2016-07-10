@@ -118,7 +118,7 @@ void CReactiveNavigationSystem3D::loadConfigFile(const mrpt::utils::CConfigFileB
 	ini.read_vector(sectCfg, "weights", vector<float> (0), weights, 1);
 	ASSERT_(weights.size()==6);
 
-	badNavAlarm_AlarmTimeout = ini.read_float(sectCfg,"ALARM_SEEMS_NOT_APPROACHING_TARGET_TIMEOUT", badNavAlarm_AlarmTimeout, false);
+	m_badNavAlarm_AlarmTimeout = ini.read_float(sectCfg,"ALARM_SEEMS_NOT_APPROACHING_TARGET_TIMEOUT", m_badNavAlarm_AlarmTimeout, false);
 
 	//m_reactiveparam.m_reload_ptgfiles = ini.read_bool(sectCfg,"RELOAD_PTGFILES", 1, true);
 

@@ -9,21 +9,21 @@
 
 #include "nav-precomp.h" // Precomp header
 
-#include <mrpt/nav/reactive/CAbstractWaypointsNavigator.h>
+#include <mrpt/nav/reactive/CWaypointsNavigator.h>
 
 using namespace mrpt::nav;
 using namespace std;
 
-CAbstractWaypointsNavigator::CAbstractWaypointsNavigator(CRobot2NavInterface &robot_if) :
+CWaypointsNavigator::CWaypointsNavigator(CRobot2NavInterface &robot_if) :
 	CAbstractNavigator(robot_if)
 {
 }
 
-CAbstractWaypointsNavigator::~CAbstractWaypointsNavigator()
+CWaypointsNavigator::~CWaypointsNavigator()
 {
 }
 
-void CAbstractWaypointsNavigator::navigateWaypoints( const TWaypointSequence & nav_request )
+void CWaypointsNavigator::navigateWaypoints( const TWaypointSequence & nav_request )
 {
 	MRPT_START
 
@@ -49,13 +49,13 @@ void CAbstractWaypointsNavigator::navigateWaypoints( const TWaypointSequence & n
 	MRPT_END
 }
 
-void CAbstractWaypointsNavigator::getWaypointNavStatus(TWaypointStatusSequence & out_nav_status) const
+void CWaypointsNavigator::getWaypointNavStatus(TWaypointStatusSequence & out_nav_status) const
 {
 	// No need to lock mutex...
 	out_nav_status = m_waypoint_nav_status;
 }
 
-void CAbstractWaypointsNavigator::cancel()
+void CWaypointsNavigator::cancel()
 {
 	{
 		mrpt::synch::CCriticalSectionLocker csl(&m_nav_waypoints_cs);
@@ -64,7 +64,7 @@ void CAbstractWaypointsNavigator::cancel()
 	CAbstractNavigator::cancel();
 }
 
-void CAbstractWaypointsNavigator::navigationStep()
+void CWaypointsNavigator::navigationStep()
 {
 	MRPT_START
 
@@ -90,7 +90,7 @@ void CAbstractWaypointsNavigator::navigationStep()
 		mrpt::math::TPose2D  currentPose;
 		mrpt::math::TTwist2D cur_vel;
 		if ( !m_robot.getCurrentPoseAndSpeeds(currentPose, cur_vel) ) {
-			doEmergencyStop("\n[CAbstractWaypointsNavigator] Error querying current robot pose.\n");
+			doEmergencyStop("\n[CWaypointsNavigator] Error querying current robot pose.\n");
 			return;
 		}
 
