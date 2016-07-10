@@ -188,15 +188,6 @@ namespace mrpt
 
 		float  meanExecutionPeriod;	//!< Runtime estimation of execution period of the method.
 		mrpt::utils::CTimeLogger m_timelogger;			//!< A complete time logger \sa enableTimeLog()
-<<<<<<< HEAD
-=======
-		
-		/** For sending an alarm (error event) when it seems that we are not approaching toward the target in a while... */
-		double                   badNavAlarm_minDistTarget;
-		mrpt::system::TTimeStamp badNavAlarm_lastMinDistTime;
-		double                   badNavAlarm_AlarmTimeout;
->>>>>>> master
-
 		bool  m_PTGsMustBeReInitialized;
 
 		/** @name Variables for CReactiveNavigationSystem::performNavigationStep

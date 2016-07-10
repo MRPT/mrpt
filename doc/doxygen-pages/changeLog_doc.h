@@ -58,6 +58,7 @@
 		- \ref mrpt_maps_grp
 			- mrpt::maps::CMultiMetricMapPDF added method CMultiMetricMapPDF::prediction_and_update_pfAuxiliaryPFStandard().
 		- \ref mrpt_nav_grp
+			- New mrpt::nav::CWaypointsNavigator interface for waypoint list-based navigation.
 			- [ABI & API change] PTG classes refactored (see new virtual base class mrpt::nav::CParameterizedTrajectoryGenerator and its derived classes):
 				- Old classes `CPTG%d` have been renamed to describe each path type. Old PTGs #6 and #7 have been removed for lack of practical use.
 				- New separate classes for PTGs based on numerically-integrated paths and on closed-form formulations.

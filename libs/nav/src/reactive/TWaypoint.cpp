@@ -96,7 +96,7 @@ TWaypointStatus & TWaypointStatus::operator =(const TWaypoint &wp)
 std::string TWaypointStatus::getAsText() const 
 {
 	std::string s = TWaypoint::getAsText();
-	s += mrpt::format(" reached=%s skipped=%s", (reached ? "YES":"NO ") );;
+	s += mrpt::format(" reached=%s", (reached ? "YES":"NO ") );;
 	return s;
 }
 

@@ -1069,7 +1069,7 @@ void reactive_navigator_demoframe::simulateOneStep(double time_step)
 			unsigned int idx=0;
 			for (const auto &p : wp_status.waypoints)
 			{
-				const bool is_cur_goal = idx==wp_status.waypoint_index_current_goal;
+				const bool is_cur_goal = (int(idx)==wp_status.waypoint_index_current_goal);
 
 				mrpt::opengl::CDiskPtr gl_pt = mrpt::opengl::CDisk::Create(is_cur_goal ? 0.4 : 0.3,0.0, 20);
 				gl_pt->setLocation(p.target.x,p.target.y,0.01);
@@ -1169,6 +1169,8 @@ void reactive_navigator_demoframe::Onplot3DMouseMove(wxMouseEvent& event)
 					skip_normal_process=true;
 				}
 			}
+			break;
+		default:
 			break;
 		};
 

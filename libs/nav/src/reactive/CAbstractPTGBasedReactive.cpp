@@ -57,7 +57,6 @@ CAbstractPTGBasedReactive::CAbstractPTGBasedReactive(CRobot2NavInterface &react_
 	secureDistanceEnd            (0.20f),
 	meanExecutionPeriod          (0.1f),
 	m_timelogger                 (false), // default: disabled
-	badNavAlarm_AlarmTimeout     (30.0),
 	m_PTGsMustBeReInitialized    (true),
 	meanExecutionTime            (0.1f),
 	meanTotalExecutionTime       (0.1f),
@@ -158,49 +157,6 @@ void CAbstractPTGBasedReactive::getLastLogRecord( CLogFileRecord &o )
 	o = lastLogRecord;
 }
 
-void CAbstractPTGBasedReactive::navigate(const CAbstractNavigator::TNavigationParams *params )
-{
-	navigationEndEventSent = false;
-
-	// Copy data:
-	mrpt::utils::delete_safe(m_navigationParams);
-	m_navigationParams = params->clone();
-
-	// Transform: relative -> absolute, if needed.
-	if ( m_navigationParams->targetIsRelative )
-	{
-		mrpt::math::TPose2D  currentPose;
-		mrpt::math::TTwist2D cur_vel;
-
-		if ( !m_robot.getCurrentPoseAndSpeeds(currentPose, cur_vel) )
-		{
-			doEmergencyStop("\n[CAbstractPTGBasedReactive] Error querying current robot pose to resolve relative coordinates\n");
-			return;
-		}
-
-		const mrpt::poses::CPose2D relTarget(m_navigationParams->target);
-		mrpt::poses::CPose2D absTarget;
-		absTarget.composeFrom(currentPose, relTarget);
-
-		m_navigationParams->target = mrpt::math::TPose2D(absTarget);
-
-		m_navigationParams->targetIsRelative = false; // Now it's not relative
-	}
-
-	// new state:
-	m_navigationState = NAVIGATING;
-
-	// Reset the bad navigation alarm:
-	badNavAlarm_minDistTarget = std::numeric_limits<double>::max();
-	badNavAlarm_lastMinDistTime = system::getCurrentTime();
-}
-
-void CAbstractPTGBasedReactive::doEmergencyStop( const char *msg )
-{
-	m_navigationState = NAV_ERROR;
-	m_robot.stop();
-	printf_debug("%s\n",msg);
-}
 
 void CAbstractPTGBasedReactive::loadHolonomicMethodConfig(
 	const mrpt::utils::CConfigFileBase &ini,
@@ -284,69 +240,6 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 		totalExecutionTime.Tic(); // Start timer
 
 		const mrpt::system::TTimeStamp tim_start_iteration = mrpt::system::now();
-
-		/* ----------------------------------------------------------------
-		 	  Request current robot pose and velocities
-		   ---------------------------------------------------------------- */
-		mrpt::math::TPose2D  curPose;
-		mrpt::math::TTwist2D curVel;
-		{
-			CTimeLoggerEntry tle2(m_timelogger,"navigationStep.getCurrentPoseAndSpeeds");
-			if ( !m_robot.getCurrentPoseAndSpeeds(curPose, curVel) )
-			{
-				doEmergencyStop("ERROR calling m_robot.getCurrentPoseAndSpeeds, stopping robot and finishing navigation");
-				return;
-			}
-		}
-		mrpt::math::TTwist2D curVelLocal = curVel;
-		curVelLocal.rotate(-curPose.phi);
-
-		/* ----------------------------------------------------------------
-		 	  Have we reached the target location?
-		   ---------------------------------------------------------------- */
-		const double targetDist = mrpt::math::distance( mrpt::math::TPoint2D(curPose), mrpt::math::TPoint2D(m_navigationParams->target));
-
-		// Should "End of navigation" event be sent??
-		if (!navigationEndEventSent && targetDist < DIST_TO_TARGET_FOR_SENDING_EVENT)
-		{
-			navigationEndEventSent = true;
-			m_robot.sendNavigationEndEvent();
-		}
-
-		// Have we really reached the target?
-		if ( targetDist < m_navigationParams->targetAllowedDistance )
-		{
-			m_robot.stop();
-			m_navigationState = IDLE;
-			if (m_enableConsoleOutput) printf_debug("Navigation target (%.03f,%.03f) was reached\n", m_navigationParams->target.x,m_navigationParams->target.y);
-
-			if (!navigationEndEventSent)
-			{
-				navigationEndEventSent = true;
-				m_robot.sendNavigationEndEvent();
-			}
-			return;
-		}
-
-		// Check the "no approaching the target"-alarm:
-		// -----------------------------------------------------------
-		if (targetDist < badNavAlarm_minDistTarget )
-		{
-			badNavAlarm_minDistTarget = targetDist;
-			badNavAlarm_lastMinDistTime =  system::getCurrentTime();
-		}
-		else
-		{
-			// Too much time have passed?
-			if ( system::timeDifference( badNavAlarm_lastMinDistTime, system::getCurrentTime() ) > badNavAlarm_AlarmTimeout)
-			{
-				printf_debug("\n--------------------------------------------\nWARNING: Timeout for approaching toward the target expired!! Aborting navigation!! \n---------------------------------\n");
-				m_robot.sendWaySeemsBlockedEvent();
-
-				m_navigationState = NAV_ERROR;
-				return;
-			}
-		}
 
 		// Compute target location relative to current robot pose:
 		// ---------------------------------------------------------------------
@@ -796,7 +689,7 @@ void CAbstractPTGBasedReactive::loadConfigFile(const mrpt::utils::CConfigFileBas
 	SPEEDFILTER_TAU =  cfg.read_float(sectCfg,"SPEEDFILTER_TAU", .0);
 
 	DIST_TO_TARGET_FOR_SENDING_EVENT = cfg.read_float(sectCfg, "DIST_TO_TARGET_FOR_SENDING_EVENT", DIST_TO_TARGET_FOR_SENDING_EVENT, false);
-	badNavAlarm_AlarmTimeout = cfg.read_double(sectCfg,"ALARM_SEEMS_NOT_APPROACHING_TARGET_TIMEOUT", badNavAlarm_AlarmTimeout, false);
+	m_badNavAlarm_AlarmTimeout = cfg.read_double(sectCfg,"ALARM_SEEMS_NOT_APPROACHING_TARGET_TIMEOUT", m_badNavAlarm_AlarmTimeout, false);
 
 	cfg.read_vector(sectCfg, "weights", vector<float> (0), weights, 1);
 	ASSERT_(weights.size()==6);
