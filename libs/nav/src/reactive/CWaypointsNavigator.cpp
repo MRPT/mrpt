@@ -10,12 +10,14 @@
 #include "nav-precomp.h" // Precomp header
 
 #include <mrpt/nav/reactive/CWaypointsNavigator.h>
+#include <mrpt/poses/CPose2D.h>
 
 using namespace mrpt::nav;
 using namespace std;
 
 CWaypointsNavigator::CWaypointsNavigator(CRobot2NavInterface &robot_if) :
-	CAbstractNavigator(robot_if)
+	CAbstractNavigator(robot_if),
+	MAX_DISTANCE_TO_ALLOW_SKIP_WAYPOINT(-1.0)
 {
 }
 
@@ -130,13 +132,21 @@ void CWaypointsNavigator::navigationStep()
 		//     which is the best candidate for the next waypoint, if we can skip current one:
 		if (!wps.final_goal_reached)
 		{
+			const mrpt::poses::CPose2D robot_pose(m_curPose);
 			int most_advanced_wp = wps.waypoint_index_current_goal;
+
 			for (int idx=wps.waypoint_index_current_goal;idx<(int)wps.waypoints.size();idx++)
 			{
 				if (idx<0) continue;
 
 				// Is it reachable?
-				bool is_reachable = true;
+				mrpt::math::TPoint2D wp_local_wrt_robot;
+				robot_pose.inverseComposePoint(wps.waypoints[idx].target, wp_local_wrt_robot);
+
+				if (MAX_DISTANCE_TO_ALLOW_SKIP_WAYPOINT>0 && wp_local_wrt_robot.norm()>MAX_DISTANCE_TO_ALLOW_SKIP_WAYPOINT)
+					continue; // Skip this one, it is too far away
+
+				const bool is_reachable = this->impl_waypoint_is_reachable(wp_local_wrt_robot);
 
 				if (is_reachable) {
 					most_advanced_wp = idx;
@@ -180,5 +190,7 @@ void CWaypointsNavigator::navigationStep()
 	MRPT_END
 }
 
-
-
+void CWaypointsNavigator::loadWaypointsParamsConfigFile(const mrpt::utils::CConfigFileBase &cfg, const std::string &sectionName)
+{
+	MRPT_LOAD_CONFIG_VAR(MAX_DISTANCE_TO_ALLOW_SKIP_WAYPOINT, double,   cfg, sectionName);
+}

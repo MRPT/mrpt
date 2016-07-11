@@ -47,6 +47,16 @@ namespace mrpt
 		TWaypointStatusSequence  m_waypoint_nav_status; //!< The latest waypoints navigation command and the up-to-date control status.
 		mrpt::synch::CCriticalSection m_nav_waypoints_cs;
 
+		double  MAX_DISTANCE_TO_ALLOW_SKIP_WAYPOINT; //!< In meters. <0: unlimited
+
+		/** Implements the way to waypoint is free function in children classes: `true` must be returned 
+		  * if, according to the information gathered at the last navigation step, there is a free path to 
+		  * the given point; `false` otherwise: if way is blocked or there is missing information, the point is out of range, etc. */
+		virtual bool impl_waypoint_is_reachable(const mrpt::math::TPoint2D &wp_local_wrt_robot) const = 0;
+
+		/** Loads parameters for waypoints navigation */
+		void loadWaypointsParamsConfigFile(const mrpt::utils::CConfigFileBase &cfg, const std::string &sectionName);
+
 	};
   }
 }

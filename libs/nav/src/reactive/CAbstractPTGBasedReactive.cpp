@@ -53,8 +53,8 @@ CAbstractPTGBasedReactive::CAbstractPTGBasedReactive(CRobot2NavInterface &react_
 	ptg_cache_files_directory    ("."),
 	refDistance                  (4.0f),
 	SPEEDFILTER_TAU              (0.0),
-	secureDistanceStart          (0.05f),
-	secureDistanceEnd            (0.20f),
+	secureDistanceStart          (0.05),
+	secureDistanceEnd            (0.20),
 	meanExecutionPeriod          (0.1f),
 	m_timelogger                 (false), // default: disabled
 	m_PTGsMustBeReInitialized    (true),
@@ -687,6 +687,8 @@ void CAbstractPTGBasedReactive::loadConfigFile(const mrpt::utils::CConfigFileBas
 
 	refDistance = cfg.read_double(sectCfg,"MAX_REFERENCE_DISTANCE", refDistance, true);
 	SPEEDFILTER_TAU =  cfg.read_float(sectCfg,"SPEEDFILTER_TAU", .0);
+	secureDistanceStart = cfg.read_float(sectCfg,"secureDistanceStart", secureDistanceStart);
+	secureDistanceEnd = cfg.read_float(sectCfg,"secureDistanceEnd", secureDistanceEnd);
 
 	DIST_TO_TARGET_FOR_SENDING_EVENT = cfg.read_float(sectCfg, "DIST_TO_TARGET_FOR_SENDING_EVENT", DIST_TO_TARGET_FOR_SENDING_EVENT, false);
 	m_badNavAlarm_AlarmTimeout = cfg.read_double(sectCfg,"ALARM_SEEMS_NOT_APPROACHING_TARGET_TIMEOUT", m_badNavAlarm_AlarmTimeout, false);
@@ -704,6 +706,7 @@ void CAbstractPTGBasedReactive::loadConfigFile(const mrpt::utils::CConfigFileBas
 
 	// ========= Load "Global params" (must be called after initialization of PTGs in `internal_loadConfigFile()`)
 	this->m_robot.loadConfigFile(cfg,sectGlobal); // robot interface params
+	this->loadWaypointsParamsConfigFile(cfg,sectCfg);
 	this->loadHolonomicMethodConfig(cfg,sectGlobal); // Load holonomic method params
 	ASSERT_(!m_holonomicMethod.empty())
 
@@ -715,4 +718,10 @@ void CAbstractPTGBasedReactive::loadConfigFile(const mrpt::utils::CConfigFileBas
 	m_init_done = true;
 
 	MRPT_END;
+}
+
+bool CAbstractPTGBasedReactive::impl_waypoint_is_reachable(const mrpt::math::TPoint2D &wp_local_wrt_robot) const
+{
+	MRPT_TODO("continue");
+	return false;
 }
