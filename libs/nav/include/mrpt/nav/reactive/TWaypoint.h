@@ -40,7 +40,7 @@ namespace mrpt
 
 		bool isValid() const; //!< Check whether all the minimum mandatory fields have been filled by the user.
 		TWaypoint(); //!< Ctor with default values
-		TWaypoint(double target_x, double target_y, double allowed_distance);
+		TWaypoint(double target_x, double target_y, double allowed_distance, bool allow_skip = true);
 		std::string getAsText() const; //!< get in human-readable format
 
 		static const double INVALID_NUM; //!< The default value of fields (used to detect non-set values)

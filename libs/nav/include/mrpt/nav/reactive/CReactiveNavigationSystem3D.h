@@ -82,14 +82,15 @@ namespace mrpt
 			/** Change the robot shape, which is taken into account for collision grid building. */
 			void changeRobotShape( TRobotShape robotShape );
 
-			/** Returns the number of different PTGs that have been setup */
-			virtual size_t getPTG_count() const { return m_ptgmultilevel.size(); }
-
-			/** Gets the i'th PTG */
-			virtual CParameterizedTrajectoryGenerator* getPTG(size_t i)
-			{
-				ASSERT_(i<m_ptgmultilevel.size() && !m_ptgmultilevel[i].PTGs.empty())
-				return m_ptgmultilevel[i].PTGs[0];  // Return the 0'th because the PTG itself is the same, what changes is the collision grid.
+			// See base class docs:
+			virtual size_t getPTG_count() const { ASSERT_(!m_ptgmultilevel.empty());  return m_ptgmultilevel.begin()->PTGs.size(); }
+			virtual CParameterizedTrajectoryGenerator* getPTG(size_t i) { 
+				ASSERT_(!m_ptgmultilevel.empty() && !m_ptgmultilevel[0].PTGs.empty())
+				return m_ptgmultilevel[0].PTGs[i];  // Return for the 0'th level (ptgs are replicated at each level)
+			}
+			virtual const CParameterizedTrajectoryGenerator* getPTG(size_t i) const { 
+				ASSERT_(!m_ptgmultilevel.empty() && !m_ptgmultilevel[0].PTGs.empty())
+				return m_ptgmultilevel[0].PTGs[i];  // Return for the 0'th level (ptgs are replicated at each level)
 			}
 
 		private:

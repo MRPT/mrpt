@@ -60,7 +60,8 @@ CAbstractPTGBasedReactive::CAbstractPTGBasedReactive(CRobot2NavInterface &react_
 	m_PTGsMustBeReInitialized    (true),
 	meanExecutionTime            (0.1f),
 	meanTotalExecutionTime       (0.1f),
-	m_closing_navigator          (false)
+	m_closing_navigator          (false),
+	m_infoPerPTG_timestamp       (INVALID_TIMESTAMP)
 {
 	this->enableLogFile( enableLogFile );
 }
@@ -93,6 +94,8 @@ CAbstractPTGBasedReactive::~CAbstractPTGBasedReactive()
 void CAbstractPTGBasedReactive::initialize()
 {
 	mrpt::synch::CCriticalSectionLocker csl(&m_nav_cs);
+
+	m_infoPerPTG_timestamp = INVALID_TIMESTAMP;
 
 	// Compute collision grids:
 	STEP1_InitPTGs();
@@ -264,8 +267,8 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 		// Start timer
 		executionTime.Tic();
 
-
 		m_infoPerPTG.resize(nPTGs);
+		m_infoPerPTG_timestamp = tim_start_iteration;
 		vector<THolonomicMovement> holonomicMovements(nPTGs);
 
 		for (size_t indexPTG=0;indexPTG<nPTGs;indexPTG++)
@@ -720,8 +723,38 @@ void CAbstractPTGBasedReactive::loadConfigFile(const mrpt::utils::CConfigFileBas
 	MRPT_END;
 }
 
-bool CAbstractPTGBasedReactive::impl_waypoint_is_reachable(const mrpt::math::TPoint2D &wp_local_wrt_robot) const
+bool CAbstractPTGBasedReactive::impl_waypoint_is_reachable(const mrpt::math::TPoint2D &wp) const
 {
-	MRPT_TODO("continue");
-	return false;
+	MRPT_START;
+
+	const size_t N = this->getPTG_count();
+	if (N!=m_infoPerPTG.size() ||
+		m_infoPerPTG_timestamp == INVALID_TIMESTAMP ||
+		mrpt::system::timeDifference(m_infoPerPTG_timestamp, mrpt::system::now() ) > 0.5
+		)
+		return false; // We didn't run yet or obstacle info is old
+
+	for (size_t i=0;i<N;i++)
+	{
+		const CParameterizedTrajectoryGenerator* ptg = getPTG(i);
+
+		const std::vector<double> & tp_obs = m_infoPerPTG[i].TP_Obstacles; // normalized distances
+		if (tp_obs.size() != ptg->getPathCount() )
+			continue; // May be this PTG has not been used so far? (Target out of domain,...)
+		
+		int wp_k;
+		double wp_norm_d;
+		bool is_into_domain = ptg->inverseMap_WS2TP(wp.x,wp.y,  wp_k, wp_norm_d);
+		if (!is_into_domain) 
+			continue;
+
+		ASSERT_(wp_k<int(tp_obs.size()));
+
+		const double collision_free_dist = tp_obs[wp_k];
+		if (collision_free_dist>1.01*wp_norm_d)
+			return true; // free path found to target
+	}
+
+	return false; // no way found
+	MRPT_END;
 }
