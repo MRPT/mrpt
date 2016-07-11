@@ -17,6 +17,7 @@
 #include <mrpt/graphslam.h>
 #include <mrpt/gui/CBaseGUIWindow.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
+#include <mrpt/gui/CDisplayWindowPlots.h>
 #include <mrpt/opengl/CPlanarLaserScan.h> // It's in the lib mrpt-maps now
 #include <mrpt/opengl/CPointCloud.h>
 #include <mrpt/opengl/CRenderizable.h>
@@ -60,7 +61,7 @@
 #include <sstream>
 #include <map>
 #include <cerrno>
-#include <cmath> // fabs function
+#include <cmath> // fabs function, power
 #include <set>
 #include <algorithm>
 #include <cstdlib>
@@ -255,6 +256,16 @@ template<
 			void toggleGTVisualization();
 			void toggleMapVisualization();
 			void toggleEstimatedTrajectoryVisualization();
+
+			/*
+			* comapre the SLAM result (estimated trajectory) with the GT path
+			* see "A Comparison of SLAM Algorithms Based on a Graph of Relations"
+			* for more details on this.
+			*/
+			void computeSlamMetric(mrpt::utils::TNodeID nodeID, 
+					size_t gt_index);
+			void initSlamMetricVisualization();
+			void updateSlamMetricVisualization();
 			
 			// wrapper around std::cout for specifically printing error messages in
 			// the visibility toggling from the CDisplayWindow3D
@@ -305,6 +316,7 @@ template<
 			// visualization objects
 			mrpt::gui::CDisplayWindow3D* m_win;
 			mrpt::gui::CWindowObserver* m_win_observer;
+			mrpt::gui::CDisplayWindowPlots* m_win_plot;
 			mrpt::gui::CWindowManager_t m_win_manager;
 
 			// flags for visualizing various trajectories/objects of interest. These
@@ -315,6 +327,7 @@ template<
 			bool m_visualize_GT;
 			bool m_visualize_map;
 			bool m_visualize_estimated_trajectory;
+			bool m_visualize_SLAM_metric;
 			bool m_enable_curr_pos_viewport;
 			bool m_enable_intensity_viewport;
 			bool m_enable_range_viewport;
@@ -371,7 +384,6 @@ template<
 
 			size_t m_robot_model_size;
 
-			bool m_is3D;
 			// internal counter for querrying for the number of nodeIDs.
 			// Handy for not locking the m_graph resource
 			mrpt::utils::TNodeID m_nodeID_max; 
@@ -384,6 +396,23 @@ template<
 			// images
 			std::string m_img_external_storage_dir;
 			std::string m_img_prev_path_base;
+
+			// Slam Metric related variables
+			// map from nodeIDs to their corresponding closest GT pose intex
+			// Keep track of the nodeIDs instead of the node positions as the latter
+			// are about to change in the Edge Registaration / Loop closing
+			// procedures
+			std::map<mrpt::utils::TNodeID, size_t> m_nodeID_to_gt_indices;
+			double m_curr_deformation_energy;
+			std::vector<double> m_deformation_energy_vec;
+			size_t m_deformation_energy_plot_scale;
+			
+
+			// user-set flag for indicating whether to compute and visualize the SLAM
+			// evaluation metric
+			// TODO - read them from .ini
+			// TODO - write them in printproblemparams
+			bool m_compute_SLAM_metric;
 
 			// struct to hold the parameters of the info file generated during the
 			// conversion of RGBD TUM dataset .rosbags to rawlog format
@@ -408,10 +437,10 @@ template<
 
 
 			} m_info_params;
-
 	};
 
 } } // end of namespaces
+
 // pseudo-split the definition and implementation of template
 #include "CGraphSlamEngine_impl.h"
 
