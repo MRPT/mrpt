@@ -7,7 +7,10 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
+#include <mrpt/utils/CFileOutputStream.h>
+#include <mrpt/utils/CStdOutStream.h>
 #include "COutputLogger.h"
+#include <mrpt/system/threads.h>
 
 
 using namespace mrpt;
@@ -22,6 +25,10 @@ using namespace std;
 
 // COutputLogger
 // ////////////////////////////////////////////////////////////
+
+// variables shared among the various logger instances
+size_t COutputLogger_t::m_times_for_log_const = 0;
+size_t COutputLogger_t::m_times_for_log_const_thresh = 2; // warn 2 times at most
 
 COutputLogger_t::COutputLogger_t(std::string name) {
 	this->reset();
@@ -59,18 +66,46 @@ void COutputLogger_t::log(const std::string& msg_str, const VerbosityLevel& leve
 	m_curr_level = global_level;
 }
 
-void COutputLogger_t::logCond(const std::string& msg_str, 
-		const VerbosityLevel& level,
-		bool cond) {
-	if (cond) {
-		this->log(msg_str, level);
-	}
+void COutputLogger_t::log(const std::string& msg_str) const {
+	warnForLogConstMethod();
+
+	TMsg msg(msg_str, *this);
+	msg.dumpToConsole();
 }
+
+void COutputLogger_t::log(const std::string& msg_str, const VerbosityLevel& level) const {
+	warnForLogConstMethod();
+
+	TMsg msg(msg_str, *this);
+	msg.level = level;
+	msg.dumpToConsole();
+}
+
+void COutputLogger_t::warnForLogConstMethod() const {
+	if (m_times_for_log_const++ >= m_times_for_log_const_thresh) {
+		return;
+	}
+
+	// warn the user of the method behavior
+	std::string msg_str("Using the log method inside a const function/method. Message will not be recorded in COutputLogger_t history");
+	TMsg warning_msg(msg_str, *this);
+	warning_msg.level = LVL_WARN;
+	warning_msg.dumpToConsole();
+	mrpt::system::sleep(1000);
+}
+
 
 void COutputLogger_t::logCond(const std::string& msg_str, 
 		bool cond) {
 	if (cond) {
 		this->log(msg_str);
+	}
+}
+void COutputLogger_t::logCond(const std::string& msg_str, 
+		const VerbosityLevel& level,
+		bool cond) {
+	if (cond) {
+		this->log(msg_str, level);
 	}
 }
 
@@ -165,8 +200,6 @@ COutputLogger_t::TMsg::TMsg(const std::string& msg_str, const COutputLogger_t& l
 
 	name = logger.getName();
 	level = logger.getCurrentLoggingLevel();
-	color = this->getConsoleColor(level);
-	level_name = this->getLoggingLevelName(level);
 	timestamp = mrpt::system::now(); // fill with the current time
 	body = msg_str;
 }
@@ -228,7 +261,7 @@ void COutputLogger_t::TMsg::reset() {
 std::string COutputLogger_t::TMsg::getAsString() const {
 	stringstream out;
 	out.str("");
-	out << "[" << name <<  " | " << level_name << " | " 
+	out << "[" << name <<  " | " << this->getLoggingLevelName(level) << " | " 
 		<< mrpt::system::timeToString(timestamp) 
 		<< "] " << body;
 
@@ -242,7 +275,7 @@ void COutputLogger_t::TMsg::writeToStream(mrpt::utils::CStream& out) const {
 }
 void COutputLogger_t::TMsg::dumpToConsole() const {
 	CStdOutStream mrpt_cout;
-	setConsoleColor(color);
+	setConsoleColor(this->getConsoleColor(level));
 	this->writeToStream(mrpt_cout);
 	
 }
