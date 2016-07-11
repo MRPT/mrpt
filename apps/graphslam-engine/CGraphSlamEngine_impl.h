@@ -77,6 +77,12 @@ CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::~CGraphS
 		}
 	}
 
+	// delete the CDisplayWindowPlots object
+	if (m_win_plot) {
+		m_logger.log("Releasing m_win_plot object", LVL_DEBUG);
+		delete m_win_plot;
+	}
+
 	MRPT_END;
 }
 
@@ -90,22 +96,22 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::ini
 
 	m_logger.setName("CGraphSlamengine");
 	m_logger.setLoggingLevel(LVL_INFO); // default level of the messages
-	m_logger.setMinLoggingLevel(LVL_INFO); // ignore every log below this
+	m_logger.setMinLoggingLevel(LVL_DEBUG); // ignore every log below this
 
-	/**
-	 * Parameters validation
-	 */
-	ASSERT_(!(!m_win && m_win_observer) &&
+	ASSERTMSG_(!(!m_win && m_win_observer),
 			"CObsever was provided even though no CDisplayWindow3D was not");
 
 	/**
 	 * Initialization of various member variables
 	 */
 
+ 	// set the pointer to null for starters, we don't know if we are going to be using it
+	m_win_plot = NULL;
+	m_deformation_energy_plot_scale = 1000;
+
 	// check for duplicated edges every..
 	m_num_of_edges_for_collapse = 100;
 
-	m_is3D = constraint_t::is_3D_val;
 	m_observation_only_rawlog = false;
 
 	// max node number already in the graph
@@ -149,6 +155,8 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::ini
 		m_visualize_odometry_poses = 0;
 		m_visualize_GT = 0;
 		m_visualize_map = 0;
+		m_visualize_estimated_trajectory = 0;
+		m_visualize_SLAM_metric = 0;
 		m_enable_curr_pos_viewport = 0;
 		m_enable_range_viewport = 0;
 		m_enable_intensity_viewport = 0;
@@ -341,9 +349,6 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::ini
 	m_request_to_exit = false;
 	m_GT_poses_index = 0;
 
-
-
-
 	// In case we are given an RGBD TUM Dataset - try and read the info file so
 	// that we know how to play back the GT poses.
 	try {
@@ -359,6 +364,12 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::ini
 	}
 	catch (std::exception& e) {
 		m_logger.log("RGBD_TUM info file was not found.", LVL_INFO);
+	}
+
+	// SLAM evaluation metric
+	m_curr_deformation_energy = 0;
+	if (m_visualize_SLAM_metric) {
+		this->initSlamMetricVisualization();
 	}
 
 	MRPT_END;
@@ -563,6 +574,15 @@ bool CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::par
 				this->updateEstimatedTrajectoryVisualization(full_update);
 			}
 
+			// refine the SLAM metric  and update its corresponding visualization
+			if (m_compute_SLAM_metric) {
+				this->computeSlamMetric(m_nodeID_max, m_GT_poses_index);
+
+				if (m_visualize_SLAM_metric) {
+					this->updateSlamMetricVisualization();
+				}
+			}
+
 		} // IF REGISTERED_NEW_NODE
 
 		// Timestamp textMessage
@@ -670,17 +690,11 @@ template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR, class OPTIMI
 void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::readConfigFile(
 		const string& fname) {
 	MRPT_START;
+	ASSERTMSG_(mrpt::system::fileExists(fname), 
+			mrpt::format("\nConfiguration file not found: \n%s\n", fname.c_str()));
 
 	m_logger.log("Reading the .ini file... ", LVL_INFO);
 
-	// validation of .ini fname
-	if (!mrpt::system::fileExists(fname)) {
-		THROW_EXCEPTION(
-				std::endl
-				<< "Configuration file not found: "
-				<< fname
-				<< std::endl);
-	}
 	CConfigFile cfg_file(fname);
 
 	if (m_rawlog_fname.empty()) {
@@ -752,6 +766,12 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::rea
 			"visualize_ground_truth",
 			true, false);
 
+	// SLAM metric plot
+	m_visualize_SLAM_metric = cfg_file.read_bool(
+			"VisualizationParameters",
+			"visualize_SLAM_metric",
+			true, false);
+
 	// Viewports flags
 	m_enable_curr_pos_viewport = cfg_file.read_bool(
 			"VisualizationParameters",
@@ -819,6 +839,9 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::pri
 		<< ( m_visualize_map ? "TRUE" : "FALSE" ) << std::endl;
 	ss_out << "Visualize Ground Truth          = "
 		<< ( m_visualize_GT ? "TRUE" : "FALSE" ) << std::endl;
+
+	ss_out << "Visualize SLAM metric plot      = "
+		<< ( m_visualize_SLAM_metric ? "TRUE" : "FALSE" ) << std::endl;
 
 	ss_out << "Enable curr. position viewport  = " 
 		<< ( m_enable_curr_pos_viewport ? "TRUE" : "FALSE" ) << endl;
@@ -1642,7 +1665,6 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::upd
 			m_GT_poses_index < m_GT_poses.size()) {
 		ASSERT_(m_win &&
 				"Visualization of data was requested but no CDisplayWindow3D pointer was given");
-		m_logger.log("Updating the GT visualization", LVL_DEBUG);
 
 		COpenGLScenePtr scene = m_win->get3DSceneAndLock();
 
@@ -1720,7 +1742,6 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::upd
 	ASSERT_(m_win &&
 			"Visualization of data was requested but no CDisplayWindow3D pointer was given");
 
-	m_logger.log("Updating the odometry visualization", LVL_DEBUG);
 	COpenGLScenePtr scene = m_win->get3DSceneAndLock();
 
 	// point cloud
@@ -1972,5 +1993,125 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::sav
 	MRPT_END;
 }
 
+template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR, class OPTIMIZER>
+void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::computeSlamMetric(mrpt::utils::TNodeID nodeID, size_t gt_index) {
+	m_logger.log("In computeSlamMetric..." );
+	ASSERT_(m_compute_SLAM_metric);
 
+	// TODO - add assertions here...
+	// TODO - recheck this function
+
+	// start updating the metric after a certain number of nodes have been added
+	if ( m_graph.nodeCount() < 4 ) {
+		return;
+	}
+
+	// add to the map
+	m_nodeID_to_gt_indices[nodeID] = gt_index;
+	m_logger.log(format("Current nodeID-gt pair: %lu - %lu", nodeID, gt_index));
+
+	// initialize the loop variables only once
+	pose_t curr_node_pos;
+	pose_t curr_gt_pos;
+	pose_t node_delta;
+	pose_t gt_delta;
+	double trans_diff;
+	double rot_diff;
+
+	size_t indices_size = m_nodeID_to_gt_indices.size();
+	m_logger.log(format("Total size of nodeID - gt_index map: %lu", indices_size));
+
+	// recompute the metric from scratch
+	m_curr_deformation_energy = 0;
+
+	// first element of map
+	std::map<mrpt::utils::TNodeID, size_t>::const_iterator start_it = 
+		std::next(m_nodeID_to_gt_indices.begin(), 1);
+
+
+	// fetch the first node, gt positions seperately
+	std::map<mrpt::utils::TNodeID, size_t>::const_iterator prev_it = std::prev(start_it, 1);
+	pose_t prev_node_pos = m_graph.nodes[prev_it->first];
+	pose_t prev_gt_pos = m_GT_poses[prev_it->second];
+
+	for (std::map<mrpt::utils::TNodeID, size_t>::const_iterator 
+			index_it = start_it; 
+			index_it != m_nodeID_to_gt_indices.end();
+			index_it++) {
+		curr_node_pos = m_graph.nodes[index_it->first];
+		curr_gt_pos = m_GT_poses[index_it->second];
+
+		m_logger.log(format("nodeID-gt pair:\n\t%s\n\t%s",
+			 		curr_node_pos.asString().c_str(), curr_gt_pos.asString().c_str()));
+
+		node_delta = curr_node_pos - prev_node_pos;
+		gt_delta = curr_gt_pos - prev_gt_pos;
+
+		trans_diff = gt_delta.distanceTo(node_delta);
+		rot_diff = wrapToPi(gt_delta.phi() - node_delta.phi());
+
+		m_curr_deformation_energy += (pow(trans_diff, 2) + pow(rot_diff, 2));
+		m_curr_deformation_energy /= indices_size;
+
+		// add it to the overall vector
+		m_deformation_energy_vec.push_back(m_curr_deformation_energy);
+
+		prev_node_pos = curr_node_pos;
+		prev_gt_pos = curr_gt_pos;
+	}
+
+	m_logger.log(format("Total deformation energy: %f", m_curr_deformation_energy));
+
+}
+
+template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR, class OPTIMIZER>
+void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::initSlamMetricVisualization() {
+	m_logger.log("In initializeSlamMetricVisualization...");
+	MRPT_START;
+	ASSERT_(m_visualize_SLAM_metric);
+
+	// initialize the m_win_plot on the stack
+	m_win_plot = new CDisplayWindowPlots("Evolution of SLAM metric - Deformation Energy (1:1000)", 400, 300);
+
+
+	m_win_plot->setPos(20, 50);
+	m_win_plot->clf();
+	// just plot the deformation points from scratch every time
+	m_win_plot->hold_off();
+	m_win_plot->enableMousePanZoom(true);
+
+	MRPT_END;
+}
+
+template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR, class OPTIMIZER>
+void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::updateSlamMetricVisualization() {
+	MRPT_START;
+
+	ASSERT_(m_win_plot && m_visualize_SLAM_metric);
+
+	// build the X, Y vectors for plotting - use log scale 
+	std::vector<double> x(m_deformation_energy_vec.size(), 0);
+	std::vector<double> y(m_deformation_energy_vec.size(), 0);
+	for (int i = 0; i != x.size(); i++)  {
+		x[i] = i;
+		y[i] = m_deformation_energy_vec[i]*1000;
+	}
+
+	m_win_plot->plot(x, y, "r-1",
+			/*plotName = */ "Deformation Energy (x1000)");
+
+	// set the limits so that he y-values can be monitored
+	// set the xmin limit with respect to xmax, which is constantly growing
+	std::vector<double>::const_iterator xmax, ymax;
+	xmax = std::max_element(x.begin(), x.end());
+	ymax = std::max_element(y.begin(), y.end());
+	
+	m_win_plot->axis(/*x_min = */ xmax != x.end()? -(*xmax/12) : -1,
+			/*x_max = */ (xmax != x.end()? *xmax : 1),
+			/*y_min = */ -0.4,
+			/*y_max = */ (ymax != y.end()? *ymax : 1) ) ;
+
+
+	MRPT_END;
+}
 #endif /* end of include guard: CGRAPHSLAMENGINE_IMPL_H */

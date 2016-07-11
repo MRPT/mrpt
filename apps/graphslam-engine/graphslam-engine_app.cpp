@@ -265,6 +265,7 @@ int main(int argc, char **argv)
 		logger.log("Listening to graph_window events...");
 
 		bool has_exited_normally = false;
+		////////////////////////////////////////////////////////////////////////
 		// take all the different combinations of node / edge registration deciders
 		// one-by-one.
 		logger.log(format("Node registration decider: %s", node_reg.c_str()));
@@ -381,6 +382,7 @@ int main(int argc, char **argv)
 			}
 
 		}
+		////////////////////////////////////////////////////////////////////////
 
 		if (has_exited_normally) {
 			while (graph_win.isOpen()) {
