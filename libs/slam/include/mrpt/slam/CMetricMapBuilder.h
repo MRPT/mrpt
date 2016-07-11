@@ -35,7 +35,7 @@ namespace slam
 	class SLAM_IMPEXP CMetricMapBuilder : public mrpt::utils::CDebugOutputCapable
 	{
 	protected:
-		synch::CCriticalSection	critZoneChangingMap; //!< Critical zones
+		mrpt::synch::CCriticalSection   critZoneChangingMap; //!< Critical zones
 		/** Enter critical section for map updating */
 		inline void  enterCriticalSection() { critZoneChangingMap.enter(); }
 		/** Leave critical section for map updating */
