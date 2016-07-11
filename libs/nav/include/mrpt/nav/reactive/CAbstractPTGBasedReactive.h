@@ -115,11 +115,10 @@ namespace mrpt
 		/** Gives access to a const-ref to the internal time logger \sa enableTimeLog */
 		const mrpt::utils::CTimeLogger & getTimeLogger() const { return m_timelogger; }
 
-		/** Returns the number of different PTGs that have been setup */
-		virtual size_t getPTG_count() const = 0;
-
-		/** Gets the i'th PTG */
-		virtual CParameterizedTrajectoryGenerator* getPTG(size_t i) = 0;
+		
+		virtual size_t getPTG_count() const = 0;  //!< Returns the number of different PTGs that have been setup
+		virtual CParameterizedTrajectoryGenerator* getPTG(size_t i) = 0; //!< Gets the i'th PTG
+		virtual const CParameterizedTrajectoryGenerator* getPTG(size_t i) const = 0; //!< Gets the i'th PTG
 
 		/** Reload the configuration from a file. See details in CReactiveNavigationSystem docs.
 			* Section to be read is "{sect_prefix}ReactiveParams". */
@@ -244,6 +243,7 @@ namespace mrpt
 		};
 
 		std::vector<TInfoPerPTG> m_infoPerPTG; //!< Temporary buffers for working with each PTG during a navigationStep()
+		mrpt::system::TTimeStamp m_infoPerPTG_timestamp;
 
 
 		void deleteHolonomicObjects(); //!< Delete m_holonomicMethod

@@ -61,15 +61,10 @@ namespace mrpt
 			/** Defines the 2D circular robot shape radius, used for some PTGs for collision checking. */
 			void changeRobotCircularShapeRadius( const double R );
 
-			/** Returns the number of different PTGs that have been setup */
+			// See base class docs:
 			virtual size_t getPTG_count() const { return PTGs.size(); }
-
-			/** Gets the i'th PTG */
-			virtual CParameterizedTrajectoryGenerator* getPTG(size_t i)
-			{
-				ASSERT_(i<PTGs.size())
-				return PTGs[i];
-			}
+			virtual CParameterizedTrajectoryGenerator* getPTG(size_t i) { ASSERT_(i<PTGs.size()); return PTGs[i]; }
+			virtual const CParameterizedTrajectoryGenerator* getPTG(size_t i) const { ASSERT_(i<PTGs.size()); return PTGs[i]; }
 
 		private:
 			float	minObstaclesHeight, maxObstaclesHeight; // The range of "z" coordinates for obstacles to be considered

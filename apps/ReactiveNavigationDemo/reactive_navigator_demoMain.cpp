@@ -92,6 +92,7 @@ const long reactive_navigator_demoframe::ID_CHECKBOX1 = wxNewId();
 const long reactive_navigator_demoframe::ID_CHECKBOX2 = wxNewId();
 const long reactive_navigator_demoframe::ID_CHECKBOX3 = wxNewId();
 const long reactive_navigator_demoframe::ID_CHECKBOX4 = wxNewId();
+const long reactive_navigator_demoframe::ID_CHECKBOX5 = wxNewId();
 const long reactive_navigator_demoframe::ID_RADIOBOX1 = wxNewId();
 const long reactive_navigator_demoframe::ID_PANEL6 = wxNewId();
 const long reactive_navigator_demoframe::ID_TEXTCTRL1 = wxNewId();
@@ -262,6 +263,9 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(wxWindow* parent,wxWi
     cbDrawShapePath = new wxCheckBox(pnNavSelButtons, ID_CHECKBOX4, _("and draw robot shape"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX4"));
     cbDrawShapePath->SetValue(true);
     FlexGridSizer3->Add(cbDrawShapePath, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    cbWaypointsAllowSkip = new wxCheckBox(pnNavSelButtons, ID_CHECKBOX5, _("Allow skip waypoints"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX5"));
+    cbWaypointsAllowSkip->SetValue(true);
+    FlexGridSizer3->Add(cbWaypointsAllowSkip, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
     FlexGridSizer9->Add(FlexGridSizer3, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     wxString __wxRadioBoxChoices_2[2] = 
     {
@@ -1055,7 +1059,7 @@ void reactive_navigator_demoframe::simulateOneStep(double time_step)
 		gl_waypoints_clicking->clear();
 		for (const auto &p : m_waypoints_clicked.waypoints)
 		{
-			mrpt::opengl::CDiskPtr gl_pt = mrpt::opengl::CDisk::Create(0.3,0.0, 20);
+			mrpt::opengl::CDiskPtr gl_pt = mrpt::opengl::CDisk::Create(0.3,0.2, 20);
 			gl_pt->setLocation(p.target.x,p.target.y,0.01);
 			gl_pt->setColor_u8(mrpt::utils::TColor(0x00,0x00,0xff));
 			gl_waypoints_clicking->insert(gl_pt);
@@ -1071,7 +1075,7 @@ void reactive_navigator_demoframe::simulateOneStep(double time_step)
 			{
 				const bool is_cur_goal = (int(idx)==wp_status.waypoint_index_current_goal);
 
-				mrpt::opengl::CDiskPtr gl_pt = mrpt::opengl::CDisk::Create(is_cur_goal ? 0.4 : 0.3,0.0, 20);
+				mrpt::opengl::CDiskPtr gl_pt = mrpt::opengl::CDisk::Create(is_cur_goal ? 0.4 : 0.3,0.2, 20);
 				gl_pt->setLocation(p.target.x,p.target.y,0.01);
 				gl_pt->setName(mrpt::format("WayPt #%2u Reach:%s",idx, p.reached ? "YES":"NO"));
 				gl_pt->enableShowName(true);
@@ -1081,7 +1085,6 @@ void reactive_navigator_demoframe::simulateOneStep(double time_step)
 				++idx;
 			}
 		}
-
 	}
 }
 
@@ -1196,7 +1199,8 @@ void reactive_navigator_demoframe::Onplot3DMouseClick(wxMouseEvent& event)
 		{
 			if (event.ButtonIsDown( wxMOUSE_BTN_LEFT ))
 			{
-				m_waypoints_clicked.waypoints.push_back( TWaypoint( m_curCursorPos.x,m_curCursorPos.y, 0.2 /* allowed dist */) );
+				const bool allow_skip_wps = cbWaypointsAllowSkip->IsChecked();
+				m_waypoints_clicked.waypoints.push_back( TWaypoint( m_curCursorPos.x,m_curCursorPos.y, 0.2 /* allowed dist */, allow_skip_wps) );
 			}
 			if (event.ButtonIsDown( wxMOUSE_BTN_RIGHT ))
 			{
@@ -1206,6 +1210,8 @@ void reactive_navigator_demoframe::Onplot3DMouseClick(wxMouseEvent& event)
 				CWaypointsNavigator *wp_nav = dynamic_cast<CWaypointsNavigator *>(m_navMethod.get());
 				if (wp_nav)
 					wp_nav->navigateWaypoints(m_waypoints_clicked);
+
+				m_waypoints_clicked.clear();
 
 				m_plot3D->SetCursor( *wxSTANDARD_CURSOR ); // End of cross cursor
 				m_cursorPickState = cpsNone; // end of mode

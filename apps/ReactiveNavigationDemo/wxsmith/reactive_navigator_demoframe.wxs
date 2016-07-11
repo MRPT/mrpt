@@ -281,6 +281,15 @@
 													<border>5</border>
 													<option>1</option>
 												</object>
+												<object class="sizeritem">
+													<object class="wxCheckBox" name="ID_CHECKBOX5" variable="cbWaypointsAllowSkip" member="yes">
+														<label>Allow skip waypoints</label>
+														<checked>1</checked>
+													</object>
+													<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL</flag>
+													<border>5</border>
+													<option>1</option>
+												</object>
 											</object>
 											<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
 											<border>5</border>
