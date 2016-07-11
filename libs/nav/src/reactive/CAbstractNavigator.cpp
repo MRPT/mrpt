@@ -12,6 +12,7 @@
 #include <mrpt/nav/reactive/CAbstractNavigator.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/math/geometry.h>
+#include <mrpt/math/lightweight_geom_data.h>
 #include <limits>
 
 using namespace mrpt::nav;
@@ -44,13 +45,13 @@ std::string CAbstractNavigator::TNavigationParams::getAsText() const
   ---------------------------------------------------------------*/
 CAbstractNavigator::CAbstractNavigator(CRobot2NavInterface &react_iterf_impl) :
 	m_lastNavigationState ( IDLE ),
+	m_navigationEndEventSent(false),
 	m_navigationState     ( IDLE ),
 	m_navigationParams    ( NULL ),
 	m_robot               ( react_iterf_impl ),
 	m_curPose             (0,0,0),
 	m_curVel              (0,0,0),
 	m_curVelLocal         (0,0,0),
-	m_navigationEndEventSent(false),
 	m_badNavAlarm_AlarmTimeout(30.0),
 	DIST_TO_TARGET_FOR_SENDING_EVENT(0.4)
 {
@@ -152,6 +153,7 @@ void CAbstractNavigator::navigationStep()
 	case NAVIGATING:
 		try
 		{
+			bool is_first_nav_step = false;
 			if ( m_lastNavigationState != NAVIGATING )
 			{
 				printf_debug("\n[CAbstractNavigator::navigationStep()] Starting Navigation. Watchdog initiated...\n");
@@ -159,6 +161,7 @@ void CAbstractNavigator::navigationStep()
 					printf_debug("[CAbstractNavigator::navigationStep()] Navigation Params:\n%s\n", m_navigationParams->getAsText().c_str() );
 
 				m_robot.startWatchdog( 1000 );	// Watchdog = 1 seg
+				is_first_nav_step=true;
 			}
 
 			// Have we just started the navigation?
@@ -177,11 +180,15 @@ void CAbstractNavigator::navigationStep()
 			m_curVelLocal = m_curVel;
 			m_curVelLocal.rotate(-m_curPose.phi);
 
+			if (is_first_nav_step) m_lastPose = m_curPose;
+
+
 			/* ----------------------------------------------------------------
 		 			Have we reached the target location?
 				---------------------------------------------------------------- */
-			const double targetDist = mrpt::math::distance( mrpt::math::TPoint2D(m_curPose), mrpt::math::TPoint2D(m_navigationParams->target));
-			MRPT_TODO("Use segment distance");
+			const mrpt::math::TSegment2D seg_robot_mov = mrpt::math::TSegment2D( mrpt::math::TPoint2D(m_curPose), mrpt::math::TPoint2D(m_lastPose) );
+
+			const double targetDist = seg_robot_mov.distance( mrpt::math::TPoint2D(m_navigationParams->target) );
 
 			// Should "End of navigation" event be sent??
 			if (!m_navigationEndEventSent && targetDist < DIST_TO_TARGET_FOR_SENDING_EVENT)
@@ -247,8 +254,7 @@ void CAbstractNavigator::doEmergencyStop( const char *msg )
 {
 	m_navigationState = NAV_ERROR;
 	m_robot.stop();
-	printf_debug(msg);
-	printf_debug("\n");
+	printf_debug("%s\n",msg);
 }
 
 

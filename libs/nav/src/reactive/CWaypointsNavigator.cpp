@@ -72,8 +72,6 @@ void CWaypointsNavigator::navigationStep()
 
 	using mrpt::utils::square;
 
-	const TState prevState = m_navigationState;
-
 	// Call base navigation step to execute one-single waypoint navigation, as usual:
 	CAbstractNavigator::navigationStep();  // This internally locks "m_nav_cs"
 
@@ -120,7 +118,7 @@ void CWaypointsNavigator::navigationStep()
 			m_robot.sendWaypointReachedEvent(wps.waypoint_index_current_goal);
 
 			// Was this the final goal??
-			if ( wps.waypoint_index_current_goal < (wps.waypoints.size()-1) ) {
+			if ( wps.waypoint_index_current_goal < int(wps.waypoints.size()-1) ) {
 				wps.waypoint_index_current_goal++;
 			}
 			else {
@@ -169,9 +167,9 @@ void CWaypointsNavigator::navigationStep()
 		//    Only if the temporary goal changed:
 		if (wps.waypoint_index_current_goal>=0 && prev_wp_index!=wps.waypoint_index_current_goal)
 		{
-			ASSERT_( wps.waypoint_index_current_goal < wps.waypoints.size() );
+			ASSERT_( wps.waypoint_index_current_goal < int(wps.waypoints.size()) );
 			TWaypointStatus &wp = wps.waypoints[wps.waypoint_index_current_goal];
-			const bool is_final_wp =  ( (wps.waypoint_index_current_goal+1)==wps.waypoints.size() );
+			const bool is_final_wp =  ( (wps.waypoint_index_current_goal+1)==int(wps.waypoints.size()) );
 			
 			m_robot.sendNewWaypointTargetEvent(wps.waypoint_index_current_goal);
 
