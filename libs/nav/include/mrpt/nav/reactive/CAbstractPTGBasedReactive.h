@@ -184,7 +184,7 @@ namespace mrpt
 		  * \endcode
 		  *
 		  */
-		float secureDistanceStart,secureDistanceEnd;
+		double secureDistanceStart,secureDistanceEnd;
 
 		float  meanExecutionPeriod;	//!< Runtime estimation of execution period of the method.
 		mrpt::utils::CTimeLogger m_timelogger;			//!< A complete time logger \sa enableTimeLog()
@@ -198,6 +198,8 @@ namespace mrpt
 
 		/** Loads derived-class specific parameters */
 		virtual void internal_loadConfigFile(const mrpt::utils::CConfigFileBase &cfg, const std::string &section_prefix="") = 0;
+
+		virtual bool impl_waypoint_is_reachable(const mrpt::math::TPoint2D &wp_local_wrt_robot) const MRPT_OVERRIDE; // See docs in base class
 
 		// Steps for the reactive navigation sytem.
 		// ----------------------------------------------------------------------------
