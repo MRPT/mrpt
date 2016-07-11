@@ -395,7 +395,7 @@ CDisplayWindow3D::CDisplayWindow3D(
 	unsigned int		initialWindowWidth,
 	unsigned int		initialWindowHeight )
 	: CBaseGUIWindow(static_cast<void*>(this),300,399, windowCaption),
-      m_csAccess3DScene("m_csAccess3DScene"),
+      m_csAccess3DScene(),
       m_grab_imgs_prefix(),
       m_grab_imgs_idx(0),
       m_is_capturing_imgs(false),

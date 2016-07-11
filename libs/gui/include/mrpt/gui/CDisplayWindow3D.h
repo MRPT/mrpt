@@ -99,17 +99,11 @@ namespace mrpt
 		protected:
 			friend class C3DWindowDialog;
 			friend class CMyGLCanvas_DisplayWindow3D;
-			/** Internal OpenGL object (see general discussion in about usage of this object)
-			  */
-			opengl::COpenGLScenePtr			m_3Dscene;
 
-			/** Critical section for accesing m_3Dscene
-			  */
-			synch::CCriticalSection		m_csAccess3DScene;
+			mrpt::opengl::COpenGLScenePtr          m_3Dscene; //!< Internal OpenGL object (see general discussion in about usage of this object)
+			mrpt::synch::CCriticalSectionRecursive m_csAccess3DScene; //!< Critical section for accesing m_3Dscene
 
-			/** Throws an exception on initialization error
-			  */
-			void  createOpenGLContext();
+			void  createOpenGLContext(); //!< Throws an exception on initialization error
 
 			mrpt::utils::void_ptr_noncopy	m_DisplayDeviceContext;
 			mrpt::utils::void_ptr_noncopy	m_GLRenderingContext;

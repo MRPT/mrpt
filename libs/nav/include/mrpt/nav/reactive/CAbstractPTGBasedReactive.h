@@ -154,7 +154,7 @@ namespace mrpt
 		std::vector<double> m_last_vel_cmd, m_new_vel_cmd; //!< Actual and last velocity commands
 		std::vector<std::vector<double> > m_cmd_vel_filterings; //!< Logged values of temporary vel cmds before reaching at the final value sent to the robot (for logging)
 
-		synch::CCriticalSection  m_critZoneLastLog; //!< Critical zones
+		mrpt::synch::CCriticalSectionRecursive  m_critZoneLastLog; //!< Critical zones
 
 		bool    m_enableConsoleOutput;  //!< Enables / disables the console debug output.
 		bool    m_init_done;            //!< Whether \a loadConfigFile() has been called or not.

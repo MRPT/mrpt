@@ -116,7 +116,7 @@ namespace mrpt
 
 		CRobot2NavInterface   &m_robot; //!< The navigator-robot interface.
 
-		mrpt::synch::CCriticalSection m_nav_cs; //!< mutex for all navigation methods
+		mrpt::synch::CCriticalSectionRecursive m_nav_cs; //!< mutex for all navigation methods
 
 		mrpt::math::TPose2D  m_curPose;   //!< Current robot pose (updated in CAbstractNavigator::navigationStep() )
 		mrpt::math::TTwist2D m_curVel, m_curVelLocal; //!< Current robot velocities (updated in CAbstractNavigator::navigationStep() )

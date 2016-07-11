@@ -45,7 +45,7 @@ namespace mrpt
 
 	protected:
 		TWaypointStatusSequence  m_waypoint_nav_status; //!< The latest waypoints navigation command and the up-to-date control status.
-		mrpt::synch::CCriticalSection m_nav_waypoints_cs;
+		mrpt::synch::CCriticalSectionRecursive m_nav_waypoints_cs;
 
 		double  MAX_DISTANCE_TO_ALLOW_SKIP_WAYPOINT; //!< In meters. <0: unlimited
 
