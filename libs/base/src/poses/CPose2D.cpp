@@ -202,6 +202,16 @@ void CPose2D::composePoint(double lx,double ly,double lz, double &gx, double &gy
 	gz = lz;
 }
 
+void CPose2D::inverseComposePoint(const double gx,const double gy, double &lx,double &ly) const
+{
+	update_cached_cos_sin();
+
+	const double Ax = gx - m_coords[0];
+	const double Ay = gy - m_coords[1];
+
+	lx = Ax * m_cosphi + Ay * m_sinphi;
+	ly =-Ax * m_sinphi + Ay * m_cosphi;
+}
 
 /*---------------------------------------------------------------
 The operator u'="this"+u is the pose/point compounding operator.

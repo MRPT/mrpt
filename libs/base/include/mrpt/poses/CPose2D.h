@@ -138,6 +138,13 @@ namespace poses
 		 /** overload (the "z" coordinate remains unmodified) */
 		 void composePoint(double lx,double ly,double lz, double &gx, double &gy, double &gz) const;
 
+		/**  Computes the 2D point L such as \f$ L = G \ominus this \f$. \sa composePoint, composeFrom */
+		void inverseComposePoint(const double gx,const double gy, double &lx,double &ly) const;
+		/** \overload */
+		inline void inverseComposePoint(const mrpt::math::TPoint2D &g, mrpt::math::TPoint2D &l) const {
+			inverseComposePoint(g.x,g.y, l.x,l.y);
+		}
+
 		 /** The operator \f$ u' = this \oplus u \f$ is the pose/point compounding operator. */
 		 CPoint3D operator + (const CPoint3D& u) const ;
 
