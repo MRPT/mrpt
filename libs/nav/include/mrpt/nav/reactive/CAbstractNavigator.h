@@ -102,6 +102,7 @@ namespace mrpt
 	private:
 		TState  m_lastNavigationState; //!< Last internal state of navigator:
 		bool    m_navigationEndEventSent; //!< Will be false until the navigation end is sent, and it is reset with each new command
+		mrpt::math::TPose2D  m_lastPose;
 
 	protected:
 		/** To be implemented in derived classes */
