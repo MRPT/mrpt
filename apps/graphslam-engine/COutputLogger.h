@@ -11,10 +11,7 @@
 #define COUTPUTLOGGER_H
 
 #include <mrpt/utils/CStream.h>
-#include <mrpt/utils/CFileOutputStream.h>
-#include <mrpt/utils/CStdOutStream.h>
 #include <mrpt/system/os.h>
-#include <mrpt/system/threads.h>
 
 #include <string>
 #include <map>
@@ -47,6 +44,20 @@ class COutputLogger_t {
      * after opration
      */
     void log(const std::string& msg_str, const VerbosityLevel& level);
+    /**
+     * Alternative logging method, handy for usage in const functions/methdos
+     *
+     * Used solely for printing the given string in the console (but does not
+     * store it internally
+     */
+    void log(const std::string& msg_str) const;
+    /**
+     * Alternative logging method, handy for usage in const functions/methdos
+     *
+     * Used solely for printing the given string in the console (but does not
+     * store it internally
+     */
+    void log(const std::string& msg_str, const VerbosityLevel& level) const;
     /**
      * log the given message only if the condition is satisfied
      */
@@ -122,14 +133,14 @@ class COutputLogger_t {
 			VerbosityLevel level;
 			std::string name;
 			std::string body;
-			mrpt::system::TConsoleColor color;
-			std::string level_name;
 
  			std::map<VerbosityLevel, mrpt::system::TConsoleColor> m_levels_to_colors;
 			std::map<VerbosityLevel, std::string> m_levels_to_names;
    };
 
   private:
+  	void warnForLogConstMethod() const;
+
 		std::string m_name;
 		std::vector<TMsg> m_history;
 		VerbosityLevel m_curr_level;
@@ -139,6 +150,11 @@ class COutputLogger_t {
 		mrpt::system::TTimeStamp m_curr_timestamp;
 
 		bool m_print_message_automatically;
+		
+		// how many times have I warned the user about using the const log method
+		// if it passes a predefined threshold of times stop polluting the console
+		static size_t m_times_for_log_const;
+		static size_t m_times_for_log_const_thresh;
 };
 
 } }  // END OF NAMESPACES
