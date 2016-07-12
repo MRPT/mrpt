@@ -30,7 +30,6 @@
 #include <cerrno>
 
 #include "CWindowObserver.h"
-#include "CWindowManager.h"
 
 // deciders
 #include "COutputLogger.h"
@@ -91,7 +90,13 @@ TCLAP::SwitchArg list_edge_registrars("","list-edge-regs","List available edge r
 TCLAP::SwitchArg list_all_registrars("","list-regs","List (all) available registration decider classes",cmd, false);
 TCLAP::SwitchArg list_optimizers("","list-optimizers","List (all) available graphslam optimizer classes",cmd, false);
 
-CWindowObserver  graph_win_observer;
+// specify whether to run on headless mode - no visuals
+// flag overrides all visualization related directives of the .ini file
+// handy for usage when no visualization is needed or when running on
+// real-robots in headless mode
+TCLAP::SwitchArg disable_visuals("","disable-visuals","Disable Visualization - Overrides related visualize* directives of the .ini file",cmd, false);
+
+
 
 // Properties struct for the Registration Decider Classes
 // ////////////////////////////////////////////////////////////
@@ -253,16 +258,28 @@ int main(int argc, char **argv)
 		}
 
 		// Visualization
-		CDisplayWindow3D	graph_win("Graphslam building procedure",800, 600);
-		graph_win.setPos(400, 200);
-		graph_win_observer.observeBegin(graph_win);
-		{
-			COpenGLScenePtr &scene = graph_win.get3DSceneAndLock();
-			opengl::COpenGLViewportPtr main_view = scene->getViewport("main");
-			graph_win_observer.observeBegin( *main_view );
-			graph_win.unlockAccess3DScene();
+		// Deciding whether to enable visuals
+		CWindowObserver* graph_win_observer = NULL;
+		CDisplayWindow3D* graph_win = NULL;
+		if (!disable_visuals.getValue()) { // enabling Visualization objects
+			graph_win_observer = new CWindowObserver();
+
+			graph_win = new CDisplayWindow3D("GraphSlam building procedure", 800, 600);
+			//CDisplayWindow3D	graph_win("Graphslam building procedure",800, 600);
+			graph_win->setPos(400, 200);
+			graph_win_observer->observeBegin(*graph_win);
+			{
+				COpenGLScenePtr &scene = graph_win->get3DSceneAndLock();
+				opengl::COpenGLViewportPtr main_view = scene->getViewport("main");
+				graph_win_observer->observeBegin( *main_view );
+				graph_win->unlockAccess3DScene();
+			}
+			logger.log("Initialized CDisplayWindow3D...", LVL_WARN);
+			logger.log("Listening to CDisplayWindow3D events...");
 		}
-		logger.log("Listening to graph_window events...");
+		else {
+			logger.log("Running on headless mode - Visuals disabled", LVL_WARN);
+		}
 
 		bool has_exited_normally = false;
 		////////////////////////////////////////////////////////////////////////
@@ -282,8 +299,8 @@ int main(int argc, char **argv)
 					>
 					graph_engine(
 							ini_fname,
-							&graph_win,
-							&graph_win_observer,
+							graph_win,
+							graph_win_observer,
 							rawlog_fname,
 							ground_truth_fname);
 				has_exited_normally = graph_engine.parseRawlogFile();
@@ -299,8 +316,8 @@ int main(int argc, char **argv)
 					>
 					graph_engine(
 							ini_fname,
-							&graph_win,
-							&graph_win_observer,
+							graph_win,
+							graph_win_observer,
 							rawlog_fname,
 							ground_truth_fname);
 				has_exited_normally = graph_engine.parseRawlogFile();
@@ -319,8 +336,8 @@ int main(int argc, char **argv)
 					>
 					graph_engine(
 							ini_fname,
-							&graph_win,
-							&graph_win_observer,
+							graph_win,
+							graph_win_observer,
 							rawlog_fname,
 							ground_truth_fname);
 				has_exited_normally = graph_engine.parseRawlogFile();
@@ -336,8 +353,8 @@ int main(int argc, char **argv)
 					>
 					graph_engine(
 							ini_fname,
-							&graph_win,
-							&graph_win_observer,
+							graph_win,
+							graph_win_observer,
 							rawlog_fname,
 							ground_truth_fname);
 				has_exited_normally = graph_engine.parseRawlogFile();
@@ -356,8 +373,8 @@ int main(int argc, char **argv)
 					>
 					graph_engine(
 							ini_fname,
-							&graph_win,
-							&graph_win_observer,
+							graph_win,
+							graph_win_observer,
 							rawlog_fname,
 							ground_truth_fname);
 				has_exited_normally = graph_engine.parseRawlogFile();
@@ -374,8 +391,8 @@ int main(int argc, char **argv)
 					>
 					graph_engine(
 							ini_fname,
-							&graph_win,
-							&graph_win_observer,
+							graph_win,
+							graph_win_observer,
 							rawlog_fname,
 							ground_truth_fname);
 				has_exited_normally = graph_engine.parseRawlogFile();
@@ -384,11 +401,19 @@ int main(int argc, char **argv)
 		}
 		////////////////////////////////////////////////////////////////////////
 
-		if (has_exited_normally) {
-			while (graph_win.isOpen()) {
+		if (has_exited_normally && !disable_visuals.getValue()) {
+			while (graph_win->isOpen()) {
 				mrpt::system::sleep(100);
-				graph_win.forceRepaint();
+				graph_win->forceRepaint();
 			}
+		}
+
+		if (!disable_visuals.getValue()) {
+			// exiting actions...
+			logger.log("Releasing CDisplayWindow3D...");
+			delete graph_win;
+			logger.log("Releasing CWindowObserver...");
+			delete graph_win_observer;
 		}
 
 	}

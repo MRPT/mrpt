@@ -388,6 +388,9 @@ void CICPGoodnessERD_t<GRAPH_t>::notifyOfWindowEvents(
 template<class GRAPH_t>
 void CICPGoodnessERD_t<GRAPH_t>::toggleLaserScansVisualization() {
 	MRPT_START;
+	ASSERTMSG_(m_win, "No CDisplayWindow3D* was provided");
+	ASSERTMSG_(m_win_manager, "No CWindowManager* was provided");
+
 	m_logger.log("Toggling LaserScans visualization...");
  
 	COpenGLScenePtr scene = m_win->get3DSceneAndLock();
@@ -404,7 +407,6 @@ void CICPGoodnessERD_t<GRAPH_t>::toggleLaserScansVisualization() {
 	m_win->forceRepaint();
 
 	MRPT_END;
-
 }
 
 
