@@ -134,8 +134,9 @@ template<
 		 		*/
 			void printProblemParams() const;
 			/**
-		 		* Reads the file provided and builds the graph. Method returns false if
-		 		* user issues termination coe (Ctrl+c) otherwise true
+		 		* Main meethod of the class. Reads the file provided and builds the graph.
+		 		* Method returns false if user issues termination coe (Ctrl+c)
+		 		* otherwise true.
 		 		**/
 			bool parseRawlogFile();
 			/**
@@ -258,7 +259,7 @@ template<
 			void toggleEstimatedTrajectoryVisualization();
 
 			/*
-			* comapre the SLAM result (estimated trajectory) with the GT path
+			* Comapre the SLAM result (estimated trajectory) with the GT path
 			* see "A Comparison of SLAM Algorithms Based on a Graph of Relations"
 			* for more details on this.
 			*/
@@ -360,6 +361,11 @@ template<
 			CEdgeCounter_t m_edge_counter;
 			int m_num_of_edges_for_collapse;
 
+			// flag for specifying if we are going to use GroundTruth data at all
+			// this is set to true either if the slam metric evaluation is set to
+			// true or the visualization of the SLAM metric evolution is set to true
+			bool m_use_GT;
+
 			// pose_t vectors
 			std::vector<pose_t*> m_odometry_poses;
 			std::vector<pose_t> m_GT_poses;
@@ -368,8 +374,7 @@ template<
 			std::map<const mrpt::utils::TNodeID, 
 				mrpt::obs::CObservation2DRangeScanPtr> m_nodes_to_laser_scans2D;
 			mrpt::obs::CObservation2DRangeScanPtr m_last_laser_scan2D;
-			std::map<const mrpt::utils::TNodeID, 
-				mrpt::obs::CObservation3DRangeScanPtr> m_nodes_to_laser_scans3D;
+
 			mrpt::obs::CObservation3DRangeScanPtr m_last_laser_scan3D;
 
 
@@ -377,6 +382,7 @@ template<
 			mrpt::utils::TColor m_odometry_color; // see Ctor for initialization
 			mrpt::utils::TColor m_GT_color;
 			mrpt::utils::TColor m_estimated_traj_color;
+			mrpt::utils::TColor m_optimized_map_color;
 
 			// frame transformation from the RGBD_TUM GrountTruth to the MRPT
 			// reference frame
@@ -410,9 +416,6 @@ template<
 
 			// user-set flag for indicating whether to compute and visualize the SLAM
 			// evaluation metric
-			// TODO - read them from .ini
-			// TODO - write them in printproblemparams
-			bool m_compute_SLAM_metric;
 
 			// struct to hold the parameters of the info file generated during the
 			// conversion of RGBD TUM dataset .rosbags to rawlog format
