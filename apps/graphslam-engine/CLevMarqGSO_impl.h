@@ -47,9 +47,9 @@ void CLevMarqGSO_t<GRAPH_t>::initCLevMarqGSO_t() {
 	m_last_total_num_of_nodes = 5;
 	m_autozoom_active = true;
 
-	m_logger.setName("CLevMarqGSO");
-	m_logger.setLoggingLevel(LVL_DEBUG);
-	m_logger.setMinLoggingLevel(LVL_INFO);
+	m_out_logger.setName("CLevMarqGSO");
+	m_out_logger.setLoggingLevel(LVL_DEBUG);
+	m_out_logger.setMinLoggingLevel(LVL_INFO);
 
 	MRPT_END;
 }
@@ -62,7 +62,7 @@ bool CLevMarqGSO_t<GRAPH_t>::updateOptimizerState(
 		mrpt::obs::CSensoryFramePtr observations,
 		mrpt::obs::CObservationPtr observation ) {
 	MRPT_START;
-	m_logger.log("In updateOptimizerState... ");
+	m_out_logger.log("In updateOptimizerState... ");
 	
 	if (m_graph->nodeCount() > m_last_total_num_of_nodes) {
 		m_last_total_num_of_nodes = m_graph->nodeCount();
@@ -100,7 +100,7 @@ void CLevMarqGSO_t<GRAPH_t>::setGraphPtr(GRAPH_t* graph) {
 
 	m_graph = graph;
 
-	m_logger.log("Fetched the graph successfully");
+	m_out_logger.log("Fetched the graph successfully");
 
 	MRPT_END;
 }
@@ -125,7 +125,7 @@ void CLevMarqGSO_t<GRAPH_t>::setWindowManagerPtr(
 		m_win_observer = m_win_manager->observer;
 
 	}
-	m_logger.log("Fetched the CDisplayWindow successfully");
+	m_out_logger.log("Fetched the CDisplayWindow successfully");
 
 	MRPT_END;
 }
@@ -137,7 +137,7 @@ void CLevMarqGSO_t<GRAPH_t>::setCriticalSectionPtr(
 
 	m_graph_section = graph_section;
 
-	m_logger.log("Fetched the CCRiticalSection successfully");
+	m_out_logger.log("Fetched the CCRiticalSection successfully");
 	MRPT_END;
 }
 
@@ -145,7 +145,7 @@ void CLevMarqGSO_t<GRAPH_t>::setCriticalSectionPtr(
 template<class GRAPH_t>
 void CLevMarqGSO_t<GRAPH_t>::initializeVisuals() {
 	MRPT_START;
-	m_logger.log("CLevMarqGSO:] Initializing visuals");
+	m_out_logger.log("CLevMarqGSO:] Initializing visuals");
 
 	ASSERTMSG_(m_win,
 			"Visualization of data was requested but no CDisplayWindow3D pointer "
@@ -233,7 +233,7 @@ template<class GRAPH_t>
 inline void CLevMarqGSO_t<GRAPH_t>::updateGraphVisualization() {
 	MRPT_START;
 
-	m_logger.log("In the updateGraphVisualization function");
+	m_out_logger.log("In the updateGraphVisualization function");
 
 	// update the graph (clear and rewrite..)
 	COpenGLScenePtr& scene = m_win->get3DSceneAndLock();
@@ -393,14 +393,14 @@ template<class GRAPH_t>
 void CLevMarqGSO_t<GRAPH_t>::optimizeGraph() {
 	MRPT_START;
 
-	m_logger.log(mrpt::format(
+	m_out_logger.log(mrpt::format(
 				"In optimizeGraph\n\tThreadID: %lu\n\tTrying to grab lock... ", 
 				mrpt::system::getCurrentThreadId()));
 
 	mrpt::synch::CCriticalSectionLocker m_graph_lock(m_graph_section);
 	this->_optimizeGraph();
 
-	m_logger.log("2nd thread grabbed the lock..");
+	m_out_logger.log("2nd thread grabbed the lock..");
 
 	MRPT_END;
 }
@@ -409,7 +409,8 @@ void CLevMarqGSO_t<GRAPH_t>::optimizeGraph() {
 template<class GRAPH_t>
 void CLevMarqGSO_t<GRAPH_t>::_optimizeGraph() {
 	MRPT_START;
-	m_logger.log("In _optimizeGraph");
+	m_out_logger.log("In _optimizeGraph");
+	m_time_logger.enter("CLevMarqGSO::_optimizeGraph");
 
 	CTicTac optimization_timer;
 	optimization_timer.Tic();
@@ -425,7 +426,7 @@ void CLevMarqGSO_t<GRAPH_t>::_optimizeGraph() {
  		this->checkForLoopClosures();
  	if (full_update) {
  		nodes_to_optimize = NULL;
-		m_logger.log("Commencing with FULL graph optimization... ", LVL_INFO);
+		m_out_logger.log("Commencing with FULL graph optimization... ", LVL_INFO);
 	}
 	else {
 		nodes_to_optimize = new std::set<mrpt::utils::TNodeID>;
@@ -450,12 +451,13 @@ void CLevMarqGSO_t<GRAPH_t>::_optimizeGraph() {
 			&CLevMarqGSO_t<GRAPH_t>::levMarqFeedback); // functor feedback
 
 	double elapsed_time = optimization_timer.Tac();
-	m_logger.log(mrpt::format("Optimization of graph took: %fs", elapsed_time));
+	m_out_logger.log(mrpt::format("Optimization of graph took: %fs", elapsed_time));
 
 	// deleting the nodes_to_optimize set
 	delete nodes_to_optimize;
 	nodes_to_optimize = NULL;
 
+	m_time_logger.leave("CLevMarqGSO::_optimizeGraph");
 	MRPT_UNUSED_PARAM(elapsed_time);
 	MRPT_END;
 }
@@ -486,7 +488,7 @@ bool CLevMarqGSO_t<GRAPH_t>::checkForLoopClosures() {
 						static_cast<int>(curr_pair.second) ) > 
 			 	 	opt_params.LC_min_nodeid_diff ) {
 
-				m_logger.log("Registering loop closure... ");
+				m_out_logger.log("Registering loop closure... ");
 				is_loop_closure = true;
 				break; // no need for more iterations
 			}
@@ -542,8 +544,39 @@ void CLevMarqGSO_t<GRAPH_t>::loadParams(const std::string& source_fname) {
 	opt_params.loadFromConfigFileName(source_fname, "OptimizerParameters");
 	viz_params.loadFromConfigFileName(source_fname, "VisualizationParameters");
 
-	m_logger.log("Successfully loaded Params. ");
+	m_out_logger.log("Successfully loaded Params. ");
 	m_has_read_config = true;
+}
+
+template<class GRAPH_t>
+void CLevMarqGSO_t<GRAPH_t>::getDescriptiveReport(std::string* report_str) const {
+	MRPT_START;
+
+	const std::string report_sep(2, '\n');
+	const std::string header_sep(80, '#');
+
+	// Report on graph
+	stringstream class_props_ss;
+	class_props_ss << "Levenberg Marquardt Optimization Summary: " << std::endl;
+	class_props_ss << header_sep << std::endl;
+
+	// time and output logging
+	const std::string time_res = m_time_logger.getStatsAsText();
+	const std::string output_res = m_out_logger.getAsString();
+	
+	// merge the individual reports
+	report_str->clear();
+
+	*report_str += class_props_ss.str();
+	*report_str += report_sep;
+
+	*report_str += time_res;
+	*report_str += report_sep;
+
+	*report_str += output_res;
+	*report_str += report_sep;
+
+	MRPT_END;
 }
 
 

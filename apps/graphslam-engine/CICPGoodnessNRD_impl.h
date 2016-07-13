@@ -45,11 +45,11 @@ void CICPGoodnessNRD_t<GRAPH_t>::initCICPGoodnessNRD_t() {
 	m_since_prev_node_PDF.cov_inv = init_path_uncertainty;
 	m_since_prev_node_PDF.mean = pose_t();
 
-	m_logger.setName("CICPGoodnessNRD");
-	m_logger.setLoggingLevel(LVL_DEBUG);
-	m_logger.setMinLoggingLevel(LVL_INFO);
+	m_out_logger.setName("CICPGoodnessNRD");
+	m_out_logger.setLoggingLevel(LVL_DEBUG);
+	m_out_logger.setMinLoggingLevel(LVL_INFO);
 
-	m_logger.log("Initialized class object", LVL_DEBUG);
+	m_out_logger.log("Initialized class object", LVL_DEBUG);
 }
 template<class GRAPH_t>
 CICPGoodnessNRD_t<GRAPH_t>::~CICPGoodnessNRD_t() { }
@@ -60,6 +60,7 @@ bool CICPGoodnessNRD_t<GRAPH_t>::updateDeciderState(
 		mrpt::obs::CSensoryFramePtr observations,
 		mrpt::obs::CObservationPtr observation )  {
 	MRPT_START;
+	m_time_logger.enter("CICPGoodnessNRD::updateDeciderState");
 
 	bool registered_new_node = false;
 
@@ -82,6 +83,7 @@ bool CICPGoodnessNRD_t<GRAPH_t>::updateDeciderState(
 				m_first_time_call3D = false;
 
 				// do not check for node registration - not enough data yet.
+				m_time_logger.leave("CICPGoodnessNRD::updateDeciderState");
 				return false;
 			}
 
@@ -99,6 +101,7 @@ bool CICPGoodnessNRD_t<GRAPH_t>::updateDeciderState(
 				m_first_time_call2D = false;
 
 				// do not check for node registration - not enough data yet.
+				m_time_logger.leave("CICPGoodnessNRD::updateDeciderState");
 				return false;
 			}
 
@@ -114,7 +117,6 @@ bool CICPGoodnessNRD_t<GRAPH_t>::updateDeciderState(
 			m_prev_timestamp = m_curr_timestamp;
 
 		}
-
 
 	}
 	else { // Action/Observations Rawlog
@@ -138,6 +140,7 @@ bool CICPGoodnessNRD_t<GRAPH_t>::updateDeciderState(
 				m_first_time_call2D = false;
 
 				// do not check for node registration - not enough data yet.
+				m_time_logger.leave("CICPGoodnessNRD::updateDeciderState");
 				return false;
 			}
 
@@ -155,6 +158,7 @@ bool CICPGoodnessNRD_t<GRAPH_t>::updateDeciderState(
 				m_first_time_call3D = false;
 
 				// do not check for node registration - not enough data yet.
+				m_time_logger.leave("CICPGoodnessNRD::updateDeciderState");
 				return false;
 			}
 
@@ -172,7 +176,9 @@ bool CICPGoodnessNRD_t<GRAPH_t>::updateDeciderState(
 
 	// TODO - implement checkIfInvalidDataset
 
+	m_time_logger.leave("CICPGoodnessNRD::updateDeciderState");
 	return registered_new_node;
+
 	MRPT_END;
 }
 
@@ -180,7 +186,7 @@ template<class GRAPH_t>
 bool CICPGoodnessNRD_t<GRAPH_t>::checkRegistrationCondition() {
 	MRPT_START;
 
-	m_logger.log("In checkRegistrationCondition2D..");
+	m_out_logger.log("In checkRegistrationCondition2D..");
 	bool registered_new_node = false;
 
 
@@ -219,7 +225,7 @@ bool CICPGoodnessNRD_t<GRAPH_t>::checkRegistrationCondition() {
 	m_ICP_sliding_win.addNewMeasurement(icp_info.goodness);
 	//m_ICP_sliding_win.dumpToConsole();
 
-	m_logger.log(mrpt::format(
+	m_out_logger.log(mrpt::format(
 				"Current ICP constraint: \n\tEdge: %s\n\tNorm: %f", 
 				rel_edge.getMeanVal().asString().c_str(), 
 				rel_edge.getMeanVal().norm()), LVL_DEBUG);
@@ -238,7 +244,7 @@ bool CICPGoodnessNRD_t<GRAPH_t>::checkRegistrationCondition() {
 		}
 
 		// Update the pose estimator object
-		m_logger.log("Updating the pose_estimator object... ", LVL_DEBUG);
+		m_out_logger.log("Updating the pose_estimator object... ", LVL_DEBUG);
 		pose_t curr_estimated_pose;
 		pose_estimator.getLatestRobotPose(curr_estimated_pose);
 		curr_estimated_pose += rel_edge.getMeanVal();
@@ -287,7 +293,7 @@ void CICPGoodnessNRD_t<GRAPH_t>::registerNewNode() {
 	mrpt::utils::TNodeID from = m_nodeID_max;
 	mrpt::utils::TNodeID to = ++m_nodeID_max;
 
-	m_logger.log(mrpt::format("Registered new node:\n\t%lu => %lu\n\tEdge: %s",
+	m_out_logger.log(mrpt::format("Registered new node:\n\t%lu => %lu\n\tEdge: %s",
 				from, to, m_since_prev_node_PDF.getMeanVal().asString().c_str()), LVL_DEBUG);
 
 	m_graph->nodes[to] = m_graph->nodes[from] + m_since_prev_node_PDF.getMeanVal();
@@ -302,7 +308,7 @@ void CICPGoodnessNRD_t<GRAPH_t>::setGraphPtr(GRAPH_t* graph) {
 	// get the last registrered node + corresponding pose - root
 	m_nodeID_max = m_graph->root;
 
-	m_logger.log("CICPGoodnessNRD: Fetched the graph successfully", LVL_DEBUG);
+	m_out_logger.log("CICPGoodnessNRD: Fetched the graph successfully", LVL_DEBUG);
 }
 template<class GRAPH_t>
 void CICPGoodnessNRD_t<GRAPH_t>::loadParams(const std::string& source_fname) {
@@ -313,7 +319,7 @@ void CICPGoodnessNRD_t<GRAPH_t>::loadParams(const std::string& source_fname) {
 	m_ICP_sliding_win.loadFromConfigFileName(source_fname,
 			"NodeRegistrationDeciderParameters");
 
-	m_logger.log("Successfully loaded parameters.", LVL_DEBUG);
+	m_out_logger.log("Successfully loaded parameters.", LVL_DEBUG);
 
 	MRPT_END;
 }
@@ -326,6 +332,39 @@ void CICPGoodnessNRD_t<GRAPH_t>::printParams() const {
 
 	MRPT_END;
 }
+
+template<class GRAPH_t>
+void CICPGoodnessNRD_t<GRAPH_t>::getDescriptiveReport(std::string* report_str) const {
+	MRPT_START;
+
+	const std::string report_sep(2, '\n');
+	const std::string header_sep(80, '#');
+
+	// Report on graph
+	stringstream class_props_ss;
+	class_props_ss << "ICP Goodness-based Registration Procedure Summary: " << std::endl;
+	class_props_ss << header_sep << std::endl;
+
+	// time and output logging
+	const std::string time_res = m_time_logger.getStatsAsText();
+	const std::string output_res = m_out_logger.getAsString();
+
+	// merge the individual reports
+	report_str->clear();
+
+	*report_str += class_props_ss.str();
+	*report_str += report_sep;
+
+	// loggers results
+	*report_str += time_res;
+	*report_str += report_sep;
+
+	*report_str += output_res;
+	*report_str += report_sep;
+
+	MRPT_END;
+}
+
 
 // TParams
 //////////////////////////////////////////////////////////////

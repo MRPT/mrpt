@@ -128,14 +128,12 @@ class CLevMarqGSO_t:
  				double offset_y_graph;
 
     };
+		void getDescriptiveReport(std::string* report_str) const; 
 
 		// Public members
 		// ////////////////////////////
     OptimizationParams opt_params;
     GraphVisualizationParams viz_params;
-		// logger
-		mrpt::utils::COutputLogger_t m_logger;
-
 
   private:
 
@@ -224,8 +222,9 @@ class CLevMarqGSO_t:
 		// Use second thread for graph optimization
 		mrpt::system::TThreadHandle m_thread_optimize;
 
-		
-
+		// logger
+		mrpt::utils::COutputLogger_t m_out_logger;
+		mrpt::utils::CTimeLogger m_time_logger;
 
 };
 
