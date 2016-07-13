@@ -47,7 +47,6 @@ void CICPGoodnessNRD_t<GRAPH_t>::initCICPGoodnessNRD_t() {
 
 	m_out_logger.setName("CICPGoodnessNRD");
 	m_out_logger.setLoggingLevel(LVL_DEBUG);
-	m_out_logger.setMinLoggingLevel(LVL_INFO);
 
 	m_out_logger.log("Initialized class object", LVL_DEBUG);
 }
@@ -314,10 +313,19 @@ template<class GRAPH_t>
 void CICPGoodnessNRD_t<GRAPH_t>::loadParams(const std::string& source_fname) {
 	MRPT_START;
 
-	params.loadFromConfigFileName(source_fname, 
+	params.loadFromConfigFileName(source_fname,
 			"NodeRegistrationDeciderParameters");
 	m_ICP_sliding_win.loadFromConfigFileName(source_fname,
 			"NodeRegistrationDeciderParameters");
+
+	// set the logging level if given by the user
+	CConfigFile source(source_fname);
+	// Minimum verbosity level of the logger
+	int min_verbosity_level = source.read_int(
+			"NodeRegistrationDeciderParameters",
+			"class_verbosity",
+			1, false);
+	m_out_logger.setMinLoggingLevel(VerbosityLevel(min_verbosity_level));
 
 	m_out_logger.log("Successfully loaded parameters.", LVL_DEBUG);
 
