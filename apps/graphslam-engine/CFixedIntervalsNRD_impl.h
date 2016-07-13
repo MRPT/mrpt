@@ -43,7 +43,7 @@ void CFixedIntervalsNRD_t<GRAPH_t>::initCFixedIntervalsNRD_t() {
 
 	m_out_logger.setName("CFixedIntervalsNRD");
 	m_out_logger.setLoggingLevel(LVL_DEBUG);
-	m_out_logger.setMinLoggingLevel(LVL_INFO);
+	m_out_logger.setMinLoggingLevel(LVL_DEBUG);
 
 	m_out_logger.log("IntervalsNRD: Initialized class object", LVL_DEBUG);
 }
@@ -208,6 +208,16 @@ void CFixedIntervalsNRD_t<GRAPH_t>::loadParams(const std::string& source_fname) 
 
 	params.loadFromConfigFileName(source_fname,
 			"NodeRegistrationDeciderParameters");
+
+	// set the logging level if given by the user
+	CConfigFile source(source_fname);
+	int min_verbosity_level = source.read_int(
+			"NodeRegistrationDeciderParameters",
+			"class_verbosity",
+			1, false);
+	m_out_logger.setMinLoggingLevel(VerbosityLevel(min_verbosity_level));
+
+
 	m_out_logger.log("Successfully loaded parameters.", LVL_DEBUG);
 
 	MRPT_END;

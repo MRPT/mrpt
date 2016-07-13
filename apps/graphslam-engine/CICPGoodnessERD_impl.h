@@ -54,7 +54,6 @@ void CICPGoodnessERD_t<GRAPH_t>::initCICPGoodnessERD_t() {
 
 	m_out_logger.setName("CICPGoodnessERD");
 	m_out_logger.setLoggingLevel(LVL_DEBUG);
-	m_out_logger.setMinLoggingLevel(LVL_DEBUG);
 
 	m_out_logger.log("CCICPGoodnessERD: Initialized class object");
 
@@ -624,6 +623,14 @@ void CICPGoodnessERD_t<GRAPH_t>::loadParams(const std::string& source_fname) {
 	params.loadFromConfigFileName(source_fname, 
 			"EdgeRegistrationDeciderParameters");
 	m_out_logger.log("Successfully loaded CICPGoodnessERD parameters. ");
+
+	// set the logging level if given by the user
+	CConfigFile source(source_fname);
+	int min_verbosity_level = source.read_int(
+			"EdgeRegistrationDeciderParameters",
+			"class_verbosity",
+			1, false);
+	m_out_logger.setMinLoggingLevel(VerbosityLevel(min_verbosity_level));
 
 	MRPT_END;
 }

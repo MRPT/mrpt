@@ -100,8 +100,8 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::ini
 
 	// logger instance properties
 	m_out_logger.setName("CGraphSlamengine");
-	m_out_logger.setLoggingLevel(LVL_INFO); // default level of the messages
-	m_out_logger.setMinLoggingLevel(LVL_DEBUG); // ignore every log below this
+	m_out_logger.setLoggingLevel(LVL_DEBUG); // default level of the messages
+	m_out_logger.setMinLoggingLevel(LVL_INFO); // ignore every log below this
 
  	// set the CDisplayWindowPlots pointer to null for starters, we don't know if we are using it
 	m_win_plot = NULL;
@@ -587,7 +587,7 @@ bool CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::par
 				mrpt::synch::CCriticalSectionLocker m_graph_lock(&m_graph_section);
 				m_time_logger.enter("CGraphSlamEngine::dijkstra_estimation");
 				m_graph.dijkstra_nodes_estimate();
-				m_time_logger.leave("CGraphSlamEngine::dijkstra_nodes_estimate");
+				m_time_logger.leave("CGraphSlamEngine::dijkstra_estimation");
 			}
 
 			// update visualization of estimated trajectory
@@ -772,6 +772,13 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::rea
 			"ground_truth_file_format",
 			"NavSimul", false);
 
+	// Minimum verbosity level of the logger
+	int min_verbosity_level = cfg_file.read_int(
+			"GeneralConfiguration",
+			"class_verbosity",
+			1, false);
+	m_out_logger.setMinLoggingLevel(VerbosityLevel(min_verbosity_level));
+
 	// Section: VisualizationParameters
 	// ////////////////////////////////
 
@@ -869,6 +876,9 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::get
 		<< m_GT_file_format << std::endl;
 	ss_out << "Ground Truth filename           = "
 		<< m_fname_GT << std::endl;
+
+	ss_out << "Output Verbosity level          = "
+		<< m_out_logger.getCurrentLoggingLevel() << std::endl;
 
 	ss_out << "Visualize odometry              = "
 		<< ( m_visualize_odometry_poses ? "TRUE" : "FALSE" ) << std::endl;
@@ -2035,7 +2045,7 @@ template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR, class OPTIMI
 void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::computeSlamMetric(mrpt::utils::TNodeID nodeID, size_t gt_index) {
 	MRPT_START;
 
-	m_out_logger.log("In computeSlamMetric..." );
+	m_out_logger.log("In computeSlamMetric...", LVL_DEBUG);
 
 	// TODO - add assertions here...
 	// TODO - recheck this function
@@ -2239,7 +2249,7 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::gen
 		m_out_streams[fname]->printf("%s", report_str.c_str());
 	}
 
-	{ // slam evaluation metric
+	if (m_use_GT) { // slam evaluation metric
 		report_str.clear();
 		const std::string desc("# File includes the evolution of the SLAM metric. \
 Implemented metric computes the \"deformation energy\" that is needed to transfer \

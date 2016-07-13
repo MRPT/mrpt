@@ -49,7 +49,6 @@ void CLevMarqGSO_t<GRAPH_t>::initCLevMarqGSO_t() {
 
 	m_out_logger.setName("CLevMarqGSO");
 	m_out_logger.setLoggingLevel(LVL_DEBUG);
-	m_out_logger.setMinLoggingLevel(LVL_INFO);
 
 	MRPT_END;
 }
@@ -543,6 +542,15 @@ template<class GRAPH_t>
 void CLevMarqGSO_t<GRAPH_t>::loadParams(const std::string& source_fname) {
 	opt_params.loadFromConfigFileName(source_fname, "OptimizerParameters");
 	viz_params.loadFromConfigFileName(source_fname, "VisualizationParameters");
+
+	// set the logging level if given by the user
+	CConfigFile source(source_fname);
+	// Minimum verbosity level of the logger
+	int min_verbosity_level = source.read_int(
+			"OptimizerParameters",
+			"class_verbosity",
+			1, false);
+	m_out_logger.setMinLoggingLevel(VerbosityLevel(min_verbosity_level));
 
 	m_out_logger.log("Successfully loaded Params. ");
 	m_has_read_config = true;

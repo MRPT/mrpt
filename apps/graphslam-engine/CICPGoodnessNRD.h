@@ -23,6 +23,7 @@
 #include <mrpt/obs/CObservationIMU.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/utils/CLoadableOptions.h>
+#include <mrpt/utils/CConfigFile.h>
 #include <mrpt/utils/CConfigFileBase.h>
 #include <mrpt/utils/CStream.h>
 #include <mrpt/utils/types_simple.h>
