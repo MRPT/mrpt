@@ -17,6 +17,7 @@
 #include <mrpt/graphs/CNetworkOfPoses.h>
 #include <mrpt/synch/CCriticalSection.h>
 #include <mrpt/utils/TParameters.h>
+#include <mrpt/utils/CTimeLogger.h>
 
 #include "CWindowManager.h"
 
@@ -103,6 +104,14 @@ class CGraphSlamOptimizer_t {
      * Print the problem parameters to the screen in a unified way
      */
 		virtual void printParams() const {}
+		/**
+		 * Fill the provided string with a detailed report of the class state
+		 * including:
+		 * - Timing of important methods
+		 * - Properties fo class at the current time
+		 * - Logging of commands until current time
+		 */
+		virtual void getDescriptiveReport(std::string* report_str) const {}
 
 	protected:
 		/**

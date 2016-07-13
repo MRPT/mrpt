@@ -52,11 +52,11 @@ void CICPGoodnessERD_t<GRAPH_t>::initCICPGoodnessERD_t() {
 	m_checked_for_usuable_dataset = false;
 	m_consecutive_invalid_format_instances = 0;
 
-	m_logger.setName("CICPGoodnessERD");
-	m_logger.setLoggingLevel(LVL_DEBUG);
-	m_logger.setMinLoggingLevel(LVL_DEBUG);
+	m_out_logger.setName("CICPGoodnessERD");
+	m_out_logger.setLoggingLevel(LVL_DEBUG);
+	m_out_logger.setMinLoggingLevel(LVL_DEBUG);
 
-	m_logger.log("CCICPGoodnessERD: Initialized class object");
+	m_out_logger.log("CCICPGoodnessERD: Initialized class object");
 
 	MRPT_END;
 }
@@ -79,7 +79,7 @@ template<class GRAPH_t> void CICPGoodnessERD_t<GRAPH_t>::updateDeciderState(
 	if (m_last_total_num_of_nodes < m_graph->nodeCount()) {
 		registered_new_node = true;
 		m_last_total_num_of_nodes = m_graph->nodeCount();
-		m_logger.log("Registered new node. ");
+		m_out_logger.log("Registered new node. ");
 	}
 
 	if (observation.present()) { // observation-only rawlog format
@@ -111,12 +111,12 @@ template<class GRAPH_t> void CICPGoodnessERD_t<GRAPH_t>::updateDeciderState(
 		if (registered_new_node) {
 			if (!m_last_laser_scan2D.null()) {
 				m_nodes_to_laser_scans2D[m_graph->nodeCount()-1] = m_last_laser_scan2D;
-				m_logger.log(mrpt::format("Added laser scans of nodeID: %lu", 
+				m_out_logger.log(mrpt::format("Added laser scans of nodeID: %lu", 
 							m_graph->nodeCount()-1));
 			}
 			if (!m_last_laser_scan3D.null()) {
 				m_nodes_to_laser_scans3D[m_graph->nodeCount()-1] = m_last_laser_scan3D;
-				m_logger.log(mrpt::format("Added laser scans of nodeID: %lu", 
+				m_out_logger.log(mrpt::format("Added laser scans of nodeID: %lu", 
 							m_graph->nodeCount()-1));
 			}
 		}
@@ -127,7 +127,7 @@ template<class GRAPH_t> void CICPGoodnessERD_t<GRAPH_t>::updateDeciderState(
 			observations->getObservationByClass<CObservation2DRangeScan>();
 		if (registered_new_node && m_last_laser_scan2D) {
 			m_nodes_to_laser_scans2D[m_graph->nodeCount()-1] = m_last_laser_scan2D;
-			m_logger.log(mrpt::format("Added laser scans of nodeID: %lu", 
+			m_out_logger.log(mrpt::format("Added laser scans of nodeID: %lu", 
 						m_graph->nodeCount()-1));
 		}
 	}
@@ -140,7 +140,7 @@ template<class GRAPH_t> void CICPGoodnessERD_t<GRAPH_t>::updateDeciderState(
 				&nodes_to_check_ICP,
 				m_graph->nodeCount()-1,
 				params.ICP_max_distance);
-		m_logger.log(mrpt::format("Found * %lu * nodes close to nodeID %lu",
+		m_out_logger.log(mrpt::format("Found * %lu * nodes close to nodeID %lu",
 				nodes_to_check_ICP.size(),
 				m_graph->nodeCount()-1));
 
@@ -202,12 +202,14 @@ void CICPGoodnessERD_t<GRAPH_t>::checkRegistrationCondition2D(
 				pose_t initial_pose = m_graph->nodes[curr_nodeID] - 
 					m_graph->nodes[*node_it];
 
+				m_time_logger.enter("CICPGoodnessERD::getICPEdge");
 				this->getICPEdge(
 						*prev_laser_scan,
 						*curr_laser_scan,
 						&rel_edge,
 						&initial_pose,
 						&icp_info);
+				m_time_logger.leave("CICPGoodnessERD::getICPEdge");
 
 				sliding_win.addNewMeasurement(icp_info.goodness);
 
@@ -260,12 +262,14 @@ void CICPGoodnessERD_t<GRAPH_t>::checkRegistrationCondition3D(
         prev_laser_scan = search->second;
 
 				// TODO - use initial edge estimation
+				m_time_logger.enter("CICPGoodnessERD::getICPEdge");
 				this->getICPEdge(
 						*prev_laser_scan,
 						*curr_laser_scan,
 						&rel_edge,
 						NULL,
 						&icp_info);
+				m_time_logger.leave("CICPGoodnessERD::getICPEdge");
 
 				// criterion for registering a new node
 				if (icp_info.goodness > params.ICP_goodness_thresh) {
@@ -328,7 +332,7 @@ void CICPGoodnessERD_t<GRAPH_t>::setGraphPtr(GRAPH_t* graph) {
 
 	m_graph = graph;
 
-	m_logger.log("Fetched the graph successfully");
+	m_out_logger.log("Fetched the graph successfully");
 
 	MRPT_END;
 }
@@ -337,7 +341,7 @@ void CICPGoodnessERD_t<GRAPH_t>::setRawlogFname(const std::string& rawlog_fname)
 	MRPT_START;
 
 	m_rawlog_fname = rawlog_fname;
-	m_logger.log(mrpt::format("Fetched the rawlog filename successfully: %s", 
+	m_out_logger.log(mrpt::format("Fetched the rawlog filename successfully: %s", 
 			m_rawlog_fname.c_str()));
 
 	// find the directory of the 3Dscan images in case we are working with
@@ -391,7 +395,7 @@ void CICPGoodnessERD_t<GRAPH_t>::toggleLaserScansVisualization() {
 	ASSERTMSG_(m_win, "No CDisplayWindow3D* was provided");
 	ASSERTMSG_(m_win_manager, "No CWindowManager* was provided");
 
-	m_logger.log("Toggling LaserScans visualization...");
+	m_out_logger.log("Toggling LaserScans visualization...");
  
 	COpenGLScenePtr scene = m_win->get3DSceneAndLock();
 
@@ -423,7 +427,8 @@ void CICPGoodnessERD_t<GRAPH_t>::getEdgesStats(
 template<class GRAPH_t>
 void CICPGoodnessERD_t<GRAPH_t>::initializeVisuals() {
 	MRPT_START;
-	m_logger.log("Initializing CICPGoodnessERD visuals");
+	m_out_logger.log("Initializing CICPGoodnessERD visuals");
+	m_time_logger.enter("CICPGoodnessERD::Visuals");
 
 	ASSERTMSG_(params.has_read_config,
 			"Configuration parameters aren't loaded yet");
@@ -483,13 +488,15 @@ void CICPGoodnessERD_t<GRAPH_t>::initializeVisuals() {
 	}
 
 	m_initialized_visuals = true;
+	m_time_logger.leave("CICPGoodnessERD::Visuals");
 	MRPT_END;
 }
 template<class GRAPH_t>
 void CICPGoodnessERD_t<GRAPH_t>::updateVisuals() {
 	MRPT_START;
 	ASSERT_(m_initialized_visuals);
-	m_logger.log("Updating CICPGoodnessERD visuals");
+	m_out_logger.log("Updating CICPGoodnessERD visuals");
+	m_time_logger.enter("CICPGoodnessERD::Visuals");
 
 	// update ICP_max_distance Disk
 	if (m_win && params.ICP_max_distance > 0) {
@@ -539,6 +546,7 @@ void CICPGoodnessERD_t<GRAPH_t>::updateVisuals() {
 		m_win->forceRepaint();
 	}
 
+	m_time_logger.leave("CICPGoodnessERD::Visuals");
 	MRPT_END;
 }
 template<class GRAPH_t>
@@ -570,7 +578,7 @@ void CICPGoodnessERD_t<GRAPH_t>::checkIfInvalidDataset(
 		return;
 	}
 	if (m_consecutive_invalid_format_instances > m_consecutive_invalid_format_instances_thres) {
-		m_logger.log("Can't find usuable data in the given dataset.\nMake sure dataset contains valid CObservation2DRangeScan/CObservation3DRangeScan data.",
+		m_out_logger.log("Can't find usuable data in the given dataset.\nMake sure dataset contains valid CObservation2DRangeScan/CObservation3DRangeScan data.",
 				LVL_ERROR);
 		mrpt::system::sleep(5000);
 		m_checked_for_usuable_dataset = true;
@@ -584,7 +592,7 @@ void CICPGoodnessERD_t<GRAPH_t>::dumpVisibilityErrorMsg(
 		std::string viz_flag, int sleep_time /* = 500 milliseconds */) {
 	MRPT_START;
 	
-	m_logger.log(format("Cannot toggle visibility of specified object.\n "
+	m_out_logger.log(format("Cannot toggle visibility of specified object.\n "
 			"Make sure that the corresponding visualization flag ( %s "
 			") is set to true in the .ini file.\n",
 			viz_flag.c_str()).c_str(), LVL_ERROR);
@@ -615,7 +623,7 @@ void CICPGoodnessERD_t<GRAPH_t>::loadParams(const std::string& source_fname) {
 
 	params.loadFromConfigFileName(source_fname, 
 			"EdgeRegistrationDeciderParameters");
-	m_logger.log("Successfully loaded CICPGoodnessERD parameters. ");
+	m_out_logger.log("Successfully loaded CICPGoodnessERD parameters. ");
 
 	MRPT_END;
 }
@@ -627,6 +635,38 @@ void CICPGoodnessERD_t<GRAPH_t>::printParams() const {
 
 	MRPT_END;
 }
+
+template<class GRAPH_t>
+void CICPGoodnessERD_t<GRAPH_t>::getDescriptiveReport(std::string* report_str) const {
+	MRPT_START;
+
+	const std::string report_sep(2, '\n');
+	const std::string header_sep(80, '#');
+
+	// Report on graph
+	stringstream class_props_ss;
+	class_props_ss << "ICP Goodness-based Registration Procedure Summary: " << std::endl;
+	class_props_ss << header_sep << std::endl;
+
+	// time and output logging
+	const std::string time_res = m_time_logger.getStatsAsText();
+	const std::string output_res = m_out_logger.getAsString();
+	
+	// merge the individual reports
+	report_str->clear();
+
+	*report_str += class_props_ss.str();
+	*report_str += report_sep;
+
+	*report_str += time_res;
+	*report_str += report_sep;
+
+	*report_str += output_res;
+	*report_str += report_sep;
+
+	MRPT_END;
+}
+
 
 
 // TParameter

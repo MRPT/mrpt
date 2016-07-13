@@ -237,40 +237,51 @@ class CEdgeCounter_t {
 		}
 
 		/**
-		 * printEdgesSummary
-		 *
-		 * Dump a detailed report for all the edges registered thus far
+		 * Dump a report of the registered, so far, edges to the console
 		 */
-		void printEdgesSummary() const {
+		void dumpToConsole() const {
+			std::string str(getAsString());
+			std::cout << str << std::endl;
+		}
+		/**
+		 * Fill the provided string with a detailed report of the registered, so far,
+		 * edges
+		 */
+		void getAsString(std::string* str_out) const {
 			std::stringstream ss_out;
+			std::string sep(30, '#');
 			ss_out << "Summary of Edges: " << std::endl;
-			ss_out << "---------------------------" << std::endl;
+			ss_out << sep << std::endl;
 
-			ss_out << "\t Total edges: " << this->getTotalNumOfEdges() << std::endl;
+			ss_out << "\tTotal registered edges: " << this->getTotalNumOfEdges() << std::endl;
+			ss_out << "\tUnique edges (after removal of multiple edges connecting the same nodes): " 
+				<< m_unique_edges << std::endl;
 
 			for (std::map<std::string, int>::const_iterator it = m_name_to_edges_num.begin();
 					it != m_name_to_edges_num.end(); ++it) {
-				ss_out << "\t " << it->first << " edges: " << it->second << std::endl;
+				ss_out << "\t" << it->first << " edges: " << it->second << std::endl;
 			}
-			ss_out << "\t Loop closure edges: " << this->getLoopClosureEdges() << std::endl;
+			ss_out << "\tLoop closure edges: " << this->getLoopClosureEdges() << std::endl;
 
-			std::cout << ss_out.str() << std::endl;
+			// dump the contents to the provided string
+			*str_out = ss_out.str();
+		}
+		std::string getAsString() const {
+			std::string str;
+			this->getAsString(&str);
+			return str;
 		}
 
 		// VISUALIZATION RELATED METHODS
 		// ////////////////////////////
 
 		/**
-		 * setVisualizationWindow
-		 *
 		 * Add the visualization window. Handy function for not having to
 		 * specify it in the class constructor
 		 */
 		void setVisualizationWindow(mrpt::gui::CDisplayWindow3D* win) { m_win = win; }
 
 		/**
-		 * setTextMessageParams
-		 *
 		 * Add the textMessage parameters to the object - used during visualization
 		 * All the names in the given std::maps have to be already specified and added in
 		 * the object via addEdge with is_new=true or addEdgeType

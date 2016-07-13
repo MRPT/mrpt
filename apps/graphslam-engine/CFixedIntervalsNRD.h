@@ -74,6 +74,7 @@ class CFixedIntervalsNRD_t:
 
 		void loadParams(const std::string& source_fname);
 		void printParams() const; 
+		void getDescriptiveReport(std::string* report_str) const; 
 
 		/**
 		 	* Method makes use of the CActionCollection/CObservation to update the odometry estimation from
@@ -92,6 +93,11 @@ class CFixedIntervalsNRD_t:
     				const mrpt::utils::CConfigFileBase &source,
     				const std::string &section);
 				void 	dumpToTextStream(mrpt::utils::CStream &out) const;
+				/**
+		 		 * Return a string with the configuration parameters
+		 		 */
+				void getAsString(std::string* params_out) const;
+				std::string getAsString() const;
 
 				// max values for new node registration
 				double registration_max_distance;
@@ -102,10 +108,6 @@ class CFixedIntervalsNRD_t:
 		// ////////////////////////////
     TParams params;
 
-		// logger
-		mrpt::utils::COutputLogger_t m_logger;
-
-	
 	private:
 		// Private functions
 		//////////////////////////////////////////////////////////////
@@ -151,6 +153,10 @@ class CFixedIntervalsNRD_t:
 		bool m_checked_for_usuable_dataset;
 		size_t m_consecutive_invalid_format_instances;
 		const size_t m_consecutive_invalid_format_instances_thres;
+
+		// loggers
+		mrpt::utils::COutputLogger_t m_out_logger;
+		mrpt::utils::CTimeLogger m_time_logger;
 };
 
 } } } // end of namespaces

@@ -87,6 +87,7 @@ template<class GRAPH_t>
 		void setGraphPtr(GRAPH_t* graph);
 		void loadParams(const std::string& source_fname);
 		void printParams() const; 
+		void getDescriptiveReport(std::string* report_str) const; 
 
 		bool updateDeciderState( mrpt::obs::CActionCollectionPtr action,
 				mrpt::obs::CSensoryFramePtr observations,
@@ -113,9 +114,6 @@ template<class GRAPH_t>
 		// Public members
 		// ////////////////////////////
 		TParams params;
-
-		// logger
-		mrpt::utils::COutputLogger_t m_logger;
 
 	private:
 		// Private functions
@@ -160,6 +158,10 @@ template<class GRAPH_t>
 		mrpt::poses::CRobot2DPoseEstimator pose_estimator;
 		mrpt::system::TTimeStamp m_curr_timestamp;
 		mrpt::system::TTimeStamp m_prev_timestamp;
+
+		// loggers
+		mrpt::utils::COutputLogger_t m_out_logger;
+		mrpt::utils::CTimeLogger m_time_logger;
 
 };
 
