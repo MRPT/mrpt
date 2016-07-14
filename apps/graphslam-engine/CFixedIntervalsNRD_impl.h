@@ -41,7 +41,11 @@ void CFixedIntervalsNRD_t<GRAPH_t>::initCFixedIntervalsNRD_t() {
 	m_checked_for_usuable_dataset = false;
 	m_consecutive_invalid_format_instances = 0;
 
-	std::cout << "CFixedIntervalsNRD: Initialized class object" << std::endl;
+	m_logger.setName("CFixedIntervalsNRD");
+	m_logger.setLoggingLevel(LVL_DEBUG);
+	m_logger.setMinLoggingLevel(LVL_INFO);
+
+	m_logger.log("IntervalsNRD: Initialized class object", LVL_DEBUG);
 }
 template<class GRAPH_t>
 CFixedIntervalsNRD_t<GRAPH_t>::~CFixedIntervalsNRD_t() { }
@@ -69,7 +73,8 @@ bool CFixedIntervalsNRD_t<GRAPH_t>::updateDeciderState(
 				static_cast<CObservationOdometryPtr>(observation);
 			// not incremental - gives the absolute odometry reading
 			m_curr_odometry_only_pose = obs_odometry->odometry;
-			//std::cout << "Current odometry-only" << m_curr_odometry_only_pose << std::endl;
+			m_logger.log(mrpt::format("Current odometry-only pose: %s", m_curr_odometry_only_pose.asString().c_str()),
+						LVL_DEBUG);
 
 			// I don't have any information about the covariane of the move in
 			// observation-only format
@@ -141,7 +146,7 @@ bool CFixedIntervalsNRD_t<GRAPH_t>::checkRegistrationCondition() {
 
 template<class GRAPH_t>
 void CFixedIntervalsNRD_t<GRAPH_t>::registerNewNode() {
-	//std::cout << "in registerNewNode..." << endl;
+	m_logger.log("In registerNewNode...", LVL_DEBUG);
 
 	mrpt::utils::TNodeID from = m_prev_registered_node;
 	mrpt::utils::TNodeID to = ++m_prev_registered_node;
@@ -149,9 +154,8 @@ void CFixedIntervalsNRD_t<GRAPH_t>::registerNewNode() {
 	m_graph->nodes[to] = m_graph->nodes[from] + m_since_prev_node_PDF.getMeanVal();
   m_graph->insertEdgeAtEnd(from, to, m_since_prev_node_PDF);
 
-	std::cout << "Registered new node: "
-		<< "\tnodeID: " << to << std::endl
-		<< "\tedge: " << std::endl << m_since_prev_node_PDF << std::endl;
+	m_logger.log(mrpt::format("Registered new node:\n\t%lu => %lu\n\tEdge: %s",
+				from, to, m_since_prev_node_PDF.getMeanVal().asString().c_str()), LVL_DEBUG);
 
 }
 template<class GRAPH_t>
@@ -161,8 +165,7 @@ void CFixedIntervalsNRD_t<GRAPH_t>::setGraphPtr(GRAPH_t* graph) {
 	// get the last registrered node + corresponding pose - root
 	m_prev_registered_node = m_graph->root;
 
-	std::cout << "CFixedIntervalsNRD: Fetched the graph successfully" 
-		<< std::endl;
+	m_logger.log("Fetched the graph successfully", LVL_DEBUG);
 }
 
 template<class GRAPH_t>
@@ -190,9 +193,8 @@ void CFixedIntervalsNRD_t<GRAPH_t>::checkIfInvalidDataset(
 	}
 	
 	if (m_consecutive_invalid_format_instances > m_consecutive_invalid_format_instances_thres) {
-		std::cout << "CFixedIntervalsNRD: Can't find usuable data in the given dataset." 
-			<< std::endl;
-		std::cout << "Make sure dataset contains valid odometry data." << std::endl;
+		m_logger.log("Can't find usuable data in the given dataset.\nMake sure dataset contains valid odometry data.",
+				LVL_ERROR);
 		mrpt::system::sleep(5000);
 		m_checked_for_usuable_dataset = true;
 	}
@@ -206,6 +208,7 @@ void CFixedIntervalsNRD_t<GRAPH_t>::loadParams(const std::string& source_fname) 
 
 	params.loadFromConfigFileName(source_fname,
 			"NodeRegistrationDeciderParameters");
+	m_logger.log("Successfully loaded parameters.", LVL_DEBUG);
 
 	MRPT_END;
 }
@@ -251,8 +254,6 @@ void CFixedIntervalsNRD_t<GRAPH_t>::TParams::loadFromConfigFile(
 			"registration_max_angle",
 			60 /* degrees */, false);
 	registration_max_angle = DEG2RAD(registration_max_angle);
-
-	std::cout << "Successfully loaded CFixedIntervalsNRD parameters. " << std::endl;
 
 	MRPT_END;
 }

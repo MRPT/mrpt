@@ -102,6 +102,10 @@ class CFixedIntervalsNRD_t:
 		// ////////////////////////////
     TParams params;
 
+		// logger
+		mrpt::utils::COutputLogger_t m_logger;
+
+	
 	private:
 		// Private functions
 		//////////////////////////////////////////////////////////////

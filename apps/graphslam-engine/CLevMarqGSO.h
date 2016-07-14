@@ -122,7 +122,8 @@ class CLevMarqGSO_t:
 				TParametersDouble cfg;
 				bool visualize_optimized_graph;
 				// textMessage parameters
-				std::string keystroke_graph;
+				std::string keystroke_graph_toggle; // see Ctor for initialization
+				std::string keystroke_graph_autofit; // see Ctor for initialization
  				int text_index_graph;
  				double offset_y_graph;
 
@@ -132,6 +133,9 @@ class CLevMarqGSO_t:
 		// ////////////////////////////
     OptimizationParams opt_params;
     GraphVisualizationParams viz_params;
+		// logger
+		mrpt::utils::COutputLogger_t m_logger;
+
 
   private:
 
@@ -175,6 +179,14 @@ class CLevMarqGSO_t:
 		 * togle the graph visualization on and off
 		 */
 		void toggleGraphVisualization();
+		/**
+		 * Set the camera parameters of the CDisplayWindow3D so that the whole
+		 * graph is viewed in the window. Method assumes that the COpenGLinstance
+		 * *is not locked* prior to this call, so make sure you have issued
+		 * CDisplayWindow3D::unlockAccess3DScene() before calling this method.
+		 */
+		inline void fitGraphInView();
+
 		void initOptDistanceVisualization();
 		/**
 		 * Update the position of the disk indicating the distance in which
@@ -203,6 +215,7 @@ class CLevMarqGSO_t:
 		bool m_has_read_config;
 		bool m_just_inserted_loop_closure;
 		bool registered_new_node;
+		bool m_autozoom_active;
 
 		// start optimizing the graph after a certain number of nodes has been
 		// added (when m_graph->nodeCount() > m_last_total_num_of_nodes)

@@ -26,12 +26,15 @@ void CICPGoodnessNRD_t<GRAPH_t>::initCICPGoodnessNRD_t() {
 
 	m_first_time_call2D = true;
 	m_first_time_call3D = true;
+	m_is_using_3DScan = false;
 
 	m_graph = NULL;
 
 	// Current node registration decider *decides* how many nodes are there
 	// currently in the graph (no need to ask m_graph->nodeCount..
 	m_nodeID_max  = INVALID_NODEID;
+	
+	m_curr_timestamp = INVALID_TIMESTAMP;
 
 	// I am sure of the initial position, set to identity matrix
 	double tmp[] = {
@@ -42,7 +45,11 @@ void CICPGoodnessNRD_t<GRAPH_t>::initCICPGoodnessNRD_t() {
 	m_since_prev_node_PDF.cov_inv = init_path_uncertainty;
 	m_since_prev_node_PDF.mean = pose_t();
 
-	std::cout << "CICPGoodnessNRD: Initialized class object" << std::endl;
+	m_logger.setName("CICPGoodnessNRD");
+	m_logger.setLoggingLevel(LVL_DEBUG);
+	m_logger.setMinLoggingLevel(LVL_INFO);
+
+	m_logger.log("Initialized class object", LVL_DEBUG);
 }
 template<class GRAPH_t>
 CICPGoodnessNRD_t<GRAPH_t>::~CICPGoodnessNRD_t() { }
@@ -59,6 +66,8 @@ bool CICPGoodnessNRD_t<GRAPH_t>::updateDeciderState(
 	MRPT_UNUSED_PARAM(action);
 
 	if (observation.present()) { // Observation-Only Rawlog
+
+
 		// 3D Range Scan
 		if (IS_CLASS(observation, CObservation3DRangeScan)) {
 			m_curr_laser_scan3D =
@@ -95,8 +104,28 @@ bool CICPGoodnessNRD_t<GRAPH_t>::updateDeciderState(
 
 			m_is_using_3DScan = false;
 		}
+
+		if (IS_CLASS(observation, CObservation3DRangeScan) ||
+				IS_CLASS(observation, CObservation2DRangeScan) ) {
+			// Ignore the timestamps of the CObservationOdometry objects in the
+			// datasets. They aren't always in acending order when combined with the
+			// CObaservation*DRangeScan objects
+			m_curr_timestamp = observation->timestamp;
+			m_prev_timestamp = m_curr_timestamp;
+
+		}
+
+
 	}
 	else { // Action/Observations Rawlog
+		// update the timestamps
+		CActionRobotMovement2DPtr robot_move =
+			action->getBestMovementEstimation();
+		if (robot_move) {
+			m_prev_timestamp = m_curr_timestamp;
+			m_curr_timestamp = robot_move->timestamp;
+		}
+
 		// 2D Range Scan
 		m_curr_laser_scan2D =
 			observations->getObservationByClass<CObservation2DRangeScan>();
@@ -150,8 +179,21 @@ bool CICPGoodnessNRD_t<GRAPH_t>::updateDeciderState(
 template<class GRAPH_t>
 bool CICPGoodnessNRD_t<GRAPH_t>::checkRegistrationCondition() {
 	MRPT_START;
-	//cout << "CICPGoodnessNRD: In checkRegistrationCondition2D.." << endl;
+
+	m_logger.log("In checkRegistrationCondition2D..");
 	bool registered_new_node = false;
+
+
+
+	// get an initial estimation of your next ICP constraint using the
+	// pose_estimator object
+	pose_t curr_estimated_pose;
+	pose_t initial_ICP_estimation;
+	//bool is_trusted = pose_estimator.getLatestRobotPose(curr_estimated_pose);
+
+	//if (is_trusted)
+		//initial_ICP_estimation
+
 
 	constraint_t rel_edge;
 	mrpt::slam::CICP::TReturnInfo icp_info;
@@ -173,13 +215,14 @@ bool CICPGoodnessNRD_t<GRAPH_t>::checkRegistrationCondition() {
 				&icp_info);
 	}
 
-	// append current ICP edge to the sliding window to adjust the 
+	// append current ICP edge to the sliding window
 	m_ICP_sliding_win.addNewMeasurement(icp_info.goodness);
 	//m_ICP_sliding_win.dumpToConsole();
 
-	std::cout << "Current ICP constraint: " << std::endl;
-	std::cout << "\tEdge: " << rel_edge.getMeanVal() << std::endl;
-	std::cout << "\tNorm: " << rel_edge.getMeanVal().norm() << std::endl;
+	m_logger.log(mrpt::format(
+				"Current ICP constraint: \n\tEdge: %s\n\tNorm: %f", 
+				rel_edge.getMeanVal().asString().c_str(), 
+				rel_edge.getMeanVal().norm()), LVL_DEBUG);
 
 	// Criterions for updating PDF since last registered node
 	// - ICP goodness > threshold goodness
@@ -194,9 +237,20 @@ bool CICPGoodnessNRD_t<GRAPH_t>::checkRegistrationCondition() {
 			m_last_laser_scan2D = m_curr_laser_scan2D;
 		}
 
-		//cout << "CICPGoodnessNRD: norm = "
-			//<< m_since_prev_node_PDF.getMeanVal().norm() << " | angle = "
-			//<< RAD2DEG(fabs(wrapToPi(m_since_prev_node_PDF.getMeanVal().phi()))) << endl;
+		// Update the pose estimator object
+		m_logger.log("Updating the pose_estimator object... ", LVL_DEBUG);
+		pose_t curr_estimated_pose;
+		pose_estimator.getLatestRobotPose(curr_estimated_pose);
+		curr_estimated_pose += rel_edge.getMeanVal();
+
+// 		 // update the pose estimation
+// 		 //TODO have an estimation of velocity of your own. See Giannakoglou notes..
+// 		 // Not all timestamps are in correct order..
+// 		pose_estimator.processUpdateNewOdometry(
+// 				curr_estimated_pose,
+// 				m_curr_timestamp,
+// 				/* hasVelocities = */ false);
+		
 
 		// Criterions for adding a new node
 		// - Covered distance since last node > registration_max_distance
@@ -233,9 +287,8 @@ void CICPGoodnessNRD_t<GRAPH_t>::registerNewNode() {
 	mrpt::utils::TNodeID from = m_nodeID_max;
 	mrpt::utils::TNodeID to = ++m_nodeID_max;
 
-	std::cout << "CICPGoodnessNRD: Registering new node/edge: "
-		<< from << " -> " << to << std::endl
-		<< "\tedge: " << std::endl << m_since_prev_node_PDF << std::endl;
+	m_logger.log(mrpt::format("Registered new node:\n\t%lu => %lu\n\tEdge: %s",
+				from, to, m_since_prev_node_PDF.getMeanVal().asString().c_str()), LVL_DEBUG);
 
 	m_graph->nodes[to] = m_graph->nodes[from] + m_since_prev_node_PDF.getMeanVal();
   m_graph->insertEdgeAtEnd(from, to, m_since_prev_node_PDF);
@@ -248,10 +301,8 @@ void CICPGoodnessNRD_t<GRAPH_t>::setGraphPtr(GRAPH_t* graph) {
 
 	// get the last registrered node + corresponding pose - root
 	m_nodeID_max = m_graph->root;
-	cout << "m_nodeID_max = " << m_nodeID_max << endl;
 
-	std::cout << "CICPGoodnessNRD: Fetched the graph successfully"
-		<< std::endl;
+	m_logger.log("CICPGoodnessNRD: Fetched the graph successfully", LVL_DEBUG);
 }
 template<class GRAPH_t>
 void CICPGoodnessNRD_t<GRAPH_t>::loadParams(const std::string& source_fname) {
@@ -262,8 +313,7 @@ void CICPGoodnessNRD_t<GRAPH_t>::loadParams(const std::string& source_fname) {
 	m_ICP_sliding_win.loadFromConfigFileName(source_fname,
 			"NodeRegistrationDeciderParameters");
 
-	std::cout << "source_fname: " << source_fname << std::endl;
-	std::cout << "[CICPGoodnessNRD:] Successfully loaded parameters." << std::endl;
+	m_logger.log("Successfully loaded parameters.", LVL_DEBUG);
 
 	MRPT_END;
 }

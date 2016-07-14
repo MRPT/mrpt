@@ -7,6 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
+#define LOGGING_LEVEL 2
 
 #include <mrpt/obs/CRawlog.h>
 #include <mrpt/graphslam.h>
@@ -32,6 +33,7 @@
 #include "CWindowManager.h"
 
 // deciders
+#include "COutputLogger.h"
 #include "CEmptyNRD.h"
 #include "CICPGoodnessNRD.h"
 #include "CEmptyERD.h"
@@ -56,8 +58,6 @@ using namespace mrpt::graphslam::deciders;
 using namespace mrpt::graphslam::optimizers;
 
 using namespace std;
-
-#define VERBOSE_COUT	if (verbose) std::cout << "[graphslam_engine:] "
 
 // command line arguments
 // ////////////////////////////////////////////////////////////
@@ -131,6 +131,7 @@ bool checkOptimizerExists(string opt_name);
 int main(int argc, char **argv)
 {
 	try {
+		COutputLogger_t logger("graphslam-engine_app");
 
 		bool showHelp		 = argc>1 && !os::_strcmp(argv[1],"--help");
 		bool showVersion = argc>1 && !os::_strcmp(argv[1],"--version");
@@ -226,7 +227,7 @@ int main(int argc, char **argv)
 			}
 
 			if (list_registrars || list_optimizers.getValue()) {
-				VERBOSE_COUT << "Exiting.. " << endl;
+				logger.log("Exiting.. ");
 				return 0;
 			}
 		}
@@ -261,13 +262,13 @@ int main(int argc, char **argv)
 			graph_win_observer.observeBegin( *main_view );
 			graph_win.unlockAccess3DScene();
 		}
-		VERBOSE_COUT << "Listening to graph_window events..." << endl;
+		logger.log("Listening to graph_window events...");
 
 		bool has_exited_normally = false;
 		// take all the different combinations of node / edge registration deciders
 		// one-by-one.
-		VERBOSE_COUT << "Node registration decider: " << node_reg << endl;
-		VERBOSE_COUT << "Edge registration decider: " << edge_reg << endl;
+		logger.log(format("Node registration decider: %s", node_reg.c_str()));
+		logger.log(format("Edge registration decider: %s", edge_reg.c_str()));
 		if (system::strCmpI(node_reg, "CFixedIntervalsNRD")) {
 			if (system::strCmpI(edge_reg, "CICPGoodnessERD")) { // CFixedIntervalsNRD - CICPGoodnessERD
 				// Initialize the CGraphSlamEngine_t class

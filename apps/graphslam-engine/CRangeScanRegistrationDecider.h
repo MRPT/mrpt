@@ -36,7 +36,7 @@ namespace mrpt { namespace graphslam { namespace deciders {
 	* Class for keeping together all the RangeScanner-related functions.
 	* Deciders that make use of either 2DRangeScans (laser generated
 	* observations) or 3DRangeScans (RGBD-cameras) generated can inherit from
-	* this class in case they want to use ICP alignment functions
+	* this class in case they want to use the underlying methods
 	*/
 template< class GRAPH_t=typename mrpt::graphs::CNetworkOfPoses2DInf>
 	class CRangeScanRegistrationDecider_t {
@@ -60,7 +60,7 @@ template< class GRAPH_t=typename mrpt::graphs::CNetworkOfPoses2DInf>
 				const mrpt::obs::CObservation2DRangeScan& from,
 				const mrpt::obs::CObservation2DRangeScan& to,
 				constraint_t* rel_edge,
-				mrpt::poses::CPose2D* initial_pose=NULL,
+				const mrpt::poses::CPose2D* initial_pose=NULL,
 				mrpt::slam::CICP::TReturnInfo* icp_info=NULL);
 		/**
 			* allign the 3D range scans provided and find the potential edge that
@@ -73,7 +73,7 @@ template< class GRAPH_t=typename mrpt::graphs::CNetworkOfPoses2DInf>
 				mrpt::obs::CObservation3DRangeScan& from,
 				mrpt::obs::CObservation3DRangeScan& to,
 				constraint_t* rel_edge,
-				mrpt::poses::CPose2D* initial_pose=NULL,
+				const mrpt::poses::CPose2D* initial_pose=NULL,
 				mrpt::slam::CICP::TReturnInfo* icp_info=NULL);
 		/**
 			* Reduce the size of the given CPointsMap by keeping one out of

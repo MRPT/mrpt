@@ -17,6 +17,7 @@
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/poses/CPosePDF.h>
 #include <mrpt/poses/CPose3DPDF.h>
+#include <mrpt/poses/CRobot2DPoseEstimator.h>
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/obs/CRawlog.h>
 #include <mrpt/obs/CObservationIMU.h>
@@ -27,6 +28,7 @@
 #include <mrpt/utils/types_simple.h>
 #include <mrpt/slam/CICP.h>
 #include <mrpt/system/os.h>
+#include <mrpt/system/datetime.h>
 
 #include "CNodeRegistrationDecider.h"
 #include "CRangeScanRegistrationDecider.h"
@@ -112,6 +114,9 @@ template<class GRAPH_t>
 		// ////////////////////////////
 		TParams params;
 
+		// logger
+		mrpt::utils::COutputLogger_t m_logger;
+
 	private:
 		// Private functions
 		//////////////////////////////////////////////////////////////
@@ -151,6 +156,10 @@ template<class GRAPH_t>
 
 		// sliding window for managing the ICP goodness values
 		typename superB::TSlidingWindow m_ICP_sliding_win;
+		// TODO make this an m_
+		mrpt::poses::CRobot2DPoseEstimator pose_estimator;
+		mrpt::system::TTimeStamp m_curr_timestamp;
+		mrpt::system::TTimeStamp m_prev_timestamp;
 
 };
 
