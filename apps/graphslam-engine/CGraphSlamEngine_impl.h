@@ -47,7 +47,7 @@ CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::CGraphSl
 	m_odometry_color(0, 0, 255),
 	m_GT_color(0, 255, 0),
 	m_estimated_traj_color(255, 165, 0),
-	m_robot_model_size(3),
+	m_robot_model_size(1),
 	m_graph_section("graph_sec")
 {
 

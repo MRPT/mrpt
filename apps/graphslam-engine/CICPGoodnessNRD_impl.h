@@ -255,7 +255,7 @@ bool CICPGoodnessNRD_t<GRAPH_t>::checkRegistrationCondition() {
 		// Criterions for adding a new node
 		// - Covered distance since last node > registration_max_distance
 		// - Angle difference since last node > registration_max_angle
-		bool use_angle_difference_node_reg = false;
+		bool use_angle_difference_node_reg = true;
 		bool use_distance_node_reg = true;
 
 		bool angle_crit = false;

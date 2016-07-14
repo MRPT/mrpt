@@ -102,7 +102,7 @@ template<
 				void notifyOfWindowEvents(
 						const std::map<std::string, bool>& events_occurred); 
     		void getEdgesStats(
-    				std::map<const std::string, int>* edge_types_to_nums);
+    				std::map<const std::string, int>* edge_types_to_nums) const;
 
     		void initializeVisuals();
     		void updateVisuals();
