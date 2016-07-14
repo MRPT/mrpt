@@ -18,7 +18,6 @@ project(${PROJECT_NAME})
 
 set(SRC_FILES
     graphslam-engine_app.cpp
-    COutputLogger.cpp COutputLogger.h
     )
 
 # Define the executable target:
