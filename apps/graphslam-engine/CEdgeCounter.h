@@ -249,7 +249,7 @@ class CEdgeCounter_t {
 		 */
 		void getAsString(std::string* str_out) const {
 			std::stringstream ss_out;
-			std::string sep(30, '#');
+			std::string sep(80, '#');
 			ss_out << "Summary of Edges: " << std::endl;
 			ss_out << sep << std::endl;
 
