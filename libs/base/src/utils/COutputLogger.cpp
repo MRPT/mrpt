@@ -211,7 +211,7 @@ COutputLogger_t::TMsg::TMsg(const std::string& msg_str, const COutputLogger_t& l
 
 	name = logger.getName();
 	level = logger.getCurrentLoggingLevel();
-	timestamp = mrpt::system::getCurrentLocalTime(); // fill with the current time
+	timestamp = mrpt::system::getCurrentTime(); // fill with the current time
 	body = msg_str;
 }
 COutputLogger_t::TMsg::~TMsg() { }
@@ -273,7 +273,7 @@ std::string COutputLogger_t::TMsg::getAsString() const {
 	stringstream out;
 	out.str("");
 	out << "[" << name <<  " | " << this->getLoggingLevelName(level) << " | " 
-		<< mrpt::system::timeLocalToString(timestamp) 
+		<< mrpt::system::timeToString(timestamp) 
 		<< "] " << body;
 
 	return out.str();
