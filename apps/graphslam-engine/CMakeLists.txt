@@ -18,6 +18,7 @@ project(${PROJECT_NAME})
 
 set(SRC_FILES
     graphslam-engine_app.cpp
+    COutputLogger.cpp COutputLogger.h
     )
 
 # Define the executable target:
@@ -26,11 +27,8 @@ ADD_EXECUTABLE(${PROJECT_NAME}
 	${MRPT_VERSION_RC_FILE}
 	)
 
-#SET(TMP_TARGET_NAME "graph-slam")
-
 
 # Add the required libraries for linking:
-#TARGET_LINK_LIBRARIES(${TMP_TARGET_NAME} ${MRPT_LINKER_LIBS})
 TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${MRPT_LINKER_LIBS})
 
 

@@ -72,7 +72,6 @@
 namespace mrpt { namespace graphslam {
 
 bool verbose = true;
-#define VERBOSE_COUT	if (verbose) std::cout << "[graphslam_engine:] "
 
 template< 
   	class GRAPH_t=typename mrpt::graphs::CNetworkOfPoses2DInf,
@@ -244,11 +243,6 @@ template<
 				*/
 			void updateEstimatedTrajectoryVisualization(bool full_update=false);
 			/**
-		 		* Set the camera parameters of the CDisplayWindow3D so that the whole
-		 		* graph is viewed in the window.
-		 		*/
-			inline void autofitObjectInView(const mrpt::opengl::CSetOfObjectsPtr& gr);
-			/**
 		 		* Query the given observer for any events (keystrokes, mouse clicks,
 		 		* that may have occured in the CDisplayWindow3D  and fill in the
 		 		* corresponding class variables
@@ -267,12 +261,11 @@ template<
 			void dumpVisibilityErrorMsg(std::string viz_flag, 
 					int sleep_time=500 /* ms */);
 
-			// TODO - implement this
-			void autofitObjectsInScene() {}
-
-
 			// VARIABLES
 			//////////////////////////////////////////////////////////////
+
+			// logger
+			mrpt::utils::COutputLogger_t m_logger;
 
 			// the graph object to be built and optimized
 			GRAPH_t m_graph;
@@ -326,7 +319,6 @@ template<
 			bool m_enable_intensity_viewport;
 			bool m_enable_range_viewport;
 
-			bool m_autozoom_active;
 			bool m_request_to_exit;
 			bool m_program_paused;
 

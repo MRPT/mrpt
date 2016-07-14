@@ -45,6 +45,11 @@ void CLevMarqGSO_t<GRAPH_t>::initCLevMarqGSO_t() {
 	m_initialized_visuals = false;
 	m_has_read_config = false;
 	m_last_total_num_of_nodes = 5;
+	m_autozoom_active = true;
+
+	m_logger.setName("CLevMarqGSO");
+	m_logger.setLoggingLevel(LVL_DEBUG);
+	m_logger.setMinLoggingLevel(LVL_INFO);
 
 	MRPT_END;
 }
@@ -57,7 +62,7 @@ bool CLevMarqGSO_t<GRAPH_t>::updateOptimizerState(
 		mrpt::obs::CSensoryFramePtr observations,
 		mrpt::obs::CObservationPtr observation ) {
 	MRPT_START;
-	//cout << "[CLevMarqGSO:] In updateOptimizerState... " << endl;
+	m_logger.log("In updateOptimizerState... ");
 	
 	if (m_graph->nodeCount() > m_last_total_num_of_nodes) {
 		m_last_total_num_of_nodes = m_graph->nodeCount();
@@ -95,8 +100,7 @@ void CLevMarqGSO_t<GRAPH_t>::setGraphPtr(GRAPH_t* graph) {
 
 	m_graph = graph;
 
-	std::cout << "[CLevMarqGSO:] Fetched the graph successfully"
-		<< std::endl;
+	m_logger.log("Fetched the graph successfully");
 
 	MRPT_END;
 }
@@ -121,8 +125,7 @@ void CLevMarqGSO_t<GRAPH_t>::setWindowManagerPtr(
 		m_win_observer = m_win_manager->observer;
 
 	}
-	std::cout << "[CLevMarqGSO:] Fetched the CDisplayWindow successfully"
-		<< std::endl;
+	m_logger.log("Fetched the CDisplayWindow successfully");
 
 	MRPT_END;
 }
@@ -134,8 +137,7 @@ void CLevMarqGSO_t<GRAPH_t>::setCriticalSectionPtr(
 
 	m_graph_section = graph_section;
 
-	std::cout << "[CLevMarqGSO:] Fetched the CCRiticalSection successfully"
-		<< std::endl;
+	m_logger.log("Fetched the CCRiticalSection successfully");
 	MRPT_END;
 }
 
@@ -143,7 +145,7 @@ void CLevMarqGSO_t<GRAPH_t>::setCriticalSectionPtr(
 template<class GRAPH_t>
 void CLevMarqGSO_t<GRAPH_t>::initializeVisuals() {
 	MRPT_START;
-	std::cout << "CLevMarqGSO:] Initializing visuals" << std::endl;
+	m_logger.log("CLevMarqGSO:] Initializing visuals");
 
 	ASSERTMSG_(m_win,
 			"Visualization of data was requested but no CDisplayWindow3D pointer "
@@ -182,17 +184,27 @@ void CLevMarqGSO_t<GRAPH_t>::notifyOfWindowEvents(
 
 	// I know the keys exists - I put it there explicitly
 
-	// graph toggling
-	if (events_occurred.find(viz_params.keystroke_graph)->second) {
-		this->toggleGraphVisualization();
-	}
-
 	// optimization_distance toggling
 	if (opt_params.optimization_distance > 0) {
 		if (events_occurred.find(
 					opt_params.keystroke_optimization_distance)->second) {
 			this->toggleOptDistanceVisualization();
 		}
+	}
+
+	// graph toggling
+	if (events_occurred.find(viz_params.keystroke_graph_toggle)->second) {
+		this->toggleGraphVisualization();
+	}
+
+	// if mouse event, let the user decide about the camera
+	if (events_occurred.find("mouse_clicked")->second) {
+		m_autozoom_active = false;
+	}
+
+	// autofit the graph once
+	if (events_occurred.find(viz_params.keystroke_graph_autofit)->second) {
+		this->fitGraphInView();
 	}
 
 	MRPT_END;
@@ -202,12 +214,16 @@ template<class GRAPH_t>
 inline void CLevMarqGSO_t<GRAPH_t>::initGraphVisualization() {
 	MRPT_START;
 
-	m_win_observer->registerKeystroke("s", "Toggle Graph visualization");
-
 	if (viz_params.visualize_optimized_graph) {
+		m_win_observer->registerKeystroke(viz_params.keystroke_graph_toggle, 
+				"Toggle Graph visualization");
+		m_win_observer->registerKeystroke(viz_params.keystroke_graph_autofit, 
+				"Fit Graph in view");
+
 		m_win_manager->assignTextMessageParameters(
 				/* offset_y*	= */ &viz_params.offset_y_graph,
 				/* text_index* = */ &viz_params.text_index_graph );
+
 	}
 
 
@@ -217,8 +233,7 @@ template<class GRAPH_t>
 inline void CLevMarqGSO_t<GRAPH_t>::updateGraphVisualization() {
 	MRPT_START;
 
-	std::cout << "[CLevMarqGSO:] In the updateGraphVisualization function" 
-		<< std::endl;
+	m_logger.log("In the updateGraphVisualization function");
 
 	// update the graph (clear and rewrite..)
 	COpenGLScenePtr& scene = m_win->get3DSceneAndLock();
@@ -246,6 +261,10 @@ inline void CLevMarqGSO_t<GRAPH_t>::updateGraphVisualization() {
 
 	m_win->forceRepaint();
 
+	if (m_autozoom_active) {
+		this->fitGraphInView();
+	}
+
 	MRPT_END;
 }
 
@@ -263,6 +282,37 @@ void CLevMarqGSO_t<GRAPH_t>::toggleGraphVisualization() {
 
 	MRPT_END;
 }
+
+template<class GRAPH_t>
+void CLevMarqGSO_t<GRAPH_t>::fitGraphInView() {
+	MRPT_START;
+
+	ASSERTMSG_(m_win,
+			"\nVisualization of data was requested but no CDisplayWindow3D pointer was given\n");
+
+	// first fetch the graph object
+	COpenGLScenePtr& scene = m_win->get3DSceneAndLock();
+	CRenderizablePtr obj = scene->getByName("optimized_graph");
+	CSetOfObjectsPtr graph_obj = static_cast<CSetOfObjectsPtr>(obj);
+	m_win->unlockAccess3DScene();
+	m_win->forceRepaint();
+
+	// autofit it based on its grid
+	CGridPlaneXYPtr obj_grid = graph_obj->CSetOfObjects::getByClass<CGridPlaneXY>();
+	if (obj_grid) {
+		float x_min,x_max, y_min,y_max;
+		obj_grid->getPlaneLimits(x_min,x_max, y_min,y_max);
+		const float z_min = obj_grid->getPlaneZcoord();
+		m_win->setCameraPointingToPoint( 0.5*(x_min+x_max), 0.5*(y_min+y_max), z_min );
+		m_win->setCameraZoom( 2.0f * std::max(10.0f, std::max(x_max-x_min, y_max-y_min) ) );
+	}
+	m_win->setCameraAzimuthDeg(60);
+	m_win->setCameraElevationDeg(75);
+	m_win->setCameraProjective(true);
+
+	MRPT_END;
+}
+
 
 template<class GRAPH_t>
 void CLevMarqGSO_t<GRAPH_t>::initOptDistanceVisualization() {
@@ -343,14 +393,14 @@ template<class GRAPH_t>
 void CLevMarqGSO_t<GRAPH_t>::optimizeGraph() {
 	MRPT_START;
 
-	std::cout << "[CLevMarqGSO:] In optimizeGraph" << std::endl;
-	std::cout << "\tThreadID: " << mrpt::system::getCurrentThreadId() << std::endl;
-	std::cout << "\tTrying to grab lock... " << std::endl;
+	m_logger.log(mrpt::format(
+				"In optimizeGraph\n\tThreadID: %lu\n\tTrying to grab lock... ", 
+				mrpt::system::getCurrentThreadId()));
 
 	mrpt::synch::CCriticalSectionLocker m_graph_lock(m_graph_section);
 	this->_optimizeGraph();
 
-	std::cout << "\t2nd thread grabbed the lock.." << std::endl;
+	m_logger.log("2nd thread grabbed the lock..");
 
 	MRPT_END;
 }
@@ -359,7 +409,7 @@ void CLevMarqGSO_t<GRAPH_t>::optimizeGraph() {
 template<class GRAPH_t>
 void CLevMarqGSO_t<GRAPH_t>::_optimizeGraph() {
 	MRPT_START;
-	std::cout << "[CLevMarqGSO:] In _optimizeGraph" << std::endl;
+	m_logger.log("In _optimizeGraph");
 
 	CTicTac optimization_timer;
 	optimization_timer.Tic();
@@ -375,8 +425,7 @@ void CLevMarqGSO_t<GRAPH_t>::_optimizeGraph() {
  		this->checkForLoopClosures();
  	if (full_update) {
  		nodes_to_optimize = NULL;
-		std::cout << "[CLevMarqGSO:] Commencing with FULL graph optimization... "
-			<< std::endl;
+		m_logger.log("Commencing with FULL graph optimization... ", LVL_INFO);
 	}
 	else {
 		nodes_to_optimize = new std::set<mrpt::utils::TNodeID>;
@@ -388,15 +437,6 @@ void CLevMarqGSO_t<GRAPH_t>::_optimizeGraph() {
 				m_graph->nodeCount()-1,
 				opt_params.optimization_distance);
 		nodes_to_optimize->insert(m_graph->nodeCount()-1);
-
-		std::cout << "Nodes to optimize: # " << nodes_to_optimize->size() << std::endl;
-		std::cout << "\t< ";
-		for (std::set<mrpt::utils::TNodeID>::const_iterator it = 
-				nodes_to_optimize->begin(); it != nodes_to_optimize->end(); ++it) {
-			std::cout << *it << ", ";
-		}
-		std::cout << " >" << std::endl;
-
  	}
 
 	graphslam::TResultInfoSpaLevMarq	levmarq_info;
@@ -410,8 +450,7 @@ void CLevMarqGSO_t<GRAPH_t>::_optimizeGraph() {
 			&CLevMarqGSO_t<GRAPH_t>::levMarqFeedback); // functor feedback
 
 	double elapsed_time = optimization_timer.Tac();
-	std::cout << "Optimization of graph took: " << elapsed_time << "s" 
-		<< std::endl;
+	m_logger.log(mrpt::format("Optimization of graph took: %fs", elapsed_time));
 
 	// deleting the nodes_to_optimize set
 	delete nodes_to_optimize;
@@ -428,12 +467,6 @@ bool CLevMarqGSO_t<GRAPH_t>::checkForLoopClosures() {
 	bool is_loop_closure = false;
 	typename GRAPH_t::edges_map_t curr_pair_nodes_to_edge =  m_graph->edges;
 
-	//// print it for verification reasons
-	//std::cout << "Last Edges: #" << opt_params.last_pair_nodes_to_edge.size()
-		//<< std::endl;
-	//std::cout << "Current Edges: #" << curr_pair_nodes_to_edge.size()
-		//<< std::endl;
-
 	// find the *node pairs* that exist in current but not the last nodes_to_edge
 	// map If the distance of any of these pairs is greater than
 	// LC_min_nodeid_diff then consider this a loop closure
@@ -447,15 +480,13 @@ bool CLevMarqGSO_t<GRAPH_t>::checkForLoopClosures() {
 		// if current node pair is not found in the last set...
 		if (search == opt_params.last_pair_nodes_to_edge.end()) {
 			curr_pair = it->first;
-			//std::cout << "- New node pair was detected: " << curr_pair.first 
-				 //<< " => " << curr_pair.second << std::endl;
 
 			if (std::abs(
 						static_cast<int>(curr_pair.first) - 
 						static_cast<int>(curr_pair.second) ) > 
 			 	 	opt_params.LC_min_nodeid_diff ) {
 
-				std::cout << "[CLevMarq:] Registering loop closure... " << std::endl;
+				m_logger.log("Registering loop closure... ");
 				is_loop_closure = true;
 				break; // no need for more iterations
 			}
@@ -489,8 +520,6 @@ void CLevMarqGSO_t<GRAPH_t>::getNearbyNodesOf(
 		for (mrpt::utils::TNodeID nodeID = 0; nodeID < m_graph->nodeCount()-1; ++nodeID) {
 			double curr_distance = m_graph->nodes[nodeID].distanceTo(
 					m_graph->nodes[cur_nodeID]);
-			//std::cout << "testing against node: " << nodeID << std::endl;
-			//std::cout << "\tcurr_distance: " << curr_distance << std::endl;
 			if (curr_distance <= distance) {
 				nodes_set->insert(nodeID);
 			}
@@ -513,6 +542,7 @@ void CLevMarqGSO_t<GRAPH_t>::loadParams(const std::string& source_fname) {
 	opt_params.loadFromConfigFileName(source_fname, "OptimizerParameters");
 	viz_params.loadFromConfigFileName(source_fname, "VisualizationParameters");
 
+	m_logger.log("Successfully loaded Params. ");
 	m_has_read_config = true;
 }
 
@@ -539,7 +569,6 @@ void CLevMarqGSO_t<GRAPH_t>::OptimizationParams::dumpToTextStream(
 	out.printf("Min. node difference for LC    = %d\n", LC_min_nodeid_diff);
 
 	out.printf("%s", cfg.getAsString().c_str());
-
 	std::cout << std::endl;
 
 	MRPT_END;
@@ -589,9 +618,6 @@ void CLevMarqGSO_t<GRAPH_t>::OptimizationParams::loadFromConfigFile(
 			"tau",
 			1e-3, false);
 
-	std::cout << "[CLevMarqGSO:] Successfully loaded Optimization parameters. "
-		<< std::endl;
-
 	MRPT_END;
 }
 
@@ -599,7 +625,8 @@ void CLevMarqGSO_t<GRAPH_t>::OptimizationParams::loadFromConfigFile(
 //////////////////////////////////////////////////////////////
 template<class GRAPH_t>
 CLevMarqGSO_t<GRAPH_t>::GraphVisualizationParams::GraphVisualizationParams():
-	keystroke_graph("s")
+	keystroke_graph_toggle("s"),
+	keystroke_graph_autofit("a")
 {
 }
 template<class GRAPH_t>
@@ -679,9 +706,6 @@ void CLevMarqGSO_t<GRAPH_t>::GraphVisualizationParams::loadFromConfigFile(
 			section,
 			"optimized_point_color",
 			10526880, false);
-
-	std::cout << "[LevMarqGSO:] Successfully loaded GraphVisualization Params. "
-		<< std::endl;
 
 	MRPT_END;
 }

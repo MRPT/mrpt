@@ -17,7 +17,7 @@ void CRangeScanRegistrationDecider_t<GRAPH_t>::getICPEdge(
 		const mrpt::obs::CObservation2DRangeScan& from,
 		const mrpt::obs::CObservation2DRangeScan& to,
 		constraint_t* rel_edge,
-		mrpt::poses::CPose2D* initial_pose_in/* = NULL */,
+		const mrpt::poses::CPose2D* initial_pose_in/* = NULL */,
 		mrpt::slam::CICP::TReturnInfo* icp_info/* = NULL */) {
 	MRPT_START;
 
@@ -68,7 +68,7 @@ void CRangeScanRegistrationDecider_t<GRAPH_t>::getICPEdge(
 		mrpt::obs::CObservation3DRangeScan& from,
 		mrpt::obs::CObservation3DRangeScan& to,
 		constraint_t* rel_edge,
-		mrpt::poses::CPose2D* initial_pose_in /* =NULL */,
+		const mrpt::poses::CPose2D* initial_pose_in /* =NULL */,
 		mrpt::slam::CICP::TReturnInfo* icp_info /* =NULL */) {
 	MRPT_START;
 
