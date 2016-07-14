@@ -48,7 +48,7 @@ void COutputLogger_t::log(const std::string& msg_str) {
 	TMsg msg(msg_str, *this);
 	m_history.push_back(msg);
 
-	if (m_print_message_automatically) {
+	if (print_message_automatically) {
 		msg.dumpToConsole();
 
 		// automatically set the color back to normal
@@ -193,9 +193,8 @@ void COutputLogger_t::reset() {
 
 	m_history.clear();
 	m_curr_level = LVL_INFO;
-	m_curr_timestamp = INVALID_TIMESTAMP;
 
-	m_print_message_automatically = true;
+	print_message_automatically = true;
 
 	// set the minimum logging level allowed for printing. By default its
 	// LVL_DEBUG
