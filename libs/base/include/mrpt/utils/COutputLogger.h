@@ -33,7 +33,7 @@ class COutputLogger_t {
     ~COutputLogger_t();
 
 		/*
-		 * Main method to add a specific method to the logger
+		 * Main method to add the specified message string to the logger.
 		 * It is printed in the terminal window if dump_to_terminal is set
 		 * to true. By default it is saved in the COutputLogger_t history.
 		 */

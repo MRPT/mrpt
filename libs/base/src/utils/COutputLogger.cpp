@@ -9,7 +9,7 @@
 
 #include <mrpt/utils/CFileOutputStream.h>
 #include <mrpt/utils/CStdOutStream.h>
-#include "COutputLogger.h"
+#include <mrpt/utils/COutputLogger.h>
 #include <mrpt/system/threads.h>
 
 
