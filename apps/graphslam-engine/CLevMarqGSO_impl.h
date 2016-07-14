@@ -425,7 +425,7 @@ void CLevMarqGSO_t<GRAPH_t>::_optimizeGraph() {
  		this->checkForLoopClosures();
  	if (full_update) {
  		nodes_to_optimize = NULL;
-		m_out_logger.log("Commencing with FULL graph optimization... ", LVL_INFO);
+		m_out_logger.log("Commencing with FULL graph optimization... ", LVL_DEBUG);
 	}
 	else {
 		nodes_to_optimize = new std::set<mrpt::utils::TNodeID>;

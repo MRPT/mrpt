@@ -33,7 +33,7 @@ void CICPGoodnessNRD_t<GRAPH_t>::initCICPGoodnessNRD_t() {
 	// Current node registration decider *decides* how many nodes are there
 	// currently in the graph (no need to ask m_graph->nodeCount..
 	m_nodeID_max  = INVALID_NODEID;
-	
+
 	m_curr_timestamp = INVALID_TIMESTAMP;
 
 	// I am sure of the initial position, set to identity matrix
