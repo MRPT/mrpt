@@ -81,6 +81,11 @@ class COutputLogger_t {
 
     VerbosityLevel getCurrentLoggingLevel() const;
     /**
+     * Get the history of COuputLogger_t instance in a string representation.
+     */
+    void getAsString(std::string* fname) const;
+		std::string getAsString() const;
+    /**
      * Write the contents of the COutputLogger_t instance to an external file.
      * By default the filename is set to LOGGERNAME.log except if the fname
      * parameter is provided
