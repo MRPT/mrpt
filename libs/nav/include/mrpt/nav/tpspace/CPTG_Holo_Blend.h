@@ -51,7 +51,7 @@ namespace mrpt
 		void updateTPObstacle(double ox, double oy, std::vector<double> &tp_obstacles) const MRPT_OVERRIDE;
 
 	 protected:
-		double T_ramp;
+		double T_ramp_max;
 		double V_MAX, W_MAX;
 		double turningRadiusReference;
 		mrpt::math::TTwist2D curVelLocal;
