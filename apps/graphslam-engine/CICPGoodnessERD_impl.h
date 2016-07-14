@@ -52,7 +52,7 @@ void CICPGoodnessERD_t<GRAPH_t>::initCICPGoodnessERD_t() {
 	m_checked_for_usuable_dataset = false;
 	m_consecutive_invalid_format_instances = 0;
 
-	m_logger.setName("CICPGoodnessNRD");
+	m_logger.setName("CICPGoodnessERD");
 	m_logger.setLoggingLevel(LVL_DEBUG);
 	m_logger.setMinLoggingLevel(LVL_DEBUG);
 
@@ -170,11 +170,13 @@ void CICPGoodnessERD_t<GRAPH_t>::checkRegistrationCondition2D(
 
 	//cout << "CICPGoodnessERD: Checking 2D Registration Condition... " << endl;
 
+	mrpt::utils::TNodeID curr_nodeID = m_graph->nodeCount()-1;
   CObservation2DRangeScanPtr curr_laser_scan;
   std::map<const mrpt::utils::TNodeID,
     mrpt::obs::CObservation2DRangeScanPtr>::const_iterator search;
+
 	// search for curr_laser_scan
-  search = m_nodes_to_laser_scans2D.find(m_graph->nodeCount()-1);
+  search = m_nodes_to_laser_scans2D.find(curr_nodeID);
   if (search != m_nodes_to_laser_scans2D.end()) {
     curr_laser_scan = search->second;
   }
@@ -196,22 +198,25 @@ void CICPGoodnessERD_t<GRAPH_t>::checkRegistrationCondition2D(
     	if (search != m_nodes_to_laser_scans2D.end()) {
         prev_laser_scan = search->second;
 
-				//  TODO - use initial edge estimation
+        // make use of initial node position difference for the ICP edge
+				pose_t initial_pose = m_graph->nodes[curr_nodeID] - 
+					m_graph->nodes[*node_it];
+
 				this->getICPEdge(
 						*prev_laser_scan,
 						*curr_laser_scan,
 						&rel_edge,
-						NULL,
+						&initial_pose,
 						&icp_info);
 
 				sliding_win.addNewMeasurement(icp_info.goodness);
 
 				// criterion for registering a new node
 				if (icp_info.goodness > params.ICP_goodness_thresh) {
-					this->registerNewEdge(*node_it, m_graph->nodeCount()-1, rel_edge);
+					this->registerNewEdge(*node_it, curr_nodeID, rel_edge);
 					m_edge_types_to_nums["ICP2D"]++;
 					// in case of loop closure
-					if (abs(m_graph->nodeCount()-1 - *node_it) > params.LC_min_nodeid_diff) {
+					if (abs(curr_nodeID - *node_it) > params.LC_min_nodeid_diff) {
 						m_edge_types_to_nums["LC"]++;
 						m_just_inserted_loop_closure = true;
 					}
@@ -227,11 +232,12 @@ void CICPGoodnessERD_t<GRAPH_t>::checkRegistrationCondition3D(
 		const std::set<mrpt::utils::TNodeID>& nodes_set) {
 	MRPT_START;
 
+	mrpt::utils::TNodeID curr_nodeID = m_graph->nodeCount()-1;
   CObservation3DRangeScanPtr curr_laser_scan;
   std::map<const mrpt::utils::TNodeID,
     mrpt::obs::CObservation3DRangeScanPtr>::const_iterator search;
 	// search for curr_laser_scan
-  search = m_nodes_to_laser_scans3D.find(m_graph->nodeCount()-1);
+  search = m_nodes_to_laser_scans3D.find(curr_nodeID);
   if (search != m_nodes_to_laser_scans3D.end()) {
     curr_laser_scan = search->second;
   }
@@ -263,10 +269,10 @@ void CICPGoodnessERD_t<GRAPH_t>::checkRegistrationCondition3D(
 
 				// criterion for registering a new node
 				if (icp_info.goodness > params.ICP_goodness_thresh) {
-					this->registerNewEdge(*node_it, m_graph->nodeCount()-1, rel_edge);
+					this->registerNewEdge(*node_it, curr_nodeID, rel_edge);
 					m_edge_types_to_nums["ICP3D"]++;
 					// in case of loop closure
-					if (abs(m_graph->nodeCount()-1 - *node_it) > params.LC_min_nodeid_diff) {
+					if (abs(curr_nodeID - *node_it) > params.LC_min_nodeid_diff) {
 						m_edge_types_to_nums["LC"]++;
 						m_just_inserted_loop_closure = true;
 					}
@@ -404,7 +410,7 @@ void CICPGoodnessERD_t<GRAPH_t>::toggleLaserScansVisualization() {
 
 template<class GRAPH_t>
 void CICPGoodnessERD_t<GRAPH_t>::getEdgesStats(
-		std::map<const std::string, int>* edge_types_to_nums) {
+		std::map<const std::string, int>* edge_types_to_nums) const {
 	MRPT_START;
 
 	*edge_types_to_nums = m_edge_types_to_nums;
