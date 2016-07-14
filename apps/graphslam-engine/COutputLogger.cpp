@@ -138,6 +138,18 @@ void COutputLogger_t::setMinLoggingLevel(const VerbosityLevel& level /*= LVL_INF
 
 VerbosityLevel COutputLogger_t::getCurrentLoggingLevel() const { return m_curr_level; }
 
+void COutputLogger_t::getAsString(std::string* fname) const {
+	for (std::vector<TMsg>::const_iterator hist_it = m_history.begin();
+			hist_it != m_history.end(); ++hist_it) {
+		*fname += hist_it->getAsString() + "\n";
+	}
+}
+std::string COutputLogger_t::getAsString() const{
+	std::string str;
+	this->getAsString(&str);
+
+	return str;
+}
 void COutputLogger_t::writeToFile(const std::string* fname_in /* = NULL */) const {
 	// determine the filename - open it
 	std::string fname;
@@ -152,10 +164,9 @@ void COutputLogger_t::writeToFile(const std::string* fname_in /* = NULL */) cons
 			mrpt::format("\n[%s:] Could not open external file: %s",
 				m_name.c_str(), fname.c_str()) );
 
-	for (std::vector<TMsg>::const_iterator hist_it = m_history.begin();
-			hist_it != m_history.end(); ++hist_it) {
-		fstream.printf("%s\n", hist_it->getAsString().c_str() );
-	}
+	std::string hist_str;
+	this->getAsString(&hist_str);
+	fstream.printf("%s\n", hist_str.c_str());
 
 	fstream.close();
 }
