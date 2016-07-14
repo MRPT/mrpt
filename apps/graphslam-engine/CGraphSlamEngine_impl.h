@@ -615,17 +615,17 @@ bool CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::par
 		m_time_logger.enter("CGraphSlamEngine::Visuals");
 		// Timestamp textMessage
 		// Use the dataset timestamp otherwise fallback to
-		// mrpt::system::getCurrentLocalTime
+		// mrpt::system::getCurrentTime
 		if (m_win) {
 			if (timestamp != INVALID_TIMESTAMP) {
 				m_win_manager.addTextMessage(5,-m_offset_y_timestamp,
-						format("Simulated time: %s", timeLocalToString(timestamp).c_str()),
+						format("Simulated time: %s", timeToString(timestamp).c_str()),
 						TColorf(1.0, 1.0, 1.0),
 						/* unique_index = */ m_text_index_timestamp );
 			}
 			else {
 				m_win_manager.addTextMessage(5,-m_offset_y_timestamp,
-						format("Wall time: %s", timeLocalToString(mrpt::system::getCurrentLocalTime()).c_str()),
+						format("Wall time: %s", timeToString(mrpt::system::getCurrentTime()).c_str()),
 						TColorf(1.0, 1.0, 1.0),
 						/* unique_index = */ m_text_index_timestamp );
 			}
@@ -924,8 +924,8 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::ini
 	m_out_logger.log(format("Setting up Output directory: %s", m_output_dir_fname.c_str()), LVL_INFO);
 
 	// current time vars - handy in the rest of the function.
-	TTimeStamp cur_date(getCurrentLocalTime());
-	string cur_date_str(dateTimeLocalToString(cur_date));
+	TTimeStamp cur_date(getCurrentTime());
+	string cur_date_str(dateTimeToString(cur_date));
 	string cur_date_validstr(fileNameStripInvalidChars(cur_date_str));
 
 	ASSERTMSG_(m_has_read_config, 
@@ -1015,8 +1015,8 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::ini
 	m_out_logger.log(mrpt::format("Setting up file: %s", fname.c_str()), LVL_INFO);
 
 	// current time vars - handy in the rest of the function.
-	TTimeStamp cur_date(getCurrentLocalTime());
-	string cur_date_str(dateTimeLocalToString(cur_date));
+	TTimeStamp cur_date(getCurrentTime());
+	string cur_date_str(dateTimeToString(cur_date));
 	string cur_date_validstr(fileNameStripInvalidChars(cur_date_str));
 
 	m_out_streams[fname] = new CFileOutputStream(fname);
