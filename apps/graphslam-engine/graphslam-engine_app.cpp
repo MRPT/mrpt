@@ -32,7 +32,7 @@
 #include "CWindowObserver.h"
 
 // deciders
-#include "COutputLogger.h"
+#include <mrpt/utils/COutputLogger.h>
 #include "CEmptyNRD.h"
 #include "CICPGoodnessNRD.h"
 #include "CEmptyERD.h"
