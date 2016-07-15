@@ -90,9 +90,14 @@ template<class GRAPH_t>
 		void printParams() const; 
 		void getDescriptiveReport(std::string* report_str) const; 
 
-		bool updateDeciderState( mrpt::obs::CActionCollectionPtr action,
+		bool updateDeciderState(
+				mrpt::obs::CActionCollectionPtr action,
 				mrpt::obs::CSensoryFramePtr observations,
 				mrpt::obs::CObservationPtr observation );
+		bool updateDeciderState2D(
+				mrpt::obs::CObservation2DRangeScanPtr observation); 
+		bool updateDeciderState3D(
+				mrpt::obs::CObservation3DRangeScanPtr observation);
 
     struct TParams: public mrpt::utils::CLoadableOptions {
     	public:
@@ -120,6 +125,8 @@ template<class GRAPH_t>
 		// Private functions
 		//////////////////////////////////////////////////////////////
 		bool checkRegistrationCondition();
+		bool checkRegistrationCondition2D();
+		bool checkRegistrationCondition3D();
 
 		void registerNewNode();
 		void initCICPGoodnessNRD_t();
@@ -163,6 +170,11 @@ template<class GRAPH_t>
 		// loggers
 		mrpt::utils::COutputLogger m_out_logger;
 		mrpt::utils::CTimeLogger m_time_logger;
+
+		// criterions for adding new a new node
+		bool m_use_angle_difference_node_reg = true;
+		bool m_use_distance_node_reg = true;
+
 
 };
 

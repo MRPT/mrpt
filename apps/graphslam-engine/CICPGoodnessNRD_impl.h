@@ -31,10 +31,11 @@ void CICPGoodnessNRD_t<GRAPH_t>::initCICPGoodnessNRD_t() {
 	m_graph = NULL;
 
 	// Current node registration decider *decides* how many nodes are there
-	// currently in the graph (no need to ask m_graph->nodeCount..
+	// currently in the graph (no need to ask m_graph->nodeCount)..
 	m_nodeID_max  = INVALID_NODEID;
 
 	m_curr_timestamp = INVALID_TIMESTAMP;
+	m_prev_timestamp = INVALID_TIMESTAMP;
 
 	// I am sure of the initial position, set to identity matrix
 	double tmp[] = {
@@ -59,122 +60,43 @@ bool CICPGoodnessNRD_t<GRAPH_t>::updateDeciderState(
 		mrpt::obs::CSensoryFramePtr observations,
 		mrpt::obs::CObservationPtr observation )  {
 	MRPT_START;
+	MRPT_UNUSED_PARAM(action);
 	m_time_logger.enter("CICPGoodnessNRD::updateDeciderState");
-
 	bool registered_new_node = false;
 
-	MRPT_UNUSED_PARAM(action);
-
 	if (observation.present()) { // Observation-Only Rawlog
-
-
-		// 3D Range Scan
-		if (IS_CLASS(observation, CObservation3DRangeScan)) {
-			m_curr_laser_scan3D =
-				static_cast<mrpt::obs::CObservation3DRangeScanPtr>(observation);
-			m_curr_laser_scan3D->load();
-			m_curr_laser_scan3D->project3DPointsFromDepthImage();
-
-			// first_time call 
-			// Initialize the m_last_laser_scan as well
-			if (m_first_time_call3D) {
-				m_last_laser_scan3D = m_curr_laser_scan3D;
-				m_first_time_call3D = false;
-
-				// do not check for node registration - not enough data yet.
-				m_time_logger.leave("CICPGoodnessNRD::updateDeciderState");
-				return false;
-			}
-
-			m_is_using_3DScan = true;
-		}
-		// 2D Range Scan
-		else if (IS_CLASS(observation, CObservation2DRangeScan)) {
-			m_curr_laser_scan2D =
+		// delegate the action to the method responsible
+		if (IS_CLASS(observation, CObservation2DRangeScan) ) { // 2D
+			mrpt::obs::CObservation2DRangeScanPtr curr_laser_scan = 
 				static_cast<mrpt::obs::CObservation2DRangeScanPtr>(observation);
-
-			// first_time call 
-			// Initialize the m_last_laser_scan as well
-			if (m_first_time_call2D) {
-				m_last_laser_scan2D = m_curr_laser_scan2D;
-				m_first_time_call2D = false;
-
-				// do not check for node registration - not enough data yet.
-				m_time_logger.leave("CICPGoodnessNRD::updateDeciderState");
-				return false;
-			}
-
-			m_is_using_3DScan = false;
-		}
-
-		if (IS_CLASS(observation, CObservation3DRangeScan) ||
-				IS_CLASS(observation, CObservation2DRangeScan) ) {
-			// Ignore the timestamps of the CObservationOdometry objects in the
-			// datasets. They aren't always in acending order when combined with the
-			// CObaservation*DRangeScan objects
-			m_curr_timestamp = observation->timestamp;
-			m_prev_timestamp = m_curr_timestamp;
+			registered_new_node = updateDeciderState2D(curr_laser_scan);
 
 		}
-
+		if (IS_CLASS(observation, CObservation3DRangeScan) ) { // 3D
+			mrpt::obs::CObservation3DRangeScanPtr curr_laser_scan = 
+				static_cast<mrpt::obs::CObservation3DRangeScanPtr>(observation);
+			registered_new_node = updateDeciderState3D(curr_laser_scan);
+		}
 	}
-	else { // Action/Observations Rawlog
-		// update the timestamps
-		CActionRobotMovement2DPtr robot_move =
-			action->getBestMovementEstimation();
-		if (robot_move) {
-			m_prev_timestamp = m_curr_timestamp;
-			m_curr_timestamp = robot_move->timestamp;
+	else { // action-observations rawlog
+		if (observations->getObservationByClass<CObservation2DRangeScan>()) { // 2D
+			CObservation2DRangeScanPtr curr_laser_scan = 
+				observations->getObservationByClass<CObservation2DRangeScan>();
+			registered_new_node = updateDeciderState2D(curr_laser_scan);
 		}
-
-		// 2D Range Scan
-		m_curr_laser_scan2D =
-			observations->getObservationByClass<CObservation2DRangeScan>();
-		if (m_curr_laser_scan2D) {
-
-			// first_time call 
-			// Initialize the m_last_laser_scan as well
-			if (m_first_time_call2D) {
-				m_last_laser_scan2D = m_curr_laser_scan2D;
-				m_first_time_call2D = false;
-
-				// do not check for node registration - not enough data yet.
-				m_time_logger.leave("CICPGoodnessNRD::updateDeciderState");
-				return false;
-			}
-
-			m_is_using_3DScan = false;
+		else if (observations->getObservationByClass<CObservation3DRangeScan>()){	// 3D - EXPERIMENTAL, has not been tested
+			CObservation3DRangeScanPtr curr_laser_scan = 
+				observations->getObservationByClass<CObservation3DRangeScan>();
+			registered_new_node = updateDeciderState3D(curr_laser_scan);
 		}
-		// 3D Range Scan
-		m_curr_laser_scan3D =
-			observations->getObservationByClass<CObservation3DRangeScan>();
-		if (m_curr_laser_scan3D) {
-
-			// first_time call 
-			// Initialize the m_last_laser_scan as well
-			if (m_first_time_call3D) {
-				m_last_laser_scan3D = m_curr_laser_scan3D;
-				m_first_time_call3D = false;
-
-				// do not check for node registration - not enough data yet.
-				m_time_logger.leave("CICPGoodnessNRD::updateDeciderState");
-				return false;
-			}
-
-			m_is_using_3DScan = true;
-		}
-
 	}
 
-	registered_new_node = this->checkRegistrationCondition();
-
-	// reset the relative PDF since the previous registered node
+	// reset the constraint since the last registered node
 	if (registered_new_node) {
 		m_since_prev_node_PDF = constraint_t();
 	}
 
 	// TODO - implement checkIfInvalidDataset
-
 	m_time_logger.leave("CICPGoodnessNRD::updateDeciderState");
 	return registered_new_node;
 
@@ -182,103 +104,109 @@ bool CICPGoodnessNRD_t<GRAPH_t>::updateDeciderState(
 }
 
 template<class GRAPH_t>
-bool CICPGoodnessNRD_t<GRAPH_t>::checkRegistrationCondition() {
+bool CICPGoodnessNRD_t<GRAPH_t>::updateDeciderState2D(
+		mrpt::obs::CObservation2DRangeScanPtr scan2d) {
 	MRPT_START;
-
-	m_out_logger.log("In checkRegistrationCondition2D..");
 	bool registered_new_node = false;
 
+	m_curr_laser_scan2D = scan2d;
+	if (m_last_laser_scan2D.null()) {
+		m_out_logger.log("First time call for updateDeciderState2D.", LVL_WARN);
+		// initialize the last_laser_scan here - afterwards updated inside the
+		// checkRegistrationCondition*D method
+		m_last_laser_scan2D = m_curr_laser_scan2D;
+	}
+	else {
+		registered_new_node = checkRegistrationCondition2D(); 
+	}
 
-
-	// get an initial estimation of your next ICP constraint using the
-	// pose_estimator object
-	pose_t curr_estimated_pose;
-	pose_t initial_ICP_estimation;
-	//bool is_trusted = pose_estimator.getLatestRobotPose(curr_estimated_pose);
-
-	//if (is_trusted)
-		//initial_ICP_estimation
-
+	return registered_new_node;
+	MRPT_END;
+}
+template<class GRAPH_t>
+bool CICPGoodnessNRD_t<GRAPH_t>::checkRegistrationCondition2D() {
+	MRPT_START;
+	bool registered_new_node = false;
+	m_out_logger.log("In checkRegistrationCondition2D..");
 
 	constraint_t rel_edge;
 	mrpt::slam::CICP::TReturnInfo icp_info;
-	// decide on which data to use.
-	if ( m_is_using_3DScan ) {
-		this->getICPEdge(
-				*m_last_laser_scan3D,
-				*m_curr_laser_scan3D,
-				&rel_edge,
-				NULL,
-				&icp_info);
-	}
-	else {
-		this->getICPEdge(
-				*m_last_laser_scan2D,
-				*m_curr_laser_scan2D,
-				&rel_edge,
-				NULL,
-				&icp_info);
-	}
 
+	this->getICPEdge(
+			*m_last_laser_scan2D,
+			*m_curr_laser_scan2D,
+			&rel_edge,
+			NULL,
+			&icp_info);
 	// append current ICP edge to the sliding window
 	m_ICP_sliding_win.addNewMeasurement(icp_info.goodness);
-	//m_ICP_sliding_win.dumpToConsole();
 
-	m_out_logger.log(mrpt::format(
-				"Current ICP constraint: \n\tEdge: %s\n\tNorm: %f", 
+	m_out_logger.logFmt("Current ICP constraint: \n\tEdge: %s\n\tNorm: %f", 
 				rel_edge.getMeanVal().asString().c_str(), 
-				rel_edge.getMeanVal().norm()), LVL_DEBUG);
+				rel_edge.getMeanVal().norm());
 
 	// Criterions for updating PDF since last registered node
 	// - ICP goodness > threshold goodness
 	if (m_ICP_sliding_win.evaluateICPgoodness(icp_info.goodness) ) {
 		m_since_prev_node_PDF += rel_edge;
+		m_last_laser_scan2D = m_curr_laser_scan2D;
+		registered_new_node = this->checkRegistrationCondition();
+	}
 
-		// udpate the last laser scan
-		if (m_is_using_3DScan) {
-			m_last_laser_scan3D = m_curr_laser_scan3D;
-		}
-		else {
-			m_last_laser_scan2D = m_curr_laser_scan2D;
-		}
 
-		// Update the pose estimator object
-		m_out_logger.log("Updating the pose_estimator object... ", LVL_DEBUG);
-		pose_t curr_estimated_pose;
-		pose_estimator.getLatestRobotPose(curr_estimated_pose);
-		curr_estimated_pose += rel_edge.getMeanVal();
+	return registered_new_node;
+	MRPT_END;
+}
+template<class GRAPH_t>
+bool CICPGoodnessNRD_t<GRAPH_t>::updateDeciderState3D(
+		mrpt::obs::CObservation3DRangeScanPtr scan3d) {
+	MRPT_START;
+	bool registered_new_node = false;
 
-// 		 // update the pose estimation
-// 		 //TODO have an estimation of velocity of your own. See Giannakoglou notes..
-// 		 // Not all timestamps are in correct order..
-// 		pose_estimator.processUpdateNewOdometry(
-// 				curr_estimated_pose,
-// 				m_curr_timestamp,
-// 				/* hasVelocities = */ false);
-		
+	m_curr_laser_scan3D->load();
+	m_curr_laser_scan3D->project3DPointsFromDepthImage();
 
-		// Criterions for adding a new node
-		// - Covered distance since last node > registration_max_distance
-		// - Angle difference since last node > registration_max_angle
-		bool use_angle_difference_node_reg = true;
-		bool use_distance_node_reg = true;
+	// TODO - implement this
 
-		bool angle_crit = false;
-		if (use_angle_difference_node_reg) {
-			angle_crit = fabs(wrapToPi(m_since_prev_node_PDF.getMeanVal().phi())) >
-				params.registration_max_angle;
-		}
-		bool max_registration_distance_crit = false;
-		if (use_distance_node_reg) {
-			max_registration_distance_crit =
-				m_since_prev_node_PDF.getMeanVal().norm() > params.registration_max_distance;
-		}
+	return registered_new_node;
+	MRPT_END;
+}
 
-		if (max_registration_distance_crit || angle_crit) {
+template<class GRAPH_t>
+bool CICPGoodnessNRD_t<GRAPH_t>::checkRegistrationCondition3D() {
+	MRPT_START;
+	bool registered_new_node = false;
+	// TODO - implement this
 
-			registered_new_node = true;
-			this->registerNewNode();
-		}
+	return registered_new_node;
+	MRPT_END;
+}
+
+template<class GRAPH_t>
+bool CICPGoodnessNRD_t<GRAPH_t>::checkRegistrationCondition() {
+	MRPT_START;
+	bool registered_new_node = false;
+	m_out_logger.log("In checkRegistrationCondition");
+
+	// Criterions for adding a new node
+	// - Covered distance since last node > registration_max_distance
+	// - Angle difference since last node > registration_max_angle
+
+	bool angle_crit = false;
+	if (m_use_angle_difference_node_reg) {
+		angle_crit = fabs(wrapToPi(m_since_prev_node_PDF.getMeanVal().phi())) >
+			params.registration_max_angle;
+	}
+	bool distance_crit = false;
+	if (m_use_distance_node_reg) {
+		distance_crit =
+			m_since_prev_node_PDF.getMeanVal().norm() > params.registration_max_distance;
+	}
+
+	// actual check
+	if (distance_crit || angle_crit) {
+		registered_new_node = true;
+		this->registerNewNode();
 	}
 
 	return registered_new_node;
@@ -292,14 +220,15 @@ void CICPGoodnessNRD_t<GRAPH_t>::registerNewNode() {
 	mrpt::utils::TNodeID from = m_nodeID_max;
 	mrpt::utils::TNodeID to = ++m_nodeID_max;
 
-	m_out_logger.log(mrpt::format("Registered new node:\n\t%lu => %lu\n\tEdge: %s",
-				from, to, m_since_prev_node_PDF.getMeanVal().asString().c_str()), LVL_DEBUG);
+	m_out_logger.logFmt("Registered new node:\n\t%lu => %lu\n\tEdge: %s",
+				from, to, m_since_prev_node_PDF.getMeanVal().asString().c_str());
 
 	m_graph->nodes[to] = m_graph->nodes[from] + m_since_prev_node_PDF.getMeanVal();
   m_graph->insertEdgeAtEnd(from, to, m_since_prev_node_PDF);
 
 	MRPT_END;
 }
+
 template<class GRAPH_t>
 void CICPGoodnessNRD_t<GRAPH_t>::setGraphPtr(GRAPH_t* graph) {
 	m_graph = graph;
@@ -307,7 +236,7 @@ void CICPGoodnessNRD_t<GRAPH_t>::setGraphPtr(GRAPH_t* graph) {
 	// get the last registrered node + corresponding pose - root
 	m_nodeID_max = m_graph->root;
 
-	m_out_logger.log("CICPGoodnessNRD: Fetched the graph successfully", LVL_DEBUG);
+	m_out_logger.log("Fetched the graph successfully", LVL_DEBUG);
 }
 template<class GRAPH_t>
 void CICPGoodnessNRD_t<GRAPH_t>::loadParams(const std::string& source_fname) {
@@ -328,7 +257,6 @@ void CICPGoodnessNRD_t<GRAPH_t>::loadParams(const std::string& source_fname) {
 	m_out_logger.setMinLoggingLevel(VerbosityLevel(min_verbosity_level));
 
 	m_out_logger.log("Successfully loaded parameters.", LVL_DEBUG);
-
 	MRPT_END;
 }
 template<class GRAPH_t>
