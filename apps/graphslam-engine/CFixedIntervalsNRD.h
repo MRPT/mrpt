@@ -156,7 +156,7 @@ class CFixedIntervalsNRD_t:
 		const size_t m_consecutive_invalid_format_instances_thres;
 
 		// loggers
-		mrpt::utils::COutputLogger_t m_out_logger;
+		mrpt::utils::COutputLogger m_out_logger;
 		mrpt::utils::CTimeLogger m_time_logger;
 };
 

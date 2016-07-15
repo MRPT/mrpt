@@ -101,7 +101,6 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::ini
 	// logger instance properties
 	m_out_logger.setName("CGraphSlamengine");
 	m_out_logger.setLoggingLevel(LVL_DEBUG); // default level of the messages
-	m_out_logger.setMinLoggingLevel(LVL_INFO); // ignore every log below this
 
  	// set the CDisplayWindowPlots pointer to null for starters, we don't know if we are using it
 	m_win_plot = NULL;
@@ -879,7 +878,7 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::get
 		<< m_fname_GT << std::endl;
 
 	ss_out << "Output Verbosity level          = "
-		<< m_out_logger.getCurrentLoggingLevel() << std::endl;
+		<< m_out_logger.getLoggingLevel() << std::endl;
 
 	ss_out << "Visualize odometry              = "
 		<< ( m_visualize_odometry_poses ? "TRUE" : "FALSE" ) << std::endl;

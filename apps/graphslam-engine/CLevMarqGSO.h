@@ -224,7 +224,7 @@ class CLevMarqGSO_t:
 		mrpt::system::TThreadHandle m_thread_optimize;
 
 		// logger
-		mrpt::utils::COutputLogger_t m_out_logger;
+		mrpt::utils::COutputLogger m_out_logger;
 		mrpt::utils::CTimeLogger m_time_logger;
 
 };
