@@ -29,7 +29,7 @@ enum VerbosityLevel { LVL_DEBUG=0, LVL_INFO, LVL_WARN, LVL_ERROR };
 /** \brief Versatile class for consistent logging and 
  *        management of output messages
  *
- * COutputLogger_t is a versatile class for logging messages either to the
+ * COutputLogger is a versatile class for logging messages either to the
  * terminal window or to an external file. Class instances can take messages in
  * std::string using the log class methods 
  *
@@ -61,35 +61,35 @@ enum VerbosityLevel { LVL_DEBUG=0, LVL_INFO, LVL_WARN, LVL_ERROR };
  * \sa TMsg
  * \ingroup mrpt_base_grp
  */
-class COutputLogger_t {
+class COutputLogger {
   public:
   	/**
-  	 * \brief Construct a COutputLogger_t instance with the given name as the
+  	 * \brief Construct a COutputLogger instance with the given name as the
   	 * instance name.
   	 *
   	 * Call to this constructor can be used instead of first initializing the
   	 * object and then explicitly setting the name like in the following case:
   	 * \code
-  	 * COutputLogger_t a_logger;
+  	 * COutputLogger a_logger;
   	 * a_logger.setName("logger_name");
   	 * \endcode
   	 */
-    COutputLogger_t(std::string name);
+    COutputLogger(std::string name);
     /** \brief Default class constructor.
      *
      * Name of the logger is initialized to *Logger*
      */
-    COutputLogger_t();
+    COutputLogger();
     /**
      * \brief Default class destructor
      */
-    ~COutputLogger_t();
+    ~COutputLogger();
 
 		/** \brief Main method to add the specified message string to the logger.
 		 *
 		 * Message is printed in the terminal window if
 		 * <b>print_message_automatically</b> is set to true. By default it is
-		 * saved in the COutputLogger_t history.
+		 * saved in the COutputLogger history.
 		 *
 		 * \sa logCond
 		 */
@@ -126,12 +126,12 @@ class COutputLogger_t {
      * \sa log
      */
     void logCond(const std::string& msg_str, const VerbosityLevel& level, bool cond);
-		/** \brief Set the name of the COutputLogger_t instance 
+		/** \brief Set the name of the COutputLogger instance 
 		 *
 		 * \sa getName
 		 */
 		void setName(const std::string& name);
-		/** \brief Return the name of the COutputLogger_t instance 
+		/** \brief Return the name of the COutputLogger instance 
 		 *
 		 * \sa setName
 		 */
@@ -147,7 +147,7 @@ class COutputLogger_t {
      *
      * String messages with specified VerbosityLevel smaller than the min, will
      * not be outputted to the screen and neither will a record of them be
-     * stored in by the COutputLogger_t instance
+     * stored in by the COutputLogger instance
      *
      * \sa setLoggingLevel
      */
@@ -160,12 +160,12 @@ class COutputLogger_t {
      * \sa setLoggingLevel
      */
     void getAsString(std::string* fname) const;
-    /** \brief Get the history of COuputLogger_t instance in a string representation.
+    /** \brief Get the history of COutputLogger instance in a string representation.
      */
 		std::string getAsString() const;
-    /** \brief Write the contents of the COutputLogger_t instance to an external file.
+    /** \brief Write the contents of the COutputLogger instance to an external file.
      *
-     * Upon call to this method, COutputLogger_t dumps the contents of all the
+     * Upon call to this method, COutputLogger dumps the contents of all the
      * logged commands so far to the specified external file.  By default the
      * filename is set to ${LOGGERNAME}.log except if the fname parameter is
      * provided
@@ -173,7 +173,7 @@ class COutputLogger_t {
      * \sa dumpToConsole, getAsString
      */
     void writeToFile(const std::string* fname_in=NULL) const;
-    /** \brief Dump the current contents of the COutputLogger_t instance in the
+    /** \brief Dump the current contents of the COutputLogger instance in the
      * terminal window.
      *
 		 * \sa writeToFile
@@ -197,7 +197,7 @@ class COutputLogger_t {
 		 *        (in std::string form) issued by the user.
 		 *
 		 * Upon TMsg initialization, instance fetches the name of the caller
-		 * COutputLogger_t, as well as the VerbosityLevel and the
+		 * COutputLogger, as well as the VerbosityLevel and the
 		 * mrpt::system::TTimeStamp of the message provided.
 		 * The format of the message when this is printed / or written to an
 		 * external file complies is given below:
@@ -209,7 +209,7 @@ class COutputLogger_t {
     	 * form as well as a reference to the COutputLogger that provided the
     	 * current message
     	 */
-    	TMsg(const std::string& msg, const COutputLogger_t& logger);
+    	TMsg(const std::string& msg, const COutputLogger& logger);
     	/** \brief  Default Destructor */
     	~TMsg();
 
@@ -246,7 +246,7 @@ class COutputLogger_t {
     	//
 			mrpt::system::TTimeStamp timestamp; /**< Timestamp of the message. */
 			VerbosityLevel level; /**< Verbosity level of the message. */
-			std::string name; /**< Name of the COutputLogger_t instance that called registered the message. */
+			std::string name; /**< Name of the COutputLogger instance that called registered the message. */
 			std::string body; /**< Actual content of the message. */
 
 			/** \brief Map from VerbosityLevels to their corresponding mrpt::system::TConsoleColor
@@ -271,7 +271,7 @@ class COutputLogger_t {
   private:
   	/** Warn (at least for the first usages) that the logged messages are not
   	 * stored by the COutputLogger instance since the call to
-  	 * COutputLogger_t::log is made inside a const method/function
+  	 * COutputLogger::log is made inside a const method/function
   	 */
   	void warnForLogConstMethod() const;
 
