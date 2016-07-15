@@ -136,7 +136,7 @@ void COutputLogger_t::setMinLoggingLevel(const VerbosityLevel& level /*= LVL_INF
 }
 
 
-VerbosityLevel COutputLogger_t::getCurrentLoggingLevel() const { return m_curr_level; }
+VerbosityLevel COutputLogger_t::getLoggingLevel() const { return m_curr_level; }
 
 void COutputLogger_t::getAsString(std::string* fname) const {
 	for (std::vector<TMsg>::const_iterator hist_it = m_history.begin();
@@ -209,7 +209,7 @@ COutputLogger_t::TMsg::TMsg(const std::string& msg_str, const COutputLogger_t& l
 	this->reset();
 
 	name = logger.getName();
-	level = logger.getCurrentLoggingLevel();
+	level = logger.getLoggingLevel();
 	timestamp = mrpt::system::getCurrentTime(); // fill with the current time
 	body = msg_str;
 }
