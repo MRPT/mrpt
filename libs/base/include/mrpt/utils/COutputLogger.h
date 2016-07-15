@@ -19,6 +19,7 @@
 #include <mrpt/system/datetime.h>
 #include <sstream>
 #include <iostream>
+#include <cstdarg> // for logFmt
 
 namespace mrpt { namespace utils {
 
@@ -91,7 +92,7 @@ class COutputLogger {
 		 * <b>print_message_automatically</b> is set to true. By default it is
 		 * saved in the COutputLogger history.
 		 *
-		 * \sa logCond
+		 * \sa logCond, logFmt
 		 */
     void log(const std::string& msg_str);
     /** \brief Alternative of the previous method, which lets the user specify 
@@ -99,33 +100,77 @@ class COutputLogger {
      *
      * Level will be reverted to the prior logging level
      * after opration
-     * \sa logCond
+     * \sa logCond, logFmt
      */
     void log(const std::string& msg_str, const VerbosityLevel& level);
+    /** \brief Alternative logging method, *handy for usage in const
+     *         functions/methods*
+     *
+     * Used *solely for printing* the given string in the console (but does not
+     * store it internally)
+     * \sa logCond, logFmt
+     */
+    void log(const std::string& msg_str, const VerbosityLevel& level) const;
     /** \brief Alternative logging method, handy for usage in const functions/methdos.
      *
      * Used solely for printing the given string in the console (but does not
      * store it internally
-     * \sa logCond
+     * \sa logCond, logFmt
      */
     void log(const std::string& msg_str) const;
-    /** \brief Alternative logging method, *handy for usage in const
-     *         functions/methods*
+    /** \brief Alternative logging method, which mimics the printf behavior.
      *
-     * Used solely for printing the given string in the console (but does not
-     * store it internally
-     * \sa logCond
+     * Handy for not having to first use mrpt::format to pass a std::string
+     * message to log
+     *
+     * \code
+     * // instead of: 
+     * log(mrpt::format("Today is the %d of %s, %d", 15, "July", 2016));
+     *
+     * // one can use:
+     * logFmt("Today is the %d of %s, %d", 15, "July", 2016);
+     * \endcode
+     *
+     * \sa log, logCond, mrpt::utils:CDebugOutputCapable
      */
-    void log(const std::string& msg_str, const VerbosityLevel& level) const;
+    void logFmt(const char* fmt, ...);
+    /** \brief Alternative logging method, which mimics the printf behavior.
+     *
+     * Handy for not having to first use mrpt::format to pass a std::string
+     * message to log. Used *solely for printing* the given string in the console
+     * (but does not store it internally)
+     *
+     * \sa log, logCond, mrpt::utils:CDebugOutputCapable
+     */
+    void logFmt(const char* fmt, ...) const;
     /** \brief Log the given message only if the condition is satisfied.
-     * \sa log
+     *
+     * Level will be reverted to the prior logging level
+     * after opration
+     *
+     * \sa log, logFmt
      */
     void logCond(const std::string& msg_str, bool cond);
-    /** \brief Log the given message only if the condition is satisfied
+    /** \brief Log the given message only if the condition is satisfied.
      *
-     * \sa log
+     * Used *solely for printing* the given string in the console (but does not
+     * store it internally)
+     *
+     * \sa log, logFmt
+     */
+    void logCond(const std::string& msg_str, bool cond) const;
+    /** \brief Log the given message only if the condition is satisfied.
+     *
+     * \sa log, logFmt
      */
     void logCond(const std::string& msg_str, const VerbosityLevel& level, bool cond);
+    /** \brief Log the given message only if the condition is satisfied.
+     *
+     * Used *solely for printing* the given string in the console (but does not
+     * store it internally)
+     * \sa log, logFmt
+     */
+    void logCond(const std::string& msg_str, const VerbosityLevel& level, bool cond) const;
 		/** \brief Set the name of the COutputLogger instance 
 		 *
 		 * \sa getName
@@ -152,12 +197,14 @@ class COutputLogger {
      * \sa setLoggingLevel
      */
     void setMinLoggingLevel(const VerbosityLevel& level = LVL_INFO);
-		/** \brief Return the currently used VerbosityLevel */
+		/** \brief Return the currently used VerbosityLevel 
+     *
+     * \sa setLoggingLevel
+		 */
     VerbosityLevel getLoggingLevel() const;
     /** \brief Fill the provided string with the contents of the logger's
      * history in std::string representation
      *
-     * \sa setLoggingLevel
      */
     void getAsString(std::string* fname) const;
     /** \brief Get the history of COutputLogger instance in a string representation.
@@ -274,6 +321,11 @@ class COutputLogger {
   	 * COutputLogger::log is made inside a const method/function
   	 */
   	void warnForLogConstMethod() const;
+
+		/** Helper method for generating a std::string instance from printf-like
+		 * arguments
+		 */
+		std::string generateStringFromFormat(const char* fmt, va_list argp) const;
 
 		std::string m_name;
 		std::vector<TMsg> m_history;

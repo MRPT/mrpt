@@ -12,6 +12,8 @@
 #include <mrpt/utils/COutputLogger.h>
 #include <mrpt/system/threads.h>
 
+#include <vector>
+
 
 using namespace mrpt;
 using namespace mrpt::system;
@@ -56,6 +58,13 @@ void COutputLogger::log(const std::string& msg_str) {
 	}
 
 }
+void COutputLogger::log(const std::string& msg_str) const {
+	warnForLogConstMethod();
+
+	TMsg msg(msg_str, *this);
+	msg.dumpToConsole();
+}
+
 void COutputLogger::log(const std::string& msg_str, const VerbosityLevel& level) {
 	// temporarily override the logging level
 	VerbosityLevel global_level = m_curr_level;
@@ -65,20 +74,87 @@ void COutputLogger::log(const std::string& msg_str, const VerbosityLevel& level)
 
 	m_curr_level = global_level;
 }
-
-void COutputLogger::log(const std::string& msg_str) const {
-	warnForLogConstMethod();
-
-	TMsg msg(msg_str, *this);
-	msg.dumpToConsole();
-}
-
 void COutputLogger::log(const std::string& msg_str, const VerbosityLevel& level) const {
 	warnForLogConstMethod();
 
 	TMsg msg(msg_str, *this);
 	msg.level = level;
 	msg.dumpToConsole();
+}
+
+void COutputLogger::logFmt(const char* fmt, ...) {
+	// see MRPT/libs/base/src/utils/CDeugOutputCapable.cpp for the iniitial
+	// implementtion
+
+	// check for NULL pointer
+	if (!fmt) return;
+
+	// initialize the va_list and let generateStringFromFormat do the work
+	// http://c-faq.com/varargs/handoff.html
+	va_list argp;
+	va_start(argp, fmt);
+	std::string str = this->generateStringFromFormat(fmt, argp);
+	va_end(argp);
+
+	this->log(str);
+}
+
+void COutputLogger::logFmt(const char* fmt, ...) const {
+	if (!fmt) return;
+
+	va_list argp;
+	va_start(argp, fmt);
+	std::string str = this->generateStringFromFormat(fmt, argp);
+	va_end(argp);
+
+	this->log(str);
+}
+
+std::string COutputLogger::generateStringFromFormat(const char* fmt, va_list argp) const{
+	int   result = -1, length = 1024;
+	std::vector<char> buffer;
+	// make sure that the buffer is large enough to handle the string
+	while (result == -1)
+	{
+		buffer.resize(length + 10);
+		result = os::vsnprintf(&buffer[0], length, fmt, argp);
+
+		// http://www.cplusplus.com/reference/cstdio/vsnprintf/
+		// only when this returned value is non-negative and less than n, the
+		// string has been completely written
+		if (result>=length) result=-1;
+		length*=2;
+	}
+
+	// return result to the caller
+	return std::string(&buffer[0]);
+
+}
+void COutputLogger::logCond(const std::string& msg_str, 
+		bool cond) {
+	if (cond) {
+		this->log(msg_str);
+	}
+}
+void COutputLogger::logCond(const std::string& msg_str, 
+		bool cond) const {
+	if (cond) {
+		this->log(msg_str);
+	}
+}
+void COutputLogger::logCond(const std::string& msg_str, 
+		const VerbosityLevel& level,
+		bool cond) {
+	if (cond) {
+		this->log(msg_str, level);
+	}
+}
+void COutputLogger::logCond(const std::string& msg_str, 
+		const VerbosityLevel& level,
+		bool cond) const {
+	if (cond) {
+		this->log(msg_str, level);
+	}
 }
 
 void COutputLogger::warnForLogConstMethod() const {
@@ -92,21 +168,6 @@ void COutputLogger::warnForLogConstMethod() const {
 	warning_msg.level = LVL_WARN;
 	warning_msg.dumpToConsole();
 	mrpt::system::sleep(1000);
-}
-
-
-void COutputLogger::logCond(const std::string& msg_str, 
-		bool cond) {
-	if (cond) {
-		this->log(msg_str);
-	}
-}
-void COutputLogger::logCond(const std::string& msg_str, 
-		const VerbosityLevel& level,
-		bool cond) {
-	if (cond) {
-		this->log(msg_str, level);
-	}
 }
 
 void COutputLogger::setName(const std::string& name) { m_name = name; }
