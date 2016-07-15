@@ -27,20 +27,20 @@ using namespace std;
 // ////////////////////////////////////////////////////////////
 
 // variables shared among the various logger instances
-size_t COutputLogger_t::m_times_for_log_const = 0;
-size_t COutputLogger_t::m_times_for_log_const_thresh = 2; // warn 2 times at most
+size_t COutputLogger::m_times_for_log_const = 0;
+size_t COutputLogger::m_times_for_log_const_thresh = 2; // warn 2 times at most
 
-COutputLogger_t::COutputLogger_t(std::string name) {
+COutputLogger::COutputLogger(std::string name) {
 	this->reset();
 	m_name = name;
 
 }
-COutputLogger_t::COutputLogger_t() {
+COutputLogger::COutputLogger() {
 	this->reset();
 }
-COutputLogger_t::~COutputLogger_t() { }
+COutputLogger::~COutputLogger() { }
 
-void COutputLogger_t::log(const std::string& msg_str) {
+void COutputLogger::log(const std::string& msg_str) {
 	if (m_curr_level < m_min_verbosity_level)
 		return;
 
@@ -56,7 +56,7 @@ void COutputLogger_t::log(const std::string& msg_str) {
 	}
 
 }
-void COutputLogger_t::log(const std::string& msg_str, const VerbosityLevel& level) {
+void COutputLogger::log(const std::string& msg_str, const VerbosityLevel& level) {
 	// temporarily override the logging level
 	VerbosityLevel global_level = m_curr_level;
 	m_curr_level = level;
@@ -66,14 +66,14 @@ void COutputLogger_t::log(const std::string& msg_str, const VerbosityLevel& leve
 	m_curr_level = global_level;
 }
 
-void COutputLogger_t::log(const std::string& msg_str) const {
+void COutputLogger::log(const std::string& msg_str) const {
 	warnForLogConstMethod();
 
 	TMsg msg(msg_str, *this);
 	msg.dumpToConsole();
 }
 
-void COutputLogger_t::log(const std::string& msg_str, const VerbosityLevel& level) const {
+void COutputLogger::log(const std::string& msg_str, const VerbosityLevel& level) const {
 	warnForLogConstMethod();
 
 	TMsg msg(msg_str, *this);
@@ -81,13 +81,13 @@ void COutputLogger_t::log(const std::string& msg_str, const VerbosityLevel& leve
 	msg.dumpToConsole();
 }
 
-void COutputLogger_t::warnForLogConstMethod() const {
+void COutputLogger::warnForLogConstMethod() const {
 	if (m_times_for_log_const++ >= m_times_for_log_const_thresh) {
 		return;
 	}
 
 	// warn the user of the method behavior
-	std::string msg_str("Using the log method inside a const function/method. Message will not be recorded in COutputLogger_t history");
+	std::string msg_str("Using the log method inside a const function/method. Message will not be recorded in COutputLogger history");
 	TMsg warning_msg(msg_str, *this);
 	warning_msg.level = LVL_WARN;
 	warning_msg.dumpToConsole();
@@ -95,13 +95,13 @@ void COutputLogger_t::warnForLogConstMethod() const {
 }
 
 
-void COutputLogger_t::logCond(const std::string& msg_str, 
+void COutputLogger::logCond(const std::string& msg_str, 
 		bool cond) {
 	if (cond) {
 		this->log(msg_str);
 	}
 }
-void COutputLogger_t::logCond(const std::string& msg_str, 
+void COutputLogger::logCond(const std::string& msg_str, 
 		const VerbosityLevel& level,
 		bool cond) {
 	if (cond) {
@@ -109,11 +109,11 @@ void COutputLogger_t::logCond(const std::string& msg_str,
 	}
 }
 
-void COutputLogger_t::setName(const std::string& name) { m_name = name; }
+void COutputLogger::setName(const std::string& name) { m_name = name; }
 
-std::string COutputLogger_t::getName() const { return m_name; }
+std::string COutputLogger::getName() const { return m_name; }
 
-void COutputLogger_t::setLoggingLevel(const VerbosityLevel& level /*= LVL_INFO */) {
+void COutputLogger::setLoggingLevel(const VerbosityLevel& level /*= LVL_INFO */) {
 	m_curr_level = level;
 
 	if (m_curr_level < m_min_verbosity_level) {
@@ -124,7 +124,7 @@ void COutputLogger_t::setLoggingLevel(const VerbosityLevel& level /*= LVL_INFO *
 	}
 }
 
-void COutputLogger_t::setMinLoggingLevel(const VerbosityLevel& level /*= LVL_INFO */) {
+void COutputLogger::setMinLoggingLevel(const VerbosityLevel& level /*= LVL_INFO */) {
 	m_min_verbosity_level = level;
 
 	if (m_curr_level < m_min_verbosity_level) {
@@ -136,21 +136,21 @@ void COutputLogger_t::setMinLoggingLevel(const VerbosityLevel& level /*= LVL_INF
 }
 
 
-VerbosityLevel COutputLogger_t::getLoggingLevel() const { return m_curr_level; }
+VerbosityLevel COutputLogger::getLoggingLevel() const { return m_curr_level; }
 
-void COutputLogger_t::getAsString(std::string* fname) const {
+void COutputLogger::getAsString(std::string* fname) const {
 	for (std::vector<TMsg>::const_iterator hist_it = m_history.begin();
 			hist_it != m_history.end(); ++hist_it) {
 		*fname += hist_it->getAsString() + "\n";
 	}
 }
-std::string COutputLogger_t::getAsString() const{
+std::string COutputLogger::getAsString() const{
 	std::string str;
 	this->getAsString(&str);
 
 	return str;
 }
-void COutputLogger_t::writeToFile(const std::string* fname_in /* = NULL */) const {
+void COutputLogger::writeToFile(const std::string* fname_in /* = NULL */) const {
 	// determine the filename - open it
 	std::string fname;
 	if (fname_in) {
@@ -171,24 +171,24 @@ void COutputLogger_t::writeToFile(const std::string* fname_in /* = NULL */) cons
 	fstream.close();
 }
 
-void COutputLogger_t::dumpToConsole() const{
+void COutputLogger::dumpToConsole() const{
 	for (std::vector<TMsg>::const_iterator hist_it = m_history.begin();
 			hist_it != m_history.end(); ++hist_it) {
 		hist_it->dumpToConsole();
 	}
 }
 
-std::string COutputLogger_t::getLastMsg() const {
+std::string COutputLogger::getLastMsg() const {
 	TMsg last_msg = m_history.back();
 	return last_msg.getAsString();
 }
 
-void COutputLogger_t::getLastMsg(std::string* msg_str) const {
+void COutputLogger::getLastMsg(std::string* msg_str) const {
 	*msg_str = this->getLastMsg();
 }
 
 
-void COutputLogger_t::reset() {
+void COutputLogger::reset() {
 	m_name = "Logger"; // just the default name
 
 	m_history.clear();
@@ -205,7 +205,7 @@ void COutputLogger_t::reset() {
 // TMsg Struct
 // ////////////////////////////////////////////////////////////
 
-COutputLogger_t::TMsg::TMsg(const std::string& msg_str, const COutputLogger_t& logger) {
+COutputLogger::TMsg::TMsg(const std::string& msg_str, const COutputLogger& logger) {
 	this->reset();
 
 	name = logger.getName();
@@ -213,9 +213,9 @@ COutputLogger_t::TMsg::TMsg(const std::string& msg_str, const COutputLogger_t& l
 	timestamp = mrpt::system::getCurrentTime(); // fill with the current time
 	body = msg_str;
 }
-COutputLogger_t::TMsg::~TMsg() { }
+COutputLogger::TMsg::~TMsg() { }
 
-mrpt::system::TConsoleColor COutputLogger_t::TMsg::getConsoleColor(VerbosityLevel level) const {
+mrpt::system::TConsoleColor COutputLogger::TMsg::getConsoleColor(VerbosityLevel level) const {
 	TConsoleColor color;
 
   map<VerbosityLevel, mrpt::system::TConsoleColor>::const_iterator search;
@@ -232,7 +232,7 @@ mrpt::system::TConsoleColor COutputLogger_t::TMsg::getConsoleColor(VerbosityLeve
 	return color;
 }
 
-std::string COutputLogger_t::TMsg::getLoggingLevelName(VerbosityLevel level) const {
+std::string COutputLogger::TMsg::getLoggingLevelName(VerbosityLevel level) const {
 	std::string name;
 
   map<VerbosityLevel, std::string>::const_iterator search;
@@ -249,7 +249,7 @@ std::string COutputLogger_t::TMsg::getLoggingLevelName(VerbosityLevel level) con
 	return name;
 }
 
-void COutputLogger_t::TMsg::reset() {
+void COutputLogger::TMsg::reset() {
 	timestamp = INVALID_TIMESTAMP;
 	level = LVL_INFO;
 	name = "Message"; // default name
@@ -268,7 +268,7 @@ void COutputLogger_t::TMsg::reset() {
 	m_levels_to_names[LVL_ERROR] = "ERROR";
 }
 
-std::string COutputLogger_t::TMsg::getAsString() const {
+std::string COutputLogger::TMsg::getAsString() const {
 	stringstream out;
 	out.str("");
 	out << "[" << name <<  " | " << this->getLoggingLevelName(level) << " | " 
@@ -277,13 +277,13 @@ std::string COutputLogger_t::TMsg::getAsString() const {
 
 	return out.str();
 }
-void COutputLogger_t::TMsg::getAsString(std::string* contents) const {
+void COutputLogger::TMsg::getAsString(std::string* contents) const {
 	*contents = this->getAsString();
 }
-void COutputLogger_t::TMsg::writeToStream(mrpt::utils::CStream& out) const {
+void COutputLogger::TMsg::writeToStream(mrpt::utils::CStream& out) const {
 	out.printf("%s\n", getAsString().c_str());
 }
-void COutputLogger_t::TMsg::dumpToConsole() const {
+void COutputLogger::TMsg::dumpToConsole() const {
 	CStdOutStream mrpt_cout;
 	setConsoleColor(this->getConsoleColor(level));
 	this->writeToStream(mrpt_cout);
