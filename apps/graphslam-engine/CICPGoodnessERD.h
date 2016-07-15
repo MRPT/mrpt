@@ -221,7 +221,7 @@ class CICPGoodnessERD_t :
 		typename superB::TSlidingWindow sliding_win;
 
 		// loggers
-		mrpt::utils::COutputLogger_t m_out_logger;
+		mrpt::utils::COutputLogger m_out_logger;
 		mrpt::utils::CTimeLogger m_time_logger;
 
 };

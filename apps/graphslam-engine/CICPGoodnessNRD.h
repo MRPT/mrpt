@@ -161,7 +161,7 @@ template<class GRAPH_t>
 		mrpt::system::TTimeStamp m_prev_timestamp;
 
 		// loggers
-		mrpt::utils::COutputLogger_t m_out_logger;
+		mrpt::utils::COutputLogger m_out_logger;
 		mrpt::utils::CTimeLogger m_time_logger;
 
 };

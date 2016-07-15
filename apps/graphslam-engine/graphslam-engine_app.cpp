@@ -136,7 +136,7 @@ bool checkOptimizerExists(string opt_name);
 int main(int argc, char **argv)
 {
 	try {
-		COutputLogger_t logger("graphslam-engine_app");
+		COutputLogger logger("graphslam-engine_app");
 
 		bool showHelp		 = argc>1 && !os::_strcmp(argv[1],"--help");
 		bool showVersion = argc>1 && !os::_strcmp(argv[1],"--version");

@@ -306,7 +306,7 @@ class CGraphSlamEngine_t {
 		//////////////////////////////////////////////////////////////
 
 		// logger
-		mrpt::utils::COutputLogger_t m_out_logger;
+		mrpt::utils::COutputLogger m_out_logger;
 
 		// the graph object to be built and optimized
 		GRAPH_t m_graph;
