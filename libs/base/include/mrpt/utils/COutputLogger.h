@@ -62,7 +62,7 @@ enum VerbosityLevel { LVL_DEBUG=0, LVL_INFO, LVL_WARN, LVL_ERROR };
  * \sa TMsg
  * \ingroup mrpt_base_grp
  */
-class COutputLogger {
+class BASE_IMPEXP COutputLogger {
   public:
   	/**
   	 * \brief Construct a COutputLogger instance with the given name as the
@@ -251,7 +251,7 @@ class COutputLogger {
 		 *
 		 * <center><em> [name | level | timestamp:] body </em></center>
 		 */
-    struct TMsg {
+    struct BASE_IMPEXP TMsg {
     	/** \brief Class constructor that passes a message in std::string
     	 * form as well as a reference to the COutputLogger that provided the
     	 * current message
