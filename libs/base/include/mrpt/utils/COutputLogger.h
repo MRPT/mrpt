@@ -50,8 +50,16 @@ enum VerbosityLevel { LVL_DEBUG=0, LVL_INFO, LVL_WARN, LVL_ERROR };
  *   higher than m_min_verbosity_level (logger ignores those messages
  *   altogether). This can be used for filtering the output messages according
  *   to their importance (e.g. show only error messages by issuing
- *   setMinLoggingLevel(LVL_ERROR)). See setLoggingLevel,
- *   setMinLoggingLevel methods for more.
+ *   setMinLoggingLevel(LVL_ERROR)).
+ *   \sa setLoggingLevel, setMinLoggingLevel
+ *
+ * \note By default every logged message is going to be dumped to the stadard
+ * output as well (if VerbisityLevel > m_min_verbosity_level). Unset \b
+ * print_message_automatically class variable if that's not the desired
+ * behavior
+ *
+ * \sa TMsg
+ * \ingroup mrpt_base_grp
  */
 class COutputLogger_t {
   public:
@@ -79,8 +87,11 @@ class COutputLogger_t {
 
 		/** \brief Main method to add the specified message string to the logger.
 		 *
-		 * It is printed in the terminal window if <b>print_message_automatically</b> is set
-		 * to true. By default it is saved in the COutputLogger_t history.
+		 * Message is printed in the terminal window if
+		 * <b>print_message_automatically</b> is set to true. By default it is
+		 * saved in the COutputLogger_t history.
+		 *
+		 * \sa logCond
 		 */
     void log(const std::string& msg_str);
     /** \brief Alternative of the previous method, which lets the user specify 
@@ -88,12 +99,14 @@ class COutputLogger_t {
      *
      * Level will be reverted to the prior logging level
      * after opration
+     * \sa logCond
      */
     void log(const std::string& msg_str, const VerbosityLevel& level);
     /** \brief Alternative logging method, handy for usage in const functions/methdos.
      *
      * Used solely for printing the given string in the console (but does not
      * store it internally
+     * \sa logCond
      */
     void log(const std::string& msg_str) const;
     /** \brief Alternative logging method, *handy for usage in const
@@ -101,21 +114,32 @@ class COutputLogger_t {
      *
      * Used solely for printing the given string in the console (but does not
      * store it internally
+     * \sa logCond
      */
     void log(const std::string& msg_str, const VerbosityLevel& level) const;
-    /** \brief Log the given message only if the condition is satisfied
+    /** \brief Log the given message only if the condition is satisfied.
+     * \sa log
      */
     void logCond(const std::string& msg_str, bool cond);
     /** \brief Log the given message only if the condition is satisfied
+     *
+     * \sa log
      */
     void logCond(const std::string& msg_str, const VerbosityLevel& level, bool cond);
-
-		/** \brief Set the name of the COutputLogger_t instance */
+		/** \brief Set the name of the COutputLogger_t instance 
+		 *
+		 * \sa getName
+		 */
 		void setName(const std::string& name);
-		/** \brief Return the name of the COutputLogger_t instance */
+		/** \brief Return the name of the COutputLogger_t instance 
+		 *
+		 * \sa setName
+		 */
 		std::string getName() const;
 		/** \brief Set the logging level that is going to be assigned in each message
 		 *         logged from this point on.
+		 *
+     * \sa setMinLoggingLevel, getLoggingLevel
 		 */
     void setLoggingLevel(const VerbosityLevel& level = LVL_INFO);
     /** \brief Set the *minimum* logging level for which the incoming logs are going to
@@ -124,13 +148,16 @@ class COutputLogger_t {
      * String messages with specified VerbosityLevel smaller than the min, will
      * not be outputted to the screen and neither will a record of them be
      * stored in by the COutputLogger_t instance
+     *
+     * \sa setLoggingLevel
      */
     void setMinLoggingLevel(const VerbosityLevel& level = LVL_INFO);
-
 		/** \brief Return the currently used VerbosityLevel */
-    VerbosityLevel getCurrentLoggingLevel() const;
+    VerbosityLevel getLoggingLevel() const;
     /** \brief Fill the provided string with the contents of the logger's
      * history in std::string representation
+     *
+     * \sa setLoggingLevel
      */
     void getAsString(std::string* fname) const;
     /** \brief Get the history of COuputLogger_t instance in a string representation.
@@ -142,20 +169,26 @@ class COutputLogger_t {
      * logged commands so far to the specified external file.  By default the
      * filename is set to ${LOGGERNAME}.log except if the fname parameter is
      * provided
+     *
+     * \sa dumpToConsole, getAsString
      */
     void writeToFile(const std::string* fname_in=NULL) const;
     /** \brief Dump the current contents of the COutputLogger_t instance in the
      * terminal window.
+     *
+		 * \sa writeToFile
      */
     void dumpToConsole() const;
-		/** \brief Return the last Tmsg instance registered in the logger history */
+		/** \brief Return the last Tmsg instance registered in the logger history 
+		 *
+		 */
 		std::string getLastMsg() const;
 		/** \brief Fill inputtted string with the contents of the last message in history
 		 */
 		void getLastMsg(std::string* msg_str) const;
     /** \brief Reset the contents of the logger instance.
      *
-     * Used by default when the an instance of the class is initialized
+     * Used *by default* when an instance of the class is initialized
      */
     void reset();
 
@@ -169,14 +202,15 @@ class COutputLogger_t {
 		 * The format of the message when this is printed / or written to an
 		 * external file complies is given below:
 		 *
-		 * <em> [name | level | timestamp:] body </em>
+		 * <center><em> [name | level | timestamp:] body </em></center>
 		 */
     struct TMsg {
-    	/** \brief Class constructor that provides the message in std::string
+    	/** \brief Class constructor that passes a message in std::string
     	 * form as well as a reference to the COutputLogger that provided the
     	 * current message
     	 */
     	TMsg(const std::string& msg, const COutputLogger_t& logger);
+    	/** \brief  Default Destructor */
     	~TMsg();
 
 			/** \brief Return a string representation of the underlying message */
@@ -184,21 +218,31 @@ class COutputLogger_t {
 			/** \brief Fill the string with the contents of the underlying message in
 			 * string representation */
 			void getAsString(std::string* contents) const;
-			/** \brief Write the message contents to the specified stream */
+			/** \brief Write the message contents to the specified stream
+			 *
+			 * \sa getAsString
+			 */
 			void writeToStream(mrpt::utils::CStream& out) const;
-			/** \brief Dump the message contents to the standard output */
+			/** \brief Dump the message contents to the standard output
+			 *
+			 * \sa writeToStream
+			 */
 			void dumpToConsole() const;
 			/** \brief Reset the contents of the TMsg instance */
 			void reset();
-			/** \brief Return the color corresponding to the given VerbosityLevel */
+			/** \brief Return the color corresponding to the given VerbosityLevel
+			 *
+			 * \sa getLoggingLevelName
+			 */
 			mrpt::system::TConsoleColor getConsoleColor(VerbosityLevel level) const;
-			/** \brief Return the name corresponding to the given VerbosityLevel */
+			/** \brief Return the name corresponding to the given VerbosityLevel 
+			 *
+			 * \sa getConsoleColor
+			 */
 			std::string getLoggingLevelName(VerbosityLevel level) const; 
 
     	//
     	// parameters of the message under construction
-    	// Message format
-    	// [name | level | timestamp:] body
     	//
 			mrpt::system::TTimeStamp timestamp; /**< Timestamp of the message. */
 			VerbosityLevel level; /**< Verbosity level of the message. */
@@ -218,12 +262,11 @@ class COutputLogger_t {
 			std::map<VerbosityLevel, std::string> m_levels_to_names;
    };
 
-		/**
-		 * \brief Set it to false in case you don't want the logged message to be dumped
-		 *         to the output automatically. 
+		/** \brief Set it to false in case you don't want the logged message to be
+		 *         dumped to the output automatically. 
 		 *
 		 * By default it is set to true.
-		 * */
+		 */
 		bool print_message_automatically;
   private:
   	/** Warn (at least for the first usages) that the logged messages are not
