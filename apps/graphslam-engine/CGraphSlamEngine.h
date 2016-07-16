@@ -418,6 +418,7 @@ class CGraphSlamEngine_t {
 		// reference frame
 		CMatrixDouble33  m_rot_TUM_to_MRPT;
 
+		// how big are the robots going to be in the scene
 		size_t m_robot_model_size;
 
 		// internal counter for querrying for the number of nodeIDs.

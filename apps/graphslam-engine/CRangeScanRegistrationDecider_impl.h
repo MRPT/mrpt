@@ -95,10 +95,10 @@ void CRangeScanRegistrationDecider_t<GRAPH_t>::getICPEdge(
 
 	// return the edge regardless of the goodness of the alignment
 	// copy from the 3D PDF
-	// NULLIFY if Z displacement is high (normally this should be 0) since we are
+	// NULLIFY contraint_t if Z displacement is high (normally this should be 0) since we are
 	// moving in 2D
 	std::cout << "3D Pose from alignment: " << pdf->getMeanVal() << std::endl;
-	if (fabs(pdf->getMeanVal().z()) < 0.1) { // TODO - set this limit adaptively
+	if (fabs(pdf->getMeanVal().z()) < 0.1) {
 		rel_edge->copyFrom(*pdf);
 		std::cout << "2D corresponding pose : " << rel_edge->getMeanVal() << std::endl;
 	}
