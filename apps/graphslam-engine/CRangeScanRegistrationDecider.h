@@ -26,6 +26,7 @@
 #include <mrpt/system/os.h>
 
 #include <algorithm>
+#include <cmath>
 #include <iostream>
 #include <numeric>
 #include <vector>
@@ -70,8 +71,8 @@ template< class GRAPH_t=typename mrpt::graphs::CNetworkOfPoses2DInf>
 			* information be returned in a TReturnInfo struct
 			*/
 		void getICPEdge(
-				mrpt::obs::CObservation3DRangeScan& from,
-				mrpt::obs::CObservation3DRangeScan& to,
+				const mrpt::obs::CObservation3DRangeScan& from,
+				const mrpt::obs::CObservation3DRangeScan& to,
 				constraint_t* rel_edge,
 				const mrpt::poses::CPose2D* initial_pose=NULL,
 				mrpt::slam::CICP::TReturnInfo* icp_info=NULL);

@@ -163,10 +163,19 @@ bool CICPGoodnessNRD_t<GRAPH_t>::updateDeciderState3D(
 	MRPT_START;
 	bool registered_new_node = false;
 
+	m_curr_laser_scan3D = scan3d;
 	m_curr_laser_scan3D->load();
 	m_curr_laser_scan3D->project3DPointsFromDepthImage();
 
-	// TODO - implement this
+	if (m_last_laser_scan3D.null()) {
+		m_out_logger.log("First time call for updateDeciderState3D.", LVL_WARN);
+		// initialize the last_laser_scan here - afterwards updated inside the
+		// checkRegistrationCondition*D method
+		m_last_laser_scan3D = m_curr_laser_scan3D;
+	}
+	else {
+		registered_new_node = checkRegistrationCondition3D(); 
+	}
 
 	return registered_new_node;
 	MRPT_END;
@@ -176,7 +185,45 @@ template<class GRAPH_t>
 bool CICPGoodnessNRD_t<GRAPH_t>::checkRegistrationCondition3D() {
 	MRPT_START;
 	bool registered_new_node = false;
-	// TODO - implement this
+
+	m_out_logger.log("In checkRegistrationCondition3D..");
+
+	constraint_t* rel_edge = new constraint_t;
+	mrpt::slam::CICP::TReturnInfo icp_info;
+
+	this->getICPEdge(
+			*m_last_laser_scan3D,
+			*m_curr_laser_scan3D,
+			rel_edge,
+			NULL,
+			&icp_info);
+	// append current ICP edge to the sliding window
+	m_ICP_sliding_win.addNewMeasurement(icp_info.goodness);
+
+	// Criterions for updating PDF since last registered node
+	// - ICP goodness > threshold goodness
+	// - Small Z displacement
+
+	if (!rel_edge) {
+		m_out_logger.logFmt("NULL rel_edge from getICPEdge procedure");
+		return false;
+	}
+
+	m_out_logger.logFmt("Current ICP constraint: \n\tEdge: %s\n\tNorm: %f", 
+				rel_edge->getMeanVal().asString().c_str(), 
+				rel_edge->getMeanVal().norm());
+	m_out_logger.logFmt("ICP Alignment operation:\
+			\n\tnIterations: %d\
+			\n\tquality: %f\
+			\n\tgoodness: %.f\n",
+			icp_info.nIterations, icp_info.quality, icp_info.goodness);
+
+	if (m_ICP_sliding_win.evaluateICPgoodness(icp_info.goodness) ) {
+		m_out_logger.logFmt("Using the above constraint...");
+		m_since_prev_node_PDF += *rel_edge;
+		m_last_laser_scan3D = m_curr_laser_scan3D;
+		registered_new_node = this->checkRegistrationCondition();
+	}
 
 	return registered_new_node;
 	MRPT_END;
@@ -220,11 +267,11 @@ void CICPGoodnessNRD_t<GRAPH_t>::registerNewNode() {
 	mrpt::utils::TNodeID from = m_nodeID_max;
 	mrpt::utils::TNodeID to = ++m_nodeID_max;
 
-	m_out_logger.logFmt("Registered new node:\n\t%lu => %lu\n\tEdge: %s",
-				from, to, m_since_prev_node_PDF.getMeanVal().asString().c_str());
-
 	m_graph->nodes[to] = m_graph->nodes[from] + m_since_prev_node_PDF.getMeanVal();
   m_graph->insertEdgeAtEnd(from, to, m_since_prev_node_PDF);
+
+	m_out_logger.logFmt("Registered new node:\n\t%lu => %lu\n\tEdge: %s",
+				from, to, m_since_prev_node_PDF.getMeanVal().asString().c_str());
 
 	MRPT_END;
 }

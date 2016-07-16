@@ -42,14 +42,6 @@ void CRangeScanRegistrationDecider_t<GRAPH_t>::getICPEdge(
 			&running_time,
 			(void*)&info);
 
-	//std::cout << "ICP Alignment operation: \n" 
-		//<< "\n\t nIterations: " << info.nIterations
-		//<< "\n\t quality: " << info.quality
-		//<< "\n\t goodness: " << info.goodness
-		//<< std::endl;
-	//std::cout << "Alignemnt took: " << running_time << " s" << std::endl;
-
-
 	// return the edge regardless of the goodness of the alignment
 	rel_edge->copyFrom(*pdf);
 
@@ -65,8 +57,8 @@ void CRangeScanRegistrationDecider_t<GRAPH_t>::getICPEdge(
 }
 template<class GRAPH_t>
 void CRangeScanRegistrationDecider_t<GRAPH_t>::getICPEdge(
-		mrpt::obs::CObservation3DRangeScan& from,
-		mrpt::obs::CObservation3DRangeScan& to,
+		const mrpt::obs::CObservation3DRangeScan& from,
+		const mrpt::obs::CObservation3DRangeScan& to,
 		constraint_t* rel_edge,
 		const mrpt::poses::CPose2D* initial_pose_in /* =NULL */,
 		mrpt::slam::CICP::TReturnInfo* icp_info /* =NULL */) {
@@ -85,8 +77,8 @@ void CRangeScanRegistrationDecider_t<GRAPH_t>::getICPEdge(
 	m1.insertObservation(&from);
 	m2.insertObservation(&to);
 
-	this->decimatePointsMap(&m1, /* keep every = */ 40, /* low_lim = */ 5000);
-	this->decimatePointsMap(&m2, /* keep every = */ 40, /* low_lim = */ 5000);
+	//this->decimatePointsMap(&m1, [> keep every = */ 40, /* low_lim = <] 5000);
+	//this->decimatePointsMap(&m2, [> keep every = */ 40, /* low_lim = <] 5000);
 
 	// If given, use initial_pose_in as a first guess for the ICP
 	mrpt::poses::CPose3D initial_pose;
@@ -101,26 +93,18 @@ void CRangeScanRegistrationDecider_t<GRAPH_t>::getICPEdge(
 			&running_time,
 			(void*)&info);
 
-	//CStdOutStream cout_stream;
-	//std::cout << "For first laser scan: " << std::endl;
-	//from.getDescriptionAsText(std::cout);
-	//std::cout << "For second laser scan: " << std::endl;
-	//to.getDescriptionAsText(std::cout);
-
-	std::cout << "ICP Alignment operation: \n" 
-		<< "\t nIterations: " << info.nIterations
-		//<< "\t quality: " << info.quality
-		<< "\t goodness: " << info.goodness
-		<< std::endl;
-	std::cout << "Alignemnt took: " << running_time << " s" << std::endl;
-
-
 	// return the edge regardless of the goodness of the alignment
-	// copy fro the 3D PDF
-	rel_edge->copyFrom(*pdf);
-
-	//std::cout << "3D Pose from alignment: " << pdf->getMeanVal() << std::endl;
-	//std::cout << "2D corresponding pose : " << rel_edge->getMeanVal() << std::endl;
+	// copy from the 3D PDF
+	// NULLIFY if Z displacement is high (normally this should be 0) since we are
+	// moving in 2D
+	std::cout << "3D Pose from alignment: " << pdf->getMeanVal() << std::endl;
+	if (fabs(pdf->getMeanVal().z()) < 0.1) { // TODO - set this limit adaptively
+		rel_edge->copyFrom(*pdf);
+		std::cout << "2D corresponding pose : " << rel_edge->getMeanVal() << std::endl;
+	}
+	else {
+		rel_edge = NULL;
+	}
 
 	// if given, fill the TReturnInfo Struct
 	if (icp_info) {

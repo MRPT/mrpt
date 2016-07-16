@@ -153,9 +153,11 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::ini
 	m_edge_registrar.setRawlogFname(m_rawlog_fname);
 	m_optimizer.setRawlogFname(m_rawlog_fname);
 
+	
 	m_use_GT = !m_fname_GT.empty();
 	if (m_use_GT) {
 		if (mrpt::system::strCmpI(m_GT_file_format, "rgbd_tum")) {
+			this->alignOpticalWithMRPTFrame();
 			this->readGTFileRGBD_TUM(m_fname_GT, &m_GT_poses);
 		}
 		else if (mrpt::system::strCmpI(m_GT_file_format, "navsimul")) {
@@ -189,52 +191,6 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::ini
 	// timestamp
 	m_win_manager.assignTextMessageParameters(&m_offset_y_timestamp,
 			&m_text_index_timestamp);
-
-	// aligning GT (optical) frame with the MRPT frame
-	// Set the rotation matrix from the corresponding RPY angles
-	// MRPT Frame: X->forward; Y->Left; Z->Upward
-	// Optical Frame: X->Right; Y->Downward; Z->Forward
-	ASSERT_(m_has_read_config);
-	if (mrpt::system::strCmpI(m_GT_file_format, "rgbd_tum") && m_visualize_GT) {
-		// rotz
-		double anglez = DEG2RAD(0);
-		const double tmpz[] = {
-			cos(anglez),     -sin(anglez), 0,
-			sin(anglez),     cos(anglez),  0,
-			0,               0,            1  };
-		CMatrixDouble rotz(3, 3, tmpz);
-
-		// roty
-		//double angley = DEG2RAD(-90);
-		double angley = DEG2RAD(0);
-		const double tmpy[] = {
-			cos(angley),      0,      sin(angley),
-			0,                1,      0,
-			-sin(angley),     0,      cos(angley)  };
-		CMatrixDouble roty(3, 3, tmpy);
-
-		// rotx
-		//double anglex = DEG2RAD(-90);
-		double anglex = DEG2RAD(0);
-		const double tmpx[] = {
-			1,        0,               0,
-			0,        cos(anglex),     -sin(anglex),
-			0,        sin(anglex),     cos(anglex)  };
-		CMatrixDouble rotx(3, 3, tmpx);
-
-		stringstream ss_out;
-		ss_out << "\nConstructing the rotation matrix for the GroundTruth Data..." 
-			<< endl;
-		m_rot_TUM_to_MRPT = rotz * roty * rotx;
-
-		ss_out << "Rotation matrices for optical=>MRPT transformation" << endl;
-		ss_out << "rotz: " << endl << rotz << endl;
-		ss_out << "roty: " << endl << roty << endl;
-		ss_out << "rotx: " << endl << rotx << endl;
-		ss_out << "Full rotation matrix: " << endl << m_rot_TUM_to_MRPT << endl;
-
-		m_out_logger.log(ss_out.str(), LVL_DEBUG);
-	}
 
 	// Configuration of various trajectories visualization
 	ASSERT_(m_has_read_config);
@@ -1274,8 +1230,6 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::rea
 	CVectorDouble curr_coords_MRPT_fr;
 	m_rot_TUM_to_MRPT.multiply_Ab(curr_coords_optical_fr, curr_coords_MRPT_fr);
 
-
-	// TODO Add GT pose orientation
 	// initial pose
 	pose_t curr_pose(
 			curr_coords_MRPT_fr[0],
@@ -1301,7 +1255,6 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::rea
 			gt_timestamps->push_back(timestamp);
 		}
 
-		// pose
 		// quaternion
 		CQuaternionDouble quat;
 		quat.r(atof(curr_tokens[7].c_str()));
@@ -1310,6 +1263,7 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::rea
 		quat.z(atof(curr_tokens[6].c_str()));
 		quat.rpy(r, p, y);
 
+		// pose
 		CVectorDouble curr_coords_optical_fr(3);
 		curr_coords_optical_fr[0] = atof(curr_tokens[1].c_str());
 		curr_coords_optical_fr[1] = atof(curr_tokens[2].c_str());
@@ -1319,7 +1273,6 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::rea
 		CVectorDouble curr_coords_MRPT_fr;
 		m_rot_TUM_to_MRPT.multiply_Ab(curr_coords_optical_fr, curr_coords_MRPT_fr);
 
-		// TODO Add GT pose orientation
 		// initial pose
 		pose_t curr_pose(
 				curr_coords_MRPT_fr[0],
@@ -1338,6 +1291,57 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::rea
 	//mrpt::system::pause();
 
 	file_GT.close();
+
+	MRPT_END;
+}
+
+template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR, class OPTIMIZER>
+void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::alignOpticalWithMRPTFrame() {
+	MRPT_START;
+
+	// aligning GT (optical) frame with the MRPT frame
+	// Set the rotation matrix from the corresponding RPY angles
+	// MRPT Frame: X->forward; Y->Left; Z->Upward
+	// Optical Frame: X->Right; Y->Downward; Z->Forward
+	ASSERT_(m_has_read_config);
+	// rotz
+	double anglez = DEG2RAD(0.0);
+	const double tmpz[] = {
+		cos(anglez),     -sin(anglez), 0,
+		sin(anglez),     cos(anglez),  0,
+		0,               0,            1  };
+	CMatrixDouble rotz(3, 3, tmpz);
+
+	// roty
+	double angley = DEG2RAD(0.0);
+	//double angley = DEG2RAD(90.0);
+	const double tmpy[] = {
+		cos(angley),      0,      sin(angley),
+		0,                1,      0,
+		-sin(angley),     0,      cos(angley)  };
+	CMatrixDouble roty(3, 3, tmpy);
+
+	// rotx
+	//double anglex = DEG2RAD(-90.0);
+	double anglex = DEG2RAD(0.0);
+	const double tmpx[] = {
+		1,        0,               0,
+		0,        cos(anglex),     -sin(anglex),
+		0,        sin(anglex),     cos(anglex)  };
+	CMatrixDouble rotx(3, 3, tmpx);
+
+	stringstream ss_out;
+	ss_out << "\nConstructing the rotation matrix for the GroundTruth Data..." 
+		<< endl;
+	m_rot_TUM_to_MRPT = rotz * roty * rotx;
+
+	ss_out << "Rotation matrices for optical=>MRPT transformation" << endl;
+	ss_out << "rotz: " << endl << rotz << endl;
+	ss_out << "roty: " << endl << roty << endl;
+	ss_out << "rotx: " << endl << rotx << endl;
+	ss_out << "Full rotation matrix: " << endl << m_rot_TUM_to_MRPT << endl;
+
+	m_out_logger.log(ss_out.str(), LVL_DEBUG);
 
 	MRPT_END;
 }
