@@ -28,8 +28,9 @@
 #include <mrpt/utils/CStream.h>
 #include <mrpt/utils/types_simple.h>
 #include <mrpt/slam/CICP.h>
-#include <mrpt/system/os.h>
 #include <mrpt/system/datetime.h>
+#include <mrpt/system/os.h>
+#include <mrpt/system/threads.h>
 
 #include "CNodeRegistrationDecider.h"
 #include "CRangeScanRegistrationDecider.h"

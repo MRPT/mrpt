@@ -255,6 +255,7 @@ class CGraphSlamEngine_t {
 				const std::string& fname_GT, 
 				std::vector<pose_t>* gt_poses,
 				std::vector<mrpt::system::TTimeStamp>* gt_timestamps=NULL);
+		void alignOpticalWithMRPTFrame();
 		void initGTVisualization();
 		/**
 		 * Display the next ground truth position in the visualization window
