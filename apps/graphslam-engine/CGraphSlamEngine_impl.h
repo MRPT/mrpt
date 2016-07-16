@@ -1221,20 +1221,17 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::rea
 	double r,p,y;
 	quat.rpy(r, p, y);
 
-	CVectorDouble curr_coords_optical_fr(3);
-	curr_coords_optical_fr[0] = atof(curr_tokens[1].c_str());
-	curr_coords_optical_fr[1] = atof(curr_tokens[2].c_str());
-	curr_coords_optical_fr[2] = atof(curr_tokens[3].c_str());
-
-	// coordinates - MRPT reference frame
-	CVectorDouble curr_coords_MRPT_fr;
-	m_rot_TUM_to_MRPT.multiply_Ab(curr_coords_optical_fr, curr_coords_MRPT_fr);
+	CVectorDouble curr_coords(3);
+	curr_coords[0] = atof(curr_tokens[1].c_str());
+	curr_coords[1] = atof(curr_tokens[2].c_str());
+	curr_coords[2] = atof(curr_tokens[3].c_str());
 
 	// initial pose
 	pose_t curr_pose(
-			curr_coords_MRPT_fr[0],
-			curr_coords_MRPT_fr[1],
+			curr_coords[0],
+			curr_coords[1],
 			y);
+	//pose_t curr_pose(0, 0, 0);
 
 	pose_diff = curr_pose;
 	m_out_logger.log(format("Initial GT pose: %s", pose_diff.asString().c_str()), LVL_DEBUG);
@@ -1264,30 +1261,29 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::rea
 		quat.rpy(r, p, y);
 
 		// pose
-		CVectorDouble curr_coords_optical_fr(3);
-		curr_coords_optical_fr[0] = atof(curr_tokens[1].c_str());
-		curr_coords_optical_fr[1] = atof(curr_tokens[2].c_str());
-		curr_coords_optical_fr[2] = atof(curr_tokens[3].c_str());
+		CVectorDouble curr_coords(3);
+		curr_coords[0] = atof(curr_tokens[1].c_str());
+		curr_coords[1] = atof(curr_tokens[2].c_str());
+		curr_coords[2] = atof(curr_tokens[3].c_str());
 
-		// coordinates - MRPT reference frame
-		CVectorDouble curr_coords_MRPT_fr;
-		m_rot_TUM_to_MRPT.multiply_Ab(curr_coords_optical_fr, curr_coords_MRPT_fr);
-
-		// initial pose
+		// current ground-truth pose
 		pose_t curr_pose(
-				curr_coords_MRPT_fr[0],
-				curr_coords_MRPT_fr[1],
+				curr_coords[0],
+				curr_coords[1],
 				y);
 
-		//curr_pose = curr_pose - pose_diff - do it one-by-one, not a vector
-		//operation as it contains the angle;
+		m_out_logger.logFmt("GT pose (prior to alignment with origin): %s", 
+				curr_pose.asString().c_str());
+		
 		curr_pose.x() -= pose_diff.x();
 		curr_pose.y() -= pose_diff.y();
 		curr_pose.phi() -= pose_diff.phi();
+		//curr_pose += -pose_diff;
 		gt_poses->push_back(curr_pose);
-		m_out_logger.log(format("GT pose: %s", curr_pose.asString().c_str()), LVL_DEBUG);
+		m_out_logger.logFmt("GT pose: %s", curr_pose.asString().c_str());
+		//mrpt::system::pause();
 	}
-	m_out_logger.log(format("Size of gt_poses vector: %lu", gt_poses->size()), LVL_DEBUG);
+	m_out_logger.logFmt("Size of gt_poses vector: %lu", gt_poses->size());
 	//mrpt::system::pause();
 
 	file_GT.close();
