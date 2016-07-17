@@ -27,7 +27,7 @@
 #include <mrpt/opengl/CRenderizable.h>
 #include <mrpt/utils/TColor.h>
 
-#include "CGraphslamOptimizer.h"
+#include "CGraphSlamOptimizer.h"
 #include "CWindowManager.h"
 #include "CWindowObserver.h"
 
@@ -38,10 +38,10 @@
 
 namespace mrpt { namespace graphslam { namespace optimizers {
 
-/**
- * Levenberg-Marquardt non-linear graph slam optimization scheme
+/** Levenberg-Marquardt non-linear graph slam optimization scheme
+ *
+ * \ingroup mrpt_graphslam_grp
  */
-
 template<class GRAPH_t=typename mrpt::graphs::CNetworkOfPoses2DInf>
 class CLevMarqGSO_t:
 	public mrpt::graphslam::optimizers::CGraphSlamOptimizer_t<GRAPH_t>
@@ -60,7 +60,7 @@ class CLevMarqGSO_t:
     ~CLevMarqGSO_t();
     void initCLevMarqGSO_t();
 
-		bool updateOptimizerState( mrpt::obs::CActionCollectionPtr action,
+		bool updateState( mrpt::obs::CActionCollectionPtr action,
 				mrpt::obs::CSensoryFramePtr observations,
 				mrpt::obs::CObservationPtr observation );
 
@@ -133,16 +133,15 @@ class CLevMarqGSO_t:
 
 		// Public members
 		// ////////////////////////////
-    OptimizationParams opt_params;
-    GraphVisualizationParams viz_params;
+    OptimizationParams opt_params; /**<Parameters relevant to the optimizatio nfo the graph. */
+    GraphVisualizationParams viz_params; /**<Parameters relevant to the visualization of the graph. */
 
   private:
 
   	// Private methods
   	// ////////////////////////////
 		
-		/**
-		 * Feedback of the levenberg-marquardt graph optimization procedure
+		/**\brief Feedback of the levenberg-marquardt graph optimization procedure.
 		 */
 		static void levMarqFeedback(
 				const GRAPH_t& graph,
@@ -150,50 +149,57 @@ class CLevMarqGSO_t:
 				const size_t max_iter,
 				const double cur_sq_error );
 
-  	/**
-  	 * Optimize the given graph. Wrapper around the
-  	 * graphslam::optimize_spa_levmarq method
+  	/**\brief Optimize the given graph.
+  	 *
+  	 * Wrapper around the graphslam::optimize_spa_levmarq method
+  	 * \sa optimize_spa_levmarq, optimizeGraph
   	 */
 		void _optimizeGraph();
-		/**
-		 * Wrapper around _optimizeGraph which first locks the section and then
-		 * calls the _optimizeGraph method. Used in multithreaded optimization
-		 * \sa optimizeGraph()
+		/** \brief Wrapper around _optimizeGraph which first locks the section and then
+		 * calls the _optimizeGraph method. 
+		 *
+		 * Used in multithreaded optimization
+		 * \sa _optimizeGraph()
 		 */
   	void optimizeGraph();
-  	/**
-  	 * Match the previously registered edges in the graph with the current.
-  	 * If there is a node difference in any new edge greater than
-  	 * LC_min_nodeid_diff (see .ini parameter) then a full graph optimization
-  	 * is issued. Returns true on new loop closure
+  	/**\brief Checks if a loop closure edge was added in the graph.
+  	 *
+  	 * Match the previously registered edges in the graph with the current. If
+  	 * there is a node difference *in any new edge* greater than
+  	 * \b LC_min_nodeid_diff (see .ini parameter) then a full graph optimization
+  	 * is issued.
+  	 *
+  	 * \return True on new loop closure
   	 */
   	bool checkForLoopClosures();
 		void initGraphVisualization();
-		/**
-		 * Called internally for updating the vizualization scene for the graph
+		/**\brief Called internally for updating the vizualization scene for the graph
 		 * building procedure
 		 */
 		inline void updateGraphVisualization();
-		/**
-		 * togle the graph visualization on and off
+		/**\brief togle the graph visualization on and off
 		 */
 		void toggleGraphVisualization();
-		/**
-		 * Set the camera parameters of the CDisplayWindow3D so that the whole
-		 * graph is viewed in the window. Method assumes that the COpenGLinstance
-		 * *is not locked* prior to this call, so make sure you have issued
+		/**\brief Set the camera parameters of the CDisplayWindow3D so that the whole
+		 * graph is viewed in the window.
+		 *
+		 * \warning Method assumes that the COpenGLinstance *is not locked* prior to this
+		 * call, so make sure you have issued
 		 * CDisplayWindow3D::unlockAccess3DScene() before calling this method.
 		 */
 		inline void fitGraphInView();
 
 		void initOptDistanceVisualization();
-		/**
-		 * Update the position of the disk indicating the distance in which
+		/**\brief Update the position of the disk indicating the distance in which
 		 * Levenberg-Marquardt graph optimization is executed
 		 */
 		inline void updateOptDistanceVisualization();
+		/**\brief toggle the optimization distance disk on and off
+		 */
 		void toggleOptDistanceVisualization();
-
+		/**\brief Get a list of the nodeIDs whose position is within a certain
+		 * distance to the specified nodeID
+		 */
 		void getNearbyNodesOf(
 		 		std::set<mrpt::utils::TNodeID> *nodes_set,
 				const mrpt::utils::TNodeID& cur_nodeID,
@@ -201,7 +207,7 @@ class CLevMarqGSO_t:
 
 		// Private members
 		//////////////////////////////////////////////////////////////
-		GRAPH_t* m_graph;
+		GRAPH_t* m_graph; /**<\brief Pointer to the graph under construction */
 		mrpt::gui::CDisplayWindow3D* m_win;
 		mrpt::gui::CWindowManager_t* m_win_manager;
 		mrpt::gui::CWindowObserver* m_win_observer;
@@ -223,10 +229,8 @@ class CLevMarqGSO_t:
 		// Use second thread for graph optimization
 		mrpt::system::TThreadHandle m_thread_optimize;
 
-		// logger
-		mrpt::utils::COutputLogger m_out_logger;
-		mrpt::utils::CTimeLogger m_time_logger;
-
+		mrpt::utils::COutputLogger m_out_logger; /**<Output logger instance */
+		mrpt::utils::CTimeLogger m_time_logger; /**<Time logger instance */
 };
 
 } } } // end of namespaces

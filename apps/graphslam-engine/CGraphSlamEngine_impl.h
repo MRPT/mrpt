@@ -27,7 +27,7 @@ using namespace mrpt::graphslam;
 
 using namespace std;
 
-// Ctors, Dtors implementations
+ // Ctors, Dtors implementations
 //////////////////////////////////////////////////////////////
 
 template< class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR, class OPTIMIZER>
@@ -35,8 +35,8 @@ CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::CGraphSl
 		const string& config_file,
 		CDisplayWindow3D* win /* = NULL */,
 		CWindowObserver* win_observer /* = NULL */,
-		std::string rawlog_fname /* = "" */,
-		std::string fname_GT /* = "" */ ):
+		const std::string rawlog_fname /* = "" */,
+		const std::string fname_GT /* = "" */ ):
 	m_config_fname(config_file),
 	m_rawlog_fname(rawlog_fname),
 	m_fname_GT(fname_GT),
@@ -403,7 +403,7 @@ bool CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::par
 		{
 			mrpt::synch::CCriticalSectionLocker m_graph_lock(&m_graph_section);
 			m_time_logger.enter("CGraphSlamEngine::node_registrar");
-			registered_new_node = m_node_registrar.updateDeciderState(
+			registered_new_node = m_node_registrar.updateState(
 					action, observations, observation);
 			m_time_logger.leave("CGraphSlamEngine::node_registrar");
 			if (registered_new_node) {
@@ -418,14 +418,14 @@ bool CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::par
 			mrpt::synch::CCriticalSectionLocker m_graph_lock(&m_graph_section);
 
 			m_time_logger.enter("CGraphSlamEngine::edge_registrar");
-			m_edge_registrar.updateDeciderState(
+			m_edge_registrar.updateState(
 					action,
 					observations,
 					observation );
 			m_time_logger.leave("CGraphSlamEngine::edge_registrar");
 
 			m_time_logger.enter("CGraphSlamEngine::optimizer");
-			m_optimizer.updateOptimizerState(
+			m_optimizer.updateState(
 					action,
 					observations,
 					observation );
@@ -686,7 +686,7 @@ template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR, class OPTIMI
 void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::readConfigFile(
 		const string& fname) {
 	MRPT_START;
-	ASSERTMSG_(mrpt::system::fileExists(fname), 
+	ASSERTMSG_(mrpt::system::fileExists(fname),
 			mrpt::format("\nConfiguration file not found: \n%s\n", fname.c_str()));
 
 	m_out_logger.log("Reading the .ini file... ", LVL_INFO);

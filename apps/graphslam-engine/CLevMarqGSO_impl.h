@@ -56,7 +56,7 @@ void CLevMarqGSO_t<GRAPH_t>::initCLevMarqGSO_t() {
 // Member function implementations
 //////////////////////////////////////////////////////////////
 template<class GRAPH_t>
-bool CLevMarqGSO_t<GRAPH_t>::updateOptimizerState(
+bool CLevMarqGSO_t<GRAPH_t>::updateState(
 		mrpt::obs::CActionCollectionPtr action,
 		mrpt::obs::CSensoryFramePtr observations,
 		mrpt::obs::CObservationPtr observation ) {
@@ -89,7 +89,7 @@ bool CLevMarqGSO_t<GRAPH_t>::updateOptimizerState(
 
 	}
 
-	return false;
+	return true;
 	MRPT_END;
 }
 
@@ -231,7 +231,6 @@ inline void CLevMarqGSO_t<GRAPH_t>::initGraphVisualization() {
 template<class GRAPH_t>
 inline void CLevMarqGSO_t<GRAPH_t>::updateGraphVisualization() {
 	MRPT_START;
-
 	m_out_logger.log("In the updateGraphVisualization function");
 
 	// update the graph (clear and rewrite..)
@@ -240,7 +239,7 @@ inline void CLevMarqGSO_t<GRAPH_t>::updateGraphVisualization() {
 	// remove previous graph and insert the its new instance
 	CRenderizablePtr prev_object = scene->getByName("optimized_graph");
 	bool prev_visibility = true;
-	if (prev_object) {
+	if (prev_object) { // set the visibility of the graph correctly
 		prev_visibility = prev_object->isVisible();
 	}
 	scene->removeObject(prev_object);

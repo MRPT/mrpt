@@ -23,6 +23,8 @@
 
 namespace mrpt { namespace gui {
 
+/**\brief Monitor events in the visualization window.
+ */
 class CWindowObserver : public mrpt::utils::CObserver
 {
 public:
@@ -45,6 +47,9 @@ public:
 		std::cout << "WindowObserver initialized." << std::endl;
 	}
 
+	/**\brief Return a map of key code to a boolean indicating whether it was
+	 * pressed since the previous time the class was quarried.
+	 */
 	void returnEventsStruct(std::map<std::string, bool>* codes_to_pressed) {
 	
 		*codes_to_pressed = m_key_codes_to_pressed;
@@ -57,9 +62,9 @@ public:
 		}
 	}
 
-	/**
-	 * Method for making new keystrokes available in the help message box.
-	 * Classes with a pointer to the CWindowObserver can use this method to add
+	/**\brief Make new keystrokes available in the help message box.
+	 *
+	 * Classes with access to the CWindowObserver can use this method to add
 	 * keystrokes according to their needs 
 	 */
 	void registerKeystroke(const std::string key_str, const std::string key_desc) {
@@ -71,7 +76,7 @@ public:
 	}
 
 protected:
-	virtual void OnEvent(const mrpt::utils::mrptEvent &e) {
+	void OnEvent(const mrpt::utils::mrptEvent &e) {
 		if (e.isOfType<mrpt::utils::mrptEventOnDestroy>()) {
 			const mrpt::utils::mrptEventOnDestroy &ev = static_cast<const mrpt::utils::mrptEventOnDestroy &>(e);
 			MRPT_UNUSED_PARAM(ev);
@@ -131,7 +136,7 @@ protected:
 				<< ev.source_object<< "pt: " <<ev.coords.x << "," << ev.coords.y << "\n";
 		}
 		else if (e.isOfType<mrpt::opengl::mrptEventGLPostRender>()) {
-			/**
+			/*
 			 * An event sent by an mrpt::opengl::COpenGLViewport AFTER calling the
 			 * SCENE OPENGL DRAWING PRIMITIVES and before doing a glSwapBuffers.
 			 */
@@ -187,11 +192,11 @@ private:
 
 	std::string help_msg;
 
-	// map from registered char_code (std::string to support <C-c>) to boolean
-	// true/false indicating whether it has been pressed since previous time
-	// checked
+	/** Map from registered char_code (std::string to support <C-c>) to boolean
+	 * true/false indicating whether it has been pressed since previous time
+	 * checked 
+	 */
 	std::map<std::string, bool> m_key_codes_to_pressed;
-
 	mrpt::utils::CTicTac  m_tim_show_start, m_tim_show_end;
 	std::string m_help_text;
 };

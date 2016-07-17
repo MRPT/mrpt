@@ -18,10 +18,9 @@
 
 namespace mrpt { namespace graphslam { namespace deciders {
 
-/**
- * Empty Registration Decider
+/**\brief Empty Node Registration Decider
  *
- * Handy when you have are testing other parts of the application but not the
+ * Handy when you are testing other parts of the application but not the
  * specific registration procedure
  */
 template<class GRAPH_t=typename mrpt::graphs::CNetworkOfPoses2DInf>
@@ -32,7 +31,7 @@ class CEmptyNRD_t:
 		CEmptyNRD_t();
 		~CEmptyNRD_t();
 
-		bool updateDeciderState( mrpt::obs::CActionCollectionPtr action,
+		bool updateState( mrpt::obs::CActionCollectionPtr action,
 				mrpt::obs::CSensoryFramePtr observations,
 				mrpt::obs::CObservationPtr observation );
 
@@ -51,7 +50,7 @@ template<class GRAPH_t>
 CEmptyNRD_t<GRAPH_t>::~CEmptyNRD_t() { }
 
 template<class GRAPH_t>
-bool CEmptyNRD_t<GRAPH_t>::updateDeciderState(
+bool CEmptyNRD_t<GRAPH_t>::updateState(
 		mrpt::obs::CActionCollectionPtr action,
 		mrpt::obs::CSensoryFramePtr observations,
 		mrpt::obs::CObservationPtr observation )  {return false;}

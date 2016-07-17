@@ -19,10 +19,9 @@
 
 namespace mrpt { namespace graphslam { namespace deciders {
 
-/**
- * Empty Registration Decider
+/**\brief Empty Edge Registration Decider
  *
- * Handy when you have are testing other parts of the application but not the
+ * Handy when you are testing other parts of the application but not the
  * specific registration procedure
  */
 template< class GRAPH_t=typename mrpt::graphs::CNetworkOfPoses2DInf >
@@ -31,12 +30,11 @@ class CEmptyERD_t:
 {
 	public:
 		typedef typename GRAPH_t::constraint_t constraint_t;
-		typedef typename GRAPH_t::constraint_t::type_value pose_t; // type of underlying poses (2D/3D)
 
 	  CEmptyERD_t();
 	  ~CEmptyERD_t();
 
-		void updateDeciderState(
+		bool updateState(
 				mrpt::obs::CActionCollectionPtr action,
 				mrpt::obs::CSensoryFramePtr observations,
 				mrpt::obs::CObservationPtr observation );
@@ -58,10 +56,10 @@ template<class GRAPH_t>
 CEmptyERD_t<GRAPH_t>::~CEmptyERD_t() { }
 
 template<class GRAPH_t> 
-void CEmptyERD_t<GRAPH_t>::updateDeciderState(
+bool CEmptyERD_t<GRAPH_t>::updateState(
 		mrpt::obs::CActionCollectionPtr action,
 		mrpt::obs::CSensoryFramePtr observations,
-		mrpt::obs::CObservationPtr observation ) { }
+		mrpt::obs::CObservationPtr observation ) {return true;}
 
 template<class GRAPH_t>
 void CEmptyERD_t<GRAPH_t>::registerNewEdge(

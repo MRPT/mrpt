@@ -65,7 +65,7 @@ CICPGoodnessERD_t<GRAPH_t>::~CICPGoodnessERD_t() { }
 // Method implementations
 // //////////////////////////////////
 
-template<class GRAPH_t> void CICPGoodnessERD_t<GRAPH_t>::updateDeciderState(
+template<class GRAPH_t> bool CICPGoodnessERD_t<GRAPH_t>::updateState(
 		mrpt::obs::CActionCollectionPtr action,
 		mrpt::obs::CSensoryFramePtr observations,
 		mrpt::obs::CObservationPtr observation ) {
@@ -159,6 +159,7 @@ template<class GRAPH_t> void CICPGoodnessERD_t<GRAPH_t>::updateDeciderState(
 		this->checkIfInvalidDataset(action, observations, observation);
 	}
 
+	return true;
 	MRPT_END;
 }
 
@@ -415,10 +416,10 @@ void CICPGoodnessERD_t<GRAPH_t>::toggleLaserScansVisualization() {
 
 template<class GRAPH_t>
 void CICPGoodnessERD_t<GRAPH_t>::getEdgesStats(
-		std::map<const std::string, int>* edge_types_to_nums) const {
+		std::map<const std::string, int>* edge_types_to_num) const {
 	MRPT_START;
 
-	*edge_types_to_nums = m_edge_types_to_nums;
+	*edge_types_to_num = m_edge_types_to_nums;
 
 	MRPT_END;
 }
@@ -549,7 +550,7 @@ void CICPGoodnessERD_t<GRAPH_t>::updateVisuals() {
 	MRPT_END;
 }
 template<class GRAPH_t>
-bool CICPGoodnessERD_t<GRAPH_t>::justInsertedLoopClosure() {
+bool CICPGoodnessERD_t<GRAPH_t>::justInsertedLoopClosure() const {
 	return m_just_inserted_loop_closure;
 }
 

@@ -59,16 +59,23 @@ using namespace mrpt::maps;
 
 namespace mrpt { namespace graphslam { namespace deciders {
 
-/**
+/**\brief ICP-based Edge Registration
+ *\b Description
+ *
+ * Register new edges in the graph with the last added node. Criterion for
+ * adding new edges should be the goodness of the candidate ICP edge. The
+ * nodes for ICP are be picked <em>based on the distance from the last
+ * inserted node</em>.
+ * \sa  getNearbyNodesOf
+ *
+ * \b Specifications
+ *
  * Map type: 2D
  * MRPT rawlog format: #1, #2
  * Observations: CObservation2DRangeScan, CObservation3DRangeScan
- * Edge Registration Strategy: Goodnesss threshold
+ * Edge Registration Strategy: ICP Goodnesss threshold
  *
- * Register new edges in the graph with the last added node. Criterion for
- * adding new nodes should  be the goodness of the potential ICP edge. The
- * nodes for ICP should be picked based on the distance from the last
- * inserted node.
+ * \ingroup mrpt_graphslam_grp
  */
 template<class GRAPH_t=typename mrpt::graphs::CNetworkOfPoses2DInf >
 class CICPGoodnessERD_t :
@@ -79,19 +86,20 @@ class CICPGoodnessERD_t :
 		typedef mrpt::graphslam::deciders::CNodeRegistrationDecider_t<GRAPH_t> superA;
 		typedef mrpt::graphslam::deciders::CRangeScanRegistrationDecider_t<GRAPH_t> superB;
 
-
+		/**\brief type of graph constraints */
 		typedef typename GRAPH_t::constraint_t constraint_t;
-		// type of underlying poses (2D/3D)
+		/**\brief type of underlying poses (2D/3D). */
 		typedef typename GRAPH_t::constraint_t::type_value pose_t;
-		typedef mrpt::graphslam::deciders::CRangeScanRegistrationDecider_t<GRAPH_t> range_scanner_t;
-		typedef CICPGoodnessERD_t<GRAPH_t> decider_t;
+		/**\brief Typedef for accessing methods of the RangeScanRegistrationDecider_t parent class. */
+		typedef mrpt::graphslam::deciders::CRangeScanRegistrationDecider_t<GRAPH_t> range_scanner_t; 
+		typedef CICPGoodnessERD_t<GRAPH_t> decider_t; /**< self type - Handy typedef */
 
 		// Public methods
 		//////////////////////////////////////////////////////////////
 	  CICPGoodnessERD_t();
 	  ~CICPGoodnessERD_t();
 
-		void updateDeciderState(
+		bool updateState(
 				mrpt::obs::CActionCollectionPtr action,
 				mrpt::obs::CSensoryFramePtr observations,
 				mrpt::obs::CObservationPtr observation );
@@ -103,11 +111,11 @@ class CICPGoodnessERD_t :
 		void notifyOfWindowEvents(
 				const std::map<std::string, bool>& events_occurred); 
     void getEdgesStats(
-    		std::map<const std::string, int>* edge_types_to_nums) const;
+    		std::map<const std::string, int>* edge_types_to_num) const;
 
     void initializeVisuals();
     void updateVisuals();
-    bool justInsertedLoopClosure();
+    bool justInsertedLoopClosure() const;
 		void loadParams(const std::string& source_fname);
 		void printParams() const; 
 
@@ -161,10 +169,15 @@ class CICPGoodnessERD_t :
 		void checkIfInvalidDataset(mrpt::obs::CActionCollectionPtr action,
 				mrpt::obs::CSensoryFramePtr observations,
 				mrpt::obs::CObservationPtr observation );
+		/**\brief Get a list of the nodeIDs whose position is within a certain
+		 * distance to the specified nodeID
+		 */
 		void getNearbyNodesOf(
 		 		std::set<mrpt::utils::TNodeID> *nodes_set,
 				const mrpt::utils::TNodeID& cur_nodeID,
 				double distance );
+		/**\brief togle the LaserScans visualization on and off
+		 */
 		void toggleLaserScansVisualization();
 		void dumpVisibilityErrorMsg(std::string viz_flag, 
 				int sleep_time=500 /* ms */);
@@ -172,7 +185,7 @@ class CICPGoodnessERD_t :
 		// Private variables
 		//////////////////////////////////////////////////////////////
 
-		GRAPH_t* m_graph;
+		GRAPH_t* m_graph; /**<\brief Pointer to the graph under construction */
 		mrpt::gui::CDisplayWindow3D* m_win;
 		mrpt::gui::CWindowManager_t* m_win_manager;
 		mrpt::gui::CWindowObserver* m_win_observer;
@@ -209,9 +222,8 @@ class CICPGoodnessERD_t :
 
 		typename superB::TSlidingWindow sliding_win;
 
-		// loggers
-		mrpt::utils::COutputLogger m_out_logger;
-		mrpt::utils::CTimeLogger m_time_logger;
+		mrpt::utils::COutputLogger m_out_logger; /**<Output logger instance */
+		mrpt::utils::CTimeLogger m_time_logger; /**<Time logger instance */
 
 };
 
