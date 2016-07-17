@@ -24,20 +24,20 @@
  * tpes of edges and for storing visualization-related information for each
  * type
  */
-class CEdgeCounter_t {
+class CEdgeCounter {
 	public:
 
 		/**\brief Constructor class */
-		CEdgeCounter_t(mrpt::gui::CDisplayWindow3D* win = NULL) {
+		CEdgeCounter(mrpt::gui::CDisplayWindow3D* win = NULL) {
 			m_win = win;
-			initCEdgeCounter_t();
+			initCEdgeCounter();
 		}
 		/**\brief Destructor class */
-		~CEdgeCounter_t() {}
+		~CEdgeCounter() {}
 
     /**\brief Initialization method to be called from the various Constructors.
      */
-		void initCEdgeCounter_t() {
+		void initCEdgeCounter() {
 
 			this->clearAllEdges();
 			m_has_read_textmessage_params = false;
@@ -204,7 +204,7 @@ class CEdgeCounter_t {
 				m_name_to_edges_num[name] = 0;
 			}
 		}
-		/**\brief Reset the state of the CEdgeCounter_t instance.
+		/**\brief Reset the state of the CEdgeCounter instance.
 		 */
 		void clearAllEdges() {
 			m_num_loop_closures = 0;
@@ -260,7 +260,7 @@ class CEdgeCounter_t {
 		// VISUALIZATION RELATED METHODS
 		// ////////////////////////////
 
-		/**\brief Provide CEDgeCounter_t instance with the visualization window. 
+		/**\brief Provide CEdgeCounter instance with the visualization window. 
 		 */
 		void setVisualizationWindow(mrpt::gui::CDisplayWindow3D* win) { m_win = win; }
 

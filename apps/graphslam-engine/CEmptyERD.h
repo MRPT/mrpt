@@ -25,14 +25,14 @@ namespace mrpt { namespace graphslam { namespace deciders {
  * specific registration procedure
  */
 template< class GRAPH_t=typename mrpt::graphs::CNetworkOfPoses2DInf >
-class CEmptyERD_t:
-	public mrpt::graphslam::deciders::CEdgeRegistrationDecider_t<GRAPH_t> 
+class CEmptyERD:
+	public mrpt::graphslam::deciders::CEdgeRegistrationDecider<GRAPH_t> 
 {
 	public:
 		typedef typename GRAPH_t::constraint_t constraint_t;
 
-	  CEmptyERD_t();
-	  ~CEmptyERD_t();
+	  CEmptyERD();
+	  ~CEmptyERD();
 
 		bool updateState(
 				mrpt::obs::CActionCollectionPtr action,
@@ -51,18 +51,18 @@ class CEmptyERD_t:
 using namespace mrpt::graphslam::deciders;
 
 template<class GRAPH_t>
-CEmptyERD_t<GRAPH_t>::CEmptyERD_t() { }
+CEmptyERD<GRAPH_t>::CEmptyERD() { }
 template<class GRAPH_t>
-CEmptyERD_t<GRAPH_t>::~CEmptyERD_t() { }
+CEmptyERD<GRAPH_t>::~CEmptyERD() { }
 
 template<class GRAPH_t> 
-bool CEmptyERD_t<GRAPH_t>::updateState(
+bool CEmptyERD<GRAPH_t>::updateState(
 		mrpt::obs::CActionCollectionPtr action,
 		mrpt::obs::CSensoryFramePtr observations,
 		mrpt::obs::CObservationPtr observation ) {return true;}
 
 template<class GRAPH_t>
-void CEmptyERD_t<GRAPH_t>::registerNewEdge(
+void CEmptyERD<GRAPH_t>::registerNewEdge(
     const mrpt::utils::TNodeID& from, 
     const mrpt::utils::TNodeID& to,
     const constraint_t& rel_edge ) { }

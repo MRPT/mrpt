@@ -78,26 +78,23 @@ namespace mrpt { namespace graphslam { namespace deciders {
  * \ingroup mrpt_graphslam_grp
  */
 template<class GRAPH_t=typename mrpt::graphs::CNetworkOfPoses2DInf >
-class CICPGoodnessERD_t :
-	public mrpt::graphslam::deciders::CEdgeRegistrationDecider_t<GRAPH_t>,
-	public mrpt::graphslam::deciders::CRangeScanRegistrationDecider_t<GRAPH_t>
+class CICPGoodnessERD :
+	public mrpt::graphslam::deciders::CEdgeRegistrationDecider<GRAPH_t>,
+	public mrpt::graphslam::deciders::CRangeScanRegistrationDecider<GRAPH_t>
 {
 	public:
-		typedef mrpt::graphslam::deciders::CNodeRegistrationDecider_t<GRAPH_t> superA;
-		typedef mrpt::graphslam::deciders::CRangeScanRegistrationDecider_t<GRAPH_t> superB;
-
 		/**\brief type of graph constraints */
 		typedef typename GRAPH_t::constraint_t constraint_t;
 		/**\brief type of underlying poses (2D/3D). */
 		typedef typename GRAPH_t::constraint_t::type_value pose_t;
 		/**\brief Typedef for accessing methods of the RangeScanRegistrationDecider_t parent class. */
-		typedef mrpt::graphslam::deciders::CRangeScanRegistrationDecider_t<GRAPH_t> range_scanner_t; 
-		typedef CICPGoodnessERD_t<GRAPH_t> decider_t; /**< self type - Handy typedef */
+		typedef mrpt::graphslam::deciders::CRangeScanRegistrationDecider<GRAPH_t> range_scanner_t; 
+		typedef CICPGoodnessERD<GRAPH_t> decider_t; /**< self type - Handy typedef */
 
 		// Public methods
 		//////////////////////////////////////////////////////////////
-	  CICPGoodnessERD_t();
-	  ~CICPGoodnessERD_t();
+	  CICPGoodnessERD();
+	  ~CICPGoodnessERD();
 
 		bool updateState(
 				mrpt::obs::CActionCollectionPtr action,
@@ -157,7 +154,7 @@ class CICPGoodnessERD_t :
 		//////////////////////////////////////////////////////////////
 		/** \brief Initialization function to be called from the various constructors
 		 */
-		void initCICPGoodnessERD_t();
+		void initCICPGoodnessERD();
 		void checkRegistrationCondition2D(
 				const std::set<mrpt::utils::TNodeID>& nodes_set);
 		void checkRegistrationCondition3D(
@@ -220,7 +217,7 @@ class CICPGoodnessERD_t :
 		size_t m_consecutive_invalid_format_instances;
 		const size_t m_consecutive_invalid_format_instances_thres;
 
-		typename superB::TSlidingWindow sliding_win;
+		typename range_scanner_t::TSlidingWindow sliding_win;
 
 		mrpt::utils::COutputLogger m_out_logger; /**<Output logger instance */
 		mrpt::utils::CTimeLogger m_time_logger; /**<Time logger instance */

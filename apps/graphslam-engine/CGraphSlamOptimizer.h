@@ -33,13 +33,13 @@ namespace mrpt { namespace graphslam { namespace optimizers {
  * \ingroup mrpt_graphslam_grp
  */
 template<class GRAPH_t=typename mrpt::graphs::CNetworkOfPoses2DInf>
-class CGraphSlamOptimizer_t : public mrpt::graphslam::CRegistrationDeciderOrOptimizer<GRAPH_t> {
+class CGraphSlamOptimizer : public mrpt::graphslam::CRegistrationDeciderOrOptimizer<GRAPH_t> {
 	public:
 		typedef typename GRAPH_t::constraint_t constraint_t; // type of underlying constraints
 		typedef typename GRAPH_t::constraint_t::type_value pose_t; // type of underlying poses (2D/3D)
 
-		CGraphSlamOptimizer_t() { }
-		~CGraphSlamOptimizer_t() { }
+		CGraphSlamOptimizer() { }
+		~CGraphSlamOptimizer() { }
 
 		/**\brief Generic method for fetching the incremental action/observation
 		 * readings from the calling function.

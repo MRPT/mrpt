@@ -24,12 +24,12 @@ namespace mrpt { namespace graphslam { namespace deciders {
  * specific registration procedure
  */
 template<class GRAPH_t=typename mrpt::graphs::CNetworkOfPoses2DInf>
-class CEmptyNRD_t:
-	public mrpt::graphslam::deciders::CNodeRegistrationDecider_t<GRAPH_t>
+class CEmptyNRD:
+	public mrpt::graphslam::deciders::CNodeRegistrationDecider<GRAPH_t>
 {
 	public:
-		CEmptyNRD_t();
-		~CEmptyNRD_t();
+		CEmptyNRD();
+		~CEmptyNRD();
 
 		bool updateState( mrpt::obs::CActionCollectionPtr action,
 				mrpt::obs::CSensoryFramePtr observations,
@@ -45,17 +45,17 @@ class CEmptyNRD_t:
 using namespace mrpt::graphslam::deciders;
 
 template<class GRAPH_t>
-CEmptyNRD_t<GRAPH_t>::CEmptyNRD_t() { }
+CEmptyNRD<GRAPH_t>::CEmptyNRD() { }
 template<class GRAPH_t>
-CEmptyNRD_t<GRAPH_t>::~CEmptyNRD_t() { }
+CEmptyNRD<GRAPH_t>::~CEmptyNRD() { }
 
 template<class GRAPH_t>
-bool CEmptyNRD_t<GRAPH_t>::updateState(
+bool CEmptyNRD<GRAPH_t>::updateState(
 		mrpt::obs::CActionCollectionPtr action,
 		mrpt::obs::CSensoryFramePtr observations,
 		mrpt::obs::CObservationPtr observation )  {return false;}
 
 template<class GRAPH_t>
-void CEmptyNRD_t<GRAPH_t>::registerNewNode() { }
+void CEmptyNRD<GRAPH_t>::registerNewNode() { }
 
 #endif /* end of include guard: CEMPTYNRD_H */
