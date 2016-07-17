@@ -7,12 +7,19 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
+#include "base-precomp.h"  // Precompiled headers
+
 #include <mrpt/utils/CFileOutputStream.h>
 #include <mrpt/utils/CStdOutStream.h>
 #include <mrpt/utils/COutputLogger.h>
 #include <mrpt/system/threads.h>
 
 #include <vector>
+
+#ifdef _MSC_VER
+	#define WIN32_LEAN_AND_MEAN
+	#include <windows.h>   // OutputDebugString() for MSVC
+#endif
 
 
 using namespace mrpt;
@@ -342,11 +349,14 @@ void COutputLogger::TMsg::getAsString(std::string* contents) const {
 	*contents = this->getAsString();
 }
 void COutputLogger::TMsg::writeToStream(mrpt::utils::CStream& out) const {
-	out.printf("%s\n", getAsString().c_str());
+	const std::string str = getAsString();
+	out.printf("%s\n", str.c_str());
+#ifdef _MSC_VER
+	OutputDebugStringA(str.c_str());
+#endif
 }
 void COutputLogger::TMsg::dumpToConsole() const {
 	CStdOutStream mrpt_cout;
 	setConsoleColor(this->getConsoleColor(level));
 	this->writeToStream(mrpt_cout);
-	
 }

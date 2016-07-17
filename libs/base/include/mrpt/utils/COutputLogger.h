@@ -12,6 +12,7 @@
 
 #include <mrpt/utils/CStream.h>
 #include <mrpt/system/os.h>
+#include <mrpt/utils/mrpt_macros.h>
 
 #include <string>
 #include <map>
@@ -63,28 +64,28 @@ enum VerbosityLevel { LVL_DEBUG=0, LVL_INFO, LVL_WARN, LVL_ERROR };
  * \ingroup mrpt_base_grp
  */
 class BASE_IMPEXP COutputLogger {
-  public:
-  	/**
-  	 * \brief Construct a COutputLogger instance with the given name as the
-  	 * instance name.
-  	 *
-  	 * Call to this constructor can be used instead of first initializing the
-  	 * object and then explicitly setting the name like in the following case:
-  	 * \code
-  	 * COutputLogger a_logger;
-  	 * a_logger.setName("logger_name");
-  	 * \endcode
-  	 */
-    COutputLogger(std::string name);
-    /** \brief Default class constructor.
-     *
-     * Name of the logger is initialized to *Logger*
-     */
-    COutputLogger();
-    /**
-     * \brief Default class destructor
-     */
-    ~COutputLogger();
+	public:
+		/**
+		 * \brief Construct a COutputLogger instance with the given name as the
+		 * instance name.
+		 *
+		 * Call to this constructor can be used instead of first initializing the
+		 * object and then explicitly setting the name like in the following case:
+		 * \code
+		 * COutputLogger a_logger;
+		 * a_logger.setName("logger_name");
+		 * \endcode
+		 */
+		COutputLogger(std::string name);
+		/** \brief Default class constructor.
+		 *
+		 * Name of the logger is initialized to *Logger*
+		 */
+		COutputLogger();
+		/**
+		 * \brief Default class destructor
+		 */
+		virtual ~COutputLogger();  //!< virtual dtor (so we can derive classes from this one)
 
 		/** \brief Main method to add the specified message string to the logger.
 		 *
@@ -94,83 +95,83 @@ class BASE_IMPEXP COutputLogger {
 		 *
 		 * \sa logCond, logFmt
 		 */
-    void log(const std::string& msg_str);
-    /** \brief Alternative of the previous method, which lets the user specify 
-     *         a *temporary logging level*. 
-     *
-     * Level will be reverted to the prior logging level
-     * after opration
-     * \sa logCond, logFmt
-     */
-    void log(const std::string& msg_str, const VerbosityLevel& level);
-    /** \brief Alternative logging method, *handy for usage in const
-     *         functions/methods*
-     *
-     * Used *solely for printing* the given string in the console (but does not
-     * store it internally)
-     * \sa logCond, logFmt
-     */
-    void log(const std::string& msg_str, const VerbosityLevel& level) const;
-    /** \brief Alternative logging method, handy for usage in const functions/methdos.
-     *
-     * Used solely for printing the given string in the console (but does not
-     * store it internally
-     * \sa logCond, logFmt
-     */
-    void log(const std::string& msg_str) const;
-    /** \brief Alternative logging method, which mimics the printf behavior.
-     *
-     * Handy for not having to first use mrpt::format to pass a std::string
-     * message to log
-     *
-     * \code
-     * // instead of: 
-     * log(mrpt::format("Today is the %d of %s, %d", 15, "July", 2016));
-     *
-     * // one can use:
-     * logFmt("Today is the %d of %s, %d", 15, "July", 2016);
-     * \endcode
-     *
-     * \sa log, logCond, mrpt::utils:CDebugOutputCapable
-     */
-    void logFmt(const char* fmt, ...);
-    /** \brief Alternative logging method, which mimics the printf behavior.
-     *
-     * Handy for not having to first use mrpt::format to pass a std::string
-     * message to log. Used *solely for printing* the given string in the console
-     * (but does not store it internally)
-     *
-     * \sa log, logCond, mrpt::utils:CDebugOutputCapable
-     */
-    void logFmt(const char* fmt, ...) const;
-    /** \brief Log the given message only if the condition is satisfied.
-     *
-     * Level will be reverted to the prior logging level
-     * after opration
-     *
-     * \sa log, logFmt
-     */
-    void logCond(const std::string& msg_str, bool cond);
-    /** \brief Log the given message only if the condition is satisfied.
-     *
-     * Used *solely for printing* the given string in the console (but does not
-     * store it internally)
-     *
-     * \sa log, logFmt
-     */
-    void logCond(const std::string& msg_str, bool cond) const;
-    /** \brief Log the given message only if the condition is satisfied.
-     *
-     * \sa log, logFmt
-     */
-    void logCond(const std::string& msg_str, const VerbosityLevel& level, bool cond);
-    /** \brief Log the given message only if the condition is satisfied.
-     *
-     * Used *solely for printing* the given string in the console (but does not
-     * store it internally)
-     * \sa log, logFmt
-     */
-    void logCond(const std::string& msg_str, const VerbosityLevel& level, bool cond) const;
+		void log(const std::string& msg_str);
+		/** \brief Alternative of the previous method, which lets the user specify
+		 *         a *temporary logging level*.
+		 *
+		 * Level will be reverted to the prior logging level
+		 * after opration
+		 * \sa logCond, logFmt
+		 */
+		void log(const std::string& msg_str, const VerbosityLevel& level);
+		/** \brief Alternative logging method, *handy for usage in const
+		 *         functions/methods*
+		 *
+		 * Used *solely for printing* the given string in the console (but does not
+		 * store it internally)
+		 * \sa logCond, logFmt
+		 */
+		void log(const std::string& msg_str, const VerbosityLevel& level) const;
+		/** \brief Alternative logging method, handy for usage in const functions/methdos.
+		 *
+		 * Used solely for printing the given string in the console (but does not
+		 * store it internally
+		 * \sa logCond, logFmt
+		 */
+		void log(const std::string& msg_str) const;
+		/** \brief Alternative logging method, which mimics the printf behavior.
+		 *
+		 * Handy for not having to first use mrpt::format to pass a std::string
+		 * message to log
+		 *
+		 * \code
+		 * // instead of:
+		 * log(mrpt::format("Today is the %d of %s, %d", 15, "July", 2016));
+		 *
+		 * // one can use:
+		 * logFmt("Today is the %d of %s, %d", 15, "July", 2016);
+		 * \endcode
+		 *
+		 * \sa log, logCond, mrpt::utils:CDebugOutputCapable
+		 */
+		void logFmt(const char* fmt, ...) MRPT_printf_format_check(2,3);
+		/** \brief Alternative logging method, which mimics the printf behavior.
+		 *
+		 * Handy for not having to first use mrpt::format to pass a std::string
+		 * message to log. Used *solely for printing* the given string in the console
+		 * (but does not store it internally)
+		 *
+		 * \sa log, logCond, mrpt::utils:CDebugOutputCapable
+		 */
+		void logFmt(const char* fmt, ...) const MRPT_printf_format_check(2,3);
+		/** \brief Log the given message only if the condition is satisfied.
+		 *
+		 * Level will be reverted to the prior logging level
+		 * after opration
+		 *
+		 * \sa log, logFmt
+		 */
+		void logCond(const std::string& msg_str, bool cond);
+		/** \brief Log the given message only if the condition is satisfied.
+		 *
+		 * Used *solely for printing* the given string in the console (but does not
+		 * store it internally)
+		 *
+		 * \sa log, logFmt
+		 */
+		void logCond(const std::string& msg_str, bool cond) const;
+		/** \brief Log the given message only if the condition is satisfied.
+		 *
+		 * \sa log, logFmt
+		 */
+		void logCond(const std::string& msg_str, const VerbosityLevel& level, bool cond);
+		/** \brief Log the given message only if the condition is satisfied.
+		 *
+		 * Used *solely for printing* the given string in the console (but does not
+		 * store it internally)
+		 * \sa log, logFmt
+		 */
+		void logCond(const std::string& msg_str, const VerbosityLevel& level, bool cond) const;
 		/** \brief Set the name of the COutputLogger instance 
 		 *
 		 * \sa getName
@@ -184,48 +185,48 @@ class BASE_IMPEXP COutputLogger {
 		/** \brief Set the logging level that is going to be assigned in each message
 		 *         logged from this point on.
 		 *
-     * \sa setMinLoggingLevel, getLoggingLevel
+		 * \sa setMinLoggingLevel, getLoggingLevel
 		 */
-    void setLoggingLevel(const VerbosityLevel& level = LVL_INFO);
-    /** \brief Set the *minimum* logging level for which the incoming logs are going to
-     *         be taken into account. 
-     *
-     * String messages with specified VerbosityLevel smaller than the min, will
-     * not be outputted to the screen and neither will a record of them be
-     * stored in by the COutputLogger instance
-     *
-     * \sa setLoggingLevel
-     */
-    void setMinLoggingLevel(const VerbosityLevel& level = LVL_INFO);
+		void setLoggingLevel(const VerbosityLevel& level = LVL_INFO);
+		/** \brief Set the *minimum* logging level for which the incoming logs are going to
+		 *         be taken into account.
+		 *
+		 * String messages with specified VerbosityLevel smaller than the min, will
+		 * not be outputted to the screen and neither will a record of them be
+		 * stored in by the COutputLogger instance
+		 *
+		 * \sa setLoggingLevel
+		 */
+		void setMinLoggingLevel(const VerbosityLevel& level = LVL_INFO);
 		/** \brief Return the currently used VerbosityLevel 
-     *
-     * \sa setLoggingLevel
+		 *
+		 * \sa setLoggingLevel
 		 */
-    VerbosityLevel getLoggingLevel() const;
-    /** \brief Fill the provided string with the contents of the logger's
-     * history in std::string representation
-     *
-     */
-    void getAsString(std::string* fname) const;
-    /** \brief Get the history of COutputLogger instance in a string representation.
-     */
+		VerbosityLevel getLoggingLevel() const;
+		/** \brief Fill the provided string with the contents of the logger's
+		 * history in std::string representation
+		 *
+		 */
+		void getAsString(std::string* fname) const;
+		/** \brief Get the history of COutputLogger instance in a string representation.
+		 */
 		std::string getAsString() const;
-    /** \brief Write the contents of the COutputLogger instance to an external file.
-     *
-     * Upon call to this method, COutputLogger dumps the contents of all the
-     * logged commands so far to the specified external file.  By default the
-     * filename is set to ${LOGGERNAME}.log except if the fname parameter is
-     * provided
-     *
-     * \sa dumpToConsole, getAsString
-     */
-    void writeToFile(const std::string* fname_in=NULL) const;
-    /** \brief Dump the current contents of the COutputLogger instance in the
-     * terminal window.
-     *
-		 * \sa writeToFile
-     */
-    void dumpToConsole() const;
+		/** \brief Write the contents of the COutputLogger instance to an external file.
+		 *
+		 * Upon call to this method, COutputLogger dumps the contents of all the
+		 * logged commands so far to the specified external file.  By default the
+		 * filename is set to ${LOGGERNAME}.log except if the fname parameter is
+		 * provided
+		 *
+		 * \sa dumpToConsole, getAsString
+		 */
+		void writeToFile(const std::string* fname_in=NULL) const;
+		/** \brief Dump the current contents of the COutputLogger instance in the
+		 * terminal window.
+		 *
+			 * \sa writeToFile
+		 */
+		void dumpToConsole() const;
 		/** \brief Return the last Tmsg instance registered in the logger history 
 		 *
 		 */
@@ -233,11 +234,11 @@ class BASE_IMPEXP COutputLogger {
 		/** \brief Fill inputtted string with the contents of the last message in history
 		 */
 		void getLastMsg(std::string* msg_str) const;
-    /** \brief Reset the contents of the logger instance.
-     *
-     * Used *by default* when an instance of the class is initialized
-     */
-    void reset();
+		/** \brief Reset the contents of the logger instance.
+		 *
+		 * Used *by default* when an instance of the class is initialized
+		 */
+		void reset();
 
 		/**
 		 * \brief Struct responsible of holding information relevant to the message
@@ -251,14 +252,14 @@ class BASE_IMPEXP COutputLogger {
 		 *
 		 * <center><em> [name | level | timestamp:] body </em></center>
 		 */
-    struct BASE_IMPEXP TMsg {
-    	/** \brief Class constructor that passes a message in std::string
-    	 * form as well as a reference to the COutputLogger that provided the
-    	 * current message
-    	 */
-    	TMsg(const std::string& msg, const COutputLogger& logger);
-    	/** \brief  Default Destructor */
-    	~TMsg();
+		struct BASE_IMPEXP TMsg {
+			/** \brief Class constructor that passes a message in std::string
+			 * form as well as a reference to the COutputLogger that provided the
+			 * current message
+			 */
+			TMsg(const std::string& msg, const COutputLogger& logger);
+			/** \brief  Default Destructor */
+			~TMsg();
 
 			/** \brief Return a string representation of the underlying message */
 			std::string getAsString() const;
@@ -288,9 +289,9 @@ class BASE_IMPEXP COutputLogger {
 			 */
 			std::string getLoggingLevelName(VerbosityLevel level) const; 
 
-    	//
-    	// parameters of the message under construction
-    	//
+			//
+			// parameters of the message under construction
+			//
 			mrpt::system::TTimeStamp timestamp; /**< Timestamp of the message. */
 			VerbosityLevel level; /**< Verbosity level of the message. */
 			std::string name; /**< Name of the COutputLogger instance that called registered the message. */
@@ -307,7 +308,7 @@ class BASE_IMPEXP COutputLogger {
 			 * actual content
 			 */
 			std::map<VerbosityLevel, std::string> m_levels_to_names;
-   };
+		};
 
 		/** \brief Set it to false in case you don't want the logged message to be
 		 *         dumped to the output automatically. 
@@ -315,12 +316,12 @@ class BASE_IMPEXP COutputLogger {
 		 * By default it is set to true.
 		 */
 		bool print_message_automatically;
-  private:
-  	/** Warn (at least for the first usages) that the logged messages are not
-  	 * stored by the COutputLogger instance since the call to
-  	 * COutputLogger::log is made inside a const method/function
-  	 */
-  	void warnForLogConstMethod() const;
+	private:
+		/** Warn (at least for the first usages) that the logged messages are not
+		 * stored by the COutputLogger instance since the call to
+		 * COutputLogger::log is made inside a const method/function
+		 */
+		void warnForLogConstMethod() const;
 
 		/** Helper method for generating a std::string instance from printf-like
 		 * arguments
