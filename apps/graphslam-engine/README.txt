@@ -37,7 +37,7 @@ Sample calls to the graphslam-engine application are given below:
   graphslam-engine --list-regs
 - run specifying both node and edge registration deciders
   graphslam-engine -i
-  MRPT/share/mrpt/config_files/graphslam-engine/odometry_2DRangeScans.ini 
+  MRPT/share/mrpt/config_files/graphslam-engine/odometry_2DRangeScans.ini
   -r MRPT/share/mrpt/config_files/graphslam-engine-demos/action_observations_map/range_030_bearing_015.rawlog
   -g MRPT/share/mrpt/config_files/graphslam-engine-demos/action_observations_map/range_030_bearing_015.rawlog.GT.txt
   --node-reg CFixedIntervalsNRD --edge-reg CICPGoodnessERD
@@ -48,21 +48,23 @@ file - independently of the current working directory (modify paths to MRPT,
 graphslam-engine accordingly):
 - graphslam-engine -i
 	MRPT/share/config_files/graphslam-engine/odometry_2DRangeScans.ini
-	-r MRPT/datasets/graphslam-engine-demos/observation_only_map2/range030_bearing_015.rawlog
-	-g MRPT/datasets/graphslam-engine-demos/observation_only_map2/range030_bearing_015.rawlog.GT.txt
+	-r MRPT/datasets/graphslam-engine-demos/observation_only_map2/range_030_bearing_015.rawlog
+	-g MRPT/datasets/graphslam-engine-demos/observation_only_map2/range_030_bearing_015.rawlog.GT.txt
 	--node-reg CFixedIntervalsNRD --edge-reg CICPGoodnessERD
 - graphslam-engine -i
   MRPT/share/config_files/graphslam-engine/odometry_2DRangeScans.ini
-  -r MRPT/datasets/graphslam-engine-demos/action_observations_map/range030_bearing_015.rawlog
-  -g MRPT/datasets/graphslam-engine-demos/action_observations_map/range030_bearing_015.rawlog.GT.txt
+  -r MRPT/datasets/graphslam-engine-demos/action_observations_map/range_030_bearing_015.rawlog
+  -g MRPT/datasets/graphslam-engine-demos/action_observations_map/range_030_bearing_015.rawlog.GT.txt
   --node-reg CFixedIntervalsNRD --edge-reg CICPGoodnessERD
 - graphslam-engine -i
   MRPT/share/config_files/graphslam-engine/laser_odometry.ini -r
-  MRPT/datasets/graphslam-engine-demos/action_observations_map/range030_bearing_015.rawlog
-  -g MRPT/datasets/graphslam-engine-demos/action_observations_map/range030_bearing_015.rawlog.GT.txt
+  MRPT/datasets/graphslam-engine-demos/action_observations_map/range_030_bearing_015.rawlog
+  -g MRPT/datasets/graphslam-engine-demos/action_observations_map/range_030_bearing_015.rawlog.GT.txt
   --node-reg CICPGoodnessNRD --edge-reg CICPGoodnessERD
 
 
 # TODO
 # Update with the following
 # Available Optimizers
+# Include pictures of the graphSLAM building procedure
+# Include Youtube video demonstrating the whole build-up

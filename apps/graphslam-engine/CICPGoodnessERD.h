@@ -60,18 +60,17 @@ using namespace mrpt::maps;
 namespace mrpt { namespace graphslam { namespace deciders {
 
 /**
-	* Map type: 2D
-	* MRPT rawlog format: #1, #2
-	* Observations: CObservation2DRangeScan, CObservation3DRangeScan
-	* Edge Registration Strategy: Goodnesss threshold
-	*
- 	* Register new edges in the graph with the last added node. Criterion for
-	* adding new nodes should  be the goodness of the potential ICP edge. The
-	* nodes for ICP should be picked based on the distance from the last
-	* inserted node.
-	*/
-template<
-		class GRAPH_t=typename mrpt::graphs::CNetworkOfPoses2DInf >
+ * Map type: 2D
+ * MRPT rawlog format: #1, #2
+ * Observations: CObservation2DRangeScan, CObservation3DRangeScan
+ * Edge Registration Strategy: Goodnesss threshold
+ *
+ * Register new edges in the graph with the last added node. Criterion for
+ * adding new nodes should  be the goodness of the potential ICP edge. The
+ * nodes for ICP should be picked based on the distance from the last
+ * inserted node.
+ */
+template<class GRAPH_t=typename mrpt::graphs::CNetworkOfPoses2DInf >
 class CICPGoodnessERD_t :
 	public mrpt::graphslam::deciders::CEdgeRegistrationDecider_t<GRAPH_t>,
 	public mrpt::graphslam::deciders::CRangeScanRegistrationDecider_t<GRAPH_t>
@@ -148,8 +147,7 @@ class CICPGoodnessERD_t :
 	private:
 		// Private functions
 		//////////////////////////////////////////////////////////////
-		/**
-		 * Initialization function to be called from the various constructors
+		/** \brief Initialization function to be called from the various constructors
 		 */
 		void initCICPGoodnessERD_t();
 		void checkRegistrationCondition2D(
@@ -170,15 +168,6 @@ class CICPGoodnessERD_t :
 		void toggleLaserScansVisualization();
 		void dumpVisibilityErrorMsg(std::string viz_flag, 
 				int sleep_time=500 /* ms */);
-		/**
-		 * In case of 3DScan images, method sets the path of each image
-		 * either to ${rawlog_path_wo_extension}_Images/img_name (default
-		 * choice) or to the  param.scans_img_external_storage directory
-		 * specified by the user in the .ini configuration file.
-		 */
-		void correct3DScanImageFname(
-				mrpt::utils::CImage* img,
-				std::string extension = ".png");
 
 		// Private variables
 		//////////////////////////////////////////////////////////////
@@ -194,8 +183,8 @@ class CICPGoodnessERD_t :
 		bool m_just_inserted_loop_closure;
 		bool m_is_using_3DScan;
 
-		mrpt::utils::TColor m_search_disk_color; // see Ctor for initialization
-		mrpt::utils::TColor m_laser_scans_color; // see Ctor for initialization
+		mrpt::utils::TColor m_search_disk_color; //!< see Constructor for initialization
+		mrpt::utils::TColor m_laser_scans_color; //!< see Constructor for initialization
 		double m_offset_y_search_disk;
 		int m_text_index_search_disk;
 

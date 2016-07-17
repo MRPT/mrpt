@@ -165,10 +165,6 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::ini
 		}
 	}
 
-	/**
-	 * Visualization-related parameters initialization
-	 */
-
 	if (!m_win) {
 		m_out_logger.log("CDisplayWindow3D was not provided. Switching all visualization parameters off...", LVL_WARN);
 		m_visualize_odometry_poses       = 0;
@@ -891,11 +887,6 @@ void CGraphSlamEngine_t<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::ini
 	if (directoryExists(m_output_dir_fname)) {
 		int answer_int;
 		if (m_user_decides_about_output_dir) {
-			/**
-			 * Give the user 3 choices.
-			 * - Remove the current directory contents
-			 * - Rename (and keep) the current directory contents
-			 */
 			stringstream question;
 			string answer;
 
