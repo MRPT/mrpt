@@ -602,21 +602,6 @@ void CICPGoodnessERD_t<GRAPH_t>::dumpVisibilityErrorMsg(
 
 
 template<class GRAPH_t>
-void CICPGoodnessERD_t<GRAPH_t>::correct3DScanImageFname(
-		mrpt::utils::CImage* img,
-		std::string extension /*= ".png" */ ) {
-
-	if (!params.scans_img_external_dir.empty()) {
-		// fetch the correct absolute path of the image
-		string relative_fname = img->getExternalStorageFile();
-		string fname = system::extractFileName(relative_fname);
-		fname = params.scans_img_external_dir + fname + extension;
-
-		// set the image file path appropriately
-		img->setExternalStorage(fname);
-	}
-}
-template<class GRAPH_t>
 void CICPGoodnessERD_t<GRAPH_t>::loadParams(const std::string& source_fname) {
 	MRPT_START;
 

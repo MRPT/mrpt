@@ -48,21 +48,21 @@ using namespace std;
 namespace mrpt { namespace graphslam { namespace deciders {
 
 /**
-	* Map type: 2D
-	* MRPT rawlog format: #1, #2
-	* Observations: CObservation2DRangeScan, CObservation3DRangeScan
-	* Node Registration Strategy: Fixed space intervals
-	*
-	* Current Decider is meant for adding nodes in 2D datasets recorded using
-	* a laser range finder or RGB-D camera (e.g. Kinect). No odometry data from
-	* encoders is needed.
-	* Decider *does not guarrantee* thread safety when accessing the GRAPH_t
- 	* resource. This is handled by the CGraphSlamEngine_t class.
-	*/
+ * Map type: 2D
+ * MRPT rawlog format: #1, #2
+ * Observations: CObservation2DRangeScan, CObservation3DRangeScan
+ * Node Registration Strategy: Fixed space intervals
+ *
+ * Current Decider is meant for adding nodes in 2D datasets recorded using
+ * a laser range finder or RGB-D camera (e.g. Kinect). No odometry data from
+ * encoders is needed.
+ * Decider *does not guarrantee* thread safety when accessing the GRAPH_t
+ * resource. This is handled by the CGraphSlamEngine_t class.
+ */
 template<class GRAPH_t>
-	class CICPGoodnessNRD_t:
-		public mrpt::graphslam::deciders::CNodeRegistrationDecider_t<GRAPH_t>,
-		public mrpt::graphslam::deciders::CRangeScanRegistrationDecider_t<GRAPH_t>
+class CICPGoodnessNRD_t:
+	public mrpt::graphslam::deciders::CNodeRegistrationDecider_t<GRAPH_t>,
+	public mrpt::graphslam::deciders::CRangeScanRegistrationDecider_t<GRAPH_t>
 {
 	public:
 		// Public functions
@@ -84,8 +84,8 @@ template<class GRAPH_t>
 		~CICPGoodnessNRD_t();
 
 		/**
-		 	* Initialize the graph to be used for the node registration procedure
-		 	*/
+		 * Initialize the graph to be used for the node registration procedure
+		 */
 		void setGraphPtr(GRAPH_t* graph);
 		void loadParams(const std::string& source_fname);
 		void printParams() const; 
@@ -163,8 +163,6 @@ template<class GRAPH_t>
 
 		// sliding window for managing the ICP goodness values
 		typename superB::TSlidingWindow m_ICP_sliding_win;
-		// TODO make this an m_
-		mrpt::poses::CRobot2DPoseEstimator pose_estimator;
 		mrpt::system::TTimeStamp m_curr_timestamp;
 		mrpt::system::TTimeStamp m_prev_timestamp;
 

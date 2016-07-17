@@ -37,20 +37,20 @@ using namespace std;
 namespace mrpt { namespace graphslam { namespace deciders {
 
 /**
-	* Map type: 2D
-	* MRPT rawlog format: #1, #2
-	* Observations: CObservationOdometry, CActionRobotMovement2D
-	* Edge Registration Strategy: Goodnesss threshold
-	*
- 	* Fixed intervals odometry edge insertion. Determine whether to insert a new
- 	* pose in the graph given the distance and angle thresholds. If used offline,
-	* use it with datasets in observation-only rawlog format.
- 	*
- 	* Current Decider is a minimal, simple implementation of the
- 	* CNodeRegistrationDecider_t interface which can be used for 2D datasets.
- 	* Decider *does not guarrantee* thread safety when accessing the GRAPH_t
- 	* resource. This is handled by the CGraphSlamEngine_t class.
- 	*/
+ * Map type: 2D
+ * MRPT rawlog format: #1, #2
+ * Observations: CObservationOdometry, CActionRobotMovement2D
+ * Edge Registration Strategy: Goodnesss threshold
+ *
+ * Fixed intervals odometry edge insertion. Determine whether to insert a new
+ * pose in the graph given the distance and angle thresholds. If used offline,
+ * use it with datasets in observation-only rawlog format.
+ *
+ * Current Decider is a minimal, simple implementation of the
+ * CNodeRegistrationDecider_t interface which can be used for 2D datasets.
+ * Decider *does not guarrantee* thread safety when accessing the GRAPH_t
+ * resource. This is handled by the CGraphSlamEngine_t class.
+ */
 template<class GRAPH_t=typename mrpt::graphs::CNetworkOfPoses2DInf>
 class CFixedIntervalsNRD_t:
 	public mrpt::graphslam::deciders::CNodeRegistrationDecider_t<GRAPH_t>
@@ -69,8 +69,8 @@ class CFixedIntervalsNRD_t:
 		~CFixedIntervalsNRD_t();
 
 		/**
-		 	* Initialize the graph to be used for the node registration procedure
-		 	*/
+		 * Initialize the graph to be used for the node registration procedure
+		 */
 		void setGraphPtr(GRAPH_t* graph);
 
 		void loadParams(const std::string& source_fname);
@@ -78,9 +78,9 @@ class CFixedIntervalsNRD_t:
 		void getDescriptiveReport(std::string* report_str) const; 
 
 		/**
-		 	* Method makes use of the CActionCollection/CObservation to update the odometry estimation from
-		 	* the last inserted pose
-		 	*/
+		 * Method makes use of the CActionCollection/CObservation to update the odometry estimation from
+		 * the last inserted pose
+		 */
 		bool updateDeciderState( mrpt::obs::CActionCollectionPtr action,
 				mrpt::obs::CSensoryFramePtr observations,
 				mrpt::obs::CObservationPtr observation );
@@ -113,16 +113,16 @@ class CFixedIntervalsNRD_t:
 		// Private functions
 		//////////////////////////////////////////////////////////////
 		/**
-		 	* If estimated position surpasses the registration max values since the
-		 	* previous registered node, register a new node in the graph.
-		 	*
-		 	* Returns new on successful registration.
-		 	*/
+		 * If estimated position surpasses the registration max values since the
+		 * previous registered node, register a new node in the graph.
+		 *
+		 * Returns new on successful registration.
+		 */
 		bool checkRegistrationCondition();
 		void registerNewNode();
 		/**
-		 	* Initialization function to be called from the various constructors
-		 	*/
+		 * Initialization function to be called from the various constructors
+		 */
 		void initCFixedIntervalsNRD_t();
 		void checkIfInvalidDataset(mrpt::obs::CActionCollectionPtr action,
 				mrpt::obs::CSensoryFramePtr observations,
