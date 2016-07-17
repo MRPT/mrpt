@@ -16,13 +16,13 @@ using namespace mrpt::graphslam::deciders;
 //////////////////////////////////////////////////////////////
 
 template<class GRAPH_t>
-CICPGoodnessNRD_t<GRAPH_t>::CICPGoodnessNRD_t():
+CICPGoodnessNRD<GRAPH_t>::CICPGoodnessNRD():
 	params(*this) // pass reference to self when initializing the parameters
 {
-	this->initCICPGoodnessNRD_t();
+	this->initCICPGoodnessNRD();
 }
 template<class GRAPH_t>
-void CICPGoodnessNRD_t<GRAPH_t>::initCICPGoodnessNRD_t() {
+void CICPGoodnessNRD<GRAPH_t>::initCICPGoodnessNRD() {
 
 	m_first_time_call2D = true;
 	m_first_time_call3D = true;
@@ -52,10 +52,10 @@ void CICPGoodnessNRD_t<GRAPH_t>::initCICPGoodnessNRD_t() {
 	m_out_logger.log("Initialized class object", LVL_DEBUG);
 }
 template<class GRAPH_t>
-CICPGoodnessNRD_t<GRAPH_t>::~CICPGoodnessNRD_t() { }
+CICPGoodnessNRD<GRAPH_t>::~CICPGoodnessNRD() { }
 
 template<class GRAPH_t>
-bool CICPGoodnessNRD_t<GRAPH_t>::updateState(
+bool CICPGoodnessNRD<GRAPH_t>::updateState(
 		mrpt::obs::CActionCollectionPtr action,
 		mrpt::obs::CSensoryFramePtr observations,
 		mrpt::obs::CObservationPtr observation )  {
@@ -104,7 +104,7 @@ bool CICPGoodnessNRD_t<GRAPH_t>::updateState(
 }
 
 template<class GRAPH_t>
-bool CICPGoodnessNRD_t<GRAPH_t>::updateState2D(
+bool CICPGoodnessNRD<GRAPH_t>::updateState2D(
 		mrpt::obs::CObservation2DRangeScanPtr scan2d) {
 	MRPT_START;
 	bool registered_new_node = false;
@@ -124,7 +124,7 @@ bool CICPGoodnessNRD_t<GRAPH_t>::updateState2D(
 	MRPT_END;
 }
 template<class GRAPH_t>
-bool CICPGoodnessNRD_t<GRAPH_t>::checkRegistrationCondition2D() {
+bool CICPGoodnessNRD<GRAPH_t>::checkRegistrationCondition2D() {
 	MRPT_START;
 	bool registered_new_node = false;
 	m_out_logger.log("In checkRegistrationCondition2D..");
@@ -158,7 +158,7 @@ bool CICPGoodnessNRD_t<GRAPH_t>::checkRegistrationCondition2D() {
 	MRPT_END;
 }
 template<class GRAPH_t>
-bool CICPGoodnessNRD_t<GRAPH_t>::updateState3D(
+bool CICPGoodnessNRD<GRAPH_t>::updateState3D(
 		mrpt::obs::CObservation3DRangeScanPtr scan3d) {
 	MRPT_START;
 	bool registered_new_node = false;
@@ -182,7 +182,7 @@ bool CICPGoodnessNRD_t<GRAPH_t>::updateState3D(
 }
 
 template<class GRAPH_t>
-bool CICPGoodnessNRD_t<GRAPH_t>::checkRegistrationCondition3D() {
+bool CICPGoodnessNRD<GRAPH_t>::checkRegistrationCondition3D() {
 	MRPT_START;
 	bool registered_new_node = false;
 
@@ -230,7 +230,7 @@ bool CICPGoodnessNRD_t<GRAPH_t>::checkRegistrationCondition3D() {
 }
 
 template<class GRAPH_t>
-bool CICPGoodnessNRD_t<GRAPH_t>::checkRegistrationCondition() {
+bool CICPGoodnessNRD<GRAPH_t>::checkRegistrationCondition() {
 	MRPT_START;
 	bool registered_new_node = false;
 	m_out_logger.log("In checkRegistrationCondition");
@@ -261,7 +261,7 @@ bool CICPGoodnessNRD_t<GRAPH_t>::checkRegistrationCondition() {
 }
 
 template<class GRAPH_t>
-void CICPGoodnessNRD_t<GRAPH_t>::registerNewNode() {
+void CICPGoodnessNRD<GRAPH_t>::registerNewNode() {
 	MRPT_START;
 
 	mrpt::utils::TNodeID from = m_nodeID_max;
@@ -277,7 +277,7 @@ void CICPGoodnessNRD_t<GRAPH_t>::registerNewNode() {
 }
 
 template<class GRAPH_t>
-void CICPGoodnessNRD_t<GRAPH_t>::setGraphPtr(GRAPH_t* graph) {
+void CICPGoodnessNRD<GRAPH_t>::setGraphPtr(GRAPH_t* graph) {
 	m_graph = graph;
 
 	// get the last registrered node + corresponding pose - root
@@ -286,7 +286,7 @@ void CICPGoodnessNRD_t<GRAPH_t>::setGraphPtr(GRAPH_t* graph) {
 	m_out_logger.log("Fetched the graph successfully", LVL_DEBUG);
 }
 template<class GRAPH_t>
-void CICPGoodnessNRD_t<GRAPH_t>::loadParams(const std::string& source_fname) {
+void CICPGoodnessNRD<GRAPH_t>::loadParams(const std::string& source_fname) {
 	MRPT_START;
 
 	params.loadFromConfigFileName(source_fname,
@@ -307,7 +307,7 @@ void CICPGoodnessNRD_t<GRAPH_t>::loadParams(const std::string& source_fname) {
 	MRPT_END;
 }
 template<class GRAPH_t>
-void CICPGoodnessNRD_t<GRAPH_t>::printParams() const {
+void CICPGoodnessNRD<GRAPH_t>::printParams() const {
 	MRPT_START;
 
 	params.dumpToConsole();
@@ -317,7 +317,7 @@ void CICPGoodnessNRD_t<GRAPH_t>::printParams() const {
 }
 
 template<class GRAPH_t>
-void CICPGoodnessNRD_t<GRAPH_t>::getDescriptiveReport(std::string* report_str) const {
+void CICPGoodnessNRD<GRAPH_t>::getDescriptiveReport(std::string* report_str) const {
 	MRPT_START;
 
 	const std::string report_sep(2, '\n');
@@ -352,13 +352,13 @@ void CICPGoodnessNRD_t<GRAPH_t>::getDescriptiveReport(std::string* report_str) c
 // TParams
 //////////////////////////////////////////////////////////////
 template<class GRAPH_t>
-CICPGoodnessNRD_t<GRAPH_t>::TParams::TParams(decider_t& d):
+CICPGoodnessNRD<GRAPH_t>::TParams::TParams(decider_t& d):
 	decider(d)
 { }
 template<class GRAPH_t>
-CICPGoodnessNRD_t<GRAPH_t>::TParams::~TParams() { }
+CICPGoodnessNRD<GRAPH_t>::TParams::~TParams() { }
 template<class GRAPH_t>
-void CICPGoodnessNRD_t<GRAPH_t>::TParams::dumpToTextStream(
+void CICPGoodnessNRD<GRAPH_t>::TParams::dumpToTextStream(
 		mrpt::utils::CStream &out) const {
 	MRPT_START;
 
@@ -373,7 +373,7 @@ void CICPGoodnessNRD_t<GRAPH_t>::TParams::dumpToTextStream(
 	MRPT_END;
 }
 template<class GRAPH_t>
-void CICPGoodnessNRD_t<GRAPH_t>::TParams::loadFromConfigFile(
+void CICPGoodnessNRD<GRAPH_t>::TParams::loadFromConfigFile(
 		const mrpt::utils::CConfigFileBase &source,
     const std::string &section) {
   MRPT_START;

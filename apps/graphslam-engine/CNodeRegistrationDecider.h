@@ -28,14 +28,14 @@ namespace mrpt { namespace graphslam { namespace deciders {
 
 /**\brief Interface for implementing node registration classes.
  *
- * CNodeRegistrationDecider_t provides the basic methods that have to exist in
+ * CNodeRegistrationDecider provides the basic methods that have to exist in
  * every node registration decider class. For an example of overloading these
  * methods, see CFixedIntervalsNRD.h
  *
  * \ingroup mrpt_graphslam_grp
  */
 template<class GRAPH_t=typename mrpt::graphs::CNetworkOfPoses2DInf>
-class CNodeRegistrationDecider_t : public mrpt::graphslam::CRegistrationDeciderOrOptimizer<GRAPH_t> {
+class CNodeRegistrationDecider : public mrpt::graphslam::CRegistrationDeciderOrOptimizer<GRAPH_t> {
 	public:
 		/**\brief type of graph constraints */
 		typedef typename GRAPH_t::constraint_t constraint_t;
@@ -43,9 +43,9 @@ class CNodeRegistrationDecider_t : public mrpt::graphslam::CRegistrationDeciderO
 		typedef typename GRAPH_t::constraint_t::type_value pose_t;
 
 		/**\brief Default class constructor.*/
-    CNodeRegistrationDecider_t() {}
+    CNodeRegistrationDecider() {}
 		/**\brief Default class destructor.*/
-    virtual ~CNodeRegistrationDecider_t() {};
+    virtual ~CNodeRegistrationDecider() {};
 
 		/**\brief Generic method for fetching the incremental action-observations (or
 		 * observation-only) depending on the rawlog format readings from the

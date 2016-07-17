@@ -43,8 +43,8 @@ namespace mrpt { namespace graphslam { namespace optimizers {
  * \ingroup mrpt_graphslam_grp
  */
 template<class GRAPH_t=typename mrpt::graphs::CNetworkOfPoses2DInf>
-class CLevMarqGSO_t:
-	public mrpt::graphslam::optimizers::CGraphSlamOptimizer_t<GRAPH_t>
+class CLevMarqGSO:
+	public mrpt::graphslam::optimizers::CGraphSlamOptimizer<GRAPH_t>
 {
   public:
 		// Public methods
@@ -56,9 +56,9 @@ class CLevMarqGSO_t:
 						constraint_t::state_length,
 						constraint_t::state_length> InfMat;
 
-    CLevMarqGSO_t();
-    ~CLevMarqGSO_t();
-    void initCLevMarqGSO_t();
+    CLevMarqGSO();
+    ~CLevMarqGSO();
+    void initCLevMarqGSO();
 
 		bool updateState( mrpt::obs::CActionCollectionPtr action,
 				mrpt::obs::CSensoryFramePtr observations,

@@ -16,23 +16,23 @@ using namespace mrpt::graphslam::optimizers;
 //////////////////////////////////////////////////////////////
 
 template<class GRAPH_t>
-CLevMarqGSO_t<GRAPH_t>::CLevMarqGSO_t()
+CLevMarqGSO<GRAPH_t>::CLevMarqGSO()
 {
 	MRPT_START;
 
-	this->initCLevMarqGSO_t();
+	this->initCLevMarqGSO();
 
 	MRPT_END;
 }
 template<class GRAPH_t>
-CLevMarqGSO_t<GRAPH_t>::~CLevMarqGSO_t() {
+CLevMarqGSO<GRAPH_t>::~CLevMarqGSO() {
 	MRPT_START;
 
 	MRPT_END;
 }
 
 template<class GRAPH_t>
-void CLevMarqGSO_t<GRAPH_t>::initCLevMarqGSO_t() {
+void CLevMarqGSO<GRAPH_t>::initCLevMarqGSO() {
 	MRPT_START;
 
 	m_graph = NULL;
@@ -56,7 +56,7 @@ void CLevMarqGSO_t<GRAPH_t>::initCLevMarqGSO_t() {
 // Member function implementations
 //////////////////////////////////////////////////////////////
 template<class GRAPH_t>
-bool CLevMarqGSO_t<GRAPH_t>::updateState(
+bool CLevMarqGSO<GRAPH_t>::updateState(
 		mrpt::obs::CActionCollectionPtr action,
 		mrpt::obs::CSensoryFramePtr observations,
 		mrpt::obs::CObservationPtr observation ) {
@@ -80,7 +80,7 @@ bool CLevMarqGSO_t<GRAPH_t>::updateState(
 			// optimize the graph - run on a seperate thread
 			m_thread_optimize = mrpt::system::createThreadFromObjectMethod(
 					/*obj = */ this,
-					/* func = */ &CLevMarqGSO_t::optimizeGraph);
+					/* func = */ &CLevMarqGSO::optimizeGraph);
 
 		}
 		else { // single threaded implementation
@@ -94,7 +94,7 @@ bool CLevMarqGSO_t<GRAPH_t>::updateState(
 }
 
 template<class GRAPH_t>
-void CLevMarqGSO_t<GRAPH_t>::setGraphPtr(GRAPH_t* graph) {
+void CLevMarqGSO<GRAPH_t>::setGraphPtr(GRAPH_t* graph) {
 	MRPT_START;
 
 	m_graph = graph;
@@ -105,7 +105,7 @@ void CLevMarqGSO_t<GRAPH_t>::setGraphPtr(GRAPH_t* graph) {
 }
 
 template<class GRAPH_t>
-void CLevMarqGSO_t<GRAPH_t>::setRawlogFname(const std::string& rawlog_fname) {
+void CLevMarqGSO<GRAPH_t>::setRawlogFname(const std::string& rawlog_fname) {
 	MRPT_START;
 
 	MRPT_END;
@@ -113,7 +113,7 @@ void CLevMarqGSO_t<GRAPH_t>::setRawlogFname(const std::string& rawlog_fname) {
 
 
 template<class GRAPH_t>
-void CLevMarqGSO_t<GRAPH_t>::setWindowManagerPtr(
+void CLevMarqGSO<GRAPH_t>::setWindowManagerPtr(
 		mrpt::gui::CWindowManager_t* win_manager) {
 	MRPT_START;
 
@@ -130,7 +130,7 @@ void CLevMarqGSO_t<GRAPH_t>::setWindowManagerPtr(
 }
 
 template <class GRAPH_t>
-void CLevMarqGSO_t<GRAPH_t>::setCriticalSectionPtr(
+void CLevMarqGSO<GRAPH_t>::setCriticalSectionPtr(
 		mrpt::synch::CCriticalSection* graph_section) {
 	MRPT_START;
 
@@ -142,7 +142,7 @@ void CLevMarqGSO_t<GRAPH_t>::setCriticalSectionPtr(
 
 
 template<class GRAPH_t>
-void CLevMarqGSO_t<GRAPH_t>::initializeVisuals() {
+void CLevMarqGSO<GRAPH_t>::initializeVisuals() {
 	MRPT_START;
 	m_out_logger.log("CLevMarqGSO:] Initializing visuals");
 
@@ -160,7 +160,7 @@ void CLevMarqGSO_t<GRAPH_t>::initializeVisuals() {
 }
 
 template<class GRAPH_t>
-void CLevMarqGSO_t<GRAPH_t>::updateVisuals() {
+void CLevMarqGSO<GRAPH_t>::updateVisuals() {
 	MRPT_START;
 
 	ASSERT_(m_initialized_visuals);
@@ -176,7 +176,7 @@ void CLevMarqGSO_t<GRAPH_t>::updateVisuals() {
 }
 
 template<class GRAPH_t>
-void CLevMarqGSO_t<GRAPH_t>::notifyOfWindowEvents(
+void CLevMarqGSO<GRAPH_t>::notifyOfWindowEvents(
 		const std::map<std::string, bool> events_occurred)
 {
 	MRPT_START;
@@ -210,7 +210,7 @@ void CLevMarqGSO_t<GRAPH_t>::notifyOfWindowEvents(
 }
 
 template<class GRAPH_t>
-inline void CLevMarqGSO_t<GRAPH_t>::initGraphVisualization() {
+inline void CLevMarqGSO<GRAPH_t>::initGraphVisualization() {
 	MRPT_START;
 
 	if (viz_params.visualize_optimized_graph) {
@@ -229,7 +229,7 @@ inline void CLevMarqGSO_t<GRAPH_t>::initGraphVisualization() {
 	MRPT_END;
 }
 template<class GRAPH_t>
-inline void CLevMarqGSO_t<GRAPH_t>::updateGraphVisualization() {
+inline void CLevMarqGSO<GRAPH_t>::updateGraphVisualization() {
 	MRPT_START;
 	m_out_logger.log("In the updateGraphVisualization function");
 
@@ -267,7 +267,7 @@ inline void CLevMarqGSO_t<GRAPH_t>::updateGraphVisualization() {
 }
 
 template<class GRAPH_t>
-void CLevMarqGSO_t<GRAPH_t>::toggleGraphVisualization() {
+void CLevMarqGSO<GRAPH_t>::toggleGraphVisualization() {
 	MRPT_START;
 
 	COpenGLScenePtr& scene = m_win->get3DSceneAndLock();
@@ -282,7 +282,7 @@ void CLevMarqGSO_t<GRAPH_t>::toggleGraphVisualization() {
 }
 
 template<class GRAPH_t>
-void CLevMarqGSO_t<GRAPH_t>::fitGraphInView() {
+void CLevMarqGSO<GRAPH_t>::fitGraphInView() {
 	MRPT_START;
 
 	ASSERTMSG_(m_win,
@@ -313,7 +313,7 @@ void CLevMarqGSO_t<GRAPH_t>::fitGraphInView() {
 
 
 template<class GRAPH_t>
-void CLevMarqGSO_t<GRAPH_t>::initOptDistanceVisualization() {
+void CLevMarqGSO<GRAPH_t>::initOptDistanceVisualization() {
 	MRPT_START;
 
 	if (opt_params.optimization_distance > 0) {
@@ -350,7 +350,7 @@ void CLevMarqGSO_t<GRAPH_t>::initOptDistanceVisualization() {
 	MRPT_END;
 }
 template<class GRAPH_t>
-void CLevMarqGSO_t<GRAPH_t>::updateOptDistanceVisualization() {
+void CLevMarqGSO<GRAPH_t>::updateOptDistanceVisualization() {
 	MRPT_START;
 
 	// update ICP_max_distance Disk
@@ -371,7 +371,7 @@ void CLevMarqGSO_t<GRAPH_t>::updateOptDistanceVisualization() {
 
 // TODO - implement this
 template<class GRAPH_t>
-void CLevMarqGSO_t<GRAPH_t>::toggleOptDistanceVisualization() {
+void CLevMarqGSO<GRAPH_t>::toggleOptDistanceVisualization() {
 	MRPT_START;
 
 	COpenGLScenePtr scene = m_win->get3DSceneAndLock();
@@ -388,7 +388,7 @@ void CLevMarqGSO_t<GRAPH_t>::toggleOptDistanceVisualization() {
 
 
 template<class GRAPH_t>
-void CLevMarqGSO_t<GRAPH_t>::optimizeGraph() {
+void CLevMarqGSO<GRAPH_t>::optimizeGraph() {
 	MRPT_START;
 
 	m_out_logger.log(mrpt::format(
@@ -405,7 +405,7 @@ void CLevMarqGSO_t<GRAPH_t>::optimizeGraph() {
 
 // TODO - do something meaningful with these parameters
 template<class GRAPH_t>
-void CLevMarqGSO_t<GRAPH_t>::_optimizeGraph() {
+void CLevMarqGSO<GRAPH_t>::_optimizeGraph() {
 	MRPT_START;
 	m_out_logger.log("In _optimizeGraph");
 	m_time_logger.enter("CLevMarqGSO::_optimizeGraph");
@@ -446,7 +446,7 @@ void CLevMarqGSO_t<GRAPH_t>::_optimizeGraph() {
 			levmarq_info,
 			nodes_to_optimize,  // List of nodes to optimize. NULL -> all but the root node.
 			opt_params.cfg,
-			&CLevMarqGSO_t<GRAPH_t>::levMarqFeedback); // functor feedback
+			&CLevMarqGSO<GRAPH_t>::levMarqFeedback); // functor feedback
 
 	double elapsed_time = optimization_timer.Tac();
 	m_out_logger.log(mrpt::format("Optimization of graph took: %fs", elapsed_time));
@@ -461,7 +461,7 @@ void CLevMarqGSO_t<GRAPH_t>::_optimizeGraph() {
 }
 
 template<class GRAPH_t>
-bool CLevMarqGSO_t<GRAPH_t>::checkForLoopClosures() {
+bool CLevMarqGSO<GRAPH_t>::checkForLoopClosures() {
 	MRPT_START;
 
 	bool is_loop_closure = false;
@@ -501,7 +501,7 @@ bool CLevMarqGSO_t<GRAPH_t>::checkForLoopClosures() {
 }
 
 	template<class GRAPH_t>
-void CLevMarqGSO_t<GRAPH_t>::levMarqFeedback(
+void CLevMarqGSO<GRAPH_t>::levMarqFeedback(
 		const GRAPH_t &graph,
 		const size_t iter,
 		const size_t max_iter,
@@ -509,7 +509,7 @@ void CLevMarqGSO_t<GRAPH_t>::levMarqFeedback(
 { }
 
 template<class GRAPH_t>
-void CLevMarqGSO_t<GRAPH_t>::getNearbyNodesOf(
+void CLevMarqGSO<GRAPH_t>::getNearbyNodesOf(
 		std::set<mrpt::utils::TNodeID> *nodes_set,
 		const mrpt::utils::TNodeID& cur_nodeID,
 		double distance ) {
@@ -533,12 +533,12 @@ void CLevMarqGSO_t<GRAPH_t>::getNearbyNodesOf(
 }
 
 template<class GRAPH_t>
-void CLevMarqGSO_t<GRAPH_t>::printParams() const {
+void CLevMarqGSO<GRAPH_t>::printParams() const {
 	opt_params.dumpToConsole();
 	viz_params.dumpToConsole();
 }
 template<class GRAPH_t>
-void CLevMarqGSO_t<GRAPH_t>::loadParams(const std::string& source_fname) {
+void CLevMarqGSO<GRAPH_t>::loadParams(const std::string& source_fname) {
 	opt_params.loadFromConfigFileName(source_fname, "OptimizerParameters");
 	viz_params.loadFromConfigFileName(source_fname, "VisualizationParameters");
 
@@ -556,7 +556,7 @@ void CLevMarqGSO_t<GRAPH_t>::loadParams(const std::string& source_fname) {
 }
 
 template<class GRAPH_t>
-void CLevMarqGSO_t<GRAPH_t>::getDescriptiveReport(std::string* report_str) const {
+void CLevMarqGSO<GRAPH_t>::getDescriptiveReport(std::string* report_str) const {
 	MRPT_START;
 
 	const std::string report_sep(2, '\n');
@@ -590,15 +590,15 @@ void CLevMarqGSO_t<GRAPH_t>::getDescriptiveReport(std::string* report_str) const
 // OptimizationParams
 //////////////////////////////////////////////////////////////
 template<class GRAPH_t>
-CLevMarqGSO_t<GRAPH_t>::OptimizationParams::OptimizationParams():
+CLevMarqGSO<GRAPH_t>::OptimizationParams::OptimizationParams():
 	optimization_distance_color(0, 201, 87),
 	keystroke_optimization_distance("u")
 { }
 template<class GRAPH_t>
-CLevMarqGSO_t<GRAPH_t>::OptimizationParams::~OptimizationParams() {
+CLevMarqGSO<GRAPH_t>::OptimizationParams::~OptimizationParams() {
 }
 template<class GRAPH_t>
-void CLevMarqGSO_t<GRAPH_t>::OptimizationParams::dumpToTextStream(
+void CLevMarqGSO<GRAPH_t>::OptimizationParams::dumpToTextStream(
 		mrpt::utils::CStream &out) const {
 	MRPT_START;
 
@@ -614,7 +614,7 @@ void CLevMarqGSO_t<GRAPH_t>::OptimizationParams::dumpToTextStream(
 	MRPT_END;
 }
 template<class GRAPH_t>
-void CLevMarqGSO_t<GRAPH_t>::OptimizationParams::loadFromConfigFile(
+void CLevMarqGSO<GRAPH_t>::OptimizationParams::loadFromConfigFile(
 		const mrpt::utils::CConfigFileBase &source,
     const std::string &section) {
   MRPT_START;
@@ -664,16 +664,16 @@ void CLevMarqGSO_t<GRAPH_t>::OptimizationParams::loadFromConfigFile(
 // GraphVisualizationParams
 //////////////////////////////////////////////////////////////
 template<class GRAPH_t>
-CLevMarqGSO_t<GRAPH_t>::GraphVisualizationParams::GraphVisualizationParams():
+CLevMarqGSO<GRAPH_t>::GraphVisualizationParams::GraphVisualizationParams():
 	keystroke_graph_toggle("s"),
 	keystroke_graph_autofit("a")
 {
 }
 template<class GRAPH_t>
-CLevMarqGSO_t<GRAPH_t>::GraphVisualizationParams::~GraphVisualizationParams() {
+CLevMarqGSO<GRAPH_t>::GraphVisualizationParams::~GraphVisualizationParams() {
 }
 template<class GRAPH_t>
-void CLevMarqGSO_t<GRAPH_t>::GraphVisualizationParams::dumpToTextStream(
+void CLevMarqGSO<GRAPH_t>::GraphVisualizationParams::dumpToTextStream(
 		mrpt::utils::CStream &out) const {
 	MRPT_START;
 
@@ -688,7 +688,7 @@ void CLevMarqGSO_t<GRAPH_t>::GraphVisualizationParams::dumpToTextStream(
 	MRPT_END;
 }
 template<class GRAPH_t>
-void CLevMarqGSO_t<GRAPH_t>::GraphVisualizationParams::loadFromConfigFile(
+void CLevMarqGSO<GRAPH_t>::GraphVisualizationParams::loadFromConfigFile(
 		const mrpt::utils::CConfigFileBase &source,
     const std::string &section) {
   MRPT_START;

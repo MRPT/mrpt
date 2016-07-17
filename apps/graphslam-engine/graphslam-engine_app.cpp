@@ -6,9 +6,6 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
-
-#define LOGGING_LEVEL 2
-
 #include <mrpt/obs/CRawlog.h>
 #include <mrpt/graphslam.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
@@ -289,13 +286,13 @@ int main(int argc, char **argv)
 		logger.log(format("Edge registration decider: %s", edge_reg.c_str()));
 		if (system::strCmpI(node_reg, "CFixedIntervalsNRD")) {
 			if (system::strCmpI(edge_reg, "CICPGoodnessERD")) { // CFixedIntervalsNRD - CICPGoodnessERD
-				// Initialize the CGraphSlamEngine_t class
-				CGraphSlamEngine_t
+				// Initialize the CGraphSlamEngine class
+				CGraphSlamEngine
 					<
 					CNetworkOfPoses2DInf,
-					CFixedIntervalsNRD_t<CNetworkOfPoses2DInf>,
-					CICPGoodnessERD_t<CNetworkOfPoses2DInf>,
-					CLevMarqGSO_t<CNetworkOfPoses2DInf>
+					CFixedIntervalsNRD<CNetworkOfPoses2DInf>,
+					CICPGoodnessERD<CNetworkOfPoses2DInf>,
+					CLevMarqGSO<CNetworkOfPoses2DInf>
 					>
 					graph_engine(
 							ini_fname,
@@ -306,13 +303,13 @@ int main(int argc, char **argv)
 				has_exited_normally = graph_engine.parseRawlogFile();
 			}
 			else if (system::strCmpI(edge_reg, "CEmptyERD")) { // CFixedIntervalsNRD - CEmptyERD
-				// Initialize the CGraphSlamEngine_t class
-				CGraphSlamEngine_t
+				// Initialize the CGraphSlamEngine class
+				CGraphSlamEngine
 					<
 					CNetworkOfPoses2DInf,
-					CFixedIntervalsNRD_t<CNetworkOfPoses2DInf>,
-					CEmptyERD_t<CNetworkOfPoses2DInf>,
-					CLevMarqGSO_t<CNetworkOfPoses2DInf>
+					CFixedIntervalsNRD<CNetworkOfPoses2DInf>,
+					CEmptyERD<CNetworkOfPoses2DInf>,
+					CLevMarqGSO<CNetworkOfPoses2DInf>
 					>
 					graph_engine(
 							ini_fname,
@@ -326,13 +323,13 @@ int main(int argc, char **argv)
 		}
 		if (system::strCmpI(node_reg, "CEmptyNRD")) {
 			if (system::strCmpI(edge_reg, "CICPGoodnessERD")) { // CEmptyNRD - CICPGoodnessERD
-				// Initialize the CGraphSlamEngine_t class
-				CGraphSlamEngine_t
+				// Initialize the CGraphSlamEngine class
+				CGraphSlamEngine
 					<
 					CNetworkOfPoses2DInf,
-					CEmptyNRD_t<CNetworkOfPoses2DInf>,
-					CICPGoodnessERD_t<CNetworkOfPoses2DInf>,
-					CLevMarqGSO_t<CNetworkOfPoses2DInf>
+					CEmptyNRD<CNetworkOfPoses2DInf>,
+					CICPGoodnessERD<CNetworkOfPoses2DInf>,
+					CLevMarqGSO<CNetworkOfPoses2DInf>
 					>
 					graph_engine(
 							ini_fname,
@@ -343,13 +340,13 @@ int main(int argc, char **argv)
 				has_exited_normally = graph_engine.parseRawlogFile();
 			}
 			else if (system::strCmpI(edge_reg, "CEmptyERD")) { // CEmtpyNRD - CEmptyERD
-				// Initialize the CGraphSlamEngine_t class
-				CGraphSlamEngine_t
+				// Initialize the CGraphSlamEngine class
+				CGraphSlamEngine
 					<
 					CNetworkOfPoses2DInf,
-					CEmptyNRD_t<CNetworkOfPoses2DInf>,
-					CEmptyERD_t<CNetworkOfPoses2DInf>,
-					CLevMarqGSO_t<CNetworkOfPoses2DInf>
+					CEmptyNRD<CNetworkOfPoses2DInf>,
+					CEmptyERD<CNetworkOfPoses2DInf>,
+					CLevMarqGSO<CNetworkOfPoses2DInf>
 					>
 					graph_engine(
 							ini_fname,
@@ -363,13 +360,13 @@ int main(int argc, char **argv)
 		}
 		else if (system::strCmpI(node_reg, "CICPGoodnessNRD")) {
 			if (system::strCmpI(edge_reg, "CICPGoodnessERD")) { // CICPGooodnessNRD - CICPGoodnessERD
-				// Initialize the CGraphSlamEngine_t class
-				CGraphSlamEngine_t
+				// Initialize the CGraphSlamEngine class
+				CGraphSlamEngine
 					<
 					CNetworkOfPoses2DInf,
-					CICPGoodnessNRD_t<CNetworkOfPoses2DInf>,
-					CICPGoodnessERD_t<CNetworkOfPoses2DInf>,
-					CLevMarqGSO_t<CNetworkOfPoses2DInf>
+					CICPGoodnessNRD<CNetworkOfPoses2DInf>,
+					CICPGoodnessERD<CNetworkOfPoses2DInf>,
+					CLevMarqGSO<CNetworkOfPoses2DInf>
 					>
 					graph_engine(
 							ini_fname,
@@ -381,13 +378,13 @@ int main(int argc, char **argv)
 			}
 			else if (system::strCmpI(edge_reg, "CEmptyERD")) { // CICPGooodnessNRD - CEmptyERD
 
-				// Initialize the CGraphSlamEngine_t class
-				CGraphSlamEngine_t
+				// Initialize the CGraphSlamEngine class
+				CGraphSlamEngine
 					<
 					CNetworkOfPoses2DInf,
-					CICPGoodnessNRD_t<CNetworkOfPoses2DInf>,
-					CEmptyERD_t<CNetworkOfPoses2DInf>,
-					CLevMarqGSO_t<CNetworkOfPoses2DInf>
+					CICPGoodnessNRD<CNetworkOfPoses2DInf>,
+					CEmptyERD<CNetworkOfPoses2DInf>,
+					CLevMarqGSO<CNetworkOfPoses2DInf>
 					>
 					graph_engine(
 							ini_fname,

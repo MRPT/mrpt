@@ -72,16 +72,16 @@ namespace mrpt { namespace graphslam { namespace deciders {
  * \ingroup mrpt_graphslam_grp
  */
 template<class GRAPH_t>
-class CICPGoodnessNRD_t:
-	public mrpt::graphslam::deciders::CNodeRegistrationDecider_t<GRAPH_t>,
-	public mrpt::graphslam::deciders::CRangeScanRegistrationDecider_t<GRAPH_t>
+class CICPGoodnessNRD:
+	public mrpt::graphslam::deciders::CNodeRegistrationDecider<GRAPH_t>,
+	public mrpt::graphslam::deciders::CRangeScanRegistrationDecider<GRAPH_t>
 {
 	public:
 		// Public functions
 		//////////////////////////////////////////////////////////////
 
-		typedef mrpt::graphslam::deciders::CNodeRegistrationDecider_t<GRAPH_t> superA;
-		typedef mrpt::graphslam::deciders::CRangeScanRegistrationDecider_t<GRAPH_t> superB;
+		typedef mrpt::graphslam::deciders::CNodeRegistrationDecider<GRAPH_t> superA;
+		typedef mrpt::graphslam::deciders::CRangeScanRegistrationDecider<GRAPH_t> superB;
 
 		/**\brief type of graph constraints */
 		typedef typename GRAPH_t::constraint_t constraint_t;
@@ -92,13 +92,13 @@ class CICPGoodnessNRD_t:
 						constraint_t::state_length,
 						constraint_t::state_length> InfMat;
 		/**\brief Typedef for accessing methods of the RangeScanRegistrationDecider_t parent class. */
-		typedef mrpt::graphslam::deciders::CRangeScanRegistrationDecider_t<GRAPH_t> range_scanner_t;
-		typedef CICPGoodnessNRD_t<GRAPH_t> decider_t; /**< self type - Handy typedef */
+		typedef mrpt::graphslam::deciders::CRangeScanRegistrationDecider<GRAPH_t> range_scanner_t;
+		typedef CICPGoodnessNRD<GRAPH_t> decider_t; /**< self type - Handy typedef */
 
 		/**\brief Class constructor */
-		CICPGoodnessNRD_t();
+		CICPGoodnessNRD();
 		/**\brief Class destructor */
-		~CICPGoodnessNRD_t();
+		~CICPGoodnessNRD();
 
 		void setGraphPtr(GRAPH_t* graph);
 		void loadParams(const std::string& source_fname);
@@ -168,7 +168,7 @@ class CICPGoodnessNRD_t:
 
 		void registerNewNode();
 		/**\brief General initialization method to call from the Class Constructors*/
-		void initCICPGoodnessNRD_t();
+		void initCICPGoodnessNRD();
 
 		// Private members
 		//////////////////////////////////////////////////////////////

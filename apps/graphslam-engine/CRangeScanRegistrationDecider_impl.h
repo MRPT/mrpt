@@ -13,7 +13,7 @@
 using namespace mrpt::graphslam::deciders;
 
 template<class GRAPH_t>
-void CRangeScanRegistrationDecider_t<GRAPH_t>::getICPEdge(
+void CRangeScanRegistrationDecider<GRAPH_t>::getICPEdge(
 		const mrpt::obs::CObservation2DRangeScan& from,
 		const mrpt::obs::CObservation2DRangeScan& to,
 		constraint_t* rel_edge,
@@ -56,7 +56,7 @@ void CRangeScanRegistrationDecider_t<GRAPH_t>::getICPEdge(
 	MRPT_END;
 }
 template<class GRAPH_t>
-void CRangeScanRegistrationDecider_t<GRAPH_t>::getICPEdge(
+void CRangeScanRegistrationDecider<GRAPH_t>::getICPEdge(
 		const mrpt::obs::CObservation3DRangeScan& from,
 		const mrpt::obs::CObservation3DRangeScan& to,
 		constraint_t* rel_edge,
@@ -119,7 +119,7 @@ void CRangeScanRegistrationDecider_t<GRAPH_t>::getICPEdge(
 }
 
 template<class GRAPH_t>
-void CRangeScanRegistrationDecider_t<GRAPH_t>::decimatePointsMap(
+void CRangeScanRegistrationDecider<GRAPH_t>::decimatePointsMap(
 		mrpt::maps::CPointsMap* m,
 		size_t keep_point_every, /* = 4 */
 		size_t low_lim /* = 8000 */) {
@@ -148,7 +148,7 @@ void CRangeScanRegistrationDecider_t<GRAPH_t>::decimatePointsMap(
 }
 
 template<class GRAPH_t>
-void CRangeScanRegistrationDecider_t<GRAPH_t>::convert3DTo2DRangeScan(
+void CRangeScanRegistrationDecider<GRAPH_t>::convert3DTo2DRangeScan(
 		mrpt::obs::CObservation3DRangeScanPtr& scan3D_in,
 		mrpt::obs::CObservation2DRangeScanPtr* scan2D_out /*= NULL*/) {
 
@@ -173,7 +173,7 @@ void CRangeScanRegistrationDecider_t<GRAPH_t>::convert3DTo2DRangeScan(
 // //////////////////////////////////
 
 template<class GRAPH_t>
-CRangeScanRegistrationDecider_t<GRAPH_t>::TSlidingWindow::TSlidingWindow(
+CRangeScanRegistrationDecider<GRAPH_t>::TSlidingWindow::TSlidingWindow(
 		double win_size /* = 10 */ ) {
 	MRPT_START;
 
@@ -190,9 +190,9 @@ CRangeScanRegistrationDecider_t<GRAPH_t>::TSlidingWindow::TSlidingWindow(
 	MRPT_END;
 }
 template<class GRAPH_t>
-CRangeScanRegistrationDecider_t<GRAPH_t>::TSlidingWindow::~TSlidingWindow() { }
+CRangeScanRegistrationDecider<GRAPH_t>::TSlidingWindow::~TSlidingWindow() { }
 template<class GRAPH_t>
-inline double CRangeScanRegistrationDecider_t<GRAPH_t>::TSlidingWindow::getMedian() {
+inline double CRangeScanRegistrationDecider<GRAPH_t>::TSlidingWindow::getMedian() {
 	MRPT_START;
 
 	double median_out = 0.0;
@@ -224,7 +224,7 @@ inline double CRangeScanRegistrationDecider_t<GRAPH_t>::TSlidingWindow::getMedia
 	MRPT_END;
 }
 template<class GRAPH_t>
-inline double CRangeScanRegistrationDecider_t<GRAPH_t>::TSlidingWindow::getMean() {
+inline double CRangeScanRegistrationDecider<GRAPH_t>::TSlidingWindow::getMean() {
 	MRPT_START;
 
 	double m_mean_out = 0.0;
@@ -245,7 +245,7 @@ inline double CRangeScanRegistrationDecider_t<GRAPH_t>::TSlidingWindow::getMean(
 	MRPT_END;
 }
 template<class GRAPH_t>
-inline bool CRangeScanRegistrationDecider_t<GRAPH_t>::TSlidingWindow::evaluateICPgoodness( 
+inline bool CRangeScanRegistrationDecider<GRAPH_t>::TSlidingWindow::evaluateICPgoodness( 
 		double goodness) {
 	MRPT_START;
 
@@ -264,7 +264,7 @@ inline bool CRangeScanRegistrationDecider_t<GRAPH_t>::TSlidingWindow::evaluateIC
 }
 
 template<class GRAPH_t>
-inline void CRangeScanRegistrationDecider_t<GRAPH_t>::TSlidingWindow::addNewMeasurement(
+inline void CRangeScanRegistrationDecider<GRAPH_t>::TSlidingWindow::addNewMeasurement(
 		double goodness_val ) {
 	MRPT_START;
 
@@ -286,7 +286,7 @@ inline void CRangeScanRegistrationDecider_t<GRAPH_t>::TSlidingWindow::addNewMeas
 	MRPT_END;
 }
 template<class GRAPH_t>
-void CRangeScanRegistrationDecider_t<GRAPH_t>::TSlidingWindow::resizeWindow(
+void CRangeScanRegistrationDecider<GRAPH_t>::TSlidingWindow::resizeWindow(
 		size_t new_size ) {
 	MRPT_START;
 
@@ -306,7 +306,7 @@ void CRangeScanRegistrationDecider_t<GRAPH_t>::TSlidingWindow::resizeWindow(
 	MRPT_END;
 }
 template<class GRAPH_t>
-void CRangeScanRegistrationDecider_t<GRAPH_t>::TSlidingWindow::loadFromConfigFile(
+void CRangeScanRegistrationDecider<GRAPH_t>::TSlidingWindow::loadFromConfigFile(
 		const mrpt::utils::CConfigFileBase& source,
     const std::string& section) {
   MRPT_START;
@@ -330,7 +330,7 @@ void CRangeScanRegistrationDecider_t<GRAPH_t>::TSlidingWindow::loadFromConfigFil
   MRPT_END;
 }
 template<class GRAPH_t>
-void CRangeScanRegistrationDecider_t<GRAPH_t>::TSlidingWindow::dumpToTextStream(
+void CRangeScanRegistrationDecider<GRAPH_t>::TSlidingWindow::dumpToTextStream(
 		mrpt::utils::CStream &out) const {
 	MRPT_START;
 
@@ -353,7 +353,7 @@ void CRangeScanRegistrationDecider_t<GRAPH_t>::TSlidingWindow::dumpToTextStream(
 	MRPT_END;
 }
 template<class GRAPH_t>
-void CRangeScanRegistrationDecider_t<GRAPH_t>::TSlidingWindow::setEvaluationCriterion(std::string criterion) {
+void CRangeScanRegistrationDecider<GRAPH_t>::TSlidingWindow::setEvaluationCriterion(std::string criterion) {
 	MRPT_START;
 
 	ASSERTMSG_(mrpt::system::strCmpI(criterion, "mean") ||
@@ -373,16 +373,16 @@ void CRangeScanRegistrationDecider_t<GRAPH_t>::TSlidingWindow::setEvaluationCrit
 // //////////////////////////////////
 
 template<class GRAPH_t>
-CRangeScanRegistrationDecider_t<GRAPH_t>::TParams::TParams():
+CRangeScanRegistrationDecider<GRAPH_t>::TParams::TParams():
 	has_read_config(false)
 { }
 
 template<class GRAPH_t>
-CRangeScanRegistrationDecider_t<GRAPH_t>::TParams::~TParams() {
+CRangeScanRegistrationDecider<GRAPH_t>::TParams::~TParams() {
 }
 
 template<class GRAPH_t>
-void CRangeScanRegistrationDecider_t<GRAPH_t>::TParams::dumpToTextStream(
+void CRangeScanRegistrationDecider<GRAPH_t>::TParams::dumpToTextStream(
 		mrpt::utils::CStream &out) const {
 	MRPT_START;
 	out.printf("3D=>2D LaserScan Conversion Sensor label       = %s\n",
@@ -399,7 +399,7 @@ void CRangeScanRegistrationDecider_t<GRAPH_t>::TParams::dumpToTextStream(
 	MRPT_END;
 }
 template<class GRAPH_t>
-void CRangeScanRegistrationDecider_t<GRAPH_t>::TParams::loadFromConfigFile(
+void CRangeScanRegistrationDecider<GRAPH_t>::TParams::loadFromConfigFile(
 		const mrpt::utils::CConfigFileBase& source,
     const std::string& section) {
   MRPT_START;

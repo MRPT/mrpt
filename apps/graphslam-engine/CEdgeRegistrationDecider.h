@@ -29,14 +29,14 @@ namespace mrpt { namespace graphslam { namespace deciders {
 
 /** \brief Interface for implementing edge registration classes.
  *
- * CEdgeRegistrationDecider_t provides the basic methods that have to exist in
+ * CEdgeRegistrationDecider provides the basic methods that have to exist in
  * every edge registration decider class. For an example of overloading these
  * methods, see CICPGoodnessERD.h
  *
  * \ingroup mrpt_graphslam_grp
  */
 template<class GRAPH_t=typename mrpt::graphs::CNetworkOfPoses2DInf>
-class CEdgeRegistrationDecider_t : public mrpt::graphslam::CRegistrationDeciderOrOptimizer<GRAPH_t> {
+class CEdgeRegistrationDecider : public mrpt::graphslam::CRegistrationDeciderOrOptimizer<GRAPH_t> {
   public:
 		/**\brief type of graph constraints */
 		typedef typename GRAPH_t::constraint_t constraint_t;
@@ -45,9 +45,9 @@ class CEdgeRegistrationDecider_t : public mrpt::graphslam::CRegistrationDeciderO
 
 
 		/**\brief Default class constructor.*/
-    CEdgeRegistrationDecider_t() {}
+    CEdgeRegistrationDecider() {}
 		/**\brief Default class destructor.*/
-    virtual ~CEdgeRegistrationDecider_t() {};
+    virtual ~CEdgeRegistrationDecider() {};
 		/**\brief Generic method for fetching the incremental action/observation
 		 * readings from the calling function. 
 		 *

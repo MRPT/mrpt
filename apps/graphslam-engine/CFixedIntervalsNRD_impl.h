@@ -16,13 +16,13 @@ using namespace mrpt::graphslam::deciders;
 //////////////////////////////////////////////////////////////
 
 template<class GRAPH_t>
-CFixedIntervalsNRD_t<GRAPH_t>::CFixedIntervalsNRD_t():
+CFixedIntervalsNRD<GRAPH_t>::CFixedIntervalsNRD():
 	m_consecutive_invalid_format_instances_thres(20) // large threshold just to make sure
 {
-	this->initCFixedIntervalsNRD_t();
+	this->initCFixedIntervalsNRD();
 }
 template<class GRAPH_t>
-void CFixedIntervalsNRD_t<GRAPH_t>::initCFixedIntervalsNRD_t() {
+void CFixedIntervalsNRD<GRAPH_t>::initCFixedIntervalsNRD() {
 
 	m_win = NULL;
 	m_graph = NULL;
@@ -48,13 +48,13 @@ void CFixedIntervalsNRD_t<GRAPH_t>::initCFixedIntervalsNRD_t() {
 	m_out_logger.log("IntervalsNRD: Initialized class object", LVL_DEBUG);
 }
 template<class GRAPH_t>
-CFixedIntervalsNRD_t<GRAPH_t>::~CFixedIntervalsNRD_t() { }
+CFixedIntervalsNRD<GRAPH_t>::~CFixedIntervalsNRD() { }
 
 // Member function implementations
 //////////////////////////////////////////////////////////////
 
 template<class GRAPH_t>
-bool CFixedIntervalsNRD_t<GRAPH_t>::updateState(
+bool CFixedIntervalsNRD<GRAPH_t>::updateState(
 		mrpt::obs::CActionCollectionPtr action,
 		mrpt::obs::CSensoryFramePtr observations,
 		mrpt::obs::CObservationPtr observation )  {
@@ -119,7 +119,7 @@ bool CFixedIntervalsNRD_t<GRAPH_t>::updateState(
 }
 
 template<class GRAPH_t>
-bool CFixedIntervalsNRD_t<GRAPH_t>::checkRegistrationCondition() {
+bool CFixedIntervalsNRD<GRAPH_t>::checkRegistrationCondition() {
 	MRPT_START;
 
 	bool registered = false;
@@ -145,7 +145,7 @@ bool CFixedIntervalsNRD_t<GRAPH_t>::checkRegistrationCondition() {
 }
 
 template<class GRAPH_t>
-void CFixedIntervalsNRD_t<GRAPH_t>::registerNewNode() {
+void CFixedIntervalsNRD<GRAPH_t>::registerNewNode() {
 	m_out_logger.log("In registerNewNode...", LVL_DEBUG);
 
 	mrpt::utils::TNodeID from = m_prev_registered_node;
@@ -159,7 +159,7 @@ void CFixedIntervalsNRD_t<GRAPH_t>::registerNewNode() {
 
 }
 template<class GRAPH_t>
-void CFixedIntervalsNRD_t<GRAPH_t>::setGraphPtr(GRAPH_t* graph) {
+void CFixedIntervalsNRD<GRAPH_t>::setGraphPtr(GRAPH_t* graph) {
 	m_graph = graph;
 
 	// get the last registrered node + corresponding pose - root
@@ -169,7 +169,7 @@ void CFixedIntervalsNRD_t<GRAPH_t>::setGraphPtr(GRAPH_t* graph) {
 }
 
 template<class GRAPH_t>
-void CFixedIntervalsNRD_t<GRAPH_t>::checkIfInvalidDataset(
+void CFixedIntervalsNRD<GRAPH_t>::checkIfInvalidDataset(
 		mrpt::obs::CActionCollectionPtr action,
 		mrpt::obs::CSensoryFramePtr observations,
 		mrpt::obs::CObservationPtr observation ) {
@@ -203,7 +203,7 @@ void CFixedIntervalsNRD_t<GRAPH_t>::checkIfInvalidDataset(
 }
 
 template<class GRAPH_t>
-void CFixedIntervalsNRD_t<GRAPH_t>::loadParams(const std::string& source_fname) {
+void CFixedIntervalsNRD<GRAPH_t>::loadParams(const std::string& source_fname) {
 	MRPT_START;
 
 	params.loadFromConfigFileName(source_fname,
@@ -224,7 +224,7 @@ void CFixedIntervalsNRD_t<GRAPH_t>::loadParams(const std::string& source_fname) 
 }
 
 template<class GRAPH_t>
-void CFixedIntervalsNRD_t<GRAPH_t>::printParams() const {
+void CFixedIntervalsNRD<GRAPH_t>::printParams() const {
 	MRPT_START;
 	params.dumpToConsole();
 
@@ -232,7 +232,7 @@ void CFixedIntervalsNRD_t<GRAPH_t>::printParams() const {
 }
 
 template<class GRAPH_t>
-void CFixedIntervalsNRD_t<GRAPH_t>::getDescriptiveReport(std::string* report_str) const {
+void CFixedIntervalsNRD<GRAPH_t>::getDescriptiveReport(std::string* report_str) const {
 	MRPT_START;
 
 	const std::string report_sep(2, '\n');
@@ -270,20 +270,20 @@ void CFixedIntervalsNRD_t<GRAPH_t>::getDescriptiveReport(std::string* report_str
 // TParams
 //////////////////////////////////////////////////////////////
 template<class GRAPH_t>
-CFixedIntervalsNRD_t<GRAPH_t>::TParams::TParams() {
+CFixedIntervalsNRD<GRAPH_t>::TParams::TParams() {
 }
 template<class GRAPH_t>
-CFixedIntervalsNRD_t<GRAPH_t>::TParams::~TParams() {
+CFixedIntervalsNRD<GRAPH_t>::TParams::~TParams() {
 }
 template<class GRAPH_t>
-void CFixedIntervalsNRD_t<GRAPH_t>::TParams::dumpToTextStream(
+void CFixedIntervalsNRD<GRAPH_t>::TParams::dumpToTextStream(
 		mrpt::utils::CStream &out) const {
 	MRPT_START;
 	out.printf("%s", this->getAsString().c_str());
 	MRPT_END;
 }
 template<class GRAPH_t>
-void CFixedIntervalsNRD_t<GRAPH_t>::TParams::loadFromConfigFile(
+void CFixedIntervalsNRD<GRAPH_t>::TParams::loadFromConfigFile(
 		const mrpt::utils::CConfigFileBase &source,
     const std::string &section) {
   MRPT_START;
@@ -299,7 +299,7 @@ void CFixedIntervalsNRD_t<GRAPH_t>::TParams::loadFromConfigFile(
 }
 
 template<class GRAPH_t>
-void CFixedIntervalsNRD_t<GRAPH_t>::TParams::getAsString(std::string* params_out) const {
+void CFixedIntervalsNRD<GRAPH_t>::TParams::getAsString(std::string* params_out) const {
 	MRPT_START;
 
 	double max_angle_deg = RAD2DEG(registration_max_angle);
@@ -312,7 +312,7 @@ void CFixedIntervalsNRD_t<GRAPH_t>::TParams::getAsString(std::string* params_out
 	MRPT_END;
 }
 template<class GRAPH_t>
-std::string CFixedIntervalsNRD_t<GRAPH_t>::TParams::getAsString() const {
+std::string CFixedIntervalsNRD<GRAPH_t>::TParams::getAsString() const {
 	MRPT_START;
 
 	std::string str;

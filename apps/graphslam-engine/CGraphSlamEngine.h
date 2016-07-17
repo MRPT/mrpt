@@ -98,10 +98,10 @@ namespace mrpt { namespace graphslam {
  */
 template< 
   	class GRAPH_t=typename mrpt::graphs::CNetworkOfPoses2DInf,
-  	class NODE_REGISTRAR=typename mrpt::graphslam::deciders::CFixedIntervalsNRD_t<GRAPH_t>, 
-  	class EDGE_REGISTRAR=typename mrpt::graphslam::deciders::CICPGoodnessERD_t<GRAPH_t>,
-  	class OPTIMIZER=typename mrpt::graphslam::optimizers::CLevMarqGSO_t<GRAPH_t> >
-class CGraphSlamEngine_t {
+  	class NODE_REGISTRAR=typename mrpt::graphslam::deciders::CFixedIntervalsNRD<GRAPH_t>, 
+  	class EDGE_REGISTRAR=typename mrpt::graphslam::deciders::CICPGoodnessERD<GRAPH_t>,
+  	class OPTIMIZER=typename mrpt::graphslam::optimizers::CLevMarqGSO<GRAPH_t> >
+class CGraphSlamEngine {
 	public:
 
 		/**\{*/
@@ -116,20 +116,20 @@ class CGraphSlamEngine_t {
 		/**\brief type of underlying poses (2D/3D). */
 		typedef typename GRAPH_t::constraint_t::type_value pose_t; 
 
-		/**\brief Constructor of CGraphSlamEngine_t class template.
+		/**\brief Constructor of CGraphSlamEngine class template.
 		 *
 		 * \param[in] config_file .ini file containing the configuration
-		 * parameters for the CGraphSlamEngine_t as well as the deciders/optimizer
-		 * classes that CGraphSlamEngine_t is using 
+		 * parameters for the CGraphSlamEngine as well as the deciders/optimizer
+		 * classes that CGraphSlamEngine is using 
 		 * \param[in] win CDisplayWindow3D for visualizing the graphSLAM operation.
 		 * \param[in] win_observer CObserver instance for monitoring keyboard and
 		 * mouse events issued by the user
 		 * \param[in] rawlog_fname .rawlog dataset file, containing the robot
-		 * measurements. CGraphSlamEngine_t supports both 
+		 * measurements. CGraphSlamEngine supports both 
 		 * <a href="http://www.mrpt.org/Rawlog_Format"> MRPT rwalog formats </a>
 		 * but in order for graphSLAM to work as expected the rawlog foromat has to
 		 * be supported by the every decider/optimizer class that
-		 * CGraphSlamEngine_t makes use of.
+		 * CGraphSlamEngine makes use of.
 		 * \param[in] fname_GT Textfile containing the ground truth path of the
 		 * robot. Currently the class can read ground truth files corresponding
 		 * either to <em>RGBD - TUM datasets</em> or to rawlog files generated with
@@ -140,17 +140,17 @@ class CGraphSlamEngine_t {
 		 * visual feedback is given but application receives a big boost in
 		 * performance
 		 */
-		CGraphSlamEngine_t(const std::string& config_file,
+		CGraphSlamEngine(const std::string& config_file,
 				mrpt::gui::CDisplayWindow3D* win=NULL,
 				CWindowObserver* win_observer=NULL,
 				const std::string rawlog_fname="",
 				const std::string fname_GT="");
 		/**\brief Default Destructor. */
-		~CGraphSlamEngine_t();
+		~CGraphSlamEngine();
 
 		// Public function definitions
 		//////////////////////////////////////////////////////////////
-		/**\brief Wrapper method around the CGraphSlamEngine_t::saveGraph method.
+		/**\brief Wrapper method around the CGraphSlamEngine::saveGraph method.
 		 *
 		 * Output .graph filename is set either by the user via the .ini
 		 * save_graph_fname variable or (if not specified in the .ini file) it is
@@ -175,7 +175,7 @@ class CGraphSlamEngine_t {
 		/**\brief Read the configuration variables from the .ini file specified by
 		 * the user.
 		 *
-		 * Method is automatically called, upon CGraphSlamEngine_t initialization
+		 * Method is automatically called, upon CGraphSlamEngine initialization
 		 */
 	 	void readConfigFile(const std::string& fname);
 	 	/**\brief Fill in the provided string with the class configuration parameters.
@@ -192,7 +192,7 @@ class CGraphSlamEngine_t {
 		std::string getParamsAsString() const;
 		/**\brief Print the problem parameters to the console for verification. 
 		 *
-		 * Method is a wrapper around CGraphSlamEngine_t::getParamsAsString method
+		 * Method is a wrapper around CGraphSlamEngine::getParamsAsString method
 		 * \sa getParamsAsString
 		 */
 		void printParams() const;
@@ -225,7 +225,7 @@ class CGraphSlamEngine_t {
 		 * to false, if he doesn't care about the previous results directory. In
 		 * this case the 1st choice is picked.
 		 *
-		 * \sa CGraphSlamEngine_t::initResultsFile
+		 * \sa CGraphSlamEngine::initResultsFile
 		 */
 		void initOutputDir();
 		/**\brief Automate the creation and initialization of a results file relevant to
@@ -524,7 +524,7 @@ class CGraphSlamEngine_t {
 		std::string m_keystroke_map;
 		/**\}*/
 
-		CEdgeCounter_t m_edge_counter; /**< Instance to keep track of all the edges + visualization related operations */
+		CEdgeCounter m_edge_counter; /**< Instance to keep track of all the edges + visualization related operations */
 		int m_num_of_edges_for_collapse;
 
 		/**\brief Flag for specifying if we are going to use ground truth data at all.

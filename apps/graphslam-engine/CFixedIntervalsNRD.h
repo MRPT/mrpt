@@ -46,7 +46,7 @@ namespace mrpt { namespace graphslam { namespace deciders {
  * pose a new node is added in the graph.
  *
  * Current decider is a minimal, simple implementation of the
- * CNodeRegistrationDecider_t interface which can be used for 2D datasets.
+ * CNodeRegistrationDecider interface which can be used for 2D datasets.
  * Decider *does not guarrantee* thread safety when accessing the GRAPH_t
  * resource. This is handled by the CGraphSlamEngine_t instance.
  *
@@ -60,8 +60,8 @@ namespace mrpt { namespace graphslam { namespace deciders {
  * \ingroup mrpt_graphslam_grp
  */
 template<class GRAPH_t=typename mrpt::graphs::CNetworkOfPoses2DInf>
-class CFixedIntervalsNRD_t:
-	public mrpt::graphslam::deciders::CNodeRegistrationDecider_t<GRAPH_t>
+class CFixedIntervalsNRD:
+	public mrpt::graphslam::deciders::CNodeRegistrationDecider<GRAPH_t>
 {
 	public:
 		// Public functions
@@ -77,9 +77,9 @@ class CFixedIntervalsNRD_t:
 						constraint_t::state_length> InfMat;
 
 		/**\brief Class constructor */
-		CFixedIntervalsNRD_t();
+		CFixedIntervalsNRD();
 		/**\brief Class destructor */
-		~CFixedIntervalsNRD_t();
+		~CFixedIntervalsNRD();
 
 		void setGraphPtr(GRAPH_t* graph);
 
@@ -135,7 +135,7 @@ class CFixedIntervalsNRD_t:
 		void registerNewNode();
 		/**\brief Initialization function to be called from the various constructors
 		 */
-		void initCFixedIntervalsNRD_t();
+		void initCFixedIntervalsNRD();
 		void checkIfInvalidDataset(mrpt::obs::CActionCollectionPtr action,
 				mrpt::obs::CSensoryFramePtr observations,
 				mrpt::obs::CObservationPtr observation );
