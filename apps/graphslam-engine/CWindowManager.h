@@ -7,18 +7,22 @@
 
 namespace mrpt { namespace gui {
 
-/**
- * Class responsible for keeping ponters to CDisplayWindow3D and CObserver
+/**\brief Class responsible for keeping pointers to CDisplayWindow3D and CObserver
  * instances.
+ *
+ * CWindowManager_t also provides methods for adding/positioning textMessages
+ * and viewports in the CDisplayWindow in a compact and consistent way.
  */
 class CWindowManager_t {
   public:
+  	/**\brief Class constructor*/
     CWindowManager_t(CDisplayWindow3D* win_in):
     	win(win_in) // pointer to window to manage
 		{
 			observer = NULL;
   		this->initCWindowManager();
   	}
+  	/**\brief Class constructor*/
     CWindowManager_t(CDisplayWindow3D* win_in, CWindowObserver* observer_in):
     	win(win_in), // pointer to window to manage
     	observer(observer_in) // pointer to CWindowObserver instance
@@ -26,7 +30,10 @@ class CWindowManager_t {
   		this->initCWindowManager();
   	}
 
+  	/**\brief Class destructor. */
     virtual ~CWindowManager_t() { }
+    /**\brief Initialization method to be called from the various Constructors.
+     */
     void initCWindowManager() {
 
     	m_offset_y_step = 20.0;
@@ -44,12 +51,14 @@ class CWindowManager_t {
 
 
     }
-		/**
-		 	* assignTextMessageParameters
-		 	*
-		 	* Assign the next available offset_y and text_index for the textMessage
-		 	* under construction. Then increment the respective current counters
-		 	*/
+		/**\brief Assign the next available offset_y and text_index for the
+		 * textMessage under construction. 
+		 *
+		 * Used for consistent positioning of textMessages in the
+		 * CDisplayWindow3D.
+		 *
+		 * \sa assignViewPortParameters
+		 */
 		inline void assignTextMessageParameters(
 				double* offset_y, int* text_index) {
 
@@ -60,30 +69,34 @@ class CWindowManager_t {
 			m_curr_text_index += m_index_text_step;
 		}
 
-		/**
-			* Wrapper around the CDisplayWindow3D::addTextMessage method, so that
-			* the user does not have to specify the font name and size
-			*/
+		/**\brief Wrapper around the CDisplayWindow3D::addTextMessage method, so that the
+		 * user does not have to specify the font name and size.
+		 *
+		 * \note see initCWindowManager method for the default fontName and
+		 * fontSize used.
+		 */
 		inline void addTextMessage(
 		  	const double x, const double y,
 		  	const std::string& text,
 		  	const mrpt::utils::TColorf& color=mrpt::utils::TColorf(1.0, 1.0, 1.0),
 		  	const size_t unique_index=0) {
+		  if (!win) {
+		  	return;
+		  }
 
-		  if (win) {
-				win->addTextMessage(x,y,
-						text,
-						color,
-						m_font_name, m_font_size,
-						mrpt::opengl::NICE,
- 						unique_index);
- 			}
+			win->addTextMessage(x,y,
+					text,
+					color,
+					m_font_name, m_font_size,
+					mrpt::opengl::NICE,
+ 					unique_index);
  		}
 
-		/**
-		 * Assign position and size values for the placement of the next viewport
-		 * This way the user doesn't have to decide on the layout of the viewports
-		 * in the CDisplayWindow3D.
+		/**\brief Assign position and size values for the placement of the next viewport
+		 *
+		 * Used for consistent positioning of the Viewports in the CDisplayWindow3D
+		 *
+		 * \sa assignTextMessageParameters
 		 */
  		inline void assignViewportParameters(double *x, double *y, double *width, double *height) {
  			*x = m_viewp_x;
@@ -95,8 +108,8 @@ class CWindowManager_t {
  			m_viewp_y -= m_viewp_height + m_viewp_margin;
  		}
 
-		CDisplayWindow3D* win;
-		CWindowObserver* observer;
+		CDisplayWindow3D* win; /**< CDisplayWindow instance */
+		CWindowObserver* observer; /**< CWindowObserver instance */
   private:
 
 		double m_offset_y_step;
@@ -111,7 +124,7 @@ class CWindowManager_t {
 		double m_viewp_width;
 		double m_viewp_height;
 		double m_viewp_x;
-		double m_viewp_y; // vertical layouts of the viewports
+		double m_viewp_y; /**< vertical layout of the viewports */
 		double m_viewp_margin;
 
 };

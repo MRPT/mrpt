@@ -55,13 +55,13 @@ template<class GRAPH_t>
 CICPGoodnessNRD_t<GRAPH_t>::~CICPGoodnessNRD_t() { }
 
 template<class GRAPH_t>
-bool CICPGoodnessNRD_t<GRAPH_t>::updateDeciderState(
+bool CICPGoodnessNRD_t<GRAPH_t>::updateState(
 		mrpt::obs::CActionCollectionPtr action,
 		mrpt::obs::CSensoryFramePtr observations,
 		mrpt::obs::CObservationPtr observation )  {
 	MRPT_START;
 	MRPT_UNUSED_PARAM(action);
-	m_time_logger.enter("CICPGoodnessNRD::updateDeciderState");
+	m_time_logger.enter("CICPGoodnessNRD::updateState");
 	bool registered_new_node = false;
 
 	if (observation.present()) { // Observation-Only Rawlog
@@ -69,25 +69,25 @@ bool CICPGoodnessNRD_t<GRAPH_t>::updateDeciderState(
 		if (IS_CLASS(observation, CObservation2DRangeScan) ) { // 2D
 			mrpt::obs::CObservation2DRangeScanPtr curr_laser_scan = 
 				static_cast<mrpt::obs::CObservation2DRangeScanPtr>(observation);
-			registered_new_node = updateDeciderState2D(curr_laser_scan);
+			registered_new_node = updateState2D(curr_laser_scan);
 
 		}
 		if (IS_CLASS(observation, CObservation3DRangeScan) ) { // 3D
 			mrpt::obs::CObservation3DRangeScanPtr curr_laser_scan = 
 				static_cast<mrpt::obs::CObservation3DRangeScanPtr>(observation);
-			registered_new_node = updateDeciderState3D(curr_laser_scan);
+			registered_new_node = updateState3D(curr_laser_scan);
 		}
 	}
 	else { // action-observations rawlog
 		if (observations->getObservationByClass<CObservation2DRangeScan>()) { // 2D
 			CObservation2DRangeScanPtr curr_laser_scan = 
 				observations->getObservationByClass<CObservation2DRangeScan>();
-			registered_new_node = updateDeciderState2D(curr_laser_scan);
+			registered_new_node = updateState2D(curr_laser_scan);
 		}
 		else if (observations->getObservationByClass<CObservation3DRangeScan>()){	// 3D - EXPERIMENTAL, has not been tested
 			CObservation3DRangeScanPtr curr_laser_scan = 
 				observations->getObservationByClass<CObservation3DRangeScan>();
-			registered_new_node = updateDeciderState3D(curr_laser_scan);
+			registered_new_node = updateState3D(curr_laser_scan);
 		}
 	}
 
@@ -97,21 +97,21 @@ bool CICPGoodnessNRD_t<GRAPH_t>::updateDeciderState(
 	}
 
 	// TODO - implement checkIfInvalidDataset
-	m_time_logger.leave("CICPGoodnessNRD::updateDeciderState");
+	m_time_logger.leave("CICPGoodnessNRD::updateState");
 	return registered_new_node;
 
 	MRPT_END;
 }
 
 template<class GRAPH_t>
-bool CICPGoodnessNRD_t<GRAPH_t>::updateDeciderState2D(
+bool CICPGoodnessNRD_t<GRAPH_t>::updateState2D(
 		mrpt::obs::CObservation2DRangeScanPtr scan2d) {
 	MRPT_START;
 	bool registered_new_node = false;
 
 	m_curr_laser_scan2D = scan2d;
 	if (m_last_laser_scan2D.null()) {
-		m_out_logger.log("First time call for updateDeciderState2D.", LVL_WARN);
+		m_out_logger.log("First time call for updateState2D.", LVL_WARN);
 		// initialize the last_laser_scan here - afterwards updated inside the
 		// checkRegistrationCondition*D method
 		m_last_laser_scan2D = m_curr_laser_scan2D;
@@ -158,7 +158,7 @@ bool CICPGoodnessNRD_t<GRAPH_t>::checkRegistrationCondition2D() {
 	MRPT_END;
 }
 template<class GRAPH_t>
-bool CICPGoodnessNRD_t<GRAPH_t>::updateDeciderState3D(
+bool CICPGoodnessNRD_t<GRAPH_t>::updateState3D(
 		mrpt::obs::CObservation3DRangeScanPtr scan3d) {
 	MRPT_START;
 	bool registered_new_node = false;
@@ -168,7 +168,7 @@ bool CICPGoodnessNRD_t<GRAPH_t>::updateDeciderState3D(
 	m_curr_laser_scan3D->project3DPointsFromDepthImage();
 
 	if (m_last_laser_scan3D.null()) {
-		m_out_logger.log("First time call for updateDeciderState3D.", LVL_WARN);
+		m_out_logger.log("First time call for updateState3D.", LVL_WARN);
 		// initialize the last_laser_scan here - afterwards updated inside the
 		// checkRegistrationCondition*D method
 		m_last_laser_scan3D = m_curr_laser_scan3D;

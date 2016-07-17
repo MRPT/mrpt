@@ -54,13 +54,13 @@ CFixedIntervalsNRD_t<GRAPH_t>::~CFixedIntervalsNRD_t() { }
 //////////////////////////////////////////////////////////////
 
 template<class GRAPH_t>
-bool CFixedIntervalsNRD_t<GRAPH_t>::updateDeciderState(
+bool CFixedIntervalsNRD_t<GRAPH_t>::updateState(
 		mrpt::obs::CActionCollectionPtr action,
 		mrpt::obs::CSensoryFramePtr observations,
 		mrpt::obs::CObservationPtr observation )  {
 	MRPT_START;
 
-	//cout << "in updateDeciderState..." << endl;
+	//cout << "in updateState..." << endl;
 	// don't use the measurements in this implementation
 	MRPT_UNUSED_PARAM(observations);
 

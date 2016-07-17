@@ -71,6 +71,31 @@
 
 namespace mrpt { namespace graphslam {
 
+/**
+ * Given a dataset of measurements build a graph of nodes (keyframes) and
+ * constraints (edges) and solve it to find an estimation of the actual robot
+ * path.
+ * \todo - add here...
+ *
+ * The template arguments are listed below:
+ * - \em GRAPH_t: The type of Graph to be constructed and optimized.
+ * - \em NODE_REGISTRAR: Class responsible of adding new nodes in the graph. Class
+ *   should at least implement the deciders::CNodeRegistrationDecider_t interface provided
+ *   in CNodeRegistrationDecider.h file.
+ * - \em EDGE_REGISTRAR: Class responsible of adding new edges in the graph. Class
+ *   should at least implement the deciders::CEdgeRegistrationDecider_t interface provided
+ *   in CEdgeRegistrationDecider.h file.
+ * - \em OPTIMIZER: Class responsible of optimizing the graph. Class should at
+ *   least implement the optimizers::CGraphSlamOptimizer_t interface provided in
+ *   CGraphslamOptimizer.h file.
+ *
+ * The GRAPH_t resource is accessed after having locked the relevant section
+ * \em m_graph_section. Critical section is also <em> locked prior to the calls to
+ * the deciders/optimizers </em>.
+ *
+ * \ingroup mrpt_graphslam_grp
+ * \note Implementation can be found in the file \em CGraphSlamEngine_impl.h
+ */
 template< 
   	class GRAPH_t=typename mrpt::graphs::CNetworkOfPoses2DInf,
   	class NODE_REGISTRAR=typename mrpt::graphslam::deciders::CFixedIntervalsNRD_t<GRAPH_t>, 
@@ -93,15 +118,33 @@ class CGraphSlamEngine_t {
 
 		/**\brief Constructor of CGraphSlamEngine_t class template.
 		 *
-		 * If caller doesn't provide an mrpt::gui::CDisplayWindow3D instance, the
-		 * application runs on <em> headless mode </em>.  In this case, no visual
-		 * feedback is given but application receives a big boost in performance
-		 * */
+		 * \param[in] config_file .ini file containing the configuration
+		 * parameters for the CGraphSlamEngine_t as well as the deciders/optimizer
+		 * classes that CGraphSlamEngine_t is using 
+		 * \param[in] win CDisplayWindow3D for visualizing the graphSLAM operation.
+		 * \param[in] win_observer CObserver instance for monitoring keyboard and
+		 * mouse events issued by the user
+		 * \param[in] rawlog_fname .rawlog dataset file, containing the robot
+		 * measurements. CGraphSlamEngine_t supports both 
+		 * <a href="http://www.mrpt.org/Rawlog_Format"> MRPT rwalog formats </a>
+		 * but in order for graphSLAM to work as expected the rawlog foromat has to
+		 * be supported by the every decider/optimizer class that
+		 * CGraphSlamEngine_t makes use of.
+		 * \param[in] fname_GT Textfile containing the ground truth path of the
+		 * robot. Currently the class can read ground truth files corresponding
+		 * either to <em>RGBD - TUM datasets</em> or to rawlog files generated with
+		 * the \em GridMapNavSimul MRPT application.
+		 *
+		 * \note If caller doesn't provide an mrpt::gui::CDisplayWindow3D instance,
+		 * the application runs on <em> headless mode </em>.  In this case, no
+		 * visual feedback is given but application receives a big boost in
+		 * performance
+		 */
 		CGraphSlamEngine_t(const std::string& config_file,
-				mrpt::gui::CDisplayWindow3D* win = NULL,
-				CWindowObserver* win_observer = NULL,
-				std::string rawlog_fname = "",
-				std::string fname_GT = "");
+				mrpt::gui::CDisplayWindow3D* win=NULL,
+				CWindowObserver* win_observer=NULL,
+				const std::string rawlog_fname="",
+				const std::string fname_GT="");
 		/**\brief Default Destructor. */
 		~CGraphSlamEngine_t();
 
@@ -188,7 +231,7 @@ class CGraphSlamEngine_t {
 		/**\brief Automate the creation and initialization of a results file relevant to
 		 * the application.
 		 *
-		 * Opens the file (corresponding to the provided filename) and write an
+		 * Open the file (corresponding to the provided filename) and write an
 		 * introductory message.
 		 *
 		 * \sa initOutputDir
@@ -201,7 +244,7 @@ class CGraphSlamEngine_t {
 		 * - Properties fo class at the current time
 		 * - Logging of commands until current time
 		 *
-		 * \note Decider/Optimizer classes should also implement a getDescriptiveReports
+		 * \note Decider/Optimizer classes should also implement a getDescriptiveReport
 		 * method for printing information on their part of the execution
 		 */
 		void getDescriptiveReport(std::string* report_str) const;
@@ -298,10 +341,10 @@ class CGraphSlamEngine_t {
 
 		/**\brief Cut down on the size of the given laser scan.
 		 *
-		 * Handy for reducing the size of the resulting CSetOfObject that would be
-		 * inserted in the visualization scene. Increase the decimation rate -
-		 * keep-every_n_entries - to reduce the computational cost of updating the
-		 * map visualization
+		 * Handy for reducing the size of the resulting mrpt::opengl::CSetOfObjects
+		 * that would be inserted in the visualization scene. Increase the
+		 * decimation rate - keep-every_n_entries - to reduce the computational
+		 * cost of updating the map visualization
 		 *
 		 * \sa updateMapVisualization
 		 */
@@ -315,6 +358,14 @@ class CGraphSlamEngine_t {
 		 * It is assumed that the rawlog, thererfore the groundtruth file has been
 		 * generated using the <em>GridMapNavSimul</em> MRPT application.
 		 * \sa readGTFileRGBD_TUM
+		 *
+		 * \param[in] fname_GT Ground truth filename from which the measurements
+		 * are to be read
+		 * \param[out] gt_poses std::vector which is to contain the
+		 * 2D ground truth poses.
+		 * \param[out] gt_timestamps std::vector which is to contain the timestamps
+		 * for the corresponding ground truth poses. Ignore this argument if
+		 * timestamps are not needed.
 		 */
 		void readGTFileNavSimulOutput(
 				const std::string& fname_GT, 
@@ -326,6 +377,14 @@ class CGraphSlamEngine_t {
 		 *
 		 * It is assumed that the groundtruth file has been generated using the
 		 * <em>rgbd_dataset2rawlog</em> MRPT tool.
+		 *
+		 * \param[in] fname_GT Ground truth filename from which the measurements
+		 * are to be read
+		 * \param[out] gt_poses std::vector which is to contain the
+		 * 2D ground truth poses.
+		 * \param[out] gt_timestamps std::vector which is to contain the timestamps
+		 * for the corresponding ground truth poses. Ignore this argument if
+		 * timestamps are not needed.
 		 *
 		 * \sa readGTFileNavSimulOutput,
 		 * http://www.mrpt.org/Collection_of_Kinect_RGBD_datasets_with_ground_truth_CVPR_TUM_2011
@@ -345,7 +404,7 @@ class CGraphSlamEngine_t {
 
 		/** \brief Comapre the SLAM result (estimated trajectory) with the GT path.
 		 *
-		 * see <a href="http://europa.informatik.uni-freiburg.de/files/burgard09iros.pdf">
+		 * See <a href="http://europa.informatik.uni-freiburg.de/files/burgard09iros.pdf">
 		 * A Comparison of SLAM Algorithms Based on a Graph of Relations</a>
 		 * for more details on this.
 		 */
@@ -555,9 +614,9 @@ class CGraphSlamEngine_t {
 
 		} m_info_params;
 
-		/**
-		 * time it took to record the dataset. Processing time should (at least) be
-		 * equal to the grab time for the algorithm to run in real-time
+		/**\brief Time it took to record the dataset.
+		 * Processing time should (at least) be equal to the grab time for the
+		 * algorithm to run in real-time
 		 */
 		double m_dataset_grab_time;
 };
