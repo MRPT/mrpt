@@ -10,11 +10,11 @@
 #include "base-precomp.h"  // Precompiled headers
 
 #include <mrpt/utils/CFileOutputStream.h>
-#include <mrpt/utils/CStdOutStream.h>
 #include <mrpt/utils/COutputLogger.h>
 #include <mrpt/system/threads.h>
 
 #include <vector>
+#include <cstdio>
 
 #ifdef _MSC_VER
 	#define WIN32_LEAN_AND_MEAN
@@ -356,7 +356,14 @@ void COutputLogger::TMsg::writeToStream(mrpt::utils::CStream& out) const {
 #endif
 }
 void COutputLogger::TMsg::dumpToConsole() const {
-	CStdOutStream mrpt_cout;
-	setConsoleColor(this->getConsoleColor(level));
-	this->writeToStream(mrpt_cout);
+	const std::string str = getAsString();
+
+	const bool dump_to_cerr = false; // TO-DO: Allow LVL_ERROR to be alternatively dumped to stderr instead of stdout??
+
+	mrpt::system::setConsoleColor(this->getConsoleColor(level), dump_to_cerr);
+	::fputs(str.c_str(), dump_to_cerr ? stderr:stdout );
+#ifdef _MSC_VER
+	OutputDebugStringA(str.c_str());
+#endif
 }
+
