@@ -33,6 +33,7 @@
 			- New template method: mrpt::utils::CStream::ReadAsAndCastTo
 			- Added missing method mrpt::poses::CPose2D::inverseComposePoint() for consistency with CPose3D
 			- New class mrpt::synch::CCriticalSectionRecursive
+			- New class mrpt::utils::COutputLogger replaces the (now no longer available) classes mrpt::utils::CDebugOutputCapable and mrpt::utils::CLog.
 		- \ref mrpt_gui_grp
 			- mrpt::gui::CMyGLCanvasBase is now derived from mrpt::opengl::CTextMessageCapable so they can draw text labels
 			- New class mrpt::gui::CDisplayWindow3DLocker for exception-safe 3D scene lock in 3D windows.
