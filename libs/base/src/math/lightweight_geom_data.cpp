@@ -414,7 +414,6 @@ double TLine3D::distance(const TPoint3D &point) const	{
 	return sqrt(d2-(dv*dv)/v2);
 }
 void TLine3D::unitarize()	{
-	//double s=sqrt(director[0]*director[0]+director[1]*director[1]+director[2]*director[2]);
 	double s=sqrt(squareNorm<3,double>(director));
 	for (size_t i=0;i<3;i++) director[i]/=s;
 }
@@ -447,7 +446,6 @@ TLine3D::TLine3D(const TLine2D &l)	{
 }
 
 double TPlane::evaluatePoint(const TPoint3D &point) const	{
-	//return coefs[0]*point.x+coefs[1]*point.y+coefs[2]*point.z+coefs[3];
 	return dotProduct<3,double>(coefs,point)+coefs[3];
 }
 bool TPlane::contains(const TPoint3D &point) const	{
@@ -458,7 +456,6 @@ bool TPlane::contains(const TLine3D &line) const	{
 	return abs(getAngle(*this,line))<geometryEpsilon;	//Plane's normal must be normal to director vector
 }
 double TPlane::distance(const TPoint3D &point) const	{
-	//return abs(evaluatePoint(point))/sqrt(coefs[0]*coefs[0]+coefs[1]*coefs[1]+coefs[2]*coefs[2]);
 	return abs(evaluatePoint(point))/sqrt(squareNorm<3,double>(coefs));
 }
 double TPlane::distance(const TLine3D &line) const	{
@@ -471,7 +468,6 @@ void TPlane::getNormalVector(double (&vector)[3]) const	{
 	vector[2]=coefs[2];
 }
 void TPlane::unitarize()	{
-//	double s=sqrt(coefs[0]*coefs[0]+coefs[1]*coefs[1]+coefs[2]*coefs[2]);
 	double s=sqrt(squareNorm<3,double>(coefs));
 	for (size_t i=0;i<4;i++) coefs[i]/=s;
 }
