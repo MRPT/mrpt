@@ -1,11 +1,11 @@
 /* +---------------------------------------------------------------------------+
-   |                     Mobile Robot Programming Toolkit (MRPT)               |
-   |                          http://www.mrpt.org/                             |
-   |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
-   | See: http://www.mrpt.org/Authors - All rights reserved.                   |
-   | Released under BSD License. See details in http://www.mrpt.org/License    |
-   +---------------------------------------------------------------------------+ */
+	 |                     Mobile Robot Programming Toolkit (MRPT)               |
+	 |                          http://www.mrpt.org/                             |
+	 |                                                                           |
+	 | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+	 | See: http://www.mrpt.org/Authors - All rights reserved.                   |
+	 | Released under BSD License. See details in http://www.mrpt.org/License    |
+	 +---------------------------------------------------------------------------+ */
 
 #ifndef CEDGECOUNTER_H
 #define CEDGECOUNTER_H
@@ -35,8 +35,8 @@ class CEdgeCounter {
 		/**\brief Destructor class */
 		~CEdgeCounter() {}
 
-    /**\brief Initialization method to be called from the various Constructors.
-     */
+		/**\brief Initialization method to be called from the various Constructors.
+		 */
 		void initCEdgeCounter() {
 
 			this->clearAllEdges();
@@ -151,7 +151,7 @@ class CEdgeCounter {
 			}
 		}
 		/**\brief Increment the number of edges for the specified type.
-		 * 
+		 *
 		 * \exception std::exception If edge exists and \b is_new is True
 		 *
 		 * \sa setEdgesManually
@@ -236,7 +236,7 @@ class CEdgeCounter {
 			ss_out << sep << std::endl;
 
 			ss_out << "\tTotal registered edges: " << this->getTotalNumOfEdges() << std::endl;
-			ss_out << "\tUnique edges (after removal of multiple edges connecting the same nodes): " 
+			ss_out << "\tUnique edges (after removal of multiple edges connecting the same nodes): "
 				<< m_unique_edges << std::endl;
 
 			for (std::map<std::string, int>::const_iterator it = m_name_to_edges_num.begin();
@@ -260,7 +260,7 @@ class CEdgeCounter {
 		// VISUALIZATION RELATED METHODS
 		// ////////////////////////////
 
-		/**\brief Provide CEdgeCounter instance with the visualization window. 
+		/**\brief Provide CEdgeCounter instance with the visualization window.
 		 */
 		void setVisualizationWindow(mrpt::gui::CDisplayWindow3D* win) { m_win = win; }
 

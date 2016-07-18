@@ -1,11 +1,11 @@
 /* +---------------------------------------------------------------------------+
-   |                     Mobile Robot Programming Toolkit (MRPT)               |
-   |                          http://www.mrpt.org/                             |
-   |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
-   | See: http://www.mrpt.org/Authors - All rights reserved.                   |
-   | Released under BSD License. See details in http://www.mrpt.org/License    |
-   +---------------------------------------------------------------------------+ */
+	 |                     Mobile Robot Programming Toolkit (MRPT)               |
+	 |                          http://www.mrpt.org/                             |
+	 |                                                                           |
+	 | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+	 | See: http://www.mrpt.org/Authors - All rights reserved.                   |
+	 | Released under BSD License. See details in http://www.mrpt.org/License    |
+	 +---------------------------------------------------------------------------+ */
 
 #ifndef CRANGESCANREGISTRATIONDECIDER_H
 #define CRANGESCANREGISTRATIONDECIDER_H
@@ -63,7 +63,7 @@ class CRangeScanRegistrationDecider {
 			const mrpt::poses::CPose2D* initial_pose=NULL,
 			mrpt::slam::CICP::TReturnInfo* icp_info=NULL);
 	/**\brief Allign the 3D range scans provided and find the potential edge that
-	 * can transform the one into the other. 
+	 * can transform the one into the other.
 	 *
 	 * Fills the 2D part (rel_edge) of the 3D constraint between the scans, since
 	 * we are interested in computing the 2D alignment. User can optionally ask
@@ -76,7 +76,7 @@ class CRangeScanRegistrationDecider {
 			const mrpt::poses::CPose2D* initial_pose=NULL,
 			mrpt::slam::CICP::TReturnInfo* icp_info=NULL);
 	/**\brief Reduce the size of the given CPointsMap by keeping one out of
-	 * "keep_point_every" points. 
+	 * "keep_point_every" points.
 	 *
 	 * \note If low_lim is set then the PointsMap will contain at least low_lim
 	 * measurements, regardless of keep_point_every value. Set low_lim to 0 if no
@@ -124,9 +124,9 @@ class CRangeScanRegistrationDecider {
 			 * specified has already been reached
 			 */
 			void resizeWindow(size_t new_size);
-    	void loadFromConfigFile(
-    			const mrpt::utils::CConfigFileBase &source,
-    			const std::string &section);
+			void loadFromConfigFile(
+					const mrpt::utils::CConfigFileBase &source,
+					const std::string &section);
 			void 	dumpToTextStream(mrpt::utils::CStream &out) const;
 			/**\brief Set the criterion to be used when evaluating an ICP goodness
 			 * value.
@@ -136,11 +136,11 @@ class CRangeScanRegistrationDecider {
 			void setEvaluationCriterion(std::string criterion);
 
 		private:
-		  size_t m_win_size;
+			size_t m_win_size;
 			std::vector<double> m_goodness_vec;
 
-		  double m_mean_cached; /**< Cached mean value */
-		  double m_median_cached; /**< Cached median value */
+			double m_mean_cached; /**< Cached mean value */
+			double m_median_cached; /**< Cached median value */
 			bool m_mean_updated; /**< Is the mean up-to-date? */
 			bool m_median_updated; /**< Is the median up-to-date? */
 
@@ -158,14 +158,14 @@ class CRangeScanRegistrationDecider {
 
 	};
 
-  struct TParams: public mrpt::utils::CLoadableOptions {
-    public:
-    	TParams();
-    	~TParams();
+	struct TParams: public mrpt::utils::CLoadableOptions {
+		public:
+			TParams();
+			~TParams();
 
-    	void loadFromConfigFile(
-    			const mrpt::utils::CConfigFileBase &source,
-    			const std::string &section);
+			void loadFromConfigFile(
+					const mrpt::utils::CConfigFileBase &source,
+					const std::string &section);
 			void 	dumpToTextStream(mrpt::utils::CStream &out) const;
 
 			mrpt::slam::CICP icp;
@@ -177,8 +177,8 @@ class CRangeScanRegistrationDecider {
 			double conversion_oversampling_ratio;
 
 			bool has_read_config;
-  };
-  TParams params;
+	};
+	TParams params;
 
 };
 

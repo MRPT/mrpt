@@ -1,11 +1,11 @@
 /* +---------------------------------------------------------------------------+
-   |                     Mobile Robot Programming Toolkit (MRPT)               |
-   |                          http://www.mrpt.org/                             |
-   |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
-   | See: http://www.mrpt.org/Authors - All rights reserved.                   |
-   | Released under BSD License. See details in http://www.mrpt.org/License    |
-   +---------------------------------------------------------------------------+ */
+	 |                     Mobile Robot Programming Toolkit (MRPT)               |
+	 |                          http://www.mrpt.org/                             |
+	 |                                                                           |
+	 | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+	 | See: http://www.mrpt.org/Authors - All rights reserved.                   |
+	 | Released under BSD License. See details in http://www.mrpt.org/License    |
+	 +---------------------------------------------------------------------------+ */
 
 #ifndef CLEVMARQGSO_IMPL_H
 #define CLEVMARQGSO_IMPL_H
@@ -62,7 +62,7 @@ bool CLevMarqGSO<GRAPH_t>::updateState(
 		mrpt::obs::CObservationPtr observation ) {
 	MRPT_START;
 	m_out_logger.log("In updateOptimizerState... ");
-	
+
 	if (m_graph->nodeCount() > m_last_total_num_of_nodes) {
 		m_last_total_num_of_nodes = m_graph->nodeCount();
 		registered_new_node = true;
@@ -166,8 +166,7 @@ void CLevMarqGSO<GRAPH_t>::updateVisuals() {
 	ASSERT_(m_initialized_visuals);
 	ASSERTMSG_(m_win_manager, "No CWindowManager* is given");
 	ASSERTMSG_(m_win,
-			"Visualization of data was requested but no CDisplayWindow3D pointer "
-			" was given.");
+			"Visualization of data was requested but no CDisplayWindow3D pointer was given.");
 
 	this->updateOptDistanceVisualization();
 	this->updateGraphVisualization();
@@ -214,9 +213,9 @@ inline void CLevMarqGSO<GRAPH_t>::initGraphVisualization() {
 	MRPT_START;
 
 	if (viz_params.visualize_optimized_graph) {
-		m_win_observer->registerKeystroke(viz_params.keystroke_graph_toggle, 
+		m_win_observer->registerKeystroke(viz_params.keystroke_graph_toggle,
 				"Toggle Graph visualization");
-		m_win_observer->registerKeystroke(viz_params.keystroke_graph_autofit, 
+		m_win_observer->registerKeystroke(viz_params.keystroke_graph_autofit,
 				"Fit Graph in view");
 
 		m_win_manager->assignTextMessageParameters(
@@ -244,7 +243,7 @@ inline void CLevMarqGSO<GRAPH_t>::updateGraphVisualization() {
 	}
 	scene->removeObject(prev_object);
 
-	CSetOfObjectsPtr graph_obj = 
+	CSetOfObjectsPtr graph_obj =
 		graph_tools::graph_visualize(*m_graph, viz_params.cfg);
 	graph_obj->setName("optimized_graph");
 	graph_obj->setVisibility(prev_visibility);
@@ -327,7 +326,7 @@ void CLevMarqGSO<GRAPH_t>::initOptDistanceVisualization() {
 		obj->setPose(initial_pose);
 		obj->setName("optimization_distance_disk");
 		obj->setColor_u8(opt_params.optimization_distance_color);
-		obj->setDiskRadius(opt_params.optimization_distance, 
+		obj->setDiskRadius(opt_params.optimization_distance,
 				opt_params.optimization_distance-0.1);
 		scene->insert(obj);
 
@@ -381,7 +380,7 @@ void CLevMarqGSO<GRAPH_t>::toggleOptDistanceVisualization() {
 
 	m_win->unlockAccess3DScene();
 	m_win->forceRepaint();
-	
+
 	MRPT_END;
 }
 
@@ -392,7 +391,7 @@ void CLevMarqGSO<GRAPH_t>::optimizeGraph() {
 	MRPT_START;
 
 	m_out_logger.log(mrpt::format(
-				"In optimizeGraph\n\tThreadID: %lu\n\tTrying to grab lock... ", 
+				"In optimizeGraph\n\tThreadID: %lu\n\tTrying to grab lock... ",
 				mrpt::system::getCurrentThreadId()));
 
 	mrpt::synch::CCriticalSectionLocker m_graph_lock(m_graph_section);
@@ -413,30 +412,30 @@ void CLevMarqGSO<GRAPH_t>::_optimizeGraph() {
 	CTicTac optimization_timer;
 	optimization_timer.Tic();
 
- 	
+
 	// set of nodes for which the optimization procedure will take place
- 	std::set< mrpt::utils::TNodeID>* nodes_to_optimize;
+	std::set< mrpt::utils::TNodeID>* nodes_to_optimize;
 
- 	// fill in the nodes in certain distance to the current node, only if
- 	// full_update is not instructed
+	// fill in the nodes in certain distance to the current node, only if
+	// full_update is not instructed
 
- 	bool full_update = opt_params.optimization_distance == -1 || 
- 		this->checkForLoopClosures();
- 	if (full_update) {
- 		nodes_to_optimize = NULL;
+	bool full_update = opt_params.optimization_distance == -1 ||
+		this->checkForLoopClosures();
+	if (full_update) {
+		nodes_to_optimize = NULL;
 		m_out_logger.log("Commencing with FULL graph optimization... ", LVL_DEBUG);
 	}
 	else {
 		nodes_to_optimize = new std::set<mrpt::utils::TNodeID>;
-	
- 		// I am certain that this shall not be called when nodeCount = 0, since the
- 		// optimization procedure starts only after certain number of nodes has
- 		// been added
+
+		// I am certain that this shall not be called when nodeCount = 0, since the
+		// optimization procedure starts only after certain number of nodes has
+		// been added
 		this->getNearbyNodesOf(nodes_to_optimize,
 				m_graph->nodeCount()-1,
 				opt_params.optimization_distance);
 		nodes_to_optimize->insert(m_graph->nodeCount()-1);
- 	}
+	}
 
 	graphslam::TResultInfoSpaLevMarq	levmarq_info;
 
@@ -482,9 +481,9 @@ bool CLevMarqGSO<GRAPH_t>::checkForLoopClosures() {
 			curr_pair = it->first;
 
 			if (std::abs(
-						static_cast<int>(curr_pair.first) - 
-						static_cast<int>(curr_pair.second) ) > 
-			 	 	opt_params.LC_min_nodeid_diff ) {
+						static_cast<int>(curr_pair.first) -
+						static_cast<int>(curr_pair.second) ) >
+					opt_params.LC_min_nodeid_diff ) {
 
 				m_out_logger.log("Registering loop closure... ");
 				is_loop_closure = true;
@@ -570,7 +569,7 @@ void CLevMarqGSO<GRAPH_t>::getDescriptiveReport(std::string* report_str) const {
 	// time and output logging
 	const std::string time_res = m_time_logger.getStatsAsText();
 	const std::string output_res = m_out_logger.getAsString();
-	
+
 	// merge the individual reports
 	report_str->clear();
 
@@ -616,25 +615,25 @@ void CLevMarqGSO<GRAPH_t>::OptimizationParams::dumpToTextStream(
 template<class GRAPH_t>
 void CLevMarqGSO<GRAPH_t>::OptimizationParams::loadFromConfigFile(
 		const mrpt::utils::CConfigFileBase &source,
-    const std::string &section) {
-  MRPT_START;
-  optimization_on_second_thread = source.read_bool(
-  		section,
-  		"optimization_on_second_thread",
-  		1, false);
-  LC_min_nodeid_diff = source.read_int(
- 			"GeneralConfiguration",
- 			"LC_min_nodeid_diff",
- 			30, false);
-  optimization_distance = source.read_double(
-  		section,
-  		"optimization_distance",
-  		-1, false);
+		const std::string &section) {
+	MRPT_START;
+	optimization_on_second_thread = source.read_bool(
+			section,
+			"optimization_on_second_thread",
+			1, false);
+	LC_min_nodeid_diff = source.read_int(
+			"GeneralConfiguration",
+			"LC_min_nodeid_diff",
+			30, false);
+	optimization_distance = source.read_double(
+			section,
+			"optimization_distance",
+			-1, false);
 	// asert the previous value
-	ASSERTMSG_(optimization_distance == -1 || 
- 			optimization_distance > 0,
- 			format("Invalid value for optimization distance: %.2f", 
- 				optimization_distance) );
+	ASSERTMSG_(optimization_distance == -1 ||
+			optimization_distance > 0,
+			format("Invalid value for optimization distance: %.2f",
+				optimization_distance) );
 
 	// optimization parameters
 	cfg["verbose"] = source.read_bool(
@@ -678,7 +677,7 @@ void CLevMarqGSO<GRAPH_t>::GraphVisualizationParams::dumpToTextStream(
 	MRPT_START;
 
 	out.printf("-----------[ Graph Visualization Parameters ]-----------\n");
-	out.printf("Visualize optimized graph = %s\n", 
+	out.printf("Visualize optimized graph = %s\n",
 			visualize_optimized_graph ? "TRUE" : "FALSE");
 
 	out.printf("%s", cfg.getAsString().c_str());
@@ -690,8 +689,8 @@ void CLevMarqGSO<GRAPH_t>::GraphVisualizationParams::dumpToTextStream(
 template<class GRAPH_t>
 void CLevMarqGSO<GRAPH_t>::GraphVisualizationParams::loadFromConfigFile(
 		const mrpt::utils::CConfigFileBase &source,
-    const std::string &section) {
-  MRPT_START;
+		const std::string &section) {
+	MRPT_START;
 
 	visualize_optimized_graph = source.read_bool(
 			section,

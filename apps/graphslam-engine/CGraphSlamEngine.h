@@ -1,11 +1,11 @@
 /* +---------------------------------------------------------------------------+
-   |                     Mobile Robot Programming Toolkit (MRPT)               |
-   |                          http://www.mrpt.org/                             |
-   |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
-   | See: http://www.mrpt.org/Authors - All rights reserved.                   |
-   | Released under BSD License. See details in http://www.mrpt.org/License    |
-   +---------------------------------------------------------------------------+ */
+	 |                     Mobile Robot Programming Toolkit (MRPT)               |
+	 |                          http://www.mrpt.org/                             |
+	 |                                                                           |
+	 | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+	 | See: http://www.mrpt.org/Authors - All rights reserved.                   |
+	 | Released under BSD License. See details in http://www.mrpt.org/License    |
+	 +---------------------------------------------------------------------------+ */
 
 #ifndef GRAPHSLAMENGINE_H
 #define GRAPHSLAMENGINE_H
@@ -96,11 +96,11 @@ namespace mrpt { namespace graphslam {
  * \ingroup mrpt_graphslam_grp
  * \note Implementation can be found in the file \em CGraphSlamEngine_impl.h
  */
-template< 
-  	class GRAPH_t=typename mrpt::graphs::CNetworkOfPoses2DInf,
-  	class NODE_REGISTRAR=typename mrpt::graphslam::deciders::CFixedIntervalsNRD<GRAPH_t>, 
-  	class EDGE_REGISTRAR=typename mrpt::graphslam::deciders::CICPGoodnessERD<GRAPH_t>,
-  	class OPTIMIZER=typename mrpt::graphslam::optimizers::CLevMarqGSO<GRAPH_t> >
+template<
+		class GRAPH_t=typename mrpt::graphs::CNetworkOfPoses2DInf,
+		class NODE_REGISTRAR=typename mrpt::graphslam::deciders::CFixedIntervalsNRD<GRAPH_t>,
+		class EDGE_REGISTRAR=typename mrpt::graphslam::deciders::CICPGoodnessERD<GRAPH_t>,
+		class OPTIMIZER=typename mrpt::graphslam::optimizers::CLevMarqGSO<GRAPH_t> >
 class CGraphSlamEngine {
 	public:
 
@@ -114,18 +114,18 @@ class CGraphSlamEngine {
 		/**\brief type of graph constraints */
 		typedef typename GRAPH_t::constraint_t constraint_t;
 		/**\brief type of underlying poses (2D/3D). */
-		typedef typename GRAPH_t::constraint_t::type_value pose_t; 
+		typedef typename GRAPH_t::constraint_t::type_value pose_t;
 
 		/**\brief Constructor of CGraphSlamEngine class template.
 		 *
 		 * \param[in] config_file .ini file containing the configuration
 		 * parameters for the CGraphSlamEngine as well as the deciders/optimizer
-		 * classes that CGraphSlamEngine is using 
+		 * classes that CGraphSlamEngine is using
 		 * \param[in] win CDisplayWindow3D for visualizing the graphSLAM operation.
 		 * \param[in] win_observer CObserver instance for monitoring keyboard and
 		 * mouse events issued by the user
 		 * \param[in] rawlog_fname .rawlog dataset file, containing the robot
-		 * measurements. CGraphSlamEngine supports both 
+		 * measurements. CGraphSlamEngine supports both
 		 * <a href="http://www.mrpt.org/Rawlog_Format"> MRPT rwalog formats </a>
 		 * but in order for graphSLAM to work as expected the rawlog foromat has to
 		 * be supported by the every decider/optimizer class that
@@ -177,20 +177,20 @@ class CGraphSlamEngine {
 		 *
 		 * Method is automatically called, upon CGraphSlamEngine initialization
 		 */
-	 	void readConfigFile(const std::string& fname);
-	 	/**\brief Fill in the provided string with the class configuration parameters.
-	 	 *
-	 	 * \sa printParams
-	 	 */
-	 	void getParamsAsString(std::string* params_out) const;
-	 	/**\brief Wrapper around getParamsAsString.
-	 	 * Returns the generated string instead of passing it as an argument to the
-	 	 * call
-	 	 *
-	 	 * \sa printParams
-	 	 */
+		void readConfigFile(const std::string& fname);
+		/**\brief Fill in the provided string with the class configuration parameters.
+		 *
+		 * \sa printParams
+		 */
+		void getParamsAsString(std::string* params_out) const;
+		/**\brief Wrapper around getParamsAsString.
+		 * Returns the generated string instead of passing it as an argument to the
+		 * call
+		 *
+		 * \sa printParams
+		 */
 		std::string getParamsAsString() const;
-		/**\brief Print the problem parameters to the console for verification. 
+		/**\brief Print the problem parameters to the console for verification.
 		 *
 		 * Method is a wrapper around CGraphSlamEngine::getParamsAsString method
 		 * \sa getParamsAsString
@@ -289,8 +289,8 @@ class CGraphSlamEngine {
 		 */
 		void updateIntensityImageViewport();
 		/**\brief Update the viewport responsible for displaying the graph-building
- 		 * procedure in the estimated position of the robot
- 		 */
+		 * procedure in the estimated position of the robot
+		 */
 		inline void updateCurrPosViewport();
 		/**\brief Update the map visualization based on the current graphSLAM
 		 * state.
@@ -300,8 +300,8 @@ class CGraphSlamEngine {
 		 *
 		 * \sa updateEstimatedTrajectoryVisualization
 		 */
-		void updateMapVisualization(const GRAPH_t& gr, 
-				std::map<const mrpt::utils::TNodeID, 
+		void updateMapVisualization(const GRAPH_t& gr,
+				std::map<const mrpt::utils::TNodeID,
 				mrpt::obs::CObservation2DRangeScanPtr> m_nodes_to_laser_scans,
 				bool full_update=false );
 		/**\brief Display the next ground truth position in the visualization window.
@@ -351,7 +351,7 @@ class CGraphSlamEngine {
 		void decimateLaserScan(
 				mrpt::obs::CObservation2DRangeScan& laser_scan_in,
 				mrpt::obs::CObservation2DRangeScan* laser_scan_out,
-				const int keep_every_n_entries = 2); 
+				const int keep_every_n_entries = 2);
 		/**\brief Parse the ground truth .txt file and fill in the corresponding
 		 * m_GT_poses vector.
 		 *
@@ -368,7 +368,7 @@ class CGraphSlamEngine {
 		 * timestamps are not needed.
 		 */
 		void readGTFileNavSimulOutput(
-				const std::string& fname_GT, 
+				const std::string& fname_GT,
 				std::vector<pose_t>* gt_poses,
 				std::vector<mrpt::system::TTimeStamp>* gt_timestamps=NULL);
 		/**\brief Parse the ground truth .txt file and fill in the corresponding
@@ -390,7 +390,7 @@ class CGraphSlamEngine {
 		 * http://www.mrpt.org/Collection_of_Kinect_RGBD_datasets_with_ground_truth_CVPR_TUM_2011
 		 */
 		void readGTFileRGBD_TUM(
-				const std::string& fname_GT, 
+				const std::string& fname_GT,
 				std::vector<pose_t>* gt_poses,
 				std::vector<mrpt::system::TTimeStamp>* gt_timestamps=NULL);
 		void alignOpticalWithMRPTFrame(); // TODO - either use it or remove it
@@ -408,7 +408,7 @@ class CGraphSlamEngine {
 		 * A Comparison of SLAM Algorithms Based on a Graph of Relations</a>
 		 * for more details on this.
 		 */
-		void computeSlamMetric(mrpt::utils::TNodeID nodeID, 
+		void computeSlamMetric(mrpt::utils::TNodeID nodeID,
 				size_t gt_index);
 
 		/**\brief Wrapper method that makes use of the COutputLogger instance.
@@ -416,7 +416,7 @@ class CGraphSlamEngine {
 		 * Used for printing error messages in a consistent manner when toggling certain
 		 * visual features in the display window
 		 */
-		void dumpVisibilityErrorMsg(std::string viz_flag, 
+		void dumpVisibilityErrorMsg(std::string viz_flag,
 				int sleep_time=500 /* ms */);
 
 		// VARIABLES
@@ -429,8 +429,8 @@ class CGraphSlamEngine {
 		GRAPH_t m_graph;
 
 		// registrator instances
-		NODE_REGISTRAR m_node_registrar; 
-		EDGE_REGISTRAR m_edge_registrar; 
+		NODE_REGISTRAR m_node_registrar;
+		EDGE_REGISTRAR m_edge_registrar;
 		OPTIMIZER m_optimizer;
 
 		std::string	m_config_fname;
@@ -466,8 +466,8 @@ class CGraphSlamEngine {
 																								/**< CWindowManager instance */
 		mrpt::gui::CDisplayWindowPlots* m_win_plot;	 /**< DisplayPlots instance for visualizing the evolution of the SLAM metric */
 		mrpt::gui::CWindowManager_t m_win_manager;/**<Pointer to the window manager*/
-                                              /**< It is supported by the calling */
-                                              /**< application */
+																							/**< It is supported by the calling */
+																							/**< application */
 
 		/** \name Visualization - related variables
 		 * \brief Flags for visualizing various trajectories/objects of interest.
@@ -539,7 +539,7 @@ class CGraphSlamEngine {
 		std::vector<pose_t> m_GT_poses;
 		std::string m_GT_file_format;
 
-		std::map<const mrpt::utils::TNodeID, 
+		std::map<const mrpt::utils::TNodeID,
 			mrpt::obs::CObservation2DRangeScanPtr> m_nodes_to_laser_scans2D;
 		mrpt::obs::CObservation2DRangeScanPtr m_last_laser_scan2D;
 
@@ -564,7 +564,7 @@ class CGraphSlamEngine {
 		 *
 		 * Handy for not locking the m_graph resource
 		 */
-		mrpt::utils::TNodeID m_nodeID_max; 
+		mrpt::utils::TNodeID m_nodeID_max;
 
 		/** Mark graph modification/accessing explicitly for multithreaded
 		 * implementation

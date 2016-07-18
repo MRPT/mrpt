@@ -1,11 +1,11 @@
 /* +---------------------------------------------------------------------------+
-   |                     Mobile Robot Programming Toolkit (MRPT)               |
-   |                          http://www.mrpt.org/                             |
-   |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
-   | See: http://www.mrpt.org/Authors - All rights reserved.                   |
-   | Released under BSD License. See details in http://www.mrpt.org/License    |
-   +---------------------------------------------------------------------------+ */
+	 |                     Mobile Robot Programming Toolkit (MRPT)               |
+	 |                          http://www.mrpt.org/                             |
+	 |                                                                           |
+	 | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+	 | See: http://www.mrpt.org/Authors - All rights reserved.                   |
+	 | Released under BSD License. See details in http://www.mrpt.org/License    |
+	 +---------------------------------------------------------------------------+ */
 
 #ifndef CICPGOODNESSNRD_IMPL_H
 #define CICPGOODNESSNRD_IMPL_H
@@ -67,25 +67,25 @@ bool CICPGoodnessNRD<GRAPH_t>::updateState(
 	if (observation.present()) { // Observation-Only Rawlog
 		// delegate the action to the method responsible
 		if (IS_CLASS(observation, CObservation2DRangeScan) ) { // 2D
-			mrpt::obs::CObservation2DRangeScanPtr curr_laser_scan = 
+			mrpt::obs::CObservation2DRangeScanPtr curr_laser_scan =
 				static_cast<mrpt::obs::CObservation2DRangeScanPtr>(observation);
 			registered_new_node = updateState2D(curr_laser_scan);
 
 		}
 		if (IS_CLASS(observation, CObservation3DRangeScan) ) { // 3D
-			mrpt::obs::CObservation3DRangeScanPtr curr_laser_scan = 
+			mrpt::obs::CObservation3DRangeScanPtr curr_laser_scan =
 				static_cast<mrpt::obs::CObservation3DRangeScanPtr>(observation);
 			registered_new_node = updateState3D(curr_laser_scan);
 		}
 	}
 	else { // action-observations rawlog
 		if (observations->getObservationByClass<CObservation2DRangeScan>()) { // 2D
-			CObservation2DRangeScanPtr curr_laser_scan = 
+			CObservation2DRangeScanPtr curr_laser_scan =
 				observations->getObservationByClass<CObservation2DRangeScan>();
 			registered_new_node = updateState2D(curr_laser_scan);
 		}
 		else if (observations->getObservationByClass<CObservation3DRangeScan>()){	// 3D - EXPERIMENTAL, has not been tested
-			CObservation3DRangeScanPtr curr_laser_scan = 
+			CObservation3DRangeScanPtr curr_laser_scan =
 				observations->getObservationByClass<CObservation3DRangeScan>();
 			registered_new_node = updateState3D(curr_laser_scan);
 		}
@@ -117,7 +117,7 @@ bool CICPGoodnessNRD<GRAPH_t>::updateState2D(
 		m_last_laser_scan2D = m_curr_laser_scan2D;
 	}
 	else {
-		registered_new_node = checkRegistrationCondition2D(); 
+		registered_new_node = checkRegistrationCondition2D();
 	}
 
 	return registered_new_node;
@@ -141,8 +141,8 @@ bool CICPGoodnessNRD<GRAPH_t>::checkRegistrationCondition2D() {
 	// append current ICP edge to the sliding window
 	m_ICP_sliding_win.addNewMeasurement(icp_info.goodness);
 
-	m_out_logger.logFmt("Current ICP constraint: \n\tEdge: %s\n\tNorm: %f", 
-				rel_edge.getMeanVal().asString().c_str(), 
+	m_out_logger.logFmt("Current ICP constraint: \n\tEdge: %s\n\tNorm: %f",
+				rel_edge.getMeanVal().asString().c_str(),
 				rel_edge.getMeanVal().norm());
 
 	// Criterions for updating PDF since last registered node
@@ -174,7 +174,7 @@ bool CICPGoodnessNRD<GRAPH_t>::updateState3D(
 		m_last_laser_scan3D = m_curr_laser_scan3D;
 	}
 	else {
-		registered_new_node = checkRegistrationCondition3D(); 
+		registered_new_node = checkRegistrationCondition3D();
 	}
 
 	return registered_new_node;
@@ -209,8 +209,8 @@ bool CICPGoodnessNRD<GRAPH_t>::checkRegistrationCondition3D() {
 		return false;
 	}
 
-	m_out_logger.logFmt("Current ICP constraint: \n\tEdge: %s\n\tNorm: %f", 
-				rel_edge->getMeanVal().asString().c_str(), 
+	m_out_logger.logFmt("Current ICP constraint: \n\tEdge: %s\n\tNorm: %f",
+				rel_edge->getMeanVal().asString().c_str(),
 				rel_edge->getMeanVal().norm());
 	m_out_logger.logFmt("ICP Alignment operation:\
 			\n\tnIterations: %d\
@@ -268,7 +268,7 @@ void CICPGoodnessNRD<GRAPH_t>::registerNewNode() {
 	mrpt::utils::TNodeID to = ++m_nodeID_max;
 
 	m_graph->nodes[to] = m_graph->nodes[from] + m_since_prev_node_PDF.getMeanVal();
-  m_graph->insertEdgeAtEnd(from, to, m_since_prev_node_PDF);
+	m_graph->insertEdgeAtEnd(from, to, m_since_prev_node_PDF);
 
 	m_out_logger.logFmt("Registered new node:\n\t%lu => %lu\n\tEdge: %s",
 				from, to, m_since_prev_node_PDF.getMeanVal().asString().c_str());
@@ -375,8 +375,8 @@ void CICPGoodnessNRD<GRAPH_t>::TParams::dumpToTextStream(
 template<class GRAPH_t>
 void CICPGoodnessNRD<GRAPH_t>::TParams::loadFromConfigFile(
 		const mrpt::utils::CConfigFileBase &source,
-    const std::string &section) {
-  MRPT_START;
+		const std::string &section) {
+	MRPT_START;
 
 	registration_max_distance = source.read_double( section,
 			"registration_max_distance",

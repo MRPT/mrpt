@@ -1,11 +1,11 @@
 /* +---------------------------------------------------------------------------+
-   |                     Mobile Robot Programming Toolkit (MRPT)               |
-   |                          http://www.mrpt.org/                             |
-   |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
-   | See: http://www.mrpt.org/Authors - All rights reserved.                   |
-   | Released under BSD License. See details in http://www.mrpt.org/License    |
-   +---------------------------------------------------------------------------+ */
+	 |                     Mobile Robot Programming Toolkit (MRPT)               |
+	 |                          http://www.mrpt.org/                             |
+	 |                                                                           |
+	 | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+	 | See: http://www.mrpt.org/Authors - All rights reserved.                   |
+	 | Released under BSD License. See details in http://www.mrpt.org/License    |
+	 +---------------------------------------------------------------------------+ */
 
 #ifndef CFIXEDINTERVALSNRD_H
 #define CFIXEDINTERVALSNRD_H
@@ -99,29 +99,29 @@ class CFixedIntervalsNRD:
 		/**\brief Parameters structure for managing the relevant to the decider
 		 * variables in a compact manner
 		 */
-    struct TParams: public mrpt::utils::CLoadableOptions {
-    	public:
-    		TParams();
-    		~TParams();
+		struct TParams: public mrpt::utils::CLoadableOptions {
+			public:
+				TParams();
+				~TParams();
 
-    		void loadFromConfigFile(
-    				const mrpt::utils::CConfigFileBase &source,
-    				const std::string &section);
+				void loadFromConfigFile(
+						const mrpt::utils::CConfigFileBase &source,
+						const std::string &section);
 				void 	dumpToTextStream(mrpt::utils::CStream &out) const;
 				/**
-		 		 * Return a string with the configuration parameters
-		 		 */
+				 * Return a string with the configuration parameters
+				 */
 				void getAsString(std::string* params_out) const;
 				std::string getAsString() const;
 
 				// max values for new node registration
 				double registration_max_distance;
 				double registration_max_angle;
-    };
+		};
 
 		// Public members
 		// ////////////////////////////
-    TParams params;
+		TParams params;
 
 	private:
 		// Private functions

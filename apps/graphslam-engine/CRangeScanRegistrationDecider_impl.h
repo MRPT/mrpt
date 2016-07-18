@@ -1,11 +1,11 @@
 /* +---------------------------------------------------------------------------+
-   |                     Mobile Robot Programming Toolkit (MRPT)               |
-   |                          http://www.mrpt.org/                             |
-   |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
-   | See: http://www.mrpt.org/Authors - All rights reserved.                   |
-   | Released under BSD License. See details in http://www.mrpt.org/License    |
-   +---------------------------------------------------------------------------+ */
+	 |                     Mobile Robot Programming Toolkit (MRPT)               |
+	 |                          http://www.mrpt.org/                             |
+	 |                                                                           |
+	 | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+	 | See: http://www.mrpt.org/Authors - All rights reserved.                   |
+	 | Released under BSD License. See details in http://www.mrpt.org/License    |
+	 +---------------------------------------------------------------------------+ */
 
 #ifndef CRANGESCANREGISTRATIONDECIDER_IMPL_H
 #define CRANGESCANREGISTRATIONDECIDER_IMPL_H
@@ -64,9 +64,9 @@ void CRangeScanRegistrationDecider<GRAPH_t>::getICPEdge(
 		mrpt::slam::CICP::TReturnInfo* icp_info /* =NULL */) {
 	MRPT_START;
 
-	ASSERTMSG_(from.hasRangeImage, 
+	ASSERTMSG_(from.hasRangeImage,
 			mrpt::format("Laser scan doesn't contain valid range image"));
-	ASSERTMSG_(to.hasRangeImage, 
+	ASSERTMSG_(to.hasRangeImage,
 			mrpt::format("Laser scan doesn't contain valid range image"));
 
 	// TODO - have this as a class member
@@ -141,7 +141,7 @@ void CRangeScanRegistrationDecider<GRAPH_t>::decimatePointsMap(
 		}
 	}
 	m->applyDeletionMask(deletion_mask);
-	
+
 	std::cout << "Map size: " << map_size << " => " << m->size() << std::endl;
 
 	MRPT_END;
@@ -158,10 +158,10 @@ void CRangeScanRegistrationDecider<GRAPH_t>::convert3DTo2DRangeScan(
 	}
 
 	if (scan3D_in->hasRangeImage) {
-		scan3D_in->convertTo2DScan(**scan2D_out, 
-				params.conversion_sensor_label, 
-				params.conversion_angle_sup, 
-				params.conversion_angle_inf, 
+		scan3D_in->convertTo2DScan(**scan2D_out,
+				params.conversion_sensor_label,
+				params.conversion_angle_sup,
+				params.conversion_angle_inf,
 				params.conversion_oversampling_ratio);
 	}
 	else {
@@ -186,7 +186,7 @@ CRangeScanRegistrationDecider<GRAPH_t>::TSlidingWindow::TSlidingWindow(
 	m_is_initialized = false;
 	m_mean_updated = false;
 	m_median_updated = false;
-	
+
 	MRPT_END;
 }
 template<class GRAPH_t>
@@ -245,7 +245,7 @@ inline double CRangeScanRegistrationDecider<GRAPH_t>::TSlidingWindow::getMean() 
 	MRPT_END;
 }
 template<class GRAPH_t>
-inline bool CRangeScanRegistrationDecider<GRAPH_t>::TSlidingWindow::evaluateICPgoodness( 
+inline bool CRangeScanRegistrationDecider<GRAPH_t>::TSlidingWindow::evaluateICPgoodness(
 		double goodness) {
 	MRPT_START;
 
@@ -294,7 +294,7 @@ void CRangeScanRegistrationDecider<GRAPH_t>::TSlidingWindow::resizeWindow(
 	if ( new_size < curr_size ) {
 		// remove (curr_size - new_size) elements from the beginning of the
 		// goodness vector
-		m_goodness_vec.erase(m_goodness_vec.begin(), 
+		m_goodness_vec.erase(m_goodness_vec.begin(),
 				m_goodness_vec.begin() + (curr_size - new_size));
 
 		m_mean_updated = false;
@@ -308,9 +308,9 @@ void CRangeScanRegistrationDecider<GRAPH_t>::TSlidingWindow::resizeWindow(
 template<class GRAPH_t>
 void CRangeScanRegistrationDecider<GRAPH_t>::TSlidingWindow::loadFromConfigFile(
 		const mrpt::utils::CConfigFileBase& source,
-    const std::string& section) {
-  MRPT_START;
-	
+		const std::string& section) {
+	MRPT_START;
+
 	size_t sliding_win_size = source.read_int(
 			section,
 			"sliding_win_size",
@@ -327,7 +327,7 @@ void CRangeScanRegistrationDecider<GRAPH_t>::TSlidingWindow::loadFromConfigFile(
 	std::cout << "sliding_win_size: " << sliding_win_size << std::endl;
 	std::cout << "m_win_size: " << m_win_size << std::endl;
 
-  MRPT_END;
+	MRPT_END;
 }
 template<class GRAPH_t>
 void CRangeScanRegistrationDecider<GRAPH_t>::TSlidingWindow::dumpToTextStream(
@@ -358,10 +358,10 @@ void CRangeScanRegistrationDecider<GRAPH_t>::TSlidingWindow::setEvaluationCriter
 
 	ASSERTMSG_(mrpt::system::strCmpI(criterion, "mean") ||
 			mrpt::system::strCmpI(criterion, "median"),
-			format("\nEvaluation criterion %s is not available\n", 
+			format("\nEvaluation criterion %s is not available\n",
 				criterion.c_str()));
 
-	m_evaluate_using_mean = 
+	m_evaluate_using_mean =
 		mrpt::system::strCmpI(criterion, "mean") ? true : false;
 
 
@@ -401,8 +401,8 @@ void CRangeScanRegistrationDecider<GRAPH_t>::TParams::dumpToTextStream(
 template<class GRAPH_t>
 void CRangeScanRegistrationDecider<GRAPH_t>::TParams::loadFromConfigFile(
 		const mrpt::utils::CConfigFileBase& source,
-    const std::string& section) {
-  MRPT_START;
+		const std::string& section) {
+	MRPT_START;
 
 	conversion_sensor_label = source.read_string(
 			section,

@@ -1,11 +1,11 @@
 /* +---------------------------------------------------------------------------+
-   |                     Mobile Robot Programming Toolkit (MRPT)               |
-   |                          http://www.mrpt.org/                             |
-   |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
-   | See: http://www.mrpt.org/Authors - All rights reserved.                   |
-   | Released under BSD License. See details in http://www.mrpt.org/License    |
-   +---------------------------------------------------------------------------+ */
+	 |                     Mobile Robot Programming Toolkit (MRPT)               |
+	 |                          http://www.mrpt.org/                             |
+	 |                                                                           |
+	 | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+	 | See: http://www.mrpt.org/Authors - All rights reserved.                   |
+	 | Released under BSD License. See details in http://www.mrpt.org/License    |
+	 +---------------------------------------------------------------------------+ */
 
 #ifndef CNODEREGISTRATIONDECIDER_H
 #define CNODEREGISTRATIONDECIDER_H
@@ -43,9 +43,9 @@ class CNodeRegistrationDecider : public mrpt::graphslam::CRegistrationDeciderOrO
 		typedef typename GRAPH_t::constraint_t::type_value pose_t;
 
 		/**\brief Default class constructor.*/
-    CNodeRegistrationDecider() {}
+		CNodeRegistrationDecider() {}
 		/**\brief Default class destructor.*/
-    virtual ~CNodeRegistrationDecider() {};
+		virtual ~CNodeRegistrationDecider() {};
 
 		/**\brief Generic method for fetching the incremental action-observations (or
 		 * observation-only) depending on the rawlog format readings from the
@@ -62,9 +62,9 @@ class CNodeRegistrationDecider : public mrpt::graphslam::CRegistrationDeciderOrO
 				mrpt::obs::CSensoryFramePtr observations,
 				mrpt::obs::CObservationPtr observation ) = 0;
 
-  protected:
+	protected:
 		/**\brief Check whether a new node should be registered in the
-		 * graph. 
+		 * graph.
 		 *
 		 * This should be the key-method in any implementation of this
 		 * interface. Should call registerNewNode method if the registration
@@ -74,8 +74,8 @@ class CNodeRegistrationDecider : public mrpt::graphslam::CRegistrationDeciderOrO
 		 */
 		virtual bool checkRegistrationCondition() {return false;}
 		/**\brief Generic method of adding new poses to the graph.
-     */
-    virtual void registerNewNode() = 0;
+		 */
+		virtual void registerNewNode() = 0;
 
 };
 

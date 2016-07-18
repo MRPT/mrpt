@@ -1,11 +1,11 @@
 	/* +---------------------------------------------------------------------------+
-   |                     Mobile Robot Programming Toolkit (MRPT)               |
-   |                          http://www.mrpt.org/                             |
-   |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
-   | See: http://www.mrpt.org/Authors - All rights reserved.                   |
-   | Released under BSD License. See details in http://www.mrpt.org/License    |
-   +---------------------------------------------------------------------------+ */
+	 |                     Mobile Robot Programming Toolkit (MRPT)               |
+	 |                          http://www.mrpt.org/                             |
+	 |                                                                           |
+	 | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+	 | See: http://www.mrpt.org/Authors - All rights reserved.                   |
+	 | Released under BSD License. See details in http://www.mrpt.org/License    |
+	 +---------------------------------------------------------------------------+ */
 
 #ifndef CEmptyERD_H
 #define CEmptyERD_H
@@ -26,13 +26,13 @@ namespace mrpt { namespace graphslam { namespace deciders {
  */
 template< class GRAPH_t=typename mrpt::graphs::CNetworkOfPoses2DInf >
 class CEmptyERD:
-	public mrpt::graphslam::deciders::CEdgeRegistrationDecider<GRAPH_t> 
+	public mrpt::graphslam::deciders::CEdgeRegistrationDecider<GRAPH_t>
 {
 	public:
 		typedef typename GRAPH_t::constraint_t constraint_t;
 
-	  CEmptyERD();
-	  ~CEmptyERD();
+		CEmptyERD();
+		~CEmptyERD();
 
 		bool updateState(
 				mrpt::obs::CActionCollectionPtr action,
@@ -40,10 +40,10 @@ class CEmptyERD:
 				mrpt::obs::CObservationPtr observation );
 
 	private:
-    void registerNewEdge(
-    		const mrpt::utils::TNodeID& from, 
-    		const mrpt::utils::TNodeID& to,
-    		const constraint_t& rel_edge );
+		void registerNewEdge(
+				const mrpt::utils::TNodeID& from,
+				const mrpt::utils::TNodeID& to,
+				const constraint_t& rel_edge );
 };
 
 } } } // end of namespaces
@@ -55,7 +55,7 @@ CEmptyERD<GRAPH_t>::CEmptyERD() { }
 template<class GRAPH_t>
 CEmptyERD<GRAPH_t>::~CEmptyERD() { }
 
-template<class GRAPH_t> 
+template<class GRAPH_t>
 bool CEmptyERD<GRAPH_t>::updateState(
 		mrpt::obs::CActionCollectionPtr action,
 		mrpt::obs::CSensoryFramePtr observations,
@@ -63,8 +63,8 @@ bool CEmptyERD<GRAPH_t>::updateState(
 
 template<class GRAPH_t>
 void CEmptyERD<GRAPH_t>::registerNewEdge(
-    const mrpt::utils::TNodeID& from, 
-    const mrpt::utils::TNodeID& to,
-    const constraint_t& rel_edge ) { }
+		const mrpt::utils::TNodeID& from,
+		const mrpt::utils::TNodeID& to,
+		const constraint_t& rel_edge ) { }
 
 #endif /* end of include guard: CEmptyERD_H */

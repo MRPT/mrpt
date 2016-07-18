@@ -1,11 +1,11 @@
 	/* +---------------------------------------------------------------------------+
-   |                     Mobile Robot Programming Toolkit (MRPT)               |
-   |                          http://www.mrpt.org/                             |
-   |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
-   | See: http://www.mrpt.org/Authors - All rights reserved.                   |
-   | Released under BSD License. See details in http://www.mrpt.org/License    |
-   +---------------------------------------------------------------------------+ */
+	 |                     Mobile Robot Programming Toolkit (MRPT)               |
+	 |                          http://www.mrpt.org/                             |
+	 |                                                                           |
+	 | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+	 | See: http://www.mrpt.org/Authors - All rights reserved.                   |
+	 | Released under BSD License. See details in http://www.mrpt.org/License    |
+	 +---------------------------------------------------------------------------+ */
 
 #ifndef CICPGoodnessERD_H
 #define CICPGoodnessERD_H
@@ -88,13 +88,13 @@ class CICPGoodnessERD :
 		/**\brief type of underlying poses (2D/3D). */
 		typedef typename GRAPH_t::constraint_t::type_value pose_t;
 		/**\brief Typedef for accessing methods of the RangeScanRegistrationDecider_t parent class. */
-		typedef mrpt::graphslam::deciders::CRangeScanRegistrationDecider<GRAPH_t> range_scanner_t; 
+		typedef mrpt::graphslam::deciders::CRangeScanRegistrationDecider<GRAPH_t> range_scanner_t;
 		typedef CICPGoodnessERD<GRAPH_t> decider_t; /**< self type - Handy typedef */
 
 		// Public methods
 		//////////////////////////////////////////////////////////////
-	  CICPGoodnessERD();
-	  ~CICPGoodnessERD();
+		CICPGoodnessERD();
+		~CICPGoodnessERD();
 
 		bool updateState(
 				mrpt::obs::CActionCollectionPtr action,
@@ -104,32 +104,32 @@ class CICPGoodnessERD :
 
 		void setGraphPtr(GRAPH_t* graph);
 		void setRawlogFname(const std::string& rawlog_fname);
-    void setWindowManagerPtr(mrpt::gui::CWindowManager_t* win_manager);
+		void setWindowManagerPtr(mrpt::gui::CWindowManager_t* win_manager);
 		void notifyOfWindowEvents(
-				const std::map<std::string, bool>& events_occurred); 
-    void getEdgesStats(
-    		std::map<const std::string, int>* edge_types_to_num) const;
+				const std::map<std::string, bool>& events_occurred);
+		void getEdgesStats(
+				std::map<const std::string, int>* edge_types_to_num) const;
 
-    void initializeVisuals();
-    void updateVisuals();
-    bool justInsertedLoopClosure() const;
+		void initializeVisuals();
+		void updateVisuals();
+		bool justInsertedLoopClosure() const;
 		void loadParams(const std::string& source_fname);
-		void printParams() const; 
+		void printParams() const;
 
-    struct TParams: public mrpt::utils::CLoadableOptions {
-    	public:
-    		TParams(decider_t& d);
-    		~TParams();
+		struct TParams: public mrpt::utils::CLoadableOptions {
+			public:
+				TParams(decider_t& d);
+				~TParams();
 
 
-    		void loadFromConfigFile(
-    				const mrpt::utils::CConfigFileBase &source,
-    				const std::string &section);
+				void loadFromConfigFile(
+						const mrpt::utils::CConfigFileBase &source,
+						const std::string &section);
 				void 	dumpToTextStream(mrpt::utils::CStream &out) const;
 
 				decider_t& decider;
 				mrpt::slam::CICP icp;
- 				// maximum distance for checking other nodes for ICP constraints
+				// maximum distance for checking other nodes for ICP constraints
 				double ICP_max_distance;
 				// threshold for accepting an ICP constraint in the graph
 				double ICP_goodness_thresh;
@@ -142,12 +142,12 @@ class CICPGoodnessERD :
 				std::string scans_img_external_dir;
 
 				bool has_read_config;
-    };
+		};
 		void getDescriptiveReport(std::string* report_str) const;
 
 		// Public variables
 		// ////////////////////////////
-    TParams params;
+		TParams params;
 
 	private:
 		// Private functions
@@ -159,10 +159,10 @@ class CICPGoodnessERD :
 				const std::set<mrpt::utils::TNodeID>& nodes_set);
 		void checkRegistrationCondition3D(
 				const std::set<mrpt::utils::TNodeID>& nodes_set);
-    void registerNewEdge(
-    		const mrpt::utils::TNodeID& from,
-    		const mrpt::utils::TNodeID& to,
-    		const constraint_t& rel_edge );
+		void registerNewEdge(
+				const mrpt::utils::TNodeID& from,
+				const mrpt::utils::TNodeID& to,
+				const constraint_t& rel_edge );
 		void checkIfInvalidDataset(mrpt::obs::CActionCollectionPtr action,
 				mrpt::obs::CSensoryFramePtr observations,
 				mrpt::obs::CObservationPtr observation );
@@ -170,13 +170,13 @@ class CICPGoodnessERD :
 		 * distance to the specified nodeID
 		 */
 		void getNearbyNodesOf(
-		 		std::set<mrpt::utils::TNodeID> *nodes_set,
+				std::set<mrpt::utils::TNodeID> *nodes_set,
 				const mrpt::utils::TNodeID& cur_nodeID,
 				double distance );
 		/**\brief togle the LaserScans visualization on and off
 		 */
 		void toggleLaserScansVisualization();
-		void dumpVisibilityErrorMsg(std::string viz_flag, 
+		void dumpVisibilityErrorMsg(std::string viz_flag,
 				int sleep_time=500 /* ms */);
 
 		// Private variables
@@ -205,12 +205,12 @@ class CICPGoodnessERD :
 			mrpt::obs::CObservation3DRangeScanPtr> m_nodes_to_laser_scans3D;
 		std::map<const std::string, int> m_edge_types_to_nums;
 
-    int m_last_total_num_of_nodes;
-    CObservation2DRangeScanPtr m_last_laser_scan2D;
-    CObservation3DRangeScanPtr m_last_laser_scan3D;
-    // fake 2D laser scan generated from corresponding 3DRangeScan for
-    // visualization reasons
-    CObservation2DRangeScanPtr m_fake_laser_scan2D;
+		int m_last_total_num_of_nodes;
+		CObservation2DRangeScanPtr m_last_laser_scan2D;
+		CObservation3DRangeScanPtr m_last_laser_scan3D;
+		// fake 2D laser scan generated from corresponding 3DRangeScan for
+		// visualization reasons
+		CObservation2DRangeScanPtr m_fake_laser_scan2D;
 
 		// find out if decider is invalid for the given dataset
 		bool m_checked_for_usuable_dataset;

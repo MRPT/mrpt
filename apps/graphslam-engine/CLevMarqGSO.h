@@ -1,11 +1,11 @@
 /* +---------------------------------------------------------------------------+
-   |                     Mobile Robot Programming Toolkit (MRPT)               |
-   |                          http://www.mrpt.org/                             |
-   |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
-   | See: http://www.mrpt.org/Authors - All rights reserved.                   |
-   | Released under BSD License. See details in http://www.mrpt.org/License    |
-   +---------------------------------------------------------------------------+ */
+	 |                     Mobile Robot Programming Toolkit (MRPT)               |
+	 |                          http://www.mrpt.org/                             |
+	 |                                                                           |
+	 | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+	 | See: http://www.mrpt.org/Authors - All rights reserved.                   |
+	 | Released under BSD License. See details in http://www.mrpt.org/License    |
+	 +---------------------------------------------------------------------------+ */
 
 #ifndef CLEVMARQGSO_H
 #define CLEVMARQGSO_H
@@ -46,7 +46,7 @@ template<class GRAPH_t=typename mrpt::graphs::CNetworkOfPoses2DInf>
 class CLevMarqGSO:
 	public mrpt::graphslam::optimizers::CGraphSlamOptimizer<GRAPH_t>
 {
-  public:
+	public:
 		// Public methods
 		//////////////////////////////////////////////////////////////
 
@@ -56,9 +56,9 @@ class CLevMarqGSO:
 						constraint_t::state_length,
 						constraint_t::state_length> InfMat;
 
-    CLevMarqGSO();
-    ~CLevMarqGSO();
-    void initCLevMarqGSO();
+		CLevMarqGSO();
+		~CLevMarqGSO();
+		void initCLevMarqGSO();
 
 		bool updateState( mrpt::obs::CActionCollectionPtr action,
 				mrpt::obs::CSensoryFramePtr observations,
@@ -66,23 +66,23 @@ class CLevMarqGSO:
 
 		void setGraphPtr(GRAPH_t* graph);
 		void setRawlogFname(const std::string& rawlog_fname);
-    void setWindowManagerPtr(mrpt::gui::CWindowManager_t* win_manager);
+		void setWindowManagerPtr(mrpt::gui::CWindowManager_t* win_manager);
 		void setCriticalSectionPtr(mrpt::synch::CCriticalSection* graph_section);
-    void initializeVisuals();
-    void updateVisuals();
+		void initializeVisuals();
+		void updateVisuals();
 		/**
 		 * Get a list of the window events that happened since the last call.
 		 */
-		void notifyOfWindowEvents(const std::map<std::string, bool> events_occurred); 
+		void notifyOfWindowEvents(const std::map<std::string, bool> events_occurred);
 		// struct for holding the optimization-related variables in a compact form
-    struct OptimizationParams: public mrpt::utils::CLoadableOptions {
-    	public:
-    		OptimizationParams();
-    		~OptimizationParams();
+		struct OptimizationParams: public mrpt::utils::CLoadableOptions {
+			public:
+				OptimizationParams();
+				~OptimizationParams();
 
-    		void loadFromConfigFile(
-    				const mrpt::utils::CConfigFileBase &source,
-    				const std::string &section);
+				void loadFromConfigFile(
+						const mrpt::utils::CConfigFileBase &source,
+						const std::string &section);
 				void 	dumpToTextStream(mrpt::utils::CStream &out) const;
 
 				TParametersDouble cfg;
@@ -96,51 +96,51 @@ class CLevMarqGSO:
 				int text_index_optimization_distance;
 				mrpt::utils::TColor optimization_distance_color;
 				std::string keystroke_optimization_distance;
-				
+
 				// nodeID difference for an edge to be considered loop closure
 				int LC_min_nodeid_diff;
 
 				// Map of TPairNodesID to their corresponding edge as recorded in the
 				// last update of the optimizer state
 				typename GRAPH_t::edges_map_t last_pair_nodes_to_edge;
-    };
+		};
 
 		void loadParams(const std::string& source_fname);
-		void printParams() const; 
+		void printParams() const;
 
 		// struct for holding the graph visualization-related variables in a
 		// compact form
-    struct GraphVisualizationParams: public mrpt::utils::CLoadableOptions {
-    	public:
-    		GraphVisualizationParams();
-    		~GraphVisualizationParams();
+		struct GraphVisualizationParams: public mrpt::utils::CLoadableOptions {
+			public:
+				GraphVisualizationParams();
+				~GraphVisualizationParams();
 
-    		void loadFromConfigFile(
-    				const mrpt::utils::CConfigFileBase &source,
-    				const std::string &section);
-				void 	dumpToTextStream(mrpt::utils::CStream &out) const;
+				void loadFromConfigFile(
+						const mrpt::utils::CConfigFileBase &source,
+						const std::string &section);
+				void dumpToTextStream(mrpt::utils::CStream &out) const;
 
 				TParametersDouble cfg;
 				bool visualize_optimized_graph;
 				// textMessage parameters
 				std::string keystroke_graph_toggle; // see Ctor for initialization
 				std::string keystroke_graph_autofit; // see Ctor for initialization
- 				int text_index_graph;
- 				double offset_y_graph;
+				int text_index_graph;
+				double offset_y_graph;
 
-    };
-		void getDescriptiveReport(std::string* report_str) const; 
+		};
+		void getDescriptiveReport(std::string* report_str) const;
 
 		// Public members
 		// ////////////////////////////
-    OptimizationParams opt_params; /**<Parameters relevant to the optimizatio nfo the graph. */
-    GraphVisualizationParams viz_params; /**<Parameters relevant to the visualization of the graph. */
+		OptimizationParams opt_params; /**<Parameters relevant to the optimizatio nfo the graph. */
+		GraphVisualizationParams viz_params; /**<Parameters relevant to the visualization of the graph. */
 
-  private:
+	private:
 
-  	// Private methods
-  	// ////////////////////////////
-		
+		// Private methods
+		// ////////////////////////////
+
 		/**\brief Feedback of the levenberg-marquardt graph optimization procedure.
 		 */
 		static void levMarqFeedback(
@@ -149,29 +149,29 @@ class CLevMarqGSO:
 				const size_t max_iter,
 				const double cur_sq_error );
 
-  	/**\brief Optimize the given graph.
-  	 *
-  	 * Wrapper around the graphslam::optimize_spa_levmarq method
-  	 * \sa optimize_spa_levmarq, optimizeGraph
-  	 */
+		/**\brief Optimize the given graph.
+		 *
+		 * Wrapper around the graphslam::optimize_spa_levmarq method
+		 * \sa optimize_spa_levmarq, optimizeGraph
+		 */
 		void _optimizeGraph();
 		/** \brief Wrapper around _optimizeGraph which first locks the section and then
-		 * calls the _optimizeGraph method. 
+		 * calls the _optimizeGraph method.
 		 *
 		 * Used in multithreaded optimization
 		 * \sa _optimizeGraph()
 		 */
-  	void optimizeGraph();
-  	/**\brief Checks if a loop closure edge was added in the graph.
-  	 *
-  	 * Match the previously registered edges in the graph with the current. If
-  	 * there is a node difference *in any new edge* greater than
-  	 * \b LC_min_nodeid_diff (see .ini parameter) then a full graph optimization
-  	 * is issued.
-  	 *
-  	 * \return True on new loop closure
-  	 */
-  	bool checkForLoopClosures();
+		void optimizeGraph();
+		/**\brief Checks if a loop closure edge was added in the graph.
+		 *
+		 * Match the previously registered edges in the graph with the current. If
+		 * there is a node difference *in any new edge* greater than
+		 * \b LC_min_nodeid_diff (see .ini parameter) then a full graph optimization
+		 * is issued.
+		 *
+		 * \return True on new loop closure
+		 */
+		bool checkForLoopClosures();
 		void initGraphVisualization();
 		/**\brief Called internally for updating the vizualization scene for the graph
 		 * building procedure
@@ -201,7 +201,7 @@ class CLevMarqGSO:
 		 * distance to the specified nodeID
 		 */
 		void getNearbyNodesOf(
-		 		std::set<mrpt::utils::TNodeID> *nodes_set,
+				std::set<mrpt::utils::TNodeID> *nodes_set,
 				const mrpt::utils::TNodeID& cur_nodeID,
 				double distance );
 
