@@ -356,7 +356,7 @@ void COutputLogger::TMsg::writeToStream(mrpt::utils::CStream& out) const {
 #endif
 }
 void COutputLogger::TMsg::dumpToConsole() const {
-	const std::string str = getAsString();
+	const std::string str = getAsString() + "\n";
 
 	const bool dump_to_cerr = false; // TO-DO: Allow LVL_ERROR to be alternatively dumped to stderr instead of stdout??
 
