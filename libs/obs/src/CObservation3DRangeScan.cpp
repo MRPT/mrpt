@@ -528,6 +528,8 @@ void CObservation3DRangeScan::points3D_convertToExternalStorage( const std::stri
 	vector_strong_clear(points3D_x);
 	vector_strong_clear(points3D_y);
 	vector_strong_clear(points3D_z);
+	vector_strong_clear(points3D_idxs_x);
+	vector_strong_clear(points3D_idxs_y);
 }
 void CObservation3DRangeScan::rangeImage_convertToExternalStorage( const std::string &fileName_, const std::string &use_this_base_dir )
 {
