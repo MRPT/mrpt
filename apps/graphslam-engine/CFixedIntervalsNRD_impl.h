@@ -1,11 +1,11 @@
 /* +---------------------------------------------------------------------------+
-   |                     Mobile Robot Programming Toolkit (MRPT)               |
-   |                          http://www.mrpt.org/                             |
-   |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
-   | See: http://www.mrpt.org/Authors - All rights reserved.                   |
-   | Released under BSD License. See details in http://www.mrpt.org/License    |
-   +---------------------------------------------------------------------------+ */
+	 |                     Mobile Robot Programming Toolkit (MRPT)               |
+	 |                          http://www.mrpt.org/                             |
+	 |                                                                           |
+	 | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+	 | See: http://www.mrpt.org/Authors - All rights reserved.                   |
+	 | Released under BSD License. See details in http://www.mrpt.org/License    |
+	 +---------------------------------------------------------------------------+ */
 
 #ifndef CFIXEDINTERVALSNRD_IMPL_H
 #define CFIXEDINTERVALSNRD_IMPL_H
@@ -69,7 +69,7 @@ bool CFixedIntervalsNRD<GRAPH_t>::updateState(
 
 		if (IS_CLASS(observation, CObservationOdometry)) {
 
-			CObservationOdometryPtr obs_odometry = 
+			CObservationOdometryPtr obs_odometry =
 				static_cast<CObservationOdometryPtr>(observation);
 			// not incremental - gives the absolute odometry reading
 			m_curr_odometry_only_pose = obs_odometry->odometry;
@@ -96,7 +96,7 @@ bool CFixedIntervalsNRD<GRAPH_t>::updateState(
 		m_since_prev_node_PDF += incremental_constraint;
 	} // ELSE - FORMAT #1
 
-	m_curr_estimated_pose = m_graph->nodes[m_prev_registered_node] + 
+	m_curr_estimated_pose = m_graph->nodes[m_prev_registered_node] +
 		m_since_prev_node_PDF.getMeanVal();
 
 	bool registered = this->checkRegistrationCondition();
@@ -129,9 +129,9 @@ bool CFixedIntervalsNRD<GRAPH_t>::checkRegistrationCondition() {
 	pose_t last_pose_inserted = m_graph->nodes[m_prev_registered_node];
 
 	// odometry criterion
-	if ( (last_pose_inserted.distanceTo(m_curr_estimated_pose) 
+	if ( (last_pose_inserted.distanceTo(m_curr_estimated_pose)
 				> params.registration_max_distance) ||
-			(fabs(wrapToPi(last_pose_inserted.phi() - m_curr_estimated_pose.phi())) 
+			(fabs(wrapToPi(last_pose_inserted.phi() - m_curr_estimated_pose.phi()))
 			 > params.registration_max_angle ) ) {
 
 		// register the new node
@@ -152,7 +152,7 @@ void CFixedIntervalsNRD<GRAPH_t>::registerNewNode() {
 	mrpt::utils::TNodeID to = ++m_prev_registered_node;
 
 	m_graph->nodes[to] = m_graph->nodes[from] + m_since_prev_node_PDF.getMeanVal();
-  m_graph->insertEdgeAtEnd(from, to, m_since_prev_node_PDF);
+	m_graph->insertEdgeAtEnd(from, to, m_since_prev_node_PDF);
 
 	m_out_logger.log(mrpt::format("Registered new node:\n\t%lu => %lu\n\tEdge: %s",
 				from, to, m_since_prev_node_PDF.getMeanVal().asString().c_str()), LVL_DEBUG);
@@ -191,7 +191,7 @@ void CFixedIntervalsNRD<GRAPH_t>::checkIfInvalidDataset(
 		m_checked_for_usuable_dataset = true;
 		return;
 	}
-	
+
 	if (m_consecutive_invalid_format_instances > m_consecutive_invalid_format_instances_thres) {
 		m_out_logger.log("Can't find usuable data in the given dataset.\nMake sure dataset contains valid odometry data.",
 				LVL_ERROR);
@@ -246,7 +246,7 @@ void CFixedIntervalsNRD<GRAPH_t>::getDescriptiveReport(std::string* report_str) 
 	// time and output logging
 	const std::string time_res = m_time_logger.getStatsAsText();
 	const std::string output_res = m_out_logger.getAsString();
-	
+
 	// merge the individual reports
 	report_str->clear();
 
@@ -285,8 +285,8 @@ void CFixedIntervalsNRD<GRAPH_t>::TParams::dumpToTextStream(
 template<class GRAPH_t>
 void CFixedIntervalsNRD<GRAPH_t>::TParams::loadFromConfigFile(
 		const mrpt::utils::CConfigFileBase &source,
-    const std::string &section) {
-  MRPT_START;
+		const std::string &section) {
+	MRPT_START;
 	registration_max_distance = source.read_double( section,
 			"registration_max_distance",
 			5 /* meter */, false);

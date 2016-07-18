@@ -1,11 +1,11 @@
 /* +---------------------------------------------------------------------------+
-   |                     Mobile Robot Programming Toolkit (MRPT)               |
-   |                          http://www.mrpt.org/                             |
-   |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
-   | See: http://www.mrpt.org/Authors - All rights reserved.                   |
-   | Released under BSD License. See details in http://www.mrpt.org/License    |
-   +---------------------------------------------------------------------------+ */
+	 |                     Mobile Robot Programming Toolkit (MRPT)               |
+	 |                          http://www.mrpt.org/                             |
+	 |                                                                           |
+	 | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+	 | See: http://www.mrpt.org/Authors - All rights reserved.                   |
+	 | Released under BSD License. See details in http://www.mrpt.org/License    |
+	 +---------------------------------------------------------------------------+ */
 
 #ifndef CICPGoodnessERD_IMPL_H
 #define CICPGoodnessERD_IMPL_H
@@ -110,12 +110,12 @@ template<class GRAPH_t> bool CICPGoodnessERD<GRAPH_t>::updateState(
 		if (registered_new_node) {
 			if (!m_last_laser_scan2D.null()) {
 				m_nodes_to_laser_scans2D[m_graph->nodeCount()-1] = m_last_laser_scan2D;
-				m_out_logger.log(mrpt::format("Added laser scans of nodeID: %lu", 
+				m_out_logger.log(mrpt::format("Added laser scans of nodeID: %lu",
 							m_graph->nodeCount()-1));
 			}
 			if (!m_last_laser_scan3D.null()) {
 				m_nodes_to_laser_scans3D[m_graph->nodeCount()-1] = m_last_laser_scan3D;
-				m_out_logger.log(mrpt::format("Added laser scans of nodeID: %lu", 
+				m_out_logger.log(mrpt::format("Added laser scans of nodeID: %lu",
 							m_graph->nodeCount()-1));
 			}
 		}
@@ -126,7 +126,7 @@ template<class GRAPH_t> bool CICPGoodnessERD<GRAPH_t>::updateState(
 			observations->getObservationByClass<CObservation2DRangeScan>();
 		if (registered_new_node && m_last_laser_scan2D) {
 			m_nodes_to_laser_scans2D[m_graph->nodeCount()-1] = m_last_laser_scan2D;
-			m_out_logger.log(mrpt::format("Added laser scans of nodeID: %lu", 
+			m_out_logger.log(mrpt::format("Added laser scans of nodeID: %lu",
 						m_graph->nodeCount()-1));
 		}
 	}
@@ -171,18 +171,18 @@ void CICPGoodnessERD<GRAPH_t>::checkRegistrationCondition2D(
 	//cout << "CICPGoodnessERD: Checking 2D Registration Condition... " << endl;
 
 	mrpt::utils::TNodeID curr_nodeID = m_graph->nodeCount()-1;
-  CObservation2DRangeScanPtr curr_laser_scan;
-  std::map<const mrpt::utils::TNodeID,
-    mrpt::obs::CObservation2DRangeScanPtr>::const_iterator search;
+	CObservation2DRangeScanPtr curr_laser_scan;
+	std::map<const mrpt::utils::TNodeID,
+		mrpt::obs::CObservation2DRangeScanPtr>::const_iterator search;
 
 	// search for curr_laser_scan
-  search = m_nodes_to_laser_scans2D.find(curr_nodeID);
-  if (search != m_nodes_to_laser_scans2D.end()) {
-    curr_laser_scan = search->second;
-  }
+	search = m_nodes_to_laser_scans2D.find(curr_nodeID);
+	if (search != m_nodes_to_laser_scans2D.end()) {
+		curr_laser_scan = search->second;
+	}
 
 	// commence only if I have the current laser scan
-  if (curr_laser_scan) {
+	if (curr_laser_scan) {
 		// try adding ICP constraints with each node in the previous set
 		for (set<mrpt::utils::TNodeID>::const_iterator
 				node_it = nodes_set.begin();
@@ -191,15 +191,15 @@ void CICPGoodnessERD<GRAPH_t>::checkRegistrationCondition2D(
 			// get the ICP edge between current and last node
 			constraint_t rel_edge;
 			mrpt::slam::CICP::TReturnInfo icp_info;
-    	CObservation2DRangeScanPtr prev_laser_scan;
+			CObservation2DRangeScanPtr prev_laser_scan;
 
-    	// search for prev_laser_scan
+			// search for prev_laser_scan
 			search = m_nodes_to_laser_scans2D.find(*node_it);
-    	if (search != m_nodes_to_laser_scans2D.end()) {
-        prev_laser_scan = search->second;
+			if (search != m_nodes_to_laser_scans2D.end()) {
+				prev_laser_scan = search->second;
 
-        // make use of initial node position difference for the ICP edge
-				pose_t initial_pose = m_graph->nodes[curr_nodeID] - 
+				// make use of initial node position difference for the ICP edge
+				pose_t initial_pose = m_graph->nodes[curr_nodeID] -
 					m_graph->nodes[*node_it];
 
 				m_time_logger.enter("CICPGoodnessERD::getICPEdge");
@@ -235,17 +235,17 @@ void CICPGoodnessERD<GRAPH_t>::checkRegistrationCondition3D(
 	MRPT_START;
 
 	mrpt::utils::TNodeID curr_nodeID = m_graph->nodeCount()-1;
-  CObservation3DRangeScanPtr curr_laser_scan;
-  std::map<const mrpt::utils::TNodeID,
-    mrpt::obs::CObservation3DRangeScanPtr>::const_iterator search;
+	CObservation3DRangeScanPtr curr_laser_scan;
+	std::map<const mrpt::utils::TNodeID,
+		mrpt::obs::CObservation3DRangeScanPtr>::const_iterator search;
 	// search for curr_laser_scan
-  search = m_nodes_to_laser_scans3D.find(curr_nodeID);
-  if (search != m_nodes_to_laser_scans3D.end()) {
-    curr_laser_scan = search->second;
-  }
+	search = m_nodes_to_laser_scans3D.find(curr_nodeID);
+	if (search != m_nodes_to_laser_scans3D.end()) {
+		curr_laser_scan = search->second;
+	}
 
 	// commence only if I have the current laser scan
-  if (curr_laser_scan) {
+	if (curr_laser_scan) {
 		// try adding ICP constraints with each node in the previous set
 		for (set<mrpt::utils::TNodeID>::const_iterator
 				node_it = nodes_set.begin();
@@ -254,12 +254,12 @@ void CICPGoodnessERD<GRAPH_t>::checkRegistrationCondition3D(
 			// get the ICP edge between current and last node
 			constraint_t rel_edge;
 			mrpt::slam::CICP::TReturnInfo icp_info;
-    	CObservation3DRangeScanPtr prev_laser_scan;
+			CObservation3DRangeScanPtr prev_laser_scan;
 
-    	// search for prev_laser_scan
+			// search for prev_laser_scan
 			search = m_nodes_to_laser_scans3D.find(*node_it);
-    	if (search != m_nodes_to_laser_scans3D.end()) {
-        prev_laser_scan = search->second;
+			if (search != m_nodes_to_laser_scans3D.end()) {
+				prev_laser_scan = search->second;
 
 				// TODO - use initial edge estimation
 				m_time_logger.enter("CICPGoodnessERD::getICPEdge");
@@ -290,12 +290,12 @@ void CICPGoodnessERD<GRAPH_t>::checkRegistrationCondition3D(
 
 template<class GRAPH_t>
 void CICPGoodnessERD<GRAPH_t>::registerNewEdge(
-    const mrpt::utils::TNodeID& from,
-    const mrpt::utils::TNodeID& to,
-    const constraint_t& rel_edge ) {
-  MRPT_START;
+		const mrpt::utils::TNodeID& from,
+		const mrpt::utils::TNodeID& to,
+		const constraint_t& rel_edge ) {
+	MRPT_START;
 
-  //cout << "Inserting new Edge: " << from << " -> " << to << endl;
+	//cout << "Inserting new Edge: " << from << " -> " << to << endl;
 	m_graph->insertEdge(from,  to, rel_edge);
 
 	MRPT_END;
@@ -341,7 +341,7 @@ void CICPGoodnessERD<GRAPH_t>::setRawlogFname(const std::string& rawlog_fname){
 	MRPT_START;
 
 	m_rawlog_fname = rawlog_fname;
-	m_out_logger.log(mrpt::format("Fetched the rawlog filename successfully: %s", 
+	m_out_logger.log(mrpt::format("Fetched the rawlog filename successfully: %s",
 			m_rawlog_fname.c_str()));
 
 	// find the directory of the 3Dscan images in case we are working with
@@ -396,7 +396,7 @@ void CICPGoodnessERD<GRAPH_t>::toggleLaserScansVisualization() {
 	ASSERTMSG_(m_win_manager, "No CWindowManager* was provided");
 
 	m_out_logger.log("Toggling LaserScans visualization...");
- 
+
 	COpenGLScenePtr scene = m_win->get3DSceneAndLock();
 
 	if (params.visualize_laser_scans) {
@@ -512,7 +512,7 @@ void CICPGoodnessERD<GRAPH_t>::updateVisuals() {
 	}
 
 	// update laser scan visual
-	if (m_win && params.visualize_laser_scans && 
+	if (m_win && params.visualize_laser_scans &&
 			(!m_last_laser_scan2D.null() || !m_fake_laser_scan2D.null())) {
 		COpenGLScenePtr scene = m_win->get3DSceneAndLock();
 
@@ -591,7 +591,7 @@ template<class GRAPH_t>
 void CICPGoodnessERD<GRAPH_t>::dumpVisibilityErrorMsg(
 		std::string viz_flag, int sleep_time /* = 500 milliseconds */) {
 	MRPT_START;
-	
+
 	m_out_logger.log(format("Cannot toggle visibility of specified object.\n "
 			"Make sure that the corresponding visualization flag ( %s "
 			") is set to true in the .ini file.\n",
@@ -606,7 +606,7 @@ template<class GRAPH_t>
 void CICPGoodnessERD<GRAPH_t>::loadParams(const std::string& source_fname) {
 	MRPT_START;
 
-	params.loadFromConfigFileName(source_fname, 
+	params.loadFromConfigFileName(source_fname,
 			"EdgeRegistrationDeciderParameters");
 	m_out_logger.log("Successfully loaded CICPGoodnessERD parameters. ");
 
@@ -644,7 +644,7 @@ void CICPGoodnessERD<GRAPH_t>::getDescriptiveReport(std::string* report_str) con
 	// time and output logging
 	const std::string time_res = m_time_logger.getStatsAsText();
 	const std::string output_res = m_out_logger.getAsString();
-	
+
 	// merge the individual reports
 	report_str->clear();
 
@@ -695,13 +695,13 @@ void CICPGoodnessERD<GRAPH_t>::TParams::dumpToTextStream(
 template<class GRAPH_t>
 void CICPGoodnessERD<GRAPH_t>::TParams::loadFromConfigFile(
 		const mrpt::utils::CConfigFileBase& source,
-    const std::string& section) {
-  MRPT_START;
+		const std::string& section) {
+	MRPT_START;
 
-  LC_min_nodeid_diff = source.read_int(
- 			"GeneralConfiguration",
- 			"LC_min_nodeid_diff",
- 			30, false);
+	LC_min_nodeid_diff = source.read_int(
+			"GeneralConfiguration",
+			"LC_min_nodeid_diff",
+			30, false);
 	ICP_max_distance = source.read_double(
 			section,
 			"ICP_max_distance",
@@ -709,15 +709,15 @@ void CICPGoodnessERD<GRAPH_t>::TParams::loadFromConfigFile(
 	ICP_goodness_thresh = source.read_double(
 			section,
 			"ICP_goodness_thresh",
-	 		0.75, false);
-  visualize_laser_scans = source.read_bool(
-  		"VisualizationParameters",
- 			"visualize_laser_scans",
- 			true, false);
- 	scans_img_external_dir = source.read_string(
- 			section,
- 			"scan_images_external_directory",
- 			"./", false);
+			0.75, false);
+	visualize_laser_scans = source.read_bool(
+			"VisualizationParameters",
+			"visualize_laser_scans",
+			true, false);
+	scans_img_external_dir = source.read_string(
+			section,
+			"scan_images_external_directory",
+			"./", false);
 
 	// load the icp parameters - from "ICP" section explicitly
 	decider.range_scanner_t::params.loadFromConfigFile(source, "ICP");

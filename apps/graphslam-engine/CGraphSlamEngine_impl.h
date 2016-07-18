@@ -1,11 +1,11 @@
 /* +---------------------------------------------------------------------------+
-   |                     Mobile Robot Programming Toolkit (MRPT)               |
-   |                          http://www.mrpt.org/                             |
-   |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
-   | See: http://www.mrpt.org/Authors - All rights reserved.                   |
-   | Released under BSD License. See details in http://www.mrpt.org/License    |
-   +---------------------------------------------------------------------------+ */
+	 |                     Mobile Robot Programming Toolkit (MRPT)               |
+	 |                          http://www.mrpt.org/                             |
+	 |                                                                           |
+	 | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+	 | See: http://www.mrpt.org/Authors - All rights reserved.                   |
+	 | Released under BSD License. See details in http://www.mrpt.org/License    |
+	 +---------------------------------------------------------------------------+ */
 
 #ifndef CGRAPHSLAMENGINE_IMPL_H
 #define CGRAPHSLAMENGINE_IMPL_H
@@ -102,7 +102,7 @@ void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::initC
 	m_out_logger.setName("CGraphSlamengine");
 	m_out_logger.setLoggingLevel(LVL_DEBUG); // default level of the messages
 
- 	// set the CDisplayWindowPlots pointer to null for starters, we don't know if we are using it
+	// set the CDisplayWindowPlots pointer to null for starters, we don't know if we are using it
 	m_win_plot = NULL;
 	m_deformation_energy_plot_scale = 1000;
 
@@ -153,7 +153,7 @@ void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::initC
 	m_edge_registrar.setRawlogFname(m_rawlog_fname);
 	m_optimizer.setRawlogFname(m_rawlog_fname);
 
-	
+
 	m_use_GT = !m_fname_GT.empty();
 	if (m_use_GT) {
 		if (mrpt::system::strCmpI(m_GT_file_format, "rgbd_tum")) {
@@ -250,7 +250,7 @@ void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::initC
 	m_keystroke_map = "m";
 
 	// Add additional keystrokes in the CDisplayWindow3D help textBox
-	if (m_win_observer) { 
+	if (m_win_observer) {
 		m_win_observer->registerKeystroke(m_keystroke_pause_exec,
 				"Pause/Resume program execution");
 		m_win_observer->registerKeystroke(m_keystroke_odometry,
@@ -350,7 +350,7 @@ bool CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::parse
 			format("\nConfig file is not read yet.\nExiting... \n"));
 	ASSERTMSG_(mrpt::system::fileExists(m_rawlog_fname),
 			format("\nRawlog file: %s was not found\n", m_rawlog_fname.c_str() ));
- 	// good to go..
+	// good to go..
 
 	// Variables initialization
 	CFileGZInputStream rawlog_file(m_rawlog_fname);
@@ -611,7 +611,7 @@ bool CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::parse
 			if (m_enable_range_viewport && !m_last_laser_scan3D.null()) {
 				this->updateRangeImageViewport();
 			}
-			
+
 			if (m_enable_intensity_viewport && !m_last_laser_scan3D.null()) {
 				this->updateIntensityImageViewport();
 			}
@@ -651,8 +651,8 @@ bool CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::parse
 	// exiting actions
 	//
 	if (m_save_graph) { this->saveGraph(); }
-	
-	if (m_win && m_save_3DScene) { 
+
+	if (m_win && m_save_3DScene) {
 		// remove the CPlanarLaserScan if it exists
 		{
 			COpenGLScenePtr& scene = m_win->get3DSceneAndLock();
@@ -667,7 +667,7 @@ bool CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::parse
 		}
 
 		m_out_logger.log("Saving 3D Scene...", LVL_INFO);
-		this->save3DScene(); 
+		this->save3DScene();
 	}
 
 	// change back the CImage path
@@ -783,7 +783,7 @@ void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::readC
 	MRPT_END;
 }
 template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR, class OPTIMIZER>
-std::string CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::getParamsAsString() const { 
+std::string CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::getParamsAsString() const {
 	MRPT_START;
 
 	std::string str;
@@ -844,11 +844,11 @@ void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::getPa
 	ss_out << "Visualize SLAM metric plot      = "
 		<< ( m_visualize_SLAM_metric ? "TRUE" : "FALSE" ) << std::endl;
 
-	ss_out << "Enable curr. position viewport  = " 
+	ss_out << "Enable curr. position viewport  = "
 		<< ( m_enable_curr_pos_viewport ? "TRUE" : "FALSE" ) << endl;
-	ss_out << "Enable range img viewport       = " 
+	ss_out << "Enable range img viewport       = "
 		<< ( m_enable_range_viewport ? "TRUE" : "FALSE" ) << endl;
-	ss_out << "Enable intensity img viewport   = " 
+	ss_out << "Enable intensity img viewport   = "
 		<< ( m_enable_intensity_viewport ? "TRUE" : "FALSE" ) << endl;
 
 	ss_out << "-----------------------------------------------------------"
@@ -879,7 +879,7 @@ void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::initO
 	string cur_date_str(dateTimeToString(cur_date));
 	string cur_date_validstr(fileNameStripInvalidChars(cur_date_str));
 
-	ASSERTMSG_(m_has_read_config, 
+	ASSERTMSG_(m_has_read_config,
 			"\nCannot initialize output directory, \nMake sure that you have parsed the configuration file first\n");
 
 	// Determine what to do with existing results if previous output directory
@@ -911,7 +911,7 @@ void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::initO
 
 		switch (answer_int)
 		{
-			case 2: 
+			case 2:
 				{
 					m_out_logger.log("Deleting existing files...", LVL_INFO);
 					// purge directory
@@ -919,13 +919,13 @@ void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::initO
 							/*deleteDirectoryAsWell = */ false);
 					break;
 				}
-			case 3: 
+			case 3:
 				{
 					// Exit gracefully - call Dtor implicitly
 					return;
 				}
 			case 1:
-			default: 
+			default:
 				{
 					// rename the whole directory to DATE_TIME_${OUTPUT_DIR_NAME}
 					string dst_fname = m_output_dir_fname + cur_date_validstr;
@@ -934,8 +934,8 @@ void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::initO
 					bool did_rename = renameFile(m_output_dir_fname,
 							dst_fname,
 							error_msg);
-					ASSERTMSG_(did_rename, 
-							format("\nError while trying to rename the output directory: %s", 
+					ASSERTMSG_(did_rename,
+							format("\nError while trying to rename the output directory: %s",
 								error_msg->c_str()) );
 					break;
 				}
@@ -1037,7 +1037,7 @@ void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::initI
 
 	m_win->unlockAccess3DScene();
 	m_win->forceRepaint();
-	
+
 	MRPT_END;
 }
 template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR, class OPTIMIZER>
@@ -1263,9 +1263,9 @@ void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::readG
 				curr_coords[1],
 				y);
 
-		m_out_logger.logFmt("GT pose (prior to alignment with origin): %s", 
+		m_out_logger.logFmt("GT pose (prior to alignment with origin): %s",
 				curr_pose.asString().c_str());
-		
+
 		curr_pose.x() -= pose_diff.x();
 		curr_pose.y() -= pose_diff.y();
 		curr_pose.phi() -= pose_diff.phi();
@@ -1318,7 +1318,7 @@ void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::align
 	CMatrixDouble rotx(3, 3, tmpx);
 
 	stringstream ss_out;
-	ss_out << "\nConstructing the rotation matrix for the GroundTruth Data..." 
+	ss_out << "\nConstructing the rotation matrix for the GroundTruth Data..."
 		<< endl;
 	m_rot_TUM_to_MRPT = rotz * roty * rotx;
 
@@ -1391,7 +1391,7 @@ template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR, class OPTIMI
 void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::toggleOdometryVisualization() {
 	MRPT_START;
 	m_out_logger.log("Toggling Odometry visualization...", LVL_INFO);
- 
+
 	COpenGLScenePtr scene = m_win->get3DSceneAndLock();
 
 	if (m_visualize_odometry_poses) {
@@ -1459,7 +1459,7 @@ void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::toggl
 
 		CRenderizablePtr obj = scene->getByName(scan_name.str());
 		// current node may not have laserScans => may not have corresponding obj
-		if (obj) { 
+		if (obj) {
 			obj->setVisibility(!obj->isVisible());
 		}
 	}
@@ -1496,10 +1496,10 @@ template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR, class OPTIMI
 void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::dumpVisibilityErrorMsg(
 		std::string viz_flag, int sleep_time /* = 500 milliseconds */) {
 	MRPT_START;
-	
+
 	m_out_logger.log(format("Cannot toggle visibility of specified object.\n "
 			"Make sure that the corresponding visualization flag ( %s "
-			") is set to true in the .ini file.\n", 
+			") is set to true in the .ini file.\n",
 			viz_flag.c_str()).c_str(), LVL_ERROR);
 	mrpt::system::sleep(sleep_time);
 
@@ -1542,7 +1542,7 @@ void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::updat
 			node_it != nodes_set.end(); ++node_it) {
 
 		// get the node pose - thread safe
-		// TODO just *find* it 
+		// TODO just *find* it
 		pose_t scan_pose = m_graph.nodes[*node_it];
 
 		// name of gui object
@@ -1573,7 +1573,7 @@ void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::updat
 			CSetOfObjectsPtr scan_obj;
 			if (obj.null()) {
 				m_out_logger.log(format("CSetOfObjects for nodeID %lu doesn't exist. Creating it...",
-							*node_it), LVL_DEBUG); 
+							*node_it), LVL_DEBUG);
 
 				scan_obj = CSetOfObjects::Create();
 
@@ -2065,7 +2065,7 @@ void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::compu
 	m_curr_deformation_energy = 0;
 
 	// first element of map
-	std::map<mrpt::utils::TNodeID, size_t>::const_iterator start_it = 
+	std::map<mrpt::utils::TNodeID, size_t>::const_iterator start_it =
 		std::next(m_nodeID_to_gt_indices.begin(), 1);
 
 
@@ -2074,8 +2074,8 @@ void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::compu
 	pose_t prev_node_pos = m_graph.nodes[prev_it->first];
 	pose_t prev_gt_pos = m_GT_poses[prev_it->second];
 
-	for (std::map<mrpt::utils::TNodeID, size_t>::const_iterator 
-			index_it = start_it; 
+	for (std::map<mrpt::utils::TNodeID, size_t>::const_iterator
+			index_it = start_it;
 			index_it != m_nodeID_to_gt_indices.end();
 			index_it++) {
 		curr_node_pos = m_graph.nodes[index_it->first];
@@ -2127,7 +2127,7 @@ void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::updat
 
 	ASSERT_(m_win_plot && m_visualize_SLAM_metric);
 
-	// build the X, Y vectors for plotting - use log scale 
+	// build the X, Y vectors for plotting - use log scale
 	std::vector<double> x(m_deformation_energy_vec.size(), 0);
 	std::vector<double> y(m_deformation_energy_vec.size(), 0);
 	for (int i = 0; i != x.size(); i++)  {
@@ -2143,7 +2143,7 @@ void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::updat
 	std::vector<double>::const_iterator xmax, ymax;
 	xmax = std::max_element(x.begin(), x.end());
 	ymax = std::max_element(y.begin(), y.end());
-	
+
 	m_win_plot->axis(/*x_min = */ xmax != x.end()? -(*xmax/12) : -1,
 			/*x_max = */ (xmax != x.end()? *xmax : 1),
 			/*y_min = */ -0.4,
@@ -2164,10 +2164,10 @@ void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::getDe
 	stringstream results_ss;
 	results_ss << "Summary: " << std::endl;
 	results_ss << header_sep << std::endl;
-	results_ss << "\tProcessing time: " << 
+	results_ss << "\tProcessing time: " <<
 		m_time_logger.getMeanTime("CGraphSlamEngine::proc_time") << std::endl;;
 	results_ss << "\tDataset Grab time: " << m_dataset_grab_time << std::endl;
-	results_ss << "\tReal-time capable: " << 
+	results_ss << "\tReal-time capable: " <<
 		(m_time_logger.getMeanTime("CGraphSlamEngine::proc_time") < m_dataset_grab_time ? "TRUE": "FALSE") << std::endl;
 	results_ss << m_edge_counter.getAsString();
 	results_ss << "\tNum of Nodes: " << m_graph.nodeCount() << std::endl;;
@@ -2178,7 +2178,7 @@ void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::getDe
 	// time and output logging
 	const std::string time_res = m_time_logger.getStatsAsText();
 	const std::string output_res = m_out_logger.getAsString();
-	
+
 	// merge the individual reports
 	report_str->clear();
 
@@ -2259,7 +2259,7 @@ W.Burgard et al.\", for more details on the metric.\n");
 		}
 	}
 
-	
+
 
 	MRPT_END;
 }

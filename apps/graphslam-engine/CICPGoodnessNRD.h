@@ -1,11 +1,11 @@
 /* +---------------------------------------------------------------------------+
-   |                     Mobile Robot Programming Toolkit (MRPT)               |
-   |                          http://www.mrpt.org/                             |
-   |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
-   | See: http://www.mrpt.org/Authors - All rights reserved.                   |
-   | Released under BSD License. See details in http://www.mrpt.org/License    |
-   +---------------------------------------------------------------------------+ */
+	 |                     Mobile Robot Programming Toolkit (MRPT)               |
+	 |                          http://www.mrpt.org/                             |
+	 |                                                                           |
+	 | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+	 | See: http://www.mrpt.org/Authors - All rights reserved.                   |
+	 | Released under BSD License. See details in http://www.mrpt.org/License    |
+	 +---------------------------------------------------------------------------+ */
 
 #ifndef CICPGOODNESSNRD_H
 #define CICPGOODNESSNRD_H
@@ -102,8 +102,8 @@ class CICPGoodnessNRD:
 
 		void setGraphPtr(GRAPH_t* graph);
 		void loadParams(const std::string& source_fname);
-		void printParams() const; 
-		void getDescriptiveReport(std::string* report_str) const; 
+		void printParams() const;
+		void getDescriptiveReport(std::string* report_str) const;
 
 		/**\brief Update the decider state using the latest dataset measurements.
 		 *
@@ -123,7 +123,7 @@ class CICPGoodnessNRD:
 		 * \sa updateState3D
 		 */
 		bool updateState2D(
-				mrpt::obs::CObservation2DRangeScanPtr observation); 
+				mrpt::obs::CObservation2DRangeScanPtr observation);
 		/**\brief Specialized updateState method used solely when dealing with
 		 * 3DRangeScan information.
 		 * \sa updateState2D
@@ -131,21 +131,21 @@ class CICPGoodnessNRD:
 		bool updateState3D(
 				mrpt::obs::CObservation3DRangeScanPtr observation);
 
-    struct TParams: public mrpt::utils::CLoadableOptions {
-    	public:
-    		TParams(decider_t& d);
-    		~TParams();
+		struct TParams: public mrpt::utils::CLoadableOptions {
+			public:
+				TParams(decider_t& d);
+				~TParams();
 
 				decider_t& decider; /**< Reference to outer decider class */
 
-    		void loadFromConfigFile(
-    				const mrpt::utils::CConfigFileBase &source,
-    				const std::string &section);
+				void loadFromConfigFile(
+						const mrpt::utils::CConfigFileBase &source,
+						const std::string &section);
 				void 	dumpToTextStream(mrpt::utils::CStream &out) const;
 
 				double registration_max_distance; /**< Maximum distance for new node registration */
 				double registration_max_angle; /**< Maximum angle difference for new node registration */
-    };
+		};
 
 		// Public members
 		// ////////////////////////////
@@ -184,13 +184,13 @@ class CICPGoodnessNRD:
 		bool m_is_using_3DScan;
 
 		// handy laser scans to use in the class methods
-    CObservation2DRangeScanPtr m_last_laser_scan2D;
-    CObservation2DRangeScanPtr m_curr_laser_scan2D;
+		CObservation2DRangeScanPtr m_last_laser_scan2D;
+		CObservation2DRangeScanPtr m_curr_laser_scan2D;
 
-    CObservation3DRangeScanPtr m_last_laser_scan3D;
-    CObservation3DRangeScanPtr m_curr_laser_scan3D;
+		CObservation3DRangeScanPtr m_last_laser_scan3D;
+		CObservation3DRangeScanPtr m_curr_laser_scan3D;
 
-    // last insertede node in the graph
+		// last insertede node in the graph
 		mrpt::utils::TNodeID m_nodeID_max;
 
 		// sliding window for managing the ICP goodness values
