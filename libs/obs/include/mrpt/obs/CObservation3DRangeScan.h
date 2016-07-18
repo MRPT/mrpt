@@ -41,9 +41,14 @@ namespace obs
 	struct OBS_IMPEXP T3DPointsTo2DScanParams
 	{
 		std::string  sensorLabel;    //!< The sensor label that will have the newly created observation.
-		double angle_sup, angle_inf; //!< (Default=5 degrees) The upper & lower half-FOV angle (in radians).
+		double angle_sup, angle_inf; //!< (Default=5 degrees) The upper & lower half-FOV angle (in radians). Ignored if use_origin_sensor_pose=true.
 		double oversampling_ratio;   //!< (Default=1.2=120%) How many more laser scans rays to create (read docs for CObservation3DRangeScan::convertTo2DScan()).
-		T3DPointsTo2DScanParams() : angle_sup(mrpt::utils::DEG2RAD(5)), angle_inf(mrpt::utils::DEG2RAD(5)),oversampling_ratio(1.2)
+		
+		/** (Default:false) If `false`, the conversion will be such that the 2D observation pose on the robot coincides with that in the original 3D range scan. 
+		  * If `true`, the sensed points will be "reprojected" as seen from a sensor pose at the robot/vehicle frame origin  (and angle_sup, angle_inf will be ignored) */
+		bool use_origin_sensor_pose;
+
+		T3DPointsTo2DScanParams() : angle_sup(mrpt::utils::DEG2RAD(5)), angle_inf(mrpt::utils::DEG2RAD(5)),oversampling_ratio(1.2),use_origin_sensor_pose(false)
 		{}
 	};
 
@@ -249,10 +254,14 @@ namespace obs
 		  *  Obviously, a requisite for calling this method is the 3D observation having range data,
 		  *  i.e. hasRangeImage must be true. It's not needed to have RGB data nor the raw 3D point clouds
 		  *  for this method to work.
+		  *  
+		  *  If `scanParams.use_origin_sensor_pose` is `true`, the points will be projected to 3D and then reprojected 
+		  *  as seen from a different sensorPose at the vehicle frame origin. Otherwise (the default), the output 2D observation will share the sensorPose of the input 3D scan 
+		  *  (using a more efficient algorithm that avoids trigonometric functions).
 		  *
 		  *  \param[out] out_scan2d The resulting 2D equivalent scan.
 		  *
-		  * \sa The example in http://www.mrpt.org/Example_Kinect_To_2D_laser_scan
+		  * \sa The example in http://www.mrpt.org/tutorials/mrpt-examples/example-kinect-to-2d-laser-demo/
 		  */
 		void convertTo2DScan(mrpt::obs::CObservation2DRangeScan & out_scan2d, const T3DPointsTo2DScanParams &scanParams, const TRangeImageFilterParams &filterParams = TRangeImageFilterParams() );
 

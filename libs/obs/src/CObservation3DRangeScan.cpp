@@ -12,6 +12,7 @@
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/poses/CPosePDF.h>
 #include <mrpt/utils/CStream.h>
+#include <mrpt/opengl/CPointCloud.h>
 
 #include <mrpt/math/CMatrix.h>
 #include <mrpt/math/CLevenbergMarquardt.h>
@@ -932,17 +933,22 @@ void CObservation3DRangeScan::convertTo2DScan(mrpt::obs::CObservation2DRangeScan
 	// Now, we should create more "fake laser" points than columns in the image,
 	//  since laser scans are assumed to sample space at evenly-spaced angles,
 	//  while in images it is like ~tan(angle).
-	ASSERT_ABOVE_(sp.oversampling_ratio,1.0)
+	ASSERT_ABOVEEQ_(sp.oversampling_ratio,1.0)
 	const size_t nLaserRays = static_cast<size_t>( nCols * sp.oversampling_ratio );
-
 
 	// Prepare 2D scan data fields:
 	out_scan2d.aperture = FOV_equiv;
 	out_scan2d.maxRange = this->maxRange;
-	out_scan2d.sensorPose = this->sensorPose;
 	out_scan2d.rightToLeft = false;
 	out_scan2d.validRange.assign(nLaserRays, false);  // default: all ranges=invalid
-	out_scan2d.scan.assign(nLaserRays, 0);
+	out_scan2d.scan.assign(nLaserRays, 2.0 * this->maxRange);	
+	if (sp.use_origin_sensor_pose)
+	     out_scan2d.sensorPose = mrpt::poses::CPose3D();
+	else out_scan2d.sensorPose = this->sensorPose;
+
+	// The vertical FOVs given by the user can be translated into limits of the tangents (tan>0 means above, i.e. z>0):
+	const float tan_min = -tan( std::abs(sp.angle_inf) );
+	const float tan_max =  tan( std::abs(sp.angle_sup) );
 
 	// Precompute the tangents of the vertical angles of each "ray"
 	// for every row in the range image:
@@ -950,52 +956,83 @@ void CObservation3DRangeScan::convertTo2DScan(mrpt::obs::CObservation2DRangeScan
 	for (size_t r=0;r<nRows;r++)
 		vert_ang_tan[r] = static_cast<float>( (cy-r)/fy );
 
-	// The vertical FOVs given by the user can be translated into limits of the tangents (tan>0 means above, i.e. z>0):
-	const float tan_min = -tan( std::abs(sp.angle_inf) );
-	const float tan_max =  tan( std::abs(sp.angle_sup) );
-
-	// Angle "counter" for the fake laser scan direction, and the increment:
-	double ang  = -FOV_equiv*0.5;
-	const double A_ang = FOV_equiv/(nLaserRays-1);
-
-	TRangeImageFilter rif(fp);
-
-	// Go thru columns, and keep the minimum distance (along the +X axis, not 3D distance!)
-	// for each direction (i.e. for each column) which also lies within the vertical FOV passed
-	// by the user.
-	for (size_t i=0;i<nLaserRays;i++, ang+=A_ang )
+	if (!sp.use_origin_sensor_pose)
 	{
-		// Equivalent column in the range image for the "i'th" ray:
-		const double tan_ang = tan(ang);
-		// make sure we don't go out of range (just in case):
-		const size_t c = std::min(static_cast<size_t>(std::max(0.0,cx + fx*tan_ang)),nCols-1);
+		// Algorithm 1: each column in the range image corresponds to a known orientation in the 2D scan:
+		// -------------------
 
-		bool any_valid = false;
-		float closest_range = out_scan2d.maxRange;
+		// Angle "counter" for the fake laser scan direction, and the increment:
+		double ang  = -FOV_equiv*0.5;
+		const double A_ang = FOV_equiv/(nLaserRays-1);
 
-		for (size_t r=0;r<nRows;r++)
+		TRangeImageFilter rif(fp);
+
+		// Go thru columns, and keep the minimum distance (along the +X axis, not 3D distance!)
+		// for each direction (i.e. for each column) which also lies within the vertical FOV passed
+		// by the user.
+		for (size_t i=0;i<nLaserRays;i++, ang+=A_ang )
 		{
-			const float D = this->rangeImage.coeff(r,c);
-			if (!rif.do_range_filter(r,c,D))
+			// Equivalent column in the range image for the "i'th" ray:
+			const double tan_ang = tan(ang);
+			// make sure we don't go out of range (just in case):
+			const size_t c = std::min(static_cast<size_t>(std::max(0.0,cx + fx*tan_ang)),nCols-1);
+
+			bool any_valid = false;
+			float closest_range = out_scan2d.maxRange;
+
+			for (size_t r=0;r<nRows;r++)
+			{
+				const float D = this->rangeImage.coeff(r,c);
+				if (!rif.do_range_filter(r,c,D))
+					continue;
+
+				// All filters passed:
+				const float this_point_tan = vert_ang_tan[r] * D;
+				if (this_point_tan>tan_min && this_point_tan<tan_max)
+				{
+					any_valid = true;
+					mrpt::utils::keep_min(closest_range, D);
+				}
+			}
+
+			if (any_valid)
+			{
+				out_scan2d.validRange[i] = true;
+				// Compute the distance in 2D from the "depth" in closest_range:
+				out_scan2d.scan[i] = closest_range*std::sqrt(1.0+tan_ang*tan_ang);
+			}
+		} // end for columns
+	}
+	else
+	{
+		// Algorithm 2: project to 3D and reproject (for a different sensorPose at the origin)
+		// ------------------------------------------------------------------------
+		T3DPointsProjectionParams projParams;
+		projParams.takeIntoAccountSensorPoseOnRobot = true;
+		
+		mrpt::opengl::CPointCloudPtr pc = mrpt::opengl::CPointCloud::Create();
+		this->project3DPointsFromDepthImageInto(*pc, projParams, fp);
+
+		const std::vector<float> & xs = pc->getArrayX(), &ys = pc->getArrayY(), &zs = pc->getArrayZ();
+		const size_t N = xs.size();
+
+		const double A_ang = FOV_equiv/(nLaserRays-1);
+		const double ang0  = -FOV_equiv*0.5;
+
+		for (size_t i=0;i<N;i++)
+		{
+			const double phi_wrt_origin = atan2(ys[i], xs[i]);
+
+			int i_range = (phi_wrt_origin-ang0)/A_ang;
+			if (i_range<0 || i_range>=int(N))
 				continue;
 
-			// All filters passed:
-			const float this_point_tan = vert_ang_tan[r] * D;
-			if (this_point_tan>tan_min && this_point_tan<tan_max)
-			{
-				any_valid = true;
-				mrpt::utils::keep_min(closest_range, D);
-			}
+			const float  r_wrt_origin = ::hypotf(xs[i],ys[i]);
+			mrpt::utils::keep_min( out_scan2d.scan[i_range], r_wrt_origin);
+			out_scan2d.validRange[i_range] = true;
 		}
 
-		if (any_valid)
-		{
-			out_scan2d.validRange[i] = true;
-			// Compute the distance in 2D from the "depth" in closest_range:
-			out_scan2d.scan[i] = closest_range*std::sqrt(1.0+tan_ang*tan_ang);
-		}
-	} // end for columns
-
+	}
 }
 	
 void CObservation3DRangeScan::getDescriptionAsText(std::ostream &o) const
