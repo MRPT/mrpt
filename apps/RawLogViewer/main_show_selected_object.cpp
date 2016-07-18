@@ -72,6 +72,25 @@ void xRawLogViewerFrame::SelectObjectInTreeView( const CSerializablePtr & sel_ob
 			CObservationPtr obs( sel_obj );
 			obs->load();
 			obs->getDescriptionAsText(cout);
+
+			// Special cases:
+			if ( IS_CLASS(sel_obj, CObservation2DRangeScan) )
+			{
+				CObservation2DRangeScanPtr obs_scan2d = CObservation2DRangeScanPtr(sel_obj);
+
+				mrpt::maps::CSimplePointsMap pts;
+				pts.insertionOptions.minDistBetweenLaserPoints = .0;
+
+				pts.loadFromRangeScan(*obs_scan2d);
+
+				cout << "2D coordinates of valid points (wrt to robot/vehicle frame, " << pts.size() << " points)\n";
+				cout << "pts=[";
+				const std::vector<float> & xs = pts.getPointsBufferRef_x();
+				const std::vector<float> & ys = pts.getPointsBufferRef_y();
+				for (size_t i=0;i<xs.size();i++) cout << format("%7.04f %7.04f;", xs[i],ys[i] );
+				cout << "]\n\n";
+			}
+
 			curSelectedObservation = CObservationPtr( sel_obj );
 		}
 		if ( classID->derivedFrom( CLASS_ID( CAction ) ) )
