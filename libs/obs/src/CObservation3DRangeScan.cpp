@@ -933,7 +933,7 @@ void CObservation3DRangeScan::convertTo2DScan(mrpt::obs::CObservation2DRangeScan
 	// Now, we should create more "fake laser" points than columns in the image,
 	//  since laser scans are assumed to sample space at evenly-spaced angles,
 	//  while in images it is like ~tan(angle).
-	ASSERT_ABOVEEQ_(sp.oversampling_ratio,1.0)
+	ASSERT_ABOVE_(sp.oversampling_ratio, sp.use_origin_sensor_pose ? 0.0 : 1.0)
 	const size_t nLaserRays = static_cast<size_t>( nCols * sp.oversampling_ratio );
 
 	// Prepare 2D scan data fields:
