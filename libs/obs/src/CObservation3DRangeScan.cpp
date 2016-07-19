@@ -24,6 +24,8 @@
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/string_utils.h>
 
+#include <limits>
+
 using namespace std;
 using namespace mrpt::obs;
 using namespace mrpt::utils;
@@ -933,7 +935,7 @@ void CObservation3DRangeScan::convertTo2DScan(mrpt::obs::CObservation2DRangeScan
 	// Now, we should create more "fake laser" points than columns in the image,
 	//  since laser scans are assumed to sample space at evenly-spaced angles,
 	//  while in images it is like ~tan(angle).
-	ASSERT_ABOVE_(sp.oversampling_ratio, sp.use_origin_sensor_pose ? 0.0 : 1.0)
+	ASSERT_ABOVE_(sp.oversampling_ratio, (sp.use_origin_sensor_pose ? 0.0 : 1.0) );
 	const size_t nLaserRays = static_cast<size_t>( nCols * sp.oversampling_ratio );
 
 	// Prepare 2D scan data fields:
@@ -1021,6 +1023,9 @@ void CObservation3DRangeScan::convertTo2DScan(mrpt::obs::CObservation2DRangeScan
 
 		for (size_t i=0;i<N;i++)
 		{
+			if (zs[i]<sp.z_min || zs[i]>sp.z_max)
+				continue;
+
 			const double phi_wrt_origin = atan2(ys[i], xs[i]);
 
 			int i_range = (phi_wrt_origin-ang0)/A_ang;
@@ -1165,3 +1170,9 @@ CObservation3DRangeScan::TPixelLabelInfoBase* CObservation3DRangeScan::TPixelLab
 
 }
 
+T3DPointsTo2DScanParams::T3DPointsTo2DScanParams() : 
+	angle_sup(mrpt::utils::DEG2RAD(5)), angle_inf(mrpt::utils::DEG2RAD(5)),
+	z_min(-std::numeric_limits<double>::max() ),z_max(std::numeric_limits<double>::max()),
+	oversampling_ratio(1.2),use_origin_sensor_pose(false)
+{
+}
