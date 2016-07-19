@@ -41,15 +41,15 @@ namespace obs
 	struct OBS_IMPEXP T3DPointsTo2DScanParams
 	{
 		std::string  sensorLabel;    //!< The sensor label that will have the newly created observation.
-		double angle_sup, angle_inf; //!< (Default=5 degrees) The upper & lower half-FOV angle (in radians). Ignored if use_origin_sensor_pose=true.
+		double angle_sup, angle_inf; //!< (Default=5 degrees) [Only if use_origin_sensor_pose=false] The upper & lower half-FOV angle (in radians).
+		double z_min,z_max;          //!< (Default:-inf, +inf) [Only if use_origin_sensor_pose=true] Only obstacle points with Z coordinates within the range [z_min,z_max] will be taken into account.
 		double oversampling_ratio;   //!< (Default=1.2=120%) How many more laser scans rays to create (read docs for CObservation3DRangeScan::convertTo2DScan()).
 		
 		/** (Default:false) If `false`, the conversion will be such that the 2D observation pose on the robot coincides with that in the original 3D range scan. 
 		  * If `true`, the sensed points will be "reprojected" as seen from a sensor pose at the robot/vehicle frame origin  (and angle_sup, angle_inf will be ignored) */
 		bool use_origin_sensor_pose;
 
-		T3DPointsTo2DScanParams() : angle_sup(mrpt::utils::DEG2RAD(5)), angle_inf(mrpt::utils::DEG2RAD(5)),oversampling_ratio(1.2),use_origin_sensor_pose(false)
-		{}
+		T3DPointsTo2DScanParams();
 	};
 
 	namespace detail {
