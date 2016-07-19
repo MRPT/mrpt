@@ -12,6 +12,7 @@
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/poses/CPosePDF.h>
 #include <mrpt/utils/CStream.h>
+#include <mrpt/opengl/CPointCloud.h>
 
 #include <mrpt/math/CMatrix.h>
 #include <mrpt/math/CLevenbergMarquardt.h>
@@ -20,6 +21,10 @@
 #include <mrpt/utils/CFileGZOutputStream.h>
 #include <mrpt/utils/CTimeLogger.h>
 #include <mrpt/utils/CConfigFileMemory.h>
+#include <mrpt/system/filesystem.h>
+#include <mrpt/system/string_utils.h>
+
+#include <limits>
 
 using namespace std;
 using namespace mrpt::obs;
@@ -33,9 +38,8 @@ IMPLEMENTS_SERIALIZABLE(CObservation3DRangeScan, CObservation,mrpt::obs)
 // Static LUT:
 CObservation3DRangeScan::TCached3DProjTables CObservation3DRangeScan::m_3dproj_lut;
 
+bool CObservation3DRangeScan::EXTERNALS_AS_TEXT = false;
 
-// Whether external files for 3D points & range are text or binary.
-//#define EXTERNALS_AS_TEXT
 
 // Whether to use a memory pool for 3D points:
 #define COBS3DRANGE_USE_MEMPOOL
@@ -406,28 +410,35 @@ void CObservation3DRangeScan::load() const
 	if (hasPoints3D && m_points3D_external_stored)
 	{
 		const string fil = points3D_getExternalStorageFileAbsolutePath();
-#ifdef EXTERNALS_AS_TEXT
-		CMatrixFloat M;
-		M.loadFromTextFile(fil);
+		if (mrpt::system::strCmpI("txt",mrpt::system::extractFileExtension(fil,true)))
+		{
+			CMatrixFloat M;
+			M.loadFromTextFile(fil);
+			ASSERT_EQUAL_(M.rows(),3);
 
-		M.extractRow(0,const_cast<std::vector<float>&>(points3D_x));
-		M.extractRow(1,const_cast<std::vector<float>&>(points3D_y));
-		M.extractRow(2,const_cast<std::vector<float>&>(points3D_z));
-#else
-		mrpt::utils::CFileGZInputStream f(fil);
-		f >> const_cast<std::vector<float>&>(points3D_x) >> const_cast<std::vector<float>&>(points3D_y) >> const_cast<std::vector<float>&>(points3D_z);
-#endif
+			M.extractRow(0,const_cast<std::vector<float>&>(points3D_x));
+			M.extractRow(1,const_cast<std::vector<float>&>(points3D_y));
+			M.extractRow(2,const_cast<std::vector<float>&>(points3D_z));
+		}
+		else
+		{
+			mrpt::utils::CFileGZInputStream f(fil);
+			f >> const_cast<std::vector<float>&>(points3D_x) >> const_cast<std::vector<float>&>(points3D_y) >> const_cast<std::vector<float>&>(points3D_z);
+		}
 	}
 
 	if (hasRangeImage && m_rangeImage_external_stored)
 	{
 		const string fil = rangeImage_getExternalStorageFileAbsolutePath();
-#ifdef EXTERNALS_AS_TEXT
-		const_cast<CMatrix&>(rangeImage).loadFromTextFile(fil);
-#else
-		mrpt::utils::CFileGZInputStream f(fil);
-		f >> const_cast<CMatrix&>(rangeImage);
-#endif
+		if (mrpt::system::strCmpI("txt",mrpt::system::extractFileExtension(fil,true)))
+		{
+			const_cast<CMatrix&>(rangeImage).loadFromTextFile(fil);
+		}
+		else
+		{
+			mrpt::utils::CFileGZInputStream f(fil);
+			f >> const_cast<CMatrix&>(rangeImage);
+		}
 	}
 }
 
@@ -480,10 +491,14 @@ void CObservation3DRangeScan::points3D_getExternalStorageFileAbsolutePath(std::s
 	}
 }
 
-void CObservation3DRangeScan::points3D_convertToExternalStorage( const std::string &fileName, const std::string &use_this_base_dir )
+void CObservation3DRangeScan::points3D_convertToExternalStorage( const std::string &fileName_, const std::string &use_this_base_dir )
 {
 	ASSERT_(!points3D_isExternallyStored())
-	m_points3D_external_file = fileName;
+	ASSERT_(points3D_x.size()==points3D_y.size() && points3D_x.size()==points3D_z.size())
+
+	if (EXTERNALS_AS_TEXT)
+	     m_points3D_external_file = mrpt::system::fileNameChangeExtension(fileName_,"txt");
+	else m_points3D_external_file = mrpt::system::fileNameChangeExtension(fileName_,"bin");
 
 	// Use "use_this_base_dir" in "*_getExternalStorageFileAbsolutePath()" instead of CImage::IMAGES_PATH_BASE
 	const string savedDir = CImage::IMAGES_PATH_BASE;
@@ -491,23 +506,24 @@ void CObservation3DRangeScan::points3D_convertToExternalStorage( const std::stri
 	const string real_absolute_file_path = points3D_getExternalStorageFileAbsolutePath();
 	CImage::IMAGES_PATH_BASE = savedDir;
 
-	ASSERT_(points3D_x.size()==points3D_y.size() && points3D_x.size()==points3D_z.size())
+	if (EXTERNALS_AS_TEXT)
+	{
+		const size_t nPts = points3D_x.size();
 
-#ifdef EXTERNALS_AS_TEXT
-	const size_t nPts = points3D_x.size();
+		CMatrixFloat M(3,nPts);
+		M.insertRow(0,points3D_x);
+		M.insertRow(1,points3D_y);
+		M.insertRow(2,points3D_z);
 
-	CMatrixFloat M(3,nPts);
-	M.insertRow(0,points3D_x);
-	M.insertRow(1,points3D_y);
-	M.insertRow(2,points3D_z);
-
-	M.saveToTextFile(
-		real_absolute_file_path,
-		MATRIX_FORMAT_FIXED );
-#else
-	mrpt::utils::CFileGZOutputStream f(real_absolute_file_path);
-	f  << points3D_x << points3D_y << points3D_z;
-#endif
+		M.saveToTextFile(
+			real_absolute_file_path,
+			MATRIX_FORMAT_FIXED );
+	}
+	else
+	{
+		mrpt::utils::CFileGZOutputStream f(real_absolute_file_path);
+		f  << points3D_x << points3D_y << points3D_z;
+	}
 
 	m_points3D_external_stored = true;
 
@@ -515,11 +531,15 @@ void CObservation3DRangeScan::points3D_convertToExternalStorage( const std::stri
 	vector_strong_clear(points3D_x);
 	vector_strong_clear(points3D_y);
 	vector_strong_clear(points3D_z);
+	vector_strong_clear(points3D_idxs_x);
+	vector_strong_clear(points3D_idxs_y);
 }
-void CObservation3DRangeScan::rangeImage_convertToExternalStorage( const std::string &fileName, const std::string &use_this_base_dir )
+void CObservation3DRangeScan::rangeImage_convertToExternalStorage( const std::string &fileName_, const std::string &use_this_base_dir )
 {
 	ASSERT_(!rangeImage_isExternallyStored())
-	m_rangeImage_external_file = fileName;
+	if (EXTERNALS_AS_TEXT)
+	     m_rangeImage_external_file = mrpt::system::fileNameChangeExtension(fileName_,"txt");
+	else m_rangeImage_external_file = mrpt::system::fileNameChangeExtension(fileName_,"bin");
 
 	// Use "use_this_base_dir" in "*_getExternalStorageFileAbsolutePath()" instead of CImage::IMAGES_PATH_BASE
 	const string savedDir = CImage::IMAGES_PATH_BASE;
@@ -527,14 +547,17 @@ void CObservation3DRangeScan::rangeImage_convertToExternalStorage( const std::st
 	const string real_absolute_file_path = rangeImage_getExternalStorageFileAbsolutePath();
 	CImage::IMAGES_PATH_BASE = savedDir;
 
-#ifdef EXTERNALS_AS_TEXT
-	rangeImage.saveToTextFile(
-		real_absolute_file_path,
-		MATRIX_FORMAT_FIXED );
-#else
-	mrpt::utils::CFileGZOutputStream f(real_absolute_file_path);
-	f  << rangeImage;
-#endif
+	if (EXTERNALS_AS_TEXT)
+	{
+		rangeImage.saveToTextFile(
+			real_absolute_file_path,
+			MATRIX_FORMAT_FIXED );
+	}
+	else 
+	{
+		mrpt::utils::CFileGZOutputStream f(real_absolute_file_path);
+		f  << rangeImage;
+	}
 
 	m_rangeImage_external_stored = true;
 	rangeImage.setSize(0,0);
@@ -912,17 +935,22 @@ void CObservation3DRangeScan::convertTo2DScan(mrpt::obs::CObservation2DRangeScan
 	// Now, we should create more "fake laser" points than columns in the image,
 	//  since laser scans are assumed to sample space at evenly-spaced angles,
 	//  while in images it is like ~tan(angle).
-	ASSERT_ABOVE_(sp.oversampling_ratio,1.0)
+	ASSERT_ABOVE_(sp.oversampling_ratio, (sp.use_origin_sensor_pose ? 0.0 : 1.0) );
 	const size_t nLaserRays = static_cast<size_t>( nCols * sp.oversampling_ratio );
-
 
 	// Prepare 2D scan data fields:
 	out_scan2d.aperture = FOV_equiv;
 	out_scan2d.maxRange = this->maxRange;
-	out_scan2d.sensorPose = this->sensorPose;
 	out_scan2d.rightToLeft = false;
 	out_scan2d.validRange.assign(nLaserRays, false);  // default: all ranges=invalid
-	out_scan2d.scan.assign(nLaserRays, 0);
+	out_scan2d.scan.assign(nLaserRays, 2.0 * this->maxRange);	
+	if (sp.use_origin_sensor_pose)
+	     out_scan2d.sensorPose = mrpt::poses::CPose3D();
+	else out_scan2d.sensorPose = this->sensorPose;
+
+	// The vertical FOVs given by the user can be translated into limits of the tangents (tan>0 means above, i.e. z>0):
+	const float tan_min = -tan( std::abs(sp.angle_inf) );
+	const float tan_max =  tan( std::abs(sp.angle_sup) );
 
 	// Precompute the tangents of the vertical angles of each "ray"
 	// for every row in the range image:
@@ -930,52 +958,86 @@ void CObservation3DRangeScan::convertTo2DScan(mrpt::obs::CObservation2DRangeScan
 	for (size_t r=0;r<nRows;r++)
 		vert_ang_tan[r] = static_cast<float>( (cy-r)/fy );
 
-	// The vertical FOVs given by the user can be translated into limits of the tangents (tan>0 means above, i.e. z>0):
-	const float tan_min = -tan( std::abs(sp.angle_inf) );
-	const float tan_max =  tan( std::abs(sp.angle_sup) );
-
-	// Angle "counter" for the fake laser scan direction, and the increment:
-	double ang  = -FOV_equiv*0.5;
-	const double A_ang = FOV_equiv/(nLaserRays-1);
-
-	TRangeImageFilter rif(fp);
-
-	// Go thru columns, and keep the minimum distance (along the +X axis, not 3D distance!)
-	// for each direction (i.e. for each column) which also lies within the vertical FOV passed
-	// by the user.
-	for (size_t i=0;i<nLaserRays;i++, ang+=A_ang )
+	if (!sp.use_origin_sensor_pose)
 	{
-		// Equivalent column in the range image for the "i'th" ray:
-		const double tan_ang = tan(ang);
-		// make sure we don't go out of range (just in case):
-		const size_t c = std::min(static_cast<size_t>(std::max(0.0,cx + fx*tan_ang)),nCols-1);
+		// Algorithm 1: each column in the range image corresponds to a known orientation in the 2D scan:
+		// -------------------
 
-		bool any_valid = false;
-		float closest_range = out_scan2d.maxRange;
+		// Angle "counter" for the fake laser scan direction, and the increment:
+		double ang  = -FOV_equiv*0.5;
+		const double A_ang = FOV_equiv/(nLaserRays-1);
 
-		for (size_t r=0;r<nRows;r++)
+		TRangeImageFilter rif(fp);
+
+		// Go thru columns, and keep the minimum distance (along the +X axis, not 3D distance!)
+		// for each direction (i.e. for each column) which also lies within the vertical FOV passed
+		// by the user.
+		for (size_t i=0;i<nLaserRays;i++, ang+=A_ang )
 		{
-			const float D = this->rangeImage.coeff(r,c);
-			if (!rif.do_range_filter(r,c,D))
+			// Equivalent column in the range image for the "i'th" ray:
+			const double tan_ang = tan(ang);
+			// make sure we don't go out of range (just in case):
+			const size_t c = std::min(static_cast<size_t>(std::max(0.0,cx + fx*tan_ang)),nCols-1);
+
+			bool any_valid = false;
+			float closest_range = out_scan2d.maxRange;
+
+			for (size_t r=0;r<nRows;r++)
+			{
+				const float D = this->rangeImage.coeff(r,c);
+				if (!rif.do_range_filter(r,c,D))
+					continue;
+
+				// All filters passed:
+				const float this_point_tan = vert_ang_tan[r] * D;
+				if (this_point_tan>tan_min && this_point_tan<tan_max)
+				{
+					any_valid = true;
+					mrpt::utils::keep_min(closest_range, D);
+				}
+			}
+
+			if (any_valid)
+			{
+				out_scan2d.validRange[i] = true;
+				// Compute the distance in 2D from the "depth" in closest_range:
+				out_scan2d.scan[i] = closest_range*std::sqrt(1.0+tan_ang*tan_ang);
+			}
+		} // end for columns
+	}
+	else
+	{
+		// Algorithm 2: project to 3D and reproject (for a different sensorPose at the origin)
+		// ------------------------------------------------------------------------
+		T3DPointsProjectionParams projParams;
+		projParams.takeIntoAccountSensorPoseOnRobot = true;
+		
+		mrpt::opengl::CPointCloudPtr pc = mrpt::opengl::CPointCloud::Create();
+		this->project3DPointsFromDepthImageInto(*pc, projParams, fp);
+
+		const std::vector<float> & xs = pc->getArrayX(), &ys = pc->getArrayY(), &zs = pc->getArrayZ();
+		const size_t N = xs.size();
+
+		const double A_ang = FOV_equiv/(nLaserRays-1);
+		const double ang0  = -FOV_equiv*0.5;
+
+		for (size_t i=0;i<N;i++)
+		{
+			if (zs[i]<sp.z_min || zs[i]>sp.z_max)
 				continue;
 
-			// All filters passed:
-			const float this_point_tan = vert_ang_tan[r] * D;
-			if (this_point_tan>tan_min && this_point_tan<tan_max)
-			{
-				any_valid = true;
-				mrpt::utils::keep_min(closest_range, D);
-			}
+			const double phi_wrt_origin = atan2(ys[i], xs[i]);
+
+			int i_range = (phi_wrt_origin-ang0)/A_ang;
+			if (i_range<0 || i_range>=int(N))
+				continue;
+
+			const float  r_wrt_origin = ::hypotf(xs[i],ys[i]);
+			mrpt::utils::keep_min( out_scan2d.scan[i_range], r_wrt_origin);
+			out_scan2d.validRange[i_range] = true;
 		}
 
-		if (any_valid)
-		{
-			out_scan2d.validRange[i] = true;
-			// Compute the distance in 2D from the "depth" in closest_range:
-			out_scan2d.scan[i] = closest_range*std::sqrt(1.0+tan_ang*tan_ang);
-		}
-	} // end for columns
-
+	}
 }
 	
 void CObservation3DRangeScan::getDescriptionAsText(std::ostream &o) const
@@ -1108,3 +1170,9 @@ CObservation3DRangeScan::TPixelLabelInfoBase* CObservation3DRangeScan::TPixelLab
 
 }
 
+T3DPointsTo2DScanParams::T3DPointsTo2DScanParams() : 
+	angle_sup(mrpt::utils::DEG2RAD(5)), angle_inf(mrpt::utils::DEG2RAD(5)),
+	z_min(-std::numeric_limits<double>::max() ),z_max(std::numeric_limits<double>::max()),
+	oversampling_ratio(1.2),use_origin_sensor_pose(false)
+{
+}

@@ -13,6 +13,7 @@
 #include <mrpt/utils/types_math.h>
 #include <mrpt/math/num_jacobian.h>
 #include <mrpt/utils/printf_vector.h>
+#include <mrpt/math/ops_containers.h>
 
 /*---------------------------------------------------------------
 	Class
@@ -156,7 +157,7 @@ namespace math
 				double h_lm_n2 = math::norm(h_lm);
 				double x_n2 = math::norm(x);
 
-				if (verbose) printf_debug( (format("[LM] Iter: %u x:",(unsigned)iter)+ sprintf_vector(" %f",x) + std::string("\n")).c_str() );
+				if (verbose) printf_debug("[LM] Iter:%u x=%s\n",(unsigned)iter,sprintf_vector(" %f",x).c_str() );
 
 				if (h_lm_n2<e2*(x_n2+e2))
 				{

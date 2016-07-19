@@ -12,6 +12,7 @@
 #include <mrpt/nav/reactive/CLogFileRecord.h>
 #include <mrpt/poses/CPoint2D.h>
 #include <mrpt/utils/CStream.h>
+#include <mrpt/utils/stl_serialization.h>
 
 using namespace mrpt::nav;
 
@@ -29,74 +30,9 @@ CLogFileRecord::CLogFileRecord() :
 	WS_Obstacles.clear();
 }
 
-/*---------------------------------------------------------------
-					Copy constructor
-  ---------------------------------------------------------------*/
-void CLogFileRecord::operator =( CLogFileRecord &o)
-{
-	// Free CHolonomicLogFileRecord objects:
-	// ----------------------------------------
-	freeInfoPerPTGs();
-
-	// Copy
-	// --------------------------
-	infoPerPTG.resize( o.infoPerPTG.size() );
-	for (unsigned int i=0;i<o.infoPerPTG.size();i++)
-	{
-		infoPerPTG[i] = o.infoPerPTG[i];
-		// Copy the pointer only:
-		infoPerPTG[i].HLFR = o.infoPerPTG[i].HLFR;
-		o.infoPerPTG[i].HLFR.clear_unique();
-	}
-
-	WS_Obstacles = o.WS_Obstacles;
-	WS_target_relative = o.WS_target_relative;
-	robotOdometryPose = o.robotOdometryPose;
-	v = o.v;
-	w = o.w;
-	nSelectedPTG = o.nSelectedPTG;
-	executionTime = o.executionTime;
-	estimatedExecutionPeriod = o.estimatedExecutionPeriod;
-
-	robotShape_x=o.robotShape_x;
-	robotShape_y=o.robotShape_y;
-
-	actual_v = o.actual_v;
-	actual_w = o.actual_w;
-
-    timestamp = o.timestamp;
-	nPTGs = o.nPTGs;
-
-	navigatorBehavior = o.navigatorBehavior;
-}
-
-
-/*---------------------------------------------------------------
-					freeInfoPerPTGs
-  ---------------------------------------------------------------*/
-void  CLogFileRecord::freeInfoPerPTGs()
-{
-	int	i,n;
-	try
-	{
-		n = infoPerPTG.size();
-		for (i=0;i<n;i++)
-		{
-			infoPerPTG[i].HLFR.clear_unique();
-		}
-	} catch(...) { };
-
-	infoPerPTG.clear();
-}
-
-/*---------------------------------------------------------------
-					Destructor
-  ---------------------------------------------------------------*/
 CLogFileRecord::~CLogFileRecord()
 {
-	freeInfoPerPTGs();
 }
-
 
 /*---------------------------------------------------------------
 						writeToStream
@@ -104,7 +40,7 @@ CLogFileRecord::~CLogFileRecord()
 void  CLogFileRecord::writeToStream(mrpt::utils::CStream &out,int *version) const
 {
 	if (version)
-		*version = 9;
+		*version = 12;
 	else
 	{
 		uint32_t	i,n;
@@ -121,19 +57,17 @@ void  CLogFileRecord::writeToStream(mrpt::utils::CStream &out,int *version) cons
 			if (m) out.WriteBuffer((const void*)&(*infoPerPTG[i].TP_Obstacles.begin()), m * sizeof(infoPerPTG[i].TP_Obstacles[0]));
 
 			out << infoPerPTG[i].TP_Target;  // v8: CPoint2D -> TPoint2D
-			out << infoPerPTG[i].timeForTPObsTransformation << infoPerPTG[i].timeForHolonomicMethod;
-			out << infoPerPTG[i].desiredDirection << infoPerPTG[i].desiredSpeed << infoPerPTG[i].evaluation;
+			out << infoPerPTG[i].timeForTPObsTransformation << infoPerPTG[i].timeForHolonomicMethod; // made double in v12
+			out << infoPerPTG[i].desiredDirection << infoPerPTG[i].desiredSpeed << infoPerPTG[i].evaluation; // made double in v12
 			out << *infoPerPTG[i].HLFR;
 
 			// Version 9: Removed security distances. Added optional field with PTG info.
-			const bool there_is_ptg_data = infoPerPTG[i].ptg_trajectory.present();
+			const bool there_is_ptg_data = infoPerPTG[i].ptg.present();
 			out << there_is_ptg_data;
 			if (there_is_ptg_data)
-			{
-				infoPerPTG[i].ptg_trajectory->saveTrajectories( out );
-			}
+				out << infoPerPTG[i].ptg;
 		}
-		out << nSelectedPTG << WS_Obstacles << robotOdometryPose << WS_target_relative /*v8*/ << v << w << executionTime;
+		out << nSelectedPTG << WS_Obstacles << robotOdometryPose << WS_target_relative /*v8*/ << cmd_vel /*v10*/ << executionTime;
 
 		// Previous values: REMOVED IN VERSION #6
 
@@ -145,7 +79,7 @@ void  CLogFileRecord::writeToStream(mrpt::utils::CStream &out,int *version) cons
 		}
 
 		// Version 1 ---------
-		out << actual_v << actual_w;
+		out << cur_vel<< cur_vel_local; /*v10*/ 
 
 		// Version 2 ----------
 		out << estimatedExecutionPeriod;
@@ -163,11 +97,12 @@ void  CLogFileRecord::writeToStream(mrpt::utils::CStream &out,int *version) cons
 		// Version 4 ----------
 		out << nPTGs;
 
-		// Version 5 -----------
-		out << navigatorBehavior; // Removed in version 6: << doorCrossing_P1 << doorCrossing_P2;
-
 		// version 7:
 		out << timestamp;
+
+		out << robotShape_radius; // v11
+
+		out << cmd_vel_filterings; // v12
 	}
 }
 
@@ -188,13 +123,14 @@ void  CLogFileRecord::readFromStream(mrpt::utils::CStream &in,int version)
 	case 7:
 	case 8:
 	case 9:
+	case 10:
+	case 11:
+	case 12:
 		{
 			// Version 0 --------------
 			uint32_t  i,n;
 
-			// Free previous if required:
-			freeInfoPerPTGs();
-
+			infoPerPTG.clear();
 
 			in >> n;
 			infoPerPTG.resize(n);
@@ -218,19 +154,27 @@ void  CLogFileRecord::readFromStream(mrpt::utils::CStream &in,int version)
 					infoPerPTG[i].TP_Target = mrpt::math::TPoint2D(pos);
 				}
 
-				in >> infoPerPTG[i].timeForTPObsTransformation >> infoPerPTG[i].timeForHolonomicMethod;
-				in >> infoPerPTG[i].desiredDirection >> infoPerPTG[i].desiredSpeed >> infoPerPTG[i].evaluation;
+				if (version>=12) {
+					in >> infoPerPTG[i].timeForTPObsTransformation >> infoPerPTG[i].timeForHolonomicMethod;
+					in >> infoPerPTG[i].desiredDirection >> infoPerPTG[i].desiredSpeed >> infoPerPTG[i].evaluation;
+				} else {
+					in.ReadAsAndCastTo<float,double>(infoPerPTG[i].timeForTPObsTransformation);
+					in.ReadAsAndCastTo<float,double>(infoPerPTG[i].timeForHolonomicMethod);
+					in.ReadAsAndCastTo<float,double>(infoPerPTG[i].desiredDirection);
+					in.ReadAsAndCastTo<float,double>(infoPerPTG[i].desiredSpeed);
+					in.ReadAsAndCastTo<float,double>(infoPerPTG[i].evaluation);
+				}
+
 				in >> infoPerPTG[i].HLFR;
 
 				if (version>=9) // Extra PTG info
 				{
+					infoPerPTG[i].ptg.clear();
+
 					bool there_is_ptg_data;
 					in >> there_is_ptg_data;
-					if (there_is_ptg_data) 
-					{
-						infoPerPTG[i].ptg_trajectory = CParameterizedTrajectoryGeneratorPtr( new CPTG_Dummy );
-						infoPerPTG[i].ptg_trajectory->loadTrajectories(in);
-					}
+					if (there_is_ptg_data)
+						infoPerPTG[i].ptg = mrpt::nav::CParameterizedTrajectoryGeneratorPtr( in.ReadObject() ); 
 				}
 			}
 
@@ -245,8 +189,17 @@ void  CLogFileRecord::readFromStream(mrpt::utils::CStream &in,int version)
 				WS_target_relative = mrpt::math::TPoint2D(pos);
 			}
 			
-			in >> v >> w >> executionTime;
-
+			if (version >= 10) {
+				in >> cmd_vel;
+			}
+			else {
+				float v, w;
+				in >> v >> w;
+				cmd_vel.resize(2);
+				cmd_vel[0] = v;
+				cmd_vel[1] = w;
+			}
+			in >> executionTime;
 
 			if (version<6)
 			{
@@ -276,11 +229,19 @@ void  CLogFileRecord::readFromStream(mrpt::utils::CStream &in,int version)
 
 			if (version > 0)
 			{	// Version 1 --------------
-				in >> actual_v >> actual_w;
+				if (version >= 10) {
+					in >> cur_vel >> cur_vel_local;
+				}
+				else {
+					float actual_v, actual_w;
+					in >> actual_v >> actual_w;
+					cur_vel = mrpt::math::TTwist2D(0,0,0);
+					cur_vel_local= mrpt::math::TTwist2D(actual_v, .0, actual_w );
+				}
 			}
 			else
 			{	// Default values for old versions:
-				actual_v = actual_w = 0;
+				cur_vel = mrpt::math::TTwist2D(0,0,0);
 			}
 
 			if (version > 1)
@@ -330,8 +291,11 @@ void  CLogFileRecord::readFromStream(mrpt::utils::CStream &in,int version)
 
 			if (version > 4)
 			{
-				// Version 5 ----------
-				in >> navigatorBehavior;
+				if (version < 10)
+				{
+					int32_t navigatorBehavior; // removed in v10
+					in >> navigatorBehavior;
+				}
 
 				if (version<6)  // Removed in version 6:
 				{
@@ -339,18 +303,24 @@ void  CLogFileRecord::readFromStream(mrpt::utils::CStream &in,int version)
 					in >> doorCrossing_P1 >> doorCrossing_P2;
 				}
 			}
-			else
-			{
-				navigatorBehavior = 0;
+
+			if (version>6) {
+				in >> timestamp;
+			}
+			else {
+				timestamp = INVALID_TIMESTAMP;
 			}
 
-			if (version>6)
-			{
-			    in >> timestamp;
+			if (version>=11) {
+				in >> robotShape_radius;
+			} else {
+				robotShape_radius = 0.5;
 			}
-			else
-			{
-			    timestamp = INVALID_TIMESTAMP;
+
+			if (version>=12) {
+				in >> cmd_vel_filterings;
+			} else {
+				cmd_vel_filterings.clear();
 			}
 
 		} break;

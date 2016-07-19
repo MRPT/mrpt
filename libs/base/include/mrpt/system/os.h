@@ -156,11 +156,6 @@ namespace mrpt
 		/** Returns a const ref to a text with the same text that appears at the beginning of each MRPT file (useful for displaying the License text in GUIs) */
 		const std::string BASE_IMPEXP & getMRPTLicense();
 
-		/** Since MRPT 1.3.0 this function does nothing */
-		MRPT_DECLARE_DEPRECATED_FUNCTION("Deprecated: This function does nothing now. Do not call it.",
-		void BASE_IMPEXP registerFatalExceptionHandlers()
-		);
-
 		/** For use in  setConsoleColor */
 		enum TConsoleColor
 		{

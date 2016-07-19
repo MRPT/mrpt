@@ -48,7 +48,7 @@ namespace maps
 	 *   - mrpt::obs::CObservationRange: IRs, Sonars, etc.
 	 *   - mrpt::obs::CObservationVelodyneScan
 	 *
-	 * Loading and saving in the standard LAS LiDAR point cloud format is supported by installing `libLAS` and including the 
+	 * Loading and saving in the standard LAS LiDAR point cloud format is supported by installing `libLAS` and including the
 	 * header `<mrpt/maps/CPointsMaps_liblas.h>` in your program. Since MRPT 1.5.0 there is no need to build MRPT against libLAS to use this feature.
 	 * See LAS functions in \ref mrpt_maps_liblas_grp.
 	 *
@@ -331,7 +331,7 @@ namespace maps
 		inline void  setPoint(size_t index,mrpt::math::TPoint3D &p)  { setPoint(index,p.x,p.y,p.z); }
 		/// \overload
 		inline void  setPoint(size_t index,float x, float y) { setPoint(index,x,y,0); }
-		/// \overload (RGB data is ignored in classes without color information)
+		/// overload (RGB data is ignored in classes without color information)
 		virtual void setPoint(size_t index,float x, float y, float z, float R, float G, float B)
 		{
 			MRPT_UNUSED_PARAM(R); MRPT_UNUSED_PARAM(G); MRPT_UNUSED_PARAM(B);
@@ -382,14 +382,19 @@ namespace maps
 			MRPT_END
 		}
 
-		inline void getAllPoints(std::vector<mrpt::math::TPoint3D> &ps,size_t decimation=1) const	{
+		/** Gets all points as a STL-like container.
+		  * \tparam CONTAINER Any STL-like container of mrpt::math::TPoint3D, mrpt::math::TPoint3Df or anything having members `x`,`y`,`z`.
+		  * Note that this method is not efficient for large point clouds. Fastest methods are getPointsBuffer() or getPointsBufferRef_x(), getPointsBufferRef_y(), getPointsBufferRef_z()
+		  */
+		template <class CONTAINER>
+		void getAllPoints(CONTAINER &ps,size_t decimation=1) const	{
 			std::vector<float> dmy1,dmy2,dmy3;
 			getAllPoints(dmy1,dmy2,dmy3,decimation);
 			ps.resize(dmy1.size());
 			for (size_t i=0;i<dmy1.size();i++)	{
-				ps[i].x=static_cast<double>(dmy1[i]);
-				ps[i].y=static_cast<double>(dmy2[i]);
-				ps[i].z=static_cast<double>(dmy3[i]);
+				ps[i].x=dmy1[i];
+				ps[i].y=dmy2[i];
+				ps[i].z=dmy3[i];
 			}
 		}
 
@@ -413,9 +418,9 @@ namespace maps
 		  * classes (color, weight, etc) are left to their default values
 		  */
 		inline void  insertPoint( float x, float y, float z=0 ) { insertPointFast(x,y,z); mark_as_modified(); }
-		/// \overload of \a insertPoint()
+		/// \overload
 		inline void  insertPoint( const mrpt::math::TPoint3D &p ) { insertPoint(p.x,p.y,p.z); }
-		/// \overload (RGB data is ignored in classes without color information)
+		/// overload (RGB data is ignored in classes without color information)
 		virtual void  insertPoint( float x, float y, float z, float R, float G, float B )
 		{
 			MRPT_UNUSED_PARAM(R); MRPT_UNUSED_PARAM(G); MRPT_UNUSED_PARAM(B);

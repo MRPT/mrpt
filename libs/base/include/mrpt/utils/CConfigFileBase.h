@@ -193,10 +193,13 @@ namespace utils
 #define MRPT_LOAD_CONFIG_VAR(variableName,variableType,configFileObject,sectionNameStr) \
 	{ variableName = configFileObject.read_##variableType(sectionNameStr,#variableName,variableName); }
 
-	/** Loads a float variable, stored as radians but entered in the INI-file as degrees:
-	  */
+	/** Loads a double variable, stored as radians but entered in the INI-file as degrees */
 #define MRPT_LOAD_CONFIG_VAR_DEGREES(variableName,configFileObject,sectionNameStr) \
-	{ variableName = DEG2RAD( configFileObject.read_float(sectionNameStr,#variableName, RAD2DEG(variableName)) ); }
+	{ variableName = mrpt::utils::DEG2RAD( configFileObject.read_double(sectionNameStr,#variableName, mrpt::utils::RAD2DEG(variableName)) ); }
+
+	/** Loads a double, required, variable, stored as radians but entered in the INI-file as degrees */
+#define MRPT_LOAD_CONFIG_VAR_DEGREES_NO_DEFAULT(variableName,configFileObject,sectionNameStr) \
+	{ variableName = mrpt::utils::DEG2RAD( configFileObject.read_double(sectionNameStr,#variableName, mrpt::utils::RAD2DEG(variableName),true) ); }
 
 #define MRPT_LOAD_CONFIG_VAR_CAST(variableName,variableType,variableTypeCast,configFileObject,sectionNameStr) \
 	{ variableName = static_cast<variableTypeCast>(configFileObject.read_##variableType(sectionNameStr,#variableName,variableName)); }
@@ -208,10 +211,16 @@ namespace utils
 #define MRPT_LOAD_HERE_CONFIG_VAR_NO_DEFAULT(variableName,variableType,targetVariable,configFileObject,sectionNameStr) \
 	{ try { \
 		targetVariable = configFileObject.read_##variableType(sectionNameStr,#variableName,targetVariable,true); \
-    } catch (std::exception &) \
-    { \
-		THROW_EXCEPTION( format( "Value for '%s' not found in config file", static_cast<const char*>(#variableName ) )); \
-	} }\
+	} catch (std::exception &) { \
+		THROW_EXCEPTION( format( "Value for '%s' not found in config file in section '%s'", static_cast<const char*>(#variableName ), std::string(sectionNameStr).c_str() )); \
+	} }
+
+#define MRPT_LOAD_HERE_CONFIG_VAR_DEGREES_NO_DEFAULT(variableName,variableType,targetVariable,configFileObject,sectionNameStr) \
+	{ try { \
+		targetVariable = mrpt::utils::DEG2RAD( configFileObject.read_##variableType(sectionNameStr,#variableName,targetVariable,true)); \
+	} catch (std::exception &) { \
+		THROW_EXCEPTION( format( "Value for '%s' not found in config file in section '%s'", static_cast<const char*>(#variableName ), std::string(sectionNameStr).c_str() )); \
+	} }
 
 
 #define MRPT_LOAD_CONFIG_VAR_NO_DEFAULT(variableName,variableType,configFileObject,sectionNameStr) \
@@ -219,7 +228,7 @@ namespace utils
 		variableName = configFileObject.read_##variableType(sectionNameStr,#variableName,variableName,true); \
     } catch (std::exception &) \
     { \
-		THROW_EXCEPTION( format( "Value for '%s' not found in config file", static_cast<const char*>(#variableName ) )); \
+		THROW_EXCEPTION( format( "Value for '%s' not found in config file in section '%s'", static_cast<const char*>(#variableName ), std::string(sectionNameStr).c_str() )); \
 	} }\
 
 #define MRPT_LOAD_CONFIG_VAR_CAST_NO_DEFAULT(variableName,variableType,variableTypeCast,configFileObject,sectionNameStr) \
@@ -227,7 +236,7 @@ namespace utils
 		variableName = static_cast<variableTypeCast>(configFileObject.read_##variableType(sectionNameStr,#variableName,variableName,true)); \
     } catch (std::exception &) \
     { \
-		THROW_EXCEPTION( format( "Value for '%s' not found in config file", static_cast<const char*>(#variableName ) )); \
+		THROW_EXCEPTION( format( "Value for '%s' not found in config file in section '%s'", static_cast<const char*>(#variableName ), std::string(sectionNameStr).c_str() )); \
 	} }\
 
 
@@ -239,7 +248,7 @@ namespace utils
 		targetVariable = static_cast<variableTypeCast>(configFileObject.read_##variableType(sectionNameStr,#variableName,targetVariable,true)); \
     } catch (std::exception &) \
     { \
-		THROW_EXCEPTION( format( "Value for '%s' not found in config file", static_cast<const char*>(#variableName ) )); \
+		THROW_EXCEPTION( format( "Value for '%s' not found in config file in section '%s'", static_cast<const char*>(#variableName ), std::string(sectionNameStr).c_str() )); \
 	} }\
 
 

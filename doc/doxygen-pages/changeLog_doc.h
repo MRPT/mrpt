@@ -16,13 +16,31 @@
 <a name="1.5.0">
 <h2>Version 1.5.0: (Under development)  </h2></a>
 	- Changes in apps:
+		- New app [PTG-configurator](http://www.mrpt.org/list-of-mrpt-apps/application-ptg-configurator/)
+		- [ReactiveNavigationDemo](http://www.mrpt.org/list-of-mrpt-apps/application-reactivenavigationdemo/) has been totally rebuilt as a 3D visualizer capable of testing different navigation algorithms and robot kinematics.
 		- [RawLogViewer](http://www.mrpt.org/list-of-mrpt-apps/rawlogviewer/):
 			- Now displays a textual and graphical representation of all observation timestamps, useful to quickly detect sensor "shortages" or temporary failures.
 			- New menu operation: "Edit" -> "Rename selected observation"
 			- mrpt::obs::CObservation3DRangeScan pointclouds are now shown in local coordinates wrt to the vehicle/robot, not to the sensor.
+		- [rawlog-edit](http://www.mrpt.org/list-of-mrpt-apps/application-rawlog-edit/): New flag: `--txt-externals`
 	- Changes in libraries:
 		- \ref mrpt_base_grp
 			- New API to interface ZeroMQ: \ref noncstream_serialization_zmq
+			- Deprecated function (since 1.3.0) deleted: mrpt::system::registerFatalExceptionHandlers()
+			- New method mrpt::poses::CPosePDFParticles::resetAroundSetOfPoses()
+			- Class mrpt::utils::CRobotSimulator renamed ==> mrpt::kinematics::CVehicleSimul_DiffDriven
+			- New twist (linear + angular velocity state) classes: mrpt::math::TTwist2D, mrpt::math::TTwist3D
+			- New template method: mrpt::utils::CStream::ReadAsAndCastTo
+			- Added missing method mrpt::poses::CPose2D::inverseComposePoint() for consistency with CPose3D
+			- New class mrpt::synch::CCriticalSectionRecursive
+			- New class mrpt::utils::COutputLogger replaces the (now no longer available) classes mrpt::utils::CDebugOutputCapable and mrpt::utils::CLog.
+		- \ref mrpt_gui_grp
+			- mrpt::gui::CMyGLCanvasBase is now derived from mrpt::opengl::CTextMessageCapable so they can draw text labels
+			- New class mrpt::gui::CDisplayWindow3DLocker for exception-safe 3D scene lock in 3D windows.
+		- \ref mrpt_kinematics_grp
+			- New classes for 2D robot simulation:
+				- mrpt::kinematics::CVehicleSimul_DiffDriven
+				- mrpt::kinematics::CVehicleSimul_Holo
 		- \ref mrpt_maps_grp
 			- mrpt::maps::COccupancyGridMap2D::loadFromBitmapFile() correct description of `yCentralPixel` parameter.
 			- mrpt::maps::CPointsMap `liblas` import/export methods are now in a separate header. See \ref mrpt_maps_liblas_grp and \ref dep-liblas
@@ -30,13 +48,27 @@
 			- [ABI change] mrpt::obs::CObservation3DRangeScan:
 				- Now uses more SSE2 optimized code
 				- Depth filters are now available for mrpt::obs::CObservation3DRangeScan::project3DPointsFromDepthImageInto() and  mrpt::obs::CObservation3DRangeScan::convertTo2DScan()
+				- New switch mrpt::obs::CObservation3DRangeScan::EXTERNALS_AS_TEXT for runtime selection of externals format.
+			- mrpt::obs::CObservation2DRangeScan now has an optional field for intensity.
+		- \ref mrpt_opengl_grp
+			- [ABI change] mrpt::opengl::CAxis now has many new options exposed to configure its look.
 		- \ref mrpt_hwdrivers_grp
 			- mrpt::hwdrivers::CGenericSensor: external image format is now `png` by default instead of `jpg` to avoid losses.
 			- [ABI change] mrpt::hwdrivers::COpenNI2Generic:
 				- refactored to expose more methods and allow changing parameters via its constructor.
 				- Now supports reading from an IR, RGB and Depth channels independenty.
+			-  mrpt::hwdrivers::CHokuyoURG now can optionally return intensity values.
 		- \ref mrpt_maps_grp
 			- mrpt::maps::CMultiMetricMapPDF added method CMultiMetricMapPDF::prediction_and_update_pfAuxiliaryPFStandard().
+		- \ref mrpt_nav_grp
+			- New mrpt::nav::CWaypointsNavigator interface for waypoint list-based navigation.
+			- [ABI & API change] PTG classes refactored (see new virtual base class mrpt::nav::CParameterizedTrajectoryGenerator and its derived classes):
+				- Old classes `CPTG%d` have been renamed to describe each path type. Old PTGs #6 and #7 have been removed for lack of practical use.
+				- New separate classes for PTGs based on numerically-integrated paths and on closed-form formulations.
+				- Old deprecated method of PTGs `lambdaFunction()` removed.
+				- Parameters are no longer passed via a mrpt::utils::TParameters class, but via a mrpt::utils::CConfigFileBase which makes parameter passing to PTGs much more maintainable and consistent.
+				- PTGs now have a score_priority field to manually set hints about preferences for path planning.
+				- PTGs are now mrpt::utils::CLoadableOptions classes
 	- Changes in build system:
 		- [Windows only] `DLL`s/`LIB`s now have the signature `lib-${name}${2-digits-version}${compiler-name}_{x32|x64}.{dll/lib}`, allowing several MRPT versions to coexist in the system PATH.
 		- [Visual Studio only] There are no longer `pragma comment(lib...)` in any MRPT header, so it is the user responsibility to correctly tell user projects to link against MRPT libraries.
@@ -44,6 +76,7 @@
 		- Debian package: depends on libopenni-dev
 		- Optional dependency `liblas`: minimum required version is now 1.6.0 (Ubuntu Trusty or above).
 		- Update of embedded copy of nanoflann to version 1.2.0.
+		- New script for automated dumping stack traces on unit tests failures (`tests/run_all_tests_gdb.sh`)
 	- BUG FIXES:
 		- Fix inconsistent state after calling mrpt::obs::CObservation3DRangeScan::swap()
 		- Fix SEGFAULT in mrpt::obs::CObservation3DRangeScan if trying to build a pointcloud in an external container (mrpt::opengl, mrpt::maps)
@@ -51,6 +84,8 @@
 		- Fix PTG look-up-tables will always fail to load from cache files and will re-generate (Closes [GitHub #243](https://github.com/MRPT/mrpt/issues/243))
 		- Fix mrpt::maps::COccupancyGridMap2D::simulateScanRay() fails to mark out-of-range ranges as "invalid".
 		- Fix mrpt::utils::CMemoryStream::Clear() after assigning read-only memory blocks.
+		- Fix point into polygon checking not working for concave polygons. Now, mrpt::math::TPolygon2D::contains() uses the winding number test which works for any geometry.
+		- Fix inconsistent internal state after externalizing mrpt::obs::CObservation3DRangeScan
 
 <hr>
 <a name="1.4.0">
@@ -679,7 +714,7 @@
 				- mrpt::reactivenav::CParameterizedTrajectoryGenerator::debugDumpInFiles() now also saves text files which can be used to visualize PTGs from MATLAB (see scripts/viewPTG.m) - <a href="http://code.google.com/p/mrpt/source/detail?r=3009" >r3009</a>
 				- mrpt::reactivenav::CHolonomicVFF and mrpt::reactivenav::CHolonomicND now have more configurable parameters, loadable from config files. See their documentation.
 				- Repulsive forces from obstacles in mrpt::reactivenav::CHolonomicVFF are now automatically normalized wrt the density of the 360deg view of obstacles and forces follow a "1/range" law instead of the old "exp(-range)".
-				- Solved a stability issue in C-S paths, in mrpt::reactivenav::CPTG5 (By Mariano Jaimez Tarifa) - <a href="http://code.google.com/p/mrpt/source/detail?r=3085" >r3085</a>
+				- Solved a stability issue in C-S paths, in mrpt::reactivenav::CPTG_DiffDrive_CS (By Mariano Jaimez Tarifa) - <a href="http://code.google.com/p/mrpt/source/detail?r=3085" >r3085</a>
 			- [mrpt-scanmatching]
 				- mrpt::scanmatching::robustRigidTransformation():
 					- Changed behavior not to allow features to appear in duplicated pairings.

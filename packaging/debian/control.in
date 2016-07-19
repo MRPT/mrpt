@@ -1,6 +1,6 @@
 Source: mrpt
 Section: science
-Priority: extra
+Priority: optional
 Maintainer: Jose Luis Blanco (University of Malaga) <joseluisblancoc@gmail.com>
 Build-Depends: debhelper (>= 9),
 	autotools-dev,
@@ -23,8 +23,7 @@ Build-Depends: debhelper (>= 9),
 	texlive-latex-extra,
 	texlive-science,
 	doxygen-latex | perl,
-	subversion,
-	libeigen3-dev ,
+	libeigen3-dev,
 	libdc1394-22-dev [linux-any],
 	libusb-1.0-0-dev [linux-any],
 	libudev-dev [linux-any],
@@ -32,8 +31,11 @@ Build-Depends: debhelper (>= 9),
 	libassimp-dev,
 	libfreenect-dev (>= 0.2) | perl,
 	libpcap-dev,
-	libopenni2-dev | perl
-Standards-Version: 3.9.6
+	libopenni2-dev | perl,
+	gdb,
+	lib3ds-dev,
+	libsuitesparse-dev
+Standards-Version: 3.9.8
 Homepage: http://www.mrpt.org/
 
 Package: mrpt-doc
@@ -347,7 +349,8 @@ Depends: ${shlibs:Depends}, ${misc:Depends}, libeigen3-dev,
          libmrpt-tfest@MRPT_VER_MM@ (= ${binary:Version}),
          libmrpt-slam@MRPT_VER_MM@ (= ${binary:Version}),
          libmrpt-topography@MRPT_VER_MM@ (= ${binary:Version}),
-         libmrpt-vision@MRPT_VER_MM@ (= ${binary:Version})
+         libmrpt-vision@MRPT_VER_MM@ (= ${binary:Version}),
+         libsuitesparse-dev
 Description: Mobile Robot Programming Toolkit - Development headers
  The Mobile Robot Programming Toolkit (MRPT) is an extensive, cross-platform,
  and open source C++ library aimed to help robotics researchers to design and
@@ -357,27 +360,11 @@ Description: Mobile Robot Programming Toolkit - Development headers
  .
  This package provides the MRPT headers and libraries for development.
 
-Package: libmrpt-dbg
-Section: debug
-Priority: extra
-Architecture: any
-Pre-Depends: ${misc:Pre-Depends}
-Depends: libmrpt-dev (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}
-#Multi-Arch: same
-Description: Mobile Robot Programming Toolkit - Debug libraries
- The Mobile Robot Programming Toolkit (MRPT) is an extensive, cross-platform,
- and open source C++ library aimed to help robotics researchers to design and
- implement algorithms in the fields of Simultaneous Localization and Mapping
- (SLAM, Graph-SLAM, Bundle Adjustment), computer vision, and motion planning
- (obstacle avoidance).
- .
- This package provides MRPT libraries debug symbols.
-
 Package: mrpt-common
 Architecture: all
 Depends: ${shlibs:Depends}, ${misc:Depends}
-Replaces: mrpt-apps (<< 1.3.2-1)
-Breaks: mrpt-apps (<< 1.3.2-1)
+Replaces: mrpt-apps (<< 1:1.3.2-1)
+Breaks: mrpt-apps (<< 1:1.3.2-1)
 Description: Mobile Robot Programming Toolkit - Example datasets and files
  The Mobile Robot Programming Toolkit (MRPT) is an extensive, cross-platform,
  and open source C++ library aimed to help robotics researchers to design and

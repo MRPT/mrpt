@@ -20,10 +20,10 @@ namespace mrpt
 	  */
 	  
 		/** See base class CAbstractPTGBasedReactive for a description and instructions of use.
-		* This particular implementation assumes a 2D robot shape.
+		* This particular implementation assumes a 2D robot shape which can be polygonal or circular (depending on the selected PTGs).
 		*
 		* Publications:
-		*  - Blanco, Jose-Luis, Javier Gonzalez, and Juan-Antonio Fernandez-Madrigal. "[Extending obstacle avoidance methods through multiple parameter-space transformations](http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.190.4672&rep=rep1&type=pdf)." Autonomous Robots 24.1 (2008): 29-48.
+		*  - Blanco, Jose-Luis, Javier Gonzalez, and Juan-Antonio Fernandez-Madrigal. ["Extending obstacle avoidance methods through multiple parameter-space transformations"](http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.190.4672&rep=rep1&type=pdf). Autonomous Robots 24.1 (2008): 29-48.
 		*
 		* Class history:
 		* - 17/JUN/2004: First design.
@@ -38,7 +38,7 @@ namespace mrpt
 		* Next we provide a self-documented template config file: 
 		* \verbinclude reactive2d_config.ini
 		*
-		*  \sa CAbstractReactiveNavigationSystem, CParameterizedTrajectoryGenerator, CAbstractHolonomicReactiveMethod
+		*  \sa CAbstractNavigator, CParameterizedTrajectoryGenerator, CAbstractHolonomicReactiveMethod
 		*  \ingroup nav_reactive
 		*/
 		class NAV_IMPEXP  CReactiveNavigationSystem : public CAbstractPTGBasedReactive
@@ -48,7 +48,7 @@ namespace mrpt
 		public:
 			/** See docs in ctor of base class */
 			CReactiveNavigationSystem(
-				CReactiveInterfaceImplementation &react_iterf_impl,
+				CRobot2NavInterface &react_iterf_impl,
 				bool enableConsoleOutput = true,
 				bool enableLogFile = false);
 
@@ -56,59 +56,41 @@ namespace mrpt
 			 */
 			virtual ~CReactiveNavigationSystem();
 
-			/** Reload the configuration from a file. See details in CReactiveNavigationSystem docs. 
-			 * \param[in] ini The main source of configuration parameters.
-			 * \param[in] robotIni Deprecated (kept for backwards compatibility). It is recommended to use the newer loadConfigFile() method with one argument in new code.
-			 */
-			void loadConfigFile(const mrpt::utils::CConfigFileBase &ini, const mrpt::utils::CConfigFileBase &robotIni);
+			/** Defines the 2D polygonal robot shape, used for some PTGs for collision checking. */
+			void changeRobotShape( const mrpt::math::CPolygon &shape );
+			/** Defines the 2D circular robot shape radius, used for some PTGs for collision checking. */
+			void changeRobotCircularShapeRadius( const double R );
 
-			/** Reload the configuration from a file. See details in CReactiveNavigationSystem docs. */
-			void loadConfigFile(const mrpt::utils::CConfigFileBase &ini);
-
-			/** Change the robot shape, which is taken into account for collision
-			  *  grid building.
-			  */
-			void changeRobotShape( const math::CPolygon &shape );
-
-			/** Returns the number of different PTGs that have been setup */
+			// See base class docs:
 			virtual size_t getPTG_count() const { return PTGs.size(); }
-
-			/** Gets the i'th PTG */
-			virtual CParameterizedTrajectoryGenerator* getPTG(size_t i)
-			{
-				ASSERT_(i<PTGs.size())
-				return PTGs[i];
-			}
-
+			virtual CParameterizedTrajectoryGenerator* getPTG(size_t i) { ASSERT_(i<PTGs.size()); return PTGs[i]; }
+			virtual const CParameterizedTrajectoryGenerator* getPTG(size_t i) const { ASSERT_(i<PTGs.size()); return PTGs[i]; }
 
 		private:
-			// ------------------------------------------------------
-			//					PRIVATE	VARIABLES
-			// ------------------------------------------------------
 			float	minObstaclesHeight, maxObstaclesHeight; // The range of "z" coordinates for obstacles to be considered
 
-			/** The robot 2D shape model */
-			math::CPolygon		m_robotShape;
+			math::CPolygon m_robotShape;               //!< The robot 2D shape model. Only one of `m_robotShape` or `m_robotShape` will be used in each PTG
+			double         m_robotShapeCircularRadius; //!< Radius of the robot if approximated as a circle. Only one of `m_robotShape` or `m_robotShape` will be used in each PTG
 
-			/** The set of transformations to be used:
-			  */
-			std::vector<CParameterizedTrajectoryGenerator*>	PTGs;
+			std::vector<CParameterizedTrajectoryGenerator*>	PTGs;  //!< The list of PTGs to use for navigation
 
 			// Steps for the reactive navigation sytem.
 			// ----------------------------------------------------------------------------
-			virtual void STEP1_CollisionGridsBuilder();
+			virtual void STEP1_InitPTGs();
 
 			// See docs in parent class
 			virtual bool STEP2_SenseObstacles();
 
 			// See docs in parent class
-			virtual void STEP3_WSpaceToTPSpace(const size_t ptg_idx,std::vector<float> &out_TPObstacles);
+			virtual void STEP3_WSpaceToTPSpace(const size_t ptg_idx,std::vector<double> &out_TPObstacles);
 
 			/** Generates a pointcloud of obstacles, and the robot shape, to be saved in the logging record for the current timestep */
 			virtual void loggingGetWSObstaclesAndShape(CLogFileRecord &out_log);
 
-
 			mrpt::maps::CSimplePointsMap m_WS_Obstacles;  //!< The obstacle points, as seen from the local robot frame.
+
+		protected:
+			void internal_loadConfigFile(const mrpt::utils::CConfigFileBase &ini, const std::string &section_prefix="") MRPT_OVERRIDE;
 
 		}; // end class
 	}

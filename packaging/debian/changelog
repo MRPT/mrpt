@@ -1,8 +1,26 @@
+  * Removed manual -dbg packages, as they are now
+    generated automatically.
+
+mrpt (1:1.4.0-3) unstable; urgency=medium
+
+  * Fix FTBFS on sparc64 (Closes: #825846).
+
+ -- Jose Luis Blanco (University of Malaga) <joseluisblancoc@gmail.com>  Sun, 10 Jul 2016 00:07:40 +0200
+
+mrpt (1:1.4.0-2) unstable; urgency=medium
+
+  * Fix FTBFS (unit tests) in armhf (Closes: #825844).
+  * Fix wrong "Breaks/Replace" fields (Closes: #807662).
+  * Fix FTBFS on big endian due unit test errors (Closes: #825845).
+
+ -- Jose Luis Blanco (University of Malaga) <joseluisblancoc@gmail.com>  Fri, 08 Jul 2016 23:52:47 +0200
+
 mrpt (1:1.4.0-1) unstable; urgency=medium
 
   * New version of upstream sources.
-  * Lintian clean again: fix not-binnmuable-any-depends-all (Closes: #821818)
-  * Fix mrpt-common package overwriting files in mrpt-apps (Closes: #807662)
+  * Lintian clean: fix not-binnmuable-any-depends-all (Closes: #821818)
+  * Fix mrpt-common package overwriting files
+    in mrpt-apps (Closes: #807662)
   * Fix building against libftdi1-dev (Closes: #810368)
   * Fix building with gcc 6.0 (Closes: #811812)
 
@@ -48,7 +66,7 @@ mrpt (1:1.2.2-1.1) unstable; urgency=medium
   * Fix FTBFS on many architectures by fixing disabling of use of SSE4.
 
  -- Olly Betts <olly@survex.com>  Tue, 14 Oct 2014 14:22:01 +1300
- 
+
 mrpt (1:1.2.2-1) unstable; urgency=medium
 
   * New version of upstream sources.
@@ -90,7 +108,7 @@ mrpt (1:1.0.1-1) unstable; urgency=low
   * Fixed typo in short description of libmrpt-kinematics1.0 (Closes: #703923)
   * Fixed wrong dependencies of libmrpt-dev
   * Fix of Lintian's hardening-no-fortify-functions
-  * Fixed embedded copy of libeigen-dev in mrpt sources 
+  * Fixed embedded copy of libeigen-dev in mrpt sources
     package (Closes: #707860)
 
  -- Jose Luis Blanco (University of Malaga) <joseluisblancoc@gmail.com>  Sun, 12 May 2013 14:05:55 +0200
@@ -203,7 +221,7 @@ mrpt (0.6.5svn807-2) unstable; urgency=low
 mrpt (0.6.5svn807-1) unstable; urgency=low
 
   * New version of upstream sources.
-  * Applications separated in individual packages, "mrpt-apps" still 
+  * Applications separated in individual packages, "mrpt-apps" still
     exists as a virtual package.
   * Fixed desktop-mimetype-without-update-call
 
@@ -296,4 +314,3 @@ mrpt (0.6.0-1) unstable; urgency=low
   * Initial packaging (Closes: #495520)
 
  -- Jose Luis Blanco (University of Malaga) <joseluisblancoc@gmail.com>  Wed, 06 Aug 2008 19:12:19 +0200
-

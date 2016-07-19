@@ -182,7 +182,7 @@ void Test_Kinect()
 
 	// Set of parameters common to any tracker implementation:
 	// To see all the existing params and documentation, see mrpt::vision::CGenericFeatureTracker
-	//  http://reference.mrpt.org/svn/structmrpt_1_1vision_1_1_c_generic_feature_tracker.html
+	//  http://reference.mrpt.org/devel/structmrpt_1_1vision_1_1_c_generic_feature_tracker.html
 	tracker->extra_params["add_new_features"]             = 1;   // track, AND ALSO, add new features
 	tracker->extra_params["add_new_feat_min_separation"]  = 25;
 	tracker->extra_params["add_new_feat_max_features"]    = 150;
@@ -367,12 +367,12 @@ void Test_Kinect()
 					params.ransac_maxSetSizePct = 6.0 / corrs.size();
 
 					mrpt::tfest::TSE3RobustResult results;
-					bool register_ok = false; 
+					bool register_ok = false;
 					try {
 						mrpt::tfest::se3_l2_robust(corrs, params, results);
 						register_ok = true;
-					} catch (std::exception &) {  
-						/* Cannot find a minimum number of matches, inconsistent parameters due to very reduced numberof matches,etc. */ 
+					} catch (std::exception &) {
+						/* Cannot find a minimum number of matches, inconsistent parameters due to very reduced numberof matches,etc. */
 					}
 
 					const CPose3D relativePose = results.transformation;

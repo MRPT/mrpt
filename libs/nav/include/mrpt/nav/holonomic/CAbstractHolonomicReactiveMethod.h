@@ -47,16 +47,32 @@ namespace mrpt
 		   *  NOTE: With "pseudometers" we refer to the distance unit in TP-Space, thus:
 		   *     <br><center><code>pseudometer<sup>2</sup>= meter<sup>2</sup> + (rad * r)<sup>2</sup></code><br></center>
 		   */
-		 virtual void  navigate(const mrpt::math::TPoint2D &target,
-								const std::vector<float>	&obstacles,
-								double			maxRobotSpeed,
-								double			&desiredDirection,
-								double			&desiredSpeed,
-								CHolonomicLogFileRecordPtr &logRecord) = 0;
+		virtual void  navigate(
+			const mrpt::math::TPoint2D &target,
+			const std::vector<double>	&obstacles,
+			double			maxRobotSpeed,
+			double			&desiredDirection,
+			double			&desiredSpeed,
+			CHolonomicLogFileRecordPtr &logRecord) = 0;
 
-        /** Virtual destructor
-          */
-        virtual ~CAbstractHolonomicReactiveMethod() { };
+		/** Overload with a generic container for obstacles (for backwards compatibility with std::vector<float> and other future uses) */
+		template <class OBSTACLES_LIST>
+		void navigate(
+			const mrpt::math::TPoint2D &target,
+			const OBSTACLES_LIST &obstacles,
+			double			maxRobotSpeed,
+			double			&desiredDirection,
+			double			&desiredSpeed,
+			CHolonomicLogFileRecordPtr &logRecord)
+		{
+			std::vector<double>  obs(obstacles.size());
+			std::copy(obstacles.begin(), obstacles.end(), obs.begin() );
+			this->navigate(target,obs, maxRobotSpeed,desiredDirection,desiredSpeed,logRecord);
+		}
+
+
+		/** Virtual destructor */
+		virtual ~CAbstractHolonomicReactiveMethod() { };
 
 		 /**  Initialize the parameters of the navigator.
 		   */

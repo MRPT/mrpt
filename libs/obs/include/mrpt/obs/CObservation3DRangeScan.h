@@ -41,10 +41,15 @@ namespace obs
 	struct OBS_IMPEXP T3DPointsTo2DScanParams
 	{
 		std::string  sensorLabel;    //!< The sensor label that will have the newly created observation.
-		double angle_sup, angle_inf; //!< (Default=5 degrees) The upper & lower half-FOV angle (in radians).
+		double angle_sup, angle_inf; //!< (Default=5 degrees) [Only if use_origin_sensor_pose=false] The upper & lower half-FOV angle (in radians).
+		double z_min,z_max;          //!< (Default:-inf, +inf) [Only if use_origin_sensor_pose=true] Only obstacle points with Z coordinates within the range [z_min,z_max] will be taken into account.
 		double oversampling_ratio;   //!< (Default=1.2=120%) How many more laser scans rays to create (read docs for CObservation3DRangeScan::convertTo2DScan()).
-		T3DPointsTo2DScanParams() : angle_sup(mrpt::utils::DEG2RAD(5)), angle_inf(mrpt::utils::DEG2RAD(5)),oversampling_ratio(1.2)
-		{}
+		
+		/** (Default:false) If `false`, the conversion will be such that the 2D observation pose on the robot coincides with that in the original 3D range scan. 
+		  * If `true`, the sensed points will be "reprojected" as seen from a sensor pose at the robot/vehicle frame origin  (and angle_sup, angle_inf will be ignored) */
+		bool use_origin_sensor_pose;
+
+		T3DPointsTo2DScanParams();
 	};
 
 	namespace detail {
@@ -126,6 +131,7 @@ namespace obs
 	 *  \note Starting at serialization version 5 (MRPT 0.9.5+), the new field \a range_is_depth
 	 *  \note Starting at serialization version 6 (MRPT 0.9.5+), the new field \a intensityImageChannel
 	 *  \note Starting at serialization version 7 (MRPT 1.3.1+), new fields for semantic labeling
+	 *  \note Since MRPT 1.5.0, external files format can be selected at runtime with `CObservation3DRangeScan::EXTERNALS_AS_TEXT`
 	 *
 	 * \sa mrpt::hwdrivers::CSwissRanger3DCamera, mrpt::hwdrivers::CKinect, CObservation
 	 * \ingroup mrpt_obs_grp
@@ -248,10 +254,14 @@ namespace obs
 		  *  Obviously, a requisite for calling this method is the 3D observation having range data,
 		  *  i.e. hasRangeImage must be true. It's not needed to have RGB data nor the raw 3D point clouds
 		  *  for this method to work.
+		  *  
+		  *  If `scanParams.use_origin_sensor_pose` is `true`, the points will be projected to 3D and then reprojected 
+		  *  as seen from a different sensorPose at the vehicle frame origin. Otherwise (the default), the output 2D observation will share the sensorPose of the input 3D scan 
+		  *  (using a more efficient algorithm that avoids trigonometric functions).
 		  *
 		  *  \param[out] out_scan2d The resulting 2D equivalent scan.
 		  *
-		  * \sa The example in http://www.mrpt.org/Example_Kinect_To_2D_laser_scan
+		  * \sa The example in http://www.mrpt.org/tutorials/mrpt-examples/example-kinect-to-2d-laser-demo/
 		  */
 		void convertTo2DScan(mrpt::obs::CObservation2DRangeScan & out_scan2d, const T3DPointsTo2DScanParams &scanParams, const TRangeImageFilterParams &filterParams = TRangeImageFilterParams() );
 
@@ -266,14 +276,24 @@ namespace obs
 			)
 		);
 
+		/** Whether external files (3D points, range and confidence) are to be 
+		  * saved as `.txt` text files (MATLAB compatible) or `*.bin` binary (faster).
+		  * Loading always will determine the type by inspecting the file extension.
+		  * \note Default=false
+		  **/
+		static bool EXTERNALS_AS_TEXT;
+
+		/** \name Point cloud
+		  * @{ */
 		bool hasPoints3D; //!< true means the field points3D contains valid data.
 		std::vector<float> points3D_x,points3D_y,points3D_z;  //!< If hasPoints3D=true, the (X,Y,Z) coordinates of the 3D point cloud detected by the camera. \sa resizePoints3DVectors
 		std::vector<uint16_t> points3D_idxs_x, points3D_idxs_y; //!< //!< If hasPoints3D=true, the (x,y) pixel coordinates for each (X,Y,Z) point in \a points3D_x, points3D_y, points3D_z
 
 		/** Use this method instead of resizing all three \a points3D_x, \a points3D_y & \a points3D_z to allow the usage of the internal memory pool. */
 		void resizePoints3DVectors(const size_t nPoints);
+		/** @} */
 
-		/** \name 3D points external storage functions
+		/** \name Point cloud external storage functions
 		  * @{ */
 		inline bool points3D_isExternallyStored() const { return m_points3D_external_stored; }
 		inline std::string points3D_getExternalStorageFile() const { return m_points3D_external_file; }
@@ -283,7 +303,7 @@ namespace obs
 				points3D_getExternalStorageFileAbsolutePath(tmp);
 				return tmp;
 		}
-		void points3D_convertToExternalStorage( const std::string &fileName, const std::string &use_this_base_dir ); //!< Users won't normally want to call this, it's only used from internal MRPT programs.
+		void points3D_convertToExternalStorage( const std::string &fileName, const std::string &use_this_base_dir ); //!< Users won't normally want to call this, it's only used from internal MRPT programs. \sa EXTERNALS_AS_TEXT
 		/** @} */
 
 		/** \name Range (depth) image
@@ -305,7 +325,7 @@ namespace obs
 				rangeImage_getExternalStorageFileAbsolutePath(tmp);
 				return tmp;
 		}
-		void rangeImage_convertToExternalStorage( const std::string &fileName, const std::string &use_this_base_dir ); //!< Users won't normally want to call this, it's only used from internal MRPT programs.
+		void rangeImage_convertToExternalStorage( const std::string &fileName, const std::string &use_this_base_dir ); //!< Users won't normally want to call this, it's only used from internal MRPT programs. \sa EXTERNALS_AS_TEXT
 		/** Forces marking this observation as non-externally stored - it doesn't anything else apart from reseting the corresponding flag (Users won't normally want to call this, it's only used from internal MRPT programs) */
 		void rangeImage_forceResetExternalStorage() { m_rangeImage_external_stored=false; }
 		/** @} */
@@ -367,7 +387,7 @@ namespace obs
 			/** Mark the pixel(row,col) as classified in the category \a label_idx, which may be in the range 0 to MAX_NUM_LABELS-1 
 			  * Note that 0 is a valid label index, it does not mean "no label" \sa unsetLabel, unsetAll */
 			virtual void setLabel(const int row, const int col, uint8_t label_idx) =0;
-            virtual void getLabels( const int row, const int col, uint8_t &labels ) =0;
+			virtual void getLabels( const int row, const int col, uint8_t &labels ) =0;
 			/** For the pixel(row,col), removes its classification into the category \a label_idx, which may be in the range 0 to 7 
 			  * Note that 0 is a valid label index, it does not mean "no label" \sa setLabel, unsetAll */
 			virtual void unsetLabel(const int row, const int col, uint8_t label_idx)=0;
@@ -380,12 +400,11 @@ namespace obs
 			void writeToStream(mrpt::utils::CStream &out) const;
 			static TPixelLabelInfoBase* readAndBuildFromStream(mrpt::utils::CStream &in);
 
-            /// std stream interface
-            friend std::ostream& operator<<( std::ostream& out, const TPixelLabelInfoBase& obj )
-            {
-                obj.Print( out );
-                return out;
-            }
+			/// std stream interface
+			friend std::ostream& operator<<( std::ostream& out, const TPixelLabelInfoBase& obj ){
+				obj.Print( out );
+				return out;
+			}
 
 			TPixelLabelInfoBase(unsigned int BITFIELD_BYTES_) : 
 				BITFIELD_BYTES (BITFIELD_BYTES_)
@@ -399,7 +418,7 @@ namespace obs
 		protected:
 			virtual void internal_readFromStream(mrpt::utils::CStream &in) = 0;
 			virtual void internal_writeToStream(mrpt::utils::CStream &out) const = 0;
-            virtual void Print( std::ostream& ) const =0;
+			virtual void Print( std::ostream& ) const =0;
 		};
 		typedef stlplus::smart_ptr<TPixelLabelInfoBase>  TPixelLabelInfoPtr;  //!< Used in CObservation3DRangeScan::pixelLabels
 

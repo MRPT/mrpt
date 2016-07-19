@@ -31,7 +31,7 @@ void deleteSingleton();
 struct TAuxDLData
 {
 	std::vector<unsigned int>      dls_to_delete;
-	mrpt::synch::CCriticalSection  dls_to_delete_cs;
+	mrpt::synch::CCriticalSectionRecursive  dls_to_delete_cs;
 
 	static TAuxDLData& getSingleton()
 	{

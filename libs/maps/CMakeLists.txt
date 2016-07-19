@@ -12,13 +12,13 @@ LIST(APPEND maps_EXTRA_SRCS_NAME 	"opengl" "opengl")
 #
 LIST(APPEND maps_EXTRA_SRCS			"${MRPT_SOURCE_DIR}/otherlibs/octomap/src/*.cpp" "${MRPT_SOURCE_DIR}/otherlibs/octomap/src/math/*.cpp")
 LIST(APPEND maps_EXTRA_SRCS_NAME 	"octomap" "octomath")
-#INCLUDE_DIRECTORIES("${MRPT_SOURCE_DIR}/otherlibs/octomap/include/") 
+#INCLUDE_DIRECTORIES("${MRPT_SOURCE_DIR}/otherlibs/octomap/include/")
 # Headers are publicly exposed in <mrpt/otherlibs/octomap/*.h>
 
 IF(CMAKE_MRPT_HAS_LIBLAS)
 	LINK_DIRECTORIES(${LAS_LINK_DIRS})
 	INCLUDE_DIRECTORIES(${LAS_INCLUDE_DIRS})
-ENDIF(CMAKE_MRPT_HAS_LIBLAS)
+ENDIF()
 
 #---------------------------------------------
 # Macro declared in "DeclareMRPTLib.cmake":
@@ -33,14 +33,14 @@ define_mrpt_lib(
 	mrpt-base
 	)
 
-IF(BUILD_mrpt-maps) 
+IF(BUILD_mrpt-maps)
 	IF (CMAKE_MRPT_HAS_PCL)
 		target_link_libraries(mrpt-maps ${PCL_LIBRARIES})
-	ENDIF(CMAKE_MRPT_HAS_PCL)
+	ENDIF()
 
 	IF(CMAKE_MRPT_HAS_LIBLAS)
 		target_link_libraries(mrpt-maps ${LAS_LIBS})
-	ENDIF(CMAKE_MRPT_HAS_LIBLAS)
+	ENDIF()
 
 	# Ignore precompiled headers in some sources:
 	IF(MRPT_ENABLE_PRECOMPILED_HDRS AND MSVC)
@@ -49,7 +49,6 @@ IF(BUILD_mrpt-maps)
 			${octomath_FILES}
 			PROPERTIES COMPILE_FLAGS "/Y-"
 			)
-	ENDIF(MRPT_ENABLE_PRECOMPILED_HDRS AND MSVC)
+	ENDIF()
 
-ENDIF(BUILD_mrpt-maps) 
-
+ENDIF()

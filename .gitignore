@@ -36,3 +36,6 @@ SOURCE_DATE_EPOCH
 *.exe
 *.out
 *.app
+
+*.backup
+

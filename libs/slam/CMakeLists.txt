@@ -2,12 +2,12 @@
 #  See "DeclareMRPTLib.cmake" for explanations
 # -------------------------------------------------
 
-LIST(APPEND slam_EXTRA_SRCS		
+LIST(APPEND slam_EXTRA_SRCS
 	"${MRPT_LIBS_ROOT}/slam/src/maps/*.cpp"
 	"${MRPT_LIBS_ROOT}/slam/src/slam/*.cpp"
 	"${MRPT_LIBS_ROOT}/slam/include/mrpt/slam/*.h"
 	)
-LIST(APPEND slam_EXTRA_SRCS_NAME 	
+LIST(APPEND slam_EXTRA_SRCS_NAME
 	"slam" "slam" "slam-headers")
 
 #---------------------------------------------
@@ -15,7 +15,7 @@ LIST(APPEND slam_EXTRA_SRCS_NAME
 #---------------------------------------------
 define_mrpt_lib(
 	# Lib name
-	slam 		
+	slam
 	# Dependencies
 	mrpt-bayes
 	mrpt-graphs
@@ -28,7 +28,6 @@ define_mrpt_lib(
 	mrpt-base
 	)
 
-IF(BUILD_mrpt-slam) 
+IF(BUILD_mrpt-slam)
 
-ENDIF(BUILD_mrpt-slam) 
-
+ENDIF() 

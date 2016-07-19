@@ -147,7 +147,6 @@ void CAboutBox::OnInit(wxInitDialogEvent& event)
 		cout << "Jose Luis Blanco\n";
 		cout << "For bug reports or to collaborate: <joseluisblancoc@gmail.com>\n";
 
-		cout << "Program version:        " << NAVLOGVIEWER_VERSION << endl;
 		cout << "MRPT version:           " << MRPT_getVersion() << endl;
 		cout << "MRPT source timestamp:  " << MRPT_getCompilationDate() << endl;
  		cout << "Eigen version:          " << EIGEN_WORLD_VERSION << "." << EIGEN_MAJOR_VERSION << "." << EIGEN_MINOR_VERSION << endl;
@@ -160,7 +159,7 @@ void CAboutBox::OnInit(wxInitDialogEvent& event)
 #endif
     }
 
-    lbProgName->SetLabel( _U( format("navlog-viewer %s",NAVLOGVIEWER_VERSION).c_str() ) );
+    lbProgName->SetLabel( wxT("navlog-viewer") );
 	lbProgName->SetForegroundColour( wxColour(0,0,128) );
 
     FlexGridSizer1->RecalcSizes();

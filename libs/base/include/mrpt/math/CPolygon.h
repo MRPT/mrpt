@@ -28,23 +28,16 @@ namespace math
 		DEFINE_SERIALIZABLE( CPolygon )
 
 	public:
-		/** Constructor
-		  *  cx and cy are the "central" point coordinates (laser sensor location if applicable)
-		  *  This parameters are NOT used in PointIntoPolygon, so they can be ignored.
-		  * \sa PointIntoPolygon
-		 */
+		/** Default constructor (empty polygon, 0 vertices) */
 		CPolygon() : TPolygon2D()
-		{
-		}
+		{ }
 
-		/** Add a new vertex to polygon: */
+		/** Add a new vertex to polygon */
 		void  AddVertex(double x,double y) {
 			TPolygon2D::push_back(TPoint2D(x,y));
 		}
 
-		/** Methods for accessing the vertexs:
-		  * \sa verticesCount
-		  */
+		/** Methods for accessing the vertices \sa verticesCount */
 		double  GetVertex_x(size_t i) const { ASSERT_(i<TPolygon2D::size()); return TPolygon2D::operator [](i).x; }
 		double  GetVertex_y(size_t i) const { ASSERT_(i<TPolygon2D::size()); return TPolygon2D::operator [](i).y; }
 
@@ -58,18 +51,16 @@ namespace math
 		/** Set all vertices at once. Please use the std::vector version whenever possible unless efficiency is really an issue */
 		void  setAllVertices( size_t nVertices, const float *xs, const float *ys );
 
-		/** Get all vertices at once. */
+		/** Get all vertices at once */
 		void  getAllVertices( std::vector<double> &x, std::vector<double> &y ) const;
 
-		/** Clear the polygon, erasing all vertexs. */
+		/** Clear the polygon, erasing all vertices */
 		void   Clear() { TPolygon2D::clear(); }
 
-		/**	Check if a point is inside the polygon:
-		 */
+		/**	Check if a point is inside the polygon */
 		bool  PointIntoPolygon(double x,double y) const {
 			return TPolygon2D::contains(TPoint2D(x,y));
 		}
-
 	};
 	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE( CPolygon, mrpt::utils::CSerializable )
 
