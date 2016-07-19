@@ -109,4 +109,3 @@ using namespace mrpt::synch;
 	#endif
 #endif
 
-
