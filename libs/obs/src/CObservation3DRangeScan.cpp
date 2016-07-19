@@ -941,7 +941,6 @@ void CObservation3DRangeScan::convertTo2DScan(mrpt::obs::CObservation2DRangeScan
 	// Prepare 2D scan data fields:
 	out_scan2d.aperture = FOV_equiv;
 	out_scan2d.maxRange = this->maxRange;
-	out_scan2d.rightToLeft = false;
 	out_scan2d.validRange.assign(nLaserRays, false);  // default: all ranges=invalid
 	out_scan2d.scan.assign(nLaserRays, 2.0 * this->maxRange);	
 	if (sp.use_origin_sensor_pose)
@@ -962,6 +961,7 @@ void CObservation3DRangeScan::convertTo2DScan(mrpt::obs::CObservation2DRangeScan
 	{
 		// Algorithm 1: each column in the range image corresponds to a known orientation in the 2D scan:
 		// -------------------
+		out_scan2d.rightToLeft = false;
 
 		// Angle "counter" for the fake laser scan direction, and the increment:
 		double ang  = -FOV_equiv*0.5;
@@ -1009,6 +1009,8 @@ void CObservation3DRangeScan::convertTo2DScan(mrpt::obs::CObservation2DRangeScan
 	{
 		// Algorithm 2: project to 3D and reproject (for a different sensorPose at the origin)
 		// ------------------------------------------------------------------------
+		out_scan2d.rightToLeft = true;
+
 		T3DPointsProjectionParams projParams;
 		projParams.takeIntoAccountSensorPoseOnRobot = true;
 		
