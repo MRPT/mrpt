@@ -114,7 +114,6 @@ IF(BUILD_EXAMPLES)
 		RangeOnlyLocalization_RejectionSampling
 		benchmark-gridmaps
 		gridMapLikelihoodCharacterization
-		gridRawlogSimulator
 		gauss_img_filtering
 		test-compress
 		spline_interpolation

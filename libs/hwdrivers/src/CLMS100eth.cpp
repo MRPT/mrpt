@@ -89,8 +89,7 @@ bool CLMS100Eth::checkIsConnected(void)
             m_client.connect(m_ip, m_port);
         }catch(std::exception &e)
         {
-            printf_debug(e.what());
-            printf_debug("[CLMS100ETH] ERROR TRYING TO OPEN Ethernet DEVICE");
+			printf_debug("[CLMS100ETH] ERROR TRYING TO OPEN Ethernet DEVICE:\n%s",e.what());
             return false;
         }
     }
@@ -128,7 +127,7 @@ bool CLMS100Eth::turnOn()
                 size_t read = m_client.readAsync(msgIn, 100, 1000, 1000);  //18
 
                 msgIn[read-1] = 0;
-                printf_debug("read : %d\n",read);
+				printf_debug("read : %u\n",(unsigned int)read);
                 printf_debug("message : %s\n",string(&msgIn[1]).c_str());
 
                 if(!read) return false;
@@ -141,8 +140,8 @@ bool CLMS100Eth::turnOn()
                 size_t read = m_client.readAsync(msgIn, 100, 1000, 1000);
 
                 msgIn[read-1] = 0;
-                printf_debug("read : %d\n",read);
-                printf_debug("message : %s\n",string(&msgIn[1]).c_str());
+				printf_debug("read : %u\n",(unsigned int)read);
+				printf_debug("message : %s\n",string(&msgIn[1]).c_str());
 
                 if(!read) return false;
             }
@@ -154,8 +153,8 @@ bool CLMS100Eth::turnOn()
                 size_t read = m_client.readAsync(msgIn, 100, 1000, 1000);
 
                 msgIn[read-1] = 0;
-                printf_debug("read : %d\n",read);
-                printf_debug("message : %s\n",string(&msgIn[1]).c_str());
+				printf_debug("read : %u\n",(unsigned int)read);
+				printf_debug("message : %s\n",string(&msgIn[1]).c_str());
 
                 if(!read) return false;
             }
@@ -186,7 +185,7 @@ bool CLMS100Eth::turnOn()
             m_turnedOn = true;
         }catch(std::exception &e)
         {
-            printf_debug(e.what());
+			printf_debug("%s",e.what());
             return false;
         }
     }else

@@ -3,7 +3,7 @@ PROJECT(mrpt_zeromq_example)
 CMAKE_MINIMUM_REQUIRED(VERSION 2.4)
 if(COMMAND cmake_policy)
       cmake_policy(SET CMP0003 NEW)  # Required by CMake 2.7+
-endif(COMMAND cmake_policy)
+endif()
 
 # --------------------------------------------------------------------------
 #   The list of "libs" which can be included can be found in:
@@ -20,12 +20,12 @@ find_library (ZMQ_LIBRARY NAMES zmq )
 
 if(ZMQ_INCLUDE)
 	INCLUDE_DIRECTORIES(${ZMQ_INCLUDE})
-endif(ZMQ_INCLUDE)
+endif()
 
 # Set optimized building:
 IF(CMAKE_COMPILER_IS_GNUCXX AND NOT CMAKE_BUILD_TYPE MATCHES "Debug")
 	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
-ENDIF(CMAKE_COMPILER_IS_GNUCXX AND NOT CMAKE_BUILD_TYPE MATCHES "Debug")
+ENDIF()
 
 # Subscriber:
 ADD_EXECUTABLE(mrpt_zmq_example_sub main_sub.cpp)

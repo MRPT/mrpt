@@ -23,7 +23,7 @@ namespace mrpt { namespace utils {
 }
 
 // Load test datalog
-TEST(ReactiveNavTests, LoadNavLogFile)
+TEST(NavTests, LoadNavLogFile)
 {
 	const string navlog_file = MRPT_GLOBAL_UNITTEST_SRC_DIR + string("/tests/serialize_test_data.reactivenavlog");
 	if (!mrpt::system::fileExists(navlog_file))

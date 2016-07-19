@@ -95,6 +95,7 @@ namespace poses
 
 		/** Returns a 3D representation of this PDF (it doesn't clear the current contents of out_obj, but append new OpenGL objects to that list)
 		  * \note Needs the mrpt-opengl library, and using mrpt::opengl::CSetOfObjectsPtr as template argument.
+		  * \note By default, ellipsoids for the confidence intervals of  "q=3" are drawn; for more mathematical details, see  CGeneralizedEllipsoidTemplate::setQuantiles()
 		  */
 		template <class OPENGL_SETOFOBJECTSPTR>
 		inline void getAs3DObject(OPENGL_SETOFOBJECTSPTR &out_obj) const {

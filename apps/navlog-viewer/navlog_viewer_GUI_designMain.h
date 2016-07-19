@@ -59,6 +59,8 @@ class navlog_viewer_GUI_designDialog: public wxFrame //wxDialog
 		void OntimAutoloadTrigger(wxTimerEvent& event);
 		void OnbtnMoreOpsClick(wxCommandEvent& event);
 		void OnmnuMatlabPlotsSelected(wxCommandEvent& event);
+		void OnmnuSeePTGParamsSelected(wxCommandEvent& event);
+		void OncbGlobalFrameClick(wxCommandEvent& event);
 		//*)
 
 		//(*Identifiers(navlog_viewer_GUI_designDialog)
@@ -78,6 +80,7 @@ class navlog_viewer_GUI_designDialog: public wxFrame //wxDialog
 		static const long ID_STATICTEXT6;
 		static const long ID_STATICTEXT7;
 		static const long ID_CHECKBOX1;
+		static const long ID_CHECKBOX2;
 		static const long ID_STATICTEXT8;
 		static const long ID_TEXTCTRL2;
 		static const long ID_PANEL3;
@@ -85,6 +88,7 @@ class navlog_viewer_GUI_designDialog: public wxFrame //wxDialog
 		static const long ID_PANEL1;
 		static const long ID_TIMER1;
 		static const long ID_TIMER2;
+		static const long ID_MENUITEM2;
 		static const long ID_MENUITEM1;
 		//*)
 
@@ -92,6 +96,7 @@ class navlog_viewer_GUI_designDialog: public wxFrame //wxDialog
 		wxButton* btnStop;
 		wxTextCtrl* edShapeMinDist;
 		wxButton* btnMoreOps;
+		wxMenuItem* mnuSeePTGParams;
 		wxPanel* Panel_AUX;
 		wxStaticText* txtLogDuration;
 		wxStaticText* StaticText2;
@@ -107,6 +112,7 @@ class navlog_viewer_GUI_designDialog: public wxFrame //wxDialog
 		wxSlider* slidLog;
 		wxTimer timPlay;
 		wxStaticText* StaticText5;
+		wxCheckBox* cbGlobalFrame;
 		wxStaticText* txtLogEntries;
 		wxMenuItem* mnuMatlabPlots;
 		wxFlexGridSizer* flexGridRightHand;
@@ -150,8 +156,6 @@ class navlog_viewer_GUI_designDialog: public wxFrame //wxDialog
         wxMessageBox( _("Untyped exception!"), _("Exception"), wxOK, this); \
     }
 
-
-#define NAVLOGVIEWER_VERSION  "1.0"
 
 
 #endif // NAVLOG_VIEWER_GUI_DESIGNMAIN_H

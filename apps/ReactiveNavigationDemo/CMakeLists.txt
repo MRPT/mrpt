@@ -16,33 +16,35 @@ IF(CMAKE_MRPT_HAS_WXWIDGETS)
 	# TARGET:
 	# ---------------------------------------------
 	SET(SRCS
-	 ReactiveNavigationDemoApp.cpp  ReactiveNavigationDemoApp.h
-	 ReactiveNavigationDemoMain.cpp  ReactiveNavigationDemoMain.h
-	 CIniEditor.cpp  CIniEditor.h
+	 reactive_navigator_demoApp.cpp  reactive_navigator_demoApp.h
+	 reactive_navigator_demoMain.cpp  reactive_navigator_demoMain.h
 	 DEFAULT_GRIDMAP_DATA.h
 	 ../wx-common/CMyRedirector.h
-	 )
+	 CAboutBox.cpp  CAboutBox.h
+	 MyGLCanvas.cpp MyGLCanvas.h
+	)
 
 	IF(WIN32)
 		SET(SRCS ${SRCS} resource.rc)
-	ENDIF(WIN32)
+	ENDIF()
+	
+	INCLUDE_DIRECTORIES("${MRPT_SOURCE_DIR}/otherlibs/wxThings/")
 
 	# Define the executable target:
 	ADD_EXECUTABLE(ReactiveNavigationDemo WIN32 ${SRCS} ${MRPT_VERSION_RC_FILE})
 
 	SET(TMP_TARGET_NAME "ReactiveNavigationDemo")
 
-
-	
-
 	# Add the required libraries for linking:
 	TARGET_LINK_LIBRARIES(${TMP_TARGET_NAME} ${wxWidgets_LIBRARIES} )
 	TARGET_LINK_LIBRARIES(${TMP_TARGET_NAME} ${MRPT_LINKER_LIBS})
+	TARGET_LINK_LIBRARIES(${TMP_TARGET_NAME} mrptwxthings)
+	ADD_DEPENDENCIES(${TMP_TARGET_NAME} mrptwxthings)
 
 	# Dependencies on MRPT libraries:
 	#  Just mention the top-level dependency, the rest will be detected automatically, 
 	#  and all the needed #include<> dirs added (see the script DeclareAppDependencies.cmake for further details)
-	DeclareAppDependencies(${TMP_TARGET_NAME} mrpt-gui mrpt-nav)
+	DeclareAppDependencies(${TMP_TARGET_NAME} mrpt-gui mrpt-nav mrpt-kinematics)
 
 	DeclareAppForInstall(${TMP_TARGET_NAME})
 
@@ -54,4 +56,3 @@ ELSE()
 	# ----------------------------------------------------------------------------------
     MESSAGE(STATUS "wxWidgets not found!: **This target will not be included in the Makefiles**")
 ENDIF()
-

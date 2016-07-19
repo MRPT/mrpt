@@ -229,7 +229,7 @@ void CHMTSLAM::thread_LSLAM()
 
 		// Release semaphores:
 
-		if (e.what())  obj->printf_debug( e.what() );
+		if (e.what())  obj->printf_debug("%s", e.what() );
 
 		// DEBUG: Terminate application:
 		obj->m_terminateThreads	= true;
@@ -1455,7 +1455,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA( const TMessageLSLAMfromAA &myMsg )
 #endif
 			LMH->changeCoordinateOrigin( new_poseID_origin );
 #if HMTSLAM_LSLAM_VERBOSE
-			printf_debug("[LSLAM_proc_msg_AA] LMH->changeCoordinateOrigin %i->%i took %f ms\n", poseID_origin,new_poseID_origin,tictac.Tac()*1000 );
+			printf_debug("[LSLAM_proc_msg_AA] LMH->changeCoordinateOrigin %lu->%lu took %f ms\n", poseID_origin,new_poseID_origin,tictac.Tac()*1000 );
 #endif
 		}
 		else if (areasDelayedMetricMapsInsertion.size())

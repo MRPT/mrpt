@@ -28,6 +28,7 @@ define_mrpt_lib(
 	# Dependencies
 	mrpt-graphs
 	mrpt-maps
+	mrpt-kinematics
 	# Depts of the deps:
 	mrpt-obs
 	mrpt-opengl
@@ -49,6 +50,5 @@ IF(BUILD_mrpt-nav)
 		mrpt-opengl
 		mrpt-base
 		)
-		
-ENDIF(BUILD_mrpt-nav) 
+ENDIF() 
 

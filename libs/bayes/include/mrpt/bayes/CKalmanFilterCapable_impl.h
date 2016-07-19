@@ -393,7 +393,7 @@ namespace mrpt
 							data_association.begin(),
 							data_association.end(),
 							mapIndicesForKFUpdate.begin(),
-							binder1st<equal_to<int> >(equal_to<int>(),-1) ) ) );
+							bind1st(equal_to<int>(),-1) ) ) );
 
 						const size_t N_upd = (FEAT_SIZE==0) ?
 							1 : 	// Non-SLAM problems: Just one observation for the entire system.

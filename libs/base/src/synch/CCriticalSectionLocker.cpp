@@ -24,7 +24,7 @@ using namespace std;
 /*---------------------------------------------------------------
 				CCriticalSectionLocker
 ---------------------------------------------------------------*/
-CCriticalSectionLocker::CCriticalSectionLocker( const CCriticalSection * cs)
+CCriticalSectionLocker::CCriticalSectionLocker( const CAbstractMutex * cs)
 	: m_cs(cs)
 {
 	if (m_cs)

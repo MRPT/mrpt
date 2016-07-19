@@ -50,7 +50,7 @@ private:
 public:
 	std::vector<bool>		freeTextureNames;
 	unsigned int			next_free_texture;
-	synch::CCriticalSection	cs;
+	synch::CCriticalSectionRecursive	cs;
 
 	static TOpenGLNameBooker & instance()
 	{

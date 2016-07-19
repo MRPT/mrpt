@@ -15,10 +15,32 @@ namespace mrpt
 {
   namespace nav
   {
-		/** A 3D robot shape stored as a "sliced" stack of 2D polygons, used for CReactiveNavigationSystem3D */
-		struct TRobotShape {
-				std::vector<math::CPolygon>	polygons;		// The polygonal bases
-				std::vector<float>			heights;		// Heights of the prisms
+		/** A 3D robot shape stored as a "sliced" stack of 2D polygons, used for CReactiveNavigationSystem3D 
+		  * Depending on each PTG, only the 2D polygon or the circular radius will be taken into account
+		  *  \ingroup nav_reactive
+		  */
+		struct NAV_IMPEXP TRobotShape 
+		{
+			size_t size() const { return polygons.size(); }
+			void resize(size_t num_levels)
+			{ 
+				polygons.resize(num_levels); 
+				radius.resize(num_levels);
+				heights.resize(num_levels);
+			}
+
+			const mrpt::math::CPolygon & polygon(size_t level) const { return polygons[level]; }
+			const double & getRadius(size_t level) const { return radius[level]; }
+			const double & getHeight(size_t level) const { return heights[level]; }
+			mrpt::math::CPolygon & polygon(size_t level) { return polygons[level]; }
+			void setRadius(size_t level, double r) { radius[level]=r; }
+			void setHeight(size_t level, double h) { heights[level]=h; }
+			
+			const std::vector<double> &getHeights() const { return heights; }
+		private:
+			std::vector<mrpt::math::CPolygon> polygons;  // The polygonal bases
+			std::vector<double>               radius;    // The radius of each prism.
+			std::vector<double>               heights;   // Heights of the prisms
 		};
 		
 		/** See base class CAbstractPTGBasedReactive for a description and instructions of use.
@@ -40,7 +62,7 @@ namespace mrpt
 		* Next we provide a self-documented template config file: 
 		* \verbinclude reactive3d_config.ini
 		*
-		*  \sa CAbstractReactiveNavigationSystem, CParameterizedTrajectoryGenerator, CAbstractHolonomicReactiveMethod
+		*  \sa CAbstractNavigator, CParameterizedTrajectoryGenerator, CAbstractHolonomicReactiveMethod
 		*  \ingroup nav_reactive
 		*/
 		class NAV_IMPEXP CReactiveNavigationSystem3D : public CAbstractPTGBasedReactive
@@ -50,27 +72,25 @@ namespace mrpt
 		public:
 			/** See docs in ctor of base class */
 			CReactiveNavigationSystem3D(
-				CReactiveInterfaceImplementation &react_iterf_impl,
+				CRobot2NavInterface &react_iterf_impl,
 				bool enableConsoleOutput = true,
 				bool enableLogFile = false);
 
 			/** Destructor */
 			virtual ~CReactiveNavigationSystem3D();
 
-			/** Reload the configuration from a file. See CReactiveNavigationSystem3D for details. */
-			void loadConfigFile(const mrpt::utils::CConfigFileBase &ini);
-
 			/** Change the robot shape, which is taken into account for collision grid building. */
 			void changeRobotShape( TRobotShape robotShape );
 
-			/** Returns the number of different PTGs that have been setup */
-			virtual size_t getPTG_count() const { return m_ptgmultilevel.size(); }
-
-			/** Gets the i'th PTG */
-			virtual CParameterizedTrajectoryGenerator* getPTG(size_t i)
-			{
-				ASSERT_(i<m_ptgmultilevel.size() && !m_ptgmultilevel[i].PTGs.empty())
-				return m_ptgmultilevel[i].PTGs[0];  // Return the 0'th because the PTG itself is the same, what changes is the collision grid.
+			// See base class docs:
+			virtual size_t getPTG_count() const { ASSERT_(!m_ptgmultilevel.empty());  return m_ptgmultilevel.begin()->PTGs.size(); }
+			virtual CParameterizedTrajectoryGenerator* getPTG(size_t i) { 
+				ASSERT_(!m_ptgmultilevel.empty() && !m_ptgmultilevel[0].PTGs.empty())
+				return m_ptgmultilevel[0].PTGs[i];  // Return for the 0'th level (ptgs are replicated at each level)
+			}
+			virtual const CParameterizedTrajectoryGenerator* getPTG(size_t i) const { 
+				ASSERT_(!m_ptgmultilevel.empty() && !m_ptgmultilevel[0].PTGs.empty())
+				return m_ptgmultilevel[0].PTGs[i];  // Return for the 0'th level (ptgs are replicated at each level)
 			}
 
 		private:
@@ -105,18 +125,19 @@ namespace mrpt
 
 			// Steps for the reactive navigation sytem.
 			// ----------------------------------------------------------------------------
-			virtual void STEP1_CollisionGridsBuilder();
+			virtual void STEP1_InitPTGs();
 
 			// See docs in parent class
 			virtual bool STEP2_SenseObstacles();
 
 			// See docs in parent class
-			virtual void STEP3_WSpaceToTPSpace(const size_t ptg_idx,std::vector<float> &out_TPObstacles);
+			virtual void STEP3_WSpaceToTPSpace(const size_t ptg_idx,std::vector<double> &out_TPObstacles);
 
 			/** Generates a pointcloud of obstacles, and the robot shape, to be saved in the logging record for the current timestep */
 			virtual void loggingGetWSObstaclesAndShape(CLogFileRecord &out_log);
 
-
+		protected:
+			void internal_loadConfigFile(const mrpt::utils::CConfigFileBase &ini, const std::string &section_prefix="") MRPT_OVERRIDE;
 
 		}; // end class
 	}

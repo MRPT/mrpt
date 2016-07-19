@@ -268,7 +268,7 @@ bool CCANBusReader::tryToOpenComms(std::string *err_msg)
 		std::string s = "[CCANBusReader] Error trying to open CANBusReader at port ";
 		s+= e.what();
 		if (err_msg) *err_msg=s;
-		printf_debug(s.c_str());
+		printf_debug("%s",s.c_str());
 		return false;
 	}
 }

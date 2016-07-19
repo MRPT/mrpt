@@ -229,6 +229,21 @@
 																<option>1</option>
 															</object>
 															<object class="sizeritem">
+																<object class="wxCheckBox" name="ID_CHECKBOX2" variable="cbGlobalFrame" member="yes">
+																	<label>Represent in global frame</label>
+																	<checked>1</checked>
+																	<handler function="OncbGlobalFrameClick" entry="EVT_CHECKBOX" />
+																</object>
+																<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+																<border>5</border>
+																<option>1</option>
+															</object>
+															<object class="spacer">
+																<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+																<border>5</border>
+																<option>1</option>
+															</object>
+															<object class="sizeritem">
 																<object class="wxStaticText" name="ID_STATICTEXT8" variable="StaticText5" member="yes">
 																	<label>Shape draw min. dist:</label>
 																</object>
@@ -285,6 +300,10 @@
 			<handler function="OntimAutoloadTrigger" entry="EVT_TIMER" />
 		</object>
 		<object class="wxMenu" variable="mnuMoreOps" member="yes">
+			<object class="wxMenuItem" name="ID_MENUITEM2" variable="mnuSeePTGParams" member="yes">
+				<label>See PTG params...</label>
+				<handler function="OnmnuSeePTGParamsSelected" entry="EVT_MENU" />
+			</object>
 			<object class="wxMenuItem" name="ID_MENUITEM1" variable="mnuMatlabPlots" member="yes">
 				<label>Export map plot to MATLAB...</label>
 				<handler function="OnmnuMatlabPlotsSelected" entry="EVT_MENU" />
