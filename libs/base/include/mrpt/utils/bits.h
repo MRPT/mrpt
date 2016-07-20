@@ -13,6 +13,10 @@
 
 #define _USE_MATH_DEFINES // (For VS to define M_PI, etc. in cmath)
 #include <cmath> // floor()
+#include <string>
+#include <mrpt/base/link_pragmas.h>
+#include <mrpt/utils/mrpt_macros.h>
+#include <mrpt/utils/mrpt_stdint.h>
 
 /** This is the global namespace for all Mobile Robot Programming Toolkit (MRPT) libraries. */
 namespace mrpt
