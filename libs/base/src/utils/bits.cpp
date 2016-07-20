@@ -12,7 +12,6 @@
 
 #include <mrpt/utils/core_defs.h>
 #include <mrpt/utils/bits.h>
-#include <mrpt/utils/mrpt_stdint.h>
 #include <cstring>
 
 template <typename T>
