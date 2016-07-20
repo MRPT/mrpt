@@ -35,15 +35,13 @@ template <typename T>
 void reverseBytesInPlace_8b(T& v_in_out)
 {
 	const uint64_t org = *reinterpret_cast<uint64_t*>(&v_in_out);
-	const uint64_t val_rev =
-		((org & ( UINT64_C(0xff) << (7*8))) >> (7*8)) |
-		((org & ( UINT64_C(0xff) << (6*8))) >> (5*8)) |
-		((org & ( UINT64_C(0xff) << (5*8))) >> (3*8)) |
-		((org & ( UINT64_C(0xff) << (4*8))) >> (1*8)) |
-		((org & ( UINT64_C(0xff) << (3*8))) << (1*8)) |
-		((org & ( UINT64_C(0xff) << (2*8))) << (3*8)) |
-		((org & ( UINT64_C(0xff) << (1*8))) << (5*8)) |
-		((org & ( UINT64_C(0xff) << (0*8))) << (7*8));
+	uint64_t val_rev = 0;
+	int i,j;
+	for (i=7,j=7;i>=4;i--,j-=2)
+		val_rev |= ((org & ( UINT64_C(0xff) << (i*8))) >> (j*8));
+	for (i=3,j=1;i>=0;i--,j+=2)
+		val_rev |= ((org & ( UINT64_C(0xff) << (i*8))) << (j*8));
+
 	::memcpy(&v_in_out, &val_rev, sizeof(T)); // This avoid deref. puned pointer warning with:   *reinterpret_cast<const T*>(&val_rev);
 }
 
@@ -89,4 +87,15 @@ void mrpt::utils::reverseBytesInPlace(float& v_in_out)  {
 void mrpt::utils::reverseBytesInPlace(double& v_in_out) {
 	reverseBytesInPlace_8b(v_in_out);
 }
+
+#ifdef HAVE_LONG_DOUBLE
+void mrpt::utils::reverseBytesInPlace(long double& v_in_out) {
+	uint64_t dat[2];
+	::memcpy(&dat[0], &v_in_out, sizeof(long double)); // This avoid deref. puned pointer warning with:   *reinterpret_cast<const T*>(&val_rev);
+	std::swap(dat[0],dat[1]);
+	reverseBytesInPlace(dat[0]);
+	reverseBytesInPlace(dat[1]);
+	::memcpy(&v_in_out, &dat[0], sizeof(long double)); // This avoid deref. puned pointer warning with:   *reinterpret_cast<const T*>(&val_rev);
+}
+#endif
 
