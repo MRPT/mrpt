@@ -11,7 +11,6 @@
 
 #define _USE_MATH_DEFINES // (For VS to define M_PI, etc. in cmath)
 #include <cmath> // floor()
-#include <algorithm> // reverse()
 
 /** This is the global namespace for all Mobile Robot Programming Toolkit (MRPT) libraries. */
 namespace mrpt
@@ -121,11 +120,17 @@ namespace mrpt
 		inline const R* getAs(const SMART_PTR &o) { return static_cast<const R*>( & (*o) ); }
 
 		/** Reverse the order of the bytes of a given type (useful for transforming btw little/big endian)  */
-		template <class T> inline void reverseBytesInPlace(T& v_in_out)
-		{
-			unsigned char *ptr = reinterpret_cast<unsigned char*>(&v_in_out);
-			std::reverse(ptr,ptr+sizeof(T));
-		}
+		void BASE_IMPEXP reverseBytesInPlace(bool& v_in_out);
+		void BASE_IMPEXP reverseBytesInPlace(uint8_t& v_in_out);
+		void BASE_IMPEXP reverseBytesInPlace(int8_t& v_in_out);
+		void BASE_IMPEXP reverseBytesInPlace(uint16_t& v_in_out);
+		void BASE_IMPEXP reverseBytesInPlace(int16_t& v_in_out);
+		void BASE_IMPEXP reverseBytesInPlace(uint32_t& v_in_out);
+		void BASE_IMPEXP reverseBytesInPlace(int32_t& v_in_out);
+		void BASE_IMPEXP reverseBytesInPlace(uint64_t& v_in_out);
+		void BASE_IMPEXP reverseBytesInPlace(int64_t& v_in_out);
+		void BASE_IMPEXP reverseBytesInPlace(float& v_in_out);
+		void BASE_IMPEXP reverseBytesInPlace(double& v_in_out);
 
 		/** Reverse the order of the bytes of a given type (useful for transforming btw little/big endian)  */
 		template <class T> inline void reverseBytes(const T &v_in, T& v_out)
