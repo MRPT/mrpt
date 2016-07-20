@@ -9,6 +9,8 @@
 
 #pragma once
 
+#include <mrpt/config.h>
+
 #define _USE_MATH_DEFINES // (For VS to define M_PI, etc. in cmath)
 #include <cmath> // floor()
 
@@ -131,6 +133,9 @@ namespace mrpt
 		void BASE_IMPEXP reverseBytesInPlace(int64_t& v_in_out);
 		void BASE_IMPEXP reverseBytesInPlace(float& v_in_out);
 		void BASE_IMPEXP reverseBytesInPlace(double& v_in_out);
+#ifdef HAVE_LONG_DOUBLE
+		void BASE_IMPEXP reverseBytesInPlace(long double& v_in_out);
+#endif
 
 		/** Reverse the order of the bytes of a given type (useful for transforming btw little/big endian)  */
 		template <class T> inline void reverseBytes(const T &v_in, T& v_out)
