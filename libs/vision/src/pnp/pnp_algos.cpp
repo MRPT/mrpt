@@ -6,7 +6,8 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
-
+#include <mrpt/config.h>
+#include <mrpt/vision/utils.h>
 #include <mrpt/vision/pnp_algos.h>
 using namespace pnp;
 

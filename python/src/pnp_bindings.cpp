@@ -8,6 +8,9 @@ using namespace boost::python;
 #include <eigen3/Eigen/Dense>
 using namespace Eigen;
 
+#include <mrpt/config.h>
+//#include <mrpt/vision/utils.h>
+
 #include <mrpt/vision/pnp_algos.h>
 pnp::CPnP pnp_algos;
 
@@ -38,6 +41,9 @@ private:
 
 PnPAlgos::PnPAlgos( int new_m ){
 	dummy = new_m;
+    #if MRPT_HAS_OPENCV
+    std::cout<<" Using OpenCV dependency for PnP Algorithms - EPnP, DLS-PnP " << std::endl << std::endl; 
+    #endif
 }
 PnPAlgos::~PnPAlgos(){
 }
