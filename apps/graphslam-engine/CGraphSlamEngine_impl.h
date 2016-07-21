@@ -1118,7 +1118,6 @@ void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::readG
 		vector<TTimeStamp>* gt_timestamps /* = NULL */) {
 	MRPT_START;
 
-	m_out_logger.log("Parsing the ground truth textfile..", LVL_DEBUG);
 	// make sure file exists
 	ASSERTMSG_(fileExists(fname_GT),
 			format("\nGround-truth file %s was not found.\n"
@@ -1168,8 +1167,6 @@ void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::readG
 		std::vector<pose_t>* gt_poses,
 		std::vector<mrpt::system::TTimeStamp>* gt_timestamps/*= NULL */) {
 	MRPT_START;
-
-	m_out_logger.log("Parsing the ground truth textfile..", LVL_DEBUG);
 
 	// make sure file exists
 	ASSERTMSG_(fileExists(fname_GT),
@@ -1225,8 +1222,6 @@ void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::readG
 	//pose_t curr_pose(0, 0, 0);
 
 	pose_diff = curr_pose;
-	m_out_logger.log(format("Initial GT pose: %s", pose_diff.asString().c_str()), LVL_DEBUG);
-
 
 	// parse the file - get timestamp and pose and fill in the pose_t vector
 	for (; file_GT.readLine(curr_line) ;) {
@@ -1263,19 +1258,12 @@ void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::readG
 				curr_coords[1],
 				y);
 
-		m_out_logger.logFmt("GT pose (prior to alignment with origin): %s",
-				curr_pose.asString().c_str());
-
 		curr_pose.x() -= pose_diff.x();
 		curr_pose.y() -= pose_diff.y();
 		curr_pose.phi() -= pose_diff.phi();
 		//curr_pose += -pose_diff;
 		gt_poses->push_back(curr_pose);
-		m_out_logger.logFmt("GT pose: %s", curr_pose.asString().c_str());
-		//mrpt::system::pause();
 	}
-	m_out_logger.logFmt("Size of gt_poses vector: %lu", gt_poses->size());
-	//mrpt::system::pause();
 
 	file_GT.close();
 

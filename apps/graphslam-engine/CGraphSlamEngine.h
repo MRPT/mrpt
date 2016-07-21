@@ -207,6 +207,48 @@ class CGraphSlamEngine {
 		/**\brief Return the filename of the used rawlog file.*/
 		inline std::string getRawlogFname() {return m_rawlog_fname;}
 
+		/**\brief Parse the ground truth .txt file and fill in the corresponding
+		 * m_GT_poses vector.
+		 *
+		 * It is assumed that the rawlog, thererfore the groundtruth file has been
+		 * generated using the <em>GridMapNavSimul</em> MRPT application.
+		 * \sa readGTFileRGBD_TUM
+		 *
+		 * \param[in] fname_GT Ground truth filename from which the measurements
+		 * are to be read
+		 * \param[out] gt_poses std::vector which is to contain the
+		 * 2D ground truth poses.
+		 * \param[out] gt_timestamps std::vector which is to contain the timestamps
+		 * for the corresponding ground truth poses. Ignore this argument if
+		 * timestamps are not needed.
+		 */
+		static void readGTFileNavSimulOutput(
+				const std::string& fname_GT,
+				std::vector<pose_t>* gt_poses,
+				std::vector<mrpt::system::TTimeStamp>* gt_timestamps=NULL);
+		/**\brief Parse the ground truth .txt file and fill in the corresponding
+		 * m_GT_poses vector. The poses returned are given with regards to the
+		 * MRPT reference frame.
+		 *
+		 * It is assumed that the groundtruth file has been generated using the
+		 * <em>rgbd_dataset2rawlog</em> MRPT tool.
+		 *
+		 * \param[in] fname_GT Ground truth filename from which the measurements
+		 * are to be read
+		 * \param[out] gt_poses std::vector which is to contain the
+		 * 2D ground truth poses.
+		 * \param[out] gt_timestamps std::vector which is to contain the timestamps
+		 * for the corresponding ground truth poses. Ignore this argument if
+		 * timestamps are not needed.
+		 *
+		 * \sa readGTFileNavSimulOutput,
+		 * http://www.mrpt.org/Collection_of_Kinect_RGBD_datasets_with_ground_truth_CVPR_TUM_2011
+		 */
+		static void readGTFileRGBD_TUM(
+				const std::string& fname_GT,
+				std::vector<pose_t>* gt_poses,
+				std::vector<mrpt::system::TTimeStamp>* gt_timestamps=NULL);
+
 	private:
 		// Private function definitions
 		//////////////////////////////////////////////////////////////
@@ -352,47 +394,6 @@ class CGraphSlamEngine {
 				mrpt::obs::CObservation2DRangeScan& laser_scan_in,
 				mrpt::obs::CObservation2DRangeScan* laser_scan_out,
 				const int keep_every_n_entries = 2);
-		/**\brief Parse the ground truth .txt file and fill in the corresponding
-		 * m_GT_poses vector.
-		 *
-		 * It is assumed that the rawlog, thererfore the groundtruth file has been
-		 * generated using the <em>GridMapNavSimul</em> MRPT application.
-		 * \sa readGTFileRGBD_TUM
-		 *
-		 * \param[in] fname_GT Ground truth filename from which the measurements
-		 * are to be read
-		 * \param[out] gt_poses std::vector which is to contain the
-		 * 2D ground truth poses.
-		 * \param[out] gt_timestamps std::vector which is to contain the timestamps
-		 * for the corresponding ground truth poses. Ignore this argument if
-		 * timestamps are not needed.
-		 */
-		void readGTFileNavSimulOutput(
-				const std::string& fname_GT,
-				std::vector<pose_t>* gt_poses,
-				std::vector<mrpt::system::TTimeStamp>* gt_timestamps=NULL);
-		/**\brief Parse the ground truth .txt file and fill in the corresponding
-		 * m_GT_poses vector. The poses returned are given with regards to the
-		 * MRPT reference frame.
-		 *
-		 * It is assumed that the groundtruth file has been generated using the
-		 * <em>rgbd_dataset2rawlog</em> MRPT tool.
-		 *
-		 * \param[in] fname_GT Ground truth filename from which the measurements
-		 * are to be read
-		 * \param[out] gt_poses std::vector which is to contain the
-		 * 2D ground truth poses.
-		 * \param[out] gt_timestamps std::vector which is to contain the timestamps
-		 * for the corresponding ground truth poses. Ignore this argument if
-		 * timestamps are not needed.
-		 *
-		 * \sa readGTFileNavSimulOutput,
-		 * http://www.mrpt.org/Collection_of_Kinect_RGBD_datasets_with_ground_truth_CVPR_TUM_2011
-		 */
-		void readGTFileRGBD_TUM(
-				const std::string& fname_GT,
-				std::vector<pose_t>* gt_poses,
-				std::vector<mrpt::system::TTimeStamp>* gt_timestamps=NULL);
 		void alignOpticalWithMRPTFrame(); // TODO - either use it or remove it
 		/**\brief Query the observer instance for any user events.
 		 *
