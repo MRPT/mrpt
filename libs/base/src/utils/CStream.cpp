@@ -83,7 +83,8 @@ void  CStream::WriteBuffer(const void *Buffer, size_t Count)
 		CStream& utils::operator<<(mrpt::utils::CStream&out, const T &a) \
 		{ \
 			T b; \
-			mrpt::utils::reverseBytes(a,b); \
+			::memcpy(&b,&a,sizeof(b)); \
+			mrpt::utils::reverseBytesInPlace(b); \
 			out.WriteBuffer( (void*)&b, sizeof(b) ); \
 			return out; \
 		} \
@@ -91,7 +92,8 @@ void  CStream::WriteBuffer(const void *Buffer, size_t Count)
 		{ \
 			T b; \
 			in.ReadBuffer( (void*)&b, sizeof(a) ); \
-			mrpt::utils::reverseBytes(b,a); \
+			mrpt::utils::reverseBytesInPlace(b); \
+			::memcpy(&a,&b,sizeof(b)); \
 			return in; \
 		}
 #else
