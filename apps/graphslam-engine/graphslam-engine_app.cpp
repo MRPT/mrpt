@@ -47,6 +47,7 @@ using namespace mrpt::poses;
 using namespace mrpt::obs;
 using namespace mrpt::system;
 using namespace mrpt::graphs;
+using namespace mrpt::graphslam;
 using namespace mrpt::math;
 using namespace mrpt::opengl;
 using namespace mrpt::utils;

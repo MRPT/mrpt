@@ -5,7 +5,7 @@
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include "CWindowObserver.h"
 
-namespace mrpt { namespace gui {
+namespace mrpt { namespace graphslam {
 
 /**\brief Class responsible for keeping pointers to CDisplayWindow3D and CObserver
  * instances.
@@ -16,14 +16,15 @@ namespace mrpt { namespace gui {
 class CWindowManager_t {
   public:
   	/**\brief Class constructor*/
-    CWindowManager_t(CDisplayWindow3D* win_in):
+    CWindowManager_t(mrpt::gui::CDisplayWindow3D* win_in):
     	win(win_in) // pointer to window to manage
 		{
 			observer = NULL;
   		this->initCWindowManager();
   	}
   	/**\brief Class constructor*/
-    CWindowManager_t(CDisplayWindow3D* win_in, CWindowObserver* observer_in):
+    CWindowManager_t(mrpt::gui::CDisplayWindow3D* win_in, 
+    		mrpt::graphslam::CWindowObserver* observer_in):
     	win(win_in), // pointer to window to manage
     	observer(observer_in) // pointer to CWindowObserver instance
 		{
@@ -108,8 +109,8 @@ class CWindowManager_t {
  			m_viewp_y -= m_viewp_height + m_viewp_margin;
  		}
 
-		CDisplayWindow3D* win; /**< CDisplayWindow instance */
-		CWindowObserver* observer; /**< CWindowObserver instance */
+		mrpt::gui::CDisplayWindow3D* win; /**< CDisplayWindow instance */
+		mrpt::graphslam::CWindowObserver* observer; /**< CWindowObserver instance */
   private:
 
 		double m_offset_y_step;

@@ -142,7 +142,7 @@ class CGraphSlamEngine {
 		 */
 		CGraphSlamEngine(const std::string& config_file,
 				mrpt::gui::CDisplayWindow3D* win=NULL,
-				CWindowObserver* win_observer=NULL,
+				mrpt::graphslam::CWindowObserver* win_observer=NULL,
 				const std::string rawlog_fname="",
 				const std::string fname_GT="");
 		/**\brief Default Destructor. */
@@ -459,13 +459,13 @@ class CGraphSlamEngine {
 		mrpt::gui::CDisplayWindow3D* m_win; /**<Pointer to the display window at hand */
 																				/**< It is supported by the calling */
 																				/**< application */
-		mrpt::gui::CWindowObserver* m_win_observer; /**<Pointer ot a CWindowObserver instance */
+		mrpt::graphslam::CWindowObserver* m_win_observer; /**<Pointer ot a CWindowObserver instance */
 																								/**<If not on headless mode, */
 																								/**< this should be passed as a*/
 																								/**< class member of a */
 																								/**< CWindowManager instance */
 		mrpt::gui::CDisplayWindowPlots* m_win_plot;	 /**< DisplayPlots instance for visualizing the evolution of the SLAM metric */
-		mrpt::gui::CWindowManager_t m_win_manager;/**<Pointer to the window manager*/
+		mrpt::graphslam::CWindowManager_t m_win_manager;/**<Pointer to the window manager*/
 																							/**< It is supported by the calling */
 																							/**< application */
 
@@ -524,7 +524,7 @@ class CGraphSlamEngine {
 		std::string m_keystroke_map;
 		/**\}*/
 
-		CEdgeCounter m_edge_counter; /**< Instance to keep track of all the edges + visualization related operations */
+		mrpt::graphslam::CEdgeCounter m_edge_counter; /**< Instance to keep track of all the edges + visualization related operations */
 		int m_num_of_edges_for_collapse;
 
 		/**\brief Flag for specifying if we are going to use ground truth data at all.

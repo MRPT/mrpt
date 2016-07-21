@@ -363,7 +363,7 @@ void CICPGoodnessERD<GRAPH_t>::setRawlogFname(const std::string& rawlog_fname){
 }
 template<class GRAPH_t>
 void CICPGoodnessERD<GRAPH_t>::setWindowManagerPtr(
-		mrpt::gui::CWindowManager_t* win_manager) {
+		mrpt::graphslam::CWindowManager_t* win_manager) {
 	m_win_manager = win_manager;
 
 	// may still be null..
