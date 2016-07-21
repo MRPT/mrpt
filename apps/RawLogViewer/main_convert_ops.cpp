@@ -284,7 +284,7 @@ void xRawLogViewerFrame::OnMenuLossLessDecimate(wxCommandEvent& event)
 	} // end for i each entry
 
 	// Clear the list only (objects already deleted)
-	rawlog.clearWithoutDelete();
+	rawlog.clear();
 
 	// Copy as new log:
 	rawlog = newRawLog;
