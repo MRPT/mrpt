@@ -21,7 +21,7 @@
 #include <string>
 #include <map>
 
-namespace mrpt { namespace gui {
+namespace mrpt { namespace graphslam {
 
 /**\brief Monitor events in the visualization window.
  */

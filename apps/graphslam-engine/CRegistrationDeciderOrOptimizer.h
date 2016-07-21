@@ -45,7 +45,7 @@ class CRegistrationDeciderOrOptimizer {
 		 * optionally, a CWindowObserver pointer so that interaction with the
 		 * window is possible
 		 */
-		virtual void setWindowManagerPtr(mrpt::gui::CWindowManager_t* win_manager) {}
+		virtual void setWindowManagerPtr(mrpt::graphslam::CWindowManager_t* win_manager) {}
 		/**\brief Fetch a mrpt::synch::CCriticalSection for locking the GRAPH_t resource.
 		 *
 		 * Handy for realising multithreading in the derived classes.

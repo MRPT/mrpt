@@ -114,7 +114,7 @@ void CLevMarqGSO<GRAPH_t>::setRawlogFname(const std::string& rawlog_fname) {
 
 template<class GRAPH_t>
 void CLevMarqGSO<GRAPH_t>::setWindowManagerPtr(
-		mrpt::gui::CWindowManager_t* win_manager) {
+		mrpt::graphslam::CWindowManager_t* win_manager) {
 	MRPT_START;
 
 	m_win_manager = win_manager;
