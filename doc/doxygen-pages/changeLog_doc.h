@@ -50,6 +50,7 @@
 				- Depth filters are now available for mrpt::obs::CObservation3DRangeScan::project3DPointsFromDepthImageInto() and  mrpt::obs::CObservation3DRangeScan::convertTo2DScan()
 				- New switch mrpt::obs::CObservation3DRangeScan::EXTERNALS_AS_TEXT for runtime selection of externals format.
 			- mrpt::obs::CObservation2DRangeScan now has an optional field for intensity.
+			- mrpt::obs::CRawLog can now holds objects of arbitrary type, not only actions/observations. This may be useful for richer logs aimed at debugging.
 		- \ref mrpt_opengl_grp
 			- [ABI change] mrpt::opengl::CAxis now has many new options exposed to configure its look.
 		- \ref mrpt_hwdrivers_grp
