@@ -72,14 +72,43 @@ def RotMat2quat(R):
     return [qw, qx, qy, qz]
 
 def display_comparison_plot(t, arr, names, line_styles, title, xtitle, ytitle, ylim):
+
+    f, ax = plt.subplots()    
+    lines=[]
     for i in np.arange(0,len(arr)):
-        plt.plot(t,arr[i,:],label=names[i], lw=2, ls=line_styles[i])
+        l, =ax.plot(t,arr[i,:],label=names[i], lw=2, ls=line_styles[i])
+        lines.append(l)
+    
+    leg = ax.legend(fancybox=True, shadow=True)
+    leg.get_frame().set_alpha(0.4)
+    
+    lined = dict()
+    for legline, origline in zip(leg.get_lines(), lines):
+        legline.set_picker(10)
+        lined[legline]=origline
         
-    plt.xlabel(xtitle)
-    plt.ylabel(ytitle)
-    plt.title(title)
+    ax.set_xlabel(xtitle)
+    ax.set_ylabel(ytitle)
+    ax.set_title(title)
     ax=plt.gca()
     ax.set_ylim(ylim)
+    
+    def onpick(event):
+        legline=event.artist
+        origline = lined[legline]
+        vis=not origline.get_visible()
+        origline.set_visible(vis)
+        
+        if vis:
+            legline.set_alpha(1)
+        else:
+            legline.set_alpha(0.2)
+        
+        f.canvas.draw()
+    
+    f.canvas.mpl_connect('pick_event', onpick)
+        
+    plt.show()
 
 def calc_err(pose1, pose2):
     # Percent error in translation    
@@ -220,15 +249,10 @@ err_q=err[:,1].reshape(n_algos,n_iter)
 
 it=np.arange(0,n_iter)
 
-plt.figure(1)
-display_comparison_plot(it, err_t, names=['epnp','dls','p3p','ppnp','posit','lhm'], line_styles =['-', '--', '--', ':','-','-'], title='Translation %Error Plot', xtitle='Iteration', ytitle='%$e_t$', ylim=[0,10])
-plt.legend()
-plt.show()
 
-plt.figure(2)
+display_comparison_plot(it, err_t, names=['epnp','dls','p3p','ppnp','posit','lhm'], line_styles =['-', '--', '--', ':','-','-'], title='Translation %Error Plot', xtitle='Iteration', ytitle='%$e_t$', ylim=[0,10])
+
 display_comparison_plot(it, err_q, names=['epnp','dls','p3p','ppnp','posit','lhm'], line_styles =['-', '--', '--', ':','-','-'], title='Rotation Error Plot (rad)', xtitle='Iteration', ytitle='$e_y$', ylim=[0,2])
-plt.legend()
-plt.show()
 
 comp_arr = np.zeros([n_iter,2])
 for i in np.arange(0,n_iter):
