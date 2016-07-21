@@ -79,19 +79,19 @@ namespace mrpt { namespace graphslam {
  *
  * The template arguments are listed below:
  * - \em GRAPH_t: The type of Graph to be constructed and optimized.
- * - \em NODE_REGISTRAR: Class responsible of adding new nodes in the graph. Class
- *   should at least implement the deciders::CNodeRegistrationDecider_t interface provided
- *   in CNodeRegistrationDecider.h file.
- * - \em EDGE_REGISTRAR: Class responsible of adding new edges in the graph. Class
- *   should at least implement the deciders::CEdgeRegistrationDecider_t interface provided
- *   in CEdgeRegistrationDecider.h file.
+ * - \em NODE_REGISTRAR: Class responsible of adding new nodes in the graph.
+ *   Class should at least implement the deciders::CNodeRegistrationDecider_t
+ *   interface provided in CNodeRegistrationDecider.h file.
+ * - \em EDGE_REGISTRAR: Class responsible of adding new edges in the graph.
+ *   Class should at least implement the deciders::CEdgeRegistrationDecider_t
+ *   interface provided in CEdgeRegistrationDecider.h file.
  * - \em OPTIMIZER: Class responsible of optimizing the graph. Class should at
- *   least implement the optimizers::CGraphSlamOptimizer_t interface provided in
- *   CGraphslamOptimizer.h file.
+ *   least implement the optimizers::CGraphSlamOptimizer_t interface provided
+ *   in CGraphslamOptimizer.h file.
  *
  * The GRAPH_t resource is accessed after having locked the relevant section
- * \em m_graph_section. Critical section is also <em> locked prior to the calls to
- * the deciders/optimizers </em>.
+ * \em m_graph_section. Critical section is also <em> locked prior to the calls
+ * to the deciders/optimizers </em>.
  *
  * \ingroup mrpt_graphslam_grp
  * \note Implementation can be found in the file \em CGraphSlamEngine_impl.h

@@ -18,6 +18,7 @@ project(${PROJECT_NAME})
 
 set(SRC_FILES
     graphslam-engine_app.cpp
+    TSlidingWindow.h TSlidingWindow.cpp
     )
 
 # Define the executable target:

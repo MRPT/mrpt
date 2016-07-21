@@ -20,7 +20,7 @@
 #include <mrpt/poses/CRobot2DPoseEstimator.h>
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/obs/CRawlog.h>
-#include <mrpt/obs/CObservationIMU.h>
+#include <mrpt/obs/CObservationOdometry.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/utils/CConfigFile.h>
@@ -34,8 +34,10 @@
 
 #include "CNodeRegistrationDecider.h"
 #include "CRangeScanRegistrationDecider.h"
+#include "TSlidingWindow.h"
 
 #include <string>
+#include <math.h>
 
 using namespace mrpt;
 using namespace mrpt::utils;
@@ -190,13 +192,36 @@ class CICPGoodnessNRD:
 		CObservation3DRangeScanPtr m_last_laser_scan3D;
 		CObservation3DRangeScanPtr m_curr_laser_scan3D;
 
+		/**\brief Latest odometry rigid body transformation. Decider can use it to smoothen the
+		 * trajectory in the case of high noise in the laser measurements
+		 */
+		constraint_t m_latest_odometry_PDF;
+		/**\brief pose_t estimation using only odometry information. Handy for observation-only rawlogs.  */
+		pose_t m_curr_odometry_only_pose;
+		/**\brief pose_t estimation using only odometry information. Handy for observation-only rawlogs.
+		 *
+		 * Resets next time an ICP edge is successfully registered.
+		 */
+		pose_t m_last_odometry_only_pose;
+
+
+
 		// last insertede node in the graph
 		mrpt::utils::TNodeID m_nodeID_max;
 
-		// sliding window for managing the ICP goodness values
-		typename superB::TSlidingWindow m_ICP_sliding_win;
-		mrpt::system::TTimeStamp m_curr_timestamp;
-		mrpt::system::TTimeStamp m_prev_timestamp;
+		/**\brief Keeps track of the last N measurements of the incoming ICP
+		 * matches.
+		 */
+		TSlidingWindow m_ICP_sliding_win;
+		/**\brief Keeps track of the last N measurements between the ICP edge and
+		 * the corresponding odometry measurements.
+		 *
+		 * Use the last odometry rigid body transformation instead of the
+		 * ICP edge if the mahalanobis distance between them is greater than this
+		 * limit.
+		 */
+		TSlidingWindow m_mahal_distance_ICP_odom; 
+
 
 		mrpt::utils::COutputLogger m_out_logger; /**<Output logger instance */
 		mrpt::utils::CTimeLogger m_time_logger; /**<Time logger instance */

@@ -188,6 +188,7 @@ void CFixedIntervalsNRD<GRAPH_t>::checkIfInvalidDataset(
 		}
 	}
 	else {
+		// TODO - make a real check here
 		m_checked_for_usuable_dataset = true;
 		return;
 	}

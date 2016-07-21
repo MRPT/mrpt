@@ -22,7 +22,6 @@
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/slam/CICP.h>
-#include <mrpt/utils/CStdOutStream.h>
 #include <mrpt/system/os.h>
 
 #include <algorithm>
@@ -90,73 +89,6 @@ class CRangeScanRegistrationDecider {
 	void convert3DTo2DRangeScan(
 			/*from = */ mrpt::obs::CObservation3DRangeScanPtr& scan3D_in,
 			/*to   = */ mrpt::obs::CObservation2DRangeScanPtr* scan2D_out=NULL);
-
-	/**\brief Class to monitor the ICP edges and adapt the ICP goodness value used to
-	 * accept or reject an edge. Class can compute both the current mean and
-	 * median so that the decider may choose which one to use as a criterion
-	 */
-	struct TSlidingWindow: public mrpt::utils::CLoadableOptions {
-		public:
-			TSlidingWindow(double win_size=10);
-			~TSlidingWindow();
-			/**\brief Return the current median goodness.
-			 */
-			inline double getMedian();
-			/**\brief Return the current mean goodness.
-			 */
-			inline double getMean();
-			/**\brief Determine whether the goodness value provided is above the current
-			 * mean or median.
-			 *
-			 * Depending on \b m_evaluate_using_mean it either uses the mean or
-			 * median as the evaluation threshold
-			 *
-			 * \sa setEvaluationCriterion
-			 * \return True if it above the threshold
-			 */
-			inline bool evaluateICPgoodness(double goodness);
-			/**\brief Update the sliding window by appending a new ICP goodness
-			 */
-			inline void addNewMeasurement(double goodness_val);
-			/** Resize the window.
-			 *
-			 * \note Method affects the underlying vector only if the new_size
-			 * specified has already been reached
-			 */
-			void resizeWindow(size_t new_size);
-			void loadFromConfigFile(
-					const mrpt::utils::CConfigFileBase &source,
-					const std::string &section);
-			void 	dumpToTextStream(mrpt::utils::CStream &out) const;
-			/**\brief Set the criterion to be used when evaluating an ICP goodness
-			 * value.
-			 *
-			 * \sa evaluateICPgoodness
-			 */
-			void setEvaluationCriterion(std::string criterion);
-
-		private:
-			size_t m_win_size;
-			std::vector<double> m_goodness_vec;
-
-			double m_mean_cached; /**< Cached mean value */
-			double m_median_cached; /**< Cached median value */
-			bool m_mean_updated; /**< Is the mean up-to-date? */
-			bool m_median_updated; /**< Is the median up-to-date? */
-
-			/**\brief flag is raised the first time that
-			 * TSlidingWindow::addNewMeasurement is
-			 * called
-			 */
-			bool m_is_initialized;
-
-			/** Option for deciding whether to use mean or median in the
-			 * evaluateICPgoodness method
-			 */
-			bool m_evaluate_using_mean;
-
-
-	};
 
 	struct TParams: public mrpt::utils::CLoadableOptions {
 		public:
