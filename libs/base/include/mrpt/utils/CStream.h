@@ -147,10 +147,6 @@ namespace mrpt
 			#endif
 			}
 
-
-			/** Copies a specified number of bytes from one stream to another. */
-			size_t  CopyFrom(mrpt::utils::CStream* Source, size_t Count);
-
 			/** Introduces a pure virtual method for moving to a specified position in the streamed resource.
 			 *   he Origin parameter indicates how to interpret the Offset parameter. Origin should be one of the following values:
 			 *	- sFromBeginning	(Default) Offset is from the beginning of the resource. Seek moves to the position Offset. Offset must be >= 0.
