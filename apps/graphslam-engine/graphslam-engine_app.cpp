@@ -255,31 +255,10 @@ int main(int argc, char **argv)
 			ground_truth_fname = arg_ground_truth_file.getValue();
 		}
 
-		// Visualization
-		// Deciding whether to enable visuals
-		CWindowObserver* graph_win_observer = NULL;
-		CDisplayWindow3D* graph_win = NULL;
-		if (!disable_visuals.getValue()) { // enabling Visualization objects
-			graph_win_observer = new CWindowObserver();
-
-			graph_win = new CDisplayWindow3D("GraphSlam building procedure", 800, 600);
-			//CDisplayWindow3D	graph_win("Graphslam building procedure",800, 600);
-			graph_win->setPos(400, 200);
-			graph_win_observer->observeBegin(*graph_win);
-			{
-				COpenGLScenePtr &scene = graph_win->get3DSceneAndLock();
-				opengl::COpenGLViewportPtr main_view = scene->getViewport("main");
-				graph_win_observer->observeBegin( *main_view );
-				graph_win->unlockAccess3DScene();
-			}
-			logger.log("Initialized CDisplayWindow3D...", LVL_WARN);
-			logger.log("Listening to CDisplayWindow3D events...");
-		}
-		else {
+		if (disable_visuals.getValue()) { // enabling Visualization objects
 			logger.log("Running on headless mode - Visuals disabled", LVL_WARN);
 		}
 
-		bool has_exited_normally = false;
 		////////////////////////////////////////////////////////////////////////
 		// take all the different combinations of node / edge registration deciders
 		// one-by-one.
@@ -297,11 +276,10 @@ int main(int argc, char **argv)
 					>
 					graph_engine(
 							ini_fname,
-							graph_win,
-							graph_win_observer,
 							rawlog_fname,
-							ground_truth_fname);
-				has_exited_normally = graph_engine.parseRawlogFile();
+							ground_truth_fname,
+							!disable_visuals.getValue());
+				graph_engine.parseRawlogFile();
 			}
 			else if (system::strCmpI(edge_reg, "CEmptyERD")) { // CFixedIntervalsNRD - CEmptyERD
 				// Initialize the CGraphSlamEngine class
@@ -314,11 +292,10 @@ int main(int argc, char **argv)
 					>
 					graph_engine(
 							ini_fname,
-							graph_win,
-							graph_win_observer,
 							rawlog_fname,
-							ground_truth_fname);
-				has_exited_normally = graph_engine.parseRawlogFile();
+							ground_truth_fname,
+							!disable_visuals.getValue());
+				graph_engine.parseRawlogFile();
 			}
 
 		}
@@ -334,11 +311,10 @@ int main(int argc, char **argv)
 					>
 					graph_engine(
 							ini_fname,
-							graph_win,
-							graph_win_observer,
 							rawlog_fname,
-							ground_truth_fname);
-				has_exited_normally = graph_engine.parseRawlogFile();
+							ground_truth_fname,
+							!disable_visuals.getValue());
+				graph_engine.parseRawlogFile();
 			}
 			else if (system::strCmpI(edge_reg, "CEmptyERD")) { // CEmtpyNRD - CEmptyERD
 				// Initialize the CGraphSlamEngine class
@@ -351,11 +327,10 @@ int main(int argc, char **argv)
 					>
 					graph_engine(
 							ini_fname,
-							graph_win,
-							graph_win_observer,
 							rawlog_fname,
-							ground_truth_fname);
-				has_exited_normally = graph_engine.parseRawlogFile();
+							ground_truth_fname,
+							!disable_visuals.getValue());
+				graph_engine.parseRawlogFile();
 			}
 
 		}
@@ -371,11 +346,10 @@ int main(int argc, char **argv)
 					>
 					graph_engine(
 							ini_fname,
-							graph_win,
-							graph_win_observer,
 							rawlog_fname,
-							ground_truth_fname);
-				has_exited_normally = graph_engine.parseRawlogFile();
+							ground_truth_fname,
+							!disable_visuals.getValue());
+				graph_engine.parseRawlogFile();
 			}
 			else if (system::strCmpI(edge_reg, "CEmptyERD")) { // CICPGooodnessNRD - CEmptyERD
 
@@ -389,30 +363,14 @@ int main(int argc, char **argv)
 					>
 					graph_engine(
 							ini_fname,
-							graph_win,
-							graph_win_observer,
 							rawlog_fname,
-							ground_truth_fname);
-				has_exited_normally = graph_engine.parseRawlogFile();
+							ground_truth_fname,
+							!disable_visuals.getValue());
+				graph_engine.parseRawlogFile();
 			}
 
 		}
 		////////////////////////////////////////////////////////////////////////
-
-		if (has_exited_normally && !disable_visuals.getValue()) {
-			while (graph_win->isOpen()) {
-				mrpt::system::sleep(100);
-				graph_win->forceRepaint();
-			}
-		}
-
-		if (!disable_visuals.getValue()) {
-			// exiting actions...
-			logger.log("Releasing CDisplayWindow3D...");
-			delete graph_win;
-			logger.log("Releasing CWindowObserver...");
-			delete graph_win_observer;
-		}
 
 	}
 	catch (exception& e) {
