@@ -9,7 +9,6 @@ using namespace boost::python;
 using namespace Eigen;
 
 #include <mrpt/config.h>
-//#include <mrpt/vision/utils.h>
 
 #include <mrpt/vision/pnp_algos.h>
 pnp::CPnP pnp_algos;
@@ -42,7 +41,9 @@ private:
 PnPAlgos::PnPAlgos( int new_m ){
 	dummy = new_m;
     #if MRPT_HAS_OPENCV
-    std::cout<<" Using OpenCV dependency for PnP Algorithms - EPnP, DLS-PnP " << std::endl << std::endl; 
+    std::cout <<" Using OpenCV dependency for PnP Algorithms - EPnP, DLS-PnP " << std::endl << std::endl; 
+    #else 
+    std::cout << " Initializing PnP class " << std::endl << std::endl;
     #endif
 }
 PnPAlgos::~PnPAlgos(){
@@ -50,7 +51,7 @@ PnPAlgos::~PnPAlgos(){
 #if MRPT_HAS_OPENCV
     int PnPAlgos::epnp_solve(PyObject* obj_pts, PyObject* img_pts, int n, PyObject* cam_intrinsic, PyObject* pose_mat){
         Map<MatrixXd> _obj_pts((double *) PyArray_DATA((PyArrayObject*)obj_pts),3,n);
-        Map<MatrixXd> _img_pts((double *) PyArray_DATA((PyArrayObject*)img_pts),2,n);
+        Map<MatrixXd> _img_pts((double *) PyArray_DATA((PyArrayObject*)img_pts),3,n);
         Map<MatrixXd> _pose_mat((double *) PyArray_DATA((PyArrayObject*)pose_mat),6,1);
         Map<MatrixXd> _cam_intrinsic((double *) PyArray_DATA((PyArrayObject*)cam_intrinsic),3,3);
         
@@ -59,7 +60,7 @@ PnPAlgos::~PnPAlgos(){
 
     int PnPAlgos::dls_solve(PyObject* obj_pts, PyObject* img_pts, int n, PyObject* cam_intrinsic, PyObject* pose_mat){
         Map<MatrixXd> _obj_pts((double *) PyArray_DATA((PyArrayObject*)obj_pts),3,n);
-        Map<MatrixXd> _img_pts((double *) PyArray_DATA((PyArrayObject*)img_pts),2,n);
+        Map<MatrixXd> _img_pts((double *) PyArray_DATA((PyArrayObject*)img_pts),3,n);
         Map<MatrixXd> _pose_mat((double *) PyArray_DATA((PyArrayObject*)pose_mat),6,1);
         Map<MatrixXd> _cam_intrinsic((double *) PyArray_DATA((PyArrayObject*)cam_intrinsic),3,3);
         
@@ -69,7 +70,7 @@ PnPAlgos::~PnPAlgos(){
 
     int PnPAlgos::upnp_solve(PyObject* obj_pts, PyObject* img_pts, int n, PyObject* cam_intrinsic, PyObject* pose_mat){
         Map<MatrixXd> _obj_pts((double *) PyArray_DATA((PyArrayObject*)obj_pts),3,n);
-        Map<MatrixXd> _img_pts((double *) PyArray_DATA((PyArrayObject*)img_pts),2,n);
+        Map<MatrixXd> _img_pts((double *) PyArray_DATA((PyArrayObject*)img_pts),3,n);
         Map<MatrixXd> _pose_mat((double *) PyArray_DATA((PyArrayObject*)pose_mat),6,1);
         Map<MatrixXd> _cam_intrinsic((double *) PyArray_DATA((PyArrayObject*)cam_intrinsic),3,3);
         
