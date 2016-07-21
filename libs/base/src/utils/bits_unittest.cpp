@@ -37,8 +37,8 @@ TEST(bits, reverseBytes)
 		EXPECT_EQ(val, val_r_ok);
 	}
 	{
-		uint32_t val   = 0x11223344, val_r;
-		const uint32_t val_r_ok = 0x44332211;
+		uint32_t val   = UINT32_C(0x11223344), val_r;
+		const uint32_t val_r_ok = UINT32_C(0x44332211);
 
 		mrpt::utils::reverseBytes(val, val_r);
 		EXPECT_EQ(val_r, val_r_ok);
@@ -46,8 +46,8 @@ TEST(bits, reverseBytes)
 		EXPECT_EQ(val, val_r_ok);
 	}
 	{
-		uint64_t val   = 0x1122334455667788UL, val_r;
-		const uint64_t val_r_ok = 0x8877665544332211UL;
+		uint64_t val   = UINT64_C( 0x1122334455667788 ), val_r;
+		const uint64_t val_r_ok = UINT64_C( 0x8877665544332211 );
 
 		mrpt::utils::reverseBytes(val, val_r);
 		EXPECT_EQ(val_r, val_r_ok);
