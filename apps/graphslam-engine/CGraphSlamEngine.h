@@ -141,10 +141,9 @@ class CGraphSlamEngine {
 		 * performance
 		 */
 		CGraphSlamEngine(const std::string& config_file,
-				mrpt::gui::CDisplayWindow3D* win=NULL,
-				mrpt::graphslam::CWindowObserver* win_observer=NULL,
 				const std::string rawlog_fname="",
-				const std::string fname_GT="");
+				const std::string fname_GT="",
+				bool enable_visuals=true);
 		/**\brief Default Destructor. */
 		~CGraphSlamEngine();
 
@@ -307,6 +306,13 @@ class CGraphSlamEngine {
 		 * (via the .ini file) and if it is relevant to the application then the
 		 * corresponding method is called in the initCGraphSlamEngine class method
 		 */
+		/**\{*/
+
+		/**\brief If \b m_enable_visuals is specified then initialize the primitive
+		 * openGL/gui objects related to visualization.
+		 */
+		void initVisualization();
+
 		void initRangeImageViewport();
 		void initIntensityImageViewport();
 		void initCurrPosViewport();
@@ -438,8 +444,11 @@ class CGraphSlamEngine {
 		std::string	m_rawlog_fname;
 
 		std::string	m_fname_GT;
-		size_t m_GT_poses_index; // counter for reading back the GT_poses
-		size_t m_GT_poses_step; // rate at which to read the GT poses
+ 		/**\brief Determine if we are to enable visualizatio support or not. */
+		bool m_enable_visuals;
+
+		size_t m_GT_poses_index; /**\brief Counter for reading back the GT_poses. */
+		size_t m_GT_poses_step; //**\brief Rate at which to read the GT poses. */
 
 		// parameters related to the application generated files
 		std::string	m_output_dir_fname;
@@ -466,7 +475,7 @@ class CGraphSlamEngine {
 																								/**< class member of a */
 																								/**< CWindowManager instance */
 		mrpt::gui::CDisplayWindowPlots* m_win_plot;	 /**< DisplayPlots instance for visualizing the evolution of the SLAM metric */
-		mrpt::graphslam::CWindowManager_t m_win_manager;/**<Pointer to the window manager*/
+		mrpt::graphslam::CWindowManager m_win_manager;/**<Pointer to the window manager*/
 																							/**< It is supported by the calling */
 																							/**< application */
 

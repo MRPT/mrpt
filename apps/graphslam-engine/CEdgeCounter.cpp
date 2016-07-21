@@ -30,7 +30,7 @@ void CEdgeCounter::initCEdgeCounter() {
 /**\brief Provide the instance with a CWindowManager.
 */
 void CEdgeCounter::setWindowManagerPtr(
-		mrpt::graphslam::CWindowManager_t* win_manager) {
+		mrpt::graphslam::CWindowManager* win_manager) {
 	m_win_manager = win_manager;
 }
 /**\brief State how many of the existing edges have been removed.

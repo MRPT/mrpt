@@ -104,7 +104,7 @@ class CICPGoodnessERD :
 
 		void setGraphPtr(GRAPH_t* graph);
 		void setRawlogFname(const std::string& rawlog_fname);
-		void setWindowManagerPtr(mrpt::graphslam::CWindowManager_t* win_manager);
+		void setWindowManagerPtr(mrpt::graphslam::CWindowManager* win_manager);
 		void notifyOfWindowEvents(
 				const std::map<std::string, bool>& events_occurred);
 		void getEdgesStats(
@@ -184,7 +184,7 @@ class CICPGoodnessERD :
 
 		GRAPH_t* m_graph; /**<\brief Pointer to the graph under construction */
 		mrpt::gui::CDisplayWindow3D* m_win;
-		mrpt::graphslam::CWindowManager_t* m_win_manager;
+		mrpt::graphslam::CWindowManager* m_win_manager;
 		mrpt::graphslam::CWindowObserver* m_win_observer;
 
 		std::string m_rawlog_fname;

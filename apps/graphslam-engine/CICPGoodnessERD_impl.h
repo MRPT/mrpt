@@ -168,8 +168,6 @@ void CICPGoodnessERD<GRAPH_t>::checkRegistrationCondition2D(
 		const std::set<mrpt::utils::TNodeID>& nodes_set) {
 	MRPT_START;
 
-	//cout << "CICPGoodnessERD: Checking 2D Registration Condition... " << endl;
-
 	mrpt::utils::TNodeID curr_nodeID = m_graph->nodeCount()-1;
 	CObservation2DRangeScanPtr curr_laser_scan;
 	std::map<const mrpt::utils::TNodeID,
@@ -293,7 +291,6 @@ void CICPGoodnessERD<GRAPH_t>::registerNewEdge(
 		const constraint_t& rel_edge ) {
 	MRPT_START;
 
-	//cout << "Inserting new Edge: " << from << " -> " << to << endl;
 	m_graph->insertEdge(from,  to, rel_edge);
 
 	MRPT_END;
@@ -344,7 +341,8 @@ void CICPGoodnessERD<GRAPH_t>::setRawlogFname(const std::string& rawlog_fname){
 
 	// find the directory of the 3Dscan images in case we are working with
 	// Cobservation3DRangeScans
-	cout << "Trying to fetch 3D scans external storage directory.. " << endl;
+	stringstream ss;
+	ss << "Trying to fetch 3D scans external storage directory.. " << endl;
 	std::string rawlog_fname_noext = system::extractFileName(m_rawlog_fname);
 	std::string rawlog_dir = system::extractFileDirectory(rawlog_fname);
 	std::string img_external_storage_dir =
@@ -352,18 +350,20 @@ void CICPGoodnessERD<GRAPH_t>::setRawlogFname(const std::string& rawlog_fname){
 
 	if (system::directoryExists(img_external_storage_dir)) {
 		params.scans_img_external_dir = img_external_storage_dir;
-		cout << "3D scans external storage: " << params.scans_img_external_dir
+		ss << "3D scans external storage: " << params.scans_img_external_dir
 			<< endl;
 	}
 	else {
-		cout << "Couldn't find 3D scans external storage: " << img_external_storage_dir << endl;
+		ss << "Couldn't find 3D scans external storage: " << img_external_storage_dir << endl;
 	}
+
+	m_out_logger.logFmt("%s", ss.str().c_str());
 
 	MRPT_END;
 }
 template<class GRAPH_t>
 void CICPGoodnessERD<GRAPH_t>::setWindowManagerPtr(
-		mrpt::graphslam::CWindowManager_t* win_manager) {
+		mrpt::graphslam::CWindowManager* win_manager) {
 	m_win_manager = win_manager;
 
 	// may still be null..

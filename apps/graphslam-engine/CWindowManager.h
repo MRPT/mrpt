@@ -3,55 +3,64 @@
 
 #include <mrpt/gui/CBaseGUIWindow.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
+#include <mrpt/utils/COutputLogger.h>
+
 #include "CWindowObserver.h"
 
 namespace mrpt { namespace graphslam {
 
-/**\brief Class responsible for keeping pointers to CDisplayWindow3D and CObserver
- * instances.
+/**\brief Class acts as a container for storing pointers to mrpt::gui::CDisplayWindow3D,
+ * mrpt::graphslam::CWindowManager instances.
  *
- * CWindowManager_t also provides methods for adding/positioning textMessages
+ * CWindowManager also provides methods for adding/positioning textMessages
  * and viewports in the CDisplayWindow in a compact and consistent way.
  */
-class CWindowManager_t {
+class CWindowManager {
   public:
-  	/**\brief Class constructor*/
-    CWindowManager_t(mrpt::gui::CDisplayWindow3D* win_in):
-    	win(win_in) // pointer to window to manage
-		{
-			observer = NULL;
+  	/**\brief Default class constructor */
+  	CWindowManager() {
   		this->initCWindowManager();
   	}
   	/**\brief Class constructor*/
-    CWindowManager_t(mrpt::gui::CDisplayWindow3D* win_in, 
-    		mrpt::graphslam::CWindowObserver* observer_in):
-    	win(win_in), // pointer to window to manage
-    	observer(observer_in) // pointer to CWindowObserver instance
+    CWindowManager(mrpt::gui::CDisplayWindow3D* win_in)
 		{
   		this->initCWindowManager();
+  		this->setCDisplayWindow3DPtr(win_in);
   	}
+  	/**\brief Class constructor*/
+    CWindowManager(mrpt::gui::CDisplayWindow3D* win_in, 
+    		mrpt::graphslam::CWindowObserver* observer_in)
+		{
+  		this->initCWindowManager();
 
+  		this->setWindowObserverPtr(observer_in);
+  		this->setCDisplayWindow3DPtr(win_in);
+  	}
   	/**\brief Class destructor. */
-    virtual ~CWindowManager_t() { }
-    /**\brief Initialization method to be called from the various Constructors.
-     */
-    void initCWindowManager() {
+    ~CWindowManager() { }
 
-    	m_offset_y_step = 20.0;
-    	m_index_text_step = 1;
-    	m_font_name = "sans";
-    	m_font_size = 12;
-    	m_curr_offset_y = 30;
-    	m_curr_text_index = 1;
+		/**\brief Store the CDisplayWindow3D pointer in the CWindowManager
+		 * instance.
+		 *
+		 * \sa setWindowObserverPtr
+		 */
+    void setCDisplayWindow3DPtr(mrpt::gui::CDisplayWindow3D* win_in) {
+    	m_fetched_displaywindow_pointer = true;
+    	win = win_in;
 
-    	m_viewp_width = 0.2;
-    	m_viewp_height = 0.2;
-    	m_viewp_x = 0.75;
-    	m_viewp_margin = 0.01;
-    	m_viewp_y = 0.72;
-
-
+    	m_out_logger.log("Fetched the CDisplayWindow3D* successfully");
     }
+		/**\brief Store the CWindowObserver pointer in the CWindowManager instance.
+		 *
+		 * \sa setCDisplayWindow3DPtr
+		 */
+    void setWindowObserverPtr(mrpt::graphslam::CWindowObserver* obsever_in) {
+    	m_fetched_observer_pointer = true;
+    	observer = obsever_in;
+
+    	m_out_logger.log("Fetched the CWindowObserver* successfully");
+    }
+
 		/**\brief Assign the next available offset_y and text_index for the
 		 * textMessage under construction. 
 		 *
@@ -60,7 +69,7 @@ class CWindowManager_t {
 		 *
 		 * \sa assignViewPortParameters
 		 */
-		inline void assignTextMessageParameters(
+		void assignTextMessageParameters(
 				double* offset_y, int* text_index) {
 
 			*offset_y = m_curr_offset_y;
@@ -76,7 +85,7 @@ class CWindowManager_t {
 		 * \note see initCWindowManager method for the default fontName and
 		 * fontSize used.
 		 */
-		inline void addTextMessage(
+		void addTextMessage(
 		  	const double x, const double y,
 		  	const std::string& text,
 		  	const mrpt::utils::TColorf& color=mrpt::utils::TColorf(1.0, 1.0, 1.0),
@@ -99,7 +108,7 @@ class CWindowManager_t {
 		 *
 		 * \sa assignTextMessageParameters
 		 */
- 		inline void assignViewportParameters(double *x, double *y, double *width, double *height) {
+ 		void assignViewportParameters(double *x, double *y, double *width, double *height) {
  			*x = m_viewp_x;
 			*y = m_viewp_y;
 
@@ -112,6 +121,35 @@ class CWindowManager_t {
 		mrpt::gui::CDisplayWindow3D* win; /**< CDisplayWindow instance */
 		mrpt::graphslam::CWindowObserver* observer; /**< CWindowObserver instance */
   private:
+    /**\brief Initialization method, to be called from the various Constructors.
+     */
+    void initCWindowManager() {
+  		m_fetched_displaywindow_pointer = false;
+  		m_fetched_observer_pointer= false;
+			win = NULL;
+			observer = NULL;
+
+    	m_offset_y_step = 20.0;
+    	m_index_text_step = 1;
+    	m_font_name = "sans";
+    	m_font_size = 12;
+    	m_curr_offset_y = 30;
+    	m_curr_text_index = 1;
+
+    	m_viewp_width = 0.2;
+    	m_viewp_height = 0.2;
+    	m_viewp_x = 0.75;
+    	m_viewp_margin = 0.01;
+    	m_viewp_y = 0.72;
+
+			// loger related directives
+			m_out_logger.setName("CWindowManager");
+			m_out_logger.setLoggingLevel(mrpt::utils::LVL_DEBUG);
+			m_out_logger.log("Initializing...");
+    }
+
+		bool m_fetched_observer_pointer;
+		bool m_fetched_displaywindow_pointer;
 
 		double m_offset_y_step;
 		int m_index_text_step;
@@ -128,6 +166,7 @@ class CWindowManager_t {
 		double m_viewp_y; /**< vertical layout of the viewports */
 		double m_viewp_margin;
 
+		mrpt::utils::COutputLogger m_out_logger; /**<Output logger instance */
 };
 
 } } // END OF NAMESPACES

@@ -33,17 +33,14 @@ using namespace std;
 template< class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR, class OPTIMIZER>
 CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::CGraphSlamEngine(
 		const string& config_file,
-		CDisplayWindow3D* win /* = NULL */,
-		CWindowObserver* win_observer /* = NULL */,
 		const std::string rawlog_fname /* = "" */,
-		const std::string fname_GT /* = "" */ ):
+		const std::string fname_GT /* = "" */,
+		bool enable_visuals /* = true */):
 	m_config_fname(config_file),
 	m_rawlog_fname(rawlog_fname),
 	m_fname_GT(fname_GT),
+	m_enable_visuals(enable_visuals),
 	m_GT_poses_step(1),
-	m_win(win),
-	m_win_observer(win_observer),
-	m_win_manager(m_win, m_win_observer), // pass window and observer in Ctor
 	m_odometry_color(0, 0, 255),
 	m_GT_color(0, 255, 0),
 	m_estimated_traj_color(255, 165, 0),
@@ -72,10 +69,27 @@ CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::~CGraphSla
 
 	// delete m_odometry_poses
 	if (m_odometry_poses.size()) {
-		m_out_logger.log( mrpt::format("Releasing m_odometry_poses vector; size: %lu", m_odometry_poses.size()), LVL_DEBUG);
+		m_out_logger.log(mrpt::format("Releasing m_odometry_poses vector; size: %lu", m_odometry_poses.size()), LVL_DEBUG);
 		for (int i = 0; i != m_odometry_poses.size(); ++i) {
 			delete m_odometry_poses[i];
 		}
+	}
+
+	if (m_enable_visuals) {
+
+		// keep the window open
+		if (!m_request_to_exit) {
+			while (m_win->isOpen()) {
+				mrpt::system::sleep(100);
+				m_win->forceRepaint();
+			}
+		}
+
+		// exiting actions...
+		m_out_logger.log("Releasing CDisplayWindow3D...");
+		delete m_win;
+		m_out_logger.log("Releasing CWindowObserver...");
+		delete m_win_observer;
 	}
 
 	// delete the CDisplayWindowPlots object
@@ -95,14 +109,22 @@ template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR, class OPTIMI
 void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::initCGraphSlamEngine() {
 	MRPT_START;
 
-	ASSERTMSG_(!(!m_win && m_win_observer),
-			"\nCObsever was provided even though no CDisplayWindow3D was not\n");
-
 	// logger instance properties
 	m_out_logger.setName("CGraphSlamengine");
 	m_out_logger.setLoggingLevel(LVL_DEBUG); // default level of the messages
 
-	// set the CDisplayWindowPlots pointer to null for starters, we don't know if we are using it
+	if (m_enable_visuals) {
+		this->initVisualization();
+	}
+	else {
+		m_win = NULL;
+		m_win_observer = NULL;
+
+		m_out_logger.log("Visualization is off. Running on headless mode",
+				LVL_WARN);
+	}
+	// set the CDisplayWindowPlots pointer to null for starters, we don't know if
+	// we are using it
 	m_win_plot = NULL;
 	m_deformation_energy_plot_scale = 1000;
 
@@ -165,8 +187,8 @@ void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::initC
 		}
 	}
 
-	if (!m_win) {
-		m_out_logger.log("CDisplayWindow3D was not provided. Switching all visualization parameters off...", LVL_WARN);
+	if (!m_enable_visuals) {
+		m_out_logger.log("Switching all visualization parameters off...", LVL_WARN);
 		m_visualize_odometry_poses       = 0;
 		m_visualize_GT                   = 0;
 		m_visualize_map                  = 0;
@@ -190,7 +212,7 @@ void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::initC
 
 	// Configuration of various trajectories visualization
 	ASSERT_(m_has_read_config);
-	if (m_win) {
+	if (m_enable_visuals) {
 		// odometry visualization
 		if (m_visualize_odometry_poses) {
 			this->initOdometryVisualization();
@@ -228,7 +250,7 @@ void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::initC
 		}
 	}
 	// axis
-	if (m_win) {
+	if (m_enable_visuals) {
 		COpenGLScenePtr scene = m_win->get3DSceneAndLock();
 
 		CAxisPtr obj = CAxis::Create();
@@ -250,7 +272,7 @@ void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::initC
 	m_keystroke_map = "m";
 
 	// Add additional keystrokes in the CDisplayWindow3D help textBox
-	if (m_win_observer) {
+	if (m_enable_visuals) {
 		m_win_observer->registerKeystroke(m_keystroke_pause_exec,
 				"Pause/Resume program execution");
 		m_win_observer->registerKeystroke(m_keystroke_odometry,
@@ -263,7 +285,7 @@ void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::initC
 				"Toggle Map visualization");
 	}
 
-	if (m_win) {
+	if (m_enable_visuals) {
 		m_edge_counter.setVisualizationWindow(m_win);
 	}
 
@@ -296,7 +318,7 @@ void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::initC
 		m_win_manager.assignTextMessageParameters(&offset_y_loop_closures,
 				&text_index_loop_closures);
 
-		if (m_win) {
+		if (m_enable_visuals) {
 			// add all the parameters to the CEdgeCounter object
 			m_edge_counter.setTextMessageParams(name_to_offset_y, name_to_text_index,
 					offset_y_total_edges, text_index_total_edges,
@@ -306,7 +328,7 @@ void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::initC
 	}
 
 	// query node/edge deciders for visual objects initialization
-	if (m_win) {
+	if (m_enable_visuals) {
 		mrpt::synch::CCriticalSectionLocker m_graph_lock(&m_graph_section);
 		m_time_logger.enter("CGraphSlamEngine::Visuals");
 		m_node_registrar.initializeVisuals();
@@ -493,7 +515,7 @@ bool CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::parse
 			// keep track of the laser scans so that I can later visualize the map
 			m_nodes_to_laser_scans2D[m_nodeID_max] = m_last_laser_scan2D;
 
-			if (m_win && m_visualize_map) {
+			if (m_enable_visuals && m_visualize_map) {
 				mrpt::synch::CCriticalSectionLocker m_graph_lock(&m_graph_section);
 				bool full_update = m_edge_registrar.justInsertedLoopClosure();
 				this->updateMapVisualization(m_graph, m_nodes_to_laser_scans2D, full_update);
@@ -501,7 +523,7 @@ bool CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::parse
 
 
 			// query node/edge deciders for visual objects update
-			if (m_win) {
+			if (m_enable_visuals) {
 				mrpt::synch::CCriticalSectionLocker m_graph_lock(&m_graph_section);
 				m_time_logger.enter("CGraphSlamEngine::Visuals");
 				m_node_registrar.updateVisuals();
@@ -542,7 +564,7 @@ bool CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::parse
 			}
 
 			// update visualization of estimated trajectory
-			if (m_win) {
+			if (m_enable_visuals) {
 				bool full_update = true;
 				m_time_logger.enter("CGraphSlamEngine::Visuals");
 				this->updateEstimatedTrajectoryVisualization(full_update);
@@ -567,7 +589,7 @@ bool CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::parse
 		// Timestamp textMessage
 		// Use the dataset timestamp otherwise fallback to
 		// mrpt::system::getCurrentTime
-		if (m_win) {
+		if (m_enable_visuals) {
 			if (timestamp != INVALID_TIMESTAMP) {
 				m_win_manager.addTextMessage(5,-m_offset_y_timestamp,
 						format("Simulated time: %s", timeToString(timestamp).c_str()),
@@ -618,7 +640,7 @@ bool CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::parse
 		}
 
 		// Query for events and take coresponding actions
-		if (m_win && m_win_observer) {
+		if (m_enable_visuals) {
 			this->queryObserverForEvents();
 		}
 
@@ -652,7 +674,7 @@ bool CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::parse
 	//
 	if (m_save_graph) { this->saveGraph(); }
 
-	if (m_win && m_save_3DScene) {
+	if (m_enable_visuals && m_save_3DScene) {
 		// remove the CPlanarLaserScan if it exists
 		{
 			COpenGLScenePtr& scene = m_win->get3DSceneAndLock();
@@ -1089,8 +1111,7 @@ template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR, class OPTIMI
 inline void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::updateCurrPosViewport() {
 	MRPT_START;
 
-	ASSERT_(m_win &&
-			"Visualization of data was requested but no CDisplayWindow3D pointer was given");
+	ASSERT_(m_enable_visuals);
 
 	pose_t curr_robot_pose;
 	{
@@ -1325,7 +1346,7 @@ template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR, class OPTIMI
 void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::queryObserverForEvents() {
 	MRPT_START;
 
-	ASSERT_(m_win);
+	ASSERT_(m_enable_visuals);
 	ASSERTMSG_(m_win_observer,
 			"\nqueryObserverForEvents method was called even though no Observer object was provided\n");
 
@@ -1506,8 +1527,7 @@ void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::updat
 	CTicTac map_update_timer;
 	map_update_timer.Tic();
 
-	ASSERT_(m_win &&
-			"Visualization of data was requested but no CDisplayWindow3D pointer was given");
+	ASSERT_(m_enable_visuals);
 
 	// get set of nodes to run the update for
 	std::set<mrpt::utils::TNodeID> nodes_set;
@@ -1637,6 +1657,31 @@ void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::decim
 }
 
 template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR, class OPTIMIZER>
+void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::initVisualization() {
+	MRPT_START;
+	ASSERT_(m_enable_visuals);
+
+	m_win_observer = new CWindowObserver();
+	m_win = new CDisplayWindow3D("GraphSlam building procedure", 800, 600);
+	m_win->setPos(400, 200);
+	m_win_observer->observeBegin(*m_win);
+	{
+		COpenGLScenePtr &scene = m_win->get3DSceneAndLock();
+		opengl::COpenGLViewportPtr main_view = scene->getViewport("main");
+		m_win_observer->observeBegin( *main_view );
+		m_win->unlockAccess3DScene();
+	}
+
+	m_out_logger.log("Initialized CDisplayWindow3D...", LVL_WARN);
+	m_out_logger.log("Listening to CDisplayWindow3D events...");
+
+	m_win_manager.setCDisplayWindow3DPtr(m_win);
+	m_win_manager.setWindowObserverPtr(m_win_observer);
+
+	MRPT_END;
+}
+
+template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR, class OPTIMIZER>
 void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::initGTVisualization() {
 	MRPT_START;
 
@@ -1719,10 +1764,8 @@ void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::updat
 template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR, class OPTIMIZER>
 void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::initOdometryVisualization() {
 	MRPT_START;
-
 	ASSERT_(m_has_read_config);
-	ASSERT_(m_win &&
-			"Visualization of data was requested but no CDisplayWindow3D pointer was given");
+	ASSERT_(m_enable_visuals);
 
 	// point cloud
 	CPointCloudPtr odometry_poses_cloud = CPointCloud::Create();
@@ -1998,7 +2041,7 @@ template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR, class OPTIMI
 void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::save3DScene() const {
 	MRPT_START;
 	ASSERT_(m_has_read_config);
-	ASSERT_(m_win);
+	ASSERT_(m_enable_visuals);
 
 	std::string fname = m_output_dir_fname + "/" + m_save_3DScene_fname;
 	save3DScene(fname);

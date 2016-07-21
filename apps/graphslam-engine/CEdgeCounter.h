@@ -35,7 +35,7 @@ class CEdgeCounter {
 		~CEdgeCounter();
 
 		/**\brief Provide the instance with a CWindowManager.  */
-		void setWindowManagerPtr(mrpt::graphslam::CWindowManager_t* win_manager);
+		void setWindowManagerPtr(mrpt::graphslam::CWindowManager* win_manager);
 		/**\brief State how many of the existing edges have been removed.
 		 *
 		 * Method is to be called after CNetworkOfPoses::collapseDuplicatedEdges
@@ -141,7 +141,7 @@ class CEdgeCounter {
 		void updateTextMessages() const;
 
 		mrpt::gui::CDisplayWindow3D* m_win;
-		mrpt::graphslam::CWindowManager_t* m_win_manager;
+		mrpt::graphslam::CWindowManager* m_win_manager;
 
 		// Tracking number of edges
 		std::map<std::string, int> m_name_to_edges_num;;
