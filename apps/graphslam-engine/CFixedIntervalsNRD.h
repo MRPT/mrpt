@@ -158,9 +158,9 @@ class CFixedIntervalsNRD:
 
 		/**\brief Current estimated position */
 		pose_t m_curr_estimated_pose;
-		/**\brief pose_t estimation using only odometry information. Handy for observation-only rawlogs.
-		 */
+		/**\brief pose_t estimation using only odometry information. Handy for observation-only rawlogs.  */
 		pose_t m_curr_odometry_only_pose;
+		/**\brief pose_t estimation using only odometry information. Handy for observation-only rawlogs.  */
 		pose_t m_last_odometry_only_pose;
 		/**\brief Keep track of whether we are reading from an
 		 * observation-only rawlog file or from an action-observation rawlog

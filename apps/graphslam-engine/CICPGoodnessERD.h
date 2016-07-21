@@ -217,8 +217,6 @@ class CICPGoodnessERD :
 		size_t m_consecutive_invalid_format_instances;
 		const size_t m_consecutive_invalid_format_instances_thres;
 
-		typename range_scanner_t::TSlidingWindow sliding_win;
-
 		mrpt::utils::COutputLogger m_out_logger; /**<Output logger instance */
 		mrpt::utils::CTimeLogger m_time_logger; /**<Time logger instance */
 

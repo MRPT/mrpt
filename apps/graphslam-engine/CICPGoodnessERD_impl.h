@@ -211,8 +211,6 @@ void CICPGoodnessERD<GRAPH_t>::checkRegistrationCondition2D(
 						&icp_info);
 				m_time_logger.leave("CICPGoodnessERD::getICPEdge");
 
-				sliding_win.addNewMeasurement(icp_info.goodness);
-
 				// criterion for registering a new node
 				if (icp_info.goodness > params.ICP_goodness_thresh) {
 					this->registerNewEdge(*node_it, curr_nodeID, rel_edge);
