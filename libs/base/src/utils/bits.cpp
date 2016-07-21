@@ -17,7 +17,8 @@
 template <typename T>
 void reverseBytesInPlace_2b(T& v_in_out)
 {
-	const uint16_t org = *reinterpret_cast<uint16_t*>(&v_in_out);
+	uint16_t org;
+	::memcpy(&org, &v_in_out, sizeof(T));  // Was: = *reinterpret_cast<uint16_t*>(&v_in_out); but caused SIGBUS in some archs
 	const uint16_t val_rev = ((org & 0xff00) >> 8) | ((org & 0x00ff) << 8);
 	::memcpy(&v_in_out, &val_rev, sizeof(T)); // This avoid deref. puned pointer warning with:   *reinterpret_cast<const T*>(&val_rev);
 }
@@ -25,7 +26,8 @@ void reverseBytesInPlace_2b(T& v_in_out)
 template <typename T>
 void reverseBytesInPlace_4b(T& v_in_out)
 {
-	const uint32_t org = *reinterpret_cast<uint32_t*>(&v_in_out);
+	uint32_t org;
+	::memcpy(&org, &v_in_out, sizeof(T));  // Was: = = *reinterpret_cast<uint32_t*>(&v_in_out); but caused SIGBUS in some archs
 	const uint32_t val_rev = ((org & 0xff000000) >> (3*8)) | ((org & 0x00ff0000) >> (1*8)) | ((org & 0x0000ff00) << (1*8)) | ((org & 0x000000ff) << (3*8));
 	::memcpy(&v_in_out, &val_rev, sizeof(T)); // This avoid deref. puned pointer warning with:   *reinterpret_cast<const T*>(&val_rev);
 }
@@ -33,7 +35,8 @@ void reverseBytesInPlace_4b(T& v_in_out)
 template <typename T>
 void reverseBytesInPlace_8b(T& v_in_out)
 {
-	const uint64_t org = *reinterpret_cast<uint64_t*>(&v_in_out);
+	uint64_t org;
+	::memcpy(&org, &v_in_out, sizeof(T));  // Was: = *reinterpret_cast<uint64_t*>(&v_in_out); but caused SIGBUS in some archs
 	uint64_t val_rev = 0;
 	int i,j;
 	for (i=7,j=7;i>=4;i--,j-=2)
