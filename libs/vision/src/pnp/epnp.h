@@ -1,5 +1,6 @@
 #ifndef _mrpt_epnp
 #define _mrpt_epnp
+#include <mrpt/config.h>
 
 #if MRPT_HAS_OPENCV
     #include <opencv2/opencv.hpp>
