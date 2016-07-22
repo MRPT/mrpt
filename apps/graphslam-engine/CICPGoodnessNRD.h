@@ -31,6 +31,7 @@
 #include <mrpt/system/datetime.h>
 #include <mrpt/system/os.h>
 #include <mrpt/system/threads.h>
+#include <mrpt/utils/CFileOutputStream.h> // TODO - remove this
 
 #include "CNodeRegistrationDecider.h"
 #include "CRangeScanRegistrationDecider.h"
@@ -192,13 +193,17 @@ class CICPGoodnessNRD:
 		CObservation3DRangeScanPtr m_last_laser_scan3D;
 		CObservation3DRangeScanPtr m_curr_laser_scan3D;
 
-		/**\brief Latest odometry rigid body transformation. Decider can use it to smoothen the
-		 * trajectory in the case of high noise in the laser measurements
+		/**\brief Latest odometry rigid body transformation.
+		 *
+		 * Decider can use it to smoothen the trajectory in the case of high noise
+		 * in the laser measurements
 		 */
 		constraint_t m_latest_odometry_PDF;
-		/**\brief pose_t estimation using only odometry information. Handy for observation-only rawlogs.  */
+		/**\brief pose_t estimation using only odometry information. Handy for
+		 * observation-only rawlogs.  */
 		pose_t m_curr_odometry_only_pose;
-		/**\brief pose_t estimation using only odometry information. Handy for observation-only rawlogs.
+		/**\brief pose_t estimation using only odometry information. Handy for
+		 * observation-only rawlogs.
 		 *
 		 * Resets next time an ICP edge is successfully registered.
 		 */
@@ -220,7 +225,7 @@ class CICPGoodnessNRD:
 		 * ICP edge if the mahalanobis distance between them is greater than this
 		 * limit.
 		 */
-		TSlidingWindow m_mahal_distance_ICP_odom; 
+		TSlidingWindow m_mahal_distance_ICP_odom;
 
 
 		mrpt::utils::COutputLogger m_out_logger; /**<Output logger instance */
@@ -229,6 +234,11 @@ class CICPGoodnessNRD:
 		// criterions for adding new a new node
 		bool m_use_angle_difference_node_reg = true;
 		bool m_use_distance_node_reg = true;
+
+		size_t m_times_used_ICP; /**<How many times we used the ICP Edge */
+		size_t m_times_used_odom; /**<How many times we used the Odometry Edge instead of the ICP edge */
+
+		CFileOutputStream* mahalanobis_file;
 
 
 };

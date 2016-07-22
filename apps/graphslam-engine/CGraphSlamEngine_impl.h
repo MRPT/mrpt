@@ -94,7 +94,7 @@ CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::~CGraphSla
 
 	// delete the CDisplayWindowPlots object
 	if (m_win_plot) {
-		m_out_logger.log("Releasing m_win_plot object", LVL_DEBUG);
+		m_out_logger.log("Releasing CDisplayWindowPlots... ", LVL_DEBUG);
 		delete m_win_plot;
 	}
 
@@ -399,16 +399,16 @@ bool CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::parse
 		}
 		else {
 			m_observation_only_rawlog = false;
+			if (action->getBestMovementEstimation()) {
 
-			CActionRobotMovement2DPtr robot_move =
-				action->getBestMovementEstimation();
-			CPosePDFPtr increment = robot_move->poseChange;
-			pose_t increment_pose = increment->getMeanVal();
-			curr_odometry_only_pose += increment_pose;
+				CActionRobotMovement2DPtr robot_move =
+					action->getBestMovementEstimation();
+				CPosePDFPtr increment = robot_move->poseChange;
+				pose_t increment_pose = increment->getMeanVal();
+				curr_odometry_only_pose += increment_pose;
 
-			init_timestamp = robot_move->timestamp;
-
-
+				init_timestamp = robot_move->timestamp;
+			}
 		}
 	}
 
