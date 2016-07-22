@@ -30,7 +30,6 @@
 	#include <unistd.h>
 	#include <utime.h>
 	#include <errno.h>
-//	#include <signal.h>
 #endif
 
 #include <time.h>
@@ -38,39 +37,27 @@
 #include <sys/stat.h>
 
 using namespace mrpt;
-//using namespace mrpt::utils;
 using namespace mrpt::system;
 using namespace std;
 
-/*---------------------------------------------------------------
-					time_tToTimestamp
-  ---------------------------------------------------------------*/
 mrpt::system::TTimeStamp  mrpt::system::time_tToTimestamp(const time_t &t )
 {
-    return (((uint64_t)t) * (uint64_t)10000000) + ((uint64_t)116444736*1000000000);
+	return uint64_t(t) * UINT64_C(10000000) +  UINT64_C(116444736) * UINT64_C(1000000000);
 }
 
-/*---------------------------------------------------------------
-					time_tToTimestamp
-  ---------------------------------------------------------------*/
 mrpt::system::TTimeStamp  mrpt::system::time_tToTimestamp(const double &t )
 {
-    return (uint64_t)(t*10000000.0)+((uint64_t)116444736*1000000000);
+	return uint64_t(t*10000000.0)+ UINT64_C(116444736)*UINT64_C(1000000000);
 }
 
-/*---------------------------------------------------------------
-					timestampTotime_t
-  ---------------------------------------------------------------*/
 double mrpt::system::timestampTotime_t( const mrpt::system::TTimeStamp  &t )
 {
-    return double(t - ((uint64_t)116444736*1000000000)) / 10000000.0;
+	return double(t - UINT64_C(116444736)*UINT64_C(1000000000)) / 10000000.0;
 }
 
 /* Jerome Monceaux 2011/03/08: bilock@gmail.com
  * comment this include because it is not find
- * under snow leopard and because the
- * mrpt::system::getCurrentTime
- * is not implemented for now under apple
+ * under snow leopard
  */
 #if defined(MRPT_OS_APPLE)
 //#	include <CFBase.h> // for CFAbsoluteTimeGetCurrent
@@ -113,11 +100,11 @@ mrpt::system::TTimeStamp  mrpt::system::getCurrentTime( )
   ---------------------------------------------------------------*/
 void mrpt::system::timestampToParts( TTimeStamp t, TTimeParts &p , bool localTime)
 {
-	double T = mrpt::system::timestampTotime_t(t);
-	time_t tt = time_t(T);
-
-	double sec_frac = T - uint64_t(tt);
+	const double T = mrpt::system::timestampTotime_t(t);
+	double sec_frac = T - floor(T);
 	ASSERT_(sec_frac<1.0);
+
+	const time_t tt = time_t(T);
 
 	struct tm * parts =  localTime ? localtime(&tt) : gmtime(&tt);
 	ASSERTMSG_(parts, "Malformed timestamp");
