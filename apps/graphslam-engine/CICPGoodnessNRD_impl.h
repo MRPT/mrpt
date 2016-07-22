@@ -47,20 +47,22 @@ void CICPGoodnessNRD<GRAPH_t>::initCICPGoodnessNRD() {
 		m_since_prev_node_PDF.mean = pose_t();
 	}
 
-
 	{
-		// odometry only estimation initialization
-		m_latest_odometry_PDF.mean = pose_t();
 		// I am sure of the initial position, set to identity matrix
 		double tmp[] = {
 			1.0, 0.0, 0.0,
 			0.0, 1.0 ,0.0,
 			0.0, 0.0, 1.0 };
 		InfMat init_path_uncertainty(tmp);
-		m_since_prev_node_PDF.cov_inv = init_path_uncertainty;
+		// odometry only estimation initialization
+		m_latest_odometry_PDF.mean = pose_t();
+		m_latest_odometry_PDF.cov_inv = init_path_uncertainty;
 
-		m_mahal_distance_ICP_odom.resizeWindow(10); // use the last 10 known mahalanobis distance values
+		m_mahal_distance_ICP_odom.resizeWindow(1000); // use the last X mahalanobis distance values
 	}
+
+	m_times_used_ICP = 0;
+	m_times_used_odom = 0;
 
 	// logger initialization
 	m_out_logger.setName("CICPGoodnessNRD");
@@ -68,7 +70,8 @@ void CICPGoodnessNRD<GRAPH_t>::initCICPGoodnessNRD() {
 	m_out_logger.log("Initialized class object", LVL_DEBUG);
 }
 template<class GRAPH_t>
-CICPGoodnessNRD<GRAPH_t>::~CICPGoodnessNRD() { }
+CICPGoodnessNRD<GRAPH_t>::~CICPGoodnessNRD() { 
+}
 
 template<class GRAPH_t>
 bool CICPGoodnessNRD<GRAPH_t>::updateState(
@@ -101,12 +104,25 @@ bool CICPGoodnessNRD<GRAPH_t>::updateState(
 			// not incremental - gives the absolute odometry reading - no InfMat
 			// either
 			m_curr_odometry_only_pose = obs_odometry->odometry;
-			m_latest_odometry_PDF.mean = m_curr_odometry_only_pose - m_last_odometry_only_pose;
+			m_latest_odometry_PDF.mean = 
+				m_curr_odometry_only_pose - m_last_odometry_only_pose;
 
 		}
 
 	}
 	else { // action-observations rawlog
+		// Action part
+		if (action->getBestMovementEstimation()) {
+			// if it exists use the odometry information to reject wrong ICP matches
+			mrpt::obs::CActionRobotMovement2DPtr robot_move =
+				action->getBestMovementEstimation();
+			mrpt::poses::CPosePDFPtr increment = robot_move->poseChange;
+			mrpt::poses::CPosePDFGaussianInf increment_gaussian;
+			increment_gaussian.copyFrom(*increment);
+			m_latest_odometry_PDF += increment_gaussian;
+		}
+
+		// observations part
 		if (observations->getObservationByClass<CObservation2DRangeScan>()) { // 2D
 			CObservation2DRangeScanPtr curr_laser_scan =
 				observations->getObservationByClass<CObservation2DRangeScan>();
@@ -117,15 +133,7 @@ bool CICPGoodnessNRD<GRAPH_t>::updateState(
 				observations->getObservationByClass<CObservation3DRangeScan>();
 			registered_new_node = updateState3D(curr_laser_scan);
 		}
-		else if (observations->getObservationByClass<CObservationOdometry>()) {
-			// if it exists use the odometry information to reject wrong ICP matches
-			m_out_logger.log("Using the odometry... ", LVL_ERROR);
-			mrpt::obs::CActionRobotMovement2DPtr robot_move = action->getBestMovementEstimation();
-			mrpt::poses::CPosePDFPtr increment = robot_move->poseChange;
-			m_latest_odometry_PDF.copyFrom(*increment);
-			m_out_logger.log("Using the odometry... ", LVL_ERROR);
 
-		}
 	}
 
 	// reset the constraint since the last registered node
@@ -148,7 +156,6 @@ bool CICPGoodnessNRD<GRAPH_t>::updateState2D(
 
 	m_curr_laser_scan2D = scan2d;
 	if (m_last_laser_scan2D.null()) {
-		m_out_logger.log("First time call for updateState2D.", LVL_WARN);
 		// initialize the last_laser_scan here - afterwards updated inside the
 		// checkRegistrationCondition*D method
 		m_last_laser_scan2D = m_curr_laser_scan2D;
@@ -191,19 +198,36 @@ bool CICPGoodnessNRD<GRAPH_t>::checkRegistrationCondition2D() {
 		1.0, 0.0, 0.0,
 		0.0, 1.0 ,0.0,
 		0.0, 0.0, 1.0 };
-	constraint_t latest_odometry_PDF(m_latest_odometry_PDF.getMeanVal(), CMatrixDouble33(tmp)/* cov= unity */ ); // TODO - Unity?
+	constraint_t latest_odometry_PDF(m_latest_odometry_PDF.getMeanVal(), 
+			CMatrixDouble33(tmp)/* cov= unity */ );
 	double mahal_distance = rel_edge.mahalanobisDistanceTo(latest_odometry_PDF);
 	m_mahal_distance_ICP_odom.addNewMeasurement(mahal_distance);
+	
+	// TODO - decide on this criterion - Ask EduFdez
+	// How do I filter out the "bad" 2DRangeScans?
+	//double mahal_distance_lim = m_mahal_distance_ICP_odom.getMedian();
+	//double mahal_distance_lim = m_mahal_distance_ICP_odom.getMean();
+	//double mahal_distance_lim = 
+		//m_mahal_distance_ICP_odom.getMean() + m_mahal_distance_ICP_odom.getStdDev();
+	double mahal_distance_lim = 0.18; // visual introspection
 
-	// make this use the below
-	if (m_mahal_distance_ICP_odom.evaluateMeasurementAbove(mahal_distance)) {
-		m_out_logger.logFmt("Using the odometry rigid body transformation instead... (mahal = %f)",
-				mahal_distance);
-		rel_edge.copyFrom(m_latest_odometry_PDF);
+	// check whether to use ICP or odometry Edge.
+	// if the norm of the odometry edge is 0 => no odometry edge available. =>
+	// use ICP
+	if (mahal_distance < mahal_distance_lim || 
+			m_latest_odometry_PDF.getMeanVal().norm() == 0) {
+		m_out_logger.logFmt("Using the ICP edge... mahal = %f", mahal_distance);
+		m_times_used_ICP++;
 	}
 	else {
-		m_out_logger.logFmt("Using the ICP edge... (mahal = %f...", mahal_distance);
+		m_out_logger.logFmt(
+				"Using the odometry rigid body transformation instead... mahal = %f",
+				mahal_distance);
+		rel_edge.copyFrom(m_latest_odometry_PDF);
+		m_times_used_odom++;
 	}
+	m_out_logger.logFmt("Times that the ICP Edge was used: %lu/%lu",
+			m_times_used_ICP, m_times_used_ICP + m_times_used_odom);
 
 	// Criterions for updating PDF since last registered node
 	// - ICP goodness > threshold goodness
@@ -212,8 +236,9 @@ bool CICPGoodnessNRD<GRAPH_t>::checkRegistrationCondition2D() {
 		m_last_laser_scan2D = m_curr_laser_scan2D;
 		registered_new_node = this->checkRegistrationCondition();
 		
-		// update this - counts as reference with regards to the expected ICP edge
+		// reset the odometry tracking as well.
 		m_last_odometry_only_pose = m_curr_odometry_only_pose;
+		m_latest_odometry_PDF.mean = pose_t();
 	}
 
 
@@ -231,7 +256,6 @@ bool CICPGoodnessNRD<GRAPH_t>::updateState3D(
 	m_curr_laser_scan3D->project3DPointsFromDepthImage();
 
 	if (m_last_laser_scan3D.null()) {
-		m_out_logger.log("First time call for updateState3D.", LVL_WARN);
 		// initialize the last_laser_scan here - afterwards updated inside the
 		// checkRegistrationCondition*D method
 		m_last_laser_scan3D = m_curr_laser_scan3D;

@@ -24,10 +24,7 @@
 #include <mrpt/slam/CICP.h>
 #include <mrpt/system/os.h>
 
-#include <algorithm>
-#include <cmath>
 #include <iostream>
-#include <numeric>
 #include <vector>
 
 namespace mrpt { namespace graphslam { namespace deciders {

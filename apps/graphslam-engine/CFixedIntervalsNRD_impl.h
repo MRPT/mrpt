@@ -85,15 +85,17 @@ bool CFixedIntervalsNRD<GRAPH_t>::updateState(
 	else { // FORMAT #1
 		m_observation_only_rawlog = false;
 
-		mrpt::obs::CActionRobotMovement2DPtr robot_move = action->getBestMovementEstimation();
-		mrpt::poses::CPosePDFPtr increment = robot_move->poseChange;
-		pose_t increment_pose = increment->getMeanVal();
-		InfMat increment_inf_mat;
-		increment->getInformationMatrix(increment_inf_mat);
+		if (action->getBestMovementEstimation() ) {
+			mrpt::obs::CActionRobotMovement2DPtr robot_move = action->getBestMovementEstimation();
+			mrpt::poses::CPosePDFPtr increment = robot_move->poseChange;
+			pose_t increment_pose = increment->getMeanVal();
+			InfMat increment_inf_mat;
+			increment->getInformationMatrix(increment_inf_mat);
 
-		// update the relative PDF of the path since the LAST node was inserted
-		constraint_t incremental_constraint(increment_pose, increment_inf_mat);
-		m_since_prev_node_PDF += incremental_constraint;
+			// update the relative PDF of the path since the LAST node was inserted
+			constraint_t incremental_constraint(increment_pose, increment_inf_mat);
+			m_since_prev_node_PDF += incremental_constraint;
+		}
 	} // ELSE - FORMAT #1
 
 	m_curr_estimated_pose = m_graph->nodes[m_prev_registered_node] +
