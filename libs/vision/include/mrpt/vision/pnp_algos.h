@@ -9,6 +9,8 @@
 #ifndef __pnp_algos_h
 #define __pnp_algos_h
 
+#include <mrpt/config.h>
+
 #include <eigen3/Eigen/Core>
 #include <eigen3/Eigen/Dense>
 
