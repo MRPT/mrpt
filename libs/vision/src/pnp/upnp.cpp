@@ -46,6 +46,8 @@
 \****************************************************************************************/
 
 #include <iostream>
+#include <mrpt/config.h>
+
 #include <limits>
 using namespace std;
 #if MRPT_HAS_OPENCV

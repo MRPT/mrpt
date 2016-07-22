@@ -1,6 +1,5 @@
+#include <mrpt/config.h>
 #include <iostream>
-using namespace std;
-//#include "precomp.hpp"
 #if MRPT_HAS_OPENCV
     #include <opencv2/opencv.hpp>
     #include <opencv2/opencv_modules.hpp>
