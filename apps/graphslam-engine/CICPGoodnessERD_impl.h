@@ -21,7 +21,7 @@ CICPGoodnessERD<GRAPH_t>::CICPGoodnessERD():
 	params(*this), // pass reference to self when initializing the parameters
 	m_search_disk_color(142, 142, 56),
 	m_laser_scans_color(0, 20, 255),
-	m_consecutive_invalid_format_instances_thres(20) // large threshold just to make sure
+	m_consecutive_invalid_format_instances_thres(20) // high threshold just to make sure
 {
 	MRPT_START;
 
@@ -55,14 +55,14 @@ void CICPGoodnessERD<GRAPH_t>::initCICPGoodnessERD() {
 	m_out_logger.setName("CICPGoodnessERD");
 	m_out_logger.setLoggingLevel(LVL_DEBUG);
 
-	m_out_logger.log("CCICPGoodnessERD: Initialized class object");
+	m_out_logger.log("Initialized class object");
 
 	MRPT_END;
 }
 template<class GRAPH_t>
 CICPGoodnessERD<GRAPH_t>::~CICPGoodnessERD() { }
 
-// Method implementations
+// Methods implementations
 // //////////////////////////////////
 
 template<class GRAPH_t> bool CICPGoodnessERD<GRAPH_t>::updateState(
@@ -78,7 +78,7 @@ template<class GRAPH_t> bool CICPGoodnessERD<GRAPH_t>::updateState(
 	if (m_last_total_num_of_nodes < m_graph->nodeCount()) {
 		registered_new_node = true;
 		m_last_total_num_of_nodes = m_graph->nodeCount();
-		m_out_logger.log("Registered new node. ");
+		m_out_logger.log("New node has been registered!");
 	}
 
 	if (observation.present()) { // observation-only rawlog format
@@ -425,13 +425,14 @@ void CICPGoodnessERD<GRAPH_t>::getEdgesStats(
 template<class GRAPH_t>
 void CICPGoodnessERD<GRAPH_t>::initializeVisuals() {
 	MRPT_START;
-	m_out_logger.log("Initializing CICPGoodnessERD visuals");
+	m_out_logger.log("Initializing visuals");
 	m_time_logger.enter("CICPGoodnessERD::Visuals");
 
 	ASSERTMSG_(params.has_read_config,
 			"Configuration parameters aren't loaded yet");
 	ASSERTMSG_(m_win, "No CDisplayWindow3D* was provided");
 	ASSERTMSG_(m_win_manager, "No CWindowManager* was provided");
+	ASSERTMSG_(m_win_observer, "No CWindowObserver* was provided");
 
 	m_win_observer->registerKeystroke(params.keystroke_laser_scans,
 			"Toggle LaserScans Visualization");
@@ -493,7 +494,7 @@ template<class GRAPH_t>
 void CICPGoodnessERD<GRAPH_t>::updateVisuals() {
 	MRPT_START;
 	ASSERT_(m_initialized_visuals);
-	m_out_logger.log("Updating CICPGoodnessERD visuals");
+	m_out_logger.log("Updating visuals");
 	m_time_logger.enter("CICPGoodnessERD::Visuals");
 
 	// update ICP_max_distance Disk
@@ -533,7 +534,7 @@ void CICPGoodnessERD<GRAPH_t>::updateVisuals() {
 			// put the laser scan underneath the graph, so that you can still
 			// visualize the loop closures with the nodes ahead
 			laser_scan_viz->setPose(CPose3D(
-						laser_scan_viz->getPoseX(), laser_scan_viz->getPoseY(), -0.1,
+						laser_scan_viz->getPoseX(), laser_scan_viz->getPoseY(), -0.3,
 						DEG2RAD(laser_scan_viz->getPoseYaw()),
 						DEG2RAD(laser_scan_viz->getPosePitch()),
 						DEG2RAD(laser_scan_viz->getPoseRoll())
@@ -606,7 +607,7 @@ void CICPGoodnessERD<GRAPH_t>::loadParams(const std::string& source_fname) {
 
 	params.loadFromConfigFileName(source_fname,
 			"EdgeRegistrationDeciderParameters");
-	m_out_logger.log("Successfully loaded CICPGoodnessERD parameters. ");
+	m_out_logger.log("Successfully loaded parameters. ");
 
 	// set the logging level if given by the user
 	CConfigFile source(source_fname);

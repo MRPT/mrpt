@@ -7,78 +7,71 @@
 	 | Released under BSD License. See details in http://www.mrpt.org/License    |
 	 +---------------------------------------------------------------------------+ */
 
-#ifndef CICPGoodnessERD_H
-#define CICPGoodnessERD_H
+#ifndef CLOOPCLOSERERD_H
+#define CLOOPCLOSERERD_H
 
+
+// TODO - remove the ones not needed.
 #include <mrpt/math/CMatrix.h>
-#include <mrpt/utils/CImage.h>
 #include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/utils/CConfigFile.h>
 #include <mrpt/utils/CConfigFileBase.h>
-#include <mrpt/utils/CStream.h>
 #include <mrpt/utils/types_simple.h>
 #include <mrpt/utils/TColor.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
-#include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/obs/CActionCollection.h>
 #include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/obs/CRawlog.h>
-#include <mrpt/opengl/CDisk.h>
-#include <mrpt/opengl/CSetOfObjects.h> // TODO - is it needed?
+#include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/opengl/CRenderizable.h>
-#include <mrpt/opengl/CPlanarLaserScan.h>
-#include <mrpt/opengl/COpenGLViewport.h>
 #include <mrpt/slam/CICP.h>
 #include <mrpt/system/os.h>
 #include <mrpt/system/threads.h>
 
 #include <iostream>
-#include <map>
+#include <vector>
 #include <string>
-#include <stdlib.h> // abs
+#include <sstream>
 
 #include "CEdgeRegistrationDecider.h"
 #include "CRangeScanRegistrationDecider.h"
 
 
-// TODO - remove these
-using namespace mrpt;
-using namespace mrpt::synch;
-using namespace mrpt::poses;
-using namespace mrpt::obs;
-using namespace mrpt::system;
-using namespace mrpt::graphs;
-using namespace mrpt::math;
-using namespace mrpt::utils;
-using namespace mrpt::gui;
-using namespace mrpt::opengl;
-using namespace mrpt::slam;
-using namespace mrpt::maps;
-
-
-
 namespace mrpt { namespace graphslam { namespace deciders {
 
-/**\brief ICP-based Edge Registration
- *\b Description
+/** Edge Registration Decider scheem specialized in Loop Closing.
  *
- * Register new edges in the graph with the last added node. Criterion for
- * adding new edges should be the goodness of the candidate ICP edge. The
- * nodes for ICP are be picked <em>based on the distance from the last
- * inserted node</em>.
- * \sa  getNearbyNodesOf
+ * Scheme is implemented based on the following two papers:
+ *
+ * TODO - split this line if possible
+ * <a href="http://ieeexplore.ieee.org/xpl/login.jsp?tp=&arnumber=1641810&url=http%3A%2F%2Fieeexplore.ieee.org%2Fxpls%2Fabs_all.jsp%3Farnumber%3D1641810">Consistent Observation Grouping for Generating Metric-Topological Maps that Improves Robot Localization</a> - J. blanco, J. Gonzalez, J. Antonio Fernandez Madrigal
+ * - We split the under-construction graph into groups of nodes. The groups are
+ *   formatted basd on the observations gathered each node. the actuall split
+ *   between the groups is decided by the minimum normalized Cut (minNcut) as
+ *   described in the aformentioned paper
+ *
+ * <a href="https://april.eecs.umich.edu/pdfs/olson2009ras.pdf">Recognizing places using spectrally clustered local matches</a> - E. Olson, 2009
+ * - Having the groups already assembled, we generate all the hypotheses in
+ *   each group and evaluate each set using its corresponding Pairwise
+ *   consistency matrix.
+ *
+ * \b Description
+ *
+ * // TODO - add here...
+ * The Edge registration procedure is implemented as described below:
+ *
  *
  * \b Specifications
  *
  * Map type: 2D
  * MRPT rawlog format: #1, #2
- * Observations: CObservation2DRangeScan, CObservation3DRangeScan
- * Edge Registration Strategy: ICP Goodnesss threshold
+ * Observations: CObservation2DRangeScan
+ * Edge Registration Strategy: Pairwise Consistency of ICP Edges
  *
  * \ingroup mrpt_graphslam_grp
  */
 template<class GRAPH_t=typename mrpt::graphs::CNetworkOfPoses2DInf >
-class CICPGoodnessERD :
+class CLoopCloserERD:
 	public mrpt::graphslam::deciders::CEdgeRegistrationDecider<GRAPH_t>,
 	public mrpt::graphslam::deciders::CRangeScanRegistrationDecider<GRAPH_t>
 {
@@ -89,12 +82,12 @@ class CICPGoodnessERD :
 		typedef typename GRAPH_t::constraint_t::type_value pose_t;
 		/**\brief Typedef for accessing methods of the RangeScanRegistrationDecider_t parent class. */
 		typedef mrpt::graphslam::deciders::CRangeScanRegistrationDecider<GRAPH_t> range_scanner_t;
-		typedef CICPGoodnessERD<GRAPH_t> decider_t; /**< self type - Handy typedef */
+		typedef CLoopCloserERD<GRAPH_t> decider_t; /**< self type - Handy typedef */
 
 		// Public methods
 		//////////////////////////////////////////////////////////////
-		CICPGoodnessERD();
-		~CICPGoodnessERD();
+		CLoopCloserERD();
+		~CLoopCloserERD();
 
 		bool updateState(
 				mrpt::obs::CActionCollectionPtr action,
@@ -118,19 +111,15 @@ class CICPGoodnessERD :
 
 		struct TParams: public mrpt::utils::CLoadableOptions {
 			public:
-				TParams(decider_t& d);
+				TParams();
 				~TParams();
-
 
 				void loadFromConfigFile(
 						const mrpt::utils::CConfigFileBase &source,
 						const std::string &section);
 				void 	dumpToTextStream(mrpt::utils::CStream &out) const;
 
-				decider_t& decider;
 				mrpt::slam::CICP icp;
-				// maximum distance for checking other nodes for ICP constraints
-				double ICP_max_distance;
 				// threshold for accepting an ICP constraint in the graph
 				double ICP_goodness_thresh;
 				int LC_min_nodeid_diff;
@@ -138,8 +127,6 @@ class CICPGoodnessERD :
 				// keystroke to be used for the user to toggle the LaserScans from
 				// the CDisplayWindow
 				std::string keystroke_laser_scans;
-
-				std::string scans_img_external_dir;
 
 				bool has_read_config;
 		};
@@ -154,30 +141,19 @@ class CICPGoodnessERD :
 		//////////////////////////////////////////////////////////////
 		/** \brief Initialization function to be called from the various constructors
 		 */
-		void initCICPGoodnessERD();
-		void checkRegistrationCondition2D(
-				const std::set<mrpt::utils::TNodeID>& nodes_set);
-		void checkRegistrationCondition3D(
-				const std::set<mrpt::utils::TNodeID>& nodes_set);
+		void initCLoopCloserERD();
 		void registerNewEdge(
 				const mrpt::utils::TNodeID& from,
 				const mrpt::utils::TNodeID& to,
 				const constraint_t& rel_edge );
-		void checkIfInvalidDataset(mrpt::obs::CActionCollectionPtr action,
-				mrpt::obs::CSensoryFramePtr observations,
-				mrpt::obs::CObservationPtr observation );
-		/**\brief Get a list of the nodeIDs whose position is within a certain
-		 * distance to the specified nodeID
-		 */
-		void getNearbyNodesOf(
-				std::set<mrpt::utils::TNodeID> *nodes_set,
-				const mrpt::utils::TNodeID& cur_nodeID,
-				double distance );
 		/**\brief togle the LaserScans visualization on and off
 		 */
 		void toggleLaserScansVisualization();
 		void dumpVisibilityErrorMsg(std::string viz_flag,
 				int sleep_time=500 /* ms */);
+		void checkIfInvalidDataset(mrpt::obs::CActionCollectionPtr action,
+				mrpt::obs::CSensoryFramePtr observations,
+				mrpt::obs::CObservationPtr observation );
 
 		// Private variables
 		//////////////////////////////////////////////////////////////
@@ -191,26 +167,19 @@ class CICPGoodnessERD :
 
 		bool m_initialized_visuals;
 		bool m_just_inserted_loop_closure;
-		bool m_is_using_3DScan;
 
-		mrpt::utils::TColor m_search_disk_color; //!< see Constructor for initialization
-		mrpt::utils::TColor m_laser_scans_color; //!< see Constructor for initialization
-		double m_offset_y_search_disk;
-		int m_text_index_search_disk;
-
-
-		std::map<const mrpt::utils::TNodeID,
-			mrpt::obs::CObservation2DRangeScanPtr> m_nodes_to_laser_scans2D;
-		std::map<const mrpt::utils::TNodeID,
-			mrpt::obs::CObservation3DRangeScanPtr> m_nodes_to_laser_scans3D;
+		/**\brief Keep track of the registered edge types.
+		 *
+		 * Handy for displaying them in the Visualization window.
+		 */
 		std::map<const std::string, int> m_edge_types_to_nums;
-
+ 		/**\brief Keep track of the total number of registered nodes since the last
+ 		 * time class method was called */
 		int m_last_total_num_of_nodes;
-		CObservation2DRangeScanPtr m_last_laser_scan2D;
-		CObservation3DRangeScanPtr m_last_laser_scan3D;
-		// fake 2D laser scan generated from corresponding 3DRangeScan for
-		// visualization reasons
-		CObservation2DRangeScanPtr m_fake_laser_scan2D;
+		/**\brief Keep the last laser scan for visualization purposes */
+		mrpt::obs::CObservation2DRangeScanPtr m_last_laser_scan2D;
+
+		mrpt::utils::TColor m_laser_scans_color; //!< see Constructor for initialization
 
 		// find out if decider is invalid for the given dataset
 		bool m_checked_for_usuable_dataset;
@@ -219,11 +188,11 @@ class CICPGoodnessERD :
 
 		mrpt::utils::COutputLogger m_out_logger; /**<Output logger instance */
 		mrpt::utils::CTimeLogger m_time_logger; /**<Time logger instance */
-
 };
 
 } } } // end of namespaces
 
-#include "CICPGoodnessERD_impl.h"
-#endif /* end of include guard: CICPGoodnessERD_H */
+
+#include "CLoopCloserERD_impl.h"
+#endif /* end of include guard: CLOOPCLOSERERD_H */
 
