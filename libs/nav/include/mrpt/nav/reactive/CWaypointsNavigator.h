@@ -37,10 +37,10 @@ namespace mrpt
 		/** Waypoint navigation request. This immediately cancels any other previous on-going navigation.
 		  * \sa CAbstractNavigator::navigate() for single waypoint navigation requests.
 		  */
-		void navigateWaypoints( const TWaypointSequence & nav_request );
+		virtual void navigateWaypoints( const TWaypointSequence & nav_request );
 
 		/** Get a copy of the control structure which describes the progress status of the waypoint navigation. */
-		void getWaypointNavStatus(TWaypointStatusSequence & out_nav_status) const;
+		virtual void getWaypointNavStatus(TWaypointStatusSequence & out_nav_status) const;
 		/** @}*/
 
 	protected:
@@ -55,7 +55,7 @@ namespace mrpt
 		virtual bool impl_waypoint_is_reachable(const mrpt::math::TPoint2D &wp_local_wrt_robot) const = 0;
 
 		/** Loads parameters for waypoints navigation */
-		void loadWaypointsParamsConfigFile(const mrpt::utils::CConfigFileBase &cfg, const std::string &sectionName);
+		virtual void loadWaypointsParamsConfigFile(const mrpt::utils::CConfigFileBase &cfg, const std::string &sectionName);
 
 	};
   }
