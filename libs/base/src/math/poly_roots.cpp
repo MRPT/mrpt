@@ -1,12 +1,23 @@
+/* +---------------------------------------------------------------------------+
+   |                     Mobile Robot Programming Toolkit (MRPT)               |
+   |                          http://www.mrpt.org/                             |
+   |                                                                           |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | See: http://www.mrpt.org/Authors - All rights reserved.                   |
+   | Released under BSD License. See details in http://www.mrpt.org/License    |
+   +---------------------------------------------------------------------------+ */
+
+#include "base-precomp.h"  // Precompiled headers
+
+#include <mrpt/math/poly_roots.h>
+#include <cmath>
+
+// Based on:
 // poly.cpp : solution of cubic and quartic equation
 // (c) Khashin S.I. http://math.ivanovo.ac.ru/dalgebra/Khashin/index.html
 // khash2 (at) gmail.com
 //
-#include "nav-precomp.h" // Precomp header
 
-#include <cmath>
-
-#include "poly34.h"     // solution of cubic and quartic equation
 #define	TwoPi  6.28318530717958648
 const double eps=1e-14;
 
@@ -15,7 +26,7 @@ const double eps=1e-14;
 // In case 3 real roots: => x[0], x[1], x[2], return 3
 //         2 real roots: x[0], x[1],          return 2
 //         1 real root : x[0], x[1] +- i*x[2], return 1
-int SolveP3(double *x,double a,double b,double c) {	// solve cubic equation x^3 + a*x^2 + b*x + c
+int mrpt::math::solve_poly3(double *x,double a,double b,double c) {	// solve cubic equation x^3 + a*x^2 + b*x + c
 	double a2 = a*a;
 	double q  = (a2 - 3*b)/9;
 	double r  = (a*(2*a2-9*b) + 27*c)/54;
@@ -119,7 +130,7 @@ int   SolveP4De(double *x, double b, double c, double d)	// solve equation x^4 +
 	//if( c==0 ) return SolveP4Bi(x,b,d); // After that, c!=0
 	if( fabs(c)<1e-14*(fabs(b)+fabs(d)) ) return SolveP4Bi(x,b,d); // After that, c!=0
 
-	int res3 = SolveP3( x, 2*b, b*b-4*d, -c*c);	// solve resolvent
+	int res3 = mrpt::math::solve_poly3( x, 2*b, b*b-4*d, -c*c);	// solve resolvent
 	// by Viet theorem:  x1*x2*x3=-c*c not equals to 0, so x1!=0, x2!=0, x3!=0
 	if( res3>1 )	// 3 real roots,
 	{
@@ -201,7 +212,7 @@ double N4Step(double x, double a,double b,double c,double d)	// one Newton step 
 // return 4: 4 real roots x[0], x[1], x[2], x[3], possible multiple roots
 // return 2: 2 real roots x[0], x[1] and complex x[2]±i*x[3],
 // return 0: two pair of complex roots: x[0]+-i*x[1],  x[2]+-i*x[3],
-int   SolveP4(double *x,double a,double b,double c,double d) {	// solve equation x^4 + a*x^3 + b*x^2 + c*x + d by Dekart-Euler method
+int  mrpt::math::solve_poly4(double *x,double a,double b,double c,double d) {	// solve equation x^4 + a*x^3 + b*x^2 + c*x + d by Dekart-Euler method
 	// move to a=0:
 	double d1 = d + 0.25*a*( 0.25*b*a - 3./64*a*a*a - c);
 	double c1 = c + 0.5*a*(0.25*a*a - b);
@@ -226,7 +237,7 @@ int   SolveP4(double *x,double a,double b,double c,double d) {	// solve equation
 //-----------------------------------------------------------------------------
 #define F5(t) (((((t+a)*t+b)*t+c)*t+d)*t+e)
 //-----------------------------------------------------------------------------
-double SolveP5_1(double a,double b,double c,double d,double e)	// return real root of x^5 + a*x^4 + b*x^3 + c*x^2 + d*x + e = 0
+static double SolveP5_1(double a,double b,double c,double d,double e)	// return real root of x^5 + a*x^4 + b*x^3 + c*x^2 + d*x + e = 0
 {
 	int cnt;
 	if( fabs(e)<eps ) return 0;
@@ -279,33 +290,36 @@ double SolveP5_1(double a,double b,double c,double d,double e)	// return real ro
 	return x2;
 } // SolveP5_1(double a,double b,double c,double d,double e)	// return real root of x^5 + a*x^4 + b*x^3 + c*x^2 + d*x + e = 0
 //-----------------------------------------------------------------------------
-int   SolveP5(double *x,double a,double b,double c,double d,double e)	// solve equation x^5 + a*x^4 + b*x^3 + c*x^2 + d*x + e = 0
+int  mrpt::math::solve_poly5(double *x,double a,double b,double c,double d,double e)	// solve equation x^5 + a*x^4 + b*x^3 + c*x^2 + d*x + e = 0
 {
 	double r = x[0] = SolveP5_1(a,b,c,d,e);
 	double a1 = a+r, b1=b+r*a1, c1=c+r*b1, d1=d+r*c1;
-	return 1+SolveP4(x+1, a1,b1,c1,d1);
+	return 1+solve_poly4(x+1, a1,b1,c1,d1);
 } // SolveP5(double *x,double a,double b,double c,double d,double e)	// solve equation x^5 + a*x^4 + b*x^3 + c*x^2 + d*x + e = 0
 //-----------------------------------------------------------------------------
-// let f(x ) = a*x^2 + b*x + c and
-//     f(x0) = f0,
-//     f(x1) = f1,
-//     f(x2) = f3
-// Then r1, r2 - root of f(x)=0.
-// Returns 0, if there are no roots, else return 2.
-int Solve2( double x0, double x1, double x2, double f0, double f1, double f2, double &r1, double &r2)
+
+// a*x^2 + b*x + c = 0
+int mrpt::math::solve_poly2(double a, double b, double c, double &r1, double &r2)
 {
-	double w0 = f0*(x1-x2);
-	double w1 = f1*(x2-x0);
-	double w2 = f2*(x0-x1);
-	double a1 =  w0         + w1         + w2;
-	double b1 = -w0*(x1+x2) - w1*(x2+x0) - w2*(x0+x1);
-	double c1 =  w0*x1*x2   + w1*x2*x0   + w2*x0*x1;
-	double Di =  b1*b1 - 4*a1*c1;	// must be>0!
-	if( Di<0 ) { r1=r2=1e99; return 0; }
-	Di =  sqrt(Di);
-	r1 =  (-b1 + Di)/2/a1;
-	r2 =  (-b1 - Di)/2/a1;
-	return 2;
+	if (abs(a)<eps)
+	{
+		// b*x+c=0
+		if (abs(b)<eps) 
+			return 0;
+		r1 = -c/b;
+		r2 =1e99;
+		return 1;
+	}
+	else 
+	{
+		double Di =  b*b - 4*a*c;
+		if( Di<0 ) { r1=r2=1e99; return 0; }
+		Di =  sqrt(Di);
+		r1 =  (-b + Di)/(2*a);
+		r2 =  (-b - Di)/(2*a);
+		// We ensure at output that r1 <= r2
+		double t; // temp:
+		if (r2<r1) SWAP(r1,r2);
+		return 2;
+	}
 }
-//-----------------------------------------------------------------------------
-//-----------------------------------------------------------------------------
