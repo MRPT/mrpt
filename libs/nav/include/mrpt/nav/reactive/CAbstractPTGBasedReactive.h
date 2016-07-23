@@ -141,7 +141,7 @@ namespace mrpt
 		//					PRIVATE METHODS
 		// ------------------------------------------------------
 		/** The main method for the navigator */
-		void  performNavigationStep( );
+		virtual void  performNavigationStep() MRPT_OVERRIDE;
 
 		// ------------------------------------------------------
 		//					PRIVATE	VARIABLES
