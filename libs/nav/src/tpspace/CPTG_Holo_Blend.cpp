@@ -14,7 +14,7 @@
 #include <mrpt/utils/CStream.h>
 #include <mrpt/utils/round.h>
 #include <mrpt/utils/CTimeLogger.h>
-#include "poly34.h"
+#include <mrpt/math/poly_roots.h>
 
 using namespace mrpt::nav;
 using namespace mrpt::utils;
@@ -541,13 +541,13 @@ void CPTG_Holo_Blend::updateTPObstacle(double ox, double oy, std::vector<double>
 		{
 			// General case: 4th order equation
 			// a * x^4 + b * x^3 + c * x^2 + d * x + e
-			num_real_sols = SolveP4(roots, b/a,c/a,d/a,e/a);
+			num_real_sols = mrpt::math::solve_poly4(roots, b/a,c/a,d/a,e/a);
 		}
 		else if (std::abs(b)>eps) {
 			// Special case: k2=k4=0 (straight line path, no blend)
 			// 3rd order equation: 
 			// b * x^3 + c * x^2 + d * x + e
-			num_real_sols = SolveP3(roots, c/b,d/b,e/b);
+			num_real_sols = mrpt::math::solve_poly3(roots, c/b,d/b,e/b);
 		} else 
 		{
 			// Special case: 2nd order equation (a=b=0)
