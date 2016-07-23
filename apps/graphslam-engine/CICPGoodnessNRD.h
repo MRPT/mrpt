@@ -238,9 +238,6 @@ class CICPGoodnessNRD:
 		size_t m_times_used_ICP; /**<How many times we used the ICP Edge */
 		size_t m_times_used_odom; /**<How many times we used the Odometry Edge instead of the ICP edge */
 
-		CFileOutputStream* mahalanobis_file;
-
-
 };
 
 

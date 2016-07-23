@@ -183,6 +183,7 @@ template<class GRAPH_t>
 void CRangeScanRegistrationDecider<GRAPH_t>::TParams::dumpToTextStream(
 		mrpt::utils::CStream &out) const {
 	MRPT_START;
+
 	out.printf("3D=>2D LaserScan Conversion Sensor label       = %s\n",
 			conversion_sensor_label.c_str());
 	out.printf("3D=>2D LaserScan Conversion angle sup          = %.2f deg\n",
