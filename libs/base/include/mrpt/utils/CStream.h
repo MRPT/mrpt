@@ -202,16 +202,17 @@ namespace mrpt
 			  */
 			virtual int printf(const char *fmt,...) MRPT_printf_format_check(2,3);  // The first argument (1) is "this" !!!
 
-			/** Prints a vector in the format [A,B,C,...] using CStream::printf, and the fmt string for <b>each</b> vector element. */
-			template <typename T>
-			void printf_vector(const char *fmt, const std::vector<T> &V )
+			/** Prints a vector in the format [A,B,C,...] using CStream::printf, and the fmt string for <b>each</b> vector element `T`.
+			  * \tparam CONTAINER_TYPE can be any vector<T>, deque<T> or alike. */
+			template <typename CONTAINER_TYPE>
+			void printf_vector(const char *fmt, const CONTAINER_TYPE &V, char separator = ',' )
 			{
 				this->printf("[");
-				size_t N = V.size();
+				const size_t N = V.size();
 				for (size_t i=0;i<N;i++)
 				{
 					this->printf(fmt,V[i]);
-					if (i!=(N-1)) this->printf(",");
+					if (i!=(N-1)) this->printf("%c",separator);
 				}
 				this->printf("]");
 			}
