@@ -67,7 +67,6 @@ CAtan2LookUpTableMultiRes::CAtan2LookUpTableMultiRes(const std::map<double,doubl
 }
 void CAtan2LookUpTableMultiRes::resize(const std::map<double,double> & lst_resolutions2extensions) MRPT_NO_THROWS
 {
-	const double def = .0;
 	m_grids.clear();
 
 	for (const auto &it : lst_resolutions2extensions)
