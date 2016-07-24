@@ -35,6 +35,7 @@
 			- New class mrpt::synch::CCriticalSectionRecursive
 			- New class mrpt::utils::COutputLogger replaces the (now no longer available) classes mrpt::utils::CDebugOutputCapable and mrpt::utils::CLog.
 			- New functions for polynomial roots: see \ref polynomial_roots
+			- New classes mrpt::math::CAtan2LookUpTable, mrpt::math::CAtan2LookUpTableMultiRes
 		- \ref mrpt_gui_grp
 			- mrpt::gui::CMyGLCanvasBase is now derived from mrpt::opengl::CTextMessageCapable so they can draw text labels
 			- New class mrpt::gui::CDisplayWindow3DLocker for exception-safe 3D scene lock in 3D windows.
