@@ -1605,7 +1605,6 @@ void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::updat
 					}
 				}
 
-
 				scene->insert(scan_obj);
 			}
 			else {

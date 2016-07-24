@@ -13,6 +13,7 @@
 
 // TODO - remove the ones not needed.
 #include <mrpt/math/CMatrix.h>
+#include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/utils/CConfigFile.h>
 #include <mrpt/utils/CConfigFileBase.h>
@@ -22,15 +23,26 @@
 #include <mrpt/obs/CActionCollection.h>
 #include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/obs/CRawlog.h>
+#include <mrpt/opengl/COpenGLScene.h>
 #include <mrpt/opengl/CSetOfObjects.h>
+#include <mrpt/opengl/CSetOfLines.h>
 #include <mrpt/opengl/CRenderizable.h>
+#include <mrpt/poses/CPoint3D.h>
+#include <mrpt/opengl/CSphere.h>
+#include <mrpt/poses/CPose2D.h>
+#include <mrpt/poses/CPose3D.h>
+#include <mrpt/slam/CIncrementalMapPartitioner.h>
 #include <mrpt/slam/CICP.h>
 #include <mrpt/system/os.h>
 #include <mrpt/system/threads.h>
 
+
+#include <algorithm>
 #include <iostream>
+#include <map>
 #include <vector>
 #include <string>
+#include <set>
 #include <sstream>
 
 #include "CEdgeRegistrationDecider.h"
@@ -83,6 +95,9 @@ class CLoopCloserERD:
 		/**\brief Typedef for accessing methods of the RangeScanRegistrationDecider_t parent class. */
 		typedef mrpt::graphslam::deciders::CRangeScanRegistrationDecider<GRAPH_t> range_scanner_t;
 		typedef CLoopCloserERD<GRAPH_t> decider_t; /**< self type - Handy typedef */
+		/**\brief New typedef for splitting the nodes into groups */
+		typedef std::vector<mrpt::vector_uint> partitions_t;
+		typedef std::map<const mrpt::utils::TNodeID, mrpt::obs::CObservation2DRangeScanPtr> nodes_to_scans2D_t;
 
 		// Public methods
 		//////////////////////////////////////////////////////////////
@@ -109,6 +124,7 @@ class CLoopCloserERD:
 		void loadParams(const std::string& source_fname);
 		void printParams() const;
 
+		// TODO - either use it or lose it
 		struct TParams: public mrpt::utils::CLoadableOptions {
 			public:
 				TParams();
@@ -146,6 +162,8 @@ class CLoopCloserERD:
 				const mrpt::utils::TNodeID& from,
 				const mrpt::utils::TNodeID& to,
 				const constraint_t& rel_edge );
+		void initLaserScansVisualization();
+		void updateLaserScansVisualization();
 		/**\brief togle the LaserScans visualization on and off
 		 */
 		void toggleLaserScansVisualization();
@@ -154,9 +172,26 @@ class CLoopCloserERD:
 		void checkIfInvalidDataset(mrpt::obs::CActionCollectionPtr action,
 				mrpt::obs::CSensoryFramePtr observations,
 				mrpt::obs::CObservationPtr observation );
+		/**\brief Split the currently registered graph nodes into partitions.  */
+		void updateMapPartitions();
+		/**\brief Initialize the visualization of the map partition objects */
+		void initMapPartitionsVisualization();
+		/**\brief Update the map partitions visualization */
+		void updateMapPartitionsVisualization();
+
+		void computeCentroidOfNodesVector(const vector_uint& nodes_list,
+				std::pair<double, double>* centroid_coords);
+		template<class T>
+		void printVectorOfVectors(const T& t) const;
+
+		template<class T>
+		void printVector(const T& t) const;
+
 
 		// Private variables
 		//////////////////////////////////////////////////////////////
+		/**\brief Instance responsible for partitioning the map */
+		mrpt::slam::CIncrementalMapPartitioner m_partitioner;
 
 		GRAPH_t* m_graph; /**<\brief Pointer to the graph under construction */
 		mrpt::gui::CDisplayWindow3D* m_win;
@@ -176,18 +211,48 @@ class CLoopCloserERD:
  		/**\brief Keep track of the total number of registered nodes since the last
  		 * time class method was called */
 		int m_last_total_num_of_nodes;
+		/**\brief Surpass this to start adding edges */
+		int m_threshold_to_start;
+
+		/**\brief Map for keeping track of the observation recorded at each graph
+		 * position
+		 */
+		nodes_to_scans2D_t  m_nodes_to_laser_scans2D;
 		/**\brief Keep the last laser scan for visualization purposes */
 		mrpt::obs::CObservation2DRangeScanPtr m_last_laser_scan2D;
 
-		mrpt::utils::TColor m_laser_scans_color; //!< see Constructor for initialization
+ 		/** see Constructor for initialization */
+		mrpt::utils::TColor m_laser_scans_color;
+
+		/**\brief Previous partitions vector */
+		partitions_t m_last_partitions;
+		/**\brief Current partitions vector */
+		partitions_t m_curr_partitions;
+		/**\brief Indicate whether the partitions have been updated recently */
+		bool m_partitions_updated;
 
 		// find out if decider is invalid for the given dataset
 		bool m_checked_for_usuable_dataset;
 		size_t m_consecutive_invalid_format_instances;
 		const size_t m_consecutive_invalid_format_instances_thres;
 
+		// map partitioning - parameters for textmessage
+		double m_offset_y_map_partitions;
+		int m_text_index_map_partitions;
+
+
+		// map partitioning  - visualization window parameters
+		const double m_balloon_elevation;
+		const double m_balloon_radius;
+		const mrpt::utils::TColor m_balloon_std_color;
+		const mrpt::utils::TColor m_balloon_curr_color;
+		const mrpt::utils::TColor m_connecting_lines_color;
+
+
+
 		mrpt::utils::COutputLogger m_out_logger; /**<Output logger instance */
 		mrpt::utils::CTimeLogger m_time_logger; /**<Time logger instance */
+
 };
 
 } } } // end of namespaces
