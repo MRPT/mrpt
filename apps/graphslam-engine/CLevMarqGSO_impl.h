@@ -235,7 +235,7 @@ inline void CLevMarqGSO<GRAPH_t>::updateGraphVisualization() {
 	// update the graph (clear and rewrite..)
 	COpenGLScenePtr& scene = m_win->get3DSceneAndLock();
 
-	// remove previous graph and insert the its new instance
+	// remove previous graph and insert the new instance
 	CRenderizablePtr prev_object = scene->getByName("optimized_graph");
 	bool prev_visibility = true;
 	if (prev_object) { // set the visibility of the graph correctly
