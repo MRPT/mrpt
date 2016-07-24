@@ -51,7 +51,7 @@ void CLoopCloserERD<GRAPH_t>::initCLoopCloserERD() {
 	m_checked_for_usuable_dataset = false;
 	m_consecutive_invalid_format_instances = 0;
 
-	m_partitions_updated = false;
+	m_partitions_full_update = false;
 
 	m_out_logger.setName("CLoopCloserERD");
 	m_out_logger.setLoggingLevel(mrpt::utils::LVL_DEBUG); // defalut level of logger
@@ -108,16 +108,14 @@ bool CLoopCloserERD<GRAPH_t>::updateState(
 		// register the new node-laserScan pair
 		m_nodes_to_laser_scans2D[m_graph->nodeCount()-1] = m_last_laser_scan2D;
 
-		// partition creation from scartch is costy
+		// update the partitioned map
 		if ((m_graph->nodeCount() % 50) == 0) {
-			this->updateMapPartitions();
-			m_partitions_updated = true;
-
+			m_partitions_full_update = true;
 		}
 		else {
-			m_partitions_updated = false;
+			m_partitions_full_update = false;
 		}
-
+		this->updateMapPartitions(m_partitions_full_update);
 
 	}
 
@@ -180,7 +178,7 @@ void CLoopCloserERD<GRAPH_t>::notifyOfWindowEvents(
 	MRPT_START;
 
 	// I know the key exists - I put it there explicitly
-	if (events_occurred.find(params.keystroke_laser_scans)->second) {
+	if (events_occurred.at(params.keystroke_laser_scans)) {
 		this->toggleLaserScansVisualization();
 	}
 
@@ -218,10 +216,6 @@ void CLoopCloserERD<GRAPH_t>::updateMapPartitionsVisualization() {
 	using namespace mrpt::math;
 	using namespace mrpt::opengl;
 	using namespace mrpt::poses;
-
-	// do the visual update only if the  partitions have been updated
-	if (!m_partitions_updated)  return;
-
 
 	// textmessage
 	std::stringstream title;
@@ -363,7 +357,7 @@ void CLoopCloserERD<GRAPH_t>::computeCentroidOfNodesVector(const vector_uint& no
 	double centroid_y = 0;
 	for (vector_uint::const_iterator node_it = nodes_list.begin();
 			node_it != nodes_list.end(); ++node_it) {
-		pose_t curr_node_pos = m_graph->nodes.find(*node_it)->second;
+		pose_t curr_node_pos = m_graph->nodes.at(*node_it);
 		centroid_x +=  curr_node_pos.x();
 		centroid_y +=  curr_node_pos.y();
 
@@ -630,20 +624,36 @@ void CLoopCloserERD<GRAPH_t>::getDescriptiveReport(std::string* report_str) cons
 }
 
 template<class GRAPH_t>
-void CLoopCloserERD<GRAPH_t>::updateMapPartitions() {
+void CLoopCloserERD<GRAPH_t>::updateMapPartitions(bool full_update /* = false */) {
 	MRPT_START;
-	m_time_logger.enter("CLoopCloser:updateMapPartitions");
-	m_partitioner.clear();
+	using namespace mrpt::utils;
+	using namespace std;
 
-	// for each one of the given nodes - add its position and correspoding
+	m_time_logger.enter("CLoopCloser:updateMapPartitions");
+	
+ nodes_to_scans2D_t nodes_to_scans;
+	if (full_update) {
+		m_out_logger.log("updateMapPartitions: Full partitionint of map was issued", LVL_INFO);
+
+		// clear the existing partitions and recompute the partitioned map for all
+		// the nodes
+		m_partitioner.clear();
+		nodes_to_scans = m_nodes_to_laser_scans2D;
+	}
+	else {
+		// just use the last node-laser scan pair
+		nodes_to_scans[0] = m_nodes_to_laser_scans2D.at(m_graph->nodeCount()-1);
+	}
+
+	// for each one of the above nodes - add its position and correspoding
 	// laserScan to the partitioner object
-	for (nodes_to_scans2D_t::const_iterator it = m_nodes_to_laser_scans2D.begin();
-			it != m_nodes_to_laser_scans2D.end(); ++it) {
+	for (nodes_to_scans2D_t::const_iterator it = nodes_to_scans.begin();
+			it != nodes_to_scans.end(); ++it) {
 		if ((it->second).null()) { continue; } // if laserScan invalud go to next...
 
 
 		// pose
-		pose_t curr_pose = m_graph->nodes.find(it->first)->second;
+		pose_t curr_pose = m_graph->nodes.at(it->first);
 		mrpt::poses::CPosePDFPtr posePDF(new constraint_t(curr_pose));
 
 		// laser scan

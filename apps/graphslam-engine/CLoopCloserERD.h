@@ -173,7 +173,7 @@ class CLoopCloserERD:
 				mrpt::obs::CSensoryFramePtr observations,
 				mrpt::obs::CObservationPtr observation );
 		/**\brief Split the currently registered graph nodes into partitions.  */
-		void updateMapPartitions();
+		void updateMapPartitions(bool full_update=false);
 		/**\brief Initialize the visualization of the map partition objects */
 		void initMapPartitionsVisualization();
 		/**\brief Update the map partitions visualization */
@@ -229,7 +229,7 @@ class CLoopCloserERD:
 		/**\brief Current partitions vector */
 		partitions_t m_curr_partitions;
 		/**\brief Indicate whether the partitions have been updated recently */
-		bool m_partitions_updated;
+		bool m_partitions_full_update;
 
 		// find out if decider is invalid for the given dataset
 		bool m_checked_for_usuable_dataset;
