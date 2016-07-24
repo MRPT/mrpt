@@ -146,7 +146,7 @@ int main(int argc, char **argv)
 		register_tests_graph();
 		register_tests_graphslam();
 		register_tests_CObservation3DRangeScan();
-
+		register_tests_atan2lut();
 
 		if (doLog)
 		{
