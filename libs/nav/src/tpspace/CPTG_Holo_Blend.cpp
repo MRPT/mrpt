@@ -26,7 +26,7 @@ IMPLEMENTS_SERIALIZABLE(CPTG_Holo_Blend,CParameterizedTrajectoryGenerator,mrpt::
 Closed-form PTG. Parameters: 
 - Initial velocity vector (xip, yip)
 - Target velocity vector depends on \alpha: xfp = V_MAX*cos(alpha), yfp = V_MAX*sin(alpha)
-- T_ramp time for velocity interpolation (xip,yip) -> (xfp, yfp)
+- T_ramp_max max time for velocity interpolation (xip,yip) -> (xfp, yfp)
 - W_MAX: Rotational velocity for robot heading forwards.
 
 Number of steps "d" for each PTG path "k": 
@@ -115,9 +115,18 @@ dd = sqrt( (4*k2^2 + 4*k4^2)*t^2 + (4*k2*vxi + 4*k4*vyi)*t + vxi^2 + vyi^2 ) dt
 	}
 }
 
+inline double calc_T_ramp(const double T_ramp_max, double vxi, double vyi, double vxf, double vyf, double V_MAX)
+{
+	return T_ramp_max * std::max( std::abs(vxi-vxf), std::abs(vyi-vyf) ) / V_MAX;
+}
+inline double calc_T_ramp_dir(const double T_ramp_max, double vxi, double vyi, double dir, double V_MAX)
+{
+	return T_ramp_max * std::max( std::abs(vxi-V_MAX*cos(dir)), std::abs(vyi-V_MAX*sin(dir)) ) / V_MAX;
+}
+
 
 CPTG_Holo_Blend::CPTG_Holo_Blend() : 
-	T_ramp(-1.0),
+	T_ramp_max(-1.0),
 	V_MAX(-1.0), 
 	W_MAX(-1.0),
 	turningRadiusReference(0.30),
@@ -145,7 +154,7 @@ void CPTG_Holo_Blend::loadDefaultParams()
 	CPTG_RobotShape_Circular::loadDefaultParams();
 
 	m_alphaValuesCount = 100;
-	T_ramp = 0.9;
+	T_ramp_max = 0.9;
 	V_MAX = 1.0;
 	W_MAX = mrpt::utils::DEG2RAD(120);
 	maxAllowedDirAngle = M_PI;
@@ -156,7 +165,7 @@ void CPTG_Holo_Blend::loadFromConfigFile(const mrpt::utils::CConfigFileBase &cfg
 	CParameterizedTrajectoryGenerator::loadFromConfigFile(cfg,sSection);
 	CPTG_RobotShape_Circular::loadShapeFromConfigFile(cfg,sSection);
 
-	MRPT_LOAD_HERE_CONFIG_VAR_NO_DEFAULT(T_ramp ,double, T_ramp, cfg,sSection);
+	MRPT_LOAD_HERE_CONFIG_VAR_NO_DEFAULT(T_ramp_max ,double, T_ramp_max, cfg,sSection);
 	MRPT_LOAD_HERE_CONFIG_VAR_NO_DEFAULT(v_max_mps  ,double, V_MAX, cfg,sSection);
 	MRPT_LOAD_HERE_CONFIG_VAR_DEGREES_NO_DEFAULT(w_max_dps  ,double, W_MAX, cfg,sSection);
 	MRPT_LOAD_CONFIG_VAR(turningRadiusReference  ,double, cfg,sSection);
@@ -173,7 +182,7 @@ void CPTG_Holo_Blend::saveToConfigFile(mrpt::utils::CConfigFileBase &cfg,const s
 
 	CParameterizedTrajectoryGenerator::saveToConfigFile(cfg,sSection);
 
-	cfg.write(sSection,"T_ramp",T_ramp,   WN,WV, "Duration of the velocity interpolation since a vel_cmd is issued [s].");
+	cfg.write(sSection,"T_ramp_max",T_ramp_max,   WN,WV, "Max duration of the velocity interpolation since a vel_cmd is issued [s].");
 	cfg.write(sSection,"v_max_mps",V_MAX,   WN,WV, "Maximum linear velocity for trajectories [m/s].");
 	cfg.write(sSection,"w_max_dps",mrpt::utils::RAD2DEG(W_MAX),   WN,WV, "Maximum angular velocity for trajectories [deg/s].");
 	cfg.write(sSection,"turningRadiusReference",turningRadiusReference,   WN,WV, "An approximate dimension of the robot (not a critical parameter) [m].");
@@ -189,7 +198,7 @@ void CPTG_Holo_Blend::saveToConfigFile(mrpt::utils::CConfigFileBase &cfg,const s
 
 std::string CPTG_Holo_Blend::getDescription() const
 {
-	return mrpt::format("PTG_Holo_Blend_Tramp=%.03f_Vmax=%.03f_Wmax=%.03f_MaxAng=%.02f",T_ramp,V_MAX,W_MAX,maxAllowedDirAngle);
+	return mrpt::format("PTG_Holo_Blend_Tramp=%.03f_Vmax=%.03f_Wmax=%.03f_MaxAng=%.02f",T_ramp_max,V_MAX,W_MAX,maxAllowedDirAngle);
 }
 
 
@@ -206,7 +215,7 @@ void CPTG_Holo_Blend::readFromStream(mrpt::utils::CStream &in, int version)
 			CPTG_RobotShape_Circular::internal_shape_loadFromStream(in);
 		}
 
-		in >> T_ramp >> V_MAX >> W_MAX >> turningRadiusReference;
+		in >> T_ramp_max >> V_MAX >> W_MAX >> turningRadiusReference;
 		if (version>=2)
 			in >> maxAllowedDirAngle;
 		break;
@@ -226,7 +235,7 @@ void CPTG_Holo_Blend::writeToStream(mrpt::utils::CStream &out, int *version) con
 	CParameterizedTrajectoryGenerator::internal_writeToStream(out);
 	CPTG_RobotShape_Circular::internal_shape_saveToStream(out);
 
-	out << T_ramp << V_MAX << W_MAX << turningRadiusReference;
+	out << T_ramp_max << V_MAX << W_MAX << turningRadiusReference;
 	out << maxAllowedDirAngle; // v2
 }
 
@@ -240,8 +249,6 @@ bool CPTG_Holo_Blend::inverseMap_WS2TP(double x, double y, int &out_k, double &o
 	const double err_threshold = 1e-3;
 
 	const double vxi = curVelLocal.vx, vyi = curVelLocal.vy;
-	const double TR_ =  1.0/(T_ramp);
-	const double TR2_ = 1.0/(2*T_ramp);
 	const double V_MAXsq = V_MAX*V_MAX;
 
 	// Use a Newton iterative non-linear optimizer to find the "exact" solution for (t,alpha) 
@@ -249,7 +256,7 @@ bool CPTG_Holo_Blend::inverseMap_WS2TP(double x, double y, int &out_k, double &o
 
 	// Initial value:
 	Eigen::Vector3d  q; // [t vxf vyf]
-	q[0]=T_ramp*1.1;
+	q[0]=T_ramp_max*1.1;
 	q[1]=V_MAX*x/sqrt(x*x+y*y);
 	q[2]=V_MAX*y/sqrt(x*x+y*y);
 
@@ -258,6 +265,10 @@ bool CPTG_Holo_Blend::inverseMap_WS2TP(double x, double y, int &out_k, double &o
 	bool sol_found = false;
 	for (int iters=0;!sol_found && iters<25;iters++)
 	{
+		const double T_ramp = calc_T_ramp(T_ramp_max, vxi,vyi, q[1], q[2], V_MAX);
+		const double TR_ =  1.0/(T_ramp);
+		const double TR2_ = 1.0/(2*T_ramp);
+
 		// Eval residual:
 		Eigen::Vector3d  r;
 		if (q[0]>=T_ramp)
@@ -325,7 +336,7 @@ bool CPTG_Holo_Blend::PTG_IsIntoDomain(double x, double y ) const
 void CPTG_Holo_Blend::internal_initialize(const std::string & cacheFilename, const bool verbose )
 {
 	// No need to initialize anything, just do some params sanity checks:
-	ASSERT_(T_ramp>0);
+	ASSERT_(T_ramp_max>0);
 	ASSERT_(V_MAX>0);
 	ASSERT_(W_MAX>0);
 	ASSERT_(m_alphaValuesCount>0);
@@ -354,8 +365,8 @@ void CPTG_Holo_Blend::directionToMotionCommand( uint16_t k, std::vector<double> 
 		cmd_vel[0] = .0;
 	}
 	cmd_vel[1] = dir_local;
-	cmd_vel[2] = T_ramp;
-	cmd_vel[3] = W_MAX * dir_local / M_PI;
+	cmd_vel[2] = calc_T_ramp_dir(T_ramp_max, curVelLocal.vx, curVelLocal.vy, dir_local, V_MAX);
+	cmd_vel[3] = mrpt::utils::saturate_val(W_MAX * dir_local / (0.5*M_PI), -W_MAX, W_MAX);
 }
 
 size_t CPTG_Holo_Blend::getPathStepCount(uint16_t k) const
@@ -372,9 +383,10 @@ void CPTG_Holo_Blend::getPathPose(uint16_t k, uint16_t step, mrpt::math::TPose2D
 	const double t = PATH_TIME_STEP*step;
 	const double dir = CParameterizedTrajectoryGenerator::index2alpha(k);
 
-	const double TR2_ = 1.0/(2*T_ramp);
 	const double vxf = V_MAX * cos(dir), vyf = V_MAX * sin(dir);
 	const double vxi = curVelLocal.vx, vyi = curVelLocal.vy;
+	const double T_ramp = calc_T_ramp(T_ramp_max,vxi,vyi,vxf,vyf,V_MAX);
+	const double TR2_ = 1.0/(2*T_ramp);
 
 	// Translational part:
 	if (t<T_ramp)
@@ -400,9 +412,10 @@ double CPTG_Holo_Blend::getPathDist(uint16_t k, uint16_t step) const
 	const double t = PATH_TIME_STEP*step;
 	const double dir = CParameterizedTrajectoryGenerator::index2alpha(k);
 
-	const double TR2_ = 1.0/(2*T_ramp);
 	const double vxf = V_MAX * cos(dir), vyf = V_MAX * sin(dir);
 	const double vxi = curVelLocal.vx, vyi = curVelLocal.vy;
+	const double T_ramp = calc_T_ramp(T_ramp_max,vxi,vyi,vxf,vyf,V_MAX);
+	const double TR2_ = 1.0/(2*T_ramp);
 
 	const double k2 = (vxf-vxi)*TR2_;
 	const double k4 = (vyf-vyi)*TR2_;
@@ -424,9 +437,10 @@ bool CPTG_Holo_Blend::getPathStepForDist(uint16_t k, double dist, uint16_t &out_
 
 	const double dir = CParameterizedTrajectoryGenerator::index2alpha(k);
 
-	const double TR2_ = 1.0/(2*T_ramp);
 	const double vxf = V_MAX * cos(dir), vyf = V_MAX * sin(dir);
 	const double vxi = curVelLocal.vx, vyi = curVelLocal.vy;
+	const double T_ramp = calc_T_ramp(T_ramp_max,vxi,vyi,vxf,vyf,V_MAX);
+	const double TR2_ = 1.0/(2*T_ramp);
 
 	const double k2 = (vxf-vxi)*TR2_;
 	const double k4 = (vyf-vyi)*TR2_;
@@ -511,16 +525,17 @@ void CPTG_Holo_Blend::updateTPObstacle(double ox, double oy, std::vector<double>
 
 	const double R = m_robotRadius;
 
-	const double TR_2 = T_ramp*0.5;
-	const double TR2_ = 1.0/(2*T_ramp);
 	const double vxi = curVelLocal.vx, vyi = curVelLocal.vy;
-	const double T_ramp_thres099 = T_ramp*0.99;
-	const double T_ramp_thres101 = T_ramp*1.01;
 
 	for (unsigned int k=0;k<m_alphaValuesCount;k++)
 	{
 		const double dir = CParameterizedTrajectoryGenerator::index2alpha(k);
 		const double vxf = V_MAX * cos(dir), vyf = V_MAX * sin(dir);
+		const double T_ramp = calc_T_ramp(T_ramp_max,vxi,vyi,vxf,vyf,V_MAX);
+		const double TR2_ = 1.0/(2*T_ramp);
+		const double TR_2 = T_ramp*0.5;
+		const double T_ramp_thres099 = T_ramp*0.99;
+		const double T_ramp_thres101 = T_ramp*1.01;
 
 		double sol_t=-1.0; // candidate solution for shortest time to collision
 
