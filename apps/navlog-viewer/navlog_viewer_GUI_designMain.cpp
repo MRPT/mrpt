@@ -698,7 +698,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 		win1->repaint();
 	}
 
-	// Draw PTG-obstacles
+	// Draw TP-obstacles
 	// --------------------------------
 	for (unsigned int nPTG=0;nPTG<log.nPTGs;nPTG++)
 	{
@@ -755,6 +755,30 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 		// Target:
 		win->plot(make_vector<1,double>(pI.TP_Target.x),make_vector<1,double>(pI.TP_Target.y),"k.9", "TPTARGET");
 
+		// In the case of ND algorithm: draw gaps
+		if (pI.HLFR && IS_CLASS(pI.HLFR, CLogFileRecord_ND))
+		{
+			CLogFileRecord_NDPtr log_ND = CLogFileRecord_NDPtr(pI.HLFR);
+			const size_t nGaps = log_ND->gaps_ini.size();
+			ASSERT_( log_ND->gaps_end.size()==nGaps );
+			xs.clear(); ys.clear();
+			for (size_t nG=0;nG<nGaps;nG++)
+			{
+				const int32_t ang_ini = log_ND->gaps_ini[nG];
+				const int32_t ang_end = log_ND->gaps_end[nG];
+
+				xs.push_back(0);ys.push_back(0);
+				for (int i=ang_ini;i<ang_end;i++)
+				{
+					const double a = -M_PI + (i+0.5)*2*M_PI/double(nAlphas);
+					const double r = pI.TP_Obstacles[i] - 0.04;
+					xs.push_back(r*cos(a));
+					ys.push_back(r*sin(a));
+				}
+				xs.push_back(0);ys.push_back(0);
+			}
+			win->plot(xs,ys,"k-2", "TPOBS-Gaps");
+		}
 
 	} // end for each PTG
 
