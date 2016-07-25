@@ -70,6 +70,7 @@ namespace mrpt { namespace graphslam { namespace deciders {
  * \b Description
  *
  * // TODO - add here...
+ * // TODO - explain the process/flow of method calls when an LC is detected
  * The Edge registration procedure is implemented as described below:
  *
  *
@@ -124,11 +125,23 @@ class CLoopCloserERD:
 		void loadParams(const std::string& source_fname);
 		void printParams() const;
 
-		// TODO - either use it or lose it
-		struct TParams: public mrpt::utils::CLoadableOptions {
+
+		void getDescriptiveReport(std::string* report_str) const;
+
+		// Public variables
+		// ////////////////////////////
+
+	private:
+		// Private functions
+		//////////////////////////////////////////////////////////////
+
+		/**\brief Struct for storing together the parameters needed for ICP
+		 * matching, laser scans visualization etc.
+		 */
+		struct TLaserParams: public mrpt::utils::CLoadableOptions {
 			public:
-				TParams();
-				~TParams();
+				TLaserParams();
+				~TLaserParams();
 
 				void loadFromConfigFile(
 						const mrpt::utils::CConfigFileBase &source,
@@ -138,23 +151,44 @@ class CLoopCloserERD:
 				mrpt::slam::CICP icp;
 				// threshold for accepting an ICP constraint in the graph
 				double ICP_goodness_thresh;
-				int LC_min_nodeid_diff;
 				bool visualize_laser_scans;
-				// keystroke to be used for the user to toggle the LaserScans from
+				// keystroke to be used by the user to toggle the LaserScans from
 				// the CDisplayWindow
 				std::string keystroke_laser_scans;
 
 				bool has_read_config;
 		};
-		void getDescriptiveReport(std::string* report_str) const;
 
-		// Public variables
-		// ////////////////////////////
-		TParams params;
+		/**\brief Struct for storing together the loop-closing related parameters.
+		 */
+		struct TLoopClosureParams: public mrpt::utils::CLoadableOptions {
+			public:
+				TLoopClosureParams();
+				~TLoopClosureParams();
 
-	private:
-		// Private functions
-		//////////////////////////////////////////////////////////////
+				void loadFromConfigFile(
+						const mrpt::utils::CConfigFileBase &source,
+						const std::string &section);
+				void 	dumpToTextStream(mrpt::utils::CStream &out) const;
+
+
+				/**\brief nodeID difference for detecting potential loop closure in a
+		 		 * partition.
+		 		 *
+		 		 * If this difference is surpassed then the partition should be
+		 		 * investigated for loop closures using Olson's strategy.
+		 		 */
+				int LC_min_nodeid_diff;
+				bool visualize_map_partitions;
+				std::string keystroke_map_partitions;
+
+				bool has_read_config;
+
+
+		};
+		TLaserParams m_laser_params;
+		TLoopClosureParams m_lc_params;
+
 		/** \brief Initialization function to be called from the various constructors
 		 */
 		void initCLoopCloserERD();
@@ -178,14 +212,41 @@ class CLoopCloserERD:
 		void initMapPartitionsVisualization();
 		/**\brief Update the map partitions visualization */
 		void updateMapPartitionsVisualization();
+		/**\brief Toggle the map partitions visualization objects.
+		 *
+		 * To be called  upon relevant keystroke press by the user (see \b
+		 * TLoopClosureParams::keystroke_map_partitions)
+		 */
+		void toggleMapPartitionsVisualization();
 
 		void computeCentroidOfNodesVector(const vector_uint& nodes_list,
 				std::pair<double, double>* centroid_coords);
-		template<class T>
-		void printVectorOfVectors(const T& t) const;
 
 		template<class T>
+		void printVectorOfVectors(const T& t) const;
+		template<class T>
 		void printVector(const T& t) const;
+
+		/**\brief Check the registered so far partitions for potential loop
+		 * closures.
+		 *
+		 * Practically checks whether there exist nodes in a single partition whose
+		 * distance surpasses the minimum loop closure nodeID distance. The latter
+		 * is read from a .ini external file, thus specified by the user (see \b
+		 * TLoopClosureParams.LC_min_nodeid_diff
+		 *
+		 * \sa evaluatePartitionsForLC
+		 */
+		void checkPartitionsForLC(partitions_t* partitions_for_LC);
+		/**\brief Evaluate the given partitions for loop closures.
+		 *
+		 * Call this method when you have identified potential loop closures - e.g.
+		 * far away nodes in the same partitions - and you want to evaluate the
+		 * potential hypotheses in the group
+		 *
+		 * \sa checkPartitionsForLC
+		 */
+		void evaluatePartitionsForLC(const partitions_t& partitions_for_LC);
 
 
 		// Private variables
@@ -247,7 +308,6 @@ class CLoopCloserERD:
 		const mrpt::utils::TColor m_balloon_std_color;
 		const mrpt::utils::TColor m_balloon_curr_color;
 		const mrpt::utils::TColor m_connecting_lines_color;
-
 
 
 		mrpt::utils::COutputLogger m_out_logger; /**<Output logger instance */
