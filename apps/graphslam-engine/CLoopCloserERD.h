@@ -151,6 +151,8 @@ class CLoopCloserERD:
 				mrpt::slam::CICP icp;
 				// threshold for accepting an ICP constraint in the graph
 				double ICP_goodness_thresh;
+ 				/** see Constructor for initialization */
+				mrpt::utils::TColor laser_scans_color;
 				bool visualize_laser_scans;
 				// keystroke to be used by the user to toggle the LaserScans from
 				// the CDisplayWindow
@@ -181,6 +183,16 @@ class CLoopCloserERD:
 				int LC_min_nodeid_diff;
 				bool visualize_map_partitions;
 				std::string keystroke_map_partitions;
+
+				double offset_y_map_partitions;
+				int text_index_map_partitions;
+
+				// map partitioning  - visualization window parameters
+				const double balloon_elevation;
+				const double balloon_radius;
+				const mrpt::utils::TColor balloon_std_color;
+				const mrpt::utils::TColor balloon_curr_color;
+				const mrpt::utils::TColor connecting_lines_color;
 
 				bool has_read_config;
 
@@ -282,9 +294,6 @@ class CLoopCloserERD:
 		/**\brief Keep the last laser scan for visualization purposes */
 		mrpt::obs::CObservation2DRangeScanPtr m_last_laser_scan2D;
 
- 		/** see Constructor for initialization */
-		mrpt::utils::TColor m_laser_scans_color;
-
 		/**\brief Previous partitions vector */
 		partitions_t m_last_partitions;
 		/**\brief Current partitions vector */
@@ -297,21 +306,10 @@ class CLoopCloserERD:
 		size_t m_consecutive_invalid_format_instances;
 		const size_t m_consecutive_invalid_format_instances_thres;
 
-		// map partitioning - parameters for textmessage
-		double m_offset_y_map_partitions;
-		int m_text_index_map_partitions;
-
-
-		// map partitioning  - visualization window parameters
-		const double m_balloon_elevation;
-		const double m_balloon_radius;
-		const mrpt::utils::TColor m_balloon_std_color;
-		const mrpt::utils::TColor m_balloon_curr_color;
-		const mrpt::utils::TColor m_connecting_lines_color;
-
-
 		mrpt::utils::COutputLogger m_out_logger; /**<Output logger instance */
 		mrpt::utils::CTimeLogger m_time_logger; /**<Time logger instance */
+
+
 
 };
 

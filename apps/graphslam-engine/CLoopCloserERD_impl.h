@@ -18,13 +18,7 @@ namespace mrpt { namespace graphslam { namespace deciders {
 // //////////////////////////////////
 template<class GRAPH_t>
 CLoopCloserERD<GRAPH_t>::CLoopCloserERD():
-	m_laser_scans_color(0, 20, 255),
-	m_consecutive_invalid_format_instances_thres(20), // high threshold just to make sure
-	m_balloon_elevation(3),
-	m_balloon_radius(0.5),
-	m_balloon_std_color(153, 0, 153),
-	m_balloon_curr_color(102, 0, 102),
-	m_connecting_lines_color(m_balloon_std_color)
+	m_consecutive_invalid_format_instances_thres(20) // high threshold just to make sure
 {
 	MRPT_START;
 	this->initCLoopCloserERD();
@@ -134,6 +128,7 @@ template<class GRAPH_t>
 void CLoopCloserERD<GRAPH_t>::checkPartitionsForLC(
 		partitions_t* partitions_for_LC) {
 	MRPT_START;
+	m_time_logger.enter("CLoopCloserERD::LoopClosureEvaluation");
 	using namespace std;
 	using namespace mrpt;
 	using namespace mrpt::utils;
@@ -165,11 +160,17 @@ void CLoopCloserERD<GRAPH_t>::checkPartitionsForLC(
 		}
 	}
 
+	m_time_logger.leave("CLoopCloserERD::LoopClosureEvaluation");
 	MRPT_END;
 }
 
 template<class GRAPH_t>
 void CLoopCloserERD<GRAPH_t>::evaluatePartitionsForLC( const partitions_t&) {
+	MRPT_START;
+	m_time_logger.enter("CLoopCloserERD::LoopClosureEvaluation");
+
+	m_time_logger.leave("CLoopCloserERD::LoopClosureEvaluation");
+	MRPT_END;
 }
 
 template<class GRAPH_t>
@@ -253,8 +254,8 @@ void CLoopCloserERD<GRAPH_t>::initMapPartitionsVisualization() {
 
 	// textmessage
 	m_win_manager->assignTextMessageParameters(
-			/* offset_y*	= */ &m_offset_y_map_partitions,
-			/* text_index* = */ &m_text_index_map_partitions);
+			/* offset_y*	= */ &m_lc_params.offset_y_map_partitions,
+			/* text_index* = */ &m_lc_params.text_index_map_partitions);
 
 
 	// just add an empty CSetOfObjects in the scene - going to populate it later
@@ -277,14 +278,16 @@ void CLoopCloserERD<GRAPH_t>::updateMapPartitionsVisualization() {
 	using namespace mrpt::poses;
 
 	// textmessage
+	// ////////////////////////////////////////////////////////////
 	std::stringstream title;
 	title << "# Partitions: " << m_curr_partitions.size();
-	m_win_manager->addTextMessage(5,-m_offset_y_map_partitions,
+	m_win_manager->addTextMessage(5,-m_lc_params.offset_y_map_partitions,
 			title.str(),
-			mrpt::utils::TColorf(m_balloon_std_color),
-			/* unique_index = */ m_text_index_map_partitions);
+			mrpt::utils::TColorf(m_lc_params.balloon_std_color),
+			/* unique_index = */ m_lc_params.text_index_map_partitions);
 
 	// update the partitioning visualization
+	// ////////////////////////////////////////////////////////////
 	COpenGLScenePtr& scene = m_win->get3DSceneAndLock();
 
 	// fetch the partitions CSetOfObjects
@@ -324,8 +327,8 @@ void CLoopCloserERD<GRAPH_t>::updateMapPartitionsVisualization() {
 			m_out_logger.logFmt("\t\tCreating a new CSphere balloon object");
 			CSpherePtr balloon_obj = CSphere::Create();
 			balloon_obj->setName(balloon_obj_name);
-			balloon_obj->setRadius(m_balloon_radius);
-			balloon_obj->setColor_u8(m_balloon_std_color);
+			balloon_obj->setRadius(m_lc_params.balloon_radius);
+			balloon_obj->setColor_u8(m_lc_params.balloon_std_color);
 			balloon_obj->enableShowName();
 
 			curr_partition_obj->insert(balloon_obj);
@@ -334,8 +337,8 @@ void CLoopCloserERD<GRAPH_t>::updateMapPartitionsVisualization() {
 			m_out_logger.logFmt("\t\tCreating set of lines that will connect to the Balloon");
 			CSetOfLinesPtr connecting_lines_obj = CSetOfLines::Create();
 			connecting_lines_obj->setName("connecting_lines");
-			connecting_lines_obj->setColor_u8(m_connecting_lines_color);
-			connecting_lines_obj->setLineWidth(0.4);
+			connecting_lines_obj->setColor_u8(m_lc_params.connecting_lines_color);
+			connecting_lines_obj->setLineWidth(0.1);
 
 			curr_partition_obj->insert(connecting_lines_obj);
 
@@ -358,7 +361,7 @@ void CLoopCloserERD<GRAPH_t>::updateMapPartitionsVisualization() {
 			partition_contains_last_node = false;
 		}
 		TPoint3D balloon_location(centroid_coords.first, centroid_coords.second,
-				m_balloon_elevation);
+				m_lc_params.balloon_elevation);
 
 		m_out_logger.logFmt("\tUpdating the balloon position");
 		// set the balloon properties
@@ -369,9 +372,9 @@ void CLoopCloserERD<GRAPH_t>::updateMapPartitionsVisualization() {
 			balloon_obj = static_cast<CSpherePtr>(obj);
 			balloon_obj->setLocation(balloon_location);
 			if (partition_contains_last_node)
-				balloon_obj->setColor_u8(m_balloon_curr_color);
+				balloon_obj->setColor_u8(m_lc_params.balloon_curr_color);
 			else
-				balloon_obj->setColor_u8(m_balloon_std_color);
+				balloon_obj->setColor_u8(m_lc_params.balloon_std_color);
 		}
 
 		m_out_logger.logFmt("\tUpdating the lines connecting nodes to balloon");
@@ -397,6 +400,23 @@ void CLoopCloserERD<GRAPH_t>::updateMapPartitionsVisualization() {
 
 		}
 		m_out_logger.logFmt("Done working on partition #%d", partitionID);
+	}
+
+	// remove outdated partitions
+	// these occur when more partitions existed during the previous visualization
+	// update, thus the partitions with higher ID than the maximum partitionID
+	// would otherwise remain in the visual as zombie partitions
+	size_t prev_size = m_last_partitions.size();
+	size_t curr_size = m_curr_partitions.size();
+	if (curr_size < prev_size) {
+		m_out_logger.logFmt("Removing outdated partitions in visual");
+		for (int partitionID = curr_size; partitionID != prev_size; ++partitionID) {
+			m_out_logger.logFmt("\tRemoving partition %d", partitionID);
+			std::string partition_obj_name = mrpt::format("partition_%d", partitionID);
+
+			CRenderizablePtr obj = map_partitions_obj->getByName(partition_obj_name);
+			map_partitions_obj->removeObject(obj);
+		}
 	}
 	m_out_logger.logFmt("Done working on the partitions visualization.");
 
@@ -469,10 +489,10 @@ void CLoopCloserERD<GRAPH_t>::initLaserScansVisualization() {
 		laser_scan_viz->enableLine(true);
 		laser_scan_viz->enableSurface(true);
 		laser_scan_viz->setSurfaceColor(
-				m_laser_scans_color.R,
-				m_laser_scans_color.G,
-				m_laser_scans_color.B,
-				m_laser_scans_color.A);
+				m_laser_params.laser_scans_color.R,
+				m_laser_params.laser_scans_color.G,
+				m_laser_params.laser_scans_color.B,
+				m_laser_params.laser_scans_color.A);
 
 		laser_scan_viz->setName("laser_scan_viz");
 
@@ -804,6 +824,7 @@ void CLoopCloserERD<GRAPH_t>::printVector(const T& t) const {
 
 template<class GRAPH_t>
 CLoopCloserERD<GRAPH_t>::TLaserParams::TLaserParams():
+	laser_scans_color(0, 20, 255),
 	keystroke_laser_scans("l"),
 	has_read_config(false)
 { }
@@ -848,8 +869,14 @@ void CLoopCloserERD<GRAPH_t>::TLaserParams::loadFromConfigFile(
 template<class GRAPH_t>
 CLoopCloserERD<GRAPH_t>::TLoopClosureParams::TLoopClosureParams():
 	keystroke_map_partitions("b"),
+	balloon_elevation(3),
+	balloon_radius(0.5),
+	balloon_std_color(153, 0, 153),
+	balloon_curr_color(102, 0, 102),
+	connecting_lines_color(balloon_std_color),
 	has_read_config(false)
-{ }
+{ 
+}
 
 template<class GRAPH_t>
 CLoopCloserERD<GRAPH_t>::TLoopClosureParams::~TLoopClosureParams() { }
