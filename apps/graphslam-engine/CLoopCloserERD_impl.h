@@ -117,12 +117,59 @@ bool CLoopCloserERD<GRAPH_t>::updateState(
 		}
 		this->updateMapPartitions(m_partitions_full_update);
 
+		//this->printVectorOfVectors(m_curr_partitions);
+		partitions_t partitions_for_LC;
+		this->checkPartitionsForLC(&partitions_for_LC);
+		this->evaluatePartitionsForLC(partitions_for_LC);
+
 	}
 
 	m_time_logger.enter("CLoopCloserERD::updateState");
 	// TODO - remove this
 	return false;
 	MRPT_END;
+}
+
+template<class GRAPH_t>
+void CLoopCloserERD<GRAPH_t>::checkPartitionsForLC(
+		partitions_t* partitions_for_LC) {
+	MRPT_START;
+	using namespace std;
+	using namespace mrpt;
+	using namespace mrpt::utils;
+
+	partitions_for_LC->clear();
+
+	int partitionID = 0;
+	// for every partition...
+	for (partitions_t::const_iterator partitions_it = m_curr_partitions.begin()+1;
+			partitions_it != m_curr_partitions.end(); ++partitions_it, ++partitionID) {
+		// investigate each partition specifically
+		size_t prev_nodeID = *(partitions_it->begin());
+		for (vector_uint::const_iterator it = partitions_it->begin();
+				it != partitions_it->end(); ++it) {
+			size_t curr_nodeID = *it;
+
+			// are there consecutive nodes with large difference inside this
+			// partition?
+			if ((curr_nodeID - prev_nodeID) > m_lc_params.LC_min_nodeid_diff) {
+				m_out_logger.log(mrpt::format("Found potential loop closures:\n"
+							"\tPartitionID: %d\n"
+							"\t%lu ==> %lu", partitionID, prev_nodeID, curr_nodeID), LVL_WARN);
+				partitions_for_LC->push_back(*partitions_it);
+				continue; // no need to check the rest of the nodes in this partition
+			}
+
+			// update the previous node
+			prev_nodeID = curr_nodeID;
+		}
+	}
+
+	MRPT_END;
+}
+
+template<class GRAPH_t>
+void CLoopCloserERD<GRAPH_t>::evaluatePartitionsForLC( const partitions_t&) {
 }
 
 template<class GRAPH_t>
@@ -168,6 +215,14 @@ void CLoopCloserERD<GRAPH_t>::setWindowManagerPtr(
 		m_win = m_win_manager->win;
 		m_win_observer = m_win_manager->observer;
 
+		if (m_win_observer) {
+			m_win_observer->registerKeystroke(m_laser_params.keystroke_laser_scans,
+					"Toggle LaserScans Visualization");
+			m_win_observer->registerKeystroke(m_lc_params.keystroke_map_partitions,
+					"Toggle Map Partitions Visualization");
+
+		}
+
 		m_out_logger.log("Fetched the window manager, window observer  successfully.");
 	}
 
@@ -177,9 +232,13 @@ void CLoopCloserERD<GRAPH_t>::notifyOfWindowEvents(
 		const std::map<std::string, bool>& events_occurred) {
 	MRPT_START;
 
-	// I know the key exists - I put it there explicitly
-	if (events_occurred.at(params.keystroke_laser_scans)) {
+	// laser scans
+	if (events_occurred.at(m_laser_params.keystroke_laser_scans)) {
 		this->toggleLaserScansVisualization();
+	}
+	// map partitions
+	if (events_occurred.at(m_lc_params.keystroke_map_partitions)) {
+		this->toggleMapPartitionsVisualization();
 	}
 
 	MRPT_END;
@@ -347,6 +406,31 @@ void CLoopCloserERD<GRAPH_t>::updateMapPartitionsVisualization() {
 }
 
 template<class GRAPH_t>
+void CLoopCloserERD<GRAPH_t>::toggleMapPartitionsVisualization() {
+	MRPT_START;
+	ASSERTMSG_(m_win, "No CDisplayWindow3D* was provided");
+	ASSERTMSG_(m_win_manager, "No CWindowManager* was provided");
+	using namespace mrpt::utils;
+	using namespace mrpt::opengl;
+
+	m_out_logger.log("Toggling map partitions  visualization...", LVL_INFO);
+	mrpt::opengl::COpenGLScenePtr scene = m_win->get3DSceneAndLock();
+
+	if (m_lc_params.visualize_map_partitions) {
+		mrpt::opengl::CRenderizablePtr obj = scene->getByName("map_partitions");
+		obj->setVisibility(!obj->isVisible());
+	}
+	else {
+		this->dumpVisibilityErrorMsg("visualize_map_partitions");
+	}
+
+	m_win->unlockAccess3DScene();
+	m_win->forceRepaint();
+
+	MRPT_END;
+}
+
+template<class GRAPH_t>
 void CLoopCloserERD<GRAPH_t>::computeCentroidOfNodesVector(const vector_uint& nodes_list,
 		std::pair<double, double>* centroid_coords) {
 	MRPT_START;
@@ -374,11 +458,9 @@ template<class GRAPH_t>
 void CLoopCloserERD<GRAPH_t>::initLaserScansVisualization() {
 	MRPT_START;
 
-	m_win_observer->registerKeystroke(params.keystroke_laser_scans,
-			"Toggle LaserScans Visualization");
 
 	// laser scan visualization
-	if (params.visualize_laser_scans) {
+	if (m_laser_params.visualize_laser_scans) {
 		mrpt::opengl::COpenGLScenePtr scene = m_win->get3DSceneAndLock();
 
 		mrpt::opengl::CPlanarLaserScanPtr laser_scan_viz = 
@@ -407,7 +489,7 @@ void CLoopCloserERD<GRAPH_t>::updateLaserScansVisualization() {
 	MRPT_START;
 
 	// update laser scan visual
-	if (params.visualize_laser_scans && !m_last_laser_scan2D.null()) {
+	if (m_laser_params.visualize_laser_scans && !m_last_laser_scan2D.null()) {
 		mrpt::opengl::COpenGLScenePtr scene = m_win->get3DSceneAndLock();
 
 		mrpt::opengl::CRenderizablePtr obj = scene->getByName("laser_scan_viz");
@@ -444,17 +526,18 @@ void CLoopCloserERD<GRAPH_t>::toggleLaserScansVisualization() {
 	MRPT_START;
 	ASSERTMSG_(m_win, "No CDisplayWindow3D* was provided");
 	ASSERTMSG_(m_win_manager, "No CWindowManager* was provided");
+	using namespace mrpt::utils;
 
-	m_out_logger.log("Toggling LaserScans visualization...");
+	m_out_logger.log("Toggling LaserScans visualization...", LVL_INFO);
 
 	mrpt::opengl::COpenGLScenePtr scene = m_win->get3DSceneAndLock();
 
-	if (params.visualize_laser_scans) {
+	if (m_laser_params.visualize_laser_scans) {
 		mrpt::opengl::CRenderizablePtr obj = scene->getByName("laser_scan_viz");
 		obj->setVisibility(!obj->isVisible());
 	}
 	else {
-		dumpVisibilityErrorMsg("visualize_laser_scans");
+		this->dumpVisibilityErrorMsg("visualize_laser_scans");
 	}
 
 	m_win->unlockAccess3DScene();
@@ -478,7 +561,7 @@ void CLoopCloserERD<GRAPH_t>::initializeVisuals() {
 	m_out_logger.log("Initializing visuals");
 	m_time_logger.enter("CLoopCloserERD::Visuals");
 
-	ASSERTMSG_(params.has_read_config,
+	ASSERTMSG_(m_laser_params.has_read_config,
 			"Configuration parameters aren't loaded yet");
 	ASSERTMSG_(m_win, "No CDisplayWindow3D* was provided");
 	ASSERTMSG_(m_win_manager, "No CWindowManager* was provided");
@@ -488,8 +571,12 @@ void CLoopCloserERD<GRAPH_t>::initializeVisuals() {
 	// TODO - include visualization of the Olson LC
 	// TODO - indicate number of node groups
 
-	this->initLaserScansVisualization();
-	this->initMapPartitionsVisualization();
+	if (m_laser_params.visualize_laser_scans) {
+		this->initLaserScansVisualization();
+	}
+	if (m_lc_params.visualize_map_partitions) {
+		this->initMapPartitionsVisualization();
+	}
 
 	m_initialized_visuals = true;
 	m_time_logger.leave("CLoopCloserERD::Visuals");
@@ -502,8 +589,12 @@ void CLoopCloserERD<GRAPH_t>::updateVisuals() {
 	m_out_logger.log("Updating visuals");
 	m_time_logger.enter("CLoopCloserERD::Visuals");
 
+	if (m_laser_params.visualize_laser_scans) {
 	this->updateLaserScansVisualization();
-	this->updateMapPartitionsVisualization();
+	}
+	if (m_lc_params.visualize_map_partitions) {
+		this->updateMapPartitionsVisualization();
+	}
 
 	m_time_logger.leave("CLoopCloserERD::Visuals");
 	MRPT_END;
@@ -566,8 +657,12 @@ template<class GRAPH_t>
 void CLoopCloserERD<GRAPH_t>::loadParams(const std::string& source_fname) {
 	MRPT_START;
 
-	m_partitioner.options.loadFromConfigFileName(source_fname, "EdgeRegistrationDeciderParameters");
-	params.loadFromConfigFileName(source_fname, "EdgeRegistrationDeciderParameters");
+	m_partitioner.options.loadFromConfigFileName(source_fname,
+			"EdgeRegistrationDeciderParameters");
+	m_laser_params.loadFromConfigFileName(source_fname,
+			"EdgeRegistrationDeciderParameters");
+	m_lc_params.loadFromConfigFileName(source_fname,
+			"EdgeRegistrationDeciderParameters");
 	range_scanner_t::params.loadFromConfigFileName(source_fname, "ICP");
 
 	// set the logging level if given by the user
@@ -584,8 +679,12 @@ void CLoopCloserERD<GRAPH_t>::loadParams(const std::string& source_fname) {
 template<class GRAPH_t>
 void CLoopCloserERD<GRAPH_t>::printParams() const {
 	MRPT_START;
+
+	std::cout << "------------------[Pairwise Consistency of ICP Edges - Registration Procedure Summary]------------------" << std::endl;
+
 	m_partitioner.options.dumpToConsole();
-	params.dumpToConsole();
+	m_laser_params.dumpToConsole();
+	m_lc_params.dumpToConsole();
 	range_scanner_t::params.dumpToConsole();
 
 	m_out_logger.log("Printed the relevant parameters");
@@ -699,44 +798,36 @@ void CLoopCloserERD<GRAPH_t>::printVector(const T& t) const {
 
 }
 
-// TODO - either use it or lose it
-// TParameter
+// TLaserParams
 // //////////////////////////////////
 
 
 template<class GRAPH_t>
-CLoopCloserERD<GRAPH_t>::TParams::TParams():
+CLoopCloserERD<GRAPH_t>::TLaserParams::TLaserParams():
 	keystroke_laser_scans("l"),
 	has_read_config(false)
 { }
 
 template<class GRAPH_t>
-CLoopCloserERD<GRAPH_t>::TParams::~TParams() { }
+CLoopCloserERD<GRAPH_t>::TLaserParams::~TLaserParams() { }
 
 template<class GRAPH_t>
-void CLoopCloserERD<GRAPH_t>::TParams::dumpToTextStream(
+void CLoopCloserERD<GRAPH_t>::TLaserParams::dumpToTextStream(
 		mrpt::utils::CStream &out) const {
 	MRPT_START;
-	// TODO - Implement this for LoopCloser
 
-	out.printf("------------------[Pairwise Consistency of ICP Edges - Registration Procedure Summary]------------------\n");
 	out.printf("ICP goodness threshold      = %.2f%% \n", ICP_goodness_thresh*100);
-	out.printf("Min. node difference for LC = %d\n", LC_min_nodeid_diff);
 	out.printf("Visualize laser scans       = %s\n",
 			visualize_laser_scans? "TRUE": "FALSE");
 
 	MRPT_END;
 }
 template<class GRAPH_t>
-void CLoopCloserERD<GRAPH_t>::TParams::loadFromConfigFile(
+void CLoopCloserERD<GRAPH_t>::TLaserParams::loadFromConfigFile(
 		const mrpt::utils::CConfigFileBase& source,
 		const std::string& section) {
 	MRPT_START;
 
-	LC_min_nodeid_diff = source.read_int(
-			"GeneralConfiguration",
-			"LC_min_nodeid_diff",
-			30, false);
 	ICP_goodness_thresh = source.read_double(
 			section,
 			"ICP_goodness_thresh",
@@ -746,7 +837,48 @@ void CLoopCloserERD<GRAPH_t>::TParams::loadFromConfigFile(
 			"visualize_laser_scans",
 			true, false);
 
-	// TODO - Implement this for LoopCloser
+
+	has_read_config = true;
+	MRPT_END;
+}
+// TLoopClosureParams
+// //////////////////////////////////
+
+
+template<class GRAPH_t>
+CLoopCloserERD<GRAPH_t>::TLoopClosureParams::TLoopClosureParams():
+	keystroke_map_partitions("b"),
+	has_read_config(false)
+{ }
+
+template<class GRAPH_t>
+CLoopCloserERD<GRAPH_t>::TLoopClosureParams::~TLoopClosureParams() { }
+
+template<class GRAPH_t>
+void CLoopCloserERD<GRAPH_t>::TLoopClosureParams::dumpToTextStream(
+		mrpt::utils::CStream &out) const {
+	MRPT_START;
+
+	out.printf("Min. node difference for LC = %d\n", LC_min_nodeid_diff);
+	out.printf("Visualize map partitions    = %s\n", visualize_map_partitions?
+			"TRUE": "FALSE");
+
+	MRPT_END;
+}
+template<class GRAPH_t>
+void CLoopCloserERD<GRAPH_t>::TLoopClosureParams::loadFromConfigFile(
+		const mrpt::utils::CConfigFileBase& source,
+		const std::string& section) {
+	MRPT_START;
+
+	LC_min_nodeid_diff = source.read_int(
+			"GeneralConfiguration",
+			"LC_min_nodeid_diff",
+			30, false);
+	visualize_map_partitions = source.read_bool(
+			"VisualizationParameters",
+			"visualize_map_partitions",
+			true, false);
 
 	has_read_config = true;
 	MRPT_END;
