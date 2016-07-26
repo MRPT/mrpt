@@ -64,7 +64,7 @@ namespace mrpt { namespace graphslam { namespace deciders {
  *
  * <a href="https://april.eecs.umich.edu/pdfs/olson2009ras.pdf">Recognizing places using spectrally clustered local matches</a> - E. Olson, 2009
  * - Having the groups already assembled, we generate all the hypotheses in
- *   each group and evaluate each set using its corresponding Pairwise
+ *   each group and evaluate each set using its corresponding pair-wise
  *   consistency matrix.
  *
  * \b Description
@@ -79,7 +79,7 @@ namespace mrpt { namespace graphslam { namespace deciders {
  * Map type: 2D
  * MRPT rawlog format: #1, #2
  * Observations: CObservation2DRangeScan
- * Edge Registration Strategy: Pairwise Consistency of ICP Edges
+ * Edge Registration Strategy: Pair-wise Consistency of ICP Edges
  *
  * \ingroup mrpt_graphslam_grp
  */
@@ -270,14 +270,14 @@ class CLoopCloserERD:
 		 * \sa checkPartitionsForLC
 		 */
 		void evaluatePartitionsForLC(const partitions_t& partitions);
-		/**\brief Calculate the Pairwise consistency matrix in the given partition
+		/**\brief Calculate the pair-wise consistency matrix in the given partition
 		 * set.
 		 *
 		 * \sa generatePWConsistencyMatrix
 		 */
 		void generatePWConsistencyMatrix(const vector_uint& partition,
 				mrpt::math::CMatrixDouble* consist_matrix);
-		/**\brief Return the pairwise consistency between the observations of the
+		/**\brief Return the pair-wise consistency between the observations of the
 		 * given nodes.
 		 *
 		 * Use the dijkstra link between a1, a2, and b1, b2 pairs and use an ICP
@@ -291,6 +291,9 @@ class CLoopCloserERD:
 				const mrpt::utils::TNodeID& b1,
 				const mrpt::utils::TNodeID& b2,
 				mrpt::math::CMatrixDouble33 consistency_elem );
+		// TODO - implement the computation of Average pair
+		// TODO - implement the computation of the two dominant eigenvalues
+		// computeDominantEigenVs
 
 		// Private variables
 		//////////////////////////////////////////////////////////////
@@ -339,6 +342,8 @@ class CLoopCloserERD:
 
 		mrpt::utils::COutputLogger m_out_logger; /**<Output logger instance */
 		mrpt::utils::CTimeLogger m_time_logger; /**<Time logger instance */
+
+		const std::string m_class_name;
 
 
 

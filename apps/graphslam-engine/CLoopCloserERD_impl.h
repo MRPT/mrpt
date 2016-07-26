@@ -18,7 +18,8 @@ namespace mrpt { namespace graphslam { namespace deciders {
 // //////////////////////////////////
 template<class GRAPH_t>
 CLoopCloserERD<GRAPH_t>::CLoopCloserERD():
-	m_consecutive_invalid_format_instances_thres(20) // high threshold just to make sure
+	m_consecutive_invalid_format_instances_thres(20), // high threshold just to make sure
+	m_class_name("CLoopCloserERD")
 {
 	MRPT_START;
 	this->initCLoopCloserERD();
@@ -47,7 +48,8 @@ void CLoopCloserERD<GRAPH_t>::initCLoopCloserERD() {
 
 	m_partitions_full_update = false;
 
-	m_out_logger.setName("CLoopCloserERD");
+	m_time_logger.setName(m_class_name);
+	m_out_logger.setName(m_class_name);
 	m_out_logger.setLoggingLevel(mrpt::utils::LVL_DEBUG); // defalut level of logger
 
 	m_out_logger.log("Initialized class object");
@@ -69,7 +71,7 @@ bool CLoopCloserERD<GRAPH_t>::updateState(
 		mrpt::obs::CObservationPtr observation ) {
 	MRPT_START;
 	MRPT_UNUSED_PARAM(action);
-	m_time_logger.enter("CLoopCloserERD::updateState");
+	m_time_logger.enter("updateState");
 	using namespace mrpt;
 	using namespace mrpt::obs;
 	using namespace mrpt::opengl;
@@ -121,7 +123,7 @@ bool CLoopCloserERD<GRAPH_t>::updateState(
 
 	}
 
-	m_time_logger.enter("CLoopCloserERD::updateState");
+	m_time_logger.leave("updateState");
 	// TODO - remove this
 	return false;
 	MRPT_END;
@@ -152,8 +154,6 @@ void CLoopCloserERD<GRAPH_t>::addScanMatchingEdges(mrpt::utils::TNodeID curr_nod
 	}
 
 	m_out_logger.logFmt("Adding ICP Constraints for nodeID: %lu", curr_nodeID);
-	m_out_logger.logFmt("Using %lu previous nodes", nodes_set.size());
-	this->printVector(nodes_set);
 
 	// check ICP with each one of the nodes in the previous set
 	CObservation2DRangeScanPtr curr_laser_scan =
@@ -181,14 +181,14 @@ void CLoopCloserERD<GRAPH_t>::addScanMatchingEdges(mrpt::utils::TNodeID curr_nod
 		pose_t initial_pose = m_graph->nodes[curr_nodeID] -
 			m_graph->nodes[*node_it];
 
-		m_time_logger.enter("CICPGoodnessERD::getICPEdge");
+		m_time_logger.enter("getICPEdge");
 		this->getICPEdge(
 				*prev_laser_scan,
 				*curr_laser_scan,
 				&rel_edge,
 				&initial_pose,
 				&icp_info);
-		m_time_logger.leave("CICPGoodnessERD::getICPEdge");
+		m_time_logger.leave("getICPEdge");
 
 		// criterion for registering a new node
 		if (icp_info.goodness > m_laser_params.ICP_goodness_thresh) {
@@ -204,7 +204,7 @@ template<class GRAPH_t>
 void CLoopCloserERD<GRAPH_t>::checkPartitionsForLC(
 		partitions_t* partitions_for_LC) {
 	MRPT_START;
-	m_time_logger.enter("CLoopCloserERD::LoopClosureEvaluation");
+	m_time_logger.enter("LoopClosureEvaluation");
 	using namespace std;
 	using namespace mrpt;
 	using namespace mrpt::utils;
@@ -236,7 +236,7 @@ void CLoopCloserERD<GRAPH_t>::checkPartitionsForLC(
 		}
 	}
 
-	m_time_logger.leave("CLoopCloserERD::LoopClosureEvaluation");
+	m_time_logger.leave("LoopClosureEvaluation");
 	MRPT_END;
 }
 
@@ -244,7 +244,23 @@ template<class GRAPH_t>
 void CLoopCloserERD<GRAPH_t>::evaluatePartitionsForLC(
 		const partitions_t& partitions) {
 	MRPT_START;
+	using namespace mrpt;
+	using namespace mrpt::math;
+	using namespace std;
 
+	// for each one of the partitions generate the pair-wise consistency Matrix of
+	// the relevant edges and find the submatrix of the msot consistent edges
+	// inside it.
+	for (partitions_t::const_iterator p_it = partitions.begin();
+			p_it != partitions.end();
+			++p_it ) {
+		CMatrixDouble consist_matrix; // matrix to fill in
+		this->generatePWConsistencyMatrix(*p_it, &consist_matrix);
+
+		// evaluate the pair-wise consistency matrix
+		// TODO - consult the paper on this
+
+	}
 
 
 	MRPT_END;
@@ -256,7 +272,10 @@ void CLoopCloserERD<GRAPH_t>::generatePWConsistencyMatrix(
 	MRPT_START;
 	using namespace mrpt;
 	using namespace mrpt::math;
+	// resize the matrix to fit all the pair-wise consistencies
+	// TODO
 
+	// fill the matrix
 
 	MRPT_END;
 }
@@ -682,7 +701,7 @@ template<class GRAPH_t>
 void CLoopCloserERD<GRAPH_t>::initializeVisuals() {
 	MRPT_START;
 	m_out_logger.log("Initializing visuals");
-	m_time_logger.enter("CLoopCloserERD::Visuals");
+	m_time_logger.enter("Visuals");
 
 	ASSERTMSG_(m_laser_params.has_read_config,
 			"Configuration parameters aren't loaded yet");
@@ -702,7 +721,7 @@ void CLoopCloserERD<GRAPH_t>::initializeVisuals() {
 	}
 
 	m_initialized_visuals = true;
-	m_time_logger.leave("CLoopCloserERD::Visuals");
+	m_time_logger.leave("Visuals");
 	MRPT_END;
 }
 template<class GRAPH_t>
@@ -710,7 +729,7 @@ void CLoopCloserERD<GRAPH_t>::updateVisuals() {
 	MRPT_START;
 	ASSERT_(m_initialized_visuals);
 	m_out_logger.log("Updating visuals");
-	m_time_logger.enter("CLoopCloserERD::Visuals");
+	m_time_logger.enter("Visuals");
 
 	if (m_laser_params.visualize_laser_scans) {
 	this->updateLaserScansVisualization();
@@ -719,7 +738,7 @@ void CLoopCloserERD<GRAPH_t>::updateVisuals() {
 		this->updateMapPartitionsVisualization();
 	}
 
-	m_time_logger.leave("CLoopCloserERD::Visuals");
+	m_time_logger.leave("Visuals");
 	MRPT_END;
 }
 template<class GRAPH_t>
@@ -803,7 +822,7 @@ template<class GRAPH_t>
 void CLoopCloserERD<GRAPH_t>::printParams() const {
 	MRPT_START;
 
-	std::cout << "------------------[Pairwise Consistency of ICP Edges - Registration Procedure Summary]------------------" << std::endl;
+	std::cout << "------------------[Pair-wise Consistency of ICP Edges - Registration Procedure Summary]------------------" << std::endl;
 
 	m_partitioner.options.dumpToConsole();
 	m_laser_params.dumpToConsole();
@@ -823,7 +842,7 @@ void CLoopCloserERD<GRAPH_t>::getDescriptiveReport(std::string* report_str) cons
 
 	// Report on graph
 	std::stringstream class_props_ss;
-	class_props_ss << "Pairwise Consistency of ICP Edges - Registration Procedure Summary: " << std::endl;
+	class_props_ss << "Pair-wise Consistency of ICP Edges - Registration Procedure Summary: " << std::endl;
 	class_props_ss << header_sep << std::endl;
 
 	// time and output logging
@@ -851,7 +870,7 @@ void CLoopCloserERD<GRAPH_t>::updateMapPartitions(bool full_update /* = false */
 	using namespace mrpt::utils;
 	using namespace std;
 
-	m_time_logger.enter("CLoopCloser:updateMapPartitions");
+	m_time_logger.enter("updateMapPartitions");
 	
  nodes_to_scans2D_t nodes_to_scans;
 	if (full_update) {
@@ -895,7 +914,7 @@ void CLoopCloserERD<GRAPH_t>::updateMapPartitions(bool full_update /* = false */
 	m_partitioner.updatePartitions(m_curr_partitions);
 
 	m_out_logger.log("Updated map partitions successfully.");
-	m_time_logger.leave("CLoopCloser:updateMapPartitions");
+	m_time_logger.leave("updateMapPartitions");
 	MRPT_END;
 }
 

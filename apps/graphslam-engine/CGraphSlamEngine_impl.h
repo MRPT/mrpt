@@ -46,7 +46,8 @@ CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::CGraphSlam
 	m_estimated_traj_color(255, 165, 0),
 	m_optimized_map_color(255, 0, 0),
 	m_robot_model_size(1),
-	m_graph_section("graph_sec") // give the CCriticalSection a name for easier debugging
+	m_graph_section("graph_sec"), // give the CCriticalSection a name for easier debugging
+	m_class_name("CGraphSlamEngine")
 {
 
 	this->initCGraphSlamEngine();
@@ -110,7 +111,8 @@ void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::initC
 	MRPT_START;
 
 	// logger instance properties
-	m_out_logger.setName("CGraphSlamengine");
+	m_time_logger.setName(m_class_name);
+	m_out_logger.setName(m_class_name);
 	m_out_logger.setLoggingLevel(LVL_DEBUG); // default level of the messages
 
 	if (m_enable_visuals) {
@@ -330,11 +332,11 @@ void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::initC
 	// query node/edge deciders for visual objects initialization
 	if (m_enable_visuals) {
 		mrpt::synch::CCriticalSectionLocker m_graph_lock(&m_graph_section);
-		m_time_logger.enter("CGraphSlamEngine::Visuals");
+		m_time_logger.enter("Visuals");
 		m_node_registrar.initializeVisuals();
 		m_edge_registrar.initializeVisuals();
 		m_optimizer.initializeVisuals();
-		m_time_logger.leave("CGraphSlamEngine::Visuals");
+		m_time_logger.leave("Visuals");
 	}
 
 	// In case we are given an RGBD TUM Dataset - try and read the info file so
@@ -366,7 +368,7 @@ void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::initC
 template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR, class OPTIMIZER>
 bool CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::parseRawlogFile() {
 	MRPT_START;
-	m_time_logger.enter("CGraphSlamEngine::proc_time");
+	m_time_logger.enter("proc_time");
 
 	ASSERTMSG_(m_has_read_config,
 			format("\nConfig file is not read yet.\nExiting... \n"));
@@ -424,10 +426,10 @@ bool CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::parse
 		bool registered_new_node;
 		{
 			mrpt::synch::CCriticalSectionLocker m_graph_lock(&m_graph_section);
-			m_time_logger.enter("CGraphSlamEngine::node_registrar");
+			m_time_logger.enter("node_registrar");
 			registered_new_node = m_node_registrar.updateState(
 					action, observations, observation);
-			m_time_logger.leave("CGraphSlamEngine::node_registrar");
+			m_time_logger.leave("node_registrar");
 			if (registered_new_node) {
 				m_edge_counter.addEdge("Odometry");
 				m_nodeID_max++;
@@ -439,19 +441,19 @@ bool CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::parse
 		{
 			mrpt::synch::CCriticalSectionLocker m_graph_lock(&m_graph_section);
 
-			m_time_logger.enter("CGraphSlamEngine::edge_registrar");
+			m_time_logger.enter("edge_registrar");
 			m_edge_registrar.updateState(
 					action,
 					observations,
 					observation );
-			m_time_logger.leave("CGraphSlamEngine::edge_registrar");
+			m_time_logger.leave("edge_registrar");
 
-			m_time_logger.enter("CGraphSlamEngine::optimizer");
+			m_time_logger.enter("optimizer");
 			m_optimizer.updateState(
 					action,
 					observations,
 					observation );
-			m_time_logger.leave("CGraphSlamEngine::optimizer");
+			m_time_logger.leave("optimizer");
 		}
 
 		if (observation.present()) {
@@ -525,11 +527,11 @@ bool CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::parse
 			// query node/edge deciders for visual objects update
 			if (m_enable_visuals) {
 				mrpt::synch::CCriticalSectionLocker m_graph_lock(&m_graph_section);
-				m_time_logger.enter("CGraphSlamEngine::Visuals");
+				m_time_logger.enter("Visuals");
 				m_node_registrar.updateVisuals();
 				m_edge_registrar.updateVisuals();
 				m_optimizer.updateVisuals();
-				m_time_logger.leave("CGraphSlamEngine::Visuals");
+				m_time_logger.leave("Visuals");
 			}
 
 			// update the edge counter
@@ -558,34 +560,34 @@ bool CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::parse
 			// update the global position of the nodes
 			{
 				mrpt::synch::CCriticalSectionLocker m_graph_lock(&m_graph_section);
-				m_time_logger.enter("CGraphSlamEngine::dijkstra_estimation");
+				m_time_logger.enter("dijkstra_nodes_estimation");
 				m_graph.dijkstra_nodes_estimate();
-				m_time_logger.leave("CGraphSlamEngine::dijkstra_estimation");
+				m_time_logger.leave("dijkstra_nodes_estimation");
 			}
 
 			// update visualization of estimated trajectory
 			if (m_enable_visuals) {
 				bool full_update = true;
-				m_time_logger.enter("CGraphSlamEngine::Visuals");
+				m_time_logger.enter("Visuals");
 				this->updateEstimatedTrajectoryVisualization(full_update);
-				m_time_logger.leave("CGraphSlamEngine::Visuals");
+				m_time_logger.leave("Visuals");
 			}
 
 			// refine the SLAM metric  and update its corresponding visualization
 			if (m_use_GT) {
-				m_time_logger.enter("CGraphSlamEngine::SLAM_metric");
+				m_time_logger.enter("SLAM_metric");
 				this->computeSlamMetric(m_nodeID_max, m_GT_poses_index);
-				m_time_logger.leave("CGraphSlamEngine::SLAM_metric");
+				m_time_logger.leave("SLAM_metric");
 				if (m_visualize_SLAM_metric) {
-					m_time_logger.enter("CGraphSlamEngine::Visuals");
+					m_time_logger.enter("Visuals");
 					this->updateSlamMetricVisualization();
-					m_time_logger.leave("CGraphSlamEngine::Visuals");
+					m_time_logger.leave("Visuals");
 				}
 			}
 
 		} // IF REGISTERED_NEW_NODE
 
-		m_time_logger.enter("CGraphSlamEngine::Visuals");
+		m_time_logger.enter("Visuals");
 		// Timestamp textMessage
 		// Use the dataset timestamp otherwise fallback to
 		// mrpt::system::getCurrentTime
@@ -654,17 +656,19 @@ bool CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::parse
 				CImage::IMAGES_PATH_BASE = m_img_prev_path_base;
 			}
 
+			m_time_logger.leave("proc_time");
 			return false; // exit the parseRawlogFile method
 		}
-		m_time_logger.leave("CGraphSlamEngine::Visuals");
+		m_time_logger.leave("Visuals");
 
-		// Reduce edges
-		if (m_edge_counter.getTotalNumOfEdges() % m_num_of_edges_for_collapse == 0) {
-			mrpt::synch::CCriticalSectionLocker m_graph_lock(&m_graph_section);
+		// TODO - should I collapse the edges after a a while?
+		//// Reduce edges
+		//if (m_edge_counter.getTotalNumOfEdges() % m_num_of_edges_for_collapse == 0) {
+			//mrpt::synch::CCriticalSectionLocker m_graph_lock(&m_graph_section);
 
-			int removed_edges = m_graph.collapseDuplicatedEdges();
-			m_edge_counter.setRemovedEdges(removed_edges);
-		}
+			//int removed_edges = m_graph.collapseDuplicatedEdges();
+			//m_edge_counter.setRemovedEdges(removed_edges);
+		//}
 
 	} // WHILE CRAWLOG FILE
 	rawlog_file.close();
@@ -698,7 +702,7 @@ bool CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::parse
 	}
 
 	m_dataset_grab_time = mrpt::system::timeDifference(init_timestamp, timestamp);
-	m_time_logger.leave("CGraphSlamEngine::proc_time");
+	m_time_logger.leave("proc_time");
 	this->generateReportFiles();
 	return true; // function execution completed successfully
 	MRPT_END;
@@ -2195,10 +2199,10 @@ void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::getDe
 	results_ss << "Summary: " << std::endl;
 	results_ss << header_sep << std::endl;
 	results_ss << "\tProcessing time: " <<
-		m_time_logger.getMeanTime("CGraphSlamEngine::proc_time") << std::endl;;
+		m_time_logger.getMeanTime("proc_time") << std::endl;;
 	results_ss << "\tDataset Grab time: " << m_dataset_grab_time << std::endl;
 	results_ss << "\tReal-time capable: " <<
-		(m_time_logger.getMeanTime("CGraphSlamEngine::proc_time") < m_dataset_grab_time ? "TRUE": "FALSE") << std::endl;
+		(m_time_logger.getMeanTime("proc_time") < m_dataset_grab_time ? "TRUE": "FALSE") << std::endl;
 	results_ss << m_edge_counter.getAsString();
 	results_ss << "\tNum of Nodes: " << m_graph.nodeCount() << std::endl;;
 
@@ -2239,7 +2243,7 @@ void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::gener
 
 	{ // CGraphSlamEngine
 		report_str.clear();
-		fname = m_output_dir_fname + "/" + "CGraphSlamEngine" + ext;
+		fname = m_output_dir_fname + "/" + m_class_name + ext;
 		// initialize the output file - refer to the stream through the
 		// m_out_streams map
 		this->initResultsFile(fname);

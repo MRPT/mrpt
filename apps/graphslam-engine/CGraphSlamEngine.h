@@ -629,6 +629,8 @@ class CGraphSlamEngine {
 		 * algorithm to run in real-time
 		 */
 		double m_dataset_grab_time;
+
+		const std::string m_class_name;
 };
 
 } } // end of namespaces
