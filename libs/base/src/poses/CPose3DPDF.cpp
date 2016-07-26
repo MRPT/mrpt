@@ -12,10 +12,12 @@
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPose3DPDF.h>
 #include <mrpt/poses/CPose3DPDFGaussian.h>
+#include <mrpt/poses/CPose3DPDFGaussianInf.h>
 #include <mrpt/poses/CPose3DPDFSOG.h>
 #include <mrpt/poses/CPose3DPDFParticles.h>
 #include <mrpt/poses/CPose3DQuatPDF.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
+#include <mrpt/poses/CPosePDFGaussianInf.h>
 #include <mrpt/poses/CPosePDFSOG.h>
 #include <mrpt/poses/CPosePDFParticles.h>
 #include <mrpt/utils/CStream.h>
@@ -50,6 +52,25 @@ CPose3DPDF* CPose3DPDF::createFrom2D(const CPosePDF &o)
 		newObj->cov= CMatrixDouble66(COV);
 
 		return newObj;
+	}
+	else if (o.GetRuntimeClass()==CLASS_ID(CPosePDFGaussianInf))
+	{
+		CPose3DPDFGaussianInf	*newObj = new CPose3DPDFGaussianInf();
+		const CPosePDFGaussianInf *obj = static_cast<const CPosePDFGaussianInf *>( &o );
+
+		newObj->mean = CPose3D( obj->mean );
+		CMatrixDouble COVINV = CMatrixDouble(obj->cov_inv);
+
+		COVINV.setSize(6,6);
+		// Move covariances: phi<->z
+		COVINV(3,3)=COVINV(2,2); COVINV(2,2)=0;
+		COVINV(0,3)=COVINV(3,0) = COVINV(0,2); COVINV(0,2)=COVINV(2,0)=0;
+		COVINV(1,3)=COVINV(3,1) = COVINV(1,2); COVINV(1,2)=COVINV(2,1)=0;
+
+		newObj->cov_inv= CMatrixDouble66(COVINV);
+
+		return newObj;
+
 	}
 	else
 		if (o.GetRuntimeClass()==CLASS_ID(CPosePDFParticles))
