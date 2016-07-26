@@ -53,7 +53,7 @@ CAbstractNavigator::CAbstractNavigator(CRobot2NavInterface &react_iterf_impl) :
 	m_curVel              (0,0,0),
 	m_curVelLocal         (0,0,0),
 	m_badNavAlarm_AlarmTimeout(30.0),
-	DIST_TO_TARGET_FOR_SENDING_EVENT(0.4)
+	DIST_TO_TARGET_FOR_SENDING_EVENT(.0)
 {
 }
 

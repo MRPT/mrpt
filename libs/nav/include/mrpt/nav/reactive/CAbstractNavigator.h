@@ -125,7 +125,7 @@ namespace mrpt
 		double                   m_badNavAlarm_minDistTarget;
 		mrpt::system::TTimeStamp m_badNavAlarm_lastMinDistTime;
 		double                   m_badNavAlarm_AlarmTimeout;
-		double DIST_TO_TARGET_FOR_SENDING_EVENT;
+		double DIST_TO_TARGET_FOR_SENDING_EVENT;  //!< Default value=0, means use the "targetAllowedDistance" passed by the user in the navigation request.
 
 	public:
 		MRPT_MAKE_ALIGNED_OPERATOR_NEW
