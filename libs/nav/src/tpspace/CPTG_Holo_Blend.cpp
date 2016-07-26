@@ -365,7 +365,7 @@ void CPTG_Holo_Blend::directionToMotionCommand( uint16_t k, std::vector<double> 
 		cmd_vel[0] = .0;
 	}
 	cmd_vel[1] = dir_local;
-	cmd_vel[2] = std::min( 0.1, calc_T_ramp_dir(T_ramp_max, curVelLocal.vx, curVelLocal.vy, dir_local, V_MAX) );
+	cmd_vel[2] = std::max( 0.1, calc_T_ramp_dir(T_ramp_max, curVelLocal.vx, curVelLocal.vy, dir_local, V_MAX) );
 	cmd_vel[3] = mrpt::utils::saturate_val(W_MAX * dir_local / (0.5*M_PI), -W_MAX, W_MAX);
 }
 
