@@ -151,6 +151,8 @@ class CLoopCloserERD:
 				mrpt::slam::CICP icp;
 				// threshold for accepting an ICP constraint in the graph
 				double ICP_goodness_thresh;
+				int prev_nodes_for_ICP; // how many nodes back to check ICP against?
+
  				/** see Constructor for initialization */
 				mrpt::utils::TColor laser_scans_color;
 				bool visualize_laser_scans;
@@ -201,13 +203,22 @@ class CLoopCloserERD:
 		TLaserParams m_laser_params;
 		TLoopClosureParams m_lc_params;
 
-		/** \brief Initialization function to be called from the various constructors
+		/** \brief Initialization function to be called from the various
+		 * constructors.
 		 */
 		void initCLoopCloserERD();
 		void registerNewEdge(
 				const mrpt::utils::TNodeID& from,
 				const mrpt::utils::TNodeID& to,
 				const constraint_t& rel_edge );
+		/**\brief Addd ICP constraints from X previous nodeIDs up to the given
+		 * nodeID.
+		 *
+		 * X is set by the user in the .ini configuration file (see
+		 * TLaserParams::prev_nodes_for_ICP)
+		 */
+		void addScanMatchingEdges(mrpt::utils::TNodeID curr_nodeID);
+
 		void initLaserScansVisualization();
 		void updateLaserScansVisualization();
 		/**\brief togle the LaserScans visualization on and off
@@ -220,9 +231,9 @@ class CLoopCloserERD:
 				mrpt::obs::CObservationPtr observation );
 		/**\brief Split the currently registered graph nodes into partitions.  */
 		void updateMapPartitions(bool full_update=false);
-		/**\brief Initialize the visualization of the map partition objects */
+		/**\brief Initialize the visualization of the map partition objects. */
 		void initMapPartitionsVisualization();
-		/**\brief Update the map partitions visualization */
+		/**\brief Update the map partitions visualization. */
 		void updateMapPartitionsVisualization();
 		/**\brief Toggle the map partitions visualization objects.
 		 *
@@ -258,8 +269,28 @@ class CLoopCloserERD:
 		 *
 		 * \sa checkPartitionsForLC
 		 */
-		void evaluatePartitionsForLC(const partitions_t& partitions_for_LC);
-
+		void evaluatePartitionsForLC(const partitions_t& partitions);
+		/**\brief Calculate the Pairwise consistency matrix in the given partition
+		 * set.
+		 *
+		 * \sa generatePWConsistencyMatrix
+		 */
+		void generatePWConsistencyMatrix(const vector_uint& partition,
+				mrpt::math::CMatrixDouble* consist_matrix);
+		/**\brief Return the pairwise consistency between the observations of the
+		 * given nodes.
+		 *
+		 * Use the dijkstra link between a1, a2, and b1, b2 pairs and use an ICP
+		 * hypotheses between a1, b1 and a2, b2 pairs
+		 *
+		 * \sa generatePWConsistencyMatrix
+		 */
+		void generatePWConsistencyElement(
+				const mrpt::utils::TNodeID& a1,
+				const mrpt::utils::TNodeID& a2,
+				const mrpt::utils::TNodeID& b1,
+				const mrpt::utils::TNodeID& b2,
+				mrpt::math::CMatrixDouble33 consistency_elem );
 
 		// Private variables
 		//////////////////////////////////////////////////////////////

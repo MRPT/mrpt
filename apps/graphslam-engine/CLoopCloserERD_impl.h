@@ -102,6 +102,9 @@ bool CLoopCloserERD<GRAPH_t>::updateState(
 		// register the new node-laserScan pair
 		m_nodes_to_laser_scans2D[m_graph->nodeCount()-1] = m_last_laser_scan2D;
 
+		// scan match with previous X nodes
+		this->addScanMatchingEdges(m_graph->nodeCount()-1);
+
 		// update the partitioned map
 		if ((m_graph->nodeCount() % 50) == 0) {
 			m_partitions_full_update = true;
@@ -111,7 +114,7 @@ bool CLoopCloserERD<GRAPH_t>::updateState(
 		}
 		this->updateMapPartitions(m_partitions_full_update);
 
-		//this->printVectorOfVectors(m_curr_partitions);
+		// check for loop closures
 		partitions_t partitions_for_LC;
 		this->checkPartitionsForLC(&partitions_for_LC);
 		this->evaluatePartitionsForLC(partitions_for_LC);
@@ -121,6 +124,79 @@ bool CLoopCloserERD<GRAPH_t>::updateState(
 	m_time_logger.enter("CLoopCloserERD::updateState");
 	// TODO - remove this
 	return false;
+	MRPT_END;
+}
+
+template<class GRAPH_t>
+void CLoopCloserERD<GRAPH_t>::addScanMatchingEdges(mrpt::utils::TNodeID curr_nodeID) {
+	MRPT_START;
+	using namespace mrpt;
+	using namespace mrpt::utils;
+	using namespace mrpt::obs;
+
+	// get a list of nodes to check ICP against
+	std::set<TNodeID> nodes_set;
+
+	// have too few nodes been registered yet?
+	if (curr_nodeID < m_laser_params.prev_nodes_for_ICP) {
+		for (TNodeID nodeID = 0; nodeID != curr_nodeID; ++nodeID) {
+			nodes_set.insert(nodeID);
+		}
+	}
+	else {
+		for (TNodeID nodeID = curr_nodeID-1;
+				nodeID != curr_nodeID-1 - m_laser_params.prev_nodes_for_ICP;
+				--nodeID) {
+			nodes_set.insert(nodeID);
+		}
+	}
+
+	m_out_logger.logFmt("Adding ICP Constraints for nodeID: %lu", curr_nodeID);
+	m_out_logger.logFmt("Using %lu previous nodes", nodes_set.size());
+	this->printVector(nodes_set);
+
+	// check ICP with each one of the nodes in the previous set
+	CObservation2DRangeScanPtr curr_laser_scan =
+		m_nodes_to_laser_scans2D.at(curr_nodeID);
+	ASSERT_(curr_laser_scan.present());
+
+	// try adding ICP constraints with each node in the previous set
+	for (std::set<TNodeID>::const_iterator node_it = nodes_set.begin();
+			node_it != nodes_set.end(); ++node_it) {
+
+		// get the ICP edge between current and last node
+		constraint_t rel_edge;
+		mrpt::slam::CICP::TReturnInfo icp_info;
+		CObservation2DRangeScanPtr prev_laser_scan = 
+			m_nodes_to_laser_scans2D.at(*node_it);
+		ASSERT_(prev_laser_scan.present());
+
+		// TODO - Remove these
+		//// search for prev_laser_scan
+		//search = m_nodes_to_laser_scans2D.find(*node_it);
+		//if (search != m_nodes_to_laser_scans2D.end()) {
+		//prev_laser_scan = search->second;
+
+		// make use of initial node position difference for the ICP edge
+		pose_t initial_pose = m_graph->nodes[curr_nodeID] -
+			m_graph->nodes[*node_it];
+
+		m_time_logger.enter("CICPGoodnessERD::getICPEdge");
+		this->getICPEdge(
+				*prev_laser_scan,
+				*curr_laser_scan,
+				&rel_edge,
+				&initial_pose,
+				&icp_info);
+		m_time_logger.leave("CICPGoodnessERD::getICPEdge");
+
+		// criterion for registering a new node
+		if (icp_info.goodness > m_laser_params.ICP_goodness_thresh) {
+			this->registerNewEdge(*node_it, curr_nodeID, rel_edge);
+			m_edge_types_to_nums["ICP2D"]++;
+		}
+	}
+
 	MRPT_END;
 }
 
@@ -165,11 +241,38 @@ void CLoopCloserERD<GRAPH_t>::checkPartitionsForLC(
 }
 
 template<class GRAPH_t>
-void CLoopCloserERD<GRAPH_t>::evaluatePartitionsForLC( const partitions_t&) {
+void CLoopCloserERD<GRAPH_t>::evaluatePartitionsForLC(
+		const partitions_t& partitions) {
 	MRPT_START;
-	m_time_logger.enter("CLoopCloserERD::LoopClosureEvaluation");
 
-	m_time_logger.leave("CLoopCloserERD::LoopClosureEvaluation");
+
+
+	MRPT_END;
+}
+template<class GRAPH_t>
+void CLoopCloserERD<GRAPH_t>::generatePWConsistencyMatrix(
+		const vector_uint& partition,
+		mrpt::math::CMatrixDouble* constist_matrix) {
+	MRPT_START;
+	using namespace mrpt;
+	using namespace mrpt::math;
+
+
+	MRPT_END;
+}
+
+template<class GRAPH_t>
+void CLoopCloserERD<GRAPH_t>::generatePWConsistencyElement(
+		const mrpt::utils::TNodeID& a1,
+		const mrpt::utils::TNodeID& a2,
+		const mrpt::utils::TNodeID& b1,
+		const mrpt::utils::TNodeID& b2,
+		mrpt::math::CMatrixDouble33 consistency_elem ) {
+	MRPT_START;
+	using namespace mrpt;
+	using namespace mrpt::math;
+
+
 	MRPT_END;
 }
 
@@ -180,8 +283,8 @@ void CLoopCloserERD<GRAPH_t>::registerNewEdge(
 		const constraint_t& rel_edge ) {
 	MRPT_START;
 	m_out_logger.logFmt("Registering new edge: %lu => %lu\n"
-			"\t%s\n"
-			"\t%f\n", from, to, 
+			"rel_edge: \t%s\n"
+			"norm:     \t%f\n", from, to, 
 			rel_edge.getMeanVal().asString().c_str(),
 			rel_edge.getMeanVal().norm());
 
@@ -837,8 +940,11 @@ void CLoopCloserERD<GRAPH_t>::TLaserParams::dumpToTextStream(
 		mrpt::utils::CStream &out) const {
 	MRPT_START;
 
-	out.printf("ICP goodness threshold      = %.2f%% \n", ICP_goodness_thresh*100);
-	out.printf("Visualize laser scans       = %s\n",
+	out.printf("ICP goodness threshold                      = %.2f%% \n",
+			ICP_goodness_thresh*100);
+	out.printf("Num. of previous nodes to check ICP against =  %d\n",
+			prev_nodes_for_ICP);
+	out.printf("Visualize laser scans                       = %s\n",
 			visualize_laser_scans? "TRUE": "FALSE");
 
 	MRPT_END;
@@ -853,6 +959,10 @@ void CLoopCloserERD<GRAPH_t>::TLaserParams::loadFromConfigFile(
 			section,
 			"ICP_goodness_thresh",
 			0.75, false);
+	prev_nodes_for_ICP = source.read_int( // how many nodes to check ICP against
+			section,
+			"prev_nodes_for_ICP",
+			10, false);
 	visualize_laser_scans = source.read_bool(
 			"VisualizationParameters",
 			"visualize_laser_scans",
