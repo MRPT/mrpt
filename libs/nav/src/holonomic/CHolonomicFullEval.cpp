@@ -55,6 +55,8 @@ void  CHolonomicFullEval::navigate(
 	const unsigned int target_sector = mrpt::utils::round( -0.5 + (target_dir/M_PI + 1)*nDirs*0.5 );
 	const double target_dist = target.norm();
 
+	log->dirs_scores.resize(nDirs, options.factorWeights.size() );
+
 	// TP-Obstacles in 2D:
 	std::vector<mrpt::math::TPoint2D> obstacles_2d(nDirs);
 	std::vector<double> k2dir(nDirs);
@@ -66,9 +68,8 @@ void  CHolonomicFullEval::navigate(
 		obstacles_2d[i].y = obstacles[i] * sin(k2dir[i]);
 	}
 
-
 	std::vector<double> dirs_eval(nDirs, .0);  // Evaluation of each possible direction
-	
+
 	double scores[5];  // scores for each criterion
 
 	ASSERT_(options.factorWeights.size()==5);
@@ -140,16 +141,17 @@ void  CHolonomicFullEval::navigate(
 		MRPT_TODO("Revise after refactoring all holo nav interface and impl. PTG nearness output?");
 		{
 			// "Temporary" (?) approximation:
-			double min_path_clearness_sq = 1.0;
+			double avr_path_clearness = 0.;
+			int avr_cnt = 0;
 			int i0 = i-nDirs/4;
 			int i1 = i+nDirs/4;
 			for (int ki=i0;ki<=i1;ki++)
 			{
 				const int k = ((ki<0) ? (ki+nDirs) : ki) % nDirs;
-				const double d_sq = square(obstacles_2d[k].x-x)+square(obstacles_2d[k].y-y);
-				mrpt::utils::keep_min(min_path_clearness_sq, d_sq);
+				avr_path_clearness+=sg.distance(obstacles_2d[k]);
+				avr_cnt++;
 			}
-			scores[4] = std::sqrt(min_path_clearness_sq);
+			scores[4] = avr_path_clearness/avr_cnt;
 		}
 
 		// Sum up:
@@ -159,6 +161,9 @@ void  CHolonomicFullEval::navigate(
 
 		// save evaluation:
 		dirs_eval[i] = this_dir_eval;
+
+		// Save stats for debugging:
+		for (int l=0;l<sizeof(scores)/sizeof(scores[0]);l++) log->dirs_scores(i,l)= scores[l];
 
 	} // for each direction
 
@@ -216,7 +221,7 @@ void  CLogFileRecord_FullEval::writeToStream(mrpt::utils::CStream &out,int *vers
 		*version = 0;
 	else
 	{
-		out << dirs_eval << selectedSector << evaluation;
+		out << dirs_eval << dirs_scores << selectedSector << evaluation;
 	}
 }
 
@@ -229,7 +234,7 @@ void  CLogFileRecord_FullEval::readFromStream(mrpt::utils::CStream &in,int versi
 	{
 	case 0:
 		{
-			in >> dirs_eval >> selectedSector >> evaluation;
+			in >> dirs_eval >> dirs_scores >> selectedSector >> evaluation;
 		} break;
 	default:
 		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)

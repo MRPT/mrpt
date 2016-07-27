@@ -94,6 +94,9 @@ namespace mrpt
 		std::vector<double>  dirs_eval; //!< Evaluation of each direction, in the same order of TP-Obstacles.
 		int32_t              selectedSector;
 		double               evaluation;
+		mrpt::math::CMatrixD dirs_scores; //!< Individual scores for each direction: (i,j), i (row) are directions, j (cols) are scores. Not all directions may have evaluations, in which case a "-1" value will be found.
+
+		const mrpt::math::CMatrixD * getDirectionScores() const MRPT_OVERRIDE { return &dirs_scores; }
 	};
 	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(CLogFileRecord_FullEval, CHolonomicLogFileRecord, NAV_IMPEXP)
 
