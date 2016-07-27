@@ -61,6 +61,7 @@ class navlog_viewer_GUI_designDialog: public wxFrame //wxDialog
 		void OnmnuMatlabPlotsSelected(wxCommandEvent& event);
 		void OnmnuSeePTGParamsSelected(wxCommandEvent& event);
 		void OncbGlobalFrameClick(wxCommandEvent& event);
+		void OnmnuSaveScoreMatrixSelected(wxCommandEvent& event);
 		//*)
 
 		//(*Identifiers(navlog_viewer_GUI_designDialog)
@@ -90,6 +91,7 @@ class navlog_viewer_GUI_designDialog: public wxFrame //wxDialog
 		static const long ID_TIMER2;
 		static const long ID_MENUITEM2;
 		static const long ID_MENUITEM1;
+		static const long ID_MENUITEM3;
 		//*)
 
 		//(*Declarations(navlog_viewer_GUI_designDialog)
