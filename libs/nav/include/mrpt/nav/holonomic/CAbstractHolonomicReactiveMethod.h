@@ -26,12 +26,13 @@ namespace mrpt
 	/**  The implemented reactive navigation methods. This enum works with mrpt::utils::TEnumType */
 	enum THolonomicMethod
 	{
-		hmVIRTUAL_FORCE_FIELDS = 0,
-		hmSEARCH_FOR_BEST_GAP = 1
+		hmVIRTUAL_FORCE_FIELDS = 0,  //!< CHolonomicVFF
+		hmSEARCH_FOR_BEST_GAP = 1,   //!< CHolonomicND
+		hmFULL_EVAL = 2              //!< CHolonomicFullEval
 	};
 
 	/** A base class for holonomic reactive navigation methods.
-	 *  \sa CHolonomicVFF,CHolonomicND, CReactiveNavigationSystem
+	 *  \sa CHolonomicVFF,CHolonomicND,CHolonomicFullEval, CReactiveNavigationSystem
 	 */
 	class NAV_IMPEXP CAbstractHolonomicReactiveMethod
 	{
@@ -92,6 +93,7 @@ namespace mrpt
 			{
 				m_map.insert(nav::hmVIRTUAL_FORCE_FIELDS, "hmVIRTUAL_FORCE_FIELDS");
 				m_map.insert(nav::hmSEARCH_FOR_BEST_GAP, "hmSEARCH_FOR_BEST_GAP");
+				m_map.insert(nav::hmFULL_EVAL, "hmFULL_EVAL");
 			}
 		};
 	} // End of namespace

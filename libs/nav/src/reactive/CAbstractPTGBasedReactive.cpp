@@ -10,6 +10,9 @@
 #include "nav-precomp.h" // Precomp header
 
 #include <mrpt/nav/reactive/CAbstractPTGBasedReactive.h>
+#include <mrpt/nav/holonomic/CHolonomicVFF.h>
+#include <mrpt/nav/holonomic/CHolonomicND.h>
+#include <mrpt/nav/holonomic/CHolonomicFullEval.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/math/geometry.h>
@@ -194,6 +197,7 @@ void CAbstractPTGBasedReactive::setHolonomicMethod(
 		{
 		case hmSEARCH_FOR_BEST_GAP:  m_holonomicMethod[i] = new CHolonomicND();  break;
 		case hmVIRTUAL_FORCE_FIELDS: m_holonomicMethod[i] = new CHolonomicVFF(); break;
+		case hmFULL_EVAL: m_holonomicMethod[i] = new CHolonomicFullEval(); break;
 		default: THROW_EXCEPTION_CUSTOM_MSG1("Unknown Holonomic method: %u",static_cast<unsigned int>(method))
 		};
 		// Load params:
@@ -352,8 +356,8 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 
 					ASSERT_(m_holonomicMethod[indexPTG])
 					m_holonomicMethod[indexPTG]->navigate(
-						ipf.TP_Target,
-						ipf.TP_Obstacles,
+						ipf.TP_Target,     // Normalized [0,1]
+						ipf.TP_Obstacles,  // Normalized [0,1]
 						1.0, // Was: ptg->getMax_V_inTPSpace(),
 						holonomicMovement.direction,
 						holonomicMovement.speed,

@@ -15,6 +15,10 @@
 #include <mrpt/nav/reactive/CAbstractNavigator.h>
 #include <mrpt/nav/reactive/CRobot2NavInterfaceForSimulator.h>
 
+#include <mrpt/nav/holonomic/CHolonomicVFF.h>
+#include <mrpt/nav/holonomic/CHolonomicND.h>
+#include <mrpt/nav/holonomic/CHolonomicFullEval.h>
+
 #include <mrpt/nav/tpspace/CPTG_DiffDrive_C.h>
 #include <mrpt/nav/tpspace/CPTG_DiffDrive_alpha.h>
 #include <mrpt/nav/tpspace/CPTG_DiffDrive_CCS.h>

@@ -35,4 +35,5 @@ void mrpt::nav::registerAllNavigationClasses()
 	registerClass(CLASS_ID( CLogFileRecord ));
 	registerClass(CLASS_ID( CLogFileRecord_ND ));
 	registerClass(CLASS_ID( CLogFileRecord_VFF ));
+	registerClass(CLASS_ID( CLogFileRecord_FullEval ));
 }

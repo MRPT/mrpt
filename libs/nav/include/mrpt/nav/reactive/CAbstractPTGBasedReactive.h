@@ -13,8 +13,6 @@
 #include <mrpt/nav/tpspace/CParameterizedTrajectoryGenerator.h>
 #include <mrpt/nav/reactive/CLogFileRecord.h>
 #include <mrpt/nav/holonomic/CAbstractHolonomicReactiveMethod.h>
-#include <mrpt/nav/holonomic/CHolonomicVFF.h>
-#include <mrpt/nav/holonomic/CHolonomicND.h>
 #include <mrpt/utils/CTimeLogger.h>
 #include <mrpt/system/datetime.h>
 #include <mrpt/synch/CCriticalSection.h>

@@ -53,30 +53,18 @@ namespace mrpt
 	public:
 		MRPT_MAKE_ALIGNED_OPERATOR_NEW
 	public:
-		 /**  Initialize the parameters of the navigator, from some configuration file, or default values if set to NULL.
-		   */
-		 CHolonomicND( const mrpt::utils::CConfigFileBase *INI_FILE = NULL );
+		 /**  Initialize the parameters of the navigator, from some configuration file, or default values if set to NULL */
+		CHolonomicND( const mrpt::utils::CConfigFileBase *INI_FILE = NULL );
 
-		 /** This method performs the holonomic navigation itself.
-		   *  \param target [IN] The relative location (x,y) of target point.
-		   *  \param obstacles [IN] Distance to obstacles from robot location (0,0). First index refers to -PI direction, and last one to +PI direction. Distances can be dealed as "meters", although they are "pseudometers", see note below.
-		   *  \param maxRobotSpeed [IN] Maximum robot speed, in "pseudometers/sec". See note below.
-		   *  \param desiredDirection [OUT] The desired motion direction, in the range [-PI,PI]
-		   *  \param desiredSpeed [OUT] The desired motion speed in that direction, in "pseudometers"/sec. (See note below)
-		   *  \param logRecord [IN/OUT] A placeholder for a pointer to a log record with extra info about the execution. Set to NULL if not required. User <b>must free memory</b> using "delete logRecord" after using it.
-		   *
-		   *  NOTE: With "pseudometers" we refer to the distance unit in TP-Space, thus:
-		   *     <br><center><code>pseudometer<sup>2</sup>= meter<sup>2</sup> + (rad * r)<sup>2</sup></code><br></center>
-		   */
-		 void  navigate(	const mrpt::math::TPoint2D &target,
+		// See base class docs
+		void  navigate(	const mrpt::math::TPoint2D &target,
 							const std::vector<double>	&obstacles,
 							double			maxRobotSpeed,
 							double			&desiredDirection,
 							double			&desiredSpeed,
 							CHolonomicLogFileRecordPtr &logRecord );
 
-		 /** The structure used to store a detected gap in obstacles.
-		   */
+		/** The structure used to store a detected gap in obstacles. */
 		struct TGap
 		{
 			unsigned int  ini;
@@ -88,8 +76,7 @@ namespace mrpt
 
 		typedef std::vector<TGap> TGapArray;
 
-		/** The set of posible situations for each trajectory. (mrpt::utils::TEnumType works with this enum)
-		  */
+		/** The set of posible situations for each trajectory. (mrpt::utils::TEnumType works with this enum) */
 		enum TSituations
 		{
 			SITUATION_TARGET_DIRECTLY = 1,
@@ -98,8 +85,7 @@ namespace mrpt
 			SITUATION_NO_WAY_FOUND
 		};
 
-		/**  Initialize the parameters of the navigator.
-		  */
+		/**  Initialize the parameters of the navigator. */
 		void  initialize( const mrpt::utils::CConfigFileBase &INI_FILE )
 		{
 			options.loadFromConfigFile(INI_FILE, std::string("ND_CONFIG"));
