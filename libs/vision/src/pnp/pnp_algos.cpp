@@ -27,6 +27,7 @@ using namespace std;
 #include "ppnp.h"
 #include "posit.h"
 #include "lhm.h"
+#include "rpnp.h"
 
 #if MRPT_HAS_OPENCV
     int CPnP::CPnP_dls(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<Eigen::MatrixXd> img_pts, int n, const Eigen::Ref<Eigen::MatrixXd> cam_intrinsic, Eigen::Ref<Eigen::MatrixXd> pose_mat){
@@ -115,7 +116,21 @@ int CPnP::CPnP_p3p(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<E
     return ret;
 }
 
-
+int CPnP::CPnP_rpnp(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<Eigen::MatrixXd> img_pts, int n, const Eigen::Ref<Eigen::MatrixXd> cam_intrinsic, Eigen::Ref<Eigen::MatrixXd> pose_mat){
+    
+    Eigen::MatrixXd cam_in_eig=cam_intrinsic.transpose(), img_pts_eig=img_pts.transpose(), obj_pts_eig=obj_pts.transpose();
+    Eigen::Matrix3d R_eig; 
+    Eigen::Vector3d t_eig;
+    
+    mrpt::vision::rpnp r(obj_pts_eig, img_pts_eig, cam_in_eig, n);
+    int ret = r.compute_pose(R_eig,t_eig);
+    
+    Eigen::Quaterniond q(R_eig);
+    
+    pose_mat << t_eig,q.vec();
+    
+    return ret;
+}
 
 int CPnP::CPnP_ppnp(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<Eigen::MatrixXd> img_pts, int n, const Eigen::Ref<Eigen::MatrixXd> cam_intrinsic, Eigen::Ref<Eigen::MatrixXd> pose_mat)
 {	
