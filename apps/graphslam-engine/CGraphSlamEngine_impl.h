@@ -130,9 +130,6 @@ void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::initC
 	m_win_plot = NULL;
 	m_deformation_energy_plot_scale = 1000;
 
-	// check for duplicated edges every..
-	m_num_of_edges_for_collapse = 100;
-
 	m_observation_only_rawlog = false;
 
 	// max node number already in the graph
@@ -660,15 +657,6 @@ bool CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::parse
 			return false; // exit the parseRawlogFile method
 		}
 		m_time_logger.leave("Visuals");
-
-		// TODO - should I collapse the edges after a a while?
-		//// Reduce edges
-		//if (m_edge_counter.getTotalNumOfEdges() % m_num_of_edges_for_collapse == 0) {
-			//mrpt::synch::CCriticalSectionLocker m_graph_lock(&m_graph_section);
-
-			//int removed_edges = m_graph.collapseDuplicatedEdges();
-			//m_edge_counter.setRemovedEdges(removed_edges);
-		//}
 
 	} // WHILE CRAWLOG FILE
 	rawlog_file.close();
