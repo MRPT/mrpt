@@ -163,6 +163,14 @@ class CLoopCloserERD:
 				// the CDisplayWindow
 				std::string keystroke_laser_scans;
 
+				/**\brief Indicate whethet to use scan-matching at all during
+				 * graphSLAM [on by default].
+				 *
+				 * \warning It is strongly recomended that the user does not set this
+				 * to false (via the .ini file). graphSLAM may diverge significantly if
+				 * no scan-matching is not used.
+				 */
+				bool use_scan_matching;
 				bool has_read_config;
 		};
 
