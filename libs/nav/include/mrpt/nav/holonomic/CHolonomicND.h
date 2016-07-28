@@ -62,7 +62,8 @@ namespace mrpt
 							double			maxRobotSpeed,
 							double			&desiredDirection,
 							double			&desiredSpeed,
-							CHolonomicLogFileRecordPtr &logRecord );
+							CHolonomicLogFileRecordPtr &logRecord,
+							const double    max_obstacle_dist );
 
 		/** The structure used to store a detected gap in obstacles. */
 		struct TGap

@@ -39,7 +39,8 @@ void  CHolonomicFullEval::navigate(
 	double			maxRobotSpeed,
 	double			&desiredDirection,
 	double			&desiredSpeed,
-	CHolonomicLogFileRecordPtr &logRecord)
+	CHolonomicLogFileRecordPtr &logRecord,
+	const double    max_obstacle_dist)
 {
 	CLogFileRecord_FullEvalPtr log;
 
@@ -55,7 +56,7 @@ void  CHolonomicFullEval::navigate(
 	const unsigned int target_sector = mrpt::utils::round( -0.5 + (target_dir/M_PI + 1)*nDirs*0.5 );
 	const double target_dist = target.norm();
 
-	log->dirs_scores.resize(nDirs, options.factorWeights.size() );
+	log->dirs_scores.resize(nDirs, options.factorWeights.size() + 2 );
 
 	// TP-Obstacles in 2D:
 	std::vector<mrpt::math::TPoint2D> obstacles_2d(nDirs);
@@ -70,9 +71,11 @@ void  CHolonomicFullEval::navigate(
 
 	std::vector<double> dirs_eval(nDirs, .0);  // Evaluation of each possible direction
 
-	double scores[5];  // scores for each criterion
+	const int NUM_FACTORS = 5;
+	double score_min[NUM_FACTORS] = { 100.0, 100.0, 100.0, 100.0, 100.0 };
+	double score_max[NUM_FACTORS] = { 0.0, 0.0, 0.0, 0.0, 0.0 };
 
-	ASSERT_(options.factorWeights.size()==5);
+	ASSERT_(options.factorWeights.size()==NUM_FACTORS);
 	const double weights_sum = mrpt::math::sum(options.factorWeights);
 	ASSERT_(weights_sum!=.0);
 	const double weights_sum_inv = 1.0/weights_sum;
@@ -83,9 +86,11 @@ void  CHolonomicFullEval::navigate(
 
 	for (unsigned int i=0;i<nDirs;i++)
 	{
+		double scores[NUM_FACTORS];  // scores for each criterion
+
 		if ( obstacles[i] < options.TOO_CLOSE_OBSTACLE ) // Too close to obstacles ?
 		{
-			dirs_eval[i] = .0;
+			for (int l=0;l<NUM_FACTORS;l++) log->dirs_scores(i,l)= .0;
 			continue;
 		}
 
@@ -110,7 +115,7 @@ void  CHolonomicFullEval::navigate(
 			const double min_dist_target_along_path = sg.distance(target);
 			const double min_dist_target_along_path_norm = std::min(1.0, min_dist_target_along_path*0.5); // Now it is normalized [0,1]
 
-			scores[1] = square(1.0 - min_dist_target_along_path_norm);
+			scores[1] = std::sqrt(1.01 - min_dist_target_along_path_norm); // the 1.01 instead of 1.0 is to be 100% sure we don't get a domain error in sqrt()
 		}
 
 		// Factor #3: Distance of end colission-free point to target (Euclidean)
@@ -119,7 +124,7 @@ void  CHolonomicFullEval::navigate(
 			const double endpt_dist_to_target = (target - TPoint2D(x,y)).norm();
 			const double endpt_dist_to_target_norm = std::min(1.0, endpt_dist_to_target );
 
-			scores[2] = square(1.0 - endpt_dist_to_target_norm);
+			scores[2] = std::sqrt(1.01 - endpt_dist_to_target_norm); // the 1.01 instead of 1.0 is to be 100% sure we don't get a domain error in sqrt()
 		}
 
 		// Factor #4: Stabilizing factor (hysteresis) to avoid quick switch among very similar paths:
@@ -129,11 +134,11 @@ void  CHolonomicFullEval::navigate(
 			const unsigned int hist_dist = mrpt::utils::abs_diff(m_last_selected_sector, i);  // It's fine here to consider that -PI is far from +PI.
 			
 			if (hist_dist >= options.HYSTERESIS_SECTOR_COUNT)
-			     scores[3] = .0;
-			else scores[3] = (options.HYSTERESIS_SECTOR_COUNT-hist_dist)/double(options.HYSTERESIS_SECTOR_COUNT);
+			     scores[3] = square( 1.0-(hist_dist-options.HYSTERESIS_SECTOR_COUNT)/double(nDirs) );
+			else scores[3] = 1.0; 
 		}
 		else {
-			scores[3] = 0;
+			scores[3] = 1.0;
 		}
 
 		// Factor #5: Clearness to nearest obstacle along path
@@ -141,32 +146,90 @@ void  CHolonomicFullEval::navigate(
 		MRPT_TODO("Revise after refactoring all holo nav interface and impl. PTG nearness output?");
 		{
 			// "Temporary" (?) approximation:
-			double avr_path_clearness = 0.;
-			int avr_cnt = 0;
+			double avr_path_clearness = 1.0;
 			int i0 = i-nDirs/4;
 			int i1 = i+nDirs/4;
 			for (int ki=i0;ki<=i1;ki++)
 			{
 				const int k = ((ki<0) ? (ki+nDirs) : ki) % nDirs;
-				avr_path_clearness+=sg.distance(obstacles_2d[k]);
-				avr_cnt++;
+				if (obstacles[k]<0.99*max_obstacle_dist)
+					mrpt::utils::keep_min(avr_path_clearness, sg.distance(obstacles_2d[k]) );
 			}
-			scores[4] = avr_path_clearness/avr_cnt;
+			scores[4] = avr_path_clearness;
 		}
 
-		// Sum up:
-		double this_dir_eval = .0;
-		for (int l=0;l<sizeof(scores)/sizeof(scores[0]);l++) this_dir_eval += options.factorWeights[l] * scores[l];
-		this_dir_eval/=weights_sum_inv;
-
-		// save evaluation:
-		dirs_eval[i] = this_dir_eval;
+		// Keep min/max:
+		for (int l=0;l<NUM_FACTORS;l++) 
+		{
+			mrpt::utils::keep_max(score_max[l], scores[l]);
+			mrpt::utils::keep_min(score_min[l], scores[l]);
+		}
 
 		// Save stats for debugging:
-		for (int l=0;l<sizeof(scores)/sizeof(scores[0]);l++) log->dirs_scores(i,l)= scores[l];
+		for (int l=0;l<NUM_FACTORS;l++) log->dirs_scores(i,l)= scores[l];
+	}
 
+	// Prepare normalization constants:
+	double score_norm_f[NUM_FACTORS];
+	for (int l=0;l<NUM_FACTORS;l++) {
+		if (std::abs(score_max[l]-score_min[l])<1e-5)
+		     score_norm_f[l] = 1.0;
+		else score_norm_f[l] = 1.0/(score_max[l]-score_min[l]);
+	}
+
+	// Phase 1: average of normalized factors 1,2 & 3 and thresholding:
+	// ----------------------------------------------------------------------
+	const double weights_sum123 = options.factorWeights[0]+options.factorWeights[1]+options.factorWeights[2];
+	ASSERT_(weights_sum123>.0);
+
+	std::vector<double> phase1_score(nDirs,.0);
+	double phase1_min = 1e6, phase1_max=.0;
+
+	for (unsigned int i=0;i<nDirs;i++)
+	{
+		// Normalize:
+		double scores_norm[3];
+		for (int l=0;l<3;l++) 
+			scores_norm[l] = (log->dirs_scores(i,l) - score_min[l]) * score_norm_f[l];
+
+		// Sum up:
+		for (int l=0;l<3;l++) phase1_score[i] += options.factorWeights[l] * scores_norm[l];
+		phase1_score[i]/=weights_sum123;
+
+		mrpt::utils::keep_max(phase1_max, phase1_score[i]);
+		mrpt::utils::keep_min(phase1_min, phase1_score[i]);
+
+		log->dirs_scores(i,NUM_FACTORS+0)= phase1_score[i];
+	}
+
+	// Phase 2: 
+	// ----------------------------------------------------------------------
+	const double F123_THRESHOLD_RATIO = 0.75;
+	const double p1_threshold = F123_THRESHOLD_RATIO * phase1_max + (1.0-F123_THRESHOLD_RATIO) * phase1_min;
+	const double weights_sum34 = options.factorWeights[3]+options.factorWeights[4];
+	ASSERT_(weights_sum34>.0);
+	const double weights_sum34_inv = 1.0/weights_sum34;
+
+	for (unsigned int i=0;i<nDirs;i++)
+	{
+		double this_dir_eval;
+
+		if ( obstacles[i] < options.TOO_CLOSE_OBSTACLE ||  // Too close to obstacles ?
+			phase1_score[i]<p1_threshold  // thresholding
+			)
+		{
+			this_dir_eval = .0;
+		}
+		else 
+		{
+			this_dir_eval = (options.factorWeights[3] * log->dirs_scores(i,3) + options.factorWeights[4] * log->dirs_scores(i,4))*weights_sum34_inv;
+		}
+
+		dirs_eval[i] = this_dir_eval;
+
+		// save for logging:
+		log->dirs_scores(i,NUM_FACTORS+1)= this_dir_eval;
 	} // for each direction
-
 
 	// Search for best direction:
 	unsigned int best_dir  = std::numeric_limits<unsigned int>::max();

@@ -73,7 +73,8 @@ namespace mrpt
 							double			maxRobotSpeed,
 							double			&desiredDirection,
 							double			&desiredSpeed,
-							CHolonomicLogFileRecordPtr &logRecord );
+							CHolonomicLogFileRecordPtr &logRecord,
+			const double    max_obstacle_dist );
 
 		/**  Initialize the parameters of the navigator from section "VFF_CONFIG" of a config file. \sa options */
 		void  initialize( const mrpt::utils::CConfigFileBase &INI_FILE )

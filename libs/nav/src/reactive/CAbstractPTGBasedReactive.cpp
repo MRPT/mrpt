@@ -361,7 +361,8 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 						1.0, // Was: ptg->getMax_V_inTPSpace(),
 						holonomicMovement.direction,
 						holonomicMovement.speed,
-						HLFR);
+						HLFR, 
+						1.0 /* max obstacle dist*/ );
 
 					MRPT_TODO("Honor targetIsIntermediaryWaypoint wrt approaching slow down")
 
