@@ -7,8 +7,8 @@
 	 | Released under BSD License. See details in http://www.mrpt.org/License    |
 	 +---------------------------------------------------------------------------+ */
 
-#ifndef CICPGOODNESSNRD_H
-#define CICPGOODNESSNRD_H
+#ifndef CICPCRITERIANRD_H
+#define CICPCRITERIANRD_H
 
 #include <mrpt/obs/CRawlog.h>
 #include <mrpt/obs/CActionCollection.h>
@@ -75,7 +75,7 @@ namespace mrpt { namespace graphslam { namespace deciders {
  * \ingroup mrpt_graphslam_grp
  */
 template<class GRAPH_t>
-class CICPGoodnessNRD:
+class CICPCriteriaNRD:
 	public mrpt::graphslam::deciders::CNodeRegistrationDecider<GRAPH_t>,
 	public mrpt::graphslam::deciders::CRangeScanRegistrationDecider<GRAPH_t>
 {
@@ -96,12 +96,12 @@ class CICPGoodnessNRD:
 						constraint_t::state_length> InfMat;
 		/**\brief Typedef for accessing methods of the RangeScanRegistrationDecider_t parent class. */
 		typedef mrpt::graphslam::deciders::CRangeScanRegistrationDecider<GRAPH_t> range_scanner_t;
-		typedef CICPGoodnessNRD<GRAPH_t> decider_t; /**< self type - Handy typedef */
+		typedef CICPCriteriaNRD<GRAPH_t> decider_t; /**< self type - Handy typedef */
 
 		/**\brief Class constructor */
-		CICPGoodnessNRD();
+		CICPCriteriaNRD();
 		/**\brief Class destructor */
-		~CICPGoodnessNRD();
+		~CICPCriteriaNRD();
 
 		void setGraphPtr(GRAPH_t* graph);
 		void loadParams(const std::string& source_fname);
@@ -171,7 +171,7 @@ class CICPGoodnessNRD:
 
 		void registerNewNode();
 		/**\brief General initialization method to call from the Class Constructors*/
-		void initCICPGoodnessNRD();
+		void initCICPCriteriaNRD();
 
 		// Private members
 		//////////////////////////////////////////////////////////////
@@ -243,5 +243,5 @@ class CICPGoodnessNRD:
 
 } } }
 
-#include "CICPGoodnessNRD_impl.h"
-#endif /* end of include guard: CICPGOODNESSNRD_H */
+#include "CICPCriteriaNRD_impl.h"
+#endif /* end of include guard: CICPCRITERIANRD_H */

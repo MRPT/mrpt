@@ -31,7 +31,7 @@ namespace mrpt { namespace graphslam { namespace deciders {
  *
  * CEdgeRegistrationDecider provides the basic methods that have to exist in
  * every edge registration decider class. For an example of overloading these
- * methods, see CICPGoodnessERD.h
+ * methods, see CICPCriteriaERD.h
  *
  * \ingroup mrpt_graphslam_grp
  */

@@ -7,8 +7,8 @@
 	 | Released under BSD License. See details in http://www.mrpt.org/License    |
 	 +---------------------------------------------------------------------------+ */
 
-#ifndef CICPGoodnessERD_IMPL_H
-#define CICPGoodnessERD_IMPL_H
+#ifndef CICPCRITERIAERD_IMPL_H
+#define CICPCRITERIAERD_IMPL_H
 
 
 using namespace mrpt::graphslam::deciders;
@@ -17,7 +17,7 @@ using namespace mrpt::graphslam::deciders;
 // //////////////////////////////////
 
 template<class GRAPH_t>
-CICPGoodnessERD<GRAPH_t>::CICPGoodnessERD():
+CICPCriteriaERD<GRAPH_t>::CICPCriteriaERD():
 	params(*this), // pass reference to self when initializing the parameters
 	m_search_disk_color(142, 142, 56),
 	m_laser_scans_color(0, 20, 255),
@@ -25,12 +25,12 @@ CICPGoodnessERD<GRAPH_t>::CICPGoodnessERD():
 {
 	MRPT_START;
 
-	this->initCICPGoodnessERD();
+	this->initCICPCriteriaERD();
 
 	MRPT_END;
 }
 template<class GRAPH_t>
-void CICPGoodnessERD<GRAPH_t>::initCICPGoodnessERD() {
+void CICPCriteriaERD<GRAPH_t>::initCICPCriteriaERD() {
 	MRPT_START;
 
 	m_win = NULL;
@@ -52,7 +52,7 @@ void CICPGoodnessERD<GRAPH_t>::initCICPGoodnessERD() {
 	m_checked_for_usuable_dataset = false;
 	m_consecutive_invalid_format_instances = 0;
 
-	m_out_logger.setName("CICPGoodnessERD");
+	m_out_logger.setName("CICPCriteriaERD");
 	m_out_logger.setLoggingLevel(LVL_DEBUG);
 
 	m_out_logger.log("Initialized class object");
@@ -60,12 +60,12 @@ void CICPGoodnessERD<GRAPH_t>::initCICPGoodnessERD() {
 	MRPT_END;
 }
 template<class GRAPH_t>
-CICPGoodnessERD<GRAPH_t>::~CICPGoodnessERD() { }
+CICPCriteriaERD<GRAPH_t>::~CICPCriteriaERD() { }
 
 // Methods implementations
 // //////////////////////////////////
 
-template<class GRAPH_t> bool CICPGoodnessERD<GRAPH_t>::updateState(
+template<class GRAPH_t> bool CICPCriteriaERD<GRAPH_t>::updateState(
 		mrpt::obs::CActionCollectionPtr action,
 		mrpt::obs::CSensoryFramePtr observations,
 		mrpt::obs::CObservationPtr observation ) {
@@ -164,7 +164,7 @@ template<class GRAPH_t> bool CICPGoodnessERD<GRAPH_t>::updateState(
 }
 
 template<class GRAPH_t>
-void CICPGoodnessERD<GRAPH_t>::checkRegistrationCondition2D(
+void CICPCriteriaERD<GRAPH_t>::checkRegistrationCondition2D(
 		const std::set<mrpt::utils::TNodeID>& nodes_set) {
 	MRPT_START;
 
@@ -200,14 +200,14 @@ void CICPGoodnessERD<GRAPH_t>::checkRegistrationCondition2D(
 				pose_t initial_pose = m_graph->nodes[curr_nodeID] -
 					m_graph->nodes[*node_it];
 
-				m_time_logger.enter("CICPGoodnessERD::getICPEdge");
+				m_time_logger.enter("CICPCriteriaERD::getICPEdge");
 				this->getICPEdge(
 						*prev_laser_scan,
 						*curr_laser_scan,
 						&rel_edge,
 						&initial_pose,
 						&icp_info);
-				m_time_logger.leave("CICPGoodnessERD::getICPEdge");
+				m_time_logger.leave("CICPCriteriaERD::getICPEdge");
 
 				// criterion for registering a new node
 				if (icp_info.goodness > params.ICP_goodness_thresh) {
@@ -226,7 +226,7 @@ void CICPGoodnessERD<GRAPH_t>::checkRegistrationCondition2D(
 	MRPT_END;
 }
 template<class GRAPH_t>
-void CICPGoodnessERD<GRAPH_t>::checkRegistrationCondition3D(
+void CICPCriteriaERD<GRAPH_t>::checkRegistrationCondition3D(
 		const std::set<mrpt::utils::TNodeID>& nodes_set) {
 	MRPT_START;
 
@@ -258,14 +258,14 @@ void CICPGoodnessERD<GRAPH_t>::checkRegistrationCondition3D(
 				prev_laser_scan = search->second;
 
 				// TODO - use initial edge estimation
-				m_time_logger.enter("CICPGoodnessERD::getICPEdge");
+				m_time_logger.enter("CICPCriteriaERD::getICPEdge");
 				this->getICPEdge(
 						*prev_laser_scan,
 						*curr_laser_scan,
 						&rel_edge,
 						NULL,
 						&icp_info);
-				m_time_logger.leave("CICPGoodnessERD::getICPEdge");
+				m_time_logger.leave("CICPCriteriaERD::getICPEdge");
 
 				// criterion for registering a new node
 				if (icp_info.goodness > params.ICP_goodness_thresh) {
@@ -285,7 +285,7 @@ void CICPGoodnessERD<GRAPH_t>::checkRegistrationCondition3D(
 }
 
 template<class GRAPH_t>
-void CICPGoodnessERD<GRAPH_t>::registerNewEdge(
+void CICPCriteriaERD<GRAPH_t>::registerNewEdge(
 		const mrpt::utils::TNodeID& from,
 		const mrpt::utils::TNodeID& to,
 		const constraint_t& rel_edge ) {
@@ -297,7 +297,7 @@ void CICPGoodnessERD<GRAPH_t>::registerNewEdge(
 }
 
 template<class GRAPH_t>
-void CICPGoodnessERD<GRAPH_t>::getNearbyNodesOf(
+void CICPCriteriaERD<GRAPH_t>::getNearbyNodesOf(
 		set<TNodeID> *nodes_set,
 		const TNodeID& cur_nodeID,
 		double distance ) {
@@ -322,7 +322,7 @@ void CICPGoodnessERD<GRAPH_t>::getNearbyNodesOf(
 
 
 template<class GRAPH_t>
-void CICPGoodnessERD<GRAPH_t>::setGraphPtr(GRAPH_t* graph) {
+void CICPCriteriaERD<GRAPH_t>::setGraphPtr(GRAPH_t* graph) {
 	MRPT_START;
 
 	m_graph = graph;
@@ -332,7 +332,7 @@ void CICPGoodnessERD<GRAPH_t>::setGraphPtr(GRAPH_t* graph) {
 	MRPT_END;
 }
 template<class GRAPH_t>
-void CICPGoodnessERD<GRAPH_t>::setRawlogFname(const std::string& rawlog_fname){
+void CICPCriteriaERD<GRAPH_t>::setRawlogFname(const std::string& rawlog_fname){
 	MRPT_START;
 
 	m_rawlog_fname = rawlog_fname;
@@ -362,7 +362,7 @@ void CICPGoodnessERD<GRAPH_t>::setRawlogFname(const std::string& rawlog_fname){
 	MRPT_END;
 }
 template<class GRAPH_t>
-void CICPGoodnessERD<GRAPH_t>::setWindowManagerPtr(
+void CICPCriteriaERD<GRAPH_t>::setWindowManagerPtr(
 		mrpt::graphslam::CWindowManager* win_manager) {
 	m_win_manager = win_manager;
 
@@ -375,7 +375,7 @@ void CICPGoodnessERD<GRAPH_t>::setWindowManagerPtr(
 
 }
 template<class GRAPH_t>
-void CICPGoodnessERD<GRAPH_t>::notifyOfWindowEvents(
+void CICPCriteriaERD<GRAPH_t>::notifyOfWindowEvents(
 		const std::map<std::string, bool>& events_occurred) {
 	MRPT_START;
 
@@ -388,7 +388,7 @@ void CICPGoodnessERD<GRAPH_t>::notifyOfWindowEvents(
 }
 
 template<class GRAPH_t>
-void CICPGoodnessERD<GRAPH_t>::toggleLaserScansVisualization() {
+void CICPCriteriaERD<GRAPH_t>::toggleLaserScansVisualization() {
 	MRPT_START;
 	ASSERTMSG_(m_win, "No CDisplayWindow3D* was provided");
 	ASSERTMSG_(m_win_manager, "No CWindowManager* was provided");
@@ -413,7 +413,7 @@ void CICPGoodnessERD<GRAPH_t>::toggleLaserScansVisualization() {
 
 
 template<class GRAPH_t>
-void CICPGoodnessERD<GRAPH_t>::getEdgesStats(
+void CICPCriteriaERD<GRAPH_t>::getEdgesStats(
 		std::map<const std::string, int>* edge_types_to_num) const {
 	MRPT_START;
 
@@ -423,10 +423,10 @@ void CICPGoodnessERD<GRAPH_t>::getEdgesStats(
 }
 
 template<class GRAPH_t>
-void CICPGoodnessERD<GRAPH_t>::initializeVisuals() {
+void CICPCriteriaERD<GRAPH_t>::initializeVisuals() {
 	MRPT_START;
 	m_out_logger.log("Initializing visuals");
-	m_time_logger.enter("CICPGoodnessERD::Visuals");
+	m_time_logger.enter("CICPCriteriaERD::Visuals");
 
 	ASSERTMSG_(params.has_read_config,
 			"Configuration parameters aren't loaded yet");
@@ -487,15 +487,15 @@ void CICPGoodnessERD<GRAPH_t>::initializeVisuals() {
 	}
 
 	m_initialized_visuals = true;
-	m_time_logger.leave("CICPGoodnessERD::Visuals");
+	m_time_logger.leave("CICPCriteriaERD::Visuals");
 	MRPT_END;
 }
 template<class GRAPH_t>
-void CICPGoodnessERD<GRAPH_t>::updateVisuals() {
+void CICPCriteriaERD<GRAPH_t>::updateVisuals() {
 	MRPT_START;
 	ASSERT_(m_initialized_visuals);
 	m_out_logger.log("Updating visuals");
-	m_time_logger.enter("CICPGoodnessERD::Visuals");
+	m_time_logger.enter("CICPCriteriaERD::Visuals");
 
 	// update ICP_max_distance Disk
 	if (m_win && params.ICP_max_distance > 0) {
@@ -545,16 +545,16 @@ void CICPGoodnessERD<GRAPH_t>::updateVisuals() {
 		m_win->forceRepaint();
 	}
 
-	m_time_logger.leave("CICPGoodnessERD::Visuals");
+	m_time_logger.leave("CICPCriteriaERD::Visuals");
 	MRPT_END;
 }
 template<class GRAPH_t>
-bool CICPGoodnessERD<GRAPH_t>::justInsertedLoopClosure() const {
+bool CICPCriteriaERD<GRAPH_t>::justInsertedLoopClosure() const {
 	return m_just_inserted_loop_closure;
 }
 
 template<class GRAPH_t>
-void CICPGoodnessERD<GRAPH_t>::checkIfInvalidDataset(
+void CICPCriteriaERD<GRAPH_t>::checkIfInvalidDataset(
 		mrpt::obs::CActionCollectionPtr action,
 		mrpt::obs::CSensoryFramePtr observations,
 		mrpt::obs::CObservationPtr observation ) {
@@ -587,7 +587,7 @@ void CICPGoodnessERD<GRAPH_t>::checkIfInvalidDataset(
 }
 
 template<class GRAPH_t>
-void CICPGoodnessERD<GRAPH_t>::dumpVisibilityErrorMsg(
+void CICPCriteriaERD<GRAPH_t>::dumpVisibilityErrorMsg(
 		std::string viz_flag, int sleep_time /* = 500 milliseconds */) {
 	MRPT_START;
 
@@ -602,7 +602,7 @@ void CICPGoodnessERD<GRAPH_t>::dumpVisibilityErrorMsg(
 
 
 template<class GRAPH_t>
-void CICPGoodnessERD<GRAPH_t>::loadParams(const std::string& source_fname) {
+void CICPCriteriaERD<GRAPH_t>::loadParams(const std::string& source_fname) {
 	MRPT_START;
 
 	params.loadFromConfigFileName(source_fname,
@@ -620,7 +620,7 @@ void CICPGoodnessERD<GRAPH_t>::loadParams(const std::string& source_fname) {
 	MRPT_END;
 }
 template<class GRAPH_t>
-void CICPGoodnessERD<GRAPH_t>::printParams() const {
+void CICPCriteriaERD<GRAPH_t>::printParams() const {
 	MRPT_START;
 
 	params.dumpToConsole();
@@ -629,7 +629,7 @@ void CICPGoodnessERD<GRAPH_t>::printParams() const {
 }
 
 template<class GRAPH_t>
-void CICPGoodnessERD<GRAPH_t>::getDescriptiveReport(std::string* report_str) const {
+void CICPCriteriaERD<GRAPH_t>::getDescriptiveReport(std::string* report_str) const {
 	MRPT_START;
 
 	const std::string report_sep(2, '\n');
@@ -665,18 +665,18 @@ void CICPGoodnessERD<GRAPH_t>::getDescriptiveReport(std::string* report_str) con
 // //////////////////////////////////
 
 template<class GRAPH_t>
-CICPGoodnessERD<GRAPH_t>::TParams::TParams(decider_t& d):
+CICPCriteriaERD<GRAPH_t>::TParams::TParams(decider_t& d):
 	decider(d),
 	keystroke_laser_scans("l"),
 	has_read_config(false)
 { }
 
 template<class GRAPH_t>
-CICPGoodnessERD<GRAPH_t>::TParams::~TParams() {
+CICPCriteriaERD<GRAPH_t>::TParams::~TParams() {
 }
 
 template<class GRAPH_t>
-void CICPGoodnessERD<GRAPH_t>::TParams::dumpToTextStream(
+void CICPCriteriaERD<GRAPH_t>::TParams::dumpToTextStream(
 		mrpt::utils::CStream &out) const {
 	MRPT_START;
 
@@ -692,7 +692,7 @@ void CICPGoodnessERD<GRAPH_t>::TParams::dumpToTextStream(
 	MRPT_END;
 }
 template<class GRAPH_t>
-void CICPGoodnessERD<GRAPH_t>::TParams::loadFromConfigFile(
+void CICPCriteriaERD<GRAPH_t>::TParams::loadFromConfigFile(
 		const mrpt::utils::CConfigFileBase& source,
 		const std::string& section) {
 	MRPT_START;
@@ -727,4 +727,4 @@ void CICPGoodnessERD<GRAPH_t>::TParams::loadFromConfigFile(
 }
 
 
-#endif /* end of include guard: CICPGoodnessERD_IMPL_H */
+#endif /* end of include guard: CICPCRITERIAERD_IMPL_H */

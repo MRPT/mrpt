@@ -55,6 +55,8 @@
 #include <mrpt/utils/TColor.h>
 #include <mrpt/utils/CImage.h>
 
+// TODO - includethe decider/optimizer classes here - after moving to /lib
+
 #include <cstdlib>
 #include <string>
 #include <sstream>
@@ -99,7 +101,7 @@ namespace mrpt { namespace graphslam {
 template<
 		class GRAPH_t=typename mrpt::graphs::CNetworkOfPoses2DInf,
 		class NODE_REGISTRAR=typename mrpt::graphslam::deciders::CFixedIntervalsNRD<GRAPH_t>,
-		class EDGE_REGISTRAR=typename mrpt::graphslam::deciders::CICPGoodnessERD<GRAPH_t>,
+		class EDGE_REGISTRAR=typename mrpt::graphslam::deciders::CICPCriteriaERD<GRAPH_t>,
 		class OPTIMIZER=typename mrpt::graphslam::optimizers::CLevMarqGSO<GRAPH_t> >
 class CGraphSlamEngine {
 	public:

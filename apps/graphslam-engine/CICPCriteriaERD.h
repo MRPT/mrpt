@@ -7,8 +7,8 @@
 	 | Released under BSD License. See details in http://www.mrpt.org/License    |
 	 +---------------------------------------------------------------------------+ */
 
-#ifndef CICPGoodnessERD_H
-#define CICPGoodnessERD_H
+#ifndef CICPCRITERIAERD_H
+#define CICPCRITERIAERD_H
 
 #include <mrpt/math/CMatrix.h>
 #include <mrpt/utils/CImage.h>
@@ -78,7 +78,7 @@ namespace mrpt { namespace graphslam { namespace deciders {
  * \ingroup mrpt_graphslam_grp
  */
 template<class GRAPH_t=typename mrpt::graphs::CNetworkOfPoses2DInf >
-class CICPGoodnessERD :
+class CICPCriteriaERD :
 	public mrpt::graphslam::deciders::CEdgeRegistrationDecider<GRAPH_t>,
 	public mrpt::graphslam::deciders::CRangeScanRegistrationDecider<GRAPH_t>
 {
@@ -89,12 +89,12 @@ class CICPGoodnessERD :
 		typedef typename GRAPH_t::constraint_t::type_value pose_t;
 		/**\brief Typedef for accessing methods of the RangeScanRegistrationDecider_t parent class. */
 		typedef mrpt::graphslam::deciders::CRangeScanRegistrationDecider<GRAPH_t> range_scanner_t;
-		typedef CICPGoodnessERD<GRAPH_t> decider_t; /**< self type - Handy typedef */
+		typedef CICPCriteriaERD<GRAPH_t> decider_t; /**< self type - Handy typedef */
 
 		// Public methods
 		//////////////////////////////////////////////////////////////
-		CICPGoodnessERD();
-		~CICPGoodnessERD();
+		CICPCriteriaERD();
+		~CICPCriteriaERD();
 
 		bool updateState(
 				mrpt::obs::CActionCollectionPtr action,
@@ -154,7 +154,7 @@ class CICPGoodnessERD :
 		//////////////////////////////////////////////////////////////
 		/** \brief Initialization function to be called from the various constructors
 		 */
-		void initCICPGoodnessERD();
+		void initCICPCriteriaERD();
 		void checkRegistrationCondition2D(
 				const std::set<mrpt::utils::TNodeID>& nodes_set);
 		void checkRegistrationCondition3D(
@@ -224,6 +224,6 @@ class CICPGoodnessERD :
 
 } } } // end of namespaces
 
-#include "CICPGoodnessERD_impl.h"
-#endif /* end of include guard: CICPGoodnessERD_H */
+#include "CICPCriteriaERD_impl.h"
+#endif /* end of include guard: CICPCRITERIAERD_H */
 
