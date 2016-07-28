@@ -32,10 +32,10 @@
 // deciders
 #include "CLoopCloserERD.h"
 #include "CEmptyNRD.h"
-#include "CICPGoodnessNRD.h"
+#include "CICPCriteriaNRD.h"
 #include "CEmptyERD.h"
 #include "CFixedIntervalsNRD.h"
-#include "CICPGoodnessERD.h"
+#include "CICPCriteriaERD.h"
 
 // optimizers
 #include "CLevMarqGSO.h"
@@ -77,9 +77,9 @@ TCLAP::ValueArg<string> arg_ground_truth_file( "g", "ground-truth",
 
 // Specify the Registration Deciders to use
 TCLAP::ValueArg<string> arg_node_reg("n", "node-reg",
-		"Specify Node registration decider",	false, "CFixedIntervalsNRD", "CICPGoodnessNRD", cmd);
+		"Specify Node registration decider",	false, "CFixedIntervalsNRD", "CICPCriteriaNRD", cmd);
 TCLAP::ValueArg<string> arg_edge_reg("e", "edge-reg",
-		"Specify Edge registration decider",	false, "CICPGoodnessERD", "CICPGoodnessERD", cmd);
+		"Specify Edge registration decider",	false, "CICPCriteriaERD", "CICPCriteriaERD", cmd);
 TCLAP::ValueArg<string> arg_optimizer("o", "optimizer",
 		"Specify GraphSlam Optimizer",	false, "CLevMarqGSO", "CLevMarqGSO", cmd);
 
@@ -152,9 +152,9 @@ int main(int argc, char **argv)
 
 			deciders_vec.push_back(dec);
 		}
-		{ // CICPGoodnessNRD
+		{ // CICPCriteriaNRD
 			TRegistrationDeciderProps* dec = new TRegistrationDeciderProps;
-			dec->name = "CICPGoodnessNRD";
+			dec->name = "CICPCriteriaNRD";
 			dec->description = "Register a new node if the distance from the previous node surpasses a predefined distance threshold. Uses 2D/3D RangeScans alignment for estimating the robot movement";
 			dec->type = "Node";
 			dec->rawlog_format = "#2 - Observation-only";
@@ -163,9 +163,9 @@ int main(int argc, char **argv)
 
 			deciders_vec.push_back(dec);
 		}
-		{ // CICPGoodnessERD
+		{ // CICPCriteriaERD
 			TRegistrationDeciderProps* dec = new TRegistrationDeciderProps;
-			dec->name = "CICPGoodnessERD";
+			dec->name = "CICPCriteriaERD";
 			dec->description = "Register a new edge by alligning the provided 2D/3D RangeScans of 2 nodes. Uses the goodness of the ICP Alignment as the criterium for adding a new edge";
 			dec->type = "Edge";
 			dec->rawlog_format = "Both";
@@ -277,13 +277,13 @@ int main(int argc, char **argv)
 		logger.log(format("Node registration decider: %s", node_reg.c_str()));
 		logger.log(format("Edge registration decider: %s", edge_reg.c_str()));
 		if (system::strCmpI(node_reg, "CFixedIntervalsNRD")) {
-			if (system::strCmpI(edge_reg, "CICPGoodnessERD")) { // CFixedIntervalsNRD - CICPGoodnessERD
+			if (system::strCmpI(edge_reg, "CICPCriteriaERD")) { // CFixedIntervalsNRD - CICPCriteriaERD
 				// Initialize the CGraphSlamEngine class
 				CGraphSlamEngine
 					<
 					CNetworkOfPoses2DInf,
 					CFixedIntervalsNRD<CNetworkOfPoses2DInf>,
-					CICPGoodnessERD<CNetworkOfPoses2DInf>,
+					CICPCriteriaERD<CNetworkOfPoses2DInf>,
 					CLevMarqGSO<CNetworkOfPoses2DInf>
 					>
 					graph_engine(
@@ -293,7 +293,7 @@ int main(int argc, char **argv)
 							!disable_visuals.getValue());
 				graph_engine.parseRawlogFile();
 			}
-			else if (system::strCmpI(edge_reg, "CLoopCloserERD")) { // CFixedIntervalsNRD - CICPGoodnessERD
+			else if (system::strCmpI(edge_reg, "CLoopCloserERD")) { // CFixedIntervalsNRD - CICPCriteriaERD
 				// Initialize the CGraphSlamEngine class
 				CGraphSlamEngine
 					<
@@ -328,13 +328,13 @@ int main(int argc, char **argv)
 
 		}
 		if (system::strCmpI(node_reg, "CEmptyNRD")) {
-			if (system::strCmpI(edge_reg, "CICPGoodnessERD")) { // CEmptyNRD - CICPGoodnessERD
+			if (system::strCmpI(edge_reg, "CICPCriteriaERD")) { // CEmptyNRD - CICPCriteriaERD
 				// Initialize the CGraphSlamEngine class
 				CGraphSlamEngine
 					<
 					CNetworkOfPoses2DInf,
 					CEmptyNRD<CNetworkOfPoses2DInf>,
-					CICPGoodnessERD<CNetworkOfPoses2DInf>,
+					CICPCriteriaERD<CNetworkOfPoses2DInf>,
 					CLevMarqGSO<CNetworkOfPoses2DInf>
 					>
 					graph_engine(
@@ -344,7 +344,7 @@ int main(int argc, char **argv)
 							!disable_visuals.getValue());
 				graph_engine.parseRawlogFile();
 			}
-			else if (system::strCmpI(edge_reg, "CLoopCloserERD")) { // CFixedIntervalsNRD - CICPGoodnessERD
+			else if (system::strCmpI(edge_reg, "CLoopCloserERD")) { // CFixedIntervalsNRD - CICPCriteriaERD
 				// Initialize the CGraphSlamEngine class
 				CGraphSlamEngine
 					<
@@ -378,14 +378,14 @@ int main(int argc, char **argv)
 			}
 
 		}
-		else if (system::strCmpI(node_reg, "CICPGoodnessNRD")) {
-			if (system::strCmpI(edge_reg, "CICPGoodnessERD")) { // CICPGooodnessNRD - CICPGoodnessERD
+		else if (system::strCmpI(node_reg, "CICPCriteriaNRD")) {
+			if (system::strCmpI(edge_reg, "CICPCriteriaERD")) { // CICPGooodnessNRD - CICPCriteriaERD
 				// Initialize the CGraphSlamEngine class
 				CGraphSlamEngine
 					<
 					CNetworkOfPoses2DInf,
-					CICPGoodnessNRD<CNetworkOfPoses2DInf>,
-					CICPGoodnessERD<CNetworkOfPoses2DInf>,
+					CICPCriteriaNRD<CNetworkOfPoses2DInf>,
+					CICPCriteriaERD<CNetworkOfPoses2DInf>,
 					CLevMarqGSO<CNetworkOfPoses2DInf>
 					>
 					graph_engine(
@@ -395,7 +395,7 @@ int main(int argc, char **argv)
 							!disable_visuals.getValue());
 				graph_engine.parseRawlogFile();
 			}
-			else if (system::strCmpI(edge_reg, "CLoopCloserERD")) { // CFixedIntervalsNRD - CICPGoodnessERD
+			else if (system::strCmpI(edge_reg, "CLoopCloserERD")) { // CFixedIntervalsNRD - CICPCriteriaERD
 				// Initialize the CGraphSlamEngine class
 				CGraphSlamEngine
 					<
@@ -417,7 +417,7 @@ int main(int argc, char **argv)
 				CGraphSlamEngine
 					<
 					CNetworkOfPoses2DInf,
-					CICPGoodnessNRD<CNetworkOfPoses2DInf>,
+					CICPCriteriaNRD<CNetworkOfPoses2DInf>,
 					CEmptyERD<CNetworkOfPoses2DInf>,
 					CLevMarqGSO<CNetworkOfPoses2DInf>
 					>

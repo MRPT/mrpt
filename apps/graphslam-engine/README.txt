@@ -29,7 +29,7 @@ supported) as input which should contain (some of) the following observation typ
 	  true in the .ini file
 
 	+ Node/Edge registration decider classes to be used. If not specified the
-	  default CFixedIntervalsNRD, CICPGoodnessERD are used.
+	  default CFixedIntervalsNRD, CICPCriteriaERD are used.
 
 Sample calls to the graphslam-engine application are given below:
 
@@ -40,7 +40,7 @@ Sample calls to the graphslam-engine application are given below:
   MRPT/share/mrpt/config_files/graphslam-engine/odometry_2DRangeScans.ini
   -r MRPT/share/mrpt/config_files/graphslam-engine-demos/action_observations_map/range_030_bearing_015.rawlog
   -g MRPT/share/mrpt/config_files/graphslam-engine-demos/action_observations_map/range_030_bearing_015.rawlog.GT.txt
-  --node-reg CFixedIntervalsNRD --edge-reg CICPGoodnessERD
+  --node-reg CFixedIntervalsNRD --edge-reg CICPCriteriaERD
 
 
 The following commands should be working without any modification to the .ini
@@ -50,17 +50,17 @@ graphslam-engine accordingly):
 	MRPT/share/config_files/graphslam-engine/odometry_2DRangeScans.ini
 	-r MRPT/datasets/graphslam-engine-demos/observation_only_map2/range_030_bearing_015.rawlog
 	-g MRPT/datasets/graphslam-engine-demos/observation_only_map2/range_030_bearing_015.rawlog.GT.txt
-	--node-reg CFixedIntervalsNRD --edge-reg CICPGoodnessERD
+	--node-reg CFixedIntervalsNRD --edge-reg CICPCriteriaERD
 - graphslam-engine -i
   MRPT/share/config_files/graphslam-engine/odometry_2DRangeScans.ini
   -r MRPT/datasets/graphslam-engine-demos/action_observations_map/range_030_bearing_015.rawlog
   -g MRPT/datasets/graphslam-engine-demos/action_observations_map/range_030_bearing_015.rawlog.GT.txt
-  --node-reg CFixedIntervalsNRD --edge-reg CICPGoodnessERD
+  --node-reg CFixedIntervalsNRD --edge-reg CICPCriteriaERD
 - graphslam-engine -i
   MRPT/share/config_files/graphslam-engine/laser_odometry.ini -r
   MRPT/datasets/graphslam-engine-demos/action_observations_map/range_030_bearing_015.rawlog
   -g MRPT/datasets/graphslam-engine-demos/action_observations_map/range_030_bearing_015.rawlog.GT.txt
-  --node-reg CICPGoodnessNRD --edge-reg CICPGoodnessERD
+  --node-reg CICPCriteriaNRD --edge-reg CICPCriteriaERD
 
 
 # TODO
