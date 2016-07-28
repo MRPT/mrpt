@@ -534,8 +534,10 @@ class CGraphSlamEngine {
 		std::string m_keystroke_map;
 		/**\}*/
 
-		mrpt::graphslam::CEdgeCounter m_edge_counter; /**< Instance to keep track of all the edges + visualization related operations */
-		int m_num_of_edges_for_collapse;
+		/**\brief Instance to keep track of all the edges + visualization related
+ 		 * operations
+ 		 */
+		mrpt::graphslam::CEdgeCounter m_edge_counter;
 
 		/**\brief Flag for specifying if we are going to use ground truth data at all.
 		 *

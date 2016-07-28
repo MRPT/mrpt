@@ -48,6 +48,8 @@ void CLoopCloserERD<GRAPH_t>::initCLoopCloserERD() {
 
 	m_partitions_full_update = false;
 
+	m_dijkstra_uncertainties_updated = false;
+
 	m_time_logger.setName(m_class_name);
 	m_out_logger.setName(m_class_name);
 	m_out_logger.setLoggingLevel(mrpt::utils::LVL_DEBUG); // defalut level of logger
@@ -57,7 +59,18 @@ void CLoopCloserERD<GRAPH_t>::initCLoopCloserERD() {
 	MRPT_END;
 }
 template<class GRAPH_t>
-CLoopCloserERD<GRAPH_t>::~CLoopCloserERD() { }
+CLoopCloserERD<GRAPH_t>::~CLoopCloserERD() {
+
+	// release memory of m_node_optimal_paths map.
+	m_out_logger.logFmt("Releasing memory of m_node_optimal_paths map...");
+	for (typename std::map<mrpt::utils::TNodeID, TPath*>::iterator it = 
+			m_node_optimal_paths.begin(); it != m_node_optimal_paths.end();
+			++it) {
+
+		delete it->second;
+	}
+
+}
 
 
 
@@ -116,6 +129,12 @@ bool CLoopCloserERD<GRAPH_t>::updateState(
 		}
 		this->updateMapPartitions(m_partitions_full_update);
 
+		// update the node uncertainties
+		m_dijkstra_uncertainties_updated = false;
+		if (m_graph->nodeCount() % 60 == 0) {
+			this->execDijkstraProjection();
+		}
+
 		// check for loop closures
 		partitions_t partitions_for_LC;
 		this->checkPartitionsForLC(&partitions_for_LC);
@@ -170,12 +189,6 @@ void CLoopCloserERD<GRAPH_t>::addScanMatchingEdges(mrpt::utils::TNodeID curr_nod
 		CObservation2DRangeScanPtr prev_laser_scan = 
 			m_nodes_to_laser_scans2D.at(*node_it);
 		ASSERT_(prev_laser_scan.present());
-
-		// TODO - Remove these
-		//// search for prev_laser_scan
-		//search = m_nodes_to_laser_scans2D.find(*node_it);
-		//if (search != m_nodes_to_laser_scans2D.end()) {
-		//prev_laser_scan = search->second;
 
 		// make use of initial node position difference for the ICP edge
 		pose_t initial_pose = m_graph->nodes[curr_nodeID] -
@@ -268,7 +281,7 @@ void CLoopCloserERD<GRAPH_t>::evaluatePartitionsForLC(
 template<class GRAPH_t>
 void CLoopCloserERD<GRAPH_t>::generatePWConsistencyMatrix(
 		const vector_uint& partition,
-		mrpt::math::CMatrixDouble* constist_matrix) {
+		mrpt::math::CMatrixDouble* constist_matrix) const {
 	MRPT_START;
 	using namespace mrpt;
 	using namespace mrpt::math;
@@ -286,12 +299,291 @@ void CLoopCloserERD<GRAPH_t>::generatePWConsistencyElement(
 		const mrpt::utils::TNodeID& a2,
 		const mrpt::utils::TNodeID& b1,
 		const mrpt::utils::TNodeID& b2,
-		mrpt::math::CMatrixDouble33 consistency_elem ) {
+		mrpt::math::CMatrixDouble33 consistency_elem ) const {
 	MRPT_START;
 	using namespace mrpt;
 	using namespace mrpt::math;
 
 
+	MRPT_END;
+}
+
+template<class GRAPH_t>
+void CLoopCloserERD<GRAPH_t>::execDijkstraProjection() {
+	MRPT_START;
+	using namespace std;
+	using namespace mrpt;
+	using namespace mrpt::utils;
+	// for the full algorithm see
+	// - Recognizing places using spectrally cllustered local matches - E.Olson,
+	// p.6
+	
+	// TODO - make it more efficient by computing the path only to the last
+	// inserted nodes if no full_update is issued
+	// TODO - test each step of the process by pausing and computing math on your
+	// own
+
+	m_time_logger.enter("Dijkstra Projection");
+
+	// if uncertainties already updated - do nothing
+	if (m_dijkstra_uncertainties_updated || m_graph->nodeCount() < 5) return;
+
+	cout << "Executing Dijkstra Projection...." << endl;
+
+	// keep track of the nodes that I have visited
+	std::vector<bool> visited_nodes(m_graph->nodeCount(), false);
+
+	// get the neighbors of each node
+	std::map<TNodeID, std::set<TNodeID>>  neighbors_of;
+	m_graph->getAdjacencyMatrix(neighbors_of);
+
+	// initialize a pool of TPaths - draw the minimum-uncertainty path during
+	// execution
+	std::set<TPath*> pool_of_paths;
+	std::cout << "Neighbors of root: " << std::endl;
+	// get the edge to each one of the neighboring nodes of the root
+	std::set<TNodeID> root_neighbors(neighbors_of.at(m_graph->root));
+	for (std::set<TNodeID>::const_iterator n_it = root_neighbors.begin();
+			n_it != root_neighbors.end(); ++n_it) {
+		cout << "\t" << *n_it << endl;
+
+		TPath* path_between_neighbors = new TPath();
+		this->getMinUncertaintyPath(m_graph->root, *n_it, path_between_neighbors);
+
+		pool_of_paths.insert(path_between_neighbors);
+	}
+	// just visited the first node
+	visited_nodes.at(m_graph->root) = true;
+
+	//// TODO Remove these - >>>>>>>>>>>>>>>>>>>>
+	//// printing the pool for verification
+	//cout << "Pool of Paths: " << endl;
+	//for (typename std::set<TPath*>::const_iterator it = pool_of_paths.begin();
+			//it != pool_of_paths.end(); ++it) {
+		//printVector((*it)->nodes_traversed);
+	//}
+	//cout << "------ Done with the root ... ------" << endl;
+	//int iters = 0;
+	//// TODO Remove these - <<<<<<<<<<<<<<<<<<<<<
+
+	// for all unvisited nodes
+	while ( std::any_of(visited_nodes.begin(), visited_nodes.end(),
+			[](bool b) {return !b;} ) ) { // if there is at least one false..
+		TPath* optimal_path = this->popMinUncertaintyPath(&pool_of_paths);
+		TNodeID dest = optimal_path->getDestination();
+
+		//// TODO Remove these - >>>>>>>>>>>>>>>>>>>>
+		//cout << iters << " " << std::string(40, '>') << endl;
+		//cout << "current path Destination: " << dest << endl;
+		//// printing the pool for verification
+		//cout << "Pool of Paths: " << endl;
+		//for (typename std::set<TPath*>::const_iterator it = pool_of_paths.begin();
+				//it != pool_of_paths.end(); ++it) {
+			//printVector((*it)->nodes_traversed);
+		//}
+		//cout << "Nodes visited: " << endl;
+		//std::vector<int> tmp_vec;
+		//for (int i = 0; i != visited_nodes.size(); ++i) {
+			//tmp_vec.push_back(i);
+		//}
+		//printVector(tmp_vec); cout << endl; // indices of numbers
+		//printVector(visited_nodes);         // actual flags
+		//cout << std::string(40, '<') << " " << iters++ << endl;
+		//mrpt::system::pause();
+		//// TODO Remove these - <<<<<<<<<<<<<<<<<<<<<
+
+		if (!visited_nodes.at(dest)) {
+			m_node_optimal_paths[dest] = optimal_path;
+			visited_nodes.at(dest)= true;
+
+			// for all the edges leaving this node .. compose the transforms with the
+			// current pool of paths.
+			this->addToPaths(&pool_of_paths, *optimal_path, neighbors_of.at(dest) );
+		}
+	}
+	//cout << "----------- Done with Dijkstra Projection... ----------" << endl;
+
+	m_dijkstra_uncertainties_updated = true;
+	m_time_logger.leave("Dijkstra Projection");
+	MRPT_END;
+}
+
+template<class GRAPH_t>
+void CLoopCloserERD<GRAPH_t>::addToPaths(
+		std::set<TPath*>* pool_of_paths,
+		const TPath& current_path,
+		const std::set<mrpt::utils::TNodeID>& neighbors) const {
+	MRPT_START;
+	using namespace mrpt::utils;
+	using namespace std;
+
+	TNodeID node_to_append_from = current_path.getDestination();
+
+	// compose transforms for every neighbor of node_to_append_from *except*
+	// for the link connecting node_to_append_from and the second to last node in
+	// the current_path
+	TNodeID second_to_last_node = current_path.nodes_traversed.rbegin()[1];
+	for (std::set<TNodeID>::const_iterator neigh_it = neighbors.begin();
+			neigh_it != neighbors.end(); ++neigh_it) {
+		if (*neigh_it == second_to_last_node) continue;
+
+		// get the path between node_to_append_from, *node_it
+		TPath path_between_nodes;
+		this->getMinUncertaintyPath(node_to_append_from, *neigh_it,
+				&path_between_nodes);
+
+		// format the path to append
+		TPath* path_to_append = new TPath();
+		*path_to_append = current_path;
+		path_to_append->operator+=(path_between_nodes);
+
+		pool_of_paths->insert(path_to_append);
+	}
+
+	MRPT_END;
+}
+
+template<class GRAPH_t>
+bool CLoopCloserERD<GRAPH_t>::queryForOptimalPath(
+		const mrpt::utils::TNodeID node, TPath* path) {
+	MRPT_START;
+	ASSERTMSG_(path, "\nNull TPath* was provided.\n");
+
+	typename std::map<mrpt::utils::TNodeID, TPath*>::const_iterator search;
+	search = m_node_optimal_paths.find(node);
+	bool found = false;
+
+	if (search != m_node_optimal_paths.end()) {
+		path = search->second;
+		found = true;
+
+	}
+	else {
+		// TODO
+		// if this is one nodeID after the last registered one, make an incremental
+		// Dijkstra step, otherwise return false.
+
+		found = false;
+	}
+
+	return found;
+
+	MRPT_END;
+}
+
+template<class GRAPH_t>
+void CLoopCloserERD<GRAPH_t>::getMinUncertaintyPath(
+		const mrpt::utils::TNodeID from,
+		const mrpt::utils::TNodeID to,
+		TPath* path_between_nodes) const {
+	MRPT_START;
+	using namespace mrpt::utils;
+	using namespace mrpt::math;
+	using namespace std;
+
+	ASSERTMSG_(m_graph->edgeExists(from, to) || m_graph->edgeExists(to, from),
+			mrpt::format("\nEdge between the provided nodeIDs"
+				"(%lu <-> %lu) does not exist\n", from, to) );
+
+	// don't add to the path_between_nodes, just fill it in afterwards
+	path_between_nodes->clear(); 
+	
+	// iterate over all the edges, ignore the ones that are all 0s - find the
+	// one that is with the lowest uncertainty
+	double curr_determinant = 0;
+	// forward edges from -> to
+	std::pair<edges_citerator, edges_citerator> fwd_edges_pair =
+		m_graph->getEdges(from, to);
+
+	for (edges_citerator edges_it = fwd_edges_pair.first;
+			edges_it != fwd_edges_pair.second; ++edges_it) {
+		// operate on a temporary object instead of the real edge - otherwise
+		// function is non-const
+		constraint_t curr_edge;
+		curr_edge.copyFrom(edges_it->second);
+
+		// is it all 0s?
+		CMatrixDouble33 inf_mat;
+		curr_edge.getInformationMatrix(inf_mat);
+
+		if (inf_mat == CMatrixDouble33()) {
+			inf_mat.unit(); inf_mat *= 0.0001; // TODO - fill with sample info?
+			curr_edge.cov_inv = inf_mat;
+		}
+
+		TPath curr_path(from); // set the starting node
+		curr_path.addToPath(to, curr_edge);
+
+		// update the resulting path_between_nodes if its determinant is smaller
+		// than the determinant of the current path_between_nodes
+		if (curr_determinant < curr_path.getDeterminant()) {
+			curr_determinant = curr_path.getDeterminant();
+			*path_between_nodes = curr_path;
+		}
+	}
+	// backwards edges to -> from
+	std::pair<edges_citerator, edges_citerator> bwd_edges_pair =
+		m_graph->getEdges(to, from);
+
+	for (edges_citerator edges_it = bwd_edges_pair.first;
+			edges_it != bwd_edges_pair.second; ++edges_it) {
+		// operate on a temporary object instead of the real edge - otherwise
+		// function is non-const
+		constraint_t curr_edge;
+		(edges_it->second).inverse(curr_edge);
+
+		// is it all 0s?
+		CMatrixDouble33 inf_mat;
+		curr_edge.getInformationMatrix(inf_mat);
+
+		if (inf_mat == CMatrixDouble33()) { // TODO - check if isNull works ..
+			inf_mat.unit(); inf_mat *= 0.0001; // TODO - fill with sample info?
+			curr_edge.cov_inv = inf_mat;
+		}
+
+		TPath curr_path(from); // set the starting node
+		curr_path.addToPath(to, curr_edge);
+
+		// update the resulting path_between_nodes if its determinant is smaller
+		// than the determinant of the current path_between_nodes
+		if (curr_determinant < curr_path.getDeterminant()) {
+			curr_determinant = curr_path.getDeterminant();
+			*path_between_nodes = curr_path;
+		}
+	}
+
+	// TODO - add meaningfull assertions here...
+
+	MRPT_END;
+}
+
+template<class GRAPH_t>
+typename CLoopCloserERD<GRAPH_t>::TPath* CLoopCloserERD<GRAPH_t>::
+popMinUncertaintyPath(std::set<TPath*>* pool_of_paths) const {
+	MRPT_START;
+	using namespace std;
+
+	//cout << "Determinants: ";
+	TPath* optimal_path = NULL;
+	double curr_determinant = 0;
+	for (typename std::set<TPath*>::const_iterator it =pool_of_paths->begin();
+			it != pool_of_paths->end(); ++it) {
+		//cout << (*it)->getDeterminant() << ", ";
+
+		// keep the largest determinant - we are in INFORMATION form.
+		if (curr_determinant < (*it)->getDeterminant()) {
+			curr_determinant = (*it)->getDeterminant();
+			optimal_path = *it;
+		}
+	}
+
+	//cout << endl;
+	//cout << "Optimal path determinant: " << optimal_path->getDeterminant() << endl;
+
+	ASSERT_(optimal_path);
+	pool_of_paths->erase(optimal_path); // erase it from the pool
+
+	return optimal_path;
 	MRPT_END;
 }
 
@@ -573,8 +865,9 @@ void CLoopCloserERD<GRAPH_t>::toggleMapPartitionsVisualization() {
 }
 
 template<class GRAPH_t>
-void CLoopCloserERD<GRAPH_t>::computeCentroidOfNodesVector(const vector_uint& nodes_list,
-		std::pair<double, double>* centroid_coords) {
+void CLoopCloserERD<GRAPH_t>::computeCentroidOfNodesVector(
+		const vector_uint& nodes_list,
+		std::pair<double, double>* centroid_coords) const {
 	MRPT_START;
 
 	// get the poses and find the centroid so that we can place the baloon over
@@ -921,23 +1214,30 @@ void CLoopCloserERD<GRAPH_t>::updateMapPartitions(bool full_update /* = false */
 
 template<class GRAPH_t>
 template<class T>
-void CLoopCloserERD<GRAPH_t>::printVectorOfVectors(const T& t) const{
+void CLoopCloserERD<GRAPH_t>::printVectorOfVectors(const T& t) {
 	int i = 0;
 	for (typename T::const_iterator it = t.begin(); it  != t.end(); ++i, ++it) {
 		printf("Vector %d/%lu:\n\t", i, t.size());
-		this->printVector(*it);
+		CLoopCloserERD<GRAPH_t>::printVector(*it);
 	}
 }
 
 // TODO - what happesn if I have them the opposite way?
 template<class GRAPH_t>
 template<class T>
-void CLoopCloserERD<GRAPH_t>::printVector(const T& t) const {
-	for (typename T::const_iterator it = t.begin(); it != t.end(); ++it) {
-		std::cout << *it << ", ";
-	}
-	std::cout << std::endl;
+void CLoopCloserERD<GRAPH_t>::printVector(const T& t) {
+	std::cout << CLoopCloserERD<GRAPH_t>::getVectorAsString(t) << std::endl;
+}
 
+template<class GRAPH_t>
+template<class T>
+std::string CLoopCloserERD<GRAPH_t>::getVectorAsString(const T& t) {
+	using namespace std;
+	stringstream ss;
+	for (typename T::const_iterator it = t.begin(); it != t.end(); ++it) {
+		ss << *it << ", ";
+	}
+	return ss.str();
 }
 
 // TLaserParams
@@ -1038,6 +1338,211 @@ void CLoopCloserERD<GRAPH_t>::TLoopClosureParams::loadFromConfigFile(
 
 	has_read_config = true;
 	MRPT_END;
+}
+
+// TPath
+// //////////////////////////////////
+
+template<class GRAPH_t>
+CLoopCloserERD<GRAPH_t>::TPath::TPath() {
+	this->clear();
+}
+template<class GRAPH_t>
+CLoopCloserERD<GRAPH_t>::TPath::TPath(mrpt::utils::TNodeID starting_node) {
+	this->clear();
+
+	nodes_traversed.push_back(starting_node);
+}
+template<class GRAPH_t>
+CLoopCloserERD<GRAPH_t>::TPath::~TPath() { }
+
+template<class GRAPH_t>
+void CLoopCloserERD<GRAPH_t>::TPath::clear() {
+	using namespace mrpt;
+	using namespace mrpt::poses;
+	using namespace mrpt::math;
+
+	// clear the vector of traversed nodes
+	nodes_traversed.clear();
+
+	// clear the relative edge
+	curr_pose_pdf.mean = pose_t();
+	CMatrixDouble33 init_path_mat; init_path_mat.unit();
+	curr_pose_pdf.cov_inv = init_path_mat;
+
+	determinant_updated = false;
+	determinant_cached = 0;
+
+}
+// TODO - is this done correctly?
+template<class GRAPH_t>
+typename CLoopCloserERD<GRAPH_t>::TPath& CLoopCloserERD<GRAPH_t>::TPath::
+operator+=(
+		const CLoopCloserERD<GRAPH_t>::TPath& other) {
+	using namespace std;
+	using namespace mrpt::utils;
+
+	// other should start where this ends
+	ASSERTMSG_(other.nodes_traversed.begin()[0] ==
+			this->nodes_traversed.rbegin()[0],
+			"\"other\" instance must start from the nodeID that this "
+			"TPath has ended.");
+	ASSERTMSG_(other.nodes_traversed.size(),
+			"\"other\" instance doesn't have an initialized nodes traversal list");
+	ASSERTMSG_(this->nodes_traversed.size(),
+			"\"this\" instance doesn't have an initialized nodes traversal list");
+
+	// add the traversed nodes
+	this->nodes_traversed.insert(
+			this->nodes_traversed.end(),
+			other.nodes_traversed.begin()+1,
+			other.nodes_traversed.end());
+	this->curr_pose_pdf += other.curr_pose_pdf;
+	
+	determinant_updated = false;
+	return *this;
+
+}
+
+template<class GRAPH_t>
+void CLoopCloserERD<GRAPH_t>::TPath::addToPath(
+		mrpt::utils::TNodeID node, constraint_t edge) {
+
+	// update the traversed nodes
+	nodes_traversed.push_back(node);
+
+	// update the path
+	curr_pose_pdf += edge;
+
+	determinant_updated = false;
+}
+
+template<class GRAPH_t>
+void CLoopCloserERD<GRAPH_t>::TPath::loadFromConfigFile( 
+		const mrpt::utils::CConfigFileBase &source,
+		const std::string &section) {}
+template<class GRAPH_t>
+void CLoopCloserERD<GRAPH_t>::TPath::dumpToTextStream(
+		mrpt::utils::CStream &out) const {
+
+	out.printf("%s", this->getAsString().c_str());
+
+}
+
+template<class GRAPH_t>
+void CLoopCloserERD<GRAPH_t>::TPath::getAsString(std::string* str) const{
+	using namespace mrpt;
+	using namespace mrpt::math;
+	using namespace std;
+
+	stringstream ss;
+	string header_sep(30, '=');
+
+	ss << "Path properties: " << endl;
+	ss << header_sep << endl << endl;
+
+	ss << "- CPosePDFGaussianInf: "
+		<< (this->isGaussianInfType()?  "TRUE" : "FALSE") << endl;
+	ss << "- Nodeslist: \n\t< " <<
+		CLoopCloserERD<GRAPH_t>::getVectorAsString(nodes_traversed)
+		<< "\b\b>" << endl;
+
+	if (nodes_traversed.size()) {
+		ss << "- Relative edge: " << endl;
+		ss << "\tMean: " << curr_pose_pdf.getMeanVal().asString() << endl;
+
+		CMatrixDouble33 mat;
+		if (this->isGaussianInfType()) {
+			curr_pose_pdf.getInformationMatrix(mat);
+			ss << "-Information matrix: " << endl << mat;
+					
+		}
+		else if (this->isGaussianType()) {
+			curr_pose_pdf.getCovariance(mat);
+			ss << "-Covariance matrix: " << endl << mat;
+		}
+
+	}
+
+	*str = ss.str();
+}
+template<class GRAPH_t>
+std::string CLoopCloserERD<GRAPH_t>::TPath::getAsString() const {
+	std::string s;
+	this->getAsString(&s);
+	return s;
+}
+
+template<class GRAPH_t>
+mrpt::utils::TNodeID CLoopCloserERD<GRAPH_t>::TPath::getSource() const {
+	return nodes_traversed.at(0);
+}
+template<class GRAPH_t>
+mrpt::utils::TNodeID CLoopCloserERD<GRAPH_t>::TPath::getDestination() const {
+	return nodes_traversed.back();
+}
+template<class GRAPH_t>
+double CLoopCloserERD<GRAPH_t>::TPath::getDeterminant() {
+	MRPT_START;
+
+	using namespace mrpt::math;
+	using namespace std;
+
+	// if determinant is up-to-date then return the cached version...
+	if (determinant_updated) return determinant_cached;
+
+	CMatrixDouble33 mat;
+	if (this->isGaussianInfType()) {
+		curr_pose_pdf.getInformationMatrix(mat);
+	}
+	else if (this->isGaussianType()) {
+		curr_pose_pdf.getCovariance(mat);
+	}
+	double determinant = mat.det();
+
+	// update the cached version
+	determinant_cached = determinant;
+	determinant_updated = true;
+
+	//cout << "mat = " << endl << mat;
+	//cout << "Determinant = " << determinant << std::endl;
+
+
+	return determinant;
+
+	MRPT_END;
+}
+
+template<class GRAPH_t>
+bool CLoopCloserERD<GRAPH_t>::TPath::hasLowerUncertaintyThan(
+		const TPath& other) const {
+	ASSERT_((this->isGaussianInfType() && other->isGaussianInfType()) ||
+			(this->isGaussianType() && other->isGaussianType()) );
+
+	// If we are talking about information form matrices, the *higher* the 
+	// determinant the better.
+	// if we are talking about covariances then the *lower* the determinant the
+	// better.
+	bool has_lower = false;
+	if (this->isGaussianInfType()) {
+		has_lower = this->getDeterminant() > other->getDeterminant();
+	}
+	else if (this->isGaussianType()) {
+		has_lower = this->getDeterminant() < other->getDeterminant();
+	}
+
+	return has_lower;
+}
+
+template<class GRAPH_t>
+bool CLoopCloserERD<GRAPH_t>::TPath::isGaussianInfType() const {
+	using namespace mrpt::poses;
+	return curr_pose_pdf.GetRuntimeClass() == CLASS_ID(CPosePDFGaussianInf);
+}
+template<class GRAPH_t>
+bool CLoopCloserERD<GRAPH_t>::TPath::isGaussianType() const {
+	using namespace mrpt::poses;
+	return curr_pose_pdf.GetRuntimeClass() == CLASS_ID(CPosePDFGaussian);
 }
 
 } } } // end of namespaces

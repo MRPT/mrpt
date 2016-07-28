@@ -39,6 +39,7 @@
 
 #include <algorithm>
 #include <iostream>
+#include <iterator>
 #include <map>
 #include <vector>
 #include <string>
@@ -99,6 +100,8 @@ class CLoopCloserERD:
 		/**\brief New typedef for splitting the nodes into groups */
 		typedef std::vector<mrpt::vector_uint> partitions_t;
 		typedef std::map<const mrpt::utils::TNodeID, mrpt::obs::CObservation2DRangeScanPtr> nodes_to_scans2D_t;
+		typedef typename GRAPH_t::edges_map_t::const_iterator edges_citerator;
+		typedef typename GRAPH_t::edges_map_t::iterator edges_iterator;
 
 		// Public methods
 		//////////////////////////////////////////////////////////////
@@ -203,6 +206,73 @@ class CLoopCloserERD:
 		TLaserParams m_laser_params;
 		TLoopClosureParams m_lc_params;
 
+		/**\brief Holds the data of an information path.
+		 *
+		 * Instances of this struct are used during the Dijkstra projection method
+		 */
+		struct TPath : public mrpt::utils::CLoadableOptions {
+
+			// methods
+			// ////////////////////////////
+			TPath();
+			TPath(mrpt::utils::TNodeID starting_node);
+			~TPath();
+			void clear();
+
+			// no need to load anything..
+			void loadFromConfigFile(
+					const mrpt::utils::CConfigFileBase &source,
+					const std::string &section);
+			void 	dumpToTextStream(mrpt::utils::CStream &out) const;
+			std::string getAsString() const;
+			void getAsString(std::string* str) const;
+
+			mrpt::utils::TNodeID getSource() const;
+			mrpt::utils::TNodeID getDestination() const;
+			double getDeterminant();
+
+			/**\brief Test if the current path has a lower uncertainty than the other
+			 * path.
+			 *
+			 * \return True if the current path does have a lower uncertainty
+			 */
+			bool hasLowerUncertaintyThan(const TPath& other) const;
+
+			/**\brief add a new link in the current path.
+			 *
+			 * Add the node that the path passese by and the information matrix of
+			 * the extra link
+			 */
+			void addToPath(mrpt::utils::TNodeID node, constraint_t edge);
+
+			/**brief Test weather the constraints are of type CPosePDFGaussianInf.  */
+			bool isGaussianInfType() const;
+			/**brief Test weather the constraints are of type CPosePDFGaussian.  */
+			bool isGaussianType() const;
+
+			// TODO - implement these..
+			//operator=(const TPath& other);
+			//operator==(const TPath& other);
+			//operator!=(const TPath& other);
+			TPath& operator+=(const TPath& other);
+			// TODO - add to the dumpToConsole, << oeprators for monitoring the
+			// results...
+
+			// members
+			// ////////////////////////////
+
+			/**\brief Nodes that the path comprises of.
+			 * Nodes in the path are added to the end of the vector
+			 */
+			std::vector<mrpt::utils::TNodeID> nodes_traversed;
+			/**\brief Current path position + related covariance */
+			constraint_t curr_pose_pdf;
+
+			bool determinant_updated;
+			double determinant_cached;
+
+		};
+
 		/** \brief Initialization function to be called from the various
 		 * constructors.
 		 */
@@ -243,12 +313,14 @@ class CLoopCloserERD:
 		void toggleMapPartitionsVisualization();
 
 		void computeCentroidOfNodesVector(const vector_uint& nodes_list,
-				std::pair<double, double>* centroid_coords);
+				std::pair<double, double>* centroid_coords) const;
 
 		template<class T>
-		void printVectorOfVectors(const T& t) const;
+		static void printVectorOfVectors(const T& t);
 		template<class T>
-		void printVector(const T& t) const;
+		static void printVector(const T& t);
+		template<class T>
+		static std::string getVectorAsString(const T& t);
 
 		/**\brief Check the registered so far partitions for potential loop
 		 * closures.
@@ -276,7 +348,7 @@ class CLoopCloserERD:
 		 * \sa generatePWConsistencyMatrix
 		 */
 		void generatePWConsistencyMatrix(const vector_uint& partition,
-				mrpt::math::CMatrixDouble* consist_matrix);
+				mrpt::math::CMatrixDouble* consist_matrix) const;
 		/**\brief Return the pair-wise consistency between the observations of the
 		 * given nodes.
 		 *
@@ -290,10 +362,55 @@ class CLoopCloserERD:
 				const mrpt::utils::TNodeID& a2,
 				const mrpt::utils::TNodeID& b1,
 				const mrpt::utils::TNodeID& b2,
-				mrpt::math::CMatrixDouble33 consistency_elem );
+				mrpt::math::CMatrixDouble33 consistency_elem ) const;
 		// TODO - implement the computation of Average pair
 		// TODO - implement the computation of the two dominant eigenvalues
 		// computeDominantEigenVs
+		/**\brief compute the minimum uncertainty of each node position with
+		 * regards to the graph root.
+		 */
+		void execDijkstraProjection();
+		/**\brief Given two nodeIDs compute and return the path connecting them.
+		 *
+		 * Method takes care of multiple edges, as well as edges with 0 covariance
+		 * matrices
+		 */
+		void getMinUncertaintyPath(
+				const mrpt::utils::TNodeID from,
+				const mrpt::utils::TNodeID to,
+				TPath* path) const;
+		/**\brief Find the minimum uncertainty path from te given pool of TPath
+		 * instances.
+		 *
+		 * Removes (and returns) the found path from the pool.
+		 *
+		 * \return Minimum uncertainty path from the pool provided
+		 */
+		TPath* popMinUncertaintyPath(std::set<TPath*>* pool_of_paths) const;
+		/**\brief  Append the paths from the current node that haven't already been
+		 * registered in the pool of paths
+		 *
+		 * \param[in] pool_of_paths Paths that are currently registered
+		 * \param[in] curr_path Path that I am currently traversing. This path is
+		 * already removed from \a pool_of_paths
+		 * \param[in] neighbors std::set of neighboring nodes to the last node of
+		 * the current path
+		 */
+		void addToPaths(std::set<TPath*>* pool_of_paths,
+				const TPath& curr_path,
+				const std::set<mrpt::utils::TNodeID>& neibors) const;
+		/**\brief
+		 * Query for the optimal path of a nodeID. 
+		 *
+		 * Method handles calls to out-of-bounds nodes as well as nodes whose paths
+		 * have not yet been computed.
+		 *
+		 * \param[in] node nodeID for which hte path is going to be returned
+		 * \param[out] path TPath* to be filled in by the method
+		 *
+		 * \return True if optimal path has been computed and is available.
+		 */
+		bool queryForOptimalPath(const mrpt::utils::TNodeID node, TPath* path);
 
 		// Private variables
 		//////////////////////////////////////////////////////////////
@@ -339,12 +456,21 @@ class CLoopCloserERD:
 		bool m_checked_for_usuable_dataset;
 		size_t m_consecutive_invalid_format_instances;
 		const size_t m_consecutive_invalid_format_instances_thres;
+		
+
+		// TODO - implement this
+		// does the node positional uncertainty needs updating?
+		bool m_dijkstra_uncertainties_updated;
+
+		/**\brief Map for holding the information matrix representing the
+		 * certanty of each node position
+		 */
+		std::map<mrpt::utils::TNodeID, TPath*> m_node_optimal_paths;
 
 		mrpt::utils::COutputLogger m_out_logger; /**<Output logger instance */
 		mrpt::utils::CTimeLogger m_time_logger; /**<Time logger instance */
 
 		const std::string m_class_name;
-
 
 
 };
