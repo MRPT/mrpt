@@ -117,8 +117,10 @@ bool CLoopCloserERD<GRAPH_t>::updateState(
 		// register the new node-laserScan pair
 		m_nodes_to_laser_scans2D[m_graph->nodeCount()-1] = m_last_laser_scan2D;
 
-		// scan match with previous X nodes
-		this->addScanMatchingEdges(m_graph->nodeCount()-1);
+		if (m_laser_params.use_scan_matching) {
+			// scan match with previous X nodes
+			this->addScanMatchingEdges(m_graph->nodeCount()-1);
+		}
 
 		// update the partitioned map
 		if ((m_graph->nodeCount() % 50) == 0) {
@@ -1259,6 +1261,8 @@ void CLoopCloserERD<GRAPH_t>::TLaserParams::dumpToTextStream(
 		mrpt::utils::CStream &out) const {
 	MRPT_START;
 
+	out.printf("Use scan-matching constraints               = %s\n",
+			use_scan_matching? "TRUE": "FALSE");
 	out.printf("ICP goodness threshold                      = %.2f%% \n",
 			ICP_goodness_thresh*100);
 	out.printf("Num. of previous nodes to check ICP against =  %d\n",
@@ -1274,6 +1278,10 @@ void CLoopCloserERD<GRAPH_t>::TLaserParams::loadFromConfigFile(
 		const std::string& section) {
 	MRPT_START;
 
+	use_scan_matching = source.read_bool(
+			section,
+			"use_scan_matching",
+			true, false);
 	ICP_goodness_thresh = source.read_double(
 			section,
 			"ICP_goodness_thresh",
