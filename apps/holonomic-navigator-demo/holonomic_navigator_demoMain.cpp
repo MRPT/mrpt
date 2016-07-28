@@ -599,7 +599,9 @@ void holonomic_navigator_demoFrame::simulateOneStep(double time_step)
 		m_simul_options.ROBOT_MAX_SPEED,
 		desiredDirection,
 		desiredSpeed,
-		out_log );
+		out_log,
+		m_simul_options.MAX_SENSOR_RADIUS
+		);
 	// Tac
 
 	// Move robot:
