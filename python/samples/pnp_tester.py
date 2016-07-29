@@ -5,6 +5,99 @@ import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 
+import mpld3
+from mpld3 import plugins, utils
+
+class HighlightLines(plugins.PluginBase):
+    """A plugin for an interactive legend. 
+    
+    Inspired by http://bl.ocks.org/simzou/6439398
+    
+    """
+
+    JAVASCRIPT = """
+    mpld3.register_plugin("interactive_legend", InteractiveLegend);
+    InteractiveLegend.prototype = Object.create(mpld3.Plugin.prototype);
+    InteractiveLegend.prototype.constructor = InteractiveLegend;
+    InteractiveLegend.prototype.requiredProps = ["line_ids", "labels"];
+    InteractiveLegend.prototype.defaultProps = {}
+    function InteractiveLegend(fig, props){
+        mpld3.Plugin.call(this, fig, props);
+    };
+
+    InteractiveLegend.prototype.draw = function(){
+        var labels = new Array();
+        for(var i=0; i<this.props.labels.length; i++){
+            var obj = {}
+            obj.label = this.props.labels[i]
+            obj.line = mpld3.get_element(this.props.line_ids[i], this.fig)
+            obj.visible = false;
+            labels.push(obj);
+        }
+       
+        var ax = this.fig.axes[0]
+        var legend = this.fig.canvas.append("svg:g")
+                               .attr("class", "legend");
+        
+        // add the rectangles
+        legend.selectAll("rect")
+                .data(labels)
+             .enter().append("rect")
+                .attr("height",10)
+                .attr("width", 25)
+                .attr("x",ax.width+10+ax.position[0])
+                .attr("y",function(d,i) {
+                                return ax.position[1]+ i * 25 - 10;})
+                .attr("stroke", function(d) {
+                                return d.line.props.edgecolor})
+                .attr("class", "legend-box")
+                .style("fill", "white")
+                .on("click", click)
+        
+        // add the text
+        legend.selectAll("text")
+                .data(labels)
+            .enter().append("text")
+              .attr("x", function (d) {
+                return ax.width+10+ax.position[0] + 25 + 15
+              })
+              .attr("y", function(d,i) { 
+                return ax.position[1]+ i * 25
+              })
+              .text(function(d) { return d.label })
+        
+        // specify the action on click
+        function click(d,i){
+            d.visible = !d.visible;
+            d3.select(this)
+              .style("fill",function(d, i) {
+                  console.log(d)
+                  var color = d.line.props.edgecolor
+                  return d.visible ? color : "white";
+              })
+            d3.select(d.line.path[0][0])
+                .style("stroke-opacity", d.visible ? 1 : d.line.props.alpha);
+            
+        }
+    };
+    """
+
+    def __init__(self, lines, labels, css):
+        
+        self.css_ = css or ""
+        
+        self.lines = lines
+        self.dict_ = {"type": "interactive_legend",
+                      "line_ids": [utils.get_id(line) for line in lines],
+                      "labels":labels}
+
+
+css = """
+.legend-box {
+  cursor: pointer;  
+}
+"""
+
 import pymrpt
 
 mpl.rcParams['figure.figsize'] = (20.0, 16.0)
@@ -111,7 +204,28 @@ def display_comparison_plot(t, arr, names, line_styles, title, xtitle, ytitle, y
     f.canvas.mpl_connect('pick_event', onpick)
         
     plt.show()
-    plt.savefig(figname)
+    plt.savefig(figname+'.pdf')
+ 
+    
+def display_comparison_plot_mpld3(t, arr, names, line_styles, title, xtitle, ytitle, ylim, figname):
+    f, ax = plt.subplots()    
+    lines=[]
+    for i in np.arange(0,len(arr)):
+        l, =ax.plot(t,arr[i,:],label=names[i], lw=3, ls=line_styles[i], alpha=0.2)
+        lines.append(l)
+    
+    ax.set_xlabel(xtitle)
+    ax.set_ylabel(ytitle)
+    ax.set_title(title)
+    ax=plt.gca()
+    ax.set_ylim(ylim)
+    ax.grid()
+    
+    plugins.connect(f, HighlightLines(lines, names, css))
+
+    mpld3.display()
+    
+    mpld3.save_html(f, figname+'.html')
 
 def calc_err(pose1, pose2):
     # Percent error in translation    
@@ -247,9 +361,9 @@ def err_plot():
     it=np.arange(0,n_iter)
     
     
-    display_comparison_plot(it, err_t, names=['epnp','dls','p3p','ppnp','posit','lhm'], line_styles =['-', '--', '--', ':','-','-'], title='Translation %Error Plot', xtitle='Iteration', ytitle='%$e_t$', ylim=[0,10], figname ='err_t.pdf')
+    display_comparison_plot_mpld3(it, err_t, names=['epnp','dls','p3p','ppnp','posit','lhm'], line_styles =['-', '--', '--', ':','-','-'], title='Translation %Error Plot', xtitle='Iteration', ytitle='%$e_t$', ylim=[0,10], figname ='err_t')
     
-    display_comparison_plot(it, err_q, names=['epnp','dls','p3p','ppnp','posit','lhm'], line_styles =['-', '--', '--', ':','-','-'], title='Rotation Error Plot (rad)', xtitle='Iteration', ytitle='$e_q$', ylim=[0,2], figname ='err_q.pdf')
+    display_comparison_plot_mpld3(it, err_q, names=['epnp','dls','p3p','ppnp','posit','lhm'], line_styles =['-', '--', '--', ':','-','-'], title='Rotation Error Plot (rad)', xtitle='Iteration', ytitle='$e_q$', ylim=[0,2], figname ='err_q')
     
     
     comp_arr = np.zeros([n_iter,2])
@@ -401,11 +515,11 @@ def err_statistics_fcn_n():
     err_t=err[:,0].reshape(n_algos,n_iter1)
     err_q=err[:,1].reshape(n_algos,n_iter1)        
     
-    display_comparison_plot(it, err_t, names=['epnp','dls','p3p','ppnp','posit','lhm'], line_styles =['-', '--', '--', ':','-','-'], title='Mean Translation %Error Plot', xtitle='n', ytitle=r'% $\bar{e}_t$', ylim=[0,10], figname ='mean_err_t.pdf')
-    display_comparison_plot(it, err_q, names=['epnp','dls','p3p','ppnp','posit','lhm'], line_styles =['-', '--', '--', ':','-','-'], title='Mean Rotation Error Plot (rad)', xtitle='n', ytitle=r'$\bar{e}_q$', ylim=[0,0.5], figname ='mean_err_q.pdf')
+    display_comparison_plot_mpld3(it, err_t, names=['epnp','dls','p3p','ppnp','posit','lhm'], line_styles =['-', '--', '--', ':','-','-'], title='Mean Translation %Error Plot', xtitle='n', ytitle=r'% $\bar{e}_t$', ylim=[0,10], figname ='mean_err_t')
+    display_comparison_plot_mpld3(it, err_q, names=['epnp','dls','p3p','ppnp','posit','lhm'], line_styles =['-', '--', '--', ':','-','-'], title='Mean Rotation Error Plot (rad)', xtitle='n', ytitle=r'$\bar{e}_q$', ylim=[0,0.5], figname ='mean_err_q')
 
-    display_comparison_plot(it, err_t, names=['epnp','dls','p3p','ppnp','posit','lhm'], line_styles =['-', '--', '--', ':','-','-'], title='Median Translation %Error Plot', xtitle='n', ytitle=r'% $\tilde{e}_t$', ylim=[0,10], figname ='median_err_t.pdf')
-    display_comparison_plot(it, err_q, names=['epnp','dls','p3p','ppnp','posit','lhm'], line_styles =['-', '--', '--', ':','-','-'], title='Median Rotation Error Plot (rad)', xtitle='n', ytitle=r'$\tilde{e}_q$', ylim=[0,0.5], figname ='median_err_q.pdf')
+    display_comparison_plot_mpld3(it, err_t, names=['epnp','dls','p3p','ppnp','posit','lhm'], line_styles =['-', '--', '--', ':','-','-'], title='Median Translation %Error Plot', xtitle='n', ytitle=r'% $\tilde{e}_t$', ylim=[0,10], figname ='median_err_t')
+    display_comparison_plot_mpld3(it, err_q, names=['epnp','dls','p3p','ppnp','posit','lhm'], line_styles =['-', '--', '--', ':','-','-'], title='Median Rotation Error Plot (rad)', xtitle='n', ytitle=r'$\tilde{e}_q$', ylim=[0,0.5], figname ='median_err_q')
 
 
     return err    
@@ -537,14 +651,15 @@ def err_statistics_fcn_sigma():
     err_t=err[:,0].reshape(n_algos,n_iter1)
     err_q=err[:,1].reshape(n_algos,n_iter1)        
     
-    display_comparison_plot(it, err_t, names=['epnp','dls','p3p','ppnp','posit','lhm'], line_styles =['-', '--', '--', ':','-','-'], title='Mean Translation %Error Plot', xtitle=r'\sigma', ytitle=r'% $\bar{e}_t$', ylim=[0,10], figname ='mean_sigma_err_t.pdf')
-    display_comparison_plot(it, err_q, names=['epnp','dls','p3p','ppnp','posit','lhm'], line_styles =['-', '--', '--', ':','-','-'], title='Mean Rotation Error Plot (rad)', xtitle=r'\sigma', ytitle=r'$\bar{e}_q$', ylim=[0,0.5], figname ='mean_sigma_err_q.pdf')
+    display_comparison_plot_mpld3(it, err_t, names=['epnp','dls','p3p','ppnp','posit','lhm'], line_styles =['-', '--', '--', ':','-','-'], title='Mean Translation %Error Plot', xtitle=r'\sigma', ytitle=r'% $\bar{e}_t$', ylim=[0,10], figname ='mean_sigma_err_t')
+    display_comparison_plot_mpld3(it, err_q, names=['epnp','dls','p3p','ppnp','posit','lhm'], line_styles =['-', '--', '--', ':','-','-'], title='Mean Rotation Error Plot (rad)', xtitle=r'\sigma', ytitle=r'$\bar{e}_q$', ylim=[0,0.5], figname ='mean_sigma_err_q')
 
-    display_comparison_plot(it, err_t, names=['epnp','dls','p3p','ppnp','posit','lhm'], line_styles =['-', '--', '--', ':','-','-'], title='Median Translation %Error Plot', xtitle=r'\sigma', ytitle=r'% $\tilde{e}_t$', ylim=[0,10], figname ='median_sigma_err_t.pdf')
-    display_comparison_plot(it, err_q, names=['epnp','dls','p3p','ppnp','posit','lhm'], line_styles =['-', '--', '--', ':','-','-'], title='Median Rotation Error Plot (rad)', xtitle=r'\sigma', ytitle=r'$\tilde{e}_q$', ylim=[0,0.5], figname ='median_sigma_err_q.pdf')
+    display_comparison_plot_mpld3(it, err_t, names=['epnp','dls','p3p','ppnp','posit','lhm'], line_styles =['-', '--', '--', ':','-','-'], title='Median Translation %Error Plot', xtitle=r'\sigma', ytitle=r'% $\tilde{e}_t$', ylim=[0,10], figname ='median_sigma_err_t')
+    display_comparison_plot_mpld3(it, err_q, names=['epnp','dls','p3p','ppnp','posit','lhm'], line_styles =['-', '--', '--', ':','-','-'], title='Median Rotation Error Plot (rad)', xtitle=r'\sigma', ytitle=r'$\tilde{e}_q$', ylim=[0,0.5], figname ='median_sigma_err_q')
 
 
     return err    
-    
+
+err_plot()
 err_statistics_fcn_sigma()
-#err_statistics_fcn_n()
+err_statistics_fcn_n()
