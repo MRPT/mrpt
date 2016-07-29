@@ -33,7 +33,7 @@ TEST(CPnP_Test, lhm_ALGO_TEST)
     
     Eigen::MatrixXd I3 = Eigen::MatrixXd::Identity(3, 3);
     
-    pnp::CPnP p;
+    mrpt::vision::pnp::CPnP p;
 
     Eigen::MatrixXd pose_est(6,1);
     p.CPnP_lhm(obj_pts, img_pts, n, I3, pose_est);
@@ -75,7 +75,7 @@ TEST(CPnP_Test, p3p_ALGO_TEST)
     
     Eigen::MatrixXd I3 = Eigen::MatrixXd::Identity(3, 3);
     
-    pnp::CPnP p;
+    mrpt::vision::pnp::CPnP p;
 
     Eigen::MatrixXd pose_est(6,1);
     p.CPnP_p3p(obj_pts, img_pts, n, I3, pose_est);
@@ -117,7 +117,7 @@ TEST(CPnP_Test, ppnp_ALGO_TEST)
     
     Eigen::MatrixXd I3 = Eigen::MatrixXd::Identity(3, 3);
     
-    pnp::CPnP p;
+    mrpt::vision::pnp::CPnP p;
 
     Eigen::MatrixXd pose_est(6,1);
     p.CPnP_ppnp(obj_pts, img_pts, n, I3, pose_est);
@@ -159,7 +159,7 @@ TEST(CPnP_Test, rpnp_ALGO_TEST)
     
     Eigen::MatrixXd I3 = Eigen::MatrixXd::Identity(3, 3);
     
-    pnp::CPnP p;
+    mrpt::vision::pnp::CPnP p;
 
     Eigen::MatrixXd pose_est(6,1);
     p.CPnP_rpnp(obj_pts, img_pts, n, I3, pose_est);
@@ -203,7 +203,7 @@ TEST(CPnP_Test, posit_ALGO_TEST)
     
     Eigen::MatrixXd I3 = Eigen::MatrixXd::Identity(3, 3);
     
-    pnp::CPnP p;
+    mrpt::vision::pnp::CPnP p;
     
     Eigen::MatrixXd pose_est(6,1);
     p.CPnP_posit(obj_pts, i_pts, n, I3, pose_est);
@@ -247,7 +247,7 @@ TEST(CPnP_Test, posit_ALGO_TEST)
         
         Eigen::MatrixXd I3 = Eigen::MatrixXd::Identity(3, 3);
         
-        pnp::CPnP p;
+        mrpt::vision::pnp::CPnP p;
         
         i_pts= img_pts.block(0,0,2,n);
 
@@ -291,7 +291,7 @@ TEST(CPnP_Test, posit_ALGO_TEST)
         
         Eigen::MatrixXd I3 = Eigen::MatrixXd::Identity(3, 3);
         
-        pnp::CPnP p;
+        mrpt::vision::pnp::CPnP p;
         
         i_pts= img_pts.block(0,0,2,n);
 
