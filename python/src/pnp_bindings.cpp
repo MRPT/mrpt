@@ -11,7 +11,7 @@ using namespace Eigen;
 #include <mrpt/config.h>
 
 #include <mrpt/vision/pnp_algos.h>
-pnp::CPnP pnp_algos;
+mrpt::vision::pnp::CPnP pnp_algos;
 
 #if MRPT_HAS_OPENCV
     #include <opencv2/opencv.hpp>
@@ -42,7 +42,7 @@ private:
 PnPAlgos::PnPAlgos( int new_m ){
 	dummy = new_m;
     #if MRPT_HAS_OPENCV
-    std::cout <<" Using OpenCV dependency for PnP Algorithms - EPnP, DLS-PnP " << std::endl << std::endl; 
+    std::cout <<" Using OpenCV dependency for PnP Algorithms - EPnP, DLS-PnP, UPnP(Broken) " << std::endl << std::endl; 
     #else 
     std::cout << " Initializing PnP class " << std::endl << std::endl;
     #endif
