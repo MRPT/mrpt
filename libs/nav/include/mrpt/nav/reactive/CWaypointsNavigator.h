@@ -18,6 +18,11 @@ namespace mrpt
 	/** This class extends `CAbstractNavigator` with the capability of following a list of waypoints. By default, waypoints are followed one by one, 
 	 *  but, if they are tagged with `allow_skip=true` **and** the derived navigator class supports it, the navigator may choose to skip some to 
 	 *  make a smoother, safer and shorter navigation.
+	 * Notes on navigation status and event dispatchment:
+	 *  - Navigation state may briefly pass by the `IDLE` status between a waypoint is reached and a new navigation command is issued towards the next waypoint.
+	 *  - `sendNavigationEndEvent()` will be called only when the last waypoint is reached.
+	 *  - Reaching an intermediary waypoint (or skipping it if considered so by the navigator) generates a call to `sendWaypointReachedEvent()` instead.
+	 *
 	 * \sa Base class CAbstractNavigator, CWaypointsNavigator::navigateWaypoints(), and derived classes.
 	 *  \ingroup nav_reactive
 	 */
