@@ -28,14 +28,17 @@ namespace mrpt
 	 * \code
 	 * [FULL_EVAL_CONFIG]
 	 * factorWeights=1.0 1.0 1.0 0.05 1.0
-	 * // 1: Clearness in direction
-	 * // 2: Closest approach to target along straight line (Euclidean)
-	 * // 3: Distance of end colission-free point to target (Euclidean)
-	 * // 4: Hysteresis
-	 * // 5: Clearness to nearest obstacle along path
-	 * TARGET_SLOW_APPROACHING_DISTANCE = 0.60  // For stopping gradually
-	 * TOO_CLOSE_OBSTACLE               = 0.02  // In meters
-	 * HYSTERESIS_SECTOR_COUNT          = 5     // Range of "sectors" (directions) for hysteresis over succesive timesteps
+	 * // 0: Clearness in direction
+	 * // 1: Closest approach to target along straight line (Euclidean)
+	 * // 2: Distance of end colission-free point to target (Euclidean)
+	 * // 3: Hysteresis
+	 * // 4: Clearness to nearest obstacle along path
+	 * TARGET_SLOW_APPROACHING_DISTANCE = 0.20   // Start to reduce speed when closer than this to target.
+	 * TOO_CLOSE_OBSTACLE               = 0.02   // Directions with collision-free distances below this threshold are not elegible.
+	 * HYSTERESIS_SECTOR_COUNT          = 5      // Range of "sectors" (directions) for hysteresis over succesive timesteps
+	 * PHASE1_FACTORS   = 0 1 2                  // Indices of the factors above to be considered in phase 1
+	 * PHASE2_FACTORS   = 3 4                    // Indices of the factors above to be considered in phase 2
+	 * PHASE1_THRESHOLD = 0.75                   // Phase1 scores must be above this relative range threshold [0,1] to be considered in phase 2 (Default:`0.75`)
 	 * \endcode
 	 *
 	 *  \sa CAbstractHolonomicReactiveMethod,CReactiveNavigationSystem
@@ -67,10 +70,12 @@ namespace mrpt
 		/** Algorithm options */
 		struct NAV_IMPEXP TOptions : public mrpt::utils::CLoadableOptions
 		{
-			double TOO_CLOSE_OBSTACLE;
-			double TARGET_SLOW_APPROACHING_DISTANCE;
-			double HYSTERESIS_SECTOR_COUNT;
-			std::vector<double> factorWeights;  //!< See docs above
+			double TOO_CLOSE_OBSTACLE;  //!< Directions with collision-free distances below this threshold are not elegible.
+			double TARGET_SLOW_APPROACHING_DISTANCE; //!< Start to reduce speed when closer than this to target.
+			double HYSTERESIS_SECTOR_COUNT; //!< Range of "sectors" (directions) for hysteresis over succesive timesteps
+			std::vector<double>   factorWeights;  //!< See docs above
+			std::vector<int>      PHASE1_FACTORS, PHASE2_FACTORS; //!< Factor indices [0,4] for the factors to consider in each phase of the movement decision (Defaults: `PHASE1_FACTORS=0 1 2`, `PHASE2_FACTORS=`3 4`)
+			double                PHASE1_THRESHOLD;   //!< Phase1 scores must be above this relative range threshold [0,1] to be considered in phase 2 (Default:`0.75`)
 
 			TOptions();
 			void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) MRPT_OVERRIDE; // See base docs
