@@ -73,8 +73,6 @@ void  CHolonomicFullEval::navigate(
 	std::vector<double> dirs_eval(nDirs, .0);  // Evaluation of each possible direction
 
 	const int NUM_FACTORS = 5;
-	double score_min[NUM_FACTORS] = { 100.0, 100.0, 100.0, 100.0, 100.0 };
-	double score_max[NUM_FACTORS] = { 0.0, 0.0, 0.0, 0.0, 0.0 };
 
 	ASSERT_(options.factorWeights.size()==NUM_FACTORS);
 	const double weights_sum = mrpt::math::sum(options.factorWeights);
@@ -159,23 +157,8 @@ void  CHolonomicFullEval::navigate(
 			scores[4] = avr_path_clearness;
 		}
 
-		// Keep min/max:
-		for (int l=0;l<NUM_FACTORS;l++) 
-		{
-			mrpt::utils::keep_max(score_max[l], scores[l]);
-			mrpt::utils::keep_min(score_min[l], scores[l]);
-		}
-
 		// Save stats for debugging:
 		for (int l=0;l<NUM_FACTORS;l++) m_dirs_scores(i,l)= scores[l];
-	}
-
-	// Prepare normalization constants:
-	double score_norm_f[NUM_FACTORS];
-	for (int l=0;l<NUM_FACTORS;l++) {
-		if (std::abs(score_max[l]-score_min[l])<1e-5)
-		     score_norm_f[l] = 1.0;
-		else score_norm_f[l] = 1.0/(score_max[l]-score_min[l]);
 	}
 
 	// Phase 1: average of normalized factors 1,2 & 3 and thresholding:
@@ -202,11 +185,7 @@ void  CHolonomicFullEval::navigate(
 	{
 		// Sum up:
 		for (unsigned int l : options.PHASE1_FACTORS)
-		{
-			//const double score_norm = (m_dirs_scores(i,l) - score_min[l]) * score_norm_f[l];
-			const double score_norm = m_dirs_scores(i,l);
-			phase1_score[i] += options.factorWeights[l] * score_norm;
-		}
+			phase1_score[i] += options.factorWeights[l] * m_dirs_scores(i,l);
 	
 		phase1_score[i]*=weights_sum_phase1_inv;
 
