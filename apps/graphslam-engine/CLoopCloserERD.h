@@ -27,8 +27,9 @@
 #include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/opengl/CSetOfLines.h>
 #include <mrpt/opengl/CRenderizable.h>
-#include <mrpt/poses/CPoint3D.h>
 #include <mrpt/opengl/CSphere.h>
+#include <mrpt/opengl/CEllipsoid.h>
+#include <mrpt/poses/CPoint3D.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/slam/CIncrementalMapPartitioner.h>
@@ -157,7 +158,7 @@ class CLoopCloserERD:
 				int prev_nodes_for_ICP; // how many nodes back to check ICP against?
 
  				/** see Constructor for initialization */
-				mrpt::utils::TColor laser_scans_color;
+				const mrpt::utils::TColor laser_scans_color;
 				bool visualize_laser_scans;
 				// keystroke to be used by the user to toggle the LaserScans from
 				// the CDisplayWindow
@@ -237,6 +238,7 @@ class CLoopCloserERD:
 
 			mrpt::utils::TNodeID getSource() const;
 			mrpt::utils::TNodeID getDestination() const;
+
 			double getDeterminant();
 
 			/**\brief Test if the current path has a lower uncertainty than the other
@@ -263,8 +265,12 @@ class CLoopCloserERD:
 			//operator==(const TPath& other);
 			//operator!=(const TPath& other);
 			TPath& operator+=(const TPath& other);
-			// TODO - add to the dumpToConsole, << oeprators for monitoring the
+			// TODO - add to the dumpToConsole, << operators for monitoring the
 			// results...
+			bool operator==(const TPath& other);
+			bool operator!=(const TPath& other);
+			// TODO - implement this.
+			//bool operator-(const TPath& other);
 
 			// members
 			// ////////////////////////////
@@ -319,6 +325,9 @@ class CLoopCloserERD:
 		 * TLoopClosureParams::keystroke_map_partitions)
 		 */
 		void toggleMapPartitionsVisualization();
+
+		void initCurrCovarianceVisualization();
+		void updateCurrCovarianceVisualization();
 
 		void computeCentroidOfNodesVector(const vector_uint& nodes_list,
 				std::pair<double, double>* centroid_coords) const;
@@ -376,8 +385,10 @@ class CLoopCloserERD:
 		// computeDominantEigenVs
 		/**\brief compute the minimum uncertainty of each node position with
 		 * regards to the graph root.
+		 *
+		 * \param[in] Node from which I start the Dijkstra projection algorithm
 		 */
-		void execDijkstraProjection();
+		void execDijkstraProjection(const mrpt::utils::TNodeID& starting_node=0);
 		/**\brief Given two nodeIDs compute and return the path connecting them.
 		 *
 		 * Method takes care of multiple edges, as well as edges with 0 covariance
@@ -395,8 +406,7 @@ class CLoopCloserERD:
 		 * \return Minimum uncertainty path from the pool provided
 		 */
 		TPath* popMinUncertaintyPath(std::set<TPath*>* pool_of_paths) const;
-		/**\brief  Append the paths from the current node that haven't already been
-		 * registered in the pool of paths
+		/**\brief  Append the paths starting from the current node.
 		 *
 		 * \param[in] pool_of_paths Paths that are currently registered
 		 * \param[in] curr_path Path that I am currently traversing. This path is
@@ -414,11 +424,11 @@ class CLoopCloserERD:
 		 * have not yet been computed.
 		 *
 		 * \param[in] node nodeID for which hte path is going to be returned
-		 * \param[out] path TPath* to be filled in by the method
 		 *
-		 * \return True if optimal path has been computed and is available.
+		 * \return Optimal path corresponding to the given nodeID or NULL if the
+		 * former is not found.
 		 */
-		bool queryForOptimalPath(const mrpt::utils::TNodeID node, TPath* path);
+		TPath* queryOptimalPath(const mrpt::utils::TNodeID node);
 
 		// Private variables
 		//////////////////////////////////////////////////////////////
@@ -433,7 +443,12 @@ class CLoopCloserERD:
 		std::string m_rawlog_fname;
 
 		bool m_initialized_visuals;
-		bool m_just_inserted_loop_closure;
+		bool m_just_inserted_loop_closure; // TODO - implement this
+
+		bool m_visualize_curr_node_covariance;
+		const mrpt::utils::TColor m_curr_node_covariance_color;
+		double m_offset_y_curr_node_covariance;
+		int m_text_index_curr_node_covariance;
 
 		/**\brief Keep track of the registered edge types.
 		 *
@@ -465,11 +480,6 @@ class CLoopCloserERD:
 		size_t m_consecutive_invalid_format_instances;
 		const size_t m_consecutive_invalid_format_instances_thres;
 		
-
-		// TODO - implement this
-		// does the node positional uncertainty needs updating?
-		bool m_dijkstra_uncertainties_updated;
-
 		/**\brief Map for holding the information matrix representing the
 		 * certanty of each node position
 		 */
