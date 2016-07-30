@@ -27,7 +27,7 @@ namespace mrpt
 	 *
 	 * \code
 	 * [FULL_EVAL_CONFIG]
-	 * factorWeights=0.5 3.0 0.1 0.01 2.0
+	 * factorWeights=1.0 1.0 1.0 0.05 1.0
 	 * // 1: Clearness in direction
 	 * // 2: Closest approach to target along straight line (Euclidean)
 	 * // 3: Distance of end colission-free point to target (Euclidean)
