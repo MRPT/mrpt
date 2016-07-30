@@ -243,8 +243,7 @@ namespace mrpt
 		{
 			vel_cmd[0] *= vel_scale; // |(vx,vy)|
 			vel_cmd[3] *= vel_scale; // rot_speed
-			if (vel_scale!=0)
-				vel_cmd[2] /= vel_scale; // ramp_time
+			// ramp_time: leave unchanged
 		}
 
 		// See base class docs.
@@ -256,9 +255,7 @@ namespace mrpt
 
 			vel_cmd[0] *= f; // |(vx,vy)|
 			vel_cmd[3] *= f; // rot_speed
-			if (f!=0)
-				vel_cmd[2] /= f; // ramp_time
-
+			// ramp_time: leave unchanged
 			// Blending with "beta" not required, since the ramp_time already blends cmds for holo robots.
 		}
 
