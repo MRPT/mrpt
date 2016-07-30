@@ -56,7 +56,7 @@ void  CHolonomicFullEval::navigate(
 	const unsigned int target_sector = mrpt::utils::round( -0.5 + (target_dir/M_PI + 1)*nDirs*0.5 );
 	const double target_dist = target.norm();
 
-	log->dirs_scores.resize(nDirs, options.factorWeights.size() + 2 );
+	m_dirs_scores.resize(nDirs, options.factorWeights.size() + 2 );
 
 	// TP-Obstacles in 2D:
 	std::vector<mrpt::math::TPoint2D> obstacles_2d(nDirs);
@@ -90,7 +90,7 @@ void  CHolonomicFullEval::navigate(
 
 		if ( obstacles[i] < options.TOO_CLOSE_OBSTACLE ) // Too close to obstacles ?
 		{
-			for (int l=0;l<NUM_FACTORS;l++) log->dirs_scores(i,l)= .0;
+			for (int l=0;l<NUM_FACTORS;l++) m_dirs_scores(i,l)= .0;
 			continue;
 		}
 
@@ -166,7 +166,7 @@ void  CHolonomicFullEval::navigate(
 		}
 
 		// Save stats for debugging:
-		for (int l=0;l<NUM_FACTORS;l++) log->dirs_scores(i,l)= scores[l];
+		for (int l=0;l<NUM_FACTORS;l++) m_dirs_scores(i,l)= scores[l];
 	}
 
 	// Prepare normalization constants:
@@ -190,19 +190,20 @@ void  CHolonomicFullEval::navigate(
 		// Normalize:
 		double scores_norm[3];
 		for (int l=0;l<3;l++) 
-			scores_norm[l] = (log->dirs_scores(i,l) - score_min[l]) * score_norm_f[l];
+			scores_norm[l] = (m_dirs_scores(i,l) - score_min[l]) * score_norm_f[l];
 
 		// Sum up:
 		for (int l=0;l<3;l++) phase1_score[i] += options.factorWeights[l] * scores_norm[l];
+	
 		phase1_score[i]/=weights_sum123;
 
 		mrpt::utils::keep_max(phase1_max, phase1_score[i]);
 		mrpt::utils::keep_min(phase1_min, phase1_score[i]);
 
-		log->dirs_scores(i,NUM_FACTORS+0)= phase1_score[i];
+		m_dirs_scores(i,NUM_FACTORS+0)= phase1_score[i];
 	}
 
-	// Phase 2: 
+	// Phase 2:
 	// ----------------------------------------------------------------------
 	const double F123_THRESHOLD_RATIO = 0.75;
 	const double p1_threshold = F123_THRESHOLD_RATIO * phase1_max + (1.0-F123_THRESHOLD_RATIO) * phase1_min;
@@ -220,15 +221,19 @@ void  CHolonomicFullEval::navigate(
 		{
 			this_dir_eval = .0;
 		}
-		else 
+		else
 		{
-			this_dir_eval = (options.factorWeights[3] * log->dirs_scores(i,3) + options.factorWeights[4] * log->dirs_scores(i,4))*weights_sum34_inv;
+			this_dir_eval = (options.factorWeights[3] * m_dirs_scores(i,3) + options.factorWeights[4] * m_dirs_scores(i,4))*weights_sum34_inv;
+
+			// Boost score of directions that take us straight to the target:
+			if (target_sector==i && obstacles[i]>=0.99*target_dist)
+				this_dir_eval+=std::max(0.0, 1.0-target_dist);
 		}
 
 		dirs_eval[i] = this_dir_eval;
 
 		// save for logging:
-		log->dirs_scores(i,NUM_FACTORS+1)= this_dir_eval;
+		m_dirs_scores(i,NUM_FACTORS+1)= this_dir_eval;
 	} // for each direction
 
 	// Search for best direction:
@@ -267,6 +272,7 @@ void  CHolonomicFullEval::navigate(
 		log->selectedSector = best_dir;
 		log->evaluation = best_eval;
 		log->dirs_eval  = dirs_eval;
+		log->dirs_scores = m_dirs_scores;
 	}
 }
 

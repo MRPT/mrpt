@@ -82,6 +82,8 @@ namespace mrpt
 	private:
 		unsigned int m_last_selected_sector;
 		unsigned int direction2sector(const double a, const unsigned int N);
+		mrpt::math::CMatrixD m_dirs_scores; //!< Individual scores for each direction: (i,j), i (row) are directions, j (cols) are scores. Not all directions may have evaluations, in which case a "-1" value will be found.
+
 	}; // end of CHolonomicFullEval
 
 	/** A class for storing extra information about the execution of CHolonomicFullEval navigation.
