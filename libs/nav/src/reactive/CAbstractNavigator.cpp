@@ -191,7 +191,7 @@ void CAbstractNavigator::navigationStep()
 			const double targetDist = seg_robot_mov.distance( mrpt::math::TPoint2D(m_navigationParams->target) );
 
 			// Should "End of navigation" event be sent??
-			if (!m_navigationEndEventSent && targetDist < DIST_TO_TARGET_FOR_SENDING_EVENT)
+			if (!m_navigationParams->targetIsIntermediaryWaypoint && !m_navigationEndEventSent && targetDist < DIST_TO_TARGET_FOR_SENDING_EVENT)
 			{
 				m_navigationEndEventSent = true;
 				m_robot.sendNavigationEndEvent();
@@ -206,7 +206,7 @@ void CAbstractNavigator::navigationStep()
 				m_navigationState = IDLE;
 				printf_debug("Navigation target (%.03f,%.03f) was reached\n", m_navigationParams->target.x,m_navigationParams->target.y);
 
-				if (!m_navigationEndEventSent)
+				if (!m_navigationParams->targetIsIntermediaryWaypoint && !m_navigationEndEventSent)
 				{
 					m_navigationEndEventSent = true;
 					m_robot.sendNavigationEndEvent();
