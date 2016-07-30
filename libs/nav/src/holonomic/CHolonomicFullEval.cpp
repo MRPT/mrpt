@@ -13,6 +13,7 @@
 #include <mrpt/utils/CStream.h>
 #include <mrpt/utils/round.h>
 #include <mrpt/math/geometry.h>
+#include <mrpt/math/utils.h>  // make_vector()
 #include <mrpt/math/ops_containers.h>
 #include <cmath>
 
@@ -179,37 +180,48 @@ void  CHolonomicFullEval::navigate(
 
 	// Phase 1: average of normalized factors 1,2 & 3 and thresholding:
 	// ----------------------------------------------------------------------
-	const double weights_sum123 = options.factorWeights[0]+options.factorWeights[1]+options.factorWeights[2];
-	ASSERT_(weights_sum123>.0);
+	const unsigned int PHASE1_NUM_FACTORS = options.PHASE1_FACTORS.size(), PHASE2_NUM_FACTORS = options.PHASE2_FACTORS.size();
+	ASSERT_(PHASE1_NUM_FACTORS>0);
+	ASSERT_(PHASE2_NUM_FACTORS>0);
+
+	double weights_sum_phase1=.0;
+	for (unsigned int l : options.PHASE1_FACTORS) weights_sum_phase1+=options.factorWeights[l];
+	ASSERT_(weights_sum_phase1>.0);
+	const double weights_sum_phase1_inv = 1.0/weights_sum_phase1;
+	
+	double weights_sum_phase2=.0;
+	for (unsigned int l : options.PHASE2_FACTORS) weights_sum_phase2+=options.factorWeights[l];
+	ASSERT_(weights_sum_phase2>.0);
+	const double weights_sum_phase2_inv = 1.0/weights_sum_phase2;
 
 	std::vector<double> phase1_score(nDirs,.0);
-	double phase1_min = 1e6, phase1_max=.0;
+	double phase1_min = std::numeric_limits<double>::max(), phase1_max=.0;
+
 
 	for (unsigned int i=0;i<nDirs;i++)
 	{
-		// Normalize:
-		double scores_norm[3];
-		for (int l=0;l<3;l++) 
-			scores_norm[l] = (m_dirs_scores(i,l) - score_min[l]) * score_norm_f[l];
-
 		// Sum up:
-		for (int l=0;l<3;l++) phase1_score[i] += options.factorWeights[l] * scores_norm[l];
+		for (unsigned int l : options.PHASE1_FACTORS)
+		{
+			//const double score_norm = (m_dirs_scores(i,l) - score_min[l]) * score_norm_f[l];
+			const double score_norm = m_dirs_scores(i,l);
+			phase1_score[i] += options.factorWeights[l] * score_norm;
+		}
 	
-		phase1_score[i]/=weights_sum123;
+		phase1_score[i]*=weights_sum_phase1_inv;
 
 		mrpt::utils::keep_max(phase1_max, phase1_score[i]);
 		mrpt::utils::keep_min(phase1_min, phase1_score[i]);
 
+		MRPT_TODO("Save only if logging")
 		m_dirs_scores(i,NUM_FACTORS+0)= phase1_score[i];
 	}
 
 	// Phase 2:
 	// ----------------------------------------------------------------------
-	const double F123_THRESHOLD_RATIO = 0.75;
-	const double p1_threshold = F123_THRESHOLD_RATIO * phase1_max + (1.0-F123_THRESHOLD_RATIO) * phase1_min;
-	const double weights_sum34 = options.factorWeights[3]+options.factorWeights[4];
-	ASSERT_(weights_sum34>.0);
-	const double weights_sum34_inv = 1.0/weights_sum34;
+	ASSERT_(options.PHASE1_THRESHOLD>.0 && options.PHASE1_THRESHOLD<1.0);
+
+	const double p1_threshold = options.PHASE1_THRESHOLD * phase1_max + (1.0-options.PHASE1_THRESHOLD) * phase1_min;
 
 	for (unsigned int i=0;i<nDirs;i++)
 	{
@@ -223,7 +235,9 @@ void  CHolonomicFullEval::navigate(
 		}
 		else
 		{
-			this_dir_eval = (options.factorWeights[3] * m_dirs_scores(i,3) + options.factorWeights[4] * m_dirs_scores(i,4))*weights_sum34_inv;
+			this_dir_eval = .0;
+			for (unsigned int l : options.PHASE2_FACTORS) this_dir_eval+=options.factorWeights[l] * m_dirs_scores(i,l);
+			this_dir_eval*=weights_sum_phase2_inv;
 
 			// Boost score of directions that take us straight to the target:
 			if (target_sector==i && obstacles[i]>=0.99*target_dist)
@@ -317,14 +331,13 @@ CHolonomicFullEval::TOptions::TOptions() :
 	// Default values:
 	TOO_CLOSE_OBSTACLE                 ( 0.15 ),
 	TARGET_SLOW_APPROACHING_DISTANCE   ( 0.60 ),
-	HYSTERESIS_SECTOR_COUNT            ( 5 )
+	HYSTERESIS_SECTOR_COUNT            ( 5 ),
+	PHASE1_THRESHOLD( 0.75 )
 {
-	factorWeights.resize(5);
-	factorWeights[0]=1.0;
-	factorWeights[1]=0.5;
-	factorWeights[2]=2.0;
-	factorWeights[3]=0.1;
-	factorWeights[4]=1.0;
+	factorWeights = mrpt::math::make_vector<5,double>(1.0, 1.0, 1.0, 0.1, 1.0);
+
+	PHASE1_FACTORS = mrpt::math::make_vector<3,int>(0,1,2);
+	PHASE2_FACTORS = mrpt::math::make_vector<2,int>(3,4);
 }
 
 void CHolonomicFullEval::TOptions::loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section)
@@ -335,9 +348,16 @@ void CHolonomicFullEval::TOptions::loadFromConfigFile(const mrpt::utils::CConfig
 	MRPT_LOAD_CONFIG_VAR(TOO_CLOSE_OBSTACLE,double,  source,section );
 	MRPT_LOAD_CONFIG_VAR(TARGET_SLOW_APPROACHING_DISTANCE,double,  source,section );
 	MRPT_LOAD_CONFIG_VAR(HYSTERESIS_SECTOR_COUNT,double,  source,section );
+	MRPT_LOAD_CONFIG_VAR(PHASE1_THRESHOLD,double,  source,section );
 
 	source.read_vector(section,"factorWeights", std::vector<double>(), factorWeights, true );
 	ASSERT_(factorWeights.size()==5);
+
+	source.read_vector(section,"PHASE1_FACTORS", PHASE1_FACTORS, PHASE1_FACTORS );
+	ASSERT_(PHASE1_FACTORS.size()>0);
+	
+	source.read_vector(section,"PHASE2_FACTORS", PHASE2_FACTORS, PHASE2_FACTORS );
+	ASSERT_(PHASE2_FACTORS.size()>0);
 
 	MRPT_END
 }
@@ -347,12 +367,16 @@ void CHolonomicFullEval::TOptions::saveToConfigFile(mrpt::utils::CConfigFileBase
 	MRPT_START
 	const int WN = 40, WV = 20;
 
-	cfg.write(section,"TOO_CLOSE_OBSTACLE",TOO_CLOSE_OBSTACLE,   WN,WV, "For stopping gradually");
-	cfg.write(section,"TARGET_SLOW_APPROACHING_DISTANCE",TARGET_SLOW_APPROACHING_DISTANCE,   WN,WV, "In normalized ps-meters");
+	cfg.write(section,"TOO_CLOSE_OBSTACLE",TOO_CLOSE_OBSTACLE,   WN,WV, "Directions with collision-free distances below this threshold are not elegible.");
+	cfg.write(section,"TARGET_SLOW_APPROACHING_DISTANCE",TARGET_SLOW_APPROACHING_DISTANCE,   WN,WV, "Start to reduce speed when closer than this to target.");
 	cfg.write(section,"HYSTERESIS_SECTOR_COUNT",HYSTERESIS_SECTOR_COUNT,   WN,WV, "Range of `sectors` (directions) for hysteresis over succesive timesteps");
+	cfg.write(section,"PHASE1_THRESHOLD",PHASE1_THRESHOLD,   WN,WV, "Phase1 scores must be above this relative range threshold [0,1] to be considered in phase 2 (Default:`0.75`)");
 	
 	ASSERT_EQUAL_(factorWeights.size(),5)
-	cfg.write(section,"factorWeights",mrpt::format("%.2f %.2f %.2f %.2f %.2f",factorWeights[0],factorWeights[1],factorWeights[2],factorWeights[3],factorWeights[4]),   WN,WV, "[0]=Free space, [1]=Dist. in sectors, [2]=Closer to target (Euclidean), [3]=Hysteresis, [4]=Clearness along path");
+	cfg.write(section,"factorWeights", mrpt::system::sprintf_container("%.2f ",factorWeights),   WN,WV, "[0]=Free space, [1]=Dist. in sectors, [2]=Closer to target (Euclidean), [3]=Hysteresis, [4]=Clearness along path");
+
+	cfg.write(section,"PHASE1_FACTORS", mrpt::system::sprintf_container("%d ",PHASE1_FACTORS),   WN,WV, "Indices of the factors above to be considered in phase 1");
+	cfg.write(section,"PHASE2_FACTORS", mrpt::system::sprintf_container("%d ",PHASE2_FACTORS),   WN,WV, "Indices of the factors above to be considered in phase 2");
 
 	MRPT_END
 }
