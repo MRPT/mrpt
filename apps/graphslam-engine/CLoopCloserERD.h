@@ -37,6 +37,7 @@
 #include <mrpt/system/os.h>
 #include <mrpt/system/threads.h>
 
+#include <unsupported/Eigen/MatrixFunctions>
 
 #include <algorithm>
 #include <iostream>
@@ -46,6 +47,7 @@
 #include <string>
 #include <set>
 #include <sstream>
+#include <stdlib.h> // abs
 
 #include "CEdgeRegistrationDecider.h"
 #include "CRangeScanRegistrationDecider.h"
@@ -255,7 +257,7 @@ class CLoopCloserERD:
 			 */
 			void addToPath(mrpt::utils::TNodeID node, constraint_t edge);
 
-			/**brief Test weather the constraints are of type CPosePDFGaussianInf.  */
+			/**brief Test weather the constraints are of type CPosePDFGaussianInf.*/
 			bool isGaussianInfType() const;
 			/**brief Test weather the constraints are of type CPosePDFGaussian.  */
 			bool isGaussianType() const;
@@ -345,7 +347,7 @@ class CLoopCloserERD:
 		 * Practically checks whether there exist nodes in a single partition whose
 		 * distance surpasses the minimum loop closure nodeID distance. The latter
 		 * is read from a .ini external file, thus specified by the user (see \b
-		 * TLoopClosureParams.LC_min_nodeid_diff
+		 * TLoopClosureParams.LC_min_nodeid_diff.
 		 *
 		 * \sa evaluatePartitionsForLC
 		 */
@@ -369,8 +371,16 @@ class CLoopCloserERD:
 		/**\brief Return the pair-wise consistency between the observations of the
 		 * given nodes.
 		 *
-		 * Use the dijkstra link between a1, a2, and b1, b2 pairs and use an ICP
-		 * hypotheses between a1, b1 and a2, b2 pairs
+		 * For the tranformation matrix of the loop use the following edges
+		 * - a1=>a2 (Dijkstra Link)
+		 * - a2=>b1 (hypothesis - ICP edge)
+		 * - b1=>b2 (Dijkstra Link)
+		 * - b2=>a1 (hypothesis - ICP edge)
+		 *
+		 * Given the transformation matrix of the above composition (e.g. T) the
+		 * pairwise consistency element would then be: 
+		 * // TODO - include mathemetical formula here
+		 * // TODO - include image of links placement
 		 *
 		 * \sa generatePWConsistencyMatrix
 		 */
@@ -379,16 +389,35 @@ class CLoopCloserERD:
 				const mrpt::utils::TNodeID& a2,
 				const mrpt::utils::TNodeID& b1,
 				const mrpt::utils::TNodeID& b2,
-				mrpt::math::CMatrixDouble33 consistency_elem ) const;
+				mrpt::math::CMatrixDouble33* consistency_elem );
+
 		// TODO - implement the computation of Average pair
 		// TODO - implement the computation of the two dominant eigenvalues
 		// computeDominantEigenVs
+		
+		/** Get the ICP Edge between the provided nodes.
+		 *
+		 * Handy for not having to manually fetch the laser scans, as the method
+		 * takes care of this
+		 */
+		void getICPEdge(
+				const mrpt::utils::TNodeID& from,
+				const mrpt::utils::TNodeID& to,
+				constraint_t* rel_edge,
+				mrpt::slam::CICP::TReturnInfo* icp_info=NULL);
+
 		/**\brief compute the minimum uncertainty of each node position with
 		 * regards to the graph root.
 		 *
-		 * \param[in] Node from which I start the Dijkstra projection algorithm
+		 * \param[in] starting_node Node from which I start the Dijkstra projection
+		 * algorithm
+		 * \param[in] ending_node Specify the nodeID whose uncertainty wrt the
+		 * starting_node, we are interested in computing. If given, method
+		 * execution ends when this path is computed.
 		 */
-		void execDijkstraProjection(const mrpt::utils::TNodeID& starting_node=0);
+		void execDijkstraProjection(
+				mrpt::utils::TNodeID starting_node=0,
+				mrpt::utils::TNodeID ending_node=INVALID_NODEID);
 		/**\brief Given two nodeIDs compute and return the path connecting them.
 		 *
 		 * Method takes care of multiple edges, as well as edges with 0 covariance
@@ -428,7 +457,7 @@ class CLoopCloserERD:
 		 * \return Optimal path corresponding to the given nodeID or NULL if the
 		 * former is not found.
 		 */
-		TPath* queryOptimalPath(const mrpt::utils::TNodeID node);
+		TPath* queryOptimalPath(const mrpt::utils::TNodeID node) const;
 
 		// Private variables
 		//////////////////////////////////////////////////////////////
