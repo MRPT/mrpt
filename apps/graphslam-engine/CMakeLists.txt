@@ -19,7 +19,7 @@ project(${PROJECT_NAME})
 set(SRC_FILES
     graphslam-engine_app.cpp
     TSlidingWindow.h TSlidingWindow.cpp
-    CEdgecounter.h CEdgeCounter.cpp
+    CEdgeCounter.h CEdgeCounter.cpp
     )
 
 # Define the executable target:
@@ -37,7 +37,7 @@ TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${MRPT_LINKER_LIBS})
 #  Just mention the top-level dependency, the rest will be detected automatically,
 #  and all the needed #include<> dirs added (see the script DeclareAppDependencies.cmake for further details)
 DeclareAppDependencies(${PROJECT_NAME}
-	mrpt-graphslam 
+	mrpt-graphslam
 	mrpt-graphs
 	mrpt-gui
 	mrpt-obs
