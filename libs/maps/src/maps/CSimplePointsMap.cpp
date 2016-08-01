@@ -223,7 +223,7 @@ void  CSimplePointsMap::readFromStream(mrpt::utils::CStream &in, int version)
 					else
 					{
 						std::vector<uint32_t>  dummy_pointWeight(n);
-						in.ReadBufferFixEndianness((unsigned long*)(&dummy_pointWeight[0]),n);
+						in.ReadBufferFixEndianness(&dummy_pointWeight[0],n);
 					}
 				}
 			}

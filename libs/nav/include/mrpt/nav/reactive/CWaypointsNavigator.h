@@ -18,6 +18,11 @@ namespace mrpt
 	/** This class extends `CAbstractNavigator` with the capability of following a list of waypoints. By default, waypoints are followed one by one, 
 	 *  but, if they are tagged with `allow_skip=true` **and** the derived navigator class supports it, the navigator may choose to skip some to 
 	 *  make a smoother, safer and shorter navigation.
+	 * Notes on navigation status and event dispatchment:
+	 *  - Navigation state may briefly pass by the `IDLE` status between a waypoint is reached and a new navigation command is issued towards the next waypoint.
+	 *  - `sendNavigationEndEvent()` will be called only when the last waypoint is reached.
+	 *  - Reaching an intermediary waypoint (or skipping it if considered so by the navigator) generates a call to `sendWaypointReachedEvent()` instead.
+	 *
 	 * \sa Base class CAbstractNavigator, CWaypointsNavigator::navigateWaypoints(), and derived classes.
 	 *  \ingroup nav_reactive
 	 */
@@ -37,10 +42,10 @@ namespace mrpt
 		/** Waypoint navigation request. This immediately cancels any other previous on-going navigation.
 		  * \sa CAbstractNavigator::navigate() for single waypoint navigation requests.
 		  */
-		void navigateWaypoints( const TWaypointSequence & nav_request );
+		virtual void navigateWaypoints( const TWaypointSequence & nav_request );
 
 		/** Get a copy of the control structure which describes the progress status of the waypoint navigation. */
-		void getWaypointNavStatus(TWaypointStatusSequence & out_nav_status) const;
+		virtual void getWaypointNavStatus(TWaypointStatusSequence & out_nav_status) const;
 		/** @}*/
 
 	protected:
@@ -55,7 +60,7 @@ namespace mrpt
 		virtual bool impl_waypoint_is_reachable(const mrpt::math::TPoint2D &wp_local_wrt_robot) const = 0;
 
 		/** Loads parameters for waypoints navigation */
-		void loadWaypointsParamsConfigFile(const mrpt::utils::CConfigFileBase &cfg, const std::string &sectionName);
+		virtual void loadWaypointsParamsConfigFile(const mrpt::utils::CConfigFileBase &cfg, const std::string &sectionName);
 
 	};
   }

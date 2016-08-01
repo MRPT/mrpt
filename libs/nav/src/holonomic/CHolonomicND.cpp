@@ -45,7 +45,8 @@ void  CHolonomicND::navigate(
 	double			maxRobotSpeed,
 	double			&desiredDirection,
 	double			&desiredSpeed,
-	CHolonomicLogFileRecordPtr &logRecord)
+	CHolonomicLogFileRecordPtr &logRecord,
+	const double    max_obstacle_dist)
 {
 	TGapArray			gaps;
 	TSituations			situation;

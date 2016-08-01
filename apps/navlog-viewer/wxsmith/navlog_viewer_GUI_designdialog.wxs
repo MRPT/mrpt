@@ -308,6 +308,10 @@
 				<label>Export map plot to MATLAB...</label>
 				<handler function="OnmnuMatlabPlotsSelected" entry="EVT_MENU" />
 			</object>
+			<object class="wxMenuItem" name="ID_MENUITEM3" variable="mnuSaveScoreMatrix" member="no">
+				<label>Save score matrices...</label>
+				<handler function="OnmnuSaveScoreMatrixSelected" entry="EVT_MENU" />
+			</object>
 		</object>
 	</object>
 </wxsmith>

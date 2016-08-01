@@ -25,7 +25,7 @@ namespace mrpt
 	 *  - A class derived from `CRobot2NavInterface` with callbacks must be defined by the user and provided to the constructor.
 	 *  - `navigationStep()` must be called periodically in order to effectively run the navigation. This method will internally call the callbacks to gather sensor data and robot positioning data.
 	 *
-	 * It implements the following state machine (see CAbstractNavigator::getCurrentState() )
+	 * It implements the following state machine (see CAbstractNavigator::getCurrentState() ), taking into account the extensions described in CWaypointsNavigator
 	 *  \dot
 	 *  digraph CAbstractNavigator_States {
 	 *      IDLE; NAVIGATING; SUSPENDED; NAV_ERROR;
@@ -40,7 +40,7 @@ namespace mrpt
 	 *  }
 	 *  \enddot
 	 *
-	 * \sa CReactiveNavigationSystem, CRobot2NavInterface, all children classes
+	 * \sa CWaypointsNavigator, CReactiveNavigationSystem, CRobot2NavInterface, all children classes
 	 *  \ingroup nav_reactive
 	 */
 	class NAV_IMPEXP CAbstractNavigator : public mrpt::utils::CDebugOutputCapable
@@ -125,7 +125,7 @@ namespace mrpt
 		double                   m_badNavAlarm_minDistTarget;
 		mrpt::system::TTimeStamp m_badNavAlarm_lastMinDistTime;
 		double                   m_badNavAlarm_AlarmTimeout;
-		double DIST_TO_TARGET_FOR_SENDING_EVENT;
+		double DIST_TO_TARGET_FOR_SENDING_EVENT;  //!< Default value=0, means use the "targetAllowedDistance" passed by the user in the navigation request.
 
 	public:
 		MRPT_MAKE_ALIGNED_OPERATOR_NEW

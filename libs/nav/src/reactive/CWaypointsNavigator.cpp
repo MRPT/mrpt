@@ -132,6 +132,7 @@ void CWaypointsNavigator::navigationStep()
 		{
 			const mrpt::poses::CPose2D robot_pose(m_curPose);
 			int most_advanced_wp = wps.waypoint_index_current_goal;
+			const int most_advanced_wp_at_begin = most_advanced_wp;
 
 			for (int idx=wps.waypoint_index_current_goal;idx<(int)wps.waypoints.size();idx++)
 			{
@@ -155,8 +156,13 @@ void CWaypointsNavigator::navigationStep()
 					break; // Do not keep trying, since we are now allowed to skip this one.
 			}
 
-			if (most_advanced_wp>=0)
+			if (most_advanced_wp>=0) {
 				wps.waypoint_index_current_goal = most_advanced_wp;
+				for (int k=most_advanced_wp_at_begin;k<most_advanced_wp;k++) {
+					wps.waypoints[k].reached = true;
+					m_robot.sendWaypointReachedEvent(k);
+				}
+			}
 		}
 
 		// Still not started and no better guess? Start with the first waypoint:

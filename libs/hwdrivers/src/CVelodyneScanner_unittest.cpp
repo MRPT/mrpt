@@ -57,8 +57,8 @@ TEST(CVelodyneScanner, sample_vlp16_dataset)
 		}
 		if (gps)  nGPS++;
 	};
-	EXPECT_EQ(nScans,4);
-	EXPECT_GT(nGPS,0);
+	EXPECT_EQ(nScans,4U);
+	EXPECT_GT(nGPS,0U);
 }
 
 TEST(CVelodyneScanner, sample_hdl32_dataset)
@@ -92,7 +92,7 @@ TEST(CVelodyneScanner, sample_hdl32_dataset)
 		if (scan) nScans++;
 //		if (gps)  nGPS++;
 	};
-	EXPECT_EQ(nScans,3);
+	EXPECT_EQ(nScans,3U);
 }
 
 #endif // MRPT_HAS_LIBPCAP
