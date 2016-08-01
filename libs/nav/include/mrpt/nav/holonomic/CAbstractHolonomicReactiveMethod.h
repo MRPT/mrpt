@@ -26,12 +26,13 @@ namespace mrpt
 	/**  The implemented reactive navigation methods. This enum works with mrpt::utils::TEnumType */
 	enum THolonomicMethod
 	{
-		hmVIRTUAL_FORCE_FIELDS = 0,
-		hmSEARCH_FOR_BEST_GAP = 1
+		hmVIRTUAL_FORCE_FIELDS = 0,  //!< CHolonomicVFF
+		hmSEARCH_FOR_BEST_GAP = 1,   //!< CHolonomicND
+		hmFULL_EVAL = 2              //!< CHolonomicFullEval
 	};
 
 	/** A base class for holonomic reactive navigation methods.
-	 *  \sa CHolonomicVFF,CHolonomicND, CReactiveNavigationSystem
+	 *  \sa CHolonomicVFF,CHolonomicND,CHolonomicFullEval, CReactiveNavigationSystem
 	 */
 	class NAV_IMPEXP CAbstractHolonomicReactiveMethod
 	{
@@ -43,6 +44,7 @@ namespace mrpt
 		   *  \param desiredDirection [OUT] The desired motion direction, in the range [-PI,PI]
 		   *  \param desiredSpeed [OUT] The desired motion speed in that direction, in "pseudometers"/sec. (See note below)
 		   *  \param logRecord [IN/OUT] A placeholder for a pointer to a log record with extra info about the execution. Set to NULL if not required. User <b>must free memory</b> using "delete logRecord" after using it.
+		   *  \param max_obstacle_dist[in] Maximum expected value to be found in `obstacles`. Typically, values in `obstacles` larger or equal to this value mean there is no visible obstacle in that direction.
 		   *
 		   *  NOTE: With "pseudometers" we refer to the distance unit in TP-Space, thus:
 		   *     <br><center><code>pseudometer<sup>2</sup>= meter<sup>2</sup> + (rad * r)<sup>2</sup></code><br></center>
@@ -53,7 +55,8 @@ namespace mrpt
 			double			maxRobotSpeed,
 			double			&desiredDirection,
 			double			&desiredSpeed,
-			CHolonomicLogFileRecordPtr &logRecord) = 0;
+			CHolonomicLogFileRecordPtr &logRecord,
+			const double    max_obstacle_dist) = 0;
 
 		/** Overload with a generic container for obstacles (for backwards compatibility with std::vector<float> and other future uses) */
 		template <class OBSTACLES_LIST>
@@ -63,11 +66,12 @@ namespace mrpt
 			double			maxRobotSpeed,
 			double			&desiredDirection,
 			double			&desiredSpeed,
-			CHolonomicLogFileRecordPtr &logRecord)
+			CHolonomicLogFileRecordPtr &logRecord,
+			const double    max_obstacle_dist)
 		{
 			std::vector<double>  obs(obstacles.size());
 			std::copy(obstacles.begin(), obstacles.end(), obs.begin() );
-			this->navigate(target,obs, maxRobotSpeed,desiredDirection,desiredSpeed,logRecord);
+			this->navigate(target,obs, maxRobotSpeed,desiredDirection,desiredSpeed,logRecord,max_obstacle_dist);
 		}
 
 
@@ -92,6 +96,7 @@ namespace mrpt
 			{
 				m_map.insert(nav::hmVIRTUAL_FORCE_FIELDS, "hmVIRTUAL_FORCE_FIELDS");
 				m_map.insert(nav::hmSEARCH_FOR_BEST_GAP, "hmSEARCH_FOR_BEST_GAP");
+				m_map.insert(nav::hmFULL_EVAL, "hmFULL_EVAL");
 			}
 		};
 	} // End of namespace

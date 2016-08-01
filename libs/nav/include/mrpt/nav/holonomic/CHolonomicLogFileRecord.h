@@ -11,6 +11,7 @@
 
 #include <mrpt/nav/link_pragmas.h>
 #include <mrpt/utils/CSerializable.h>
+#include <mrpt/math/CMatrixD.h>
 
 namespace mrpt
 {
@@ -30,6 +31,7 @@ namespace mrpt
 	{
 		DEFINE_VIRTUAL_SERIALIZABLE( CHolonomicLogFileRecord )
 	public:
+		virtual const mrpt::math::CMatrixD * getDirectionScores() const { return NULL; }
 
 	};
 	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(CHolonomicLogFileRecord, mrpt::utils::CSerializable, NAV_IMPEXP)

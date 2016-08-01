@@ -1531,7 +1531,8 @@ void xRawLogViewerFrame::loadRawlogFile(
 			else
 			{
 				// Unknown class:
-				THROW_EXCEPTION("Unknown class found in the file!");
+				// New in MRPT v1.5.0: Allow loading some other classes:
+				rawlog.addGenericObject( newObj );
 			}
 
 			// Passed last?
@@ -2852,7 +2853,7 @@ void xRawLogViewerFrame::OnDecimateRecords(wxCommandEvent& event)
 	} // end for i each entry
 
 	// Clear the list only (objects already deleted)
-	rawlog.clearWithoutDelete();
+	rawlog.clear();
 
 	// Copy as new log:
 	rawlog = newRawLog;

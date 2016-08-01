@@ -25,80 +25,43 @@ using namespace mrpt::system;
 
 IMPLEMENTS_SERIALIZABLE(CRawlog, CSerializable,mrpt::obs)
 
-/*---------------------------------------------------------------
-					Default constructor
-  ---------------------------------------------------------------*/
+// ctor
 CRawlog::CRawlog() : m_seqOfActObs(), m_commentTexts()
 {
 }
 
-/*---------------------------------------------------------------
-					Destructor
-  ---------------------------------------------------------------*/
+// dtor
 CRawlog::~CRawlog()
 {
 	clear();
 }
 
-/*---------------------------------------------------------------
-						clear
-  ---------------------------------------------------------------*/
 void  CRawlog::clear()
 {
-	// Since we use smart pointers, there's no need to manually delete object...
-	// for_each(m_seqOfActObs.begin(), m_seqOfActObs.end(),  ObjectDelete() );
-	m_seqOfActObs.clear();
-
-	m_commentTexts.text.clear();
-}
-
-/*---------------------------------------------------------------
-						clearWithoutDelete
-  ---------------------------------------------------------------*/
-void  CRawlog::clearWithoutDelete()
-{
 	m_seqOfActObs.clear();
 	m_commentTexts.text.clear();
 }
 
-
-/*---------------------------------------------------------------
-						addObservation
-  ---------------------------------------------------------------*/
-void  CRawlog::addObservations(
-		CSensoryFrame		&observations )
+void  CRawlog::addObservations(CSensoryFrame		&observations )
 {
 	m_seqOfActObs.push_back( CSerializablePtr( observations.duplicateGetSmartPtr() ) );
 }
 
-/*---------------------------------------------------------------
-					addActions
-  ---------------------------------------------------------------*/
-void  CRawlog::addActions(
-		CActionCollection		&actions )
-{
+void  CRawlog::addActions(CActionCollection		&actions ) {
 	m_seqOfActObs.push_back( CSerializablePtr( actions.duplicateGetSmartPtr() ) );
 }
 
-/*---------------------------------------------------------------
-					addActionsMemoryReference
-  ---------------------------------------------------------------*/
-void  CRawlog::addActionsMemoryReference( const CActionCollectionPtr &action )
-{
+void  CRawlog::addActionsMemoryReference( const CActionCollectionPtr &action ) {
 	m_seqOfActObs.push_back( action );
 }
 
-/*---------------------------------------------------------------
-					addObservationsMemoryReference
-  ---------------------------------------------------------------*/
-void  CRawlog::addObservationsMemoryReference( const CSensoryFramePtr &observations )
-{
+void  CRawlog::addObservationsMemoryReference( const CSensoryFramePtr &observations ) {
 	m_seqOfActObs.push_back( observations );
 }
+void  CRawlog::addGenericObject( const CSerializablePtr &obj ) {
+	m_seqOfActObs.push_back( obj );
+}
 
-/*---------------------------------------------------------------
-					addObservationMemoryReference
-  ---------------------------------------------------------------*/
 void  CRawlog::addObservationMemoryReference( const CObservationPtr &observation )
 {
 	if (IS_CLASS(observation,CObservationComment))
@@ -110,27 +73,18 @@ void  CRawlog::addObservationMemoryReference( const CObservationPtr &observation
 	m_seqOfActObs.push_back( observation );
 }
 
-/*---------------------------------------------------------------
-
-  ---------------------------------------------------------------*/
 void  CRawlog::addAction( CAction &action )
 {
-	CActionCollection	*temp = new CActionCollection();
+	CActionCollectionPtr temp = CActionCollection::Create();
 	temp->insert( action );
-	m_seqOfActObs.push_back( CSerializablePtr(temp) );
+	m_seqOfActObs.push_back( temp );
 }
 
-/*---------------------------------------------------------------
-						size
-  ---------------------------------------------------------------*/
 size_t  CRawlog::size() const
 {
 	return m_seqOfActObs.size();
 }
 
-/*---------------------------------------------------------------
-						getAsAction
-  ---------------------------------------------------------------*/
 CActionCollectionPtr  CRawlog::getAsAction( size_t index ) const
 {
 	MRPT_START
@@ -146,9 +100,6 @@ CActionCollectionPtr  CRawlog::getAsAction( size_t index ) const
 	MRPT_END
 }
 
-/*---------------------------------------------------------------
-						getAsObservation
-  ---------------------------------------------------------------*/
 CObservationPtr  CRawlog::getAsObservation( size_t index ) const
 {
 	MRPT_START
@@ -164,10 +115,6 @@ CObservationPtr  CRawlog::getAsObservation( size_t index ) const
 	MRPT_END
 }
 
-
-/*---------------------------------------------------------------
-						getAsGeneric
-  ---------------------------------------------------------------*/
 CSerializablePtr CRawlog::getAsGeneric( size_t index ) const
 {
 	MRPT_START
@@ -178,9 +125,6 @@ CSerializablePtr CRawlog::getAsGeneric( size_t index ) const
 	MRPT_END
 }
 
-/*---------------------------------------------------------------
-						getType
-  ---------------------------------------------------------------*/
 CRawlog::TEntryType CRawlog::getType( size_t index ) const
 {
 	MRPT_START
@@ -191,21 +135,15 @@ CRawlog::TEntryType CRawlog::getType( size_t index ) const
 
 	if( obj->GetRuntimeClass()->derivedFrom( CLASS_ID(CObservation) ) )
 		return etObservation;
-
-	if( obj->GetRuntimeClass() == CLASS_ID(CActionCollection) )
+	else if( obj->GetRuntimeClass() == CLASS_ID(CActionCollection) )
 		return etActionCollection;
-
-	if( obj->GetRuntimeClass() == CLASS_ID(CSensoryFrame) )
+	else if( obj->GetRuntimeClass() == CLASS_ID(CSensoryFrame) )
 		return etSensoryFrame;
-
-	THROW_EXCEPTION("Object is not of any of the 3 allowed classes.");
+	else return etOther;
 
 	MRPT_END
 }
 
-/*---------------------------------------------------------------
-						getAsObservations
-  ---------------------------------------------------------------*/
 CSensoryFramePtr  CRawlog::getAsObservations( size_t index ) const
 {
 	MRPT_START
@@ -220,11 +158,6 @@ CSensoryFramePtr  CRawlog::getAsObservations( size_t index ) const
 	MRPT_END
 }
 
-/*---------------------------------------------------------------
-					writeToStream
-	Implements the writing to a CStream capability of
-	  CSerializable objects
-  ---------------------------------------------------------------*/
 void  CRawlog::writeToStream(mrpt::utils::CStream &out, int *version) const
 {
 	if (version)
@@ -268,60 +201,58 @@ void  CRawlog::readFromStream(mrpt::utils::CStream &in,int version)
 	};
 }
 
-/*---------------------------------------------------------------
-						loadFromRawLogFile
-  ---------------------------------------------------------------*/
-bool  CRawlog::loadFromRawLogFile( const std::string &fileName )
+bool  CRawlog::loadFromRawLogFile( const std::string &fileName, bool non_obs_objects_are_legal )
 {
-	bool		keepReading = true;
 	// Open for read.
-
-	m_commentTexts.text.clear();
-
-	CFileGZInputStream		fs(fileName);
-
+	CFileGZInputStream fs(fileName);
 	if (!fs.fileOpenCorrectly()) return false;
 
-	// Clear first:
-	clear();
+	clear();  // Clear first
 
 	// OK: read objects:
+	bool keepReading = true;
 	while (keepReading)
 	{
 		CSerializablePtr newObj;
 		try
 		{
 			fs >> newObj;
-            // Check type:
+			bool add_obj = false;
+			// Check type:
 			if ( newObj->GetRuntimeClass() == CLASS_ID(CRawlog))
-        	{
+			{
 				// It is an entire object: Copy and finish:
 				CRawlogPtr ao = CRawlogPtr( newObj );
 				this->swap(*ao);
 				return true;
-            }
-            else if ( newObj->GetRuntimeClass()->derivedFrom( CLASS_ID(CObservation)) )
-            {
-            	if (IS_CLASS(newObj,CObservationComment))
-            	{
+			}
+			else if ( newObj->GetRuntimeClass()->derivedFrom( CLASS_ID(CObservation)) )
+			{
+				if (IS_CLASS(newObj,CObservationComment)) {
 					CObservationCommentPtr o = CObservationCommentPtr(newObj);
 					m_commentTexts = *o;
-            	}
-            	else
-					m_seqOfActObs.push_back( newObj );
-            }
-            else if ( newObj->GetRuntimeClass() == CLASS_ID(CSensoryFrame))
-            {
-	        	m_seqOfActObs.push_back( newObj );
-            }
-            else if ( newObj->GetRuntimeClass() == CLASS_ID(CActionCollection))
-            {
-				m_seqOfActObs.push_back( newObj );
-            }
-			else
-			{       // Unknown class:
-				keepReading = false;
+				}
+				else {
+					add_obj = true;
+				}
 			}
+			else if ( newObj->GetRuntimeClass() == CLASS_ID(CSensoryFrame)) {
+				add_obj = true;
+			}
+			else if ( newObj->GetRuntimeClass() == CLASS_ID(CActionCollection)) {
+				add_obj = true;
+			}
+			else
+			{
+				// Other classes:
+				if (non_obs_objects_are_legal) {
+					add_obj = true;
+				} else {
+					keepReading = false;
+				}
+			}
+			if (add_obj)
+				m_seqOfActObs.push_back( newObj );
 		}
 		catch (mrpt::utils::CExceptionEOF &)
 		{	// EOF, just finish the loop
@@ -337,56 +268,36 @@ bool  CRawlog::loadFromRawLogFile( const std::string &fileName )
 			keepReading = false;
 		}
 	}
-
 	return true;
 }
 
-/*---------------------------------------------------------------
-					remove
-  ---------------------------------------------------------------*/
 void  CRawlog::remove( size_t index )
 {
 	MRPT_START
-
 	if (index >=m_seqOfActObs.size())
 		THROW_EXCEPTION("Index out of bounds")
-
 	m_seqOfActObs.erase( m_seqOfActObs.begin()+index );
-
 	MRPT_END
 }
 
-/*---------------------------------------------------------------
-					remove
-  ---------------------------------------------------------------*/
 void  CRawlog::remove( size_t first_index, size_t last_index )
 {
 	MRPT_START
-
 	if (first_index >=m_seqOfActObs.size() || last_index>=m_seqOfActObs.size() )
 		THROW_EXCEPTION("Index out of bounds")
-
 	m_seqOfActObs.erase( m_seqOfActObs.begin()+first_index, m_seqOfActObs.begin()+last_index+1 );
-
 	MRPT_END
 }
 
-
-/*---------------------------------------------------------------
-						saveToRawLogFile
-  ---------------------------------------------------------------*/
-bool  CRawlog::saveToRawLogFile( const std::string &fileName ) const
+bool CRawlog::saveToRawLogFile( const std::string &fileName ) const
 {
 	try
 	{
 		CFileGZOutputStream	f(fileName);
-
 		if (!m_commentTexts.text.empty())
 			f << m_commentTexts;
-
 		for (size_t i=0;i<m_seqOfActObs.size();i++)
 			f << *m_seqOfActObs[i];
-
 		return true;
 	}
 	catch(...)
@@ -395,11 +306,6 @@ bool  CRawlog::saveToRawLogFile( const std::string &fileName ) const
 	}
 }
 
-
-
-/*---------------------------------------------------------------
-					moveFrom
-  ---------------------------------------------------------------*/
 void CRawlog::moveFrom( CRawlog &obj)
 {
 	MRPT_START
@@ -412,9 +318,6 @@ void CRawlog::moveFrom( CRawlog &obj)
 	MRPT_END
 }
 
-/*---------------------------------------------------------------
-					swap
-  ---------------------------------------------------------------*/
 void CRawlog::swap( CRawlog &obj)
 {
 	if (this == &obj) return;
@@ -422,9 +325,6 @@ void CRawlog::swap( CRawlog &obj)
 	std::swap(m_commentTexts, obj.m_commentTexts);
 }
 
-/*---------------------------------------------------------------
-		getActionObservationPair
-  ---------------------------------------------------------------*/
 bool CRawlog::readActionObservationPair(
 	CStream					&inStream,
 	CActionCollectionPtr	&action,
@@ -549,11 +449,6 @@ bool CRawlog::getActionObservationPairOrObservation(
 	}
 }
 
-
-
-/*---------------------------------------------------------------
-					findObservationsByClassInRange
-  ---------------------------------------------------------------*/
 void CRawlog::findObservationsByClassInRange(
 	mrpt::system::TTimeStamp		time_start,
 	mrpt::system::TTimeStamp		time_end,
@@ -633,10 +528,6 @@ void CRawlog::findObservationsByClassInRange(
 	MRPT_END
 }
 
-
-/*---------------------------------------------------------------
-		getActionObservationPair
-  ---------------------------------------------------------------*/
 bool CRawlog::getActionObservationPair(
 	CActionCollectionPtr  &action,
 	CSensoryFramePtr      &observations,
@@ -669,9 +560,6 @@ bool CRawlog::getActionObservationPair(
 	}
 }
 
-/*---------------------------------------------------------------
-		getCommentText
-  ---------------------------------------------------------------*/
 void CRawlog::getCommentText( std::string &t) const
 {
 	t = m_commentTexts.text;
@@ -681,25 +569,16 @@ std::string CRawlog::getCommentText() const
 	return m_commentTexts.text;
 }
 
-/*---------------------------------------------------------------
-		getCommentTextAsConfigFile
-  ---------------------------------------------------------------*/
 void CRawlog::getCommentTextAsConfigFile( mrpt::utils::CConfigFileMemory &memCfg ) const
 {
 	memCfg.setContent( m_commentTexts.text );
 }
 
-/*---------------------------------------------------------------
-		setCommentText
-  ---------------------------------------------------------------*/
 void CRawlog::setCommentText( const std::string &t)
 {
 	m_commentTexts.text = t;
 }
 
-/*---------------------------------------------------------------
-		detectImagesDirectory
-  ---------------------------------------------------------------*/
 std::string CRawlog::detectImagesDirectory(const std::string &str)
 {
 	const std::string rawlog_path = extractFileDirectory(str);

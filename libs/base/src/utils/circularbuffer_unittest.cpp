@@ -55,11 +55,11 @@ TEST(circular_buffer_tests, RandomWriteAndPeek)
 		cb_t ret;
 		for (size_t i=0;i<nWr;i++) { 
 			ret=cb.peek(i);
-			EXPECT_EQ(ret,i);
+			EXPECT_EQ(ret,cb_t(i));
 		}
 		for (size_t i=0;i<nWr;i++) {
 			cb.pop(ret);
-			EXPECT_EQ(ret,i);
+			EXPECT_EQ(ret,cb_t(i));
 		}
 	}
 }
@@ -77,6 +77,7 @@ TEST(circular_buffer_tests, RandomWriteManyAndPeek)
 		cb_t ret;
 		if (iter%1) {
 			for (size_t i=0;i<nWr;i++) ret=cb.peek(i);
+			MRPT_UNUSED_PARAM(ret);
 		} else {
 			cb.peek_many(&dum_buf[0],nWr);
 		}
@@ -104,5 +105,4 @@ TEST(circular_buffer_tests, RandomWriteAndPeekOverrun)
 		for (size_t i=0;i<nWr;i++) cb.pop(ret);
 	}
 }
-
 

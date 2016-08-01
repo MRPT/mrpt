@@ -37,6 +37,7 @@ ADD_EXECUTABLE(mrpt-performance
 	perf-random.cpp
 	perf-scan_matching.cpp
 	perf-CObservation3DRangeScan.cpp
+	perf-atan2lut.cpp
 	 ${MRPT_VERSION_RC_FILE}
 	)
 

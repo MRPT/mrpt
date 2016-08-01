@@ -73,7 +73,8 @@ namespace mrpt
 			{
 				etSensoryFrame = 0,
 				etActionCollection,
-				etObservation
+				etObservation,
+				etOther
 			};
 
 			/** Default constructor */
@@ -83,18 +84,15 @@ namespace mrpt
 			/** Destructor: */
 			virtual ~CRawlog();
 
-			/** Clear the sequence of actions/observations, freeing the memory of all the objects in the list. */
+			/** Clear the sequence of actions/observations. Smart pointers to objects previously in the rawlog will remain being valid. */
 			void  clear();
 
-			/** Clear the sequence of actions/observations, without deleting the objects themselves (USE ONLY IF YOU KNOW WHAT YOU DO, NORMALLY YOU'LL CALL "clear" INSTEAD). */
-			void  clearWithoutDelete();
-
 			/** Add an action to the sequence: a collection of just one element is created.
-			  *   The object is duplicated, so the original one can be free if desired.
+			  *   The object is duplicated, so the original one can be freed if desired.
 			  */
 			void  addAction( CAction &action );
 
-			/** Add a set of actions to the sequence; the object is duplicated, so the original one can be free if desired.
+			/** Add a set of actions to the sequence; the object is duplicated, so the original one can be freed if desired.
 			  * \sa addObservations, addActionsMemoryReference
 			  */
 			void  addActions( CActionCollection &action );
@@ -119,12 +117,18 @@ namespace mrpt
 			  */
 			void  addObservationMemoryReference( const CObservationPtr &observation );
 
-			/** Load the contents from a file containing one of these possibilities:
-			  *		- A "CRawlog" object.
-			  *		- Directly the sequence of objects (pairs CSensoryFrame/CActionCollection or CObservation* objects). In this case the method stops reading on EOF of an unrecogniced class name.
-			  * \returns It returns false if the file does not exists.
+			/** Generic add for a smart pointer to a CSerializable object:
+			  * \sa addObservations, addActionsMemoryReference, addObservationMemoryReference
 			  */
-			bool  loadFromRawLogFile( const std::string &fileName );
+			void  addGenericObject( const mrpt::utils::CSerializablePtr &obj );
+
+			/** Load the contents from a file containing one of these possibilities:
+			  *  - A "CRawlog" object.
+			  *  - Directly the sequence of objects (pairs `CSensoryFrame`/`CActionCollection` or `CObservation*` objects). In this case the method stops reading on EOF of an unrecogniced class name.
+			  *  - Only if `non_obs_objects_are_legal` is true, any `CSerializable` object is allowed in the log file. Otherwise, the read stops on classes different from the ones listed in the item above.
+			  * \returns It returns false upon error reading or accessing the file.
+			  */
+			bool  loadFromRawLogFile( const std::string &fileName, bool non_obs_objects_are_legal = false );
 
 			/** Saves the contents to a rawlog-file, compatible with RawlogViewer (As the sequence of internal objects).
 			  *  The file is saved with gz-commpressed if MRPT has gz-streams.

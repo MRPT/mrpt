@@ -147,10 +147,6 @@ namespace mrpt
 			#endif
 			}
 
-
-			/** Copies a specified number of bytes from one stream to another. */
-			size_t  CopyFrom(mrpt::utils::CStream* Source, size_t Count);
-
 			/** Introduces a pure virtual method for moving to a specified position in the streamed resource.
 			 *   he Origin parameter indicates how to interpret the Offset parameter. Origin should be one of the following values:
 			 *	- sFromBeginning	(Default) Offset is from the beginning of the resource. Seek moves to the position Offset. Offset must be >= 0.
@@ -206,16 +202,17 @@ namespace mrpt
 			  */
 			virtual int printf(const char *fmt,...) MRPT_printf_format_check(2,3);  // The first argument (1) is "this" !!!
 
-			/** Prints a vector in the format [A,B,C,...] using CStream::printf, and the fmt string for <b>each</b> vector element. */
-			template <typename T>
-			void printf_vector(const char *fmt, const std::vector<T> &V )
+			/** Prints a vector in the format [A,B,C,...] using CStream::printf, and the fmt string for <b>each</b> vector element `T`.
+			  * \tparam CONTAINER_TYPE can be any vector<T>, deque<T> or alike. */
+			template <typename CONTAINER_TYPE>
+			void printf_vector(const char *fmt, const CONTAINER_TYPE &V, char separator = ',' )
 			{
 				this->printf("[");
-				size_t N = V.size();
+				const size_t N = V.size();
 				for (size_t i=0;i<N;i++)
 				{
 					this->printf(fmt,V[i]);
-					if (i!=(N-1)) this->printf(",");
+					if (i!=(N-1)) this->printf("%c",separator);
 				}
 				this->printf("]");
 			}

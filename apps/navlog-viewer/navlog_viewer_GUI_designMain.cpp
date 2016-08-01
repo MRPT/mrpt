@@ -81,6 +81,7 @@ const long navlog_viewer_GUI_designDialog::ID_TIMER1 = wxNewId();
 const long navlog_viewer_GUI_designDialog::ID_TIMER2 = wxNewId();
 const long navlog_viewer_GUI_designDialog::ID_MENUITEM2 = wxNewId();
 const long navlog_viewer_GUI_designDialog::ID_MENUITEM1 = wxNewId();
+const long navlog_viewer_GUI_designDialog::ID_MENUITEM3 = wxNewId();
 //*)
 
 BEGIN_EVENT_TABLE(navlog_viewer_GUI_designDialog,wxFrame)
@@ -122,6 +123,7 @@ navlog_viewer_GUI_designDialog::navlog_viewer_GUI_designDialog(wxWindow* parent,
     wxStaticBoxSizer* StaticBoxSizer2;
     wxFlexGridSizer* FlexGridSizer4;
     wxFlexGridSizer* FlexGridSizer3;
+    wxMenuItem* mnuSaveScoreMatrix;
     wxFlexGridSizer* FlexGridSizer5;
     wxFlexGridSizer* FlexGridSizer2;
     wxFlexGridSizer* FlexGridSizer7;
@@ -231,6 +233,8 @@ navlog_viewer_GUI_designDialog::navlog_viewer_GUI_designDialog(wxWindow* parent,
     mnuMoreOps.Append(mnuSeePTGParams);
     mnuMatlabPlots = new wxMenuItem((&mnuMoreOps), ID_MENUITEM1, _("Export map plot to MATLAB..."), wxEmptyString, wxITEM_NORMAL);
     mnuMoreOps.Append(mnuMatlabPlots);
+    mnuSaveScoreMatrix = new wxMenuItem((&mnuMoreOps), ID_MENUITEM3, _("Save score matrices..."), wxEmptyString, wxITEM_NORMAL);
+    mnuMoreOps.Append(mnuSaveScoreMatrix);
     FlexGridSizer1->Fit(this);
     FlexGridSizer1->SetSizeHints(this);
     
@@ -247,6 +251,7 @@ navlog_viewer_GUI_designDialog::navlog_viewer_GUI_designDialog(wxWindow* parent,
     Connect(ID_TIMER2,wxEVT_TIMER,(wxObjectEventFunction)&navlog_viewer_GUI_designDialog::OntimAutoloadTrigger);
     Connect(ID_MENUITEM2,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&navlog_viewer_GUI_designDialog::OnmnuSeePTGParamsSelected);
     Connect(ID_MENUITEM1,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&navlog_viewer_GUI_designDialog::OnmnuMatlabPlotsSelected);
+    Connect(ID_MENUITEM3,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&navlog_viewer_GUI_designDialog::OnmnuSaveScoreMatrixSelected);
     //*)
 
     {
@@ -698,7 +703,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 		win1->repaint();
 	}
 
-	// Draw PTG-obstacles
+	// Draw TP-obstacles
 	// --------------------------------
 	for (unsigned int nPTG=0;nPTG<log.nPTGs;nPTG++)
 	{
@@ -750,11 +755,36 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 			xs.push_back(r*cos(a));
 			ys.push_back(r*sin(a));
 		}
-		win->plot(xs,ys,"b-2", "TPOBS");
+		win->plot(xs,ys,"b-1", "TPOBS");
+		win->plot(xs,ys,"b.3", "TPOBSdot");
 
 		// Target:
 		win->plot(make_vector<1,double>(pI.TP_Target.x),make_vector<1,double>(pI.TP_Target.y),"k.9", "TPTARGET");
 
+		// In the case of ND algorithm: draw gaps
+		if (pI.HLFR && IS_CLASS(pI.HLFR, CLogFileRecord_ND))
+		{
+			CLogFileRecord_NDPtr log_ND = CLogFileRecord_NDPtr(pI.HLFR);
+			const size_t nGaps = log_ND->gaps_ini.size();
+			ASSERT_( log_ND->gaps_end.size()==nGaps );
+			xs.clear(); ys.clear();
+			for (size_t nG=0;nG<nGaps;nG++)
+			{
+				const int32_t ang_ini = log_ND->gaps_ini[nG];
+				const int32_t ang_end = log_ND->gaps_end[nG];
+
+				xs.push_back(0);ys.push_back(0);
+				for (int i=ang_ini;i<ang_end;i++)
+				{
+					const double a = -M_PI + (i+0.5)*2*M_PI/double(nAlphas);
+					const double r = pI.TP_Obstacles[i] - 0.04;
+					xs.push_back(r*cos(a));
+					ys.push_back(r*sin(a));
+				}
+				xs.push_back(0);ys.push_back(0);
+			}
+			win->plot(xs,ys,"k-2", "TPOBS-Gaps");
+		}
 
 	} // end for each PTG
 
@@ -932,4 +962,41 @@ void navlog_viewer_GUI_designDialog::OncbGlobalFrameClick(wxCommandEvent& event)
 {
 	wxScrollEvent d;
 	OnslidLogCmdScroll(d);
+}
+
+void navlog_viewer_GUI_designDialog::OnmnuSaveScoreMatrixSelected(wxCommandEvent& event)
+{
+	WX_START_TRY
+
+	wxFileDialog dialog(
+		this,
+		_("Save scores matrices...") /*caption*/,
+		_(".") /* defaultDir */,
+		_("scores.txt") /* defaultFilename */,
+		_("MATLAB/Octave plain text file (*.txt)|*.txt") /* wildcard */,
+		wxFD_SAVE | wxFD_OVERWRITE_PROMPT );
+	if (dialog.ShowModal() != wxID_OK) return;
+
+	const string filName(dialog.GetPath().mb_str());
+	const size_t N = m_logdata.size();
+	for (size_t i=0;i<N;i++)
+	{
+		const CLogFileRecordPtr logsptr = CLogFileRecordPtr( m_logdata[i] );
+		const CLogFileRecord * logptr = logsptr.pointer();
+
+		for (size_t iPTG = 0; iPTG<logptr->infoPerPTG.size(); iPTG++)
+		{
+			const CHolonomicLogFileRecordPtr & hlog = logptr->infoPerPTG[iPTG].HLFR;
+			if (!hlog.present()) continue;
+			
+			const mrpt::math::CMatrixD * dirs_scores = hlog->getDirectionScores();
+			if (!dirs_scores || dirs_scores->getRowCount()<2) continue;
+
+			const std::string sFil = mrpt::system::fileNameChangeExtension(filName, mrpt::format("step%06u_ptg%02u.txt",(unsigned int)i, (unsigned int)iPTG ) );
+
+			dirs_scores->saveToTextFile(sFil,mrpt::math::MATRIX_FORMAT_FIXED);
+		}
+	}
+
+	WX_END_TRY
 }
