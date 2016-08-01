@@ -14,8 +14,8 @@ using namespace mrpt::vision::pnp;
 #include <iostream>
 using namespace std;
 
-#include <eigen3/Eigen/Core>
-#include <eigen3/Eigen/Dense>
+#include <Eigen/Core>
+#include <Eigen/Dense>
 
 #include <opencv2/opencv.hpp>
 #include <opencv2/core/eigen.hpp>

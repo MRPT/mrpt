@@ -1,5 +1,5 @@
-#include <eigen3/Eigen/Dense>
-#include <eigen3/Eigen/SVD>
+#include <Eigen/Dense>
+#include <Eigen/SVD>
 
 #include <iostream>
 
