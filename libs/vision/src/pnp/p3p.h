@@ -2,8 +2,8 @@
 #define P3P_H
 
 
-#include <eigen3/Eigen/Dense>
-#include <eigen3/Eigen/SVD>
+#include <Eigen/Dense>
+#include <Eigen/SVD>
 
 #if MRPT_HAS_OPENCV
     #include <opencv2/opencv.hpp>

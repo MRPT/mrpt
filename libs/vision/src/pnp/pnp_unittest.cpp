@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 #include <iostream>
-#include <eigen3/Eigen/Dense>
+#include <Eigen/Dense>
 #include <mrpt/vision/pnp_algos.h>
 
 class CPnPTest: public::testing::Test
