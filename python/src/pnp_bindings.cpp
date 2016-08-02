@@ -4,8 +4,8 @@
 #include <numpy/arrayobject.h> 
 using namespace boost::python;
 
-#include <eigen3/Eigen/Core>
-#include <eigen3/Eigen/Dense>
+#include <Eigen/Core>
+#include <Eigen/Dense>
 using namespace Eigen;
 
 #include <mrpt/config.h>
