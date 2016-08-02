@@ -4,9 +4,9 @@
 
 #include <iostream>
 
-#include <eigen3/Eigen/Dense>
-#include <eigen3/Eigen/SVD>
-#include <eigen3/Eigen/StdVector>
+#include <Eigen/Dense>
+#include <Eigen/SVD>
+#include <Eigen/StdVector>
 
 
 #define TOL_LHM 0.00001
