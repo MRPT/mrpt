@@ -37,9 +37,8 @@
 #include <mrpt/system/os.h>
 #include <mrpt/system/threads.h>
 
-#include <unsupported/Eigen/MatrixFunctions>
-
 #include <algorithm>
+#include <cmath>
 #include <iostream>
 #include <iterator>
 #include <map>
@@ -197,6 +196,15 @@ class CLoopCloserERD:
 		 		 * investigated for loop closures using Olson's strategy.
 		 		 */
 				int LC_min_nodeid_diff;
+				/**\brief Eigenvalues ratio for accepting/rejecting a hypothesis set.
+				 *
+				 * By default this is set to 2.
+				 */
+				double LC_eigenvalues_ratio_thresh;
+				/**\brief how many remote nodes (large nodID difference should there be before
+				 * I consider the potential loop closure?
+				 */
+				int LC_min_remote_nodes; 
 				bool visualize_map_partitions;
 				std::string keystroke_map_partitions;
 
@@ -288,6 +296,25 @@ class CLoopCloserERD:
 			double determinant_cached;
 
 		};
+		struct THypothesis {
+			THypothesis() {is_invalid = false; }
+			~THypothesis() { }
+			std::string getAsString(bool oneline=true) const;
+			void getAsString(std::string* str, bool oneline=true) const;
+
+			int id;
+			mrpt::utils::TNodeID from;
+			mrpt::utils::TNodeID to;
+
+			constraint_t edge;
+			bool is_invalid;
+
+		} /* optional variable list */;
+
+		/**\brief Wrapper around the registerNewEdge method which accepts a
+		 * THypothesis object instead.
+		 */
+		void registerHypothesis(const THypothesis& h) { this->registerNewEdge(h.from, h.to, h.edge); }
 
 		/** \brief Initialization function to be called from the various
 		 * constructors.
@@ -361,13 +388,6 @@ class CLoopCloserERD:
 		 * \sa checkPartitionsForLC
 		 */
 		void evaluatePartitionsForLC(const partitions_t& partitions);
-		/**\brief Calculate the pair-wise consistency matrix in the given partition
-		 * set.
-		 *
-		 * \sa generatePWConsistencyMatrix
-		 */
-		void generatePWConsistencyMatrix(const vector_uint& partition,
-				mrpt::math::CMatrixDouble* consist_matrix) const;
 		/**\brief Return the pair-wise consistency between the observations of the
 		 * given nodes.
 		 *
@@ -377,19 +397,20 @@ class CLoopCloserERD:
 		 * - b1=>b2 (Dijkstra Link)
 		 * - b2=>a1 (hypothesis - ICP edge)
 		 *
-		 * Given the transformation matrix of the above composition (e.g. T) the
+		 * // TODO - greek letter support ? 
+		 * Given the transformation vector (x,y,phi) of the above composition (e.g. T) the
 		 * pairwise consistency element would then be: 
 		 * // TODO - include mathemetical formula here
 		 * // TODO - include image of links placement
 		 *
-		 * \sa generatePWConsistencyMatrix
 		 */
-		void generatePWConsistencyElement(
+		double generatePWConsistencyElement(
 				const mrpt::utils::TNodeID& a1,
 				const mrpt::utils::TNodeID& a2,
 				const mrpt::utils::TNodeID& b1,
 				const mrpt::utils::TNodeID& b2,
-				mrpt::math::CMatrixDouble33* consistency_elem );
+				const std::map<std::pair<mrpt::utils::TNodeID, mrpt::utils::TNodeID>,
+					THypothesis*>& hypots_map);
 
 		// TODO - implement the computation of Average pair
 		// TODO - implement the computation of the two dominant eigenvalues
@@ -503,6 +524,11 @@ class CLoopCloserERD:
 		partitions_t m_curr_partitions;
 		/**\brief Indicate whether the partitions have been updated recently */
 		bool m_partitions_full_update;
+
+		/**\brief Keep track of the evaluated partitions so they are not checked
+		 * again if nothing changed in them
+		 */
+		std::map<int, vector_uint> m_partitionID_to_prev_nodes_list;
 
 		// find out if decider is invalid for the given dataset
 		bool m_checked_for_usuable_dataset;
