@@ -35,7 +35,7 @@ void CLoopCloserERD<GRAPH_t>::initCLoopCloserERD() {
 	m_graph = NULL;
 
 	m_initialized_visuals = false;
-	m_visualize_curr_node_covariance = true;
+	m_visualize_curr_node_covariance = false;
 	m_just_inserted_loop_closure = false;
 
 	// start the edge registration procedure only when this num is surpassed
@@ -124,12 +124,8 @@ bool CLoopCloserERD<GRAPH_t>::updateState(
 		}
 
 		// update the partitioned map
-		if ((m_graph->nodeCount() % 50) == 0) {
-			m_partitions_full_update = true;
-		}
-		else {
-			m_partitions_full_update = false;
-		}
+		m_partitions_full_update = ((m_graph->nodeCount() % 50) == 0 || m_just_inserted_loop_closure)
+			?  true: false;
 		this->updateMapPartitions(m_partitions_full_update);
 
 		// check for loop closures
@@ -139,18 +135,6 @@ bool CLoopCloserERD<GRAPH_t>::updateState(
 
 		if (m_visualize_curr_node_covariance) {
 			this->execDijkstraProjection();
-		}
-
-		// TODO - remove this
-		if (m_graph->nodeCount() % 30 == 0) {
-			
-			CMatrixDouble33 consistency_elem;
-			this->generatePWConsistencyElement(
-					m_graph->nodeCount()-15,
-					m_graph->nodeCount()-12,
-					m_graph->nodeCount()-4,
-					m_graph->nodeCount()-1,
-					&consistency_elem);
 		}
 
 	}
@@ -261,34 +245,72 @@ void CLoopCloserERD<GRAPH_t>::checkPartitionsForLC(
 
 	partitions_for_LC->clear();
 
+	// keep track of the previous nodes list of every partition. If this is not
+	// changed - do not mark it as potential for loop closure
+	map<int, vector_uint>::iterator finder;
+	// reset the previous list if full partitioning was issued
+	if (m_partitions_full_update) {
+		m_partitionID_to_prev_nodes_list.clear();
+	}
+
 	int partitionID = 0;
+	// TODO - maybe check only with the current node partition?
 	// for every partition...
 	for (partitions_t::const_iterator partitions_it = m_curr_partitions.begin();
 			partitions_it != m_curr_partitions.end(); ++partitions_it, ++partitionID)
 	{
+		// keep track of the previous nodes list
+		finder = m_partitionID_to_prev_nodes_list.find(partitionID);
+		if (finder == m_partitionID_to_prev_nodes_list.end()) { // nodes list is not reegistered yet
+			m_partitionID_to_prev_nodes_list.insert(make_pair(partitionID, *partitions_it));
+		}
+		else {
+			if (*partitions_it == finder->second) {
+				m_out_logger.logFmt("Partition %d remained unchanged. ", partitionID);
+				continue; // same list as before.. no need to check this...
+			}
+			else { // list was changed  - update the previous nodes list
+				m_out_logger.logFmt("Partition %d CHANGED. ", partitionID);
+				finder->second = *partitions_it;
+			}
+		}
+
+
 		// investigate each partition
+		int curr_node_index = 1;
 		size_t prev_nodeID = *(partitions_it->begin());
 		for (vector_uint::const_iterator it = partitions_it->begin()+1;
-				it != partitions_it->end(); ++it) {
+				it != partitions_it->end(); ++it, ++curr_node_index) {
 			size_t curr_nodeID = *it;
 
 			// are there consecutive nodes with large difference inside this
-			// partition?
+			// partition? Are these nodes enough to consider LC?
 			if ((curr_nodeID - prev_nodeID) > m_lc_params.LC_min_nodeid_diff) {
-				m_out_logger.log(mrpt::format("Found potential loop closures:\n"
-							"\tPartitionID: %d\n"
-							"\tPartition: %s\n"
-							"\t%lu ==> %lu\n",
-							partitionID, getVectorAsString(*partitions_it).c_str(),
-							prev_nodeID, curr_nodeID),
-						LVL_WARN);
-				partitions_for_LC->push_back(*partitions_it);
-				continue; // no need to check the rest of the nodes in this partition
+				// there is at least one divergent node..
+				
+				int num_after_nodes = partitions_it->size() - curr_node_index;
+				int num_before_nodes = partitions_it->size() - num_after_nodes;
+				if (num_after_nodes >= m_lc_params.LC_min_remote_nodes &&
+						num_before_nodes >= m_lc_params.LC_min_remote_nodes ) { // at least X LC nodes
+					m_out_logger.log(mrpt::format("Found potential loop closures:\n"
+								"\tPartitionID: %d\n"
+								"\tPartition: %s\n"
+								"\t%lu ==> %lu\n"
+								"\tNumber of LC nodes: %d\n",
+								partitionID, getVectorAsString(*partitions_it).c_str(),
+								prev_nodeID, curr_nodeID,
+								num_after_nodes),
+							LVL_WARN);
+					partitions_for_LC->push_back(*partitions_it);
+					break; // no need to check the rest of the nodes in this partition
+				}
 			}
 
 			// update the previous node
 			prev_nodeID = curr_nodeID;
 		}
+
+		m_out_logger.logFmt("Successfully checked partition: %d", partitionID);
 	}
 
 	m_time_logger.leave("LoopClosureEvaluation");
@@ -301,54 +323,196 @@ void CLoopCloserERD<GRAPH_t>::evaluatePartitionsForLC(
 	MRPT_START;
 	using namespace mrpt;
 	using namespace mrpt::math;
+	using namespace mrpt::utils;
 	using namespace std;
 
-	// for each one of the partitions generate the pair-wise consistency Matrix of
-	// the relevant edges and find the submatrix of the msot consistent edges
-	// inside it.
+	if (partitions.size() == 0) return;
+
+	std::string header_sep(80, '-');
+	m_out_logger.logFmt("Evaluating partitions for loop closures...\n%s\n",
+			header_sep.c_str());
+
 	for (partitions_t::const_iterator p_it = partitions.begin();
 			p_it != partitions.end();
 			++p_it ) {
-		CMatrixDouble consist_matrix; // matrix to fill in
-		this->generatePWConsistencyMatrix(*p_it, &consist_matrix);
+
+		// Have two groups A, B.
+		// - Group A consists of the lower nodeIDs. They correspond to the start of
+		// the course
+		// - Group B consists of the higher (more recent) nodeIDs. They correspond
+		// to the end of the course
+		//
+		// find where to split the current partition
+		TNodeID prev_nodeID = 0;
+		int index_to_split = 1;
+		for (vector_uint::const_iterator it = p_it->begin()+1;
+				it != p_it->end(); ++it, ++index_to_split) {
+			TNodeID curr_nodeID = *it;
+
+			if ((curr_nodeID - prev_nodeID) > m_lc_params.LC_min_nodeid_diff) {
+				break;
+			}
+			// update the last nodeID
+			prev_nodeID = curr_nodeID;
+		}
+		ASSERT_(p_it->size() > index_to_split);
+
+		// groupA
+		// use only the first nodes of groupA
+		vector_uint groupA(p_it->begin(), p_it->begin()+index_to_split);
+		int first_nodes_to_use = 5;
+		if (groupA.size() > first_nodes_to_use) {
+			vector_uint group_tmp(groupA.begin(), groupA.begin()+5);
+			groupA = group_tmp;
+		}
+
+		// groupB
+		// keep all the nodes there..
+		vector_uint groupB(p_it->begin()+index_to_split, p_it->end());
+
+		m_out_logger.setLoggingLevel(LVL_INFO); // TODO - remove this
+		m_out_logger.logFmt("groupA: %s - size: %lu\n",
+				this->getVectorAsString(groupA).c_str(), groupA.size());
+		m_out_logger.logFmt("groupB: %s - size: %lu\n",
+				this->getVectorAsString(groupB).c_str(), groupB.size());
+		m_out_logger.setLoggingLevel(LVL_DEBUG); // TODO - remove this
+		mrpt::system::pause();
+
+		// TODO - test that the hypotheses are generated correctly
+		// generate the hypothesis pool
+		// use a hypothesis ID with which the consistency matrix will then be
+		// formed
+		int hypothesis_counter = 0;
+		int invalid_hypotheses = 0;
+		std::map<std::pair<TNodeID, TNodeID>, THypothesis*> nodeIDs_to_hypots;
+		{
+			mrpt::slam::CICP::TReturnInfo icp_info;
+			for (vector_uint::const_iterator b_it = groupB.begin(); b_it != groupB.end();
+					++b_it) {
+				for (vector_uint::const_iterator a_it = groupA.begin(); a_it != groupA.end();
+						++a_it) {
+					// by default hypotheses will direct bi => ai; If the hypothesis is
+					// traversed the opposite way take the opposite of the constraint
+					THypothesis* hypot = new THypothesis;
+					hypot->from = *b_it;
+					hypot->to = *a_it;
+					hypot->id = hypothesis_counter++;
+					this->getICPEdge(*b_it, *a_it, &(hypot->edge), &icp_info);
+					//cout << "Goodness: " << icp_info.goodness << endl;
+					//cout << hypot->getAsString() << endl;
+					// Mark as invalid, do not use it from now on...
+					if (icp_info.goodness == 0) {
+						hypot->is_invalid = true;
+						invalid_hypotheses++;
+					}
+					nodeIDs_to_hypots[make_pair(*b_it, *a_it)] = hypot;
+
+					m_out_logger.setLoggingLevel(LVL_INFO); // TODO - remove this
+					m_out_logger.logFmt("%s", hypot->getAsString().c_str());
+					m_out_logger.setLoggingLevel(LVL_DEBUG); // TODO - remove this
+				}
+			}
+			m_out_logger.logFmt("Generated pool of hypotheses...\tnodeIDs_to_hypots.size() = %lu",
+					nodeIDs_to_hypots.size());
+		}
+
+		// TODO - test that the consistency elements are generated correctly
+		std::map<std::pair<THypothesis*, THypothesis*>, double> hypots_to_consistencies;
+		for (vector_uint::const_iterator b_out_it = groupB.begin(); b_out_it != groupB.end();
+				++b_out_it) {
+			TNodeID b1 = *b_out_it;
+			for (vector_uint::const_iterator b_in_it = b_out_it+1; b_in_it != groupB.end();
+					++b_in_it) {
+				TNodeID b2 = *b_in_it;
+				for (vector_uint::const_iterator a_out_it = groupA.begin(); a_out_it != groupA.end();
+						++a_out_it) {
+					TNodeID a1 = *a_out_it;
+					THypothesis* h_b2a1 = nodeIDs_to_hypots.at(make_pair(b2, a1));
+					for (vector_uint::const_iterator a_in_it = a_out_it+1; a_in_it != groupA.end();
+							++a_in_it) {
+						TNodeID a2 = *a_in_it;
+						THypothesis* h_b1a2 = nodeIDs_to_hypots.at(make_pair(b1, a2));
+
+						double consistency;
+						if (!h_b2a1->is_invalid && !h_b1a2->is_invalid) {
+							// keep the consistency element based on the hypotheses that it was
+							// generated by - direction of the hypothesis is by default bi=>ai.
+							// If the opposite is needed, it is handled by the calling function
+							consistency = this->generatePWConsistencyElement(a1,a2,b1,b2,nodeIDs_to_hypots);
+						}
+						else {
+							consistency = 0;
+						}
+						m_out_logger.logFmt("Adding hypotheses consistency for nodeIDs: "
+								"(%lu, %lu, %lu, %lu)\t%f", b1, b2, a1, a2, consistency);
+						hypots_to_consistencies[make_pair(h_b2a1, h_b1a2)] = consistency;
+					}
+				}
+			}
+		}
+		m_out_logger.logFmt("Generated map of hypothesis pairs to corresponding consistency elements");
+
+		// generate the pair-wise consistency Matrix of the relevant edges and find
+		// the submatrix of the most consistent edges inside it.
+		CMatrixDouble consist_matrix(hypothesis_counter, hypothesis_counter);
+		cout << "Row/Col count of consist_matrix: " << consist_matrix.rows() << " / " << consist_matrix.cols() << endl;
+		int cnt = 0;
+		for (typename std::map<std::pair<THypothesis*, THypothesis*>, double>::const_iterator it = hypots_to_consistencies.begin(); it != hypots_to_consistencies.end(); ++it, ++cnt)  {
+			cout << "cnt = " << cnt << endl;
+			int id1 = it->first.first->id;	
+			int id2 = it->first.second->id;	
+			cout << "id1 = " << id1 << "| id2 = " << id2 << endl;
+			double consistency_elem = it->second;
+			cout << "consistency_elem = " << consistency_elem << endl;
+			consist_matrix(id1, id2) = consistency_elem;
+			consist_matrix(id2, id1) = consistency_elem;
+		}
+		//m_out_logger.logFmt("PairWise Consistency Matrix: size: %lu\n\n%s",
+				//consist_matrix.size(), ss.str().c_str());
+		//cout << consist_matrix << endl;
+		cout << std::fixed << std::setprecision(2) << consist_matrix;
+		mrpt::system::pause();
 
 		// evaluate the pair-wise consistency matrix
-		// TODO - consult the paper on this
+		// find the two dominant eigenvectors + eigenvalues
+		// TODO
 
-		// TODO - partition is worth it only if nodes of the partition are split
-		// into two groups A, B whose node difference is larger than the LC
-		// difference
+		// check the ratio of the two eigenvalues - reject if smaller than
+		// threshold
+		// TODO
+
+		// register the indicated hypotheses
+		// TODO
+
+
+		// delete the hypotheses - generated in the heap...
+		m_out_logger.logFmt("Deleting the generated hypotheses pool..." );
+		for (typename std::map<std::pair<TNodeID, TNodeID>,
+					CLoopCloserERD<GRAPH_t>::THypothesis*>::const_iterator it =
+				nodeIDs_to_hypots.begin(); it != nodeIDs_to_hypots.end(); ++it)  {
+			delete it->second;
+		}
+
 	}
 
-
-	MRPT_END;
-}
-template<class GRAPH_t>
-void CLoopCloserERD<GRAPH_t>::generatePWConsistencyMatrix(
-		const vector_uint& partition,
-		mrpt::math::CMatrixDouble* constist_matrix) const {
-	MRPT_START;
-	using namespace mrpt;
-	using namespace mrpt::math;
-	// resize the matrix to fit all the pair-wise consistencies
-	// TODO
-
-	// fill the matrix
+	m_out_logger.logFmt("\n%s", header_sep.c_str());
 
 	MRPT_END;
 }
 
 template<class GRAPH_t>
-void CLoopCloserERD<GRAPH_t>::generatePWConsistencyElement(
+double CLoopCloserERD<GRAPH_t>::generatePWConsistencyElement(
 		const mrpt::utils::TNodeID& a1,
 		const mrpt::utils::TNodeID& a2,
 		const mrpt::utils::TNodeID& b1,
 		const mrpt::utils::TNodeID& b2,
-		mrpt::math::CMatrixDouble33* consistency_elem ) {
+		const typename std::map<std::pair<mrpt::utils::TNodeID, mrpt::utils::TNodeID>,
+			CLoopCloserERD<GRAPH_t>::THypothesis*>& nodeIDs_to_hypots) {
 	MRPT_START;
 	using namespace std;
 	using namespace mrpt;
 	using namespace mrpt::math;
+	using namespace mrpt::utils;
 
 	// get the dijkstra links
 	// a1=>a2
@@ -370,18 +534,30 @@ void CLoopCloserERD<GRAPH_t>::generatePWConsistencyElement(
 			format("\nnodeID %lu is not the destination of the optimal path\n%s\n\n",
 				b2, path_b1b2->getAsString().c_str()));
 
-
-	// get the hypotheses
+	// get the edges of the hypotheses
+	// by default hypotheses are stored bi => ai
+	// TODO - test this
+	std::pair<TNodeID, TNodeID> curr_pair;
 	constraint_t edge_a2b1, edge_b2a1;
+	typename std::map<std::pair<TNodeID, TNodeID>, CLoopCloserERD<GRAPH_t>::THypothesis*>::
+		const_iterator search;
 	{
-		// TODO - Assert that the hypotheses don't return nans in the information
-		// matrix
-		mrpt::slam::CICP::TReturnInfo icp_info;
-		this->getICPEdge(a2, b1, &edge_a2b1, &icp_info);	// a2=>b1
-		cout << "Goodness of a2=>b1: " << icp_info.goodness << endl;
-		this->getICPEdge(b2, a1, &edge_b2a1, &icp_info);	// b2=>a1
-		cout << "Goodness of b2=>a1: " << icp_info.goodness << endl;
+		// Backwards edge: a2=>b1
+		curr_pair = make_pair(b1, a2);
+		search = nodeIDs_to_hypots.find(curr_pair);
+		ASSERTMSG_(search != nodeIDs_to_hypots.end(),
+				format("Hypothesis (b1= ) %lu => (a2= ) %lu was not found", b1, a2) );
+		(search->second->edge).inverse(edge_a2b1);
+
+		// forward edge b2=>a1
+		curr_pair = make_pair(b2, a1);
+		search = nodeIDs_to_hypots.find(curr_pair);
+		ASSERTMSG_(search != nodeIDs_to_hypots.end(),
+				format("Hypothesis (b2= ) %lu => (a1= ) %lu was not found", b1, a2) );
+		edge_b2a1 = search->second->edge;
 	}
+
+
 
 	constraint_t res(path_a1a2->curr_pose_pdf);
 	//cout << "a1=>a2: " << endl << res;
@@ -392,44 +568,30 @@ void CLoopCloserERD<GRAPH_t>::generatePWConsistencyElement(
 	res += edge_b2a1;
 	//cout << "b2=>a1: " << endl << edge_b2a1;
 
-	cout << "Resulting Transformation: " << endl;
-	cout << res << endl;
-	//CMatrixDouble33 mat; res.getInformationMatrix(mat);
-	//cout << "Determinant: " << mat.det() << endl;
+	//cout << "Resulting Transformation: " << endl;
+	//cout << res << endl;
 	
-	// get the homogeneous matrix of the translation-rotation
-	CMatrixDouble44 T_tmp;
-	res.getMeanVal().getHomogeneousMatrix(T_tmp);
-
-	// extract the 2D part of the homogeneous Matrix
-	CMatrixDouble33 T;
-	T(0,0) = T_tmp(0,0) ; T(0,1) = T_tmp(0,1) ; T(0,2) = T_tmp(0,3) ;
-	T(1,0) = T_tmp(1,0) ; T(1,1) = T_tmp(1,1) ; T(1,2) = T_tmp(1,3) ;
-	T(2,0) = 0.0        ; T(2,1) = 0.0        ; T(2,2) = 1          ;
+	// get the vector of the corresponding transformation - [x, y, phi] form
+	CVectorDouble T;
+	res.getMeanVal().getAsVector(T);
 
 	// information matrix
 	CMatrixDouble33 inf_mat;
 	res.getInformationMatrix(inf_mat);
 
-	//CMatrixDouble33 exponent = T * inf_mat * T.transpose();
-	Eigen::MatrixXd exponent(3,3); 
-	//exponent = T * inf_mat * T.transpose();
-	exponent = T * inf_mat * T.transpose();
-	// TODO - normalize it - Should I?
-	exponent /= exponent.determinant(); // if matrix ill-conditioned? 
-	//exponent /= exponent.maxCoeff(); // TODO - test this.
+	// TODO - make sure about this
+	// there has to be an error with the initial Olson formula - p.15.
+	// There must be a minus in the exponent. Otherwise if hypothesis is wrong
+	// consistency element increases
+	double exponent = (-T.transpose() * inf_mat * T).value();
+	double consistency_elem = exp(exponent);
 
-	ASSERT_(consistency_elem);
-	Eigen::MatrixXd consistency_tmp = exponent.exp(); // TODO - Can't directly assign it to CMatrixDouble44 - compilation error
-	*consistency_elem = consistency_tmp;
+	//cout << "T = " << endl << T << endl;
+	//cout << "exponent = " << exponent << endl;
+	//cout << "consistency_elem = " << consistency_elem << endl;
+	//mrpt::system::pause();
 
-	cout << "T = " << endl << T;
-	cout << "Exponent= " << endl << exponent << endl;
-	cout << "Exponent.determinant()= " << exponent.determinant() << endl;
-	cout << "consistency_elem = " << endl << *consistency_elem;
-	
-	mrpt::system::pause();
-
+	return consistency_elem;
 	MRPT_END;
 }
 
@@ -451,11 +613,13 @@ void CLoopCloserERD<GRAPH_t>::execDijkstraProjection(
 	// nodeIDs
 	ASSERT_(ending_node == INVALID_NODEID ||
 			(ending_node >= 0 && ending_node < m_graph->nodeCount()) );
-
-	m_out_logger.logFmt("Executing Dijkstra Projection starting from nodeID: %lu",
-			starting_node);
+	ASSERTMSG_(starting_node != ending_node, "Starting and Ending nodes coincede");
 	// if uncertainties already updated - do nothing
 	if (m_graph->nodeCount() < 5) return;
+
+	std::string to_node_str(ending_node == INVALID_NODEID? "": format("=> %lu", ending_node) );
+	m_out_logger.logFmt("Executing Dijkstra Projection: %lu%s",
+			starting_node, to_node_str.c_str());
 
 	// keep track of the nodes that I have visited
 	std::vector<bool> visited_nodes(m_graph->nodeCount(), false);
@@ -501,6 +665,8 @@ void CLoopCloserERD<GRAPH_t>::execDijkstraProjection(
 		// it is found.
 		if (ending_node != INVALID_NODEID) {
 			if (visited_nodes.at(ending_node)) {
+				m_out_logger.logFmt("----------- Done with Dijkstra Projection... ----------");
+				m_time_logger.leave("Dijkstra Projection");
 				return;
 			}
 		}
@@ -537,10 +703,8 @@ void CLoopCloserERD<GRAPH_t>::execDijkstraProjection(
 			this->addToPaths(&pool_of_paths, *optimal_path, neighbors_of.at(dest) );
 		}
 	}
-	//// TODO Remove these - >>>>>>>>>>>>>>>>>>>>
-	//cout << "----------- Done with Dijkstra Projection... ----------" << endl;
-	//// TODO Remove these - <<<<<<<<<<<<<<<<<<<<<
 
+	m_out_logger.logFmt("----------- Done with Dijkstra Projection... ----------");
 	m_time_logger.leave("Dijkstra Projection");
 	MRPT_END;
 }
@@ -709,6 +873,12 @@ popMinUncertaintyPath(std::set<TPath*>* pool_of_paths) const {
 	MRPT_END;
 }
 
+// TODO - implement here or lose it...
+//template<class GRAPH_t>
+//void CLoopCloserERD<GRAPH_t>::registerHypothesis(
+		//const typename CLoopCloserERD<GRAPH_t>::THypothesis& h) {
+//}
+
 template<class GRAPH_t>
 void CLoopCloserERD<GRAPH_t>::registerNewEdge(
 		const mrpt::utils::TNodeID& from,
@@ -717,6 +887,7 @@ void CLoopCloserERD<GRAPH_t>::registerNewEdge(
 	MRPT_START;
 	using namespace mrpt::utils;
 
+	//  keep track of the registered edges...
 	m_edge_types_to_nums["ICP2D"]++;
 	m_out_logger.logFmt("Registering new edge: %lu => %lu\n"
 			"rel_edge: \t%s\n"
@@ -724,13 +895,16 @@ void CLoopCloserERD<GRAPH_t>::registerNewEdge(
 			rel_edge.getMeanVal().asString().c_str(),
 			rel_edge.getMeanVal().norm());
 
+	//  keep track of the registered edges...
 	if (abs(to - from) > m_lc_params.LC_min_nodeid_diff)  {
 		m_edge_types_to_nums["LC"]++;
 		m_just_inserted_loop_closure = true;
 		m_out_logger.log("\tLoop Closure edge!", LVL_INFO);
 	}
 
+	//  actuall registration
 	m_graph->insertEdge(from,  to, rel_edge);
+
 	MRPT_END;
 }
 
@@ -1528,9 +1702,14 @@ void CLoopCloserERD<GRAPH_t>::TLoopClosureParams::dumpToTextStream(
 		mrpt::utils::CStream &out) const {
 	MRPT_START;
 
-	out.printf("Min. node difference for LC = %d\n", LC_min_nodeid_diff);
-	out.printf("Visualize map partitions    = %s\n", visualize_map_partitions?
-			"TRUE": "FALSE");
+	out.printf("Min. node difference for loop closure                 = %d\n",
+			LC_min_nodeid_diff);
+	out.printf("Remote NodeIDs to consider the potential loop closure = %d\n",
+			LC_min_remote_nodes);
+	out.printf("Min EigenValues ratio for accepting a hypotheses set  = %f\n",
+			LC_eigenvalues_ratio_thresh);
+	out.printf("Visualize map partitions                              = %s\n",
+			visualize_map_partitions?  "TRUE": "FALSE");
 
 	MRPT_END;
 }
@@ -1544,6 +1723,14 @@ void CLoopCloserERD<GRAPH_t>::TLoopClosureParams::loadFromConfigFile(
 			"GeneralConfiguration",
 			"LC_min_nodeid_diff",
 			30, false);
+	LC_min_remote_nodes = source.read_int(
+			section,
+			"LC_min_remote_nodes",
+			3, false);
+	LC_eigenvalues_ratio_thresh = source.read_double(
+			section,
+			"LC_eigenvalues_ratio_thresh",
+			2, false);
 	visualize_map_partitions = source.read_bool(
 			"VisualizationParameters",
 			"visualize_map_partitions",
@@ -1583,7 +1770,7 @@ void CLoopCloserERD<GRAPH_t>::TPath::clear() {
 	// by default the information matrix is set to the unit matrix
 	CMatrixDouble33 init_path_mat; init_path_mat.unit();
 	// put a really large number - we are certain of this position
-	init_path_mat *= 10000; // justify this..
+	init_path_mat *= 10000; //TODO - justify this..
 	curr_pose_pdf.cov_inv = init_path_mat;
 
 	determinant_updated = false;
@@ -1793,6 +1980,36 @@ template<class GRAPH_t>
 bool CLoopCloserERD<GRAPH_t>::TPath::isGaussianType() const {
 	using namespace mrpt::poses;
 	return curr_pose_pdf.GetRuntimeClass() == CLASS_ID(CPosePDFGaussian);
+}
+
+template<class GRAPH_t>
+std::string CLoopCloserERD<GRAPH_t>::THypothesis::getAsString(bool oneline/*=true*/) const {
+	std::string str;
+	this->getAsString(&str, oneline);
+	return str;
+}
+
+template<class GRAPH_t>
+void CLoopCloserERD<GRAPH_t>::THypothesis::getAsString(std::string* str,
+		bool oneline /*=true*/) const {
+	using namespace std;
+
+	stringstream ss;
+	if (!oneline) { // multiline report
+		ss << "Hypothesis #" << id << endl;
+		ss << from << " => " << to << endl;
+		ss << edge << endl;
+	}
+	else {
+		ss << "Hypothesis #" << id << " | ";
+		ss << from << " => " << to << " | ";
+		ss << edge.getMeanVal(); 
+
+		ss << endl;
+	}
+
+	ASSERT_(str);
+	*str = ss.str();
 }
 
 } } } // end of namespaces
