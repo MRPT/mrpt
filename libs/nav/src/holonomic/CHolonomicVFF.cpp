@@ -19,6 +19,7 @@ using namespace std;
 using namespace mrpt::nav;
 
 IMPLEMENTS_SERIALIZABLE( CLogFileRecord_VFF, CHolonomicLogFileRecord,mrpt::nav )
+IMPLEMENTS_SERIALIZABLE( CHolonomicVFF, CAbstractHolonomicReactiveMethod,mrpt::nav)
 
 /*---------------------------------------------------------------
 						initialize
@@ -87,6 +88,29 @@ void  CHolonomicVFF::navigate(
 	const double targetNearnessFactor = std::min( 1.0, target.norm()/(options.TARGET_SLOW_APPROACHING_DISTANCE));
 	desiredSpeed = maxRobotSpeed * std::min(obstacleNearnessFactor, targetNearnessFactor);
 }
+
+void  CHolonomicVFF::writeToStream(mrpt::utils::CStream &out,int *version) const
+{
+	if (version)
+		*version = 0;
+	else
+	{
+		out << options.TARGET_ATTRACTIVE_FORCE << options.TARGET_SLOW_APPROACHING_DISTANCE;
+	}
+}
+void  CHolonomicVFF::readFromStream(mrpt::utils::CStream &in,int version)
+{
+	switch(version)
+	{
+	case 0:
+		{
+			in >> options.TARGET_ATTRACTIVE_FORCE >> options.TARGET_SLOW_APPROACHING_DISTANCE;
+		} break;
+	default:
+		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
+	};
+}
+
 
 /*---------------------------------------------------------------
 					writeToStream

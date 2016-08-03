@@ -17,6 +17,7 @@ namespace mrpt
   namespace nav
   {
 	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE(CLogFileRecord_ND, CHolonomicLogFileRecord, NAV_IMPEXP)
+	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE(CHolonomicND, CAbstractHolonomicReactiveMethod, NAV_IMPEXP )
 
 	/** \addtogroup nav_holo Holonomic navigation methods
 	  * \ingroup mrpt_nav_grp
@@ -50,8 +51,7 @@ namespace mrpt
 	 */
 	class NAV_IMPEXP CHolonomicND : public CAbstractHolonomicReactiveMethod
 	{
-	public:
-		MRPT_MAKE_ALIGNED_OPERATOR_NEW
+		DEFINE_SERIALIZABLE( CHolonomicND )
 	public:
 		 /**  Initialize the parameters of the navigator, from some configuration file, or default values if set to NULL */
 		CHolonomicND( const mrpt::utils::CConfigFileBase *INI_FILE = NULL );
@@ -152,6 +152,7 @@ namespace mrpt
 			std::vector<double>       & out_gaps_evaluation );
 
 	}; // end of CHolonomicND
+	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CHolonomicND, CAbstractHolonomicReactiveMethod, NAV_IMPEXP )
 
 	/** A class for storing extra information about the execution of
 	 *    CHolonomicND navigation.
