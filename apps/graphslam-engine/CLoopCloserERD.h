@@ -37,6 +37,8 @@
 #include <mrpt/system/os.h>
 #include <mrpt/system/threads.h>
 
+#include <Eigen/Dense>
+
 #include <algorithm>
 #include <cmath>
 #include <iostream>
@@ -309,12 +311,12 @@ class CLoopCloserERD:
 			constraint_t edge;
 			bool is_invalid;
 
-		} /* optional variable list */;
+		};
 
 		/**\brief Wrapper around the registerNewEdge method which accepts a
 		 * THypothesis object instead.
 		 */
-		void registerHypothesis(const THypothesis& h) { this->registerNewEdge(h.from, h.to, h.edge); }
+		void registerHypothesis(const THypothesis& h);
 
 		/** \brief Initialization function to be called from the various
 		 * constructors.
@@ -411,10 +413,6 @@ class CLoopCloserERD:
 				const mrpt::utils::TNodeID& b2,
 				const std::map<std::pair<mrpt::utils::TNodeID, mrpt::utils::TNodeID>,
 					THypothesis*>& hypots_map);
-
-		// TODO - implement the computation of Average pair
-		// TODO - implement the computation of the two dominant eigenvalues
-		// computeDominantEigenVs
 		
 		/** Get the ICP Edge between the provided nodes.
 		 *
