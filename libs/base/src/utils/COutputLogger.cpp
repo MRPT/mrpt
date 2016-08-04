@@ -9,18 +9,20 @@
 
 #include "base-precomp.h"  // Precompiled headers
 
+#include <mrpt/system/os.h>
+#include <mrpt/utils/CStream.h>
 #include <mrpt/utils/CFileOutputStream.h>
 #include <mrpt/utils/COutputLogger.h>
 #include <mrpt/system/threads.h>
-
-#include <vector>
 #include <cstdio>
+#include <sstream>
+#include <iostream>
+#include <cstdarg> // for logFmt
 
 #ifdef _MSC_VER
 	#define WIN32_LEAN_AND_MEAN
 	#include <windows.h>   // OutputDebugString() for MSVC
 #endif
-
 
 using namespace mrpt;
 using namespace mrpt::system;
@@ -35,61 +37,47 @@ using namespace std;
 // COutputLogger
 // ////////////////////////////////////////////////////////////
 
-// variables shared among the various logger instances
-size_t COutputLogger::m_times_for_log_const = 0;
-size_t COutputLogger::m_times_for_log_const_thresh = 2; // warn 2 times at most
+mrpt::system::TConsoleColor COutputLogger::logging_levels_to_colors[NUMBER_OF_VERBOSITY_LEVELS] = {
+	CONCOL_BLUE,  // LVL_DEBUG
+	CONCOL_NORMAL, // LVL_INFO
+	CONCOL_GREEN, // LVL_WARN
+	CONCOL_RED // LVL_ERROR
+};
 
-COutputLogger::COutputLogger(std::string name) {
-	this->reset();
-	m_name = name;
+std::string COutputLogger::logging_levels_to_names[NUMBER_OF_VERBOSITY_LEVELS] = {
+ 	"DEBUG", //LVL_DEBUG
+	"INFO", // LVL_INFO
+	"WARN", // LVL_WARN
+	"ERROR" // LVL_ERROR
+};
+
+COutputLogger::COutputLogger(const std::string &name) {
+	this->loggerReset();
+	m_logger_name = name;
 
 }
 COutputLogger::COutputLogger() {
-	this->reset();
+	this->loggerReset();
 }
 COutputLogger::~COutputLogger() { }
 
-void COutputLogger::log(const std::string& msg_str) {
-	if (m_curr_level < m_min_verbosity_level)
+void COutputLogger::log(const VerbosityLevel level, const std::string& msg_str) const {
+	if (level<m_min_verbosity_level)
 		return;
 
 	// initialize a TMsg object
-	TMsg msg(msg_str, *this);
-	m_history.push_back(msg);
+	TMsg msg(level, msg_str, *this);
+	if (logging_enable_keep_record)
+		m_history.push_back(msg);
 
-	if (print_message_automatically) {
+	if (logging_enable_console_output) {
 		msg.dumpToConsole();
-
 		// automatically set the color back to normal
 		mrpt::system::setConsoleColor(CONCOL_NORMAL);
 	}
-
-}
-void COutputLogger::log(const std::string& msg_str) const {
-	warnForLogConstMethod();
-
-	TMsg msg(msg_str, *this);
-	msg.dumpToConsole();
 }
 
-void COutputLogger::log(const std::string& msg_str, const VerbosityLevel& level) {
-	// temporarily override the logging level
-	VerbosityLevel global_level = m_curr_level;
-	m_curr_level = level;
-
-	this->log(msg_str);
-
-	m_curr_level = global_level;
-}
-void COutputLogger::log(const std::string& msg_str, const VerbosityLevel& level) const {
-	warnForLogConstMethod();
-
-	TMsg msg(msg_str, *this);
-	msg.level = level;
-	msg.dumpToConsole();
-}
-
-void COutputLogger::logFmt(const char* fmt, ...) {
+void COutputLogger::logFmt(const VerbosityLevel level, const char* fmt, ...) const {
 	// see MRPT/libs/base/src/utils/CDeugOutputCapable.cpp for the iniitial
 	// implementtion
 
@@ -103,18 +91,7 @@ void COutputLogger::logFmt(const char* fmt, ...) {
 	std::string str = this->generateStringFromFormat(fmt, argp);
 	va_end(argp);
 
-	this->log(str);
-}
-
-void COutputLogger::logFmt(const char* fmt, ...) const {
-	if (!fmt) return;
-
-	va_list argp;
-	va_start(argp, fmt);
-	std::string str = this->generateStringFromFormat(fmt, argp);
-	va_end(argp);
-
-	this->log(str);
+	this->log(level,str);
 }
 
 std::string COutputLogger::generateStringFromFormat(const char* fmt, va_list argp) const{
@@ -137,209 +114,101 @@ std::string COutputLogger::generateStringFromFormat(const char* fmt, va_list arg
 	return std::string(&buffer[0]);
 
 }
-void COutputLogger::logCond(const std::string& msg_str, 
-		bool cond) {
-	if (cond) {
-		this->log(msg_str);
-	}
-}
-void COutputLogger::logCond(const std::string& msg_str, 
-		bool cond) const {
-	if (cond) {
-		this->log(msg_str);
-	}
-}
-void COutputLogger::logCond(const std::string& msg_str, 
-		const VerbosityLevel& level,
-		bool cond) {
-	if (cond) {
-		this->log(msg_str, level);
-	}
-}
-void COutputLogger::logCond(const std::string& msg_str, 
-		const VerbosityLevel& level,
-		bool cond) const {
-	if (cond) {
-		this->log(msg_str, level);
-	}
+void COutputLogger::logCond(const VerbosityLevel level, bool cond, const std::string& msg_str) const
+{
+	if (!cond) return;
+	this->log(level,msg_str);
 }
 
-void COutputLogger::warnForLogConstMethod() const {
-	if (m_times_for_log_const++ >= m_times_for_log_const_thresh) {
-		return;
-	}
+void COutputLogger::setLoggerName(const std::string& name) { m_logger_name = name; }
 
-	// warn the user of the method behavior
-	std::string msg_str("Using the log method inside a const function/method. Message will not be recorded in COutputLogger history");
-	TMsg warning_msg(msg_str, *this);
-	warning_msg.level = LVL_WARN;
-	warning_msg.dumpToConsole();
-	mrpt::system::sleep(1000);
-}
+std::string COutputLogger::getLoggerName() const { return m_logger_name; }
 
-void COutputLogger::setName(const std::string& name) { m_name = name; }
-
-std::string COutputLogger::getName() const { return m_name; }
-
-void COutputLogger::setLoggingLevel(const VerbosityLevel& level /*= LVL_INFO */) {
-	m_curr_level = level;
-
-	if (m_curr_level < m_min_verbosity_level) {
-		mrpt::system::setConsoleColor(CONCOL_RED);
-		std::cout << format("Current VerbosityLevel provided %d is smaller than the minimum allowed verbosity level %d. Logger will ignore all logging directives\n", m_curr_level, m_min_verbosity_level); 
-		mrpt::system::setConsoleColor(CONCOL_NORMAL);
-		mrpt::system::sleep(1000);
-	}
-}
-
-void COutputLogger::setMinLoggingLevel(const VerbosityLevel& level /*= LVL_INFO */) {
+void COutputLogger::setMinLoggingLevel(const VerbosityLevel level /*= LVL_INFO */) {
 	m_min_verbosity_level = level;
-
-	if (m_curr_level < m_min_verbosity_level) {
-		mrpt::system::setConsoleColor(CONCOL_RED);
-		std::cout << format("Current VerbosityLevel %d is smaller than the minimum allowed verbosity level %d.\nLogger will ignore all logging directives using this VerbosityLevel\n", m_curr_level, m_min_verbosity_level); 
-		mrpt::system::setConsoleColor(CONCOL_NORMAL);
-		mrpt::system::sleep(1000);
-	}
 }
 
-
-VerbosityLevel COutputLogger::getLoggingLevel() const { return m_curr_level; }
-
-void COutputLogger::getAsString(std::string* fname) const {
-	for (std::vector<TMsg>::const_iterator hist_it = m_history.begin();
-			hist_it != m_history.end(); ++hist_it) {
-		*fname += hist_it->getAsString() + "\n";
-	}
+void COutputLogger::getLogAsString(std::string& fname) const {
+	fname.clear();
+	for (const auto & h : m_history)
+		fname += h.getAsString() + std::string("\n");
 }
-std::string COutputLogger::getAsString() const{
+std::string COutputLogger::getLogAsString() const{
 	std::string str;
-	this->getAsString(&str);
-
+	this->getLogAsString(str);
 	return str;
 }
-void COutputLogger::writeToFile(const std::string* fname_in /* = NULL */) const {
+void COutputLogger::writeLogToFile(const std::string* fname_in /* = NULL */) const {
 	// determine the filename - open it
 	std::string fname;
 	if (fname_in) {
 		fname = *fname_in;
 	}
 	else {
-		fname = m_name + ".log";
+		fname = m_logger_name + ".log";
 	}
 	CFileOutputStream fstream(fname);
 	ASSERTMSG_(fstream.fileOpenCorrectly(),
 			mrpt::format("\n[%s:] Could not open external file: %s",
-				m_name.c_str(), fname.c_str()) );
+				m_logger_name.c_str(), fname.c_str()) );
 
 	std::string hist_str;
-	this->getAsString(&hist_str);
+	this->getLogAsString(hist_str);
 	fstream.printf("%s\n", hist_str.c_str());
-
 	fstream.close();
 }
 
-void COutputLogger::dumpToConsole() const{
-	for (std::vector<TMsg>::const_iterator hist_it = m_history.begin();
-			hist_it != m_history.end(); ++hist_it) {
-		hist_it->dumpToConsole();
-	}
+void COutputLogger::dumpLogToConsole() const{
+	for (const auto &h :m_history)
+		h.dumpToConsole();
 }
 
-std::string COutputLogger::getLastMsg() const {
+std::string COutputLogger::getLoggerLastMsg() const {
 	TMsg last_msg = m_history.back();
 	return last_msg.getAsString();
 }
 
-void COutputLogger::getLastMsg(std::string* msg_str) const {
-	*msg_str = this->getLastMsg();
+void COutputLogger::getLoggerLastMsg(std::string& msg_str) const {
+	msg_str = this->getLoggerLastMsg();
 }
 
 
-void COutputLogger::reset() {
-	m_name = "Logger"; // just the default name
+void COutputLogger::loggerReset() {
+	m_logger_name = "log"; // just the default name
 
 	m_history.clear();
-	m_curr_level = LVL_INFO;
-
-	print_message_automatically = true;
+	logging_enable_console_output = true;
+	logging_enable_keep_record    = false;
 
 	// set the minimum logging level allowed for printing. By default its
-	// LVL_DEBUG
-	m_min_verbosity_level = LVL_DEBUG;
-
+	// LVL_INFO
+	m_min_verbosity_level = LVL_INFO;
 }
 
 // TMsg Struct
 // ////////////////////////////////////////////////////////////
 
-COutputLogger::TMsg::TMsg(const std::string& msg_str, const COutputLogger& logger) {
+COutputLogger::TMsg::TMsg(const mrpt::utils::VerbosityLevel level, const std::string& msg_str, const COutputLogger& logger) {
 	this->reset();
 
-	name = logger.getName();
-	level = logger.getLoggingLevel();
+	name = logger.getLoggerName();
+	this->level = level;
 	timestamp = mrpt::system::getCurrentTime(); // fill with the current time
 	body = msg_str;
 }
 COutputLogger::TMsg::~TMsg() { }
-
-mrpt::system::TConsoleColor COutputLogger::TMsg::getConsoleColor(VerbosityLevel level) const {
-	TConsoleColor color;
-
-  map<VerbosityLevel, mrpt::system::TConsoleColor>::const_iterator search;
-  search = m_levels_to_colors.find(level);
-
-	// if found return the corresponding color, otherwise return normal...
-  if (search != m_levels_to_colors.end()) {
-  	color = search->second;
-  }
-  else {
-  	color = CONCOL_NORMAL;
-  }
-
-	return color;
-}
-
-std::string COutputLogger::TMsg::getLoggingLevelName(VerbosityLevel level) const {
-	std::string name;
-
-  map<VerbosityLevel, std::string>::const_iterator search;
-  search = m_levels_to_names.find(level);
-
-	// if found return the corresponding color, otherwise return normal...
-  if (search != m_levels_to_names.end()) {
-  	name = search->second;
-  }
-  else {
-  	name = "UNKNOWN_LVL";
-  }
-
-	return name;
-}
 
 void COutputLogger::TMsg::reset() {
 	timestamp = INVALID_TIMESTAMP;
 	level = LVL_INFO;
 	name = "Message"; // default name
 	body.clear(); 
-
-	m_levels_to_colors.clear();
-	m_levels_to_colors[LVL_DEBUG] = CONCOL_BLUE;
-	m_levels_to_colors[LVL_INFO]  = CONCOL_NORMAL;
-	m_levels_to_colors[LVL_WARN]  = CONCOL_GREEN;
-	m_levels_to_colors[LVL_ERROR] = CONCOL_RED;
-
-	m_levels_to_names.clear();
- 	m_levels_to_names[LVL_DEBUG] = "DEBUG";
-	m_levels_to_names[LVL_INFO]  = "INFO ";
-	m_levels_to_names[LVL_WARN]  = "WARN ";
-	m_levels_to_names[LVL_ERROR] = "ERROR";
 }
 
 std::string COutputLogger::TMsg::getAsString() const {
 	stringstream out;
 	out.str("");
-	out << "[" << name <<  " | " << this->getLoggingLevelName(level) << " | " 
+	out << "[" << name <<  " | " << COutputLogger::logging_levels_to_names[level]  << " | " 
 		<< mrpt::system::timeToString(timestamp) 
 		<< "] " << body;
 
@@ -358,9 +227,9 @@ void COutputLogger::TMsg::writeToStream(mrpt::utils::CStream& out) const {
 void COutputLogger::TMsg::dumpToConsole() const {
 	const std::string str = getAsString() + "\n";
 
-	const bool dump_to_cerr = false; // TO-DO: Allow LVL_ERROR to be alternatively dumped to stderr instead of stdout??
+	const bool dump_to_cerr = (level==LVL_ERROR); // LVL_ERROR alternatively dumped to stderr instead of stdout
 
-	mrpt::system::setConsoleColor(this->getConsoleColor(level), dump_to_cerr);
+	mrpt::system::setConsoleColor(COutputLogger::logging_levels_to_colors[level], dump_to_cerr);
 	::fputs(str.c_str(), dump_to_cerr ? stderr:stdout );
 #ifdef _MSC_VER
 	OutputDebugStringA(str.c_str());
