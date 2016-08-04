@@ -190,7 +190,10 @@ class CLoopCloserERD:
 						const std::string &section);
 				void 	dumpToTextStream(mrpt::utils::CStream &out) const;
 
-
+				/**\brief flag indicating whether to check only the partition of the last
+	 			 * registered node for potential loop closures
+	 			 */
+				bool LC_check_curr_partition_only;
 				/**\brief nodeID difference for detecting potential loop closure in a
 		 		 * partition.
 		 		 *
@@ -309,6 +312,7 @@ class CLoopCloserERD:
 			mrpt::utils::TNodeID to;
 
 			constraint_t edge;
+			double goodness;
 			bool is_invalid;
 
 		};
@@ -370,6 +374,7 @@ class CLoopCloserERD:
 		template<class T>
 		static std::string getVectorAsString(const T& t);
 
+
 		/**\brief Check the registered so far partitions for potential loop
 		 * closures.
 		 *
@@ -390,6 +395,9 @@ class CLoopCloserERD:
 		 * \sa checkPartitionsForLC
 		 */
 		void evaluatePartitionsForLC(const partitions_t& partitions);
+		bool computeDominantEigenVector(const mrpt::math::CMatrixDouble& consist_matrix,
+				mrpt::math::dynamic_vector<double>* eigvec,
+				bool use_power_method=false);
 		/**\brief Return the pair-wise consistency between the observations of the
 		 * given nodes.
 		 *

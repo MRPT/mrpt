@@ -119,8 +119,10 @@ bool CLoopCloserERD<GRAPH_t>::updateState(
 		if (curr_observation) {
 			m_last_laser_scan2D = observations->getObservationByClass<CObservation2DRangeScan>();
 		}
-
-
+		else {
+			cout << "current observation not found" << endl;
+			mrpt::system::pause();
+		}
 	}
 
 
@@ -249,10 +251,12 @@ void CLoopCloserERD<GRAPH_t>::checkPartitionsForLC(
 		partitions_t* partitions_for_LC) {
 	MRPT_START;
 	m_time_logger.enter("LoopClosureEvaluation");
+
 	using namespace std;
 	using namespace mrpt;
 	using namespace mrpt::utils;
 
+	ASSERT_(partitions_for_LC);
 	partitions_for_LC->clear();
 
 	// keep track of the previous nodes list of every partition. If this is not
@@ -269,6 +273,15 @@ void CLoopCloserERD<GRAPH_t>::checkPartitionsForLC(
 	for (partitions_t::const_iterator partitions_it = m_curr_partitions.begin();
 			partitions_it != m_curr_partitions.end(); ++partitions_it, ++partitionID)
 	{
+		// check whether the last registered node is in the currently traversed
+		// partition - if not, ignore it.
+		if (m_lc_params.LC_check_curr_partition_only) {
+			bool curr_node_in_curr_partition = ((find(partitions_it->begin(), partitions_it->end(), m_graph->nodeCount()-1)) != partitions_it->end());
+			if (!curr_node_in_curr_partition) {
+				continue;
+			}
+		}
+
 		// keep track of the previous nodes list
 		finder = m_partitionID_to_prev_nodes_list.find(partitionID);
 		if (finder == m_partitionID_to_prev_nodes_list.end()) { // nodes list is not reegistered yet
@@ -319,7 +332,6 @@ void CLoopCloserERD<GRAPH_t>::checkPartitionsForLC(
 			// update the previous node
 			prev_nodeID = curr_nodeID;
 		}
-
 		m_out_logger.logFmt("Successfully checked partition: %d", partitionID);
 	}
 
@@ -335,6 +347,7 @@ void CLoopCloserERD<GRAPH_t>::evaluatePartitionsForLC(
 	using namespace mrpt::math;
 	using namespace mrpt::utils;
 	using namespace std;
+	m_time_logger.enter("LoopClosureEvaluation");
 
 	if (partitions.size() == 0) return;
 
@@ -372,15 +385,19 @@ void CLoopCloserERD<GRAPH_t>::evaluatePartitionsForLC(
 		// TODO - reconsider using first nodes here?
 		vector_uint groupA(p_it->begin(), p_it->begin()+index_to_split);
 		int first_nodes_to_use = 5;
-		if (groupA.size() > first_nodes_to_use) {
-			vector_uint group_tmp(groupA.begin(), groupA.begin()+5);
+		if (groupA.size() > first_nodes_to_use && first_nodes_to_use!=-1) {
+			vector_uint group_tmp(groupA.begin(), groupA.begin()+first_nodes_to_use);
 			groupA = group_tmp;
 		}
 
 		// groupB
 		// keep all the nodes there..
-		// TODO - reconsider using all the nodes here?
 		vector_uint groupB(p_it->begin()+index_to_split, p_it->end());
+		int last_nodes_to_use = -1;
+		if (groupB.size() > last_nodes_to_use && last_nodes_to_use!=-1) {
+			vector_uint group_tmp(groupB.end()-last_nodes_to_use, groupB.end());
+			groupB = group_tmp;
+		}
 
 		m_out_logger.logFmt("groupA: %s - size: %lu\n",
 				this->getVectorAsString(groupA).c_str(), groupA.size());
@@ -408,6 +425,7 @@ void CLoopCloserERD<GRAPH_t>::evaluatePartitionsForLC(
 					hypot->to = *a_it;
 					hypot->id = hypothesis_counter++;
 					this->getICPEdge(*b_it, *a_it, &(hypot->edge), &icp_info);
+					hypot->goodness = icp_info.goodness; // goodness related to the edge
 					//cout << "Goodness: " << icp_info.goodness << endl;
 					//cout << hypot->getAsString() << endl;
 					// Mark as invalid, do not use it from now on...
@@ -452,7 +470,7 @@ void CLoopCloserERD<GRAPH_t>::evaluatePartitionsForLC(
 							consistency = 0;
 						}
 						m_out_logger.logFmt("Adding hypotheses consistency for nodeIDs: "
-								"(%lu, %lu, %lu, %lu)\t%f", b1, b2, a1, a2, consistency);
+								"(%lu, %lu, %lu, %lu) => \t%f", b1, b2, a1, a2, consistency);
 						hypots_to_consistencies[make_pair(h_b2a1, h_b1a2)] = consistency;
 					}
 				}
@@ -465,8 +483,8 @@ void CLoopCloserERD<GRAPH_t>::evaluatePartitionsForLC(
 		CMatrixDouble consist_matrix(hypothesis_counter, hypothesis_counter);
 		for (typename std::map<std::pair<THypothesis*, THypothesis*>, double>::const_iterator it =
 				hypots_to_consistencies.begin(); it != hypots_to_consistencies.end(); ++it)  {
-			int id1 = it->first.first->id;	
-			int id2 = it->first.second->id;	
+			int id1 = it->first.first->id;
+			int id2 = it->first.second->id;
 			double consistency_elem = it->second;
 			consist_matrix(id1, id2) = consist_matrix(id2, id1) = consistency_elem;
 			m_out_logger.logFmt("id1 = %d\t| id2 = %d\t| consistency_element = %f",
@@ -475,84 +493,60 @@ void CLoopCloserERD<GRAPH_t>::evaluatePartitionsForLC(
 		m_out_logger.logFmt("Row count of consist_matrix: %lu", consist_matrix.getRowCount());
 
 		// evaluate the pair-wise consistency matrix
-		// find the two dominant eigenvectors + eigenvalues
-		CMatrixDouble eigvecs, eigvals;
-		consist_matrix.eigenVectors(eigvecs, eigvals);
+		// compute dominant eigenvector
+		dynamic_vector<double> u;
+		bool valid_lambda_ratio =
+			this->computeDominantEigenVector(consist_matrix, &u, /*use_power_method=*/ false);
+		if (!valid_lambda_ratio) continue;
 
-		ASSERTMSG_((eigvecs.size() == eigvals.size()) &&
-				(consist_matrix.size() == eigvals.size()),
-				mrpt::format("\nSizes of eigvecs, eigvals, consist_matrix don't match\n"));
+		cout << "Dominant eigenvector: " << u.transpose() << endl; // TODO - Remove it
 
-		// check the ratio of the two eigenvalues - reject if smaller than
-		// threshold
-		double lambda1 = eigvals(eigvals.getRowCount()-1, eigvals.getColCount()-1);
-		double lambda2 = eigvals(eigvals.getRowCount()-2, eigvals.getColCount()-2);
-		double curr_lambda_ratio = lambda1 / lambda2;
+		// discretize the indicator vector - maximize the dot product of
+		// w_unit .* u
+		dynamic_vector<double> w(u.size(), 0); // discretized  indicator vector
+		double dot_product = 0;
+		for (int i = 0; i != w.size(); ++i) {
+			stringstream ss;
 
-		stringstream ss;
-		ss << "lambda1 = " << lambda1 << " | lambda2 = " << lambda2 << endl;
-		if (curr_lambda_ratio < m_lc_params.LC_eigenvalues_ratio_thresh || lambda2 == 0) {
-			ss << "Current Lambda ratio: " << curr_lambda_ratio << endl;
-			ss << "Threshold ratio: " << m_lc_params.LC_eigenvalues_ratio_thresh << endl;
-			ss << "\tThreshold surpassed!" << endl;
-			continue;
-			//mrpt::system::pause(); // TODO - remove this
-		}
-		else {
-			dynamic_vector<double> u; // indicator vector = eigenvector corresponding to larger eigenvalue
-			eigvecs.extractCol(eigvecs.getColCount()-1, u);
-			cout << "Dominant eigenvector: " << u.transpose() << endl;
-
-			// discretize the indicator vector - maximize the dot product of
-			// w_unit .* u
-			dynamic_vector<double> w(u.size(), 0); // discretized  indicator vector
-			double dot_product = 0;
-			for (int i = 0; i != w.size(); ++i) {
-				stringstream ss;
-
-				// make the necessary change and see if the dot product increases
-				w(i) = 1;
-				double potential_dot_product = ((w.transpose() * u) / w.squaredNorm()).value();
-				ss << mrpt::format("current: %f | potential_dot_product: %f",
-						dot_product, potential_dot_product);
-				if (potential_dot_product > dot_product) {
-					ss << " ==>  ACCEPT";
-					dot_product =	potential_dot_product;
-				}
-				else {
-					ss << " ==>  REJECT";
-					w(i) = 0; // revert the change
-				}
-				ss << endl;
-				m_out_logger.logFmt("%s", ss.str().c_str());
+			// make the necessary change and see if the dot product increases
+			w(i) = 1;
+			double potential_dot_product = ((w.transpose() * u) / w.squaredNorm()).value();
+			ss << mrpt::format("current: %f | potential_dot_product: %f",
+					dot_product, potential_dot_product);
+			if (potential_dot_product > dot_product) {
+				ss << " ==>  ACCEPT";
+				dot_product =	potential_dot_product;
 			}
-			//cout << "outcome of discretization: " << w.transpose() << endl;
+			else {
+				ss << " ==>  REJECT";
+				w(i) = 0; // revert the change
+			}
+			ss << endl;
+			m_out_logger.logFmt("%s", ss.str().c_str());
+		}
+		//cout << "outcome of discretization: " << w.transpose() << endl;
 
-			m_out_logger.logFmt("%s\n", ss.str().c_str());
+		// register the indicated hypotheses
+		if (!w.isZero()) {
+			m_out_logger.logFmt("Registering Hypotheses...");
 
-			// register the indicated hypotheses
-			if (!w.isZero()) {
-				m_out_logger.logFmt("Registering Hypotheses...");
-
-				for (int wi = 0; wi != w.size(); ++wi) {
-					if (w(wi) == 1)  {
-						// search through the potential hypotheses, find the one with the
-						// correct ID and register it.
-						typename std::map<std::pair<TNodeID, TNodeID>, THypothesis*>::const_iterator h_it;
-						for (h_it = nodeIDs_to_hypots.begin(); h_it != nodeIDs_to_hypots.end(); ++h_it) {
-							if (h_it->second->id == wi) {
-								this->registerHypothesis(*(h_it->second));
-								break;
-							}
+			for (int wi = 0; wi != w.size(); ++wi) {
+				if (w(wi) == 1)  {
+					// search through the potential hypotheses, find the one with the
+					// correct ID and register it.
+					typename std::map<std::pair<TNodeID, TNodeID>, THypothesis*>::const_iterator h_it;
+					for (h_it = nodeIDs_to_hypots.begin(); h_it != nodeIDs_to_hypots.end(); ++h_it) {
+						if (h_it->second->id == wi) {
+							this->registerHypothesis(*(h_it->second));
+							break;
 						}
-						ASSERTMSG_(h_it != nodeIDs_to_hypots.end(),
-								format("Hypothesis %d was not found", wi));
-						continue; // we should have gotten here only after breaking...
 					}
+					ASSERTMSG_(h_it != nodeIDs_to_hypots.end(),
+							format("Hypothesis %d was not found", wi));
 				}
 			}
-			//mrpt::system::pause();
 		}
+		//mrpt::system::pause();
 
 
 		// delete the hypotheses - generated in the heap...
@@ -566,11 +560,65 @@ void CLoopCloserERD<GRAPH_t>::evaluatePartitionsForLC(
 	}
 
 	m_out_logger.logFmt("\n%s", header_sep.c_str());
+	m_time_logger.leave("LoopClosureEvaluation");
 
 	MRPT_END;
 }
 
 template<class GRAPH_t>
+bool CLoopCloserERD<GRAPH_t>::computeDominantEigenVector(
+		const mrpt::math::CMatrixDouble& consist_matrix,
+		mrpt::math::dynamic_vector<double>* eigvec,
+		bool use_power_method/*=true*/) {
+	MRPT_START;
+	using namespace mrpt;
+	using namespace mrpt::math;
+	using namespace std;
+	ASSERT_(eigvec);
+
+	m_time_logger.enter("DominantEigenvectorComputation");
+
+	double lambda1, lambda2; // eigenvalues to use
+	bool valid_lambda_ratio = false;
+
+	if (use_power_method) {
+		THROW_EXCEPTION("\nPower method for computing the first two eigenvectors/eigenvalues hasn't been implemented yet\n");
+	}
+	else { // call to eigenVectors method
+		CMatrixDouble eigvecs, eigvals;
+		consist_matrix.eigenVectors(eigvecs, eigvals);
+
+		ASSERTMSG_((eigvecs.size() == eigvals.size()) &&
+				(consist_matrix.size() == eigvals.size()),
+				mrpt::format("\nSizes of eigvecs, eigvals, consist_matrix don't match\n"));
+
+		eigvecs.extractCol(eigvecs.getColCount()-1, *eigvec);
+		lambda1 = eigvals(eigvals.getRowCount()-1, eigvals.getColCount()-1);
+		lambda2 = eigvals(eigvals.getRowCount()-2, eigvals.getColCount()-2);
+	}
+
+	// check the ratio of the two eigenvalues - reject hypotheses set if ratio
+	// smaller than threshold
+	double curr_lambda_ratio = lambda1 / lambda2;
+	stringstream ss;
+	ss << "lambda1 = " << lambda1 << " | lambda2 = " << lambda2 << endl;
+
+	valid_lambda_ratio = (curr_lambda_ratio > m_lc_params.LC_eigenvalues_ratio_thresh || lambda2 == 0);
+	if (!valid_lambda_ratio) {
+		ss << "Current Lambda ratio: " << curr_lambda_ratio;
+		ss << "| Threshold ratio: " << m_lc_params.LC_eigenvalues_ratio_thresh;
+		ss << "| Lambda threshold not passed or lambda2 = 0!" << endl;
+	}
+	m_out_logger.logFmt("%s", ss.str().c_str());
+
+	m_time_logger.leave("DominantEigenvectorComputation");
+	return valid_lambda_ratio;
+
+	MRPT_END;
+}
+
+
+	template<class GRAPH_t>
 double CLoopCloserERD<GRAPH_t>::generatePWConsistencyElement(
 		const mrpt::utils::TNodeID& a1,
 		const mrpt::utils::TNodeID& a2,
@@ -725,7 +773,7 @@ void CLoopCloserERD<GRAPH_t>::execDijkstraProjection(
 	//}
 	//cout << "------ Done with the starting node ... ------" << endl;
 	//int iters = 0;
-	//// TODO Remove these - <<<<<<<<<<<<<<<<<<<<<
+	//// TODO Remove these - <<<<<<<<<<<<<<<<<<<<< vvvUNCOMMENT BELOW AS WELLvvv
 
 	// for all unvisited nodes
 	while ( std::any_of(visited_nodes.begin(), visited_nodes.end(),
@@ -743,7 +791,8 @@ void CLoopCloserERD<GRAPH_t>::execDijkstraProjection(
 
 		TPath* optimal_path = this->popMinUncertaintyPath(&pool_of_paths);
 		TNodeID dest = optimal_path->getDestination();
-	
+
+		//// TODO Remove these - <<<<<<<<<<<<<<<<<<<<< ^^^UNCOMMENT ABOVE AS WELL^^^
 		//// TODO Remove these - >>>>>>>>>>>>>>>>>>>>
 		//cout << iters << " " << std::string(40, '>') << endl;
 		//cout << "current path Destination: " << dest << endl;
@@ -843,6 +892,9 @@ void CLoopCloserERD<GRAPH_t>::getMinUncertaintyPath(
 	ASSERTMSG_(m_graph->edgeExists(from, to) || m_graph->edgeExists(to, from),
 			mrpt::format("\nEdge between the provided nodeIDs"
 				"(%lu <-> %lu) does not exist\n", from, to) );
+	ASSERT_(path_between_nodes);
+
+	//cout << "getMinUncertaintyPath: " << from << " => " << to << endl;
 
 	// don't add to the path_between_nodes, just fill it in afterwards
 	path_between_nodes->clear(); 
@@ -853,6 +905,12 @@ void CLoopCloserERD<GRAPH_t>::getMinUncertaintyPath(
 	// forward edges from -> to
 	std::pair<edges_citerator, edges_citerator> fwd_edges_pair =
 		m_graph->getEdges(from, to);
+
+	//cout << "Forward edges: " << endl;
+	//for (edges_citerator e_it = fwd_edges_pair.first; e_it != fwd_edges_pair.second;
+			//++e_it) {
+		//cout << e_it->second << endl;
+	//}
 
 	for (edges_citerator edges_it = fwd_edges_pair.first;
 			edges_it != fwd_edges_pair.second; ++edges_it) {
@@ -865,7 +923,7 @@ void CLoopCloserERD<GRAPH_t>::getMinUncertaintyPath(
 		CMatrixDouble33 inf_mat;
 		curr_edge.getInformationMatrix(inf_mat);
 
-		if (inf_mat == CMatrixDouble33()) {
+		if (inf_mat == CMatrixDouble33() || mrpt::math::isNaN(inf_mat(0,0))) {
 			inf_mat.unit();
 			curr_edge.cov_inv = inf_mat;
 		}
@@ -884,6 +942,12 @@ void CLoopCloserERD<GRAPH_t>::getMinUncertaintyPath(
 	std::pair<edges_citerator, edges_citerator> bwd_edges_pair =
 		m_graph->getEdges(to, from);
 
+	//cout << "Backwards edges: " << endl;
+	//for (edges_citerator e_it = bwd_edges_pair.first; e_it != bwd_edges_pair.second;
+			//++e_it) {
+		//cout << e_it->second << endl;
+	//}
+
 	for (edges_citerator edges_it = bwd_edges_pair.first;
 			edges_it != bwd_edges_pair.second; ++edges_it) {
 		// operate on a temporary object instead of the real edge - otherwise
@@ -895,7 +959,7 @@ void CLoopCloserERD<GRAPH_t>::getMinUncertaintyPath(
 		CMatrixDouble33 inf_mat;
 		curr_edge.getInformationMatrix(inf_mat);
 
-		if (inf_mat == CMatrixDouble33()) {
+		if (inf_mat == CMatrixDouble33() || mrpt::math::isNaN(inf_mat(0,0))) {
 			inf_mat.unit();
 			curr_edge.cov_inv = inf_mat;
 		}
@@ -972,6 +1036,9 @@ void CLoopCloserERD<GRAPH_t>::registerNewEdge(
 		m_just_inserted_loop_closure = true;
 		m_out_logger.log("\tLoop Closure edge!", LVL_INFO);
 	}
+	else {
+		m_just_inserted_loop_closure = false;
+	}
 
 	//  actuall registration
 	m_graph->insertEdge(from,  to, rel_edge);
@@ -1042,10 +1109,12 @@ void CLoopCloserERD<GRAPH_t>::initMapPartitionsVisualization() {
 	using namespace mrpt::math;
 	using namespace mrpt::opengl;
 
-	// textmessage
-	m_win_manager->assignTextMessageParameters(
-			/* offset_y*	= */ &m_lc_params.offset_y_map_partitions,
-			/* text_index* = */ &m_lc_params.text_index_map_partitions);
+	// textmessage - display the number of partitions
+	if (m_lc_params.LC_check_curr_partition_only) {
+		m_win_manager->assignTextMessageParameters(
+				/* offset_y*	= */ &m_lc_params.offset_y_map_partitions,
+				/* text_index* = */ &m_lc_params.text_index_map_partitions);
+	}
 
 	// just add an empty CSetOfObjects in the scene - going to populate it later
 	CSetOfObjectsPtr map_partitions_obj = CSetOfObjects::Create();
@@ -1068,12 +1137,14 @@ void CLoopCloserERD<GRAPH_t>::updateMapPartitionsVisualization() {
 
 	// textmessage
 	// ////////////////////////////////////////////////////////////
-	std::stringstream title;
-	title << "# Partitions: " << m_curr_partitions.size();
-	m_win_manager->addTextMessage(5,-m_lc_params.offset_y_map_partitions,
-			title.str(),
-			mrpt::utils::TColorf(m_lc_params.balloon_std_color),
-			/* unique_index = */ m_lc_params.text_index_map_partitions);
+	if (m_lc_params.LC_check_curr_partition_only) {
+		std::stringstream title;
+		title << "# Partitions: " << m_curr_partitions.size();
+		m_win_manager->addTextMessage(5,-m_lc_params.offset_y_map_partitions,
+				title.str(),
+				mrpt::utils::TColorf(m_lc_params.balloon_std_color),
+				/* unique_index = */ m_lc_params.text_index_map_partitions);
+	}
 
 	// update the partitioning visualization
 	// ////////////////////////////////////////////////////////////
@@ -1091,8 +1162,18 @@ void CLoopCloserERD<GRAPH_t>::updateMapPartitionsVisualization() {
 	bool partition_contains_last_node = false;
 	for (partitions_t::const_iterator p_it = m_curr_partitions.begin();
 			p_it != m_curr_partitions.end(); ++p_it, ++partitionID) {
+
 		m_out_logger.logFmt("Working on Partition #%d", partitionID);
 		vector_uint nodes_list = *p_it;
+
+		// finding the partition in which the last node is in
+		if (std::find(nodes_list.begin(), nodes_list.end(), m_graph->nodeCount()-1)
+				!= nodes_list.end()) {
+			partition_contains_last_node = true;
+		}
+		else {
+			partition_contains_last_node = false;
+		}
 
 		// fetch the current partition object if it exists - create otherwise
 		std::string partition_obj_name = mrpt::format("partition_%d", partitionID);
@@ -1105,6 +1186,9 @@ void CLoopCloserERD<GRAPH_t>::updateMapPartitionsVisualization() {
 					"\tFetching CSetOfObjects partition object for partition #%d",
 					partitionID);
 			curr_partition_obj = static_cast<CSetOfObjectsPtr>(obj);
+			if (m_lc_params.LC_check_curr_partition_only) { // make all but the last partition invisible
+				curr_partition_obj->setVisibility(partition_contains_last_node); 
+			}
 		}
 		else {
 			m_out_logger.logFmt(
@@ -1112,6 +1196,9 @@ void CLoopCloserERD<GRAPH_t>::updateMapPartitionsVisualization() {
 					partitionID);
 			curr_partition_obj = CSetOfObjects::Create();
 			curr_partition_obj->setName(partition_obj_name);
+			if (m_lc_params.LC_check_curr_partition_only) { // make all but the last partition invisible
+				curr_partition_obj->setVisibility(partition_contains_last_node); 
+			}
 
 			m_out_logger.logFmt("\t\tCreating a new CSphere balloon object");
 			CSpherePtr balloon_obj = CSphere::Create();
@@ -1141,14 +1228,6 @@ void CLoopCloserERD<GRAPH_t>::updateMapPartitionsVisualization() {
 		std::pair<double, double> centroid_coords;
 		this->computeCentroidOfNodesVector(nodes_list, &centroid_coords);
 
-		// finding the partition in which the last node is in
-		if (std::find(nodes_list.begin(), nodes_list.end(), m_graph->nodeCount()-1)
-				!= nodes_list.end()) {
-			partition_contains_last_node = true;
-		}
-		else {
-			partition_contains_last_node = false;
-		}
 		TPoint3D balloon_location(centroid_coords.first, centroid_coords.second,
 				m_lc_params.balloon_elevation);
 
@@ -1779,6 +1858,8 @@ void CLoopCloserERD<GRAPH_t>::TLoopClosureParams::dumpToTextStream(
 			LC_min_remote_nodes);
 	out.printf("Min EigenValues ratio for accepting a hypotheses set  = %f\n",
 			LC_eigenvalues_ratio_thresh);
+	out.printf("Check only current node's partition for loop closures = %s\n",
+			LC_check_curr_partition_only? "TRUE": "FALSE");
 	out.printf("Visualize map partitions                              = %s\n",
 			visualize_map_partitions?  "TRUE": "FALSE");
 
@@ -1802,6 +1883,10 @@ void CLoopCloserERD<GRAPH_t>::TLoopClosureParams::loadFromConfigFile(
 			section,
 			"LC_eigenvalues_ratio_thresh",
 			2, false);
+	LC_check_curr_partition_only = source.read_bool(
+			section,
+			"LC_check_curr_partition_only",
+			true, false);
 	visualize_map_partitions = source.read_bool(
 			"VisualizationParameters",
 			"visualize_map_partitions",
@@ -2072,9 +2157,13 @@ void CLoopCloserERD<GRAPH_t>::THypothesis::getAsString(std::string* str,
 		ss << edge << endl;
 	}
 	else {
-		ss << "Hypothesis #" << id << " | ";
-		ss << from << " => " << to << " | ";
-		ss << edge.getMeanVal(); 
+		ss << "Hypothesis #" << id << "|\t ";
+		ss << from << " => " << to << "|\t ";
+		ss << edge.getMeanVal().asString(); 
+		if (goodness) {
+			ss << "|\tgoodness: " << goodness;
+		}
+		ss << endl;
 	}
 
 	ASSERT_(str);
