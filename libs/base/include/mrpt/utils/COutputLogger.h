@@ -12,6 +12,7 @@
 
 #include <mrpt/base/link_pragmas.h>
 #include <mrpt/utils/mrpt_macros.h>
+#include <mrpt/system/os.h>  // for console color constants
 
 #include <string>
 #include <deque>
@@ -35,7 +36,7 @@ enum VerbosityLevel {
  *
  * COutputLogger is a versatile class for logging messages either to the
  * terminal window or to an external file. Class instances can take messages in
- * std::string using the log class methods 
+ * std::string using the logStr class methods 
  *
  * - Logger instance keeps the messages in an internal container so that upon
  *   request it can dump them either to the console or to an external file
@@ -64,6 +65,7 @@ enum VerbosityLevel {
  * logging_enable_console_output class variable if that's not the desired
  * behavior
  *
+ * \note [New in MRPT 1.5.0]
  * \sa TMsg
  * \ingroup mrpt_base_grp
  */
@@ -87,27 +89,27 @@ class BASE_IMPEXP COutputLogger {
 		 * \endcode
 		 */
 		COutputLogger(const std::string &name);
-		COutputLogger(); //!< Default class constructor. Name of the logger is initialized to "log"
+		COutputLogger(); //!< Default class constructor. Name of the logger is initialized to "logStr"
 		virtual ~COutputLogger();  //!< virtual dtor (so we can derive classes from this one)
 
 		/** \brief Main method to add the specified message string to the logger.
 		 * \sa logCond, logFmt */
-		void log(const VerbosityLevel level, const std::string& msg_str) const;
+		void logStr(const VerbosityLevel level, const std::string& msg_str) const;   // renamed from log() to avoid conflict with math ::log()
 
 		/** \brief Alternative logging method, which mimics the printf behavior.
 		 *
 		 * Handy for not having to first use mrpt::format to pass a std::string
-		 * message to log
+		 * message to logStr
 		 *
 		 * \code
 		 * // instead of:
-		 * log(mrpt::format("Today is the %d of %s, %d", 15, "July", 2016));
+		 * logStr(mrpt::format("Today is the %d of %s, %d", 15, "July", 2016));
 		 *
 		 * // one can use:
 		 * logFmt("Today is the %d of %s, %d", 15, "July", 2016);
 		 * \endcode
 		 *
-		 * \sa log, logCond, mrpt::utils:CDebugOutputCapable
+		 * \sa logStr, logCond, mrpt::utils:CDebugOutputCapable
 		 */
 		void logFmt(const VerbosityLevel level, const char* fmt, ...) const MRPT_printf_format_check(3,4);  // arg 1=this
 		

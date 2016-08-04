@@ -13,23 +13,16 @@
 #include <mrpt/system/memory.h>
 #include <mrpt/system/os.h>
 
-#ifdef MRPT_OS_WINDOWS
-	#define WIN32_LEAN_AND_MEAN
-	#include <windows.h>
-#endif
-
 #include <vector>
 #include <cstdarg>
-#include <iostream>
 
 using namespace mrpt::utils;
 using namespace mrpt::system;
 
-
 /*---------------------------------------------------------------
 					printf_debug
  ---------------------------------------------------------------*/
-void CDebugOutputCapable::printf_debug( const char *fmt, ... )
+void CDebugOutputCapable::printf_debug( const char *fmt, ... ) const
 {
 	if (!fmt) return;
 
@@ -50,9 +43,6 @@ void CDebugOutputCapable::printf_debug( const char *fmt, ... )
 	}
 
 	// Output:
-	std::cout << &buffer[0];
-
-#ifdef _MSC_VER
-	OutputDebugStringA(&buffer[0]);
-#endif
+	std::string s(&buffer[0]);
+	COutputLogger::logStr(LVL_INFO, s);
 }
