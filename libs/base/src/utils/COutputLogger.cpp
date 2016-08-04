@@ -9,7 +9,6 @@
 
 #include "base-precomp.h"  // Precompiled headers
 
-#include <mrpt/system/os.h>
 #include <mrpt/utils/CStream.h>
 #include <mrpt/utils/CFileOutputStream.h>
 #include <mrpt/utils/COutputLogger.h>
@@ -61,7 +60,7 @@ COutputLogger::COutputLogger() {
 }
 COutputLogger::~COutputLogger() { }
 
-void COutputLogger::log(const VerbosityLevel level, const std::string& msg_str) const {
+void COutputLogger::logStr(const VerbosityLevel level, const std::string& msg_str) const {
 	if (level<m_min_verbosity_level)
 		return;
 
@@ -91,7 +90,7 @@ void COutputLogger::logFmt(const VerbosityLevel level, const char* fmt, ...) con
 	std::string str = this->generateStringFromFormat(fmt, argp);
 	va_end(argp);
 
-	this->log(level,str);
+	this->logStr(level,str);
 }
 
 std::string COutputLogger::generateStringFromFormat(const char* fmt, va_list argp) const{
@@ -117,7 +116,7 @@ std::string COutputLogger::generateStringFromFormat(const char* fmt, va_list arg
 void COutputLogger::logCond(const VerbosityLevel level, bool cond, const std::string& msg_str) const
 {
 	if (!cond) return;
-	this->log(level,msg_str);
+	this->logStr(level,msg_str);
 }
 
 void COutputLogger::setLoggerName(const std::string& name) { m_logger_name = name; }

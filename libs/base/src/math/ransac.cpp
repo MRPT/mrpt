@@ -39,7 +39,7 @@ bool RANSAC_Template<NUMTYPE>::execute(
 	bool						verbose,
 	const double                p,
 	const size_t				maxIter
-	)
+	) const
 {
 	MRPT_START
 

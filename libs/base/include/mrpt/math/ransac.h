@@ -58,7 +58,7 @@ namespace mrpt
 			  *  This implementation is highly inspired on Peter Kovesi's MATLAB scripts (http://www.csse.uwa.edu.au/~pk).
 			  * \return false if no good solution can be found, true on success.
 			  */
-			static bool execute(
+			bool execute(
 				const CMatrixTemplateNumeric<NUMTYPE>	  &data,
 				TRansacFitFunctor			fit_func,
 				TRansacDistanceFunctor  	dist_func,
@@ -70,7 +70,7 @@ namespace mrpt
 				bool						verbose = false,
 				const double                prob_good_sample = 0.999,
 				const size_t				maxIter = 2000
-				);
+				) const;
 
 		}; // end class
 

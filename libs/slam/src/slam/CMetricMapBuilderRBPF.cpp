@@ -9,8 +9,6 @@
 
 #include "slam-precomp.h"   // Precompiled headers
 
-
-
 #include <mrpt/slam/CMetricMapBuilderRBPF.h>
 #include <mrpt/obs/CObservationStereoImages.h>
 #include <mrpt/utils/CEnhancedMetaFile.h>
