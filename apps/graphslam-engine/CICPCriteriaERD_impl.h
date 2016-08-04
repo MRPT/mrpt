@@ -126,8 +126,6 @@ template<class GRAPH_t> bool CICPCriteriaERD<GRAPH_t>::updateState(
 			observations->getObservationByClass<CObservation2DRangeScan>();
 		if (registered_new_node && m_last_laser_scan2D) {
 			m_nodes_to_laser_scans2D[m_graph->nodeCount()-1] = m_last_laser_scan2D;
-			m_out_logger.log(mrpt::format("Added laser scans of nodeID: %lu",
-						m_graph->nodeCount()-1));
 		}
 	}
 
