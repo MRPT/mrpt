@@ -15,9 +15,6 @@
 #include <mrpt/utils/printf_vector.h>
 #include <mrpt/math/ops_containers.h>
 
-/*---------------------------------------------------------------
-	Class
-  ---------------------------------------------------------------*/
 namespace mrpt
 {
 namespace math

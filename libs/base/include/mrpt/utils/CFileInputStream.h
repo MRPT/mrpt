@@ -12,9 +12,6 @@
 #include <mrpt/utils/CStream.h>
 #include <fstream>
 
-/*---------------------------------------------------------------
-	Class
-  ---------------------------------------------------------------*/
 namespace mrpt
 {
 	namespace utils

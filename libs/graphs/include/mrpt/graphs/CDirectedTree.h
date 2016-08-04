@@ -12,9 +12,6 @@
 #include <mrpt/utils/utils_defs.h>
 #include <list>
 
-/*---------------------------------------------------------------
-	Class
-  ---------------------------------------------------------------*/
 namespace mrpt
 {
 	namespace graphs

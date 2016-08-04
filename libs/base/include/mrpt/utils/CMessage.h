@@ -13,9 +13,6 @@
 #include <mrpt/utils/mrpt_stdint.h>
 #include <vector>
 
-/*---------------------------------------------------------------
-	Class
-  ---------------------------------------------------------------*/
 namespace mrpt
 {
 	namespace utils

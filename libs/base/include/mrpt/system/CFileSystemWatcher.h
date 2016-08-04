@@ -14,9 +14,6 @@
 #include <mrpt/system/threads.h>
 #include <mrpt/utils/CThreadSafeQueue.h>
 
-/*---------------------------------------------------------------
-	Class
-  ---------------------------------------------------------------*/
 namespace mrpt
 {
 	namespace system

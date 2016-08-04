@@ -12,9 +12,6 @@
 #include <mrpt/base/link_pragmas.h>
 #include <mrpt/utils/mrpt_macros.h>
 
-/*---------------------------------------------------------------
-	Class
-  ---------------------------------------------------------------*/
 namespace mrpt
 {
 	namespace utils

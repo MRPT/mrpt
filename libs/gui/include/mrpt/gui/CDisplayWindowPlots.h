@@ -15,9 +15,6 @@
 #include <mrpt/utils/CImage.h>
 #include <mrpt/gui/gui_frwds.h>
 
-/*---------------------------------------------------------------
-	Class
-  ---------------------------------------------------------------*/
 namespace mrpt
 {
 	namespace gui
