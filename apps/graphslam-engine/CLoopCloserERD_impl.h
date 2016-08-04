@@ -85,6 +85,7 @@ bool CLoopCloserERD<GRAPH_t>::updateState(
 	MRPT_START;
 	MRPT_UNUSED_PARAM(action);
 	m_time_logger.enter("updateState");
+	using namespace std;
 	using namespace mrpt;
 	using namespace mrpt::obs;
 	using namespace mrpt::opengl;
@@ -101,16 +102,25 @@ bool CLoopCloserERD<GRAPH_t>::updateState(
 		m_out_logger.log("New node has been registered!");
 	}
 
+	// update last laser scan to use
 	if (observation.present()) { // observation-only rawlog format
 		if (IS_CLASS(observation, CObservation2DRangeScan)) {
-			// update last laser scan to use
 			m_last_laser_scan2D = 
 				static_cast<mrpt::obs::CObservation2DRangeScanPtr>(observation);
 
 		}
 	}
 	else { // action-observations format
-		// TODO - going to implement this.
+		// action part
+
+		// observation part
+		CObservationPtr curr_observation =
+			observations->getObservationByClass<CObservation2DRangeScan>();
+		if (curr_observation) {
+			m_last_laser_scan2D = observations->getObservationByClass<CObservation2DRangeScan>();
+		}
+
+
 	}
 
 
