@@ -218,7 +218,6 @@ class CLevMarqGSO:
 		bool m_first_time_call;
 		bool m_initialized_visuals;
 		bool m_has_read_config;
-		bool m_just_inserted_loop_closure;
 		bool registered_new_node;
 		bool m_autozoom_active;
 

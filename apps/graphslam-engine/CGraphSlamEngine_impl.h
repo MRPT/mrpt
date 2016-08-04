@@ -511,6 +511,15 @@ bool CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::parse
 		} // ELSE FORMAT #1 - Action/Observations
 
 		if (registered_new_node) {
+
+			// update the global position of the nodes
+			{
+				mrpt::synch::CCriticalSectionLocker m_graph_lock(&m_graph_section);
+				m_time_logger.enter("dijkstra_nodes_estimation");
+				m_graph.dijkstra_nodes_estimate();
+				m_time_logger.leave("dijkstra_nodes_estimation");
+			}
+
 			// keep track of the laser scans so that I can later visualize the map
 			m_nodes_to_laser_scans2D[m_nodeID_max] = m_last_laser_scan2D;
 
@@ -519,7 +528,6 @@ bool CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::parse
 				bool full_update = m_edge_registrar.justInsertedLoopClosure();
 				this->updateMapVisualization(m_graph, m_nodes_to_laser_scans2D, full_update);
 			}
-
 
 			// query node/edge deciders for visual objects update
 			if (m_enable_visuals) {
@@ -553,15 +561,6 @@ bool CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::parse
 			if (m_enable_curr_pos_viewport) {
 				updateCurrPosViewport();
 			}
-
-			// update the global position of the nodes
-			{
-				mrpt::synch::CCriticalSectionLocker m_graph_lock(&m_graph_section);
-				m_time_logger.enter("dijkstra_nodes_estimation");
-				m_graph.dijkstra_nodes_estimate();
-				m_time_logger.leave("dijkstra_nodes_estimation");
-			}
-
 			// update visualization of estimated trajectory
 			if (m_enable_visuals) {
 				bool full_update = true;
