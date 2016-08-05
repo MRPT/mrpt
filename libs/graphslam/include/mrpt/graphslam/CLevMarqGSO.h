@@ -28,8 +28,6 @@
 #include <mrpt/utils/TColor.h>
 
 #include "CGraphSlamOptimizer.h"
-#include "CWindowManager.h"
-#include "CWindowObserver.h"
 
 #include <iostream>
 #include <string>

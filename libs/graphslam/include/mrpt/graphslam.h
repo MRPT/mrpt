@@ -16,5 +16,33 @@
 // Graph SLAM: Batch solvers
 #include "graphslam/levmarq.h"
 
+// Interfaces for implementing deciders/optimizers
+#include "graphslam/CNodeRegistrationDecider.h"
+#include "graphslam/CEdgeRegistrationDecider.h"
+#include "graphslam/CGraphSlamOptimizer.h"
+#include "graphslam/CRangeScanRegistrationDecider.h"
+
+// Node Registration Deciders
+#include "graphslam/CEmptyNRD.h"
+#include "graphslam/CFixedIntervalsNRD.h"
+#include "graphslam/CICPCriteriaNRD.h"
+
+// Edge Registration Deciders
+#include "graphslam/CEmptyERD.h"
+#include "graphslam/CICPCriteriaERD.h"
+#include "graphslam/CLoopCloserERD.h"
+
+// GraphSlamOptimizers
+#include "graphslam/CLevMarqGSO.h"
+
+// Graph SLAM Engine - Relevant headers
+#include "graphslam/CEdgeCounter.h"
+#include "graphslam/CWindowManager.h"
+#include "graphslam/CWindowObserver.h"
+#include "graphslam/TSlidingWindow.h"
+
+#include "graphslam/CGraphSlamEngine.h"
+
+
 
 #endif
