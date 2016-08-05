@@ -27,21 +27,6 @@
 #include <sstream>
 #include <cerrno>
 
-#include "CWindowObserver.h"
-
-// deciders
-#include "CLoopCloserERD.h"
-#include "CEmptyNRD.h"
-#include "CICPCriteriaNRD.h"
-#include "CEmptyERD.h"
-#include "CFixedIntervalsNRD.h"
-#include "CICPCriteriaERD.h"
-
-// optimizers
-#include "CLevMarqGSO.h"
-
-#include "CGraphSlamEngine.h"
-
 using namespace mrpt;
 using namespace mrpt::utils;
 using namespace mrpt::poses;

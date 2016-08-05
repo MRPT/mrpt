@@ -11,6 +11,7 @@
 
 #include <mrpt/graphs/CNetworkOfPoses.h>
 #include <mrpt/poses/SE_traits.h>
+#include "mrpt/graphslam.h"
 
 namespace mrpt
 {

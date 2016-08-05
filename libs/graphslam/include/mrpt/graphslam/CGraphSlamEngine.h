@@ -67,10 +67,6 @@
 #include <algorithm>
 #include <cstdlib>
 
-#include "CEdgeCounter.h"
-#include "CWindowObserver.h"
-#include "CWindowManager.h"
-
 namespace mrpt { namespace graphslam {
 
 /**

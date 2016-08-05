@@ -30,6 +30,7 @@
 #include <mrpt/opengl/COpenGLViewport.h>
 #include <mrpt/slam/CICP.h>
 #include <mrpt/system/os.h>
+#include <mrpt/system/filesystem.h>
 #include <mrpt/system/threads.h>
 
 #include <iostream>

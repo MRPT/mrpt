@@ -9,10 +9,10 @@
 
 // Implementattion file for TSlidingWindow struct
 
+#include <mrpt/graphslam/TSlidingWindow.h>
 #include <mrpt/utils/CConfigFileBase.h>
 #include <mrpt/utils/CStream.h>
 
-#include "TSlidingWindow.h"
 
 TSlidingWindow::TSlidingWindow(
 		std::string name /* = "window" */) {

@@ -11,6 +11,7 @@
 #define CEDGECOUNTER_H
 
 #include <mrpt/utils/mrpt_macros.h>
+#include <mrpt/graphslam/CWindowManager.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
 
 #include <iostream>
@@ -18,7 +19,6 @@
 #include <string>
 #include <map>
 
-#include "CWindowManager.h"
 
 namespace mrpt { namespace graphslam {
 
