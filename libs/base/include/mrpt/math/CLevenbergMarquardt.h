@@ -87,7 +87,7 @@ namespace math
 			const VECTORTYPE	&increments,
 			const USERPARAM		&userParam,
 			TResultInfo			&out_info,
-			mrpt::utils::VerbosityLevel verbosity = LVL_INFO,
+			mrpt::utils::VerbosityLevel verbosity = mrpt::utils::LVL_INFO,
 			bool				verbose = false,
 			const size_t		maxIter = 200,
 			const NUMTYPE		tau = 1e-3,
