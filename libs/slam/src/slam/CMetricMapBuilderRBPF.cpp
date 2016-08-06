@@ -35,7 +35,7 @@ CMetricMapBuilderRBPF::CMetricMapBuilderRBPF(  const TConstructionOptions &initi
 		initializationOptions.PF_options,
 		&initializationOptions.mapsInitializers,
 		&initializationOptions.predictionOptions ),
-    m_PF_options( initializationOptions.PF_options ),
+	m_PF_options( initializationOptions.PF_options ),
 	insertionLinDistance(initializationOptions.insertionLinDistance),
 	insertionAngDistance(initializationOptions.insertionAngDistance),
 	localizeLinDistance(initializationOptions.localizeLinDistance),
@@ -44,13 +44,15 @@ CMetricMapBuilderRBPF::CMetricMapBuilderRBPF(  const TConstructionOptions &initi
 	odoIncrementSinceLastMapUpdate(),
 	currentMetricMapEstimation(NULL)
 {
+	this->setLoggerName("CMetricMapBuilderRBPF");
 	// Reset:
 	clear();
 }
 
 CMetricMapBuilderRBPF::CMetricMapBuilderRBPF()
 {
-	std::cerr << "WARNING: empty constructor" << std::endl;
+	this->setLoggerName("CMetricMapBuilderRBPF");
+	MRPT_LOG_WARN("Empty constructor invoked!\n");
 }
 
 /*---------------------------------------------------------------
@@ -126,7 +128,7 @@ void  CMetricMapBuilderRBPF::processActionObservation(
 		}
 		else
 		{
-			std::cerr << "[CMetricMapBuilderRBPF] WARNING: action contains no odometry." << std::endl;
+			MRPT_LOG_WARN("Action contains no odometry.\n");
 		}
 	}
 
@@ -160,6 +162,7 @@ void  CMetricMapBuilderRBPF::processActionObservation(
 	if (do_map_update)
 		do_localization = true;
 
+	MRPT_LOG_DEBUG(mrpt::format("do_map_update=%s do_localization=%s",do_map_update ? "yes":"no", do_localization ? "yes":"no" ));
 
 	if (do_localization)
 	{
@@ -198,7 +201,7 @@ void  CMetricMapBuilderRBPF::processActionObservation(
 
 		pf.executeOn( mapPDF, &fakeActs, &observations );
 
-		if (options.verbose)
+		if (isLoggingLevelVisible(LVL_INFO))
 		{
 			// Get current pose estimation:
 			CPose3DPDFParticles  poseEstimation;
@@ -210,8 +213,8 @@ void  CMetricMapBuilderRBPF::processActionObservation(
 			CMatrixDouble66	cov;
 			poseEstimation.getCovarianceAndMean(cov,estPos);
 
-			std::cout << " New pose=" << estPos << std::endl << "New ESS:"<< mapPDF.ESS() << std::endl;
-			std::cout << format("   STDs: x=%2.3f y=%2.3f z=%.03f yaw=%2.3fdeg\n", sqrt(cov(0,0)),sqrt(cov(1,1)),sqrt(cov(2,2)),RAD2DEG(sqrt(cov(3,3))));
+			MRPT_LOG_INFO_STREAM << "New pose=" << estPos << std::endl << "New ESS:"<< mapPDF.ESS() << std::endl;
+			MRPT_LOG_INFO( format("   STDs: x=%2.3f y=%2.3f z=%.03f yaw=%2.3fdeg\n", sqrt(cov(0,0)),sqrt(cov(1,1)),sqrt(cov(2,2)),RAD2DEG(sqrt(cov(3,3)))) );
 		}
 	}
 
@@ -221,8 +224,7 @@ void  CMetricMapBuilderRBPF::processActionObservation(
 
 		// Update the particles' maps:
 		// -------------------------------------------------
-		if (options.verbose)
-			printf(" 3) New observation inserted into the map!\n");
+		MRPT_LOG_INFO(" 3) New observation inserted into the map!\n");
 
 		// Add current observation to the map:
 		mapPDF.insertObservation(observations);
@@ -254,14 +256,11 @@ void  CMetricMapBuilderRBPF::initialize(
 	// Enter critical section (updating map)
 	enterCriticalSection();
 
-	if (options.verbose)
-	{
-		printf("[initialize] Called with %u nodes in fixed map, and x0=", static_cast<unsigned>(initialMap.size()) );
-		if (x0)
-			std::cout << x0->getMeanVal() << "\n";
-		else
-			printf("(Not supplied)\n");
-	}
+	MRPT_LOG_INFO_STREAM << "[initialize] Called with " << initialMap.size() << " nodes in fixed map\n"; 
+	if (x0)
+		MRPT_LOG_INFO_STREAM << "[initialize] x0: " << x0->getMeanVal() << "\n";
+	else
+		MRPT_LOG_INFO_STREAM << "[initialize] x0: (Not supplied)\n";
 
 	this->clear();
 	if (x0) {

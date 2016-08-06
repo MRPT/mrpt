@@ -17,6 +17,7 @@
 #include <string>
 #include <deque>
 #include <mrpt/system/datetime.h>
+#include <sstream>
 
 namespace mrpt { namespace utils {
 	class CStream; // frwd decl
@@ -128,7 +129,13 @@ class BASE_IMPEXP COutputLogger {
 		 * not be outputted to the screen and neither will a record of them be
 		 * stored in by the COutputLogger instance
 		 */
-		void setMinLoggingLevel(const VerbosityLevel level = LVL_INFO);
+		void setMinLoggingLevel(const VerbosityLevel level);
+		/** alias of setMinLoggingLevel() */
+		void setVerbosityLevel(const VerbosityLevel level);
+
+		/** \sa setMinLoggingLevel */
+		VerbosityLevel getMinLoggingLevel() const { return m_min_verbosity_level; }
+		bool isLoggingLevelVisible(VerbosityLevel level) const { return m_min_verbosity_level<=level; }
 
 		void getLogAsString(std::string& log_contents) const; //!< Fill the provided string with the contents of the logger's history in std::string representation
 		std::string getLogAsString() const; //!< Get the history of COutputLogger instance in a string representation.
@@ -212,6 +219,35 @@ class BASE_IMPEXP COutputLogger {
 		/** \brief Provided messages with VerbosityLevel smaller than this value shall be ignored */
 		VerbosityLevel m_min_verbosity_level;
 };
+
+	/** For use in MRPT_LOG_DEBUG_STREAM, etc. */
+	struct BASE_IMPEXP COutputLoggerStreamWrapper
+	{
+		COutputLoggerStreamWrapper(VerbosityLevel level, COutputLogger &logger) : m_level(level),m_logger(logger) {}
+		~COutputLoggerStreamWrapper() { if (m_logger.isLoggingLevelVisible(m_level)) m_logger.logStr(m_level, m_str.str()); }
+
+		template <typename T>
+		std::stringstream & operator << (const T &val) {
+			m_str << val;
+			return m_str;
+		}
+	private:
+		std::stringstream m_str;
+		VerbosityLevel m_level;
+		COutputLogger &m_logger;
+	};
+
+#define MRPT_LOG_DEBUG(_STRING) this->logStr(mrpt::utils::LVL_DEBUG, _STRING)
+#define MRPT_LOG_INFO(_STRING) this->logStr(mrpt::utils::LVL_INFO, _STRING)
+#define MRPT_LOG_WARN(_STRING) this->logStr(mrpt::utils::LVL_WARN, _STRING)
+#define MRPT_LOG_ERROR(_STRING) this->logStr(mrpt::utils::LVL_ERROR, _STRING)
+
+/** Usage: `MRPT_LOG_DEBUG_STREAM << "Var=" << value;` */
+#define MRPT_LOG_DEBUG_STREAM COutputLoggerStreamWrapper(mrpt::utils::LVL_DEBUG,*this)
+#define MRPT_LOG_INFO_STREAM COutputLoggerStreamWrapper(mrpt::utils::LVL_INFO,*this)
+#define MRPT_LOG_WARN_STREAM COutputLoggerStreamWrapper(mrpt::utils::LVL_WARN,*this)
+#define MRPT_LOG_ERROR_STREAM COutputLoggerStreamWrapper(mrpt::utils::LVL_ERROR,*this)
+
 
 } }  // END OF NAMESPACES
 
