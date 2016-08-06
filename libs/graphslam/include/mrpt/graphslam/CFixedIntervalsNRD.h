@@ -25,15 +25,6 @@
 
 #include <iostream>
 
-// TODO - change these
-using namespace mrpt;
-using namespace mrpt::utils;
-using namespace mrpt::graphs;
-using namespace mrpt::math;
-using namespace mrpt::obs;
-
-using namespace std;
-
 namespace mrpt { namespace graphslam { namespace deciders {
 
 /**\brief Fixed Intervals Odometry-based Node Registration
@@ -149,7 +140,7 @@ class CFixedIntervalsNRD:
 		 * Not his pose since it will most likely change due to calls to the
 		 * graph-optimization procedure / dijkstra_node_estimation
 		 */
-		TNodeID m_prev_registered_node;
+		mrpt::utils::TNodeID m_prev_registered_node;
 
 		/**\brief Tracking the PDF of the current position of the robot with regards to
 		 * the <b> previous registered node </b>

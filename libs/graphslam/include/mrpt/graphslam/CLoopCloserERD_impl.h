@@ -11,7 +11,6 @@
 #ifndef CLOOPCLOSERERD_IMPL_H
 #define CLOOPCLOSERERD_IMPL_H
 
-
 namespace mrpt { namespace graphslam { namespace deciders {
 
 // Ctors, Dtors

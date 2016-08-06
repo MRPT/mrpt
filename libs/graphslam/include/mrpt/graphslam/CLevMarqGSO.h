@@ -83,7 +83,7 @@ class CLevMarqGSO:
 						const std::string &section);
 				void 	dumpToTextStream(mrpt::utils::CStream &out) const;
 
-				TParametersDouble cfg;
+				mrpt::utils::TParametersDouble cfg;
 				// True if optimization procedure is to run in a multithreading fashion
 				bool optimization_on_second_thread;
 
@@ -118,7 +118,7 @@ class CLevMarqGSO:
 						const std::string &section);
 				void dumpToTextStream(mrpt::utils::CStream &out) const;
 
-				TParametersDouble cfg;
+				mrpt::utils::TParametersDouble cfg;
 				bool visualize_optimized_graph;
 				// textMessage parameters
 				std::string keystroke_graph_toggle; // see Ctor for initialization

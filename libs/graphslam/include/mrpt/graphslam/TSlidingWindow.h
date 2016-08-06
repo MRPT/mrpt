@@ -19,6 +19,8 @@
 #include <string>
 #include <vector>
 
+namespace mrpt { namespace graphslam {
+
 /**\brief Class to monitor the evolution of a statistical quantity. Keeps
  * track of the last N incoming measurements of the quantity at hand and upon
  * request returns statistical properties of these measurements (mean,
@@ -90,7 +92,7 @@ struct TSlidingWindow: public mrpt::utils::CLoadableOptions {
 		 * called
 		 */
 		bool m_is_initialized;
-
 };
 
+} } // end of namespaces
 #endif /* end of include guard: TSLIDINGWINDOW_H */

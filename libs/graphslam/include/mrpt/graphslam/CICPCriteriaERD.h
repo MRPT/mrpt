@@ -42,22 +42,6 @@
 #include "CRangeScanRegistrationDecider.h"
 
 
-// TODO - remove these
-using namespace mrpt;
-using namespace mrpt::synch;
-using namespace mrpt::poses;
-using namespace mrpt::obs;
-using namespace mrpt::system;
-using namespace mrpt::graphs;
-using namespace mrpt::math;
-using namespace mrpt::utils;
-using namespace mrpt::gui;
-using namespace mrpt::opengl;
-using namespace mrpt::slam;
-using namespace mrpt::maps;
-
-
-
 namespace mrpt { namespace graphslam { namespace deciders {
 
 /**\brief ICP-based Edge Registration
@@ -207,11 +191,11 @@ class CICPCriteriaERD :
 		std::map<const std::string, int> m_edge_types_to_nums;
 
 		int m_last_total_num_of_nodes;
-		CObservation2DRangeScanPtr m_last_laser_scan2D;
-		CObservation3DRangeScanPtr m_last_laser_scan3D;
+		mrpt::obs::CObservation2DRangeScanPtr m_last_laser_scan2D;
+		mrpt::obs::CObservation3DRangeScanPtr m_last_laser_scan3D;
 		// fake 2D laser scan generated from corresponding 3DRangeScan for
 		// visualization reasons
-		CObservation2DRangeScanPtr m_fake_laser_scan2D;
+		mrpt::obs::CObservation2DRangeScanPtr m_fake_laser_scan2D;
 
 		// find out if decider is invalid for the given dataset
 		bool m_checked_for_usuable_dataset;
@@ -227,4 +211,3 @@ class CICPCriteriaERD :
 
 #include "CICPCriteriaERD_impl.h"
 #endif /* end of include guard: CICPCRITERIAERD_H */
-

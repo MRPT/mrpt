@@ -559,4 +559,3 @@ class CLoopCloserERD:
 
 #include "CLoopCloserERD_impl.h"
 #endif /* end of include guard: CLOOPCLOSERERD_H */
-
