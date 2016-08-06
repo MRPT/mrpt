@@ -4,6 +4,7 @@ sys.path.append("../../build/lib")
 import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as plt
+import timeit
 
 import mpld3
 from mpld3 import plugins, utils
@@ -247,6 +248,8 @@ f=1.0
 cx=0.0
 cy=0.0
 
+cam_intrinsic=np.array([[f,0.0,cx],[0.0,f,cy],[0.0, 0.0, 1.0]])
+
 # Instantiate pnp module
 pnp = pymrpt.pnp(n)
 
@@ -297,7 +300,6 @@ def err_plot():
         
         pose_act[0:3,0]=t;
         pose_act[3:6,0]=q[1:4];
-        cam_intrinsic=np.array([[f,0.0,cx],[0.0,f,cy],[0.0, 0.0, 1.0]])
         
         # Use the c-library to compute the pose 
         pnp.epnp_solve(obj_pts,img_pts, n, cam_intrinsic, pose_epnp)
@@ -451,7 +453,6 @@ def err_statistics_fcn_n():
             
             pose_act[0:3,0]=t;
             pose_act[3:6,0]=q[1:4];
-            cam_intrinsic=np.array([[f,0.0,cx],[0.0,f,cy],[0.0, 0.0, 1.0]])
             
             # Use the c-library to compute the pose 
             pnp.epnp_solve(obj_pts,img_pts, n, cam_intrinsic, pose_epnp)
@@ -587,7 +588,6 @@ def err_statistics_fcn_sigma():
             
             pose_act[0:3,0]=t;
             pose_act[3:6,0]=q[1:4];
-            cam_intrinsic=np.array([[f,0.0,cx],[0.0,f,cy],[0.0, 0.0, 1.0]])
             
             # Use the c-library to compute the pose 
             pnp.epnp_solve(obj_pts,img_pts, n, cam_intrinsic, pose_epnp)
@@ -659,7 +659,72 @@ def err_statistics_fcn_sigma():
 
 
     return err    
+    
+def time_comp():
+    
+    algos = [pnp.dls_solve, pnp.epnp_solve, pnp.upnp_solve, pnp.p3p_solve, pnp.rpnp_solve, pnp.ppnp_solve, pnp.posit_solve, pnp.lhm_solve]
+    algo_names=['dls', 'epnp', 'upnp', 'p3p', 'rpnp', 'ppnp', 'posit', 'lhm']
+    obj_pts_store=[]    
+    img_pts_store=[]
+    n_max=25
+    n_step=5
+    n_start=5
+    n_iter=100
 
-err_plot()
-err_statistics_fcn_sigma()
-err_statistics_fcn_n()
+    tcomp_storage=[]    
+    
+    for n in np.arange(n_start,n_max,n_step):
+        # Generate object points and image points
+        for i in np.arange(0,n_iter):
+            obj_pts=np.random.randint(-40,40,[n,3])
+            obj_pts=obj_pts.astype(float)
+            obj_pts[0,:]=[0,0,0]
+            img_pts=np.empty([n,3])
+            img_pts[:,2]=1
+            
+            # Define camera extrinsic matrix
+            v=2*np.random.random([3]) - np.array([1,1,1])
+            v=v/np.linalg.norm(v)
+            
+            #R=np.array([[0.841986, -0.352662, -0.408276],[0.308904,  0.935579, -0.171085],[0.442309, 0.0179335,  0.896683]])
+            R = vector2RotMat(v, np.pi*2/3)
+            t=np.array([0.0,0.0,200.0])
+            
+            # Compute image points based on actual extrinsic matrix and add noise to measurements
+            for i in range(0,n):
+                pt=np.dot(R,obj_pts[i,:])+t
+                img_pts[i,0:2]= np.array([pt[0]/pt[2] , pt[1]/pt[2]])
+            
+            img_pts[:,0:2]=img_pts[:,0:2] + sigma*np.random.randn(n,2)
+            
+            obj_pts_store.append(obj_pts)
+            img_pts_store.append(img_pts)
+            
+        tcomp = []
+        
+        # Compute time for n_iter iterations 
+        for it,algo in enumerate(algos):
+            pose_dummy=np.empty([6,1])    
+            start = timeit.default_timer()
+            
+            for i in np.arange(0,n_iter):
+                obj_pts=obj_pts_store[i]
+                img_pts=img_pts_store[i]
+                algo(obj_pts,img_pts,n,cam_intrinsic, pose_dummy)
+                
+            end = timeit.default_timer()
+        
+            tcomp.append( end-start)
+            
+        tcomp_storage.append(tcomp)
+    
+        print n
+        
+    return tcomp_storage
+    
+    
+x = time_comp()
+print x
+#err_plot()
+#err_statistics_fcn_sigma()
+#err_statistics_fcn_n()
