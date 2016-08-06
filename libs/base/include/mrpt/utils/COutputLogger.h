@@ -223,7 +223,7 @@ class BASE_IMPEXP COutputLogger {
 	/** For use in MRPT_LOG_DEBUG_STREAM, etc. */
 	struct BASE_IMPEXP COutputLoggerStreamWrapper
 	{
-		COutputLoggerStreamWrapper(VerbosityLevel level, COutputLogger &logger) : m_level(level),m_logger(logger) {}
+		COutputLoggerStreamWrapper(VerbosityLevel level, const COutputLogger &logger) : m_level(level),m_logger(logger) {}
 		~COutputLoggerStreamWrapper() { if (m_logger.isLoggingLevelVisible(m_level)) m_logger.logStr(m_level, m_str.str()); }
 
 		template <typename T>
@@ -234,7 +234,7 @@ class BASE_IMPEXP COutputLogger {
 	private:
 		std::stringstream m_str;
 		VerbosityLevel m_level;
-		COutputLogger &m_logger;
+		const COutputLogger &m_logger;
 	};
 
 #define MRPT_LOG_DEBUG(_STRING) this->logStr(mrpt::utils::LVL_DEBUG, _STRING)

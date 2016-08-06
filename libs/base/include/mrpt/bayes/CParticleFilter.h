@@ -10,7 +10,7 @@
 #define CPARTICLEFILTER_H
 
 #include <mrpt/utils/core_defs.h>
-#include <mrpt/utils/CDebugOutputCapable.h>
+#include <mrpt/utils/COutputLogger.h>
 #include <mrpt/utils/CLoadableOptions.h>
 
 namespace mrpt
@@ -37,7 +37,7 @@ namespace mrpt
 		 * \ingroup mrpt_base_grp
 		 * \sa mrpt::poses::CPoseParticlesPDF
 		 */
-		class BASE_IMPEXP CParticleFilter : public mrpt::utils::CDebugOutputCapable
+		class BASE_IMPEXP CParticleFilter : public mrpt::utils::COutputLogger
 		{
 		public:
 
@@ -108,10 +108,8 @@ namespace mrpt
 				  */
 				bool pfAuxFilterStandard_FirstStageWeightsMonteCarlo;
 
-				bool verbose;  //!< Enable extra messages for each PF iteration (Default=false)
 				bool pfAuxFilterOptimal_MLE; //!< (Default=false) In the algorithm "CParticleFilter::pfAuxiliaryPFOptimal", if set to true, do not perform rejection sampling, but just the most-likely (ML) particle found in the preliminary weight-determination stage.
 			};
-
 
 			/** Statistics for being returned from the "execute" method. */
 			struct BASE_IMPEXP TParticleFilterStats
@@ -124,7 +122,7 @@ namespace mrpt
 			/** Default constructor.
 			 *   After creating the PF object, set the options in CParticleFilter::m_options, then execute steps through CParticleFilter::executeOn.
 			 */
-			CParticleFilter( );
+			CParticleFilter();
 
 			virtual ~CParticleFilter() {}
 

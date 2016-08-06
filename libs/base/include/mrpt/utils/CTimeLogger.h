@@ -10,7 +10,7 @@
 #define  CTimeLogger_H
 
 #include <mrpt/utils/CTicTac.h>
-#include <mrpt/utils/CDebugOutputCapable.h>
+#include <mrpt/utils/COutputLogger.h>
 #include <mrpt/utils/compiler_fixes.h>
 #include <mrpt/utils/mrpt_macros.h>
 #include <vector>
@@ -32,7 +32,7 @@ namespace mrpt
 		 * \note The default behavior is dumping all the information at destruction.
 		 * \ingroup mrpt_base_grp
 		 */
-		class BASE_IMPEXP CTimeLogger : public mrpt::utils::CDebugOutputCapable
+		class BASE_IMPEXP CTimeLogger : public mrpt::utils::COutputLogger
 		{
 		private:
 			CTicTac		m_tictac;

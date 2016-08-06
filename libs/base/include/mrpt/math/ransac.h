@@ -9,7 +9,7 @@
 #ifndef  mrpt_ransac_H
 #define  mrpt_ransac_H
 
-#include <mrpt/utils/CDebugOutputCapable.h>
+#include <mrpt/utils/COutputLogger.h>
 #include <mrpt/math/CMatrixD.h>
 #include <set>
 
@@ -27,9 +27,13 @@ namespace mrpt
 		  *  \sa mrpt::math::ModelSearch, a more versatile RANSAC implementation where models can be anything else, not only matrices.
 		  */
 		template <typename NUMTYPE = double>
-		class BASE_IMPEXP RANSAC_Template : public mrpt::utils::CDebugOutputCapable
+		class BASE_IMPEXP RANSAC_Template : public mrpt::utils::COutputLogger
 		{
 		public:
+			RANSAC_Template() :
+				mrpt::utils::COutputLogger("RANSAC_Template")
+			{
+			}
 
 			/** The type of the function passed to mrpt::math::ransac - See the documentation for that method for more info. */
 			typedef void (*TRansacFitFunctor)(

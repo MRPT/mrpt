@@ -20,7 +20,7 @@
 #include <mrpt/utils/aligned_containers.h>
 #include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/utils/stl_containers_utils.h>
-#include <mrpt/utils/CDebugOutputCapable.h>
+#include <mrpt/utils/COutputLogger.h>
 #include <mrpt/utils/stl_containers_utils.h> // find_in_vector
 #include <mrpt/utils/CTicTac.h>
 #include <mrpt/utils/CFileOutputStream.h>
@@ -157,7 +157,7 @@ namespace mrpt
 	 	 * \ingroup mrpt_bayes_grp
 		 */
 		template <size_t VEH_SIZE, size_t OBS_SIZE, size_t FEAT_SIZE, size_t ACT_SIZE, typename KFTYPE = double>
-		class CKalmanFilterCapable : public mrpt::utils::CDebugOutputCapable
+		class CKalmanFilterCapable : public mrpt::utils::COutputLogger
 		{
 		public:
 			static inline size_t get_vehicle_size() { return VEH_SIZE; }
@@ -451,7 +451,7 @@ namespace mrpt
 			 */
 
 		public:
-			CKalmanFilterCapable() : m_user_didnt_implement_jacobian(true) {} //!< Default constructor
+			CKalmanFilterCapable() : mrpt::utils::COutputLogger("CKalmanFilterCapable"), m_user_didnt_implement_jacobian(true) {} //!< Default constructor
 			virtual ~CKalmanFilterCapable() {}  //!< Destructor
 
 			mrpt::utils::CTimeLogger &getProfiler() { return m_timLogger; }

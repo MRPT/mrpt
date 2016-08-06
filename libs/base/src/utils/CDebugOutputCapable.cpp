@@ -9,6 +9,7 @@
 
 #include "base-precomp.h"  // Precompiled headers
 
+#define MRPT_DISABLE_WARN_DEPRECATED_DEBUG_OUTPUT_CAPABLE
 #include <mrpt/utils/CDebugOutputCapable.h>
 #include <mrpt/system/memory.h>
 #include <mrpt/system/os.h>

@@ -42,6 +42,8 @@
 			- [API change] The following functions are no longer static methods: (since their classes are now derived from the state-aware mrpt::utils::COutputLogger)
 				- mrpt::math::RANSAC_Template::execute()
 				- mrpt::math::CLevenbergMarquardtTempl::execute()
+		- \ref mrpt_bayes_grp
+			-  [API change] `verbose` is no longer a field of mrpt::bayes::CParticleFilter::TParticleFilterOptions. Use the setVerbosityLevel() method of the CParticleFilter class itself.
 		- \ref mrpt_gui_grp
 			- mrpt::gui::CMyGLCanvasBase is now derived from mrpt::opengl::CTextMessageCapable so they can draw text labels
 			- New class mrpt::gui::CDisplayWindow3DLocker for exception-safe 3D scene lock in 3D windows.
