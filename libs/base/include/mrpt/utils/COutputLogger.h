@@ -12,6 +12,7 @@
 
 #include <mrpt/base/link_pragmas.h>
 #include <mrpt/utils/mrpt_macros.h>
+#include <mrpt/utils/TEnumType.h>
 #include <mrpt/system/os.h>  // for console color constants
 
 #include <string>
@@ -165,6 +166,9 @@ class BASE_IMPEXP COutputLogger {
 
 		/** @} */
 
+	protected:
+		/** \brief Provided messages with VerbosityLevel smaller than this value shall be ignored */
+		VerbosityLevel m_min_verbosity_level;
 	private:
 		/**
 		 * \brief Struct responsible of holding information relevant to the message
@@ -216,8 +220,6 @@ class BASE_IMPEXP COutputLogger {
 
 		std::string m_logger_name;
 		mutable std::deque<TMsg> m_history;   // deque is better than vector to avoid memory reallocs
-		/** \brief Provided messages with VerbosityLevel smaller than this value shall be ignored */
-		VerbosityLevel m_min_verbosity_level;
 };
 
 	/** For use in MRPT_LOG_DEBUG_STREAM, etc. */
@@ -248,7 +250,27 @@ class BASE_IMPEXP COutputLogger {
 #define MRPT_LOG_WARN_STREAM COutputLoggerStreamWrapper(mrpt::utils::LVL_WARN,*this)
 #define MRPT_LOG_ERROR_STREAM COutputLoggerStreamWrapper(mrpt::utils::LVL_ERROR,*this)
 
-
-} }  // END OF NAMESPACES
-
+}
+	// Specializations MUST occur at the same namespace:
+	namespace utils
+	{
+		template <>
+		struct TEnumTypeFiller<mrpt::utils::VerbosityLevel>
+		{
+			typedef mrpt::utils::VerbosityLevel enum_t;
+			static void fill(bimap<enum_t,std::string>  &m_map)
+			{
+				using namespace mrpt::utils;
+				m_map.insert(VerbosityLevel::LVL_DEBUG,          "DEBUG");
+				m_map.insert(VerbosityLevel::LVL_DEBUG,          "LVL_DEBUG");
+				m_map.insert(VerbosityLevel::LVL_INFO ,          "INFO");
+				m_map.insert(VerbosityLevel::LVL_INFO ,          "LVL_INFO");
+				m_map.insert(VerbosityLevel::LVL_WARN ,          "WARN");
+				m_map.insert(VerbosityLevel::LVL_WARN ,          "LVL_WARN");
+				m_map.insert(VerbosityLevel::LVL_ERROR,          "ERROR");
+				m_map.insert(VerbosityLevel::LVL_ERROR,          "LVL_ERROR");
+			}
+		};
+	} // End of namespace
+}
 #endif /* end of include guard: COUTPUTLOGGER_H */

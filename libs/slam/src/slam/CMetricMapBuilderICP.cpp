@@ -104,6 +104,7 @@ void  CMetricMapBuilderICP::processObservation(const CObservationPtr &obs)
 	// Is it an odometry observation??
 	if (IS_CLASS(obs,CObservationOdometry))
 	{
+		MRPT_LOG_DEBUG("processObservation(): obs is CObservationOdometry");
 		m_there_has_been_an_odometry = true;
 
 		const CObservationOdometryPtr odo = CObservationOdometryPtr(obs);
@@ -121,6 +122,7 @@ void  CMetricMapBuilderICP::processObservation(const CObservationPtr &obs)
 			CPose2D pose_after;
 			if (m_lastPoseEst.getLatestRobotPose(pose_after))
 				this->accumulateRobotDisplacementCounters(pose_after);
+			MRPT_LOG_DEBUG_STREAM << "processObservation(): obs is CObservationOdometry, new post_after=" << pose_after;
 		}
 	} // end it's odometry
 	else
@@ -132,13 +134,18 @@ void  CMetricMapBuilderICP::processObservation(const CObservationPtr &obs)
 			float v,w;
 			if (obs->timestamp!=INVALID_TIMESTAMP)
 			{
+				MRPT_LOG_DEBUG("processObservation(): extrapolating pose from latest pose and new observation timestamp...");
 				if (!m_lastPoseEst.getCurrentEstimate(initialEstimatedRobotPose,v,w, obs->timestamp))
 				{	// couldn't had a good extrapolation estimate... we'll have to live with the latest pose:
 					m_lastPoseEst.getLatestRobotPose(initialEstimatedRobotPose);
+					MRPT_LOG_WARN("processObservation(): new pose extrapolation failed, using last pose as is.");
 				}
 			}
-			else
+			else 
+			{
+				MRPT_LOG_WARN("processObservation(): invalid observation timestamp.");
 				m_lastPoseEst.getLatestRobotPose(initialEstimatedRobotPose);
+			}
 		}
 
 		// To know the total path length:
@@ -156,6 +163,8 @@ void  CMetricMapBuilderICP::processObservation(const CObservationPtr &obs)
 			m_distSinceLastICP.lin < std::min(ICP_options.localizationLinDistance,ICP_options.insertionLinDistance) &&
 			m_distSinceLastICP.ang < std::min(ICP_options.localizationAngDistance,ICP_options.insertionAngDistance);
 
+		MRPT_LOG_DEBUG_STREAM << "processObservation(): skipping ICP pose correction? : " << (we_skip_ICP_pose_correction ? "YES":"NO");
+
 		CICP::TReturnInfo	icpReturn;
 		bool				can_do_icp=false;
 
@@ -164,11 +173,13 @@ void  CMetricMapBuilderICP::processObservation(const CObservationPtr &obs)
 		if (ICP_options.matchAgainstTheGrid && !metricMap.m_gridMaps.empty() )
 		{
 			matchWith = static_cast<CMetricMap*>(metricMap.m_gridMaps[0].pointer());
+			MRPT_LOG_DEBUG("processObservation(): matching against gridmap.");
 		}
 		else
 		{
 			ASSERTMSG_( metricMap.m_pointsMaps.size(), "No points map in multi-metric map." )
 			matchWith = static_cast<CMetricMap*>(metricMap.m_pointsMaps[0].pointer());
+			MRPT_LOG_DEBUG("processObservation(): matching against point map.");
 		}
 		ASSERT_(matchWith!=NULL)
 
@@ -261,6 +272,10 @@ void  CMetricMapBuilderICP::processObservation(const CObservationPtr &obs)
 				this->accumulateRobotDisplacementCounters(currentKnownRobotPose); //currentKnownRobotPose - previousKnownRobotPose);
 
 			} // end we can do ICP.
+			else
+			{
+				MRPT_LOG_WARN_STREAM << "Cannot do ICP: empty pointmap or not suitable gridmap...\n";
+			}
 
 		} // else, we do ICP pose correction
 
@@ -286,8 +301,8 @@ void  CMetricMapBuilderICP::processObservation(const CObservationPtr &obs)
 		if (matchWith && matchWith->isEmpty())
 			update = true;
 
-		// ----------------------------------------------------------
-		// ----------------------------------------------------------
+		MRPT_LOG_DEBUG_STREAM << "update map: " << (update ? "YES":"NO") << " options.enableMapUpdating: " << (options.enableMapUpdating ? "YES":"NO");
+
 		if ( options.enableMapUpdating && update)
 		{
 			CTicTac tictac;
@@ -321,8 +336,6 @@ void  CMetricMapBuilderICP::processObservation(const CObservationPtr &obs)
 
 			MRPT_LOG_INFO_STREAM << "Map updated OK. Done in " << mrpt::system::formatTimeInterval( tictac.Tac() ) << std::endl;
 		}
-
-
 
 	} // end other observation
 

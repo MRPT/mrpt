@@ -17,6 +17,7 @@
 #include <mrpt/poses/CPose3DPDFGaussian.h>
 #include <mrpt/poses/CPoseRandomSampler.h>
 #include <mrpt/slam/TKLDParams.h>
+#include <mrpt/utils/COutputLogger.h>
 
 #include <mrpt/slam/link_pragmas.h>
 
@@ -37,10 +38,12 @@ namespace mrpt
 		  *   \ingroup mrpt_slam_grp
 		  */
 		template <class PARTICLE_TYPE, class MYSELF>
-		class PF_implementation
+		class PF_implementation :
+			public mrpt::utils::COutputLogger
 		{
 		public:
 			PF_implementation() :
+				mrpt::utils::COutputLogger("PF_implementation"),
 				m_accumRobotMovement2DIsValid(false),
 				m_accumRobotMovement3DIsValid(false)
 			{
