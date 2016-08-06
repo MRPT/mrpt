@@ -12,6 +12,7 @@ define_mrpt_lib(
 	mrpt-base
 	mrpt-obs
 	mrpt-opengl
+  mrpt-gui
 	)
 
 IF(BUILD_mrpt-hmtslam)

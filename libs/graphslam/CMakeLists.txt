@@ -13,6 +13,7 @@ define_mrpt_lib(
 	mrpt-obs
 	mrpt-opengl
 	mrpt-slam
+	mrpt-vision
 	)
 
 IF(BUILD_mrpt-graphslam)

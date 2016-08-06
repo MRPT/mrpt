@@ -7,7 +7,6 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 #include <mrpt/obs/CRawlog.h>
-#include <mrpt/graphslam.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
@@ -18,6 +17,7 @@
 #include <mrpt/poses/CPosePDF.h>
 #include <mrpt/graphs/CNetworkOfPoses.h>
 #include <mrpt/system/string_utils.h>
+#include <mrpt/graphslam.h>
 
 #include <mrpt/otherlibs/tclap/CmdLine.h>
 
