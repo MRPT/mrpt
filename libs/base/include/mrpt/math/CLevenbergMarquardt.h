@@ -9,7 +9,7 @@
 #ifndef  CLevenbergMarquardt_H
 #define  CLevenbergMarquardt_H
 
-#include <mrpt/utils/CDebugOutputCapable.h>
+#include <mrpt/utils/COutputLogger.h>
 #include <mrpt/utils/types_math.h>
 #include <mrpt/math/num_jacobian.h>
 #include <mrpt/utils/printf_vector.h>
@@ -28,7 +28,7 @@ namespace math
 	 * \ingroup mrpt_base_grp
 	 */
 	template <typename VECTORTYPE = Eigen::VectorXd, class USERPARAM = VECTORTYPE >
-	class CLevenbergMarquardtTempl : public mrpt::utils::CDebugOutputCapable
+	class CLevenbergMarquardtTempl : public mrpt::utils::COutputLogger
 	{
 	public:
 		typedef typename VECTORTYPE::Scalar  NUMTYPE;
@@ -36,7 +36,7 @@ namespace math
 		typedef VECTORTYPE vector_t;
 
 		CLevenbergMarquardtTempl() : 
-			mrpt::utils::CDebugOutputCapable("CLevenbergMarquardt")
+			mrpt::utils::COutputLogger("CLevenbergMarquardt")
 		{}
 
 		/** The type of the function passed to execute. The user must supply a function which evaluates the error of a given point in the solution space.

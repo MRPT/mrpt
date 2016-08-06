@@ -12,7 +12,7 @@
 #include <mrpt/maps/CPointsMap.h>
 #include <mrpt/poses/poses_frwds.h>
 
-#include <mrpt/utils/CDebugOutputCapable.h>
+#include <mrpt/utils/COutputLogger.h>
 
 #include <mrpt/slam/link_pragmas.h>
 
@@ -25,14 +25,12 @@ namespace slam
      *
 	 * \sa CPointsMap, utils::CDebugOutputCapable  \ingroup mrpt_slam_grp 
 	 */
-	class SLAM_IMPEXP  CMetricMapsAlignmentAlgorithm : public mrpt::utils::CDebugOutputCapable
+	class SLAM_IMPEXP  CMetricMapsAlignmentAlgorithm : public mrpt::utils::COutputLogger
 	{
 	public:
-        /** Destructor
-          */
-        virtual ~CMetricMapsAlignmentAlgorithm()
-        {
-        }
+		CMetricMapsAlignmentAlgorithm() : mrpt::utils::COutputLogger("CMetricMapsAlignmentAlgorithm") {}
+		/** Dtor */
+		virtual ~CMetricMapsAlignmentAlgorithm() { }
 
 		/** The method for aligning a pair of metric maps, aligning only 2D + orientation.
 		 *   The meaning of some parameters and the kind of the maps to be aligned are implementation dependant,

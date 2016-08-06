@@ -11,7 +11,9 @@
 
 #include <mrpt/utils/COutputLogger.h>
 
+#if !defined(MRPT_DISABLE_WARN_DEPRECATED_DEBUG_OUTPUT_CAPABLE)
 MRPT_WARNING("`CDebugOutputCapable.h` is deprecated since MRPT 1.5.0, please use `mrpt/utils/COutputLogger.h` instead")
+#endif
 
 namespace mrpt
 {
