@@ -13,6 +13,7 @@
 #include <mrpt/utils/CConfigFileBase.h>
 #include <mrpt/utils/CStream.h>
 
+using namespace mrpt::graphslam;
 
 TSlidingWindow::TSlidingWindow(
 		std::string name /* = "window" */) {

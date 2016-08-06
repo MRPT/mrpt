@@ -10,7 +10,7 @@
 #ifndef CLEVMARQGSO_IMPL_H
 #define CLEVMARQGSO_IMPL_H
 
-using namespace mrpt::graphslam::optimizers;
+namespace mrpt { namespace graphslam { namespace optimizers {
 
 // Ctors, Dtors
 //////////////////////////////////////////////////////////////
@@ -34,6 +34,8 @@ CLevMarqGSO<GRAPH_t>::~CLevMarqGSO() {
 template<class GRAPH_t>
 void CLevMarqGSO<GRAPH_t>::initCLevMarqGSO() {
 	MRPT_START;
+
+	using namespace mrpt::utils;
 
 	m_graph = NULL;
 	m_win_manager = NULL;
@@ -230,6 +232,9 @@ inline void CLevMarqGSO<GRAPH_t>::initGraphVisualization() {
 template<class GRAPH_t>
 inline void CLevMarqGSO<GRAPH_t>::updateGraphVisualization() {
 	MRPT_START;
+	using namespace mrpt::opengl;
+	using namespace mrpt::utils;
+
 	m_out_logger.log("In the updateGraphVisualization function");
 
 	// update the graph (clear and rewrite..)
@@ -268,6 +273,7 @@ inline void CLevMarqGSO<GRAPH_t>::updateGraphVisualization() {
 template<class GRAPH_t>
 void CLevMarqGSO<GRAPH_t>::toggleGraphVisualization() {
 	MRPT_START;
+	using namespace mrpt::opengl;
 
 	COpenGLScenePtr& scene = m_win->get3DSceneAndLock();
 
@@ -283,6 +289,7 @@ void CLevMarqGSO<GRAPH_t>::toggleGraphVisualization() {
 template<class GRAPH_t>
 void CLevMarqGSO<GRAPH_t>::fitGraphInView() {
 	MRPT_START;
+	using namespace mrpt::opengl;
 
 	ASSERTMSG_(m_win,
 			"\nVisualization of data was requested but no CDisplayWindow3D pointer was given\n");
@@ -314,6 +321,7 @@ void CLevMarqGSO<GRAPH_t>::fitGraphInView() {
 template<class GRAPH_t>
 void CLevMarqGSO<GRAPH_t>::initOptDistanceVisualization() {
 	MRPT_START;
+	using namespace mrpt::opengl;
 
 	if (opt_params.optimization_distance > 0) {
 		m_win_observer->registerKeystroke(opt_params.keystroke_optimization_distance,
@@ -351,6 +359,7 @@ void CLevMarqGSO<GRAPH_t>::initOptDistanceVisualization() {
 template<class GRAPH_t>
 void CLevMarqGSO<GRAPH_t>::updateOptDistanceVisualization() {
 	MRPT_START;
+	using namespace mrpt::opengl;
 
 	// update ICP_max_distance Disk
 	if (opt_params.optimization_distance > 0) {
@@ -372,6 +381,7 @@ void CLevMarqGSO<GRAPH_t>::updateOptDistanceVisualization() {
 template<class GRAPH_t>
 void CLevMarqGSO<GRAPH_t>::toggleOptDistanceVisualization() {
 	MRPT_START;
+	using namespace mrpt::opengl;
 
 	COpenGLScenePtr scene = m_win->get3DSceneAndLock();
 
@@ -406,8 +416,10 @@ void CLevMarqGSO<GRAPH_t>::optimizeGraph() {
 template<class GRAPH_t>
 void CLevMarqGSO<GRAPH_t>::_optimizeGraph() {
 	MRPT_START;
-	m_out_logger.log("In _optimizeGraph");
 	m_time_logger.enter("CLevMarqGSO::_optimizeGraph");
+	m_out_logger.log("In _optimizeGraph");
+
+	using namespace mrpt::utils;
 
 	CTicTac optimization_timer;
 	optimization_timer.Tic();
@@ -538,6 +550,10 @@ void CLevMarqGSO<GRAPH_t>::printParams() const {
 }
 template<class GRAPH_t>
 void CLevMarqGSO<GRAPH_t>::loadParams(const std::string& source_fname) {
+	MRPT_START;
+
+	using namespace mrpt::utils;
+
 	opt_params.loadFromConfigFileName(source_fname, "OptimizerParameters");
 	viz_params.loadFromConfigFileName(source_fname, "VisualizationParameters");
 
@@ -552,11 +568,14 @@ void CLevMarqGSO<GRAPH_t>::loadParams(const std::string& source_fname) {
 
 	m_out_logger.log("Successfully loaded Params. ");
 	m_has_read_config = true;
+
+	MRPT_END;
 }
 
 template<class GRAPH_t>
 void CLevMarqGSO<GRAPH_t>::getDescriptiveReport(std::string* report_str) const {
 	MRPT_START;
+	using namespace std;
 
 	const std::string report_sep(2, '\n');
 	const std::string header_sep(80, '#');
@@ -691,6 +710,7 @@ void CLevMarqGSO<GRAPH_t>::GraphVisualizationParams::loadFromConfigFile(
 		const mrpt::utils::CConfigFileBase &source,
 		const std::string &section) {
 	MRPT_START;
+	using namespace utils;
 
 	visualize_optimized_graph = source.read_bool(
 			section,
@@ -749,5 +769,6 @@ void CLevMarqGSO<GRAPH_t>::GraphVisualizationParams::loadFromConfigFile(
 	MRPT_END;
 }
 
+} } } // end of namespaces
 
 #endif /* end of include guard: CLEVMARQGSO_IMPL_H */

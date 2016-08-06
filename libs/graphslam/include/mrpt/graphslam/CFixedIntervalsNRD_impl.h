@@ -10,7 +10,7 @@
 #ifndef CFIXEDINTERVALSNRD_IMPL_H
 #define CFIXEDINTERVALSNRD_IMPL_H
 
-using namespace mrpt::graphslam::deciders;
+namespace mrpt { namespace graphslam { namespace deciders {
 
 // Ctors, Dtors
 //////////////////////////////////////////////////////////////
@@ -23,6 +23,7 @@ CFixedIntervalsNRD<GRAPH_t>::CFixedIntervalsNRD():
 }
 template<class GRAPH_t>
 void CFixedIntervalsNRD<GRAPH_t>::initCFixedIntervalsNRD() {
+	using namespace mrpt::utils;
 
 	m_win = NULL;
 	m_graph = NULL;
@@ -59,6 +60,9 @@ bool CFixedIntervalsNRD<GRAPH_t>::updateState(
 		mrpt::obs::CSensoryFramePtr observations,
 		mrpt::obs::CObservationPtr observation )  {
 	MRPT_START;
+	using namespace mrpt::obs;
+	using namespace mrpt::math;
+	using namespace mrpt::utils;
 
 	//cout << "in updateState..." << endl;
 	// don't use the measurements in this implementation
@@ -123,6 +127,7 @@ bool CFixedIntervalsNRD<GRAPH_t>::updateState(
 template<class GRAPH_t>
 bool CFixedIntervalsNRD<GRAPH_t>::checkRegistrationCondition() {
 	MRPT_START;
+	using namespace mrpt::math;
 
 	bool registered = false;
 
@@ -148,6 +153,9 @@ bool CFixedIntervalsNRD<GRAPH_t>::checkRegistrationCondition() {
 
 template<class GRAPH_t>
 void CFixedIntervalsNRD<GRAPH_t>::registerNewNode() {
+	MRPT_START;
+	using namespace mrpt::utils;
+
 	m_out_logger.log("In registerNewNode...", LVL_DEBUG);
 
 	mrpt::utils::TNodeID from = m_prev_registered_node;
@@ -159,14 +167,15 @@ void CFixedIntervalsNRD<GRAPH_t>::registerNewNode() {
 	m_out_logger.log(mrpt::format("Registered new node:\n\t%lu => %lu\n\tEdge: %s",
 				from, to, m_since_prev_node_PDF.getMeanVal().asString().c_str()), LVL_DEBUG);
 
+	MRPT_END;
 }
 template<class GRAPH_t>
 void CFixedIntervalsNRD<GRAPH_t>::setGraphPtr(GRAPH_t* graph) {
-	m_graph = graph;
+	using namespace mrpt::utils;
 
+	m_graph = graph;
 	// get the last registrered node + corresponding pose - root
 	m_prev_registered_node = m_graph->root;
-
 	m_out_logger.log("Fetched the graph successfully", LVL_DEBUG);
 }
 
@@ -176,6 +185,9 @@ void CFixedIntervalsNRD<GRAPH_t>::checkIfInvalidDataset(
 		mrpt::obs::CSensoryFramePtr observations,
 		mrpt::obs::CObservationPtr observation ) {
 	MRPT_START;
+	using namespace mrpt;
+	using namespace mrpt::obs;
+	using namespace mrpt::utils;
 
 	MRPT_UNUSED_PARAM(observations);
 	MRPT_UNUSED_PARAM(action);
@@ -208,6 +220,7 @@ void CFixedIntervalsNRD<GRAPH_t>::checkIfInvalidDataset(
 template<class GRAPH_t>
 void CFixedIntervalsNRD<GRAPH_t>::loadParams(const std::string& source_fname) {
 	MRPT_START;
+	using namespace mrpt::utils;
 
 	params.loadFromConfigFileName(source_fname,
 			"NodeRegistrationDeciderParameters");
@@ -237,6 +250,7 @@ void CFixedIntervalsNRD<GRAPH_t>::printParams() const {
 template<class GRAPH_t>
 void CFixedIntervalsNRD<GRAPH_t>::getDescriptiveReport(std::string* report_str) const {
 	MRPT_START;
+	using namespace std;
 
 	const std::string report_sep(2, '\n');
 	const std::string header_sep(80, '#');
@@ -290,6 +304,9 @@ void CFixedIntervalsNRD<GRAPH_t>::TParams::loadFromConfigFile(
 		const mrpt::utils::CConfigFileBase &source,
 		const std::string &section) {
 	MRPT_START;
+	using namespace mrpt::math;
+	using namespace mrpt::utils;
+
 	registration_max_distance = source.read_double( section,
 			"registration_max_distance",
 			5 /* meter */, false);
@@ -304,6 +321,8 @@ void CFixedIntervalsNRD<GRAPH_t>::TParams::loadFromConfigFile(
 template<class GRAPH_t>
 void CFixedIntervalsNRD<GRAPH_t>::TParams::getAsString(std::string* params_out) const {
 	MRPT_START;
+	using namespace mrpt::math;
+	using namespace mrpt::utils;
 
 	double max_angle_deg = RAD2DEG(registration_max_angle);
 	params_out->clear();
@@ -324,4 +343,7 @@ std::string CFixedIntervalsNRD<GRAPH_t>::TParams::getAsString() const {
 
 	MRPT_END;
 }
+
+} } } // end of namespaces
+
 #endif /* end of include guard: CFIXEDINTERVALSNRD_IMPL_H */

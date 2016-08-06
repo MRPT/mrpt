@@ -14,7 +14,6 @@
 #include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/obs/CRawlog.h>
 
-
 #include "CEdgeRegistrationDecider.h"
 
 namespace mrpt { namespace graphslam { namespace deciders {
@@ -46,9 +45,7 @@ class CEmptyERD:
 				const constraint_t& rel_edge );
 };
 
-} } } // end of namespaces
-
-using namespace mrpt::graphslam::deciders;
+//////////////////////////////////////////////////////////////////////////////
 
 template<class GRAPH_t>
 CEmptyERD<GRAPH_t>::CEmptyERD() { }
@@ -66,5 +63,7 @@ void CEmptyERD<GRAPH_t>::registerNewEdge(
 		const mrpt::utils::TNodeID& from,
 		const mrpt::utils::TNodeID& to,
 		const constraint_t& rel_edge ) { }
+
+} } } // end of namespaces
 
 #endif /* end of include guard: CEmptyERD_H */

@@ -10,7 +10,7 @@
 #ifndef CICPCRITERIANRD_IMPL_H
 #define CICPCRITERIANRD_IMPL_H
 
-using namespace mrpt::graphslam::deciders;
+namespace mrpt { namespace graphslam { namespace deciders {
 
 // Ctors, Dtors
 //////////////////////////////////////////////////////////////
@@ -25,6 +25,7 @@ CICPCriteriaNRD<GRAPH_t>::CICPCriteriaNRD():
 }
 template<class GRAPH_t>
 void CICPCriteriaNRD<GRAPH_t>::initCICPCriteriaNRD() {
+	using namespace mrpt::utils;
 
 	m_first_time_call2D = true;
 	m_first_time_call3D = true;
@@ -81,6 +82,10 @@ bool CICPCriteriaNRD<GRAPH_t>::updateState(
 	MRPT_START;
 	MRPT_UNUSED_PARAM(action);
 	m_time_logger.enter("CICPCriteriaNRD::updateState");
+
+	using namespace mrpt::obs;
+	using namespace mrpt::poses;
+
 	bool registered_new_node = false;
 
 	if (observation.present()) { // Observation-Only Rawlog
@@ -92,7 +97,7 @@ bool CICPCriteriaNRD<GRAPH_t>::updateState(
 
 		}
 		else if (IS_CLASS(observation, CObservation3DRangeScan) ) { // 3D
-			mrpt::obs::CObservation3DRangeScanPtr curr_laser_scan =
+			CObservation3DRangeScanPtr curr_laser_scan =
 				static_cast<mrpt::obs::CObservation3DRangeScanPtr>(observation);
 			registered_new_node = updateState3D(curr_laser_scan);
 		}
@@ -170,6 +175,9 @@ bool CICPCriteriaNRD<GRAPH_t>::updateState2D(
 template<class GRAPH_t>
 bool CICPCriteriaNRD<GRAPH_t>::checkRegistrationCondition2D() {
 	MRPT_START;
+
+	using namespace mrpt::math;
+
 	bool registered_new_node = false;
 	m_out_logger.log("In checkRegistrationCondition2D..");
 
@@ -321,6 +329,7 @@ bool CICPCriteriaNRD<GRAPH_t>::checkRegistrationCondition() {
 	MRPT_START;
 	bool registered_new_node = false;
 	m_out_logger.log("In checkRegistrationCondition");
+	using namespace mrpt::math;
 
 	// Criterions for adding a new node
 	// - Covered distance since last node > registration_max_distance
@@ -351,6 +360,8 @@ template<class GRAPH_t>
 void CICPCriteriaNRD<GRAPH_t>::registerNewNode() {
 	MRPT_START;
 
+	using namespace mrpt::utils;
+
 	mrpt::utils::TNodeID from = m_nodeID_max;
 	mrpt::utils::TNodeID to = ++m_nodeID_max;
 
@@ -365,8 +376,9 @@ void CICPCriteriaNRD<GRAPH_t>::registerNewNode() {
 
 template<class GRAPH_t>
 void CICPCriteriaNRD<GRAPH_t>::setGraphPtr(GRAPH_t* graph) {
-	m_graph = graph;
+	using namespace mrpt::utils;
 
+	m_graph = graph;
 	// get the last registrered node + corresponding pose - root
 	m_nodeID_max = m_graph->root;
 
@@ -375,6 +387,8 @@ void CICPCriteriaNRD<GRAPH_t>::setGraphPtr(GRAPH_t* graph) {
 template<class GRAPH_t>
 void CICPCriteriaNRD<GRAPH_t>::loadParams(const std::string& source_fname) {
 	MRPT_START;
+
+	using namespace mrpt::utils;
 
 	params.loadFromConfigFileName(source_fname,
 			"NodeRegistrationDeciderParameters");
@@ -409,6 +423,8 @@ void CICPCriteriaNRD<GRAPH_t>::printParams() const {
 template<class GRAPH_t>
 void CICPCriteriaNRD<GRAPH_t>::getDescriptiveReport(std::string* report_str) const {
 	MRPT_START;
+
+	using namespace std;
 
 	const std::string report_sep(2, '\n');
 	const std::string header_sep(80, '#');
@@ -452,6 +468,9 @@ void CICPCriteriaNRD<GRAPH_t>::TParams::dumpToTextStream(
 		mrpt::utils::CStream &out) const {
 	MRPT_START;
 
+	using namespace mrpt::utils;
+	using namespace mrpt::math;
+
 	out.printf("------------------[ ICP Fixed Intervals Node Registration ]------------------\n");
 	out.printf("Max distance for registration = %.2f m\n",
 			registration_max_distance);
@@ -468,6 +487,9 @@ void CICPCriteriaNRD<GRAPH_t>::TParams::loadFromConfigFile(
 		const std::string &section) {
 	MRPT_START;
 
+	using namespace mrpt::utils;
+	using namespace mrpt::math;
+
 	registration_max_distance = source.read_double( section,
 			"registration_max_distance",
 			0.5 /* meter */, false);
@@ -481,6 +503,8 @@ void CICPCriteriaNRD<GRAPH_t>::TParams::loadFromConfigFile(
 
 	MRPT_END;
 }
+
+} } } // end of namespace
 
 
 #endif /* end of include guard: CICPCRITERIANRD_IMPL_H */

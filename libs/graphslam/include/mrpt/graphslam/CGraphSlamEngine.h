@@ -55,8 +55,6 @@
 #include <mrpt/utils/TColor.h>
 #include <mrpt/utils/CImage.h>
 
-// TODO - includethe decider/optimizer classes here - after moving to /lib
-
 #include <cstdlib>
 #include <string>
 #include <sstream>
@@ -566,7 +564,7 @@ class CGraphSlamEngine {
 		// frame transformation from the RGBD_TUM GrountTruth to the MRPT
 		// reference frame
 		// TODO - either use it or lose it...
-		CMatrixDouble33  m_rot_TUM_to_MRPT;
+		mrpt::math::CMatrixDouble33  m_rot_TUM_to_MRPT;
 
 		size_t m_robot_model_size; /**< How big are the robots going to be in the scene */
 
@@ -616,8 +614,11 @@ class CGraphSlamEngine {
 			void parseFile();
 			void setRawlogFile(std::string rawlog_fname);
 
-			std::map<std::string, std::string> fields; /**< Format for the parameters in the info file:*/
-																								 /**< <em>string literal - related value</em> (kept in a string representation)*/
+			/**\brief Format for the parameters in the info file:
+			 * <em>string literal - related value</em> (kept in a string representation)
+			 */
+			std::map<std::string, std::string> fields; 
+																								 
 
 			std::string info_fname;
 

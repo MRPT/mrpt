@@ -10,8 +10,7 @@
 #ifndef CICPCRITERIAERD_IMPL_H
 #define CICPCRITERIAERD_IMPL_H
 
-
-using namespace mrpt::graphslam::deciders;
+namespace mrpt { namespace graphslam { namespace deciders {
 
 // Ctors, Dtors
 // //////////////////////////////////
@@ -32,6 +31,7 @@ CICPCriteriaERD<GRAPH_t>::CICPCriteriaERD():
 template<class GRAPH_t>
 void CICPCriteriaERD<GRAPH_t>::initCICPCriteriaERD() {
 	MRPT_START;
+	using namespace mrpt::utils;
 
 	m_win = NULL;
 	m_win_manager = NULL;
@@ -71,6 +71,8 @@ template<class GRAPH_t> bool CICPCriteriaERD<GRAPH_t>::updateState(
 		mrpt::obs::CObservationPtr observation ) {
 	MRPT_START;
 	MRPT_UNUSED_PARAM(action);
+	using namespace mrpt::obs;
+	using namespace mrpt::utils;
 
 	// check possible prior node registration
 	bool registered_new_node = false;
@@ -165,6 +167,7 @@ template<class GRAPH_t>
 void CICPCriteriaERD<GRAPH_t>::checkRegistrationCondition2D(
 		const std::set<mrpt::utils::TNodeID>& nodes_set) {
 	MRPT_START;
+	using namespace mrpt::obs;
 
 	mrpt::utils::TNodeID curr_nodeID = m_graph->nodeCount()-1;
 	CObservation2DRangeScanPtr curr_laser_scan;
@@ -180,7 +183,7 @@ void CICPCriteriaERD<GRAPH_t>::checkRegistrationCondition2D(
 	// commence only if I have the current laser scan
 	if (curr_laser_scan) {
 		// try adding ICP constraints with each node in the previous set
-		for (set<mrpt::utils::TNodeID>::const_iterator
+		for (std::set<mrpt::utils::TNodeID>::const_iterator
 				node_it = nodes_set.begin();
 				node_it != nodes_set.end(); ++node_it) {
 
@@ -227,6 +230,8 @@ template<class GRAPH_t>
 void CICPCriteriaERD<GRAPH_t>::checkRegistrationCondition3D(
 		const std::set<mrpt::utils::TNodeID>& nodes_set) {
 	MRPT_START;
+	using namespace std;
+	using namespace mrpt::obs;
 
 	mrpt::utils::TNodeID curr_nodeID = m_graph->nodeCount()-1;
 	CObservation3DRangeScanPtr curr_laser_scan;
@@ -288,6 +293,7 @@ void CICPCriteriaERD<GRAPH_t>::registerNewEdge(
 		const mrpt::utils::TNodeID& to,
 		const constraint_t& rel_edge ) {
 	MRPT_START;
+	using namespace mrpt::utils;
 
 	m_graph->insertEdge(from,  to, rel_edge);
 
@@ -296,10 +302,11 @@ void CICPCriteriaERD<GRAPH_t>::registerNewEdge(
 
 template<class GRAPH_t>
 void CICPCriteriaERD<GRAPH_t>::getNearbyNodesOf(
-		set<TNodeID> *nodes_set,
-		const TNodeID& cur_nodeID,
+		std::set<mrpt::utils::TNodeID> *nodes_set,
+		const mrpt::utils::TNodeID& cur_nodeID,
 		double distance ) {
 	MRPT_START;
+	using namespace mrpt::utils;
 
 	if (distance > 0) {
 		// check all but the last node.
@@ -332,6 +339,7 @@ void CICPCriteriaERD<GRAPH_t>::setGraphPtr(GRAPH_t* graph) {
 template<class GRAPH_t>
 void CICPCriteriaERD<GRAPH_t>::setRawlogFname(const std::string& rawlog_fname){
 	MRPT_START;
+	using namespace std;
 
 	m_rawlog_fname = rawlog_fname;
 	m_out_logger.log(mrpt::format("Fetched the rawlog filename successfully: %s",
@@ -388,8 +396,11 @@ void CICPCriteriaERD<GRAPH_t>::notifyOfWindowEvents(
 template<class GRAPH_t>
 void CICPCriteriaERD<GRAPH_t>::toggleLaserScansVisualization() {
 	MRPT_START;
+	using namespace mrpt::opengl;
+
 	ASSERTMSG_(m_win, "No CDisplayWindow3D* was provided");
 	ASSERTMSG_(m_win_manager, "No CWindowManager* was provided");
+
 
 	m_out_logger.log("Toggling LaserScans visualization...");
 
@@ -425,6 +436,7 @@ void CICPCriteriaERD<GRAPH_t>::initializeVisuals() {
 	MRPT_START;
 	m_out_logger.log("Initializing visuals");
 	m_time_logger.enter("CICPCriteriaERD::Visuals");
+	using namespace mrpt::opengl;
 
 	ASSERTMSG_(params.has_read_config,
 			"Configuration parameters aren't loaded yet");
@@ -479,7 +491,7 @@ void CICPCriteriaERD<GRAPH_t>::initializeVisuals() {
 				&m_text_index_search_disk);
 
 		m_win_manager->addTextMessage(5,-m_offset_y_search_disk,
-				format("ICP Edges search radius"),
+				mrpt::format("ICP Edges search radius"),
 				mrpt::utils::TColorf(m_search_disk_color),
 				/* unique_index = */ m_text_index_search_disk );
 	}
@@ -494,6 +506,10 @@ void CICPCriteriaERD<GRAPH_t>::updateVisuals() {
 	ASSERT_(m_initialized_visuals);
 	m_out_logger.log("Updating visuals");
 	m_time_logger.enter("CICPCriteriaERD::Visuals");
+	using namespace mrpt::opengl;
+	using namespace mrpt::utils;
+	using namespace mrpt::math;
+	using namespace mrpt::poses;
 
 	// update ICP_max_distance Disk
 	if (m_win && params.ICP_max_distance > 0) {
@@ -558,6 +574,8 @@ void CICPCriteriaERD<GRAPH_t>::checkIfInvalidDataset(
 		mrpt::obs::CObservationPtr observation ) {
 	MRPT_START;
 	MRPT_UNUSED_PARAM(action);
+	using namespace mrpt::utils;
+	using namespace mrpt::obs;
 
 	if (observation.present()) { // FORMAT #2
 		if (IS_CLASS(observation, CObservation2DRangeScan) ||
@@ -588,6 +606,8 @@ template<class GRAPH_t>
 void CICPCriteriaERD<GRAPH_t>::dumpVisibilityErrorMsg(
 		std::string viz_flag, int sleep_time /* = 500 milliseconds */) {
 	MRPT_START;
+	using namespace mrpt::utils;
+	using namespace mrpt;
 
 	m_out_logger.log(format("Cannot toggle visibility of specified object.\n "
 			"Make sure that the corresponding visualization flag ( %s "
@@ -602,6 +622,7 @@ void CICPCriteriaERD<GRAPH_t>::dumpVisibilityErrorMsg(
 template<class GRAPH_t>
 void CICPCriteriaERD<GRAPH_t>::loadParams(const std::string& source_fname) {
 	MRPT_START;
+	using namespace mrpt::utils;
 
 	params.loadFromConfigFileName(source_fname,
 			"EdgeRegistrationDeciderParameters");
@@ -629,6 +650,7 @@ void CICPCriteriaERD<GRAPH_t>::printParams() const {
 template<class GRAPH_t>
 void CICPCriteriaERD<GRAPH_t>::getDescriptiveReport(std::string* report_str) const {
 	MRPT_START;
+	using namespace std;
 
 	const std::string report_sep(2, '\n');
 	const std::string header_sep(80, '#');
@@ -724,5 +746,6 @@ void CICPCriteriaERD<GRAPH_t>::TParams::loadFromConfigFile(
 	MRPT_END;
 }
 
+} } } // end of namespaces
 
 #endif /* end of include guard: CICPCRITERIAERD_IMPL_H */

@@ -40,9 +40,7 @@ class CEmptyNRD:
 
 };
 
-} } } // end of namespaces
-
-using namespace mrpt::graphslam::deciders;
+//////////////////////////////////////////////////////////////////////////////
 
 template<class GRAPH_t>
 CEmptyNRD<GRAPH_t>::CEmptyNRD() { }
@@ -57,5 +55,7 @@ bool CEmptyNRD<GRAPH_t>::updateState(
 
 template<class GRAPH_t>
 void CEmptyNRD<GRAPH_t>::registerNewNode() { }
+
+} } } // end of namespaces
 
 #endif /* end of include guard: CEMPTYNRD_H */

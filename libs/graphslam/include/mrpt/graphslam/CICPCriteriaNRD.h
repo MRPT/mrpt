@@ -31,7 +31,6 @@
 #include <mrpt/system/datetime.h>
 #include <mrpt/system/os.h>
 #include <mrpt/system/threads.h>
-#include <mrpt/utils/CFileOutputStream.h> // TODO - remove this
 
 #include "CNodeRegistrationDecider.h"
 #include "CRangeScanRegistrationDecider.h"
@@ -39,14 +38,6 @@
 
 #include <string>
 #include <math.h>
-
-using namespace mrpt;
-using namespace mrpt::utils;
-using namespace mrpt::graphs;
-using namespace mrpt::math;
-using namespace mrpt::obs;
-
-using namespace std;
 
 namespace mrpt { namespace graphslam { namespace deciders {
 
@@ -187,11 +178,11 @@ class CICPCriteriaNRD:
 		bool m_is_using_3DScan;
 
 		// handy laser scans to use in the class methods
-		CObservation2DRangeScanPtr m_last_laser_scan2D;
-		CObservation2DRangeScanPtr m_curr_laser_scan2D;
+		mrpt::obs::CObservation2DRangeScanPtr m_last_laser_scan2D;
+		mrpt::obs::CObservation2DRangeScanPtr m_curr_laser_scan2D;
 
-		CObservation3DRangeScanPtr m_last_laser_scan3D;
-		CObservation3DRangeScanPtr m_curr_laser_scan3D;
+		mrpt::obs::CObservation3DRangeScanPtr m_last_laser_scan3D;
+		mrpt::obs::CObservation3DRangeScanPtr m_curr_laser_scan3D;
 
 		/**\brief Latest odometry rigid body transformation.
 		 *
@@ -209,9 +200,7 @@ class CICPCriteriaNRD:
 		 */
 		pose_t m_last_odometry_only_pose;
 
-
-
-		// last insertede node in the graph
+		// last inserted node in the graph
 		mrpt::utils::TNodeID m_nodeID_max;
 
 		/**\brief Keeps track of the last N measurements of the incoming ICP
@@ -237,11 +226,10 @@ class CICPCriteriaNRD:
 
 		size_t m_times_used_ICP; /**<How many times we used the ICP Edge */
 		size_t m_times_used_odom; /**<How many times we used the Odometry Edge instead of the ICP edge */
-
 };
 
 
-} } }
+} } } // end of namespaces
 
 #include "CICPCriteriaNRD_impl.h"
 #endif /* end of include guard: CICPCRITERIANRD_H */
