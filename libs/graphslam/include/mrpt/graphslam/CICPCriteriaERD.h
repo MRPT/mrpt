@@ -24,10 +24,7 @@
 #include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/obs/CRawlog.h>
 #include <mrpt/opengl/CDisk.h>
-#include <mrpt/opengl/CSetOfObjects.h> // TODO - is it needed?
-#include <mrpt/opengl/CRenderizable.h>
 #include <mrpt/opengl/CPlanarLaserScan.h>
-#include <mrpt/opengl/COpenGLViewport.h>
 #include <mrpt/slam/CICP.h>
 #include <mrpt/system/os.h>
 #include <mrpt/system/filesystem.h>

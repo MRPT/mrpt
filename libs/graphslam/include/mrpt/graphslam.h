@@ -17,10 +17,11 @@
 #include "graphslam/levmarq.h"
 
 // Interfaces for implementing deciders/optimizers
+#include "graphslam/CRegistrationDeciderOrOptimizer.h"
+#include "graphslam/CRangeScanRegistrationDecider.h"
 #include "graphslam/CNodeRegistrationDecider.h"
 #include "graphslam/CEdgeRegistrationDecider.h"
 #include "graphslam/CGraphSlamOptimizer.h"
-#include "graphslam/CRangeScanRegistrationDecider.h"
 
 // Node Registration Deciders
 #include "graphslam/CEmptyNRD.h"

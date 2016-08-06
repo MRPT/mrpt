@@ -9,6 +9,17 @@
 #ifndef CREGISTRATIONDECIDEROROPTIMIZER_H
 #define CREGISTRATIONDECIDEROROPTIMIZER_H
 
+#include <mrpt/obs/CActionCollection.h>
+#include <mrpt/obs/CSensoryFrame.h>
+#include <mrpt/obs/CObservation.h>
+#include <mrpt/synch/CCriticalSection.h>
+#include <mrpt/graphs/CNetworkOfPoses.h>
+#include "CWindowManager.h"
+
+#include <string>
+#include <map>
+
+
 namespace mrpt { namespace graphslam {
 
 /**\brief Interface for implementing node/edge registration deciders or
@@ -17,6 +28,12 @@ namespace mrpt { namespace graphslam {
  * Specific interfaces - for implementing node/edge deciders / optimizers -
  * can inherit from CRegistrationDeciderOrOptimizer so that they can make use
  * of the generic methods defined in the latter.
+ *
+ * \note \b Convention: For the already implemented deciders/optimizers the
+ * following naming convention has been used:
+ * - NRD: Node Registration Decider class
+ * - ERD: Edge Registration Decider class
+ * - GSO: GraphSlam Optimizer class
  *
  * \ingroup mrpt_graphslam_grp
  */

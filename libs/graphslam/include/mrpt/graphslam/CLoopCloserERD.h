@@ -56,7 +56,7 @@
 
 namespace mrpt { namespace graphslam { namespace deciders {
 
-/** Edge Registration Decider scheem specialized in Loop Closing.
+/** Edge Registration Decider scheme specialized in Loop Closing.
  *
  * Scheme is implemented based on the following two papers:
  *
@@ -76,6 +76,7 @@ namespace mrpt { namespace graphslam { namespace deciders {
  *
  * // TODO - add here...
  * // TODO - explain the process/flow of method calls when an LC is detected
+ * // Add loop closure images
  * The Edge registration procedure is implemented as described below:
  *
  *
