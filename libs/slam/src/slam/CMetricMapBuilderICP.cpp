@@ -9,8 +9,6 @@
 
 #include "slam-precomp.h"   // Precompiled headers
 
-
-
 #include <mrpt/slam/CICP.h>
 #include <mrpt/slam/CMetricMapBuilderICP.h>
 #include <mrpt/maps/CSimplePointsMap.h>
@@ -33,6 +31,7 @@ using namespace mrpt::math;
   ---------------------------------------------------------------*/
 CMetricMapBuilderICP::CMetricMapBuilderICP()
 {
+	this->setLoggerName("CMetricMapBuilderICP");
 	this->initialize( CSimpleMap() );
 }
 
@@ -175,8 +174,7 @@ void  CMetricMapBuilderICP::processObservation(const CObservationPtr &obs)
 
 		if (we_skip_ICP_pose_correction)
 		{
-			if (options.verbose)
-				printf("[CMetricMapBuilderICP] Skipping ICP pose correction...\n" );
+			MRPT_LOG_WARN("Skipping ICP pose correction...\n");
 		}
 		else
 		{
@@ -245,19 +243,15 @@ void  CMetricMapBuilderICP::processObservation(const CObservationPtr &obs)
 
 
 					// Debug output to console:
-					if (options.verbose)
-					{
-						cout << "[CMetricMapBuilderICP]  " << previousKnownRobotPose << "->" << pEst2D.getMeanVal() << std::endl;
-						cout << format("[CMetricMapBuilderICP]   Fit:%.1f%% Itr:%i In %.02fms \n",
+					MRPT_LOG_INFO_STREAM << "processObservation: previousPose="<<previousKnownRobotPose << "-> currentPose=" << pEst2D.getMeanVal() << std::endl;
+					MRPT_LOG_INFO( format("[CMetricMapBuilderICP]   Fit:%.1f%% Itr:%i In %.02fms \n",
 							icpReturn.goodness*100,
 							icpReturn.nIterations,
-							1000*runningTime );
-					}
+							1000*runningTime ) );
 				}
 				else
 				{
-					if (options.verbose)
-						cout << "[CMetricMapBuilderICP]  Ignoring ICP of low quality: " << icpReturn.goodness*100 << std::endl;
+					MRPT_LOG_WARN_STREAM << "Ignoring ICP of low quality: " << icpReturn.goodness*100 << std::endl;
 				}
 
 				// Compute the transversed length:
@@ -298,8 +292,7 @@ void  CMetricMapBuilderICP::processObservation(const CObservationPtr &obs)
 		{
 			CTicTac tictac;
 
-			if (options.verbose)
-				tictac.Tic();
+			tictac.Tic();
 
 			// Insert the observation:
 			CPose2D  currentKnownRobotPose;
@@ -312,8 +305,7 @@ void  CMetricMapBuilderICP::processObservation(const CObservationPtr &obs)
 			resetRobotDisplacementCounters(currentKnownRobotPose);
 			//m_distSinceLastInsertion[obs->sensorLabel].updatePose(currentKnownRobotPose);
 
-			if (options.verbose)
-				printf("[CMetricMapBuilderICP] Updating map from pose %s\n",currentKnownRobotPose.asString().c_str());
+			MRPT_LOG_INFO(mrpt::format("Updating map from pose %s\n",currentKnownRobotPose.asString().c_str()));
 
 			CPose3D		estimatedPose3D(currentKnownRobotPose);
 			metricMap.insertObservationPtr(obs,&estimatedPose3D);
@@ -327,8 +319,7 @@ void  CMetricMapBuilderICP::processObservation(const CObservationPtr &obs)
 
 			SF_Poses_seq.insert( pose3D, sf );
 
-			if (options.verbose)
-				printf("[CMetricMapBuilderICP] Map updated OK!! In %.03fms\n",tictac.Tac()*1000.0f );
+			MRPT_LOG_INFO_STREAM << "Map updated OK. Done in " << mrpt::system::formatTimeInterval( tictac.Tac() ) << std::endl;
 		}
 
 
@@ -465,8 +456,7 @@ void  CMetricMapBuilderICP::initialize(
 		SF->insertObservationsInto( &metricMap, &estimatedPose3D );
 	}
 
-	if (options.verbose)
-		printf("[CMetricMapBuilderICP::loadCurrentMapFromFile] OK\n");
+	MRPT_LOG_INFO("loadCurrentMapFromFile() OK.\n");
 
 	MRPT_END
 }

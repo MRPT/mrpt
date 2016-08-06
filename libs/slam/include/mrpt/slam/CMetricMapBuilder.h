@@ -11,7 +11,7 @@
 
 #include <mrpt/utils/CSerializable.h>
 #include <mrpt/utils/CListOfClasses.h>
-#include <mrpt/utils/CDebugOutputCapable.h>
+#include <mrpt/utils/COutputLogger.h>
 #include <mrpt/synch/CCriticalSection.h>
 #include <mrpt/maps/CMultiMetricMap.h>
 #include <mrpt/obs/CSensoryFrame.h>
@@ -32,7 +32,7 @@ namespace slam
 	 *
 	 * \sa CMetricMap  \ingroup metric_slam_grp
 	 */
-	class SLAM_IMPEXP CMetricMapBuilder : public mrpt::utils::CDebugOutputCapable
+	class SLAM_IMPEXP CMetricMapBuilder : public mrpt::utils::COutputLogger
 	{
 	protected:
 		mrpt::synch::CCriticalSection   critZoneChangingMap; //!< Critical zones
@@ -99,14 +99,13 @@ namespace slam
 		/** Options for the algorithm */
 		struct SLAM_IMPEXP TOptions
 		{
-			TOptions() : verbose(true),
-						 enableMapUpdating(true),
-						 debugForceInsertion(false),
-						 alwaysInsertByClass()
+			TOptions() :
+				enableMapUpdating(true),
+				debugForceInsertion(false),
+				alwaysInsertByClass()
 			{
 			}
 
-			bool	verbose;             //!< If true shows debug information in the console, default is true.
 			bool	enableMapUpdating;   //!< Enable map updating, default is true.
 			bool	debugForceInsertion; //!< Always insert into map. Default is false: detect if necesary.
 
@@ -118,14 +117,12 @@ namespace slam
 			  * \sa mrpt::utils::CListOfClasses
 			  */
 			mrpt::utils::CListOfClasses		alwaysInsertByClass;
-
 		};
 
 		TOptions options;
 
 		public: 
 			MRPT_MAKE_ALIGNED_OPERATOR_NEW 
-
 	}; // End of class def.
 
 	} // End of namespace

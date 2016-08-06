@@ -126,6 +126,9 @@ std::string COutputLogger::getLoggerName() const { return m_logger_name; }
 void COutputLogger::setMinLoggingLevel(const VerbosityLevel level /*= LVL_INFO */) {
 	m_min_verbosity_level = level;
 }
+void COutputLogger::setVerbosityLevel(const VerbosityLevel level) { 
+	m_min_verbosity_level = level;
+}
 
 void COutputLogger::getLogAsString(std::string& fname) const {
 	fname.clear();

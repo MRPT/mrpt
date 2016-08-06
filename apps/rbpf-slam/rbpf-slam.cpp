@@ -236,7 +236,7 @@ void MapBuilding_RBPF()
 	// ---------------------------------
 	//   CMetricMapBuilder::TOptions
 	// ---------------------------------
-	mapBuilder.options.verbose					= true;
+	mapBuilder.setVerbosityLevel(  mrpt::utils::LVL_DEBUG );
 	mapBuilder.options.enableMapUpdating		= true;
     mapBuilder.options.debugForceInsertion		= false;
 
