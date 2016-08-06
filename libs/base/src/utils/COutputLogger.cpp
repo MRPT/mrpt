@@ -133,7 +133,7 @@ void COutputLogger::setVerbosityLevel(const VerbosityLevel level) {
 void COutputLogger::getLogAsString(std::string& fname) const {
 	fname.clear();
 	for (const auto & h : m_history)
-		fname += h.getAsString() + std::string("\n");
+		fname += h.getAsString();
 }
 std::string COutputLogger::getLogAsString() const{
 	std::string str;
@@ -156,7 +156,7 @@ void COutputLogger::writeLogToFile(const std::string* fname_in /* = NULL */) con
 
 	std::string hist_str;
 	this->getLogAsString(hist_str);
-	fstream.printf("%s\n", hist_str.c_str());
+	fstream.printf("%s", hist_str.c_str());
 	fstream.close();
 }
 
@@ -210,9 +210,11 @@ void COutputLogger::TMsg::reset() {
 std::string COutputLogger::TMsg::getAsString() const {
 	stringstream out;
 	out.str("");
-	out << "[" << name <<  " | " << COutputLogger::logging_levels_to_names[level]  << " | " 
-		<< mrpt::system::timeToString(timestamp) 
+	out << "[" << name <<  "|" << COutputLogger::logging_levels_to_names[level]  << "|" 
+		<< mrpt::system::timeLocalToString(timestamp,4) 
 		<< "] " << body;
+	if (!body.empty() && *body.rbegin()!='\n')
+		out<<std::endl;
 
 	return out.str();
 }
@@ -221,13 +223,13 @@ void COutputLogger::TMsg::getAsString(std::string* contents) const {
 }
 void COutputLogger::TMsg::writeToStream(mrpt::utils::CStream& out) const {
 	const std::string str = getAsString();
-	out.printf("%s\n", str.c_str());
+	out.printf("%s", str.c_str());
 #ifdef _MSC_VER
 	OutputDebugStringA(str.c_str());
 #endif
 }
 void COutputLogger::TMsg::dumpToConsole() const {
-	const std::string str = getAsString() + "\n";
+	const std::string str = getAsString();
 
 	const bool dump_to_cerr = (level==LVL_ERROR); // LVL_ERROR alternatively dumped to stderr instead of stdout
 

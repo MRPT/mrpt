@@ -159,7 +159,7 @@ void MapBuilding_ICP(const string &INI_FILENAME, const string &override_rawlog_f
 	// ---------------------------------
 	//   CMetricMapBuilder::TOptions
 	// ---------------------------------
-	mapBuilder.options.verbose = true;
+	mapBuilder.setVerbosityLevel( LVL_DEBUG );
     mapBuilder.options.alwaysInsertByClass.fromString( iniFile.read_string("MappingApplication","alwaysInsertByClass","") );
 
 
