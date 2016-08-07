@@ -941,8 +941,8 @@ void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::initO
 				}
 			case 3:
 				{
-					// Exit gracefully - call Dtor implicitly
-					return;
+					// I don't need to exit gracefully here..
+					exit(0);
 				}
 			case 1:
 			default:

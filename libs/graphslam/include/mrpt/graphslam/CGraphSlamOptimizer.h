@@ -28,7 +28,11 @@ namespace mrpt { namespace graphslam { namespace optimizers {
  *
  * Interface should provide a general class from which real optimizers should
  * inherit so that they abide to the necessary method calls used in the
- * CGraphSlamEngine class
+ * CGraphSlamEngine class. For an example of inherenting from this class see
+ * CLevMarqGSO.
+ *
+ * \note As a naming convention, all the implemented graphslam optimizer classes
+ * are suffixed with the GSO acronym.
  *
  * \ingroup mrpt_graphslam_grp
  */
