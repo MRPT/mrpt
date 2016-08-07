@@ -31,6 +31,7 @@ IMPLEMENTS_GENERIC_SENSOR(CPhidgetInterfaceKitProximitySensors,mrpt::hwdrivers)
                 Constructor
    ----------------------------------------------------- */
 CPhidgetInterfaceKitProximitySensors::CPhidgetInterfaceKitProximitySensors() :
+	mrpt::utils::COutputLogger("CPhidgetInterfaceKitProximitySensors"),
 	m_serialNumber(-1)
 {
 #if MRPT_HAS_PHIDGET

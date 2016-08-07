@@ -11,7 +11,7 @@
 #define CNationalInstrumentsDAQ_H
 
 #include <mrpt/obs/CObservationRawDAQ.h>
-#include <mrpt/utils/CDebugOutputCapable.h>
+#include <mrpt/utils/COutputLogger.h>
 #include <mrpt/hwdrivers/CGenericSensor.h>
 #include <mrpt/synch/CPipe.h>
 #include <mrpt/system/threads.h>
@@ -153,7 +153,7 @@ namespace mrpt
 		*
 		* \ingroup mrpt_hwdrivers_grp
 		*/
-		class HWDRIVERS_IMPEXP CNationalInstrumentsDAQ : public utils::CDebugOutputCapable, public CGenericSensor
+		class HWDRIVERS_IMPEXP CNationalInstrumentsDAQ : public mrpt::utils::COutputLogger, public CGenericSensor
 		{
 			DEFINE_GENERIC_SENSOR(CNationalInstrumentsDAQ)
 		public:

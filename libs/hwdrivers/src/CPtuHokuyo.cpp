@@ -90,7 +90,7 @@ bool CPtuHokuyo::init(const string &portPtu,const string &portHokuyo){
 
 	// Hokuyo initialization
 	laser.setSerialPort(portHokuyo);
-	laser.setVerbose(false); // Disable warning message upon truncated read frame, due to us doing a "purge"...
+	laser.setVerbosityLevel(mrpt::utils::LVL_INFO); // Disable warning message upon truncated read frame, due to us doing a "purge"...
 
 	printf("\n[TEST] Turning laser ON...\n");
 	if (laser.turnOn())

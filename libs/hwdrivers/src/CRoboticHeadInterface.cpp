@@ -18,7 +18,8 @@ using namespace mrpt::hwdrivers;
 /*-------------------------------------------------------------
 						CRoboticHeadInterface
 -------------------------------------------------------------*/
-CRoboticHeadInterface::CRoboticHeadInterface()
+CRoboticHeadInterface::CRoboticHeadInterface() :
+	mrpt::utils::COutputLogger("CRoboticHeadInterface")
 {
 	MRPT_START
 

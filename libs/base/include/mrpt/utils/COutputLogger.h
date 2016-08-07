@@ -38,7 +38,18 @@ enum VerbosityLevel {
  *
  * COutputLogger is a versatile class for logging messages either to the
  * terminal window or to an external file. Class instances can take messages in
- * std::string using the logStr class methods
+ * std::string using the logStr class methods. The following macros are also provided
+ * for usage within a class that inherits from COutputLogger:
+ *
+ * \code
+ * // Plain strings:
+ * MRPT_LOG_DEBUG("This will be shown only if verbosity level is LVL_DEBUG.");
+ * MRPT_LOG_ERROR("This message will be always shown.");
+ * // printf-like versions:
+ * MRPT_LOG_ERROR_FMT("Out of range value: %i.", int_param);
+ * // stream-like versions:
+ * MRPT_LOG_ERROR_STREAM << "Out of range value: " << int_param;
+ * \endcode
  *
  * - Logger instance keeps the messages in an internal container so that upon
  *   request it can dump them either to the console or to an external file
@@ -111,7 +122,7 @@ class BASE_IMPEXP COutputLogger {
 		 * logFmt("Today is the %d of %s, %d", 15, "July", 2016);
 		 * \endcode
 		 *
-		 * \sa logStr, logCond, mrpt::utils:CDebugOutputCapable
+		 * \sa logStr, logCond
 		 */
 		void logFmt(const VerbosityLevel level, const char* fmt, ...) const MRPT_printf_format_check(3,4);  // arg 1=this
 
@@ -243,6 +254,11 @@ class BASE_IMPEXP COutputLogger {
 #define MRPT_LOG_INFO(_STRING) this->logStr(::mrpt::utils::LVL_INFO, _STRING)
 #define MRPT_LOG_WARN(_STRING) this->logStr(::mrpt::utils::LVL_WARN, _STRING)
 #define MRPT_LOG_ERROR(_STRING) this->logStr(::mrpt::utils::LVL_ERROR, _STRING)
+
+#define MRPT_LOG_DEBUG_FMT(_FMT_STRING,...) this->logFmt(::mrpt::utils::LVL_DEBUG, _FMT_STRING, __VA_ARGS__)
+#define MRPT_LOG_INFO_FMT(_FMT_STRING,...) this->logFmt(::mrpt::utils::LVL_INFO, _FMT_STRING, __VA_ARGS__)
+#define MRPT_LOG_WARN_FMT(_FMT_STRING,...) this->logFmt(::mrpt::utils::LVL_WARN, _FMT_STRING, __VA_ARGS__)
+#define MRPT_LOG_ERROR_FMT(_FMT_STRING,...) this->logFmt(::mrpt::utils::LVL_ERROR, _FMT_STRING, __VA_ARGS__)
 
 /** Usage: `MRPT_LOG_DEBUG_STREAM << "Var=" << value;` */
 #define MRPT_LOG_DEBUG_STREAM ::mrpt::utils::COutputLoggerStreamWrapper(::mrpt::utils::LVL_DEBUG,*this)

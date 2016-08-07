@@ -71,6 +71,10 @@
 				- refactored to expose more methods and allow changing parameters via its constructor.
 				- Now supports reading from an IR, RGB and Depth channels independenty.
 			-  mrpt::hwdrivers::CHokuyoURG now can optionally return intensity values.
+			- Deleted old, unused classes: 
+				- mrpt::hwdrivers::CBoardIR
+				- mrpt::hwdrivers::CBoardDLMS
+			- mrpt::hwdrivers::CHokuyoURG no longer as a "verbose" field. It's superseded now by the COutputLogger interface.
 		- \ref mrpt_maps_grp
 			- mrpt::maps::CMultiMetricMapPDF added method CMultiMetricMapPDF::prediction_and_update_pfAuxiliaryPFStandard().
 		- \ref mrpt_nav_grp

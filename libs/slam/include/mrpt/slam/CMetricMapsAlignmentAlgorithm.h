@@ -23,7 +23,7 @@ namespace slam
 	/** A base class for any algorithm able of maps alignment. There are two methods
 	 *   depending on an PDF or a single 2D Pose value is available as initial guess for the methods.
      *
-	 * \sa CPointsMap, utils::CDebugOutputCapable  \ingroup mrpt_slam_grp 
+	 * \sa CPointsMap, \ingroup mrpt_slam_grp 
 	 */
 	class SLAM_IMPEXP  CMetricMapsAlignmentAlgorithm : public mrpt::utils::COutputLogger
 	{

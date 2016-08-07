@@ -66,7 +66,7 @@ namespace mrpt
 			virtual ~CTimeLogger(); //!< Destructor
 			std::string getStatsAsText(const size_t column_width=80) const; //!< Dump all stats to a multi-line text string. \sa dumpAllStats, saveToCVSFile
 			void getStats(std::map<std::string,TCallStats> &out_stats) const; //!< Returns all the current stats as a map: section_name => stats. \sa getStatsAsText, dumpAllStats, saveToCVSFile
-			void dumpAllStats(const size_t column_width=80) const; //!< Dump all stats through the CDebugOutputCapable interface. \sa getStatsAsText, saveToCVSFile
+			void dumpAllStats(const size_t column_width=80) const; //!< Dump all stats through the COutputLogger interface. \sa getStatsAsText, saveToCVSFile
 			void clear(bool deep_clear=false); //!< Resets all stats. By default (deep_clear=false), all section names are remembered (not freed) so the cost of creating upon the first next call is avoided.
 			void enable(bool enabled = true) { m_enabled = enabled; }
 			void disable() { m_enabled = false; }

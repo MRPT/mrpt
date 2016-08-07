@@ -12,7 +12,7 @@
 
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/obs/CObservation.h>
-#include <mrpt/utils/CDebugOutputCapable.h>
+#include <mrpt/utils/COutputLogger.h>
 #include <mrpt/utils/CConfigFileBase.h>
 #include <mrpt/hwdrivers/CGenericSensor.h>
 
@@ -240,7 +240,7 @@ namespace mrpt
 		  *  \sa mrpt::hwdrivers::CImageGrabber_OpenCV, mrpt::hwdrivers::CImageGrabber_dc1394, CGenericSensor, prepareVideoSourceFromUserSelection()
 		  * \ingroup mrpt_hwdrivers_grp
 		  */
-		class HWDRIVERS_IMPEXP CCameraSensor : public utils::CDebugOutputCapable, public CGenericSensor
+		class HWDRIVERS_IMPEXP CCameraSensor : public mrpt::utils::COutputLogger, public CGenericSensor
 		{
 			DEFINE_GENERIC_SENSOR(CCameraSensor)
 

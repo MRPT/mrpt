@@ -23,6 +23,7 @@ using namespace mrpt::hwdrivers;
 						Constructor
 -------------------------------------------------------------*/
 C2DRangeFinderAbstract::C2DRangeFinderAbstract() :
+	mrpt::utils::COutputLogger("C2DRangeFinderAbstract"),
 	m_lastObservation		( ),
 	m_lastObservationIsNew	( false ),
 	m_hardwareError			( false ),
