@@ -566,7 +566,7 @@ def time_comp():
     return tcomp_storage
 
 
-#time_comp()
+time_comp()
 err_plot()
-#err_statistics_fcn_sigma()
-#err_statistics_fcn_n()
+err_statistics_fcn_sigma()
+err_statistics_fcn_n()
