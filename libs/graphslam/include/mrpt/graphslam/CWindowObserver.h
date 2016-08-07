@@ -24,6 +24,8 @@
 namespace mrpt { namespace graphslam {
 
 /**\brief Monitor events in the visualization window.
+ *
+ * \ingroup mrpt_graphslam_grp
  */
 class CWindowObserver : public mrpt::utils::CObserver
 {

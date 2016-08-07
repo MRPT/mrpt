@@ -30,7 +30,7 @@ namespace mrpt { namespace graphslam { namespace deciders {
 /** \brief Interface for implementing edge registration classes.
  *
  * CEdgeRegistrationDecider provides the basic methods that have to exist in
- * every edge registration decider class. For an example of inherenting from
+ * every edge registration decider class. For an example of inheriting from
  * this class see CICPCriteriaERD.
  *
  * \note As a naming convention, all the implemented edge registration deciders

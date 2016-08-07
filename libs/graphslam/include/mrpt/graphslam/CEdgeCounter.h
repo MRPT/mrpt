@@ -25,6 +25,8 @@ namespace mrpt { namespace graphslam {
 /**\brief Generic class for tracking the total number of edges for different
  * tpes of edges and for storing visualization-related information for each
  * type
+ *
+ * \ingroup mrpt_graphslam_grp
  */
 class CEdgeCounter {
 	public:

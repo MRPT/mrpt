@@ -34,12 +34,12 @@ namespace mrpt { namespace graphslam { namespace deciders {
  * Determine whether to insert a new pose in the graph given the distance and
  * angle thresholds. When the odometry readings indicate that any of the
  * thresholds has been surpassed, with regards to the previous registered
- * pose a new node is added in the graph.
+ * pose, a new node is added in the graph.
  *
  * Current decider is a minimal, simple implementation of the
  * CNodeRegistrationDecider interface which can be used for 2D datasets.
- * Decider *does not guarrantee* thread safety when accessing the GRAPH_t
- * resource. This is handled by the CGraphSlamEngine_t instance.
+ * Decider *does not guarantee* thread safety when accessing the GRAPH_t
+ * resource. This is handled by the CGraphSlamEngine instance.
  *
  * \b Specifications
  *
@@ -47,6 +47,25 @@ namespace mrpt { namespace graphslam { namespace deciders {
  * - MRPT rawlog format: #1, #2
  * - Observations Used: CObservationOdometry, CActionRobotMovement2D
  * - Node Registration Strategy: Fixed Odometry Intervals
+ *
+ * <b>.ini Configuration Parameters </b>
+ *
+ * \htmlinclude graphslam-engine_config_params_preamble.txt
+ *
+ * - \b class_verbosity
+ *   + \a Section       : NodeRegistrationDeciderParameters
+ *   + \a Default value : 1 (LVL_INFO)
+ *   + \a Required      : FALSE
+ *
+ * - \b registration_max_distance
+ *  + \a Section       : NodeRegistrationDeciderParameters
+ *  + \a Default value : 0.5 // meters
+ *  + \a Required      : FALSE
+ *
+ * - \b registration_max_angle
+ *  + \a Section       : NodeRegistrationDeciderParameters
+ *  + \a Default value : 60 // degrees
+ *  + \a Required      : FALSE
  *
  * \ingroup mrpt_graphslam_grp
  */
@@ -135,7 +154,7 @@ class CFixedIntervalsNRD:
 		//////////////////////////////////////////////////////////////
 		GRAPH_t* m_graph; /**<\brief Pointer to the graph under construction */
 		mrpt::gui::CDisplayWindow3D* m_win;
-		/**\brief Store the last registered nodeID .
+		/**\brief Store the last registered NodeID .
 		 *
 		 * Not his pose since it will most likely change due to calls to the
 		 * graph-optimization procedure / dijkstra_node_estimation

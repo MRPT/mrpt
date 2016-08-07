@@ -60,14 +60,18 @@ namespace mrpt { namespace graphslam { namespace deciders {
  *
  * Scheme is implemented based on the following two papers:
  *
- * TODO - split this line if possible
- * <a href="http://ieeexplore.ieee.org/xpl/login.jsp?tp=&arnumber=1641810&url=http%3A%2F%2Fieeexplore.ieee.org%2Fxpls%2Fabs_all.jsp%3Farnumber%3D1641810">Consistent Observation Grouping for Generating Metric-Topological Maps that Improves Robot Localization</a> - J. blanco, J. Gonzalez, J. Antonio Fernandez Madrigal
+ * <a
+ * href="http://ieeexplore.ieee.org/xpl/login.jsp?tp=&arnumber=1641810&url=http%3A%2F%2Fieeexplore.ieee.org%2Fxpls%2Fabs_all.jsp%3Farnumber%3D1641810">Consistent
+ * Observation Grouping for Generating Metric-Topological Maps that Improves
+ * Robot Localization</a> - J. Blanco, J. Gonzalez, J. Antonio Fernandez
+ * Madrigal, 2006
  * - We split the under-construction graph into groups of nodes. The groups are
- *   formatted basd on the observations gathered each node. the actuall split
+ *   formatted based on the observations gathered each node. The actual split
  *   between the groups is decided by the minimum normalized Cut (minNcut) as
- *   described in the aformentioned paper
+ *   described in the aforementioned paper
  *
- * <a href="https://april.eecs.umich.edu/pdfs/olson2009ras.pdf">Recognizing places using spectrally clustered local matches</a> - E. Olson, 2009
+ * <a href="https://april.eecs.umich.edu/pdfs/olson2009ras.pdf">Recognizing
+ * places using spectrally clustered local matches</a> - E. Olson, 2009
  * - Having the groups already assembled, we generate all the hypotheses in
  *   each group and evaluate each set using its corresponding pair-wise
  *   consistency matrix.
@@ -86,6 +90,79 @@ namespace mrpt { namespace graphslam { namespace deciders {
  * MRPT rawlog format: #1, #2
  * Observations: CObservation2DRangeScan
  * Edge Registration Strategy: Pair-wise Consistency of ICP Edges
+ *
+ * <b>.ini Configuration Parameters </b>
+ *
+ * \htmlinclude graphslam-engine_config_params_preamble.txt
+ *
+ * - \b class_verbosity
+ *   + \a Section       : EdgeRegistrationDeciderParameters
+ *   + \a Default value : 1 (LVL_INFO)
+ *   + \a Required      : FALSE
+ *
+ * - \b use_scan_matching
+ *   + \a Section       : EdgeRegistrationDeciderParameters
+ *   + \a Default value : TRUE
+ *   + \a Required      : FALSE
+ *   + \a Description   :Indicates whether the decider uses scan matching
+ *   between the current and previous laser scans to correct the robot
+ *   trajectory. 
+ *
+ * - \b goodness_thresh
+ *   + \a Section       : EdgeRegistrationDeciderParameters
+ *   + \a Default value : 0.75
+ *   + \a Required      : FALSE
+ *   + \a Description   : Threshold for accepting a scan-matching edge between
+ *   the current and previous nodes
+ *
+ * - \b visualize_laser_scans
+ *   + \a Section       : VisualizationParameters
+ *   + \a Default value : 10
+ *   + \a Required      : FALSE
+ *
+ * - \b LC_min_nodeid_diff
+ *  + \a Section       : GeneralConfiguration
+ *  + \a Default value : 30
+ *  + \a Required      : FALSE
+ *  + \a Description   : Minimum NodeID difference for an edge to be considered
+ *  a loop closure.
+ *
+ * - \b LC_min_remote_nodes
+ *   + \a Section       : EdgeRegistrationDeciderParameters
+ *   + \a Default value : 3
+ *   + \a Required      : FALSE
+ *   + \a Description   : Number of remote nodes that must exist in order for
+ *   the Loop Closure procedure to commence
+ *
+ * - \b LC_eigenvalues_ratio_thresh
+ *   + \a Section       : EdgeRegistrationDeciderParameters
+ *   + \a Default value : 2
+ *   + \a Required      : FALSE
+ *   + \a Description   : Minimum ratio of the two dominant eigenvalues for a
+ * loop closing hypotheses set to be considered valid
+ *
+ * - \b LC_check_curr_partition_only
+ *   + \a Section       : EdgeRegistrationDeciderParameters
+ *   + \a Default value : TRUE
+ *   + \a Required      : FALSE
+ *   + \a Description   : Boolean flag indicating whether to check for loop
+ * closures only in the current node's partition
+ *
+ * - \b visualize_map_partitions
+ *   + \a Section       : VisualizationParameters
+ *   + \a Default value : TRUE
+ *   + \a Required      : FALSE
+ *
+ * \note Since the decider inherits from the CRangeScanRegistrationDecider
+ * class, it parses the configuration parameters of the latter as well from the
+ * "ICP" section. Refer to the CRangeScanRegistrationDecider documentation for
+ * its list of configuration parameters
+ *
+ * \note Class contains an instance of the
+ * mrpt::slam::CIncrementalMapPartitioner class and it parses the configuration
+ * parameters of the latter from the "EdgeRegistrationDeciderParameters"
+ * section. Refer to mrpt::slam::CIncrementalMapPartitioner documentation for
+ * its list of configuration parameters
  *
  * \ingroup mrpt_graphslam_grp
  */
@@ -266,7 +343,7 @@ class CLoopCloserERD:
 
 			/**\brief add a new link in the current path.
 			 *
-			 * Add the node that the path passese by and the information matrix of
+			 * Add the node that the path traverses and the information matrix of
 			 * the extra link
 			 */
 			void addToPath(mrpt::utils::TNodeID node, constraint_t edge);

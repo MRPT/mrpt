@@ -29,6 +29,16 @@ namespace mrpt { namespace graphslam {
  * Class also contains methods for evaluating incoming measurements (weather
  * to accept or reject those)
  *
+ * <b>.ini Configuration Parameters </b>
+ *
+ * \htmlinclude graphslam-engine_config_params_preamble.txt
+ *
+ * - \b sliding_win_size
+ *   + \a Default value : 10
+ *   + \a Required      : FALSE
+ *   + \a Description   : How many of the latest measurements to take into
+ *   account when computing the relevant statistics
+ *
  * \ingroup mrpt_graphslam_grp
  */
 struct TSlidingWindow: public mrpt::utils::CLoadableOptions {
@@ -82,7 +92,7 @@ struct TSlidingWindow: public mrpt::utils::CLoadableOptions {
 
 		double m_mean_cached; /**< Cached mean value */
 		double m_median_cached; /**< Cached median value */
-		double m_std_dev_cached; /**< Cached version of the stanard deviation */
+		double m_std_dev_cached; /**< Cached version of the standard deviation */
 		bool m_mean_updated; /**< Is the mean up-to-date? */
 		bool m_median_updated; /**< Is the median up-to-date? */
 		bool m_std_dev_updated; /**< Is the standard deviation up-to-date? */

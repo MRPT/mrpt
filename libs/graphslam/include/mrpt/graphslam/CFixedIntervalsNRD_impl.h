@@ -309,7 +309,7 @@ void CFixedIntervalsNRD<GRAPH_t>::TParams::loadFromConfigFile(
 
 	registration_max_distance = source.read_double( section,
 			"registration_max_distance",
-			5 /* meter */, false);
+			0.5 /* meter */, false);
 	registration_max_angle = source.read_double( section,
 			"registration_max_angle",
 			60 /* degrees */, false);

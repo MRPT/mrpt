@@ -13,6 +13,8 @@ namespace mrpt { namespace graphslam {
  *
  * CWindowManager also provides methods for adding/positioning textMessages
  * and viewports in the CDisplayWindow in a compact and consistent way.
+ *
+ * \ingroup mrpt_graphslam_grp
  */
 class CWindowManager {
   public:

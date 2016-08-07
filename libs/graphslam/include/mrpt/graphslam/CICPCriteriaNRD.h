@@ -53,8 +53,8 @@ namespace mrpt { namespace graphslam { namespace deciders {
  * graph)
  * \sa loadParams, TParams::loadFromConfigFile
  *
- * Decider *does not guarrantee* thread safety when accessing the GRAPH_t
- * resource. This is handled by the CGraphSlamEngine_t class.
+ * Decider *does not guarantee* thread safety when accessing the GRAPH_t
+ * resource. This is handled by the CGraphSlamEngine class.
  *
  * \b Specifications
  *
@@ -62,6 +62,36 @@ namespace mrpt { namespace graphslam { namespace deciders {
  * - MRPT rawlog format: #1, #2
  * - Observations Used: CObservation2DRangeScan, CObservation3DRangeScan
  * - Node Registration Strategy: Fixed Intervals
+ *
+ * <b>.ini Configuration Parameters </b>
+ *
+ * \htmlinclude config_params_preamble.txt
+ *
+ * - \b class_verbosity
+ *   + \a Section       : NodeRegistrationDeciderParameters
+ *   + \a default value : 1 (LVL_INFO)
+ *   + \a Required      : FALSE
+ *
+ * - \b registration_max_distance
+ *  + \a Section       : NodeRegistrationDeciderParameters
+ *  + \a Default value : 0.5 // meters
+ *  + \a Required      : FALSE
+ *
+ * - \b registration_max_angle
+ *  + \a Section       : NodeRegistrationDeciderParameters
+ *  + \a Default value : 10 // degrees
+ *  + \a Required      : FALSE
+ *
+ * \note Since the decider inherits from the CRangeScanRegistrationDecider
+ * class, it parses the configuration parameters of the latter as well from the
+ * "ICP" section. Refer to the CRangeScanRegistrationDecider documentation for
+ * its list of configuration
+ * parameters
+ *
+ * \note Class contains an instance of the TSlidingWindow class and it parses
+ * the configuration parameters of the latter from the
+ * "NodeRegistrationDeciderParameters" section. Refer to TSlidingWindow
+ * documentation for its list of configuration parameters
  *
  * \ingroup mrpt_graphslam_grp
  */
@@ -220,7 +250,7 @@ class CICPCriteriaNRD:
 		mrpt::utils::COutputLogger m_out_logger; /**<Output logger instance */
 		mrpt::utils::CTimeLogger m_time_logger; /**<Time logger instance */
 
-		// criterions for adding new a new node
+		// criteria for adding new a new node
 		bool m_use_angle_difference_node_reg = true;
 		bool m_use_distance_node_reg = true;
 

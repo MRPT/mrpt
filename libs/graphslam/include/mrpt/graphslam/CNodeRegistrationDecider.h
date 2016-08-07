@@ -29,7 +29,7 @@ namespace mrpt { namespace graphslam { namespace deciders {
 /**\brief Interface for implementing node registration classes.
  *
  * CNodeRegistrationDecider provides the basic methods that have to exist in
- * every node registration decider class. For an example of inherenting from
+ * every node registration decider class. For an example of inheriting from
  * this class see CFixedIntervalsNRD.
  *
  * \note As a naming convention, all the implemented node registration deciders

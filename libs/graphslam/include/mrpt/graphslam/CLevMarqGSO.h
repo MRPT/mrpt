@@ -38,6 +38,85 @@ namespace mrpt { namespace graphslam { namespace optimizers {
 
 /** Levenberg-Marquardt non-linear graph slam optimization scheme
  *
+ * \b Description
+ *
+ * Current decider optimizes the graph according to the
+ * graphslam::optimize_spa_levmarq method. Refer to the latter for more
+ * details on the implementation.
+ *
+ * <b>.ini Configuration Parameters </b>
+ *
+ * \htmlinclude graphslam-engine_config_params_preamble.txt
+ *
+ * - \b class_verbosity
+ *   + \a Section       : OptimizerParameters
+ *   + \a Default value : 1 (LVL_INFO)
+ *   + \a Required      : FALSE
+ *
+ * - \b optimization_on_second_thread
+ *   + \a Section       : OptimizerParameters
+ *   + \a Default value :  FALSE
+ *   + \a Required      : FALSE
+ *   + \a Description   : Specify whether to use a second thread to optimize
+ *   the graph.
+ *
+ * - \b LC_min_nodeid_diff
+ *  + \a Section       : GeneralConfiguration
+ *  + \a Default value : 30
+ *  + \a Required      : FALSE
+ *  + \a Description   : Minimum NodeID difference for an edge to be considered
+ *  a loop closure.
+ *
+ * - \b optimization_distance
+ *  + \a Section       : OptimizerParameters
+ *  + \a Default value : 5
+ *  + \a Required      : FALSE
+ *  + \a Description   : Positions of the nodes within the specified distance from the current
+ *  graph node are optimized according to the corresponding constraints between
+ *  them
+ *  
+ * - \b verbose
+ *  + \a Section       : OptimizerParameters
+ *  + \a Default value : FALSE
+ *  + \a Required      : FALSE
+ *  + \a Description   : Refers to the Levenberg-Marquardt optimization.
+ *  procedure
+ *
+ * - \b profiler
+ *  + \a Section       : OptimizerParameters
+ *  + \a Default value : FALSE
+ *  + \a Required      : FALSE
+ *  + \a Description   : Refers to the Levenberg-Marquardt optimization.
+ *  procedure
+ *
+ * - \b max_iterations
+ *  + \a Section       : OptimizerParameters
+ *  + \a Default value : 100
+ *  + \a Required      : FALSE
+ *  + \a Description   : Refers to the Levenberg-Marquardt optimization. Sets
+ *  the maximum number of iterations of the optimization scheme.
+ *
+ * - \b scale_hessian
+ *  + \a Section       : OptimizerParameters
+ *  + \a Default value : 0.2
+ *  + \a Required      : FALSE
+ *  + \a Description   : Refers to the Levenberg-Marquardt optimization.
+ *
+ * - \b tau
+ *  + \a Section       : OptimizerParameters
+ *  + \a Default value : 1e-3
+ *  + \a Required      : FALSE
+ *  + \a Description   : Refers to the Levenberg-Marquardt optimization.
+ *
+ *  \note For a detailed description of the optimization parameters of the
+ *  Levenberg-Marquardt scheme, refer to
+ *  http://reference.mrpt.org/devel/group__mrpt__graphslam__grp.html#ga022f4a70be5ec7c432f46374e4bb9d66 
+ *
+ *  \note For a detailed description of the graph visualization parameters
+ *  refer to
+ *  http://reference.mrpt.org/devel/group__mrpt__opengl__grp.html#ga30efc9f6fcb49801e989d174e0f65a61
+
+ *
  * \ingroup mrpt_graphslam_grp
  */
 template<class GRAPH_t=typename mrpt::graphs::CNetworkOfPoses2DInf>
@@ -139,7 +218,7 @@ class CLevMarqGSO:
 		// Private methods
 		// ////////////////////////////
 
-		/**\brief Feedback of the levenberg-marquardt graph optimization procedure.
+		/**\brief Feedback of the Levenberg-Marquardt graph optimization procedure.
 		 */
 		static void levMarqFeedback(
 				const GRAPH_t& graph,
@@ -171,11 +250,11 @@ class CLevMarqGSO:
 		 */
 		bool checkForLoopClosures();
 		void initGraphVisualization();
-		/**\brief Called internally for updating the vizualization scene for the graph
+		/**\brief Called internally for updating the visualization scene for the graph
 		 * building procedure
 		 */
 		inline void updateGraphVisualization();
-		/**\brief togle the graph visualization on and off
+		/**\brief Toggle the graph visualization on and off.
 		 */
 		void toggleGraphVisualization();
 		/**\brief Set the camera parameters of the CDisplayWindow3D so that the whole

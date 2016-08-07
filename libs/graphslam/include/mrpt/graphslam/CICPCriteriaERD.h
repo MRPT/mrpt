@@ -58,6 +58,54 @@ namespace mrpt { namespace graphslam { namespace deciders {
  * Observations: CObservation2DRangeScan, CObservation3DRangeScan
  * Edge Registration Strategy: ICP Goodnesss threshold
  *
+ * <b>.ini Configuration Parameters </b>
+ *
+ * \htmlinclude graphslam-engine_config_params_preamble.txt
+ *
+ * - \b class_verbosity
+ *   + \a Section       : EdgeRegistrationDeciderParameters
+ *   + \a default value : 1 (LVL_INFO)
+ *   + \a Required      : FALSE
+ *
+ * - \b LC_min_nodeid_diff
+ *  + \a Section       : GeneralConfiguration
+ *  + \a Default value : 30
+ *  + \a Required      : FALSE
+ *  + \a Description   : Minimum NodeID difference for an edge to be considered
+ *  a loop closure.
+ *
+ * - \b ICP_max_distance
+ *  + \a Section       : EdgeRegistrationDeciderParameters
+ *  + \a Default value : 10 // meters
+ *  + \a Required      : FALSE
+ *  + \a Description   : Maximum distance for scan-matching. Decider tries to
+ *  align the laser scans of the current node and each of the previous nodes
+ *  that are found within the designated ICP_max_distance.
+ *
+ * - \b ICP_goodness_thresh
+ *   + \a Section       : EdgeRegistrationDeciderParameters
+ *   + \a Default value : 0.75
+ *   + \a Required      : FALSE
+ *   + \a Description   : Threshold for accepting a scan-matching edge between
+ *   the current and previous nodes
+ *
+ * - \b visualize_laser_scans
+ *   + \a Section       : VisualizationParameters
+ *   + \a Default value : TRUE
+ *   + \a Required      : FALSE
+ *
+ * - \b scans_img_external_dir
+ *   + \a Section       : EdgeRegistrationDeciderParameters
+ *   + \a Default value : . (current directory)
+ *   + \a Required      : FALSE
+ *   + \a Description   : Only applicable in datasets with 3DRangeScans that
+ *   are externally stored (not stored in the given .rawlog file).
+ *
+ * \note Since the decider inherits from the CRangeScanRegistrationDecider
+ * class, it parses the configuration parameters of the latter as well from the
+ * "ICP" section. Refer to the CRangeScanRegistrationDecider documentation for
+ * its list of configuration parameters
+ *
  * \ingroup mrpt_graphslam_grp
  */
 template<class GRAPH_t=typename mrpt::graphs::CNetworkOfPoses2DInf >
