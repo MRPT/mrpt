@@ -88,7 +88,6 @@ namespace math
 			const USERPARAM		&userParam,
 			TResultInfo			&out_info,
 			mrpt::utils::VerbosityLevel verbosity = mrpt::utils::LVL_INFO,
-			bool				verbose = false,
 			const size_t		maxIter = 200,
 			const NUMTYPE		tau = 1e-3,
 			const NUMTYPE		e1 = 1e-8,
