@@ -119,7 +119,7 @@ void CAbstractPTGBasedReactive::enableLogFile(bool enable)
 		{
 			if (m_logFile)
 			{
-				printf_debug("[CAbstractPTGBasedReactive::enableLogFile] Stopping logging.\n");
+				MRPT_LOG_DEBUG("[CAbstractPTGBasedReactive::enableLogFile] Stopping logging.");
 				// Close file:
 				delete m_logFile;
 				m_logFile = NULL;
@@ -148,11 +148,11 @@ void CAbstractPTGBasedReactive::enableLogFile(bool enable)
 			// Open log file:
 			m_logFile = new CFileOutputStream(aux);
 
-			printf_debug("[CAbstractPTGBasedReactive::enableLogFile] Logging to file `%s`\n",aux);
+			MRPT_LOG_DEBUG(mrpt::format("[CAbstractPTGBasedReactive::enableLogFile] Logging to file `%s`\n",aux));
 
 		}
 	} catch (...) {
-		printf_debug("[CAbstractPTGBasedReactive::enableLogFile] Exception!!\n");
+		MRPT_LOG_ERROR("[CAbstractPTGBasedReactive::enableLogFile] Exception!!");
 	}
 
 }
@@ -262,7 +262,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 		// -----------------------------------------------------------------------------
 		if (! STEP2_SenseObstacles() )
 		{
-			printf_debug("Error while loading and sorting the obstacles. Robot will be stopped.\n");
+			MRPT_LOG_ERROR("Error while loading and sorting the obstacles. Robot will be stopped.\n");
 			m_robot.stop();
 			m_navigationState = NAV_ERROR;
 			return;
@@ -466,7 +466,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 
 		if (m_enableConsoleOutput)
 		{
-			printf_debug(
+			MRPT_LOG_DEBUG(mrpt::format(
 				"CMD: %s \t"
 				"T=%.01lfms Exec:%.01lfms|%.01lfms \t"
 				"E=%.01lf PTG#%i\n",
@@ -476,7 +476,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 					1000.0*meanTotalExecutionTime,
 					(double)selectedHolonomicMovement.evaluation,
 					nSelectedPTG
-					);
+					) );
 		}
 
 		// ---------------------------------------
@@ -676,7 +676,7 @@ void CAbstractPTGBasedReactive::STEP7_GenerateSpeedCommands( const THolonomicMov
 	}
 	catch (std::exception &e)
 	{
-		printf_debug("[CReactiveNavigationSystem::STEP7_NonHolonomicMovement] Exception: %s",e.what());
+		MRPT_LOG_ERROR_STREAM << "[CReactiveNavigationSystem::STEP7_NonHolonomicMovement] Exception: " << e.what();
 	}
 }
 
@@ -705,9 +705,9 @@ void CAbstractPTGBasedReactive::loadConfigFile(const mrpt::utils::CConfigFileBas
 	ASSERT_(weights.size()==6);
 
 	// =========  Show configuration parameters:
-	printf_debug("-------------------------------------------------------------\n");
-	printf_debug("       PTG-based Reactive Navigation parameters               \n");
-	printf_debug("-------------------------------------------------------------\n");
+	MRPT_LOG_INFO("-------------------------------------------------------------\n");
+	MRPT_LOG_INFO("       PTG-based Reactive Navigation parameters               \n");
+	MRPT_LOG_INFO("-------------------------------------------------------------\n");
 
 	// ========= Load Derived class-specific params:
 	this->internal_loadConfigFile(cfg, section_prefix);
@@ -718,9 +718,9 @@ void CAbstractPTGBasedReactive::loadConfigFile(const mrpt::utils::CConfigFileBas
 	this->loadHolonomicMethodConfig(cfg,sectGlobal); // Load holonomic method params
 	ASSERT_(!m_holonomicMethod.empty())
 
-	printf_debug(" Holonomic method   = %s\n", typeid(m_holonomicMethod[0]).name());
-	printf_debug(" PTG Count          = %u\n", static_cast<unsigned int>( this->getPTG_count() ) );
-	printf_debug(" Reference distance = %f\n", refDistance );
+	MRPT_LOG_INFO_FMT(" Holonomic method   = %s\n", typeid(m_holonomicMethod[0]).name());
+	MRPT_LOG_INFO_FMT(" PTG Count          = %u\n", static_cast<unsigned int>( this->getPTG_count() ) );
+	MRPT_LOG_INFO_FMT(" Reference distance = %f\n", refDistance );
 
 	// ========= If we reached this point without an exception, all is good.
 	m_init_done = true;

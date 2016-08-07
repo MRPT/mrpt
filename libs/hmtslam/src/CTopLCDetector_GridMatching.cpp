@@ -104,11 +104,12 @@ CPose3DPDFPtr CTopLCDetector_GridMatching::computeTopologicalObservationModel(
 		const std::string filStat = dbg_dir+format("/state_%05i_test_%i_%i.hmtslam",cnt,(int)currentArea->getID(),(int)refArea->getID());
 		const std::string filRes  = dbg_dir+format("/state_%05i_test_%i_%i_result.txt",cnt,(int)currentArea->getID(),(int)refArea->getID() );
 
-		m_hmtslam->printf_debug("[TLCD_gridmatch] DEBUG: Saving %s\n",filStat.c_str());
+
+		m_hmtslam->logFmt(mrpt::utils::LVL_DEBUG,"[TLCD_gridmatch] DEBUG: Saving %s\n",filStat.c_str());
 		CFileGZOutputStream f(filStat);
 		this->m_hmtslam->saveState(f);
 
-		m_hmtslam->printf_debug("[TLCD_gridmatch] DEBUG: Saving %s\n",filRes.c_str());
+		m_hmtslam->logFmt(mrpt::utils::LVL_DEBUG,"[TLCD_gridmatch] DEBUG: Saving %s\n",filRes.c_str());
 		CFileOutputStream f_res(filRes);
 		f_res.printf("# SOG modes: %i\n",(int)CPosePDFSOGPtr(alignRes)->size() );
 		f_res.printf("ICP goodness: ");

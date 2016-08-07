@@ -33,7 +33,7 @@ namespace mrpt
 	}
 }
 
-CTimeLogger::CTimeLogger(bool enabled) : m_tictac(), m_enabled(enabled)
+CTimeLogger::CTimeLogger(bool enabled) : COutputLogger("CTimeLogger"), m_tictac(), m_enabled(enabled)
 {
 	m_tictac.Tic();
 }
@@ -131,8 +131,7 @@ void CTimeLogger::saveToCSVFile(const std::string &csv_file)  const
 
 void CTimeLogger::dumpAllStats(const size_t  column_width) const
 {
-	string s = getStatsAsText(column_width);
-	printf_debug("\n%s\n", s.c_str() );
+	MRPT_LOG_INFO_STREAM << "dumpAllStats:\n" << getStatsAsText(column_width);
 }
 
 void CTimeLogger::do_enter(const char *func_name)

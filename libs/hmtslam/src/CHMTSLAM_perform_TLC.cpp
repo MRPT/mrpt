@@ -45,7 +45,7 @@ void CHMTSLAM::perform_TLC(
 
 	synch::CCriticalSectionLocker locker ( &LMH.m_robotPosesGraph.lock );
 
-	printf_debug("[perform_TLC] TLC of areas: %u <-> %u \n",(unsigned)Ai, (unsigned)Ae );
+	logFmt(mrpt::utils::LVL_DEBUG, "[perform_TLC] TLC of areas: %u <-> %u \n",(unsigned)Ai, (unsigned)Ae );
 
 	// * Verify a1 \in LMH & a2 \notin LMH
 	// ----------------------------------------------------------------------

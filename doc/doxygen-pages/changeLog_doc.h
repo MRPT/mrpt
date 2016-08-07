@@ -33,9 +33,17 @@
 			- New template method: mrpt::utils::CStream::ReadAsAndCastTo
 			- Added missing method mrpt::poses::CPose2D::inverseComposePoint() for consistency with CPose3D
 			- New class mrpt::synch::CCriticalSectionRecursive
-			- New class mrpt::utils::COutputLogger replaces the (now no longer available) classes mrpt::utils::CDebugOutputCapable and mrpt::utils::CLog.
+			- New class mrpt::utils::COutputLogger replaces the classes mrpt::utils::CDebugOutputCapable (deprecated) and mrpt::utils::CLog (removed).
+			- New macros for much more versatily logging: 
+				- MRPT_LOG_DEBUG(), MRPT_LOG_INFO(), MRPT_LOG_WARN(), MRPT_LOG_ERROR()
+				- MRPT_LOG_DEBUG_STREAM, MRPT_LOG_INFO_STREAM, MRPT_LOG_WARN_STREAM, MRPT_LOG_ERROR_STREAM
 			- New functions for polynomial roots: see \ref polynomial_roots
 			- New classes mrpt::math::CAtan2LookUpTable, mrpt::math::CAtan2LookUpTableMultiRes
+			- [API change] The following functions are no longer static methods: (since their classes are now derived from the state-aware mrpt::utils::COutputLogger)
+				- mrpt::math::RANSAC_Template::execute()
+				- mrpt::math::CLevenbergMarquardtTempl::execute()
+		- \ref mrpt_bayes_grp
+			-  [API change] `verbose` is no longer a field of mrpt::bayes::CParticleFilter::TParticleFilterOptions. Use the setVerbosityLevel() method of the CParticleFilter class itself.
 		- \ref mrpt_gui_grp
 			- mrpt::gui::CMyGLCanvasBase is now derived from mrpt::opengl::CTextMessageCapable so they can draw text labels
 			- New class mrpt::gui::CDisplayWindow3DLocker for exception-safe 3D scene lock in 3D windows.
@@ -55,12 +63,18 @@
 			- mrpt::obs::CRawLog can now holds objects of arbitrary type, not only actions/observations. This may be useful for richer logs aimed at debugging.
 		- \ref mrpt_opengl_grp
 			- [ABI change] mrpt::opengl::CAxis now has many new options exposed to configure its look.
+		- \ref mrpt_slam_grp
+			- [API change] mrpt::slam::CMetricMapBuilder::TOptions does not have a `verbose` field anymore. It's supersedded now by the verbosity level of the CMetricMapBuilder class itself.
 		- \ref mrpt_hwdrivers_grp
 			- mrpt::hwdrivers::CGenericSensor: external image format is now `png` by default instead of `jpg` to avoid losses.
 			- [ABI change] mrpt::hwdrivers::COpenNI2Generic:
 				- refactored to expose more methods and allow changing parameters via its constructor.
 				- Now supports reading from an IR, RGB and Depth channels independenty.
 			-  mrpt::hwdrivers::CHokuyoURG now can optionally return intensity values.
+			- Deleted old, unused classes: 
+				- mrpt::hwdrivers::CBoardIR
+				- mrpt::hwdrivers::CBoardDLMS
+			- mrpt::hwdrivers::CHokuyoURG no longer as a "verbose" field. It's superseded now by the COutputLogger interface.
 		- \ref mrpt_maps_grp
 			- mrpt::maps::CMultiMetricMapPDF added method CMultiMetricMapPDF::prediction_and_update_pfAuxiliaryPFStandard().
 		- \ref mrpt_nav_grp

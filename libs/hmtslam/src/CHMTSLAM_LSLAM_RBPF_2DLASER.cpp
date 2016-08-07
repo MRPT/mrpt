@@ -153,7 +153,7 @@ void CLSLAM_RBPF_2DLASER::processOneLMH(
 	// -----------------------------------------------------------
 	if (insertNewRobotPose)
 	{
-		m_parent->printf_debug("[CLSLAM_RBPF_2DLASER] Adding new pose...\n");
+		m_parent->logStr( mrpt::utils::LVL_INFO, "[CLSLAM_RBPF_2DLASER] Adding new pose...\n");
 
 		//	Leave the up-to-now "current pose" in the map, insert the SF in it, and...
 		// ----------------------------------------------------------------------------
@@ -189,8 +189,7 @@ void CLSLAM_RBPF_2DLASER::processOneLMH(
 		// --------------------------------------------------------------------------------
 		LMH->m_posesPendingAddPartitioner.push_back( newlyAddedPose );
 
-		m_parent->printf_debug("[CLSLAM_RBPF_2DLASER] Added pose %i.\n", (int)newlyAddedPose);
-
+		m_parent->logFmt( mrpt::utils::LVL_INFO, "[CLSLAM_RBPF_2DLASER] Added pose %i.\n", (int)newlyAddedPose);
 
 		// Notice LC detectors:
 		// ------------------------------

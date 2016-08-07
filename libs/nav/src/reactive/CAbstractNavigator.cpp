@@ -44,6 +44,7 @@ std::string CAbstractNavigator::TNavigationParams::getAsText() const
 							Constructor
   ---------------------------------------------------------------*/
 CAbstractNavigator::CAbstractNavigator(CRobot2NavInterface &react_iterf_impl) :
+	mrpt::utils::COutputLogger("MRPT_navigator"),
 	m_lastNavigationState ( IDLE ),
 	m_navigationEndEventSent(false),
 	m_navigationState     ( IDLE ),
@@ -55,6 +56,7 @@ CAbstractNavigator::CAbstractNavigator(CRobot2NavInterface &react_iterf_impl) :
 	m_badNavAlarm_AlarmTimeout(30.0),
 	DIST_TO_TARGET_FOR_SENDING_EVENT(.0)
 {
+	this->setVerbosityLevel(mrpt::utils::LVL_DEBUG);
 }
 
 // Dtor:
@@ -69,7 +71,7 @@ CAbstractNavigator::~CAbstractNavigator()
 void CAbstractNavigator::cancel()
 {
 	mrpt::synch::CCriticalSectionLocker csl(&m_nav_cs);
-	printf_debug("\n[CAbstractNavigator::cancel()]\n");
+	MRPT_LOG_DEBUG("CAbstractNavigator::cancel() called.");
 	m_navigationState = IDLE;
 	m_robot.stop();
 }
@@ -82,7 +84,7 @@ void CAbstractNavigator::resume()
 {
 	mrpt::synch::CCriticalSectionLocker csl(&m_nav_cs);
 
-	printf_debug("\n[CAbstractNavigator::resume()]\n");
+	MRPT_LOG_DEBUG("[CAbstractNavigator::resume() called.");
 	if ( m_navigationState == SUSPENDED )
 		m_navigationState = NAVIGATING;
 }
@@ -95,7 +97,7 @@ void  CAbstractNavigator::suspend()
 {
 	mrpt::synch::CCriticalSectionLocker csl(&m_nav_cs);
 
-	printf_debug("\n[CAbstractNavigator::suspend()]\n");
+	MRPT_LOG_DEBUG("CAbstractNavigator::suspend() called.");
 	if ( m_navigationState == NAVIGATING )
 		m_navigationState  = SUSPENDED;
 }
@@ -104,7 +106,7 @@ void CAbstractNavigator::resetNavError()
 {
 	mrpt::synch::CCriticalSectionLocker csl(&m_nav_cs);
 
-	printf_debug("\n[CAbstractNavigator::resetNavError()]\n");
+	MRPT_LOG_DEBUG("CAbstractNavigator::resetNavError() called.");
 	if ( m_navigationState == NAV_ERROR )
 		m_navigationState  = IDLE;
 }
@@ -126,7 +128,7 @@ void CAbstractNavigator::navigationStep()
 			// If we just arrived at this state, stop robot:
 			if ( m_lastNavigationState == NAVIGATING )
 			{
-				printf_debug("\n[CAbstractNavigator::navigationStep()] Navigation stopped\n");
+				MRPT_LOG_INFO("[CAbstractNavigator::navigationStep()] Navigation stopped.");
 				// m_robot.stop();  stop() is called by the method switching the "state", so we have more flexibility
 				m_robot.stopWatchdog();
 			}
@@ -143,7 +145,7 @@ void CAbstractNavigator::navigationStep()
 			// If we just arrived at this state, stop the robot:
 			if ( m_lastNavigationState == NAVIGATING )
 			{
-				printf_debug("\n[CAbstractNavigator::navigationStep()] Stoping Navigation due to a NAV_ERROR state!\n");
+				MRPT_LOG_ERROR("[CAbstractNavigator::navigationStep()] Stoping Navigation due to a NAV_ERROR state!");
 				m_robot.stop();
 				m_robot.stopWatchdog();
 			}
@@ -156,9 +158,9 @@ void CAbstractNavigator::navigationStep()
 			bool is_first_nav_step = false;
 			if ( m_lastNavigationState != NAVIGATING )
 			{
-				printf_debug("\n[CAbstractNavigator::navigationStep()] Starting Navigation. Watchdog initiated...\n");
+				MRPT_LOG_INFO("[CAbstractNavigator::navigationStep()] Starting Navigation. Watchdog initiated...\n");
 				if (m_navigationParams)
-					printf_debug("[CAbstractNavigator::navigationStep()] Navigation Params:\n%s\n", m_navigationParams->getAsText().c_str() );
+					MRPT_LOG_DEBUG(mrpt::format("[CAbstractNavigator::navigationStep()] Navigation Params:\n%s\n", m_navigationParams->getAsText().c_str() ));
 
 				m_robot.startWatchdog( 1000 );	// Watchdog = 1 seg
 				is_first_nav_step=true;
@@ -204,7 +206,7 @@ void CAbstractNavigator::navigationStep()
 					m_robot.stop();
 				}
 				m_navigationState = IDLE;
-				printf_debug("Navigation target (%.03f,%.03f) was reached\n", m_navigationParams->target.x,m_navigationParams->target.y);
+				logFmt(mrpt::utils::LVL_WARN, "Navigation target (%.03f,%.03f) was reached\n", m_navigationParams->target.x,m_navigationParams->target.y);
 
 				if (!m_navigationParams->targetIsIntermediaryWaypoint && !m_navigationEndEventSent)
 				{
@@ -226,7 +228,7 @@ void CAbstractNavigator::navigationStep()
 				// Too much time have passed?
 				if (mrpt::system::timeDifference( m_badNavAlarm_lastMinDistTime, mrpt::system::getCurrentTime() ) > m_badNavAlarm_AlarmTimeout)
 				{
-					printf_debug("\n--------------------------------------------\nWARNING: Timeout for approaching toward the target expired!! Aborting navigation!! \n---------------------------------\n");
+					MRPT_LOG_WARN("--------------------------------------------\nWARNING: Timeout for approaching toward the target expired!! Aborting navigation!! \n---------------------------------\n");
 					m_navigationState = NAV_ERROR;
 					m_robot.sendWaySeemsBlockedEvent();
 					break;
@@ -254,7 +256,7 @@ void CAbstractNavigator::doEmergencyStop( const char *msg )
 {
 	m_navigationState = NAV_ERROR;
 	m_robot.stop();
-	printf_debug("%s\n",msg);
+	MRPT_LOG_ERROR(msg);
 }
 
 

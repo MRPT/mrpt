@@ -36,7 +36,6 @@ CHokuyoURG::CHokuyoURG() :
 	m_motorSpeed_rpm(0),
 	m_sensorPose(0,0,0),
 	m_rx_buffer(40000),
-	m_verbose(true),
 	m_highSensMode(false),
 	m_reduced_fov(0),
 	m_com_port(""),
@@ -122,8 +121,7 @@ void  CHokuyoURG::doProcessSimple(
 
 	if ( expectedSize!=rcv_dataLength )
 	{
-		if (m_verbose)
-			printf_debug("[CHokuyoURG::doProcess] ERROR: Expecting %u data bytes, received %u instead!\n",expectedSize,rcv_dataLength);
+		MRPT_LOG_DEBUG_FMT("[CHokuyoURG::doProcess] ERROR: Expecting %u data bytes, received %u instead!\n",expectedSize,rcv_dataLength);
 		hardwareError = true;
 		return;
 	}
@@ -373,7 +371,7 @@ bool  CHokuyoURG::setHighBaudrate()
 
 	if (!checkCOMisOpen()) return false;
 
-	printf_debug("[CHokuyoURG::setHighBaudrate] Changing baudrate to 115200...");
+	MRPT_LOG_DEBUG("[CHokuyoURG::setHighBaudrate] Changing baudrate to 115200...");
 
 	// Send command:
 	os::strcpy(cmd,20, "SS115200\x0A");
@@ -395,7 +393,7 @@ bool  CHokuyoURG::setHighBaudrate()
 		return false;
 	}
 
-	printf_debug("OK\n");
+	MRPT_LOG_DEBUG("OK\n");
 	return true;
 }
 
@@ -590,7 +588,7 @@ bool  CHokuyoURG::enableSCIP20()
 
 	if (!checkCOMisOpen()) return false;
 
-	printf_debug("[CHokuyoURG::enableSCIP20] Changing protocol to SCIP2.0...");
+	MRPT_LOG_DEBUG("[CHokuyoURG::enableSCIP20] Changing protocol to SCIP2.0...");
 
 	// Send command:
 	os::strcpy(cmd,20, "SCIP2.0\x0A");
@@ -614,7 +612,7 @@ bool  CHokuyoURG::enableSCIP20()
 	}
 
 
-	printf_debug("OK\n");
+	MRPT_LOG_DEBUG("OK\n");
 	return true;
 }
 
@@ -631,7 +629,7 @@ bool  CHokuyoURG::switchLaserOn()
 
 	if (!checkCOMisOpen()) return false;
 
-	printf_debug("[CHokuyoURG::switchLaserOn] Switching laser ON...");
+	MRPT_LOG_DEBUG("[CHokuyoURG::switchLaserOn] Switching laser ON...");
 
 	// Send command:
 	os::strcpy(cmd,20, "BM\x0A");
@@ -653,7 +651,7 @@ bool  CHokuyoURG::switchLaserOn()
 		return false;
 	}
 
-	printf_debug("OK\n");
+	MRPT_LOG_DEBUG("OK\n");
 
 	return true;
 }
@@ -671,7 +669,7 @@ bool  CHokuyoURG::switchLaserOff()
 
 	if (!checkCOMisOpen()) return false;
 
-	printf_debug("[CHokuyoURG::switchLaserOff] Switching laser OFF...");
+	MRPT_LOG_DEBUG("[CHokuyoURG::switchLaserOff] Switching laser OFF...");
 
 	// Send command:
 	os::strcpy(cmd,20, "QT\x0A");
@@ -693,7 +691,7 @@ bool  CHokuyoURG::switchLaserOff()
 		return false;
 	}
 
-	printf_debug("OK\n");
+	MRPT_LOG_DEBUG("OK\n");
 	return true;
 }
 
@@ -710,7 +708,7 @@ bool  CHokuyoURG::setMotorSpeed(int motoSpeed_rpm)
 
 	if (!checkCOMisOpen()) return false;
 
-	printf_debug("[CHokuyoURG::setMotorSpeed] Setting to %i rpm...",motoSpeed_rpm);
+	MRPT_LOG_DEBUG_FMT("[CHokuyoURG::setMotorSpeed] Setting to %i rpm...",motoSpeed_rpm);
 
 	// Send command:
 	int		motorSpeedCode = (600 - motoSpeed_rpm) / 6;
@@ -739,7 +737,7 @@ bool  CHokuyoURG::setMotorSpeed(int motoSpeed_rpm)
 		return false;
 	}
 
-	printf_debug("OK\n");
+	MRPT_LOG_DEBUG("OK\n");
 	return true;
 }
 
@@ -756,7 +754,7 @@ bool  CHokuyoURG::setHighSensitivityMode(bool enabled)
 
 	if (!checkCOMisOpen()) return false;
 
-	printf_debug("[CHokuyoURG::setHighSensitivityMode] Setting HS mode to: %s...", enabled ? "true":"false" );
+	MRPT_LOG_DEBUG_FMT("[CHokuyoURG::setHighSensitivityMode] Setting HS mode to: %s...", enabled ? "true":"false" );
 
 	// Send command:
 	os::sprintf(cmd,20, "HS%i\x0A",enabled ? 1:0);
@@ -778,7 +776,7 @@ bool  CHokuyoURG::setHighSensitivityMode(bool enabled)
 		return false;
 	}
 
-	printf_debug("OK\n");
+	MRPT_LOG_DEBUG("OK\n");
 	return true;
 }
 
@@ -804,7 +802,7 @@ bool  CHokuyoURG::displayVersionInfo( )
 
 	if (!checkCOMisOpen()) return false;
 
-	printf_debug("[CHokuyoURG::displayVersionInfo] Asking info...");
+	MRPT_LOG_DEBUG("[CHokuyoURG::displayVersionInfo] Asking info...");
 
 	// Send command:
 	os::sprintf(cmd,20, "VV\x0A");
@@ -826,7 +824,7 @@ bool  CHokuyoURG::displayVersionInfo( )
 		return false;
 	}
 
-	printf_debug("OK\n");
+	MRPT_LOG_DEBUG("OK\n");
 
 	// PRINT:
 	for (int i=0;i<rcv_dataLength;i++)
@@ -836,7 +834,7 @@ bool  CHokuyoURG::displayVersionInfo( )
 	}
 	rcv_data[rcv_dataLength]=0;
 
-	printf_debug(
+	MRPT_LOG_INFO_FMT(
 		"\n------------- HOKUYO Scanner: Version Information ------\n"
 		"%s\n"
 		"-------------------------------------------------------\n\n",rcv_data);
@@ -856,7 +854,7 @@ bool  CHokuyoURG::displaySensorInfo( TSensorInfo * out_data)
 
 	if (!checkCOMisOpen()) return false;
 
-	printf_debug("[CHokuyoURG::displaySensorInfo] Asking for info...");
+	MRPT_LOG_DEBUG("[CHokuyoURG::displaySensorInfo] Asking for info...");
 
 	// Send command:
 	os::sprintf(cmd,20, "PP\x0A");
@@ -878,7 +876,7 @@ bool  CHokuyoURG::displaySensorInfo( TSensorInfo * out_data)
 		return false;
 	}
 
-	printf_debug("OK\n");
+	MRPT_LOG_DEBUG("OK\n");
 
 	// PRINT:
 	for (int i=0;i<rcv_dataLength;i++)
@@ -888,7 +886,7 @@ bool  CHokuyoURG::displaySensorInfo( TSensorInfo * out_data)
 	}
 	rcv_data[rcv_dataLength]=0;
 
-	printf_debug(
+	MRPT_LOG_INFO_FMT(
 		"\n------------- HOKUYO Scanner: Product Information  ------\n"
 		"%s\n"
 		"-------------------------------------------------------\n\n",rcv_data);
@@ -951,7 +949,7 @@ bool  CHokuyoURG::startScanningMode()
 
 	if (!checkCOMisOpen()) return false;
 
-	printf_debug("[CHokuyoURG::startScanningMode] Starting scanning mode...");
+	MRPT_LOG_DEBUG("[CHokuyoURG::startScanningMode] Starting scanning mode...");
 
 	// Send command:
 	if(m_intensity)
@@ -978,7 +976,7 @@ bool  CHokuyoURG::startScanningMode()
 		return false;
 	}
 
-	printf_debug("OK\n");
+	MRPT_LOG_DEBUG("OK\n");
 	return true;
 }
 

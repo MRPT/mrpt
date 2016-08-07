@@ -240,7 +240,7 @@ void  CHolonomicFullEval::navigate(
 		}
 	}
 
-	if (best_eval=.0)
+	if (best_eval==.0)
 	{
 		// No way found!
 		desiredDirection = 0;

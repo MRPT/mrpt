@@ -105,13 +105,13 @@ CHMTSLAM::~CHMTSLAM()
 
 	// Wait for threads:
 	// ----------------------------------
-	printf_debug("[CHMTSLAM::destructor] Waiting for threads end...\n");
+	MRPT_LOG_DEBUG("[CHMTSLAM::destructor] Waiting for threads end...\n");
 
 	mrpt::system::joinThread( m_hThread_3D_viewer );
 	mrpt::system::joinThread( m_hThread_LSLAM );
 	mrpt::system::joinThread( m_hThread_TBI );
 
-	printf_debug("[CHMTSLAM::destructor] All threads finished.\n");
+	MRPT_LOG_DEBUG("[CHMTSLAM::destructor] All threads finished.\n");
 
 	// Save the resulting H.Map if logging
 	// --------------------------------------
@@ -131,11 +131,11 @@ CHMTSLAM::~CHMTSLAM()
 		}
 		catch(std::exception &e)
 		{
-			printf_debug("Ignoring exception at ~CHMTSLAM():\n%s",e.what());
+			MRPT_LOG_WARN(mrpt::format("Ignoring exception at ~CHMTSLAM():\n%s",e.what()));
 		}
 		catch(...)
 		{
-			printf_debug("Ignoring untyped exception at ~CHMTSLAM()");
+			MRPT_LOG_WARN("Ignoring untyped exception at ~CHMTSLAM()");
 		}
 	}
 

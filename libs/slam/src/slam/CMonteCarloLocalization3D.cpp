@@ -76,6 +76,7 @@ using namespace mrpt::slam;
 CMonteCarloLocalization3D::CMonteCarloLocalization3D( size_t M ) :
 	CPose3DPDFParticles(M)
 {
+	this->setLoggerName("CMonteCarloLocalization3D");
 }
 
 /*---------------------------------------------------------------
