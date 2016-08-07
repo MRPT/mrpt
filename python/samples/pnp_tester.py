@@ -187,8 +187,8 @@ def display_comparison_plot(t, arr, names, line_styles, title, xtitle, ytitle, y
 
     f, ax = plt.subplots()
     lines=[]
-    for i in np.arange(0,len(arr)):
-        l, =ax.plot(t,arr[i,:],label=names[i], lw=2, ls=line_styles[i])
+    for i in np.arange(0,len(names)):
+        l, =ax.plot(t,arr[:,i],label=names[i], lw=3, ls=line_styles[i])
         lines.append(l)
 
     leg = ax.legend(fancybox=True, shadow=True)
@@ -566,7 +566,7 @@ def time_comp():
     return tcomp_storage
 
 
-time_comp()
-#err_plot()
+#time_comp()
+err_plot()
 #err_statistics_fcn_sigma()
 #err_statistics_fcn_n()
