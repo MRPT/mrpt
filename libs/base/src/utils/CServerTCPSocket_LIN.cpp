@@ -40,10 +40,9 @@ using namespace mrpt::utils;
 CServerTCPSocket::CServerTCPSocket(
 	unsigned short		listenPort,
 	const std::string	&IPaddress,
-	int               	maxConnectionsWaiting,
-	bool				verbose
+	int               	maxConnectionsWaiting
 	) :
-		m_verbose(verbose)
+	COutputLogger("CServerTCPSocket")
 {
 	MRPT_TRY_START;
 	setupSocket( listenPort, IPaddress, maxConnectionsWaiting );
