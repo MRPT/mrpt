@@ -659,7 +659,8 @@ Eigen::Matrix4f ConsistencyTest::estimatePoseRANSAC( std::map<unsigned, unsigned
 //  Eigen::Matrix4f best_model;
   CMatrixDouble best_model;
 
-  math::RANSAC::execute(planeCorresp,
+  math::RANSAC ransac_executer;
+  ransac_executer.execute(planeCorresp,
                         ransacPlaneAlignment_fit,
                         ransac3Dplane_distance,
                         ransac3Dplane_degenerate,
