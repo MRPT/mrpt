@@ -371,7 +371,7 @@ bool  CHokuyoURG::setHighBaudrate()
 
 	if (!checkCOMisOpen()) return false;
 
-	MRPT_LOG_DEBUG_FMT("[CHokuyoURG::setHighBaudrate] Changing baudrate to 115200...");
+	MRPT_LOG_DEBUG("[CHokuyoURG::setHighBaudrate] Changing baudrate to 115200...");
 
 	// Send command:
 	os::strcpy(cmd,20, "SS115200\x0A");
@@ -393,7 +393,7 @@ bool  CHokuyoURG::setHighBaudrate()
 		return false;
 	}
 
-	MRPT_LOG_DEBUG_FMT("OK\n");
+	MRPT_LOG_DEBUG("OK\n");
 	return true;
 }
 
@@ -588,7 +588,7 @@ bool  CHokuyoURG::enableSCIP20()
 
 	if (!checkCOMisOpen()) return false;
 
-	MRPT_LOG_DEBUG_FMT("[CHokuyoURG::enableSCIP20] Changing protocol to SCIP2.0...");
+	MRPT_LOG_DEBUG("[CHokuyoURG::enableSCIP20] Changing protocol to SCIP2.0...");
 
 	// Send command:
 	os::strcpy(cmd,20, "SCIP2.0\x0A");
@@ -612,7 +612,7 @@ bool  CHokuyoURG::enableSCIP20()
 	}
 
 
-	MRPT_LOG_DEBUG_FMT("OK\n");
+	MRPT_LOG_DEBUG("OK\n");
 	return true;
 }
 
@@ -629,7 +629,7 @@ bool  CHokuyoURG::switchLaserOn()
 
 	if (!checkCOMisOpen()) return false;
 
-	MRPT_LOG_DEBUG_FMT("[CHokuyoURG::switchLaserOn] Switching laser ON...");
+	MRPT_LOG_DEBUG("[CHokuyoURG::switchLaserOn] Switching laser ON...");
 
 	// Send command:
 	os::strcpy(cmd,20, "BM\x0A");
@@ -651,7 +651,7 @@ bool  CHokuyoURG::switchLaserOn()
 		return false;
 	}
 
-	MRPT_LOG_DEBUG_FMT("OK\n");
+	MRPT_LOG_DEBUG("OK\n");
 
 	return true;
 }
@@ -669,7 +669,7 @@ bool  CHokuyoURG::switchLaserOff()
 
 	if (!checkCOMisOpen()) return false;
 
-	MRPT_LOG_DEBUG_FMT("[CHokuyoURG::switchLaserOff] Switching laser OFF...");
+	MRPT_LOG_DEBUG("[CHokuyoURG::switchLaserOff] Switching laser OFF...");
 
 	// Send command:
 	os::strcpy(cmd,20, "QT\x0A");
@@ -691,7 +691,7 @@ bool  CHokuyoURG::switchLaserOff()
 		return false;
 	}
 
-	MRPT_LOG_DEBUG_FMT("OK\n");
+	MRPT_LOG_DEBUG("OK\n");
 	return true;
 }
 
@@ -737,7 +737,7 @@ bool  CHokuyoURG::setMotorSpeed(int motoSpeed_rpm)
 		return false;
 	}
 
-	MRPT_LOG_DEBUG_FMT("OK\n");
+	MRPT_LOG_DEBUG("OK\n");
 	return true;
 }
 
@@ -776,7 +776,7 @@ bool  CHokuyoURG::setHighSensitivityMode(bool enabled)
 		return false;
 	}
 
-	MRPT_LOG_DEBUG_FMT("OK\n");
+	MRPT_LOG_DEBUG("OK\n");
 	return true;
 }
 
@@ -802,7 +802,7 @@ bool  CHokuyoURG::displayVersionInfo( )
 
 	if (!checkCOMisOpen()) return false;
 
-	MRPT_LOG_DEBUG_FMT("[CHokuyoURG::displayVersionInfo] Asking info...");
+	MRPT_LOG_DEBUG("[CHokuyoURG::displayVersionInfo] Asking info...");
 
 	// Send command:
 	os::sprintf(cmd,20, "VV\x0A");
@@ -824,7 +824,7 @@ bool  CHokuyoURG::displayVersionInfo( )
 		return false;
 	}
 
-	MRPT_LOG_DEBUG_FMT("OK\n");
+	MRPT_LOG_DEBUG("OK\n");
 
 	// PRINT:
 	for (int i=0;i<rcv_dataLength;i++)
@@ -854,7 +854,7 @@ bool  CHokuyoURG::displaySensorInfo( TSensorInfo * out_data)
 
 	if (!checkCOMisOpen()) return false;
 
-	MRPT_LOG_DEBUG_FMT("[CHokuyoURG::displaySensorInfo] Asking for info...");
+	MRPT_LOG_DEBUG("[CHokuyoURG::displaySensorInfo] Asking for info...");
 
 	// Send command:
 	os::sprintf(cmd,20, "PP\x0A");
@@ -876,7 +876,7 @@ bool  CHokuyoURG::displaySensorInfo( TSensorInfo * out_data)
 		return false;
 	}
 
-	MRPT_LOG_DEBUG_FMT("OK\n");
+	MRPT_LOG_DEBUG("OK\n");
 
 	// PRINT:
 	for (int i=0;i<rcv_dataLength;i++)
@@ -949,7 +949,7 @@ bool  CHokuyoURG::startScanningMode()
 
 	if (!checkCOMisOpen()) return false;
 
-	MRPT_LOG_DEBUG_FMT("[CHokuyoURG::startScanningMode] Starting scanning mode...");
+	MRPT_LOG_DEBUG("[CHokuyoURG::startScanningMode] Starting scanning mode...");
 
 	// Send command:
 	if(m_intensity)
@@ -976,7 +976,7 @@ bool  CHokuyoURG::startScanningMode()
 		return false;
 	}
 
-	MRPT_LOG_DEBUG_FMT("OK\n");
+	MRPT_LOG_DEBUG("OK\n");
 	return true;
 }
 

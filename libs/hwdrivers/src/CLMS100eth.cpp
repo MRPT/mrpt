@@ -209,7 +209,7 @@ void CLMS100Eth::generateCmd(const char *cmd)
 {
     if(strlen(cmd) > 995)
     {
-        MRPT_LOG_ERROR_FMT("Error: command is too long.");
+        MRPT_LOG_ERROR("Error: command is too long.");
         return;
     }
     m_cmd = format("%c%s%c",0x02,cmd,0x03);
@@ -250,7 +250,7 @@ bool CLMS100Eth::decodeScan(char* buff, CObservation2DRangeScan& outObservation)
 				THROW_EXCEPTION("Contamination error on LMS100");
 				return false;
 			}
-            MRPT_LOG_DEBUG_FMT("STATUS Ok.\n");
+            MRPT_LOG_DEBUG("STATUS Ok.\n");
             break;
         case 21 :
             if(strcmp(next, "DIST1"))
@@ -258,7 +258,7 @@ bool CLMS100Eth::decodeScan(char* buff, CObservation2DRangeScan& outObservation)
                 THROW_EXCEPTION("LMS100 is not configured to send distances.");
                 return false;
             }
-            MRPT_LOG_DEBUG_FMT("Distance : OK\n");
+            MRPT_LOG_DEBUG("Distance : OK\n");
             break;
         case 22 :
             //factor = strtod(next, NULL);
@@ -325,7 +325,7 @@ void CLMS100Eth::doProcessSimple(bool &outThereIsObservation, CObservation2DRang
     {
         hardwareError = true;
         outThereIsObservation = false;
-        MRPT_LOG_ERROR_FMT("doProcessSimple failed\n");
+        MRPT_LOG_ERROR("doProcessSimple failed\n");
     }
 }
 
