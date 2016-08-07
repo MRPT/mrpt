@@ -89,6 +89,7 @@ CMetricMapBuilderRBPF::~CMetricMapBuilderRBPF()
   ---------------------------------------------------------------*/
 void  CMetricMapBuilderRBPF::clear()
 {
+	MRPT_LOG_DEBUG("CMetricMapBuilderRBPF::clear() called.");
 	static CPose2D		nullPose(0,0,0);
 
 	// Reset traveled distances counters:
@@ -108,9 +109,7 @@ void  CMetricMapBuilderRBPF::processActionObservation(
 					CSensoryFrame		&observations )
 {
 	MRPT_START
-
-	// Enter critical section (updating map)
-	enterCriticalSection();
+	mrpt::synch::CCriticalSectionLocker csl(&critZoneChangingMap); // Enter critical section (updating map)
 
 	// Update the traveled distance estimations:
 	{
@@ -118,11 +117,13 @@ void  CMetricMapBuilderRBPF::processActionObservation(
 		CActionRobotMovement2DPtr act2D = action.getActionByClass<CActionRobotMovement2D>();
 		if (act3D)
 		{
+			MRPT_LOG_DEBUG("processActionObservation(): Input action is CActionRobotMovement3D");
 			odoIncrementSinceLastMapUpdate += act3D->poseChange.getMeanVal();
 			odoIncrementSinceLastLocalization += act3D->poseChange;
 		}
 		else if (act2D)
 		{
+			MRPT_LOG_DEBUG("processActionObservation(): Input action is CActionRobotMovement2D");
 			odoIncrementSinceLastMapUpdate += act2D->poseChange->getMeanVal();
 			odoIncrementSinceLastLocalization.mean += act2D->poseChange->getMeanVal();
 		}
@@ -162,7 +163,7 @@ void  CMetricMapBuilderRBPF::processActionObservation(
 	if (do_map_update)
 		do_localization = true;
 
-	MRPT_LOG_DEBUG(mrpt::format("do_map_update=%s do_localization=%s",do_map_update ? "yes":"no", do_localization ? "yes":"no" ));
+	MRPT_LOG_DEBUG(mrpt::format("do_map_update=%s do_localization=%s",do_map_update ? "YES":"NO", do_localization ? "YES":"NO" ));
 
 	if (do_localization)
 	{
@@ -192,12 +193,14 @@ void  CMetricMapBuilderRBPF::processActionObservation(
 			}
 		}
 
+		MRPT_LOG_DEBUG_STREAM << "odoIncrementSinceLastLocalization before resetting = " << odoIncrementSinceLastLocalization.mean;
 		// Reset distance counters:
 		odoIncrementSinceLastLocalization.mean.setFromValues(0,0,0,0,0,0);
 		odoIncrementSinceLastLocalization.cov.zeros();
 
 		CParticleFilter	pf;
 		pf.m_options = m_PF_options;
+		pf.setVerbosityLevel( this->getMinLoggingLevel() );
 
 		pf.executeOn( mapPDF, &fakeActs, &observations );
 
@@ -224,7 +227,7 @@ void  CMetricMapBuilderRBPF::processActionObservation(
 
 		// Update the particles' maps:
 		// -------------------------------------------------
-		MRPT_LOG_INFO(" 3) New observation inserted into the map!\n");
+		MRPT_LOG_INFO("New observation inserted into the map.");
 
 		// Add current observation to the map:
 		mapPDF.insertObservation(observations);
@@ -241,9 +244,7 @@ void  CMetricMapBuilderRBPF::processActionObservation(
 	for (CMultiMetricMapPDF::CParticleList::iterator	it = mapPDF.m_particles.begin(); it!=mapPDF.m_particles.end();++it)
 		it->d->mapTillNow.auxParticleFilterCleanUp();
 
-	leaveCriticalSection(); /* Leaving critical section (updating map) */
-
-	MRPT_END_WITH_CLEAN_UP( leaveCriticalSection(); /* Leaving critical section (updating map) */ );
+	MRPT_END;
 }
 
 /*---------------------------------------------------------------

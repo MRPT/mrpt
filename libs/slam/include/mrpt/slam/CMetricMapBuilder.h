@@ -99,13 +99,15 @@ namespace slam
 		/** Options for the algorithm */
 		struct SLAM_IMPEXP TOptions
 		{
-			TOptions() :
+			TOptions(mrpt::utils::VerbosityLevel &verb_level_ref ) :
+				verbosity_level (verb_level_ref),
 				enableMapUpdating(true),
 				debugForceInsertion(false),
 				alwaysInsertByClass()
 			{
 			}
 
+			mrpt::utils::VerbosityLevel & verbosity_level;
 			bool	enableMapUpdating;   //!< Enable map updating, default is true.
 			bool	debugForceInsertion; //!< Always insert into map. Default is false: detect if necesary.
 
