@@ -34,8 +34,6 @@ MRPT_WARNING("Including <mrpt/hwdrivers.h> makes compilation much slower, consid
 #include <mrpt/hwdrivers/CRaePID.h>
 #include <mrpt/hwdrivers/CImpinjRFID.h>
 #include <mrpt/hwdrivers/CSerialPort.h>
-#include <mrpt/hwdrivers/CBoardDLMS.h>
-#include <mrpt/hwdrivers/CBoardIR.h>
 #include <mrpt/hwdrivers/CIMUXSens.h>
 #include <mrpt/hwdrivers/CIMUXSens_MT4.h>
 #include <mrpt/hwdrivers/CActivMediaRobotBase.h>

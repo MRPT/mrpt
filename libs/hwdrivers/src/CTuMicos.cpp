@@ -521,12 +521,12 @@ bool CTuMicos::init(const string &port){
 	}
 	catch(std::exception &e)
 	{
-		printf_debug("Error initializating: %s\n",e.what());
+		MRPT_LOG_ERROR_STREAM << "Error initializating: " << e.what();
 		return false;
 	}
 	catch(...)
 	{
-		printf_debug("Error initializating\n");
+		MRPT_LOG_ERROR_STREAM << "Error initializating.";
 		return false;
 	}
 

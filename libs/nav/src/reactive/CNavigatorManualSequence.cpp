@@ -69,12 +69,12 @@ void CNavigatorManualSequence::navigationStep()
 	{
 		const TVelCmd &krc = programmed_orders.begin()->second;
 		// Send cmd:
-		printf_debug("[CNavigatorManualSequence] Sending cmd: t=%f\n",programmed_orders.begin()->first);
+		logFmt( mrpt::utils::LVL_DEBUG, "[CNavigatorManualSequence] Sending cmd: t=%f\n",programmed_orders.begin()->first);
 
 		if (! m_robot.changeSpeeds(krc.cmd_vel) )
 		{
 			m_robot.stop();
-			std::cerr << "[CNavigatorManualSequence] **ERROR** sending cmd to robot." << std::endl;
+			logFmt( mrpt::utils::LVL_ERROR, "[CNavigatorManualSequence] **ERROR** sending cmd to robot.");
 			return;
 		}
 		// remove:

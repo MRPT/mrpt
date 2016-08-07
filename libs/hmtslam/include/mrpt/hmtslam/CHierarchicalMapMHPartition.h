@@ -15,7 +15,7 @@
 
 #include <mrpt/poses/CPose3DPDFSOG.h>
 #include <mrpt/poses/CPose3DPDFGaussian.h>
-#include <mrpt/utils/CDebugOutputCapable.h>
+#include <mrpt/utils/COutputLogger.h>
 #include <mrpt/opengl/opengl_frwds.h>
 
 #include <map>
@@ -31,7 +31,7 @@ namespace mrpt
 		 * \sa CHierarchicalMHMap, CHMHMapArc, CHMHMapNode
 		  * \ingroup mrpt_hmtslam_grp
 		 */
-		class HMTSLAM_IMPEXP CHierarchicalMapMHPartition : public mrpt::utils::CDebugOutputCapable
+		class HMTSLAM_IMPEXP CHierarchicalMapMHPartition : public mrpt::utils::COutputLogger
 		{
 		protected:
 			/** The internal list of nodes and arcs in the whole hierarchical model.

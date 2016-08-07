@@ -34,9 +34,6 @@ using namespace mrpt::poses;
 using namespace mrpt::math;
 using namespace std;
 
-#define HMTSLAM_LSLAM_VERBOSE   1
-//#define HMTSLAM_LSLAM_VERBOSE   0
-
 /*---------------------------------------------------------------
 
 						CHMTSLAM_LSLAM
@@ -59,7 +56,7 @@ void CHMTSLAM::thread_LSLAM()
 	{
 		// Start thread:
 		// -------------------------
-		obj->printf_debug("[thread_LSLAM] Thread started (ID=0x%08lX)\n", mrpt::system::getCurrentThreadId() );
+		obj->logFmt(mrpt::utils::LVL_DEBUG,"[thread_LSLAM] Thread started (ID=0x%08lX)\n", mrpt::system::getCurrentThreadId() );
 
 		// --------------------------------------------
 		//    The main loop
@@ -135,15 +132,13 @@ void CHMTSLAM::thread_LSLAM()
 						// ----------------------------------------------
 						if (it->second.m_posesPendingAddPartitioner.size()>5) // Option: Do this only one out of N new added poses:
 						{
-#if HMTSLAM_LSLAM_VERBOSE
 							static CTicTac	tictac;
 							tictac.Tic();
-#endif
+
 							unsigned nPosesToInsert = it->second.m_posesPendingAddPartitioner.size();
 							TMessageLSLAMfromAAPtr msgFromAA = CHMTSLAM::areaAbstraction( &it->second, it->second.m_posesPendingAddPartitioner );
-#if HMTSLAM_LSLAM_VERBOSE
-							obj->printf_debug("[AreaAbstraction] Took %.03fms to insert %u new poses.               AA\n", 1000*tictac.Tac(), nPosesToInsert );
-#endif
+
+							obj->logFmt(mrpt::utils::LVL_DEBUG,"[AreaAbstraction] Took %.03fms to insert %u new poses.               AA\n", 1000*tictac.Tac(), nPosesToInsert );
 
 							// Empty the list, it's done for now:
 							it->second.m_posesPendingAddPartitioner.clear();
@@ -165,19 +160,17 @@ void CHMTSLAM::thread_LSLAM()
 						{
 							for (TNodeIDList::const_iterator areaID=it->second.m_areasPendingTBI.begin();areaID!=it->second.m_areasPendingTBI.end();++areaID)
 							{
-#if HMTSLAM_LSLAM_VERBOSE
+
 								static CTicTac	tictac;
 								tictac.Tic();
-#endif
 								if (obj->m_options.random_seed)
 									randomGenerator.randomize(obj->m_options.random_seed);
 
 								TMessageLSLAMfromTBIPtr msgFromTBI = CHMTSLAM::TBI_main_method(
 									&it->second,
 									*areaID );
-#if HMTSLAM_LSLAM_VERBOSE
-								obj->printf_debug("[TBI] Took %.03fms	                     TBI\n", 1000*tictac.Tac() );
-#endif
+
+								obj->logFmt(mrpt::utils::LVL_DEBUG,"[TBI] Took %.03fms	                     TBI\n", 1000*tictac.Tac() );
 
 								// -----------------------------------------------------------------------
 								//   Process the set of (potentially) several topological hypotheses:
@@ -219,7 +212,7 @@ void CHMTSLAM::thread_LSLAM()
 		// -------------------------
 		time_t timCreat,timExit; double timCPU=0;
 		try { mrpt::system::getCurrentThreadTimes( timCreat,timExit,timCPU); } catch(...) {};
-		obj->printf_debug("[thread_LSLAM] Thread finished. CPU time used:%.06f secs \n",timCPU);
+		obj->logFmt(mrpt::utils::LVL_DEBUG,"[thread_LSLAM] Thread finished. CPU time used:%.06f secs \n",timCPU);
 		obj->m_terminationFlag_LSLAM = true;
 
 	}
@@ -229,7 +222,7 @@ void CHMTSLAM::thread_LSLAM()
 
 		// Release semaphores:
 
-		if (e.what())  obj->printf_debug("%s", e.what() );
+		if (e.what())  obj->logFmt(mrpt::utils::LVL_DEBUG,"%s", e.what() );
 
 		// DEBUG: Terminate application:
 		obj->m_terminateThreads	= true;
@@ -240,8 +233,8 @@ void CHMTSLAM::thread_LSLAM()
 	{
 		obj->m_terminationFlag_LSLAM = true;
 
-		obj->printf_debug("\n---------------------- EXCEPTION CAUGHT! ---------------------\n");
-		obj->printf_debug(" In CHierarchicalMappingFramework::thread_LSLAM. Unexpected runtime error!!\n");
+		obj->logFmt(mrpt::utils::LVL_DEBUG,"\n---------------------- EXCEPTION CAUGHT! ---------------------\n");
+		obj->logFmt(mrpt::utils::LVL_DEBUG," In CHierarchicalMappingFramework::thread_LSLAM. Unexpected runtime error!!\n");
 
 		// Release semaphores:
 
@@ -288,9 +281,8 @@ void CHMTSLAM::LSLAM_process_message_from_AA( const TMessageLSLAMfromAA &myMsg )
 
 		CTicTac    tictac;
 		tictac.Tic();
-#if HMTSLAM_LSLAM_VERBOSE
-		printf_debug("[LSLAM_proc_msg_AA] Beginning of Msg from AA processing...              [\n" );
-#endif
+		logFmt(mrpt::utils::LVL_INFO,"[LSLAM_proc_msg_AA] Beginning of Msg from AA processing...              [\n" );
+
 		// Get the corresponding LMH:
 		aligned_containers<THypothesisID, CLocalMetricHypothesis>::map_t::iterator  itLMH = m_LMHs.find( myMsg.hypothesisID );
 		ASSERT_( itLMH!=m_LMHs.end() );
@@ -351,22 +343,20 @@ void CHMTSLAM::LSLAM_process_message_from_AA( const TMessageLSLAMfromAA &myMsg )
 
 		static int DEBUG_STEP = 0;
 		DEBUG_STEP++;
-		printf_debug("[LSLAM_proc_msg_AA] DEBUG_STEP=%i\n",DEBUG_STEP);
+		logFmt(mrpt::utils::LVL_INFO,"[LSLAM_proc_msg_AA] DEBUG_STEP=%i\n",DEBUG_STEP);
 		if (DEBUG_STEP==3)
 		{
 			CMatrix	A(3,3);
 			DEBUG_STEP = DEBUG_STEP + 0;
 		}
-#if HMTSLAM_LSLAM_VERBOSE
 		if (0)
 		{
 			CCriticalSectionLocker  locker( &m_map_cs );
 			utils::CStringList s;
 			m_map.dumpAsText(s);
 			s.saveToFile( format("%s/HMAP_txt/HMAP_%05i_before.txt",m_options.LOG_OUTPUT_DIR.c_str(), DEBUG_STEP ) );
-			printf_debug("[LSLAM_proc_msg_AA] Saved HMAP_%05i_before.txt\n",DEBUG_STEP);
+			logFmt(mrpt::utils::LVL_INFO,"[LSLAM_proc_msg_AA] Saved HMAP_%05i_before.txt\n",DEBUG_STEP);
 		}
-#endif
 
 		vector< TPoseIDList >::const_iterator	it;
 		for ( i=0, it= myMsg.partitions.begin(); it!=myMsg.partitions.end();++it, i++)
@@ -463,13 +453,11 @@ void CHMTSLAM::LSLAM_process_message_from_AA( const TMessageLSLAMfromAA &myMsg )
 		} // end for i
 
 
-#if HMTSLAM_LSLAM_VERBOSE
 		{
-			printf_debug("[LSLAM_proc_msg_AA] partIdx2Areas:\n");
+			logFmt(mrpt::utils::LVL_INFO,"[LSLAM_proc_msg_AA] partIdx2Areas:\n");
 			for (size_t i=0;i<partIdx2Areas.size();i++)
-				printf_debug("       Partition #%i -> AREA_ID  %i ('%s')\n",(int)i,(int)partIdx2Areas[i], m_map.getNodeByID(partIdx2Areas[i])->m_label.c_str() );
+				logFmt(mrpt::utils::LVL_INFO,"       Partition #%i -> AREA_ID  %i ('%s')\n",(int)i,(int)partIdx2Areas[i], m_map.getNodeByID(partIdx2Areas[i])->m_label.c_str() );
 		}
-#endif
 
 
 		// --------------------------------------------------------
@@ -524,7 +512,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA( const TMessageLSLAMfromAA &myMsg )
 		const CHMHMapNode::TNodeID curAreaID = LMH->m_nodeIDmemberships[ LMH->m_currentRobotPose ];
 
 		if (curAreaID!=oldAreaID)
-			printf_debug("[LSLAM_proc_msg_AA] Current area has changed: %i -> %i\n",(int)oldAreaID,(int)curAreaID );
+			logFmt(mrpt::utils::LVL_INFO,"[LSLAM_proc_msg_AA] Current area has changed: %i -> %i\n",(int)oldAreaID,(int)curAreaID );
 
 
 		// --------------------------------------------------------
@@ -537,16 +525,16 @@ void CHMTSLAM::LSLAM_process_message_from_AA( const TMessageLSLAMfromAA &myMsg )
 
 #if 1
 			{
-				printf_debug("[LSLAM_proc_msg_AA] Old  neighbors: ");
+				logFmt(mrpt::utils::LVL_INFO,"[LSLAM_proc_msg_AA] Old  neighbors: ");
 				for (TNodeIDSet::const_iterator it=neighbors_before.begin();it!=neighbors_before.end();++it)
-					printf_debug("%i ",(int)*it);
-				printf_debug("\n");
+					logFmt(mrpt::utils::LVL_INFO,"%i ",(int)*it);
+				logFmt(mrpt::utils::LVL_INFO,"\n");
 			}
 			{
-				printf_debug("[LSLAM_proc_msg_AA] Cur. neighbors: ");
+				logFmt(mrpt::utils::LVL_INFO,"[LSLAM_proc_msg_AA] Cur. neighbors: ");
 				for (TNodeIDSet::const_iterator it=LMH->m_neighbors.begin();it!=LMH->m_neighbors.end();++it)
-					printf_debug("%i ",(int)*it);
-				printf_debug("\n");
+					logFmt(mrpt::utils::LVL_INFO,"%i ",(int)*it);
+				logFmt(mrpt::utils::LVL_INFO,"\n");
 			}
 #endif
 
@@ -558,11 +546,11 @@ void CHMTSLAM::LSLAM_process_message_from_AA( const TMessageLSLAMfromAA &myMsg )
 
 				if (!node)
 				{
-					printf_debug("[LSLAM_proc_msg_AA] Area %i has been removed from the neighbors & no longer exists in the HMAP.\n", (int)*pBef);
+					logFmt(mrpt::utils::LVL_INFO,"[LSLAM_proc_msg_AA] Area %i has been removed from the neighbors & no longer exists in the HMAP.\n", (int)*pBef);
 				}
 				else
 				{
-					printf_debug("[LSLAM_proc_msg_AA] Deleting area %i\n", (int)node->getID() );
+					logFmt(mrpt::utils::LVL_INFO,"[LSLAM_proc_msg_AA] Deleting area %i\n", (int)node->getID() );
 
 					// ----------------------------------------------------------------------------
 					//  Check if arcs to nodes out of the LMH must be modified coz this deletion
@@ -715,10 +703,8 @@ void CHMTSLAM::LSLAM_process_message_from_AA( const TMessageLSLAMfromAA &myMsg )
 								Delta_b_c.cov.zeros();  // *********** DEBUG !!!!!!!!!!!
 								Delta_b_c.cov(0,0)=Delta_b_c.cov(1,1)=square(0.04);
 								Delta_b_c.cov(3,3)=square(DEG2RAD(1));
-	#if HMTSLAM_LSLAM_VERBOSE
-								cout << "b_a: " << Delta_b_a.mean << endl << "a_c: " << Delta_a_c.mean << endl << "b_a + a_c: " << Delta_b_c.mean << endl;
-								//mrpt::system::pause();
-	#endif
+
+								MRPT_LOG_DEBUG_STREAM << "b_a: " << Delta_b_a.mean << endl << "a_c: " << Delta_a_c.mean << endl << "b_a + a_c: " << Delta_b_c.mean << endl;
 
 								// ------------------------------------------------
 								// Finally, add the new annotation to arc "b->c":
@@ -748,9 +734,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA( const TMessageLSLAMfromAA &myMsg )
 								if (!arcDeltaIsInverted)
 								{  // arc: b->c
 									newArc->m_annotations.set(ARC_ANNOTATION_DELTA, CPose3DPDFGaussianPtr( new CPose3DPDFGaussian(Delta_b_c) ),LMH->m_ID );
-#if HMTSLAM_LSLAM_VERBOSE
-									cout << "[LSLAM_proc_msg_AA] Setting arc " << nodeB->getID() << " -> " << node_c->getID() << " : " << Delta_b_c.mean << " cov = " << Delta_b_c.cov.inMatlabFormat() << endl;
-#endif
+									MRPT_LOG_DEBUG_STREAM << "[LSLAM_proc_msg_AA] Setting arc " << nodeB->getID() << " -> " << node_c->getID() << " : " << Delta_b_c.mean << " cov = " << Delta_b_c.cov.inMatlabFormat() << endl;
 									newArc->m_annotations.setElemental(ARC_ANNOTATION_DELTA_SRC_POSEID, refPoseAt_b ,LMH->m_ID );
 									newArc->m_annotations.setElemental(ARC_ANNOTATION_DELTA_TRG_POSEID, refPoseAt_c ,LMH->m_ID );
 								}
@@ -759,9 +743,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA( const TMessageLSLAMfromAA &myMsg )
 									CPose3DPDFGaussian Delta_b_c_inv;
 									Delta_b_c.inverse( Delta_b_c_inv );
 
-#if HMTSLAM_LSLAM_VERBOSE
-									cout << "[LSLAM_proc_msg_AA] Setting arc " << nodeB->getID() << " <- " << node_c->getID() << " : " << Delta_b_c_inv.mean << " cov = " << Delta_b_c_inv.cov.inMatlabFormat() << endl;
-#endif
+									MRPT_LOG_DEBUG_STREAM << "[LSLAM_proc_msg_AA] Setting arc " << nodeB->getID() << " <- " << node_c->getID() << " : " << Delta_b_c_inv.mean << " cov = " << Delta_b_c_inv.cov.inMatlabFormat() << endl;
 									newArc->m_annotations.set(ARC_ANNOTATION_DELTA,CPose3DPDFGaussianPtr( new CPose3DPDFGaussian(Delta_b_c_inv)),LMH->m_ID );
 									newArc->m_annotations.setElemental(ARC_ANNOTATION_DELTA_SRC_POSEID, refPoseAt_c ,LMH->m_ID );
 									newArc->m_annotations.setElemental(ARC_ANNOTATION_DELTA_TRG_POSEID, refPoseAt_b ,LMH->m_ID );
@@ -803,7 +785,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA( const TMessageLSLAMfromAA &myMsg )
 		if ( curAreaID != oldAreaID )
 		{
 			LMH->m_areasPendingTBI.insert(curAreaID); // Add to TBI list
-			printf_debug("[LSLAM_proc_msg_AA] Current area changed: enqueing area %i for TBI.\n", (int)curAreaID );
+			logFmt(mrpt::utils::LVL_INFO,"[LSLAM_proc_msg_AA] Current area changed: enqueing area %i for TBI.\n", (int)curAreaID );
 		}
 		else
 		{
@@ -812,7 +794,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA( const TMessageLSLAMfromAA &myMsg )
 			{
 				cntAddTBI = 0;
 				LMH->m_areasPendingTBI.insert(curAreaID); // Add to TBI list
-				printf_debug("[LSLAM_proc_msg_AA] Current area %i enqued for TBI (routine check).\n", (int)curAreaID );
+				logFmt(mrpt::utils::LVL_INFO,"[LSLAM_proc_msg_AA] Current area %i enqued for TBI (routine check).\n", (int)curAreaID );
 			}
 		}
 
@@ -863,7 +845,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA( const TMessageLSLAMfromAA &myMsg )
 					poseID_trg = myMsg.partitions[idx_area_a][0];
 
 					area_a->m_annotations.setElemental( NODE_ANNOTATION_REF_POSEID, poseID_trg, LMH->m_ID );
-					printf_debug("[LSLAM_proc_msg_AA] Changing reference poseID of area '%i' to pose '%i'\n", (int)area_a_ID,(int)poseID_trg);
+					logFmt(mrpt::utils::LVL_INFO,"[LSLAM_proc_msg_AA] Changing reference poseID of area '%i' to pose '%i'\n", (int)area_a_ID,(int)poseID_trg);
 
 					// Reconsider the arcs of this area again, since the ref. poseID has changed:
 					/*for ( list_searchable<TPairNodeIDs>::iterator it=lstAlreadyUpdated.begin();it!=lstAlreadyUpdated.end();  )
@@ -892,7 +874,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA( const TMessageLSLAMfromAA &myMsg )
 						poseID_trg = myMsg.partitions[idx_area_a][0];
 						area_a->m_annotations.setElemental( NODE_ANNOTATION_REF_POSEID, poseID_trg, LMH->m_ID );
 
-						printf_debug("[LSLAM_proc_msg_AA] Changing reference poseID of area '%i' to pose '%i'\n", (int)area_a_ID,(int)poseID_trg);
+						logFmt(mrpt::utils::LVL_INFO,"[LSLAM_proc_msg_AA] Changing reference poseID of area '%i' to pose '%i'\n", (int)area_a_ID,(int)poseID_trg);
 
 						// ------------------------------------------------------------------------
 						// Look for existing arcs from "area_a"<->other areas outside the LMH to
@@ -933,10 +915,9 @@ void CHMTSLAM::LSLAM_process_message_from_AA( const TMessageLSLAMfromAA &myMsg )
 									newDelta.cov(0,0)=newDelta.cov(1,1)=square(0.04);
 									newDelta.cov(3,3)=square(DEG2RAD(1));
 
-#if HMTSLAM_LSLAM_VERBOSE
-									cout << "[LSLAM_proc_msg_AA] Updating arc " << nodeFrom << " -> " << nodeTo << " OLD: " << oldDelta->mean << " cov = " << oldDelta->cov.inMatlabFormat() << endl;
-									cout << "[LSLAM_proc_msg_AA] Updating arc " << nodeFrom << " -> " << nodeTo << " NEW: " << newDelta.mean << " cov = " << newDelta.cov.inMatlabFormat() << endl;
-#endif
+									MRPT_LOG_DEBUG_STREAM<< "[LSLAM_proc_msg_AA] Updating arc " << nodeFrom << " -> " << nodeTo << " OLD: " << oldDelta->mean << " cov = " << oldDelta->cov.inMatlabFormat() << endl;
+									MRPT_LOG_DEBUG_STREAM<< "[LSLAM_proc_msg_AA] Updating arc " << nodeFrom << " -> " << nodeTo << " NEW: " << newDelta.mean << " cov = " << newDelta.cov.inMatlabFormat() << endl;
+
 									theArc->m_annotations.set(ARC_ANNOTATION_DELTA, CPose3DPDFGaussianPtr( new CPose3DPDFGaussian(newDelta)),LMH->m_ID );
 									theArc->m_annotations.setElemental(ARC_ANNOTATION_DELTA_SRC_POSEID, poseID_trg ,LMH->m_ID );
 								}
@@ -962,10 +943,9 @@ void CHMTSLAM::LSLAM_process_message_from_AA( const TMessageLSLAMfromAA &myMsg )
 									newDelta.cov(0,0)=newDelta.cov(1,1)=square(0.04);
 									newDelta.cov(3,3)=square(DEG2RAD(1));
 
-#if HMTSLAM_LSLAM_VERBOSE
-									cout << "[LSLAM_proc_msg_AA] Updating arc " << nodeFrom << " <- " << nodeTo << " OLD: " << oldDelta->mean << " cov = " << oldDelta->cov.inMatlabFormat() << endl;
-									cout << "[LSLAM_proc_msg_AA] Updating arc " << nodeFrom << " <- " << nodeTo << " NEW: " << newDelta.mean << " cov = " << newDelta.cov.inMatlabFormat() << endl;
-#endif
+									MRPT_LOG_DEBUG_STREAM<< "[LSLAM_proc_msg_AA] Updating arc " << nodeFrom << " <- " << nodeTo << " OLD: " << oldDelta->mean << " cov = " << oldDelta->cov.inMatlabFormat() << endl;
+									MRPT_LOG_DEBUG_STREAM<< "[LSLAM_proc_msg_AA] Updating arc " << nodeFrom << " <- " << nodeTo << " NEW: " << newDelta.mean << " cov = " << newDelta.cov.inMatlabFormat() << endl;
+
 									theArc->m_annotations.set(ARC_ANNOTATION_DELTA,CPose3DPDFGaussianPtr(new CPose3DPDFGaussian(newDelta)),LMH->m_ID );
 									theArc->m_annotations.setElemental(ARC_ANNOTATION_DELTA_TRG_POSEID, poseID_trg ,LMH->m_ID );
 								}
@@ -1016,7 +996,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA( const TMessageLSLAMfromAA &myMsg )
 							// Add 'poseID_closests': this should happen when the closest area is a new one:
 							area_b->m_annotations.setElemental( NODE_ANNOTATION_REF_POSEID, poseID_closests, LMH->m_ID );
 							poseID_src = poseID_closests;
-							printf_debug("[LSLAM_proc_msg_AA] Changing reference poseID of area '%i' to pose '%i' (creat. annot)\n", (int)area_b_ID,(int)poseID_closests);
+							logFmt(mrpt::utils::LVL_INFO,"[LSLAM_proc_msg_AA] Changing reference poseID of area '%i' to pose '%i' (creat. annot)\n", (int)area_b_ID,(int)poseID_closests);
 						}
 						ASSERT_(poseID_src != POSEID_INVALID);
 
@@ -1073,13 +1053,13 @@ void CHMTSLAM::LSLAM_process_message_from_AA( const TMessageLSLAMfromAA &myMsg )
 
 #if	1
 		{
-			printf_debug("[LSLAM_proc_msg_AA] lstInternalArcsToCreate contains %i entries:\n",(int)lstInternalArcsToCreate.size());
+			logFmt(mrpt::utils::LVL_INFO,"[LSLAM_proc_msg_AA] lstInternalArcsToCreate contains %i entries:\n",(int)lstInternalArcsToCreate.size());
 			for ( list_searchable<TPairNodeIDs>::const_iterator arcCreat=lstInternalArcsToCreate.begin();arcCreat!=lstInternalArcsToCreate.end();++arcCreat)
 			{
 				// Get the reference pose IDs:
 				CHMHMapNode::TNodeID	closestAreaID	= arcCreat->first;
 				CHMHMapNode::TNodeID	newAreaID		 = arcCreat->second;
-				printf_debug("  AREA %i <-> AREA %i\n", (int)closestAreaID, (int)newAreaID );
+				logFmt(mrpt::utils::LVL_INFO,"  AREA %i <-> AREA %i\n", (int)closestAreaID, (int)newAreaID );
 			}
 		}
 #endif
@@ -1116,13 +1096,12 @@ void CHMTSLAM::LSLAM_process_message_from_AA( const TMessageLSLAMfromAA &myMsg )
 				relPoseGauss.cov(0,0)=relPoseGauss.cov(1,1)=square(0.04);
 				relPoseGauss.cov(3,3)=square(DEG2RAD(1));
 
-#if HMTSLAM_LSLAM_VERBOSE
-				printf_debug("[LSLAM_proc_msg_AA] Creating arc %i[ref:%i] -> %i[ref:%i] = (%.03f,%.03f,%.03fdeg)\n",
+				logFmt(mrpt::utils::LVL_INFO,"[LSLAM_proc_msg_AA] Creating arc %i[ref:%i] -> %i[ref:%i] = (%.03f,%.03f,%.03fdeg)\n",
 					(int)area_a_ID,(int)area_a_poseID_src,
 					(int)area_b_ID,(int)area_b_poseID_trg,
 					relPoseGauss.mean.x(),relPoseGauss.mean.y(),RAD2DEG(relPoseGauss.mean.yaw())
 					);
-#endif
+
 				// Did an arc already exist?
 				// Look into existing arcs, in both directions:
 				bool		 arcDeltaIsInverted;
@@ -1149,9 +1128,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA( const TMessageLSLAMfromAA &myMsg )
 				// Add data to arc:
 				if (!arcDeltaIsInverted)
 				{
-#if HMTSLAM_LSLAM_VERBOSE
-					cout << "[LSLAM_proc_msg_AA] Updating int. arc " << area_a_ID << " -> " << area_b_ID << " : " << relPoseGauss.mean << " cov = " << relPoseGauss.cov.inMatlabFormat() << endl;
-#endif
+					MRPT_LOG_DEBUG_STREAM<< "[LSLAM_proc_msg_AA] Updating int. arc " << area_a_ID << " -> " << area_b_ID << " : " << relPoseGauss.mean << " cov = " << relPoseGauss.cov.inMatlabFormat() << endl;
 					newArc->m_annotations.set(ARC_ANNOTATION_DELTA, CPose3DPDFGaussianPtr(new CPose3DPDFGaussian(relPoseGauss)),LMH->m_ID );
 					newArc->m_annotations.setElemental(ARC_ANNOTATION_DELTA_SRC_POSEID, area_a_poseID_src ,LMH->m_ID );
 					newArc->m_annotations.setElemental(ARC_ANNOTATION_DELTA_TRG_POSEID, area_b_poseID_trg ,LMH->m_ID );
@@ -1161,9 +1138,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA( const TMessageLSLAMfromAA &myMsg )
 					CPose3DPDFGaussian	relPoseInv;
 					relPoseGauss.inverse(relPoseInv);
 
-#if HMTSLAM_LSLAM_VERBOSE
-					cout << "[LSLAM_proc_msg_AA] Updating int. arc " << area_a_ID << " <- " << area_b_ID << " : " << relPoseInv.mean << " cov = " << relPoseInv.cov.inMatlabFormat() << endl;
-#endif
+					MRPT_LOG_DEBUG_STREAM<< "[LSLAM_proc_msg_AA] Updating int. arc " << area_a_ID << " <- " << area_b_ID << " : " << relPoseInv.mean << " cov = " << relPoseInv.cov.inMatlabFormat() << endl;
 					newArc->m_annotations.set(ARC_ANNOTATION_DELTA,CPose3DPDFGaussianPtr( new CPose3DPDFGaussian(relPoseInv)),LMH->m_ID );
 
 					newArc->m_annotations.setElemental(ARC_ANNOTATION_DELTA_SRC_POSEID, area_b_poseID_trg,LMH->m_ID );
@@ -1208,15 +1183,11 @@ void CHMTSLAM::LSLAM_process_message_from_AA( const TMessageLSLAMfromAA &myMsg )
 						{
 							// it doesn't! Delete this arc:
 							arc->m_annotations.remove(ARC_ANNOTATION_DELTA,LMH->m_ID );
-#if HMTSLAM_LSLAM_VERBOSE
-							printf_debug("[LSLAM_proc_msg_AA] Deleting annotation of arc: %lu-%lu\n", (long unsigned)nodeFromID, (long unsigned) nodeToID);
-#endif
+							logFmt(mrpt::utils::LVL_INFO,"[LSLAM_proc_msg_AA] Deleting annotation of arc: %lu-%lu\n", (long unsigned)nodeFromID, (long unsigned) nodeToID);
 							// Any other ARC_ANNOTATION_DELTA? If not, delete the entire arc:
 							if (! arc->m_annotations.getAnyHypothesis(ARC_ANNOTATION_DELTA) )
 							{
-#if HMTSLAM_LSLAM_VERBOSE
-								printf_debug("[LSLAM_proc_msg_AA] Deleting empty arc: %lu-%lu\n", (long unsigned)nodeFromID, (long unsigned) nodeToID);
-#endif
+								logFmt(mrpt::utils::LVL_INFO,"[LSLAM_proc_msg_AA] Deleting empty arc: %lu-%lu\n", (long unsigned)nodeFromID, (long unsigned) nodeToID);
 								arc.clear();
 							}
 						}
@@ -1226,16 +1197,14 @@ void CHMTSLAM::LSLAM_process_message_from_AA( const TMessageLSLAMfromAA &myMsg )
 			} // end for each neighbor
 		} // end lock m_map_cs
 
-#if HMTSLAM_LSLAM_VERBOSE
 		if (0)
 		{
 			CCriticalSectionLocker  locker( &m_map_cs );
 			utils::CStringList s;
 			m_map.dumpAsText(s);
 			s.saveToFile( format("%s/HMAP_txt/HMAP_%05i_mid.txt",m_options.LOG_OUTPUT_DIR.c_str(), DEBUG_STEP ) );
-			printf_debug("[LSLAM_proc_msg_AA] Saved HMAP_%05i_mid.txt\n",DEBUG_STEP);
+			logFmt(mrpt::utils::LVL_INFO,"[LSLAM_proc_msg_AA] Saved HMAP_%05i_mid.txt\n",DEBUG_STEP);
 		}
-#endif
 
 		// -----------------------------------------------------------------------------
 		//  Remove areas from LMH if they are at a topological distance of 2 or more
@@ -1255,7 +1224,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA( const TMessageLSLAMfromAA &myMsg )
 				}
 				if (lstArcs.empty())
 				{
-					printf_debug("[LSLAM_proc_msg_AA] Getting area '%u' out of LMH\n", static_cast<unsigned>(*pNei1) );
+					logFmt(mrpt::utils::LVL_INFO,"[LSLAM_proc_msg_AA] Getting area '%u' out of LMH\n", static_cast<unsigned>(*pNei1) );
 
 					// Remove from list first:
 					CHMHMapNode::TNodeID id = *pNei1;
@@ -1266,7 +1235,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA( const TMessageLSLAMfromAA &myMsg )
 					double ESS_bef = LMH->ESS();
 					LMH->removeAreaFromLMH( id );
 					double ESS_aft = LMH->ESS();
-					printf_debug("[LSLAM_proc_msg_AA] ESS: %f -> %f\n", ESS_bef, ESS_aft );
+					logFmt(mrpt::utils::LVL_INFO,"[LSLAM_proc_msg_AA] ESS: %f -> %f\n", ESS_bef, ESS_aft );
 				}
 				else pNei1++; // Go next:
 			}
@@ -1304,7 +1273,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA( const TMessageLSLAMfromAA &myMsg )
 				// If otherArea is out of the LMH, we must bring it in!
 				if ( LMH->m_neighbors.find(otherAreaID)==LMH->m_neighbors.end() )
 				{
-					printf_debug("[LSLAM_proc_msg_AA] Bringing in LMH area %i\n",(int)otherAreaID );
+					logFmt(mrpt::utils::LVL_INFO,"[LSLAM_proc_msg_AA] Bringing in LMH area %i\n",(int)otherAreaID );
 
 					CHMHMapNodePtr area = m_map.getNodeByID( otherAreaID );
 					ASSERT_(area);
@@ -1324,12 +1293,12 @@ void CHMTSLAM::LSLAM_process_message_from_AA( const TMessageLSLAMfromAA &myMsg )
 					if (arc->getNodeTo()==curAreaID)
 					{
 						// It is inverted:
-						printf_debug("[LSLAM_proc_msg_AA] Arc is inverted: (%.03f,%.03f,%.03fdeg) -> ",
+						logFmt(mrpt::utils::LVL_INFO,"[LSLAM_proc_msg_AA] Arc is inverted: (%.03f,%.03f,%.03fdeg) -> ",
 							Delta_c2a.x(),Delta_c2a.y(),RAD2DEG(Delta_c2a.yaw()) );
 
 						Delta_c2a = CPose3D(0,0,0) - Delta_c2a;
 
-						printf_debug("(%.03f,%.03f,%.03fdeg)\n",
+						logFmt(mrpt::utils::LVL_INFO,"(%.03f,%.03f,%.03fdeg)\n",
 							Delta_c2a.x(),Delta_c2a.y(),RAD2DEG(Delta_c2a.yaw()) );
 
 						arc->m_annotations.getElemental( ARC_ANNOTATION_DELTA_SRC_POSEID, refPoseIDAtOtherArea, LMH->m_ID, true );
@@ -1342,7 +1311,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA( const TMessageLSLAMfromAA &myMsg )
 						arc->m_annotations.getElemental( ARC_ANNOTATION_DELTA_SRC_POSEID, refPoseIDAtCurArea, LMH->m_ID, true );
 					}
 
-					printf_debug("[LSLAM_proc_msg_AA] Bringing in: refPoseCur=%i refPoseOther=%i -> Delta_c2a:(%.03f,%.03f,%.03fdeg)\n",
+					logFmt(mrpt::utils::LVL_INFO,"[LSLAM_proc_msg_AA] Bringing in: refPoseCur=%i refPoseOther=%i -> Delta_c2a:(%.03f,%.03f,%.03fdeg)\n",
 						(int)refPoseIDAtCurArea, (int)refPoseIDAtOtherArea,
 						Delta_c2a.x(),Delta_c2a.y(),RAD2DEG(Delta_c2a.yaw()) );
 
@@ -1405,13 +1374,12 @@ void CHMTSLAM::LSLAM_process_message_from_AA( const TMessageLSLAMfromAA &myMsg )
 		} // end of lock on m_map_cs
 
 
-#if HMTSLAM_LSLAM_VERBOSE
 		if (0)
 		{
 			utils::CStringList s;
 			LMH->dumpAsText(s);
 			s.saveToFile( format("%s/HMAP_txt/HMAP_%05i_LMH_mid.txt",m_options.LOG_OUTPUT_DIR.c_str(), DEBUG_STEP ) );
-			printf_debug("[LSLAM_proc_msg_AA] Saved HMAP_%05i_LMH_mid.txt\n",DEBUG_STEP);
+			logFmt(mrpt::utils::LVL_INFO,"[LSLAM_proc_msg_AA] Saved HMAP_%05i_LMH_mid.txt\n",DEBUG_STEP);
 		}
 		if (0)
 		{
@@ -1431,12 +1399,9 @@ void CHMTSLAM::LSLAM_process_message_from_AA( const TMessageLSLAMfromAA &myMsg )
 			sceneLSLAM.enableFollowCamera(true);
 
 			string filLocalAreas = format("%s/HMAP_txt/HMAP_%05i_LMH_mid.3Dscene",m_options.LOG_OUTPUT_DIR.c_str(), DEBUG_STEP );
-			printf_debug("[LOG] Saving %s\n", filLocalAreas.c_str());
+			logFmt(mrpt::utils::LVL_INFO,"[LOG] Saving %s\n", filLocalAreas.c_str());
 			CFileOutputStream(filLocalAreas) << sceneLSLAM;
 		}
-
-#endif
-
 
 		// -------------------------------------------------------------
 		//  Change local coordinate system, as required
@@ -1449,21 +1414,15 @@ void CHMTSLAM::LSLAM_process_message_from_AA( const TMessageLSLAMfromAA &myMsg )
 
 		if ( new_poseID_origin != poseID_origin )
 		{	// Change coords AND rebuild metric maps
-#if HMTSLAM_LSLAM_VERBOSE
 			CTicTac tictac;
 			tictac.Tic();
-#endif
 			LMH->changeCoordinateOrigin( new_poseID_origin );
-#if HMTSLAM_LSLAM_VERBOSE
-			printf_debug("[LSLAM_proc_msg_AA] LMH->changeCoordinateOrigin %lu->%lu took %f ms\n", poseID_origin,new_poseID_origin,tictac.Tac()*1000 );
-#endif
+			logFmt(mrpt::utils::LVL_INFO,"[LSLAM_proc_msg_AA] LMH->changeCoordinateOrigin %lu->%lu took %f ms\n", poseID_origin,new_poseID_origin,tictac.Tac()*1000 );
 		}
 		else if (areasDelayedMetricMapsInsertion.size())
 		{
-#if HMTSLAM_LSLAM_VERBOSE
 			CTicTac tictac;
 			tictac.Tic();
-#endif
 			// We haven't rebuilt the whole metric maps, so just insert the new observations as needed:
 			for (TNodeIDSet::iterator areaID=areasDelayedMetricMapsInsertion.begin();areaID!=areasDelayedMetricMapsInsertion.end();++areaID)
 			{
@@ -1487,32 +1446,26 @@ void CHMTSLAM::LSLAM_process_message_from_AA( const TMessageLSLAMfromAA &myMsg )
 				} // end for each m_nodeIDmemberships
 			} // end for each areasDelayedMetricMapsInsertion
 
-#if HMTSLAM_LSLAM_VERBOSE
-			printf_debug("[LSLAM_proc_msg_AA] areasDelayedMetricMapsInsertion took %f ms\n", tictac.Tac()*1000 );
-#endif
+			logFmt(mrpt::utils::LVL_INFO,"[LSLAM_proc_msg_AA] areasDelayedMetricMapsInsertion took %f ms\n", tictac.Tac()*1000 );
 		}
 
-#if HMTSLAM_LSLAM_VERBOSE
 		if (0)
 		{
 			CCriticalSectionLocker  locker( &m_map_cs );
 			utils::CStringList s;
 			m_map.dumpAsText(s);
 			s.saveToFile( format("%s/HMAP_txt/HMAP_%05i_after.txt",m_options.LOG_OUTPUT_DIR.c_str(), DEBUG_STEP ) );
-			printf_debug("[LSLAM_proc_msg_AA] Saved HMAP_%05i_after.txt\n",DEBUG_STEP);
+			logFmt(mrpt::utils::LVL_INFO,"[LSLAM_proc_msg_AA] Saved HMAP_%05i_after.txt\n",DEBUG_STEP);
 		}
 		if (0)
 		{
 			utils::CStringList s;
 			LMH->dumpAsText(s);
 			s.saveToFile( format("%s/HMAP_txt/HMAP_%05i_LMH_after.txt",m_options.LOG_OUTPUT_DIR.c_str(), DEBUG_STEP ) );
-			printf_debug("[LSLAM_proc_msg_AA] Saved HMAP_%05i_LMH_after.txt\n",DEBUG_STEP);
+			logFmt(mrpt::utils::LVL_INFO,"[LSLAM_proc_msg_AA] Saved HMAP_%05i_LMH_after.txt\n",DEBUG_STEP);
 		}
-#endif
 
-#if HMTSLAM_LSLAM_VERBOSE
-		printf_debug("[LSLAM_proc_msg_AA] Msg from AA took %f ms                      ]\n", tictac.Tac()*1000 );
-#endif
+		logFmt(mrpt::utils::LVL_INFO,"[LSLAM_proc_msg_AA] Msg from AA took %f ms                      ]\n", tictac.Tac()*1000 );
 
 		MRPT_END
 }
@@ -1527,18 +1480,14 @@ void CHMTSLAM::LSLAM_process_message_from_TBI( const TMessageLSLAMfromTBI &myMsg
 
 	CTicTac    tictac;
 	tictac.Tic();
-#if HMTSLAM_LSLAM_VERBOSE
-	printf_debug("[LSLAM_proc_msg_TBI] Beginning of Msg from TBI processing...              [\n" );
-#endif
+	logFmt(mrpt::utils::LVL_INFO,"[LSLAM_proc_msg_TBI] Beginning of Msg from TBI processing...              [\n" );
 
 	// In case of multiple areas involved in a TLC, we need a mapping from the old areaIDs to the new ones:
 	std::map<CHMHMapNode::TNodeID,CHMHMapNode::TNodeID>  alreadyClosedLoops;
 
 	for (map< CHMHMapNode::TNodeID, TMessageLSLAMfromTBI::TBI_info >::const_iterator candidate = myMsg.loopClosureData.begin();candidate != myMsg.loopClosureData.end();++candidate)
 	{
-#if HMTSLAM_LSLAM_VERBOSE
-		printf_debug("[LSLAM_proc_msg_TBI] Processing TLC of areas: %u <-> %u...  \n",(unsigned)myMsg.cur_area, (unsigned)candidate->first );
-#endif
+		logFmt(mrpt::utils::LVL_INFO,"[LSLAM_proc_msg_TBI] Processing TLC of areas: %u <-> %u...  \n",(unsigned)myMsg.cur_area, (unsigned)candidate->first );
 
 		// Check if the area has already been merged:
 		CHMHMapNode::TNodeID  currentArea = myMsg.cur_area;
@@ -1614,7 +1563,7 @@ void CHMTSLAM::LSLAM_process_message_from_TBI( const TMessageLSLAMfromTBI &myMsg
 			//  2) Just keep the most likely one (***** CHOICE, FOR NOW!!! *****)
 			// --------------------------------------------------------
 			static CTicTac  tictac;
-			printf_debug("[LSLAM_proc_msg_TBI] Accepting TLC of areas: %u <-> %u  with an overall log(lik)=%f  \n",(unsigned)currentArea, (unsigned)candidate->first,lstModesAndCompats.rbegin()->first );
+			logFmt(mrpt::utils::LVL_INFO,"[LSLAM_proc_msg_TBI] Accepting TLC of areas: %u <-> %u  with an overall log(lik)=%f  \n",(unsigned)currentArea, (unsigned)candidate->first,lstModesAndCompats.rbegin()->first );
 
 			tictac.Tic();
 			this->perform_TLC(
@@ -1622,7 +1571,7 @@ void CHMTSLAM::LSLAM_process_message_from_TBI( const TMessageLSLAMfromTBI &myMsg
 				currentArea,   // Area in the LMH
 				candidate->first, // External area
 				pdfDelta );
-			printf_debug("[LSLAM_proc_msg_TBI] TLC of areas %u <-> %u  - DONE in %.03f ms\n",(unsigned)currentArea, (unsigned)candidate->first,1e3*tictac.Tac() );
+			logFmt(mrpt::utils::LVL_INFO,"[LSLAM_proc_msg_TBI] TLC of areas %u <-> %u  - DONE in %.03f ms\n",(unsigned)currentArea, (unsigned)candidate->first,1e3*tictac.Tac() );
 
 			// The old area "myMsg.cur_area" is now "candidate->first"
 			alreadyClosedLoops[myMsg.cur_area] = candidate->first;
@@ -1632,9 +1581,7 @@ void CHMTSLAM::LSLAM_process_message_from_TBI( const TMessageLSLAMfromTBI &myMsg
 
 	} // end for each candidate
 
-#if HMTSLAM_LSLAM_VERBOSE
-	printf_debug("[LSLAM_proc_msg_TBI] Msg from TBI took %f ms                      ]\n", tictac.Tac()*1000 );
-#endif
+	logFmt(mrpt::utils::LVL_INFO,"[LSLAM_proc_msg_TBI] Msg from TBI took %f ms                      ]\n", tictac.Tac()*1000 );
 
 	MRPT_END
 }

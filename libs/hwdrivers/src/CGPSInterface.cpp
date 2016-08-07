@@ -47,6 +47,7 @@ private:
                 Constructor
    ----------------------------------------------------- */
 CGPSInterface::CGPSInterface() :
+	mrpt::utils::COutputLogger("CGPSInterface"),
 	m_data_stream(NULL),    // Typically a CSerialPort created by this class, but may be set externally.
 	m_data_stream_cs(NULL),
 	m_data_stream_is_external(false),
@@ -327,7 +328,7 @@ void  CGPSInterface::doProcess()
 	catch (std::exception &)
 	{
 		// ERROR:
-		printf_debug("[CGPSInterface::doProcess] Error reading stream of data: Closing communications\n");
+		MRPT_LOG_ERROR("[CGPSInterface::doProcess] Error reading stream of data: Closing communications\n");
 		if(stream_serial) {
 			CCriticalSectionLocker lock(m_data_stream_cs);
 			stream_serial->close();
