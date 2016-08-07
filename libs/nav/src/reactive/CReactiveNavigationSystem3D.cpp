@@ -164,7 +164,7 @@ void CReactiveNavigationSystem3D::STEP1_InitPTGs()
 					format("%s/ReacNavGrid_%s_%03u_L%02u.dat.gz", ptg_cache_files_directory.c_str(), robotName.c_str(), i, j),
 					m_enableConsoleOutput /*verbose*/
 				);
-				MRPT_LOG_INFO_FMT("...Done.");
+				MRPT_LOG_INFO("...Done.");
 			}
 		}
 	}
