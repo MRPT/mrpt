@@ -29,7 +29,8 @@ using namespace mrpt::math;
 /*---------------------------------------------------------------
 		 Constructor
   ---------------------------------------------------------------*/
-CMetricMapBuilderICP::CMetricMapBuilderICP()
+CMetricMapBuilderICP::CMetricMapBuilderICP() : 
+	ICP_options(m_min_verbosity_level)
 {
 	this->setLoggerName("CMetricMapBuilderICP");
 	this->initialize( CSimpleMap() );
@@ -52,13 +53,14 @@ CMetricMapBuilderICP::~CMetricMapBuilderICP()
 /*---------------------------------------------------------------
 							Options
   ---------------------------------------------------------------*/
-CMetricMapBuilderICP::TConfigParams::TConfigParams() :
+CMetricMapBuilderICP::TConfigParams::TConfigParams(mrpt::utils::VerbosityLevel &parent_verbosity_level) :
 	matchAgainstTheGrid( false ),
 	insertionLinDistance(1.0),
 	insertionAngDistance(DEG2RAD(30)),
 	localizationLinDistance(0.20),
 	localizationAngDistance(DEG2RAD(30)),
 	minICPgoodnessToAccept(0.40),
+	verbosity_level(parent_verbosity_level),
 	mapInitializers()
 {
 }
@@ -72,6 +74,7 @@ void  CMetricMapBuilderICP::TConfigParams::loadFromConfigFile(
 	MRPT_LOAD_CONFIG_VAR_DEGREES(insertionAngDistance,source,section)
 	MRPT_LOAD_CONFIG_VAR(localizationLinDistance, double	,source,section)
 	MRPT_LOAD_CONFIG_VAR_DEGREES(localizationAngDistance, source,section)
+	verbosity_level = source.read_enum<mrpt::utils::VerbosityLevel>(section,"verbosity_level", verbosity_level );
 
 	MRPT_LOAD_CONFIG_VAR(minICPgoodnessToAccept, double	,source,section)
 
@@ -81,6 +84,15 @@ void  CMetricMapBuilderICP::TConfigParams::loadFromConfigFile(
 
 void  CMetricMapBuilderICP::TConfigParams::dumpToTextStream( CStream	&out) const
 {
+	out.printf("\n----------- [CMetricMapBuilderICP::TConfigParams] ------------ \n\n");
+
+	out.printf("insertionLinDistance                    = %f m\n", insertionLinDistance );
+	out.printf("insertionAngDistance                    = %f deg\n", RAD2DEG(insertionAngDistance) );
+	out.printf("localizationLinDistance                 = %f m\n", localizationLinDistance );
+	out.printf("localizationAngDistance                 = %f deg\n", RAD2DEG(localizationAngDistance) );
+	out.printf("verbosity_level                         = %s\n", mrpt::utils::TEnumType<mrpt::utils::VerbosityLevel>::value2name(verbosity_level).c_str());
+
+	out.printf("  Now showing 'mapsInitializers':\n");
 	mapInitializers.dumpToTextStream(out);
 }
 
@@ -163,7 +175,7 @@ void  CMetricMapBuilderICP::processObservation(const CObservationPtr &obs)
 			m_distSinceLastICP.lin < std::min(ICP_options.localizationLinDistance,ICP_options.insertionLinDistance) &&
 			m_distSinceLastICP.ang < std::min(ICP_options.localizationAngDistance,ICP_options.insertionAngDistance);
 
-		MRPT_LOG_DEBUG_STREAM << "processObservation(): skipping ICP pose correction? : " << (we_skip_ICP_pose_correction ? "YES":"NO");
+		MRPT_LOG_DEBUG_STREAM << "processObservation(): skipping ICP pose correction due to small odometric displacement? : " << (we_skip_ICP_pose_correction ? "YES":"NO");
 
 		CICP::TReturnInfo	icpReturn;
 		bool				can_do_icp=false;
@@ -183,11 +195,7 @@ void  CMetricMapBuilderICP::processObservation(const CObservationPtr &obs)
 		}
 		ASSERT_(matchWith!=NULL)
 
-		if (we_skip_ICP_pose_correction)
-		{
-			MRPT_LOG_WARN("Skipping ICP pose correction...\n");
-		}
-		else
+		if (!we_skip_ICP_pose_correction)
 		{
 			m_there_has_been_an_odometry = false;
 
