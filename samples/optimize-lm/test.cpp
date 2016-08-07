@@ -48,9 +48,10 @@ void TestLM()
 	double T;
 	size_t  N = 1;
 
+	CLevenbergMarquardt lm;
 	tictac.Tic();
 	for (size_t k=0;k<N;k++)
-		CLevenbergMarquardt::execute(optimal_x, initial_x, myFunction, increments_x, y, info  );
+		lm.execute(optimal_x, initial_x, myFunction, increments_x, y, info  );
 
 	T = tictac.Tac() / N;
 
