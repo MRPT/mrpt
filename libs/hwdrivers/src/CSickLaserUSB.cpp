@@ -179,12 +179,12 @@ bool  CSickLaserUSB::checkControllerIsConnected()
 		m_usbConnection->SetLatencyTimer(1);		// 1ms, the minimum
 		mrpt::system::sleep(10);
 
-		printf_debug("[CSickLaserUSB] USB DEVICE S/N:'%s' OPEN SUCCESSFULLY!!!\n",m_serialNumber.c_str() );
+		MRPT_LOG_INFO_FMT("[CSickLaserUSB] USB DEVICE S/N:'%s' OPEN SUCCESSFULLY!!!\n",m_serialNumber.c_str() );
 		return true;
 	}
 	catch(std::exception &e)
 	{
-		printf_debug("[CSickLaserUSB] ERROR TRYING TO OPEN USB DEVICE S/N:'%s'\n%s",m_serialNumber.c_str(),e.what() );
+		MRPT_LOG_ERROR_FMT("[CSickLaserUSB] ERROR TRYING TO OPEN USB DEVICE S/N:'%s'\n%s",m_serialNumber.c_str(),e.what() );
 		return false;
 	}
 }
@@ -225,7 +225,7 @@ bool  CSickLaserUSB::waitContinuousSampleFrame(
 		catch (std::exception &e)
 		{
 			// Disconnected?
-			printf_debug("[CSickLaserUSB::waitContinuousSampleFrame] Disconnecting due to comms error: %s\n", e.what());
+			MRPT_LOG_ERROR_FMT("[CSickLaserUSB::waitContinuousSampleFrame] Disconnecting due to comms error: %s\n", e.what());
 			m_usbConnection->Close();
 			m_timeStartUI = 0;
 			return false;

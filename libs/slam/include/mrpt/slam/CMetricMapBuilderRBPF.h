@@ -88,6 +88,7 @@ namespace slam
 
 			mrpt::maps::TSetOfMetricMapInitializers					mapsInitializers;
 			mrpt::maps::CMultiMetricMapPDF::TPredictionParams		predictionOptions;
+			mrpt::utils::VerbosityLevel  verbosity_level;
 		};
 
 		/** Constructor. */

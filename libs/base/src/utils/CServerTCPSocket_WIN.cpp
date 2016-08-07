@@ -7,7 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include "base-precomp.h"  // Precompiled headers 
+#include "base-precomp.h"  // Precompiled headers
 
 
 #include <MRPT/config.h>
@@ -32,11 +32,12 @@ CServerTCPSocket::CServerTCPSocket(
 	unsigned short		listenPort,
 	const std::string	&IPaddress,
 	int					maxConnectionsWaiting,
-	bool				verbose
+	mrpt::utils::VerbosityLevel verbosityLevel
 	) :
-		m_verbose(verbose)
+		COutputLogger("CServerTCPSocket")
 {
 	MRPT_START
+	setVerbosityLevel(verbosityLevel);
 
 	// Init the WinSock Library:
 	// ----------------------------

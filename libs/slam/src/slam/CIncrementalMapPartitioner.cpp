@@ -38,6 +38,7 @@ IMPLEMENTS_SERIALIZABLE(CIncrementalMapPartitioner, CSerializable,mrpt::slam)
 						Constructor
   ---------------------------------------------------------------*/
 CIncrementalMapPartitioner::CIncrementalMapPartitioner( ) :
+	COutputLogger("CIncrementalMapPartitioner"),
 	options(),
 	m_individualFrames(),
 	m_individualMaps(),

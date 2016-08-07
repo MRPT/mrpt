@@ -28,12 +28,10 @@
 #	define MRPT_OVERRIDE
 #endif
 // A cross-compiler definition for "deprecated"-warnings
-#if defined(__GNUC__) && (__GNUC__ - 0 > 3 || (__GNUC__ - 0 == 3 && __GNUC_MINOR__ - 0 >= 2))
-   /* gcc >= 3.2 */
+#if defined(__clang__) || (defined(__GNUC__) && (__GNUC__ - 0 > 4 || (__GNUC__ - 0 == 4 && __GNUC_MINOR__ - 0 >= 4)))
+   /* gcc >= 4.4 supports deprecated with msgs */
 #   define MRPT_DEPRECATED_PRE(_MSG)
-	// The "message" is not supported yet in GCC (JL: wait for gcc 4.4??)
-	//#   define MRPT_DEPRECATED_POST(_MSG) __attribute__ ((deprecated(_MSG)))
-#   define MRPT_DEPRECATED_POST(_MSG) __attribute__ ((deprecated))
+#   define MRPT_DEPRECATED_POST(_MSG) __attribute__((deprecated(_MSG)))
 # elif defined(_MSC_VER) && (_MSC_VER >= 1300)
   /* msvc >= 7 */
 #   define MRPT_DEPRECATED_PRE(_MSG)  __declspec(deprecated (_MSG))

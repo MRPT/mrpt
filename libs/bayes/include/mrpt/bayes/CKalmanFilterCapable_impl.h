@@ -24,7 +24,7 @@ namespace mrpt
 			using namespace std;
 			MRPT_START
 
-				m_timLogger.enable(KF_options.enable_profiler || KF_options.verbose);
+			m_timLogger.enable(KF_options.enable_profiler);
 			m_timLogger.enter("KF:complete_step");
 
 			ASSERT_(size_t(m_xkk.size())==m_pkk.getColCount())
@@ -208,7 +208,7 @@ namespace mrpt
 				if (!missing_predictions_to_add.empty())
 				{
 					const size_t nNew = missing_predictions_to_add.size();
-					printf_debug("[KF] *Performance Warning*: %u LMs were not correctly predicted by OnPreComputingPredictions()\n",static_cast<unsigned int>(nNew));
+					MRPT_LOG_WARN_STREAM << "[KF] *Performance Warning*: " <<nNew <<  " LMs were not correctly predicted by OnPreComputingPredictions().";
 
 					ASSERTDEB_(FEAT_SIZE!=0)
 						for (size_t j=0;j<nNew;j++)
@@ -1001,18 +1001,14 @@ namespace mrpt
 
 			m_timLogger.leave("KF:complete_step");
 
-			if (KF_options.verbose)
-			{
-				printf_debug("[KF] %u LMs | Pr: %.2fms | Pr.Obs: %.2fms | Obs.DA: %.2fms | Upd: %.2fms\n",
-					static_cast<unsigned int>(getNumberOfLandmarksInTheMap()),
-					1e3*tim_pred,
-					1e3*tim_pred_obs,
-					1e3*tim_obs_DA,
-					1e3*tim_update
-					);
-			}
+			MRPT_LOG_DEBUG( mrpt::format("[KF] %u LMs | Pr: %.2fms | Pr.Obs: %.2fms | Obs.DA: %.2fms | Upd: %.2fms\n",
+				static_cast<unsigned int>(getNumberOfLandmarksInTheMap()),
+				1e3*tim_pred,
+				1e3*tim_pred_obs,
+				1e3*tim_obs_DA,
+				1e3*tim_update
+				) );
 			MRPT_END
-
 		} // End of "runOneKalmanIteration"
 
 

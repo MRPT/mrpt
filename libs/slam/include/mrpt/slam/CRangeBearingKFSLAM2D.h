@@ -9,7 +9,6 @@
 #ifndef CRangeBearingKFSLAM2D_H
 #define CRangeBearingKFSLAM2D_H
 
-#include <mrpt/utils/CDebugOutputCapable.h>
 #include <mrpt/math/CMatrixTemplateNumeric.h>
 #include <mrpt/utils/CConfigFileBase.h>
 #include <mrpt/utils/CLoadableOptions.h>

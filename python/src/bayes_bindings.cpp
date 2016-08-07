@@ -85,7 +85,6 @@ void export_bayes()
             .def_readwrite("resamplingMethod", &CParticleFilter::TParticleFilterOptions::resamplingMethod)
             .def_readwrite("max_loglikelihood_dyn_range", &CParticleFilter::TParticleFilterOptions::max_loglikelihood_dyn_range)
             .def_readwrite("pfAuxFilterStandard_FirstStageWeightsMonteCarlo", &CParticleFilter::TParticleFilterOptions::pfAuxFilterStandard_FirstStageWeightsMonteCarlo)
-            .def_readwrite("verbose", &CParticleFilter::TParticleFilterOptions::verbose)
             .def_readwrite("pfAuxFilterOptimal_MLE", &CParticleFilter::TParticleFilterOptions::pfAuxFilterOptimal_MLE)
         ;
 

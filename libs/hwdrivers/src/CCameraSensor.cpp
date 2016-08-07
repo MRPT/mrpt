@@ -37,6 +37,7 @@ IMPLEMENTS_GENERIC_SENSOR(CCameraSensor,mrpt::hwdrivers)
                 Constructor
    ----------------------------------------------------- */
 CCameraSensor::CCameraSensor() :
+	mrpt::utils::COutputLogger("CCameraSensor"),
 	m_sensorPose			(),
 	m_grabber_type			("opencv"),
 	m_capture_grayscale		(false),

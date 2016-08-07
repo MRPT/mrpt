@@ -53,7 +53,7 @@ CHMTSLAM::TMessageLSLAMfromAAPtr CHMTSLAM::areaAbstraction(
 	for (TPoseIDList::const_iterator newID=newPoseIDs.begin();newID!=newPoseIDs.end();++newID)
 	{
 		// Add a new node to the graph:
-		obj->printf_debug("[thread_AA] Processing new pose ID: %u\n", static_cast<unsigned>( *newID ) );
+		obj->logFmt(mrpt::utils::LVL_DEBUG, "[thread_AA] Processing new pose ID: %u\n", static_cast<unsigned>( *newID ) );
 
 		// Get SF & pose pdf for the new pose.
 		const CSensoryFrame			*sf;
