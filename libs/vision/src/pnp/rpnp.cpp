@@ -24,6 +24,7 @@ mrpt::vision::rpnp::rpnp(Eigen::MatrixXd obj_pts_, Eigen::MatrixXd img_pts_, Eig
 	for (int i = 0; i < n; i++)
 		Q.col(i) = Q.col(i) / Q.col(i).norm();
 
+    R.setZero();
 	t.setZero();
 }
 
@@ -34,7 +35,10 @@ bool mrpt::vision::rpnp::compute_pose(Eigen::Ref<Eigen::Matrix3d> R_, Eigen::Ref
 	double lmin = Q(0, i1)*Q(0, i2) + Q(1, i1)*Q(1, i2) + Q(2, i1)*Q(2, i2);
 
 	Eigen::MatrixXi rij (n,2);
-
+    
+    R_=Eigen::MatrixXd::Identity(3,3);
+    t_=Eigen::Vector3d::Zero();
+    
 	for (int i = 0; i < n; i++)
 		for (int j = 0; j < 2; j++)
 			rij(i, j) = rand() % n;
@@ -57,7 +61,6 @@ bool mrpt::vision::rpnp::compute_pose(Eigen::Ref<Eigen::Matrix3d> R_, Eigen::Ref
 	}
 
 	// calculating the rotation matrix of $O_aX_aY_aZ_a$.
-
 	Eigen::Vector3d p1, p2, p0, x, y, z, dum_vec;
 
 	p1 = P.col(i1);
@@ -94,14 +97,16 @@ bool mrpt::vision::rpnp::compute_pose(Eigen::Ref<Eigen::Matrix3d> R_, Eigen::Ref
 	double sg1 = sqrt(1 - cg1*cg1);
 	double D1 = (P.col(i1) - P.col(i2)).norm();
 	Eigen::MatrixXd D4(n - 2, 5);
-
+    
 	int j = 0;
+    Eigen::Vector3d vi;
+    Eigen::VectorXd rowvec(5);
 	for (int i = 0; i < n; i++)
 	{
 		if (i == i1 || i == i2)
 			continue;
 
-		Eigen::Vector3d vi = Q.col(i);
+		vi = Q.col(i);
 		double cg2 = v1.dot(vi); 
 		double cg3 = v2.dot(vi);
 		double sg2 = sqrt(1 - cg2*cg2);
@@ -109,22 +114,25 @@ bool mrpt::vision::rpnp::compute_pose(Eigen::Ref<Eigen::Matrix3d> R_, Eigen::Ref
 		double D3 = (P.col(i) - P.col(i2)).norm();
 
 		// get the coefficients of the P3P equation from each subset.
-		Eigen::VectorXd rowvec(5);
-		getp3p(cg1, cg2, cg3, sg1, sg2, D1, D2, D3, rowvec);
+		
+		rowvec = getp3p(cg1, cg2, cg3, sg1, sg2, D1, D2, D3);
 		D4.row(j) = rowvec;
 		j += 1;
-
+      
+        if(j>n-3)
+            break;
 	}
 
-	Eigen::VectorXd D7(8), dumvec(8);
+	Eigen::VectorXd D7(8), dumvec(8), dumvec1(5);
 	D7.setZero();
-
+    
 	for (int i = 0; i < n-2; i++)
 	{
-		dumvec= getpoly7(D4.row(i));
+        dumvec1 = D4.row(i);
+		dumvec= getpoly7(dumvec1);
 		D7 += dumvec;
 	}
-
+    
 	Eigen::PolynomialSolver<double, 7> psolve(D7.reverse());
 	Eigen::VectorXcd comp_roots = psolve.roots().transpose();
 	Eigen::VectorXd real_comp, imag_comp;
@@ -135,28 +143,35 @@ bool mrpt::vision::rpnp::compute_pose(Eigen::Ref<Eigen::Matrix3d> R_, Eigen::Ref
 
 	double max_real= real_comp.cwiseAbs().maxCoeff(&max_index);
 
-	Eigen::VectorXd act_roots(n);
+    std::vector<double> act_roots_;
 
 	int cnt=0;
-
+    
 	for (int i=0; i<imag_comp.size(); i++ )
 	{
 		if(abs(imag_comp(i))/max_real<0.001)
 		{
-				act_roots(cnt) = real_comp(i);
-				cnt++;
+				act_roots_.push_back(real_comp(i));
+                cnt++;
 		}
 	}
-
+    
+    double* ptr = &act_roots_[0];
+    Eigen::Map<Eigen::VectorXd> act_roots(ptr, cnt); 
+    
 	if (cnt==0)
-		return -1;
-
-	Eigen::VectorXd act_roots1 = act_roots.segment(0,cnt);
+    {
+		//std::cout << "RPnP Did not converge" << std::endl;
+        return false;
+    }
+    
+    Eigen::VectorXd act_roots1(cnt);
+    act_roots1 << act_roots.segment(0,cnt);
 
 	std::vector<Eigen::Matrix3d> R_cum(cnt);
 	std::vector<Eigen::Vector3d> t_cum(cnt);
 	std::vector<double> err_cum(cnt);
-
+    
 	for(int i=0; i<cnt; i++)
 	{
 		double root = act_roots(i);
@@ -192,7 +207,7 @@ bool mrpt::vision::rpnp::compute_pose(Eigen::Ref<Eigen::Matrix3d> R_, Eigen::Ref
 
 		R0 = R.transpose();
 		Eigen::VectorXd r(Eigen::Map<Eigen::VectorXd>(R0.data(), R0.cols()*R0.rows()));
-
+        
 		for (int j = 0; j<n; j++)
 		{
 			double ui = img_pts(j, 0), vi = img_pts(j, 1), xi = P(0, j), yi = P(1, j), zi = P(2, j);
@@ -210,7 +225,7 @@ bool mrpt::vision::rpnp::compute_pose(Eigen::Ref<Eigen::Matrix3d> R_, Eigen::Ref
 				vi,
 				vi*r(6)*xi - r(3)*xi;
 		}
-
+        
 		Eigen::MatrixXd DTD = D.transpose()*D;
 
 		Eigen::EigenSolver<Eigen::MatrixXd> es(DTD);
@@ -269,12 +284,12 @@ bool mrpt::vision::rpnp::compute_pose(Eigen::Ref<Eigen::Matrix3d> R_, Eigen::Ref
 		err_cum[i] = res;
 	
 	}
-
+    
 	int pos_cum = std::min_element(err_cum.begin(), err_cum.end()) - err_cum.begin();
 
 	R_ = R_cum[pos_cum];
 	t_ = t_cum[pos_cum];
-
+    
 	return true;
 }
 
@@ -326,7 +341,7 @@ Eigen::VectorXd mrpt::vision::rpnp::getpoly7(const Eigen::VectorXd& vin)
 	return vout;
 }
 
-void mrpt::vision::rpnp::getp3p(double l1, double l2, double A5, double C1, double C2, double D1, double D2, double D3, Eigen::VectorXd& vec)
+Eigen::VectorXd mrpt::vision::rpnp::getp3p(double l1, double l2, double A5, double C1, double C2, double D1, double D2, double D3)
 {
 	double A1 = (D2 / D1)*(D2 / D1);
 	double A2 = A1*pow(C1, 2) - pow(C2, 2);
@@ -335,9 +350,13 @@ void mrpt::vision::rpnp::getp3p(double l1, double l2, double A5, double C1, doub
 	double A6 = (pow(D3, 2) - pow(D1, 2) - pow(D2, 2)) / (2 * pow(D1, 2));
 	double A7 = 1 - pow(l1, 2) - pow(l2, 2) + l1*l2*A5 + A6*pow(C1, 2);
 
+    Eigen::VectorXd vec(5);
+
 	vec << pow(A6, 2) - A1*pow(A5, 2),
 		2 * (A3*A6 - A1*A4*A5),
 		pow(A3, 2) + 2 * A6*A7 - A1*pow(A4, 2) - A2*pow(A5, 2),
 		2 * (A3*A7 - A2*A4*A5),
 		pow(A7, 2) - A2*pow(A4, 2);
+        
+    return vec;
 }
