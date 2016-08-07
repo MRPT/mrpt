@@ -150,7 +150,7 @@ void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::initC
 	m_edge_registrar.setCriticalSectionPtr(&m_graph_section);
 	m_optimizer.setCriticalSectionPtr(&m_graph_section);
 
-	// Calling of initalization-relevant functions
+	// Calling of initialization-relevant functions
 	this->readConfigFile(m_config_fname);
 
 	this->initOutputDir();
@@ -385,13 +385,13 @@ bool CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::parse
 	mrpt::system::TTimeStamp timestamp, init_timestamp;
 	pose_t curr_odometry_only_pose; // defaults to all 0s
 
-	// read first meaesurement independently
+	// read first measurement independently
 	{
 		CRawlog::getActionObservationPairOrObservation(
 				rawlog_file,
-				action,	// Possible out var: Action of a a pair action / obs
-				observations,	// Possible out var: obs's of a pair actin		 / obs
-				observation, // Possible out var
+				action,
+				observations,
+				observation,
 				curr_rawlog_entry );
 		if (observation.present()) {
 			m_observation_only_rawlog = true; // false by default
@@ -415,9 +415,9 @@ bool CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::parse
 	// Read the rest of the rawlog file
 	while (CRawlog::getActionObservationPairOrObservation(
 				rawlog_file,
-				action,	// Possible out var: Action of a a pair action / obs
-				observations,	// Possible out var: obs's of a pair actin		 / obs
-				observation, // Possible out var
+				action,
+				observations,
+				observation,
 				curr_rawlog_entry ) ) {
 
 		// node registration procedure
@@ -435,7 +435,7 @@ bool CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::parse
 		}
 		// Edge registration procedure
 		// run this so that the decider can be updated with the latest
-		// obsesrvations even when no new nodes have been added to the graph
+		// observations even when no new nodes have been added to the graph
 		{
 			mrpt::synch::CCriticalSectionLocker m_graph_lock(&m_graph_section);
 
@@ -638,7 +638,7 @@ bool CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::parse
 			}
 		}
 
-		// Query for events and take coresponding actions
+		// Query for events and take corresponding actions
 		if (m_enable_visuals) {
 			this->queryObserverForEvents();
 		}
@@ -648,7 +648,7 @@ bool CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::parse
 
 			// exiting actions
 			rawlog_file.close();
-			// change back the cimage path
+			// change back the CImage path
 			if (mrpt::system::strCmpI(m_GT_file_format, "rgbd_tum")) {
 				CImage::IMAGES_PATH_BASE = m_img_prev_path_base;
 			}
@@ -718,7 +718,7 @@ void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::readC
 	m_user_decides_about_output_dir = cfg_file.read_bool(
 			"GeneralConfiguration",
 			"user_decides_about_output_dir",
-			true, false);
+			false, false);
 	m_save_graph = cfg_file.read_bool(
 			"GeneralConfiguration",
 			"save_graph",
@@ -1392,7 +1392,7 @@ void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::query
 	if (events_occurred[m_keystroke_estimated_trajectory]) {
 		this->toggleEstimatedTrajectoryVisualization();
 	}
-	// pause/unpause program execution
+	// pause/resume program execution
 	if (events_occurred[m_keystroke_pause_exec]) {
 		m_program_paused = !m_program_paused;
 
@@ -2037,7 +2037,7 @@ void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::TRGBD
 			break;
 	}
 
-	// parse the meaningfull data
+	// parse the meaningful data
 	while (info_file.readLine(curr_line)) {
 		// split current line at ":"
 		vector<string> curr_tokens;
@@ -2152,7 +2152,7 @@ void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::compu
 		std::next(m_nodeID_to_gt_indices.begin(), 1);
 
 
-	// fetch the first node, gt positions seperately
+	// fetch the first node, gt positions separately
 	std::map<mrpt::utils::TNodeID, size_t>::const_iterator prev_it = std::prev(start_it, 1);
 	pose_t prev_node_pos = m_graph.nodes[prev_it->first];
 	pose_t prev_gt_pos = m_GT_poses[prev_it->second];

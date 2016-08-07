@@ -32,8 +32,46 @@ namespace mrpt { namespace graphslam { namespace deciders {
 /**\brief Class for keeping together all the RangeScanner-related functions.
  *
  * Deciders that make use of either 2DRangeScans (laser generated
- * observations) or 3DRangeScans (RGBD-cameras) generated can inherit from
+ * observations) or 3DRangeScans (RGBD-cameras) can inherit from
  * this class in case they want to use the underlying methods
+ *
+ * <b>.ini Configuration Parameters </b>
+ *
+ * \htmlinclude graphslam-engine_config_params_preamble.txt
+ *
+ * - \b conversion_sensor_label
+ *   + \a Default value : "KINECT_TO_2D_SCAN"
+ *   + \a Required      : FALSE
+ *   + \a Description   : Applicable only when dealing with 3DRangeScans.
+ *   Used for converting 3DRangeScan to 2DRangesScan so that they are
+ *   visualized on the 2D surface
+ *
+ * - \b conversion_angle_sup
+ *   + \a Default value : 10
+ *   + \a Required      : FALSE
+ *   + \a Description   : Applicable only when dealing with 3DRangeScans.
+ *   Used for converting 3DRangeScan to 2DRangesScan so that they are
+ *   visualized on the 2D surface
+ *
+ * - \b conversion_angle_inf
+ *   + \a Default value : 10
+ *   + \a Required      : FALSE
+ *   + \a Description   : Applicable only when dealing with 3DRangeScans.
+ *   Used for converting 3DRangeScan to 2DRangesScan so that they are
+ *   visualized on the 2D surface
+ *
+ * - \b conversion_oversampling_ratio
+ *   + \a Default value : 1.1
+ *   + \a Required      : FALSE
+ *   + \a Description   : Applicable only when dealing with 3DRangeScans.
+ *   Used for converting 3DRangeScan to 2DRangesScan so that they are
+ *   visualized on the 2D surface
+ *
+ * \note Class contains an instance of the mrpt::slam::CICP class and it parses
+ * the configuration parameters of the latter from the
+ * "ICP" section. Refer to
+ * mrpt::slam::CICP documentation for its list of
+ * configuration parameters
  *
  * \ingroup mrpt_graphslam_grp
  */
@@ -46,7 +84,7 @@ class CRangeScanRegistrationDecider {
 	// Protected methods
 	// ////////////////////////////////////////////////////////////
 
-	/**\brief Allign the 2D range scans provided and fill the potential edge that
+	/**\brief Align the 2D range scans provided and fill the potential edge that
 	 * can transform the one into the other.
 	 *
 	 * User can optionally ask that additional information be returned in a
@@ -58,7 +96,7 @@ class CRangeScanRegistrationDecider {
 			constraint_t* rel_edge,
 			const mrpt::poses::CPose2D* initial_pose=NULL,
 			mrpt::slam::CICP::TReturnInfo* icp_info=NULL);
-	/**\brief Allign the 3D range scans provided and find the potential edge that
+	/**\brief Align the 3D range scans provided and find the potential edge that
 	 * can transform the one into the other.
 	 *
 	 * Fills the 2D part (rel_edge) of the 3D constraint between the scans, since

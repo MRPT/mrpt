@@ -639,7 +639,7 @@ void CLevMarqGSO<GRAPH_t>::OptimizationParams::loadFromConfigFile(
 	optimization_on_second_thread = source.read_bool(
 			section,
 			"optimization_on_second_thread",
-			1, false);
+			false, false);
 	LC_min_nodeid_diff = source.read_int(
 			"GeneralConfiguration",
 			"LC_min_nodeid_diff",
@@ -647,7 +647,7 @@ void CLevMarqGSO<GRAPH_t>::OptimizationParams::loadFromConfigFile(
 	optimization_distance = source.read_double(
 			section,
 			"optimization_distance",
-			-1, false);
+			5, false);
 	// asert the previous value
 	ASSERTMSG_(optimization_distance == -1 ||
 			optimization_distance > 0,
@@ -666,7 +666,7 @@ void CLevMarqGSO<GRAPH_t>::OptimizationParams::loadFromConfigFile(
 	cfg["max_iterations"] = source.read_double(
 			section,
 			"max_iterations",
-			200, false);
+			100, false);
 	cfg["scale_hessian"] = source.read_double(
 			"Optimization",
 			"scale_hessian",

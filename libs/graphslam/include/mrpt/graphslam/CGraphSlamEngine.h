@@ -68,6 +68,9 @@
 namespace mrpt { namespace graphslam {
 
 /**
+ *
+ * \b Description
+ *
  * Given a dataset of measurements build a graph of nodes (keyframes) and
  * constraints (edges) and solve it to find an estimation of the actual robot
  * path.
@@ -76,21 +79,119 @@ namespace mrpt { namespace graphslam {
  * The template arguments are listed below:
  * - \em GRAPH_t: The type of Graph to be constructed and optimized.
  * - \em NODE_REGISTRAR: Class responsible of adding new nodes in the graph.
- *   Class should at least implement the deciders::CNodeRegistrationDecider_t
+ *   Class should at least implement the deciders::CNodeRegistrationDecider
  *   interface provided in CNodeRegistrationDecider.h file.
  * - \em EDGE_REGISTRAR: Class responsible of adding new edges in the graph.
- *   Class should at least implement the deciders::CEdgeRegistrationDecider_t
+ *   Class should at least implement the deciders::CEdgeRegistrationDecider
  *   interface provided in CEdgeRegistrationDecider.h file.
  * - \em OPTIMIZER: Class responsible of optimizing the graph. Class should at
- *   least implement the optimizers::CGraphSlamOptimizer_t interface provided
+ *   least implement the optimizers::CGraphSlamOptimizer interface provided
  *   in CGraphslamOptimizer.h file.
  *
  * The GRAPH_t resource is accessed after having locked the relevant section
  * \em m_graph_section. Critical section is also <em> locked prior to the calls
  * to the deciders/optimizers </em>.
  *
- * \ingroup mrpt_graphslam_grp
+ * <b>.ini Configuration Parameters </b>
+ *
+ * \htmlinclude graphslam-engine_config_params_preamble.txt
+ *
+ * - \b output_dir_fname
+ *   + \a Section       : GeneralConfiguration
+ *   + \a Default value : 1 (LVL_INFO)
+ *   + \a Required      : FALSE
+ *
+ * - \b user_decides_about_output_dir
+ *   + \a Section       : GeneralConfiguration
+ *   + \a Default value : FALSE
+ *   + \a Required      : FALSE
+ *   + \a Description   : If flag true and in case of name conflict with output directory of the
+ *   previous execution, a command-line is presented to the user to decide what
+ *   to do about the new output directory. By default output directory from
+ *   previous run is overwritten by the directory of the current run.
+ *
+ * - \b save_graph
+ *   + \a Section       : GeneralConfiguration
+ *   + \a Default value : TRUE
+ *   + \a Required      : FALSE
+ *
+ * - \b save_3DScene
+ *   + \a Section       : GeneralConfiguration
+ *   + \a Default value : TRUE
+ *   + \a Required      : FALSE
+ *
+ * - \b save_graph_fname
+ *   + \a Section       : GeneralConfiguration
+ *   + \a Default value : "output_graph.graph"
+ *   + \a Required      : FALSE
+ *
+ * - \b save_3DScene_fname
+ *   + \a Section       : GeneralConfiguration
+ *   + \a Default value : "scene.3DScene"
+ *   + \a Required      : FALSE
+ *
+ * - \b ground_truth_file_format
+ *   + \a Section       : GeneralConfiguration
+ *   + \a Default value : NavSimul
+ *   + \a Required      : FALSE
+ *   + \a Description   : Specify the format of the ground-truth file if one is
+ *   provided. Currently CGraphSlamEngine supports ground truth files generated
+ *   by the GridMapNavSimul tool or ground truth files corresponding to
+ *   RGBD-TUM datasets.
+ *   + \a Available Options: NavSimul, RGBD_TUM
+ *
+ * - \b class_verbosity
+ *   + \a Section       : GeneralConfiguration
+ *   + \a Default value : 1 (LVL_INFO)
+ *   + \a Required      : FALSE
+ *
+ *
+ * - \b visualize_map
+ *   + \a Section       : VisualizationParameters
+ *   + \a Default value : TRUE
+ *   + \a Required      : FALSE
+ *
+ * - \b visualize_odometry_poses
+ *   + \a Section       : VisualizationParameters
+ *   + \a Default value : TRUE
+ *   + \a Required      : FALSE
+ *
+ * - \b visualize_estimated_trajectory
+ *   + \a Section       : VisualizationParameters
+ *   + \a Default value : TRUE
+ *   + \a Required      : FALSE
+ *
+ * - \b visualize_GT
+ *   + \a Section       : VisualizationParameters
+ *   + \a Default value : TRUE
+ *   + \a Required      : FALSE
+ *
+ * - \b visualize_SLAM_metric
+ *   + \a Section       : VisualizationParameters
+ *   + \a Default value : TRUE
+ *   + \a Required      : FALSE
+ *
+ * - \b enable_curr_pos_viewport
+ *   + \a Section       : VisualizationParameters
+ *   + \a Default value : TRUE
+ *   + \a Required      : FALSE
+ *   + \a Description   : Applicable only when dealing with RGB-D datasets
+ *
+ * - \b enable_range_viewport
+ *   + \a Section       : VisualizationParameters
+ *   + \a Default value : TRUE
+ *   + \a Required      : FALSE
+ *   + \a Description   : Applicable only when dealing with RGB-D datasets
+ *
+ * - \b enable_intensity_viewport
+ *   + \a Section       : VisualizationParameters
+ *   + \a Default value : FALSE
+ *   + \a Required      : FALSE
+ *   + \a Description   : Applicable only when dealing with RGB-D datasets
+ *
+ *
  * \note Implementation can be found in the file \em CGraphSlamEngine_impl.h
+ * \ingroup mrpt_graphslam_grp
  */
 template<
 		class GRAPH_t=typename mrpt::graphs::CNetworkOfPoses2DInf,
@@ -358,7 +459,7 @@ class CGraphSlamEngine {
 		 * \sa updateGTVisualization
 		 * */
 		void updateOdometryVisualization();
-		/**\brief Update the Edstimated robot trajectory with the latest estimated
+		/**\brief Update the Esstimated robot trajectory with the latest estimated
 		 * robot position.
 		 *
 		 * Update CSetOfLines visualization object with the latest graph node
@@ -400,12 +501,12 @@ class CGraphSlamEngine {
 		/**\brief Query the observer instance for any user events.
 		 *
 		 * Query the given observer for any events (keystrokes, mouse clicks,
-		 * that may have occured in the CDisplayWindow3D  and fill in the
+		 * that may have occurred in the CDisplayWindow3D  and fill in the
 		 * corresponding class variables
 		 */
 		inline void queryObserverForEvents();
 
-		/** \brief Comapre the SLAM result (estimated trajectory) with the GT path.
+		/** \brief Compare the SLAM result (estimated trajectory) with the GT path.
 		 *
 		 * See <a href="http://europa.informatik.uni-freiburg.de/files/burgard09iros.pdf">
 		 * A Comparison of SLAM Algorithms Based on a Graph of Relations</a>
@@ -431,7 +532,7 @@ class CGraphSlamEngine {
 		// the graph object to be built and optimized
 		GRAPH_t m_graph;
 
-		// registrator instances
+		// deciders/optimizer instances
 		NODE_REGISTRAR m_node_registrar;
 		EDGE_REGISTRAR m_edge_registrar;
 		OPTIMIZER m_optimizer;
@@ -440,7 +541,7 @@ class CGraphSlamEngine {
 		std::string	m_rawlog_fname;
 
 		std::string	m_fname_GT;
- 		/**\brief Determine if we are to enable visualizatio support or not. */
+ 		/**\brief Determine if we are to enable visualization support or not. */
 		bool m_enable_visuals;
 
 		size_t m_GT_poses_index; /**\brief Counter for reading back the GT_poses. */
@@ -479,7 +580,7 @@ class CGraphSlamEngine {
 		 * \brief Flags for visualizing various trajectories/objects of interest.
 		 *
 		 * These are set from the .ini configuration file. The actual visualization
-		 * of these objects can be overriden if the user issues the corresponding
+		 * of these objects can be overridden if the user issues the corresponding
 		 * keystrokes in the CDisplayWindow3D. In order for them to have any
 		 * effect, a pointer to CDisplayWindow3D has to be given first.
 		 */
@@ -497,7 +598,7 @@ class CGraphSlamEngine {
 		bool m_request_to_exit;
 		bool m_program_paused;
 
-		/**\name textMessage-related Paarameters
+		/**\name textMessage-related Parameters
 		 * Parameters relevant to the textMessages appearing in the visualization
 		 * window. These are divided into
 		 * - Y offsets: vertical position of the textMessage, starting from the top
@@ -505,13 +606,11 @@ class CGraphSlamEngine {
 		 * - Indices: Unique ID number of each textMessage, used for updating it
 		 */
 		/**\{*/
-		// textMessage vertical text position
 		double m_offset_y_odometry;
 		double m_offset_y_GT;
 		double m_offset_y_estimated_traj;
 		double m_offset_y_timestamp;
 
-		// textMessage index
 		int m_text_index_odometry;
 		int m_text_index_GT;
 		int m_text_index_estimated_traj;
@@ -568,7 +667,7 @@ class CGraphSlamEngine {
 
 		size_t m_robot_model_size; /**< How big are the robots going to be in the scene */
 
-		/**\brief Internal counter for querrying for the number of nodeIDs.
+		/**\brief Internal counter for querying for the number of nodeIDs.
 		 *
 		 * Handy for not locking the m_graph resource
 		 */
@@ -588,7 +687,7 @@ class CGraphSlamEngine {
 		/**\{*/
 		/** Map from nodeIDs to their corresponding closest GT pose index.  Keep
 		 * track of the nodeIDs instead of the node positions as the latter are
-		 * about to change in the Edge Registaration / Loop closing procedures
+		 * about to change in the Edge Registration / Loop closing procedures
 		 */
 		std::map<mrpt::utils::TNodeID, size_t> m_nodeID_to_gt_indices;
 		double m_curr_deformation_energy;
