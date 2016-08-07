@@ -45,8 +45,8 @@ mrpt::system::TConsoleColor COutputLogger::logging_levels_to_colors[NUMBER_OF_VE
 
 std::string COutputLogger::logging_levels_to_names[NUMBER_OF_VERBOSITY_LEVELS] = {
  	"DEBUG", //LVL_DEBUG
-	"INFO", // LVL_INFO
-	"WARN", // LVL_WARN
+	"INFO ", // LVL_INFO
+	"WARN ", // LVL_WARN
 	"ERROR" // LVL_ERROR
 };
 

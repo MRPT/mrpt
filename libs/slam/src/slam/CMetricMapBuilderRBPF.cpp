@@ -44,7 +44,8 @@ CMetricMapBuilderRBPF::CMetricMapBuilderRBPF(  const TConstructionOptions &initi
 	odoIncrementSinceLastMapUpdate(),
 	currentMetricMapEstimation(NULL)
 {
-	this->setLoggerName("CMetricMapBuilderRBPF");
+	setLoggerName("CMetricMapBuilderRBPF");
+	setVerbosityLevel(initializationOptions.verbosity_level);
 	// Reset:
 	clear();
 }
@@ -487,7 +488,8 @@ CMetricMapBuilderRBPF::TConstructionOptions::TConstructionOptions() :
 	localizeAngDistance		( DEG2RAD(10) ),
 	PF_options(),
 	mapsInitializers(),
-	predictionOptions()
+	predictionOptions(),
+	verbosity_level(mrpt::utils::LVL_INFO)
 {
 }
 
@@ -502,6 +504,7 @@ void  CMetricMapBuilderRBPF::TConstructionOptions::dumpToTextStream(mrpt::utils:
 	out.printf("insertionAngDistance                    = %f deg\n", RAD2DEG(insertionAngDistance) );
 	out.printf("localizeLinDistance                     = %f m\n", localizeLinDistance );
 	out.printf("localizeAngDistance                     = %f deg\n", RAD2DEG(localizeAngDistance) );
+	out.printf("verbosity_level                         = %s\n", mrpt::utils::TEnumType<mrpt::utils::VerbosityLevel>::value2name(verbosity_level).c_str());
 
 	PF_options.dumpToTextStream(out);
 
@@ -525,10 +528,11 @@ void  CMetricMapBuilderRBPF::TConstructionOptions::loadFromConfigFile(
 	PF_options.loadFromConfigFile(iniFile,section);
 
 	MRPT_LOAD_CONFIG_VAR(insertionLinDistance, float, iniFile,section);
-	insertionAngDistance = DEG2RAD( iniFile.read_double(section,"insertionAngDistance_deg",RAD2DEG(insertionAngDistance) ));
+	MRPT_LOAD_HERE_CONFIG_VAR_DEGREES_NO_DEFAULT(insertionAngDistance_deg, double, insertionAngDistance,  iniFile,section);
 
 	MRPT_LOAD_CONFIG_VAR(localizeLinDistance, float, iniFile,section);
-	localizeAngDistance = DEG2RAD( iniFile.read_double(section,"localizeAngDistance_deg",RAD2DEG(localizeAngDistance) ));
+	MRPT_LOAD_HERE_CONFIG_VAR_DEGREES_NO_DEFAULT(localizeAngDistance_deg, double, localizeAngDistance,  iniFile,section);
+	verbosity_level = iniFile.read_enum<mrpt::utils::VerbosityLevel>(section,"verbosity_level", verbosity_level );
 
 	mapsInitializers.loadFromConfigFile(iniFile,section);
 	predictionOptions.loadFromConfigFile(iniFile,section);
