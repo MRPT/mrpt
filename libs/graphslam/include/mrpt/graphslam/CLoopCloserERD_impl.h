@@ -1707,7 +1707,7 @@ void CLoopCloserERD<GRAPH_t>::updateMapPartitions(bool full_update /* = false */
 	}
 	else {
 		// just use the last node-laser scan pair
-		nodes_to_scans[0] = m_nodes_to_laser_scans2D.at(m_graph->nodeCount()-1);
+		nodes_to_scans.insert(make_pair(m_graph->root, m_nodes_to_laser_scans2D.at(m_graph->nodeCount()-1)));
 	}
 
 	// for each one of the above nodes - add its position and correspoding

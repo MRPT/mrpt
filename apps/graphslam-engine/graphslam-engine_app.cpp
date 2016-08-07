@@ -49,10 +49,10 @@ TCLAP::CmdLine cmd(/*output message = */ " graphslam-engine - Part of the MRPT\n
 		/* delimeter = */ ' ', /* version = */ MRPT_getVersion().c_str());
 
 TCLAP::ValueArg<string> arg_ini_file(/*flag = */ "i", /*name = */ "ini_file",
-		/*desc = */ ".ini configuration file", /* required = */ true,
+		/*desc = */ ".ini configuration file", /* required = */ false,
 		/* default value = */ "", /*typeDesc = */ "config.ini", /*parser = */ cmd);
 TCLAP::ValueArg<string> arg_rawlog_file( "r", "rawlog",
-		"Rawlog dataset file",	true, "", "contents.rawlog", cmd);
+		"Rawlog dataset file",	false, "", "contents.rawlog", cmd);
 
 // OPTIONAL - If dataset was generated from GridMapNavSimul program and the
 // visualize_ground_truth is set to true in the .ini file, the ground truth is
@@ -237,16 +237,18 @@ int main(int argc, char **argv)
 		string edge_reg = arg_edge_reg.getValue();
 		string optimizer = arg_optimizer.getValue();
 		ASSERTMSG_(checkRegistrationDeciderExists(node_reg, "node"),
-				format("Node Registration Decider %s is not available. ", node_reg.c_str()) );
+				format("\nNode Registration Decider %s is not available.\n", node_reg.c_str()) );
 		checkRegistrationDeciderExists(edge_reg, "edge");
 		ASSERTMSG_(checkRegistrationDeciderExists(edge_reg, "edge"),
-				format("Edge Registration Decider %s is not available. ", edge_reg.c_str()) );
+				format("\nEdge Registration Decider %s is not available.\n", edge_reg.c_str()) );
 		ASSERTMSG_(checkOptimizerExists(optimizer),
-				format("Optimizer %s is not available", optimizer.c_str()) );
+				format("\nOptimizer %s is not available\n", optimizer.c_str()) );
 
 		// fetch the filenames
+		ASSERTMSG_(arg_ini_file.isSet(), format("\n.ini file was not provided.\n"));
 		string ini_fname = arg_ini_file.getValue();
 		string ground_truth_fname;
+		ASSERTMSG_(arg_rawlog_file.isSet(), format("\n.rawlog file was not provided.\n"));
 		string rawlog_fname = arg_rawlog_file.getValue();
 		if ( arg_ground_truth_file.isSet() ) {
 			ground_truth_fname = arg_ground_truth_file.getValue();
