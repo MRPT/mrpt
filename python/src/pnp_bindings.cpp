@@ -134,7 +134,7 @@ void export_pnp()
         #endif
         .def("p3p_solve", &PnPAlgos::p3p_solve)
         .def("ppnp_solve", &PnPAlgos::ppnp_solve)
-        .def("rpnp_solve", &PnPAlgos::ppnp_solve)
+        .def("rpnp_solve", &PnPAlgos::rpnp_solve)
         .def("posit_solve", &PnPAlgos::posit_solve)
         .def("lhm_solve", &PnPAlgos::lhm_solve)
     ;
