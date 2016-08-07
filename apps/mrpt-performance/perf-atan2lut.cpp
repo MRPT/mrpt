@@ -39,7 +39,8 @@ double atan2_lut_test_query(int , int )
 	for (unsigned int i=0;i<step;i++)
 	{
 		x+=dx; y+=dy;
-		bool valid = lut.atan2(y,x,atan2val);
+		//bool valid =
+		lut.atan2(y,x,atan2val);
 	}
 	return tictac.Tac()/step;
 }
@@ -85,7 +86,8 @@ double atan2_lut_multires_test_query(int , int )
 	for (unsigned int i=0;i<step;i++)
 	{
 		x+=dx; y+=dy;
-		bool valid = atan2lut.atan2(y,x,atan2val);
+		//bool valid =
+		atan2lut.atan2(y,x,atan2val);
 	}
 	return tictac.Tac()/step;
 }
@@ -125,4 +127,3 @@ void register_tests_atan2lut()
 
 	lstTests.push_back( TestData("CAtan2LUT: raw ::atan2() call", atan2_raw_test_query ) );
 }
-
