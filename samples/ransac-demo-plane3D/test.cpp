@@ -141,8 +141,9 @@ void TestRANSAC()
 	CTicTac	tictac;
 	const size_t TIMES=100;
 
+	math::RANSAC myransac;
 	for (size_t iters=0;iters<TIMES;iters++)
-		math::RANSAC::execute(
+		myransac.execute(
 			data,
 			ransac3Dplane_fit,
 			ransac3Dplane_distance,
@@ -151,7 +152,7 @@ void TestRANSAC()
 			3,  // Minimum set of points
 			best_inliers,
 			best_model,
-			iters==0   // Verbose
+			iters==0 ? mrpt::utils::LVL_DEBUG : mrpt::utils::LVL_INFO  // Verbose
 			);
 
 	cout << "Computation time: " << tictac.Tac()*1000.0/TIMES << " ms" << endl;

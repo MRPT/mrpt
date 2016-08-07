@@ -38,7 +38,8 @@ namespace utils
 		CServerTCPSocket(
 			unsigned short	  listenPort,
 			const std::string &IPaddress = std::string("127.0.0.1"),
-			int               maxConnectionsWaiting = 50
+			int               maxConnectionsWaiting = 50,
+			mrpt::utils::VerbosityLevel verbosityLevel = mrpt::utils::LVL_INFO
 			);
 		virtual ~CServerTCPSocket( ); //!< Dtor
 
