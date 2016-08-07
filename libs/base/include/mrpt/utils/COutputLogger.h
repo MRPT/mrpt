@@ -25,7 +25,7 @@ namespace mrpt { namespace utils {
 
 /** \brief Enumeration of available verbosity levels. \sa COutputLogger */
 enum VerbosityLevel {
-	LVL_DEBUG=0, 
+	LVL_DEBUG=0,
 	LVL_INFO,
 	LVL_WARN,
 	LVL_ERROR,
@@ -33,23 +33,23 @@ enum VerbosityLevel {
 	NUMBER_OF_VERBOSITY_LEVELS
 };
 
-/** \brief Versatile class for consistent logging and 
+/** \brief Versatile class for consistent logging and
  *        management of output messages
  *
  * COutputLogger is a versatile class for logging messages either to the
  * terminal window or to an external file. Class instances can take messages in
- * std::string using the logStr class methods 
+ * std::string using the logStr class methods
  *
  * - Logger instance keeps the messages in an internal container so that upon
  *   request it can dump them either to the console or to an external file
- *   altogether.  
+ *   altogether.
  * - The message, when printed in the terminal window, is **colored** according to
  *   the logger's current verbosity/logging level (Logging level with which
  *   the underlying TMsg instance was instantiatedd).  The available verbosity
  *   levels as well as their corresponding colors are listed below:
  *
  *   + LVL_DEBUG => CONCOL_BLUE
- *   + LVL_INFO  => CONCOL_NORMAL 
+ *   + LVL_INFO  => CONCOL_NORMAL
  *   + LVL_WARN  => CONCOL_GREEN
  *   + LVL_ERROR => CONCOL_RED
  *
@@ -76,7 +76,7 @@ class BASE_IMPEXP COutputLogger {
 		static mrpt::system::TConsoleColor logging_levels_to_colors[NUMBER_OF_VERBOSITY_LEVELS];  //! Map from VerbosityLevels to their corresponding mrpt::system::TConsoleColor. Handy for coloring the input based on the verbosity of the message
 		static std::string logging_levels_to_names[NUMBER_OF_VERBOSITY_LEVELS]; //!< Map from VerbosityLevels to their corresponding names. Handy for printing the current message VerbosityLevel along with the actual content
 
-		/** @name Logging methods 
+		/** @name Logging methods
 		  * @{ */
 
 		/**
@@ -114,7 +114,7 @@ class BASE_IMPEXP COutputLogger {
 		 * \sa logStr, logCond, mrpt::utils:CDebugOutputCapable
 		 */
 		void logFmt(const VerbosityLevel level, const char* fmt, ...) const MRPT_printf_format_check(3,4);  // arg 1=this
-		
+
 		/** \brief Log the given message only if the condition is satisfied.
 		 *
 		 * \sa log, logFmt
@@ -157,7 +157,7 @@ class BASE_IMPEXP COutputLogger {
 		 * \sa writeToFile
 		 */
 		void dumpLogToConsole() const;
-		std::string getLoggerLastMsg() const;  //!< Return the last Tmsg instance registered in the logger history 
+		std::string getLoggerLastMsg() const;  //!< Return the last Tmsg instance registered in the logger history
 		void getLoggerLastMsg(std::string& msg_str) const; //!< Fill inputtted string with the contents of the last message in history
 		void loggerReset(); //!< Reset the contents of the logger instance. Called upon construction.
 
@@ -239,16 +239,16 @@ class BASE_IMPEXP COutputLogger {
 		const COutputLogger &m_logger;
 	};
 
-#define MRPT_LOG_DEBUG(_STRING) this->logStr(mrpt::utils::LVL_DEBUG, _STRING)
-#define MRPT_LOG_INFO(_STRING) this->logStr(mrpt::utils::LVL_INFO, _STRING)
-#define MRPT_LOG_WARN(_STRING) this->logStr(mrpt::utils::LVL_WARN, _STRING)
-#define MRPT_LOG_ERROR(_STRING) this->logStr(mrpt::utils::LVL_ERROR, _STRING)
+#define MRPT_LOG_DEBUG(_STRING) this->logStr(::mrpt::utils::LVL_DEBUG, _STRING)
+#define MRPT_LOG_INFO(_STRING) this->logStr(::mrpt::utils::LVL_INFO, _STRING)
+#define MRPT_LOG_WARN(_STRING) this->logStr(::mrpt::utils::LVL_WARN, _STRING)
+#define MRPT_LOG_ERROR(_STRING) this->logStr(::mrpt::utils::LVL_ERROR, _STRING)
 
 /** Usage: `MRPT_LOG_DEBUG_STREAM << "Var=" << value;` */
-#define MRPT_LOG_DEBUG_STREAM COutputLoggerStreamWrapper(mrpt::utils::LVL_DEBUG,*this)
-#define MRPT_LOG_INFO_STREAM COutputLoggerStreamWrapper(mrpt::utils::LVL_INFO,*this)
-#define MRPT_LOG_WARN_STREAM COutputLoggerStreamWrapper(mrpt::utils::LVL_WARN,*this)
-#define MRPT_LOG_ERROR_STREAM COutputLoggerStreamWrapper(mrpt::utils::LVL_ERROR,*this)
+#define MRPT_LOG_DEBUG_STREAM ::mrpt::utils::COutputLoggerStreamWrapper(::mrpt::utils::LVL_DEBUG,*this)
+#define MRPT_LOG_INFO_STREAM ::mrpt::utils::COutputLoggerStreamWrapper(::mrpt::utils::LVL_INFO,*this)
+#define MRPT_LOG_WARN_STREAM ::mrpt::utils::COutputLoggerStreamWrapper(::mrpt::utils::LVL_WARN,*this)
+#define MRPT_LOG_ERROR_STREAM ::mrpt::utils::COutputLoggerStreamWrapper(::mrpt::utils::LVL_ERROR,*this)
 
 }
 	// Specializations MUST occur at the same namespace:
