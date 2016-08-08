@@ -277,14 +277,14 @@ class BASE_IMPEXP COutputLogger {
 			static void fill(bimap<enum_t,std::string>  &m_map)
 			{
 				using namespace mrpt::utils;
-				m_map.insert(VerbosityLevel::LVL_DEBUG,          "DEBUG");
-				m_map.insert(VerbosityLevel::LVL_DEBUG,          "LVL_DEBUG");
-				m_map.insert(VerbosityLevel::LVL_INFO ,          "INFO");
-				m_map.insert(VerbosityLevel::LVL_INFO ,          "LVL_INFO");
-				m_map.insert(VerbosityLevel::LVL_WARN ,          "WARN");
-				m_map.insert(VerbosityLevel::LVL_WARN ,          "LVL_WARN");
-				m_map.insert(VerbosityLevel::LVL_ERROR,          "ERROR");
-				m_map.insert(VerbosityLevel::LVL_ERROR,          "LVL_ERROR");
+				m_map.insert(LVL_DEBUG,          "DEBUG");
+				m_map.insert(LVL_DEBUG,          "LVL_DEBUG");
+				m_map.insert(LVL_INFO ,          "INFO");
+				m_map.insert(LVL_INFO ,          "LVL_INFO");
+				m_map.insert(LVL_WARN ,          "WARN");
+				m_map.insert(LVL_WARN ,          "LVL_WARN");
+				m_map.insert(LVL_ERROR,          "ERROR");
+				m_map.insert(LVL_ERROR,          "LVL_ERROR");
 			}
 		};
 	} // End of namespace
