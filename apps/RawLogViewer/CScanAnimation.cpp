@@ -260,6 +260,7 @@ void CScanAnimation::BuildMapAndRefresh(CSensoryFrame *sf)
 	bool						wereScans = false;
 	for (CSensoryFrame::iterator it=sf->begin();it!=sf->end();++it)
 	{
+		const std::string sNameInMap = std::string((*it)->GetRuntimeClass()->className) + (*it)->sensorLabel;
 		if (IS_CLASS(*it,CObservation2DRangeScan))
 		{
 			CObservation2DRangeScanPtr obs = CObservation2DRangeScanPtr(*it);
@@ -268,7 +269,7 @@ void CScanAnimation::BuildMapAndRefresh(CSensoryFrame *sf)
 				tim_last = obs->timestamp;
 
 			// Already in the map with the same sensor label?
-			TListGlObjects::iterator it_gl = m_gl_objects.find(obs->sensorLabel);
+			TListGlObjects::iterator it_gl = m_gl_objects.find(sNameInMap);
 			if (it_gl!=m_gl_objects.end())
 			{
 				// Update existing object:
@@ -285,7 +286,7 @@ void CScanAnimation::BuildMapAndRefresh(CSensoryFrame *sf)
 				TRenderObject ro;
 				ro.obj = gl_obj;
 				ro.timestamp = obs->timestamp;
-				m_gl_objects[obs->sensorLabel]=ro;
+				m_gl_objects[sNameInMap]=ro;
 				m_plot3D->m_openGLScene->insert( gl_obj );
 			}
 		}
@@ -304,7 +305,7 @@ void CScanAnimation::BuildMapAndRefresh(CSensoryFrame *sf)
 			pointMap.insertObservation( obs.pointer() );
 
 			// Already in the map with the same sensor label?
-			TListGlObjects::iterator it_gl = m_gl_objects.find(obs->sensorLabel);
+			TListGlObjects::iterator it_gl = m_gl_objects.find(sNameInMap);
 			if (it_gl!=m_gl_objects.end())
 			{
 				// Update existing object:
@@ -323,7 +324,7 @@ void CScanAnimation::BuildMapAndRefresh(CSensoryFrame *sf)
 				TRenderObject ro;
 				ro.obj = gl_obj;
 				ro.timestamp = obs->timestamp;
-				m_gl_objects[obs->sensorLabel]=ro;
+				m_gl_objects[sNameInMap]=ro;
 				m_plot3D->m_openGLScene->insert( gl_obj );
 			}
 			// Add to list:
@@ -343,7 +344,7 @@ void CScanAnimation::BuildMapAndRefresh(CSensoryFrame *sf)
 			obs->point_cloud.clear_deep();
 			
 			// Already in the map with the same sensor label?
-			TListGlObjects::iterator it_gl = m_gl_objects.find(obs->sensorLabel);
+			TListGlObjects::iterator it_gl = m_gl_objects.find(sNameInMap);
 			if (it_gl!=m_gl_objects.end())
 			{
 				// Update existing object:
@@ -362,7 +363,7 @@ void CScanAnimation::BuildMapAndRefresh(CSensoryFrame *sf)
 				TRenderObject ro;
 				ro.obj = gl_obj;
 				ro.timestamp = obs->timestamp;
-				m_gl_objects[obs->sensorLabel]=ro;
+				m_gl_objects[sNameInMap]=ro;
 				m_plot3D->m_openGLScene->insert( gl_obj );
 			}
 		}
