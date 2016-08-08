@@ -114,16 +114,24 @@ dd = sqrt( (4*k2^2 + 4*k4^2)*t^2 + (4*k2*vxi + 4*k4*vyi)*t + vxi^2 + vyi^2 ) dt
 		return std::sqrt(c)*t;
 	}
 }
-
+inline double calc_T_ramp_from_ratio(const double T_ramp_max, double ratio)
+{
+#if 1
+	// Linear:
+	return T_ramp_max * ratio;
+#else
+	// quadratic:
+	return T_ramp_max * (1.0 - mrpt::utils::square(ratio-1.0) );
+#endif
+}
 inline double calc_T_ramp(const double T_ramp_max, double vxi, double vyi, double vxf, double vyf, double V_MAX)
 {
-	return T_ramp_max * std::max( std::abs(vxi-vxf), std::abs(vyi-vyf) ) / V_MAX;
+	return calc_T_ramp_from_ratio(T_ramp_max, std::max( std::abs(vxi-vxf), std::abs(vyi-vyf) ) / (2.0*V_MAX) );
 }
 inline double calc_T_ramp_dir(const double T_ramp_max, double vxi, double vyi, double dir, double V_MAX)
 {
-	return T_ramp_max * std::max( std::abs(vxi-V_MAX*cos(dir)), std::abs(vyi-V_MAX*sin(dir)) ) / V_MAX;
+	return calc_T_ramp_from_ratio(T_ramp_max, std::max( std::abs(vxi-V_MAX*cos(dir)), std::abs(vyi-V_MAX*sin(dir)) ) / (2.0*V_MAX) );
 }
-
 
 CPTG_Holo_Blend::CPTG_Holo_Blend() : 
 	T_ramp_max(-1.0),
@@ -366,7 +374,7 @@ void CPTG_Holo_Blend::directionToMotionCommand( uint16_t k, std::vector<double> 
 	}
 	cmd_vel[1] = dir_local;
 	cmd_vel[2] = std::max( 0.1, calc_T_ramp_dir(T_ramp_max, curVelLocal.vx, curVelLocal.vy, dir_local, V_MAX) );
-	cmd_vel[3] = mrpt::utils::saturate_val(W_MAX * dir_local / (0.5*M_PI), -W_MAX, W_MAX);
+	cmd_vel[3] = mrpt::utils::saturate_val(dir_local/cmd_vel[2], -W_MAX, W_MAX);
 }
 
 size_t CPTG_Holo_Blend::getPathStepCount(uint16_t k) const

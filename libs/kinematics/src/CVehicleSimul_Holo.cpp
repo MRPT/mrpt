@@ -12,7 +12,6 @@
 #include <mrpt/kinematics/CVehicleSimul_Holo.h>
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/random.h>
-#include <mrpt/utils/CDebugOutputCapable.h>
 
 using namespace mrpt::kinematics;
 
