@@ -10,8 +10,6 @@
 #ifndef CLOOPCLOSERERD_H
 #define CLOOPCLOSERERD_H
 
-
-// TODO - remove the ones not needed.
 #include <mrpt/math/CMatrix.h>
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/utils/CLoadableOptions.h>
@@ -58,42 +56,113 @@
 
 namespace mrpt { namespace graphslam { namespace deciders {
 
-/** Edge Registration Decider scheme specialized in Loop Closing.
+/**\brief Edge Registration Decider scheme specialized in Loop Closing.
  *
- * Scheme is implemented based on the following two papers:
+ * ## Description
  *
- * <a
- * href="http://ieeexplore.ieee.org/xpl/login.jsp?tp=&arnumber=1641810&url=http%3A%2F%2Fieeexplore.ieee.org%2Fxpls%2Fabs_all.jsp%3Farnumber%3D1641810">Consistent
+ * Current decider is implemented based on the following papers:
+ *
+ * - [1] <a
+ *   href="http://ieeexplore.ieee.org/xpl/login.jsp?tp=&arnumber=1641810&url=http%3A%2F%2Fieeexplore.ieee.org%2Fxpls%2Fabs_all.jsp%3Farnumber%3D1641810">Consistent
  * Observation Grouping for Generating Metric-Topological Maps that Improves
  * Robot Localization</a> - J. Blanco, J. Gonzalez, J. Antonio Fernandez
  * Madrigal, 2006
- * - We split the under-construction graph into groups of nodes. The groups are
- *   formatted based on the observations gathered each node. The actual split
- *   between the groups is decided by the minimum normalized Cut (minNcut) as
- *   described in the aforementioned paper
- *
- * <a href="https://april.eecs.umich.edu/pdfs/olson2009ras.pdf">Recognizing
+ * - [2] <a href="https://april.eecs.umich.edu/pdfs/olson2009ras.pdf">Recognizing
  * places using spectrally clustered local matches</a> - E. Olson, 2009
- * - Having the groups already assembled, we generate all the hypotheses in
- *   each group and evaluate each set using its corresponding pair-wise
- *   consistency matrix.
  *
- * \b Description
+ * ### Specifications
  *
- * // TODO - add here...
- * // TODO - explain the process/flow of method calls when an LC is detected
- * // Add loop closure images
- * The Edge registration procedure is implemented as described below:
+ * - Map type: 2D
+ * - MRPT rawlog format: #1, #2
+ * - Graph Type: CPosePDFGaussianInf
+ * - Observations: CObservation2DRangeScan
+ * - Edge Registration Strategy: ICP Scan-matching between nearby nodes
+ * - Loop Registration Strategy: Pair-wise Consistency of ICP Edges
  *
+ * ### Loop Closing Strategy
  *
- * \b Specifications
+ * The Loop closure registration strategy is described below:
  *
- * Map type: 2D
- * MRPT rawlog format: #1, #2
- * Observations: CObservation2DRangeScan
- * Edge Registration Strategy: Pair-wise Consistency of ICP Edges
+ * - We split the graph under-construction into groups of nodes. The groups are
+ *   formatted based on the observations gathered in each node position. The
+ *   actual split between the groups is decided by the minimum normalized Cut
+ *   (minNcut) as described in [1].
+ * - Having assembled the groups of nodes, we find the groups that might
+ *   contain loop closure edges (these groups contain successive nodes with large
+ *   difference in their IDs). These groups are then split into two subgroups
+ *   A, B, with the former containing the lower NodeIDs and the latter the
+ *   higher. To minimize computational cost as well as the possibility of wrong
+ *   loop closure registration, we search for loop closures only between the
+ *   <a>last</a> nodes of group B and the <a>first</a> nodes of group A. Based on [2] the
+ *   potential loop closure edges are not evaluated individually but rather in
+ *   sets. Refer to [2] for insight on the algorithm and to
+ *   evaluatePartitionsForLC method for the actual implementation. See below
+ *   for images of potential Loop closure edges.
  *
- * <b>.ini Configuration Parameters </b>
+ * <div>
+ *   <div>
+ *     <img src="graphslam-engine_loop_closing_full.png">
+ *     <caption align="bottom">
+ *     Loop closing schematic. blue nodes belong to group A and have lower
+ *     NodeIDs, while red nodes belong to group B and have higher NodeIDs.
+ *     Nodes of both groups A and B belong to the same partition based on their
+ *     corresponding 2DRangeScan observations.
+ *     </caption>
+ *   </div>
+ *   <div>
+ *     <img src="graphslam-engine_loop_closing_consistency_element.png">
+ *     <caption align="bottom">
+ *     Rigid body transformation of hypotheses and two corresponding
+ *     dijkstra links
+ *     </caption>
+ *   </div>
+ * </div>
+ *
+ * \note
+ * Olson uses the following formula for evaluating the pairwise
+ * consistency between two hypotheses i,j:
+ * <br><center> \f$ A_{i,j} = e^{T \Sigma_T^{-1} T^T} \f$ </center>
+ *
+ * \note
+ * Where: 
+ * - T is the rigid body transformation using the two hypotheses and the two
+ * Dijkstra Links connecting the nodes that form the hypotheses
+ * - \f$ \Sigma_T \f$ is the covariance matrix of the aforementioned rigid
+ * body transformation
+ *
+ * \note
+ * However this formula is <a>inconsistent with the rest of the paper
+ * explanations and mathematical formulas </a>:
+ * - The author states that:
+ *   \verbatim
+"This quantity is proportional to the probability density that the rigid-body
+transformation is the identity matrix (i.e., T = [0 0 0])"
+\endverbatim
+ *   This is \a inconsistent with the given formula. Suppose that a
+ *   wrong loop closure is included in the \f$ A_{i,j} \f$, therefore the
+ *   pairwise-consistency element should have a low value. For this to hold
+ *   true the exponent of the consistency element shoud be small and
+ *   neglecting the covariance matrix of rigid-body transformation  (e.g. unit
+ *   covariance matrix), \f$ T T^T \f$ should be small.
+ *   When a wrong loop closure is evaluated the following quantity
+ *   diverges from \f$ [0, 0, 0] \f$ since the hypotheses do not form a
+ *   correct loop. Therefore the worse the rigid-body transformation the
+ *   higher the exponent term, therefore the higher the consistency element
+ * - Author uses the information matrix \f$ \Sigma_T^{-1} \f$ in the exponential.  
+ *   However in the optimal case (high certainty of two correct loop closure
+ *   hypotheses) information matrix and rigid body transformation vector T
+ *   have opposite effects in the exponent term:
+ *   - \f$ \text{Correct loop closure} \Rightarrow T \rightarrow [0, 0, 0]
+ *   \Rightarrow \text{exponent} \downarrow \f$
+ *   - \f$ \text{Wrong loop closure} \Rightarrow
+ *   \text{diagonal\_terms}(\Sigma_T^{-1}) \uparrow \Rightarrow \text{exponent}
+ *   \downarrow \f$
+ *
+ * \note
+ * Based on the previous comments the following formula is used in the decider:
+ * <br><center> \f$ A_{i,j} = e^{-T \Sigma_T T^T} \f$ </center>
+ *
+ * ### .ini Configuration Parameters
  *
  * \htmlinclude graphslam-engine_config_params_preamble.txt
  *
@@ -134,14 +203,14 @@ namespace mrpt { namespace graphslam { namespace deciders {
  *   + \a Default value : 2
  *   + \a Required      : FALSE
  *   + \a Description   : Minimum ratio of the two dominant eigenvalues for a
- * loop closing hypotheses set to be considered valid
+ *   loop closing hypotheses set to be considered valid
  *
  * - \b LC_check_curr_partition_only
  *   + \a Section       : EdgeRegistrationDeciderParameters
  *   + \a Default value : TRUE
  *   + \a Required      : FALSE
  *   + \a Description   : Boolean flag indicating whether to check for loop
- * closures only in the current node's partition
+ *   closures only in the current node's partition
  *
  * - \b visualize_map_partitions
  *   + \a Section       : VisualizationParameters
@@ -358,17 +427,10 @@ class CLoopCloserERD:
 			/**brief Test weather the constraints are of type CPosePDFGaussian.  */
 			bool isGaussianType() const;
 
-			// TODO - implement these..
-			//operator=(const TPath& other);
-			//operator==(const TPath& other);
-			//operator!=(const TPath& other);
 			TPath& operator+=(const TPath& other);
-			// TODO - add to the dumpToConsole, << operators for monitoring the
 			// results...
 			bool operator==(const TPath& other);
 			bool operator!=(const TPath& other);
-			// TODO - implement this.
-			//bool operator-(const TPath& other);
 
 			// members
 			// ////////////////////////////
@@ -504,11 +566,9 @@ class CLoopCloserERD:
 		 * - b1=>b2 (Dijkstra Link)
 		 * - b2=>a1 (hypothesis - ICP edge)
 		 *
-		 * // TODO - greek letter support ? 
-		 * Given the transformation vector (x,y,phi) of the above composition (e.g. T) the
+		 * Given the transformation vector \f$ (x,y,\phi)\f$ of the above composition (e.g. T) the
 		 * pairwise consistency element would then be: 
-		 * // TODO - include mathemetical formula here
-		 * // TODO - include image of links placement
+ 		 * <br><center> \f$ A_{i,j} = e^{-T \Sigma_T T^T} \f$ </center>
 		 *
 		 */
 		double generatePWConsistencyElement(
@@ -596,7 +656,7 @@ class CLoopCloserERD:
 		std::string m_rawlog_fname;
 
 		bool m_initialized_visuals;
-		bool m_just_inserted_loop_closure; // TODO - implement this
+		bool m_just_inserted_loop_closure;
 
 		bool m_visualize_curr_node_covariance;
 		const mrpt::utils::TColor m_curr_node_covariance_color;

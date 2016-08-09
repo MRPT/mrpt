@@ -34,7 +34,7 @@ namespace mrpt { namespace graphslam { namespace deciders {
  * this class see CICPCriteriaERD.
  *
  * \note As a naming convention, all the implemented edge registration deciders
- * are suffixed with the NRD acronym.
+ * are suffixed with the ERD acronym.
  *
  * \ingroup mrpt_graphslam_grp
  */

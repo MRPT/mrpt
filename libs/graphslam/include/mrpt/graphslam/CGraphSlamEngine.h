@@ -67,17 +67,17 @@
 
 namespace mrpt { namespace graphslam {
 
-/**
+/**\brief Main file for the GraphSlamEngine.
  *
- * \b Description
+ * ## Description
  *
  * Given a dataset of measurements build a graph of nodes (keyframes) and
  * constraints (edges) and solve it to find an estimation of the actual robot
- * path.
- * \todo - add here...
+ * trajectory.
  *
  * The template arguments are listed below:
- * - \em GRAPH_t: The type of Graph to be constructed and optimized.
+ * - \em GRAPH_t: The type of Graph to be constructed and optimized. Currently
+ *   CGraphSlamEngine works only with CPosePDFGaussianInf GRAPH_t instances.
  * - \em NODE_REGISTRAR: Class responsible of adding new nodes in the graph.
  *   Class should at least implement the deciders::CNodeRegistrationDecider
  *   interface provided in CNodeRegistrationDecider.h file.
@@ -86,13 +86,13 @@ namespace mrpt { namespace graphslam {
  *   interface provided in CEdgeRegistrationDecider.h file.
  * - \em OPTIMIZER: Class responsible of optimizing the graph. Class should at
  *   least implement the optimizers::CGraphSlamOptimizer interface provided
- *   in CGraphslamOptimizer.h file.
+ *   in CGraphSlamOptimizer.h file.
  *
- * The GRAPH_t resource is accessed after having locked the relevant section
+ * \note The GRAPH_t resource is accessed after having locked the relevant section
  * \em m_graph_section. Critical section is also <em> locked prior to the calls
  * to the deciders/optimizers </em>.
  *
- * <b>.ini Configuration Parameters </b>
+ * ### .ini Configuration Parameters
  *
  * \htmlinclude graphslam-engine_config_params_preamble.txt
  *
@@ -232,10 +232,9 @@ class CGraphSlamEngine {
 		 * either to <em>RGBD - TUM datasets</em> or to rawlog files generated with
 		 * the \em GridMapNavSimul MRPT application.
 		 *
-		 * \note If caller doesn't provide an mrpt::gui::CDisplayWindow3D instance,
-		 * the application runs on <em> headless mode </em>.  In this case, no
-		 * visual feedback is given but application receives a big boost in
-		 * performance
+		 * \note If enable_visuals is set to false, the application runs on <em>
+		 * headless mode </em>. In this case, no visual feedback is given but
+		 * application receives a big boost in performance
 		 */
 		CGraphSlamEngine(const std::string& config_file,
 				const std::string rawlog_fname="",

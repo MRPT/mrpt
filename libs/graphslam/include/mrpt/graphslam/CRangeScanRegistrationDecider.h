@@ -31,11 +31,13 @@ namespace mrpt { namespace graphslam { namespace deciders {
 
 /**\brief Class for keeping together all the RangeScanner-related functions.
  *
+ * ## Description
+ *
  * Deciders that make use of either 2DRangeScans (laser generated
  * observations) or 3DRangeScans (RGBD-cameras) can inherit from
  * this class in case they want to use the underlying methods
  *
- * <b>.ini Configuration Parameters </b>
+ * ### .ini Configuration Parameters
  *
  * \htmlinclude graphslam-engine_config_params_preamble.txt
  *

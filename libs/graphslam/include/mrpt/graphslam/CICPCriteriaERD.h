@@ -42,8 +42,9 @@
 
 namespace mrpt { namespace graphslam { namespace deciders {
 
-/**\brief ICP-based Edge Registration
- *\b Description
+/**\brief ICP-based Edge Registration.
+ *
+ * ## Description
  *
  * Register new edges in the graph with the last added node. Criterion for
  * adding new edges should be the goodness of the candidate ICP edge. The
@@ -51,14 +52,15 @@ namespace mrpt { namespace graphslam { namespace deciders {
  * inserted node</em>.
  * \sa  getNearbyNodesOf
  *
- * \b Specifications
+ * ### Specifications
  *
- * Map type: 2D
- * MRPT rawlog format: #1, #2
- * Observations: CObservation2DRangeScan, CObservation3DRangeScan
- * Edge Registration Strategy: ICP Goodnesss threshold
+ * - Map type: 2D
+ * - MRPT rawlog format: #1, #2
+ * - Graph Type: CPosePDFGaussianInf
+ * - Observations: CObservation2DRangeScan, CObservation3DRangeScan
+ * - Edge Registration Strategy: ICP Goodnesss threshold
  *
- * <b>.ini Configuration Parameters </b>
+ * ### .ini Configuration Parameters
  *
  * \htmlinclude graphslam-engine_config_params_preamble.txt
  *

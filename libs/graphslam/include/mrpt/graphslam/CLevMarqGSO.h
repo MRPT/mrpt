@@ -36,15 +36,15 @@
 
 namespace mrpt { namespace graphslam { namespace optimizers {
 
-/** Levenberg-Marquardt non-linear graph slam optimization scheme
+/**\brief Levenberg-Marquardt non-linear graph slam optimization scheme.
  *
- * \b Description
+ * ## Description
  *
  * Current decider optimizes the graph according to the
  * graphslam::optimize_spa_levmarq method. Refer to the latter for more
  * details on the implementation.
  *
- * <b>.ini Configuration Parameters </b>
+ * ### .ini Configuration Parameters
  *
  * \htmlinclude graphslam-engine_config_params_preamble.txt
  *

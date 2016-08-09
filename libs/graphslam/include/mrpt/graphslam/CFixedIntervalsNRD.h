@@ -29,7 +29,7 @@ namespace mrpt { namespace graphslam { namespace deciders {
 
 /**\brief Fixed Intervals Odometry-based Node Registration
  *
- * \b Description
+ * ## Description
  *
  * Determine whether to insert a new pose in the graph given the distance and
  * angle thresholds. When the odometry readings indicate that any of the
@@ -41,14 +41,15 @@ namespace mrpt { namespace graphslam { namespace deciders {
  * Decider *does not guarantee* thread safety when accessing the GRAPH_t
  * resource. This is handled by the CGraphSlamEngine instance.
  *
- * \b Specifications
+ * ### Specifications
  *
  * - Map type: 2D
  * - MRPT rawlog format: #1, #2
+ * - Graph Type: CPosePDFGaussianInf
  * - Observations Used: CObservationOdometry, CActionRobotMovement2D
  * - Node Registration Strategy: Fixed Odometry Intervals
  *
- * <b>.ini Configuration Parameters </b>
+ * ### .ini Configuration Parameters
  *
  * \htmlinclude graphslam-engine_config_params_preamble.txt
  *
