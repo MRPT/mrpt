@@ -205,3 +205,12 @@ void TSlidingWindow::dumpToTextStream(
 
 	MRPT_END;
 }
+
+size_t TSlidingWindow::getWindowSize() const {
+	return m_win_size;
+}
+
+bool TSlidingWindow::windowIsFull() const {
+	return (m_win_size == m_measurements_vec.size());
+
+}

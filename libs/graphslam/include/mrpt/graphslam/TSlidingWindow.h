@@ -83,6 +83,16 @@ struct TSlidingWindow: public mrpt::utils::CLoadableOptions {
 		// TODO - make it use the boundaries
 		void 	dumpToTextStream(mrpt::utils::CStream &out) const;
 
+		/**\brief Return the size of the window
+		 */
+		size_t getWindowSize() const;
+		/**\brief Check if the window has reached its limit. This limit is set by
+		 * the user via the resizeWindow method.
+		 *
+		 * \sa resizeWindow
+		 */
+		bool windowIsFull() const;
+
 	private:
 		size_t m_win_size;
 		std::vector<double> m_measurements_vec;
