@@ -28,6 +28,7 @@ using namespace std;
 #include "posit.h"
 #include "lhm.h"
 #include "rpnp.h"
+#include "so3.h"
 
 #if MRPT_HAS_OPENCV
 
@@ -257,6 +258,27 @@ int CPnP::CPnP_lhm(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<E
     mrpt::vision::lhm l(obj_pts_, img_pts_, cam_intrinsic, n);
     
     int ret = l.compute_pose(R,t);
+    
+    Eigen::Quaterniond q(R);
+    
+    pose_mat<<t,q.vec();
+    
+    return ret;
+    
+}
+
+int CPnP::CPnP_so3(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<Eigen::MatrixXd> img_pts, int n, const Eigen::Ref<Eigen::MatrixXd> cam_intrinsic, Eigen::Ref<Eigen::MatrixXd> pose_mat)
+{
+    Eigen::Matrix3d R;
+	Eigen::Vector3d t;
+	
+	Eigen::MatrixXd obj_pts_=obj_pts.transpose(), img_pts_=img_pts.transpose(), cam_intrinsic_ = cam_intrinsic.transpose();
+    
+    mrpt::vision::p3p p(cam_intrinsic_);
+    int ret_ = p.solve(R,t, obj_pts_, img_pts_);
+    
+    mrpt::vision::so3 s(obj_pts_, img_pts_, cam_intrinsic_, n);
+    int ret = s.compute_pose(R,t);
     
     Eigen::Quaterniond q(R);
     
