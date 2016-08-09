@@ -42,7 +42,8 @@
 namespace mrpt { namespace graphslam { namespace deciders {
 
 /**\brief Fixed Intervals ICP-based Node Registration
- * \b Description
+ *
+ * ## Description
  *
  * Current Decider is meant for adding nodes in 2D datasets recorded using
  * a laser range finder or RGB-D camera (e.g. Kinect). No odometry data from
@@ -56,14 +57,15 @@ namespace mrpt { namespace graphslam { namespace deciders {
  * Decider *does not guarantee* thread safety when accessing the GRAPH_t
  * resource. This is handled by the CGraphSlamEngine class.
  *
- * \b Specifications
+ * ### Specifications
  *
  * - Map type: 2D
  * - MRPT rawlog format: #1, #2
+ * - Graph Type: CPosePDFGaussianInf
  * - Observations Used: CObservation2DRangeScan, CObservation3DRangeScan
  * - Node Registration Strategy: Fixed Intervals
  *
- * <b>.ini Configuration Parameters </b>
+ * ### .ini Configuration Parameters
  *
  * \htmlinclude config_params_preamble.txt
  *

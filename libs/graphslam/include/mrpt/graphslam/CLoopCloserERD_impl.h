@@ -147,8 +147,7 @@ bool CLoopCloserERD<GRAPH_t>::updateState(
 	}
 
 	m_time_logger.leave("updateState");
-	// TODO - remove this
-	return false;
+	return true;
 	MRPT_END;
 }
 
@@ -199,7 +198,7 @@ void CLoopCloserERD<GRAPH_t>::addScanMatchingEdges(mrpt::utils::TNodeID curr_nod
 		}
 		double goodness_thresh = m_laser_params.goodness_threshold_win.getMedian()*0.9;
 		bool accept_goodness = icp_info.goodness > goodness_thresh;
-		cout << "Curr. Goodness: " << icp_info.goodness << "|\t Threshold: " << goodness_thresh << " => " << (accept_goodness? "ACCEPT" : "REJECT") << endl;
+		//cout << "Curr. Goodness: " << icp_info.goodness << "|\t Threshold: " << goodness_thresh << " => " << (accept_goodness? "ACCEPT" : "REJECT") << endl;
 
 		// make sure that the suggested edge is logical with regards to current
 		// graph config - check against the current position difference
@@ -278,7 +277,6 @@ void CLoopCloserERD<GRAPH_t>::checkPartitionsForLC(
 	}
 
 	int partitionID = 0;
-	// TODO - maybe check only with the current node partition?
 	// for every partition...
 	for (partitions_t::const_iterator partitions_it = m_curr_partitions.begin();
 			partitions_it != m_curr_partitions.end(); ++partitions_it, ++partitionID)
@@ -392,7 +390,6 @@ void CLoopCloserERD<GRAPH_t>::evaluatePartitionsForLC(
 
 		// groupA
 		// use only the first nodes of groupA
-		// TODO - reconsider using first nodes here?
 		vector_uint groupA(p_it->begin(), p_it->begin()+index_to_split);
 		int first_nodes_to_use = 5;
 		if (groupA.size() > first_nodes_to_use && first_nodes_to_use!=-1) {
@@ -401,7 +398,7 @@ void CLoopCloserERD<GRAPH_t>::evaluatePartitionsForLC(
 		}
 
 		// groupB
-		// use only the last nodes here..
+		// use only the last nodes of groupB..
 		vector_uint groupB(p_it->begin()+index_to_split, p_it->end());
 		int last_nodes_to_use = 5;
 		if (groupB.size() > last_nodes_to_use && last_nodes_to_use!=-1) {
@@ -514,7 +511,7 @@ void CLoopCloserERD<GRAPH_t>::evaluatePartitionsForLC(
 			this->computeDominantEigenVector(consist_matrix, &u, /*use_power_method=*/ false);
 		if (!valid_lambda_ratio) continue;
 
-		cout << "Dominant eigenvector: " << u.transpose() << endl; // TODO - Remove it
+		//cout << "Dominant eigenvector: " << u.transpose() << endl;
 
 		// discretize the indicator vector - maximize the dot product of
 		// w_unit .* u
@@ -675,7 +672,6 @@ double CLoopCloserERD<GRAPH_t>::generatePWConsistencyElement(
 
 	// get the edges of the hypotheses
 	// by default hypotheses are stored bi => ai
-	// TODO - test this
 	std::pair<TNodeID, TNodeID> curr_pair;
 	constraint_t edge_a2b1, edge_b2a1;
 	typename std::map<std::pair<TNodeID, TNodeID>, CLoopCloserERD<GRAPH_t>::THypothesis*>::
@@ -718,9 +714,8 @@ double CLoopCloserERD<GRAPH_t>::generatePWConsistencyElement(
 	CMatrixDouble33 cov_mat;
 	res.getCovariance(cov_mat);
 
-	// TODO - make sure about this
 	// there has to be an error with the initial Olson formula - p.15.
-	// There must be a minus in the exponent + the covariance matrix instead of
+	// There must be a minus in the exponent and the covariance matrix instead of
 	// the information matrix.
 	double exponent = (-T.transpose() * cov_mat * T).value();
 	double consistency_elem = exp(exponent);
@@ -813,8 +808,7 @@ void CLoopCloserERD<GRAPH_t>::execDijkstraProjection(
 		TPath* optimal_path = this->popMinUncertaintyPath(&pool_of_paths);
 		TNodeID dest = optimal_path->getDestination();
 
-		//// TODO Remove these - <<<<<<<<<<<<<<<<<<<<< ^^^UNCOMMENT ABOVE AS WELL^^^
-		//// TODO Remove these - >>>>>>>>>>>>>>>>>>>>
+		//// TODO Remove these - >>>>>>>>>>>>>>>>>>>> ^^^UNCOMMENT ABOVE AS WELL^^^
 		//cout << iters << " " << std::string(40, '>') << endl;
 		//cout << "current path Destination: " << dest << endl;
 		//// printing the pool for verification
@@ -996,8 +990,6 @@ void CLoopCloserERD<GRAPH_t>::getMinUncertaintyPath(
 		}
 	}
 
-	// TODO - add meaningfull assertions here...
-
 	MRPT_END;
 }
 
@@ -1169,7 +1161,7 @@ void CLoopCloserERD<GRAPH_t>::initMapPartitionsVisualization() {
 	using namespace mrpt::opengl;
 
 	// textmessage - display the number of partitions
-	if (m_lc_params.LC_check_curr_partition_only) {
+	if (!m_lc_params.LC_check_curr_partition_only) {
 		m_win_manager->assignTextMessageParameters(
 				/* offset_y*	= */ &m_lc_params.offset_y_map_partitions,
 				/* text_index* = */ &m_lc_params.text_index_map_partitions);
@@ -1196,7 +1188,7 @@ void CLoopCloserERD<GRAPH_t>::updateMapPartitionsVisualization() {
 
 	// textmessage
 	// ////////////////////////////////////////////////////////////
-	if (m_lc_params.LC_check_curr_partition_only) {
+	if (!m_lc_params.LC_check_curr_partition_only) {
 		std::stringstream title;
 		title << "# Partitions: " << m_curr_partitions.size();
 		m_win_manager->addTextMessage(5,-m_lc_params.offset_y_map_partitions,
@@ -1612,7 +1604,6 @@ void CLoopCloserERD<GRAPH_t>::updateCurrCovarianceVisualization() {
 	CRenderizablePtr obj = scene->getByName("cov_ellipsis_obj");
 	CEllipsoidPtr cov_ellipsis_obj = static_cast<CEllipsoidPtr>(obj);
 
-	// TODO - try setting the pose using the curr_pose_pdf.getMeanVal()..
 	// set the pose and corresponding covariance matrix of the ellipsis
 	cov_ellipsis_obj->setLocation(curr_position.x(), curr_position.y(), 0);
 	//pose_t loc = path->curr_pose_pdf.getMeanVal();

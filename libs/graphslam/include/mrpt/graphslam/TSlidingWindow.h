@@ -21,15 +21,18 @@
 
 namespace mrpt { namespace graphslam {
 
-/**\brief Class to monitor the evolution of a statistical quantity. Keeps
- * track of the last N incoming measurements of the quantity at hand and upon
- * request returns statistical properties of these measurements (mean,
+/**\brief Class to monitor the evolution of a statistical quantity.
+ *
+ * ## Description
+ *
+ * Keeps track of the last N incoming measurements of the quantity at hand and
+ * upon request returns statistical properties of these measurements (mean,
  * median, etc.)
  *
- * Class also contains methods for evaluating incoming measurements (weather
- * to accept or reject those)
+ * Class also contains methods for evaluating incoming measurements (whether to
+ * accept or reject those)
  *
- * <b>.ini Configuration Parameters </b>
+ * ### .ini Configuration Parameters </b>
  *
  * \htmlinclude graphslam-engine_config_params_preamble.txt
  *

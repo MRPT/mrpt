@@ -9,7 +9,7 @@
 
 #include <mrpt/graphslam/CEdgeCounter.h>
 
-using namespace mrpt::graphslam;
+namespace mrpt { namespace graphslam {
 
 // implementation file of CEdgeCounter class
 
@@ -385,3 +385,4 @@ void CEdgeCounter::updateTextMessages() const {
 	m_win->forceRepaint();
 }
 
+} } // end of namespaces
