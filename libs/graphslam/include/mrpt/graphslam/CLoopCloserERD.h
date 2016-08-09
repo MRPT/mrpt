@@ -110,13 +110,6 @@ namespace mrpt { namespace graphslam { namespace deciders {
  *   between the current and previous laser scans to correct the robot
  *   trajectory. 
  *
- * - \b goodness_thresh
- *   + \a Section       : EdgeRegistrationDeciderParameters
- *   + \a Default value : 0.75
- *   + \a Required      : FALSE
- *   + \a Description   : Threshold for accepting a scan-matching edge between
- *   the current and previous nodes
- *
  * - \b visualize_laser_scans
  *   + \a Section       : VisualizationParameters
  *   + \a Default value : 10
@@ -237,7 +230,6 @@ class CLoopCloserERD:
 
 				mrpt::slam::CICP icp;
 				// threshold for accepting an ICP constraint in the graph
-				double ICP_goodness_thresh;
 				int prev_nodes_for_ICP; // how many nodes back to check ICP against?
 
  				/** see Constructor for initialization */
@@ -256,10 +248,16 @@ class CLoopCloserERD:
 				 */
 				bool use_scan_matching;
 				bool has_read_config;
-				/** Keep track of the mahalanobis distance between the initial pose
-				 * difference and the suggested new edge for the pairs of checked nodes
+				/**\brief Keep track of the mahalanobis distance between the initial pose
+				 * difference and the suggested new edge for the pairs of checked
+				 * nodes.
 				 */
 				TSlidingWindow mahal_distance_ICP_odom_win;
+				/**\brief Keep track of ICP Goodness values for ICP between nearby
+				 * nodes and adapt the Goodness threshold based on the median of the
+				 * recorded Goodness values.
+				 */
+				TSlidingWindow goodness_threshold_win;
 
 		};
 

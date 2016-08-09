@@ -193,13 +193,21 @@ void CLoopCloserERD<GRAPH_t>::addScanMatchingEdges(mrpt::utils::TNodeID curr_nod
 				&rel_edge,
 				&icp_info);
 
-		// make sure that the suggested edge is logical - check against the current
-		// position difference
-		// format it as a method.
-		bool accept_mahal_distance = this->mahalanobisDistanceOdometryToICPEdge(*node_it, curr_nodeID, rel_edge);
+		// keep track of the recorded goodness values
+		if (!isNaN(icp_info.goodness)) {
+			m_laser_params.goodness_threshold_win.addNewMeasurement(icp_info.goodness);
+		}
+		double goodness_thresh = m_laser_params.goodness_threshold_win.getMedian()*0.9;
+		bool accept_goodness = icp_info.goodness > goodness_thresh;
+		cout << "Curr. Goodness: " << icp_info.goodness << "|\t Threshold: " << goodness_thresh << " => " << (accept_goodness? "ACCEPT" : "REJECT") << endl;
+
+		// make sure that the suggested edge is logical with regards to current
+		// graph config - check against the current position difference
+		bool accept_mahal_distance = this->mahalanobisDistanceOdometryToICPEdge(
+				*node_it, curr_nodeID, rel_edge);
  
 		// criterion for registering a new node
-		if (icp_info.goodness > m_laser_params.ICP_goodness_thresh && accept_mahal_distance) {
+		if (accept_goodness && accept_mahal_distance) {
 			this->registerNewEdge(*node_it, curr_nodeID, rel_edge);
 		}
 	}
@@ -936,7 +944,7 @@ void CLoopCloserERD<GRAPH_t>::getMinUncertaintyPath(
 		CMatrixDouble33 inf_mat;
 		curr_edge.getInformationMatrix(inf_mat);
 
-		if (inf_mat == CMatrixDouble33() || mrpt::math::isNaN(inf_mat(0,0))) {
+		if (inf_mat == CMatrixDouble33() || isNaN(inf_mat(0,0))) {
 			inf_mat.unit();
 			curr_edge.cov_inv = inf_mat;
 		}
@@ -972,7 +980,7 @@ void CLoopCloserERD<GRAPH_t>::getMinUncertaintyPath(
 		CMatrixDouble33 inf_mat;
 		curr_edge.getInformationMatrix(inf_mat);
 
-		if (inf_mat == CMatrixDouble33() || mrpt::math::isNaN(inf_mat(0,0))) {
+		if (inf_mat == CMatrixDouble33() || isNaN(inf_mat(0,0))) {
 			inf_mat.unit();
 			curr_edge.cov_inv = inf_mat;
 		}
@@ -1040,7 +1048,7 @@ bool CLoopCloserERD<GRAPH_t>::mahalanobisDistanceOdometryToICPEdge(
 
 	// mahalanobis distance computation
 	double mahal_distance = mrpt::math::mahalanobisDistance2(mean_diff, cov_mat);
-	bool mahal_distance_null = mrpt::math::isNaN(mahal_distance);
+	bool mahal_distance_null = isNaN(mahal_distance);
 	if (!mahal_distance_null) {
 		m_laser_params.mahal_distance_ICP_odom_win.addNewMeasurement(mahal_distance);
 	}
@@ -1050,9 +1058,9 @@ bool CLoopCloserERD<GRAPH_t>::mahalanobisDistanceOdometryToICPEdge(
 	double threshold = m_laser_params.mahal_distance_ICP_odom_win.getMedian()*4;
 	bool accept_edge = (threshold >= mahal_distance && !mahal_distance_null) ? true : false;
 
-	cout << "Suggested Edge: " << rel_edge.getMeanVal() << "\t Initial Estim: " << initial_estim
-		<< "\tMahalanobis Dist: " << mahal_distance << "\tthreshold: " << threshold
-		<< " =>" << (accept_edge? "ACCEPT": "REJECT") << endl;
+	//cout << "Suggested Edge: " << rel_edge.getMeanVal() << "|\tInitial Estim.: " << initial_estim
+		//<< "|\tMahalanobis Dist: " << mahal_distance << "|\tThresh.: " << threshold
+		//<< " => " << (accept_edge? "ACCEPT": "REJECT") << endl;
 
 	return accept_edge;
 	MRPT_END;
@@ -1833,6 +1841,7 @@ CLoopCloserERD<GRAPH_t>::TLaserParams::TLaserParams():
 	has_read_config(false)
 { 
 	mahal_distance_ICP_odom_win.resizeWindow(200); // use the last X mahalanobis distance values
+	goodness_threshold_win.resizeWindow(200); // use the last X ICP values
 }
 
 template<class GRAPH_t>
@@ -1845,8 +1854,6 @@ void CLoopCloserERD<GRAPH_t>::TLaserParams::dumpToTextStream(
 
 	out.printf("Use scan-matching constraints               = %s\n",
 			use_scan_matching? "TRUE": "FALSE");
-	out.printf("ICP goodness threshold                      = %.2f%% \n",
-			ICP_goodness_thresh*100);
 	out.printf("Num. of previous nodes to check ICP against =  %d\n",
 			prev_nodes_for_ICP);
 	out.printf("Visualize laser scans                       = %s\n",
@@ -1864,11 +1871,7 @@ void CLoopCloserERD<GRAPH_t>::TLaserParams::loadFromConfigFile(
 			section,
 			"use_scan_matching",
 			true, false);
-	ICP_goodness_thresh = source.read_double(
-			section,
-			"ICP_goodness_thresh",
-			0.75, false);
-	prev_nodes_for_ICP = source.read_int( // how many nodes to check ICP against
+		prev_nodes_for_ICP = source.read_int( // how many nodes to check ICP against
 			section,
 			"prev_nodes_for_ICP",
 			10, false);
