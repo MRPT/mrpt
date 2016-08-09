@@ -431,8 +431,7 @@ void CLevMarqGSO<GRAPH_t>::_optimizeGraph() {
 	// fill in the nodes in certain distance to the current node, only if
 	// full_update is not instructed
 
-	bool full_update = opt_params.optimization_distance == -1 ||
-		this->checkForLoopClosures();
+	bool full_update = opt_params.optimization_distance == -1 || this->checkForLoopClosures();
 	if (full_update) {
 		nodes_to_optimize = NULL;
 		m_out_logger.log("Commencing with FULL graph optimization... ", LVL_DEBUG);

@@ -36,6 +36,8 @@
 #include <mrpt/slam/CICP.h>
 #include <mrpt/system/os.h>
 #include <mrpt/system/threads.h>
+#include <mrpt/math/data_utils.h>
+#include <mrpt/graphslam/TSlidingWindow.h>
 
 #include <Eigen/Dense>
 
@@ -254,6 +256,11 @@ class CLoopCloserERD:
 				 */
 				bool use_scan_matching;
 				bool has_read_config;
+				/** Keep track of the mahalanobis distance between the initial pose
+				 * difference and the suggested new edge for the pairs of checked nodes
+				 */
+				TSlidingWindow mahal_distance_ICP_odom_win;
+
 		};
 
 		/**\brief Struct for storing together the loop-closing related parameters.
@@ -380,7 +387,7 @@ class CLoopCloserERD:
 
 		};
 		struct THypothesis {
-			THypothesis() {is_invalid = false; }
+			THypothesis() {is_valid = true; }
 			~THypothesis() { }
 			std::string getAsString(bool oneline=true) const;
 			void getAsString(std::string* str, bool oneline=true) const;
@@ -391,9 +398,23 @@ class CLoopCloserERD:
 
 			constraint_t edge;
 			double goodness;
-			bool is_invalid;
+			bool is_valid;
 
 		};
+
+		/**brief Compare the suggested ICP edge against the initial node
+		 * difference.
+		 *
+		 * If this difference is significantly larger than the rest of of the
+		 * recorded mahalanobis distances, reject the suggested ICP edge.
+		 *
+		 * \return True if suggested ICP edge is accepted
+		 * \note Method updates the Mahalanobis Distance TSlidingWindow which
+		 * keep track of the recorded mahalanobis distance values.
+		 * \sa getICPEdge
+		 */
+		bool mahalanobisDistanceOdometryToICPEdge(const mrpt::utils::TNodeID& from,
+				const mrpt::utils::TNodeID& to, const constraint_t& rel_edge);
 
 		/**\brief Wrapper around the registerNewEdge method which accepts a
 		 * THypothesis object instead.
