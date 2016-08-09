@@ -7,6 +7,9 @@ LIST(APPEND vision_EXTRA_SRCS_NAME 	"maps" "maps" "maps-bcks-compat")
 LIST(APPEND vision_EXTRA_SRCS		"${MRPT_SOURCE_DIR}/libs/vision/src/obs/*.cpp" "${MRPT_SOURCE_DIR}/libs/vision/include/mrpt/slam/CObservation*.h")
 LIST(APPEND vision_EXTRA_SRCS_NAME 	"observations" "observations")
 
+LIST(APPEND vision_EXTRA_SRCS		"${MRPT_SOURCE_DIR}/libs/vision/src/pnp/*.cpp" "${MRPT_SOURCE_DIR}/libs/vision/include/mrpt/vision/pnp_algos.h")
+LIST(APPEND vision_EXTRA_SRCS_NAME 	"pnp" "pnp")
+
 IF(CMAKE_MRPT_HAS_SIFT_HESS)
 	LIST(APPEND vision_EXTRA_SRCS
 		"${MRPT_SOURCE_DIR}/libs/vision/src/sift-hess/imgfeatures.c"
