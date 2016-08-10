@@ -10,6 +10,7 @@
 #ifndef TSLIDINGWINDOW_H
 #define TSLIDINGWINDOW_H
 
+#include "link_pragmas.h"
 #include <mrpt/utils/CLoadableOptions.h>
 
 #include <algorithm> // std::transform
@@ -44,7 +45,7 @@ namespace mrpt { namespace graphslam {
  *
  * \ingroup mrpt_graphslam_grp
  */
-struct TSlidingWindow: public mrpt::utils::CLoadableOptions {
+struct GRAPHSLAM_IMPEXP TSlidingWindow: public mrpt::utils::CLoadableOptions {
 	public:
 		TSlidingWindow(std::string name="window");
 		~TSlidingWindow();

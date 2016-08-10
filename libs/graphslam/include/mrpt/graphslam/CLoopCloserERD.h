@@ -144,19 +144,19 @@ transformation is the identity matrix (i.e., T = [0 0 0])"
  *   true the exponent of the consistency element shoud be small and
  *   neglecting the covariance matrix of rigid-body transformation  (e.g. unit
  *   covariance matrix), \f$ T T^T \f$ should be small.
- *   When a wrong loop closure is evaluated the following quantity
- *   diverges from \f$ [0, 0, 0] \f$ since the hypotheses do not form a
- *   correct loop. Therefore the worse the rigid-body transformation the
- *   higher the exponent term, therefore the higher the consistency element
+ *   When a wrong loop closure is evaluated the aforementioned quantity
+ *   increases since the hypotheses do not form a correct loop. Therefore the
+ *   worse the rigid-body transformation the higher the exponent term,
+ *   therefore the higher the consistency element
  * - Author uses the information matrix \f$ \Sigma_T^{-1} \f$ in the exponential.  
  *   However in the optimal case (high certainty of two correct loop closure
  *   hypotheses) information matrix and rigid body transformation vector T
  *   have opposite effects in the exponent term:
  *   - \f$ \text{Correct loop closure} \Rightarrow T \rightarrow [0, 0, 0]
  *   \Rightarrow \text{exponent} \downarrow \f$
- *   - \f$ \text{Wrong loop closure} \Rightarrow
+ *   - \f$ \text{Correct loop closure} \Rightarrow
  *   \text{diagonal\_terms}(\Sigma_T^{-1}) \uparrow \Rightarrow \text{exponent}
- *   \downarrow \f$
+ *   \uparrow \f$
  *
  * \note
  * Based on the previous comments the following formula is used in the decider:
@@ -258,7 +258,6 @@ class CLoopCloserERD:
 				mrpt::obs::CActionCollectionPtr action,
 				mrpt::obs::CSensoryFramePtr observations,
 				mrpt::obs::CObservationPtr observation );
-
 
 		void setGraphPtr(GRAPH_t* graph);
 		void setRawlogFname(const std::string& rawlog_fname);

@@ -15,7 +15,7 @@ namespace mrpt { namespace graphslam {
  // Ctors, Dtors implementations
 //////////////////////////////////////////////////////////////
 
-template< class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR, class OPTIMIZER>
+template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR, class OPTIMIZER>
 CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::CGraphSlamEngine(
 		const std::string& config_file,
 		const std::string rawlog_fname /* = "" */,
@@ -38,7 +38,7 @@ CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::CGraphSlam
 	this->initCGraphSlamEngine();
 };
 
-template< class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR, class OPTIMIZER>
+template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR, class OPTIMIZER>
 CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::~CGraphSlamEngine() {
 	MRPT_START;
 	using namespace mrpt::utils;
