@@ -324,9 +324,9 @@ void render_node(Lib3dsNode *node, Lib3dsFile	*file)
             }
             else
             {
-              static const Lib3dsRgba a={0.7, 0.7, 0.7, 1.0};
-              static const Lib3dsRgba d={0.7, 0.7, 0.7, 1.0};
-              static const Lib3dsRgba s={1.0, 1.0, 1.0, 1.0};
+              static const Lib3dsRgba a={0.7f, 0.7f, 0.7f, 1.0f};
+              static const Lib3dsRgba d={0.7f, 0.7f, 0.7f, 1.0f};
+              static const Lib3dsRgba s={1.0f, 1.0f, 1.0f, 1.0f};
               glMaterialfv(GL_FRONT, GL_AMBIENT, a);
               glMaterialfv(GL_FRONT, GL_DIFFUSE, d);
               glMaterialfv(GL_FRONT, GL_SPECULAR, s);
