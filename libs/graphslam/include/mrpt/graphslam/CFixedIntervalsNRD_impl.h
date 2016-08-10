@@ -42,11 +42,11 @@ void CFixedIntervalsNRD<GRAPH_t>::initCFixedIntervalsNRD() {
 	m_checked_for_usuable_dataset = false;
 	m_consecutive_invalid_format_instances = 0;
 
-	m_out_logger.setName("CFixedIntervalsNRD");
-	m_out_logger.setLoggingLevel(LVL_DEBUG);
-	m_out_logger.setMinLoggingLevel(LVL_DEBUG);
+	this->logging_enable_keep_record = true;
+	this->setLoggerName("CFixedIntervalsNRD");
+	this->setMinLoggingLevel(LVL_DEBUG);
 
-	m_out_logger.log("IntervalsNRD: Initialized class object", LVL_DEBUG);
+	this->logStr(LVL_DEBUG, "IntervalsNRD: Initialized class object");
 }
 template<class GRAPH_t>
 CFixedIntervalsNRD<GRAPH_t>::~CFixedIntervalsNRD() { }
@@ -77,8 +77,8 @@ bool CFixedIntervalsNRD<GRAPH_t>::updateState(
 				static_cast<CObservationOdometryPtr>(observation);
 			// not incremental - gives the absolute odometry reading
 			m_curr_odometry_only_pose = obs_odometry->odometry;
-			m_out_logger.log(mrpt::format("Current odometry-only pose: %s", m_curr_odometry_only_pose.asString().c_str()),
-						LVL_DEBUG);
+			this->logFmt(LVL_DEBUG, "Current odometry-only pose: %s",
+					m_curr_odometry_only_pose.asString().c_str());
 
 			// I don't have any information about the covariane of the move in
 			// observation-only format
@@ -156,7 +156,7 @@ void CFixedIntervalsNRD<GRAPH_t>::registerNewNode() {
 	MRPT_START;
 	using namespace mrpt::utils;
 
-	m_out_logger.log("In registerNewNode...", LVL_DEBUG);
+	this->logStr(LVL_DEBUG, "In registerNewNode...");
 
 	mrpt::utils::TNodeID from = m_prev_registered_node;
 	mrpt::utils::TNodeID to = ++m_prev_registered_node;
@@ -164,8 +164,8 @@ void CFixedIntervalsNRD<GRAPH_t>::registerNewNode() {
 	m_graph->nodes[to] = m_graph->nodes[from] + m_since_prev_node_PDF.getMeanVal();
 	m_graph->insertEdgeAtEnd(from, to, m_since_prev_node_PDF);
 
-	m_out_logger.log(mrpt::format("Registered new node:\n\t%lu => %lu\n\tEdge: %s",
-				from, to, m_since_prev_node_PDF.getMeanVal().asString().c_str()), LVL_DEBUG);
+	this->logFmt(LVL_DEBUG, "Registered new node:\n\t%lu => %lu\n\tEdge: %s",
+				from, to, m_since_prev_node_PDF.getMeanVal().asString().c_str());
 
 	MRPT_END;
 }
@@ -176,7 +176,7 @@ void CFixedIntervalsNRD<GRAPH_t>::setGraphPtr(GRAPH_t* graph) {
 	m_graph = graph;
 	// get the last registrered node + corresponding pose - root
 	m_prev_registered_node = m_graph->root;
-	m_out_logger.log("Fetched the graph successfully", LVL_DEBUG);
+	this->logStr(LVL_DEBUG, "Fetched the graph successfully");
 }
 
 template<class GRAPH_t>
@@ -208,8 +208,8 @@ void CFixedIntervalsNRD<GRAPH_t>::checkIfInvalidDataset(
 	}
 
 	if (m_consecutive_invalid_format_instances > m_consecutive_invalid_format_instances_thres) {
-		m_out_logger.log("Can't find usuable data in the given dataset.\nMake sure dataset contains valid odometry data.",
-				LVL_ERROR);
+		this->logStr(LVL_ERROR,
+				"Can't find usuable data in the given dataset.\nMake sure dataset contains valid odometry data.");
 		mrpt::system::sleep(5000);
 		m_checked_for_usuable_dataset = true;
 	}
@@ -231,10 +231,10 @@ void CFixedIntervalsNRD<GRAPH_t>::loadParams(const std::string& source_fname) {
 			"NodeRegistrationDeciderParameters",
 			"class_verbosity",
 			1, false);
-	m_out_logger.setMinLoggingLevel(VerbosityLevel(min_verbosity_level));
+	this->setMinLoggingLevel(VerbosityLevel(min_verbosity_level));
 
 
-	m_out_logger.log("Successfully loaded parameters.", LVL_DEBUG);
+	this->logStr(LVL_DEBUG, "Successfully loaded parameters.");
 
 	MRPT_END;
 }
@@ -262,7 +262,7 @@ void CFixedIntervalsNRD<GRAPH_t>::getDescriptiveReport(std::string* report_str) 
 
 	// time and output logging
 	const std::string time_res = m_time_logger.getStatsAsText();
-	const std::string output_res = m_out_logger.getAsString();
+	const std::string output_res = this->getLogAsString();
 
 	// merge the individual reports
 	report_str->clear();

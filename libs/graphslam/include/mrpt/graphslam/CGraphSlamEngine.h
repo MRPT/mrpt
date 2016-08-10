@@ -13,7 +13,6 @@
 #include <mrpt/math/CQuaternion.h>
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/graphs/CNetworkOfPoses.h>
-#include <mrpt/graphslam.h>
 #include <mrpt/gui/CBaseGUIWindow.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/gui/CDisplayWindowPlots.h>
@@ -54,6 +53,7 @@
 #include <mrpt/utils/types_simple.h>
 #include <mrpt/utils/TColor.h>
 #include <mrpt/utils/CImage.h>
+//#include <mrpt/graphslam.h>
 
 #include <cstdlib>
 #include <string>
@@ -198,7 +198,7 @@ template<
 		class NODE_REGISTRAR=typename mrpt::graphslam::deciders::CFixedIntervalsNRD<GRAPH_t>,
 		class EDGE_REGISTRAR=typename mrpt::graphslam::deciders::CICPCriteriaERD<GRAPH_t>,
 		class OPTIMIZER=typename mrpt::graphslam::optimizers::CLevMarqGSO<GRAPH_t> >
-class CGraphSlamEngine {
+class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 	public:
 
 		/**\{*/
@@ -524,8 +524,6 @@ class CGraphSlamEngine {
 
 		// VARIABLES
 		//////////////////////////////////////////////////////////////
-
-		mrpt::utils::COutputLogger m_out_logger; /**<Output logger instance */
 		mrpt::utils::CTimeLogger m_time_logger; /**<Time logger instance */
 
 		/**\brief The graph object to be built and optimized. */

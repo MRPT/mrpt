@@ -66,9 +66,9 @@ void CICPCriteriaNRD<GRAPH_t>::initCICPCriteriaNRD() {
 	m_times_used_odom = 0;
 
 	// logger initialization
-	m_out_logger.setName("CICPCriteriaNRD");
-	m_out_logger.setLoggingLevel(LVL_DEBUG);
-	m_out_logger.log("Initialized class object", LVL_DEBUG);
+	this->logging_enable_keep_record = true;
+	this->setLoggerName("CICPCriteriaNRD");
+	this->logStr(mrpt::utils::LVL_DEBUG, "Initialized class object");
 }
 template<class GRAPH_t>
 CICPCriteriaNRD<GRAPH_t>::~CICPCriteriaNRD() { 
@@ -179,7 +179,7 @@ bool CICPCriteriaNRD<GRAPH_t>::checkRegistrationCondition2D() {
 	using namespace mrpt::math;
 
 	bool registered_new_node = false;
-	m_out_logger.log("In checkRegistrationCondition2D..");
+	this->logStr(mrpt::utils::LVL_DEBUG, "In checkRegistrationCondition2D..");
 
 	constraint_t rel_edge;
 	mrpt::slam::CICP::TReturnInfo icp_info;
@@ -193,10 +193,10 @@ bool CICPCriteriaNRD<GRAPH_t>::checkRegistrationCondition2D() {
 	// append current ICP edge to the sliding window
 	m_ICP_sliding_win.addNewMeasurement(icp_info.goodness);
 
-	m_out_logger.logFmt("Current ICP constraint: \n\tEdge: %s\n\tNorm: %f",
+	this->logFmt(mrpt::utils::LVL_INFO, "Current ICP constraint: \n\tEdge: %s\n\tNorm: %f",
 				rel_edge.getMeanVal().asString().c_str(),
 				rel_edge.getMeanVal().norm());
-	m_out_logger.logFmt("Corresponding Odometry constraint: \n\tEdge: %s\n\tNorm: %f",
+	this->logFmt(mrpt::utils::LVL_INFO, "Corresponding Odometry constraint: \n\tEdge: %s\n\tNorm: %f",
 				m_latest_odometry_PDF.getMeanVal().asString().c_str(),
 				m_latest_odometry_PDF.getMeanVal().norm());
 
@@ -224,17 +224,17 @@ bool CICPCriteriaNRD<GRAPH_t>::checkRegistrationCondition2D() {
 	// use ICP
 	if (mahal_distance < mahal_distance_lim || 
 			m_latest_odometry_PDF.getMeanVal().norm() == 0) {
-		m_out_logger.logFmt("Using the ICP edge... mahal = %f", mahal_distance);
+		this->logFmt(mrpt::utils::LVL_INFO, "Using the ICP edge... mahal = %f", mahal_distance);
 		m_times_used_ICP++;
 	}
 	else {
-		m_out_logger.logFmt(
+		this->logFmt(mrpt::utils::LVL_DEBUG,
 				"Using the odometry rigid body transformation instead... mahal = %f",
 				mahal_distance);
 		rel_edge.copyFrom(m_latest_odometry_PDF);
 		m_times_used_odom++;
 	}
-	m_out_logger.logFmt("Times that the ICP Edge was used: %lu/%lu",
+	this->logFmt(mrpt::utils::LVL_INFO, "Times that the ICP Edge was used: %lu/%lu",
 			m_times_used_ICP, m_times_used_ICP + m_times_used_odom);
 
 	// Criterions for updating PDF since last registered node
@@ -281,7 +281,7 @@ bool CICPCriteriaNRD<GRAPH_t>::checkRegistrationCondition3D() {
 	MRPT_START;
 	bool registered_new_node = false;
 
-	m_out_logger.log("In checkRegistrationCondition3D..");
+	this->logStr(mrpt::utils::LVL_DEBUG, "In checkRegistrationCondition3D..");
 
 	constraint_t* rel_edge = new constraint_t;
 	mrpt::slam::CICP::TReturnInfo icp_info;
@@ -300,21 +300,21 @@ bool CICPCriteriaNRD<GRAPH_t>::checkRegistrationCondition3D() {
 	// - Small Z displacement
 
 	if (!rel_edge) {
-		m_out_logger.logFmt("NULL rel_edge from getICPEdge procedure");
+		this->logFmt(mrpt::utils::LVL_INFO, "NULL rel_edge from getICPEdge procedure");
 		return false;
 	}
 
-	m_out_logger.logFmt("Current ICP constraint: \n\tEdge: %s\n\tNorm: %f",
+	this->logFmt(mrpt::utils::LVL_INFO, "Current ICP constraint: \n\tEdge: %s\n\tNorm: %f",
 				rel_edge->getMeanVal().asString().c_str(),
 				rel_edge->getMeanVal().norm());
-	m_out_logger.logFmt("ICP Alignment operation:\
+	this->logFmt(mrpt::utils::LVL_INFO, "ICP Alignment operation:\
 			\n\tnIterations: %d\
 			\n\tquality: %f\
 			\n\tgoodness: %.f\n",
 			icp_info.nIterations, icp_info.quality, icp_info.goodness);
 
 	if (m_ICP_sliding_win.evaluateMeasurementAbove(icp_info.goodness) ) {
-		m_out_logger.logFmt("Using the above constraint...");
+		this->logFmt(mrpt::utils::LVL_INFO, "Using the above constraint...");
 		m_since_prev_node_PDF += *rel_edge;
 		m_last_laser_scan3D = m_curr_laser_scan3D;
 		registered_new_node = this->checkRegistrationCondition();
@@ -328,7 +328,7 @@ template<class GRAPH_t>
 bool CICPCriteriaNRD<GRAPH_t>::checkRegistrationCondition() {
 	MRPT_START;
 	bool registered_new_node = false;
-	m_out_logger.log("In checkRegistrationCondition");
+	this->logStr(mrpt::utils::LVL_DEBUG, "In checkRegistrationCondition");
 	using namespace mrpt::math;
 
 	// Criterions for adding a new node
@@ -368,8 +368,8 @@ void CICPCriteriaNRD<GRAPH_t>::registerNewNode() {
 	m_graph->nodes[to] = m_graph->nodes[from] + m_since_prev_node_PDF.getMeanVal();
 	m_graph->insertEdgeAtEnd(from, to, m_since_prev_node_PDF);
 
-	m_out_logger.log(format("Registered new node:\n\t%lu => %lu\n\tEdge: %s",
-				from, to, m_since_prev_node_PDF.getMeanVal().asString().c_str()), LVL_INFO);
+	this->logStr(mrpt::utils::LVL_INFO, format("Registered new node:\n\t%lu => %lu\n\tEdge: %s",
+				from, to, m_since_prev_node_PDF.getMeanVal().asString().c_str()));
 
 	MRPT_END;
 }
@@ -382,7 +382,7 @@ void CICPCriteriaNRD<GRAPH_t>::setGraphPtr(GRAPH_t* graph) {
 	// get the last registrered node + corresponding pose - root
 	m_nodeID_max = m_graph->root;
 
-	m_out_logger.log("Fetched the graph successfully", LVL_DEBUG);
+	this->logStr(mrpt::utils::LVL_DEBUG, "Fetched the graph successfully");
 }
 template<class GRAPH_t>
 void CICPCriteriaNRD<GRAPH_t>::loadParams(const std::string& source_fname) {
@@ -404,9 +404,9 @@ void CICPCriteriaNRD<GRAPH_t>::loadParams(const std::string& source_fname) {
 			"NodeRegistrationDeciderParameters",
 			"class_verbosity",
 			1, false);
-	m_out_logger.setMinLoggingLevel(VerbosityLevel(min_verbosity_level));
+	this->setMinLoggingLevel(VerbosityLevel(min_verbosity_level));
 
-	m_out_logger.log("Successfully loaded parameters.", LVL_DEBUG);
+	this->logStr(mrpt::utils::LVL_DEBUG, "Successfully loaded parameters.");
 	MRPT_END;
 }
 template<class GRAPH_t>
@@ -436,7 +436,7 @@ void CICPCriteriaNRD<GRAPH_t>::getDescriptiveReport(std::string* report_str) con
 
 	// time and output logging
 	const std::string time_res = m_time_logger.getStatsAsText();
-	const std::string output_res = m_out_logger.getAsString();
+	const std::string output_res = this->getLogAsString();
 
 	// merge the individual reports
 	report_str->clear();

@@ -14,6 +14,7 @@
 #include <mrpt/obs/CObservation.h>
 #include <mrpt/synch/CCriticalSection.h>
 #include <mrpt/graphs/CNetworkOfPoses.h>
+#include <mrpt/utils/COutputLogger.h>
 #include "CWindowManager.h"
 
 #include <string>
@@ -38,7 +39,7 @@ namespace mrpt { namespace graphslam {
  * \ingroup mrpt_graphslam_grp
  */
 template<class GRAPH_t=typename mrpt::graphs::CNetworkOfPoses2DInf>
-class CRegistrationDeciderOrOptimizer {
+class CRegistrationDeciderOrOptimizer : public mrpt::utils::COutputLogger {
 	public:
 		/**\brief Generic method for fetching the incremental action-observations (or
 		 * observation-only) measurements
