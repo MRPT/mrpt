@@ -227,7 +227,7 @@ int main(int argc, char **argv)
 			}
 
 			if (list_registrars || list_optimizers.getValue()) {
-				logger.log("Exiting.. ");
+				logger.logStr(LVL_INFO, "Exiting.. ");
 				return 0;
 			}
 		}
@@ -255,14 +255,14 @@ int main(int argc, char **argv)
 		}
 
 		if (disable_visuals.getValue()) { // enabling Visualization objects
-			logger.log("Running on headless mode - Visuals disabled", LVL_WARN);
+			logger.logStr(LVL_WARN, "Running on headless mode - Visuals disabled");
 		}
 
 		////////////////////////////////////////////////////////////////////////
 		// take all the different combinations of node / edge registration deciders
 		// one-by-one.
-		logger.log(format("Node registration decider: %s", node_reg.c_str()));
-		logger.log(format("Edge registration decider: %s", edge_reg.c_str()));
+		logger.logStr(LVL_INFO, format("Node registration decider: %s", node_reg.c_str()));
+		logger.logStr(LVL_INFO, format("Edge registration decider: %s", edge_reg.c_str()));
 		if (system::strCmpI(node_reg, "CFixedIntervalsNRD")) {
 			if (system::strCmpI(edge_reg, "CICPCriteriaERD")) { // CFixedIntervalsNRD - CICPCriteriaERD
 				// Initialize the CGraphSlamEngine class

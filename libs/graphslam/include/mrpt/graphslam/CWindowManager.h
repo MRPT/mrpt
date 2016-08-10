@@ -16,7 +16,7 @@ namespace mrpt { namespace graphslam {
  *
  * \ingroup mrpt_graphslam_grp
  */
-class CWindowManager {
+class CWindowManager : public mrpt::utils::COutputLogger {
   public:
   	/**\brief Default class constructor */
   	CWindowManager() {
@@ -49,7 +49,7 @@ class CWindowManager {
     	m_fetched_displaywindow_pointer = true;
     	win = win_in;
 
-    	m_out_logger.log("Fetched the CDisplayWindow3D* successfully");
+    	MRPT_LOG_DEBUG_STREAM << "Fetched the CDisplayWindow3D* successfully";
     }
 		/**\brief Store the CWindowObserver pointer in the CWindowManager instance.
 		 *
@@ -59,7 +59,7 @@ class CWindowManager {
     	m_fetched_observer_pointer = true;
     	observer = obsever_in;
 
-    	m_out_logger.log("Fetched the CWindowObserver* successfully");
+    	MRPT_LOG_DEBUG_STREAM << "Fetched the CWindowObserver* successfully";
     }
 
 		/**\brief Assign the next available offset_y and text_index for the
@@ -144,9 +144,8 @@ class CWindowManager {
     	m_viewp_y = 0.72;
 
 			// loger related directives
-			m_out_logger.setName("CWindowManager");
-			m_out_logger.setLoggingLevel(mrpt::utils::LVL_DEBUG);
-			m_out_logger.log("Initializing...");
+			this->setLoggerName("CWindowManager");
+			MRPT_LOG_DEBUG_STREAM << "Initializing...";
     }
 
 		bool m_fetched_observer_pointer;
@@ -167,7 +166,6 @@ class CWindowManager {
 		double m_viewp_y; /**< vertical layout of the viewports */
 		double m_viewp_margin;
 
-		mrpt::utils::COutputLogger m_out_logger; /**<Output logger instance */
 };
 
 } } // END OF NAMESPACES

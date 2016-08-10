@@ -95,8 +95,8 @@ class CFixedIntervalsNRD:
 		void setGraphPtr(GRAPH_t* graph);
 
 		void loadParams(const std::string& source_fname);
-		void printParams() const; 
-		void getDescriptiveReport(std::string* report_str) const; 
+		void printParams() const;
+		void getDescriptiveReport(std::string* report_str) const;
 
 		/**\brief Method makes use of the CActionCollection/CObservation to update the
 		 * odometry estimation from the last inserted pose
@@ -183,7 +183,6 @@ class CFixedIntervalsNRD:
 		size_t m_consecutive_invalid_format_instances;
 		const size_t m_consecutive_invalid_format_instances_thres;
 
-		mrpt::utils::COutputLogger m_out_logger; /**<Output logger instance */
 		mrpt::utils::CTimeLogger m_time_logger; /**<Time logger instance */
 };
 

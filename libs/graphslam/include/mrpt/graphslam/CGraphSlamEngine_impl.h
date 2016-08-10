@@ -45,21 +45,21 @@ CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::~CGraphSla
 	using namespace mrpt;
 	using namespace std;
 
-	m_out_logger.log("In Destructor: Deleting CGraphSlamEngine instance...", LVL_INFO);
+	this->logStr(LVL_INFO, "In Destructor: Deleting CGraphSlamEngine instance...");
 
 	// close all open files
 	for (fstreams_out_it it  = m_out_streams.begin(); it != m_out_streams.end();
 			++it) {
 		if ((it->second)->fileOpenCorrectly()) {
-			m_out_logger.log(format("Closing file: %s", (it->first).c_str()), LVL_INFO);
+			this->logStr(LVL_INFO, format("Closing file: %s", (it->first).c_str()));
 			(it->second)->close();
 		}
 	}
 
 	// delete m_odometry_poses
 	if (m_odometry_poses.size()) {
-		m_out_logger.log(format("Releasing m_odometry_poses vector; size: %lu",
-					m_odometry_poses.size()), LVL_DEBUG);
+		this->logStr(LVL_DEBUG, format("Releasing m_odometry_poses vector; size: %lu",
+					m_odometry_poses.size()));
 		for (int i = 0; i != m_odometry_poses.size(); ++i) {
 			delete m_odometry_poses[i];
 		}
@@ -76,15 +76,15 @@ CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::~CGraphSla
 		}
 
 		// exiting actions...
-		m_out_logger.log("Releasing CDisplayWindow3D...");
+		this->logStr(LVL_DEBUG, "Releasing CDisplayWindow3D...");
 		delete m_win;
-		m_out_logger.log("Releasing CWindowObserver...");
+		this->logStr(LVL_DEBUG, "Releasing CWindowObserver...");
 		delete m_win_observer;
 	}
 
 	// delete the CDisplayWindowPlots object
 	if (m_win_plot) {
-		m_out_logger.log("Releasing CDisplayWindowPlots... ", LVL_DEBUG);
+		this->logStr(LVL_DEBUG, "Releasing CDisplayWindowPlots... ");
 		delete m_win_plot;
 	}
 
@@ -105,8 +105,8 @@ void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::initC
 
 	// logger instance properties
 	m_time_logger.setName(m_class_name);
-	m_out_logger.setName(m_class_name);
-	m_out_logger.setLoggingLevel(LVL_DEBUG); // default level of the messages
+	this->logging_enable_keep_record = true;
+	this->setLoggerName(m_class_name);
 
 	if (m_enable_visuals) {
 		this->initVisualization();
@@ -115,8 +115,7 @@ void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::initC
 		m_win = NULL;
 		m_win_observer = NULL;
 
-		m_out_logger.log("Visualization is off. Running on headless mode",
-				LVL_WARN);
+		this->logStr(LVL_WARN, "Visualization is off. Running on headless mode");
 	}
 	// set the CDisplayWindowPlots pointer to null for starters, we don't know if
 	// we are using it
@@ -180,7 +179,7 @@ void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::initC
 	}
 
 	if (!m_enable_visuals) {
-		m_out_logger.log("Switching all visualization parameters off...", LVL_WARN);
+		this->logStr(LVL_WARN, "Switching all visualization parameters off...");
 		m_visualize_odometry_poses       = 0;
 		m_visualize_GT                   = 0;
 		m_visualize_map                  = 0;
@@ -193,7 +192,7 @@ void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::initC
 
 	// plot the GT related visuals only if ground-truth file is given
 	if (!m_use_GT) {
-		m_out_logger.log("Ground truth file was not provided. Switching the related visualization parameters off...", LVL_WARN);
+		this->logStr(LVL_WARN, "Ground truth file was not provided. Switching the related visualization parameters off...");
 		m_visualize_GT          = 0;
 		m_visualize_SLAM_metric = 0;
 	}
@@ -339,11 +338,11 @@ void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::initC
 				m_info_params.fields["Overall number of objects"].c_str());
 		m_GT_poses_step = m_GT_poses.size() / num_of_objects;
 
-		m_out_logger.log(format("Overall number of objects in rawlog: %d", num_of_objects), LVL_INFO);
-		m_out_logger.log(format("Setting the Ground truth read step to: %lu", m_GT_poses_step), LVL_INFO);
+		this->logStr(LVL_INFO, format("Overall number of objects in rawlog: %d", num_of_objects));
+		this->logStr(LVL_INFO, format("Setting the Ground truth read step to: %lu", m_GT_poses_step));
 	}
 	catch (std::exception& e) {
-		m_out_logger.log("RGBD_TUM info file was not found.", LVL_INFO);
+		this->logStr(LVL_INFO, "RGBD_TUM info file was not found.");
 	}
 
 	// SLAM evaluation metric
@@ -644,7 +643,7 @@ bool CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::parse
 		}
 
 		if (m_request_to_exit) {
-			m_out_logger.log("Halting execution... ", LVL_INFO);
+			this->logStr(LVL_INFO, "Halting execution... ");
 
 			// exiting actions
 			rawlog_file.close();
@@ -672,7 +671,7 @@ bool CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::parse
 			COpenGLScenePtr& scene = m_win->get3DSceneAndLock();
 			CPlanarLaserScanPtr laser_scan;
 			for (; laser_scan = scene->getByClass<CPlanarLaserScan>() ;) {
-				m_out_logger.log("Removing CPlanarlaserScan from generated 3DScene...", LVL_DEBUG);
+				this->logStr(LVL_DEBUG, "Removing CPlanarlaserScan from generated 3DScene...");
 				scene->removeObject(laser_scan);
 			}
 
@@ -680,7 +679,7 @@ bool CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::parse
 			m_win->forceRepaint();
 		}
 
-		m_out_logger.log("Saving 3D Scene...", LVL_INFO);
+		this->logStr(LVL_INFO, "Saving 3D Scene...");
 		this->save3DScene();
 	}
 
@@ -705,7 +704,7 @@ void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::readC
 	ASSERTMSG_(mrpt::system::fileExists(fname),
 			mrpt::format("\nConfiguration file not found: \n%s\n", fname.c_str()));
 
-	m_out_logger.log("Reading the .ini file... ", LVL_INFO);
+	this->logStr(LVL_INFO, "Reading the .ini file... ");
 
 	CConfigFile cfg_file(fname);
 
@@ -745,7 +744,7 @@ void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::readC
 			"GeneralConfiguration",
 			"class_verbosity",
 			1, false);
-	m_out_logger.setMinLoggingLevel(VerbosityLevel(min_verbosity_level));
+	this->setMinLoggingLevel(VerbosityLevel(min_verbosity_level));
 
 	// Section: VisualizationParameters
 	// ////////////////////////////////
@@ -846,9 +845,6 @@ void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::getPa
 	ss_out << "Ground Truth filename           = "
 		<< m_fname_GT << std::endl;
 
-	ss_out << "Output Verbosity level          = "
-		<< m_out_logger.getLoggingLevel() << std::endl;
-
 	ss_out << "Visualize odometry              = "
 		<< ( m_visualize_odometry_poses ? "TRUE" : "FALSE" ) << std::endl;
 	ss_out << "Visualize estimated trajectory  = "
@@ -892,7 +888,7 @@ void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::initO
 	using namespace mrpt::utils;
 	using namespace mrpt::system;
 
-	m_out_logger.log(format("Setting up Output directory: %s", m_output_dir_fname.c_str()), LVL_INFO);
+	this->logStr(LVL_INFO, format("Setting up Output directory: %s", m_output_dir_fname.c_str()));
 
 	// current time vars - handy in the rest of the function.
 	mrpt::system::TTimeStamp cur_date(getCurrentTime());
@@ -933,7 +929,7 @@ void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::initO
 		{
 			case 2:
 				{
-					m_out_logger.log("Deleting existing files...", LVL_INFO);
+					this->logStr(LVL_INFO, "Deleting existing files...");
 					// purge directory
 					deleteFilesInDirectory(m_output_dir_fname,
 							/*deleteDirectoryAsWell = */ false);
@@ -949,7 +945,7 @@ void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::initO
 				{
 					// rename the whole directory to DATE_TIME_${OUTPUT_DIR_NAME}
 					string dst_fname = m_output_dir_fname + cur_date_validstr;
-					m_out_logger.log(format("Renaming directory to: %s", dst_fname.c_str()), LVL_INFO);
+					this->logStr(LVL_INFO, format("Renaming directory to: %s", dst_fname.c_str()));
 					string* error_msg = NULL;
 					bool did_rename = renameFile(m_output_dir_fname,
 							dst_fname,
@@ -963,12 +959,12 @@ void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::initO
 	} // IF DIRECTORY EXISTS..
 
 	// Now rebuild the directory from scratch
-	m_out_logger.log("Creating the new directory structure...", LVL_INFO);
+	this->logStr(LVL_INFO, "Creating the new directory structure...");
 	string cur_fname;
 
 	// debug_fname
 	createDirectory(m_output_dir_fname);
-	m_out_logger.log("Finished initializing output directory.", LVL_INFO);
+	this->logStr(LVL_INFO, "Finished initializing output directory.");
 
 	MRPT_END;
 } // end of initOutputDir
@@ -981,7 +977,7 @@ void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::initR
 	using namespace std;
 	using namespace mrpt::system;
 
-	m_out_logger.log(mrpt::format("Setting up file: %s", fname.c_str()), LVL_INFO);
+	this->logStr(LVL_INFO, mrpt::format("Setting up file: %s", fname.c_str()));
 
 	// current time vars - handy in the rest of the function.
 	mrpt::system::TTimeStamp cur_date(getCurrentTime());
@@ -1139,7 +1135,7 @@ inline void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>
 
 	m_win->unlockAccess3DScene();
 	m_win->forceRepaint();
-	m_out_logger.log("Updated the \"current_pos\" viewport", LVL_DEBUG);
+	this->logStr(LVL_DEBUG, "Updated the \"current_pos\" viewport");
 
 	MRPT_END;
 }
@@ -1359,7 +1355,7 @@ void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::align
 	ss_out << "rotx: " << endl << rotx << endl;
 	ss_out << "Full rotation matrix: " << endl << m_rot_TUM_to_MRPT << endl;
 
-	m_out_logger.log(ss_out.str(), LVL_DEBUG);
+	this->logStr(LVL_DEBUG, ss_out.str());
 
 	MRPT_END;
 }
@@ -1398,10 +1394,10 @@ void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::query
 
 		// message to the user
 		if (m_program_paused) {
-			m_out_logger.log("Program was paused. Press \"p\" or \"P\" in the dipslay window to resume", LVL_INFO);
+			this->logStr(LVL_INFO, "Program was paused. Press \"p\" or \"P\" in the dipslay window to resume");
 		}
 		else {
-			m_out_logger.log("Program resumed.", LVL_INFO);
+			this->logStr(LVL_INFO, "Program resumed.");
 		}
 
 		while (m_program_paused) {
@@ -1423,7 +1419,7 @@ void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::toggl
 	MRPT_START;
 	using namespace mrpt::utils;
 	using namespace mrpt::opengl;
-	m_out_logger.log("Toggling Odometry visualization...", LVL_INFO);
+	this->logStr(LVL_INFO, "Toggling Odometry visualization...");
 
 	COpenGLScenePtr scene = m_win->get3DSceneAndLock();
 
@@ -1448,7 +1444,7 @@ void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::toggl
 	MRPT_START;
 	using namespace mrpt::opengl;
 	using namespace mrpt::utils;
-	m_out_logger.log("Toggling Ground Truth visualization", LVL_INFO);
+	this->logStr(LVL_INFO, "Toggling Ground Truth visualization");
 
 	COpenGLScenePtr scene = m_win->get3DSceneAndLock();
 
@@ -1475,7 +1471,7 @@ void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::toggl
 	using namespace std;
 	using namespace mrpt::opengl;
 	using namespace mrpt::utils;
-	m_out_logger.log("Toggling Map visualization... ", LVL_INFO);
+	this->logStr(LVL_INFO, "Toggling Map visualization... ");
 
 	COpenGLScenePtr scene = m_win->get3DSceneAndLock();
 
@@ -1511,7 +1507,7 @@ void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::toggl
 	MRPT_START;
 	using namespace mrpt::opengl;
 	using namespace mrpt::utils;
-	m_out_logger.log("Toggling Estimated Trajectory visualization... ", LVL_INFO);
+	this->logStr(LVL_INFO, "Toggling Estimated Trajectory visualization... ");
 
 	COpenGLScenePtr scene = m_win->get3DSceneAndLock();
 
@@ -1538,10 +1534,10 @@ void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::dumpV
 	MRPT_START;
 	using namespace mrpt::utils;
 
-	m_out_logger.log(mrpt::format("Cannot toggle visibility of specified object.\n "
+	this->logStr(LVL_ERROR, mrpt::format("Cannot toggle visibility of specified object.\n "
 			"Make sure that the corresponding visualization flag ( %s "
 			") is set to true in the .ini file.\n",
-			viz_flag.c_str()).c_str(), LVL_ERROR);
+			viz_flag.c_str()).c_str());
 	mrpt::system::sleep(sleep_time);
 
 	MRPT_END;
@@ -1571,7 +1567,7 @@ void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::updat
 			// for all the nodes get the node position and the corresponding laser scan
 			// if they were recorded and visualize them
 			m_graph.getAllNodes(nodes_set);
-			m_out_logger.log("Executing full update of the map", LVL_INFO);
+			this->logStr(LVL_INFO, "Executing full update of the map");
 
 		} // IF FULL UPDATE
 		else { // add only current CSimplePointMap
@@ -1615,8 +1611,8 @@ void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::updat
 
 			CSetOfObjectsPtr scan_obj;
 			if (obj.null()) {
-				m_out_logger.log(mrpt::format("CSetOfObjects for nodeID %lu doesn't exist. Creating it...",
-							*node_it), LVL_DEBUG);
+				this->logStr(LVL_DEBUG, mrpt::format("CSetOfObjects for nodeID %lu doesn't exist. Creating it...",
+							*node_it));
 
 				scan_obj = CSetOfObjects::Create();
 
@@ -1653,13 +1649,13 @@ void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::updat
 			m_win->forceRepaint();
 		}
 		else {
-			m_out_logger.log(mrpt::format("Laser scans of NodeID %lu are empty/invalid", *node_it), LVL_DEBUG);
+			this->logStr(LVL_DEBUG, mrpt::format("Laser scans of NodeID %lu are empty/invalid", *node_it));
 		}
 	}
 
 
 	double elapsed_time = map_update_timer.Tac();
-	m_out_logger.log(mrpt::format("updateMapVisualization took: %fs", elapsed_time), LVL_DEBUG);
+	this->logStr(LVL_DEBUG, mrpt::format("updateMapVisualization took: %fs", elapsed_time));
 	MRPT_END;
 }
 
@@ -1696,6 +1692,7 @@ void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::initV
 	ASSERT_(m_enable_visuals);
 	using namespace mrpt::opengl;
 	using namespace mrpt::gui;
+	using namespace mrpt::utils;
 
 	m_win_observer = new CWindowObserver();
 	m_win = new CDisplayWindow3D("GraphSlam building procedure", 800, 600);
@@ -1708,8 +1705,8 @@ void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::initV
 		m_win->unlockAccess3DScene();
 	}
 
-	m_out_logger.log("Initialized CDisplayWindow3D...");
-	m_out_logger.log("Listening to CDisplayWindow3D events...");
+	this->logStr(LVL_DEBUG, "Initialized CDisplayWindow3D...");
+	this->logStr(LVL_DEBUG, "Listening to CDisplayWindow3D events...");
 
 	m_win_manager.setCDisplayWindow3DPtr(m_win);
 	m_win_manager.setWindowObserverPtr(m_win_observer);
@@ -2080,8 +2077,8 @@ void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::saveG
 	MRPT_START;
 	// assertions are handled in the caller function
 
-	m_out_logger.log(mrpt::format("Saving generated graph in VERTEX/EDGE format: %s", fname.c_str()),
-			LVL_INFO);
+	this->logStr(LVL_INFO,
+			mrpt::format("Saving generated graph in VERTEX/EDGE format: %s", fname.c_str()));
 	m_graph.saveToTextFile(fname);
 
 	MRPT_END;
@@ -2107,7 +2104,7 @@ void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::save3
 
 	// assertions are handled in the caller function
 
-	m_out_logger.log(mrpt::format("Saving generated scene to %s", fname.c_str()), LVL_INFO);
+	this->logStr(LVL_INFO, mrpt::format("Saving generated scene to %s", fname.c_str()));
 	COpenGLScenePtr scene = m_win->get3DSceneAndLock();
 	scene->saveToFile(fname);
 	m_win->unlockAccess3DScene();
@@ -2131,7 +2128,7 @@ void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::compu
 
 	// add to the map - keep track of which gt index corresponds to which nodeID
 	m_nodeID_to_gt_indices[nodeID] = gt_index;
-	m_out_logger.log(mrpt::format("Current nodeID-gt pair: %lu - %lu", nodeID, gt_index), LVL_DEBUG);
+	this->logStr(LVL_DEBUG, mrpt::format("Current nodeID-gt pair: %lu - %lu", nodeID, gt_index));
 
 	// initialize the loop variables only once
 	pose_t curr_node_pos;
@@ -2142,7 +2139,7 @@ void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::compu
 	double rot_diff;
 
 	size_t indices_size = m_nodeID_to_gt_indices.size();
-	m_out_logger.log(mrpt::format("Total size of nodeID - gt_index map: %lu", indices_size), LVL_DEBUG);
+	this->logStr(LVL_DEBUG, mrpt::format("Total size of nodeID - gt_index map: %lu", indices_size));
 
 	// recompute the metric from scratch
 	m_curr_deformation_energy = 0;
@@ -2180,7 +2177,7 @@ void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::compu
 		prev_gt_pos = curr_gt_pos;
 	}
 
-	m_out_logger.log(mrpt::format("Total deformation energy: %f", m_curr_deformation_energy), LVL_DEBUG);
+	this->logStr(LVL_DEBUG, mrpt::format("Total deformation energy: %f", m_curr_deformation_energy));
 
 	MRPT_END;
 }
@@ -2191,7 +2188,7 @@ void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::initS
 	using namespace mrpt::utils;
 	using namespace mrpt::gui;
 
-	m_out_logger.log("In initializeSlamMetricVisualization...", LVL_DEBUG);
+	this->logStr(LVL_DEBUG, "In initializeSlamMetricVisualization...");
 	MRPT_START;
 	ASSERT_(m_visualize_SLAM_metric);
 
@@ -2266,7 +2263,7 @@ void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::getDe
 
 	// time and output logging
 	const std::string time_res = m_time_logger.getStatsAsText();
-	const std::string output_res = m_out_logger.getAsString();
+	const std::string output_res = this->getLogAsString();
 
 	// merge the individual reports
 	report_str->clear();
@@ -2291,7 +2288,7 @@ void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::gener
 	MRPT_START;
 	using namespace mrpt::utils;
 
-	m_out_logger.log("Generating detailed class report...", LVL_INFO);
+	this->logStr(LVL_INFO, "Generating detailed class report...");
 	mrpt::synch::CCriticalSectionLocker m_graph_lock(&m_graph_section);
 
 	std::string report_str;

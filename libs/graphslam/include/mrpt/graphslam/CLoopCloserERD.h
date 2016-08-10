@@ -701,8 +701,6 @@ class CLoopCloserERD:
 		 * certanty of each node position
 		 */
 		std::map<mrpt::utils::TNodeID, TPath*> m_node_optimal_paths;
-
-		mrpt::utils::COutputLogger m_out_logger; /**<Output logger instance */
 		mrpt::utils::CTimeLogger m_time_logger; /**<Time logger instance */
 
 		const std::string m_class_name;

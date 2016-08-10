@@ -294,9 +294,6 @@ void CEdgeCounter::setTextMessageParams(
 		double offset_y = it->second;
 		int text_index = name_to_text_index.find(name)->second;
 
-		//std::cout << "in setTextMessageParams: " << std::endl;
-		//std::cout << "name: " << name << " | offset_y: " << offset_y << " | text_index: " << text_index << std::endl;
-
 		m_name_to_offset_y[name] = offset_y;
 		m_name_to_text_index[name] = text_index;
 
@@ -337,8 +334,6 @@ void CEdgeCounter::updateTextMessages() const {
 	ASSERT_(m_has_read_textmessage_params);
 	ASSERT_EQUAL_(m_name_to_offset_y.size(), m_name_to_text_index.size());
 
-	//std::cout << "Updating total amount of edges" << std::endl;
-
 	//Add text message for the total amount of edges
 	std::stringstream title;
 	title << "Total edges: " <<  this->getTotalNumOfEdges();
@@ -360,8 +355,6 @@ void CEdgeCounter::updateTextMessages() const {
 		double offset_y = it->second;
 		int text_index = m_name_to_text_index.find(name)->second;
 		int edges_num = m_name_to_edges_num.find(name)->second;
-
-		//std::cout << "name: " << name << " | offset_y: " << offset_y << " | text_index: " << text_index << std::endl;
 
 		std::stringstream title;
 		title << "  " << name << ": " <<	edges_num << std::endl;

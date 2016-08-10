@@ -52,10 +52,9 @@ void CICPCriteriaERD<GRAPH_t>::initCICPCriteriaERD() {
 	m_checked_for_usuable_dataset = false;
 	m_consecutive_invalid_format_instances = 0;
 
-	m_out_logger.setName("CICPCriteriaERD");
-	m_out_logger.setLoggingLevel(LVL_DEBUG);
-
-	m_out_logger.log("Initialized class object");
+	this->logging_enable_keep_record = true;
+	this->setLoggerName("CICPCriteriaERD");
+	this->logStr(LVL_DEBUG, "Initialized class object");
 
 	MRPT_END;
 }
@@ -80,7 +79,7 @@ template<class GRAPH_t> bool CICPCriteriaERD<GRAPH_t>::updateState(
 	if (m_last_total_num_of_nodes < m_graph->nodeCount()) {
 		registered_new_node = true;
 		m_last_total_num_of_nodes = m_graph->nodeCount();
-		m_out_logger.log("New node has been registered!");
+		this->logStr(LVL_DEBUG, "New node has been registered!");
 	}
 
 	if (observation.present()) { // observation-only rawlog format
@@ -112,12 +111,12 @@ template<class GRAPH_t> bool CICPCriteriaERD<GRAPH_t>::updateState(
 		if (registered_new_node) {
 			if (!m_last_laser_scan2D.null()) {
 				m_nodes_to_laser_scans2D[m_graph->nodeCount()-1] = m_last_laser_scan2D;
-				m_out_logger.log(mrpt::format("Added laser scans of nodeID: %lu",
+				this->logStr(LVL_DEBUG, mrpt::format("Added laser scans of nodeID: %lu",
 							m_graph->nodeCount()-1));
 			}
 			if (!m_last_laser_scan3D.null()) {
 				m_nodes_to_laser_scans3D[m_graph->nodeCount()-1] = m_last_laser_scan3D;
-				m_out_logger.log(mrpt::format("Added laser scans of nodeID: %lu",
+				this->logStr(LVL_DEBUG, mrpt::format("Added laser scans of nodeID: %lu",
 							m_graph->nodeCount()-1));
 			}
 		}
@@ -139,7 +138,7 @@ template<class GRAPH_t> bool CICPCriteriaERD<GRAPH_t>::updateState(
 				&nodes_to_check_ICP,
 				m_graph->nodeCount()-1,
 				params.ICP_max_distance);
-		m_out_logger.log(mrpt::format("Found * %lu * nodes close to nodeID %lu",
+		this->logStr(LVL_DEBUG, mrpt::format("Found * %lu * nodes close to nodeID %lu",
 				nodes_to_check_ICP.size(),
 				m_graph->nodeCount()-1));
 
@@ -332,7 +331,7 @@ void CICPCriteriaERD<GRAPH_t>::setGraphPtr(GRAPH_t* graph) {
 
 	m_graph = graph;
 
-	m_out_logger.log("Fetched the graph successfully");
+	this->logStr(mrpt::utils::LVL_DEBUG, "Fetched the graph successfully");
 
 	MRPT_END;
 }
@@ -340,9 +339,10 @@ template<class GRAPH_t>
 void CICPCriteriaERD<GRAPH_t>::setRawlogFname(const std::string& rawlog_fname){
 	MRPT_START;
 	using namespace std;
+	using namespace mrpt::utils;
 
 	m_rawlog_fname = rawlog_fname;
-	m_out_logger.log(mrpt::format("Fetched the rawlog filename successfully: %s",
+	this->logStr(LVL_DEBUG, mrpt::format("Fetched the rawlog filename successfully: %s",
 			m_rawlog_fname.c_str()));
 
 	// find the directory of the 3Dscan images in case we are working with
@@ -363,7 +363,7 @@ void CICPCriteriaERD<GRAPH_t>::setRawlogFname(const std::string& rawlog_fname){
 		ss << "Couldn't find 3D scans external storage: " << img_external_storage_dir << endl;
 	}
 
-	m_out_logger.logFmt("%s", ss.str().c_str());
+	this->logFmt(LVL_INFO, "%s", ss.str().c_str());
 
 	MRPT_END;
 }
@@ -402,7 +402,7 @@ void CICPCriteriaERD<GRAPH_t>::toggleLaserScansVisualization() {
 	ASSERTMSG_(m_win_manager, "No CWindowManager* was provided");
 
 
-	m_out_logger.log("Toggling LaserScans visualization...");
+	this->logStr(mrpt::utils::LVL_INFO, "Toggling LaserScans visualization...");
 
 	COpenGLScenePtr scene = m_win->get3DSceneAndLock();
 
@@ -434,7 +434,7 @@ void CICPCriteriaERD<GRAPH_t>::getEdgesStats(
 template<class GRAPH_t>
 void CICPCriteriaERD<GRAPH_t>::initializeVisuals() {
 	MRPT_START;
-	m_out_logger.log("Initializing visuals");
+	this->logStr(mrpt::utils::LVL_DEBUG, "Initializing visuals");
 	m_time_logger.enter("CICPCriteriaERD::Visuals");
 	using namespace mrpt::opengl;
 
@@ -504,12 +504,12 @@ template<class GRAPH_t>
 void CICPCriteriaERD<GRAPH_t>::updateVisuals() {
 	MRPT_START;
 	ASSERT_(m_initialized_visuals);
-	m_out_logger.log("Updating visuals");
 	m_time_logger.enter("CICPCriteriaERD::Visuals");
 	using namespace mrpt::opengl;
 	using namespace mrpt::utils;
 	using namespace mrpt::math;
 	using namespace mrpt::poses;
+	this->logStr(LVL_DEBUG, "Updating visuals");
 
 	// update ICP_max_distance Disk
 	if (m_win && params.ICP_max_distance > 0) {
@@ -593,8 +593,8 @@ void CICPCriteriaERD<GRAPH_t>::checkIfInvalidDataset(
 		return;
 	}
 	if (m_consecutive_invalid_format_instances > m_consecutive_invalid_format_instances_thres) {
-		m_out_logger.log("Can't find usuable data in the given dataset.\nMake sure dataset contains valid CObservation2DRangeScan/CObservation3DRangeScan data.",
-				LVL_ERROR);
+		this->logStr(LVL_ERROR,
+				"Can't find usuable data in the given dataset.\nMake sure dataset contains valid CObservation2DRangeScan/CObservation3DRangeScan data.");
 		mrpt::system::sleep(5000);
 		m_checked_for_usuable_dataset = true;
 	}
@@ -609,10 +609,10 @@ void CICPCriteriaERD<GRAPH_t>::dumpVisibilityErrorMsg(
 	using namespace mrpt::utils;
 	using namespace mrpt;
 
-	m_out_logger.log(format("Cannot toggle visibility of specified object.\n "
+	this->logStr(LVL_ERROR, format("Cannot toggle visibility of specified object.\n "
 			"Make sure that the corresponding visualization flag ( %s "
 			") is set to true in the .ini file.\n",
-			viz_flag.c_str()).c_str(), LVL_ERROR);
+			viz_flag.c_str()).c_str());
 	mrpt::system::sleep(sleep_time);
 
 	MRPT_END;
@@ -626,7 +626,7 @@ void CICPCriteriaERD<GRAPH_t>::loadParams(const std::string& source_fname) {
 
 	params.loadFromConfigFileName(source_fname,
 			"EdgeRegistrationDeciderParameters");
-	m_out_logger.log("Successfully loaded parameters. ");
+	this->logStr(LVL_DEBUG, "Successfully loaded parameters. ");
 
 	// set the logging level if given by the user
 	CConfigFile source(source_fname);
@@ -634,7 +634,7 @@ void CICPCriteriaERD<GRAPH_t>::loadParams(const std::string& source_fname) {
 			"EdgeRegistrationDeciderParameters",
 			"class_verbosity",
 			1, false);
-	m_out_logger.setMinLoggingLevel(VerbosityLevel(min_verbosity_level));
+	this->setMinLoggingLevel(VerbosityLevel(min_verbosity_level));
 
 	MRPT_END;
 }
@@ -662,7 +662,7 @@ void CICPCriteriaERD<GRAPH_t>::getDescriptiveReport(std::string* report_str) con
 
 	// time and output logging
 	const std::string time_res = m_time_logger.getStatsAsText();
-	const std::string output_res = m_out_logger.getAsString();
+	const std::string output_res = this->getLogAsString();
 
 	// merge the individual reports
 	report_str->clear();

@@ -248,8 +248,6 @@ class CICPCriteriaNRD:
 		 */
 		TSlidingWindow m_mahal_distance_ICP_odom;
 
-
-		mrpt::utils::COutputLogger m_out_logger; /**<Output logger instance */
 		mrpt::utils::CTimeLogger m_time_logger; /**<Time logger instance */
 
 		// criteria for adding new a new node

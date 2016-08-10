@@ -10,7 +10,6 @@
 #ifndef CLEVMARQGSO_H
 #define CLEVMARQGSO_H
 
-#include <mrpt/graphslam.h>
 #include <mrpt/obs/CObservationOdometry.h>
 #include <mrpt/obs/CRawlog.h>
 #include <mrpt/obs/CSensoryFrame.h>
@@ -27,7 +26,9 @@
 #include <mrpt/opengl/CRenderizable.h>
 #include <mrpt/utils/TColor.h>
 
-#include "CGraphSlamOptimizer.h"
+//#include <mrpt/graphslam.h>
+#include <mrpt/graphslam/levmarq.h>
+#include <mrpt/graphslam/CGraphSlamOptimizer.h>
 
 #include <iostream>
 #include <string>
@@ -304,8 +305,6 @@ class CLevMarqGSO:
 
 		// Use second thread for graph optimization
 		mrpt::system::TThreadHandle m_thread_optimize;
-
-		mrpt::utils::COutputLogger m_out_logger; /**<Output logger instance */
 		mrpt::utils::CTimeLogger m_time_logger; /**<Time logger instance */
 };
 
