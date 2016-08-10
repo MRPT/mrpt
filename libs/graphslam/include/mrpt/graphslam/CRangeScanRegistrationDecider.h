@@ -77,7 +77,7 @@ namespace mrpt { namespace graphslam { namespace deciders {
  *
  * \ingroup mrpt_graphslam_grp
  */
-template< class GRAPH_t=typename mrpt::graphs::CNetworkOfPoses2DInf>
+template<class GRAPH_t=typename mrpt::graphs::CNetworkOfPoses2DInf>
 class CRangeScanRegistrationDecider {
 	typedef typename GRAPH_t::constraint_t constraint_t;
 	typedef CRangeScanRegistrationDecider<GRAPH_t> self_t;

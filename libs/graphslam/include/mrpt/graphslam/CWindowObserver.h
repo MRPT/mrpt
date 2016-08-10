@@ -10,6 +10,7 @@
 #ifndef CWINDOWOBSERVER_H
 #define CWINDOWOBSERVER_H
 
+#include "link_pragmas.h"
 #include <mrpt/gui/CBaseGUIWindow.h>
 #include <mrpt/utils/CTicTac.h>
 #include <mrpt/utils/TParameters.h>
@@ -27,7 +28,7 @@ namespace mrpt { namespace graphslam {
  *
  * \ingroup mrpt_graphslam_grp
  */
-class CWindowObserver : public mrpt::utils::CObserver
+class GRAPHSLAM_IMPEXP CWindowObserver : public mrpt::utils::CObserver
 {
 public:
 	CWindowObserver();

@@ -528,13 +528,17 @@ class CGraphSlamEngine {
 		mrpt::utils::COutputLogger m_out_logger; /**<Output logger instance */
 		mrpt::utils::CTimeLogger m_time_logger; /**<Time logger instance */
 
-		// the graph object to be built and optimized
+		/**\brief The graph object to be built and optimized. */
 		GRAPH_t m_graph;
 
-		// deciders/optimizer instances
+		/** Decider/Optimizer instances. Delegating the GRAPH_t tasks to these classes
+		 * makes up for a modular and configurable design
+		 */
+		/**\{*/
 		NODE_REGISTRAR m_node_registrar;
 		EDGE_REGISTRAR m_edge_registrar;
 		OPTIMIZER m_optimizer;
+		/**\}*/
 
 		std::string	m_config_fname;
 		std::string	m_rawlog_fname;
@@ -546,13 +550,15 @@ class CGraphSlamEngine {
 		size_t m_GT_poses_index; /**\brief Counter for reading back the GT_poses. */
 		size_t m_GT_poses_step; //**\brief Rate at which to read the GT poses. */
 
-		// parameters related to the application generated files
+		/**\brief parameters related to the application generated files */
+		/**\{*/
 		std::string	m_output_dir_fname;
 		bool m_user_decides_about_output_dir;
 		bool m_save_graph;
 		std::string	m_save_graph_fname;
 		bool m_save_3DScene;
 		std::string	m_save_3DScene_fname;
+		/**\}*/
 
 		bool m_has_read_config;
 		bool m_observation_only_rawlog;
@@ -561,21 +567,16 @@ class CGraphSlamEngine {
 		// closed (if still open) in the class Dtor.
 		fstreams_out m_out_streams;
 
-		// visualization objects
-		mrpt::gui::CDisplayWindow3D* m_win; /**<Pointer to the display window at hand */
-																				/**< It is supported by the calling */
-																				/**< application */
-		mrpt::graphslam::CWindowObserver* m_win_observer; /**<Pointer ot a CWindowObserver instance */
-																								/**<If not on headless mode, */
-																								/**< this should be passed as a*/
-																								/**< class member of a */
-																								/**< CWindowManager instance */
-		mrpt::gui::CDisplayWindowPlots* m_win_plot;	 /**< DisplayPlots instance for visualizing the evolution of the SLAM metric */
-		mrpt::graphslam::CWindowManager m_win_manager;/**<Pointer to the window manager*/
-																							/**< It is supported by the calling */
-																							/**< application */
+		/**\name Visualization - related objects */
+		/**\{*/
+		mrpt::gui::CDisplayWindow3D* m_win; 
+		mrpt::graphslam::CWindowObserver* m_win_observer;
+		/**\brief DisplayPlots instance for visualizing the evolution of the SLAM metric */
+		mrpt::gui::CDisplayWindowPlots* m_win_plot;	 
+		mrpt::graphslam::CWindowManager m_win_manager;
+		/**\}*/
 
-		/** \name Visualization - related variables
+		/** \name Visualization - related flags
 		 * \brief Flags for visualizing various trajectories/objects of interest.
 		 *
 		 * These are set from the .ini configuration file. The actual visualization
@@ -597,7 +598,7 @@ class CGraphSlamEngine {
 		bool m_request_to_exit;
 		bool m_program_paused;
 
-		/**\name textMessage-related Parameters
+		/**\name textMessage - related Parameters
 		 * Parameters relevant to the textMessages appearing in the visualization
 		 * window. These are divided into
 		 * - Y offsets: vertical position of the textMessage, starting from the top

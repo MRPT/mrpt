@@ -23,7 +23,7 @@ namespace mrpt { namespace graphslam { namespace deciders {
  * Handy when you are testing other parts of the application but not the
  * specific registration procedure
  */
-template< class GRAPH_t=typename mrpt::graphs::CNetworkOfPoses2DInf >
+template<class GRAPH_t=typename mrpt::graphs::CNetworkOfPoses2DInf >
 class CEmptyERD:
 	public mrpt::graphslam::deciders::CEdgeRegistrationDecider<GRAPH_t>
 {
