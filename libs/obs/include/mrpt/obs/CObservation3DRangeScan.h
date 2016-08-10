@@ -208,7 +208,7 @@ namespace obs
 		}
 
 		template <class POINTMAP>
-		MRPT_DECLARE_DEPRECATED_FUNCTION("DEPRECATED: Use the other method signature with structured parameters instead.",
+		MRPT_DEPRECATED("DEPRECATED: Use the other method signature with structured parameters instead.")
 		inline void project3DPointsFromDepthImageInto(
 			POINTMAP                   & dest_pointcloud,
 			const bool takeIntoAccountSensorPoseOnRobot,
@@ -225,7 +225,6 @@ namespace obs
 			fp.rangeMask_min=rangeMask_min;
 			detail::project3DPointsFromDepthImageInto<POINTMAP>(*this,dest_pointcloud,pp,fp);
 		}
-		);
 
 		/** This method is equivalent to \c project3DPointsFromDepthImageInto() storing the projected 3D points (without color, in local sensor-centric coordinates) in this same class.
 		  *  For new code it's recommended to use instead \c project3DPointsFromDepthImageInto() which is much more versatile. */
@@ -265,7 +264,7 @@ namespace obs
 		  */
 		void convertTo2DScan(mrpt::obs::CObservation2DRangeScan & out_scan2d, const T3DPointsTo2DScanParams &scanParams, const TRangeImageFilterParams &filterParams = TRangeImageFilterParams() );
 
-		MRPT_DECLARE_DEPRECATED_FUNCTION("DEPRECATED: Use the other method signature with structured parameters instead.",
+		MRPT_DEPRECATED("DEPRECATED: Use the other method signature with structured parameters instead.")
 		void convertTo2DScan(
 			mrpt::obs::CObservation2DRangeScan & out_scan2d,
 			const std::string       & sensorLabel,
@@ -273,8 +272,7 @@ namespace obs
 			const double angle_inf = mrpt::utils::DEG2RAD(5),
 			const double oversampling_ratio = 1.2,
 			const mrpt::math::CMatrix * rangeMask_min = NULL
-			)
-		);
+			);
 
 		/** Whether external files (3D points, range and confidence) are to be 
 		  * saved as `.txt` text files (MATLAB compatible) or `*.bin` binary (faster).
