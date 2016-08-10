@@ -10,18 +10,18 @@
 #define CSCANMATCHING_H
 
 //(*Headers(CScanMatching)
-#include <wx/gauge.h>
-#include <wx/bmpbuttn.h>
-#include <wx/checkbox.h>
-#include <wx/dialog.h>
-#include <wx/sizer.h>
 #include <wx/notebook.h>
-#include <wx/button.h>
-#include <wx/radiobut.h>
-#include <wx/panel.h>
-#include <wx/splitter.h>
+#include <wx/sizer.h>
 #include <wx/stattext.h>
 #include <wx/textctrl.h>
+#include <wx/checkbox.h>
+#include <wx/splitter.h>
+#include <wx/radiobut.h>
+#include <wx/panel.h>
+#include <wx/bmpbuttn.h>
+#include <wx/button.h>
+#include <wx/dialog.h>
+#include <wx/gauge.h>
 //*)
 
 // The "custom class" mpWindow, from the wxMathPlot libray by David Schalig
@@ -37,35 +37,35 @@ public:
     virtual ~CScanMatching();
 
     //(*Declarations(CScanMatching)
-    wxCheckBox* cbAnimate;
-    wxPanel* Panel1;
-    wxButton* btnClose;
-    wxTextCtrl* edOptAlignMap;
+    wxTextCtrl* edOptRefGrid;
+    wxGauge* pbSteps;
+    wxPanel* Panel5;
+    wxNotebook* Notebook1;
     mpWindow* plotMaps;
     wxTextCtrl* edOptRefPnt;
-    wxRadioButton* rbGrid;
-    wxBitmapButton* btnHelp;
-    wxTextCtrl* edOptICP;
-    wxPanel* Panel2;
-    wxButton* btnRunICP;
-    wxTextCtrl* edFirst;
-    wxSplitterWindow* SplitterWindow1;
-    wxGauge* pbSteps;
-    wxStaticText* StaticText3;
-    wxPanel* Panel4;
-    wxSplitterWindow* SplitterWindow2;
-    wxPanel* Panel5;
-    wxPanel* Panel3;
-    wxTextCtrl* txtLog;
-    wxTextCtrl* edSecond;
-    wxStaticText* StaticText4;
-    wxStaticText* StaticText5;
     wxStaticText* StaticText2;
-    wxNotebook* Notebook1;
+    wxPanel* Panel4;
+    wxButton* btnClose;
+    wxTextCtrl* edOptICP;
     wxStaticText* StaticText6;
+    wxTextCtrl* edSecond;
+    wxTextCtrl* edFirst;
+    wxSplitterWindow* SplitterWindow2;
+    wxCheckBox* cbAnimate;
+    wxTextCtrl* edOptAlignMap;
+    wxBitmapButton* btnHelp;
+    wxPanel* Panel1;
+    wxTextCtrl* txtLog;
+    wxStaticText* StaticText3;
+    wxRadioButton* rbGrid;
+    wxPanel* Panel3;
+    wxStaticText* StaticText5;
+    wxButton* btnRunICP;
     wxRadioButton* rbPoint;
-    wxTextCtrl* edOptRefGrid;
+    wxPanel* Panel2;
     wxStaticText* txtStep;
+    wxSplitterWindow* SplitterWindow1;
+    wxStaticText* StaticText4;
     //*)
 
 protected:
