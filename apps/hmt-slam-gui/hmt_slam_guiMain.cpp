@@ -341,7 +341,7 @@ hmt_slam_guiFrame::hmt_slam_guiFrame(wxWindow* parent,wxWindowID id)  :
     Panel7->SetSizer(FlexGridSizer11);
     FlexGridSizer11->Fit(Panel7);
     FlexGridSizer11->SetSizeHints(Panel7);
-    FlexGridSizer10->Add(Panel7, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+    FlexGridSizer10->Add(Panel7, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
     Panel6->SetSizer(FlexGridSizer10);
     FlexGridSizer10->SetSizeHints(Panel6);
     Panel10 = new wxPanel(SplitterWindow2, ID_PANEL12, wxDefaultPosition, wxSize(100,100), wxTAB_TRAVERSAL, _T("ID_PANEL12"));
@@ -365,11 +365,11 @@ hmt_slam_guiFrame::hmt_slam_guiFrame(wxWindow* parent,wxWindowID id)  :
     Panel11->SetSizer(FlexGridSizer13);
     FlexGridSizer13->Fit(Panel11);
     FlexGridSizer13->SetSizeHints(Panel11);
-    FlexGridSizer12->Add(Panel11, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+    FlexGridSizer12->Add(Panel11, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
     Panel10->SetSizer(FlexGridSizer12);
     FlexGridSizer12->SetSizeHints(Panel10);
     SplitterWindow2->SplitHorizontally(Panel6, Panel10);
-    BoxSizer1->Add(SplitterWindow2, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+    BoxSizer1->Add(SplitterWindow2, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
     Panel4->SetSizer(BoxSizer1);
     BoxSizer1->Fit(Panel4);
     BoxSizer1->SetSizeHints(Panel4);

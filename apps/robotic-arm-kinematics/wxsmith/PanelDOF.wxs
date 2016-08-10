@@ -15,7 +15,7 @@
 					<bg>wxSYS_COLOUR_BTNFACE</bg>
 					<style>wxNO_BORDER</style>
 				</object>
-				<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+				<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 				<border>2</border>
 				<option>1</option>
 			</object>
