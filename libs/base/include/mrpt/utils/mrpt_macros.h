@@ -27,22 +27,46 @@
 #else
 #	define MRPT_OVERRIDE
 #endif
-// A cross-compiler definition for "deprecated"-warnings
-#if defined(__clang__) || (defined(__GNUC__) && (__GNUC__ - 0 > 4 || (__GNUC__ - 0 == 4 && __GNUC_MINOR__ - 0 >= 4)))
-   /* gcc >= 4.4 supports deprecated with msgs */
-#   define MRPT_DEPRECATED_PRE(_MSG)
-#   define MRPT_DEPRECATED_POST(_MSG) __attribute__((deprecated(_MSG)))
-# elif defined(_MSC_VER) && (_MSC_VER >= 1300)
-  /* msvc >= 7 */
-#   define MRPT_DEPRECATED_PRE(_MSG)  __declspec(deprecated (_MSG))
-#   define MRPT_DEPRECATED_POST(_MSG)
-# else
-#  define MRPT_DEPRECATED_PRE(_MSG)
-#  define MRPT_DEPRECATED_POST(_MSG)
-# endif
 
-/** Usage: MRPT_DECLARE_DEPRECATED_FUNCTION("Use XX instead", void myFunc(double)); */
-#define MRPT_DECLARE_DEPRECATED_FUNCTION(__MSG, __FUNC) MRPT_DEPRECATED_PRE(__MSG) __FUNC MRPT_DEPRECATED_POST(__MSG)
+
+/**  MRPT_CHECK_GCC_VERSION(MAJ,MIN) */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+#	define MRPT_CHECK_GCC_VERSION( major, minor ) ( ( __GNUC__ > (major) )  || ( __GNUC__ == (major) && __GNUC_MINOR__ >= (minor) ) )
+#else
+#	define MRPT_CHECK_GCC_VERSION( major, minor ) 0
+#endif
+
+/** MRPT_CHECK_VISUALC_VERSION(Version) */
+#ifndef _MSC_VER
+#   define MRPT_VISUALC_VERSION(major) 0
+#   define MRPT_CHECK_VISUALC_VERSION(major) 0
+#else
+/* (From wxWidgets macros):
+Things used to be simple with the _MSC_VER value and the version number
+increasing in lock step, but _MSC_VER value of 1900 is VC14 and not the
+non existing (presumably for the superstitious reasons) VC13, so we now
+need to account for this with an extra offset.
+*/
+#   define MRPT_VISUALC_VERSION(major) ( (6 + (major >= 14 ? 1 : 0) + major) * 100 )
+#   define MRPT_CHECK_VISUALC_VERSION(major) ( _MSC_VER >= MRPT_VISUALC_VERSION(major) )
+#endif
+
+// A cross-compiler definition for "deprecated"-warnings
+/** Usage: MRPT_DEPRECATED("Use XX instead") void myFunc(double); */
+#if defined(__clang__) && defined(__has_extension)
+#	if __has_extension(attribute_deprecated_with_message)
+#		define MRPT_DEPRECATED(msg) __attribute__((deprecated(msg)))
+#	else
+#		define MRPT_DEPRECATED(msg) __attribute__((deprecated))
+#	endif
+#elif MRPT_CHECK_GCC_VERSION(4, 5)
+#	define MRPT_DEPRECATED(msg) __attribute__((deprecated(msg)))
+#elif MRPT_CHECK_VISUALC_VERSION(8)
+#	define MRPT_DEPRECATED(msg) __declspec(deprecated("deprecated: " msg))
+#else
+#	define MRPT_DEPRECATED(msg) 
+#endif
+
 
 /** Declare MRPT_TODO(message)  */
 #if defined(_MSC_VER)
