@@ -48,10 +48,18 @@ void _NAME(const std::string &in_file, bool is3D, TCLAP::CmdLine &cmdline, bool 
 } \
 template <class GRAPHTYPE> void _NAME##impl(const std::string &in_file, bool is3D, TCLAP::CmdLine &cmdline, bool verbose)
 
+/**
+ * http://stackoverflow.com/questions/3982470/what-does-typedef-void-something-mean
+ * Define a pointer-to-function type "TOperationFunctor". TOperationFunctor
+ * returns void and takes 4 input parameters as explained in the latter
+ * parentheses
+ */
 typedef void (*TOperationFunctor)(const std::string &in_file, bool is3D, TCLAP::CmdLine &cmdline, bool verbose);
 
 
-// Frwd. decls:
+/** Forward declaration.
+ * display_graph function template provided in display_graph.cpp
+ */
 template <class GRAPHTYPE> void display_graph(const GRAPHTYPE & g);
 
 DECLARE_OP_FUNCTION(op_view);
@@ -91,6 +99,7 @@ int main(int argc, char **argv)
 	try
 	{
 		// --------------- List of possible operations ---------------
+    // Only one of the following operators have to be specified by the user
 		map<string,TOperationFunctor>  ops_functors;
 
 		arg_ops.push_back(new TCLAP::SwitchArg("","levmarq",
@@ -127,7 +136,8 @@ int main(int argc, char **argv)
 		// Check the selected operation:
 		//  Only one of the ops should be selected:
 		string selected_op;
-		for (size_t i=0;i<arg_ops.size();i++)
+		for (size_t i=0;i<arg_ops.size();i++) 
+    {
 			if (arg_ops[i]->isSet())
 			{
 				if (selected_op.empty())
@@ -138,6 +148,7 @@ int main(int argc, char **argv)
 					"Exactly one operation must be indicated on command line.\n"
 					"Use --help to see the list of possible operations.");
 			}
+    }
 
 		// The "--view" argument needs a bit special treatment:
 		if (selected_op.empty())
@@ -181,6 +192,10 @@ int main(int argc, char **argv)
 	// end:
 	return ret_val;
 }
+
+// ===================================================================================
+//     Implementation of the functions operations
+// ===================================================================================
 
 // -----------------------------------------------------------------------------------
 //  op: --view
@@ -339,5 +354,5 @@ IMPLEMENT_OP_FUNCTION(op_levmarq)
 		VERBOSE_COUT  << "Displaying resulting graph\n";
 		display_graph(g);
 	}
-} // end op_dijkstra
+} // end op_levmarq
 
