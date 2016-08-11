@@ -7,15 +7,12 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-/**
- * Following functions investigate the directory manipulation capabilities in
- * MRPT. Funtions are called from the main function in the end of the
- * script.
+/** Following functions investigate the directory manipulation capabilities in
+ * MRPT. Functions are called from the main function in the end of the script.
  * See each function for the corresponding usage.
  * See http://reference.mrpt.org/stable/group__filesystem.html on the
  * documentation of the functions
  */
-
 
 #include <mrpt/utils.h>
 #include <mrpt/poses/CPose2D.h>
@@ -32,11 +29,8 @@ using namespace mrpt::utils;
 using namespace mrpt::system;
 using namespace std;
 
-/**
- * setupDirContents
- *
- * Create a directory
- * open and write some content in a file inside the directory
+/** Create a directory
+ * Open and write some content in a file inside the directory
  * If directory exists delete it altogether.
  */
 void setupDirContents()
@@ -72,11 +66,9 @@ void setupDirContents()
   }
 }
 
-/**
- * renameDirContents
- *
- * Initialize a directory along with some dummy content
- * Rename the directory and filenames inside it to ${PREVIOUS_FNAME}_renamed_datetime
+/** Initialize a directory along with some dummy content.
+ * Rename the directory and filenames inside it to
+ * ${PREVIOUS_FNAME}_renamed_datetime
  */
 void renameDirContents() {
   string dir_name = "dir_b";
@@ -133,9 +125,9 @@ void renameDirContents() {
 }
 
 
-/**
- * MAIN
- **/
+//
+// MAIN
+//
 int main()
 {
   char c;
