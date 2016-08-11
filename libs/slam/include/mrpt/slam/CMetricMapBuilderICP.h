@@ -41,10 +41,11 @@ namespace slam
 		 struct SLAM_IMPEXP TConfigParams : public mrpt::utils::CLoadableOptions
 		 {
 			 /** Initializer */
-			 TConfigParams (mrpt::utils::VerbosityLevel &parent_verbosity_level);
-			 void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) MRPT_OVERRIDE; // See base docs
-			 void dumpToTextStream(mrpt::utils::CStream &out) const MRPT_OVERRIDE; // See base docs
+			TConfigParams (mrpt::utils::VerbosityLevel &parent_verbosity_level);
+			TConfigParams &operator=(const TConfigParams &other);  //Copy assignment
 
+			void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) MRPT_OVERRIDE; // See base docs
+			void dumpToTextStream(mrpt::utils::CStream &out) const MRPT_OVERRIDE; // See base docs
 			/** (default:false) Match against the occupancy grid or the points map? The former is quicker but less precise. */
 			bool	matchAgainstTheGrid;
 

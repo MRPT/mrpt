@@ -65,6 +65,19 @@ CMetricMapBuilderICP::TConfigParams::TConfigParams(mrpt::utils::VerbosityLevel &
 {
 }
 
+CMetricMapBuilderICP::TConfigParams &CMetricMapBuilderICP::TConfigParams::operator=(const CMetricMapBuilderICP::TConfigParams &other){
+	matchAgainstTheGrid     = other.matchAgainstTheGrid;
+	insertionLinDistance    = other.insertionLinDistance;
+	insertionAngDistance    = other.insertionAngDistance;
+	localizationLinDistance = other.localizationLinDistance;
+	localizationAngDistance = other.localizationAngDistance;
+	minICPgoodnessToAccept  = other.minICPgoodnessToAccept;
+//	We can't copy a reference type
+//	verbosity_level         = other.verbosity_level;
+	mapInitializers         = other.mapInitializers;
+	return *this;
+}
+
 void  CMetricMapBuilderICP::TConfigParams::loadFromConfigFile(
 	const mrpt::utils::CConfigFileBase	&source,
 	const std::string		&section)
