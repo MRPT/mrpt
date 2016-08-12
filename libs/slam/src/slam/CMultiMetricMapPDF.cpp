@@ -377,7 +377,7 @@ void  CMultiMetricMapPDF::rebuildAverageMap()
 /*---------------------------------------------------------------
 						insertObservation
  ---------------------------------------------------------------*/
-void  CMultiMetricMapPDF::insertObservation(CSensoryFrame	&sf)
+bool CMultiMetricMapPDF::insertObservation(CSensoryFrame	&sf)
 {
 	const size_t M = particlesCount();
 
@@ -391,13 +391,16 @@ void  CMultiMetricMapPDF::insertObservation(CSensoryFrame	&sf)
 		CSensoryFramePtr( new CSensoryFrame(sf) ) );
 	SF2robotPath.push_back( m_particles[0].d->robotPath.size()-1 );
 
+	bool anymap = false;
 	for (size_t i=0;i<M;i++)
 	{
 		const CPose3D robotPose(*getLastPose(i));
-		sf.insertObservationsInto( &m_particles[i].d->mapTillNow, &robotPose );
+		const bool map_modified = sf.insertObservationsInto( &m_particles[i].d->mapTillNow, &robotPose );
+		anymap = anymap || map_modified;
 	}
 
 	averageMapIsUpdated = false;
+	return anymap;
 }
 
 /*---------------------------------------------------------------

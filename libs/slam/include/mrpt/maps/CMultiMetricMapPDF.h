@@ -201,8 +201,9 @@ namespace maps
 
 		/** Insert an observation to the map, at each particle's pose and to each particle's metric map.
 		  * \param sf The SF to be inserted
+		  * \return true if any may was updated, false otherwise
 		  */
-		void  insertObservation(mrpt::obs::CSensoryFrame	&sf);
+		bool  insertObservation(mrpt::obs::CSensoryFrame	&sf);
 
 		/** Return the path (in absolute coordinate poses) for the i'th particle.
 		  * \exception On index out of bounds
