@@ -344,7 +344,9 @@ void  CMetricMapBuilderICP::processObservation(const CObservationPtr &obs)
 			MRPT_LOG_INFO(mrpt::format("Updating map from pose %s\n",currentKnownRobotPose.asString().c_str()));
 
 			CPose3D		estimatedPose3D(currentKnownRobotPose);
-			metricMap.insertObservationPtr(obs,&estimatedPose3D);
+			const bool anymap_update = metricMap.insertObservationPtr(obs,&estimatedPose3D);
+			if (!anymap_update)
+				MRPT_LOG_WARN_STREAM << "**No map was updated** after inserting an observation of type `"<< obs->GetRuntimeClass()->className << "`";
 
 			// Add to the vector of "poses"-"SFs" pairs:
 			CPosePDFGaussian	posePDF(currentKnownRobotPose);

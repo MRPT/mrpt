@@ -231,7 +231,9 @@ void  CMetricMapBuilderRBPF::processActionObservation(
 		MRPT_LOG_INFO("New observation inserted into the map.");
 
 		// Add current observation to the map:
-		mapPDF.insertObservation(observations);
+		const bool anymap_update = mapPDF.insertObservation(observations);
+		if (!anymap_update)
+			MRPT_LOG_WARN_STREAM << "**No map was updated** after inserting a CSensoryFrame with "<< observations.size();
 
 		m_statsLastIteration.observationsInserted = true;
 	}
