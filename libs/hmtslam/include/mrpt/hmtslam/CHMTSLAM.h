@@ -338,7 +338,7 @@ namespace mrpt
 			  */
 			CHMTSLAM( );
 
-			CHMTSLAM(const CHMTSLAM &) { THROW_EXCEPTION("This object cannot be copied."); }
+			CHMTSLAM(const CHMTSLAM &) : mrpt::utils::COutputLogger() { THROW_EXCEPTION("This object cannot be copied."); }
 			const CHMTSLAM& operator =(const CHMTSLAM &) { THROW_EXCEPTION("This object cannot be copied."); }
 
 			/** Destructor
