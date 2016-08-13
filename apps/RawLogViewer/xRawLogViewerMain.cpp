@@ -516,7 +516,7 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent,wxWindowID id)
 	Panel3 = new wxPanel(SplitterWindow3, ID_PANEL3, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL3"));
 	BoxSizer2 = new wxBoxSizer(wxHORIZONTAL);
 	memo = new wxTextCtrl(Panel3, ID_TEXTCTRL1, wxEmptyString, wxDefaultPosition, wxSize(327,140), wxTE_MULTILINE|wxTE_READONLY|wxTE_WORDWRAP|wxNO_BORDER|wxVSCROLL, wxDefaultValidator, _T("ID_TEXTCTRL1"));
-	wxFont memoFont(10,wxTELETYPE,wxFONTSTYLE_NORMAL,wxNORMAL,false,_T("Courier 10 Pitch"),wxFONTENCODING_DEFAULT);
+	wxFont memoFont(10,wxFONTFAMILY_TELETYPE,wxFONTSTYLE_NORMAL,wxNORMAL,false,_T("Courier 10 Pitch"),wxFONTENCODING_DEFAULT);
 	memo->SetFont(memoFont);
 	BoxSizer2->Add(memo, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
 	Panel3->SetSizer(BoxSizer2);
@@ -539,7 +539,7 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent,wxWindowID id)
 	SplitterWindow2->SetMinimumPaneSize(100);
 	memStats = new wxTextCtrl(SplitterWindow2, ID_TEXTCTRL2, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE|wxTE_READONLY|wxVSCROLL, wxDefaultValidator, _T("ID_TEXTCTRL2"));
 	memStats->SetMinSize(wxSize(-1,150));
-	wxFont memStatsFont(10,wxTELETYPE,wxFONTSTYLE_NORMAL,wxNORMAL,false,_T("Monospace"),wxFONTENCODING_DEFAULT);
+	wxFont memStatsFont(10,wxFONTFAMILY_TELETYPE,wxFONTSTYLE_NORMAL,wxNORMAL,false,_T("Monospace"),wxFONTENCODING_DEFAULT);
 	memStats->SetFont(memStatsFont);
 	memStats->SetToolTip(_("Statistics of the rawlog load"));
 	Panel11 = new wxPanel(SplitterWindow2, ID_PANEL25, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL25"));
@@ -551,7 +551,7 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent,wxWindowID id)
 	BoxSizer6->SetSizeHints(Panel11);
 	SplitterWindow2->SplitHorizontally(memStats, Panel11);
 	txtException = new wxTextCtrl(Notebook3, ID_TEXTCTRL3, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE|wxTE_READONLY, wxDefaultValidator, _T("ID_TEXTCTRL3"));
-	wxFont txtExceptionFont(10,wxTELETYPE,wxFONTSTYLE_NORMAL,wxNORMAL,false,_T("Monospace"),wxFONTENCODING_DEFAULT);
+	wxFont txtExceptionFont(10,wxFONTFAMILY_TELETYPE,wxFONTSTYLE_NORMAL,wxNORMAL,false,_T("Monospace"),wxFONTENCODING_DEFAULT);
 	txtException->SetFont(txtExceptionFont);
 	Notebook3->AddPage(SplitterWindow2, _("Dataset statistics && info"), false);
 	Notebook3->AddPage(txtException, _("End of load message"), false);

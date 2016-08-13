@@ -156,7 +156,7 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent,wxWindowID id) :
     edPTGIndex->SetValue(_T("0"));
     FlexGridSizer4->Add(edPTGIndex, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 5);
     btnReloadParams = new wxButton(Panel1, ID_BUTTON1, _("Initialize PTG"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON1"));
-    wxFont btnReloadParamsFont(wxDEFAULT,wxDEFAULT,wxFONTSTYLE_NORMAL,wxBOLD,false,wxEmptyString,wxFONTENCODING_DEFAULT);
+    wxFont btnReloadParamsFont(wxDEFAULT,wxDEFAULT,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_BOLD,false,wxEmptyString,wxFONTENCODING_DEFAULT);
     btnReloadParams->SetFont(btnReloadParamsFont);
     FlexGridSizer4->Add(btnReloadParams, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     cbDrawShapePath = new wxCheckBox(Panel1, ID_CHECKBOX1, _("Draw robot shape"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX1"));
@@ -206,7 +206,7 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent,wxWindowID id) :
     wxFont edCfgFont = wxSystemSettings::GetFont(wxSYS_OEM_FIXED_FONT);
     if ( !edCfgFont.Ok() ) edCfgFont = wxSystemSettings::GetFont(wxSYS_DEFAULT_GUI_FONT);
     edCfgFont.SetPointSize(8);
-    edCfgFont.SetFamily(wxTELETYPE);
+    edCfgFont.SetFamily(wxFONTFAMILY_TELETYPE);
     edCfg->SetFont(edCfgFont);
     FlexGridSizer3->Add(edCfg, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 2);
     FlexGridSizer5 = new wxFlexGridSizer(0, 3, 0, 0);
@@ -224,7 +224,7 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent,wxWindowID id) :
     wxFont edLogFont = wxSystemSettings::GetFont(wxSYS_OEM_FIXED_FONT);
     if ( !edLogFont.Ok() ) edLogFont = wxSystemSettings::GetFont(wxSYS_DEFAULT_GUI_FONT);
     edLogFont.SetPointSize(8);
-    edLogFont.SetFamily(wxTELETYPE);
+    edLogFont.SetFamily(wxFONTFAMILY_TELETYPE);
     edLog->SetFont(edLogFont);
     FlexGridSizer1->Add(edLog, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
     SetSizer(FlexGridSizer1);

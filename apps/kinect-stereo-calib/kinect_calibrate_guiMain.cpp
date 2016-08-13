@@ -380,14 +380,14 @@ kinect_calibrate_guiDialog::kinect_calibrate_guiDialog(wxWindow* parent,wxWindow
     FlexGridSizer25->Add(edTilt, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 5);
     FlexGridSizer8->Add(FlexGridSizer25, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
     btnCapture = new wxButton(Panel7, ID_BUTTON6, _("CAPTURE NOW"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON6"));
-    wxFont btnCaptureFont(10,wxSWISS,wxFONTSTYLE_NORMAL,wxBOLD,false,wxEmptyString,wxFONTENCODING_DEFAULT);
+    wxFont btnCaptureFont(10,wxSWISS,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_BOLD,false,wxEmptyString,wxFONTENCODING_DEFAULT);
     btnCapture->SetFont(btnCaptureFont);
     FlexGridSizer8->Add(btnCapture, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 5);
     lbNumCaptured = new wxStaticText(Panel7, ID_STATICTEXT12, _("Captured image pairs: 0"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT12"));
     FlexGridSizer8->Add(lbNumCaptured, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 5);
     btnNextCalib = new wxButton(Panel7, ID_BUTTON7, _("OK, go to calibrate >>"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON7"));
     btnNextCalib->Disable();
-    wxFont btnNextCalibFont(10,wxSWISS,wxFONTSTYLE_NORMAL,wxBOLD,false,wxEmptyString,wxFONTENCODING_DEFAULT);
+    wxFont btnNextCalibFont(10,wxSWISS,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_BOLD,false,wxEmptyString,wxFONTENCODING_DEFAULT);
     btnNextCalib->SetFont(btnNextCalibFont);
     FlexGridSizer8->Add(btnNextCalib, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 5);
     StaticBoxSizer2->Add(FlexGridSizer8, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 3);
@@ -412,7 +412,7 @@ kinect_calibrate_guiDialog::kinect_calibrate_guiDialog(wxWindow* parent,wxWindow
     FlexGridSizer22->AddGrowableCol(0);
     FlexGridSizer22->AddGrowableRow(1);
     StaticText22 = new wxStaticText(Panel6, ID_STATICTEXT23, _("List of stereo images:"), wxDefaultPosition, wxDefaultSize, wxALIGN_CENTRE, _T("ID_STATICTEXT23"));
-    wxFont StaticText22Font(wxDEFAULT,wxDEFAULT,wxFONTSTYLE_NORMAL,wxBOLD,false,wxEmptyString,wxFONTENCODING_DEFAULT);
+    wxFont StaticText22Font(wxDEFAULT,wxDEFAULT,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_BOLD,false,wxEmptyString,wxFONTENCODING_DEFAULT);
     StaticText22->SetFont(StaticText22Font);
     FlexGridSizer22->Add(StaticText22, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 2);
     lbImagePairs = new wxListBox(Panel6, ID_LISTBOX1, wxDefaultPosition, wxDefaultSize, 0, 0, wxLB_SINGLE, wxDefaultValidator, _T("ID_LISTBOX1"));
@@ -485,7 +485,7 @@ kinect_calibrate_guiDialog::kinect_calibrate_guiDialog(wxWindow* parent,wxWindow
     FlexGridSizer30 = new wxFlexGridSizer(1, 1, 0, 0);
     FlexGridSizer30->AddGrowableCol(0);
     StaticText24 = new wxStaticText(Panel6, ID_STATICTEXT25, _("Calibration options"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT25"));
-    wxFont StaticText24Font(wxDEFAULT,wxDEFAULT,wxFONTSTYLE_NORMAL,wxBOLD,false,wxEmptyString,wxFONTENCODING_DEFAULT);
+    wxFont StaticText24Font(wxDEFAULT,wxDEFAULT,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_BOLD,false,wxEmptyString,wxFONTENCODING_DEFAULT);
     StaticText24->SetFont(StaticText24Font);
     FlexGridSizer30->Add(StaticText24, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     FlexGridSizer29->Add(FlexGridSizer30, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
@@ -570,7 +570,7 @@ kinect_calibrate_guiDialog::kinect_calibrate_guiDialog(wxWindow* parent,wxWindow
     FlexGridSizer31 = new wxFlexGridSizer(1, 1, 0, 0);
     FlexGridSizer31->AddGrowableCol(0);
     btnRunCalib = new wxButton(Panel6, ID_BUTTON14, _("Run optimizer..."), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON14"));
-    wxFont btnRunCalibFont(wxDEFAULT,wxDEFAULT,wxFONTSTYLE_NORMAL,wxBOLD,false,wxEmptyString,wxFONTENCODING_DEFAULT);
+    wxFont btnRunCalibFont(wxDEFAULT,wxDEFAULT,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_BOLD,false,wxEmptyString,wxFONTENCODING_DEFAULT);
     btnRunCalib->SetFont(btnRunCalibFont);
     FlexGridSizer31->Add(btnRunCalib, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 5);
     FlexGridSizer29->Add(FlexGridSizer31, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
@@ -581,7 +581,7 @@ kinect_calibrate_guiDialog::kinect_calibrate_guiDialog(wxWindow* parent,wxWindow
     FlexGridSizer28 = new wxFlexGridSizer(1, 2, 0, 0);
     FlexGridSizer28->AddGrowableCol(0);
     StaticText23 = new wxStaticText(Panel6, ID_STATICTEXT24, _("Calibration results:"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT24"));
-    wxFont StaticText23Font(wxDEFAULT,wxDEFAULT,wxFONTSTYLE_NORMAL,wxBOLD,false,wxEmptyString,wxFONTENCODING_DEFAULT);
+    wxFont StaticText23Font(wxDEFAULT,wxDEFAULT,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_BOLD,false,wxEmptyString,wxFONTENCODING_DEFAULT);
     StaticText23->SetFont(StaticText23Font);
     FlexGridSizer28->Add(StaticText23, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     btnSaveCalib = new wxButton(Panel6, ID_BUTTON13, _("Save calibration..."), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON13"));
@@ -593,7 +593,7 @@ kinect_calibrate_guiDialog::kinect_calibrate_guiDialog(wxWindow* parent,wxWindow
     FlexGridSizer19->AddGrowableCol(0);
     FlexGridSizer19->AddGrowableRow(0);
     edLogCalibResult = new wxTextCtrl(Panel1, ID_TEXTCTRL8, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE|wxTE_READONLY|wxTE_DONTWRAP, wxDefaultValidator, _T("ID_TEXTCTRL8"));
-    wxFont edLogCalibResultFont(8,wxTELETYPE,wxFONTSTYLE_NORMAL,wxNORMAL,false,wxEmptyString,wxFONTENCODING_DEFAULT);
+    wxFont edLogCalibResultFont(8,wxFONTFAMILY_TELETYPE,wxFONTSTYLE_NORMAL,wxNORMAL,false,wxEmptyString,wxFONTENCODING_DEFAULT);
     edLogCalibResult->SetFont(edLogCalibResultFont);
     FlexGridSizer19->Add(edLogCalibResult, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
     Panel1->SetSizer(FlexGridSizer19);
@@ -681,7 +681,7 @@ kinect_calibrate_guiDialog::kinect_calibrate_guiDialog(wxWindow* parent,wxWindow
     StaticText10 = new wxStaticText(Panel2, ID_STATICTEXT10, _("Log:"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT10"));
     FlexGridSizer13->Add(StaticText10, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     edLogTest = new wxTextCtrl(Panel2, ID_TEXTCTRL4, wxEmptyString, wxDefaultPosition, wxSize(-1,50), wxTE_MULTILINE|wxTE_READONLY|wxHSCROLL|wxVSCROLL, wxDefaultValidator, _T("ID_TEXTCTRL4"));
-    wxFont edLogTestFont(8,wxTELETYPE,wxFONTSTYLE_NORMAL,wxNORMAL,false,wxEmptyString,wxFONTENCODING_DEFAULT);
+    wxFont edLogTestFont(8,wxFONTFAMILY_TELETYPE,wxFONTSTYLE_NORMAL,wxNORMAL,false,wxEmptyString,wxFONTENCODING_DEFAULT);
     edLogTest->SetFont(edLogTestFont);
     FlexGridSizer13->Add(edLogTest, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 5);
     FlexGridSizer2->Add(FlexGridSizer13, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);

@@ -232,7 +232,7 @@ slamdemoFrame::slamdemoFrame(wxWindow* parent,wxWindowID id)
     Panel3->SetBackgroundColour(wxColour(255,255,0));
     GridSizer1 = new wxGridSizer(0, 1, 0, 0);
     lbGT = new wxStaticText(Panel3, ID_STATICTEXT1, _("Ground truth"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT1"));
-    wxFont lbGTFont(wxDEFAULT,wxDEFAULT,wxFONTSTYLE_NORMAL,wxBOLD,false,wxEmptyString,wxFONTENCODING_DEFAULT);
+    wxFont lbGTFont(wxDEFAULT,wxDEFAULT,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_BOLD,false,wxEmptyString,wxFONTENCODING_DEFAULT);
     lbGT->SetFont(lbGTFont);
     GridSizer1->Add(lbGT, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     Panel3->SetSizer(GridSizer1);
@@ -245,7 +245,7 @@ slamdemoFrame::slamdemoFrame(wxWindow* parent,wxWindowID id)
     Panel4->SetBackgroundColour(wxColour(255,255,0));
     GridSizer2 = new wxGridSizer(0, 1, 0, 0);
     lbObs = new wxStaticText(Panel4, ID_STATICTEXT2, _("Observation"), wxDefaultPosition, wxDefaultSize, wxALIGN_CENTRE, _T("ID_STATICTEXT2"));
-    wxFont lbObsFont(wxDEFAULT,wxDEFAULT,wxFONTSTYLE_NORMAL,wxBOLD,false,wxEmptyString,wxFONTENCODING_DEFAULT);
+    wxFont lbObsFont(wxDEFAULT,wxDEFAULT,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_BOLD,false,wxEmptyString,wxFONTENCODING_DEFAULT);
     lbObs->SetFont(lbObsFont);
     GridSizer2->Add(lbObs, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     Panel4->SetSizer(GridSizer2);
@@ -263,7 +263,7 @@ slamdemoFrame::slamdemoFrame(wxWindow* parent,wxWindowID id)
     Panel5->SetBackgroundColour(wxColour(255,255,0));
     GridSizer3 = new wxGridSizer(0, 1, 0, 0);
     lbMap = new wxStaticText(Panel5, ID_STATICTEXT10, _("Map"), wxDefaultPosition, wxDefaultSize, wxALIGN_CENTRE, _T("ID_STATICTEXT10"));
-    wxFont lbMapFont(wxDEFAULT,wxDEFAULT,wxFONTSTYLE_NORMAL,wxBOLD,false,wxEmptyString,wxFONTENCODING_DEFAULT);
+    wxFont lbMapFont(wxDEFAULT,wxDEFAULT,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_BOLD,false,wxEmptyString,wxFONTENCODING_DEFAULT);
     lbMap->SetFont(lbMapFont);
     GridSizer3->Add(lbMap, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     Panel5->SetSizer(GridSizer3);
@@ -276,7 +276,7 @@ slamdemoFrame::slamdemoFrame(wxWindow* parent,wxWindowID id)
     Panel6->SetBackgroundColour(wxColour(255,255,0));
     GridSizer4 = new wxGridSizer(0, 1, 0, 0);
     lmIndCompat = new wxStaticText(Panel6, ID_STATICTEXT3, _("Indiv. compat (95% ellips.)"), wxDefaultPosition, wxDefaultSize, wxALIGN_CENTRE, _T("ID_STATICTEXT3"));
-    wxFont lmIndCompatFont(wxDEFAULT,wxDEFAULT,wxFONTSTYLE_NORMAL,wxBOLD,false,wxEmptyString,wxFONTENCODING_DEFAULT);
+    wxFont lmIndCompatFont(wxDEFAULT,wxDEFAULT,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_BOLD,false,wxEmptyString,wxFONTENCODING_DEFAULT);
     lmIndCompat->SetFont(lmIndCompatFont);
     GridSizer4->Add(lmIndCompat, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     Panel6->SetSizer(GridSizer4);
@@ -293,7 +293,7 @@ slamdemoFrame::slamdemoFrame(wxWindow* parent,wxWindowID id)
     Panel7->SetBackgroundColour(wxColour(255,255,0));
     GridSizer5 = new wxGridSizer(0, 1, 0, 0);
     lbDatAssoc = new wxStaticText(Panel7, ID_STATICTEXT4, _("Dat assoc"), wxDefaultPosition, wxDefaultSize, wxALIGN_CENTRE, _T("ID_STATICTEXT4"));
-    wxFont lbDatAssocFont(wxDEFAULT,wxDEFAULT,wxFONTSTYLE_NORMAL,wxBOLD,false,wxEmptyString,wxFONTENCODING_DEFAULT);
+    wxFont lbDatAssocFont(wxDEFAULT,wxDEFAULT,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_BOLD,false,wxEmptyString,wxFONTENCODING_DEFAULT);
     lbDatAssoc->SetFont(lbDatAssocFont);
     GridSizer5->Add(lbDatAssoc, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     Panel7->SetSizer(GridSizer5);
@@ -325,7 +325,7 @@ slamdemoFrame::slamdemoFrame(wxWindow* parent,wxWindowID id)
     Panel8->SetBackgroundColour(wxColour(255,255,0));
     GridSizer7 = new wxGridSizer(0, 1, 0, 0);
     StaticText2 = new wxStaticText(Panel8, ID_STATICTEXT5, _("Vehicle X (err,99% bounds)"), wxDefaultPosition, wxDefaultSize, wxALIGN_CENTRE, _T("ID_STATICTEXT5"));
-    wxFont StaticText2Font(wxDEFAULT,wxDEFAULT,wxFONTSTYLE_NORMAL,wxBOLD,false,wxEmptyString,wxFONTENCODING_DEFAULT);
+    wxFont StaticText2Font(wxDEFAULT,wxDEFAULT,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_BOLD,false,wxEmptyString,wxFONTENCODING_DEFAULT);
     StaticText2->SetFont(StaticText2Font);
     GridSizer7->Add(StaticText2, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     Panel8->SetSizer(GridSizer7);
@@ -338,7 +338,7 @@ slamdemoFrame::slamdemoFrame(wxWindow* parent,wxWindowID id)
     Panel9->SetBackgroundColour(wxColour(255,255,0));
     GridSizer8 = new wxGridSizer(0, 1, 0, 0);
     StaticText3 = new wxStaticText(Panel9, ID_STATICTEXT6, _("Vehicle Y (err,99% bounds)"), wxDefaultPosition, wxDefaultSize, wxALIGN_CENTRE, _T("ID_STATICTEXT6"));
-    wxFont StaticText3Font(wxDEFAULT,wxDEFAULT,wxFONTSTYLE_NORMAL,wxBOLD,false,wxEmptyString,wxFONTENCODING_DEFAULT);
+    wxFont StaticText3Font(wxDEFAULT,wxDEFAULT,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_BOLD,false,wxEmptyString,wxFONTENCODING_DEFAULT);
     StaticText3->SetFont(StaticText3Font);
     GridSizer8->Add(StaticText3, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     Panel9->SetSizer(GridSizer8);
@@ -351,7 +351,7 @@ slamdemoFrame::slamdemoFrame(wxWindow* parent,wxWindowID id)
     Panel10->SetBackgroundColour(wxColour(255,255,0));
     GridSizer9 = new wxGridSizer(0, 1, 0, 0);
     StaticText4 = new wxStaticText(Panel10, ID_STATICTEXT7, _("Vehicle Phi (err,99% bounds)"), wxDefaultPosition, wxDefaultSize, wxALIGN_CENTRE, _T("ID_STATICTEXT7"));
-    wxFont StaticText4Font(wxDEFAULT,wxDEFAULT,wxFONTSTYLE_NORMAL,wxBOLD,false,wxEmptyString,wxFONTENCODING_DEFAULT);
+    wxFont StaticText4Font(wxDEFAULT,wxDEFAULT,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_BOLD,false,wxEmptyString,wxFONTENCODING_DEFAULT);
     StaticText4->SetFont(StaticText4Font);
     GridSizer9->Add(StaticText4, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     Panel10->SetSizer(GridSizer9);
@@ -374,7 +374,7 @@ slamdemoFrame::slamdemoFrame(wxWindow* parent,wxWindowID id)
     Panel13->SetBackgroundColour(wxColour(255,255,0));
     GridSizer6 = new wxGridSizer(0, 1, 0, 0);
     lbDaTP = new wxStaticText(Panel13, ID_STATICTEXT9, _("True positives:"), wxDefaultPosition, wxDefaultSize, wxALIGN_CENTRE, _T("ID_STATICTEXT9"));
-    wxFont lbDaTPFont(wxDEFAULT,wxDEFAULT,wxFONTSTYLE_NORMAL,wxBOLD,false,wxEmptyString,wxFONTENCODING_DEFAULT);
+    wxFont lbDaTPFont(wxDEFAULT,wxDEFAULT,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_BOLD,false,wxEmptyString,wxFONTENCODING_DEFAULT);
     lbDaTP->SetFont(lbDaTPFont);
     GridSizer6->Add(lbDaTP, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     Panel13->SetSizer(GridSizer6);
@@ -387,7 +387,7 @@ slamdemoFrame::slamdemoFrame(wxWindow* parent,wxWindowID id)
     Panel14->SetBackgroundColour(wxColour(255,255,0));
     GridSizer11 = new wxGridSizer(0, 1, 0, 0);
     lbDaTN = new wxStaticText(Panel14, ID_STATICTEXT11, _("True negatives:"), wxDefaultPosition, wxDefaultSize, wxALIGN_CENTRE, _T("ID_STATICTEXT11"));
-    wxFont lbDaTNFont(wxDEFAULT,wxDEFAULT,wxFONTSTYLE_NORMAL,wxBOLD,false,wxEmptyString,wxFONTENCODING_DEFAULT);
+    wxFont lbDaTNFont(wxDEFAULT,wxDEFAULT,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_BOLD,false,wxEmptyString,wxFONTENCODING_DEFAULT);
     lbDaTN->SetFont(lbDaTNFont);
     GridSizer11->Add(lbDaTN, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     Panel14->SetSizer(GridSizer11);
@@ -400,7 +400,7 @@ slamdemoFrame::slamdemoFrame(wxWindow* parent,wxWindowID id)
     Panel15->SetBackgroundColour(wxColour(255,255,0));
     GridSizer12 = new wxGridSizer(0, 1, 0, 0);
     StaticText6 = new wxStaticText(Panel15, ID_STATICTEXT12, _("False positives:"), wxDefaultPosition, wxDefaultSize, wxALIGN_CENTRE, _T("ID_STATICTEXT12"));
-    wxFont StaticText6Font(wxDEFAULT,wxDEFAULT,wxFONTSTYLE_NORMAL,wxBOLD,false,wxEmptyString,wxFONTENCODING_DEFAULT);
+    wxFont StaticText6Font(wxDEFAULT,wxDEFAULT,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_BOLD,false,wxEmptyString,wxFONTENCODING_DEFAULT);
     StaticText6->SetFont(StaticText6Font);
     GridSizer12->Add(StaticText6, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     Panel15->SetSizer(GridSizer12);
@@ -413,7 +413,7 @@ slamdemoFrame::slamdemoFrame(wxWindow* parent,wxWindowID id)
     Panel16->SetBackgroundColour(wxColour(255,255,0));
     GridSizer13 = new wxGridSizer(0, 1, 0, 0);
     StaticText7 = new wxStaticText(Panel16, ID_STATICTEXT13, _("False negatives:"), wxDefaultPosition, wxDefaultSize, wxALIGN_CENTRE, _T("ID_STATICTEXT13"));
-    wxFont StaticText7Font(wxDEFAULT,wxDEFAULT,wxFONTSTYLE_NORMAL,wxBOLD,false,wxEmptyString,wxFONTENCODING_DEFAULT);
+    wxFont StaticText7Font(wxDEFAULT,wxDEFAULT,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_BOLD,false,wxEmptyString,wxFONTENCODING_DEFAULT);
     StaticText7->SetFont(StaticText7Font);
     GridSizer13->Add(StaticText7, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     Panel16->SetSizer(GridSizer13);
@@ -433,7 +433,7 @@ slamdemoFrame::slamdemoFrame(wxWindow* parent,wxWindowID id)
     Panel12->SetBackgroundColour(wxColour(255,255,0));
     GridSizer10 = new wxGridSizer(0, 1, 0, 0);
     StaticText1 = new wxStaticText(Panel12, ID_STATICTEXT8, _("Computation time (ms)"), wxDefaultPosition, wxDefaultSize, wxALIGN_CENTRE, _T("ID_STATICTEXT8"));
-    wxFont StaticText1Font(wxDEFAULT,wxDEFAULT,wxFONTSTYLE_NORMAL,wxBOLD,false,wxEmptyString,wxFONTENCODING_DEFAULT);
+    wxFont StaticText1Font(wxDEFAULT,wxDEFAULT,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_BOLD,false,wxEmptyString,wxFONTENCODING_DEFAULT);
     StaticText1->SetFont(StaticText1Font);
     GridSizer10->Add(StaticText1, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     Panel12->SetSizer(GridSizer10);
@@ -446,7 +446,7 @@ slamdemoFrame::slamdemoFrame(wxWindow* parent,wxWindowID id)
     Panel17->SetBackgroundColour(wxColour(255,255,0));
     GridSizer14 = new wxGridSizer(0, 1, 0, 0);
     StaticText5 = new wxStaticText(Panel17, ID_STATICTEXT14, _("JCBB iterations (if used)"), wxDefaultPosition, wxDefaultSize, wxALIGN_CENTRE, _T("ID_STATICTEXT14"));
-    wxFont StaticText5Font(wxDEFAULT,wxDEFAULT,wxFONTSTYLE_NORMAL,wxBOLD,false,wxEmptyString,wxFONTENCODING_DEFAULT);
+    wxFont StaticText5Font(wxDEFAULT,wxDEFAULT,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_BOLD,false,wxEmptyString,wxFONTENCODING_DEFAULT);
     StaticText5->SetFont(StaticText5Font);
     GridSizer14->Add(StaticText5, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     Panel17->SetSizer(GridSizer14);

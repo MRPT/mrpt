@@ -322,7 +322,7 @@ robotic_arm_kinematicsFrame::robotic_arm_kinematicsFrame(wxWindow* parent,wxWind
     wxFont StaticText10Font = wxSystemSettings::GetFont(wxSYS_OEM_FIXED_FONT);
     if ( !StaticText10Font.Ok() ) StaticText10Font = wxSystemSettings::GetFont(wxSYS_DEFAULT_GUI_FONT);
     StaticText10Font.SetPointSize(8);
-    StaticText10Font.SetWeight(wxBOLD);
+    StaticText10Font.SetWeight(wxFONTWEIGHT_BOLD);
     StaticText10->SetFont(StaticText10Font);
     FlexGridSizer14->Add(StaticText10, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     FlexGridSizer7->Add(FlexGridSizer14, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
@@ -343,7 +343,7 @@ robotic_arm_kinematicsFrame::robotic_arm_kinematicsFrame(wxWindow* parent,wxWind
     wxFont StaticText2Font = wxSystemSettings::GetFont(wxSYS_OEM_FIXED_FONT);
     if ( !StaticText2Font.Ok() ) StaticText2Font = wxSystemSettings::GetFont(wxSYS_DEFAULT_GUI_FONT);
     StaticText2Font.SetPointSize(8);
-    StaticText2Font.SetWeight(wxBOLD);
+    StaticText2Font.SetWeight(wxFONTWEIGHT_BOLD);
     StaticText2->SetFont(StaticText2Font);
     FlexGridSizer18->Add(StaticText2, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     FlexGridSizer17->Add(FlexGridSizer18, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
@@ -353,12 +353,12 @@ robotic_arm_kinematicsFrame::robotic_arm_kinematicsFrame(wxWindow* parent,wxWind
     FlexGridSizer19->AddGrowableCol(1);
     FlexGridSizer19->AddGrowableRow(0);
     lbXYZs = new wxListBox(Panel1, ID_LISTBOX1, wxDefaultPosition, wxSize(45,-1), 0, 0, 0, wxDefaultValidator, _T("ID_LISTBOX1"));
-    wxFont lbXYZsFont(7,wxTELETYPE,wxFONTSTYLE_NORMAL,wxNORMAL,false,wxEmptyString,wxFONTENCODING_DEFAULT);
+    wxFont lbXYZsFont(7,wxFONTFAMILY_TELETYPE,wxFONTSTYLE_NORMAL,wxNORMAL,false,wxEmptyString,wxFONTENCODING_DEFAULT);
     lbXYZs->SetFont(lbXYZsFont);
     FlexGridSizer19->Add(lbXYZs, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
     edMatrix = new wxTextCtrl(Panel1, ID_TEXTCTRL5, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE|wxTE_READONLY|wxTE_DONTWRAP|wxALWAYS_SHOW_SB, wxDefaultValidator, _T("ID_TEXTCTRL5"));
     edMatrix->SetMinSize(wxSize(300,-1));
-    wxFont edMatrixFont(7,wxTELETYPE,wxFONTSTYLE_NORMAL,wxNORMAL,false,_T("Monospace"),wxFONTENCODING_DEFAULT);
+    wxFont edMatrixFont(7,wxFONTFAMILY_TELETYPE,wxFONTSTYLE_NORMAL,wxNORMAL,false,_T("Monospace"),wxFONTENCODING_DEFAULT);
     edMatrix->SetFont(edMatrixFont);
     FlexGridSizer19->Add(edMatrix, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
     Panel1->SetSizer(FlexGridSizer19);

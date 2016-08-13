@@ -170,7 +170,7 @@ camera_calib_guiDialog::camera_calib_guiDialog(wxWindow* parent,wxWindowID id)
 	FlexGridSizer4->AddGrowableRow(1);
 	FlexGridSizer5 = new wxFlexGridSizer(0, 4, 0, 0);
 	btnCaptureNow = new wxButton(this, ID_BUTTON8, _("Grab now..."), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON8"));
-	wxFont btnCaptureNowFont(wxDEFAULT,wxDEFAULT,wxFONTSTYLE_NORMAL,wxBOLD,false,wxEmptyString,wxFONTENCODING_DEFAULT);
+	wxFont btnCaptureNowFont(wxDEFAULT,wxDEFAULT,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_BOLD,false,wxEmptyString,wxFONTENCODING_DEFAULT);
 	btnCaptureNow->SetFont(btnCaptureNowFont);
 	FlexGridSizer5->Add(btnCaptureNow, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 5);
 	Button11 = new wxButton(this, ID_BUTTON1, _("Add image(s)..."), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON1"));
@@ -265,7 +265,7 @@ camera_calib_guiDialog::camera_calib_guiDialog(wxWindow* parent,wxWindowID id)
 	FlexGridSizer8->AddGrowableCol(1);
 	btnRunCalib = new wxButton(this, ID_BUTTON3, _("Calibrate"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON3"));
 	btnRunCalib->SetDefault();
-	wxFont btnRunCalibFont(wxDEFAULT,wxDEFAULT,wxFONTSTYLE_NORMAL,wxBOLD,false,wxEmptyString,wxFONTENCODING_DEFAULT);
+	wxFont btnRunCalibFont(wxDEFAULT,wxDEFAULT,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_BOLD,false,wxEmptyString,wxFONTENCODING_DEFAULT);
 	btnRunCalib->SetFont(btnRunCalibFont);
 	FlexGridSizer8->Add(btnRunCalib, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 5);
 	btnSave = new wxButton(this, ID_BUTTON6, _("Save matrices..."), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON6"));
