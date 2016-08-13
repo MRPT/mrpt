@@ -16,36 +16,82 @@ namespace mrpt
 {
     namespace vision
     {
+        /** \addtogroup pnp Perspective-n-Point pose estimation
+         *  \ingroup mrpt_vision_grp
+         *  @{  
+         */
+         
+        /**
+         * @class lhm
+         * @author Chandra Mangipudi
+         * @date 10/08/16
+         * @file lhm.h
+         * @brief Lu Hage Mjolsness - Iterative PnP Algorithm (Eigen Implementation
+         */
         class lhm
         {
 
-            Eigen::MatrixXd obj_pts, img_pts, cam_intrinsic, P, Q;
+            Eigen::MatrixXd obj_pts; //! Object points in Camera Co-ordinate system
+            Eigen::MatrixXd img_pts; //! Image points in pixel co-ordinates
+            Eigen::MatrixXd cam_intrinsic; //! Camera intrinsic matrix
+            Eigen::MatrixXd P; //! Trnaspose of Object points @obj_pts
+            Eigen::MatrixXd Q; //! Transpose of Image points @img_pts
 
-            Eigen::Matrix3d R, G;
-            Eigen::Vector3d t;
+            Eigen::Matrix3d R; //! Matrix for internal computations
+            Eigen::Matrix3d G; //! Rotation Matrix 
+            Eigen::Vector3d t; //! Translation Vector
 
-            std::vector<Eigen::Matrix3d> F;
-            double err, err2;
+            std::vector<Eigen::Matrix3d> F; //! Storage matrix for each point
+            double err;  //! Error variable for convergence selection
+            double err2; //! Error variable for convergence selection
 
-            int n;
+            int n; //! Number of 2d/3d correspondences
 
         public:
 
+            //! Constructor for the LHM class
             lhm(Eigen::MatrixXd obj_pts_, Eigen::MatrixXd img_pts_, Eigen::MatrixXd cam_, int n0);
             //~lhm();
-
+            
+            /**
+             * @brief Function to compute pose using LHM PnP algorithm
+             * @param R_ Rotation matrix
+             * @param t_ Trnaslation Vector
+             * @return Success flag
+             */
             bool compute_pose(Eigen::Ref<Eigen::Matrix3d> R_, Eigen::Ref<Eigen::Vector3d> t_);
 
+            /**
+             * @brief Function to compute pose during an iteration
+             */
             void absKernel();
 
+            /**
+             * @brief Function to estimate translation given an estimated rotation matrix
+             */
             void estimate_t();
 
+            /**
+             * @brief Transform object points in Body frame (Landmark Frame) to estimated Camera Frame
+             */
             void xform();
 
+            /**
+             * @brief Iternal Function of quaternion
+             * @param q Quaternion
+             * @return 
+             */
             Eigen::Matrix4d qMatQ(Eigen::VectorXd q);
 
+            /**
+             * @brief Iternal Function of quaternion
+             * @param q Quaternion
+             * @return 
+             */
             Eigen::Matrix4d qMatW(Eigen::VectorXd q);
         };
+        
+        /** @}  */ // end of grouping
     }
 }
 #endif
