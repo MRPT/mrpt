@@ -11,13 +11,6 @@ mrpt::vision::ppnp::ppnp(const Eigen::MatrixXd& obj_pts, const Eigen::MatrixXd& 
 	C = cam_intrinsic;
 }
 
-mrpt::vision::ppnp::~ppnp()
-{
-	P.resize(0,0);
-	S.resize(0,0);
-	C.resize(0,0);
-}
-
 bool mrpt::vision::ppnp::compute_pose(Eigen::Matrix3d& R, Eigen::VectorXd& t, int n)
 {
 	double tol=0.001;

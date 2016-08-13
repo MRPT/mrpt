@@ -23,8 +23,6 @@ namespace mrpt
             
             //! Constructor for the P-PnP class
             ppnp(const Eigen::MatrixXd& obj_pts, const Eigen::MatrixXd& img_pts, const Eigen::MatrixXd& cam_intrinsic);
-            //! Standard Default destructor for P-PnP class
-            ~ppnp();
             
             /**
              * @brief Function to compute pose 
