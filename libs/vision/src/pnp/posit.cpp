@@ -8,7 +8,7 @@
 mrpt::vision::POSIT::POSIT(Eigen::MatrixXd obj_pts_, Eigen::MatrixXd img_pts_, Eigen::MatrixXd camera_intrinsic_, int n0)
 {
 		obj_pts=obj_pts_;
-		img_pts=img_pts_;
+		img_pts=img_pts_.block(0,0,n0,2);
 		cam_intrinsic=camera_intrinsic_;
 		R=Eigen::MatrixXd::Identity(3,3);
 		t=Eigen::VectorXd::Zero(3);
