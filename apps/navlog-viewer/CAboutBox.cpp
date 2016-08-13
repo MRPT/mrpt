@@ -67,7 +67,7 @@ CAboutBox::CAboutBox(wxWindow* parent,wxWindowID id)
     FlexGridSizer2->AddGrowableRow(0);
     FlexGridSizer2->AddGrowableRow(1);
     lbProgName = new wxStaticText(this, ID_STATICTEXT1, _("Title"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT1"));
-    wxFont lbProgNameFont(22,wxSWISS,wxFONTSTYLE_NORMAL,wxBOLD,false,_T("Times New Roman"),wxFONTENCODING_DEFAULT);
+    wxFont lbProgNameFont(22,wxSWISS,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_BOLD,false,_T("Times New Roman"),wxFONTENCODING_DEFAULT);
     lbProgName->SetFont(lbProgNameFont);
     FlexGridSizer2->Add(lbProgName, 1, wxALL|wxALIGN_BOTTOM|wxALIGN_CENTER_HORIZONTAL, 5);
     lbBuild = new wxStaticText(this, ID_STATICTEXT2, _("Label"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT2"));

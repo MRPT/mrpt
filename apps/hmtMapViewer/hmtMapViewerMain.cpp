@@ -230,7 +230,7 @@ hmtMapViewerFrame::hmtMapViewerFrame(wxWindow* parent,wxWindowID id)
     wxFont StaticText1Font = wxSystemSettings::GetFont(wxSYS_SYSTEM_FONT);
     if ( !StaticText1Font.Ok() ) StaticText1Font = wxSystemSettings::GetFont(wxSYS_DEFAULT_GUI_FONT);
     StaticText1Font.SetPointSize((int)(StaticText1Font.GetPointSize() * 1.000000));
-    StaticText1Font.SetWeight(wxBOLD);
+    StaticText1Font.SetWeight(wxFONTWEIGHT_BOLD);
     StaticText1->SetFont(StaticText1Font);
     BoxSizer2->Add(StaticText1, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 5);
     FlexGridSizer4->Add(BoxSizer2, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
@@ -286,7 +286,7 @@ hmtMapViewerFrame::hmtMapViewerFrame(wxWindow* parent,wxWindowID id)
     wxFont StaticText3Font = wxSystemSettings::GetFont(wxSYS_SYSTEM_FONT);
     if ( !StaticText3Font.Ok() ) StaticText3Font = wxSystemSettings::GetFont(wxSYS_DEFAULT_GUI_FONT);
     StaticText3Font.SetPointSize((int)(StaticText3Font.GetPointSize() * 1.000000));
-    StaticText3Font.SetWeight(wxBOLD);
+    StaticText3Font.SetWeight(wxFONTWEIGHT_BOLD);
     StaticText3->SetFont(StaticText3Font);
     FlexGridSizer2->Add(StaticText3, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     Panel6 = new wxPanel(Panel3, ID_PANEL6, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL6"));
@@ -308,7 +308,7 @@ hmtMapViewerFrame::hmtMapViewerFrame(wxWindow* parent,wxWindowID id)
     wxFont StaticText4Font = wxSystemSettings::GetFont(wxSYS_SYSTEM_FONT);
     if ( !StaticText4Font.Ok() ) StaticText4Font = wxSystemSettings::GetFont(wxSYS_DEFAULT_GUI_FONT);
     StaticText4Font.SetPointSize((int)(StaticText4Font.GetPointSize() * 1.000000));
-    StaticText4Font.SetWeight(wxBOLD);
+    StaticText4Font.SetWeight(wxFONTWEIGHT_BOLD);
     StaticText4->SetFont(StaticText4Font);
     FlexGridSizer3->Add(StaticText4, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     Panel7 = new wxPanel(Panel4, ID_PANEL7, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL7"));
