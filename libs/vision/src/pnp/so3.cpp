@@ -26,7 +26,7 @@ along with this program.If not, see <http://www.gnu.org/licenses/>.
 mrpt::vision::so3::so3(const Eigen::MatrixXd& obj_pts_, const Eigen::MatrixXd& img_pts_, const Eigen::MatrixXd& cam_intrinsic_, int n0)
 {
     obj_pts = obj_pts_;
-    img_pts = img_pts_;
+    img_pts = img_pts_.block(0,0,n0,2);
     
     cam_intrinsic = cam_intrinsic_;
     
@@ -34,18 +34,18 @@ mrpt::vision::so3::so3(const Eigen::MatrixXd& obj_pts_, const Eigen::MatrixXd& i
     Pr1 = Eigen::MatrixXd::Zero(3, 2*n);
     Pr = Eigen::MatrixXd::Zero(2*n, 2*n);
     
-    Ra    = Eigen::MatrixXd::Identity(3,3);
-    Rc    = Eigen::MatrixXd::Identity(3,3);
-    R_ret = Eigen::MatrixXd::Identity(3,3); 
-    R     = Eigen::MatrixXd::Identity(3,3); 
-    step  = Eigen::MatrixXd::Zero(3,3);
-    N     = Eigen::MatrixXd::Zero(3,3);
+    Ra.setIdentity();
+    Rc.setIdentity();
+    R_ret.setIdentity();
+    R.setIdentity();
+    step.setZero();
+    N.setZero();
     
-    rgm       = Eigen::VectorXd::Zero(3);
-    Veca      = Eigen::VectorXd::Zero(3);
-    Vecc      = Eigen::VectorXd::Zero(3);
-    dummyrgm  = Eigen::VectorXd::Zero(3);
-    ax        = Eigen::VectorXd::Zero(3);
+    rgm.setZero();
+    Veca.setZero();
+    Vecc.setZero();
+    dummyrgm.setZero();
+    ax.setZero();
     gam       = Eigen::VectorXd::Zero(2*n);
     err       = Eigen::VectorXd::Zero(2*n);
     
@@ -59,7 +59,7 @@ mrpt::vision::so3::so3(const Eigen::MatrixXd& obj_pts_, const Eigen::MatrixXd& i
     for(k=0;k<n;k++)
 		beta1.block(2*k, 0, 2, 2) = -cam_intrinsic.block(0,0,2,2);
         
-    std::cout<<"Init Complete" << std::endl << std::endl;
+    //std::cout<<"Init Complete" << std::endl << std::endl;
     
 }
 
