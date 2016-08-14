@@ -17,6 +17,7 @@ along with this program.If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************/
 
 #include <iostream>
+#include <math.h>
 #include <Eigen/Dense>
 
 #include "so3.h"
@@ -25,8 +26,9 @@ along with this program.If not, see <http://www.gnu.org/licenses/>.
 
 mrpt::vision::so3::so3(const Eigen::MatrixXd& obj_pts_, const Eigen::MatrixXd& img_pts_, const Eigen::MatrixXd& cam_intrinsic_, int n0)
 {
+    n=n0;
     obj_pts = obj_pts_;
-    img_pts = img_pts_.block(0,0,n0,2);
+    img_pts = img_pts_.block(0,0,n,2);
     
     cam_intrinsic = cam_intrinsic_;
     
@@ -46,15 +48,14 @@ mrpt::vision::so3::so3(const Eigen::MatrixXd& obj_pts_, const Eigen::MatrixXd& i
     Vecc.setZero();
     dummyrgm.setZero();
     ax.setZero();
+     
     gam       = Eigen::VectorXd::Zero(2*n);
     err       = Eigen::VectorXd::Zero(2*n);
-    
+   
     k=0;
     k1=0;
     k2=0;
     k3=0;
-    
-    n=n0;
     
     for(k=0;k<n;k++)
 		beta1.block(2*k, 0, 2, 2) = -cam_intrinsic.block(0,0,2,2);
@@ -135,7 +136,7 @@ void mrpt::vision::so3::findPosSO3(Eigen::Matrix3d & R_guess)
 	Vecc = Veca;
 
 	stepsize=M_PI/72;
-
+    
 	while (stepsize > M_PI / 1440)
 	{
 		k2++;
