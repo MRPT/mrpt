@@ -94,6 +94,7 @@
 		- Optional dependency `liblas`: minimum required version is now 1.6.0 (Ubuntu Trusty or above).
 		- Update of embedded copy of nanoflann to version 1.2.0.
 		- New script for automated dumping stack traces on unit tests failures (`tests/run_all_tests_gdb.sh`)
+		- Fix build against wxWidgets 3.1.*
 	- BUG FIXES:
 		- Fix inconsistent state after calling mrpt::obs::CObservation3DRangeScan::swap()
 		- Fix SEGFAULT in mrpt::obs::CObservation3DRangeScan if trying to build a pointcloud in an external container (mrpt::opengl, mrpt::maps)
