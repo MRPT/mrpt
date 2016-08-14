@@ -613,25 +613,6 @@ public:
 		*this = A*B;
 	}
 
-
-	/** Matrix left divide: RES = A<sup>-1</sup> * this , with A being squared (using the Eigen::ColPivHouseholderQR method) */
-	template<class MAT2,class MAT3 >
-	EIGEN_STRONG_INLINE void leftDivideSquare(const MAT2 &A, MAT3 &RES) const
-	{
-		Eigen::ColPivHouseholderQR<PlainObject> QR = A.colPivHouseholderQr();
-		if (!QR.isInvertible()) throw std::runtime_error("leftDivideSquare: Matrix A is not invertible");
-		RES = QR.inverse() * (*this);
-	}
-
-	/** Matrix right divide: RES = this * B<sup>-1</sup>, with B being squared  (using the Eigen::ColPivHouseholderQR method)  */
-	template<class MAT2,class MAT3 >
-	EIGEN_STRONG_INLINE void rightDivideSquare(const MAT2 &B, MAT3 &RES) const
-	{
-		Eigen::ColPivHouseholderQR<PlainObject> QR = B.colPivHouseholderQr();
-		if (!QR.isInvertible()) throw std::runtime_error("rightDivideSquare: Matrix B is not invertible");
-		RES = (*this) * QR.inverse();
-	}
-
 	/** @} */  // end multiply functions
 
 
