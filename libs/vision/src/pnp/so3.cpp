@@ -151,7 +151,7 @@ void mrpt::vision::so3::findPosSO3(Eigen::Matrix3d & R_guess)
 			error_c = err.norm();
 			k3++;
             
-            if(k3>10)
+            if(k3>100)
             {
                 k3=0;
                 break;
@@ -166,7 +166,7 @@ void mrpt::vision::so3::findPosSO3(Eigen::Matrix3d & R_guess)
 			err_calc(Rc, 0, err, Vecc, dummyrgm);
 			error_c = err.norm();
 			k1++;
-            if(k1>10)
+            if(k1>100)
             {
                 k1=0;
                 break;
@@ -174,7 +174,7 @@ void mrpt::vision::so3::findPosSO3(Eigen::Matrix3d & R_guess)
             
 		}
         
-        if(k2>10)
+        if(k2>100)
         {
             k2=0;
             break;

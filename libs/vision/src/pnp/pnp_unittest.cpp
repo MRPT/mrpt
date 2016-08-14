@@ -51,7 +51,7 @@ class CPnPTest: public::testing::Test
 
 TEST_F(CPnPTest, p3p_TEST)
 {
-    cpnp.CPnP_p3p(obj_pts, img_pts, n, I3, pose_est);
+    cpnp.p3p(obj_pts, img_pts, n, I3, pose_est);
     
     t_est<<pose_est(0), pose_est(1), pose_est(2);
     
@@ -62,7 +62,7 @@ TEST_F(CPnPTest, p3p_TEST)
 
 TEST_F(CPnPTest, rpnp_TEST)
 {
-    cpnp.CPnP_rpnp(obj_pts, img_pts, n, I3, pose_est);
+    cpnp.rpnp(obj_pts, img_pts, n, I3, pose_est);
     
     t_est<<pose_est(0), pose_est(1), pose_est(2);
     
@@ -73,7 +73,7 @@ TEST_F(CPnPTest, rpnp_TEST)
 
 TEST_F(CPnPTest, ppnp_TEST)
 {
-    cpnp.CPnP_ppnp(obj_pts, img_pts, n, I3, pose_est);
+    cpnp.ppnp(obj_pts, img_pts, n, I3, pose_est);
     
     t_est<<pose_est(0), pose_est(1), pose_est(2);
     
@@ -84,7 +84,7 @@ TEST_F(CPnPTest, ppnp_TEST)
 
 TEST_F(CPnPTest, posit_TEST)
 {
-    cpnp.CPnP_posit(obj_pts, img_pts, n, I3, pose_est);
+    cpnp.posit(obj_pts, img_pts, n, I3, pose_est);
     
     t_est<<pose_est(0), pose_est(1), pose_est(2);
     
@@ -95,7 +95,7 @@ TEST_F(CPnPTest, posit_TEST)
 
 TEST_F(CPnPTest, lhm_TEST)
 {
-    cpnp.CPnP_lhm(obj_pts, img_pts, n, I3, pose_est);
+    cpnp.lhm(obj_pts, img_pts, n, I3, pose_est);
     
     t_est<<pose_est(0), pose_est(1), pose_est(2);
     
@@ -106,7 +106,7 @@ TEST_F(CPnPTest, lhm_TEST)
 
 TEST_F(CPnPTest, so3_TEST)
 {
-    cpnp.CPnP_so3(obj_pts, img_pts, n, I3, pose_est);
+    cpnp.so3(obj_pts, img_pts, n, I3, pose_est);
     
     t_est<<pose_est(0), pose_est(1), pose_est(2);
     
@@ -119,7 +119,7 @@ TEST_F(CPnPTest, so3_TEST)
 
     TEST_F(CPnPTest, dls_TEST)
     {
-        cpnp.CPnP_dls(obj_pts, img_pts, n, I3, pose_est);
+        cpnp.dls(obj_pts, img_pts, n, I3, pose_est);
         
         t_est<<pose_est(0), pose_est(1), pose_est(2);
         
@@ -130,7 +130,7 @@ TEST_F(CPnPTest, so3_TEST)
     
     TEST_F(CPnPTest, epnp_TEST)
     {
-        cpnp.CPnP_epnp(obj_pts, img_pts, n, I3, pose_est);
+        cpnp.epnp(obj_pts, img_pts, n, I3, pose_est);
         
         t_est<<pose_est(0), pose_est(1), pose_est(2);
         
@@ -141,7 +141,7 @@ TEST_F(CPnPTest, so3_TEST)
     
     TEST_F(CPnPTest, DISABLED_upnp_TEST)
     {
-        cpnp.CPnP_upnp(obj_pts, img_pts, n, I3, pose_est);
+        cpnp.upnp(obj_pts, img_pts, n, I3, pose_est);
         
         t_est<<pose_est(0), pose_est(1), pose_est(2);
         
