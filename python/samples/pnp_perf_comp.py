@@ -23,6 +23,9 @@ cx = 0.0
 cy = 0.0
 cam_intrinsic = np.array([[f, 0.0, cx], [0.0, f, cy], [0.0, 0.0, 1.0]])
 
+# Instantiate pnp module
+pnp = pymrpt.pnp(n)
+
 # Define settings for comparison module
 algos = [pnp.dls_solve, pnp.epnp_solve, pnp.p3p_solve,
          pnp.rpnp_solve, pnp.ppnp_solve, pnp.posit_solve, pnp.lhm_solve]
@@ -30,10 +33,6 @@ algo_names = ['dls', 'epnp', 'p3p', 'rpnp', 'ppnp', 'posit', 'lhm']
 algo_ls = [':', '-', '--', '-', '--', '-', '-']
 n_algos = len(algos)
 n_iter = 100
-
-
-# Instantiate pnp module
-pnp = pymrpt.pnp(n)
 
 
 class HighlightLines(plugins.PluginBase):
