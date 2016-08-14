@@ -59,9 +59,6 @@ mrpt::vision::so3::so3(const Eigen::MatrixXd& obj_pts_, const Eigen::MatrixXd& i
     
     for(k=0;k<n;k++)
 		beta1.block(2*k, 0, 2, 2) = -cam_intrinsic.block(0,0,2,2);
-        
-    //std::cout<<"Init Complete" << std::endl << std::endl;
-    
 }
 
 
@@ -185,11 +182,6 @@ void mrpt::vision::so3::findPosSO3(Eigen::Matrix3d & R_guess)
 
 	R = Rc;
 	err_calc(R, 1, err, dummyrgm, rgm);
-	
-	//<--------------------- Display and Log Data -------------------------->
-	//std::cout<<"R_Cam=\n"<<R<<std::endl<<std::endl;
-	//std::cout<<"r_cam=\n"<<rgm<<std::endl<<std::endl;
-
 }
 
 bool mrpt::vision::so3::compute_pose(Eigen::Matrix3d& R_, Eigen::Vector3d& t_)

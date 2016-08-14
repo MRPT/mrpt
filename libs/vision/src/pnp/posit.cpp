@@ -43,15 +43,11 @@ void mrpt::vision::POSIT::POS()
 		J0(i)=obj_matrix.row(i).dot(img_vecs.col(1));
 	}
 	
-	//cout<<"I0="<<endl<<I0<<endl<<endl;
-	//cout<<"J0="<<endl<<J0<<endl<<endl;
-	
+    
 	I0_norm=I0.norm();
 	J0_norm=J0.norm();
 	
 	scale=(I0_norm + J0_norm)/2;
-	
-	//cout<<"scale="<<scale<<endl;
 	
 	/*Computing TRANSLATION */
 	t(0)=img_pts(0,0)/scale;
@@ -66,9 +62,6 @@ void mrpt::vision::POSIT::POS()
 	R.row(0)=r1;
 	R.row(1)=r2;
 	R.row(2)=r3;
-	
-	//cout<<"R="<<R<<endl<<endl;
-	
 }
 
 /** 
@@ -86,7 +79,6 @@ int mrpt::vision::POSIT::compute_pose(Eigen::Ref<Eigen::Matrix3d> R_, Eigen::Ref
 	
 	for(iCount=0; iCount<LOOP_MAX_COUNT;iCount++)
 	{
-		//cout<<"icount="<<iCount<<endl;
 		if(iCount==0)
 		{
 			for(i=0;i<img_vecs.rows();i++)
@@ -103,19 +95,13 @@ int mrpt::vision::POSIT::compute_pose(Eigen::Ref<Eigen::Matrix3d> R_, Eigen::Ref
 			}
 			epsilons/=t(2);
 			
-			//cout<<"epsilons="<<endl<<epsilons<<endl<<endl;
-			
 			// Corrected image vectors 	
 			for(i=0; i<n; i++)
 			{
 				img_vecs.row(i)= img_pts.row(i) * (1+epsilons(i)) -img_pts.row(0);
 			}
 			
-			//cout<<"img_vecs=" <<endl<<img_vecs<<endl<<endl;
-			
 			imageDiff=this->get_img_diff();
-			
-			//cout<<"img_diff="<<imageDiff<<endl<<endl;
 			
 		}
 		
