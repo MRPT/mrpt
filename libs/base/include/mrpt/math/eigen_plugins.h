@@ -622,17 +622,19 @@ public:
 	/** [For square matrices only] Compute the eigenvectors and eigenvalues (sorted), both returned as matrices: eigenvectors are the columns in "eVecs", and eigenvalues in ascending order as the diagonal of "eVals".
 	  *   \note Warning: Only the real part of complex eigenvectors and eigenvalues are returned.
 	  *   \sa eigenVectorsSymmetric, eigenVectorsVec
+	  *  \return false on error
 	  */
 	template <class MATRIX1,class MATRIX2>
-	EIGEN_STRONG_INLINE void eigenVectors( MATRIX1 & eVecs, MATRIX2 & eVals ) const;
+	EIGEN_STRONG_INLINE bool eigenVectors( MATRIX1 & eVecs, MATRIX2 & eVals ) const;
 	// Implemented in eigen_plugins_impl.h (can't be here since Eigen::SelfAdjointEigenSolver isn't defined yet at this point.
 
 	/** [For square matrices only] Compute the eigenvectors and eigenvalues (sorted), eigenvectors are the columns in "eVecs", and eigenvalues are returned in in ascending order in the vector "eVals".
 	  *   \note Warning: Only the real part of complex eigenvectors and eigenvalues are returned.
 	  *   \sa eigenVectorsSymmetric, eigenVectorsVec
+	  *  \return false on error
 	  */
 	template <class MATRIX1,class VECTOR1>
-	EIGEN_STRONG_INLINE void eigenVectorsVec( MATRIX1 & eVecs, VECTOR1 & eVals ) const;
+	EIGEN_STRONG_INLINE bool eigenVectorsVec( MATRIX1 & eVecs, VECTOR1 & eVals ) const;
 	// Implemented in eigen_plugins_impl.h
 
 	/** [For square matrices only] Compute the eigenvectors and eigenvalues (sorted), and return only the eigenvalues in the vector "eVals".
