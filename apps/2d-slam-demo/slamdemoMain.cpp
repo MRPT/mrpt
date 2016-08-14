@@ -24,6 +24,7 @@
 #include <wx/image.h>
 #include <wx/artprov.h>
 //*)
+#include "../wx-common/wx28-fixes.h"
 
 #include <mrpt/utils/CFileGZOutputStream.h>
 #include <mrpt/math/wrap2pi.h>

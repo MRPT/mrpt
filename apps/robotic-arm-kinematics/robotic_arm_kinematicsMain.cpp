@@ -20,6 +20,7 @@
 #include <wx/image.h>
 #include <wx/artprov.h>
 //*)
+#include "../wx-common/wx28-fixes.h"
 
 #include "CAboutBox.h"
 
