@@ -249,7 +249,9 @@ def display_comparison_plot_mpld3(t, arr, names, line_styles, title, xtitle, yti
 
     mpld3.display()
 
-    mpld3.save_html(f, figname + '.html')
+    #mpld3.save_html(f, figname + '.html')
+
+    return mpld3.fig_to_html(f)
 
 
 def calc_err(pose1, pose2):
@@ -348,10 +350,15 @@ def err_plot():
     err_net_t = np.array(err_net_t)
     err_net_q = np.array(err_net_q)
 
-    display_comparison_plot_mpld3(it, err_net_t, names=algo_names, line_styles=algo_ls,
-                                  title='Translation %Error Plot', xtitle='Iteration', ytitle='%$e_t$', ylim=[0, 10], figname='err_t')
-    display_comparison_plot_mpld3(it, err_net_q, names=algo_names, line_styles=algo_ls,
-                                  title='Rotation Error Plot (deg)', xtitle='Iteration', ytitle='$e_q$', ylim=[0, 2], figname='err_q')
+    s = ''
+    s1 = display_comparison_plot_mpld3(it, err_net_t, names=algo_names, line_styles=algo_ls,
+                                       title='Translation %Error Plot', xtitle='Iteration', ytitle='%$e_t$', ylim=[0, 10], figname='err_t')
+    s2 = display_comparison_plot_mpld3(it, err_net_q, names=algo_names, line_styles=algo_ls,
+                                       title='Rotation Error Plot (deg)', xtitle='Iteration', ytitle='$e_q$', ylim=[0, 2], figname='err_q')
+
+    s = s1 + s2
+
+    return s
 
     """
     comp_arr = np.zeros([n_iter,2])
@@ -447,16 +454,20 @@ def err_statistics_fcn_n():
     median_err_t_net = np.array(median_err_t_net)
     median_err_q_net = np.array(median_err_q_net)
 
-    display_comparison_plot_mpld3(it, mean_err_t_net, names=algo_names, line_styles=algo_ls,
-                                  title='Mean Translation %Error Plot', xtitle='n', ytitle=r'% $\bar{e}_t$', ylim=[0, 10], figname='mean_err_t')
-    display_comparison_plot_mpld3(it, mean_err_q_net, names=algo_names, line_styles=algo_ls,
-                                  title='Mean Rotation Error Plot (deg)', xtitle='n', ytitle=r'$\bar{e}_q$', ylim=[0, 0.5], figname='mean_err_q')
+    s = ''
 
-    display_comparison_plot_mpld3(it, median_err_t_net, names=algo_names, line_styles=algo_ls,
-                                  title='Median Translation %Error Plot', xtitle='n', ytitle=r'% $\tilde{e}_t$', ylim=[0, 10], figname='median_err_t')
-    display_comparison_plot_mpld3(it, median_err_q_net, names=algo_names, line_styles=algo_ls,
-                                  title='Median Rotation Error Plot (deg)', xtitle='n', ytitle=r'$\tilde{e}_q$', ylim=[0, 0.5], figname='median_err_q')
-    return 1
+    s1 = display_comparison_plot_mpld3(it, mean_err_t_net, names=algo_names, line_styles=algo_ls,
+                                       title='Mean Translation %Error Plot', xtitle='n', ytitle=r'% $\bar{e}_t$', ylim=[0, 10], figname='mean_err_t')
+    s2 = display_comparison_plot_mpld3(it, mean_err_q_net, names=algo_names, line_styles=algo_ls,
+                                       title='Mean Rotation Error Plot (deg)', xtitle='n', ytitle=r'$\bar{e}_q$', ylim=[0, 0.5], figname='mean_err_q')
+
+    s3 = display_comparison_plot_mpld3(it, median_err_t_net, names=algo_names, line_styles=algo_ls,
+                                       title='Median Translation %Error Plot', xtitle='n', ytitle=r'% $\tilde{e}_t$', ylim=[0, 10], figname='median_err_t')
+    s4 = display_comparison_plot_mpld3(it, median_err_q_net, names=algo_names, line_styles=algo_ls,
+                                       title='Median Rotation Error Plot (deg)', xtitle='n', ytitle=r'$\tilde{e}_q$', ylim=[0, 0.5], figname='median_err_q')
+
+    s = s1 + s2 + s3 + s4
+    return s
 
 
 def err_statistics_fcn_sigma():
@@ -529,17 +540,21 @@ def err_statistics_fcn_sigma():
     median_err_t_net = np.array(median_err_t_net)
     median_err_q_net = np.array(median_err_t_net)
 
-    display_comparison_plot_mpld3(it, mean_err_t_net, names=algo_names, line_styles=algo_ls, title='Mean Translation %Error Plot',
-                                  xtitle=r'\sigma', ytitle=r'% $\bar{e}_t$', ylim=[0, 10], figname='mean_sigma_err_t')
-    display_comparison_plot_mpld3(it, mean_err_q_net, names=algo_names, line_styles=algo_ls, title='Mean Rotation Error Plot (deg)',
-                                  xtitle=r'\sigma', ytitle=r'$\bar{e}_q$', ylim=[0, 0.5], figname='mean_sigma_err_q')
+    s = ''
 
-    display_comparison_plot_mpld3(it, median_err_t_net, names=algo_names, line_styles=algo_ls, title='Median Translation %Error Plot',
-                                  xtitle=r'\sigma', ytitle=r'% $\tilde{e}_t$', ylim=[0, 10], figname='median_sigma_err_t')
-    display_comparison_plot_mpld3(it, median_err_q_net, names=algo_names, line_styles=algo_ls, title='Median Rotation Error Plot (deg)',
-                                  xtitle=r'\sigma', ytitle=r'$\tilde{e}_q$', ylim=[0, 0.5], figname='median_sigma_err_q')
+    s1 = display_comparison_plot_mpld3(it, mean_err_t_net, names=algo_names, line_styles=algo_ls, title='Mean Translation %Error Plot',
+                                       xtitle=r'\sigma', ytitle=r'% $\bar{e}_t$', ylim=[0, 10], figname='mean_sigma_err_t')
+    s2 = display_comparison_plot_mpld3(it, mean_err_q_net, names=algo_names, line_styles=algo_ls, title='Mean Rotation Error Plot (deg)',
+                                       xtitle=r'\sigma', ytitle=r'$\bar{e}_q$', ylim=[0, 0.5], figname='mean_sigma_err_q')
 
-    return 1
+    s3 = display_comparison_plot_mpld3(it, median_err_t_net, names=algo_names, line_styles=algo_ls, title='Median Translation %Error Plot',
+                                       xtitle=r'\sigma', ytitle=r'% $\tilde{e}_t$', ylim=[0, 10], figname='median_sigma_err_t')
+    s4 = display_comparison_plot_mpld3(it, median_err_q_net, names=algo_names, line_styles=algo_ls, title='Median Rotation Error Plot (deg)',
+                                       xtitle=r'\sigma', ytitle=r'$\tilde{e}_q$', ylim=[0, 0.5], figname='median_sigma_err_q')
+
+    s = s1 + s2 + s3 + s4
+
+    return s
 
 
 def time_comp():
@@ -599,13 +614,19 @@ def time_comp():
 
     it = np.arange(n_start, n_max, n_step)
     tcomp_storage = np.array(tcomp_storage)
-    display_comparison_plot_mpld3(it, tcomp_storage, names=algo_names[1:], line_styles=algo_ls[
-                                  1:], title='Average Time for algorithm (ms)', xtitle=r'n', ytitle=r't(ms)', ylim=[0, 1], figname='mean_time')
 
-    return tcomp_storage
+    s = display_comparison_plot_mpld3(it, tcomp_storage, names=algo_names[1:], line_styles=algo_ls[
+        1:], title='Average Time for algorithm (ms)', xtitle=r'n', ytitle=r't(ms)', ylim=[0, 1], figname='mean_time')
 
+    return s
 
-time_comp()
-err_plot()
-err_statistics_fcn_sigma()
-err_statistics_fcn_n()
+ss = ''
+s1 = err_plot()
+s2 = err_statistics_fcn_sigma()
+s3 = err_statistics_fcn_n()
+s4 = time_comp()
+ss = ss + s1 + s2 + s3 + s4
+
+f = open("pnp_perf_comp.html", "w")
+f.write(ss)
+f.close()
