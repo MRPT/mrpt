@@ -38,7 +38,7 @@ namespace mrpt
                          * @param[out] pose_mat Output pose vector 6X1, pose_mat[0:2]-> Translation, pose_mat[3:5] -> Quaternion vector component 
                          * @return success flag
                          */
-                        int CPnP_dls(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<Eigen::MatrixXd> img_pts, int n, const Eigen::Ref<Eigen::MatrixXd> cam_intrinsic, Eigen::Ref<Eigen::MatrixXd> pose_mat);
+                        int dls(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<Eigen::MatrixXd> img_pts, int n, const Eigen::Ref<Eigen::MatrixXd> cam_intrinsic, Eigen::Ref<Eigen::MatrixXd> pose_mat);
 
                         /**
                          * @brief \cite lepetit Efficient-PnP (EPnP) - Algorithm takes 4 control points based on n points and uses the control points to compute the pose
@@ -50,7 +50,7 @@ namespace mrpt
                          * @param[out] pose_mat Output pose vector 6X1, pose_mat[0:2]-> Translation, pose_mat[3:5] -> Quaternion vector component 
                          * @return success flag
                          */
-                        int CPnP_epnp(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<Eigen::MatrixXd> img_pts, int n, const Eigen::Ref<Eigen::MatrixXd> cam_intrinsic, Eigen::Ref<Eigen::MatrixXd> pose_mat);
+                        int epnp(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<Eigen::MatrixXd> img_pts, int n, const Eigen::Ref<Eigen::MatrixXd> cam_intrinsic, Eigen::Ref<Eigen::MatrixXd> pose_mat);
 
                         /**
                          * @brief \cite Kneip2014 Unified-PnP (UPnP) : Algorithm to compute pose from unknown camera intrinsic matrix
@@ -62,7 +62,7 @@ namespace mrpt
                          * @param[out] pose_mat Output pose vector 6X1, pose_mat[0:2]-> Translation, pose_mat[3:5] -> Quaternion vector component 
                          * @return success flag
                          */
-                        int CPnP_upnp(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<Eigen::MatrixXd> img_pts, int n, const Eigen::Ref<Eigen::MatrixXd> cam_intrinsic, Eigen::Ref<Eigen::MatrixXd> pose_mat);
+                        int upnp(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<Eigen::MatrixXd> img_pts, int n, const Eigen::Ref<Eigen::MatrixXd> cam_intrinsic, Eigen::Ref<Eigen::MatrixXd> pose_mat);
                         
                     #endif
                     
@@ -76,7 +76,7 @@ namespace mrpt
                      * @param[out] pose_mat Output pose vector 6X1, pose_mat[0:2]-> Translation, pose_mat[3:5] -> Quaternion vector component 
                      * @return success flag
                      */
-                    int CPnP_p3p(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<Eigen::MatrixXd> img_pts, int n, const Eigen::Ref<Eigen::MatrixXd> cam_intrinsic, Eigen::Ref<Eigen::MatrixXd> pose_mat);
+                    int p3p(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<Eigen::MatrixXd> img_pts, int n, const Eigen::Ref<Eigen::MatrixXd> cam_intrinsic, Eigen::Ref<Eigen::MatrixXd> pose_mat);
                     
                     /**
                      * @brief \cite xie Robust (R-PnP)- A closed form solution with intermediate P3P computations
@@ -88,7 +88,7 @@ namespace mrpt
                      * @param[out] pose_mat Output pose vector 6X1, pose_mat[0:2]-> Translation, pose_mat[3:5] -> Quaternion vector component 
                      * @return success flag
                      */
-                    int CPnP_rpnp(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<Eigen::MatrixXd> img_pts, int n, const Eigen::Ref<Eigen::MatrixXd> cam_intrinsic, Eigen::Ref<Eigen::MatrixXd> pose_mat);
+                    int rpnp(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<Eigen::MatrixXd> img_pts, int n, const Eigen::Ref<Eigen::MatrixXd> cam_intrinsic, Eigen::Ref<Eigen::MatrixXd> pose_mat);
                     
                     /**
                      * @brief \cite garro Procrustes-PnP(PPnP) Algorithm : Iterative SVD based algorithm
@@ -99,7 +99,7 @@ namespace mrpt
                      * @param[out] pose_mat Output pose vector 6X1, pose_mat[0:2]-> Translation, pose_mat[3:5] -> Quaternion vector component 
                      * @return success flag
                      */
-                    int CPnP_ppnp(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<Eigen::MatrixXd> img_pts, int n, const Eigen::Ref<Eigen::MatrixXd> cam_intrinsic, Eigen::Ref<Eigen::MatrixXd> pose_mat);
+                    int ppnp(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<Eigen::MatrixXd> img_pts, int n, const Eigen::Ref<Eigen::MatrixXd> cam_intrinsic, Eigen::Ref<Eigen::MatrixXd> pose_mat);
 
                     /**
                      * @brief \cite dementhon Pose from Orthogoanlity and Scaling :Iterative (POSIT) -  A Geometric algorithm to compute scale and orthogonality independently
@@ -110,7 +110,7 @@ namespace mrpt
                      * @param[out] pose_mat Output pose vector 6X1, pose_mat[0:2]-> Translation, pose_mat[3:5] -> Quaternion vector component 
                      * @return success flag
                      */
-                    int CPnP_posit(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<Eigen::MatrixXd> img_pts, int n, const Eigen::Ref<Eigen::MatrixXd> cam_intrinsic, Eigen::Ref<Eigen::MatrixXd> pose_mat);
+                    int posit(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<Eigen::MatrixXd> img_pts, int n, const Eigen::Ref<Eigen::MatrixXd> cam_intrinsic, Eigen::Ref<Eigen::MatrixXd> pose_mat);
             
                     /**@brief \cite lu Lu-Hager-Mjolsness(LHM)-PnP algorithm : Iterative algorithm to reduce object space error
                      * @param[in] obj_pts   Object points in Camera Co-ordinate system {C} nX3 array [p_x p_y p_z]
@@ -120,7 +120,7 @@ namespace mrpt
                      * @param[out] pose_mat Output pose vector 6X1, pose_mat[0:2]-> Translation, pose_mat[3:5] -> Quaternion vector component 
                      * @return success flag
                      */
-                    int CPnP_lhm(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<Eigen::MatrixXd> img_pts, int n, const Eigen::Ref<Eigen::MatrixXd> cam_intrinsic, Eigen::Ref<Eigen::MatrixXd> pose_mat);
+                    int lhm(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<Eigen::MatrixXd> img_pts, int n, const Eigen::Ref<Eigen::MatrixXd> cam_intrinsic, Eigen::Ref<Eigen::MatrixXd> pose_mat);
                     
                     /**
                      * @brief /cite chandra SO(3) - PnP: Gradient descent based local search optimization
@@ -132,8 +132,8 @@ namespace mrpt
                      * @return success flag
                      * @return 
                      */
-                    int CPnP_so3(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<Eigen::MatrixXd> img_pts, int n, const Eigen::Ref<Eigen::MatrixXd> cam_intrinsic, Eigen::Ref<Eigen::MatrixXd> pose_mat);
-                    };
+                    int so3(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<Eigen::MatrixXd> img_pts, int n, const Eigen::Ref<Eigen::MatrixXd> cam_intrinsic, Eigen::Ref<Eigen::MatrixXd> pose_mat);
+            };
             
         }
     }

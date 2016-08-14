@@ -27,8 +27,8 @@ cam_intrinsic = np.array([[f, 0.0, cx], [0.0, f, cy], [0.0, 0.0, 1.0]])
 pnp = pymrpt.pnp(n)
 
 # Define settings for comparison module
-algos = [pnp.dls_solve, pnp.epnp_solve, pnp.p3p_solve,
-         pnp.rpnp_solve, pnp.ppnp_solve, pnp.posit_solve, pnp.lhm_solve]
+algos = [pnp.dls, pnp.epnp, pnp.p3p,
+         pnp.rpnp, pnp.ppnp, pnp.posit, pnp.lhm]
 algo_names = ['dls', 'epnp', 'p3p', 'rpnp', 'ppnp', 'posit', 'lhm']
 algo_ls = [':', '-', '--', '-', '--', '-', '-']
 n_algos = len(algos)
