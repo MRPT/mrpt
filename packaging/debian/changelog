@@ -1,3 +1,4 @@
+  * Fix FTBFS in testing (Closes #834274)
   * Removed manual -dbg packages, as they are now generated automatically.
 
 mrpt (1:1.4.0-5) unstable; urgency=medium

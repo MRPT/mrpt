@@ -42,6 +42,7 @@
 			- [API change] The following functions are no longer static methods: (since their classes are now derived from the state-aware mrpt::utils::COutputLogger)
 				- mrpt::math::RANSAC_Template::execute()
 				- mrpt::math::CLevenbergMarquardtTempl::execute()
+			- Deleted methods in Eigen-extensions: leftDivideSquare(), rightDivideSquare()
 		- \ref mrpt_bayes_grp
 			-  [API change] `verbose` is no longer a field of mrpt::bayes::CParticleFilter::TParticleFilterOptions. Use the setVerbosityLevel() method of the CParticleFilter class itself.
 		- \ref mrpt_gui_grp
