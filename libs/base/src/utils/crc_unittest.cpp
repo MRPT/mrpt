@@ -29,5 +29,5 @@ TEST(crc, crc32)
 
 	uint32_t crc = mrpt::utils::compute_CRC32(buffer, sizeof(buffer), 0xEDB88320L );
 	
-	EXPECT_EQ(crc, 0x484cdc42);
+	EXPECT_EQ(crc, 0x484cdc42u);
 }
