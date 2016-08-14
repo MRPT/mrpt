@@ -125,14 +125,14 @@ void mrpt::vision::so3::findPosSO3(Eigen::Matrix3d & R_guess)
 
 	Pr = Eigen::MatrixXd ::Identity(2 * n, 2 * n) - beta1*Pr1;
 	
-	Ra = R;
-
 	err_calc(Ra, 0, err, Veca, dummyrgm);
 
 	error_a = err.norm();
 
 	error_c = error_a;
-	Rc = Ra;
+	
+	Ra = R;
+    Rc = Ra;
 	Vecc = Veca;
 
 	stepsize=M_PI/72;
@@ -151,6 +151,12 @@ void mrpt::vision::so3::findPosSO3(Eigen::Matrix3d & R_guess)
 			error_c = err.norm();
 			k3++;
             
+            if(k3>10)
+            {
+                k3=0;
+                break;
+            }
+            
 		}
 
 		while (Veca.transpose()*Vecc < 0)
@@ -160,8 +166,19 @@ void mrpt::vision::so3::findPosSO3(Eigen::Matrix3d & R_guess)
 			err_calc(Rc, 0, err, Vecc, dummyrgm);
 			error_c = err.norm();
 			k1++;
+            if(k1>10)
+            {
+                k1=0;
+                break;
+            }
             
 		}
+        
+        if(k2>10)
+        {
+            k2=0;
+            break;
+        }
         
        
 	}
