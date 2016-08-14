@@ -19,6 +19,7 @@
 #include <wx/intl.h>
 #include <wx/font.h>
 //*)
+#include "../wx-common/wx28-fixes.h"
 
 
 using namespace std;

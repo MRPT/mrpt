@@ -24,6 +24,7 @@
 #include <mrpt/gui/WxUtils.h>
 #include "imgs/main_icon.xpm"
 #include "../wx-common/mrpt_logo.xpm"
+#include "../wx-common/wx28-fixes.h"
 
 // A custom Art provider for customizing the icons:
 class MyArtProvider : public wxArtProvider
