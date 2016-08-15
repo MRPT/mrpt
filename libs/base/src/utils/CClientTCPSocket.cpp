@@ -9,19 +9,22 @@
 
 #include "base-precomp.h"  // Precompiled headers
 
-
 #include <mrpt/utils/CClientTCPSocket.h>
 #include <mrpt/utils/CMessage.h>
 #include <mrpt/utils/net_utils.h>
 #include <mrpt/system/os.h>
 #include <cstring>
 
-using namespace mrpt::utils;
-using namespace mrpt::system;
-
 #ifdef MRPT_OS_WINDOWS
+	// Windows
 	#include <winsock.h>
+	#include <winsock2.h>
+	#include <winerror.h>
+	#if defined(__BORLANDC__) || defined(_MSC_VER)
+	#pragma comment (lib,"WS2_32.LIB")
+	#endif
 #else
+	// Linux, Apple
 	#define  INVALID_SOCKET		(-1)
 	#include <sys/socket.h>
 	#include <unistd.h>
@@ -35,7 +38,73 @@ using namespace mrpt::system;
 	#include <netinet/tcp.h>
 #endif
 
+using namespace mrpt::utils;
+using namespace mrpt::system;
+using namespace mrpt;
+using namespace std;
+
+
 unsigned int CClientTCPSocket::DNS_LOOKUP_TIMEOUT_MS = 3000;
+
+CClientTCPSocket::CClientTCPSocket( )
+{
+	MRPT_START
+
+#ifdef MRPT_OS_WINDOWS
+	// Init the WinSock Library:
+	// ----------------------------
+	WORD		wVersionRequested;
+	WSADATA		wsaData;
+
+	wVersionRequested = MAKEWORD( 2, 0 );
+
+	if (WSAStartup( wVersionRequested, &wsaData ) )
+		THROW_EXCEPTION("Error calling WSAStartup");
+
+	m_hSock = INVALID_SOCKET;
+#else
+	// Linux, Apple
+	m_hSock = -1;
+#endif
+	MRPT_END
+}
+
+CClientTCPSocket::~CClientTCPSocket( )
+{
+	// Close socket:
+	close();
+#ifdef MRPT_OS_WINDOWS
+	WSACleanup();
+#else
+	// Nothing else to do.
+#endif
+}
+
+void  CClientTCPSocket::close()
+{
+	MRPT_START
+
+#ifdef MRPT_OS_WINDOWS
+	// Delete socket:
+	if (m_hSock != INVALID_SOCKET)
+	{
+		shutdown(m_hSock, 2 ); //SD_BOTH  );
+		closesocket( m_hSock );
+		m_hSock = INVALID_SOCKET;
+	}
+#else
+	// Delete socket:
+	if (m_hSock != -1)
+	{
+		shutdown(m_hSock, SHUT_RDWR  );
+		::close( m_hSock );
+		m_hSock = -1;
+	}
+#endif
+	MRPT_END
+}
+
+
 
 /*---------------------------------------------------------------
 						Read
