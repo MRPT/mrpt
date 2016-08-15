@@ -47,9 +47,9 @@ namespace mrpt { namespace graphslam { namespace deciders {
  *
  * ## Description
  *
- * Register new edges in the graph with the last added node. Criterion for
+ * Register new edges in the graph with the last inserted node. Criterion for
  * adding new edges should be the goodness of the candidate ICP edge. The
- * nodes for ICP are be picked <em>based on the distance from the last
+ * nodes for ICP are picked <em>based on the distance from the last
  * inserted node</em>.
  * \sa  getNearbyNodesOf
  *
