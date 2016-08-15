@@ -54,7 +54,7 @@ bool mrpt::vision::rpnp::compute_pose(Eigen::Ref<Eigen::Matrix3d> R_, Eigen::Ref
 
 		if (l < lmin)
 		{
-			i1 = 1;
+			i1 = i;
 			i2 = j;
 			lmin = l;
 		}
@@ -161,8 +161,7 @@ bool mrpt::vision::rpnp::compute_pose(Eigen::Ref<Eigen::Matrix3d> R_, Eigen::Ref
     
 	if (cnt==0)
     {
-		//std::cout << "RPnP Did not converge" << std::endl;
-        return false;
+		return false;
     }
     
     Eigen::VectorXd act_roots1(cnt);

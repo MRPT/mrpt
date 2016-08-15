@@ -14,19 +14,11 @@ lhm::lhm(Eigen::MatrixXd obj_pts_, Eigen::MatrixXd img_pts_, Eigen::MatrixXd cam
 	cam_intrinsic = cam_;
 	n = n0;
 
-	//std::cout << "obj_pts_=" << std::endl << obj_pts_ << std::endl << std::endl;
-	//std::cout << "img_pts_=" << std::endl << img_pts_ << std::endl << std::endl;
-	//std::cout << "cam_=" << std::endl << cam_ << std::endl << std::endl;
-
-
 	// Store obj_pts as 3XN and img_projections as 2XN matrices 
 	P = obj_pts.transpose();
 	Q = Eigen::MatrixXd::Ones(3, n);
 
 	Q = img_pts.transpose();
-
-	//std::cout << "P=" << std::endl << P << std::endl << std::endl;
-	//std::cout << "Q=" << std::endl << Q << std::endl << std::endl;
 
 	t.setZero();
 }
@@ -44,8 +36,6 @@ void lhm::xform()
 {
 	for (int i = 0; i < n; i++)
 		Q.col(i) = R*P.col(i) + t;
-
-	//std::cout << "Q_xform =" << std::endl << Q << std::endl << std::endl;
 }
 
 Eigen::Matrix4d lhm::qMatQ(Eigen::VectorXd q)
@@ -83,17 +73,11 @@ void lhm::absKernel()
 	P_bar = P.rowwise().mean();
 	Q_bar = Q.rowwise().mean();
 
-	//std::cout<<"P_bar="<<std::endl<<P_bar<<std::endl<<std::endl;
-	//std::cout<<"Q_bar="<<std::endl<<Q_bar<<std::endl<<std::endl;
-
 	for (i = 0; i < n; i++)
 	{
 		P.col(i) = P.col(i) - P_bar;
 		Q.col(i) = Q.col(i) - Q_bar;
 	}
-
-	//std::cout<<"P="<<std::endl<<P<<std::endl<<std::endl;
-	//std::cout<<"Q="<<std::endl<<Q<<std::endl<<std::endl;
 
 	//<------------------- Use SVD Solution ------------------->//
 	/*
@@ -102,8 +86,6 @@ void lhm::absKernel()
 
 	for (i = 0; i < n; i++)
 		M += P.col(i)*Q.col(i).transpose();
-
-	cout<<"M="<<endl<<M<<endl<<endl;
 
 	Eigen::JacobiSVD<Eigen::MatrixXd> svd(M, Eigen::ComputeThinU | Eigen::ComputeThinV);
 
@@ -134,25 +116,18 @@ void lhm::absKernel()
 		}
 	}
 
-	cout << "R=" << endl << R << endl << endl;
-	cout << "t=" << endl << t << endl << endl;
-
 	err2 = 0;
 	xform();
 
 	Eigen::Vector3d vec;
 	Eigen::Matrix3d I3 = Eigen::MatrixXd::Identity(3, 3);
 
-	cout << "Q_out=" << endl << Q << endl << endl;
-
 	for (i = 0; i < n; i++)
 	{
 		vec = (I3 - F[i])*Q.col(i);
 		err2 += vec.squaredNorm();
 	}
-
-	cout << "err2=" << err2 << endl << endl;
-	*/
+    */
 	//<------------------- Use QTN Solution ------------------->//
 
 	Eigen::Matrix4d A;
@@ -180,34 +155,23 @@ void lhm::absKernel()
 
 	V = V_mat.col(max_index);
 
-	//std::cout << "D=" << std::endl << D << std::endl << std::endl;
-	//std::cout << "V=" << std::endl << V << std::endl << std::endl;
-
 	Eigen::Quaterniond q(V(0), V(1), V(2), V(3));
 
 	R = q.toRotationMatrix();
 
-	//std::cout << "R=" << std::endl << R << std::endl << std::endl;
-
 	estimate_t();
-	//std::cout << "t=" << std::endl << t << std::endl << std::endl;
-
-
+	
 	err2 = 0;
 	xform();
 
 	Eigen::Vector3d vec;
 	Eigen::Matrix3d I3 = Eigen::MatrixXd::Identity(3, 3);
 
-	//std::cout << "Q_out=" << std::endl << Q << std::endl << std::endl;
-
 	for (i = 0; i < n; i++)
 	{
 		vec = (I3 - F[i])*Q.col(i);
 		err2 += vec.squaredNorm();
 	}
-
-	//std::cout << "err2=" << err2 << std::endl << std::endl;
 
 }
 
@@ -222,23 +186,14 @@ bool lhm::compute_pose(Eigen::Ref<Eigen::Matrix3d> R_, Eigen::Ref<Eigen::Vector3
 
 	p_bar = P.rowwise().mean();
 
-	//std::cout<<"p_bar="<< std::endl << p_bar<<std::endl<<std::endl;
-
 	for (i = 0; i<n; i++)
 	{
 		P.col(i) -= p_bar;
 		F[i] = Q.col(i)*Q.col(i).transpose() / Q.col(i).squaredNorm();
 		sum_F = sum_F + F[i];
-
-		//cout << "i= " << i << endl;
-		//cout << F[i] << endl << endl;
 	}
 
-	//std::cout << "sum_F=" << std::endl << sum_F << std::endl << std::endl;
-
 	G = (I3 - sum_F / n).inverse() / n;
-
-	//std::cout << "G=" << std::endl << G << std::endl << std::endl;
 
 	err = 0;
 	err2 = 1000;
@@ -250,9 +205,6 @@ bool lhm::compute_pose(Eigen::Ref<Eigen::Matrix3d> R_, Eigen::Ref<Eigen::Vector3
 
 		absKernel();
 		
-		//cout << "j=" << j << endl;
-		//cout << abs(err2 - err) << endl << err2 << endl << endl;
-
 		j += 1;
 		if (j > 100)
 			break;
@@ -260,14 +212,8 @@ bool lhm::compute_pose(Eigen::Ref<Eigen::Matrix3d> R_, Eigen::Ref<Eigen::Vector3
 
 	R_ = R;
 	t_ = t - R*p_bar;
-    
-    //std::cout<< "R=" << std::endl << R_ << std::endl << std::endl;
-    //std::cout<< "t=" << std::endl << t_ << std::endl << std::endl;
-    
 
 	return 1;
-
-
 }
 
 

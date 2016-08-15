@@ -11,18 +11,36 @@
     {
         namespace vision
         {
-
+            
+            /** \addtogroup pnp Perspective-n-Point pose estimation
+             *  \ingroup mrpt_vision_grp
+             *  @{  
+             */
+            
+            /**
+             * @class dls
+             * @author Chandra Mangipudi
+             * @date 12/08/16
+             * @file dls.h
+             * @brief Direct Least Squares (DLS) - Eigen Implementation
+             */
             class dls
             {
             public:
+                //! Constructor for DLS class
                 dls(const cv::Mat& opoints, const cv::Mat& ipoints);
                 ~dls();
 
+                //! OpenCV function for computing pose
                 bool compute_pose(cv::Mat& R, cv::Mat& t);
 
             private:
 
-                // initialisation
+                 /**
+                 * @brief Initialization of object points and image points
+                 * @param[in] opoints
+                 * @param[in] ipoints
+                 */
                 template <typename OpointType, typename IpointType>
                 void init_points(const cv::Mat& opoints, const cv::Mat& ipoints)
                 {
@@ -52,63 +70,162 @@
                     mn.at<double>(2) /= (double)N;
                 }
 
-                // main algorithm
+                /**
+                 * @brief Create a matrix from vector
+                 * @param[in] v
+                 * @return Matrix containing vector v as columns
+                 */
                 cv::Mat LeftMultVec(const cv::Mat& v);
+                
+                /**
+                 * @brief Main function to run DLS-PnP
+                 * @param[in] pp
+                 */
                 void run_kernel(const cv::Mat& pp);
+                
+                /**
+                 * @brief Build the Maucaulay matrix co-efficients
+                 * @param[in] pp
+                 * @param[out] Mtilde
+                 * @param[out] D
+                 */
                 void build_coeff_matrix(const cv::Mat& pp, cv::Mat& Mtilde, cv::Mat& D);
+                
+                /**
+                 * @brief Eigen Value Decomposition
+                 * @param Mtilde Matrix to be decomposed
+                 * @param eigenval_real Real eigenvalues
+                 * @param eigenval_imag Imaginary eigenvalues
+                 * @param eigenvec_real Eigen Vectors corresponding to real eigen values
+                 * @param eigenvec_imag Eigen Vectors corresponding to imaginary eigen values
+                 */
                 void compute_eigenvec(const cv::Mat& Mtilde, cv::Mat& eigenval_real, cv::Mat& eigenval_imag,
                                                              cv::Mat& eigenvec_real, cv::Mat& eigenvec_imag);
+                                                             
+                /**
+                 * @brief Fill the hessian functions
+                 * @param[in] D
+                 */
                 void fill_coeff(const cv::Mat * D);
-
-                // useful functions
+                
+                /**
+                 * @brief Fill the Maucaulay matrix with co-efficients
+                 * @param[in] a
+                 * @param[in] b
+                 * @param[in] c
+                 * @param[in] u
+                 * @return Maucaulay matrix M
+                 */
                 cv::Mat cayley_LS_M(const std::vector<double>& a, const std::vector<double>& b,
                                     const std::vector<double>& c, const std::vector<double>& u);
+                                    
+                /**
+                 * @brief Compute the Hessian matrix for the polynomial co-efficient vector s
+                 * @param[in] s
+                 * @return 
+                 */
                 cv::Mat Hessian(const double s[]);
+                
+                /**
+                 * @brief Cayley parameters to Rotation Matrix
+                 * @param[in] s
+                 * @return Rotation Matrix
+                 */
                 cv::Mat cayley2rotbar(const cv::Mat& s);
+                
+                /**
+                 * @brief Create a skwy-symmetric matrix from a vector
+                 * @param[in] X1
+                 * @return Skew-symmetric matrix
+                 */
                 cv::Mat skewsymm(const cv::Mat * X1);
 
-                // extra functions
+                /**
+                 * @brief Rotation matrix along x-axis by angle t
+                 * @param[in] t
+                 * @return Rotation Matrix
+                 */
                 cv::Mat rotx(const double t);
+                
+                /**
+                 * @brief Rotation matrix along y-axis by angle t
+                 * @param[in] t
+                 * @return Rotation Matrix
+                 */
                 cv::Mat roty(const double t);
+                
+                /**
+                 * @brief Rotation matrix along z-axis by angle t
+                 * @param[in] t
+                 * @return Rotation Matrix
+                 */
                 cv::Mat rotz(const double t);
+                
+                /**
+                 * @brief Column-wise mean of matrix M
+                 * @param[in] M
+                 * @return Mean vector
+                 */
                 cv::Mat mean(const cv::Mat& M);
+                
+                /**
+                 * @brief Check for negative values in vector v
+                 * @param[in] v
+                 * @return False if v[i] < 0 else True 
+                 */
                 bool is_empty(const cv::Mat * v);
+                
+                /**
+                 * @brief check for positive eigenvalues
+                 * @param[in] eigenvalues
+                 * @return True if positivie eigenvalues are found else False
+                 */
                 bool positive_eigenvalues(const cv::Mat * eigenvalues);
 
-                cv::Mat p, z, mn;        // object-image points
-                int N;                // number of input points
-                std::vector<double> f1coeff, f2coeff, f3coeff, cost_; // coefficient for coefficients matrix
-                std::vector<cv::Mat> C_est_, t_est_;    // optimal candidates
-                cv::Mat C_est__, t_est__;                // optimal found solution
-                double cost__;                            // optimal found solution
+                cv::Mat p, z, mn;        //! object-image points
+                int N;                //! number of input points
+                std::vector<double> f1coeff, f2coeff, f3coeff, cost_; //! coefficient for coefficients matrix
+                std::vector<cv::Mat> C_est_, t_est_;    //! optimal candidates
+                cv::Mat C_est__, t_est__;                //! optimal found solution
+                double cost__;                            //! cost for optimal found solution
             };
-
+            
+            
+            /**
+             * \cond INTERNAL_FUNC_DLS
+             */
             class EigenvalueDecomposition {
             private:
 
-                // Holds the data dimension.
-                int n;
+                
+                int n; //! Holds the data dimension.
+                
+                double cdivr, cdivi; //! Stores real/imag part of a complex division.
 
-                // Stores real/imag part of a complex division.
-                double cdivr, cdivi;
+                
+                double *d, *e, *ort; //! Pointer to internal memory.
+                double **V, **H; //! Pointer to internal memory.
+                
+                cv::Mat _eigenvalues; //! Holds the computed eigenvalues.
+                
+                cv::Mat _eigenvectors; //! Holds the computed eigenvectors.
 
-                // Pointer to internal memory.
-                double *d, *e, *ort;
-                double **V, **H;
-
-                // Holds the computed eigenvalues.
-                cv::Mat _eigenvalues;
-
-                // Holds the computed eigenvectors.
-                cv::Mat _eigenvectors;
-
-                // Allocates memory.
+                /**
+                 * @brief Function to allocate memmory for 1d array
+                 * @param[in] m Size of new 1d array
+                 * @return New 1d array of appropriate type
+                 */
                 template<typename _Tp>
                 _Tp *alloc_1d(int m) {
                     return new _Tp[m];
                 }
 
-                // Allocates memory.
+                /**
+                 * @brief Function to allocate memmory and initialize 1d array
+                 * @param[in] m Size of new 1d array
+                 * @param[in] val Initial values for the array
+                 * @return New 1d array
+                 */
                 template<typename _Tp>
                 _Tp *alloc_1d(int m, _Tp val) {
                     _Tp *arr = alloc_1d<_Tp> (m);
@@ -117,7 +234,12 @@
                     return arr;
                 }
 
-                // Allocates memory.
+                /**
+                 * @brief Function to allocate memmory for 2d array
+                 * @param m Row size 
+                 * @param _n Column size
+                 * @return  New 2d array
+                 */
                 template<typename _Tp>
                 _Tp **alloc_2d(int m, int _n) {
                     _Tp **arr = new _Tp*[m];
@@ -126,7 +248,13 @@
                     return arr;
                 }
 
-                // Allocates memory.
+                /**
+                 * @brief Function to allocate memmory for 2d array and initialize the array
+                 * @param[in] m Row size
+                 * @param[in] _n Column size
+                 * @param[out] val Initialization for 2d array
+                 * @return 
+                 */
                 template<typename _Tp>
                 _Tp **alloc_2d(int m, int _n, _Tp val) {
                     _Tp **arr = alloc_2d<_Tp> (m, _n);
@@ -138,6 +266,13 @@
                     return arr;
                 }
 
+                /**
+                 * @brief Internal function
+                 * @param[in] xr
+                 * @param[in] xi
+                 * @param[in] yr
+                 * @param[in] yi
+                 */
                 void cdiv(double xr, double xi, double yr, double yi) {
                     double r, dv;
                     if (std::abs(yr) > std::abs(yi)) {
@@ -153,15 +288,15 @@
                     }
                 }
 
-                // Nonsymmetric reduction from Hessenberg to real Schur form.
-
+                /**
+                 * @brief Nonsymmetric reduction from Hessenberg to real Schur form.
+                 *          
+                 *        This is derived from the Algol procedure hqr2,
+                 *        by Martin and Wilkinson, Handbook for Auto. Comp.,
+                 *        Vol.ii-Linear Algebra, and the corresponding
+                 *        Fortran subroutine in EISPACK.
+                 */
                 void hqr2() {
-
-                    //  This is derived from the Algol procedure hqr2,
-                    //  by Martin and Wilkinson, Handbook for Auto. Comp.,
-                    //  Vol.ii-Linear Algebra, and the corresponding
-                    //  Fortran subroutine in EISPACK.
-
                     // Initialize
                     int nn = this->n;
                     int n1 = nn - 1;
@@ -592,13 +727,17 @@
                         }
                     }
                 }
-
-                // Nonsymmetric reduction to Hessenberg form.
+                
+                /**
+                 * @brief  Nonsymmetric reduction to Hessenberg form.
+                 * 
+                 *         This is derived from the Algol procedures orthes and ortran,
+                 *         by Martin and Wilkinson, Handbook for Auto. Comp.,
+                 *         Vol.ii-Linear Algebra, and the corresponding
+                 *         Fortran subroutines in EISPACK.
+                 */
                 void orthes() {
-                    //  This is derived from the Algol procedures orthes and ortran,
-                    //  by Martin and Wilkinson, Handbook for Auto. Comp.,
-                    //  Vol.ii-Linear Algebra, and the corresponding
-                    //  Fortran subroutines in EISPACK.
+                    
                     int low = 0;
                     int high = n - 1;
 
@@ -683,7 +822,9 @@
                     }
                 }
 
-                // Releases all internal working memory.
+                /**
+                 * @brief Releases all internal working memory.
+                 */
                 void release() {
                     // releases the working data
                     delete[] d;
@@ -697,7 +838,9 @@
                     delete[] V;
                 }
 
-                // Computes the Eigenvalue Decomposition for a matrix given in H.
+                /**
+                 * @brief Computes the Eigenvalue Decomposition for a matrix given in H.
+                 */
                 void compute() {
                     // Allocate memory for the working data.
                     V = alloc_2d<double> (n, n, 0.0);
@@ -721,23 +864,28 @@
                     // Deallocate the memory by releasing all internal working data.
                     release();
                 }
+                
 
-            public:
+        public:
+                //! Constructor for EigenvalueDecomposition class
                 EigenvalueDecomposition()
                 : n(0) { }
 
-                // Initializes & computes the Eigenvalue Decomposition for a general matrix
-                // given in src. This function is a port of the EigenvalueSolver in JAMA,
-                // which has been released to public domain by The MathWorks and the
-                // National Institute of Standards and Technology (NIST).
+                /**
+                 * Initializes & computes the Eigenvalue Decomposition for a general matrix
+                 * given in src. This function is a port of the EigenvalueSolver in JAMA,
+                 * which has been released to public domain by The MathWorks and the
+                 * National Institute of Standards and Technology (NIST).
+                 */
                 EigenvalueDecomposition(cv::InputArray src) {
                     compute(src);
                 }
 
-                // This function computes the Eigenvalue Decomposition for a general matrix
-                // given in src. This function is a port of the EigenvalueSolver in JAMA,
-                // which has been released to public domain by The MathWorks and the
-                // National Institute of Standards and Technology (NIST).
+                /** This function computes the Eigenvalue Decomposition for a general matrix
+                 *  given in src. This function is a port of the EigenvalueSolver in JAMA,
+                 *  which has been released to public domain by The MathWorks and the
+                 *  National Institute of Standards and Technology (NIST).
+                 */
                 void compute(cv::InputArray src)
                 {
                     /*if(isSymmetric(src)) {
@@ -766,13 +914,27 @@
                    // }
                 }
 
+                //! Destructor for EigenvalueDecomposition class
                 ~EigenvalueDecomposition() {}
 
-                // Returns the eigenvalues of the Eigenvalue Decomposition.
+                /**
+                 * @brief Returns the eigenvalues of the Eigenvalue Decomposition.
+                 * @return eigenvalues
+                 */
                 cv::Mat eigenvalues() {  return _eigenvalues; }
-                // Returns the eigenvectors of the Eigenvalue Decomposition.
+    
+                /**
+                 * @brief Returns the eigenvectors of the Eigenvalue Decomposition.
+                 * @return eigenvectors
+                 */
                 cv::Mat eigenvectors() { return _eigenvectors; }
             };
+            
+            /**
+             * \endcond
+             */
+             
+            /** @}  */ // end of grouping
         }
     }
 #endif // OPENCV_Check
