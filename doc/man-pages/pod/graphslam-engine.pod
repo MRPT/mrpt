@@ -3,14 +3,15 @@
 graphslam-engine - Construct and solve robot pose graphs from .rawlog dataset files
 
 =head1 SYNOPSIS
+
 The available command line arguments are listed below:
 
-   ./bin/graphslam-engine [--disable-visuals] [--list-optimizers]
-                          [--list-regs] [--list-edge-regs]
-                          [--list-node-regs][-o <CLevMarqGSO>][-e
-                          <CICPCriteriaERD>][-n <CICPCriteriaNRD>][-g
-                          <contents.rawlog.GT.txt>][-r <contents.rawlog>] [-i
-                          <config.ini>] [--][--version] [-h]
+   graphslam-engine [--disable-visuals] [--list-optimizers]
+                    [--list-regs] [--list-edge-regs]
+                    [--list-node-regs][-o <CLevMarqGSO>][-e
+                    <CICPCriteriaERD>][-n <CICPCriteriaNRD>][-g
+                    <contents.rawlog.GT.txt>][-r <contents.rawlog>] [-i
+                    <config.ini>] [--][--version] [-h]
 
 Alternatively run graphslam-engine -h for the full arguments list
 
@@ -137,7 +138,7 @@ parts of the application, and summary statistics about the constructed graph
 
 =item * node_registrar.log, edge_registrar.log, optimizer.log
 
-Logfiles containing the activities of the corresponding class instances. File
+Logfiles containing the activity of the corresponding class instances. File
 contents depend on the implementation of the corresponding classes but in most
 cases they contain I<output logger messages>, I<time statistics> for critical
 parts of the class execution.
@@ -177,13 +178,13 @@ is given.
 =back
 
 I<Note:> In case a directory named graphslam-results, generated during a previous
-execution, exists it is, by default, overwritten. If this is not the desired
+execution, already exists it is, by default, overwritten. If this is not the desired
 behavior, user can set the I<user_decides_about_output_dir> .ini parameter to
 true so that they are asked about this naming conflict during program execution.
 
 =head1 EXAMPLES
 
-Sample calls ot the graphslam application are given below:
+Sample calls ot the graphslam-engine application are given below:
 
     graphslam-engine --list-regs
 
@@ -191,7 +192,7 @@ Sample calls ot the graphslam application are given below:
 
     graphslam-engine -i $mrpt/share/mrpt/config_files/graphslam-engine/odometry_2DRangeScans.ini -r $mrpt/share//mrpt/datasets/graphslam-engine-demos/observation_only_map2/range_030_bearing_015.rawlog -g $mrpt/share//mrpt/datasets/graphslam-engine-demos/observation_only_map2/range_030_bearing_015.rawlog.GT.txt
 
-    graphslam-engine -i $mrpt/share//mrpt/config_files/graphslam-engine/odometry_2DRangeScans_LC_version.ini -r $mrpt/share//mrpt/datasets/graphslam-engine-demos/action_observations_map/range_030_bearing_015.rawlog -g $mrpt/share//mrpt/datasets/graphslam-engine-demos/action_observations_map/range_030_bearing_015.rawlog.GT.txt --node-reg CFixedIntervalsNRD --edge-reg CLoopCloserERD
+    graphslam-engine -i $mrpt/share//mrpt/config_files/graphslam-engine/odometry_2DRangeScans_LC_version.ini -r $mrpt/share//mrpt/datasets/graphslam-engine-demos/action_observations_map/range_030_bearing_015.rawlog -g $mrpt/share//mrpt/datasets/graphslam-engine-demos/action_observations_map/range_030_bearing_015.rawlog.GT.txt --node-reg CFixedIntervalsNRD --edge-reg CLoopCloserERD --optimizer CLevMarqGSO
 
     graphslam-engine -i $mrpt/share//mrpt/config_files/graphslam-engine/laser_odometry.ini -r $mrpt/share//mrpt/datasets/graphslam-engine-demos/action_observations_map/range_030_bearing_015.rawlog -g $mrpt/share//mrpt/datasets/graphslam-engine-demos/action_observations_map/range_030_bearing_015.rawlog.GT.txt -n CFixedIntervalsNRD -e CICPCriteriaERD
 
@@ -200,24 +201,55 @@ Sample calls ot the graphslam application are given below:
 In this section insight into the graphslam-engine application - and
 corresponding library - is provided.
 
-// TODO - Add here
+CGraphSlamEngine is the main class executing graphslam. CGraphSlamEngine
+delegates most of the graph manipulation tasks to node/edge registration
+deciders and optimizer classes. This makes up for independency between the
+different tasks as well as for a reconfigurable setup, as the user can select
+to use different decider/optimizer classes depending on the situation. Users
+can also write their own decider/optimizer classes by inheriting from one of
+the CNodeRegistrationDecider, CEdgeRegistrationDecider, CGraphSlamOptimizer
+interfaces depending on what part they want to implement.
 
 =head2 REGISTRATION DECIDERS
 
 The registration decider classes are divided into node and edge registration
 deciders. The former are responsible of adding new nodes in the graph while the
-latter add additional edges between I<already added> graph nodes.
+latter add additional edges between I<already added> graph nodes. These nodes
+can be consecutive or non-consecutive.
 
 =head3 NODE REGISTRATION DECIDERS
 
 Node registration decider schemes add nodes to the graph according to a
 specific criterion. Node deciders should implement the methods defined in the
 CNodeRegistrationDecider abstract class.  CNodeRegistrationDecider provides the
-basic methods that have to exist in every node registration decider class. For
-an example of inherenting from this class see CFixedIntervalsNRD.
+basic methods that have to exist in every node registration decider class.
+For an example of inheriting from this class see CFixedIntervalsNRD. As a
+naming convention, all the implemented node registration deciders are suffixed
+with the NRD acronym.
 
-As a naming convention, all the implemented node registration deciders are
-suffixed with the NRD acronym.
+Currently two specific node registration schemes have been implemented:
+
+=over 4
+
+=item * CFixedIntervalsNRD
+
+Decider registers a new node in the graph if the distance or the angle
+difference with regards to the previous registered node surpasses a
+corresponding I<fixed> threshold. Decider makes use only of the
+CObservationOdometry instances in the rawlog file.
+
+=item * CICPCriteriaNRD
+
+Decider registers a new node in the graph if the distance or the angle
+difference with regards to the previous registered node surpasses a
+corresponding I<fixed> threshold. Decider measures the distance from the
+current position to the previous registered node using ICP (i.e. matches the
+current range scan against the range scan of the previous node). In case of
+noisy 2D laser scans, decider can also use odometry information to locally
+correct and smoothen the robot trajectory. Decider makes use of 2DRangeScans
+or 3DRangeScans.
+
+=back
 
 // TODO - check if link works
 For more information on this see http://reference.mrpt.org/devel/classmrpt_1_1graphslam_1_1deciders_1_1_c_node_registration_decider.html
@@ -228,11 +260,36 @@ Edge registration decider schemes add edges between already added nodes in the
 graph according to a specific criterion. Edge deciders should implement the
 methods defined in CEdgeRegistrationDecider abstract class.
 CEdgeRegistrationDecider provides the basic methods that have to exist in
-every edge registration decider class. For an example of inherenting from
-this class see CICPCriteriaERD.
+every edge registration decider class. For an example of inheriting from
+this class see CICPCriteriaERD. As a naming convention, all the implemented
+edge registration deciders are suffixed with the ERD acronym.
 
-As a naming convention, all the implemented edge registration deciders are
-suffixed with the ERD acronym.
+Currently two specific edge registration schemes have been implemented:
+
+=over 4
+
+=item * CICPCriteriaERD
+
+Register new edges in the graph with the last inserted node. Criterion for
+adding new edges should be the goodness of the candidate ICP edge. The
+nodes for ICP are picked based on the distance from the last inserted node.
+Decider makes use of 2DRangeScans or 3DRangeScans.
+
+=item * CLoopCloserERD
+
+Evaluate sets of potential loop closure edges in the graph based on their
+pairwise consistency matrix.
+
+Decider first splits the graph into partitions based on the 2D laser scans of
+the nodes and then searches for potential loop closure edges within
+the partitions. Goal is to register only a subset of the potential loop
+closure edges that maximally agree with each other. Decider is implemented
+based on the following two papers:
+
+[1] Consistent Observation Grouping for Generating Metric-Topological Maps that Improves Robot Localization - J. Blanco, J. Gonzalez, J. Antonio Fernandez Madrigal, 2006
+[2] Recognizing places using spectrally clustered local matches - E. Olson, 2009
+
+=back
 
 // TODO - check if link works
 For more information on this see http://reference.mrpt.org/devel/classmrpt_1_1graphslam_1_1deciders_1_1_c_edge_registration_decider.html
@@ -242,21 +299,12 @@ For more information on this see http://reference.mrpt.org/devel/classmrpt_1_1gr
 Optimizer schemes optimize an already constructed graph so that the registered
 edges maximally agree with each other. Optimizer schemes should implement the
 methods defined in CGraphSlamOptimizer abstract class. For an example of
-inherenting from this class see CLevMarqGSO.
+inheriting from this class see CLevMarqGSO.
 
 As a naming convention, all the implemented graphslam optimizer classes
 are suffixed with the GSO acronym.
 
 For more information on this see http://reference.mrpt.org/devel/classmrpt_1_1graphslam_1_1optimizers_1_1_c_graph_slam_optimizer.html
-
-
-=head1 DISCUSSION
-
-// TODO - Add here
-
-=head2 WRITING CUSTOM DECIDERS/OPTIMIZERS
-
-// TODO - Add here
 
 =head1 BUGS
 
@@ -275,13 +323,13 @@ Please report bugs at https://github.com/MRPT/mrpt/issues
 =item * .ini Example files:
 
 For examples of .ini configuration files see the
-$mrpt/share/mrpt/config_files/graphslam-engine directory.
+I<$mrpt/share/mrpt/config_files/graphslam-engine directory>.
 Modify $mrpt according to the path of MRPT source code.
 
 =item * Example datasets
 
 For a list of datasets used during the application testing see the
-$mrpt/share/mrpt/datasets/graphslam-engine directory.
+I<$mrpt/share/mrpt/datasets/graphslam-engine directory>.
 Modify $mrpt according to the path of MRPT source code.
 
 =back
@@ -299,7 +347,7 @@ This manual page was written by Nikos Koukis <nickkouk@gmail.com>.
 This program is free software; you can redistribute it and/or modify it
 under the terms of the BSD License.
 
-On Debian GNU/Linux systems, the complete text of the BSD License can be 
+On Debian GNU/Linux systems, the complete text of the BSD License can be
 found in `/usr/share/common-licenses/BSD'.
 
 =cut
