@@ -1,0 +1,7 @@
+The configuration parameters of the current decider class are listed below.
+These parameters are parsed from an external .ini configuration file from their
+respective section. If an optional parameter is not found a default value is
+used instead. If a mandatory/required parameter is not found a runtime error is
+raised. For a sample configuration file see
+$mrpt/share/mrpt/config_files/graphslam-engine/laser_odometry.ini (Modify $mrpt
+according to the path of your mrpt source directory).
