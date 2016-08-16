@@ -1,5 +1,18 @@
 INCLUDE(../cmakemodules/AssureCMakeRootFile.cmake) # Avoid user mistake in CMake source directory
 
+
+# Dummy documentation target for showing grouped files in IDEs:
+# ----------------------------------------------------------------------------
+FILE(GLOB DOX_HDRS "${CMAKE_SOURCE_DIR}/doc/doxygen-pages/*.h")
+SET(DOC_INDIV_FILES
+	"${CMAKE_SOURCE_DIR}/README.md"
+	)
+SET(all_docs_files ${DOX_HDRS} ${DOC_INDIV_FILES})
+add_custom_target(DocumentationFiles DEPENDS ${all_docs_files} SOURCES ${all_docs_files})
+if(ENABLE_SOLUTION_FOLDERS)
+	set_target_properties(DocumentationFiles PROPERTIES FOLDER "Docs")
+endif()
+
 # ----------------------------------------------------------------------------
 # Targets for building the documentation of the MRPT
 # ----------------------------------------------------------------------------
