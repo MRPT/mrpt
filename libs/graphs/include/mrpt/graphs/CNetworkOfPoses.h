@@ -36,7 +36,7 @@ namespace mrpt
 			struct node_annotations_empty {  };
 		}
 
-		/** A directed graph of pose constraints, with edges being the relative pose between pairs of nodes indentified by their numeric IDs (of type mrpt::utils::TNodeID).
+		/** A directed graph of pose constraints, with edges being the relative poses between pairs of nodes identified by their numeric IDs (of type mrpt::utils::TNodeID).
 		  *  A link or edge between two nodes "i" and "j", that is, the pose \f$ p_{ij} \f$, holds the relative position of "j" with respect to "i".
 		  *   These poses are stored in the edges in the format specified by the template argument CPOSE. Users should employ the following derived classes
 		  *   depending on the desired representation of edges:
@@ -96,10 +96,10 @@ namespace mrpt
 				template <typename ARG1,typename ARG2> inline global_pose_t(const ARG1 &a1,const ARG2 &a2) : constraint_no_pdf_t(a1,a2) { }
 			};
 
-			/** A map from pose IDs to their global coordinates estimates, with uncertainty */
+			/** A map from pose IDs to their global coordinate estimates, with uncertainty */
 			typedef typename MAPS_IMPLEMENTATION::template map<mrpt::utils::TNodeID,CPOSE>     global_poses_pdf_t;
 
-			/** A map from pose IDs to their global coordinates estimates, without uncertainty (the "most-likely value") */
+			/** A map from pose IDs to their global coordinate estimates, without uncertainty (the "most-likely value") */
 			typedef typename MAPS_IMPLEMENTATION::template map<mrpt::utils::TNodeID,global_pose_t> global_poses_t;
 
 			/** @} */
