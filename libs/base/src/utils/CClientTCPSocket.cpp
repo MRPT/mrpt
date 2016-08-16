@@ -17,7 +17,7 @@
 
 #ifdef MRPT_OS_WINDOWS
 	// Windows
-	#include <winsock.h>
+	#define _WINSOCK_DEPRECATED_NO_WARNINGS
 	#include <winsock2.h>
 	#include <winerror.h>
 	#if defined(__BORLANDC__) || defined(_MSC_VER)
