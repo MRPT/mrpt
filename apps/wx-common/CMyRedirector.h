@@ -17,6 +17,9 @@
 #include <iostream>
 #include <cstdio>
 
+#include "wx28-fixes.h"
+
+
 /** This auxiliary class redirects the output sent to a streambuf to a wxTextCtrl object.
   *  Uses code from http://www.devmaster.net/forums/showthread.php?t=7037
   *  Jose Luis Blanco - Dec 2007

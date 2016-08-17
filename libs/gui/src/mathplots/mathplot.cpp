@@ -832,7 +832,11 @@ void mpScaleX::Plot(wxDC & dc, mpWindow & w)
 					else
 						dc.DrawLine( p, orgy, p, orgy+4);
 				} else { // draw grid dotted lines
+#if wxCHECK_VERSION(3, 0, 0)
+					m_pen.SetStyle(wxPENSTYLE_DOT);
+#else
 					m_pen.SetStyle(wxDOT);
+#endif
 					dc.SetPen(m_pen);
 					if ((m_flags == mpALIGN_BOTTOM) && !m_drawOutsideMargins) {
 						dc.DrawLine( p, orgy+4, p, minYpx );
@@ -843,7 +847,11 @@ void mpScaleX::Plot(wxDC & dc, mpWindow & w)
 							dc.DrawLine( p, 0/*-w.GetScrY()*/, p, w.GetScrY() );
 						}
 					}
+#if wxCHECK_VERSION(3, 0, 0)
+					m_pen.SetStyle(wxPENSTYLE_SOLID);
+#else
 					m_pen.SetStyle(wxSOLID);
+#endif
 					dc.SetPen(m_pen);
 				}
 				// Write ticks labels in s string
@@ -1069,7 +1077,11 @@ void mpScaleY::Plot(wxDC & dc, mpWindow & w)
 					dc.DrawLine( orgx-4, p, orgx, p); //( orgx, p, orgx+4, p);
 				}
 			} else {
-				m_pen.SetStyle(wxDOT);
+#if wxCHECK_VERSION(3, 0, 0)
+					m_pen.SetStyle(wxPENSTYLE_DOT);
+#else
+					m_pen.SetStyle(wxDOT);
+#endif
 				dc.SetPen( m_pen);
 				if ((m_flags == mpALIGN_LEFT) && !m_drawOutsideMargins) {
 					dc.DrawLine( orgx-4, p, endPx, p);
@@ -1080,7 +1092,11 @@ void mpScaleY::Plot(wxDC & dc, mpWindow & w)
 					dc.DrawLine( 0/*-w.GetScrX()*/, p, w.GetScrX(), p);
 						}
 				}
-				m_pen.SetStyle(wxSOLID);
+#if wxCHECK_VERSION(3, 0, 0)
+					m_pen.SetStyle(wxPENSTYLE_SOLID);
+#else
+					m_pen.SetStyle(wxSOLID);
+#endif
 				dc.SetPen( m_pen);
 			}
 			// Print ticks labels

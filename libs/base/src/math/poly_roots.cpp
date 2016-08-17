@@ -44,7 +44,7 @@ int mrpt::math::solve_poly3(double *x,double a,double b,double c)  MRPT_NO_THROW
 		x[2]=q*cos((t-TwoPi)/3)-a;
 		return(3);
 	} else {
-		A =-pow(fabs(r)+sqrt(r2-q3),1./3);
+		A =-pow(std::abs(r)+sqrt(r2-q3),1./3);
 		if( r<0 ) A=-A;
 		B = A==0? 0 : q/A;
 
@@ -52,7 +52,7 @@ int mrpt::math::solve_poly3(double *x,double a,double b,double c)  MRPT_NO_THROW
 		x[0] =(A+B)-a;
 		x[1] =-0.5*(A+B)-a;
 		x[2] = 0.5*sqrt(3.)*(A-B);
-		if(fabs(x[2])<eps) { x[2]=x[1]; return(2); }
+		if(std::abs(x[2])<eps) { x[2]=x[1]; return(2); }
 		return(1);
 	}
 }// SolveP3(double *x,double a,double b,double c) {
@@ -128,7 +128,7 @@ static void  dblSort3( double &a, double &b, double &c) // make: a <= b <= c
 int   SolveP4De(double *x, double b, double c, double d)	// solve equation x^4 + b*x^2 + c*x + d
 {
 	//if( c==0 ) return SolveP4Bi(x,b,d); // After that, c!=0
-	if( fabs(c)<1e-14*(fabs(b)+fabs(d)) ) return SolveP4Bi(x,b,d); // After that, c!=0
+	if( std::abs(c)<1e-14*(std::abs(b)+std::abs(d)) ) return SolveP4Bi(x,b,d); // After that, c!=0
 
 	int res3 = mrpt::math::solve_poly3( x, 2*b, b*b-4*d, -c*c);	// solve resolvent
 	// by Viet theorem:  x1*x2*x3=-c*c not equals to 0, so x1!=0, x2!=0, x3!=0
@@ -240,13 +240,13 @@ int  mrpt::math::solve_poly4(double *x,double a,double b,double c,double d)  MRP
 static double SolveP5_1(double a,double b,double c,double d,double e)	// return real root of x^5 + a*x^4 + b*x^3 + c*x^2 + d*x + e = 0
 {
 	int cnt;
-	if( fabs(e)<eps ) return 0;
+	if( std::abs(e)<eps ) return 0;
 
-	double brd =  fabs(a);			// brd - border of real roots
-	if( fabs(b)>brd ) brd = fabs(b);
-	if( fabs(c)>brd ) brd = fabs(c);
-	if( fabs(d)>brd ) brd = fabs(d);
-	if( fabs(e)>brd ) brd = fabs(e);
+	double brd =  std::abs(a);			// brd - border of real roots
+	if( std::abs(b)>brd ) brd = std::abs(b);
+	if( std::abs(c)>brd ) brd = std::abs(c);
+	if( std::abs(d)>brd ) brd = std::abs(d);
+	if( std::abs(e)>brd ) brd = std::abs(e);
 	brd++;							// brd - border of real roots
 
 	double x0, f0;					// less, than root
@@ -257,8 +257,8 @@ static double SolveP5_1(double a,double b,double c,double d,double e)	// return 
 	if( e<0 ) { x0 =   0; x1 = brd; f0=e; f1=F5(x1); x2 = 0.01*brd; }
 	else	  { x0 =-brd; x1 =   0; f0=F5(x0); f1=e; x2 =-0.01*brd; }
 
-	if( fabs(f0)<eps ) return x0;
-	if( fabs(f1)<eps ) return x1;
+	if( std::abs(f0)<eps ) return x0;
+	if( std::abs(f1)<eps ) return x1;
 
 	// now x0<x1, f(x0)<0, f(x1)>0
 	// Firstly 5 bisections
@@ -266,7 +266,7 @@ static double SolveP5_1(double a,double b,double c,double d,double e)	// return 
 	{
 		x2 = (x0 + x1)/2;			// next point
 		f2 = F5(x2);				// f(x2)
-		if( fabs(f2)<eps ) return x2;
+		if( std::abs(f2)<eps ) return x2;
 		if( f2>0 ) { x1=x2; f1=f2; }
 		else       { x0=x2; f0=f2; }
 	}
@@ -279,14 +279,14 @@ static double SolveP5_1(double a,double b,double c,double d,double e)	// return 
 		cnt++;
 		if( x2<=x0 || x2>= x1 ) x2 = (x0 + x1)/2;	// now  x0 < x2 < x1
 		f2 = F5(x2);								// f(x2)
-		if( fabs(f2)<eps ) return x2;
+		if( std::abs(f2)<eps ) return x2;
 		if( f2>0 ) { x1=x2; f1=f2; }
 		else       { x0=x2; f0=f2; }
 		f2s= (((5*x2+4*a)*x2+3*b)*x2+2*c)*x2+d;		// f'(x2)
-		if( fabs(f2s)<eps ) { x2=1e99; continue; }
+		if( std::abs(f2s)<eps ) { x2=1e99; continue; }
 		dx = f2/f2s;
 		x2 -= dx;
-	} while(fabs(dx)>eps);
+	} while(std::abs(dx)>eps);
 	return x2;
 } // SolveP5_1(double a,double b,double c,double d,double e)	// return real root of x^5 + a*x^4 + b*x^3 + c*x^2 + d*x + e = 0
 //-----------------------------------------------------------------------------
@@ -301,10 +301,10 @@ int  mrpt::math::solve_poly5(double *x,double a,double b,double c,double d,doubl
 // a*x^2 + b*x + c = 0
 int mrpt::math::solve_poly2(double a, double b, double c, double &r1, double &r2)  MRPT_NO_THROWS
 {
-	if (abs(a)<eps)
+	if (std::abs(a)<eps)
 	{
 		// b*x+c=0
-		if (abs(b)<eps) 
+		if (std::abs(b)<eps) 
 			return 0;
 		r1 = -c/b;
 		r2 =1e99;

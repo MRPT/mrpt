@@ -248,7 +248,7 @@ void MapBuilding_ICP_Live(const string &INI_FILENAME)
 	// ---------------------------------
 	//   CMetricMapBuilder::TOptions
 	// ---------------------------------
-	mapBuilder.options.verbose = true;
+	mapBuilder.setVerbosityLevel( mrpt::utils::LVL_DEBUG);
 
 	mapBuilder.ICP_params.dumpToConsole();
 	mapBuilder.ICP_options.dumpToConsole();

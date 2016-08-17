@@ -41,10 +41,11 @@ namespace slam
 		 struct SLAM_IMPEXP TConfigParams : public mrpt::utils::CLoadableOptions
 		 {
 			 /** Initializer */
-			 TConfigParams ();
-			 void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) MRPT_OVERRIDE; // See base docs
-			 void dumpToTextStream(mrpt::utils::CStream &out) const MRPT_OVERRIDE; // See base docs
+			TConfigParams (mrpt::utils::VerbosityLevel &parent_verbosity_level);
+			TConfigParams &operator=(const TConfigParams &other);  //Copy assignment
 
+			void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) MRPT_OVERRIDE; // See base docs
+			void dumpToTextStream(mrpt::utils::CStream &out) const MRPT_OVERRIDE; // See base docs
 			/** (default:false) Match against the occupancy grid or the points map? The former is quicker but less precise. */
 			bool	matchAgainstTheGrid;
 
@@ -54,6 +55,8 @@ namespace slam
 			double localizationAngDistance;//!< Minimum robot angular (rad, deg when loaded from the .ini) displacement for a new observation to be used to do ICP-based localization (otherwise, dead-reckon with odometry).
 
 			double minICPgoodnessToAccept;  //!< Minimum ICP goodness (0,1) to accept the resulting corrected position (default: 0.40)
+
+			mrpt::utils::VerbosityLevel &verbosity_level;
 
 			/** What maps to create (at least one points map and/or a grid map are needed).
 			  *  For the expected format in the .ini file when loaded with loadFromConfigFile(), see documentation of TSetOfMetricMapInitializers.

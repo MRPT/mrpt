@@ -12,9 +12,6 @@
 #include <mrpt/utils/CStream.h>
 #include <mrpt/utils/safe_pointers.h>
 
-/*---------------------------------------------------------------
-	Class
-  ---------------------------------------------------------------*/
 namespace mrpt
 {
 namespace utils

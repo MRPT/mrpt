@@ -25,7 +25,7 @@
 							<maxsize>-1,-1</maxsize>
 							<handler function="OnbtnStartClick" entry="EVT_BUTTON" />
 						</object>
-						<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+						<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 						<border>2</border>
 						<option>1</option>
 					</object>
@@ -40,7 +40,7 @@
 							<maxsize>-1,-1</maxsize>
 							<handler function="OnbtnStopClick" entry="EVT_BUTTON" />
 						</object>
-						<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+						<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 						<border>2</border>
 						<option>1</option>
 					</object>
@@ -60,7 +60,7 @@
 							<extra_code>btnPlaceTarget-&gt;SetToolTip(&quot;Left-click on the map to place a navigation command.&quot;);</extra_code>
 							<handler function="OnbtnPlaceTargetClick" entry="EVT_BUTTON" />
 						</object>
-						<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+						<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 						<border>2</border>
 						<option>1</option>
 					</object>
@@ -74,7 +74,7 @@
 							<maxsize>-1,-1</maxsize>
 							<handler function="OnbtnSetWaypointSeqClick" entry="EVT_BUTTON" />
 						</object>
-						<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+						<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 						<border>2</border>
 						<option>1</option>
 					</object>
@@ -88,7 +88,7 @@
 							<maxsize>-1,-1</maxsize>
 							<handler function="OnbtnPlaceRobotClick" entry="EVT_BUTTON" />
 						</object>
-						<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+						<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 						<border>2</border>
 						<option>1</option>
 					</object>
@@ -107,7 +107,7 @@
 							<maxsize>-1,-1</maxsize>
 							<handler function="OnbtnLoadMapClick" entry="EVT_BUTTON" />
 						</object>
-						<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+						<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 						<border>2</border>
 						<option>1</option>
 					</object>
@@ -121,7 +121,7 @@
 							<maxsize>-1,-1</maxsize>
 							<handler function="OnbtnEmptyMapClick" entry="EVT_BUTTON" />
 						</object>
-						<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+						<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 						<border>2</border>
 						<option>1</option>
 					</object>
@@ -135,7 +135,7 @@
 							<maxsize>-1,-1</maxsize>
 							<handler function="OnbtnDrawMapObsClick" entry="EVT_BUTTON" />
 						</object>
-						<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+						<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 						<border>2</border>
 						<option>1</option>
 					</object>
@@ -149,7 +149,7 @@
 							<maxsize>-1,-1</maxsize>
 							<handler function="OnbtnDrawEmptyClick" entry="EVT_BUTTON" />
 						</object>
-						<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+						<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 						<border>2</border>
 						<option>1</option>
 					</object>
@@ -163,7 +163,7 @@
 							<maxsize>-1,-1</maxsize>
 							<handler function="OnbtnSaveMapClick" entry="EVT_BUTTON" />
 						</object>
-						<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+						<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 						<border>2</border>
 						<option>1</option>
 					</object>
@@ -182,7 +182,7 @@
 							<maxsize>-1,-1</maxsize>
 							<handler function="OnAbout" entry="EVT_BUTTON" />
 						</object>
-						<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+						<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 						<border>2</border>
 						<option>1</option>
 					</object>
@@ -195,12 +195,12 @@
 							<maxsize>-1,-1</maxsize>
 							<handler function="OnbtnQuitClick" entry="EVT_BUTTON" />
 						</object>
-						<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+						<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 						<border>2</border>
 						<option>1</option>
 					</object>
 				</object>
-				<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+				<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 				<option>1</option>
 			</object>
 			<object class="sizeritem">
@@ -230,7 +230,7 @@
 												<default>-1</default>
 												<style>wxRA_SPECIFY_COLS</style>
 											</object>
-											<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+											<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 											<border>5</border>
 											<option>1</option>
 										</object>
@@ -286,12 +286,12 @@
 														<label>Allow skip waypoints</label>
 														<checked>1</checked>
 													</object>
-													<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL</flag>
+													<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 													<border>5</border>
 													<option>1</option>
 												</object>
 											</object>
-											<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+											<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 											<border>5</border>
 											<option>1</option>
 										</object>
@@ -312,7 +312,7 @@
 										</object>
 									</object>
 								</object>
-								<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+								<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 								<option>1</option>
 							</object>
 							<object class="sizeritem">
@@ -336,7 +336,7 @@
 														<minsize>-1,100</minsize>
 														<style>wxTE_PROCESS_ENTER|wxTE_PROCESS_TAB|wxTE_MULTILINE|wxHSCROLL|wxVSCROLL|wxALWAYS_SHOW_SB</style>
 													</object>
-													<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+													<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 													<border>2</border>
 													<option>1</option>
 												</object>
@@ -363,7 +363,7 @@
 														<minsize>-1,100</minsize>
 														<style>wxTE_PROCESS_ENTER|wxTE_PROCESS_TAB|wxTE_MULTILINE|wxHSCROLL|wxVSCROLL|wxALWAYS_SHOW_SB</style>
 													</object>
-													<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+													<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 													<border>2</border>
 													<option>1</option>
 												</object>
@@ -390,7 +390,7 @@
 														<style>wxTE_PROCESS_ENTER|wxTE_PROCESS_TAB|wxTE_MULTILINE|wxHSCROLL|wxVSCROLL|wxALWAYS_SHOW_SB</style>
 														<handler function="OnedManualKinRampsText" entry="EVT_TEXT" />
 													</object>
-													<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+													<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 													<option>1</option>
 												</object>
 											</object>
@@ -398,7 +398,7 @@
 										<label>Params: Preprogrammed seq.</label>
 									</object>
 								</object>
-								<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+								<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 								<border>2</border>
 								<option>1</option>
 							</object>
@@ -434,9 +434,9 @@
 														<family>teletype</family>
 													</font>
 													<minsize>-1,70</minsize>
-													<style>wxTE_AUTO_SCROLL|wxTE_MULTILINE|wxTE_READONLY|wxTE_DONTWRAP|wxALWAYS_SHOW_SB</style>
+													<style>wxTE_MULTILINE|wxTE_READONLY|wxTE_DONTWRAP|wxALWAYS_SHOW_SB</style>
 												</object>
-												<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+												<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 												<option>1</option>
 											</object>
 										</object>
@@ -473,7 +473,7 @@
 													<focused>1</focused>
 													<minsize>450,350</minsize>
 												</object>
-												<flag>wxALL|wxEXPAND|wxFIXED_MINSIZE|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+												<flag>wxALL|wxEXPAND|wxFIXED_MINSIZE|wxALIGN_LEFT|wxALIGN_TOP</flag>
 												<border>1</border>
 												<option>1</option>
 											</object>
@@ -487,13 +487,13 @@
 														<object class="wxStaticText" name="ID_STATICTEXT4" variable="StaticText4" member="yes">
 															<label>Show for PTG:</label>
 														</object>
-														<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+														<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 														<border>5</border>
 														<option>1</option>
 													</object>
 													<object class="sizeritem">
 														<object class="wxChoice" name="ID_CHOICE1" variable="cbSelPTG" member="yes" />
-														<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+														<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 														<border>5</border>
 														<option>1</option>
 													</object>
@@ -507,7 +507,7 @@
 															<focused>1</focused>
 															<minsize>150,150</minsize>
 														</object>
-														<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+														<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 														<border>1</border>
 														<option>1</option>
 													</object>
@@ -521,24 +521,24 @@
 															<minsize>-1,50</minsize>
 															<style>wxTE_MULTILINE|wxTE_READONLY|wxTE_DONTWRAP|wxALWAYS_SHOW_SB</style>
 														</object>
-														<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+														<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 														<border>2</border>
 														<option>1</option>
 													</object>
 												</object>
-												<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+												<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 												<option>1</option>
 											</object>
 										</object>
 									</object>
 								</object>
-								<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+								<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 								<option>1</option>
 							</object>
 						</object>
 					</object>
 				</object>
-				<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+				<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 				<option>1</option>
 			</object>
 		</object>

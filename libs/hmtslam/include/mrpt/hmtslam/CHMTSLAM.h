@@ -10,7 +10,7 @@
 #define CHMTSLAM_H
 
 #include <mrpt/synch/CCriticalSection.h>
-#include <mrpt/utils/CDebugOutputCapable.h>
+#include <mrpt/utils/COutputLogger.h>
 #include <mrpt/utils/CMessageQueue.h>
 #include <mrpt/system/threads.h>
 
@@ -56,7 +56,7 @@ namespace mrpt
 		 * \sa CHierarchicalMHMap
 		  * \ingroup mrpt_hmtslam_grp
 		 */
-		class HMTSLAM_IMPEXP CHMTSLAM : public mrpt::utils::CDebugOutputCapable, public mrpt::utils::CSerializable
+		class HMTSLAM_IMPEXP CHMTSLAM : public mrpt::utils::COutputLogger, public mrpt::utils::CSerializable
 		{
 			friend class CLocalMetricHypothesis;
 			friend class CLSLAM_RBPF_2DLASER;
@@ -338,7 +338,7 @@ namespace mrpt
 			  */
 			CHMTSLAM( );
 
-			CHMTSLAM(const CHMTSLAM &) { THROW_EXCEPTION("This object cannot be copied."); }
+			CHMTSLAM(const CHMTSLAM &) : mrpt::utils::COutputLogger() { THROW_EXCEPTION("This object cannot be copied."); }
 			const CHMTSLAM& operator =(const CHMTSLAM &) { THROW_EXCEPTION("This object cannot be copied."); }
 
 			/** Destructor

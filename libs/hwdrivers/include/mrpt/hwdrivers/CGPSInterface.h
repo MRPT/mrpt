@@ -13,7 +13,7 @@
 #include <mrpt/obs/CObservationGPS.h>
 #include <mrpt/poses/CPoint3D.h>
 #include <mrpt/hwdrivers/CSerialPort.h>
-#include <mrpt/utils/CDebugOutputCapable.h>
+#include <mrpt/utils/COutputLogger.h>
 #include <mrpt/utils/CFileOutputStream.h>
 #include <mrpt/utils/TEnumType.h>
 #include <mrpt/hwdrivers/CGenericSensor.h>
@@ -107,7 +107,7 @@ namespace mrpt
 		  * \sa CGPS_NTRIP, CNTRIPEmitter, mrpt::obs::CObservationGPS 
 		  * \ingroup mrpt_hwdrivers_grp
 		  */
-		class HWDRIVERS_IMPEXP CGPSInterface : public utils::CDebugOutputCapable, public CGenericSensor
+		class HWDRIVERS_IMPEXP CGPSInterface : public mrpt::utils::COutputLogger, public CGenericSensor
 		{
 			DEFINE_GENERIC_SENSOR(CGPSInterface)
 

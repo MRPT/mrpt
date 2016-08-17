@@ -12,9 +12,6 @@
 #include <mrpt/utils/CReferencedMemBlock.h>
 #include <string>
 
-/*---------------------------------------------------------------
-	Class
-  ---------------------------------------------------------------*/
 namespace mrpt
 {
 	namespace synch

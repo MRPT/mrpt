@@ -345,11 +345,11 @@ CPosePDFPtr CGridMapAligner::AlignPDF_robustMatch(
 		else
 		{
 			outInfo.noRobustEstimation = noRobustEst;
-			printf_debug("[CGridMapAligner] Overall estimation(%u corrs, total: %u): (%.03f,%.03f,%.03fdeg)\n",
+			MRPT_LOG_INFO( mrpt::format("[CGridMapAligner] Overall estimation(%u corrs, total: %u): (%.03f,%.03f,%.03fdeg)\n",
 				corrsCount,(unsigned)correspondences.size(),
 				outInfo.noRobustEstimation.x(),
 				outInfo.noRobustEstimation.y(),
-				RAD2DEG(outInfo.noRobustEstimation.phi() ));
+				RAD2DEG(outInfo.noRobustEstimation.phi() )) );
 
 			// The list of SOG modes & their corresponding sub-sets of matchings:
 			typedef mrpt::aligned_containers<mrpt::utils::TMatchingPairList, CPosePDFSOG::TGaussianMode>::map_t  TMapMatchingsToPoseMode;
@@ -410,9 +410,7 @@ CPosePDFPtr CGridMapAligner::AlignPDF_robustMatch(
 				pdf_SOG->push_back( best_mode );
 				outInfo.sog2 = pdf_SOG; outInfo.sog2.make_unique();
 
-				size_t nA = pdf_SOG->size();
-
-				printf_debug("[CGridMapAligner] amRobustMatch: %u SOG modes reduced to %u (most-likely) (min.inliers=%u)\n", (unsigned int)nB, (unsigned int)nA, min_inliers );
+				MRPT_LOG_INFO_STREAM << "[CGridMapAligner] amRobustMatch: "<< nB << " SOG modes reduced to "<< pdf_SOG->size() << " (most-likely) (min.inliers="<< min_inliers << ")\n";
 
 			} // end of amRobustMatch
 			else
@@ -760,7 +758,7 @@ CPosePDFPtr CGridMapAligner::AlignPDF_robustMatch(
 
 				outInfo.sog2 = pdf_SOG; outInfo.sog2.make_unique();
 				size_t nA = pdf_SOG->size();
-				printf_debug("[CGridMapAligner] amModifiedRANSAC: %u SOG modes merged to %u in %.03fsec\n", (unsigned int)nB, (unsigned int)nA, merge_clock_tim );
+				MRPT_LOG_INFO(mrpt::format("[CGridMapAligner] amModifiedRANSAC: %u SOG modes merged to %u in %.03fsec\n", (unsigned int)nB, (unsigned int)nA, merge_clock_tim ) );
 
 			} // end of amModifiedRANSAC
 
@@ -854,8 +852,7 @@ CPosePDFPtr CGridMapAligner::AlignPDF_robustMatch(
 				outInfo.sog3 = pdf_SOG; outInfo.sog3.make_unique();
 
 				pdf_SOG->mergeModes( options.maxKLd_for_merge, false );
-				//size_t nAA = pdf_SOG->size();
-				//printf_debug("[CGridMapAligner] Debug: %u SOG modes merged after ICP\n", (unsigned int)nAA );
+				MRPT_LOG_DEBUG_STREAM << "[CGridMapAligner] " << pdf_SOG->size() << " SOG modes merged after ICP.";
 
 			} // end multimapX
 

@@ -10,7 +10,7 @@
 #define  CTimeLogger_H
 
 #include <mrpt/utils/CTicTac.h>
-#include <mrpt/utils/CDebugOutputCapable.h>
+#include <mrpt/utils/COutputLogger.h>
 #include <mrpt/utils/compiler_fixes.h>
 #include <mrpt/utils/mrpt_macros.h>
 #include <vector>
@@ -32,11 +32,12 @@ namespace mrpt
 		 * \note The default behavior is dumping all the information at destruction.
 		 * \ingroup mrpt_base_grp
 		 */
-		class BASE_IMPEXP CTimeLogger : public mrpt::utils::CDebugOutputCapable
+		class BASE_IMPEXP CTimeLogger : public mrpt::utils::COutputLogger
 		{
 		private:
 			CTicTac		m_tictac;
 			bool		m_enabled;
+			std::string m_name;
 
 			//! Data of all the calls:
 			struct BASE_IMPEXP TCallData
@@ -62,17 +63,19 @@ namespace mrpt
 				double min_t,max_t,mean_t,total_t;
 			};
 
-			CTimeLogger(bool enabled = true); //! Default constructor
+			CTimeLogger(bool enabled=true, const std::string& name=""); //! Default constructor
 			virtual ~CTimeLogger(); //!< Destructor
 			std::string getStatsAsText(const size_t column_width=80) const; //!< Dump all stats to a multi-line text string. \sa dumpAllStats, saveToCVSFile
 			void getStats(std::map<std::string,TCallStats> &out_stats) const; //!< Returns all the current stats as a map: section_name => stats. \sa getStatsAsText, dumpAllStats, saveToCVSFile
-			void dumpAllStats(const size_t column_width=80) const; //!< Dump all stats through the CDebugOutputCapable interface. \sa getStatsAsText, saveToCVSFile
+			void dumpAllStats(const size_t column_width=80) const; //!< Dump all stats through the COutputLogger interface. \sa getStatsAsText, saveToCVSFile
 			void clear(bool deep_clear=false); //!< Resets all stats. By default (deep_clear=false), all section names are remembered (not freed) so the cost of creating upon the first next call is avoided.
 			void enable(bool enabled = true) { m_enabled = enabled; }
 			void disable() { m_enabled = false; }
 			bool isEnabled() const { return m_enabled;}
 			void saveToCSVFile(const std::string &csv_file)  const; 	//!< Dump all stats to a Comma Separated Values (CSV) file. \sa dumpAllStats
 			void registerUserMeasure(const char *event_name, const double value);
+
+			void setName(const std::string& name) { m_name =  name; }
 
 			/** Start of a named section \sa enter */
 			inline void enter( const char *func_name ) {

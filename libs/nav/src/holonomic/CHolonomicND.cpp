@@ -22,8 +22,7 @@ using namespace mrpt::nav;
 using namespace std;
 
 IMPLEMENTS_SERIALIZABLE( CLogFileRecord_ND, CHolonomicLogFileRecord,mrpt::nav )
-
-
+IMPLEMENTS_SERIALIZABLE( CHolonomicND, CAbstractHolonomicReactiveMethod,mrpt::nav)
 
 /**  Initialize the parameters of the navigator, from some
 *    configuration file, or default values if filename is set to NULL.
@@ -704,3 +703,36 @@ void CHolonomicND::TOptions::saveToConfigFile(mrpt::utils::CConfigFileBase &cfg 
 
 	MRPT_END
 }
+
+void  CHolonomicND::writeToStream(mrpt::utils::CStream &out,int *version) const
+{
+	if (version)
+		*version = 0;
+	else
+	{
+		// Params:
+		out << options.factorWeights << options.MAX_SECTOR_DIST_FOR_D2_PERCENT << 
+			options.RISK_EVALUATION_DISTANCE << options.RISK_EVALUATION_SECTORS_PERCENT <<
+			options.TARGET_SLOW_APPROACHING_DISTANCE << options.TOO_CLOSE_OBSTACLE << options.WIDE_GAP_SIZE_PERCENT;
+		// State:
+		out << m_last_selected_sector;
+	}
+}
+void  CHolonomicND::readFromStream(mrpt::utils::CStream &in,int version)
+{
+	switch(version)
+	{
+	case 0:
+		{
+		// Params:
+		in >> options.factorWeights >> options.MAX_SECTOR_DIST_FOR_D2_PERCENT >> 
+			options.RISK_EVALUATION_DISTANCE >> options.RISK_EVALUATION_SECTORS_PERCENT >>
+			options.TARGET_SLOW_APPROACHING_DISTANCE >> options.TOO_CLOSE_OBSTACLE >> options.WIDE_GAP_SIZE_PERCENT;
+		// State:
+		in >> m_last_selected_sector;
+		} break;
+	default:
+		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
+	};
+}
+

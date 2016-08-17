@@ -1,4 +1,9 @@
-  * Removed manual -dbg packages, as they are now generated automatically.
+mrpt (1:1.4.0-6) unstable; urgency=medium
+
+  * Fix FTBFS with latest eigen 3.3 beta 1 (Closes #834274).
+  * Drop build-depends on subversion, no longer needed.
+
+ -- Jose Luis Blanco (University of Malaga) <joseluisblancoc@gmail.com>  Sun, 14 Aug 2016 13:51:20 +0200
 
 mrpt (1:1.4.0-5) unstable; urgency=medium
 

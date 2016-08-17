@@ -107,8 +107,6 @@ void CReactiveNavigationSystem::internal_loadConfigFile(const mrpt::utils::CConf
 	for (size_t i=0;i<PTGs.size();i++)	delete PTGs[i];
 	PTGs.assign(PTG_COUNT,NULL);
 
-	printf_debug("\n");
-
 	for ( unsigned int n=0;n<PTG_COUNT;n++)
 	{
 		// Factory:
@@ -116,9 +114,7 @@ void CReactiveNavigationSystem::internal_loadConfigFile(const mrpt::utils::CConf
 		PTGs[n] = CParameterizedTrajectoryGenerator::CreatePTG(sPTGName,ini,sectCfg, format("PTG%u_",n) );
 	}
 
-	printf_debug(" Obstacles 'z' axis range = [%.03f,%.03f]\n", minObstaclesHeight, maxObstaclesHeight );
-
-//	this->STEP1_InitPTGs();
+	logFmt(mrpt::utils::LVL_DEBUG," Obstacles 'z' axis range = [%.03f,%.03f]\n", minObstaclesHeight, maxObstaclesHeight );
 
 	MRPT_END
 }
@@ -135,8 +131,7 @@ void CReactiveNavigationSystem::STEP1_InitPTGs()
 		{
 			PTGs[i]->deinitialize();
 
-			printf_debug("[loadConfigFile] Initializing PTG#%u...", i);
-			printf_debug("%s",PTGs[i]->getDescription().c_str());
+			logFmt(mrpt::utils::LVL_INFO,"[loadConfigFile] Initializing PTG#%u (`%s`)...", i,PTGs[i]->getDescription().c_str());
 
 			// Polygonal robot shape?
 			{
@@ -156,7 +151,7 @@ void CReactiveNavigationSystem::STEP1_InitPTGs()
 				format("%s/ReacNavGrid_%s_%03u.dat.gz", ptg_cache_files_directory.c_str(), robotName.c_str(), i),
 				m_enableConsoleOutput /*verbose*/
 			);
-			printf_debug("...Done!\n");
+			logStr(mrpt::utils::LVL_INFO,"Done!");
 		}
 	}
 }
@@ -176,13 +171,12 @@ bool CReactiveNavigationSystem::STEP2_SenseObstacles()
 	}
 	catch (std::exception &e)
 	{
-		printf_debug("[CReactiveNavigationSystem::STEP2_Sense] Exception:");
-		printf_debug("%s",(char*)(e.what()));
+		MRPT_LOG_ERROR_STREAM << "[CReactiveNavigationSystem::STEP2_Sense] Exception:" << e.what();
 		return false;
 	}
 	catch (...)
 	{
-		printf_debug("[CReactiveNavigationSystem::STEP2_Sense] Unexpected exception!\n");
+		MRPT_LOG_ERROR_STREAM << "[CReactiveNavigationSystem::STEP2_Sense] Unexpected exception!";
 		return false;
 	}
 

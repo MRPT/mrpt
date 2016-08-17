@@ -32,8 +32,6 @@ namespace mrpt
 			public mrpt::poses::CPose3DPDFParticles,
 			public PF_implementation<mrpt::poses::CPose3D,CMonteCarloLocalization3D>
 		{
-			//template <class PARTICLE_TYPE, class MYSELF> friend class PF_implementation;
-
 		public:
 			TMonteCarloLocalizationParams	options; //!< MCL parameters
 

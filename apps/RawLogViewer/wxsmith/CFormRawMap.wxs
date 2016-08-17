@@ -63,7 +63,7 @@
 												<handler function="OnslFromCmdScrollThumbTrack" entry="EVT_COMMAND_SCROLL_THUMBTRACK" />
 												<handler function="OnslFromCmdScrollThumbTrack" entry="EVT_COMMAND_SCROLL_CHANGED" />
 											</object>
-											<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+											<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 											<border>1</border>
 											<option>1</option>
 										</object>
@@ -88,7 +88,7 @@
 												<handler function="OnslToCmdScrollThumbTrack" entry="EVT_COMMAND_SCROLL_THUMBTRACK" />
 												<handler function="OnslToCmdScrollThumbTrack" entry="EVT_COMMAND_SCROLL_CHANGED" />
 											</object>
-											<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+											<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 											<border>1</border>
 											<option>1</option>
 										</object>
@@ -115,7 +115,7 @@
 												<handler function="OnslDecimateCmdScrollThumbTrack" entry="EVT_COMMAND_SCROLL_THUMBTRACK" />
 												<handler function="OnslDecimateCmdScrollThumbTrack" entry="EVT_COMMAND_SCROLL_CHANGED" />
 											</object>
-											<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+											<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 											<option>1</option>
 										</object>
 										<object class="sizeritem">
@@ -129,7 +129,7 @@
 											<option>1</option>
 										</object>
 									</object>
-									<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+									<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 									<option>1</option>
 								</object>
 								<object class="sizeritem">
@@ -156,7 +156,7 @@
 																		<default>1</default>
 																		<handler function="OnbtnGenerateClick" entry="EVT_BUTTON" />
 																	</object>
-																	<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+																	<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 																	<border>5</border>
 																	<option>1</option>
 																</object>
@@ -166,7 +166,7 @@
 																		<default>1</default>
 																		<handler function="OnGenerateFromRTK" entry="EVT_BUTTON" />
 																	</object>
-																	<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+																	<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 																	<border>5</border>
 																	<option>1</option>
 																</object>
@@ -176,21 +176,21 @@
 																		<default>1</default>
 																		<handler function="OnbtnGeneratePathsClick" entry="EVT_BUTTON" />
 																	</object>
-																	<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+																	<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 																	<border>5</border>
 																	<option>1</option>
 																</object>
 															</object>
-															<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+															<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 															<option>1</option>
 														</object>
 													</object>
-													<flag>wxALL|wxEXPAND|wxALIGN_TOP|wxALIGN_CENTER_HORIZONTAL</flag>
+													<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 													<border>3</border>
 													<option>1</option>
 												</object>
 											</object>
-											<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+											<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 											<option>1</option>
 										</object>
 										<object class="sizeritem">
@@ -217,7 +217,7 @@
 																				<enabled>0</enabled>
 																				<handler function="OnbtnSaveTxtClick" entry="EVT_BUTTON" />
 																			</object>
-																			<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+																			<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 																			<border>5</border>
 																			<option>1</option>
 																		</object>
@@ -227,7 +227,7 @@
 																				<enabled>0</enabled>
 																				<handler function="OnbtnSave3DClick" entry="EVT_BUTTON" />
 																			</object>
-																			<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+																			<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 																			<border>5</border>
 																			<option>1</option>
 																		</object>
@@ -237,7 +237,7 @@
 																				<enabled>0</enabled>
 																				<handler function="OnbtnSavePathClick" entry="EVT_BUTTON" />
 																			</object>
-																			<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+																			<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 																			<border>5</border>
 																			<option>1</option>
 																		</object>
@@ -247,7 +247,7 @@
 																				<enabled>0</enabled>
 																				<handler function="OnbtnSaveObsPathClick" entry="EVT_BUTTON" />
 																			</object>
-																			<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+																			<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 																			<border>5</border>
 																			<option>1</option>
 																		</object>
@@ -257,7 +257,7 @@
 																				<enabled>0</enabled>
 																				<handler function="OnbtnView3DClick" entry="EVT_BUTTON" />
 																			</object>
-																			<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+																			<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 																			<border>5</border>
 																			<option>1</option>
 																		</object>
@@ -283,19 +283,19 @@
 																			<option>1</option>
 																		</object>
 																	</object>
-																	<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+																	<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 																	<option>1</option>
 																</object>
 															</object>
-															<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+															<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 															<option>1</option>
 														</object>
 													</object>
-													<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+													<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 													<option>1</option>
 												</object>
 											</object>
-											<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+											<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 											<border>3</border>
 											<option>1</option>
 										</object>
@@ -314,7 +314,7 @@
 													<object class="wxBitmapButton" name="ID_BITMAPBUTTON1" variable="btnHelp" member="yes">
 														<bitmap stock_id="wxART_INFORMATION" stock_client="wxART_BUTTON" />
 													</object>
-													<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+													<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 													<border>4</border>
 													<option>1</option>
 												</object>
@@ -323,21 +323,21 @@
 														<label>Close</label>
 														<handler function="OnbtnCloseClick" entry="EVT_BUTTON" />
 													</object>
-													<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+													<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 													<border>5</border>
 													<option>1</option>
 												</object>
 											</object>
-											<flag>wxALL|wxEXPAND|wxALIGN_TOP|wxALIGN_CENTER_HORIZONTAL</flag>
+											<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 											<border>5</border>
 											<option>1</option>
 										</object>
 									</object>
-									<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+									<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 									<option>1</option>
 								</object>
 							</object>
-							<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+							<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 							<option>1</option>
 						</object>
 						<object class="sizeritem">
@@ -354,13 +354,13 @@
 								</font>
 								<style>wxTE_PROCESS_ENTER|wxTE_PROCESS_TAB|wxTE_MULTILINE|wxHSCROLL</style>
 							</object>
-							<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+							<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 							<border>1</border>
 							<option>1</option>
 						</object>
 					</object>
 				</object>
-				<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+				<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 				<option>1</option>
 			</object>
 			<object class="sizeritem">
@@ -372,12 +372,12 @@
 								<style></style>
 								<size>742,380</size>
 							</object>
-							<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+							<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 							<option>1</option>
 						</object>
 					</object>
 				</object>
-				<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+				<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 				<option>1</option>
 			</object>
 		</object>

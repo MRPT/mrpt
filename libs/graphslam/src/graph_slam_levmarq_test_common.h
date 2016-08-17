@@ -8,7 +8,8 @@
    +---------------------------------------------------------------------------+ */
 
 
-#include <mrpt/graphslam.h>
+#include <mrpt/graphslam/types.h>
+#include <mrpt/graphslam/levmarq.h>
 #include <mrpt/graphs.h>
 #include <mrpt/random.h>
 #include <mrpt/utils/CMemoryStream.h>

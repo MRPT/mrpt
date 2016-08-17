@@ -58,26 +58,30 @@ namespace internal_mrpt
 	};
 }
 
-/** Compute the eigenvectors and eigenvalues, both returned as matrices: eigenvectors are the columns, and eigenvalues
+/** Compute the eigenvectors and eigenvalues, both returned as matrices: eigenvectors are the columns, and eigenvalues. \return false on error.
   */
 template <class Derived>
 template <class MATRIX1,class MATRIX2>
-EIGEN_STRONG_INLINE void Eigen::MatrixBase<Derived>::eigenVectors( MATRIX1 & eVecs, MATRIX2 & eVals ) const
+EIGEN_STRONG_INLINE bool Eigen::MatrixBase<Derived>::eigenVectors( MATRIX1 & eVecs, MATRIX2 & eVals ) const
 {
 	Matrix<Scalar,Dynamic,1> evals;
-	eigenVectorsVec(eVecs,evals);
+	if (!eigenVectorsVec(eVecs,evals))
+		return false;
 	eVals.resize(evals.size(),evals.size());
 	eVals.setZero();
 	eVals.diagonal()=evals;
+	return true;
 }
 
 /** Compute the eigenvectors and eigenvalues, both returned as matrices: eigenvectors are the columns, and eigenvalues
   */
 template <class Derived>
 template <class MATRIX1,class VECTOR1>
-EIGEN_STRONG_INLINE void Eigen::MatrixBase<Derived>::eigenVectorsVec( MATRIX1 & eVecs, VECTOR1 & eVals ) const
+EIGEN_STRONG_INLINE bool Eigen::MatrixBase<Derived>::eigenVectorsVec( MATRIX1 & eVecs, VECTOR1 & eVals ) const
 {
 	Eigen::EigenSolver< Derived > es(*this, true);
+	if (es.info()!=Eigen::Success)
+		return false;
 	eVecs = es.eigenvectors().real(); // Keep only the real part of complex matrix
 	eVals = es.eigenvalues().real(); // Keep only the real part of complex matrix
 
@@ -95,6 +99,7 @@ EIGEN_STRONG_INLINE void Eigen::MatrixBase<Derived>::eigenVectorsVec( MATRIX1 & 
 		sortedEigs.col(i)=eVecs.col(D[i].second);
 	}
 	eVecs = sortedEigs;
+	return true;
 }
 
 /** Compute the eigenvectors and eigenvalues, both returned as matrices: eigenvectors are the columns, and eigenvalues

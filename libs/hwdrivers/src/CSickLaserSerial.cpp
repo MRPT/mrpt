@@ -266,7 +266,7 @@ bool CSickLaserSerial::tryToOpenComms(std::string *err_msg)
 		std::string s = "[CSickLaserSerial] Error trying to open SICK at port ";
 		s+= e.what();
 		if (err_msg) *err_msg=s;
-		printf_debug("%s",s.c_str());
+		MRPT_LOG_ERROR(s);
 		return false;
 	}
 }
@@ -309,7 +309,7 @@ bool  CSickLaserSerial::waitContinuousSampleFrame(
 		catch (std::exception &e)
 		{
 			// Disconnected?
-			printf_debug("[CSickLaserSerial::waitContinuousSampleFrame] Disconnecting due to comms error: %s\n", e.what());
+			MRPT_LOG_ERROR_FMT("[CSickLaserSerial::waitContinuousSampleFrame] Disconnecting due to comms error: %s\n", e.what());
 			//m_usbConnection->Close();
 			return false;
 		}

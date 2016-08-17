@@ -13,9 +13,6 @@
 #include <mrpt/utils/CConfigFileBase.h>
 #include <mrpt/utils/safe_pointers.h>
 
-/*---------------------------------------------------------------
-	Class
-  ---------------------------------------------------------------*/
 namespace mrpt
 {
 namespace utils

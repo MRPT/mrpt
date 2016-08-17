@@ -15,9 +15,6 @@
 #include <mrpt/synch/CCriticalSection.h>
 #include <mrpt/utils/CImage.h>
 
-/*---------------------------------------------------------------
-	Class
-  ---------------------------------------------------------------*/
 namespace mrpt
 {
 	namespace gui

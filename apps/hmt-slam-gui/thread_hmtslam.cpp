@@ -85,7 +85,7 @@ void hmt_slam_guiFrame::thread_HMTSLAM()
 					else
 					{
 						fInRawlog = new CFileGZInputStream(fil);
-						m_hmtslam->printf_debug("RAWLOG FILE: \n%s\n",fil.c_str());
+						m_hmtslam->logFmt(mrpt::utils::LVL_INFO,"RAWLOG FILE: \n%s\n",fil.c_str());
 						OUT_DIR = "HMT_SLAM_OUTPUT"; //cfg.read_string("HMT-SLAM","LOG_OUTPUT_DIR", "HMT_SLAM_OUTPUT");
 
 						// Set relative path for externally-stored images in rawlogs:

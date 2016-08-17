@@ -14,7 +14,7 @@
 #include <mrpt/hwdrivers/CInterfaceFTDIMessages.h>
 #include <mrpt/utils/CMessage.h>
 #include <mrpt/math/CMatrixTemplate.h>
-#include <mrpt/utils/CDebugOutputCapable.h>
+#include <mrpt/utils/COutputLogger.h>
 #include <mrpt/utils/CConfigFileBase.h>
 #include <mrpt/obs/CObservationRange.h>
 
@@ -42,7 +42,7 @@ namespace mrpt
 		  *  \endcode
 		  * \ingroup mrpt_hwdrivers_grp
 		  */
-		class HWDRIVERS_IMPEXP CRoboticHeadInterface : public mrpt::utils::CDebugOutputCapable
+		class HWDRIVERS_IMPEXP CRoboticHeadInterface : public mrpt::utils::COutputLogger
 		{
 			private:
 				CInterfaceFTDIMessages	m_usbConnection;
