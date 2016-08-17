@@ -9,7 +9,7 @@
 #pragma once
 
 #include <mrpt/nav/reactive/CRobot2NavInterface.h>
-#include <mrpt/utils/CDebugOutputCapable.h>
+#include <mrpt/utils/COutputLogger.h>
 #include <mrpt/synch/CCriticalSection.h>
 #include <mrpt/obs/obs_frwds.h>
 
@@ -43,7 +43,7 @@ namespace mrpt
 	 * \sa CWaypointsNavigator, CReactiveNavigationSystem, CRobot2NavInterface, all children classes
 	 *  \ingroup nav_reactive
 	 */
-	class NAV_IMPEXP CAbstractNavigator : public mrpt::utils::CDebugOutputCapable
+	class NAV_IMPEXP CAbstractNavigator : public mrpt::utils::COutputLogger
 	{
 	public:
 		CAbstractNavigator( CRobot2NavInterface &robot_interface_impl );  //!< ctor

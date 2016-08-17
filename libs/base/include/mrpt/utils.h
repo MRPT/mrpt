@@ -13,7 +13,7 @@
 
 #include <mrpt/poses.h>  // Dependency
 
-#include <mrpt/utils/CDebugOutputCapable.h>
+#include <mrpt/utils/COutputLogger.h>
 #include <mrpt/utils/CStringList.h>
 #include <mrpt/utils/TEnumType.h>
 

@@ -693,14 +693,15 @@ double CObservation3DRangeScan::recoverCameraCalibrationParameters(
 
 	CVectorDouble optimal_x;
 
-	TMyLevMar::execute(
+	TMyLevMar lm;
+	lm.execute(
 		optimal_x,
 		initial_x,
 		&mrpt::obs::detail::cost_func,
 		increments_x,
 		detail::TLevMarData(obs,camera_offset),
 		info,
-		false, /* verbose */
+		mrpt::utils::LVL_INFO, /* verbose */
 		1000 , /* max iter */
 		1e-3,
 		1e-9,

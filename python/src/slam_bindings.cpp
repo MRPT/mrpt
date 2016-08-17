@@ -413,7 +413,7 @@ void export_slam()
         ;
 
         // TConfigParams
-        class_<CMetricMapBuilderICP::TConfigParams, bases<CLoadableOptions> >("TConfigParams", init<>())
+        class_<CMetricMapBuilderICP::TConfigParams, bases<CLoadableOptions> >("TConfigParams", init<mrpt::utils::VerbosityLevel&>())
             .def_readwrite("matchAgainstTheGrid", &CMetricMapBuilderICP::TConfigParams::matchAgainstTheGrid)
             .def_readwrite("insertionLinDistance", &CMetricMapBuilderICP::TConfigParams::insertionLinDistance)
             .def_readwrite("insertionAngDistance", &CMetricMapBuilderICP::TConfigParams::insertionAngDistance)

@@ -12,9 +12,6 @@
 #include <mrpt/utils/utils_defs.h>
 #include <mrpt/system/string_utils.h>
 
-/*---------------------------------------------------------------
-	Class
-  ---------------------------------------------------------------*/
 namespace mrpt
 {
 namespace utils

@@ -10,41 +10,57 @@
 #ifndef COUTPUTLOGGER_H
 #define COUTPUTLOGGER_H
 
-#include <mrpt/utils/CStream.h>
-#include <mrpt/system/os.h>
+#include <mrpt/base/link_pragmas.h>
 #include <mrpt/utils/mrpt_macros.h>
+#include <mrpt/utils/TEnumType.h>
+#include <mrpt/system/os.h>  // for console color constants
 
 #include <string>
-#include <map>
-#include <vector>
+#include <deque>
 #include <mrpt/system/datetime.h>
 #include <sstream>
-#include <iostream>
-#include <cstdarg> // for logFmt
 
 namespace mrpt { namespace utils {
+	class CStream; // frwd decl
 
-/** \brief Enumeration of available verbosity levels */
-enum VerbosityLevel { LVL_DEBUG=0, LVL_INFO, LVL_WARN, LVL_ERROR };
+/** \brief Enumeration of available verbosity levels. \sa COutputLogger */
+enum VerbosityLevel {
+	LVL_DEBUG=0,
+	LVL_INFO,
+	LVL_WARN,
+	LVL_ERROR,
+	// ------------
+	NUMBER_OF_VERBOSITY_LEVELS
+};
 
-
-/** \brief Versatile class for consistent logging and 
+/** \brief Versatile class for consistent logging and
  *        management of output messages
  *
  * COutputLogger is a versatile class for logging messages either to the
  * terminal window or to an external file. Class instances can take messages in
- * std::string using the log class methods 
+ * std::string using the logStr class methods. The following macros are also provided
+ * for usage within a class that inherits from COutputLogger:
  *
- * - Logger instance keeps the messages in an internal std::vector so that upon
+ * \code
+ * // Plain strings:
+ * MRPT_LOG_DEBUG("This will be shown only if verbosity level is LVL_DEBUG.");
+ * MRPT_LOG_ERROR("This message will be always shown.");
+ * // printf-like versions:
+ * MRPT_LOG_ERROR_FMT("Out of range value: %i.", int_param);
+ * // stream-like versions:
+ * MRPT_LOG_ERROR_STREAM << "Out of range value: " << int_param;
+ * \endcode
+ *
+ * - Logger instance keeps the messages in an internal container so that upon
  *   request it can dump them either to the console or to an external file
- *   altogether.  
+ *   altogether.
  * - The message, when printed in the terminal window, is **colored** according to
  *   the logger's current verbosity/logging level (Logging level with which
  *   the underlying TMsg instance was instantiatedd).  The available verbosity
  *   levels as well as their corresponding colors are listed below:
  *
  *   + LVL_DEBUG => CONCOL_BLUE
- *   + LVL_INFO  => CONCOL_NORMAL 
+ *   + LVL_INFO  => CONCOL_NORMAL
  *   + LVL_WARN  => CONCOL_GREEN
  *   + LVL_ERROR => CONCOL_RED
  *
@@ -55,16 +71,25 @@ enum VerbosityLevel { LVL_DEBUG=0, LVL_INFO, LVL_WARN, LVL_ERROR };
  *   setMinLoggingLevel(LVL_ERROR)).
  *   \sa setLoggingLevel, setMinLoggingLevel
  *
- * \note By default every logged message is going to be dumped to the stadard
- * output as well (if VerbisityLevel > m_min_verbosity_level). Unset \b
- * print_message_automatically class variable if that's not the desired
+ *   Default logging level is LVL_INFO.
+ *
+ * \note By default every logged message is going to be dumped to the standard
+ * output as well (if VerbosityLevel > m_min_verbosity_level). Unset \b
+ * logging_enable_console_output class variable if that's not the desired
  * behavior
  *
+ * \note [New in MRPT 1.5.0]
  * \sa TMsg
  * \ingroup mrpt_base_grp
  */
 class BASE_IMPEXP COutputLogger {
 	public:
+		static mrpt::system::TConsoleColor logging_levels_to_colors[NUMBER_OF_VERBOSITY_LEVELS];  //! Map from VerbosityLevels to their corresponding mrpt::system::TConsoleColor. Handy for coloring the input based on the verbosity of the message
+		static std::string logging_levels_to_names[NUMBER_OF_VERBOSITY_LEVELS]; //!< Map from VerbosityLevels to their corresponding names. Handy for printing the current message VerbosityLevel along with the actual content
+
+		/** @name Logging methods
+		  * @{ */
+
 		/**
 		 * \brief Construct a COutputLogger instance with the given name as the
 		 * instance name.
@@ -73,144 +98,60 @@ class BASE_IMPEXP COutputLogger {
 		 * object and then explicitly setting the name like in the following case:
 		 * \code
 		 * COutputLogger a_logger;
-		 * a_logger.setName("logger_name");
+		 * a_logger.setLoggerName("logger_name");
 		 * \endcode
 		 */
-		COutputLogger(std::string name);
-		/** \brief Default class constructor.
-		 *
-		 * Name of the logger is initialized to *Logger*
-		 */
-		COutputLogger();
-		/**
-		 * \brief Default class destructor
-		 */
+		COutputLogger(const std::string &name);
+		COutputLogger(); //!< Default class constructor. Name of the logger is initialized to "logStr"
 		virtual ~COutputLogger();  //!< virtual dtor (so we can derive classes from this one)
 
 		/** \brief Main method to add the specified message string to the logger.
-		 *
-		 * Message is printed in the terminal window if
-		 * <b>print_message_automatically</b> is set to true. By default it is
-		 * saved in the COutputLogger history.
-		 *
-		 * \sa logCond, logFmt
-		 */
-		void log(const std::string& msg_str);
-		/** \brief Alternative of the previous method, which lets the user specify
-		 *         a *temporary logging level*.
-		 *
-		 * Level will be reverted to the prior logging level
-		 * after opration
-		 * \sa logCond, logFmt
-		 */
-		void log(const std::string& msg_str, const VerbosityLevel& level);
-		/** \brief Alternative logging method, *handy for usage in const
-		 *         functions/methods*
-		 *
-		 * Used *solely for printing* the given string in the console (but does not
-		 * store it internally)
-		 * \sa logCond, logFmt
-		 */
-		void log(const std::string& msg_str, const VerbosityLevel& level) const;
-		/** \brief Alternative logging method, handy for usage in const functions/methdos.
-		 *
-		 * Used solely for printing the given string in the console (but does not
-		 * store it internally
-		 * \sa logCond, logFmt
-		 */
-		void log(const std::string& msg_str) const;
+		 * \sa logCond, logFmt */
+		void logStr(const VerbosityLevel level, const std::string& msg_str) const;   // renamed from log() to avoid conflict with math ::log()
+
 		/** \brief Alternative logging method, which mimics the printf behavior.
 		 *
 		 * Handy for not having to first use mrpt::format to pass a std::string
-		 * message to log
+		 * message to logStr
 		 *
 		 * \code
 		 * // instead of:
-		 * log(mrpt::format("Today is the %d of %s, %d", 15, "July", 2016));
+		 * logStr(mrpt::format("Today is the %d of %s, %d", 15, "July", 2016));
 		 *
 		 * // one can use:
 		 * logFmt("Today is the %d of %s, %d", 15, "July", 2016);
 		 * \endcode
 		 *
-		 * \sa log, logCond, mrpt::utils:CDebugOutputCapable
+		 * \sa logStr, logCond
 		 */
-		void logFmt(const char* fmt, ...) MRPT_printf_format_check(2,3);
-		/** \brief Alternative logging method, which mimics the printf behavior.
-		 *
-		 * Handy for not having to first use mrpt::format to pass a std::string
-		 * message to log. Used *solely for printing* the given string in the console
-		 * (but does not store it internally)
-		 *
-		 * \sa log, logCond, mrpt::utils:CDebugOutputCapable
-		 */
-		void logFmt(const char* fmt, ...) const MRPT_printf_format_check(2,3);
-		/** \brief Log the given message only if the condition is satisfied.
-		 *
-		 * Level will be reverted to the prior logging level
-		 * after opration
-		 *
-		 * \sa log, logFmt
-		 */
-		void logCond(const std::string& msg_str, bool cond);
-		/** \brief Log the given message only if the condition is satisfied.
-		 *
-		 * Used *solely for printing* the given string in the console (but does not
-		 * store it internally)
-		 *
-		 * \sa log, logFmt
-		 */
-		void logCond(const std::string& msg_str, bool cond) const;
+		void logFmt(const VerbosityLevel level, const char* fmt, ...) const MRPT_printf_format_check(3,4);  // arg 1=this
+
 		/** \brief Log the given message only if the condition is satisfied.
 		 *
 		 * \sa log, logFmt
 		 */
-		void logCond(const std::string& msg_str, const VerbosityLevel& level, bool cond);
-		/** \brief Log the given message only if the condition is satisfied.
-		 *
-		 * Used *solely for printing* the given string in the console (but does not
-		 * store it internally)
-		 * \sa log, logFmt
-		 */
-		void logCond(const std::string& msg_str, const VerbosityLevel& level, bool cond) const;
-		/** \brief Set the name of the COutputLogger instance 
-		 *
-		 * \sa getName
-		 */
-		void setName(const std::string& name);
-		/** \brief Return the name of the COutputLogger instance 
-		 *
-		 * \sa setName
-		 */
-		std::string getName() const;
-		/** \brief Set the logging level that is going to be assigned in each message
-		 *         logged from this point on.
-		 *
-		 * \sa setMinLoggingLevel, getLoggingLevel
-		 */
-		void setLoggingLevel(const VerbosityLevel& level = LVL_INFO);
-		/** \brief Set the *minimum* logging level for which the incoming logs are going to
-		 *         be taken into account.
+		void logCond(const VerbosityLevel level, bool cond, const std::string& msg_str) const;
+
+		void setLoggerName(const std::string& name);  //!< Set the name of the COutputLogger instance.  \sa getLoggerName
+		std::string getLoggerName() const; //!< Return the name of the COutputLogger instance.  \sa setLoggerName
+
+		/** \brief Set the *minimum* logging level for which the incoming logs are going to be taken into account.
 		 *
 		 * String messages with specified VerbosityLevel smaller than the min, will
 		 * not be outputted to the screen and neither will a record of them be
 		 * stored in by the COutputLogger instance
-		 *
-		 * \sa setLoggingLevel
 		 */
-		void setMinLoggingLevel(const VerbosityLevel& level = LVL_INFO);
-		/** \brief Return the currently used VerbosityLevel 
-		 *
-		 * \sa setLoggingLevel
-		 */
-		VerbosityLevel getLoggingLevel() const;
-		/** \brief Fill the provided string with the contents of the logger's
-		 * history in std::string representation
-		 *
-		 */
-		void getAsString(std::string* fname) const;
-		/** \brief Get the history of COutputLogger instance in a string representation.
-		 */
-		std::string getAsString() const;
+		void setMinLoggingLevel(const VerbosityLevel level);
+		/** alias of setMinLoggingLevel() */
+		void setVerbosityLevel(const VerbosityLevel level);
+
+		/** \sa setMinLoggingLevel */
+		VerbosityLevel getMinLoggingLevel() const { return m_min_verbosity_level; }
+		bool isLoggingLevelVisible(VerbosityLevel level) const { return m_min_verbosity_level<=level; }
+
+		void getLogAsString(std::string& log_contents) const; //!< Fill the provided string with the contents of the logger's history in std::string representation
+		std::string getLogAsString() const; //!< Get the history of COutputLogger instance in a string representation.
+
 		/** \brief Write the contents of the COutputLogger instance to an external file.
 		 *
 		 * Upon call to this method, COutputLogger dumps the contents of all the
@@ -220,26 +161,26 @@ class BASE_IMPEXP COutputLogger {
 		 *
 		 * \sa dumpToConsole, getAsString
 		 */
-		void writeToFile(const std::string* fname_in=NULL) const;
+		void writeLogToFile(const std::string* fname_in=NULL) const;
 		/** \brief Dump the current contents of the COutputLogger instance in the
 		 * terminal window.
 		 *
-			 * \sa writeToFile
+		 * \sa writeToFile
 		 */
-		void dumpToConsole() const;
-		/** \brief Return the last Tmsg instance registered in the logger history 
-		 *
-		 */
-		std::string getLastMsg() const;
-		/** \brief Fill inputtted string with the contents of the last message in history
-		 */
-		void getLastMsg(std::string* msg_str) const;
-		/** \brief Reset the contents of the logger instance.
-		 *
-		 * Used *by default* when an instance of the class is initialized
-		 */
-		void reset();
+		void dumpLogToConsole() const;
+		std::string getLoggerLastMsg() const;  //!< Return the last Tmsg instance registered in the logger history
+		void getLoggerLastMsg(std::string& msg_str) const; //!< Fill inputtted string with the contents of the last message in history
+		void loggerReset(); //!< Reset the contents of the logger instance. Called upon construction.
 
+		bool logging_enable_console_output; //!< [Default=true] Set it to false in case you don't want the logged messages to be dumped to the output automatically.
+		bool logging_enable_keep_record;    //!< [Default=false] Enables storing all messages into an internal list. \sa writeLogToFile, getLogAsString
+
+		/** @} */
+
+	protected:
+		/** \brief Provided messages with VerbosityLevel smaller than this value shall be ignored */
+		VerbosityLevel m_min_verbosity_level;
+	private:
 		/**
 		 * \brief Struct responsible of holding information relevant to the message
 		 *        (in std::string form) issued by the user.
@@ -257,7 +198,7 @@ class BASE_IMPEXP COutputLogger {
 			 * form as well as a reference to the COutputLogger that provided the
 			 * current message
 			 */
-			TMsg(const std::string& msg, const COutputLogger& logger);
+			TMsg(const mrpt::utils::VerbosityLevel level, const std::string& msg, const COutputLogger& logger);
 			/** \brief  Default Destructor */
 			~TMsg();
 
@@ -278,68 +219,74 @@ class BASE_IMPEXP COutputLogger {
 			void dumpToConsole() const;
 			/** \brief Reset the contents of the TMsg instance */
 			void reset();
-			/** \brief Return the color corresponding to the given VerbosityLevel
-			 *
-			 * \sa getLoggingLevelName
-			 */
-			mrpt::system::TConsoleColor getConsoleColor(VerbosityLevel level) const;
-			/** \brief Return the name corresponding to the given VerbosityLevel 
-			 *
-			 * \sa getConsoleColor
-			 */
-			std::string getLoggingLevelName(VerbosityLevel level) const; 
 
-			//
 			// parameters of the message under construction
-			//
 			mrpt::system::TTimeStamp timestamp; /**< Timestamp of the message. */
 			VerbosityLevel level; /**< Verbosity level of the message. */
 			std::string name; /**< Name of the COutputLogger instance that called registered the message. */
 			std::string body; /**< Actual content of the message. */
-
-			/** \brief Map from VerbosityLevels to their corresponding mrpt::system::TConsoleColor
-			 *
-			 * Handy for coloring the input based on the verbosity of the message
-			 */
- 			std::map<VerbosityLevel, mrpt::system::TConsoleColor> m_levels_to_colors;
-			/** \brief Map from VerbosityLevels to their corresponding names
-			 *
-			 * Handy for printing the current message VerbosityLevel along with the
-			 * actual content
-			 */
-			std::map<VerbosityLevel, std::string> m_levels_to_names;
 		};
 
-		/** \brief Set it to false in case you don't want the logged message to be
-		 *         dumped to the output automatically. 
-		 *
-		 * By default it is set to true.
-		 */
-		bool print_message_automatically;
-	private:
-		/** Warn (at least for the first usages) that the logged messages are not
-		 * stored by the COutputLogger instance since the call to
-		 * COutputLogger::log is made inside a const method/function
-		 */
-		void warnForLogConstMethod() const;
+		std::string generateStringFromFormat(const char* fmt, va_list argp) const; //!< Helper method for generating a std::string instance from printf-like arguments
 
-		/** Helper method for generating a std::string instance from printf-like
-		 * arguments
-		 */
-		std::string generateStringFromFormat(const char* fmt, va_list argp) const;
-
-		std::string m_name;
-		std::vector<TMsg> m_history;
-		VerbosityLevel m_curr_level;
-		/** \brief Provided messages with VerbosityLevel smaller than this value shall be ignored */
-		VerbosityLevel m_min_verbosity_level;
-		
-		// how many times have I warned the user about using the const log method
-		// if it passes a predefined threshold of times stop polluting the console
-		static size_t m_times_for_log_const;
-		static size_t m_times_for_log_const_thresh;
+		std::string m_logger_name;
+		mutable std::deque<TMsg> m_history;   // deque is better than vector to avoid memory reallocs
 };
 
-} }  // END OF NAMESPACES
+	/** For use in MRPT_LOG_DEBUG_STREAM, etc. */
+	struct BASE_IMPEXP COutputLoggerStreamWrapper
+	{
+		COutputLoggerStreamWrapper(VerbosityLevel level, const COutputLogger &logger) : m_level(level),m_logger(logger) {}
+		~COutputLoggerStreamWrapper() { if (m_logger.isLoggingLevelVisible(m_level)) m_logger.logStr(m_level, m_str.str()); }
 
+		template <typename T>
+		std::stringstream & operator << (const T &val) {
+			m_str << val;
+			return m_str;
+		}
+	private:
+		std::stringstream m_str;
+		VerbosityLevel m_level;
+		const COutputLogger &m_logger;
+	};
+
+#define MRPT_LOG_DEBUG(_STRING) this->logStr(::mrpt::utils::LVL_DEBUG, _STRING)
+#define MRPT_LOG_INFO(_STRING) this->logStr(::mrpt::utils::LVL_INFO, _STRING)
+#define MRPT_LOG_WARN(_STRING) this->logStr(::mrpt::utils::LVL_WARN, _STRING)
+#define MRPT_LOG_ERROR(_STRING) this->logStr(::mrpt::utils::LVL_ERROR, _STRING)
+
+#define MRPT_LOG_DEBUG_FMT(_FMT_STRING,...) this->logFmt(::mrpt::utils::LVL_DEBUG, _FMT_STRING, __VA_ARGS__)
+#define MRPT_LOG_INFO_FMT(_FMT_STRING,...) this->logFmt(::mrpt::utils::LVL_INFO, _FMT_STRING, __VA_ARGS__)
+#define MRPT_LOG_WARN_FMT(_FMT_STRING,...) this->logFmt(::mrpt::utils::LVL_WARN, _FMT_STRING, __VA_ARGS__)
+#define MRPT_LOG_ERROR_FMT(_FMT_STRING,...) this->logFmt(::mrpt::utils::LVL_ERROR, _FMT_STRING, __VA_ARGS__)
+
+/** Usage: `MRPT_LOG_DEBUG_STREAM << "Var=" << value;` */
+#define MRPT_LOG_DEBUG_STREAM ::mrpt::utils::COutputLoggerStreamWrapper(::mrpt::utils::LVL_DEBUG,*this)
+#define MRPT_LOG_INFO_STREAM ::mrpt::utils::COutputLoggerStreamWrapper(::mrpt::utils::LVL_INFO,*this)
+#define MRPT_LOG_WARN_STREAM ::mrpt::utils::COutputLoggerStreamWrapper(::mrpt::utils::LVL_WARN,*this)
+#define MRPT_LOG_ERROR_STREAM ::mrpt::utils::COutputLoggerStreamWrapper(::mrpt::utils::LVL_ERROR,*this)
+
+}
+	// Specializations MUST occur at the same namespace:
+	namespace utils
+	{
+		template <>
+		struct TEnumTypeFiller<mrpt::utils::VerbosityLevel>
+		{
+			typedef mrpt::utils::VerbosityLevel enum_t;
+			static void fill(bimap<enum_t,std::string>  &m_map)
+			{
+				using namespace mrpt::utils;
+				m_map.insert(LVL_DEBUG,          "DEBUG");
+				m_map.insert(LVL_DEBUG,          "LVL_DEBUG");
+				m_map.insert(LVL_INFO ,          "INFO");
+				m_map.insert(LVL_INFO ,          "LVL_INFO");
+				m_map.insert(LVL_WARN ,          "WARN");
+				m_map.insert(LVL_WARN ,          "LVL_WARN");
+				m_map.insert(LVL_ERROR,          "ERROR");
+				m_map.insert(LVL_ERROR,          "LVL_ERROR");
+			}
+		};
+	} // End of namespace
+}
 #endif /* end of include guard: COUTPUTLOGGER_H */

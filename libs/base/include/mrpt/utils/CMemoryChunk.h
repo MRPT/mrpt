@@ -12,9 +12,6 @@
 #include <mrpt/utils/CMemoryStream.h>
 #include <mrpt/utils/CSerializable.h>
 
-/*---------------------------------------------------------------
-	Class
-  ---------------------------------------------------------------*/
 namespace mrpt
 {
 	namespace utils

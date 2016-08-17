@@ -26,6 +26,7 @@ using namespace mrpt::poses;
 						Constructor
   ---------------------------------------------------------------*/
 CDetectorDoorCrossing::CDetectorDoorCrossing()  :
+	COutputLogger("CDetectorDoorCrossing"),
 	options(),
 	lastObs(),
 	entropy(),

@@ -24,6 +24,7 @@ using namespace mrpt::nav;
 using namespace std;
 
 IMPLEMENTS_SERIALIZABLE( CLogFileRecord_FullEval, CHolonomicLogFileRecord,mrpt::nav )
+IMPLEMENTS_SERIALIZABLE( CHolonomicFullEval, CAbstractHolonomicReactiveMethod,mrpt::nav)
 
 
 CHolonomicFullEval::CHolonomicFullEval(const mrpt::utils::CConfigFileBase *INI_FILE ) :
@@ -239,7 +240,7 @@ void  CHolonomicFullEval::navigate(
 		}
 	}
 
-	if (best_eval=.0)
+	if (best_eval==.0)
 	{
 		// No way found!
 		desiredDirection = 0;
@@ -359,3 +360,36 @@ void CHolonomicFullEval::TOptions::saveToConfigFile(mrpt::utils::CConfigFileBase
 
 	MRPT_END
 }
+
+void  CHolonomicFullEval::writeToStream(mrpt::utils::CStream &out,int *version) const
+{
+	if (version)
+		*version = 0;
+	else
+	{
+		// Params:
+		out << options.factorWeights << options.HYSTERESIS_SECTOR_COUNT << 
+			options.PHASE1_FACTORS << options.PHASE2_FACTORS <<
+			options.TARGET_SLOW_APPROACHING_DISTANCE << options.TOO_CLOSE_OBSTACLE << options.PHASE1_THRESHOLD;
+		// State:
+		out << m_last_selected_sector;
+	}
+}
+void  CHolonomicFullEval::readFromStream(mrpt::utils::CStream &in,int version)
+{
+	switch(version)
+	{
+	case 0:
+		{
+		// Params:
+		in >> options.factorWeights >> options.HYSTERESIS_SECTOR_COUNT >> 
+			options.PHASE1_FACTORS >> options.PHASE2_FACTORS >>
+			options.TARGET_SLOW_APPROACHING_DISTANCE >> options.TOO_CLOSE_OBSTACLE >> options.PHASE1_THRESHOLD;
+		// State:
+		in >> m_last_selected_sector;
+		} break;
+	default:
+		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
+	};
+}
+

@@ -14,9 +14,6 @@
 #include <mrpt/system/string_utils.h>
 #include <cstdio>
 
-/*---------------------------------------------------------------
-	Class
-  ---------------------------------------------------------------*/
 namespace mrpt
 {
     namespace utils

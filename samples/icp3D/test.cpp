@@ -159,6 +159,12 @@ void test_icp3D()
 	icp.options.thresholdDist = 0.40;
 	icp.options.thresholdAng = 0;
 
+	std::vector<double> xs, ys, zs;
+	M1.getAllPoints(xs, ys, ys);
+	cout << "Size of  xs in M1: " << xs.size() << endl;
+	M2.getAllPoints(xs, ys, ys);
+	cout << "Size of  xs in M2: " << xs.size() << endl;
+
 	CPose3DPDFPtr pdf= icp.Align3D(
 		&M2_noisy,    // Map to align
 		&M1,          // Reference map
@@ -169,7 +175,7 @@ void test_icp3D()
 	CPose3D  mean = pdf->getMeanVal();
 
 	cout << "ICP run took " << run_time << " secs." << endl;
-	cout << "Goodness: " << 100*icp_info.goodness << "% , # of iterations= " << icp_info.nIterations << endl;
+	cout << "Goodness: " << 100*icp_info.goodness << "% , # of iterations= " << icp_info.nIterations << " Quality: " << icp_info.quality << endl;
 	cout << "ICP output: mean= " << mean << endl;
 	cout << "Real displacement: " << SCAN2_POSE_ERROR  << endl;
 

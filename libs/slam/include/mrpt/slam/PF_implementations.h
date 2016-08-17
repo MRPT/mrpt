@@ -24,8 +24,6 @@
 #include <mrpt/slam/PF_implementations_data.h>
 
 #include <mrpt/slam/link_pragmas.h>
-#include <cstdio> // printf()
-
 
 /** \file PF_implementations.h
   *  This file contains the implementations of the template members declared in mrpt::slam::PF_implementation
@@ -547,11 +545,11 @@ namespace mrpt
 
 			// For USE_OPTIMAL_SAMPLING=1,  m_pfAuxiliaryPFOptimal_maxLikelihood is now computed.
 
-			if (USE_OPTIMAL_SAMPLING && PF_options.verbose)
+			if (USE_OPTIMAL_SAMPLING && me->isLoggingLevelVisible(mrpt::utils::LVL_DEBUG) )
 			{
-				printf("[prepareFastDrawSample] max      (log) = %10.06f\n",  math::maximum(m_pfAuxiliaryPFOptimal_estimatedProb) );
-				printf("[prepareFastDrawSample] max-mean (log) = %10.06f\n", -math::mean(m_pfAuxiliaryPFOptimal_estimatedProb) + math::maximum(m_pfAuxiliaryPFOptimal_estimatedProb) );
-				printf("[prepareFastDrawSample] max-min  (log) = %10.06f\n", -math::minimum(m_pfAuxiliaryPFOptimal_estimatedProb) + math::maximum(m_pfAuxiliaryPFOptimal_estimatedProb) );
+				me->logStr(mrpt::utils::LVL_DEBUG, mrpt::format("[prepareFastDrawSample] max      (log) = %10.06f\n",  math::maximum(m_pfAuxiliaryPFOptimal_estimatedProb) ) );
+				me->logStr(mrpt::utils::LVL_DEBUG, mrpt::format("[prepareFastDrawSample] max-mean (log) = %10.06f\n", -math::mean(m_pfAuxiliaryPFOptimal_estimatedProb) + math::maximum(m_pfAuxiliaryPFOptimal_estimatedProb) ) );
+				me->logStr(mrpt::utils::LVL_DEBUG, mrpt::format("[prepareFastDrawSample] max-min  (log) = %10.06f\n", -math::minimum(m_pfAuxiliaryPFOptimal_estimatedProb) + math::maximum(m_pfAuxiliaryPFOptimal_estimatedProb) ) );
 			}
 
 			// Now we have the vector "m_fastDrawProbability" filled out with:
@@ -648,7 +646,7 @@ namespace mrpt
 				typename MYSELF::CParticleList::iterator		partIt;
 				unsigned int	partIndex;
 
-				printf( "[FIXED_SAMPLING] Computing...");
+				me->logStr(mrpt::utils::LVL_DEBUG, "[FIXED_SAMPLING] Computing...");
 				for (partIt = me->m_particles.begin(),partIndex=0; partIt!=me->m_particles.end(); ++partIt,++partIndex)
 				{
 					// Load the bin from the path data:
@@ -668,7 +666,7 @@ namespace mrpt
 						stateSpaceBinsLastTimestepParticles[idx].push_back( partIndex );
 					}
 				}
-				printf( "done (%u bins in t-1)\n",(unsigned int)stateSpaceBinsLastTimestep.size());
+				me->logStr(mrpt::utils::LVL_DEBUG, mrpt::format("[FIXED_SAMPLING] done (%u bins in t-1)\n",(unsigned int)stateSpaceBinsLastTimestep.size()) );
 
 				// ------------------------------------------------------------------------------
 				// 2.2)    THE MAIN KLD-BASED DRAW SAMPLING LOOP
@@ -805,7 +803,7 @@ namespace mrpt
 							N < max(Nx,minNumSamples_KLD)) ||
 							(permutationPathsAuxVector.size() && !doResample) );
 
-				printf("\n[ADAPTIVE SAMPLE SIZE]  #Bins: %u \t #Particles: %u \t Nx=%u\n", static_cast<unsigned>(stateSpaceBins.size()),static_cast<unsigned>(N), (unsigned)Nx);
+				me->logStr(mrpt::utils::LVL_DEBUG, mrpt::format("[ADAPTIVE SAMPLE SIZE]  #Bins: %u \t #Particles: %u \t Nx=%u\n", static_cast<unsigned>(stateSpaceBins.size()),static_cast<unsigned>(N), (unsigned)Nx) );
 			} // end adaptive sample size
 
 
@@ -850,7 +848,7 @@ namespace mrpt
 			{
 				// Select another 'k' uniformly:
 				k = mrpt::random::randomGenerator.drawUniform32bit() % me->m_particles.size();
-				if (PF_options.verbose) cout << "[PF_implementation] Warning: Discarding very unlikely particle" << endl;
+				me->logStr(mrpt::utils::LVL_DEBUG, "[PF_SLAM_aux_perform_one_rejection_sampling_step] Warning: Discarding very unlikely particle.");
 			}
 
 			const mrpt::poses::CPose3D oldPose = *getLastPose(k);	// Get the current pose of the k'th particle
@@ -923,9 +921,8 @@ namespace mrpt
 					{
 						out_newPose = bestTryByNow_pose;
 						poseLogLik = bestTryByNow_loglik;
-						if (PF_options.verbose) cout << "[PF_implementation] Warning: timeout in rejection sampling." << endl;
+						me->logStr(mrpt::utils::LVL_WARN, "[PF_implementation] Warning: timeout in rejection sampling.");
 					}
-
 				}
 
 				// And its weight:

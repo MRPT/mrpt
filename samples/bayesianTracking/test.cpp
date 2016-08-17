@@ -220,7 +220,7 @@ void TestBayesianTracking()
 	CRangeBearing 	EKF;
 	EKF.KF_options.method = kfEKFNaive;
 
-	EKF.KF_options.verbose = true;
+	EKF.KF_options.verbosity_level = mrpt::utils::LVL_DEBUG;
 	EKF.KF_options.enable_profiler = true;
 
 	// Create PF
@@ -646,4 +646,3 @@ void CRangeBearingParticleFilter::getMean( float &x, float &y, float &vx, float 
 		vy+= (float)w * (*it).d->vy;
 	}
 }
-

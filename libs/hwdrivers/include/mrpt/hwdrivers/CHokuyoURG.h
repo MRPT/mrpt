@@ -85,7 +85,6 @@ namespace mrpt
 
 			std::string     m_lastSentMeasCmd; //!< The last sent measurement command (MDXXX), including the last 0x0A.
 
-			bool 			m_verbose;
 			bool			m_highSensMode;  //!< High sensitivity [HS] mode (default: false)
 			mrpt::gui::CDisplayWindow3DPtr m_win;
 
@@ -202,11 +201,7 @@ namespace mrpt
 			  * Should not be called while scanning.
 			  * \return false on any error
 			  */
-                        bool  setIntensityMode(bool enabled);
-
-
-			void setVerbose(bool enable = true) { m_verbose = enable; }
-
+			bool  setIntensityMode(bool enabled);
 
 		protected:
 			/** Returns true if there is a valid stream bound to the laser scanner, otherwise it first try to open the serial port "m_com_port"

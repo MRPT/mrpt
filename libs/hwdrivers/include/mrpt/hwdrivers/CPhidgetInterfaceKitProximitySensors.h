@@ -12,7 +12,7 @@
 
 #include <mrpt/obs/CObservationRange.h>
 #include <mrpt/poses/CPoint3D.h>
-#include <mrpt/utils/CDebugOutputCapable.h>
+#include <mrpt/utils/COutputLogger.h>
 #include <mrpt/hwdrivers/CGenericSensor.h>
 
 namespace mrpt
@@ -69,7 +69,7 @@ namespace mrpt
 		 */
 		enum SensorType{SHARP_30cm, SHARP_80cm, EZ1, UNPLUGGED};
 
-		class HWDRIVERS_IMPEXP CPhidgetInterfaceKitProximitySensors : public utils::CDebugOutputCapable, public CGenericSensor
+		class HWDRIVERS_IMPEXP CPhidgetInterfaceKitProximitySensors : public mrpt::utils::COutputLogger, public CGenericSensor
 		{
 			DEFINE_GENERIC_SENSOR(CPhidgetInterfaceKitProximitySensors)
 

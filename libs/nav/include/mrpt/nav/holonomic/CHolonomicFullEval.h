@@ -16,6 +16,7 @@ namespace mrpt
   namespace nav
   {
 	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE(CLogFileRecord_FullEval, CHolonomicLogFileRecord, NAV_IMPEXP)
+	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE(CHolonomicFullEval, CAbstractHolonomicReactiveMethod, NAV_IMPEXP )
 
 	/** \addtogroup nav_holo Holonomic navigation methods
 	  * \ingroup mrpt_nav_grp
@@ -46,8 +47,7 @@ namespace mrpt
 	 */
 	class NAV_IMPEXP CHolonomicFullEval : public CAbstractHolonomicReactiveMethod
 	{
-	public:
-		MRPT_MAKE_ALIGNED_OPERATOR_NEW
+		DEFINE_SERIALIZABLE( CHolonomicFullEval )
 	public:
 		/**  Initialize the parameters of the navigator, from some configuration file, or default values if set to NULL */
 		CHolonomicFullEval( const mrpt::utils::CConfigFileBase *INI_FILE = NULL );
@@ -74,7 +74,7 @@ namespace mrpt
 			double TARGET_SLOW_APPROACHING_DISTANCE; //!< Start to reduce speed when closer than this to target.
 			double HYSTERESIS_SECTOR_COUNT; //!< Range of "sectors" (directions) for hysteresis over succesive timesteps
 			std::vector<double>   factorWeights;  //!< See docs above
-			std::vector<int>      PHASE1_FACTORS, PHASE2_FACTORS; //!< Factor indices [0,4] for the factors to consider in each phase of the movement decision (Defaults: `PHASE1_FACTORS=0 1 2`, `PHASE2_FACTORS=`3 4`)
+			std::vector<int32_t>  PHASE1_FACTORS, PHASE2_FACTORS; //!< Factor indices [0,4] for the factors to consider in each phase of the movement decision (Defaults: `PHASE1_FACTORS=0 1 2`, `PHASE2_FACTORS=`3 4`)
 			double                PHASE1_THRESHOLD;   //!< Phase1 scores must be above this relative range threshold [0,1] to be considered in phase 2 (Default:`0.75`)
 
 			TOptions();
@@ -90,6 +90,7 @@ namespace mrpt
 		mrpt::math::CMatrixD m_dirs_scores; //!< Individual scores for each direction: (i,j), i (row) are directions, j (cols) are scores. Not all directions may have evaluations, in which case a "-1" value will be found.
 
 	}; // end of CHolonomicFullEval
+	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CHolonomicFullEval, CAbstractHolonomicReactiveMethod, NAV_IMPEXP )
 
 	/** A class for storing extra information about the execution of CHolonomicFullEval navigation.
 	 * \sa CHolonomicFullEval, CHolonomicLogFileRecord

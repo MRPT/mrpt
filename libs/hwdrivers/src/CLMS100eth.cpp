@@ -40,6 +40,7 @@ CLMS100Eth::CLMS100Eth(string _ip, unsigned int _port):
         m_maxRange(20.0),
         m_beamApperture(.25*M_PI/180.0)
 {
+	setVerbosityLevel(mrpt::utils::LVL_DEBUG);
 }
 
 CLMS100Eth::~CLMS100Eth()
@@ -89,7 +90,7 @@ bool CLMS100Eth::checkIsConnected(void)
             m_client.connect(m_ip, m_port);
         }catch(std::exception &e)
         {
-			printf_debug("[CLMS100ETH] ERROR TRYING TO OPEN Ethernet DEVICE:\n%s",e.what());
+			MRPT_LOG_ERROR_FMT("[CLMS100ETH] ERROR TRYING TO OPEN Ethernet DEVICE:\n%s",e.what());
             return false;
         }
     }
@@ -127,8 +128,8 @@ bool CLMS100Eth::turnOn()
                 size_t read = m_client.readAsync(msgIn, 100, 1000, 1000);  //18
 
                 msgIn[read-1] = 0;
-				printf_debug("read : %u\n",(unsigned int)read);
-                printf_debug("message : %s\n",string(&msgIn[1]).c_str());
+				MRPT_LOG_DEBUG_FMT("read : %u\n",(unsigned int)read);
+                MRPT_LOG_DEBUG_FMT("message : %s\n",string(&msgIn[1]).c_str());
 
                 if(!read) return false;
             }
@@ -140,8 +141,8 @@ bool CLMS100Eth::turnOn()
                 size_t read = m_client.readAsync(msgIn, 100, 1000, 1000);
 
                 msgIn[read-1] = 0;
-				printf_debug("read : %u\n",(unsigned int)read);
-				printf_debug("message : %s\n",string(&msgIn[1]).c_str());
+				MRPT_LOG_DEBUG_FMT("read : %u\n",(unsigned int)read);
+				MRPT_LOG_DEBUG_FMT("message : %s\n",string(&msgIn[1]).c_str());
 
                 if(!read) return false;
             }
@@ -153,8 +154,8 @@ bool CLMS100Eth::turnOn()
                 size_t read = m_client.readAsync(msgIn, 100, 1000, 1000);
 
                 msgIn[read-1] = 0;
-				printf_debug("read : %u\n",(unsigned int)read);
-				printf_debug("message : %s\n",string(&msgIn[1]).c_str());
+				MRPT_LOG_DEBUG_FMT("read : %u\n",(unsigned int)read);
+				MRPT_LOG_DEBUG_FMT("message : %s\n",string(&msgIn[1]).c_str());
 
                 if(!read) return false;
             }
@@ -165,7 +166,7 @@ bool CLMS100Eth::turnOn()
                 size_t read = m_client.readAsync(msgIn, 100, 1000, 1000);
 
                 msgIn[read-1] = 0;
-                printf_debug("message : %s\n",string(&msgIn[1]).c_str());
+                MRPT_LOG_DEBUG_FMT("message : %s\n",string(&msgIn[1]).c_str());
                 if(!read) return false;
             }
             {
@@ -177,15 +178,15 @@ bool CLMS100Eth::turnOn()
                     sleep(10000);
 
                     msgIn[read-1] = 0;
-                    printf_debug("message : %s\n",&msgIn[1]);
-                    printf_debug("%c\n", msgIn[11]);
+                    MRPT_LOG_DEBUG_FMT("message : %s\n",&msgIn[1]);
+                    MRPT_LOG_DEBUG_FMT("%c\n", msgIn[11]);
                     if(!read) return false;
                 } while(msgIn[11] != '7');
             }
             m_turnedOn = true;
         }catch(std::exception &e)
         {
-			printf_debug("%s",e.what());
+			MRPT_LOG_ERROR_FMT("%s",e.what());
             return false;
         }
     }else
@@ -208,7 +209,7 @@ void CLMS100Eth::generateCmd(const char *cmd)
 {
     if(strlen(cmd) > 995)
     {
-        printf_debug("la commande est trop longue\n");
+        MRPT_LOG_ERROR("Error: command is too long.");
         return;
     }
     m_cmd = format("%c%s%c",0x02,cmd,0x03);
@@ -249,7 +250,7 @@ bool CLMS100Eth::decodeScan(char* buff, CObservation2DRangeScan& outObservation)
 				THROW_EXCEPTION("Contamination error on LMS100");
 				return false;
 			}
-            printf_debug("STATUS Ok.\n");
+            MRPT_LOG_DEBUG("STATUS Ok.\n");
             break;
         case 21 :
             if(strcmp(next, "DIST1"))
@@ -257,14 +258,14 @@ bool CLMS100Eth::decodeScan(char* buff, CObservation2DRangeScan& outObservation)
                 THROW_EXCEPTION("LMS100 is not configured to send distances.");
                 return false;
             }
-            printf_debug("Distance : OK\n");
+            MRPT_LOG_DEBUG("Distance : OK\n");
             break;
         case 22 :
             //factor = strtod(next, NULL);
             break;
         case 26 :
             scanCount = strtoul(next, NULL, 16);
-            printf_debug("Scan Count : %d\n", scanCount);
+            MRPT_LOG_DEBUG_FMT("Scan Count : %d\n", scanCount);
             break;
         default :
                 break;
@@ -324,7 +325,7 @@ void CLMS100Eth::doProcessSimple(bool &outThereIsObservation, CObservation2DRang
     {
         hardwareError = true;
         outThereIsObservation = false;
-        printf_debug("doProcessSimple failed\n");
+        MRPT_LOG_ERROR("doProcessSimple failed\n");
     }
 }
 

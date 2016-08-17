@@ -117,14 +117,14 @@ void CReactiveNavigationSystem3D::internal_loadConfigFile(const mrpt::utils::CCo
 	{
 		for (unsigned int i=1; i<=m_robotShape.size(); i++)
 		{
-			printf_debug("[loadConfigFile] Generating PTG#%u at level %u...",j,i);
+			MRPT_LOG_INFO_FMT("[loadConfigFile] Generating PTG#%u at level %u...",j,i);
 			const std::string sPTGName = ini.read_string(sectCfg,format("PTG%d_TYPE",j),"",true);
 			CParameterizedTrajectoryGenerator *ptgaux = CParameterizedTrajectoryGenerator::CreatePTG(sPTGName,ini,sectCfg,format("PTG%d_",j));
 			m_ptgmultilevel[j-1].PTGs.push_back(ptgaux);
 		}
 	}
 
-	printf_debug(" Robot height sections = %u\n", static_cast<unsigned int>(m_robotShape.size()) );
+	MRPT_LOG_DEBUG_FMT(" Robot height sections = %u\n", static_cast<unsigned int>(m_robotShape.size()) );
 
 	//this->STEP1_InitPTGs();
 
@@ -145,8 +145,7 @@ void CReactiveNavigationSystem3D::STEP1_InitPTGs()
 			{
 				m_ptgmultilevel[j].PTGs[i]->deinitialize();
 
-				printf_debug("[loadConfigFile] Initializing PTG#%u.%u...", j,i);
-				printf_debug("%s",m_ptgmultilevel[j].PTGs[i]->getDescription().c_str());
+				MRPT_LOG_INFO_FMT("[loadConfigFile] Initializing PTG#%u.%u... (`%s`)", j,i,m_ptgmultilevel[j].PTGs[i]->getDescription().c_str());
 
 				// Polygonal robot shape?
 				{
@@ -165,7 +164,7 @@ void CReactiveNavigationSystem3D::STEP1_InitPTGs()
 					format("%s/ReacNavGrid_%s_%03u_L%02u.dat.gz", ptg_cache_files_directory.c_str(), robotName.c_str(), i, j),
 					m_enableConsoleOutput /*verbose*/
 				);
-				printf_debug("...Done!\n");
+				MRPT_LOG_INFO("...Done.");
 			}
 		}
 	}

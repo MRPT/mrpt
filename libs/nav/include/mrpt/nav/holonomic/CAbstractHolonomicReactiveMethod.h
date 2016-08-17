@@ -12,6 +12,7 @@
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/utils/TEnumType.h>
 #include <mrpt/utils/CConfigFileBase.h>
+#include <mrpt/utils/CSerializable.h>
 
 #include "CHolonomicLogFileRecord.h"
 
@@ -23,7 +24,9 @@ namespace mrpt
 	  * \ingroup mrpt_nav_grp
 	  * @{ */
 	  
-	/**  The implemented reactive navigation methods. This enum works with mrpt::utils::TEnumType */
+	/** The implemented reactive navigation methods. This enum works with mrpt::utils::TEnumType.
+	  * Since MRPT 1.5.0 the preferred way to select a holonomic method is, instead of this enum, 
+	  *  via the class factory method CAbstractHolonomicReactiveMethod::Create() via the class name. */
 	enum THolonomicMethod
 	{
 		hmVIRTUAL_FORCE_FIELDS = 0,  //!< CHolonomicVFF
@@ -31,12 +34,16 @@ namespace mrpt
 		hmFULL_EVAL = 2              //!< CHolonomicFullEval
 	};
 
+	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE(CAbstractHolonomicReactiveMethod, mrpt::utils::CSerializable, NAV_IMPEXP)
+
 	/** A base class for holonomic reactive navigation methods.
 	 *  \sa CHolonomicVFF,CHolonomicND,CHolonomicFullEval, CReactiveNavigationSystem
 	 */
-	class NAV_IMPEXP CAbstractHolonomicReactiveMethod
+	class NAV_IMPEXP CAbstractHolonomicReactiveMethod :
+		public mrpt::utils::CSerializable
 	{
-	 public:
+		DEFINE_VIRTUAL_SERIALIZABLE(CAbstractHolonomicReactiveMethod)
+	public:
 		 /** This method performs the holonomic navigation itself.
 		   *  \param target [IN] The relative location (x,y) of target point.
 		   *  \param obstacles [IN] Distance to obstacles from robot location (0,0). First index refers to -PI direction, and last one to +PI direction. Distances can be dealed as "meters", although they are "pseudometers", see note below, but normalized in the range [0,1]
@@ -74,16 +81,19 @@ namespace mrpt
 			this->navigate(target,obs, maxRobotSpeed,desiredDirection,desiredSpeed,logRecord,max_obstacle_dist);
 		}
 
-
 		/** Virtual destructor */
 		virtual ~CAbstractHolonomicReactiveMethod() { };
 
-		 /**  Initialize the parameters of the navigator.
-		   */
+		 /**  Initialize the parameters of the navigator */
 		 virtual void  initialize( const mrpt::utils::CConfigFileBase &INI_FILE  ) = 0;
 
+		/** Class factory from class name, e.g. `"CHolonomicVFF"`, etc.
+		  * \exception std::logic_error On invalid or missing parameters. */
+		static CAbstractHolonomicReactiveMethod * Create(const std::string &className) MRPT_NO_THROWS;
 	};
+	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CAbstractHolonomicReactiveMethod, mrpt::utils::CSerializable, NAV_IMPEXP )
 	  /** @} */
+
   }
 	// Specializations MUST occur at the same namespace:
 	namespace utils

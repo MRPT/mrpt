@@ -138,7 +138,8 @@ void mrpt::math::ransac_detect_3D_planes(
 		mrpt::vector_size_t				this_best_inliers;
 		CMatrixTemplateNumeric<NUMTYPE> this_best_model;
 
-		math::RANSAC_Template<NUMTYPE>::execute(
+		math::RANSAC_Template<NUMTYPE> ransac;
+		ransac.execute(
 			remainingPoints,
 			ransac3Dplane_fit,
 			ransac3Dplane_distance,
@@ -312,7 +313,8 @@ void mrpt::math::ransac_detect_2D_lines(
 		mrpt::vector_size_t				this_best_inliers;
 		CMatrixTemplateNumeric<NUMTYPE> this_best_model;
 
-		math::RANSAC_Template<NUMTYPE>::execute(
+		math::RANSAC_Template<NUMTYPE> ransac;
+		ransac.execute(
 			remainingPoints,
 			ransac2Dline_fit,
 			ransac2Dline_distance,
