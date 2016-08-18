@@ -18,8 +18,31 @@ namespace mrpt
 {
     namespace vision
     {
+        /** Perspective n Point (PnP) Algorithms toolkit for MRPT \ingroup mrpt_vision_grp */
         namespace pnp
         {
+            /** \addtogroup pnp Perspective-n-Point pose estimation
+             *  \ingroup mrpt_vision_grp
+             *  @{  
+             */
+             
+            /**
+             * @class CPnP
+             * @author Chandra Mangipudi
+             * @date 17/08/16
+             * @file pnp_algos.h
+             * @brief PnP Algorithms toolkit for MRPT
+             */
+ 
+            /** This class is used for Pose estimation from a known landmark using a monocular camera.
+             *  The toolkit comprises of state of the art  PnP (Perspective n Point) algorithms
+             * 
+             *  The Python Bindings pnp_perf_comp.py can be used to generate performance comparison using 
+             *  standard tests between the different algorithms.
+             * 
+             *  <h2> <a href="pnp_perf_comp.html">Performance comparison Results </a> </h2>
+             *  
+             */
             class CPnP
             {
                 public:
@@ -123,7 +146,7 @@ namespace mrpt
                     int lhm(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<Eigen::MatrixXd> img_pts, int n, const Eigen::Ref<Eigen::MatrixXd> cam_intrinsic, Eigen::Ref<Eigen::MatrixXd> pose_mat);
                     
                     /**
-                     * @brief /cite chandra SO(3) - PnP: Gradient descent based local search optimization
+                     * @brief \cite chandra SO(3) - PnP: Gradient descent based local search optimization
                      * @param[in] obj_pts   Object points in Camera Co-ordinate system {C} nX3 array [p_x p_y p_z]
                      * @param[in] img_pts Image points in pixels nX3 array containing pixel data from camera [u, v, 1]
                      * @param[in] n number of 2D-3D correspondences
@@ -135,6 +158,7 @@ namespace mrpt
                     int so3(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<Eigen::MatrixXd> img_pts, int n, const Eigen::Ref<Eigen::MatrixXd> cam_intrinsic, Eigen::Ref<Eigen::MatrixXd> pose_mat);
             };
             
+            /** @}  */ // end of grouping
         }
     }
 }
