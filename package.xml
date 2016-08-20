@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
-<!-- This is a ROS package file, intended to allow MRPT to be built 
-     side-by-side to real ROS packages in a catkin environment. 
+<!-- This is a ROS package file, intended to allow MRPT to be built
+     side-by-side to real ROS packages in a catkin environment.
      Real MRPT ROS packages are found elsewhere: https://github.com/mrpt-ros-pkg
 -->
 <package format="2">
@@ -20,7 +20,7 @@
   <maintainer email="joseluisblancoc@gmail.com">Jose-Luis Blanco-Claraco</maintainer>
 
   <url type="website">http://www.mrpt.org/</url>
-  <url type="bugtracker">https://github.com/jlblancoc/mrpt/issues</url>
+  <url type="bugtracker">https://github.com/MRPT/mrpt/issues</url>
 
   <license>BSD</license>
 
