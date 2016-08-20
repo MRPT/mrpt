@@ -157,7 +157,7 @@ namespace poses
 		/** Convert this pose into its inverse, saving the result in itself. \sa operator- */
 		void inverse();
 
-		/** Compute \f$ RET = this \oplus b \f$  */
+		/** Compute \f$ RET = this \ominus b \f$  */
 		inline CPose2D  operator - (const CPose2D& b) const
 		{
 			CPose2D ret(UNINITIALIZED_POSE);

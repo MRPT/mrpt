@@ -46,6 +46,12 @@ const char* MSG_HELP_WINDOW=
 	" - q: Quit\n"
 	;
 
+/**
+ * display_graph
+ *
+ * function template for displaying a Graph (most commonly a CNetworkOfPoses
+ * instance)
+ */
 template <class GRAPHTYPE>
 void display_graph(const GRAPHTYPE & g)
 {
@@ -221,7 +227,7 @@ void display_graph(const GRAPHTYPE & g)
 					const double show_tim = tim_show_start.Tac();
 					const double hide_tim = tim_show_end.Tac();
 
-					const double tranparency = hiding_help ?
+					const double transparency = hiding_help ?
 						1.0-std::min(1.0,hide_tim/TRANSP_ANIMATION_TIME_SEC)
 						:
 						std::min(1.0,show_tim/TRANSP_ANIMATION_TIME_SEC);
@@ -231,9 +237,9 @@ void display_graph(const GRAPHTYPE & g)
 						0.50f, 0.50f, // width, height (in screen "ratios")
 						MSG_HELP_WINDOW,
 						0.02f,  // text size
-						mrpt::utils::TColor(190,190,190, 200*tranparency),   // background
-						mrpt::utils::TColor(0,0,0, 200*tranparency),  // border
-						mrpt::utils::TColor(200,0,0, 150*tranparency), // text
+						mrpt::utils::TColor(190,190,190, 200*transparency),   // background
+						mrpt::utils::TColor(0,0,0, 200*transparency),  // border
+						mrpt::utils::TColor(200,0,0, 150*transparency), // text
 						5.0f, // border width
 						"serif", // text font
 						mrpt::opengl::NICE // text style

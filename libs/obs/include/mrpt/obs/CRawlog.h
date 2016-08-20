@@ -39,7 +39,7 @@ namespace mrpt
 		 *  This class also publishes a static helper method for loading rawlog files in format #1: see CRawlog::readActionObservationPair
 		 *
 		 *  There is a field for comments and blocks of parameters (in ini-like format) accessible through getCommentText and setCommentText
-		 *   (introduced in MRPT 0.6.4). When serialized to a rawlog file, the commens are saved as an additional observation of the
+		 *   (introduced in MRPT 0.6.4). When serialized to a rawlog file, the comments are saved as an additional observation of the
 		 *   type CObservationComments at the beginning of the file, but this observation does not appear after loading for clarity.
 		 *
 		 * \note Since MRPT version 0.5.5, this class also provides a STL container-like interface (see CRawlog::begin, CRawlog::iterator, ...).
