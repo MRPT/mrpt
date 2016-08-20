@@ -19,6 +19,7 @@
 #include <deque>
 #include <mrpt/system/datetime.h>
 #include <sstream>
+#include <set>
 
 namespace mrpt { namespace utils {
 	class CStream; // frwd decl
@@ -32,6 +33,9 @@ enum VerbosityLevel {
 	// ------------
 	NUMBER_OF_VERBOSITY_LEVELS
 };
+
+/** Callback types for use with mrpt::utils::COuputLogger */
+typedef void (*output_logger_callback_t)(const std::string &msg, const mrpt::utils::VerbosityLevel level, const std::string &loggerName, const mrpt::system::TTimeStamp timestamp, void *userParam);
 
 /** \brief Versatile class for consistent logging and
  *        management of output messages
@@ -72,6 +76,11 @@ enum VerbosityLevel {
  *   \sa setLoggingLevel, setMinLoggingLevel
  *
  *   Default logging level is LVL_INFO.
+ *
+ * User may receive callbacks whenever a message is displayed to console by using
+ * logRegisterCallback(). If for some reason the callbacks are not needed any more,
+ * use logDeregisterCallback() to stop receiving calls. This mechanism is useful
+ * in case of showing the messages to a GUI, transmiting them to a remote machine, etc.
  *
  * \note By default every logged message is going to be dumped to the standard
  * output as well (if VerbosityLevel > m_min_verbosity_level). Unset \b
@@ -175,7 +184,15 @@ class BASE_IMPEXP COutputLogger {
 		bool logging_enable_console_output; //!< [Default=true] Set it to false in case you don't want the logged messages to be dumped to the output automatically.
 		bool logging_enable_keep_record;    //!< [Default=false] Enables storing all messages into an internal list. \sa writeLogToFile, getLogAsString
 
+		void logRegisterCallback(output_logger_callback_t  userFunc, void *userParam = NULL);
+		void logDeregisterCallback(output_logger_callback_t  userFunc, void *userParam = NULL);
 		/** @} */
+
+		struct BASE_IMPEXP TCallbackEntry
+		{
+			output_logger_callback_t  func;
+			void *userParam;
+		};
 
 	protected:
 		/** \brief Provided messages with VerbosityLevel smaller than this value shall be ignored */
@@ -231,6 +248,9 @@ class BASE_IMPEXP COutputLogger {
 
 		std::string m_logger_name;
 		mutable std::deque<TMsg> m_history;   // deque is better than vector to avoid memory reallocs
+
+		std::set<TCallbackEntry> m_listCallbacks;
+
 };
 
 	/** For use in MRPT_LOG_DEBUG_STREAM, etc. */
