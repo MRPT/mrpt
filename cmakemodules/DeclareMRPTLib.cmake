@@ -207,7 +207,7 @@ macro(internal_define_mrpt_lib name headers_only is_metalib)
 
 	# Dependencies between projects:
 	IF(NOT "${ARGN}" STREQUAL "")
-		ADD_DEPENDENCIES(mrpt-${name} ${ARGN})
+		ADD_DEPENDENCIES(mrpt-${name} ${ARGN} "DocumentationFiles")
 	ENDIF(NOT "${ARGN}" STREQUAL "")
 
 	IF (NOT ${headers_only})
@@ -294,7 +294,7 @@ macro(internal_define_mrpt_lib name headers_only is_metalib)
 
 			# Collect .pdb debug files for optional installation:
 			IF (MSVC)
-				SET(PDB_FILE 
+				SET(PDB_FILE
 					"${CMAKE_BINARY_DIR}/bin/Debug/${MRPT_LIB_PREFIX}mrpt-${name}${MRPT_DLL_VERSION_POSTFIX}-dbg.pdb")
 				IF (EXISTS "${PDB_FILE}")
 					INSTALL(FILES ${PDB_FILE} DESTINATION bin COMPONENT LibrariesDebugInfoPDB)

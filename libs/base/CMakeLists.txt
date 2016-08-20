@@ -68,10 +68,6 @@ if (MSVC AND MSVC_VERSION GREATER 1800) # VS>= 2013
 	LIST(APPEND base_EXTRA_SRCS_NAME 	"MSVC debug natvis")
 endif()
 
-# Documentation files:
-LIST(APPEND base_EXTRA_SRCS			"${CMAKE_SOURCE_DIR}/doc/doxygen-pages/*.h")
-LIST(APPEND base_EXTRA_SRCS_NAME 	"Documentation")
-
 #---------------------------------------------
 # Macro declared in "DeclareMRPTLib.cmake":
 #---------------------------------------------

@@ -37,6 +37,7 @@ namespace mrpt
 		private:
 			CTicTac		m_tictac;
 			bool		m_enabled;
+			std::string m_name;
 
 			//! Data of all the calls:
 			struct BASE_IMPEXP TCallData
@@ -62,7 +63,7 @@ namespace mrpt
 				double min_t,max_t,mean_t,total_t;
 			};
 
-			CTimeLogger(bool enabled = true); //! Default constructor
+			CTimeLogger(bool enabled=true, const std::string& name=""); //! Default constructor
 			virtual ~CTimeLogger(); //!< Destructor
 			std::string getStatsAsText(const size_t column_width=80) const; //!< Dump all stats to a multi-line text string. \sa dumpAllStats, saveToCVSFile
 			void getStats(std::map<std::string,TCallStats> &out_stats) const; //!< Returns all the current stats as a map: section_name => stats. \sa getStatsAsText, dumpAllStats, saveToCVSFile
@@ -73,6 +74,8 @@ namespace mrpt
 			bool isEnabled() const { return m_enabled;}
 			void saveToCSVFile(const std::string &csv_file)  const; 	//!< Dump all stats to a Comma Separated Values (CSV) file. \sa dumpAllStats
 			void registerUserMeasure(const char *event_name, const double value);
+
+			void setName(const std::string& name) { m_name =  name; }
 
 			/** Start of a named section \sa enter */
 			inline void enter( const char *func_name ) {

@@ -13,6 +13,8 @@
 #include <mrpt/utils/CFileOutputStream.h>
 #include <mrpt/system/string_utils.h>
 
+#include <iostream>
+
 using namespace mrpt;
 using namespace mrpt::utils;
 using namespace mrpt::system;
@@ -33,7 +35,11 @@ namespace mrpt
 	}
 }
 
-CTimeLogger::CTimeLogger(bool enabled) : COutputLogger("CTimeLogger"), m_tictac(), m_enabled(enabled)
+CTimeLogger::CTimeLogger(bool enabled/*=true*/, const std::string& name/*=""*/) :
+	COutputLogger("CTimeLogger"),
+	m_tictac(),
+	m_enabled(enabled),
+	m_name(name)
 {
 	m_tictac.Tic();
 }
@@ -85,12 +91,30 @@ void CTimeLogger::getStats(std::map<std::string,TCallStats> &out_stats) const
 
 std::string CTimeLogger::getStatsAsText(const size_t column_width)  const
 {
-	MRPT_UNUSED_PARAM(column_width);
-	std::string s;
+	std::string stats_text;
+	std::string name_tmp = m_name.size() ? " " + m_name + ": " : " ";
+	std::string mrpt_string = "MRPT CTimeLogger report ";
 
-	s+="--------------------------- MRPT CTimeLogger report --------------------------\n";
-	s+="           FUNCTION                         #CALLS  MIN.T  MEAN.T MAX.T TOTAL \n";
-	s+="------------------------------------------------------------------------------\n";
+	std::string top_header(name_tmp + mrpt_string);
+	// append dashes to the header to reach column_width
+	{
+		int space_to_fill = top_header.size() < column_width?
+			(column_width-top_header.size())/2 : 2;
+		std::string dashes_half(space_to_fill, '-');
+		top_header = dashes_half + top_header + dashes_half;
+		if (dashes_half.size() % 2)	{ // what if column_width-top_header.size() is odd?
+			top_header += '-';
+		}
+	}
+
+	std::string middle_header("           FUNCTION                         #CALLS  MIN.T  MEAN.T MAX.T TOTAL ");
+	std::string bottom_header(column_width, '-');
+
+	stats_text += top_header + "\n";
+	stats_text += middle_header + "\n";
+	stats_text += bottom_header + "\n";
+
+	// for all the timed sections
 	for (map<string,TCallData>::const_iterator i=m_data.begin();i!=m_data.end();++i)
 	{
 		const string sMinT   = unitsFormat(i->second.min_t,1,false);
@@ -98,7 +122,7 @@ std::string CTimeLogger::getStatsAsText(const size_t column_width)  const
 		const string sTotalT = unitsFormat(i->second.mean_t,1,false);
 		const string sMeanT  = unitsFormat(i->second.n_calls ? i->second.mean_t/i->second.n_calls : 0,1,false);
 
-		s+=format("%s %7u %6s%c %6s%c %6s%c %6s%c\n",
+		stats_text+=format("%s %7u %6s%c %6s%c %6s%c %6s%c\n",
 			aux_format_string_multilines(i->first,39).c_str(),
 			static_cast<unsigned int>(i->second.n_calls),
 			sMinT.c_str(), i->second.has_time_units ? 's':' ',
@@ -107,9 +131,10 @@ std::string CTimeLogger::getStatsAsText(const size_t column_width)  const
 			sTotalT.c_str(),i->second.has_time_units ? 's':' ' );
 	}
 
-	s+="---------------------- End of MRPT CTimeLogger report ------------------------\n";
+	std::string footer(top_header);
+	stats_text += footer + "\n";
 
-	return s;
+	return stats_text;
 }
 
 void CTimeLogger::saveToCSVFile(const std::string &csv_file)  const
