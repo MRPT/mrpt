@@ -26,6 +26,10 @@
 #include <wx/button.h>
 #include <wx/dialog.h>
 #include <mrpt/gui/WxUtils.h>
+
+
+#include <mrpt/utils/core_defs.h>
+#include <mrpt/hwdrivers/CCameraSensor.h>
 //*)
 
 #include <mrpt/gui/CDisplayWindow3D.h>
@@ -51,6 +55,11 @@ class camera_calib_guiDialog: public wxDialog
         void OnlbFilesSelect(wxCommandEvent& event);
         void OnbtnManualRectClick(wxCommandEvent& event);
         void OnbtnCaptureNowClick(wxCommandEvent& event);
+        
+        void OnbtnPoseEstimateNowClick(wxCommandEvent& event);
+        mrpt::system::TThreadHandle m_opencvcalibfcn;
+        void runOpenCVcalib();
+        
         void OnbtnSaveImagesClick(wxCommandEvent& event);
         void OncbZoomSelect(wxCommandEvent& event);
         //*)
@@ -88,6 +97,9 @@ class camera_calib_guiDialog: public wxDialog
         static const long ID_XY_GLCANVAS;
         static const long ID_PANEL1;
         static const long ID_NOTEBOOK1;
+        
+        static const long ID_BUTTON10;
+        
         //*)
 
         //(*Declarations(camera_calib_guiDialog)
@@ -109,6 +121,9 @@ class camera_calib_guiDialog: public wxDialog
         wxChoice* cbZoom;
         wxPanel* Panel1;
         wxButton* btnCaptureNow;
+        
+        wxButton* btnPoseEstimateNow;
+        
         wxStaticText* StaticText1;
         wxTextCtrl* txtLog;
         wxStaticText* StaticText3;
