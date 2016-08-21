@@ -32,12 +32,25 @@
 #include <mrpt/system/filesystem.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/stock_objects.h>
+#include <mrpt/utils/core_defs.h>
+
+#include <fstream>
+#include <iostream>
+
+#include <Eigen/Dense>
+#include <mrpt/vision/pnp_algos.h>
+#if MRPT_HAS_OPENCV
+    #include<opencv2/opencv.hpp>
+    #include<opencv2/opencv_modules.hpp>
+#endif
+
 
 using namespace mrpt;
 using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace mrpt::vision;
 using namespace mrpt::gui;
+using namespace mrpt::system;
 using namespace std;
 
 #include "../wx-common/CMyRedirector.h"
@@ -116,6 +129,8 @@ const long camera_calib_guiDialog::ID_PANEL3 = wxNewId();
 const long camera_calib_guiDialog::ID_XY_GLCANVAS = wxNewId();
 const long camera_calib_guiDialog::ID_PANEL1 = wxNewId();
 const long camera_calib_guiDialog::ID_NOTEBOOK1 = wxNewId();
+
+const long camera_calib_guiDialog::ID_BUTTON10 = wxNewId();
 //*)
 
 BEGIN_EVENT_TABLE(camera_calib_guiDialog,wxDialog)
@@ -172,7 +187,14 @@ camera_calib_guiDialog::camera_calib_guiDialog(wxWindow* parent,wxWindowID id)
 	btnCaptureNow = new wxButton(this, ID_BUTTON8, _("Grab now..."), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON8"));
 	wxFont btnCaptureNowFont(wxDEFAULT,wxDEFAULT,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_BOLD,false,wxEmptyString,wxFONTENCODING_DEFAULT);
 	btnCaptureNow->SetFont(btnCaptureNowFont);
+    
+    btnPoseEstimateNow = new wxButton(this, ID_BUTTON10, _("Pose Est. now..."), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON10"));
+	wxFont btnPoseEstimateNowFont(wxDEFAULT,wxDEFAULT,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_BOLD,false,wxEmptyString,wxFONTENCODING_DEFAULT);
+	btnPoseEstimateNow->SetFont(btnPoseEstimateNowFont);
+    
+    
 	FlexGridSizer5->Add(btnCaptureNow, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 5);
+	FlexGridSizer5->Add(btnPoseEstimateNow, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 5);
 	Button11 = new wxButton(this, ID_BUTTON1, _("Add image(s)..."), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON1"));
 	FlexGridSizer5->Add(Button11, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 5);
 	Button22 = new wxButton(this, ID_BUTTON2, _("Clear all"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON2"));
@@ -213,12 +235,12 @@ camera_calib_guiDialog::camera_calib_guiDialog(wxWindow* parent,wxWindowID id)
 	StaticText1 = new wxStaticText(this, ID_STATICTEXT1, _("In X:"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT1"));
 	FlexGridSizer17->Add(StaticText1, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
 	edSizeX = new wxSpinCtrl(this, ID_SPINCTRL1, _T("5"), wxDefaultPosition, wxSize(50,-1), 0, 1, 200, 5, _T("ID_SPINCTRL1"));
-	edSizeX->SetValue(_T("5"));
+	edSizeX->SetValue(_T("9"));
 	FlexGridSizer17->Add(edSizeX, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
 	StaticText2 = new wxStaticText(this, ID_STATICTEXT2, _("In Y:"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT2"));
 	FlexGridSizer17->Add(StaticText2, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
 	edSizeY = new wxSpinCtrl(this, ID_SPINCTRL2, _T("8"), wxDefaultPosition, wxSize(50,-1), 0, 1, 200, 8, _T("ID_SPINCTRL2"));
-	edSizeY->SetValue(_T("8"));
+	edSizeY->SetValue(_T("7"));
 	FlexGridSizer17->Add(edSizeY, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
 	StaticBoxSizer4->Add(FlexGridSizer17, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
 	FlexGridSizer6->Add(StaticBoxSizer4, 1, wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 2);
@@ -348,6 +370,8 @@ camera_calib_guiDialog::camera_calib_guiDialog(wxWindow* parent,wxWindowID id)
 	Connect(ID_BUTTON7,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&camera_calib_guiDialog::OnbtnManualRectClick);
 	Connect(ID_BUTTON5,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&camera_calib_guiDialog::OnbtnAboutClick);
 	Connect(ID_BUTTON4,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&camera_calib_guiDialog::OnbtnCloseClick);
+    
+	Connect(ID_BUTTON10,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&camera_calib_guiDialog::OnbtnPoseEstimateNowClick);
 	//*)
 
 
@@ -821,6 +845,180 @@ void camera_calib_guiDialog::OnbtnCaptureNowClick(wxCommandEvent& event)
 	this->updateListOfImages();
 
 
+}
+
+void camera_calib_guiDialog::OnbtnPoseEstimateNowClick(wxCommandEvent& event)
+{
+	// Compute pose using PnP Algorithms toolkit
+    m_opencvcalibfcn = mrpt::system::createThreadFromObjectMethod( this, &camera_calib_guiDialog::runOpenCVcalib);
+}
+
+void camera_calib_guiDialog::runOpenCVcalib()
+{
+    const unsigned int  check_size_x = edSizeX->GetValue();
+	const unsigned int  check_size_y = edSizeY->GetValue();
+	const double        check_squares_length_X_meters = 0.001 * atof( string(edLengthX->GetValue().mb_str()).c_str() );
+	const double        check_squares_length_Y_meters = 0.001 * atof( string(edLengthY->GetValue().mb_str()).c_str() );
+    
+    // 3d view in OpenGL
+    
+    mrpt::opengl::COpenGLScenePtr	scene = mrpt::opengl::COpenGLScene::Create();
+    
+    opengl::CGridPlaneXYPtr	grid = opengl::CGridPlaneXY::Create(0,check_size_x*check_squares_length_X_meters, 0, check_size_y*check_squares_length_Y_meters, 0, check_squares_length_X_meters );
+	scene->insert( grid );
+    
+    mrpt::opengl::CSetOfObjectsPtr	cor = mrpt::opengl::stock_objects::CornerXYZ();
+    cor->setName( "Real Time Pose");
+    cor->enableShowName(true);
+    cor->setScale(0.1);
+    
+    // Pose for OpenGL 3d-view
+    mrpt::poses::CPose3D pose;
+   
+    // Pose estimation using PnP Toolkit
+    pnp::CPnP pnp_algos;
+    
+    // Get the camera intrinsic matrix from calibration
+    Eigen::MatrixXd cam_intrinsic(3,3), I3(3,3);
+    I3.setIdentity();
+    
+    ifstream file("intrinsic_matrix.txt");
+    
+    if(file.is_open())
+    {
+        double arr[9];
+        
+        for(int i=0; i<9 ; i++)
+            file>>arr[i];
+        
+        for(int i=0; i<3; i++)
+            for(int j=0; j<3; j++)
+                cam_intrinsic(i,j) = arr[3*i+j];
+                
+        file.close();
+    
+    }
+    else if(camera_params.intrinsicParams(0,0) != 0)
+    {
+        for(int i=0; i<3; i++)
+        for(int j=0; j<3; j++)
+            cam_intrinsic(i,j) = camera_params.intrinsicParams(i,j);
+    }
+    else
+    {
+        wxMessageBox(_("Do calibration First"), _("Error"));
+        return;
+    }
+    
+    // Get object and image points from OPENCV camera
+    #if MRPT_HAS_OPENCV
+    
+        cv::VideoCapture cap(0); // open the default camera
+        
+        if(!cap.isOpened())  // check if we succeeded
+        {
+            wxMessageBox(_("Error opening camera"), _("Error"));
+            return;
+        }
+            
+        // Resize camera based on selected camera dimensions during calibration
+        //cap.set(CV_CAP_PROP_FRAME_WIDTH, 1280);
+        //cap.set(CV_CAP_PROP_FRAME_HEIGHT, 720);
+        
+        cv::namedWindow("Pose Estimate",1);
+        cv::Mat frame, gray, chk_frame;
+        
+        Eigen::MatrixXd ipts(check_size_x*check_size_y,2);
+        Eigen::MatrixXd opts(check_size_x*check_size_y,3);
+        
+        cv::Size board_sz = cv::Size(check_size_x, check_size_y);
+        
+        vector<cv::Point3f> obj; 
+        for(unsigned int j=0;j<check_size_x*check_size_y;j++) 
+            obj.push_back(cv::Point3f(j/check_size_x, j%check_size_y, 0.0f)); 
+            
+        for(unsigned int i=0; i<check_size_x*check_size_y;i++)
+        {
+            opts(i,0) = obj[i].x;
+            opts(i,1) = obj[i].y;
+            opts(i,2) = obj[i].z;
+        }
+        
+        opts = opts * check_squares_length_X_meters * 100; // Object points in cm
+        
+        vector<cv::Point2f> chk_corners;
+        
+        Eigen::Quaterniond q;
+        Eigen::Matrix3d R;
+        Eigen::Vector3d t;
+        
+        Eigen::MatrixXd opts_, ipts_, pose_mat(6,1);
+        CMatrixDouble33 pose_R;
+        
+        int time =20000;
+        
+        while(time>0)
+        {
+            cap >> frame; // get a new frame from camera
+            cv::cvtColor(frame, gray, CV_BGR2GRAY);
+            bool found = cv::findChessboardCorners(frame, board_sz, chk_corners, CV_CALIB_CB_ADAPTIVE_THRESH | CV_CALIB_CB_FILTER_QUADS);
+            
+            if(found) 
+            { 
+                cv::cornerSubPix(gray, chk_corners, cv::Size(11, 11), cv::Size(-1, -1), cv::TermCriteria(CV_TERMCRIT_EPS | CV_TERMCRIT_ITER, 30, 0.1)); 
+                cv::drawChessboardCorners(frame, board_sz, chk_corners, found);
+                
+                if (chk_corners.size() == check_size_x*check_size_y)
+                {
+                    for(unsigned int i=0; i<check_size_x*check_size_y;i++)
+                    {
+                        ipts(i,0) = (chk_corners[i].x - cam_intrinsic(0,2))/cam_intrinsic(0,0);
+                        ipts(i,1) = (chk_corners[i].y - cam_intrinsic(1,2))/cam_intrinsic(1,1);
+                    }
+                }
+            
+                opts_ = opts.transpose();
+                ipts_ = ipts.transpose();
+                pnp_algos.epnp(opts_, ipts_, check_size_x*check_size_y, I3, pose_mat);
+                
+                q.vec() << pose_mat(3,0), pose_mat(4,0), pose_mat(5,0);
+                t << pose_mat(0,0), pose_mat(1,0), pose_mat(2,0);
+                
+                R = q.toRotationMatrix();
+                
+                for(int i=0; i<3; i++)
+                    for(int j=0; j<3; j++)
+                        pose_R(i,j) = R(i,j);
+
+                if (t.norm() < pow(10,3))
+                {
+                    pose.setRotationMatrix(pose_R);
+                    pose.m_coords[0] = t(0)/100; // cm to m conversion
+                    pose.m_coords[1] = t(1)/100; // cm to m conversion
+                    pose.m_coords[2] = t(2)/100; // cm to m conversion
+                    
+                    cor->setPose( pose);
+
+                    scene->insert( cor );
+                    
+                    this->m_3Dview->m_openGLScene = scene;
+                    this->m_3Dview->Refresh();
+                }
+                
+            }
+            
+            cv::imshow("Pose Estimate", frame);
+            
+            time-=30;
+            
+        }
+        
+        cv::destroyWindow("Pose Estimate");
+        
+    #endif
+    
+    return;
+            
 }
 
 void camera_calib_guiDialog::OnbtnSaveImagesClick(wxCommandEvent& event)
