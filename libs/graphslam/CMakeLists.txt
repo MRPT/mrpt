@@ -8,7 +8,6 @@ define_mrpt_lib(
 	mrpt-base
 	mrpt-graphs
 	mrpt-gui
-	mrpt-hwdrivers
 	mrpt-maps
 	mrpt-obs
 	mrpt-opengl
@@ -18,4 +17,4 @@ define_mrpt_lib(
 
 IF(BUILD_mrpt-graphslam)
 
-ENDIF() 
+ENDIF()
