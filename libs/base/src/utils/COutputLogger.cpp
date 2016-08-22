@@ -79,11 +79,11 @@ void COutputLogger::logStr(const VerbosityLevel level, const std::string& msg_st
 
 	if (logging_enable_console_output) {
 		msg.dumpToConsole();
-
-		// User callbacks:
-		for (const auto &c : m_listCallbacks)
-			(*c.func)(msg.body,msg.level,msg.name,msg.timestamp,c.userParam);
 	}
+
+	// User callbacks:
+	for (const auto &c : m_listCallbacks)
+		(*c.func)(msg.body,msg.level,msg.name,msg.timestamp,c.userParam);
 }
 
 void COutputLogger::logFmt(const VerbosityLevel level, const char* fmt, ...) const {
@@ -248,7 +248,7 @@ void COutputLogger::TMsg::dumpToConsole() const {
 	if (concol!=CONCOL_NORMAL)
 		mrpt::system::setConsoleColor(concol, dump_to_cerr);
 	// Output msg:
-	::fputs(str.c_str(), dump_to_cerr ? stderr:stdout );
+	(dump_to_cerr ? std::cerr : std::cout) << str;
 	// Switch back to normal color:
 	if (concol!=CONCOL_NORMAL)
 		mrpt::system::setConsoleColor(CONCOL_NORMAL);
