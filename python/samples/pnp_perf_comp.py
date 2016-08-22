@@ -350,13 +350,15 @@ def err_plot():
     err_net_t = np.array(err_net_t)
     err_net_q = np.array(err_net_q)
 
-    s = ''
-    s1 = display_comparison_plot_mpld3(it, err_net_t, names=algo_names, line_styles=algo_ls,
-                                       title='Translation %Error Plot', xtitle='Iteration', ytitle='%$e_t$', ylim=[0, 10], figname='err_t')
-    s2 = display_comparison_plot_mpld3(it, err_net_q, names=algo_names, line_styles=algo_ls,
-                                       title='Rotation Error Plot (deg)', xtitle='Iteration', ytitle='$e_q$', ylim=[0, 2], figname='err_q')
+    s = '<h2> Translation error and Rotation error for 100 iterations (R - Randomly varying, t - fixed) </h2>'
 
-    s = s1 + s2
+    s1 = display_comparison_plot_mpld3(it, err_net_t, names=algo_names, line_styles=algo_ls,
+                                       title='Translation %Error Plot', xtitle='Iteration', ytitle='%$e_t$', ylim=[0, 2], figname='err_t')
+    s2 = display_comparison_plot_mpld3(it, err_net_q, names=algo_names, line_styles=algo_ls,
+                                       title='Rotation Error Plot (deg)', xtitle='Iteration', ytitle='$e_q$', ylim=[0, 1], figname='err_q')
+
+    s = s + '\n <table > \n <tr > \n <td > \n' + s1 + \
+        '</td > \n <td> \n' + s2 + '</td> \n </tr> \n </table> \n'
 
     return s
 
@@ -454,7 +456,7 @@ def err_statistics_fcn_n():
     median_err_t_net = np.array(median_err_t_net)
     median_err_q_net = np.array(median_err_q_net)
 
-    s = ''
+    s = '<h2> Mean and Median error in Translation and Rotation with varying 2d/3d correspondences (n) </h2>'
 
     s1 = display_comparison_plot_mpld3(it, mean_err_t_net, names=algo_names, line_styles=algo_ls,
                                        title='Mean Translation %Error Plot', xtitle='n', ytitle=r'% $\bar{e}_t$', ylim=[0, 10], figname='mean_err_t')
@@ -462,11 +464,12 @@ def err_statistics_fcn_n():
                                        title='Mean Rotation Error Plot (deg)', xtitle='n', ytitle=r'$\bar{e}_q$', ylim=[0, 0.5], figname='mean_err_q')
 
     s3 = display_comparison_plot_mpld3(it, median_err_t_net, names=algo_names, line_styles=algo_ls,
-                                       title='Median Translation %Error Plot', xtitle='n', ytitle=r'% $\tilde{e}_t$', ylim=[0, 10], figname='median_err_t')
+                                       title='Median Translation %Error Plot', xtitle='n', ytitle=r'% $\tilde{e}_t$', ylim=[0, 1], figname='median_err_t')
     s4 = display_comparison_plot_mpld3(it, median_err_q_net, names=algo_names, line_styles=algo_ls,
                                        title='Median Rotation Error Plot (deg)', xtitle='n', ytitle=r'$\tilde{e}_q$', ylim=[0, 0.5], figname='median_err_q')
 
-    s = s1 + s2 + s3 + s4
+    s = s + '\n<table>\n <tr>\n <td>\n' + s1 + '</td>\n <td>\n' + s2 + '</td>\n </tr>\n' + \
+        '\n<tr>\n <td>\n' + s3 + '\n</td>\n <td>\n' + s4 + '\n</td>\n </tr>\n </table>\n'
     return s
 
 
@@ -540,7 +543,7 @@ def err_statistics_fcn_sigma():
     median_err_t_net = np.array(median_err_t_net)
     median_err_q_net = np.array(median_err_t_net)
 
-    s = ''
+    s = '\n<h2>\n Mean and Median error in Translation and Rotation with varying noise variance (sigma)\n </h2>\n'
 
     s1 = display_comparison_plot_mpld3(it, mean_err_t_net, names=algo_names, line_styles=algo_ls, title='Mean Translation %Error Plot',
                                        xtitle=r'\sigma', ytitle=r'% $\bar{e}_t$', ylim=[0, 10], figname='mean_sigma_err_t')
@@ -548,11 +551,12 @@ def err_statistics_fcn_sigma():
                                        xtitle=r'\sigma', ytitle=r'$\bar{e}_q$', ylim=[0, 0.5], figname='mean_sigma_err_q')
 
     s3 = display_comparison_plot_mpld3(it, median_err_t_net, names=algo_names, line_styles=algo_ls, title='Median Translation %Error Plot',
-                                       xtitle=r'\sigma', ytitle=r'% $\tilde{e}_t$', ylim=[0, 10], figname='median_sigma_err_t')
+                                       xtitle=r'\sigma', ytitle=r'% $\tilde{e}_t$', ylim=[0, 1], figname='median_sigma_err_t')
     s4 = display_comparison_plot_mpld3(it, median_err_q_net, names=algo_names, line_styles=algo_ls, title='Median Rotation Error Plot (deg)',
                                        xtitle=r'\sigma', ytitle=r'$\tilde{e}_q$', ylim=[0, 0.5], figname='median_sigma_err_q')
 
-    s = s1 + s2 + s3 + s4
+    s = s + '\n<table>\n <tr>\n <td>\n' + s1 + '\n</td>\n <td>\n' + s2 + '\n</td>\n </tr>\n' + \
+        '\n<tr>\n <td>\n' + s3 + '\n</td> \n<td>\n' + s4 + '\n</td>\n </tr>\n </table>\n'
 
     return s
 
@@ -615,17 +619,36 @@ def time_comp():
     it = np.arange(n_start, n_max, n_step)
     tcomp_storage = np.array(tcomp_storage)
 
-    s = display_comparison_plot_mpld3(it, tcomp_storage, names=algo_names[1:], line_styles=algo_ls[
-        1:], title='Average Time for algorithm (ms)', xtitle=r'n', ytitle=r't(ms)', ylim=[0, 1], figname='mean_time')
+    s = '\n<h2>\n Average compuational time for algorithm (ms) \n</h2>\n'
+    s = s + display_comparison_plot_mpld3(it, tcomp_storage, names=algo_names[1:], line_styles=algo_ls[
+        1:], title='Average Time for algorithm (ms)', xtitle=r'n', ytitle=r't(ms)', ylim=[0, 0.6], figname='mean_time')
 
     return s
 
-ss = ''
+# Introduction and links to various files
+ss = """<h1> Introduction </h1>
+<br>
+<embed src = "https://www.dropbox.com/s/9m4rw8sl868xrob/pnp_intro-1.png?raw=1 #toolbar=0&navpanes=0&scrollbar=0" width = "1000" height = "1500" >
+<br>
+<embed src = "https://www.dropbox.com/s/e3ll5ptjm9dnoev/pnp_intro-2.png?raw=1 #toolbar=0&navpanes=0&scrollbar=0" width = "1000" height = "600" >
+<br>
+<h1> Sample Pose Estimation using Camera Calib application of MRPT </h1>
+<br>
+<iframe src = "https://www.youtube.com/embed/aGd7ZyrcwaE" width = "960" height = "540" frameborder = "0" allowfullscreen > </iframe >
+<br>
+<br>
+<h1> Performance Comparison using python interface in MRPT(pnp_perf_comp.py) </h1>"""
+
 s1 = err_plot()
 s2 = err_statistics_fcn_sigma()
 s3 = err_statistics_fcn_n()
 s4 = time_comp()
-ss = ss + s1 + s2 + s3 + s4
+
+s5 = """ <h1> MRPT Merge Pull Request </h1>
+ <a href="https://github.com/MRPT/mrpt/pull/310">Link to PnP Algorithm Pull Request </a>
+"""
+
+ss = ss + s1 + s2 + s3 + s4 + s5
 
 f = open("pnp_perf_comp.html", "w")
 f.write(ss)
