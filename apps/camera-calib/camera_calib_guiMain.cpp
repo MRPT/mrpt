@@ -955,7 +955,7 @@ void camera_calib_guiDialog::runOpenCVcalib()
         Eigen::MatrixXd opts_, ipts_, pose_mat(6,1);
         CMatrixDouble33 pose_R;
         
-        int time =20000;
+        int time =10000;
         
         while(time>0)
         {
