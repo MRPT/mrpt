@@ -1,0 +1,213 @@
+%!TEX TS-program = xelatex
+%!TEX encoding = UTF-8 Unicode
+\documentclass[11pt, parindent=0]{article} % use larger type; default would be 10pt
+\sloppy
+
+%----------------------------------------------------------------------------------------
+%   PACKAGES
+%----------------------------------------------------------------------------------------
+\usepackage{afterpage}
+%\usepackage[demo]{graphicx} % support the \includegraphics command and options
+\usepackage{graphicx}
+\usepackage[parfill]{parskip}
+\usepackage{hyperref}
+\usepackage{amsmath,amsfonts,amsthm} % Math packages
+\usepackage{mathtools}
+\usepackage{relsize} % for mathlarger
+\usepackage{lipsum} % Used for inserting dummy 'Lorem ipsum' text into the template
+\usepackage{datetime}
+\usepackage{xfrac}
+\usepackage{changepage} % for adjusting the width
+\usepackage{gensymb}
+\usepackage{subcaption}
+\usepackage{sectsty}
+\usepackage{xcolor}
+\usepackage{verbatim}
+\usepackage{titlesec}
+% not needed in >2015 versions
+%\usepackage{fixltx2e} %helps the [H] problem! 10/2/2015
+\usepackage{color}
+\usepackage{float} % Not have your figures fly around  - use [H]
+\usepackage{booktabs} % for much better looking tables
+\usepackage{array} % for better arrays (e.g matrices) in maths
+\usepackage{paralist} % very flexible & customisable lists (eg. enumerate/itemize, etc.)
+\usepackage{verbatim} % adds environment for commenting out blocks of text & for better verbatim
+\usepackage[export]{adjustbox}
+\usepackage{pdfpages} % For pdf inputs
+\usepackage{import} % for subfolder inputs
+\usepackage{metalogo} % for the fucking logo
+\usepackage{listings}
+\usepackage{mdwlist} % for tight lists
+\usepackage{letltxmacro} % better roots
+\usepackage{xspace} % for correct spacing
+\usepackage{multicol} % for the multicol environment
+\usepackage{wrapfig}
+\usepackage{tabularx}
+\usepackage{nomencl}
+\usepackage[noabbrev]{cleveref}      % reference object types automatically
+\usepackage{mathrsfs} % for fancy F symbol
+
+% mediocre solution - fixing the quotes problem
+\usepackage [autostyle]{csquotes}
+\MakeOuterQuote{"}
+
+% underlining with color
+\usepackage{soul}
+\setul{}{2pt}
+\definecolor{yellow}{rgb}{1.0, 0.8, 0}
+\setulcolor{yellow}
+
+
+\makenomenclature %change position
+
+%----------------------------------------------------------------------------------------
+%   DOCUMENT CONFIGURATIONS
+%----------------------------------------------------------------------------------------
+\definecolor{MediumBlue}{rgb}{0 ,0 ,205}
+\definecolor{Blue}{rgb}{0 ,0 ,255}
+\definecolor{RoyalBlue}{rgb}{65,105,225}
+\definecolor{mygreen}{rgb}{0,0.6,0}
+\definecolor{mygray}{rgb}{0.5,0.5,0.5}
+\definecolor{mymauve}{rgb}{0.58,0,0.82}
+
+\titleformat{\paragraph}
+{\normalfont\normalsize\bfseries}{\theparagraph}{1em}{}
+\titlespacing*{\paragraph}
+{0pt}{3.25ex plus 1ex minus .2ex}{1.5ex plus .2ex}
+
+% New Root configuration - http://en.wikibooks.org/wiki/LaTeX/Mathematics#Roots
+\LetLtxMacro{\oldsqrt}{\sqrt} % makes all sqrts closed
+\renewcommand{\sqrt}[1][\ ]{%
+  \def\DHLindex{#1}\mathpalette\DHLhksqrt}
+\def\DHLhksqrt#1#2{%
+  \setbox0=\hbox{$#1\oldsqrt[\DHLindex]{#2\,}$}\dimen0=\ht0
+  \advance\dimen0-0.2\ht0
+  \setbox2=\hbox{\vrule height\ht0 depth -\dimen0}%
+  {\box0\lower0.71pt\box2}}
+
+\newcommand{\norm}[1]{\lVert#1\rVert}
+\newcommand{\abs}[1]{\lvert#1\rvert}
+
+\newcommand\blankpage{%
+    \null
+    \thispagestyle{empty}%
+    \addtocounter{page}{-1}%
+    \newpage}
+
+%----------------------------------------------------------------------------------------
+%   GEOMETRY - GRAPHICS 
+%----------------------------------------------------------------------------------------
+\usepackage[a4paper,margin=2cm, textwidth=18cm]{geometry} % to change the page dimensions
+
+\graphicspath{
+{./images/}
+}
+
+% Read MRPT version:
+\newread\file
+\openin\file=../../version_prefix.txt
+\read\file to\MRPTVERSION % Reads a line of the file 
+\closein\file
+
+% Hyperlinks setup:
+% http://tex.stackexchange.com/a/26085/54498
+\hypersetup{%
+  colorlinks=false,% hyperlinks will be coloured
+}
+\makeatletter
+\Hy@AtBeginDocument{%
+  \def\@pdfborder{0 0 1}% Overrides border definition set with colorlinks=true
+  \def\@pdfborderstyle{/S/U/W 1}% Overrides border style set with colorlinks=true
+                                % Hyperlink border style will be underline of width 1pt
+}
+\makeatother
+
+%----------------------------------------------------------------------------------------
+%   LISTINGS RELATED
+%----------------------------------------------------------------------------------------
+
+
+\definecolor{mygreen}{rgb}{0,0.6,0}
+\definecolor{mygray}{rgb}{0.5,0.5,0.5}
+\definecolor{mymauve}{rgb}{0.58,0,0.82}
+
+\lstset{ %
+  backgroundcolor=\color{white},   % choose the background color; you must add \usepackage{color} or \usepackage{xcolor}
+  basicstyle=\footnotesize,        % the size of the fonts that are used for the code
+  breakatwhitespace=false,         % sets if automatic breaks should only happen at whitespace
+  breaklines=true,                 % sets automatic line breaking
+  captionpos=t,                    % sets the caption-position to bottom
+  commentstyle=\color{mygreen},    % comment style
+  deletekeywords={...},            % if you want to delete keywords from the given language
+  extendedchars=true,              % lets you use non-ASCII characters; for 8-bits encodings only, does not work with UTF-8
+  frame=none,                    % adds a frame around the code
+  keepspaces=true,                 % keeps spaces in text, useful for keeping indentation of code (possibly needs columns=flexible)
+  keywordstyle=\color{blue},       % keyword style
+  language=C++,                 % the language of the code
+  morekeywords={*,...},            % if you want to add more keywords to the set
+  numbers=left,                    % where to put the line-numbers; possible values are (none, left, right)
+  numbersep=5pt,                   % how far the line-numbers are from the code
+  numberstyle=\tiny\color{mygray}, % the style that is used for the line-numbers
+  rulecolor=\color{black},         % if not set, the frame-color may be changed on line-breaks within not-black text (e.g. comments (green here))
+  showspaces=false,                % show spaces everywhere adding particular underscores; it overrides 'showstringspaces'
+  showstringspaces=false,          % underline spaces within strings only
+  showtabs=false,                  % show tabs within strings adding particular underscores
+  stepnumber=2,                    % the step between two line-numbers. If it's 1, each line will be numbered
+  stringstyle=\color{mymauve},     % string literal style
+  tabsize=2,                       % sets default tabsize to 2 spaces
+  title=\lstname                   % show the filename of files included with \lstinputlisting; also try caption instead of title
+}
+
+%----------------------------------------------------------------------------------------
+%   HEADER & FOOTERS
+%----------------------------------------------------------------------------------------
+\usepackage{fancyhdr} % This should be set AFTER setting up the page geometry
+\pagestyle{fancy} % options: empty , plain , fancy
+\renewcommand{\headrulewidth}{0.4pt} % customise the layout...
+\lhead{\textcolor{gray}{graphslam-engine}}\chead{}\rhead{\textcolor{gray}{
+Execute graphSLAM using rawlog files in MRPT}}
+\lfoot{}\cfoot{\thepage}\rfoot{}
+
+%----------------------------------------------------------------------------------------
+%   SECTION APPEARANCE
+%----------------------------------------------------------------------------------------
+% (This matches ConTeXt defaults)
+\numberwithin{equation}{section} % Number equations within sections (i.e. 1.1, 1.2, 2.1, 2.2 instead of 1, 2, 3, 4)
+\numberwithin{figure}{section} % Number figures within sections (i.e. 1.1, 1.2, 2.1, 2.2 instead of 1, 2, 3, 4)
+\numberwithin{table}{section} % Number tables within sections (i.e. 1.1, 1.2, 2.1, 2.2 instead of 1, 2, 3, 4)
+
+%----------------------------------------------------------------------------------------
+%   TOC APPEARANCE
+%----------------------------------------------------------------------------------------
+\usepackage[nottoc,notlof,notlot]{tocbibind} % Put the bibliography in the ToC
+
+%----------------------------------------------------------------------------------------
+%   DOCUMENT PART
+%----------------------------------------------------------------------------------------
+\begin{document}
+\input{./tex_includes/titlepage.tex}
+\newpage
+\tableofcontents
+\listoffigures
+%\lstlistoflistings
+\blankpage
+\input{./tex_includes/abstract.tex}
+\printnomenclature[0.5in] % print the nomenclature
+\newpage
+\input{./tex_includes/main_body.tex}
+
+%%----------------------------------------------------------------------------------------
+%%  BIBLIOGRAPHY
+%%----------------------------------------------------------------------------------------
+\newpage
+\nocite{*}
+\bibliographystyle{ieeetr}
+\bibliography{./bibliography/stachniss_tutorial,%
+              ./bibliography/consistent_observations.bib,%
+              ./bibliography/olson_loop_closing,%
+              ./bibliography/tutorial_se3_transformation,%
+              ./bibliography/lu_milios.bib,%
+              ./bibliography/saeedi_review.bib,%
+              ./bibliography/comparison_of_SLAM_algorithms.bib}
+
+\end{document}

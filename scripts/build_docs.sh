@@ -189,11 +189,12 @@ cp images/*.* html/
 cp html_postbuild/*.* html/
 
 # Build & copy PDF manuals:
-cd pbmap-guide
-make 2> /dev/null
-mv *.pdf ..
-cd ..
-
+for dir in ./{pbmap-guide,graphslam-engine-guide}; do
+    cd $dir
+    make 2> /dev/null
+    mv *.pdf ..
+    cd ..
+done
 
 rm html/*.pdf 2> /dev/null
 cp *.pdf html/ 2> /dev/null
