@@ -47,47 +47,43 @@ namespace mrpt
             {
                 public:
                 
-                    #if MRPT_HAS_OPENCV
-                    
-                        /**
-                         * @brief \cite hesch Direct Least Squares (DLS) - PnP : Algorithm formulates position as a function of rotation. 
-                         *        Use Cayley's rotation theorem to represent the rotation using parameters ($s_1, s_2, s_3$).
-                         *        Solve the rotation using multi-variate polynomial expressions
-                         *        
-                         * @param[in] obj_pts Object points in Camera Co-ordinate system {C} nX3 (only 4 points used) array [p_x, p_y, p_z]
-                         * @param[in] img_pts Image points in pixels nX3 (only 4 points used) array containing pixel data from camera [u, v, 1]
-                         * @param[in] n number of 2D-3D correspondences
-                         * @param[in] cam_intrinsic Camera Intrinsic matrix
-                         * @param[out] pose_mat Output pose vector 6X1, pose_mat[0:2]-> Translation, pose_mat[3:5] -> Quaternion vector component 
-                         * @return success flag
-                         */
-                        int dls(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<Eigen::MatrixXd> img_pts, int n, const Eigen::Ref<Eigen::MatrixXd> cam_intrinsic, Eigen::Ref<Eigen::MatrixXd> pose_mat);
+                    /**
+                     * @brief \cite hesch Direct Least Squares (DLS) - PnP : Algorithm formulates position as a function of rotation. 
+                     *        Use Cayley's rotation theorem to represent the rotation using parameters ($s_1, s_2, s_3$).
+                     *        Solve the rotation using multi-variate polynomial expressions
+                     *        
+                     * @param[in] obj_pts Object points in Camera Co-ordinate system {C} nX3 (only 4 points used) array [p_x, p_y, p_z]
+                     * @param[in] img_pts Image points in pixels nX3 (only 4 points used) array containing pixel data from camera [u, v, 1]
+                     * @param[in] n number of 2D-3D correspondences
+                     * @param[in] cam_intrinsic Camera Intrinsic matrix
+                     * @param[out] pose_mat Output pose vector 6X1, pose_mat[0:2]-> Translation, pose_mat[3:5] -> Quaternion vector component 
+                     * @return success flag
+                     */
+                    int dls(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<Eigen::MatrixXd> img_pts, int n, const Eigen::Ref<Eigen::MatrixXd> cam_intrinsic, Eigen::Ref<Eigen::MatrixXd> pose_mat);
 
-                        /**
-                         * @brief \cite lepetit Efficient-PnP (EPnP) - Algorithm takes 4 control points based on n points and uses the control points to compute the pose
-                         * 
-                         * @param[in] obj_pts Object points in Camera Co-ordinate system {C} nX3 (only 4 points used) array [p_x, p_y, p_z]
-                         * @param[in] img_pts Image points in pixels nX3 (only 4 points used) array containing pixel data from camera [u, v, 1]
-                         * @param[in] n number of 2D-3D correspondences
-                         * @param[in] cam_intrinsic Camera Intrinsic matrix
-                         * @param[out] pose_mat Output pose vector 6X1, pose_mat[0:2]-> Translation, pose_mat[3:5] -> Quaternion vector component 
-                         * @return success flag
-                         */
-                        int epnp(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<Eigen::MatrixXd> img_pts, int n, const Eigen::Ref<Eigen::MatrixXd> cam_intrinsic, Eigen::Ref<Eigen::MatrixXd> pose_mat);
+                    /**
+                     * @brief \cite lepetit Efficient-PnP (EPnP) - Algorithm takes 4 control points based on n points and uses the control points to compute the pose
+                     * 
+                     * @param[in] obj_pts Object points in Camera Co-ordinate system {C} nX3 (only 4 points used) array [p_x, p_y, p_z]
+                     * @param[in] img_pts Image points in pixels nX3 (only 4 points used) array containing pixel data from camera [u, v, 1]
+                     * @param[in] n number of 2D-3D correspondences
+                     * @param[in] cam_intrinsic Camera Intrinsic matrix
+                     * @param[out] pose_mat Output pose vector 6X1, pose_mat[0:2]-> Translation, pose_mat[3:5] -> Quaternion vector component 
+                     * @return success flag
+                     */
+                    int epnp(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<Eigen::MatrixXd> img_pts, int n, const Eigen::Ref<Eigen::MatrixXd> cam_intrinsic, Eigen::Ref<Eigen::MatrixXd> pose_mat);
 
-                        /**
-                         * @brief \cite Kneip2014 Unified-PnP (UPnP) : Algorithm to compute pose from unknown camera intrinsic matrix
-                         * 
-                         * @param[in] obj_pts Object points in Camera Co-ordinate system {C} nX3 (only 4 points used) array [p_x, p_y, p_z]
-                         * @param[in] img_pts Image points in pixels nX3 (only 4 points used) array containing pixel data from camera [u, v, 1]
-                         * @param[in] n number of 2D-3D correspondences
-                         * @param[in] cam_intrinsic Camera Intrinsic matrix
-                         * @param[out] pose_mat Output pose vector 6X1, pose_mat[0:2]-> Translation, pose_mat[3:5] -> Quaternion vector component 
-                         * @return success flag
-                         */
-                        int upnp(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<Eigen::MatrixXd> img_pts, int n, const Eigen::Ref<Eigen::MatrixXd> cam_intrinsic, Eigen::Ref<Eigen::MatrixXd> pose_mat);
-                        
-                    #endif
+                    /**
+                     * @brief \cite Kneip2014 Unified-PnP (UPnP) : Algorithm to compute pose from unknown camera intrinsic matrix
+                     * 
+                     * @param[in] obj_pts Object points in Camera Co-ordinate system {C} nX3 (only 4 points used) array [p_x, p_y, p_z]
+                     * @param[in] img_pts Image points in pixels nX3 (only 4 points used) array containing pixel data from camera [u, v, 1]
+                     * @param[in] n number of 2D-3D correspondences
+                     * @param[in] cam_intrinsic Camera Intrinsic matrix
+                     * @param[out] pose_mat Output pose vector 6X1, pose_mat[0:2]-> Translation, pose_mat[3:5] -> Quaternion vector component 
+                     * @return success flag
+                     */
+                    int upnp(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<Eigen::MatrixXd> img_pts, int n, const Eigen::Ref<Eigen::MatrixXd> cam_intrinsic, Eigen::Ref<Eigen::MatrixXd> pose_mat);
                     
                     /**
                      * @brief \cite kneip P3P - A closed form solution for n=3, 2D-3D correspondences
