@@ -107,11 +107,19 @@ IF(LATEXMK_PROGRAM)
 	# The main (empty) target:
 	add_custom_target(documentation_psgz_guides)
 
+    # pbmap-guide
 	add_custom_target(documentation_pbmap-guide
 		COMMAND 		make -C ${MRPT_SOURCE_DIR}/doc/pbmap-guide/ pbmap-guide.ps.gz
 		COMMENT 		"Generating pbmap-guide (ps.gz)"
 		)
 	add_dependencies(documentation_psgz_guides documentation_pbmap-guide)
+
+	# graphslam-engine-guide
+	add_custom_target(documentation_graphslam-engine-guide
+		COMMAND 		make -C ${MRPT_SOURCE_DIR}/doc/graphslam-engine-guide/ graphslam-engine-guide.ps.gz
+		COMMENT 		"Generating graphslam-engine-guide (ps.gz)"
+		)
+	add_dependencies(documentation_psgz_guides documentation_graphslam-engine-guide)
 
 ENDIF()
 ENDIF()
