@@ -5,7 +5,7 @@
 #include <Eigen/StdVector>
 
 #include "lhm.h"
-using namespace mrpt::vision;
+using namespace mrpt::vision::pnp;
 
 lhm::lhm(Eigen::MatrixXd obj_pts_, Eigen::MatrixXd img_pts_, Eigen::MatrixXd cam_, int n0) : F(n0)
 {

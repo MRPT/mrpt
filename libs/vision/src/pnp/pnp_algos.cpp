@@ -9,7 +9,6 @@
 #include <mrpt/config.h>
 #include <mrpt/vision/utils.h>
 #include <mrpt/vision/pnp_algos.h>
-using namespace mrpt::vision::pnp;
 
 #include <iostream>
 using namespace std;
@@ -30,7 +29,7 @@ using namespace std;
 #include "rpnp.h"
 #include "so3.h"
 
-int CPnP::dls(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<Eigen::MatrixXd> img_pts, int n, const Eigen::Ref<Eigen::MatrixXd> cam_intrinsic, Eigen::Ref<Eigen::MatrixXd> pose_mat){
+int mrpt::vision::pnp::CPnP::dls(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<Eigen::MatrixXd> img_pts, int n, const Eigen::Ref<Eigen::MatrixXd> cam_intrinsic, Eigen::Ref<Eigen::MatrixXd> pose_mat){
     #if MRPT_HAS_OPENCV
     
     Eigen::MatrixXd cam_in_eig=cam_intrinsic.transpose(), img_pts_eig=img_pts.transpose().block(0,0,n,2), obj_pts_eig=obj_pts.transpose(), t_eig;
@@ -41,7 +40,7 @@ int CPnP::dls(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<Eigen:
     cv::eigen2cv(img_pts_eig, img_pts_cv);
     cv::eigen2cv(obj_pts_eig, obj_pts_cv);
     
-    mrpt::vision::dls d(obj_pts_cv, img_pts_cv);
+    mrpt::vision::pnp::dls d(obj_pts_cv, img_pts_cv);
     int ret = d.compute_pose(R_cv,t_cv);
     
     cv::cv2eigen(R_cv, R_eig);
@@ -58,7 +57,7 @@ int CPnP::dls(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<Eigen:
     #endif
 }
 
-int CPnP::epnp(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<Eigen::MatrixXd> img_pts, int n, const Eigen::Ref<Eigen::MatrixXd> cam_intrinsic, Eigen::Ref<Eigen::MatrixXd> pose_mat){
+int mrpt::vision::pnp::CPnP::epnp(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<Eigen::MatrixXd> img_pts, int n, const Eigen::Ref<Eigen::MatrixXd> cam_intrinsic, Eigen::Ref<Eigen::MatrixXd> pose_mat){
     #if MRPT_HAS_OPENCV
     Eigen::MatrixXd cam_in_eig=cam_intrinsic.transpose(), img_pts_eig=img_pts.transpose().block(0,0,n,2), obj_pts_eig=obj_pts.transpose(), t_eig;
     Eigen::Matrix3d R_eig; 
@@ -68,7 +67,7 @@ int CPnP::epnp(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<Eigen
     cv::eigen2cv(img_pts_eig, img_pts_cv);
     cv::eigen2cv(obj_pts_eig, obj_pts_cv);
     
-    mrpt::vision::epnp e(cam_in_cv, obj_pts_cv, img_pts_cv);
+    mrpt::vision::pnp::epnp e(cam_in_cv, obj_pts_cv, img_pts_cv);
     e.compute_pose(R_cv,t_cv);
     
     cv::cv2eigen(R_cv, R_eig);
@@ -85,7 +84,7 @@ int CPnP::epnp(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<Eigen
     #endif
 }
 
-int CPnP::upnp(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<Eigen::MatrixXd> img_pts, int n, const Eigen::Ref<Eigen::MatrixXd> cam_intrinsic, Eigen::Ref<Eigen::MatrixXd> pose_mat){
+int mrpt::vision::pnp::CPnP::upnp(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<Eigen::MatrixXd> img_pts, int n, const Eigen::Ref<Eigen::MatrixXd> cam_intrinsic, Eigen::Ref<Eigen::MatrixXd> pose_mat){
     #if MRPT_HAS_OPENCV
     Eigen::MatrixXd cam_in_eig=cam_intrinsic.transpose(), img_pts_eig=img_pts.transpose().block(0,0,n,2), obj_pts_eig=obj_pts.transpose(), t_eig;
     Eigen::Matrix3d R_eig; 
@@ -95,7 +94,7 @@ int CPnP::upnp(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<Eigen
     cv::eigen2cv(img_pts_eig, img_pts_cv);
     cv::eigen2cv(obj_pts_eig, obj_pts_cv);
     
-    mrpt::vision::upnp u(cam_in_cv, obj_pts_cv, img_pts_cv);
+    mrpt::vision::pnp::upnp u(cam_in_cv, obj_pts_cv, img_pts_cv);
     u.compute_pose(R_cv,t_cv);
     
     cv::cv2eigen(R_cv, R_eig);
@@ -112,13 +111,13 @@ int CPnP::upnp(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<Eigen
 }
 
 
-int CPnP::p3p(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<Eigen::MatrixXd> img_pts, int n, const Eigen::Ref<Eigen::MatrixXd> cam_intrinsic, Eigen::Ref<Eigen::MatrixXd> pose_mat){
+int mrpt::vision::pnp::CPnP::p3p(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<Eigen::MatrixXd> img_pts, int n, const Eigen::Ref<Eigen::MatrixXd> cam_intrinsic, Eigen::Ref<Eigen::MatrixXd> pose_mat){
     
     Eigen::MatrixXd cam_in_eig=cam_intrinsic.transpose(), img_pts_eig=img_pts.transpose(), obj_pts_eig=obj_pts.transpose();
     Eigen::Matrix3d R_eig; 
     Eigen::Vector3d t_eig;
     
-    mrpt::vision::p3p p(cam_in_eig);
+    mrpt::vision::pnp::p3p p(cam_in_eig);
     int ret = p.solve(R_eig,t_eig, obj_pts_eig, img_pts_eig);
     
     Eigen::Quaterniond q(R_eig);
@@ -129,13 +128,13 @@ int CPnP::p3p(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<Eigen:
 }
 
 
-int CPnP::rpnp(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<Eigen::MatrixXd> img_pts, int n, const Eigen::Ref<Eigen::MatrixXd> cam_intrinsic, Eigen::Ref<Eigen::MatrixXd> pose_mat){
+int mrpt::vision::pnp::CPnP::rpnp(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<Eigen::MatrixXd> img_pts, int n, const Eigen::Ref<Eigen::MatrixXd> cam_intrinsic, Eigen::Ref<Eigen::MatrixXd> pose_mat){
     
     Eigen::MatrixXd cam_in_eig=cam_intrinsic.transpose(), img_pts_eig=img_pts.transpose(), obj_pts_eig=obj_pts.transpose();
     Eigen::Matrix3d R_eig; 
     Eigen::Vector3d t_eig;
     
-    mrpt::vision::rpnp r(obj_pts_eig, img_pts_eig, cam_in_eig, n);
+    mrpt::vision::pnp::rpnp r(obj_pts_eig, img_pts_eig, cam_in_eig, n);
     int ret = r.compute_pose(R_eig,t_eig);
     
     Eigen::Quaterniond q(R_eig);
@@ -145,14 +144,14 @@ int CPnP::rpnp(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<Eigen
     return ret;
 }
 
-int CPnP::ppnp(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<Eigen::MatrixXd> img_pts, int n, const Eigen::Ref<Eigen::MatrixXd> cam_intrinsic, Eigen::Ref<Eigen::MatrixXd> pose_mat)
+int mrpt::vision::pnp::CPnP::ppnp(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<Eigen::MatrixXd> img_pts, int n, const Eigen::Ref<Eigen::MatrixXd> cam_intrinsic, Eigen::Ref<Eigen::MatrixXd> pose_mat)
 {	
 	Eigen::Matrix3d R(3,3);
 	Eigen::VectorXd t(3);
 	
 	Eigen::MatrixXd obj_pts_=obj_pts.transpose(), img_pts_=img_pts.transpose();
 
-	mrpt::vision::ppnp p(obj_pts_,img_pts_, cam_intrinsic);
+	mrpt::vision::pnp::ppnp p(obj_pts_,img_pts_, cam_intrinsic);
 	
 	int ret = p.compute_pose(R,t,n);
 	
@@ -163,14 +162,14 @@ int CPnP::ppnp(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<Eigen
 	return ret;
 }
 
-int CPnP::posit(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<Eigen::MatrixXd> img_pts, int n, const Eigen::Ref<Eigen::MatrixXd> cam_intrinsic, Eigen::Ref<Eigen::MatrixXd> pose_mat)
+int mrpt::vision::pnp::CPnP::posit(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<Eigen::MatrixXd> img_pts, int n, const Eigen::Ref<Eigen::MatrixXd> cam_intrinsic, Eigen::Ref<Eigen::MatrixXd> pose_mat)
 {	
 	Eigen::Matrix3d R;
 	Eigen::Vector3d t;
 	
 	Eigen::MatrixXd obj_pts_=obj_pts.transpose(), img_pts_=img_pts.transpose();
 
-	mrpt::vision::POSIT p(obj_pts_,img_pts_, cam_intrinsic, n);
+	mrpt::vision::pnp::posit p(obj_pts_,img_pts_, cam_intrinsic, n);
 	
 	int ret = p.compute_pose(R,t);
     
@@ -181,14 +180,14 @@ int CPnP::posit(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<Eige
 	return ret;
 }
 
-int CPnP::lhm(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<Eigen::MatrixXd> img_pts, int n, const Eigen::Ref<Eigen::MatrixXd> cam_intrinsic, Eigen::Ref<Eigen::MatrixXd> pose_mat)
+int mrpt::vision::pnp::CPnP::lhm(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<Eigen::MatrixXd> img_pts, int n, const Eigen::Ref<Eigen::MatrixXd> cam_intrinsic, Eigen::Ref<Eigen::MatrixXd> pose_mat)
 {
     Eigen::Matrix3d R;
 	Eigen::Vector3d t;
 	
 	Eigen::MatrixXd obj_pts_=obj_pts.transpose(), img_pts_=img_pts.transpose();
     
-    mrpt::vision::lhm l(obj_pts_, img_pts_, cam_intrinsic, n);
+    mrpt::vision::pnp::lhm l(obj_pts_, img_pts_, cam_intrinsic, n);
     
     int ret = l.compute_pose(R,t);
     
@@ -200,17 +199,17 @@ int CPnP::lhm(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<Eigen:
     
 }
 
-int CPnP::so3(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<Eigen::MatrixXd> img_pts, int n, const Eigen::Ref<Eigen::MatrixXd> cam_intrinsic, Eigen::Ref<Eigen::MatrixXd> pose_mat)
+int mrpt::vision::pnp::CPnP::so3(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<Eigen::MatrixXd> img_pts, int n, const Eigen::Ref<Eigen::MatrixXd> cam_intrinsic, Eigen::Ref<Eigen::MatrixXd> pose_mat)
 {
     Eigen::Matrix3d R;
 	Eigen::Vector3d t;
 	
 	Eigen::MatrixXd obj_pts_=obj_pts.transpose(), img_pts_=img_pts.transpose(), cam_intrinsic_ = cam_intrinsic.transpose();
     
-    mrpt::vision::p3p p(cam_intrinsic_);
+    mrpt::vision::pnp::p3p p(cam_intrinsic_);
     p.solve(R,t, obj_pts_, img_pts_);
     
-    mrpt::vision::so3 s(obj_pts_, img_pts_, cam_intrinsic_, n);
+    mrpt::vision::pnp::so3 s(obj_pts_, img_pts_, cam_intrinsic_, n);
     int ret = s.compute_pose(R,t);
     
     Eigen::Quaterniond q(R);

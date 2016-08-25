@@ -4,14 +4,14 @@
 
 #include "ppnp.h"
 
-mrpt::vision::ppnp::ppnp(const Eigen::MatrixXd& obj_pts, const Eigen::MatrixXd& img_pts, const Eigen::MatrixXd& cam_intrinsic)
+mrpt::vision::pnp::ppnp::ppnp(const Eigen::MatrixXd& obj_pts, const Eigen::MatrixXd& img_pts, const Eigen::MatrixXd& cam_intrinsic)
 {
 	P = img_pts;
 	S = obj_pts;
 	C = cam_intrinsic;
 }
 
-bool mrpt::vision::ppnp::compute_pose(Eigen::Matrix3d& R, Eigen::VectorXd& t, int n)
+bool mrpt::vision::pnp::ppnp::compute_pose(Eigen::Matrix3d& R, Eigen::VectorXd& t, int n)
 {
 	double tol=0.0001;
 	
