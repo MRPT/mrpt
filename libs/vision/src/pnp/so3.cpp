@@ -24,7 +24,7 @@ along with this program.If not, see <http://www.gnu.org/licenses/>.
 
 #define epsilon 0.00001
 
-mrpt::vision::so3::so3(const Eigen::MatrixXd& obj_pts_, const Eigen::MatrixXd& img_pts_, const Eigen::MatrixXd& cam_intrinsic_, int n0)
+mrpt::vision::pnp::so3::so3(const Eigen::MatrixXd& obj_pts_, const Eigen::MatrixXd& img_pts_, const Eigen::MatrixXd& cam_intrinsic_, int n0)
 {
     n=n0;
     obj_pts = obj_pts_;
@@ -63,7 +63,7 @@ mrpt::vision::so3::so3(const Eigen::MatrixXd& obj_pts_, const Eigen::MatrixXd& i
 
 
 //<---------------------- Function quatrot to get rotation matrix------------------------->//
-Eigen::Matrix3d  mrpt::vision::so3::quatrot(Eigen::Vector3d  Vec)
+Eigen::Matrix3d  mrpt::vision::pnp::so3::quatrot(Eigen::Vector3d  Vec)
 {
 	ax=Vec;
 	ang = Vec.norm();
@@ -79,7 +79,7 @@ Eigen::Matrix3d  mrpt::vision::so3::quatrot(Eigen::Vector3d  Vec)
 }
 
 //<---------------------- Function to calcualte rotation error------------------------->//
-void mrpt::vision::so3::err_calc(Eigen::Matrix3d & R, int flag, Eigen::VectorXd & err, Eigen::Vector3d & Vec, Eigen::Vector3d & rgm)
+void mrpt::vision::pnp::so3::err_calc(Eigen::Matrix3d & R, int flag, Eigen::VectorXd & err, Eigen::Vector3d & Vec, Eigen::Vector3d & rgm)
 {
 	gam=Eigen::VectorXd ::Zero(2*n);
 	
@@ -108,7 +108,7 @@ void mrpt::vision::so3::err_calc(Eigen::Matrix3d & R, int flag, Eigen::VectorXd 
 }
 
 //<---------------------- Function to calcualte optimal rotation matrix------------------------->//
-void mrpt::vision::so3::findPosSO3(Eigen::Matrix3d & R_guess)
+void mrpt::vision::pnp::so3::findPosSO3(Eigen::Matrix3d & R_guess)
 {
 	R = R_guess;
 
@@ -184,7 +184,7 @@ void mrpt::vision::so3::findPosSO3(Eigen::Matrix3d & R_guess)
 	err_calc(R, 1, err, dummyrgm, rgm);
 }
 
-bool mrpt::vision::so3::compute_pose(Eigen::Matrix3d& R_, Eigen::Vector3d& t_)
+bool mrpt::vision::pnp::so3::compute_pose(Eigen::Matrix3d& R_, Eigen::Vector3d& t_)
 {
     if(R_(2,2)==1)
         findPosSO3(R_);
@@ -201,7 +201,7 @@ bool mrpt::vision::so3::compute_pose(Eigen::Matrix3d& R_, Eigen::Vector3d& t_)
 }
 
 //<---------------------- Function to convert from DCM to Quaternion------------------------->//
-Eigen::Vector4d  mrpt::vision::so3::dcm2quat(Eigen::Matrix3d  R)
+Eigen::Vector4d  mrpt::vision::pnp::so3::dcm2quat(Eigen::Matrix3d  R)
 {
 	Eigen::VectorXd  q(4);
 	q(0) = sqrt(abs((1 + R(0, 0) + R(1, 1) + R(2, 2)) / 4));

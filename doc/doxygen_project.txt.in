@@ -72,7 +72,7 @@ WARN_LOGFILE           =
 #---------------------------------------------------------------------------
 # configuration options related to the input files
 #---------------------------------------------------------------------------
-INPUT                  = $MRPT_LIST_INPUT
+INPUT                  = $MRPT_LIST_INPUT "../libs/vision/src/pnp"
 FILE_PATTERNS          = *.h *.cpp *.hpp *.tpp
 RECURSIVE              = YES
 EXCLUDE                =
@@ -223,7 +223,7 @@ MAX_DOT_GRAPH_DEPTH    = 1000
 DOT_TRANSPARENT	       = YES
 DOT_MULTI_TARGETS      = NO
 GENERATE_LEGEND	       = YES
-DOT_CLEANUP	           = YES
+DOT_CLEANUP	       = YES
 #---------------------------------------------------------------------------
 # Configuration::additions related to the search engine
 #---------------------------------------------------------------------------
@@ -237,3 +237,9 @@ SEARCHENGINE           = $MRPT_USE_SEARCHENGINE
 # file to put on the web server. The advantage of the server based approach is that it scales better to large projects and allows full text search. The disadvances is that it is more difficult to setup
 # and does not have live searching capabilities.
 SERVER_BASED_SEARCH    = YES
+
+#---------------------------------------------------------------------------
+# Citation
+#---------------------------------------------------------------------------
+CITE_BIB_FILES = "../libs/vision/src/pnp/pnp_algos.bib"
+LATEX_BIB_STYLE = ieeetr
