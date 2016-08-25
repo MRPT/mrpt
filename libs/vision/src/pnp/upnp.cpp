@@ -57,7 +57,7 @@ using namespace std;
     using namespace cv;
 
     #include "upnp.h"
-    using namespace mrpt::vision;
+    using namespace mrpt::vision::pnp;
 
     upnp::upnp(const Mat& cameraMatrix, const Mat& opoints, const Mat& ipoints)
     {

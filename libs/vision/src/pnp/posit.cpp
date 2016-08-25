@@ -5,7 +5,7 @@
 #include "posit.h"
 
 
-mrpt::vision::POSIT::POSIT(Eigen::MatrixXd obj_pts_, Eigen::MatrixXd img_pts_, Eigen::MatrixXd camera_intrinsic_, int n0)
+mrpt::vision::pnp::posit::posit(Eigen::MatrixXd obj_pts_, Eigen::MatrixXd img_pts_, Eigen::MatrixXd camera_intrinsic_, int n0)
 {
 		obj_pts=obj_pts_;
 		img_pts=img_pts_.block(0,0,n0,2);
@@ -29,7 +29,7 @@ mrpt::vision::POSIT::POSIT(Eigen::MatrixXd obj_pts_, Eigen::MatrixXd img_pts_, E
 		epsilons=Eigen::VectorXd::Zero(n);
 }
 
-void mrpt::vision::POSIT::POS()
+void mrpt::vision::pnp::posit::POS()
 {
 	Eigen::Vector3d I0, J0 , r1, r2, r3;
 	double I0_norm, J0_norm;
@@ -68,7 +68,7 @@ void mrpt::vision::POSIT::POS()
 Iterate over results obtained by the POS function;
 see paper "Model-Based Object Pose in 25 Lines of Code", IJCV 15, pp. 123-141, 1995.
 */
-int mrpt::vision::POSIT::compute_pose(Eigen::Ref<Eigen::Matrix3d> R_, Eigen::Ref<Eigen::Vector3d> t_)
+int mrpt::vision::pnp::posit::compute_pose(Eigen::Ref<Eigen::Matrix3d> R_, Eigen::Ref<Eigen::Vector3d> t_)
 {
 	Eigen::FullPivLU<Eigen::MatrixXd> lu(obj_pts);
 	if(lu.rank()<3)
@@ -128,7 +128,7 @@ int mrpt::vision::POSIT::compute_pose(Eigen::Ref<Eigen::Matrix3d> R_, Eigen::Ref
 	
 }
 
-long mrpt::vision::POSIT::get_img_diff()
+long mrpt::vision::pnp::posit::get_img_diff()
 {
 	int i, j;
 	long sumOfDiffs = 0;
