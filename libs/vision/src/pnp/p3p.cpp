@@ -5,7 +5,7 @@
 #include "polynom_solver.h"
 #include "p3p.h"
 
-void mrpt::vision::p3p::init_inverse_parameters()
+void mrpt::vision::pnp::p3p::init_inverse_parameters()
 {
     inv_fx = 1. / fx;
     inv_fy = 1. / fy;
@@ -13,7 +13,7 @@ void mrpt::vision::p3p::init_inverse_parameters()
     cy_fy = cy / fy;
 }
 
-mrpt::vision::p3p::p3p(Eigen::MatrixXd cam_intrinsic)
+mrpt::vision::pnp::p3p::p3p(Eigen::MatrixXd cam_intrinsic)
 {
     fx = cam_intrinsic(0,0);
     fy = cam_intrinsic(1,1);
@@ -22,7 +22,7 @@ mrpt::vision::p3p::p3p(Eigen::MatrixXd cam_intrinsic)
     init_inverse_parameters();
 }
 
-mrpt::vision::p3p::p3p(double _fx, double _fy, double _cx, double _cy)
+mrpt::vision::pnp::p3p::p3p(double _fx, double _fy, double _cx, double _cy)
 {
     fx = _fx;
     fy = _fy;
@@ -32,7 +32,7 @@ mrpt::vision::p3p::p3p(double _fx, double _fy, double _cx, double _cy)
 }
 #if MRPT_HAS_OPENCV
 
-    mrpt::vision::p3p::p3p(cv::Mat cameraMatrix)
+    mrpt::vision::pnp::p3p::p3p(cv::Mat cameraMatrix)
     {
         if (cameraMatrix.depth() == CV_32F)
             init_camera_parameters<float>(cameraMatrix);
@@ -41,7 +41,7 @@ mrpt::vision::p3p::p3p(double _fx, double _fy, double _cx, double _cy)
         init_inverse_parameters();
     }
     
-    bool mrpt::vision::p3p::solve(cv::Mat& R, cv::Mat& tvec, const cv::Mat& opoints, const cv::Mat& ipoints)
+    bool mrpt::vision::pnp::p3p::solve(cv::Mat& R, cv::Mat& tvec, const cv::Mat& opoints, const cv::Mat& ipoints)
     {
         double rotation_matrix[3][3], translation[3];
         std::vector<double> points;
@@ -67,7 +67,7 @@ mrpt::vision::p3p::p3p(double _fx, double _fy, double _cx, double _cy)
     
 #endif
 
-bool mrpt::vision::p3p::solve(Eigen::Ref<Eigen::Matrix3d> R, Eigen::Ref<Eigen::Vector3d> t, Eigen::MatrixXd obj_pts, Eigen::MatrixXd img_pts)
+bool mrpt::vision::pnp::p3p::solve(Eigen::Ref<Eigen::Matrix3d> R, Eigen::Ref<Eigen::Vector3d> t, Eigen::MatrixXd obj_pts, Eigen::MatrixXd img_pts)
 {
     double rotation_matrix[3][3], translation[3];
     std::vector<double> points;
@@ -80,7 +80,7 @@ bool mrpt::vision::p3p::solve(Eigen::Ref<Eigen::Matrix3d> R, Eigen::Ref<Eigen::V
     
     return result;
 }
-bool mrpt::vision::p3p::solve(double R[3][3], double t[3],
+bool mrpt::vision::pnp::p3p::solve(double R[3][3], double t[3],
     double mu0, double mv0,   double X0, double Y0, double Z0,
     double mu1, double mv1,   double X1, double Y1, double Z1,
     double mu2, double mv2,   double X2, double Y2, double Z2,
@@ -117,7 +117,7 @@ bool mrpt::vision::p3p::solve(double R[3][3], double t[3],
     return true;
 }
 
-int mrpt::vision::p3p::solve(double R[4][3][3], double t[4][3],
+int mrpt::vision::pnp::p3p::solve(double R[4][3][3], double t[4][3],
     double mu0, double mv0,   double X0, double Y0, double Z0,
     double mu1, double mv1,   double X1, double Y1, double Z1,
     double mu2, double mv2,   double X2, double Y2, double Z2)
@@ -191,7 +191,7 @@ int mrpt::vision::p3p::solve(double R[4][3][3], double t[4][3],
 /// \returns Number of solutions.
 /// WARNING: NOT ALL THE DEGENERATE CASES ARE IMPLEMENTED
 
-int mrpt::vision::p3p::solve_for_lengths(double lengths[4][3], double distances[3], double cosines[3])
+int mrpt::vision::pnp::p3p::solve_for_lengths(double lengths[4][3], double distances[3], double cosines[3])
 {
     double p = cosines[0] * 2;
     double q = cosines[1] * 2;
@@ -283,7 +283,7 @@ int mrpt::vision::p3p::solve_for_lengths(double lengths[4][3], double distances[
     return nb_solutions;
 }
 
-bool mrpt::vision::p3p::align(double M_end[3][3],
+bool mrpt::vision::pnp::p3p::align(double M_end[3][3],
     double X0, double Y0, double Z0,
     double X1, double Y1, double Z1,
     double X2, double Y2, double Z2,
@@ -355,7 +355,7 @@ bool mrpt::vision::p3p::align(double M_end[3][3],
     return true;
 }
     
-bool mrpt::vision::p3p::jacobi_4x4(double * A, double * D, double * U)
+bool mrpt::vision::pnp::p3p::jacobi_4x4(double * A, double * D, double * U)
 {
     double B[4], Z[4];
     double Id[16] = {1., 0., 0., 0.,

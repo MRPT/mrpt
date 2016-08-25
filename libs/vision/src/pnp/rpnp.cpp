@@ -10,7 +10,7 @@
 #include "rpnp.h"
 
 
-mrpt::vision::rpnp::rpnp(Eigen::MatrixXd obj_pts_, Eigen::MatrixXd img_pts_, Eigen::MatrixXd cam_, int n0)
+mrpt::vision::pnp::rpnp::rpnp(Eigen::MatrixXd obj_pts_, Eigen::MatrixXd img_pts_, Eigen::MatrixXd cam_, int n0)
 {
 	obj_pts = obj_pts_;
 	img_pts = img_pts_;
@@ -28,7 +28,7 @@ mrpt::vision::rpnp::rpnp(Eigen::MatrixXd obj_pts_, Eigen::MatrixXd img_pts_, Eig
 	t.setZero();
 }
 
-bool mrpt::vision::rpnp::compute_pose(Eigen::Ref<Eigen::Matrix3d> R_, Eigen::Ref<Eigen::Vector3d> t_)
+bool mrpt::vision::pnp::rpnp::compute_pose(Eigen::Ref<Eigen::Matrix3d> R_, Eigen::Ref<Eigen::Vector3d> t_)
 {
 	// selecting an edge $P_{ i1 }P_{ i2 }$ by n random sampling
 	int i1 = 0, i2 = 1;
@@ -292,7 +292,7 @@ bool mrpt::vision::rpnp::compute_pose(Eigen::Ref<Eigen::Matrix3d> R_, Eigen::Ref
 	return true;
 }
 
-void mrpt::vision::rpnp::calcampose(Eigen::MatrixXd& XXc, Eigen::MatrixXd& XXw, Eigen::Matrix3d& R2, Eigen::Vector3d& t2)
+void mrpt::vision::pnp::rpnp::calcampose(Eigen::MatrixXd& XXc, Eigen::MatrixXd& XXw, Eigen::Matrix3d& R2, Eigen::Vector3d& t2)
 {
 	Eigen::MatrixXd X = XXc;
 	Eigen::MatrixXd Y = XXw;
@@ -326,7 +326,7 @@ void mrpt::vision::rpnp::calcampose(Eigen::MatrixXd& XXc, Eigen::MatrixXd& XXw, 
 		R2.col(2) = -R2.col(2);
 }
 
-Eigen::VectorXd mrpt::vision::rpnp::getpoly7(const Eigen::VectorXd& vin)
+Eigen::VectorXd mrpt::vision::pnp::rpnp::getpoly7(const Eigen::VectorXd& vin)
 {
 	Eigen::VectorXd vout(8);
 	vout << 4 * pow(vin(0), 2),
@@ -340,7 +340,7 @@ Eigen::VectorXd mrpt::vision::rpnp::getpoly7(const Eigen::VectorXd& vin)
 	return vout;
 }
 
-Eigen::VectorXd mrpt::vision::rpnp::getp3p(double l1, double l2, double A5, double C1, double C2, double D1, double D2, double D3)
+Eigen::VectorXd mrpt::vision::pnp::rpnp::getp3p(double l1, double l2, double A5, double C1, double C2, double D1, double D2, double D3)
 {
 	double A1 = (D2 / D1)*(D2 / D1);
 	double A2 = A1*pow(C1, 2) - pow(C2, 2);
