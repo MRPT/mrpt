@@ -10,7 +10,7 @@ options
 import argparse
 
 # Argument Parsing
-parser = argparse.ArgumentParser(description='Compute the GPA of your studies')
+parser = argparse.ArgumentParser(description='Decimate a ground-truth file by the decimation ratio provided')
 parser.add_argument('-i', '--input_gt',
                     default=None,
                     help='Specify the input ground-truth file')
