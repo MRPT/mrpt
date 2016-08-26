@@ -29,46 +29,22 @@ namespace mrpt
 		{
 		protected:
 			mrpt::utils::CReferencedMemBlock m_data;
-			std::string  m_name; //!< The name of the named semaphore, or empty if unnamed.
+		public:
+			/** Creates a semaphore.*/
+			CSemaphore(unsigned int    initialCount, unsigned int    maxCount);
 
-        public:
-            /** Creates a semaphore.
-              *  If \a name is not an empty string, a named semaphore is created. In that case
-              *   if the semaphore didn't exist it's created. Otherwise, the existing semaphore
-              *   is linked to this object and then \a initialCount and \a maxCount are ignored.
-              *  \note Named semaphores require Linux kernel version>2.6.12
-              */
-            CSemaphore(
-                unsigned int    initialCount,
-                unsigned int    maxCount,
-                const std::string &name=std::string("") );
+			virtual ~CSemaphore(); //!< Dtor
 
-            /** Destructor
-              */
-            virtual ~CSemaphore();
+			/** Blocks until the count of the semaphore to be non-zero.
+				* \param timeout_ms The timeout in milliseconds, or set to zero to wait indefinidely.
+				* \return true if the semaphore has been signaled, false on timeout or any other error.
+				*/
+			bool waitForSignal( unsigned int timeout_ms = 0 );
 
-            /** Blocks until the count of the semaphore to be non-zero.
-              * \param timeout_ms The timeout in milliseconds, or set to zero to wait indefinidely.
-              * \return true if the semaphore has been signaled, false on timeout or any other error.
-              */
-            bool waitForSignal( unsigned int timeout_ms = 0 );
-
-            /** Increments the count of the semaphore by a given amount.
-              */
-            void release(unsigned int increaseCount = 1);
-
-
-			/** Get the name of the named semaphore or an empty string if it's unnamed */
-			inline std::string  getName() const { return m_name; }
-
-			/** Return true if this is a named semaphore */
-			inline bool isNamed() const { return !m_name.empty(); }
-
-
+			/** Increments the count of the semaphore by a given amount */
+			void release(unsigned int increaseCount = 1);
 		};
 
 	} // End of namespace
-
 } // End of namespace
-
 #endif

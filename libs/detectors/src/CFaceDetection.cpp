@@ -45,12 +45,12 @@ using namespace mrpt::obs;
 //------------------------------------------------------------------------
 CFaceDetection::CFaceDetection() :
 	m_end_threads(false),
-	m_enter_checkIfFaceRegions(0,1,"enter_checkIfFaceRegions"),
-	m_enter_checkIfFacePlaneCov(0,1,"enter_checkIfFacePlaneCov"),
-	m_enter_checkIfDiagonalSurface(0,1,"enter_checkIfDiagonalSurface"),
-	m_leave_checkIfFaceRegions(0,1,"leave_checkIfFaceRegions"),
-	m_leave_checkIfFacePlaneCov(0,1,"leave_checkIfFacePlaneCov"),
-	m_leave_checkIfDiagonalSurface(0,1,"leave_checkIfDiagonalSurface")
+	m_enter_checkIfFaceRegions(0,1),
+	m_enter_checkIfFacePlaneCov(0,1),
+	m_enter_checkIfDiagonalSurface(0,1),
+	m_leave_checkIfFaceRegions(0,1),
+	m_leave_checkIfFacePlaneCov(0,1),
+	m_leave_checkIfDiagonalSurface(0,1)
 {
 	m_measure.numPossibleFacesDetected = 0;
 	m_measure.numRealFacesDetected = 0;
@@ -1563,7 +1563,7 @@ void CFaceDetection::experimental_viewRegions( const vector<TPoint3D> regions[9]
 	pntsMap.setAllPoints( xs, ys, zs );
 
 	int cont = 0;
-	float colors[9][3] = {{1,0,0},{0,1,0},{0,0,1},{1,1,0},{1,0,1},{0,1,1},{0.5,0.25,0},{0.5,0,0.25},{0,0.35,0.5}};
+	float colors[9][3] = {{1,0,0},{0,1,0},{0,0,1},{1,1,0},{1,0,1},{0,1,1},{0.5f,0.25f,0},{0.5f,0,0.25f},{0,0.35f,0.5f}};
 	for ( size_t i = 0; i < 9; i++ )
 	{
 		float R = colors[i][0];

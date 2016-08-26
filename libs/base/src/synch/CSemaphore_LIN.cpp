@@ -44,10 +44,7 @@ typedef struct
 ---------------------------------------------------------------*/
 CSemaphore::CSemaphore(
     unsigned int    initialCount,
-    unsigned int    maxCount,
-    const std::string &name )
-    :
-    m_name(name)
+    unsigned int    maxCount)
 {
 	MRPT_UNUSED_PARAM(maxCount);
 	MRPT_START
@@ -56,30 +53,16 @@ CSemaphore::CSemaphore(
     m_data.resize( sizeof(sem_private_struct) );
     sem_private token = m_data.getAs<sem_private>();
 
-	if (isNamed())
-	{
-		// Named semaphores assume a Linux kernel 2.6+
-		// See: http://linux.die.net/man/3/sem_open
+	// Unnamed semaphore:
+	token->has_to_free_mem = true;  // sem_init() requires an already allocated "sem_t"
+	token->semid = static_cast<sem_t*>( malloc(sizeof(sem_t)) );
 
-		token->has_to_free_mem = false;  // the "sem_t*" is returned by sem_open()
-
-		// Open it or create if not existing:
-		token->semid = sem_open(m_name.c_str(),O_CREAT, 0644 /* permisions */, initialCount );
-	}
-	else
-	{
-		// Unnamed semaphore:
-		token->has_to_free_mem = true;  // sem_init() requires an already allocated "sem_t"
-		token->semid = static_cast<sem_t*>( malloc(sizeof(sem_t)) );
-
-		if (sem_init(token->semid, 0 /*pshared:false*/, initialCount))
-			token->semid=(sem_t*)SEM_FAILED;
-	}
-
+	if (sem_init(token->semid, 0 /*pshared:false*/, initialCount))
+		token->semid=(sem_t*)SEM_FAILED;
 
 	// On error, launch an exception explaining it:
 	if (token->semid==SEM_FAILED)
-		THROW_EXCEPTION( format("Creating semaphore (name='%s') raised error: %s",m_name.c_str(),strerror(errno) ) )
+		THROW_EXCEPTION( format("Creating semaphore raised error: %s",strerror(errno) ) )
 
 	//int sval; sem_getvalue(token->semid, &sval); std::cout << mrpt::format("Semaphore: Init val=%i desired initialCount=%i.\n",sval,initialCount);std::cout.flush();
 
@@ -95,17 +78,8 @@ CSemaphore::~CSemaphore()
 	{
 		sem_private token = m_data.getAs<sem_private>();
 		
-		if (isNamed())
-		{
-			// Named sems: sem_close() + sem_unlink()
-			sem_close((sem_t *)token->semid);
-			sem_unlink(m_name.c_str());
-		}
-		else
-		{
-			// Unnamed sems: sem_destroy()
-			sem_destroy((sem_t *)token->semid);
-		}
+		// Unnamed sems: sem_destroy()
+		sem_destroy((sem_t *)token->semid);
 
 		if (token->has_to_free_mem)
 			free(token->semid);
@@ -159,7 +133,7 @@ bool CSemaphore::waitForSignal( unsigned int timelimit )
 
 	// If there's an error != than a timeout, dump to stderr:
 	if (rc!=0 && errno!=ETIMEDOUT)
-		std::cerr << format("[CSemaphore::waitForSignal] In semaphore named '%s', error: %s\n", m_name.c_str(),strerror(errno) );
+		std::cerr << format("[CSemaphore::waitForSignal] In semaphore, error: %s\n", strerror(errno) );
 
 	return rc==0; // true: all ok.
 
@@ -177,7 +151,7 @@ void CSemaphore::release(unsigned int increaseCount )
 
     for (unsigned int i=0;i<increaseCount;i++)
     	if (sem_post(token->semid))
-			THROW_EXCEPTION( format("Increasing count of semaphore (name='%s') raised error: %s",m_name.c_str(),strerror(errno) ) )
+			THROW_EXCEPTION( format("Increasing count of semaphore raised error: %s",strerror(errno) ) )
 
 	MRPT_END
 }

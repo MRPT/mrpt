@@ -43,6 +43,7 @@
 				- mrpt::math::RANSAC_Template::execute()
 				- mrpt::math::CLevenbergMarquardtTempl::execute()
 			- Deleted methods in Eigen-extensions: leftDivideSquare(), rightDivideSquare()
+			- Removed support for **named** semaphores in mrpt::synch::CSemaphore
 		- \ref mrpt_bayes_grp
 			-  [API change] `verbose` is no longer a field of mrpt::bayes::CParticleFilter::TParticleFilterOptions. Use the setVerbosityLevel() method of the CParticleFilter class itself.
 		- \ref mrpt_gui_grp
