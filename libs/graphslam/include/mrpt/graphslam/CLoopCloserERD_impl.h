@@ -642,7 +642,7 @@ double CLoopCloserERD<GRAPH_t>::generatePWConsistencyElement(
 		const mrpt::utils::TNodeID& b1,
 		const mrpt::utils::TNodeID& b2,
 		const typename std::map<std::pair<mrpt::utils::TNodeID, mrpt::utils::TNodeID>,
-			CLoopCloserERD<GRAPH_t>::THypothesis*>& nodeIDs_to_hypots) {
+			typename CLoopCloserERD<GRAPH_t>::THypothesis*>& nodeIDs_to_hypots) {
 	MRPT_START;
 	using namespace std;
 	using namespace mrpt;
@@ -1982,7 +1982,7 @@ void CLoopCloserERD<GRAPH_t>::TPath::clear() {
 
 template<class GRAPH_t>
 typename CLoopCloserERD<GRAPH_t>::TPath& CLoopCloserERD<GRAPH_t>::TPath::
-operator+=(const CLoopCloserERD<GRAPH_t>::TPath& other) {
+operator+=(const typename CLoopCloserERD<GRAPH_t>::TPath& other) {
 	MRPT_START;
 
 	using namespace std;
@@ -2028,7 +2028,7 @@ operator+=(const CLoopCloserERD<GRAPH_t>::TPath& other) {
 }
 template<class GRAPH_t>
 bool CLoopCloserERD<GRAPH_t>::TPath::operator==(
-		const CLoopCloserERD<GRAPH_t>::TPath& other) {
+		const typename CLoopCloserERD<GRAPH_t>::TPath& other) {
 		MRPT_START;
 
 		// check if the traversed nodes are the same as well as the
@@ -2040,7 +2040,7 @@ bool CLoopCloserERD<GRAPH_t>::TPath::operator==(
 }
 template<class GRAPH_t>
 bool CLoopCloserERD<GRAPH_t>::TPath::operator!=(
-		const CLoopCloserERD<GRAPH_t>::TPath& other) {
+		const typename CLoopCloserERD<GRAPH_t>::TPath& other) {
 		MRPT_START;
 
 		return !(*this == other);

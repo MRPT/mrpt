@@ -7,8 +7,8 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-
 // Implementation file for CWindowObserver class
+#include "graphslam-precomp.h"  // Precompiled headers
 
 #include <mrpt/graphslam/CWindowObserver.h>
 #include <mrpt/opengl/COpenGLViewport.h>
