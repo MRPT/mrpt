@@ -15,10 +15,11 @@
 
 #include <iostream>
 
+#include <mrpt/utils/types_math.h> // Eigen must be included first via MRPT to enable the plugin system
 #include <Eigen/Core>
 #include <Eigen/Dense>
 
-#include <opencv2/opencv.hpp>
+#include <mrpt/otherlibs/do_opencv_includes.h>
 #include <opencv2/core/eigen.hpp>
 
 #include "dls.h"
@@ -172,7 +173,7 @@ bool mrpt::vision::pnp::CPnP::posit(const Eigen::Ref<Eigen::MatrixXd> obj_pts, c
 	mrpt::vision::pnp::posit p(obj_pts_,img_pts_, cam_intrinsic, n);
 	
 	bool ret = p.compute_pose(R,t);
-    
+
 	Eigen::Quaterniond q(R);
 	
 	pose_mat << t,q.vec();

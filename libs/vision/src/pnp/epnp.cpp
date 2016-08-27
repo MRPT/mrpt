@@ -11,8 +11,7 @@
 #include <mrpt/config.h>
 #include <iostream>
 #if MRPT_HAS_OPENCV
-    #include <opencv2/opencv.hpp>
-    #include <opencv2/opencv_modules.hpp>
+    #include <mrpt/otherlibs/do_opencv_includes.h>
     using namespace cv;
 
     #include "epnp.h"
