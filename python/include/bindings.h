@@ -116,6 +116,7 @@ void export_system();
 void export_utils();
 void export_utils_stl();
 void export_bayes();
+void export_pnp();
 
 #ifdef ROS_EXTENSIONS
 // time conversion
