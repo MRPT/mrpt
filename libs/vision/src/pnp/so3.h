@@ -1,6 +1,7 @@
 // SO3 - PnP 
+
+#include <mrpt/utils/types_math.h> // Eigen must be included first via MRPT to enable the plugin system
 #include <iostream>
-#include <Eigen/Dense>
 
 namespace mrpt
 {

@@ -9,6 +9,7 @@
 
 #include "vision-precomp.h"   // Precompiled headers
 #include <iostream>
+#include <mrpt/utils/types_math.h> // Eigen must be included first via MRPT to enable the plugin system
 #include <Eigen/Dense>
 #include <Eigen/SVD>
 
@@ -78,11 +79,11 @@ void mrpt::vision::pnp::posit::POS()
 Iterate over results obtained by the POS function;
 see paper "Model-Based Object Pose in 25 Lines of Code", IJCV 15, pp. 123-141, 1995.
 */
-int mrpt::vision::pnp::posit::compute_pose(Eigen::Ref<Eigen::Matrix3d> R_, Eigen::Ref<Eigen::Vector3d> t_)
+bool mrpt::vision::pnp::posit::compute_pose(Eigen::Ref<Eigen::Matrix3d> R_, Eigen::Ref<Eigen::Vector3d> t_)
 {
 	Eigen::FullPivLU<Eigen::MatrixXd> lu(obj_pts);
 	if(lu.rank()<3)
-		return -1;
+		return false;
 		
 	int i, iCount;
 	long imageDiff=1000;
@@ -119,7 +120,6 @@ int mrpt::vision::pnp::posit::compute_pose(Eigen::Ref<Eigen::Matrix3d> R_, Eigen
 		
 		this->POS();
 		
-		
 		if(iCount>0 && imageDiff==0)
 			break;
 			
@@ -130,12 +130,10 @@ int mrpt::vision::pnp::posit::compute_pose(Eigen::Ref<Eigen::Matrix3d> R_, Eigen
 		}
 		
 	}
-	
 	R_=R;
 	t_=t;
-	
-	return 1;
-	
+
+	return true;
 }
 
 long mrpt::vision::pnp::posit::get_img_diff()

@@ -57,14 +57,12 @@
 \****************************************************************************************/
 
 #include <iostream>
-#include <mrpt/config.h>
+#include <mrpt/otherlibs/do_opencv_includes.h>
 
 #include <limits>
 using namespace std;
 #if MRPT_HAS_OPENCV
 
-    #include <opencv2/opencv.hpp>
-    #include <opencv2/opencv_modules.hpp>
     using namespace cv;
 
     #include "upnp.h"

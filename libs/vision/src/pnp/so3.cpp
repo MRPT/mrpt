@@ -29,7 +29,7 @@ along with this program.If not, see <http://www.gnu.org/licenses/>.
 
 #include <iostream>
 #include <math.h>
-#include <Eigen/Dense>
+#include <mrpt/utils/types_math.h>
 
 #include "so3.h"
 

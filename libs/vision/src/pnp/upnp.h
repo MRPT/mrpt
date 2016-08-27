@@ -49,9 +49,10 @@
 #define OPENCV_CALIB3D_UPNP_H_
 
 #include <mrpt/config.h>
+#include <mrpt/otherlibs/do_opencv_includes.h>
 
 #if MRPT_HAS_OPENCV
-    #include <opencv2/core/core_c.h>
+    //#include <opencv2/core/core_c.h>
     #include <iostream>
 
     namespace mrpt
