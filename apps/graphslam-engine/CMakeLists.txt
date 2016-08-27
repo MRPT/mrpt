@@ -40,7 +40,6 @@ DeclareAppDependencies(${PROJECT_NAME}
 	mrpt-gui
 	mrpt-obs
 	mrpt-maps
-	mrpt-hwdrivers
 	mrpt-slam
 	mrpt-opengl
 	)

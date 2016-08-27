@@ -26,7 +26,6 @@
 #include <mrpt/opengl/CRenderizable.h>
 #include <mrpt/utils/TColor.h>
 
-//#include <mrpt/graphslam.h>
 #include <mrpt/graphslam/levmarq.h>
 #include <mrpt/graphslam/CGraphSlamOptimizer.h>
 

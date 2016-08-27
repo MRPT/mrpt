@@ -700,22 +700,21 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		 * in RGBD related datasets
 		 */
 		struct TRGBDInfoFileParams {
-
 			TRGBDInfoFileParams();
-			TRGBDInfoFileParams(std::string rawlog_fname);
+			TRGBDInfoFileParams(const std::string& rawlog_fname);
+			~TRGBDInfoFileParams();
 
 			void initTRGBDInfoFileParams();
 			/**\brief Parse the RGBD information file to gain information about the rawlog
 			 * file contents
 			 */
 			void parseFile();
-			void setRawlogFile(std::string rawlog_fname);
+			void setRawlogFile(const std::string& rawlog_fname);
 
 			/**\brief Format for the parameters in the info file:
 			 * <em>string literal - related value</em> (kept in a string representation)
 			 */
-			std::map<std::string, std::string> fields; 
-																								 
+			std::map<std::string, std::string> fields;
 
 			std::string info_fname;
 
