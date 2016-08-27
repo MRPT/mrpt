@@ -6,6 +6,9 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
+
+#include "vision-precomp.h"   // Precompiled headers
+
 #include <mrpt/config.h>
 #include <mrpt/vision/utils.h>
 #include <mrpt/vision/pnp_algos.h>
@@ -29,9 +32,8 @@
 #include "so3.h"
 
 bool mrpt::vision::pnp::CPnP::dls(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<Eigen::MatrixXd> img_pts, int n, const Eigen::Ref<Eigen::MatrixXd> cam_intrinsic, Eigen::Ref<Eigen::MatrixXd> pose_mat){
-    try{
-    #if MRPT_HAS_OPENCV==1
-    
+#if MRPT_HAS_OPENCV
+
     Eigen::MatrixXd cam_in_eig=cam_intrinsic.transpose(), img_pts_eig=img_pts.transpose().block(0,0,n,2), obj_pts_eig=obj_pts.transpose(), t_eig;
     Eigen::Matrix3d R_eig; 
     cv::Mat cam_in_cv(3,3,CV_32F), img_pts_cv(2,n,CV_32F), obj_pts_cv(3,n,CV_32F), R_cv(3,3,CV_32F), t_cv(3,1,CV_32F);
@@ -51,21 +53,13 @@ bool mrpt::vision::pnp::CPnP::dls(const Eigen::Ref<Eigen::MatrixXd> obj_pts, con
     pose_mat << t_eig,q.vec();
     
     return ret;
-    
-    #else
-    throw(-1)
-    #endif
-    }
-    catch(int e)
-    {
-        if (e==-1)
-            std::cout<<"Please install OpenCV for DLS-PnP" << std::endl;
-    }
+#else
+	THROW_EXCEPTION("This function requires compiling MRPT against OpenCV!");
+#endif
 }
 
 bool mrpt::vision::pnp::CPnP::epnp(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<Eigen::MatrixXd> img_pts, int n, const Eigen::Ref<Eigen::MatrixXd> cam_intrinsic, Eigen::Ref<Eigen::MatrixXd> pose_mat){
-    try{
-    #if MRPT_HAS_OPENCV==1
+#if MRPT_HAS_OPENCV
     Eigen::MatrixXd cam_in_eig=cam_intrinsic.transpose(), img_pts_eig=img_pts.transpose().block(0,0,n,2), obj_pts_eig=obj_pts.transpose(), t_eig;
     Eigen::Matrix3d R_eig; 
     cv::Mat cam_in_cv(3,3,CV_32F), img_pts_cv(2,n,CV_32F), obj_pts_cv(3,n,CV_32F), R_cv, t_cv;
@@ -85,21 +79,13 @@ bool mrpt::vision::pnp::CPnP::epnp(const Eigen::Ref<Eigen::MatrixXd> obj_pts, co
     pose_mat << t_eig,q.vec();
     
     return true;
-    
-    #else
-    throw(-1);
-    #endif
-    }
-    catch(int e)
-    {
-        if (e==-1)
-            std::cout<<"Please install OpenCV for EPnP" << std::endl;
-    }
+#else
+	THROW_EXCEPTION("This function requires compiling MRPT against OpenCV!");
+#endif
 }
 
 bool mrpt::vision::pnp::CPnP::upnp(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<Eigen::MatrixXd> img_pts, int n, const Eigen::Ref<Eigen::MatrixXd> cam_intrinsic, Eigen::Ref<Eigen::MatrixXd> pose_mat){
-    try{
-    #if MRPT_HAS_OPENCV==1
+#if MRPT_HAS_OPENCV
     Eigen::MatrixXd cam_in_eig=cam_intrinsic.transpose(), img_pts_eig=img_pts.transpose().block(0,0,n,2), obj_pts_eig=obj_pts.transpose(), t_eig;
     Eigen::Matrix3d R_eig; 
     cv::Mat cam_in_cv(3,3,CV_32F), img_pts_cv(2,n,CV_32F), obj_pts_cv(3,n,CV_32F), R_cv, t_cv;
@@ -119,15 +105,9 @@ bool mrpt::vision::pnp::CPnP::upnp(const Eigen::Ref<Eigen::MatrixXd> obj_pts, co
     pose_mat << t_eig,q.vec();
     
     return true;
-    #else
-    throw(-1);
-    #endif
-    }
-    catch(int e)
-    {
-        if (e==-1)
-            std::cout<<"Please install OpenCV for UPnP" << std::endl;
-    }
+#else
+	THROW_EXCEPTION("This function requires compiling MRPT against OpenCV!");
+#endif
 }
 
 
