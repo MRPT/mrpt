@@ -92,7 +92,7 @@ void thread_example2(int id)
 	{
 		printf("[thread_example2 %i, ID:%lu] Started, trying to get into semaphore...\n", id, getCurrentThreadId());
 
-		CSemaphore  sem(0,1,"mrpt-demo-sem1");
+		CSemaphore  sem(0,1);
 
 		sem.waitForSignal();
 
@@ -122,7 +122,7 @@ void ThreadsTest2()
 	std::vector<TThreadHandle>  threads;
 
 	// Create a named semaphore:
-	CSemaphore  sem(3 /*init val*/,50 /*max val*/,"mrpt-demo-sem1");
+	CSemaphore  sem(3 /*init val*/,50 /*max val*/);
 
 	for (int i=1;i<=10;i++)
 		threads.push_back( createThread( thread_example2, i ) );
