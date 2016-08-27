@@ -36,7 +36,7 @@ void sem_thread_example(int id)
 	MRPT_UNUSED_PARAM(id);
 #endif // DEBUG_OUT
 
-		CSemaphore  sem(1,1,"/mrpt-demo-sem");
+		CSemaphore  sem(1,1);
 #ifdef DEBUG_OUT
     cout << mrpt::format("[thread_example2 %i, ID:%lu] Object created...\n", id, getCurrentThreadId()); cout.flush();
 #endif // DEBUG_OUT
