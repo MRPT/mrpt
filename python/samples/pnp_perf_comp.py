@@ -37,9 +37,7 @@ n_iter = 100
 
 class HighlightLines(plugins.PluginBase):
     """A plugin for an interactive legend.
-
     Inspired by http://bl.ocks.org/simzou/6439398
-
     """
 
     JAVASCRIPT = """
@@ -51,7 +49,6 @@ class HighlightLines(plugins.PluginBase):
     function InteractiveLegend(fig, props){
         mpld3.Plugin.call(this, fig, props);
     };
-
     InteractiveLegend.prototype.draw = function(){
         var labels = new Array();
         for(var i=0; i<this.props.labels.length; i++){
@@ -61,11 +58,9 @@ class HighlightLines(plugins.PluginBase):
             obj.visible = false;
             labels.push(obj);
         }
-
         var ax = this.fig.axes[0]
         var legend = this.fig.canvas.append("svg:g")
                                .attr("class", "legend");
-
         // add the rectangles
         legend.selectAll("rect")
                 .data(labels)
@@ -80,7 +75,6 @@ class HighlightLines(plugins.PluginBase):
                 .attr("class", "legend-box")
                 .style("fill", "white")
                 .on("click", click)
-
         // add the text
         legend.selectAll("text")
                 .data(labels)
@@ -92,7 +86,6 @@ class HighlightLines(plugins.PluginBase):
                 return ax.position[1]+ i * 25
               })
               .text(function(d) { return d.label })
-
         // specify the action on click
         function click(d,i){
             d.visible = !d.visible;
@@ -104,7 +97,6 @@ class HighlightLines(plugins.PluginBase):
               })
             d3.select(d.line.path[0][0])
                 .style("stroke-opacity", d.visible ? 1 : d.line.props.alpha);
-
         }
     };
     """
@@ -255,6 +247,11 @@ def display_comparison_plot_mpld3(t, arr, names, line_styles, title, xtitle, yti
 
 
 def calc_err(pose1, pose2):
+
+    if np.any(np.isnan(pose1)) or np.log10(np.linalg.norm(pose1)) > 5:
+        err = [0, 0]
+        return err
+
     # Percent error in translation
     t_est = np.array(pose1[0:3])
     t = np.array(pose2[0:3])
@@ -336,10 +333,10 @@ def err_plot():
         err_net_t.append(err_t)
         err_net_q.append(err_q)
 
-    mean_err_t = np.mean(err_net_t, axis=1)
-    mean_err_q = np.mean(err_net_q, axis=1)
-    median_err_t = np.median(err_net_t, axis=1)
-    median_err_q = np.median(err_net_q, axis=1)
+    mean_err_t = np.mean(err_net_t, axis=0)
+    mean_err_q = np.mean(err_net_q, axis=0)
+    median_err_t = np.median(err_net_t, axis=0)
+    median_err_q = np.median(err_net_q, axis=0)
 
     for i in np.arange(0, n_algos):
         print 'mean_err_t_' + algo_names[i] + '=', mean_err_t[i], 'median_err_t_' + algo_names[i] + '=', median_err_t[i]
@@ -353,9 +350,9 @@ def err_plot():
     s = '<h2> Translation error and Rotation error for 100 iterations (R - Randomly varying, t - fixed) </h2>'
 
     s1 = display_comparison_plot_mpld3(it, err_net_t, names=algo_names, line_styles=algo_ls,
-                                       title='Translation %Error Plot', xtitle='Iteration', ytitle='%$e_t$', ylim=[0, 2], figname='err_t')
+                                       title='% Translation Error Plot', xtitle='Iteration', ytitle='e_t', ylim=[0, 2], figname='err_t')
     s2 = display_comparison_plot_mpld3(it, err_net_q, names=algo_names, line_styles=algo_ls,
-                                       title='Rotation Error Plot (deg)', xtitle='Iteration', ytitle='$e_q$', ylim=[0, 1], figname='err_q')
+                                       title='Rotation Error Plot (deg)', xtitle='Iteration', ytitle='e_q', ylim=[0, 1], figname='err_q')
 
     s = s + '\n <table > \n <tr > \n <td > \n' + s1 + \
         '</td > \n <td> \n' + s2 + '</td> \n </tr> \n </table> \n'
@@ -366,16 +363,12 @@ def err_plot():
     comp_arr = np.zeros([n_iter,2])
     for i in np.arange(0,n_iter):
         comp_arr[i,:] = 2*mean_err_p3p
-
-
     nconv_epnp = float(np.sum(err_epnp>comp_arr))/n_iter*100
     nconv_dls  = float(np.sum(err_dls>comp_arr))/n_iter*100
     nconv_ppnp  = float(np.sum(err_ppnp>comp_arr))/n_iter*100
     nconv_posit  = float(np.sum(err_posit>comp_arr))/n_iter*100
     nconv_lhm  = float(np.sum(err_lhm>comp_arr))/n_iter*100
     nconv_p3p  = float(np.sum(err_p3p>comp_arr))/n_iter*100
-
-
     plt.figure()
     xvals = ['epnp', 'dls', 'ppnp', 'posit','lhm', 'p3p']
     xvals_int = np.arange(0,n_algos)
@@ -443,11 +436,11 @@ def err_statistics_fcn_n():
             err_net_t.append(err_t)
             err_net_q.append(err_q)
 
-        mean_err_t_net.append(np.mean(err_net_t, axis=1))
-        mean_err_q_net.append(np.mean(err_net_q, axis=1))
+        mean_err_t_net.append(np.mean(err_net_t, axis=0))
+        mean_err_q_net.append(np.mean(err_net_q, axis=0))
 
-        median_err_t_net.append(np.median(err_net_t, axis=1))
-        median_err_q_net.append(np.median(err_net_q, axis=1))
+        median_err_t_net.append(np.median(err_net_t, axis=0))
+        median_err_q_net.append(np.median(err_net_q, axis=0))
 
     it = np.arange(5, 25)
 
@@ -459,14 +452,14 @@ def err_statistics_fcn_n():
     s = '<h2> Mean and Median error in Translation and Rotation with varying 2d/3d correspondences (n) </h2>'
 
     s1 = display_comparison_plot_mpld3(it, mean_err_t_net, names=algo_names, line_styles=algo_ls,
-                                       title='Mean Translation %Error Plot', xtitle='n', ytitle=r'% $\bar{e}_t$', ylim=[0, 10], figname='mean_err_t')
+                                       title='Mean Translation %Error Plot', xtitle='n', ytitle=r'% Translation error e_t', ylim=[0, 10], figname='mean_err_t')
     s2 = display_comparison_plot_mpld3(it, mean_err_q_net, names=algo_names, line_styles=algo_ls,
-                                       title='Mean Rotation Error Plot (deg)', xtitle='n', ytitle=r'$\bar{e}_q$', ylim=[0, 0.5], figname='mean_err_q')
+                                       title='Mean Rotation Error Plot (deg)', xtitle='n', ytitle=r'Rotation error e_q (deg)', ylim=[0, 0.5], figname='mean_err_q')
 
     s3 = display_comparison_plot_mpld3(it, median_err_t_net, names=algo_names, line_styles=algo_ls,
-                                       title='Median Translation %Error Plot', xtitle='n', ytitle=r'% $\tilde{e}_t$', ylim=[0, 1], figname='median_err_t')
+                                       title='Median Translation %Error Plot', xtitle='n', ytitle=r'% Translation error e_t', ylim=[0, 1], figname='median_err_t')
     s4 = display_comparison_plot_mpld3(it, median_err_q_net, names=algo_names, line_styles=algo_ls,
-                                       title='Median Rotation Error Plot (deg)', xtitle='n', ytitle=r'$\tilde{e}_q$', ylim=[0, 0.5], figname='median_err_q')
+                                       title='Median Rotation Error Plot (deg)', xtitle='n', ytitle=r'Rotation error e_q(deg)', ylim=[0, 0.5], figname='median_err_q')
 
     s = s + '\n<table>\n <tr>\n <td>\n' + s1 + '</td>\n <td>\n' + s2 + '</td>\n </tr>\n' + \
         '\n<tr>\n <td>\n' + s3 + '\n</td>\n <td>\n' + s4 + '\n</td>\n </tr>\n </table>\n'
@@ -529,11 +522,11 @@ def err_statistics_fcn_sigma():
             err_net_t.append(err_t)
             err_net_q.append(err_q)
 
-        mean_err_t_net.append(np.mean(err_net_t, axis=1))
-        mean_err_q_net.append(np.mean(err_net_q, axis=1))
+        mean_err_t_net.append(np.mean(err_net_t, axis=0))
+        mean_err_q_net.append(np.mean(err_net_q, axis=0))
 
-        median_err_t_net.append(np.median(err_net_t, axis=1))
-        median_err_q_net.append(np.median(err_net_q, axis=1))
+        median_err_t_net.append(np.median(err_net_t, axis=0))
+        median_err_q_net.append(np.median(err_net_q, axis=0))
 
     it = np.arange(0.001, 0.010, 0.001)
 
@@ -546,14 +539,14 @@ def err_statistics_fcn_sigma():
     s = '\n<h2>\n Mean and Median error in Translation and Rotation with varying noise variance (sigma)\n </h2>\n'
 
     s1 = display_comparison_plot_mpld3(it, mean_err_t_net, names=algo_names, line_styles=algo_ls, title='Mean Translation %Error Plot',
-                                       xtitle=r'\sigma', ytitle=r'% $\bar{e}_t$', ylim=[0, 10], figname='mean_sigma_err_t')
+                                       xtitle=r'\sigma', ytitle=r'% Translation error e_t', ylim=[0, 10], figname='mean_sigma_err_t')
     s2 = display_comparison_plot_mpld3(it, mean_err_q_net, names=algo_names, line_styles=algo_ls, title='Mean Rotation Error Plot (deg)',
-                                       xtitle=r'\sigma', ytitle=r'$\bar{e}_q$', ylim=[0, 0.5], figname='mean_sigma_err_q')
+                                       xtitle=r'\sigma', ytitle=r'Rotation error e_q (deg)', ylim=[0, 0.5], figname='mean_sigma_err_q')
 
     s3 = display_comparison_plot_mpld3(it, median_err_t_net, names=algo_names, line_styles=algo_ls, title='Median Translation %Error Plot',
-                                       xtitle=r'\sigma', ytitle=r'% $\tilde{e}_t$', ylim=[0, 1], figname='median_sigma_err_t')
+                                       xtitle=r'\sigma', ytitle=r'% Translation error e_t', ylim=[0, 1], figname='median_sigma_err_t')
     s4 = display_comparison_plot_mpld3(it, median_err_q_net, names=algo_names, line_styles=algo_ls, title='Median Rotation Error Plot (deg)',
-                                       xtitle=r'\sigma', ytitle=r'$\tilde{e}_q$', ylim=[0, 0.5], figname='median_sigma_err_q')
+                                       xtitle=r'\sigma', ytitle=r'Rotation error e_q (deg)', ylim=[0, 0.5], figname='median_sigma_err_q')
 
     s = s + '\n<table>\n <tr>\n <td>\n' + s1 + '\n</td>\n <td>\n' + s2 + '\n</td>\n </tr>\n' + \
         '\n<tr>\n <td>\n' + s3 + '\n</td> \n<td>\n' + s4 + '\n</td>\n </tr>\n </table>\n'
@@ -626,26 +619,56 @@ def time_comp():
     return s
 
 # Introduction and links to various files
-ss = """<h1> Introduction </h1>
+ss = """<!DOCTYPE html>
+<html>
+<body bgcolor="#E6E6FA">
 <br>
-<embed src = "https://www.dropbox.com/s/9m4rw8sl868xrob/pnp_intro-1.png?raw=1 #toolbar=0&navpanes=0&scrollbar=0" width = "1000" height = "1500" >
+<CENTER>
+<embed src = "https://www.dropbox.com/s/a266gqe3o0typpg/pnp_intro1.png?raw=1 #toolbar=0&navpanes=0&scrollbar=0" width = "1000" height = "1250" ALIGN=CENTER>
 <br>
-<embed src = "https://www.dropbox.com/s/e3ll5ptjm9dnoev/pnp_intro-2.png?raw=1 #toolbar=0&navpanes=0&scrollbar=0" width = "1000" height = "600" >
+<embed src = "https://www.dropbox.com/s/5v8n4edc7g8q8tu/pnp_intro2.png?raw=1 #toolbar=0&navpanes=0&scrollbar=0" width = "1000" height = "1250" ALIGN=CENTER>
+<br>
+<embed src = "https://www.dropbox.com/s/6bdadtn99tthth0/pnp_intro3.png?raw=1 #toolbar=0&navpanes=0&scrollbar=0" width = "1000" height = "650" ALIGN=CENTER>
 <br>
 <h1> Sample Pose Estimation using Camera Calib application of MRPT </h1>
 <br>
-<iframe src = "https://www.youtube.com/embed/aGd7ZyrcwaE" width = "960" height = "540" frameborder = "0" allowfullscreen > </iframe >
-<br>
-<br>
-<h1> Performance Comparison using python interface in MRPT(pnp_perf_comp.py) </h1>"""
+<iframe src = "https://www.youtube.com/embed/aGd7ZyrcwaE" width = "960" height = "540" frameborder = "0" allowfullscreen ALIGN=CENTER> </iframe >
 
+<br>
+<br>
+<h1> Performance Comparison using python interface in MRPT(pnp_perf_comp.py) </h1>
+<div>
+<h3> Plots are interactive <br>
+    * Click on legend box to solidy the particular algorithm <br>
+    * Pan and Zoom at lower left corner  </h3>
+</div>"""
+
+print 'Test1 - Variation in error for 100 iterations \n'
 s1 = err_plot()
-s2 = err_statistics_fcn_sigma()
-s3 = err_statistics_fcn_n()
-s4 = time_comp()
+print 'Test1 Complete \n\n'
+sys.stdout.flush()
 
-s5 = """ <h1> MRPT Merge Pull Request </h1>
- <a href="https://github.com/MRPT/mrpt/pull/310">Link to PnP Algorithm Pull Request </a>
+print 'Test2 - Variation in error with image pixel noise standard deviation\n'
+s2 = err_statistics_fcn_sigma()
+print 'Test2 Complete\n\n'
+sys.stdout.flush()
+
+print 'Test3 - Variation in error with number of 2d/3d correspondences\n'
+s3 = err_statistics_fcn_n()
+print 'Test3 Complete\n\n'
+sys.stdout.flush()
+
+print 'Test4 - Average computation time per algorithm\n'
+s4 = time_comp()
+print 'Test 4 Complete \n\n'
+
+s5 = """<h1> MRPT Merge Pull Request </h1>
+  <h3>
+  <a href="https://github.com/MRPT/mrpt/pull/310">Link to PnP Algorithm Pull Request </a>
+  </h3>
+</CENTER>
+</body>
+</html>
 """
 
 ss = ss + s1 + s2 + s3 + s4 + s5
