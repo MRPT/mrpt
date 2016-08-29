@@ -23,7 +23,6 @@ Build-Depends: debhelper (>= 9),
 	texlive-latex-extra,
 	texlive-science,
 	doxygen-latex | perl,
-	libeigen3-dev,
 	libdc1394-22-dev [linux-any],
 	libusb-1.0-0-dev [linux-any],
 	libudev-dev [linux-any],
@@ -35,7 +34,8 @@ Build-Depends: debhelper (>= 9),
 	gdb,
 	lib3ds-dev,
 	libsuitesparse-dev,
-	python-numpy
+	python-numpy,
+	libeigen3-dev
 Standards-Version: 3.9.8
 Homepage: http://www.mrpt.org/
 
