@@ -9,8 +9,18 @@ import timeit
 import mpld3
 from mpld3 import plugins, utils
 
+# Install tabulate using "pip-install tabulate"
+from tabulate import tabulate
+
+import os
+
+
+def clear(): os.system('clear')
+# Function to clear screen
 import pymrpt
 
+
+# Matplotlib figure parameters
 mpl.rcParams['figure.figsize'] = (12.0, 8.0)
 plt.rcParams.update({'axes.titlesize': 30, 'axes.labelsize': 20, 'xtick.labelsize': 15, 'ytick.labelsize': 15,
                      'figure.titlesize': 40})
@@ -18,10 +28,16 @@ plt.rcParams.update({'axes.titlesize': 30, 'axes.labelsize': 20, 'xtick.labelsiz
 # Define number of points and camera parameters
 n = 10
 sigma = 0.0005
+n_range = range(5, 25)
+sigma_range = np.arange(0.0001, 0.001, 0.0001)
 f = 1.0
 cx = 0.0
 cy = 0.0
 cam_intrinsic = np.array([[f, 0.0, cx], [0.0, f, cy], [0.0, 0.0, 1.0]])
+
+# Define constants for serial outputting results
+checkmark = u'\u2713'
+l_progress_bar = 50
 
 # Instantiate pnp module
 pnp = pymrpt.pnp(n)
@@ -36,6 +52,7 @@ n_iter = 100
 
 
 class HighlightLines(plugins.PluginBase):
+    # css format for interactive d3 plots
     """A plugin for an interactive legend.
     Inspired by http://bl.ocks.org/simzou/6439398
     """
@@ -119,6 +136,7 @@ css = """
 
 
 def vector2RotMat(vec, theta=0):
+    # Function to convert from axis, angle to rotation matrix
     # Rodrigues rotation formula
     n_check = np.linalg.norm(vec)
 
@@ -136,6 +154,7 @@ def vector2RotMat(vec, theta=0):
 
 
 def quatvec2RotMat(q):
+    # Function to convert from quaternion to Rotaiton matrix
     qw = np.sqrt(1 - np.linalg.norm(q) * np.linalg.norm(q))
     qx = q[0]
     qy = q[1]
@@ -151,6 +170,7 @@ def quatvec2RotMat(q):
 
 
 def RotMat2quat(R):
+    # Function to convert from rotation matrix to Quaternion
     qw = np.sqrt(1 + R[0, 0] + R[1, 1] + R[2, 2]) / 2
 
     if qw > 0.01:
@@ -224,6 +244,7 @@ def display_comparison_plot(t, arr, names, line_styles, title, xtitle, ytitle, y
 
 
 def display_comparison_plot_mpld3(t, arr, names, line_styles, title, xtitle, ytitle, ylim, figname):
+    # Function used to generate interactive d3 plots in html
     f, ax = plt.subplots()
     lines = []
     for i in np.arange(0, len(names)):
@@ -246,9 +267,74 @@ def display_comparison_plot_mpld3(t, arr, names, line_styles, title, xtitle, yti
     return mpld3.fig_to_html(f)
 
 
-def calc_err(pose1, pose2):
+def printProgress(iteration, total, prefix='', suffix='', decimals=1, barLength=100):
+    """
+    # Print iterations progress
+    Call in a loop to create terminal progress bar
+    @params:
+        iteration   - Required  : current iteration (Int)
+        total       - Required  : total iterations (Int)
+        prefix      - Optional  : prefix string (Str)
+        suffix      - Optional  : suffix string (Str)
+        decimals    - Optional  : positive number of decimals in percent complete (Int)
+        barLength   - Optional  : character length of bar (Int)
+    """
+    formatStr = "{0:." + str(decimals) + "f}"
+    percents = formatStr.format(100 * (iteration / float(total)))
+    filledLength = int(round(barLength * iteration / float(total)))
+    bar = u"\u2588" * filledLength + '-' * (barLength - filledLength)
+    sys.stdout.write('\r%s |%s| %s%s %s' % (prefix, bar, percents, '%', suffix)),
+    sys.stdout.flush()
+    if iteration == total:
+        sys.stdout.write('\n')
+        sys.stdout.flush()
 
-    if np.any(np.isnan(pose1)) or np.log10(np.linalg.norm(pose1)) > 5:
+
+def printTestStatus(test_index):
+    # Print overall progress of all the tests
+    head_tests = ['#No.', 'Status', 'Description']
+
+    table_tests = [[str(1), '', 'Test for 100 iterations with each algorithm'], [str(2), '',  'Varitaion of error with image pixel noise standard deviation (' +
+                                                                                 u'\u03C3' + ')'], [str(3), '', ' Variation in error with number of 2d/3d correspondences (n)'], [str(4), '', 'Average computation time of each algorithm']]
+
+    for i in range(0, test_index):
+        table_tests[i][1] = checkmark
+
+    print tabulate(table_tests, head_tests, tablefmt='fancy_grid')
+
+    for i in range(0, test_index):
+        printProgress(l_progress_bar, l_progress_bar, prefix='Test' + str(i + 1) +
+                      ' Progress:', suffix='Complete', barLength=50)
+
+
+def printTest1Results(vals):
+    # Function to print results of test 1
+    test1_headers = ['Algo', 'Translation Mean Error', 'Translation Median Error',
+                     'Rotation Mean Error', 'Rotation Median Error']
+
+    test1_table = np.empty([7, 5], dtype=object)
+    test1_table[:, 1:] = vals
+    test1_table[:, 0] = algo_names
+
+    print tabulate(test1_table, test1_headers, tablefmt='fancy_grid')
+
+
+def printTest4Results(vals):
+    # Function to print results of test 4
+    test4_headers = ['Algo', 'Translation Mean Error', 'Translation Median Error',
+                     'Rotation Mean Error', 'Rotation Median Error']
+
+    vals = np.random.rand(7, 1)
+    test4_table = np.empty([7, 2], dtype=object)
+    test4_table[:, 1:] = vals
+    test4_table[:, 0] = algo_names
+
+    print tabulate(test4_table, test4_headers, tablefmt='fancy_grid')
+
+
+def calc_err(pose1, pose2):
+    # FUnction to compute reprojection errors
+    if np.any(np.isnan(pose1)) or np.linalg.norm(pose1) > 1000000:
         err = [0, 0]
         return err
 
@@ -260,7 +346,10 @@ def calc_err(pose1, pose2):
     q_est = pose1[3:6, 0]
     q = pose2[3:6, 0]
 
-    val = np.dot(q_est, q) / np.linalg.norm(q_est) / np.linalg.norm(q)
+    if np.linalg.norm(q) != 0 and np.linalg.norm(q_est):
+        val = np.dot(q_est, q) / np.linalg.norm(q_est) / np.linalg.norm(q)
+    else:
+        val = 1
 
     if val > 1:
         val = 1
@@ -282,6 +371,7 @@ def calc_err(pose1, pose2):
 
 
 def err_plot():
+    # Test 1
     # Define object points and image points
 
     obj_pts = np.random.randint(-40, 40, [n, 3])
@@ -332,16 +422,23 @@ def err_plot():
 
         err_net_t.append(err_t)
         err_net_q.append(err_q)
-
+        printProgress(it, n_iter, prefix='Test' + str(1) +
+                      ' Progress:', suffix='Complete', barLength=50)
     mean_err_t = np.mean(err_net_t, axis=0)
     mean_err_q = np.mean(err_net_q, axis=0)
     median_err_t = np.median(err_net_t, axis=0)
     median_err_q = np.median(err_net_q, axis=0)
 
+    vals = np.empty([7, 4])
+    vals[:, 0] = mean_err_t
+    vals[:, 1] = median_err_t
+    vals[:, 2] = mean_err_q
+    vals[:, 3] = median_err_q
+    """
     for i in np.arange(0, n_algos):
         print 'mean_err_t_' + algo_names[i] + '=', mean_err_t[i], 'median_err_t_' + algo_names[i] + '=', median_err_t[i]
         print 'mean_err_q_' + algo_names[i] + '=', mean_err_q[i], 'median_err_q_' + algo_names[i] + '=', median_err_q[i]
-
+    """
     it = np.arange(0, n_iter)
 
     err_net_t = np.array(err_net_t)
@@ -357,7 +454,7 @@ def err_plot():
     s = s + '\n <table > \n <tr > \n <td > \n' + s1 + \
         '</td > \n <td> \n' + s2 + '</td> \n </tr> \n </table> \n'
 
-    return s
+    return s, vals
 
     """
     comp_arr = np.zeros([n_iter,2])
@@ -382,13 +479,13 @@ def err_plot():
 
 
 def err_statistics_fcn_n():
-
+    # Test 2
     mean_err_t_net = []
     mean_err_q_net = []
     median_err_t_net = []
     median_err_q_net = []
 
-    for n in np.arange(5, 25):
+    for n in n_range:
         # Define object points and image points
         obj_pts = np.random.randint(-40, 40, [n, 3])
         obj_pts = obj_pts.astype(float)
@@ -441,6 +538,9 @@ def err_statistics_fcn_n():
 
         median_err_t_net.append(np.median(err_net_t, axis=0))
         median_err_q_net.append(np.median(err_net_q, axis=0))
+
+        printProgress(n - 5, len(n_range), prefix='Test' + str(3) +
+                      ' Progress:', suffix='Complete', barLength=50)
 
     it = np.arange(5, 25)
 
@@ -467,7 +567,7 @@ def err_statistics_fcn_n():
 
 
 def err_statistics_fcn_sigma():
-
+    # Test 3
     mean_err_t_net = []
     mean_err_q_net = []
     median_err_t_net = []
@@ -475,7 +575,7 @@ def err_statistics_fcn_sigma():
 
     n = 10
 
-    for sigma in np.arange(0.0001, 0.0010, 0.0001):
+    for sigma in sigma_range:
         # Define object points and image points
         obj_pts = np.random.randint(-40, 40, [n, 3])
         obj_pts = obj_pts.astype(float)
@@ -527,6 +627,9 @@ def err_statistics_fcn_sigma():
 
         median_err_t_net.append(np.median(err_net_t, axis=0))
         median_err_q_net.append(np.median(err_net_q, axis=0))
+
+        printProgress(sigma * 1000, len(sigma_range), prefix='Test' + str(2) +
+                      ' Progress:', suffix='Complete', barLength=50)
 
     it = np.arange(0.001, 0.010, 0.001)
 
@@ -555,7 +658,7 @@ def err_statistics_fcn_sigma():
 
 
 def time_comp():
-
+    # Test 4
     obj_pts_store = []
     img_pts_store = []
     n_max = 50
@@ -609,6 +712,8 @@ def time_comp():
 
         tcomp_storage.append(tcomp)
 
+        printProgress(n - n_start, len(range(n_start, n_max, n_step)), prefix='Test' + str(4) +
+                      ' Progress:', suffix='Complete', barLength=50)
     it = np.arange(n_start, n_max, n_step)
     tcomp_storage = np.array(tcomp_storage)
 
@@ -643,24 +748,39 @@ ss = """<!DOCTYPE html>
     * Pan and Zoom at lower left corner  </h3>
 </div>"""
 
-print 'Test1 - Variation in error for 100 iterations \n'
-s1 = err_plot()
-print 'Test1 Complete \n\n'
-sys.stdout.flush()
+# sys.stderr.write('\x1b[2J\x1b[H')
+clear()
+printTestStatus(0)
+printProgress(0, len(range(5, 25)), prefix='Test' + str(1) +
+              ' Progress:', suffix='Complete', barLength=50)
+s1, vals = err_plot()
 
-print 'Test2 - Variation in error with image pixel noise standard deviation\n'
+# sys.stderr.write('\x1b[2J\x1b[H')
+clear()
+printTestStatus(1)
+printProgress(0, len(range(5, 25)), prefix='Test' + str(2) +
+              ' Progress:', suffix='Complete', barLength=50)
 s2 = err_statistics_fcn_sigma()
-print 'Test2 Complete\n\n'
-sys.stdout.flush()
 
-print 'Test3 - Variation in error with number of 2d/3d correspondences\n'
+# sys.stderr.write('\x1b[2J\x1b[H')
+clear()
+printTestStatus(2)
+printProgress(0, len(range(5, 25)), prefix='Test' + str(3) +
+              ' Progress:', suffix='Complete', barLength=50)
 s3 = err_statistics_fcn_n()
-print 'Test3 Complete\n\n'
-sys.stdout.flush()
 
-print 'Test4 - Average computation time per algorithm\n'
+# sys.stderr.write('\x1b[2J\x1b[H')
+clear()
+printTestStatus(3)
+printProgress(0, len(range(5, 25)), prefix='Test' + str(4) +
+              ' Progress:', suffix='Complete', barLength=50)
 s4 = time_comp()
-print 'Test 4 Complete \n\n'
+
+# sys.stderr.write('\x1b[2J\x1b[H')
+clear()
+printTestStatus(4)
+print '\n\nResults of Test 1 \n\n'
+printTest1Results(vals)
 
 s5 = """<h1> MRPT Merge Pull Request </h1>
   <h3>
