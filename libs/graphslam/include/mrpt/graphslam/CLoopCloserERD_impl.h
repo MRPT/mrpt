@@ -759,7 +759,7 @@ void CLoopCloserERD<GRAPH_t>::execDijkstraProjection(
 	m_node_optimal_paths.clear();
 
 	// get the neighbors of each node
-	std::map<TNodeID, std::set<TNodeID>>  neighbors_of;
+	std::map<TNodeID, std::set<TNodeID> >  neighbors_of;
 	m_graph->getAdjacencyMatrix(neighbors_of);
 
 	// initialize a pool of TPaths - draw the minimum-uncertainty path during
@@ -790,15 +790,22 @@ void CLoopCloserERD<GRAPH_t>::execDijkstraProjection(
 	//int iters = 0;
 	//// TODO Remove these - <<<<<<<<<<<<<<<<<<<<< vvvUNCOMMENT BELOW AS WELLvvv
 
-	// for all unvisited nodes
-	while ( std::any_of(visited_nodes.begin(), visited_nodes.end(),
-			[](bool b) {return !b;} ) ) { // if there is at least one false..
+	while (true) {
+
+		// if there is at least one false, exit loop
+		for (std::vector<bool>::const_iterator it = visited_nodes.begin();
+				it != visited_nodes.end(); ++it) {
+			if (! *it) {
+				break;
+			}
+		}
 
 		// if an ending nodeID has been specified, end the method when the path to
 		// it is found.
 		if (ending_node != INVALID_NODEID) {
 			if (visited_nodes.at(ending_node)) {
-				this->logFmt(mrpt::utils::LVL_DEBUG, "----------- Done with Dijkstra Projection... ----------");
+				this->logFmt(mrpt::utils::LVL_DEBUG,
+						"----------- Done with Dijkstra Projection... ----------");
 				m_time_logger.leave("Dijkstra Projection");
 				return;
 			}

@@ -2155,12 +2155,16 @@ void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::compu
 	m_curr_deformation_energy = 0;
 
 	// first element of map
-	std::map<mrpt::utils::TNodeID, size_t>::const_iterator start_it =
-		std::next(m_nodeID_to_gt_indices.begin(), 1);
+	//std::map<mrpt::utils::TNodeID, size_t>::const_iterator start_it =
+		//std::next(m_nodeID_to_gt_indices.begin(), 1);
+	std::map<mrpt::utils::TNodeID, size_t>::const_iterator start_it = m_nodeID_to_gt_indices.begin();
+	start_it++;
 
 
 	// fetch the first node, gt positions separately
-	std::map<mrpt::utils::TNodeID, size_t>::const_iterator prev_it = std::prev(start_it, 1);
+	//std::map<mrpt::utils::TNodeID, size_t>::const_iterator prev_it = std::prev(start_it, 1);
+	std::map<mrpt::utils::TNodeID, size_t>::const_iterator prev_it = start_it;
+	prev_it--;
 	pose_t prev_node_pos = m_graph.nodes[prev_it->first];
 	pose_t prev_gt_pos = m_GT_poses[prev_it->second];
 
