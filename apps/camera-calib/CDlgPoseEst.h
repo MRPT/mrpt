@@ -8,8 +8,8 @@
    +---------------------------------------------------------------------------+ */
 
 
-#ifndef CDLGCALIBWIZARDONLINE_H
-#define CDLGCALIBWIZARDONLINE_H
+#ifndef CDLGPOSEEST_H
+#define CDLGPOSEEST_H
 
 //(*Headers(CDlgCalibWizardOnline)
 #include <wx/spinctrl.h>
@@ -30,13 +30,24 @@
 #include <mrpt/hwdrivers/CCameraSensor.h>
 #include "../wx-common/CMyRedirector.h"
 
+#include <mrpt/gui/CDisplayWindow3D.h>
 
-class CDlgCalibWizardOnline: public wxDialog
+#include "MyGLCanvas.h"
+
+#include <mrpt/vision/pnp_algos.h>
+#include <mrpt/poses/CPose3D.h>
+#include <mrpt/poses/CPose3DQuat.h>
+#include <mrpt/math/CQuaternion.h>
+#include <fstream>
+
+#define CAMERA_CALIB_GUI_VERSION  "2.0"
+
+class CDlgPoseEst: public wxDialog
 {
 	public:
 
-		CDlgCalibWizardOnline(wxWindow* parent,wxWindowID id=wxID_ANY,const wxPoint& pos=wxDefaultPosition,const wxSize& size=wxDefaultSize);
-		virtual ~CDlgCalibWizardOnline();
+		CDlgPoseEst(wxWindow* parent,wxWindowID id=wxID_ANY,const wxPoint& pos=wxDefaultPosition,const wxSize& size=wxDefaultSize);
+		virtual ~CDlgPoseEst();
 
 		CMyRedirector	*redire;
 
@@ -64,6 +75,7 @@ class CDlgCalibWizardOnline: public wxDialog
 		wxTextCtrl* edLengthX;
 		wxButton* btnStart;
     		wxChoice* pnpSelect;
+    		wxStaticText* StaticTextAlgo;
 		//*)
 
 	protected:
@@ -90,7 +102,9 @@ class CDlgCalibWizardOnline: public wxDialog
 		static const long ID_BUTTON3;
 		static const long ID_CUSTOM1;
 		static const long ID_TIMER1;
-		static const long ID_CHOICE1;
+	    	static const long ID_ALGOCHOICE;
+	    	static const long ID_CAMPOSEVIEW;
+	    	static const long ID_STATICTEXTALGO;
 		//*)
 
 	private:
@@ -121,10 +135,24 @@ class CDlgCalibWizardOnline: public wxDialog
 
 		mrpt::hwdrivers::CCameraSensorPtr  m_video;
 
+        CMyGLCanvas* m_3Dview_cam;
+
+        mrpt::vision::pnp::CPnP pnp_algos;
+        typedef  bool (mrpt::vision::pnp::CPnP::*CPNP_PTR) (const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<Eigen::MatrixXd> img_pts, int n, const Eigen::Ref<Eigen::MatrixXd> cam_intrinsic, Eigen::Ref<Eigen::MatrixXd> pose_mat);
+
+        CPNP_PTR pose_algos[9]= {&mrpt::vision::pnp::CPnP::epnp, &mrpt::vision::pnp::CPnP::dls, &mrpt::vision::pnp::CPnP::upnp,
+                                 &mrpt::vision::pnp::CPnP::p3p, &mrpt::vision::pnp::CPnP::lhm, &mrpt::vision::pnp::CPnP::posit,
+                                 &mrpt::vision::pnp::CPnP::ppnp, &mrpt::vision::pnp::CPnP::rpnp, &mrpt::vision::pnp::CPnP::so3};
+
+        Eigen::MatrixXd obj_pts, img_pts, pose_mat, cam_intrinsic, I3;
+
 	public:
 		/** The list of selected frames to use in camera calibration */
 		mrpt::vision::TCalibrationImageList	  m_calibFrames;
 
+		void showCamPose();
+
+		std::fstream flog;
 };
 
 #endif
