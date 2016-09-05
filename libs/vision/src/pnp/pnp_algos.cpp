@@ -20,7 +20,9 @@
 #include <Eigen/Dense>
 
 #include <mrpt/otherlibs/do_opencv_includes.h>
-#include <opencv2/core/eigen.hpp>
+#if MRPT_HAS_OPENCV
+#	include <opencv2/core/eigen.hpp>
+#endif
 
 #include "dls.h"
 #include "epnp.h"
