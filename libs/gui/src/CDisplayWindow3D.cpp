@@ -104,6 +104,7 @@ CMyGLCanvas_DisplayWindow3D::CMyGLCanvas_DisplayWindow3D(
 {
 	m_win3D = win3D;
 	Connect(wxEVT_CHAR,(wxObjectEventFunction)&CMyGLCanvas_DisplayWindow3D::OnCharCustom);
+	Connect(wxEVT_CHAR_HOOK,(wxObjectEventFunction)&CMyGLCanvas_DisplayWindow3D::OnCharCustom);
 
 	Connect(wxEVT_LEFT_DOWN,(wxObjectEventFunction)&CMyGLCanvas_DisplayWindow3D::OnMouseDown);
 	Connect(wxEVT_RIGHT_DOWN,(wxObjectEventFunction)&CMyGLCanvas_DisplayWindow3D::OnMouseDown);
@@ -160,6 +161,7 @@ void CMyGLCanvas_DisplayWindow3D::OnMouseDown(wxMouseEvent& event)
 			m_win3D->publishEvent( mrptEventMouseDown(m_win3D, TPixelCoord(event.GetX(), event.GetY()), event.LeftDown(), event.RightDown() ) );
 		} catch(...) { }
 	}
+
 	event.Skip(); // so it's processed by the wx system!
 }
 
