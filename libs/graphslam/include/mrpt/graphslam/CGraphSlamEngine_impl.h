@@ -354,13 +354,20 @@ void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::initC
 		this->initSlamMetricVisualization();
 	}
 
+	// Decide where to read the measurements from
+	if (!m_rawlog_fname.empty()) {
+			m_provider = new mrpt::graphslam::measurement_providers::CRawlogMP();
+	}
+	else { // run in online mode
+		// TODO
+	}
+
 	MRPT_END;
 }
 
 template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR, class OPTIMIZER>
 bool CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::parseRawlogFile() {
 	MRPT_START;
-	m_time_logger.enter("proc_time");
 
 	using namespace std;
 	using namespace mrpt;
@@ -369,6 +376,9 @@ bool CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::parse
 	using namespace mrpt::obs;
 	using namespace mrpt::opengl;
 	using namespace mrpt::system;
+	using namespace mrpt::graphslam::measurement_providers;
+
+	m_time_logger.enter("proc_time");
 
 	ASSERTMSG_(m_has_read_config,
 			format("\nConfig file is not read yet.\nExiting... \n"));
@@ -376,8 +386,10 @@ bool CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::parse
 			format("\nRawlog file: %s was not found\n", m_rawlog_fname.c_str() ));
 	// good to go..
 
+	if (!(m_provider->run_online)) {
+		dynamic_cast<CRawlogMP*>(m_provider)->setRawlogFname(m_rawlog_fname);
+	}
 	// Variables initialization
-	CFileGZInputStream rawlog_file(m_rawlog_fname);
 	CActionCollectionPtr action;
 	CSensoryFramePtr observations;
 	CObservationPtr observation;
@@ -389,8 +401,7 @@ bool CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::parse
 
 	// read first measurement independently
 	{
-		CRawlog::getActionObservationPairOrObservation(
-				rawlog_file,
+		m_provider->getActionObservationPairOrObservation(
 				action,
 				observations,
 				observation,
@@ -415,12 +426,12 @@ bool CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::parse
 	}
 
 	// Read the rest of the rawlog file
-	while (CRawlog::getActionObservationPairOrObservation(
-				rawlog_file,
+	while(m_provider->getActionObservationPairOrObservation(
 				action,
 				observations,
 				observation,
 				curr_rawlog_entry ) ) {
+
 
 		// node registration procedure
 		bool registered_new_node;
@@ -651,7 +662,6 @@ bool CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::parse
 			this->logStr(LVL_INFO, "Halting execution... ");
 
 			// exiting actions
-			rawlog_file.close();
 			// change back the CImage path
 			if (mrpt::system::strCmpI(m_GT_file_format, "rgbd_tum")) {
 				CImage::IMAGES_PATH_BASE = m_img_prev_path_base;
@@ -663,7 +673,6 @@ bool CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::parse
 		m_time_logger.leave("Visuals");
 
 	} // WHILE CRAWLOG FILE
-	rawlog_file.close();
 
 	//
 	// exiting actions
