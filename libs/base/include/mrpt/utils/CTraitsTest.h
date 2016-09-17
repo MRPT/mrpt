@@ -6,10 +6,25 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
-#pragma once
-#include <mrpt/maps/CBeacon.h>
-MRPT_WARNING("*Deprecated header* Please replace with #include <mrpt/maps/CBeacon.h>. This backward compatible header will be removed in MRPT 2.0.0")
-namespace mrpt { namespace slam {
-	using mrpt::maps::CBeacon;    //!< Backward compatibility
-	using mrpt::maps::CBeaconPtr; //!< Backward compatibility
-} }
+#ifndef  CTraitsTest_H
+#define  CTraitsTest_H
+
+#include <type_traits>
+/*---------------------------------------------------------------
+        Class
+  ---------------------------------------------------------------*/
+namespace mrpt
+{
+        namespace utils
+        {
+		template<typename T>
+		class CTraitsTest{
+			static_assert(std::is_move_constructible<T>(), "Can't move");
+			static_assert(std::is_copy_constructible<T>(), "Can't copy");
+			static_assert(std::is_move_assignable<T>(), "Can't move assign");
+			static_assert(std::is_copy_assignable<T>(), "Can't copy assign");
+		};
+	}
+}
+
+#endif

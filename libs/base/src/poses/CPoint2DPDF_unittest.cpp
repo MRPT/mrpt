@@ -6,10 +6,15 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
-#pragma once
-#include <mrpt/obs/CActionCollection.h>
-MRPT_WARNING("*Deprecated header* Please replace with #include <mrpt/obs/CActionCollection.h>. This backward compatible header will be removed in MRPT 2.0.0")
-namespace mrpt { namespace slam {
-	using mrpt::obs::CActionCollection;    //!< Backward compatibility
-	using mrpt::obs::CActionCollectionPtr; //!< Backward compatibility
-} }
+
+#include <mrpt/poses/CPoint2DPDF.h>
+#include <mrpt/utils/CTraitsTest.h>
+
+using namespace mrpt;
+using namespace mrpt::poses;
+using namespace mrpt::utils;
+using namespace mrpt::math;
+using namespace std;
+
+template class mrpt::utils::CTraitsTest<CPoint2DPDF>;
+
