@@ -11,6 +11,7 @@
 #include <mrpt/poses/CPose3DQuat.h>
 #include <mrpt/math/jacobians.h>
 #include <mrpt/random.h>
+#include <mrpt/utils/CTraitsTest.h>
 #include <gtest/gtest.h>
 
 using namespace mrpt;
@@ -19,7 +20,7 @@ using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace std;
 
-
+template class mrpt::utils::CTraitsTest<CPose3DQuat>;
 
 class Pose3DQuatTests : public ::testing::Test {
 protected:
