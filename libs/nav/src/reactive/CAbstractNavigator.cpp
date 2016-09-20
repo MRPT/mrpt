@@ -53,6 +53,8 @@ CAbstractNavigator::CAbstractNavigator(CRobot2NavInterface &react_iterf_impl) :
 	m_curPose             (0,0,0),
 	m_curVel              (0,0,0),
 	m_curVelLocal         (0,0,0),
+	m_curPoseVelTimestamp (INVALID_TIMESTAMP),
+	m_timlog_delays       (true, "CAbstractNavigator::m_timlog_delays"),
 	m_badNavAlarm_AlarmTimeout(30.0),
 	DIST_TO_TARGET_FOR_SENDING_EVENT(.0)
 {
@@ -173,14 +175,7 @@ void CAbstractNavigator::navigationStep()
 			/* ----------------------------------------------------------------
 			        Get current robot dyn state:
 				---------------------------------------------------------------- */
-			if ( !m_robot.getCurrentPoseAndSpeeds(m_curPose, m_curVel) )
-			{
-				m_navigationState = NAV_ERROR;
-				m_robot.stop();
-				throw std::runtime_error("ERROR calling m_robot.getCurrentPoseAndSpeeds, stopping robot and finishing navigation");
-			}
-			m_curVelLocal = m_curVel;
-			m_curVelLocal.rotate(-m_curPose.phi);
+			updateCurrentPoseAndSpeeds();
 
 			if (is_first_nav_step) m_lastPose = m_curPose;
 
@@ -273,17 +268,11 @@ void CAbstractNavigator::navigate(const CAbstractNavigator::TNavigationParams *p
 	// Transform: relative -> absolute, if needed.
 	if ( m_navigationParams->targetIsRelative )
 	{
-		mrpt::math::TPose2D  currentPose;
-		mrpt::math::TTwist2D cur_vel;
-		if ( !m_robot.getCurrentPoseAndSpeeds(currentPose, cur_vel) )
-		{
-			doEmergencyStop("\n[CAbstractNavigator] Error querying current robot pose to resolve relative coordinates\n");
-			return;
-		}
+		this->updateCurrentPoseAndSpeeds();
 
 		const mrpt::poses::CPose2D relTarget(m_navigationParams->target);
 		mrpt::poses::CPose2D absTarget;
-		absTarget.composeFrom(currentPose, relTarget);
+		absTarget.composeFrom(m_curPose, relTarget);
 
 		m_navigationParams->target = mrpt::math::TPose2D(absTarget);
 
@@ -297,3 +286,20 @@ void CAbstractNavigator::navigate(const CAbstractNavigator::TNavigationParams *p
 	m_badNavAlarm_minDistTarget = std::numeric_limits<double>::max();
 	m_badNavAlarm_lastMinDistTime = mrpt::system::getCurrentTime();
 }
+
+void CAbstractNavigator::updateCurrentPoseAndSpeeds()
+{
+	{
+		mrpt::utils::CTimeLoggerEntry tle(m_timlog_delays, "getCurrentPoseAndSpeeds()");
+		if (!m_robot.getCurrentPoseAndSpeeds(m_curPose, m_curVel, m_curPoseVelTimestamp))
+		{
+			m_navigationState = NAV_ERROR;
+			m_robot.stop();
+			throw std::runtime_error("ERROR calling m_robot.getCurrentPoseAndSpeeds, stopping robot and finishing navigation");
+		}
+	}
+	m_timlog_delays.registerUserMeasure("curPoseAndSpeed_age", mrpt::system::timeDifference(m_curPoseVelTimestamp, mrpt::system::now()));
+	m_curVelLocal = m_curVel;
+	m_curVelLocal.rotate(-m_curPose.phi);
+}
+

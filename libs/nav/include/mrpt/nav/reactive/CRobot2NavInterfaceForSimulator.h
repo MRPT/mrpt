@@ -31,10 +31,11 @@ namespace mrpt
 	public:
 		CRobot2NavInterfaceForSimulator_Holo(mrpt::kinematics::CVehicleSimul_Holo &simul) : m_simul(simul),m_simul_time_start(.0) {}
 	
-		bool getCurrentPoseAndSpeeds(mrpt::math::TPose2D &curPose, mrpt::math::TTwist2D &curVel) MRPT_OVERRIDE
+		bool getCurrentPoseAndSpeeds(mrpt::math::TPose2D &curPose, mrpt::math::TTwist2D &curVel, mrpt::system::TTimeStamp &timestamp) MRPT_OVERRIDE
 		{
 			curPose = m_simul.getCurrentGTPose();
 			curVel  = m_simul.getCurrentGTVel();
+			timestamp = mrpt::system::now();
 			return true; // ok
 		}
 
@@ -76,10 +77,11 @@ namespace mrpt
 	public:
 		CRobot2NavInterfaceForSimulator_DiffDriven(mrpt::kinematics::CVehicleSimul_DiffDriven &simul) : m_simul(simul),m_simul_time_start(.0) {}
 	
-		bool getCurrentPoseAndSpeeds(mrpt::math::TPose2D &curPose, mrpt::math::TTwist2D &curVel) MRPT_OVERRIDE
+		bool getCurrentPoseAndSpeeds(mrpt::math::TPose2D &curPose, mrpt::math::TTwist2D &curVel, mrpt::system::TTimeStamp &timestamp) MRPT_OVERRIDE
 		{
 			curPose = m_simul.getCurrentGTPose();
 			curVel  = m_simul.getCurrentGTVel();
+			timestamp = mrpt::system::now();
 			return true; // ok
 		}
 

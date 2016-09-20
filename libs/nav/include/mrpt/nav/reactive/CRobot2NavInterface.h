@@ -13,6 +13,7 @@
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/utils/CConfigFileBase.h>
 #include <mrpt/utils/CTicTac.h>
+#include <mrpt/system/datetime.h>
 
 #include <vector>
 
@@ -48,9 +49,10 @@ namespace mrpt
 		*
 		* \param[out] curPose The latest robot pose, in world coordinates. (x,y: meters, phi: radians)
 		* \param[out] curVel  The latest robot velocity vector, in world coordinates. (vx,vy: m/s, omega: rad/s)
+		* \param[out] timestamp  The timestamp for the read pose and velocity values. Use mrpt::system::now() unless you have something more accurate.
 		* \return false on any error retrieving these values from the robot.
 		*/
-		virtual bool getCurrentPoseAndSpeeds(mrpt::math::TPose2D &curPose, mrpt::math::TTwist2D &curVel) = 0;
+		virtual bool getCurrentPoseAndSpeeds(mrpt::math::TPose2D &curPose, mrpt::math::TTwist2D &curVel, mrpt::system::TTimeStamp &timestamp ) = 0;
 
 		/** Sends a velocity command to the robot.
 		 * Length and meaning of this vector is PTG-dependent.
@@ -82,8 +84,10 @@ namespace mrpt
 
 		/** Return the current set of obstacle points, as seen from the local coordinate frame of the robot.
 		  * \return false on any error.
+		  * \param[out] obstacles  A representation of obstacles in robot-centric coordinates.
+		  * \param[out] timestamp  The timestamp for the read obstacles. Use mrpt::system::now() unless you have something more accurate.
 		  */
-		virtual bool senseObstacles( mrpt::maps::CSimplePointsMap &obstacles ) = 0;
+		virtual bool senseObstacles( mrpt::maps::CSimplePointsMap &obstacles, mrpt::system::TTimeStamp &timestamp) = 0;
 
 		/** Callback: Start of navigation command */
 		virtual void sendNavigationStartEvent () { std::cout << "[sendNavigationStartEvent] Not implemented by the user." << std::endl; }

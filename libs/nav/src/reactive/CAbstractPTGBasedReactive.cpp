@@ -448,10 +448,13 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 		}
 		else
 		{
-			if ( !m_robot.changeSpeeds(m_new_vel_cmd) )
 			{
-				doEmergencyStop("\nERROR calling RobotMotionControl::changeSpeeds!! Stopping robot and finishing navigation\n");
-				return;
+				mrpt::utils::CTimeLoggerEntry tle(m_timlog_delays, "changeSpeeds()");
+				if (!m_robot.changeSpeeds(m_new_vel_cmd))
+				{
+					doEmergencyStop("\nERROR calling RobotMotionControl::changeSpeeds!! Stopping robot and finishing navigation\n");
+					return;
+				}
 			}
 		}
 

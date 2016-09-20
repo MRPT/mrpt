@@ -113,6 +113,7 @@ namespace mrpt
 			//					PRIVATE	VARIABLES
 			// ------------------------------------------------------
 			mrpt::maps::CSimplePointsMap              m_WS_Obstacles_unsorted;  //!< The unsorted set of obstacles from the sensors
+			mrpt::system::TTimeStamp                  m_WS_Obstacles_timestamp;
 			std::vector<mrpt::maps::CSimplePointsMap> m_WS_Obstacles_inlevels; //!< One point cloud per 2.5D robot-shape-slice, coordinates relative to the robot local frame
 
 

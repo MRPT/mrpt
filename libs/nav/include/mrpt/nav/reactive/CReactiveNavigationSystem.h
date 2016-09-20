@@ -88,6 +88,7 @@ namespace mrpt
 			virtual void loggingGetWSObstaclesAndShape(CLogFileRecord &out_log);
 
 			mrpt::maps::CSimplePointsMap m_WS_Obstacles;  //!< The obstacle points, as seen from the local robot frame.
+			mrpt::system::TTimeStamp m_WS_Obstacles_timestamp;
 
 		protected:
 			void internal_loadConfigFile(const mrpt::utils::CConfigFileBase &ini, const std::string &section_prefix="") MRPT_OVERRIDE;
