@@ -189,7 +189,12 @@ bool CReactiveNavigationSystem3D::STEP2_SenseObstacles()
 
 	m_timelogger.enter("navigationStep.STEP2_LoadAndSortObstacle");
 
-	m_robot.senseObstacles( m_WS_Obstacles_unsorted );
+	{
+		CTimeLoggerEntry tle(m_timlog_delays, "senseObstacles()");
+		if (!m_robot.senseObstacles(m_WS_Obstacles_unsorted, m_WS_Obstacles_timestamp))
+			return false;
+	}
+	m_timlog_delays.registerUserMeasure("senseObstacles_age", mrpt::system::timeDifference(m_WS_Obstacles_timestamp, mrpt::system::now()));
 
 	// Empty slice maps:
 	const size_t nSlices = m_robotShape.size();

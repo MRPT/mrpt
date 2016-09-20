@@ -33,7 +33,8 @@ CReactiveNavigationSystem::CReactiveNavigationSystem(
 	:
 	CAbstractPTGBasedReactive(react_iterf_impl,enableConsoleOutput,enableLogToFile),
 	minObstaclesHeight           (-1.0),
-	maxObstaclesHeight           (1e9)
+	maxObstaclesHeight           (1e9),
+	m_WS_Obstacles_timestamp     (INVALID_TIMESTAMP)
 {
 }
 
@@ -163,10 +164,15 @@ bool CReactiveNavigationSystem::STEP2_SenseObstacles()
 {
 	try
 	{
-		CTimeLoggerEntry tle(m_timelogger,"navigationStep.STEP2_Sense");
+		bool ret; // Return true on success
+		{
+			CTimeLoggerEntry tle1(m_timelogger, "navigationStep.STEP2_Sense");
+			CTimeLoggerEntry tle2(m_timlog_delays, "senseObstacles()");
+			ret = m_robot.senseObstacles(m_WS_Obstacles, m_WS_Obstacles_timestamp);
+		}
+		m_timlog_delays.registerUserMeasure("senseObstacles_age", mrpt::system::timeDifference(m_WS_Obstacles_timestamp, mrpt::system::now()));
 
-		// Return true on success:
-		return m_robot.senseObstacles( m_WS_Obstacles );
+		return ret;
 		// Note: Clip obstacles by "z" axis coordinates is more efficiently done in STEP3_WSpaceToTPSpace()
 	}
 	catch (std::exception &e)

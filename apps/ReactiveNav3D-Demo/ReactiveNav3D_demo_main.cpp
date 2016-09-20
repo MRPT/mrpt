@@ -346,7 +346,8 @@ int main(int num_arg, char *argv[])
 			if ((rn3d.IDLE == rn3d.getCurrentState())||(rn3d.SUSPENDED == rn3d.getCurrentState()))
 			{
 				CSimplePointsMap auxpoints;
-				ReactInterface.senseObstacles( auxpoints );
+				mrpt::system::TTimeStamp auxpoints_time;
+				ReactInterface.senseObstacles( auxpoints, auxpoints_time);
 			}
 			ReactInterface.updateScene();
 			mrpt::system::sleep(5);
