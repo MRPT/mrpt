@@ -75,16 +75,14 @@ Eigen::Matrix4d lhm::qMatW(Eigen::VectorXd q)
 
 void lhm::absKernel()
 {
-	int i;
-
-	for (i = 0; i < n; i++)
+	for (int i = 0; i < n; i++)
 		Q.col(i) = F[i] * Q.col(i);
 
 	Eigen::Vector3d P_bar, Q_bar;
 	P_bar = P.rowwise().mean();
 	Q_bar = Q.rowwise().mean();
 
-	for (i = 0; i < n; i++)
+	for (int i = 0; i < n; i++)
 	{
 		P.col(i) = P.col(i) - P_bar;
 		Q.col(i) = Q.col(i) - Q_bar;
@@ -144,7 +142,7 @@ void lhm::absKernel()
 	Eigen::Matrix4d A;
 	A.setZero();
 
-	for (i = 0; i < n; i++)
+	for (int i = 0; i < n; i++)
 	{
 		Eigen::Vector4d q1, q2;
 		q1 << 1, Q.col(i);
@@ -154,7 +152,9 @@ void lhm::absKernel()
 
 	Eigen::EigenSolver<Eigen::Matrix4d> es(A);
 
-	Eigen::Vector4d D = es.pseudoEigenvalueMatrix().diagonal();
+	const Eigen::Matrix4d Ae = es.pseudoEigenvalueMatrix();
+	Eigen::Vector4d D; // Ae.diagonal(); for some reason this leads to an internal compiler error in MSVC11... (sigh)
+	for (int i=0;i<4;i++) D[i] = Ae(i,i);
 
 	Eigen::Matrix4d V_mat = es.pseudoEigenvectors();
 
@@ -178,7 +178,7 @@ void lhm::absKernel()
 	Eigen::Vector3d vec;
 	Eigen::Matrix3d I3 = Eigen::MatrixXd::Identity(3, 3);
 
-	for (i = 0; i < n; i++)
+	for (int i = 0; i < n; i++)
 	{
 		vec = (I3 - F[i])*Q.col(i);
 		err2 += vec.squaredNorm();
@@ -226,6 +226,4 @@ bool lhm::compute_pose(Eigen::Ref<Eigen::Matrix3d> R_, Eigen::Ref<Eigen::Vector3
 
 	return 1;
 }
-
-
 
