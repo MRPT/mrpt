@@ -160,7 +160,7 @@ void CReactiveNavigationSystem::STEP1_InitPTGs()
 /*************************************************************************
 		STEP2_SenseObstacles
 *************************************************************************/
-bool CReactiveNavigationSystem::STEP2_SenseObstacles()
+bool CReactiveNavigationSystem::STEP2_SenseObstacles(mrpt::system::TTimeStamp &obstacles_timestamp)
 {
 	try
 	{
@@ -169,6 +169,7 @@ bool CReactiveNavigationSystem::STEP2_SenseObstacles()
 			CTimeLoggerEntry tle1(m_timelogger, "navigationStep.STEP2_Sense");
 			CTimeLoggerEntry tle2(m_timlog_delays, "senseObstacles()");
 			ret = m_robot.senseObstacles(m_WS_Obstacles, m_WS_Obstacles_timestamp);
+			obstacles_timestamp = m_WS_Obstacles_timestamp;
 		}
 		m_timlog_delays.registerUserMeasure("senseObstacles_age", mrpt::system::timeDifference(m_WS_Obstacles_timestamp, mrpt::system::now()));
 

@@ -260,7 +260,8 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 
 		// STEP2: Load the obstacles and sort them in height bands.
 		// -----------------------------------------------------------------------------
-		if (! STEP2_SenseObstacles() )
+		mrpt::system::TTimeStamp obstacles_timestamp;
+		if (! STEP2_SenseObstacles(obstacles_timestamp) )
 		{
 			MRPT_LOG_ERROR("Error while loading and sorting the obstacles. Robot will be stopped.\n");
 			m_robot.stop();
@@ -268,6 +269,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 			return;
 		}
 		newLogRec.values["senseObstacles_age"] = m_timlog_delays.getLastTime("senseObstacles_age");
+		newLogRec.timestamps["obstacles"] = obstacles_timestamp;
 
 		// Start timer
 		executionTime.Tic();
