@@ -52,15 +52,23 @@ namespace nav
 			mrpt::nav::CParameterizedTrajectoryGeneratorPtr ptg; //!< Only for the FIRST entry in a log file, this will contain a copy of the PTG with trajectories, suitable to render trajectories, etc.
 		};
 
-		mrpt::system::TTimeStamp   timestamp;  //!< The timestamp of when this log was processed by the reactive algorithm (It can be INVALID_TIMESTAMP for navigation logs in MRPT <0.9.5)
+		//mrpt::system::TTimeStamp   timestamp;  //!< The timestamp of when this log was processed by the reactive algorithm (It can be INVALID_TIMESTAMP for navigation logs in MRPT <0.9.5)
 		uint32_t       nPTGs;  //!< The number of PTGS:
 
 		 /** The info for each applied PTG: must contain "nPTGs * nSecDistances" elements */
 		mrpt::aligned_containers<TInfoPerPTG>::vector_t infoPerPTG;
 
 		int32_t					nSelectedPTG;   //!< The selected PTG.
-		float						executionTime;  //!< The total computation time, excluding sensing.
-		float						estimatedExecutionPeriod;  //!< The estimated execution period.
+		/** Known values: 
+		 *	- "executionTime": The total computation time, excluding sensing.
+		 *	- "estimatedExecutionPeriod": The estimated execution period.
+		 */
+		std::map<std::string, double>  values;
+		/** Known values:
+		*	- "tim_start_iteration":
+		*	- "tim_send_cmd_vel":
+		 */
+		std::map<std::string, mrpt::system::TTimeStamp>  timestamps;
 		mrpt::maps::CSimplePointsMap  WS_Obstacles;  //!< The WS-Obstacles
 		mrpt::poses::CPose2D          robotOdometryPose; //!< The robot pose (from raw odometry or a localization system).
 		mrpt::math::TPoint2D          WS_target_relative;  //!< The relative location of target point in WS.

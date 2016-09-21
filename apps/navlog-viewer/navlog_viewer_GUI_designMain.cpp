@@ -34,6 +34,7 @@
 #include <mrpt/utils/CFileInputStream.h>
 #include <mrpt/utils/CConfigFileMemory.h>
 #include <mrpt/utils/CConfigFilePrefixer.h>
+#include <mrpt/system/string_utils.h>
 #include <mrpt/math/utils.h>
 #include <mrpt/utils/printf_vector.h>
 #include <mrpt/system/string_utils.h>
@@ -333,8 +334,9 @@ void navlog_viewer_GUI_designDialog::loadLogfile(const std::string &filName)
 			if (IS_CLASS(obj,CLogFileRecord))
 			{
 				const CLogFileRecordPtr logptr = CLogFileRecordPtr(obj);
-				if (logptr->timestamp!=INVALID_TIMESTAMP)
-					m_log_last_tim = logptr->timestamp;
+				const auto it = logptr->timestamps.find("tim_start_iteration");
+				if ( it != logptr->timestamps.end())
+					m_log_last_tim = it->second;
 
 				if (!logptr->infoPerPTG.empty())
 				{
@@ -655,18 +657,22 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 		// Show extra info as text msgs:
 		// ---------------------------------
 		const double fy = 10, Ay = 15;   // Font size & line spaces
+		int lineY = 0, unique_id = 0;
 
-		win1->addTextMessage(5.0, 5+0*Ay, mrpt::format("Timestamp: %s",mrpt::system::dateTimeLocalToString( log.timestamp ).c_str() ),
-				mrpt::utils::TColorf(1,1,1), "mono", fy, mrpt::opengl::NICE,  0 /*unique txt index*/ );
+		for (const auto &e : log.timestamps)
+		{
+			win1->addTextMessage(5.0, 5 + (lineY++) * Ay, mrpt::format("Timestamp %20s=%s", e.first.c_str(), mrpt::system::dateTimeLocalToString(e.second).c_str()),
+				mrpt::utils::TColorf(1, 1, 1), "mono", fy, mrpt::opengl::NICE, unique_id++);
+		}
 
-		win1->addTextMessage(5.0, 5+1*Ay, mrpt::format("cmd_vel=%s cur_vel=[%.02f m/s, %0.2f m/s, %.02f dps] cur_vel_local=[%.02f m/s, %0.2f m/s, %.02f dps]",
+		win1->addTextMessage(5.0, 5+ (lineY++)*Ay, mrpt::format("cmd_vel=%s cur_vel=[%.02f m/s, %0.2f m/s, %.02f dps] cur_vel_local=[%.02f m/s, %0.2f m/s, %.02f dps]",
 			mrpt::utils::sprintf_vector("%.02f",log.cmd_vel).c_str(),
 			log.cur_vel.vx, log.cur_vel.vy, mrpt::utils::RAD2DEG(log.cur_vel.omega),
 			log.cur_vel_local.vx, log.cur_vel_local.vy, mrpt::utils::RAD2DEG(log.cur_vel_local.omega) ),
-			mrpt::utils::TColorf(1,1,1), "mono", fy, mrpt::opengl::NICE,  1 /*unique txt index*/ );
+			mrpt::utils::TColorf(1,1,1), "mono", fy, mrpt::opengl::NICE, unique_id++);
 
-		win1->addTextMessage(5.0, 5+2*Ay, mrpt::format("robot_pose=%s",log.robotOdometryPose.asString().c_str()),
-			mrpt::utils::TColorf(1,1,1), "mono", fy, mrpt::opengl::NICE,  2 /*unique txt index*/ );
+		win1->addTextMessage(5.0, 5+ (lineY++)*Ay, mrpt::format("robot_pose=%s",log.robotOdometryPose.asString().c_str()),
+			mrpt::utils::TColorf(1,1,1), "mono", fy, mrpt::opengl::NICE, unique_id++);
 
 		{
 			std::stringstream ss;
@@ -674,7 +680,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 			for (size_t i=0;i<log.cmd_vel_filterings.size();i++)
 				ss << "#" << i << mrpt::utils::sprintf_vector("%.02f",log.cmd_vel_filterings[i]) << " ";
 
-			win1->addTextMessage(5.0, 5+3*Ay, ss.str(), mrpt::utils::TColorf(1,1,1), "mono", fy, mrpt::opengl::NICE,  3 /*unique txt index*/ );
+			win1->addTextMessage(5.0, 5+ (lineY++)*Ay, ss.str(), mrpt::utils::TColorf(1,1,1), "mono", fy, mrpt::opengl::NICE, unique_id++);
 		}
 
 		{
@@ -682,7 +688,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 			ss << "Performance: ";
 			for (size_t i=0;i<log.infoPerPTG.size();i++)
 				ss << "PTG#" << i << mrpt::format(" TPObs:%ss HoloNav:%ss |", mrpt::system::unitsFormat(log.infoPerPTG[i].timeForTPObsTransformation).c_str(),mrpt::system::unitsFormat(log.infoPerPTG[i].timeForHolonomicMethod).c_str());
-			win1->addTextMessage(5.0, 5+4*Ay, ss.str(), mrpt::utils::TColorf(1,1,1), "mono", fy, mrpt::opengl::NICE,  4 /*unique txt index*/ );
+			win1->addTextMessage(5.0, 5+ (lineY++)*Ay, ss.str(), mrpt::utils::TColorf(1,1,1), "mono", fy, mrpt::opengl::NICE, unique_id++);
 		}
 
 		for (unsigned int nPTG=0;nPTG<log.nPTGs;nPTG++)
@@ -694,10 +700,17 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 			     col = mrpt::utils::TColorf(1,1,1);
 			else col = mrpt::utils::TColorf(.8,.8,.8);
 
-			win1->addTextMessage(5.0, 5+ Ay*(5+nPTG),
+			win1->addTextMessage(5.0, 5+ Ay*(lineY++),
 				mrpt::format("PTG#%u: Eval=%5.03f factors=%s", nPTG, pI.evaluation, sprintf_vector("%5.02f ", pI.evalFactors).c_str() ),
-				col, "mono", fy, mrpt::opengl::NICE,  10+nPTG /*unique txt index*/ );
+				col, "mono", fy, mrpt::opengl::NICE, unique_id++);
+		}
 
+		{
+			for (const auto &e : log.values)
+			{
+				win1->addTextMessage(5.0, 5 + (lineY++) * Ay, format("%s=%s ", e.first.c_str(), mrpt::system::unitsFormat(e.second, 3,false).c_str()),
+					mrpt::utils::TColorf(1, 1, 1), "mono", fy, mrpt::opengl::NICE, unique_id++);
+			}
 		}
 
 		win1->repaint();

@@ -267,6 +267,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 			m_navigationState = NAV_ERROR;
 			return;
 		}
+		newLogRec.values["senseObstacles_age"] = m_timlog_delays.getLastTime("senseObstacles_age");
 
 		// Start timer
 		executionTime.Tic();
@@ -450,6 +451,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 		{
 			{
 				mrpt::utils::CTimeLoggerEntry tle(m_timlog_delays, "changeSpeeds()");
+				newLogRec.timestamps["tim_send_cmd_vel"] = mrpt::system::now();
 				if (!m_robot.changeSpeeds(m_new_vel_cmd))
 				{
 					doEmergencyStop("\nERROR calling RobotMotionControl::changeSpeeds!! Stopping robot and finishing navigation\n");
@@ -496,11 +498,13 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 			newLogRec.cmd_vel             = m_new_vel_cmd;
 			newLogRec.cmd_vel_filterings  = m_cmd_vel_filterings;
 			newLogRec.nSelectedPTG        = nSelectedPTG;
-			newLogRec.executionTime       = executionTimeValue;
 			newLogRec.cur_vel             = m_curVel;
 			newLogRec.cur_vel_local       = m_curVelLocal;
-			newLogRec.estimatedExecutionPeriod = meanExecutionPeriod;
-			newLogRec.timestamp = tim_start_iteration;
+			newLogRec.values["estimatedExecutionPeriod"] = meanExecutionPeriod;
+			newLogRec.values["executionTime"] = executionTimeValue;
+			newLogRec.values["time_changeSpeeds()"] = m_timlog_delays.getLastTime("changeSpeeds()");
+			newLogRec.timestamps["tim_start_iteration"] = tim_start_iteration;
+			newLogRec.timestamps["curPoseAndVel"] = m_curPoseVelTimestamp;
 			newLogRec.nPTGs = nPTGs;
 
 			m_timelogger.leave("navigationStep.populate_log_info");

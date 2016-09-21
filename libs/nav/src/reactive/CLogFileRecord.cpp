@@ -23,7 +23,6 @@ IMPLEMENTS_SERIALIZABLE( CLogFileRecord, CSerializable,mrpt::nav )
 					Constructor
   ---------------------------------------------------------------*/
 CLogFileRecord::CLogFileRecord() :
-    timestamp ( INVALID_TIMESTAMP ),
     nPTGs     ( 0 )
 {
 	infoPerPTG.clear();
@@ -40,7 +39,7 @@ CLogFileRecord::~CLogFileRecord()
 void  CLogFileRecord::writeToStream(mrpt::utils::CStream &out,int *version) const
 {
 	if (version)
-		*version = 12;
+		*version = 13;
 	else
 	{
 		uint32_t	i,n;
@@ -67,10 +66,9 @@ void  CLogFileRecord::writeToStream(mrpt::utils::CStream &out,int *version) cons
 			if (there_is_ptg_data)
 				out << infoPerPTG[i].ptg;
 		}
-		out << nSelectedPTG << WS_Obstacles << robotOdometryPose << WS_target_relative /*v8*/ << cmd_vel /*v10*/ << executionTime;
+		out << nSelectedPTG << WS_Obstacles << robotOdometryPose << WS_target_relative /*v8*/ << cmd_vel /*v10*/; // << executionTime; removed v13
 
 		// Previous values: REMOVED IN VERSION #6
-
 		n = robotShape_x.size();
 		out << n;
 		if (n) {
@@ -80,9 +78,7 @@ void  CLogFileRecord::writeToStream(mrpt::utils::CStream &out,int *version) cons
 
 		// Version 1 ---------
 		out << cur_vel<< cur_vel_local; /*v10*/ 
-
-		// Version 2 ----------
-		out << estimatedExecutionPeriod;
+		//out << estimatedExecutionPeriod; // removed v13
 
 		// Version 3 ----------
 		for (i=0;i<infoPerPTG.size();i++)
@@ -94,15 +90,13 @@ void  CLogFileRecord::writeToStream(mrpt::utils::CStream &out,int *version) cons
 				out << infoPerPTG[i].evalFactors[j];
 		}
 
-		// Version 4 ----------
-		out << nPTGs;
-
-		// version 7:
-		out << timestamp;
-
+		out << nPTGs; // v4
+		// out << timestamp; // removed v13
 		out << robotShape_radius; // v11
-
 		out << cmd_vel_filterings; // v12
+
+		out << values << timestamps; // v13
+
 	}
 }
 
@@ -126,6 +120,7 @@ void  CLogFileRecord::readFromStream(mrpt::utils::CStream &in,int version)
 	case 10:
 	case 11:
 	case 12:
+	case 13:
 		{
 			// Version 0 --------------
 			uint32_t  i,n;
@@ -199,7 +194,10 @@ void  CLogFileRecord::readFromStream(mrpt::utils::CStream &in,int version)
 				cmd_vel[0] = v;
 				cmd_vel[1] = w;
 			}
-			in >> executionTime;
+			if (version < 13) {
+				float old_exec_time;  in >> old_exec_time;
+				values["executionTime"] = old_exec_time;
+			}
 
 			if (version<6)
 			{
@@ -244,13 +242,9 @@ void  CLogFileRecord::readFromStream(mrpt::utils::CStream &in,int version)
 				cur_vel = mrpt::math::TTwist2D(0,0,0);
 			}
 
-			if (version > 1)
-			{	// Version 2 --------------
-				in >> estimatedExecutionPeriod;
-			}
-			else
-			{	// Default values for old versions:
-				estimatedExecutionPeriod = 0.06f;
+			if (version < 13 && version>1) {
+				float old_estim_period;  in >> old_estim_period;
+				values["estimatedExecutionPeriod"] = old_estim_period;
 			}
 
 			if (version > 2)
@@ -304,11 +298,9 @@ void  CLogFileRecord::readFromStream(mrpt::utils::CStream &in,int version)
 				}
 			}
 
-			if (version>6) {
-				in >> timestamp;
-			}
-			else {
-				timestamp = INVALID_TIMESTAMP;
+			if (version>6 && version<13) {
+				mrpt::system::TTimeStamp tt; in >> tt;
+				timestamps["tim_start_iteration"] = tt;
 			}
 
 			if (version>=11) {
@@ -321,6 +313,14 @@ void  CLogFileRecord::readFromStream(mrpt::utils::CStream &in,int version)
 				in >> cmd_vel_filterings;
 			} else {
 				cmd_vel_filterings.clear();
+			}
+
+			if (version >= 13) {
+				in >> values >> timestamps;
+			}
+			else {
+				values.clear();
+				timestamps.clear();
 			}
 
 		} break;
