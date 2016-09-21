@@ -107,10 +107,24 @@ const char *default_cfg_txt =
 	"; To modify them change this included files, and the method CMyReactInterface::loadmaps() if necessary \n"
 	"MAP_RESOLUTION = 0.02 \n\n\n"
 
+	"[GLOBAL_CONFIG] \n"
+	"robotMax_V_mps = 0.70			; Speed limits - mps \n"
+	"robotMax_W_degps = 60			; dps \n"
 
-	"[ReactiveParams] \n"
 	"; 0: VFF,  1: ND \n"
 	"HOLONOMIC_METHOD = 1 \n\n"
+
+
+	"DIST_TO_TARGET_FOR_SENDING_EVENT = 0.5	; Minimum distance to target for sending the end event. Set to 0 to send it just on navigation end \n\n"
+
+	"[ReactiveParams] \n"
+	"robotMax_V_mps = 0.70			; Speed limits - mps \n"
+	"robotMax_W_degps = 60			; dps \n"
+	"MAX_REFERENCE_DISTANCE = 2		; Marks the maximum distance regarded by the reactive navigator (m) \n"
+
+	"X0 = 2						; Initial location (meters) \n"
+	"Y0 = 0 \n"
+	"PHI0 = -90					; In degrees \n"
 
 	";	Parameters for the navigation \n"
 	"; ---------------------------------------------------- \n"
@@ -121,16 +135,6 @@ const char *default_cfg_txt =
 	"; 4: Closer to target (euclidean) \n"
 	"; 5: Hysteresis \n"
 	"; 6: Security Distance \n\n"
-
-	"DIST_TO_TARGET_FOR_SENDING_EVENT = 0.5	; Minimum distance to target for sending the end event. Set to 0 to send it just on navigation end \n\n"
-
-	"X0 = 2						; Initial location (meters) \n"
-	"Y0 = 0 \n"
-	"PHI0 = -90					; In degrees \n"
-	"robotMax_V_mps = 0.70			; Speed limits - mps \n"
-	"robotMax_W_degps = 60			; dps \n"
-	"SPEEDFILTER_TAU = 0.1		; The 'TAU' time constant of a first order lowpass filter for speed commands (s) \n"
-	"MAX_REFERENCE_DISTANCE = 2		; Marks the maximum distance regarded by the reactive navigator (m) \n"
 
 	";	PTGs	.All of them has the same fields to fill, but they don't use all of them. \n"
 	";----------------------------------------------------------------------------------- \n"
@@ -160,7 +164,6 @@ const char *default_cfg_txt =
 	"PTG3_v_max_mps = 0.5 \n"
 	"PTG3_w_max_dps = 45 \n"
 	"PTG3_K = 1.0 \n"
-
 
 
 	";	Parameters for the 'Nearness diagram' Holonomic method \n"
@@ -394,4 +397,3 @@ int main(int num_arg, char *argv[])
 		return -1;
 	}
 }
-
