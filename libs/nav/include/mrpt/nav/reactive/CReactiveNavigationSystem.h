@@ -79,7 +79,7 @@ namespace mrpt
 			virtual void STEP1_InitPTGs();
 
 			// See docs in parent class
-			virtual bool STEP2_SenseObstacles();
+			virtual bool STEP2_SenseObstacles(mrpt::system::TTimeStamp &obs_timestamp);
 
 			// See docs in parent class
 			virtual void STEP3_WSpaceToTPSpace(const size_t ptg_idx,std::vector<double> &out_TPObstacles);

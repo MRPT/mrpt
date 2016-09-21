@@ -203,7 +203,7 @@ namespace mrpt
 		virtual void STEP1_InitPTGs() = 0;
 
 		/** Return false on any fatal error */
-		virtual bool STEP2_SenseObstacles() = 0;
+		virtual bool STEP2_SenseObstacles(mrpt::system::TTimeStamp &obs_timestamp) = 0;
 
 		/** Builds TP-Obstacles from Workspace obstacles for the given PTG.
 		  * "out_TPObstacles" is already initialized to the proper length and maximum collision-free distance for each "k" trajectory index.
