@@ -61,7 +61,6 @@
 #include "CRawlogMP.h"
 #include "CRosTopicMP.h"
 
-
 #include <cstdlib>
 #include <string>
 #include <sstream>
@@ -303,7 +302,7 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		 * Reads the dataset file and builds the graph. Method returns false if
 		 * user terminates execution (<em>Ctrl+c</em> is pressed) otherwise true.
 		 **/
-		bool parseRawlogFile();
+		bool execGraphSlam();
 		/**\brief Return a reference to the underlying GRAPH_t instance. */
 		const GRAPH_t& getGraph() const { return m_graph; }
 		/**\brief Return the filename of the used rawlog file.*/
@@ -428,7 +427,7 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		/** \name Update of Visuals
 		 * Methods used for updating various visualization features relevant to
 		 * the application at hand. If relevant to the application at hand update
-		 * is periodically scheduled inside the parseRawlogFile method
+		 * is periodically scheduled inside the execGraphSlam method
 		 */
 		/**\{*/
 		/**\brief In RGB-D TUM Datasets update the Range image displayed in a

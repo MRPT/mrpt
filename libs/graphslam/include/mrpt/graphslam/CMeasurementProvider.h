@@ -51,7 +51,7 @@ public:
 
 		this->init();
 	}
-	virtual ~CMeasurementProvider() { };
+	virtual ~CMeasurementProvider() { }
 
 	virtual void init() {
 		m_class_name = "CMeasurementProvider";
@@ -75,9 +75,18 @@ public:
 			mrpt::obs::CObservationPtr& observation,
 			size_t& rawlog_entry )=0;
 
+	/**\brief Load the parameters related to the current class from an external
+	 * .ini file.
+	 */
+	virtual void loadParams(const std::string& source_fname) {}
+	/**\brief Print the class parameters to the console - handy for debugging
+	 */
+	virtual void printParams() const { }
+
 	//
 	// public variables
 	//
+
 	/**\brief Indicates whether the provider is ready to be querried for
 	 * measurements
 	 */
