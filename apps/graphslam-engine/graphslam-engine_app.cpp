@@ -278,7 +278,7 @@ int main(int argc, char **argv)
 							rawlog_fname,
 							ground_truth_fname,
 							!disable_visuals.getValue());
-				graph_engine.parseRawlogFile();
+				graph_engine.execGraphSlam();
 			}
 			else if (system::strCmpI(edge_reg, "CLoopCloserERD")) { // CFixedIntervalsNRD - CICPCriteriaERD
 				// Initialize the CGraphSlamEngine class
@@ -294,7 +294,7 @@ int main(int argc, char **argv)
 							rawlog_fname,
 							ground_truth_fname,
 							!disable_visuals.getValue());
-				graph_engine.parseRawlogFile();
+				graph_engine.execGraphSlam();
 			}
 			else if (system::strCmpI(edge_reg, "CEmptyERD")) { // CFixedIntervalsNRD - CEmptyERD
 				// Initialize the CGraphSlamEngine class
@@ -310,7 +310,7 @@ int main(int argc, char **argv)
 							rawlog_fname,
 							ground_truth_fname,
 							!disable_visuals.getValue());
-				graph_engine.parseRawlogFile();
+				graph_engine.execGraphSlam();
 			}
 
 		}
@@ -329,7 +329,7 @@ int main(int argc, char **argv)
 							rawlog_fname,
 							ground_truth_fname,
 							!disable_visuals.getValue());
-				graph_engine.parseRawlogFile();
+				graph_engine.execGraphSlam();
 			}
 			else if (system::strCmpI(edge_reg, "CLoopCloserERD")) { // CFixedIntervalsNRD - CICPCriteriaERD
 				// Initialize the CGraphSlamEngine class
@@ -345,7 +345,7 @@ int main(int argc, char **argv)
 							rawlog_fname,
 							ground_truth_fname,
 							!disable_visuals.getValue());
-				graph_engine.parseRawlogFile();
+				graph_engine.execGraphSlam();
 			}
 			else if (system::strCmpI(edge_reg, "CEmptyERD")) { // CEmtpyNRD - CEmptyERD
 				// Initialize the CGraphSlamEngine class
@@ -361,7 +361,7 @@ int main(int argc, char **argv)
 							rawlog_fname,
 							ground_truth_fname,
 							!disable_visuals.getValue());
-				graph_engine.parseRawlogFile();
+				graph_engine.execGraphSlam();
 			}
 
 		}
@@ -380,7 +380,7 @@ int main(int argc, char **argv)
 							rawlog_fname,
 							ground_truth_fname,
 							!disable_visuals.getValue());
-				graph_engine.parseRawlogFile();
+				graph_engine.execGraphSlam();
 			}
 			else if (system::strCmpI(edge_reg, "CLoopCloserERD")) { // CFixedIntervalsNRD - CICPCriteriaERD
 				// Initialize the CGraphSlamEngine class
@@ -396,7 +396,7 @@ int main(int argc, char **argv)
 							rawlog_fname,
 							ground_truth_fname,
 							!disable_visuals.getValue());
-				graph_engine.parseRawlogFile();
+				graph_engine.execGraphSlam();
 			}
 			else if (system::strCmpI(edge_reg, "CEmptyERD")) { // CICPGooodnessNRD - CEmptyERD
 
@@ -413,7 +413,7 @@ int main(int argc, char **argv)
 							rawlog_fname,
 							ground_truth_fname,
 							!disable_visuals.getValue());
-				graph_engine.parseRawlogFile();
+				graph_engine.execGraphSlam();
 			}
 
 		}

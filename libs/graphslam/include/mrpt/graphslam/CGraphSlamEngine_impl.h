@@ -80,6 +80,8 @@ CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::~CGraphSla
 		delete m_win;
 		this->logStr(LVL_DEBUG, "Releasing CWindowObserver...");
 		delete m_win_observer;
+		this->logStr(LVL_DEBUG, "Releasing CMeasurementProvider ...");
+		delete m_provider;
 	}
 
 	// delete the CDisplayWindowPlots object
@@ -102,6 +104,7 @@ void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::initC
 	using namespace mrpt::utils;
 	using namespace mrpt::opengl;
 	using namespace std;
+	using namespace mrpt::graphslam::measurement_providers;
 
 	// logger instance properties
 	m_time_logger.setName(m_class_name);
@@ -149,7 +152,16 @@ void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::initC
 	m_edge_registrar.setCriticalSectionPtr(&m_graph_section);
 	m_optimizer.setCriticalSectionPtr(&m_graph_section);
 
+	// Decide where to read the measurements from
+	if (!m_rawlog_fname.empty()) {
+			m_provider = new CRawlogMP();
+	}
+	else { // run in online mode
+		m_provider = new CRosTopicMP();
+	}
+
 	// Calling of initialization-relevant functions
+	// [NOTE] loadParams methods are called from within this method
 	this->readConfigFile(m_config_fname);
 
 	this->initOutputDir();
@@ -159,13 +171,16 @@ void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::initC
 	m_node_registrar.printParams();
 	m_edge_registrar.printParams();
 	m_optimizer.printParams();
-
+	m_provider->printParams();
 
 	// pass the rawlog filename after the instance initialization
 	m_node_registrar.setRawlogFname(m_rawlog_fname);
 	m_edge_registrar.setRawlogFname(m_rawlog_fname);
 	m_optimizer.setRawlogFname(m_rawlog_fname);
 
+	if (!(m_provider->run_online)) {
+		dynamic_cast<CRawlogMP*>(m_provider)->setRawlogFname(m_rawlog_fname);
+	}
 
 	m_use_GT = !m_fname_GT.empty();
 	if (m_use_GT) {
@@ -256,11 +271,11 @@ void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::initC
 	}
 
 	// keystrokes initialization
-	m_keystroke_pause_exec = "p";
-	m_keystroke_odometry = "o";
-	m_keystroke_GT = "g";
+	m_keystroke_pause_exec           = "p";
+	m_keystroke_odometry             = "o";
+	m_keystroke_GT                   = "g";
 	m_keystroke_estimated_trajectory = "t";
-	m_keystroke_map = "m";
+	m_keystroke_map                  = "m";
 
 	// Add additional keystrokes in the CDisplayWindow3D help textBox
 	if (m_enable_visuals) {
@@ -354,19 +369,11 @@ void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::initC
 		this->initSlamMetricVisualization();
 	}
 
-	// Decide where to read the measurements from
-	if (!m_rawlog_fname.empty()) {
-			m_provider = new mrpt::graphslam::measurement_providers::CRawlogMP();
-	}
-	else { // run in online mode
-		// TODO
-	}
-
 	MRPT_END;
 }
 
 template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR, class OPTIMIZER>
-bool CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::parseRawlogFile() {
+bool CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::execGraphSlam() {
 	MRPT_START;
 
 	using namespace std;
@@ -382,13 +389,8 @@ bool CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::parse
 
 	ASSERTMSG_(m_has_read_config,
 			format("\nConfig file is not read yet.\nExiting... \n"));
-	ASSERTMSG_(mrpt::system::fileExists(m_rawlog_fname),
-			format("\nRawlog file: %s was not found\n", m_rawlog_fname.c_str() ));
 	// good to go..
 
-	if (!(m_provider->run_online)) {
-		dynamic_cast<CRawlogMP*>(m_provider)->setRawlogFname(m_rawlog_fname);
-	}
 	// Variables initialization
 	CActionCollectionPtr action;
 	CSensoryFramePtr observations;
@@ -668,7 +670,7 @@ bool CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::parse
 			}
 
 			m_time_logger.leave("proc_time");
-			return false; // exit the parseRawlogFile method
+			return false; // exit the execGraphSlam method
 		}
 		m_time_logger.leave("Visuals");
 
@@ -707,7 +709,7 @@ bool CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::parse
 	this->generateReportFiles();
 	return true; // function execution completed successfully
 	MRPT_END;
-} // END OF PARSERAWLOGFILE
+} // END OF EXECGRAPHSLAM
 
 template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR, class OPTIMIZER>
 void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::readConfigFile(
@@ -807,6 +809,8 @@ void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::readC
 	m_node_registrar.loadParams(m_config_fname);
 	m_edge_registrar.loadParams(m_config_fname);
 	m_optimizer.loadParams(m_config_fname);
+	m_provider->loadParams(m_config_fname);
+
 
 	m_has_read_config = true;
 	MRPT_END;
