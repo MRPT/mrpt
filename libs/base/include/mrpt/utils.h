@@ -19,7 +19,6 @@
 
 // Smart pointers and RTTI:
 #include <mrpt/utils/CObject.h>
-#include <mrpt/utils/CStartUpClassesRegister.h>
 
 // CStream related classes:
 #include <mrpt/utils/CSerializable.h>

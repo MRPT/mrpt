@@ -13,8 +13,7 @@
 #include <mrpt/obs.h>
 
 #include <mrpt/utils/CSerializable.h>
-#include <mrpt/utils/CStartUpClassesRegister.h>
-
+#include <mrpt/utils/initializer.h>
 
 using namespace mrpt::obs;
 using namespace mrpt::maps;
@@ -22,13 +21,8 @@ using namespace mrpt::utils;
 
 void registerAllClasses_mrpt_obs();
 
-CStartUpClassesRegister  mrpt_obs_class_reg(&registerAllClasses_mrpt_obs);
 
-
-/*---------------------------------------------------------------
-					registerAllClasses_mrpt_obs
-  ---------------------------------------------------------------*/
-void registerAllClasses_mrpt_obs()
+MRPT_INITIALIZER(registerAllClasses_mrpt_obs)
 {
 #if !defined(DISABLE_MRPT_AUTO_CLASS_REGISTRATION)
 	registerClass( CLASS_ID( CSensoryFrame ) );
