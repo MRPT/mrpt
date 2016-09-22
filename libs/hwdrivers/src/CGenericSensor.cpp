@@ -19,8 +19,6 @@ using namespace mrpt::system;
 using namespace mrpt::hwdrivers;
 using namespace std;
 
-map< std::string , const TSensorClassId *>	CGenericSensor::m_knownClasses;
-
 /*-------------------------------------------------------------
 						Constructor
 -------------------------------------------------------------*/
@@ -104,17 +102,25 @@ void CGenericSensor::getObservations( TListObservations	&lstObjects )
 -------------------------------------------------------------*/
 CGenericSensor* CGenericSensor::createSensor(const std::string &className)
 {
-	std::map< std::string , const TSensorClassId *>::iterator it=m_knownClasses.find(className);
-	return it==m_knownClasses.end() ? NULL : it->second->ptrCreateObject();
+	registered_sensor_classes_t & regs = get_registered_sensor_classes();
+	const registered_sensor_classes_t::iterator it=regs.find(className);
+	return it==regs.end() ? NULL : it->second->ptrCreateObject();
 }
 
+// Singleton
+CGenericSensor::registered_sensor_classes_t & CGenericSensor::get_registered_sensor_classes()
+{
+	static registered_sensor_classes_t reg;
+	return reg;
+}
 
 /*-------------------------------------------------------------
 						registerClass
 -------------------------------------------------------------*/
 void CGenericSensor::registerClass(const TSensorClassId* pNewClass)
 {
-	m_knownClasses[ pNewClass->className ] = pNewClass;
+	registered_sensor_classes_t & regs = get_registered_sensor_classes();
+	regs[ pNewClass->className ] = pNewClass;
 }
 
 
