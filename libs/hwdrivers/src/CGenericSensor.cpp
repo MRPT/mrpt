@@ -97,8 +97,6 @@ void CGenericSensor::getObservations( TListObservations	&lstObjects )
 }
 
 
-extern void registerAllClasses_mrpt_hwdrivers();
-
 /*-------------------------------------------------------------
 
 						createSensor
@@ -106,8 +104,6 @@ extern void registerAllClasses_mrpt_hwdrivers();
 -------------------------------------------------------------*/
 CGenericSensor* CGenericSensor::createSensor(const std::string &className)
 {
-	registerAllClasses_mrpt_hwdrivers();	// make sure all sensors are registered.
-
 	std::map< std::string , const TSensorClassId *>::iterator it=m_knownClasses.find(className);
 	return it==m_knownClasses.end() ? NULL : it->second->ptrCreateObject();
 }
@@ -144,5 +140,3 @@ void  CGenericSensor::loadConfig(
 
 	MRPT_END
 }
-
-
