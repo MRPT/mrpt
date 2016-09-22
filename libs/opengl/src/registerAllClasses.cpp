@@ -16,8 +16,6 @@
 using namespace mrpt::opengl;
 using namespace mrpt::utils;
 
-void registerAllClasses_mrpt_opengl();
-
 MRPT_INITIALIZER(registerAllClasses_mrpt_opengl)
 {
 #if !defined(DISABLE_MRPT_AUTO_CLASS_REGISTRATION)
