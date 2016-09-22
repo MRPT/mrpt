@@ -11,22 +11,13 @@
 
 #define MRPT_NO_WARN_BIG_HDR
 #include <mrpt/hwdrivers.h>
-
-#include <mrpt/utils/CStartUpClassesRegister.h>
+#include <mrpt/utils/initializer.h>
 
 using namespace mrpt::utils;
 using namespace mrpt::hwdrivers;
 
 
-void registerAllClasses_mrpt_hwdrivers();
-
-CStartUpClassesRegister  mrpt_hwdrivers_class_reg(&registerAllClasses_mrpt_hwdrivers);
-
-
-/** Register existing sensors.
-  * \sa mrpt::hwdrivers::CGenericSensor::createSensor
-  */
-void registerAllClasses_mrpt_hwdrivers()
+MRPT_INITIALIZER(registerAllClasses_mrpt_hwdrivers)
 {
 #if !defined(DISABLE_MRPT_AUTO_CLASS_REGISTRATION)
 	CSickLaserUSB::doRegister();
