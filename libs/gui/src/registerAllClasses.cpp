@@ -17,8 +17,6 @@
 using namespace mrpt::gui;
 using namespace mrpt::utils;
 
-void registerAllClasses_mrpt_gui();
-
 MRPT_INITIALIZER(registerAllClasses_mrpt_gui)
 {
 #if !defined(DISABLE_MRPT_AUTO_CLASS_REGISTRATION)
@@ -27,4 +25,3 @@ MRPT_INITIALIZER(registerAllClasses_mrpt_gui)
 	registerClass( CLASS_ID( CDisplayWindowPlots ) );
 #endif
 }
-

@@ -19,8 +19,6 @@ using namespace mrpt::obs;
 using namespace mrpt::maps;
 using namespace mrpt::utils;
 
-void registerAllClasses_mrpt_obs();
-
 
 MRPT_INITIALIZER(registerAllClasses_mrpt_obs)
 {
@@ -70,4 +68,3 @@ MRPT_INITIALIZER(registerAllClasses_mrpt_obs)
 	registerClass( CLASS_ID( TMapGenericParams ) );
 #endif
 }
-

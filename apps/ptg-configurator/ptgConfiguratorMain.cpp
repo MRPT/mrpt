@@ -538,7 +538,7 @@ void ptgConfiguratorframe::rebuild3Dview()
 					d1*cos(a1),d1*sin(a1),0.0 );
 			}
 		}
-	} // if ptg init 
+	} // if ptg init
 
 	// Target:
 	{
@@ -567,7 +567,7 @@ void ptgConfiguratorframe::rebuild3Dview()
 			}
 			StatusBar1->SetStatusText(wxString::Format(
 				wxT("TP-Target: k=%i (alpha=%.03f deg) norm_d=%.03f is_exact:%s"),
-				k,dir*180/M_PI,norm_d,(is_exact ? "yes":"NO")), 
+				k,dir*180/M_PI,norm_d,(is_exact ? "yes":"NO")),
 				1);
 		}
 	}
@@ -657,6 +657,8 @@ void ptgConfiguratorframe::Onplot3DMouseMove(wxMouseEvent& event)
 				rebuild3Dview();
 			}
 			break;
+    default:
+      break;
 		};
 		StatusBar1->SetStatusText(wxString::Format(wxT("Cursor: X=%.03f Y=%.04f"),m_curCursorPos.x,m_curCursorPos.y), 0);
 	}
