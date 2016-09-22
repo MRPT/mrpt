@@ -11,7 +11,6 @@
 
 #include <mrpt/detectors/CObjectDetection.h>
 #include <mrpt/obs/CObservationImage.h>
-#include <mrpt/utils/CStartUpClassesRegister.h>
 #include <mrpt/obs/CObservationImage.h>
 #include <mrpt/obs/CObservationStereoImages.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
@@ -21,8 +20,6 @@
 
 using namespace mrpt::detectors;
 using namespace mrpt::utils;
-
-extern CStartUpClassesRegister  mrpt_detectors_class_reg;
 
 void CObjectDetection::detectObjects(const CImage *img, vector_detectable_object &detected)
 {

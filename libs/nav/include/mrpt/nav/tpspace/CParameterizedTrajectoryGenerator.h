@@ -281,6 +281,5 @@ protected:
 		void loadDefaultParams();
 	};
 
-	void NAV_IMPEXP registerAllNavigationClasses();
 }
 }

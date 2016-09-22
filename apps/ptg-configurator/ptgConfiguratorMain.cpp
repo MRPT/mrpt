@@ -359,7 +359,7 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent,wxWindowID id) :
 
 	// Populate list of existing PTGs:
 	{
-		mrpt::nav::registerAllNavigationClasses();
+		//mrpt::nav::registerAllNavigationClasses();
 		const std::vector<const mrpt::utils::TRuntimeClassId*> &lstClasses = mrpt::utils::getAllRegisteredClasses();
 		for (size_t i=0;i<lstClasses.size();i++)
 		{

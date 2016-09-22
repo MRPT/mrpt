@@ -12,7 +12,6 @@
 #include <mrpt/utils/CConfigFile.h>
 #include <mrpt/utils/CTicTac.h>
 #include <mrpt/utils/CTimeLogger.h>
-#include <mrpt/utils/CStartUpClassesRegister.h>
 #include <mrpt/system/os.h>
 #include <mrpt/math/geometry.h>
 #include <mrpt/utils/CStream.h>
@@ -61,9 +60,6 @@ IMPLEMENTS_VIRTUAL_SERIALIZABLE(CPointsMap, CMetricMap,mrpt::maps)
 float CPointsMap::COLOR_3DSCENE_R = 0;
 float CPointsMap::COLOR_3DSCENE_G = 0;
 float CPointsMap::COLOR_3DSCENE_B = 1;
-
-extern CStartUpClassesRegister  mrpt_maps_class_reg;
-static const int dumm = mrpt_maps_class_reg.do_nothing(); // Avoid compiler removing this class in static linking
 
 /*---------------------------------------------------------------
 						Constructor
