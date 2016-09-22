@@ -1740,7 +1740,8 @@ void xRawLogViewerFrame::rebuildTreeView()
 
 			} // end Observation
 			break;
-
+		default:
+			break;
 		}; // end switch type
 
 	} // end for i
