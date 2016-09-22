@@ -23,6 +23,7 @@ namespace mrpt { namespace graphslam { namespace measurement_providers {
  * \brief Formats that can be used by the specific implementations of the CMeasurementProvider
  * interface
  */
+	// TODO - do I use it?
 enum RawlogFormat { 
 	ACTION_OBSERVATIONS=1,
 	OBSERVATIONS_ONLY,
@@ -57,11 +58,6 @@ public:
 		m_class_name = "CMeasurementProvider";
 		this->setLoggerName(m_class_name);
 
-		run_online = false;
-		provider_ready = false;
-		rawlog_format = UNDEFINED;
-
-
 	};
 
 	/**\brief Main method that can be used to query the provider for the next
@@ -90,15 +86,14 @@ public:
 	/**\brief Indicates whether the provider is ready to be querried for
 	 * measurements
 	 */
-	bool provider_ready;
+	virtual bool providerIsReady()=0;
 	/**\brief Variable indicating whether the current provider class is used in
 	 * an online fashion.
 	 */
-	bool run_online;
+	virtual bool providerRunsOnline()=0;
 
 	/**\brief Format that is used by the current provider class.
 	 */
-	RawlogFormat rawlog_format;
 
 private:
 

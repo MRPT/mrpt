@@ -39,7 +39,14 @@ public:
 			size_t& rawlog_entry);
 	void setRawlogFname(std::string rawlog_fname);
 
+	/** Getter method in sake of polymorphic behavior. */
+	bool providerIsReady();
+	/** Getter method in sake of polymorphic behavior. */
+	bool providerRunsOnline();
+
 private:
+	bool run_online;
+	bool provider_ready;
 
 	std::string m_class_name;
 	std::string m_rawlog_fname;

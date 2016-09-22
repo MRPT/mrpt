@@ -45,40 +45,40 @@ using namespace std;
 // command line arguments
 // ////////////////////////////////////////////////////////////
 
-TCLAP::CmdLine cmd(/*output message = */ " graphslam-engine - Part of the MRPT\n",
+TCLAP::CmdLine cmd_line(/*output message = */ " graphslam-engine - Part of the MRPT\n",
 		/* delimeter = */ ' ', /* version = */ MRPT_getVersion().c_str());
 
-TCLAP::ValueArg<string> arg_ini_file(/*flag = */ "i", /*name = */ "ini_file",
-		/*desc = */ ".ini configuration file", /* required = */ false,
-		/* default value = */ "", /*typeDesc = */ "config.ini", /*parser = */ cmd);
-TCLAP::ValueArg<string> arg_rawlog_file( "r", "rawlog",
-		"Rawlog dataset file",	false, "", "contents.rawlog", cmd);
+TCLAP::ValueArg<string> arg_ini_file(/*flag = */ "i", /*name = */ "ini-file",
+		/*desc = */ ".ini configuration file", /* required = */ true,
+		/* default value = */ "", /*typeDesc = */ "config.ini", /*parser = */ cmd_line);
 
-// OPTIONAL - If dataset was generated from GridMapNavSimul program and the
-// visualize_ground_truth is set to true in the .ini file, the ground truth is
-// automatically found
-TCLAP::ValueArg<string> arg_ground_truth_file( "g", "ground-truth",
-		"Ground-truth textfile",	false, "", "contents.rawlog.GT.txt", cmd);
+// Mutually Exclusive Args - Either use a rawlog file or fetch the measurements
+// from a TCP Socket (online graphSLAM execution)
+TCLAP::ValueArg<string> arg_rawlog_file("r", "rawlog",
+		"Rawlog dataset file",	false, "", "contents.rawlog");
+TCLAP::SwitchArg arg_online_exec("", "online",
+		"Execute online graphSLAM", /*default = */ false);
+
+
+TCLAP::ValueArg<string> arg_ground_truth_file("g", "ground-truth",
+		"Ground-truth textfile",	false, "", "contents.rawlog.GT.txt", cmd_line);
 
 // Specify the Registration Deciders to use
-TCLAP::ValueArg<string> arg_node_reg("n", "node-reg",
-		"Specify Node registration decider",	false, "CFixedIntervalsNRD", "CICPCriteriaNRD", cmd);
-TCLAP::ValueArg<string> arg_edge_reg("e", "edge-reg",
-		"Specify Edge registration decider",	false, "CICPCriteriaERD", "CICPCriteriaERD", cmd);
-TCLAP::ValueArg<string> arg_optimizer("o", "optimizer",
-		"Specify GraphSlam Optimizer",	false, "CLevMarqGSO", "CLevMarqGSO", cmd);
+TCLAP::ValueArg<string> arg_node_reg("n"  , "node-reg"  , "Specify Node Registration Decider" , false , "CFixedIntervalsNRD" , "CICPCriteriaNRD" , cmd_line);
+TCLAP::ValueArg<string> arg_edge_reg("e"  , "edge-reg"  , "Specify Edge Registration Decider" , false , "CICPCriteriaERD"    , "CICPCriteriaERD" , cmd_line);
+TCLAP::ValueArg<string> arg_optimizer("o" , "optimizer" , "Specify GraphSlam Optimizer"       , false , "CLevMarqGSO"        , "CLevMarqGSO"     , cmd_line);
 
 // list available deciders
-TCLAP::SwitchArg list_node_registrars("","list-node-regs","List available node registration decider classes",cmd, false);
-TCLAP::SwitchArg list_edge_registrars("","list-edge-regs","List available edge registration decider classes",cmd, false);
-TCLAP::SwitchArg list_all_registrars("","list-regs","List (all) available registration decider classes",cmd, false);
-TCLAP::SwitchArg list_optimizers("","list-optimizers","List (all) available graphslam optimizer classes",cmd, false);
+TCLAP::SwitchArg list_node_registrars("" , "list-node-regs"  , "List available node registration decider classes"  , cmd_line , false);
+TCLAP::SwitchArg list_edge_registrars("" , "list-edge-regs"  , "List available edge registration decider classes"  , cmd_line , false);
+TCLAP::SwitchArg list_all_registrars(""  , "list-regs"       , "List (all) available registration decider classes" , cmd_line , false);
+TCLAP::SwitchArg list_optimizers(""      , "list-optimizers" , "List (all) available graphslam optimizer classes"  , cmd_line , false);
 
 // specify whether to run on headless mode - no visuals
 // flag overrides all visualization related directives of the .ini file
 // handy for usage when no visualization is needed or when running on
 // real-robots in headless mode
-TCLAP::SwitchArg disable_visuals("","disable-visuals","Disable Visualization - Overrides related visualize* directives of the .ini file",cmd, false);
+TCLAP::SwitchArg disable_visuals("","disable-visuals","Disable Visualization - Overrides related visualize* directives of the .ini file",cmd_line, false);
 
 
 
@@ -197,15 +197,17 @@ int main(int argc, char **argv)
 			optimizers_vec.push_back(opt);
 		}
 
+		// state the mutually exclusive variables
+		cmd_line.xorAdd(arg_rawlog_file, arg_online_exec);
 
 		// Input Validation
-		if (!cmd.parse( argc, argv ) ||  showVersion || showHelp) {
+		if (!cmd_line.parse( argc, argv ) ||  showVersion || showHelp) {
 			return 0;
 		}
 		// fetch the command line options
 		// ////////////////////////////////////////////////////////////
 
-		// decide on the SwitchArgs
+		// decide whether to display the help messages for the deciders/optimizers
 		{
 			bool list_registrars = false;
 
@@ -245,11 +247,16 @@ int main(int argc, char **argv)
 				format("\nOptimizer %s is not available\n", optimizer.c_str()) );
 
 		// fetch the filenames
-		ASSERTMSG_(arg_ini_file.isSet(), format("\n.ini file was not provided.\n"));
+		// ini file
 		string ini_fname = arg_ini_file.getValue();
+		// rawlog file - either use one or run online
+		// If we run online just pass an empty rawlog_fname string to the
+		// execGraphSlam call
+		string rawlog_fname = arg_rawlog_file.isSet()? arg_rawlog_file.getValue(): "";
+		ASSERT_(arg_rawlog_file.isSet() ^ arg_online_exec.isSet());
+
+		// ground-truth file
 		string ground_truth_fname;
-		ASSERTMSG_(arg_rawlog_file.isSet(), format("\n.rawlog file was not provided.\n"));
-		string rawlog_fname = arg_rawlog_file.getValue();
 		if ( arg_ground_truth_file.isSet() ) {
 			ground_truth_fname = arg_ground_truth_file.getValue();
 		}

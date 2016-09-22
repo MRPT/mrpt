@@ -21,7 +21,6 @@ void CRawlogMP::init() {
 	// configure the current provider
 	m_class_name = "CRawlogMP";
 	this->setLoggerName(m_class_name);
-	rawlog_format = UNDEFINED; // It depends on the format of the rawlog file to be used
 
 	run_online = false;
 	provider_ready = false;
@@ -61,6 +60,12 @@ void CRawlogMP::setRawlogFname(std::string rawlog_fname) {
 	provider_ready = true;
 }
 
+bool CRawlogMP::providerIsReady() {
+	return provider_ready;
+}
+bool CRawlogMP::providerRunsOnline() {
+	return run_online;
+}
 
 } } } // end of namespaces
 
