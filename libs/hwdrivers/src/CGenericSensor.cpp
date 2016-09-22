@@ -12,7 +12,6 @@
 #include <mrpt/hwdrivers/CGenericSensor.h>
 #include <mrpt/obs/CAction.h>
 #include <mrpt/obs/CObservation.h>
-#include <mrpt/utils/CStartUpClassesRegister.h>
 
 using namespace mrpt::utils;
 using namespace mrpt::obs;
@@ -21,9 +20,6 @@ using namespace mrpt::hwdrivers;
 using namespace std;
 
 map< std::string , const TSensorClassId *>	CGenericSensor::m_knownClasses;
-
-extern CStartUpClassesRegister  mrpt_hwdrivers_class_reg;
-const int dumm = mrpt_hwdrivers_class_reg.do_nothing(); // Avoid compiler removing this class in static linking
 
 /*-------------------------------------------------------------
 						Constructor
