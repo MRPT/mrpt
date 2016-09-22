@@ -153,11 +153,13 @@ void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::initC
 	m_optimizer.setCriticalSectionPtr(&m_graph_section);
 
 	// Decide where to read the measurements from
-	if (!m_rawlog_fname.empty()) {
-			m_provider = new CRawlogMP();
-	}
-	else { // run in online mode
+	if (m_rawlog_fname.empty()) { // run in online mode
+		MRPT_LOG_INFO_STREAM << "Executing online graphSLAM";
 		m_provider = new CRosTopicMP();
+	}
+	else {
+		MRPT_LOG_INFO_STREAM << "Executing graphSLAM using rawlog files";
+		m_provider = new CRawlogMP();
 	}
 
 	// Calling of initialization-relevant functions
@@ -178,7 +180,7 @@ void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::initC
 	m_edge_registrar.setRawlogFname(m_rawlog_fname);
 	m_optimizer.setRawlogFname(m_rawlog_fname);
 
-	if (!(m_provider->run_online)) {
+	if (!(m_provider->providerRunsOnline())) {
 		dynamic_cast<CRawlogMP*>(m_provider)->setRawlogFname(m_rawlog_fname);
 	}
 

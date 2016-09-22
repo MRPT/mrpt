@@ -26,15 +26,18 @@ CRosTopicMP::~CRosTopicMP() {
 }
 
 void CRosTopicMP::init() {
+	MRPT_START;
+
 	// configure the current provider
 	m_class_name = "CRosTopicMP";
-	m_ini_section_name = "CMeraurementProviderParameters";
+	m_ini_section_name = "CMeasurementProviderParameters";
 	this->setLoggerName(m_class_name);
-	rawlog_format = ACTION_OBSERVATIONS;
 	run_online = true;
 	provider_ready = false;
 
 	client = NULL;
+
+	MRPT_END;
 }
 
 bool CRosTopicMP::getActionObservationPairOrObservation(
@@ -42,6 +45,8 @@ bool CRosTopicMP::getActionObservationPairOrObservation(
 		mrpt::obs::CSensoryFramePtr& observations,
 		mrpt::obs::CObservationPtr& observation,
 		size_t& rawlog_entry ) {
+	MRPT_START;
+
 	using namespace std;
 	using namespace mrpt::obs;
 	using namespace mrpt::utils;
@@ -92,6 +97,15 @@ bool CRosTopicMP::getActionObservationPairOrObservation(
 	}
 
 	return success;
+
+	MRPT_END;
+}
+
+bool CRosTopicMP::providerIsReady() {
+	return provider_ready;
+}
+bool CRosTopicMP::providerRunsOnline() {
+	return run_online;
 }
 
 void CRosTopicMP::printParams() const {
@@ -127,6 +141,7 @@ void CRosTopicMP::loadParams(const std::string& source_fname) {
 }
 
 void CRosTopicMP::initClient(mrpt::utils::CClientTCPSocket* cl) {
+	MRPT_START;
 	using namespace std;
 
 	stringstream msg_ss;
@@ -138,10 +153,12 @@ void CRosTopicMP::initClient(mrpt::utils::CClientTCPSocket* cl) {
 	client = new mrpt::utils::CClientTCPSocket();
 	client->connect(
 			client_params.server_addr,
-			client_params.port_no,
+			client_params.server_port_no,
 			client_params.client_timeout_ms);
 
 	MRPT_LOG_INFO_STREAM << "TCP Socket was successfully established." << endl;
+
+	MRPT_END;
 }
 
 // TClientParams
@@ -176,29 +193,37 @@ void CRosTopicMP::TClientParams::loadFromConfigFile(
 	MRPT_START;
 	using namespace mrpt::utils;
 
-	port_no = source.read_int(section           , "tcp_port_no"           , 68000       , false);
 	server_addr = source.read_string(section    , "tcp_server_addr"       , "127.0.0.1" , false);
+	server_port_no = source.read_int(section    , "tcp_server_port_no"    , 6800        , false);
 	client_timeout_ms = source.read_int(section , "tcp_client_timeout_ms" , 10000       , false);
 
 	MRPT_END;
 }
 
 void CRosTopicMP::TClientParams::getAsString(std::string* params_out) const {
+	MRPT_START;
+
 	using namespace std;
 
 	stringstream ss("");
 	ss << "------------------[ CRosTopicMP ]------------------\n";
-	ss << "Port No.                           : " << port_no << endl;
+	ss << "Port No.                           : " << server_port_no << endl;
 	ss << "Server IP Address                  : " << server_addr.c_str() << endl;
 	ss << "Client Time to wait for connection : " << client_timeout_ms << endl;
 
 	*params_out = ss.str();
+
+	MRPT_END;
 }
 
 std::string CRosTopicMP::TClientParams::getAsString() const {
+	MRPT_START;
+
 	std::string str;
 	this->getAsString(&str);
 	return str;
+
+	MRPT_END;
 }
 
 } } } // end of namespaces

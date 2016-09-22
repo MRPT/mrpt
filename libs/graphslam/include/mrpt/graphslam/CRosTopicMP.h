@@ -50,13 +50,17 @@ public:
 
 	void loadParams(const std::string& source_fname);
 	void printParams() const;
-	
-	bool run_online;
-	bool provider_ready;
 
+	/** Getter method in sake of polymorphic behavior. */
+	bool providerIsReady();
+	/** Getter method in sake of polymorphic behavior. */
+	bool providerRunsOnline();
+	
 private:
 	std::string m_class_name;
 	std::string m_ini_section_name;
+	bool run_online;
+	bool provider_ready;
 
 	mrpt::utils::CClientTCPSocket* client;
 
@@ -90,7 +94,7 @@ private:
 			provider_t& provider;
 
 			// TCP communication parameters
-			int port_no;
+			int server_port_no;
 			std::string server_addr;
 			int client_timeout_ms;
 
