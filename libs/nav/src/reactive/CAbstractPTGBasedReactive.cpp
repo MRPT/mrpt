@@ -465,10 +465,9 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 		// Statistics:
 		// ----------------------------------------------------
 		const double executionTimeValue = executionTime.Tac();
-		meanExecutionTime=  0.3 * meanExecutionTime + 0.7 * executionTimeValue;
-		meanTotalExecutionTime=  0.3 * meanTotalExecutionTime + 0.7 * totalExecutionTime.Tac();
-		meanExecutionPeriod = 0.3 * meanExecutionPeriod + 0.7 * min(1.0, timerForExecutionPeriod.Tac());
-
+		meanExecutionTime.filter(executionTimeValue);
+		meanTotalExecutionTime.filter(totalExecutionTime.Tac());
+		meanExecutionPeriod.filter( timerForExecutionPeriod.Tac());
 		timerForExecutionPeriod.Tic();
 
 		if (m_enableConsoleOutput)
@@ -478,9 +477,9 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 				"T=%.01lfms Exec:%.01lfms|%.01lfms \t"
 				"E=%.01lf PTG#%i\n",
 					mrpt::utils::sprintf_vector("%.02f ",m_new_vel_cmd).c_str(),
-					1000.0*meanExecutionPeriod,
-					1000.0*meanExecutionTime,
-					1000.0*meanTotalExecutionTime,
+					1000.0*meanExecutionPeriod.getLastOutput(),
+					1000.0*meanExecutionTime.getLastOutput(),
+					1000.0*meanTotalExecutionTime.getLastOutput(),
 					(double)selectedHolonomicMovement.evaluation,
 					nSelectedPTG
 					) );
@@ -502,7 +501,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 			newLogRec.nSelectedPTG        = nSelectedPTG;
 			newLogRec.cur_vel             = m_curVel;
 			newLogRec.cur_vel_local       = m_curVelLocal;
-			newLogRec.values["estimatedExecutionPeriod"] = meanExecutionPeriod;
+			newLogRec.values["estimatedExecutionPeriod"] = meanExecutionPeriod.getLastOutput();
 			newLogRec.values["executionTime"] = executionTimeValue;
 			newLogRec.values["time_changeSpeeds()"] = m_timlog_delays.getLastTime("changeSpeeds()");
 			newLogRec.timestamps["tim_start_iteration"] = tim_start_iteration;
@@ -676,7 +675,7 @@ void CAbstractPTGBasedReactive::STEP7_GenerateSpeedCommands( const THolonomicMov
 			m_cmd_vel_filterings.push_back(m_new_vel_cmd);
 
 			// Honor user speed limits & "blending":
-			const double beta = meanExecutionPeriod / (meanExecutionPeriod + SPEEDFILTER_TAU);
+			const double beta = meanExecutionPeriod.getLastOutput() / (meanExecutionPeriod.getLastOutput() + SPEEDFILTER_TAU);
 			m_robot.cmdVel_limits(m_new_vel_cmd, m_last_vel_cmd, beta);
 			m_cmd_vel_filterings.push_back(m_new_vel_cmd);
 		}
