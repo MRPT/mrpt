@@ -268,8 +268,10 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 			m_navigationState = NAV_ERROR;
 			return;
 		}
-		newLogRec.values["senseObstacles_age"] = m_timlog_delays.getLastTime("senseObstacles_age");
+		const double obstaclesAge = m_timlog_delays.getLastTime("senseObstacles_age");
+		newLogRec.values["senseObstacles_age"] = obstaclesAge;
 		newLogRec.timestamps["obstacles"] = obstacles_timestamp;
+		obstacleAge_avr.filter(obstaclesAge);
 
 		// Start timer
 		executionTime.Tic();
@@ -467,8 +469,19 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 		const double executionTimeValue = executionTime.Tac();
 		meanExecutionTime.filter(executionTimeValue);
 		meanTotalExecutionTime.filter(totalExecutionTime.Tac());
+
+		const double tim_changeSpeed = m_timlog_delays.getLastTime("changeSpeeds()");
+		tim_changeSpeed_avr.filter(tim_changeSpeed);
+
+		curPoseAndSpeedAge_avr.filter( m_timlog_delays.getLastTime("curPoseAndSpeed_age") );
+
+		// Average delay between sensing 
+		newLogRec.timestamps["tim_send_cmd_vel"] = mrpt::system::now();
+
+		// Running period estim:
 		meanExecutionPeriod.filter( timerForExecutionPeriod.Tac());
 		timerForExecutionPeriod.Tic();
+
 
 		if (m_enableConsoleOutput)
 		{
@@ -503,7 +516,11 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 			newLogRec.cur_vel_local       = m_curVelLocal;
 			newLogRec.values["estimatedExecutionPeriod"] = meanExecutionPeriod.getLastOutput();
 			newLogRec.values["executionTime"] = executionTimeValue;
-			newLogRec.values["time_changeSpeeds()"] = m_timlog_delays.getLastTime("changeSpeeds()");
+			newLogRec.values["executionTime_avr"] = meanExecutionTime.getLastOutput();
+			newLogRec.values["time_changeSpeeds()"] = tim_changeSpeed;
+			newLogRec.values["time_changeSpeeds()_avr"] = tim_changeSpeed_avr.getLastOutput();
+			newLogRec.values["obstacleAge_avr"] = obstacleAge_avr.getLastOutput();
+			newLogRec.values["curPoseAndSpeedAge_avr"] = curPoseAndSpeedAge_avr.getLastOutput();
 			newLogRec.timestamps["tim_start_iteration"] = tim_start_iteration;
 			newLogRec.timestamps["curPoseAndVel"] = m_curPoseVelTimestamp;
 			newLogRec.nPTGs = nPTGs;
