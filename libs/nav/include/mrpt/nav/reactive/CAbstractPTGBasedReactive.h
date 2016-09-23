@@ -15,6 +15,7 @@
 #include <mrpt/nav/holonomic/CAbstractHolonomicReactiveMethod.h>
 #include <mrpt/utils/CTimeLogger.h>
 #include <mrpt/system/datetime.h>
+#include <mrpt/math/filters.h>
 #include <mrpt/synch/CCriticalSection.h>
 #include <mrpt/math/CPolygon.h>
 
@@ -183,14 +184,16 @@ namespace mrpt
 		  */
 		double secureDistanceStart,secureDistanceEnd;
 
-		float  meanExecutionPeriod;	//!< Runtime estimation of execution period of the method.
 		mrpt::utils::CTimeLogger m_timelogger;			//!< A complete time logger \sa enableTimeLog()
 		bool  m_PTGsMustBeReInitialized;
 
 		/** @name Variables for CReactiveNavigationSystem::performNavigationStep
 			@{ */
 		mrpt::utils::CTicTac totalExecutionTime, executionTime, tictac;
-		float meanExecutionTime, meanTotalExecutionTime;
+		mrpt::math::LowPassFilter_IIR1  meanExecutionTime;
+		mrpt::math::LowPassFilter_IIR1  meanTotalExecutionTime;
+		mrpt::math::LowPassFilter_IIR1  meanExecutionPeriod;    //!< Runtime estimation of execution period of the method.
+
 		/** @} */
 
 		/** Loads derived-class specific parameters */
