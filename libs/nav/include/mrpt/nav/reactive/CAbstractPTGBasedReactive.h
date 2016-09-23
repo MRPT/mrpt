@@ -193,6 +193,7 @@ namespace mrpt
 		mrpt::math::LowPassFilter_IIR1  meanExecutionTime;
 		mrpt::math::LowPassFilter_IIR1  meanTotalExecutionTime;
 		mrpt::math::LowPassFilter_IIR1  meanExecutionPeriod;    //!< Runtime estimation of execution period of the method.
+		mrpt::math::LowPassFilter_IIR1  tim_changeSpeed_avr, obstacleAge_avr, curPoseAndSpeedAge_avr;
 
 		/** @} */
 
