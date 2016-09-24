@@ -33,8 +33,7 @@ CReactiveNavigationSystem::CReactiveNavigationSystem(
 	:
 	CAbstractPTGBasedReactive(react_iterf_impl,enableConsoleOutput,enableLogToFile),
 	minObstaclesHeight           (-1.0),
-	maxObstaclesHeight           (1e9),
-	m_WS_Obstacles_timestamp     (INVALID_TIMESTAMP)
+	maxObstaclesHeight           (1e9)
 {
 }
 
@@ -157,10 +156,7 @@ void CReactiveNavigationSystem::STEP1_InitPTGs()
 	}
 }
 
-/*************************************************************************
-		STEP2_SenseObstacles
-*************************************************************************/
-bool CReactiveNavigationSystem::STEP2_SenseObstacles(mrpt::system::TTimeStamp &obstacles_timestamp)
+bool CReactiveNavigationSystem::implementSenseObstacles(mrpt::system::TTimeStamp &obstacles_timestamp)
 {
 	try
 	{
@@ -168,10 +164,8 @@ bool CReactiveNavigationSystem::STEP2_SenseObstacles(mrpt::system::TTimeStamp &o
 		{
 			CTimeLoggerEntry tle1(m_timelogger, "navigationStep.STEP2_Sense");
 			CTimeLoggerEntry tle2(m_timlog_delays, "senseObstacles()");
-			ret = m_robot.senseObstacles(m_WS_Obstacles, m_WS_Obstacles_timestamp);
-			obstacles_timestamp = m_WS_Obstacles_timestamp;
+			ret = m_robot.senseObstacles(m_WS_Obstacles, obstacles_timestamp);
 		}
-		m_timlog_delays.registerUserMeasure("senseObstacles_age", mrpt::system::timeDifference(m_WS_Obstacles_timestamp, mrpt::system::now()));
 
 		return ret;
 		// Note: Clip obstacles by "z" axis coordinates is more efficiently done in STEP3_WSpaceToTPSpace()

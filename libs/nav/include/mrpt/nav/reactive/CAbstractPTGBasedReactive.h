@@ -193,8 +193,7 @@ namespace mrpt
 		mrpt::math::LowPassFilter_IIR1  meanExecutionTime;
 		mrpt::math::LowPassFilter_IIR1  meanTotalExecutionTime;
 		mrpt::math::LowPassFilter_IIR1  meanExecutionPeriod;    //!< Runtime estimation of execution period of the method.
-		mrpt::math::LowPassFilter_IIR1  tim_changeSpeed_avr, obstacleAge_avr, curPoseAndSpeedAge_avr;
-
+		mrpt::math::LowPassFilter_IIR1  tim_changeSpeed_avr, timoff_obstacles_avr, timoff_curPoseAndSpeed_avr, timoff_sendVelCmd_avr;
 		/** @} */
 
 		/** Loads derived-class specific parameters */
@@ -207,7 +206,8 @@ namespace mrpt
 		virtual void STEP1_InitPTGs() = 0;
 
 		/** Return false on any fatal error */
-		virtual bool STEP2_SenseObstacles(mrpt::system::TTimeStamp &obs_timestamp) = 0;
+		virtual bool implementSenseObstacles(mrpt::system::TTimeStamp &obs_timestamp) = 0;
+		bool STEP2_SenseObstacles();
 
 		/** Builds TP-Obstacles from Workspace obstacles for the given PTG.
 		  * "out_TPObstacles" is already initialized to the proper length and maximum collision-free distance for each "k" trajectory index.
@@ -234,6 +234,7 @@ namespace mrpt
 
 	private:
 		bool m_closing_navigator; //!< Signal that the destructor has been called, so no more calls are accepted from other threads
+		mrpt::system::TTimeStamp m_WS_Obstacles_timestamp;
 
 		struct TInfoPerPTG
 		{

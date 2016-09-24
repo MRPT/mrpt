@@ -113,7 +113,6 @@ namespace mrpt
 			//					PRIVATE	VARIABLES
 			// ------------------------------------------------------
 			mrpt::maps::CSimplePointsMap              m_WS_Obstacles_unsorted;  //!< The unsorted set of obstacles from the sensors
-			mrpt::system::TTimeStamp                  m_WS_Obstacles_timestamp;
 			std::vector<mrpt::maps::CSimplePointsMap> m_WS_Obstacles_inlevels; //!< One point cloud per 2.5D robot-shape-slice, coordinates relative to the robot local frame
 
 
@@ -129,7 +128,7 @@ namespace mrpt
 			virtual void STEP1_InitPTGs();
 
 			// See docs in parent class
-			virtual bool STEP2_SenseObstacles(mrpt::system::TTimeStamp &obs_timestamp);
+			bool implementSenseObstacles(mrpt::system::TTimeStamp &obs_timestamp) MRPT_OVERRIDE;
 
 			// See docs in parent class
 			virtual void STEP3_WSpaceToTPSpace(const size_t ptg_idx,std::vector<double> &out_TPObstacles);

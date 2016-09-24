@@ -178,7 +178,7 @@ void CReactiveNavigationSystem3D::STEP1_InitPTGs()
 				sections used to model the robot.
 
 *************************************************************************/
-bool CReactiveNavigationSystem3D::STEP2_SenseObstacles(mrpt::system::TTimeStamp &obstacles_timestamp)
+bool CReactiveNavigationSystem3D::implementSenseObstacles(mrpt::system::TTimeStamp &obstacles_timestamp)
 {
 	//-------------------------------------------------------------------
 	// The user must implement its own method to load the obstacles from
@@ -191,11 +191,9 @@ bool CReactiveNavigationSystem3D::STEP2_SenseObstacles(mrpt::system::TTimeStamp 
 
 	{
 		CTimeLoggerEntry tle(m_timlog_delays, "senseObstacles()");
-		if (!m_robot.senseObstacles(m_WS_Obstacles_unsorted, m_WS_Obstacles_timestamp))
+		if (!m_robot.senseObstacles(m_WS_Obstacles_unsorted, obstacles_timestamp))
 			return false;
 	}
-	obstacles_timestamp = m_WS_Obstacles_timestamp;
-	m_timlog_delays.registerUserMeasure("senseObstacles_age", mrpt::system::timeDifference(m_WS_Obstacles_timestamp, mrpt::system::now()));
 
 	// Empty slice maps:
 	const size_t nSlices = m_robotShape.size();
