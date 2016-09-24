@@ -39,7 +39,7 @@ namespace mrpt
 			return true; // ok
 		}
 
-		bool changeSpeeds(const std::vector<double> &vel_cmd) MRPT_OVERRIDE
+		virtual bool changeSpeeds(const std::vector<double> &vel_cmd) MRPT_OVERRIDE
 		{
 			m_simul.sendVelCmd(vel_cmd);
 			return true; // ok

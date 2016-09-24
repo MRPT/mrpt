@@ -183,10 +183,7 @@ bool CReactiveNavigationSystem::implementSenseObstacles(mrpt::system::TTimeStamp
 
 }
 
-/*************************************************************************
-				STEP3_WSpaceToTPSpace
-*************************************************************************/
-void CReactiveNavigationSystem::STEP3_WSpaceToTPSpace(const size_t ptg_idx,std::vector<double> &out_TPObstacles)
+void CReactiveNavigationSystem::STEP3_WSpaceToTPSpace(const size_t ptg_idx,std::vector<double> &out_TPObstacles, const mrpt::poses::CPose2D &rel_pose_PTG_origin_wrt_sense)
 {
 	CParameterizedTrajectoryGenerator	*ptg = this->PTGs[ptg_idx];
 
@@ -199,7 +196,8 @@ void CReactiveNavigationSystem::STEP3_WSpaceToTPSpace(const size_t ptg_idx,std::
 
 	for (size_t obs=0;obs<nObs;obs++)
 	{
-		const float ox=xs[obs], oy = ys[obs], oz=zs[obs];
+		double ox,oy,oz=zs[obs];
+		rel_pose_PTG_origin_wrt_sense.composePoint(xs[obs], ys[obs], ox, oy);
 
 		if (ox>-OBS_MAX_XY && ox<OBS_MAX_XY &&
 			oy>-OBS_MAX_XY && oy<OBS_MAX_XY &&
