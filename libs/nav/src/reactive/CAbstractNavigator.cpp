@@ -298,7 +298,6 @@ void CAbstractNavigator::updateCurrentPoseAndSpeeds()
 			throw std::runtime_error("ERROR calling m_robot.getCurrentPoseAndSpeeds, stopping robot and finishing navigation");
 		}
 	}
-	m_timlog_delays.registerUserMeasure("curPoseAndSpeed_age", mrpt::system::timeDifference(m_curPoseVelTimestamp, mrpt::system::now()));
 	m_curVelLocal = m_curVel;
 	m_curVelLocal.rotate(-m_curPose.phi);
 }

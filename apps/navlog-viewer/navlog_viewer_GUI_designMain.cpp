@@ -661,7 +661,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 
 		for (const auto &e : log.timestamps)
 		{
-			win1->addTextMessage(5.0, 5 + (lineY++) * Ay, mrpt::format("Timestamp %20s=%s", e.first.c_str(), mrpt::system::dateTimeLocalToString(e.second).c_str()),
+			win1->addTextMessage(5.0, 5 + (lineY++) * Ay, mrpt::format("Timestamp %-20s=%s", e.first.c_str(), mrpt::system::dateTimeLocalToString(e.second).c_str()),
 				mrpt::utils::TColorf(1, 1, 1), "mono", fy, mrpt::opengl::NICE, unique_id++);
 		}
 
@@ -707,7 +707,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 
 		for (const auto &e : log.values)
 		{
-			win1->addTextMessage(5.0, 5 + (lineY++) * Ay, format("%30s=%s ", e.first.c_str(), mrpt::system::unitsFormat(e.second, 3,false).c_str()),
+			win1->addTextMessage(5.0, 5 + (lineY++) * Ay, format("%-30s=%s ", e.first.c_str(), mrpt::system::unitsFormat(e.second, 3,false).c_str()),
 				mrpt::utils::TColorf(1, 1, 1), "mono", fy, mrpt::opengl::NICE, unique_id++);
 		}
 

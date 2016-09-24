@@ -79,7 +79,7 @@ namespace mrpt
 			virtual void STEP1_InitPTGs();
 
 			// See docs in parent class
-			virtual bool STEP2_SenseObstacles(mrpt::system::TTimeStamp &obs_timestamp);
+			bool implementSenseObstacles(mrpt::system::TTimeStamp &obs_timestamp) MRPT_OVERRIDE;
 
 			// See docs in parent class
 			virtual void STEP3_WSpaceToTPSpace(const size_t ptg_idx,std::vector<double> &out_TPObstacles);
@@ -88,7 +88,6 @@ namespace mrpt
 			virtual void loggingGetWSObstaclesAndShape(CLogFileRecord &out_log);
 
 			mrpt::maps::CSimplePointsMap m_WS_Obstacles;  //!< The obstacle points, as seen from the local robot frame.
-			mrpt::system::TTimeStamp m_WS_Obstacles_timestamp;
 
 		protected:
 			void internal_loadConfigFile(const mrpt::utils::CConfigFileBase &ini, const std::string &section_prefix="") MRPT_OVERRIDE;
