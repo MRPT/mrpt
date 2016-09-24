@@ -33,8 +33,7 @@ CReactiveNavigationSystem::CReactiveNavigationSystem(
 	:
 	CAbstractPTGBasedReactive(react_iterf_impl,enableConsoleOutput,enableLogToFile),
 	minObstaclesHeight           (-1.0),
-	maxObstaclesHeight           (1e9),
-	m_WS_Obstacles_timestamp     (INVALID_TIMESTAMP)
+	maxObstaclesHeight           (1e9)
 {
 }
 
@@ -157,10 +156,7 @@ void CReactiveNavigationSystem::STEP1_InitPTGs()
 	}
 }
 
-/*************************************************************************
-		STEP2_SenseObstacles
-*************************************************************************/
-bool CReactiveNavigationSystem::STEP2_SenseObstacles(mrpt::system::TTimeStamp &obstacles_timestamp)
+bool CReactiveNavigationSystem::implementSenseObstacles(mrpt::system::TTimeStamp &obstacles_timestamp)
 {
 	try
 	{
@@ -168,10 +164,8 @@ bool CReactiveNavigationSystem::STEP2_SenseObstacles(mrpt::system::TTimeStamp &o
 		{
 			CTimeLoggerEntry tle1(m_timelogger, "navigationStep.STEP2_Sense");
 			CTimeLoggerEntry tle2(m_timlog_delays, "senseObstacles()");
-			ret = m_robot.senseObstacles(m_WS_Obstacles, m_WS_Obstacles_timestamp);
-			obstacles_timestamp = m_WS_Obstacles_timestamp;
+			ret = m_robot.senseObstacles(m_WS_Obstacles, obstacles_timestamp);
 		}
-		m_timlog_delays.registerUserMeasure("senseObstacles_age", mrpt::system::timeDifference(m_WS_Obstacles_timestamp, mrpt::system::now()));
 
 		return ret;
 		// Note: Clip obstacles by "z" axis coordinates is more efficiently done in STEP3_WSpaceToTPSpace()
@@ -189,10 +183,7 @@ bool CReactiveNavigationSystem::STEP2_SenseObstacles(mrpt::system::TTimeStamp &o
 
 }
 
-/*************************************************************************
-				STEP3_WSpaceToTPSpace
-*************************************************************************/
-void CReactiveNavigationSystem::STEP3_WSpaceToTPSpace(const size_t ptg_idx,std::vector<double> &out_TPObstacles)
+void CReactiveNavigationSystem::STEP3_WSpaceToTPSpace(const size_t ptg_idx,std::vector<double> &out_TPObstacles, const mrpt::poses::CPose2D &rel_pose_PTG_origin_wrt_sense)
 {
 	CParameterizedTrajectoryGenerator	*ptg = this->PTGs[ptg_idx];
 
@@ -205,7 +196,8 @@ void CReactiveNavigationSystem::STEP3_WSpaceToTPSpace(const size_t ptg_idx,std::
 
 	for (size_t obs=0;obs<nObs;obs++)
 	{
-		const float ox=xs[obs], oy = ys[obs], oz=zs[obs];
+		double ox,oy,oz=zs[obs];
+		rel_pose_PTG_origin_wrt_sense.composePoint(xs[obs], ys[obs], ox, oy);
 
 		if (ox>-OBS_MAX_XY && ox<OBS_MAX_XY &&
 			oy>-OBS_MAX_XY && oy<OBS_MAX_XY &&

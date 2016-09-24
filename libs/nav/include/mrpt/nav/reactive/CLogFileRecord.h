@@ -71,6 +71,7 @@ namespace nav
 		std::map<std::string, mrpt::system::TTimeStamp>  timestamps;
 		mrpt::maps::CSimplePointsMap  WS_Obstacles;  //!< The WS-Obstacles
 		mrpt::poses::CPose2D          robotOdometryPose; //!< The robot pose (from raw odometry or a localization system).
+		mrpt::poses::CPose2D          relPoseSense, relPoseVelCmd; //! Relative poses (wrt to robotOdometryPose) for extrapolated paths at two instants: time of obstacle sense, and future pose of motion comman
 		mrpt::math::TPoint2D          WS_target_relative;  //!< The relative location of target point in WS.
 
 		std::vector<double>    cmd_vel;  //!< The final motion command sent to robot, in "m/sec" and "rad/sec".

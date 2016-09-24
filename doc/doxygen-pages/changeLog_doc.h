@@ -38,6 +38,7 @@
 				- MRPT_LOG_DEBUG(), MRPT_LOG_INFO(), MRPT_LOG_WARN(), MRPT_LOG_ERROR()
 				- MRPT_LOG_DEBUG_STREAM, MRPT_LOG_INFO_STREAM, MRPT_LOG_WARN_STREAM, MRPT_LOG_ERROR_STREAM
 			- New functions for polynomial roots: see \ref polynomial_roots
+			- New functions for signal filtering: see \ref filtering_grp
 			- New classes mrpt::math::CAtan2LookUpTable, mrpt::math::CAtan2LookUpTableMultiRes
 			- [API change] The following functions are no longer static methods: (since their classes are now derived from the state-aware mrpt::utils::COutputLogger)
 				- mrpt::math::RANSAC_Template::execute()
@@ -109,6 +110,7 @@
 		- Fix point into polygon checking not working for concave polygons. Now, mrpt::math::TPolygon2D::contains() uses the winding number test which works for any geometry.
 		- Fix inconsistent internal state after externalizing mrpt::obs::CObservation3DRangeScan
 		- Fix a long outstanding bug regarding losing of keystroke events in CDisplayWindow3D windows (Closes #13 again)
+		- Fix wrong units for negative numbers in mrpt::system::unitsFormat()
 
 <hr>
 <a name="1.4.0">
