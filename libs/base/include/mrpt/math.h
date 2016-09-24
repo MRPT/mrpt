@@ -51,5 +51,6 @@
 #include <mrpt/math/kmeans.h>
 #include <mrpt/math/slerp.h>
 #include <mrpt/math/model_search.h>
+#include <mrpt/math/filters.h>
 
 #endif

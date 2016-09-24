@@ -73,6 +73,8 @@ const long navlog_viewer_GUI_designDialog::ID_STATICTEXT6 = wxNewId();
 const long navlog_viewer_GUI_designDialog::ID_STATICTEXT7 = wxNewId();
 const long navlog_viewer_GUI_designDialog::ID_CHECKBOX1 = wxNewId();
 const long navlog_viewer_GUI_designDialog::ID_CHECKBOX2 = wxNewId();
+const long navlog_viewer_GUI_designDialog::ID_CHECKBOX3 = wxNewId();
+const long navlog_viewer_GUI_designDialog::ID_CHECKBOX4 = wxNewId();
 const long navlog_viewer_GUI_designDialog::ID_STATICTEXT8 = wxNewId();
 const long navlog_viewer_GUI_designDialog::ID_TEXTCTRL2 = wxNewId();
 const long navlog_viewer_GUI_designDialog::ID_PANEL3 = wxNewId();
@@ -203,16 +205,24 @@ navlog_viewer_GUI_designDialog::navlog_viewer_GUI_designDialog(wxWindow* parent,
     FlexGridSizer9->Add(txtSelectedPTG, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     cbDrawShapePath = new wxCheckBox(Panel3, ID_CHECKBOX1, _("Draw shape along path"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX1"));
     cbDrawShapePath->SetValue(true);
-    FlexGridSizer9->Add(cbDrawShapePath, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    FlexGridSizer9->Add(cbDrawShapePath, 1, wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
     FlexGridSizer9->Add(-1,-1,1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     cbGlobalFrame = new wxCheckBox(Panel3, ID_CHECKBOX2, _("Represent in global frame"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX2"));
     cbGlobalFrame->SetValue(true);
-    FlexGridSizer9->Add(cbGlobalFrame, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    FlexGridSizer9->Add(cbGlobalFrame, 1, wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
+    FlexGridSizer9->Add(-1,-1,1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    cbShowRelPoses = new wxCheckBox(Panel3, ID_CHECKBOX3, _("Show extrapolated poses"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX3"));
+    cbShowRelPoses->SetValue(true);
+    FlexGridSizer9->Add(cbShowRelPoses, 1, wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
+    FlexGridSizer9->Add(-1,-1,1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    cbShowAllDebugEntries = new wxCheckBox(Panel3, ID_CHECKBOX4, _("Show all debug fields"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX4"));
+    cbShowAllDebugEntries->SetValue(true);
+    FlexGridSizer9->Add(cbShowAllDebugEntries, 1, wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
     FlexGridSizer9->Add(-1,-1,1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     StaticText5 = new wxStaticText(Panel3, ID_STATICTEXT8, _("Shape draw min. dist:"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT8"));
     FlexGridSizer9->Add(StaticText5, 1, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5);
-    edShapeMinDist = new wxTextCtrl(Panel3, ID_TEXTCTRL2, _("1.0"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_TEXTCTRL2"));
-    FlexGridSizer9->Add(edShapeMinDist, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    edShapeMinDist = new wxTextCtrl(Panel3, ID_TEXTCTRL2, _("1.0"), wxDefaultPosition, wxSize(55,21), 0, wxDefaultValidator, _T("ID_TEXTCTRL2"));
+    FlexGridSizer9->Add(edShapeMinDist, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 5);
     Panel3->SetSizer(FlexGridSizer9);
     FlexGridSizer9->Fit(Panel3);
     FlexGridSizer9->SetSizeHints(Panel3);
@@ -246,7 +256,10 @@ navlog_viewer_GUI_designDialog::navlog_viewer_GUI_designDialog(wxWindow* parent,
     Connect(ID_SLIDER1,wxEVT_SCROLL_CHANGED,(wxObjectEventFunction)&navlog_viewer_GUI_designDialog::OnslidLogCmdScroll);
     Connect(ID_BUTTON4,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&navlog_viewer_GUI_designDialog::OnbtnPlayClick);
     Connect(ID_BUTTON5,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&navlog_viewer_GUI_designDialog::OnbtnStopClick);
+    Connect(ID_CHECKBOX1,wxEVT_COMMAND_CHECKBOX_CLICKED,(wxObjectEventFunction)&navlog_viewer_GUI_designDialog::OncbGlobalFrameClick);
     Connect(ID_CHECKBOX2,wxEVT_COMMAND_CHECKBOX_CLICKED,(wxObjectEventFunction)&navlog_viewer_GUI_designDialog::OncbGlobalFrameClick);
+    Connect(ID_CHECKBOX3,wxEVT_COMMAND_CHECKBOX_CLICKED,(wxObjectEventFunction)&navlog_viewer_GUI_designDialog::OncbGlobalFrameClick);
+    Connect(ID_CHECKBOX4,wxEVT_COMMAND_CHECKBOX_CLICKED,(wxObjectEventFunction)&navlog_viewer_GUI_designDialog::OncbGlobalFrameClick);
     Connect(ID_BUTTON6,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&navlog_viewer_GUI_designDialog::OnbtnMoreOpsClick);
     Connect(ID_TIMER1,wxEVT_TIMER,(wxObjectEventFunction)&navlog_viewer_GUI_designDialog::OntimPlayTrigger);
     Connect(ID_TIMER2,wxEVT_TIMER,(wxObjectEventFunction)&navlog_viewer_GUI_designDialog::OntimAutoloadTrigger);
@@ -255,7 +268,9 @@ navlog_viewer_GUI_designDialog::navlog_viewer_GUI_designDialog(wxWindow* parent,
     Connect(ID_MENUITEM3,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&navlog_viewer_GUI_designDialog::OnmnuSaveScoreMatrixSelected);
     //*)
 
-    {
+	cbShowAllDebugEntries->SetValue(false);
+
+	{
     	wxIcon FrameIcon;
     	FrameIcon.CopyFromBitmap(wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("MAIN_ICON")),wxART_FRAME_ICON));
     	SetIcon(FrameIcon);
@@ -552,8 +567,41 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 				}
 			}
 
+			// Extrapolated poses from delay models:
 			{
-				// Obstacles:  Was: win1->plot(log.WS_Obstacles.getPointsBufferRef_x(),log.WS_Obstacles.getPointsBufferRef_y(),"b.4");
+				mrpt::opengl::CSetOfObjectsPtr gl_relposes;
+				mrpt::opengl::CRenderizablePtr gl_relposes_r = gl_robot_frame->getByName("relposes");  // Get or create if new
+				if (!gl_relposes_r) {
+					gl_relposes = mrpt::opengl::CSetOfObjects::Create();
+					gl_relposes->setName("relposes");
+					gl_robot_frame->insert(gl_relposes);
+				}
+				else {
+					gl_relposes = mrpt::opengl::CSetOfObjectsPtr(gl_relposes_r);
+				}
+
+				gl_relposes->clear();
+				if (cbShowRelPoses->IsChecked())
+				{
+					{
+						mrpt::opengl::CSetOfObjectsPtr gl_relpose_sense = mrpt::opengl::stock_objects::CornerXYSimple(0.3, 1);
+						gl_relpose_sense->setName("sense");
+						gl_relpose_sense->enableShowName(true);
+						gl_relpose_sense->setPose(log.relPoseSense);
+						gl_relposes->insert(gl_relpose_sense);
+					}
+					{
+						mrpt::opengl::CSetOfObjectsPtr gl_relpose_cmdvel = mrpt::opengl::stock_objects::CornerXYSimple(0.3, 1);
+						gl_relpose_cmdvel->setName("cmdVel");
+						gl_relpose_cmdvel->enableShowName(true);
+						gl_relpose_cmdvel->setPose(log.relPoseVelCmd);
+						gl_relposes->insert(gl_relpose_cmdvel);
+					}
+				}
+			}
+
+			{
+				// Obstacles:
 				mrpt::opengl::CPointCloudPtr gl_obs;
 				mrpt::opengl::CRenderizablePtr gl_obs_r = gl_robot_frame->getByName("obs");  // Get or create if new
 				if (!gl_obs_r) {
@@ -566,6 +614,9 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 					gl_obs = mrpt::opengl::CPointCloudPtr(gl_obs_r);
 				}
 				gl_obs->loadFromPointsMap(&log.WS_Obstacles);
+				if (cbShowRelPoses->IsChecked())
+						gl_obs->setPose(log.relPoseSense);
+				else	gl_obs->setPose(mrpt::poses::CPose3D());
 			}
 
 			{
@@ -597,6 +648,10 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 
 						ptg->renderPathAsSimpleLine(selected_k,*gl_path,0.10, max_dist);
 						gl_path->setColor_u8( mrpt::utils::TColor(0xff,0x00,0x00) );
+
+						if (cbShowRelPoses->IsChecked())
+								gl_path->setPose(log.relPoseVelCmd);
+						else	gl_path->setPose(mrpt::poses::CPose3D());
 
 						// Overlay a sequence of robot shapes:
 						if (cbDrawShapePath->IsChecked())
@@ -658,11 +713,14 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 		// ---------------------------------
 		const double fy = 10, Ay = 15;   // Font size & line spaces
 		int lineY = 0, unique_id = 0;
+		win1->clearTextMessages();
 
-		for (const auto &e : log.timestamps)
-		{
-			win1->addTextMessage(5.0, 5 + (lineY++) * Ay, mrpt::format("Timestamp %20s=%s", e.first.c_str(), mrpt::system::dateTimeLocalToString(e.second).c_str()),
-				mrpt::utils::TColorf(1, 1, 1), "mono", fy, mrpt::opengl::NICE, unique_id++);
+		if (cbShowAllDebugEntries->IsChecked()) {
+			for (const auto &e : log.timestamps)
+			{
+				win1->addTextMessage(5.0, 5 + (lineY++) * Ay, mrpt::format("Timestamp %-20s=%s", e.first.c_str(), mrpt::system::dateTimeLocalToString(e.second).c_str()),
+					mrpt::utils::TColorf(1, 1, 1), "mono", fy, mrpt::opengl::NICE, unique_id++);
+			}
 		}
 
 		win1->addTextMessage(5.0, 5+ (lineY++)*Ay, mrpt::format("cmd_vel=%s cur_vel=[%.02f m/s, %0.2f m/s, %.02f dps] cur_vel_local=[%.02f m/s, %0.2f m/s, %.02f dps]",
@@ -705,12 +763,15 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 				col, "mono", fy, mrpt::opengl::NICE, unique_id++);
 		}
 
-		{
+		win1->addTextMessage(5.0, 5 + (lineY++)*Ay, mrpt::format("relPoseSense: %s relPoseVelCmd:%s",
+			log.relPoseSense.asString().c_str(),
+			log.relPoseVelCmd.asString().c_str()),
+			mrpt::utils::TColorf(1, 1, 1), "mono", fy, mrpt::opengl::NICE, unique_id++);
+
+		if (cbShowAllDebugEntries->IsChecked()) {
 			for (const auto &e : log.values)
-			{
-				win1->addTextMessage(5.0, 5 + (lineY++) * Ay, format("%s=%s ", e.first.c_str(), mrpt::system::unitsFormat(e.second, 3,false).c_str()),
+				win1->addTextMessage(5.0, 5 + (lineY++) * Ay, format("%-30s=%s ", e.first.c_str(), mrpt::system::unitsFormat(e.second, 3,false).c_str()),
 					mrpt::utils::TColorf(1, 1, 1), "mono", fy, mrpt::opengl::NICE, unique_id++);
-			}
 		}
 
 		win1->repaint();
@@ -1001,7 +1062,7 @@ void navlog_viewer_GUI_designDialog::OnmnuSaveScoreMatrixSelected(wxCommandEvent
 		{
 			const CHolonomicLogFileRecordPtr & hlog = logptr->infoPerPTG[iPTG].HLFR;
 			if (!hlog.present()) continue;
-			
+
 			const mrpt::math::CMatrixD * dirs_scores = hlog->getDirectionScores();
 			if (!dirs_scores || dirs_scores->getRowCount()<2) continue;
 

@@ -126,6 +126,7 @@ CSetOfObjects::~CSetOfObjects()
 
 void CSetOfObjects::insert( const CRenderizablePtr &newObject )
 {
+	ASSERTMSG_(newObject.pointer() != this, "Error: Trying to insert container into itself!");
 	m_objects.push_back(newObject);
 }
 
