@@ -33,13 +33,14 @@ using namespace std;
 // ------ CAbstractPTGBasedReactive::TNavigationParamsPTG -----
 std::string CAbstractPTGBasedReactive::TNavigationParamsPTG::getAsText() const
 {
-
 	std::string s = TNavigationParams::getAsText();
 	s += "restrict_PTG_indices: ";
 	s += mrpt::utils::sprintf_vector("%u ",this->restrict_PTG_indices);
 	s += "\n";
 	return s;
 }
+
+const double ESTIM_LOWPASSFILTER_ALPHA = 0.7;
 
 // Ctor:
 CAbstractPTGBasedReactive::CAbstractPTGBasedReactive(CRobot2NavInterface &react_iterf_impl, bool enableConsoleOutput, bool enableLogFile):
@@ -63,10 +64,10 @@ CAbstractPTGBasedReactive::CAbstractPTGBasedReactive(CRobot2NavInterface &react_
 	m_PTGsMustBeReInitialized    (true),
 	meanExecutionTime            (0.1f),
 	meanTotalExecutionTime       (0.1f),
-	tim_changeSpeed_avr          (0.95),  // 0.95: alpha filter constant
-	timoff_obstacles_avr         (0.95),
-	timoff_curPoseAndSpeed_avr   (0.95),
-	timoff_sendVelCmd_avr        (0.95),
+	tim_changeSpeed_avr          (ESTIM_LOWPASSFILTER_ALPHA),
+	timoff_obstacles_avr         (ESTIM_LOWPASSFILTER_ALPHA),
+	timoff_curPoseAndSpeed_avr   (ESTIM_LOWPASSFILTER_ALPHA),
+	timoff_sendVelCmd_avr        (ESTIM_LOWPASSFILTER_ALPHA),
 	m_closing_navigator          (false),
 	m_WS_Obstacles_timestamp     (INVALID_TIMESTAMP),
 	m_infoPerPTG_timestamp       (INVALID_TIMESTAMP)
@@ -314,8 +315,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 		CPose2D relPoseSense, relPoseVelCmd;
 		robotPoseExtrapolateIncrement(m_curVel, timoff_pose2sense, relPoseSense);
 		robotPoseExtrapolateIncrement(m_curVel, timoff_pose2VelCmd, relPoseVelCmd);
-		const CPose2D absPoseSense  = CPose2D(m_curPose) + relPoseSense;
-		const CPose2D absPoseVelCmd = CPose2D(m_curPose) + relPoseVelCmd;
+		const CPose2D rel_pose_PTG_origin_wrt_sense = relPoseVelCmd - relPoseSense;
 
 		// Start timer
 		executionTime.Tic();
@@ -387,7 +387,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 					ptg->initTPObstacles(ipf.TP_Obstacles);
 
 					// Implementation-dependent conversion:
-					STEP3_WSpaceToTPSpace(indexPTG,ipf.TP_Obstacles);
+					STEP3_WSpaceToTPSpace(indexPTG, ipf.TP_Obstacles, rel_pose_PTG_origin_wrt_sense);
 
 					// Distances in TP-Space are normalized to [0,1]:
 					const double _refD = 1.0/ptg->getRefDistance();
