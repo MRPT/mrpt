@@ -39,7 +39,7 @@ CLogFileRecord::~CLogFileRecord()
 void  CLogFileRecord::writeToStream(mrpt::utils::CStream &out,int *version) const
 {
 	if (version)
-		*version = 13;
+		*version = 14;
 	else
 	{
 		uint32_t	i,n;
@@ -97,6 +97,7 @@ void  CLogFileRecord::writeToStream(mrpt::utils::CStream &out,int *version) cons
 
 		out << values << timestamps; // v13
 
+		out << relPoseSense << relPoseVelCmd; // v14
 	}
 }
 
@@ -121,6 +122,7 @@ void  CLogFileRecord::readFromStream(mrpt::utils::CStream &in,int version)
 	case 11:
 	case 12:
 	case 13:
+	case 14:
 		{
 			// Version 0 --------------
 			uint32_t  i,n;
@@ -321,6 +323,13 @@ void  CLogFileRecord::readFromStream(mrpt::utils::CStream &in,int version)
 			else {
 				values.clear();
 				timestamps.clear();
+			}
+
+			if (version >= 14) {
+				in >> relPoseSense >> relPoseVelCmd;
+			}
+			else {
+				relPoseSense = relPoseVelCmd = mrpt::poses::CPose2D();
 			}
 
 		} break;

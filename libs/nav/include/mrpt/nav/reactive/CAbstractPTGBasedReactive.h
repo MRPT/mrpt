@@ -248,8 +248,8 @@ namespace mrpt
 		std::vector<TInfoPerPTG> m_infoPerPTG; //!< Temporary buffers for working with each PTG during a navigationStep()
 		mrpt::system::TTimeStamp m_infoPerPTG_timestamp;
 
-
 		void deleteHolonomicObjects(); //!< Delete m_holonomicMethod
+		static void robotPoseExtrapolateIncrement(const mrpt::math::TTwist2D & globalVel, const double time_offset, mrpt::poses::CPose2D & out_pose);
 
 
 	}; // end of CAbstractPTGBasedReactive
