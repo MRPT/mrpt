@@ -110,6 +110,7 @@
 		- Fix point into polygon checking not working for concave polygons. Now, mrpt::math::TPolygon2D::contains() uses the winding number test which works for any geometry.
 		- Fix inconsistent internal state after externalizing mrpt::obs::CObservation3DRangeScan
 		- Fix a long outstanding bug regarding losing of keystroke events in CDisplayWindow3D windows (Closes #13 again)
+		- Fix wrong units for negative numbers in mrpt::system::unitsFormat()
 
 <hr>
 <a name="1.4.0">
