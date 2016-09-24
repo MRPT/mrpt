@@ -63,6 +63,10 @@ CAbstractPTGBasedReactive::CAbstractPTGBasedReactive(CRobot2NavInterface &react_
 	m_PTGsMustBeReInitialized    (true),
 	meanExecutionTime            (0.1f),
 	meanTotalExecutionTime       (0.1f),
+	tim_changeSpeed_avr          (0.95),  // 0.95: alpha filter constant
+	timoff_obstacles_avr         (0.95),
+	timoff_curPoseAndSpeed_avr   (0.95),
+	timoff_sendVelCmd_avr        (0.95),
 	m_closing_navigator          (false),
 	m_WS_Obstacles_timestamp     (INVALID_TIMESTAMP),
 	m_infoPerPTG_timestamp       (INVALID_TIMESTAMP)
@@ -279,6 +283,8 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 		*                timoff_obstacles <-+                |               +--> timoff_curPoseVelAge           |
 		*                                                    |<---------------------------------+--------------->|
 		*                                                                                       +--> timoff_sendVelCmd_avr (estimation)
+		*                                                                                                |<-------------------->|
+		*                                                                                                   tim_changeSpeed_avr (estim)
 		*
 		*                             |<-----------------------------------------------|-------------------------->|
 		*  Relative poses:                              relPoseSense                           relPoseVelCmd
@@ -296,11 +302,20 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 		newLogRec.values["timoff_curPoseVelAge_avr"] = timoff_curPoseAndSpeed_avr.getLastOutput();
 
 		// time offset estimations:
-		const double timoff_pose2sense  = timoff_curPoseVelAge - timoff_obstacles;
-		const double timoff_pose2VelCmd = timoff_curPoseVelAge - timoff_sendVelCmd_avr.getLastOutput();
+		const double timoff_pose2sense  = timoff_obstacles - timoff_curPoseVelAge;
+		const double timoff_pose2VelCmd = timoff_sendVelCmd_avr.getLastOutput() + 0.5*tim_changeSpeed_avr.getLastOutput() - timoff_curPoseVelAge;
+		newLogRec.values["timoff_pose2sense"] = timoff_pose2sense;
+		newLogRec.values["timoff_pose2VelCmd"] = timoff_pose2VelCmd;
 
-		// robot relative poses along current path estimation:
-		MRPT_TODO("path extrapolation");
+		if (std::abs(timoff_pose2sense)  > 0.5) MRPT_LOG_WARN_FMT("timoff_pose2sense=%e is too large! Path extrapolation may be not accurate.", timoff_pose2sense);
+		if (std::abs(timoff_pose2VelCmd) > 0.5) MRPT_LOG_WARN_FMT("timoff_pose2VelCmd=%e is too large! Path extrapolation may be not accurate.", timoff_pose2VelCmd);
+
+		// Path extrapolation: robot relative poses along current path estimation:
+		CPose2D relPoseSense, relPoseVelCmd;
+		robotPoseExtrapolateIncrement(m_curVel, timoff_pose2sense, relPoseSense);
+		robotPoseExtrapolateIncrement(m_curVel, timoff_pose2VelCmd, relPoseVelCmd);
+		const CPose2D absPoseSense  = CPose2D(m_curPose) + relPoseSense;
+		const CPose2D absPoseVelCmd = CPose2D(m_curPose) + relPoseVelCmd;
 
 		// Start timer
 		executionTime.Tic();
@@ -544,6 +559,8 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 			this->loggingGetWSObstaclesAndShape(newLogRec);
 
 			newLogRec.robotOdometryPose   = m_curPose;
+			newLogRec.relPoseSense        = relPoseSense;
+			newLogRec.relPoseVelCmd       = relPoseVelCmd;
 			newLogRec.WS_target_relative  = TPoint2D(relTarget.x(), relTarget.y());
 			newLogRec.cmd_vel             = m_new_vel_cmd;
 			newLogRec.cmd_vel_filterings  = m_cmd_vel_filterings;
@@ -826,5 +843,12 @@ bool CAbstractPTGBasedReactive::impl_waypoint_is_reachable(const mrpt::math::TPo
 bool CAbstractPTGBasedReactive::STEP2_SenseObstacles()
 {
 	return implementSenseObstacles(m_WS_Obstacles_timestamp);
+}
+
+void CAbstractPTGBasedReactive::robotPoseExtrapolateIncrement(const mrpt::math::TTwist2D & globalVel, const double time_offset, mrpt::poses::CPose2D & out_pose)
+{
+	out_pose.x(globalVel.vx * time_offset);
+	out_pose.y(globalVel.vy * time_offset);
+	out_pose.phi( globalVel.omega * time_offset );
 }
 
