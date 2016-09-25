@@ -18,7 +18,11 @@ using namespace mrpt::utils;
 MRPT_INITIALIZER(registerAllClasses_mrpt_kinematics)
 {
 #if !defined(DISABLE_MRPT_AUTO_CLASS_REGISTRATION)
-	registerClass( CLASS_ID( CKinematicChain ) );
+	registerClass(CLASS_ID(CKinematicChain));
+
+	// Vehicle vel cmds:
+	registerClass(CLASS_ID(CVehicleVelCmd_DiffDriven));
+	registerClass(CLASS_ID(CVehicleVelCmd_Holo));
 #endif
 }
 

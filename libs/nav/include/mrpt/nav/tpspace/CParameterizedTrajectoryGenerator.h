@@ -17,6 +17,7 @@
 #include <mrpt/utils/mrpt_stdint.h>    // compiler-independent version of "stdint.h"
 #include <mrpt/nav/link_pragmas.h>
 #include <mrpt/poses/CPose2D.h>
+#include <mrpt/kinematics/CVehicleVelCmd.h>
 #include <mrpt/otherlibs/stlplus/smart_ptr.hpp>  // STL+ library
 
 namespace mrpt { namespace opengl { class CSetOfLines; } }
@@ -98,7 +99,11 @@ namespace nav
 		}
 
 		/** Converts a discretized "alpha" value into a feasible motion command or action. See derived classes for the meaning of these actions */
-		virtual void directionToMotionCommand( uint16_t k, std::vector<double> &out_action_cmd ) const = 0;
+		virtual mrpt::kinematics::CVehicleVelCmdPtr directionToMotionCommand( uint16_t k ) const = 0;
+
+		/** Returns an empty kinematic velocity command object of the type supported by this PTG. 
+		  * Can be queried to determine the expected kinematic interface of the PTG.  */
+		virtual mrpt::kinematics::CVehicleVelCmdPtr getSupportedKinematicVelocityCommand() const = 0;
 
 		/** Callback whenever we have new info about the velocity state of the robot right now. May be used by some PTGs and discarded by others.
 		  * \param[in] curVelLocal The current robot velocities in the local frame of reference (+X: forwards, omega: clockwise rotation) */
