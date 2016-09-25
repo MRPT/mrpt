@@ -11,6 +11,7 @@
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/system/datetime.h>
+#include <mrpt/kinematics/CVehicleVelCmd.h>
 #include <mrpt/kinematics/link_pragmas.h>
 
 namespace mrpt
@@ -46,7 +47,7 @@ namespace kinematics
 		const mrpt::math::TPose2D  & getCurrentOdometricPose() const { return m_odometry; }
 		/** Brute-force overwrite robot odometry  */
 		template<typename T>
-		void setCurrentOdometricPose(const T &pose) { m_odometry = pose; }
+		void setCurrentOdometricPose(const T &pose) { m_odometry = mrpt::math::TPose2D(pose); }
 
 		/** Returns the instantaneous, ground truth velocity vector (vx,vy,omega) in world coordinates */
 		const mrpt::math::TTwist2D & getCurrentGTVel() const { return m_vel; }
@@ -56,10 +57,11 @@ namespace kinematics
 		/** Get the current simulation time */
 		double getTime() const { return m_time;}
 
-		/** Sends a velocity command to the robot. The number of components and their meaning depends on the derived class */
-		virtual void sendVelCmd(const std::vector<double> &cmd_vel) = 0;
-		virtual size_t getVelCmdLength() const = 0;
-		virtual std::string getVelCmdDescription() const = 0;
+		/** Sends a velocity command to the robot. The number of components and their meaning depends 
+		  * on the vehicle-kinematics derived class */
+		virtual void sendVelCmd(const CVehicleVelCmd &cmd_vel) = 0;
+		/** Gets an empty velocity command object that can be queried to find out the number of velcmd components,... */
+		virtual CVehicleVelCmdPtr getVelCmdType() const = 0;
 
 		/** Enable/Disable odometry errors. Errors in odometry are 1 sigma Gaussian values per second */
 		void setOdometryErrors(

@@ -39,7 +39,7 @@ namespace mrpt
 			return true; // ok
 		}
 
-		virtual bool changeSpeeds(const std::vector<double> &vel_cmd) MRPT_OVERRIDE
+		virtual bool changeSpeeds(const mrpt::kinematics::CVehicleVelCmd &vel_cmd) MRPT_OVERRIDE
 		{
 			m_simul.sendVelCmd(vel_cmd);
 			return true; // ok
@@ -85,7 +85,7 @@ namespace mrpt
 			return true; // ok
 		}
 
-		bool changeSpeeds(const std::vector<double> &vel_cmd) MRPT_OVERRIDE
+		bool changeSpeeds(const mrpt::kinematics::CVehicleVelCmd &vel_cmd) MRPT_OVERRIDE
 		{
 			m_simul.sendVelCmd(vel_cmd);
 			return true; // ok
@@ -93,8 +93,9 @@ namespace mrpt
 
 		bool stop() MRPT_OVERRIDE
 		{
-			std::vector<double> cmd_vel(2, 0.0);
-			m_simul.sendVelCmd(cmd_vel);
+			mrpt::kinematics::CVehicleVelCmd_DiffDriven cmd;
+			cmd.setToStop();
+			m_simul.sendVelCmd(cmd);
 			return true;
 		}
 		/** See CRobot2NavInterface::getNavigationTime(). In this class, simulation time is returned instead of wall-clock time. */

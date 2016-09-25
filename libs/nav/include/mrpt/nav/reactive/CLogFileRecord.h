@@ -16,6 +16,7 @@
 
 #include <mrpt/nav/holonomic/CHolonomicLogFileRecord.h>
 #include <mrpt/nav/tpspace/CParameterizedTrajectoryGenerator.h>
+#include <mrpt/kinematics/CVehicleVelCmd.h>
 
 namespace mrpt
 {
@@ -74,8 +75,8 @@ namespace nav
 		mrpt::poses::CPose2D          relPoseSense, relPoseVelCmd; //! Relative poses (wrt to robotOdometryPose) for extrapolated paths at two instants: time of obstacle sense, and future pose of motion comman
 		mrpt::math::TPoint2D          WS_target_relative;  //!< The relative location of target point in WS.
 
-		std::vector<double>    cmd_vel;  //!< The final motion command sent to robot, in "m/sec" and "rad/sec".
-		std::vector<std::vector<double> > cmd_vel_filterings;  //!< Motion command as comes out from the PTG, after scaling and after speed limit filtering.
+		mrpt::kinematics::CVehicleVelCmdPtr    cmd_vel;  //!< The final motion command sent to robot, in "m/sec" and "rad/sec".
+		mrpt::kinematics::CVehicleVelCmdPtr    cmd_vel_original;  //!< Motion command as comes out from the PTG, before scaling speed limit filtering.
 		mrpt::math::TTwist2D   cur_vel; //!< The actual robot velocities in global (map) coordinates, as read from sensors, in "m/sec" and "rad/sec".
 		mrpt::math::TTwist2D   cur_vel_local; //!< The actual robot velocities in local (robot) coordinates, as read from sensors, in "m/sec" and "rad/sec".
 

@@ -39,7 +39,7 @@ CLogFileRecord::~CLogFileRecord()
 void  CLogFileRecord::writeToStream(mrpt::utils::CStream &out,int *version) const
 {
 	if (version)
-		*version = 14;
+		*version = 15;
 	else
 	{
 		uint32_t	i,n;
@@ -67,6 +67,7 @@ void  CLogFileRecord::writeToStream(mrpt::utils::CStream &out,int *version) cons
 				out << infoPerPTG[i].ptg;
 		}
 		out << nSelectedPTG << WS_Obstacles << robotOdometryPose << WS_target_relative /*v8*/ << cmd_vel /*v10*/; // << executionTime; removed v13
+		out << cmd_vel_original; // v15
 
 		// Previous values: REMOVED IN VERSION #6
 		n = robotShape_x.size();
@@ -93,11 +94,13 @@ void  CLogFileRecord::writeToStream(mrpt::utils::CStream &out,int *version) cons
 		out << nPTGs; // v4
 		// out << timestamp; // removed v13
 		out << robotShape_radius; // v11
-		out << cmd_vel_filterings; // v12
+		//out << cmd_vel_filterings; // added v12: Removed in v15
 
 		out << values << timestamps; // v13
 
 		out << relPoseSense << relPoseVelCmd; // v14
+
+		// v15: cmd_vel converted from std::vector<double> into CSerializable
 	}
 }
 
@@ -123,6 +126,7 @@ void  CLogFileRecord::readFromStream(mrpt::utils::CStream &in,int version)
 	case 12:
 	case 13:
 	case 14:
+	case 15:
 		{
 			// Version 0 --------------
 			uint32_t  i,n;
@@ -187,15 +191,30 @@ void  CLogFileRecord::readFromStream(mrpt::utils::CStream &in,int version)
 			}
 			
 			if (version >= 10) {
-				in >> cmd_vel;
+				if (version >= 15) {
+					in >> cmd_vel;
+				}
+				else {
+					std::vector<double> vel;
+					in >> vel;
+					if (vel.size() == 2)
+						cmd_vel = mrpt::kinematics::CVehicleVelCmdPtr(new mrpt::kinematics::CVehicleVelCmd_DiffDriven);
+					else cmd_vel = mrpt::kinematics::CVehicleVelCmdPtr(new mrpt::kinematics::CVehicleVelCmd_Holo);
+					for (size_t i = 0; i < cmd_vel->getVelCmdLength(); i++)
+						cmd_vel->setVelCmdElement(i, vel[i]);
+				}
 			}
 			else {
 				float v, w;
 				in >> v >> w;
-				cmd_vel.resize(2);
-				cmd_vel[0] = v;
-				cmd_vel[1] = w;
+				cmd_vel = mrpt::kinematics::CVehicleVelCmdPtr(new mrpt::kinematics::CVehicleVelCmd_DiffDriven);
+				cmd_vel->setVelCmdElement(0, v);
+				cmd_vel->setVelCmdElement(0, w);
 			}
+
+			if (version>=15)
+				in >> cmd_vel_original;
+
 			if (version < 13) {
 				float old_exec_time;  in >> old_exec_time;
 				values["executionTime"] = old_exec_time;
@@ -311,10 +330,9 @@ void  CLogFileRecord::readFromStream(mrpt::utils::CStream &in,int version)
 				robotShape_radius = 0.5;
 			}
 
-			if (version>=12) {
-				in >> cmd_vel_filterings;
-			} else {
-				cmd_vel_filterings.clear();
+			if (version >= 12 && version<15) {
+				std::vector<std::vector<double> > dummy_cmd_vel_filterings;
+				in >> dummy_cmd_vel_filterings;
 			}
 
 			if (version >= 13) {
