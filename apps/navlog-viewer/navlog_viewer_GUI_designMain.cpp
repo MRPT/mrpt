@@ -452,36 +452,34 @@ void navlog_viewer_GUI_designDialog::UpdateInfoFromLoadedLog()
 		}
 
 		std::vector<std::vector<double> > cmd_vels;
+		std::string sCmdVelTitle = "Velocity cmd: ";
+		const char cols[4] = { 'r','b','k','g' };
+		const char* cols_txt[4] = { "red","blue","black","green" };
+
 		for (size_t i=0;i<N;i++)
 		{
 			CLogFileRecordPtr logptr = CLogFileRecordPtr(m_logdata[i]);
 			const CLogFileRecord &log = *logptr;
-			const size_t vel_len = log.cmd_vel.size();
+			const size_t vel_len = log.cmd_vel->getVelCmdLength();
 			if (i==0) {
 				cmd_vels.resize( vel_len );
-				for (size_t k=0;k<vel_len;k++)
+				for (size_t k = 0; k < vel_len; k++) {
 					cmd_vels[k].resize(N);
+					sCmdVelTitle += log.cmd_vel->getVelCmdDescription(k);
+					sCmdVelTitle += mrpt::format(" (%s), ",cols_txt[k%4]);
+				}
 			}
-			for (size_t k=0;k<vel_len;k++)
-				cmd_vels[k][i] = log.cmd_vel[k];
+			for (size_t k = 0; k < vel_len; k++)
+				cmd_vels[k][i] = log.cmd_vel->getVelCmdElement(k);
 		}
 		win->clf();
-		const char cols [4] = {'r','b','k','g'};
 		for (size_t i=0;i<cmd_vels.size();i++)
 		{
 			win->plot(cmd_vels[i],mrpt::format("%c-",cols[i%4]),mrpt::format("vc%u",(unsigned int)i));
-			win->plot(cmd_vels[i],mrpt::format("%c.",cols[i%4]),mrpt::format("vp%u",(unsigned int)i));
+			win->plot(cmd_vels[i],mrpt::format("%c3.",cols[i%4]),mrpt::format("vp%u",(unsigned int)i));
 		}
 		win->axis_fit();
-		switch (cmd_vels.size())
-		{
-		case 2:
-			win->setWindowTitle("Commanded v (red)/w (blue)");
-			break;
-		case 4:
-			win->setWindowTitle("Commanded vel (red)/dir (blue)/T_ramp (black)/W (green)");
-			break;
-		};
+		win->setWindowTitle(sCmdVelTitle);
 	}
 
 	std::string sDuration("???");
@@ -724,7 +722,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 		}
 
 		win1->addTextMessage(5.0, 5+ (lineY++)*Ay, mrpt::format("cmd_vel=%s cur_vel=[%.02f m/s, %0.2f m/s, %.02f dps] cur_vel_local=[%.02f m/s, %0.2f m/s, %.02f dps]",
-			mrpt::utils::sprintf_vector("%.02f",log.cmd_vel).c_str(),
+			log.cmd_vel->asString().c_str(),
 			log.cur_vel.vx, log.cur_vel.vy, mrpt::utils::RAD2DEG(log.cur_vel.omega),
 			log.cur_vel_local.vx, log.cur_vel_local.vy, mrpt::utils::RAD2DEG(log.cur_vel_local.omega) ),
 			mrpt::utils::TColorf(1,1,1), "mono", fy, mrpt::opengl::NICE, unique_id++);
@@ -732,12 +730,11 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 		win1->addTextMessage(5.0, 5+ (lineY++)*Ay, mrpt::format("robot_pose=%s",log.robotOdometryPose.asString().c_str()),
 			mrpt::utils::TColorf(1,1,1), "mono", fy, mrpt::opengl::NICE, unique_id++);
 
+		if (log.cmd_vel_original)
 		{
 			std::stringstream ss;
-			ss << "filtered versions of cmd_vel: ";
-			for (size_t i=0;i<log.cmd_vel_filterings.size();i++)
-				ss << "#" << i << mrpt::utils::sprintf_vector("%.02f",log.cmd_vel_filterings[i]) << " ";
-
+			ss << "original cmd_vel: ";
+			ss << log.cmd_vel_original->asString();
 			win1->addTextMessage(5.0, 5+ (lineY++)*Ay, ss.str(), mrpt::utils::TColorf(1,1,1), "mono", fy, mrpt::opengl::NICE, unique_id++);
 		}
 

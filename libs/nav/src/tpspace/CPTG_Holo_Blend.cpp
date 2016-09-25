@@ -361,20 +361,19 @@ void CPTG_Holo_Blend::internal_deinitialize()
 	// Nothing to do in a closed-form PTG.
 }
 
-void CPTG_Holo_Blend::directionToMotionCommand( uint16_t k, std::vector<double> &cmd_vel ) const
+mrpt::kinematics::CVehicleVelCmdPtr CPTG_Holo_Blend::directionToMotionCommand( uint16_t k) const
 {
 	const double dir_local = CParameterizedTrajectoryGenerator::index2alpha(k);
 
-	// cmd_vel=[vel dir_local ramp_time rot_speed]:
-	cmd_vel.resize(4);
-	if (std::abs(dir_local)<=maxAllowedDirAngle) {
-		cmd_vel[0] = V_MAX;
-	} else {
-		cmd_vel[0] = .0;
-	}
-	cmd_vel[1] = dir_local;
-	cmd_vel[2] = std::max( 0.1, calc_T_ramp_dir(T_ramp_max, curVelLocal.vx, curVelLocal.vy, dir_local, V_MAX) );
-	cmd_vel[3] = mrpt::utils::saturate_val(dir_local/cmd_vel[2], -W_MAX, W_MAX);
+	mrpt::kinematics::CVehicleVelCmd_Holo * cmd = new mrpt::kinematics::CVehicleVelCmd_Holo();
+	cmd->vel = (std::abs(dir_local) <= maxAllowedDirAngle) ? V_MAX : .0;
+	cmd->dir_local = dir_local;
+	cmd->ramp_time = std::max(0.1, calc_T_ramp_dir(T_ramp_max, curVelLocal.vx, curVelLocal.vy, dir_local, V_MAX));
+	cmd->rot_speed = mrpt::utils::saturate_val(dir_local / cmd->ramp_time, -W_MAX, W_MAX);
+	MRPT_TODO("Fix extremelly small rot_speed here?");
+
+	return mrpt::kinematics::CVehicleVelCmdPtr(cmd);
+
 }
 
 size_t CPTG_Holo_Blend::getPathStepCount(uint16_t k) const
@@ -644,3 +643,7 @@ void CPTG_Holo_Blend::internal_processNewRobotShape()
 	// Nothing to do in a closed-form PTG.
 }
 
+mrpt::kinematics::CVehicleVelCmdPtr CPTG_Holo_Blend::getSupportedKinematicVelocityCommand() const
+{
+	return mrpt::kinematics::CVehicleVelCmdPtr(new mrpt::kinematics::CVehicleVelCmd_Holo());
+}
