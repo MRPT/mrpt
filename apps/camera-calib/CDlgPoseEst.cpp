@@ -21,10 +21,6 @@
 //*)
 #include "../wx-common/wx28-fixes.h"
 
-#include <mrpt/opengl/CGridPlaneXY.h>
-#include <mrpt/opengl/stock_objects.h>
-
-
 using namespace std;
 using namespace mrpt;
 using namespace mrpt::utils;
@@ -151,7 +147,7 @@ CDlgPoseEst::CDlgPoseEst(wxWindow* parent,wxWindowID id,const wxPoint& pos,const
 	wxString ch_default("epnp");
 	pnpSelect = new wxChoice(this, ID_ALGOCHOICE, wxDefaultPosition, wxDefaultSize, ch_wx, 0, wxDefaultValidator, ch_default );
 	FlexGridSizer7->Add(pnpSelect, 1, wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
-	pnpSelect->SetSelection(7);
+	pnpSelect->SetSelection(0);
 	m_3Dview_cam = new CMyGLCanvas(this,ID_CAMPOSEVIEW,wxDefaultPosition,wxSize(300,300),wxTAB_TRAVERSAL,_T("ID_CAMPOSEVIEW"));
 	FlexGridSizer7->Add(m_3Dview_cam, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
 
@@ -197,6 +193,25 @@ CDlgPoseEst::CDlgPoseEst(wxWindow* parent,wxWindowID id,const wxPoint& pos,const
 	pose_mat = Eigen::MatrixXd::Zero(6,1);
 	pose_mat << -25, 25, 100, -0.1, 0.25, 0.5;
 	//*)
+
+	scene = mrpt::opengl::COpenGLScene::Create();
+	cor   = mrpt::opengl::stock_objects::CornerXYZ();
+	cor1  = mrpt::opengl::stock_objects::CornerXYZ();
+
+	const unsigned int  check_size_x = edSizeX->GetValue();
+	const unsigned int  check_size_y = edSizeY->GetValue();
+	const double        check_squares_length_X_meters = 0.005 * atof( string(edLengthX->GetValue().mb_str()).c_str() );
+	const double        check_squares_length_Y_meters = 0.005 * atof( string(edLengthY->GetValue().mb_str()).c_str() );
+
+	grid  = opengl::CGridPlaneXY::Create(0,check_size_y*check_squares_length_Y_meters, 0, check_size_x*check_squares_length_X_meters, 0, check_squares_length_Y_meters );
+	scene->insert( grid );
+
+	mrpt::poses::CPose3D pose1;
+	cor->setName("Global Frame");
+	cor->enableShowName(true);
+	cor->setScale(0.5);
+	cor->setPose(pose1);
+	scene->insert( cor );
 
 	this->showCamPose();
 	redire = new CMyRedirector(txtLog, true, 10);
@@ -292,6 +307,7 @@ void CDlgPoseEst::OnbtnStopClick(wxCommandEvent& event)
 
 void CDlgPoseEst::OntimCaptureTrigger(wxTimerEvent& event)
 {
+	static mrpt::system::TTimeStamp  last_valid = INVALID_TIMESTAMP;
 
 	try
 	{
@@ -332,13 +348,20 @@ void CDlgPoseEst::OntimCaptureTrigger(wxTimerEvent& event)
 		// get the observation:
 		CObservationImagePtr  obs_img = CObservationImagePtr(obs);
 
-		if (m_threadResultsComputed && !m_threadResults.empty() )
+		bool blankTime = (last_valid != INVALID_TIMESTAMP) && mrpt::system::timeDifference(last_valid,mrpt::system::now())<0.5;
+		if (!blankTime && m_threadResultsComputed && !m_threadResults.empty() )
 		{
+			// Update last valid
+			last_valid=mrpt::system::now();
+
 			// Display now:
 			m_threadImgToProcess->image.colorImage(img_to_show);
 
 			// Draw the corners:
 			img_to_show.drawChessboardCorners(m_threadResults,m_check_size_x, m_check_size_y);
+
+			// Set flag to process pose estimation
+			flag_pose_est=true;
 		}
 		else
 		{
@@ -403,24 +426,33 @@ void CDlgPoseEst::threadProcessCorners()
 							obj->m_threadResults.clear();
 						else
 						{
-							const double  m_check_len_x = 0.1 * atof( string(edLengthX->GetValue().mb_str()).c_str() );
-							const double  m_check_len_y = 0.1 * atof( string(edLengthY->GetValue().mb_str()).c_str() );
-
-							obj_pts = Eigen::MatrixXd(m_check_size_x*m_check_size_y,3);
-							img_pts = Eigen::MatrixXd(m_check_size_x*m_check_size_y,3);
-							for(unsigned int i=0; i<m_check_size_x; i++)
-							for(unsigned int j=0; j<m_check_size_y; j++)
+							if(obj->flag_pose_est ==true)
 							{
-								obj_pts.row(i*m_check_size_y+j) << i*m_check_len_x, j*m_check_len_y, 0;
-								img_pts.row(i*m_check_size_y+j) << (obj->m_threadResults[i*m_check_size_y+j].x - cam_intrinsic(0,2))/cam_intrinsic(0,0)
-								, (obj->m_threadResults[i*m_check_size_y+j].y- cam_intrinsic(1,2))/cam_intrinsic(1,1)
-								, 1;
+								const double  m_check_len_x = 0.1 * atof( string(edLengthX->GetValue().mb_str()).c_str() );
+								const double  m_check_len_y = 0.1 * atof( string(edLengthY->GetValue().mb_str()).c_str() );
 
+								obj_pts.resize(m_check_size_x*m_check_size_y,3);
+								img_pts.resize(m_check_size_x*m_check_size_y,3);
+
+								// Sort Object points in Eigen Matrix
+								for(unsigned int j=0; j<m_check_size_y; j++)
+										for(unsigned int i=0; i<m_check_size_x; i++)
+												obj_pts.row(j*m_check_size_x+i) << (i)*m_check_len_x, (j)*m_check_len_y,  1;
+
+								// Sort Image points in Eigen Matrix
+								for(unsigned int i=0; i<m_check_size_x; i++)
+									for(unsigned int j=0; j<m_check_size_y; j++)
+										img_pts.row(i*m_check_size_y+j) << (obj->m_threadResults[i*m_check_size_y+j].x - cam_intrinsic(0,2))/cam_intrinsic(0,0)
+										, (obj->m_threadResults[i*m_check_size_y+j].y- cam_intrinsic(1,2))/cam_intrinsic(1,1)
+										, 1;
+
+								int algo_idx = pnpSelect->GetSelection();
+								(pnp_algos.*pose_algos[algo_idx])(obj_pts, img_pts, m_check_size_x*m_check_size_y, I3, pose_mat );
+
+								obj->showCamPose();
+
+								obj->flag_pose_est=false;
 							}
-							int algo_idx = pnpSelect->GetSelection();
-							(pnp_algos.*pose_algos[algo_idx])(obj_pts, img_pts, m_check_len_x*m_check_len_y, I3, pose_mat );
-
-							obj->showCamPose();
 						}
 
 						obj->m_threadResultsComputed = true;
@@ -460,36 +492,15 @@ void CDlgPoseEst::threadProcessCorners()
 
 	void CDlgPoseEst::showCamPose()
 	{
-		mrpt::opengl::COpenGLScenePtr	scene = mrpt::opengl::COpenGLScene::Create();
-
-		const unsigned int  check_size_x = edSizeX->GetValue();
-		const unsigned int  check_size_y = edSizeY->GetValue();
-		const double        check_squares_length_X_meters = 0.005 * atof( string(edLengthX->GetValue().mb_str()).c_str() );
-		const double        check_squares_length_Y_meters = 0.005 * atof( string(edLengthY->GetValue().mb_str()).c_str() );
-
-		opengl::CGridPlaneXYPtr	grid = opengl::CGridPlaneXY::Create(0,check_size_y*check_squares_length_Y_meters, 0, check_size_x*check_squares_length_X_meters, 0, check_squares_length_Y_meters );
-		scene->insert( grid );
-
-		mrpt::poses::CPose3D pose1, pose2;
-		mrpt::opengl::CSetOfObjectsPtr	cor = mrpt::opengl::stock_objects::CornerXYZ(), cor1 = mrpt::opengl::stock_objects::CornerXYZ();
-
-		cor->setName("Global Frame");
-		cor->enableShowName(true);
-		cor->setScale(1);
-		cor->setPose(pose1);
-
-		scene->insert( cor );
 
 		double q_norm = sqrt(1 - pose_mat(3,0)*pose_mat(3,0) -pose_mat(4,0)*pose_mat(4,0) -pose_mat(5,0)*pose_mat(5,0) );
-
-		mrpt::poses::CPose3DQuat q_pose (0.005*pose_mat(0,0), 0.005*pose_mat(1,0),0.005*pose_mat(2,0), mrpt::math::CQuaternionDouble(q_norm, pose_mat(3,0), pose_mat(4,0), pose_mat(5,0)) );
-		pose2 = q_pose;
+		mrpt::poses::CPose3DQuat q_pose(0.005*pose_mat(0,0), 0.005*pose_mat(1,0),0.005*pose_mat(2,0), mrpt::math::CQuaternionDouble(q_norm, pose_mat(3,0), pose_mat(4,0), pose_mat(5,0)) );
+		q_pose.inverse();
 
 		cor1->setName("Camera Frame");
 		cor1->enableShowName(true);
-		cor1->setScale(1);
-		cor1->setPose(pose2);
-
+		cor1->setScale(0.5);
+		cor1->setPose(q_pose);
 		scene->insert( cor1 );
 
 		this->m_3Dview_cam->m_openGLScene = scene;

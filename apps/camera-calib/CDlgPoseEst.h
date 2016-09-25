@@ -34,6 +34,8 @@
 
 #include "MyGLCanvas.h"
 
+#include <mrpt/opengl/CGridPlaneXY.h>
+#include <mrpt/opengl/stock_objects.h>
 #include <mrpt/vision/pnp_algos.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPose3DQuat.h>
@@ -74,8 +76,8 @@ class CDlgPoseEst: public wxDialog
 		wxStaticText* StaticText6;
 		wxTextCtrl* edLengthX;
 		wxButton* btnStart;
-    		wxChoice* pnpSelect;
-    		wxStaticText* StaticTextAlgo;
+		wxChoice* pnpSelect;
+		wxStaticText* StaticTextAlgo;
 		//*)
 
 	protected:
@@ -102,9 +104,9 @@ class CDlgPoseEst: public wxDialog
 		static const long ID_BUTTON3;
 		static const long ID_CUSTOM1;
 		static const long ID_TIMER1;
-	    	static const long ID_ALGOCHOICE;
-	    	static const long ID_CAMPOSEVIEW;
-	    	static const long ID_STATICTEXTALGO;
+  	static const long ID_ALGOCHOICE;
+  	static const long ID_CAMPOSEVIEW;
+  	static const long ID_STATICTEXTALGO;
 		//*)
 
 	private:
@@ -135,16 +137,20 @@ class CDlgPoseEst: public wxDialog
 
 		mrpt::hwdrivers::CCameraSensorPtr  m_video;
 
-        CMyGLCanvas* m_3Dview_cam;
+    CMyGLCanvas* m_3Dview_cam;
 
-        mrpt::vision::pnp::CPnP pnp_algos;
-        typedef  bool (mrpt::vision::pnp::CPnP::*CPNP_PTR) (const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<Eigen::MatrixXd> img_pts, int n, const Eigen::Ref<Eigen::MatrixXd> cam_intrinsic, Eigen::Ref<Eigen::MatrixXd> pose_mat);
+    mrpt::vision::pnp::CPnP pnp_algos;
+    typedef  bool (mrpt::vision::pnp::CPnP::*CPNP_PTR) (const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<Eigen::MatrixXd> img_pts, int n, const Eigen::Ref<Eigen::MatrixXd> cam_intrinsic, Eigen::Ref<Eigen::MatrixXd> pose_mat);
 
-        CPNP_PTR pose_algos[9]= {&mrpt::vision::pnp::CPnP::epnp, &mrpt::vision::pnp::CPnP::dls, &mrpt::vision::pnp::CPnP::upnp,
-                                 &mrpt::vision::pnp::CPnP::p3p, &mrpt::vision::pnp::CPnP::lhm, &mrpt::vision::pnp::CPnP::posit,
-                                 &mrpt::vision::pnp::CPnP::ppnp, &mrpt::vision::pnp::CPnP::rpnp, &mrpt::vision::pnp::CPnP::so3};
+    CPNP_PTR pose_algos[9]= {&mrpt::vision::pnp::CPnP::epnp, &mrpt::vision::pnp::CPnP::dls, &mrpt::vision::pnp::CPnP::upnp,
+                             &mrpt::vision::pnp::CPnP::p3p, &mrpt::vision::pnp::CPnP::lhm, &mrpt::vision::pnp::CPnP::posit,
+                             &mrpt::vision::pnp::CPnP::ppnp, &mrpt::vision::pnp::CPnP::rpnp, &mrpt::vision::pnp::CPnP::so3};
 
-        Eigen::MatrixXd obj_pts, img_pts, pose_mat, cam_intrinsic, I3;
+    Eigen::MatrixXd obj_pts, img_pts, pose_mat, cam_intrinsic, I3;
+
+		mrpt::opengl::COpenGLScenePtr	scene;
+		mrpt::opengl::CSetOfObjectsPtr	cor, cor1;
+		mrpt::opengl::CGridPlaneXYPtr	grid;
 
 	public:
 		/** The list of selected frames to use in camera calibration */
@@ -153,6 +159,8 @@ class CDlgPoseEst: public wxDialog
 		void showCamPose();
 
 		std::fstream flog;
+
+		bool flag_pose_est;
 };
 
 #endif
