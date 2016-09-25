@@ -49,9 +49,6 @@ CAbstractPTGBasedReactive::CAbstractPTGBasedReactive(CRobot2NavInterface &react_
 	m_logFile                    (NULL),
 	m_enableKeepLogRecords       (false),
 
-	m_last_vel_cmd               (react_iterf_impl.getVelCmdLength()  , 0.0),
-	m_new_vel_cmd                (react_iterf_impl.getVelCmdLength(), 0.0),
-
 	m_enableConsoleOutput        (enableConsoleOutput),
 	m_init_done                  (false),
 	ptg_cache_files_directory    ("."),
@@ -491,8 +488,8 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 		//				SEND MOVEMENT COMMAND TO THE ROBOT
 		// ---------------------------------------------------------------------
 		// All equal to 0 means "stop".
-		if (std::find_if(m_new_vel_cmd.begin(), m_new_vel_cmd.end(), std::bind2nd(std::not_equal_to<double>(), 0.0) ) == m_new_vel_cmd.end() )
-		{
+		ASSERT_(m_new_vel_cmd);
+		if (m_new_vel_cmd->isStopCmd()) {
 			m_robot.stop();
 		}
 		else
@@ -502,7 +499,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 				mrpt::utils::CTimeLoggerEntry tle(m_timlog_delays, "changeSpeeds()");
 				tim_send_cmd_vel = mrpt::system::now();
 				newLogRec.timestamps["tim_send_cmd_vel"] = tim_send_cmd_vel;
-				if (!m_robot.changeSpeeds(m_new_vel_cmd))
+				if (!m_robot.changeSpeeds(*m_new_vel_cmd))
 				{
 					doEmergencyStop("\nERROR calling RobotMotionControl::changeSpeeds!! Stopping robot and finishing navigation\n");
 					return;
@@ -540,7 +537,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 				"CMD: %s \t"
 				"T=%.01lfms Exec:%.01lfms|%.01lfms \t"
 				"E=%.01lf PTG#%i\n",
-					mrpt::utils::sprintf_vector("%.02f ",m_new_vel_cmd).c_str(),
+					m_new_vel_cmd->asString().c_str(),
 					1000.0*meanExecutionPeriod.getLastOutput(),
 					1000.0*meanExecutionTime.getLastOutput(),
 					1000.0*meanTotalExecutionTime.getLastOutput(),
@@ -563,7 +560,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 			newLogRec.relPoseVelCmd       = relPoseVelCmd;
 			newLogRec.WS_target_relative  = TPoint2D(relTarget.x(), relTarget.y());
 			newLogRec.cmd_vel             = m_new_vel_cmd;
-			newLogRec.cmd_vel_filterings  = m_cmd_vel_filterings;
+			newLogRec.cmd_vel_original    = m_cmd_vel_original;
 			newLogRec.nSelectedPTG        = nSelectedPTG;
 			newLogRec.cur_vel             = m_curVel;
 			newLogRec.cur_vel_local       = m_curVelLocal;
@@ -657,17 +654,21 @@ void CAbstractPTGBasedReactive::STEP5_PTGEvaluator(
 
 	// Factor5: Hysteresis:
 	// -----------------------------------------------------
-	std::vector<double> desired_cmd;
-	holonomicMovement.PTG->directionToMotionCommand( kDirection, desired_cmd);
-	ASSERT_EQUAL_(m_last_vel_cmd.size(), desired_cmd.size());
-
-	double simil_score = 1.0;
-	for (size_t i=0;i<desired_cmd.size();i++)
+	double factor5 = 1.0;
+	if (m_last_vel_cmd)
 	{
-		const double scr = exp(-std::abs(desired_cmd[i] - m_last_vel_cmd[i]) / 0.20);
-		mrpt::utils::keep_min(simil_score, scr);
+		mrpt::kinematics::CVehicleVelCmdPtr desired_cmd;
+		desired_cmd = holonomicMovement.PTG->directionToMotionCommand(kDirection);
+		ASSERT_EQUAL_(m_last_vel_cmd->getVelCmdLength(), desired_cmd->getVelCmdLength());
+
+		double simil_score = 1.0;
+		for (size_t i = 0; i < desired_cmd->getVelCmdLength(); i++)
+		{
+			const double scr = exp(-std::abs(desired_cmd->getVelCmdElement(i) - m_last_vel_cmd->getVelCmdElement(i)) / 0.20);
+			mrpt::utils::keep_min(simil_score, scr);
+		}
+		factor5 = simil_score;
 	}
-	const double factor5 = simil_score;
 
 	// Factor6: free space
 	// -----------------------------------------------------
@@ -725,27 +726,29 @@ void CAbstractPTGBasedReactive::STEP7_GenerateSpeedCommands( const THolonomicMov
 	mrpt::utils::CTimeLoggerEntry tle(m_timelogger, "STEP7_GenerateSpeedCommands");
 	try
 	{
-		m_cmd_vel_filterings.clear();
+		m_cmd_vel_original = in_movement.PTG->getSupportedKinematicVelocityCommand();
 		if (in_movement.speed == 0)
 		{
 			// The robot will stop:
-			m_new_vel_cmd.assign(m_new_vel_cmd.size(), 0.0);
-			m_cmd_vel_filterings.push_back( m_new_vel_cmd );
+			m_new_vel_cmd = in_movement.PTG->getSupportedKinematicVelocityCommand();
+			m_new_vel_cmd->setToStop();
+			*m_cmd_vel_original = *m_new_vel_cmd;
 		}
 		else
 		{
 			// Take the normalized movement command:
-			in_movement.PTG->directionToMotionCommand( in_movement.PTG->alpha2index( in_movement.direction ), m_new_vel_cmd);
-			m_cmd_vel_filterings.push_back(m_new_vel_cmd);
+			m_new_vel_cmd = in_movement.PTG->directionToMotionCommand( in_movement.PTG->alpha2index( in_movement.direction ) );
+			*m_cmd_vel_original = *m_new_vel_cmd;
 
 			// Scale holonomic speeds to real-world one:
-			m_robot.cmdVel_scale(m_new_vel_cmd, in_movement.speed);
-			m_cmd_vel_filterings.push_back(m_new_vel_cmd);
+			m_robot.cmdVel_scale(*m_new_vel_cmd, in_movement.speed);
+
+			if (!m_last_vel_cmd) // first iteration? Use default values:
+				m_last_vel_cmd = in_movement.PTG->getSupportedKinematicVelocityCommand();
 
 			// Honor user speed limits & "blending":
 			const double beta = meanExecutionPeriod.getLastOutput() / (meanExecutionPeriod.getLastOutput() + SPEEDFILTER_TAU);
-			m_robot.cmdVel_limits(m_new_vel_cmd, m_last_vel_cmd, beta);
-			m_cmd_vel_filterings.push_back(m_new_vel_cmd);
+			m_robot.cmdVel_limits(*m_new_vel_cmd, *m_last_vel_cmd, beta);
 		}
 
 		m_last_vel_cmd = m_new_vel_cmd; // Save for filtering in next step

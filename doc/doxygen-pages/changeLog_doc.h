@@ -56,6 +56,7 @@
 			- New classes for 2D robot simulation:
 				- mrpt::kinematics::CVehicleSimul_DiffDriven
 				- mrpt::kinematics::CVehicleSimul_Holo
+			- New classes for 2D robot kinematic motion commands. See children of mrpt::kinematics::CVehicleVelCmd
 		- \ref mrpt_maps_grp
 			- mrpt::maps::COccupancyGridMap2D::loadFromBitmapFile() correct description of `yCentralPixel` parameter.
 			- mrpt::maps::CPointsMap `liblas` import/export methods are now in a separate header. See \ref mrpt_maps_liblas_grp and \ref dep-liblas
