@@ -104,9 +104,9 @@ class CDlgPoseEst: public wxDialog
 		static const long ID_BUTTON3;
 		static const long ID_CUSTOM1;
 		static const long ID_TIMER1;
-  	static const long ID_ALGOCHOICE;
-  	static const long ID_CAMPOSEVIEW;
-  	static const long ID_STATICTEXTALGO;
+		static const long ID_ALGOCHOICE;
+		static const long ID_CAMPOSEVIEW;
+		static const long ID_STATICTEXTALGO;
 		//*)
 
 	private:
