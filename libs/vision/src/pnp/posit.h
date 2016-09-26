@@ -1,3 +1,13 @@
+/* +---------------------------------------------------------------------------+
+|                     Mobile Robot Programming Toolkit (MRPT)               |
+|                          http://www.mrpt.org/                             |
+|                                                                           |
+| Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+| See: http://www.mrpt.org/Authors - All rights reserved.                   |
+| Released under BSD License. See details in http://www.mrpt.org/License    |
++---------------------------------------------------------------------------+ */
+
+#include <mrpt/utils/types_math.h> // Eigen must be included first via MRPT to enable the plugin system
 #include <Eigen/Dense>
 #include <Eigen/SVD>
 
@@ -56,9 +66,9 @@ namespace mrpt
                  * @brief Computes pose using iterative computation of @func POS()
                  * @param[out] R_
                  * @param[out] t_
-                 * @return 
+                 * @return true on success
                  */
-                int compute_pose(Eigen::Ref<Eigen::Matrix3d> R_, Eigen::Ref<Eigen::Vector3d> t_);
+                bool compute_pose(Eigen::Ref<Eigen::Matrix3d> R_, Eigen::Ref<Eigen::Vector3d> t_);
                 
                 /**
                  * @brief Function to check for convergence

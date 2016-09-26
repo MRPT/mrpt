@@ -6,6 +6,7 @@ INCLUDE(../../cmakemodules/AssureCMakeRootFile.cmake) # Avoid user mistake in CM
 #  Run with "cmake ." at the root directory
 #-----------------------------------------------------------------
 
+IF(BUILD_mrpt-graphslam)
 #-------------------------------------------------------------------------------
 # Declare a new CMake Project:
 #-------------------------------------------------------------------------------
@@ -40,9 +41,9 @@ DeclareAppDependencies(${PROJECT_NAME}
 	mrpt-gui
 	mrpt-obs
 	mrpt-maps
-	mrpt-hwdrivers
 	mrpt-slam
 	mrpt-opengl
 	)
 
 DeclareAppForInstall(${PROJECT_NAME})
+ENDIF() #BUILD_mrpt-graphslam

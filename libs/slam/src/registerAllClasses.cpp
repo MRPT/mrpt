@@ -12,24 +12,14 @@
 #define MRPT_NO_WARN_BIG_HDR
 #include <mrpt/slam.h>
 
-#include <mrpt/utils/CStartUpClassesRegister.h>
+#include <mrpt/utils/initializer.h>
 
 using namespace mrpt::utils;
-using namespace mrpt::math;
 using namespace mrpt::slam;
 using namespace mrpt::maps;
-using namespace mrpt::poses;
 using namespace mrpt::opengl;
 
-
-void registerAllClasses_mrpt_core();
-
-CStartUpClassesRegister  mrpt_slam_class_reg(&registerAllClasses_mrpt_core);
-
-/*---------------------------------------------------------------
-					registerAllClasses_mrpt_core
-  ---------------------------------------------------------------*/
-void registerAllClasses_mrpt_core()
+MRPT_INITIALIZER(registerAllClasses_mrpt_core)
 {
 #if !defined(DISABLE_MRPT_AUTO_CLASS_REGISTRATION)
 //   Hack to enable compatibility with an older name of this class:

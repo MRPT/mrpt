@@ -208,7 +208,7 @@ double mrpt::system::timeDifference( const mrpt::system::TTimeStamp &t1, const m
 	ASSERT_(t1!=INVALID_TIMESTAMP)
 	ASSERT_(t2!=INVALID_TIMESTAMP)
 
-	return ((double)((int64_t)(t2-t1)))/10000000.0;
+	return (int64_t(t2)- int64_t(t1))/10000000.0;
 
 	MRPT_END
 }

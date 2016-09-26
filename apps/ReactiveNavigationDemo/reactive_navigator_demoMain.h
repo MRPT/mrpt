@@ -259,8 +259,9 @@ class reactive_navigator_demoframe: public wxFrame
 				mrpt::nav::CRobot2NavInterfaceForSimulator_DiffDriven(simul),
 				MyNavIFBase(ref_latest_obstacles)
 			{}
-			virtual bool senseObstacles( mrpt::maps::CSimplePointsMap &obstacles ) {
+			virtual bool senseObstacles(mrpt::maps::CSimplePointsMap &obstacles, mrpt::system::TTimeStamp &timestamp) MRPT_OVERRIDE {
 				obstacles = latest_obstacles;
+				timestamp = mrpt::system::now();
 				return true;
 			}
 		};
@@ -271,8 +272,9 @@ class reactive_navigator_demoframe: public wxFrame
 				mrpt::nav::CRobot2NavInterfaceForSimulator_Holo(simul),
 				MyNavIFBase(ref_latest_obstacles)
 			{}
-			virtual bool senseObstacles( mrpt::maps::CSimplePointsMap &obstacles ) {
+			virtual bool senseObstacles( mrpt::maps::CSimplePointsMap &obstacles, mrpt::system::TTimeStamp &timestamp ) MRPT_OVERRIDE {
 				obstacles = latest_obstacles;
+				timestamp = mrpt::system::now();
 				return true;
 			}
 		};

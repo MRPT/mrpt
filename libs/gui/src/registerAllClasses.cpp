@@ -12,21 +12,12 @@
 #include <mrpt/gui.h>
 
 #include <mrpt/utils/CSerializable.h>
-#include <mrpt/utils/CStartUpClassesRegister.h>
+#include <mrpt/utils/initializer.h>
 
 using namespace mrpt::gui;
 using namespace mrpt::utils;
 
-void registerAllClasses_mrpt_gui();
-
-CStartUpClassesRegister  mrpt_gui_class_reg(&registerAllClasses_mrpt_gui);
-//const int dumm = mrpt_gui_class_reg.do_nothing(); // Avoid compiler removing this class in static linking
-
-
-/*---------------------------------------------------------------
-					registerAllClasses_mrpt_gui
-  ---------------------------------------------------------------*/
-void registerAllClasses_mrpt_gui()
+MRPT_INITIALIZER(registerAllClasses_mrpt_gui)
 {
 #if !defined(DISABLE_MRPT_AUTO_CLASS_REGISTRATION)
 	registerClass( CLASS_ID( CDisplayWindow ) );
@@ -34,4 +25,3 @@ void registerAllClasses_mrpt_gui()
 	registerClass( CLASS_ID( CDisplayWindowPlots ) );
 #endif
 }
-

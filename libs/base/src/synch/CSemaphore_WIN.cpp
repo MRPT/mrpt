@@ -28,10 +28,7 @@ using namespace mrpt::synch;
 ---------------------------------------------------------------*/
 CSemaphore::CSemaphore(
     unsigned int    initialCount,
-    unsigned int    maxCount,
-    const std::string &name )
-    :
-    m_name(name)
+    unsigned int    maxCount)
 {
 	MRPT_START
 
@@ -39,7 +36,7 @@ CSemaphore::CSemaphore(
 		NULL,			// pointer to security attributes
 		initialCount,	// initial count
 		maxCount,		// maximum count
-		name.size()==0 ? NULL : name.c_str() );
+		NULL /*name*/ );
 
 	if (!hSem)	THROW_EXCEPTION("Error creating semaphore!");
 

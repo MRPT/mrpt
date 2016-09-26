@@ -11,6 +11,7 @@
 
 #define MRPT_NO_WARN_BIG_HDR
 #include <mrpt/base.h>
+#include <mrpt/utils/initializer.h>
 
 #ifndef MRPT_ENABLE_PRECOMPILED_HDRS
 #	define MRPT_ALWAYS_INCLUDE_ALL_HEADERS
@@ -22,24 +23,7 @@ using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace mrpt::poses;
 
-/*
-Note: Why do we need "CStartUpClassesRegister" and "registerAllClasses_mrpt_base()" at all?
- One idea is to use static const members in every CObject, initialized via a call to registerClass(). 
- In this way, there is NO NEED to build the ugly list of classes to be registered below, and it works...
- but when building as STATIC LIBRARIES, the compiler optimizes out all non-directly used classes, 
- thus not registering them!!
- So, it seems we must live with this ugly method for the sake of static libs...
-(Jose Luis Blanco, April 2013)
-*/
-
-void registerAllClasses_mrpt_base();
-
-CStartUpClassesRegister  mrpt_base_class_reg(&registerAllClasses_mrpt_base);
-
-/*---------------------------------------------------------------
-					registerAllClasses_mrpt_base
-  ---------------------------------------------------------------*/
-void registerAllClasses_mrpt_base()
+MRPT_INITIALIZER(registerAllClasses_mrpt_base)
 {
 #if !defined(DISABLE_MRPT_AUTO_CLASS_REGISTRATION)
 	// Abstract classes are not registered since they can not be

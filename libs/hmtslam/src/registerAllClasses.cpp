@@ -10,20 +10,12 @@
 #include "hmtslam-precomp.h" // Precomp header
 
 #include <mrpt/hmtslam.h>
-#include <mrpt/utils/CStartUpClassesRegister.h>
+#include <mrpt/utils/initializer.h>
 
 using namespace mrpt::utils;
 using namespace mrpt::hmtslam;
 
-void registerAllClasses_mrpt_hmtslam();
-
-CStartUpClassesRegister  mrpt_hmtslam_class_reg(&registerAllClasses_mrpt_hmtslam);
-
-
-/*---------------------------------------------------------------
-					registerAllClasses_mrpt_hmtslam
-  ---------------------------------------------------------------*/
-void registerAllClasses_mrpt_hmtslam()
+MRPT_INITIALIZER(registerAllClasses_mrpt_hmtslam)
 {
 #if !defined(DISABLE_MRPT_AUTO_CLASS_REGISTRATION)
 	registerClass( CLASS_ID(CHMTSLAM) );

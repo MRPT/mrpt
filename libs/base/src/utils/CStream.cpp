@@ -13,7 +13,6 @@
 #include <mrpt/system/os.h>
 #include <mrpt/system/os.h>
 #include <mrpt/utils/CSerializable.h>
-#include <mrpt/utils/CStartUpClassesRegister.h>
 #include <mrpt/utils/types_math.h> // CVector* types
 
 #include <map>
@@ -342,11 +341,6 @@ CStream& utils::operator>>(mrpt::utils::CStream&in, char *s)
 
 //#define CSTREAM_VERBOSE     1
 #define CSTREAM_VERBOSE     0
-
-extern CStartUpClassesRegister  mrpt_base_class_reg;
-
-static const int dumm = mrpt_base_class_reg.do_nothing(); // Avoid compiler removing this class in static linking
-
 
 template <bool EXISTING_OBJ>
 CSerializable* CStream::internal_ReadObject(CSerializable *existingObj)

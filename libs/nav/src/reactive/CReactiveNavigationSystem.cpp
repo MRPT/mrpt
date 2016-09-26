@@ -156,17 +156,18 @@ void CReactiveNavigationSystem::STEP1_InitPTGs()
 	}
 }
 
-/*************************************************************************
-		STEP2_SenseObstacles
-*************************************************************************/
-bool CReactiveNavigationSystem::STEP2_SenseObstacles()
+bool CReactiveNavigationSystem::implementSenseObstacles(mrpt::system::TTimeStamp &obstacles_timestamp)
 {
 	try
 	{
-		CTimeLoggerEntry tle(m_timelogger,"navigationStep.STEP2_Sense");
+		bool ret; // Return true on success
+		{
+			CTimeLoggerEntry tle1(m_timelogger, "navigationStep.STEP2_Sense");
+			CTimeLoggerEntry tle2(m_timlog_delays, "senseObstacles()");
+			ret = m_robot.senseObstacles(m_WS_Obstacles, obstacles_timestamp);
+		}
 
-		// Return true on success:
-		return m_robot.senseObstacles( m_WS_Obstacles );
+		return ret;
 		// Note: Clip obstacles by "z" axis coordinates is more efficiently done in STEP3_WSpaceToTPSpace()
 	}
 	catch (std::exception &e)
@@ -182,10 +183,7 @@ bool CReactiveNavigationSystem::STEP2_SenseObstacles()
 
 }
 
-/*************************************************************************
-				STEP3_WSpaceToTPSpace
-*************************************************************************/
-void CReactiveNavigationSystem::STEP3_WSpaceToTPSpace(const size_t ptg_idx,std::vector<double> &out_TPObstacles)
+void CReactiveNavigationSystem::STEP3_WSpaceToTPSpace(const size_t ptg_idx,std::vector<double> &out_TPObstacles, const mrpt::poses::CPose2D &rel_pose_PTG_origin_wrt_sense)
 {
 	CParameterizedTrajectoryGenerator	*ptg = this->PTGs[ptg_idx];
 
@@ -198,7 +196,8 @@ void CReactiveNavigationSystem::STEP3_WSpaceToTPSpace(const size_t ptg_idx,std::
 
 	for (size_t obs=0;obs<nObs;obs++)
 	{
-		const float ox=xs[obs], oy = ys[obs], oz=zs[obs];
+		double ox,oy,oz=zs[obs];
+		rel_pose_PTG_origin_wrt_sense.composePoint(xs[obs], ys[obs], ox, oy);
 
 		if (ox>-OBS_MAX_XY && ox<OBS_MAX_XY &&
 			oy>-OBS_MAX_XY && oy<OBS_MAX_XY &&

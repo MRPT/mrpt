@@ -23,11 +23,19 @@
 	#include <windows.h>   // OutputDebugString() for MSVC
 #endif
 
+namespace std {
+bool operator <(const mrpt::utils::COutputLogger::TCallbackEntry &e1, const mrpt::utils::COutputLogger::TCallbackEntry &e2)
+{
+	return e1.func<e2.func;
+}
+}
+
 using namespace mrpt;
 using namespace mrpt::system;
 using namespace mrpt::utils;
 
 using namespace std;
+
 
 /**
  * Implementation file for the COutputLogger header class
@@ -71,9 +79,11 @@ void COutputLogger::logStr(const VerbosityLevel level, const std::string& msg_st
 
 	if (logging_enable_console_output) {
 		msg.dumpToConsole();
-		// automatically set the color back to normal
-		mrpt::system::setConsoleColor(CONCOL_NORMAL);
 	}
+
+	// User callbacks:
+	for (const auto &c : m_listCallbacks)
+		(*c.func)(msg.body,msg.level,msg.name,msg.timestamp,c.userParam);
 }
 
 void COutputLogger::logFmt(const VerbosityLevel level, const char* fmt, ...) const {
@@ -233,10 +243,35 @@ void COutputLogger::TMsg::dumpToConsole() const {
 
 	const bool dump_to_cerr = (level==LVL_ERROR); // LVL_ERROR alternatively dumped to stderr instead of stdout
 
-	mrpt::system::setConsoleColor(COutputLogger::logging_levels_to_colors[level], dump_to_cerr);
-	::fputs(str.c_str(), dump_to_cerr ? stderr:stdout );
+	// Set console color:
+	const TConsoleColor concol = COutputLogger::logging_levels_to_colors[level];
+	if (concol!=CONCOL_NORMAL)
+		mrpt::system::setConsoleColor(concol, dump_to_cerr);
+	// Output msg:
+	(dump_to_cerr ? std::cerr : std::cout) << str;
+	// Switch back to normal color:
+	if (concol!=CONCOL_NORMAL)
+		mrpt::system::setConsoleColor(CONCOL_NORMAL);
 #ifdef _MSC_VER
 	OutputDebugStringA(str.c_str());
 #endif
+}
+
+void COutputLogger::logRegisterCallback(output_logger_callback_t  userFunc, void *userParam )
+{
+	ASSERT_(userFunc!=NULL);
+	TCallbackEntry cbe;
+	cbe.func = userFunc;
+	cbe.userParam = userParam;
+	m_listCallbacks.insert(cbe);
+}
+
+void COutputLogger::logDeregisterCallback(output_logger_callback_t  userFunc, void *userParam )
+{
+	ASSERT_(userFunc!=NULL);
+	TCallbackEntry cbe;
+	cbe.func = userFunc;
+	cbe.userParam = userParam;
+	m_listCallbacks.erase(cbe);
 }
 

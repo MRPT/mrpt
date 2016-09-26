@@ -16,6 +16,7 @@
 
 #include <mrpt/nav/holonomic/CHolonomicLogFileRecord.h>
 #include <mrpt/nav/tpspace/CParameterizedTrajectoryGenerator.h>
+#include <mrpt/kinematics/CVehicleVelCmd.h>
 
 namespace mrpt
 {
@@ -52,21 +53,30 @@ namespace nav
 			mrpt::nav::CParameterizedTrajectoryGeneratorPtr ptg; //!< Only for the FIRST entry in a log file, this will contain a copy of the PTG with trajectories, suitable to render trajectories, etc.
 		};
 
-		mrpt::system::TTimeStamp   timestamp;  //!< The timestamp of when this log was processed by the reactive algorithm (It can be INVALID_TIMESTAMP for navigation logs in MRPT <0.9.5)
+		//mrpt::system::TTimeStamp   timestamp;  //!< The timestamp of when this log was processed by the reactive algorithm (It can be INVALID_TIMESTAMP for navigation logs in MRPT <0.9.5)
 		uint32_t       nPTGs;  //!< The number of PTGS:
 
 		 /** The info for each applied PTG: must contain "nPTGs * nSecDistances" elements */
 		mrpt::aligned_containers<TInfoPerPTG>::vector_t infoPerPTG;
 
 		int32_t					nSelectedPTG;   //!< The selected PTG.
-		float						executionTime;  //!< The total computation time, excluding sensing.
-		float						estimatedExecutionPeriod;  //!< The estimated execution period.
+		/** Known values: 
+		 *	- "executionTime": The total computation time, excluding sensing.
+		 *	- "estimatedExecutionPeriod": The estimated execution period.
+		 */
+		std::map<std::string, double>  values;
+		/** Known values:
+		*	- "tim_start_iteration":
+		*	- "tim_send_cmd_vel":
+		 */
+		std::map<std::string, mrpt::system::TTimeStamp>  timestamps;
 		mrpt::maps::CSimplePointsMap  WS_Obstacles;  //!< The WS-Obstacles
 		mrpt::poses::CPose2D          robotOdometryPose; //!< The robot pose (from raw odometry or a localization system).
+		mrpt::poses::CPose2D          relPoseSense, relPoseVelCmd; //! Relative poses (wrt to robotOdometryPose) for extrapolated paths at two instants: time of obstacle sense, and future pose of motion comman
 		mrpt::math::TPoint2D          WS_target_relative;  //!< The relative location of target point in WS.
 
-		std::vector<double>    cmd_vel;  //!< The final motion command sent to robot, in "m/sec" and "rad/sec".
-		std::vector<std::vector<double> > cmd_vel_filterings;  //!< Motion command as comes out from the PTG, after scaling and after speed limit filtering.
+		mrpt::kinematics::CVehicleVelCmdPtr    cmd_vel;  //!< The final motion command sent to robot, in "m/sec" and "rad/sec".
+		mrpt::kinematics::CVehicleVelCmdPtr    cmd_vel_original;  //!< Motion command as comes out from the PTG, before scaling speed limit filtering.
 		mrpt::math::TTwist2D   cur_vel; //!< The actual robot velocities in global (map) coordinates, as read from sensors, in "m/sec" and "rad/sec".
 		mrpt::math::TTwist2D   cur_vel_local; //!< The actual robot velocities in local (robot) coordinates, as read from sensors, in "m/sec" and "rad/sec".
 

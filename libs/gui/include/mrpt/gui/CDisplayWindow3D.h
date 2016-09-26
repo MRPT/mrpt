@@ -84,6 +84,14 @@ namespace mrpt
 		  *  For a list of supported events with the observer/observable pattern, see the discussion in mrpt::gui::CBaseGUIWindow.
 		  *  In addition to those events, this class introduces mrpt::gui::mrptEvent3DWindowGrabImageFile
 		  *
+		  * ** CDisplayWindow3D mouse view navigation cheatsheet **
+		  *  - <b>Orbit camera</b>: Left-button pressed + move
+		  *  - <b>Zoom in / out</b>: 
+		  *    - Mouse scroll wheel, or
+		  *    - SHIFT+Left-button pressed + move up/down
+		  *  - <b>Look around (pivot camera)</b>: CTRL+Left-button pressed + move up/down
+		  *  - <b>Pan (XY plane)</b>: Right-button pressed + move
+		  *  - <b>Move camera along Z axis</b>: SHIFT+Left-button pressed + move left/right
 		  *
 		  * \sa  The example /samples/display3D, the <a href="http://www.mrpt.org/Tutorial_3D_Scenes" > tutorial only</a>.
 		  * \ingroup mrpt_gui_grp
