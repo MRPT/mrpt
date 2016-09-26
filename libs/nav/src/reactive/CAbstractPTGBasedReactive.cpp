@@ -33,7 +33,6 @@ using namespace std;
 // ------ CAbstractPTGBasedReactive::TNavigationParamsPTG -----
 std::string CAbstractPTGBasedReactive::TNavigationParamsPTG::getAsText() const
 {
-
 	std::string s = TNavigationParams::getAsText();
 	s += "restrict_PTG_indices: ";
 	s += mrpt::utils::sprintf_vector("%u ",this->restrict_PTG_indices);
@@ -41,15 +40,14 @@ std::string CAbstractPTGBasedReactive::TNavigationParamsPTG::getAsText() const
 	return s;
 }
 
+const double ESTIM_LOWPASSFILTER_ALPHA = 0.7;
+
 // Ctor:
 CAbstractPTGBasedReactive::CAbstractPTGBasedReactive(CRobot2NavInterface &react_iterf_impl, bool enableConsoleOutput, bool enableLogFile):
 	CWaypointsNavigator(react_iterf_impl),
 	m_holonomicMethod            (),
 	m_logFile                    (NULL),
 	m_enableKeepLogRecords       (false),
-
-	m_last_vel_cmd               (react_iterf_impl.getVelCmdLength()  , 0.0),
-	m_new_vel_cmd                (react_iterf_impl.getVelCmdLength(), 0.0),
 
 	m_enableConsoleOutput        (enableConsoleOutput),
 	m_init_done                  (false),
@@ -63,7 +61,12 @@ CAbstractPTGBasedReactive::CAbstractPTGBasedReactive(CRobot2NavInterface &react_
 	m_PTGsMustBeReInitialized    (true),
 	meanExecutionTime            (0.1f),
 	meanTotalExecutionTime       (0.1f),
+	tim_changeSpeed_avr          (ESTIM_LOWPASSFILTER_ALPHA),
+	timoff_obstacles_avr         (ESTIM_LOWPASSFILTER_ALPHA),
+	timoff_curPoseAndSpeed_avr   (ESTIM_LOWPASSFILTER_ALPHA),
+	timoff_sendVelCmd_avr        (ESTIM_LOWPASSFILTER_ALPHA),
 	m_closing_navigator          (false),
+	m_WS_Obstacles_timestamp     (INVALID_TIMESTAMP),
 	m_infoPerPTG_timestamp       (INVALID_TIMESTAMP)
 {
 	this->enableLogFile( enableLogFile );
@@ -268,6 +271,49 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 			return;
 		}
 
+		/*
+		*                                          Delays model
+		*
+		* Event:          OBSTACLES_SENSED         RNAV_ITERATION_STARTS       GET_ROBOT_POSE_VEL         VEL_CMD_SENT_TO_ROBOT
+		* Timestamp:  (m_WS_Obstacles_timestamp)   (tim_start_iteration)     (m_curPoseVelTimestamp)     ("tim_send_cmd_vel")
+		* Delay                       | <---+--------------->|<--------------+-------->|                         |
+		* estimator:                        |                |               |                                   |
+		*                timoff_obstacles <-+                |               +--> timoff_curPoseVelAge           |
+		*                                                    |<---------------------------------+--------------->|
+		*                                                                                       +--> timoff_sendVelCmd_avr (estimation)
+		*                                                                                                |<-------------------->|
+		*                                                                                                   tim_changeSpeed_avr (estim)
+		*
+		*                             |<-----------------------------------------------|-------------------------->|
+		*  Relative poses:                              relPoseSense                           relPoseVelCmd
+		*  Time offsets (signed):                       timoff_pose2sense                     timoff_pose2VelCmd
+		*/
+		const double timoff_obstacles = mrpt::system::timeDifference(tim_start_iteration, m_WS_Obstacles_timestamp);
+		timoff_obstacles_avr.filter(timoff_obstacles);
+		newLogRec.values["timoff_obstacles"] = timoff_obstacles;
+		newLogRec.values["timoff_obstacles_avr"] = timoff_obstacles_avr.getLastOutput();
+		newLogRec.timestamps["obstacles"] = m_WS_Obstacles_timestamp;
+
+		const double timoff_curPoseVelAge = mrpt::system::timeDifference(tim_start_iteration, m_curPoseVelTimestamp);
+		timoff_curPoseAndSpeed_avr.filter(timoff_curPoseVelAge);
+		newLogRec.values["timoff_curPoseVelAge"] = timoff_curPoseVelAge;
+		newLogRec.values["timoff_curPoseVelAge_avr"] = timoff_curPoseAndSpeed_avr.getLastOutput();
+
+		// time offset estimations:
+		const double timoff_pose2sense  = timoff_obstacles - timoff_curPoseVelAge;
+		const double timoff_pose2VelCmd = timoff_sendVelCmd_avr.getLastOutput() + 0.5*tim_changeSpeed_avr.getLastOutput() - timoff_curPoseVelAge;
+		newLogRec.values["timoff_pose2sense"] = timoff_pose2sense;
+		newLogRec.values["timoff_pose2VelCmd"] = timoff_pose2VelCmd;
+
+		if (std::abs(timoff_pose2sense)  > 0.5) MRPT_LOG_WARN_FMT("timoff_pose2sense=%e is too large! Path extrapolation may be not accurate.", timoff_pose2sense);
+		if (std::abs(timoff_pose2VelCmd) > 0.5) MRPT_LOG_WARN_FMT("timoff_pose2VelCmd=%e is too large! Path extrapolation may be not accurate.", timoff_pose2VelCmd);
+
+		// Path extrapolation: robot relative poses along current path estimation:
+		CPose2D relPoseSense, relPoseVelCmd;
+		robotPoseExtrapolateIncrement(m_curVel, timoff_pose2sense, relPoseSense);
+		robotPoseExtrapolateIncrement(m_curVel, timoff_pose2VelCmd, relPoseVelCmd);
+		const CPose2D rel_pose_PTG_origin_wrt_sense = relPoseVelCmd - relPoseSense;
+
 		// Start timer
 		executionTime.Tic();
 
@@ -338,7 +384,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 					ptg->initTPObstacles(ipf.TP_Obstacles);
 
 					// Implementation-dependent conversion:
-					STEP3_WSpaceToTPSpace(indexPTG,ipf.TP_Obstacles);
+					STEP3_WSpaceToTPSpace(indexPTG, ipf.TP_Obstacles, rel_pose_PTG_origin_wrt_sense);
 
 					// Distances in TP-Space are normalized to [0,1]:
 					const double _refD = 1.0/ptg->getRefDistance();
@@ -442,27 +488,48 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 		//				SEND MOVEMENT COMMAND TO THE ROBOT
 		// ---------------------------------------------------------------------
 		// All equal to 0 means "stop".
-		if (std::find_if(m_new_vel_cmd.begin(), m_new_vel_cmd.end(), std::bind2nd(std::not_equal_to<double>(), 0.0) ) == m_new_vel_cmd.end() )
-		{
+		ASSERT_(m_new_vel_cmd);
+		if (m_new_vel_cmd->isStopCmd()) {
 			m_robot.stop();
 		}
 		else
 		{
-			if ( !m_robot.changeSpeeds(m_new_vel_cmd) )
+			mrpt::system::TTimeStamp tim_send_cmd_vel;
 			{
-				doEmergencyStop("\nERROR calling RobotMotionControl::changeSpeeds!! Stopping robot and finishing navigation\n");
-				return;
+				mrpt::utils::CTimeLoggerEntry tle(m_timlog_delays, "changeSpeeds()");
+				tim_send_cmd_vel = mrpt::system::now();
+				newLogRec.timestamps["tim_send_cmd_vel"] = tim_send_cmd_vel;
+				if (!m_robot.changeSpeeds(*m_new_vel_cmd))
+				{
+					doEmergencyStop("\nERROR calling RobotMotionControl::changeSpeeds!! Stopping robot and finishing navigation\n");
+					return;
+				}
 			}
+			// Update delay model:
+			const double timoff_sendVelCmd = mrpt::system::timeDifference(tim_start_iteration, tim_send_cmd_vel);
+			timoff_sendVelCmd_avr.filter(timoff_sendVelCmd);
+			newLogRec.values["timoff_sendVelCmd"] = timoff_sendVelCmd;
+			newLogRec.values["timoff_sendVelCmd_avr"] = timoff_sendVelCmd_avr.getLastOutput();
+
 		}
 
 		// Statistics:
 		// ----------------------------------------------------
 		const double executionTimeValue = executionTime.Tac();
-		meanExecutionTime=  0.3 * meanExecutionTime + 0.7 * executionTimeValue;
-		meanTotalExecutionTime=  0.3 * meanTotalExecutionTime + 0.7 * totalExecutionTime.Tac();
-		meanExecutionPeriod = 0.3 * meanExecutionPeriod + 0.7 * min(1.0, timerForExecutionPeriod.Tac());
+		meanExecutionTime.filter(executionTimeValue);
+		meanTotalExecutionTime.filter(totalExecutionTime.Tac());
 
+		const double tim_changeSpeed = m_timlog_delays.getLastTime("changeSpeeds()");
+		tim_changeSpeed_avr.filter(tim_changeSpeed);
+
+
+		// Average delay between sensing 
+		//newLogRec.timestamps["tim_send_cmd_vel"] = mrpt::system::now();
+
+		// Running period estim:
+		meanExecutionPeriod.filter( timerForExecutionPeriod.Tac());
 		timerForExecutionPeriod.Tic();
+
 
 		if (m_enableConsoleOutput)
 		{
@@ -470,10 +537,10 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 				"CMD: %s \t"
 				"T=%.01lfms Exec:%.01lfms|%.01lfms \t"
 				"E=%.01lf PTG#%i\n",
-					mrpt::utils::sprintf_vector("%.02f ",m_new_vel_cmd).c_str(),
-					1000.0*meanExecutionPeriod,
-					1000.0*meanExecutionTime,
-					1000.0*meanTotalExecutionTime,
+					m_new_vel_cmd->asString().c_str(),
+					1000.0*meanExecutionPeriod.getLastOutput(),
+					1000.0*meanExecutionTime.getLastOutput(),
+					1000.0*meanTotalExecutionTime.getLastOutput(),
 					(double)selectedHolonomicMovement.evaluation,
 					nSelectedPTG
 					) );
@@ -489,15 +556,21 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 			this->loggingGetWSObstaclesAndShape(newLogRec);
 
 			newLogRec.robotOdometryPose   = m_curPose;
+			newLogRec.relPoseSense        = relPoseSense;
+			newLogRec.relPoseVelCmd       = relPoseVelCmd;
 			newLogRec.WS_target_relative  = TPoint2D(relTarget.x(), relTarget.y());
 			newLogRec.cmd_vel             = m_new_vel_cmd;
-			newLogRec.cmd_vel_filterings  = m_cmd_vel_filterings;
+			newLogRec.cmd_vel_original    = m_cmd_vel_original;
 			newLogRec.nSelectedPTG        = nSelectedPTG;
-			newLogRec.executionTime       = executionTimeValue;
 			newLogRec.cur_vel             = m_curVel;
 			newLogRec.cur_vel_local       = m_curVelLocal;
-			newLogRec.estimatedExecutionPeriod = meanExecutionPeriod;
-			newLogRec.timestamp = tim_start_iteration;
+			newLogRec.values["estimatedExecutionPeriod"] = meanExecutionPeriod.getLastOutput();
+			newLogRec.values["executionTime"] = executionTimeValue;
+			newLogRec.values["executionTime_avr"] = meanExecutionTime.getLastOutput();
+			newLogRec.values["time_changeSpeeds()"] = tim_changeSpeed;
+			newLogRec.values["time_changeSpeeds()_avr"] = tim_changeSpeed_avr.getLastOutput();
+			newLogRec.timestamps["tim_start_iteration"] = tim_start_iteration;
+			newLogRec.timestamps["curPoseAndVel"] = m_curPoseVelTimestamp;
 			newLogRec.nPTGs = nPTGs;
 
 			m_timelogger.leave("navigationStep.populate_log_info");
@@ -581,17 +654,21 @@ void CAbstractPTGBasedReactive::STEP5_PTGEvaluator(
 
 	// Factor5: Hysteresis:
 	// -----------------------------------------------------
-	std::vector<double> desired_cmd;
-	holonomicMovement.PTG->directionToMotionCommand( kDirection, desired_cmd);
-	ASSERT_EQUAL_(m_last_vel_cmd.size(), desired_cmd.size());
-
-	double simil_score = 1.0;
-	for (size_t i=0;i<desired_cmd.size();i++)
+	double factor5 = 1.0;
+	if (m_last_vel_cmd)
 	{
-		const double scr = exp(-std::abs(desired_cmd[i] - m_last_vel_cmd[i]) / 0.20);
-		mrpt::utils::keep_min(simil_score, scr);
+		mrpt::kinematics::CVehicleVelCmdPtr desired_cmd;
+		desired_cmd = holonomicMovement.PTG->directionToMotionCommand(kDirection);
+		ASSERT_EQUAL_(m_last_vel_cmd->getVelCmdLength(), desired_cmd->getVelCmdLength());
+
+		double simil_score = 1.0;
+		for (size_t i = 0; i < desired_cmd->getVelCmdLength(); i++)
+		{
+			const double scr = exp(-std::abs(desired_cmd->getVelCmdElement(i) - m_last_vel_cmd->getVelCmdElement(i)) / 0.20);
+			mrpt::utils::keep_min(simil_score, scr);
+		}
+		factor5 = simil_score;
 	}
-	const double factor5 = simil_score;
 
 	// Factor6: free space
 	// -----------------------------------------------------
@@ -649,27 +726,29 @@ void CAbstractPTGBasedReactive::STEP7_GenerateSpeedCommands( const THolonomicMov
 	mrpt::utils::CTimeLoggerEntry tle(m_timelogger, "STEP7_GenerateSpeedCommands");
 	try
 	{
-		m_cmd_vel_filterings.clear();
+		m_cmd_vel_original = in_movement.PTG->getSupportedKinematicVelocityCommand();
 		if (in_movement.speed == 0)
 		{
 			// The robot will stop:
-			m_new_vel_cmd.assign(m_new_vel_cmd.size(), 0.0);
-			m_cmd_vel_filterings.push_back( m_new_vel_cmd );
+			m_new_vel_cmd = in_movement.PTG->getSupportedKinematicVelocityCommand();
+			m_new_vel_cmd->setToStop();
+			*m_cmd_vel_original = *m_new_vel_cmd;
 		}
 		else
 		{
 			// Take the normalized movement command:
-			in_movement.PTG->directionToMotionCommand( in_movement.PTG->alpha2index( in_movement.direction ), m_new_vel_cmd);
-			m_cmd_vel_filterings.push_back(m_new_vel_cmd);
+			m_new_vel_cmd = in_movement.PTG->directionToMotionCommand( in_movement.PTG->alpha2index( in_movement.direction ) );
+			*m_cmd_vel_original = *m_new_vel_cmd;
 
 			// Scale holonomic speeds to real-world one:
-			m_robot.cmdVel_scale(m_new_vel_cmd, in_movement.speed);
-			m_cmd_vel_filterings.push_back(m_new_vel_cmd);
+			m_robot.cmdVel_scale(*m_new_vel_cmd, in_movement.speed);
+
+			if (!m_last_vel_cmd) // first iteration? Use default values:
+				m_last_vel_cmd = in_movement.PTG->getSupportedKinematicVelocityCommand();
 
 			// Honor user speed limits & "blending":
-			const double beta = meanExecutionPeriod / (meanExecutionPeriod + SPEEDFILTER_TAU);
-			m_robot.cmdVel_limits(m_new_vel_cmd, m_last_vel_cmd, beta);
-			m_cmd_vel_filterings.push_back(m_new_vel_cmd);
+			const double beta = meanExecutionPeriod.getLastOutput() / (meanExecutionPeriod.getLastOutput() + SPEEDFILTER_TAU);
+			m_robot.cmdVel_limits(*m_new_vel_cmd, *m_last_vel_cmd, beta);
 		}
 
 		m_last_vel_cmd = m_new_vel_cmd; // Save for filtering in next step
@@ -763,3 +842,16 @@ bool CAbstractPTGBasedReactive::impl_waypoint_is_reachable(const mrpt::math::TPo
 	return false; // no way found
 	MRPT_END;
 }
+
+bool CAbstractPTGBasedReactive::STEP2_SenseObstacles()
+{
+	return implementSenseObstacles(m_WS_Obstacles_timestamp);
+}
+
+void CAbstractPTGBasedReactive::robotPoseExtrapolateIncrement(const mrpt::math::TTwist2D & globalVel, const double time_offset, mrpt::poses::CPose2D & out_pose)
+{
+	out_pose.x(globalVel.vx * time_offset);
+	out_pose.y(globalVel.vy * time_offset);
+	out_pose.phi( globalVel.omega * time_offset );
+}
+

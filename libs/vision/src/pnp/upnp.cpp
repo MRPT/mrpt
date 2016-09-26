@@ -1,3 +1,14 @@
+/* +---------------------------------------------------------------------------+
+|                     Mobile Robot Programming Toolkit (MRPT)               |
+|                          http://www.mrpt.org/                             |
+|                                                                           |
+| Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+| See: http://www.mrpt.org/Authors - All rights reserved.                   |
+| Released under BSD License. See details in http://www.mrpt.org/License    |
++---------------------------------------------------------------------------+ */
+
+#include "vision-precomp.h"   // Precompiled headers
+
 //M*//////////////////////////////////////////////////////////////////////////////////////
 //
 // IMPORTANT: READ BEFORE DOWNLOADING, COPYING, INSTALLING OR USING.
@@ -46,14 +57,12 @@
 \****************************************************************************************/
 
 #include <iostream>
-#include <mrpt/config.h>
+#include <mrpt/otherlibs/do_opencv_includes.h>
 
 #include <limits>
 using namespace std;
 #if MRPT_HAS_OPENCV
 
-    #include <opencv2/opencv.hpp>
-    #include <opencv2/opencv_modules.hpp>
     using namespace cv;
 
     #include "upnp.h"

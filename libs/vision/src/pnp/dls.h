@@ -1,11 +1,18 @@
+/* +---------------------------------------------------------------------------+
+|                     Mobile Robot Programming Toolkit (MRPT)               |
+|                          http://www.mrpt.org/                             |
+|                                                                           |
+| Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+| See: http://www.mrpt.org/Authors - All rights reserved.                   |
+| Released under BSD License. See details in http://www.mrpt.org/License    |
++---------------------------------------------------------------------------+ */
+
 #ifndef DLS_H_
 #define DLS_H_
 
-#include <mrpt/config.h>
+#include <mrpt/otherlibs/do_opencv_includes.h>
 
 #if MRPT_HAS_OPENCV
-    #include <opencv2/opencv.hpp>
-    #include <opencv2/opencv_modules.hpp>
 
     namespace mrpt
     {

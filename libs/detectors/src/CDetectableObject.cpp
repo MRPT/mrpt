@@ -11,7 +11,6 @@
 
 #include <mrpt/detectors/CDetectableObject.h>
 #include <mrpt/utils/CStream.h>
-#include <mrpt/utils/CStartUpClassesRegister.h>
 
 using namespace mrpt;
 using namespace mrpt::utils;

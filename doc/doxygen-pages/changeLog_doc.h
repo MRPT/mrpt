@@ -38,11 +38,15 @@
 				- MRPT_LOG_DEBUG(), MRPT_LOG_INFO(), MRPT_LOG_WARN(), MRPT_LOG_ERROR()
 				- MRPT_LOG_DEBUG_STREAM, MRPT_LOG_INFO_STREAM, MRPT_LOG_WARN_STREAM, MRPT_LOG_ERROR_STREAM
 			- New functions for polynomial roots: see \ref polynomial_roots
+			- New functions for signal filtering: see \ref filtering_grp
 			- New classes mrpt::math::CAtan2LookUpTable, mrpt::math::CAtan2LookUpTableMultiRes
 			- [API change] The following functions are no longer static methods: (since their classes are now derived from the state-aware mrpt::utils::COutputLogger)
 				- mrpt::math::RANSAC_Template::execute()
 				- mrpt::math::CLevenbergMarquardtTempl::execute()
 			- Deleted methods in Eigen-extensions: leftDivideSquare(), rightDivideSquare()
+			- Removed support for **named** semaphores in mrpt::synch::CSemaphore
+			- new method mrpt::utils::CTimeLogger::getLastTime()
+			- Removed mrpt::utils::CStartUpClassesRegister, replaced by the new macro MRPT_INITIALIZER()
 		- \ref mrpt_bayes_grp
 			-  [API change] `verbose` is no longer a field of mrpt::bayes::CParticleFilter::TParticleFilterOptions. Use the setVerbosityLevel() method of the CParticleFilter class itself.
 		- \ref mrpt_gui_grp
@@ -52,6 +56,7 @@
 			- New classes for 2D robot simulation:
 				- mrpt::kinematics::CVehicleSimul_DiffDriven
 				- mrpt::kinematics::CVehicleSimul_Holo
+			- New classes for 2D robot kinematic motion commands. See children of mrpt::kinematics::CVehicleVelCmd
 		- \ref mrpt_maps_grp
 			- mrpt::maps::COccupancyGridMap2D::loadFromBitmapFile() correct description of `yCentralPixel` parameter.
 			- mrpt::maps::CPointsMap `liblas` import/export methods are now in a separate header. See \ref mrpt_maps_liblas_grp and \ref dep-liblas
@@ -105,6 +110,8 @@
 		- Fix mrpt::utils::CMemoryStream::Clear() after assigning read-only memory blocks.
 		- Fix point into polygon checking not working for concave polygons. Now, mrpt::math::TPolygon2D::contains() uses the winding number test which works for any geometry.
 		- Fix inconsistent internal state after externalizing mrpt::obs::CObservation3DRangeScan
+		- Fix a long outstanding bug regarding losing of keystroke events in CDisplayWindow3D windows (Closes #13 again)
+		- Fix wrong units for negative numbers in mrpt::system::unitsFormat()
 
 <hr>
 <a name="1.4.0">

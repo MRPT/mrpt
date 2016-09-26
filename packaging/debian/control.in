@@ -23,7 +23,6 @@ Build-Depends: debhelper (>= 9),
 	texlive-latex-extra,
 	texlive-science,
 	doxygen-latex | perl,
-	libeigen3-dev,
 	libdc1394-22-dev [linux-any],
 	libusb-1.0-0-dev [linux-any],
 	libudev-dev [linux-any],
@@ -34,7 +33,9 @@ Build-Depends: debhelper (>= 9),
 	libopenni2-dev | perl,
 	gdb,
 	lib3ds-dev,
-	libsuitesparse-dev
+	libsuitesparse-dev,
+	python-numpy,
+	libeigen3-dev
 Standards-Version: 3.9.8
 Homepage: http://www.mrpt.org/
 
@@ -359,6 +360,7 @@ Depends: ${shlibs:Depends}, ${misc:Depends}, libeigen3-dev,
          libmrpt-gui@MRPT_VER_MM@ (= ${binary:Version}),
          libmrpt-hmtslam@MRPT_VER_MM@ (= ${binary:Version}),
          libmrpt-hwdrivers@MRPT_VER_MM@ (= ${binary:Version}),
+         libmrpt-graphslam@MRPT_VER_MM@ (= ${binary:Version}),
          libmrpt-kinematics@MRPT_VER_MM@ (= ${binary:Version}),
          libmrpt-maps@MRPT_VER_MM@ (= ${binary:Version}),
          libmrpt-obs@MRPT_VER_MM@ (= ${binary:Version}),

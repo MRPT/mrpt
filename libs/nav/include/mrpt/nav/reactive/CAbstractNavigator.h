@@ -10,6 +10,7 @@
 
 #include <mrpt/nav/reactive/CRobot2NavInterface.h>
 #include <mrpt/utils/COutputLogger.h>
+#include <mrpt/utils/CTimeLogger.h>
 #include <mrpt/synch/CCriticalSection.h>
 #include <mrpt/obs/obs_frwds.h>
 
@@ -108,6 +109,9 @@ namespace mrpt
 		/** To be implemented in derived classes */
 		virtual void  performNavigationStep( )=0;
 
+		/** Call to the robot getCurrentPoseAndSpeeds() and updates members m_curPose,m_curVel and m_curVelLocal accordingly. */
+		void updateCurrentPoseAndSpeeds();
+
 		/** Stops the robot and set navigation state to error */
 		void doEmergencyStop( const char *msg );
 
@@ -120,6 +124,9 @@ namespace mrpt
 
 		mrpt::math::TPose2D  m_curPose;   //!< Current robot pose (updated in CAbstractNavigator::navigationStep() )
 		mrpt::math::TTwist2D m_curVel, m_curVelLocal; //!< Current robot velocities (updated in CAbstractNavigator::navigationStep() )
+		mrpt::system::TTimeStamp m_curPoseVelTimestamp;
+
+		mrpt::utils::CTimeLogger m_timlog_delays; //!< Time logger to collect delay-related stats
 
 		/** For sending an alarm (error event) when it seems that we are not approaching toward the target in a while... */
 		double                   m_badNavAlarm_minDistTarget;

@@ -26,7 +26,6 @@
 #include "hmtslam-precomp.h" // Precomp header
 
 #include <mrpt/utils/CFileStream.h>
-#include <mrpt/utils/CStartUpClassesRegister.h>
 #include <mrpt/utils/CConfigFile.h>
 #include <mrpt/utils/stl_serialization.h>
 #include <mrpt/system/filesystem.h>
@@ -46,10 +45,6 @@ using namespace std;
 
 
 IMPLEMENTS_SERIALIZABLE(CHMTSLAM, CSerializable,mrpt::hmtslam)
-
-
-extern CStartUpClassesRegister  mrpt_hmtslam_class_reg;
-const int dumm = mrpt_hmtslam_class_reg.do_nothing(); // Avoid compiler removing this class in static linking
 
 
 // Initialization of static members:

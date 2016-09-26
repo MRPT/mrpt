@@ -328,6 +328,7 @@ void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::initC
 		m_time_logger.leave("Visuals");
 	}
 
+
 	// In case we are given an RGBD TUM Dataset - try and read the info file so
 	// that we know how to play back the GT poses.
 	try {
@@ -338,8 +339,10 @@ void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::initC
 				m_info_params.fields["Overall number of objects"].c_str());
 		m_GT_poses_step = m_GT_poses.size() / num_of_objects;
 
-		this->logStr(LVL_INFO, format("Overall number of objects in rawlog: %d", num_of_objects));
-		this->logStr(LVL_INFO, format("Setting the Ground truth read step to: %lu", m_GT_poses_step));
+		this->logStr(LVL_INFO,
+				format("Overall number of objects in rawlog: %d", num_of_objects));
+		this->logStr(LVL_INFO,
+				format("Setting the Ground truth read step to: %lu", m_GT_poses_step));
 	}
 	catch (std::exception& e) {
 		this->logStr(LVL_INFO, "RGBD_TUM info file was not found.");
@@ -613,15 +616,17 @@ bool CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::parse
 				this->updateGTVisualization(); // I have already taken care of the step
 				m_GT_poses_index += m_GT_poses_step;
 		}
-		else if (mrpt::system::strCmpI(m_GT_file_format, "navsimul")) { // 1/2loops
-			if (m_observation_only_rawlog) {
+		else if (mrpt::system::strCmpI(m_GT_file_format, "navsimul")) {
+			if (m_observation_only_rawlog) { // 1/2loops
 				if (curr_rawlog_entry % 2 == 0) {
 					this->updateGTVisualization();
 					m_GT_poses_index += m_GT_poses_step;
+					MRPT_LOG_ERROR_STREAM << "observation_only_rawlog..." << std::endl;
 				}
 			}
 			else { // 1/loop
-				this->updateGTVisualization(); // get both action and observation at a single step - same rate as GT
+				// get both action and observation at a single step - same rate as GT
+				this->updateGTVisualization(); 
 				m_GT_poses_index += m_GT_poses_step;
 			}
 		}
@@ -1982,7 +1987,7 @@ updateEstimatedTrajectoryVisualization(bool full_update) {
 // ////////////////////////////////
 template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR, class OPTIMIZER>
 CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::
-TRGBDInfoFileParams::TRGBDInfoFileParams(std::string rawlog_fname) {
+TRGBDInfoFileParams::TRGBDInfoFileParams(const std::string& rawlog_fname) {
 
 	this->setRawlogFile(rawlog_fname);
 	this->initTRGBDInfoFileParams();
@@ -1993,8 +1998,12 @@ TRGBDInfoFileParams::TRGBDInfoFileParams() {
 	this->initTRGBDInfoFileParams();
 }
 template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR, class OPTIMIZER>
+CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::
+TRGBDInfoFileParams::~TRGBDInfoFileParams() { }
+
+template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR, class OPTIMIZER>
 void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::TRGBDInfoFileParams::setRawlogFile(
-		std::string rawlog_fname) {
+		const std::string& rawlog_fname) {
 
 	// get the correct info filename from the rawlog_fname
 	std::string dir = mrpt::system::extractFileDirectory(rawlog_fname);
@@ -2058,6 +2067,7 @@ void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::TRGBD
 	}
 
 }
+////////////////////////////////////////////////////////////////////////////////
 
 template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR, class OPTIMIZER>
 void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::saveGraph() const {

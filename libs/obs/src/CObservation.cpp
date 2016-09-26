@@ -14,7 +14,6 @@
 #include <mrpt/system/os.h>
 #include <mrpt/math/lightweight_geom_data.h>
 
-#include <mrpt/utils/CStartUpClassesRegister.h>
 #include <mrpt/poses/CPose3D.h>
 #include <iomanip>
 
@@ -25,10 +24,6 @@ using namespace mrpt::math;
 
 IMPLEMENTS_VIRTUAL_SERIALIZABLE(CObservation, CSerializable, mrpt::obs)
 
-
-extern CStartUpClassesRegister  mrpt_obs_class_reg;
-
-const volatile int dumm = mrpt_obs_class_reg.do_nothing(); // Avoid compiler removing this class in static linking
 
 /*---------------------------------------------------------------
 					CONSTRUCTOR

@@ -1,3 +1,14 @@
+/* +---------------------------------------------------------------------------+
+|                     Mobile Robot Programming Toolkit (MRPT)               |
+|                          http://www.mrpt.org/                             |
+|                                                                           |
+| Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+| See: http://www.mrpt.org/Authors - All rights reserved.                   |
+| Released under BSD License. See details in http://www.mrpt.org/License    |
++---------------------------------------------------------------------------+ */
+
+#include "vision-precomp.h"   // Precompiled headers
+
 /*********************************************************************
 SO3-PnP
 Algorithm to estimate Position and Orientation from image data
@@ -18,7 +29,7 @@ along with this program.If not, see <http://www.gnu.org/licenses/>.
 
 #include <iostream>
 #include <math.h>
-#include <Eigen/Dense>
+#include <mrpt/utils/types_math.h>
 
 #include "so3.h"
 

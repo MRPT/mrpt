@@ -2,12 +2,10 @@
 #define P3P_H
 
 #include <vector>
+#include <mrpt/utils/types_math.h> // Eigen must be included first via MRPT to enable the plugin system
 #include <Eigen/Dense>
 #include <Eigen/SVD>
-
-#if MRPT_HAS_OPENCV
-    #include <opencv2/opencv.hpp>
-#endif
+#include <mrpt/otherlibs/do_opencv_includes.h>
 
 namespace mrpt
 {

@@ -14,17 +14,12 @@
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/math/utils.h>
 #include <mrpt/math/geometry.h>
-#include <mrpt/utils/CStartUpClassesRegister.h>
 
 using namespace std;
 using namespace mrpt;
 using namespace mrpt::math;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
-
-
-extern CStartUpClassesRegister  mrpt_topography_class_reg;
-const int dumm = mrpt_topography_class_reg.do_nothing(); // Avoid compiler removing this class in static linking
 
 
 bool mrpt::topography::operator ==(const TCoords &a, const TCoords &o) { return a.decimal_value==o.decimal_value; }

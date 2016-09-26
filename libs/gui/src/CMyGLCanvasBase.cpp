@@ -166,6 +166,9 @@ void CMyGLCanvasBase::OnMouseMove(wxMouseEvent& event)
 #endif
 		Refresh(false);
 	}
+
+	// ensure we have the focus so we get keyboard events:
+	this->SetFocus();
 }
 
 void CMyGLCanvasBase::OnMouseWheel(wxMouseEvent& event)
@@ -178,6 +181,8 @@ void CMyGLCanvasBase::OnMouseWheel(wxMouseEvent& event)
 	OnUserManuallyMovesCamera(cameraPointingX, cameraPointingY, cameraPointingZ, cameraZoomDistance, cameraElevationDeg, cameraAzimuthDeg);
 
 	Refresh(false);
+	// ensure we have the focus so we get keyboard events:
+	this->SetFocus();
 }
 
 static int WX_GL_ATTR_LIST[] = { WX_GL_DOUBLEBUFFER, WX_GL_RGBA, WX_GL_DEPTH_SIZE, 24,  0 };
@@ -221,6 +226,7 @@ CMyGLCanvasBase::CMyGLCanvasBase(wxWindow *parent, wxWindowID id,const wxPoint& 
     Connect(wxID_ANY,wxEVT_MOUSEWHEEL,(wxObjectEventFunction)&CMyGLCanvasBase::OnMouseWheel);
 
 	Connect(wxID_ANY,wxEVT_CHAR,(wxObjectEventFunction)&CMyGLCanvasBase::OnChar);
+	Connect(wxID_ANY,wxEVT_CHAR_HOOK,(wxObjectEventFunction)&CMyGLCanvasBase::OnChar);
 
 	Connect(wxEVT_CREATE,(wxObjectEventFunction)&CMyGLCanvasBase::OnWindowCreation);
 

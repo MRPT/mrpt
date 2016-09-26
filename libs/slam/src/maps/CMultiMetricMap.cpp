@@ -12,7 +12,6 @@
 #include <mrpt/utils/CConfigFile.h>
 #include <mrpt/poses/CPoint2D.h>
 #include <mrpt/maps/CMultiMetricMap.h>
-#include <mrpt/utils/CStartUpClassesRegister.h>
 #include <mrpt/utils/metaprogramming.h>
 #include <mrpt/utils/CStream.h>
 
@@ -23,9 +22,6 @@ using namespace mrpt::obs;
 using namespace mrpt::utils::metaprogramming;
 
 IMPLEMENTS_SERIALIZABLE( CMultiMetricMap, CMetricMap, mrpt::maps )
-
-extern CStartUpClassesRegister  mrpt_slam_class_reg;
-const int dumm = mrpt_slam_class_reg.do_nothing(); // Avoid compiler removing this class in static linking
 
 // ------------------------------------------------------------------------
 // A few words explaining how all this works:

@@ -11,20 +11,12 @@
 
 #define MRPT_NO_WARN_BIG_HDR
 #include <mrpt/opengl.h>
-
-#include <mrpt/utils/CStartUpClassesRegister.h>
+#include <mrpt/utils/initializer.h>
 
 using namespace mrpt::opengl;
 using namespace mrpt::utils;
 
-void registerAllClasses_mrpt_opengl();
-
-CStartUpClassesRegister  mrpt_opengl_class_reg(&registerAllClasses_mrpt_opengl);
-
-/*---------------------------------------------------------------
-					registerAllClasses_mrpt_opengl
-  ---------------------------------------------------------------*/
-void registerAllClasses_mrpt_opengl()
+MRPT_INITIALIZER(registerAllClasses_mrpt_opengl)
 {
 #if !defined(DISABLE_MRPT_AUTO_CLASS_REGISTRATION)
 	// Opengl classes:
