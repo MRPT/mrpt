@@ -15,6 +15,7 @@
 #include <mrpt/utils/round.h>
 #include <mrpt/utils/CTimeLogger.h>
 #include <mrpt/math/poly_roots.h>
+#include <mrpt/kinematics/CVehicleVelCmd_Holo.h>
 
 using namespace mrpt::nav;
 using namespace mrpt::utils;
@@ -23,13 +24,13 @@ using namespace mrpt::system;
 IMPLEMENTS_SERIALIZABLE(CPTG_Holo_Blend,CParameterizedTrajectoryGenerator,mrpt::nav)
 
 /*
-Closed-form PTG. Parameters: 
+Closed-form PTG. Parameters:
 - Initial velocity vector (xip, yip)
 - Target velocity vector depends on \alpha: xfp = V_MAX*cos(alpha), yfp = V_MAX*sin(alpha)
 - T_ramp_max max time for velocity interpolation (xip,yip) -> (xfp, yfp)
 - W_MAX: Rotational velocity for robot heading forwards.
 
-Number of steps "d" for each PTG path "k": 
+Number of steps "d" for each PTG path "k":
 - Step = time increment PATH_TIME_STEP
 
 */
@@ -40,8 +41,8 @@ Number of steps "d" for each PTG path "k":
 #ifdef DO_PERFORMANCE_BENCHMARK
 	mrpt::utils::CTimeLogger tl;
 	#define PERFORMANCE_BENCHMARK  CTimeLoggerEntry  tle(tl, __CURRENT_FUNCTION_NAME__);
-#else 
-	#define PERFORMANCE_BENCHMARK  
+#else
+	#define PERFORMANCE_BENCHMARK
 #endif
 
 const double PATH_TIME_STEP = 10e-3;   // 10 ms
@@ -69,7 +70,7 @@ double calc_trans_distance_t_below_Tramp_abc(double t, double a,double b, double
 			dist=0.5*(r*r+(t-r)*(t-r));
 		}
 	}
-	else 
+	else
 	{
 		// General case:
 		// Indefinite integral of sqrt(a*t^2+b*t+c):
@@ -92,7 +93,7 @@ double calc_trans_distance_t_below_Tramp(double k2, double k4, double vxi,double
 {
 /*
 dd = sqrt( (4*k2^2 + 4*k4^2)*t^2 + (4*k2*vxi + 4*k4*vyi)*t + vxi^2 + vyi^2 ) dt
-            a t^2 + b t + c 
+            a t^2 + b t + c
 */
 	const double c = (vxi*vxi+vyi*vyi);
 	if (std::abs(k2)>eps || std::abs(k4)>eps)
@@ -133,14 +134,14 @@ inline double calc_T_ramp_dir(const double T_ramp_max, double vxi, double vyi, d
 	return calc_T_ramp_from_ratio(T_ramp_max, std::max( std::abs(vxi-V_MAX*cos(dir)), std::abs(vyi-V_MAX*sin(dir)) ) / (2.0*V_MAX) );
 }
 
-CPTG_Holo_Blend::CPTG_Holo_Blend() : 
+CPTG_Holo_Blend::CPTG_Holo_Blend() :
 	T_ramp_max(-1.0),
-	V_MAX(-1.0), 
+	V_MAX(-1.0),
 	W_MAX(-1.0),
 	turningRadiusReference(0.30),
 	curVelLocal(0,0,0),
 	maxAllowedDirAngle(M_PI)
-{ 
+{
 }
 
 CPTG_Holo_Blend::CPTG_Holo_Blend(const mrpt::utils::CConfigFileBase &cfg,const std::string &sSection) :
@@ -234,7 +235,7 @@ void CPTG_Holo_Blend::readFromStream(mrpt::utils::CStream &in, int version)
 
 void CPTG_Holo_Blend::writeToStream(mrpt::utils::CStream &out, int *version) const
 {
-	if (version) 
+	if (version)
 	{
 		*version = 2;
 		return;
@@ -253,13 +254,13 @@ bool CPTG_Holo_Blend::inverseMap_WS2TP(double x, double y, int &out_k, double &o
 
 	MRPT_UNUSED_PARAM(tolerance_dist);
 	ASSERT_(x!=0 || y!=0);
-	
+
 	const double err_threshold = 1e-3;
 
 	const double vxi = curVelLocal.vx, vyi = curVelLocal.vy;
 	const double V_MAXsq = V_MAX*V_MAX;
 
-	// Use a Newton iterative non-linear optimizer to find the "exact" solution for (t,alpha) 
+	// Use a Newton iterative non-linear optimizer to find the "exact" solution for (t,alpha)
 	// in each case: (1) t<T_ramp and (2) t>T_ramp
 
 	// Initial value:
@@ -321,7 +322,7 @@ bool CPTG_Holo_Blend::inverseMap_WS2TP(double x, double y, int &out_k, double &o
 	{
 		const double alpha = atan2(q[2],q[1]);
 		out_k =  CParameterizedTrajectoryGenerator::alpha2index( alpha );
-		
+
 		const double solved_t = q[0];
 		const unsigned int solved_step = solved_t/PATH_TIME_STEP;
 		const double found_dist = this->getPathDist(out_k, solved_step);
@@ -336,7 +337,7 @@ bool CPTG_Holo_Blend::inverseMap_WS2TP(double x, double y, int &out_k, double &o
 
 bool CPTG_Holo_Blend::PTG_IsIntoDomain(double x, double y ) const
 {
-	int k; 
+	int k;
 	double d;
 	return inverseMap_WS2TP(x,y,k,d);
 }
@@ -457,7 +458,7 @@ bool CPTG_Holo_Blend::getPathStepForDist(uint16_t k, double dist, uint16_t &out_
 	// --------------------------------------
 	const double dist_trans_T_ramp = calc_trans_distance_t_below_Tramp(k2,k4,vxi,vyi,T_ramp);
 	double t_solved = -1;
-		
+
 	if (dist>=dist_trans_T_ramp)
 	{
 		// Good solution:
@@ -509,7 +510,7 @@ bool CPTG_Holo_Blend::getPathStepForDist(uint16_t k, double dist, uint16_t &out_
 					const double diff = std::sqrt(a*t_solved*t_solved+b*t_solved+c);
 					ASSERT_(std::abs(diff)>1e-40);
 					t_solved -= (err) / diff;
-					if (t_solved<0) 
+					if (t_solved<0)
 						t_solved=.0;
 					if (std::abs(err)<1e-3)
 						break; // Good enough!
@@ -559,7 +560,7 @@ void CPTG_Holo_Blend::updateTPObstacle(double ox, double oy, std::vector<double>
 
 		double roots[4];
 		int num_real_sols=0;
-		if (std::abs(a)>eps) 
+		if (std::abs(a)>eps)
 		{
 			// General case: 4th order equation
 			// a * x^4 + b * x^3 + c * x^2 + d * x + e
@@ -567,10 +568,10 @@ void CPTG_Holo_Blend::updateTPObstacle(double ox, double oy, std::vector<double>
 		}
 		else if (std::abs(b)>eps) {
 			// Special case: k2=k4=0 (straight line path, no blend)
-			// 3rd order equation: 
+			// 3rd order equation:
 			// b * x^3 + c * x^2 + d * x + e
 			num_real_sols = mrpt::math::solve_poly3(roots, c/b,d/b,e/b);
-		} else 
+		} else
 		{
 			// Special case: 2nd order equation (a=b=0)
 			const double discr = d*d-4*c*e;  // c*t^2 + d*t + e = 0
@@ -588,7 +589,7 @@ void CPTG_Holo_Blend::updateTPObstacle(double ox, double oy, std::vector<double>
 		{
 			if (roots[i]==roots[i] && // not NaN
 				mrpt::math::isFinite(roots[i]) &&
-				roots[i]>=.0 && 
+				roots[i]>=.0 &&
 				roots[i]<=T_ramp*1.01)
 			{
 				if (sol_t<0) sol_t=roots[i];

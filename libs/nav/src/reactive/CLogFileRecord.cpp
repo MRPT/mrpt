@@ -13,6 +13,8 @@
 #include <mrpt/poses/CPoint2D.h>
 #include <mrpt/utils/CStream.h>
 #include <mrpt/utils/stl_serialization.h>
+#include <mrpt/kinematics/CVehicleVelCmd_DiffDriven.h>
+#include <mrpt/kinematics/CVehicleVelCmd_Holo.h>
 
 using namespace mrpt::nav;
 
@@ -78,7 +80,7 @@ void  CLogFileRecord::writeToStream(mrpt::utils::CStream &out,int *version) cons
 		}
 
 		// Version 1 ---------
-		out << cur_vel<< cur_vel_local; /*v10*/ 
+		out << cur_vel<< cur_vel_local; /*v10*/
 		//out << estimatedExecutionPeriod; // removed v13
 
 		// Version 3 ----------
@@ -147,7 +149,7 @@ void  CLogFileRecord::readFromStream(mrpt::utils::CStream &in,int version)
 				if (m) in.ReadBufferFixEndianness( &(*infoPerPTG[i].TP_Obstacles.begin()), m );
 
 				if (version>=8)
-					in >> infoPerPTG[i].TP_Target; 
+					in >> infoPerPTG[i].TP_Target;
 				else
 				{
 					mrpt::poses::CPoint2D pos;
@@ -175,21 +177,21 @@ void  CLogFileRecord::readFromStream(mrpt::utils::CStream &in,int version)
 					bool there_is_ptg_data;
 					in >> there_is_ptg_data;
 					if (there_is_ptg_data)
-						infoPerPTG[i].ptg = mrpt::nav::CParameterizedTrajectoryGeneratorPtr( in.ReadObject() ); 
+						infoPerPTG[i].ptg = mrpt::nav::CParameterizedTrajectoryGeneratorPtr( in.ReadObject() );
 				}
 			}
 
-			in >> nSelectedPTG >> WS_Obstacles >> robotOdometryPose; 
-				
+			in >> nSelectedPTG >> WS_Obstacles >> robotOdometryPose;
+
 			if (version>=8)
-				in >> WS_target_relative; 
+				in >> WS_target_relative;
 			else
 			{
 				mrpt::poses::CPoint2D pos;
 				in >> pos;
 				WS_target_relative = mrpt::math::TPoint2D(pos);
 			}
-			
+
 			if (version >= 10) {
 				if (version >= 15) {
 					in >> cmd_vel;
@@ -357,4 +359,3 @@ void  CLogFileRecord::readFromStream(mrpt::utils::CStream &in,int version)
 	};
 
 }
-
