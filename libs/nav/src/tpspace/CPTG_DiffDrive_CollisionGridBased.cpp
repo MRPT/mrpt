@@ -16,6 +16,7 @@
 #include <mrpt/utils/CTicTac.h>
 #include <mrpt/math/geometry.h>
 #include <mrpt/utils/stl_serialization.h>
+#include <mrpt/kinematics/CVehicleVelCmd_DiffDriven.h>
 
 using namespace mrpt::nav;
 
@@ -36,7 +37,7 @@ void CPTG_DiffDrive_CollisionGridBased::loadDefaultParams()
 {
 	CParameterizedTrajectoryGenerator::loadDefaultParams();
 	CPTG_RobotShape_Polygonal::loadDefaultParams();
-	
+
 	m_resolution = 0.10;
 	V_MAX = 1.0;
 	W_MAX = mrpt::utils::DEG2RAD(120);
@@ -251,7 +252,7 @@ mrpt::kinematics::CVehicleVelCmdPtr CPTG_DiffDrive_CollisionGridBased::direction
 	ptgDiffDriveSteeringFunction( index2alpha(k),0, 0, 0, 0, v, w );
 
 	mrpt::kinematics::CVehicleVelCmd_DiffDriven * cmd = new mrpt::kinematics::CVehicleVelCmd_DiffDriven();
-	cmd->lin_vel = v; 
+	cmd->lin_vel = v;
 	cmd->ang_vel = w;
 	return mrpt::kinematics::CVehicleVelCmdPtr(cmd);
 }
@@ -586,14 +587,14 @@ bool CPTG_DiffDrive_CollisionGridBased::inverseMap_WS2TP(double x, double y, int
 	out_k = selected_k;
 	out_d = selected_d / refDistance;
 
-	// If the target dist. > refDistance, then it's normal that we had to extrapolate. 
+	// If the target dist. > refDistance, then it's normal that we had to extrapolate.
 	// Otherwise, it may actually mean that the target is not reachable by this set of paths:
 	const float target_dist = std::sqrt( x*x+y*y );
-	return (target_dist>target_dist);  
+	return (target_dist>target_dist);
 }
 
-void CPTG_DiffDrive_CollisionGridBased::setRefDistance(const double refDist) 
-{ 
+void CPTG_DiffDrive_CollisionGridBased::setRefDistance(const double refDist)
+{
 	ASSERTMSG_(m_trajectory.empty(), "Changing reference distance not allowed in this class after initialization!");
 	this->refDistance = refDist;
 }
@@ -757,7 +758,7 @@ void CPTG_DiffDrive_CollisionGridBased::getPathPose(uint16_t k, uint16_t step, m
 	p.phi = m_trajectory[k][step].phi;
 }
 
-double CPTG_DiffDrive_CollisionGridBased::getPathDist(uint16_t k, uint16_t step) const 
+double CPTG_DiffDrive_CollisionGridBased::getPathDist(uint16_t k, uint16_t step) const
 {
 	ASSERT_(k<m_trajectory.size());
 	ASSERT_(step<m_trajectory[k].size());
@@ -765,7 +766,7 @@ double CPTG_DiffDrive_CollisionGridBased::getPathDist(uint16_t k, uint16_t step)
 	return m_trajectory[k][step].dist;
 }
 
-bool CPTG_DiffDrive_CollisionGridBased::getPathStepForDist(uint16_t k, double dist, uint16_t &out_step) const 
+bool CPTG_DiffDrive_CollisionGridBased::getPathStepForDist(uint16_t k, double dist, uint16_t &out_step) const
 {
 	ASSERT_(k<m_trajectory.size());
 	const size_t numPoints = m_trajectory[k].size();
@@ -809,7 +810,7 @@ void CPTG_DiffDrive_CollisionGridBased::internal_readFromStream(mrpt::utils::CSt
 		internal_deinitialize();
 		in >>V_MAX >> W_MAX
 			>> turningRadiusReference
-			>> m_robotShape 
+			>> m_robotShape
 			>> m_resolution
 			>> m_trajectory;
 		break;
@@ -828,7 +829,7 @@ void CPTG_DiffDrive_CollisionGridBased::internal_writeToStream(mrpt::utils::CStr
 
 	out << V_MAX << W_MAX
 		<< turningRadiusReference
-		<< m_robotShape 
+		<< m_robotShape
 		<< m_resolution
 		<< m_trajectory;
 }
