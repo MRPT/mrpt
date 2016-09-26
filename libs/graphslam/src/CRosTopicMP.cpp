@@ -17,11 +17,11 @@ CRosTopicMP::CRosTopicMP():
 	this->init();
 }
 
-CRosTopicMP::~CRosTopicMP() { 
+CRosTopicMP::~CRosTopicMP() {
 	MRPT_LOG_DEBUG_STREAM << "In class Destructor";
 
 	MRPT_LOG_DEBUG_STREAM << "Deleting client socket instance.";
-	delete client;
+	delete m_client;
 
 }
 
@@ -35,7 +35,7 @@ void CRosTopicMP::init() {
 	run_online = true;
 	provider_ready = false;
 
-	client = NULL;
+	m_client = NULL;
 
 	MRPT_END;
 }
@@ -51,7 +51,8 @@ bool CRosTopicMP::getActionObservationPairOrObservation(
 	using namespace mrpt::obs;
 	using namespace mrpt::utils;
 
-	ASSERTMSG_(provider_ready, "getActionObservationPairOrObservation was called even though provider is not ready yet.");
+	ASSERTMSG_(provider_ready,
+			"getActionObservationPairOrObservation was called even though provider is not ready yet.");
 
 	//is there any data available - if so return it, otherwise block and wait
 	// TODO - maybe inform of the user if it takes too long to return from this
@@ -59,10 +60,19 @@ bool CRosTopicMP::getActionObservationPairOrObservation(
 
 	// Ask the server of data
 	CMessage msg;
-	bool did_receive = client->receiveMessage(msg,
-			/*timeoutStart_ms =*/ 2000,
+	bool did_receive = m_client->receiveMessage(msg,
+			/*timeoutStart_ms =*/ 40000,
 			/*timeoutBetween_ms =*/ 2000 );
-	ASSERTMSG_(did_receive, "\nCould not successfully receive message from server! Exiting\n");
+	if (!did_receive) { // communication failed. What exception should I raise?
+		if (client_params.has_transmitted_valid_data) {
+ 			// Overall, I have managed to transmit some data.
+			// Assume that the data transmission is over.
+			msg.type = client_params.msg_types["EXIT"];
+		}
+		else {
+			THROW_EXCEPTION("\nMessage transmission stopped abruptly.\n");
+		}
+	}
 
 	stringstream ss("");
 	ss <<  "Received message: Type: " << msg.type
@@ -75,17 +85,15 @@ bool CRosTopicMP::getActionObservationPairOrObservation(
 	observation.clear_unique();
 
 	bool success;
-	if (msg.type == client_params.msg_types["FORMAT 1"]) {
+	if (msg.type == client_params.msg_types["FORMAT_1"]) {
 		// in case of format #1 I need two objects:
 		// - CActionCollection
 		// - CSensoryFrame
-
 		// TODO
 		THROW_EXCEPTION("FORMAT 1 (action-observations) is not implemented yet.");
-
-		//msg.deserializeIntoExistingObject(action.pointer());
 	}
-	else if (msg.type == client_params.msg_types["FORMAT 2"]) {
+	else if (msg.type == client_params.msg_types["FORMAT_2"]) {
+		observation = mrpt::obs::CObservation2DRangeScan::Create();
 		msg.deserializeIntoExistingObject(observation.pointer());
 		success=true;
 	}
@@ -93,11 +101,16 @@ bool CRosTopicMP::getActionObservationPairOrObservation(
 		success = false;
 	}
 	else {
-		THROW_EXCEPTION(mrpt::format("%s: Received measurement was not understood.", m_class_name.c_str()));
+		THROW_EXCEPTION(
+				mrpt::format("%s: Received measurement was not understood.",
+					m_class_name.c_str()));
+	}
+
+	if (success) {
+		client_params.has_transmitted_valid_data = true;
 	}
 
 	return success;
-
 	MRPT_END;
 }
 
@@ -134,7 +147,7 @@ void CRosTopicMP::loadParams(const std::string& source_fname) {
 	this->logStr(LVL_DEBUG, "Successfully loaded parameters.");
 
 	// initialize the client - connect to remote part...
-	this->initClient(client);
+	this->initClient(m_client);
 
 	provider_ready = true;
 	MRPT_END;
@@ -150,13 +163,33 @@ void CRosTopicMP::initClient(mrpt::utils::CClientTCPSocket* cl) {
 	msg_ss << client_params.getAsString();
 	MRPT_LOG_INFO_STREAM << msg_ss;
 
-	client = new mrpt::utils::CClientTCPSocket();
-	client->connect(
-			client_params.server_addr,
-			client_params.server_port_no,
-			client_params.client_timeout_ms);
+	// Connect to the server side. Server counterpart may not be up when the
+	// connection attempt is made Make multiple attempts.
+	bool did_connect = false;
+	int tries_thresh = 10;
+	int curr_try = 1;
+	m_client = new mrpt::utils::CClientTCPSocket();
+	std::string error_msg = "Connection with remote server could not be established.";
+	while (tries_thresh >= curr_try) {
+		try {
+			m_client->connect(
+					client_params.server_addr,
+					client_params.server_port_no,
+					client_params.client_timeout_ms);
+			did_connect = true;
+			break;
+		}
+		catch(std::logic_error& e) {
+			MRPT_LOG_WARN_STREAM << error_msg << "Retrying... "
+				<< curr_try++ << "/" << tries_thresh << endl;
+			mrpt::system::sleep(1000);
+		}
+	}
+	error_msg = error_msg +
+		"\nMake sure that the TCP server on the ROS side is up, otherwise contact the maintainer.";
+	ASSERTMSG_(did_connect, mrpt::format("\n%s\n", error_msg.c_str()));
 
-	MRPT_LOG_INFO_STREAM << "TCP Socket was successfully established." << endl;
+	MRPT_LOG_INFO_STREAM << "Connection with server was successfully established." << endl;
 
 	MRPT_END;
 }
@@ -165,14 +198,10 @@ void CRosTopicMP::initClient(mrpt::utils::CClientTCPSocket* cl) {
 ////////////////////////////////////////////////////////////////////////////////
 
 CRosTopicMP::TClientParams::TClientParams(provider_t& p):
-	provider(p)
-{
+	provider(p) {
 	MRPT_START;
 
-	msg_types["FORMAT 1"] = 1; /**< Transmit data in the 1st rawlog MRPT format */
-	msg_types["FORMAT 2"] = 2; /**< Transmit data in the 2nd rawlog MRPT format */
-	msg_types["EXIT"] = 99; /**< Code is returned when no more data is to be transmitted */
-
+	has_transmitted_valid_data = false;
 
 	MRPT_END;
 }
@@ -197,6 +226,11 @@ void CRosTopicMP::TClientParams::loadFromConfigFile(
 	server_port_no = source.read_int(section    , "tcp_server_port_no"    , 6800        , false);
 	client_timeout_ms = source.read_int(section , "tcp_client_timeout_ms" , 10000       , false);
 
+	// reading the possilble formats that an incoming message may have
+	msg_types["FORMAT_1"] = source.read_int(section , "MSG_TYPE_FORMAT_1" , 1  , false);
+	msg_types["FORMAT_2"] = source.read_int(section , "MSG_TYPE_FORMAT_2" , 2  , false);
+	msg_types["EXIT"] = source.read_int(section     , "MSG_TYPE_EXIT"     , 99 , false);
+
 	MRPT_END;
 }
 
@@ -210,6 +244,10 @@ void CRosTopicMP::TClientParams::getAsString(std::string* params_out) const {
 	ss << "Port No.                           : " << server_port_no << endl;
 	ss << "Server IP Address                  : " << server_addr.c_str() << endl;
 	ss << "Client Time to wait for connection : " << client_timeout_ms << endl;
+	ss << "Available message codes: " << endl;
+	ss << "\tMessage code for FORMAT #1: "               << msg_types.find("FORMAT_1")->second << endl;
+	ss << "\tMessage code for FORMAT #2: "               << msg_types.find("FORMAT_2")->second << endl;
+	ss << "\tMessage code for end of data transmission " << msg_types.find("EXIT")->second     << endl;
 
 	*params_out = ss.str();
 

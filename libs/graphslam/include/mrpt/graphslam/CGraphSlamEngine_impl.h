@@ -627,22 +627,24 @@ bool CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::execG
 
 		// ensure that the GT is visualized at the same rate as the SLAM procedure
 		// handle RGBD-TUM datasets manually. Advance the GT index accordingly
-		if (mrpt::system::strCmpI(m_GT_file_format, "rgbd_tum")) { // 1/loop
+		if (m_use_GT) {
+			if (mrpt::system::strCmpI(m_GT_file_format, "rgbd_tum")) { // 1/loop
 				this->updateGTVisualization(); // I have already taken care of the step
 				m_GT_poses_index += m_GT_poses_step;
-		}
-		else if (mrpt::system::strCmpI(m_GT_file_format, "navsimul")) {
-			if (m_observation_only_rawlog) { // 1/2loops
-				if (curr_rawlog_entry % 2 == 0) {
-					this->updateGTVisualization();
-					m_GT_poses_index += m_GT_poses_step;
-					MRPT_LOG_ERROR_STREAM << "observation_only_rawlog..." << std::endl;
-				}
 			}
-			else { // 1/loop
-				// get both action and observation at a single step - same rate as GT
-				this->updateGTVisualization(); 
-				m_GT_poses_index += m_GT_poses_step;
+			else if (mrpt::system::strCmpI(m_GT_file_format, "navsimul")) {
+				if (m_observation_only_rawlog) { // 1/2loops
+					if (curr_rawlog_entry % 2 == 0) {
+						this->updateGTVisualization();
+						m_GT_poses_index += m_GT_poses_step;
+						MRPT_LOG_ERROR_STREAM << "observation_only_rawlog..." << std::endl;
+					}
+				}
+				else { // 1/loop
+					// get both action and observation at a single step - same rate as GT
+					this->updateGTVisualization(); 
+					m_GT_poses_index += m_GT_poses_step;
+				}
 			}
 		}
 
@@ -836,7 +838,7 @@ void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::getPa
 
 	stringstream ss_out;
 
-	ss_out << "\n------------[ Graphslamm_engine Problem Parameters ]------------"
+	ss_out << "\n------------[ Graphslam_engine Problem Parameters ]------------"
 		<< std::endl;
 	ss_out << "Config filename                 = "
 		<< m_config_fname << std::endl;
