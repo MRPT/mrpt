@@ -14,9 +14,9 @@
 
 using namespace mrpt::math;
 
-LowPassFilter_IIR1::LowPassFilter_IIR1(double _alpha) :
+LowPassFilter_IIR1::LowPassFilter_IIR1(double _alpha, double y_k_minus_1) :
 	alpha(_alpha),
-	m_y_km1(.0)
+	m_y_km1(y_k_minus_1)
 {
 }
 
