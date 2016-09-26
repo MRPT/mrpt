@@ -15,6 +15,7 @@
 
 
 #include <mrpt/system/filesystem.h>
+#include <mrpt/system/threads.h>
 #include <mrpt/system/datetime.h>
 #include <mrpt/system/os.h>
 #include <mrpt/utils/CLoadableOptions.h>
@@ -24,6 +25,8 @@
 #include <mrpt/utils/CMessage.h>
 #include <mrpt/utils/CServerTCPSocket.h>
 #include <mrpt/utils/CClientTCPSocket.h>
+#include <mrpt/obs/CObservation.h>
+#include <mrpt/obs/CObservation2DRangeScan.h>
 
 #include <string>
 #include <sstream>
@@ -62,17 +65,17 @@ private:
 	bool run_online;
 	bool provider_ready;
 
-	mrpt::utils::CClientTCPSocket* client;
+	mrpt::utils::CClientTCPSocket* m_client;
 
 	/** Given a client object, initialize a connection to the remote part
 	 * based on the parameters of the TClientParams.
 	 */
 	void initClient(mrpt::utils::CClientTCPSocket* cl);
 
-	/**\brief Parameters structure for managing the relevant to the decider
+	/**\brief Parameters structure for managing the relevant to the client
 	 * variables in a compact manner
 	 */
-	struct TClientParams: public mrpt::utils::CLoadableOptions {
+	struct GRAPHSLAM_IMPEXP TClientParams: public mrpt::utils::CLoadableOptions {
 		public:
 			TClientParams(provider_t& p);
 			~TClientParams();
@@ -102,7 +105,13 @@ private:
 			/**\brief Types indicating the content of the MRPT class instance that
 			 * is contained in the message
 			 */
+			// TODO - have the exit codes defined in the .ini file
 			std::map<std::string, unsigned int> msg_types;
+
+			/**\brief Indicates whether client and server have communicated any valid
+			 * data until now.
+			 */
+			bool has_transmitted_valid_data;
 			
 
 	} client_params;
