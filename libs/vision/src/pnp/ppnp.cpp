@@ -23,7 +23,7 @@ mrpt::vision::pnp::ppnp::ppnp(const Eigen::MatrixXd& obj_pts, const Eigen::Matri
 	C = cam_intrinsic;
 }
 
-bool mrpt::vision::pnp::ppnp::compute_pose(Eigen::Matrix3d& R, Eigen::VectorXd& t, int n)
+bool mrpt::vision::pnp::ppnp::compute_pose(Eigen::Matrix3d& R, Eigen::Vector3d& t, int n)
 {
 	double tol=0.00001;
 	
