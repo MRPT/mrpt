@@ -34,7 +34,7 @@ namespace mrpt
                  * @param n Number of 2d/3d correspondences
                  * @return 
                  */
-                bool compute_pose(Eigen::Matrix3d& R, Eigen::VectorXd& t, int n);
+                bool compute_pose(Eigen::Matrix3d& R, Eigen::Vector3d& t, int n);
                 
                 private:
                 
