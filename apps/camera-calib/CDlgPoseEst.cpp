@@ -142,7 +142,7 @@ CDlgPoseEst::CDlgPoseEst(wxWindow* parent,wxWindowID id,const wxPoint& pos,const
 	FlexGridSizer7->AddGrowableRow(0);
 	StaticTextAlgo = new wxStaticText(this, ID_STATICTEXTALGO, _("Choose Algorithm"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXTALGO"));
 	FlexGridSizer7->Add(StaticTextAlgo, 1, wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
-	const char* ch_names[9] = {"epnp", "dls", "upnp", "p3p", "lhm", "posit", "ppnp", "rpnp", "so3"};
+	const wxString ch_names[] = { wxT("epnp"), wxT("dls"), wxT("upnp"), wxT("p3p"), wxT("lhm"), wxT("posit"), wxT("ppnp"), wxT("rpnp"), wxT("so3")};
 	wxArrayString ch_wx = wxArrayString(9, ch_names);
 	wxString ch_default("epnp");
 	pnpSelect = new wxChoice(this, ID_ALGOCHOICE, wxDefaultPosition, wxDefaultSize, ch_wx, 0, wxDefaultValidator, ch_default );
