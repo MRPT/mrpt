@@ -34,6 +34,13 @@ macro(internal_define_mrpt_lib name headers_only is_metalib)
 	IF(NOT ${is_metalib})
 		PROJECT(mrpt-${name})
 	ENDIF(NOT ${is_metalib})
+	
+	# Optional build-time plugin mechanism:
+	SET(mrpt-${name}_PLUGIN_FILE "" CACHE FILE "Optional CMake file defining additional sources for mrpt-${name}")
+	MARK_AS_ADVANCED(mrpt-${name}_PLUGIN_FILE)
+	IF (EXISTS "${mrpt-${name}_PLUGIN_FILE}")
+		INCLUDE("${mrpt-${name}_PLUGIN_FILE}")
+	ENDIF()
 
 	# There is an optional LISTS of extra sources from the caller:
 	#  "${name}_EXTRA_SRCS" and
