@@ -119,8 +119,7 @@ class CFixedIntervalsNRD:
 						const mrpt::utils::CConfigFileBase &source,
 						const std::string &section);
 				void 	dumpToTextStream(mrpt::utils::CStream &out) const;
-				/**
-				 * Return a string with the configuration parameters
+				/**\brief Return a string with the configuration parameters
 				 */
 				void getAsString(std::string* params_out) const;
 				std::string getAsString() const;

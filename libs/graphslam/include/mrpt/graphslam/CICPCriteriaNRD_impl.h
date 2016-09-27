@@ -31,6 +31,10 @@ void CICPCriteriaNRD<GRAPH_t>::initCICPCriteriaNRD() {
 	m_first_time_call3D = true;
 	m_is_using_3DScan = false;
 
+	m_use_angle_difference_node_reg = true;
+	m_use_distance_node_reg = true;
+
+
 	m_graph = NULL;
 
 	// Current node registration decider *decides* how many nodes are there

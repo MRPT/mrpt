@@ -8,7 +8,6 @@
    +---------------------------------------------------------------------------+ */
 
 #include "graphslam-precomp.h"  // Precompiled headers
-
 #include <mrpt/graphslam/CEdgeCounter.h>
 
 namespace mrpt { namespace graphslam {
