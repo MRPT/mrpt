@@ -144,7 +144,7 @@ CDlgPoseEst::CDlgPoseEst(wxWindow* parent,wxWindowID id,const wxPoint& pos,const
 	FlexGridSizer7->Add(StaticTextAlgo, 1, wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
 	const wxString ch_names[] = { wxT("epnp"), wxT("dls"), wxT("upnp"), wxT("p3p"), wxT("lhm"), wxT("posit"), wxT("ppnp"), wxT("rpnp"), wxT("so3")};
 	wxArrayString ch_wx = wxArrayString(9, ch_names);
-	wxString ch_default("epnp");
+	wxString ch_default(wxT("epnp"));
 	pnpSelect = new wxChoice(this, ID_ALGOCHOICE, wxDefaultPosition, wxDefaultSize, ch_wx, 0, wxDefaultValidator, ch_default );
 	FlexGridSizer7->Add(pnpSelect, 1, wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
 	pnpSelect->SetSelection(0);
