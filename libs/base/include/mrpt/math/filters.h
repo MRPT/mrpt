@@ -27,7 +27,7 @@ namespace mrpt
 		  */
 		struct BASE_IMPEXP LowPassFilter_IIR1
 		{
-			LowPassFilter_IIR1(double alpha = 0.5);
+			LowPassFilter_IIR1(double alpha = 0.5, double y_k_minus_1 = .0);
 			double filter(double x); //!< Processes one input sample, updates the filter state and return the filtered value.
 			double getLastOutput() const;
 			double alpha; //!< See equation in LowPassFilter_IIR1
