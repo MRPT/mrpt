@@ -20,7 +20,6 @@
 #include <string>
 #include <map>
 
-
 namespace mrpt { namespace graphslam {
 
 /**\brief Generic class for tracking the total number of edges for different

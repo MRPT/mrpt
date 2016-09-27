@@ -80,6 +80,8 @@ CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::~CGraphSla
 		delete m_win;
 		this->logStr(LVL_DEBUG, "Releasing CWindowObserver...");
 		delete m_win_observer;
+		this->logStr(LVL_DEBUG, "Releasing CMeasurementProvider ...");
+		delete m_provider;
 	}
 
 	// delete the CDisplayWindowPlots object
@@ -102,6 +104,7 @@ void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::initC
 	using namespace mrpt::utils;
 	using namespace mrpt::opengl;
 	using namespace std;
+	using namespace mrpt::graphslam::measurement_providers;
 
 	// logger instance properties
 	m_time_logger.setName(m_class_name);
@@ -149,7 +152,18 @@ void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::initC
 	m_edge_registrar.setCriticalSectionPtr(&m_graph_section);
 	m_optimizer.setCriticalSectionPtr(&m_graph_section);
 
+	// Decide where to read the measurements from
+	if (m_rawlog_fname.empty()) { // run in online mode
+		MRPT_LOG_INFO_STREAM << "Executing online graphSLAM";
+		m_provider = new CRosTopicMP();
+	}
+	else {
+		MRPT_LOG_INFO_STREAM << "Executing graphSLAM using rawlog files";
+		m_provider = new CRawlogMP();
+	}
+
 	// Calling of initialization-relevant functions
+	// [NOTE] loadParams methods are called from within this method
 	this->readConfigFile(m_config_fname);
 
 	this->initOutputDir();
@@ -159,13 +173,16 @@ void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::initC
 	m_node_registrar.printParams();
 	m_edge_registrar.printParams();
 	m_optimizer.printParams();
-
+	m_provider->printParams();
 
 	// pass the rawlog filename after the instance initialization
 	m_node_registrar.setRawlogFname(m_rawlog_fname);
 	m_edge_registrar.setRawlogFname(m_rawlog_fname);
 	m_optimizer.setRawlogFname(m_rawlog_fname);
 
+	if (!(m_provider->providerRunsOnline())) {
+		dynamic_cast<CRawlogMP*>(m_provider)->setRawlogFname(m_rawlog_fname);
+	}
 
 	m_use_GT = !m_fname_GT.empty();
 	if (m_use_GT) {
@@ -256,11 +273,11 @@ void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::initC
 	}
 
 	// keystrokes initialization
-	m_keystroke_pause_exec = "p";
-	m_keystroke_odometry = "o";
-	m_keystroke_GT = "g";
+	m_keystroke_pause_exec           = "p";
+	m_keystroke_odometry             = "o";
+	m_keystroke_GT                   = "g";
 	m_keystroke_estimated_trajectory = "t";
-	m_keystroke_map = "m";
+	m_keystroke_map                  = "m";
 
 	// Add additional keystrokes in the CDisplayWindow3D help textBox
 	if (m_enable_visuals) {
@@ -358,9 +375,8 @@ void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::initC
 }
 
 template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR, class OPTIMIZER>
-bool CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::parseRawlogFile() {
+bool CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::execGraphSlam() {
 	MRPT_START;
-	m_time_logger.enter("proc_time");
 
 	using namespace std;
 	using namespace mrpt;
@@ -369,15 +385,15 @@ bool CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::parse
 	using namespace mrpt::obs;
 	using namespace mrpt::opengl;
 	using namespace mrpt::system;
+	using namespace mrpt::graphslam::measurement_providers;
+
+	m_time_logger.enter("proc_time");
 
 	ASSERTMSG_(m_has_read_config,
 			format("\nConfig file is not read yet.\nExiting... \n"));
-	ASSERTMSG_(mrpt::system::fileExists(m_rawlog_fname),
-			format("\nRawlog file: %s was not found\n", m_rawlog_fname.c_str() ));
 	// good to go..
 
 	// Variables initialization
-	CFileGZInputStream rawlog_file(m_rawlog_fname);
 	CActionCollectionPtr action;
 	CSensoryFramePtr observations;
 	CObservationPtr observation;
@@ -389,8 +405,7 @@ bool CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::parse
 
 	// read first measurement independently
 	{
-		CRawlog::getActionObservationPairOrObservation(
-				rawlog_file,
+		m_provider->getActionObservationPairOrObservation(
 				action,
 				observations,
 				observation,
@@ -415,12 +430,12 @@ bool CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::parse
 	}
 
 	// Read the rest of the rawlog file
-	while (CRawlog::getActionObservationPairOrObservation(
-				rawlog_file,
+	while(m_provider->getActionObservationPairOrObservation(
 				action,
 				observations,
 				observation,
 				curr_rawlog_entry ) ) {
+
 
 		// node registration procedure
 		bool registered_new_node;
@@ -612,22 +627,24 @@ bool CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::parse
 
 		// ensure that the GT is visualized at the same rate as the SLAM procedure
 		// handle RGBD-TUM datasets manually. Advance the GT index accordingly
-		if (mrpt::system::strCmpI(m_GT_file_format, "rgbd_tum")) { // 1/loop
+		if (m_use_GT) {
+			if (mrpt::system::strCmpI(m_GT_file_format, "rgbd_tum")) { // 1/loop
 				this->updateGTVisualization(); // I have already taken care of the step
 				m_GT_poses_index += m_GT_poses_step;
-		}
-		else if (mrpt::system::strCmpI(m_GT_file_format, "navsimul")) {
-			if (m_observation_only_rawlog) { // 1/2loops
-				if (curr_rawlog_entry % 2 == 0) {
-					this->updateGTVisualization();
-					m_GT_poses_index += m_GT_poses_step;
-					MRPT_LOG_ERROR_STREAM << "observation_only_rawlog..." << std::endl;
-				}
 			}
-			else { // 1/loop
-				// get both action and observation at a single step - same rate as GT
-				this->updateGTVisualization(); 
-				m_GT_poses_index += m_GT_poses_step;
+			else if (mrpt::system::strCmpI(m_GT_file_format, "navsimul")) {
+				if (m_observation_only_rawlog) { // 1/2loops
+					if (curr_rawlog_entry % 2 == 0) {
+						this->updateGTVisualization();
+						m_GT_poses_index += m_GT_poses_step;
+						MRPT_LOG_ERROR_STREAM << "observation_only_rawlog..." << std::endl;
+					}
+				}
+				else { // 1/loop
+					// get both action and observation at a single step - same rate as GT
+					this->updateGTVisualization(); 
+					m_GT_poses_index += m_GT_poses_step;
+				}
 			}
 		}
 
@@ -651,19 +668,17 @@ bool CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::parse
 			this->logStr(LVL_INFO, "Halting execution... ");
 
 			// exiting actions
-			rawlog_file.close();
 			// change back the CImage path
 			if (mrpt::system::strCmpI(m_GT_file_format, "rgbd_tum")) {
 				CImage::IMAGES_PATH_BASE = m_img_prev_path_base;
 			}
 
 			m_time_logger.leave("proc_time");
-			return false; // exit the parseRawlogFile method
+			return false; // exit the execGraphSlam method
 		}
 		m_time_logger.leave("Visuals");
 
 	} // WHILE CRAWLOG FILE
-	rawlog_file.close();
 
 	//
 	// exiting actions
@@ -698,7 +713,7 @@ bool CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::parse
 	this->generateReportFiles();
 	return true; // function execution completed successfully
 	MRPT_END;
-} // END OF PARSERAWLOGFILE
+} // END OF EXECGRAPHSLAM
 
 template<class GRAPH_t, class NODE_REGISTRAR, class EDGE_REGISTRAR, class OPTIMIZER>
 void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::readConfigFile(
@@ -798,6 +813,8 @@ void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::readC
 	m_node_registrar.loadParams(m_config_fname);
 	m_edge_registrar.loadParams(m_config_fname);
 	m_optimizer.loadParams(m_config_fname);
+	m_provider->loadParams(m_config_fname);
+
 
 	m_has_read_config = true;
 	MRPT_END;
@@ -821,7 +838,7 @@ void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::getPa
 
 	stringstream ss_out;
 
-	ss_out << "\n------------[ Graphslamm_engine Problem Parameters ]------------"
+	ss_out << "\n------------[ Graphslam_engine Problem Parameters ]------------"
 		<< std::endl;
 	ss_out << "Config filename                 = "
 		<< m_config_fname << std::endl;
@@ -2155,12 +2172,16 @@ void CGraphSlamEngine<GRAPH_t, NODE_REGISTRAR, EDGE_REGISTRAR, OPTIMIZER>::compu
 	m_curr_deformation_energy = 0;
 
 	// first element of map
-	std::map<mrpt::utils::TNodeID, size_t>::const_iterator start_it =
-		std::next(m_nodeID_to_gt_indices.begin(), 1);
+	//std::map<mrpt::utils::TNodeID, size_t>::const_iterator start_it =
+		//std::next(m_nodeID_to_gt_indices.begin(), 1);
+	std::map<mrpt::utils::TNodeID, size_t>::const_iterator start_it = m_nodeID_to_gt_indices.begin();
+	start_it++;
 
 
 	// fetch the first node, gt positions separately
-	std::map<mrpt::utils::TNodeID, size_t>::const_iterator prev_it = std::prev(start_it, 1);
+	//std::map<mrpt::utils::TNodeID, size_t>::const_iterator prev_it = std::prev(start_it, 1);
+	std::map<mrpt::utils::TNodeID, size_t>::const_iterator prev_it = start_it;
+	prev_it--;
 	pose_t prev_node_pos = m_graph.nodes[prev_it->first];
 	pose_t prev_gt_pos = m_GT_poses[prev_it->second];
 
