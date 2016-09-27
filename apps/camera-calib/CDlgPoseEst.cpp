@@ -255,7 +255,7 @@ void CDlgPoseEst::OnbtnStartClick(wxCommandEvent& event)
 	}
 	else
 	{
-		int answer = wxMessageBox("Do calibration first and save camera parameters as intrinsic_matrix.txt", "Quit?", wxYES_NO | wxCANCEL);
+		int answer = wxMessageBox(wxT("Do calibration first and save camera parameters as intrinsic_matrix.txt"), wxT("Quit?"), wxYES_NO | wxCANCEL);
 
 		if (answer == wxYES)
 		EndModal(wxID_CANCEL);
