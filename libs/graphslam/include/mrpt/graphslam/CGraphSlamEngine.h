@@ -60,6 +60,9 @@
 #include "CMeasurementProvider.h"
 #include "CRawlogMP.h"
 #include "CRosTopicMP.h"
+#include "CNodeRegistrationDecider.h"
+#include "CEdgeRegistrationDecider.h"
+#include "CGraphSlamOptimizer.h"
 
 #include <cstdlib>
 #include <string>
@@ -81,6 +84,7 @@ namespace mrpt { namespace graphslam {
  * constraints (edges) and solve it to find an estimation of the actual robot
  * trajectory.
  *
+ * // TODO - chagne this description
  * The template arguments are listed below:
  * - \em GRAPH_t: The type of Graph to be constructed and optimized. Currently
  *   CGraphSlamEngine works only with CPosePDFGaussianInf GRAPH_t instances.
@@ -199,11 +203,7 @@ namespace mrpt { namespace graphslam {
  * \note Implementation can be found in the file \em CGraphSlamEngine_impl.h
  * \ingroup mrpt_graphslam_grp
  */
-template<
-		class GRAPH_t=typename mrpt::graphs::CNetworkOfPoses2DInf,
-		class NODE_REGISTRAR=typename mrpt::graphslam::deciders::CFixedIntervalsNRD<GRAPH_t>,
-		class EDGE_REGISTRAR=typename mrpt::graphslam::deciders::CICPCriteriaERD<GRAPH_t>,
-		class OPTIMIZER=typename mrpt::graphslam::optimizers::CLevMarqGSO<GRAPH_t> >
+template<class GRAPH_t=typename mrpt::graphs::CNetworkOfPoses2DInf>
 class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 	public:
 
@@ -242,10 +242,15 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		 * headless mode </em>. In this case, no visual feedback is given but
 		 * application receives a big boost in performance
 		 */
-		CGraphSlamEngine(const std::string& config_file,
+		CGraphSlamEngine(
+				const std::string& config_file,
 				const std::string rawlog_fname="",
 				const std::string fname_GT="",
-				bool enable_visuals=true);
+				bool enable_visuals=true,
+				mrpt::graphslam::deciders::CNodeRegistrationDecider<GRAPH_t>* node_reg=NULL,
+				mrpt::graphslam::deciders::CEdgeRegistrationDecider<GRAPH_t>* edge_reg=NULL,
+				mrpt::graphslam::optimizers::CGraphSlamOptimizer<GRAPH_t>* optimizer=NULL
+				);
 		/**\brief Default Destructor. */
 		~CGraphSlamEngine();
 
@@ -535,18 +540,25 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		/**\brief The graph object to be built and optimized. */
 		GRAPH_t m_graph;
 
+
+		mrpt::graphslam::measurement_providers::CMeasurementProvider* m_provider;
+
 		/** Decider/Optimizer instances. Delegating the GRAPH_t tasks to these classes
 		 * makes up for a modular and configurable design
 		 */
 		/**\{*/
-		NODE_REGISTRAR m_node_registrar;
-		EDGE_REGISTRAR m_edge_registrar;
-		OPTIMIZER m_optimizer;
+		mrpt::graphslam::deciders::CNodeRegistrationDecider<GRAPH_t>* m_node_registrar;
+		mrpt::graphslam::deciders::CEdgeRegistrationDecider<GRAPH_t>* m_edge_registrar;
+		mrpt::graphslam::optimizers::CGraphSlamOptimizer<GRAPH_t>* m_optimizer;
 		/**\}*/
 
-		mrpt::graphslam::measurement_providers::CMeasurementProvider* m_provider;
-
 		std::string	m_config_fname;
+
+
+		/**\brief Rawlog file from which to read the measurements.
+		 *
+		 * If string is empty, process is to be run online
+		 */
 		std::string	m_rawlog_fname;
 
 		std::string	m_fname_GT;
@@ -575,10 +587,10 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 
 		/**\name Visualization - related objects */
 		/**\{*/
-		mrpt::gui::CDisplayWindow3D* m_win; 
+		mrpt::gui::CDisplayWindow3D* m_win;
 		mrpt::graphslam::CWindowObserver* m_win_observer;
 		/**\brief DisplayPlots instance for visualizing the evolution of the SLAM metric */
-		mrpt::gui::CDisplayWindowPlots* m_win_plot;	 
+		mrpt::gui::CDisplayWindowPlots* m_win_plot;
 		mrpt::graphslam::CWindowManager m_win_manager;
 		/**\}*/
 

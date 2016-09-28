@@ -108,8 +108,25 @@ struct TOptimizerProps {
 };
 vector<TOptimizerProps*> optimizers_vec;
 
+// functions for initializing decider/optimizer instances based on the user
+// command line choices
+// http://stackoverflow.com/a/582456/2843583
+// ////////////////////////////////////////////////////////////
+template<typename T>
+mrpt::graphslam::deciders::CNodeRegistrationDecider<CNetworkOfPoses2DInf>* createNodeRegistrationDecider() {
+	return new T;
+}
+template<typename T>
+mrpt::graphslam::deciders::CEdgeRegistrationDecider<CNetworkOfPoses2DInf>* createEdgeRegistrationDecider() {
+	return new T;
+}
+template<typename T>
+mrpt::graphslam::optimizers::CGraphSlamOptimizer<CNetworkOfPoses2DInf>* createGraphSlamOptimizer() {
+	return new T;
+}
 
-// Used Functions
+
+// Misc. used functions
 // ////////////////////////////////////////////////////////////
 void dumpRegistrarsToConsole(string reg_type);
 bool checkRegistrationDeciderExists(string node_reg, string reg_type);
@@ -148,6 +165,15 @@ int main(int argc, char **argv)
 
 			deciders_vec.push_back(dec);
 		}
+		{ // CEmptyNRD
+			TRegistrationDeciderProps* dec = new TRegistrationDeciderProps;
+			dec->name = "CEmptyNRD";
+			dec->description = "Empty Decider - does nothing when its class methods are called";
+			dec->type = "Node";
+			dec->rawlog_format = "Both";
+
+			deciders_vec.push_back(dec);
+		}
 		{ // CICPCriteriaERD
 			TRegistrationDeciderProps* dec = new TRegistrationDeciderProps;
 			dec->name = "CICPCriteriaERD";
@@ -156,15 +182,6 @@ int main(int argc, char **argv)
 			dec->rawlog_format = "Both";
 			dec->observations_used.push_back("CObservation2DRangeScan - Format #1, #2");
 			dec->observations_used.push_back("CObservation3DRangeScan - Format #2");
-
-			deciders_vec.push_back(dec);
-		}
-		{ // CEmptyNRD
-			TRegistrationDeciderProps* dec = new TRegistrationDeciderProps;
-			dec->name = "CEmptyNRD";
-			dec->description = "Empty Decider - does nothing when its class methods are called";
-			dec->type = "Node";
-			dec->rawlog_format = "Both";
 
 			deciders_vec.push_back(dec);
 		}
@@ -189,7 +206,7 @@ int main(int argc, char **argv)
 		}
 
 		// registering the available optimizers
-		{
+		{ // CLevMarqGSO
 			TOptimizerProps* opt = new TOptimizerProps;
 			opt->name = "CLevMarqGSO";
 			opt->description = "Levenberg-Marqurdt non-linear graphSLAM solver";
@@ -265,165 +282,50 @@ int main(int argc, char **argv)
 			logger.logStr(LVL_WARN, "Running on headless mode - Visuals disabled");
 		}
 
-		////////////////////////////////////////////////////////////////////////
-		// take all the different combinations of node / edge registration deciders
-		// one-by-one.
+		//
+		// assemble maps of available deciders/optimizers
+		//
+
+		// node registration deciders
+		typedef std::map<std::string, CNodeRegistrationDecider<CNetworkOfPoses2DInf>*(*)()> node_regs_t;
+
+		node_regs_t node_regs_map;
+		node_regs_map["CFixedIntervalsNRD"] = &createNodeRegistrationDecider<CFixedIntervalsNRD<CNetworkOfPoses2DInf> >;
+		node_regs_map["CEmptyNRD"] = &createNodeRegistrationDecider<CEmptyNRD<CNetworkOfPoses2DInf> >;
+		node_regs_map["CICPCriteriaNRD"] = &createNodeRegistrationDecider<CICPCriteriaNRD<CNetworkOfPoses2DInf> >;
+
+		// edge registration deciders
+		typedef std::map<std::string, CEdgeRegistrationDecider<CNetworkOfPoses2DInf>*(*)()> edge_regs_t;
+
+		edge_regs_t edge_regs_map;
+		edge_regs_map["CICPCriteriaERD"] = &createEdgeRegistrationDecider<CICPCriteriaERD<CNetworkOfPoses2DInf> >;
+		edge_regs_map["CEmptyERD"] = &createEdgeRegistrationDecider<CEmptyERD<CNetworkOfPoses2DInf> >;
+		edge_regs_map["CLoopCloserERD"] = &createEdgeRegistrationDecider<CLoopCloserERD<CNetworkOfPoses2DInf> >;
+
+		// optimizers
+		typedef std::map<std::string, CGraphSlamOptimizer<CNetworkOfPoses2DInf>*(*)()> optimizers_t;
+
+		optimizers_t optimizers_map;
+		optimizers_map["CLevMarqGSO"] = &createGraphSlamOptimizer<CLevMarqGSO<CNetworkOfPoses2DInf> >;
+
+
 		logger.logStr(LVL_INFO, format("Node registration decider: %s", node_reg.c_str()));
 		logger.logStr(LVL_INFO, format("Edge registration decider: %s", edge_reg.c_str()));
-		if (system::strCmpI(node_reg, "CFixedIntervalsNRD")) {
-			if (system::strCmpI(edge_reg, "CICPCriteriaERD")) { // CFixedIntervalsNRD - CICPCriteriaERD
-				// Initialize the CGraphSlamEngine class
-				CGraphSlamEngine
-					<
-					CNetworkOfPoses2DInf,
-					CFixedIntervalsNRD<CNetworkOfPoses2DInf>,
-					CICPCriteriaERD<CNetworkOfPoses2DInf>,
-					CLevMarqGSO<CNetworkOfPoses2DInf>
-					>
-					graph_engine(
-							ini_fname,
-							rawlog_fname,
-							ground_truth_fname,
-							!disable_visuals.getValue());
-				graph_engine.execGraphSlam();
-			}
-			else if (system::strCmpI(edge_reg, "CLoopCloserERD")) { // CFixedIntervalsNRD - CICPCriteriaERD
-				// Initialize the CGraphSlamEngine class
-				CGraphSlamEngine
-					<
-					CNetworkOfPoses2DInf,
-					CFixedIntervalsNRD<CNetworkOfPoses2DInf>,
-					CLoopCloserERD<CNetworkOfPoses2DInf>,
-					CLevMarqGSO<CNetworkOfPoses2DInf>
-					>
-					graph_engine(
-							ini_fname,
-							rawlog_fname,
-							ground_truth_fname,
-							!disable_visuals.getValue());
-				graph_engine.execGraphSlam();
-			}
-			else if (system::strCmpI(edge_reg, "CEmptyERD")) { // CFixedIntervalsNRD - CEmptyERD
-				// Initialize the CGraphSlamEngine class
-				CGraphSlamEngine
-					<
-					CNetworkOfPoses2DInf,
-					CFixedIntervalsNRD<CNetworkOfPoses2DInf>,
-					CEmptyERD<CNetworkOfPoses2DInf>,
-					CLevMarqGSO<CNetworkOfPoses2DInf>
-					>
-					graph_engine(
-							ini_fname,
-							rawlog_fname,
-							ground_truth_fname,
-							!disable_visuals.getValue());
-				graph_engine.execGraphSlam();
-			}
+		logger.logStr(LVL_INFO, format("graphSLAM Optimizer: %s", optimizer.c_str()));
 
-		}
-		if (system::strCmpI(node_reg, "CEmptyNRD")) {
-			if (system::strCmpI(edge_reg, "CICPCriteriaERD")) { // CEmptyNRD - CICPCriteriaERD
-				// Initialize the CGraphSlamEngine class
-				CGraphSlamEngine
-					<
-					CNetworkOfPoses2DInf,
-					CEmptyNRD<CNetworkOfPoses2DInf>,
-					CICPCriteriaERD<CNetworkOfPoses2DInf>,
-					CLevMarqGSO<CNetworkOfPoses2DInf>
-					>
-					graph_engine(
-							ini_fname,
-							rawlog_fname,
-							ground_truth_fname,
-							!disable_visuals.getValue());
-				graph_engine.execGraphSlam();
-			}
-			else if (system::strCmpI(edge_reg, "CLoopCloserERD")) { // CFixedIntervalsNRD - CICPCriteriaERD
-				// Initialize the CGraphSlamEngine class
-				CGraphSlamEngine
-					<
-					CNetworkOfPoses2DInf,
-					CFixedIntervalsNRD<CNetworkOfPoses2DInf>,
-					CLoopCloserERD<CNetworkOfPoses2DInf>,
-					CLevMarqGSO<CNetworkOfPoses2DInf>
-					>
-					graph_engine(
-							ini_fname,
-							rawlog_fname,
-							ground_truth_fname,
-							!disable_visuals.getValue());
-				graph_engine.execGraphSlam();
-			}
-			else if (system::strCmpI(edge_reg, "CEmptyERD")) { // CEmtpyNRD - CEmptyERD
-				// Initialize the CGraphSlamEngine class
-				CGraphSlamEngine
-					<
-					CNetworkOfPoses2DInf,
-					CEmptyNRD<CNetworkOfPoses2DInf>,
-					CEmptyERD<CNetworkOfPoses2DInf>,
-					CLevMarqGSO<CNetworkOfPoses2DInf>
-					>
-					graph_engine(
-							ini_fname,
-							rawlog_fname,
-							ground_truth_fname,
-							!disable_visuals.getValue());
-				graph_engine.execGraphSlam();
-			}
+		CGraphSlamEngine<CNetworkOfPoses2DInf>
+			graphslam_engine(
+					ini_fname,
+					rawlog_fname,
+					ground_truth_fname,
+					!disable_visuals.getValue(),
+					node_regs_map[node_reg](),
+					edge_regs_map[edge_reg](),
+					optimizers_map[optimizer]());
 
-		}
-		else if (system::strCmpI(node_reg, "CICPCriteriaNRD")) {
-			if (system::strCmpI(edge_reg, "CICPCriteriaERD")) { // CICPGooodnessNRD - CICPCriteriaERD
-				// Initialize the CGraphSlamEngine class
-				CGraphSlamEngine
-					<
-					CNetworkOfPoses2DInf,
-					CICPCriteriaNRD<CNetworkOfPoses2DInf>,
-					CICPCriteriaERD<CNetworkOfPoses2DInf>,
-					CLevMarqGSO<CNetworkOfPoses2DInf>
-					>
-					graph_engine(
-							ini_fname,
-							rawlog_fname,
-							ground_truth_fname,
-							!disable_visuals.getValue());
-				graph_engine.execGraphSlam();
-			}
-			else if (system::strCmpI(edge_reg, "CLoopCloserERD")) { // CFixedIntervalsNRD - CICPCriteriaERD
-				// Initialize the CGraphSlamEngine class
-				CGraphSlamEngine
-					<
-					CNetworkOfPoses2DInf,
-					CFixedIntervalsNRD<CNetworkOfPoses2DInf>,
-					CLoopCloserERD<CNetworkOfPoses2DInf>,
-					CLevMarqGSO<CNetworkOfPoses2DInf>
-					>
-					graph_engine(
-							ini_fname,
-							rawlog_fname,
-							ground_truth_fname,
-							!disable_visuals.getValue());
-				graph_engine.execGraphSlam();
-			}
-			else if (system::strCmpI(edge_reg, "CEmptyERD")) { // CICPGooodnessNRD - CEmptyERD
+		// actual call to the graphSLAM execution method
+		graphslam_engine.execGraphSlam();
 
-				// Initialize the CGraphSlamEngine class
-				CGraphSlamEngine
-					<
-					CNetworkOfPoses2DInf,
-					CICPCriteriaNRD<CNetworkOfPoses2DInf>,
-					CEmptyERD<CNetworkOfPoses2DInf>,
-					CLevMarqGSO<CNetworkOfPoses2DInf>
-					>
-					graph_engine(
-							ini_fname,
-							rawlog_fname,
-							ground_truth_fname,
-							!disable_visuals.getValue());
-				graph_engine.execGraphSlam();
-			}
-
-		}
 		////////////////////////////////////////////////////////////////////////
 
 	}
