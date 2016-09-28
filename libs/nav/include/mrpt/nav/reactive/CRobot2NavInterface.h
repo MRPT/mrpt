@@ -60,27 +60,32 @@ namespace mrpt
 		/** Sends a velocity command to the robot.
 		 * The number components in each command depends on children classes of mrpt::kinematics::CVehicleVelCmd.
 		 * One robot may accept one or more different CVehicleVelCmd classes.
+		 * This method resets the watchdog timer (that may be or may be not implemented in a particular robotic platform) started with startWatchdog()
 		 * \return false on any error.
+		 * \sa startWatchdog
 		 */
 		virtual bool changeSpeeds(const mrpt::kinematics::CVehicleVelCmd &vel_cmd) = 0;
+
+		/** Just like changeSpeeds(), but will be called when the last velocity command is still the preferred solution, 
+		  * so there is no need to change that past command. The unique effect of this callback would be resetting the watchdog timer. 
+		  * \sa changeSpeeds(), startWatchdog() */
+		virtual void changeSpeedsNOP() { std::cout << "[changeSpeedsNOP] Not implemented by the user." << std::endl; }
 
 		/** Stop the robot right now.
 		 * \return false on any error.
 		 */
 		virtual bool stop() = 0;
 
-		/** Start the watchdog timer of the robot platform, if any.
+		/** Start the watchdog timer of the robot platform, if any, for maximum expected delay between consecutive calls to changeSpeeds().
 		 * \param T_ms Period, in ms.
-		 * \return false on any error.
-		 */
+		 * \return false on any error. */
 		virtual bool startWatchdog(float T_ms) {
 			MRPT_UNUSED_PARAM(T_ms);
 			return true;
 		}
 
 		/** Stop the watchdog timer.
-		 * \return false on any error.
-		 */
+		 * \return false on any error. \sa startWatchdog */
 		virtual bool stopWatchdog() { return true; }
 
 		/** Return the current set of obstacle points, as seen from the local coordinate frame of the robot.
