@@ -68,8 +68,9 @@ namespace mrpt
 
 		/** Just like changeSpeeds(), but will be called when the last velocity command is still the preferred solution, 
 		  * so there is no need to change that past command. The unique effect of this callback would be resetting the watchdog timer. 
+		  * \return false on any error.
 		  * \sa changeSpeeds(), startWatchdog() */
-		virtual void changeSpeedsNOP() { std::cout << "[changeSpeedsNOP] Not implemented by the user." << std::endl; }
+		virtual bool changeSpeedsNOP() { std::cout << "[changeSpeedsNOP] Not implemented by the user." << std::endl; return true; }
 
 		/** Stop the robot right now.
 		 * \return false on any error.
