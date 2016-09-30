@@ -217,7 +217,6 @@ namespace mrpt
 		/** Generates a pointcloud of obstacles, and the robot shape, to be saved in the logging record for the current timestep */
 		virtual void loggingGetWSObstaclesAndShape(CLogFileRecord &out_log) = 0;
 
-
 		/** Scores \a holonomicMovement */
 		void STEP5_PTGEvaluator(
 			THolonomicMovement         & holonomicMovement,
@@ -228,9 +227,8 @@ namespace mrpt
 
 		virtual void STEP7_GenerateSpeedCommands(const THolonomicMovement &in_movement);
 
-
 		void preDestructor(); //!< To be called during children destructors to assure thread-safe destruction, and free of shared objects.
-
+		virtual void onStartNewNavigation() MRPT_OVERRIDE;
 
 	private:
 		bool m_closing_navigator; //!< Signal that the destructor has been called, so no more calls are accepted from other threads
@@ -251,6 +249,18 @@ namespace mrpt
 		void deleteHolonomicObjects(); //!< Delete m_holonomicMethod
 		static void robotPoseExtrapolateIncrement(const mrpt::math::TTwist2D & globalVel, const double time_offset, mrpt::poses::CPose2D & out_pose);
 
+		struct TSentVelCmd
+		{
+			int ptg_index; //!< 0-based index of used PTG
+			int ptg_alpha; //!< Path index for selected PTG
+			mrpt::system::TTimeStamp tim_send_cmd_vel, tim_poseVel; //!< Timestamp of when the cmd was sent, and when the robot pose was queried in that iteration.
+
+			bool isValid() const;
+			void reset();
+			TSentVelCmd();
+		};
+
+		TSentVelCmd m_lastSentVelCmd;
 
 	}; // end of CAbstractPTGBasedReactive
   }

@@ -648,3 +648,8 @@ mrpt::kinematics::CVehicleVelCmdPtr CPTG_Holo_Blend::getSupportedKinematicVeloci
 {
 	return mrpt::kinematics::CVehicleVelCmdPtr(new mrpt::kinematics::CVehicleVelCmd_Holo());
 }
+
+bool CPTG_Holo_Blend::supportVelCmdNOP() const
+{
+	return true;
+}
