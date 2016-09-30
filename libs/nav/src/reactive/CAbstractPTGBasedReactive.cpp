@@ -253,13 +253,13 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 
 		// Compute target location relative to current robot pose:
 		// ---------------------------------------------------------------------
-		const CPose2D relTarget = CPose2D(m_navigationParams->target) - CPose2D(m_curPose);
+		const CPose2D relTarget = CPose2D(m_navigationParams->target) - CPose2D(m_curPoseVel.pose);
 
 		STEP1_InitPTGs(); // Will only recompute if "m_PTGsMustBeReInitialized==true"
 
 		// Update kinematic state in all PTGs:
 		for (size_t i=0;i<nPTGs;i++)
-			getPTG(i)->updateCurrentRobotVel(m_curVelLocal);
+			getPTG(i)->updateCurrentRobotVel(m_curPoseVel.velLocal);
 
 		// STEP2: Load the obstacles and sort them in height bands.
 		// -----------------------------------------------------------------------------
@@ -294,7 +294,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 		newLogRec.values["timoff_obstacles_avr"] = timoff_obstacles_avr.getLastOutput();
 		newLogRec.timestamps["obstacles"] = m_WS_Obstacles_timestamp;
 
-		const double timoff_curPoseVelAge = mrpt::system::timeDifference(tim_start_iteration, m_curPoseVelTimestamp);
+		const double timoff_curPoseVelAge = mrpt::system::timeDifference(tim_start_iteration, m_curPoseVel.timestamp);
 		timoff_curPoseAndSpeed_avr.filter(timoff_curPoseVelAge);
 		newLogRec.values["timoff_curPoseVelAge"] = timoff_curPoseVelAge;
 		newLogRec.values["timoff_curPoseVelAge_avr"] = timoff_curPoseAndSpeed_avr.getLastOutput();
@@ -310,8 +310,8 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 
 		// Path extrapolation: robot relative poses along current path estimation:
 		CPose2D relPoseSense, relPoseVelCmd;
-		robotPoseExtrapolateIncrement(m_curVel, timoff_pose2sense, relPoseSense);
-		robotPoseExtrapolateIncrement(m_curVel, timoff_pose2VelCmd, relPoseVelCmd);
+		robotPoseExtrapolateIncrement(m_curPoseVel.vel, timoff_pose2sense, relPoseSense);
+		robotPoseExtrapolateIncrement(m_curPoseVel.vel, timoff_pose2VelCmd, relPoseVelCmd);
 		const CPose2D rel_pose_PTG_origin_wrt_sense = relPoseVelCmd - relPoseSense;
 
 		// Start timer
@@ -555,22 +555,22 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 
 			this->loggingGetWSObstaclesAndShape(newLogRec);
 
-			newLogRec.robotOdometryPose   = m_curPose;
+			newLogRec.robotOdometryPose   = m_curPoseVel.pose;
 			newLogRec.relPoseSense        = relPoseSense;
 			newLogRec.relPoseVelCmd       = relPoseVelCmd;
 			newLogRec.WS_target_relative  = TPoint2D(relTarget.x(), relTarget.y());
 			newLogRec.cmd_vel             = m_new_vel_cmd;
 			newLogRec.cmd_vel_original    = m_cmd_vel_original;
 			newLogRec.nSelectedPTG        = nSelectedPTG;
-			newLogRec.cur_vel             = m_curVel;
-			newLogRec.cur_vel_local       = m_curVelLocal;
+			newLogRec.cur_vel             = m_curPoseVel.vel;
+			newLogRec.cur_vel_local       = m_curPoseVel.velLocal;
 			newLogRec.values["estimatedExecutionPeriod"] = meanExecutionPeriod.getLastOutput();
 			newLogRec.values["executionTime"] = executionTimeValue;
 			newLogRec.values["executionTime_avr"] = meanExecutionTime.getLastOutput();
 			newLogRec.values["time_changeSpeeds()"] = tim_changeSpeed;
 			newLogRec.values["time_changeSpeeds()_avr"] = tim_changeSpeed_avr.getLastOutput();
 			newLogRec.timestamps["tim_start_iteration"] = tim_start_iteration;
-			newLogRec.timestamps["curPoseAndVel"] = m_curPoseVelTimestamp;
+			newLogRec.timestamps["curPoseAndVel"] = m_curPoseVel.timestamp;
 			newLogRec.nPTGs = nPTGs;
 
 			m_timelogger.leave("navigationStep.populate_log_info");

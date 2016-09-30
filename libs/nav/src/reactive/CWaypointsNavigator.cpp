@@ -93,8 +93,8 @@ void CWaypointsNavigator::navigationStep()
 		const int prev_wp_index = wps.waypoint_index_current_goal;
 
 		mrpt::math::TSegment2D robot_move_seg;
-		robot_move_seg.point1.x = m_curPose.x;
-		robot_move_seg.point1.y = m_curPose.y;
+		robot_move_seg.point1.x = m_curPoseVel.pose.x;
+		robot_move_seg.point1.y = m_curPoseVel.pose.y;
 		if (wps.last_robot_pose.x==TWaypoint::INVALID_NUM) 
 		{
 			robot_move_seg.point2 = robot_move_seg.point1;
@@ -104,7 +104,7 @@ void CWaypointsNavigator::navigationStep()
 			robot_move_seg.point2.x = wps.last_robot_pose.x;
 			robot_move_seg.point2.y = wps.last_robot_pose.y;
 		}
-		wps.last_robot_pose = m_curPose; // save for next iters
+		wps.last_robot_pose = m_curPoseVel.pose; // save for next iters
 
 		if (wps.waypoint_index_current_goal>=0 && 
 			robot_move_seg.distance( wps.waypoints[wps.waypoint_index_current_goal].target ) < wps.waypoints[wps.waypoint_index_current_goal].allowed_distance )
@@ -125,7 +125,7 @@ void CWaypointsNavigator::navigationStep()
 		//     which is the best candidate for the next waypoint, if we can skip current one:
 		if (!wps.final_goal_reached)
 		{
-			const mrpt::poses::CPose2D robot_pose(m_curPose);
+			const mrpt::poses::CPose2D robot_pose(m_curPoseVel.pose);
 			int most_advanced_wp = wps.waypoint_index_current_goal;
 			const int most_advanced_wp_at_begin = most_advanced_wp;
 
