@@ -35,6 +35,11 @@ void CParameterizedTrajectoryGenerator::loadDefaultParams()
 	m_score_priority = 1.0;
 }
 
+bool CParameterizedTrajectoryGenerator::supportVelCmdNOP() const 
+{
+	return false; 
+}
+
 void CParameterizedTrajectoryGenerator::loadFromConfigFile(const mrpt::utils::CConfigFileBase &cfg,const std::string &sSection)
 {
 	MRPT_LOAD_HERE_CONFIG_VAR_NO_DEFAULT(num_paths   , uint64_t, m_alphaValuesCount, cfg,sSection);

@@ -145,6 +145,11 @@ namespace nav
 		  * exclusively for the PTG-configurator tool. */
 		virtual void loadDefaultParams();
 
+		/** Returns true if it is possible to stop sending velocity commands to the robot and, still, the 
+		  * robot controller will be able to keep following the last sent trajectory ("NOP" velocity commands). 
+		  * Default implementation returns "false". */
+		virtual bool supportVelCmdNOP() const;
+
 		/** @} */  // --- end of virtual methods
 
 		static std::string OUTPUT_DEBUG_PATH_PREFIX; //!< The path used as defaul output in, for example, debugDumpInFiles. (Default="./reactivenav.logs/")

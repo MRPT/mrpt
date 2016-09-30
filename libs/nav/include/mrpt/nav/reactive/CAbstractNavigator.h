@@ -109,6 +109,9 @@ namespace mrpt
 		/** To be implemented in derived classes */
 		virtual void  performNavigationStep( )=0;
 
+		/** Called whenever a new navigation has been started. Can be used to reset state variables, etc. */
+		virtual void onStartNewNavigation() = 0; 
+
 		/** Call to the robot getCurrentPoseAndSpeeds() and updates members m_curPose,m_curVel and m_curVelLocal accordingly. */
 		void updateCurrentPoseAndSpeeds(bool update_seq_latest_poses = true);
 

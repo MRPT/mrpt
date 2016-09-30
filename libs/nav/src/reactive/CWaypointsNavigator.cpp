@@ -193,3 +193,8 @@ void CWaypointsNavigator::loadWaypointsParamsConfigFile(const mrpt::utils::CConf
 {
 	MRPT_LOAD_CONFIG_VAR(MAX_DISTANCE_TO_ALLOW_SKIP_WAYPOINT, double,   cfg, sectionName);
 }
+
+void CWaypointsNavigator::onStartNewNavigation()
+{
+
+}
