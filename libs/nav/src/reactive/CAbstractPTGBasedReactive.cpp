@@ -271,6 +271,12 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 			return;
 		}
 
+		// ------- start of motion decision zone ---------
+		executionTime.Tic();
+
+		// Round #1: As usual, pure reactive, evaluate all PTGs and all directions from scratch.
+		// =========
+
 		/*
 		*                                          Delays model
 		*
@@ -313,9 +319,6 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 		robotPoseExtrapolateIncrement(m_curPoseVel.vel, timoff_pose2sense, relPoseSense);
 		robotPoseExtrapolateIncrement(m_curPoseVel.vel, timoff_pose2VelCmd, relPoseVelCmd);
 		const CPose2D rel_pose_PTG_origin_wrt_sense = relPoseVelCmd - relPoseSense;
-
-		// Start timer
-		executionTime.Tic();
 
 		m_infoPerPTG.resize(nPTGs);
 		m_infoPerPTG_timestamp = tim_start_iteration;
@@ -467,6 +470,18 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 		} // end for each PTG
 
 
+		// Round #2: Evaluate dont sending any new velocity command ("NOP" motion)
+		// =========
+		// This approach is only possible if:
+		const bool can_do_nop_motion = (m_lastSentVelCmd.isValid() &&
+			getPTG(m_lastSentVelCmd.ptg_index)->supportVelCmdNOP());
+
+		if (can_do_nop_motion)
+		{
+			MRPT_TODO("Implement");
+		} //end can_do_NOP_motion
+
+
 		// STEP6: After all PTGs have been evaluated, pick the best scored:
 		// ---------------------------------------------------------------------
 		int nSelectedPTG = 0;
@@ -487,7 +502,6 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 		// ---------------------------------------------------------------------
 		//				SEND MOVEMENT COMMAND TO THE ROBOT
 		// ---------------------------------------------------------------------
-		// All equal to 0 means "stop".
 		ASSERT_(m_new_vel_cmd);
 		if (m_new_vel_cmd->isStopCmd()) {
 			m_robot.stop();
@@ -505,13 +519,21 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 					return;
 				}
 			}
+			// Save last sent cmd:
+			m_lastSentVelCmd.ptg_index = nSelectedPTG;
+			m_lastSentVelCmd.ptg_alpha = selectedHolonomicMovement.PTG->alpha2index(selectedHolonomicMovement.direction);
+			m_lastSentVelCmd.tim_poseVel = m_curPoseVel.timestamp;
+			m_lastSentVelCmd.tim_send_cmd_vel = tim_send_cmd_vel;
+
 			// Update delay model:
 			const double timoff_sendVelCmd = mrpt::system::timeDifference(tim_start_iteration, tim_send_cmd_vel);
 			timoff_sendVelCmd_avr.filter(timoff_sendVelCmd);
 			newLogRec.values["timoff_sendVelCmd"] = timoff_sendVelCmd;
 			newLogRec.values["timoff_sendVelCmd_avr"] = timoff_sendVelCmd_avr.getLastOutput();
-
 		}
+
+		// ------- end of motion decision zone ---------
+
 
 		// Statistics:
 		// ----------------------------------------------------
@@ -522,14 +544,9 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 		const double tim_changeSpeed = m_timlog_delays.getLastTime("changeSpeeds()");
 		tim_changeSpeed_avr.filter(tim_changeSpeed);
 
-
-		// Average delay between sensing 
-		//newLogRec.timestamps["tim_send_cmd_vel"] = mrpt::system::now();
-
 		// Running period estim:
 		meanExecutionPeriod.filter( timerForExecutionPeriod.Tac());
 		timerForExecutionPeriod.Tic();
-
 
 		if (m_enableConsoleOutput)
 		{
@@ -853,5 +870,26 @@ void CAbstractPTGBasedReactive::robotPoseExtrapolateIncrement(const mrpt::math::
 	out_pose.x(globalVel.vx * time_offset);
 	out_pose.y(globalVel.vy * time_offset);
 	out_pose.phi( globalVel.omega * time_offset );
+}
+
+void CAbstractPTGBasedReactive::onStartNewNavigation()
+{
+	m_lastSentVelCmd.reset();
+}
+
+CAbstractPTGBasedReactive::TSentVelCmd::TSentVelCmd()
+{
+	reset();
+}
+void CAbstractPTGBasedReactive::TSentVelCmd::reset()
+{
+	ptg_index = -1;
+	ptg_alpha = -1;
+	tim_send_cmd_vel = INVALID_TIMESTAMP;
+	tim_poseVel = INVALID_TIMESTAMP;
+}
+bool CAbstractPTGBasedReactive::TSentVelCmd::isValid() const
+{
+	return tim_poseVel != INVALID_TIMESTAMP;
 }
 
