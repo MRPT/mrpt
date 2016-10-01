@@ -47,6 +47,7 @@
 			- Removed support for **named** semaphores in mrpt::synch::CSemaphore
 			- new method mrpt::utils::CTimeLogger::getLastTime()
 			- Removed mrpt::utils::CStartUpClassesRegister, replaced by the new macro MRPT_INITIALIZER()
+			- New class mrpt::utils::CRateTimer
 		- \ref mrpt_bayes_grp
 			-  [API change] `verbose` is no longer a field of mrpt::bayes::CParticleFilter::TParticleFilterOptions. Use the setVerbosityLevel() method of the CParticleFilter class itself.
 		- \ref mrpt_gui_grp
