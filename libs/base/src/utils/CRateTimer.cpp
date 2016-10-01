@@ -10,6 +10,7 @@
 #include "base-precomp.h"  // Precompiled headers
 
 #include <mrpt/utils/CRateTimer.h>
+#include <mrpt/utils/mrpt_macros.h>
 #include <chrono>
 #include <thread>
 
