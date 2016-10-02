@@ -1111,16 +1111,6 @@ void CLoopCloserERD<GRAPH_t>::setGraphPtr(GRAPH_t* graph) {
 	MRPT_END;
 }
 template<class GRAPH_t>
-void CLoopCloserERD<GRAPH_t>::setRawlogFname(const std::string& rawlog_fname){
-	MRPT_START;
-
-	m_rawlog_fname = rawlog_fname;
-	this->logFmt(mrpt::utils::LVL_DEBUG, "Fetched the rawlog filename successfully: %s",
-			m_rawlog_fname.c_str());
-
-	MRPT_END;
-}
-template<class GRAPH_t>
 void CLoopCloserERD<GRAPH_t>::setWindowManagerPtr(
 		mrpt::graphslam::CWindowManager* win_manager) {
 	m_win_manager = win_manager;

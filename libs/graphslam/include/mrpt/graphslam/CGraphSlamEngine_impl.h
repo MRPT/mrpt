@@ -46,6 +46,7 @@ CGraphSlamEngine<GRAPH_t>::CGraphSlamEngine(
 };
 
 template<class GRAPH_t>
+
 CGraphSlamEngine<GRAPH_t>::~CGraphSlamEngine() {
 	MRPT_START;
 	using namespace mrpt::utils;
@@ -88,6 +89,7 @@ CGraphSlamEngine<GRAPH_t>::~CGraphSlamEngine() {
 		this->logStr(LVL_DEBUG, "Releasing CWindowObserver...");
 		delete m_win_observer;
 		this->logStr(LVL_DEBUG, "Releasing CMeasurementProvider ...");
+		// TODO - remove this
 		delete m_provider;
 	}
 
@@ -132,7 +134,7 @@ void CGraphSlamEngine<GRAPH_t>::initCGraphSlamEngine() {
 	m_win_plot = NULL;
 	m_deformation_energy_plot_scale = 1000;
 
-	m_observation_only_rawlog = false;
+	m_observation_only_dataset = false;
 
 	// max node number already in the graph
 	m_nodeID_max = 0;
@@ -159,6 +161,7 @@ void CGraphSlamEngine<GRAPH_t>::initCGraphSlamEngine() {
 	m_edge_registrar->setCriticalSectionPtr(&m_graph_section);
 	m_optimizer->setCriticalSectionPtr(&m_graph_section);
 
+	// TODO - remove these
 	// Decide where to read the measurements from
 	if (m_rawlog_fname.empty()) { // run in online mode
 		MRPT_LOG_INFO_STREAM << "Executing online graphSLAM";
@@ -180,13 +183,10 @@ void CGraphSlamEngine<GRAPH_t>::initCGraphSlamEngine() {
 	m_node_registrar->printParams();
 	m_edge_registrar->printParams();
 	m_optimizer->printParams();
+	// TODO - remove this
 	m_provider->printParams();
 
 	// pass the rawlog filename after the instance initialization
-	m_node_registrar->setRawlogFname(m_rawlog_fname);
-	m_edge_registrar->setRawlogFname(m_rawlog_fname);
-	m_optimizer->setRawlogFname(m_rawlog_fname);
-
 	if (!(m_provider->providerRunsOnline())) {
 		dynamic_cast<CRawlogMP*>(m_provider)->setRawlogFname(m_rawlog_fname);
 	}
@@ -251,7 +251,8 @@ void CGraphSlamEngine<GRAPH_t>::initCGraphSlamEngine() {
 
 		std::string rawlog_fname_noext = system::extractFileName(m_rawlog_fname);
 		std::string rawlog_dir = system::extractFileDirectory(m_rawlog_fname);
-		std::string m_img_external_storage_dir = rawlog_dir + rawlog_fname_noext + "_Images/";
+		std::string m_img_external_storage_dir = rawlog_dir + rawlog_fname_noext
+			+ "_Images/";
 		CImage::IMAGES_PATH_BASE = m_img_external_storage_dir;
 	}
 
@@ -418,11 +419,11 @@ bool CGraphSlamEngine<GRAPH_t>::execGraphSlam() {
 				observation,
 				curr_rawlog_entry );
 		if (observation.present()) {
-			m_observation_only_rawlog = true; // false by default
+			m_observation_only_dataset = true; // false by default
 			init_timestamp = observation->timestamp;
 		}
 		else {
-			m_observation_only_rawlog = false;
+			m_observation_only_dataset = false;
 			if (action->getBestMovementEstimation()) {
 
 				CActionRobotMovement2DPtr robot_move =
@@ -640,7 +641,7 @@ bool CGraphSlamEngine<GRAPH_t>::execGraphSlam() {
 				m_GT_poses_index += m_GT_poses_step;
 			}
 			else if (mrpt::system::strCmpI(m_GT_file_format, "navsimul")) {
-				if (m_observation_only_rawlog) { // 1/2loops
+				if (m_observation_only_dataset) { // 1/2loops
 					if (curr_rawlog_entry % 2 == 0) {
 						this->updateGTVisualization();
 						m_GT_poses_index += m_GT_poses_step;
@@ -820,8 +821,6 @@ void CGraphSlamEngine<GRAPH_t>::readConfigFile(
 	m_node_registrar->loadParams(m_config_fname);
 	m_edge_registrar->loadParams(m_config_fname);
 	m_optimizer->loadParams(m_config_fname);
-	m_provider->loadParams(m_config_fname);
-
 
 	m_has_read_config = true;
 	MRPT_END;

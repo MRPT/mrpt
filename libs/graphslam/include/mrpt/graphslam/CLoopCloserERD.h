@@ -260,7 +260,6 @@ class CLoopCloserERD:
 				mrpt::obs::CObservationPtr observation );
 
 		void setGraphPtr(GRAPH_t* graph);
-		void setRawlogFname(const std::string& rawlog_fname);
 		void setWindowManagerPtr(mrpt::graphslam::CWindowManager* win_manager);
 		void notifyOfWindowEvents(
 				const std::map<std::string, bool>& events_occurred);
@@ -651,8 +650,6 @@ class CLoopCloserERD:
 		mrpt::gui::CDisplayWindow3D* m_win;
 		mrpt::graphslam::CWindowManager* m_win_manager;
 		mrpt::graphslam::CWindowObserver* m_win_observer;
-
-		std::string m_rawlog_fname;
 
 		bool m_initialized_visuals;
 		bool m_just_inserted_loop_closure;
