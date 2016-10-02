@@ -52,11 +52,8 @@ class CRegistrationDeciderOrOptimizer : public mrpt::utils::COutputLogger {
 				mrpt::obs::CSensoryFramePtr observations,
 				mrpt::obs::CObservationPtr observation ) = 0;
 
-		/**\brief Fetch the graph on which the decider/optimizer will work on.
-		 */
+		/**\brief Fetch the graph on which the decider/optimizer will work on. */
 		virtual void setGraphPtr(GRAPH_t* graph) {}
-		/**\brief Set the rawlog fname */
-		virtual void setRawlogFname(const std::string& rawlog_fname) {}
 		/**\brief Fetch a CWindowManager pointer.
 		 *
 		 * CWindowManager instance should contain a CDisplayWindow3D* and,

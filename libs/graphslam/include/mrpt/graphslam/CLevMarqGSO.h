@@ -142,7 +142,6 @@ class CLevMarqGSO:
 				mrpt::obs::CObservationPtr observation );
 
 		void setGraphPtr(GRAPH_t* graph);
-		void setRawlogFname(const std::string& rawlog_fname);
 		void setWindowManagerPtr(mrpt::graphslam::CWindowManager* win_manager);
 		void setCriticalSectionPtr(mrpt::synch::CCriticalSection* graph_section);
 		void initializeVisuals();
@@ -289,8 +288,6 @@ class CLevMarqGSO:
 		mrpt::graphslam::CWindowManager* m_win_manager;
 		mrpt::graphslam::CWindowObserver* m_win_observer;
 		mrpt::synch::CCriticalSection* m_graph_section;
-
-		std::string m_rawlog_fname;
 
 		bool m_first_time_call;
 		bool m_initialized_visuals;

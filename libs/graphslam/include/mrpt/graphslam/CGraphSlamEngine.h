@@ -237,6 +237,8 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		 * robot. Currently the class can read ground truth files corresponding
 		 * either to <em>RGBD - TUM datasets</em> or to rawlog files generated with
 		 * the \em GridMapNavSimul MRPT application.
+		 * // TODO add the deciders/optimizer
+		 *
 		 *
 		 * \note If enable_visuals is set to false, the application runs on <em>
 		 * headless mode </em>. In this case, no visual feedback is given but
@@ -579,7 +581,7 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		/**\}*/
 
 		bool m_has_read_config;
-		bool m_observation_only_rawlog;
+		bool m_observation_only_dataset;
 
 		// keeps track of the out fstreams so that they can be
 		// closed (if still open) in the class Dtor.

@@ -336,38 +336,6 @@ void CICPCriteriaERD<GRAPH_t>::setGraphPtr(GRAPH_t* graph) {
 	MRPT_END;
 }
 template<class GRAPH_t>
-void CICPCriteriaERD<GRAPH_t>::setRawlogFname(const std::string& rawlog_fname){
-	MRPT_START;
-	using namespace std;
-	using namespace mrpt::utils;
-
-	m_rawlog_fname = rawlog_fname;
-	this->logStr(LVL_DEBUG, mrpt::format("Fetched the rawlog filename successfully: %s",
-			m_rawlog_fname.c_str()));
-
-	// find the directory of the 3Dscan images in case we are working with
-	// Cobservation3DRangeScans
-	stringstream ss;
-	ss << "Trying to fetch 3D scans external storage directory.. " << endl;
-	std::string rawlog_fname_noext = system::extractFileName(m_rawlog_fname);
-	std::string rawlog_dir = system::extractFileDirectory(rawlog_fname);
-	std::string img_external_storage_dir =
-		rawlog_dir + rawlog_fname_noext + "_Images/";
-
-	if (system::directoryExists(img_external_storage_dir)) {
-		params.scans_img_external_dir = img_external_storage_dir;
-		ss << "3D scans external storage: " << params.scans_img_external_dir
-			<< endl;
-	}
-	else {
-		ss << "Couldn't find 3D scans external storage: " << img_external_storage_dir << endl;
-	}
-
-	this->logFmt(LVL_INFO, "%s", ss.str().c_str());
-
-	MRPT_END;
-}
-template<class GRAPH_t>
 void CICPCriteriaERD<GRAPH_t>::setWindowManagerPtr(
 		mrpt::graphslam::CWindowManager* win_manager) {
 	m_win_manager = win_manager;

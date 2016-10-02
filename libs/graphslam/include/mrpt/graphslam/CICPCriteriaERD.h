@@ -32,10 +32,11 @@
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/threads.h>
 
+#include <stdlib.h> // abs
+
 #include <iostream>
 #include <map>
 #include <string>
-#include <stdlib.h> // abs
 
 #include "CEdgeRegistrationDecider.h"
 #include "CRangeScanRegistrationDecider.h"
@@ -137,7 +138,6 @@ class CICPCriteriaERD :
 
 
 		void setGraphPtr(GRAPH_t* graph);
-		void setRawlogFname(const std::string& rawlog_fname);
 		void setWindowManagerPtr(mrpt::graphslam::CWindowManager* win_manager);
 		void notifyOfWindowEvents(
 				const std::map<std::string, bool>& events_occurred);
@@ -221,8 +221,6 @@ class CICPCriteriaERD :
 		mrpt::graphslam::CWindowManager* m_win_manager;
 		mrpt::graphslam::CWindowObserver* m_win_observer;
 
-		std::string m_rawlog_fname;
-
 		bool m_initialized_visuals;
 		bool m_just_inserted_loop_closure;
 		bool m_is_using_3DScan;
@@ -252,7 +250,6 @@ class CICPCriteriaERD :
 		const size_t m_consecutive_invalid_format_instances_thres;
 
 		mrpt::utils::CTimeLogger m_time_logger; /**<Time logger instance */
-
 };
 
 } } } // end of namespaces
