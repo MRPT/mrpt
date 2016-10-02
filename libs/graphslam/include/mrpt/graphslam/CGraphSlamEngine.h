@@ -258,34 +258,29 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 
 		// Public function definitions
 		//////////////////////////////////////////////////////////////
-		/**\brief Wrapper method around the CGraphSlamEngine::saveGraph method.
-		 *
-		 * Output .graph filename is set either by the user via the .ini
-		 * save_graph_fname variable or (if not specified in the .ini file) it is
-		 * set to "output_graph.graph"
-		 *
-		 * \sa save3DScene
-		 * */
-		void saveGraph() const;
 		/**\brief Wrapper method around the GRAPH_t::saveToTextFile method.
-		 *
 		 * Method saves the graph in the format used by TORO & HoG-man strategies
+		 *
+		 * \in Name of the generated graph file - Defaults to "output_graph" if not
+		 * set by the user
 		 *
 		 * \sa save3DScene, http://www.mrpt.org/Robotics_file_formats
 		 */
-		void saveGraph(const std::string& fname) const;
-		/**\brief Wrapper method around the mrpt::opengl::COpenGLScene::saveToFile method.
-		 */
-		void save3DScene() const;
+		void saveGraph(const std::string* fname_in=NULL) const;
 		/**\brief Wrapper method around the COpenGLScene::saveToFile method.
+		 *
+		 * \in Name of the generated graph file - Defaults to "output_graph" if not
+		 * set by the user
+		 *
+		 * \sa saveGraph
 		 */
-		void save3DScene(const std::string& fname) const;
+		void save3DScene(const std::string* fname_in=NULL) const;
 		/**\brief Read the configuration variables from the .ini file specified by
 		 * the user.
-		 *
 		 * Method is automatically called, upon CGraphSlamEngine initialization
+		 *
 		 */
-		void readConfigFile(const std::string& fname);
+		void readConfigFname(const std::string& fname);
 		/**\brief Fill in the provided string with the class configuration parameters.
 		 *
 		 * \sa printParams
@@ -304,12 +299,19 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		 * \sa getParamsAsString
 		 */
 		void printParams() const;
-		/**\brief Main class method responsible for reading the .rawlog file.
+		/**\brief Main class method responsible for parsing each measurement and
+		 * for executing graphSLAM.
 		 *
-		 * Reads the dataset file and builds the graph. Method returns false if
-		 * user terminates execution (<em>Ctrl+c</em> is pressed) otherwise true.
+		 * \note Method reads each measurement seperately, so the application that
+		 * invokes it is responsibe for fetching the measurements (e.g. from a
+		 * rawlog file).
+		 *
 		 **/
-		bool execGraphSlam();
+		void execGraphSlamStep(
+				mrpt::obs::CActionCollectionPtr& action,
+				mrpt::obs::CSensoryFramePtr& observations,
+				mrpt::obs::CObservationPtr& observation,
+				size_t& rawlog_entry);
 		/**\brief Return a reference to the underlying GRAPH_t instance. */
 		const GRAPH_t& getGraph() const { return m_graph; }
 		/**\brief Return the filename of the used rawlog file.*/
@@ -356,6 +358,15 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 				const std::string& fname_GT,
 				std::vector<pose_t>* gt_poses,
 				std::vector<mrpt::system::TTimeStamp>* gt_timestamps=NULL);
+		/**
+		 *\brief Generate and write to a corresponding file a report For each of
+		 * the respective self/decider/optimizer classes.
+		 * Report files are generated in the output directory as set by the user in
+		 * the .ini configuration file [default = graphslam_engine_results/]
+		 *
+		 * \sa getDescriptiveReport
+		 */
+		void generateReportFiles();
 
 	private:
 		// Private function definitions
@@ -395,20 +406,9 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		 * - Logging of commands until current time
 		 *
 		 * \note Decider/Optimizer classes should also implement a getDescriptiveReport
-		 * method for printing information on their part of the execution
+		 * method for printing information on their part of the execution.
 		 */
 		void getDescriptiveReport(std::string* report_str) const;
-		/**
-		 *\brief Generate and write to disk a report For each of the respective
-		 * self/decider/optimizer classes.
-		 *
-		 * Report files are generated in the output directory as set by the user in
-		 * the .ini configuration file [default = graphslam_engine_results/]
-		 *
-		 * \sa getDescriptiveReport
-		 */
-		void generateReportFiles();
-
 		/** \name Initialization of Visuals
 		 * Methods used for initializing various visualization features relevant to
 		 * the application at hand. If the visual feature is specified by the user
@@ -542,9 +542,6 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		/**\brief The graph object to be built and optimized. */
 		GRAPH_t m_graph;
 
-
-		mrpt::graphslam::measurement_providers::CMeasurementProvider* m_provider;
-
 		/** Decider/Optimizer instances. Delegating the GRAPH_t tasks to these classes
 		 * makes up for a modular and configurable design
 		 */
@@ -570,14 +567,11 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		size_t m_GT_poses_index; /**\brief Counter for reading back the GT_poses. */
 		size_t m_GT_poses_step; //**\brief Rate at which to read the GT poses. */
 
+		// TODO - remove these?
 		/**\brief parameters related to the application generated files */
 		/**\{*/
 		std::string	m_output_dir_fname;
 		bool m_user_decides_about_output_dir;
-		bool m_save_graph;
-		std::string	m_save_graph_fname;
-		bool m_save_3DScene;
-		std::string	m_save_3DScene_fname;
 		/**\}*/
 
 		bool m_has_read_config;
@@ -748,6 +742,13 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		 * algorithm to run in real-time
 		 */
 		double m_dataset_grab_time;
+
+		/**\brief First recorded timestamp in the dataset. */
+		mrpt::system::TTimeStamp* m_init_timestamp;
+		/**\brief Current robot position based solely on odometry */
+		pose_t m_curr_odometry_only_pose; // defaults to all 0s
+
+
 
 		const std::string m_class_name;
 };

@@ -89,8 +89,11 @@ CGraphSlamEngine<GRAPH_t>::~CGraphSlamEngine() {
 		this->logStr(LVL_DEBUG, "Releasing CWindowObserver...");
 		delete m_win_observer;
 		this->logStr(LVL_DEBUG, "Releasing CMeasurementProvider ...");
-		// TODO - remove this
-		delete m_provider;
+	}
+
+	// change back the CImage path
+	if (mrpt::system::strCmpI(m_GT_file_format, "rgbd_tum")) {
+		CImage::IMAGES_PATH_BASE = m_img_prev_path_base;
 	}
 
 	// delete the CDisplayWindowPlots object
@@ -98,6 +101,8 @@ CGraphSlamEngine<GRAPH_t>::~CGraphSlamEngine() {
 		this->logStr(LVL_DEBUG, "Releasing CDisplayWindowPlots... ");
 		delete m_win_plot;
 	}
+
+	delete m_init_timestamp;
 
 	MRPT_END;
 }
@@ -161,20 +166,12 @@ void CGraphSlamEngine<GRAPH_t>::initCGraphSlamEngine() {
 	m_edge_registrar->setCriticalSectionPtr(&m_graph_section);
 	m_optimizer->setCriticalSectionPtr(&m_graph_section);
 
-	// TODO - remove these
-	// Decide where to read the measurements from
-	if (m_rawlog_fname.empty()) { // run in online mode
-		MRPT_LOG_INFO_STREAM << "Executing online graphSLAM";
-		m_provider = new CRosTopicMP();
-	}
-	else {
-		MRPT_LOG_INFO_STREAM << "Executing graphSLAM using rawlog files";
-		m_provider = new CRawlogMP();
-	}
-
-	// Calling of initialization-relevant functions
-	// [NOTE] loadParams methods are called from within this method
-	this->readConfigFile(m_config_fname);
+	// Load the parameters that each one of the self/deciders/optimizer classes
+	// needs
+	this->readConfigFname(m_config_fname);
+	m_node_registrar->loadParams(m_config_fname);
+	m_edge_registrar->loadParams(m_config_fname);
+	m_optimizer->loadParams(m_config_fname);
 
 	this->initOutputDir();
 
@@ -183,13 +180,6 @@ void CGraphSlamEngine<GRAPH_t>::initCGraphSlamEngine() {
 	m_node_registrar->printParams();
 	m_edge_registrar->printParams();
 	m_optimizer->printParams();
-	// TODO - remove this
-	m_provider->printParams();
-
-	// pass the rawlog filename after the instance initialization
-	if (!(m_provider->providerRunsOnline())) {
-		dynamic_cast<CRawlogMP*>(m_provider)->setRawlogFname(m_rawlog_fname);
-	}
 
 	m_use_GT = !m_fname_GT.empty();
 	if (m_use_GT) {
@@ -353,6 +343,8 @@ void CGraphSlamEngine<GRAPH_t>::initCGraphSlamEngine() {
 		m_time_logger.leave("Visuals");
 	}
 
+	m_init_timestamp = NULL;
+
 
 	// In case we are given an RGBD TUM Dataset - try and read the info file so
 	// that we know how to play back the GT poses.
@@ -383,7 +375,11 @@ void CGraphSlamEngine<GRAPH_t>::initCGraphSlamEngine() {
 }
 
 template<class GRAPH_t>
-bool CGraphSlamEngine<GRAPH_t>::execGraphSlam() {
+void CGraphSlamEngine<GRAPH_t>::execGraphSlamStep(
+		mrpt::obs::CActionCollectionPtr& action,
+		mrpt::obs::CSensoryFramePtr& observations,
+		mrpt::obs::CObservationPtr& observation,
+		size_t& rawlog_entry) {
 	MRPT_START;
 
 	using namespace std;
@@ -401,28 +397,19 @@ bool CGraphSlamEngine<GRAPH_t>::execGraphSlam() {
 			format("\nConfig file is not read yet.\nExiting... \n"));
 	// good to go..
 
-	// Variables initialization
-	CActionCollectionPtr action;
-	CSensoryFramePtr observations;
-	CObservationPtr observation;
-	size_t curr_rawlog_entry = 0;
+	// read first measurement independently if we haven't already
+	if (!m_init_timestamp) {
+		MRPT_LOG_DEBUG_STREAM << "execGraphSlamStep: first run";
+		m_init_timestamp = new mrpt::system::TTimeStamp;
+		*m_init_timestamp = observation->timestamp;
 
-	// current timestamp - to be filled depending on the format
-	mrpt::system::TTimeStamp timestamp, init_timestamp;
-	pose_t curr_odometry_only_pose; // defaults to all 0s
-
-	// read first measurement independently
-	{
-		m_provider->getActionObservationPairOrObservation(
-				action,
-				observations,
-				observation,
-				curr_rawlog_entry );
 		if (observation.present()) {
+			MRPT_LOG_DEBUG_STREAM << "Observation only dataset!";
 			m_observation_only_dataset = true; // false by default
-			init_timestamp = observation->timestamp;
+			*m_init_timestamp = observation->timestamp;
 		}
 		else {
+			MRPT_LOG_DEBUG_STREAM << "Action-observation dataset!";
 			m_observation_only_dataset = false;
 			if (action->getBestMovementEstimation()) {
 
@@ -430,301 +417,264 @@ bool CGraphSlamEngine<GRAPH_t>::execGraphSlam() {
 					action->getBestMovementEstimation();
 				CPosePDFPtr increment = robot_move->poseChange;
 				pose_t increment_pose = increment->getMeanVal();
-				curr_odometry_only_pose += increment_pose;
+				m_curr_odometry_only_pose += increment_pose;
 
-				init_timestamp = robot_move->timestamp;
+				*m_init_timestamp = robot_move->timestamp;
 			}
 		}
+
+		mrpt::system::pause();
 	}
 
-	// Read the rest of the rawlog file
-	while(m_provider->getActionObservationPairOrObservation(
+
+	// node registration procedure
+	bool registered_new_node;
+	{
+		mrpt::synch::CCriticalSectionLocker m_graph_lock(&m_graph_section);
+		m_time_logger.enter("node_registrar");
+		registered_new_node = m_node_registrar->updateState(
+				action, observations, observation);
+		m_time_logger.leave("node_registrar");
+		if (registered_new_node) {
+			m_edge_counter.addEdge("Odometry");
+			m_nodeID_max++;
+		}
+	}
+	// Edge registration procedure
+	// run this so that the decider can be updated with the latest
+	// observations even when no new nodes have been added to the graph
+	{
+		mrpt::synch::CCriticalSectionLocker m_graph_lock(&m_graph_section);
+
+		m_time_logger.enter("edge_registrar");
+		m_edge_registrar->updateState(
 				action,
 				observations,
-				observation,
-				curr_rawlog_entry ) ) {
+				observation );
+		m_time_logger.leave("edge_registrar");
 
+		m_time_logger.enter("optimizer");
+		m_optimizer->updateState(
+				action,
+				observations,
+				observation );
+		m_time_logger.leave("optimizer");
+	}
 
-		// node registration procedure
-		bool registered_new_node;
-		{
-			mrpt::synch::CCriticalSectionLocker m_graph_lock(&m_graph_section);
-			m_time_logger.enter("node_registrar");
-			registered_new_node = m_node_registrar->updateState(
-					action, observations, observation);
-			m_time_logger.leave("node_registrar");
-			if (registered_new_node) {
-				m_edge_counter.addEdge("Odometry");
-				m_nodeID_max++;
-			}
-		}
-		// Edge registration procedure
-		// run this so that the decider can be updated with the latest
-		// observations even when no new nodes have been added to the graph
-		{
-			mrpt::synch::CCriticalSectionLocker m_graph_lock(&m_graph_section);
+	// current timestamp - to be filled depending on the format
+	mrpt::system::TTimeStamp timestamp;
 
-			m_time_logger.enter("edge_registrar");
-			m_edge_registrar->updateState(
-					action,
-					observations,
-					observation );
-			m_time_logger.leave("edge_registrar");
+	if (observation.present()) {
+		// Read a single observation from the rawlog
+		// (Format #2 rawlog file)
 
-			m_time_logger.enter("optimizer");
-			m_optimizer->updateState(
-					action,
-					observations,
-					observation );
-			m_time_logger.leave("optimizer");
-		}
+		timestamp = observation->timestamp;
 
-		if (observation.present()) {
-			// Read a single observation from the rawlog
-			// (Format #2 rawlog file)
+		// odometry
+		if (IS_CLASS(observation, CObservationOdometry)) {
+			CObservationOdometryPtr obs_odometry =
+				static_cast<CObservationOdometryPtr>(observation);
 
-			timestamp = observation->timestamp;
-
-			// odometry
-			if (IS_CLASS(observation, CObservationOdometry)) {
-				CObservationOdometryPtr obs_odometry =
-					static_cast<CObservationOdometryPtr>(observation);
-
-				curr_odometry_only_pose = obs_odometry->odometry;
-				// add to the odometry vector
-				{
-					pose_t* odometry_pose = new pose_t;
-					*odometry_pose = curr_odometry_only_pose;
-					m_odometry_poses.push_back(odometry_pose);
-				}
-			}
-			// laser scans
-			else if (IS_CLASS(observation, CObservation2DRangeScan)) {
-				m_last_laser_scan2D =
-					static_cast<mrpt::obs::CObservation2DRangeScanPtr>(observation);
-
-			}
-			else if (IS_CLASS(observation, CObservation3DRangeScan)) {
-				m_last_laser_scan3D =
-					static_cast<mrpt::obs::CObservation3DRangeScanPtr>(observation);
-
-			}
-		}
-		else {
-			// action, observations should contain a pair of valid data
-			// (Format #1 rawlog file)
-
-			// parse the current action
-			CActionRobotMovement2DPtr robot_move =
-				action->getBestMovementEstimation();
-			CPosePDFPtr increment = robot_move->poseChange;
-			pose_t increment_pose = increment->getMeanVal();
-			curr_odometry_only_pose += increment_pose;
-
-			timestamp = robot_move->timestamp;
-
+			m_curr_odometry_only_pose = obs_odometry->odometry;
 			// add to the odometry vector
 			{
 				pose_t* odometry_pose = new pose_t;
-				*odometry_pose = curr_odometry_only_pose;
+				*odometry_pose = m_curr_odometry_only_pose;
 				m_odometry_poses.push_back(odometry_pose);
 			}
-
-			// get the last laser scan
+		}
+		// laser scans
+		else if (IS_CLASS(observation, CObservation2DRangeScan)) {
 			m_last_laser_scan2D =
-				observations->getObservationByClass<CObservation2DRangeScan>();
+				static_cast<mrpt::obs::CObservation2DRangeScanPtr>(observation);
 
-		} // ELSE FORMAT #1 - Action/Observations
+		}
+		else if (IS_CLASS(observation, CObservation3DRangeScan)) {
+			m_last_laser_scan3D =
+				static_cast<mrpt::obs::CObservation3DRangeScanPtr>(observation);
 
-		if (registered_new_node) {
+		}
+	}
+	else {
+		// action, observations should contain a pair of valid data
+		// (Format #1 rawlog file)
 
-			// update the global position of the nodes
-			{
-				mrpt::synch::CCriticalSectionLocker m_graph_lock(&m_graph_section);
-				m_time_logger.enter("dijkstra_nodes_estimation");
-				m_graph.dijkstra_nodes_estimate();
-				m_time_logger.leave("dijkstra_nodes_estimation");
-			}
+		// parse the current action
+		CActionRobotMovement2DPtr robot_move =
+			action->getBestMovementEstimation();
+		CPosePDFPtr increment = robot_move->poseChange;
+		pose_t increment_pose = increment->getMeanVal();
+		m_curr_odometry_only_pose += increment_pose;
 
-			// keep track of the laser scans so that I can later visualize the map
-			m_nodes_to_laser_scans2D[m_nodeID_max] = m_last_laser_scan2D;
+		timestamp = robot_move->timestamp;
 
-			if (m_enable_visuals && m_visualize_map) {
-				mrpt::synch::CCriticalSectionLocker m_graph_lock(&m_graph_section);
-				bool full_update = m_edge_registrar->justInsertedLoopClosure();
-				this->updateMapVisualization(m_graph, m_nodes_to_laser_scans2D, full_update);
-			}
+		// add to the odometry vector
+		{
+			pose_t* odometry_pose = new pose_t;
+			*odometry_pose = m_curr_odometry_only_pose;
+			m_odometry_poses.push_back(odometry_pose);
+		}
 
-			// query node/edge deciders for visual objects update
-			if (m_enable_visuals) {
-				mrpt::synch::CCriticalSectionLocker m_graph_lock(&m_graph_section);
-				m_time_logger.enter("Visuals");
-				m_node_registrar->updateVisuals();
-				m_edge_registrar->updateVisuals();
-				m_optimizer->updateVisuals();
-				m_time_logger.leave("Visuals");
-			}
+		// get the last laser scan
+		m_last_laser_scan2D =
+			observations->getObservationByClass<CObservation2DRangeScan>();
 
-			// update the edge counter
-			std::map<const std::string, int> edge_types_to_nums;
-			m_edge_registrar->getEdgesStats(&edge_types_to_nums);
-			if (edge_types_to_nums.size()) {
-				for (std::map<std::string, int>::const_iterator it =
-						edge_types_to_nums.begin(); it != edge_types_to_nums.end();
-						++it) {
+	} // ELSE FORMAT #1 - Action/Observations
 
-					// loop closure
-					if (mrpt::system::strCmpI(it->first, "lc")) {
-						m_edge_counter.setLoopClosureEdgesManually(it->second);
-					}
-					else {
-						m_edge_counter.setEdgesManually(it->first, it->second);
-					}
-				}
-			}
-			// update the graph visualization
+	if (registered_new_node) {
 
-			if (m_enable_curr_pos_viewport) {
-				updateCurrPosViewport();
-			}
-			// update visualization of estimated trajectory
-			if (m_enable_visuals) {
-				bool full_update = true;
-				m_time_logger.enter("Visuals");
-				this->updateEstimatedTrajectoryVisualization(full_update);
-				m_time_logger.leave("Visuals");
-			}
+		// update the global position of the nodes
+		{
+			mrpt::synch::CCriticalSectionLocker m_graph_lock(&m_graph_section);
+			m_time_logger.enter("dijkstra_nodes_estimation");
+			m_graph.dijkstra_nodes_estimate();
+			m_time_logger.leave("dijkstra_nodes_estimation");
+		}
 
-			// refine the SLAM metric  and update its corresponding visualization
-			if (m_use_GT) {
-				m_time_logger.enter("SLAM_metric");
-				this->computeSlamMetric(m_nodeID_max, m_GT_poses_index);
-				m_time_logger.leave("SLAM_metric");
-				if (m_visualize_SLAM_metric) {
-					m_time_logger.enter("Visuals");
-					this->updateSlamMetricVisualization();
-					m_time_logger.leave("Visuals");
-				}
-			}
+		// keep track of the laser scans so that I can later visualize the map
+		m_nodes_to_laser_scans2D[m_nodeID_max] = m_last_laser_scan2D;
 
-		} // IF REGISTERED_NEW_NODE
+		if (m_enable_visuals && m_visualize_map) {
+			mrpt::synch::CCriticalSectionLocker m_graph_lock(&m_graph_section);
+			bool full_update = m_edge_registrar->justInsertedLoopClosure();
+			this->updateMapVisualization(m_graph, m_nodes_to_laser_scans2D, full_update);
+		}
 
-		m_time_logger.enter("Visuals");
-		// Timestamp textMessage
-		// Use the dataset timestamp otherwise fallback to
-		// mrpt::system::getCurrentTime
+		// query node/edge deciders for visual objects update
 		if (m_enable_visuals) {
-			if (timestamp != INVALID_TIMESTAMP) {
-				m_win_manager.addTextMessage(5,-m_offset_y_timestamp,
-						format("Simulated time: %s", timeToString(timestamp).c_str()),
-						TColorf(1.0, 1.0, 1.0),
-						/* unique_index = */ m_text_index_timestamp );
-			}
-			else {
-				m_win_manager.addTextMessage(5,-m_offset_y_timestamp,
-						format("Wall time: %s", timeToString(mrpt::system::getCurrentTime()).c_str()),
-						TColorf(1.0, 1.0, 1.0),
-						/* unique_index = */ m_text_index_timestamp );
-			}
+			mrpt::synch::CCriticalSectionLocker m_graph_lock(&m_graph_section);
+			m_time_logger.enter("Visuals");
+			m_node_registrar->updateVisuals();
+			m_edge_registrar->updateVisuals();
+			m_optimizer->updateVisuals();
+			m_time_logger.leave("Visuals");
 		}
 
-		// Odometry visualization
-		if (m_visualize_odometry_poses && m_odometry_poses.size()) {
-			this->updateOdometryVisualization();
+		// update the edge counter
+		std::map<const std::string, int> edge_types_to_nums;
+		m_edge_registrar->getEdgesStats(&edge_types_to_nums);
+		if (edge_types_to_nums.size()) {
+			for (std::map<std::string, int>::const_iterator it =
+					edge_types_to_nums.begin(); it != edge_types_to_nums.end();
+					++it) {
+
+				// loop closure
+				if (mrpt::system::strCmpI(it->first, "lc")) {
+					m_edge_counter.setLoopClosureEdgesManually(it->second);
+				}
+				else {
+					m_edge_counter.setEdgesManually(it->first, it->second);
+				}
+			}
+		}
+		// update the graph visualization
+
+		if (m_enable_curr_pos_viewport) {
+			updateCurrPosViewport();
+		}
+		// update visualization of estimated trajectory
+		if (m_enable_visuals) {
+			bool full_update = true;
+			m_time_logger.enter("Visuals");
+			this->updateEstimatedTrajectoryVisualization(full_update);
+			m_time_logger.leave("Visuals");
 		}
 
-		// ensure that the GT is visualized at the same rate as the SLAM procedure
-		// handle RGBD-TUM datasets manually. Advance the GT index accordingly
+		// refine the SLAM metric  and update its corresponding visualization
 		if (m_use_GT) {
-			if (mrpt::system::strCmpI(m_GT_file_format, "rgbd_tum")) { // 1/loop
-				this->updateGTVisualization(); // I have already taken care of the step
+			m_time_logger.enter("SLAM_metric");
+			this->computeSlamMetric(m_nodeID_max, m_GT_poses_index);
+			m_time_logger.leave("SLAM_metric");
+			if (m_visualize_SLAM_metric) {
+				m_time_logger.enter("Visuals");
+				this->updateSlamMetricVisualization();
+				m_time_logger.leave("Visuals");
+			}
+		}
+
+	} // IF REGISTERED_NEW_NODE
+
+	//
+	// Visualization related actions
+	//
+	m_time_logger.enter("Visuals");
+	// Timestamp textMessage
+	// Use the dataset timestamp otherwise fallback to
+	// mrpt::system::getCurrentTime
+	if (m_enable_visuals) {
+		if (timestamp != INVALID_TIMESTAMP) {
+			m_win_manager.addTextMessage(5,-m_offset_y_timestamp,
+					format("Simulated time: %s", timeToString(timestamp).c_str()),
+					TColorf(1.0, 1.0, 1.0),
+					/* unique_index = */ m_text_index_timestamp );
+		}
+		else {
+			m_win_manager.addTextMessage(5,-m_offset_y_timestamp,
+					format("Wall time: %s", timeToString(mrpt::system::getCurrentTime()).c_str()),
+					TColorf(1.0, 1.0, 1.0),
+					/* unique_index = */ m_text_index_timestamp );
+		}
+	}
+
+	// Odometry visualization
+	if (m_visualize_odometry_poses && m_odometry_poses.size()) {
+		this->updateOdometryVisualization();
+	}
+
+	// ensure that the GT is visualized at the same rate as the SLAM procedure
+	// handle RGBD-TUM datasets manually. Advance the GT index accordingly
+	if (m_use_GT) {
+		if (mrpt::system::strCmpI(m_GT_file_format, "rgbd_tum")) { // 1/loop
+			this->updateGTVisualization(); // I have already taken care of the step
+			m_GT_poses_index += m_GT_poses_step;
+		}
+		else if (mrpt::system::strCmpI(m_GT_file_format, "navsimul")) {
+			if (m_observation_only_dataset) { // 1/2loops
+				MRPT_LOG_DEBUG_STREAM <<
+					"observation_only_dataset: Updating GTVisualization";
+				if (rawlog_entry % 2 == 0) {
+					this->updateGTVisualization();
+					m_GT_poses_index += m_GT_poses_step;
+					MRPT_LOG_DEBUG_STREAM << "rawlog_entry%2==0 " << std::endl;
+				}
+			}
+			else { // 1/loop
+				// get both action and observation at a single step - same rate as GT
+				MRPT_LOG_DEBUG_STREAM <<
+					"action-observations dataset: Updating GTVisualization";
+				this->updateGTVisualization(); 
 				m_GT_poses_index += m_GT_poses_step;
 			}
-			else if (mrpt::system::strCmpI(m_GT_file_format, "navsimul")) {
-				if (m_observation_only_dataset) { // 1/2loops
-					if (curr_rawlog_entry % 2 == 0) {
-						this->updateGTVisualization();
-						m_GT_poses_index += m_GT_poses_step;
-						MRPT_LOG_ERROR_STREAM << "observation_only_rawlog..." << std::endl;
-					}
-				}
-				else { // 1/loop
-					// get both action and observation at a single step - same rate as GT
-					this->updateGTVisualization(); 
-					m_GT_poses_index += m_GT_poses_step;
-				}
-			}
 		}
-
-		// 3DRangeScans viewports update
-		if (mrpt::system::strCmpI(m_GT_file_format, "rgbd_tum")) {
-			if (m_enable_range_viewport && !m_last_laser_scan3D.null()) {
-				this->updateRangeImageViewport();
-			}
-
-			if (m_enable_intensity_viewport && !m_last_laser_scan3D.null()) {
-				this->updateIntensityImageViewport();
-			}
-		}
-
-		// Query for events and take corresponding actions
-		if (m_enable_visuals) {
-			this->queryObserverForEvents();
-		}
-
-		if (m_request_to_exit) {
-			this->logStr(LVL_INFO, "Halting execution... ");
-
-			// exiting actions
-			// change back the CImage path
-			if (mrpt::system::strCmpI(m_GT_file_format, "rgbd_tum")) {
-				CImage::IMAGES_PATH_BASE = m_img_prev_path_base;
-			}
-
-			m_time_logger.leave("proc_time");
-			return false; // exit the execGraphSlam method
-		}
-		m_time_logger.leave("Visuals");
-
-	} // WHILE CRAWLOG FILE
-
-	//
-	// exiting actions
-	//
-	if (m_save_graph) { this->saveGraph(); }
-
-	if (m_enable_visuals && m_save_3DScene) {
-		// remove the CPlanarLaserScan if it exists
-		{
-			COpenGLScenePtr& scene = m_win->get3DSceneAndLock();
-			CPlanarLaserScanPtr laser_scan;
-			for (; laser_scan = scene->getByClass<CPlanarLaserScan>() ;) {
-				this->logStr(LVL_DEBUG, "Removing CPlanarlaserScan from generated 3DScene...");
-				scene->removeObject(laser_scan);
-			}
-
-			m_win->unlockAccess3DScene();
-			m_win->forceRepaint();
-		}
-
-		this->logStr(LVL_INFO, "Saving 3D Scene...");
-		this->save3DScene();
 	}
 
-	// change back the CImage path
+	// 3DRangeScans viewports update
 	if (mrpt::system::strCmpI(m_GT_file_format, "rgbd_tum")) {
-		CImage::IMAGES_PATH_BASE = m_img_prev_path_base;
+		if (m_enable_range_viewport && !m_last_laser_scan3D.null()) {
+			this->updateRangeImageViewport();
+		}
+
+		if (m_enable_intensity_viewport && !m_last_laser_scan3D.null()) {
+			this->updateIntensityImageViewport();
+		}
 	}
 
-	m_dataset_grab_time = mrpt::system::timeDifference(init_timestamp, timestamp);
+	// Query for events and take corresponding actions
+	if (m_enable_visuals) {
+		this->queryObserverForEvents();
+	}
+	m_time_logger.leave("Visuals");
+
+	m_dataset_grab_time = mrpt::system::timeDifference(
+			*m_init_timestamp,
+			timestamp);
 	m_time_logger.leave("proc_time");
-	this->generateReportFiles();
-	return true; // function execution completed successfully
+
 	MRPT_END;
 } // END OF EXECGRAPHSLAM
 
 template<class GRAPH_t>
-void CGraphSlamEngine<GRAPH_t>::readConfigFile(
+void CGraphSlamEngine<GRAPH_t>::readConfigFname(
 		const std::string& fname) {
 	MRPT_START;
 	using namespace mrpt::utils;
@@ -746,22 +696,6 @@ void CGraphSlamEngine<GRAPH_t>::readConfigFile(
 			"GeneralConfiguration",
 			"user_decides_about_output_dir",
 			false, false);
-	m_save_graph = cfg_file.read_bool(
-			"GeneralConfiguration",
-			"save_graph",
-			true, false);
-	m_save_3DScene = cfg_file.read_bool(
-			"GeneralConfiguration",
-			"save_3DScene",
-			true, false);
-	m_save_graph_fname = cfg_file.read_string(
-			"GeneralConfiguration",
-			"save_graph_fname",
-			"output_graph.graph", false);
-	m_save_3DScene_fname = cfg_file.read_string(
-			"GeneralConfiguration",
-			"save_3DScene_fname",
-			"scene.3DScene", false);
 	m_GT_file_format = cfg_file.read_string(
 			"GeneralConfiguration",
 			"ground_truth_file_format",
@@ -818,9 +752,6 @@ void CGraphSlamEngine<GRAPH_t>::readConfigFile(
 			"enable_intensity_viewport",
 			false, false);
 
-	m_node_registrar->loadParams(m_config_fname);
-	m_edge_registrar->loadParams(m_config_fname);
-	m_optimizer->loadParams(m_config_fname);
 
 	m_has_read_config = true;
 	MRPT_END;
@@ -854,19 +785,6 @@ void CGraphSlamEngine<GRAPH_t>::getParamsAsString(
 		<< (m_user_decides_about_output_dir ? "TRUE" : "FALSE")  << std::endl;
 	ss_out << "Output directory                = "
 		<< m_output_dir_fname << std::endl;
-
-	ss_out << "Generate .graph file?           = "
-		<< ( m_save_graph? "TRUE" : "FALSE" )  << std::endl;
-	ss_out << "Generate .3DScene file?         = "
-		<< ( m_save_3DScene? "TRUE" : "FALSE" ) << std::endl;
-	if (m_save_graph) {
-		ss_out << "Generated .graph filename       = "
-			<< m_save_graph_fname << std::endl;
-	}
-	if (m_save_3DScene) {
-		ss_out << "Generated .3DScene filename     = "
-			<< m_save_3DScene_fname << std::endl;
-	}
 
 	ss_out << "Ground Truth File format        = "
 		<< m_GT_file_format << std::endl;
@@ -2093,53 +2011,64 @@ void CGraphSlamEngine<GRAPH_t>::TRGBDInfoFileParams::parseFile() {
 ////////////////////////////////////////////////////////////////////////////////
 
 template<class GRAPH_t>
-void CGraphSlamEngine<GRAPH_t>::saveGraph() const {
+void CGraphSlamEngine<GRAPH_t>::saveGraph(
+		const std::string* fname_in /*= NULL */) const {
 	MRPT_START;
-	ASSERT_(m_has_read_config);
-
-	std::string fname = m_output_dir_fname + "/" + m_save_graph_fname;
-	saveGraph(fname);
-
-	MRPT_END;
-}
-
-template<class GRAPH_t>
-void CGraphSlamEngine<GRAPH_t>::saveGraph(const std::string& fname) const {
 	using namespace mrpt::utils;
 
-	MRPT_START;
-	// assertions are handled in the caller function
+	// what's the name of the file to be saved?
+	std::string fname;
+	if (fname_in) {
+		fname = *fname_in;
+	}
+	else {
+		fname = "output_graph.graph";
+	}
 
-	this->logStr(LVL_INFO,
-			mrpt::format("Saving generated graph in VERTEX/EDGE format: %s", fname.c_str()));
+	this->logStr(LVL_INFO, mrpt::format(
+				"Saving generated graph in VERTEX/EDGE format: %s",
+				fname.c_str()));
 	m_graph.saveToTextFile(fname);
 
 	MRPT_END;
 }
 
 template<class GRAPH_t>
-void CGraphSlamEngine<GRAPH_t>::save3DScene() const {
-	MRPT_START;
-	ASSERT_(m_has_read_config);
-	ASSERT_(m_enable_visuals);
-
-	std::string fname = m_output_dir_fname + "/" + m_save_3DScene_fname;
-	this->save3DScene(fname);
-
-	MRPT_END;
-}
-
-template<class GRAPH_t>
-void CGraphSlamEngine<GRAPH_t>::save3DScene(const std::string& fname) const {
+void CGraphSlamEngine<GRAPH_t>::save3DScene(
+		const std::string* fname_in /* = NULL */) const {
 	MRPT_START;
 	using namespace mrpt::opengl;
 	using namespace mrpt::utils;
 
-	// assertions are handled in the caller function
+	ASSERTMSG_(m_enable_visuals,
+			"\nsave3DScene was called even thoguh enable_visuals flag is off.\nExiting...\n");
 
-	this->logStr(LVL_INFO, mrpt::format("Saving generated scene to %s", fname.c_str()));
 	COpenGLScenePtr scene = m_win->get3DSceneAndLock();
+
+	// TODO - what else is there to be excluded from the scene?
+	// remove the CPlanarLaserScan if it exists
+	{
+		CPlanarLaserScanPtr laser_scan;
+		for (; laser_scan = scene->getByClass<CPlanarLaserScan>() ;) {
+			this->logStr(LVL_DEBUG,
+					"Removing CPlanarlaserScan from generated 3DScene...");
+			scene->removeObject(laser_scan);
+		}
+
+	}
+
+	// what's the name of the file to be saved?
+	std::string fname;
+	if (fname_in) {
+		fname = *fname_in;
+	}
+	else {
+		fname = "output_scene.3DScene";
+	}
+
+	this->logFmt(LVL_INFO, "Saving generated scene to %s", fname.c_str());
 	scene->saveToFile(fname);
+
 	m_win->unlockAccess3DScene();
 	m_win->forceRepaint();
 
@@ -2291,7 +2220,8 @@ void CGraphSlamEngine<GRAPH_t>::getDescriptiveReport(std::string* report_str) co
 		m_time_logger.getMeanTime("proc_time") << std::endl;;
 	results_ss << "\tDataset Grab time: " << m_dataset_grab_time << std::endl;
 	results_ss << "\tReal-time capable: " <<
-		(m_time_logger.getMeanTime("proc_time") < m_dataset_grab_time ? "TRUE": "FALSE") << std::endl;
+		(m_time_logger.getMeanTime("proc_time") < m_dataset_grab_time ?
+		 "TRUE": "FALSE") << std::endl;
 	results_ss << m_edge_counter.getAsString();
 	results_ss << "\tNum of Nodes: " << m_graph.nodeCount() << std::endl;;
 
