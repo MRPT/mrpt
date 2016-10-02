@@ -93,8 +93,7 @@ bool CRosTopicMP::getActionObservationPairOrObservation(
 		THROW_EXCEPTION("FORMAT 1 (action-observations) is not implemented yet.");
 	}
 	else if (msg.type == client_params.msg_types["FORMAT_2"]) {
-		observation = mrpt::obs::CObservation2DRangeScan::Create();
-		msg.deserializeIntoExistingObject(observation.pointer());
+		msg.deserializeIntoNewObject(observation);
 		success=true;
 	}
 	else if (msg.type == client_params.msg_types["EXIT"]) {
