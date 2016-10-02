@@ -6,6 +6,10 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
+
+#include "TGraphSlamHandler.h"
+#include "supplementary_funs.h"
+
 #include <mrpt/obs/CRawlog.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/system/filesystem.h>
@@ -18,6 +22,9 @@
 #include <mrpt/graphs/CNetworkOfPoses.h>
 #include <mrpt/system/string_utils.h>
 #include <mrpt/graphslam.h>
+
+#include <mrpt/graphslam/CRawlogMP.h>
+#include <mrpt/graphslam/CRosTopicMP.h>
 
 #include <mrpt/otherlibs/tclap/CmdLine.h>
 
@@ -39,6 +46,7 @@ using namespace mrpt::utils;
 using namespace mrpt::graphslam;
 using namespace mrpt::graphslam::deciders;
 using namespace mrpt::graphslam::optimizers;
+using namespace mrpt::graphslam::measurement_providers;
 
 using namespace std;
 
@@ -137,7 +145,9 @@ bool checkOptimizerExists(string opt_name);
 int main(int argc, char **argv)
 {
 	try {
+		// initializign the logger instance
 		COutputLogger logger("graphslam-engine_app");
+		logger.logging_enable_keep_record = true;
 
 		bool showHelp		 = argc>1 && !os::_strcmp(argv[1],"--help");
 		bool showVersion = argc>1 && !os::_strcmp(argv[1],"--version");
@@ -256,12 +266,15 @@ int main(int argc, char **argv)
 		string edge_reg = arg_edge_reg.getValue();
 		string optimizer = arg_optimizer.getValue();
 		ASSERTMSG_(checkRegistrationDeciderExists(node_reg, "node"),
-				format("\nNode Registration Decider %s is not available.\n", node_reg.c_str()) );
+				format("\nNode Registration Decider %s is not available.\n",
+					node_reg.c_str()) );
 		checkRegistrationDeciderExists(edge_reg, "edge");
 		ASSERTMSG_(checkRegistrationDeciderExists(edge_reg, "edge"),
-				format("\nEdge Registration Decider %s is not available.\n", edge_reg.c_str()) );
+				format("\nEdge Registration Decider %s is not available.\n",
+					edge_reg.c_str()) );
 		ASSERTMSG_(checkOptimizerExists(optimizer),
-				format("\nOptimizer %s is not available\n", optimizer.c_str()) );
+				format("\nOptimizer %s is not available\n",
+					optimizer.c_str()) );
 
 		// fetch the filenames
 		// ini file
@@ -313,18 +326,75 @@ int main(int argc, char **argv)
 		logger.logStr(LVL_INFO, format("Edge registration decider: %s", edge_reg.c_str()));
 		logger.logStr(LVL_INFO, format("graphSLAM Optimizer: %s", optimizer.c_str()));
 
-		CGraphSlamEngine<CNetworkOfPoses2DInf>
-			graphslam_engine(
-					ini_fname,
-					rawlog_fname,
-					ground_truth_fname,
-					!disable_visuals.getValue(),
-					node_regs_map[node_reg](),
-					edge_regs_map[edge_reg](),
-					optimizers_map[optimizer]());
+		// Initialize class responsible for reading in the measurements
+		mrpt::graphslam::measurement_providers::CMeasurementProvider*
+			measurement_provider = NULL;
 
-		// actual call to the graphSLAM execution method
-		graphslam_engine.execGraphSlam();
+		// Decide where to read the measurements from
+		if (rawlog_fname.empty()) { // run in online mode
+			logger.logFmt(LVL_WARN, "Executing online graphSLAM");
+			measurement_provider = new CRosTopicMP();
+		}
+		else {
+			logger.logFmt(LVL_WARN, "Executing graphSLAM using rawlog files");
+			measurement_provider = new CRawlogMP();
+			dynamic_cast<CRawlogMP*>(measurement_provider)->setRawlogFname(rawlog_fname);
+		}
+		measurement_provider->loadParams(ini_fname);
+
+		// Initialization of related objects
+		// TGraphSlamHandler
+		TGraphSlamHandler graphslam_handler;
+		graphslam_handler.setOutputLoggerPtr(&logger);
+		graphslam_handler.readConfigFname(ini_fname);
+
+
+
+		// CGraphSlamEngine
+		CGraphSlamEngine<CNetworkOfPoses2DInf> graphslam_engine(
+				ini_fname,
+				rawlog_fname,
+				ground_truth_fname,
+				!disable_visuals.getValue(),
+				node_regs_map[node_reg](),
+				edge_regs_map[edge_reg](),
+				optimizers_map[optimizer]());
+
+		// Read the dataset and pass the measurements to CGraphSlamEngine
+
+		// Variables initialization
+		CActionCollectionPtr action;
+		CSensoryFramePtr observations;
+		CObservationPtr observation;
+		size_t curr_rawlog_entry;
+
+		while(measurement_provider->getActionObservationPairOrObservation(
+					action,
+					observations,
+					observation,
+					curr_rawlog_entry)) {
+
+			// actual call to the graphSLAM execution method
+			graphslam_engine.execGraphSlamStep(
+					action,
+					observations,
+					observation,
+					curr_rawlog_entry);
+
+		}
+
+		logger.logStr(LVL_WARN, "Finished graphslam execution.");
+
+		logger.logStr(LVL_INFO, "Generating overall report...");
+		graphslam_engine.generateReportFiles();
+		if (graphslam_handler.save_graph) {
+			graphslam_engine.saveGraph(&graphslam_handler.save_graph_fname);
+		}
+		if (graphslam_handler.save_3DScene) {
+			graphslam_engine.save3DScene(&graphslam_handler.save_3DScene_fname);
+		}
+
+
 
 		////////////////////////////////////////////////////////////////////////
 
@@ -453,3 +523,5 @@ bool checkOptimizerExists(string given_opt) {
 	return found;
 	MRPT_END;
 }
+
+

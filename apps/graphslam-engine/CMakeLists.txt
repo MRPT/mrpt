@@ -19,6 +19,8 @@ project(${PROJECT_NAME})
 
 set(SRC_FILES
     graphslam-engine_app.cpp
+    TGraphSlamHandler.cpp
+    supplementary_funs.cpp
     )
 
 # Define the executable target:
