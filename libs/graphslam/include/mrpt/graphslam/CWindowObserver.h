@@ -34,8 +34,13 @@ public:
 	CWindowObserver();
 	/**\brief Return a map of key code to a boolean indicating whether it was
 	 * pressed since the previous time the class was quarried.
+	 *
+	 * \note By default the codes are reset every time the method is invoked,
+	 * unless <em>reset_keypresses<\em> is set to False
 	 */
-	void returnEventsStruct(std::map<std::string, bool>* codes_to_pressed);
+	void returnEventsStruct(
+			std::map<std::string, bool>* codes_to_pressed,
+			bool reset_keypresses=true);
 	/**\brief Make new keystrokes available in the help message box.
 	 *
 	 * Classes with access to the CWindowObserver can use this method to add

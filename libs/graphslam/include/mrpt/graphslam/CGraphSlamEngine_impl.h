@@ -20,10 +20,10 @@ CGraphSlamEngine<GRAPH_t>::CGraphSlamEngine(
 		const std::string& config_file,
 		const std::string rawlog_fname/* ="" */,
 		const std::string fname_GT /* ="" */,
-		bool enable_visuals /* =true */,
-		mrpt::graphslam::deciders::CNodeRegistrationDecider<GRAPH_t>* node_reg /* =NULL */,
-		mrpt::graphslam::deciders::CEdgeRegistrationDecider<GRAPH_t>* edge_reg /* =NULL */,
-		mrpt::graphslam::optimizers::CGraphSlamOptimizer<GRAPH_t>* optimizer /* =NULL */
+		mrpt::graphslam::CWindowManager* win_manager /* = NULL */,
+		mrpt::graphslam::deciders::CNodeRegistrationDecider<GRAPH_t>* node_reg /* = NULL */,
+		mrpt::graphslam::deciders::CEdgeRegistrationDecider<GRAPH_t>* edge_reg /* = NULL */,
+		mrpt::graphslam::optimizers::CGraphSlamOptimizer<GRAPH_t>* optimizer /* = NULL */
 		):
 	m_node_registrar(node_reg),
 	m_edge_registrar(edge_reg),
@@ -31,8 +31,8 @@ CGraphSlamEngine<GRAPH_t>::CGraphSlamEngine(
 	m_config_fname(config_file),
 	m_rawlog_fname(rawlog_fname),
 	m_fname_GT(fname_GT),
-	m_enable_visuals(enable_visuals),
 	m_GT_poses_step(1),
+	m_win_manager(win_manager),
 	m_odometry_color(0, 0, 255),
 	m_GT_color(0, 255, 0),
 	m_estimated_traj_color(255, 165, 0),
@@ -73,24 +73,6 @@ CGraphSlamEngine<GRAPH_t>::~CGraphSlamEngine() {
 		}
 	}
 
-	if (m_enable_visuals) {
-
-		// keep the window open
-		if (!m_request_to_exit) {
-			while (m_win->isOpen()) {
-				mrpt::system::sleep(100);
-				m_win->forceRepaint();
-			}
-		}
-
-		// exiting actions...
-		this->logStr(LVL_DEBUG, "Releasing CDisplayWindow3D...");
-		delete m_win;
-		this->logStr(LVL_DEBUG, "Releasing CWindowObserver...");
-		delete m_win_observer;
-		this->logStr(LVL_DEBUG, "Releasing CMeasurementProvider ...");
-	}
-
 	// change back the CImage path
 	if (mrpt::system::strCmpI(m_GT_file_format, "rgbd_tum")) {
 		CImage::IMAGES_PATH_BASE = m_img_prev_path_base;
@@ -125,8 +107,11 @@ void CGraphSlamEngine<GRAPH_t>::initCGraphSlamEngine() {
 	this->logging_enable_keep_record = true;
 	this->setLoggerName(m_class_name);
 
+	// If a valid CWindowManager pointer is given then visuals are on.
+	m_enable_visuals = (m_win_manager != NULL);
 	if (m_enable_visuals) {
-		this->initVisualization();
+		m_win = m_win_manager->win;
+		m_win_observer = m_win_manager->observer;
 	}
 	else {
 		m_win = NULL;
@@ -134,10 +119,10 @@ void CGraphSlamEngine<GRAPH_t>::initCGraphSlamEngine() {
 
 		this->logStr(LVL_WARN, "Visualization is off. Running on headless mode");
 	}
+
 	// set the CDisplayWindowPlots pointer to null for starters, we don't know if
 	// we are using it
 	m_win_plot = NULL;
-	m_deformation_energy_plot_scale = 1000;
 
 	m_observation_only_dataset = false;
 
@@ -146,7 +131,6 @@ void CGraphSlamEngine<GRAPH_t>::initCGraphSlamEngine() {
 	m_graph.root = TNodeID(0);
 
 	m_program_paused  = false;
-	m_request_to_exit = false;
 	m_GT_poses_index  = 0;
 
 	// pass the necessary variables/objects to the deciders/optimizes
@@ -155,11 +139,11 @@ void CGraphSlamEngine<GRAPH_t>::initCGraphSlamEngine() {
 	m_edge_registrar->setGraphPtr(&m_graph);
 	m_optimizer->setGraphPtr(&m_graph);
 
-	// pass the window manager ptr after the instance initialization.
+	// pass the window manager pointer to the deciders/optimizer
 	// m_win_manager contains a pointer to the CDisplayWindow3D instance
-	m_node_registrar->setWindowManagerPtr(&m_win_manager);
-	m_edge_registrar->setWindowManagerPtr(&m_win_manager);
-	m_optimizer->setWindowManagerPtr(&m_win_manager);
+	m_node_registrar->setWindowManagerPtr(m_win_manager);
+	m_edge_registrar->setWindowManagerPtr(m_win_manager);
+	m_optimizer->setWindowManagerPtr(m_win_manager);
 
 	// pass a lock in case of multithreaded implementation
 	m_node_registrar->setCriticalSectionPtr(&m_graph_section);
@@ -212,7 +196,7 @@ void CGraphSlamEngine<GRAPH_t>::initCGraphSlamEngine() {
 	}
 
 	// timestamp
-	m_win_manager.assignTextMessageParameters(&m_offset_y_timestamp,
+	m_win_manager->assignTextMessageParameters(&m_offset_y_timestamp,
 			&m_text_index_timestamp);
 
 	// Configuration of various trajectories visualization
@@ -302,7 +286,7 @@ void CGraphSlamEngine<GRAPH_t>::initCGraphSlamEngine() {
 		double offset_y_total_edges, offset_y_loop_closures;
 		int text_index_total_edges, text_index_loop_closures;
 
-		m_win_manager.assignTextMessageParameters(&offset_y_total_edges,
+		m_win_manager->assignTextMessageParameters(&offset_y_total_edges,
 				&text_index_total_edges);
 
 		// register all the edge types
@@ -317,11 +301,11 @@ void CGraphSlamEngine<GRAPH_t>::initCGraphSlamEngine() {
 		for (vector<string>::const_iterator it = vec_edge_types.begin();
 				it != vec_edge_types.end();
 				++it) {
-			m_win_manager.assignTextMessageParameters(&name_to_offset_y[*it],
+			m_win_manager->assignTextMessageParameters(&name_to_offset_y[*it],
 					&name_to_text_index[*it]);
 		}
 
-		m_win_manager.assignTextMessageParameters(&offset_y_loop_closures,
+		m_win_manager->assignTextMessageParameters(&offset_y_loop_closures,
 				&text_index_loop_closures);
 
 		if (m_enable_visuals) {
@@ -329,7 +313,7 @@ void CGraphSlamEngine<GRAPH_t>::initCGraphSlamEngine() {
 			m_edge_counter.setTextMessageParams(name_to_offset_y, name_to_text_index,
 					offset_y_total_edges, text_index_total_edges,
 					offset_y_loop_closures, text_index_loop_closures);
-			m_edge_counter.setWindowManagerPtr(&m_win_manager);
+			m_edge_counter.setWindowManagerPtr(m_win_manager);
 		}
 	}
 
@@ -422,8 +406,6 @@ void CGraphSlamEngine<GRAPH_t>::execGraphSlamStep(
 				*m_init_timestamp = robot_move->timestamp;
 			}
 		}
-
-		mrpt::system::pause();
 	}
 
 
@@ -603,13 +585,13 @@ void CGraphSlamEngine<GRAPH_t>::execGraphSlamStep(
 	// mrpt::system::getCurrentTime
 	if (m_enable_visuals) {
 		if (timestamp != INVALID_TIMESTAMP) {
-			m_win_manager.addTextMessage(5,-m_offset_y_timestamp,
+			m_win_manager->addTextMessage(5,-m_offset_y_timestamp,
 					format("Simulated time: %s", timeToString(timestamp).c_str()),
 					TColorf(1.0, 1.0, 1.0),
 					/* unique_index = */ m_text_index_timestamp );
 		}
 		else {
-			m_win_manager.addTextMessage(5,-m_offset_y_timestamp,
+			m_win_manager->addTextMessage(5,-m_offset_y_timestamp,
 					format("Wall time: %s", timeToString(mrpt::system::getCurrentTime()).c_str()),
 					TColorf(1.0, 1.0, 1.0),
 					/* unique_index = */ m_text_index_timestamp );
@@ -955,7 +937,7 @@ void CGraphSlamEngine<GRAPH_t>::initRangeImageViewport() {
 
 	viewp_range = scene->createViewport("viewp_range");
 	double x,y,h,w;
-	m_win_manager.assignViewportParameters(&x, &y, &w, &h);
+	m_win_manager->assignViewportParameters(&x, &y, &w, &h);
 	viewp_range->setViewportPosition(x, y, h, w);
 
 	m_win->unlockAccess3DScene();
@@ -1001,7 +983,7 @@ void CGraphSlamEngine<GRAPH_t>::initIntensityImageViewport() {
 
 	viewp_intensity = scene->createViewport("viewp_intensity");
 	double x, y, w, h;
-	m_win_manager.assignViewportParameters(&x, &y, &w, &h);
+	m_win_manager->assignViewportParameters(&x, &y, &w, &h);
 	viewp_intensity->setViewportPosition(x, y, w, h);
 
 	m_win->unlockAccess3DScene();
@@ -1043,7 +1025,7 @@ void CGraphSlamEngine<GRAPH_t>::initCurrPosViewport() {
 	// Add a clone viewport, using [0,1] factor X,Y,Width,Height coordinates:
 	viewp->setCloneView("main");
 	double x,y,h,w;
-	m_win_manager.assignViewportParameters(&x, &y, &w, &h);
+	m_win_manager->assignViewportParameters(&x, &y, &w, &h);
 	viewp->setViewportPosition(x, y, h, w);
 	viewp->setTransparent(false);
 	viewp->getCamera().setAzimuthDegrees(90);
@@ -1316,7 +1298,6 @@ void CGraphSlamEngine<GRAPH_t>::queryObserverForEvents() {
 
 	std::map<std::string, bool> events_occurred;
 	m_win_observer->returnEventsStruct(&events_occurred);
-	m_request_to_exit = events_occurred["Ctrl+c"];
 
 	// odometry visualization
 	if (events_occurred[m_keystroke_odometry]) {
@@ -1353,6 +1334,7 @@ void CGraphSlamEngine<GRAPH_t>::queryObserverForEvents() {
 	}
 
 	// notify the deciders/optimizer of any events they may be interested in
+	MRPT_LOG_DEBUG_STREAM << "Notifying deciders/optimizer for events";
 	m_node_registrar->notifyOfWindowEvents(events_occurred);
 	m_edge_registrar->notifyOfWindowEvents(events_occurred);
 	m_optimizer->notifyOfWindowEvents(events_occurred);
@@ -1633,34 +1615,6 @@ void CGraphSlamEngine<GRAPH_t>::decimateLaserScan(
 }
 
 template<class GRAPH_t>
-void CGraphSlamEngine<GRAPH_t>::initVisualization() {
-	MRPT_START;
-	ASSERT_(m_enable_visuals);
-	using namespace mrpt::opengl;
-	using namespace mrpt::gui;
-	using namespace mrpt::utils;
-
-	m_win_observer = new CWindowObserver();
-	m_win = new CDisplayWindow3D("GraphSlam building procedure", 800, 600);
-	m_win->setPos(400, 200);
-	m_win_observer->observeBegin(*m_win);
-	{
-		COpenGLScenePtr &scene = m_win->get3DSceneAndLock();
-		COpenGLViewportPtr main_view = scene->getViewport("main");
-		m_win_observer->observeBegin( *main_view );
-		m_win->unlockAccess3DScene();
-	}
-
-	this->logStr(LVL_DEBUG, "Initialized CDisplayWindow3D...");
-	this->logStr(LVL_DEBUG, "Listening to CDisplayWindow3D events...");
-
-	m_win_manager.setCDisplayWindow3DPtr(m_win);
-	m_win_manager.setWindowObserverPtr(m_win_observer);
-
-	MRPT_END;
-}
-
-template<class GRAPH_t>
 void CGraphSlamEngine<GRAPH_t>::initGTVisualization() {
 	MRPT_START;
 	using namespace mrpt::utils;
@@ -1695,10 +1649,10 @@ void CGraphSlamEngine<GRAPH_t>::initGTVisualization() {
 	scene->insert(robot_model);
 	m_win->unlockAccess3DScene();
 
-	m_win_manager.assignTextMessageParameters(
+	m_win_manager->assignTextMessageParameters(
 			/* offset_y*		= */ &m_offset_y_GT,
 			/* text_index* = */ &m_text_index_GT);
-	m_win_manager.addTextMessage(5,-m_offset_y_GT,
+	m_win_manager->addTextMessage(5,-m_offset_y_GT,
 			mrpt::format("Ground truth path"),
 			TColorf(m_GT_color),
 			/* unique_index = */ m_text_index_GT );
@@ -1775,10 +1729,10 @@ void CGraphSlamEngine<GRAPH_t>::initOdometryVisualization() {
 	scene->insert(robot_model);
 	m_win->unlockAccess3DScene();
 
-	m_win_manager.assignTextMessageParameters(
+	m_win_manager->assignTextMessageParameters(
 			/* offset_y* = */ &m_offset_y_odometry,
 			/* text_index* = */ &m_text_index_odometry);
-	m_win_manager.addTextMessage(5,-m_offset_y_odometry,
+	m_win_manager->addTextMessage(5,-m_offset_y_odometry,
 			mrpt::format("Odometry path"),
 			TColorf(m_odometry_color),
 			/* unique_index = */ m_text_index_odometry );
@@ -1852,9 +1806,9 @@ void CGraphSlamEngine<GRAPH_t>::initEstimatedTrajectoryVisualization() {
 	m_win->unlockAccess3DScene();
 
 	if (m_visualize_estimated_trajectory) {
-		m_win_manager.assignTextMessageParameters( /* offset_y* = */ &m_offset_y_estimated_traj,
+		m_win_manager->assignTextMessageParameters( /* offset_y* = */ &m_offset_y_estimated_traj,
 				/* text_index* = */ &m_text_index_estimated_traj);
-		m_win_manager.addTextMessage(5,-m_offset_y_estimated_traj,
+		m_win_manager->addTextMessage(5,-m_offset_y_estimated_traj,
 				mrpt::format("Estimated trajectory"),
 				TColorf(m_estimated_traj_color),
 				/* unique_index = */ m_text_index_estimated_traj );
@@ -2041,7 +1995,7 @@ void CGraphSlamEngine<GRAPH_t>::save3DScene(
 	using namespace mrpt::utils;
 
 	ASSERTMSG_(m_enable_visuals,
-			"\nsave3DScene was called even thoguh enable_visuals flag is off.\nExiting...\n");
+			"\nsave3DScene was called even though enable_visuals flag is off.\nExiting...\n");
 
 	COpenGLScenePtr scene = m_win->get3DSceneAndLock();
 
@@ -2081,8 +2035,6 @@ void CGraphSlamEngine<GRAPH_t>::computeSlamMetric(mrpt::utils::TNodeID nodeID, s
 	using namespace mrpt::utils;
 	using namespace mrpt::math;
 
-	// TODO - recheck this function
-
 	// start updating the metric after a certain number of nodes have been added
 	if ( m_graph.nodeCount() < 4 ) {
 		return;
@@ -2109,7 +2061,8 @@ void CGraphSlamEngine<GRAPH_t>::computeSlamMetric(mrpt::utils::TNodeID nodeID, s
 	// first element of map
 	//std::map<mrpt::utils::TNodeID, size_t>::const_iterator start_it =
 		//std::next(m_nodeID_to_gt_indices.begin(), 1);
-	std::map<mrpt::utils::TNodeID, size_t>::const_iterator start_it = m_nodeID_to_gt_indices.begin();
+	std::map<mrpt::utils::TNodeID, size_t>::const_iterator start_it =
+		m_nodeID_to_gt_indices.begin();
 	start_it++;
 
 

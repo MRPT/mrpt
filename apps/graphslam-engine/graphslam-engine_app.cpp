@@ -348,6 +348,10 @@ int main(int argc, char **argv)
 		graphslam_handler.setOutputLoggerPtr(&logger);
 		graphslam_handler.readConfigFname(ini_fname);
 
+		// initialize visuals
+		if (!disable_visuals.getValue()) {
+			graphslam_handler.initVisualization();
+		}
 
 
 		// CGraphSlamEngine
@@ -355,7 +359,7 @@ int main(int argc, char **argv)
 				ini_fname,
 				rawlog_fname,
 				ground_truth_fname,
-				!disable_visuals.getValue(),
+				graphslam_handler.win_manager,
 				node_regs_map[node_reg](),
 				edge_regs_map[edge_reg](),
 				optimizers_map[optimizer]());
@@ -374,6 +378,11 @@ int main(int argc, char **argv)
 					observation,
 					curr_rawlog_entry)) {
 
+			bool break_exec = graphslam_handler.queryObserverForEvents();
+			if (break_exec) {
+				break;
+			}
+
 			// actual call to the graphSLAM execution method
 			graphslam_engine.execGraphSlamStep(
 					action,
@@ -390,10 +399,9 @@ int main(int argc, char **argv)
 		if (graphslam_handler.save_graph) {
 			graphslam_engine.saveGraph(&graphslam_handler.save_graph_fname);
 		}
-		if (graphslam_handler.save_3DScene) {
+		if (!disable_visuals.getValue() && graphslam_handler.save_3DScene) {
 			graphslam_engine.save3DScene(&graphslam_handler.save_3DScene_fname);
 		}
-
 
 
 		////////////////////////////////////////////////////////////////////////

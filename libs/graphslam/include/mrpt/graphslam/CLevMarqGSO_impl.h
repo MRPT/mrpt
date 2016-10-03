@@ -170,9 +170,16 @@ void CLevMarqGSO<GRAPH_t>::updateVisuals() {
 
 template<class GRAPH_t>
 void CLevMarqGSO<GRAPH_t>::notifyOfWindowEvents(
-		const std::map<std::string, bool> events_occurred)
+		const std::map<std::string, bool>& events_occurred)
 {
 	MRPT_START;
+	using namespace std;
+
+	//// print the keys for debuggging reasons
+	//for (std::map<std::string, bool>::const_iterator cit = events_occurred.begin();
+			//cit != events_occurred.end(); ++cit) {
+		//cout << "\t" << cit->first << " ==> " << cit->second << endl;
+	//}
 
 	// I know the keys exists - I put it there explicitly
 
@@ -191,11 +198,13 @@ void CLevMarqGSO<GRAPH_t>::notifyOfWindowEvents(
 
 	// if mouse event, let the user decide about the camera
 	if (events_occurred.find("mouse_clicked")->second) {
+		MRPT_LOG_DEBUG_STREAM << "Mouse was clicked. Disabling autozoom.";
 		m_autozoom_active = false;
 	}
 
 	// autofit the graph once
 	if (events_occurred.find(viz_params.keystroke_graph_autofit)->second) {
+		MRPT_LOG_DEBUG_STREAM << "Autofit button was pressed";
 		this->fitGraphInView();
 	}
 

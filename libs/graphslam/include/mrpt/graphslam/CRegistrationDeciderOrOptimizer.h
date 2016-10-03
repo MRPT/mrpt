@@ -97,7 +97,7 @@ class CRegistrationDeciderOrOptimizer : public mrpt::utils::COutputLogger {
 		 * fetch the parameters that it is interested in.
 		 */
 		virtual void notifyOfWindowEvents(
-				const std::map<std::string, bool>& events_occurred) { }
+				const std::map<std::string, bool>& events_occurred) {}
 		/**\brief Load the necessary for the decider/optimizer configuration parameters.
 		 */
 		virtual void loadParams(const std::string& source_fname) {}

@@ -240,15 +240,15 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		 * // TODO add the deciders/optimizer
 		 *
 		 *
-		 * \note If enable_visuals is set to false, the application runs on <em>
-		 * headless mode </em>. In this case, no visual feedback is given but
-		 * application receives a big boost in performance
+		 * \note If a NULL CWindowManager pointer is porovided, the application
+		 * runs on <em> headless mode </em>. In this case, no visual feedback is
+		 * given but application receives a big boost in performance
 		 */
 		CGraphSlamEngine(
 				const std::string& config_file,
 				const std::string rawlog_fname="",
 				const std::string fname_GT="",
-				bool enable_visuals=true,
+				mrpt::graphslam::CWindowManager* win_manager=NULL,
 				mrpt::graphslam::deciders::CNodeRegistrationDecider<GRAPH_t>* node_reg=NULL,
 				mrpt::graphslam::deciders::CEdgeRegistrationDecider<GRAPH_t>* edge_reg=NULL,
 				mrpt::graphslam::optimizers::CGraphSlamOptimizer<GRAPH_t>* optimizer=NULL
@@ -417,9 +417,6 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		 */
 		/**\{*/
 
-		/**\brief If \b m_enable_visuals is specified then initialize the primitive
-		 * openGL/gui objects related to visualization.
-		 */
 		void initVisualization();
 
 		void initRangeImageViewport();
@@ -583,11 +580,11 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 
 		/**\name Visualization - related objects */
 		/**\{*/
+		mrpt::graphslam::CWindowManager* m_win_manager;
 		mrpt::gui::CDisplayWindow3D* m_win;
 		mrpt::graphslam::CWindowObserver* m_win_observer;
 		/**\brief DisplayPlots instance for visualizing the evolution of the SLAM metric */
 		mrpt::gui::CDisplayWindowPlots* m_win_plot;
-		mrpt::graphslam::CWindowManager m_win_manager;
 		/**\}*/
 
 		/** \name Visualization - related flags
@@ -609,7 +606,6 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		bool m_enable_range_viewport;
 		/**\}*/
 
-		bool m_request_to_exit;
 		bool m_program_paused;
 
 		/**\name textMessage - related Parameters
@@ -706,10 +702,6 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		std::map<mrpt::utils::TNodeID, size_t> m_nodeID_to_gt_indices;
 		double m_curr_deformation_energy;
 		std::vector<double> m_deformation_energy_vec;
-		/** How much should I scale up the deformation energy values so that they
-		 * can be visualized appropriately in the displayPlots window
-		 */
-		size_t m_deformation_energy_plot_scale;
 		/**\}*/
 
 		/**\brief Struct responsible for keeping the parameters of the .info file

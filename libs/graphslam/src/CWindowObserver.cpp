@@ -35,15 +35,19 @@ CWindowObserver::CWindowObserver() :
 }
 
 
-void CWindowObserver::returnEventsStruct(std::map<std::string, bool>* codes_to_pressed) {
+void CWindowObserver::returnEventsStruct(
+		std::map<std::string, bool>* codes_to_pressed,
+		bool reset_keypresses /*= true */) {
 	*codes_to_pressed = m_key_codes_to_pressed;
 
 	// reset the code flags
-	for ( std::map<std::string, bool>::iterator map_it = 
-			m_key_codes_to_pressed.begin(); map_it != m_key_codes_to_pressed.end();
-			++map_it ) {
-		map_it->second = false;
-	}
+	if (reset_keypresses) {
+		for ( std::map<std::string, bool>::iterator map_it = 
+				m_key_codes_to_pressed.begin(); map_it != m_key_codes_to_pressed.end();
+				++map_it ) {
+			map_it->second = false;
+		}
+}
 }
 
 void CWindowObserver::registerKeystroke(const std::string key_str, const std::string key_desc) {
