@@ -38,6 +38,8 @@ public:
 	void setOutputLoggerPtr(mrpt::utils::COutputLogger* logger);
 	void initVisualization();
 
+	void setRawlogFname(std::string rawlog_fname);
+
 	/**\brief Query the CWindowObserver instance for any pressed keys that might
 	 * be of interest (e.g. <C-c>)
 	 *
@@ -50,6 +52,8 @@ public:
 
 	bool save_graph;
 	bool save_3DScene;
+
+	std::string rawlog_fname;
 
 	std::string save_graph_fname;
 	std::string save_3DScene_fname;

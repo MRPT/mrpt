@@ -23,9 +23,13 @@ TGraphSlamHandler::~TGraphSlamHandler() {
 
 	using namespace mrpt::utils;
 
-	logger->logFmt(LVL_WARN, "Application shall close whe the display window is closed.\nWaiting...");
+	logger->logFmt(LVL_WARN,
+			"graphslam-engine has finished. Application will exit when the display window is closed.");
+
 	// keep the window open until user closes it.
-	while (win->isOpen()) {
+	bool break_exec = false;
+	while (win->isOpen() && break_exec == false) {
+		break_exec = this->queryObserverForEvents();
 		mrpt::system::sleep(100);
 		win->forceRepaint();
 	}
@@ -96,21 +100,40 @@ void TGraphSlamHandler::getParamsAsString(std::string* str) const {
 
 	stringstream ss_out("");
 
+	ss_out << "\n------------[ graphslam-engine_app Parameters ]------------"
+		<< std::endl;
+
 	// general configuration parameters
+	ss_out << "User decides about output dir?  = "
+		<< (user_decides_about_output_dir ? "TRUE" : "FALSE")
+		<< std::endl;
+	ss_out << "Output directory                = "
+		<< output_dir_fname
+		<< std::endl;
 	ss_out << "Generate .graph file?           = "
-		<< ( save_graph? "TRUE" : "FALSE" )  << std::endl;
+		<< ( save_graph? "TRUE" : "FALSE" )
+		<< std::endl;
 	ss_out << "Generate .3DScene file?         = "
-		<< ( save_3DScene? "TRUE" : "FALSE" ) << std::endl;
+		<< ( save_3DScene? "TRUE" : "FALSE" )
+		<< std::endl;
 	if (save_graph) {
 		ss_out << "Generated .graph filename       = "
-			<< save_graph_fname << std::endl;
+			<< save_graph_fname
+			<< std::endl;
 	}
 	if (save_3DScene) {
 		ss_out << "Generated .3DScene filename     = "
 			<< save_3DScene_fname << std::endl;
 	}
+	ss_out << "Rawlog filename                 = "
+		<< rawlog_fname
+		<< std::endl;
 
 	*str = ss_out.str();
+}
+
+void TGraphSlamHandler::setRawlogFname(std::string rawlog_fname) {
+	this->rawlog_fname = rawlog_fname;
 }
 
 std::string TGraphSlamHandler::getParamsAsString() const {
