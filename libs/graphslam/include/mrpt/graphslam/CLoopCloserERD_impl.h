@@ -185,6 +185,9 @@ void CLoopCloserERD<GRAPH_t>::addScanMatchingEdges(mrpt::utils::TNodeID curr_nod
 		constraint_t rel_edge;
 		mrpt::slam::CICP::TReturnInfo icp_info;
 
+		MRPT_LOG_DEBUG_STREAM << "Fetching laser scan for nodes: " << *node_it <<
+			" ==> " << curr_nodeID;
+
 		this->getICPEdge(
 				*node_it,
 				curr_nodeID,

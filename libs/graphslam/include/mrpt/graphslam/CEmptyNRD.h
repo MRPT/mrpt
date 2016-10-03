@@ -29,6 +29,7 @@ template<class GRAPH_t=typename mrpt::graphs::CNetworkOfPoses2DInf>
 class CEmptyNRD:
 	public mrpt::graphslam::deciders::CNodeRegistrationDecider<GRAPH_t>
 {
+	typedef typename GRAPH_t::constraint_t::type_value pose_t;
 	public:
 		CEmptyNRD();
 		~CEmptyNRD();
@@ -36,6 +37,7 @@ class CEmptyNRD:
 		bool updateState( mrpt::obs::CActionCollectionPtr action,
 				mrpt::obs::CSensoryFramePtr observations,
 				mrpt::obs::CObservationPtr observation );
+		pose_t getCurrentRobotPosEstimation() const;
 
 	private:
 		void registerNewNode();
@@ -57,6 +59,10 @@ bool CEmptyNRD<GRAPH_t>::updateState(
 
 template<class GRAPH_t>
 void CEmptyNRD<GRAPH_t>::registerNewNode() { }
+
+template<class GRAPH_t>
+typename GRAPH_t::constraint_t::type_value
+CEmptyNRD<GRAPH_t>::getCurrentRobotPosEstimation() const {return pose_t();}
 
 } } } // end of namespaces
 

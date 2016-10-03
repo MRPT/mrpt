@@ -349,7 +349,6 @@ int main(int argc, char **argv)
 					observation,
 					curr_rawlog_entry);
 
-
 		}
 		logger.logFmt(LVL_WARN, "Finished graphslam execution.");
 
