@@ -79,6 +79,18 @@ CICPCriteriaNRD<GRAPH_t>::~CICPCriteriaNRD() {
 }
 
 template<class GRAPH_t>
+typename GRAPH_t::constraint_t::type_value
+CICPCriteriaNRD<GRAPH_t>::getCurrentRobotPosEstimation() const {
+	MRPT_START;
+	
+	mrpt::utils::TNodeID from = m_nodeID_max;
+	return m_graph->nodes.find(from)->second +
+		m_since_prev_node_PDF.getMeanVal();
+
+	MRPT_END;
+}
+
+template<class GRAPH_t>
 bool CICPCriteriaNRD<GRAPH_t>::updateState(
 		mrpt::obs::CActionCollectionPtr action,
 		mrpt::obs::CSensoryFramePtr observations,
@@ -369,10 +381,10 @@ void CICPCriteriaNRD<GRAPH_t>::registerNewNode() {
 	mrpt::utils::TNodeID from = m_nodeID_max;
 	mrpt::utils::TNodeID to = ++m_nodeID_max;
 
-	m_graph->nodes[to] = m_graph->nodes[from] + m_since_prev_node_PDF.getMeanVal();
+	m_graph->nodes[to] = this->getCurrentRobotPosEstimation();
 	m_graph->insertEdgeAtEnd(from, to, m_since_prev_node_PDF);
 
-	this->logStr(mrpt::utils::LVL_INFO, format("Registered new node:\n\t%lu => %lu\n\tEdge: %s",
+	this->logStr(mrpt::utils::LVL_DEBUG, format("Registered new node:\n\t%lu => %lu\n\tEdge: %s",
 				from, to, m_since_prev_node_PDF.getMeanVal().asString().c_str()));
 
 	MRPT_END;

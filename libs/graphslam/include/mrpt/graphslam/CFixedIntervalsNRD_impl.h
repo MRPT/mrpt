@@ -55,6 +55,12 @@ CFixedIntervalsNRD<GRAPH_t>::~CFixedIntervalsNRD() { }
 //////////////////////////////////////////////////////////////
 
 template<class GRAPH_t>
+typename GRAPH_t::constraint_t::type_value
+CFixedIntervalsNRD<GRAPH_t>::getCurrentRobotPosEstimation() const {
+	return m_curr_estimated_pose;
+}
+
+template<class GRAPH_t>
 bool CFixedIntervalsNRD<GRAPH_t>::updateState(
 		mrpt::obs::CActionCollectionPtr action,
 		mrpt::obs::CSensoryFramePtr observations,

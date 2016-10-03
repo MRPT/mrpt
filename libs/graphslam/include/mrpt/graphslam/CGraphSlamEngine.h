@@ -241,7 +241,7 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		/**\brief Query CGraphSlamEngine instance for the current estimated robot
 		 * position
 		 */
-		pose_t getCurrentRobotPosEstimation();
+		pose_t getCurrentRobotPosEstimation() const;
 		/**\brief Wrapper method around the GRAPH_t::saveToTextFile method.
 		 * Method saves the graph in the format used by TORO & HoG-man strategies
 		 *

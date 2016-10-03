@@ -95,14 +95,13 @@ CGraphSlamEngine<GRAPH_t>::~CGraphSlamEngine() {
 
 
 template<class GRAPH_t>
-pose_t CGraphSlamEngine<GRAPH_t>::getCurrentRobotPosEstimation() {
+typename GRAPH_t::constraint_t::type_value
+CGraphSlamEngine<GRAPH_t>::getCurrentRobotPosEstimation() const {
 	MRPT_START;
 
 	mrpt::synch::CCriticalSectionLocker m_graph_lock(&m_graph_section);
-	// get the last added pose
-	pose_t curr_robot_pose = m_graph.nodes.find(m_graph.nodeCount()-1)->second;
+	return m_node_registrar->getCurrentRobotPosEstimation();
 
-	return curr_robot_pose;
 	MRPT_END;
 }
 
@@ -389,7 +388,6 @@ bool CGraphSlamEngine<GRAPH_t>::execGraphSlamStep(
 	if (!m_init_timestamp) {
 		MRPT_LOG_DEBUG_STREAM << "execGraphSlamStep: first run";
 		m_init_timestamp = new mrpt::system::TTimeStamp;
-		*m_init_timestamp = observation->timestamp;
 
 		if (observation.present()) {
 			MRPT_LOG_DEBUG_STREAM << "Observation only dataset!";

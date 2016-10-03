@@ -50,6 +50,10 @@ class CNodeRegistrationDecider : public mrpt::graphslam::CRegistrationDeciderOrO
 		/**\brief Default class destructor.*/
 		virtual ~CNodeRegistrationDecider() {};
 
+		/** \return Latest estimated robot position
+		 */
+		virtual pose_t getCurrentRobotPosEstimation() const = 0;
+
 		/**\brief Generic method for fetching the incremental action-observations (or
 		 * observation-only) depending on the rawlog format readings from the
 		 * calling function.

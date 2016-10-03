@@ -117,8 +117,11 @@ class CICPCriteriaNRD:
 		typedef mrpt::math::CMatrixFixedNumeric<double,
 						constraint_t::state_length,
 						constraint_t::state_length> InfMat;
-		/**\brief Typedef for accessing methods of the RangeScanRegistrationDecider_t parent class. */
-		typedef mrpt::graphslam::deciders::CRangeScanRegistrationDecider<GRAPH_t> range_scanner_t;
+		/**\brief Typedef for accessing methods of the RangeScanRegistrationDecider
+		 * parent class.
+		 */
+		typedef mrpt::graphslam::deciders::CRangeScanRegistrationDecider<GRAPH_t>
+			range_scanner_t;
 		typedef CICPCriteriaNRD<GRAPH_t> decider_t; /**< self type - Handy typedef */
 
 		/**\brief Class constructor */
@@ -130,6 +133,8 @@ class CICPCriteriaNRD:
 		void loadParams(const std::string& source_fname);
 		void printParams() const;
 		void getDescriptiveReport(std::string* report_str) const;
+
+		pose_t getCurrentRobotPosEstimation() const;
 
 		/**\brief Update the decider state using the latest dataset measurements.
 		 *

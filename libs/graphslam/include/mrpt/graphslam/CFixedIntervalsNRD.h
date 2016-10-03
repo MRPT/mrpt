@@ -97,6 +97,7 @@ class CFixedIntervalsNRD:
 		void loadParams(const std::string& source_fname);
 		void printParams() const;
 		void getDescriptiveReport(std::string* report_str) const;
+		pose_t getCurrentRobotPosEstimation() const;
 
 		/**\brief Method makes use of the CActionCollection/CObservation to update the
 		 * odometry estimation from the last inserted pose
