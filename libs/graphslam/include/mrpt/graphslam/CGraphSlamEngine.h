@@ -238,6 +238,10 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 
 		// Public function definitions
 		//////////////////////////////////////////////////////////////
+		/**\brief Query CGraphSlamEngine instance for the current estimated robot
+		 * position
+		 */
+		pose_t getCurrentRobotPosEstimation();
 		/**\brief Wrapper method around the GRAPH_t::saveToTextFile method.
 		 * Method saves the graph in the format used by TORO & HoG-man strategies
 		 *
@@ -371,7 +375,7 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		 *
 		 * \sa CGraphSlamEngine::initResultsFile
 		 */
-		void initOutputDir(std::string output_dir_fname="graphslam_results");
+		void initOutputDir(const std::string& output_dir_fname="graphslam_results");
 		/**\brief Automate the creation and initialization of a results file relevant to
 		 * the application.
 		 *
@@ -725,8 +729,6 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		 * pressed by pressign ctrl-c)
 		 */
 		bool m_request_to_exit;
-
-
 
 		const std::string m_class_name;
 };

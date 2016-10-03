@@ -93,6 +93,20 @@ CGraphSlamEngine<GRAPH_t>::~CGraphSlamEngine() {
 // Member functions implementations
 //////////////////////////////////////////////////////////////
 
+
+template<class GRAPH_t>
+pose_t CGraphSlamEngine<GRAPH_t>::getCurrentRobotPosEstimation() {
+	MRPT_START;
+
+	mrpt::synch::CCriticalSectionLocker m_graph_lock(&m_graph_section);
+	// get the last added pose
+	pose_t curr_robot_pose = m_graph.nodes.find(m_graph.nodeCount()-1)->second;
+
+	return curr_robot_pose;
+	MRPT_END;
+}
+
+
 template<class GRAPH_t>
 void CGraphSlamEngine<GRAPH_t>::initCGraphSlamEngine() {
 	MRPT_START;
@@ -800,7 +814,7 @@ void CGraphSlamEngine<GRAPH_t>::printParams() const {
 
 template<class GRAPH_t>
 void CGraphSlamEngine<GRAPH_t>::initOutputDir(
-		std::string output_dir_fname /* = graphslam_results */) {
+		const std::string& output_dir_fname /* = graphslam_results */) {
 	MRPT_START;
 	using namespace std;
 	using namespace mrpt::utils;
@@ -1040,15 +1054,9 @@ inline void CGraphSlamEngine<GRAPH_t>::updateCurrPosViewport() {
 
 	ASSERT_(m_enable_visuals);
 
-	pose_t curr_robot_pose;
-	{
-		mrpt::synch::CCriticalSectionLocker m_graph_lock(&m_graph_section);
-		// get the last added pose
-		curr_robot_pose = m_graph.nodes.find(m_graph.nodeCount()-1)->second;
-	}
+	pose_t curr_robot_pose = this->getCurrentRobotPosEstimation();
 
 	COpenGLScenePtr scene = m_win->get3DSceneAndLock();
-
 	COpenGLViewportPtr viewp = scene->getViewport("curr_robot_pose_viewport");
 	viewp->getCamera().setPointingAt(CPose3D(curr_robot_pose));
 
