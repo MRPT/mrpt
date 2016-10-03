@@ -253,7 +253,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 
 		// Compute target location relative to current robot pose:
 		// ---------------------------------------------------------------------
-		const CPose2D relTarget = CPose2D(m_navigationParams->target) - CPose2D(m_curPoseVel.pose);
+		const TPose2D relTarget = TPose2D(CPose2D(m_navigationParams->target) - CPose2D(m_curPoseVel.pose));
 
 		STEP1_InitPTGs(); // Will only recompute if "m_PTGsMustBeReInitialized==true"
 
@@ -331,144 +331,17 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 			//  STEP3(a): Transform target location into TP-Space for each PTG
 			// -----------------------------------------------------------------------------
 			CParameterizedTrajectoryGenerator * ptg = getPTG(indexPTG);
-			ASSERT_(ptg)
 			TInfoPerPTG &ipf = m_infoPerPTG[indexPTG];
 
 			// The picked movement in TP-Space (to be determined by holonomic method below)
 			THolonomicMovement &holonomicMovement = holonomicMovements[indexPTG];
-			holonomicMovement.PTG = ptg;
 
-			// If the user doesn't want to use this PTG, just mark it as invalid:
-			ipf.valid_TP = true;
-			{
-				const TNavigationParamsPTG * navp = dynamic_cast<const TNavigationParamsPTG*>(m_navigationParams);
-				if (navp && !navp->restrict_PTG_indices.empty())
-				{
-					bool use_this_ptg = false;
-					for (size_t i=0;i<navp->restrict_PTG_indices.size() && !use_this_ptg;i++) {
-						if (navp->restrict_PTG_indices[i]==indexPTG)
-							use_this_ptg = true;
-					}
-					ipf.valid_TP = use_this_ptg;
-				}
-			}
-
-			double timeForTPObsTransformation=.0, timeForHolonomicMethod=.0;
-
-			// Normal PTG validity filter: check if target falls into the PTG domain:
-			if (ipf.valid_TP)
-			{
-				ipf.valid_TP = ptg->inverseMap_WS2TP(relTarget.x(),relTarget.y(),ipf.target_k,ipf.target_dist);
-			}
-
-			if (!ipf.valid_TP)
-			{
-				ipf.target_k=0;
-				ipf.target_dist=0;
-
-				{   // Invalid PTG (target out of reachable space):
-					// - holonomicMovement= Leave default values
-					HLFR = CLogFileRecord_VFF::Create();
-				}
-			}
-			else
-			{
-				ipf.target_alpha = ptg->index2alpha(ipf.target_k);
-				ipf.TP_Target.x = cos(ipf.target_alpha) * ipf.target_dist;
-				ipf.TP_Target.y = sin(ipf.target_alpha) * ipf.target_dist;
-
-				//  STEP3(b): Build TP-Obstacles
-				// -----------------------------------------------------------------------------
-				{
-					tictac.Tic();
-
-					// Initialize TP-Obstacles:
-					const size_t Ki = ptg->getAlphaValuesCount();
-					ptg->initTPObstacles(ipf.TP_Obstacles);
-
-					// Implementation-dependent conversion:
-					STEP3_WSpaceToTPSpace(indexPTG, ipf.TP_Obstacles, rel_pose_PTG_origin_wrt_sense);
-
-					// Distances in TP-Space are normalized to [0,1]:
-					const double _refD = 1.0/ptg->getRefDistance();
-					for (size_t i=0;i<Ki;i++) ipf.TP_Obstacles[i] *= _refD;
-
-					timeForTPObsTransformation= tictac.Tac();
-					if (m_timelogger.isEnabled())
-						m_timelogger.registerUserMeasure("navigationStep.STEP3_WSpaceToTPSpace",timeForTPObsTransformation);
-				}
-
-				//  STEP4: Holonomic navigation method
-				// -----------------------------------------------------------------------------
-				{
-					tictac.Tic();
-
-					ASSERT_(m_holonomicMethod[indexPTG])
-					m_holonomicMethod[indexPTG]->navigate(
-						ipf.TP_Target,     // Normalized [0,1]
-						ipf.TP_Obstacles,  // Normalized [0,1]
-						1.0, // Was: ptg->getMax_V_inTPSpace(),
-						holonomicMovement.direction,
-						holonomicMovement.speed,
-						HLFR, 
-						1.0 /* max obstacle dist*/ );
-
-					MRPT_TODO("Honor targetIsIntermediaryWaypoint wrt approaching slow down")
-
-					// Security: Scale down the velocity when heading towards obstacles,
-					//  such that it's assured that we never go thru an obstacle!
-					const int kDirection = static_cast<int>( holonomicMovement.PTG->alpha2index( holonomicMovement.direction ) );
-					const double obsFreeNormalizedDistance = ipf.TP_Obstacles[kDirection];
-					double velScale = 1.0;
-					ASSERT_(secureDistanceEnd>secureDistanceStart);
-					if (obsFreeNormalizedDistance<secureDistanceEnd)
-					{
-						if (obsFreeNormalizedDistance<=secureDistanceStart)
-							 velScale = 0.0; // security stop
-						else velScale = (obsFreeNormalizedDistance-secureDistanceStart)/(secureDistanceEnd-secureDistanceStart);
-					}
-
-					// Scale:
-					holonomicMovement.speed *= velScale;
-
-					timeForHolonomicMethod = tictac.Tac();
-					if (m_timelogger.isEnabled())
-						m_timelogger.registerUserMeasure("navigationStep.STEP4_HolonomicMethod",timeForHolonomicMethod);
-				}
-
-				// STEP5: Evaluate each movement to assign them a "evaluation" value.
-				// ---------------------------------------------------------------------
-				{
-					CTimeLoggerEntry tle(m_timelogger,"navigationStep.STEP5_PTGEvaluator");
-
-					STEP5_PTGEvaluator(
-						holonomicMovement,
-						ipf.TP_Obstacles,
-						TPose2D(relTarget),
-						ipf.TP_Target,
-						newLogRec.infoPerPTG[indexPTG]);
-				}
-
-
-			} // end "valid_TP"
-
-			// Logging:
-			if (fill_log_record)
-			{
-				metaprogramming::copy_container_typecasting(ipf.TP_Obstacles, newLogRec.infoPerPTG[indexPTG].TP_Obstacles);
-				CLogFileRecord::TInfoPerPTG &ipp = newLogRec.infoPerPTG[indexPTG];
-				ipp.PTG_desc  = ptg->getDescription();
-				ipp.TP_Target = ipf.TP_Target;
-				ipp.HLFR	     = HLFR;
-				ipp.desiredDirection = holonomicMovement.direction;
-				ipp.desiredSpeed     = holonomicMovement.speed;
-				ipp.evaluation       = holonomicMovement.evaluation;
-				ipp.timeForTPObsTransformation = timeForTPObsTransformation;
-				ipp.timeForHolonomicMethod     = timeForHolonomicMethod;
-			}
-
+			ptg_eval_target_build_obstacles(
+				ptg, indexPTG, 
+				relTarget, rel_pose_PTG_origin_wrt_sense,
+				ipf, holonomicMovement,
+				HLFR, newLogRec);
 		} // end for each PTG
-
 
 		// Round #2: Evaluate dont sending any new velocity command ("NOP" motion)
 		// =========
@@ -476,9 +349,36 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 		const bool can_do_nop_motion = (m_lastSentVelCmd.isValid() &&
 			getPTG(m_lastSentVelCmd.ptg_index)->supportVelCmdNOP());
 
+		CPose2D relPoseVelCmd_NOP;
+
 		if (can_do_nop_motion)
 		{
 			MRPT_TODO("Implement");
+
+			CPose3D robot_pose3d_at_send_cmd;
+			bool valid_pose;
+			m_latestPoses.interpolate(m_lastSentVelCmd.tim_send_cmd_vel, robot_pose3d_at_send_cmd, valid_pose);
+			if (valid_pose)
+			{
+				const CPose2D robot_pose_at_send_cmd = CPose2D(robot_pose3d_at_send_cmd);
+				MRPT_LOG_DEBUG_STREAM << "Eval NOP motion: robot_pose_at_send_cmd=" << robot_pose_at_send_cmd;
+
+				CParameterizedTrajectoryGenerator * ptg = getPTG(m_lastSentVelCmd.ptg_index);
+				TInfoPerPTG ipf_NOP;
+				const TPose2D relTarget_NOP = TPose2D(CPose2D(m_navigationParams->target) - robot_pose_at_send_cmd);
+				const CPose2D rel_pose_PTG_origin_wrt_sense_NOP = robot_pose_at_send_cmd - (m_curPoseVel.pose + relPoseSense);
+				relPoseVelCmd_NOP = robot_pose_at_send_cmd - m_curPoseVel.pose;  // for logging
+
+				THolonomicMovement holonomicMovement;
+				CHolonomicLogFileRecordPtr HLFR;
+
+				ptg_eval_target_build_obstacles(
+					ptg, m_lastSentVelCmd.ptg_index,
+					relTarget_NOP, rel_pose_PTG_origin_wrt_sense_NOP,
+					ipf_NOP, holonomicMovement,
+					HLFR, newLogRec);
+
+			} // end valid interpolated origin pose
 		} //end can_do_NOP_motion
 
 
@@ -575,7 +475,8 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 			newLogRec.robotOdometryPose   = m_curPoseVel.pose;
 			newLogRec.relPoseSense        = relPoseSense;
 			newLogRec.relPoseVelCmd       = relPoseVelCmd;
-			newLogRec.WS_target_relative  = TPoint2D(relTarget.x(), relTarget.y());
+			newLogRec.relPoseVelCmd_NOP   = relPoseVelCmd_NOP;
+			newLogRec.WS_target_relative  = TPoint2D(relTarget);
 			newLogRec.cmd_vel             = m_new_vel_cmd;
 			newLogRec.cmd_vel_original    = m_cmd_vel_original;
 			newLogRec.nSelectedPTG        = nSelectedPTG;
@@ -893,3 +794,149 @@ bool CAbstractPTGBasedReactive::TSentVelCmd::isValid() const
 	return tim_poseVel != INVALID_TIMESTAMP;
 }
 
+
+void CAbstractPTGBasedReactive::ptg_eval_target_build_obstacles(
+	CParameterizedTrajectoryGenerator * ptg,
+	const size_t indexPTG,
+	const TPose2D &relTarget,
+	const CPose2D &rel_pose_PTG_origin_wrt_sense,
+	TInfoPerPTG &ipf,
+	THolonomicMovement &holonomicMovement,
+	CHolonomicLogFileRecordPtr &HLFR,
+	CLogFileRecord &newLogRec
+	)
+{
+	ASSERT_(ptg)
+
+		holonomicMovement.PTG = ptg;
+
+	// If the user doesn't want to use this PTG, just mark it as invalid:
+	ipf.valid_TP = true;
+	{
+		const TNavigationParamsPTG * navp = dynamic_cast<const TNavigationParamsPTG*>(m_navigationParams);
+		if (navp && !navp->restrict_PTG_indices.empty())
+		{
+			bool use_this_ptg = false;
+			for (size_t i = 0; i < navp->restrict_PTG_indices.size() && !use_this_ptg; i++) {
+				if (navp->restrict_PTG_indices[i] == indexPTG)
+					use_this_ptg = true;
+			}
+			ipf.valid_TP = use_this_ptg;
+		}
+	}
+
+	double timeForTPObsTransformation = .0, timeForHolonomicMethod = .0;
+
+	// Normal PTG validity filter: check if target falls into the PTG domain:
+	if (ipf.valid_TP)
+	{
+		ipf.valid_TP = ptg->inverseMap_WS2TP(relTarget.x, relTarget.y, ipf.target_k, ipf.target_dist);
+	}
+
+	if (!ipf.valid_TP)
+	{
+		ipf.target_k = 0;
+		ipf.target_dist = 0;
+
+		{   // Invalid PTG (target out of reachable space):
+			// - holonomicMovement= Leave default values
+			HLFR = CLogFileRecord_VFF::Create();
+		}
+	}
+	else
+	{
+		ipf.target_alpha = ptg->index2alpha(ipf.target_k);
+		ipf.TP_Target.x = cos(ipf.target_alpha) * ipf.target_dist;
+		ipf.TP_Target.y = sin(ipf.target_alpha) * ipf.target_dist;
+
+		//  STEP3(b): Build TP-Obstacles
+		// -----------------------------------------------------------------------------
+		{
+			tictac.Tic();
+
+			// Initialize TP-Obstacles:
+			const size_t Ki = ptg->getAlphaValuesCount();
+			ptg->initTPObstacles(ipf.TP_Obstacles);
+
+			// Implementation-dependent conversion:
+			STEP3_WSpaceToTPSpace(indexPTG, ipf.TP_Obstacles, rel_pose_PTG_origin_wrt_sense);
+
+			// Distances in TP-Space are normalized to [0,1]:
+			const double _refD = 1.0 / ptg->getRefDistance();
+			for (size_t i = 0; i < Ki; i++) ipf.TP_Obstacles[i] *= _refD;
+
+			timeForTPObsTransformation = tictac.Tac();
+			if (m_timelogger.isEnabled())
+				m_timelogger.registerUserMeasure("navigationStep.STEP3_WSpaceToTPSpace", timeForTPObsTransformation);
+		}
+
+		//  STEP4: Holonomic navigation method
+		// -----------------------------------------------------------------------------
+		{
+			tictac.Tic();
+
+			ASSERT_(m_holonomicMethod[indexPTG])
+				m_holonomicMethod[indexPTG]->navigate(
+					ipf.TP_Target,     // Normalized [0,1]
+					ipf.TP_Obstacles,  // Normalized [0,1]
+					1.0, // Was: ptg->getMax_V_inTPSpace(),
+					holonomicMovement.direction,
+					holonomicMovement.speed,
+					HLFR,
+					1.0 /* max obstacle dist*/);
+
+			MRPT_TODO("Honor targetIsIntermediaryWaypoint wrt approaching slow down");
+
+			// Security: Scale down the velocity when heading towards obstacles,
+			//  such that it's assured that we never go thru an obstacle!
+			const int kDirection = static_cast<int>(holonomicMovement.PTG->alpha2index(holonomicMovement.direction));
+			const double obsFreeNormalizedDistance = ipf.TP_Obstacles[kDirection];
+			double velScale = 1.0;
+			ASSERT_(secureDistanceEnd > secureDistanceStart);
+			if (obsFreeNormalizedDistance < secureDistanceEnd)
+			{
+				if (obsFreeNormalizedDistance <= secureDistanceStart)
+					velScale = 0.0; // security stop
+				else velScale = (obsFreeNormalizedDistance - secureDistanceStart) / (secureDistanceEnd - secureDistanceStart);
+			}
+
+			// Scale:
+			holonomicMovement.speed *= velScale;
+
+			timeForHolonomicMethod = tictac.Tac();
+			if (m_timelogger.isEnabled())
+				m_timelogger.registerUserMeasure("navigationStep.STEP4_HolonomicMethod", timeForHolonomicMethod);
+		}
+
+		// STEP5: Evaluate each movement to assign them a "evaluation" value.
+		// ---------------------------------------------------------------------
+		{
+			CTimeLoggerEntry tle(m_timelogger, "navigationStep.STEP5_PTGEvaluator");
+
+			STEP5_PTGEvaluator(
+				holonomicMovement,
+				ipf.TP_Obstacles,
+				relTarget,
+				ipf.TP_Target,
+				newLogRec.infoPerPTG[indexPTG]);
+		}
+
+
+	} // end "valid_TP"
+
+	// Logging:
+	const bool fill_log_record = (m_logFile != NULL || m_enableKeepLogRecords);
+	if (fill_log_record)
+	{
+		metaprogramming::copy_container_typecasting(ipf.TP_Obstacles, newLogRec.infoPerPTG[indexPTG].TP_Obstacles);
+		CLogFileRecord::TInfoPerPTG &ipp = newLogRec.infoPerPTG[indexPTG];
+		ipp.PTG_desc = ptg->getDescription();
+		ipp.TP_Target = ipf.TP_Target;
+		ipp.HLFR = HLFR;
+		ipp.desiredDirection = holonomicMovement.direction;
+		ipp.desiredSpeed = holonomicMovement.speed;
+		ipp.evaluation = holonomicMovement.evaluation;
+		ipp.timeForTPObsTransformation = timeForTPObsTransformation;
+		ipp.timeForHolonomicMethod = timeForHolonomicMethod;
+	}
+}

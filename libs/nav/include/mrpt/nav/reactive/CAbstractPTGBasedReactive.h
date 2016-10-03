@@ -262,6 +262,18 @@ namespace mrpt
 
 		TSentVelCmd m_lastSentVelCmd;
 
+		void ptg_eval_target_build_obstacles(
+			CParameterizedTrajectoryGenerator * ptg,
+			const size_t indexPTG,
+			const mrpt::math::TPose2D &relTarget,
+			const mrpt::poses::CPose2D &rel_pose_PTG_origin_wrt_sense,
+			TInfoPerPTG &ipf,
+			THolonomicMovement &holonomicMovement,
+			CHolonomicLogFileRecordPtr &HLFR,
+			CLogFileRecord &newLogRec
+			);
+
+
 	}; // end of CAbstractPTGBasedReactive
   }
 }
