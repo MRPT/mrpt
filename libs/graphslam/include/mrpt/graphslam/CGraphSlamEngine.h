@@ -241,7 +241,7 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		/**\brief Wrapper method around the GRAPH_t::saveToTextFile method.
 		 * Method saves the graph in the format used by TORO & HoG-man strategies
 		 *
-		 * \in Name of the generated graph file - Defaults to "output_graph" if not
+		 * \param[in] fname_in Name of the generated graph file - Defaults to "output_graph" if not
 		 * set by the user
 		 *
 		 * \sa save3DScene, http://www.mrpt.org/Robotics_file_formats
@@ -249,18 +249,18 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		void saveGraph(const std::string* fname_in=NULL) const;
 		/**\brief Wrapper method around the COpenGLScene::saveToFile method.
 		 *
-		 * \in Name of the generated graph file - Defaults to "output_graph" if not
+		 * \param[in] Name of the generated graph file - Defaults to "output_graph" if not
 		 * set by the user
 		 *
 		 * \sa saveGraph
 		 */
 		void save3DScene(const std::string* fname_in=NULL) const;
-		/**\brief Read the configuration variables from the .ini file specified by
+		/**\brief Read the configuration variables from the <em>.ini file</em> specified by
 		 * the user.
 		 * Method is automatically called, upon CGraphSlamEngine initialization
 		 *
 		 */
-		void readConfigFname(const std::string& fname);
+		void loadParams(const std::string& fname);
 		/**\brief Fill in the provided string with the class configuration parameters.
 		 *
 		 * \sa printParams
@@ -286,8 +286,10 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		 * invokes it is responsibe for fetching the measurements (e.g. from a
 		 * rawlog file).
 		 *
+		 * \return False if the user has requested to exit the graphslam execution
+		 * (e.g. pressed ctrl-c), True otherwise
 		 **/
-		void execGraphSlamStep(
+		bool execGraphSlamStep(
 				mrpt::obs::CActionCollectionPtr& action,
 				mrpt::obs::CSensoryFramePtr& observations,
 				mrpt::obs::CObservationPtr& observation,
@@ -339,14 +341,13 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 				std::vector<pose_t>* gt_poses,
 				std::vector<mrpt::system::TTimeStamp>* gt_timestamps=NULL);
 		/**
-		 *\brief Generate and write to a corresponding file a report For each of
+		 *\brief Generate and write to a corresponding report for each of
 		 * the respective self/decider/optimizer classes.
-		 * Report files are generated in the output directory as set by the user in
-		 * the .ini configuration file [default = graphslam_engine_results/]
 		 *
+		 * \param[in] output_dir_fname directory name to generate the files in
 		 * \sa getDescriptiveReport
 		 */
-		void generateReportFiles();
+		void generateReportFiles(const std::string& output_dir_fname);
 
 	private:
 		// Private function definitions
@@ -366,9 +367,11 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		 * to false, if he doesn't care about the previous results directory. In
 		 * this case the 1st choice is picked.
 		 *
+		 * \param[in] Name of the output directory to be used
+		 *
 		 * \sa CGraphSlamEngine::initResultsFile
 		 */
-		void initOutputDir();
+		void initOutputDir(std::string output_dir_fname="graphslam_results");
 		/**\brief Automate the creation and initialization of a results file relevant to
 		 * the application.
 		 *
@@ -544,18 +547,14 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		size_t m_GT_poses_index; /**\brief Counter for reading back the GT_poses. */
 		size_t m_GT_poses_step; //**\brief Rate at which to read the GT poses. */
 
-		// TODO - remove these?
-		/**\brief parameters related to the application generated files */
-		/**\{*/
-		std::string	m_output_dir_fname;
 		bool m_user_decides_about_output_dir;
-		/**\}*/
 
 		bool m_has_read_config;
 		bool m_observation_only_dataset;
 
-		// keeps track of the out fstreams so that they can be
-		// closed (if still open) in the class Dtor.
+		/**\brief keeps track of the out fstreams so that they can be closed (if
+		 * still open) in the class Dtor.
+		 */
 		fstreams_out m_out_streams;
 
 		/**\name Visualization - related objects */
@@ -563,7 +562,9 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		mrpt::graphslam::CWindowManager* m_win_manager;
 		mrpt::gui::CDisplayWindow3D* m_win;
 		mrpt::graphslam::CWindowObserver* m_win_observer;
-		/**\brief DisplayPlots instance for visualizing the evolution of the SLAM metric */
+		/**\brief DisplayPlots instance for visualizing the evolution of the SLAM
+		 * metric
+		 */
 		mrpt::gui::CDisplayWindowPlots* m_win_plot;
 		/**\}*/
 
@@ -719,6 +720,11 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		mrpt::system::TTimeStamp* m_init_timestamp;
 		/**\brief Current robot position based solely on odometry */
 		pose_t m_curr_odometry_only_pose; // defaults to all 0s
+
+		/**\brief Indicate whether the user wants to exit the application (e.g.
+		 * pressed by pressign ctrl-c)
+		 */
+		bool m_request_to_exit;
 
 
 

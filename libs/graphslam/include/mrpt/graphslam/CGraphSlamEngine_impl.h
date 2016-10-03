@@ -125,6 +125,7 @@ void CGraphSlamEngine<GRAPH_t>::initCGraphSlamEngine() {
 	m_win_plot = NULL;
 
 	m_observation_only_dataset = false;
+	m_request_to_exit = false;
 
 	// max node number already in the graph
 	m_nodeID_max = 0;
@@ -152,18 +153,7 @@ void CGraphSlamEngine<GRAPH_t>::initCGraphSlamEngine() {
 
 	// Load the parameters that each one of the self/deciders/optimizer classes
 	// needs
-	this->readConfigFname(m_config_fname);
-	m_node_registrar->loadParams(m_config_fname);
-	m_edge_registrar->loadParams(m_config_fname);
-	m_optimizer->loadParams(m_config_fname);
-
-	this->initOutputDir();
-
-	// print the configuration parameters of self/deciders/optimizers
-	this->printParams();
-	m_node_registrar->printParams();
-	m_edge_registrar->printParams();
-	m_optimizer->printParams();
+	this->loadParams(m_config_fname);
 
 	m_use_GT = !m_fname_GT.empty();
 	if (m_use_GT) {
@@ -359,7 +349,7 @@ void CGraphSlamEngine<GRAPH_t>::initCGraphSlamEngine() {
 }
 
 template<class GRAPH_t>
-void CGraphSlamEngine<GRAPH_t>::execGraphSlamStep(
+bool CGraphSlamEngine<GRAPH_t>::execGraphSlamStep(
 		mrpt::obs::CActionCollectionPtr& action,
 		mrpt::obs::CSensoryFramePtr& observations,
 		mrpt::obs::CObservationPtr& observation,
@@ -652,11 +642,12 @@ void CGraphSlamEngine<GRAPH_t>::execGraphSlamStep(
 			timestamp);
 	m_time_logger.leave("proc_time");
 
+	return !m_request_to_exit;
 	MRPT_END;
 } // END OF EXECGRAPHSLAM
 
 template<class GRAPH_t>
-void CGraphSlamEngine<GRAPH_t>::readConfigFname(
+void CGraphSlamEngine<GRAPH_t>::loadParams(
 		const std::string& fname) {
 	MRPT_START;
 	using namespace mrpt::utils;
@@ -670,10 +661,6 @@ void CGraphSlamEngine<GRAPH_t>::readConfigFname(
 
 	// Section: GeneralConfiguration
 	// ////////////////////////////////
-	m_output_dir_fname = cfg_file.read_string(
-			"GeneralConfiguration",
-			"output_dir_fname",
-			"graphslam_engine_results", false);
 	m_user_decides_about_output_dir = cfg_file.read_bool(
 			"GeneralConfiguration",
 			"user_decides_about_output_dir",
@@ -734,6 +721,9 @@ void CGraphSlamEngine<GRAPH_t>::readConfigFname(
 			"enable_intensity_viewport",
 			false, false);
 
+	m_node_registrar->loadParams(fname);
+	m_edge_registrar->loadParams(fname);
+	m_optimizer->loadParams(fname);
 
 	m_has_read_config = true;
 	MRPT_END;
@@ -761,12 +751,6 @@ void CGraphSlamEngine<GRAPH_t>::getParamsAsString(
 		<< std::endl;
 	ss_out << "Config filename                 = "
 		<< m_config_fname << std::endl;
-	ss_out << "Rawlog filename                 = "
-		<< m_rawlog_fname << std::endl;
-	ss_out << "User decides about output dir?  = "
-		<< (m_user_decides_about_output_dir ? "TRUE" : "FALSE")  << std::endl;
-	ss_out << "Output directory                = "
-		<< m_output_dir_fname << std::endl;
 
 	ss_out << "Ground Truth File format        = "
 		<< m_GT_file_format << std::endl;
@@ -806,17 +790,24 @@ template<class GRAPH_t>
 void CGraphSlamEngine<GRAPH_t>::printParams() const {
 	MRPT_START;
 	std::cout << getParamsAsString();
+
+	m_node_registrar->printParams();
+	m_edge_registrar->printParams();
+	m_optimizer->printParams();
+
 	MRPT_END;
 }
 
 template<class GRAPH_t>
-void CGraphSlamEngine<GRAPH_t>::initOutputDir() {
+void CGraphSlamEngine<GRAPH_t>::initOutputDir(
+		std::string output_dir_fname /* = graphslam_results */) {
 	MRPT_START;
 	using namespace std;
 	using namespace mrpt::utils;
 	using namespace mrpt::system;
 
-	this->logStr(LVL_INFO, format("Setting up Output directory: %s", m_output_dir_fname.c_str()));
+	this->logFmt(LVL_INFO,
+			"Setting up Output directory: %s", output_dir_fname.c_str());
 
 	// current time vars - handy in the rest of the function.
 	mrpt::system::TTimeStamp cur_date(getCurrentTime());
@@ -828,7 +819,7 @@ void CGraphSlamEngine<GRAPH_t>::initOutputDir() {
 
 	// Determine what to do with existing results if previous output directory
 	// exists
-	if (directoryExists(m_output_dir_fname)) {
+	if (directoryExists(output_dir_fname)) {
 		int answer_int;
 		if (m_user_decides_about_output_dir) {
 			stringstream question;
@@ -859,7 +850,7 @@ void CGraphSlamEngine<GRAPH_t>::initOutputDir() {
 				{
 					this->logStr(LVL_INFO, "Deleting existing files...");
 					// purge directory
-					deleteFilesInDirectory(m_output_dir_fname,
+					deleteFilesInDirectory(output_dir_fname,
 							/*deleteDirectoryAsWell = */ false);
 					break;
 				}
@@ -872,10 +863,10 @@ void CGraphSlamEngine<GRAPH_t>::initOutputDir() {
 			default:
 				{
 					// rename the whole directory to DATE_TIME_${OUTPUT_DIR_NAME}
-					string dst_fname = m_output_dir_fname + cur_date_validstr;
+					string dst_fname = output_dir_fname + cur_date_validstr;
 					this->logStr(LVL_INFO, format("Renaming directory to: %s", dst_fname.c_str()));
 					string* error_msg = NULL;
-					bool did_rename = renameFile(m_output_dir_fname,
+					bool did_rename = renameFile(output_dir_fname,
 							dst_fname,
 							error_msg);
 					ASSERTMSG_(did_rename,
@@ -891,7 +882,7 @@ void CGraphSlamEngine<GRAPH_t>::initOutputDir() {
 	string cur_fname;
 
 	// debug_fname
-	createDirectory(m_output_dir_fname);
+	createDirectory(output_dir_fname);
 	this->logStr(LVL_INFO, "Finished initializing output directory.");
 
 	MRPT_END;
@@ -1298,6 +1289,7 @@ void CGraphSlamEngine<GRAPH_t>::queryObserverForEvents() {
 
 	std::map<std::string, bool> events_occurred;
 	m_win_observer->returnEventsStruct(&events_occurred);
+	m_request_to_exit = events_occurred.find("Ctrl+c")->second;
 
 	// odometry visualization
 	if (events_occurred[m_keystroke_odometry]) {
@@ -1508,9 +1500,7 @@ void CGraphSlamEngine<GRAPH_t>::updateMapVisualization(
 			node_it = nodes_set.begin();
 			node_it != nodes_set.end(); ++node_it) {
 
-		// get the node pose - thread safe
-		// TODO just *find* it
-		pose_t scan_pose = m_graph.nodes[*node_it];
+		pose_t scan_pose = m_graph.nodes.find(*node_it)->second;
 
 		// name of gui object
 		stringstream scan_name("");
@@ -2204,9 +2194,12 @@ void CGraphSlamEngine<GRAPH_t>::getDescriptiveReport(std::string* report_str) co
 }
 
 template<class GRAPH_t>
-void CGraphSlamEngine<GRAPH_t>::generateReportFiles() {
+void CGraphSlamEngine<GRAPH_t>::generateReportFiles(
+		const std::string& output_dir_fname) {
 	MRPT_START;
 	using namespace mrpt::utils;
+	// first initialize the directory where the files are to be placed
+	this->initOutputDir(output_dir_fname);
 
 	this->logStr(LVL_INFO, "Generating detailed class report...");
 	mrpt::synch::CCriticalSectionLocker m_graph_lock(&m_graph_section);
@@ -2217,7 +2210,7 @@ void CGraphSlamEngine<GRAPH_t>::generateReportFiles() {
 
 	{ // CGraphSlamEngine
 		report_str.clear();
-		fname = m_output_dir_fname + "/" + m_class_name + ext;
+		fname = output_dir_fname + "/" + m_class_name + ext;
 		// initialize the output file - refer to the stream through the
 		// m_out_streams map
 		this->initResultsFile(fname);
@@ -2228,21 +2221,21 @@ void CGraphSlamEngine<GRAPH_t>::generateReportFiles() {
 	}
 	{ // node_registrar
 		report_str.clear();
-		fname = m_output_dir_fname + "/" + "node_registrar" + ext;
+		fname = output_dir_fname + "/" + "node_registrar" + ext;
 		this->initResultsFile(fname);
 		m_node_registrar->getDescriptiveReport(&report_str);
 		m_out_streams[fname]->printf("%s", report_str.c_str());
 	}
 	{ // edge_registrar
 		report_str.clear();
-		fname = m_output_dir_fname + "/" + "edge_registrar" + ext;
+		fname = output_dir_fname + "/" + "edge_registrar" + ext;
 		this->initResultsFile(fname);
 		m_edge_registrar->getDescriptiveReport(&report_str);
 		m_out_streams[fname]->printf("%s", report_str.c_str());
 	}
 	{ // optimizer
 		report_str.clear();
-		fname = m_output_dir_fname + "/" + "optimizer" + ext;
+		fname = output_dir_fname + "/" + "optimizer" + ext;
 		this->initResultsFile(fname);
 		m_optimizer->getDescriptiveReport(&report_str);
 		m_out_streams[fname]->printf("%s", report_str.c_str());
@@ -2250,14 +2243,9 @@ void CGraphSlamEngine<GRAPH_t>::generateReportFiles() {
 
 	if (m_use_GT) { // slam evaluation metric
 		report_str.clear();
-		const std::string desc("# File includes the evolution of the SLAM metric. \
-Implemented metric computes the \"deformation energy\" that is needed to transfer \
-the estimated trajectory into the ground-truth trajectory (computed as sum of \
-the difference between estimated trajectory and ground truth consecutive \
-poses See \"A comparison of SLAM algorithms based on a graph of relations - \
-W.Burgard et al.\", for more details on the metric.\n");
+		const std::string desc("# File includes the evolution of the SLAM metric.  Implemented metric computes the \"deformation energy\" that is needed to transfer the estimated trajectory into the ground-truth trajectory (computed as sum of the difference between estimated trajectory and ground truth consecutive poses See \"A comparison of SLAM algorithms based on a graph of relations - W.Burgard et al.\", for more details on the metric.\n");
 
-		fname = m_output_dir_fname + "/" + "SLAM_evaluation_metric" + ext;
+		fname = output_dir_fname + "/" + "SLAM_evaluation_metric" + ext;
 		this->initResultsFile(fname);
 
 		m_out_streams[fname]->printf("%s\n", desc.c_str());

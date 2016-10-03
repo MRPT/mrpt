@@ -301,11 +301,11 @@ int main(int argc, char **argv)
 		}
 		measurement_provider->loadParams(ini_fname);
 
-		// Initialization of related objects
-		// TGraphSlamHandler
+		// Initialization of TGraphSlamHandler
 		TGraphSlamHandler graphslam_handler;
 		graphslam_handler.setOutputLoggerPtr(&logger);
 		graphslam_handler.readConfigFname(ini_fname);
+		graphslam_handler.setRawlogFname(rawlog_fname);
 
 		// initialize visuals
 		if (!disable_visuals.getValue()) {
@@ -323,6 +323,10 @@ int main(int argc, char **argv)
 				edge_regs_map[edge_reg](),
 				optimizers_map[optimizer]());
 
+		// print the problem parameters
+		graphslam_handler.printParams();
+		graphslam_engine.printParams();
+
 		// Variables initialization
 		CActionCollectionPtr action;
 		CSensoryFramePtr observations;
@@ -330,30 +334,28 @@ int main(int argc, char **argv)
 		size_t curr_rawlog_entry;
 
 		// Read the dataset and pass the measurements to CGraphSlamEngine
+		bool cont_exec = true;
 		while(measurement_provider->getActionObservationPairOrObservation(
 					action,
 					observations,
 					observation,
-					curr_rawlog_entry)) {
-
-			bool break_exec = graphslam_handler.queryObserverForEvents();
-			if (break_exec) {
-				break;
-			}
+					curr_rawlog_entry) && cont_exec) {
 
 			// actual call to the graphSLAM execution method
-			graphslam_engine.execGraphSlamStep(
+			// Exit if user pressed C-c
+			cont_exec = graphslam_engine.execGraphSlamStep(
 					action,
 					observations,
 					observation,
 					curr_rawlog_entry);
 
+
 		}
 		logger.logFmt(LVL_WARN, "Finished graphslam execution.");
 
 		logger.logFmt(LVL_INFO, "Generating overall report...");
-		graphslam_engine.generateReportFiles();
-		// save the 3DScene and the graph
+		graphslam_engine.generateReportFiles(graphslam_handler.output_dir_fname);
+		// save the graph and the 3DScene 
 		if (graphslam_handler.save_graph) {
 			std::string save_graph_fname = 
 				graphslam_handler.output_dir_fname +
