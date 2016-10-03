@@ -120,26 +120,6 @@ namespace mrpt { namespace graphslam {
  *   to do about the new output directory. By default output directory from
  *   previous run is overwritten by the directory of the current run.
  *
- * - \b save_graph
- *   + \a Section       : GeneralConfiguration
- *   + \a Default value : TRUE
- *   + \a Required      : FALSE
- *
- * - \b save_3DScene
- *   + \a Section       : GeneralConfiguration
- *   + \a Default value : TRUE
- *   + \a Required      : FALSE
- *
- * - \b save_graph_fname
- *   + \a Section       : GeneralConfiguration
- *   + \a Default value : "output_graph.graph"
- *   + \a Required      : FALSE
- *
- * - \b save_3DScene_fname
- *   + \a Section       : GeneralConfiguration
- *   + \a Default value : "scene.3DScene"
- *   + \a Required      : FALSE
- *
  * - \b ground_truth_file_format
  *   + \a Section       : GeneralConfiguration
  *   + \a Default value : NavSimul
