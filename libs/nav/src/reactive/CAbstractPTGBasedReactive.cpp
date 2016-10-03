@@ -316,8 +316,8 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 
 		// Path extrapolation: robot relative poses along current path estimation:
 		CPose2D relPoseSense, relPoseVelCmd;
-		robotPoseExtrapolateIncrement(m_curPoseVel.vel, timoff_pose2sense, relPoseSense);
-		robotPoseExtrapolateIncrement(m_curPoseVel.vel, timoff_pose2VelCmd, relPoseVelCmd);
+		robotPoseExtrapolateIncrement(m_curPoseVel.velLocal, timoff_pose2sense, relPoseSense);
+		robotPoseExtrapolateIncrement(m_curPoseVel.velLocal, timoff_pose2VelCmd, relPoseVelCmd);
 		const CPose2D rel_pose_PTG_origin_wrt_sense = relPoseVelCmd - relPoseSense;
 
 		m_infoPerPTG.resize(nPTGs);
@@ -579,7 +579,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 			newLogRec.cmd_vel             = m_new_vel_cmd;
 			newLogRec.cmd_vel_original    = m_cmd_vel_original;
 			newLogRec.nSelectedPTG        = nSelectedPTG;
-			newLogRec.cur_vel             = m_curPoseVel.vel;
+			newLogRec.cur_vel             = m_curPoseVel.velGlobal;
 			newLogRec.cur_vel_local       = m_curPoseVel.velLocal;
 			newLogRec.values["estimatedExecutionPeriod"] = meanExecutionPeriod.getLastOutput();
 			newLogRec.values["executionTime"] = executionTimeValue;

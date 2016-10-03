@@ -128,7 +128,7 @@ namespace mrpt
 		struct NAV_IMPEXP TRobotPoseVel
 		{
 			mrpt::math::TPose2D  pose;
-			mrpt::math::TTwist2D vel, velLocal;
+			mrpt::math::TTwist2D velGlobal, velLocal;
 			mrpt::system::TTimeStamp timestamp;
 			TRobotPoseVel();
 		};
