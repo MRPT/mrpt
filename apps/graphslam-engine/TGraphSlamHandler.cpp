@@ -50,10 +50,19 @@ void TGraphSlamHandler::readConfigFname(const std::string& fname) {
 			mrpt::format("\nConfiguration file not found: \n%s\n", fname.c_str()));
 
 	if (logger) {
-		logger->logStr(LVL_INFO, "Reading the .ini file... ");
+		logger->logFmt(LVL_INFO, "Reading the .ini file... ");
 	}
 
 	CConfigFile cfg_file(fname);
+
+	output_dir_fname = cfg_file.read_string(
+			"GeneralConfiguration",
+			"output_dir_fname",
+			"graphslam_engine_results", false);
+	user_decides_about_output_dir = cfg_file.read_bool(
+			"GeneralConfiguration",
+			"user_decides_about_output_dir",
+			false, false);
 
 	save_graph = cfg_file.read_bool(
 			"GeneralConfiguration",
@@ -130,8 +139,8 @@ void TGraphSlamHandler::initVisualization() {
 		win->unlockAccess3DScene();
 	}
 
-	this->logStr(LVL_DEBUG, "Initialized CDisplayWindow3D...");
-	this->logStr(LVL_DEBUG, "Listening to CDisplayWindow3D events...");
+	this->logFmt(LVL_DEBUG, "Initialized CDisplayWindow3D...");
+	this->logFmt(LVL_DEBUG, "Listening to CDisplayWindow3D events...");
 
 	// pass the window and the observer pointers to the CWindowManager instance
 	win_manager = new mrpt::graphslam::CWindowManager();

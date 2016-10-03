@@ -146,11 +146,13 @@ class CLevMarqGSO:
 		void setCriticalSectionPtr(mrpt::synch::CCriticalSection* graph_section);
 		void initializeVisuals();
 		void updateVisuals();
-		/**
-		 * Get a list of the window events that happened since the last call.
+		/**\brief Get a list of the window events that happened since the last
+		 * call.
 		 */
 		void notifyOfWindowEvents(const std::map<std::string, bool>& events_occurred);
-		// struct for holding the optimization-related variables in a compact form
+		/**\brief Struct for holding the optimization-related variables in a
+		 * compact form
+		 */
 		struct OptimizationParams: public mrpt::utils::CLoadableOptions {
 			public:
 				OptimizationParams();
@@ -165,8 +167,9 @@ class CLevMarqGSO:
 				// True if optimization procedure is to run in a multithreading fashion
 				bool optimization_on_second_thread;
 
-				// optimize only for the nodes found in a certain distance from the
-				// current position. Optimize for the entire graph if set to -1
+				/**\brief optimize only for the nodes found in a certain distance from
+				 * the current position. Optimize for the entire graph if set to -1
+				 */
 				double optimization_distance;
 				double offset_y_optimization_distance;
 				int text_index_optimization_distance;
@@ -184,8 +187,9 @@ class CLevMarqGSO:
 		void loadParams(const std::string& source_fname);
 		void printParams() const;
 
-		// struct for holding the graph visualization-related variables in a
-		// compact form
+		/**\brief struct for holding the graph visualization-related variables in a
+		 * compact form
+		 */
 		struct GraphVisualizationParams: public mrpt::utils::CLoadableOptions {
 			public:
 				GraphVisualizationParams();

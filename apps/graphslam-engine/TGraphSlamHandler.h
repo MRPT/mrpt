@@ -22,7 +22,9 @@
 #include <sstream>
 #include <iostream>
 
-// Class to manage variables and methods general to the graphslam-engine application
+/** Class to manage variables and methods general to the graphslam-engine
+ * application.
+ */
 class TGraphSlamHandler : mrpt::utils::COutputLogger
 {
 public:
@@ -42,6 +44,9 @@ public:
 	 * \return True if graphslam execution is to be continued normally
 	 */
 	bool queryObserverForEvents();
+
+	std::string output_dir_fname;
+	bool user_decides_about_output_dir;
 
 	bool save_graph;
 	bool save_3DScene;
