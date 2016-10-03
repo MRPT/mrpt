@@ -9,10 +9,14 @@
 #ifndef TGRAPHSLAMHANDLER_H
 #define TGRAPHSLAMHANDLER_H
 
-#include <mrpt/system/filesystem.h>
+#include <mrpt/graphslam/CWindowManager.h>
+#include <mrpt/graphslam/CWindowObserver.h>
+#include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/utils/CConfigFile.h>
 #include <mrpt/utils/mrpt_macros.h>
 #include <mrpt/utils/COutputLogger.h>
+#include <mrpt/system/filesystem.h>
+#include <mrpt/system/threads.h>
 
 #include <string>
 #include <sstream>
@@ -30,12 +34,24 @@ public:
 	void getParamsAsString(std::string* str) const;
 	std::string getParamsAsString() const;
 	void setOutputLoggerPtr(mrpt::utils::COutputLogger* logger);
+	void initVisualization();
+
+	/**\brief Query the CWindowObserver instance for any pressed keys that might
+	 * be of interest (e.g. <C-c>)
+	 *
+	 * \return True if graphslam execution is to be continued normally
+	 */
+	bool queryObserverForEvents();
 
 	bool save_graph;
 	bool save_3DScene;
 
 	std::string save_graph_fname;
 	std::string save_3DScene_fname;
+
+	mrpt::graphslam::CWindowManager* win_manager;
+	mrpt::graphslam::CWindowObserver* win_observer;
+	mrpt::gui::CDisplayWindow3D* win;
 
 	mrpt::utils::COutputLogger* logger;
 };

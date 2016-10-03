@@ -149,7 +149,7 @@ class CLevMarqGSO:
 		/**
 		 * Get a list of the window events that happened since the last call.
 		 */
-		void notifyOfWindowEvents(const std::map<std::string, bool> events_occurred);
+		void notifyOfWindowEvents(const std::map<std::string, bool>& events_occurred);
 		// struct for holding the optimization-related variables in a compact form
 		struct OptimizationParams: public mrpt::utils::CLoadableOptions {
 			public:

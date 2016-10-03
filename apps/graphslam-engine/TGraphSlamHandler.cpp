@@ -4,6 +4,9 @@ TGraphSlamHandler::TGraphSlamHandler() {
 	using namespace mrpt::system;
 
 	this->logger = NULL;
+	win_manager = NULL;
+	win_observer = NULL;
+	win = NULL;
 }
 
 void TGraphSlamHandler::setOutputLoggerPtr(mrpt::utils::COutputLogger* logger) {
@@ -15,7 +18,29 @@ void TGraphSlamHandler::setOutputLoggerPtr(mrpt::utils::COutputLogger* logger) {
 	MRPT_END;
 }
 
-TGraphSlamHandler::~TGraphSlamHandler() {}
+TGraphSlamHandler::~TGraphSlamHandler() {
+	MRPT_START;
+
+	using namespace mrpt::utils;
+
+	logger->logFmt(LVL_WARN, "Application shall close whe the display window is closed.\nWaiting...");
+	// keep the window open until user closes it.
+	while (win->isOpen()) {
+		mrpt::system::sleep(100);
+		win->forceRepaint();
+	}
+
+	logger->logFmt(LVL_DEBUG, "Releasing CDisplayWindow3D instance...");
+	delete win;
+	logger->logFmt(LVL_DEBUG, "Releasing CWindowObserver instance...");
+	delete win_observer;
+	logger->logFmt(LVL_DEBUG, "Releasing CWindowManager instance...");
+	delete win_manager;
+
+
+	logger->logFmt(LVL_INFO, "Exited.");
+	MRPT_END;
+}
 
 void TGraphSlamHandler::readConfigFname(const std::string& fname) {
 	MRPT_START;
@@ -83,4 +108,48 @@ std::string TGraphSlamHandler::getParamsAsString() const {
 	std::string str;
 	this->getParamsAsString(&str);
 	return str;
+}
+
+void TGraphSlamHandler::initVisualization() {
+	MRPT_START;
+
+	using namespace mrpt::opengl;
+	using namespace mrpt::gui;
+	using namespace mrpt::utils;
+	using namespace mrpt::graphslam;
+
+	win_observer = new CWindowObserver();
+	win = new CDisplayWindow3D(
+			"GraphSlam building procedure", 800, 600);
+	win->setPos(400, 200);
+	win_observer->observeBegin(*win);
+	{
+		COpenGLScenePtr &scene = win->get3DSceneAndLock();
+		COpenGLViewportPtr main_view = scene->getViewport("main");
+		win_observer->observeBegin( *main_view );
+		win->unlockAccess3DScene();
+	}
+
+	this->logStr(LVL_DEBUG, "Initialized CDisplayWindow3D...");
+	this->logStr(LVL_DEBUG, "Listening to CDisplayWindow3D events...");
+
+	// pass the window and the observer pointers to the CWindowManager instance
+	win_manager = new mrpt::graphslam::CWindowManager();
+	win_manager->setCDisplayWindow3DPtr(win);
+	win_manager->setWindowObserverPtr(win_observer);
+
+	MRPT_END;
+}
+
+bool TGraphSlamHandler::queryObserverForEvents() {
+	MRPT_START;
+	
+	std::map<std::string, bool> events_occurred;
+	win_observer->returnEventsStruct(
+			&events_occurred,
+			/* reset_keypresses = */ false);
+	bool request_to_exit = events_occurred.find("Ctrl+c")->second;
+
+	return request_to_exit;
+	MRPT_END;
 }
