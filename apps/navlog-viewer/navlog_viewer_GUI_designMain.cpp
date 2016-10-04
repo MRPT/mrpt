@@ -460,6 +460,7 @@ void navlog_viewer_GUI_designDialog::UpdateInfoFromLoadedLog()
 		{
 			CLogFileRecordPtr logptr = CLogFileRecordPtr(m_logdata[i]);
 			const CLogFileRecord &log = *logptr;
+			if (!log.cmd_vel) continue; // NOP cmd
 			const size_t vel_len = log.cmd_vel->getVelCmdLength();
 			if (i==0) {
 				cmd_vels.resize( vel_len );
@@ -632,14 +633,19 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 				}
 				if ((int)m_logdata_ptg_paths.size()>log.nSelectedPTG)
 				{
-					mrpt::nav::CParameterizedTrajectoryGeneratorPtr ptg = m_logdata_ptg_paths[log.nSelectedPTG];
+					const size_t sel_ptg_idx = log.ptg_index_NOP < 0 ? log.nSelectedPTG : log.ptg_index_NOP;
+					mrpt::nav::CParameterizedTrajectoryGeneratorPtr ptg = m_logdata_ptg_paths[sel_ptg_idx];
 					if (ptg)
 					{
 						// Set instantaneous kinematic state:
 						ptg->updateCurrentRobotVel(log.cur_vel_local);
 
 						// Draw path:
-						const int selected_k = ptg->alpha2index( log.infoPerPTG[log.nSelectedPTG].desiredDirection );
+						const int selected_k =
+							log.ptg_index_NOP < 0 ?
+							ptg->alpha2index(log.infoPerPTG[sel_ptg_idx].desiredDirection)
+							:
+							log.ptg_last_k_NOP;
 						float max_dist = ptg->getRefDistance();
 						gl_path->clear();
 						ptg->add_robotShape_to_setOfLines(*gl_path);
@@ -647,9 +653,16 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 						ptg->renderPathAsSimpleLine(selected_k,*gl_path,0.10, max_dist);
 						gl_path->setColor_u8( mrpt::utils::TColor(0xff,0x00,0x00) );
 
-						if (cbShowRelPoses->IsChecked())
-								gl_path->setPose(log.relPoseVelCmd);
-						else	gl_path->setPose(mrpt::poses::CPose3D());
+						// PTG origin:
+						// enable delays model?
+						mrpt::poses::CPose2D ptg_origin = (cbShowRelPoses->IsChecked()) ? log.relPoseVelCmd : CPose2D();
+
+						// "NOP cmd" case:
+						if (log.ptg_index_NOP >= 0) {
+							ptg_origin = ptg_origin - log.rel_cur_pose_wrt_last_vel_cmd_NOP;
+						}
+
+						gl_path->setPose(ptg_origin);
 
 						// Overlay a sequence of robot shapes:
 						if (cbDrawShapePath->IsChecked())
@@ -721,7 +734,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 			}
 		}
 
-		win1->addTextMessage(5.0, 5+ (lineY++)*Ay, mrpt::format("cmd_vel=%s",log.cmd_vel->asString().c_str()),
+		win1->addTextMessage(5.0, 5+ (lineY++)*Ay, mrpt::format("cmd_vel=%s", log.cmd_vel ? log.cmd_vel->asString().c_str() : "NOP (Continue last PTG)"),
 			mrpt::utils::TColorf(1,1,1), "mono", fy, mrpt::opengl::NICE, unique_id++);
 
 		win1->addTextMessage(5.0, 5+ (lineY++)*Ay, mrpt::format("cur_vel=[%.02f m/s, %0.2f m/s, %.02f dps] cur_vel_local=[%.02f m/s, %0.2f m/s, %.02f dps]",
