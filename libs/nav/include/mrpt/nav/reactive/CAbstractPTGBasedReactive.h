@@ -183,6 +183,7 @@ namespace mrpt
 		  *
 		  */
 		double secureDistanceStart,secureDistanceEnd;
+		bool   USE_DELAYS_MODEL;
 
 		mrpt::utils::CTimeLogger m_timelogger;			//!< A complete time logger \sa enableTimeLog()
 		bool  m_PTGsMustBeReInitialized;
