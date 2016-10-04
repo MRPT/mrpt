@@ -205,16 +205,13 @@ void CObservation2DRangeScan_from_ROS_LaserScan_msg(CObservation2DRangeScan &sel
     self.beamAperture = extract<float>(scan_msg.attr("angle_increment"));
     self.sensorPose = pose;
     // set ranges
-    self.scan.clear();
-    self.validRange.clear();
-    tuple ranges = extract<tuple>(scan_msg.attr("ranges"));
+	tuple ranges = extract<tuple>(scan_msg.attr("ranges"));
+	const size_t N = len(ranges);
+	self.resizeScan(N);
     for (int i = 0; i < len(ranges); ++i) {
         float range = extract<float>(ranges[i]);
-        self.scan.push_back(range);
-        if (range < self.maxRange - 0.01)
-          self.validRange.push_back('\x01');
-        else
-          self.validRange.push_back('\x00');
+		self.setScanRange(i, range);
+		self.setScanRangeValidity(i, (range < self.maxRange - 0.01) );
     }
 }
 #endif

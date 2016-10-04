@@ -139,7 +139,7 @@ void  CMetricMapBuilderICP::processObservation(const CObservationPtr &obs)
 		bool    pose_before_valid = m_lastPoseEst.getLatestRobotPose(pose_before);
 
 		// Move our estimation:
-		m_lastPoseEst.processUpdateNewOdometry( odo->odometry, odo->timestamp, odo->hasVelocities, odo->velocityLin, odo->velocityAng  );
+		m_lastPoseEst.processUpdateNewOdometry(odo->odometry, odo->timestamp, odo->hasVelocities, mrpt::math::TTwist2D(odo->velocityLin, 0.0, odo->velocityAng) );
 
 		if (pose_before_valid)
 		{
@@ -154,13 +154,13 @@ void  CMetricMapBuilderICP::processObservation(const CObservationPtr &obs)
 	{
 		// Current robot pose given the timestamp of the observation (this can include a small extrapolation
 		//  using the latest known robot velocities):
-		CPose2D		initialEstimatedRobotPose;
+		TPose2D		initialEstimatedRobotPose;
 		{
-			float v,w;
+			mrpt::math::TTwist2D  robotVelLocal, robotVelGlobal;
 			if (obs->timestamp!=INVALID_TIMESTAMP)
 			{
 				MRPT_LOG_DEBUG("processObservation(): extrapolating pose from latest pose and new observation timestamp...");
-				if (!m_lastPoseEst.getCurrentEstimate(initialEstimatedRobotPose,v,w, obs->timestamp))
+				if (!m_lastPoseEst.getCurrentEstimate(initialEstimatedRobotPose,robotVelLocal,robotVelGlobal, obs->timestamp))
 				{	// couldn't had a good extrapolation estimate... we'll have to live with the latest pose:
 					m_lastPoseEst.getLatestRobotPose(initialEstimatedRobotPose);
 					MRPT_LOG_WARN("processObservation(): new pose extrapolation failed, using last pose as is.");
@@ -268,7 +268,7 @@ void  CMetricMapBuilderICP::processObservation(const CObservationPtr &obs)
 					CPosePDFGaussian  pEst2D;
 					pEst2D.copyFrom( *pestPose );
 
-					m_lastPoseEst.processUpdateNewPoseLocalization( TPose2D(pEst2D.mean), pEst2D.cov, obs->timestamp );
+					m_lastPoseEst.processUpdateNewPoseLocalization( TPose2D(pEst2D.mean), obs->timestamp );
 					m_lastPoseEst_cov = pEst2D.cov;
 
 					m_distSinceLastICP.updatePose(pEst2D.mean);
@@ -475,7 +475,7 @@ void  CMetricMapBuilderICP::initialize(
 	m_lastPoseEst.reset();
 
 	if (x0)
-		m_lastPoseEst.processUpdateNewPoseLocalization( x0->getMeanVal(), CMatrixDouble33(), mrpt::system::now() );
+		m_lastPoseEst.processUpdateNewPoseLocalization( x0->getMeanVal(), mrpt::system::now() );
 
 	for (size_t i=0;i<SF_Poses_seq.size();i++)
 	{
