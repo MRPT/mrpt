@@ -222,7 +222,9 @@ namespace mrpt
 			const std::vector<double>        & in_TPObstacles,
 			const mrpt::math::TPose2D  & WS_Target,
 			const mrpt::math::TPoint2D & TP_Target,
-			CLogFileRecord::TInfoPerPTG & log );
+			CLogFileRecord::TInfoPerPTG & log,
+			const bool this_is_PTG_continuation,
+			const mrpt::poses::CPose2D & relPoseVelCmd_NOP);
 
 		virtual void STEP7_GenerateSpeedCommands(const THolonomicMovement &in_movement, mrpt::kinematics::CVehicleVelCmdPtr &cmd_vel_original, mrpt::kinematics::CVehicleVelCmdPtr &new_vel_cmd );
 
@@ -269,7 +271,9 @@ namespace mrpt
 			TInfoPerPTG &ipf,
 			THolonomicMovement &holonomicMovement,
 			CHolonomicLogFileRecordPtr &HLFR,
-			CLogFileRecord &newLogRec
+			CLogFileRecord &newLogRec,
+			const bool this_is_PTG_continuation,
+			const mrpt::poses::CPose2D &relPoseVelCmd_NOP = mrpt::poses::CPose2D()
 			);
 
 
