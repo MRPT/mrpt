@@ -281,14 +281,14 @@ bool CLMS100Eth::decodeScan(char* buff, CObservation2DRangeScan& outObservation)
 	outObservation.timestamp				= mrpt::system::getCurrentTime();
 	outObservation.sensorLabel             = m_sensorLabel;
 
-	outObservation.scan.clear();
-	outObservation.validRange.clear();
+	outObservation.resizeScan(scanCount);
     unsigned int i;
     for(i = 0 ; i < scanCount && next; i++, next = strtok(NULL, " ", &tmp))
     {
-        outObservation.scan.push_back(double(strtoul(next, NULL, 16))/1000.0);
-        outObservation.validRange.push_back(outObservation.scan[i] <= outObservation.maxRange);
+		outObservation.setScanRange(i, double(strtoul(next, NULL, 16))/1000.0);
+		outObservation.setScanRangeValidity(i, outObservation.getScanRange(i) <= outObservation.maxRange);
     }
+	outObservation.resizeScan( i );
     return i>=scanCount;
 }
 

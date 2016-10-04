@@ -68,8 +68,7 @@ CPlanarLaserScan::CPlanarLaserScan() :
 void CPlanarLaserScan::clear()
 {
 	CRenderizableDisplayList::notifyChange();
-	m_scan.scan.clear();
-	m_scan.validRange.clear();
+	m_scan.resizeScan(0);
 }
 
 
