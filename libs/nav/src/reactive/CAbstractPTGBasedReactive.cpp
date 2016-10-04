@@ -56,6 +56,7 @@ CAbstractPTGBasedReactive::CAbstractPTGBasedReactive(CRobot2NavInterface &react_
 	SPEEDFILTER_TAU              (0.0),
 	secureDistanceStart          (0.05),
 	secureDistanceEnd            (0.20),
+	USE_DELAYS_MODEL             (false),
 	m_timelogger                 (false), // default: disabled
 	m_PTGsMustBeReInitialized    (true),
 	meanExecutionTime            (ESTIM_LOWPASSFILTER_ALPHA, 0.1),
@@ -277,48 +278,61 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 		// Round #1: As usual, pure reactive, evaluate all PTGs and all directions from scratch.
 		// =========
 
-		/*
-		*                                          Delays model
-		*
-		* Event:          OBSTACLES_SENSED         RNAV_ITERATION_STARTS       GET_ROBOT_POSE_VEL         VEL_CMD_SENT_TO_ROBOT
-		* Timestamp:  (m_WS_Obstacles_timestamp)   (tim_start_iteration)     (m_curPoseVelTimestamp)     ("tim_send_cmd_vel")
-		* Delay                       | <---+--------------->|<--------------+-------->|                         |
-		* estimator:                        |                |               |                                   |
-		*                timoff_obstacles <-+                |               +--> timoff_curPoseVelAge           |
-		*                                                    |<---------------------------------+--------------->|
-		*                                                                                       +--> timoff_sendVelCmd_avr (estimation)
-		*                                                                                                |<-------------------->|
-		*                                                                                                   tim_changeSpeed_avr (estim)
-		*
-		*                             |<-----------------------------------------------|-------------------------->|
-		*  Relative poses:                              relPoseSense                           relPoseVelCmd
-		*  Time offsets (signed):                       timoff_pose2sense                     timoff_pose2VelCmd
-		*/
-		const double timoff_obstacles = mrpt::system::timeDifference(tim_start_iteration, m_WS_Obstacles_timestamp);
-		timoff_obstacles_avr.filter(timoff_obstacles);
-		newLogRec.values["timoff_obstacles"] = timoff_obstacles;
-		newLogRec.values["timoff_obstacles_avr"] = timoff_obstacles_avr.getLastOutput();
-		newLogRec.timestamps["obstacles"] = m_WS_Obstacles_timestamp;
+		CPose2D rel_pose_PTG_origin_wrt_sense;
+		if (USE_DELAYS_MODEL)
+		{
+			/*
+			*                                          Delays model
+			*
+			* Event:          OBSTACLES_SENSED         RNAV_ITERATION_STARTS       GET_ROBOT_POSE_VEL         VEL_CMD_SENT_TO_ROBOT
+			* Timestamp:  (m_WS_Obstacles_timestamp)   (tim_start_iteration)     (m_curPoseVelTimestamp)     ("tim_send_cmd_vel")
+			* Delay                       | <---+--------------->|<--------------+-------->|                         |
+			* estimator:                        |                |               |                                   |
+			*                timoff_obstacles <-+                |               +--> timoff_curPoseVelAge           |
+			*                                                    |<---------------------------------+--------------->|
+			*                                                                                       +--> timoff_sendVelCmd_avr (estimation)
+			*                                                                                                |<-------------------->|
+			*                                                                                                   tim_changeSpeed_avr (estim)
+			*
+			*                             |<-----------------------------------------------|-------------------------->|
+			*  Relative poses:                              relPoseSense                           relPoseVelCmd
+			*  Time offsets (signed):                       timoff_pose2sense                     timoff_pose2VelCmd
+			*/
+			const double timoff_obstacles = mrpt::system::timeDifference(tim_start_iteration, m_WS_Obstacles_timestamp);
+			timoff_obstacles_avr.filter(timoff_obstacles);
+			newLogRec.values["timoff_obstacles"] = timoff_obstacles;
+			newLogRec.values["timoff_obstacles_avr"] = timoff_obstacles_avr.getLastOutput();
+			newLogRec.timestamps["obstacles"] = m_WS_Obstacles_timestamp;
 
-		const double timoff_curPoseVelAge = mrpt::system::timeDifference(tim_start_iteration, m_curPoseVel.timestamp);
-		timoff_curPoseAndSpeed_avr.filter(timoff_curPoseVelAge);
-		newLogRec.values["timoff_curPoseVelAge"] = timoff_curPoseVelAge;
-		newLogRec.values["timoff_curPoseVelAge_avr"] = timoff_curPoseAndSpeed_avr.getLastOutput();
+			const double timoff_curPoseVelAge = mrpt::system::timeDifference(tim_start_iteration, m_curPoseVel.timestamp);
+			timoff_curPoseAndSpeed_avr.filter(timoff_curPoseVelAge);
+			newLogRec.values["timoff_curPoseVelAge"] = timoff_curPoseVelAge;
+			newLogRec.values["timoff_curPoseVelAge_avr"] = timoff_curPoseAndSpeed_avr.getLastOutput();
 
-		// time offset estimations:
-		const double timoff_pose2sense  = timoff_obstacles - timoff_curPoseVelAge;
-		const double timoff_pose2VelCmd = timoff_sendVelCmd_avr.getLastOutput() + 0.5*tim_changeSpeed_avr.getLastOutput() - timoff_curPoseVelAge;
-		newLogRec.values["timoff_pose2sense"] = timoff_pose2sense;
-		newLogRec.values["timoff_pose2VelCmd"] = timoff_pose2VelCmd;
+			// time offset estimations:
+			const double timoff_pose2sense = timoff_obstacles - timoff_curPoseVelAge;
+			const double timoff_pose2VelCmd = timoff_sendVelCmd_avr.getLastOutput() + 0.5*tim_changeSpeed_avr.getLastOutput() - timoff_curPoseVelAge;
+			newLogRec.values["timoff_pose2sense"] = timoff_pose2sense;
+			newLogRec.values["timoff_pose2VelCmd"] = timoff_pose2VelCmd;
 
-		if (std::abs(timoff_pose2sense)  > 0.5) MRPT_LOG_WARN_FMT("timoff_pose2sense=%e is too large! Path extrapolation may be not accurate.", timoff_pose2sense);
-		if (std::abs(timoff_pose2VelCmd) > 0.5) MRPT_LOG_WARN_FMT("timoff_pose2VelCmd=%e is too large! Path extrapolation may be not accurate.", timoff_pose2VelCmd);
+			if (std::abs(timoff_pose2sense) > 0.5) MRPT_LOG_WARN_FMT("timoff_pose2sense=%e is too large! Path extrapolation may be not accurate.", timoff_pose2sense);
+			if (std::abs(timoff_pose2VelCmd) > 0.5) MRPT_LOG_WARN_FMT("timoff_pose2VelCmd=%e is too large! Path extrapolation may be not accurate.", timoff_pose2VelCmd);
 
-		// Path extrapolation: robot relative poses along current path estimation:
-		CPose2D relPoseSense, relPoseVelCmd;
-		robotPoseExtrapolateIncrement(m_curPoseVel.vel, timoff_pose2sense, relPoseSense);
-		robotPoseExtrapolateIncrement(m_curPoseVel.vel, timoff_pose2VelCmd, relPoseVelCmd);
-		const CPose2D rel_pose_PTG_origin_wrt_sense = relPoseVelCmd - relPoseSense;
+			// Path extrapolation: robot relative poses along current path estimation:
+			CPose2D relPoseSense, relPoseVelCmd;
+			robotPoseExtrapolateIncrement(m_curPoseVel.vel, timoff_pose2sense, relPoseSense);
+			robotPoseExtrapolateIncrement(m_curPoseVel.vel, timoff_pose2VelCmd, relPoseVelCmd);
+			// relative pose for PTGs:
+			rel_pose_PTG_origin_wrt_sense = relPoseVelCmd - relPoseSense;
+
+			// logging:
+			newLogRec.relPoseSense = relPoseSense;
+			newLogRec.relPoseVelCmd = relPoseVelCmd;
+		}
+		else {
+			// No delays model:
+			rel_pose_PTG_origin_wrt_sense = CPose2D();
+		}
 
 		m_infoPerPTG.resize(nPTGs);
 		m_infoPerPTG_timestamp = tim_start_iteration;
@@ -573,8 +587,6 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 			this->loggingGetWSObstaclesAndShape(newLogRec);
 
 			newLogRec.robotOdometryPose   = m_curPoseVel.pose;
-			newLogRec.relPoseSense        = relPoseSense;
-			newLogRec.relPoseVelCmd       = relPoseVelCmd;
 			newLogRec.WS_target_relative  = TPoint2D(relTarget.x(), relTarget.y());
 			newLogRec.cmd_vel             = m_new_vel_cmd;
 			newLogRec.cmd_vel_original    = m_cmd_vel_original;
@@ -793,6 +805,8 @@ void CAbstractPTGBasedReactive::loadConfigFile(const mrpt::utils::CConfigFileBas
 	SPEEDFILTER_TAU =  cfg.read_float(sectCfg,"SPEEDFILTER_TAU", .0);
 	secureDistanceStart = cfg.read_float(sectCfg,"secureDistanceStart", secureDistanceStart);
 	secureDistanceEnd = cfg.read_float(sectCfg,"secureDistanceEnd", secureDistanceEnd);
+
+	USE_DELAYS_MODEL = cfg.read_bool(sectCfg, "USE_DELAYS_MODEL", USE_DELAYS_MODEL);
 
 	DIST_TO_TARGET_FOR_SENDING_EVENT = cfg.read_float(sectCfg, "DIST_TO_TARGET_FOR_SENDING_EVENT", DIST_TO_TARGET_FOR_SENDING_EVENT, false);
 	m_badNavAlarm_AlarmTimeout = cfg.read_double(sectCfg,"ALARM_SEEMS_NOT_APPROACHING_TARGET_TIMEOUT", m_badNavAlarm_AlarmTimeout, false);
