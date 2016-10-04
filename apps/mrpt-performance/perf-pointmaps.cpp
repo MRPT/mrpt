@@ -35,11 +35,7 @@ double pointmap_test_0(int a1, int a2)
 	CObservation2DRangeScan	scan1;
 	scan1.aperture = M_PIf;
 	scan1.rightToLeft = true;
-	scan1.validRange.resize( sizeof(SCAN_RANGES_1)/sizeof(SCAN_RANGES_1[0]) );
-	scan1.scan.resize( sizeof(SCAN_RANGES_1)/sizeof(SCAN_RANGES_1[0]) );
-	memcpy( &scan1.scan[0], SCAN_RANGES_1, sizeof(SCAN_RANGES_1) );
-	memcpy( &scan1.validRange[0], SCAN_VALID_1, sizeof(SCAN_VALID_1) );
-
+	scan1.loadFromVectors( sizeof(SCAN_RANGES_1)/sizeof(SCAN_RANGES_1[0]), SCAN_RANGES_1, SCAN_VALID_1);
 
 	CSimplePointsMap  pt_map;
 
@@ -68,11 +64,7 @@ double pointmap_test_1(int a1, int a2)
 	CObservation2DRangeScan	scan1;
 	scan1.aperture = M_PIf;
 	scan1.rightToLeft = true;
-	scan1.validRange.resize( sizeof(SCAN_RANGES_1)/sizeof(SCAN_RANGES_1[0]) );
-	scan1.scan.resize( sizeof(SCAN_RANGES_1)/sizeof(SCAN_RANGES_1[0]) );
-	memcpy( &scan1.scan[0], SCAN_RANGES_1, sizeof(SCAN_RANGES_1) );
-	memcpy( &scan1.validRange[0], SCAN_VALID_1, sizeof(SCAN_VALID_1) );
-
+	scan1.loadFromVectors( sizeof(SCAN_RANGES_1)/sizeof(SCAN_RANGES_1[0]), SCAN_RANGES_1, SCAN_VALID_1);
 
 	CSimplePointsMap  pt_map;
 
@@ -123,10 +115,7 @@ double pointmap_test_2(int a1, int a2)
 	CObservation2DRangeScan	scan1;
 	scan1.aperture = M_PIf;
 	scan1.rightToLeft = true;
-	scan1.validRange.resize( sizeof(SCAN_RANGES_1)/sizeof(SCAN_RANGES_1[0]) );
-	scan1.scan.resize( sizeof(SCAN_RANGES_1)/sizeof(SCAN_RANGES_1[0]) );
-	memcpy( &scan1.scan[0], SCAN_RANGES_1, sizeof(SCAN_RANGES_1) );
-	memcpy( &scan1.validRange[0], SCAN_VALID_1, sizeof(SCAN_VALID_1) );
+	scan1.loadFromVectors( sizeof(SCAN_RANGES_1)/sizeof(SCAN_RANGES_1[0]), SCAN_RANGES_1, SCAN_VALID_1);
 
 	CTicTac	 tictac;
 	const unsigned N_TIMES = 20;
@@ -166,10 +155,7 @@ double pointmap_test_3(int a1, int a2)
 	CObservation2DRangeScan	scan1;
 	scan1.aperture = M_PIf;
 	scan1.rightToLeft = true;
-	scan1.validRange.resize( sizeof(SCAN_RANGES_1)/sizeof(SCAN_RANGES_1[0]) );
-	scan1.scan.resize( sizeof(SCAN_RANGES_1)/sizeof(SCAN_RANGES_1[0]) );
-	memcpy( &scan1.scan[0], SCAN_RANGES_1, sizeof(SCAN_RANGES_1) );
-	memcpy( &scan1.validRange[0], SCAN_VALID_1, sizeof(SCAN_VALID_1) );
+	scan1.loadFromVectors( sizeof(SCAN_RANGES_1)/sizeof(SCAN_RANGES_1[0]), SCAN_RANGES_1, SCAN_VALID_1);
 
 
 	CSimplePointsMap  pt_map;
@@ -208,10 +194,7 @@ double pointmap_test_4(int a1, int a2)
 	CObservation2DRangeScan	scan1;
 	scan1.aperture = M_PIf;
 	scan1.rightToLeft = true;
-	scan1.validRange.resize( sizeof(SCAN_RANGES_1)/sizeof(SCAN_RANGES_1[0]) );
-	scan1.scan.resize( sizeof(SCAN_RANGES_1)/sizeof(SCAN_RANGES_1[0]) );
-	memcpy( &scan1.scan[0], SCAN_RANGES_1, sizeof(SCAN_RANGES_1) );
-	memcpy( &scan1.validRange[0], SCAN_VALID_1, sizeof(SCAN_VALID_1) );
+	scan1.loadFromVectors( sizeof(SCAN_RANGES_1)/sizeof(SCAN_RANGES_1[0]), SCAN_RANGES_1, SCAN_VALID_1);
 
 
 	CSimplePointsMap  pt_map;
@@ -253,10 +236,7 @@ double pointmap_test_5(int a1, int a2)
 	CObservation2DRangeScan	scan1;
 	scan1.aperture = M_PIf;
 	scan1.rightToLeft = true;
-	scan1.validRange.resize( sizeof(SCAN_RANGES_1)/sizeof(SCAN_RANGES_1[0]) );
-	scan1.scan.resize( sizeof(SCAN_RANGES_1)/sizeof(SCAN_RANGES_1[0]) );
-	memcpy( &scan1.scan[0], SCAN_RANGES_1, sizeof(SCAN_RANGES_1) );
-	memcpy( &scan1.validRange[0], SCAN_VALID_1, sizeof(SCAN_VALID_1) );
+	scan1.loadFromVectors( sizeof(SCAN_RANGES_1)/sizeof(SCAN_RANGES_1[0]), SCAN_RANGES_1, SCAN_VALID_1);
 
 
 	CSimplePointsMap  pt_map;
