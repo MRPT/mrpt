@@ -6,32 +6,35 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
-#ifndef  CTICTAC_H
-#define  CTICTAC_H
+#pragma once
 
+#include <mrpt/utils/CTicTac.h>
 #include <mrpt/base/link_pragmas.h>
-#include <mrpt/utils/CUncopiable.h>
 
 namespace mrpt
 {
 namespace utils
 {
-	/** This class implements a high-performance stopwatch.
-	 *  Typical resolution is about 1e-6 seconds.
-	 *  \note The class is named after the Spanish equivalent of "Tic-Toc" ;-)
+	/** A class for calling sleep() in a loop, such that the amount of sleep time will be computed 
+	 *  to make the loop run at the desired rate (in Hz).
+	 * \note [New in MRPT 1.5.0]
 	 * \ingroup mrpt_base_grp
 	 */
-	class BASE_IMPEXP CTicTac : public mrpt::utils::CUncopiable
+	class BASE_IMPEXP CRateTimer
 	{
 	public:
-		CTicTac(); //!< Default constructor. Implicitly calls Tic()
-		virtual ~CTicTac();  //!< Dtor
-		void   Tic();  //!< Starts the stopwatch. \sa Tac
-		double Tac();  //!< Stops the stopwatch.  \return Returns the ellapsed time in seconds.  \sa Tic
+		CRateTimer(const double rate_hz=1.0); //!< Ctor: specifies the desired rate (Hz)
+		virtual ~CRateTimer();  //!< Dtor
+
+		void setRate(const double rate_hz); //!< Changes the object loop rate (Hz)
+		/** Sleeps for some time, such as the return of this method is 1/rate (seconds) 
+		  * after the return of the previous call.
+		  * \return false if the rate could not be achieved ("we are already late"), true if all went right. */
+		bool sleep(); 
 	private:
-		unsigned char largeInts[64];
+		double m_rate_hz;
+		mrpt::utils::CTicTac m_tictac;
 	}; // End of class def.
 
 } // End of namespace
 } // End of namespace
-#endif

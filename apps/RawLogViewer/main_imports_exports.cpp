@@ -166,14 +166,13 @@ void xRawLogViewerFrame::OnImportCARMEN(wxCommandEvent& event)
 			int		scanSize = atoi(str);
 			goToNextToken(str);
 
-			obsScan->scan.resize(scanSize,0);
-			obsScan->validRange.resize(scanSize,true);
+			obsScan->resizeScanAndAssign(scanSize,0, true);
 
 			for (int q =0;q<scanSize;q++)
 			{
-				obsScan->scan[q] = atof(str);
+				obsScan->setScanRange(q, atof(str));
 				goToNextToken(str);
-				obsScan->validRange[q] = obsScan->scan[q] < maxValidLaserRange;
+				obsScan->setScanRangeValidity(q, obsScan->scan[q] < maxValidLaserRange );
 			}
 
 			// Read odometry:
@@ -1100,8 +1099,18 @@ void xRawLogViewerFrame::saveImportedLogToRawlog(
 
 				obs->aperture = M_PI;
 				obs->rightToLeft = true;
-				obs->scan = it->second.data;
-				obs->validRange.resize( it->second.data.size() );
+				obs->resizeScan(it->second.data.size());
+				for (size_t i=0;i<it->second.data.size();i++) {
+					float v = it->second.data[i];
+					bool valid = true;
+					if (v < 0 || fabs(v-81.19)<0.01 || fabs(v-8.191)<0.01)
+					{
+						v=.0f;
+						valid=false;
+					}
+					obs->setScanRange(i, v);
+					obs->setScanRangeValidity(i,valid);
+				}
 				obs->deltaPitch = -DEG2RAD(it->second.endElev - it->second.startElev);
 
 				obs->sensorPose.setFromValues(
@@ -1110,22 +1119,6 @@ void xRawLogViewerFrame::saveImportedLogToRawlog(
 					-DEG2RAD(it->second.startElev) ,
 					0
 				);
-
-				vector<float>::iterator q;
-				vector<char>::iterator v;
-
-				for (q=obs->scan.begin(),v=obs->validRange.begin();q!=obs->scan.end();q++,v++)
-				{
-					if (*q < 0 || fabs(*q-81.19)<0.01 || fabs(*q-8.191)<0.01)
-					{
-						*q=0;
-						*v = false;
-					}
-					else
-					{
-						*v = true;
-					}
-				}
 			}
 			break;
 

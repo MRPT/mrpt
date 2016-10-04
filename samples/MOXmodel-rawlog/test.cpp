@@ -27,25 +27,25 @@ int main(int argc, char **argv)
 	//float													a_rise,a_decay,; //b_decay, b_rise
 	int														enoseID,sensorType,indexMonitoredSensor,delay_value; // decimate_value, winNoise_size
 	mrpt::obs::CObservationGasSensors::CMOSmodel		MOSmodel;
-	bool													save_maplog,have_estimation,apply_delay;
+	bool													have_estimation,apply_delay;
 
-	// Load configuration:	
+	// Load configuration:
 	if (mrpt::system::fileExists("./CONFIG_MOXmodel.ini"))
 	{
 		cout << "Using configuration from './CONFIG_MOXmodel.ini'" << endl;
 		CConfigFile		conf("./CONFIG_MOXmodel.ini");
-		
+
 		rawlog_file = conf.read_string("","rawlog_file","",true);
 		sensorLabel = conf.read_string("","sensorLabel","Full_MCEnose",true);
 		enoseID = conf.read_int("","enoseID",0,true);
-		std::string sensorType_str = conf.read_string("","sensorType","-1",true);		
+		std::string sensorType_str = conf.read_string("","sensorType","-1",true);
 		stringstream convert ( sensorType_str );
 		convert>> std::hex >> sensorType;
 
 		//Delays
-		apply_delay = conf.read_bool("","apply_delay",false,true);		
+		apply_delay = conf.read_bool("","apply_delay",false,true);
 		delay_value = conf.read_int("","delay_value",0,true);
-		
+
 
 		//MOX model parameters
 		MOSmodel.a_rise = conf.read_float("","a_rise",0.0,true);
@@ -54,10 +54,10 @@ int main(int argc, char **argv)
 		MOSmodel.b_decay = conf.read_float("","b_decay",0.0,true);
 		MOSmodel.winNoise_size = conf.read_int("","winNoise_size",0,true);
 		MOSmodel.decimate_value = conf.read_int("","decimate_value",0,true);
-		save_maplog = conf.read_bool("","save_maplog",false,true);
-		
+		//save_maplog = conf.read_bool("","save_maplog",false,true);
+
 		indexMonitoredSensor = -1;
-		
+
 	}
 	else
 	{
@@ -66,8 +66,8 @@ int main(int argc, char **argv)
 		return -1;
 	}
 
-		
-	//Open Rawlogs		
+
+	//Open Rawlogs
 	cout << "Processing Rawlog " << rawlog_file << endl;
 	cout << "Obtaining MOXmodel from " << sensorLabel << "(" << enoseID << ") - sensor " << sensorType << endl;
 	CFileGZInputStream                      file_input;
@@ -95,18 +95,18 @@ int main(int argc, char **argv)
 			   if (IS_CLASS(o,CObservationGasSensors))
 			   {
 				   CObservationGasSensorsPtr obs = CObservationGasSensorsPtr( o );
-				   
+
 				   //Correct delay on gas readings
 				   if ( apply_delay )
 					   obs->timestamp = obs->timestamp - delay_value*10000000;
-				   
+
 
 				   if (obs->sensorLabel == sensorLabel)
 				   {
 						//------------------------------------------------------
 						// Get reading from CH_i for gas distribution estimation
 						//------------------------------------------------------
-						float raw_reading;						
+						float raw_reading;
 
 						if (sensorType == 0){	//compute the mean
 							raw_reading = math::mean( obs->m_readings[enoseID].readingsVoltage );
@@ -117,14 +117,14 @@ int main(int argc, char **argv)
 							if (indexMonitoredSensor == -1)
 							{
 								//First reading, get the index according to sensorID
-								for (indexMonitoredSensor=0; indexMonitoredSensor< obs->m_readings[enoseID].sensorTypes.size(); indexMonitoredSensor++)
+								for (indexMonitoredSensor=0; indexMonitoredSensor< (int)obs->m_readings[enoseID].sensorTypes.size(); indexMonitoredSensor++)
 								{
 									if (obs->m_readings[enoseID].sensorTypes.at(indexMonitoredSensor) == vector_int::value_type(sensorType) )
 										break;
 								}
 							}
 
-							if (indexMonitoredSensor< obs->m_readings[enoseID].sensorTypes.size())
+							if (indexMonitoredSensor< (int)obs->m_readings[enoseID].sensorTypes.size())
 							{
 								raw_reading = obs->m_readings[enoseID].readingsVoltage.at(indexMonitoredSensor);
 							}
@@ -134,14 +134,14 @@ int main(int argc, char **argv)
 								raw_reading = math::mean( obs->m_readings[enoseID].readingsVoltage );
 							}
 						}
-						
+
 						//Obtain MOX model output
 						mrpt::poses::CPose3D MOXmodel_pose = obs->m_readings[enoseID].eNosePoseOnTheRobot;
 						float MOXmodel_estimation = raw_reading;
 						mrpt::system::TTimeStamp MOXmodel_timestamp = obs->timestamp;
 
 						have_estimation =  MOSmodel.get_GasDistribution_estimation(MOXmodel_estimation, MOXmodel_timestamp);
-						
+
 						if (have_estimation)
 						{
 							//Save as new obs
@@ -151,22 +151,22 @@ int main(int argc, char **argv)
 							gd_est.isActive = false;
 							gd_est.sensorTypes.push_back(0x0001);	//indicates that is a MOXmodel output
 							gd_est.readingsVoltage.push_back(MOXmodel_estimation);
-							gd_est.eNosePoseOnTheRobot = MOXmodel_pose;							
+							gd_est.eNosePoseOnTheRobot = MOXmodel_pose;
 
 							mrpt::obs::CObservationGasSensorsPtr obs_GDM = CObservationGasSensors::Create();
 							obs_GDM->sensorLabel = "GDM";
 							// modify timestamp to deal with the delay of the model
 							obs_GDM->timestamp = MOXmodel_timestamp;
 							obs_GDM->m_readings.push_back( gd_est );
-							
+
 							file_output << obs_GDM;
 						}
-				   }				   
+				   }
 			   }
-			   
+
 			   //Save current sensor obs to the new Rawlog file
 			   file_output << o;
-			   
+
 		   }
 
 
@@ -179,6 +179,6 @@ int main(int argc, char **argv)
 		   read = false;
 	   }
 	}
-	
+
 	return 0;
 }

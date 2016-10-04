@@ -901,8 +901,7 @@ void CObservation3DRangeScan::convertTo2DScan(mrpt::obs::CObservation2DRangeScan
 
 	if (!this->hasRangeImage)
 	{	// Nothing to do!
-		out_scan2d.validRange.clear();
-		out_scan2d.scan.clear();
+		out_scan2d.resizeScan(0);
 		return;
 	}
 
@@ -942,8 +941,9 @@ void CObservation3DRangeScan::convertTo2DScan(mrpt::obs::CObservation2DRangeScan
 	// Prepare 2D scan data fields:
 	out_scan2d.aperture = FOV_equiv;
 	out_scan2d.maxRange = this->maxRange;
-	out_scan2d.validRange.assign(nLaserRays, false);  // default: all ranges=invalid
-	out_scan2d.scan.assign(nLaserRays, 2.0 * this->maxRange);	
+	out_scan2d.resizeScan(nLaserRays);
+		
+	out_scan2d.resizeScanAndAssign(nLaserRays, 2.0 * this->maxRange, false ); // default: all ranges=invalid
 	if (sp.use_origin_sensor_pose)
 	     out_scan2d.sensorPose = mrpt::poses::CPose3D();
 	else out_scan2d.sensorPose = this->sensorPose;
@@ -1000,9 +1000,9 @@ void CObservation3DRangeScan::convertTo2DScan(mrpt::obs::CObservation2DRangeScan
 
 			if (any_valid)
 			{
-				out_scan2d.validRange[i] = true;
+				out_scan2d.setScanRangeValidity(i, true);
 				// Compute the distance in 2D from the "depth" in closest_range:
-				out_scan2d.scan[i] = closest_range*std::sqrt(1.0+tan_ang*tan_ang);
+				out_scan2d.setScanRange(i, closest_range*std::sqrt(1.0+tan_ang*tan_ang) );
 			}
 		} // end for columns
 	}
@@ -1036,8 +1036,8 @@ void CObservation3DRangeScan::convertTo2DScan(mrpt::obs::CObservation2DRangeScan
 				continue;
 
 			const float  r_wrt_origin = ::hypotf(xs[i],ys[i]);
-			mrpt::utils::keep_min( out_scan2d.scan[i_range], r_wrt_origin);
-			out_scan2d.validRange[i_range] = true;
+			if (out_scan2d.scan[i_range]< r_wrt_origin) out_scan2d.setScanRange(i_range, r_wrt_origin);
+			out_scan2d.setScanRangeValidity(i_range, true);
 		}
 
 	}

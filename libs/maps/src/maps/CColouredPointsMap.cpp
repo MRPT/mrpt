@@ -90,6 +90,8 @@ CColouredPointsMap::~CColouredPointsMap()
  ---------------------------------------------------------------*/
 void CColouredPointsMap::reserve(size_t newLength)
 {
+	newLength = mrpt::utils::length2length4N(newLength);
+
 	x.reserve( newLength );
 	y.reserve( newLength );
 	z.reserve( newLength );
@@ -102,6 +104,8 @@ void CColouredPointsMap::reserve(size_t newLength)
 //  and old contents are not changed.
 void CColouredPointsMap::resize(size_t newLength)
 {
+	this->reserve(newLength); // to ensure 4N capacity
+
 	x.resize( newLength, 0 );
 	y.resize( newLength, 0 );
 	z.resize( newLength, 0 );
@@ -115,6 +119,8 @@ void CColouredPointsMap::resize(size_t newLength)
 //  and leaving all points to default values.
 void CColouredPointsMap::setSize(size_t newLength)
 {
+	this->reserve(newLength); // to ensure 4N capacity
+
 	x.assign( newLength, 0);
 	y.assign( newLength, 0);
 	z.assign( newLength, 0);
@@ -194,7 +200,7 @@ void  CColouredPointsMap::readFromStream(mrpt::utils::CStream &in, int version)
 			uint32_t n;
 			in >> n;
 
-			x.resize(n); y.resize(n); z.resize(n);
+			this->resize(n);
 
 			if (n>0)
 			{
@@ -231,10 +237,7 @@ void  CColouredPointsMap::readFromStream(mrpt::utils::CStream &in, int version)
 			uint32_t n;
 			in >> n;
 
-			x.resize(n);
-			y.resize(n);
-			z.resize(n);
-			//pointWeight.resize(n,1);	// Default value=1
+			this->resize(n);
 
 			if (n>0)
 			{
