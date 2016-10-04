@@ -491,7 +491,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 			newLogRec.robotOdometryPose   = m_curPoseVel.pose;
 			newLogRec.relPoseSense        = relPoseSense;
 			newLogRec.relPoseVelCmd       = relPoseVelCmd;
-			newLogRec.relPoseVelCmd_NOP   = relPoseVelCmd_NOP;
+			//newLogRec.relPoseVelCmd_NOP   = relPoseVelCmd_NOP;
 			newLogRec.WS_target_relative  = TPoint2D(relTarget);
 			newLogRec.cmd_vel             = new_vel_cmd;
 			newLogRec.cmd_vel_original    = cmd_vel_original;
