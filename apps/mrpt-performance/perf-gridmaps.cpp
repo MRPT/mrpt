@@ -107,11 +107,7 @@ double grid_test_5_6(int a1, int a2)
 	CObservation2DRangeScan	scan1;
 	scan1.aperture = M_PIf;
 	scan1.rightToLeft = true;
-	scan1.validRange.resize( sizeof(SCAN_RANGES_1)/sizeof(SCAN_RANGES_1[0]) );
-	scan1.scan.resize( sizeof(SCAN_RANGES_1)/sizeof(SCAN_RANGES_1[0]) );
-
-	memcpy( &scan1.scan[0], SCAN_RANGES_1, sizeof(SCAN_RANGES_1) );
-	memcpy( &scan1.validRange[0], SCAN_VALID_1, sizeof(SCAN_VALID_1) );
+	scan1.loadFromVectors( sizeof(SCAN_RANGES_1)/sizeof(SCAN_RANGES_1[0]), SCAN_RANGES_1,SCAN_VALID_1 );
 
 	COccupancyGridMap2D		gridmap(-20,20,-20,20, 0.05);
 	gridmap.insertionOptions.wideningBeamsWithDistance = a1!=0;
@@ -148,11 +144,7 @@ double grid_test_8(int a1, int a2)
 	CObservation2DRangeScan	scan1;
 	scan1.aperture = M_PIf;
 	scan1.rightToLeft = true;
-	scan1.validRange.resize( sizeof(SCAN_RANGES_1)/sizeof(SCAN_RANGES_1[0]) );
-	scan1.scan.resize( sizeof(SCAN_RANGES_1)/sizeof(SCAN_RANGES_1[0]) );
-
-	memcpy( &scan1.scan[0], SCAN_RANGES_1, sizeof(SCAN_RANGES_1) );
-	memcpy( &scan1.validRange[0], SCAN_VALID_1, sizeof(SCAN_VALID_1) );
+	scan1.loadFromVectors( sizeof(SCAN_RANGES_1)/sizeof(SCAN_RANGES_1[0]), SCAN_RANGES_1,SCAN_VALID_1 );
 
 	COccupancyGridMap2D		gridmap(-20,20,-20,20, 0.05);
 
@@ -184,11 +176,7 @@ double grid_test_9(int a1, int a2)
 	CObservation2DRangeScan	scan1;
 	scan1.aperture = M_PIf;
 	scan1.rightToLeft = true;
-	scan1.validRange.resize( sizeof(SCAN_RANGES_1)/sizeof(SCAN_RANGES_1[0]) );
-	scan1.scan.resize( sizeof(SCAN_RANGES_1)/sizeof(SCAN_RANGES_1[0]) );
-	memcpy( &scan1.scan[0], SCAN_RANGES_1, sizeof(SCAN_RANGES_1) );
-	memcpy( &scan1.validRange[0], SCAN_VALID_1, sizeof(SCAN_VALID_1) );
-
+	scan1.loadFromVectors( sizeof(SCAN_RANGES_1)/sizeof(SCAN_RANGES_1[0]), SCAN_RANGES_1,SCAN_VALID_1 );
 
 	CSimplePointsMap  gridmap;
 	CSimplePointsMap  pt_map2;
