@@ -173,6 +173,7 @@ void CAbstractNavigator::navigationStep()
 
 				m_robot.startWatchdog( 1000 );	// Watchdog = 1 seg
 				m_latestPoses.clear(); // Clear cache of last poses.
+				onStartNewNavigation();
 			}
 
 			// Have we just started the navigation?
