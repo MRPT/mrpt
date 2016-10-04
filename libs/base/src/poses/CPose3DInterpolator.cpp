@@ -102,10 +102,23 @@ CPose3D & CPose3DInterpolator::interpolate( mrpt::system::TTimeStamp t, CPose3D 
 		return out_interp;
 	}
 
+	// We'll look for 4 consecutive time points.
+	// Check if the selected method needs all 4 points or just the central 2 of them:
+	bool interp_method_requires_4pts;
+	switch (m_method)
+	{
+	case imLinear2Neig:
+	case imSplineSlerp:
+	case imLinearSlerp:
+		interp_method_requires_4pts = false;
+		break;
+	default:
+		interp_method_requires_4pts = true;
+		break;
+	};
+
+
 	// Out of range?
-
-
-
 	const_iterator it_ge1 = m_path.lower_bound( t );
 
 	// Exact match?
@@ -125,32 +138,42 @@ CPose3D & CPose3DInterpolator::interpolate( mrpt::system::TTimeStamp t, CPose3D 
 	} // end
 
 	p3 = *it_ge1;		// Third pair
-	++it_ge1;
-	if( it_ge1 == m_path.end() )
+	const_iterator it_ge2 = it_ge1; ++it_ge2;
+	if(it_ge2 == m_path.end() )
 	{
-		out_valid_interp = false;
-		out_interp.setFromValues(0,0,0);
-		return out_interp;
+		if (interp_method_requires_4pts) {
+			out_valid_interp = false;
+			out_interp.setFromValues(0,0,0);
+			return out_interp;
+		}
 	}
-	p4 = *(it_ge1);		// Fourth pair
+	else {
+		p4 = *(it_ge2);		// Fourth pair
+	}
 
-	--it_ge1;
 	p2 = *(--it_ge1);	// Second pair
 
 	if( it_ge1 == m_path.begin() )
 	{
-		out_valid_interp = false;
-		out_interp.setFromValues(0,0,0);
-		return out_interp;
+		if (interp_method_requires_4pts) {
+			out_valid_interp = false;
+			out_interp.setFromValues(0, 0, 0);
+			return out_interp;
+		}
+	}
+	else {
+		p1 = *(--it_ge1);	// First pair
 	}
 
-	p1 = *(--it_ge1);	// First pair
-
 	// Test if the difference between the desired timestamp and the next timestamp is lower than a certain (configurable) value
+	const double dt12 = interp_method_requires_4pts ? (p2.first - p1.first) / 1e7 : .0;
+	const double dt23 = (p3.first - p2.first) / 1e7;
+	const double dt34 = interp_method_requires_4pts ? (p4.first - p3.first) / 1e7 : .0;
+
 	if( maxTimeInterpolation > 0 &&
-	  ( (p4.first - p3.first)/1e7 > maxTimeInterpolation ||
-	    (p3.first - p2.first)/1e7 > maxTimeInterpolation ||
-	    (p2.first - p1.first)/1e7 > maxTimeInterpolation ))
+	  (dt12 > maxTimeInterpolation ||
+	   dt23 > maxTimeInterpolation ||
+	   dt34 > maxTimeInterpolation ))
 	{
 		out_valid_interp = false;
 		out_interp.setFromValues(0,0,0);

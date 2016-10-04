@@ -41,7 +41,7 @@ CLogFileRecord::~CLogFileRecord()
 void  CLogFileRecord::writeToStream(mrpt::utils::CStream &out,int *version) const
 {
 	if (version)
-		*version = 15;
+		*version = 16;
 	else
 	{
 		uint32_t	i,n;
@@ -68,8 +68,12 @@ void  CLogFileRecord::writeToStream(mrpt::utils::CStream &out,int *version) cons
 			if (there_is_ptg_data)
 				out << infoPerPTG[i].ptg;
 		}
-		out << nSelectedPTG << WS_Obstacles << robotOdometryPose << WS_target_relative /*v8*/ << cmd_vel /*v10*/; // << executionTime; removed v13
-		out << cmd_vel_original; // v15
+		out << nSelectedPTG << WS_Obstacles << robotOdometryPose << WS_target_relative /*v8*/;
+		// v16:
+		out << ptg_index_NOP << ptg_last_k_NOP  << rel_cur_pose_wrt_last_vel_cmd_NOP << rel_pose_PTG_origin_wrt_sense_NOP;
+
+		if (ptg_index_NOP<0)
+			out << cmd_vel /*v10*/ << cmd_vel_original; // v15
 
 		// Previous values: REMOVED IN VERSION #6
 		n = robotShape_x.size();
@@ -129,6 +133,7 @@ void  CLogFileRecord::readFromStream(mrpt::utils::CStream &in,int version)
 	case 13:
 	case 14:
 	case 15:
+	case 16:
 		{
 			// Version 0 --------------
 			uint32_t  i,n;
@@ -192,9 +197,18 @@ void  CLogFileRecord::readFromStream(mrpt::utils::CStream &in,int version)
 				WS_target_relative = mrpt::math::TPoint2D(pos);
 			}
 
+			if (version >= 16) {
+				in >> ptg_index_NOP >> ptg_last_k_NOP >> rel_cur_pose_wrt_last_vel_cmd_NOP >> rel_pose_PTG_origin_wrt_sense_NOP;
+			}
+			else {
+				ptg_index_NOP = -1;
+			}
+
+
 			if (version >= 10) {
 				if (version >= 15) {
-					in >> cmd_vel;
+					if (ptg_index_NOP<0)
+						in >> cmd_vel;
 				}
 				else {
 					std::vector<double> vel;
@@ -214,7 +228,7 @@ void  CLogFileRecord::readFromStream(mrpt::utils::CStream &in,int version)
 				cmd_vel->setVelCmdElement(0, w);
 			}
 
-			if (version>=15)
+			if (version>=15 && ptg_index_NOP<0)
 				in >> cmd_vel_original;
 
 			if (version < 13) {
