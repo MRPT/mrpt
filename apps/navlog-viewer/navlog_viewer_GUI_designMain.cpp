@@ -921,12 +921,14 @@ void navlog_viewer_GUI_designDialog::OnmnuMatlabPlotsSelected(wxCommandEvent& ev
       << "%  From log: " << string(edLogFile->GetValue().mbc_str()) << "\n"
       << "% -------------------------------------------------------------------------\n\n";
 
-    f << "%%\n"
-    << "function [] = main()\n"
+	f << "%%\n"
+		<< "function [] = main()\n"
+		<< "figure;"
+		<< "title('Path for " << mrpt::system::extractFileName(filName) <<"');"
     << "% Robot shape: (x,y) in each line\n"
     << "rs = [-0.3 -0.3;0.6 -0.3;0.6 0.3;-0.3 0.3];\n"
-    << "decimate_robot_shapes = 15;"
-    << "decim_cnt=0;";
+    << "dec_shps = 15;"
+    << "dec=0;";
 
     const int DECIMATE_POINTS = 10;
     int decim_point_cnt =0;
@@ -940,16 +942,19 @@ void navlog_viewer_GUI_designDialog::OnmnuMatlabPlotsSelected(wxCommandEvent& ev
         const CLogFileRecordPtr logsptr = CLogFileRecordPtr( m_logdata[i] );
         const CLogFileRecord * logptr = logsptr.pointer();
 
-        f << format("decim_cnt=decim_cnt+1; if (decim_cnt>=decimate_robot_shapes); drawRobotShape(rs,[%f %f %f]); decim_cnt=0; end\n",
-            logptr->robotOdometryPose.x(),
-            logptr->robotOdometryPose.y(),
-            logptr->robotOdometryPose.phi()
-            );
+		const CPose2D robotPose = logptr->robotOdometryPose;
+		CPose2D observationBasePose = robotPose;
+
+		if (cbShowRelPoses->IsChecked())
+			observationBasePose = observationBasePose + logptr->relPoseSense;
+
+        f << format("dec=dec+1; if (dec>=dec_shps); drawRobotShape(rs,[%f %f %f]); dec=0; end\n",
+			robotPose.x(), robotPose.y(), robotPose.phi() );
 
         if (++decim_point_cnt>=DECIMATE_POINTS)
         {
             CSimplePointsMap pts;
-            pts.changeCoordinatesReference( logptr->WS_Obstacles, logptr->robotOdometryPose );
+            pts.changeCoordinatesReference( logptr->WS_Obstacles, observationBasePose);
 
             const std::vector<float> &pX = pts.getPointsBufferRef_x();
             const std::vector<float> &pY = pts.getPointsBufferRef_y();
@@ -959,7 +964,7 @@ void navlog_viewer_GUI_designDialog::OnmnuMatlabPlotsSelected(wxCommandEvent& ev
         }
 
         // Target:
-        const mrpt::math::TPoint2D trg_glob = mrpt::math::TPoint2D( logptr->robotOdometryPose+logptr->WS_target_relative );
+        const mrpt::math::TPoint2D trg_glob = mrpt::math::TPoint2D(robotPose +logptr->WS_target_relative );
         if (TX.empty() || std::abs((*TX.rbegin())-trg_glob.x)>1e-3 || std::abs((*TY.rbegin())-trg_glob.y)>1e-3 )
         {
             TX.push_back(trg_glob.x);
@@ -981,7 +986,7 @@ void navlog_viewer_GUI_designDialog::OnmnuMatlabPlotsSelected(wxCommandEvent& ev
         f << TX[k] << " " << TY[k] << "\n";
 
 	f << "];\n"
-	  << "plot(Ts(:,1),Ts(:,2),'rx','MarkerSize',5);\n";
+	  << "plot(Ts(:,1),Ts(:,2),'rx','MarkerSize',10);\n";
 
     f << "axis equal;\n"
     << "\n";
