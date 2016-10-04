@@ -565,3 +565,15 @@ size_t CObservation2DRangeScan::getScanSize() const
 {
 	return m_scan.size();
 }
+
+void CObservation2DRangeScan::loadFromVectors(size_t nRays, const float *scanRanges, const char *scanValidity )
+{
+	ASSERT_(scanRanges);
+	ASSERT_(scanValidity);
+	resizeScan(nRays);
+	for (size_t i=0;i<nRays;i++) {
+		m_scan[i] = scanRanges[i];
+		m_validRange[i] = scanValidity[i];
+	}
+}
+

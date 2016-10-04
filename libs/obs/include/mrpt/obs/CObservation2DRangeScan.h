@@ -89,6 +89,8 @@ namespace obs
 		void getScanProperties(T2DScanProperties& p) const;  //!< Fill out a T2DScanProperties structure with the parameters of this scan
 		/** @} */
 
+		void loadFromVectors(size_t nRays, const float *scanRanges, const char *scanValidity );
+
 		/** @name Cached points map
 		    @{  */
 	protected:
