@@ -139,8 +139,7 @@ namespace detail
 
 				// Make sure the input std::vector<> has room enough for reads of 4-float at a time:
 				// Invalid reads should not be a problem, but just for safety...
-				if ((rangeScan.scan.size() & 0x03) !=0)
-					const_cast<std::vector<float>*>(&rangeScan.scan)->reserve(rangeScan.scan.size()+4);
+				// JLBC: OCT/2016: rangeScan.scan() is now, by design, ensured to hold vectors of 4*N capacity, so there is no need to call reserve() here.
 
 				const float *ptr_in_scan = &rangeScan.scan[0];
 				const float *ptr_in_cos  = &sincos_vals.ccos[0];

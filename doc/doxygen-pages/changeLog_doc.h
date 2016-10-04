@@ -63,6 +63,10 @@
 			- mrpt::maps::COccupancyGridMap2D::loadFromBitmapFile() correct description of `yCentralPixel` parameter.
 			- mrpt::maps::CPointsMap `liblas` import/export methods are now in a separate header. See \ref mrpt_maps_liblas_grp and \ref dep-liblas
 		- \ref mrpt_obs_grp
+			- [ABI change] mrpt::obs::CObservation2DRangeScan
+				- range scan vectors are now protected for safety. 
+				- New getter/setter methods. 
+				- backwards-compatible proxies added for read-only from range scan members.
 			- [ABI change] mrpt::obs::CObservation3DRangeScan:
 				- Now uses more SSE2 optimized code
 				- Depth filters are now available for mrpt::obs::CObservation3DRangeScan::project3DPointsFromDepthImageInto() and  mrpt::obs::CObservation3DRangeScan::convertTo2DScan()
@@ -114,6 +118,7 @@
 		- Fix inconsistent internal state after externalizing mrpt::obs::CObservation3DRangeScan
 		- Fix a long outstanding bug regarding losing of keystroke events in CDisplayWindow3D windows (Closes #13 again)
 		- Fix wrong units for negative numbers in mrpt::system::unitsFormat()
+		- Fix potential thread-unsafe conditions while inserting a mrpt::obs::CObservation2DRangeScan into a pointmap with SSE2 optimizations enabled.
 
 <hr>
 <a name="1.4.0">
