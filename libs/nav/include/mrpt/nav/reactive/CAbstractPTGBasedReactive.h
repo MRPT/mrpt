@@ -149,9 +149,7 @@ namespace mrpt
 		mrpt::utils::CStream  *m_logFile;           //!< The current log file stream, or NULL if not being used
 		bool                   m_enableKeepLogRecords; //!< See enableKeepLogRecords
 		CLogFileRecord lastLogRecord;  //!< The last log
-		//float last_cmd_v, last_cmd_w, new_cmd_v, new_cmd_w;  //!< Speed actual and last commands
-		mrpt::kinematics::CVehicleVelCmdPtr m_last_vel_cmd, m_new_vel_cmd; //!< Actual and last velocity commands
-		mrpt::kinematics::CVehicleVelCmdPtr m_cmd_vel_original; //!< Logged values of temporary vel cmds before reaching at the final value sent to the robot (for logging)
+		mrpt::kinematics::CVehicleVelCmdPtr m_last_vel_cmd ; //!< Last velocity commands
 
 		mrpt::synch::CCriticalSectionRecursive  m_critZoneLastLog; //!< Critical zones
 
@@ -225,7 +223,7 @@ namespace mrpt
 			const mrpt::math::TPoint2D & TP_Target,
 			CLogFileRecord::TInfoPerPTG & log );
 
-		virtual void STEP7_GenerateSpeedCommands(const THolonomicMovement &in_movement);
+		virtual void STEP7_GenerateSpeedCommands(const THolonomicMovement &in_movement, mrpt::kinematics::CVehicleVelCmdPtr &cmd_vel_original, mrpt::kinematics::CVehicleVelCmdPtr &new_vel_cmd );
 
 		void preDestructor(); //!< To be called during children destructors to assure thread-safe destruction, and free of shared objects.
 		virtual void onStartNewNavigation() MRPT_OVERRIDE;

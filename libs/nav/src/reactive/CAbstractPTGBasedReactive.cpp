@@ -366,7 +366,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 				CParameterizedTrajectoryGenerator * ptg = getPTG(m_lastSentVelCmd.ptg_index);
 				TInfoPerPTG ipf_NOP;
 				const TPose2D relTarget_NOP = TPose2D(CPose2D(m_navigationParams->target) - robot_pose_at_send_cmd);
-				const CPose2D rel_pose_PTG_origin_wrt_sense_NOP = robot_pose_at_send_cmd - (m_curPoseVel.pose + relPoseSense);
+				const CPose2D rel_pose_PTG_origin_wrt_sense_NOP = robot_pose_at_send_cmd - (CPose2D(m_curPoseVel.pose) + relPoseSense);
 				relPoseVelCmd_NOP = robot_pose_at_send_cmd - m_curPoseVel.pose;  // for logging
 
 				THolonomicMovement holonomicMovement;
@@ -391,45 +391,61 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 		}
 		const THolonomicMovement & selectedHolonomicMovement = holonomicMovements[nSelectedPTG];
 
+		// If the selected PTG is (N+1), it means the NOP cmd. vel is selected as the best alternative, i.e. do NOT send any new motion command.
+		const bool best_is_NOP_cmdvel =  (nSelectedPTG==nPTGs);
 
 		// STEP7: Get the non-holonomic movement command.
 		// ---------------------------------------------------------------------
+		mrpt::kinematics::CVehicleVelCmdPtr cmd_vel_original, new_vel_cmd; 
+		if (!best_is_NOP_cmdvel)
 		{
 			CTimeLoggerEntry tle(m_timelogger,"navigationStep.STEP7_NonHolonomicMovement");
-			STEP7_GenerateSpeedCommands( selectedHolonomicMovement );
+			STEP7_GenerateSpeedCommands( selectedHolonomicMovement,cmd_vel_original, new_vel_cmd );
 		}
 
 		// ---------------------------------------------------------------------
 		//				SEND MOVEMENT COMMAND TO THE ROBOT
 		// ---------------------------------------------------------------------
-		ASSERT_(m_new_vel_cmd);
-		if (m_new_vel_cmd->isStopCmd()) {
-			m_robot.stop();
+		if (best_is_NOP_cmdvel) 
+		{
+			// Notify the robot that we want it to keep executing the last cmdvel:
+			if (!m_robot.changeSpeedsNOP())
+			{
+				doEmergencyStop("\nERROR calling changeSpeedsNOP()!! Stopping robot and finishing navigation\n");
+				return;
+			}
 		}
 		else
 		{
-			mrpt::system::TTimeStamp tim_send_cmd_vel;
-			{
-				mrpt::utils::CTimeLoggerEntry tle(m_timlog_delays, "changeSpeeds()");
-				tim_send_cmd_vel = mrpt::system::now();
-				newLogRec.timestamps["tim_send_cmd_vel"] = tim_send_cmd_vel;
-				if (!m_robot.changeSpeeds(*m_new_vel_cmd))
-				{
-					doEmergencyStop("\nERROR calling RobotMotionControl::changeSpeeds!! Stopping robot and finishing navigation\n");
-					return;
-				}
+			ASSERT_(new_vel_cmd);
+			if (new_vel_cmd->isStopCmd()) {
+				m_robot.stop();
 			}
-			// Save last sent cmd:
-			m_lastSentVelCmd.ptg_index = nSelectedPTG;
-			m_lastSentVelCmd.ptg_alpha = selectedHolonomicMovement.PTG->alpha2index(selectedHolonomicMovement.direction);
-			m_lastSentVelCmd.tim_poseVel = m_curPoseVel.timestamp;
-			m_lastSentVelCmd.tim_send_cmd_vel = tim_send_cmd_vel;
+			else
+			{
+				mrpt::system::TTimeStamp tim_send_cmd_vel;
+				{
+					mrpt::utils::CTimeLoggerEntry tle(m_timlog_delays, "changeSpeeds()");
+					tim_send_cmd_vel = mrpt::system::now();
+					newLogRec.timestamps["tim_send_cmd_vel"] = tim_send_cmd_vel;
+					if (!m_robot.changeSpeeds(*new_vel_cmd))
+					{
+						doEmergencyStop("\nERROR calling changeSpeeds()!! Stopping robot and finishing navigation\n");
+						return;
+					}
+				}
+				// Save last sent cmd:
+				m_lastSentVelCmd.ptg_index = nSelectedPTG;
+				m_lastSentVelCmd.ptg_alpha = selectedHolonomicMovement.PTG->alpha2index(selectedHolonomicMovement.direction);
+				m_lastSentVelCmd.tim_poseVel = m_curPoseVel.timestamp;
+				m_lastSentVelCmd.tim_send_cmd_vel = tim_send_cmd_vel;
 
-			// Update delay model:
-			const double timoff_sendVelCmd = mrpt::system::timeDifference(tim_start_iteration, tim_send_cmd_vel);
-			timoff_sendVelCmd_avr.filter(timoff_sendVelCmd);
-			newLogRec.values["timoff_sendVelCmd"] = timoff_sendVelCmd;
-			newLogRec.values["timoff_sendVelCmd_avr"] = timoff_sendVelCmd_avr.getLastOutput();
+				// Update delay model:
+				const double timoff_sendVelCmd = mrpt::system::timeDifference(tim_start_iteration, tim_send_cmd_vel);
+				timoff_sendVelCmd_avr.filter(timoff_sendVelCmd);
+				newLogRec.values["timoff_sendVelCmd"] = timoff_sendVelCmd;
+				newLogRec.values["timoff_sendVelCmd_avr"] = timoff_sendVelCmd_avr.getLastOutput();
+			}
 		}
 
 		// ------- end of motion decision zone ---------
@@ -454,7 +470,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 				"CMD: %s \t"
 				"T=%.01lfms Exec:%.01lfms|%.01lfms \t"
 				"E=%.01lf PTG#%i\n",
-					m_new_vel_cmd->asString().c_str(),
+					new_vel_cmd ? new_vel_cmd->asString().c_str() : "NOP",
 					1000.0*meanExecutionPeriod.getLastOutput(),
 					1000.0*meanExecutionTime.getLastOutput(),
 					1000.0*meanTotalExecutionTime.getLastOutput(),
@@ -477,8 +493,8 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 			newLogRec.relPoseVelCmd       = relPoseVelCmd;
 			newLogRec.relPoseVelCmd_NOP   = relPoseVelCmd_NOP;
 			newLogRec.WS_target_relative  = TPoint2D(relTarget);
-			newLogRec.cmd_vel             = m_new_vel_cmd;
-			newLogRec.cmd_vel_original    = m_cmd_vel_original;
+			newLogRec.cmd_vel             = new_vel_cmd;
+			newLogRec.cmd_vel_original    = cmd_vel_original;
 			newLogRec.nSelectedPTG        = nSelectedPTG;
 			newLogRec.cur_vel             = m_curPoseVel.velGlobal;
 			newLogRec.cur_vel_local       = m_curPoseVel.velLocal;
@@ -639,37 +655,37 @@ void CAbstractPTGBasedReactive::STEP5_PTGEvaluator(
 	}
 }
 
-void CAbstractPTGBasedReactive::STEP7_GenerateSpeedCommands( const THolonomicMovement &in_movement)
+void CAbstractPTGBasedReactive::STEP7_GenerateSpeedCommands( const THolonomicMovement &in_movement,mrpt::kinematics::CVehicleVelCmdPtr &cmd_vel_original, mrpt::kinematics::CVehicleVelCmdPtr &new_vel_cmd )
 {
 	mrpt::utils::CTimeLoggerEntry tle(m_timelogger, "STEP7_GenerateSpeedCommands");
 	try
 	{
-		m_cmd_vel_original = in_movement.PTG->getSupportedKinematicVelocityCommand();
+		cmd_vel_original = in_movement.PTG->getSupportedKinematicVelocityCommand();
 		if (in_movement.speed == 0)
 		{
 			// The robot will stop:
-			m_new_vel_cmd = in_movement.PTG->getSupportedKinematicVelocityCommand();
-			m_new_vel_cmd->setToStop();
-			*m_cmd_vel_original = *m_new_vel_cmd;
+			new_vel_cmd = in_movement.PTG->getSupportedKinematicVelocityCommand();
+			new_vel_cmd->setToStop();
+			*cmd_vel_original = *new_vel_cmd;
 		}
 		else
 		{
 			// Take the normalized movement command:
-			m_new_vel_cmd = in_movement.PTG->directionToMotionCommand( in_movement.PTG->alpha2index( in_movement.direction ) );
-			*m_cmd_vel_original = *m_new_vel_cmd;
+			new_vel_cmd = in_movement.PTG->directionToMotionCommand( in_movement.PTG->alpha2index( in_movement.direction ) );
+			*cmd_vel_original = *new_vel_cmd;
 
 			// Scale holonomic speeds to real-world one:
-			m_robot.cmdVel_scale(*m_new_vel_cmd, in_movement.speed);
+			m_robot.cmdVel_scale(*new_vel_cmd, in_movement.speed);
 
 			if (!m_last_vel_cmd) // first iteration? Use default values:
 				m_last_vel_cmd = in_movement.PTG->getSupportedKinematicVelocityCommand();
 
 			// Honor user speed limits & "blending":
 			const double beta = meanExecutionPeriod.getLastOutput() / (meanExecutionPeriod.getLastOutput() + SPEEDFILTER_TAU);
-			m_robot.cmdVel_limits(*m_new_vel_cmd, *m_last_vel_cmd, beta);
+			m_robot.cmdVel_limits(*new_vel_cmd, *m_last_vel_cmd, beta);
 		}
 
-		m_last_vel_cmd = m_new_vel_cmd; // Save for filtering in next step
+		m_last_vel_cmd = new_vel_cmd; // Save for filtering in next step
 	}
 	catch (std::exception &e)
 	{
