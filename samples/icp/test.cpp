@@ -10,7 +10,7 @@
 /**
  * Execute the iterating closest point algorithm (ICP) on a hardcoded pair of
  * laser data. The algorithm computes the transformation (translation and
- * rotation) for aligning the 2 sets of laser scans and plots the 
+ * rotation) for aligning the 2 sets of laser scans and plots the
  */
 
 #include <mrpt/maps/CSimplePointsMap.h>
@@ -70,20 +70,15 @@ void TestICP()
 	CObservation2DRangeScan	scan1;
     scan1.aperture = M_PIf;
     scan1.rightToLeft = true;
-	scan1.validRange.resize( SCANS_SIZE );
-	scan1.scan.resize(SCANS_SIZE);
 	ASSERT_( sizeof(SCAN_RANGES_1) == sizeof(float)*SCANS_SIZE );
 
     /**
      * Copy the  float scan laser arrays to the corresponding members of the
      * CObservation2DRangeScan instances
      */
-	memcpy( &scan1.scan[0], SCAN_RANGES_1, sizeof(SCAN_RANGES_1) );
-	memcpy( &scan1.validRange[0], SCAN_VALID_1, sizeof(SCAN_VALID_1) );
-
+    scan1.loadFromVectors(SCANS_SIZE, SCAN_RANGES_1,SCAN_VALID_1);
 	CObservation2DRangeScan	scan2 = scan1;
-	memcpy( &scan2.scan[0], SCAN_RANGES_2, sizeof(SCAN_RANGES_2) );
-	memcpy( &scan2.validRange[0], SCAN_VALID_2, sizeof(SCAN_VALID_2) );
+    scan2.loadFromVectors(SCANS_SIZE, SCAN_RANGES_2,SCAN_VALID_2);
 
 	// Build the points maps from the scans:
 	m1.insertObservation( &scan1 );
@@ -98,7 +93,7 @@ void TestICP()
 	// -----------------------------------------------------
 
     /**
-     * user-set parameters for the icp algorithm.  
+     * user-set parameters for the icp algorithm.
      * For a full list of the available options check the online tutorials
      * page:
      * http://www.mrpt.org/Iterative_Closest_Point_(ICP)_and_other_matching_algorithms
@@ -155,7 +150,7 @@ void TestICP()
 
 	//cout << "Covariance of estimation (MATLAB format): " << endl << gPdf.cov.inMatlabFormat()  << endl;
 
-    /** 
+    /**
      * Save the results for potential postprocessing (in txt and in matlab
      * format)
      */
@@ -240,4 +235,3 @@ int main(int argc, char **argv)
 		return -1;
 	}
 }
-
