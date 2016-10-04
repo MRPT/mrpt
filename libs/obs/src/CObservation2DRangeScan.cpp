@@ -31,8 +31,13 @@ IMPLEMENTS_SERIALIZABLE(CObservation2DRangeScan, CObservation,mrpt::obs)
 							Constructor
  ---------------------------------------------------------------*/
 CObservation2DRangeScan::CObservation2DRangeScan( ) :
-	scan(),
-	validRange(),
+	m_scan(),
+	m_intensity(),
+	m_validRange(),
+	m_has_intensity(false),
+	scan( m_scan ), // proxy ctor
+	intensity( m_intensity ), // proxy ctor
+	validRange( m_validRange ), // proxy ctor
 	aperture( M_PI ),
 	rightToLeft( true ),
 	maxRange( 80.0f ),
@@ -42,6 +47,14 @@ CObservation2DRangeScan::CObservation2DRangeScan( ) :
 	deltaPitch(0),
 	m_cachedMap()
 {
+}
+
+CObservation2DRangeScan::CObservation2DRangeScan(const CObservation2DRangeScan &o ) :
+	scan( m_scan ), // proxy ctor
+	intensity( m_intensity ), // proxy ctor
+	validRange( m_validRange ) // proxy ctor
+{
+	*this = o; // rely on compiler-generated copy op + the custom = operator in proxies.
 }
 
 /*---------------------------------------------------------------
@@ -67,8 +80,8 @@ void  CObservation2DRangeScan::writeToStream(mrpt::utils::CStream &out, int *ver
 		ASSERT_(validRange.size() == scan.size() );
 		if (N)
 		{
-			out.WriteBufferFixEndianness( &scan[0], N );
-			out.WriteBuffer( &validRange[0],sizeof(validRange[0])*N );
+			out.WriteBufferFixEndianness( &m_scan[0], N );
+			out.WriteBuffer( &m_validRange[0],sizeof(m_validRange[0])*N );
 		}
 		out << stdError;
 		out << timestamp;
@@ -80,9 +93,7 @@ void  CObservation2DRangeScan::writeToStream(mrpt::utils::CStream &out, int *ver
 
 		out << hasIntensity();
 		if(hasIntensity())
-		{
-			out.WriteBufferFixEndianness( &intensity[0], N );
-		}
+			out.WriteBufferFixEndianness( &m_intensity[0], N );
 	}
 }
 
@@ -98,8 +109,8 @@ void CObservation2DRangeScan::truncateByDistanceAndAngle(float min_distance, flo
 	unsigned int				k;
 	unsigned int				nPts = scan.size();
 
-	for( itScan = scan.begin(), itValid = validRange.begin(), k = 0;
-		 itScan != scan.end();
+	for( itScan = m_scan.begin(), itValid = m_validRange.begin(), k = 0;
+		 itScan != m_scan.end();
 		 itScan++, itValid++, k++ )
 	{
 		float ang	= fabs(k*aperture/nPts - aperture*0.5);
@@ -135,23 +146,20 @@ void  CObservation2DRangeScan::readFromStream(mrpt::utils::CStream &in, int vers
 
 			in >> N;
 
-			scan.resize(N);
+			this->resizeScan(N);
 			if (N)
-				in.ReadBufferFixEndianness( &scan[0], N);
+				in.ReadBufferFixEndianness( &m_scan[0], N);
 
 			if (version>=1)
-			{
-				// Load validRange:
-				validRange.resize(N);
+			{	// Load validRange:
 				if (N)
-					in.ReadBuffer( &validRange[0], sizeof(validRange[0])*N );
+					in.ReadBuffer( &m_validRange[0], sizeof(m_validRange[0])*N );
 			}
 			else
 			{
 				// validRange: Default values: If distance is not maxRange
-				validRange.resize(N);
 				for (i=0;i<N;i++)
-					validRange[i]= scan[i] < maxRange;
+					m_validRange[i]= scan[i] < maxRange;
 			}
 
 			if (version>=2)
@@ -190,12 +198,11 @@ void  CObservation2DRangeScan::readFromStream(mrpt::utils::CStream &in, int vers
 				in  >> covSensorPose;
 
 			in >> N;
-			scan.resize(N);
-			validRange.resize(N);
+			this->resizeScan(N);
 			if (N)
 			{
-				in.ReadBufferFixEndianness( &scan[0], N);
-				in.ReadBuffer( &validRange[0], sizeof(validRange[0])*N );
+				in.ReadBufferFixEndianness( &m_scan[0], N);
+				in.ReadBuffer( &m_validRange[0], sizeof(m_validRange[0])*N );
 			}
 			in >> stdError;
 			in.ReadBufferFixEndianness( &timestamp, 1);
@@ -215,14 +222,9 @@ void  CObservation2DRangeScan::readFromStream(mrpt::utils::CStream &in, int vers
 			{
 				bool hasIntensity;
 				in >> hasIntensity;
-				if (hasIntensity && N)
-				{
-					intensity.resize(N);
-					in.ReadBufferFixEndianness( &intensity[0], N);
-				}
-				else
-				{
-					intensity.clear();
+				setScanHasIntensity(hasIntensity);
+				if (hasIntensity && N) {
+					in.ReadBufferFixEndianness( &m_intensity[0], N);
 				}
 			}
 		} break;
@@ -244,7 +246,7 @@ mxArray* CObservation2DRangeScan::writeToMatlab() const
 {
 	const char* fields[] = {"class",	// Data common to any MRPT class
 							"ts","sensorLabel",		// Data common to any observation
-							"scan","validRange",	// Received raw data
+							"scan","validRange","intensity"	// Received raw data
 							"aperture","rightToLeft","maxRange",	// Scan plane geometry and properties
 							"stdError","beamAperture","deltaPitch",	// Ray properties
 							"pose", // Sensor pose
@@ -256,9 +258,10 @@ mxArray* CObservation2DRangeScan::writeToMatlab() const
 	obs_struct.set("ts", this->timestamp);
 	obs_struct.set("sensorLabel", this->sensorLabel);
 
-	obs_struct.set("scan", this->scan);
-	MRPT_TODO("validRange should be a vector<bool> for Matlab instead of vector<char>")
-	obs_struct.set("validRange", this->validRange);
+	obs_struct.set("scan", this->m_scan);
+	// TODO: "validRange should be a vector<bool> for Matlab instead of vector<char>" ==> JLBC: It cannot be done like that since serializing "bool" is not cross-platform safe, while "char" is...
+	obs_struct.set("validRange", this->m_validRange);
+	obs_struct.set("intensity", this->m_intensity);
 	obs_struct.set("aperture", this->aperture);
 	obs_struct.set("rightToLeft", this->rightToLeft);
 	obs_struct.set("maxRange", this->maxRange);
@@ -279,13 +282,15 @@ bool  CObservation2DRangeScan::isPlanarScan( const double tolerance  ) const
 	return sensorPose.isHorizontal(tolerance);
 }
 
-/*---------------------------------------------------------------
-						hasIntensity
- ---------------------------------------------------------------*/
 bool  CObservation2DRangeScan::hasIntensity() const
 {
-	return !intensity.empty();
+	return m_has_intensity;
 }
+void CObservation2DRangeScan::setScanHasIntensity(bool setHasIntensityFlag)
+{
+	m_has_intensity = setHasIntensityFlag;
+}
+
 
 /*---------------------------------------------------------------
 						filterByExclusionAreas
@@ -317,7 +322,7 @@ void CObservation2DRangeScan::filterByExclusionAreas( const TListExclusionAreasW
 	std::vector<char>::iterator   valid_it;
 	std::vector<float>::const_iterator  scan_it;
 
-	for (scan_it=scan.begin(), valid_it=validRange.begin(); scan_it!=scan.end(); scan_it++, valid_it++)
+	for (scan_it=m_scan.begin(), valid_it=m_validRange.begin(); scan_it!=m_scan.end(); scan_it++, valid_it++)
 	{
 		if (! *valid_it)
 		{
@@ -414,15 +419,15 @@ void CObservation2DRangeScan::filterByExclusionAngles( const std::vector<std::pa
 		if (idx_end>=idx_ini)
 		{
 			for (size_t i=idx_ini;i<=idx_end;i++)
-				validRange[i]=false;
+				m_validRange[i]=false;
 		}
 		else
 		{
 			for (size_t i=0;i<idx_end;i++)
-				validRange[i]=false;
+				m_validRange[i]=false;
 
 			for (size_t i=idx_ini;i<sizeRangeScan;i++)
-				validRange[i]=false;
+				m_validRange[i]=false;
 		}
 	}
 
@@ -492,8 +497,71 @@ void CObservation2DRangeScan::getDescriptionAsText(std::ostream &o) const
 
 	if(hasIntensity()){
 		o << "Raw intensity values: [";
-		for (i=0;i<intensity.size();i++) o << format("%d ", intensity[i]);
+		for (i=0;i<m_intensity.size();i++) o << format("%d ", m_intensity[i]);
 		o << "]\n\n";
 	}
 
+}
+
+float CObservation2DRangeScan::getScanRange(const size_t i) const
+{
+	ASSERT_BELOW_(i,m_scan.size());
+	return m_scan[i];
+}
+
+void CObservation2DRangeScan::setScanRange(const size_t i, const float val)
+{
+	ASSERT_BELOW_(i,m_scan.size());
+	m_scan[i] = val;
+}
+
+int CObservation2DRangeScan::getScanIntensity(const size_t i) const
+{
+	ASSERT_BELOW_(i,m_intensity.size());
+	return m_intensity[i];
+}
+void CObservation2DRangeScan::setScanIntensity(const size_t i, const int val)
+{
+	ASSERT_BELOW_(i,m_intensity.size());
+	m_intensity[i] = val;
+}
+
+bool  CObservation2DRangeScan::getScanRangeValidity(const size_t i) const
+{
+	ASSERT_BELOW_(i,m_validRange.size());
+	return m_validRange[i] != 0;
+}
+void CObservation2DRangeScan::setScanRangeValidity(const size_t i, const bool val)
+{
+	ASSERT_BELOW_(i,m_validRange.size());
+	m_validRange[i] = val ? 1:0;
+}
+
+void CObservation2DRangeScan::resizeScan(const size_t len)
+{
+	const size_t capacity = mrpt::utils::length2length4N(len);
+	m_scan.reserve(capacity);
+	m_intensity.reserve(capacity);
+	m_validRange.reserve(capacity);
+
+	m_scan.resize(len);
+	m_intensity.resize(len);
+	m_validRange.resize(len);
+}
+
+void CObservation2DRangeScan::resizeScanAndAssign(const size_t len, const float rangeVal, const bool rangeValidity, const int32_t rangeIntensity)
+{
+	const size_t capacity = mrpt::utils::length2length4N(len);
+	m_scan.reserve(capacity);
+	m_intensity.reserve(capacity);
+	m_validRange.reserve(capacity);
+
+	m_scan.assign(len, rangeVal);
+	m_validRange.assign(len, rangeValidity);
+	m_intensity.assign(len, rangeIntensity);
+}
+
+size_t CObservation2DRangeScan::getScanSize() const
+{
+	return m_scan.size();
 }

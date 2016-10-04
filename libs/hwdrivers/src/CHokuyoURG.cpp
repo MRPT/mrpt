@@ -169,7 +169,7 @@ void  CHokuyoURG::doProcessSimple(
 	char		*ptr = (char*) &rcv_data[4];
 
 	if(m_intensity)
-		outObservation.intensity.resize(nRanges);
+		outObservation.hasIntensity(true);
 
 	for (int i=0;i<nRanges;i++)
 	{

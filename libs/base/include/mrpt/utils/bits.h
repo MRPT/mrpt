@@ -187,5 +187,13 @@ namespace mrpt
 		template <class VECTOR_T>
 		inline void vector_strong_clear(VECTOR_T & v) { VECTOR_T dummy; dummy.swap(v); }
 
+		/** Returns the smaller number >=len such that it's a multiple of 4 */
+		template <typename T>
+		T length2length4N(T len) {
+			if (0!=(len & 0x03)) len+= (4 - (len & 0x03));
+			return len;
+		}
+
+
 	} // End of namespace
 } // end of namespace
