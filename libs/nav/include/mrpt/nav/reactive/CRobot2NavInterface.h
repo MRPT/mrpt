@@ -51,11 +51,11 @@ namespace mrpt
 		*   return the latest values from a cache which is updated in a parallel thread.
 		*
 		* \param[out] curPose The latest robot pose, in world coordinates. (x,y: meters, phi: radians)
-		* \param[out] curVel  The latest robot velocity vector, in world coordinates. (vx,vy: m/s, omega: rad/s)
+		* \param[out] curVelGlobal  The latest robot velocity vector, in world coordinates. (vx,vy: m/s, omega: rad/s)
 		* \param[out] timestamp  The timestamp for the read pose and velocity values. Use mrpt::system::now() unless you have something more accurate.
 		* \return false on any error retrieving these values from the robot.
 		*/
-		virtual bool getCurrentPoseAndSpeeds(mrpt::math::TPose2D &curPose, mrpt::math::TTwist2D &curVel, mrpt::system::TTimeStamp &timestamp ) = 0;
+		virtual bool getCurrentPoseAndSpeeds(mrpt::math::TPose2D &curPose, mrpt::math::TTwist2D &curVelGlobal, mrpt::system::TTimeStamp &timestamp ) = 0;
 
 		/** Sends a velocity command to the robot.
 		 * The number components in each command depends on children classes of mrpt::kinematics::CVehicleVelCmd.

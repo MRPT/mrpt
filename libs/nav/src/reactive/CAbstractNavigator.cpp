@@ -43,7 +43,7 @@ std::string CAbstractNavigator::TNavigationParams::getAsText() const
 
 CAbstractNavigator::TRobotPoseVel::TRobotPoseVel() :
 	pose(0,0,0),
-	vel(0,0,0),
+	velGlobal(0,0,0),
 	velLocal(0,0,0),
 	timestamp(INVALID_TIMESTAMP) 
 {
@@ -173,6 +173,7 @@ void CAbstractNavigator::navigationStep()
 
 				m_robot.startWatchdog( 1000 );	// Watchdog = 1 seg
 				m_latestPoses.clear(); // Clear cache of last poses.
+				onStartNewNavigation();
 			}
 
 			// Have we just started the navigation?
@@ -303,14 +304,14 @@ void CAbstractNavigator::updateCurrentPoseAndSpeeds(bool update_seq_latest_poses
 {
 	{
 		mrpt::utils::CTimeLoggerEntry tle(m_timlog_delays, "getCurrentPoseAndSpeeds()");
-		if (!m_robot.getCurrentPoseAndSpeeds(m_curPoseVel.pose, m_curPoseVel.vel, m_curPoseVel.timestamp))
+		if (!m_robot.getCurrentPoseAndSpeeds(m_curPoseVel.pose, m_curPoseVel.velGlobal, m_curPoseVel.timestamp))
 		{
 			m_navigationState = NAV_ERROR;
 			m_robot.stop();
 			throw std::runtime_error("ERROR calling m_robot.getCurrentPoseAndSpeeds, stopping robot and finishing navigation");
 		}
 	}
-	m_curPoseVel.velLocal = m_curPoseVel.vel;
+	m_curPoseVel.velLocal = m_curPoseVel.velGlobal;
 	m_curPoseVel.velLocal.rotate(-m_curPoseVel.pose.phi);
 
 	// Append to list of past poses:

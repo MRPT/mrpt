@@ -1000,17 +1000,28 @@ void reactive_navigator_demoframe::simulateOneStep(double time_step)
 	if (cbShowPredictedPTG->IsChecked() && lfr.infoPerPTG.size()>0 && ptg_nav)
 	{
 		// Selected PTG path:
-		if (lfr.nSelectedPTG<(int)ptg_nav->getPTG_count())
+		if (lfr.nSelectedPTG<=(int)ptg_nav->getPTG_count())  // the == case is for "NOP motion cmd"
 		{
-			const mrpt::nav::CParameterizedTrajectoryGenerator* ptg = ptg_nav-> getPTG(lfr.nSelectedPTG);
+			const bool is_NOP_op = (lfr.nSelectedPTG == (int)ptg_nav->getPTG_count());
+			const size_t idx_ptg = is_NOP_op ? lfr.ptg_index_NOP : lfr.nSelectedPTG;
+
+			const mrpt::nav::CParameterizedTrajectoryGenerator* ptg = ptg_nav->getPTG(idx_ptg);
 			if (ptg)
 			{
 				// Draw path:
-				const int selected_k = ptg->alpha2index( lfr.infoPerPTG[lfr.nSelectedPTG].desiredDirection );
+				const int selected_k = is_NOP_op ? lfr.ptg_last_k_NOP : ptg->alpha2index( lfr.infoPerPTG[lfr.nSelectedPTG].desiredDirection );
 				float max_dist = ptg->getRefDistance();
 				gl_robot_ptg_prediction->clear();
 				ptg->renderPathAsSimpleLine(selected_k,*gl_robot_ptg_prediction,0.10, max_dist);
 				gl_robot_ptg_prediction->setColor_u8( mrpt::utils::TColor(0xff,0x00,0x00) );
+
+				// Place it:
+				if (is_NOP_op) {
+					gl_robot_ptg_prediction->setPose(lfr.rel_pose_PTG_origin_wrt_sense_NOP);
+				}
+				else {
+					gl_robot_ptg_prediction->setPose(CPose3D());
+				}
 
 				// Overlay a sequence of robot shapes:
 				if (cbDrawShapePath->IsChecked())

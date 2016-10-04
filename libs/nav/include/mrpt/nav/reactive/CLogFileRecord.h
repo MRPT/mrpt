@@ -82,6 +82,12 @@ namespace nav
 
 		mrpt::math::CVectorFloat robotShape_x,robotShape_y;  //!< The robot shape in WS. Used by PTGs derived from mrpt::nav::CPTG_RobotShape_Polygonal
 		double robotShape_radius;  //!< The circular robot radius. Used by PTGs derived from mrpt::nav::CPTG_RobotShape_Circular
+
+		// "NOP motion command" mode variables:
+		int16_t                ptg_index_NOP;  //!< Negative means no NOP mode evaluation, so the rest of "NOP variables" should be ignored.
+		uint16_t               ptg_last_k_NOP;
+		mrpt::poses::CPose2D   rel_cur_pose_wrt_last_vel_cmd_NOP, rel_pose_PTG_origin_wrt_sense_NOP;
+
 	};
 	  DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CLogFileRecord, mrpt::utils::CSerializable, NAV_IMPEXP )
 
