@@ -30,7 +30,6 @@ MRPT_INITIALIZER(registerAllClasses_mrpt_hwdrivers)
 	CIMUXSens_MT4::doRegister();
 	CCameraSensor::doRegister();
 	CActivMediaRobotBase::doRegister();
-	CPtuHokuyo::doRegister();
 	CWirelessPower::doRegister();
 	CRaePID::doRegister();
 	CImpinjRFID::doRegister();

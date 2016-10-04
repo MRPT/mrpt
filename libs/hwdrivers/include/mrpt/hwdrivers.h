@@ -40,7 +40,6 @@ MRPT_WARNING("Including <mrpt/hwdrivers.h> makes compilation much slower, consid
 #include <mrpt/hwdrivers/CJoystick.h>
 #include <mrpt/hwdrivers/CCameraSensor.h>
 #include <mrpt/hwdrivers/CPtuDPerception.h>
-#include <mrpt/hwdrivers/CPtuHokuyo.h>
 #include <mrpt/hwdrivers/CTuMicos.h>
 #include <mrpt/hwdrivers/CFFMPEG_InputStream.h>
 #include <mrpt/hwdrivers/CNTRIPClient.h>

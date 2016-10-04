@@ -86,6 +86,7 @@
 			- Deleted old, unused classes: 
 				- mrpt::hwdrivers::CBoardIR
 				- mrpt::hwdrivers::CBoardDLMS
+				- mrpt::hwdrivers::CPtuHokuyo
 			- mrpt::hwdrivers::CHokuyoURG no longer as a "verbose" field. It's superseded now by the COutputLogger interface.
 		- \ref mrpt_maps_grp
 			- mrpt::maps::CMultiMetricMapPDF added method CMultiMetricMapPDF::prediction_and_update_pfAuxiliaryPFStandard().

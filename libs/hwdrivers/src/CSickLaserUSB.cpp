@@ -108,11 +108,12 @@ void  CSickLaserUSB::doProcessSimple(
 	outObservation.stdError = 0.003f;
 	outObservation.sensorPose = m_sensorPose;
 
-	outObservation.scan = ranges;
-	outObservation.validRange.resize(ranges.size());
+	outObservation.resizeScan(ranges.size());
 
-	for (size_t i=0;i<ranges.size();i++)
-		outObservation.validRange[i] = (outObservation.scan[i] <= outObservation.maxRange);
+	for (size_t i=0;i<ranges.size();i++) {
+		outObservation.setScanRange(i, ranges[i]);
+		outObservation.setScanRangeValidity(i, (ranges[i] <= outObservation.maxRange) );
+	}
 
 	// Do filter:
 	C2DRangeFinderAbstract::filterByExclusionAreas( outObservation );

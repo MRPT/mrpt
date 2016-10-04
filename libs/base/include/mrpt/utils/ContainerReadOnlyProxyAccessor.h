@@ -28,7 +28,7 @@ namespace mrpt
 			operator const STLCONTAINER & () const { return m_source; }
 
 			size_t size() const { return m_source.size(); }
-			typename const STLCONTAINER::value_type & operator [](const int i) const { return m_source[i]; }
+			const typename STLCONTAINER::value_type & operator [](const int i) const { return m_source[i]; }
 
 			typename STLCONTAINER::const_iterator begin() const { return m_source.begin(); }
 			typename STLCONTAINER::const_iterator end() const { return m_source.end(); }
