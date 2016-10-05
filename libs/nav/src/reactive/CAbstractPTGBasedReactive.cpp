@@ -563,6 +563,8 @@ void CAbstractPTGBasedReactive::STEP5_PTGEvaluator(
 	const bool this_is_PTG_continuation,
 	const mrpt::poses::CPose2D & rel_cur_pose_wrt_last_vel_cmd_NOP)
 {
+	MRPT_START;
+
 	const double   refDist	    = holonomicMovement.PTG->getRefDistance();
 	const double   TargetDir    = (TP_Target.x!=0 || TP_Target.y!=0) ? atan2( TP_Target.y, TP_Target.x) : 0.0;
 	const int      TargetSector = static_cast<int>( holonomicMovement.PTG->alpha2index( TargetDir ) );
@@ -585,7 +587,8 @@ void CAbstractPTGBasedReactive::STEP5_PTGEvaluator(
 
 	// Special case for NOP motion cmd: 
 	// consider only the empty space *after* the current robot pose, which is not at the origin.
-	if (this_is_PTG_continuation)
+	if (this_is_PTG_continuation && 
+		)
 	{
 		int cur_k;
 		double cur_norm_d;
@@ -700,6 +703,8 @@ void CAbstractPTGBasedReactive::STEP5_PTGEvaluator(
 			) / ( math::sum(weights));
 		}
 	}
+
+	MRPT_END;
 }
 
 void CAbstractPTGBasedReactive::STEP7_GenerateSpeedCommands( const THolonomicMovement &in_movement,mrpt::kinematics::CVehicleVelCmdPtr &cmd_vel_original, mrpt::kinematics::CVehicleVelCmdPtr &new_vel_cmd )
