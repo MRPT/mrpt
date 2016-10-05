@@ -34,7 +34,7 @@
 			- Added missing method mrpt::poses::CPose2D::inverseComposePoint() for consistency with CPose3D
 			- New class mrpt::synch::CCriticalSectionRecursive
 			- New class mrpt::utils::COutputLogger replaces the classes mrpt::utils::CDebugOutputCapable (deprecated) and mrpt::utils::CLog (removed).
-			- New macros for much more versatily logging: 
+			- New macros for much more versatily logging:
 				- MRPT_LOG_DEBUG(), MRPT_LOG_INFO(), MRPT_LOG_WARN(), MRPT_LOG_ERROR()
 				- MRPT_LOG_DEBUG_STREAM, MRPT_LOG_INFO_STREAM, MRPT_LOG_WARN_STREAM, MRPT_LOG_ERROR_STREAM
 			- New functions for polynomial roots: see \ref polynomial_roots
@@ -64,8 +64,8 @@
 			- mrpt::maps::CPointsMap `liblas` import/export methods are now in a separate header. See \ref mrpt_maps_liblas_grp and \ref dep-liblas
 		- \ref mrpt_obs_grp
 			- [ABI change] mrpt::obs::CObservation2DRangeScan
-				- range scan vectors are now protected for safety. 
-				- New getter/setter methods. 
+				- range scan vectors are now protected for safety.
+				- New getter/setter methods.
 				- backwards-compatible proxies added for read-only from range scan members.
 			- [ABI change] mrpt::obs::CObservation3DRangeScan:
 				- Now uses more SSE2 optimized code
@@ -83,7 +83,7 @@
 				- refactored to expose more methods and allow changing parameters via its constructor.
 				- Now supports reading from an IR, RGB and Depth channels independenty.
 			-  mrpt::hwdrivers::CHokuyoURG now can optionally return intensity values.
-			- Deleted old, unused classes: 
+			- Deleted old, unused classes:
 				- mrpt::hwdrivers::CBoardIR
 				- mrpt::hwdrivers::CBoardDLMS
 				- mrpt::hwdrivers::CPtuHokuyo
@@ -120,6 +120,7 @@
 		- Fix a long outstanding bug regarding losing of keystroke events in CDisplayWindow3D windows (Closes #13 again)
 		- Fix wrong units for negative numbers in mrpt::system::unitsFormat()
 		- Fix potential thread-unsafe conditions while inserting a mrpt::obs::CObservation2DRangeScan into a pointmap with SSE2 optimizations enabled.
+		- CStream: Fix memory leak if an exception (e.g. EOF) is found during object deserialization.
 
 <hr>
 <a name="1.4.0">
