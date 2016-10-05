@@ -260,9 +260,9 @@ class BASE_IMPEXP COutputLogger {
 		~COutputLoggerStreamWrapper() { if (m_logger.isLoggingLevelVisible(m_level)) m_logger.logStr(m_level, m_str.str()); }
 
 		template <typename T>
-		std::stringstream & operator << (const T &val) {
-			m_str << val;
-			return m_str;
+		COutputLoggerStreamWrapper& operator << (const T &val) {
+			if (m_logger.isLoggingLevelVisible(m_level)) m_str << val;
+			return *this;
 		}
 	private:
 		std::stringstream m_str;
