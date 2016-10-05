@@ -523,7 +523,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 			// NOP mode  stuff:
 			newLogRec.rel_cur_pose_wrt_last_vel_cmd_NOP = rel_cur_pose_wrt_last_vel_cmd_NOP;
 			newLogRec.rel_pose_PTG_origin_wrt_sense_NOP = rel_pose_PTG_origin_wrt_sense_NOP;
-			newLogRec.ptg_index_NOP  = m_lastSentVelCmd.isValid() ? m_lastSentVelCmd.ptg_index : -1;
+			newLogRec.ptg_index_NOP = best_is_NOP_cmdvel ? m_lastSentVelCmd.ptg_index : -1;
 			newLogRec.ptg_last_k_NOP = m_lastSentVelCmd.ptg_alpha;
 
 			m_timelogger.leave("navigationStep.populate_log_info");
@@ -588,6 +588,7 @@ void CAbstractPTGBasedReactive::STEP5_PTGEvaluator(
 	// Special case for NOP motion cmd: 
 	// consider only the empty space *after* the current robot pose, which is not at the origin.
 	if (this_is_PTG_continuation && 
+		( rel_cur_pose_wrt_last_vel_cmd_NOP.x()!=0 || rel_cur_pose_wrt_last_vel_cmd_NOP.y()!=0) // edge case: if the rel pose is (0,0), the evaluation is exactly as in an no-NOP case.
 		)
 	{
 		int cur_k;
