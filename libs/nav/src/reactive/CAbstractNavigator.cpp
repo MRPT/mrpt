@@ -260,7 +260,7 @@ void CAbstractNavigator::navigationStep()
 	m_lastNavigationState = prevState;
 }
 
-void CAbstractNavigator::doEmergencyStop( const char *msg )
+void CAbstractNavigator::doEmergencyStop( const std::string &msg )
 {
 	m_navigationState = NAV_ERROR;
 	m_robot.stop();

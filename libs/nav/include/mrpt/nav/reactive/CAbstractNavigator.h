@@ -116,7 +116,7 @@ namespace mrpt
 		void updateCurrentPoseAndSpeeds(bool update_seq_latest_poses = true);
 
 		/** Stops the robot and set navigation state to error */
-		void doEmergencyStop( const char *msg );
+		void doEmergencyStop( const std::string &msg );
 
 		TState             m_navigationState;  //!< Current internal state of navigator:
 		TNavigationParams  *m_navigationParams;  //!< Current navigation parameters

@@ -266,9 +266,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 		// -----------------------------------------------------------------------------
 		if (! STEP2_SenseObstacles() )
 		{
-			MRPT_LOG_ERROR("Error while loading and sorting the obstacles. Robot will be stopped.\n");
-			m_robot.stop();
-			m_navigationState = NAV_ERROR;
+			doEmergencyStop("Error while loading and sorting the obstacles. Robot will be stopped.");
 			return;
 		}
 
@@ -543,14 +541,11 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 		} // if (fill_log_record)
 
 	}
-	catch (std::exception &e)
-	{
-		std::cout << e.what();
-		std::cout << "[CAbstractPTGBasedReactive::performNavigationStep] Exceptions!!\n";
+	catch (std::exception &e) {
+		doEmergencyStop(std::string("[CAbstractPTGBasedReactive::performNavigationStep] Stopping robot and finishing navigation due to exception:\n") + std::string(e.what()));
 	}
-	catch (...)
-	{
-		std::cout << "[CAbstractPTGBasedReactive::performNavigationStep] Unexpected exception!!:\n";
+	catch (...) {
+		doEmergencyStop("[CAbstractPTGBasedReactive::performNavigationStep] Stopping robot and finishing navigation due to untyped exception." );
 	}
 }
 
