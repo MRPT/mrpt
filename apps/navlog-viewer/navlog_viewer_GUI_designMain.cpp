@@ -631,9 +631,9 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 				} else {
 					gl_path = mrpt::opengl::CSetOfLinesPtr(gl_path_r);
 				}
-				if ((int)m_logdata_ptg_paths.size()>log.nSelectedPTG)
+				const size_t sel_ptg_idx = log.ptg_index_NOP < 0 ? log.nSelectedPTG : log.ptg_index_NOP;
+				if ((int)m_logdata_ptg_paths.size()>sel_ptg_idx)
 				{
-					const size_t sel_ptg_idx = log.ptg_index_NOP < 0 ? log.nSelectedPTG : log.ptg_index_NOP;
 					mrpt::nav::CParameterizedTrajectoryGeneratorPtr ptg = m_logdata_ptg_paths[sel_ptg_idx];
 					if (ptg)
 					{
