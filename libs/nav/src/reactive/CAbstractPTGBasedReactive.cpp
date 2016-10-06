@@ -22,6 +22,7 @@
 #include <mrpt/utils/CFileOutputStream.h>
 #include <mrpt/utils/CMemoryStream.h>
 #include <limits>
+#include <iomanip>
 
 using namespace mrpt;
 using namespace mrpt::poses;
@@ -357,7 +358,8 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 		// =========
 		// This approach is only possible if:
 		const bool can_do_nop_motion = (m_lastSentVelCmd.isValid() &&
-			getPTG(m_lastSentVelCmd.ptg_index)->supportVelCmdNOP());
+			getPTG(m_lastSentVelCmd.ptg_index)->supportVelCmdNOP()) &&
+			mrpt::system::timeDifference(m_lastSentVelCmd.tim_send_cmd_vel, tim_start_iteration) < getPTG(m_lastSentVelCmd.ptg_index)->maxTimeInVelCmdNOP(m_lastSentVelCmd.ptg_alpha);
 
 		CPose2D rel_cur_pose_wrt_last_vel_cmd_NOP, rel_pose_PTG_origin_wrt_sense_NOP;
 		CHolonomicLogFileRecordPtr HLFR_NOP;
@@ -379,11 +381,11 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 
 				MRPT_TODO("Remove these traces after debugging!");
 				MRPT_LOG_DEBUG_STREAM << "NOP interpolation variables:" << "\n" <<
-					"tim_send_cmd_vel       : " << mrpt::system::timestampToDouble(m_lastSentVelCmd.tim_send_cmd_vel) << "\n" <<
-					"m_latestPoses.last time: " << mrpt::system::timestampToDouble(m_latestPoses.rbegin()->first) << "\n" <<
+					"tim_send_cmd_vel       : " << std::fixed << mrpt::system::timestampToDouble(m_lastSentVelCmd.tim_send_cmd_vel) << "\n" <<
+					"m_latestPoses.last time: " << std::fixed << mrpt::system::timestampToDouble(m_latestPoses.rbegin()->first) << "\n" <<
 					"robot_pose_at_send_cmd : " << robot_pose_at_send_cmd.asString() << "\n" <<
 					"m_curPoseVel.pose      : " << m_curPoseVel.pose.asString() << "\n" <<
-					"m_curPoseVel.timestamp : " << mrpt::system::timestampToDouble(m_curPoseVel.timestamp) << "\n" <<
+					"m_curPoseVel.timestamp : " << std::fixed << mrpt::system::timestampToDouble(m_curPoseVel.timestamp) << "\n" <<
 					"rel_cur_pose_wrt_last_vel_cmd_NOP: " << rel_cur_pose_wrt_last_vel_cmd_NOP.asString() << "\n"
 					;
 
