@@ -23,12 +23,15 @@ using namespace mrpt::system;
 
 IMPLEMENTS_SERIALIZABLE(CPTG_Holo_Blend,CParameterizedTrajectoryGenerator,mrpt::nav)
 
+MRPT_TODO("Update all equations to take maxAllowedDirAngle into account");
+
 /*
 Closed-form PTG. Parameters:
 - Initial velocity vector (xip, yip)
 - Target velocity vector depends on \alpha: xfp = V_MAX*cos(alpha), yfp = V_MAX*sin(alpha)
 - T_ramp_max max time for velocity interpolation (xip,yip) -> (xfp, yfp)
 - W_MAX: Rotational velocity for robot heading forwards.
+- maxAllowedDirAngle: Max angle between cur heading and "dir" of vel cmds
 
 Number of steps "d" for each PTG path "k":
 - Step = time increment PATH_TIME_STEP
@@ -370,8 +373,7 @@ mrpt::kinematics::CVehicleVelCmdPtr CPTG_Holo_Blend::directionToMotionCommand( u
 	cmd->vel = (std::abs(dir_local) <= maxAllowedDirAngle) ? V_MAX : .0;
 	cmd->dir_local = dir_local;
 	cmd->ramp_time = std::max(0.1, calc_T_ramp_dir(T_ramp_max, curVelLocal.vx, curVelLocal.vy, dir_local, V_MAX));
-	cmd->rot_speed = mrpt::utils::saturate_val(dir_local / cmd->ramp_time, -W_MAX, W_MAX);
-	MRPT_TODO("Fix extremelly small rot_speed here?");
+	cmd->rot_speed = mrpt::utils::signWithZero(dir_local) * W_MAX;
 
 	return mrpt::kinematics::CVehicleVelCmdPtr(cmd);
 
@@ -652,4 +654,19 @@ mrpt::kinematics::CVehicleVelCmdPtr CPTG_Holo_Blend::getSupportedKinematicVeloci
 bool CPTG_Holo_Blend::supportVelCmdNOP() const
 {
 	return true;
+}
+
+double CPTG_Holo_Blend::maxTimeInVelCmdNOP(int path_k) const
+{
+	const double dir_local = CParameterizedTrajectoryGenerator::index2alpha(path_k);
+	if (std::abs(dir_local) <= maxAllowedDirAngle)
+	{
+		const size_t nSteps = getPathStepCount(path_k);
+		const double max_t = nSteps * PATH_TIME_STEP;
+		return max_t;
+	}
+	else
+	{
+		return std::abs(dir_local)/W_MAX;
+	}
 }

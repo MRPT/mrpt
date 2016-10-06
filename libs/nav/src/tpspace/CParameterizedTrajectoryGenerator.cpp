@@ -35,10 +35,15 @@ void CParameterizedTrajectoryGenerator::loadDefaultParams()
 	m_score_priority = 1.0;
 }
 
-bool CParameterizedTrajectoryGenerator::supportVelCmdNOP() const 
+bool CParameterizedTrajectoryGenerator::supportVelCmdNOP() const
 {
-	return false; 
+	return false;
 }
+double CParameterizedTrajectoryGenerator::maxTimeInVelCmdNOP(int path_k) const
+{
+	return .0;
+}
+
 
 void CParameterizedTrajectoryGenerator::loadFromConfigFile(const mrpt::utils::CConfigFileBase &cfg,const std::string &sSection)
 {

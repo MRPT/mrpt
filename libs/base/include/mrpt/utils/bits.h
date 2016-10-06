@@ -97,7 +97,7 @@ namespace mrpt
 
 		/** Returns the sign of X as "0", "1" or "-1" */
 		template <typename T>
-		inline int signWithZero(T x)	{ return x==0?0:sign(x);}
+		inline int signWithZero(T x)	{ return (x==0 || x==-0)?0:sign(x);}
 
 		/** Efficient and portable evaluation of the absolute difference of two unsigned integer values
 		  * (but will also work for signed and floating point types) */

@@ -150,6 +150,12 @@ namespace nav
 		  * Default implementation returns "false". */
 		virtual bool supportVelCmdNOP() const;
 
+		/** Only for PTGs supporting supportVelCmdNOP(): this is the maximum time (in seconds) for which the path
+		  * can be followed without re-issuing a new velcmd. Note that this is only an absolute maximum duration, 
+		  * navigation implementations will check for many other conditions. Default method in the base virtual class returns 0. 
+		  * \param path_k Queried path `k` index  [0,N-1] */
+		virtual double maxTimeInVelCmdNOP(int path_k) const;
+
 		/** @} */  // --- end of virtual methods
 
 		static std::string OUTPUT_DEBUG_PATH_PREFIX; //!< The path used as defaul output in, for example, debugDumpInFiles. (Default="./reactivenav.logs/")
