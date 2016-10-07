@@ -105,8 +105,8 @@ namespace mrpt
 			TListObservations				m_objList;		//!< The queue of objects to be returned by getObservations
 
 			/** Used in registerClass */
-			static std::map< std::string , const TSensorClassId *>	m_knownClasses;
-
+			typedef std::map< std::string , const TSensorClassId *> registered_sensor_classes_t;
+			static registered_sensor_classes_t & get_registered_sensor_classes(); //!< Access to singleton
 
 		protected:
 			/** @name Common settings to any sensor, loaded in "loadConfig"

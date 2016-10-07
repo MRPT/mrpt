@@ -11,6 +11,7 @@
 
 #include <mrpt/config.h>
 
+#include <mrpt/vision/link_pragmas.h>
 #include <Eigen/Core>
 #include <Eigen/Dense>
 
@@ -43,7 +44,7 @@ namespace mrpt
              *  <h2> <a href="pnp_perf_comp.html">Performance comparison Results </a> </h2>
              *  
              */
-            class CPnP
+            class VISION_IMPEXP CPnP
             {
                 public:
                 

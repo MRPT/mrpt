@@ -1740,7 +1740,8 @@ void xRawLogViewerFrame::rebuildTreeView()
 
 			} // end Observation
 			break;
-
+		default:
+			break;
 		}; // end switch type
 
 	} // end for i
@@ -3387,7 +3388,7 @@ void doFilterErrScans(CObservationPtr &obs, size_t &invalidSegments, size_t &inv
 						// Mark them as invalid!!
 						for (size_t p=ringingStart;p<k;p++,invalidRanges++)
 						{
-							obsScan->validRange[p]=false;
+							obsScan->setScanRangeValidity(p, false);
 							touched = true;
 						}
 
@@ -4402,7 +4403,7 @@ void doFilterInvalidRange(CObservationPtr &obs, size_t &invalidRanges)
 		for (size_t k=0;k<obsScan->scan.size();k++)
 			if (obsScan->scan[k]>=obsScan->maxRange)
 			{
-				obsScan->validRange[k] = false;
+				obsScan->setScanRangeValidity(k, false);
 				invalidRanges++;
 			}
 	}

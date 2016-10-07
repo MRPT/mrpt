@@ -58,7 +58,8 @@ namespace nav
 		
 		/** In this class, `out_action_cmd` contains: [0]: linear velocity (m/s),  [1]: angular velocity (rad/s). 
 		  * See more docs in CParameterizedTrajectoryGenerator::directionToMotionCommand() */
-		virtual void directionToMotionCommand( uint16_t k, std::vector<double> &out_action_cmd ) const MRPT_OVERRIDE;
+		virtual mrpt::kinematics::CVehicleVelCmdPtr directionToMotionCommand( uint16_t k) const MRPT_OVERRIDE;
+		virtual mrpt::kinematics::CVehicleVelCmdPtr getSupportedKinematicVelocityCommand() const MRPT_OVERRIDE;
 
 		/** Launches an exception in this class: it is not allowed in numerical integration-based PTGs to change the reference distance 
 		  * after initialization. */

@@ -35,6 +35,15 @@ macro(internal_define_mrpt_lib name headers_only is_metalib)
 		PROJECT(mrpt-${name})
 	ENDIF(NOT ${is_metalib})
 
+	# Optional build-time plugin mechanism:
+	SET(PLUGIN_FILE_mrpt-${name} "" CACHE FILEPATH "Optional CMake file defining additional sources for mrpt-${name}")
+	MARK_AS_ADVANCED(PLUGIN_FILE_mrpt-${name})
+	IF (EXISTS "${PLUGIN_FILE_mrpt-${name}}")
+		INCLUDE("${PLUGIN_FILE_mrpt-${name}}")
+		LIST(APPEND ${name}_EXTRA_SRCS	      ${${name}_PLUGIN_SRCS})
+		LIST(APPEND ${name}_EXTRA_SRCS_NAME   ${${name}_PLUGIN_SRCS_NAME})
+	ENDIF()
+
 	# There is an optional LISTS of extra sources from the caller:
 	#  "${name}_EXTRA_SRCS" and
 	#  "${name}_EXTRA_SRCS_NAME"   <--- Must NOT contain spaces!!
@@ -133,6 +142,8 @@ macro(internal_define_mrpt_lib name headers_only is_metalib)
 	ENDIF (EXISTS "${CMAKE_SOURCE_DIR}/libs/${name}/include/mrpt/${name}.h")
 
 	IF (NOT ${headers_only})
+		add_definitions(-DBUILDING_mrpt_${name})
+
 
 		# A libray target:
 		ADD_LIBRARY(mrpt-${name}
@@ -350,9 +361,15 @@ macro(internal_define_mrpt_lib name headers_only is_metalib)
 		SET(mrpt_pkgconfig_NO_INSTALL_SOURCE "${MRPT_SOURCE_DIR}")
 		SET(mrpt_pkgconfig_NO_INSTALL_BINARY "${MRPT_BINARY_DIR}")
 		CONFIGURE_FILE("${CMAKE_SOURCE_DIR}/parse-files/mrpt_template_no_install.pc.in" "${CMAKE_BINARY_DIR}/pkgconfig-no-install/mrpt-${name}.pc" @ONLY)
-
 	ENDIF(UNIX)
 
+	IF(MRPT_ENABLE_PRECOMPILED_HDRS AND MSVC)
+		FOREACH(_N ${${name}_PLUGIN_SRCS_NAME})
+			#MESSAGE(STATUS "Disabling precomp hdrs for N=${_N}: ${${_N}_FILES}")
+			set_source_files_properties(${${_N}_FILES} PROPERTIES COMPILE_FLAGS "/Y-")
+		ENDFOREACH()
+	ENDIF()
+	
 	# --- End of conditional build of module ---
 	ENDIF(BUILD_mrpt-${name})
 

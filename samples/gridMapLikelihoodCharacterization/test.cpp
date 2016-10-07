@@ -83,8 +83,7 @@ void theMainThing()
 		obsScan.aperture = 0;
 		obsScan.maxRange = 80.0f;
 		obsScan.rightToLeft = true;
-		obsScan.validRange.resize(1,1);
-		obsScan.scan.resize(1,0);
+        obsScan.resizeScanAndAssign(1, 0.0, true);
 	}
 
 	// Set options:

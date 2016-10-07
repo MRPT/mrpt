@@ -21,8 +21,6 @@
 
 #include "opengl_internals.h"
 
-#include <mrpt/utils/CStartUpClassesRegister.h>
-
 using namespace std;
 using namespace mrpt;
 using namespace mrpt::opengl;
@@ -30,9 +28,6 @@ using namespace mrpt::utils;
 using namespace mrpt::synch;
 
 IMPLEMENTS_VIRTUAL_SERIALIZABLE( CRenderizable, CSerializable, mrpt::opengl )
-
-extern CStartUpClassesRegister  mrpt_opengl_class_reg;
-const int dumm = mrpt_opengl_class_reg.do_nothing(); // Avoid compiler removing this class in static linking
 
 #define MAX_GL_TEXTURE_IDS       0x10000
 #define MAX_GL_TEXTURE_IDS_MASK  0x0FFFF

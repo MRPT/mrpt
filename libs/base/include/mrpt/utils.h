@@ -19,7 +19,6 @@
 
 // Smart pointers and RTTI:
 #include <mrpt/utils/CObject.h>
-#include <mrpt/utils/CStartUpClassesRegister.h>
 
 // CStream related classes:
 #include <mrpt/utils/CSerializable.h>
@@ -68,6 +67,7 @@
 #include <mrpt/utils/CLog.h>
 #include <mrpt/utils/CListOfClasses.h>
 #include <mrpt/utils/CTextFileLinesParser.h>
+#include <mrpt/utils/CRateTimer.h>
 
 #include <mrpt/utils/TCamera.h>
 #include <mrpt/utils/TStereoCamera.h>
