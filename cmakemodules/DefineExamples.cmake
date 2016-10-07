@@ -259,7 +259,6 @@ IF(BUILD_EXAMPLES)
 	        # === Depending on: maps & hwdrivers ===
 	        #  list of examples for each directory:
 	        SET(LIST_EXAMPLES_IN_THIS_DIR
-			ptuHokuyo
 			swissranger_cam_demo
 			SICK_laser_serial_test
 			SICK_laser_test

@@ -11,21 +11,14 @@
 
 #define MRPT_NO_WARN_BIG_HDR
 #include <mrpt/maps.h>
-#include <mrpt/utils/CStartUpClassesRegister.h>
+#include <mrpt/utils/initializer.h>
 
 using namespace mrpt::utils;
 using namespace mrpt::maps;
 using namespace mrpt::obs;
 using namespace mrpt::opengl;
 
-void registerAllClasses_mrpt_maps();
-
-CStartUpClassesRegister  mrpt_maps_class_reg(&registerAllClasses_mrpt_maps);
-
-/*---------------------------------------------------------------
-					registerAllClasses_mrpt_maps
-  ---------------------------------------------------------------*/
-void registerAllClasses_mrpt_maps()
+MRPT_INITIALIZER(registerAllClasses_mrpt_maps)
 {
 #if !defined(DISABLE_MRPT_AUTO_CLASS_REGISTRATION)
 	registerClass( CLASS_ID( CBeacon ) );

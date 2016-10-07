@@ -62,6 +62,8 @@ namespace mrpt
 		/** Loads parameters for waypoints navigation */
 		virtual void loadWaypointsParamsConfigFile(const mrpt::utils::CConfigFileBase &cfg, const std::string &sectionName);
 
+		virtual void onStartNewNavigation() MRPT_OVERRIDE;
+
 	};
   }
 }

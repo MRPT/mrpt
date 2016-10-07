@@ -746,8 +746,14 @@ void do_pf_localization(const std::string &ini_fil, const std::string &cmdline_r
 							{
 								static mrpt::gui::CDisplayWindowPlots win;
 
-								win.plot(ssu_out.scanWithUncert.rangeScan.scan, "3k-", "mean");
-								win.plot(obs_scan->scan, "r-", "obs");
+								std::vector<float> ranges_mean, ranges_obs;
+								for (size_t i=0;i<ssu_out.scanWithUncert.rangeScan.scan.size(); i++)
+									ranges_mean.push_back(ssu_out.scanWithUncert.rangeScan.scan[i]);
+								for (size_t i=0;i<obs_scan->scan.size(); i++)
+									ranges_obs.push_back(obs_scan->scan[i]);
+
+								win.plot(ranges_mean, "3k-", "mean");
+								win.plot(ranges_obs, "r-", "obs");
 
 								Eigen::VectorXd ci1 = ssu_out.scanWithUncert.rangesMean + 3*ssu_out.scanWithUncert.rangesCovar.diagonal().array().sqrt().matrix();
 								Eigen::VectorXd ci2 = ssu_out.scanWithUncert.rangesMean - 3*ssu_out.scanWithUncert.rangesCovar.diagonal().array().sqrt().matrix();
@@ -895,12 +901,6 @@ void do_pf_localization(const std::string &ini_fil, const std::string &cmdline_r
 						// Generate text files for matlab:
 						// ------------------------------------
 						pdf.saveToTextFile(format("%s/particles_%05u.txt",sOUT_DIR_PARTS.c_str(),(unsigned)step));
-
-						if (IS_CLASS(*observations->begin(),CObservation2DRangeScan))
-						{
-							CObservation2DRangeScanPtr o = CObservation2DRangeScanPtr( *observations->begin() );
-							vectorToTextFile(o->scan , format("%s/observation_scan_%05u.txt",sOUT_DIR_PARTS.c_str(),(unsigned)step) );
-						}
 					}
 
 				} // end if rawlog_offset

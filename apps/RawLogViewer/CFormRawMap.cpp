@@ -519,7 +519,9 @@ void CFormRawMap::OnbtnGenerateClick(wxCommandEvent& )
 				addNewPathEntry=true;
 			}
 			break;
-        }; // end switch
+		default:
+			break;
+		}; // end switch
 
 		if (addNewPathEntry)
 		{

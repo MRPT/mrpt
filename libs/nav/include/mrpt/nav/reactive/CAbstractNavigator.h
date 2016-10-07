@@ -10,6 +10,8 @@
 
 #include <mrpt/nav/reactive/CRobot2NavInterface.h>
 #include <mrpt/utils/COutputLogger.h>
+#include <mrpt/utils/CTimeLogger.h>
+#include <mrpt/poses/CPose3DInterpolator.h>
 #include <mrpt/synch/CCriticalSection.h>
 #include <mrpt/obs/obs_frwds.h>
 
@@ -102,14 +104,19 @@ namespace mrpt
 	private:
 		TState  m_lastNavigationState; //!< Last internal state of navigator:
 		bool    m_navigationEndEventSent; //!< Will be false until the navigation end is sent, and it is reset with each new command
-		mrpt::math::TPose2D  m_lastPose;
 
 	protected:
 		/** To be implemented in derived classes */
 		virtual void  performNavigationStep( )=0;
 
+		/** Called whenever a new navigation has been started. Can be used to reset state variables, etc. */
+		virtual void onStartNewNavigation() = 0; 
+
+		/** Call to the robot getCurrentPoseAndSpeeds() and updates members m_curPose,m_curVel and m_curVelLocal accordingly. */
+		void updateCurrentPoseAndSpeeds(bool update_seq_latest_poses = true);
+
 		/** Stops the robot and set navigation state to error */
-		void doEmergencyStop( const char *msg );
+		void doEmergencyStop( const std::string &msg );
 
 		TState             m_navigationState;  //!< Current internal state of navigator:
 		TNavigationParams  *m_navigationParams;  //!< Current navigation parameters
@@ -118,8 +125,18 @@ namespace mrpt
 
 		mrpt::synch::CCriticalSectionRecursive m_nav_cs; //!< mutex for all navigation methods
 
-		mrpt::math::TPose2D  m_curPose;   //!< Current robot pose (updated in CAbstractNavigator::navigationStep() )
-		mrpt::math::TTwist2D m_curVel, m_curVelLocal; //!< Current robot velocities (updated in CAbstractNavigator::navigationStep() )
+		struct NAV_IMPEXP TRobotPoseVel
+		{
+			mrpt::math::TPose2D  pose;
+			mrpt::math::TTwist2D velGlobal, velLocal;
+			mrpt::system::TTimeStamp timestamp;
+			TRobotPoseVel();
+		};
+
+		TRobotPoseVel m_curPoseVel; //!< Current robot pose (updated in CAbstractNavigator::navigationStep() )
+		mrpt::poses::CPose3DInterpolator m_latestPoses; //!< Latest robot poses and velocities (updated in CAbstractNavigator::navigationStep() )
+
+		mrpt::utils::CTimeLogger m_timlog_delays; //!< Time logger to collect delay-related stats
 
 		/** For sending an alarm (error event) when it seems that we are not approaching toward the target in a while... */
 		double                   m_badNavAlarm_minDistTarget;

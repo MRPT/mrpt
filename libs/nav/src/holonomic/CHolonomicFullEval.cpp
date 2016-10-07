@@ -76,9 +76,6 @@ void  CHolonomicFullEval::navigate(
 	const int NUM_FACTORS = 5;
 
 	ASSERT_(options.factorWeights.size()==NUM_FACTORS);
-	const double weights_sum = mrpt::math::sum(options.factorWeights);
-	ASSERT_(weights_sum!=.0);
-	const double weights_sum_inv = 1.0/weights_sum;
 
 	mrpt::math::TSegment2D sg;
 	sg.point1.x = 0;

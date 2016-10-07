@@ -10,20 +10,12 @@
 #include "detectors-precomp.h"  // Precompiled headers
 #include <mrpt/detectors.h>
 
-#include <mrpt/utils.h>
-
+#include <mrpt/utils/initializer.h>
 
 using namespace mrpt::detectors;
 using namespace mrpt::utils;
 
-void registerAllClasses_mrpt_detectors();
-
-CStartUpClassesRegister  mrpt_detectors_class_reg(&registerAllClasses_mrpt_detectors);
-
-/*---------------------------------------------------------------
-					registerAllClasses_mrpt_detectors
-  ---------------------------------------------------------------*/
-void registerAllClasses_mrpt_detectors()
+MRPT_INITIALIZER(registerAllClasses_mrpt_detectors)
 {
 #if !defined(DISABLE_MRPT_AUTO_CLASS_REGISTRATION)
 	registerClass( CLASS_ID( CDetectableObject ) );

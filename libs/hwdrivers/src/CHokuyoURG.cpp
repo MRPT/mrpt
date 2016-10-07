@@ -164,12 +164,11 @@ void  CHokuyoURG::doProcessSimple(
 	outObservation.sensorPose = m_sensorPose;
 	outObservation.sensorLabel = m_sensorLabel;
 
-	outObservation.scan.resize(nRanges);
-	outObservation.validRange.resize(nRanges);
+	outObservation.resizeScan(nRanges);
 	char		*ptr = (char*) &rcv_data[4];
 
 	if(m_intensity)
-		outObservation.intensity.resize(nRanges);
+		outObservation.setScanHasIntensity(true);
 
 	for (int i=0;i<nRanges;i++)
 	{
@@ -179,15 +178,15 @@ void  CHokuyoURG::doProcessSimple(
 
 		int range_mm = ( (b1 << 12) | (b2 << 6) | b3);
 
-		outObservation.scan[i]       = range_mm * 0.001f;
-		outObservation.validRange[i] = range_mm>=20 &&  (outObservation.scan[i] <= outObservation.maxRange);
+		outObservation.setScanRange(i, range_mm * 0.001f );
+		outObservation.setScanRangeValidity(i, range_mm>=20 &&  (outObservation.scan[i] <= outObservation.maxRange) );
 
 		if(m_intensity)
 		{
 			int b4 = (*ptr++)-0x30;
 			int b5 = (*ptr++)-0x30;
 			int b6 = (*ptr++)-0x30;
-			outObservation.intensity[i] = ( (b4 << 12) | (b5 << 6) | b6);
+			outObservation.setScanIntensity(i, ( (b4 << 12) | (b5 << 6) | b6) );
 		}
 	}
 
