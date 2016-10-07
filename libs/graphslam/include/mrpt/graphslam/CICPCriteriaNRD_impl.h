@@ -17,9 +17,8 @@ namespace mrpt { namespace graphslam { namespace deciders {
 
 template<class GRAPH_t>
 CICPCriteriaNRD<GRAPH_t>::CICPCriteriaNRD():
-	params(*this), // pass reference to self when initializing the parameters
-	m_ICP_sliding_win("ICP Goodness"),
-	m_mahal_distance_ICP_odom("Mahalanobis dist (ICP - odom)")
+	params(*this) // pass reference to self when initializing the parameters
+	//m_mahal_distance_ICP_odom("Mahalanobis dist (ICP - odom)")
 {
 	this->initCICPCriteriaNRD();
 }
@@ -63,7 +62,7 @@ void CICPCriteriaNRD<GRAPH_t>::initCICPCriteriaNRD() {
 		m_latest_odometry_PDF.mean = pose_t();
 		m_latest_odometry_PDF.cov_inv = init_path_uncertainty;
 
-		m_mahal_distance_ICP_odom.resizeWindow(1000); // use the last X mahalanobis distance values
+		//m_mahal_distance_ICP_odom.resizeWindow(1000); // use the last X mahalanobis distance values
 	}
 
 	m_times_used_ICP = 0;
@@ -72,17 +71,17 @@ void CICPCriteriaNRD<GRAPH_t>::initCICPCriteriaNRD() {
 	// logger initialization
 	this->logging_enable_keep_record = true;
 	this->setLoggerName("CICPCriteriaNRD");
-	this->logStr(mrpt::utils::LVL_DEBUG, "Initialized class object");
+	this->logFmt(LVL_DEBUG, "Initialized class object");
 }
 template<class GRAPH_t>
-CICPCriteriaNRD<GRAPH_t>::~CICPCriteriaNRD() { 
+CICPCriteriaNRD<GRAPH_t>::~CICPCriteriaNRD() {
 }
 
 template<class GRAPH_t>
 typename GRAPH_t::constraint_t::type_value
 CICPCriteriaNRD<GRAPH_t>::getCurrentRobotPosEstimation() const {
 	MRPT_START;
-	
+
 	mrpt::utils::TNodeID from = m_nodeID_max;
 	return m_graph->nodes.find(from)->second +
 		m_since_prev_node_PDF.getMeanVal();
@@ -125,7 +124,7 @@ bool CICPCriteriaNRD<GRAPH_t>::updateState(
 			// not incremental - gives the absolute odometry reading - no InfMat
 			// either
 			m_curr_odometry_only_pose = obs_odometry->odometry;
-			m_latest_odometry_PDF.mean = 
+			m_latest_odometry_PDF.mean =
 				m_curr_odometry_only_pose - m_last_odometry_only_pose;
 
 		}
@@ -193,9 +192,10 @@ bool CICPCriteriaNRD<GRAPH_t>::checkRegistrationCondition2D() {
 	MRPT_START;
 
 	using namespace mrpt::math;
+	using namespace mrpt::utils;
 
 	bool registered_new_node = false;
-	this->logStr(mrpt::utils::LVL_DEBUG, "In checkRegistrationCondition2D..");
+	this->logFmt(LVL_DEBUG, "In checkRegistrationCondition2D..");
 
 	constraint_t rel_edge;
 	mrpt::slam::CICP::TReturnInfo icp_info;
@@ -206,66 +206,70 @@ bool CICPCriteriaNRD<GRAPH_t>::checkRegistrationCondition2D() {
 			&rel_edge,
 			NULL,
 			&icp_info);
-	// append current ICP edge to the sliding window
-	m_ICP_sliding_win.addNewMeasurement(icp_info.goodness);
 
-	this->logFmt(mrpt::utils::LVL_INFO, "Current ICP constraint: \n\tEdge: %s\n\tNorm: %f",
+	// Debugging directives
+	this->logFmt(LVL_DEBUG,
+			">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+	this->logFmt(LVL_DEBUG,
+			"ICP Alignment operation:\tnIterations: %d\tgoodness: %.f\n",
+			icp_info.nIterations, icp_info.goodness);
+
+	this->logFmt(LVL_DEBUG, "Current ICP constraint: \n\tEdge: %s\n\tNorm: %f",
 				rel_edge.getMeanVal().asString().c_str(),
 				rel_edge.getMeanVal().norm());
-	this->logFmt(mrpt::utils::LVL_INFO, "Corresponding Odometry constraint: \n\tEdge: %s\n\tNorm: %f",
+	this->logFmt(LVL_DEBUG, "Corresponding Odometry constraint: \n\tEdge: %s\n\tNorm: %f",
 				m_latest_odometry_PDF.getMeanVal().asString().c_str(),
 				m_latest_odometry_PDF.getMeanVal().norm());
 
 	// evaluate the mahalanobis distance of the above..
-	// If over an (adaptive) threshold - trust the odometry
+	// If over an (adaptive) threshold, trust the odometry
 	double tmp[] = {
 		1.0, 0.0, 0.0,
 		0.0, 1.0 ,0.0,
 		0.0, 0.0, 1.0 };
-	constraint_t latest_odometry_PDF(m_latest_odometry_PDF.getMeanVal(), 
+	constraint_t latest_odometry_PDF(m_latest_odometry_PDF.getMeanVal(),
 			CMatrixDouble33(tmp)/* cov= unity */ );
 	double mahal_distance = rel_edge.mahalanobisDistanceTo(latest_odometry_PDF);
-	m_mahal_distance_ICP_odom.addNewMeasurement(mahal_distance);
-	
-	// TODO - decide on this criterion - Ask EduFdez
+	//m_mahal_distance_ICP_odom.addNewMeasurement(mahal_distance);
+
+	// TODO - Find out a proper criterion
 	// How do I filter out the "bad" 2DRangeScans?
 	//double mahal_distance_lim = m_mahal_distance_ICP_odom.getMedian();
 	//double mahal_distance_lim = m_mahal_distance_ICP_odom.getMean();
-	//double mahal_distance_lim = 
+	//double mahal_distance_lim =
 		//m_mahal_distance_ICP_odom.getMean() + m_mahal_distance_ICP_odom.getStdDev();
 	double mahal_distance_lim = 0.18; // visual introspection
 
 	// check whether to use ICP or odometry Edge.
 	// if the norm of the odometry edge is 0 => no odometry edge available. =>
 	// use ICP
-	if (mahal_distance < mahal_distance_lim || 
+	if (mahal_distance < mahal_distance_lim ||
 			m_latest_odometry_PDF.getMeanVal().norm() == 0) {
-		this->logFmt(mrpt::utils::LVL_INFO, "Using the ICP edge... mahal = %f", mahal_distance);
+		this->logFmt(LVL_DEBUG, "Using ICP Edge");
 		m_times_used_ICP++;
 	}
 	else {
-		this->logFmt(mrpt::utils::LVL_DEBUG,
-				"Using the odometry rigid body transformation instead... mahal = %f",
-				mahal_distance);
+		this->logFmt(LVL_DEBUG, "Using Odometry Edge");
 		rel_edge.copyFrom(m_latest_odometry_PDF);
 		m_times_used_odom++;
 	}
-	this->logFmt(mrpt::utils::LVL_INFO, "Times that the ICP Edge was used: %lu/%lu",
+	this->logFmt(LVL_DEBUG, "\tMahalanobis Distance = %f", mahal_distance);
+	this->logFmt(LVL_DEBUG, "Times that the ICP Edge was used: %d/%d",
 			m_times_used_ICP, m_times_used_ICP + m_times_used_odom);
 
-	// Criterions for updating PDF since last registered node
-	// - ICP goodness > threshold goodness
-	if (m_ICP_sliding_win.evaluateMeasurementAbove(icp_info.goodness) ) {
-		m_since_prev_node_PDF += rel_edge;
-		m_last_laser_scan2D = m_curr_laser_scan2D;
-		registered_new_node = this->checkRegistrationCondition();
-		
-		// reset the odometry tracking as well.
-		m_last_odometry_only_pose = m_curr_odometry_only_pose;
-		m_latest_odometry_PDF.mean = pose_t();
-	}
+	// update the Probability Density Function until last registered
+	// node
+	m_since_prev_node_PDF += rel_edge;
+	m_last_laser_scan2D = m_curr_laser_scan2D;
+	registered_new_node = this->checkRegistrationCondition();
+
+	// reset the odometry tracking as well.
+	m_last_odometry_only_pose = m_curr_odometry_only_pose;
+	m_latest_odometry_PDF.mean = pose_t();
 
 
+	this->logFmt(LVL_DEBUG,
+			"<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
 	return registered_new_node;
 	MRPT_END;
 }
@@ -295,9 +299,10 @@ bool CICPCriteriaNRD<GRAPH_t>::updateState3D(
 template<class GRAPH_t>
 bool CICPCriteriaNRD<GRAPH_t>::checkRegistrationCondition3D() {
 	MRPT_START;
+	using namespace mrpt::utils;
 	bool registered_new_node = false;
 
-	this->logStr(mrpt::utils::LVL_DEBUG, "In checkRegistrationCondition3D..");
+	this->logFmt(mrpt::utils::LVL_DEBUG, "In checkRegistrationCondition3D..");
 
 	constraint_t* rel_edge = new constraint_t;
 	mrpt::slam::CICP::TReturnInfo icp_info;
@@ -308,33 +313,28 @@ bool CICPCriteriaNRD<GRAPH_t>::checkRegistrationCondition3D() {
 			rel_edge,
 			NULL,
 			&icp_info);
-	// append current ICP edge to the sliding window
-	m_ICP_sliding_win.addNewMeasurement(icp_info.goodness);
 
 	// Criterions for updating PDF since last registered node
 	// - ICP goodness > threshold goodness
 	// - Small Z displacement
 
 	if (!rel_edge) {
-		this->logFmt(mrpt::utils::LVL_INFO, "NULL rel_edge from getICPEdge procedure");
+		this->logFmt(LVL_DEBUG, "NULL rel_edge from getICPEdge procedure");
 		return false;
 	}
 
-	this->logFmt(mrpt::utils::LVL_INFO, "Current ICP constraint: \n\tEdge: %s\n\tNorm: %f",
+	this->logFmt(LVL_DEBUG, "Current ICP constraint: \n\tEdge: %s\n\tNorm: %f",
 				rel_edge->getMeanVal().asString().c_str(),
 				rel_edge->getMeanVal().norm());
-	this->logFmt(mrpt::utils::LVL_INFO, "ICP Alignment operation:\
+	this->logFmt(LVL_DEBUG, "ICP Alignment operation:\
 			\n\tnIterations: %d\
 			\n\tquality: %f\
 			\n\tgoodness: %.f\n",
 			icp_info.nIterations, icp_info.quality, icp_info.goodness);
 
-	if (m_ICP_sliding_win.evaluateMeasurementAbove(icp_info.goodness) ) {
-		this->logFmt(mrpt::utils::LVL_INFO, "Using the above constraint...");
-		m_since_prev_node_PDF += *rel_edge;
-		m_last_laser_scan3D = m_curr_laser_scan3D;
-		registered_new_node = this->checkRegistrationCondition();
-	}
+	m_since_prev_node_PDF += *rel_edge;
+	m_last_laser_scan3D = m_curr_laser_scan3D;
+	registered_new_node = this->checkRegistrationCondition();
 
 	return registered_new_node;
 	MRPT_END;
@@ -343,8 +343,10 @@ bool CICPCriteriaNRD<GRAPH_t>::checkRegistrationCondition3D() {
 template<class GRAPH_t>
 bool CICPCriteriaNRD<GRAPH_t>::checkRegistrationCondition() {
 	MRPT_START;
+	using namespace mrpt::utils;
+
 	bool registered_new_node = false;
-	this->logStr(mrpt::utils::LVL_DEBUG, "In checkRegistrationCondition");
+	this->logFmt(LVL_DEBUG, "In checkRegistrationCondition");
 	using namespace mrpt::math;
 
 	// Criterions for adding a new node
@@ -384,8 +386,11 @@ void CICPCriteriaNRD<GRAPH_t>::registerNewNode() {
 	m_graph->nodes[to] = this->getCurrentRobotPosEstimation();
 	m_graph->insertEdgeAtEnd(from, to, m_since_prev_node_PDF);
 
-	this->logStr(mrpt::utils::LVL_DEBUG, format("Registered new node:\n\t%lu => %lu\n\tEdge: %s",
-				from, to, m_since_prev_node_PDF.getMeanVal().asString().c_str()));
+	this->logFmt(LVL_DEBUG,
+			"Registered new node:\n\t%lu => %lu\n\tEdge: %s",
+			from,
+			to,
+			m_since_prev_node_PDF.getMeanVal().asString().c_str());
 
 	MRPT_END;
 }
@@ -398,7 +403,7 @@ void CICPCriteriaNRD<GRAPH_t>::setGraphPtr(GRAPH_t* graph) {
 	// get the last registrered node + corresponding pose - root
 	m_nodeID_max = m_graph->root;
 
-	this->logStr(mrpt::utils::LVL_DEBUG, "Fetched the graph successfully");
+	this->logFmt(LVL_DEBUG, "Fetched the graph successfully");
 }
 template<class GRAPH_t>
 void CICPCriteriaNRD<GRAPH_t>::loadParams(const std::string& source_fname) {
@@ -407,8 +412,6 @@ void CICPCriteriaNRD<GRAPH_t>::loadParams(const std::string& source_fname) {
 	using namespace mrpt::utils;
 
 	params.loadFromConfigFileName(source_fname,
-			"NodeRegistrationDeciderParameters");
-	m_ICP_sliding_win.loadFromConfigFileName(source_fname,
 			"NodeRegistrationDeciderParameters");
 	//m_mahal_distance_ICP_odom.loadFromConfigFileName(source_fname,
 			//"NodeRegistrationDeciderParameters");
@@ -422,7 +425,7 @@ void CICPCriteriaNRD<GRAPH_t>::loadParams(const std::string& source_fname) {
 			1, false);
 	this->setMinLoggingLevel(VerbosityLevel(min_verbosity_level));
 
-	this->logStr(mrpt::utils::LVL_DEBUG, "Successfully loaded parameters.");
+	this->logFmt(LVL_DEBUG, "Successfully loaded parameters.");
 	MRPT_END;
 }
 template<class GRAPH_t>
@@ -430,8 +433,7 @@ void CICPCriteriaNRD<GRAPH_t>::printParams() const {
 	MRPT_START;
 
 	params.dumpToConsole();
-	m_ICP_sliding_win.dumpToConsole();
-	m_mahal_distance_ICP_odom.dumpToConsole();
+	//m_mahal_distance_ICP_odom.dumpToConsole();
 
 	MRPT_END;
 }

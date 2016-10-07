@@ -89,8 +89,6 @@ TCLAP::SwitchArg list_optimizers(""      , "list-optimizers" , "List (all) avail
 TCLAP::SwitchArg disable_visuals("","disable-visuals","Disable Visualization - Overrides related visualize* directives of the .ini file",cmd_line, false);
 
 
-
-
 // Main
 // ////////////////////////////////////////////////////////////
 int main(int argc, char **argv)
@@ -103,8 +101,7 @@ int main(int argc, char **argv)
 		bool showHelp		 = argc>1 && !os::_strcmp(argv[1],"--help");
 		bool showVersion = argc>1 && !os::_strcmp(argv[1],"--version");
 
-
-		// vectors containing the prooperties of the available deciders/optimizers
+		// vectors containing the properties of the available deciders/optimizers
 		vector<TRegistrationDeciderProps*> registrars_vec;
 		vector<TOptimizerProps*> optimizers_vec;
 
