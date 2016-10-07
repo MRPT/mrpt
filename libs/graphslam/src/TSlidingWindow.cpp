@@ -23,6 +23,9 @@ TSlidingWindow::TSlidingWindow(
 	m_win_size = 5; // just a default value
 	m_name = name;
 
+	m_mean_cached = 0;
+	m_median_cached = 0;
+
 	m_is_initialized = false;
 	m_mean_updated = false;
 	m_median_updated = false;

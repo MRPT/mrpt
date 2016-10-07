@@ -240,10 +240,6 @@ class CICPCriteriaNRD:
 		// last inserted node in the graph
 		mrpt::utils::TNodeID m_nodeID_max;
 
-		/**\brief Keeps track of the last N measurements of the incoming ICP
-		 * matches.
-		 */
-		TSlidingWindow m_ICP_sliding_win;
 		/**\brief Keeps track of the last N measurements between the ICP edge and
 		 * the corresponding odometry measurements.
 		 *
@@ -259,8 +255,10 @@ class CICPCriteriaNRD:
 		bool m_use_angle_difference_node_reg;
 		bool m_use_distance_node_reg;
 
-		size_t m_times_used_ICP; /**<How many times we used the ICP Edge */
-		size_t m_times_used_odom; /**<How many times we used the Odometry Edge instead of the ICP edge */
+		/**How many times we used the ICP Edge instead of Odometry edge*/
+		int m_times_used_ICP;
+		/**How many times we used the Odometry Edge instead of the ICP edge */
+		int m_times_used_odom;
 };
 
 

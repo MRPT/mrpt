@@ -201,6 +201,7 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 
 		/**\brief Constructor of CGraphSlamEngine class template.
 		 *
+		 * // TODO - remove the deprecated arguments
 		 * \param[in] config_file .ini file containing the configuration
 		 * parameters for the CGraphSlamEngine as well as the deciders/optimizer
 		 * classes that CGraphSlamEngine is using
