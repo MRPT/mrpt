@@ -38,8 +38,8 @@
 #include <map>
 #include <string>
 
-#include "CEdgeRegistrationDecider.h"
-#include "CRangeScanRegistrationDecider.h"
+#include <mrpt/graphslam/interfaces/CEdgeRegistrationDecider.h>
+#include <mrpt/graphslam/misc/CRangeScanRegistrationDecider.h>
 
 
 namespace mrpt { namespace graphslam { namespace deciders {

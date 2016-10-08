@@ -10,9 +10,9 @@
 // Implementattion file for TSlidingWindow struct
 #include "graphslam-precomp.h"  // Precompiled headers
 
-#include <mrpt/graphslam/TSlidingWindow.h>
 #include <mrpt/utils/CConfigFileBase.h>
 #include <mrpt/utils/CStream.h>
+#include <mrpt/graphslam/misc/TSlidingWindow.h>
 
 using namespace mrpt::graphslam;
 

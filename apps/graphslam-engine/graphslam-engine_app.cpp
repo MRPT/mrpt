@@ -22,7 +22,7 @@
 #include <mrpt/system/string_utils.h>
 
 #include <mrpt/graphslam/CGraphSlamEngine.h>
-#include <mrpt/graphslam/TGraphSlamResources.h>
+#include <mrpt/graphslam/apps_related/TGraphSlamResources.h>
 
 #include <mrpt/otherlibs/tclap/CmdLine.h>
 

@@ -21,7 +21,7 @@
 #include <mrpt/utils/types_simple.h>
 #include <mrpt/system/threads.h>
 
-#include "CNodeRegistrationDecider.h"
+#include <mrpt/graphslam/interfaces/CNodeREgistrationDecider.h>
 
 #include <iostream>
 

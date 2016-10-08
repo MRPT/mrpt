@@ -17,33 +17,35 @@
 #include "graphslam/levmarq.h"
 
 // Interfaces for implementing deciders/optimizers
-#include "graphslam/CRegistrationDeciderOrOptimizer.h"
-#include "graphslam/CRangeScanRegistrationDecider.h"
-#include "graphslam/CNodeRegistrationDecider.h"
-#include "graphslam/CEdgeRegistrationDecider.h"
-#include "graphslam/CGraphSlamOptimizer.h"
+#include "graphslam/interfaces/CRegistrationDeciderOrOptimizer.h"
+#include "graphslam/interfaces/CRangeScanRegistrationDecider.h"
+#include "graphslam/interfaces/CNodeRegistrationDecider.h"
+#include "graphslam/interfaces/CEdgeRegistrationDecider.h"
+#include "graphslam/interfaces/CGraphSlamOptimizer.h"
 
 // Node Registration Deciders
-#include "graphslam/CEmptyNRD.h"
-#include "graphslam/CFixedIntervalsNRD.h"
-#include "graphslam/CICPCriteriaNRD.h"
+#include "graphslam/NRD/CEmptyNRD.h"
+#include "graphslam/NRD/CFixedIntervalsNRD.h"
+#include "graphslam/NRD/CICPCriteriaNRD.h"
 
 // Edge Registration Deciders
-#include "graphslam/CEmptyERD.h"
-#include "graphslam/CICPCriteriaERD.h"
-#include "graphslam/CLoopCloserERD.h"
+#include "graphslam/ERD/CEmptyERD.h"
+#include "graphslam/ERD/CICPCriteriaERD.h"
+#include "graphslam/ERD/CLoopCloserERD.h"
 
 // GraphSlamOptimizers
-#include "graphslam/CLevMarqGSO.h"
+#include "graphslam/GSO/CLevMarqGSO.h"
 
 // Graph SLAM Engine - Relevant headers
-#include "graphslam/CEdgeCounter.h"
-#include "graphslam/CWindowManager.h"
-#include "graphslam/CWindowObserver.h"
-#include "graphslam/TSlidingWindow.h"
+#include "graphslam/misc/CEdgeCounter.h"
+#include "graphslam/misc/CWindowManager.h"
+#include "graphslam/misc/CWindowObserver.h"
+#include "graphslam/misc/TSlidingWindow.h"
 
-#include "graphslam/TGraphSlamResources.h"
+// App-Related headers
+#include "graphslam/app_related/TGraphSlamResources.h"
 
+// Main graphslam-engine header
 #include "graphslam/CGraphSlamEngine.h"
 
 

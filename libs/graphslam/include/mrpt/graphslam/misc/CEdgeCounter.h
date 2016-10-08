@@ -10,10 +10,11 @@
 #ifndef CEDGECOUNTER_H
 #define CEDGECOUNTER_H
 
-#include "link_pragmas.h"
 #include <mrpt/utils/mrpt_macros.h>
-#include <mrpt/graphslam/CWindowManager.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
+
+#include <mrpt/graphslam/link_pragmas.h>
+#include "CWindowManager.h"
 
 #include <iostream>
 #include <sstream>

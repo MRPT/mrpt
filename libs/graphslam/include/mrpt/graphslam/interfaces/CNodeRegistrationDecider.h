@@ -16,11 +16,11 @@
 #include <mrpt/obs/CObservation.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/graphs/CNetworkOfPoses.h>
-#include <mrpt/graphslam/CWindowManager.h>
 #include <mrpt/synch/CCriticalSection.h>
 #include <mrpt/utils/TParameters.h>
 #include <mrpt/utils/CTimeLogger.h>
 
+#include <mrpt/graphslam/misc/CWindowManager.h>
 #include "CRegistrationDeciderOrOptimizer.h"
 
 

@@ -15,7 +15,8 @@
 #include <mrpt/synch/CCriticalSection.h>
 #include <mrpt/graphs/CNetworkOfPoses.h>
 #include <mrpt/utils/COutputLogger.h>
-#include "CWindowManager.h"
+
+#include <mrpt/graphslam/misc/CWindowManager.h>
 
 #include <string>
 #include <map>
