@@ -57,11 +57,10 @@
 #include <mrpt/utils/CImage.h>
 #include <mrpt/utils/COutputLogger.h>
 
-#include "CEdgeCounter.h"
-
-#include "CNodeRegistrationDecider.h"
-#include "CEdgeRegistrationDecider.h"
-#include "CGraphSlamOptimizer.h"
+#include <mrpt/graphslam/misc/CEdgeCounter.h>
+#include <mrpt/graphslam/interfaces/CNodeRegistrationDecider.h>
+#include <mrpt/graphslam/interfaces/CEdgeRegistrationDecider.h>
+#include <mrpt/graphslam/interfaces/CGraphSlamOptimizer.h>
 
 #include <cstdlib>
 #include <string>

@@ -32,9 +32,9 @@
 #include <mrpt/system/os.h>
 #include <mrpt/system/threads.h>
 
-#include "CNodeRegistrationDecider.h"
-#include "CRangeScanRegistrationDecider.h"
-#include "TSlidingWindow.h"
+#include <mrpt/graphslam/interfaces/CNodeRegistrationDecider.h>
+#include <mrpt/graphslam/misc/CRangeScanRegistrationDecider.h>
+#include <mrpt/graphslam/misc/TSlidingWindow.h>
 
 #include <string>
 #include <math.h>

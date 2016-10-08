@@ -35,7 +35,10 @@
 #include <mrpt/system/os.h>
 #include <mrpt/system/threads.h>
 #include <mrpt/math/data_utils.h>
-#include <mrpt/graphslam/TSlidingWindow.h>
+
+#include <mrpt/graphslam/interfaces/CEdgeRegistrationDecider.h>
+#include <mrpt/graphslam/misc/TSlidingWindow.h>
+#include <mrpt/graphslam/misc/CRangeScanRegistrationDecider.h>
 
 #include <Eigen/Dense>
 
@@ -49,10 +52,6 @@
 #include <set>
 #include <sstream>
 #include <stdlib.h> // abs
-
-#include "CEdgeRegistrationDecider.h"
-#include "CRangeScanRegistrationDecider.h"
-
 
 namespace mrpt { namespace graphslam { namespace deciders {
 

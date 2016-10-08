@@ -4,7 +4,7 @@
 #include <mrpt/gui/CBaseGUIWindow.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/utils/COutputLogger.h>
-#include <mrpt/graphslam/CWindowObserver.h>
+#include "CWindowObserver.h"
 
 namespace mrpt { namespace graphslam {
 

@@ -1,4 +1,4 @@
-/* +---------------------------------------------------------------------------+
+	/* +---------------------------------------------------------------------------+
 	 |                     Mobile Robot Programming Toolkit (MRPT)               |
 	 |                          http://www.mrpt.org/                             |
 	 |                                                                           |
@@ -7,63 +7,63 @@
 	 | Released under BSD License. See details in http://www.mrpt.org/License    |
 	 +---------------------------------------------------------------------------+ */
 
-#ifndef CEMPTYNRD_H
-#define CEMPTYNRD_H
+#ifndef CEmptyERD_H
+#define CEmptyERD_H
 
-#include <mrpt/obs/CActionCollection.h>
+#include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/obs/CRawlog.h>
 
-#include "CNodeRegistrationDecider.h"
+#include <mrpt/graphslam/interfaces/CEdgeRegistrationDecider.h>
 
 namespace mrpt { namespace graphslam { namespace deciders {
 
-/**\brief Empty Node Registration Decider
+/**\brief Empty Edge Registration Decider
  *
  * Handy when you are testing other parts of the application but not the
  * specific registration procedure
- *
- * \ingroup mrpt_graphslam_grp
  */
-template<class GRAPH_t=typename mrpt::graphs::CNetworkOfPoses2DInf>
-class CEmptyNRD:
-	public mrpt::graphslam::deciders::CNodeRegistrationDecider<GRAPH_t>
+template<class GRAPH_t=typename mrpt::graphs::CNetworkOfPoses2DInf >
+class CEmptyERD:
+	public mrpt::graphslam::deciders::CEdgeRegistrationDecider<GRAPH_t>
 {
-	typedef typename GRAPH_t::constraint_t::type_value pose_t;
 	public:
-		CEmptyNRD();
-		~CEmptyNRD();
+		typedef typename GRAPH_t::constraint_t constraint_t;
 
-		bool updateState( mrpt::obs::CActionCollectionPtr action,
+		CEmptyERD();
+		~CEmptyERD();
+
+		bool updateState(
+				mrpt::obs::CActionCollectionPtr action,
 				mrpt::obs::CSensoryFramePtr observations,
 				mrpt::obs::CObservationPtr observation );
-		pose_t getCurrentRobotPosEstimation() const;
 
 	private:
-		void registerNewNode();
-
+		void registerNewEdge(
+				const mrpt::utils::TNodeID& from,
+				const mrpt::utils::TNodeID& to,
+				const constraint_t& rel_edge );
 };
 
 //////////////////////////////////////////////////////////////////////////////
 
 template<class GRAPH_t>
-CEmptyNRD<GRAPH_t>::CEmptyNRD() { }
+CEmptyERD<GRAPH_t>::CEmptyERD() { }
 template<class GRAPH_t>
-CEmptyNRD<GRAPH_t>::~CEmptyNRD() { }
+CEmptyERD<GRAPH_t>::~CEmptyERD() { }
 
 template<class GRAPH_t>
-bool CEmptyNRD<GRAPH_t>::updateState(
+bool CEmptyERD<GRAPH_t>::updateState(
 		mrpt::obs::CActionCollectionPtr action,
 		mrpt::obs::CSensoryFramePtr observations,
-		mrpt::obs::CObservationPtr observation )  {return false;}
+		mrpt::obs::CObservationPtr observation ) {return true;}
 
 template<class GRAPH_t>
-void CEmptyNRD<GRAPH_t>::registerNewNode() { }
-
-template<class GRAPH_t>
-typename GRAPH_t::constraint_t::type_value
-CEmptyNRD<GRAPH_t>::getCurrentRobotPosEstimation() const {return pose_t();}
+void CEmptyERD<GRAPH_t>::registerNewEdge(
+		const mrpt::utils::TNodeID& from,
+		const mrpt::utils::TNodeID& to,
+		const constraint_t& rel_edge ) { }
 
 } } } // end of namespaces
 
-#endif /* end of include guard: CEMPTYNRD_H */
+#endif /* end of include guard: CEmptyERD_H */

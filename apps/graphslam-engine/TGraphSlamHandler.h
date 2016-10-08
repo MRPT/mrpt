@@ -9,14 +9,15 @@
 #ifndef TGRAPHSLAMHANDLER_H
 #define TGRAPHSLAMHANDLER_H
 
-#include <mrpt/graphslam/CWindowManager.h>
-#include <mrpt/graphslam/CWindowObserver.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/utils/CConfigFile.h>
 #include <mrpt/utils/mrpt_macros.h>
 #include <mrpt/utils/COutputLogger.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/threads.h>
+
+#include <mrpt/graphslam/misc/CWindowObserver.h>
+#include <mrpt/graphslam/misc/CWindowManager.h>
 
 #include <string>
 #include <sstream>

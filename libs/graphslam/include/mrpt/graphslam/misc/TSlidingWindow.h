@@ -10,8 +10,8 @@
 #ifndef TSLIDINGWINDOW_H
 #define TSLIDINGWINDOW_H
 
-#include "link_pragmas.h"
 #include <mrpt/utils/CLoadableOptions.h>
+#include <mrpt/graphslam/link_pragmas.h>
 
 #include <algorithm> // std::transform
 #include <cmath> // sqrt

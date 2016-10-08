@@ -14,13 +14,13 @@
 #include <mrpt/utils/mrpt_macros.h>
 #include <mrpt/graphs/CNetworkOfPoses.h>
 
-#include <mrpt/graphslam/CFixedIntervalsNRD.h>
-#include <mrpt/graphslam/CEmptyNRD.h>
-#include <mrpt/graphslam/CICPCriteriaNRD.h>
-#include <mrpt/graphslam/CICPCriteriaERD.h>
-#include <mrpt/graphslam/CEmptyERD.h>
-#include <mrpt/graphslam/CLoopCloserERD.h>
-#include <mrpt/graphslam/CLevMarqGSO.h>
+#include <mrpt/graphslam/NRD/CFixedIntervalsNRD.h>
+#include <mrpt/graphslam/NRD/CEmptyNRD.h>
+#include <mrpt/graphslam/NRD/CICPCriteriaNRD.h>
+#include <mrpt/graphslam/ERD/CICPCriteriaERD.h>
+#include <mrpt/graphslam/ERD/CEmptyERD.h>
+#include <mrpt/graphslam/ERD/CLoopCloserERD.h>
+#include <mrpt/graphslam/GSO/CLevMarqGSO.h>
 
 #include <string>
 #include <iostream>
