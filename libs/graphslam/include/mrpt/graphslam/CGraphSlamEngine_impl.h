@@ -113,7 +113,6 @@ void CGraphSlamEngine<GRAPH_t>::initCGraphSlamEngine() {
 	using namespace mrpt::utils;
 	using namespace mrpt::opengl;
 	using namespace std;
-	using namespace mrpt::graphslam::measurement_providers;
 
 	// logger instance properties
 	m_time_logger.setName(m_class_name);
@@ -376,7 +375,6 @@ bool CGraphSlamEngine<GRAPH_t>::execGraphSlamStep(
 	using namespace mrpt::obs;
 	using namespace mrpt::opengl;
 	using namespace mrpt::system;
-	using namespace mrpt::graphslam::measurement_providers;
 
 	m_time_logger.enter("proc_time");
 

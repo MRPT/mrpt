@@ -36,16 +36,14 @@
 // GraphSlamOptimizers
 #include "graphslam/CLevMarqGSO.h"
 
-// MeasurementProviders
-#include "graphslam/CMeasurementProvider.h"
-#include "graphslam/CRawlogMP.h"
-#include "graphslam/CRosTopicMP.h"
-
 // Graph SLAM Engine - Relevant headers
 #include "graphslam/CEdgeCounter.h"
 #include "graphslam/CWindowManager.h"
 #include "graphslam/CWindowObserver.h"
 #include "graphslam/TSlidingWindow.h"
+
+// Supplementary Functions
+#include "graphslam/supplementary_funs.h"
 
 #include "graphslam/CGraphSlamEngine.h"
 

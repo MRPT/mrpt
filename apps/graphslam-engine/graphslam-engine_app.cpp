@@ -7,7 +7,6 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include "supplementary_funs.h"
 #include "TGraphSlamHandler.h"
 
 #include <mrpt/obs/CRawlog.h>
@@ -22,9 +21,6 @@
 #include <mrpt/graphs/CNetworkOfPoses.h>
 #include <mrpt/system/string_utils.h>
 #include <mrpt/graphslam.h>
-
-#include <mrpt/graphslam/CRawlogMP.h>
-#include <mrpt/graphslam/CRosTopicMP.h>
 
 #include <mrpt/otherlibs/tclap/CmdLine.h>
 
@@ -46,7 +42,7 @@ using namespace mrpt::utils;
 using namespace mrpt::graphslam;
 using namespace mrpt::graphslam::deciders;
 using namespace mrpt::graphslam::optimizers;
-using namespace mrpt::graphslam::measurement_providers;
+using namespace mrpt::graphslam::supplementary;
 
 using namespace std;
 
@@ -60,12 +56,8 @@ TCLAP::ValueArg<string> arg_ini_file(/*flag = */ "i", /*name = */ "ini-file",
 		/*desc = */ ".ini configuration file", /* required = */ true,
 		/* default value = */ "", /*typeDesc = */ "config.ini", /*parser = */ cmd_line);
 
-// Mutually Exclusive Args - Either use a rawlog file or fetch the measurements
-// from a TCP Socket (online graphSLAM execution)
 TCLAP::ValueArg<string> arg_rawlog_file("r", "rawlog",
-		"Rawlog dataset file",	false, "", "contents.rawlog");
-TCLAP::SwitchArg arg_online_exec("", "online",
-		"Execute online graphSLAM", /*default = */ false);
+		"Rawlog dataset file",	true, "", "contents.rawlog", /*parser = */ cmd_line);
 
 
 TCLAP::ValueArg<string> arg_ground_truth_file("g", "ground-truth",
@@ -177,9 +169,6 @@ int main(int argc, char **argv)
 			optimizers_vec.push_back(opt);
 		}
 
-		// state the mutually exclusive variables
-		cmd_line.xorAdd(arg_rawlog_file, arg_online_exec);
-
 		// Input Validation
 		if (!cmd_line.parse( argc, argv ) ||  showVersion || showHelp) {
 			return 0;
@@ -231,9 +220,8 @@ int main(int argc, char **argv)
 		// fetch the filenames
 		// ini file
 		string ini_fname = arg_ini_file.getValue();
-		// rawlog file - either use one or run online
-		string rawlog_fname = arg_rawlog_file.isSet()? arg_rawlog_file.getValue(): "";
-		ASSERT_(arg_rawlog_file.isSet() ^ arg_online_exec.isSet());
+		// rawlog file
+		string rawlog_fname = arg_rawlog_file.getValue();
 
 		// ground-truth file
 		string ground_truth_fname;
@@ -282,22 +270,6 @@ int main(int argc, char **argv)
 		logger.logFmt(LVL_INFO, "Edge registration decider: %s", edge_reg.c_str());
 		logger.logFmt(LVL_INFO, "graphSLAM Optimizer: %s", optimizer.c_str());
 
-		// Initialize class responsible for reading in the measurements
-		mrpt::graphslam::measurement_providers::CMeasurementProvider*
-			measurement_provider = NULL;
-
-		// Decide where to read the measurements from
-		if (rawlog_fname.empty()) { // run in online mode
-			logger.logFmt(LVL_WARN, "Executing online graphSLAM");
-			measurement_provider = new CRosTopicMP();
-		}
-		else {
-			logger.logFmt(LVL_WARN, "Executing graphSLAM using rawlog files");
-			measurement_provider = new CRawlogMP();
-			dynamic_cast<CRawlogMP*>(measurement_provider)->setRawlogFname(rawlog_fname);
-		}
-		measurement_provider->loadParams(ini_fname);
-
 		// Initialization of TGraphSlamHandler
 		TGraphSlamHandler graphslam_handler;
 		graphslam_handler.setOutputLoggerPtr(&logger);
@@ -325,6 +297,7 @@ int main(int argc, char **argv)
 		graphslam_engine.printParams();
 
 		// Variables initialization
+		CFileGZInputStream rawlog_stream(rawlog_fname);
 		CActionCollectionPtr action;
 		CSensoryFramePtr observations;
 		CObservationPtr observation;
@@ -332,11 +305,12 @@ int main(int argc, char **argv)
 
 		// Read the dataset and pass the measurements to CGraphSlamEngine
 		bool cont_exec = true;
-		while(measurement_provider->getActionObservationPairOrObservation(
-					action,
-					observations,
-					observation,
-					curr_rawlog_entry) && cont_exec) {
+		while (CRawlog::getActionObservationPairOrObservation(
+				rawlog_stream,
+				action,
+				observations,
+				observation,
+				curr_rawlog_entry) && cont_exec) {
 
 			// actual call to the graphSLAM execution method
 			// Exit if user pressed C-c

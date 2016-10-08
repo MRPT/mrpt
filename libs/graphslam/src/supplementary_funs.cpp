@@ -7,7 +7,11 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include "supplementary_funs.h"
+#include "graphslam-precomp.h"  // Precompiled headers
+#include <mrpt/graphslam/supplementary_funs.h>
+
+// Implementation for for mrpt-graphslam supplementary functions
+namespace mrpt { namespace graphslam { namespace supplementary {
 
 std::string sep_header(40, '=');
 std::string sep_subheader(20, '-');
@@ -131,3 +135,5 @@ bool checkOptimizerExists(
 	return found;
 	MRPT_END;
 }
+
+} } } // END OF NAMESPACES

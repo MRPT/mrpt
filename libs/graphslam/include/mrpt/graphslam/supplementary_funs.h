@@ -18,7 +18,19 @@
 #include <string>
 #include <vector>
 
-// Properties struct for the Registration Decider Classes
+/**\name File containing the declarations of supplementary functions that can be used
+ * in application-related code
+ *
+ * \ingroup mrpt_graphslam_grp
+ */
+/**\{*/
+
+/**\brief Namespace containing supplementary functions that can be used in
+ * application-related code that makes use of the mrpt-graphslam API
+ */
+namespace mrpt { namespace graphslam { namespace supplementary {
+
+/**\brief Properties struct for the Registration Decider classes. */
 struct TRegistrationDeciderProps {
 	TRegistrationDeciderProps() {}
 	~TRegistrationDeciderProps() {}
@@ -30,7 +42,7 @@ struct TRegistrationDeciderProps {
   std::vector<std::string> observations_used;
 };
 
-// Properties struct for the Optimizer Classes
+/**\brief Properties struct for the Optimizer classes. */
 struct TOptimizerProps {
 	TOptimizerProps() {}
 	~TOptimizerProps() {}
@@ -40,29 +52,52 @@ struct TOptimizerProps {
 
 };
 
-// Check if the given registration decider is implemented
+/**\brief Check if the given registrator decider exists in the vector of
+ * deciders.
+ * \param[in] registrars_vec Vector with pointers to the avaiable registration
+ * deciders
+ * \param[in] given_reg String specifying the type of decider - This should
+ * either be "node" or "edge"
+ * \return True if it exists, false otherwise
+ */
 bool checkRegistrationDeciderExists(
 		const std::vector<TRegistrationDeciderProps*>& registrars_vec,
 		std::string given_reg,
 		std::string reg_type);
 
-// Check if the given optimizer is implemented
+/**\brief Check if the given optimizer exists in the vector of optimizers.
+ * \param[in] optimizers_vec Vector with pointers to the avaiable optimizers
+ * \return True if it exists, false otherwise
+ */
 bool checkOptimizerExists(
 		const std::vector<TOptimizerProps*>& optimizers_vec,
 		std::string given_opt);
 
-// Print the properties of the available deciders
+/**\brief Print the registration deciders vector in a formatted manner to the
+ * standard output
+ * \param[in] registrars_vec Vector with the pointers to the available
+ * registration deciders
+ * \param[in] reg_type Function prints both the node registration
+ * and edge registration deciders of the given vector unless specified
+ * otherwise. The available argument options are "node", "edge", "all"
+ */
 void dumpRegistrarsToConsole(
 		const std::vector<TRegistrationDeciderProps*>& registrars_vec,
 		std::string reg_type="all"
 		);
 
-// Print the properties of the available optimizers
+/**\brief Print the optimizers vector in a formatted manner to the standard
+ * output.
+ * \param[in] optimizers_vec Vector with the pointers to the available
+ * optimizers
+ */
 void dumpOptimizersToConsole(
 		const std::vector<TOptimizerProps*>& optimizers_vec);
 
-// functions for initializing decider/optimizer instances based on the user
-// command line choices - http://stackoverflow.com/a/582456/2843583
+/**\name Functions for initializing decider/optimizer instances based on the user
+ * command line choices - http://stackoverflow.com/a/582456/2843583
+ */
+/**\{*/
 template<typename T>
 mrpt::graphslam::deciders::CNodeRegistrationDecider<mrpt::graphs::CNetworkOfPoses2DInf>*
 createNodeRegistrationDecider() {
@@ -78,4 +113,8 @@ mrpt::graphslam::optimizers::CGraphSlamOptimizer<mrpt::graphs::CNetworkOfPoses2D
 createGraphSlamOptimizer() {
 	return new T;
 }
+/**}*/
 
+} } } // END OF NAMESPACES
+
+/**\}*/
