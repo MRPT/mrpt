@@ -43,9 +43,10 @@ namespace nav
 		  */
 		struct NAV_IMPEXP TInfoPerPTG
 		{
-			std::string				PTG_desc;      //!< A short description for the applied PTG
-			mrpt::math::CVectorFloat				TP_Obstacles;  //!< Distances until obstacles, in "pseudometers", first index for -PI direction, last one for PI direction.
-			mrpt::math::TPoint2D		TP_Target;     //!< Target location in TP-Space
+			std::string              PTG_desc;      //!< A short description for the applied PTG
+			mrpt::math::CVectorFloat TP_Obstacles;  //!< Distances until obstacles, in "pseudometers", first index for -PI direction, last one for PI direction.
+			mrpt::math::TPoint2D     TP_Target;     //!< Target location in TP-Space
+			mrpt::math::TPoint2D     TP_Robot;      //!< Robot location in TP-Space: normally (0,0), except during "NOP cmd vel" steps
 			double  timeForTPObsTransformation,timeForHolonomicMethod;  //!< Time, in seconds.
 			double  desiredDirection,desiredSpeed, evaluation;          //!< The results from the holonomic method.
 			mrpt::math::CVectorFloat   evalFactors;   //!< Evaluation factors

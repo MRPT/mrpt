@@ -304,7 +304,7 @@ class reactive_navigator_demoframe: public wxFrame
 
 		// ========= Opengl View: Local view (holonomic)  =======
 		mrpt::opengl::CSimpleLinePtr        gl_line_direction;
-		mrpt::opengl::CPointCloudPtr        gl_rel_target;
+		mrpt::opengl::CPointCloudPtr        gl_rel_target, gl_rel_robot;
 		mrpt::opengl::CSetOfLinesPtr        gl_nd_gaps, gl_tp_obstacles;
 
 };

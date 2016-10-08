@@ -58,6 +58,7 @@ void  CLogFileRecord::writeToStream(mrpt::utils::CStream &out,int *version) cons
 			if (m) out.WriteBuffer((const void*)&(*infoPerPTG[i].TP_Obstacles.begin()), m * sizeof(infoPerPTG[i].TP_Obstacles[0]));
 
 			out << infoPerPTG[i].TP_Target;  // v8: CPoint2D -> TPoint2D
+			out << infoPerPTG[i].TP_Robot; // v17
 			out << infoPerPTG[i].timeForTPObsTransformation << infoPerPTG[i].timeForHolonomicMethod; // made double in v12
 			out << infoPerPTG[i].desiredDirection << infoPerPTG[i].desiredSpeed << infoPerPTG[i].evaluation; // made double in v12
 			out << *infoPerPTG[i].HLFR;
@@ -163,6 +164,9 @@ void  CLogFileRecord::readFromStream(mrpt::utils::CStream &in,int version)
 					in >> pos;
 					infoPerPTG[i].TP_Target = mrpt::math::TPoint2D(pos);
 				}
+				if (version >= 17)
+					in >> infoPerPTG[i].TP_Robot;
+				else infoPerPTG[i].TP_Robot = mrpt::math::TPoint2D(0, 0);
 
 				if (version>=12) {
 					in >> infoPerPTG[i].timeForTPObsTransformation >> infoPerPTG[i].timeForHolonomicMethod;

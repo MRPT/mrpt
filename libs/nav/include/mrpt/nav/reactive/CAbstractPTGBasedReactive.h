@@ -271,7 +271,6 @@ namespace mrpt
 			const mrpt::poses::CPose2D &rel_pose_PTG_origin_wrt_sense,
 			TInfoPerPTG &ipf,
 			THolonomicMovement &holonomicMovement,
-			CHolonomicLogFileRecordPtr &HLFR,
 			CLogFileRecord &newLogRec,
 			const bool this_is_PTG_continuation,
 			const mrpt::poses::CPose2D &relPoseVelCmd_NOP = mrpt::poses::CPose2D()

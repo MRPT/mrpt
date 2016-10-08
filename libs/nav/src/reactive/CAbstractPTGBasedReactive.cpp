@@ -223,7 +223,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 	// Whether to worry about log files:
 	const bool fill_log_record = (m_logFile!=NULL || m_enableKeepLogRecords);
 	CLogFileRecord newLogRec;
-	newLogRec.infoPerPTG.resize(nPTGs);
+	newLogRec.infoPerPTG.resize(nPTGs+1); /* +1: [N] is the "NOP cmdvel" option; not to be present in all log entries. */
 
 	// At the beginning of each log file, add an introductory block explaining which PTGs are we using:
 	{
@@ -337,8 +337,6 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 
 		for (size_t indexPTG=0;indexPTG<nPTGs;indexPTG++)
 		{
-			CHolonomicLogFileRecordPtr HLFR;
-
 			//  STEP3(a): Transform target location into TP-Space for each PTG
 			// -----------------------------------------------------------------------------
 			CParameterizedTrajectoryGenerator * ptg = getPTG(indexPTG);
@@ -351,7 +349,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 				ptg, indexPTG, 
 				relTarget, rel_pose_PTG_origin_wrt_sense,
 				ipf, holonomicMovement,
-				HLFR, newLogRec, false /* this is a regular PTG reactive case */);
+				newLogRec, false /* this is a regular PTG reactive case */);
 		} // end for each PTG
 
 		// Round #2: Evaluate dont sending any new velocity command ("NOP" motion)
@@ -362,7 +360,6 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 			mrpt::system::timeDifference(m_lastSentVelCmd.tim_send_cmd_vel, tim_start_iteration) < getPTG(m_lastSentVelCmd.ptg_index)->maxTimeInVelCmdNOP(m_lastSentVelCmd.ptg_alpha);
 
 		CPose2D rel_cur_pose_wrt_last_vel_cmd_NOP, rel_pose_PTG_origin_wrt_sense_NOP;
-		CHolonomicLogFileRecordPtr HLFR_NOP;
 
 		if (can_do_nop_motion)
 		{
@@ -381,7 +378,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 				rel_pose_PTG_origin_wrt_sense_NOP = robot_pose_at_send_cmd - (CPose2D(m_curPoseVel.pose) + relPoseSense);
 				rel_cur_pose_wrt_last_vel_cmd_NOP = CPose2D(m_curPoseVel.pose) - robot_pose_at_send_cmd;
 
-				MRPT_TODO("Remove these traces after debugging!");
+#if 0
 				MRPT_LOG_DEBUG_STREAM << "NOP interpolation variables:" << "\n" <<
 					"tim_send_cmd_vel       : " << std::fixed << mrpt::system::timestampToDouble(m_lastSentVelCmd.tim_send_cmd_vel) << "\n" <<
 					"m_latestPoses.last time: " << std::fixed << mrpt::system::timestampToDouble(m_latestPoses.rbegin()->first) << "\n" <<
@@ -390,12 +387,13 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 					"m_curPoseVel.timestamp : " << std::fixed << mrpt::system::timestampToDouble(m_curPoseVel.timestamp) << "\n" <<
 					"rel_cur_pose_wrt_last_vel_cmd_NOP: " << rel_cur_pose_wrt_last_vel_cmd_NOP.asString() << "\n"
 					;
+#endif
 
 				ptg_eval_target_build_obstacles(
 					ptg, m_lastSentVelCmd.ptg_index,
 					relTarget_NOP, rel_pose_PTG_origin_wrt_sense_NOP,
 					ipf_NOP, holonomicMovements[nPTGs],
-					HLFR_NOP, newLogRec, true /* this is the PTG continuation (NOP) choice */, rel_cur_pose_wrt_last_vel_cmd_NOP);
+					newLogRec, true /* this is the PTG continuation (NOP) choice */, rel_cur_pose_wrt_last_vel_cmd_NOP);
 
 			} // end valid interpolated origin pose
 		} //end can_do_NOP_motion
@@ -531,6 +529,12 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 			newLogRec.ptg_last_k_NOP = m_lastSentVelCmd.ptg_alpha;
 			newLogRec.ptg_last_curRobotVelLocal = m_lastSentVelCmd.curRobotVelLocal;
 
+			// Last entry in info-per-PTG:
+			{
+				CLogFileRecord::TInfoPerPTG &ipp = *newLogRec.infoPerPTG.rbegin();
+				if (!ipp.HLFR) ipp.HLFR = CLogFileRecord_VFF::Create();
+			}
+
 
 			m_timelogger.leave("navigationStep.populate_log_info");
 
@@ -597,6 +601,13 @@ void CAbstractPTGBasedReactive::STEP5_PTGEvaluator(
 		int cur_k;
 		double cur_norm_d;
 		bool is_exact = holonomicMovement.PTG->inverseMap_WS2TP(rel_cur_pose_wrt_last_vel_cmd_NOP.x(), rel_cur_pose_wrt_last_vel_cmd_NOP.y(), cur_k, cur_norm_d);
+
+		{
+			const double cur_a = holonomicMovement.PTG->index2alpha(cur_k);
+			log.TP_Robot.x = cos(cur_a)*cur_norm_d;
+			log.TP_Robot.y = sin(cur_a)*cur_norm_d;
+		}
+
 		if (!is_exact)
 		{
 			// Don't trust this step: we are not 100% sure of the robot pose in TP-Space for this "PTG continuation" step:
@@ -879,7 +890,6 @@ void CAbstractPTGBasedReactive::ptg_eval_target_build_obstacles(
 	const CPose2D &rel_pose_PTG_origin_wrt_sense,
 	TInfoPerPTG &ipf,
 	THolonomicMovement &holonomicMovement,
-	CHolonomicLogFileRecordPtr &HLFR,
 	CLogFileRecord &newLogRec,
 	const bool this_is_PTG_continuation,
 	const mrpt::poses::CPose2D &rel_cur_pose_wrt_last_vel_cmd_NOP
@@ -887,6 +897,9 @@ void CAbstractPTGBasedReactive::ptg_eval_target_build_obstacles(
 {
 	ASSERT_(ptg);
 
+	const size_t idx_in_log_infoPerPTGs = this_is_PTG_continuation ? getPTG_count() : indexPTG;
+
+	CHolonomicLogFileRecordPtr HLFR;
 	holonomicMovement.PTG = ptg;
 
 	// If the user doesn't want to use this PTG, just mark it as invalid:
@@ -938,7 +951,7 @@ void CAbstractPTGBasedReactive::ptg_eval_target_build_obstacles(
 			ptg->initTPObstacles(ipf.TP_Obstacles);
 
 			// Implementation-dependent conversion:
-			STEP3_WSpaceToTPSpace(indexPTG, ipf.TP_Obstacles, rel_pose_PTG_origin_wrt_sense);
+			STEP3_WSpaceToTPSpace(indexPTG, ipf.TP_Obstacles, -rel_pose_PTG_origin_wrt_sense);
 
 			// Distances in TP-Space are normalized to [0,1]:
 			const double _refD = 1.0 / ptg->getRefDistance();
@@ -951,13 +964,12 @@ void CAbstractPTGBasedReactive::ptg_eval_target_build_obstacles(
 
 		//  STEP4: Holonomic navigation method
 		// -----------------------------------------------------------------------------
+		if (!this_is_PTG_continuation)
 		{
 			tictac.Tic();
 
-			MRPT_TODO("for the NOP case, do not run the holonomic method!");
-
-			ASSERT_(m_holonomicMethod[indexPTG])
-				m_holonomicMethod[indexPTG]->navigate(
+			ASSERT_(m_holonomicMethod[indexPTG]);
+			m_holonomicMethod[indexPTG]->navigate(
 					ipf.TP_Target,     // Normalized [0,1]
 					ipf.TP_Obstacles,  // Normalized [0,1]
 					1.0, // Was: ptg->getMax_V_inTPSpace(),
@@ -988,6 +1000,12 @@ void CAbstractPTGBasedReactive::ptg_eval_target_build_obstacles(
 			if (m_timelogger.isEnabled())
 				m_timelogger.registerUserMeasure("navigationStep.STEP4_HolonomicMethod", timeForHolonomicMethod);
 		}
+		else
+		{
+			// "NOP cmdvel" case: don't need to re-run holo algorithm, just keep the last selection:
+			holonomicMovement.direction = ptg->index2alpha( m_lastSentVelCmd.ptg_alpha );
+			holonomicMovement.speed = 1.0; // Not used.
+		}
 
 		// STEP5: Evaluate each movement to assign them a "evaluation" value.
 		// ---------------------------------------------------------------------
@@ -999,7 +1017,7 @@ void CAbstractPTGBasedReactive::ptg_eval_target_build_obstacles(
 				ipf.TP_Obstacles,
 				relTarget,
 				ipf.TP_Target,
-				newLogRec.infoPerPTG[indexPTG],
+				newLogRec.infoPerPTG[idx_in_log_infoPerPTGs],
 				this_is_PTG_continuation, rel_cur_pose_wrt_last_vel_cmd_NOP);
 		}
 
@@ -1010,9 +1028,12 @@ void CAbstractPTGBasedReactive::ptg_eval_target_build_obstacles(
 	const bool fill_log_record = (m_logFile != NULL || m_enableKeepLogRecords);
 	if (fill_log_record)
 	{
-		metaprogramming::copy_container_typecasting(ipf.TP_Obstacles, newLogRec.infoPerPTG[indexPTG].TP_Obstacles);
-		CLogFileRecord::TInfoPerPTG &ipp = newLogRec.infoPerPTG[indexPTG];
-		ipp.PTG_desc = ptg->getDescription();
+		metaprogramming::copy_container_typecasting(ipf.TP_Obstacles, newLogRec.infoPerPTG[idx_in_log_infoPerPTGs].TP_Obstacles);
+		CLogFileRecord::TInfoPerPTG &ipp = newLogRec.infoPerPTG[idx_in_log_infoPerPTGs];
+		if (!this_is_PTG_continuation)
+		     ipp.PTG_desc = ptg->getDescription();
+		else ipp.PTG_desc = mrpt::format("NOP cmdvel (prev PTG idx=%u)", static_cast<unsigned int>(m_lastSentVelCmd.ptg_index) );
+
 		ipp.TP_Target = ipf.TP_Target;
 		ipp.HLFR = HLFR;
 		ipp.desiredDirection = holonomicMovement.direction;
