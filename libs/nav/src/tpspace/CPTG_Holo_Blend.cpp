@@ -122,7 +122,7 @@ inline double calc_T_ramp_from_ratio(const double T_ramp_max, double ratio)
 {
 #if 1
 	// Linear:
-	return T_ramp_max * ratio;
+	return T_ramp_max;// * ratio;
 #else
 	// quadratic:
 	return T_ramp_max * (1.0 - mrpt::utils::square(ratio-1.0) );
