@@ -255,6 +255,7 @@ namespace mrpt
 			int ptg_index; //!< 0-based index of used PTG
 			int ptg_alpha; //!< Path index for selected PTG
 			mrpt::system::TTimeStamp tim_send_cmd_vel, tim_poseVel; //!< Timestamp of when the cmd was sent, and when the robot pose was queried in that iteration.
+			mrpt::math::TTwist2D curRobotVelLocal;
 
 			bool isValid() const;
 			void reset();

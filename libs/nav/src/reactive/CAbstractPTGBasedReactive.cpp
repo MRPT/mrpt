@@ -374,6 +374,8 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 				const CPose2D robot_pose_at_send_cmd = CPose2D(robot_pose3d_at_send_cmd);
 
 				CParameterizedTrajectoryGenerator * ptg = getPTG(m_lastSentVelCmd.ptg_index);
+				ptg->updateCurrentRobotVel(m_lastSentVelCmd.curRobotVelLocal);
+
 				TInfoPerPTG ipf_NOP;
 				const TPose2D relTarget_NOP = TPose2D(CPose2D(m_navigationParams->target) - robot_pose_at_send_cmd);
 				rel_pose_PTG_origin_wrt_sense_NOP = robot_pose_at_send_cmd - (CPose2D(m_curPoseVel.pose) + relPoseSense);
@@ -455,6 +457,8 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 				m_lastSentVelCmd.ptg_alpha = selectedHolonomicMovement.PTG->alpha2index(selectedHolonomicMovement.direction);
 				m_lastSentVelCmd.tim_poseVel = m_curPoseVel.timestamp;
 				m_lastSentVelCmd.tim_send_cmd_vel = tim_send_cmd_vel;
+				m_lastSentVelCmd.curRobotVelLocal = m_curPoseVel.velLocal;
+
 
 				// Update delay model:
 				const double timoff_sendVelCmd = mrpt::system::timeDifference(tim_start_iteration, tim_send_cmd_vel);
@@ -525,6 +529,8 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 			newLogRec.rel_pose_PTG_origin_wrt_sense_NOP = rel_pose_PTG_origin_wrt_sense_NOP;
 			newLogRec.ptg_index_NOP = best_is_NOP_cmdvel ? m_lastSentVelCmd.ptg_index : -1;
 			newLogRec.ptg_last_k_NOP = m_lastSentVelCmd.ptg_alpha;
+			newLogRec.ptg_last_curRobotVelLocal = m_lastSentVelCmd.curRobotVelLocal;
+
 
 			m_timelogger.leave("navigationStep.populate_log_info");
 
@@ -856,6 +862,9 @@ void CAbstractPTGBasedReactive::TSentVelCmd::reset()
 	ptg_alpha = -1;
 	tim_send_cmd_vel = INVALID_TIMESTAMP;
 	tim_poseVel = INVALID_TIMESTAMP;
+	curRobotVelLocal.vx = .0;
+	curRobotVelLocal.vy = .0;
+	curRobotVelLocal.omega = .0;
 }
 bool CAbstractPTGBasedReactive::TSentVelCmd::isValid() const
 {

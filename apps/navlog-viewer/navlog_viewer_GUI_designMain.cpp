@@ -631,14 +631,17 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 				} else {
 					gl_path = mrpt::opengl::CSetOfLinesPtr(gl_path_r);
 				}
-				const size_t sel_ptg_idx = log.ptg_index_NOP < 0 ? log.nSelectedPTG : log.ptg_index_NOP;
+				const bool is_NOP_cmd = log.ptg_index_NOP >= 0;
+				const size_t sel_ptg_idx = !is_NOP_cmd ? log.nSelectedPTG : log.ptg_index_NOP;
 				if ((int)m_logdata_ptg_paths.size()>sel_ptg_idx)
 				{
 					mrpt::nav::CParameterizedTrajectoryGeneratorPtr ptg = m_logdata_ptg_paths[sel_ptg_idx];
 					if (ptg)
 					{
 						// Set instantaneous kinematic state:
-						ptg->updateCurrentRobotVel(log.cur_vel_local);
+						if (!is_NOP_cmd)
+								ptg->updateCurrentRobotVel(log.cur_vel_local);
+						else	ptg->updateCurrentRobotVel(log.ptg_last_curRobotVelLocal);
 
 						// Draw path:
 						const int selected_k =

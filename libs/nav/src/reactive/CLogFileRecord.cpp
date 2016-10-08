@@ -41,7 +41,7 @@ CLogFileRecord::~CLogFileRecord()
 void  CLogFileRecord::writeToStream(mrpt::utils::CStream &out,int *version) const
 {
 	if (version)
-		*version = 16;
+		*version = 17;
 	else
 	{
 		uint32_t	i,n;
@@ -71,6 +71,7 @@ void  CLogFileRecord::writeToStream(mrpt::utils::CStream &out,int *version) cons
 		out << nSelectedPTG << WS_Obstacles << robotOdometryPose << WS_target_relative /*v8*/;
 		// v16:
 		out << ptg_index_NOP << ptg_last_k_NOP  << rel_cur_pose_wrt_last_vel_cmd_NOP << rel_pose_PTG_origin_wrt_sense_NOP;
+		out << ptg_last_curRobotVelLocal; // v17
 
 		if (ptg_index_NOP<0)
 			out << cmd_vel /*v10*/ << cmd_vel_original; // v15
@@ -134,6 +135,7 @@ void  CLogFileRecord::readFromStream(mrpt::utils::CStream &in,int version)
 	case 14:
 	case 15:
 	case 16:
+	case 17:
 		{
 			// Version 0 --------------
 			uint32_t  i,n;
@@ -203,7 +205,10 @@ void  CLogFileRecord::readFromStream(mrpt::utils::CStream &in,int version)
 			else {
 				ptg_index_NOP = -1;
 			}
-
+			if (version >= 17)
+				in >> ptg_last_curRobotVelLocal; // v17
+			else
+				ptg_last_curRobotVelLocal = mrpt::math::TTwist2D(0, 0, 0);
 
 			if (version >= 10) {
 				if (version >= 15) {

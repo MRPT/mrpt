@@ -1005,13 +1005,14 @@ void reactive_navigator_demoframe::simulateOneStep(double time_step)
 			const bool is_NOP_op = (lfr.nSelectedPTG == (int)ptg_nav->getPTG_count());
 			const size_t idx_ptg = is_NOP_op ? lfr.ptg_index_NOP : lfr.nSelectedPTG;
 
-			const mrpt::nav::CParameterizedTrajectoryGenerator* ptg = ptg_nav->getPTG(idx_ptg);
+			mrpt::nav::CParameterizedTrajectoryGenerator* ptg = ptg_nav->getPTG(idx_ptg);
 			if (ptg)
 			{
 				// Draw path:
 				const int selected_k = is_NOP_op ? lfr.ptg_last_k_NOP : ptg->alpha2index( lfr.infoPerPTG[lfr.nSelectedPTG].desiredDirection );
 				float max_dist = ptg->getRefDistance();
 				gl_robot_ptg_prediction->clear();
+				ptg->updateCurrentRobotVel(lfr.ptg_last_curRobotVelLocal);
 				ptg->renderPathAsSimpleLine(selected_k,*gl_robot_ptg_prediction,0.10, max_dist);
 				gl_robot_ptg_prediction->setColor_u8( mrpt::utils::TColor(0xff,0x00,0x00) );
 
