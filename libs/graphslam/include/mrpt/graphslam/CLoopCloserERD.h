@@ -685,7 +685,7 @@ class CLoopCloserERD:
 		bool m_partitions_full_update;
 
 		/**\brief Keep track of the evaluated partitions so they are not checked
-		 * again if nothing changed in them
+		 * again if nothing changed in them.
 		 */
 		std::map<int, vector_uint> m_partitionID_to_prev_nodes_list;
 

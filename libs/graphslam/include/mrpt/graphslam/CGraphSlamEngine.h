@@ -57,9 +57,6 @@
 
 #include "CEdgeCounter.h"
 
-#include "CMeasurementProvider.h"
-#include "CRawlogMP.h"
-#include "CRosTopicMP.h"
 #include "CNodeRegistrationDecider.h"
 #include "CEdgeRegistrationDecider.h"
 #include "CGraphSlamOptimizer.h"
@@ -205,9 +202,9 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		 * \param[in] config_file .ini file containing the configuration
 		 * parameters for the CGraphSlamEngine as well as the deciders/optimizer
 		 * classes that CGraphSlamEngine is using
-		 * \param[in] win CDisplayWindow3D for visualizing the graphSLAM operation.
-		 * \param[in] win_observer CObserver instance for monitoring keyboard and
-		 * mouse events issued by the user
+		 * \param[in] win_manager CwindowManager instance that includes a pointer
+		 * to a CDisplayWindow3D and a CWindowObserver instance for properly
+		 * interacting with the display window
 		 * \param[in] rawlog_fname .rawlog dataset file, containing the robot
 		 * measurements. CGraphSlamEngine supports both
 		 * <a href="http://www.mrpt.org/Rawlog_Format"> MRPT rwalog formats </a>
@@ -527,9 +524,8 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		/**\brief The graph object to be built and optimized. */
 		GRAPH_t m_graph;
 
-		/** Decider/Optimizer instances. Delegating the GRAPH_t tasks to these classes
-		 * makes up for a modular and configurable design
-		 */
+		/**\name Decider/Optimizer instances. Delegating the GRAPH_t tasks to these classes
+		 * makes up for a modular and configurable design */
 		/**\{*/
 		mrpt::graphslam::deciders::CNodeRegistrationDecider<GRAPH_t>* m_node_registrar;
 		mrpt::graphslam::deciders::CEdgeRegistrationDecider<GRAPH_t>* m_edge_registrar;
