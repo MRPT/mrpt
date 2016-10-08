@@ -20,7 +20,9 @@
 #include <mrpt/poses/CPosePDF.h>
 #include <mrpt/graphs/CNetworkOfPoses.h>
 #include <mrpt/system/string_utils.h>
-#include <mrpt/graphslam.h>
+
+#include <mrpt/graphslam/CGraphSlamEngine.h>
+#include <mrpt/graphslam/TGraphSlamResources.h>
 
 #include <mrpt/otherlibs/tclap/CmdLine.h>
 
@@ -93,81 +95,8 @@ int main(int argc, char **argv)
 		bool showHelp		 = argc>1 && !os::_strcmp(argv[1],"--help");
 		bool showVersion = argc>1 && !os::_strcmp(argv[1],"--version");
 
-		// vectors containing the properties of the available deciders/optimizers
-		vector<TRegistrationDeciderProps*> registrars_vec;
-		vector<TOptimizerProps*> optimizers_vec;
-
-		// registering the available deciders
-		{ // CFixedIntervalsNRD
-			TRegistrationDeciderProps* dec = new TRegistrationDeciderProps;
-			dec->name = "CFixedIntervalsNRD";
-			dec->description = "Register a new node if the distance from the previous node surpasses a predefined distance threshold. Uses odometry information for estimating the robot movement";
-			dec->type = "Node";
-			dec->rawlog_format = "Both";
-			dec->observations_used.push_back("CActionRobotMovement2D - Format #1");
-			dec->observations_used.push_back("CObservationOdometry - Format #2");
-
-			registrars_vec.push_back(dec);
-		}
-		{ // CICPCriteriaNRD
-			TRegistrationDeciderProps* dec = new TRegistrationDeciderProps;
-			dec->name = "CICPCriteriaNRD";
-			dec->description = "Register a new node if the distance from the previous node surpasses a predefined distance threshold. Uses 2D/3D RangeScans alignment for estimating the robot movement";
-			dec->type = "Node";
-			dec->rawlog_format = "#2 - Observation-only";
-			dec->observations_used.push_back("CObservation2DRangeScan - Format #2");
-			dec->observations_used.push_back("CObservation3DRangeScan - Format #2");
-
-			registrars_vec.push_back(dec);
-		}
-		{ // CEmptyNRD
-			TRegistrationDeciderProps* dec = new TRegistrationDeciderProps;
-			dec->name = "CEmptyNRD";
-			dec->description = "Empty Decider - does nothing when its class methods are called";
-			dec->type = "Node";
-			dec->rawlog_format = "Both";
-
-			registrars_vec.push_back(dec);
-		}
-		{ // CICPCriteriaERD
-			TRegistrationDeciderProps* dec = new TRegistrationDeciderProps;
-			dec->name = "CICPCriteriaERD";
-			dec->description = "Register a new edge by alligning the provided 2D/3D RangeScans of 2 nodes. Uses the goodness of the ICP Alignment as the criterium for adding a new edge";
-			dec->type = "Edge";
-			dec->rawlog_format = "Both";
-			dec->observations_used.push_back("CObservation2DRangeScan - Format #1, #2");
-			dec->observations_used.push_back("CObservation3DRangeScan - Format #2");
-
-			registrars_vec.push_back(dec);
-		}
-		{ // CEmptyERD
-			TRegistrationDeciderProps* dec = new TRegistrationDeciderProps;
-			dec->name = "CEmptyERD";
-			dec->description = "Empty Decider - does nothing when its class methods are called";
-			dec->type = "Edge";
-			dec->rawlog_format = "Both";
-
-			registrars_vec.push_back(dec);
-		}
-		{ // CLoopCloserERD
-			TRegistrationDeciderProps* dec = new TRegistrationDeciderProps;
-			dec->name = "CLoopCloserERD";
-			dec->description = "Partition the map and register *sets* of edges based on the Pairwise consistency matrix of each set.";
-			dec->type = "Edge";
-			dec->rawlog_format = "Both";
-			dec->observations_used.push_back("CObservation2DRangeScan - Format #1, #2");
-
-			registrars_vec.push_back(dec);
-		}
-
-		// registering the available optimizers
-		{ // CLevMarqGSO
-			TOptimizerProps* opt = new TOptimizerProps;
-			opt->name = "CLevMarqGSO";
-			opt->description = "Levenberg-Marqurdt non-linear graphSLAM solver";
-
-			optimizers_vec.push_back(opt);
-		}
+		// Instance for managing the available graphslam deciders optimizers
+		TGraphSlamResources resources;
 
 		// Input Validation
 		if (!cmd_line.parse( argc, argv ) ||  showVersion || showHelp) {
@@ -181,20 +110,20 @@ int main(int argc, char **argv)
 			bool list_registrars = false;
 
 			if (list_all_registrars.getValue()) {
-				dumpRegistrarsToConsole(registrars_vec, "all");
+				resources.dumpRegistrarsToConsole("all");
 				list_registrars = true;
 			}
 			if (list_node_registrars.getValue()) {
-				dumpRegistrarsToConsole(registrars_vec, "node");
+				resources.dumpRegistrarsToConsole("node");
 				list_registrars = true;
 			}
 			if (list_edge_registrars.getValue()) {
-				dumpRegistrarsToConsole(registrars_vec, "edge");
+				resources.dumpRegistrarsToConsole("edge");
 				list_registrars = true;
 			}
 
 			if (list_optimizers.getValue()) {
-				dumpOptimizersToConsole(optimizers_vec);
+				resources.dumpOptimizersToConsole();
 			}
 
 			if (list_registrars || list_optimizers.getValue()) {
@@ -207,13 +136,13 @@ int main(int argc, char **argv)
 		string node_reg = arg_node_reg.getValue();
 		string edge_reg = arg_edge_reg.getValue();
 		string optimizer = arg_optimizer.getValue();
-		ASSERTMSG_(checkRegistrationDeciderExists(registrars_vec, node_reg, "node"),
+		ASSERTMSG_(resources.checkRegistrationDeciderExists(node_reg, "node"),
 				format("\nNode Registration Decider %s is not available.\n",
 					node_reg.c_str()) );
-		ASSERTMSG_(checkRegistrationDeciderExists(registrars_vec, edge_reg, "edge"),
+		ASSERTMSG_(resources.checkRegistrationDeciderExists(edge_reg, "edge"),
 				format("\nEdge Registration Decider %s is not available.\n",
 					edge_reg.c_str()) );
-		ASSERTMSG_(checkOptimizerExists(optimizers_vec, optimizer),
+		ASSERTMSG_(resources.checkOptimizerExists(optimizer),
 				format("\nOptimizer %s is not available\n",
 					optimizer.c_str()) );
 
@@ -232,39 +161,6 @@ int main(int argc, char **argv)
 		if (disable_visuals.getValue()) { // enabling Visualization objects
 			logger.logStr(LVL_WARN, "Running on headless mode - Visuals disabled");
 		}
-
-		//
-		// assemble maps of available deciders/optimizers
-		//
-
-		// node registration deciders
-		typedef std::map<std::string, CNodeRegistrationDecider<CNetworkOfPoses2DInf>*(*)()> node_regs_t;
-
-		node_regs_t node_regs_map;
-		node_regs_map["CFixedIntervalsNRD"] =
-			&createNodeRegistrationDecider<CFixedIntervalsNRD<CNetworkOfPoses2DInf> >;
-		node_regs_map["CEmptyNRD"] =
-			&createNodeRegistrationDecider<CEmptyNRD<CNetworkOfPoses2DInf> >;
-		node_regs_map["CICPCriteriaNRD"] =
-			&createNodeRegistrationDecider<CICPCriteriaNRD<CNetworkOfPoses2DInf> >;
-
-		// edge registration deciders
-		typedef std::map<std::string, CEdgeRegistrationDecider<CNetworkOfPoses2DInf>*(*)()> edge_regs_t;
-
-		edge_regs_t edge_regs_map;
-		edge_regs_map["CICPCriteriaERD"] =
-			&createEdgeRegistrationDecider<CICPCriteriaERD<CNetworkOfPoses2DInf> >;
-		edge_regs_map["CEmptyERD"] =
-			&createEdgeRegistrationDecider<CEmptyERD<CNetworkOfPoses2DInf> >;
-		edge_regs_map["CLoopCloserERD"] =
-			&createEdgeRegistrationDecider<CLoopCloserERD<CNetworkOfPoses2DInf> >;
-
-		// optimizers
-		typedef std::map<std::string, CGraphSlamOptimizer<CNetworkOfPoses2DInf>*(*)()> optimizers_t;
-
-		optimizers_t optimizers_map;
-		optimizers_map["CLevMarqGSO"] =
-			&createGraphSlamOptimizer<CLevMarqGSO<CNetworkOfPoses2DInf> >;
 
 		logger.logFmt(LVL_INFO, "Node registration decider: %s", node_reg.c_str());
 		logger.logFmt(LVL_INFO, "Edge registration decider: %s", edge_reg.c_str());
@@ -288,9 +184,9 @@ int main(int argc, char **argv)
 				rawlog_fname,
 				ground_truth_fname,
 				graphslam_handler.win_manager,
-				node_regs_map[node_reg](),
-				edge_regs_map[edge_reg](),
-				optimizers_map[optimizer]());
+				resources.node_regs_map[node_reg](),
+				resources.edge_regs_map[edge_reg](),
+				resources.optimizers_map[optimizer]());
 
 		// print the problem parameters
 		graphslam_handler.printParams();

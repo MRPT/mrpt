@@ -16,6 +16,7 @@
 #include <mrpt/gui/CBaseGUIWindow.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/gui/CDisplayWindowPlots.h>
+#include <mrpt/opengl/stock_objects.h>
 #include <mrpt/opengl/CPlanarLaserScan.h> // It's in the lib mrpt-maps now
 #include <mrpt/opengl/CPointCloud.h>
 #include <mrpt/opengl/CRenderizable.h>
@@ -23,6 +24,7 @@
 #include <mrpt/opengl/CCamera.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/CSetOfObjects.h>
+#include <mrpt/opengl/CSetOfLines.h>
 #include <mrpt/obs/CActionRobotMovement2D.h>
 #include <mrpt/obs/CActionRobotMovement3D.h>
 #include <mrpt/obs/CObservationOdometry.h>

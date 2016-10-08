@@ -42,8 +42,7 @@
 #include "graphslam/CWindowObserver.h"
 #include "graphslam/TSlidingWindow.h"
 
-// Supplementary Functions
-#include "graphslam/supplementary_funs.h"
+#include "graphslam/TGraphSlamResources.h"
 
 #include "graphslam/CGraphSlamEngine.h"
 
