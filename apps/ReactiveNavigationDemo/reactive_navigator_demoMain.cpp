@@ -591,6 +591,12 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(wxWindow* parent,wxWi
 	gl_rel_target->insertPoint(0,0,0);
 	m_plotLocalView->m_openGLScene->insert(gl_rel_target);
 
+	gl_rel_robot = mrpt::opengl::CPointCloud::Create();
+	gl_rel_robot->setPointSize(5);
+	gl_rel_robot->setColor_u8(TColor(0, 0, 0));
+	gl_rel_robot->insertPoint(0, 0, 0);
+	m_plotLocalView->m_openGLScene->insert(gl_rel_robot);
+
 	m_plotLocalView->m_openGLScene->insert( mrpt::opengl::stock_objects::CornerXYSimple(0.1,2) );
 	m_plotLocalView->m_openGLScene->insert( gl_robot_local );
 
@@ -993,6 +999,8 @@ void reactive_navigator_demoframe::simulateOneStep(double time_step)
 
 		// TP Target:
 		gl_rel_target->setLocation( lfr.infoPerPTG[sel_PTG].TP_Target );
+		// TP Robot:
+		gl_rel_robot->setLocation(lfr.infoPerPTG[sel_PTG].TP_Robot);
 
 	} // end valid PTG selected
 

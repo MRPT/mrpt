@@ -794,7 +794,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 
 	// Draw TP-obstacles
 	// --------------------------------
-	for (unsigned int nPTG=0;nPTG<log.nPTGs;nPTG++)
+	for (unsigned int nPTG=0;nPTG<log.infoPerPTG.size();nPTG++)  // log.infoPerPTG.size() may be != nPTGs in the last entry is used for "NOP cmdvel"
 	{
 		CDisplayWindowPlotsPtr &win = m_mywins[format("PTG%u",nPTG)];
 		if (!win)  {
@@ -849,6 +849,8 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 
 		// Target:
 		win->plot(make_vector<1,double>(pI.TP_Target.x),make_vector<1,double>(pI.TP_Target.y),"k.9", "TPTARGET");
+		// Current robot pt (normally in pure reactive, at (0,0)):
+		win->plot(make_vector<1, double>(pI.TP_Robot.x), make_vector<1, double>(pI.TP_Robot.y), "r.7", "TPROBOT");
 
 		// In the case of ND algorithm: draw gaps
 		if (pI.HLFR && IS_CLASS(pI.HLFR, CLogFileRecord_ND))
