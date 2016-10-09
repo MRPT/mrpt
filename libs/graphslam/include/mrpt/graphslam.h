@@ -43,7 +43,8 @@
 #include "graphslam/misc/TSlidingWindow.h"
 
 // App-Related headers
-#include "graphslam/app_related/TGraphSlamResources.h"
+#include "graphslam/app_related/TGraphSlamOptions.h"
+#include "graphslam/app_related/CGraphSlamHandler.h"
 
 // Main graphslam-engine header
 #include "graphslam/CGraphSlamEngine.h"

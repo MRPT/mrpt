@@ -1,6 +1,18 @@
-#include "TGraphSlamHandler.h"
+/* +---------------------------------------------------------------------------+
+   |                     Mobile Robot Programming Toolkit (MRPT)               |
+   |                          http://www.mrpt.org/                             |
+   |                                                                           |
+   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | See: http://www.mrpt.org/Authors - All rights reserved.                   |
+   | Released under BSD License. See details in http://www.mrpt.org/License    |
+   +---------------------------------------------------------------------------+ */
 
-TGraphSlamHandler::TGraphSlamHandler() {
+// Implementation file for CGraphSlamHandler class
+
+#include "graphslam-precomp.cpp"
+#include <mrpt/graphslam/apps_related/CGraphSlamHandler.h>
+
+CGraphSlamHandler::CGraphSlamHandler() {
 	using namespace mrpt::system;
 
 	this->logger = NULL;
@@ -9,7 +21,9 @@ TGraphSlamHandler::TGraphSlamHandler() {
 	win = NULL;
 }
 
-void TGraphSlamHandler::setOutputLoggerPtr(mrpt::utils::COutputLogger* logger) {
+//////////////////////////////////////////////////////////////////////////////
+
+void CGraphSlamHandler::setOutputLoggerPtr(mrpt::utils::COutputLogger* logger) {
 	MRPT_START;
 
 	ASSERT_(logger);
@@ -18,7 +32,8 @@ void TGraphSlamHandler::setOutputLoggerPtr(mrpt::utils::COutputLogger* logger) {
 	MRPT_END;
 }
 
-TGraphSlamHandler::~TGraphSlamHandler() {
+//////////////////////////////////////////////////////////////////////////////
+CGraphSlamHandler::~CGraphSlamHandler() {
 	MRPT_START;
 
 	using namespace mrpt::utils;
@@ -46,7 +61,9 @@ TGraphSlamHandler::~TGraphSlamHandler() {
 	MRPT_END;
 }
 
-void TGraphSlamHandler::readConfigFname(const std::string& fname) {
+//////////////////////////////////////////////////////////////////////////////
+
+void CGraphSlamHandler::readConfigFname(const std::string& fname) {
 	MRPT_START;
 	using namespace mrpt::utils;
 
@@ -87,13 +104,15 @@ void TGraphSlamHandler::readConfigFname(const std::string& fname) {
 
 	MRPT_END;
 }
+//////////////////////////////////////////////////////////////////////////////
 
-void TGraphSlamHandler::printParams() const {
+void CGraphSlamHandler::printParams() const {
 	std::cout << this->getParamsAsString() << std::endl;
 
 }
 
-void TGraphSlamHandler::getParamsAsString(std::string* str) const {
+//////////////////////////////////////////////////////////////////////////////
+void CGraphSlamHandler::getParamsAsString(std::string* str) const {
 	using namespace std;
 
 	ASSERT_(str);
@@ -131,18 +150,24 @@ void TGraphSlamHandler::getParamsAsString(std::string* str) const {
 
 	*str = ss_out.str();
 }
-
-void TGraphSlamHandler::setRawlogFname(std::string rawlog_fname) {
-	this->rawlog_fname = rawlog_fname;
-}
-
-std::string TGraphSlamHandler::getParamsAsString() const {
+//////////////////////////////////////////////////////////////////////////////
+std::string CGraphSlamHandler::getParamsAsString() const {
 	std::string str;
 	this->getParamsAsString(&str);
 	return str;
 }
 
-void TGraphSlamHandler::initVisualization() {
+//////////////////////////////////////////////////////////////////////////////
+void CGraphSlamHandler::setRawlogFname(std::string rawlog_fname) {
+	using namespace mrpt::utils;
+
+	logger->logFmt(LVL_DEBUG, "Successfully fetched rawlog filename");
+	this->rawlog_fname = rawlog_fname;
+}
+
+
+//////////////////////////////////////////////////////////////////////////////
+void CGraphSlamHandler::initVisualization() {
 	MRPT_START;
 
 	using namespace mrpt::opengl;
@@ -162,8 +187,8 @@ void TGraphSlamHandler::initVisualization() {
 		win->unlockAccess3DScene();
 	}
 
-	this->logFmt(LVL_DEBUG, "Initialized CDisplayWindow3D...");
-	this->logFmt(LVL_DEBUG, "Listening to CDisplayWindow3D events...");
+	logger->logFmt(LVL_DEBUG, "Initialized CDisplayWindow3D...");
+	logger->logFmt(LVL_DEBUG, "Listening to CDisplayWindow3D events...");
 
 	// pass the window and the observer pointers to the CWindowManager instance
 	win_manager = new mrpt::graphslam::CWindowManager();
@@ -173,9 +198,10 @@ void TGraphSlamHandler::initVisualization() {
 	MRPT_END;
 }
 
-bool TGraphSlamHandler::queryObserverForEvents() {
+//////////////////////////////////////////////////////////////////////////////
+bool CGraphSlamHandler::queryObserverForEvents() {
 	MRPT_START;
-	
+
 	std::map<std::string, bool> events_occurred;
 	win_observer->returnEventsStruct(
 			&events_occurred,
@@ -185,3 +211,4 @@ bool TGraphSlamHandler::queryObserverForEvents() {
 	return request_to_exit;
 	MRPT_END;
 }
+//////////////////////////////////////////////////////////////////////////////

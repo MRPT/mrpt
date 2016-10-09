@@ -7,8 +7,8 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#ifndef TGRAPHSLAMRESOURCES_H
-#define TGRAPHSLAMRESOURCES_H
+#ifndef TGRAPHSLAMOPTIONS_H
+#define TGRAPHSLAMOPTIONS_H
 
 #include <mrpt/system/filesystem.h>
 #include <mrpt/utils/mrpt_macros.h>
@@ -71,7 +71,7 @@ struct GRAPHSLAM_IMPEXP TOptimizerProps {
  *
  * \ingroup mrpt_graphslam_grp
  */
-struct GRAPHSLAM_IMPEXP TGraphSlamResources {
+struct GRAPHSLAM_IMPEXP TGraphSlamOptions {
 	/**\name handy typedefs for the creation of deciders/optimzer instances from
 	 * the corresponding strings
 	 */
@@ -94,9 +94,9 @@ struct GRAPHSLAM_IMPEXP TGraphSlamResources {
 	// methods
 	//
 	/**\brief Constructor */
-	TGraphSlamResources();
+	TGraphSlamOptions();
 	/**\brief Destructor */
-	~TGraphSlamResources();
+	~TGraphSlamOptions();
 	/**\brief Create the necessary mappings from strings to the corresponding
 	 * instance creation funtors.
 	 *
@@ -201,4 +201,4 @@ struct GRAPHSLAM_IMPEXP TGraphSlamResources {
 
 } } } // END OF NAMESPACES
 
-#endif /* end of include guard: TGRAPHSLAMRESOURCES_H */
+#endif /* end of include guard: TGRAPHSLAMOPTIONS_H */

@@ -6,8 +6,8 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
-#ifndef TGRAPHSLAMHANDLER_H
-#define TGRAPHSLAMHANDLER_H
+#ifndef CGRAPHSLAMHANDLER_H
+#define CGRAPHSLAMHANDLER_H
 
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/utils/CConfigFile.h>
@@ -16,6 +16,7 @@
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/threads.h>
 
+#include <mrpt/graphslam/link_pragmas.h>
 #include <mrpt/graphslam/misc/CWindowObserver.h>
 #include <mrpt/graphslam/misc/CWindowManager.h>
 
@@ -23,24 +24,51 @@
 #include <sstream>
 #include <iostream>
 
-/** Class to manage variables and methods general to the graphslam-engine
- * application.
+/**\brief Manage variables and methods related to applications executing
+ * graphSLAM using the mrpt-graphslam API
+ *
+ * As a quick overview, class instances deal with the following:
+ * - Manage user interaction with the visuals (e.g. CDisplayWindow instance)
+ * - Manage general user options (e.g. user output directory preferences)
  */
-class TGraphSlamHandler : mrpt::utils::COutputLogger
-{
+class GRAPHSLAM_IMPEXP CGraphSlamHandler {
 public:
-	TGraphSlamHandler();
-	~TGraphSlamHandler();
+	//
+	// Ctor, Dtor
+	//
+	CGraphSlamHandler();
+	~CGraphSlamHandler();
 
+	//
+	// Class methods
+	//
+	/**\brief Read configuration variables for the current graphSLAM execution
+	 * from a .ini file
+	 *
+	 * \sa printParams
+	 */
 	void readConfigFname(const std::string& fname);
+	/**\brief Print in a formatted manner the general configuraiton variables for
+	 * the current graphSLAM execution
+	 *
+	 * \sa readConfigFname, getParamsAsString
+	 */
 	void printParams() const;
+	/**\name Fetch the general configuraiton variables for
+	 * the current graphSLAM execution
+	 */
+	/**\{*/
 	void getParamsAsString(std::string* str) const;
 	std::string getParamsAsString() const;
+	/**\}*/
+	/**\brief Set a logging instance */
 	void setOutputLoggerPtr(mrpt::utils::COutputLogger* logger);
+	/**\brief Initialize visualization (e.g. the CDisplayWindow instance that
+	 * shows the overall graphSLAM execution)
+	 */
 	void initVisualization();
-
+	/**\brief Set the rawlog filename */
 	void setRawlogFname(std::string rawlog_fname);
-
 	/**\brief Query the CWindowObserver instance for any pressed keys that might
 	 * be of interest (e.g. <C-c>)
 	 *
@@ -48,6 +76,9 @@ public:
 	 */
 	bool queryObserverForEvents();
 
+	//
+	// Class variable members 
+	//
 	std::string output_dir_fname;
 	bool user_decides_about_output_dir;
 
@@ -67,4 +98,4 @@ public:
 };
 
 
-#endif /* end of include guard: TGRAPHSLAMHANDLER_H */
+#endif /* end of include guard: CGRAPHSLAMHANDLER_H */
