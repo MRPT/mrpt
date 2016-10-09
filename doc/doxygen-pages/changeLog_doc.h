@@ -50,16 +50,21 @@
 			- Added missing method mrpt::poses::CPose2D::inverseComposePoint() for consistency with CPose3D
 			- New class mrpt::synch::CCriticalSectionRecursive
 			- New class mrpt::utils::COutputLogger replaces the classes mrpt::utils::CDebugOutputCapable (deprecated) and mrpt::utils::CLog (removed).
-			- New macros for much more versatily logging: 
+			- New macros for much more versatily logging:
 				- MRPT_LOG_DEBUG(), MRPT_LOG_INFO(), MRPT_LOG_WARN(), MRPT_LOG_ERROR()
 				- MRPT_LOG_DEBUG_STREAM, MRPT_LOG_INFO_STREAM, MRPT_LOG_WARN_STREAM, MRPT_LOG_ERROR_STREAM
 			- New functions for polynomial roots: see \ref polynomial_roots
+			- New functions for signal filtering: see \ref filtering_grp
 			- New classes mrpt::math::CAtan2LookUpTable, mrpt::math::CAtan2LookUpTableMultiRes
 			- [API change] The following functions are no longer static methods: (since their classes are now derived from the state-aware mrpt::utils::COutputLogger)
 				- mrpt::math::RANSAC_Template::execute()
 				- mrpt::math::CLevenbergMarquardtTempl::execute()
 			- Deleted methods in Eigen-extensions: leftDivideSquare(), rightDivideSquare()
 			- Removed support for **named** semaphores in mrpt::synch::CSemaphore
+			- new method mrpt::utils::CTimeLogger::getLastTime()
+			- Removed mrpt::utils::CStartUpClassesRegister, replaced by the new macro MRPT_INITIALIZER()
+			- New class mrpt::utils::CRateTimer
+			- mrpt::poses::CRobot2DPoseEstimator now uses a more generic odometry-based velocity model (vx,vy,omega).
 		- \ref mrpt_bayes_grp
 			-  [API change] `verbose` is no longer a field of mrpt::bayes::CParticleFilter::TParticleFilterOptions. Use the setVerbosityLevel() method of the CParticleFilter class itself.
 		- \ref mrpt_gui_grp
@@ -69,10 +74,15 @@
 			- New classes for 2D robot simulation:
 				- mrpt::kinematics::CVehicleSimul_DiffDriven
 				- mrpt::kinematics::CVehicleSimul_Holo
+			- New classes for 2D robot kinematic motion commands. See children of mrpt::kinematics::CVehicleVelCmd
 		- \ref mrpt_maps_grp
 			- mrpt::maps::COccupancyGridMap2D::loadFromBitmapFile() correct description of `yCentralPixel` parameter.
 			- mrpt::maps::CPointsMap `liblas` import/export methods are now in a separate header. See \ref mrpt_maps_liblas_grp and \ref dep-liblas
 		- \ref mrpt_obs_grp
+			- [ABI change] mrpt::obs::CObservation2DRangeScan
+				- range scan vectors are now protected for safety.
+				- New getter/setter methods.
+				- backwards-compatible proxies added for read-only from range scan members.
 			- [ABI change] mrpt::obs::CObservation3DRangeScan:
 				- Now uses more SSE2 optimized code
 				- Depth filters are now available for mrpt::obs::CObservation3DRangeScan::project3DPointsFromDepthImageInto() and  mrpt::obs::CObservation3DRangeScan::convertTo2DScan()
@@ -89,9 +99,10 @@
 				- refactored to expose more methods and allow changing parameters via its constructor.
 				- Now supports reading from an IR, RGB and Depth channels independenty.
 			-  mrpt::hwdrivers::CHokuyoURG now can optionally return intensity values.
-			- Deleted old, unused classes: 
+			- Deleted old, unused classes:
 				- mrpt::hwdrivers::CBoardIR
 				- mrpt::hwdrivers::CBoardDLMS
+				- mrpt::hwdrivers::CPtuHokuyo
 			- mrpt::hwdrivers::CHokuyoURG no longer as a "verbose" field. It's superseded now by the COutputLogger interface.
 		- \ref mrpt_maps_grp
 			- mrpt::maps::CMultiMetricMapPDF added method CMultiMetricMapPDF::prediction_and_update_pfAuxiliaryPFStandard().
@@ -123,6 +134,9 @@
 		- Fix point into polygon checking not working for concave polygons. Now, mrpt::math::TPolygon2D::contains() uses the winding number test which works for any geometry.
 		- Fix inconsistent internal state after externalizing mrpt::obs::CObservation3DRangeScan
 		- Fix a long outstanding bug regarding losing of keystroke events in CDisplayWindow3D windows (Closes #13 again)
+		- Fix wrong units for negative numbers in mrpt::system::unitsFormat()
+		- Fix potential thread-unsafe conditions while inserting a mrpt::obs::CObservation2DRangeScan into a pointmap with SSE2 optimizations enabled.
+		- CStream: Fix memory leak if an exception (e.g. EOF) is found during object deserialization.
 
 <hr>
 <a name="1.4.0">

@@ -74,6 +74,8 @@ CSimplePointsMap::~CSimplePointsMap()
  ---------------------------------------------------------------*/
 void CSimplePointsMap::reserve(size_t newLength)
 {
+	newLength = mrpt::utils::length2length4N(newLength);
+
 	x.reserve( newLength );
 	y.reserve( newLength );
 	z.reserve( newLength );
@@ -83,6 +85,7 @@ void CSimplePointsMap::reserve(size_t newLength)
 //  and old contents are not changed.
 void CSimplePointsMap::resize(size_t newLength)
 {
+	this->reserve(newLength); // to ensure 4N capacity
 	x.resize( newLength, 0 );
 	y.resize( newLength, 0 );
 	z.resize( newLength, 0 );
@@ -93,6 +96,7 @@ void CSimplePointsMap::resize(size_t newLength)
 //  and leaving all points to default values.
 void CSimplePointsMap::setSize(size_t newLength)
 {
+	this->reserve(newLength); // to ensure 4N capacity
 	x.assign( newLength, 0);
 	y.assign( newLength, 0);
 	z.assign( newLength, 0);
@@ -156,7 +160,7 @@ void  CSimplePointsMap::readFromStream(mrpt::utils::CStream &in, int version)
 			uint32_t n;
 			in >> n;
 
-			x.resize(n); y.resize(n); z.resize(n);
+			this->resize(n);
 
 			if (n>0)
 			{
@@ -192,9 +196,7 @@ void  CSimplePointsMap::readFromStream(mrpt::utils::CStream &in, int version)
 			uint32_t n;
 			in >> n;
 
-			x.resize(n);
-			y.resize(n);
-			z.resize(n);
+			this->resize(n);
 
 			if (n>0)
 			{

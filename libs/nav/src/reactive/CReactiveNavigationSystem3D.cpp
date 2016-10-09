@@ -178,7 +178,7 @@ void CReactiveNavigationSystem3D::STEP1_InitPTGs()
 				sections used to model the robot.
 
 *************************************************************************/
-bool CReactiveNavigationSystem3D::STEP2_SenseObstacles()
+bool CReactiveNavigationSystem3D::implementSenseObstacles(mrpt::system::TTimeStamp &obstacles_timestamp)
 {
 	//-------------------------------------------------------------------
 	// The user must implement its own method to load the obstacles from
@@ -189,7 +189,11 @@ bool CReactiveNavigationSystem3D::STEP2_SenseObstacles()
 
 	m_timelogger.enter("navigationStep.STEP2_LoadAndSortObstacle");
 
-	m_robot.senseObstacles( m_WS_Obstacles_unsorted );
+	{
+		CTimeLoggerEntry tle(m_timlog_delays, "senseObstacles()");
+		if (!m_robot.senseObstacles(m_WS_Obstacles_unsorted, obstacles_timestamp))
+			return false;
+	}
 
 	// Empty slice maps:
 	const size_t nSlices = m_robotShape.size();
@@ -235,7 +239,8 @@ bool CReactiveNavigationSystem3D::STEP2_SenseObstacles()
 *************************************************************************/
 void CReactiveNavigationSystem3D::STEP3_WSpaceToTPSpace(
 	const size_t ptg_idx,
-	std::vector<double> &out_TPObstacles )
+	std::vector<double> &out_TPObstacles,
+	const mrpt::poses::CPose2D &rel_pose_PTG_origin_wrt_sense)
 {
 	ASSERT_EQUAL_(m_WS_Obstacles_inlevels.size(),m_robotShape.size())
 
@@ -247,7 +252,8 @@ void CReactiveNavigationSystem3D::STEP3_WSpaceToTPSpace(
 
 		for (size_t obs=0;obs<nObs;obs++)
 		{
-			const float ox = xs[obs], oy = ys[obs];
+			double ox, oy;
+			rel_pose_PTG_origin_wrt_sense.composePoint(xs[obs], ys[obs], ox, oy);
 			m_ptgmultilevel[ptg_idx].PTGs[j]->updateTPObstacle(ox, oy, out_TPObstacles);
 		}
 	}

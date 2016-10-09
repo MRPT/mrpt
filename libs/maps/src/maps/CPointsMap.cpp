@@ -12,7 +12,6 @@
 #include <mrpt/utils/CConfigFile.h>
 #include <mrpt/utils/CTicTac.h>
 #include <mrpt/utils/CTimeLogger.h>
-#include <mrpt/utils/CStartUpClassesRegister.h>
 #include <mrpt/system/os.h>
 #include <mrpt/math/geometry.h>
 #include <mrpt/utils/CStream.h>
@@ -61,9 +60,6 @@ IMPLEMENTS_VIRTUAL_SERIALIZABLE(CPointsMap, CMetricMap,mrpt::maps)
 float CPointsMap::COLOR_3DSCENE_R = 0;
 float CPointsMap::COLOR_3DSCENE_G = 0;
 float CPointsMap::COLOR_3DSCENE_B = 1;
-
-extern CStartUpClassesRegister  mrpt_maps_class_reg;
-static const int dumm = mrpt_maps_class_reg.do_nothing(); // Avoid compiler removing this class in static linking
 
 /*---------------------------------------------------------------
 						Constructor
@@ -384,6 +380,8 @@ void CPointsMap::determineMatching2D(
 
 	// We'll assume that the real allocated memory in the source buffers at least have room for a maximum
 	//  of 3 more floats, and pad with zeroes there (yeah, fuck correct-constness....)
+	// JLBC OCT/2016: resize() methods in maps have been modified to enforce capacities to be 4*N by design, 
+	// but will leave this code here just in case (for some edge cases?)
 	if ( otherMap->x.capacity()<nLocalPoints_4align ||
 		 otherMap->y.capacity()<nLocalPoints_4align )
 	{
@@ -950,6 +948,8 @@ void CPointsMap::boundingBox(
 
 			// We'll assume that the real allocated memory in the source buffers at least have room for a maximum
 			//  of 3 more floats, and pad with zeroes there (yeah, fuck correct-constness....)
+			// JLBC OCT/2016: resize() methods in maps have been modified to enforce capacities to be 4*N by design, 
+			// but will leave this code here just in case (for some edge cases?)
 			if ( x.capacity()<nPoints_4align ||
 				 y.capacity()<nPoints_4align ||
 				 z.capacity()<nPoints_4align )

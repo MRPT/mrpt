@@ -9,6 +9,7 @@
 #pragma once
 
 #include <mrpt/kinematics/CVehicleSimulVirtualBase.h>
+#include <mrpt/kinematics/CVehicleVelCmd_DiffDriven.h>
 
 namespace mrpt
 {
@@ -21,7 +22,7 @@ namespace kinematics
 	class KINEMATICS_IMPEXP CVehicleSimul_DiffDriven : public CVehicleSimulVirtualBase
 	{
 	public:
-		enum { VEL_CMD_LENGTH = 2 };
+		typedef CVehicleVelCmd_DiffDriven  kinematic_cmd_t;
 
 		CVehicleSimul_DiffDriven();
 		virtual ~CVehicleSimul_DiffDriven();
@@ -44,18 +45,13 @@ namespace kinematics
 			*/
 		void  movementCommand(double lin_vel, double ang_vel );
 
-		/** Sends a velocity command to the robot. The number of components and their meaning depends on the derived class */
-		void sendVelCmd(const std::vector<double> &cmd_vel) MRPT_OVERRIDE
-		{
-			ASSERT_EQUAL_(cmd_vel.size(), getVelCmdLength());
-			movementCommand(cmd_vel[0],cmd_vel[1]);
+		void sendVelCmd(const CVehicleVelCmd &cmd_vel) MRPT_OVERRIDE {
+			const kinematic_cmd_t* cmd = reinterpret_cast<const kinematic_cmd_t*>(&cmd_vel);
+			ASSERTMSG_(cmd, "Wrong vehicle kinematic class, expected `CVehicleVelCmd_DiffDriven`");
+			movementCommand(cmd->lin_vel, cmd->ang_vel);
 		}
-
-		size_t getVelCmdLength() const  MRPT_OVERRIDE {
-			return VEL_CMD_LENGTH;
-		}
-		std::string getVelCmdDescription() const  MRPT_OVERRIDE {
-			return std::string("vel omega");
+		CVehicleVelCmdPtr getVelCmdType() const MRPT_OVERRIDE {
+			return CVehicleVelCmdPtr( new kinematic_cmd_t() );
 		}
 
 	private:

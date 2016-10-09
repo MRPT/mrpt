@@ -23,9 +23,9 @@ mrpt::vision::pnp::ppnp::ppnp(const Eigen::MatrixXd& obj_pts, const Eigen::Matri
 	C = cam_intrinsic;
 }
 
-bool mrpt::vision::pnp::ppnp::compute_pose(Eigen::Matrix3d& R, Eigen::VectorXd& t, int n)
+bool mrpt::vision::pnp::ppnp::compute_pose(Eigen::Matrix3d& R, Eigen::Vector3d& t, int n)
 {
-	double tol=0.0001;
+	double tol=0.00001;
 	
 	Eigen::MatrixXd I=Eigen::MatrixXd::Identity(n, n), A(n,n), Y(n,3), E(n,3), E_old(n,3), U,V, I3 =Eigen::MatrixXd::Identity(3, 3), PR, Z=Eigen::MatrixXd::Zero(n, n);
 	Eigen::VectorXd e(n), II(n), c(3), Zmindiag(n);

@@ -428,10 +428,11 @@ public:
 	gui::CDisplayWindow3D			window;
 	COpenGLScenePtr					scene;
 	
-	bool getCurrentPoseAndSpeeds( mrpt::math::TPose2D &curPose, mrpt::math::TTwist2D &curVel)
+	bool getCurrentPoseAndSpeeds( mrpt::math::TPose2D &curPose, mrpt::math::TTwist2D &curVel, mrpt::system::TTimeStamp &timestamp) MRPT_OVERRIDE
 	{
 		curPose = robotSim.getCurrentGTPose();
 		curVel  = robotSim.getCurrentGTVel();
+		timestamp = mrpt::system::now();
 		return true;
 	}
 
@@ -443,7 +444,7 @@ public:
 	}
 
 
-	bool senseObstacles( mrpt::maps::CSimplePointsMap 	&obstacles )
+	bool senseObstacles( mrpt::maps::CSimplePointsMap 	&obstacles, mrpt::system::TTimeStamp &timestamp ) MRPT_OVERRIDE
 	{
 		last_pose = new_pose;
 		new_pose = robotSim.getCurrentGTPose();
@@ -460,6 +461,7 @@ public:
 
 			obstacles.insertObservation(&lasers[i].m_scan);
 		}
+		timestamp = mrpt::system::now();
 
 		//Depth scans
 		for (unsigned int i=0; i<kinects.size();i++)
@@ -673,7 +675,8 @@ public:
 
 		//One scan is simulated
 		CSimplePointsMap	auxpoints;
-		this->senseObstacles( auxpoints );
+		mrpt::system::TTimeStamp auxpoints_time;
+		this->senseObstacles( auxpoints, auxpoints_time);
 
 		robotpose3d.z() = 0;
 		//The laserscans are inserted

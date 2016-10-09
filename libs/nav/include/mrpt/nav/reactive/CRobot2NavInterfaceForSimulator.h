@@ -31,14 +31,15 @@ namespace mrpt
 	public:
 		CRobot2NavInterfaceForSimulator_Holo(mrpt::kinematics::CVehicleSimul_Holo &simul) : m_simul(simul),m_simul_time_start(.0) {}
 	
-		bool getCurrentPoseAndSpeeds(mrpt::math::TPose2D &curPose, mrpt::math::TTwist2D &curVel) MRPT_OVERRIDE
+		bool getCurrentPoseAndSpeeds(mrpt::math::TPose2D &curPose, mrpt::math::TTwist2D &curVel, mrpt::system::TTimeStamp &timestamp) MRPT_OVERRIDE
 		{
 			curPose = m_simul.getCurrentGTPose();
 			curVel  = m_simul.getCurrentGTVel();
+			timestamp = mrpt::system::now();
 			return true; // ok
 		}
 
-		bool changeSpeeds(const std::vector<double> &vel_cmd) MRPT_OVERRIDE
+		virtual bool changeSpeeds(const mrpt::kinematics::CVehicleVelCmd &vel_cmd) MRPT_OVERRIDE
 		{
 			m_simul.sendVelCmd(vel_cmd);
 			return true; // ok
@@ -76,14 +77,15 @@ namespace mrpt
 	public:
 		CRobot2NavInterfaceForSimulator_DiffDriven(mrpt::kinematics::CVehicleSimul_DiffDriven &simul) : m_simul(simul),m_simul_time_start(.0) {}
 	
-		bool getCurrentPoseAndSpeeds(mrpt::math::TPose2D &curPose, mrpt::math::TTwist2D &curVel) MRPT_OVERRIDE
+		bool getCurrentPoseAndSpeeds(mrpt::math::TPose2D &curPose, mrpt::math::TTwist2D &curVel, mrpt::system::TTimeStamp &timestamp) MRPT_OVERRIDE
 		{
 			curPose = m_simul.getCurrentGTPose();
 			curVel  = m_simul.getCurrentGTVel();
+			timestamp = mrpt::system::now();
 			return true; // ok
 		}
 
-		bool changeSpeeds(const std::vector<double> &vel_cmd) MRPT_OVERRIDE
+		bool changeSpeeds(const mrpt::kinematics::CVehicleVelCmd &vel_cmd) MRPT_OVERRIDE
 		{
 			m_simul.sendVelCmd(vel_cmd);
 			return true; // ok
@@ -91,8 +93,9 @@ namespace mrpt
 
 		bool stop() MRPT_OVERRIDE
 		{
-			std::vector<double> cmd_vel(2, 0.0);
-			m_simul.sendVelCmd(cmd_vel);
+			mrpt::kinematics::CVehicleVelCmd_DiffDriven cmd;
+			cmd.setToStop();
+			m_simul.sendVelCmd(cmd);
 			return true;
 		}
 		/** See CRobot2NavInterface::getNavigationTime(). In this class, simulation time is returned instead of wall-clock time. */

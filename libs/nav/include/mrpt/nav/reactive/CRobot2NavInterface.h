@@ -13,6 +13,10 @@
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/utils/CConfigFileBase.h>
 #include <mrpt/utils/CTicTac.h>
+#include <mrpt/system/datetime.h>
+#include <mrpt/kinematics/CVehicleVelCmd.h>
+#include <mrpt/kinematics/CVehicleVelCmd_DiffDriven.h>
+#include <mrpt/kinematics/CVehicleVelCmd_Holo.h>
 
 #include <vector>
 
@@ -47,43 +51,50 @@ namespace mrpt
 		*   return the latest values from a cache which is updated in a parallel thread.
 		*
 		* \param[out] curPose The latest robot pose, in world coordinates. (x,y: meters, phi: radians)
-		* \param[out] curVel  The latest robot velocity vector, in world coordinates. (vx,vy: m/s, omega: rad/s)
+		* \param[out] curVelGlobal  The latest robot velocity vector, in world coordinates. (vx,vy: m/s, omega: rad/s)
+		* \param[out] timestamp  The timestamp for the read pose and velocity values. Use mrpt::system::now() unless you have something more accurate.
 		* \return false on any error retrieving these values from the robot.
 		*/
-		virtual bool getCurrentPoseAndSpeeds(mrpt::math::TPose2D &curPose, mrpt::math::TTwist2D &curVel) = 0;
+		virtual bool getCurrentPoseAndSpeeds(mrpt::math::TPose2D &curPose, mrpt::math::TTwist2D &curVelGlobal, mrpt::system::TTimeStamp &timestamp ) = 0;
 
 		/** Sends a velocity command to the robot.
-		 * Length and meaning of this vector is PTG-dependent.
-		 * See children classes of mrpt::nav::CParameterizedTrajectoryGenerator, but the most common cases will be:
-		 * - Differential/Ackerman vehicle: `vel_cmd=[v w]`. See mrpt::kinematics::CVehicleSimul_DiffDriven::movementCommand() for more details.
-		 * - Holonomic vehicle: `vel_cmd=[vel dir_local ramp_time rot_speed]`. See mrpt::kinematics::CVehicleSimul_Holo::sendVelCmd() for more details.
+		 * The number components in each command depends on children classes of mrpt::kinematics::CVehicleVelCmd.
+		 * One robot may accept one or more different CVehicleVelCmd classes.
+		 * This method resets the watchdog timer (that may be or may be not implemented in a particular robotic platform) started with startWatchdog()
 		 * \return false on any error.
+		 * \sa startWatchdog
 		 */
-		virtual bool changeSpeeds(const std::vector<double> &vel_cmd) = 0;
+		virtual bool changeSpeeds(const mrpt::kinematics::CVehicleVelCmd &vel_cmd) = 0;
+
+		/** Just like changeSpeeds(), but will be called when the last velocity command is still the preferred solution, 
+		  * so there is no need to change that past command. The unique effect of this callback would be resetting the watchdog timer. 
+		  * \return false on any error.
+		  * \sa changeSpeeds(), startWatchdog() */
+		virtual bool changeSpeedsNOP() { std::cout << "[changeSpeedsNOP] Not implemented by the user." << std::endl; return true; }
 
 		/** Stop the robot right now.
 		 * \return false on any error.
 		 */
 		virtual bool stop() = 0;
 
-		/** Start the watchdog timer of the robot platform, if any.
+		/** Start the watchdog timer of the robot platform, if any, for maximum expected delay between consecutive calls to changeSpeeds().
 		 * \param T_ms Period, in ms.
-		 * \return false on any error.
-		 */
+		 * \return false on any error. */
 		virtual bool startWatchdog(float T_ms) {
 			MRPT_UNUSED_PARAM(T_ms);
 			return true;
 		}
 
 		/** Stop the watchdog timer.
-		 * \return false on any error.
-		 */
+		 * \return false on any error. \sa startWatchdog */
 		virtual bool stopWatchdog() { return true; }
 
 		/** Return the current set of obstacle points, as seen from the local coordinate frame of the robot.
 		  * \return false on any error.
+		  * \param[out] obstacles  A representation of obstacles in robot-centric coordinates.
+		  * \param[out] timestamp  The timestamp for the read obstacles. Use mrpt::system::now() unless you have something more accurate.
 		  */
-		virtual bool senseObstacles( mrpt::maps::CSimplePointsMap &obstacles ) = 0;
+		virtual bool senseObstacles( mrpt::maps::CSimplePointsMap &obstacles, mrpt::system::TTimeStamp &timestamp) = 0;
 
 		/** Callback: Start of navigation command */
 		virtual void sendNavigationStartEvent () { std::cout << "[sendNavigationStartEvent] Not implemented by the user." << std::endl; }
@@ -116,9 +127,6 @@ namespace mrpt
 		/** @name Methods implemented in CReactiveInterfaceImplementation_DiffDriven / CReactiveInterfaceImplementation_Holo
 		   @{ */
 
-		/** Must return the number of elements in a cmd_vel. Read more in changeSpeeds() */
-		virtual size_t getVelCmdLength() const = 0;
-
 		/** Scale a velocity command (may be kinematic-dependent).
 		  * \param[in,out] vel_cmd The raw motion command from the selected reactive method, with the same meaning than in changeSpeeds(). Upon return, 
 		  *                        this should contain the resulting scaled-down velocity command. This will be subsequently filtered by cmdVel_limits().
@@ -129,12 +137,12 @@ namespace mrpt
 		  *  - mrpt::nav::CReactiveInterfaceImplementation_DiffDriven
 		  *  - mrpt::nav::CReactiveInterfaceImplementation_Holo
 		  */
-		virtual void cmdVel_scale(std::vector<double> &vel_cmd, double vel_scale) = 0;
+		virtual void cmdVel_scale(mrpt::kinematics::CVehicleVelCmd &vel_cmd, double vel_scale) = 0;
 
 		/** Should compute a blended version of `beta` (within [0,1]) of `vel_cmd` and `1-beta` of `prev_vel_cmd`, simultaneously 
 		  * to honoring any user-side maximum velocities.
 		  */
-		virtual void cmdVel_limits(std::vector<double> &vel_cmd, const std::vector<double> &prev_vel_cmd, const double beta) = 0;
+		virtual void cmdVel_limits(mrpt::kinematics::CVehicleVelCmd &vel_cmd, const mrpt::kinematics::CVehicleVelCmd &prev_vel_cmd, const double beta) = 0;
 
 		/** Load any parameter required by a derived class. */
 		virtual void loadConfigFile(const mrpt::utils::CConfigFileBase &cfg, const std::string &section) = 0;
@@ -151,40 +159,40 @@ namespace mrpt
 	{
 	public:
 		// See base class docs.
-		size_t getVelCmdLength() const MRPT_OVERRIDE { return 2;}
 
 		/** See docs of method in base class. The implementation for differential-driven robots of this method 
 		  * just multiplies all the components of vel_cmd times vel_scale, which is appropriate
 		  *  for differential-driven kinematic models (v,w).
 		  */
-		void cmdVel_scale(std::vector<double> &vel_cmd, double vel_scale) MRPT_OVERRIDE
+		void cmdVel_scale(mrpt::kinematics::CVehicleVelCmd &vel_cmd, double vel_scale) MRPT_OVERRIDE
 		{
-			ASSERT_(vel_cmd.size()==2);
-			vel_cmd[0] *= vel_scale;
-			vel_cmd[1] *= vel_scale;
+			mrpt::kinematics::CVehicleVelCmd_DiffDriven *cmd = reinterpret_cast<mrpt::kinematics::CVehicleVelCmd_DiffDriven*>(&vel_cmd);
+			ASSERTMSG_(cmd,"Expected velcmd of type `CVehicleVelCmd_DiffDriven`");
+			cmd->lin_vel *= vel_scale;
+			cmd->ang_vel *= vel_scale;
 		}
 
 		// See base class docs.
-		void cmdVel_limits(std::vector<double> &vel_cmd, const std::vector<double> &prev_vel_cmd, const double beta)
+		void cmdVel_limits(mrpt::kinematics::CVehicleVelCmd &vel_cmd, const mrpt::kinematics::CVehicleVelCmd &prev_vel_cmd, const double beta)
 		{
 			ASSERT_(robotMax_V_mps>0);
 			ASSERT_(robotMax_W_radps>0);
-			double new_cmd_v=vel_cmd[0], new_cmd_w=vel_cmd[1];
-			filter_max_vw(new_cmd_v, new_cmd_w);
-			if (fabs(new_cmd_v) < 0.01) // i.e. new behavior is nearly a pure rotation
+			mrpt::kinematics::CVehicleVelCmd_DiffDriven *newcmd = reinterpret_cast<mrpt::kinematics::CVehicleVelCmd_DiffDriven*>(&vel_cmd);
+			const mrpt::kinematics::CVehicleVelCmd_DiffDriven *prevcmd = reinterpret_cast<const mrpt::kinematics::CVehicleVelCmd_DiffDriven*>(&prev_vel_cmd);
+			ASSERTMSG_(newcmd && prevcmd, "Expected velcmd of type `CVehicleVelCmd_DiffDriven`");
+			filter_max_vw(newcmd->lin_vel, newcmd->ang_vel);
+			if (fabs(newcmd->lin_vel) < 0.01) // i.e. new behavior is nearly a pure rotation
 			{                        // thus, it's OK to blend the rotational component
-				new_cmd_w = beta*new_cmd_w + (1 - beta)*prev_vel_cmd[1];
+				newcmd->ang_vel = beta*newcmd->ang_vel + (1 - beta)*prevcmd->ang_vel;
 			}
 			else                     // there is a non-zero translational component
 			{
 				// must maintain the ratio of w to v (while filtering v)
-				float ratio = new_cmd_w / new_cmd_v;
-				new_cmd_v = beta*new_cmd_v + (1 - beta)*prev_vel_cmd[0];   // blend new v value
-				new_cmd_w = ratio * new_cmd_v;  // ensure new w implements expected path curvature
+				float ratio = newcmd->ang_vel / newcmd->lin_vel;
+				newcmd->lin_vel = beta*newcmd->lin_vel + (1 - beta)*prevcmd->lin_vel;   // blend new v value
+				newcmd->ang_vel = ratio * newcmd->lin_vel;  // ensure new w implements expected path curvature
 
-				filter_max_vw(new_cmd_v, new_cmd_w);
-
-				vel_cmd[0] = new_cmd_v; vel_cmd[1] = new_cmd_w;
+				filter_max_vw(newcmd->lin_vel, newcmd->ang_vel);
 			}
 		}
 
@@ -234,27 +242,32 @@ namespace mrpt
 	{
 	public:
 		// See base class docs.
-		size_t getVelCmdLength() const MRPT_OVERRIDE { return 4;}
 
 		/** See docs of method in base class. 
 		  * For holonomic robots, `vel_cmd=[vel dir_local ramp_time rot_speed]`
 		  */
-		void cmdVel_scale(std::vector<double> &vel_cmd, double vel_scale) MRPT_OVERRIDE
+		void cmdVel_scale(mrpt::kinematics::CVehicleVelCmd &vel_cmd, double vel_scale) MRPT_OVERRIDE
 		{
-			vel_cmd[0] *= vel_scale; // |(vx,vy)|
-			vel_cmd[3] *= vel_scale; // rot_speed
+			mrpt::kinematics::CVehicleVelCmd_Holo *cmd = reinterpret_cast<mrpt::kinematics::CVehicleVelCmd_Holo*>(&vel_cmd);
+			ASSERTMSG_(cmd, "Expected velcmd of type `CVehicleVelCmd_Holo`");
+			cmd->vel       *= vel_scale; // |(vx,vy)|
+			cmd->rot_speed *= vel_scale; // rot_speed
 			// ramp_time: leave unchanged
 		}
 
 		// See base class docs.
-		void cmdVel_limits(std::vector<double> &vel_cmd, const std::vector<double> &prev_vel_cmd, const double beta)
+		void cmdVel_limits(mrpt::kinematics::CVehicleVelCmd &vel_cmd, const mrpt::kinematics::CVehicleVelCmd &prev_vel_cmd, const double beta)
 		{ // remember:  `vel_cmd=[vel dir_local ramp_time rot_speed]`
-			ASSERTMSG_(robotMax_V_mps>=.0, "[CReactiveInterfaceImplementation_Holo] `robotMax_V_mps` must be set to valid values: either assign values programatically or call loadConfigFile()")
-			double f=1.0;
-			if (vel_cmd[0]>robotMax_V_mps) f = robotMax_V_mps/vel_cmd[0];
+			ASSERTMSG_(robotMax_V_mps >= .0, "[CReactiveInterfaceImplementation_Holo] `robotMax_V_mps` must be set to valid values: either assign values programatically or call loadConfigFile()");
+			mrpt::kinematics::CVehicleVelCmd_Holo *newcmd = reinterpret_cast<mrpt::kinematics::CVehicleVelCmd_Holo*>(&vel_cmd);
+			const mrpt::kinematics::CVehicleVelCmd_Holo *prevcmd = reinterpret_cast<const mrpt::kinematics::CVehicleVelCmd_Holo*>(&prev_vel_cmd);
+			ASSERTMSG_(newcmd && prevcmd, "Expected velcmd of type `CVehicleVelCmd_Holo`");
 
-			vel_cmd[0] *= f; // |(vx,vy)|
-			vel_cmd[3] *= f; // rot_speed
+			double f=1.0;
+			if (newcmd->vel>robotMax_V_mps) f = robotMax_V_mps/ newcmd->vel;
+
+			newcmd->vel *= f; // |(vx,vy)|
+			newcmd->rot_speed *= f; // rot_speed
 			// ramp_time: leave unchanged
 			// Blending with "beta" not required, since the ramp_time already blends cmds for holo robots.
 		}

@@ -581,7 +581,7 @@ void holonomic_navigator_demoFrame::simulateOneStep(double time_step)
 	gl_scan3D->setScan( simulatedScan );  // Draw real scan in 3D view
 
 	// Normalize:
-	for (size_t j=0;j<simulatedScan.scan.size();j++) simulatedScan.scan[j] /= simulatedScan.maxRange;
+	for (size_t j=0;j<simulatedScan.scan.size();j++) simulatedScan.setScanRange(j, simulatedScan.getScanRange(j) / simulatedScan.maxRange);
 
 	gl_scan2D->setScan( simulatedScan ); // Draw scaled scan in right-hand view
 

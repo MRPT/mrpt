@@ -68,15 +68,16 @@ bool mrpt::obs::carmen_log_parse_line(
 		size_t nRanges;
 		S >> nRanges;
 
-		obsLaser->scan.resize(nRanges);
-		obsLaser->validRange.resize(nRanges);
+		obsLaser->resizeScan(nRanges);
 
 		for(size_t i=0;i<nRanges;i++)
 		{
-			if (! (S >> obsLaser->scan[i]) )
-				THROW_EXCEPTION_CUSTOM_MSG1("Error parsing line from CARMEN log (ranges):\n'%s'\n", line.c_str() )
+			float range;
+			if (! (S >> range) )
+				THROW_EXCEPTION_CUSTOM_MSG1("Error parsing line from CARMEN log (ranges):\n'%s'\n", line.c_str() );
+			obsLaser->setScanRange(i, range);
 			// Valid value?
-			obsLaser->validRange[i] =  (obsLaser->scan[i]>=obsLaser->maxRange || obsLaser->scan[i]<=0 ) ? 0 : 1;
+			obsLaser->setScanRangeValidity(i,  (obsLaser->scan[i]>=obsLaser->maxRange || obsLaser->scan[i]<=0 ) );
 		}
 
 		size_t remmision_count;
@@ -165,15 +166,16 @@ bool mrpt::obs::carmen_log_parse_line(
 			obsLaser->aperture = DEG2RAD(resolutionDeg) * nRanges;
 		}
 
-		obsLaser->scan.resize(nRanges);
-		obsLaser->validRange.resize(nRanges);
+		obsLaser->resizeScan(nRanges);
 
 		for(size_t i=0;i<nRanges;i++)
 		{
-			if (! (S >> obsLaser->scan[i]) )
-				THROW_EXCEPTION_CUSTOM_MSG1("Error parsing line from CARMEN log (ranges):\n'%s'\n", line.c_str() )
+			float range;
+			if (! (S >> range) )
+				THROW_EXCEPTION_CUSTOM_MSG1("Error parsing line from CARMEN log (ranges):\n'%s'\n", line.c_str() );
+			obsLaser->setScanRange(i,range);
 			// Valid value?
-			obsLaser->validRange[i] =  (obsLaser->scan[i]>=obsLaser->maxRange || obsLaser->scan[i]<=0 ) ? 0 : 1;
+			obsLaser->setScanRangeValidity(i, (obsLaser->scan[i]>=obsLaser->maxRange || obsLaser->scan[i]<=0 ) );
 		}
 
 		mrpt::math::TPose2D  globalLaserPose;

@@ -35,10 +35,13 @@ namespace nav
 
 		struct TVelCmd
 		{
-			std::vector<double> cmd_vel;  //!< all with the same meaning than in CRobot2NavInterface::changeSpeeds()
+			mrpt::kinematics::CVehicleVelCmdPtr cmd_vel; //!< all with the same meaning than in CRobot2NavInterface::changeSpeeds()
 		};
 
 		std::map<double,TVelCmd>  programmed_orders; //!< map [time_in_secs_since_beginning] -> orders.
+
+	protected:
+		virtual void onStartNewNavigation() MRPT_OVERRIDE { }
 
 	private:
 		// Not used in this class:
