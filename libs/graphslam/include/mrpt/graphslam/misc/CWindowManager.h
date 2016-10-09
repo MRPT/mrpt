@@ -4,6 +4,8 @@
 #include <mrpt/gui/CBaseGUIWindow.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/utils/COutputLogger.h>
+
+#include <mrpt/graphslam/link_pragmas.h>
 #include "CWindowObserver.h"
 
 namespace mrpt { namespace graphslam {
@@ -16,7 +18,7 @@ namespace mrpt { namespace graphslam {
  *
  * \ingroup mrpt_graphslam_grp
  */
-class CWindowManager : public mrpt::utils::COutputLogger {
+class GRAPHSLAM_IMPEXP CWindowManager : public mrpt::utils::COutputLogger {
   public:
   	/**\brief Default class constructor */
   	CWindowManager() {
