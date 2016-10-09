@@ -146,25 +146,28 @@ void CRangeScanRegistrationDecider<GRAPH_t>::decimatePointsMap(
 }
 
 template<class GRAPH_t>
-void CRangeScanRegistrationDecider<GRAPH_t>::convert3DTo2DRangeScan(
+bool CRangeScanRegistrationDecider<GRAPH_t>::convert3DTo2DRangeScan(
 		mrpt::obs::CObservation3DRangeScanPtr& scan3D_in,
 		mrpt::obs::CObservation2DRangeScanPtr* scan2D_out /*= NULL*/) {
+	MRPT_START;
 
-	// create the 2D laser scan first
+	bool success = false;
+	// if it doesn't exist, create it
 	if ( (*scan2D_out).null() ) {
 		*scan2D_out = mrpt::obs::CObservation2DRangeScan::Create();
 	}
 
 	if (scan3D_in->hasRangeImage) {
-		scan3D_in->convertTo2DScan(**scan2D_out,
-				params.conversion_sensor_label,
-				params.conversion_angle_sup,
-				params.conversion_angle_inf,
-				params.conversion_oversampling_ratio);
+		scan3D_in->convertTo2DScan(**scan2D_out, params.conversion_params);
+		success = true;
 	}
 	else {
 		std::cout << "No valid rangeImage found" << std::endl;
+		success = false;
 	}
+
+	return success;
+	MRPT_END;
 }
 
 // TParameter
@@ -185,13 +188,15 @@ void CRangeScanRegistrationDecider<GRAPH_t>::TParams::dumpToTextStream(
 	MRPT_START;
 
 	out.printf("3D=>2D LaserScan Conversion Sensor label       = %s\n",
-			conversion_sensor_label.c_str());
+			conversion_params.sensorLabel.c_str());
 	out.printf("3D=>2D LaserScan Conversion angle sup          = %.2f deg\n",
-			mrpt::utils::RAD2DEG(conversion_angle_sup));
+			mrpt::utils::RAD2DEG(conversion_params.angle_sup));
 	out.printf("3D=>2D LaserScan Conversion angle inf          = %.2f deg\n",
-			mrpt::utils::RAD2DEG(conversion_angle_inf));
+			mrpt::utils::RAD2DEG(conversion_params.angle_inf));
 	out.printf("3D=>2D LaserScan Conversion oversampling ratio = %.2f\n",
-			conversion_oversampling_ratio);
+			conversion_params.oversampling_ratio);
+	out.printf("3D=>2D LaserScan Conversion Z minimum = %.2f\n",
+			conversion_params.z_min);
 
 	icp.options.dumpToTextStream(out);
 
@@ -203,24 +208,27 @@ void CRangeScanRegistrationDecider<GRAPH_t>::TParams::loadFromConfigFile(
 		const std::string& section) {
 	MRPT_START;
 
-	conversion_sensor_label = source.read_string(
+	conversion_params.sensorLabel = source.read_string(
 			section,
 			"conversion_sensor_label",
 			"KINECT_TO_2D_SCAN", false);
-	conversion_angle_sup = source.read_double(
-			section,
-			"conversion_angle_sup",
-			10, false);
-	conversion_angle_sup = mrpt::utils::DEG2RAD(conversion_angle_sup);
-	conversion_angle_inf = source.read_double(
-			section,
-			"conversion_angle_inf",
-			10, false);
-	conversion_angle_inf = mrpt::utils::DEG2RAD(conversion_angle_inf);
-	conversion_oversampling_ratio = source.read_double(
+	conversion_params.angle_sup = mrpt::utils::DEG2RAD(source.read_double(
+				section,
+				"conversion_angle_sup",
+				10, false));
+	conversion_params.angle_inf  = mrpt::utils::DEG2RAD(source.read_double(
+				section,
+				"conversion_angle_inf",
+				10, false));
+	conversion_params.oversampling_ratio = source.read_double(
 			section,
 			"conversion_oversampling_ratio",
 			1.1, false);
+	conversion_params.z_min = source.read_double(
+			section,
+			"conversion_z_min",
+			0, false); // TODO - is this accurate?
+
 
 	// load the icp parameters - from "ICP" section explicitly
 	icp.options.loadFromConfigFile(source, "ICP");
