@@ -46,7 +46,7 @@ void CFixedIntervalsNRD<GRAPH_t>::initCFixedIntervalsNRD() {
 	this->setLoggerName("CFixedIntervalsNRD");
 	this->setMinLoggingLevel(LVL_DEBUG);
 
-	this->logStr(LVL_DEBUG, "IntervalsNRD: Initialized class object");
+	this->logFmt(LVL_DEBUG, "IntervalsNRD: Initialized class object");
 }
 template<class GRAPH_t>
 CFixedIntervalsNRD<GRAPH_t>::~CFixedIntervalsNRD() { }
@@ -162,7 +162,7 @@ void CFixedIntervalsNRD<GRAPH_t>::registerNewNode() {
 	MRPT_START;
 	using namespace mrpt::utils;
 
-	this->logStr(LVL_DEBUG, "In registerNewNode...");
+	this->logFmt(LVL_DEBUG, "In registerNewNode...");
 
 	mrpt::utils::TNodeID from = m_prev_registered_node;
 	mrpt::utils::TNodeID to = ++m_prev_registered_node;
@@ -182,7 +182,7 @@ void CFixedIntervalsNRD<GRAPH_t>::setGraphPtr(GRAPH_t* graph) {
 	m_graph = graph;
 	// get the last registrered node + corresponding pose - root
 	m_prev_registered_node = m_graph->root;
-	this->logStr(LVL_DEBUG, "Fetched the graph successfully");
+	this->logFmt(LVL_DEBUG, "Fetched the graph successfully");
 }
 
 template<class GRAPH_t>
@@ -214,7 +214,7 @@ void CFixedIntervalsNRD<GRAPH_t>::checkIfInvalidDataset(
 	}
 
 	if (m_consecutive_invalid_format_instances > m_consecutive_invalid_format_instances_thres) {
-		this->logStr(LVL_ERROR,
+		this->logFmt(LVL_ERROR,
 				"Can't find usuable data in the given dataset.\nMake sure dataset contains valid odometry data.");
 		mrpt::system::sleep(5000);
 		m_checked_for_usuable_dataset = true;
@@ -240,7 +240,7 @@ void CFixedIntervalsNRD<GRAPH_t>::loadParams(const std::string& source_fname) {
 	this->setMinLoggingLevel(VerbosityLevel(min_verbosity_level));
 
 
-	this->logStr(LVL_DEBUG, "Successfully loaded parameters.");
+	this->logFmt(LVL_DEBUG, "Successfully loaded parameters.");
 
 	MRPT_END;
 }

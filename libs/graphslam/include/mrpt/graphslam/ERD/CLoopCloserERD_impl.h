@@ -52,7 +52,7 @@ void CLoopCloserERD<GRAPH_t>::initCLoopCloserERD() {
 	m_time_logger.setName(m_class_name);
 	this->logging_enable_keep_record = true;
 	this->setLoggerName(m_class_name);
-	this->logStr(mrpt::utils::LVL_DEBUG, "Initialized class object");
+	this->logFmt(mrpt::utils::LVL_DEBUG, "Initialized class object");
 
 	MRPT_END;
 }
@@ -97,7 +97,7 @@ bool CLoopCloserERD<GRAPH_t>::updateState(
 	if (m_last_total_num_of_nodes < m_graph->nodeCount()) {
 		registered_new_node = true;
 		m_last_total_num_of_nodes = m_graph->nodeCount();
-		this->logStr(mrpt::utils::LVL_DEBUG, "New node has been registered!");
+		this->logFmt(mrpt::utils::LVL_DEBUG, "New node has been registered!");
 	}
 
 	// update last laser scan to use
@@ -325,15 +325,15 @@ void CLoopCloserERD<GRAPH_t>::checkPartitionsForLC(
 				int num_before_nodes = partitions_it->size() - num_after_nodes;
 				if (num_after_nodes >= m_lc_params.LC_min_remote_nodes &&
 						num_before_nodes >= m_lc_params.LC_min_remote_nodes ) { // at least X LC nodes
-					this->logStr(LVL_WARN,
-							mrpt::format("Found potential loop closures:\n"
-								"\tPartitionID: %d\n"
-								"\tPartition: %s\n"
-								"\t%lu ==> %lu\n"
-								"\tNumber of LC nodes: %d\n",
-								partitionID, getVectorAsString(*partitions_it).c_str(),
-								prev_nodeID, curr_nodeID,
-								num_after_nodes));
+					this->logFmt(LVL_WARN,
+							"Found potential loop closures:\n"
+							"\tPartitionID: %d\n"
+							"\tPartition: %s\n"
+							"\t%lu ==> %lu\n"
+							"\tNumber of LC nodes: %d\n",
+							partitionID, getVectorAsString(*partitions_it).c_str(),
+							prev_nodeID, curr_nodeID,
+							num_after_nodes);
 					partitions_for_LC->push_back(*partitions_it);
 					break; // no need to check the rest of the nodes in this partition
 				}
@@ -1094,7 +1094,7 @@ void CLoopCloserERD<GRAPH_t>::registerNewEdge(
 	if (abs(to - from) > m_lc_params.LC_min_nodeid_diff)  {
 		m_edge_types_to_nums["LC"]++;
 		m_just_inserted_loop_closure = true;
-		this->logStr(LVL_INFO, "\tLoop Closure edge!");
+		this->logFmt(LVL_INFO, "\tLoop Closure edge!");
 	}
 	else {
 		m_just_inserted_loop_closure = false;
@@ -1110,7 +1110,7 @@ template<class GRAPH_t>
 void CLoopCloserERD<GRAPH_t>::setGraphPtr(GRAPH_t* graph) {
 	MRPT_START;
 	m_graph = graph;
-	this->logStr(mrpt::utils::LVL_DEBUG, "Fetched the graph successfully");
+	this->logFmt(mrpt::utils::LVL_DEBUG, "Fetched the graph successfully");
 	MRPT_END;
 }
 template<class GRAPH_t>
@@ -1131,7 +1131,8 @@ void CLoopCloserERD<GRAPH_t>::setWindowManagerPtr(
 
 		}
 
-		this->logStr(mrpt::utils::LVL_DEBUG, "Fetched the window manager, window observer  successfully.");
+		this->logFmt(mrpt::utils::LVL_DEBUG,
+				"Fetched the window manager, window observer  successfully.");
 	}
 
 }
@@ -1351,7 +1352,7 @@ void CLoopCloserERD<GRAPH_t>::toggleMapPartitionsVisualization() {
 	using namespace mrpt::utils;
 	using namespace mrpt::opengl;
 
-	this->logStr(LVL_INFO, "Toggling map partitions  visualization...");
+	this->logFmt(LVL_INFO, "Toggling map partitions  visualization...");
 	mrpt::opengl::COpenGLScenePtr scene = m_win->get3DSceneAndLock();
 
 	if (m_lc_params.visualize_map_partitions) {
@@ -1467,7 +1468,7 @@ void CLoopCloserERD<GRAPH_t>::toggleLaserScansVisualization() {
 	ASSERTMSG_(m_win_manager, "No CWindowManager* was provided");
 	using namespace mrpt::utils;
 
-	this->logStr(LVL_INFO, "Toggling LaserScans visualization...");
+	this->logFmt(LVL_INFO, "Toggling LaserScans visualization...");
 
 	mrpt::opengl::COpenGLScenePtr scene = m_win->get3DSceneAndLock();
 
@@ -1497,7 +1498,7 @@ void CLoopCloserERD<GRAPH_t>::getEdgesStats(
 template<class GRAPH_t>
 void CLoopCloserERD<GRAPH_t>::initializeVisuals() {
 	MRPT_START;
-	this->logStr(mrpt::utils::LVL_DEBUG, "Initializing visuals");
+	this->logFmt(mrpt::utils::LVL_DEBUG, "Initializing visuals");
 	m_time_logger.enter("Visuals");
 
 	ASSERTMSG_(m_laser_params.has_read_config,
@@ -1525,7 +1526,7 @@ template<class GRAPH_t>
 void CLoopCloserERD<GRAPH_t>::updateVisuals() {
 	MRPT_START;
 	ASSERT_(m_initialized_visuals);
-	this->logStr(mrpt::utils::LVL_DEBUG, "Updating visuals");
+	this->logFmt(mrpt::utils::LVL_DEBUG, "Updating visuals");
 	m_time_logger.enter("Visuals");
 
 	if (m_laser_params.visualize_laser_scans) {
@@ -1645,7 +1646,7 @@ void CLoopCloserERD<GRAPH_t>::checkIfInvalidDataset(
 	}
 	if (m_consecutive_invalid_format_instances > 
 			m_consecutive_invalid_format_instances_thres) {
-		this->logStr(mrpt::utils::LVL_ERROR,
+		this->logFmt(mrpt::utils::LVL_ERROR,
 				"Can't find usuable data in the given dataset.\nMake sure dataset contains valid CObservation2DRangeScan/CObservation3DRangeScan data.");
 		mrpt::system::sleep(5000);
 		m_checked_for_usuable_dataset = true;
@@ -1659,10 +1660,11 @@ void CLoopCloserERD<GRAPH_t>::dumpVisibilityErrorMsg(
 		std::string viz_flag, int sleep_time /* = 500 milliseconds */) {
 	MRPT_START;
 
-	this->logStr(mrpt::utils::LVL_ERROR, format("Cannot toggle visibility of specified object.\n "
+	this->logFmt(mrpt::utils::LVL_ERROR,
+			"Cannot toggle visibility of specified object.\n "
 			"Make sure that the corresponding visualization flag ( %s "
 			") is set to true in the .ini file.\n",
-			viz_flag.c_str()).c_str());
+			viz_flag.c_str());
 	mrpt::system::sleep(sleep_time);
 
 	MRPT_END;
@@ -1689,7 +1691,7 @@ void CLoopCloserERD<GRAPH_t>::loadParams(const std::string& source_fname) {
 			1, false);
 	this->setMinLoggingLevel(mrpt::utils::VerbosityLevel(min_verbosity_level));
 
-	this->logStr(mrpt::utils::LVL_DEBUG, "Successfully loaded parameters. ");
+	this->logFmt(mrpt::utils::LVL_DEBUG, "Successfully loaded parameters. ");
 	MRPT_END;
 }
 template<class GRAPH_t>
@@ -1703,7 +1705,7 @@ void CLoopCloserERD<GRAPH_t>::printParams() const {
 	m_lc_params.dumpToConsole();
 	range_scanner_t::params.dumpToConsole();
 
-	this->logStr(mrpt::utils::LVL_DEBUG, "Printed the relevant parameters");
+	this->logFmt(mrpt::utils::LVL_DEBUG, "Printed the relevant parameters");
 	MRPT_END;
 }
 
@@ -1748,7 +1750,8 @@ void CLoopCloserERD<GRAPH_t>::updateMapPartitions(bool full_update /* = false */
 	
  nodes_to_scans2D_t nodes_to_scans;
 	if (full_update) {
-		this->logStr(LVL_INFO, "updateMapPartitions: Full partitioning of map was issued");
+		this->logFmt(LVL_INFO,
+				"updateMapPartitions: Full partitioning of map was issued");
 
 		// clear the existing partitions and recompute the partitioned map for all
 		// the nodes
@@ -1787,7 +1790,7 @@ void CLoopCloserERD<GRAPH_t>::updateMapPartitions(bool full_update /* = false */
 	//update current partitions list
 	m_partitioner.updatePartitions(m_curr_partitions);
 
-	this->logStr(mrpt::utils::LVL_DEBUG, "Updated map partitions successfully.");
+	this->logFmt(mrpt::utils::LVL_DEBUG, "Updated map partitions successfully.");
 	m_time_logger.leave("updateMapPartitions");
 	MRPT_END;
 }
