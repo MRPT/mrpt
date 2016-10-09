@@ -42,9 +42,18 @@ void CNavigatorManualSequence::loadConfigFile(const mrpt::utils::CConfigFileBase
 		
 		const double t = atof(toks[0].c_str());
 		TVelCmd krc;
-		krc.cmd_vel.resize(toks.size()-1);
-		for (size_t i=0;i<toks.size()-1;i++)
-			krc.cmd_vel[i] = atof(toks[i+1].c_str());
+
+		const size_t nComps = toks.size() - 1;
+		switch (nComps)
+		{
+		case 2: krc.cmd_vel = mrpt::kinematics::CVehicleVelCmd_DiffDriven::Create(); break;
+		case 4: krc.cmd_vel = mrpt::kinematics::CVehicleVelCmd_Holo::Create(); break;
+		default:
+			THROW_EXCEPTION("Expected 2 or 4 velocity components!");
+		};
+
+		for (size_t i=0;i<nComps;i++)
+			krc.cmd_vel->setVelCmdElement(i,  atof(toks[i+1].c_str() ));
 
 		// insert:
 		programmed_orders[t] = krc;
@@ -71,7 +80,7 @@ void CNavigatorManualSequence::navigationStep()
 		// Send cmd:
 		logFmt( mrpt::utils::LVL_DEBUG, "[CNavigatorManualSequence] Sending cmd: t=%f\n",programmed_orders.begin()->first);
 
-		if (! m_robot.changeSpeeds(krc.cmd_vel) )
+		if (! m_robot.changeSpeeds(*krc.cmd_vel) )
 		{
 			m_robot.stop();
 			logFmt( mrpt::utils::LVL_ERROR, "[CNavigatorManualSequence] **ERROR** sending cmd to robot.");

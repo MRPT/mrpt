@@ -2,8 +2,10 @@ cmake_minimum_required(VERSION 2.8.3)
 
 project(pymrpt)
 
+find_package(PythonInterp)
+
 # Note: relative paths are relative to ${CMAKE_INSTALL_PREFIX} (defaults to /usr/local on Ubuntu)
-set( PYMRPT_INSTALL_DIR "lib/python${PYTHON_MAJOR_VERSION}.${PYTHON_MINOR_VERSION}/dist-packages" )
+set( PYMRPT_INSTALL_DIR "lib/python${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}/dist-packages" )
 
 include_directories(include)
 include_directories(

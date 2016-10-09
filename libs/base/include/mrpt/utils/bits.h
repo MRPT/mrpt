@@ -97,7 +97,7 @@ namespace mrpt
 
 		/** Returns the sign of X as "0", "1" or "-1" */
 		template <typename T>
-		inline int signWithZero(T x)	{ return x==0?0:sign(x);}
+		inline int signWithZero(T x)	{ return (x==0 || x==-0)?0:sign(x);}
 
 		/** Efficient and portable evaluation of the absolute difference of two unsigned integer values
 		  * (but will also work for signed and floating point types) */
@@ -186,6 +186,14 @@ namespace mrpt
 		/** Like calling a std::vector<>'s clear() method, but really forcing deallocating the memory. */
 		template <class VECTOR_T>
 		inline void vector_strong_clear(VECTOR_T & v) { VECTOR_T dummy; dummy.swap(v); }
+
+		/** Returns the smaller number >=len such that it's a multiple of 4 */
+		template <typename T>
+		T length2length4N(T len) {
+			if (0!=(len & 0x03)) len+= (4 - (len & 0x03));
+			return len;
+		}
+
 
 	} // End of namespace
 } // end of namespace

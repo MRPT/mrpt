@@ -11,18 +11,16 @@
 
 #include <mrpt/nav.h>
 #include <mrpt/utils/CSerializable.h>
-#include <mrpt/utils/CStartUpClassesRegister.h>
+#include <mrpt/utils/initializer.h>
 
 using namespace mrpt;
 using namespace mrpt::utils;
 using namespace mrpt::nav;
 using namespace std;
 
-CStartUpClassesRegister mrpt_reactivenav_class_reg(&registerAllNavigationClasses);
-
-
-void mrpt::nav::registerAllNavigationClasses()
+MRPT_INITIALIZER( registerAllNavigationClasses )
 {
+#if !defined(DISABLE_MRPT_AUTO_CLASS_REGISTRATION)
 	// PTGs:
 	registerClass(CLASS_ID( CPTG_DiffDrive_C ));
 	registerClass(CLASS_ID( CPTG_DiffDrive_alpha ));
@@ -36,4 +34,5 @@ void mrpt::nav::registerAllNavigationClasses()
 	registerClass(CLASS_ID( CLogFileRecord_ND ));
 	registerClass(CLASS_ID( CLogFileRecord_VFF ));
 	registerClass(CLASS_ID( CLogFileRecord_FullEval ));
+#endif
 }

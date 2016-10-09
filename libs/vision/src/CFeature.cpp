@@ -13,7 +13,6 @@
 #include <mrpt/utils/CTextFileLinesParser.h>
 #include <mrpt/utils/CFileOutputStream.h>
 #include <mrpt/utils/CFileInputStream.h>
-#include <mrpt/utils/CStartUpClassesRegister.h>
 #include <mrpt/utils/CStdOutStream.h>
 #include <mrpt/utils/stl_serialization.h>
 #include <mrpt/vision/CFeature.h>
@@ -30,9 +29,6 @@ using namespace mrpt::utils;
 using namespace std;
 
 IMPLEMENTS_SERIALIZABLE(CFeature, CSerializable, mrpt::vision)
-
-extern CStartUpClassesRegister  mrpt_vision_class_reg;
-const int dumm = mrpt_vision_class_reg.do_nothing(); // Avoid compiler removing this class in static linking
 
 // --------------------------------------------------
 //			loadFromConfigFile

@@ -17,6 +17,7 @@
 #include <mrpt/utils/mrpt_stdint.h>    // compiler-independent version of "stdint.h"
 #include <mrpt/nav/link_pragmas.h>
 #include <mrpt/poses/CPose2D.h>
+#include <mrpt/kinematics/CVehicleVelCmd.h>
 #include <mrpt/otherlibs/stlplus/smart_ptr.hpp>  // STL+ library
 
 namespace mrpt { namespace opengl { class CSetOfLines; } }
@@ -98,7 +99,11 @@ namespace nav
 		}
 
 		/** Converts a discretized "alpha" value into a feasible motion command or action. See derived classes for the meaning of these actions */
-		virtual void directionToMotionCommand( uint16_t k, std::vector<double> &out_action_cmd ) const = 0;
+		virtual mrpt::kinematics::CVehicleVelCmdPtr directionToMotionCommand( uint16_t k ) const = 0;
+
+		/** Returns an empty kinematic velocity command object of the type supported by this PTG. 
+		  * Can be queried to determine the expected kinematic interface of the PTG.  */
+		virtual mrpt::kinematics::CVehicleVelCmdPtr getSupportedKinematicVelocityCommand() const = 0;
 
 		/** Callback whenever we have new info about the velocity state of the robot right now. May be used by some PTGs and discarded by others.
 		  * \param[in] curVelLocal The current robot velocities in the local frame of reference (+X: forwards, omega: clockwise rotation) */
@@ -139,6 +144,17 @@ namespace nav
 		/** Loads a set of default parameters into the PTG. Users normally will call `loadFromConfigFile()` instead, this method is provided 
 		  * exclusively for the PTG-configurator tool. */
 		virtual void loadDefaultParams();
+
+		/** Returns true if it is possible to stop sending velocity commands to the robot and, still, the 
+		  * robot controller will be able to keep following the last sent trajectory ("NOP" velocity commands). 
+		  * Default implementation returns "false". */
+		virtual bool supportVelCmdNOP() const;
+
+		/** Only for PTGs supporting supportVelCmdNOP(): this is the maximum time (in seconds) for which the path
+		  * can be followed without re-issuing a new velcmd. Note that this is only an absolute maximum duration, 
+		  * navigation implementations will check for many other conditions. Default method in the base virtual class returns 0. 
+		  * \param path_k Queried path `k` index  [0,N-1] */
+		virtual double maxTimeInVelCmdNOP(int path_k) const;
 
 		/** @} */  // --- end of virtual methods
 
@@ -281,6 +297,5 @@ protected:
 		void loadDefaultParams();
 	};
 
-	void NAV_IMPEXP registerAllNavigationClasses();
 }
 }

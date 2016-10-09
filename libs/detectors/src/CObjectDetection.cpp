@@ -11,7 +11,6 @@
 
 #include <mrpt/detectors/CObjectDetection.h>
 #include <mrpt/obs/CObservationImage.h>
-#include <mrpt/utils/CStartUpClassesRegister.h>
 #include <mrpt/obs/CObservationImage.h>
 #include <mrpt/obs/CObservationStereoImages.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
@@ -22,13 +21,8 @@
 using namespace mrpt::detectors;
 using namespace mrpt::utils;
 
-extern CStartUpClassesRegister  mrpt_detectors_class_reg;
-
 void CObjectDetection::detectObjects(const CImage *img, vector_detectable_object &detected)
 {
-	//static const int dumm2 =
-	mrpt_detectors_class_reg.do_nothing(); // Avoid compiler removing this class in static linking
-
 	mrpt::obs::CObservationImage o;
 	o.timestamp = mrpt::system::now();
 	o.image.setFromImageReadOnly(*img);
