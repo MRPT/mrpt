@@ -19,7 +19,6 @@ project(${PROJECT_NAME})
 
 set(SRC_FILES
     graphslam-engine_app.cpp
-    TGraphSlamHandler.cpp
     )
 
 # Define the executable target:

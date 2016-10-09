@@ -7,7 +7,6 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include "TGraphSlamHandler.h"
 
 #include <mrpt/obs/CRawlog.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
@@ -22,7 +21,8 @@
 #include <mrpt/system/string_utils.h>
 
 #include <mrpt/graphslam/CGraphSlamEngine.h>
-#include <mrpt/graphslam/apps_related/TGraphSlamResources.h>
+#include <mrpt/graphslam/apps_related/TGraphSlamOptions.h>
+#include <mrpt/graphslam/apps_related/CGraphSlamHandler.h>
 
 #include <mrpt/otherlibs/tclap/CmdLine.h>
 
@@ -87,16 +87,17 @@ TCLAP::SwitchArg disable_visuals("","disable-visuals","Disable Visualization - O
 // ////////////////////////////////////////////////////////////
 int main(int argc, char **argv)
 {
+	// initializign the logger instance
+	COutputLogger logger("graphslam-engine_app");
+	logger.logging_enable_keep_record = true;
+
 	try {
-		// initializign the logger instance
-		COutputLogger logger("graphslam-engine_app");
-		logger.logging_enable_keep_record = true;
 
 		bool showHelp		 = argc>1 && !os::_strcmp(argv[1],"--help");
 		bool showVersion = argc>1 && !os::_strcmp(argv[1],"--version");
 
 		// Instance for managing the available graphslam deciders optimizers
-		TGraphSlamResources resources;
+		TGraphSlamOptions options;
 
 		// Input Validation
 		if (!cmd_line.parse( argc, argv ) ||  showVersion || showHelp) {
@@ -110,20 +111,20 @@ int main(int argc, char **argv)
 			bool list_registrars = false;
 
 			if (list_all_registrars.getValue()) {
-				resources.dumpRegistrarsToConsole("all");
+				options.dumpRegistrarsToConsole("all");
 				list_registrars = true;
 			}
 			if (list_node_registrars.getValue()) {
-				resources.dumpRegistrarsToConsole("node");
+				options.dumpRegistrarsToConsole("node");
 				list_registrars = true;
 			}
 			if (list_edge_registrars.getValue()) {
-				resources.dumpRegistrarsToConsole("edge");
+				options.dumpRegistrarsToConsole("edge");
 				list_registrars = true;
 			}
 
 			if (list_optimizers.getValue()) {
-				resources.dumpOptimizersToConsole();
+				options.dumpOptimizersToConsole();
 			}
 
 			if (list_registrars || list_optimizers.getValue()) {
@@ -136,13 +137,13 @@ int main(int argc, char **argv)
 		string node_reg = arg_node_reg.getValue();
 		string edge_reg = arg_edge_reg.getValue();
 		string optimizer = arg_optimizer.getValue();
-		ASSERTMSG_(resources.checkRegistrationDeciderExists(node_reg, "node"),
+		ASSERTMSG_(options.checkRegistrationDeciderExists(node_reg, "node"),
 				format("\nNode Registration Decider %s is not available.\n",
 					node_reg.c_str()) );
-		ASSERTMSG_(resources.checkRegistrationDeciderExists(edge_reg, "edge"),
+		ASSERTMSG_(options.checkRegistrationDeciderExists(edge_reg, "edge"),
 				format("\nEdge Registration Decider %s is not available.\n",
 					edge_reg.c_str()) );
-		ASSERTMSG_(resources.checkOptimizerExists(optimizer),
+		ASSERTMSG_(options.checkOptimizerExists(optimizer),
 				format("\nOptimizer %s is not available\n",
 					optimizer.c_str()) );
 
@@ -166,27 +167,26 @@ int main(int argc, char **argv)
 		logger.logFmt(LVL_INFO, "Edge registration decider: %s", edge_reg.c_str());
 		logger.logFmt(LVL_INFO, "graphSLAM Optimizer: %s", optimizer.c_str());
 
-		// Initialization of TGraphSlamHandler
-		TGraphSlamHandler graphslam_handler;
+		// CGraphSlamHandler initialization
+		CGraphSlamHandler graphslam_handler;
 		graphslam_handler.setOutputLoggerPtr(&logger);
 		graphslam_handler.readConfigFname(ini_fname);
 		graphslam_handler.setRawlogFname(rawlog_fname);
 
-		// initialize visuals
+		// Visuals initialization
 		if (!disable_visuals.getValue()) {
 			graphslam_handler.initVisualization();
 		}
 
-
-		// CGraphSlamEngine
+		// CGraphSlamEngine initialization
 		CGraphSlamEngine<CNetworkOfPoses2DInf> graphslam_engine(
 				ini_fname,
 				rawlog_fname,
 				ground_truth_fname,
 				graphslam_handler.win_manager,
-				resources.node_regs_map[node_reg](),
-				resources.edge_regs_map[edge_reg](),
-				resources.optimizers_map[optimizer]());
+				options.node_regs_map[node_reg](),
+				options.edge_regs_map[edge_reg](),
+				options.optimizers_map[optimizer]());
 
 		// print the problem parameters
 		graphslam_handler.printParams();
@@ -219,6 +219,10 @@ int main(int argc, char **argv)
 		}
 		logger.logFmt(LVL_WARN, "Finished graphslam execution.");
 
+		//
+		// Postprocessing
+		//
+
 		logger.logFmt(LVL_INFO, "Generating overall report...");
 		graphslam_engine.generateReportFiles(graphslam_handler.output_dir_fname);
 		// save the graph and the 3DScene 
@@ -243,20 +247,13 @@ int main(int argc, char **argv)
 
 	}
 	catch (exception& e) {
-		setConsoleColor(CONCOL_RED, true);
-		cerr << "Program finished with an exception!" << endl;
-		setConsoleColor(CONCOL_NORMAL, true);
-
+		logger.logFmt(LVL_ERROR, "Finished with a (known) exception!");
 		cerr << e.what() << endl;
-
 		mrpt::system::pause();
 		return -1;
 	}
 	catch (...) {
-		setConsoleColor(CONCOL_RED, true);
-		cerr << "Program finished for an untyped exception!!" << endl;
-		setConsoleColor(CONCOL_NORMAL, true);
-
+		logger.logFmt(LVL_ERROR, "Finished with a (unknown) exception!");
 		mrpt::system::pause();
 		return -1;
 	}
