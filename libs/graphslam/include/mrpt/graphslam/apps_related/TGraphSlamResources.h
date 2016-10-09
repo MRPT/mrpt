@@ -14,6 +14,7 @@
 #include <mrpt/utils/mrpt_macros.h>
 #include <mrpt/graphs/CNetworkOfPoses.h>
 
+#include <mrpt/graphslam/link_pragmas.H>
 #include <mrpt/graphslam/NRD/CFixedIntervalsNRD.h>
 #include <mrpt/graphslam/NRD/CEmptyNRD.h>
 #include <mrpt/graphslam/NRD/CICPCriteriaNRD.h>
@@ -33,7 +34,7 @@ namespace mrpt { namespace graphslam { namespace supplementary {
  *
  * \ingroup mrpt_graphslam_grp
  */
-struct TRegistrationDeciderProps {
+struct GRAPHSLAM_IMPEXP TRegistrationDeciderProps {
 	TRegistrationDeciderProps() {}
 	~TRegistrationDeciderProps() {}
 
@@ -50,7 +51,7 @@ struct TRegistrationDeciderProps {
  *
  * \ingroup mrpt_graphslam_grp
  */
-struct TOptimizerProps {
+struct GRAPHSLAM_IMPEXP TOptimizerProps {
 	TOptimizerProps() {}
 	~TOptimizerProps() {}
 
@@ -70,7 +71,7 @@ struct TOptimizerProps {
  *
  * \ingroup mrpt_graphslam_grp
  */
-struct TGraphSlamResources {
+struct GRAPHSLAM_IMPEXP TGraphSlamResources {
 	/**\name handy typedefs for the creation of deciders/optimzer instances from
 	 * the corresponding strings
 	 */
@@ -91,7 +92,7 @@ struct TGraphSlamResources {
 
 	//
 	// methods
-	// 
+	//
 	/**\brief Constructor */
 	TGraphSlamResources();
 	/**\brief Destructor */
