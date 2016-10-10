@@ -282,6 +282,20 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		 * \sa getParamsAsString
 		 */
 		void printParams() const;
+		/**\name graphSLAM Execution methods
+		 *
+		 * \brief Method for processing incoming observations 
+		 */
+		/**\{*/
+		/**\brief Wrapper method around execGraphSlamStep.
+		 *
+		 * Handy for not having to specify any action/observations objects
+		 * \return False if the user has requested to exit the graphslam execution
+		 * (e.g. pressed ctrl-c), True otherwise
+		 */
+		bool execGraphSlamStep(
+				mrpt::obs::CObservationPtr& observation,
+				size_t& rawlog_entry);
 		/**\brief Main class method responsible for parsing each measurement and
 		 * for executing graphSLAM.
 		 *
@@ -297,6 +311,7 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 				mrpt::obs::CSensoryFramePtr& observations,
 				mrpt::obs::CObservationPtr& observation,
 				size_t& rawlog_entry);
+		/**\}*/
 		/**\brief Return a reference to the underlying GRAPH_t instance. */
 		const GRAPH_t& getGraph() const { return m_graph; }
 		/**\brief Return the filename of the used rawlog file.*/

@@ -147,7 +147,6 @@ struct GRAPHSLAM_IMPEXP TGraphSlamOptions {
 	/**\brief Add a new Optimizer
 	 */
 
-	// TODO - make them static
 	/**\name Methods for initializing decider/optimizer instances based on the user
  	 * command line choices - http://stackoverflow.com/a/582456/2843583
  	 *
