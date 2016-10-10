@@ -25,6 +25,7 @@ namespace mrpt
 			DEFINE_VIRTUAL_SERIALIZABLE(CVehicleVelCmd)
 		public:
 			CVehicleVelCmd();
+			CVehicleVelCmd(const CVehicleVelCmd &other);
 			virtual ~CVehicleVelCmd();
 			CVehicleVelCmd & operator =(const CVehicleVelCmd &other);
 
