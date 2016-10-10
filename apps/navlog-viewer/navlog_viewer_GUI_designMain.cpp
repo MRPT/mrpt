@@ -34,6 +34,7 @@
 #include <mrpt/utils/CFileInputStream.h>
 #include <mrpt/utils/CConfigFileMemory.h>
 #include <mrpt/utils/CConfigFilePrefixer.h>
+#include <mrpt/system/string_utils.h>
 #include <mrpt/math/utils.h>
 #include <mrpt/utils/printf_vector.h>
 #include <mrpt/system/string_utils.h>
@@ -72,6 +73,8 @@ const long navlog_viewer_GUI_designDialog::ID_STATICTEXT6 = wxNewId();
 const long navlog_viewer_GUI_designDialog::ID_STATICTEXT7 = wxNewId();
 const long navlog_viewer_GUI_designDialog::ID_CHECKBOX1 = wxNewId();
 const long navlog_viewer_GUI_designDialog::ID_CHECKBOX2 = wxNewId();
+const long navlog_viewer_GUI_designDialog::ID_CHECKBOX3 = wxNewId();
+const long navlog_viewer_GUI_designDialog::ID_CHECKBOX4 = wxNewId();
 const long navlog_viewer_GUI_designDialog::ID_STATICTEXT8 = wxNewId();
 const long navlog_viewer_GUI_designDialog::ID_TEXTCTRL2 = wxNewId();
 const long navlog_viewer_GUI_designDialog::ID_PANEL3 = wxNewId();
@@ -202,16 +205,24 @@ navlog_viewer_GUI_designDialog::navlog_viewer_GUI_designDialog(wxWindow* parent,
     FlexGridSizer9->Add(txtSelectedPTG, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     cbDrawShapePath = new wxCheckBox(Panel3, ID_CHECKBOX1, _("Draw shape along path"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX1"));
     cbDrawShapePath->SetValue(true);
-    FlexGridSizer9->Add(cbDrawShapePath, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    FlexGridSizer9->Add(cbDrawShapePath, 1, wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
     FlexGridSizer9->Add(-1,-1,1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     cbGlobalFrame = new wxCheckBox(Panel3, ID_CHECKBOX2, _("Represent in global frame"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX2"));
     cbGlobalFrame->SetValue(true);
-    FlexGridSizer9->Add(cbGlobalFrame, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    FlexGridSizer9->Add(cbGlobalFrame, 1, wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
+    FlexGridSizer9->Add(-1,-1,1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    cbShowRelPoses = new wxCheckBox(Panel3, ID_CHECKBOX3, _("Show extrapolated poses"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX3"));
+    cbShowRelPoses->SetValue(true);
+    FlexGridSizer9->Add(cbShowRelPoses, 1, wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
+    FlexGridSizer9->Add(-1,-1,1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    cbShowAllDebugEntries = new wxCheckBox(Panel3, ID_CHECKBOX4, _("Show all debug fields"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX4"));
+    cbShowAllDebugEntries->SetValue(true);
+    FlexGridSizer9->Add(cbShowAllDebugEntries, 1, wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
     FlexGridSizer9->Add(-1,-1,1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     StaticText5 = new wxStaticText(Panel3, ID_STATICTEXT8, _("Shape draw min. dist:"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT8"));
     FlexGridSizer9->Add(StaticText5, 1, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5);
-    edShapeMinDist = new wxTextCtrl(Panel3, ID_TEXTCTRL2, _("1.0"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_TEXTCTRL2"));
-    FlexGridSizer9->Add(edShapeMinDist, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    edShapeMinDist = new wxTextCtrl(Panel3, ID_TEXTCTRL2, _("1.0"), wxDefaultPosition, wxSize(55,21), 0, wxDefaultValidator, _T("ID_TEXTCTRL2"));
+    FlexGridSizer9->Add(edShapeMinDist, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 5);
     Panel3->SetSizer(FlexGridSizer9);
     FlexGridSizer9->Fit(Panel3);
     FlexGridSizer9->SetSizeHints(Panel3);
@@ -245,7 +256,10 @@ navlog_viewer_GUI_designDialog::navlog_viewer_GUI_designDialog(wxWindow* parent,
     Connect(ID_SLIDER1,wxEVT_SCROLL_CHANGED,(wxObjectEventFunction)&navlog_viewer_GUI_designDialog::OnslidLogCmdScroll);
     Connect(ID_BUTTON4,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&navlog_viewer_GUI_designDialog::OnbtnPlayClick);
     Connect(ID_BUTTON5,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&navlog_viewer_GUI_designDialog::OnbtnStopClick);
+    Connect(ID_CHECKBOX1,wxEVT_COMMAND_CHECKBOX_CLICKED,(wxObjectEventFunction)&navlog_viewer_GUI_designDialog::OncbGlobalFrameClick);
     Connect(ID_CHECKBOX2,wxEVT_COMMAND_CHECKBOX_CLICKED,(wxObjectEventFunction)&navlog_viewer_GUI_designDialog::OncbGlobalFrameClick);
+    Connect(ID_CHECKBOX3,wxEVT_COMMAND_CHECKBOX_CLICKED,(wxObjectEventFunction)&navlog_viewer_GUI_designDialog::OncbGlobalFrameClick);
+    Connect(ID_CHECKBOX4,wxEVT_COMMAND_CHECKBOX_CLICKED,(wxObjectEventFunction)&navlog_viewer_GUI_designDialog::OncbGlobalFrameClick);
     Connect(ID_BUTTON6,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&navlog_viewer_GUI_designDialog::OnbtnMoreOpsClick);
     Connect(ID_TIMER1,wxEVT_TIMER,(wxObjectEventFunction)&navlog_viewer_GUI_designDialog::OntimPlayTrigger);
     Connect(ID_TIMER2,wxEVT_TIMER,(wxObjectEventFunction)&navlog_viewer_GUI_designDialog::OntimAutoloadTrigger);
@@ -254,7 +268,9 @@ navlog_viewer_GUI_designDialog::navlog_viewer_GUI_designDialog(wxWindow* parent,
     Connect(ID_MENUITEM3,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&navlog_viewer_GUI_designDialog::OnmnuSaveScoreMatrixSelected);
     //*)
 
-    {
+	cbShowAllDebugEntries->SetValue(false);
+
+	{
     	wxIcon FrameIcon;
     	FrameIcon.CopyFromBitmap(wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("MAIN_ICON")),wxART_FRAME_ICON));
     	SetIcon(FrameIcon);
@@ -333,8 +349,9 @@ void navlog_viewer_GUI_designDialog::loadLogfile(const std::string &filName)
 			if (IS_CLASS(obj,CLogFileRecord))
 			{
 				const CLogFileRecordPtr logptr = CLogFileRecordPtr(obj);
-				if (logptr->timestamp!=INVALID_TIMESTAMP)
-					m_log_last_tim = logptr->timestamp;
+				const auto it = logptr->timestamps.find("tim_start_iteration");
+				if ( it != logptr->timestamps.end())
+					m_log_last_tim = it->second;
 
 				if (!logptr->infoPerPTG.empty())
 				{
@@ -435,36 +452,35 @@ void navlog_viewer_GUI_designDialog::UpdateInfoFromLoadedLog()
 		}
 
 		std::vector<std::vector<double> > cmd_vels;
+		std::string sCmdVelTitle = "Velocity cmd: ";
+		const char cols[4] = { 'r','b','k','g' };
+		const char* cols_txt[4] = { "red","blue","black","green" };
+
 		for (size_t i=0;i<N;i++)
 		{
 			CLogFileRecordPtr logptr = CLogFileRecordPtr(m_logdata[i]);
 			const CLogFileRecord &log = *logptr;
-			const size_t vel_len = log.cmd_vel.size();
+			if (!log.cmd_vel) continue; // NOP cmd
+			const size_t vel_len = log.cmd_vel->getVelCmdLength();
 			if (i==0) {
 				cmd_vels.resize( vel_len );
-				for (size_t k=0;k<vel_len;k++)
+				for (size_t k = 0; k < vel_len; k++) {
 					cmd_vels[k].resize(N);
+					sCmdVelTitle += log.cmd_vel->getVelCmdDescription(k);
+					sCmdVelTitle += mrpt::format(" (%s), ",cols_txt[k%4]);
+				}
 			}
-			for (size_t k=0;k<vel_len;k++)
-				cmd_vels[k][i] = log.cmd_vel[k];
+			for (size_t k = 0; k < vel_len; k++)
+				cmd_vels[k][i] = log.cmd_vel->getVelCmdElement(k);
 		}
 		win->clf();
-		const char cols [4] = {'r','b','k','g'};
 		for (size_t i=0;i<cmd_vels.size();i++)
 		{
 			win->plot(cmd_vels[i],mrpt::format("%c-",cols[i%4]),mrpt::format("vc%u",(unsigned int)i));
-			win->plot(cmd_vels[i],mrpt::format("%c.",cols[i%4]),mrpt::format("vp%u",(unsigned int)i));
+			win->plot(cmd_vels[i],mrpt::format("%c3.",cols[i%4]),mrpt::format("vp%u",(unsigned int)i));
 		}
 		win->axis_fit();
-		switch (cmd_vels.size())
-		{
-		case 2:
-			win->setWindowTitle("Commanded v (red)/w (blue)");
-			break;
-		case 4:
-			win->setWindowTitle("Commanded vel (red)/dir (blue)/T_ramp (black)/W (green)");
-			break;
-		};
+		win->setWindowTitle(sCmdVelTitle);
 	}
 
 	std::string sDuration("???");
@@ -550,8 +566,41 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 				}
 			}
 
+			// Extrapolated poses from delay models:
 			{
-				// Obstacles:  Was: win1->plot(log.WS_Obstacles.getPointsBufferRef_x(),log.WS_Obstacles.getPointsBufferRef_y(),"b.4");
+				mrpt::opengl::CSetOfObjectsPtr gl_relposes;
+				mrpt::opengl::CRenderizablePtr gl_relposes_r = gl_robot_frame->getByName("relposes");  // Get or create if new
+				if (!gl_relposes_r) {
+					gl_relposes = mrpt::opengl::CSetOfObjects::Create();
+					gl_relposes->setName("relposes");
+					gl_robot_frame->insert(gl_relposes);
+				}
+				else {
+					gl_relposes = mrpt::opengl::CSetOfObjectsPtr(gl_relposes_r);
+				}
+
+				gl_relposes->clear();
+				if (cbShowRelPoses->IsChecked())
+				{
+					{
+						mrpt::opengl::CSetOfObjectsPtr gl_relpose_sense = mrpt::opengl::stock_objects::CornerXYSimple(0.3, 1);
+						gl_relpose_sense->setName("sense");
+						gl_relpose_sense->enableShowName(true);
+						gl_relpose_sense->setPose(log.relPoseSense);
+						gl_relposes->insert(gl_relpose_sense);
+					}
+					{
+						mrpt::opengl::CSetOfObjectsPtr gl_relpose_cmdvel = mrpt::opengl::stock_objects::CornerXYSimple(0.3, 1);
+						gl_relpose_cmdvel->setName("cmdVel");
+						gl_relpose_cmdvel->enableShowName(true);
+						gl_relpose_cmdvel->setPose(log.relPoseVelCmd);
+						gl_relposes->insert(gl_relpose_cmdvel);
+					}
+				}
+			}
+
+			{
+				// Obstacles:
 				mrpt::opengl::CPointCloudPtr gl_obs;
 				mrpt::opengl::CRenderizablePtr gl_obs_r = gl_robot_frame->getByName("obs");  // Get or create if new
 				if (!gl_obs_r) {
@@ -564,6 +613,9 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 					gl_obs = mrpt::opengl::CPointCloudPtr(gl_obs_r);
 				}
 				gl_obs->loadFromPointsMap(&log.WS_Obstacles);
+				if (cbShowRelPoses->IsChecked())
+						gl_obs->setPose(log.relPoseSense);
+				else	gl_obs->setPose(mrpt::poses::CPose3D());
 			}
 
 			{
@@ -579,22 +631,41 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 				} else {
 					gl_path = mrpt::opengl::CSetOfLinesPtr(gl_path_r);
 				}
-				if ((int)m_logdata_ptg_paths.size()>log.nSelectedPTG)
+				const bool is_NOP_cmd = log.ptg_index_NOP >= 0;
+				const size_t sel_ptg_idx = !is_NOP_cmd ? log.nSelectedPTG : log.ptg_index_NOP;
+				if ((int)m_logdata_ptg_paths.size()>sel_ptg_idx)
 				{
-					mrpt::nav::CParameterizedTrajectoryGeneratorPtr ptg = m_logdata_ptg_paths[log.nSelectedPTG];
+					mrpt::nav::CParameterizedTrajectoryGeneratorPtr ptg = m_logdata_ptg_paths[sel_ptg_idx];
 					if (ptg)
 					{
 						// Set instantaneous kinematic state:
-						ptg->updateCurrentRobotVel(log.cur_vel_local);
+						if (!is_NOP_cmd)
+								ptg->updateCurrentRobotVel(log.cur_vel_local);
+						else	ptg->updateCurrentRobotVel(log.ptg_last_curRobotVelLocal);
 
 						// Draw path:
-						const int selected_k = ptg->alpha2index( log.infoPerPTG[log.nSelectedPTG].desiredDirection );
+						const int selected_k =
+							log.ptg_index_NOP < 0 ?
+							ptg->alpha2index(log.infoPerPTG[sel_ptg_idx].desiredDirection)
+							:
+							log.ptg_last_k_NOP;
 						float max_dist = ptg->getRefDistance();
 						gl_path->clear();
 						ptg->add_robotShape_to_setOfLines(*gl_path);
 
 						ptg->renderPathAsSimpleLine(selected_k,*gl_path,0.10, max_dist);
 						gl_path->setColor_u8( mrpt::utils::TColor(0xff,0x00,0x00) );
+
+						// PTG origin:
+						// enable delays model?
+						mrpt::poses::CPose2D ptg_origin = (cbShowRelPoses->IsChecked()) ? log.relPoseVelCmd : CPose2D();
+
+						// "NOP cmd" case:
+						if (log.ptg_index_NOP >= 0) {
+							ptg_origin = ptg_origin - log.rel_cur_pose_wrt_last_vel_cmd_NOP;
+						}
+
+						gl_path->setPose(ptg_origin);
 
 						// Overlay a sequence of robot shapes:
 						if (cbDrawShapePath->IsChecked())
@@ -655,26 +726,34 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 		// Show extra info as text msgs:
 		// ---------------------------------
 		const double fy = 10, Ay = 15;   // Font size & line spaces
+		int lineY = 0, unique_id = 0;
+		win1->clearTextMessages();
 
-		win1->addTextMessage(5.0, 5+0*Ay, mrpt::format("Timestamp: %s",mrpt::system::dateTimeLocalToString( log.timestamp ).c_str() ),
-				mrpt::utils::TColorf(1,1,1), "mono", fy, mrpt::opengl::NICE,  0 /*unique txt index*/ );
+		if (cbShowAllDebugEntries->IsChecked()) {
+			for (const auto &e : log.timestamps)
+			{
+				win1->addTextMessage(5.0, 5 + (lineY++) * Ay, mrpt::format("Timestamp %-20s=%s", e.first.c_str(), mrpt::system::dateTimeLocalToString(e.second).c_str()),
+					mrpt::utils::TColorf(1, 1, 1), "mono", fy, mrpt::opengl::NICE, unique_id++);
+			}
+		}
 
-		win1->addTextMessage(5.0, 5+1*Ay, mrpt::format("cmd_vel=%s cur_vel=[%.02f m/s, %0.2f m/s, %.02f dps] cur_vel_local=[%.02f m/s, %0.2f m/s, %.02f dps]",
-			mrpt::utils::sprintf_vector("%.02f",log.cmd_vel).c_str(),
+		win1->addTextMessage(5.0, 5+ (lineY++)*Ay, mrpt::format("cmd_vel=%s", log.cmd_vel ? log.cmd_vel->asString().c_str() : "NOP (Continue last PTG)"),
+			mrpt::utils::TColorf(1,1,1), "mono", fy, mrpt::opengl::NICE, unique_id++);
+
+		win1->addTextMessage(5.0, 5+ (lineY++)*Ay, mrpt::format("cur_vel=[%.02f m/s, %0.2f m/s, %.02f dps] cur_vel_local=[%.02f m/s, %0.2f m/s, %.02f dps]",
 			log.cur_vel.vx, log.cur_vel.vy, mrpt::utils::RAD2DEG(log.cur_vel.omega),
 			log.cur_vel_local.vx, log.cur_vel_local.vy, mrpt::utils::RAD2DEG(log.cur_vel_local.omega) ),
-			mrpt::utils::TColorf(1,1,1), "mono", fy, mrpt::opengl::NICE,  1 /*unique txt index*/ );
+			mrpt::utils::TColorf(1,1,1), "mono", fy, mrpt::opengl::NICE, unique_id++);
 
-		win1->addTextMessage(5.0, 5+2*Ay, mrpt::format("robot_pose=%s",log.robotOdometryPose.asString().c_str()),
-			mrpt::utils::TColorf(1,1,1), "mono", fy, mrpt::opengl::NICE,  2 /*unique txt index*/ );
+		win1->addTextMessage(5.0, 5+ (lineY++)*Ay, mrpt::format("robot_pose=%s",log.robotOdometryPose.asString().c_str()),
+			mrpt::utils::TColorf(1,1,1), "mono", fy, mrpt::opengl::NICE, unique_id++);
 
+		if (log.cmd_vel_original)
 		{
 			std::stringstream ss;
-			ss << "filtered versions of cmd_vel: ";
-			for (size_t i=0;i<log.cmd_vel_filterings.size();i++)
-				ss << "#" << i << mrpt::utils::sprintf_vector("%.02f",log.cmd_vel_filterings[i]) << " ";
-
-			win1->addTextMessage(5.0, 5+3*Ay, ss.str(), mrpt::utils::TColorf(1,1,1), "mono", fy, mrpt::opengl::NICE,  3 /*unique txt index*/ );
+			ss << "original cmd_vel: ";
+			ss << log.cmd_vel_original->asString();
+			win1->addTextMessage(5.0, 5+ (lineY++)*Ay, ss.str(), mrpt::utils::TColorf(1,1,1), "mono", fy, mrpt::opengl::NICE, unique_id++);
 		}
 
 		{
@@ -682,7 +761,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 			ss << "Performance: ";
 			for (size_t i=0;i<log.infoPerPTG.size();i++)
 				ss << "PTG#" << i << mrpt::format(" TPObs:%ss HoloNav:%ss |", mrpt::system::unitsFormat(log.infoPerPTG[i].timeForTPObsTransformation).c_str(),mrpt::system::unitsFormat(log.infoPerPTG[i].timeForHolonomicMethod).c_str());
-			win1->addTextMessage(5.0, 5+4*Ay, ss.str(), mrpt::utils::TColorf(1,1,1), "mono", fy, mrpt::opengl::NICE,  4 /*unique txt index*/ );
+			win1->addTextMessage(5.0, 5+ (lineY++)*Ay, ss.str(), mrpt::utils::TColorf(1,1,1), "mono", fy, mrpt::opengl::NICE, unique_id++);
 		}
 
 		for (unsigned int nPTG=0;nPTG<log.nPTGs;nPTG++)
@@ -694,10 +773,20 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 			     col = mrpt::utils::TColorf(1,1,1);
 			else col = mrpt::utils::TColorf(.8,.8,.8);
 
-			win1->addTextMessage(5.0, 5+ Ay*(5+nPTG),
+			win1->addTextMessage(5.0, 5+ Ay*(lineY++),
 				mrpt::format("PTG#%u: Eval=%5.03f factors=%s", nPTG, pI.evaluation, sprintf_vector("%5.02f ", pI.evalFactors).c_str() ),
-				col, "mono", fy, mrpt::opengl::NICE,  10+nPTG /*unique txt index*/ );
+				col, "mono", fy, mrpt::opengl::NICE, unique_id++);
+		}
 
+		win1->addTextMessage(5.0, 5 + (lineY++)*Ay, mrpt::format("relPoseSense: %s relPoseVelCmd:%s",
+			log.relPoseSense.asString().c_str(),
+			log.relPoseVelCmd.asString().c_str()),
+			mrpt::utils::TColorf(1, 1, 1), "mono", fy, mrpt::opengl::NICE, unique_id++);
+
+		if (cbShowAllDebugEntries->IsChecked()) {
+			for (const auto &e : log.values)
+				win1->addTextMessage(5.0, 5 + (lineY++) * Ay, format("%-30s=%s ", e.first.c_str(), mrpt::system::unitsFormat(e.second, 3,false).c_str()),
+					mrpt::utils::TColorf(1, 1, 1), "mono", fy, mrpt::opengl::NICE, unique_id++);
 		}
 
 		win1->repaint();
@@ -705,7 +794,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 
 	// Draw TP-obstacles
 	// --------------------------------
-	for (unsigned int nPTG=0;nPTG<log.nPTGs;nPTG++)
+	for (unsigned int nPTG=0;nPTG<log.infoPerPTG.size();nPTG++)  // log.infoPerPTG.size() may be != nPTGs in the last entry is used for "NOP cmdvel"
 	{
 		CDisplayWindowPlotsPtr &win = m_mywins[format("PTG%u",nPTG)];
 		if (!win)  {
@@ -760,6 +849,8 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 
 		// Target:
 		win->plot(make_vector<1,double>(pI.TP_Target.x),make_vector<1,double>(pI.TP_Target.y),"k.9", "TPTARGET");
+		// Current robot pt (normally in pure reactive, at (0,0)):
+		win->plot(make_vector<1, double>(pI.TP_Robot.x), make_vector<1, double>(pI.TP_Robot.y), "r.7", "TPROBOT");
 
 		// In the case of ND algorithm: draw gaps
 		if (pI.HLFR && IS_CLASS(pI.HLFR, CLogFileRecord_ND))
@@ -848,12 +939,14 @@ void navlog_viewer_GUI_designDialog::OnmnuMatlabPlotsSelected(wxCommandEvent& ev
       << "%  From log: " << string(edLogFile->GetValue().mbc_str()) << "\n"
       << "% -------------------------------------------------------------------------\n\n";
 
-    f << "%%\n"
-    << "function [] = main()\n"
+	f << "%%\n"
+		<< "function [] = main()\n"
+		<< "figure;"
+		<< "title('Path for " << mrpt::system::extractFileName(filName) <<"');"
     << "% Robot shape: (x,y) in each line\n"
     << "rs = [-0.3 -0.3;0.6 -0.3;0.6 0.3;-0.3 0.3];\n"
-    << "decimate_robot_shapes = 15;"
-    << "decim_cnt=0;";
+    << "dec_shps = 15;"
+    << "dec=0;";
 
     const int DECIMATE_POINTS = 10;
     int decim_point_cnt =0;
@@ -867,16 +960,19 @@ void navlog_viewer_GUI_designDialog::OnmnuMatlabPlotsSelected(wxCommandEvent& ev
         const CLogFileRecordPtr logsptr = CLogFileRecordPtr( m_logdata[i] );
         const CLogFileRecord * logptr = logsptr.pointer();
 
-        f << format("decim_cnt=decim_cnt+1; if (decim_cnt>=decimate_robot_shapes); drawRobotShape(rs,[%f %f %f]); decim_cnt=0; end\n",
-            logptr->robotOdometryPose.x(),
-            logptr->robotOdometryPose.y(),
-            logptr->robotOdometryPose.phi()
-            );
+		const CPose2D robotPose = logptr->robotOdometryPose;
+		CPose2D observationBasePose = robotPose;
+
+		if (cbShowRelPoses->IsChecked())
+			observationBasePose = observationBasePose + logptr->relPoseSense;
+
+        f << format("dec=dec+1; if (dec>=dec_shps); drawRobotShape(rs,[%f %f %f]); dec=0; end\n",
+			robotPose.x(), robotPose.y(), robotPose.phi() );
 
         if (++decim_point_cnt>=DECIMATE_POINTS)
         {
             CSimplePointsMap pts;
-            pts.changeCoordinatesReference( logptr->WS_Obstacles, logptr->robotOdometryPose );
+            pts.changeCoordinatesReference( logptr->WS_Obstacles, observationBasePose);
 
             const std::vector<float> &pX = pts.getPointsBufferRef_x();
             const std::vector<float> &pY = pts.getPointsBufferRef_y();
@@ -886,7 +982,7 @@ void navlog_viewer_GUI_designDialog::OnmnuMatlabPlotsSelected(wxCommandEvent& ev
         }
 
         // Target:
-        const mrpt::math::TPoint2D trg_glob = mrpt::math::TPoint2D( logptr->robotOdometryPose+logptr->WS_target_relative );
+        const mrpt::math::TPoint2D trg_glob = mrpt::math::TPoint2D(robotPose +logptr->WS_target_relative );
         if (TX.empty() || std::abs((*TX.rbegin())-trg_glob.x)>1e-3 || std::abs((*TY.rbegin())-trg_glob.y)>1e-3 )
         {
             TX.push_back(trg_glob.x);
@@ -908,7 +1004,7 @@ void navlog_viewer_GUI_designDialog::OnmnuMatlabPlotsSelected(wxCommandEvent& ev
         f << TX[k] << " " << TY[k] << "\n";
 
 	f << "];\n"
-	  << "plot(Ts(:,1),Ts(:,2),'rx','MarkerSize',5);\n";
+	  << "plot(Ts(:,1),Ts(:,2),'rx','MarkerSize',10);\n";
 
     f << "axis equal;\n"
     << "\n";
@@ -988,7 +1084,7 @@ void navlog_viewer_GUI_designDialog::OnmnuSaveScoreMatrixSelected(wxCommandEvent
 		{
 			const CHolonomicLogFileRecordPtr & hlog = logptr->infoPerPTG[iPTG].HLFR;
 			if (!hlog.present()) continue;
-			
+
 			const mrpt::math::CMatrixD * dirs_scores = hlog->getDirectionScores();
 			if (!dirs_scores || dirs_scores->getRowCount()<2) continue;
 

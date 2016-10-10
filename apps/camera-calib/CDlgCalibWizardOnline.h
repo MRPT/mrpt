@@ -22,6 +22,8 @@
 #include <wx/textctrl.h>
 #include <wx/radiobox.h>
 #include <wx/timer.h>
+
+#include <wx/choice.h>
 //*)
 
 #include <mrpt/vision/chessboard_camera_calib.h>
@@ -61,6 +63,7 @@ class CDlgCalibWizardOnline: public wxDialog
 		wxStaticText* StaticText6;
 		wxTextCtrl* edLengthX;
 		wxButton* btnStart;
+    		wxChoice* pnpSelect;
 		//*)
 
 	protected:
@@ -87,6 +90,7 @@ class CDlgCalibWizardOnline: public wxDialog
 		static const long ID_BUTTON3;
 		static const long ID_CUSTOM1;
 		static const long ID_TIMER1;
+		static const long ID_CHOICE1;
 		//*)
 
 	private:

@@ -13,7 +13,6 @@
 #include <mrpt/system/os.h>
 #include <mrpt/system/os.h>
 #include <mrpt/utils/CSerializable.h>
-#include <mrpt/utils/CStartUpClassesRegister.h>
 #include <mrpt/utils/types_math.h> // CVector* types
 
 #include <map>
@@ -343,13 +342,8 @@ CStream& utils::operator>>(mrpt::utils::CStream&in, char *s)
 //#define CSTREAM_VERBOSE     1
 #define CSTREAM_VERBOSE     0
 
-extern CStartUpClassesRegister  mrpt_base_class_reg;
-
-static const int dumm = mrpt_base_class_reg.do_nothing(); // Avoid compiler removing this class in static linking
-
-
 template <bool EXISTING_OBJ>
-CSerializable* CStream::internal_ReadObject(CSerializable *existingObj)
+void CStream::internal_ReadObject(CSerializablePtr &newObj,CSerializable *existingObj)
 {
 	// Automatically register all classes when the first one is registered.
 	registerAllPendingClasses();
@@ -435,6 +429,7 @@ CSerializable* CStream::internal_ReadObject(CSerializable *existingObj)
 				THROW_EXCEPTION(msg)
 			}
 			obj = static_cast<CSerializable*>(classId->createObject());
+			newObj = CSerializablePtr(obj);
 		}
 
 		// Go on, read it:
@@ -447,8 +442,6 @@ CSerializable* CStream::internal_ReadObject(CSerializable *existingObj)
 			if (sizeof(endFlag)!=ReadBuffer( (void*)&endFlag, sizeof(endFlag) )) THROW_EXCEPTION("Cannot read object streaming version from stream!");
 			if (endFlag!=SERIALIZATION_END_FLAG) THROW_EXCEPTION_CUSTOM_MSG1("end-flag missing: There is a bug in the deserialization method of class: '%s'",strClassName.c_str());
 		}
-
-		return obj;
 	}
 	catch (std::bad_alloc &)
 	{
@@ -476,7 +469,9 @@ CSerializable* CStream::internal_ReadObject(CSerializable *existingObj)
  ---------------------------------------------------------------*/
 CSerializablePtr CStream::ReadObject()
 {
-	return CSerializablePtr( internal_ReadObject<false>() );
+	CSerializablePtr ret;
+	internal_ReadObject<false>(ret, NULL);
+	return ret;
 }
 
 /*---------------------------------------------------------------
@@ -486,7 +481,8 @@ CSerializablePtr CStream::ReadObject()
  ---------------------------------------------------------------*/
 void CStream::ReadObject(CSerializable *existingObj)
 {
-	internal_ReadObject<true>(existingObj);
+	CSerializablePtr dummy;
+	internal_ReadObject<true>(dummy,existingObj);
 }
 
 /*---------------------------------------------------------------

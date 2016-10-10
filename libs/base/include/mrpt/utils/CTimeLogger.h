@@ -45,7 +45,7 @@ namespace mrpt
 				TCallData();
 
 				size_t n_calls;
-				double min_t,max_t,mean_t;
+				double min_t,max_t,mean_t,last_t;
 				std::stack<double,std::vector<double> >   open_calls;
 				bool has_time_units;
 			};
@@ -60,7 +60,7 @@ namespace mrpt
 			struct BASE_IMPEXP TCallStats
 			{
 				size_t n_calls;
-				double min_t,max_t,mean_t,total_t;
+				double min_t,max_t,mean_t,total_t,last_t;
 			};
 
 			CTimeLogger(bool enabled=true, const std::string& name=""); //! Default constructor
@@ -88,6 +88,8 @@ namespace mrpt
 			}
 			/** Return the mean execution time of the given "section", or 0 if it hasn't ever been called "enter" with that section name */
 			double getMeanTime(const std::string &name) const;
+			/** Return the last execution time of the given "section", or 0 if it hasn't ever been called "enter" with that section name */
+			double getLastTime(const std::string &name) const;
 		}; // End of class def.
 
 

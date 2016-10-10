@@ -10,20 +10,12 @@
 #include "topography-precomp.h"
 #include <mrpt/topography.h>
 
-#include <mrpt/utils/CStartUpClassesRegister.h>
-
+#include <mrpt/utils/initializer.h>
 
 using namespace mrpt::topography;
 using namespace mrpt::utils;
 
-void registerAllClasses_mrpt_topography();
-
-CStartUpClassesRegister  mrpt_topography_class_reg(&registerAllClasses_mrpt_topography);
-
-/*---------------------------------------------------------------
-					registerAllClasses_mrpt_topography
-  ---------------------------------------------------------------*/
-void registerAllClasses_mrpt_topography()
+MRPT_INITIALIZER(registerAllClasses_mrpt_topography)
 {
 #if !defined(DISABLE_MRPT_AUTO_CLASS_REGISTRATION)
 //	registerClass( CLASS_ID( XXXX ) );
