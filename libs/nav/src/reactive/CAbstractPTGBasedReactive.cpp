@@ -742,7 +742,8 @@ void CAbstractPTGBasedReactive::STEP7_GenerateSpeedCommands( const THolonomicMov
 			*cmd_vel_original = *new_vel_cmd;
 
 			// Scale holonomic speeds to real-world one:
-			m_robot.cmdVel_scale(*new_vel_cmd, in_movement.speed);
+			MRPT_LOG_DEBUG_FMT("STEP7_GenerateSpeedCommands: new_vel_cmd=0x%0X in_movement.speed=%f", (void*)new_vel_cmd.pointer(), in_movement.speed );
+			m_robot.cmdVel_scale(*new_vel_cmd, in_movement.speed );
 
 			if (!m_last_vel_cmd) // first iteration? Use default values:
 				m_last_vel_cmd = in_movement.PTG->getSupportedKinematicVelocityCommand();

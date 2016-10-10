@@ -19,6 +19,11 @@ IMPLEMENTS_VIRTUAL_SERIALIZABLE(CVehicleVelCmd, CSerializable, mrpt::kinematics)
 CVehicleVelCmd::CVehicleVelCmd()
 {
 }
+CVehicleVelCmd::CVehicleVelCmd(const CVehicleVelCmd &other)
+{
+	*this = other;
+}
+
 CVehicleVelCmd::~CVehicleVelCmd()
 {
 }
