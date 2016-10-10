@@ -11,19 +11,12 @@
 
 #include <mrpt/obs/CAction.h>
 #include <mrpt/utils/CStream.h>
-#include <mrpt/utils/CStartUpClassesRegister.h>
-
 
 using namespace mrpt::obs;
 using namespace mrpt::utils;
 
 
 IMPLEMENTS_VIRTUAL_SERIALIZABLE(CAction, CSerializable, mrpt::obs)
-
-
-extern CStartUpClassesRegister  mrpt_obs_class_reg;
-
-static const int dumm = mrpt_obs_class_reg.do_nothing(); // Avoid compiler removing this class in static linking
 
 
 /*---------------------------------------------------------------

@@ -57,7 +57,7 @@ namespace mrpt
 			/** A common template code for both versions of CStream::ReadObject()
 			  * - EXISTING_OBJ=true  -> read in the object passed as argument
 			  * - EXISTING_OBJ=false -> build a new object and return it */
-			template <bool EXISTING_OBJ> CSerializable* internal_ReadObject(CSerializable *existingObj = NULL);
+			template <bool EXISTING_OBJ> void internal_ReadObject(CSerializablePtr &newObj, CSerializable *existingObj = NULL);
 
 		public:
 			/* Constructor

@@ -34,6 +34,8 @@ namespace mrpt
 		virtual void loadFromConfigFile(const mrpt::utils::CConfigFileBase &cfg,const std::string &sSection) MRPT_OVERRIDE;
 		virtual void saveToConfigFile(mrpt::utils::CConfigFileBase &cfg,const std::string &sSection) const MRPT_OVERRIDE;
 		virtual void loadDefaultParams() MRPT_OVERRIDE;
+		virtual bool supportVelCmdNOP() const MRPT_OVERRIDE;
+		virtual double maxTimeInVelCmdNOP(int path_k) const MRPT_OVERRIDE;
 
 		std::string getDescription() const MRPT_OVERRIDE;
 		bool inverseMap_WS2TP(double x, double y, int &out_k, double &out_d, double tolerance_dist = 0.10) const MRPT_OVERRIDE;
@@ -41,7 +43,8 @@ namespace mrpt
 		void updateCurrentRobotVel(const mrpt::math::TTwist2D &curVelLocal);
 
 		/** Converts a discretized "alpha" value into a feasible motion command or action. See derived classes for the meaning of these actions */
-		void directionToMotionCommand( uint16_t k, std::vector<double> &out_action_cmd ) const MRPT_OVERRIDE;
+		virtual mrpt::kinematics::CVehicleVelCmdPtr directionToMotionCommand(uint16_t k) const MRPT_OVERRIDE;
+		virtual mrpt::kinematics::CVehicleVelCmdPtr getSupportedKinematicVelocityCommand() const MRPT_OVERRIDE;
 
 		size_t getPathStepCount(uint16_t k) const MRPT_OVERRIDE;
 		void getPathPose(uint16_t k, uint16_t step, mrpt::math::TPose2D &p) const MRPT_OVERRIDE;

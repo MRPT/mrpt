@@ -48,8 +48,7 @@ void  COccupancyGridMap2D::laserScanSimulator(
 	CPose2D		sensorPose(sensorPose3D);
 
 	// Scan size:
-	inout_Scan.scan.resize(N);
-	inout_Scan.validRange.resize(N);
+	inout_Scan.resizeScan(N);
 
 	double  A = sensorPose.phi() + (inout_Scan.rightToLeft ? -0.5:+0.5) *inout_Scan.aperture;
 	const double AA = (inout_Scan.rightToLeft ? 1.0:-1.0) * (inout_Scan.aperture / (N-1));
@@ -59,12 +58,14 @@ void  COccupancyGridMap2D::laserScanSimulator(
 	for (size_t i=0;i<N;i+=decimation,A+=AA*decimation)
 	{
 		bool valid;
+		float out_range;
 		simulateScanRay(
 			sensorPose.x(),sensorPose.y(),A,
-			inout_Scan.scan[i],valid,
+			out_range,valid,
 			inout_Scan.maxRange, free_thres,
 			noiseStd, angleNoiseStd );
-		inout_Scan.validRange[i] = valid ? 1:0;
+		inout_Scan.setScanRange( i, out_range);
+		inout_Scan.setScanRangeValidity(i, valid);
 	}
 
 	MRPT_END
@@ -278,11 +279,10 @@ void COccupancyGridMap2D::laserScanSimulatorWithUncertainty(
 	out_results.scanWithUncert.rangeScan.rightToLeft = in_params.rightToLeft;
 	out_results.scanWithUncert.rangeScan.sensorPose = in_params.sensorPose;
 	
-	out_results.scanWithUncert.rangeScan.scan.resize(in_params.nRays);
-	out_results.scanWithUncert.rangeScan.validRange.resize(in_params.nRays);
+	out_results.scanWithUncert.rangeScan.resizeScan(in_params.nRays);
 	for (unsigned i=0;i<in_params.nRays;i++) {
-		out_results.scanWithUncert.rangeScan.scan[i] = (float)out_results.scanWithUncert.rangesMean[i];
-		out_results.scanWithUncert.rangeScan.validRange[i] = 1;
+		out_results.scanWithUncert.rangeScan.setScanRange(i, (float)out_results.scanWithUncert.rangesMean[i] );
+		out_results.scanWithUncert.rangeScan.setScanRangeValidity(i, true);
 	}
 
 }

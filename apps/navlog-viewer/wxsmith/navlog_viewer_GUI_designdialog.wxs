@@ -218,8 +218,9 @@
 																<object class="wxCheckBox" name="ID_CHECKBOX1" variable="cbDrawShapePath" member="yes">
 																	<label>Draw shape along path</label>
 																	<checked>1</checked>
+																	<handler function="OncbGlobalFrameClick" entry="EVT_CHECKBOX" />
 																</object>
-																<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+																<flag>wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL</flag>
 																<border>5</border>
 																<option>1</option>
 															</object>
@@ -234,7 +235,37 @@
 																	<checked>1</checked>
 																	<handler function="OncbGlobalFrameClick" entry="EVT_CHECKBOX" />
 																</object>
+																<flag>wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL</flag>
+																<border>5</border>
+																<option>1</option>
+															</object>
+															<object class="spacer">
 																<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+																<border>5</border>
+																<option>1</option>
+															</object>
+															<object class="sizeritem">
+																<object class="wxCheckBox" name="ID_CHECKBOX3" variable="cbShowRelPoses" member="yes">
+																	<label>Show extrapolated poses</label>
+																	<checked>1</checked>
+																	<handler function="OncbGlobalFrameClick" entry="EVT_CHECKBOX" />
+																</object>
+																<flag>wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL</flag>
+																<border>5</border>
+																<option>1</option>
+															</object>
+															<object class="spacer">
+																<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+																<border>5</border>
+																<option>1</option>
+															</object>
+															<object class="sizeritem">
+																<object class="wxCheckBox" name="ID_CHECKBOX4" variable="cbShowAllDebugEntries" member="yes">
+																	<label>Show all debug fields</label>
+																	<checked>1</checked>
+																	<handler function="OncbGlobalFrameClick" entry="EVT_CHECKBOX" />
+																</object>
+																<flag>wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL</flag>
 																<border>5</border>
 																<option>1</option>
 															</object>
@@ -254,8 +285,9 @@
 															<object class="sizeritem">
 																<object class="wxTextCtrl" name="ID_TEXTCTRL2" variable="edShapeMinDist" member="yes">
 																	<value>1.0</value>
+																	<size>55,21</size>
 																</object>
-																<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+																<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 																<border>5</border>
 																<option>1</option>
 															</object>

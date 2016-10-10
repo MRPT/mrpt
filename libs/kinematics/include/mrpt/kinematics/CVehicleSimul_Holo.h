@@ -9,6 +9,7 @@
 #pragma once
 
 #include <mrpt/kinematics/CVehicleSimulVirtualBase.h>
+#include <mrpt/kinematics/CVehicleVelCmd_Holo.h>
 
 namespace mrpt
 {
@@ -21,7 +22,7 @@ namespace kinematics
 	class KINEMATICS_IMPEXP CVehicleSimul_Holo : public CVehicleSimulVirtualBase
 	{
 	public:
-		enum { VEL_CMD_LENGTH = 4 };
+		typedef CVehicleVelCmd_Holo  kinematic_cmd_t;
 
 		CVehicleSimul_Holo();
 
@@ -33,24 +34,13 @@ namespace kinematics
 		 */
 		void sendVelRampCmd(double vel, double dir, double ramp_time, double rot_speed);
 
-		/** Sends a velocity command to the robot:
-		  * `cmd_vel=[vel dir_local ramp_time rot_speed]`:
-		  * - vel: speed (m/s)
-		  * - dir_local: direction, **relative** to the current robot heading (radians). 0 means forward.
-		  * - ramp_time: Blending time between current and target time.
-		  * - rot_speed: (rad/s) rotational speed for rotating such as the robot slowly faces forward.
-		  */
-		void sendVelCmd(const std::vector<double> &cmd_vel) MRPT_OVERRIDE
-		{
-			ASSERT_EQUAL_(cmd_vel.size(), getVelCmdLength());
-			sendVelRampCmd(cmd_vel[0],cmd_vel[1]+m_pose.phi,cmd_vel[2],cmd_vel[3]);
+		void sendVelCmd(const CVehicleVelCmd &cmd_vel) MRPT_OVERRIDE {
+			const kinematic_cmd_t* cmd = reinterpret_cast<const kinematic_cmd_t*>(&cmd_vel);
+			ASSERTMSG_(cmd, "Wrong vehicle kinematic class, expected `CVehicleVelCmd_Holo`");
+			sendVelRampCmd(cmd->vel, cmd->dir_local + m_pose.phi /* local to global dir */ ,cmd->ramp_time,cmd->rot_speed);
 		}
-
-		size_t getVelCmdLength() const  MRPT_OVERRIDE {
-			return VEL_CMD_LENGTH;
-		}
-		std::string getVelCmdDescription() const  MRPT_OVERRIDE {
-			return std::string("vel dir ramp_time rot_speed");
+		CVehicleVelCmdPtr getVelCmdType() const MRPT_OVERRIDE {
+			return CVehicleVelCmdPtr(new kinematic_cmd_t());
 		}
 
 	private:

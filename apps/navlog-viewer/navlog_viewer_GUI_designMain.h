@@ -82,6 +82,8 @@ class navlog_viewer_GUI_designDialog: public wxFrame //wxDialog
 		static const long ID_STATICTEXT7;
 		static const long ID_CHECKBOX1;
 		static const long ID_CHECKBOX2;
+		static const long ID_CHECKBOX3;
+		static const long ID_CHECKBOX4;
 		static const long ID_STATICTEXT8;
 		static const long ID_TEXTCTRL2;
 		static const long ID_PANEL3;
@@ -110,6 +112,7 @@ class navlog_viewer_GUI_designDialog: public wxFrame //wxDialog
 		wxStaticText* StaticText1;
 		wxMenu mnuMoreOps;
 		wxStaticText* StaticText3;
+		wxCheckBox* cbShowAllDebugEntries;
 		wxPanel* Panel3;
 		wxSlider* slidLog;
 		wxTimer timPlay;
@@ -118,6 +121,7 @@ class navlog_viewer_GUI_designDialog: public wxFrame //wxDialog
 		wxStaticText* txtLogEntries;
 		wxMenuItem* mnuMatlabPlots;
 		wxFlexGridSizer* flexGridRightHand;
+		wxCheckBox* cbShowRelPoses;
 		wxCustomButton* btnHelp;
 		wxTextCtrl* edLogFile;
 		wxCustomButton* btnLoad;

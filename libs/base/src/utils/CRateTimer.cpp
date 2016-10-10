@@ -9,34 +9,35 @@
 
 #include "base-precomp.h"  // Precompiled headers
 
+#include <mrpt/utils/CRateTimer.h>
+#include <mrpt/utils/mrpt_macros.h>
+#include <chrono>
+#include <thread>
 
-#include <mrpt/utils/CStartUpClassesRegister.h>
-
-#include "internal_class_registry.h"
-
-
-using namespace mrpt;
 using namespace mrpt::utils;
 
-
-/*---------------------------------------------------------------
-                Constructor
- ---------------------------------------------------------------*/
-CStartUpClassesRegister::CStartUpClassesRegister( void (*ptr_register_func)() ) :
-	m_ptr_register_func( ptr_register_func ),
-	m_dummy_var(0)
+CRateTimer::CRateTimer(const double rate_hz)
 {
-	// Put the function into the thread-safe list of pending registrations:
-	pending_class_registers().push( new TRegisterFunction(ptr_register_func) );
-	++pending_class_registers_count();
+	setRate(rate_hz);
+}
+CRateTimer::~CRateTimer()
+{
 }
 
-CStartUpClassesRegister::~CStartUpClassesRegister()
+void CRateTimer::setRate(const double rate_hz)
 {
-	m_ptr_register_func=NULL;
+	ASSERT_ABOVE_(rate_hz, 0.0);
+	m_rate_hz = rate_hz;
 }
-
-int CStartUpClassesRegister::do_nothing()
+bool CRateTimer::sleep()
 {
-	return ++m_dummy_var;
+	const double elapsed_tim = m_tictac.Tac();
+	m_tictac.Tic();
+	const double period = 1.0 / m_rate_hz;
+	const int64_t wait_tim_us = 1000000L *( period- elapsed_tim);
+	if (wait_tim_us < 0)
+		return false;
+
+	std::this_thread::sleep_for( std::chrono::milliseconds(wait_tim_us));
+	return true;
 }

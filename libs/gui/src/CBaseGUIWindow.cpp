@@ -13,8 +13,6 @@
 #include <mrpt/system/os.h>
 #include <mrpt/gui/WxSubsystem.h>
 
-#include <mrpt/utils/CStartUpClassesRegister.h>
-
 using namespace mrpt;
 using namespace mrpt::gui;
 using namespace mrpt::utils;
@@ -22,9 +20,6 @@ using namespace mrpt::system;
 using namespace std;
 
 IMPLEMENTS_VIRTUAL_MRPT_OBJECT(CBaseGUIWindow, CObject,mrpt::gui)
-
-extern CStartUpClassesRegister  mrpt_gui_class_reg;
-static const int dumm = mrpt_gui_class_reg.do_nothing(); // Avoid compiler removing this class in static linking
 
 
 /*---------------------------------------------------------------

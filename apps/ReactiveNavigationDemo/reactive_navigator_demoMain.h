@@ -259,8 +259,9 @@ class reactive_navigator_demoframe: public wxFrame
 				mrpt::nav::CRobot2NavInterfaceForSimulator_DiffDriven(simul),
 				MyNavIFBase(ref_latest_obstacles)
 			{}
-			virtual bool senseObstacles( mrpt::maps::CSimplePointsMap &obstacles ) {
+			virtual bool senseObstacles(mrpt::maps::CSimplePointsMap &obstacles, mrpt::system::TTimeStamp &timestamp) MRPT_OVERRIDE {
 				obstacles = latest_obstacles;
+				timestamp = mrpt::system::now();
 				return true;
 			}
 		};
@@ -271,8 +272,9 @@ class reactive_navigator_demoframe: public wxFrame
 				mrpt::nav::CRobot2NavInterfaceForSimulator_Holo(simul),
 				MyNavIFBase(ref_latest_obstacles)
 			{}
-			virtual bool senseObstacles( mrpt::maps::CSimplePointsMap &obstacles ) {
+			virtual bool senseObstacles( mrpt::maps::CSimplePointsMap &obstacles, mrpt::system::TTimeStamp &timestamp ) MRPT_OVERRIDE {
 				obstacles = latest_obstacles;
+				timestamp = mrpt::system::now();
 				return true;
 			}
 		};
@@ -302,7 +304,7 @@ class reactive_navigator_demoframe: public wxFrame
 
 		// ========= Opengl View: Local view (holonomic)  =======
 		mrpt::opengl::CSimpleLinePtr        gl_line_direction;
-		mrpt::opengl::CPointCloudPtr        gl_rel_target;
+		mrpt::opengl::CPointCloudPtr        gl_rel_target, gl_rel_robot;
 		mrpt::opengl::CSetOfLinesPtr        gl_nd_gaps, gl_tp_obstacles;
 
 };

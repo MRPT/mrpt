@@ -86,6 +86,7 @@ void CTimeLogger::getStats(std::map<std::string,TCallStats> &out_stats) const
 		cs.total_t = i->second.mean_t;
 		cs.mean_t  = i->second.n_calls ? i->second.mean_t/i->second.n_calls : 0;
 		cs.n_calls = i->second.n_calls;
+		cs.last_t  = i->second.last_t;
 	}
 }
 
@@ -140,12 +141,13 @@ std::string CTimeLogger::getStatsAsText(const size_t column_width)  const
 void CTimeLogger::saveToCSVFile(const std::string &csv_file)  const
 {
 	std::string s;
-	s+="FUNCTION, #CALLS, MIN.T, MEAN.T, MAX.T, TOTAL.T\n";
+	s+="FUNCTION, #CALLS, LAST.T, MIN.T, MEAN.T, MAX.T, TOTAL.T\n";
 	for (map<string,TCallData>::const_iterator i=m_data.begin();i!=m_data.end();++i)
 	{
-		s+=format("\"%s\",\"%7u\",\"%e\",\"%e\",\"%e\",\"%e\"\n",
+		s+=format("\"%s\",\"%7u\",\"%e\",\"%e\",\"%e\",\"%e\",\"%e\"\n",
 			i->first.c_str(),
 			static_cast<unsigned int>(i->second.n_calls),
+			i->second.last_t,
 			i->second.min_t,
 			i->second.n_calls ? i->second.mean_t/i->second.n_calls : 0,
 			i->second.max_t,
@@ -181,6 +183,7 @@ double CTimeLogger::do_leave(const char *func_name)
 		const double At = tim - d.open_calls.top();
 		d.open_calls.pop();
 
+		d.last_t = At;
 		d.mean_t+=At;
 		if (d.n_calls==1)
 		{
@@ -204,6 +207,7 @@ void CTimeLogger::registerUserMeasure(const char *event_name, const double value
 	TCallData &d = m_data[s];
 
 	d.has_time_units = false;
+	d.last_t = value;
 	d.mean_t+=value;
 	if (++d.n_calls==1)
 	{
@@ -222,6 +226,7 @@ CTimeLogger::TCallData::TCallData() :
 	min_t	(0),
 	max_t	(0),
 	mean_t	(0),
+	last_t	(0),
 	has_time_units(true)
 {
 }
@@ -233,7 +238,13 @@ double CTimeLogger::getMeanTime(const std::string &name)  const
 		 return 0;
 	else return it->second.n_calls ? it->second.mean_t/it->second.n_calls : 0;
 }
-
+double CTimeLogger::getLastTime(const std::string &name) const
+{
+	map<string, TCallData>::const_iterator it = m_data.find(name);
+	if (it == m_data.end())
+		return 0;
+	else return it->second.last_t;
+}
 
 CTimeLoggerEntry::CTimeLoggerEntry(CTimeLogger &logger, const char*section_name ) : m_logger(logger),m_section_name(section_name)
 {
