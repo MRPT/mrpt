@@ -363,6 +363,18 @@ void CGraphSlamEngine<GRAPH_t>::initCGraphSlamEngine() {
 
 template<class GRAPH_t>
 bool CGraphSlamEngine<GRAPH_t>::execGraphSlamStep(
+		mrpt::obs::CObservationPtr& observation,
+		size_t& rawlog_entry) {
+	using namespace mrpt::obs;
+
+	CActionCollectionPtr action;
+	CSensoryFramePtr observations;
+
+	return this->execGraphSlamStep(action, observations, observation, rawlog_entry);
+}
+
+template<class GRAPH_t>
+bool CGraphSlamEngine<GRAPH_t>::execGraphSlamStep(
 		mrpt::obs::CActionCollectionPtr& action,
 		mrpt::obs::CSensoryFramePtr& observations,
 		mrpt::obs::CObservationPtr& observation,
