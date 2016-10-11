@@ -63,6 +63,7 @@ class navlog_viewer_GUI_designDialog: public wxFrame //wxDialog
 		void OncbGlobalFrameClick(wxCommandEvent& event);
 		void OnmnuSaveScoreMatrixSelected(wxCommandEvent& event);
 		//*)
+		void OntimMouseXY(wxTimerEvent& event);
 
 		//(*Identifiers(navlog_viewer_GUI_designDialog)
 		static const long ID_BUTTON1;
@@ -95,6 +96,7 @@ class navlog_viewer_GUI_designDialog: public wxFrame //wxDialog
 		static const long ID_MENUITEM1;
 		static const long ID_MENUITEM3;
 		//*)
+		static const long ID_TIMER3;
 
 		//(*Declarations(navlog_viewer_GUI_designDialog)
 		wxButton* btnStop;
@@ -129,6 +131,7 @@ class navlog_viewer_GUI_designDialog: public wxFrame //wxDialog
 		wxStaticText* txtSelectedPTG;
 		wxButton* btnPlay;
 		//*)
+		wxTimer timMouseXY;
 
 		DECLARE_EVENT_TABLE()
 
