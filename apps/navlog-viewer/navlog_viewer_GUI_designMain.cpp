@@ -36,6 +36,7 @@
 #include <mrpt/utils/CConfigFilePrefixer.h>
 #include <mrpt/system/string_utils.h>
 #include <mrpt/math/utils.h>
+#include <mrpt/math/geometry.h> // intersect()
 #include <mrpt/utils/printf_vector.h>
 #include <mrpt/system/string_utils.h>
 #include <mrpt/opengl/CSetOfLines.h>
@@ -86,6 +87,8 @@ const long navlog_viewer_GUI_designDialog::ID_MENUITEM2 = wxNewId();
 const long navlog_viewer_GUI_designDialog::ID_MENUITEM1 = wxNewId();
 const long navlog_viewer_GUI_designDialog::ID_MENUITEM3 = wxNewId();
 //*)
+
+const long navlog_viewer_GUI_designDialog::ID_TIMER3 = wxNewId();
 
 BEGIN_EVENT_TABLE(navlog_viewer_GUI_designDialog,wxFrame)
     //(*EventTable(navlog_viewer_GUI_designDialog)
@@ -267,6 +270,10 @@ navlog_viewer_GUI_designDialog::navlog_viewer_GUI_designDialog(wxWindow* parent,
     Connect(ID_MENUITEM1,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&navlog_viewer_GUI_designDialog::OnmnuMatlabPlotsSelected);
     Connect(ID_MENUITEM3,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&navlog_viewer_GUI_designDialog::OnmnuSaveScoreMatrixSelected);
     //*)
+
+	timMouseXY.SetOwner(this, ID_TIMER3);
+	timMouseXY.Start(100, false);
+	Connect(ID_TIMER3, wxEVT_TIMER, (wxObjectEventFunction)&navlog_viewer_GUI_designDialog::OntimMouseXY);
 
 	cbShowAllDebugEntries->SetValue(false);
 
@@ -518,7 +525,6 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 			win1->setPos(600,20);
 			win1->setCameraAzimuthDeg(-90);
 			win1->setCameraElevationDeg(90);
-
 			{
 				mrpt::opengl::COpenGLScenePtr scene;
 				mrpt::gui::CDisplayWindow3DLocker  locker(*win1,scene);
@@ -728,6 +734,12 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 		const double fy = 10, Ay = 15;   // Font size & line spaces
 		int lineY = 0, unique_id = 0;
 		win1->clearTextMessages();
+
+		// Mouse position at Z=0
+		// Updated in timer callback:
+		lineY++;
+		unique_id++;
+
 
 		if (cbShowAllDebugEntries->IsChecked()) {
 			for (const auto &e : log.timestamps)
@@ -1099,4 +1111,34 @@ void navlog_viewer_GUI_designDialog::OnmnuSaveScoreMatrixSelected(wxCommandEvent
 	}
 
 	WX_END_TRY
+}
+
+void navlog_viewer_GUI_designDialog::OntimMouseXY(wxTimerEvent& event)
+{
+	// Mouse position at Z=0
+	CDisplayWindow3DPtr &win1 = m_mywins3D["WS_obs"];
+	if (!win1) return;
+
+	const double fy = 10, Ay = 15;   // Font size & line spaces
+	int lineY = 0, unique_id = 0;
+
+	{
+		mrpt::math::TLine3D mouse_ray;
+		win1->getLastMousePositionRay(mouse_ray);
+
+		// Create a 3D plane, e.g. Z=0
+		const mrpt::math::TPlane ground_plane(TPoint3D(0, 0, 0), TPoint3D(1, 0, 0), TPoint3D(0, 1, 0));
+		// Intersection of the line with the plane:
+		mrpt::math::TObject3D inters;
+		mrpt::math::intersect(mouse_ray, ground_plane, inters);
+		// Interpret the intersection as a point, if there is an intersection:
+		mrpt::math::TPoint3D inters_pt;
+		if (inters.getPoint(inters_pt))
+		{
+			win1->addTextMessage(5.0, 5 + (lineY++) * Ay, mrpt::format("Mouse pos: X=%.04f  Y=%.04f", inters_pt.x, inters_pt.y),
+				mrpt::utils::TColorf(1, 1, 1), "mono", fy, mrpt::opengl::NICE, unique_id++);
+			win1->repaint();
+		}
+	}
+
 }
