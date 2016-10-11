@@ -355,10 +355,14 @@ class CLoopCloserERD:
 				 * By default this is set to 2.
 				 */
 				double LC_eigenvalues_ratio_thresh;
-				/**\brief how many remote nodes (large nodID difference should there be before
-				 * I consider the potential loop closure?
+				/**\brief how many remote nodes (large nodID difference should there be
+				 * before I consider the potential loop closure.
 				 */
 				int LC_min_remote_nodes; 
+				/**\brief Full partition of map only afer X new nodes have been
+				 * registered
+				 */
+				int full_partition_per_nodes;
 				bool visualize_map_partitions;
 				std::string keystroke_map_partitions;
 
@@ -579,9 +583,13 @@ class CLoopCloserERD:
 		/** Get the ICP Edge between the provided nodes.
 		 *
 		 * Handy for not having to manually fetch the laser scans, as the method
-		 * takes care of this
+		 * takes care of this.
+		 *
+		 * \return True if operation was successful, false otherwise (e.g. if the
+		 * either of the nodes' CObservation2DRangeScan object does not contain
+		 * valid data.
 		 */
-		void getICPEdge(
+		bool getICPEdge(
 				const mrpt::utils::TNodeID& from,
 				const mrpt::utils::TNodeID& to,
 				constraint_t* rel_edge,
