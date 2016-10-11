@@ -71,6 +71,7 @@ namespace nav
 		*	- "tim_send_cmd_vel":
 		 */
 		std::map<std::string, mrpt::system::TTimeStamp>  timestamps;
+		std::map<std::string, std::string>  additional_debug_msgs;  //!< Additional debug traces
 		mrpt::maps::CSimplePointsMap  WS_Obstacles;  //!< The WS-Obstacles
 		mrpt::poses::CPose2D          robotOdometryPose; //!< The robot pose (from raw odometry or a localization system).
 		mrpt::poses::CPose2D          relPoseSense, relPoseVelCmd; //! Relative poses (wrt to robotOdometryPose) for extrapolated paths at two instants: time of obstacle sense, and future pose of motion comman

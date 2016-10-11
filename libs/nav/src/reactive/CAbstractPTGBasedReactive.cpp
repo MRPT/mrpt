@@ -378,16 +378,11 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 				rel_pose_PTG_origin_wrt_sense_NOP = robot_pose_at_send_cmd - (CPose2D(m_curPoseVel.pose) + relPoseSense);
 				rel_cur_pose_wrt_last_vel_cmd_NOP = CPose2D(m_curPoseVel.pose) - robot_pose_at_send_cmd;
 
-#if 0
-				MRPT_LOG_DEBUG_STREAM << "NOP interpolation variables:" << "\n" <<
-					"tim_send_cmd_vel       : " << std::fixed << mrpt::system::timestampToDouble(m_lastSentVelCmd.tim_send_cmd_vel) << "\n" <<
-					"m_latestPoses.last time: " << std::fixed << mrpt::system::timestampToDouble(m_latestPoses.rbegin()->first) << "\n" <<
-					"robot_pose_at_send_cmd : " << robot_pose_at_send_cmd.asString() << "\n" <<
-					"m_curPoseVel.pose      : " << m_curPoseVel.pose.asString() << "\n" <<
-					"m_curPoseVel.timestamp : " << std::fixed << mrpt::system::timestampToDouble(m_curPoseVel.timestamp) << "\n" <<
-					"rel_cur_pose_wrt_last_vel_cmd_NOP: " << rel_cur_pose_wrt_last_vel_cmd_NOP.asString() << "\n"
-					;
-#endif
+				if (fill_log_record)
+				{
+					newLogRec.additional_debug_msgs["rel_cur_pose_wrt_last_vel_cmd_NOP"] = rel_cur_pose_wrt_last_vel_cmd_NOP.asString();
+					newLogRec.additional_debug_msgs["robot_pose_at_send_cmd"] = robot_pose_at_send_cmd.asString();
+				}
 
 				ptg_eval_target_build_obstacles(
 					ptg, m_lastSentVelCmd.ptg_index,
