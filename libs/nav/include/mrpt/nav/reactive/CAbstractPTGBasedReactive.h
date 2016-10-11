@@ -182,6 +182,7 @@ namespace mrpt
 		  */
 		double secureDistanceStart,secureDistanceEnd;
 		bool   USE_DELAYS_MODEL;
+		double MAX_DISTANCE_PREDICTED_ACTUAL_PATH; //!< for ptg continuation [meters] (default= 0.05)
 
 		mrpt::utils::CTimeLogger m_timelogger;			//!< A complete time logger \sa enableTimeLog()
 		bool  m_PTGsMustBeReInitialized;
@@ -223,6 +224,7 @@ namespace mrpt
 			const mrpt::math::TPose2D  & WS_Target,
 			const mrpt::math::TPoint2D & TP_Target,
 			CLogFileRecord::TInfoPerPTG & log,
+			CLogFileRecord & newLogRec,
 			const bool this_is_PTG_continuation,
 			const mrpt::poses::CPose2D & relPoseVelCmd_NOP);
 
@@ -253,9 +255,10 @@ namespace mrpt
 		struct TSentVelCmd
 		{
 			int ptg_index; //!< 0-based index of used PTG
-			int ptg_alpha; //!< Path index for selected PTG
+			int ptg_alpha_index; //!< Path index for selected PTG
 			mrpt::system::TTimeStamp tim_send_cmd_vel, tim_poseVel; //!< Timestamp of when the cmd was sent, and when the robot pose was queried in that iteration.
 			mrpt::math::TTwist2D curRobotVelLocal;
+			mrpt::math::TPose2D  curRobotPose;
 
 			bool isValid() const;
 			void reset();

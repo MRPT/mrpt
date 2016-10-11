@@ -58,6 +58,7 @@ CAbstractPTGBasedReactive::CAbstractPTGBasedReactive(CRobot2NavInterface &react_
 	secureDistanceStart          (0.05),
 	secureDistanceEnd            (0.20),
 	USE_DELAYS_MODEL             (false),
+	MAX_DISTANCE_PREDICTED_ACTUAL_PATH(0.05),
 	m_timelogger                 (false), // default: disabled
 	m_PTGsMustBeReInitialized    (true),
 	meanExecutionTime            (ESTIM_LOWPASSFILTER_ALPHA, 0.1),
@@ -357,7 +358,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 		// This approach is only possible if:
 		const bool can_do_nop_motion = (m_lastSentVelCmd.isValid() &&
 			getPTG(m_lastSentVelCmd.ptg_index)->supportVelCmdNOP()) &&
-			mrpt::system::timeDifference(m_lastSentVelCmd.tim_send_cmd_vel, tim_start_iteration) < getPTG(m_lastSentVelCmd.ptg_index)->maxTimeInVelCmdNOP(m_lastSentVelCmd.ptg_alpha);
+			mrpt::system::timeDifference(m_lastSentVelCmd.tim_send_cmd_vel, tim_start_iteration) < getPTG(m_lastSentVelCmd.ptg_index)->maxTimeInVelCmdNOP(m_lastSentVelCmd.ptg_alpha_index);
 
 		CPose2D rel_cur_pose_wrt_last_vel_cmd_NOP, rel_pose_PTG_origin_wrt_sense_NOP;
 
@@ -447,10 +448,11 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 				}
 				// Save last sent cmd:
 				m_lastSentVelCmd.ptg_index = nSelectedPTG;
-				m_lastSentVelCmd.ptg_alpha = selectedHolonomicMovement.PTG->alpha2index(selectedHolonomicMovement.direction);
+				m_lastSentVelCmd.ptg_alpha_index = selectedHolonomicMovement.PTG->alpha2index(selectedHolonomicMovement.direction);
 				m_lastSentVelCmd.tim_poseVel = m_curPoseVel.timestamp;
 				m_lastSentVelCmd.tim_send_cmd_vel = tim_send_cmd_vel;
 				m_lastSentVelCmd.curRobotVelLocal = m_curPoseVel.velLocal;
+				m_lastSentVelCmd.curRobotPose = m_curPoseVel.pose;
 
 
 				// Update delay model:
@@ -521,7 +523,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 			newLogRec.rel_cur_pose_wrt_last_vel_cmd_NOP = rel_cur_pose_wrt_last_vel_cmd_NOP;
 			newLogRec.rel_pose_PTG_origin_wrt_sense_NOP = rel_pose_PTG_origin_wrt_sense_NOP;
 			newLogRec.ptg_index_NOP = best_is_NOP_cmdvel ? m_lastSentVelCmd.ptg_index : -1;
-			newLogRec.ptg_last_k_NOP = m_lastSentVelCmd.ptg_alpha;
+			newLogRec.ptg_last_k_NOP = m_lastSentVelCmd.ptg_alpha_index;
 			newLogRec.ptg_last_curRobotVelLocal = m_lastSentVelCmd.curRobotVelLocal;
 
 			// Last entry in info-per-PTG:
@@ -562,6 +564,7 @@ void CAbstractPTGBasedReactive::STEP5_PTGEvaluator(
 	const mrpt::math::TPose2D  & WS_Target,
 	const mrpt::math::TPoint2D & TP_Target,
 	CLogFileRecord::TInfoPerPTG & log,
+	CLogFileRecord & newLogRec,
 	const bool this_is_PTG_continuation,
 	const mrpt::poses::CPose2D & rel_cur_pose_wrt_last_vel_cmd_NOP)
 {
@@ -607,14 +610,38 @@ void CAbstractPTGBasedReactive::STEP5_PTGEvaluator(
 		{
 			// Don't trust this step: we are not 100% sure of the robot pose in TP-Space for this "PTG continuation" step:
 			holonomicMovement.evaluation = .0;
+			newLogRec.additional_debug_msgs["PTGEvaluator"] = "PTG-continuation not allowed, cur. pose out of PTG domain.";
 			return;
 		}
 
-		MRPT_TODO("Sanity checks on cur_k for safety?");
+		{
+			uint16_t cur_ptg_step;
+			bool ok1 = holonomicMovement.PTG->getPathStepForDist(m_lastSentVelCmd.ptg_alpha_index, cur_norm_d * holonomicMovement.PTG->getRefDistance(), cur_ptg_step);
+			if (ok1) {
+				mrpt::math::TPose2D predicted_rel_pose;
+				holonomicMovement.PTG->getPathPose(m_lastSentVelCmd.ptg_alpha_index, cur_ptg_step, predicted_rel_pose);
+				const CPose2D predicted_pose_global = CPose2D(m_lastSentVelCmd.curRobotPose) + CPose2D(predicted_rel_pose);
+				const double predicted2real_dist = predicted_pose_global.distance2DTo(m_curPoseVel.pose.x, m_curPoseVel.pose.y);
+				newLogRec.additional_debug_msgs["PTGEvaluator.PTGcont"] = mrpt::format("last_cmdvel_pose=%s mismatchDistance=%.03f cm", m_lastSentVelCmd.curRobotPose.asString().c_str(), 1e2*predicted2real_dist );
+
+				if (predicted2real_dist > MAX_DISTANCE_PREDICTED_ACTUAL_PATH)
+				{
+					holonomicMovement.evaluation = .0;
+					newLogRec.additional_debug_msgs["PTGEvaluator"] = "PTG-continuation not allowed, mismatchDistance above threshold.";
+					return;
+				}
+			}
+			else {
+				holonomicMovement.evaluation = .0;
+				newLogRec.additional_debug_msgs["PTGEvaluator"] = "PTG-continuation not allowed, couldn't get PTG step for cur. robot pose.";
+				return;
+			}
+		}
 
 		factor1 -= cur_norm_d;
 		if (factor1 < 0.10) {
 			// Don't trust this step: we are reaching too close to obstacles:
+			newLogRec.additional_debug_msgs["PTGEvaluator"] = "PTG-continuation not allowed, too close to obstacles.";
 			holonomicMovement.evaluation = .0;
 			return;
 		}
@@ -775,6 +802,7 @@ void CAbstractPTGBasedReactive::loadConfigFile(const mrpt::utils::CConfigFileBas
 	secureDistanceEnd = cfg.read_float(sectCfg,"secureDistanceEnd", secureDistanceEnd);
 
 	USE_DELAYS_MODEL = cfg.read_bool(sectCfg, "USE_DELAYS_MODEL", USE_DELAYS_MODEL);
+	MAX_DISTANCE_PREDICTED_ACTUAL_PATH = cfg.read_double(sectCfg, "MAX_DISTANCE_PREDICTED_ACTUAL_PATH", MAX_DISTANCE_PREDICTED_ACTUAL_PATH);
 
 	DIST_TO_TARGET_FOR_SENDING_EVENT = cfg.read_float(sectCfg, "DIST_TO_TARGET_FOR_SENDING_EVENT", DIST_TO_TARGET_FOR_SENDING_EVENT, false);
 	m_badNavAlarm_AlarmTimeout = cfg.read_double(sectCfg,"ALARM_SEEMS_NOT_APPROACHING_TARGET_TIMEOUT", m_badNavAlarm_AlarmTimeout, false);
@@ -866,7 +894,7 @@ CAbstractPTGBasedReactive::TSentVelCmd::TSentVelCmd()
 void CAbstractPTGBasedReactive::TSentVelCmd::reset()
 {
 	ptg_index = -1;
-	ptg_alpha = -1;
+	ptg_alpha_index = -1;
 	tim_send_cmd_vel = INVALID_TIMESTAMP;
 	tim_poseVel = INVALID_TIMESTAMP;
 	curRobotVelLocal.vx = .0;
@@ -999,7 +1027,7 @@ void CAbstractPTGBasedReactive::ptg_eval_target_build_obstacles(
 		else
 		{
 			// "NOP cmdvel" case: don't need to re-run holo algorithm, just keep the last selection:
-			holonomicMovement.direction = ptg->index2alpha( m_lastSentVelCmd.ptg_alpha );
+			holonomicMovement.direction = ptg->index2alpha( m_lastSentVelCmd.ptg_alpha_index );
 			holonomicMovement.speed = 1.0; // Not used.
 		}
 
@@ -1013,7 +1041,7 @@ void CAbstractPTGBasedReactive::ptg_eval_target_build_obstacles(
 				ipf.TP_Obstacles,
 				relTarget,
 				ipf.TP_Target,
-				newLogRec.infoPerPTG[idx_in_log_infoPerPTGs],
+				newLogRec.infoPerPTG[idx_in_log_infoPerPTGs], newLogRec,
 				this_is_PTG_continuation, rel_cur_pose_wrt_last_vel_cmd_NOP);
 		}
 
