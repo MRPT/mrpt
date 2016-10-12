@@ -262,8 +262,11 @@ void CAbstractNavigator::navigationStep()
 
 void CAbstractNavigator::doEmergencyStop( const std::string &msg )
 {
+	try {
+		m_robot.stop();
+	}
+	catch (...) { }
 	m_navigationState = NAV_ERROR;
-	m_robot.stop();
 	MRPT_LOG_ERROR(msg);
 }
 
@@ -307,7 +310,11 @@ void CAbstractNavigator::updateCurrentPoseAndSpeeds(bool update_seq_latest_poses
 		if (!m_robot.getCurrentPoseAndSpeeds(m_curPoseVel.pose, m_curPoseVel.velGlobal, m_curPoseVel.timestamp))
 		{
 			m_navigationState = NAV_ERROR;
-			m_robot.stop();
+			try { 
+				m_robot.stop(); 
+			}
+			catch (...) {}
+			MRPT_LOG_ERROR("ERROR calling m_robot.getCurrentPoseAndSpeeds, stopping robot and finishing navigation");
 			throw std::runtime_error("ERROR calling m_robot.getCurrentPoseAndSpeeds, stopping robot and finishing navigation");
 		}
 	}
