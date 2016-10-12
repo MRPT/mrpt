@@ -118,24 +118,6 @@ dd = sqrt( (4*k2^2 + 4*k4^2)*t^2 + (4*k2*vxi + 4*k4*vyi)*t + vxi^2 + vyi^2 ) dt
 		return std::sqrt(c)*t;
 	}
 }
-inline double calc_T_ramp_from_ratio(const double T_ramp_max, double ratio)
-{
-#if 1
-	// Linear:
-	return T_ramp_max;// * ratio;
-#else
-	// quadratic:
-	return T_ramp_max * (1.0 - mrpt::utils::square(ratio-1.0) );
-#endif
-}
-inline double calc_T_ramp(const double T_ramp_max, double vxi, double vyi, double vxf, double vyf, double V_MAX)
-{
-	return calc_T_ramp_from_ratio(T_ramp_max, std::max( std::abs(vxi-vxf), std::abs(vyi-vyf) ) / (2.0*V_MAX) );
-}
-inline double calc_T_ramp_dir(const double T_ramp_max, double vxi, double vyi, double dir, double V_MAX)
-{
-	return calc_T_ramp_from_ratio(T_ramp_max, std::max( std::abs(vxi-V_MAX*cos(dir)), std::abs(vyi-V_MAX*sin(dir)) ) / (2.0*V_MAX) );
-}
 
 CPTG_Holo_Blend::CPTG_Holo_Blend() :
 	T_ramp_max(-1.0),
@@ -259,7 +241,7 @@ bool CPTG_Holo_Blend::inverseMap_WS2TP(double x, double y, int &out_k, double &o
 	ASSERT_(x!=0 || y!=0);
 
 	const double err_threshold = 1e-3;
-
+	const double T_ramp = T_ramp_max;
 	const double vxi = curVelLocal.vx, vyi = curVelLocal.vy;
 	const double V_MAXsq = V_MAX*V_MAX;
 
@@ -277,7 +259,6 @@ bool CPTG_Holo_Blend::inverseMap_WS2TP(double x, double y, int &out_k, double &o
 	bool sol_found = false;
 	for (int iters=0;!sol_found && iters<25;iters++)
 	{
-		const double T_ramp = calc_T_ramp(T_ramp_max, vxi,vyi, q[1], q[2], V_MAX);
 		const double TR_ =  1.0/(T_ramp);
 		const double TR2_ = 1.0/(2*T_ramp);
 
@@ -372,7 +353,7 @@ mrpt::kinematics::CVehicleVelCmdPtr CPTG_Holo_Blend::directionToMotionCommand( u
 	mrpt::kinematics::CVehicleVelCmd_Holo * cmd = new mrpt::kinematics::CVehicleVelCmd_Holo();
 	cmd->vel = (std::abs(dir_local) <= maxAllowedDirAngle) ? V_MAX : .0;
 	cmd->dir_local = dir_local;
-	cmd->ramp_time = std::max(0.1, calc_T_ramp_dir(T_ramp_max, curVelLocal.vx, curVelLocal.vy, dir_local, V_MAX));
+	cmd->ramp_time = T_ramp_max;
 	cmd->rot_speed = mrpt::utils::signWithZero(dir_local) * W_MAX;
 
 	return mrpt::kinematics::CVehicleVelCmdPtr(cmd);
@@ -395,7 +376,7 @@ void CPTG_Holo_Blend::getPathPose(uint16_t k, uint16_t step, mrpt::math::TPose2D
 
 	const double vxf = V_MAX * cos(dir), vyf = V_MAX * sin(dir);
 	const double vxi = curVelLocal.vx, vyi = curVelLocal.vy;
-	const double T_ramp = calc_T_ramp(T_ramp_max,vxi,vyi,vxf,vyf,V_MAX);
+	const double T_ramp = T_ramp_max;
 	const double TR2_ = 1.0/(2*T_ramp);
 
 	// Translational part:
@@ -424,7 +405,7 @@ double CPTG_Holo_Blend::getPathDist(uint16_t k, uint16_t step) const
 
 	const double vxf = V_MAX * cos(dir), vyf = V_MAX * sin(dir);
 	const double vxi = curVelLocal.vx, vyi = curVelLocal.vy;
-	const double T_ramp = calc_T_ramp(T_ramp_max,vxi,vyi,vxf,vyf,V_MAX);
+	const double T_ramp = T_ramp_max;
 	const double TR2_ = 1.0/(2*T_ramp);
 
 	const double k2 = (vxf-vxi)*TR2_;
@@ -449,7 +430,7 @@ bool CPTG_Holo_Blend::getPathStepForDist(uint16_t k, double dist, uint16_t &out_
 
 	const double vxf = V_MAX * cos(dir), vyf = V_MAX * sin(dir);
 	const double vxi = curVelLocal.vx, vyi = curVelLocal.vy;
-	const double T_ramp = calc_T_ramp(T_ramp_max,vxi,vyi,vxf,vyf,V_MAX);
+	const double T_ramp = T_ramp_max;
 	const double TR2_ = 1.0/(2*T_ramp);
 
 	const double k2 = (vxf-vxi)*TR2_;
@@ -534,18 +515,17 @@ void CPTG_Holo_Blend::updateTPObstacle(double ox, double oy, std::vector<double>
 	PERFORMANCE_BENCHMARK;
 
 	const double R = m_robotRadius;
-
 	const double vxi = curVelLocal.vx, vyi = curVelLocal.vy;
+	const double T_ramp = T_ramp_max;
+	const double TR2_ = 1.0 / (2 * T_ramp);
+	const double TR_2 = T_ramp*0.5;
+	const double T_ramp_thres099 = T_ramp*0.99;
+	const double T_ramp_thres101 = T_ramp*1.01;
 
 	for (unsigned int k=0;k<m_alphaValuesCount;k++)
 	{
 		const double dir = CParameterizedTrajectoryGenerator::index2alpha(k);
 		const double vxf = V_MAX * cos(dir), vyf = V_MAX * sin(dir);
-		const double T_ramp = calc_T_ramp(T_ramp_max,vxi,vyi,vxf,vyf,V_MAX);
-		const double TR2_ = 1.0/(2*T_ramp);
-		const double TR_2 = T_ramp*0.5;
-		const double T_ramp_thres099 = T_ramp*0.99;
-		const double T_ramp_thres101 = T_ramp*1.01;
 
 		double sol_t=-1.0; // candidate solution for shortest time to collision
 
