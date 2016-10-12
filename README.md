@@ -7,7 +7,7 @@ The MRPT project
 
 1. Introduction
 ------------------------------------------------------------------------------
-<img align="right" src="https://mrpt.github.io/imgs/mrpt-videos-mix1.gif">
+<img align="right" src="https://mrpt.github.io/imgs/mrpt-videos-mix2.gif">
 
 Mobile Robot Programming Toolkit (MRPT) provides C++ libraries aimed at researchers
 in mobile robotics and computer vision. Libraries include [SLAM solutions](http://www.mrpt.org/List_of_SLAM_algorithms), [3D(6D) geometry](http://www.mrpt.org/tutorials/programming/maths-and-geometry/2d_3d_geometry/), [SE(2)/SE(3) Lie groups](http://ingmec.ual.es/~jlblanco/papers/jlblanco2010geometry3D_techrep.pdf), 
