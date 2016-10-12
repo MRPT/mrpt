@@ -406,19 +406,11 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 		// If the selected PTG is (N+1), it means the NOP cmd. vel is selected as the best alternative, i.e. do NOT send any new motion command.
 		const bool best_is_NOP_cmdvel =  (nSelectedPTG==nPTGs);
 
-		// STEP7: Get the non-holonomic movement command.
-		// ---------------------------------------------------------------------
-		mrpt::kinematics::CVehicleVelCmdPtr cmd_vel_original, new_vel_cmd; 
-		if (!best_is_NOP_cmdvel)
-		{
-			CTimeLoggerEntry tle(m_timelogger,"navigationStep.STEP7_NonHolonomicMovement");
-			STEP7_GenerateSpeedCommands( selectedHolonomicMovement,cmd_vel_original, new_vel_cmd );
-		}
-
 		// ---------------------------------------------------------------------
 		//				SEND MOVEMENT COMMAND TO THE ROBOT
 		// ---------------------------------------------------------------------
-		if (best_is_NOP_cmdvel) 
+		mrpt::kinematics::CVehicleVelCmdPtr cmd_vel_original, new_vel_cmd;
+		if (best_is_NOP_cmdvel)
 		{
 			// Notify the robot that we want it to keep executing the last cmdvel:
 			if (!m_robot.changeSpeedsNOP())
@@ -429,8 +421,17 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 		}
 		else
 		{
+			// STEP7: Get the non-holonomic movement command.
+			// ---------------------------------------------------------------------
+			if (!best_is_NOP_cmdvel)
+			{
+				CTimeLoggerEntry tle(m_timelogger, "navigationStep.STEP7_NonHolonomicMovement");
+				STEP7_GenerateSpeedCommands(selectedHolonomicMovement, cmd_vel_original, new_vel_cmd);
+			}
 			ASSERT_(new_vel_cmd);
+
 			if (new_vel_cmd->isStopCmd()) {
+				MRPT_LOG_DEBUG("Best velocity command is STOP, calling robot.stop()");
 				m_robot.stop();
 			}
 			else
@@ -505,11 +506,11 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 
 			newLogRec.robotOdometryPose   = m_curPoseVel.pose;
 			newLogRec.WS_target_relative  = TPoint2D(relTarget);
-			newLogRec.cmd_vel             = new_vel_cmd;
-			newLogRec.cmd_vel_original    = cmd_vel_original;
 			newLogRec.nSelectedPTG        = nSelectedPTG;
 			newLogRec.cur_vel             = m_curPoseVel.velGlobal;
 			newLogRec.cur_vel_local       = m_curPoseVel.velLocal;
+			newLogRec.cmd_vel = new_vel_cmd;
+			newLogRec.cmd_vel_original = cmd_vel_original;
 			newLogRec.values["estimatedExecutionPeriod"] = meanExecutionPeriod.getLastOutput();
 			newLogRec.values["executionTime"] = executionTimeValue;
 			newLogRec.values["executionTime_avr"] = meanExecutionTime.getLastOutput();
