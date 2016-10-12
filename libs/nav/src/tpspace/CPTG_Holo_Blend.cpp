@@ -23,8 +23,6 @@ using namespace mrpt::system;
 
 IMPLEMENTS_SERIALIZABLE(CPTG_Holo_Blend,CParameterizedTrajectoryGenerator,mrpt::nav)
 
-MRPT_TODO("Update all equations to take maxAllowedDirAngle into account");
-
 /*
 Closed-form PTG. Parameters:
 - Initial velocity vector (xip, yip)
@@ -263,6 +261,7 @@ bool CPTG_Holo_Blend::inverseMap_WS2TP(double x, double y, int &out_k, double &o
 		const double TR2_ = 1.0/(2*T_ramp);
 
 		// Eval residual:
+		MRPT_TODO("Update to take maxAllowedDirAngle into account");
 		Eigen::Vector3d  r;
 		if (q[0]>=T_ramp)
 		{
@@ -281,6 +280,7 @@ bool CPTG_Holo_Blend::inverseMap_WS2TP(double x, double y, int &out_k, double &o
 		//  dx/dt  dx/dvxf  dx/dvyf
 		//  dy/dt  dy/dvxf  dy/dvyf
 		//  dVF/dt  dVF/dvxf  dVF/dvyf
+		MRPT_TODO("Update to take maxAllowedDirAngle into account");
 		Eigen::Matrix3d J;
 		if (q[0]>=T_ramp)
 		{
@@ -378,17 +378,41 @@ void CPTG_Holo_Blend::getPathPose(uint16_t k, uint16_t step, mrpt::math::TPose2D
 	const double vxi = curVelLocal.vx, vyi = curVelLocal.vy;
 	const double T_ramp = T_ramp_max;
 	const double TR2_ = 1.0/(2*T_ramp);
+	const bool is_double_ramp = (std::abs(dir) > maxAllowedDirAngle); // 1st ramp: vf=(0,0), 2nd ramp: vf=(actual one)
 
 	// Translational part:
-	if (t<T_ramp)
+	if (!is_double_ramp) 
 	{
-		p.x   = vxi * t + t*t * TR2_ * (vxf-vxi);
-		p.y   = vyi * t + t*t * TR2_ * (vyf-vyi);
+		// Normal case:
+		if (t<T_ramp)
+		{
+			p.x = vxi * t + t*t * TR2_ * (vxf - vxi);
+			p.y = vyi * t + t*t * TR2_ * (vyf - vyi);
+		}
+		else
+		{
+			p.x = T_ramp *0.5*(vxi + vxf) + (t - T_ramp) * vxf;
+			p.y = T_ramp *0.5*(vyi + vyf) + (t - T_ramp) * vyf;
+		}
 	}
 	else
 	{
-		p.x   = T_ramp *0.5*(vxi+vxf) + (t-T_ramp) * vxf;
-		p.y   = T_ramp *0.5*(vyi+vyf) + (t-T_ramp) * vyf;
+		// Double T_ramp case:
+		if (t<T_ramp)
+		{
+			p.x = vxi * t + t*t * TR2_ * (.0 /*vxf*/ - vxi);
+			p.y = vyi * t + t*t * TR2_ * (.0 /*vyf*/ - vyi);
+		}
+		else if (t<2.0*T_ramp)
+		{
+			p.x = T_ramp *0.5*(vxi + .0 /*vxf*/) + .0 /*vxi*/ * t + t*t * TR2_ * (vxf - .0 /*vxi*/);
+			p.y = T_ramp *0.5*(vyi + .0 /*vyf*/) + .0 /*vyi*/ * t + t*t * TR2_ * (vyf - .0 /*vyi*/);
+		}
+		else
+		{
+			p.x = T_ramp *0.5*(vxi + .0 /*vxf*/) + T_ramp *0.5*(.0 /*vxi*/ + vxf) + (t - T_ramp) * vxf;
+			p.y = T_ramp *0.5*(vyi + .0 /*vyf*/) + T_ramp *0.5*(.0 /*vyi*/ + vyf) + (t - T_ramp) * vyf;
+		}
 	}
 
 	// Rotational part:
@@ -411,6 +435,7 @@ double CPTG_Holo_Blend::getPathDist(uint16_t k, uint16_t step) const
 	const double k2 = (vxf-vxi)*TR2_;
 	const double k4 = (vyf-vyi)*TR2_;
 
+	MRPT_TODO("Update to take maxAllowedDirAngle into account");
 	if (t<T_ramp)
 	{
 		return calc_trans_distance_t_below_Tramp(k2,k4,vxi,vyi,t);
@@ -436,6 +461,7 @@ bool CPTG_Holo_Blend::getPathStepForDist(uint16_t k, double dist, uint16_t &out_
 	const double k2 = (vxf-vxi)*TR2_;
 	const double k4 = (vyf-vyi)*TR2_;
 
+	MRPT_TODO("Update to take maxAllowedDirAngle into account");
 	// --------------------------------------
 	// Solution within  t >= T_ramp ??
 	// --------------------------------------
@@ -529,6 +555,7 @@ void CPTG_Holo_Blend::updateTPObstacle(double ox, double oy, std::vector<double>
 
 		double sol_t=-1.0; // candidate solution for shortest time to collision
 
+		MRPT_TODO("Update to take maxAllowedDirAngle into account");
 		// Try to solve first for t<T_ramp:
 		const double k2 = (vxf-vxi)*TR2_;
 		const double k4 = (vyf-vyi)*TR2_;
