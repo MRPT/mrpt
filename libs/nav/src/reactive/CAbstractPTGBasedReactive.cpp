@@ -597,15 +597,9 @@ void CAbstractPTGBasedReactive::STEP5_PTGEvaluator(
 		( rel_cur_pose_wrt_last_vel_cmd_NOP.x()!=0 || rel_cur_pose_wrt_last_vel_cmd_NOP.y()!=0) // edge case: if the rel pose is (0,0), the evaluation is exactly as in an no-NOP case.
 		)
 	{
-		int cur_k;
-		double cur_norm_d;
+		int cur_k=0;
+		double cur_norm_d=.0;
 		bool is_exact = holonomicMovement.PTG->inverseMap_WS2TP(rel_cur_pose_wrt_last_vel_cmd_NOP.x(), rel_cur_pose_wrt_last_vel_cmd_NOP.y(), cur_k, cur_norm_d);
-
-		{
-			const double cur_a = holonomicMovement.PTG->index2alpha(cur_k);
-			log.TP_Robot.x = cos(cur_a)*cur_norm_d;
-			log.TP_Robot.y = sin(cur_a)*cur_norm_d;
-		}
 
 		if (!is_exact)
 		{
@@ -614,7 +608,11 @@ void CAbstractPTGBasedReactive::STEP5_PTGEvaluator(
 			newLogRec.additional_debug_msgs["PTGEvaluator"] = "PTG-continuation not allowed, cur. pose out of PTG domain.";
 			return;
 		}
-
+		{
+			const double cur_a = holonomicMovement.PTG->index2alpha(cur_k);
+			log.TP_Robot.x = cos(cur_a)*cur_norm_d;
+			log.TP_Robot.y = sin(cur_a)*cur_norm_d;
+		}
 		{
 			uint16_t cur_ptg_step;
 			bool ok1 = holonomicMovement.PTG->getPathStepForDist(m_lastSentVelCmd.ptg_alpha_index, cur_norm_d * holonomicMovement.PTG->getRefDistance(), cur_ptg_step);
