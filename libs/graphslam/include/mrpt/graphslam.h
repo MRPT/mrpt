@@ -18,7 +18,6 @@
 
 // Interfaces for implementing deciders/optimizers
 #include "graphslam/interfaces/CRegistrationDeciderOrOptimizer.h"
-#include "graphslam/interfaces/CRangeScanRegistrationDecider.h"
 #include "graphslam/interfaces/CNodeRegistrationDecider.h"
 #include "graphslam/interfaces/CEdgeRegistrationDecider.h"
 #include "graphslam/interfaces/CGraphSlamOptimizer.h"
@@ -37,14 +36,15 @@
 #include "graphslam/GSO/CLevMarqGSO.h"
 
 // Graph SLAM Engine - Relevant headers
+#include "graphslam/misc/CRangeScanRegistrationDecider.h"
 #include "graphslam/misc/CEdgeCounter.h"
 #include "graphslam/misc/CWindowManager.h"
 #include "graphslam/misc/CWindowObserver.h"
 #include "graphslam/misc/TSlidingWindow.h"
 
 // App-Related headers
-#include "graphslam/app_related/TGraphSlamOptions.h"
-#include "graphslam/app_related/CGraphSlamHandler.h"
+#include "graphslam/apps_related/TUserOptionsChecker.h"
+#include "graphslam/apps_related/CGraphSlamHandler.h"
 
 // Main graphslam-engine header
 #include "graphslam/CGraphSlamEngine.h"

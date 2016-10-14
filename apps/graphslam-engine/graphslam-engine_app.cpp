@@ -21,7 +21,7 @@
 #include <mrpt/system/string_utils.h>
 
 #include <mrpt/graphslam/CGraphSlamEngine.h>
-#include <mrpt/graphslam/apps_related/TGraphSlamOptions.h>
+#include <mrpt/graphslam/apps_related/TUserOptionsChecker.h>
 #include <mrpt/graphslam/apps_related/CGraphSlamHandler.h>
 
 #include <mrpt/otherlibs/tclap/CmdLine.h>
@@ -97,7 +97,7 @@ int main(int argc, char **argv)
 		bool showVersion = argc>1 && !os::_strcmp(argv[1],"--version");
 
 		// Instance for managing the available graphslam deciders optimizers
-		TGraphSlamOptions options;
+		TUserOptionsChecker options;
 
 		// Input Validation
 		if (!cmd_line.parse( argc, argv ) ||  showVersion || showHelp) {

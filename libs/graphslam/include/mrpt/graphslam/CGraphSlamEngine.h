@@ -241,6 +241,13 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		 * position
 		 */
 		pose_t getCurrentRobotPosEstimation() const;
+		/***\brief Get the estimated trajectory of the robot given by the running
+		 * graphSLAM algorithm
+		 * \param[out] graph_nodes Nodes of the graph that have been registered so
+		 * far. graph_nodes contains a map of nodeIDs to their corresponding poses.
+		 */
+		void getRobotEstimatedTrajectory(
+				mrpt::graphs::CNetworkOfPoses2DInf::global_poses_t* graph_poses) const;
 		/**\brief Wrapper method around the GRAPH_t::saveToTextFile method.
 		 * Method saves the graph in the format used by TORO & HoG-man strategies
 		 *
