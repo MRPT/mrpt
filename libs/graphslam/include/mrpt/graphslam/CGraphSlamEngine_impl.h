@@ -106,6 +106,18 @@ CGraphSlamEngine<GRAPH_t>::getCurrentRobotPosEstimation() const {
 	MRPT_END;
 }
 
+template<class GRAPH_t>
+void CGraphSlamEngine<GRAPH_t>::getRobotEstimatedTrajectory(
+		mrpt::graphs::CNetworkOfPoses2DInf::global_poses_t* graph_poses) const {
+	MRPT_START;
+
+	mrpt::synch::CCriticalSectionLocker m_graph_lock(&m_graph_section);
+	*graph_poses = m_graph.nodes;
+
+	MRPT_END;
+}
+
+
 
 template<class GRAPH_t>
 void CGraphSlamEngine<GRAPH_t>::initCGraphSlamEngine() {

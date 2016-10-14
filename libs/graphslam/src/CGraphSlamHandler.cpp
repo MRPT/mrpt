@@ -44,7 +44,7 @@ CGraphSlamHandler::~CGraphSlamHandler() {
 	// keep the window open until user closes it.
 	bool break_exec = false;
 	while (win->isOpen() && break_exec == false) {
-		break_exec = this->queryObserverForEvents();
+		break_exec = !this->queryObserverForEvents();
 		mrpt::system::sleep(100);
 		win->forceRepaint();
 	}
@@ -208,7 +208,7 @@ bool CGraphSlamHandler::queryObserverForEvents() {
 			/* reset_keypresses = */ false);
 	bool request_to_exit = events_occurred.find("Ctrl+c")->second;
 
-	return request_to_exit;
+	return !request_to_exit;
 	MRPT_END;
 }
 //////////////////////////////////////////////////////////////////////////////

@@ -1817,7 +1817,6 @@ void CLoopCloserERD<GRAPH_t>::updateMapPartitions(bool full_update /* = false */
 			continue;
 		}
 
-		//pose_t curr_pose = m_graph->nodes.at(it->first);
 		pose_t curr_pose = search->second;
 		mrpt::poses::CPosePDFPtr posePDF(new constraint_t(curr_pose));
 

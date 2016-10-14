@@ -7,12 +7,12 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/graphslam/apps_related/TGraphSlamOptions.h>
+#include <mrpt/graphslam/apps_related/TUserOptionsChecker.h>
 
 namespace mrpt { namespace graphslam { namespace supplementary {
 
 //////////////////////////////////////////////////////////////
-TGraphSlamOptions::TGraphSlamOptions():
+TUserOptionsChecker::TUserOptionsChecker():
 	sep_header(40, '='),
 	sep_subheader(20, '-')
 {
@@ -23,7 +23,7 @@ TGraphSlamOptions::TGraphSlamOptions():
 
 	MRPT_END;
 }
-TGraphSlamOptions::~TGraphSlamOptions(){
+TUserOptionsChecker::~TUserOptionsChecker(){
 	using namespace std;
 
 	// release the instances holding the descriptions of the available
@@ -43,7 +43,7 @@ TGraphSlamOptions::~TGraphSlamOptions(){
 
 }
 
-void TGraphSlamOptions::createDeciderOptimizerMappings() {
+void TUserOptionsChecker::createDeciderOptimizerMappings() {
 	MRPT_START;
 
 	using namespace mrpt::graphslam::deciders;
@@ -74,7 +74,7 @@ void TGraphSlamOptions::createDeciderOptimizerMappings() {
 }
 
 //////////////////////////////////////////////////////////////
-void TGraphSlamOptions::dumpRegistrarsToConsole(
+void TUserOptionsChecker::dumpRegistrarsToConsole(
 		std::string reg_type /* = "all" */) const {
 	MRPT_START;
 	using namespace std;
@@ -116,7 +116,7 @@ void TGraphSlamOptions::dumpRegistrarsToConsole(
 }
 
 //////////////////////////////////////////////////////////////
-void TGraphSlamOptions::dumpOptimizersToConsole() const {
+void TUserOptionsChecker::dumpOptimizersToConsole() const {
 	MRPT_START;
 
 	using namespace std;
@@ -136,7 +136,7 @@ void TGraphSlamOptions::dumpOptimizersToConsole() const {
 }
 
 //////////////////////////////////////////////////////////////
-bool TGraphSlamOptions::checkRegistrationDeciderExists(
+bool TUserOptionsChecker::checkRegistrationDeciderExists(
 		std::string given_reg,
 		std::string reg_type) const {
 	MRPT_START;
@@ -167,7 +167,7 @@ bool TGraphSlamOptions::checkRegistrationDeciderExists(
 }
 
 //////////////////////////////////////////////////////////////
-bool TGraphSlamOptions::checkOptimizerExists(std::string given_opt) const {
+bool TUserOptionsChecker::checkOptimizerExists(std::string given_opt) const {
 	MRPT_START;
 	using namespace std;
 	using  namespace mrpt;
@@ -189,7 +189,7 @@ bool TGraphSlamOptions::checkOptimizerExists(std::string given_opt) const {
 }
 //////////////////////////////////////////////////////////////
 
-void TGraphSlamOptions::populateDeciderOptimizerProperties() {
+void TUserOptionsChecker::populateDeciderOptimizerProperties() {
 	MRPT_START;
 
 	// reset the vectors - in case they contain any elements
