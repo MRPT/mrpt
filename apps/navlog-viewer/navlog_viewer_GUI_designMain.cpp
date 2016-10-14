@@ -272,7 +272,8 @@ navlog_viewer_GUI_designDialog::navlog_viewer_GUI_designDialog(wxWindow* parent,
     //*)
 
 	timMouseXY.SetOwner(this, ID_TIMER3);
-	timMouseXY.Start(100, false);
+	MRPT_TODO("Add checkbox to enable XY mouse");
+	//timMouseXY.Start(100, false);
 	Connect(ID_TIMER3, wxEVT_TIMER, (wxObjectEventFunction)&navlog_viewer_GUI_designDialog::OntimMouseXY);
 
 	cbShowAllDebugEntries->SetValue(false);
