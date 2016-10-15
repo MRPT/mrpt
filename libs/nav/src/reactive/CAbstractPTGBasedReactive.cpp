@@ -648,10 +648,10 @@ void CAbstractPTGBasedReactive::STEP5_PTGEvaluator(
 
 	// Factor 2: Distance in sectors:
 	// -------------------------------------------
-	double dif = std::abs(((double)( TargetSector - kDirection )));
-	const double nSectors = (float)in_TPObstacles.size();
-	if ( dif > (0.5*nSectors)) dif = nSectors - dif;
-	const double factor2 = exp(-square( dif / (in_TPObstacles.size()/3.0f))) ;
+	int dif = std::abs(TargetSector - kDirection);
+	const size_t nSectors = in_TPObstacles.size();
+	if ( dif > (nSectors/2)) dif = nSectors - dif;
+	const double factor2 = exp(-square( dif / (nSectors/3.0))) ;
 
 	// Factor 3: Angle between the robot at the end of the chosen trajectory and the target
 	// -------------------------------------------------------------------------------------
@@ -659,7 +659,7 @@ void CAbstractPTGBasedReactive::STEP5_PTGEvaluator(
 	t_ang -= pose.phi;
 	mrpt::math::wrapToPiInPlace(t_ang);
 
-	const double factor3 = exp(-square( t_ang / (float)(0.5f*M_PI)) );
+	const double factor3 = exp(-square( t_ang / (0.5*M_PI)) );
 
 	// Factor4:		Decrease in euclidean distance between (x,y) and the target:
 	//  Moving away of the target is negatively valued
@@ -716,6 +716,8 @@ void CAbstractPTGBasedReactive::STEP5_PTGEvaluator(
 	}
 	else
 	{
+#if 0
+// 15/Oct/2016: JLBC: this may be dangerous if the goal is right close to a sharp corner. Shortcut code disabled for now.
 		if (dif<2 /* heading almost exactly towards goal */ &&
 			in_TPObstacles[kDirection]*0.95f>TargetDist // and free space towards the target
 			)
@@ -727,6 +729,7 @@ void CAbstractPTGBasedReactive::STEP5_PTGEvaluator(
 			holonomicMovement.evaluation = 1.0f + (1.0 - normalizedDistAlongPTG) + factor5 * weights[4] + factor6*weights[5];
 		}
 		else
+#endif
 		{
 		// General case:
 		holonomicMovement.evaluation = holonomicMovement.PTG->getScorePriority() *(
