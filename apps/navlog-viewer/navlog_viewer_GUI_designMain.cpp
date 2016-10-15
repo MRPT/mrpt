@@ -46,7 +46,9 @@
 
 extern std::string global_fileToOpen;
 
-const double fy = 10, Ay = 15;   // Font size & line spaces for GUI-overlayed text lines
+const double fy = 9, Ay = 12;   // Font size & line spaces for GUI-overlayed text lines
+#define ADD_WIN_TEXTMSG(__MSG) \
+	win1->addTextMessage(5.0, 5 + (lineY++) * Ay, __MSG, mrpt::utils::TColorf(1, 1, 1), "mono", fy, mrpt::opengl::NICE, unique_id++);
 
 
 using namespace std;
@@ -762,29 +764,24 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 
 		if (cbShowAllDebugEntries->IsChecked()) {
 			for (const auto &e : log.timestamps)
-			{
-				win1->addTextMessage(5.0, 5 + (lineY++) * Ay, mrpt::format("Timestamp %-20s=%s", e.first.c_str(), mrpt::system::dateTimeLocalToString(e.second).c_str()),
-					mrpt::utils::TColorf(1, 1, 1), "mono", fy, mrpt::opengl::NICE, unique_id++);
-			}
+				ADD_WIN_TEXTMSG(mrpt::format("Timestamp %-20s=%s", e.first.c_str(), mrpt::system::dateTimeLocalToString(e.second).c_str()) );
 		}
 
-		win1->addTextMessage(5.0, 5+ (lineY++)*Ay, mrpt::format("cmd_vel=%s", log.cmd_vel ? log.cmd_vel->asString().c_str() : "NOP (Continue last PTG)"),
-			mrpt::utils::TColorf(1,1,1), "mono", fy, mrpt::opengl::NICE, unique_id++);
+		ADD_WIN_TEXTMSG(mrpt::format("cmd_vel=%s", log.cmd_vel ? log.cmd_vel->asString().c_str() : "NOP (Continue last PTG)"));
 
-		win1->addTextMessage(5.0, 5+ (lineY++)*Ay, mrpt::format("cur_vel=[%.02f m/s, %0.2f m/s, %.02f dps] cur_vel_local=[%.02f m/s, %0.2f m/s, %.02f dps]",
+		ADD_WIN_TEXTMSG(mrpt::format("cur_vel=[%.02f m/s, %0.2f m/s, %.02f dps] cur_vel_local=[%.02f m/s, %0.2f m/s, %.02f dps]",
 			log.cur_vel.vx, log.cur_vel.vy, mrpt::utils::RAD2DEG(log.cur_vel.omega),
-			log.cur_vel_local.vx, log.cur_vel_local.vy, mrpt::utils::RAD2DEG(log.cur_vel_local.omega) ),
-			mrpt::utils::TColorf(1,1,1), "mono", fy, mrpt::opengl::NICE, unique_id++);
+			log.cur_vel_local.vx, log.cur_vel_local.vy, mrpt::utils::RAD2DEG(log.cur_vel_local.omega))
+			);
 
-		win1->addTextMessage(5.0, 5+ (lineY++)*Ay, mrpt::format("robot_pose=%s",log.robotOdometryPose.asString().c_str()),
-			mrpt::utils::TColorf(1,1,1), "mono", fy, mrpt::opengl::NICE, unique_id++);
+		ADD_WIN_TEXTMSG(mrpt::format("robot_pose=%s", log.robotOdometryPose.asString().c_str()));
 
 		if (log.cmd_vel_original)
 		{
 			std::stringstream ss;
 			ss << "original cmd_vel: ";
 			ss << log.cmd_vel_original->asString();
-			win1->addTextMessage(5.0, 5+ (lineY++)*Ay, ss.str(), mrpt::utils::TColorf(1,1,1), "mono", fy, mrpt::opengl::NICE, unique_id++);
+			ADD_WIN_TEXTMSG( ss.str() );
 		}
 
 		{
@@ -792,7 +789,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 			ss << "Performance: ";
 			for (size_t i=0;i<log.infoPerPTG.size();i++)
 				ss << "PTG#" << i << mrpt::format(" TPObs:%ss HoloNav:%ss |", mrpt::system::unitsFormat(log.infoPerPTG[i].timeForTPObsTransformation).c_str(),mrpt::system::unitsFormat(log.infoPerPTG[i].timeForHolonomicMethod).c_str());
-			win1->addTextMessage(5.0, 5+ (lineY++)*Ay, ss.str(), mrpt::utils::TColorf(1,1,1), "mono", fy, mrpt::opengl::NICE, unique_id++);
+			ADD_WIN_TEXTMSG(ss.str());
 		}
 
 		for (unsigned int nPTG=0;nPTG<log.nPTGs;nPTG++)
@@ -804,24 +801,19 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 			     col = mrpt::utils::TColorf(1,1,1);
 			else col = mrpt::utils::TColorf(.8,.8,.8);
 
-			win1->addTextMessage(5.0, 5+ Ay*(lineY++),
-				mrpt::format("PTG#%u: Eval=%5.03f factors=%s", nPTG, pI.evaluation, sprintf_vector("%5.02f ", pI.evalFactors).c_str() ),
-				col, "mono", fy, mrpt::opengl::NICE, unique_id++);
+			ADD_WIN_TEXTMSG(mrpt::format("PTG#%u: Eval=%5.03f factors=%s", nPTG, pI.evaluation, sprintf_vector("%5.02f ", pI.evalFactors).c_str()));
 		}
 
-		win1->addTextMessage(5.0, 5 + (lineY++)*Ay, mrpt::format("relPoseSense: %s relPoseVelCmd:%s",
+		ADD_WIN_TEXTMSG(mrpt::format("relPoseSense: %s relPoseVelCmd:%s",
 			log.relPoseSense.asString().c_str(),
-			log.relPoseVelCmd.asString().c_str()),
-			mrpt::utils::TColorf(1, 1, 1), "mono", fy, mrpt::opengl::NICE, unique_id++);
+			log.relPoseVelCmd.asString().c_str()));
 
 		if (cbShowAllDebugEntries->IsChecked()) {
 			for (const auto &e : log.values)
-				win1->addTextMessage(5.0, 5 + (lineY++) * Ay, format("%-30s=%s ", e.first.c_str(), mrpt::system::unitsFormat(e.second, 3,false).c_str()),
-					mrpt::utils::TColorf(1, 1, 1), "mono", fy, mrpt::opengl::NICE, unique_id++);
+				ADD_WIN_TEXTMSG(format("%-30s=%s ", e.first.c_str(), mrpt::system::unitsFormat(e.second, 3, false).c_str()));
 
 			for (const auto &e : log.additional_debug_msgs)
-				win1->addTextMessage(5.0, 5 + (lineY++) * Ay, format("%-30s=%s ", e.first.c_str(), e.second.c_str() ),
-					mrpt::utils::TColorf(1, 1, 1), "mono", fy, mrpt::opengl::NICE, unique_id++);
+				ADD_WIN_TEXTMSG(format("%-30s=%s ", e.first.c_str(), e.second.c_str()));
 		}
 
 		win1->repaint();
@@ -1153,8 +1145,7 @@ void navlog_viewer_GUI_designDialog::OntimMouseXY(wxTimerEvent& event)
 		mrpt::math::TPoint3D inters_pt;
 		if (inters.getPoint(inters_pt))
 		{
-			win1->addTextMessage(5.0, 5 + (lineY++) * Ay, mrpt::format("Mouse pos: X=%.04f  Y=%.04f", inters_pt.x, inters_pt.y),
-				mrpt::utils::TColorf(1, 1, 1), "mono", fy, mrpt::opengl::NICE, unique_id++);
+			ADD_WIN_TEXTMSG(mrpt::format("Mouse pos: X=%.04f  Y=%.04f", inters_pt.x, inters_pt.y));
 			win1->repaint();
 		}
 	}

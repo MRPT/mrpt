@@ -49,7 +49,7 @@ Number of steps "d" for each PTG path "k":
 #endif
 
 const double PATH_TIME_STEP = 10e-3;   // 10 ms
-const double eps = 1e-8;               // epsilon for detecting 1/0 situation
+const double eps = 1e-4;               // epsilon for detecting 1/0 situation
 
 // Axiliary function for calc_trans_distance_t_below_Tramp() and others:
 double calc_trans_distance_t_below_Tramp_abc(double t, double a,double b, double c)
