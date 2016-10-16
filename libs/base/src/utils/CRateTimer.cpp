@@ -37,7 +37,6 @@ bool CRateTimer::sleep()
 	const int64_t wait_tim_us = 1000000L *( period- elapsed_tim);
 	if (wait_tim_us < 0)
 		return false;
-
-	std::this_thread::sleep_for( std::chrono::milliseconds(wait_tim_us));
+	std::this_thread::sleep_for( std::chrono::microseconds(wait_tim_us));
 	return true;
 }
