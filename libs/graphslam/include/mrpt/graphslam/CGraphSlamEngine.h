@@ -647,7 +647,7 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		/**\brief Instance to keep track of all the edges + visualization related
  		 * operations
  		 */
-		mrpt::graphslam::CEdgeCounter m_edge_counter;
+		mrpt::graphslam::supplementary::CEdgeCounter m_edge_counter;
 
 		/**\brief Flag for specifying if we are going to use ground truth data at all.
 		 *

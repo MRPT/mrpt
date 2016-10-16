@@ -290,10 +290,6 @@ void CGraphSlamEngine<GRAPH_t>::initCGraphSlamEngine() {
 				"Toggle Map visualization");
 	}
 
-	if (m_enable_visuals) {
-		m_edge_counter.setVisualizationWindow(m_win);
-	}
-
 	// register the types of edges that are going to be displayed in the
 	// visualization window
 	{
@@ -325,10 +321,10 @@ void CGraphSlamEngine<GRAPH_t>::initCGraphSlamEngine() {
 
 		if (m_enable_visuals) {
 			// add all the parameters to the CEdgeCounter object
+			m_edge_counter.setWindowManagerPtr(m_win_manager);
 			m_edge_counter.setTextMessageParams(name_to_offset_y, name_to_text_index,
 					offset_y_total_edges, text_index_total_edges,
 					offset_y_loop_closures, text_index_loop_closures);
-			m_edge_counter.setWindowManagerPtr(m_win_manager);
 		}
 	}
 
