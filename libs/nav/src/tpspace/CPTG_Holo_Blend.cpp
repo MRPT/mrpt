@@ -528,116 +528,121 @@ bool CPTG_Holo_Blend::getPathStepForDist(uint16_t k, double dist, uint16_t &out_
 	else return false;
 }
 
+void CPTG_Holo_Blend::updateTPObstacleSingle(double ox, double oy, uint16_t k, double &tp_obstacle_k) const
+{
+	const double R = m_robotRadius;
+	const double vxi = curVelLocal.vx, vyi = curVelLocal.vy;
+
+	const double dir = CParameterizedTrajectoryGenerator::index2alpha(k);
+	const double vxf = V_MAX * cos(dir), vyf = V_MAX * sin(dir);
+	const double T_ramp = calc_T_ramp(T_ramp_max, vxi, vyi, vxf, vyf, V_MAX);
+	const double TR2_ = 1.0 / (2 * T_ramp);
+	const double TR_2 = T_ramp*0.5;
+	const double T_ramp_thres099 = T_ramp*0.99;
+	const double T_ramp_thres101 = T_ramp*1.01;
+
+	double sol_t = -1.0; // candidate solution for shortest time to collision
+
+						 // Try to solve first for t<T_ramp:
+	const double k2 = (vxf - vxi)*TR2_;
+	const double k4 = (vyf - vyi)*TR2_;
+
+	// equation: a*t^4 + b*t^3 + c*t^2 + d*t + e = 0
+	const double a = (k2*k2 + k4*k4);
+	const double b = (k2*vxi*2.0 + k4*vyi*2.0);
+	const double c = -(k2*ox*2.0 + k4*oy*2.0 - vxi*vxi - vyi*vyi);
+	const double d = -(ox*vxi*2.0 + oy*vyi*2.0);
+	const double e = -R*R + ox*ox + oy*oy;
+
+	double roots[4];
+	int num_real_sols = 0;
+	if (std::abs(a)>eps)
+	{
+		// General case: 4th order equation
+		// a * x^4 + b * x^3 + c * x^2 + d * x + e
+		num_real_sols = mrpt::math::solve_poly4(roots, b / a, c / a, d / a, e / a);
+	}
+	else if (std::abs(b)>eps) {
+		// Special case: k2=k4=0 (straight line path, no blend)
+		// 3rd order equation:
+		// b * x^3 + c * x^2 + d * x + e
+		num_real_sols = mrpt::math::solve_poly3(roots, c / b, d / b, e / b);
+	}
+	else
+	{
+		// Special case: 2nd order equation (a=b=0)
+		const double discr = d*d - 4 * c*e;  // c*t^2 + d*t + e = 0
+		if (discr >= 0)
+		{
+			num_real_sols = 2;
+			roots[0] = (-d + sqrt(discr)) / (2 * c);
+			roots[1] = (-d - sqrt(discr)) / (2 * c);
+		}
+		else {
+			num_real_sols = 0;
+		}
+	}
+
+	for (int i = 0; i<num_real_sols; i++)
+	{
+		if (roots[i] == roots[i] && // not NaN
+			mrpt::math::isFinite(roots[i]) &&
+			roots[i] >= .0 &&
+			roots[i] <= T_ramp*1.01)
+		{
+			if (sol_t<0) sol_t = roots[i];
+			else mrpt::utils::keep_min(sol_t, roots[i]);
+		}
+	}
+
+	// Invalid with these equations?
+	if (sol_t<0 || sol_t>T_ramp_thres101)
+	{
+		// Attempt to solve with the equations for t<T_ramp
+		sol_t = -1.0;
+
+		// Solve for t>T_ramp:
+		const double c1 = TR_2*(vxi - vxf) - ox;
+		const double c2 = TR_2*(vyi - vyf) - oy;
+
+		const double a = V_MAX*V_MAX;
+		const double b = 2 * (c1*vxf + c2*vyf);
+		const double c = c1*c1 + c2*c2 - R*R;
+
+		const double discr = b*b - 4 * a*c;
+		if (discr >= 0)
+		{
+			const double sol_t0 = (-b + sqrt(discr)) / (2 * a);
+			const double sol_t1 = (-b - sqrt(discr)) / (2 * a);
+
+			// Identify the shortest valid colission time:
+			if (sol_t0<T_ramp && sol_t1<T_ramp) sol_t = -1.0;
+			else if (sol_t0<T_ramp && sol_t1 >= T_ramp_thres099) sol_t = sol_t1;
+			else if (sol_t1<T_ramp && sol_t0 >= T_ramp_thres099) sol_t = sol_t0;
+			else if (sol_t1 >= T_ramp_thres099 && sol_t0 >= T_ramp_thres099) sol_t = std::min(sol_t0, sol_t1);
+		}
+	}
+
+	// Valid solution?
+	if (sol_t<0) return;
+	// Compute the transversed distance:
+	double dist;
+
+	if (sol_t<T_ramp)
+		dist = calc_trans_distance_t_below_Tramp(k2, k4, vxi, vyi, sol_t);
+	else dist = (sol_t - T_ramp) * V_MAX + calc_trans_distance_t_below_Tramp(k2, k4, vxi, vyi, T_ramp);
+
+	mrpt::utils::keep_min(tp_obstacle_k, dist);  // TP_Obstacles buffer in un-normalized distances: use "dist" directly
+
+}
 
 void CPTG_Holo_Blend::updateTPObstacle(double ox, double oy, std::vector<double> &tp_obstacles) const
 {
 	PERFORMANCE_BENCHMARK;
 
-	const double R = m_robotRadius;
-
-	const double vxi = curVelLocal.vx, vyi = curVelLocal.vy;
-
-	for (unsigned int k=0;k<m_alphaValuesCount;k++)
+	for (unsigned int k = 0; k < m_alphaValuesCount; k++)
 	{
-		const double dir = CParameterizedTrajectoryGenerator::index2alpha(k);
-		const double vxf = V_MAX * cos(dir), vyf = V_MAX * sin(dir);
-		const double T_ramp = calc_T_ramp(T_ramp_max,vxi,vyi,vxf,vyf,V_MAX);
-		const double TR2_ = 1.0/(2*T_ramp);
-		const double TR_2 = T_ramp*0.5;
-		const double T_ramp_thres099 = T_ramp*0.99;
-		const double T_ramp_thres101 = T_ramp*1.01;
-
-		double sol_t=-1.0; // candidate solution for shortest time to collision
-
-		// Try to solve first for t<T_ramp:
-		const double k2 = (vxf-vxi)*TR2_;
-		const double k4 = (vyf-vyi)*TR2_;
-
-		// equation: a*t^4 + b*t^3 + c*t^2 + d*t + e = 0
-		const double a = (k2*k2+k4*k4);
-		const double b = (k2*vxi*2.0+k4*vyi*2.0);
-		const double c = -(k2*ox*2.0+k4*oy*2.0-vxi*vxi-vyi*vyi);
-		const double d = -(ox*vxi*2.0+oy*vyi*2.0);
-		const double e = -R*R+ox*ox+oy*oy;
-
-		double roots[4];
-		int num_real_sols=0;
-		if (std::abs(a)>eps)
-		{
-			// General case: 4th order equation
-			// a * x^4 + b * x^3 + c * x^2 + d * x + e
-			num_real_sols = mrpt::math::solve_poly4(roots, b/a,c/a,d/a,e/a);
-		}
-		else if (std::abs(b)>eps) {
-			// Special case: k2=k4=0 (straight line path, no blend)
-			// 3rd order equation:
-			// b * x^3 + c * x^2 + d * x + e
-			num_real_sols = mrpt::math::solve_poly3(roots, c/b,d/b,e/b);
-		} else
-		{
-			// Special case: 2nd order equation (a=b=0)
-			const double discr = d*d-4*c*e;  // c*t^2 + d*t + e = 0
-			if (discr>=0)
-			{
-				num_real_sols = 2;
-				roots[0] = (-d+sqrt(discr))/(2*c);
-				roots[1] = (-d-sqrt(discr))/(2*c);
-			} else {
-				num_real_sols = 0;
-			}
-		}
-
-		for (int i=0;i<num_real_sols;i++)
-		{
-			if (roots[i]==roots[i] && // not NaN
-				mrpt::math::isFinite(roots[i]) &&
-				roots[i]>=.0 &&
-				roots[i]<=T_ramp*1.01)
-			{
-				if (sol_t<0) sol_t=roots[i];
-				else mrpt::utils::keep_min(sol_t, roots[i]);
-			}
-		}
-
-		// Invalid with these equations?
-		if (sol_t<0 || sol_t>T_ramp_thres101)
-		{
-			// Attempt to solve with the equations for t<T_ramp
-			sol_t = -1.0;
-
-			// Solve for t>T_ramp:
-			const double c1 = TR_2*(vxi-vxf)-ox;
-			const double c2 = TR_2*(vyi-vyf)-oy;
-
-			const double a = V_MAX*V_MAX;
-			const double b = 2*(c1*vxf+c2*vyf);
-			const double c = c1*c1+c2*c2-R*R;
-
-			const double discr = b*b-4*a*c;
-			if (discr>=0)
-			{
-				const double sol_t0 = (-b+sqrt(discr))/(2*a);
-				const double sol_t1 = (-b-sqrt(discr))/(2*a);
-
-				// Identify the shortest valid colission time:
-				if (sol_t0<T_ramp && sol_t1<T_ramp) sol_t = -1.0;
-				else if (sol_t0<T_ramp && sol_t1>=T_ramp_thres099) sol_t = sol_t1;
-				else if (sol_t1<T_ramp && sol_t0>=T_ramp_thres099) sol_t = sol_t0;
-				else if (sol_t1>=T_ramp_thres099 && sol_t0>=T_ramp_thres099) sol_t = std::min(sol_t0,sol_t1);
-			}
-		}
-
-		// Valid solution?
-		if (sol_t<0) continue;
-		// Compute the transversed distance:
-		double dist;
-
-		if (sol_t<T_ramp)
-		     dist = calc_trans_distance_t_below_Tramp(k2,k4,vxi,vyi,sol_t);
-		else dist = (sol_t-T_ramp) * V_MAX + calc_trans_distance_t_below_Tramp(k2,k4,vxi,vyi,T_ramp);
-
-		mrpt::utils::keep_min( tp_obstacles[k], dist);  // TP_Obstacles buffer in un-normalized distances: use "dist" directly
-
+		updateTPObstacleSingle(ox, oy, k, tp_obstacles[k]);
 	} // end for each "k" alpha
 }
 

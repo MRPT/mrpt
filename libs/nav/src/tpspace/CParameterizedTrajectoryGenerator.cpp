@@ -135,13 +135,16 @@ void CParameterizedTrajectoryGenerator::renderPathAsSimpleLine(
 void CParameterizedTrajectoryGenerator::initTPObstacles(std::vector<double> &TP_Obstacles) const
 {
 	TP_Obstacles.resize(m_alphaValuesCount);
-	for (size_t k=0;k<m_alphaValuesCount;k++)
-	{
-		TP_Obstacles[k] = std::min(
-			refDistance, 
-			this->getPathDist(k, this->getPathStepCount(k)-1) );
-	}
+	for (size_t k = 0; k < m_alphaValuesCount; k++)
+		initTPObstacleSingle(k, TP_Obstacles[k]);
 }
+void CParameterizedTrajectoryGenerator::initTPObstacleSingle(uint16_t k, double &TP_Obstacle_k) const
+{
+	TP_Obstacle_k = std::min(
+		refDistance,
+		this->getPathDist(k, this->getPathStepCount(k) - 1));
+}
+
 
 bool CParameterizedTrajectoryGenerator::debugDumpInFiles( const std::string &ptg_name ) const
 {
