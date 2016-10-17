@@ -41,7 +41,7 @@
 
 namespace mrpt { namespace graphslam { namespace deciders {
 
-/**\brief Fixed Intervals ICP-based Node Registration
+/**\brief ICP-based Fixed Intervals Node Registration
  *
  * ## Description
  *

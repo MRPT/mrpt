@@ -38,23 +38,31 @@ CGraphSlamHandler::~CGraphSlamHandler() {
 
 	using namespace mrpt::utils;
 
-	logger->logFmt(LVL_WARN,
-			"graphslam-engine has finished. Application will exit when the display window is closed.");
+	logger->logFmt(LVL_WARN, "graphslam-engine has finished.");
 
 	// keep the window open until user closes it.
-	bool break_exec = false;
-	while (win->isOpen() && break_exec == false) {
-		break_exec = !this->queryObserverForEvents();
-		mrpt::system::sleep(100);
-		win->forceRepaint();
+	if (win) {
+		logger->logFmt(LVL_WARN, "Application will exit when the display window is closed.");
+		bool break_exec = false;
+		while (win->isOpen() && break_exec == false) {
+			break_exec = !this->queryObserverForEvents();
+			mrpt::system::sleep(100);
+			win->forceRepaint();
+		}
 	}
 
-	logger->logFmt(LVL_DEBUG, "Releasing CDisplayWindow3D instance...");
-	delete win;
-	logger->logFmt(LVL_DEBUG, "Releasing CWindowObserver instance...");
-	delete win_observer;
-	logger->logFmt(LVL_DEBUG, "Releasing CWindowManager instance...");
-	delete win_manager;
+	if (win) {
+		logger->logFmt(LVL_DEBUG, "Releasing CDisplayWindow3D instance...");
+		delete win;
+	}
+	if (win_observer) {
+		logger->logFmt(LVL_DEBUG, "Releasing CWindowObserver instance...");
+		delete win_observer;
+	}
+	if (win_manager) {
+		logger->logFmt(LVL_DEBUG, "Releasing CWindowManager instance...");
+		delete win_manager;
+	}
 
 
 	logger->logFmt(LVL_INFO, "Exited.");

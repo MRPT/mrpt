@@ -341,6 +341,7 @@ void CICPCriteriaERD<GRAPH_t>::setGraphPtr(GRAPH_t* graph) {
 template<class GRAPH_t>
 void CICPCriteriaERD<GRAPH_t>::setWindowManagerPtr(
 		mrpt::graphslam::CWindowManager* win_manager) {
+	ASSERT_(win_manager);
 	m_win_manager = win_manager;
 
 	// may still be null..
@@ -355,6 +356,7 @@ template<class GRAPH_t>
 void CICPCriteriaERD<GRAPH_t>::notifyOfWindowEvents(
 		const std::map<std::string, bool>& events_occurred) {
 	MRPT_START;
+	ASSERT_(m_win_manager);
 
 	// I know the key exists - I put it there explicitly
 	if (events_occurred.find(params.keystroke_laser_scans)->second) {
@@ -367,11 +369,10 @@ void CICPCriteriaERD<GRAPH_t>::notifyOfWindowEvents(
 template<class GRAPH_t>
 void CICPCriteriaERD<GRAPH_t>::toggleLaserScansVisualization() {
 	MRPT_START;
-	using namespace mrpt::opengl;
-
 	ASSERTMSG_(m_win, "No CDisplayWindow3D* was provided");
 	ASSERTMSG_(m_win_manager, "No CWindowManager* was provided");
 
+	using namespace mrpt::opengl;
 
 	this->logFmt(mrpt::utils::LVL_INFO, "Toggling LaserScans visualization...");
 
@@ -405,6 +406,8 @@ void CICPCriteriaERD<GRAPH_t>::getEdgesStats(
 template<class GRAPH_t>
 void CICPCriteriaERD<GRAPH_t>::initializeVisuals() {
 	MRPT_START;
+	ASSERT_(m_win_manager);
+
 	this->logFmt(mrpt::utils::LVL_DEBUG, "Initializing visuals");
 	m_time_logger.enter("CICPCriteriaERD::Visuals");
 	using namespace mrpt::opengl;
@@ -474,6 +477,7 @@ void CICPCriteriaERD<GRAPH_t>::initializeVisuals() {
 template<class GRAPH_t>
 void CICPCriteriaERD<GRAPH_t>::updateVisuals() {
 	MRPT_START;
+	ASSERT_(m_win_manager);
 	ASSERT_(m_initialized_visuals);
 	m_time_logger.enter("CICPCriteriaERD::Visuals");
 	using namespace mrpt::opengl;

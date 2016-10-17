@@ -112,13 +112,13 @@ template<class GRAPH_t>
 void CLevMarqGSO<GRAPH_t>::setWindowManagerPtr(
 		mrpt::graphslam::CWindowManager* win_manager) {
 	MRPT_START;
+	ASSERT_(win_manager);
 
 	m_win_manager = win_manager;
 	if (m_win_manager) {
 		m_win = m_win_manager->win;
 
 		m_win_observer = m_win_manager->observer;
-
 	}
 	this->logFmt(mrpt::utils::LVL_DEBUG, "Fetched the CDisplayWindow successfully");
 
@@ -140,6 +140,7 @@ void CLevMarqGSO<GRAPH_t>::setCriticalSectionPtr(
 template<class GRAPH_t>
 void CLevMarqGSO<GRAPH_t>::initializeVisuals() {
 	MRPT_START;
+	ASSERT_(m_win_manager);
 	this->logFmt(mrpt::utils::LVL_DEBUG, "Initializing visuals");
 
 	ASSERTMSG_(m_win,
@@ -158,9 +159,8 @@ void CLevMarqGSO<GRAPH_t>::initializeVisuals() {
 template<class GRAPH_t>
 void CLevMarqGSO<GRAPH_t>::updateVisuals() {
 	MRPT_START;
-
-	ASSERT_(m_initialized_visuals);
 	ASSERTMSG_(m_win_manager, "No CWindowManager* is given");
+	ASSERT_(m_initialized_visuals);
 	ASSERTMSG_(m_win,
 			"Visualization of data was requested but no CDisplayWindow3D pointer was given.");
 
@@ -175,6 +175,7 @@ void CLevMarqGSO<GRAPH_t>::notifyOfWindowEvents(
 		const std::map<std::string, bool>& events_occurred)
 {
 	MRPT_START;
+	ASSERTMSG_(m_win_manager, "No CWindowManager* is given");
 	using namespace std;
 
 	//// print the keys for debuggging reasons
@@ -216,6 +217,7 @@ void CLevMarqGSO<GRAPH_t>::notifyOfWindowEvents(
 template<class GRAPH_t>
 inline void CLevMarqGSO<GRAPH_t>::initGraphVisualization() {
 	MRPT_START;
+	ASSERTMSG_(m_win_manager, "No CWindowManager* is given");
 
 	if (viz_params.visualize_optimized_graph) {
 		m_win_observer->registerKeystroke(viz_params.keystroke_graph_toggle,
@@ -235,6 +237,7 @@ inline void CLevMarqGSO<GRAPH_t>::initGraphVisualization() {
 template<class GRAPH_t>
 inline void CLevMarqGSO<GRAPH_t>::updateGraphVisualization() {
 	MRPT_START;
+	ASSERTMSG_(m_win_manager, "No CWindowManager* is given");
 	using namespace mrpt::opengl;
 	using namespace mrpt::utils;
 
@@ -324,6 +327,7 @@ void CLevMarqGSO<GRAPH_t>::fitGraphInView() {
 template<class GRAPH_t>
 void CLevMarqGSO<GRAPH_t>::initOptDistanceVisualization() {
 	MRPT_START;
+	ASSERTMSG_(m_win_manager, "No CWindowManager* is given");
 	using namespace mrpt::opengl;
 
 	if (opt_params.optimization_distance > 0) {
@@ -362,6 +366,7 @@ void CLevMarqGSO<GRAPH_t>::initOptDistanceVisualization() {
 template<class GRAPH_t>
 void CLevMarqGSO<GRAPH_t>::updateOptDistanceVisualization() {
 	MRPT_START;
+	ASSERTMSG_(m_win_manager, "No CWindowManager* is given");
 	using namespace mrpt::opengl;
 
 	// update ICP_max_distance Disk
@@ -384,6 +389,7 @@ void CLevMarqGSO<GRAPH_t>::updateOptDistanceVisualization() {
 template<class GRAPH_t>
 void CLevMarqGSO<GRAPH_t>::toggleOptDistanceVisualization() {
 	MRPT_START;
+	ASSERTMSG_(m_win_manager, "No CWindowManager* is given");
 	using namespace mrpt::opengl;
 
 	COpenGLScenePtr scene = m_win->get3DSceneAndLock();

@@ -82,7 +82,7 @@ namespace mrpt { namespace graphslam {
  * constraints (edges) and solve it to find an estimation of the actual robot
  * trajectory.
  *
- * // TODO - chagne this description
+ * // TODO - change this description
  * The template arguments are listed below:
  * - \em GRAPH_t: The type of Graph to be constructed and optimized. Currently
  *   CGraphSlamEngine works only with CPosePDFGaussianInf GRAPH_t instances.
@@ -555,8 +555,10 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		mrpt::graphslam::optimizers::CGraphSlamOptimizer<GRAPH_t>* m_optimizer;
 		/**\}*/
 
-		std::string	m_config_fname;
+ 		/**\brief Determine if we are to enable visualization support or not. */
+		const bool m_enable_visuals;
 
+		std::string	m_config_fname;
 
 		/**\brief Rawlog file from which to read the measurements.
 		 *
@@ -565,8 +567,6 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		std::string	m_rawlog_fname;
 
 		std::string	m_fname_GT;
- 		/**\brief Determine if we are to enable visualization support or not. */
-		bool m_enable_visuals;
 
 		size_t m_GT_poses_index; /**\brief Counter for reading back the GT_poses. */
 		size_t m_GT_poses_step; //**\brief Rate at which to read the GT poses. */
