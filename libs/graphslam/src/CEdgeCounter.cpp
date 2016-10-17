@@ -171,7 +171,8 @@ void CEdgeCounter::addEdgeType(const std::string& name) {
 		m_name_to_edges_num.find(name);
 
 	if ( search != m_name_to_edges_num.end() ) {
-		THROW_EXCEPTION(mrpt::format("Specified edge type %s already exists", name.c_str()))
+		THROW_EXCEPTION(
+				mrpt::format("Specified edge type %s already exists", name.c_str()))
 	}
 	else {
 		m_name_to_edges_num[name] = 0;

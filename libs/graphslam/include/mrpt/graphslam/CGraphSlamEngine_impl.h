@@ -28,6 +28,7 @@ CGraphSlamEngine<GRAPH_t>::CGraphSlamEngine(
 	m_node_registrar(node_reg),
 	m_edge_registrar(edge_reg),
 	m_optimizer(optimizer),
+	m_enable_visuals(win_manager != NULL),
 	m_config_fname(config_file),
 	m_rawlog_fname(rawlog_fname),
 	m_fname_GT(fname_GT),
@@ -72,10 +73,12 @@ CGraphSlamEngine<GRAPH_t>::~CGraphSlamEngine() {
 		for (int i = 0; i != m_odometry_poses.size(); ++i) {
 			delete m_odometry_poses[i];
 		}
+		this->logFmt(LVL_DEBUG, "Released m_odometry_poses vector");
 	}
 
 	// change back the CImage path
 	if (mrpt::system::strCmpI(m_GT_file_format, "rgbd_tum")) {
+		this->logFmt(LVL_DEBUG, "Changing back the CImage PATH");
 		CImage::IMAGES_PATH_BASE = m_img_prev_path_base;
 	}
 
@@ -85,6 +88,8 @@ CGraphSlamEngine<GRAPH_t>::~CGraphSlamEngine() {
 		delete m_win_plot;
 	}
 
+
+	this->logFmt(LVL_DEBUG, "Deleting the initial timestamp.");
 	delete m_init_timestamp;
 
 	MRPT_END;
@@ -133,7 +138,6 @@ void CGraphSlamEngine<GRAPH_t>::initCGraphSlamEngine() {
 	this->setLoggerName(m_class_name);
 
 	// If a valid CWindowManager pointer is given then visuals are on.
-	m_enable_visuals = (m_win_manager != NULL);
 	if (m_enable_visuals) {
 		m_win = m_win_manager->win;
 		m_win_observer = m_win_manager->observer;
@@ -165,11 +169,14 @@ void CGraphSlamEngine<GRAPH_t>::initCGraphSlamEngine() {
 	m_edge_registrar->setGraphPtr(&m_graph);
 	m_optimizer->setGraphPtr(&m_graph);
 
-	// pass the window manager pointer to the deciders/optimizer
-	// m_win_manager contains a pointer to the CDisplayWindow3D instance
-	m_node_registrar->setWindowManagerPtr(m_win_manager);
-	m_edge_registrar->setWindowManagerPtr(m_win_manager);
-	m_optimizer->setWindowManagerPtr(m_win_manager);
+	// pass the window manager pointer
+	// note: m_win_manager contains a pointer to the CDisplayWindow3D instance
+	if (m_enable_visuals) {
+		m_node_registrar->setWindowManagerPtr(m_win_manager);
+		m_edge_registrar->setWindowManagerPtr(m_win_manager);
+		m_optimizer->setWindowManagerPtr(m_win_manager);
+		m_edge_counter.setWindowManagerPtr(m_win_manager);
+	}
 
 	// pass a lock in case of multithreaded implementation
 	m_node_registrar->setCriticalSectionPtr(&m_graph_section);
@@ -179,17 +186,6 @@ void CGraphSlamEngine<GRAPH_t>::initCGraphSlamEngine() {
 	// Load the parameters that each one of the self/deciders/optimizer classes
 	// needs
 	this->loadParams(m_config_fname);
-
-	m_use_GT = !m_fname_GT.empty();
-	if (m_use_GT) {
-		if (mrpt::system::strCmpI(m_GT_file_format, "rgbd_tum")) {
-			this->alignOpticalWithMRPTFrame();
-			this->readGTFileRGBD_TUM(m_fname_GT, &m_GT_poses);
-		}
-		else if (mrpt::system::strCmpI(m_GT_file_format, "navsimul")) {
-			this->readGTFileNavSimulOutput(m_fname_GT, &m_GT_poses);
-		}
-	}
 
 	if (!m_enable_visuals) {
 		this->logFmt(LVL_WARN, "Switching all visualization parameters off...");
@@ -203,16 +199,30 @@ void CGraphSlamEngine<GRAPH_t>::initCGraphSlamEngine() {
 		m_enable_intensity_viewport      = 0;
 	}
 
+	m_use_GT = !m_fname_GT.empty();
+	if (m_use_GT) {
+		if (mrpt::system::strCmpI(m_GT_file_format, "rgbd_tum")) {
+			this->alignOpticalWithMRPTFrame();
+			this->readGTFileRGBD_TUM(m_fname_GT, &m_GT_poses);
+		}
+		else if (mrpt::system::strCmpI(m_GT_file_format, "navsimul")) {
+			this->readGTFileNavSimulOutput(m_fname_GT, &m_GT_poses);
+		}
+	}
+
 	// plot the GT related visuals only if ground-truth file is given
 	if (!m_use_GT) {
-		this->logFmt(LVL_WARN, "Ground truth file was not provided. Switching the related visualization parameters off...");
+		this->logFmt(LVL_WARN,
+				"Ground truth file was not provided. Switching the related visualization parameters off...");
 		m_visualize_GT          = 0;
 		m_visualize_SLAM_metric = 0;
 	}
 
 	// timestamp
-	m_win_manager->assignTextMessageParameters(&m_offset_y_timestamp,
-			&m_text_index_timestamp);
+	if (m_enable_visuals) {
+		m_win_manager->assignTextMessageParameters(&m_offset_y_timestamp,
+				&m_text_index_timestamp);
+	}
 
 	// Configuration of various trajectories visualization
 	ASSERT_(m_has_read_config);
@@ -269,15 +279,18 @@ void CGraphSlamEngine<GRAPH_t>::initCGraphSlamEngine() {
 		m_win->forceRepaint();
 	}
 
-	// keystrokes initialization
-	m_keystroke_pause_exec           = "p";
-	m_keystroke_odometry             = "o";
-	m_keystroke_GT                   = "g";
-	m_keystroke_estimated_trajectory = "t";
-	m_keystroke_map                  = "m";
 
 	// Add additional keystrokes in the CDisplayWindow3D help textBox
 	if (m_enable_visuals) {
+
+		// keystrokes initialization
+		m_keystroke_pause_exec           = "p";
+		m_keystroke_odometry             = "o";
+		m_keystroke_GT                   = "g";
+		m_keystroke_estimated_trajectory = "t";
+		m_keystroke_map                  = "m";
+
+		// keystrokes registration
 		m_win_observer->registerKeystroke(m_keystroke_pause_exec,
 				"Pause/Resume program execution");
 		m_win_observer->registerKeystroke(m_keystroke_odometry,
@@ -290,21 +303,26 @@ void CGraphSlamEngine<GRAPH_t>::initCGraphSlamEngine() {
 				"Toggle Map visualization");
 	}
 
-	// register the types of edges that are going to be displayed in the
-	// visualization window
-	{
-		// total edges / loop closures
+	// register the types of edges
+	vector<string> vec_edge_types;
+	vec_edge_types.push_back("Odometry");
+	vec_edge_types.push_back("ICP2D");
+	vec_edge_types.push_back("ICP3D");
+
+	for (vector<string>::const_iterator cit=vec_edge_types.begin();
+			cit != vec_edge_types.end(); ++cit) {
+		m_edge_counter.addEdgeType(*cit);
+	}
+
+	// Visualize the edge statistics
+	if (m_enable_visuals) {
+		// total edges - loop closure edges
 		double offset_y_total_edges, offset_y_loop_closures;
 		int text_index_total_edges, text_index_loop_closures;
 
 		m_win_manager->assignTextMessageParameters(&offset_y_total_edges,
 				&text_index_total_edges);
 
-		// register all the edge types
-		vector<string> vec_edge_types;
-		vec_edge_types.push_back("Odometry");m_edge_counter.addEdgeType("Odometry");
-		vec_edge_types.push_back("ICP2D"); m_edge_counter.addEdgeType("ICP2D");
-		vec_edge_types.push_back("ICP3D"); m_edge_counter.addEdgeType("ICP3D");
 
 		// build each one of these
 		map<string, double> name_to_offset_y;
@@ -312,20 +330,20 @@ void CGraphSlamEngine<GRAPH_t>::initCGraphSlamEngine() {
 		for (vector<string>::const_iterator it = vec_edge_types.begin();
 				it != vec_edge_types.end();
 				++it) {
-			m_win_manager->assignTextMessageParameters(&name_to_offset_y[*it],
+			m_win_manager->assignTextMessageParameters(
+					&name_to_offset_y[*it],
 					&name_to_text_index[*it]);
 		}
 
-		m_win_manager->assignTextMessageParameters(&offset_y_loop_closures,
+		m_win_manager->assignTextMessageParameters(
+				&offset_y_loop_closures,
 				&text_index_loop_closures);
 
-		if (m_enable_visuals) {
-			// add all the parameters to the CEdgeCounter object
-			m_edge_counter.setWindowManagerPtr(m_win_manager);
-			m_edge_counter.setTextMessageParams(name_to_offset_y, name_to_text_index,
-					offset_y_total_edges, text_index_total_edges,
-					offset_y_loop_closures, text_index_loop_closures);
-		}
+		// add all the parameters to the CEdgeCounter object
+		m_edge_counter.setTextMessageParams(
+				name_to_offset_y, name_to_text_index,
+				offset_y_total_edges, text_index_total_edges,
+				offset_y_loop_closures, text_index_loop_closures);
 	}
 
 	// query node/edge deciders for visual objects initialization
@@ -628,7 +646,9 @@ bool CGraphSlamEngine<GRAPH_t>::execGraphSlamStep(
 	// handle RGBD-TUM datasets manually. Advance the GT index accordingly
 	if (m_use_GT) {
 		if (mrpt::system::strCmpI(m_GT_file_format, "rgbd_tum")) { // 1/loop
-			this->updateGTVisualization(); // I have already taken care of the step
+		    if (m_enable_visuals) {
+			    this->updateGTVisualization(); // I have already taken care of the step
+			}
 			m_GT_poses_index += m_GT_poses_step;
 		}
 		else if (mrpt::system::strCmpI(m_GT_file_format, "navsimul")) {
@@ -636,7 +656,9 @@ bool CGraphSlamEngine<GRAPH_t>::execGraphSlamStep(
 				MRPT_LOG_DEBUG_STREAM <<
 					"observation_only_dataset: Updating GTVisualization";
 				if (rawlog_entry % 2 == 0) {
-					this->updateGTVisualization();
+		            if (m_enable_visuals) {
+			            this->updateGTVisualization(); // I have already taken care of the step
+			        }
 					m_GT_poses_index += m_GT_poses_step;
 					MRPT_LOG_DEBUG_STREAM << "rawlog_entry%2==0 " << std::endl;
 				}
@@ -645,7 +667,9 @@ bool CGraphSlamEngine<GRAPH_t>::execGraphSlamStep(
 				// get both action and observation at a single step - same rate as GT
 				MRPT_LOG_DEBUG_STREAM <<
 					"action-observations dataset: Updating GTVisualization";
-				this->updateGTVisualization(); 
+		        if (m_enable_visuals) {
+			        this->updateGTVisualization(); // I have already taken care of the step
+			    }
 				m_GT_poses_index += m_GT_poses_step;
 			}
 		}
@@ -952,6 +976,7 @@ void CGraphSlamEngine<GRAPH_t>::initResultsFile(
 template<class GRAPH_t>
 void CGraphSlamEngine<GRAPH_t>::initRangeImageViewport() {
 	MRPT_START;
+	ASSERT_(m_enable_visuals);
 	using namespace mrpt::opengl;
 
 	COpenGLScenePtr scene = m_win->get3DSceneAndLock();
@@ -970,6 +995,7 @@ void CGraphSlamEngine<GRAPH_t>::initRangeImageViewport() {
 template<class GRAPH_t>
 void CGraphSlamEngine<GRAPH_t>::updateRangeImageViewport() {
 	MRPT_START;
+	ASSERT_(m_enable_visuals);
 	using namespace mrpt::math;
 	using namespace mrpt::opengl;
 
@@ -998,6 +1024,7 @@ void CGraphSlamEngine<GRAPH_t>::updateRangeImageViewport() {
 template<class GRAPH_t>
 void CGraphSlamEngine<GRAPH_t>::initIntensityImageViewport() {
 	MRPT_START;
+	ASSERT_(m_enable_visuals);
 	using namespace mrpt::opengl;
 
 	COpenGLScenePtr scene = m_win->get3DSceneAndLock();
@@ -1016,6 +1043,7 @@ void CGraphSlamEngine<GRAPH_t>::initIntensityImageViewport() {
 template<class GRAPH_t>
 void CGraphSlamEngine<GRAPH_t>::updateIntensityImageViewport() {
 	MRPT_START;
+	ASSERT_(m_enable_visuals);
 	using namespace mrpt::opengl;
 
 	if (m_last_laser_scan3D->hasIntensityImage) {
@@ -1039,6 +1067,8 @@ void CGraphSlamEngine<GRAPH_t>::updateIntensityImageViewport() {
 
 template<class GRAPH_t>
 void CGraphSlamEngine<GRAPH_t>::initCurrPosViewport() {
+	MRPT_START;
+	ASSERT_(m_enable_visuals);
 	using namespace mrpt::opengl;
 	using namespace mrpt::utils;
 
@@ -1058,6 +1088,8 @@ void CGraphSlamEngine<GRAPH_t>::initCurrPosViewport() {
 
 	m_win->unlockAccess3DScene();
 	m_win->forceRepaint();
+
+	MRPT_END;
 }
 
 
@@ -1065,6 +1097,7 @@ void CGraphSlamEngine<GRAPH_t>::initCurrPosViewport() {
 template<class GRAPH_t>
 inline void CGraphSlamEngine<GRAPH_t>::updateCurrPosViewport() {
 	MRPT_START;
+	ASSERT_(m_enable_visuals);
 	using namespace mrpt::opengl;
 	using namespace mrpt::utils;
 	using namespace mrpt::poses;
@@ -1362,6 +1395,7 @@ void CGraphSlamEngine<GRAPH_t>::queryObserverForEvents() {
 template<class GRAPH_t>
 void CGraphSlamEngine<GRAPH_t>::toggleOdometryVisualization() {
 	MRPT_START;
+	ASSERT_(m_enable_visuals);
 	using namespace mrpt::utils;
 	using namespace mrpt::opengl;
 	this->logFmt(LVL_INFO, "Toggling Odometry visualization...");
@@ -1387,6 +1421,7 @@ void CGraphSlamEngine<GRAPH_t>::toggleOdometryVisualization() {
 template<class GRAPH_t>
 void CGraphSlamEngine<GRAPH_t>::toggleGTVisualization() {
 	MRPT_START;
+	ASSERT_(m_enable_visuals);
 	using namespace mrpt::opengl;
 	using namespace mrpt::utils;
 	this->logFmt(LVL_INFO, "Toggling Ground Truth visualization");
@@ -1413,6 +1448,7 @@ void CGraphSlamEngine<GRAPH_t>::toggleGTVisualization() {
 template<class GRAPH_t>
 void CGraphSlamEngine<GRAPH_t>::toggleMapVisualization() {
 	MRPT_START;
+	ASSERT_(m_enable_visuals);
 	using namespace std;
 	using namespace mrpt::opengl;
 	using namespace mrpt::utils;
@@ -1450,6 +1486,7 @@ void CGraphSlamEngine<GRAPH_t>::toggleMapVisualization() {
 template<class GRAPH_t>
 void CGraphSlamEngine<GRAPH_t>::toggleEstimatedTrajectoryVisualization() {
 	MRPT_START;
+	ASSERT_(m_enable_visuals);
 	using namespace mrpt::opengl;
 	using namespace mrpt::utils;
 	this->logFmt(LVL_INFO, "Toggling Estimated Trajectory visualization... ");
@@ -1636,6 +1673,7 @@ void CGraphSlamEngine<GRAPH_t>::decimateLaserScan(
 template<class GRAPH_t>
 void CGraphSlamEngine<GRAPH_t>::initGTVisualization() {
 	MRPT_START;
+	ASSERT_(m_enable_visuals);
 	using namespace mrpt::utils;
 	using namespace mrpt::opengl;
 
@@ -1684,6 +1722,7 @@ void CGraphSlamEngine<GRAPH_t>::initGTVisualization() {
 template<class GRAPH_t>
 void CGraphSlamEngine<GRAPH_t>::updateGTVisualization() {
 	MRPT_START;
+	ASSERT_(m_enable_visuals);
 	using namespace mrpt::opengl;
 
 	// add to the GT PointCloud and visualize it
@@ -1764,6 +1803,7 @@ void CGraphSlamEngine<GRAPH_t>::initOdometryVisualization() {
 template<class GRAPH_t>
 void CGraphSlamEngine<GRAPH_t>::updateOdometryVisualization() {
 	MRPT_START;
+	ASSERT_(m_enable_visuals);
 	ASSERTMSG_(m_win,
 			"Visualization of data was requested but no CDisplayWindow3D pointer was given");
 	using namespace mrpt::opengl;
@@ -1794,6 +1834,7 @@ void CGraphSlamEngine<GRAPH_t>::updateOdometryVisualization() {
 template<class GRAPH_t>
 void CGraphSlamEngine<GRAPH_t>::initEstimatedTrajectoryVisualization() {
 	MRPT_START;
+	ASSERT_(m_enable_visuals);
 	using namespace mrpt::opengl;
 	using namespace mrpt::utils;
 
@@ -1843,6 +1884,7 @@ template<class GRAPH_t>
 void CGraphSlamEngine<GRAPH_t>::
 updateEstimatedTrajectoryVisualization(bool full_update) {
 	MRPT_START;
+	ASSERT_(m_enable_visuals);
 	using namespace mrpt::opengl;
 
 	mrpt::synch::CCriticalSectionLocker m_graph_lock(&m_graph_section);
@@ -2010,11 +2052,10 @@ template<class GRAPH_t>
 void CGraphSlamEngine<GRAPH_t>::save3DScene(
 		const std::string* fname_in /* = NULL */) const {
 	MRPT_START;
-	using namespace mrpt::opengl;
-	using namespace mrpt::utils;
-
 	ASSERTMSG_(m_enable_visuals,
 			"\nsave3DScene was called even though enable_visuals flag is off.\nExiting...\n");
+	using namespace mrpt::opengl;
+	using namespace mrpt::utils;
 
 	COpenGLScenePtr scene = m_win->get3DSceneAndLock();
 
@@ -2126,6 +2167,7 @@ void CGraphSlamEngine<GRAPH_t>::computeSlamMetric(mrpt::utils::TNodeID nodeID, s
 
 template<class GRAPH_t>
 void CGraphSlamEngine<GRAPH_t>::initSlamMetricVisualization() {
+	ASSERT_(m_enable_visuals);
 	using namespace std;
 	using namespace mrpt::utils;
 	using namespace mrpt::gui;
@@ -2150,7 +2192,7 @@ void CGraphSlamEngine<GRAPH_t>::initSlamMetricVisualization() {
 template<class GRAPH_t>
 void CGraphSlamEngine<GRAPH_t>::updateSlamMetricVisualization() {
 	MRPT_START;
-
+	ASSERT_(m_enable_visuals);
 	ASSERT_(m_win_plot && m_visualize_SLAM_metric);
 
 	// build the X, Y vectors for plotting - use log scale

@@ -128,7 +128,7 @@ int main(int argc, char **argv)
 			}
 
 			if (list_registrars || list_optimizers.getValue()) {
-				logger.logStr(LVL_INFO, "Exiting.. ");
+				logger.logFmt(LVL_INFO, "Exiting.. ");
 				return 0;
 			}
 		}
@@ -160,7 +160,7 @@ int main(int argc, char **argv)
 		}
 
 		if (disable_visuals.getValue()) { // enabling Visualization objects
-			logger.logStr(LVL_WARN, "Running on headless mode - Visuals disabled");
+			logger.logFmt(LVL_WARN, "Running on headless mode - Visuals disabled");
 		}
 
 		logger.logFmt(LVL_INFO, "Node registration decider: %s", node_reg.c_str());
@@ -247,13 +247,20 @@ int main(int argc, char **argv)
 
 	}
 	catch (exception& e) {
-		logger.logFmt(LVL_ERROR, "Finished with a (known) exception!");
+		setConsoleColor(CONCOL_RED,true);
+		cerr << "Program finished for an exception!!" << endl;
+		setConsoleColor(CONCOL_NORMAL,true);
+
 		cerr << e.what() << endl;
+
 		mrpt::system::pause();
 		return -1;
 	}
 	catch (...) {
-		logger.logFmt(LVL_ERROR, "Finished with a (unknown) exception!");
+		setConsoleColor(CONCOL_RED,true);
+		cerr << "Program finished for an untyped exception!!" << endl;
+		setConsoleColor(CONCOL_NORMAL,true);
+
 		mrpt::system::pause();
 		return -1;
 	}
