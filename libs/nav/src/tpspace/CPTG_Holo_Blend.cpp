@@ -416,10 +416,33 @@ void CPTG_Holo_Blend::getPathPose(uint16_t k, uint16_t step, mrpt::math::TPose2D
 	}
 
 	// Rotational part:
-	const double T_rot = std::abs(dir)/W_MAX;
-	if (t<T_rot)
-	     p.phi = t*dir/T_rot;
-	else p.phi = dir;
+	MRPT_TODO("Reconsider constant W_MAX");
+	const double wf = mrpt::utils::signWithZero(dir) * W_MAX;
+	const double wi = curVelLocal.omega;
+
+	if (t<T_ramp)
+	{
+		// Time required to align completed?
+		const double a = TR2_ * std::abs(wf - wi), b = std::abs(wi), c = -std::abs(dir);
+
+		// Solves equation `a*x^2 + b*x + c = 0`.
+		double r1, r2;
+		int nroots = mrpt::math::solve_poly2(a,b,c, r1,r2);
+		const double t_solve = std::max(r1,r2);
+		if (t > t_solve)
+			p.phi = dir;
+		else
+			p.phi = wi*t + t*t* TR2_ * (wf-wi);
+	}
+	else
+	{
+		// Time required to align completed?
+		const double t_solve = (std::abs(dir) - T_ramp *0.5*std::abs(wi + wf))/std::abs(wf) + T_ramp;
+		if (t > t_solve)
+			p.phi = dir;
+		else
+			p.phi = T_ramp *0.5*(wi + wf) + (t - T_ramp) * wf;
+	}
 }
 
 double CPTG_Holo_Blend::getPathDist(uint16_t k, uint16_t step) const

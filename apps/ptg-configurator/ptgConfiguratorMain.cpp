@@ -157,7 +157,7 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent,wxWindowID id) :
     edPTGIndex->SetValue(_T("0"));
     FlexGridSizer4->Add(edPTGIndex, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 5);
     btnReloadParams = new wxButton(Panel1, ID_BUTTON1, _("Initialize PTG"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON1"));
-    wxFont btnReloadParamsFont(wxDEFAULT,wxDEFAULT,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_BOLD,false,wxEmptyString,wxFONTENCODING_DEFAULT);
+    wxFont btnReloadParamsFont(wxDEFAULT,wxDEFAULT,wxFONTSTYLE_NORMAL,wxBOLD,false,wxEmptyString,wxFONTENCODING_DEFAULT);
     btnReloadParams->SetFont(btnReloadParamsFont);
     FlexGridSizer4->Add(btnReloadParams, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     cbDrawShapePath = new wxCheckBox(Panel1, ID_CHECKBOX1, _("Draw robot shape"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX1"));
@@ -192,7 +192,7 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent,wxWindowID id) :
     FlexGridSizer8->Add(btnPlaceObs, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     btnRebuildTPObs = new wxButton(Panel1, ID_BUTTON2, _("Rebuild TP-Obs."), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON2"));
     FlexGridSizer8->Add(btnRebuildTPObs, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-    StaticText6 = new wxStaticText(Panel1, ID_STATICTEXT6, _("Target point:  x="), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT6"));
+    StaticText6 = new wxStaticText(Panel1, ID_STATICTEXT6, _("Target point: x="), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT6"));
     FlexGridSizer8->Add(StaticText6, 1, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5);
     edTargetX = new wxTextCtrl(Panel1, ID_TEXTCTRL6, _("5.0"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_TEXTCTRL6"));
     FlexGridSizer8->Add(edTargetX, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
@@ -207,7 +207,7 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent,wxWindowID id) :
     wxFont edCfgFont = wxSystemSettings::GetFont(wxSYS_OEM_FIXED_FONT);
     if ( !edCfgFont.Ok() ) edCfgFont = wxSystemSettings::GetFont(wxSYS_DEFAULT_GUI_FONT);
     edCfgFont.SetPointSize(8);
-    edCfgFont.SetFamily(wxFONTFAMILY_TELETYPE);
+    edCfgFont.SetFamily(wxTELETYPE);
     edCfg->SetFont(edCfgFont);
     FlexGridSizer3->Add(edCfg, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 2);
     FlexGridSizer5 = new wxFlexGridSizer(0, 3, 0, 0);
@@ -225,7 +225,7 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent,wxWindowID id) :
     wxFont edLogFont = wxSystemSettings::GetFont(wxSYS_OEM_FIXED_FONT);
     if ( !edLogFont.Ok() ) edLogFont = wxSystemSettings::GetFont(wxSYS_DEFAULT_GUI_FONT);
     edLogFont.SetPointSize(8);
-    edLogFont.SetFamily(wxFONTFAMILY_TELETYPE);
+    edLogFont.SetFamily(wxTELETYPE);
     edLog->SetFont(edLogFont);
     FlexGridSizer1->Add(edLog, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
     SetSizer(FlexGridSizer1);
@@ -254,6 +254,8 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent,wxWindowID id) :
     Connect(ID_CHECKBOX1,wxEVT_COMMAND_CHECKBOX_CLICKED,(wxObjectEventFunction)&ptgConfiguratorframe::OncbDrawShapePathClick);
     Connect(ID_CHECKBOX3,wxEVT_COMMAND_CHECKBOX_CLICKED,(wxObjectEventFunction)&ptgConfiguratorframe::OncbHighlightOnePathClick);
     Connect(ID_SLIDER1,wxEVT_SCROLL_TOP|wxEVT_SCROLL_BOTTOM|wxEVT_SCROLL_LINEUP|wxEVT_SCROLL_LINEDOWN|wxEVT_SCROLL_PAGEUP|wxEVT_SCROLL_PAGEDOWN|wxEVT_SCROLL_THUMBTRACK|wxEVT_SCROLL_THUMBRELEASE|wxEVT_SCROLL_CHANGED,(wxObjectEventFunction)&ptgConfiguratorframe::OnslidPathHighlightCmdScroll);
+    Connect(ID_SLIDER1,wxEVT_SCROLL_THUMBTRACK,(wxObjectEventFunction)&ptgConfiguratorframe::OnslidPathHighlightCmdScroll);
+    Connect(ID_SLIDER1,wxEVT_SCROLL_CHANGED,(wxObjectEventFunction)&ptgConfiguratorframe::OnslidPathHighlightCmdScroll);
     Connect(ID_SPINCTRL2,wxEVT_COMMAND_SPINCTRL_UPDATED,(wxObjectEventFunction)&ptgConfiguratorframe::OnedIndexHighlightPathChange);
     Connect(ID_CHECKBOX2,wxEVT_COMMAND_CHECKBOX_CLICKED,(wxObjectEventFunction)&ptgConfiguratorframe::OncbBuildTPObsClick);
     Connect(ID_BUTTON3,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&ptgConfiguratorframe::OnbtnPlaceObsClick);
@@ -291,6 +293,12 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent,wxWindowID id) :
 	gl_robot_ptg_prediction->setLineWidth(1.0);
 	gl_robot_ptg_prediction->setColor_u8( mrpt::utils::TColor(0x00,0x00,0xff,0x90) );
 	gl_view_WS->insert(gl_robot_ptg_prediction);
+
+	gl_robot_ptg_prediction_highlight = mrpt::opengl::CSetOfLines::Create();
+	gl_robot_ptg_prediction_highlight->setName("ptg_prediction_highlight");
+	gl_robot_ptg_prediction_highlight->setLineWidth(3.0);
+	gl_robot_ptg_prediction_highlight->setColor_u8(mrpt::utils::TColor(0xff, 0x00, 0x00, 0xff));
+	gl_view_WS->insert(gl_robot_ptg_prediction_highlight);
 
 	gl_WS_obs = mrpt::opengl::CPointCloud::Create();
 	gl_WS_obs->setPointSize(7.0);
@@ -422,6 +430,13 @@ void ptgConfiguratorframe::OnbtnReloadParamsClick(wxCommandEvent& event)
 
 	ptg->initialize();
 
+	// one-time GUI init for each PTG settings:
+	edIndexHighlightPath->SetMin(0);
+	slidPathHighlight->SetMin(0);
+	edIndexHighlightPath->SetMax( ptg->getPathCount()-1 );
+	slidPathHighlight->SetMax(ptg->getPathCount() - 1);
+
+	// first time full GUI refresh:
 	rebuild3Dview();
 
 	WX_END_TRY;
@@ -497,11 +512,19 @@ void ptgConfiguratorframe::rebuild3Dview()
 
 		// All paths:
 		gl_robot_ptg_prediction->clear();
-		gl_robot_ptg_prediction->clear();
+		gl_robot_ptg_prediction_highlight->clear();
 		for (int k=0;k<ptg->getPathCount();k++)
 		{
 			const double max_dist = TP_Obstacles[k];
-			ptg->renderPathAsSimpleLine(k,*gl_robot_ptg_prediction,0.10, max_dist);
+
+			mrpt::opengl::CSetOfLines & sol =
+				cbHighlightOnePath->IsChecked() && k == edIndexHighlightPath->GetValue()
+				?
+				*gl_robot_ptg_prediction_highlight
+				:
+				*gl_robot_ptg_prediction;
+
+			ptg->renderPathAsSimpleLine(k,sol,0.10, max_dist);
 
 			// Overlay a sequence of robot shapes:
 			if (cbDrawShapePath->IsChecked())
@@ -517,7 +540,7 @@ void ptgConfiguratorframe::rebuild3Dview()
 						continue;
 					mrpt::math::TPose2D p;
 					ptg->getPathPose(k, step, p);
-					ptg->add_robotShape_to_setOfLines(*gl_robot_ptg_prediction, mrpt::poses::CPose2D(p) );
+					ptg->add_robotShape_to_setOfLines(sol, mrpt::poses::CPose2D(p) );
 				}
 			}
 		}
@@ -690,6 +713,9 @@ void ptgConfiguratorframe::OnbtnPlaceTargetClick(wxCommandEvent& event)
 
 void ptgConfiguratorframe::OnslidPathHighlightCmdScroll(wxScrollEvent& event)
 {
+	edIndexHighlightPath->SetValue( slidPathHighlight->GetValue() );
+	wxSpinEvent dm;
+	OnedIndexHighlightPathChange(dm);
 }
 
 void ptgConfiguratorframe::OncbHighlightOnePathClick(wxCommandEvent& event)
@@ -701,4 +727,5 @@ void ptgConfiguratorframe::OncbHighlightOnePathClick(wxCommandEvent& event)
 
 void ptgConfiguratorframe::OnedIndexHighlightPathChange(wxSpinEvent& event)
 {
+	rebuild3Dview();
 }

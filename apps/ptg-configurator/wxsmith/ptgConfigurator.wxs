@@ -125,6 +125,8 @@
 											<object class="wxSlider" name="ID_SLIDER1" variable="slidPathHighlight" member="yes">
 												<enabled>0</enabled>
 												<handler function="OnslidPathHighlightCmdScroll" entry="EVT_COMMAND_SCROLL" />
+												<handler function="OnslidPathHighlightCmdScroll" entry="EVT_COMMAND_SCROLL_THUMBTRACK" />
+												<handler function="OnslidPathHighlightCmdScroll" entry="EVT_COMMAND_SCROLL_CHANGED" />
 											</object>
 											<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
 											<border>5</border>
@@ -201,7 +203,7 @@
 										</object>
 										<object class="sizeritem">
 											<object class="wxStaticText" name="ID_STATICTEXT6" variable="StaticText6" member="yes">
-												<label>Target point:  x=</label>
+												<label>Target point: x=</label>
 											</object>
 											<flag>wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL</flag>
 											<border>5</border>

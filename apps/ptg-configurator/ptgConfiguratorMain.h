@@ -163,7 +163,7 @@ class ptgConfiguratorframe: public wxFrame
 		mrpt::opengl::COpenGLViewportPtr  gl_view_WS, gl_view_TPSpace;
 		mrpt::opengl::CCameraPtr          gl_view_TPSpace_cam;
 		mrpt::opengl::CAxisPtr            gl_axis_WS, gl_axis_TPS;
-		mrpt::opengl::CSetOfLinesPtr      gl_robot_ptg_prediction, gl_tp_obstacles;
+		mrpt::opengl::CSetOfLinesPtr      gl_robot_ptg_prediction, gl_robot_ptg_prediction_highlight, gl_tp_obstacles;
 		mrpt::opengl::CPointCloudPtr      gl_WS_obs;
 		mrpt::opengl::CPointCloudPtr      gl_WS_target,gl_TP_target;
 
