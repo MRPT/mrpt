@@ -124,16 +124,11 @@ namespace mrpt
 			 */
 			struct SLAM_IMPEXP TReturnInfo
 			{
-				/** Initialization
-				  */
 				TReturnInfo() :
-					cbSize(sizeof(TReturnInfo)),
 					goodness(0),
 					noRobustEstimation()
 				{
 				}
-
-				size_t		cbSize;	//!< Size of the structure, do not change, it's set automatically
 
 				/** A goodness measure for the alignment, it is a [0,1] range indicator of percentage of correspondences.
 				 */
