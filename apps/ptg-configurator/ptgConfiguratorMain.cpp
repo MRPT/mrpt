@@ -431,9 +431,8 @@ void ptgConfiguratorframe::OnbtnReloadParamsClick(wxCommandEvent& event)
 	ptg->initialize();
 
 	// one-time GUI init for each PTG settings:
-	edIndexHighlightPath->SetMin(0);
+	edIndexHighlightPath->SetRange(0, ptg->getPathCount()-1);
 	slidPathHighlight->SetMin(0);
-	edIndexHighlightPath->SetMax( ptg->getPathCount()-1 );
 	slidPathHighlight->SetMax(ptg->getPathCount() - 1);
 
 	// first time full GUI refresh:
