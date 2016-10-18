@@ -233,8 +233,8 @@ namespace mrpt
 		void preDestructor(); //!< To be called during children destructors to assure thread-safe destruction, and free of shared objects.
 		virtual void onStartNewNavigation() MRPT_OVERRIDE;
 
-	private:
 		bool m_closing_navigator; //!< Signal that the destructor has been called, so no more calls are accepted from other threads
+	private:
 		mrpt::system::TTimeStamp m_WS_Obstacles_timestamp;
 
 		struct TInfoPerPTG
