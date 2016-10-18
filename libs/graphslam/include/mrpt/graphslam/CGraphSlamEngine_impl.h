@@ -602,6 +602,7 @@ bool CGraphSlamEngine<GRAPH_t>::execGraphSlamStep(
 		}
 
 		// refine the SLAM metric  and update its corresponding visualization
+		// This is done only when the GT is available.
 		if (m_use_GT) {
 			m_time_logger.enter("SLAM_metric");
 			this->computeSlamMetric(m_nodeID_max, m_GT_poses_index);
@@ -646,8 +647,8 @@ bool CGraphSlamEngine<GRAPH_t>::execGraphSlamStep(
 	// handle RGBD-TUM datasets manually. Advance the GT index accordingly
 	if (m_use_GT) {
 		if (mrpt::system::strCmpI(m_GT_file_format, "rgbd_tum")) { // 1/loop
-		    if (m_enable_visuals) {
-			    this->updateGTVisualization(); // I have already taken care of the step
+		  if (m_enable_visuals) {
+			  this->updateGTVisualization(); // I have already taken care of the step
 			}
 			m_GT_poses_index += m_GT_poses_step;
 		}
@@ -656,9 +657,9 @@ bool CGraphSlamEngine<GRAPH_t>::execGraphSlamStep(
 				MRPT_LOG_DEBUG_STREAM <<
 					"observation_only_dataset: Updating GTVisualization";
 				if (rawlog_entry % 2 == 0) {
-		            if (m_enable_visuals) {
-			            this->updateGTVisualization(); // I have already taken care of the step
-			        }
+		      if (m_enable_visuals) {
+			      this->updateGTVisualization(); // I have already taken care of the step
+			    }
 					m_GT_poses_index += m_GT_poses_step;
 					MRPT_LOG_DEBUG_STREAM << "rawlog_entry%2==0 " << std::endl;
 				}
@@ -667,9 +668,9 @@ bool CGraphSlamEngine<GRAPH_t>::execGraphSlamStep(
 				// get both action and observation at a single step - same rate as GT
 				MRPT_LOG_DEBUG_STREAM <<
 					"action-observations dataset: Updating GTVisualization";
-		        if (m_enable_visuals) {
-			        this->updateGTVisualization(); // I have already taken care of the step
-			    }
+		    if (m_enable_visuals) {
+			    this->updateGTVisualization(); // I have already taken care of the step
+			  }
 				m_GT_poses_index += m_GT_poses_step;
 			}
 		}
@@ -2102,7 +2103,9 @@ void CGraphSlamEngine<GRAPH_t>::computeSlamMetric(mrpt::utils::TNodeID nodeID, s
 
 	// add to the map - keep track of which gt index corresponds to which nodeID
 	m_nodeID_to_gt_indices[nodeID] = gt_index;
-	this->logFmt(LVL_DEBUG, "Current nodeID-gt pair: %lu - %lu", nodeID, gt_index);
+	this->logFmt(LVL_DEBUG, "Current nodeID-gt pair: %lu - %lu",
+			static_cast<unsigned long>(nodeID),
+			static_cast<unsigned long>(gt_index));
 
 	// initialize the loop variables only once
 	pose_t curr_node_pos;
@@ -2331,6 +2334,19 @@ void CGraphSlamEngine<GRAPH_t>::generateReportFiles(
 	}
 
 
+
+	MRPT_END;
+}
+
+
+// TODO - check this
+template<class GRAPH_t>
+void CGraphSlamEngine<GRAPH_t>::getDeformationEnergyVector(
+		std::vector<double>* vec_out) const {
+	MRPT_START;
+
+	ASSERT_(vec_out);
+	*vec_out = m_deformation_energy_vec;
 
 	MRPT_END;
 }
