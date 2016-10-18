@@ -383,7 +383,6 @@ void export_slam()
         ;
 
         class_<CICP::TReturnInfo>("TReturnInfo", init<>())
-            .def_readwrite("cbSize", &CICP::TReturnInfo::cbSize)
             .def_readwrite("nIterations", &CICP::TReturnInfo::nIterations)
             .def_readwrite("goodness", &CICP::TReturnInfo::goodness)
             .def_readwrite("quality", &CICP::TReturnInfo::quality)

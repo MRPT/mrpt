@@ -252,7 +252,6 @@ CPosePDFPtr CICP::ICP_Method_Classic(
 
 	// The algorithm output auxiliar info:
 	// -------------------------------------------------
-	outInfo.cbSize			= sizeof(TReturnInfo);
 	outInfo.nIterations		= 0;
 	outInfo.goodness		= 1;
 	outInfo.quality			= 0;
@@ -585,7 +584,6 @@ CPosePDFPtr CICP::ICP_Method_LM(
 
 	// The algorithm output auxiliar info:
 	// -------------------------------------------------
-	outInfo.cbSize			= sizeof(TReturnInfo);
 	outInfo.nIterations		= 0;
 	outInfo.goodness		= 1.0f;
 
@@ -924,9 +922,7 @@ CPose3DPDFPtr CICP::Align3DPDF(
 	// Copy the output info if requested:
 	if (info)
 	{
-		if ( static_cast<TReturnInfo*>(info)->cbSize != sizeof(TReturnInfo) )
-			THROW_EXCEPTION("'TReturnInfo' size is wrong, filling it would lead to memory corruption")
-		// It's ok:
+		MRPT_TODO("Refactor `info` so it is polymorphic and can use dynamic_cast<> here");
 		*static_cast<TReturnInfo*>(info) = outInfo;
 	}
 
@@ -965,7 +961,6 @@ CPose3DPDFPtr CICP::ICP3D_Method_Classic(
 
 	// The algorithm output auxiliar info:
 	// -------------------------------------------------
-	outInfo.cbSize			= sizeof(TReturnInfo);
 	outInfo.nIterations		= 0;
 	outInfo.goodness		= 1;
 	outInfo.quality			= 0;

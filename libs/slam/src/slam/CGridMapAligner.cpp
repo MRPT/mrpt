@@ -863,10 +863,10 @@ CPosePDFPtr CGridMapAligner::AlignPDF_robustMatch(
 
 	// Copy the output info if requested:
 	// -------------------------------------------------
+	MRPT_TODO("Refactor `info` so it is polymorphic and can use dynamic_cast<> here");
 	if (info)
 	{
 		TReturnInfo* info_ = static_cast<TReturnInfo*>(info);
-		ASSERT_( info_->cbSize == sizeof(TReturnInfo) );
 		*info_ = outInfo;
 	}
 
