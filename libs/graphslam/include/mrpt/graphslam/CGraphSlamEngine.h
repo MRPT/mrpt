@@ -365,14 +365,21 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 				const std::string& fname_GT,
 				std::vector<pose_t>* gt_poses,
 				std::vector<mrpt::system::TTimeStamp>* gt_timestamps=NULL);
-		/**
-		 *\brief Generate and write to a corresponding report for each of
-		 * the respective self/decider/optimizer classes.
+		/**\brief Generate and write to a corresponding report for each of the
+		 * respective self/decider/optimizer classes.
 		 *
 		 * \param[in] output_dir_fname directory name to generate the files in
 		 * \sa getDescriptiveReport
 		 */
 		void generateReportFiles(const std::string& output_dir_fname);
+		/**\brief Fill the given vector with the deformation energy values computed
+		 * for the SLAM evaluation metric
+		 *
+		 * \param[out] vec_out deformation energy vector to be filled
+		 * \sa m_deformation_energy_vec
+		 */
+		void getDeformationEnergyVector(std::vector<double>* vec_out) const;
+
 
 	private:
 		// Private function definitions
