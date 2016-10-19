@@ -101,6 +101,10 @@ void CGraphSlamHandler::readConfigFname(const std::string& fname) {
 			"GeneralConfiguration",
 			"save_3DScene",
 			true, false);
+	save_gridmap = cfg_file.read_bool(
+			"GeneralConfiguration",
+			"save_gridmap",
+			true, false);
 	save_graph_fname = cfg_file.read_string(
 			"GeneralConfiguration",
 			"save_graph_fname",
@@ -109,6 +113,10 @@ void CGraphSlamHandler::readConfigFname(const std::string& fname) {
 			"GeneralConfiguration",
 			"save_3DScene_fname",
 			"scene.3DScene", false);
+	save_gridmap_fname = cfg_file.read_string(
+			"GeneralConfiguration",
+			"save_gridmap_fname",
+			"output_gridmap", false);
 
 	MRPT_END;
 }

@@ -10,9 +10,11 @@
 
 #include <mrpt/obs/CRawlog.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
+#include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
 #include <mrpt/utils/CLoadableOptions.h>
+#include <mrpt/utils/CImage.h>
 #include <mrpt/utils/COutputLogger.h>
 #include <mrpt/opengl/CPlanarLaserScan.h>
 #include <mrpt/poses/CPoses2DSequence.h>
@@ -39,6 +41,7 @@ using namespace mrpt::obs;
 using namespace mrpt::system;
 using namespace mrpt::graphs;
 using namespace mrpt::math;
+using namespace mrpt::maps;
 using namespace mrpt::opengl;
 using namespace mrpt::utils;
 using namespace mrpt::graphslam;
@@ -240,6 +243,16 @@ int main(int argc, char **argv)
 				graphslam_handler.save_3DScene_fname;
 
 			graphslam_engine.save3DScene(&save_3DScene_fname);
+		}
+
+		// get the occupancy gridmap that was built
+		if (graphslam_handler.save_gridmap) {
+			COccupancyGridMap2D gridmap;
+			graphslam_engine.getOccupancyGridMap2D(&gridmap);
+			gridmap.saveMetricMapRepresentationToFile(
+					graphslam_handler.output_dir_fname +
+					"/" +
+					graphslam_handler.save_gridmap_fname);
 		}
 
 
