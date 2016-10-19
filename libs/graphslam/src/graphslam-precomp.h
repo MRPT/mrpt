@@ -12,7 +12,6 @@
 #include <mrpt/config.h>
 #if MRPT_ENABLE_PRECOMPILED_HDRS
 
-#include <mrpt/graphslam/types.h>
+#include <mrpt/graphslam.h>
 
 #endif
-

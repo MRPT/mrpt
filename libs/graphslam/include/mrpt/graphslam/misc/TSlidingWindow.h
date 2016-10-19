@@ -10,8 +10,8 @@
 #ifndef TSLIDINGWINDOW_H
 #define TSLIDINGWINDOW_H
 
-#include "link_pragmas.h"
 #include <mrpt/utils/CLoadableOptions.h>
+#include <mrpt/graphslam/link_pragmas.h>
 
 #include <algorithm> // std::transform
 #include <cmath> // sqrt
@@ -56,9 +56,9 @@ struct GRAPHSLAM_IMPEXP TSlidingWindow: public mrpt::utils::CLoadableOptions {
 		/**\brief Return the Standard deviation of the current measurement vector*/
 		double getStdDev();
 		/**\brief Determine whether the incoming measurement is inside the
-		 * [-3sigma, +3sigma] boundaries from the current mean value. 
+		 * [-3sigma, +3sigma] boundaries from the current mean value.
 		 *
-		 * \return True if it's inside the uncertainty boundaries 
+		 * \return True if it's inside the uncertainty boundaries
 		 */
 		bool evaluateMeasurementInGaussian(double measurement);
 		/**\brief Determine whether the incoming measurement is over the current

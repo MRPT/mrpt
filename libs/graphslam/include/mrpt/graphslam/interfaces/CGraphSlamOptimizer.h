@@ -19,7 +19,7 @@
 #include <mrpt/utils/TParameters.h>
 #include <mrpt/utils/CTimeLogger.h>
 
-#include <mrpt/graphslam/CWindowManager.h>
+#include <mrpt/graphslam/misc/CWindowManager.h>
 #include "CRegistrationDeciderOrOptimizer.h"
 
 namespace mrpt { namespace graphslam { namespace optimizers {
