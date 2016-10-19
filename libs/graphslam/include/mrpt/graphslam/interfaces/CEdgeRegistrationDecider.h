@@ -14,12 +14,12 @@
 #include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/obs/CObservation.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
-#include <mrpt/graphslam/CWindowManager.h>
 #include <mrpt/graphs/CNetworkOfPoses.h>
 #include <mrpt/utils/types_simple.h>
 #include <mrpt/synch/CCriticalSection.h>
 #include <mrpt/utils/TParameters.h>
 
+#include <mrpt/graphslam/misc/CWindowManager.h>
 #include "CRegistrationDeciderOrOptimizer.h"
 
 #include <map>

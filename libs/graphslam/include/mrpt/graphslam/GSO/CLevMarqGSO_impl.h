@@ -63,7 +63,8 @@ bool CLevMarqGSO<GRAPH_t>::updateState(
 		mrpt::obs::CSensoryFramePtr observations,
 		mrpt::obs::CObservationPtr observation ) {
 	MRPT_START;
-	this->logStr(mrpt::utils::LVL_DEBUG, "In updateOptimizerState... ");
+	using namespace mrpt::utils;
+	this->logFmt(LVL_DEBUG, "In updateOptimizerState... ");
 
 	if (m_graph->nodeCount() > m_last_total_num_of_nodes) {
 		m_last_total_num_of_nodes = m_graph->nodeCount();
@@ -98,35 +99,28 @@ bool CLevMarqGSO<GRAPH_t>::updateState(
 template<class GRAPH_t>
 void CLevMarqGSO<GRAPH_t>::setGraphPtr(GRAPH_t* graph) {
 	MRPT_START;
+	using namespace mrpt::utils;
 
 	m_graph = graph;
 
-	this->logStr(mrpt::utils::LVL_DEBUG, "Fetched the graph successfully");
+	this->logFmt(mrpt::utils::LVL_DEBUG, "Fetched the graph successfully");
 
 	MRPT_END;
 }
-
-template<class GRAPH_t>
-void CLevMarqGSO<GRAPH_t>::setRawlogFname(const std::string& rawlog_fname) {
-	MRPT_START;
-
-	MRPT_END;
-}
-
 
 template<class GRAPH_t>
 void CLevMarqGSO<GRAPH_t>::setWindowManagerPtr(
 		mrpt::graphslam::CWindowManager* win_manager) {
 	MRPT_START;
+	ASSERT_(win_manager);
 
 	m_win_manager = win_manager;
 	if (m_win_manager) {
 		m_win = m_win_manager->win;
 
 		m_win_observer = m_win_manager->observer;
-
 	}
-	this->logStr(mrpt::utils::LVL_DEBUG, "Fetched the CDisplayWindow successfully");
+	this->logFmt(mrpt::utils::LVL_DEBUG, "Fetched the CDisplayWindow successfully");
 
 	MRPT_END;
 }
@@ -138,7 +132,7 @@ void CLevMarqGSO<GRAPH_t>::setCriticalSectionPtr(
 
 	m_graph_section = graph_section;
 
-	this->logStr(mrpt::utils::LVL_DEBUG, "Fetched the CCRiticalSection successfully");
+	this->logFmt(mrpt::utils::LVL_DEBUG, "Fetched the CCRiticalSection successfully");
 	MRPT_END;
 }
 
@@ -146,7 +140,8 @@ void CLevMarqGSO<GRAPH_t>::setCriticalSectionPtr(
 template<class GRAPH_t>
 void CLevMarqGSO<GRAPH_t>::initializeVisuals() {
 	MRPT_START;
-	this->logStr(mrpt::utils::LVL_DEBUG, "CLevMarqGSO:] Initializing visuals");
+	ASSERT_(m_win_manager);
+	this->logFmt(mrpt::utils::LVL_DEBUG, "Initializing visuals");
 
 	ASSERTMSG_(m_win,
 			"Visualization of data was requested but no CDisplayWindow3D pointer "
@@ -164,9 +159,8 @@ void CLevMarqGSO<GRAPH_t>::initializeVisuals() {
 template<class GRAPH_t>
 void CLevMarqGSO<GRAPH_t>::updateVisuals() {
 	MRPT_START;
-
-	ASSERT_(m_initialized_visuals);
 	ASSERTMSG_(m_win_manager, "No CWindowManager* is given");
+	ASSERT_(m_initialized_visuals);
 	ASSERTMSG_(m_win,
 			"Visualization of data was requested but no CDisplayWindow3D pointer was given.");
 
@@ -178,9 +172,17 @@ void CLevMarqGSO<GRAPH_t>::updateVisuals() {
 
 template<class GRAPH_t>
 void CLevMarqGSO<GRAPH_t>::notifyOfWindowEvents(
-		const std::map<std::string, bool> events_occurred)
+		const std::map<std::string, bool>& events_occurred)
 {
 	MRPT_START;
+	ASSERTMSG_(m_win_manager, "No CWindowManager* is given");
+	using namespace std;
+
+	//// print the keys for debuggging reasons
+	//for (std::map<std::string, bool>::const_iterator cit = events_occurred.begin();
+			//cit != events_occurred.end(); ++cit) {
+		//cout << "\t" << cit->first << " ==> " << cit->second << endl;
+	//}
 
 	// I know the keys exists - I put it there explicitly
 
@@ -199,11 +201,13 @@ void CLevMarqGSO<GRAPH_t>::notifyOfWindowEvents(
 
 	// if mouse event, let the user decide about the camera
 	if (events_occurred.find("mouse_clicked")->second) {
+		MRPT_LOG_DEBUG_STREAM << "Mouse was clicked. Disabling autozoom.";
 		m_autozoom_active = false;
 	}
 
 	// autofit the graph once
 	if (events_occurred.find(viz_params.keystroke_graph_autofit)->second) {
+		MRPT_LOG_DEBUG_STREAM << "Autofit button was pressed";
 		this->fitGraphInView();
 	}
 
@@ -213,6 +217,7 @@ void CLevMarqGSO<GRAPH_t>::notifyOfWindowEvents(
 template<class GRAPH_t>
 inline void CLevMarqGSO<GRAPH_t>::initGraphVisualization() {
 	MRPT_START;
+	ASSERTMSG_(m_win_manager, "No CWindowManager* is given");
 
 	if (viz_params.visualize_optimized_graph) {
 		m_win_observer->registerKeystroke(viz_params.keystroke_graph_toggle,
@@ -232,10 +237,11 @@ inline void CLevMarqGSO<GRAPH_t>::initGraphVisualization() {
 template<class GRAPH_t>
 inline void CLevMarqGSO<GRAPH_t>::updateGraphVisualization() {
 	MRPT_START;
+	ASSERTMSG_(m_win_manager, "No CWindowManager* is given");
 	using namespace mrpt::opengl;
 	using namespace mrpt::utils;
 
-	this->logStr(mrpt::utils::LVL_DEBUG, "In the updateGraphVisualization function");
+	this->logFmt(mrpt::utils::LVL_DEBUG, "In the updateGraphVisualization function");
 
 	// update the graph (clear and rewrite..)
 	COpenGLScenePtr& scene = m_win->get3DSceneAndLock();
@@ -321,6 +327,7 @@ void CLevMarqGSO<GRAPH_t>::fitGraphInView() {
 template<class GRAPH_t>
 void CLevMarqGSO<GRAPH_t>::initOptDistanceVisualization() {
 	MRPT_START;
+	ASSERTMSG_(m_win_manager, "No CWindowManager* is given");
 	using namespace mrpt::opengl;
 
 	if (opt_params.optimization_distance > 0) {
@@ -359,6 +366,7 @@ void CLevMarqGSO<GRAPH_t>::initOptDistanceVisualization() {
 template<class GRAPH_t>
 void CLevMarqGSO<GRAPH_t>::updateOptDistanceVisualization() {
 	MRPT_START;
+	ASSERTMSG_(m_win_manager, "No CWindowManager* is given");
 	using namespace mrpt::opengl;
 
 	// update ICP_max_distance Disk
@@ -381,6 +389,7 @@ void CLevMarqGSO<GRAPH_t>::updateOptDistanceVisualization() {
 template<class GRAPH_t>
 void CLevMarqGSO<GRAPH_t>::toggleOptDistanceVisualization() {
 	MRPT_START;
+	ASSERTMSG_(m_win_manager, "No CWindowManager* is given");
 	using namespace mrpt::opengl;
 
 	COpenGLScenePtr scene = m_win->get3DSceneAndLock();
@@ -400,14 +409,14 @@ template<class GRAPH_t>
 void CLevMarqGSO<GRAPH_t>::optimizeGraph() {
 	MRPT_START;
 
-	this->logStr(mrpt::utils::LVL_DEBUG, mrpt::format(
+	this->logFmt(mrpt::utils::LVL_DEBUG,
 				"In optimizeGraph\n\tThreadID: %lu\n\tTrying to grab lock... ",
-				mrpt::system::getCurrentThreadId()));
+				mrpt::system::getCurrentThreadId());
 
 	mrpt::synch::CCriticalSectionLocker m_graph_lock(m_graph_section);
 	this->_optimizeGraph();
 
-	this->logStr(mrpt::utils::LVL_DEBUG, "2nd thread grabbed the lock..");
+	this->logFmt(mrpt::utils::LVL_DEBUG, "2nd thread grabbed the lock..");
 
 	MRPT_END;
 }
@@ -417,7 +426,7 @@ template<class GRAPH_t>
 void CLevMarqGSO<GRAPH_t>::_optimizeGraph() {
 	MRPT_START;
 	m_time_logger.enter("CLevMarqGSO::_optimizeGraph");
-	this->logStr(mrpt::utils::LVL_DEBUG, "In _optimizeGraph");
+	this->logFmt(mrpt::utils::LVL_DEBUG, "In _optimizeGraph");
 
 	using namespace mrpt::utils;
 
@@ -434,7 +443,8 @@ void CLevMarqGSO<GRAPH_t>::_optimizeGraph() {
 	bool full_update = opt_params.optimization_distance == -1 || this->checkForLoopClosures();
 	if (full_update) {
 		nodes_to_optimize = NULL;
-		this->logStr(mrpt::utils::LVL_DEBUG, "Commencing with FULL graph optimization... ");
+		this->logFmt(mrpt::utils::LVL_DEBUG,
+				"Commencing with FULL graph optimization... ");
 	}
 	else {
 		nodes_to_optimize = new std::set<mrpt::utils::TNodeID>;
@@ -459,7 +469,8 @@ void CLevMarqGSO<GRAPH_t>::_optimizeGraph() {
 			&CLevMarqGSO<GRAPH_t>::levMarqFeedback); // functor feedback
 
 	double elapsed_time = optimization_timer.Tac();
-	this->logStr(mrpt::utils::LVL_DEBUG, mrpt::format("Optimization of graph took: %fs", elapsed_time));
+	this->logFmt(mrpt::utils::LVL_DEBUG,
+			"Optimization of graph took: %fs", elapsed_time);
 
 	// deleting the nodes_to_optimize set
 	delete nodes_to_optimize;
@@ -496,7 +507,7 @@ bool CLevMarqGSO<GRAPH_t>::checkForLoopClosures() {
 						static_cast<int>(curr_pair.second) ) >
 					opt_params.LC_min_nodeid_diff ) {
 
-				this->logStr(mrpt::utils::LVL_DEBUG, "Registering loop closure... ");
+				this->logFmt(mrpt::utils::LVL_DEBUG, "Registering loop closure... ");
 				is_loop_closure = true;
 				break; // no need for more iterations
 			}
@@ -565,7 +576,7 @@ void CLevMarqGSO<GRAPH_t>::loadParams(const std::string& source_fname) {
 			1, false);
 	this->setMinLoggingLevel(VerbosityLevel(min_verbosity_level));
 
-	this->logStr(mrpt::utils::LVL_DEBUG, "Successfully loaded Params. ");
+	this->logFmt(mrpt::utils::LVL_DEBUG, "Successfully loaded Params. ");
 	m_has_read_config = true;
 
 	MRPT_END;

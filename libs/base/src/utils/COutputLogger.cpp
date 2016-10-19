@@ -245,13 +245,11 @@ void COutputLogger::TMsg::dumpToConsole() const {
 
 	// Set console color:
 	const TConsoleColor concol = COutputLogger::logging_levels_to_colors[level];
-	if (concol!=CONCOL_NORMAL)
-		mrpt::system::setConsoleColor(concol, dump_to_cerr);
+	mrpt::system::setConsoleColor(concol, dump_to_cerr);
 	// Output msg:
 	(dump_to_cerr ? std::cerr : std::cout) << str;
 	// Switch back to normal color:
-	if (concol!=CONCOL_NORMAL)
-		mrpt::system::setConsoleColor(CONCOL_NORMAL);
+	mrpt::system::setConsoleColor(CONCOL_NORMAL);
 #ifdef _MSC_VER
 	OutputDebugStringA(str.c_str());
 #endif
