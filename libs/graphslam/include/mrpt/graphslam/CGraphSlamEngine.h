@@ -12,6 +12,8 @@
 
 #include <mrpt/math/CQuaternion.h>
 #include <mrpt/maps/CSimplePointsMap.h>
+#include <mrpt/maps/COccupancyGridMap2D.h>
+#include <mrpt/maps/CMultiMetricMap.h>
 #include <mrpt/graphs/CNetworkOfPoses.h>
 #include <mrpt/gui/CBaseGUIWindow.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
@@ -283,6 +285,30 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		 * \sa printParams
 		 */
 		std::string getParamsAsString() const;
+		/**\brief Fill the given occupancy grid map based on the 2DRangeScan
+		 * observations that have been recorded so far.
+		 *
+		 * Method is a wrapper around the computeOccupancyGridMap2D method
+		 * \param[out] map_ptr Pointer to the COccupancyGridMap2D instance that is
+		 * to be filled
+		 *
+		 * \sa computeOccupancyGridMap2D
+		 */
+		void getOccupancyGridMap2D(mrpt::maps::COccupancyGridMap2D* map_ptr) const;
+		/**\brief Fill the given occupancy grid map based on the 2DRangeScan
+		 * observations that have been recorded so far.
+		 *
+		 * \param[in] nodes_to_laser_scans2D map of nodes to their corresponding
+		 * laser scans from which the occupancy gridmap is to be computed
+		 * \param[out] map_ptr Pointer to the COccupancyGridMap2D instance that is
+		 * to be filled
+		 *
+		 * \sa getOccupancyGridMap2D
+		 */
+		void computeOccupancyGridMap2D(
+				const std::map<const mrpt::utils::TNodeID,
+					mrpt::obs::CObservation2DRangeScanPtr> nodes_to_laser_scans2D,
+				mrpt::maps::COccupancyGridMap2D* map_ptr) const;
 		/**\brief Print the problem parameters to the console for verification.
 		 *
 		 * Method is a wrapper around CGraphSlamEngine::getParamsAsString method

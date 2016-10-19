@@ -701,6 +701,74 @@ bool CGraphSlamEngine<GRAPH_t>::execGraphSlamStep(
 	return !m_request_to_exit;
 	MRPT_END;
 } // END OF EXECGRAPHSLAM
+template<class GRAPH_t>
+void CGraphSlamEngine<GRAPH_t>::getOccupancyGridMap2D(
+		mrpt::maps::COccupancyGridMap2D* map_ptr) const{
+	MRPT_START;
+	ASSERT_(map_ptr);
+	this->computeOccupancyGridMap2D(m_nodes_to_laser_scans2D, map_ptr);
+	MRPT_END;
+}
+template<class GRAPH_t>
+void CGraphSlamEngine<GRAPH_t>::computeOccupancyGridMap2D(
+		const std::map<const mrpt::utils::TNodeID,
+			mrpt::obs::CObservation2DRangeScanPtr> nodes_to_laser_scans2D,
+		mrpt::maps::COccupancyGridMap2D* map_ptr) const {
+	MRPT_START;
+	using namespace std;
+	using namespace mrpt::maps;
+	using namespace mrpt::utils;
+	using namespace mrpt::poses;
+
+	this->logFmt(LVL_DEBUG, "Computing the occupancy gridmap...");
+
+	ASSERT_(map_ptr);
+	mrpt::synch::CCriticalSectionLocker m_graph_lock(&m_graph_section);
+
+	// set the map parameters
+	mrpt::maps::COccupancyGridMap2D gridmap(
+			/* min_x = */ -20.0f,
+			/* float max_x = */ 20.0f,
+			/* float min_y = */ -20.0f,
+			/* float max_y = */ 20.0f,
+			/* float resolution = */ 0.05f);
+  gridmap.insertionOptions.maxOccupancyUpdateCertainty = 0.8;
+  gridmap.insertionOptions.maxDistanceInsertion = 15;
+
+	// traverse all the nodes - add their laser scans at their corresponding poses
+	for (std::map<const mrpt::utils::TNodeID,
+			mrpt::obs::CObservation2DRangeScanPtr>::const_iterator
+			it = nodes_to_laser_scans2D.begin();
+			it != nodes_to_laser_scans2D.end(); ++it) {
+
+		TNodeID curr_node = it->first;
+		mrpt::obs::CObservation2DRangeScanPtr curr_laser_scan = it->second;
+		pose_t curr_pose;
+
+		bool laser_scan_exists = !curr_laser_scan.null();
+
+		bool pose_found = true;
+		typename mrpt::graphs::CNetworkOfPoses2DInf::global_poses_t::const_iterator
+			pose_search = m_graph.nodes.find(curr_node);
+		if (pose_search != m_graph.nodes.end()) {
+			curr_pose = pose_search->second;
+		}
+		else {
+			pose_found = false;
+		}
+
+		if (laser_scan_exists && pose_found) {
+			CPose3D pose_3d(curr_pose);
+			gridmap.insertObservation(curr_laser_scan.pointer(), &pose_3d);
+		}
+	}
+
+	map_ptr->copyMapContentFrom(gridmap);
+	this->logFmt(LVL_INFO, "Computed the occupancy gridmap successfully.");
+	MRPT_END;
+}
+
+
 
 template<class GRAPH_t>
 void CGraphSlamEngine<GRAPH_t>::loadParams(

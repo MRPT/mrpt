@@ -84,11 +84,13 @@ public:
 
 	bool save_graph;
 	bool save_3DScene;
+	bool save_gridmap;
 
 	std::string rawlog_fname;
 
 	std::string save_graph_fname;
 	std::string save_3DScene_fname;
+	std::string save_gridmap_fname;
 
 	mrpt::graphslam::CWindowManager* win_manager;
 	mrpt::graphslam::CWindowObserver* win_observer;
