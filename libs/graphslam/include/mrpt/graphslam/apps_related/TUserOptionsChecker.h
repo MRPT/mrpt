@@ -14,7 +14,7 @@
 #include <mrpt/utils/mrpt_macros.h>
 #include <mrpt/graphs/CNetworkOfPoses.h>
 
-#include <mrpt/graphslam/link_pragmas.H>
+#include <mrpt/graphslam/link_pragmas.h>
 #include <mrpt/graphslam/NRD/CFixedIntervalsNRD.h>
 #include <mrpt/graphslam/NRD/CEmptyNRD.h>
 #include <mrpt/graphslam/NRD/CICPCriteriaNRD.h>
