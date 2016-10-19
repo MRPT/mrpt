@@ -43,9 +43,10 @@ namespace nav
 		  */
 		struct NAV_IMPEXP TInfoPerPTG
 		{
-			std::string				PTG_desc;      //!< A short description for the applied PTG
-			mrpt::math::CVectorFloat				TP_Obstacles;  //!< Distances until obstacles, in "pseudometers", first index for -PI direction, last one for PI direction.
-			mrpt::math::TPoint2D		TP_Target;     //!< Target location in TP-Space
+			std::string              PTG_desc;      //!< A short description for the applied PTG
+			mrpt::math::CVectorFloat TP_Obstacles;  //!< Distances until obstacles, in "pseudometers", first index for -PI direction, last one for PI direction.
+			mrpt::math::TPoint2D     TP_Target;     //!< Target location in TP-Space
+			mrpt::math::TPoint2D     TP_Robot;      //!< Robot location in TP-Space: normally (0,0), except during "NOP cmd vel" steps
 			double  timeForTPObsTransformation,timeForHolonomicMethod;  //!< Time, in seconds.
 			double  desiredDirection,desiredSpeed, evaluation;          //!< The results from the holonomic method.
 			mrpt::math::CVectorFloat   evalFactors;   //!< Evaluation factors
@@ -70,6 +71,7 @@ namespace nav
 		*	- "tim_send_cmd_vel":
 		 */
 		std::map<std::string, mrpt::system::TTimeStamp>  timestamps;
+		std::map<std::string, std::string>  additional_debug_msgs;  //!< Additional debug traces
 		mrpt::maps::CSimplePointsMap  WS_Obstacles;  //!< The WS-Obstacles
 		mrpt::poses::CPose2D          robotOdometryPose; //!< The robot pose (from raw odometry or a localization system).
 		mrpt::poses::CPose2D          relPoseSense, relPoseVelCmd; //! Relative poses (wrt to robotOdometryPose) for extrapolated paths at two instants: time of obstacle sense, and future pose of motion comman
@@ -82,6 +84,13 @@ namespace nav
 
 		mrpt::math::CVectorFloat robotShape_x,robotShape_y;  //!< The robot shape in WS. Used by PTGs derived from mrpt::nav::CPTG_RobotShape_Polygonal
 		double robotShape_radius;  //!< The circular robot radius. Used by PTGs derived from mrpt::nav::CPTG_RobotShape_Circular
+
+		// "NOP motion command" mode variables:
+		int16_t                ptg_index_NOP;  //!< Negative means no NOP mode evaluation, so the rest of "NOP variables" should be ignored.
+		uint16_t               ptg_last_k_NOP;
+		mrpt::poses::CPose2D   rel_cur_pose_wrt_last_vel_cmd_NOP, rel_pose_PTG_origin_wrt_sense_NOP;
+		mrpt::math::TTwist2D   ptg_last_curRobotVelLocal;
+
 	};
 	  DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CLogFileRecord, mrpt::utils::CSerializable, NAV_IMPEXP )
 

@@ -18,6 +18,8 @@
 using namespace mrpt::nav;
 using namespace std;
 
+const double PREVIOUS_POSES_MAX_AGE = 20; // seconds
+
 // Ctor: CAbstractNavigator::TNavigationParams 
 CAbstractNavigator::TNavigationParams::TNavigationParams() :
 	target(0,0,0), 
@@ -39,6 +41,13 @@ std::string CAbstractNavigator::TNavigationParams::getAsText() const
 	return s;
 }
 
+CAbstractNavigator::TRobotPoseVel::TRobotPoseVel() :
+	pose(0,0,0),
+	velGlobal(0,0,0),
+	velLocal(0,0,0),
+	timestamp(INVALID_TIMESTAMP) 
+{
+}
 
 /*---------------------------------------------------------------
 							Constructor
@@ -50,14 +59,13 @@ CAbstractNavigator::CAbstractNavigator(CRobot2NavInterface &react_iterf_impl) :
 	m_navigationState     ( IDLE ),
 	m_navigationParams    ( NULL ),
 	m_robot               ( react_iterf_impl ),
-	m_curPose             (0,0,0),
-	m_curVel              (0,0,0),
-	m_curVelLocal         (0,0,0),
-	m_curPoseVelTimestamp (INVALID_TIMESTAMP),
+	m_curPoseVel          (),
+	m_latestPoses         (),
 	m_timlog_delays       (true, "CAbstractNavigator::m_timlog_delays"),
 	m_badNavAlarm_AlarmTimeout(30.0),
 	DIST_TO_TARGET_FOR_SENDING_EVENT(.0)
 {
+	m_latestPoses.setInterpolationMethod(mrpt::poses::CPose3DInterpolator::imLinear2Neig);
 	this->setVerbosityLevel(mrpt::utils::LVL_DEBUG);
 }
 
@@ -157,7 +165,6 @@ void CAbstractNavigator::navigationStep()
 	case NAVIGATING:
 		try
 		{
-			bool is_first_nav_step = false;
 			if ( m_lastNavigationState != NAVIGATING )
 			{
 				MRPT_LOG_INFO("[CAbstractNavigator::navigationStep()] Starting Navigation. Watchdog initiated...\n");
@@ -165,7 +172,8 @@ void CAbstractNavigator::navigationStep()
 					MRPT_LOG_DEBUG(mrpt::format("[CAbstractNavigator::navigationStep()] Navigation Params:\n%s\n", m_navigationParams->getAsText().c_str() ));
 
 				m_robot.startWatchdog( 1000 );	// Watchdog = 1 seg
-				is_first_nav_step=true;
+				m_latestPoses.clear(); // Clear cache of last poses.
+				onStartNewNavigation();
 			}
 
 			// Have we just started the navigation?
@@ -177,13 +185,18 @@ void CAbstractNavigator::navigationStep()
 				---------------------------------------------------------------- */
 			updateCurrentPoseAndSpeeds();
 
-			if (is_first_nav_step) m_lastPose = m_curPose;
-
-
 			/* ----------------------------------------------------------------
 		 			Have we reached the target location?
 				---------------------------------------------------------------- */
-			const mrpt::math::TSegment2D seg_robot_mov = mrpt::math::TSegment2D( mrpt::math::TPoint2D(m_curPose), mrpt::math::TPoint2D(m_lastPose) );
+			// Build a 2D segment from the current robot pose to the previous one:
+			ASSERT_(!m_latestPoses.empty());
+			const mrpt::math::TSegment2D seg_robot_mov = mrpt::math::TSegment2D(
+				mrpt::math::TPoint2D(m_curPoseVel.pose),
+				m_latestPoses.size()>1 ?
+					mrpt::math::TPoint2D( (++m_latestPoses.rbegin())->second )
+					:
+					mrpt::math::TPoint2D((m_latestPoses.rbegin())->second)
+			);
 
 			const double targetDist = seg_robot_mov.distance( mrpt::math::TPoint2D(m_navigationParams->target) );
 
@@ -247,10 +260,13 @@ void CAbstractNavigator::navigationStep()
 	m_lastNavigationState = prevState;
 }
 
-void CAbstractNavigator::doEmergencyStop( const char *msg )
+void CAbstractNavigator::doEmergencyStop( const std::string &msg )
 {
+	try {
+		m_robot.stop();
+	}
+	catch (...) { }
 	m_navigationState = NAV_ERROR;
-	m_robot.stop();
 	MRPT_LOG_ERROR(msg);
 }
 
@@ -268,11 +284,11 @@ void CAbstractNavigator::navigate(const CAbstractNavigator::TNavigationParams *p
 	// Transform: relative -> absolute, if needed.
 	if ( m_navigationParams->targetIsRelative )
 	{
-		this->updateCurrentPoseAndSpeeds();
+		this->updateCurrentPoseAndSpeeds(false /*update_seq_latest_poses*/);
 
 		const mrpt::poses::CPose2D relTarget(m_navigationParams->target);
 		mrpt::poses::CPose2D absTarget;
-		absTarget.composeFrom(m_curPose, relTarget);
+		absTarget.composeFrom(m_curPoseVel.pose, relTarget);
 
 		m_navigationParams->target = mrpt::math::TPose2D(absTarget);
 
@@ -287,18 +303,32 @@ void CAbstractNavigator::navigate(const CAbstractNavigator::TNavigationParams *p
 	m_badNavAlarm_lastMinDistTime = mrpt::system::getCurrentTime();
 }
 
-void CAbstractNavigator::updateCurrentPoseAndSpeeds()
+void CAbstractNavigator::updateCurrentPoseAndSpeeds(bool update_seq_latest_poses)
 {
 	{
 		mrpt::utils::CTimeLoggerEntry tle(m_timlog_delays, "getCurrentPoseAndSpeeds()");
-		if (!m_robot.getCurrentPoseAndSpeeds(m_curPose, m_curVel, m_curPoseVelTimestamp))
+		if (!m_robot.getCurrentPoseAndSpeeds(m_curPoseVel.pose, m_curPoseVel.velGlobal, m_curPoseVel.timestamp))
 		{
 			m_navigationState = NAV_ERROR;
-			m_robot.stop();
+			try { 
+				m_robot.stop(); 
+			}
+			catch (...) {}
+			MRPT_LOG_ERROR("ERROR calling m_robot.getCurrentPoseAndSpeeds, stopping robot and finishing navigation");
 			throw std::runtime_error("ERROR calling m_robot.getCurrentPoseAndSpeeds, stopping robot and finishing navigation");
 		}
 	}
-	m_curVelLocal = m_curVel;
-	m_curVelLocal.rotate(-m_curPose.phi);
+	m_curPoseVel.velLocal = m_curPoseVel.velGlobal;
+	m_curPoseVel.velLocal.rotate(-m_curPoseVel.pose.phi);
+
+	// Append to list of past poses:
+	m_latestPoses.insert(m_curPoseVel.timestamp, mrpt::poses::CPose3D(mrpt::math::TPose3D(m_curPoseVel.pose)));
+
+	// Purge old ones:
+	while (!m_latestPoses.empty() &&
+		mrpt::system::timeDifference(m_latestPoses.begin()->first, m_latestPoses.rbegin()->first) > PREVIOUS_POSES_MAX_AGE)
+	{
+		m_latestPoses.erase(m_latestPoses.begin());
+	}
 }
 

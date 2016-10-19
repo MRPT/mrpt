@@ -123,8 +123,9 @@
 										</object>
 										<object class="sizeritem">
 											<object class="wxSlider" name="ID_SLIDER1" variable="slidPathHighlight" member="yes">
-												<enabled>0</enabled>
 												<handler function="OnslidPathHighlightCmdScroll" entry="EVT_COMMAND_SCROLL" />
+												<handler function="OnslidPathHighlightCmdScroll" entry="EVT_COMMAND_SCROLL_THUMBTRACK" />
+												<handler function="OnslidPathHighlightCmdScroll" entry="EVT_COMMAND_SCROLL_CHANGED" />
 											</object>
 											<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
 											<border>5</border>
@@ -133,7 +134,6 @@
 										<object class="sizeritem">
 											<object class="wxSpinCtrl" name="ID_SPINCTRL2" variable="edIndexHighlightPath" member="yes">
 												<value>0</value>
-												<enabled>0</enabled>
 												<handler function="OnedIndexHighlightPathChange" entry="EVT_SPINCTRL" />
 											</object>
 											<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
@@ -201,7 +201,7 @@
 										</object>
 										<object class="sizeritem">
 											<object class="wxStaticText" name="ID_STATICTEXT6" variable="StaticText6" member="yes">
-												<label>Target point:  x=</label>
+												<label>Target point: x=</label>
 											</object>
 											<flag>wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL</flag>
 											<border>5</border>
@@ -282,13 +282,112 @@
 				<option>1</option>
 			</object>
 			<object class="sizeritem">
-				<object class="Custom" name="ID_XY_GLCANVAS" subclass="CMyGLCanvas" variable="m_plot" member="yes">
-					<creating_code>$(THIS) = new $(CLASS)($(PARENT),$(ID),$(POS),$(SIZE),$(STYLE),$(NAME));</creating_code>
-					<include_file>MyGLCanvas.h</include_file>
-					<local_include>1</local_include>
-					<style>wxTAB__TRAVERSAL</style>
-					<size>600,450</size>
-					<focused>1</focused>
+				<object class="wxFlexGridSizer" variable="FlexGridSizer9" member="no">
+					<cols>2</cols>
+					<rows>1</rows>
+					<growablecols>0,1</growablecols>
+					<growablerows>0</growablerows>
+					<object class="sizeritem">
+						<object class="Custom" name="ID_XY_GLCANVAS" subclass="CMyGLCanvas" variable="m_plot" member="yes">
+							<creating_code>$(THIS) = new $(CLASS)($(PARENT),$(ID),$(POS),$(SIZE),$(STYLE),$(NAME));</creating_code>
+							<include_file>MyGLCanvas.h</include_file>
+							<local_include>1</local_include>
+							<style>wxTAB__TRAVERSAL</style>
+							<size>150,300</size>
+							<focused>1</focused>
+						</object>
+						<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
+						<option>1</option>
+					</object>
+					<object class="sizeritem">
+						<object class="wxNotebook" name="ID_NOTEBOOK1" variable="Notebook1" member="yes">
+							<object class="notebookpage">
+								<object class="wxPanel" name="ID_PANEL2" variable="Panel2" member="yes">
+									<object class="wxFlexGridSizer" variable="FlexGridSizer10" member="no">
+										<cols>1</cols>
+										<growablecols>0</growablecols>
+										<growablerows>0</growablerows>
+										<object class="sizeritem">
+											<object class="Custom" name="ID_CUSTOM2" subclass="CMyGLCanvas" variable="m_plotTPSpace" member="yes">
+												<creating_code>$(THIS) = new $(CLASS)($(PARENT),$(ID),$(POS),$(SIZE),$(STYLE),$(NAME));</creating_code>
+												<include_file>MyGLCanvas.h</include_file>
+												<local_include>1</local_include>
+												<style>wxTAB__TRAVERSAL</style>
+												<size>150,300</size>
+												<focused>1</focused>
+											</object>
+											<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
+											<option>1</option>
+										</object>
+									</object>
+								</object>
+								<label>TP-Space</label>
+							</object>
+							<object class="notebookpage">
+								<object class="wxPanel" name="ID_PANEL3" variable="Panel3" member="yes">
+									<object class="wxFlexGridSizer" variable="FlexGridSizer11" member="no">
+										<cols>1</cols>
+										<growablecols>0</growablecols>
+										<growablerows>0</growablerows>
+										<object class="sizeritem">
+											<object class="Custom" name="ID_CUSTOM1" subclass="mpWindow" variable="m_plotVelCmds" member="yes">
+												<creating_code>$(THIS) = new $(CLASS)($(PARENT),$(ID),$(POS),$(SIZE),0);</creating_code>
+												<style></style>
+											</object>
+											<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
+											<option>1</option>
+										</object>
+									</object>
+								</object>
+								<label>VelCmds@t=0</label>
+							</object>
+							<object class="notebookpage">
+								<object class="wxPanel" name="ID_PANEL4" variable="Panel4" member="yes">
+									<object class="wxFlexGridSizer" variable="FlexGridSizer12" member="no">
+										<cols>1</cols>
+										<rows>4</rows>
+										<growablecols>0</growablecols>
+										<growablerows>1,3</growablerows>
+										<object class="sizeritem">
+											<object class="wxStaticText" name="ID_STATICTEXT8" variable="StaticText8" member="yes">
+												<label>Motion direction to robot heading angle: for selected PTG over time [deg]</label>
+											</object>
+											<flag>wxALL|wxALIGN_LEFT|wxALIGN_TOP</flag>
+											<border>5</border>
+											<option>1</option>
+										</object>
+										<object class="sizeritem">
+											<object class="Custom" name="ID_CUSTOM3" subclass="mpWindow" variable="m_plotHeadAngIndiv" member="yes">
+												<creating_code>$(THIS) = new $(CLASS)($(PARENT),$(ID),$(POS),$(SIZE),0);</creating_code>
+												<style></style>
+											</object>
+											<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
+											<option>1</option>
+										</object>
+										<object class="sizeritem">
+											<object class="wxStaticText" name="ID_STATICTEXT9" variable="StaticText9" member="yes">
+												<label>Motion direction to robot heading angle: maximum value for each trajectory [deg]</label>
+											</object>
+											<flag>wxALL|wxALIGN_LEFT|wxALIGN_TOP</flag>
+											<border>5</border>
+											<option>1</option>
+										</object>
+										<object class="sizeritem">
+											<object class="Custom" name="ID_CUSTOM4" subclass="mpWindow" variable="m_plotHeadAngAll" member="yes">
+												<creating_code>$(THIS) = new $(CLASS)($(PARENT),$(ID),$(POS),$(SIZE),0);</creating_code>
+												<style></style>
+											</object>
+											<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
+											<option>1</option>
+										</object>
+									</object>
+								</object>
+								<label>Head angle</label>
+							</object>
+						</object>
+						<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
+						<option>1</option>
+					</object>
 				</object>
 				<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 				<option>1</option>

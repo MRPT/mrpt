@@ -130,15 +130,12 @@ namespace mrpt
 				TReturnInfo() :
 					nIterations(0),
 					goodness(0),
-					quality(0),
-					cbSize(sizeof(TReturnInfo))
+					quality(0)
 				{
 				}
 				unsigned short nIterations; //!< The number of executed iterations until convergence
 				float          goodness;    //!< A goodness measure for the alignment, it is a [0,1] range indicator of percentage of correspondences.
 				float          quality;     //!< A measure of the 'quality' of the local minimum of the sqr. error found by the method. Higher values are better. Low values will be found in ill-conditioned situations (e.g. a corridor)
-
-				unsigned int   cbSize;
 			};
 
 			/** An implementation of CMetricMapsAlignmentAlgorithm for the case of a point maps and a occupancy grid/point map.

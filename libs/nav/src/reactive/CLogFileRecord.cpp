@@ -41,7 +41,7 @@ CLogFileRecord::~CLogFileRecord()
 void  CLogFileRecord::writeToStream(mrpt::utils::CStream &out,int *version) const
 {
 	if (version)
-		*version = 15;
+		*version = 18;
 	else
 	{
 		uint32_t	i,n;
@@ -58,6 +58,7 @@ void  CLogFileRecord::writeToStream(mrpt::utils::CStream &out,int *version) cons
 			if (m) out.WriteBuffer((const void*)&(*infoPerPTG[i].TP_Obstacles.begin()), m * sizeof(infoPerPTG[i].TP_Obstacles[0]));
 
 			out << infoPerPTG[i].TP_Target;  // v8: CPoint2D -> TPoint2D
+			out << infoPerPTG[i].TP_Robot; // v17
 			out << infoPerPTG[i].timeForTPObsTransformation << infoPerPTG[i].timeForHolonomicMethod; // made double in v12
 			out << infoPerPTG[i].desiredDirection << infoPerPTG[i].desiredSpeed << infoPerPTG[i].evaluation; // made double in v12
 			out << *infoPerPTG[i].HLFR;
@@ -68,8 +69,13 @@ void  CLogFileRecord::writeToStream(mrpt::utils::CStream &out,int *version) cons
 			if (there_is_ptg_data)
 				out << infoPerPTG[i].ptg;
 		}
-		out << nSelectedPTG << WS_Obstacles << robotOdometryPose << WS_target_relative /*v8*/ << cmd_vel /*v10*/; // << executionTime; removed v13
-		out << cmd_vel_original; // v15
+		out << nSelectedPTG << WS_Obstacles << robotOdometryPose << WS_target_relative /*v8*/;
+		// v16:
+		out << ptg_index_NOP << ptg_last_k_NOP  << rel_cur_pose_wrt_last_vel_cmd_NOP << rel_pose_PTG_origin_wrt_sense_NOP;
+		out << ptg_last_curRobotVelLocal; // v17
+
+		if (ptg_index_NOP<0)
+			out << cmd_vel /*v10*/ << cmd_vel_original; // v15
 
 		// Previous values: REMOVED IN VERSION #6
 		n = robotShape_x.size();
@@ -103,6 +109,7 @@ void  CLogFileRecord::writeToStream(mrpt::utils::CStream &out,int *version) cons
 		out << relPoseSense << relPoseVelCmd; // v14
 
 		// v15: cmd_vel converted from std::vector<double> into CSerializable
+		out << additional_debug_msgs; // v18
 	}
 }
 
@@ -129,6 +136,9 @@ void  CLogFileRecord::readFromStream(mrpt::utils::CStream &in,int version)
 	case 13:
 	case 14:
 	case 15:
+	case 16:
+	case 17:
+	case 18:
 		{
 			// Version 0 --------------
 			uint32_t  i,n;
@@ -156,6 +166,9 @@ void  CLogFileRecord::readFromStream(mrpt::utils::CStream &in,int version)
 					in >> pos;
 					infoPerPTG[i].TP_Target = mrpt::math::TPoint2D(pos);
 				}
+				if (version >= 17)
+					in >> infoPerPTG[i].TP_Robot;
+				else infoPerPTG[i].TP_Robot = mrpt::math::TPoint2D(0, 0);
 
 				if (version>=12) {
 					in >> infoPerPTG[i].timeForTPObsTransformation >> infoPerPTG[i].timeForHolonomicMethod;
@@ -192,9 +205,21 @@ void  CLogFileRecord::readFromStream(mrpt::utils::CStream &in,int version)
 				WS_target_relative = mrpt::math::TPoint2D(pos);
 			}
 
+			if (version >= 16) {
+				in >> ptg_index_NOP >> ptg_last_k_NOP >> rel_cur_pose_wrt_last_vel_cmd_NOP >> rel_pose_PTG_origin_wrt_sense_NOP;
+			}
+			else {
+				ptg_index_NOP = -1;
+			}
+			if (version >= 17)
+				in >> ptg_last_curRobotVelLocal; // v17
+			else
+				ptg_last_curRobotVelLocal = mrpt::math::TTwist2D(0, 0, 0);
+
 			if (version >= 10) {
 				if (version >= 15) {
-					in >> cmd_vel;
+					if (ptg_index_NOP<0)
+						in >> cmd_vel;
 				}
 				else {
 					std::vector<double> vel;
@@ -214,7 +239,7 @@ void  CLogFileRecord::readFromStream(mrpt::utils::CStream &in,int version)
 				cmd_vel->setVelCmdElement(0, w);
 			}
 
-			if (version>=15)
+			if (version>=15 && ptg_index_NOP<0)
 				in >> cmd_vel_original;
 
 			if (version < 13) {
@@ -351,6 +376,10 @@ void  CLogFileRecord::readFromStream(mrpt::utils::CStream &in,int version)
 			else {
 				relPoseSense = relPoseVelCmd = mrpt::poses::CPose2D();
 			}
+
+			if (version>=18) 
+			     in >> additional_debug_msgs;
+			else additional_debug_msgs.clear();
 
 		} break;
 	default:

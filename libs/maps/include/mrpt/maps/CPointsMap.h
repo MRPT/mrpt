@@ -94,7 +94,6 @@ namespace maps
 		 CPointsMap();            //!< Ctor
 		 virtual ~CPointsMap();   //!< Virtual destructor.
 
-
 		// --------------------------------------------
 		/** @name Pure virtual interfaces to be implemented by any class derived from CPointsMap
 			@{ */

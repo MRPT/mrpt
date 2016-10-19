@@ -138,12 +138,27 @@ namespace nav
 		  * \param [in] oy Obstacle point (Y), relative coordinates wrt origin of the PTG.
 		  * \note The length of tp_obstacles is not checked for efficiency since this method is potentially called thousands of times per
 		  *  navigation timestap, so it is left to the user responsibility to provide a valid buffer.
+		  * \note `tp_obstacles` must be initialized with initTPObstacle() before call.
 		  */
 		virtual void updateTPObstacle(double ox, double oy, std::vector<double> &tp_obstacles) const = 0;
+
+		/** Like updateTPObstacle() but for one direction only (`k`) in TP-Space. `tp_obstacle_k` must be initialized with initTPObstacleSingle() before call. */
+		virtual void updateTPObstacleSingle(double ox, double oy, uint16_t k, double &tp_obstacle_k) const = 0;
 
 		/** Loads a set of default parameters into the PTG. Users normally will call `loadFromConfigFile()` instead, this method is provided 
 		  * exclusively for the PTG-configurator tool. */
 		virtual void loadDefaultParams();
+
+		/** Returns true if it is possible to stop sending velocity commands to the robot and, still, the 
+		  * robot controller will be able to keep following the last sent trajectory ("NOP" velocity commands). 
+		  * Default implementation returns "false". */
+		virtual bool supportVelCmdNOP() const;
+
+		/** Only for PTGs supporting supportVelCmdNOP(): this is the maximum time (in seconds) for which the path
+		  * can be followed without re-issuing a new velcmd. Note that this is only an absolute maximum duration, 
+		  * navigation implementations will check for many other conditions. Default method in the base virtual class returns 0. 
+		  * \param path_k Queried path `k` index  [0,N-1] */
+		virtual double maxTimeInVelCmdNOP(int path_k) const;
 
 		/** @} */  // --- end of virtual methods
 
@@ -174,6 +189,7 @@ namespace nav
 
 		/** Resizes and populates the initial appropriate contents in a vector of tp-obstacles (collision-free ranges, in "pseudometers", un-normalized). \sa updateTPObstacle()  */
 		void initTPObstacles(std::vector<double> &TP_Obstacles) const;
+		void initTPObstacleSingle(uint16_t k, double &TP_Obstacle_k) const;
 
 		/** When used in path planning, a multiplying factor (default=1.0) for the scores for this PTG. Assign values <1 to PTGs with low priority. */
 		double getScorePriority() const { return m_score_priority; }

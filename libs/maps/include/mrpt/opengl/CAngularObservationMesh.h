@@ -361,9 +361,11 @@ namespace opengl	{
 				o.maxRange=10000;
 				o.sensorPose=pNew;
 				o.deltaPitch=0;
-				o.scan.resize(values.size());
-				for (size_t i=0;i<values.size();i++) o.scan[i]=values[i];
-				o.validRange=valid;
+				o.resizeScan(values.size());
+				for (size_t i=0;i<values.size();i++) {
+					o.setScanRange(i, values[i]);
+					o.setScanRangeValidity(i, valid[i]);
+				}
 				vObs.push_back(o);
 			}
 		};

@@ -34,6 +34,8 @@ namespace mrpt
 		virtual void loadFromConfigFile(const mrpt::utils::CConfigFileBase &cfg,const std::string &sSection) MRPT_OVERRIDE;
 		virtual void saveToConfigFile(mrpt::utils::CConfigFileBase &cfg,const std::string &sSection) const MRPT_OVERRIDE;
 		virtual void loadDefaultParams() MRPT_OVERRIDE;
+		virtual bool supportVelCmdNOP() const MRPT_OVERRIDE;
+		virtual double maxTimeInVelCmdNOP(int path_k) const MRPT_OVERRIDE;
 
 		std::string getDescription() const MRPT_OVERRIDE;
 		bool inverseMap_WS2TP(double x, double y, int &out_k, double &out_d, double tolerance_dist = 0.10) const MRPT_OVERRIDE;
@@ -50,6 +52,7 @@ namespace mrpt
 		bool getPathStepForDist(uint16_t k, double dist, uint16_t &out_step) const MRPT_OVERRIDE;
 
 		void updateTPObstacle(double ox, double oy, std::vector<double> &tp_obstacles) const MRPT_OVERRIDE;
+		void updateTPObstacleSingle(double ox, double oy, uint16_t k, double &tp_obstacle_k) const MRPT_OVERRIDE;
 
 	 protected:
 		double T_ramp_max;

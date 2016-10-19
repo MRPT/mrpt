@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 import sys
-sys.path.append("../../build/lib")
 import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as plt

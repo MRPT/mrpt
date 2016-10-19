@@ -62,7 +62,9 @@ class navlog_viewer_GUI_designDialog: public wxFrame //wxDialog
 		void OnmnuSeePTGParamsSelected(wxCommandEvent& event);
 		void OncbGlobalFrameClick(wxCommandEvent& event);
 		void OnmnuSaveScoreMatrixSelected(wxCommandEvent& event);
+		void OncbShowXYClick(wxCommandEvent& event);
 		//*)
+		void OntimMouseXY(wxTimerEvent& event);
 
 		//(*Identifiers(navlog_viewer_GUI_designDialog)
 		static const long ID_BUTTON1;
@@ -73,6 +75,8 @@ class navlog_viewer_GUI_designDialog: public wxFrame //wxDialog
 		static const long ID_SLIDER1;
 		static const long ID_BUTTON4;
 		static const long ID_BUTTON5;
+		static const long ID_STATICTEXT9;
+		static const long ID_TEXTCTRL3;
 		static const long ID_PANEL2;
 		static const long ID_STATICTEXT2;
 		static const long ID_STATICTEXT3;
@@ -80,13 +84,14 @@ class navlog_viewer_GUI_designDialog: public wxFrame //wxDialog
 		static const long ID_STATICTEXT5;
 		static const long ID_STATICTEXT6;
 		static const long ID_STATICTEXT7;
+		static const long ID_PANEL3;
 		static const long ID_CHECKBOX1;
 		static const long ID_CHECKBOX2;
 		static const long ID_CHECKBOX3;
 		static const long ID_CHECKBOX4;
+		static const long ID_CHECKBOX5;
 		static const long ID_STATICTEXT8;
 		static const long ID_TEXTCTRL2;
-		static const long ID_PANEL3;
 		static const long ID_BUTTON6;
 		static const long ID_PANEL1;
 		static const long ID_TIMER1;
@@ -95,6 +100,7 @@ class navlog_viewer_GUI_designDialog: public wxFrame //wxDialog
 		static const long ID_MENUITEM1;
 		static const long ID_MENUITEM3;
 		//*)
+		static const long ID_TIMER3;
 
 		//(*Declarations(navlog_viewer_GUI_designDialog)
 		wxButton* btnStop;
@@ -105,6 +111,7 @@ class navlog_viewer_GUI_designDialog: public wxFrame //wxDialog
 		wxStaticText* txtLogDuration;
 		wxStaticText* StaticText2;
 		wxCheckBox* cbDrawShapePath;
+		wxStaticText* StaticText6;
 		wxTimer timAutoload;
 		wxFlexGridSizer* FlexGridSizer9;
 		wxCustomButton* btnQuit;
@@ -118,17 +125,20 @@ class navlog_viewer_GUI_designDialog: public wxFrame //wxDialog
 		wxTimer timPlay;
 		wxStaticText* StaticText5;
 		wxCheckBox* cbGlobalFrame;
+		wxTextCtrl* edAnimDelayMS;
 		wxStaticText* txtLogEntries;
 		wxMenuItem* mnuMatlabPlots;
 		wxFlexGridSizer* flexGridRightHand;
 		wxCheckBox* cbShowRelPoses;
 		wxCustomButton* btnHelp;
 		wxTextCtrl* edLogFile;
+		wxCheckBox* cbShowXY;
 		wxCustomButton* btnLoad;
 		wxStaticText* StaticText4;
 		wxStaticText* txtSelectedPTG;
 		wxButton* btnPlay;
 		//*)
+		wxTimer timMouseXY;
 
 		DECLARE_EVENT_TABLE()
 

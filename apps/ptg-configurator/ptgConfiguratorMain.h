@@ -10,6 +10,7 @@
 #pragma once
 
 //(*Headers(ptgConfiguratorframe)
+#include <wx/notebook.h>
 #include <wx/sizer.h>
 #include <wx/stattext.h>
 #include <wx/menu.h>
@@ -24,6 +25,8 @@
 #include <wx/frame.h>
 #include <wx/statusbr.h>
 //*)
+
+#include <mrpt/otherlibs/mathplot/mathplot.h>
 
 #include "../wx-common/CMyRedirector.h"
 
@@ -100,6 +103,16 @@ class ptgConfiguratorframe: public wxFrame
         static const long ID_TEXTCTRL1;
         static const long ID_PANEL1;
         static const long ID_XY_GLCANVAS;
+        static const long ID_CUSTOM2;
+        static const long ID_PANEL2;
+        static const long ID_CUSTOM1;
+        static const long ID_PANEL3;
+        static const long ID_STATICTEXT8;
+        static const long ID_CUSTOM3;
+        static const long ID_STATICTEXT9;
+        static const long ID_CUSTOM4;
+        static const long ID_PANEL4;
+        static const long ID_NOTEBOOK1;
         static const long ID_TEXTCTRL2;
         static const long idMenuQuit;
         static const long idMenuAbout;
@@ -107,30 +120,40 @@ class ptgConfiguratorframe: public wxFrame
         //*)
 
         //(*Declarations(ptgConfiguratorframe)
+        wxStaticText* StaticText9;
         wxTextCtrl* edObsY;
+        mpWindow* m_plotHeadAngAll;
+        wxNotebook* Notebook1;
+        CMyGLCanvas* m_plotTPSpace;
         wxStaticText* StaticText2;
+        wxPanel* Panel4;
         wxCheckBox* cbDrawShapePath;
         wxSpinCtrl* edPTGIndex;
         wxStaticText* StaticText6;
         wxCheckBox* cbBuildTPObs;
         wxSpinCtrl* edIndexHighlightPath;
         wxButton* btnPlaceObs;
+        wxStaticText* StaticText8;
         wxButton* btnRebuildTPObs;
         wxPanel* Panel1;
         wxStaticText* StaticText1;
         wxStaticText* StaticText3;
         wxChoice* cbPTGClass;
+        wxPanel* Panel3;
         CMyGLCanvas* m_plot;
         wxButton* btnPlaceTarget;
         wxTextCtrl* edTargetX;
         wxCheckBox* cbHighlightOnePath;
         wxTextCtrl* edLog;
         wxStaticText* StaticText5;
+        mpWindow* m_plotHeadAngIndiv;
         wxStaticText* StaticText7;
         wxStatusBar* StatusBar1;
+        mpWindow* m_plotVelCmds;
         wxTextCtrl* edObsX;
         wxButton* btnReloadParams;
         wxTextCtrl* edCfg;
+        wxPanel* Panel2;
         wxTextCtrl* edMinDistBtwShapes;
         wxStaticText* StaticText4;
         wxTextCtrl* edTargetY;
@@ -163,9 +186,12 @@ class ptgConfiguratorframe: public wxFrame
 		mrpt::opengl::COpenGLViewportPtr  gl_view_WS, gl_view_TPSpace;
 		mrpt::opengl::CCameraPtr          gl_view_TPSpace_cam;
 		mrpt::opengl::CAxisPtr            gl_axis_WS, gl_axis_TPS;
-		mrpt::opengl::CSetOfLinesPtr      gl_robot_ptg_prediction, gl_tp_obstacles;
+		mrpt::opengl::CSetOfLinesPtr      gl_robot_ptg_prediction, gl_robot_ptg_prediction_highlight, gl_tp_obstacles;
 		mrpt::opengl::CPointCloudPtr      gl_WS_obs;
 		mrpt::opengl::CPointCloudPtr      gl_WS_target,gl_TP_target;
+
+		// 2D plot views:
+		mpFXYVector  *m_graph_head_all, *m_graph_head_indiv;
 
 };
 

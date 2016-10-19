@@ -59,16 +59,12 @@ protected:
 		CObservation2DRangeScan	scan1;
 		scan1.aperture = M_PIf;
 		scan1.rightToLeft = true;
-		scan1.validRange.resize( SCANS_SIZE );
-		scan1.scan.resize(SCANS_SIZE);
-		ASSERT_( sizeof(SCAN_RANGES_1) == sizeof(float)*SCANS_SIZE );
 
-		memcpy( &scan1.scan[0], SCAN_RANGES_1, sizeof(SCAN_RANGES_1) );
-		memcpy( &scan1.validRange[0], SCAN_VALID_1, sizeof(SCAN_VALID_1) );
+		ASSERT_( sizeof(SCAN_RANGES_1) == sizeof(float)*SCANS_SIZE );
+		scan1.loadFromVectors(SCANS_SIZE, SCAN_RANGES_1, SCAN_VALID_1 );
 
 		CObservation2DRangeScan	scan2 = scan1;
-		memcpy( &scan2.scan[0], SCAN_RANGES_2, sizeof(SCAN_RANGES_2) );
-		memcpy( &scan2.validRange[0], SCAN_VALID_2, sizeof(SCAN_VALID_2) );
+		scan2.loadFromVectors(SCANS_SIZE, SCAN_RANGES_2, SCAN_VALID_2 );
 
 		// Build the points maps from the scans:
 		m1.insertObservation( &scan1 );

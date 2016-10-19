@@ -149,9 +149,7 @@ namespace mrpt
 		mrpt::utils::CStream  *m_logFile;           //!< The current log file stream, or NULL if not being used
 		bool                   m_enableKeepLogRecords; //!< See enableKeepLogRecords
 		CLogFileRecord lastLogRecord;  //!< The last log
-		//float last_cmd_v, last_cmd_w, new_cmd_v, new_cmd_w;  //!< Speed actual and last commands
-		mrpt::kinematics::CVehicleVelCmdPtr m_last_vel_cmd, m_new_vel_cmd; //!< Actual and last velocity commands
-		mrpt::kinematics::CVehicleVelCmdPtr m_cmd_vel_original; //!< Logged values of temporary vel cmds before reaching at the final value sent to the robot (for logging)
+		mrpt::kinematics::CVehicleVelCmdPtr m_last_vel_cmd ; //!< Last velocity commands
 
 		mrpt::synch::CCriticalSectionRecursive  m_critZoneLastLog; //!< Critical zones
 
@@ -183,6 +181,8 @@ namespace mrpt
 		  *
 		  */
 		double secureDistanceStart,secureDistanceEnd;
+		bool   USE_DELAYS_MODEL;
+		double MAX_DISTANCE_PREDICTED_ACTUAL_PATH; //!< for ptg continuation [meters] (default= 0.05)
 
 		mrpt::utils::CTimeLogger m_timelogger;			//!< A complete time logger \sa enableTimeLog()
 		bool  m_PTGsMustBeReInitialized;
@@ -217,23 +217,24 @@ namespace mrpt
 		/** Generates a pointcloud of obstacles, and the robot shape, to be saved in the logging record for the current timestep */
 		virtual void loggingGetWSObstaclesAndShape(CLogFileRecord &out_log) = 0;
 
-
 		/** Scores \a holonomicMovement */
 		void STEP5_PTGEvaluator(
 			THolonomicMovement         & holonomicMovement,
 			const std::vector<double>        & in_TPObstacles,
 			const mrpt::math::TPose2D  & WS_Target,
 			const mrpt::math::TPoint2D & TP_Target,
-			CLogFileRecord::TInfoPerPTG & log );
+			CLogFileRecord::TInfoPerPTG & log,
+			CLogFileRecord & newLogRec,
+			const bool this_is_PTG_continuation,
+			const mrpt::poses::CPose2D & relPoseVelCmd_NOP);
 
-		virtual void STEP7_GenerateSpeedCommands(const THolonomicMovement &in_movement);
-
+		virtual void STEP7_GenerateSpeedCommands(const THolonomicMovement &in_movement, mrpt::kinematics::CVehicleVelCmdPtr &cmd_vel_original, mrpt::kinematics::CVehicleVelCmdPtr &new_vel_cmd );
 
 		void preDestructor(); //!< To be called during children destructors to assure thread-safe destruction, and free of shared objects.
+		virtual void onStartNewNavigation() MRPT_OVERRIDE;
 
-
-	private:
 		bool m_closing_navigator; //!< Signal that the destructor has been called, so no more calls are accepted from other threads
+	private:
 		mrpt::system::TTimeStamp m_WS_Obstacles_timestamp;
 
 		struct TInfoPerPTG
@@ -250,6 +251,33 @@ namespace mrpt
 
 		void deleteHolonomicObjects(); //!< Delete m_holonomicMethod
 		static void robotPoseExtrapolateIncrement(const mrpt::math::TTwist2D & globalVel, const double time_offset, mrpt::poses::CPose2D & out_pose);
+
+		struct TSentVelCmd
+		{
+			int ptg_index; //!< 0-based index of used PTG
+			int ptg_alpha_index; //!< Path index for selected PTG
+			mrpt::system::TTimeStamp tim_send_cmd_vel, tim_poseVel; //!< Timestamp of when the cmd was sent, and when the robot pose was queried in that iteration.
+			mrpt::math::TTwist2D curRobotVelLocal;
+			mrpt::math::TPose2D  curRobotPose;
+
+			bool isValid() const;
+			void reset();
+			TSentVelCmd();
+		};
+
+		TSentVelCmd m_lastSentVelCmd;
+
+		void ptg_eval_target_build_obstacles(
+			CParameterizedTrajectoryGenerator * ptg,
+			const size_t indexPTG,
+			const mrpt::math::TPose2D &relTarget,
+			const mrpt::poses::CPose2D &rel_pose_PTG_origin_wrt_sense,
+			TInfoPerPTG &ipf,
+			THolonomicMovement &holonomicMovement,
+			CLogFileRecord &newLogRec,
+			const bool this_is_PTG_continuation,
+			const mrpt::poses::CPose2D &relPoseVelCmd_NOP = mrpt::poses::CPose2D()
+			);
 
 
 	}; // end of CAbstractPTGBasedReactive

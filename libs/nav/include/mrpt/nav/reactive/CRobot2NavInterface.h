@@ -51,36 +51,42 @@ namespace mrpt
 		*   return the latest values from a cache which is updated in a parallel thread.
 		*
 		* \param[out] curPose The latest robot pose, in world coordinates. (x,y: meters, phi: radians)
-		* \param[out] curVel  The latest robot velocity vector, in world coordinates. (vx,vy: m/s, omega: rad/s)
+		* \param[out] curVelGlobal  The latest robot velocity vector, in world coordinates. (vx,vy: m/s, omega: rad/s)
 		* \param[out] timestamp  The timestamp for the read pose and velocity values. Use mrpt::system::now() unless you have something more accurate.
 		* \return false on any error retrieving these values from the robot.
 		*/
-		virtual bool getCurrentPoseAndSpeeds(mrpt::math::TPose2D &curPose, mrpt::math::TTwist2D &curVel, mrpt::system::TTimeStamp &timestamp ) = 0;
+		virtual bool getCurrentPoseAndSpeeds(mrpt::math::TPose2D &curPose, mrpt::math::TTwist2D &curVelGlobal, mrpt::system::TTimeStamp &timestamp ) = 0;
 
 		/** Sends a velocity command to the robot.
 		 * The number components in each command depends on children classes of mrpt::kinematics::CVehicleVelCmd.
 		 * One robot may accept one or more different CVehicleVelCmd classes.
+		 * This method resets the watchdog timer (that may be or may be not implemented in a particular robotic platform) started with startWatchdog()
 		 * \return false on any error.
+		 * \sa startWatchdog
 		 */
 		virtual bool changeSpeeds(const mrpt::kinematics::CVehicleVelCmd &vel_cmd) = 0;
+
+		/** Just like changeSpeeds(), but will be called when the last velocity command is still the preferred solution, 
+		  * so there is no need to change that past command. The unique effect of this callback would be resetting the watchdog timer. 
+		  * \return false on any error.
+		  * \sa changeSpeeds(), startWatchdog() */
+		virtual bool changeSpeedsNOP() { std::cout << "[changeSpeedsNOP] Not implemented by the user." << std::endl; return true; }
 
 		/** Stop the robot right now.
 		 * \return false on any error.
 		 */
 		virtual bool stop() = 0;
 
-		/** Start the watchdog timer of the robot platform, if any.
+		/** Start the watchdog timer of the robot platform, if any, for maximum expected delay between consecutive calls to changeSpeeds().
 		 * \param T_ms Period, in ms.
-		 * \return false on any error.
-		 */
+		 * \return false on any error. */
 		virtual bool startWatchdog(float T_ms) {
 			MRPT_UNUSED_PARAM(T_ms);
 			return true;
 		}
 
 		/** Stop the watchdog timer.
-		 * \return false on any error.
-		 */
+		 * \return false on any error. \sa startWatchdog */
 		virtual bool stopWatchdog() { return true; }
 
 		/** Return the current set of obstacle points, as seen from the local coordinate frame of the robot.
@@ -160,7 +166,7 @@ namespace mrpt
 		  */
 		void cmdVel_scale(mrpt::kinematics::CVehicleVelCmd &vel_cmd, double vel_scale) MRPT_OVERRIDE
 		{
-			mrpt::kinematics::CVehicleVelCmd_DiffDriven *cmd = reinterpret_cast<mrpt::kinematics::CVehicleVelCmd_DiffDriven*>(&vel_cmd);
+			mrpt::kinematics::CVehicleVelCmd_DiffDriven *cmd = dynamic_cast<mrpt::kinematics::CVehicleVelCmd_DiffDriven*>(&vel_cmd);
 			ASSERTMSG_(cmd,"Expected velcmd of type `CVehicleVelCmd_DiffDriven`");
 			cmd->lin_vel *= vel_scale;
 			cmd->ang_vel *= vel_scale;
@@ -171,8 +177,8 @@ namespace mrpt
 		{
 			ASSERT_(robotMax_V_mps>0);
 			ASSERT_(robotMax_W_radps>0);
-			mrpt::kinematics::CVehicleVelCmd_DiffDriven *newcmd = reinterpret_cast<mrpt::kinematics::CVehicleVelCmd_DiffDriven*>(&vel_cmd);
-			const mrpt::kinematics::CVehicleVelCmd_DiffDriven *prevcmd = reinterpret_cast<const mrpt::kinematics::CVehicleVelCmd_DiffDriven*>(&prev_vel_cmd);
+			mrpt::kinematics::CVehicleVelCmd_DiffDriven *newcmd = dynamic_cast<mrpt::kinematics::CVehicleVelCmd_DiffDriven*>(&vel_cmd);
+			const mrpt::kinematics::CVehicleVelCmd_DiffDriven *prevcmd = dynamic_cast<const mrpt::kinematics::CVehicleVelCmd_DiffDriven*>(&prev_vel_cmd);
 			ASSERTMSG_(newcmd && prevcmd, "Expected velcmd of type `CVehicleVelCmd_DiffDriven`");
 			filter_max_vw(newcmd->lin_vel, newcmd->ang_vel);
 			if (fabs(newcmd->lin_vel) < 0.01) // i.e. new behavior is nearly a pure rotation
@@ -242,7 +248,7 @@ namespace mrpt
 		  */
 		void cmdVel_scale(mrpt::kinematics::CVehicleVelCmd &vel_cmd, double vel_scale) MRPT_OVERRIDE
 		{
-			mrpt::kinematics::CVehicleVelCmd_Holo *cmd = reinterpret_cast<mrpt::kinematics::CVehicleVelCmd_Holo*>(&vel_cmd);
+			mrpt::kinematics::CVehicleVelCmd_Holo *cmd = dynamic_cast<mrpt::kinematics::CVehicleVelCmd_Holo*>(&vel_cmd);
 			ASSERTMSG_(cmd, "Expected velcmd of type `CVehicleVelCmd_Holo`");
 			cmd->vel       *= vel_scale; // |(vx,vy)|
 			cmd->rot_speed *= vel_scale; // rot_speed
@@ -253,8 +259,8 @@ namespace mrpt
 		void cmdVel_limits(mrpt::kinematics::CVehicleVelCmd &vel_cmd, const mrpt::kinematics::CVehicleVelCmd &prev_vel_cmd, const double beta)
 		{ // remember:  `vel_cmd=[vel dir_local ramp_time rot_speed]`
 			ASSERTMSG_(robotMax_V_mps >= .0, "[CReactiveInterfaceImplementation_Holo] `robotMax_V_mps` must be set to valid values: either assign values programatically or call loadConfigFile()");
-			mrpt::kinematics::CVehicleVelCmd_Holo *newcmd = reinterpret_cast<mrpt::kinematics::CVehicleVelCmd_Holo*>(&vel_cmd);
-			const mrpt::kinematics::CVehicleVelCmd_Holo *prevcmd = reinterpret_cast<const mrpt::kinematics::CVehicleVelCmd_Holo*>(&prev_vel_cmd);
+			mrpt::kinematics::CVehicleVelCmd_Holo *newcmd = dynamic_cast<mrpt::kinematics::CVehicleVelCmd_Holo*>(&vel_cmd);
+			const mrpt::kinematics::CVehicleVelCmd_Holo *prevcmd = dynamic_cast<const mrpt::kinematics::CVehicleVelCmd_Holo*>(&prev_vel_cmd);
 			ASSERTMSG_(newcmd && prevcmd, "Expected velcmd of type `CVehicleVelCmd_Holo`");
 
 			double f=1.0;

@@ -70,7 +70,7 @@ CGraphSlamEngine<GRAPH_t>::~CGraphSlamEngine() {
 		this->logFmt(LVL_DEBUG,
 				"Releasing m_odometry_poses vector; size: %lu",
 				m_odometry_poses.size());
-		for (int i = 0; i != m_odometry_poses.size(); ++i) {
+		for (size_t i = 0; i != m_odometry_poses.size(); ++i) {
 			delete m_odometry_poses[i];
 		}
 		this->logFmt(LVL_DEBUG, "Released m_odometry_poses vector");
@@ -2269,7 +2269,7 @@ void CGraphSlamEngine<GRAPH_t>::updateSlamMetricVisualization() {
 	// build the X, Y vectors for plotting - use log scale
 	std::vector<double> x(m_deformation_energy_vec.size(), 0);
 	std::vector<double> y(m_deformation_energy_vec.size(), 0);
-	for (int i = 0; i != x.size(); i++)  {
+	for (size_t i = 0; i != x.size(); i++)  {
 		x[i] = i;
 		y[i] = m_deformation_energy_vec[i]*1000;
 	}
