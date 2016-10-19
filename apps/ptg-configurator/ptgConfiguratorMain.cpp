@@ -21,6 +21,7 @@
 #include <wx/string.h>
 //*)
 
+#include <mrpt/system/string_utils.h>
 #include <mrpt/gui/WxUtils.h>
 #include "imgs/main_icon.xpm"
 #include "../wx-common/mrpt_logo.xpm"
@@ -87,6 +88,16 @@ const long ptgConfiguratorframe::ID_BUTTON4 = wxNewId();
 const long ptgConfiguratorframe::ID_TEXTCTRL1 = wxNewId();
 const long ptgConfiguratorframe::ID_PANEL1 = wxNewId();
 const long ptgConfiguratorframe::ID_XY_GLCANVAS = wxNewId();
+const long ptgConfiguratorframe::ID_CUSTOM2 = wxNewId();
+const long ptgConfiguratorframe::ID_PANEL2 = wxNewId();
+const long ptgConfiguratorframe::ID_CUSTOM1 = wxNewId();
+const long ptgConfiguratorframe::ID_PANEL3 = wxNewId();
+const long ptgConfiguratorframe::ID_STATICTEXT8 = wxNewId();
+const long ptgConfiguratorframe::ID_CUSTOM3 = wxNewId();
+const long ptgConfiguratorframe::ID_STATICTEXT9 = wxNewId();
+const long ptgConfiguratorframe::ID_CUSTOM4 = wxNewId();
+const long ptgConfiguratorframe::ID_PANEL4 = wxNewId();
+const long ptgConfiguratorframe::ID_NOTEBOOK1 = wxNewId();
 const long ptgConfiguratorframe::ID_TEXTCTRL2 = wxNewId();
 const long ptgConfiguratorframe::idMenuQuit = wxNewId();
 const long ptgConfiguratorframe::idMenuAbout = wxNewId();
@@ -112,18 +123,22 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent,wxWindowID id) :
     //(*Initialize(ptgConfiguratorframe)
     wxFlexGridSizer* FlexGridSizer4;
     wxMenuItem* MenuItem2;
+    wxFlexGridSizer* FlexGridSizer10;
     wxFlexGridSizer* FlexGridSizer3;
     wxMenuItem* MenuItem1;
     wxFlexGridSizer* FlexGridSizer5;
+    wxFlexGridSizer* FlexGridSizer9;
     wxFlexGridSizer* FlexGridSizer2;
     wxMenu* Menu1;
     wxFlexGridSizer* FlexGridSizer7;
     wxFlexGridSizer* FlexGridSizer8;
+    wxFlexGridSizer* FlexGridSizer12;
     wxMenuBar* MenuBar1;
     wxFlexGridSizer* FlexGridSizer6;
     wxFlexGridSizer* FlexGridSizer1;
+    wxFlexGridSizer* FlexGridSizer11;
     wxMenu* Menu2;
-
+    
     Create(parent, id, _("PTG configurator - Part of the MRPT project"), wxDefaultPosition, wxDefaultSize, wxDEFAULT_FRAME_STYLE, _T("id"));
     SetClientSize(wxSize(893,576));
     {
@@ -157,7 +172,7 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent,wxWindowID id) :
     edPTGIndex->SetValue(_T("0"));
     FlexGridSizer4->Add(edPTGIndex, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 5);
     btnReloadParams = new wxButton(Panel1, ID_BUTTON1, _("Initialize PTG"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON1"));
-    wxFont btnReloadParamsFont(wxDEFAULT,wxDEFAULT,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_BOLD,false,wxEmptyString,wxFONTENCODING_DEFAULT);
+    wxFont btnReloadParamsFont(wxDEFAULT,wxDEFAULT,wxFONTSTYLE_NORMAL,wxBOLD,false,wxEmptyString,wxFONTENCODING_DEFAULT);
     btnReloadParams->SetFont(btnReloadParamsFont);
     FlexGridSizer4->Add(btnReloadParams, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     cbDrawShapePath = new wxCheckBox(Panel1, ID_CHECKBOX1, _("Draw robot shape"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX1"));
@@ -171,11 +186,9 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent,wxWindowID id) :
     cbHighlightOnePath->SetValue(false);
     FlexGridSizer4->Add(cbHighlightOnePath, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     slidPathHighlight = new wxSlider(Panel1, ID_SLIDER1, 0, 0, 100, wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_SLIDER1"));
-    slidPathHighlight->Disable();
     FlexGridSizer4->Add(slidPathHighlight, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     edIndexHighlightPath = new wxSpinCtrl(Panel1, ID_SPINCTRL2, _T("0"), wxDefaultPosition, wxDefaultSize, 0, 0, 100, 0, _T("ID_SPINCTRL2"));
     edIndexHighlightPath->SetValue(_T("0"));
-    edIndexHighlightPath->Disable();
     FlexGridSizer4->Add(edIndexHighlightPath, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     FlexGridSizer3->Add(FlexGridSizer4, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
     FlexGridSizer8 = new wxFlexGridSizer(0, 6, 0, 0);
@@ -192,7 +205,7 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent,wxWindowID id) :
     FlexGridSizer8->Add(btnPlaceObs, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     btnRebuildTPObs = new wxButton(Panel1, ID_BUTTON2, _("Rebuild TP-Obs."), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON2"));
     FlexGridSizer8->Add(btnRebuildTPObs, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-    StaticText6 = new wxStaticText(Panel1, ID_STATICTEXT6, _("Target point:  x="), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT6"));
+    StaticText6 = new wxStaticText(Panel1, ID_STATICTEXT6, _("Target point: x="), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT6"));
     FlexGridSizer8->Add(StaticText6, 1, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5);
     edTargetX = new wxTextCtrl(Panel1, ID_TEXTCTRL6, _("5.0"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_TEXTCTRL6"));
     FlexGridSizer8->Add(edTargetX, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
@@ -207,7 +220,7 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent,wxWindowID id) :
     wxFont edCfgFont = wxSystemSettings::GetFont(wxSYS_OEM_FIXED_FONT);
     if ( !edCfgFont.Ok() ) edCfgFont = wxSystemSettings::GetFont(wxSYS_DEFAULT_GUI_FONT);
     edCfgFont.SetPointSize(8);
-    edCfgFont.SetFamily(wxFONTFAMILY_TELETYPE);
+    edCfgFont.SetFamily(wxTELETYPE);
     edCfg->SetFont(edCfgFont);
     FlexGridSizer3->Add(edCfg, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 2);
     FlexGridSizer5 = new wxFlexGridSizer(0, 3, 0, 0);
@@ -219,13 +232,57 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent,wxWindowID id) :
     FlexGridSizer2->Fit(Panel1);
     FlexGridSizer2->SetSizeHints(Panel1);
     FlexGridSizer1->Add(Panel1, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
-    m_plot = new CMyGLCanvas(this,ID_XY_GLCANVAS,wxDefaultPosition,wxSize(600,450),wxTAB_TRAVERSAL,_T("ID_XY_GLCANVAS"));
-    FlexGridSizer1->Add(m_plot, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
+    FlexGridSizer9 = new wxFlexGridSizer(1, 2, 0, 0);
+    FlexGridSizer9->AddGrowableCol(0);
+    FlexGridSizer9->AddGrowableCol(1);
+    FlexGridSizer9->AddGrowableRow(0);
+    m_plot = new CMyGLCanvas(this,ID_XY_GLCANVAS,wxDefaultPosition,wxSize(150,300),wxTAB_TRAVERSAL,_T("ID_XY_GLCANVAS"));
+    FlexGridSizer9->Add(m_plot, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
+    Notebook1 = new wxNotebook(this, ID_NOTEBOOK1, wxDefaultPosition, wxDefaultSize, 0, _T("ID_NOTEBOOK1"));
+    Panel2 = new wxPanel(Notebook1, ID_PANEL2, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL2"));
+    FlexGridSizer10 = new wxFlexGridSizer(0, 1, 0, 0);
+    FlexGridSizer10->AddGrowableCol(0);
+    FlexGridSizer10->AddGrowableRow(0);
+    m_plotTPSpace = new CMyGLCanvas(Panel2,ID_CUSTOM2,wxDefaultPosition,wxSize(150,300),wxTAB_TRAVERSAL,_T("ID_CUSTOM2"));
+    FlexGridSizer10->Add(m_plotTPSpace, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
+    Panel2->SetSizer(FlexGridSizer10);
+    FlexGridSizer10->Fit(Panel2);
+    FlexGridSizer10->SetSizeHints(Panel2);
+    Panel3 = new wxPanel(Notebook1, ID_PANEL3, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL3"));
+    FlexGridSizer11 = new wxFlexGridSizer(0, 1, 0, 0);
+    FlexGridSizer11->AddGrowableCol(0);
+    FlexGridSizer11->AddGrowableRow(0);
+    m_plotVelCmds = new mpWindow(Panel3,ID_CUSTOM1,wxDefaultPosition,wxDefaultSize,0);
+    FlexGridSizer11->Add(m_plotVelCmds, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
+    Panel3->SetSizer(FlexGridSizer11);
+    FlexGridSizer11->Fit(Panel3);
+    FlexGridSizer11->SetSizeHints(Panel3);
+    Panel4 = new wxPanel(Notebook1, ID_PANEL4, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL4"));
+    FlexGridSizer12 = new wxFlexGridSizer(4, 1, 0, 0);
+    FlexGridSizer12->AddGrowableCol(0);
+    FlexGridSizer12->AddGrowableRow(1);
+    FlexGridSizer12->AddGrowableRow(3);
+    StaticText8 = new wxStaticText(Panel4, ID_STATICTEXT8, _("Motion direction to robot heading angle: for selected PTG over time [deg]"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT8"));
+    FlexGridSizer12->Add(StaticText8, 1, wxALL|wxALIGN_LEFT|wxALIGN_TOP, 5);
+    m_plotHeadAngIndiv = new mpWindow(Panel4,ID_CUSTOM3,wxDefaultPosition,wxDefaultSize,0);
+    FlexGridSizer12->Add(m_plotHeadAngIndiv, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
+    StaticText9 = new wxStaticText(Panel4, ID_STATICTEXT9, _("Motion direction to robot heading angle: maximum value for each trajectory [deg]"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT9"));
+    FlexGridSizer12->Add(StaticText9, 1, wxALL|wxALIGN_LEFT|wxALIGN_TOP, 5);
+    m_plotHeadAngAll = new mpWindow(Panel4,ID_CUSTOM4,wxDefaultPosition,wxDefaultSize,0);
+    FlexGridSizer12->Add(m_plotHeadAngAll, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
+    Panel4->SetSizer(FlexGridSizer12);
+    FlexGridSizer12->Fit(Panel4);
+    FlexGridSizer12->SetSizeHints(Panel4);
+    Notebook1->AddPage(Panel2, _("TP-Space"), false);
+    Notebook1->AddPage(Panel3, _("VelCmds@t=0"), false);
+    Notebook1->AddPage(Panel4, _("Head angle"), false);
+    FlexGridSizer9->Add(Notebook1, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
+    FlexGridSizer1->Add(FlexGridSizer9, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
     edLog = new wxTextCtrl(this, ID_TEXTCTRL2, wxEmptyString, wxDefaultPosition, wxSize(-1,100), wxTE_PROCESS_ENTER|wxTE_PROCESS_TAB|wxTE_MULTILINE|wxTE_READONLY|wxHSCROLL|wxTE_DONTWRAP|wxALWAYS_SHOW_SB, wxDefaultValidator, _T("ID_TEXTCTRL2"));
     wxFont edLogFont = wxSystemSettings::GetFont(wxSYS_OEM_FIXED_FONT);
     if ( !edLogFont.Ok() ) edLogFont = wxSystemSettings::GetFont(wxSYS_DEFAULT_GUI_FONT);
     edLogFont.SetPointSize(8);
-    edLogFont.SetFamily(wxFONTFAMILY_TELETYPE);
+    edLogFont.SetFamily(wxTELETYPE);
     edLog->SetFont(edLogFont);
     FlexGridSizer1->Add(edLog, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
     SetSizer(FlexGridSizer1);
@@ -247,13 +304,15 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent,wxWindowID id) :
     SetStatusBar(StatusBar1);
     FlexGridSizer1->SetSizeHints(this);
     Center();
-
+    
     Connect(ID_CHOICE1,wxEVT_COMMAND_CHOICE_SELECTED,(wxObjectEventFunction)&ptgConfiguratorframe::OncbPTGClassSelect);
     Connect(ID_SPINCTRL1,wxEVT_COMMAND_SPINCTRL_UPDATED,(wxObjectEventFunction)&ptgConfiguratorframe::OnedPTGIndexChange);
     Connect(ID_BUTTON1,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&ptgConfiguratorframe::OnbtnReloadParamsClick);
     Connect(ID_CHECKBOX1,wxEVT_COMMAND_CHECKBOX_CLICKED,(wxObjectEventFunction)&ptgConfiguratorframe::OncbDrawShapePathClick);
     Connect(ID_CHECKBOX3,wxEVT_COMMAND_CHECKBOX_CLICKED,(wxObjectEventFunction)&ptgConfiguratorframe::OncbHighlightOnePathClick);
     Connect(ID_SLIDER1,wxEVT_SCROLL_TOP|wxEVT_SCROLL_BOTTOM|wxEVT_SCROLL_LINEUP|wxEVT_SCROLL_LINEDOWN|wxEVT_SCROLL_PAGEUP|wxEVT_SCROLL_PAGEDOWN|wxEVT_SCROLL_THUMBTRACK|wxEVT_SCROLL_THUMBRELEASE|wxEVT_SCROLL_CHANGED,(wxObjectEventFunction)&ptgConfiguratorframe::OnslidPathHighlightCmdScroll);
+    Connect(ID_SLIDER1,wxEVT_SCROLL_THUMBTRACK,(wxObjectEventFunction)&ptgConfiguratorframe::OnslidPathHighlightCmdScroll);
+    Connect(ID_SLIDER1,wxEVT_SCROLL_CHANGED,(wxObjectEventFunction)&ptgConfiguratorframe::OnslidPathHighlightCmdScroll);
     Connect(ID_SPINCTRL2,wxEVT_COMMAND_SPINCTRL_UPDATED,(wxObjectEventFunction)&ptgConfiguratorframe::OnedIndexHighlightPathChange);
     Connect(ID_CHECKBOX2,wxEVT_COMMAND_CHECKBOX_CLICKED,(wxObjectEventFunction)&ptgConfiguratorframe::OncbBuildTPObsClick);
     Connect(ID_BUTTON3,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&ptgConfiguratorframe::OnbtnPlaceObsClick);
@@ -269,28 +328,46 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent,wxWindowID id) :
 	// Redirect all output to control:
 	m_myRedirector = new CMyRedirector( edLog, true, 100, true);
 
+
 	WX_START_TRY
 
+	// 2D plots:
+	m_plotHeadAngAll->AddLayer(new mpScaleX());
+	m_plotHeadAngAll->AddLayer(new mpScaleY());
+	
+	m_graph_head_all = new mpFXYVector(_("head_all"));
+	m_graph_head_all->SetPen(wxPen(wxColour(0, 0, 255), 5));
+	m_graph_head_all->SetContinuity(false);
+	m_plotHeadAngAll->AddLayer(m_graph_head_all);
+
+
+	m_plotHeadAngIndiv->AddLayer(new mpScaleX());
+	m_plotHeadAngIndiv->AddLayer(new mpScaleY());
+	
+	m_graph_head_indiv = new mpFXYVector(_("head_indiv"));
+	m_graph_head_indiv->SetPen(wxPen(wxColour(0, 0, 255), 5));
+	m_graph_head_indiv->SetContinuity(false);
+	m_plotHeadAngIndiv->AddLayer(m_graph_head_indiv);
 
 	// Populate 3D views:
 	// Split in 2 views:
-	gl_view_WS      = m_plot->m_openGLScene->createViewport("main");
-	gl_view_WS->setBorderSize(1);
-
-	gl_view_TPSpace  = m_plot->m_openGLScene->createViewport("TPSpace");
-	gl_view_TPSpace->setBorderSize(1);
+	gl_view_WS      = m_plot->m_openGLScene->getViewport();
+	gl_view_TPSpace = m_plotTPSpace->m_openGLScene->getViewport();
 
 	m_plot->addTextMessage(0.01,5,"Workspace", mrpt::utils::TColorf(1,1,1,0.75), "sans", 15,mrpt::opengl::NICE, 1);
-	m_plot->addTextMessage(0.51,5,"TP-Space", mrpt::utils::TColorf(1,1,1,0.75), "sans", 15,mrpt::opengl::NICE, 2);
-
-	gl_view_WS->setViewportPosition(0,0,0.5,1.0);
-	gl_view_TPSpace->setViewportPosition(0.5,0.0,0.5,1.0);
+	m_plotTPSpace->addTextMessage(0.01,5,"TP-Space", mrpt::utils::TColorf(1,1,1,0.75), "sans", 15,mrpt::opengl::NICE, 2);
 
 	gl_robot_ptg_prediction = mrpt::opengl::CSetOfLines::Create();
 	gl_robot_ptg_prediction->setName("ptg_prediction");
 	gl_robot_ptg_prediction->setLineWidth(1.0);
 	gl_robot_ptg_prediction->setColor_u8( mrpt::utils::TColor(0x00,0x00,0xff,0x90) );
 	gl_view_WS->insert(gl_robot_ptg_prediction);
+
+	gl_robot_ptg_prediction_highlight = mrpt::opengl::CSetOfLines::Create();
+	gl_robot_ptg_prediction_highlight->setName("ptg_prediction_highlight");
+	gl_robot_ptg_prediction_highlight->setLineWidth(3.0);
+	gl_robot_ptg_prediction_highlight->setColor_u8(mrpt::utils::TColor(0xff, 0x00, 0x00, 0xff));
+	gl_view_WS->insert(gl_robot_ptg_prediction_highlight);
 
 	gl_WS_obs = mrpt::opengl::CPointCloud::Create();
 	gl_WS_obs->setPointSize(7.0);
@@ -354,9 +431,8 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent,wxWindowID id) :
 	gl_view_TPSpace_cam->setAzimuthDegrees( -90 );
 	gl_view_TPSpace_cam->setElevationDegrees(90);
 	gl_view_TPSpace_cam->setProjectiveModel( false );
-	gl_view_TPSpace_cam->setZoomDistance(2.5);
-
-
+	gl_view_TPSpace_cam->setZoomDistance(2.1);
+	
 	// Populate list of existing PTGs:
 	{
 		//mrpt::nav::registerAllNavigationClasses();
@@ -422,6 +498,11 @@ void ptgConfiguratorframe::OnbtnReloadParamsClick(wxCommandEvent& event)
 
 	ptg->initialize();
 
+	// one-time GUI init for each PTG settings:
+	edIndexHighlightPath->SetRange(0, ptg->getPathCount() - 1);
+	slidPathHighlight->SetRange(0, ptg->getPathCount() - 1);
+
+	// first time full GUI refresh:
 	rebuild3Dview();
 
 	WX_END_TRY;
@@ -491,17 +572,26 @@ void ptgConfiguratorframe::rebuild3Dview()
 				timer.Tic();
 				ptg->updateTPObstacle(ox,oy, TP_Obstacles);
 				const double t =timer.Tac();
-				StatusBar1->SetStatusText(wxString::Format(wxT("TP-Obstacle build time: %.06f ms"),t*1e3), 2);
+				StatusBar1->SetStatusText(wxString::Format(wxT("TP-Obstacle build time: %ss"), mrpt::system::unitsFormat(t,2).c_str() ), 2);
 			}
 		}
 
+		const size_t nPTGPaths = ptg->getPathCount();
 		// All paths:
 		gl_robot_ptg_prediction->clear();
-		gl_robot_ptg_prediction->clear();
-		for (int k=0;k<ptg->getPathCount();k++)
+		gl_robot_ptg_prediction_highlight->clear();
+		for (size_t k=0;k<nPTGPaths;k++)
 		{
 			const double max_dist = TP_Obstacles[k];
-			ptg->renderPathAsSimpleLine(k,*gl_robot_ptg_prediction,0.10, max_dist);
+
+			mrpt::opengl::CSetOfLines & sol =
+				cbHighlightOnePath->IsChecked() && k == edIndexHighlightPath->GetValue()
+				?
+				*gl_robot_ptg_prediction_highlight
+				:
+				*gl_robot_ptg_prediction;
+
+			ptg->renderPathAsSimpleLine(k,sol,0.10, max_dist);
 
 			// Overlay a sequence of robot shapes:
 			if (cbDrawShapePath->IsChecked())
@@ -517,10 +607,53 @@ void ptgConfiguratorframe::rebuild3Dview()
 						continue;
 					mrpt::math::TPose2D p;
 					ptg->getPathPose(k, step, p);
-					ptg->add_robotShape_to_setOfLines(*gl_robot_ptg_prediction, mrpt::poses::CPose2D(p) );
+					ptg->add_robotShape_to_setOfLines(sol, mrpt::poses::CPose2D(p) );
 				}
 			}
 		}
+
+		// 2D angle to robot head plots:
+		std::vector<double> robotHeadAng_x, robotHeadAng_y, robotHeadAngAll_x(nPTGPaths), robotHeadAngAll_y(nPTGPaths);
+		for (size_t k = 0; k < nPTGPaths; k++)
+		{
+			robotHeadAngAll_x[k] = k;
+			bool is_selected_path = (k == edIndexHighlightPath->GetValue());
+
+			size_t nSteps = ptg->getPathStepCount(k);
+			
+			if (is_selected_path) {
+				robotHeadAng_x.resize(nSteps);
+				robotHeadAng_y.resize(nSteps);
+			}
+
+			mrpt::math::TPose2D prevPose, curPose;
+			double maxRobotHeadErr = .0;
+			for (size_t j = 0; j < nSteps; j++)
+			{
+				ptg->getPathPose(k, j, curPose);
+				if (j != 0)
+				{
+					// Numerical estimate of global direction of motion:
+					const double dx = curPose.x - prevPose.x, dy = curPose.y - prevPose.y;
+					const double dir_motion = (dy != 0 || dx != 0) ? ::atan2(dy, dx) : .0;
+
+					// Head calc:
+					const double head2dir = mrpt::math::wrapToPi(dir_motion - curPose.phi);
+					
+					if (is_selected_path) {
+						robotHeadAng_x[j] = j;
+						robotHeadAng_y[j] = mrpt::utils::RAD2DEG(head2dir);
+					}
+
+					mrpt::utils::keep_max(maxRobotHeadErr, std::abs(head2dir));
+				}
+				prevPose = curPose;
+			}
+
+			robotHeadAngAll_y[k] = mrpt::utils::RAD2DEG(maxRobotHeadErr);
+		}
+		m_graph_head_all->SetData(robotHeadAngAll_x, robotHeadAngAll_y);
+		m_graph_head_indiv->SetData(robotHeadAng_x, robotHeadAng_y);
 
 		// TP-Obstacles:
 		gl_tp_obstacles->clear();
@@ -573,7 +706,12 @@ void ptgConfiguratorframe::rebuild3Dview()
 	}
 
 
+	m_plotHeadAngAll->Fit();
+	m_plotHeadAngIndiv->Fit();
+	m_plotHeadAngAll->UpdateAll();
+	m_plotHeadAngIndiv->UpdateAll();
 	m_plot->Refresh();
+	m_plotTPSpace->Refresh();
 	WX_END_TRY;
 }
 
@@ -690,6 +828,9 @@ void ptgConfiguratorframe::OnbtnPlaceTargetClick(wxCommandEvent& event)
 
 void ptgConfiguratorframe::OnslidPathHighlightCmdScroll(wxScrollEvent& event)
 {
+	edIndexHighlightPath->SetValue( slidPathHighlight->GetValue() );
+	wxSpinEvent dm;
+	OnedIndexHighlightPathChange(dm);
 }
 
 void ptgConfiguratorframe::OncbHighlightOnePathClick(wxCommandEvent& event)
@@ -701,4 +842,5 @@ void ptgConfiguratorframe::OncbHighlightOnePathClick(wxCommandEvent& event)
 
 void ptgConfiguratorframe::OnedIndexHighlightPathChange(wxSpinEvent& event)
 {
+	rebuild3Dview();
 }

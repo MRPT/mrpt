@@ -101,6 +101,7 @@ bool RANSAC_Template<NUMTYPE>::execute(
 			if (++count > maxDataTrials)
 			{
 				MRPT_LOG_WARN("Unable to select a nondegenerate data set");
+				break;
 			}
 		}
 

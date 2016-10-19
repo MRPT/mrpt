@@ -44,6 +44,8 @@ void  CHolonomicFullEval::navigate(
 	CHolonomicLogFileRecordPtr &logRecord,
 	const double    max_obstacle_dist)
 {
+	using mrpt::utils::square;
+
 	CLogFileRecord_FullEvalPtr log;
 
 	// Create a log record for returning data.
@@ -110,9 +112,8 @@ void  CHolonomicFullEval::navigate(
 			sg.point2.y = y;
 			// Range of attainable values: 0=passes thru target. 2=opposite direction
 			const double min_dist_target_along_path = sg.distance(target);
-			const double min_dist_target_along_path_norm = std::min(1.0, min_dist_target_along_path*0.5); // Now it is normalized [0,1]
 
-			scores[1] = std::sqrt(1.01 - min_dist_target_along_path_norm); // the 1.01 instead of 1.0 is to be 100% sure we don't get a domain error in sqrt()
+			scores[1] = 1.0 / (1.0 + square(min_dist_target_along_path) );
 		}
 
 		// Factor #3: Distance of end colission-free point to target (Euclidean)

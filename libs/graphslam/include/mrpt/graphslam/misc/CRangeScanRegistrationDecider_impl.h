@@ -46,12 +46,7 @@ void CRangeScanRegistrationDecider<GRAPH_t>::getICPEdge(
 	rel_edge->copyFrom(*pdf);
 
 	// if given, fill the TReturnInfo Struct
-	if (icp_info) {
-		icp_info->nIterations = info.nIterations;
-		icp_info->goodness = info.goodness;
-		icp_info->quality = info.quality;
-		icp_info->cbSize = info.cbSize;
-	}
+	if (icp_info) *icp_info = info;
 
 	MRPT_END;
 }
@@ -105,12 +100,7 @@ void CRangeScanRegistrationDecider<GRAPH_t>::getICPEdge(
 	}
 
 	// if given, fill the TReturnInfo Struct
-	if (icp_info) {
-		icp_info->nIterations = info.nIterations;
-		icp_info->goodness = info.goodness;
-		icp_info->quality = info.quality;
-		icp_info->cbSize = info.cbSize;
-	}
+	if (icp_info) *icp_info = info;
 
 
 	MRPT_END;

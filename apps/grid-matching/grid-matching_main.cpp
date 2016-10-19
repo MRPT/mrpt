@@ -250,8 +250,10 @@ void do_grid_align()
 					{
 						for (unsigned int k=0;k<obs->scan.size();k++)
 						{
-							obs->scan[k] += randomGenerator.drawGaussian1D(0,STD_NOISE_LASER);
-							if (obs->scan[k]<0) obs->scan[k] = 0;
+							float v = obs->getScanRange(k);
+							v += randomGenerator.drawGaussian1D(0,STD_NOISE_LASER);
+							if (v<0) v = 0;
+							obs->setScanRange(k,v);
 						}
 					}
 				} // end of NOISE_IN_LASER

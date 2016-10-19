@@ -35,6 +35,16 @@ void CParameterizedTrajectoryGenerator::loadDefaultParams()
 	m_score_priority = 1.0;
 }
 
+bool CParameterizedTrajectoryGenerator::supportVelCmdNOP() const
+{
+	return false;
+}
+double CParameterizedTrajectoryGenerator::maxTimeInVelCmdNOP(int path_k) const
+{
+	return .0;
+}
+
+
 void CParameterizedTrajectoryGenerator::loadFromConfigFile(const mrpt::utils::CConfigFileBase &cfg,const std::string &sSection)
 {
 	MRPT_LOAD_HERE_CONFIG_VAR_NO_DEFAULT(num_paths   , uint64_t, m_alphaValuesCount, cfg,sSection);
@@ -125,13 +135,16 @@ void CParameterizedTrajectoryGenerator::renderPathAsSimpleLine(
 void CParameterizedTrajectoryGenerator::initTPObstacles(std::vector<double> &TP_Obstacles) const
 {
 	TP_Obstacles.resize(m_alphaValuesCount);
-	for (size_t k=0;k<m_alphaValuesCount;k++)
-	{
-		TP_Obstacles[k] = std::min(
-			refDistance, 
-			this->getPathDist(k, this->getPathStepCount(k)-1) );
-	}
+	for (size_t k = 0; k < m_alphaValuesCount; k++)
+		initTPObstacleSingle(k, TP_Obstacles[k]);
 }
+void CParameterizedTrajectoryGenerator::initTPObstacleSingle(uint16_t k, double &TP_Obstacle_k) const
+{
+	TP_Obstacle_k = std::min(
+		refDistance,
+		this->getPathDist(k, this->getPathStepCount(k) - 1));
+}
+
 
 bool CParameterizedTrajectoryGenerator::debugDumpInFiles( const std::string &ptg_name ) const
 {

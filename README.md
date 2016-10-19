@@ -7,6 +7,7 @@ The MRPT project
 
 1. Introduction
 ------------------------------------------------------------------------------
+<img align="right" src="https://mrpt.github.io/imgs/mrpt-videos-mix2.gif">
 
 Mobile Robot Programming Toolkit (MRPT) provides C++ libraries aimed at researchers
 in mobile robotics and computer vision. Libraries include [SLAM solutions](http://www.mrpt.org/List_of_SLAM_algorithms), [3D(6D) geometry](http://www.mrpt.org/tutorials/programming/maths-and-geometry/2d_3d_geometry/), [SE(2)/SE(3) Lie groups](http://ingmec.ual.es/~jlblanco/papers/jlblanco2010geometry3D_techrep.pdf), 
@@ -14,9 +15,6 @@ in mobile robotics and computer vision. Libraries include [SLAM solutions](http:
 Bayesian inference ([Kalman filters](http://www.mrpt.org/Kalman_Filters), [particle filters](http://www.mrpt.org/tutorials/programming/statistics-and-bayes-filtering/particle_filters/)), [image processing](http://www.mrpt.org/tutorials/programming/images-image-processing-camera-models/), [obstacle avoidance](http://www.mrpt.org/Obstacle_avoidance), [etc](http://reference.mrpt.org/devel/modules.html). 
 MRPT also provides GUI apps for [Stereo camera calibration](http://www.mrpt.org/list-of-mrpt-apps/application-kinect-stereo-calib/), [dataset inspection](http://www.mrpt.org/list-of-mrpt-apps/rawlogviewer/), 
 and [much more](http://www.mrpt.org/list-of-mrpt-apps/).
-
-[![ReactiveNav2D](https://raw.githubusercontent.com/MRPT/mrpt/master/doc/video-screenshots/reactivenav2d.jpg)](https://www.youtube.com/watch?v=qSMs5rnmwTM&index=9&list=PLOJ3GF0x2_eX7TXG_ZyDgEIJdNcuB193X) [![6D-EKF-SLAM](https://raw.githubusercontent.com/MRPT/mrpt/master/doc/video-screenshots/ekf6d.jpg)](https://www.youtube.com/watch?v=eOkzd_i_-ps&index=6&list=PLOJ3GF0x2_eX7TXG_ZyDgEIJdNcuB193X)
-[![ReactiveNav3D](https://raw.githubusercontent.com/MRPT/mrpt/master/doc/video-screenshots/reactivenav3d.jpg)](https://www.youtube.com/watch?v=CXdZ4CjWFuU&index=2&list=PLOJ3GF0x2_eX7TXG_ZyDgEIJdNcuB193X) [![NavLogViewer](https://raw.githubusercontent.com/MRPT/mrpt/master/doc/video-screenshots/navlogviewer.jpg)](https://www.youtube.com/watch?v=6Dp-tr7yR1k&list=PLOJ3GF0x2_eXj35SYVa4-n2-E_zW6klfR&index=2)
 
 2. Resources
 ------------------------------------------------------------------------------
