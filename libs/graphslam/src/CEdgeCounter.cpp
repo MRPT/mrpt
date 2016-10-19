@@ -8,63 +8,65 @@
    +---------------------------------------------------------------------------+ */
 
 #include "graphslam-precomp.h"  // Precompiled headers
-#include <mrpt/graphslam/CEdgeCounter.h>
-
-namespace mrpt { namespace graphslam {
+#include <mrpt/graphslam/misc/CEdgeCounter.h>
 
 // implementation file of CEdgeCounter class
+using namespace mrpt::graphslam::supplementary;
 
-/**\brief Constructor class */
-CEdgeCounter::CEdgeCounter(mrpt::gui::CDisplayWindow3D* win /*= NULL*/) {
-	m_win = win;
-	initCEdgeCounter();
+
+CEdgeCounter::CEdgeCounter() {
+	this->initCEdgeCounter();
+
 }
-/**\brief Destructor class */
+
 CEdgeCounter::~CEdgeCounter() {}
 
-/**\brief Initialization method to be called from the various Constructors.
-*/
 void CEdgeCounter::initCEdgeCounter() {
 
 	this->clearAllEdges();
 	m_has_read_textmessage_params = false;
 
 	// visualization parameters for total edges / loop closures
-	m_display_total_edges = false; m_display_loop_closures = false;
-	m_offset_y_total_edges = 0.0; m_offset_y_loop_closures = 0.0;
-	m_text_index_total_edges = 0; m_text_index_loop_closures = 0;
+	m_display_total_edges = false;
+	m_display_loop_closures = false;
+
+	m_offset_y_total_edges = 0.0;
+	m_offset_y_loop_closures = 0.0;
+
+	m_text_index_total_edges = 0;
+	m_text_index_loop_closures = 0;
 
 	m_unique_edges = 0;
 
+	m_win = NULL;
+	m_win_manager = NULL;
+
 }
-/**\brief Provide the instance with a CWindowManager.
-*/
+
 void CEdgeCounter::setWindowManagerPtr(
 		mrpt::graphslam::CWindowManager* win_manager) {
+	MRPT_START;
+	ASSERT_(win_manager);
+	ASSERT_(win_manager->win);
+
 	m_win_manager = win_manager;
+	m_win = m_win_manager->win;
+
+	MRPT_END;
 }
-/**\brief State how many of the existing edges have been removed.
- *
- * Method is to be called after CNetworkOfPoses::collapseDuplicatedEdges
- * method has been executed.
- */
+
 void CEdgeCounter::setRemovedEdges(int removed_edges) {
 	m_unique_edges = this->getTotalNumOfEdges() - removed_edges;
 }
-/**\brief Method for manually setting the number of loop closures
- * registered so far.
- */
+
 void CEdgeCounter::setLoopClosureEdgesManually(int num_loop_closures) {
 	m_num_loop_closures = num_loop_closures;
 }
-/**\brief Returns the edges that form loop closures in the current graph.
-*/
+
 int CEdgeCounter::getLoopClosureEdges() const {
 	return m_num_loop_closures;
 }
-/**\brief Return the total amount of registered edges.
- * \sa getNumForEdgeType, getLoopClosureEdges
- */
+
 int CEdgeCounter::getTotalNumOfEdges() const {
 	int sum = 0;
 
@@ -74,10 +76,7 @@ int CEdgeCounter::getTotalNumOfEdges() const {
 	}
 	return sum;
 }
-/**\brief Return the total amount of registered edges.
- *
- * \sa getNumForEdgeType, getLoopClosureEdges
- */
+
 void CEdgeCounter::getTotalNumOfEdges(int* total_num_edges) const {
 	int sum = 0;
 
@@ -87,11 +86,7 @@ void CEdgeCounter::getTotalNumOfEdges(int* total_num_edges) const {
 	}
 	*total_num_edges = sum;
 }
-/**\brief Return the number of edges for the specified type.
- *
- * \exception std::exception If edge is not found
- * \sa getTotalNumOfEdges
- */
+
 int CEdgeCounter::getNumForEdgeType(const std::string& name) const {
 	std::map<std::string, int>::const_iterator search =
 		m_name_to_edges_num.find(name);
@@ -102,11 +97,7 @@ int CEdgeCounter::getNumForEdgeType(const std::string& name) const {
 		THROW_EXCEPTION("No edge with such name exists")
 	}
 }
-/** Return the number of edges for the specified type.
- *
- * \exception std::exception If edge is not found
- * \sa getTotalNumOfEdges
- */
+
 void CEdgeCounter::getNumForEdgeType(const std::string& name, int* total_num) {
 
 	std::map<std::string, int>::const_iterator search =
@@ -118,12 +109,7 @@ void CEdgeCounter::getNumForEdgeType(const std::string& name, int* total_num) {
 		THROW_EXCEPTION("No edge with such name exists")
 	}
 }
-/**\brief Set number of a specific edge type manually.
- *
- * Handy for not having to call addEdge multiple times in a row.
- *
- * \sa addEdge
- */
+
 void CEdgeCounter::setEdgesManually(const std::string& name, int num_of_edges) {
 	std::map<std::string, int>::iterator search = m_name_to_edges_num.find(name);
 	if ( search != m_name_to_edges_num.end() ) {
@@ -135,16 +121,11 @@ void CEdgeCounter::setEdgesManually(const std::string& name, int num_of_edges) {
 	}
 	// Update the visualization if the user has already set the vizualization
 	// parameters
-	if (m_has_read_textmessage_params && m_win) {
-		updateTextMessages();
+	if (m_has_read_textmessage_params && m_win_manager) {
+		this->updateTextMessages();
 	}
 }
-/**\brief Increment the number of edges for the specified type.
- *
- * \exception std::exception If edge exists and \b is_new is True
- *
- * \sa setEdgesManually
- */
+
 void CEdgeCounter::addEdge(const std::string& name,
 		bool is_loop_closure /* =false */,
 		bool is_new /* =false */) {
@@ -180,25 +161,24 @@ void CEdgeCounter::addEdge(const std::string& name,
 
 	// Update the visualization if the user has already set the vizualization
 	// parameters
-	if (m_has_read_textmessage_params && m_win) {
+	if (m_has_read_textmessage_params && m_win_manager) {
 		updateTextMessages();
 	}
 }
-/**\brief Explicitly register a new edge type.
-*/
+
 void CEdgeCounter::addEdgeType(const std::string& name) {
 	std::map<std::string, int>::const_iterator search =
 		m_name_to_edges_num.find(name);
 
 	if ( search != m_name_to_edges_num.end() ) {
-		THROW_EXCEPTION(mrpt::format("Specified edge type %s already exists", name.c_str()))
+		THROW_EXCEPTION(
+				mrpt::format("Specified edge type %s already exists", name.c_str()))
 	}
 	else {
 		m_name_to_edges_num[name] = 0;
 	}
 }
-/**\brief Reset the state of the CEdgeCounter instance.
-*/
+
 void CEdgeCounter::clearAllEdges() {
 	m_num_loop_closures = 0;
 
@@ -211,17 +191,11 @@ void CEdgeCounter::clearAllEdges() {
 	m_display_loop_closures				= false;
 }
 
-/**\brief Dump a report of the registered, so far, edges to the console.
- *
- * \sa getAsString
- */
 void CEdgeCounter::dumpToConsole() const {
 	std::string str(getAsString());
 	std::cout << str << std::endl;
 }
-/**\brief Fill the provided string with a detailed report of the registered, so
- * far, edges.
- */
+
 void CEdgeCounter::getAsString(std::string* str_out) const {
 	std::stringstream ss_out;
 	std::string sep(80, '#');
@@ -242,9 +216,7 @@ void CEdgeCounter::getAsString(std::string* str_out) const {
 	// dump the contents to the provided string
 	*str_out = ss_out.str();
 }
-/**\brief Return a detailed report of the registered, so far, edges in a
- * string representation.
- */
+
 std::string CEdgeCounter::getAsString() const {
 	std::string str;
 	this->getAsString(&str);
@@ -254,27 +226,11 @@ std::string CEdgeCounter::getAsString() const {
 // VISUALIZATION RELATED METHODS
 // ////////////////////////////
 
-/**\brief Provide CEdgeCounter instance with the visualization window.
-*/
-void CEdgeCounter::setVisualizationWindow(
-		mrpt::gui::CDisplayWindow3D* win) {
-
-	m_win = win;
-}
-
-/**\brief Add the textMessage parameters to the object
- * All the names in the given std::maps have to be already
- * specified and added in the object via addEdge with is_new=true or
- * addEdgeType
- *
- * \exception std::exception If a name in the provided std::map doesn't
- * already exist
- */
 void CEdgeCounter::setTextMessageParams(
 		const std::map<std::string, double>& name_to_offset_y,
 		const std::map<std::string, int>& name_to_text_index) {
-	ASSERTMSG_(m_win,
-			"Visualization of data was requested but no CDisplayWindow pointer was given");
+	ASSERTMSG_(m_win_manager,
+			"Visualization of data was requested but no CWindowManager pointer was provided");
 	ASSERT_EQUAL_(name_to_offset_y.size(), name_to_text_index.size());
 
 	for (std::map<std::string, double>::const_iterator it =
@@ -303,10 +259,6 @@ void CEdgeCounter::setTextMessageParams(
 	m_has_read_textmessage_params = true;
 }
 
-/**\brief Handle the extra visualization parameters for the total number of
- * edges and for loop closures and then passes execution to the other
- * setTextMessageParams function.
- */
 void CEdgeCounter::setTextMessageParams(
 		const std::map<std::string, double>& name_to_offset_y,
 		const std::map<std::string, int>& name_to_text_index,
@@ -328,10 +280,8 @@ void CEdgeCounter::setTextMessageParams(
 
 }
 
-/**\brief Update the given CDisplayWindow3D with the edges registered so far.
-*/
 void CEdgeCounter::updateTextMessages() const {
-	ASSERT_(m_win);
+	ASSERT_(m_win_manager);
 	ASSERT_(m_has_read_textmessage_params);
 	ASSERT_EQUAL_(m_name_to_offset_y.size(), m_name_to_text_index.size());
 
@@ -378,5 +328,3 @@ void CEdgeCounter::updateTextMessages() const {
 
 	m_win->forceRepaint();
 }
-
-} } // end of namespaces

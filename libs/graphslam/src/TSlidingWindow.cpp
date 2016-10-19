@@ -10,9 +10,9 @@
 // Implementattion file for TSlidingWindow struct
 #include "graphslam-precomp.h"  // Precompiled headers
 
-#include <mrpt/graphslam/TSlidingWindow.h>
 #include <mrpt/utils/CConfigFileBase.h>
 #include <mrpt/utils/CStream.h>
+#include <mrpt/graphslam/misc/TSlidingWindow.h>
 
 using namespace mrpt::graphslam;
 
@@ -22,6 +22,9 @@ TSlidingWindow::TSlidingWindow(
 
 	m_win_size = 5; // just a default value
 	m_name = name;
+
+	m_mean_cached = 0;
+	m_median_cached = 0;
 
 	m_is_initialized = false;
 	m_mean_updated = false;
