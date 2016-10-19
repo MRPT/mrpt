@@ -121,9 +121,12 @@ class CRangeScanRegistrationDecider {
 	void decimatePointsMap(mrpt::maps::CPointsMap* m,
 			size_t keep_point_every=4,
 			size_t low_lim=0);
-	/**\brief Wrapper around the CObservation3DRangeScan::convertTo2DScan method
+	/**\brief Wrapper around the CObservation3DRangeScan::convertTo2DScan
+	 * corresponding method
+	 *
+	 * \return True if operation was successful, false otherwise
 	 */
-	void convert3DTo2DRangeScan(
+	bool convert3DTo2DRangeScan(
 			/*from = */ mrpt::obs::CObservation3DRangeScanPtr& scan3D_in,
 			/*to   = */ mrpt::obs::CObservation2DRangeScanPtr* scan2D_out=NULL);
 
@@ -139,11 +142,10 @@ class CRangeScanRegistrationDecider {
 
 			mrpt::slam::CICP icp;
 
-			// parameters for conversion 3D=>2D Range Scan
-			std::string conversion_sensor_label;
-			double conversion_angle_sup;
-			double conversion_angle_inf;
-			double conversion_oversampling_ratio;
+			/**\brief Struct holding the parameters of 3D to the corresponding 2D
+			 * range scan conversion.
+			 */
+			mrpt::obs::T3DPointsTo2DScanParams conversion_params;
 
 			bool has_read_config;
 	};

@@ -273,6 +273,7 @@ include(cmakemodules/script_isense.cmake REQUIRED)		# Support for INTERSENSE Sen
 include(cmakemodules/script_nite2.cmake REQUIRED)		# Check for NITE2 library
 include(cmakemodules/script_yamlcpp.cmake REQUIRED)		# Check for YAMLCPP library
 include(cmakemodules/script_pcap.cmake REQUIRED)        # Check for the libpcap library
+include(cmakemodules/script_ros1.cmake REQUIRED)        # Check for ROS
 
 # ---------------------------------------------------------------------------
 #			OPTIONS
@@ -377,7 +378,7 @@ SET(MRPT_ENABLE_PROFILING OFF CACHE BOOL "Enable profiling (add -g -pg in GCC/CL
 
 IF(MSVC)
 	SET(EXTRA_CPP_FLAGS "/W3 /D _CRT_SECURE_NO_DEPRECATE /D _CRT_NONSTDC_NO_DEPRECATE")
-	
+
 	IF (NOT BUILD_SHARED_LIBS)
 		# static libs in Win: don't optimize out the initializers for class auto registration:
 		set(CMAKE_SHARED_LINKER_FLAGS_RELEASE "${CMAKE_SHARED_LINKER_FLAGS_RELEASE} /OPT:NOREF")

@@ -35,7 +35,10 @@
 #include <mrpt/system/os.h>
 #include <mrpt/system/threads.h>
 #include <mrpt/math/data_utils.h>
-#include <mrpt/graphslam/TSlidingWindow.h>
+
+#include <mrpt/graphslam/interfaces/CEdgeRegistrationDecider.h>
+#include <mrpt/graphslam/misc/TSlidingWindow.h>
+#include <mrpt/graphslam/misc/CRangeScanRegistrationDecider.h>
 
 #include <Eigen/Dense>
 
@@ -49,10 +52,6 @@
 #include <set>
 #include <sstream>
 #include <stdlib.h> // abs
-
-#include "CEdgeRegistrationDecider.h"
-#include "CRangeScanRegistrationDecider.h"
-
 
 namespace mrpt { namespace graphslam { namespace deciders {
 
@@ -260,7 +259,6 @@ class CLoopCloserERD:
 				mrpt::obs::CObservationPtr observation );
 
 		void setGraphPtr(GRAPH_t* graph);
-		void setRawlogFname(const std::string& rawlog_fname);
 		void setWindowManagerPtr(mrpt::graphslam::CWindowManager* win_manager);
 		void notifyOfWindowEvents(
 				const std::map<std::string, bool>& events_occurred);
@@ -357,10 +355,14 @@ class CLoopCloserERD:
 				 * By default this is set to 2.
 				 */
 				double LC_eigenvalues_ratio_thresh;
-				/**\brief how many remote nodes (large nodID difference should there be before
-				 * I consider the potential loop closure?
+				/**\brief how many remote nodes (large nodID difference should there be
+				 * before I consider the potential loop closure.
 				 */
 				int LC_min_remote_nodes; 
+				/**\brief Full partition of map only afer X new nodes have been
+				 * registered
+				 */
+				int full_partition_per_nodes;
 				bool visualize_map_partitions;
 				std::string keystroke_map_partitions;
 
@@ -581,9 +583,13 @@ class CLoopCloserERD:
 		/** Get the ICP Edge between the provided nodes.
 		 *
 		 * Handy for not having to manually fetch the laser scans, as the method
-		 * takes care of this
+		 * takes care of this.
+		 *
+		 * \return True if operation was successful, false otherwise (e.g. if the
+		 * either of the nodes' CObservation2DRangeScan object does not contain
+		 * valid data.
 		 */
-		void getICPEdge(
+		bool getICPEdge(
 				const mrpt::utils::TNodeID& from,
 				const mrpt::utils::TNodeID& to,
 				constraint_t* rel_edge,
@@ -652,8 +658,6 @@ class CLoopCloserERD:
 		mrpt::graphslam::CWindowManager* m_win_manager;
 		mrpt::graphslam::CWindowObserver* m_win_observer;
 
-		std::string m_rawlog_fname;
-
 		bool m_initialized_visuals;
 		bool m_just_inserted_loop_closure;
 
@@ -688,7 +692,7 @@ class CLoopCloserERD:
 		bool m_partitions_full_update;
 
 		/**\brief Keep track of the evaluated partitions so they are not checked
-		 * again if nothing changed in them
+		 * again if nothing changed in them.
 		 */
 		std::map<int, vector_uint> m_partitionID_to_prev_nodes_list;
 

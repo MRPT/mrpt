@@ -10,18 +10,18 @@
 #ifndef CEDGECOUNTER_H
 #define CEDGECOUNTER_H
 
-#include "link_pragmas.h"
 #include <mrpt/utils/mrpt_macros.h>
-#include <mrpt/graphslam/CWindowManager.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
+
+#include <mrpt/graphslam/link_pragmas.h>
+#include "CWindowManager.h"
 
 #include <iostream>
 #include <sstream>
 #include <string>
 #include <map>
 
-
-namespace mrpt { namespace graphslam {
+namespace mrpt { namespace graphslam { namespace supplementary {
 
 /**\brief Generic class for tracking the total number of edges for different
  * tpes of edges and for storing visualization-related information for each
@@ -32,12 +32,14 @@ namespace mrpt { namespace graphslam {
 class GRAPHSLAM_IMPEXP CEdgeCounter {
 	public:
 
-		/**\brief Constructor class */
-		CEdgeCounter(mrpt::gui::CDisplayWindow3D* win = NULL); 
-		/**\brief Destructor class */
+		/**\brief Constructor class
+		 */
+		CEdgeCounter();
+		/**\brief Destructor class
+		 */
 		~CEdgeCounter();
-
-		/**\brief Provide the instance with a CWindowManager.  */
+		/**\brief Provide the instance with a CWindowManager.
+		 */
 		void setWindowManagerPtr(mrpt::graphslam::CWindowManager* win_manager);
 		/**\brief State how many of the existing edges have been removed.
 		 *
@@ -49,7 +51,8 @@ class GRAPHSLAM_IMPEXP CEdgeCounter {
 		 * registered so far.
 		 */
 		void setLoopClosureEdgesManually(int num_loop_closures);
-		/**\brief Returns the edges that form loop closures in the current graph. */
+		/**\brief Returns the edges that form loop closures in the current graph.
+		 */
 		int getLoopClosureEdges() const;
 		/**\brief Return the total amount of registered edges.
 		 * \sa getNumForEdgeType, getLoopClosureEdges
@@ -87,11 +90,12 @@ class GRAPHSLAM_IMPEXP CEdgeCounter {
 		 */
 		void addEdge(const std::string& name, bool is_loop_closure=false,
 				bool is_new=false);
-		/**\brief Explicitly register a new edge type. */
+		/**\brief Explicitly register a new edge type.
+		 */
 		void addEdgeType(const std::string& name);
-		/**\brief Reset the state of the CEdgeCounter instance. */
+		/**\brief Reset the state of the CEdgeCounter instance.
+		 */
 		void clearAllEdges();
-
 		/**\brief Dump a report of the registered, so far, edges to the console.
 		 *
 		 * \sa getAsString
@@ -108,9 +112,6 @@ class GRAPHSLAM_IMPEXP CEdgeCounter {
 
 		// VISUALIZATION RELATED METHODS
 		// ////////////////////////////
-
-		/**\brief Provide CEdgeCounter instance with the visualization window. */
-		void setVisualizationWindow(mrpt::gui::CDisplayWindow3D* win);
 
 		/**\brief Add the textMessage parameters to the object
 		 * All the names in the given std::maps have to be already
@@ -163,6 +164,6 @@ class GRAPHSLAM_IMPEXP CEdgeCounter {
 		int m_text_index_total_edges, m_text_index_loop_closures;
 };
 
-} } // END OF NAMESPACES
+} } } // END OF NAMESPACES
 
 #endif /* end of include guard: CEDGECOUNTER_H */

@@ -15,7 +15,8 @@
 #include <mrpt/synch/CCriticalSection.h>
 #include <mrpt/graphs/CNetworkOfPoses.h>
 #include <mrpt/utils/COutputLogger.h>
-#include "CWindowManager.h"
+
+#include <mrpt/graphslam/misc/CWindowManager.h>
 
 #include <string>
 #include <map>
@@ -41,6 +42,10 @@ namespace mrpt { namespace graphslam {
 template<class GRAPH_t=typename mrpt::graphs::CNetworkOfPoses2DInf>
 class CRegistrationDeciderOrOptimizer : public mrpt::utils::COutputLogger {
 	public:
+
+		CRegistrationDeciderOrOptimizer():
+			m_win_manager(NULL) {
+		}
 		/**\brief Generic method for fetching the incremental action-observations (or
 		 * observation-only) measurements
 		 *
@@ -52,18 +57,19 @@ class CRegistrationDeciderOrOptimizer : public mrpt::utils::COutputLogger {
 				mrpt::obs::CSensoryFramePtr observations,
 				mrpt::obs::CObservationPtr observation ) = 0;
 
-		/**\brief Fetch the graph on which the decider/optimizer will work on.
-		 */
+		/**\brief Fetch the graph on which the decider/optimizer will work on. */
 		virtual void setGraphPtr(GRAPH_t* graph) {}
-		/**\brief Set the rawlog fname */
-		virtual void setRawlogFname(const std::string& rawlog_fname) {}
 		/**\brief Fetch a CWindowManager pointer.
 		 *
 		 * CWindowManager instance should contain a CDisplayWindow3D* and,
 		 * optionally, a CWindowObserver pointer so that interaction with the
 		 * window is possible
 		 */
-		virtual void setWindowManagerPtr(mrpt::graphslam::CWindowManager* win_manager) {}
+		virtual void setWindowManagerPtr(mrpt::graphslam::CWindowManager* win_manager) {
+			ASSERT_(win_manager);
+
+			m_win_manager = win_manager;
+		}
 		/**\brief Fetch a mrpt::synch::CCriticalSection for locking the GRAPH_t resource.
 		 *
 		 * Handy for realising multithreading in the derived classes.
@@ -84,7 +90,9 @@ class CRegistrationDeciderOrOptimizer : public mrpt::utils::COutputLogger {
 		 *
 		 * \sa setWindowManagerPtr, updateVisuals
 		 */
-		virtual void initializeVisuals() {}
+		virtual void initializeVisuals() {
+			ASSERT_(m_win_manager);
+		}
 		/**\brief Update the relevant visual features in CDisplayWindow.
 		 *
 		 *\exception std::exception If the method is called without having first
@@ -92,7 +100,10 @@ class CRegistrationDeciderOrOptimizer : public mrpt::utils::COutputLogger {
 		 *
 		 * \sa setWindowManagerPtr, initializeVisuals
 		 */
-		virtual void updateVisuals() {}
+		virtual void updateVisuals() {
+			ASSERT_(m_win_manager);
+		
+		}
 		/**\brief Get a list of the window events that happened since the last call.
 		 *
 		 * Method in derived classes is automatically called from the
@@ -100,7 +111,9 @@ class CRegistrationDeciderOrOptimizer : public mrpt::utils::COutputLogger {
 		 * fetch the parameters that it is interested in.
 		 */
 		virtual void notifyOfWindowEvents(
-				const std::map<std::string, bool>& events_occurred) { }
+				const std::map<std::string, bool>& events_occurred) {
+			ASSERT_(m_win_manager);
+		}
 		/**\brief Load the necessary for the decider/optimizer configuration parameters.
 		 */
 		virtual void loadParams(const std::string& source_fname) {}
@@ -126,6 +139,9 @@ class CRegistrationDeciderOrOptimizer : public mrpt::utils::COutputLogger {
 				mrpt::obs::CActionCollectionPtr action,
 				mrpt::obs::CSensoryFramePtr observations,
 				mrpt::obs::CObservationPtr observation ) {}
+
+
+		mrpt::graphslam::CWindowManager* m_win_manager;
 
 };
 

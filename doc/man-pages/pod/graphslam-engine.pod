@@ -2,6 +2,11 @@
 
 graphslam-engine - Construct and solve robot pose graphs from .rawlog dataset files
 
+I<Note:>As the graphslam-engine application still under developement, current
+manpage may be outdated. Refer to the MRPT doxygen class documentation and the
+corresponding application documentation for the latest features and usage
+instructions
+
 =head1 SYNOPSIS
 
 The available command line arguments are listed below:
@@ -203,7 +208,7 @@ corresponding library - is provided.
 
 CGraphSlamEngine is the main class executing graphslam. CGraphSlamEngine
 delegates most of the graph manipulation tasks to node/edge registration
-deciders and optimizer classes. This makes up for independency between the
+deciders and optimizer classes. This makes up for independence between the
 different tasks as well as for a reconfigurable setup, as the user can select
 to use different decider/optimizer classes depending on the situation. Users
 can also write their own decider/optimizer classes by inheriting from one of
@@ -251,7 +256,6 @@ or 3DRangeScans.
 
 =back
 
-// TODO - check if link works
 For more information on this see http://reference.mrpt.org/devel/classmrpt_1_1graphslam_1_1deciders_1_1_c_node_registration_decider.html
 
 =head3 EDGE REGISTRATION DECIDERS
@@ -291,7 +295,6 @@ based on the following two papers:
 
 =back
 
-// TODO - check if link works
 For more information on this see http://reference.mrpt.org/devel/classmrpt_1_1graphslam_1_1deciders_1_1_c_edge_registration_decider.html
 
 =head2 OPTIMIZERS
@@ -316,9 +319,9 @@ Please report bugs at https://github.com/MRPT/mrpt/issues
 
 =item * Application wiki page - http://www.mrpt.org/Applications
 
-=item * graphslam lib documentation page - // TODO
+=item * mrpt::graphslam lib documentation page - http://reference.mrpt.org/devel/namespacemrpt_1_1graphslam.html
 
-=item * Application demo video - // TODO - Add link to youtube video
+=item * Application demo video - https://www.youtube.com/watch?v=Pv0yvlzrcXk
 
 =item * .ini Example files:
 
@@ -337,7 +340,7 @@ Modify $mrpt according to the path of MRPT source code.
 =head1 AUTHORS
 
 B<graphslam-engine> is part of the Mobile Robot Programming Toolkit (MRPT), It
-was originally written by Nikos Koukis duirng the Google Summer of Code (GSOC)
+was originally written by Nikos Koukis during the Google Summer of Code (GSOC)
 2016 program.
 
 This manual page was written by Nikos Koukis <nickkouk@gmail.com>.

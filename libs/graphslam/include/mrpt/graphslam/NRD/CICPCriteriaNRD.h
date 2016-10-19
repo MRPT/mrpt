@@ -32,16 +32,16 @@
 #include <mrpt/system/os.h>
 #include <mrpt/system/threads.h>
 
-#include "CNodeRegistrationDecider.h"
-#include "CRangeScanRegistrationDecider.h"
-#include "TSlidingWindow.h"
+#include <mrpt/graphslam/interfaces/CNodeRegistrationDecider.h>
+#include <mrpt/graphslam/misc/CRangeScanRegistrationDecider.h>
+#include <mrpt/graphslam/misc/TSlidingWindow.h>
 
 #include <string>
 #include <math.h>
 
 namespace mrpt { namespace graphslam { namespace deciders {
 
-/**\brief Fixed Intervals ICP-based Node Registration
+/**\brief ICP-based Fixed Intervals Node Registration
  *
  * ## Description
  *
@@ -117,8 +117,11 @@ class CICPCriteriaNRD:
 		typedef mrpt::math::CMatrixFixedNumeric<double,
 						constraint_t::state_length,
 						constraint_t::state_length> InfMat;
-		/**\brief Typedef for accessing methods of the RangeScanRegistrationDecider_t parent class. */
-		typedef mrpt::graphslam::deciders::CRangeScanRegistrationDecider<GRAPH_t> range_scanner_t;
+		/**\brief Typedef for accessing methods of the RangeScanRegistrationDecider
+		 * parent class.
+		 */
+		typedef mrpt::graphslam::deciders::CRangeScanRegistrationDecider<GRAPH_t>
+			range_scanner_t;
 		typedef CICPCriteriaNRD<GRAPH_t> decider_t; /**< self type - Handy typedef */
 
 		/**\brief Class constructor */
@@ -130,6 +133,8 @@ class CICPCriteriaNRD:
 		void loadParams(const std::string& source_fname);
 		void printParams() const;
 		void getDescriptiveReport(std::string* report_str) const;
+
+		pose_t getCurrentRobotPosEstimation() const;
 
 		/**\brief Update the decider state using the latest dataset measurements.
 		 *
@@ -235,10 +240,6 @@ class CICPCriteriaNRD:
 		// last inserted node in the graph
 		mrpt::utils::TNodeID m_nodeID_max;
 
-		/**\brief Keeps track of the last N measurements of the incoming ICP
-		 * matches.
-		 */
-		TSlidingWindow m_ICP_sliding_win;
 		/**\brief Keeps track of the last N measurements between the ICP edge and
 		 * the corresponding odometry measurements.
 		 *
@@ -251,11 +252,13 @@ class CICPCriteriaNRD:
 		mrpt::utils::CTimeLogger m_time_logger; /**<Time logger instance */
 
 		// criteria for adding new a new node
-		bool m_use_angle_difference_node_reg = true;
-		bool m_use_distance_node_reg = true;
+		bool m_use_angle_difference_node_reg;
+		bool m_use_distance_node_reg;
 
-		size_t m_times_used_ICP; /**<How many times we used the ICP Edge */
-		size_t m_times_used_odom; /**<How many times we used the Odometry Edge instead of the ICP edge */
+		/**How many times we used the ICP Edge instead of Odometry edge*/
+		int m_times_used_ICP;
+		/**How many times we used the Odometry Edge instead of the ICP edge */
+		int m_times_used_odom;
 };
 
 
