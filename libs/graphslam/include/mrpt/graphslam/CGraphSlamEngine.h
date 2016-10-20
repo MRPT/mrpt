@@ -291,24 +291,22 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		 * Method is a wrapper around the computeOccupancyGridMap2D method
 		 * \param[out] map_ptr Pointer to the COccupancyGridMap2D instance that is
 		 * to be filled
+		 * \param[out] acquisition_time Timestamp that the gridmap was computed at.
+		 * This does not (necessarily) matches with the query time since the
+		 * cached version is used as long as a new node has not been registered
+		 * since the last time the gridmap was computed.
 		 *
 		 * \sa computeOccupancyGridMap2D
 		 */
-		void getOccupancyGridMap2D(mrpt::maps::COccupancyGridMap2D* map_ptr) const;
-		/**\brief Fill the given occupancy grid map based on the 2DRangeScan
-		 * observations that have been recorded so far.
+		void getOccupancyGridMap2D(mrpt::maps::COccupancyGridMap2D* map_ptr,
+				mrpt::system::TTimeStamp* acquisition_time=NULL) const;
+		/**\brief	Compute the occupancy gridmap of the environment based on the
+		 * recorded measurements.
 		 *
-		 * \param[in] nodes_to_laser_scans2D map of nodes to their corresponding
-		 * laser scans from which the occupancy gridmap is to be computed
-		 * \param[out] map_ptr Pointer to the COccupancyGridMap2D instance that is
-		 * to be filled
-		 *
+		 * \note Currently only mrpt::obs::2DRangeScans are supported
 		 * \sa getOccupancyGridMap2D
 		 */
-		void computeOccupancyGridMap2D(
-				const std::map<const mrpt::utils::TNodeID,
-					mrpt::obs::CObservation2DRangeScanPtr> nodes_to_laser_scans2D,
-				mrpt::maps::COccupancyGridMap2D* map_ptr) const;
+		void computeOccupancyGridMap2D() const;
 		/**\brief Print the problem parameters to the console for verification.
 		 *
 		 * Method is a wrapper around CGraphSlamEngine::getParamsAsString method
@@ -782,6 +780,17 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		 * pressed by pressign ctrl-c)
 		 */
 		bool m_request_to_exit;
+
+		/**\name gridmap-related
+		 * \brief Cached version and corresponding flag of occupancy gridmap
+		 */
+		/**\{*/
+		mutable mrpt::maps::COccupancyGridMap2DPtr m_gridmap_cached;
+		mutable bool m_gridmap_is_cached;
+		/**\brief Timestamp at which the occupancy gridmap was computed
+		 */
+		mutable mrpt::system::TTimeStamp m_gridmap_acq_time;
+		/**\}*/
 
 		const std::string m_class_name;
 };

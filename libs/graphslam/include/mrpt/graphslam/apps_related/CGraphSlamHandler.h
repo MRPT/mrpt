@@ -75,6 +75,7 @@ public:
 	 * \return True if graphslam execution is to be continued normally
 	 */
 	bool queryObserverForEvents();
+	
 
 	//
 	// Class variable members 
