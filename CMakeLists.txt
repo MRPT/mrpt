@@ -693,8 +693,6 @@ add_subdirectory(doc)
 SET( BUILD_TESTING ON CACHE BOOL "Build MRPT tests")
 IF( BUILD_TESTING)
 	# Try using libgtest (Google testing library) from the system, if available
-	# Note: In gtest 1.6.0 things changed and there's no prebuilt system lib anymore.
-	# TODO: Is it possible to compile here the /usr/src/gtest/ sources??
 	IF(${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" AND APPLE)
 		add_definitions(-DGTEST_USE_OWN_TR1_TUPLE=1)
 	ENDIF()
