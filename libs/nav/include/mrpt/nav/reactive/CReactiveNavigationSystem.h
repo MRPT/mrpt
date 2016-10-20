@@ -62,9 +62,9 @@ namespace mrpt
 			void changeRobotCircularShapeRadius( const double R );
 
 			// See base class docs:
-			virtual size_t getPTG_count() const { return PTGs.size(); }
-			virtual CParameterizedTrajectoryGenerator* getPTG(size_t i) { ASSERT_(i<PTGs.size()); return PTGs[i]; }
-			virtual const CParameterizedTrajectoryGenerator* getPTG(size_t i) const { ASSERT_(i<PTGs.size()); return PTGs[i]; }
+			virtual size_t getPTG_count() const  MRPT_OVERRIDE { return PTGs.size(); }
+			virtual CParameterizedTrajectoryGenerator* getPTG(size_t i)  MRPT_OVERRIDE { ASSERT_(i<PTGs.size()); return PTGs[i]; }
+			virtual const CParameterizedTrajectoryGenerator* getPTG(size_t i) const  MRPT_OVERRIDE { ASSERT_(i<PTGs.size()); return PTGs[i]; }
 
 		private:
 			float	minObstaclesHeight, maxObstaclesHeight; // The range of "z" coordinates for obstacles to be considered
@@ -76,7 +76,7 @@ namespace mrpt
 
 			// Steps for the reactive navigation sytem.
 			// ----------------------------------------------------------------------------
-			virtual void STEP1_InitPTGs();
+			virtual void STEP1_InitPTGs() MRPT_OVERRIDE;
 
 			// See docs in parent class
 			bool implementSenseObstacles(mrpt::system::TTimeStamp &obs_timestamp) MRPT_OVERRIDE;
@@ -85,7 +85,7 @@ namespace mrpt
 			void STEP3_WSpaceToTPSpace(const size_t ptg_idx,std::vector<double> &out_TPObstacles, const mrpt::poses::CPose2D &rel_pose_PTG_origin_wrt_sense) MRPT_OVERRIDE;
 
 			/** Generates a pointcloud of obstacles, and the robot shape, to be saved in the logging record for the current timestep */
-			virtual void loggingGetWSObstaclesAndShape(CLogFileRecord &out_log);
+			virtual void loggingGetWSObstaclesAndShape(CLogFileRecord &out_log) MRPT_OVERRIDE;
 
 			mrpt::maps::CSimplePointsMap m_WS_Obstacles;  //!< The obstacle points, as seen from the local robot frame.
 

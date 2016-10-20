@@ -264,7 +264,9 @@ void Test_Kinect()
 				// For alternative ways to generate the 3D point cloud, read:
 				// http://www.mrpt.org/tutorials/programming/miscellaneous/generating_3d_point_clouds_from_rgb_d_observations/
 				win3D.get3DSceneAndLock();
-					last_obs->project3DPointsFromDepthImageInto( *gl_points, false /* without obs.sensorPose */ );
+				mrpt::obs::T3DPointsProjectionParams  pp;
+				pp.takeIntoAccountSensorPoseOnRobot = false;
+				last_obs->project3DPointsFromDepthImageInto( *gl_points, pp );
 				win3D.unlockAccess3DScene();
 #else
 				mrpt::maps::CColouredOctoMap  octoMap(0.10);

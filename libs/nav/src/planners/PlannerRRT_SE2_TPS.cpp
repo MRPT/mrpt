@@ -29,6 +29,8 @@ using namespace mrpt::math;
 using namespace mrpt::poses;
 using namespace std;
 
+MRPT_TODO("Optimize getNearestNode() with KD-tree!")
+
 PlannerRRT_SE2_TPS::TAlgorithmParams::TAlgorithmParams() :
 	robot_shape_circular_radius(0.30),
 	ptg_cache_files_directory("."),

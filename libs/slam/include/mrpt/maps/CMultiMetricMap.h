@@ -132,9 +132,9 @@ namespace maps
 		 * \param obs The observation.
 		 * \sa computeObservationLikelihood
 		 */
-		bool internal_canComputeObservationLikelihood( const mrpt::obs::CObservation *obs );
+		bool internal_canComputeObservationLikelihood( const mrpt::obs::CObservation *obs ) MRPT_OVERRIDE;
 		// See docs in base class
-		double	 internal_computeObservationLikelihood( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D &takenFrom );
+		double	 internal_computeObservationLikelihood( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D &takenFrom ) MRPT_OVERRIDE;
 
 	public:
 		/** @name Access to internal list of maps: direct list, iterators, utility methods and proxies
@@ -293,7 +293,7 @@ namespace maps
 		/** This method is called at the end of each "prediction-update-map insertion" cycle within "mrpt::slam::CMetricMapBuilderRBPF::processActionObservation".
 		  *  This method should normally do nothing, but in some cases can be used to free auxiliary cached variables.
 		  */
-		void  auxParticleFilterCleanUp();
+		void  auxParticleFilterCleanUp() MRPT_OVERRIDE;
 
 		/** Returns a 3D object representing the map.
 		  */
@@ -302,8 +302,8 @@ namespace maps
 		/** If the map is a simple point map or it's a multi-metric map that contains EXACTLY one simple point map, return it.
 			* Otherwise, return NULL
 			*/
-		virtual const mrpt::maps::CSimplePointsMap * getAsSimplePointsMap() const;
-		virtual       mrpt::maps::CSimplePointsMap * getAsSimplePointsMap();
+		virtual const mrpt::maps::CSimplePointsMap * getAsSimplePointsMap() const MRPT_OVERRIDE;
+		virtual       mrpt::maps::CSimplePointsMap * getAsSimplePointsMap() MRPT_OVERRIDE;
 
 		/** An auxiliary variable that can be used freely by the users (this will be copied to other maps using the copy constructor, copy operator, streaming,etc) The default value is 0.
 		  */

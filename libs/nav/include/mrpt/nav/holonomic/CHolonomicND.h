@@ -63,7 +63,7 @@ namespace mrpt
 							double			&desiredDirection,
 							double			&desiredSpeed,
 							CHolonomicLogFileRecordPtr &logRecord,
-							const double    max_obstacle_dist );
+							const double    max_obstacle_dist ) MRPT_OVERRIDE;
 
 		/** The structure used to store a detected gap in obstacles. */
 		struct TGap
@@ -87,7 +87,7 @@ namespace mrpt
 		};
 
 		/**  Initialize the parameters of the navigator. */
-		void  initialize( const mrpt::utils::CConfigFileBase &INI_FILE )
+		void  initialize( const mrpt::utils::CConfigFileBase &INI_FILE ) MRPT_OVERRIDE
 		{
 			options.loadFromConfigFile(INI_FILE, std::string("ND_CONFIG"));
 		}

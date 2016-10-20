@@ -8,7 +8,7 @@
    +---------------------------------------------------------------------------+ */
 
 #include <mrpt/graphs.h>
-#include <mrpt/graphslam.h>
+//#include <mrpt/graphslam/levmarq.h>
 #include <mrpt/gui.h>
 #include <mrpt/utils/CObserver.h>
 #include <mrpt/system/threads.h>
@@ -23,7 +23,7 @@
 
 using namespace mrpt;
 using namespace mrpt::graphs;
-using namespace mrpt::graphslam;
+//using namespace mrpt::graphslam;
 using namespace mrpt::poses;
 using namespace mrpt::opengl;
 using namespace mrpt::system;

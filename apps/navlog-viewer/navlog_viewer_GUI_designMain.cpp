@@ -660,7 +660,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 				}
 				const bool is_NOP_cmd = log.ptg_index_NOP >= 0;
 				const size_t sel_ptg_idx = !is_NOP_cmd ? log.nSelectedPTG : log.ptg_index_NOP;
-				if ((int)m_logdata_ptg_paths.size()>sel_ptg_idx)
+				if (m_logdata_ptg_paths.size()>sel_ptg_idx)
 				{
 					mrpt::nav::CParameterizedTrajectoryGeneratorPtr ptg = m_logdata_ptg_paths[sel_ptg_idx];
 					if (ptg)

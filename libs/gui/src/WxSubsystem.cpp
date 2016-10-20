@@ -932,7 +932,8 @@ void WxSubsystem::wxMainThread()
 
 	// Prepare wxWidgets:
 	int argc=1;
-	char *argv[2] = { "./MRPT", NULL };
+	static const char *dummy_prog_name = "./MRPT";
+	char *argv[2] = { const_cast<char*>(dummy_prog_name), NULL };
 
 #ifdef WXSUBSYSTEM_VERBOSE
     cout << "[wxMainThread] Starting..." << endl;

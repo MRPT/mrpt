@@ -419,8 +419,9 @@ void CVelodyneScanner::initialize()
 			if( !m_device_ip.empty() )
 				filter_str += "&& src host " + m_device_ip;
 
+			static std::string sMsgError = "[CVelodyneScanner] Error calling pcap_compile: "; // This is to avoid the ill-formed signature of pcap_error() accepting "char*", not "const char*"... sigh
 			if (pcap_compile( reinterpret_cast<pcap_t*>(m_pcap), reinterpret_cast<bpf_program*>(m_pcap_bpf_program), filter_str.c_str(), 1, PCAP_NETMASK_UNKNOWN) <0)
-				pcap_perror(reinterpret_cast<pcap_t*>(m_pcap),"[CVelodyneScanner] Error calling pcap_compile: ");
+				pcap_perror(reinterpret_cast<pcap_t*>(m_pcap), &sMsgError[0] );
 		}
 
 		m_pcap_file_empty = true;

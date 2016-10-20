@@ -20,7 +20,7 @@ using namespace mrpt::system;
 using namespace std;
 
 
-void thread_reader(std::auto_ptr<CPipeReadEndPoint> read_pipe)
+void thread_reader(std::unique_ptr<CPipeReadEndPoint> &read_pipe)
 {
 	try
 	{
@@ -54,7 +54,7 @@ void thread_reader(std::auto_ptr<CPipeReadEndPoint> read_pipe)
 	}
 }
 
-void thread_writer(std::auto_ptr<CPipeWriteEndPoint> write_pipe)
+void thread_writer(std::unique_ptr<CPipeWriteEndPoint> &write_pipe)
 {
 	try
 	{
@@ -88,14 +88,14 @@ void thread_writer(std::auto_ptr<CPipeWriteEndPoint> write_pipe)
 void ThreadsTest()
 {
 	// Create a pipe:
-	std::auto_ptr<CPipeReadEndPoint>  read_pipe;
-	std::auto_ptr<CPipeWriteEndPoint> write_pipe;
+	std::unique_ptr<CPipeReadEndPoint>  read_pipe;
+	std::unique_ptr<CPipeWriteEndPoint> write_pipe;
 
 	CPipe::createPipe(read_pipe,write_pipe);
 
 	// And send the two end-points to two threads:
-	mrpt::system::TThreadHandle hT1 = createThread( thread_reader, read_pipe );
-	mrpt::system::TThreadHandle hT2 = createThread( thread_writer, write_pipe );
+	mrpt::system::TThreadHandle hT1 = createThreadRef( thread_reader, read_pipe );
+	mrpt::system::TThreadHandle hT2 = createThreadRef( thread_writer, write_pipe );
 
 	// Wait for the threads to end.
 	mrpt::system::joinThread(hT1);

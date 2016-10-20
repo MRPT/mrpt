@@ -63,7 +63,7 @@ namespace nav
 
 		/** Launches an exception in this class: it is not allowed in numerical integration-based PTGs to change the reference distance 
 		  * after initialization. */
-		virtual void setRefDistance(const double refDist);
+		virtual void setRefDistance(const double refDist) MRPT_OVERRIDE;
 
 		// Access to PTG paths (see docs in base class)
 		size_t getPathStepCount(uint16_t k) const MRPT_OVERRIDE;

@@ -79,7 +79,6 @@ namespace mrpt
 				const std::set<mrpt::utils::TNodeID> *ignored_nodes = NULL
 				) const
 			{
-				MRPT_TODO("Optimize this query with KD-tree!")
 				ASSERT_(!m_nodes.empty())
 
 				double min_d = std::numeric_limits<double>::max();

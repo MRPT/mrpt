@@ -74,10 +74,10 @@ namespace mrpt
 							double			&desiredDirection,
 							double			&desiredSpeed,
 							CHolonomicLogFileRecordPtr &logRecord,
-			const double    max_obstacle_dist );
+			const double    max_obstacle_dist ) MRPT_OVERRIDE;
 
 		/**  Initialize the parameters of the navigator from section "VFF_CONFIG" of a config file. \sa options */
-		void  initialize( const mrpt::utils::CConfigFileBase &INI_FILE )
+		void  initialize( const mrpt::utils::CConfigFileBase &INI_FILE ) MRPT_OVERRIDE
 		{
 			options.loadFromConfigFile(INI_FILE, std::string("VFF_CONFIG"));
 		}

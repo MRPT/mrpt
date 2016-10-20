@@ -80,7 +80,7 @@ bool mrpt::vision::pnp::rpnp::compute_pose(Eigen::Ref<Eigen::Matrix3d> R_, Eigen
 
 	x = p2 - p0; x /= x.norm();
 
-	if (abs(x(1)) < abs(x(2)) )
+	if (std::abs(x(1)) < std::abs(x(2)) )
 	{
 		dum_vec << 0, 1, 0;
 		z = x.cross(dum_vec); z /= z.norm();
@@ -160,7 +160,7 @@ bool mrpt::vision::pnp::rpnp::compute_pose(Eigen::Ref<Eigen::Matrix3d> R_, Eigen
     
 	for (int i=0; i<imag_comp.size(); i++ )
 	{
-		if(abs(imag_comp(i))/max_real<0.001)
+		if(std::abs(imag_comp(i))/max_real<0.001)
 		{
 				act_roots_.push_back(real_comp(i));
                 cnt++;
@@ -196,7 +196,7 @@ bool mrpt::vision::pnp::rpnp::compute_pose(Eigen::Ref<Eigen::Matrix3d> R_, Eigen
 		unitz << 0,0,1;
 		x = v2*d2 -v1;
 		x/=x.norm();
-		if (abs(unity.dot(x)) < abs(unitz.dot(x)))
+		if (std::abs(unity.dot(x)) < std::abs(unitz.dot(x)))
 		{
 			z = x.cross(unity);z/=z.norm();
 			y=z.cross(x); y/y.norm();

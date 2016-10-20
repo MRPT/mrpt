@@ -436,14 +436,6 @@ public:
 		return true;
 	}
 
-
-	bool changeSpeeds( float v, float w )
-	{
-		robotSim.movementCommand(v,w);
-		return true;
-	}
-
-
 	bool senseObstacles( mrpt::maps::CSimplePointsMap 	&obstacles, mrpt::system::TTimeStamp &timestamp ) MRPT_OVERRIDE
 	{
 		last_pose = new_pose;

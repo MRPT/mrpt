@@ -143,7 +143,7 @@ long mrpt::vision::pnp::posit::get_img_diff()
 	
 	for (i=0;i<n;i++){
 		for (j=0;j<2;j++){
-			sumOfDiffs += abs(floor(0.5+img_vecs(i,j))-floor(0.5+img_vecs_old(i,j)));
+			sumOfDiffs += std::abs(floor(0.5+img_vecs(i,j))-floor(0.5+img_vecs_old(i,j)));
 		}
 	}
 	return sumOfDiffs;

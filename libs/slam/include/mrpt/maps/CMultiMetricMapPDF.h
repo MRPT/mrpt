@@ -76,28 +76,28 @@ namespace maps
 		void  prediction_and_update_pfStandardProposal(
 			const mrpt::obs::CActionCollection	* action,
 			const mrpt::obs::CSensoryFrame		* observation,
-			const bayes::CParticleFilter::TParticleFilterOptions &PF_options );
+			const bayes::CParticleFilter::TParticleFilterOptions &PF_options ) MRPT_OVERRIDE;
 
 		/** The PF algorithm implementation.
 		  */
 		void  prediction_and_update_pfOptimalProposal(
 			const mrpt::obs::CActionCollection	* action,
 			const mrpt::obs::CSensoryFrame		* observation,
-			const bayes::CParticleFilter::TParticleFilterOptions &PF_options );
+			const bayes::CParticleFilter::TParticleFilterOptions &PF_options ) MRPT_OVERRIDE;
 
 		/** The PF algorithm implementation.
 		  */
 		void  prediction_and_update_pfAuxiliaryPFOptimal(
 			const mrpt::obs::CActionCollection	* action,
 			const mrpt::obs::CSensoryFrame		* observation,
-			const bayes::CParticleFilter::TParticleFilterOptions &PF_options );
+			const bayes::CParticleFilter::TParticleFilterOptions &PF_options ) MRPT_OVERRIDE;
 
 		/** The PF algorithm implementation.
 		  */
 		void  prediction_and_update_pfAuxiliaryPFStandard(
 			const mrpt::obs::CActionCollection	* action,
 			const mrpt::obs::CSensoryFrame		* observation,
-			const bayes::CParticleFilter::TParticleFilterOptions &PF_options );
+			const bayes::CParticleFilter::TParticleFilterOptions &PF_options ) MRPT_OVERRIDE;
 
 
 	private:
@@ -242,27 +242,27 @@ namespace maps
 			    @{ */
 
 			/** Return a pointer to the last robot pose in the i'th particle (or NULL if it's a path and it's empty). */
-			const mrpt::math::TPose3D * getLastPose(const size_t i) const;
+			const mrpt::math::TPose3D * getLastPose(const size_t i) const MRPT_OVERRIDE;
 
 			void PF_SLAM_implementation_custom_update_particle_with_new_pose(
 				CParticleDataContent *particleData,
-				const mrpt::math::TPose3D &newPose) const;
+				const mrpt::math::TPose3D &newPose) const MRPT_OVERRIDE;
 
 			// The base implementation is fine for this class.
 			// void PF_SLAM_implementation_replaceByNewParticleSet( ...
 
 			bool PF_SLAM_implementation_doWeHaveValidObservations(
 				const CParticleList	&particles,
-				const mrpt::obs::CSensoryFrame *sf) const;
+				const mrpt::obs::CSensoryFrame *sf) const MRPT_OVERRIDE;
 
-			bool PF_SLAM_implementation_skipRobotMovement() const;
+			bool PF_SLAM_implementation_skipRobotMovement() const MRPT_OVERRIDE;
 
 			/** Evaluate the observation likelihood for one particle at a given location */
 			double PF_SLAM_computeObservationLikelihoodForParticle(
 				const mrpt::bayes::CParticleFilter::TParticleFilterOptions	&PF_options,
 				const size_t			particleIndexForMap,
 				const mrpt::obs::CSensoryFrame		&observation,
-				const mrpt::poses::CPose3D			&x ) const;
+				const mrpt::poses::CPose3D			&x ) const MRPT_OVERRIDE;
 			/** @} */
 
 

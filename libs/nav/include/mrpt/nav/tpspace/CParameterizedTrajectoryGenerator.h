@@ -265,11 +265,11 @@ protected:
 		virtual void internal_processNewRobotShape() = 0; //!< Will be called whenever the robot shape is set / updated
 		mrpt::math::CPolygon m_robotShape;
 		void loadShapeFromConfigFile(const mrpt::utils::CConfigFileBase & source,const std::string & section);
-		void saveToConfigFile(mrpt::utils::CConfigFileBase &cfg,const std::string &sSection) const;
+		void saveToConfigFile(mrpt::utils::CConfigFileBase &cfg,const std::string &sSection) const MRPT_OVERRIDE;
 		void internal_shape_loadFromStream(mrpt::utils::CStream &in);
 		void internal_shape_saveToStream(mrpt::utils::CStream &out) const;
 		/** Loads a set of default parameters; provided  exclusively for the PTG-configurator tool. */
-		void loadDefaultParams();
+		void loadDefaultParams() MRPT_OVERRIDE;
 	};
 
 	/** Base class for all PTGs using a 2D circular robot shape model.
@@ -295,11 +295,11 @@ protected:
 		virtual void internal_processNewRobotShape() = 0; //!< Will be called whenever the robot shape is set / updated
 		double m_robotRadius;
 		void loadShapeFromConfigFile(const mrpt::utils::CConfigFileBase & source,const std::string & section);
-		void saveToConfigFile(mrpt::utils::CConfigFileBase &cfg,const std::string &sSection) const;
+		void saveToConfigFile(mrpt::utils::CConfigFileBase &cfg,const std::string &sSection) const MRPT_OVERRIDE;
 		void internal_shape_loadFromStream(mrpt::utils::CStream &in);
 		void internal_shape_saveToStream(mrpt::utils::CStream &out) const;
 		/** Loads a set of default parameters; provided  exclusively for the PTG-configurator tool. */
-		void loadDefaultParams();
+		void loadDefaultParams() MRPT_OVERRIDE;
 	};
 
 }
