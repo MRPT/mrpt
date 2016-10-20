@@ -260,20 +260,14 @@ int main(int argc, char **argv)
 
 	}
 	catch (exception& e) {
-		setConsoleColor(CONCOL_RED,true);
-		cerr << "Program finished for an exception!!" << endl;
-		setConsoleColor(CONCOL_NORMAL,true);
-
+		logger.logFmt(LVL_ERROR, "Program finished for an exception!!");
 		cerr << e.what() << endl;
 
 		mrpt::system::pause();
 		return -1;
 	}
 	catch (...) {
-		setConsoleColor(CONCOL_RED,true);
-		cerr << "Program finished for an untyped exception!!" << endl;
-		setConsoleColor(CONCOL_NORMAL,true);
-
+		logger.logFmt(LVL_ERROR, "Program finished for an untyped exception!!");
 		mrpt::system::pause();
 		return -1;
 	}
