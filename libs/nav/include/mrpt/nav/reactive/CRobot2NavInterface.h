@@ -173,7 +173,7 @@ namespace mrpt
 		}
 
 		// See base class docs.
-		void cmdVel_limits(mrpt::kinematics::CVehicleVelCmd &vel_cmd, const mrpt::kinematics::CVehicleVelCmd &prev_vel_cmd, const double beta)
+		void cmdVel_limits(mrpt::kinematics::CVehicleVelCmd &vel_cmd, const mrpt::kinematics::CVehicleVelCmd &prev_vel_cmd, const double beta)  MRPT_OVERRIDE
 		{
 			ASSERT_(robotMax_V_mps>0);
 			ASSERT_(robotMax_W_radps>0);
@@ -256,7 +256,7 @@ namespace mrpt
 		}
 
 		// See base class docs.
-		void cmdVel_limits(mrpt::kinematics::CVehicleVelCmd &vel_cmd, const mrpt::kinematics::CVehicleVelCmd &prev_vel_cmd, const double beta)
+		void cmdVel_limits(mrpt::kinematics::CVehicleVelCmd &vel_cmd, const mrpt::kinematics::CVehicleVelCmd &prev_vel_cmd, const double beta) MRPT_OVERRIDE
 		{ // remember:  `vel_cmd=[vel dir_local ramp_time rot_speed]`
 			ASSERTMSG_(robotMax_V_mps >= .0, "[CReactiveInterfaceImplementation_Holo] `robotMax_V_mps` must be set to valid values: either assign values programatically or call loadConfigFile()");
 			mrpt::kinematics::CVehicleVelCmd_Holo *newcmd = dynamic_cast<mrpt::kinematics::CVehicleVelCmd_Holo*>(&vel_cmd);

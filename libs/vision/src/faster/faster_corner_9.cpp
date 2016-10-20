@@ -47,7 +47,7 @@ void faster_corner_detect_9(const IplImage* I, mrpt::vision::TSimpleFeatureList 
 	const int stride = 3*I->widthStep; // 3*w;
 
 	// The compiler refuses to reserve a register for this
-	register const __m128i barriers = _mm_set1_epi8((uint8_t)barrier);
+	const __m128i barriers = _mm_set1_epi8((uint8_t)barrier);
 
 	int xend = I->width - 3;
 	xend -= (I->width-3) % 16;

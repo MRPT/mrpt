@@ -215,9 +215,9 @@ bool mrpt::vision::pnp::so3::compute_pose(Eigen::Matrix3d& R_, Eigen::Vector3d& 
 Eigen::Vector4d  mrpt::vision::pnp::so3::dcm2quat(Eigen::Matrix3d  R)
 {
 	Eigen::VectorXd  q(4);
-	q(0) = sqrt(abs((1 + R(0, 0) + R(1, 1) + R(2, 2)) / 4));
+	q(0) = sqrt(std::abs((1 + R(0, 0) + R(1, 1) + R(2, 2)) / 4));
 
-	if (abs(q(0))>epsilon)
+	if (std::abs(q(0))>epsilon)
 	{
 		q(1) = (R(2, 1) - R(1, 2)) / 4 / q(0);
 		q(2) = (R(0, 2) - R(2, 0)) / 4 / q(0);

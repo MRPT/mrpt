@@ -45,7 +45,6 @@ TEST(CAtan2LookUpTable,ValidValidTest)
 TEST(CAtan2LookUpTable,MultiResTest)
 {
 	const double SIZE = 20.0;
-	const double RES  = 0.10;
 	mrpt::math::CAtan2LookUpTableMultiRes atan2lut;
 
 	std::map<double,double> res2extension;

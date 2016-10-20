@@ -428,6 +428,9 @@ void CPTG_Holo_Blend::getPathPose(uint16_t k, uint16_t step, mrpt::math::TPose2D
 		// Solves equation `a*x^2 + b*x + c = 0`.
 		double r1, r2;
 		int nroots = mrpt::math::solve_poly2(a,b,c, r1,r2);
+		if (nroots!=2) {
+			THROW_EXCEPTION(mrpt::format("getPathPose: rotational part equation has no solution for: dir=%f t=%f T_ramp=%f wf=%f wi=%f",dir,t,T_ramp,wf,wi));
+		}
 		const double t_solve = std::max(r1,r2);
 		if (t > t_solve)
 			p.phi = dir;

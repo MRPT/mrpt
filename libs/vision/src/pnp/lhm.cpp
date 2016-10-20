@@ -210,7 +210,7 @@ bool lhm::compute_pose(Eigen::Ref<Eigen::Matrix3d> R_, Eigen::Ref<Eigen::Vector3
 	err2 = 1000;
 	absKernel();
 
-	while (abs(err2 - err) > TOL_LHM && err2 > EPSILON_LHM)
+	while (std::abs(err2 - err) > TOL_LHM && err2 > EPSILON_LHM)
 	{
 		err = err2;
 

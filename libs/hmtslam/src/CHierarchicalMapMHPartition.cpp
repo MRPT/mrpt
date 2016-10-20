@@ -20,7 +20,7 @@
 #include <mrpt/poses/CPose3DPDFParticles.h>
 #include <mrpt/math/ops_containers.h>
 #include <mrpt/random.h>
-#include <mrpt/graphslam.h>
+#include <mrpt/graphslam/levmarq.h>
 
 using namespace std;
 using namespace mrpt;

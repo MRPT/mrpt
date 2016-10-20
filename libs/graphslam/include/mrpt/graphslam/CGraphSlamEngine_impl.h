@@ -2058,7 +2058,7 @@ void CGraphSlamEngine<GRAPH_t>::TRGBDInfoFileParams::parseFile() {
 			"\nTRGBDInfoFileParams::parseFile: Couldn't open info file\n");
 
 	string curr_line;
-	size_t line_cnt;
+	size_t line_cnt = 0;
 
 	// parse until you find an empty line.
 	while (true) {
@@ -2132,7 +2132,7 @@ void CGraphSlamEngine<GRAPH_t>::save3DScene(
 	// remove the CPlanarLaserScan if it exists
 	{
 		CPlanarLaserScanPtr laser_scan;
-		for (; laser_scan = scene->getByClass<CPlanarLaserScan>() ;) {
+		for (; (laser_scan = scene->getByClass<CPlanarLaserScan>()) ;) {
 			this->logFmt(LVL_DEBUG,
 					"Removing CPlanarlaserScan from generated 3DScene...");
 			scene->removeObject(laser_scan);

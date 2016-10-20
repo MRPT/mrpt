@@ -585,7 +585,7 @@ void ptgConfiguratorframe::rebuild3Dview()
 			const double max_dist = TP_Obstacles[k];
 
 			mrpt::opengl::CSetOfLines & sol =
-				cbHighlightOnePath->IsChecked() && k == edIndexHighlightPath->GetValue()
+				cbHighlightOnePath->IsChecked() && k == size_t(edIndexHighlightPath->GetValue())
 				?
 				*gl_robot_ptg_prediction_highlight
 				:
@@ -617,7 +617,7 @@ void ptgConfiguratorframe::rebuild3Dview()
 		for (size_t k = 0; k < nPTGPaths; k++)
 		{
 			robotHeadAngAll_x[k] = k;
-			bool is_selected_path = (k == edIndexHighlightPath->GetValue());
+			bool is_selected_path = (k == size_t(edIndexHighlightPath->GetValue()));
 
 			size_t nSteps = ptg->getPathStepCount(k);
 			

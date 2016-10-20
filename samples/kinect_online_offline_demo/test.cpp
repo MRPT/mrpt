@@ -347,7 +347,11 @@ void Test_KinectOnlineOffline(bool is_online, const string &rawlog_file = string
 #if 1
 				win3D.get3DSceneAndLock();
 				logger.enter("RGBD->3D.projectInto");
-					newObs->project3DPointsFromDepthImageInto(*gl_points, false /* without obs.sensorPose */);
+				mrpt::obs::T3DPointsProjectionParams pp;
+				pp.takeIntoAccountSensorPoseOnRobot = false;
+
+				newObs->project3DPointsFromDepthImageInto(*gl_points, pp);
+
 				logger.leave("RGBD->3D.projectInto");
 				win3D.unlockAccess3DScene();
 #endif

@@ -404,7 +404,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 		const THolonomicMovement & selectedHolonomicMovement = holonomicMovements[nSelectedPTG];
 
 		// If the selected PTG is (N+1), it means the NOP cmd. vel is selected as the best alternative, i.e. do NOT send any new motion command.
-		const bool best_is_NOP_cmdvel =  (nSelectedPTG==nPTGs);
+		const bool best_is_NOP_cmdvel =  (nSelectedPTG==int(nPTGs));
 
 		// ---------------------------------------------------------------------
 		//				SEND MOVEMENT COMMAND TO THE ROBOT
@@ -650,7 +650,7 @@ void CAbstractPTGBasedReactive::STEP5_PTGEvaluator(
 	// -------------------------------------------
 	int dif = std::abs(TargetSector - kDirection);
 	const size_t nSectors = in_TPObstacles.size();
-	if ( dif > (nSectors/2)) dif = nSectors - dif;
+	if ( dif > int(nSectors/2)) dif = nSectors - dif;
 	const double factor2 = exp(-square( dif / (nSectors/3.0))) ;
 
 	// Factor 3: Angle between the robot at the end of the chosen trajectory and the target
@@ -766,7 +766,7 @@ void CAbstractPTGBasedReactive::STEP7_GenerateSpeedCommands( const THolonomicMov
 			*cmd_vel_original = *new_vel_cmd;
 
 			// Scale holonomic speeds to real-world one:
-			MRPT_LOG_DEBUG_FMT("STEP7_GenerateSpeedCommands: new_vel_cmd=0x%0X in_movement.speed=%f", (void*)new_vel_cmd.pointer(), in_movement.speed );
+			MRPT_LOG_DEBUG_FMT("STEP7_GenerateSpeedCommands: new_vel_cmd=0x%p in_movement.speed=%f", (void*)new_vel_cmd.pointer(), in_movement.speed );
 			m_robot.cmdVel_scale(*new_vel_cmd, in_movement.speed );
 
 			if (!m_last_vel_cmd) // first iteration? Use default values:
