@@ -12,11 +12,12 @@ if(MSVC)
 	add_definitions(-D_VARIADIC_MAX=10)
 endif(MSVC)
 
-INCLUDE_DIRECTORIES("fused-src")
+INCLUDE_DIRECTORIES("include")
+INCLUDE_DIRECTORIES(".")
 
 ADD_LIBRARY(mrptgtest 
 	STATIC
-	fused-src/gtest/gtest-all.cc 
+	src/gtest-all.cc 
 	)
 
 IF(CMAKE_COMPILER_IS_GNUCXX AND UNIX)
