@@ -772,7 +772,7 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		double m_dataset_grab_time;
 
 		/**\brief First recorded timestamp in the dataset. */
-		mrpt::system::TTimeStamp* m_init_timestamp;
+		mrpt::system::TTimeStamp m_init_timestamp;
 		/**\brief Current robot position based solely on odometry */
 		pose_t m_curr_odometry_only_pose; // defaults to all 0s
 

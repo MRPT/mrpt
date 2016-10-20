@@ -88,10 +88,6 @@ CGraphSlamEngine<GRAPH_t>::~CGraphSlamEngine() {
 		delete m_win_plot;
 	}
 
-
-	this->logFmt(LVL_DEBUG, "Deleting the initial timestamp.");
-	delete m_init_timestamp;
-
 	MRPT_END;
 }
 
@@ -356,7 +352,7 @@ void CGraphSlamEngine<GRAPH_t>::initCGraphSlamEngine() {
 		m_time_logger.leave("Visuals");
 	}
 
-	m_init_timestamp = NULL;
+	m_init_timestamp = INVALID_TIMESTAMP;
 
 	m_gridmap_is_cached = false;
 	m_gridmap_cached = mrpt::maps::COccupancyGridMap2D::Create();
@@ -425,14 +421,13 @@ bool CGraphSlamEngine<GRAPH_t>::execGraphSlamStep(
 	// good to go..
 
 	// read first measurement independently if we haven't already
-	if (!m_init_timestamp) {
+	if (m_init_timestamp == INVALID_TIMESTAMP) {
 		MRPT_LOG_DEBUG_STREAM << "execGraphSlamStep: first run";
-		m_init_timestamp = new mrpt::system::TTimeStamp;
 
 		if (observation.present()) {
 			MRPT_LOG_DEBUG_STREAM << "Observation only dataset!";
 			m_observation_only_dataset = true; // false by default
-			*m_init_timestamp = observation->timestamp;
+			m_init_timestamp = observation->timestamp;
 		}
 		else {
 			MRPT_LOG_DEBUG_STREAM << "Action-observation dataset!";
@@ -445,7 +440,7 @@ bool CGraphSlamEngine<GRAPH_t>::execGraphSlamStep(
 				pose_t increment_pose = increment->getMeanVal();
 				m_curr_odometry_only_pose += increment_pose;
 
-				*m_init_timestamp = robot_move->timestamp;
+				m_init_timestamp = robot_move->timestamp;
 			}
 		}
 	}
@@ -700,7 +695,7 @@ bool CGraphSlamEngine<GRAPH_t>::execGraphSlamStep(
 	m_time_logger.leave("Visuals");
 
 	m_dataset_grab_time = mrpt::system::timeDifference(
-			*m_init_timestamp,
+			m_init_timestamp,
 			timestamp);
 	m_time_logger.leave("proc_time");
 
