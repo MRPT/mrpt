@@ -100,13 +100,13 @@ int main(int argc, char **argv)
 		bool showVersion = argc>1 && !os::_strcmp(argv[1],"--version");
 
 		// Instance for managing the available graphslam deciders optimizers
-		TUserOptionsChecker options;
+		TUserOptionsChecker graphslam_opts;
 
 		// Input Validation
 		if (!cmd_line.parse( argc, argv ) ||  showVersion || showHelp) {
 			return 0;
 		}
-		// fetch the command line options
+		// fetch the command line graphslam_opts
 		// ////////////////////////////////////////////////////////////
 
 		// decide whether to display the help messages for the deciders/optimizers
@@ -114,20 +114,20 @@ int main(int argc, char **argv)
 			bool list_registrars = false;
 
 			if (list_all_registrars.getValue()) {
-				options.dumpRegistrarsToConsole("all");
+				graphslam_opts.dumpRegistrarsToConsole("all");
 				list_registrars = true;
 			}
 			if (list_node_registrars.getValue()) {
-				options.dumpRegistrarsToConsole("node");
+				graphslam_opts.dumpRegistrarsToConsole("node");
 				list_registrars = true;
 			}
 			if (list_edge_registrars.getValue()) {
-				options.dumpRegistrarsToConsole("edge");
+				graphslam_opts.dumpRegistrarsToConsole("edge");
 				list_registrars = true;
 			}
 
 			if (list_optimizers.getValue()) {
-				options.dumpOptimizersToConsole();
+				graphslam_opts.dumpOptimizersToConsole();
 			}
 
 			if (list_registrars || list_optimizers.getValue()) {
@@ -140,13 +140,13 @@ int main(int argc, char **argv)
 		string node_reg = arg_node_reg.getValue();
 		string edge_reg = arg_edge_reg.getValue();
 		string optimizer = arg_optimizer.getValue();
-		ASSERTMSG_(options.checkRegistrationDeciderExists(node_reg, "node"),
+		ASSERTMSG_(graphslam_opts.checkRegistrationDeciderExists(node_reg, "node"),
 				format("\nNode Registration Decider %s is not available.\n",
 					node_reg.c_str()) );
-		ASSERTMSG_(options.checkRegistrationDeciderExists(edge_reg, "edge"),
+		ASSERTMSG_(graphslam_opts.checkRegistrationDeciderExists(edge_reg, "edge"),
 				format("\nEdge Registration Decider %s is not available.\n",
 					edge_reg.c_str()) );
-		ASSERTMSG_(options.checkOptimizerExists(optimizer),
+		ASSERTMSG_(graphslam_opts.checkOptimizerExists(optimizer),
 				format("\nOptimizer %s is not available\n",
 					optimizer.c_str()) );
 
@@ -187,9 +187,9 @@ int main(int argc, char **argv)
 				rawlog_fname,
 				ground_truth_fname,
 				graphslam_handler.win_manager,
-				options.node_regs_map[node_reg](),
-				options.edge_regs_map[edge_reg](),
-				options.optimizers_map[optimizer]());
+				graphslam_opts.node_regs_map[node_reg](),
+				graphslam_opts.edge_regs_map[edge_reg](),
+				graphslam_opts.optimizers_map[optimizer]());
 
 		// print the problem parameters
 		graphslam_handler.printParams();

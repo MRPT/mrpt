@@ -358,6 +358,9 @@ void CGraphSlamEngine<GRAPH_t>::initCGraphSlamEngine() {
 
 	m_init_timestamp = NULL;
 
+	m_gridmap_is_cached = false;
+	m_gridmap_cached = mrpt::maps::COccupancyGridMap2D::Create();
+
 
 	// In case we are given an RGBD TUM Dataset - try and read the info file so
 	// that we know how to play back the GT poses.
@@ -614,6 +617,9 @@ bool CGraphSlamEngine<GRAPH_t>::execGraphSlamStep(
 			}
 		}
 
+		// mark the gridmap outdated
+		m_gridmap_is_cached = false;
+
 	} // IF REGISTERED_NEW_NODE
 
 	//
@@ -703,17 +709,27 @@ bool CGraphSlamEngine<GRAPH_t>::execGraphSlamStep(
 } // END OF EXECGRAPHSLAM
 template<class GRAPH_t>
 void CGraphSlamEngine<GRAPH_t>::getOccupancyGridMap2D(
-		mrpt::maps::COccupancyGridMap2D* map_ptr) const{
+		mrpt::maps::COccupancyGridMap2D* map_ptr,
+		mrpt::system::TTimeStamp* acquisition_time /* = NULL */) const {
 	MRPT_START;
 	ASSERT_(map_ptr);
-	this->computeOccupancyGridMap2D(m_nodes_to_laser_scans2D, map_ptr);
+
+	if (!m_gridmap_is_cached){
+		this->computeOccupancyGridMap2D();
+	}
+
+	map_ptr->copyMapContentFrom(*m_gridmap_cached);
+
+	// fill the timestamp if this is given
+	if (acquisition_time) {
+		*acquisition_time = m_gridmap_acq_time;
+	}
 	MRPT_END;
 }
+
+
 template<class GRAPH_t>
-void CGraphSlamEngine<GRAPH_t>::computeOccupancyGridMap2D(
-		const std::map<const mrpt::utils::TNodeID,
-			mrpt::obs::CObservation2DRangeScanPtr> nodes_to_laser_scans2D,
-		mrpt::maps::COccupancyGridMap2D* map_ptr) const {
+void CGraphSlamEngine<GRAPH_t>::computeOccupancyGridMap2D() const {
 	MRPT_START;
 	using namespace std;
 	using namespace mrpt::maps;
@@ -721,8 +737,6 @@ void CGraphSlamEngine<GRAPH_t>::computeOccupancyGridMap2D(
 	using namespace mrpt::poses;
 
 	this->logFmt(LVL_DEBUG, "Computing the occupancy gridmap...");
-
-	ASSERT_(map_ptr);
 	mrpt::synch::CCriticalSectionLocker m_graph_lock(&m_graph_section);
 
 	// set the map parameters
@@ -738,8 +752,8 @@ void CGraphSlamEngine<GRAPH_t>::computeOccupancyGridMap2D(
 	// traverse all the nodes - add their laser scans at their corresponding poses
 	for (std::map<const mrpt::utils::TNodeID,
 			mrpt::obs::CObservation2DRangeScanPtr>::const_iterator
-			it = nodes_to_laser_scans2D.begin();
-			it != nodes_to_laser_scans2D.end(); ++it) {
+			it = m_nodes_to_laser_scans2D.begin();
+			it != m_nodes_to_laser_scans2D.end(); ++it) {
 
 		TNodeID curr_node = it->first;
 		mrpt::obs::CObservation2DRangeScanPtr curr_laser_scan = it->second;
@@ -763,7 +777,10 @@ void CGraphSlamEngine<GRAPH_t>::computeOccupancyGridMap2D(
 		}
 	}
 
-	map_ptr->copyMapContentFrom(gridmap);
+	m_gridmap_cached->copyMapContentFrom(gridmap);
+	m_gridmap_is_cached = true;
+	m_gridmap_acq_time = mrpt::system::now();
+
 	this->logFmt(LVL_INFO, "Computed the occupancy gridmap successfully.");
 	MRPT_END;
 }
@@ -2400,8 +2417,6 @@ void CGraphSlamEngine<GRAPH_t>::generateReportFiles(
 			m_out_streams[fname]->printf("%f\n", *vec_it);
 		}
 	}
-
-
 
 	MRPT_END;
 }
