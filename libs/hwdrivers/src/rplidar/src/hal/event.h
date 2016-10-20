@@ -1,7 +1,13 @@
 /*
- * Copyright (c) 2014, RoboPeak
- * All rights reserved.
+ *  RPLIDAR SDK
  *
+ *  Copyright (c) 2009 - 2014 RoboPeak Team
+ *  http://www.robopeak.com
+ *  Copyright (c) 2014 - 2016 Shanghai Slamtec Co., Ltd.
+ *  http://www.slamtec.com
+ *
+ */
+/*
  * Redistribution and use in source and binary forms, with or without 
  * modification, are permitted provided that the following conditions are met:
  *
@@ -25,15 +31,6 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
-/*
- *  RoboPeak LIDAR System
- *  Lock abstract layer
- *
- *  Copyright 2009 - 2014 RoboPeak Team
- *  http://www.robopeak.com
- * 
- */
-
 
 #pragma once
 namespace rp{ namespace hal{
@@ -98,7 +95,7 @@ public:
         }
     }
     
-    int wait( unsigned long timeout = 0xFFFFFFFF )
+    unsigned long wait( unsigned long timeout = 0xFFFFFFFF )
     {
 #ifdef _WIN32
         switch (WaitForSingleObject(_event, timeout==0xFFFFFFF?INFINITE:(DWORD)timeout))
@@ -112,7 +109,7 @@ public:
         }
         return EVENT_OK;
 #else
-        int ans = EVENT_OK;
+        unsigned long ans = EVENT_OK;
         pthread_mutex_lock( &_cond_locker );
 
         if ( !_is_signalled )

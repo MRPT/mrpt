@@ -1,7 +1,13 @@
 /*
- * Copyright (c) 2014, RoboPeak
- * All rights reserved.
+ *  RPLIDAR SDK
  *
+ *  Copyright (c) 2009 - 2014 RoboPeak Team
+ *  http://www.robopeak.com
+ *  Copyright (c) 2014 - 2016 Shanghai Slamtec Co., Ltd.
+ *  http://www.slamtec.com
+ *
+ */
+/*
  * Redistribution and use in source and binary forms, with or without 
  * modification, are permitted provided that the following conditions are met:
  *
@@ -25,17 +31,11 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
-/*
- *  RoboPeak LIDAR System
- *  SDK Internal Common Header
- *
- *  Copyright 2009 - 2014 RoboPeak Team
- *  http://www.robopeak.com
- * 
- */
 
 #if defined(_WIN32)
 #include "arch\win32\arch_win32.h"
+#elif defined(_MACOS)
+#include "arch/macOS/arch_macOS.h"
 #elif defined(__GNUC__)
 #include "arch/linux/arch_linux.h"
 #else
