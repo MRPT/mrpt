@@ -574,7 +574,7 @@ void CPTG_Holo_Blend::updateTPObstacleSingle(double ox, double oy, uint16_t k, d
 
 	double sol_t = -1.0; // candidate solution for shortest time to collision
 
-						 // Try to solve first for t<T_ramp:
+	// Try to solve first for t<T_ramp:
 	const double k2 = (vxf - vxi)*TR2_;
 	const double k4 = (vyf - vyi)*TR2_;
 
@@ -663,8 +663,24 @@ void CPTG_Holo_Blend::updateTPObstacleSingle(double ox, double oy, uint16_t k, d
 		dist = calc_trans_distance_t_below_Tramp(k2, k4, vxi, vyi, sol_t);
 	else dist = (sol_t - T_ramp) * V_MAX + calc_trans_distance_t_below_Tramp(k2, k4, vxi, vyi, T_ramp);
 
-	mrpt::utils::keep_min(tp_obstacle_k, dist);  // TP_Obstacles buffer in un-normalized distances: use "dist" directly
+	// Handle the special case of obstacles *inside* the robot at the begining of the PTG path:
+	MRPT_TODO("Factor out this process so it works for all PTGs");
+	if (::hypot(ox, oy) <= m_robotRadius)
+	{
+		if (dist < m_robotRadius) {
+			// This means that we are getting apart of the obstacle: 
+			// ignore it to allow the robot to get off the near-collision:
+			return;
+		}
+		else {
+			// This means we are already in collision and trying to get even closer 
+			// to the obstacle: totally disprove this action:
+			dist = .0;
+		}
+	}
 
+	// Store in the output variable:
+	mrpt::utils::keep_min(tp_obstacle_k, dist);  // TP_Obstacles buffer in un-normalized distances: use "dist" directly
 }
 
 void CPTG_Holo_Blend::updateTPObstacle(double ox, double oy, std::vector<double> &tp_obstacles) const
