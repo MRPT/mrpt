@@ -112,6 +112,13 @@ class ptgConfiguratorframe: public wxFrame
         static const long ID_STATICTEXT9;
         static const long ID_CUSTOM4;
         static const long ID_PANEL4;
+        static const long ID_STATICTEXT10;
+        static const long ID_CUSTOM5;
+        static const long ID_STATICTEXT11;
+        static const long ID_CUSTOM6;
+        static const long ID_STATICTEXT12;
+        static const long ID_CUSTOM7;
+        static const long ID_PANEL5;
         static const long ID_NOTEBOOK1;
         static const long ID_TEXTCTRL2;
         static const long idMenuQuit;
@@ -120,9 +127,12 @@ class ptgConfiguratorframe: public wxFrame
         //*)
 
         //(*Declarations(ptgConfiguratorframe)
+        wxStaticText* StaticText10;
         wxStaticText* StaticText9;
         wxTextCtrl* edObsY;
+        wxPanel* Panel5;
         mpWindow* m_plotHeadAngAll;
+        mpWindow* m_plotPathY;
         wxNotebook* Notebook1;
         CMyGLCanvas* m_plotTPSpace;
         wxStaticText* StaticText2;
@@ -131,10 +141,12 @@ class ptgConfiguratorframe: public wxFrame
         wxSpinCtrl* edPTGIndex;
         wxStaticText* StaticText6;
         wxCheckBox* cbBuildTPObs;
+        mpWindow* m_plotPathPhi;
         wxSpinCtrl* edIndexHighlightPath;
         wxButton* btnPlaceObs;
         wxStaticText* StaticText8;
         wxButton* btnRebuildTPObs;
+        wxStaticText* StaticText11;
         wxPanel* Panel1;
         wxStaticText* StaticText1;
         wxStaticText* StaticText3;
@@ -152,6 +164,8 @@ class ptgConfiguratorframe: public wxFrame
         mpWindow* m_plotVelCmds;
         wxTextCtrl* edObsX;
         wxButton* btnReloadParams;
+        wxStaticText* StaticText12;
+        mpWindow* m_plotPathX;
         wxTextCtrl* edCfg;
         wxPanel* Panel2;
         wxTextCtrl* edMinDistBtwShapes;
@@ -192,6 +206,8 @@ class ptgConfiguratorframe: public wxFrame
 
 		// 2D plot views:
 		mpFXYVector  *m_graph_head_all, *m_graph_head_indiv;
+		mpFXYVector  *m_graph_path_x, *m_graph_path_y, *m_graph_path_phi;
 
+		static void prepareRobotPathPlot(mpWindow *plot, mpFXYVector  **graph, const std::string &name);
 };
 
