@@ -112,6 +112,9 @@ void CParameterizedTrajectoryGenerator::renderPathAsSimpleLine(
 	{
 		const float d = this->getPathDist(k, n); // distance thru path "k" until timestep "n"
 
+		// Draw the TP only until we reach the target of the "motion" segment:
+		if (max_path_distance>=0.0f && d>=max_path_distance) break;
+
 		if (d<last_added_dist+decimate_distance && n!=0)
 			continue; // skip: decimation
 
@@ -125,9 +128,6 @@ void CParameterizedTrajectoryGenerator::renderPathAsSimpleLine(
 			gl_obj.appendLine(0,0,0, p.x, p.y,0);
 		}
 		else gl_obj.appendLineStrip(p.x, p.y,0);
-
-		// Draw the TP only until we reach the target of the "motion" segment:
-		if (max_path_distance!=0.0f && d>=max_path_distance) break;
 	}
 }
 
