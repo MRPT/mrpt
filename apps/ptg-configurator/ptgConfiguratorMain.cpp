@@ -97,6 +97,13 @@ const long ptgConfiguratorframe::ID_CUSTOM3 = wxNewId();
 const long ptgConfiguratorframe::ID_STATICTEXT9 = wxNewId();
 const long ptgConfiguratorframe::ID_CUSTOM4 = wxNewId();
 const long ptgConfiguratorframe::ID_PANEL4 = wxNewId();
+const long ptgConfiguratorframe::ID_STATICTEXT10 = wxNewId();
+const long ptgConfiguratorframe::ID_CUSTOM5 = wxNewId();
+const long ptgConfiguratorframe::ID_STATICTEXT11 = wxNewId();
+const long ptgConfiguratorframe::ID_CUSTOM6 = wxNewId();
+const long ptgConfiguratorframe::ID_STATICTEXT12 = wxNewId();
+const long ptgConfiguratorframe::ID_CUSTOM7 = wxNewId();
+const long ptgConfiguratorframe::ID_PANEL5 = wxNewId();
 const long ptgConfiguratorframe::ID_NOTEBOOK1 = wxNewId();
 const long ptgConfiguratorframe::ID_TEXTCTRL2 = wxNewId();
 const long ptgConfiguratorframe::idMenuQuit = wxNewId();
@@ -132,6 +139,7 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent,wxWindowID id) :
     wxMenu* Menu1;
     wxFlexGridSizer* FlexGridSizer7;
     wxFlexGridSizer* FlexGridSizer8;
+    wxFlexGridSizer* FlexGridSizer13;
     wxFlexGridSizer* FlexGridSizer12;
     wxMenuBar* MenuBar1;
     wxFlexGridSizer* FlexGridSizer6;
@@ -273,9 +281,31 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent,wxWindowID id) :
     Panel4->SetSizer(FlexGridSizer12);
     FlexGridSizer12->Fit(Panel4);
     FlexGridSizer12->SetSizeHints(Panel4);
+    Panel5 = new wxPanel(Notebook1, ID_PANEL5, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL5"));
+    FlexGridSizer13 = new wxFlexGridSizer(6, 1, 0, 0);
+    FlexGridSizer13->AddGrowableCol(0);
+    FlexGridSizer13->AddGrowableRow(1);
+    FlexGridSizer13->AddGrowableRow(3);
+    FlexGridSizer13->AddGrowableRow(5);
+    StaticText10 = new wxStaticText(Panel5, ID_STATICTEXT10, _("Selected path trajectory: X [m]"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT10"));
+    FlexGridSizer13->Add(StaticText10, 1, wxALL|wxALIGN_LEFT|wxALIGN_TOP, 5);
+    m_plotPathX = new mpWindow(Panel5,ID_CUSTOM5,wxDefaultPosition,wxDefaultSize,0);
+    FlexGridSizer13->Add(m_plotPathX, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
+    StaticText11 = new wxStaticText(Panel5, ID_STATICTEXT11, _("Selected path trajectory: Y [m]"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT11"));
+    FlexGridSizer13->Add(StaticText11, 1, wxALL|wxALIGN_LEFT|wxALIGN_TOP, 5);
+    m_plotPathY = new mpWindow(Panel5,ID_CUSTOM6,wxDefaultPosition,wxDefaultSize,0);
+    FlexGridSizer13->Add(m_plotPathY, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
+    StaticText12 = new wxStaticText(Panel5, ID_STATICTEXT12, _("Selected path trajectory: Phi [deg]"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT12"));
+    FlexGridSizer13->Add(StaticText12, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 5);
+    m_plotPathPhi = new mpWindow(Panel5,ID_CUSTOM7,wxDefaultPosition,wxDefaultSize,0);
+    FlexGridSizer13->Add(m_plotPathPhi, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
+    Panel5->SetSizer(FlexGridSizer13);
+    FlexGridSizer13->Fit(Panel5);
+    FlexGridSizer13->SetSizeHints(Panel5);
     Notebook1->AddPage(Panel2, _("TP-Space"), false);
     Notebook1->AddPage(Panel3, _("VelCmds@t=0"), false);
     Notebook1->AddPage(Panel4, _("Head angle"), false);
+    Notebook1->AddPage(Panel5, _("Robot path"), false);
     FlexGridSizer9->Add(Notebook1, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
     FlexGridSizer1->Add(FlexGridSizer9, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
     edLog = new wxTextCtrl(this, ID_TEXTCTRL2, wxEmptyString, wxDefaultPosition, wxSize(-1,100), wxTE_PROCESS_ENTER|wxTE_PROCESS_TAB|wxTE_MULTILINE|wxTE_READONLY|wxHSCROLL|wxTE_DONTWRAP|wxALWAYS_SHOW_SB, wxDefaultValidator, _T("ID_TEXTCTRL2"));
@@ -332,25 +362,16 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent,wxWindowID id) :
 	WX_START_TRY
 
 	// 2D plots:
-	m_plotHeadAngAll->AddLayer(new mpScaleX());
-	m_plotHeadAngAll->AddLayer(new mpScaleY());
-	
-	m_graph_head_all = new mpFXYVector(_("head_all"));
-	m_graph_head_all->SetPen(wxPen(wxColour(0, 0, 255), 5));
-	m_graph_head_all->SetContinuity(false);
-	m_plotHeadAngAll->AddLayer(m_graph_head_all);
+	prepareRobotPathPlot(m_plotHeadAngAll,&m_graph_head_all, "head_all");
+	prepareRobotPathPlot(m_plotHeadAngIndiv,&m_graph_head_indiv, "head_indiv");
 
-
-	m_plotHeadAngIndiv->AddLayer(new mpScaleX());
-	m_plotHeadAngIndiv->AddLayer(new mpScaleY());
-	
-	m_graph_head_indiv = new mpFXYVector(_("head_indiv"));
-	m_graph_head_indiv->SetPen(wxPen(wxColour(0, 0, 255), 5));
-	m_graph_head_indiv->SetContinuity(false);
-	m_plotHeadAngIndiv->AddLayer(m_graph_head_indiv);
+	//
+	prepareRobotPathPlot(m_plotPathX, &m_graph_path_x, "x");
+	prepareRobotPathPlot(m_plotPathY, &m_graph_path_y, "y");
+	prepareRobotPathPlot(m_plotPathPhi, &m_graph_path_phi, "phi");
 
 	// Populate 3D views:
-	// Split in 2 views:
+	// ---------------------------
 	gl_view_WS      = m_plot->m_openGLScene->getViewport();
 	gl_view_TPSpace = m_plotTPSpace->m_openGLScene->getViewport();
 
@@ -467,6 +488,16 @@ ptgConfiguratorframe::~ptgConfiguratorframe()
 	}
 }
 
+void ptgConfiguratorframe::prepareRobotPathPlot(mpWindow *plot, mpFXYVector  **graph, const std::string &name)
+{
+	plot->AddLayer(new mpScaleX("x",mpALIGN_CENTER,false /*grid*/));
+	plot->AddLayer(new mpScaleY("y",mpALIGN_CENTER,false /*grid*/));
+
+	*graph = new mpFXYVector(_U(name.c_str()));
+	(*graph)->SetPen(wxPen(wxColour(0, 0, 255), 5));
+	(*graph)->SetContinuity(false);
+	plot->AddLayer(*graph);
+}
 
 void ptgConfiguratorframe::OnAbout(wxCommandEvent& event)
 {
@@ -614,6 +645,7 @@ void ptgConfiguratorframe::rebuild3Dview()
 
 		// 2D angle to robot head plots:
 		std::vector<double> robotHeadAng_x, robotHeadAng_y, robotHeadAngAll_x(nPTGPaths), robotHeadAngAll_y(nPTGPaths);
+		std::vector<double> robotPath_x, robotPath_y, robotPath_phi;
 		for (size_t k = 0; k < nPTGPaths; k++)
 		{
 			robotHeadAngAll_x[k] = k;
@@ -624,6 +656,9 @@ void ptgConfiguratorframe::rebuild3Dview()
 			if (is_selected_path) {
 				robotHeadAng_x.resize(nSteps);
 				robotHeadAng_y.resize(nSteps);
+				robotPath_x.resize(nSteps);
+				robotPath_y.resize(nSteps);
+				robotPath_phi.resize(nSteps);
 			}
 
 			mrpt::math::TPose2D prevPose, curPose;
@@ -644,6 +679,9 @@ void ptgConfiguratorframe::rebuild3Dview()
 					if (is_selected_path) {
 						robotHeadAng_x[j] = j;
 						robotHeadAng_y[j] = mrpt::utils::RAD2DEG(head2dir);
+						robotPath_x[j] = curPose.x;
+						robotPath_y[j] = curPose.y;
+						robotPath_phi[j] = mrpt::utils::RAD2DEG(curPose.phi);
 					}
 
 					mrpt::utils::keep_max(maxRobotHeadErr, std::abs(head2dir));
@@ -655,6 +693,11 @@ void ptgConfiguratorframe::rebuild3Dview()
 		}
 		m_graph_head_all->SetData(robotHeadAngAll_x, robotHeadAngAll_y);
 		m_graph_head_indiv->SetData(robotHeadAng_x, robotHeadAng_y);
+
+		m_graph_path_x->SetData(robotHeadAng_x, robotPath_x);
+		m_graph_path_y->SetData(robotHeadAng_x, robotPath_y);
+		m_graph_path_phi->SetData(robotHeadAng_x, robotPath_phi);
+
 
 		// TP-Obstacles:
 		gl_tp_obstacles->clear();
@@ -709,8 +752,16 @@ void ptgConfiguratorframe::rebuild3Dview()
 
 	m_plotHeadAngAll->Fit();
 	m_plotHeadAngIndiv->Fit();
+	m_plotPathX->Fit();
+	m_plotPathY->Fit();
+	m_plotPathPhi->Fit();
+
 	m_plotHeadAngAll->UpdateAll();
 	m_plotHeadAngIndiv->UpdateAll();
+	m_plotPathX->UpdateAll();
+	m_plotPathY->UpdateAll();
+	m_plotPathPhi->UpdateAll();
+
 	m_plot->Refresh();
 	m_plotTPSpace->Refresh();
 	WX_END_TRY;
