@@ -635,10 +635,11 @@ void ptgConfiguratorframe::rebuild3Dview()
 				{
 					// Numerical estimate of global direction of motion:
 					const double dx = curPose.x - prevPose.x, dy = curPose.y - prevPose.y;
-					const double dir_motion = (dy != 0 || dx != 0) ? ::atan2(dy, dx) : .0;
 
 					// Head calc:
-					const double head2dir = mrpt::math::wrapToPi(dir_motion - curPose.phi);
+					const double head2dir = (dy != 0 || dx != 0) ? 
+						mrpt::math::angDistance(::atan2(dy, dx), curPose.phi) :
+						.0;
 					
 					if (is_selected_path) {
 						robotHeadAng_x[j] = j;
@@ -835,8 +836,8 @@ void ptgConfiguratorframe::OnslidPathHighlightCmdScroll(wxScrollEvent& event)
 
 void ptgConfiguratorframe::OncbHighlightOnePathClick(wxCommandEvent& event)
 {
-	slidPathHighlight->Enable( cbHighlightOnePath->IsChecked() );
-	edIndexHighlightPath->Enable( cbHighlightOnePath->IsChecked() );
+	//slidPathHighlight->Enable( cbHighlightOnePath->IsChecked() );
+	//edIndexHighlightPath->Enable( cbHighlightOnePath->IsChecked() );
 	rebuild3Dview();
 }
 
