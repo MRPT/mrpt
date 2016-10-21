@@ -405,13 +405,15 @@ void CPTG_Holo_Blend::getPathPose(uint16_t k, uint16_t step, mrpt::math::TPose2D
 		}
 		else if (t<2.0*T_ramp)
 		{
-			p.x = T_ramp *0.5*(vxi + .0 /*vxf*/) + .0 /*vxi*/ * t + t*t * TR2_ * (vxf - .0 /*vxi*/);
-			p.y = T_ramp *0.5*(vyi + .0 /*vyf*/) + .0 /*vyi*/ * t + t*t * TR2_ * (vyf - .0 /*vyi*/);
+			const double t2 = (t - T_ramp);
+			p.x = T_ramp *0.5*(vxi + .0 /*vxf*/) + .0 /*vxi'*/ * t2 + t2*t2 * TR2_ * (vxf - .0 /*vxi'*/);
+			p.y = T_ramp *0.5*(vyi + .0 /*vyf*/) + .0 /*vyi'*/ * t2 + t2*t2 * TR2_ * (vyf - .0 /*vyi'*/);
 		}
 		else
 		{
-			p.x = T_ramp *0.5*(vxi + .0 /*vxf*/) + T_ramp *0.5*(.0 /*vxi*/ + vxf) + (t - T_ramp) * vxf;
-			p.y = T_ramp *0.5*(vyi + .0 /*vyf*/) + T_ramp *0.5*(.0 /*vyi*/ + vyf) + (t - T_ramp) * vyf;
+			const double t2 = (t - 2.0*T_ramp);
+			p.x = T_ramp *0.5*(vxi + .0 /*vxf*/) + T_ramp *0.5*(.0 /*vxi'*/ + vxf) + t2 * vxf;
+			p.y = T_ramp *0.5*(vyi + .0 /*vyf*/) + T_ramp *0.5*(.0 /*vyi'*/ + vyf) + t2 * vyf;
 		}
 	}
 
