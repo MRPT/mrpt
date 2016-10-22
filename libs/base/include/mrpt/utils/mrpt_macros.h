@@ -114,10 +114,6 @@
 #	define MRPT_scanf_format_check(_FMT_,_VARARGS_)
 #endif
 
-/** Used after member declarations */
-#define MRPT_NO_THROWS		throw()
-
-
 // A cross-compiler definition for aligned memory structures:
 #if defined(_MSC_VER)
 	#define MRPT_ALIGN16 __declspec(align(16))
