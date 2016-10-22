@@ -88,10 +88,6 @@ CGraphSlamEngine<GRAPH_t>::~CGraphSlamEngine() {
 		delete m_win_plot;
 	}
 
-
-	this->logFmt(LVL_DEBUG, "Deleting the initial timestamp.");
-	delete m_init_timestamp;
-
 	MRPT_END;
 }
 
@@ -356,7 +352,10 @@ void CGraphSlamEngine<GRAPH_t>::initCGraphSlamEngine() {
 		m_time_logger.leave("Visuals");
 	}
 
-	m_init_timestamp = NULL;
+	m_init_timestamp = INVALID_TIMESTAMP;
+
+	m_gridmap_is_cached = false;
+	m_gridmap_cached = mrpt::maps::COccupancyGridMap2D::Create();
 
 
 	// In case we are given an RGBD TUM Dataset - try and read the info file so
@@ -422,14 +421,13 @@ bool CGraphSlamEngine<GRAPH_t>::execGraphSlamStep(
 	// good to go..
 
 	// read first measurement independently if we haven't already
-	if (!m_init_timestamp) {
+	if (m_init_timestamp == INVALID_TIMESTAMP) {
 		MRPT_LOG_DEBUG_STREAM << "execGraphSlamStep: first run";
-		m_init_timestamp = new mrpt::system::TTimeStamp;
 
 		if (observation.present()) {
 			MRPT_LOG_DEBUG_STREAM << "Observation only dataset!";
 			m_observation_only_dataset = true; // false by default
-			*m_init_timestamp = observation->timestamp;
+			m_init_timestamp = observation->timestamp;
 		}
 		else {
 			MRPT_LOG_DEBUG_STREAM << "Action-observation dataset!";
@@ -442,7 +440,7 @@ bool CGraphSlamEngine<GRAPH_t>::execGraphSlamStep(
 				pose_t increment_pose = increment->getMeanVal();
 				m_curr_odometry_only_pose += increment_pose;
 
-				*m_init_timestamp = robot_move->timestamp;
+				m_init_timestamp = robot_move->timestamp;
 			}
 		}
 	}
@@ -614,6 +612,9 @@ bool CGraphSlamEngine<GRAPH_t>::execGraphSlamStep(
 			}
 		}
 
+		// mark the gridmap outdated
+		m_gridmap_is_cached = false;
+
 	} // IF REGISTERED_NEW_NODE
 
 	//
@@ -694,7 +695,7 @@ bool CGraphSlamEngine<GRAPH_t>::execGraphSlamStep(
 	m_time_logger.leave("Visuals");
 
 	m_dataset_grab_time = mrpt::system::timeDifference(
-			*m_init_timestamp,
+			m_init_timestamp,
 			timestamp);
 	m_time_logger.leave("proc_time");
 
@@ -703,17 +704,27 @@ bool CGraphSlamEngine<GRAPH_t>::execGraphSlamStep(
 } // END OF EXECGRAPHSLAM
 template<class GRAPH_t>
 void CGraphSlamEngine<GRAPH_t>::getOccupancyGridMap2D(
-		mrpt::maps::COccupancyGridMap2D* map_ptr) const{
+		mrpt::maps::COccupancyGridMap2D* map_ptr,
+		mrpt::system::TTimeStamp* acquisition_time /* = NULL */) const {
 	MRPT_START;
 	ASSERT_(map_ptr);
-	this->computeOccupancyGridMap2D(m_nodes_to_laser_scans2D, map_ptr);
+
+	if (!m_gridmap_is_cached){
+		this->computeOccupancyGridMap2D();
+	}
+
+	map_ptr->copyMapContentFrom(*m_gridmap_cached);
+
+	// fill the timestamp if this is given
+	if (acquisition_time) {
+		*acquisition_time = m_gridmap_acq_time;
+	}
 	MRPT_END;
 }
+
+
 template<class GRAPH_t>
-void CGraphSlamEngine<GRAPH_t>::computeOccupancyGridMap2D(
-		const std::map<const mrpt::utils::TNodeID,
-			mrpt::obs::CObservation2DRangeScanPtr> nodes_to_laser_scans2D,
-		mrpt::maps::COccupancyGridMap2D* map_ptr) const {
+void CGraphSlamEngine<GRAPH_t>::computeOccupancyGridMap2D() const {
 	MRPT_START;
 	using namespace std;
 	using namespace mrpt::maps;
@@ -721,8 +732,6 @@ void CGraphSlamEngine<GRAPH_t>::computeOccupancyGridMap2D(
 	using namespace mrpt::poses;
 
 	this->logFmt(LVL_DEBUG, "Computing the occupancy gridmap...");
-
-	ASSERT_(map_ptr);
 	mrpt::synch::CCriticalSectionLocker m_graph_lock(&m_graph_section);
 
 	// set the map parameters
@@ -738,8 +747,8 @@ void CGraphSlamEngine<GRAPH_t>::computeOccupancyGridMap2D(
 	// traverse all the nodes - add their laser scans at their corresponding poses
 	for (std::map<const mrpt::utils::TNodeID,
 			mrpt::obs::CObservation2DRangeScanPtr>::const_iterator
-			it = nodes_to_laser_scans2D.begin();
-			it != nodes_to_laser_scans2D.end(); ++it) {
+			it = m_nodes_to_laser_scans2D.begin();
+			it != m_nodes_to_laser_scans2D.end(); ++it) {
 
 		TNodeID curr_node = it->first;
 		mrpt::obs::CObservation2DRangeScanPtr curr_laser_scan = it->second;
@@ -763,7 +772,10 @@ void CGraphSlamEngine<GRAPH_t>::computeOccupancyGridMap2D(
 		}
 	}
 
-	map_ptr->copyMapContentFrom(gridmap);
+	m_gridmap_cached->copyMapContentFrom(gridmap);
+	m_gridmap_is_cached = true;
+	m_gridmap_acq_time = mrpt::system::now();
+
 	this->logFmt(LVL_INFO, "Computed the occupancy gridmap successfully.");
 	MRPT_END;
 }
@@ -1650,8 +1662,7 @@ void CGraphSlamEngine<GRAPH_t>::updateMapVisualization(
 			scan_content = search->second;
 
 			CObservation2DRangeScan scan_decimated;
-			this->decimateLaserScan(*scan_content,
-					&scan_decimated,
+			this->decimateLaserScan(*scan_content, &scan_decimated,
 					/*keep_every_n_entries = */ 5);
 
 			// if the scan doesn't already exist, add it to the scene, otherwise just
@@ -1718,23 +1729,22 @@ void CGraphSlamEngine<GRAPH_t>::decimateLaserScan(
 		mrpt::obs::CObservation2DRangeScan* laser_scan_out,
 		const int keep_every_n_entries /*= 2*/) {
 	MRPT_START;
+	using namespace mrpt::utils;
 
 	size_t scan_size = laser_scan_in.scan.size();
 
-	std::vector<float> new_scan;
-	std::vector<char> new_validRange;
+	// assign the decimated scans, ranges
+	float new_scan[scan_size];
+	char new_validRange[scan_size];
+	size_t new_scan_size = 0;
 	for (size_t i=0; i != scan_size; i++) {
 		if (i % keep_every_n_entries == 0) {
-			new_scan.push_back(laser_scan_in.scan[i]);
-			new_validRange.push_back(laser_scan_in.validRange[i]);
+			new_scan[new_scan_size] = laser_scan_in.scan[i];
+			new_validRange[new_scan_size] = laser_scan_in.validRange[i];
+			new_scan_size++;
 		}
 	}
-
-	// assign the decimated scans, ranges
-	laser_scan_out->scan = new_scan;
-	laser_scan_out->validRange = new_validRange;
-
-	scan_size = laser_scan_out->scan.size();
+	laser_scan_out->loadFromVectors(new_scan_size, new_scan, new_validRange);
 
 	MRPT_END;
 }
@@ -2400,8 +2410,6 @@ void CGraphSlamEngine<GRAPH_t>::generateReportFiles(
 			m_out_streams[fname]->printf("%f\n", *vec_it);
 		}
 	}
-
-
 
 	MRPT_END;
 }

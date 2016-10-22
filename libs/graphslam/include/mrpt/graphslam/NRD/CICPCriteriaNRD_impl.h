@@ -326,11 +326,12 @@ bool CICPCriteriaNRD<GRAPH_t>::checkRegistrationCondition3D() {
 	this->logFmt(LVL_DEBUG, "Current ICP constraint: \n\tEdge: %s\n\tNorm: %f",
 				rel_edge->getMeanVal().asString().c_str(),
 				rel_edge->getMeanVal().norm());
-	this->logFmt(LVL_DEBUG, "ICP Alignment operation:\
-			\n\tnIterations: %d\
-			\n\tquality: %f\
-			\n\tgoodness: %.f\n",
-			icp_info.nIterations, icp_info.quality, icp_info.goodness);
+	std::string debug_msg = mrpt::format(
+			"ICP Alignment operation:\n\tnIterations: %d\\n\tquality: %f\n\tgoodness: %.f\n",
+			icp_info.nIterations,
+			icp_info.quality,
+			icp_info.goodness);
+		this->logFmt(LVL_DEBUG, "%s", debug_msg.c_str());
 
 	m_since_prev_node_PDF += *rel_edge;
 	m_last_laser_scan3D = m_curr_laser_scan3D;
