@@ -1662,8 +1662,7 @@ void CGraphSlamEngine<GRAPH_t>::updateMapVisualization(
 			scan_content = search->second;
 
 			CObservation2DRangeScan scan_decimated;
-			this->decimateLaserScan(*scan_content,
-					&scan_decimated,
+			this->decimateLaserScan(*scan_content, &scan_decimated,
 					/*keep_every_n_entries = */ 5);
 
 			// if the scan doesn't already exist, add it to the scene, otherwise just
@@ -1730,23 +1729,22 @@ void CGraphSlamEngine<GRAPH_t>::decimateLaserScan(
 		mrpt::obs::CObservation2DRangeScan* laser_scan_out,
 		const int keep_every_n_entries /*= 2*/) {
 	MRPT_START;
+	using namespace mrpt::utils;
 
 	size_t scan_size = laser_scan_in.scan.size();
 
-	std::vector<float> new_scan;
-	std::vector<char> new_validRange;
+	// assign the decimated scans, ranges
+	float new_scan[scan_size];
+	char new_validRange[scan_size];
+	size_t new_scan_size = 0;
 	for (size_t i=0; i != scan_size; i++) {
 		if (i % keep_every_n_entries == 0) {
-			new_scan.push_back(laser_scan_in.scan[i]);
-			new_validRange.push_back(laser_scan_in.validRange[i]);
+			new_scan[new_scan_size] = laser_scan_in.scan[i];
+			new_validRange[new_scan_size] = laser_scan_in.validRange[i];
+			new_scan_size++;
 		}
 	}
-
-	// assign the decimated scans, ranges
-	laser_scan_out->scan = new_scan;
-	laser_scan_out->validRange = new_validRange;
-
-	scan_size = laser_scan_out->scan.size();
+	laser_scan_out->loadFromVectors(new_scan_size, new_scan, new_validRange);
 
 	MRPT_END;
 }
