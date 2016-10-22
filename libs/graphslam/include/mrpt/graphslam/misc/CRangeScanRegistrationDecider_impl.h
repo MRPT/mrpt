@@ -185,7 +185,7 @@ void CRangeScanRegistrationDecider<GRAPH_t>::TParams::dumpToTextStream(
 			mrpt::utils::RAD2DEG(conversion_params.angle_inf));
 	out.printf("3D=>2D LaserScan Conversion oversampling ratio = %.2f\n",
 			conversion_params.oversampling_ratio);
-	out.printf("3D=>2D LaserScan Conversion Z minimum = %.2f\n",
+	out.printf("3D=>2D LaserScan Conversion Z minimum          = %.2f\n",
 			conversion_params.z_min);
 
 	icp.options.dumpToTextStream(out);

@@ -67,7 +67,6 @@ CLoopCloserERD<GRAPH_t>::~CLoopCloserERD() {
 
 		delete it->second;
 	}
-
 }
 
 
