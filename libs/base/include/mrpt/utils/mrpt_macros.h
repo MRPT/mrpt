@@ -14,8 +14,38 @@
 #include <sstream> // ostringstream
 #include <stdexcept> // logic_error
 
+/**  MRPT_CHECK_GCC_VERSION(MAJ,MIN) */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+#	define MRPT_CHECK_GCC_VERSION( major, minor ) ( ( __GNUC__ > (major) )  || ( __GNUC__ == (major) && __GNUC_MINOR__ >= (minor) ) )
+#else
+#	define MRPT_CHECK_GCC_VERSION( major, minor ) 0
+#endif
+
+/** MRPT_CHECK_VISUALC_VERSION(Version) Version=8 for 2005, 9=2008, 10=2010, 11=2012, 12=2013, 14=2015 */
+#ifndef _MSC_VER
+#   define MRPT_VISUALC_VERSION(major) 0
+#   define MRPT_CHECK_VISUALC_VERSION(major) 0
+#else
+   /* (From wxWidgets macros):
+   Things used to be simple with the _MSC_VER value and the version number
+   increasing in lock step, but _MSC_VER value of 1900 is VC14 and not the
+   non existing (presumably for the superstitious reasons) VC13, so we now
+   need to account for this with an extra offset.
+   */
+#   define MRPT_VISUALC_VERSION(major) ( (6 + (major >= 14 ? (-1) : 0) + major) * 100 )
+#   define MRPT_CHECK_VISUALC_VERSION(major) ( _MSC_VER >= MRPT_VISUALC_VERSION(major) )
+#endif
+
+#ifndef __has_feature
+#	define __has_feature(x) 0  // Compatibility with non-clang compilers.
+#endif
+#ifndef __has_extension
+#	define __has_extension __has_feature // Compatibility with pre-3.0 compilers.
+#endif
+
+
 /** Does the compiler support C++11? */
-#if (__cplusplus>199711L || (defined(_MSC_VER) && (_MSC_VER >= 1700)) )
+#if (__cplusplus>199711L || MRPT_CHECK_VISUALC_VERSION(11) )
 #	define MRPT_HAS_CXX11  1
 #else
 #	define MRPT_HAS_CXX11  0
@@ -28,28 +58,13 @@
 #	define MRPT_OVERRIDE
 #endif
 
-
-/**  MRPT_CHECK_GCC_VERSION(MAJ,MIN) */
-#if defined(__GNUC__) && defined(__GNUC_MINOR__)
-#	define MRPT_CHECK_GCC_VERSION( major, minor ) ( ( __GNUC__ > (major) )  || ( __GNUC__ == (major) && __GNUC_MINOR__ >= (minor) ) )
+/** C++11 deleted function declarations */
+#if MRPT_CHECK_VISUALC_VERSION(12) || __has_extension(cxx_deleted_functions) || MRPT_CHECK_GCC_VERSION(4,4)
+#	define MRPT_DELETED_FUNC   =delete
 #else
-#	define MRPT_CHECK_GCC_VERSION( major, minor ) 0
+#	define MRPT_DELETED_FUNC
 #endif
 
-/** MRPT_CHECK_VISUALC_VERSION(Version) */
-#ifndef _MSC_VER
-#   define MRPT_VISUALC_VERSION(major) 0
-#   define MRPT_CHECK_VISUALC_VERSION(major) 0
-#else
-/* (From wxWidgets macros):
-Things used to be simple with the _MSC_VER value and the version number
-increasing in lock step, but _MSC_VER value of 1900 is VC14 and not the
-non existing (presumably for the superstitious reasons) VC13, so we now
-need to account for this with an extra offset.
-*/
-#   define MRPT_VISUALC_VERSION(major) ( (6 + (major >= 14 ? 1 : 0) + major) * 100 )
-#   define MRPT_CHECK_VISUALC_VERSION(major) ( _MSC_VER >= MRPT_VISUALC_VERSION(major) )
-#endif
 
 // A cross-compiler definition for "deprecated"-warnings
 /** Usage: MRPT_DEPRECATED("Use XX instead") void myFunc(double); */
@@ -116,9 +131,7 @@ need to account for this with an extra offset.
 #endif
 
 /** A macro for obtaining the name of the current function:  */
-#if defined(__BORLANDC__)
-		#define	__CURRENT_FUNCTION_NAME__	__FUNC__
-#elif defined(_MSC_VER) && (_MSC_VER>=1300)
+#if defined(_MSC_VER) && (_MSC_VER>=1300)
 		#define	__CURRENT_FUNCTION_NAME__	__FUNCTION__
 #else
 		#define	__CURRENT_FUNCTION_NAME__	__PRETTY_FUNCTION__
@@ -244,7 +257,7 @@ need to account for this with an extra offset.
 	}
 
 // Static asserts: use compiler version if we have a modern GCC (>=4.3) or MSVC (>=2010) version, otherwise rely on custom implementation:
-#if (defined(_MSC_VER) && (_MSC_VER>=1600 /*VS2010*/)) || (defined(__GNUC__) && __cplusplus>=201100L )
+#if MRPT_CHECK_VISUALC_VERSION(10) || __has_extension(cxx_static_assert) || MRPT_CHECK_GCC_VERSION(4,3)
 	#define MRPT_COMPILE_TIME_ASSERT(expression) static_assert(expression,#expression);
 #else
 	// The following macro is based on dclib:
@@ -406,7 +419,11 @@ need to account for this with an extra offset.
 
 
 /** Used after member declarations */
-#define MRPT_NO_THROWS		throw()
+#if MRPT_CHECK_VISUALC_VERSION(14) || __has_extension(cxx_noexcept) || MRPT_CHECK_GCC_VERSION(4,6)
+#	define MRPT_NO_THROWS noexcept
+#else
+#	define MRPT_NO_THROWS  throw()
+#endif
 
 /** Tells the compiler we really want to inline that function */
 #if (defined _MSC_VER) || (defined __INTEL_COMPILER)
