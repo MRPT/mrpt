@@ -551,7 +551,7 @@ namespace obs
 		void getDescriptionAsText(std::ostream &o) const MRPT_OVERRIDE;
 
 		void swap(CObservation3DRangeScan &o);	//!< Very efficient method to swap the contents of two observations.
-
+		/** Extract a ROI of the 3D observation as a new one. \note PixelLabels are *not* copied to the output subimage. */
 		void getZoneAsObs( CObservation3DRangeScan &obs, const unsigned int &r1, const unsigned int &r2, const unsigned int &c1, const unsigned int &c2 );
 
 		/** A Levenberg-Marquart-based optimizer to recover the calibration parameters of a 3D camera given a range (depth) image and the corresponding 3D point cloud.

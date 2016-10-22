@@ -750,7 +750,7 @@ void CObservation3DRangeScan::getZoneAsObs(
 	if ( hasConfidenceImage )
 		confidenceImage.extract_patch( obs.confidenceImage, c1, r1, c2-c1, r2-r1 );
 
-	MRPT_TODO("Extract zone of labels")
+	// Zone labels: It's too complex, just document that pixel labels are NOT extracted.
 
 	// Copy zone of scanned points
 	obs.hasPoints3D = hasPoints3D;
