@@ -415,7 +415,7 @@
 
 
 /** Used after member declarations */
-#if MRPT_CHECK_VISUALC_VERSION(14) || __has_extension(cxx_noexcept) || MRPT_CHECK_GCC_VERSION(4,6)
+#if MRPT_CHECK_VISUALC_VERSION(14) || __has_extension(cxx_noexcept) || (MRPT_CHECK_GCC_VERSION(4,6) && MRPT_HAS_CXX11)
 #	define MRPT_NO_THROWS noexcept
 #else
 #	define MRPT_NO_THROWS  throw()
