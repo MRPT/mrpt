@@ -177,8 +177,8 @@ struct ExampleDemoGraphSLAM
 			edge_adder_t::addEdge(0,N_VERTEX/2,real_node_poses,graph,inf_matrix);
 
 			// Tweak this last node to make it incompatible with the rest:
-      // It must exist, don't check errors...
-			typename my_graph_t::edge_t &ed = graph.edges.find(make_pair<TNodeID,TNodeID>(0,N_VERTEX/2))->second; 
+			// It must exist, don't check errors...
+			typename my_graph_t::edge_t &ed = graph.edges.find(make_pair(TNodeID(0), TNodeID(N_VERTEX/2) ))->second;
 			ed.getPoseMean().x( (1-ERROR_IN_INCOMPATIBLE_EDGE) * ed.getPoseMean().x() );
 		}
 
