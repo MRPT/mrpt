@@ -20,6 +20,13 @@ namespace mrpt
 	 */
 	namespace math
 	{
+		/**\brief Absolute difference between two numbers */
+		template< typename T >
+		T absDiff(const T& lhs, const T& rhs)
+		{
+  			return lhs>rhs ? lhs-rhs : rhs-lhs;
+		}
+
 		/** \addtogroup container_ops_grp
 		  * @{ */
 
