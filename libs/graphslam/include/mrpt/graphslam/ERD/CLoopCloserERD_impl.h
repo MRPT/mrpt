@@ -203,7 +203,8 @@ void CLoopCloserERD<GRAPH_t>::addScanMatchingEdges(mrpt::utils::TNodeID curr_nod
 		}
 		double goodness_thresh = m_laser_params.goodness_threshold_win.getMedian()*0.9;
 		bool accept_goodness = icp_info.goodness > goodness_thresh;
-		//cout << "Curr. Goodness: " << icp_info.goodness << "|\t Threshold: " << goodness_thresh << " => " << (accept_goodness? "ACCEPT" : "REJECT") << endl;
+		MRPT_LOG_DEBUG_STREAM << "Curr. Goodness: " << icp_info.goodness 
+			<< "|\t Threshold: " << goodness_thresh << " => " << (accept_goodness? "ACCEPT" : "REJECT") << endl;
 
 		// make sure that the suggested edge makes sense with regards to current
 		// graph config - check against the current position difference
@@ -299,7 +300,9 @@ void CLoopCloserERD<GRAPH_t>::checkPartitionsForLC(
 		// check whether the last registered node is in the currently traversed
 		// partition - if not, ignore it.
 		if (m_lc_params.LC_check_curr_partition_only) {
-			bool curr_node_in_curr_partition = ((find(partitions_it->begin(), partitions_it->end(), m_graph->nodeCount()-1)) != partitions_it->end());
+			bool curr_node_in_curr_partition =
+				((find(partitions_it->begin(), partitions_it->end(), m_graph->nodeCount()-1))
+				 != partitions_it->end());
 			if (!curr_node_in_curr_partition) {
 				continue;
 			}
@@ -1115,6 +1118,7 @@ void CLoopCloserERD<GRAPH_t>::registerNewEdge(
 		const constraint_t& rel_edge ) {
 	MRPT_START;
 	using namespace mrpt::utils;
+	using namespace mrpt::math;
 
 	//  keep track of the registered edges...
 	m_edge_types_to_nums["ICP2D"]++;
@@ -1125,7 +1129,7 @@ void CLoopCloserERD<GRAPH_t>::registerNewEdge(
 			rel_edge.getMeanVal().norm());
 
 	//  keep track of the registered edges...
-	if (abs(to - from) > m_lc_params.LC_min_nodeid_diff)  {
+	if (absDiff(to, from) > m_lc_params.LC_min_nodeid_diff)  {
 		m_edge_types_to_nums["LC"]++;
 		m_just_inserted_loop_closure = true;
 		this->logFmt(LVL_INFO, "\tLoop Closure edge!");
