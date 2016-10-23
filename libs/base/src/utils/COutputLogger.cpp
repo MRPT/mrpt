@@ -261,7 +261,15 @@ void COutputLogger::logRegisterCallback(output_logger_callback_t  userFunc, void
 	TCallbackEntry cbe;
 	cbe.func = userFunc;
 	cbe.userParam = userParam;
-	m_listCallbacks.insert(cbe);
+	m_listCallbacks.push_back(cbe);
+}
+
+
+namespace std {
+	bool operator == (const COutputLogger::TCallbackEntry &c1, const COutputLogger::TCallbackEntry &c2)
+	{
+		return c1.func == c2.func && c1.userParam == c2.userParam;
+	}
 }
 
 void COutputLogger::logDeregisterCallback(output_logger_callback_t  userFunc, void *userParam )
@@ -270,6 +278,8 @@ void COutputLogger::logDeregisterCallback(output_logger_callback_t  userFunc, vo
 	TCallbackEntry cbe;
 	cbe.func = userFunc;
 	cbe.userParam = userParam;
-	m_listCallbacks.erase(cbe);
+	const auto & it = m_listCallbacks.find(cbe);
+	if (it != m_listCallbacks.end())
+		m_listCallbacks.erase(it);
 }
 
