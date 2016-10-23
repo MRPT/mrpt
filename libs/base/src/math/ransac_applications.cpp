@@ -157,7 +157,7 @@ void mrpt::math::ransac_detect_3D_planes(
 		{
 			// Add this plane to the output list:
 			out_detected_planes.push_back(
-				std::make_pair<size_t,TPlane>(
+				std::make_pair(
 					this_best_inliers.size(),
 					TPlane( this_best_model(0,0), this_best_model(0,1),this_best_model(0,2),this_best_model(0,3) )
 					) );
@@ -332,7 +332,7 @@ void mrpt::math::ransac_detect_2D_lines(
 		{
 			// Add this plane to the output list:
 			out_detected_lines.push_back(
-				std::make_pair<size_t,TLine2D>(
+				std::make_pair(
 					this_best_inliers.size(),
 					TLine2D(this_best_model(0,0), this_best_model(0,1),this_best_model(0,2) )
 					) );

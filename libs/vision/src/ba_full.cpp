@@ -357,7 +357,7 @@ double mrpt::vision::bundle_adj_full(
 				for (size_t j=0; j<num_free_frames; ++j)
 				{
 					WMap::iterator W_ij;
-					W_ij = W.find(make_pair<TCameraPoseID,TLandmarkID>(j+num_fix_frames,i+num_fix_points));
+					W_ij = W.find(make_pair(TCameraPoseID(j+num_fix_frames), TLandmarkID(i+num_fix_points) ));
 
 					if (W_ij!=W.end())
 					{
