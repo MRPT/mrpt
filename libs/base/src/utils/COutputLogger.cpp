@@ -24,9 +24,11 @@
 #endif
 
 namespace std {
-bool operator <(const mrpt::utils::COutputLogger::TCallbackEntry &e1, const mrpt::utils::COutputLogger::TCallbackEntry &e2)
-{
+bool operator <(const mrpt::utils::COutputLogger::TCallbackEntry e1, const mrpt::utils::COutputLogger::TCallbackEntry e2) {
 	return e1.func<e2.func;
+}
+bool operator == (const mrpt::utils::COutputLogger::TCallbackEntry c1, const mrpt::utils::COutputLogger::TCallbackEntry c2) {
+	return c1.func == c2.func && c1.userParam == c2.userParam;
 }
 }
 
@@ -261,15 +263,7 @@ void COutputLogger::logRegisterCallback(output_logger_callback_t  userFunc, void
 	TCallbackEntry cbe;
 	cbe.func = userFunc;
 	cbe.userParam = userParam;
-	m_listCallbacks.push_back(cbe);
-}
-
-
-namespace std {
-	bool operator == (const COutputLogger::TCallbackEntry &c1, const COutputLogger::TCallbackEntry &c2)
-	{
-		return c1.func == c2.func && c1.userParam == c2.userParam;
-	}
+	m_listCallbacks.insert(cbe);
 }
 
 void COutputLogger::logDeregisterCallback(output_logger_callback_t  userFunc, void *userParam )
@@ -278,8 +272,6 @@ void COutputLogger::logDeregisterCallback(output_logger_callback_t  userFunc, vo
 	TCallbackEntry cbe;
 	cbe.func = userFunc;
 	cbe.userParam = userParam;
-	const auto & it = m_listCallbacks.find(cbe);
-	if (it != m_listCallbacks.end())
-		m_listCallbacks.erase(it);
+	m_listCallbacks.erase(cbe);
 }
 
