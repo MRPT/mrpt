@@ -37,10 +37,12 @@ namespace synch
 class BASE_IMPEXP CAtomicCounter
 {
 public:
-#if defined( __GNUC__ )
+#if defined( __GNUC__ ) && !defined( MRPT_OS_APPLE )
 	typedef _Atomic_word atomic_num_t;
-#else // mostly for MSVC in Windows
+#elif defined(_WIN32) // mostly for MSVC in Windows
 	typedef long atomic_num_t;
+#else
+	typedef int atomic_num_t;
 #endif
 
 	explicit CAtomicCounter( long v ): m_value( static_cast<atomic_num_t>(v) )
