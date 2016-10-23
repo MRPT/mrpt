@@ -19,7 +19,7 @@
 #include <deque>
 #include <mrpt/system/datetime.h>
 #include <sstream>
-#include <set>
+#include <mrpt/utils/list_searchable.h>
 
 namespace mrpt { namespace utils {
 	class CStream; // frwd decl
@@ -249,8 +249,7 @@ class BASE_IMPEXP COutputLogger {
 		std::string m_logger_name;
 		mutable std::deque<TMsg> m_history;   // deque is better than vector to avoid memory reallocs
 
-		std::set<TCallbackEntry> m_listCallbacks;
-
+		mrpt::utils::list_searchable<TCallbackEntry> m_listCallbacks;
 };
 
 	/** For use in MRPT_LOG_DEBUG_STREAM, etc. */
