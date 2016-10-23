@@ -13,9 +13,16 @@
 #include <mrpt/utils/compiler_fixes.h>
 #include <mrpt/base/link_pragmas.h>  // DLL import/export definitions
 
-#if defined( __GNUC__ )
+#if defined( __clang__ ) && defined( MRPT_OS_APPLE )
+   //no include
+#elif defined( __GNUC__ )
+#if ( __GNUC__ * 100 + __GNUC_MINOR__ >= 402 )
 #  include <ext/atomicity.h>
+#else
+#  include <bits/atomicity.h>
 #endif
+#endif
+
 
 namespace mrpt
 {
