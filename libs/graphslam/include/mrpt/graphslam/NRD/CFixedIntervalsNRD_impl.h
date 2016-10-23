@@ -161,6 +161,7 @@ template<class GRAPH_t>
 void CFixedIntervalsNRD<GRAPH_t>::registerNewNode() {
 	MRPT_START;
 	using namespace mrpt::utils;
+	using namespace std;
 
 	this->logFmt(LVL_DEBUG, "In registerNewNode...");
 
@@ -170,8 +171,9 @@ void CFixedIntervalsNRD<GRAPH_t>::registerNewNode() {
 	m_graph->nodes[to] = m_graph->nodes[from] + m_since_prev_node_PDF.getMeanVal();
 	m_graph->insertEdgeAtEnd(from, to, m_since_prev_node_PDF);
 
-	this->logFmt(LVL_DEBUG, "Registered new node:\n\t%lu => %lu\n\tEdge: %s",
-				from, to, m_since_prev_node_PDF.getMeanVal().asString().c_str());
+	MRPT_LOG_DEBUG_STREAM << "Registered new node:" << endl <<
+		"\t" << from << " => " << to << endl <<
+		"\tEdge: " << m_since_prev_node_PDF.getMeanVal().asString();
 
 	MRPT_END;
 }
