@@ -347,8 +347,6 @@ include(cmakemodules/script_create_version_h.cmake REQUIRED)  # Build version.h
 INCLUDE_DIRECTORIES(".")
 INCLUDE_DIRECTORIES("${MRPT_CONFIG_FILE_INCLUDE_DIR}")
 
-LINK_DIRECTORIES("${CMAKE_BINARY_DIR}/lib")
-
 # Add user supplied extra options (optimization, etc...)
 SET(USER_EXTRA_CPP_FLAGS "" CACHE STRING "Put extra compiler options here if desired")
 
