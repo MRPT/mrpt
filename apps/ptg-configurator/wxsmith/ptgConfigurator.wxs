@@ -322,6 +322,7 @@
 									</object>
 								</object>
 								<label>TP-Space</label>
+								<selected>1</selected>
 							</object>
 							<object class="notebookpage">
 								<object class="wxPanel" name="ID_PANEL3" variable="Panel3" member="yes">
@@ -442,6 +443,65 @@
 									</object>
 								</object>
 								<label>Robot path</label>
+							</object>
+							<object class="notebookpage">
+								<object class="wxPanel" name="ID_PANEL6" variable="Panel6" member="yes">
+									<object class="wxFlexGridSizer" variable="FlexGridSizer14" member="no">
+										<cols>1</cols>
+										<rows>6</rows>
+										<growablecols>0</growablecols>
+										<growablerows>1,3,5</growablerows>
+										<object class="sizeritem">
+											<object class="wxStaticText" name="ID_STATICTEXT13" variable="StaticText13" member="yes">
+												<label>Selected path trajectory: dX/dt [m/s]</label>
+											</object>
+											<flag>wxALL|wxALIGN_LEFT|wxALIGN_TOP</flag>
+											<border>5</border>
+											<option>1</option>
+										</object>
+										<object class="sizeritem">
+											<object class="Custom" name="ID_CUSTOM8" subclass="mpWindow" variable="m_plotPathXp" member="yes">
+												<creating_code>$(THIS) = new $(CLASS)($(PARENT),$(ID),$(POS),$(SIZE),0);</creating_code>
+												<style></style>
+											</object>
+											<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
+											<option>1</option>
+										</object>
+										<object class="sizeritem">
+											<object class="wxStaticText" name="ID_STATICTEXT14" variable="StaticText14" member="yes">
+												<label>Selected path trajectory: dY/dt [m/s]</label>
+											</object>
+											<flag>wxALL|wxALIGN_LEFT|wxALIGN_TOP</flag>
+											<border>5</border>
+											<option>1</option>
+										</object>
+										<object class="sizeritem">
+											<object class="Custom" name="ID_CUSTOM9" subclass="mpWindow" variable="m_plotPathYp" member="yes">
+												<creating_code>$(THIS) = new $(CLASS)($(PARENT),$(ID),$(POS),$(SIZE),0);</creating_code>
+												<style></style>
+											</object>
+											<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
+											<option>1</option>
+										</object>
+										<object class="sizeritem">
+											<object class="wxStaticText" name="ID_STATICTEXT15" variable="StaticText15" member="yes">
+												<label>Selected path trajectory: w [deg/s]</label>
+											</object>
+											<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
+											<border>5</border>
+											<option>1</option>
+										</object>
+										<object class="sizeritem">
+											<object class="Custom" name="ID_CUSTOM10" subclass="mpWindow" variable="m_plotPathW" member="yes">
+												<creating_code>$(THIS) = new $(CLASS)($(PARENT),$(ID),$(POS),$(SIZE),0);</creating_code>
+												<style></style>
+											</object>
+											<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
+											<option>1</option>
+										</object>
+									</object>
+								</object>
+								<label>Robot velocity components</label>
 							</object>
 						</object>
 						<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>

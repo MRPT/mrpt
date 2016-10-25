@@ -125,6 +125,10 @@ namespace nav
 		  * \sa getPathStepCount(), getAlphaValuesCount() */
 		virtual double getPathDist(uint16_t k, uint16_t step) const = 0;
 
+		/** Returns the duration (in seconds) of each "step"
+		* \sa getPathStepCount() */
+		virtual double getPathStepDuration() const = 0;
+
 		/** Access path `k` ([0,N-1]=>[-pi,pi] in alpha): largest step count for which the traversed distance is < `dist`
 		  * \param[in] dist Distance in pseudometers (real distance, NOT normalized to [0,1] for [0,refDist])
 		  * \return false if no step fulfills the condition for the given trajectory `k` (e.g. out of reference distance).

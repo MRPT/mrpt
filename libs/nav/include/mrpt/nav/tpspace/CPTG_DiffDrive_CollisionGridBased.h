@@ -70,6 +70,7 @@ namespace nav
 		void getPathPose(uint16_t k, uint16_t step, mrpt::math::TPose2D &p) const MRPT_OVERRIDE;
 		double getPathDist(uint16_t k, uint16_t step) const MRPT_OVERRIDE;
 		bool getPathStepForDist(uint16_t k, double dist, uint16_t &out_step) const MRPT_OVERRIDE;
+		double getPathStepDuration() const MRPT_OVERRIDE;
 
 		void updateTPObstacle(double ox, double oy, std::vector<double> &tp_obstacles) const MRPT_OVERRIDE;
 		void updateTPObstacleSingle(double ox, double oy, uint16_t k, double &tp_obstacle_k) const MRPT_OVERRIDE;
@@ -105,6 +106,7 @@ protected:
 		double turningRadiusReference;
 		std::vector<TCPointVector> m_trajectory;
 		double                     m_resolution;
+		double m_stepTimeDuration;
 
 		void internal_readFromStream(mrpt::utils::CStream &in) MRPT_OVERRIDE;
 		void internal_writeToStream(mrpt::utils::CStream &out) const  MRPT_OVERRIDE;

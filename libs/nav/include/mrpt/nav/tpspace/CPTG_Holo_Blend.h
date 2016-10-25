@@ -50,6 +50,7 @@ namespace mrpt
 		void getPathPose(uint16_t k, uint16_t step, mrpt::math::TPose2D &p) const MRPT_OVERRIDE;
 		double getPathDist(uint16_t k, uint16_t step) const  MRPT_OVERRIDE;
 		bool getPathStepForDist(uint16_t k, double dist, uint16_t &out_step) const MRPT_OVERRIDE;
+		double getPathStepDuration() const MRPT_OVERRIDE;
 
 		void updateTPObstacle(double ox, double oy, std::vector<double> &tp_obstacles) const MRPT_OVERRIDE;
 		void updateTPObstacleSingle(double ox, double oy, uint16_t k, double &tp_obstacle_k) const MRPT_OVERRIDE;
@@ -59,7 +60,6 @@ namespace mrpt
 		double V_MAX, W_MAX;
 		double turningRadiusReference;
 		mrpt::math::TTwist2D curVelLocal;
-		double maxAllowedDirAngle; //!< [rad] (default: PI)
 
 		void internal_processNewRobotShape() MRPT_OVERRIDE;
 		void internal_initialize(const std::string & cacheFilename = std::string(), const bool verbose = true) MRPT_OVERRIDE;
