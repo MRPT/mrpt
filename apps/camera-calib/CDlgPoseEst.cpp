@@ -65,6 +65,16 @@ CDlgPoseEst::CDlgPoseEst(wxWindow* parent,wxWindowID id,const wxPoint& pos,const
 	m_threadResultsComputed=false;
 	m_threadIsClosed = true;
 
+	// fill the pose_algos array
+	pose_algos[0] = &mrpt::vision::pnp::CPnP::epnp;
+	pose_algos[1] = &mrpt::vision::pnp::CPnP::dls;
+	pose_algos[2] = &mrpt::vision::pnp::CPnP::upnp;
+	pose_algos[3] = &mrpt::vision::pnp::CPnP::p3p;
+	pose_algos[4] = &mrpt::vision::pnp::CPnP::lhm;
+	pose_algos[5] = &mrpt::vision::pnp::CPnP::posit;
+	pose_algos[6] = &mrpt::vision::pnp::CPnP::ppnp;
+	pose_algos[7] = &mrpt::vision::pnp::CPnP::rpnp;
+	pose_algos[8] = &mrpt::vision::pnp::CPnP::so3;
 
 	//(*Initialize(CDlgPoseEst)
 	wxStaticBoxSizer* StaticBoxSizer2;
