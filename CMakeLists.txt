@@ -24,8 +24,8 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.6.4)
 SET(CMAKE_ALLOW_LOOSE_LOOP_CONSTRUCTS 1)
 
 if(COMMAND cmake_policy)
-	# We don't want to mix relative and absolute paths in linker lib lists.
-	cmake_policy(SET CMP0003 NEW)
+	cmake_policy(SET CMP0003 NEW) # We don't want to mix relative and absolute paths in linker lib lists.
+	cmake_policy(SET CMP0005 NEW) # Escape definitions (-D) strings
 	if(POLICY CMP0053)
 		cmake_policy(SET CMP0053 OLD) # Simplify variable reference and escape sequence evaluation.
 	endif()
@@ -38,7 +38,6 @@ if(COMMAND cmake_policy)
 	if(POLICY CMP0043)
 		cmake_policy(SET CMP0043 OLD) #  Ignore COMPILE_DEFINITIONS_<Config> properties.
 	endif()
-
 endif()
 # -------------------------
 
