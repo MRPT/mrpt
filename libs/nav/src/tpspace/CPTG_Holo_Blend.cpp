@@ -29,7 +29,6 @@ Closed-form PTG. Parameters:
 - Target velocity vector depends on \alpha: xfp = V_MAX*cos(alpha), yfp = V_MAX*sin(alpha)
 - T_ramp_max max time for velocity interpolation (xip,yip) -> (xfp, yfp)
 - W_MAX: Rotational velocity for robot heading forwards.
-- maxAllowedDirAngle: Max angle between cur heading and "dir" of vel cmds
 
 Number of steps "d" for each PTG path "k":
 - Step = time increment PATH_TIME_STEP
@@ -50,7 +49,7 @@ const double PATH_TIME_STEP = 10e-3;   // 10 ms
 const double eps = 1e-4;               // epsilon for detecting 1/0 situation
 
 // Axiliary function for calc_trans_distance_t_below_Tramp() and others:
-double calc_trans_distance_t_below_Tramp_abc(double t, double a,double b, double c)
+static double calc_trans_distance_t_below_Tramp_abc(double t, double a,double b, double c)
 {
 	ASSERT_(t>=0);
 	if (t==0.0) return .0;
@@ -90,7 +89,7 @@ double calc_trans_distance_t_below_Tramp_abc(double t, double a,double b, double
 
 
 // Axiliary function for computing the line-integral distance along the trajectory, handling special cases of 1/0:
-double calc_trans_distance_t_below_Tramp(double k2, double k4, double vxi,double vyi, double t)
+static double calc_trans_distance_t_below_Tramp(double k2, double k4, double vxi,double vyi, double t)
 {
 /*
 dd = sqrt( (4*k2^2 + 4*k4^2)*t^2 + (4*k2*vxi + 4*k4*vyi)*t + vxi^2 + vyi^2 ) dt
@@ -122,15 +121,13 @@ CPTG_Holo_Blend::CPTG_Holo_Blend() :
 	V_MAX(-1.0),
 	W_MAX(-1.0),
 	turningRadiusReference(0.30),
-	curVelLocal(0,0,0),
-	maxAllowedDirAngle(M_PI)
+	curVelLocal(0,0,0)
 {
 }
 
 CPTG_Holo_Blend::CPTG_Holo_Blend(const mrpt::utils::CConfigFileBase &cfg,const std::string &sSection) :
 	turningRadiusReference(0.30),
-	curVelLocal(0,0,0),
-	maxAllowedDirAngle(M_PI)
+	curVelLocal(0,0,0)
 {
 	this->loadFromConfigFile(cfg,sSection);
 }
@@ -145,11 +142,10 @@ void CPTG_Holo_Blend::loadDefaultParams()
 	CParameterizedTrajectoryGenerator::loadDefaultParams();
 	CPTG_RobotShape_Circular::loadDefaultParams();
 
-	m_alphaValuesCount = 100;
+	m_alphaValuesCount = 31;
 	T_ramp_max = 0.9;
 	V_MAX = 1.0;
-	W_MAX = mrpt::utils::DEG2RAD(120);
-	maxAllowedDirAngle = M_PI;
+	W_MAX = mrpt::utils::DEG2RAD(40);
 }
 
 void CPTG_Holo_Blend::loadFromConfigFile(const mrpt::utils::CConfigFileBase &cfg,const std::string &sSection)
@@ -161,11 +157,11 @@ void CPTG_Holo_Blend::loadFromConfigFile(const mrpt::utils::CConfigFileBase &cfg
 	MRPT_LOAD_HERE_CONFIG_VAR_NO_DEFAULT(v_max_mps  ,double, V_MAX, cfg,sSection);
 	MRPT_LOAD_HERE_CONFIG_VAR_DEGREES_NO_DEFAULT(w_max_dps  ,double, W_MAX, cfg,sSection);
 	MRPT_LOAD_CONFIG_VAR(turningRadiusReference  ,double, cfg,sSection);
-	MRPT_LOAD_CONFIG_VAR_DEGREES(maxAllowedDirAngle, cfg,sSection);
 
 	// For debugging only
 	MRPT_LOAD_HERE_CONFIG_VAR(vxi  ,double, curVelLocal.vx, cfg,sSection);
 	MRPT_LOAD_HERE_CONFIG_VAR(vyi  ,double, curVelLocal.vy, cfg,sSection);
+	MRPT_LOAD_HERE_CONFIG_VAR_DEGREES(wi   ,double, curVelLocal.omega, cfg, sSection);
 }
 void CPTG_Holo_Blend::saveToConfigFile(mrpt::utils::CConfigFileBase &cfg,const std::string &sSection) const
 {
@@ -178,10 +174,10 @@ void CPTG_Holo_Blend::saveToConfigFile(mrpt::utils::CConfigFileBase &cfg,const s
 	cfg.write(sSection,"v_max_mps",V_MAX,   WN,WV, "Maximum linear velocity for trajectories [m/s].");
 	cfg.write(sSection,"w_max_dps",mrpt::utils::RAD2DEG(W_MAX),   WN,WV, "Maximum angular velocity for trajectories [deg/s].");
 	cfg.write(sSection,"turningRadiusReference",turningRadiusReference,   WN,WV, "An approximate dimension of the robot (not a critical parameter) [m].");
-	cfg.write(sSection,"maxAllowedDirAngle",mrpt::utils::RAD2DEG(maxAllowedDirAngle),   WN,WV, "Maximum allowed angle between heading and motion direction [deg].");
 
 	cfg.write(sSection,"vxi",curVelLocal.vx,   WN,WV, "(Only for debugging) Current robot velocity vx [m/s].");
 	cfg.write(sSection,"vyi",curVelLocal.vy,   WN,WV, "(Only for debugging) Current robot velocity vy [m/s].");
+	cfg.write(sSection, "wi", mrpt::utils::RAD2DEG(curVelLocal.omega),WN,WV,"(Only for debugging) Current robot velocity omega [deg/s].");
 	CPTG_RobotShape_Circular::saveToConfigFile(cfg,sSection);
 
 	MRPT_END
@@ -190,7 +186,7 @@ void CPTG_Holo_Blend::saveToConfigFile(mrpt::utils::CConfigFileBase &cfg,const s
 
 std::string CPTG_Holo_Blend::getDescription() const
 {
-	return mrpt::format("PTG_Holo_Blend_Tramp=%.03f_Vmax=%.03f_Wmax=%.03f_MaxAng=%.02f",T_ramp_max,V_MAX,W_MAX,maxAllowedDirAngle);
+	return mrpt::format("PTG_Holo_Blend_Tramp=%.03f_Vmax=%.03f_Wmax=%.03f",T_ramp_max,V_MAX,W_MAX);
 }
 
 
@@ -203,13 +199,16 @@ void CPTG_Holo_Blend::readFromStream(mrpt::utils::CStream &in, int version)
 	case 0:
 	case 1:
 	case 2:
+	case 3:
 		if (version>=1) {
 			CPTG_RobotShape_Circular::internal_shape_loadFromStream(in);
 		}
 
 		in >> T_ramp_max >> V_MAX >> W_MAX >> turningRadiusReference;
-		if (version>=2)
-			in >> maxAllowedDirAngle;
+		if (version==2) {
+			double dummy_maxAllowedDirAngle; // removed in v3
+			in >> dummy_maxAllowedDirAngle;
+		}
 		break;
 	default:
 		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
@@ -220,7 +219,7 @@ void CPTG_Holo_Blend::writeToStream(mrpt::utils::CStream &out, int *version) con
 {
 	if (version)
 	{
-		*version = 2;
+		*version = 3;
 		return;
 	}
 
@@ -228,7 +227,6 @@ void CPTG_Holo_Blend::writeToStream(mrpt::utils::CStream &out, int *version) con
 	CPTG_RobotShape_Circular::internal_shape_saveToStream(out);
 
 	out << T_ramp_max << V_MAX << W_MAX << turningRadiusReference;
-	out << maxAllowedDirAngle; // v2
 }
 
 bool CPTG_Holo_Blend::inverseMap_WS2TP(double x, double y, int &out_k, double &out_d, double tolerance_dist) const
@@ -261,7 +259,6 @@ bool CPTG_Holo_Blend::inverseMap_WS2TP(double x, double y, int &out_k, double &o
 		const double TR2_ = 1.0/(2*T_ramp);
 
 		// Eval residual:
-		MRPT_TODO("Update to take maxAllowedDirAngle into account");
 		Eigen::Vector3d  r;
 		if (q[0]>=T_ramp)
 		{
@@ -280,7 +277,6 @@ bool CPTG_Holo_Blend::inverseMap_WS2TP(double x, double y, int &out_k, double &o
 		//  dx/dt  dx/dvxf  dx/dvyf
 		//  dy/dt  dy/dvxf  dy/dvyf
 		//  dVF/dt  dVF/dvxf  dVF/dvyf
-		MRPT_TODO("Update to take maxAllowedDirAngle into account");
 		Eigen::Matrix3d J;
 		if (q[0]>=T_ramp)
 		{
@@ -334,7 +330,6 @@ void CPTG_Holo_Blend::internal_initialize(const std::string & cacheFilename, con
 	ASSERT_(W_MAX>0);
 	ASSERT_(m_alphaValuesCount>0);
 	ASSERT_(m_robotRadius>0);
-	ASSERT_(maxAllowedDirAngle>.0);
 
 #ifdef DO_PERFORMANCE_BENCHMARK
 	tl.dumpAllStats();
@@ -351,7 +346,7 @@ mrpt::kinematics::CVehicleVelCmdPtr CPTG_Holo_Blend::directionToMotionCommand( u
 	const double dir_local = CParameterizedTrajectoryGenerator::index2alpha(k);
 
 	mrpt::kinematics::CVehicleVelCmd_Holo * cmd = new mrpt::kinematics::CVehicleVelCmd_Holo();
-	cmd->vel = (std::abs(dir_local) <= maxAllowedDirAngle) ? V_MAX : .0;
+	cmd->vel = V_MAX;
 	cmd->dir_local = dir_local;
 	cmd->ramp_time = T_ramp_max;
 	cmd->rot_speed = mrpt::utils::signWithZero(dir_local) * W_MAX;
@@ -378,43 +373,17 @@ void CPTG_Holo_Blend::getPathPose(uint16_t k, uint16_t step, mrpt::math::TPose2D
 	const double vxi = curVelLocal.vx, vyi = curVelLocal.vy;
 	const double T_ramp = T_ramp_max;
 	const double TR2_ = 1.0/(2*T_ramp);
-	const bool is_double_ramp = (std::abs(dir) > maxAllowedDirAngle); // 1st ramp: vf=(0,0), 2nd ramp: vf=(actual one)
 
 	// Translational part:
-	if (!is_double_ramp) 
+	if (t<T_ramp)
 	{
-		// Normal case:
-		if (t<T_ramp)
-		{
-			p.x = vxi * t + t*t * TR2_ * (vxf - vxi);
-			p.y = vyi * t + t*t * TR2_ * (vyf - vyi);
-		}
-		else
-		{
-			p.x = T_ramp *0.5*(vxi + vxf) + (t - T_ramp) * vxf;
-			p.y = T_ramp *0.5*(vyi + vyf) + (t - T_ramp) * vyf;
-		}
+		p.x = vxi * t + t*t * TR2_ * (vxf - vxi);
+		p.y = vyi * t + t*t * TR2_ * (vyf - vyi);
 	}
 	else
 	{
-		// Double T_ramp case:
-		if (t<T_ramp)
-		{
-			p.x = vxi * t + t*t * TR2_ * (.0 /*vxf*/ - vxi);
-			p.y = vyi * t + t*t * TR2_ * (.0 /*vyf*/ - vyi);
-		}
-		else if (t<2.0*T_ramp)
-		{
-			const double t2 = (t - T_ramp);
-			p.x = T_ramp *0.5*(vxi + .0 /*vxf*/) + .0 /*vxi'*/ * t2 + t2*t2 * TR2_ * (vxf - .0 /*vxi'*/);
-			p.y = T_ramp *0.5*(vyi + .0 /*vyf*/) + .0 /*vyi'*/ * t2 + t2*t2 * TR2_ * (vyf - .0 /*vyi'*/);
-		}
-		else
-		{
-			const double t2 = (t - 2.0*T_ramp);
-			p.x = T_ramp *0.5*(vxi + .0 /*vxf*/) + T_ramp *0.5*(.0 /*vxi'*/ + vxf) + t2 * vxf;
-			p.y = T_ramp *0.5*(vyi + .0 /*vyf*/) + T_ramp *0.5*(.0 /*vyi'*/ + vyf) + t2 * vyf;
-		}
+		p.x = T_ramp *0.5*(vxi + vxf) + (t - T_ramp) * vxf;
+		p.y = T_ramp *0.5*(vyi + vyf) + (t - T_ramp) * vyf;
 	}
 
 	// Rotational part:
@@ -425,7 +394,7 @@ void CPTG_Holo_Blend::getPathPose(uint16_t k, uint16_t step, mrpt::math::TPose2D
 	if (t<T_ramp)
 	{
 		// Time required to align completed?
-		const double a = TR2_ * std::abs(wf - wi), b = std::abs(wi), c = -std::abs(dir);
+		const double a = TR2_ * (wf - wi), b = (wi), c = -dir;
 
 		// Solves equation `a*x^2 + b*x + c = 0`.
 		double r1, r2;
@@ -443,7 +412,7 @@ void CPTG_Holo_Blend::getPathPose(uint16_t k, uint16_t step, mrpt::math::TPose2D
 	else
 	{
 		// Time required to align completed?
-		const double t_solve = (std::abs(dir) - T_ramp *0.5*std::abs(wi + wf))/std::abs(wf) + T_ramp;
+		const double t_solve = (dir - T_ramp *0.5*(wi + wf))/wf + T_ramp;
 		if (t > t_solve)
 			p.phi = dir;
 		else
@@ -464,7 +433,6 @@ double CPTG_Holo_Blend::getPathDist(uint16_t k, uint16_t step) const
 	const double k2 = (vxf-vxi)*TR2_;
 	const double k4 = (vyf-vyi)*TR2_;
 
-	MRPT_TODO("Update to take maxAllowedDirAngle into account");
 	if (t<T_ramp)
 	{
 		return calc_trans_distance_t_below_Tramp(k2,k4,vxi,vyi,t);
@@ -490,7 +458,6 @@ bool CPTG_Holo_Blend::getPathStepForDist(uint16_t k, double dist, uint16_t &out_
 	const double k2 = (vxf-vxi)*TR2_;
 	const double k4 = (vyf-vyi)*TR2_;
 
-	MRPT_TODO("Update to take maxAllowedDirAngle into account");
 	// --------------------------------------
 	// Solution within  t >= T_ramp ??
 	// --------------------------------------
@@ -670,7 +637,7 @@ void CPTG_Holo_Blend::updateTPObstacleSingle(double ox, double oy, uint16_t k, d
 	else dist = (sol_t - T_ramp) * V_MAX + calc_trans_distance_t_below_Tramp(k2, k4, vxi, vyi, T_ramp);
 
 	// Handle the special case of obstacles *inside* the robot at the begining of the PTG path:
-	MRPT_TODO("Factor out this process so it works for all PTGs");
+	MRPT_TODO("Factor out this process so it works for all PTGs: CPTG static enum behavior; virtual method isObsInside(), etc.");
 	if (::hypot(ox, oy) <= m_robotRadius)
 	{
 		if (dist < m_robotRadius) {
@@ -717,14 +684,13 @@ bool CPTG_Holo_Blend::supportVelCmdNOP() const
 double CPTG_Holo_Blend::maxTimeInVelCmdNOP(int path_k) const
 {
 	const double dir_local = CParameterizedTrajectoryGenerator::index2alpha(path_k);
-	if (std::abs(dir_local) <= maxAllowedDirAngle)
-	{
-		const size_t nSteps = getPathStepCount(path_k);
-		const double max_t = nSteps * PATH_TIME_STEP;
-		return max_t;
-	}
-	else
-	{
-		return std::abs(dir_local)/W_MAX;
-	}
+
+	const size_t nSteps = getPathStepCount(path_k);
+	const double max_t = nSteps * PATH_TIME_STEP;
+	return max_t;
+}
+
+double CPTG_Holo_Blend::getPathStepDuration() const
+{
+	return PATH_TIME_STEP;
 }

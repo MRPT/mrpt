@@ -29,6 +29,7 @@ CPTG_DiffDrive_CollisionGridBased::CPTG_DiffDrive_CollisionGridBased() :
 	V_MAX(.0), W_MAX(.0),
 	turningRadiusReference(.10),
 	m_resolution(0.05),
+	m_stepTimeDuration(0.01),
 	m_collisionGrid(-1,1,-1,1,0.5,this)
 {
 }
@@ -101,6 +102,8 @@ void CPTG_DiffDrive_CollisionGridBased::simulateTrajectories(
 	using mrpt::utils::square;
 
 	internal_deinitialize(); // Free previous paths
+
+	m_stepTimeDuration = diferencial_t;
 
 	// Reserve the size in the buffers:
 	m_trajectory.resize( m_alphaValuesCount );
@@ -849,3 +852,9 @@ mrpt::kinematics::CVehicleVelCmdPtr CPTG_DiffDrive_CollisionGridBased::getSuppor
 {
 	return mrpt::kinematics::CVehicleVelCmdPtr( new mrpt::kinematics::CVehicleVelCmd_DiffDriven() );
 }
+
+double CPTG_DiffDrive_CollisionGridBased::getPathStepDuration() const
+{
+	return m_stepTimeDuration;
+}
+
