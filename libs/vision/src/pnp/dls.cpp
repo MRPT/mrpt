@@ -95,6 +95,7 @@
 
     void mrpt::vision::pnp::dls::run_kernel(const cv::Mat& pp)
     {
+#if MRPT_OPENCV_VERSION_NUM>=0x240
         cv::Mat Mtilde(27, 27, CV_64F);
         cv::Mat D = cv::Mat::zeros(9, 9, CV_64F);
         build_coeff_matrix(pp, Mtilde, D);
@@ -204,7 +205,9 @@
                 cost_.push_back(cost_valid);
             }
         }
-
+#else
+THROW_EXCEPTION("Fix me: this method doesn't work with OpenCV < 2.4");
+#endif
     }
 
     void mrpt::vision::pnp::dls::build_coeff_matrix(const cv::Mat& pp, cv::Mat& Mtilde, cv::Mat& D)
