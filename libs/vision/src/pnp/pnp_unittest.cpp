@@ -3,6 +3,16 @@
 #include <Eigen/Dense>
 #include <mrpt/vision/pnp_algos.h>
 
+// Opencv 2.3 had a broken <opencv/eigen.h> in Ubuntu 14.04 Trusty => Disable PNP classes
+#include <mrpt/config.h>
+#if MRPT_HAS_OPENCV && MRPT_OPENCV_VERSION_NUM<0x240
+#	undef MRPT_HAS_OPENCV
+#	define MRPT_HAS_OPENCV 0
+#endif
+
+
+#if MRPT_HAS_OPENCV
+
 class CPnPTest: public::testing::Test
 {
     public:
@@ -115,39 +125,37 @@ TEST_F(CPnPTest, so3_TEST)
     EXPECT_LE(err_t, 2);
 }
 
-#if MRPT_HAS_OPENCV
-
-    TEST_F(CPnPTest, dls_TEST)
-    {
-        cpnp.dls(obj_pts, img_pts, n, I3, pose_est);
+TEST_F(CPnPTest, dls_TEST)
+{
+    cpnp.dls(obj_pts, img_pts, n, I3, pose_est);
         
-        t_est<<pose_est(0), pose_est(1), pose_est(2);
+    t_est<<pose_est(0), pose_est(1), pose_est(2);
         
-        double err_t = (t-t_est).norm();
+    double err_t = (t-t_est).norm();
         
-        EXPECT_LE(err_t, 2);
-    }
+    EXPECT_LE(err_t, 2);
+}
     
-    TEST_F(CPnPTest, epnp_TEST)
-    {
-        cpnp.epnp(obj_pts, img_pts, n, I3, pose_est);
+TEST_F(CPnPTest, epnp_TEST)
+{
+    cpnp.epnp(obj_pts, img_pts, n, I3, pose_est);
         
-        t_est<<pose_est(0), pose_est(1), pose_est(2);
+    t_est<<pose_est(0), pose_est(1), pose_est(2);
         
-        double err_t = (t-t_est).norm();
+    double err_t = (t-t_est).norm();
         
-        EXPECT_LE(err_t, 2);
-    }
+    EXPECT_LE(err_t, 2);
+}
     
-    TEST_F(CPnPTest, DISABLED_upnp_TEST)
-    {
-        cpnp.upnp(obj_pts, img_pts, n, I3, pose_est);
+TEST_F(CPnPTest, DISABLED_upnp_TEST)
+{
+    cpnp.upnp(obj_pts, img_pts, n, I3, pose_est);
         
-        t_est<<pose_est(0), pose_est(1), pose_est(2);
+    t_est<<pose_est(0), pose_est(1), pose_est(2);
         
-        double err_t = (t-t_est).norm();
+    double err_t = (t-t_est).norm();
         
-        EXPECT_LE(err_t, 2);
-    }
+    EXPECT_LE(err_t, 2);
+}
 
 #endif
