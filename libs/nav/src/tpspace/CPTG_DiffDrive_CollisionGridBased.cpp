@@ -796,8 +796,10 @@ void CPTG_DiffDrive_CollisionGridBased::updateTPObstacle(
 	ASSERTMSG_(!m_trajectory.empty(), "PTG has not been initialized!");
 	const TCollisionCell & cell = m_collisionGrid.getTPObstacle(ox, oy);
 	// Keep the minimum distance:
-	for (TCollisionCell::const_iterator i = cell.begin(); i != cell.end(); ++i)
-		mrpt::utils::keep_min(tp_obstacles[i->first], i->second);
+	for (TCollisionCell::const_iterator i = cell.begin(); i != cell.end(); ++i) {
+		const double dist = i->second;
+		internal_TPObsDistancePostprocess(ox,oy,dist, tp_obstacles[i->first]);
+	}
 }
 
 void CPTG_DiffDrive_CollisionGridBased::updateTPObstacleSingle(double ox, double oy, uint16_t k, double &tp_obstacle_k) const
@@ -806,10 +808,11 @@ void CPTG_DiffDrive_CollisionGridBased::updateTPObstacleSingle(double ox, double
 	const TCollisionCell & cell = m_collisionGrid.getTPObstacle(ox, oy);
 	// Keep the minimum distance:
 	for (TCollisionCell::const_iterator i = cell.begin(); i != cell.end(); ++i)
-		if (i->first==k)
-			mrpt::utils::keep_min(tp_obstacle_k, i->second);
+		if (i->first == k) {
+			const double dist = i->second;
+			internal_TPObsDistancePostprocess(ox,oy,dist, tp_obstacle_k);
+		}
 }
-
 
 void CPTG_DiffDrive_CollisionGridBased::internal_readFromStream(mrpt::utils::CStream &in)
 {

@@ -26,6 +26,16 @@ namespace mrpt
 {
 namespace nav
 {
+
+	/** Defines behaviors for where there is an obstacle *inside* the robot shape right at the beginning of a PTG trajectory.
+	  *\ingroup nav_tpspace
+	  * \sa Used in CParameterizedTrajectoryGenerator::COLLISION_BEHAVIOR
+	  */
+	enum PTG_collision_behavior_t {
+		COLL_BEH_BACK_AWAY = 0,    //!< Favor getting back from too-close (almost collision) obstacles.
+		COLL_BEH_STOP              //!< Totally dissallow any movement if there is any too-close (almost collision) obstacles.
+	};
+
 	/** \defgroup nav_tpspace TP-Space and PTG classes
 	  * \ingroup mrpt_nav_grp
 	  */
@@ -146,7 +156,7 @@ namespace nav
 		  */
 		virtual void updateTPObstacle(double ox, double oy, std::vector<double> &tp_obstacles) const = 0;
 
-		/** Like updateTPObstacle() but for one direction only (`k`) in TP-Space. `tp_obstacle_k` must be initialized with initTPObstacleSingle() before call. */
+		/** Like updateTPObstacle() but for one direction only (`k`) in TP-Space. `tp_obstacle_k` must be initialized with initTPObstacleSingle() before call (collision-free ranges, in "pseudometers", un-normalized). */
 		virtual void updateTPObstacleSingle(double ox, double oy, uint16_t k, double &tp_obstacle_k) const = 0;
 
 		/** Loads a set of default parameters into the PTG. Users normally will call `loadFromConfigFile()` instead, this method is provided 
@@ -163,6 +173,11 @@ namespace nav
 		  * navigation implementations will check for many other conditions. Default method in the base virtual class returns 0. 
 		  * \param path_k Queried path `k` index  [0,N-1] */
 		virtual double maxTimeInVelCmdNOP(int path_k) const;
+
+		/** Returns an approximation of the robot radius. */
+		virtual double getApproxRobotRadius() const = 0;
+		/** Returns true if the point lies within the robot shape. */
+		virtual bool isPointInsideRobotShape(const double x, const double y) const = 0;
 
 		/** @} */  // --- end of virtual methods
 
@@ -227,12 +242,24 @@ namespace nav
 		/** Auxiliary function for rendering */
 		virtual void add_robotShape_to_setOfLines(mrpt::opengl::CSetOfLines &gl_shape, const mrpt::poses::CPose2D &origin = mrpt::poses::CPose2D ()) const  = 0;
 
+		/** Defines the behavior when there is an obstacle *inside* the robot shape right at the beginning of a PTG trajectory.
+		 * Default value: COLL_BEH_BACK_AWAY
+		 */
+		static PTG_collision_behavior_t COLLISION_BEHAVIOR;
+
 protected:
 		double    refDistance;
 		uint16_t  m_alphaValuesCount; //!< The number of discrete values for "alpha" between -PI and +PI.
 		double    m_score_priority;
 
 		bool      m_is_initialized;
+
+		/** To be called by implementors of updateTPObstacle() and updateTPObstacleSingle() to 
+		  * honor the user settings regarding COLLISION_BEHAVIOR.
+		  * \param new_tp_obs_dist The newly determiend collision-free ranges, in "pseudometers", un-normalized, for some "k" direction.
+		  * \param inout_tp_obs The target where to store the new TP-Obs distance, if it fulfills the criteria determined by the collision behavior.
+		  */
+		void internal_TPObsDistancePostprocess(const double ox, const double oy, const double new_tp_obs_dist, double &inout_tp_obs) const;
 
 		virtual void internal_readFromStream(mrpt::utils::CStream &in);
 		virtual void internal_writeToStream(mrpt::utils::CStream &out) const;
@@ -251,23 +278,22 @@ protected:
 	class NAV_IMPEXP CPTG_RobotShape_Polygonal : public CParameterizedTrajectoryGenerator
 	{
 	public:
-		CPTG_RobotShape_Polygonal() : m_robotShape() {}
-		virtual ~CPTG_RobotShape_Polygonal() {}
+		CPTG_RobotShape_Polygonal();
+		virtual ~CPTG_RobotShape_Polygonal();
 
 		/** @name Robot shape
 		  * @{ **/
 		/** Robot shape must be set before initialization, either from ctor params or via this method. */
-		void setRobotShape(const mrpt::math::CPolygon & robotShape) {
-			m_robotShape = robotShape;
-			internal_processNewRobotShape();
-		}
+		void setRobotShape(const mrpt::math::CPolygon & robotShape);
 		const mrpt::math::CPolygon & getRobotShape() const { return m_robotShape; }
+		double getApproxRobotRadius() const MRPT_OVERRIDE;
 		/** @} */
-
+		bool isPointInsideRobotShape(const double x, const double y) const MRPT_OVERRIDE;
 		void add_robotShape_to_setOfLines(mrpt::opengl::CSetOfLines &gl_shape, const mrpt::poses::CPose2D &origin = mrpt::poses::CPose2D ()) const  MRPT_OVERRIDE;
 	protected:
 		virtual void internal_processNewRobotShape() = 0; //!< Will be called whenever the robot shape is set / updated
 		mrpt::math::CPolygon m_robotShape;
+		double m_robotApproxRadius;
 		void loadShapeFromConfigFile(const mrpt::utils::CConfigFileBase & source,const std::string & section);
 		void saveToConfigFile(mrpt::utils::CConfigFileBase &cfg,const std::string &sSection) const MRPT_OVERRIDE;
 		void internal_shape_loadFromStream(mrpt::utils::CStream &in);
@@ -282,19 +308,18 @@ protected:
 	class NAV_IMPEXP CPTG_RobotShape_Circular : public CParameterizedTrajectoryGenerator
 	{
 	public:
-		CPTG_RobotShape_Circular() : m_robotRadius(.0) {}
-		virtual ~CPTG_RobotShape_Circular() {}
+		CPTG_RobotShape_Circular();
+		virtual ~CPTG_RobotShape_Circular();
 
 		/** @name Robot shape
 		  * @{ **/
 		/** Robot shape must be set before initialization, either from ctor params or via this method. */
-		void setRobotShapeRadius(const double robot_radius) {
-			m_robotRadius = robot_radius;
-			internal_processNewRobotShape();
-		}
+		void setRobotShapeRadius(const double robot_radius);
 		double getRobotShapeRadius() const { return m_robotRadius; }
+		double getApproxRobotRadius() const MRPT_OVERRIDE;
 		/** @} */
 		void add_robotShape_to_setOfLines(mrpt::opengl::CSetOfLines &gl_shape, const mrpt::poses::CPose2D &origin = mrpt::poses::CPose2D ()) const  MRPT_OVERRIDE;
+		bool isPointInsideRobotShape(const double x, const double y) const MRPT_OVERRIDE;
 	protected:
 		virtual void internal_processNewRobotShape() = 0; //!< Will be called whenever the robot shape is set / updated
 		double m_robotRadius;
