@@ -212,6 +212,9 @@ namespace utils
 		THROW_EXCEPTION( mrpt::format( "Value for '%s' not found in config file in section '%s'", static_cast<const char*>(#variableName ), std::string(sectionNameStr).c_str() )); \
 	} }
 
+#define MRPT_LOAD_HERE_CONFIG_VAR_DEGREES(variableName,variableType,targetVariable,configFileObject,sectionNameStr) \
+		targetVariable = mrpt::utils::DEG2RAD( configFileObject.read_##variableType(sectionNameStr,#variableName,mrpt::utils::RAD2DEG(targetVariable),true));
+
 #define MRPT_LOAD_HERE_CONFIG_VAR_DEGREES_NO_DEFAULT(variableName,variableType,targetVariable,configFileObject,sectionNameStr) \
 	{ try { \
 		targetVariable = mrpt::utils::DEG2RAD( configFileObject.read_##variableType(sectionNameStr,#variableName,targetVariable,true)); \
