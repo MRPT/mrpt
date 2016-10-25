@@ -213,7 +213,7 @@ namespace utils
 	} }
 
 #define MRPT_LOAD_HERE_CONFIG_VAR_DEGREES(variableName,variableType,targetVariable,configFileObject,sectionNameStr) \
-		targetVariable = mrpt::utils::DEG2RAD( configFileObject.read_##variableType(sectionNameStr,#variableName,mrpt::utils::RAD2DEG(targetVariable),true));
+		targetVariable = mrpt::utils::DEG2RAD( configFileObject.read_##variableType(sectionNameStr,#variableName,mrpt::utils::RAD2DEG(targetVariable),false));
 
 #define MRPT_LOAD_HERE_CONFIG_VAR_DEGREES_NO_DEFAULT(variableName,variableType,targetVariable,configFileObject,sectionNameStr) \
 	{ try { \
