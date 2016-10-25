@@ -137,7 +137,7 @@ class CDlgPoseEst: public wxDialog
 		CMyGLCanvas* m_3Dview_cam;
 		mrpt::vision::pnp::CPnP pnp_algos;
 		typedef  bool (mrpt::vision::pnp::CPnP::*CPNP_PTR) (const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<Eigen::MatrixXd> img_pts, int n, const Eigen::Ref<Eigen::MatrixXd> cam_intrinsic, Eigen::Ref<Eigen::MatrixXd> pose_mat);
-		CPNP_PTR pose_algos[9]= {&mrpt::vision::pnp::CPnP::epnp, &mrpt::vision::pnp::CPnP::dls, &mrpt::vision::pnp::CPnP::upnp, &mrpt::vision::pnp::CPnP::p3p, &mrpt::vision::pnp::CPnP::lhm, &mrpt::vision::pnp::CPnP::posit, &mrpt::vision::pnp::CPnP::ppnp, &mrpt::vision::pnp::CPnP::rpnp, &mrpt::vision::pnp::CPnP::so3};
+		CPNP_PTR pose_algos[9];
 		Eigen::MatrixXd obj_pts, img_pts, pose_mat, cam_intrinsic, I3;
 
 		mrpt::opengl::COpenGLScenePtr	scene;
