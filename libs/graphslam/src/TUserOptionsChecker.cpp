@@ -7,6 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
+#include "graphslam-precomp.h"  // Precompiled headers
 #include <mrpt/graphslam/apps_related/TUserOptionsChecker.h>
 
 namespace mrpt { namespace graphslam { namespace supplementary {

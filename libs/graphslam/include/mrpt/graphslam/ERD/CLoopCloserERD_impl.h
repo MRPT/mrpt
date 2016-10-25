@@ -1125,7 +1125,7 @@ void CLoopCloserERD<GRAPH_t>::registerNewEdge(
 			rel_edge.getMeanVal().norm());
 
 	//  keep track of the registered edges...
-	if (abs(to - from) > m_lc_params.LC_min_nodeid_diff)  {
+	if (std::abs(int64_t(to) - int64_t(from) ) > m_lc_params.LC_min_nodeid_diff)  {
 		m_edge_types_to_nums["LC"]++;
 		m_just_inserted_loop_closure = true;
 		this->logFmt(LVL_INFO, "\tLoop Closure edge!");

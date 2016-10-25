@@ -217,7 +217,7 @@ void CICPCriteriaERD<GRAPH_t>::checkRegistrationCondition2D(
 					this->registerNewEdge(*node_it, curr_nodeID, rel_edge);
 					m_edge_types_to_nums["ICP2D"]++;
 					// in case of loop closure
-					if (abs(curr_nodeID - *node_it) > params.LC_min_nodeid_diff) {
+					if (std::abs(int64_t(curr_nodeID) - int64_t(*node_it)) > params.LC_min_nodeid_diff) {
 						m_edge_types_to_nums["LC"]++;
 						m_just_inserted_loop_closure = true;
 					}
@@ -277,7 +277,7 @@ void CICPCriteriaERD<GRAPH_t>::checkRegistrationCondition3D(
 					this->registerNewEdge(*node_it, curr_nodeID, rel_edge);
 					m_edge_types_to_nums["ICP3D"]++;
 					// in case of loop closure
-					if (abs(curr_nodeID - *node_it) > params.LC_min_nodeid_diff) {
+					if (std::abs(int64_t(curr_nodeID) - int64_t(*node_it)) > params.LC_min_nodeid_diff) {
 						m_edge_types_to_nums["LC"]++;
 						m_just_inserted_loop_closure = true;
 					}
