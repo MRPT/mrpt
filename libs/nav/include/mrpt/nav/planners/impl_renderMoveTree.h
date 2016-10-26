@@ -29,6 +29,8 @@ void PlannerTPS_VirtualBase::renderMoveTree(
 	const TRenderPlannedPathOptions &options
 )
 {
+	using std::string;
+
 	// Build a model of the vehicle shape: 
 	mrpt::opengl::CSetOfLinesPtr gl_veh_shape = mrpt::opengl::CSetOfLines::Create();
 	double xyzcorners_scale; // Size of XYZ corners (scaled to vehicle dimensions)
@@ -103,34 +105,33 @@ void PlannerTPS_VirtualBase::renderMoveTree(
 	}
 
 	// Determine the up-to-now best solution, so we can highlight the best path so far:
-	TMoveTreeSE2_TP::path_t  best_path;
+	typename tree_t::path_t  best_path;
 	if (options.highlight_path_to_node_id != INVALID_NODEID)
 		result.move_tree.backtrackPath(options.highlight_path_to_node_id, best_path);
 
 	// make list of nodes in the way of the best path:
-	std::set<const TMoveEdgeSE2_TP*> edges_best_path;
-	std::set<const TMoveEdgeSE2_TP*> edges_best_path_decim;
+	std::set<const typename tree_t::edge_t*> edges_best_path, edges_best_path_decim;
 	if (!best_path.empty())
 	{
-		TMoveTreeSE2_TP::path_t::const_iterator it_end = best_path.end();
-		TMoveTreeSE2_TP::path_t::const_iterator it_end_1 = best_path.end(); std::advance(it_end_1, -1);
+		typename tree_t::path_t::const_iterator it_end = best_path.end();
+		typename tree_t::path_t::const_iterator it_end_1 = best_path.end(); std::advance(it_end_1, -1);
 
-		for (TMoveTreeSE2_TP::path_t::const_iterator it = best_path.begin(); it != it_end; ++it)
+		for (typename tree_t::path_t::const_iterator it = best_path.begin(); it != it_end; ++it)
 			if (it->edge_to_parent)
 				edges_best_path.insert(it->edge_to_parent);
 
 		// Decimate the path (always keeping the first and last entry):
-		ASSERT_ABOVE_(options.draw_shape_decimation, 0)
-			for (TMoveTreeSE2_TP::path_t::const_iterator it = best_path.begin(); it != it_end; )
-			{
-				if (it->edge_to_parent)
-					edges_best_path_decim.insert(it->edge_to_parent);
-				if (it == it_end_1) break;
-				for (size_t k = 0; k<options.draw_shape_decimation; k++) {
-					if (it == it_end || it == it_end_1) break;
-					++it;
-				}
+		ASSERT_ABOVE_(options.draw_shape_decimation, 0);
+		for (typename tree_t::path_t::const_iterator it = best_path.begin(); it != it_end; )
+		{
+			if (it->edge_to_parent)
+				edges_best_path_decim.insert(it->edge_to_parent);
+			if (it == it_end_1) break;
+			for (size_t k = 0; k<options.draw_shape_decimation; k++) {
+				if (it == it_end || it == it_end_1) break;
+				++it;
 			}
+		}
 	}
 
 	// The starting pose vehicle shape must be inserted independently, because the rest are edges and we draw the END pose of each edge:
@@ -144,11 +145,11 @@ void PlannerTPS_VirtualBase::renderMoveTree(
 
 	// Existing nodes & edges between them:
 	{
-		const TMoveTreeSE2_TP::node_map_t & lstNodes = result.move_tree.getAllNodes();
+		const typename tree_t::node_map_t & lstNodes = result.move_tree.getAllNodes();
 
-		for (TMoveTreeSE2_TP::node_map_t::const_iterator itNode = lstNodes.begin(); itNode != lstNodes.end(); ++itNode)
+		for (typename tree_t::node_map_t::const_iterator itNode = lstNodes.begin(); itNode != lstNodes.end(); ++itNode)
 		{
-			const TMoveTreeSE2_TP::NODE_TYPE & node = itNode->second;
+			const typename tree_t::node_t & node = itNode->second;
 
 			mrpt::poses::CPose2D parent_state;
 			if (node.parent_id != INVALID_NODEID)
