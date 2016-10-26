@@ -12,6 +12,7 @@
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/nav/tpspace/CParameterizedTrajectoryGenerator.h>
 #include <mrpt/utils/CTimeLogger.h>
+#include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/nav/link_pragmas.h>
 #include <string>
 #include <cstdlib> // size_t
