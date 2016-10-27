@@ -95,7 +95,7 @@ void CPTG_RobotShape_Circular::internal_shape_saveToStream(mrpt::utils::CStream 
 	out << m_robotRadius;
 }
 
-double CPTG_RobotShape_Circular::getApproxRobotRadius() const
+double CPTG_RobotShape_Circular::getMaxRobotRadius() const
 {
 	return m_robotRadius;
 }
