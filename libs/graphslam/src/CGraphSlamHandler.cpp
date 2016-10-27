@@ -9,7 +9,7 @@
 
 // Implementation file for CGraphSlamHandler class
 
-#include "graphslam-precomp.cpp"
+#include "graphslam-precomp.h"
 #include <mrpt/graphslam/apps_related/CGraphSlamHandler.h>
 
 CGraphSlamHandler::CGraphSlamHandler() {
@@ -34,8 +34,7 @@ void CGraphSlamHandler::setOutputLoggerPtr(mrpt::utils::COutputLogger* logger) {
 
 //////////////////////////////////////////////////////////////////////////////
 CGraphSlamHandler::~CGraphSlamHandler() {
-	MRPT_START;
-
+	// Removed MRPT_START/END since a dtor can't launch an exception
 	using namespace mrpt::utils;
 
 	logger->logFmt(LVL_WARN, "graphslam-engine has finished.");
@@ -66,7 +65,6 @@ CGraphSlamHandler::~CGraphSlamHandler() {
 
 
 	logger->logFmt(LVL_INFO, "Exited.");
-	MRPT_END;
 }
 
 //////////////////////////////////////////////////////////////////////////////

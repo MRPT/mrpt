@@ -159,7 +159,7 @@ static void fghInitialize( const char* displayName )
         wc.lpszMenuName   = NULL;
         wc.lpszClassName  = _T("FREEGLUT");
 
-        /* Register the window class */
+        /* register the window class */
         atom = RegisterClass( &wc );
         FREEGLUT_INTERNAL_ERROR_EXIT ( atom, "Window Class Not Registered", "fghInitialize" );
     }
@@ -356,7 +356,7 @@ from The Open Group.
 static int
 ReadInteger(char *string, char **NextString)
 {
-    register int Result = 0;
+    int Result = 0;
     int Sign = 1;
 
     if (*string == '+')
@@ -385,7 +385,7 @@ static int XParseGeometry (
     unsigned int *height)    /* RETURN */
 {
     int mask = NoValue;
-    register char *strind;
+    char *strind;
     unsigned int tempWidth = 0, tempHeight = 0;
     int tempX = 0, tempY = 0;
     char *nextCharacter;

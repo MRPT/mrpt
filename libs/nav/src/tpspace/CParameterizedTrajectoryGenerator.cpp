@@ -11,13 +11,15 @@
 
 #include <mrpt/utils/CStream.h>
 #include <mrpt/nav/tpspace/CParameterizedTrajectoryGenerator.h>
-#include <mrpt/opengl/CSetOfLines.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
+#include <mrpt/opengl/CSetOfLines.h>
 
 using namespace mrpt::nav;
 
 std::string CParameterizedTrajectoryGenerator::OUTPUT_DEBUG_PATH_PREFIX = "./reactivenav.logs";
+PTG_collision_behavior_t CParameterizedTrajectoryGenerator::COLLISION_BEHAVIOR = mrpt::nav::COLL_BEH_BACK_AWAY;
+
 
 IMPLEMENTS_VIRTUAL_SERIALIZABLE(CParameterizedTrajectoryGenerator, CSerializable, mrpt::nav)
 
@@ -204,76 +206,6 @@ bool CParameterizedTrajectoryGenerator::debugDumpInFiles( const std::string &ptg
 	return true;
 }
 
-void CPTG_RobotShape_Polygonal::loadDefaultParams()
-{
-	m_robotShape.clear();
-	m_robotShape.AddVertex(-0.15, 0.15);
-	m_robotShape.AddVertex( 0.2, 0.1);
-	m_robotShape.AddVertex( 0.2,-0.1);
-	m_robotShape.AddVertex(-0.15,-0.15);
-}
-
-void CPTG_RobotShape_Polygonal::loadShapeFromConfigFile(const mrpt::utils::CConfigFileBase & cfg,const std::string & sSection)
-{
-	bool any_pt= false;
-	const double BADNUM = std::numeric_limits<double>::max();
-
-	for (unsigned int nPt = 0; ; ++nPt)
-	{
-		const std::string sPtx = mrpt::format("shape_x%u", nPt);
-		const std::string sPty = mrpt::format("shape_y%u", nPt);
-
-		const double ptx = cfg.read_double(sSection, sPtx,BADNUM, false);
-		const double pty = cfg.read_double(sSection, sPty,BADNUM, false);
-		if (ptx==BADNUM && pty==BADNUM) break;
-		ASSERTMSG_( (ptx!=BADNUM && pty!=BADNUM), "Error: mismatch between number of pts in {x,y} defining robot shape");
-
-		if (!any_pt) {
-			m_robotShape.clear();
-			any_pt=true;
-		}
-
-		m_robotShape.AddVertex(ptx,pty);
-	}
-
-	if (any_pt)
-		internal_processNewRobotShape();
-}
-
-void CPTG_RobotShape_Polygonal::saveToConfigFile(mrpt::utils::CConfigFileBase &cfg,const std::string &sSection) const
-{
-	const int WN = 40, WV = 20;
-
-	for (unsigned int i=0;i<m_robotShape.size();i++)
-	{
-		const std::string sPtx = mrpt::format("shape_x%u", i);
-		const std::string sPty = mrpt::format("shape_y%u", i);
-	
-		cfg.write(sSection,sPtx,m_robotShape[i].x,   WN,WV, "Robot polygonal shape, `x` [m].");
-		cfg.write(sSection,sPty,m_robotShape[i].y,   WN,WV, "Robot polygonal shape, `y` [m].");
-	}
-}
-
-
-void CPTG_RobotShape_Circular::loadDefaultParams()
-{
-	m_robotRadius = 0.2;
-}
-
-void CPTG_RobotShape_Circular::loadShapeFromConfigFile(const mrpt::utils::CConfigFileBase & cfg,const std::string & sSection)
-{
-	const double old_R = m_robotRadius;
-	MRPT_LOAD_HERE_CONFIG_VAR(robot_radius, double, m_robotRadius, cfg,sSection);
-	
-	if (m_robotRadius!=old_R)
-		internal_processNewRobotShape();
-}
-void CPTG_RobotShape_Circular::saveToConfigFile(mrpt::utils::CConfigFileBase &cfg,const std::string &sSection) const
-{
-	const int WN = 40, WV = 20;
-
-	cfg.write(sSection,"robot_radius",m_robotRadius,   WN,WV, "Robot radius [m].");
-}
 
 bool CParameterizedTrajectoryGenerator::isInitialized() const 
 { 
@@ -293,97 +225,41 @@ void CParameterizedTrajectoryGenerator::deinitialize()
 	m_is_initialized = false;
 }
 
-
-
-void CPTG_RobotShape_Circular::add_robotShape_to_setOfLines(
-	mrpt::opengl::CSetOfLines &gl_shape,
-	const mrpt::poses::CPose2D &origin) const 
+void CParameterizedTrajectoryGenerator::internal_TPObsDistancePostprocess(const double ox, const double oy, const double new_tp_obs_dist, double &inout_tp_obs) const
 {
-	const double R = m_robotRadius;
-	const int N = 21;
-	// Transform coordinates:
-	mrpt::math::CVectorDouble shap_x(N), shap_y(N),shap_z(N);
-	for (int i=0;i<N;i++) {
-		origin.composePoint(
-			R*cos(i*2*M_PI/(N-1)),R*sin(i*2*M_PI/(N-1)), 0,
-			shap_x[i],  shap_y[i],  shap_z[i]);
-	}
-	// Draw a "radius" to identify the "forward" orientation (phi=0)
-	gl_shape.appendLine( origin.x(), origin.y(), .0, shap_x[0],shap_y[0],shap_z[0] );
-	for (int i=1;i<=shap_x.size();i++) {
-		const int idx = i % shap_x.size();
-		gl_shape.appendLineStrip( shap_x[idx],shap_y[idx], shap_z[idx]);
-	}
-}
-
-
-void CPTG_RobotShape_Circular::internal_shape_loadFromStream(mrpt::utils::CStream &in)
-{
-	uint8_t version;
-	in >> version;
-	
-	switch (version)
+	const bool is_obs_inside_robot_shape = isPointInsideRobotShape(ox,oy);
+	if (!is_obs_inside_robot_shape)
 	{
-	case 0:
-		in >> m_robotRadius;
+		mrpt::utils::keep_min(inout_tp_obs, new_tp_obs_dist);
+		return;
+	}
+
+	// Handle the special case of obstacles *inside* the robot at the begining of the PTG path:
+	switch (COLLISION_BEHAVIOR)
+	{
+	case COLL_BEH_STOP:
+		inout_tp_obs = .0;
 		break;
-	default:
-		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
-	}
-}
 
-void CPTG_RobotShape_Circular::internal_shape_saveToStream(mrpt::utils::CStream &out) const
-{
-	uint8_t version = 0;
-	out << version;
-
-	out << m_robotRadius;
-}
-
-
-void CPTG_RobotShape_Polygonal::add_robotShape_to_setOfLines(
-	mrpt::opengl::CSetOfLines &gl_shape,
-	const mrpt::poses::CPose2D &origin  ) const 
-{
-	const int N = m_robotShape.size();
-	if (N>=2)
-	{
-		// Transform coordinates:
-		mrpt::math::CVectorDouble shap_x(N), shap_y(N),shap_z(N);
-		for (int i=0;i<N;i++) {
-			origin.composePoint(
-				m_robotShape[i].x, m_robotShape[i].y, 0,
-				shap_x[i],  shap_y[i],  shap_z[i]);
+	case COLL_BEH_BACK_AWAY:
+		{
+			if (new_tp_obs_dist < getApproxRobotRadius() ) {
+				// This means that we are getting apart of the obstacle: 
+				// ignore it to allow the robot to get off the near-collision:
+				// Don't change inout_tp_obs.
+				return;
+			}
+			else {
+				// This means we are already in collision and trying to get even closer 
+				// to the obstacle: totally disprove this action:
+				inout_tp_obs = .0;
+			}
 		}
-
-		gl_shape.appendLine( shap_x[0], shap_y[0], shap_z[0], shap_x[1],shap_y[1],shap_z[1] );
-		for (int i=0;i<=shap_x.size();i++) {
-			const int idx = i % shap_x.size();
-			gl_shape.appendLineStrip( shap_x[idx],shap_y[idx], shap_z[idx]);
-		}
-	}
-}
-
-void CPTG_RobotShape_Polygonal::internal_shape_loadFromStream(mrpt::utils::CStream &in)
-{
-	uint8_t version;
-	in >> version;
-	
-	switch (version)
-	{
-	case 0:
-		in >> m_robotShape;
 		break;
+
 	default:
-		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+		THROW_EXCEPTION("Obstacle postprocessing enum not implemented!");
 	}
 }
 
-void CPTG_RobotShape_Polygonal::internal_shape_saveToStream(mrpt::utils::CStream &out) const
-{
-	uint8_t version = 0;
-	out << version;
-
-	out << m_robotShape;
-}
 

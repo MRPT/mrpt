@@ -59,10 +59,17 @@
 #endif
 
 /** C++11 deleted function declarations */
-#if MRPT_CHECK_VISUALC_VERSION(12) || __has_extension(cxx_deleted_functions) || MRPT_CHECK_GCC_VERSION(4,4)
+#if MRPT_CHECK_VISUALC_VERSION(12) || __has_extension(cxx_deleted_functions) || (MRPT_CHECK_GCC_VERSION(4,4) && MRPT_HAS_CXX11)
 #	define MRPT_DELETED_FUNC   =delete
 #else
 #	define MRPT_DELETED_FUNC
+#endif
+
+/** C++11 noexcept: Used after member declarations */
+#if MRPT_CHECK_VISUALC_VERSION(14) || __has_extension(cxx_noexcept) || (MRPT_CHECK_GCC_VERSION(4,6) && MRPT_HAS_CXX11)
+#	define MRPT_NO_THROWS noexcept
+#else
+#	define MRPT_NO_THROWS  throw()
 #endif
 
 
@@ -253,7 +260,7 @@
 	}
 
 // Static asserts: use compiler version if we have a modern GCC (>=4.3) or MSVC (>=2010) version, otherwise rely on custom implementation:
-#if MRPT_CHECK_VISUALC_VERSION(10) || __has_extension(cxx_static_assert) || MRPT_CHECK_GCC_VERSION(4,3)
+#if MRPT_CHECK_VISUALC_VERSION(10) || __has_extension(cxx_static_assert) || (MRPT_CHECK_GCC_VERSION(4,3) && MRPT_HAS_CXX11)
 	#define MRPT_COMPILE_TIME_ASSERT(expression) static_assert(expression,#expression);
 #else
 	// The following macro is based on dclib:
@@ -413,13 +420,6 @@
 #	define MRPT_scanf_format_check(_FMT_,_VARARGS_)
 #endif
 
-
-/** Used after member declarations */
-#if MRPT_CHECK_VISUALC_VERSION(14) || __has_extension(cxx_noexcept) || (MRPT_CHECK_GCC_VERSION(4,6) && MRPT_HAS_CXX11)
-#	define MRPT_NO_THROWS noexcept
-#else
-#	define MRPT_NO_THROWS  throw()
-#endif
 
 /** Tells the compiler we really want to inline that function */
 #if (defined _MSC_VER) || (defined __INTEL_COMPILER)
