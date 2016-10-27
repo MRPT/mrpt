@@ -104,6 +104,13 @@ const long ptgConfiguratorframe::ID_CUSTOM6 = wxNewId();
 const long ptgConfiguratorframe::ID_STATICTEXT12 = wxNewId();
 const long ptgConfiguratorframe::ID_CUSTOM7 = wxNewId();
 const long ptgConfiguratorframe::ID_PANEL5 = wxNewId();
+const long ptgConfiguratorframe::ID_STATICTEXT13 = wxNewId();
+const long ptgConfiguratorframe::ID_CUSTOM8 = wxNewId();
+const long ptgConfiguratorframe::ID_STATICTEXT14 = wxNewId();
+const long ptgConfiguratorframe::ID_CUSTOM9 = wxNewId();
+const long ptgConfiguratorframe::ID_STATICTEXT15 = wxNewId();
+const long ptgConfiguratorframe::ID_CUSTOM10 = wxNewId();
+const long ptgConfiguratorframe::ID_PANEL6 = wxNewId();
 const long ptgConfiguratorframe::ID_NOTEBOOK1 = wxNewId();
 const long ptgConfiguratorframe::ID_TEXTCTRL2 = wxNewId();
 const long ptgConfiguratorframe::idMenuQuit = wxNewId();
@@ -139,6 +146,7 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent,wxWindowID id) :
     wxMenu* Menu1;
     wxFlexGridSizer* FlexGridSizer7;
     wxFlexGridSizer* FlexGridSizer8;
+    wxFlexGridSizer* FlexGridSizer14;
     wxFlexGridSizer* FlexGridSizer13;
     wxFlexGridSizer* FlexGridSizer12;
     wxMenuBar* MenuBar1;
@@ -228,7 +236,7 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent,wxWindowID id) :
     wxFont edCfgFont = wxSystemSettings::GetFont(wxSYS_OEM_FIXED_FONT);
     if ( !edCfgFont.Ok() ) edCfgFont = wxSystemSettings::GetFont(wxSYS_DEFAULT_GUI_FONT);
     edCfgFont.SetPointSize(8);
-    edCfgFont.SetFamily(wxTELETYPE);
+    edCfgFont.SetFamily(wxFONTFAMILY_TELETYPE);
     edCfg->SetFont(edCfgFont);
     FlexGridSizer3->Add(edCfg, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 2);
     FlexGridSizer5 = new wxFlexGridSizer(0, 3, 0, 0);
@@ -302,17 +310,39 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent,wxWindowID id) :
     Panel5->SetSizer(FlexGridSizer13);
     FlexGridSizer13->Fit(Panel5);
     FlexGridSizer13->SetSizeHints(Panel5);
-    Notebook1->AddPage(Panel2, _("TP-Space"), false);
+    Panel6 = new wxPanel(Notebook1, ID_PANEL6, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL6"));
+    FlexGridSizer14 = new wxFlexGridSizer(6, 1, 0, 0);
+    FlexGridSizer14->AddGrowableCol(0);
+    FlexGridSizer14->AddGrowableRow(1);
+    FlexGridSizer14->AddGrowableRow(3);
+    FlexGridSizer14->AddGrowableRow(5);
+    StaticText13 = new wxStaticText(Panel6, ID_STATICTEXT13, _("Selected path trajectory: dX/dt [m/s]"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT13"));
+    FlexGridSizer14->Add(StaticText13, 1, wxALL|wxALIGN_LEFT|wxALIGN_TOP, 5);
+    m_plotPathXp = new mpWindow(Panel6,ID_CUSTOM8,wxDefaultPosition,wxDefaultSize,0);
+    FlexGridSizer14->Add(m_plotPathXp, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
+    StaticText14 = new wxStaticText(Panel6, ID_STATICTEXT14, _("Selected path trajectory: dY/dt [m/s]"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT14"));
+    FlexGridSizer14->Add(StaticText14, 1, wxALL|wxALIGN_LEFT|wxALIGN_TOP, 5);
+    m_plotPathYp = new mpWindow(Panel6,ID_CUSTOM9,wxDefaultPosition,wxDefaultSize,0);
+    FlexGridSizer14->Add(m_plotPathYp, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
+    StaticText15 = new wxStaticText(Panel6, ID_STATICTEXT15, _("Selected path trajectory: w [deg/s]"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT15"));
+    FlexGridSizer14->Add(StaticText15, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 5);
+    m_plotPathW = new mpWindow(Panel6,ID_CUSTOM10,wxDefaultPosition,wxDefaultSize,0);
+    FlexGridSizer14->Add(m_plotPathW, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
+    Panel6->SetSizer(FlexGridSizer14);
+    FlexGridSizer14->Fit(Panel6);
+    FlexGridSizer14->SetSizeHints(Panel6);
+    Notebook1->AddPage(Panel2, _("TP-Space"), true);
     Notebook1->AddPage(Panel3, _("VelCmds@t=0"), false);
     Notebook1->AddPage(Panel4, _("Head angle"), false);
     Notebook1->AddPage(Panel5, _("Robot path"), false);
+    Notebook1->AddPage(Panel6, _("Robot velocity components"), false);
     FlexGridSizer9->Add(Notebook1, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
     FlexGridSizer1->Add(FlexGridSizer9, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
     edLog = new wxTextCtrl(this, ID_TEXTCTRL2, wxEmptyString, wxDefaultPosition, wxSize(-1,100), wxTE_PROCESS_ENTER|wxTE_PROCESS_TAB|wxTE_MULTILINE|wxTE_READONLY|wxHSCROLL|wxTE_DONTWRAP|wxALWAYS_SHOW_SB, wxDefaultValidator, _T("ID_TEXTCTRL2"));
     wxFont edLogFont = wxSystemSettings::GetFont(wxSYS_OEM_FIXED_FONT);
     if ( !edLogFont.Ok() ) edLogFont = wxSystemSettings::GetFont(wxSYS_DEFAULT_GUI_FONT);
     edLogFont.SetPointSize(8);
-    edLogFont.SetFamily(wxTELETYPE);
+    edLogFont.SetFamily(wxFONTFAMILY_TELETYPE);
     edLog->SetFont(edLogFont);
     FlexGridSizer1->Add(edLog, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
     SetSizer(FlexGridSizer1);
@@ -369,6 +399,10 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent,wxWindowID id) :
 	prepareRobotPathPlot(m_plotPathX, &m_graph_path_x, "x");
 	prepareRobotPathPlot(m_plotPathY, &m_graph_path_y, "y");
 	prepareRobotPathPlot(m_plotPathPhi, &m_graph_path_phi, "phi");
+	//
+	prepareRobotPathPlot(m_plotPathXp, &m_graph_path_vx, "vx");
+	prepareRobotPathPlot(m_plotPathYp, &m_graph_path_vy, "vy");
+	prepareRobotPathPlot(m_plotPathW, &m_graph_path_omega, "omega");
 
 	// Populate 3D views:
 	// ---------------------------
@@ -646,6 +680,9 @@ void ptgConfiguratorframe::rebuild3Dview()
 		// 2D angle to robot head plots:
 		std::vector<double> robotHeadAng_x, robotHeadAng_y, robotHeadAngAll_x(nPTGPaths), robotHeadAngAll_y(nPTGPaths);
 		std::vector<double> robotPath_x, robotPath_y, robotPath_phi;
+		std::vector<double> robotPath_vx, robotPath_vy, robotPath_w;
+		const double dt = ptg->getPathStepDuration();
+
 		for (size_t k = 0; k < nPTGPaths; k++)
 		{
 			robotHeadAngAll_x[k] = k;
@@ -659,6 +696,9 @@ void ptgConfiguratorframe::rebuild3Dview()
 				robotPath_x.resize(nSteps);
 				robotPath_y.resize(nSteps);
 				robotPath_phi.resize(nSteps);
+				robotPath_vx.resize(nSteps);
+				robotPath_vy.resize(nSteps);
+				robotPath_w.resize(nSteps);
 			}
 
 			mrpt::math::TPose2D prevPose, curPose;
@@ -669,7 +709,7 @@ void ptgConfiguratorframe::rebuild3Dview()
 				if (j != 0)
 				{
 					// Numerical estimate of global direction of motion:
-					const double dx = curPose.x - prevPose.x, dy = curPose.y - prevPose.y;
+					const double dx = curPose.x - prevPose.x, dy = curPose.y - prevPose.y, dphi = mrpt::math::angDistance( prevPose.phi, curPose.phi );
 
 					// Head calc:
 					const double head2dir = (dy != 0 || dx != 0) ? 
@@ -682,6 +722,11 @@ void ptgConfiguratorframe::rebuild3Dview()
 						robotPath_x[j] = curPose.x;
 						robotPath_y[j] = curPose.y;
 						robotPath_phi[j] = mrpt::utils::RAD2DEG(curPose.phi);
+
+
+						robotPath_vx[j] = dx / dt;
+						robotPath_vy[j] = dy / dt;
+						robotPath_w[j] = mrpt::utils::RAD2DEG(dphi/dt);
 					}
 
 					mrpt::utils::keep_max(maxRobotHeadErr, std::abs(head2dir));
@@ -698,6 +743,9 @@ void ptgConfiguratorframe::rebuild3Dview()
 		m_graph_path_y->SetData(robotHeadAng_x, robotPath_y);
 		m_graph_path_phi->SetData(robotHeadAng_x, robotPath_phi);
 
+		m_graph_path_vx->SetData(robotHeadAng_x, robotPath_vx);
+		m_graph_path_vy->SetData(robotHeadAng_x, robotPath_vy);
+		m_graph_path_omega->SetData(robotHeadAng_x, robotPath_w);
 
 		// TP-Obstacles:
 		gl_tp_obstacles->clear();
@@ -755,12 +803,18 @@ void ptgConfiguratorframe::rebuild3Dview()
 	m_plotPathX->Fit();
 	m_plotPathY->Fit();
 	m_plotPathPhi->Fit();
+	m_plotPathXp->Fit();
+	m_plotPathYp->Fit();
+	m_plotPathW->Fit();
 
 	m_plotHeadAngAll->UpdateAll();
 	m_plotHeadAngIndiv->UpdateAll();
 	m_plotPathX->UpdateAll();
 	m_plotPathY->UpdateAll();
 	m_plotPathPhi->UpdateAll();
+	m_plotPathXp->UpdateAll();
+	m_plotPathYp->UpdateAll();
+	m_plotPathW->UpdateAll();
 
 	m_plot->Refresh();
 	m_plotTPSpace->Refresh();

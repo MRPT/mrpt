@@ -26,9 +26,7 @@ CLevMarqGSO<GRAPH_t>::CLevMarqGSO()
 }
 template<class GRAPH_t>
 CLevMarqGSO<GRAPH_t>::~CLevMarqGSO() {
-	MRPT_START;
-
-	MRPT_END;
+	// JL Removed MRPT_END since it could launch an exception, not allowed in a dtor
 }
 
 template<class GRAPH_t>

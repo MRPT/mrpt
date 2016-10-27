@@ -119,6 +119,13 @@ class ptgConfiguratorframe: public wxFrame
         static const long ID_STATICTEXT12;
         static const long ID_CUSTOM7;
         static const long ID_PANEL5;
+        static const long ID_STATICTEXT13;
+        static const long ID_CUSTOM8;
+        static const long ID_STATICTEXT14;
+        static const long ID_CUSTOM9;
+        static const long ID_STATICTEXT15;
+        static const long ID_CUSTOM10;
+        static const long ID_PANEL6;
         static const long ID_NOTEBOOK1;
         static const long ID_TEXTCTRL2;
         static const long idMenuQuit;
@@ -128,6 +135,7 @@ class ptgConfiguratorframe: public wxFrame
 
         //(*Declarations(ptgConfiguratorframe)
         wxStaticText* StaticText10;
+        mpWindow* m_plotPathW;
         wxStaticText* StaticText9;
         wxTextCtrl* edObsY;
         wxPanel* Panel5;
@@ -135,8 +143,10 @@ class ptgConfiguratorframe: public wxFrame
         mpWindow* m_plotPathY;
         wxNotebook* Notebook1;
         CMyGLCanvas* m_plotTPSpace;
+        wxStaticText* StaticText13;
         wxStaticText* StaticText2;
         wxPanel* Panel4;
+        wxStaticText* StaticText14;
         wxCheckBox* cbDrawShapePath;
         wxSpinCtrl* edPTGIndex;
         wxStaticText* StaticText6;
@@ -151,19 +161,23 @@ class ptgConfiguratorframe: public wxFrame
         wxStaticText* StaticText1;
         wxStaticText* StaticText3;
         wxChoice* cbPTGClass;
+        wxPanel* Panel6;
         wxPanel* Panel3;
         CMyGLCanvas* m_plot;
         wxButton* btnPlaceTarget;
+        mpWindow* m_plotPathYp;
         wxTextCtrl* edTargetX;
         wxCheckBox* cbHighlightOnePath;
         wxTextCtrl* edLog;
         wxStaticText* StaticText5;
+        mpWindow* m_plotPathXp;
         mpWindow* m_plotHeadAngIndiv;
         wxStaticText* StaticText7;
         wxStatusBar* StatusBar1;
         mpWindow* m_plotVelCmds;
         wxTextCtrl* edObsX;
         wxButton* btnReloadParams;
+        wxStaticText* StaticText15;
         wxStaticText* StaticText12;
         mpWindow* m_plotPathX;
         wxTextCtrl* edCfg;
@@ -207,6 +221,7 @@ class ptgConfiguratorframe: public wxFrame
 		// 2D plot views:
 		mpFXYVector  *m_graph_head_all, *m_graph_head_indiv;
 		mpFXYVector  *m_graph_path_x, *m_graph_path_y, *m_graph_path_phi;
+		mpFXYVector  *m_graph_path_vx, *m_graph_path_vy, *m_graph_path_omega;
 
 		static void prepareRobotPathPlot(mpWindow *plot, mpFXYVector  **graph, const std::string &name);
 };
