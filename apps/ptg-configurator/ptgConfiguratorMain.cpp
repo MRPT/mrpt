@@ -524,7 +524,7 @@ ptgConfiguratorframe::~ptgConfiguratorframe()
 
 void ptgConfiguratorframe::prepareRobotPathPlot(mpWindow *plot, mpFXYVector  **graph, const std::string &name)
 {
-	plot->AddLayer(new mpScaleX(wxT("x"),mpALIGN_CENTER,false /*grid*/));
+	plot->AddLayer(new mpScaleX(wxT("t [s]"),mpALIGN_CENTER,false /*grid*/));
 	plot->AddLayer(new mpScaleY(wxT("y"),mpALIGN_CENTER,false /*grid*/));
 
 	*graph = new mpFXYVector(_U(name.c_str()));
@@ -717,7 +717,7 @@ void ptgConfiguratorframe::rebuild3Dview()
 						.0;
 					
 					if (is_selected_path) {
-						robotHeadAng_x[j] = j;
+						robotHeadAng_x[j] = j * dt;
 						robotHeadAng_y[j] = mrpt::utils::RAD2DEG(head2dir);
 						robotPath_x[j] = curPose.x;
 						robotPath_y[j] = curPose.y;
