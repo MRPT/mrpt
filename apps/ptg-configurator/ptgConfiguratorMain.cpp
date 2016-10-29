@@ -832,14 +832,14 @@ void ptgConfiguratorframe::loadPlugin()
 {
 #ifdef MRPT_OS_LINUX
 	wxFileDialog
-	openFileDialog(this, _("Open library"), "", "",
+	openFileDialog(this, _("Open library"), wxT(""), wxT(""),
 		wxT("so files (*.so)|*.so|so files (*.so.*)|*.so.*"),
 		wxFD_OPEN|wxFD_FILE_MUST_EXIST);
 
 	if (openFileDialog.ShowModal() == wxID_CANCEL)
 		return;
 
-	dlopen( _U(openFileDialog.GetPath().c_str()), RTLD_LAZY);
+	dlopen( openFileDialog.GetPath().mb_str(), RTLD_LAZY);
 
 	// Populate list of existing PTGs:
 	{
