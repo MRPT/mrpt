@@ -30,9 +30,9 @@ IF(CMAKE_MRPT_HAS_WXWIDGETS)
 	TARGET_LINK_LIBRARIES(${TMP_TARGET_NAME} ${wxWidgets_LIBRARIES} )
 	TARGET_LINK_LIBRARIES(${TMP_TARGET_NAME} ${MRPT_LINKER_LIBS})
 
-	# -lld required by the plugin load mechanism of this app:
+	# -ldl required by the plugin load mechanism of this app:
 	IF(UNIX)
-	        TARGET_LINK_LIBRARIES(${TMP_TARGET_NAME} ld)
+	        TARGET_LINK_LIBRARIES(${TMP_TARGET_NAME} dl)
 	ENDIF()
 
 	# Dependencies on MRPT libraries:
