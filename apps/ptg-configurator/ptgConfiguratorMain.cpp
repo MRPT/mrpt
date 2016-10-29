@@ -830,7 +830,7 @@ void ptgConfiguratorframe::rebuild3Dview()
 
 void ptgConfiguratorframe::loadPlugin()
 {
-#ifndef MRPT_OS_LINUX
+#ifdef MRPT_OS_LINUX
 	wxFileDialog
 	openFileDialog(this, _("Open library"), "", "",
 		wxT("so files (*.so)|*.so|so files (*.so.*)|*.so.*"),
