@@ -830,15 +830,16 @@ void ptgConfiguratorframe::rebuild3Dview()
 
 void ptgConfiguratorframe::loadPlugin()
 {
+#ifndef MRPT_OS_LINUX
 	wxFileDialog
 	openFileDialog(this, _("Open library"), "", "",
-		"so files (*.so)|*.so|so files (*.so.*)|*.so.*",
+		wxT("so files (*.so)|*.so|so files (*.so.*)|*.so.*"),
 		wxFD_OPEN|wxFD_FILE_MUST_EXIST);
 
 	if (openFileDialog.ShowModal() == wxID_CANCEL)
 		return;
 
-	dlopen(openFileDialog.GetPath().c_str(), RTLD_LAZY);
+	dlopen( _U(openFileDialog.GetPath().c_str()), RTLD_LAZY);
 
 	// Populate list of existing PTGs:
 	{
@@ -858,6 +859,9 @@ void ptgConfiguratorframe::loadPlugin()
 		wxCommandEvent e;
 		OncbPTGClassSelect(e);
 	}
+#else
+	wxMessageBox( wxT("This feature is only available in GNU/Linux!"), wxT("Error"), wxOK, NULL);
+#endif
 }
 
 void ptgConfiguratorframe::OnedPTGIndexChange(wxSpinEvent& event)
