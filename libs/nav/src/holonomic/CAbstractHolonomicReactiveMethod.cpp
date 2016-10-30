@@ -19,6 +19,23 @@ using namespace mrpt::nav;
 IMPLEMENTS_VIRTUAL_SERIALIZABLE(CAbstractHolonomicReactiveMethod, CSerializable, mrpt::nav)
 
 
+CAbstractHolonomicReactiveMethod::CAbstractHolonomicReactiveMethod() :
+	m_associatedPTG(NULL)
+{
+}
+CAbstractHolonomicReactiveMethod::~CAbstractHolonomicReactiveMethod()
+{
+}
+
+void CAbstractHolonomicReactiveMethod::setAssociatedPTG(mrpt::nav::CParameterizedTrajectoryGenerator *ptg)
+{
+	m_associatedPTG = ptg;
+}
+mrpt::nav::CParameterizedTrajectoryGenerator * CAbstractHolonomicReactiveMethod::getAssociatedPTG() const
+{
+	return m_associatedPTG;
+}
+
 CAbstractHolonomicReactiveMethod * CAbstractHolonomicReactiveMethod::Create(const std::string &className) MRPT_NO_THROWS
 {
 	try {

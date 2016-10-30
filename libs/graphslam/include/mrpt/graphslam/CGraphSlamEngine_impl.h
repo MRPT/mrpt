@@ -49,7 +49,6 @@ CGraphSlamEngine<GRAPH_t>::CGraphSlamEngine(
 template<class GRAPH_t>
 
 CGraphSlamEngine<GRAPH_t>::~CGraphSlamEngine() {
-	MRPT_START;
 	using namespace mrpt::utils;
 	using namespace mrpt;
 	using namespace std;
@@ -87,8 +86,6 @@ CGraphSlamEngine<GRAPH_t>::~CGraphSlamEngine() {
 		this->logFmt(LVL_DEBUG, "Releasing CDisplayWindowPlots... ");
 		delete m_win_plot;
 	}
-
-	MRPT_END;
 }
 
 
@@ -374,7 +371,7 @@ void CGraphSlamEngine<GRAPH_t>::initCGraphSlamEngine() {
 				"Setting the Ground truth read step to: %lu", m_GT_poses_step);
 	}
 	catch (std::exception& e) {
-		this->logFmt(LVL_INFO, "RGBD_TUM info file was not found.");
+		this->logFmt(LVL_INFO, "Error loading rawlog file: %s",e.what());
 	}
 
 	// SLAM evaluation metric
@@ -570,7 +567,7 @@ bool CGraphSlamEngine<GRAPH_t>::execGraphSlamStep(
 		}
 
 		// update the edge counter
-		std::map<const std::string, int> edge_types_to_nums;
+		std::map<std::string, int> edge_types_to_nums;
 		m_edge_registrar->getEdgesStats(&edge_types_to_nums);
 		if (edge_types_to_nums.size()) {
 			for (std::map<std::string, int>::const_iterator it =
@@ -1734,8 +1731,8 @@ void CGraphSlamEngine<GRAPH_t>::decimateLaserScan(
 	size_t scan_size = laser_scan_in.scan.size();
 
 	// assign the decimated scans, ranges
-	float new_scan[scan_size];
-	char new_validRange[scan_size];
+	std::vector<float> new_scan(scan_size); // Was [], but can't use non-constant argument with arrays
+	std::vector<char> new_validRange(scan_size);
 	size_t new_scan_size = 0;
 	for (size_t i=0; i != scan_size; i++) {
 		if (i % keep_every_n_entries == 0) {
@@ -1744,7 +1741,7 @@ void CGraphSlamEngine<GRAPH_t>::decimateLaserScan(
 			new_scan_size++;
 		}
 	}
-	laser_scan_out->loadFromVectors(new_scan_size, new_scan, new_validRange);
+	laser_scan_out->loadFromVectors(new_scan_size, &new_scan[0], &new_validRange[0]);
 
 	MRPT_END;
 }

@@ -89,6 +89,8 @@ namespace mrpt
 		unsigned int direction2sector(const double a, const unsigned int N);
 		mrpt::math::CMatrixD m_dirs_scores; //!< Individual scores for each direction: (i,j), i (row) are directions, j (cols) are scores. Not all directions may have evaluations, in which case a "-1" value will be found.
 
+		virtual void postProcessDirectionEvaluations(std::vector<double> &dir_evals); // If desired, override in a derived class to manipulate the final evaluations of each directions
+
 	}; // end of CHolonomicFullEval
 	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CHolonomicFullEval, CAbstractHolonomicReactiveMethod, NAV_IMPEXP )
 

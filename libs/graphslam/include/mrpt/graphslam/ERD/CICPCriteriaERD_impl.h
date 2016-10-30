@@ -169,7 +169,9 @@ template<class GRAPH_t>
 void CICPCriteriaERD<GRAPH_t>::checkRegistrationCondition2D(
 		const std::set<mrpt::utils::TNodeID>& nodes_set) {
 	MRPT_START;
+	using namespace mrpt;
 	using namespace mrpt::obs;
+	using namespace mrpt::math;
 
 	mrpt::utils::TNodeID curr_nodeID = m_graph->nodeCount()-1;
 	CObservation2DRangeScanPtr curr_laser_scan;
@@ -212,12 +214,28 @@ void CICPCriteriaERD<GRAPH_t>::checkRegistrationCondition2D(
 						&icp_info);
 				m_time_logger.leave("CICPCriteriaERD::getICPEdge");
 
+				// Debugging statements
+				MRPT_LOG_DEBUG_STREAM <<
+			">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>";
+				MRPT_LOG_DEBUG_STREAM <<
+					"ICP constraint between NON-successive nodes: " << 
+					*node_it << " => " << curr_nodeID << 
+					std::endl <<
+					"\tnIterations = " << icp_info.nIterations <<
+					"\tgoodness = " << icp_info.goodness;
+				MRPT_LOG_DEBUG_STREAM << "ICP_goodness_thresh: " <<
+					params.ICP_goodness_thresh;
+				MRPT_LOG_DEBUG_STREAM <<
+			"<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<";
+
+
 				// criterion for registering a new node
 				if (icp_info.goodness > params.ICP_goodness_thresh) {
 					this->registerNewEdge(*node_it, curr_nodeID, rel_edge);
 					m_edge_types_to_nums["ICP2D"]++;
 					// in case of loop closure
-					if (std::abs(int64_t(curr_nodeID) - int64_t(*node_it)) > params.LC_min_nodeid_diff) {
+					if (absDiff(curr_nodeID, *node_it) >
+							params.LC_min_nodeid_diff) {
 						m_edge_types_to_nums["LC"]++;
 						m_just_inserted_loop_closure = true;
 					}
@@ -234,6 +252,7 @@ void CICPCriteriaERD<GRAPH_t>::checkRegistrationCondition3D(
 	MRPT_START;
 	using namespace std;
 	using namespace mrpt::obs;
+	using namespace mrpt::math;
 
 	mrpt::utils::TNodeID curr_nodeID = m_graph->nodeCount()-1;
 	CObservation3DRangeScanPtr curr_laser_scan;
@@ -277,7 +296,7 @@ void CICPCriteriaERD<GRAPH_t>::checkRegistrationCondition3D(
 					this->registerNewEdge(*node_it, curr_nodeID, rel_edge);
 					m_edge_types_to_nums["ICP3D"]++;
 					// in case of loop closure
-					if (std::abs(int64_t(curr_nodeID) - int64_t(*node_it)) > params.LC_min_nodeid_diff) {
+					if (absDiff(curr_nodeID, *node_it) > params.LC_min_nodeid_diff) {
 						m_edge_types_to_nums["LC"]++;
 						m_just_inserted_loop_closure = true;
 					}
@@ -395,7 +414,7 @@ void CICPCriteriaERD<GRAPH_t>::toggleLaserScansVisualization() {
 
 template<class GRAPH_t>
 void CICPCriteriaERD<GRAPH_t>::getEdgesStats(
-		std::map<const std::string, int>* edge_types_to_num) const {
+		std::map<std::string, int>* edge_types_to_num) const {
 	MRPT_START;
 
 	*edge_types_to_num = m_edge_types_to_nums;
