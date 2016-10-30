@@ -236,7 +236,7 @@ class CICPCriteriaERD :
 			mrpt::obs::CObservation2DRangeScanPtr> m_nodes_to_laser_scans2D;
 		std::map<const mrpt::utils::TNodeID,
 			mrpt::obs::CObservation3DRangeScanPtr> m_nodes_to_laser_scans3D;
-		std::map<const std::string, int> m_edge_types_to_nums;
+		std::map<std::string, int> m_edge_types_to_nums;
 
 		int m_last_total_num_of_nodes;
 		mrpt::obs::CObservation2DRangeScanPtr m_last_laser_scan2D;
