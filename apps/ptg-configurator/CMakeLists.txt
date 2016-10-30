@@ -30,6 +30,11 @@ IF(CMAKE_MRPT_HAS_WXWIDGETS)
 	TARGET_LINK_LIBRARIES(${TMP_TARGET_NAME} ${wxWidgets_LIBRARIES} )
 	TARGET_LINK_LIBRARIES(${TMP_TARGET_NAME} ${MRPT_LINKER_LIBS})
 
+	# -ldl required by the plugin load mechanism of this app:
+	IF(UNIX)
+	        TARGET_LINK_LIBRARIES(${TMP_TARGET_NAME} dl)
+	ENDIF()
+
 	# Dependencies on MRPT libraries:
 	#  Just mention the top-level dependency, the rest will be detected automatically, 
 	#  and all the needed #include<> dirs added (see the script DeclareAppDependencies.cmake for further details)

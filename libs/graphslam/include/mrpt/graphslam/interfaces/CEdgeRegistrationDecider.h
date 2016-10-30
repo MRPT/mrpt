@@ -66,7 +66,7 @@ class CEdgeRegistrationDecider : public mrpt::graphslam::CRegistrationDeciderOrO
 		 * the corresponding number of registration of each edge.
 		 */
     virtual void getEdgesStats(
-    		std::map<const std::string, int>* edge_type_to_num) const {};
+    		std::map<std::string, int>* edge_type_to_num) const {};
     /**\brief Used by the caller to query for possible loop closures in the
      * last edge registration procedure.
      */
