@@ -175,7 +175,7 @@ void CICPCriteriaERD<GRAPH_t>::checkRegistrationCondition2D(
 
 	mrpt::utils::TNodeID curr_nodeID = m_graph->nodeCount()-1;
 	CObservation2DRangeScanPtr curr_laser_scan;
-	std::map<const mrpt::utils::TNodeID,
+	std::map<mrpt::utils::TNodeID,
 		mrpt::obs::CObservation2DRangeScanPtr>::const_iterator search;
 
 	// search for curr_laser_scan
@@ -256,7 +256,7 @@ void CICPCriteriaERD<GRAPH_t>::checkRegistrationCondition3D(
 
 	mrpt::utils::TNodeID curr_nodeID = m_graph->nodeCount()-1;
 	CObservation3DRangeScanPtr curr_laser_scan;
-	std::map<const mrpt::utils::TNodeID,
+	std::map<mrpt::utils::TNodeID,
 		mrpt::obs::CObservation3DRangeScanPtr>::const_iterator search;
 	// search for curr_laser_scan
 	search = m_nodes_to_laser_scans3D.find(curr_nodeID);
