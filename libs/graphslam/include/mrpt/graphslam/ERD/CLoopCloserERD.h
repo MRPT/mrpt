@@ -264,7 +264,7 @@ class CLoopCloserERD:
 		void notifyOfWindowEvents(
 				const std::map<std::string, bool>& events_occurred);
 		void getEdgesStats(
-				std::map<const std::string, int>* edge_types_to_num) const;
+				std::map<std::string, int>* edge_types_to_num) const;
 
 		void initializeVisuals();
 		void updateVisuals();

@@ -567,7 +567,7 @@ bool CGraphSlamEngine<GRAPH_t>::execGraphSlamStep(
 		}
 
 		// update the edge counter
-		std::map<const std::string, int> edge_types_to_nums;
+		std::map<std::string, int> edge_types_to_nums;
 		m_edge_registrar->getEdgesStats(&edge_types_to_nums);
 		if (edge_types_to_nums.size()) {
 			for (std::map<std::string, int>::const_iterator it =
