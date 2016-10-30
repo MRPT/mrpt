@@ -74,7 +74,6 @@ void  CHolonomicFullEval::navigate(
 	}
 
 	std::vector<double> dirs_eval(nDirs, .0);  // Evaluation of each possible direction
-
 	const int NUM_FACTORS = 5;
 
 	ASSERT_(options.factorWeights.size()==NUM_FACTORS);
@@ -160,7 +159,7 @@ void  CHolonomicFullEval::navigate(
 		for (int l=0;l<NUM_FACTORS;l++) m_dirs_scores(i,l)= scores[l];
 	}
 
-	// Phase 1: average of normalized factors 1,2 & 3 and thresholding:
+	// Phase 1: average of normalized PHASE1_FACTORS and thresholding:
 	// ----------------------------------------------------------------------
 	const unsigned int PHASE1_NUM_FACTORS = options.PHASE1_FACTORS.size(), PHASE2_NUM_FACTORS = options.PHASE2_FACTORS.size();
 	ASSERT_(PHASE1_NUM_FACTORS>0);
@@ -191,8 +190,7 @@ void  CHolonomicFullEval::navigate(
 		mrpt::utils::keep_max(phase1_max, phase1_score[i]);
 		mrpt::utils::keep_min(phase1_min, phase1_score[i]);
 
-		MRPT_TODO("Save only if logging")
-		m_dirs_scores(i,NUM_FACTORS+0)= phase1_score[i];
+		m_dirs_scores(i,NUM_FACTORS+0)= phase1_score[i];  // for logging.
 	}
 
 	// Phase 2:
@@ -224,9 +222,11 @@ void  CHolonomicFullEval::navigate(
 
 		dirs_eval[i] = this_dir_eval;
 
-		// save for logging:
-		m_dirs_scores(i,NUM_FACTORS+1)= this_dir_eval;
+		m_dirs_scores(i,NUM_FACTORS+1)= this_dir_eval; // for logging:
 	} // for each direction
+
+	// Give a chance for a derived class to manipulate these evaluations:
+	postProcessDirectionEvaluations(dirs_eval);
 
 	// Search for best direction:
 	unsigned int best_dir  = std::numeric_limits<unsigned int>::max();
@@ -391,3 +391,7 @@ void  CHolonomicFullEval::readFromStream(mrpt::utils::CStream &in,int version)
 	};
 }
 
+void CHolonomicFullEval::postProcessDirectionEvaluations(std::vector<double> &dir_evals)
+{
+	// Default: do nothing
+}
