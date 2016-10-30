@@ -1528,7 +1528,7 @@ void CLoopCloserERD<GRAPH_t>::toggleLaserScansVisualization() {
 
 template<class GRAPH_t>
 void CLoopCloserERD<GRAPH_t>::getEdgesStats(
-		std::map<const std::string, int>* edge_types_to_num) const {
+		std::map<std::string, int>* edge_types_to_num) const {
 	MRPT_START;
 	*edge_types_to_num = m_edge_types_to_nums;
 	MRPT_END;
