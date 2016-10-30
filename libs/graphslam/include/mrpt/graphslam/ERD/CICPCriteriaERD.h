@@ -11,6 +11,7 @@
 #define CICPCRITERIAERD_H
 
 #include <mrpt/math/CMatrix.h>
+#include <mrpt/math/utils.h>
 #include <mrpt/utils/CImage.h>
 #include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/utils/CConfigFile.h>

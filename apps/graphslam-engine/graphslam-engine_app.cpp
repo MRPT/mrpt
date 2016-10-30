@@ -260,8 +260,8 @@ int main(int argc, char **argv)
 
 	}
 	catch (exception& e) {
-		logger.logFmt(LVL_ERROR, "Program finished for an exception!!");
-		cerr << e.what() << endl;
+		logger.logFmt(LVL_ERROR, "Program finished for an exception!!\n%s\n",
+				e.what());
 
 		mrpt::system::pause();
 		return -1;
