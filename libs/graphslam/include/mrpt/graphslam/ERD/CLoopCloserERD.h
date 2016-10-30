@@ -11,6 +11,7 @@
 #define CLOOPCLOSERERD_H
 
 #include <mrpt/math/CMatrix.h>
+#include <mrpt/math/utils.h>
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/utils/CConfigFile.h>
