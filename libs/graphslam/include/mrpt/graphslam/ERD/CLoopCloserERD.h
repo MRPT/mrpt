@@ -671,7 +671,7 @@ class CLoopCloserERD:
 		 *
 		 * Handy for displaying them in the Visualization window.
 		 */
-		std::map<const std::string, int> m_edge_types_to_nums;
+		std::map<std::string, int> m_edge_types_to_nums;
  		/**\brief Keep track of the total number of registered nodes since the last
  		 * time class method was called */
 		int m_last_total_num_of_nodes;

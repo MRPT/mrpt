@@ -794,7 +794,7 @@ void CLoopCloserERD<GRAPH_t>::execDijkstraProjection(
 	else {
 		ss_debug << ending_node <<endl;
 	}
-	MRPT_LOG_DEBUG_STREAM << ss_debug;
+	MRPT_LOG_DEBUG_STREAM << ss_debug.str();
 
 	// keep track of the nodes that I have visited
 	std::vector<bool> visited_nodes(m_graph->nodeCount(), false);
