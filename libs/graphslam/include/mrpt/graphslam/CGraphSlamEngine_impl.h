@@ -742,7 +742,7 @@ void CGraphSlamEngine<GRAPH_t>::computeOccupancyGridMap2D() const {
   gridmap.insertionOptions.maxDistanceInsertion = 15;
 
 	// traverse all the nodes - add their laser scans at their corresponding poses
-	for (std::map<const mrpt::utils::TNodeID,
+	for (std::map<mrpt::utils::TNodeID,
 			mrpt::obs::CObservation2DRangeScanPtr>::const_iterator
 			it = m_nodes_to_laser_scans2D.begin();
 			it != m_nodes_to_laser_scans2D.end(); ++it) {
@@ -1607,7 +1607,7 @@ void CGraphSlamEngine<GRAPH_t>::dumpVisibilityErrorMsg(
 template<class GRAPH_t>
 void CGraphSlamEngine<GRAPH_t>::updateMapVisualization(
 		const GRAPH_t& gr,
-		std::map<const mrpt::utils::TNodeID,
+		std::map<mrpt::utils::TNodeID,
 		mrpt::obs::CObservation2DRangeScanPtr> m_nodes_to_laser_scans2D,
 		bool full_update /*= false */) {
 	MRPT_START;
@@ -1650,7 +1650,7 @@ void CGraphSlamEngine<GRAPH_t>::updateMapVisualization(
 
 		// get the node laser scan
 		CObservation2DRangeScanPtr scan_content;
-		std::map<const mrpt::utils::TNodeID,
+		std::map<mrpt::utils::TNodeID,
 			mrpt::obs::CObservation2DRangeScanPtr>::const_iterator search =
 				m_nodes_to_laser_scans2D.find(*node_it);
 

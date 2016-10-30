@@ -245,7 +245,7 @@ class CLoopCloserERD:
 		typedef CLoopCloserERD<GRAPH_t> decider_t; /**< self type - Handy typedef */
 		/**\brief New typedef for splitting the nodes into groups */
 		typedef std::vector<mrpt::vector_uint> partitions_t;
-		typedef std::map<const mrpt::utils::TNodeID, mrpt::obs::CObservation2DRangeScanPtr> nodes_to_scans2D_t;
+		typedef std::map<mrpt::utils::TNodeID, mrpt::obs::CObservation2DRangeScanPtr> nodes_to_scans2D_t;
 		typedef typename GRAPH_t::edges_map_t::const_iterator edges_citerator;
 		typedef typename GRAPH_t::edges_map_t::iterator edges_iterator;
 

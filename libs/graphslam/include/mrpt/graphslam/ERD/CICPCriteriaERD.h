@@ -232,9 +232,9 @@ class CICPCriteriaERD :
 		int m_text_index_search_disk;
 
 
-		std::map<const mrpt::utils::TNodeID,
+		std::map<mrpt::utils::TNodeID,
 			mrpt::obs::CObservation2DRangeScanPtr> m_nodes_to_laser_scans2D;
-		std::map<const mrpt::utils::TNodeID,
+		std::map<mrpt::utils::TNodeID,
 			mrpt::obs::CObservation3DRangeScanPtr> m_nodes_to_laser_scans3D;
 		std::map<std::string, int> m_edge_types_to_nums;
 
