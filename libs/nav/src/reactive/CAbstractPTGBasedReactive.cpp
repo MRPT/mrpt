@@ -849,7 +849,7 @@ void CAbstractPTGBasedReactive::loadConfigFile(const mrpt::utils::CConfigFileBas
 	this->loadHolonomicMethodConfig(cfg,sectGlobal); // Load holonomic method params
 	ASSERT_(!m_holonomicMethod.empty())
 
-	MRPT_LOG_INFO_FMT(" Holonomic method   = %s\n", typeid(m_holonomicMethod[0]).name());
+	MRPT_LOG_INFO_FMT(" Holonomic method   = %s\n", m_holonomicMethod[0]->GetRuntimeClass()->className );
 	MRPT_LOG_INFO_FMT(" PTG Count          = %u\n", static_cast<unsigned int>( this->getPTG_count() ) );
 	MRPT_LOG_INFO_FMT(" Reference distance = %f\n", refDistance );
 
