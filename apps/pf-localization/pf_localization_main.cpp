@@ -166,8 +166,8 @@ void do_pf_localization(const std::string &ini_fil, const std::string &cmdline_r
 	//  Only used for observations-only rawlogs:
 	CActionRobotMovement2D::TMotionModelOptions dummy_odom_params;
 	dummy_odom_params.modelSelection = CActionRobotMovement2D::mmGaussian;
-	dummy_odom_params.gausianModel.minStdXY  = cfg.read_double("DummyOdometryParams","minStdXY",0.04);
-	dummy_odom_params.gausianModel.minStdPHI = DEG2RAD(cfg.read_double("DummyOdometryParams","minStdPHI", 2.0));
+	dummy_odom_params.gaussianModel.minStdXY  = cfg.read_double("DummyOdometryParams","minStdXY",0.04);
+	dummy_odom_params.gaussianModel.minStdPHI = DEG2RAD(cfg.read_double("DummyOdometryParams","minStdPHI", 2.0));
 
 
 	// PF-algorithm Options:
