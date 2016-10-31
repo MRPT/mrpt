@@ -11,11 +11,6 @@
 #include <mrpt/vision/tracking.h>
 #include <mrpt/gui.h>
 
-#include <mrpt/otherlibs/do_opencv_includes.h>
-#if defined(HAVE_OPENCV_NONFREE)
-#   include <opencv2/nonfree/features2d.hpp>
-#endif
-
 using namespace mrpt::utils;
 using namespace mrpt::gui;
 using namespace mrpt::vision;
@@ -24,10 +19,7 @@ using mrpt::format;
 
 #include <mrpt/examples_config.h>
 string   myDataDir( MRPT_EXAMPLES_BASE_DIRECTORY + string("imageConvolutionFFT/") );
-//string	myDataDir = "D:/Trabajo/MRPT-trunk/samples/imageConvolutionFFT/";
-
 const string the_img_for_extract_feats = myDataDir+string("test_image.jpg");
-//const string the_img_for_extract_feats = "/imgs_temp/o.jpg";
 
 
 void TestTrackFeatures()
@@ -527,171 +519,6 @@ void TestExtractFeatures()
 	return;
 }
 
-#if defined(HAVE_OPENCV_NONFREE)
-void TestORBTiled()
-{
-	using namespace cv;
-	using namespace std;
-
-	FILE *f = mrpt::system::os::fopen("keypoints.txt","wt");
-
-	const size_t num_kps_to_extract = 500;
-	Mat img = imread("test_img.png");
-	size_t img_h = img.rows, img_w = img.cols;
-
-	// N regions
-	const size_t n_reg_col = 3;
-	const size_t n_reg_row = 3;
-	const size_t num_rois = n_reg_col*n_reg_row;
-	const size_t roi_w = img_w/n_reg_col;
-	const size_t roi_h = img_h/n_reg_row;
-	const size_t num_kps_to_extract_per_region = num_kps_to_extract/num_rois;				
-	for(size_t row = 0; row < n_reg_row; ++row)	// rows
-	{
-		size_t	this_row = roi_h*row,
-				this_roi_h = min(img_h-1,this_row+roi_h);
-		
-		for(size_t col = 0; col < n_reg_col; ++col)
-		{
-			// set roi limits
-			size_t	this_col = roi_w*col,
-					this_roi_w = min(img_w-1,this_col+roi_w);
-
-			Rect ROI(this_col,this_row,this_roi_w,this_roi_h);
-
-			Mat mask(img.size(), CV_8UC1, Scalar::all(0));
-			mask(ROI).setTo(Scalar::all(255));
-		
-			// define detector
-			ORB orbDetector( 
-				num_kps_to_extract_per_region,	// number of ORB features to extract
-				1.2,							// scale difference
-				8,								// number of levels
-				31,								// edgeThreshold
-				0,								// firstLevel
-				2,								// WTA_K
-				cv::ORB::HARRIS_SCORE,			// scoreType
-				31,								// patchSize
-				20 );							// fast threshold
-
-			// detect orb points
-			Mat desc;
-			vector<KeyPoint> kps;
-			orbDetector( img, mask, kps, desc );  // all the scales in the same call
-			
-			// save to file
-			for(size_t k = 0; k < kps.size(); ++k)
-				mrpt::system::os::fprintf(f,"%.2f %.2f\n",kps[k].pt.x,kps[k].pt.y);
-
-		} // end-inner-for
-	} // end-outter-for
-
-	mrpt::system::os::fclose(f);
-} // end-orb-tiled
-#endif
-
-// ------------------------------------------------------
-//				TestCapture
-// ------------------------------------------------------
-//void TestExtractFeatures()
-//{
-//	CDisplayWindow		wind1;
-//	CFeatureExtraction	fExt;
-//	CFeatureList		fHarris1, fHarris2;
-//	CMatchedFeatureList	fMatched;
-//	CImage				lImg, rImg;
-//
-//	string left_img		= myDataDir+string("left.jpg");
-//	string right_img	= myDataDir+string("right.jpg");
-//
-//	if( !lImg.loadFromFile( left_img ) || !rImg.loadFromFile( right_img ) )
-//	{
-//		cerr << "Cannot load " << left_img << " or " << right_img << endl;
-//		return;
-//	}
-//	cout << "Loaded test images" << endl;
-//
-//	CTicTac	tictac;
-//
-//	cout << "Extracting Harris features in left image ...";
-//	fExt.options.featsType = featHarris;
-//	fExt.detectFeatures( lImg, fHarris1 );
-//	cout << "Detected " << featsHarris.size() << " features in " << endl;
-//
-//	cout << "Extracting Harris features in right image ...";
-//	fExt.detectFeatures( rImg, fHarris2 );
-//	cout << "Detected " << featsHarris.size() << " features in " << endl;
-//
-//	cout << "Matching features ..." << endl;
-//	cout << "Method #1" << endl;
-//
-//	tictac.Tic();
-//	unsigned int nMatches = mrpt::vision::matchFeatures( fHarris1, fHarris2, fMatched );
-//	cout << format("  %.03fms",tictac.Tac()*1000) << endl;
-//	cout << "Matched " << featsHarris.size() << " features in " << endl;
-//
-//
-//	featsHarris.saveToTextFile("f_harris.txt");
-//	wind1.setWindowTitle("Harris detected features");
-//	wind1.showImageAndPoints( img, featsHarris );
-//
-//	cout << "Computing SIFT descriptors only ... [f_harris+sift.txt]";
-//	tictac.Tic();
-//	fExt.options.SIFTOptions.implementation = CFeatureExtraction::Hess;
-//	fExt.computeDescriptors( img, featsHarris, descSIFT );
-//	cout << format("  %.03fms",tictac.Tac()*1000) << endl;
-//	featsHarris.saveToTextFile("f_harris+sift.txt");
-//
-//	cout << "Extracting KLT features... [f_klt.txt]";
-//	tictac.Tic();
-//	fExt.options.featsType = featKLT;
-//	fExt.detectFeatures( img, featsKLT );
-//	cout << "Detected " << featsKLT.size() << " features in " << endl;
-//	cout << format("  %.03fms",tictac.Tac()*1000) << endl;
-//	featsKLT.saveToTextFile("f_klt.txt");
-//	wind2.setWindowTitle("KLT detected features");
-//	wind2.showImageAndPoints( img, featsKLT );
-//
-//	cout << "Extracting SIFT features... [f_sift_hess.txt]";
-//	tictac.Tic();
-//	fExt.options.featsType = featSIFT;
-//	fExt.options.SIFTOptions.implementation = CFeatureExtraction::Hess;
-//	fExt.detectFeatures( img, featsSIFT_Hess );
-//	cout << "Detected " << featsSIFT_Hess.size() << " features in " << endl;
-//	cout << format("  %.03fms",tictac.Tac()*1000) << endl;
-//	featsSIFT_Hess.saveToTextFile("f_sift_hess.txt");
-//	wind3.setWindowTitle("SIFT Hess detected features");
-//	wind3.showImageAndPoints( img, featsSIFT_Hess );
-//
-//	cout << "Extracting SURF features... [f_surf.txt]";
-//	tictac.Tic();
-//	fExt.options.featsType = featSURF;
-//	fExt.detectFeatures( img, featsSURF );
-//	cout << "Detected " << featsSURF.size() << " features in " << endl;
-//	cout << format("  %.03fms",tictac.Tac()*1000) << endl;
-//	featsSURF.saveToTextFile("f_surf.txt");
-//	wind4.setWindowTitle("SURF detected features");
-//	wind4.showImageAndPoints( img, featsSURF );
-//
-//	cout << "Computing spin images descriptors only ... [f_harris+spinimgs.txt]";
-//	tictac.Tic();
-//	fExt.options.SpinImagesOptions.radius = 13;
-//	fExt.options.SpinImagesOptions.hist_size_distance  = 10;
-//	fExt.options.SpinImagesOptions.hist_size_intensity = 10;
-//
-//	fExt.computeDescriptors( img, featsHarris, descSpinImages );
-//
-//	cout << format("  %.03fms",tictac.Tac()*1000) << endl;
-//	featsHarris.saveToTextFile("f_harris+spinimgs.txt");
-//
-//	mrpt::system::pause();
-//
-//	return;
-//}
-
-// ------------------------------------------------------
-//				TestCapture
-// ------------------------------------------------------
 void TestExtractFeaturesTile()
 {
 	CDisplayWindow		wind1,wind2;
