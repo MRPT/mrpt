@@ -192,6 +192,14 @@ class BASE_IMPEXP COutputLogger {
 		{
 			output_logger_callback_t  func;
 			void *userParam;
+
+			bool operator <(const mrpt::utils::COutputLogger::TCallbackEntry &e2) const {
+				return func<e2.func;
+			}
+			bool operator == (const mrpt::utils::COutputLogger::TCallbackEntry &c2) const {
+				return func == c2.func && userParam == c2.userParam;
+			}
+
 		};
 
 	protected:
@@ -250,7 +258,6 @@ class BASE_IMPEXP COutputLogger {
 		mutable std::deque<TMsg> m_history;   // deque is better than vector to avoid memory reallocs
 
 		std::set<TCallbackEntry> m_listCallbacks;
-
 };
 
 	/** For use in MRPT_LOG_DEBUG_STREAM, etc. */

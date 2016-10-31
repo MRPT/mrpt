@@ -155,8 +155,8 @@ ENDIF()
 # Build the RoboPeak Lidar library?
 SET(DEFAULT_BUILD_ROBOPEAK_LIDAR ON) # Default: Yes
 if (${CMAKE_MRPT_KERNEL} MATCHES "GNU" OR APPLE)   # Unless in HURD
-	SET(DEFAULT_BUILD_ROBOPEAK_LIDAR OR APPLE)
-endif (${CMAKE_MRPT_KERNEL} MATCHES "GNU" OR APPLE)
+	SET(DEFAULT_BUILD_ROBOPEAK_LIDAR OFF)
+endif ()
 # Decl option:
 SET(BUILD_ROBOPEAK_LIDAR ${DEFAULT_BUILD_ROBOPEAK_LIDAR} CACHE BOOL "Build an embedded version of RoboPeak LIDAR SDK (interface to low-cost lidar)")
 IF(BUILD_ROBOPEAK_LIDAR)
@@ -347,8 +347,6 @@ include(cmakemodules/script_create_version_h.cmake REQUIRED)  # Build version.h
 INCLUDE_DIRECTORIES(".")
 INCLUDE_DIRECTORIES("${MRPT_CONFIG_FILE_INCLUDE_DIR}")
 
-LINK_DIRECTORIES("${CMAKE_BINARY_DIR}/lib")
-
 # Add user supplied extra options (optimization, etc...)
 SET(USER_EXTRA_CPP_FLAGS "" CACHE STRING "Put extra compiler options here if desired")
 
@@ -507,12 +505,6 @@ if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR CMAKE_COMPILER_IS_GNUCXX)
 	IF(MRPT_WARNINGS_ARE_ERRORS)
 		SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror")
 		SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Werror")
-	ENDIF()
-
-	# We need pthread's
-	IF (UNIX AND NOT APPLE)
-		SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
-		SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -pthread")
 	ENDIF()
 
 	IF(CMAKE_BUILD_TYPE MATCHES "Debug")
