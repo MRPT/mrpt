@@ -1,6 +1,5 @@
 The MRPT project 
 ====================================================
-
 <table>
 <tr>
 <td align="center" valign="top"> <a href="https://travis-ci.org/MRPT/mrpt"><img alt="Travis status" src="https://travis-ci.org/MRPT/mrpt.png?branch=master"></a>
@@ -11,8 +10,6 @@ GNU/Linux & OSX</td>
 <td valign="top"> <a href="https://gitter.im/MRPT/mrpt"><img alt="[Join the chat at https://gitter.im/MRPT/mrpt" src="https://badges.gitter.im/Join%20Chat.svg"></a> </td>
 </tr>
 </table>
-
-<div align="right" > Linux & OSX </div>
 
 1. Introduction
 ------------------------------------------------------------------------------
