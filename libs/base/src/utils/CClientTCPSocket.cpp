@@ -409,7 +409,7 @@ size_t  CClientTCPSocket::readAsync(
 						 NULL,			// Wait for except.
 						 ptrTimeout);	// Timeout
 
-		if( selRet==int(INVALID_SOCKET) )
+		if( selRet==INVALID_SOCKET )
 			THROW_EXCEPTION_CUSTOM_MSG1( "Error reading from socket: %s", getLastErrorStr().c_str() );
 
 		if (selRet==0)
@@ -425,7 +425,7 @@ size_t  CClientTCPSocket::readAsync(
 			// Receive bytes:
 			readNow = ::recv( m_hSock, ((char*)Buffer) + alreadyRead, (int)remainToRead, 0);
 
-			if (readNow != int(INVALID_SOCKET))
+			if (readNow != INVALID_SOCKET)
 			{
 				// Accumulate the received length:
 				alreadyRead += readNow;
@@ -499,7 +499,7 @@ size_t  CClientTCPSocket::writeAsync(
 						 NULL,			// Wait for except.
 						 ptrTimeout);	// Timeout
 
-		if( selRet==int(INVALID_SOCKET) )
+		if( selRet==INVALID_SOCKET )
 			THROW_EXCEPTION_CUSTOM_MSG1( "Error writing to socket: %s", getLastErrorStr().c_str() );
 
 		if (selRet==0)
@@ -517,7 +517,7 @@ size_t  CClientTCPSocket::writeAsync(
 			// Receive bytes:
 			writtenNow = ::send( m_hSock, ((char*)Buffer) + alreadyWritten, (int)remainToWrite, 0);
 
-			if (writtenNow != int(INVALID_SOCKET))
+			if (writtenNow != INVALID_SOCKET)
 			{
 				// Accumulate the received length:
 				alreadyWritten += writtenNow;

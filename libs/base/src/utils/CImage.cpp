@@ -1810,12 +1810,12 @@ void  CImage::cross_correlation_FFT(
 			float	r1 = I1_R.get_unsafe(y,x);
 			float	r2 = I2_R.get_unsafe(y,x);
 
-			float	i1 = I1_I.get_unsafe(y,x);
-			float	i2 = I2_I.get_unsafe(y,x);
+			float	ii1 = I1_I.get_unsafe(y,x);
+			float	ii2 = I2_I.get_unsafe(y,x);
 
-			float	den = square(r1)+square(i1);
-			I2_R.set_unsafe(y,x, (r1*r2+i1*i2)/den);
-			I2_I.set_unsafe(y,x, (i2*r1-r2*i1)/den);
+			float	den = square(r1)+square(ii1);
+			I2_R.set_unsafe(y,x, (r1*r2+ii1*ii2)/den);
+			I2_I.set_unsafe(y,x, (ii2*r1-r2*ii1)/den);
 		}
 
 //	I2_R.saveToTextFile("DIV_R.txt");
@@ -2325,7 +2325,7 @@ bool CImage::drawChessboardCorners(
 
 	if (cornerCoords.size()!=check_size_x*check_size_y) return false;
 
-	IplImage* img = this->getAs<IplImage>();
+	IplImage* ipl = this->getAs<IplImage>();
 
 	unsigned int x, y,i;
 	CvPoint prev_pt = cvPoint(0, 0);
@@ -2352,17 +2352,17 @@ bool CImage::drawChessboardCorners(
 			pt.x = cvRound( cornerCoords[i].x);
 			pt.y = cvRound( cornerCoords[i].y);
 
-			if( i != 0 ) cvLine( img, prev_pt, pt, color, lines_width );
+			if( i != 0 ) cvLine(ipl, prev_pt, pt, color, lines_width );
 
-			cvLine( img,
+			cvLine(ipl,
 					  cvPoint( pt.x - r, pt.y - r ),
 					  cvPoint( pt.x + r, pt.y + r ), color, lines_width );
-			cvLine( img,
+			cvLine(ipl,
 					  cvPoint( pt.x - r, pt.y + r),
 					  cvPoint( pt.x + r, pt.y - r), color, lines_width );
 
 			if (r>0)
-				cvCircle( img, pt, r+1, color );
+				cvCircle(ipl, pt, r+1, color );
 			prev_pt = pt;
 
 			// Text label with the corner index in the first and last corners:

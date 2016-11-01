@@ -588,7 +588,7 @@ XMLSTR ToXMLStringTool::toXMLUnSafe(XMLSTR dest,XMLCSTR source)
     XMLSTR dd=dest;
     XMLCHAR ch;
     XMLCharacterEntity *entity;
-    while ((ch=*source))
+    while ((ch=*source)!=NULL)
     {
         entity=XMLEntities;
         do
@@ -620,7 +620,7 @@ int ToXMLStringTool::lengthXMLString(XMLCSTR source)
     int r=0;
     XMLCharacterEntity *entity;
     XMLCHAR ch;
-    while ((ch=*source))
+    while ((ch=*source)!=NULL)
     {
         entity=XMLEntities;
         do

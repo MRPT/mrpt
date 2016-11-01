@@ -76,10 +76,10 @@ void mrpt::utils::reverseBytesInPlace(bool& ) {
 	// Nothing to do.
 }
 
-void mrpt::utils::reverseBytesInPlace(uint8_t& v_in_out) {
+void mrpt::utils::reverseBytesInPlace(uint8_t& /*v_in_out*/) {
 	// Nothing to do.
 }
-void mrpt::utils::reverseBytesInPlace(int8_t& v_in_out) {
+void mrpt::utils::reverseBytesInPlace(int8_t& /*v_in_out*/) {
 	// Nothing to do.
 }
 

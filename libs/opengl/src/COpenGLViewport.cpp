@@ -85,13 +85,13 @@ COpenGLViewport::COpenGLViewport( COpenGLScene *parent, const string &name  ) :
 	m_lights[1].setPosition(1,2,-1,0);
 	m_lights[1].setDirection(1,2,1);
 
-	m_lights[1].color_diffuse[0] = 0.3;
-	m_lights[1].color_diffuse[1] = 0.3;
-	m_lights[1].color_diffuse[2] = 0.3;
+	m_lights[1].color_diffuse[0] = 0.3f;
+	m_lights[1].color_diffuse[1] = 0.3f;
+	m_lights[1].color_diffuse[2] = 0.3f;
 
-	m_lights[1].color_ambient[0] = 0.3;
-	m_lights[1].color_ambient[1] = 0.3;
-	m_lights[1].color_ambient[2] = 0.3;
+	m_lights[1].color_ambient[0] = 0.3f;
+	m_lights[1].color_ambient[1] = 0.3f;
+	m_lights[1].color_ambient[2] = 0.3f;
 
 }
 

@@ -176,8 +176,8 @@ void  CPointCloud::render_subset(const bool all, const std::vector<size_t>& idxs
 	}
 	else
 	{
-		const size_t N = idxs.size();
-		for (size_t i=0;i<N;i+=decimation)
+		const size_t Np = idxs.size();
+		for (size_t i=0;i<Np;i+=decimation)
 			internal_render_one_point(idxs[i]);
 	}
 #else

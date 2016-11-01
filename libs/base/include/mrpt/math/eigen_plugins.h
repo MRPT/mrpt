@@ -90,15 +90,17 @@ public:
 	EIGEN_STRONG_INLINE Scalar& get_unsafe(const size_t row, const size_t col) { //-V659
 #ifdef _DEBUG
 		return derived()(row,col);
-#endif
+#else
 		return derived().coeffRef(row,col);
+#endif
 	}
 	/** Sets an element  (Use with caution, bounds are not checked!) */
 	EIGEN_STRONG_INLINE void set_unsafe(const size_t row, const size_t col, const Scalar val) {
 #ifdef _DEBUG
 		derived()(row,col) = val;
-#endif
+#else
 		derived().coeffRef(row,col) = val;
+#endif
 	}
 
 	/** Insert an element at the end of the container (for 1D vectors/arrays) */

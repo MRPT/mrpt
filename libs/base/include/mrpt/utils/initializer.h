@@ -18,7 +18,7 @@
 	#include <windows.h>
 	#define MRPT_INITIALIZER(f) \
 	static void f(); \
-	BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved) \
+	BOOL WINAPI DllMain(HINSTANCE /*hinstDLL*/, DWORD fdwReason, LPVOID /*lpvReserved*/) \
 	{ \
 		switch (fdwReason) { \
 		case DLL_PROCESS_ATTACH: \

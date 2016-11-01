@@ -40,8 +40,8 @@ namespace poses
 		}
 
 		/** Returns an estimate of the point covariance matrix (2x2 cov matrix) and the mean, both at once. \sa getMean */
-		void getCovarianceAndMean(mrpt::math::CMatrixDouble22 &cov,CPoint2D &mean_point) const  MRPT_OVERRIDE{
-			cov = this->cov;
+		void getCovarianceAndMean(mrpt::math::CMatrixDouble22 &out_cov,CPoint2D &mean_point) const  MRPT_OVERRIDE{
+			out_cov = this->cov;
 			mean_point = this->mean;
 		}
 
