@@ -229,12 +229,12 @@ int main(int argc, char ** argv)
 
         CActionRobotMovement2D::TMotionModelOptions   opts;
         opts.modelSelection = CActionRobotMovement2D::mmGaussian;
-        opts.gausianModel.a1=0;
-        opts.gausianModel.a2=0;
-        opts.gausianModel.a3=0;
-        opts.gausianModel.a4=0;
-        opts.gausianModel.minStdXY = odometryNoiseXY_std;
-        opts.gausianModel.minStdPHI = odometryNoisePhi_std;
+        opts.gaussianModel.a1=0;
+        opts.gaussianModel.a2=0;
+        opts.gaussianModel.a3=0;
+        opts.gaussianModel.a4=0;
+        opts.gaussianModel.minStdXY = odometryNoiseXY_std;
+        opts.gaussianModel.minStdPHI = odometryNoisePhi_std;
 
 		// Output rawlog, gz-compressed.
 		CFileGZOutputStream  fil( format("%s/%s",outDir.c_str(),outFile.c_str()));

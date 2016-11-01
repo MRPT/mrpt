@@ -108,12 +108,12 @@ void  CActionRobotMovement2D::writeToStream(mrpt::utils::CStream &out, int *vers
 
 			i = static_cast<uint32_t>(motionModelConfiguration.modelSelection);
 			out << i;
-			out << motionModelConfiguration.gausianModel.a1
-                << motionModelConfiguration.gausianModel.a2
-                << motionModelConfiguration.gausianModel.a3
-                << motionModelConfiguration.gausianModel.a4
-                << motionModelConfiguration.gausianModel.minStdXY
-                << motionModelConfiguration.gausianModel.minStdPHI;
+			out << motionModelConfiguration.gaussianModel.a1
+                << motionModelConfiguration.gaussianModel.a2
+                << motionModelConfiguration.gaussianModel.a3
+                << motionModelConfiguration.gaussianModel.a4
+                << motionModelConfiguration.gaussianModel.minStdXY
+                << motionModelConfiguration.gaussianModel.minStdPHI;
 
 			out << motionModelConfiguration.thrunModel.nParticlesCount
 				<< motionModelConfiguration.thrunModel.alfa1_rot_rot
@@ -165,12 +165,12 @@ void  CActionRobotMovement2D::readFromStream(mrpt::utils::CStream &in, int versi
 				in >> i;
 				motionModelConfiguration.modelSelection = static_cast<TDrawSampleMotionModel>(i);
 
-				in >> motionModelConfiguration.gausianModel.a1
-					>> motionModelConfiguration.gausianModel.a2
-					>> motionModelConfiguration.gausianModel.a3
-					>> motionModelConfiguration.gausianModel.a4
-					>> motionModelConfiguration.gausianModel.minStdXY
-					>> motionModelConfiguration.gausianModel.minStdPHI;
+				in >> motionModelConfiguration.gaussianModel.a1
+					>> motionModelConfiguration.gaussianModel.a2
+					>> motionModelConfiguration.gaussianModel.a3
+					>> motionModelConfiguration.gaussianModel.a4
+					>> motionModelConfiguration.gaussianModel.minStdXY
+					>> motionModelConfiguration.gaussianModel.minStdPHI;
 
 				in  >> i; motionModelConfiguration.thrunModel.nParticlesCount=i;
 				in  >> motionModelConfiguration.thrunModel.alfa1_rot_rot
@@ -230,7 +230,7 @@ void  CActionRobotMovement2D::readFromStream(mrpt::utils::CStream &in, int versi
 
 				float   dum1,dum2,dum3;
 
-				in >> dum1 >> dum2 >> dum3 >> motionModelConfiguration.gausianModel.minStdXY >> motionModelConfiguration.gausianModel.minStdPHI;
+				in >> dum1 >> dum2 >> dum3 >> motionModelConfiguration.gaussianModel.minStdXY >> motionModelConfiguration.gaussianModel.minStdPHI;
 
 				// Leave the default values for a1,a2,a3,a4:
 				in  >> i; motionModelConfiguration.thrunModel.nParticlesCount=i;
@@ -383,16 +383,16 @@ void  CActionRobotMovement2D::computeFromOdometry(
  ---------------------------------------------------------------*/
 CActionRobotMovement2D::TMotionModelOptions::TMotionModelOptions() :
 	modelSelection( CActionRobotMovement2D::mmGaussian ),
-	gausianModel(),
+	gaussianModel(),
 	thrunModel()
 {
-	gausianModel.a1		    = 0.01f;
-	gausianModel.a2		    = RAD2DEG( 0.001f );
-	gausianModel.a3		    = DEG2RAD( 1.0f );
-	gausianModel.a4		    = 0.05f;
+	gaussianModel.a1		    = 0.01f;
+	gaussianModel.a2		    = RAD2DEG( 0.001f );
+	gaussianModel.a3		    = DEG2RAD( 1.0f );
+	gaussianModel.a4		    = 0.05f;
 
-	gausianModel.minStdXY	= 0.01f;
-	gausianModel.minStdPHI	= DEG2RAD(0.2f);
+	gaussianModel.minStdXY	= 0.01f;
+	gaussianModel.minStdPHI	= DEG2RAD(0.2f);
 
 	thrunModel.nParticlesCount		= 300;
 	thrunModel.alfa1_rot_rot		= 0.05f;
@@ -424,9 +424,9 @@ void  CActionRobotMovement2D::computeFromOdometry_modelGaussian(
 	double	Al = odometryIncrement.norm();
 	CMatrixDouble31 ODO_INCR = CMatrixDouble31(odometryIncrement);
 	CMatrixDouble33 C_ODO;
-	C_ODO(0,0) =square( o.gausianModel.minStdXY + o.gausianModel.a1*Al + o.gausianModel.a2*fabs( odometryIncrement.phi() ) );
-	C_ODO(1,1) =square( o.gausianModel.minStdXY + o.gausianModel.a1*Al + o.gausianModel.a2*fabs( odometryIncrement.phi() ) );
-	C_ODO(2,2) =square( o.gausianModel.minStdPHI + o.gausianModel.a3*Al + o.gausianModel.a4*fabs( odometryIncrement.phi() ) );
+	C_ODO(0,0) =square( o.gaussianModel.minStdXY + o.gaussianModel.a1*Al + o.gaussianModel.a2*fabs( odometryIncrement.phi() ) );
+	C_ODO(1,1) =square( o.gaussianModel.minStdXY + o.gaussianModel.a1*Al + o.gaussianModel.a2*fabs( odometryIncrement.phi() ) );
+	C_ODO(2,2) =square( o.gaussianModel.minStdPHI + o.gaussianModel.a3*Al + o.gaussianModel.a4*fabs( odometryIncrement.phi() ) );
 
     // Build the transformation matrix:
     CMatrixDouble33 H;
