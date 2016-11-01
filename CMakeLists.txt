@@ -376,6 +376,8 @@ SET(MRPT_ENABLE_PROFILING OFF CACHE BOOL "Enable profiling (add -g -pg in GCC/CL
 
 IF(MSVC)
 	SET(EXTRA_CPP_FLAGS "/W3 /D _CRT_SECURE_NO_DEPRECATE /D _CRT_NONSTDC_NO_DEPRECATE")
+	
+	LINK_DIRECTORIES("${CMAKE_BINARY_DIR}/lib")  # Required to find libraries
 
 	IF (NOT BUILD_SHARED_LIBS)
 		# static libs in Win: don't optimize out the initializers for class auto registration:
