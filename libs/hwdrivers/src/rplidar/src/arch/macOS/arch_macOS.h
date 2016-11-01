@@ -48,7 +48,9 @@
 #include <iostream>
 #include <string>
 
-// linux specific
+
+// POSIX specific
+extern "C" {
 #include <unistd.h>
 #include <errno.h>
 #include <pthread.h>
@@ -57,8 +59,8 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <sys/ioctl.h>
-#include <sys/select.h>
 #include <time.h>
+}
 
-#include "arch/linux/timer.h"
+#include "arch/macOS/timer.h"
 

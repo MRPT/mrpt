@@ -1722,12 +1722,12 @@ Units are m and radian.
 			CActionRobotMovement2D  act_mov;
 			CActionRobotMovement2D::TMotionModelOptions odoParams;
 			odoParams.modelSelection = CActionRobotMovement2D::mmGaussian;
-			odoParams.gausianModel.a1 =
-			odoParams.gausianModel.a2 =
-			odoParams.gausianModel.a3 =
-			odoParams.gausianModel.a4 = 0;
-			odoParams.gausianModel.minStdXY  = std::sqrt( atof(words[5].c_str())+atof(words[7].c_str()) );
-			odoParams.gausianModel.minStdPHI = std::sqrt( atof(words[10].c_str()) );
+			odoParams.gaussianModel.a1 =
+			odoParams.gaussianModel.a2 =
+			odoParams.gaussianModel.a3 =
+			odoParams.gaussianModel.a4 = 0;
+			odoParams.gaussianModel.minStdXY  = std::sqrt( atof(words[5].c_str())+atof(words[7].c_str()) );
+			odoParams.gaussianModel.minStdPHI = std::sqrt( atof(words[10].c_str()) );
 
 			act_mov.computeFromOdometry(odoIncr,odoParams);
 			act_mov.timestamp = cur_timestamp;

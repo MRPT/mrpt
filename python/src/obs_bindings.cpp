@@ -320,7 +320,7 @@ void export_obs()
             // TMotionModelOptions
             scope s = class_<CActionRobotMovement2D::TMotionModelOptions>("TMotionModelOptions", init<>())
                 .def_readwrite("modelSelection", &CActionRobotMovement2D::TMotionModelOptions::modelSelection)
-                .def_readwrite("gausianModel", &CActionRobotMovement2D::TMotionModelOptions::gausianModel)
+                .def_readwrite("gaussianModel", &CActionRobotMovement2D::TMotionModelOptions::gaussianModel)
                 .def_readwrite("thrunModel", &CActionRobotMovement2D::TMotionModelOptions::thrunModel)
             ;
 

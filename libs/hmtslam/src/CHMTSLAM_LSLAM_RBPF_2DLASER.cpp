@@ -268,10 +268,10 @@ void  CLSLAM_RBPF_2DLASER::prediction_and_update_pfAuxiliaryPFOptimal(
 
 	// Over
 	keep_max(
-		LMH->m_accumRobotMovement.motionModelConfiguration.gausianModel.minStdXY,
+		LMH->m_accumRobotMovement.motionModelConfiguration.gaussianModel.minStdXY,
 		LMH->m_parent->m_options.MIN_ODOMETRY_STD_XY);
 	keep_max(
-		LMH->m_accumRobotMovement.motionModelConfiguration.gausianModel.minStdPHI,
+		LMH->m_accumRobotMovement.motionModelConfiguration.gaussianModel.minStdPHI,
 		LMH->m_parent->m_options.MIN_ODOMETRY_STD_PHI);
 
 	theResultingRobotMov.computeFromOdometry( LMH->m_accumRobotMovement.rawOdometryIncrementReading, LMH->m_accumRobotMovement.motionModelConfiguration );

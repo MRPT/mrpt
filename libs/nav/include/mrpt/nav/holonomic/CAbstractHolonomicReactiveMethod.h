@@ -13,6 +13,7 @@
 #include <mrpt/utils/TEnumType.h>
 #include <mrpt/utils/CConfigFileBase.h>
 #include <mrpt/utils/CSerializable.h>
+#include <mrpt/nav/tpspace/CParameterizedTrajectoryGenerator.h>
 
 #include "CHolonomicLogFileRecord.h"
 
@@ -81,8 +82,8 @@ namespace mrpt
 			this->navigate(target,obs, maxRobotSpeed,desiredDirection,desiredSpeed,logRecord,max_obstacle_dist);
 		}
 
-		/** Virtual destructor */
-		virtual ~CAbstractHolonomicReactiveMethod() { };
+		CAbstractHolonomicReactiveMethod();  //!< ctor
+		virtual ~CAbstractHolonomicReactiveMethod(); //!< virtual dtor
 
 		 /**  Initialize the parameters of the navigator */
 		 virtual void  initialize( const mrpt::utils::CConfigFileBase &INI_FILE  ) = 0;
@@ -90,6 +91,11 @@ namespace mrpt
 		/** Class factory from class name, e.g. `"CHolonomicVFF"`, etc.
 		  * \exception std::logic_error On invalid or missing parameters. */
 		static CAbstractHolonomicReactiveMethod * Create(const std::string &className) MRPT_NO_THROWS;
+
+		void setAssociatedPTG(mrpt::nav::CParameterizedTrajectoryGenerator *ptg); //!< Optionally, sets the associated PTG, just in case a derived class requires this info (not required for methods where the robot kinematics are totally abstracted)
+		mrpt::nav::CParameterizedTrajectoryGenerator * getAssociatedPTG() const; //!< Returns the pointer set by setAssociatedPTG()
+	protected:
+		mrpt::nav::CParameterizedTrajectoryGenerator *m_associatedPTG; //!< If applicable, this will contain the argument of the most recent call to setAssociatedPTG()
 	};
 	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CAbstractHolonomicReactiveMethod, mrpt::utils::CSerializable, NAV_IMPEXP )
 	  /** @} */

@@ -169,13 +169,38 @@ void CAbstractPTGBasedReactive::getLastLogRecord( CLogFileRecord &o )
 	o = lastLogRecord;
 }
 
+static std::string holoMethodEnum2ClassName(const THolonomicMethod method)
+{
+	std::string className;
+	switch (method)
+	{
+	case hmSEARCH_FOR_BEST_GAP:  className = "CHolonomicND";  break;
+	case hmVIRTUAL_FORCE_FIELDS: className = "CHolonomicVFF"; break;
+	case hmFULL_EVAL: className = "CHolonomicFullEval"; break;
+	default: THROW_EXCEPTION_CUSTOM_MSG1("Unknown Holonomic method: %u", static_cast<unsigned int>(method))
+	};
+	return className;
+}
 
 void CAbstractPTGBasedReactive::loadHolonomicMethodConfig(
 	const mrpt::utils::CConfigFileBase &ini,
 	const std::string &section )
 {
-	THolonomicMethod holoMethod = ini.read_enum<THolonomicMethod>(section,"HOLONOMIC_METHOD",hmVIRTUAL_FORCE_FIELDS, true);
-	this->setHolonomicMethod( holoMethod, ini );
+	std::string  holoMethodName = ini.read_string(section, "HOLONOMIC_METHOD", "", true);
+
+	// Backwards compatible with numeric entries:
+	if (!holoMethodName.empty() && isdigit(holoMethodName[0])) {
+		holoMethodName = holoMethodEnum2ClassName(static_cast<THolonomicMethod>(atoi(&holoMethodName[0])));
+	}
+	// Backwards compatible with enum type name:
+	try {
+		holoMethodName = holoMethodEnum2ClassName(mrpt::utils::TEnumType<THolonomicMethod>::name2value(holoMethodName));
+	}
+	catch (...) {
+		// Ignore exception if strign is not an enum.
+	}
+
+	this->setHolonomicMethod(holoMethodName, ini );
 }
 
 void CAbstractPTGBasedReactive::deleteHolonomicObjects()
@@ -185,32 +210,30 @@ void CAbstractPTGBasedReactive::deleteHolonomicObjects()
 	m_holonomicMethod.clear();
 }
 
-void CAbstractPTGBasedReactive::setHolonomicMethod(
-    const THolonomicMethod method,
-	const mrpt::utils::CConfigFileBase &ini)
+void CAbstractPTGBasedReactive::setHolonomicMethod(const std::string & method, const mrpt::utils::CConfigFileBase & ini)
 {
 	mrpt::synch::CCriticalSectionLocker csl(&m_nav_cs);
 
 	this->deleteHolonomicObjects();
-
 	const size_t nPTGs = this->getPTG_count();
-	ASSERT_(nPTGs!=0);
+	ASSERT_(nPTGs != 0);
 	m_holonomicMethod.resize(nPTGs);
 
-	for (size_t i=0; i<nPTGs; i++)
+	for (size_t i = 0; i<nPTGs; i++)
 	{
-		switch (method)
-		{
-		case hmSEARCH_FOR_BEST_GAP:  m_holonomicMethod[i] = new CHolonomicND();  break;
-		case hmVIRTUAL_FORCE_FIELDS: m_holonomicMethod[i] = new CHolonomicVFF(); break;
-		case hmFULL_EVAL: m_holonomicMethod[i] = new CHolonomicFullEval(); break;
-		default: THROW_EXCEPTION_CUSTOM_MSG1("Unknown Holonomic method: %u",static_cast<unsigned int>(method))
-		};
-		// Load params:
-		m_holonomicMethod[i]->initialize( ini );
+		m_holonomicMethod[i] = CAbstractHolonomicReactiveMethod::Create(method);
+		if (!m_holonomicMethod[i])
+			THROW_EXCEPTION_CUSTOM_MSG1("Non-registered holonomic method className=`%s`", method.c_str());
+		
+		m_holonomicMethod[i]->setAssociatedPTG(this->getPTG(i));
+		m_holonomicMethod[i]->initialize(ini); // load params
 	}
 }
 
+void CAbstractPTGBasedReactive::setHolonomicMethod(const THolonomicMethod method, const mrpt::utils::CConfigFileBase &ini)
+{
+	setHolonomicMethod(holoMethodEnum2ClassName(method), ini);
+}
 
 // The main method: executes one time-iteration of the reactive navigation algorithm.
 void CAbstractPTGBasedReactive::performNavigationStep()
@@ -826,7 +849,7 @@ void CAbstractPTGBasedReactive::loadConfigFile(const mrpt::utils::CConfigFileBas
 	this->loadHolonomicMethodConfig(cfg,sectGlobal); // Load holonomic method params
 	ASSERT_(!m_holonomicMethod.empty())
 
-	MRPT_LOG_INFO_FMT(" Holonomic method   = %s\n", typeid(m_holonomicMethod[0]).name());
+	MRPT_LOG_INFO_FMT(" Holonomic method   = %s\n", m_holonomicMethod[0]->GetRuntimeClass()->className );
 	MRPT_LOG_INFO_FMT(" PTG Count          = %u\n", static_cast<unsigned int>( this->getPTG_count() ) );
 	MRPT_LOG_INFO_FMT(" Reference distance = %f\n", refDistance );
 

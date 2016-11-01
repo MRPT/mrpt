@@ -77,7 +77,7 @@ namespace mrpt
 				struct OBS_IMPEXP TOptions_GaussianModel
 				{
 					float		a1,a2,a3,a4,minStdXY,minStdPHI;
-				} gausianModel;
+				} gaussianModel;
 
 				/** Options for the Thrun's model, which generates a CPosePDFParticles object in poseChange 
 				  * See docs in : http://www.mrpt.org/tutorials/programming/odometry-and-motion-models/probabilistic_motion_models/

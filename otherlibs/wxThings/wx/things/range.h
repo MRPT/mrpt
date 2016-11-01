@@ -52,7 +52,7 @@ public:
     inline bool IsEmpty() const { return m_min > m_max; }
 
     // Swap the min and max values
-    inline void SwapMinMax() { register int temp = m_min; m_min = m_max; m_max = temp; }
+    inline void SwapMinMax() { int temp = m_min; m_min = m_max; m_max = temp; }
 
     // returns -1 for i < min, 0 for in range, +1 for i > m_max
     inline int Position(int i) const { return i < m_min ? -1 : (i > m_max ? 1 : 0); }
@@ -203,7 +203,7 @@ public:
     inline bool IsEmpty() const { return m_min > m_max; }
 
     // Swap the min and max values
-    inline void SwapMinMax() { register wxDouble temp = m_min; m_min = m_max; m_max = temp; }
+    inline void SwapMinMax() { wxDouble temp = m_min; m_min = m_max; m_max = temp; }
 
     // returns -1 for i < min, 0 for in range, +1 for i > m_max
     inline int Position(wxDouble i) const { return i < m_min ? -1 : (i > m_max ? 1 : 0); }

@@ -11,6 +11,7 @@
 #define CICPCRITERIAERD_H
 
 #include <mrpt/math/CMatrix.h>
+#include <mrpt/math/utils.h>
 #include <mrpt/utils/CImage.h>
 #include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/utils/CConfigFile.h>
@@ -142,7 +143,7 @@ class CICPCriteriaERD :
 		void notifyOfWindowEvents(
 				const std::map<std::string, bool>& events_occurred);
 		void getEdgesStats(
-				std::map<const std::string, int>* edge_types_to_num) const;
+				std::map<std::string, int>* edge_types_to_num) const;
 
 		void initializeVisuals();
 		void updateVisuals();
@@ -231,11 +232,11 @@ class CICPCriteriaERD :
 		int m_text_index_search_disk;
 
 
-		std::map<const mrpt::utils::TNodeID,
+		std::map<mrpt::utils::TNodeID,
 			mrpt::obs::CObservation2DRangeScanPtr> m_nodes_to_laser_scans2D;
-		std::map<const mrpt::utils::TNodeID,
+		std::map<mrpt::utils::TNodeID,
 			mrpt::obs::CObservation3DRangeScanPtr> m_nodes_to_laser_scans3D;
-		std::map<const std::string, int> m_edge_types_to_nums;
+		std::map<std::string, int> m_edge_types_to_nums;
 
 		int m_last_total_num_of_nodes;
 		mrpt::obs::CObservation2DRangeScanPtr m_last_laser_scan2D;
