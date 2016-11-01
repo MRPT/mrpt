@@ -32,33 +32,48 @@
  *
  */
 
-#pragma once
+#include "arch/macOS/arch_macOS.h"
 
-// libc dep
-#include <stdio.h>
-#include <stdint.h>
-#include <string.h>
-#include <stdlib.h>
-#include <assert.h>
-#include <math.h>
-#include <time.h>
-#include <stdarg.h>
+namespace rp{ namespace hal{
 
-// libc++ dep
-#include <iostream>
-#include <string>
+Thread Thread::create(thread_proc_t proc, void * data)
+{
+    Thread newborn(proc, data);
+    
+    // tricky code, we assume pthread_t is not a structure but a word size value
+    assert( sizeof(newborn._handle) >= sizeof(pthread_t));
 
-// linux specific
-#include <unistd.h>
-#include <errno.h>
-#include <pthread.h>
-#include <sys/time.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <sys/ioctl.h>
-#include <sys/select.h>
-#include <time.h>
+    pthread_create((pthread_t *)&newborn._handle, NULL,(void * (*)(void *))proc, data);
 
-#include "arch/linux/timer.h"
+    return newborn;
+}
 
+u_result Thread::terminate()
+{
+    if (!this->_handle) return RESULT_OK;
+    
+  //  return pthread_cancel((pthread_t)this->_handle)==0?RESULT_OK:RESULT_OPERATION_FAIL;
+    return RESULT_OK;
+}
+
+u_result Thread::setPriority( priority_val_t p)
+{
+	if (!this->_handle) return RESULT_OPERATION_FAIL;
+    // simply ignore this request
+	return  RESULT_OK;
+}
+
+Thread::priority_val_t Thread::getPriority()
+{
+	return PRIORITY_NORMAL;
+}
+
+u_result Thread::join(unsigned long timeout)
+{
+    if (!this->_handle) return RESULT_OK;
+    
+    pthread_join((pthread_t)(this->_handle), NULL);
+    return RESULT_OK;
+}
+
+}}

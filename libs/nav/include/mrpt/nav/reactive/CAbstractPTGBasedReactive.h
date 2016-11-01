@@ -80,10 +80,13 @@ namespace mrpt
 		void initialize() MRPT_OVERRIDE;
 
 		/** Selects which one from the set of available holonomic methods will be used
-			*  into transformed TP-Space, and sets its configuration from a configuration file.*/
-		void setHolonomicMethod(
-			THolonomicMethod	method,
-			const mrpt::utils::CConfigFileBase & cfgBase);
+			*  into transformed TP-Space, and sets its configuration from a configuration file.
+			* Available methods: class names of those derived from CAbstractHolonomicReactiveMethod
+			*/
+		void setHolonomicMethod(const std::string & method, const mrpt::utils::CConfigFileBase & cfgBase);
+
+		MRPT_DEPRECATED("Use the signature with a class name string instead of an enum.")
+		void setHolonomicMethod(THolonomicMethod method, const mrpt::utils::CConfigFileBase & cfgBase);
 
 		/** Just loads the holonomic method params from the given config source \sa setHolonomicMethod */
 		void loadHolonomicMethodConfig(

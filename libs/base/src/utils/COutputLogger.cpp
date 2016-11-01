@@ -23,13 +23,6 @@
 	#include <windows.h>   // OutputDebugString() for MSVC
 #endif
 
-namespace std {
-bool operator <(const mrpt::utils::COutputLogger::TCallbackEntry &e1, const mrpt::utils::COutputLogger::TCallbackEntry &e2)
-{
-	return e1.func<e2.func;
-}
-}
-
 using namespace mrpt;
 using namespace mrpt::system;
 using namespace mrpt::utils;

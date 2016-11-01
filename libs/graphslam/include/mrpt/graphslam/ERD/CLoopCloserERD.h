@@ -11,6 +11,7 @@
 #define CLOOPCLOSERERD_H
 
 #include <mrpt/math/CMatrix.h>
+#include <mrpt/math/utils.h>
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/utils/CConfigFile.h>
@@ -244,7 +245,7 @@ class CLoopCloserERD:
 		typedef CLoopCloserERD<GRAPH_t> decider_t; /**< self type - Handy typedef */
 		/**\brief New typedef for splitting the nodes into groups */
 		typedef std::vector<mrpt::vector_uint> partitions_t;
-		typedef std::map<const mrpt::utils::TNodeID, mrpt::obs::CObservation2DRangeScanPtr> nodes_to_scans2D_t;
+		typedef std::map<mrpt::utils::TNodeID, mrpt::obs::CObservation2DRangeScanPtr> nodes_to_scans2D_t;
 		typedef typename GRAPH_t::edges_map_t::const_iterator edges_citerator;
 		typedef typename GRAPH_t::edges_map_t::iterator edges_iterator;
 
@@ -263,7 +264,7 @@ class CLoopCloserERD:
 		void notifyOfWindowEvents(
 				const std::map<std::string, bool>& events_occurred);
 		void getEdgesStats(
-				std::map<const std::string, int>* edge_types_to_num) const;
+				std::map<std::string, int>* edge_types_to_num) const;
 
 		void initializeVisuals();
 		void updateVisuals();
@@ -670,7 +671,7 @@ class CLoopCloserERD:
 		 *
 		 * Handy for displaying them in the Visualization window.
 		 */
-		std::map<const std::string, int> m_edge_types_to_nums;
+		std::map<std::string, int> m_edge_types_to_nums;
  		/**\brief Keep track of the total number of registered nodes since the last
  		 * time class method was called */
 		int m_last_total_num_of_nodes;

@@ -163,7 +163,7 @@ void do_simulation()
 		CActionRobotMovement2D::TMotionModelOptions	odo_opts;
 
 		odo_opts.modelSelection = CActionRobotMovement2D::mmGaussian;
-		//odo_opts.gausianModel.
+		//odo_opts.gaussianModel.
 
 		CPose2D	last_pose( GT(0,1),GT(0,2),GT(0,3) );
 		CPose2D	real_pose = last_pose;
@@ -216,9 +216,9 @@ void simulOdometry(
 	last_pose = real_pose;
 
 	// Noise:
-	Apose.x_incr( randomGenerator.drawGaussian1D_normalized() * odo_opts.gausianModel.minStdXY );
-	Apose.y_incr( randomGenerator.drawGaussian1D_normalized() * odo_opts.gausianModel.minStdXY );
-	Apose.phi_incr( randomGenerator.drawGaussian1D_normalized() * odo_opts.gausianModel.minStdPHI );
+	Apose.x_incr( randomGenerator.drawGaussian1D_normalized() * odo_opts.gaussianModel.minStdXY );
+	Apose.y_incr( randomGenerator.drawGaussian1D_normalized() * odo_opts.gaussianModel.minStdXY );
+	Apose.phi_incr( randomGenerator.drawGaussian1D_normalized() * odo_opts.gaussianModel.minStdPHI );
 	Apose.normalizePhi();
 }
 

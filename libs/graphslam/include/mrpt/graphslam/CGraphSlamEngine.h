@@ -494,7 +494,7 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		 * \sa updateEstimatedTrajectoryVisualization
 		 */
 		void updateMapVisualization(const GRAPH_t& gr,
-				std::map<const mrpt::utils::TNodeID,
+				std::map<mrpt::utils::TNodeID,
 				mrpt::obs::CObservation2DRangeScanPtr> m_nodes_to_laser_scans,
 				bool full_update=false );
 		/**\brief Display the next ground truth position in the visualization window.
@@ -692,7 +692,7 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		std::vector<pose_t> m_GT_poses;
 		std::string m_GT_file_format;
 
-		std::map<const mrpt::utils::TNodeID,
+		std::map<mrpt::utils::TNodeID,
 			mrpt::obs::CObservation2DRangeScanPtr> m_nodes_to_laser_scans2D;
 		mrpt::obs::CObservation2DRangeScanPtr m_last_laser_scan2D;
 

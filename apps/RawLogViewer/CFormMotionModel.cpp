@@ -414,12 +414,12 @@ void CFormMotionModel::loadFromGaussian()
 {
     // Gaussian selected:
     options.modelSelection = CActionRobotMovement2D::mmGaussian;
-    options.gausianModel.a1  = atof( edG_A1->GetValue().mb_str() );
-    options.gausianModel.a2  = atof( edG_A2->GetValue().mb_str() ) * 180/M_PIf;
-    options.gausianModel.a3  = atof( edG_A3->GetValue().mb_str() ) * M_PIf/180;
-    options.gausianModel.a4  = atof( edG_A4->GetValue().mb_str() );
-    options.gausianModel.minStdXY = atof( edMinStdXY->GetValue().mb_str() );
-    options.gausianModel.minStdPHI = DEG2RAD(atof( edMinStdPHI->GetValue().mb_str() ));
+    options.gaussianModel.a1  = atof( edG_A1->GetValue().mb_str() );
+    options.gaussianModel.a2  = atof( edG_A2->GetValue().mb_str() ) * 180/M_PIf;
+    options.gaussianModel.a3  = atof( edG_A3->GetValue().mb_str() ) * M_PIf/180;
+    options.gaussianModel.a4  = atof( edG_A4->GetValue().mb_str() );
+    options.gaussianModel.minStdXY = atof( edMinStdXY->GetValue().mb_str() );
+    options.gaussianModel.minStdPHI = DEG2RAD(atof( edMinStdPHI->GetValue().mb_str() ));
 }
 
 void CFormMotionModel::loadFromThrun()
@@ -729,22 +729,22 @@ void CFormMotionModel::showOptionsInDialog()
     {
         PageControl1->ChangeSelection(0);
 
-        sprintf(str,"%.8f",options.gausianModel.a1 );
+        sprintf(str,"%.8f",options.gaussianModel.a1 );
         edG_A1->SetValue( _U(str) );
 
-        sprintf(str,"%.8f",options.gausianModel.a2 * M_PIf/180 );
+        sprintf(str,"%.8f",options.gaussianModel.a2 * M_PIf/180 );
         edG_A2->SetValue( _U(str) );
 
-        sprintf(str,"%.8f",options.gausianModel.a3 * 180/M_PIf );
+        sprintf(str,"%.8f",options.gaussianModel.a3 * 180/M_PIf );
         edG_A3->SetValue( _U(str) );
 
-        sprintf(str,"%.8f",options.gausianModel.a4 );
+        sprintf(str,"%.8f",options.gaussianModel.a4 );
         edG_A4->SetValue( _U(str) );
 
-        sprintf(str,"%.8f",options.gausianModel.minStdXY);
+        sprintf(str,"%.8f",options.gaussianModel.minStdXY);
         edMinStdXY->SetValue( _U(str) );
 
-        sprintf(str,"%.8f",RAD2DEG( options.gausianModel.minStdPHI ));
+        sprintf(str,"%.8f",RAD2DEG( options.gaussianModel.minStdPHI ));
         edMinStdPHI->SetValue( _U(str) );
     }
     else

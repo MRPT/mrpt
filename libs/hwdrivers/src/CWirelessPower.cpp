@@ -457,13 +457,10 @@ int		CWirelessPower::GetPower()
 
     return atoi(level);
 
-#endif
-
-#ifdef MRPT_OS_WINDOWS
+#elif defined(MRPT_OS_WINDOWS)
 	#  if defined(__GNUC__)
      THROW_EXCEPTION("Sorry, method not available for MinGW")
 	# else
-
 	PWLAN_AVAILABLE_NETWORK wlan;	// handler to the network
 
 	// Get a handler to the network
@@ -471,6 +468,8 @@ int		CWirelessPower::GetPower()
 
 	return wlan->wlanSignalQuality;
 	#endif
+#else
+	THROW_EXCEPTION("Method not implemented for this platform/OS!");
 #endif
 
 }

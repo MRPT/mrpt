@@ -1664,12 +1664,12 @@ void slamdemoFrame::executeOneStep()
 		odo_opts.modelSelection = CActionRobotMovement2D::mmGaussian;
 
 		// Model as a constant noise in X,Y,PHI:
-		odo_opts.gausianModel.a1  = 0; //0.01f;
-		odo_opts.gausianModel.a2  = 0; //RAD2DEG( 0.0001f );
-		odo_opts.gausianModel.a3  = 0; //DEG2RAD( 0.1f );
-		odo_opts.gausianModel.a4  = 0; // 0.01; //0.05f;
-		odo_opts.gausianModel.minStdXY  = options.odometry_noise_std_xy;
-		odo_opts.gausianModel.minStdPHI = options.odometry_noise_std_phi;
+		odo_opts.gaussianModel.a1  = 0; //0.01f;
+		odo_opts.gaussianModel.a2  = 0; //RAD2DEG( 0.0001f );
+		odo_opts.gaussianModel.a3  = 0; //DEG2RAD( 0.1f );
+		odo_opts.gaussianModel.a4  = 0; // 0.01; //0.05f;
+		odo_opts.gaussianModel.minStdXY  = options.odometry_noise_std_xy;
+		odo_opts.gaussianModel.minStdPHI = options.odometry_noise_std_phi;
 
 		// Add noise:
 		CPose2D  noisyPoseIncr = poseIncr;

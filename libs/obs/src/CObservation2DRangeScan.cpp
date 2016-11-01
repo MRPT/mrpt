@@ -465,7 +465,10 @@ void CObservation2DRangeScan::getScanProperties(T2DScanProperties& p) const
 
 bool mrpt::obs::operator<(const T2DScanProperties&a, const T2DScanProperties&b)
 {
-	return (a.nRays<b.nRays || a.aperture<b.aperture || (a.rightToLeft && !b.rightToLeft));
+	if (a.nRays != b.nRays) return a.nRays<b.nRays;
+	if (a.aperture != b.aperture) return a.aperture < b.aperture;
+	if (a.rightToLeft != b.rightToLeft) return a.rightToLeft;
+	return false;
 }
 
 
