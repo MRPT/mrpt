@@ -36,7 +36,6 @@ bool RANSAC_Template<NUMTYPE>::execute(
 	const unsigned int			minimumSizeSamplesToFit,
 	mrpt::vector_size_t			&out_best_inliers,
 	CMatrixTemplateNumeric<NUMTYPE> &out_best_model,
-	bool						verbose,
 	const double                p,
 	const size_t				maxIter
 	) const
@@ -115,7 +114,7 @@ bool RANSAC_Template<NUMTYPE>::execute(
 		mrpt::vector_size_t   inliers;
 		if (!degenerate)
 		{
-			dist_func(data,MODELS, distanceThreshold, bestModelIdx, inliers);
+			dist_func(data,MODELS, NUMTYPE(distanceThreshold), bestModelIdx, inliers);
 			ASSERT_( bestModelIdx<MODELS.size() );
 		}
 
@@ -142,7 +141,7 @@ bool RANSAC_Template<NUMTYPE>::execute(
 			pNoOutliers = std::max( std::numeric_limits<double>::epsilon(), pNoOutliers);  // Avoid division by -Inf
 			pNoOutliers = std::min(1.0 - std::numeric_limits<double>::epsilon() , pNoOutliers); // Avoid division by 0.
 			// Number of
-			N = log(1-p)/log(pNoOutliers);
+			N = static_cast<size_t>(log(1 - p) / log(pNoOutliers));
 			MRPT_LOG_DEBUG( format("Iter #%u Estimated number of iters: %u  pNoOutliers = %f  #inliers: %u\n", (unsigned)trialcount ,(unsigned)N,pNoOutliers, (unsigned)ninliers));
 		}
 

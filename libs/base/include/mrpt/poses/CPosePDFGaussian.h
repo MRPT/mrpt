@@ -79,9 +79,9 @@ namespace poses
 		/** Returns an estimate of the pose covariance matrix (3x3 cov matrix) and the mean, both at once.
 		  * \sa getMean
 		  */
-		void getCovarianceAndMean(mrpt::math::CMatrixDouble33 &cov,CPose2D &mean_point) const  MRPT_OVERRIDE{
+		void getCovarianceAndMean(mrpt::math::CMatrixDouble33 &out_cov,CPose2D &mean_point) const  MRPT_OVERRIDE{
 			mean_point = mean;
-			cov = this->cov;
+			out_cov = this->cov;
 		}
 
 		/** Copy operator, translating if necesary (for example, between particles and gaussian representations) */

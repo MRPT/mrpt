@@ -721,28 +721,23 @@ namespace mrpt
 
 		/** Computes the closest point from a given point to a segment, and returns that minimum distance.
 		  */
-		double BASE_IMPEXP minimumDistanceFromPointToSegment(
-				const double &	Px,
-				const double &	Py,
-				const double &	x1,
-				const double &	y1,
-				const double &	x2,
-				const double &	y2,
-				double &	out_x,
-				double &	out_y);
-
-		/** Computes the closest point from a given point to a segment, and returns that minimum distance.
-		  */
-		double BASE_IMPEXP minimumDistanceFromPointToSegment(
-				const double &	Px,
-				const double &	Py,
-				const double &	x1,
-				const double &	y1,
-				const double &	x2,
-				const double &	y2,
-				float &	out_x,
-				float &	out_y);
-
+		template <typename T>
+		double minimumDistanceFromPointToSegment(
+			const double Px,
+			const double Py,
+			const double x1,
+			const double y1,
+			const double x2,
+			const double y2,
+			T & out_x,
+			T & out_y)
+		{
+			double ox, oy;
+			closestFromPointToSegment(Px, Py, x1, y1, x2, y2, ox, oy);
+			out_x = static_cast<T>(ox);
+			out_y = static_cast<T>(oy);
+			return distanceBetweenPoints(Px, Py, ox, oy);
+		}
 
 		/** Computes the closest point from a given point to a segment.
 		  * \sa closestFromPointToLine
@@ -808,19 +803,19 @@ namespace mrpt
 		/** Returns the intersection point, and if it exists, between two segments.
 		  */
 		bool  BASE_IMPEXP SegmentsIntersection(
-					const double &	x1,const double &	y1,
-					const double &	x2,const double &	y2,
-					const double &	x3,const double &	y3,
-					const double &	x4,const double &	y4,
+					const double x1,const double y1,
+					const double x2,const double y2,
+					const double x3,const double y3,
+					const double x4,const double y4,
 					double &ix,double &iy);
 
 		/** Returns the intersection point, and if it exists, between two segments.
 		  */
 		bool  BASE_IMPEXP SegmentsIntersection(
-					const double &	x1,const double &	y1,
-					const double &	x2,const double &	y2,
-					const double &	x3,const double &	y3,
-					const double &	x4,const double &	y4,
+					const double x1,const double y1,
+					const double x2,const double y2,
+					const double x3,const double y3,
+					const double x4,const double y4,
 					float &ix,float &iy);
 
 		/** Returns true if the 2D point (px,py) falls INTO the given polygon.

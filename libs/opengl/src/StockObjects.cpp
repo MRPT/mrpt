@@ -176,7 +176,7 @@ CSetOfObjectsPtr stock_objects::RobotRhodon()
 
 	CPolyhedronPtr obj1 = opengl::CPolyhedron::CreateCustomPrism(level1, 0.38);
 	obj1->setLocation(0,0,height);
-	height+=0.38;
+	height+=0.38f;
 	obj1->setColor(0.6,0.6,0.6);
 	ret->insert( obj1 );
 
@@ -189,7 +189,7 @@ CSetOfObjectsPtr stock_objects::RobotRhodon()
 
 	CPolyhedronPtr obj2 = opengl::CPolyhedron::CreateCustomPrism(level2, 0.35);
 	obj2->setLocation(0,0,height);
-	height+=0.35;
+	height+=0.35f;
 	obj2->setColor(0.2,0.2,0.2);
 	ret->insert( obj2 );
 
@@ -207,12 +207,12 @@ CSetOfObjectsPtr stock_objects::RobotRhodon()
 	ret->insert( obj3 );
 
 
-	opengl::CCylinderPtr obj4 = opengl::CCylinder::Create(0.05, 0.05, 0.4, 20, 20);
+	opengl::CCylinderPtr obj4 = opengl::CCylinder::Create(0.05f, 0.05f, 0.4f, 20, 20);
 	obj4->setLocation(0,0,0.73);
 	obj4->setColor(0,0,0.9);
 	ret->insert( obj4 );
 
-	opengl::CCylinderPtr obj5 = opengl::CCylinder::Create(0.05, 0.05, 0.4, 20, 20);
+	opengl::CCylinderPtr obj5 = opengl::CCylinder::Create(0.05f, 0.05f, 0.4f, 20, 20);
 	obj5->setPose(CPose3D(0.32,0,0.89,0,-1,0));
 	obj5->setColor(0,0,0.9);
 	ret->insert( obj5 );
@@ -239,7 +239,7 @@ CSetOfObjectsPtr stock_objects::RobotGiraff()
 
 	CPolyhedronPtr obj1 = opengl::CPolyhedron::CreateCustomPrism(level1, 0.23);
 	obj1->setLocation(0,0,height);
-	height+=0.23;
+	height+=0.23f;
 	obj1->setColor(1.0,0.6,0.0);
 	ret->insert( obj1 );
 
@@ -252,7 +252,7 @@ CSetOfObjectsPtr stock_objects::RobotGiraff()
 
 	CPolyhedronPtr obj2 = opengl::CPolyhedron::CreateCustomPrism(level2, 0.45);
 	obj2->setLocation(0,0,height);
-	height+=0.45;
+	height+=0.45f;
 	obj2->setColor(1.0,0.6,0.2);
 	ret->insert( obj2 );
 
@@ -266,7 +266,7 @@ CSetOfObjectsPtr stock_objects::RobotGiraff()
 
 	CPolyhedronPtr obj3 = opengl::CPolyhedron::CreateCustomPrism(level3, 0.55);
 	obj3->setLocation(0,0,height);
-	height+=0.55;
+	height+=0.55f;
 	obj3->setColor(0.6,0.6,0.6);
 	ret->insert( obj3 );
 
@@ -280,7 +280,7 @@ CSetOfObjectsPtr stock_objects::RobotGiraff()
 	
 	CPolyhedronPtr obj4 = opengl::CPolyhedron::CreateCustomPrism(level4, 0.4);
 	obj4->setLocation(0,0,height);
-	height+=0.4;
+	height+=0.4f;
 	obj4->setColor(1.0,0.6,0.0);
 	ret->insert( obj4 );	
 
@@ -333,10 +333,10 @@ CSetOfObjectsPtr stock_objects::BumblebeeCamera()
 
 	camera->insert( rect );
 
-	CCylinderPtr lCam = opengl::CCylinder::Create( 0.01,0.01, 0.003, 10, 10 );
+	CCylinderPtr lCam = opengl::CCylinder::Create( 0.01f,0.01f, 0.003f, 10, 10 );
 	lCam->setColor( 1,0,0 );
 
-	CCylinderPtr rCam = opengl::CCylinder::Create( 0.01,0.01, 0.003, 10, 10 );
+	CCylinderPtr rCam = opengl::CCylinder::Create( 0.01f,0.01f, 0.003f, 10, 10 );
 	rCam->setPose( CPose3D(0.12,0,0) );
 	rCam->setColor( 0,0,0 );
 

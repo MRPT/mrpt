@@ -235,7 +235,7 @@ namespace poses
 		inline void composePoint(double lx,double ly,double lz, float &gx, float &gy, float &gz ) const {
 			double ggx, ggy,ggz;
 			composePoint(lx,ly,lz,ggx,ggy,ggz);
-			gx = ggx; gy = ggy; gz = ggz;
+			gx = static_cast<float>(ggx); gy = static_cast<float>(ggy); gz = static_cast<float>(ggz);
 		}
 
 		/**  Computes the 3D point L such as \f$ L = G \ominus this \f$.

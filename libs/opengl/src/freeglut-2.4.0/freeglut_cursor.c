@@ -162,6 +162,10 @@ void fgSetCursor ( SFG_Window *window, int cursorID )
                           GCL_HCURSOR, ( LONG )NULL );           \
         break;
 
+#ifdef _MSC_VER
+#pragma warning(disable:4311)
+#endif
+
     switch( cursorID )
     {
         MAP_CURSOR( GLUT_CURSOR_RIGHT_ARROW,         IDC_ARROW     );

@@ -45,7 +45,7 @@ namespace mrpt
 
 				M.setSize(1,4);
 				for (size_t i=0;i<4;i++)
-					M(0,i)=plane.coefs[i];
+					M(0,i)=T(plane.coefs[i]);
 			}
 			catch(exception &)
 			{
@@ -139,6 +139,7 @@ void mrpt::math::ransac_detect_3D_planes(
 		CMatrixTemplateNumeric<NUMTYPE> this_best_model;
 
 		math::RANSAC_Template<NUMTYPE> ransac;
+		ransac.setVerbosityLevel(mrpt::utils::LVL_INFO);
 		ransac.execute(
 			remainingPoints,
 			ransac3Dplane_fit,
@@ -148,7 +149,6 @@ void mrpt::math::ransac_detect_3D_planes(
 			3,  // Minimum set of points
 			this_best_inliers,
 			this_best_model,
-			true, // Verbose
 			0.999  // Prob. of good result
 			);
 
@@ -159,7 +159,7 @@ void mrpt::math::ransac_detect_3D_planes(
 			out_detected_planes.push_back(
 				std::make_pair(
 					this_best_inliers.size(),
-					TPlane( this_best_model(0,0), this_best_model(0,1),this_best_model(0,2),this_best_model(0,3) )
+					TPlane( double(this_best_model(0,0)), double(this_best_model(0,1)), double(this_best_model(0,2)), double(this_best_model(0,3)) )
 					) );
 
 			out_detected_planes.rbegin()->second.unitarize();
@@ -314,6 +314,7 @@ void mrpt::math::ransac_detect_2D_lines(
 		CMatrixTemplateNumeric<NUMTYPE> this_best_model;
 
 		math::RANSAC_Template<NUMTYPE> ransac;
+		ransac.setVerbosityLevel(mrpt::utils::LVL_INFO);
 		ransac.execute(
 			remainingPoints,
 			ransac2Dline_fit,
@@ -323,7 +324,6 @@ void mrpt::math::ransac_detect_2D_lines(
 			2,  // Minimum set of points
 			this_best_inliers,
 			this_best_model,
-			false, // Verbose
 			0.99999  // Prob. of good result
 			);
 
@@ -334,7 +334,7 @@ void mrpt::math::ransac_detect_2D_lines(
 			out_detected_lines.push_back(
 				std::make_pair(
 					this_best_inliers.size(),
-					TLine2D(this_best_model(0,0), this_best_model(0,1),this_best_model(0,2) )
+					TLine2D(double(this_best_model(0,0)), double(this_best_model(0,1)), double(this_best_model(0,2)) )
 					) );
 
 			out_detected_lines.rbegin()->second.unitarize();

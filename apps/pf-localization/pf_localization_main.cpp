@@ -546,7 +546,7 @@ void do_pf_localization(const std::string &ini_fil, const std::string &cmdline_r
 									GTpt->setName( "GT" );
 									GTpt->setColor(0,0,0, 0.9);
 
-									getAs<CDisk>(GTpt)->setDiskRadius(0.04);
+									getAs<CDisk>(GTpt)->setDiskRadius(0.04f);
 									ptrScene->insert( GTpt );
 								}
 
@@ -801,7 +801,7 @@ void do_pf_localization(const std::string &ini_fil, const std::string &cmdline_r
 								GTpt->setName( "GT" );
 								GTpt->setColor(0,0,0, 0.9);
 
-								getAs<CDisk>(GTpt)->setDiskRadius(0.04);
+								getAs<CDisk>(GTpt)->setDiskRadius(0.04f);
 								scene.insert( GTpt );
 							}
 

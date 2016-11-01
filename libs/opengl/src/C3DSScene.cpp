@@ -629,7 +629,7 @@ void C3DSScene::loadFrom3DSFile( const std::string &filepath )
     light = lib3ds_light_new("light0");
     light->spot_light = 0;
     light->see_cone = 0;
-    light->color[0] = light->color[1] = light->color[2] = .6;
+    light->color[0] = light->color[1] = light->color[2] = .6f;
     light->position[0] = cx + size * .75;
     light->position[1] = cy - size * 1.;
     light->position[2] = cz + size * 1.5;
@@ -642,7 +642,7 @@ void C3DSScene::loadFrom3DSFile( const std::string &filepath )
     light = lib3ds_light_new("light1");
     light->spot_light = 0;
     light->see_cone = 0;
-    light->color[0] = light->color[1] = light->color[2] = .3;
+    light->color[0] = light->color[1] = light->color[2] = .3f;
     light->position[0] = cx - size;
     light->position[1] = cy - size;
     light->position[2] = cz + size * .75;
@@ -655,7 +655,7 @@ void C3DSScene::loadFrom3DSFile( const std::string &filepath )
     light = lib3ds_light_new("light2");
     light->spot_light = 0;
     light->see_cone = 0;
-    light->color[0] = light->color[1] = light->color[2] = .3;
+    light->color[0] = light->color[1] = light->color[2] = .3f;
     light->position[0] = cx;
     light->position[1] = cy + size;
     light->position[2] = cz + size;

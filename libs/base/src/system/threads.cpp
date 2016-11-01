@@ -540,7 +540,7 @@ void mrpt::system::terminateThread(TThreadHandle &threadHandle) MRPT_NO_THROWS
 	if (threadHandle.isClear()) return; // done
 
 #ifdef MRPT_OS_WINDOWS
-	TerminateThread(threadHandle.hThread,-1);
+	TerminateThread(threadHandle.hThread, DWORD(-1));
 #elif defined(MRPT_OS_APPLE)
 	pthread_cancel(reinterpret_cast<pthread_t>(threadHandle.idThread));
 #else
