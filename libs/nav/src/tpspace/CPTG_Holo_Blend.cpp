@@ -48,6 +48,16 @@ Number of steps "d" for each PTG path "k":
 const double PATH_TIME_STEP = 10e-3;   // 10 ms
 const double eps = 1e-4;               // epsilon for detecting 1/0 situation
 
+
+// As a macro instead of a function (uglier) to allow for const variables (safer)
+MRPT_TODO("Reconsider constant W_MAX");
+#define COMMON_PTG_DESIGN_PARAMS \
+	const double vxf = V_MAX * cos(dir), vyf = V_MAX * sin(dir); \
+	const double vxi = curVelLocal.vx, vyi = curVelLocal.vy; \
+	const double T_ramp = T_ramp_max; \
+	const double wf = mrpt::utils::signWithZero(dir) * W_MAX;
+
+
 // Axiliary function for calc_trans_distance_t_below_Tramp() and others:
 static double calc_trans_distance_t_below_Tramp_abc(double t, double a,double b, double c)
 {
@@ -59,7 +69,7 @@ static double calc_trans_distance_t_below_Tramp_abc(double t, double a,double b,
 	const double discr = b*b-4*a*c;
 	if (std::abs(discr)<1e-6)
 	{
-		const double r = -b/2*a;
+		const double r = -b/(2*a);
 		// dist= definite integral [0,t] of: |t-r| dt
 		if (r<0) {
 			dist=+0.5*t*t-r*t;
@@ -264,16 +274,15 @@ bool CPTG_Holo_Blend::inverseMap_WS2TP(double x, double y, int &out_k, double &o
 		{
 			r[0] = 0.5*T_ramp *( vxi + q[1] ) + (q[0]-T_ramp)*q[1] - x;
 			r[1] = 0.5*T_ramp *( vyi + q[2] ) + (q[0]-T_ramp)*q[2]   - y;
-			r[2] = q[1]*q[1]+q[2]*q[2]   - V_MAXsq;
 		}
 		else
 		{
 			r[0] = vxi * q[0] + q[0]*q[0] * TR2_ * (q[1]-vxi)   - x;
 			r[1] = vyi * q[0] + q[0]*q[0] * TR2_ * (q[2]-vyi)   - y;
-			r[2] = q[1]*q[1]+q[2]*q[2]   - V_MAXsq;
 		}
+		r[2] = q[1]*q[1]+q[2]*q[2]   - V_MAXsq;
 
-		// Jacobian:
+		// Jacobian: q=[t vxf vyf]   q0=t   q1=vxf   q2=vyf
 		//  dx/dt  dx/dvxf  dx/dvyf
 		//  dy/dt  dy/dvxf  dy/dvyf
 		//  dVF/dt  dVF/dvxf  dVF/dvyf
@@ -282,14 +291,13 @@ bool CPTG_Holo_Blend::inverseMap_WS2TP(double x, double y, int &out_k, double &o
 		{
 			J(0,0) = q[1];  J(0,1) = 0.5*T_ramp+q[0]; J(0,2) = 0.0;
 			J(1,0) = q[2];  J(1,1) = 0.0;             J(1,2) = 0.5*T_ramp+q[0];
-			J(2,0) = 0.0; J(2,1) = 2*q[1]; J(2,2) = 2*q[2];
 		}
 		else
 		{
 			J(0,0) = vxi + q[0]*TR_*(q[1]-vxi);  J(0,1) = TR2_*q[0]*q[0];   J(0,2) = 0.0;
 			J(1,0) = vyi + q[0]*TR_*(q[2]-vyi);  J(1,1) = 0.0;              J(1,2) = TR2_*q[0]*q[0];
-			J(2,0) = 0.0;                        J(2,1) = 2*q[1];           J(2,2) = 2*q[2];
 		}
+		J(2,0) = 0.0; J(2,1) = 2*q[1]; J(2,2) = 2*q[2];
 
 		Eigen::Vector3d q_incr = J.householderQr().solve(r);
 		q-=q_incr;
@@ -368,10 +376,7 @@ void CPTG_Holo_Blend::getPathPose(uint16_t k, uint16_t step, mrpt::math::TPose2D
 {
 	const double t = PATH_TIME_STEP*step;
 	const double dir = CParameterizedTrajectoryGenerator::index2alpha(k);
-
-	const double vxf = V_MAX * cos(dir), vyf = V_MAX * sin(dir);
-	const double vxi = curVelLocal.vx, vyi = curVelLocal.vy;
-	const double T_ramp = T_ramp_max;
+	COMMON_PTG_DESIGN_PARAMS;
 	const double TR2_ = 1.0/(2*T_ramp);
 
 	// Translational part:
@@ -387,8 +392,6 @@ void CPTG_Holo_Blend::getPathPose(uint16_t k, uint16_t step, mrpt::math::TPose2D
 	}
 
 	// Rotational part:
-	MRPT_TODO("Reconsider constant W_MAX");
-	const double wf = mrpt::utils::signWithZero(dir) * W_MAX;
 	const double wi = curVelLocal.omega;
 
 	if (t<T_ramp)
@@ -425,9 +428,7 @@ double CPTG_Holo_Blend::getPathDist(uint16_t k, uint16_t step) const
 	const double t = PATH_TIME_STEP*step;
 	const double dir = CParameterizedTrajectoryGenerator::index2alpha(k);
 
-	const double vxf = V_MAX * cos(dir), vyf = V_MAX * sin(dir);
-	const double vxi = curVelLocal.vx, vyi = curVelLocal.vy;
-	const double T_ramp = T_ramp_max;
+	COMMON_PTG_DESIGN_PARAMS;
 	const double TR2_ = 1.0/(2*T_ramp);
 
 	const double k2 = (vxf-vxi)*TR2_;
@@ -449,10 +450,8 @@ bool CPTG_Holo_Blend::getPathStepForDist(uint16_t k, double dist, uint16_t &out_
 	PERFORMANCE_BENCHMARK;
 
 	const double dir = CParameterizedTrajectoryGenerator::index2alpha(k);
+	COMMON_PTG_DESIGN_PARAMS;
 
-	const double vxf = V_MAX * cos(dir), vyf = V_MAX * sin(dir);
-	const double vxi = curVelLocal.vx, vyi = curVelLocal.vy;
-	const double T_ramp = T_ramp_max;
 	const double TR2_ = 1.0/(2*T_ramp);
 
 	const double k2 = (vxf-vxi)*TR2_;
@@ -535,11 +534,9 @@ bool CPTG_Holo_Blend::getPathStepForDist(uint16_t k, double dist, uint16_t &out_
 void CPTG_Holo_Blend::updateTPObstacleSingle(double ox, double oy, uint16_t k, double &tp_obstacle_k) const
 {
 	const double R = m_robotRadius;
-	const double vxi = curVelLocal.vx, vyi = curVelLocal.vy;
-
 	const double dir = CParameterizedTrajectoryGenerator::index2alpha(k);
-	const double vxf = V_MAX * cos(dir), vyf = V_MAX * sin(dir);
-	const double T_ramp = T_ramp_max;
+	COMMON_PTG_DESIGN_PARAMS;
+
 	const double TR2_ = 1.0 / (2 * T_ramp);
 	const double TR_2 = T_ramp*0.5;
 	const double T_ramp_thres099 = T_ramp*0.99;
