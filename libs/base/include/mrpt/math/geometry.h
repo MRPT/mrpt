@@ -719,26 +719,6 @@ namespace mrpt
 			return abs(v1[2]*v2[0]-v2[2]*v1[0])<geometryEpsilon;
 		}
 
-		/** Computes the closest point from a given point to a segment, and returns that minimum distance.
-		  */
-		template <typename T>
-		double minimumDistanceFromPointToSegment(
-			const double Px,
-			const double Py,
-			const double x1,
-			const double y1,
-			const double x2,
-			const double y2,
-			T & out_x,
-			T & out_y)
-		{
-			double ox, oy;
-			closestFromPointToSegment(Px, Py, x1, y1, x2, y2, ox, oy);
-			out_x = static_cast<T>(ox);
-			out_y = static_cast<T>(oy);
-			return distanceBetweenPoints(Px, Py, ox, oy);
-		}
-
 		/** Computes the closest point from a given point to a segment.
 		  * \sa closestFromPointToLine
 		  */
@@ -799,6 +779,27 @@ namespace mrpt
 		T distanceSqrBetweenPoints(const T x1,const T y1,const T z1, const T x2,const T y2, const T z2) {
 			return square(x1-x2)+square(y1-y2)+square(z1-z2);
 		}
+
+		/** Computes the closest point from a given point to a segment, and returns that minimum distance.
+		  */
+		template <typename T>
+		double minimumDistanceFromPointToSegment(
+			const double Px,
+			const double Py,
+			const double x1,
+			const double y1,
+			const double x2,
+			const double y2,
+			T & out_x,
+			T & out_y)
+		{
+			double ox, oy;
+			closestFromPointToSegment(Px, Py, x1, y1, x2, y2, ox, oy);
+			out_x = static_cast<T>(ox);
+			out_y = static_cast<T>(oy);
+			return distanceBetweenPoints(Px, Py, ox, oy);
+		}
+
 
 		/** Returns the intersection point, and if it exists, between two segments.
 		  */
