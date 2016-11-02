@@ -21,7 +21,9 @@
 #include <wx/image.h>
 #include <wx/artprov.h>
 //*)
+#ifdef MRPT_OS_LINUX
 #include <dlfcn.h>
+#endif
 
 #include <mrpt/system/string_utils.h>
 #include <mrpt/gui/WxUtils.h>
@@ -455,7 +457,7 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent,wxWindowID id) :
 
 	{
 		gl_axis_WS = mrpt::opengl::CAxis::Create(-10.0,-10.0,0,10.0,10.0,0.0, 1.0 ,2.0);
-		gl_axis_WS->setTextScale(0.20);
+		gl_axis_WS->setTextScale(0.20f);
 		gl_axis_WS->enableTickMarks(true,true,true);
 		gl_axis_WS->setColor_u8(mrpt::utils::TColor(30,30,30,50));
 		gl_axis_WS->setTextLabelOrientation(0,0,0,0);
@@ -465,7 +467,7 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent,wxWindowID id) :
 	}
 	{
 		gl_axis_TPS= mrpt::opengl::CAxis::Create(-1.0,-1.0,0,1.0,1.0,0.0, 0.25 ,2.0);
-		gl_axis_TPS->setTextScale(0.04);
+		gl_axis_TPS->setTextScale(0.04f);
 		gl_axis_TPS->enableTickMarks(true,true,false);
 		gl_axis_TPS->setColor_u8(mrpt::utils::TColor(30,30,30,50));
 		gl_axis_TPS->setTextLabelOrientation(0,0,0,0);
@@ -475,7 +477,7 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent,wxWindowID id) :
 
 	gl_tp_obstacles = mrpt::opengl::CSetOfLines::Create();
 	gl_tp_obstacles->setName("tp_obstacles");
-	gl_tp_obstacles->setLineWidth(2.0);
+	gl_tp_obstacles->setLineWidth(2.0f);
 	gl_tp_obstacles->setColor_u8( mrpt::utils::TColor(0x00,0x00,0x00,0xff) );
 	gl_view_TPSpace->insert(gl_tp_obstacles);
 
@@ -493,7 +495,7 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent,wxWindowID id) :
 	gl_view_TPSpace_cam->setAzimuthDegrees( -90 );
 	gl_view_TPSpace_cam->setElevationDegrees(90);
 	gl_view_TPSpace_cam->setProjectiveModel( false );
-	gl_view_TPSpace_cam->setZoomDistance(2.1);
+	gl_view_TPSpace_cam->setZoomDistance(2.1f);
 
 	// Populate list of existing PTGs:
 	{
@@ -663,7 +665,7 @@ void ptgConfiguratorframe::rebuild3Dview()
 				:
 				*gl_robot_ptg_prediction;
 
-			ptg->renderPathAsSimpleLine(k,sol,0.10, max_dist);
+			ptg->renderPathAsSimpleLine(k,sol,0.10f, max_dist);
 
 			// Overlay a sequence of robot shapes:
 			if (cbDrawShapePath->IsChecked())

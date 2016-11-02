@@ -38,7 +38,7 @@ CObservation2DRangeScan::CObservation2DRangeScan( ) :
 	scan( m_scan ), // proxy ctor
 	intensity( m_intensity ), // proxy ctor
 	validRange( m_validRange ), // proxy ctor
-	aperture( M_PI ),
+	aperture( M_PIf ),
 	rightToLeft( true ),
 	maxRange( 80.0f ),
 	sensorPose(),
