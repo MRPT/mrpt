@@ -835,7 +835,7 @@ void  CRandomFieldGridMap2D::TInsertionOptionsCommon::internal_loadFromConfigFil
 	GMRF_use_occupancy_information	= iniFile.read_bool(section.c_str(),"GMRF_use_occupancy_information",false,false);
 	GMRF_simplemap_file				= iniFile.read_string(section.c_str(),"simplemap_file","",false);
 	GMRF_gridmap_image_file			= iniFile.read_string(section.c_str(),"gridmap_image_file","",false);
-	GMRF_gridmap_image_res			= iniFile.read_float(section.c_str(),"gridmap_image_res",0.01,false);
+	GMRF_gridmap_image_res			= iniFile.read_float(section.c_str(),"gridmap_image_res",0.01f,false);
 	GMRF_gridmap_image_cx			= iniFile.read_int(section.c_str(),"gridmap_image_cx",0,false);
 	GMRF_gridmap_image_cy			= iniFile.read_int(section.c_str(),"gridmap_image_cy",0,false);
 

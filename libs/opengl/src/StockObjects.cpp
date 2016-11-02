@@ -406,19 +406,19 @@ CSetOfObjectsPtr stock_objects::Hokuyo_URG()
 		ret->insert(base);
 	}
 	{
-		CCylinderPtr cyl1 = CCylinder::Create(0.02,0.02,0.01);
+		CCylinderPtr cyl1 = CCylinder::Create(0.02f,0.02f,0.01f);
 		cyl1->setColor(0,0,0);
 		cyl1->setPose(CPoint3D(0,0,-0.014));
 		ret->insert(cyl1);
 	}
 	{
-		CCylinderPtr cyl2 = CCylinder::Create(0.02,0.0175,0.01);
+		CCylinderPtr cyl2 = CCylinder::Create(0.02f,0.0175f,0.01f);
 		cyl2->setColor(0,0,0);
 		cyl2->setPose(CPoint3D(0,0,-0.004));
 		ret->insert(cyl2);
 	}
 	{
-		CCylinderPtr cyl3 = CCylinder::Create(0.0175,0.0175,0.01);
+		CCylinderPtr cyl3 = CCylinder::Create(0.0175f,0.0175f,0.01f);
 		cyl3->setColor(0,0,0);
 		cyl3->setPose(CPoint3D(0,0,0.004));
 		ret->insert(cyl3);
@@ -437,19 +437,19 @@ CSetOfObjectsPtr stock_objects::Hokuyo_UTM()
 		ret->insert(base);
 	}
 	{
-		CCylinderPtr cyl1 = CCylinder::Create(0.028,0.024,0.028);
+		CCylinderPtr cyl1 = CCylinder::Create(0.028f,0.024f,0.028f);
 		cyl1->setColor(0,0,0);
 		cyl1->setPose(CPose3D(0,0,-0.014));
 		ret->insert(cyl1);
 	}
 	{
-		CCylinderPtr cyl2 = CCylinder::Create(0.028,0.028,0.01);
+		CCylinderPtr cyl2 = CCylinder::Create(0.028f,0.028f,0.01f);
 		cyl2->setColor(1,69/255.0,0);
 		cyl2->setPose(CPoint3D(0,0,0.014));
 		ret->insert(cyl2);
 	}
 	{
-		CCylinderPtr cyl3 = CCylinder::Create(0.028,0.028,0.01);
+		CCylinderPtr cyl3 = CCylinder::Create(0.028f,0.028f,0.01f);
 		cyl3->setColor(0,0,0);
 		cyl3->setPose(CPoint3D(0,0,0.024));
 		ret->insert(cyl3);
@@ -488,25 +488,25 @@ CSetOfObjectsPtr stock_objects::Househam_Sprayer()
 		ret->insert(boom2);
 	}
 	{
-		CCylinderPtr cyl1 = CCylinder::Create(0.716,0.716,0.387,30);
+		CCylinderPtr cyl1 = CCylinder::Create(0.716f,0.716f,0.387f,30);
 		cyl1->setColor(0,0,0);
 		cyl1->setPose(CPose3D(-0.710,0.923,-2.480,0,0,DEG2RAD(90)));
 		ret->insert(cyl1);
 	}
 	{
-		CCylinderPtr cyl2 = CCylinder::Create(0.716,0.716,0.387,30);
+		CCylinderPtr cyl2 = CCylinder::Create(0.716f,0.716f,0.387f,30);
 		cyl2->setColor(0,0,0);
 		cyl2->setPose(CPose3D(-3.937,0.923,-2.480,0,0,DEG2RAD(90)));
 		ret->insert(cyl2);
 	}
 	{
-		CCylinderPtr cyl1 = CCylinder::Create(0.716,0.716,0.387,30);
+		CCylinderPtr cyl1 = CCylinder::Create(0.716f,0.716f,0.387f,30);
 		cyl1->setColor(0,0,0);
 		cyl1->setPose(CPose3D(-0.710,-0.423,-2.480,0,0,DEG2RAD(90)));
 		ret->insert(cyl1);
 	}
 	{
-		CCylinderPtr cyl2 = CCylinder::Create(0.716,0.716,0.387,30);
+		CCylinderPtr cyl2 = CCylinder::Create(0.716f,0.716f,0.387f,30);
 		cyl2->setColor(0,0,0);
 		cyl2->setPose(CPose3D(-3.937,-0.423,-2.480,0,0,DEG2RAD(90)));
 		ret->insert(cyl2);
