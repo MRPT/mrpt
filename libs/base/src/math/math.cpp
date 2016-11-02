@@ -1735,7 +1735,11 @@ bool mrpt::math::isFinite(double v) MRPT_NO_THROWS
 	---------------------------------------------------------------*/
 	bool  mrpt::math::isNaN(long double f) MRPT_NO_THROWS
 	{
+#if MRPT_CHECK_VISUALC_VERSION(14) || defined(__GNUC__)
 		return std::isnan(f);
+#else
+		return 0!=_isnan(f);
+#endif
 	}
 
 	/*---------------------------------------------------------------
@@ -1743,7 +1747,11 @@ bool mrpt::math::isFinite(double v) MRPT_NO_THROWS
 	---------------------------------------------------------------*/
 	bool  mrpt::math::isFinite(long double f) MRPT_NO_THROWS
 	{
+#if MRPT_CHECK_VISUALC_VERSION(14) || defined(__GNUC__)
 		return std::isfinite(f);
+#else
+		return 0!=_finite(f);
+#endif
 	}
 #endif
 
