@@ -79,8 +79,8 @@ namespace mrpt
 			bool					m_run;
 			void					dataCollection();
 			mrpt::system::TThreadHandle	dataCollectionThread;
-			float					convertLayerToRad(int scanlayer);
-			float					convertTicksToHRad(int hticks, int hticksPerRotation);
+			double					convertLayerToRad(int scanlayer);
+			double					convertTicksToHRad(int hticks, int hticksPerRotation);
 			mrpt::poses::CPoint3D	convertToCartesian(float vrad, float hrad, float distance);
 			float					vwinkel;
 			std::vector<mrpt::obs::CObservation3DRangeScan>	m_observations;
