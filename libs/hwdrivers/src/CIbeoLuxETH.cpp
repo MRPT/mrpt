@@ -213,14 +213,14 @@ CPoint3D CIbeoLuxETH::convertToCartesian(float vrad, float hrad, float distance)
 	return point;
 }
 
-float CIbeoLuxETH::convertTicksToHRad(int hticks, int hticksPerRotation)
+double CIbeoLuxETH::convertTicksToHRad(int hticks, int hticksPerRotation)
 {
 	return M_PI*2 * hticks / hticksPerRotation;
 }
 
-float CIbeoLuxETH::convertLayerToRad(int scanlayer)
+double CIbeoLuxETH::convertLayerToRad(int scanlayer)
 {
-	float vangle;
+	double vangle;
 
 	switch(scanlayer)
 	{
