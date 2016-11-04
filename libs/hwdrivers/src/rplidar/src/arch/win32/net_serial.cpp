@@ -72,7 +72,7 @@ bool raw_serial::open(const char * portname, _u32 baudrate, _u32 flags)
 {
     if (isOpened()) close();
     
-    _serial_handle = CreateFile(
+    _serial_handle = CreateFileA(
         portname,
         GENERIC_READ | GENERIC_WRITE,
         0,
