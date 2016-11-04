@@ -39,6 +39,7 @@
 				- MRPT_LOG_DEBUG_STREAM, MRPT_LOG_INFO_STREAM, MRPT_LOG_WARN_STREAM, MRPT_LOG_ERROR_STREAM
 			- New functions for polynomial roots: see \ref polynomial_roots
 			- New functions for signal filtering: see \ref filtering_grp
+			- New functions for Fresnel integrals: see \fresnel_integrals_grp
 			- New classes mrpt::math::CAtan2LookUpTable, mrpt::math::CAtan2LookUpTableMultiRes
 			- [API change] The following functions are no longer static methods: (since their classes are now derived from the state-aware mrpt::utils::COutputLogger)
 				- mrpt::math::RANSAC_Template::execute()
