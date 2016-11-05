@@ -39,7 +39,7 @@
 												<style>wxCB_SORT</style>
 												<handler function="OncbPTGClassSelect" entry="EVT_CHOICE" />
 											</object>
-											<flag>wxALL|wxEXPAND</flag>
+											<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 											<border>5</border>
 											<option>1</option>
 										</object>
@@ -52,7 +52,7 @@
 											<option>1</option>
 										</object>
 									</object>
-									<flag>wxALL|wxEXPAND</flag>
+									<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 									<option>1</option>
 								</object>
 								<object class="sizeritem">
@@ -71,7 +71,7 @@
 												<value>0</value>
 												<handler function="OnedPTGIndexChange" entry="EVT_SPINCTRL" />
 											</object>
-											<flag>wxALL|wxEXPAND</flag>
+											<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 											<border>5</border>
 											<option>1</option>
 										</object>
@@ -116,6 +116,7 @@
 										<object class="sizeritem">
 											<object class="wxCheckBox" name="ID_CHECKBOX3" variable="cbHighlightOnePath" member="yes">
 												<label>Highlight one trajectory:</label>
+												<checked>1</checked>
 												<handler function="OncbHighlightOnePathClick" entry="EVT_CHECKBOX" />
 											</object>
 											<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
@@ -141,8 +142,17 @@
 											<border>5</border>
 											<option>1</option>
 										</object>
+										<object class="sizeritem">
+											<object class="wxCheckBox" name="ID_CHECKBOX4" variable="cbShowOnlySelectedTraj" member="yes">
+												<label>Show only selected traj.</label>
+												<handler function="OncbHighlightOnePathClick" entry="EVT_CHECKBOX" />
+											</object>
+											<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+											<border>5</border>
+											<option>1</option>
+										</object>
 									</object>
-									<flag>wxALL|wxEXPAND</flag>
+									<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 									<option>1</option>
 								</object>
 								<object class="sizeritem">
@@ -242,7 +252,7 @@
 											<option>1</option>
 										</object>
 									</object>
-									<flag>wxALL|wxEXPAND</flag>
+									<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 									<option>1</option>
 								</object>
 								<object class="sizeritem">
@@ -253,9 +263,9 @@
 											<family>teletype</family>
 											<sysfont>wxSYS_OEM_FIXED_FONT</sysfont>
 										</font>
-										<style>wxTE_PROCESS_ENTER|wxTE_PROCESS_TAB|wxTE_MULTILINE|wxTE_DONTWRAP|wxHSCROLL|wxALWAYS_SHOW_SB</style>
+										<style>wxTE_PROCESS_ENTER|wxTE_PROCESS_TAB|wxTE_MULTILINE|wxHSCROLL|wxTE_DONTWRAP|wxALWAYS_SHOW_SB</style>
 									</object>
-									<flag>wxALL|wxEXPAND</flag>
+									<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 									<border>2</border>
 									<option>1</option>
 								</object>
@@ -263,11 +273,11 @@
 									<object class="wxFlexGridSizer" variable="FlexGridSizer5" member="no">
 										<cols>3</cols>
 									</object>
-									<flag>wxALL|wxEXPAND</flag>
+									<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 									<option>1</option>
 								</object>
 							</object>
-							<flag>wxALL|wxEXPAND</flag>
+							<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 							<option>1</option>
 						</object>
 						<object class="sizeritem">
@@ -283,12 +293,12 @@
 									<option>1</option>
 								</object>
 							</object>
-							<flag>wxALL|wxEXPAND</flag>
+							<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 							<option>1</option>
 						</object>
 					</object>
 				</object>
-				<flag>wxALL|wxEXPAND</flag>
+				<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 				<option>1</option>
 			</object>
 			<object class="sizeritem">
@@ -306,7 +316,7 @@
 							<size>150,300</size>
 							<focused>1</focused>
 						</object>
-						<flag>wxALL|wxEXPAND</flag>
+						<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 						<option>1</option>
 					</object>
 					<object class="sizeritem">
@@ -326,7 +336,7 @@
 												<size>150,300</size>
 												<focused>1</focused>
 											</object>
-											<flag>wxALL|wxEXPAND</flag>
+											<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 											<option>1</option>
 										</object>
 									</object>
@@ -345,7 +355,7 @@
 												<creating_code>$(THIS) = new $(CLASS)($(PARENT),$(ID),$(POS),$(SIZE),0);</creating_code>
 												<style></style>
 											</object>
-											<flag>wxALL|wxEXPAND</flag>
+											<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 											<option>1</option>
 										</object>
 									</object>
@@ -372,7 +382,7 @@
 												<creating_code>$(THIS) = new $(CLASS)($(PARENT),$(ID),$(POS),$(SIZE),0);</creating_code>
 												<style></style>
 											</object>
-											<flag>wxALL|wxEXPAND</flag>
+											<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 											<option>1</option>
 										</object>
 										<object class="sizeritem">
@@ -388,7 +398,7 @@
 												<creating_code>$(THIS) = new $(CLASS)($(PARENT),$(ID),$(POS),$(SIZE),0);</creating_code>
 												<style></style>
 											</object>
-											<flag>wxALL|wxEXPAND</flag>
+											<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 											<option>1</option>
 										</object>
 									</object>
@@ -415,7 +425,7 @@
 												<creating_code>$(THIS) = new $(CLASS)($(PARENT),$(ID),$(POS),$(SIZE),0);</creating_code>
 												<style></style>
 											</object>
-											<flag>wxALL|wxEXPAND</flag>
+											<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 											<option>1</option>
 										</object>
 										<object class="sizeritem">
@@ -431,14 +441,14 @@
 												<creating_code>$(THIS) = new $(CLASS)($(PARENT),$(ID),$(POS),$(SIZE),0);</creating_code>
 												<style></style>
 											</object>
-											<flag>wxALL|wxEXPAND</flag>
+											<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 											<option>1</option>
 										</object>
 										<object class="sizeritem">
 											<object class="wxStaticText" name="ID_STATICTEXT12" variable="StaticText12" member="yes">
 												<label>Selected path trajectory: Phi [deg]</label>
 											</object>
-											<flag>wxALL|wxEXPAND</flag>
+											<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 											<border>5</border>
 											<option>1</option>
 										</object>
@@ -447,7 +457,7 @@
 												<creating_code>$(THIS) = new $(CLASS)($(PARENT),$(ID),$(POS),$(SIZE),0);</creating_code>
 												<style></style>
 											</object>
-											<flag>wxALL|wxEXPAND</flag>
+											<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 											<option>1</option>
 										</object>
 									</object>
@@ -474,7 +484,7 @@
 												<creating_code>$(THIS) = new $(CLASS)($(PARENT),$(ID),$(POS),$(SIZE),0);</creating_code>
 												<style></style>
 											</object>
-											<flag>wxALL|wxEXPAND</flag>
+											<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 											<option>1</option>
 										</object>
 										<object class="sizeritem">
@@ -490,14 +500,14 @@
 												<creating_code>$(THIS) = new $(CLASS)($(PARENT),$(ID),$(POS),$(SIZE),0);</creating_code>
 												<style></style>
 											</object>
-											<flag>wxALL|wxEXPAND</flag>
+											<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 											<option>1</option>
 										</object>
 										<object class="sizeritem">
 											<object class="wxStaticText" name="ID_STATICTEXT15" variable="StaticText15" member="yes">
 												<label>Selected path trajectory: w [deg/s]</label>
 											</object>
-											<flag>wxALL|wxEXPAND</flag>
+											<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 											<border>5</border>
 											<option>1</option>
 										</object>
@@ -506,7 +516,7 @@
 												<creating_code>$(THIS) = new $(CLASS)($(PARENT),$(ID),$(POS),$(SIZE),0);</creating_code>
 												<style></style>
 											</object>
-											<flag>wxALL|wxEXPAND</flag>
+											<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 											<option>1</option>
 										</object>
 									</object>
@@ -514,11 +524,11 @@
 								<label>Robot velocity components</label>
 							</object>
 						</object>
-						<flag>wxALL|wxEXPAND</flag>
+						<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 						<option>1</option>
 					</object>
 				</object>
-				<flag>wxALL|wxEXPAND</flag>
+				<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 				<option>1</option>
 			</object>
 			<object class="sizeritem">
@@ -529,9 +539,9 @@
 						<family>teletype</family>
 						<sysfont>wxSYS_OEM_FIXED_FONT</sysfont>
 					</font>
-					<style>wxTE_PROCESS_ENTER|wxTE_PROCESS_TAB|wxTE_MULTILINE|wxTE_READONLY|wxTE_DONTWRAP|wxHSCROLL|wxALWAYS_SHOW_SB</style>
+					<style>wxTE_PROCESS_ENTER|wxTE_PROCESS_TAB|wxTE_MULTILINE|wxTE_READONLY|wxHSCROLL|wxTE_DONTWRAP|wxALWAYS_SHOW_SB</style>
 				</object>
-				<flag>wxALL|wxEXPAND</flag>
+				<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 				<option>1</option>
 			</object>
 		</object>

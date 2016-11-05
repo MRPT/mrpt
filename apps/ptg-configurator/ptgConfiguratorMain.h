@@ -10,20 +10,20 @@
 #pragma once
 
 //(*Headers(ptgConfiguratorframe)
-#include <wx/spinctrl.h>
-#include <wx/checkbox.h>
-#include <wx/sizer.h>
 #include <wx/notebook.h>
-#include <wx/button.h>
-#include <wx/menu.h>
-#include <wx/panel.h>
-#include <wx/slider.h>
-#include <wx/statusbr.h>
-#include <wx/frame.h>
-#include "MyGLCanvas.h"
+#include <wx/sizer.h>
 #include <wx/stattext.h>
+#include <wx/menu.h>
 #include <wx/textctrl.h>
+#include <wx/checkbox.h>
+#include <wx/spinctrl.h>
+#include "MyGLCanvas.h"
+#include <wx/slider.h>
+#include <wx/panel.h>
 #include <wx/choice.h>
+#include <wx/button.h>
+#include <wx/frame.h>
+#include <wx/statusbr.h>
 //*)
 
 #include <mrpt/otherlibs/mathplot/mathplot.h>
@@ -91,6 +91,7 @@ class ptgConfiguratorframe: public wxFrame
         static const long ID_CHECKBOX3;
         static const long ID_SLIDER1;
         static const long ID_SPINCTRL2;
+        static const long ID_CHECKBOX4;
         static const long ID_CHECKBOX2;
         static const long ID_TEXTCTRL3;
         static const long ID_STATICTEXT3;
@@ -137,59 +138,60 @@ class ptgConfiguratorframe: public wxFrame
         //*)
 
         //(*Declarations(ptgConfiguratorframe)
-        wxCheckBox* cbDrawShapePath;
-        wxPanel* Panel6;
-        wxPanel* Panel1;
-        wxStaticText* StaticText13;
-        wxStaticText* StaticText14;
-        wxStaticText* StaticText15;
-        wxStatusBar* StatusBar1;
-        wxTextCtrl* edObsY;
-        wxButton* btnPlaceObs;
-        mpWindow* m_plotPathXp;
-        mpWindow* m_plotHeadAngIndiv;
-        wxButton* Button1;
-        wxSpinCtrl* edIndexHighlightPath;
-        wxTextCtrl* edTargetY;
-        wxTextCtrl* edCfg;
-        wxSpinCtrl* edPTGIndex;
-        wxTextCtrl* edObsX;
-        wxStaticText* StaticText1;
         wxStaticText* StaticText10;
-        wxSlider* slidPathHighlight;
-        mpWindow* m_plotHeadAngAll;
-        wxPanel* Panel2;
-        wxStaticText* StaticText3;
-        wxPanel* Panel4;
-        CMyGLCanvas* m_plotTPSpace;
         mpWindow* m_plotPathW;
-        mpWindow* m_plotPathX;
+        wxStaticText* StaticText9;
+        wxTextCtrl* edObsY;
         wxPanel* Panel5;
-        wxButton* btnRebuildTPObs;
-        wxStaticText* StaticText8;
-        wxStaticText* StaticText12;
-        wxButton* btnPlaceTarget;
-        CMyGLCanvas* m_plot;
-        wxCheckBox* cbHighlightOnePath;
-        mpWindow* m_plotVelCmds;
-        wxPanel* Panel3;
-        wxTextCtrl* edLog;
-        mpWindow* m_plotPathPhi;
-        wxStaticText* StaticText7;
-        wxButton* btnReloadParams;
-        wxStaticText* StaticText4;
-        wxStaticText* StaticText5;
-        wxStaticText* StaticText2;
-        wxTextCtrl* edMinDistBtwShapes;
-        wxNotebook* Notebook1;
+        mpWindow* m_plotHeadAngAll;
         mpWindow* m_plotPathY;
+        wxNotebook* Notebook1;
+        CMyGLCanvas* m_plotTPSpace;
+        wxStaticText* StaticText13;
+        wxStaticText* StaticText2;
+        wxPanel* Panel4;
+        wxStaticText* StaticText14;
+        wxCheckBox* cbDrawShapePath;
+        wxButton* Button1;
+        wxCheckBox* cbShowOnlySelectedTraj;
+        wxSpinCtrl* edPTGIndex;
         wxStaticText* StaticText6;
+        wxCheckBox* cbBuildTPObs;
+        mpWindow* m_plotPathPhi;
+        wxSpinCtrl* edIndexHighlightPath;
+        wxButton* btnPlaceObs;
+        wxStaticText* StaticText8;
+        wxButton* btnRebuildTPObs;
+        wxStaticText* StaticText11;
+        wxPanel* Panel1;
+        wxStaticText* StaticText1;
+        wxStaticText* StaticText3;
         wxChoice* cbPTGClass;
+        wxPanel* Panel6;
+        wxPanel* Panel3;
+        CMyGLCanvas* m_plot;
+        wxButton* btnPlaceTarget;
         mpWindow* m_plotPathYp;
         wxTextCtrl* edTargetX;
-        wxCheckBox* cbBuildTPObs;
-        wxStaticText* StaticText9;
-        wxStaticText* StaticText11;
+        wxCheckBox* cbHighlightOnePath;
+        wxTextCtrl* edLog;
+        wxStaticText* StaticText5;
+        mpWindow* m_plotPathXp;
+        mpWindow* m_plotHeadAngIndiv;
+        wxStaticText* StaticText7;
+        wxStatusBar* StatusBar1;
+        mpWindow* m_plotVelCmds;
+        wxTextCtrl* edObsX;
+        wxButton* btnReloadParams;
+        wxStaticText* StaticText15;
+        wxStaticText* StaticText12;
+        mpWindow* m_plotPathX;
+        wxTextCtrl* edCfg;
+        wxPanel* Panel2;
+        wxTextCtrl* edMinDistBtwShapes;
+        wxStaticText* StaticText4;
+        wxTextCtrl* edTargetY;
+        wxSlider* slidPathHighlight;
         //*)
 
         DECLARE_EVENT_TABLE()
