@@ -54,8 +54,7 @@ MRPT_TODO("Reconsider constant W_MAX");
 #define COMMON_PTG_DESIGN_PARAMS \
 	const double vxf = V_MAX * cos(dir), vyf = V_MAX * sin(dir); \
 	const double vxi = curVelLocal.vx, vyi = curVelLocal.vy; \
-	const double T_ramp = T_ramp_max; \
-	const double wf = mrpt::utils::signWithZero(dir) * W_MAX;
+	const double T_ramp = T_ramp_max;
 
 
 // Axiliary function for calc_trans_distance_t_below_Tramp() and others:
@@ -377,6 +376,7 @@ void CPTG_Holo_Blend::getPathPose(uint16_t k, uint16_t step, mrpt::math::TPose2D
 	const double t = PATH_TIME_STEP*step;
 	const double dir = CParameterizedTrajectoryGenerator::index2alpha(k);
 	COMMON_PTG_DESIGN_PARAMS;
+	const double wf = mrpt::utils::signWithZero(dir) * W_MAX;
 	const double TR2_ = 1.0/(2*T_ramp);
 
 	// Translational part:
@@ -664,7 +664,7 @@ bool CPTG_Holo_Blend::supportVelCmdNOP() const
 
 double CPTG_Holo_Blend::maxTimeInVelCmdNOP(int path_k) const
 {
-	const double dir_local = CParameterizedTrajectoryGenerator::index2alpha(path_k);
+//	const double dir_local = CParameterizedTrajectoryGenerator::index2alpha(path_k);
 
 	const size_t nSteps = getPathStepCount(path_k);
 	const double max_t = nSteps * PATH_TIME_STEP;
