@@ -11,6 +11,7 @@
 
 #include <mrpt/nav/planners/nav_plan_geometry_utils.h>
 #include <mrpt/math/poly_roots.h>
+#include <mrpt/math/wrap2pi.h>
 
 using namespace mrpt;
 using namespace mrpt::math;
@@ -32,10 +33,10 @@ bool mrpt::nav::collision_free_dist_segment_circ_robot(
 	u *= 1.0 / L;
 
 	/*
-	syms x y d ux uy ox oy R real
-	f=(x+d*ux-ox)^2+(y+d*uy-oy)^2-R^2
+	syms x y d ux uy o.x o.y R real
+	f=(x+d*ux-o.x)^2+(y+d*uy-o.y)^2-R^2
 	coeffs -> 
-	[ (ox - x)^2 + (oy - y)^2 - R^2, - 2*ux*(ox - x) - 2*uy*(oy - y), ux^2 + uy^2]
+	[ (o.x - x)^2 + (o.y - y)^2 - R^2, - 2*ux*(o.x - x) - 2*uy*(o.y - y), ux^2 + uy^2]
 	*/
 	
 	// quadratic eq: a*d^2 + b*d+c=0
@@ -65,5 +66,44 @@ bool mrpt::nav::collision_free_dist_segment_circ_robot(
 
 	// A real, valid collision:
 	out_col_dist = r_min;
+	return true;
+}
+
+bool mrpt::nav::collision_free_dist_arc_circ_robot(
+	const double arc_radius, const double R,
+	const mrpt::math::TPoint2D &o, double &out_col_dist)
+{
+	ASSERT_ABOVE_(std::abs(arc_radius), 1e-10);
+	out_col_dist = -1.0;
+
+	const mrpt::math::TPoint2D ptArcCenter(.0, arc_radius);
+	const double center2obs_dist = (ptArcCenter - o).norm();
+	if (std::abs(center2obs_dist - std::abs(arc_radius))>R)
+		return false;
+	
+	// x:
+	const double r = arc_radius;
+	const double discr = (R*r*2.0 - o.y*r*2.0 - R*R + o.x*o.x + o.y*o.y)*(R*r*2.0 + o.y*r*2.0 + R*R - o.x*o.x - o.y*o.y);
+	if (discr < 0)
+		return false;
+	const double sol_x0 = ((R*R)*(-1.0 / 2.0) + (o.x*o.x)*(1.0 / 2.0) + (o.y*o.y)*(1.0 / 2.0) - (o.y*(-(R*R)*o.y + (R*R)*r + (o.x*o.x)*o.y + (o.x*o.x)*r - (o.y*o.y)*r + o.y*o.y*o.y + o.x*sqrt(discr))*(1.0 / 2.0)) / (o.y*r*-2.0 + o.x*o.x + o.y*o.y + r*r) + (r*(-(R*R)*o.y + (R*R)*r + (o.x*o.x)*o.y + (o.x*o.x)*r - (o.y*o.y)*r + o.y*o.y*o.y + o.x*sqrt(discr))*(1.0 / 2.0)) / (o.y*r*-2.0 + o.x*o.x + o.y*o.y + r*r)) / o.x;
+	const double sol_x1 = ((R*R)*(-1.0 / 2.0) + (o.x*o.x)*(1.0 / 2.0) + (o.y*o.y)*(1.0 / 2.0) - (o.y*(-(R*R)*o.y + (R*R)*r + (o.x*o.x)*o.y + (o.x*o.x)*r - (o.y*o.y)*r + o.y*o.y*o.y - o.x*sqrt(discr))*(1.0 / 2.0)) / (o.y*r*-2.0 + o.x*o.x + o.y*o.y + r*r) + (r*(-(R*R)*o.y + (R*R)*r + (o.x*o.x)*o.y + (o.x*o.x)*r - (o.y*o.y)*r + o.y*o.y*o.y - o.x*sqrt(discr))*(1.0 / 2.0)) / (o.y*r*-2.0 + o.x*o.x + o.y*o.y + r*r)) / o.x;
+
+	// y: 
+	const double sol_y0 = ((R*R)*o.y*(-1.0 / 2.0) + (R*R)*r*(1.0 / 2.0) + (o.x*o.x)*o.y*(1.0 / 2.0) + (o.x*o.x)*r*(1.0 / 2.0) - (o.y*o.y)*r*(1.0 / 2.0) + (o.y*o.y*o.y)*(1.0 / 2.0) + o.x*sqrt(discr)*(1.0 / 2.0)) / (o.y*r*-2.0 + o.x*o.x + o.y*o.y + r*r);
+	const double sol_y1 = ((R*R)*o.y*(-1.0 / 2.0) + (R*R)*r*(1.0 / 2.0) + (o.x*o.x)*o.y*(1.0 / 2.0) + (o.x*o.x)*r*(1.0 / 2.0) - (o.y*o.y)*r*(1.0 / 2.0) + (o.y*o.y*o.y)*(1.0 / 2.0) - o.x*sqrt(discr)*(1.0 / 2.0)) / (o.y*r*-2.0 + o.x*o.x + o.y*o.y + r*r);
+
+	const mrpt::math::TPoint2D sol0(sol_x0, sol_y0), sol1(sol_x1, sol_y1);
+
+	double th0 = atan2(sol0.x - ptArcCenter.x, -( sol0.y - ptArcCenter.y));  // (x,y) order is intentionally like this!
+	double th1 = atan2(sol1.x - ptArcCenter.x, -(sol1.y - ptArcCenter.y));
+
+	if (r < 0)
+	{
+		th0 -= M_PI;
+		th1 -= M_PI;
+	}
+	
+	out_col_dist = std::min(r*th0, r*th1); // do not factor out "r" so its sign is taken into account!
 	return true;
 }
