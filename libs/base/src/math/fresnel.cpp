@@ -702,7 +702,7 @@ long double xFresnel_Cosine_Integral(long double x)
 static long double Power_Series_C(long double x)
 {
 	long double x2 = x * x;
-	long double x3 = x * x2;
+//	long double x3 = x * x2;
 	long double x4 = -x2 * x2;
 	long double xn = 1.0L;
 	long double Sn = 1.0L;
