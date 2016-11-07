@@ -55,7 +55,7 @@ void CPTG_RobotShape_Circular::add_robotShape_to_setOfLines(
 	const mrpt::poses::CPose2D &origin) const
 {
 	const double R = m_robotRadius;
-	const int N = 21;
+	const int N = 17;
 	// Transform coordinates:
 	mrpt::math::CVectorDouble shap_x(N), shap_y(N), shap_z(N);
 	for (int i = 0; i<N; i++) {
@@ -69,6 +69,9 @@ void CPTG_RobotShape_Circular::add_robotShape_to_setOfLines(
 		const int idx = i % shap_x.size();
 		gl_shape.appendLineStrip(shap_x[idx], shap_y[idx], shap_z[idx]);
 	}
+	// Draw a "cross" to identify the robot center
+	gl_shape.appendLine(origin.x() - R*0.02, origin.y(), .0, origin.x() + R*0.02, origin.y(), .0);
+	gl_shape.appendLine(origin.x(), origin.y() - R*0.02, .0, origin.x(), origin.y() + R*0.02, .0);
 }
 
 
