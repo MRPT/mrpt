@@ -304,7 +304,7 @@ holonomic_navigator_demoFrame::holonomic_navigator_demoFrame(wxWindow* parent,wx
 
 	gl_robot = mrpt::opengl::CSetOfObjects::Create();
 	{
-		mrpt::opengl::CCylinderPtr obj = mrpt::opengl::CCylinder::Create(0.2,0.1,0.9);
+		mrpt::opengl::CCylinderPtr obj = mrpt::opengl::CCylinder::Create(0.2f,0.1f,0.9f);
 		obj->setColor_u8( TColor::red );
 		gl_robot->insert( obj );
 	}
@@ -328,10 +328,10 @@ holonomic_navigator_demoFrame::holonomic_navigator_demoFrame(wxWindow* parent,wx
 	gl_target = mrpt::opengl::CSetOfObjects::Create();
 	{
 		mrpt::opengl::CArrowPtr obj;
-		obj = mrpt::opengl::CArrow::Create( 1,0,0,  0.2,0,0, 0.4,0.05, 0.15 ); obj->setColor_u8( TColor(0,0,255) ); gl_target->insert(obj);
-		obj = mrpt::opengl::CArrow::Create(-1,0,0, -0.2,0,0, 0.4,0.05, 0.15 ); obj->setColor_u8( TColor(0,0,255) ); gl_target->insert(obj);
-		obj = mrpt::opengl::CArrow::Create( 0,1,0,  0,0.2,0, 0.4,0.05, 0.15 ); obj->setColor_u8( TColor(0,0,255) ); gl_target->insert(obj);
-		obj = mrpt::opengl::CArrow::Create(0,-1,0,  0,-0.2,0, 0.4,0.05, 0.15 ); obj->setColor_u8( TColor(0,0,255) ); gl_target->insert(obj);
+		obj = mrpt::opengl::CArrow::Create( 1,0,0,  0.2f,0,0, 0.4f,0.05f, 0.15f ); obj->setColor_u8( TColor(0,0,255) ); gl_target->insert(obj);
+		obj = mrpt::opengl::CArrow::Create(-1,0,0, -0.2f,0,0, 0.4f,0.05f, 0.15f ); obj->setColor_u8( TColor(0,0,255) ); gl_target->insert(obj);
+		obj = mrpt::opengl::CArrow::Create( 0,1,0,  0,0.2f,0, 0.4f,0.05f, 0.15f ); obj->setColor_u8( TColor(0,0,255) ); gl_target->insert(obj);
+		obj = mrpt::opengl::CArrow::Create(0,-1,0,  0,-0.2f,0, 0.4f,0.05f, 0.15f ); obj->setColor_u8( TColor(0,0,255) ); gl_target->insert(obj);
 		m_plot3D->m_openGLScene->insert(gl_target);
 	}
 
@@ -339,16 +339,16 @@ holonomic_navigator_demoFrame::holonomic_navigator_demoFrame(wxWindow* parent,wx
 		m_gl_placing_nav_target = opengl::CSetOfObjects::Create();
 
 		mrpt::opengl::CArrowPtr obj;
-		obj = mrpt::opengl::CArrow::Create( 1,0,0,  0.2,0,0, 0.4,0.05, 0.15 ); obj->setColor_u8( TColor(0,0,255) ); m_gl_placing_nav_target->insert(obj);
-		obj = mrpt::opengl::CArrow::Create(-1,0,0, -0.2,0,0, 0.4,0.05, 0.15 ); obj->setColor_u8( TColor(0,0,255) ); m_gl_placing_nav_target->insert(obj);
-		obj = mrpt::opengl::CArrow::Create( 0,1,0,  0,0.2,0, 0.4,0.05, 0.15 ); obj->setColor_u8( TColor(0,0,255) ); m_gl_placing_nav_target->insert(obj);
-		obj = mrpt::opengl::CArrow::Create(0,-1,0,  0,-0.2,0, 0.4,0.05, 0.15 ); obj->setColor_u8( TColor(0,0,255) ); m_gl_placing_nav_target->insert(obj);
+		obj = mrpt::opengl::CArrow::Create( 1,0,0,  0.2f,0,0, 0.4f,0.05f, 0.15f ); obj->setColor_u8( TColor(0,0,255) ); m_gl_placing_nav_target->insert(obj);
+		obj = mrpt::opengl::CArrow::Create(-1,0,0, -0.2f,0,0, 0.4f,0.05f, 0.15f ); obj->setColor_u8( TColor(0,0,255) ); m_gl_placing_nav_target->insert(obj);
+		obj = mrpt::opengl::CArrow::Create( 0,1,0,  0,0.2f,0, 0.4f,0.05f, 0.15f ); obj->setColor_u8( TColor(0,0,255) ); m_gl_placing_nav_target->insert(obj);
+		obj = mrpt::opengl::CArrow::Create(0,-1,0,  0,-0.2f,0, 0.4f,0.05f, 0.15f ); obj->setColor_u8( TColor(0,0,255) ); m_gl_placing_nav_target->insert(obj);
 		m_gl_placing_nav_target->setVisibility(false); // Start invisible.
 		m_plot3D->m_openGLScene->insert(m_gl_placing_nav_target);
 	}
 	{	// Sign of "replacing the robot":
 		m_gl_placing_robot = opengl::CSetOfObjects::Create();
-		mrpt::opengl::CCylinderPtr obj = mrpt::opengl::CCylinder::Create(0.2,0.1,0.9);
+		mrpt::opengl::CCylinderPtr obj = mrpt::opengl::CCylinder::Create(0.2f,0.1f,0.9f);
 		obj->setColor_u8( TColor(255,0,0, 120) );
 		m_gl_placing_robot->insert(obj);
 
@@ -370,7 +370,7 @@ holonomic_navigator_demoFrame::holonomic_navigator_demoFrame(wxWindow* parent,wx
 
 	// 2D view ==============
 	{
-		mrpt::opengl::CGridPlaneXYPtr obj = mrpt::opengl::CGridPlaneXY::Create(-1,1.001, -1,1.001, 0, 1);
+		mrpt::opengl::CGridPlaneXYPtr obj = mrpt::opengl::CGridPlaneXY::Create(-1,1.001f, -1,1.001f, 0, 1);
 		obj->setColor_u8(TColor(30,30,30,50));
 		m_plotScan->m_openGLScene->insert( obj );
 	}
@@ -392,7 +392,7 @@ holonomic_navigator_demoFrame::holonomic_navigator_demoFrame(wxWindow* parent,wx
 	gl_rel_target->insertPoint(0,0,0);
 	m_plotScan->m_openGLScene->insert(gl_rel_target);
 
-	m_plotScan->m_openGLScene->insert( mrpt::opengl::stock_objects::CornerXYSimple(0.1,2) );
+	m_plotScan->m_openGLScene->insert( mrpt::opengl::stock_objects::CornerXYSimple(0.1f,2) );
 
 	gl_nd_gaps = mrpt::opengl::CSetOfLines::Create();
 	gl_nd_gaps->setLineWidth(2);
@@ -407,7 +407,7 @@ holonomic_navigator_demoFrame::holonomic_navigator_demoFrame(wxWindow* parent,wx
 	m_plotScan->cameraPointingX=0;
 	m_plotScan->cameraPointingY=0;
 	m_plotScan->cameraPointingZ=0;
-	m_plotScan->cameraZoomDistance = 2.2;
+	m_plotScan->cameraZoomDistance = 2.2f;
 	m_plotScan->cameraElevationDeg = 90;
 	m_plotScan->cameraAzimuthDeg = -90;
 	m_plotScan->cameraIsProjective = false;
@@ -571,7 +571,7 @@ void holonomic_navigator_demoFrame::simulateOneStep(double time_step)
 	// Simulate 360deg range scan:
 	CObservation2DRangeScan      simulatedScan;
 
-	simulatedScan.aperture = M_2PI;
+	simulatedScan.aperture = M_2PIf;
 	simulatedScan.rightToLeft = true;
 	simulatedScan.maxRange = m_simul_options.MAX_SENSOR_RADIUS;
 	simulatedScan.sensorPose = CPose2D(0,0,0);

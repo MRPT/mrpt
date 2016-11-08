@@ -184,9 +184,9 @@ static int stream_process(freenect_context *ctx, packet_stream *strm, uint8_t *p
 
 	if (hdr->flag == eof) {
 		if (strm->variable_length)
-			got_frame_size = (dbuf - strm->raw_buf) + datalen;
+			got_frame_size = int( (dbuf - strm->raw_buf) + datalen );
 		else
-			got_frame_size = (dbuf - strm->raw_buf) + strm->last_pkt_size;
+			got_frame_size = int( (dbuf - strm->raw_buf) + strm->last_pkt_size);
 		strm->pkt_num = 0;
 		strm->valid_pkts = strm->got_pkts;
 		strm->got_pkts = 0;

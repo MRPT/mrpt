@@ -434,8 +434,8 @@ robotic_arm_kinematicsFrame::robotic_arm_kinematicsFrame(wxWindow* parent,wxWind
 
 	// Initialize 3D scene:
 	{
-		mrpt::opengl::CGridPlaneXYPtr grid_10cm = mrpt::opengl::CGridPlaneXY::Create(-5,5, -5, 5, 0, 0.1);
-		mrpt::opengl::CGridPlaneXYPtr grid_1m = mrpt::opengl::CGridPlaneXY::Create(-5,5, -5, 5, 0.001, 1);
+		mrpt::opengl::CGridPlaneXYPtr grid_10cm = mrpt::opengl::CGridPlaneXY::Create(-5,5, -5, 5, 0, 0.1f);
+		mrpt::opengl::CGridPlaneXYPtr grid_1m = mrpt::opengl::CGridPlaneXY::Create(-5,5, -5, 5, 0.001f, 1);
 
 		grid_10cm->setColor_u8( mrpt::utils::TColor(0xC0,0xC0,0xC0,0xA0) );
 		grid_1m->setColor_u8( mrpt::utils::TColor(0xFF,0xFF,0xFF) );
