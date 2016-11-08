@@ -35,7 +35,7 @@ namespace kinematics
 		void sendVelRampCmd(double vel, double dir, double ramp_time, double rot_speed);
 
 		void sendVelCmd(const CVehicleVelCmd &cmd_vel) MRPT_OVERRIDE {
-			const kinematic_cmd_t* cmd = reinterpret_cast<const kinematic_cmd_t*>(&cmd_vel);
+			const kinematic_cmd_t* cmd = dynamic_cast<const kinematic_cmd_t*>(&cmd_vel);
 			ASSERTMSG_(cmd, "Wrong vehicle kinematic class, expected `CVehicleVelCmd_Holo`");
 			sendVelRampCmd(cmd->vel, cmd->dir_local + m_pose.phi /* local to global dir */ ,cmd->ramp_time,cmd->rot_speed);
 		}
