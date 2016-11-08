@@ -98,12 +98,17 @@ bool mrpt::nav::collision_free_dist_arc_circ_robot(
 	double th0 = atan2(sol0.x - ptArcCenter.x, -( sol0.y - ptArcCenter.y));  // (x,y) order is intentionally like this!
 	double th1 = atan2(sol1.x - ptArcCenter.x, -(sol1.y - ptArcCenter.y));
 
-	if (r < 0)
+	if (r > 0)
 	{
-		th0 -= M_PI;
-		th1 -= M_PI;
+		th0 = mrpt::math::wrapTo2Pi(th0);
+		th1 = mrpt::math::wrapTo2Pi(th1);
+	}
+	else
+	{
+		th0 = mrpt::math::wrapTo2Pi(M_PI - th0);
+		th1 = mrpt::math::wrapTo2Pi(M_PI - th1);
 	}
 	
-	out_col_dist = std::min(r*th0, r*th1); // do not factor out "r" so its sign is taken into account!
+	out_col_dist = std::abs(r)*std::min(th0, th1);
 	return true;
 }
