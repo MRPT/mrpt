@@ -46,7 +46,7 @@ namespace kinematics
 		void  movementCommand(double lin_vel, double ang_vel );
 
 		void sendVelCmd(const CVehicleVelCmd &cmd_vel) MRPT_OVERRIDE {
-			const kinematic_cmd_t* cmd = reinterpret_cast<const kinematic_cmd_t*>(&cmd_vel);
+			const kinematic_cmd_t* cmd = dynamic_cast<const kinematic_cmd_t*>(&cmd_vel);
 			ASSERTMSG_(cmd, "Wrong vehicle kinematic class, expected `CVehicleVelCmd_DiffDriven`");
 			movementCommand(cmd->lin_vel, cmd->ang_vel);
 		}
