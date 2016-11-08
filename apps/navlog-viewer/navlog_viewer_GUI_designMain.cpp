@@ -610,14 +610,14 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 				if (cbShowRelPoses->IsChecked())
 				{
 					{
-						mrpt::opengl::CSetOfObjectsPtr gl_relpose_sense = mrpt::opengl::stock_objects::CornerXYSimple(0.3, 1);
+						mrpt::opengl::CSetOfObjectsPtr gl_relpose_sense = mrpt::opengl::stock_objects::CornerXYSimple(0.3f, 1);
 						gl_relpose_sense->setName("sense");
 						gl_relpose_sense->enableShowName(true);
 						gl_relpose_sense->setPose(log.relPoseSense);
 						gl_relposes->insert(gl_relpose_sense);
 					}
 					{
-						mrpt::opengl::CSetOfObjectsPtr gl_relpose_cmdvel = mrpt::opengl::stock_objects::CornerXYSimple(0.3, 1);
+						mrpt::opengl::CSetOfObjectsPtr gl_relpose_cmdvel = mrpt::opengl::stock_objects::CornerXYSimple(0.3f, 1);
 						gl_relpose_cmdvel->setName("cmdVel");
 						gl_relpose_cmdvel->enableShowName(true);
 						gl_relpose_cmdvel->setPose(log.relPoseVelCmd);
@@ -799,7 +799,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 			mrpt::utils::TColorf col;
 			if (((int)nPTG)==log.nSelectedPTG)
 			     col = mrpt::utils::TColorf(1,1,1);
-			else col = mrpt::utils::TColorf(.8,.8,.8);
+			else col = mrpt::utils::TColorf(.8f,.8f,.8f);
 
 			ADD_WIN_TEXTMSG(mrpt::format("PTG#%u: Eval=%5.03f factors=%s", nPTG, pI.evaluation, sprintf_vector("%5.02f ", pI.evalFactors).c_str()));
 		}
