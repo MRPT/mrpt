@@ -665,6 +665,9 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 					mrpt::nav::CParameterizedTrajectoryGeneratorPtr ptg = m_logdata_ptg_paths[sel_ptg_idx];
 					if (ptg)
 					{
+						if (!ptg->isInitialized())
+							ptg->initialize();
+
 						// Set instantaneous kinematic state:
 						if (!is_NOP_cmd)
 								ptg->updateCurrentRobotVel(log.cur_vel_local);
