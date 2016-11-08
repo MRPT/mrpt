@@ -220,7 +220,7 @@ namespace nav
 		  * \param[in] decimate_distance Minimum distance between path points (in meters).
 		  * \param[in] max_path_distance If >=0, cut the path at this distance (in meters).
 		  */
-		virtual void renderPathAsSimpleLine(const uint16_t k,mrpt::opengl::CSetOfLines &gl_obj,const float decimate_distance = 0.1f,const float max_path_distance = -1.0f) const;
+		virtual void renderPathAsSimpleLine(const uint16_t k,mrpt::opengl::CSetOfLines &gl_obj,const double decimate_distance = 0.1,const double max_path_distance = -1.0) const;
 
 		/** Dump PTG trajectories in four text files: `./reactivenav.logs/PTGs/PTG%i_{x,y,phi,d}.txt`
 		  * Text files are loadable from MATLAB/Octave, and can be visualized with the script `[MRPT_DIR]/scripts/viewPTG.m` 

@@ -102,20 +102,20 @@ uint16_t CParameterizedTrajectoryGenerator::alpha2index( double alpha ) const
 void CParameterizedTrajectoryGenerator::renderPathAsSimpleLine(
 	const uint16_t k, 
 	mrpt::opengl::CSetOfLines &gl_obj, 
-	const float decimate_distance, 
-	const float max_path_distance) const
+	const double decimate_distance, 
+	const double max_path_distance) const
 {
 	const size_t nPointsInPath = getPathStepCount(k);
 
 	bool first=true;
 	// Decimate trajectories: we don't need centimeter resolution!
-	float last_added_dist = 0.0f;
+	double last_added_dist = 0.0;
 	for (size_t n=0;n<nPointsInPath;n++)
 	{
-		const float d = this->getPathDist(k, n); // distance thru path "k" until timestep "n"
+		const double d = this->getPathDist(k, n); // distance thru path "k" until timestep "n"
 
 		// Draw the TP only until we reach the target of the "motion" segment:
-		if (max_path_distance>=0.0f && d>=max_path_distance) break;
+		if (max_path_distance>=0.0 && d>=max_path_distance) break;
 
 		if (d<last_added_dist+decimate_distance && n!=0)
 			continue; // skip: decimation
