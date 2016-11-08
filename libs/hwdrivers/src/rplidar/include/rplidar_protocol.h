@@ -56,7 +56,7 @@ typedef struct _rplidar_cmd_packet_t {
     _u8 syncByte; //must be RPLIDAR_CMD_SYNC_BYTE
     _u8 cmd_flag; 
     _u8 size;
-    _u8 data[0];
+    _u8 *data;
 } __attribute__((packed)) rplidar_cmd_packet_t;
 
 

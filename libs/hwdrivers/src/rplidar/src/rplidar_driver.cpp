@@ -550,7 +550,7 @@ u_result RPlidarDriverSerialImpl::grabScanData(rplidar_response_measurement_node
 
 u_result RPlidarDriverSerialImpl::ascendScanData(rplidar_response_measurement_node_t * nodebuffer, size_t count)
 {
-    float inc_origin_angle = 360.0/count;
+    float inc_origin_angle = 360.0f/count;
     size_t i = 0;
 
     //Tune head

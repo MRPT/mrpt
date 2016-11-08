@@ -1304,7 +1304,7 @@ void CLoopCloserERD<GRAPH_t>::updateMapPartitionsVisualization() {
 			CSetOfLinesPtr connecting_lines_obj = CSetOfLines::Create();
 			connecting_lines_obj->setName("connecting_lines");
 			connecting_lines_obj->setColor_u8(m_lc_params.connecting_lines_color);
-			connecting_lines_obj->setLineWidth(0.1);
+			connecting_lines_obj->setLineWidth(0.1f);
 
 			curr_partition_obj->insert(connecting_lines_obj);
 

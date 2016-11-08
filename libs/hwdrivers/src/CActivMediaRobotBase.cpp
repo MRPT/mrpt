@@ -47,8 +47,8 @@ CActivMediaRobotBase::CActivMediaRobotBase() :
 	m_simpleConnector	(NULL),
 	m_lastTimeSonars	(0),
 	m_enableJoyControl 	(false),
-    m_joy_max_v			(0.20),
-    m_joy_max_w			(DEG2RAD(20)),
+    m_joy_max_v			(0.20f),
+    m_joy_max_w			(DEG2RAD(20.0f)),
 	m_joystick			(),
 	m_last_do_process	(INVALID_TIMESTAMP),
 	m_capture_rate		(10.0)

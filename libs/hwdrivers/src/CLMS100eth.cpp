@@ -272,7 +272,7 @@ bool CLMS100Eth::decodeScan(char* buff, CObservation2DRangeScan& outObservation)
     }
         next = strtok(NULL, " ", &tmp);
     }
-    outObservation.aperture = APPERTURE;
+    outObservation.aperture = (float)APPERTURE;
     outObservation.rightToLeft = false;
     outObservation.stdError = 0.012f;
     outObservation.sensorPose = m_sensorPose;

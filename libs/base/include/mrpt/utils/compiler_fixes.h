@@ -17,7 +17,7 @@
 #if defined(_MSC_VER)
 	#pragma warning(disable:4127) // Disable conditional expression is constant (it shows up in templates where it's correct)
 	#pragma warning(disable:4244) // argument conversion "possible loss of data"
-	//#pragma warning(disable:4503) // (Compiler: Visual C++ 2010) Disable warning for too long decorated name
+	#pragma warning(disable:4503) // (Compiler: Visual C++ 2010) Disable warning for too long decorated name
 	//#pragma warning(disable:4305) // truncation 
 	//#pragma warning(disable:4308) // Disable warning for Eigen3 libs: negative integral converted to unsigned
 	#pragma warning(disable:4714) // force inlined -> not inlined (in Eigen3)
