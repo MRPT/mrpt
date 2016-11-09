@@ -168,8 +168,8 @@ void CLocalMetricHypothesis::getAs3DScene( opengl::CSetOfObjectsPtr &objs ) cons
 		// Add an arrow for the mean direction also:
 		{
 			mrpt::opengl::CArrowPtr obj = mrpt::opengl::CArrow::Create(
-        		0,0,0,
-				0.20,0,0,
+				0,0,0,
+				0.20f,0,0,
 				0.25f,0.005f,0.02f);
 			obj->setColor(1,0,0);
 			obj->setPose(pdf.mean);

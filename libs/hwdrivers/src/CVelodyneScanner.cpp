@@ -18,6 +18,7 @@
 
 // socket's hdrs:
 #ifdef MRPT_OS_WINDOWS
+	#define _WINSOCK_DEPRECATED_NO_WARNINGS
 	#if defined(_WIN32_WINNT) && (_WIN32_WINNT<0x600)
 	#undef _WIN32_WINNT
 	#define _WIN32_WINNT 0x600 // Minimum: Windows Vista (required to pollfd)
