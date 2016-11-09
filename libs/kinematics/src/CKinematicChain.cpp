@@ -138,7 +138,7 @@ void CKinematicChain::recomputeAllPoses(mrpt::aligned_containers<mrpt::poses::CP
 	}
 }
 
-const float R = 0.01;
+const float R = 0.01f;
 
 void addBar_D(mrpt::opengl::CSetOfObjectsPtr &objs, const double d)
 {

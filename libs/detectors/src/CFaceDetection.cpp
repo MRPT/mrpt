@@ -1436,7 +1436,7 @@ void CFaceDetection::experimental_viewFacePointsAndEigenVects(  const vector<CAr
 
 	mrpt::opengl::COpenGLScenePtr scene = win3D.get3DSceneAndLock();
 
-	CSpherePtr sphere = CSphere::Create(0.005);
+	CSpherePtr sphere = CSphere::Create(0.005f);
 	sphere->setLocation( center );
 	sphere->setColor( TColorf(0,1,0) );
 	scene->insert( sphere );
@@ -1520,7 +1520,7 @@ void CFaceDetection::experimental_viewRegions( const vector<TPoint3D> regions[9]
 		for ( size_t i = 0; i < 3; i++ )
 			for ( size_t j = 0; j < 3; j++ )
 			{
-				CSpherePtr sphere = CSphere::Create(0.005);
+				CSpherePtr sphere = CSphere::Create(0.005f);
 				sphere->setLocation( meanPos[i][j] );
 				sphere->setColor( TColorf(0,1,0) );
 				scene->insert( sphere );
@@ -1612,7 +1612,7 @@ void CFaceDetection::experimental_segmentFace( const CObservation3DRangeScan &fa
 	mrpt::utils::CImage  img;
 	// Normalize the image
 	CMatrixFloat  range2D = m_lastFaceDetected.rangeImage;
-	range2D *= 1.0/5;
+	range2D *= 1.0f/5;
 	img.setFromMatrix(range2D);
 
 	// INITIALIZATION

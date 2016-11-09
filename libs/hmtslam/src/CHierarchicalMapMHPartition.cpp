@@ -1219,7 +1219,7 @@ void  CHierarchicalMapMHPartition::getAs3DScene(
 				glObj->setPose( auxPose );
 				//glObj->m_z = 0;
 
-				glObj->setDiskRadius(0.05);
+				glObj->setDiskRadius(0.05f);
 				glObj->setSlicesCount(20);
 				glObj->setLoopsCount(10);
 

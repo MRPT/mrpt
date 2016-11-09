@@ -130,8 +130,8 @@ void  CRoboPeakLidar::doProcessSimple(
 		// Fill common parts of the obs:
 		outObservation.timestamp = tim_scan_start;
 		outObservation.rightToLeft = false;
-		outObservation.aperture = 2.0*M_PI;
-		outObservation.maxRange	= 6.0;
+		outObservation.aperture = 2*M_PIf;
+		outObservation.maxRange = 6.0;
 		outObservation.stdError = 0.010f;
 		outObservation.sensorPose = m_sensorPose;
 		outObservation.sensorLabel = m_sensorLabel;

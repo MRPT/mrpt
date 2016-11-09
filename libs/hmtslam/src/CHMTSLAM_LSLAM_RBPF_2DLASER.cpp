@@ -813,7 +813,7 @@ void  CLSLAM_RBPF_2DLASER::prediction_and_update_pfOptimalProposal(
 
 	// Build local map:
 	localMapPoints.clear();
-	localMapPoints.insertionOptions.minDistBetweenLaserPoints =  0.02;
+	localMapPoints.insertionOptions.minDistBetweenLaserPoints =  0.02f;
 	sf->insertObservationsInto( &localMapPoints );
 
 	// Process the particles
