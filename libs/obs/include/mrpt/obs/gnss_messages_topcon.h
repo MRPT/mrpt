@@ -18,7 +18,7 @@ namespace gnss {
 /** GPS datum for TopCon's mmGPS devices: PZS. \sa mrpt::obs::CObservationGPS   */
 struct OBS_IMPEXP Message_TOPCON_PZS : public gnss_message
 {
-	static const gnss_message_type_t  msg_type = TOPCON_PZS;  //!< Static msg type (member expected by templates)
+	enum { msg_type = TOPCON_PZS };  //!< Static msg type (member expected by templates)
 
 	double   latitude_degrees;	//!< The measured latitude, in degrees (North:+ , South:-)
 	double   longitude_degrees;	//!< The measured longitude, in degrees (East:+ , West:-)
@@ -62,7 +62,7 @@ protected:
 /** TopCon mmGPS devices: SATS, a generic structure for statistics about tracked satelites and their positions. \sa mrpt::obs::CObservationGPS   */
 struct OBS_IMPEXP Message_TOPCON_SATS : public gnss_message
 {
-	static const gnss_message_type_t  msg_type = TOPCON_SATS;  //!< Static msg type (member expected by templates)
+	enum { msg_type = TOPCON_SATS };  //!< Static msg type (member expected by templates)
 
 	Message_TOPCON_SATS();
 
