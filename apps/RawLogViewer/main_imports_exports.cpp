@@ -1097,7 +1097,7 @@ void xRawLogViewerFrame::saveImportedLogToRawlog(
 				CObservation2DRangeScanPtr obs = CObservation2DRangeScan::Create();
 				newObs = obs;
 
-				obs->aperture = M_PI;
+				obs->aperture = M_PIf;
 				obs->rightToLeft = true;
 				obs->resizeScan(it->second.data.size());
 				for (size_t i=0;i<it->second.data.size();i++) {
@@ -1689,8 +1689,8 @@ Units are m and radian.
 				obs->timestamp = cur_timestamp;
 				obs->minSensorDistance = 0;
 				obs->maxSensorDistance = 100;
-				obs->sensor_std_yaw = 1e-4;
-				obs->sensor_std_range = 1e-2;
+				obs->sensor_std_yaw = 1e-4f;
+				obs->sensor_std_range = 1e-2f;
 				obs->sensor_std_pitch = 0; // Is a 2D sensor
 				obs->fieldOfView_pitch = 0;
 				obs->fieldOfView_yaw = DEG2RAD(180);
