@@ -56,10 +56,10 @@ FOREACH(_TSTLIB ${LST_LIB_TESTS})
 	# Add the required libraries for linking:
 IF (CMAKE_MRPT_HAS_GTEST_SYSTEM)
 	# System vesion:
-	TARGET_LINK_LIBRARIES(test_${_TSTLIB} ${MRPT_LINKER_LIBS_RELorDEB} gtest)
+	TARGET_LINK_LIBRARIES(test_${_TSTLIB} ${MRPT_LINKER_LIBS_RELorDEB} gtest -lpthread)
 ELSE ()
 	# Own version:
-	TARGET_LINK_LIBRARIES(test_${_TSTLIB} ${MRPT_LINKER_LIBS_RELorDEB} mrptgtest)
+	TARGET_LINK_LIBRARIES(test_${_TSTLIB} ${MRPT_LINKER_LIBS_RELorDEB} mrptgtest -lpthread)
 	ADD_DEPENDENCIES(test_${_TSTLIB} mrptgtest)  # Assure the MRPT library is updated:
 ENDIF ()
 
