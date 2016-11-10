@@ -41,6 +41,11 @@ IF (NOT "${CMAKE_GTEST_CFLAGS}" STREQUAL "")
 	ADD_DEFINITIONS(${CMAKE_GTEST_CFLAGS})
 ENDIF ()
 
+# Fix issue #367: undefined reference to symbol on tests linking
+IF(NOT MSVC)
+    SET(CMAKE_THREAD_LIBS_INIT ${CMAKE_THREAD_LIBS_INIT} "-lpthread")
+ENDIF()
+
 
 get_property(LST_LIB_TESTS GLOBAL PROPERTY "MRPT_TEST_LIBS")
 FOREACH(_TSTLIB ${LST_LIB_TESTS})
@@ -56,10 +61,10 @@ FOREACH(_TSTLIB ${LST_LIB_TESTS})
 	# Add the required libraries for linking:
 IF (CMAKE_MRPT_HAS_GTEST_SYSTEM)
 	# System vesion:
-	TARGET_LINK_LIBRARIES(test_${_TSTLIB} ${MRPT_LINKER_LIBS_RELorDEB} gtest)
+	TARGET_LINK_LIBRARIES(test_${_TSTLIB} ${MRPT_LINKER_LIBS_RELorDEB} gtest ${CMAKE_THREAD_LIBS_INIT})
 ELSE ()
 	# Own version:
-	TARGET_LINK_LIBRARIES(test_${_TSTLIB} ${MRPT_LINKER_LIBS_RELorDEB} mrptgtest)
+	TARGET_LINK_LIBRARIES(test_${_TSTLIB} ${MRPT_LINKER_LIBS_RELorDEB} mrptgtest ${CMAKE_THREAD_LIBS_INIT})
 	ADD_DEPENDENCIES(test_${_TSTLIB} mrptgtest)  # Assure the MRPT library is updated:
 ENDIF ()
 
