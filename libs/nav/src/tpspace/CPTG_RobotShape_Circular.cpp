@@ -45,7 +45,7 @@ void CPTG_RobotShape_Circular::loadShapeFromConfigFile(const mrpt::utils::CConfi
 }
 void CPTG_RobotShape_Circular::saveToConfigFile(mrpt::utils::CConfigFileBase &cfg, const std::string &sSection) const
 {
-	const int WN = 40, WV = 20;
+	const int WN = 25, WV = 30;
 
 	cfg.write(sSection, "robot_radius", m_robotRadius, WN, WV, "Robot radius [m].");
 }

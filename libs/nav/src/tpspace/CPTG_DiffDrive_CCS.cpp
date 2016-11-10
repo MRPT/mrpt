@@ -30,7 +30,7 @@ void CPTG_DiffDrive_CCS::loadFromConfigFile(const mrpt::utils::CConfigFileBase &
 void CPTG_DiffDrive_CCS::saveToConfigFile(mrpt::utils::CConfigFileBase &cfg,const std::string &sSection) const
 {
 	MRPT_START
-	const int WN = 40, WV = 20;
+	const int WN = 25, WV = 30;
 	CPTG_DiffDrive_CollisionGridBased::saveToConfigFile(cfg,sSection);
 
 	cfg.write(sSection,"K",K,   WN,WV, "K=+1 forward paths; K=-1 for backwards paths.");

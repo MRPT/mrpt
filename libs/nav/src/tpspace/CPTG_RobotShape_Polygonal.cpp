@@ -73,7 +73,7 @@ void CPTG_RobotShape_Polygonal::loadShapeFromConfigFile(const mrpt::utils::CConf
 
 void CPTG_RobotShape_Polygonal::saveToConfigFile(mrpt::utils::CConfigFileBase &cfg, const std::string &sSection) const
 {
-	const int WN = 40, WV = 20;
+	const int WN = 25, WV = 30;
 
 	for (unsigned int i = 0; i<m_robotShape.size(); i++)
 	{
