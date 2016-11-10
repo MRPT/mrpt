@@ -28,7 +28,7 @@ void CPTG_DiffDrive_alpha::loadFromConfigFile(const mrpt::utils::CConfigFileBase
 void CPTG_DiffDrive_alpha::saveToConfigFile(mrpt::utils::CConfigFileBase &cfg,const std::string &sSection) const
 {
 	MRPT_START
-	const int WN = 40, WV = 20;
+	const int WN = 25, WV = 30;
 	CPTG_DiffDrive_CollisionGridBased::saveToConfigFile(cfg,sSection);
 
 	cfg.write(sSection,"cte_a0v_deg",mrpt::utils::RAD2DEG(cte_a0v),   WN,WV, "Contant for vel profile [deg].");

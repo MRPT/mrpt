@@ -343,7 +343,7 @@ void CHolonomicFullEval::TOptions::loadFromConfigFile(const mrpt::utils::CConfig
 void CHolonomicFullEval::TOptions::saveToConfigFile(mrpt::utils::CConfigFileBase &cfg , const std::string &section) const
 {
 	MRPT_START
-	const int WN = 40, WV = 20;
+	const int WN = 25, WV = 30;
 
 	cfg.write(section,"TOO_CLOSE_OBSTACLE",TOO_CLOSE_OBSTACLE,   WN,WV, "Directions with collision-free distances below this threshold are not elegible.");
 	cfg.write(section,"TARGET_SLOW_APPROACHING_DISTANCE",TARGET_SLOW_APPROACHING_DISTANCE,   WN,WV, "Start to reduce speed when closer than this to target.");

@@ -58,7 +58,7 @@ void CPTG_DiffDrive_CollisionGridBased::loadFromConfigFile(const mrpt::utils::CC
 void CPTG_DiffDrive_CollisionGridBased::saveToConfigFile(mrpt::utils::CConfigFileBase &cfg,const std::string &sSection) const
 {
 	MRPT_START
-	const int WN = 40, WV = 20;
+	const int WN = 25, WV = 30;
 
 	CParameterizedTrajectoryGenerator::saveToConfigFile(cfg,sSection);
 

@@ -890,7 +890,7 @@ void ptgConfiguratorframe::dumpPTGcfgToTextBox()
 	cfp.bind(cfg);
 	cfp.setPrefixes("", sKeyPrefix );
 
-	const int WN = 40, WV = 20;
+	const int WN = 25, WV = 30;
 	cfp.write(sSection,"Type", ptg->GetRuntimeClass()->className,   WN,WV, "PTG C++ class name");
 
 	// Dump default params:

@@ -689,7 +689,7 @@ void CHolonomicND::TOptions::loadFromConfigFile(const mrpt::utils::CConfigFileBa
 void CHolonomicND::TOptions::saveToConfigFile(mrpt::utils::CConfigFileBase &cfg , const std::string &section) const
 {
 	MRPT_START
-	const int WN = 40, WV = 20;
+	const int WN = 25, WV = 30;
 
 	cfg.write(section,"WIDE_GAP_SIZE_PERCENT",WIDE_GAP_SIZE_PERCENT,   WN,WV, "");
 	cfg.write(section,"MAX_SECTOR_DIST_FOR_D2_PERCENT",MAX_SECTOR_DIST_FOR_D2_PERCENT,   WN,WV, "");

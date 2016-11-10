@@ -166,7 +166,7 @@ void CHolonomicVFF::TOptions::loadFromConfigFile(const mrpt::utils::CConfigFileB
 void CHolonomicVFF::TOptions::saveToConfigFile(mrpt::utils::CConfigFileBase &cfg , const std::string &section) const
 {
 	MRPT_START
-	const int WN = 40, WV = 20;
+	const int WN = 25, WV = 30;
 
 	cfg.write(section,"TARGET_SLOW_APPROACHING_DISTANCE",TARGET_SLOW_APPROACHING_DISTANCE,   WN,WV, "For stopping gradually");
 	cfg.write(section,"TARGET_ATTRACTIVE_FORCE",TARGET_ATTRACTIVE_FORCE,   WN,WV, "Dimension-less (may have to be tuned depending on the density of obstacle sampling)");

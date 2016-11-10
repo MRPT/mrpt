@@ -197,7 +197,7 @@ void CAbstractPTGBasedReactive::loadHolonomicMethodConfig(
 		holoMethodName = holoMethodEnum2ClassName(mrpt::utils::TEnumType<THolonomicMethod>::name2value(holoMethodName));
 	}
 	catch (...) {
-		// Ignore exception if strign is not an enum.
+		// Ignore exception if string is not an enum.
 	}
 
 	this->setHolonomicMethod(holoMethodName, ini );

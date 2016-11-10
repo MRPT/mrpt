@@ -175,7 +175,7 @@ void CPTG_Holo_Blend::loadFromConfigFile(const mrpt::utils::CConfigFileBase &cfg
 void CPTG_Holo_Blend::saveToConfigFile(mrpt::utils::CConfigFileBase &cfg,const std::string &sSection) const
 {
 	MRPT_START
-	const int WN = 40, WV = 20;
+	const int WN = 25, WV = 30;
 
 	CParameterizedTrajectoryGenerator::saveToConfigFile(cfg,sSection);
 
