@@ -43,7 +43,7 @@ ENDIF ()
 
 # Fix issue #367: undefined reference to symbol on tests linking
 IF(NOT MSVC)
-    SET(CMAKE_THREAD_LIBS_INIT ${CMAKE_THREAD_LIBS_INIT} " -lpthread")
+    SET(CMAKE_THREAD_LIBS_INIT ${CMAKE_THREAD_LIBS_INIT} "-lpthread")
 ENDIF()
 
 
