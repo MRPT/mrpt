@@ -105,7 +105,7 @@ void  CConfigFileBase::writeString(const std::string &section,const std::string 
 
 	if (!comment.empty())
 	{
-		value_pad += std::string("// ");
+		value_pad += std::string(" // ");
 		value_pad += comment;
 	}
 
