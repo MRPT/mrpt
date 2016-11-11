@@ -36,7 +36,6 @@ IF(CMAKE_MRPT_HAS_WXWIDGETS)
 	 CRawlogTreeView.cpp	CRawlogTreeView.h
 	 CFormBatchSensorPose.cpp  CFormBatchSensorPose.h
 	 CIniEditor.cpp 		CIniEditor.h
-	 ../wx-common/CMyRedirector.h
 	 )
 
 	IF(WIN32)

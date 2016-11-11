@@ -12,7 +12,6 @@ IF(CMAKE_MRPT_HAS_WXWIDGETS)
 	SET(SRCS
 	 ptgConfiguratorApp.cpp   ptgConfiguratorApp.h
 	 ptgConfiguratorMain.cpp  ptgConfiguratorMain.h
-	 ../wx-common/CMyRedirector.h
 	 CAboutBox.cpp  CAboutBox.h
 	 MyGLCanvas.cpp MyGLCanvas.h
 	)
@@ -20,9 +19,9 @@ IF(CMAKE_MRPT_HAS_WXWIDGETS)
 	IF(WIN32)
 		SET(SRCS ${SRCS} resource.rc)
 	ENDIF()
-	
+
 	SET(TMP_TARGET_NAME "ptg-configurator")
-	
+
 	# Define the executable target:
 	ADD_EXECUTABLE(${TMP_TARGET_NAME} WIN32 ${SRCS} ${MRPT_VERSION_RC_FILE})
 
@@ -36,7 +35,7 @@ IF(CMAKE_MRPT_HAS_WXWIDGETS)
 	ENDIF()
 
 	# Dependencies on MRPT libraries:
-	#  Just mention the top-level dependency, the rest will be detected automatically, 
+	#  Just mention the top-level dependency, the rest will be detected automatically,
 	#  and all the needed #include<> dirs added (see the script DeclareAppDependencies.cmake for further details)
 	DeclareAppDependencies(${TMP_TARGET_NAME} mrpt-gui mrpt-nav)
 

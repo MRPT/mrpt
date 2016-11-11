@@ -19,7 +19,6 @@ IF(CMAKE_MRPT_HAS_WXWIDGETS)
 	 reactive_navigator_demoApp.cpp  reactive_navigator_demoApp.h
 	 reactive_navigator_demoMain.cpp  reactive_navigator_demoMain.h
 	 DEFAULT_GRIDMAP_DATA.h
-	 ../wx-common/CMyRedirector.h
 	 CAboutBox.cpp  CAboutBox.h
 	 MyGLCanvas.cpp MyGLCanvas.h
 	)
@@ -27,7 +26,7 @@ IF(CMAKE_MRPT_HAS_WXWIDGETS)
 	IF(WIN32)
 		SET(SRCS ${SRCS} resource.rc)
 	ENDIF()
-	
+
 	INCLUDE_DIRECTORIES("${MRPT_SOURCE_DIR}/otherlibs/wxThings/")
 
 	# Define the executable target:
@@ -42,7 +41,7 @@ IF(CMAKE_MRPT_HAS_WXWIDGETS)
 	ADD_DEPENDENCIES(${TMP_TARGET_NAME} mrptwxthings)
 
 	# Dependencies on MRPT libraries:
-	#  Just mention the top-level dependency, the rest will be detected automatically, 
+	#  Just mention the top-level dependency, the rest will be detected automatically,
 	#  and all the needed #include<> dirs added (see the script DeclareAppDependencies.cmake for further details)
 	DeclareAppDependencies(${TMP_TARGET_NAME} mrpt-gui mrpt-nav mrpt-kinematics)
 

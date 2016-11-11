@@ -21,21 +21,20 @@ IF(CMAKE_MRPT_HAS_WXWIDGETS AND CMAKE_MRPT_HAS_OPENGL_GLUT)
 		CAboutBox.cpp        CAboutBox.h
 		CDlgCamTracking.cpp  CDlgCamTracking.h
 		CDlgPLYOptions.cpp   CDlgPLYOptions.h
-		../wx-common/CMyRedirector.h
 	)
 	IF(WIN32)
 		SET(SRCS ${SRCS} resource.rc)
 	ENDIF()
 
 	INCLUDE_DIRECTORIES("${MRPT_SOURCE_DIR}/otherlibs/wxThings/")
-	
+
 	# Define the executable target:
 	ADD_EXECUTABLE(SceneViewer3D WIN32 ${SRCS} ${MRPT_VERSION_RC_FILE})
 
 	SET(TMP_TARGET_NAME "SceneViewer3D")
 
 
-	
+
 
 	# Add the required libraries for linking:
 	INCLUDE_DIRECTORIES( ${wxWidgets_INCLUDE_DIRS} )
@@ -47,7 +46,7 @@ IF(CMAKE_MRPT_HAS_WXWIDGETS AND CMAKE_MRPT_HAS_OPENGL_GLUT)
 	ADD_DEPENDENCIES(${TMP_TARGET_NAME} mrptwxthings)
 
 	# Dependencies on MRPT libraries:
-	#  Just mention the top-level dependency, the rest will be detected automatically, 
+	#  Just mention the top-level dependency, the rest will be detected automatically,
 	#  and all the needed #include<> dirs added (see the script DeclareAppDependencies.cmake for further details)
 	DeclareAppDependencies(${TMP_TARGET_NAME} mrpt-opengl mrpt-gui mrpt-maps)
 
@@ -61,5 +60,3 @@ ELSE()
 	# ----------------------------------------------------------------------------------
     MESSAGE(STATUS "wxWidgets and/or GL/GLUT not found!: **This target will not be included in the Makefiles**")
 ENDIF()
-
-

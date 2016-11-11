@@ -21,7 +21,6 @@ IF(CMAKE_MRPT_HAS_WXWIDGETS)
 		CAboutBox.cpp  CAboutBox.h
 		CDlgParams.cpp CDlgParams.h
 		CLogView.cpp CLogView.h
-	 	../wx-common/CMyRedirector.h
 	 )
 
 	IF(WIN32)
