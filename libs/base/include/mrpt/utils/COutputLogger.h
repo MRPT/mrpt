@@ -271,9 +271,8 @@ class BASE_IMPEXP COutputLogger {
 			m_str << val;
 			return m_str;
 		}
-		// Specialization for std::stringstream objects
-		template <>
-		std::stringstream & operator << <std::stringstream>(const std::stringstream &val) {
+		// Overload for std::stringstream objects
+		std::stringstream & operator << (const std::stringstream &val) {
 			m_str << val.str();
 			return m_str;
 		}
