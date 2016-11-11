@@ -17,7 +17,7 @@ before_install:
   
 
 install:
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then  sudo apt-get install build-essential pkg-config cmake libwxgtk2.8-dev libftdi-dev freeglut3-dev zlib1g-dev libusb-1.0-0-dev  libdc1394-22-dev libavformat-dev libswscale-dev libassimp-dev libjpeg-dev libopencv-dev libgtest-dev libeigen3-dev libsuitesparse-dev libpcl-all libopenni2-dev libudev-dev gdb libboost-python-dev libpython-dev python-numpy -y ; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then  sudo apt-get install build-essential pkg-config cmake libwxgtk3.0-dev libftdi-dev freeglut3-dev zlib1g-dev libusb-1.0-0-dev  libdc1394-22-dev libavformat-dev libswscale-dev libassimp-dev libjpeg-dev libopencv-dev libgtest-dev libeigen3-dev libsuitesparse-dev libpcl-all libopenni2-dev libudev-dev gdb libboost-python-dev libpython-dev python-numpy -y ; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew tap homebrew/science   ; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install eigen          ; fi
   - if [ "$TRAVIS_OS_NAME" == "osx" ]; then /usr/bin/yes | pip uninstall numpy; fi
