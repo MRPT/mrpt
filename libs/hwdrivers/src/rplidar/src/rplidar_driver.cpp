@@ -554,38 +554,28 @@ u_result RPlidarDriverSerialImpl::ascendScanData(rplidar_response_measurement_no
     size_t i = 0;
 
     //Tune head
-    for (i = 0; i < count; i++) {
-        if(nodebuffer[i].distance_q2 == 0) {
-            continue;
-        } else {
-            while(i != 0) {
-                i--;
-                float expect_angle = (nodebuffer[i+1].angle_q6_checkbit >> RPLIDAR_RESP_MEASUREMENT_ANGLE_SHIFT)/64.0f - inc_origin_angle;
-                if (expect_angle < 0.0f) expect_angle = 0.0f;
-                _u16 checkbit = nodebuffer[i].angle_q6_checkbit & RPLIDAR_RESP_MEASUREMENT_CHECKBIT;
-                nodebuffer[i].angle_q6_checkbit = (((_u16)(expect_angle * 64.0f)) << RPLIDAR_RESP_MEASUREMENT_ANGLE_SHIFT) + checkbit;
-            }
-            break;
-        }
-    }
+    for (i = 0; i < count && nodebuffer[i].distance_q2 == 0; i++);
 
     // all the data is invalid
     if (i == count) return RESULT_OPERATION_FAIL;
 
+    while(i != 0) {
+        i--;
+        float expect_angle = (nodebuffer[i+1].angle_q6_checkbit >> RPLIDAR_RESP_MEASUREMENT_ANGLE_SHIFT)/64.0f - inc_origin_angle;
+        if (expect_angle < 0.0f) expect_angle = 0.0f;
+        _u16 checkbit = nodebuffer[i].angle_q6_checkbit & RPLIDAR_RESP_MEASUREMENT_CHECKBIT;
+        nodebuffer[i].angle_q6_checkbit = (((_u16)(expect_angle * 64.0f)) << RPLIDAR_RESP_MEASUREMENT_ANGLE_SHIFT) + checkbit;
+    }
+
     //Tune tail
-    for (i = count - 1; i >= 0; i--) {
-        if(nodebuffer[i].distance_q2 == 0) {
-            continue;
-        } else {
-            while(i != (count - 1)) {
-                i++;
-                float expect_angle = (nodebuffer[i-1].angle_q6_checkbit >> RPLIDAR_RESP_MEASUREMENT_ANGLE_SHIFT)/64.0f + inc_origin_angle;
-                if (expect_angle > 360.0f) expect_angle -= 360.0f;
-                _u16 checkbit = nodebuffer[i].angle_q6_checkbit & RPLIDAR_RESP_MEASUREMENT_CHECKBIT;
-                nodebuffer[i].angle_q6_checkbit = (((_u16)(expect_angle * 64.0f)) << RPLIDAR_RESP_MEASUREMENT_ANGLE_SHIFT) + checkbit;
-            }
-            break;
-        }
+    for (i = count - 1; nodebuffer[i].distance_q2 == 0; i--);
+
+    while(i != (count - 1)) {
+        i++;
+        float expect_angle = (nodebuffer[i-1].angle_q6_checkbit >> RPLIDAR_RESP_MEASUREMENT_ANGLE_SHIFT)/64.0f + inc_origin_angle;
+        if (expect_angle > 360.0f) expect_angle -= 360.0f;
+        _u16 checkbit = nodebuffer[i].angle_q6_checkbit & RPLIDAR_RESP_MEASUREMENT_CHECKBIT;
+        nodebuffer[i].angle_q6_checkbit = (((_u16)(expect_angle * 64.0f)) << RPLIDAR_RESP_MEASUREMENT_ANGLE_SHIFT) + checkbit;
     }
 
     //Fill invalid angle in the scan
