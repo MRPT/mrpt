@@ -19,7 +19,7 @@
 #include <wx/intl.h>
 #include <wx/font.h>
 //*)
-#include "../wx-common/wx28-fixes.h"
+#include <mrpt/gui/wx28-fixes.h>
 
 using namespace std;
 using namespace mrpt;

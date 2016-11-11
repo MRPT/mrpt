@@ -18,7 +18,7 @@
 #include <wx/string.h>
 //*)
 
-#include "../wx-common/CMyRedirector.h"
+#include <mrpt/gui/CMyRedirector.h>
 #include <mrpt/gui/WxUtils.h>
 
 // For MRPT_OPENCV_VERSION

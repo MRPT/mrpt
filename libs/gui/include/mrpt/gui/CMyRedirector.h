@@ -16,6 +16,7 @@
 #include <streambuf>
 #include <iostream>
 #include <cstdio>
+#include <functional>
 
 #include "wx28-fixes.h"
 
@@ -88,15 +89,18 @@ public:
 		sync();
 	}
 
-    virtual void writeString(const std::string &str)
+	virtual void writeString(const std::string &str)
 	{
 		if(!m_threadSafe)
 		{
+			wxString s;
 #ifdef wxUSE_UNICODE
-			*m_txt  << wxString( str.c_str(), wxConvUTF8 );
+			s = wxString(str.c_str(), wxConvUTF8);
 #else
-			*m_txt  << _U( str.c_str() );
+			s = _U(str.c_str());
 #endif
+			//COutputLogger
+			m_txt->GetEventHandler()->CallAfter(&wxTextCtrl::WriteText, s);
 		}
 		else
 		{	// Critical section is already adquired.

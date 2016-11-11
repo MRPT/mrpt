@@ -40,7 +40,7 @@
 
 #include <wx/config.h>  // wxConfig
 
-#include "../wx-common/CMyRedirector.h"
+#include <mrpt/gui/CMyRedirector.h>
 
 #include <mrpt/utils.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>

@@ -48,13 +48,13 @@ double icp_test_1(int a1, int a2)
 	if (use_grid)
 	{
 		COccupancyGridMap2D::TMapDefinition def;
-		def.resolution = 0.05;
+		def.resolution = 0.05f;
 		metricMapsOpts.push_back( def );
 	}
 	else
 	{
 		CSimplePointsMap::TMapDefinition def;
-		def.insertionOpts.minDistBetweenLaserPoints = 0.03;
+		def.insertionOpts.minDistBetweenLaserPoints = 0.03f;
 		metricMapsOpts.push_back( def );
 	}
 

@@ -738,7 +738,7 @@ void CGraphSlamEngine<GRAPH_t>::computeOccupancyGridMap2D() const {
 			/* float min_y = */ -20.0f,
 			/* float max_y = */ 20.0f,
 			/* float resolution = */ 0.05f);
-  gridmap.insertionOptions.maxOccupancyUpdateCertainty = 0.8;
+  gridmap.insertionOptions.maxOccupancyUpdateCertainty = 0.8f;
   gridmap.insertionOptions.maxDistanceInsertion = 15;
 
 	// traverse all the nodes - add their laser scans at their corresponding poses
@@ -1085,7 +1085,7 @@ void CGraphSlamEngine<GRAPH_t>::updateRangeImageViewport() {
 
 	// load the image if not already loaded..
 	m_last_laser_scan3D->load();
-	range2D = m_last_laser_scan3D->rangeImage * (1.0/5.0); // TODO - without the magic number?
+	range2D = m_last_laser_scan3D->rangeImage * (1.0f/5.0); // TODO - without the magic number?
 	img.setFromMatrix(range2D);
 
 	COpenGLScenePtr scene = m_win->get3DSceneAndLock();
@@ -1998,7 +1998,7 @@ updateEstimatedTrajectoryVisualization(bool full_update) {
 			estimated_traj_setoflines->appendLineStrip(
 					m_graph.nodes[*nodeID_it].x(),
 					m_graph.nodes[*nodeID_it].y(),
-					0.05);
+					0.05f);
 		}
 	}
 
@@ -2292,7 +2292,7 @@ void CGraphSlamEngine<GRAPH_t>::updateSlamMetricVisualization() {
 
 	m_win_plot->axis(/*x_min = */ xmax != x.end()? -(*xmax/12) : -1,
 			/*x_max = */ (xmax != x.end()? *xmax : 1),
-			/*y_min = */ -0.4,
+			/*y_min = */ -0.4f,
 			/*y_max = */ (ymax != y.end()? *ymax : 1) ) ;
 
 

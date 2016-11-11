@@ -19,7 +19,7 @@
 #include <wx/dcclient.h>
 #include <wx/imaglist.h>
 #include <wx/dcbuffer.h>
-#include "../wx-common/wx28-fixes.h"
+#include <mrpt/gui/wx28-fixes.h>
 
 IMPLEMENT_DYNAMIC_CLASS(CRawlogTreeView, wxScrolledWindow)
 

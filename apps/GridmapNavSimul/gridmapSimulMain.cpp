@@ -35,7 +35,7 @@
 #include "../wx-common/mrpt_logo.xpm"
 #include "imgs/app_icon_gridmapsimul.xpm"
 
-#include "../wx-common/CMyRedirector.h"
+#include <mrpt/gui/CMyRedirector.h>
 #include "CAboutBox.h"
 
 #include <mrpt/system/filesystem.h>
@@ -511,7 +511,7 @@ gridmapSimulFrame::gridmapSimulFrame(wxWindow* parent,wxWindowID id)
     {
 		wxImage img(virtual_map1_xpm);
 		CImage *myImg = wxImage2MRPTImage(img);
-		the_grid.loadFromBitmap( *myImg, 0.03 );
+		the_grid.loadFromBitmap( *myImg, 0.03f );
 		delete myImg;
     }
 
@@ -626,10 +626,10 @@ void gridmapSimulFrame::OntimRunTrigger(wxTimerEvent& event)
 				}
 
 				if (btns.size()>=2 && btns[1])
-					m_canvas->cameraZoomDistance *= 0.99;
+					m_canvas->cameraZoomDistance *= 0.99f;
 
 				if (btns.size()>=3 && btns[2])
-					m_canvas->cameraZoomDistance *= 1.01;
+					m_canvas->cameraZoomDistance *= 1.01f;
 
 				the_robot.movementCommand(v,w);
 			}

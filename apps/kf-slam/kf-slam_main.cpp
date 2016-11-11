@@ -334,8 +334,8 @@ void Run_KF_SLAM( CConfigFile &cfgFile, const std::string &rawlogFileName )
 	{
 		win3d = mrpt::gui::CDisplayWindow3D::Create("KF-SLAM live view",800,500);
 
-		win3d->addTextMessage(0.01,0.96,"Red: Estimated path",TColorf(0.8,0.8,0.8),100,MRPT_GLUT_BITMAP_HELVETICA_10);
-		win3d->addTextMessage(0.01,0.93,"Black: Ground truth path",TColorf(0.8,0.8,0.8),101,MRPT_GLUT_BITMAP_HELVETICA_10);
+		win3d->addTextMessage(0.01,0.96,"Red: Estimated path",TColorf(0.8f,0.8f,0.8f),100,MRPT_GLUT_BITMAP_HELVETICA_10);
+		win3d->addTextMessage(0.01,0.93,"Black: Ground truth path",TColorf(0.8f,0.8f,0.8f),101,MRPT_GLUT_BITMAP_HELVETICA_10);
 	}
 
 	// Create DA-log output file:
@@ -645,7 +645,7 @@ void Run_KF_SLAM( CConfigFile &cfgFile, const std::string &rawlogFileName )
 					const typename ekfslam_t::TDataAssocInfo & da = mapping.getLastDataAssociation();
 
 					mrpt::opengl::CSetOfLinesPtr lins = mrpt::opengl::CSetOfLines::Create();
-					lins->setLineWidth(1.2);
+					lins->setLineWidth(1.2f);
 					lins->setColor(1,1,1);
 					for (std::map<observation_index_t,prediction_index_t>::const_iterator it=da.results.associations.begin();it!=da.results.associations.end();++it)
 					{

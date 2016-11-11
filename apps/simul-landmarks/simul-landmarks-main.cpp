@@ -401,7 +401,7 @@ int main(int argc, char ** argv)
 			{
 				mrpt::opengl::CSpherePtr lm = mrpt::opengl::CSphere::Create();
 				lm->setColor(1,0,0);
-				lm->setRadius(0.1);
+				lm->setRadius(0.1f);
 				lm->setLocation( it->pose_mean );
 				lm->setName( format("LM#%u",(unsigned) it->ID ) );
 				//lm->enableShowName(true);
@@ -423,7 +423,7 @@ int main(int argc, char ** argv)
 			for (size_t i=0;i<N;i++)
 			{
 				mrpt::opengl::CSetOfObjectsPtr  corner = mrpt::opengl::stock_objects::CornerXYZ();
-				corner->setScale(0.2);
+				corner->setScale(0.2f);
 				corner->setPose(TPose3D(GT_path(i,0),GT_path(i,1),GT_path(i,2),GT_path(i,3),GT_path(i,4),GT_path(i,5)));
 				scene->insert(corner);
 			}

@@ -18,7 +18,7 @@
 //*)
 
 #include "camera_calib_guiMain.h"
-#include "../wx-common/CMyRedirector.h"
+#include <mrpt/gui/CMyRedirector.h>
 
 
 #include <mrpt/system/os.h>

@@ -9,7 +9,7 @@
 
 #include "xRawLogViewerMain.h"
 
-#include "../wx-common/CMyRedirector.h"
+#include <mrpt/gui/CMyRedirector.h>
 
 #include <wx/msgdlg.h>
 #include <wx/filedlg.h>

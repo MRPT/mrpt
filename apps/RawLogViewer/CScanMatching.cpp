@@ -24,7 +24,7 @@
 #include <wx/busyinfo.h>
 
 #include "xRawLogViewerMain.h"
-#include "../wx-common/CMyRedirector.h"
+#include <mrpt/gui/CMyRedirector.h>
 
 
 // General global variables:
