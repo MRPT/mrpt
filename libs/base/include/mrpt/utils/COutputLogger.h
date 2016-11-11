@@ -271,6 +271,13 @@ class BASE_IMPEXP COutputLogger {
 			m_str << val;
 			return m_str;
 		}
+		// Specialization for std::stringstream objects
+		template <>
+		std::stringstream & operator << <std::stringstream>(const std::stringstream &val) {
+			m_str << val.str();
+			return m_str;
+		}
+
 	private:
 		std::stringstream m_str;
 		VerbosityLevel m_level;
