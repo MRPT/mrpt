@@ -21,7 +21,6 @@ IF(CMAKE_MRPT_HAS_WXWIDGETS)
 		CDlgCalibWizardOnline.cpp  CDlgCalibWizardOnline.h
 		CDlgPoseEst.cpp CDlgPoseEst.h
 		MyGLCanvas.cpp MyGLCanvas.h
-	 	../wx-common/CMyRedirector.h
 	 )
 
 	IF(WIN32)

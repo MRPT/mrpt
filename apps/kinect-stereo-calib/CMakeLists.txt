@@ -17,7 +17,6 @@ IF(CMAKE_MRPT_HAS_WXWIDGETS)
 		kinect_calibrate_guiApp.cpp kinect_calibrate_guiApp.h
 		kinect_calibrate_guiMain.cpp kinect_calibrate_guiMain.h
 		CAboutBox.cpp  CAboutBox.h
-		../wx-common/CMyRedirector.h
 		MyGLCanvas.cpp MyGLCanvas.h
 		)
 
@@ -31,7 +30,7 @@ IF(CMAKE_MRPT_HAS_WXWIDGETS)
 	SET(TMP_TARGET_NAME "kinect-stereo-calib")
 
 
-	
+
 
 	# Add the required libraries for linking:
 	INCLUDE_DIRECTORIES( ${wxWidgets_INCLUDE_DIRS} )
@@ -53,5 +52,3 @@ ELSE()
 	# ----------------------------------------------------------------------------------
 	MESSAGE(STATUS "wxWidgets not found!: **This target will not be included in the Makefiles**")
 ENDIF()
-
-
