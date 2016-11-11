@@ -19,7 +19,7 @@
 //*)
 
 #include "kinect_calibrate_guiMain.h"
-#include "../wx-common/CMyRedirector.h"
+#include <mrpt/gui/CMyRedirector.h>
 
 // For CV_VERSION
 #include <mrpt/config.h>

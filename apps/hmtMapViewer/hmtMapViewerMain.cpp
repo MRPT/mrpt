@@ -31,7 +31,7 @@
 #include <wx/colordlg.h>
 #include <wx/dcmemory.h>
 
-#include "../wx-common/CMyRedirector.h"
+#include <mrpt/gui/CMyRedirector.h>
 
 
 const char *iniFileSect = "configuration";  // For the .ini file

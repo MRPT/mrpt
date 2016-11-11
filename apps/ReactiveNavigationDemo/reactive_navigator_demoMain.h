@@ -41,7 +41,7 @@
 #include <memory> // unique_ptr<>
 
 #include <mrpt/kinematics/CVehicleSimul_DiffDriven.h>
-#include "../wx-common/CMyRedirector.h"
+#include <mrpt/gui/CMyRedirector.h>
 
 // JLBC: Unix X headers have these funny things...
 #ifdef Button1

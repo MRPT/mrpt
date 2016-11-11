@@ -200,7 +200,7 @@ void Test()
 
 	// The matlab script below will need "globalmap_grid.png":
 	{
-		COccupancyGridMap2D  gridmap(-10,10, -10,10, 0.05);
+		COccupancyGridMap2D  gridmap(-10,10, -10,10, 0.05f);
 		cout << "Building global gridmap needed by MATLAB script..."; cout.flush();
 		gridmap.loadFromSimpleMap(in_map);
 		gridmap.saveMetricMapRepresentationToFile("MAP-PARTITION_RESULTS/globalmap_grid");

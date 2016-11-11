@@ -39,7 +39,7 @@ double pointmap_test_0(int a1, int a2)
 
 	CSimplePointsMap  pt_map;
 
-	pt_map.insertionOptions.minDistBetweenLaserPoints = 0.03;
+	pt_map.insertionOptions.minDistBetweenLaserPoints = 0.03f;
 	CPose3D pose;
 
 	CTicTac	 tictac;
@@ -68,7 +68,7 @@ double pointmap_test_1(int a1, int a2)
 
 	CSimplePointsMap  pt_map;
 
-	pt_map.insertionOptions.minDistBetweenLaserPoints = 0.03;
+	pt_map.insertionOptions.minDistBetweenLaserPoints = 0.03f;
 	CPose3D pose;
 
 	CTicTac	 tictac;
@@ -124,7 +124,7 @@ double pointmap_test_2(int a1, int a2)
 	{
 		CSimplePointsMap  pt_map;
 
-		pt_map.insertionOptions.minDistBetweenLaserPoints = 0.03;
+		pt_map.insertionOptions.minDistBetweenLaserPoints = 0.03f;
 		CPose3D pose;
 		for (long i=0;i<a1;i++)
 		{
@@ -160,7 +160,7 @@ double pointmap_test_3(int a1, int a2)
 
 	CSimplePointsMap  pt_map;
 
-	pt_map.insertionOptions.minDistBetweenLaserPoints = 0.03;
+	pt_map.insertionOptions.minDistBetweenLaserPoints = 0.03f;
 	CPose3D pose;
 	for (long i=0;i<a1;i++)
 	{
@@ -176,8 +176,8 @@ double pointmap_test_3(int a1, int a2)
 	for (long i=0;i<a2;i++)
 	{
 		pt_map.kdTreeClosestPoint2D(x0,y0,x,y,sq);
-		x0+=0.05;
-		y0+=0.05;
+		x0+=0.05f;
+		y0+=0.05f;
 		if (x0>20) x0=-10;
 		if (y0>20) y0=-10;
 	}
@@ -199,8 +199,8 @@ double pointmap_test_4(int a1, int a2)
 
 	CSimplePointsMap  pt_map;
 	CSimplePointsMap  pt_map2;
-	pt_map.insertionOptions.minDistBetweenLaserPoints = 0.03;
-	pt_map2.insertionOptions.minDistBetweenLaserPoints = 0.03;
+	pt_map.insertionOptions.minDistBetweenLaserPoints = 0.03f;
+	pt_map2.insertionOptions.minDistBetweenLaserPoints = 0.03f;
 
 	CPose3D pose;
 	pt_map.insertObservation(&scan1, &pose);
@@ -212,7 +212,7 @@ double pointmap_test_4(int a1, int a2)
 	TMatchingPairList	correspondences;
 	TMatchingParams matchParams;
 	TMatchingExtraResults matchExtraResults;
-	matchParams.maxDistForCorrespondence = 0.10;
+	matchParams.maxDistForCorrespondence = 0.10f;
 	matchParams.maxAngularDistForCorrespondence = 0;
 
 	CTicTac	 tictac;
@@ -241,7 +241,7 @@ double pointmap_test_5(int a1, int a2)
 
 	CSimplePointsMap  pt_map;
 
-	pt_map.insertionOptions.minDistBetweenLaserPoints = 0.03;
+	pt_map.insertionOptions.minDistBetweenLaserPoints = 0.03f;
 	CPose3D pose;
 	for (long i=0;i<a1;i++)
 	{

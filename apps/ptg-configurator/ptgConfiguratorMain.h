@@ -28,7 +28,7 @@
 
 #include <mrpt/otherlibs/mathplot/mathplot.h>
 
-#include "../wx-common/CMyRedirector.h"
+#include <mrpt/gui/CMyRedirector.h>
 
 #include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/opengl/CSetOfLines.h>

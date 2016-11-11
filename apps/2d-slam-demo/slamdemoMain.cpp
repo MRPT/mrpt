@@ -24,7 +24,7 @@
 #include <wx/image.h>
 #include <wx/artprov.h>
 //*)
-#include "../wx-common/wx28-fixes.h"
+#include <mrpt/gui/wx28-fixes.h>
 
 #include <mrpt/utils/CFileGZOutputStream.h>
 #include <mrpt/math/wrap2pi.h>
@@ -590,9 +590,9 @@ slamdemoFrame::slamdemoFrame(wxWindow* parent,wxWindowID id)
 
 	vector<float> robot_shape_xs(3);
 	vector<float> robot_shape_ys(3);
-	robot_shape_xs[0] =0;	robot_shape_ys[0] =-0.10;
-	robot_shape_xs[1] =0;	robot_shape_ys[1] = 0.10;
-	robot_shape_xs[2] =0.2;	robot_shape_ys[2] = 0;
+	robot_shape_xs[0] =0;	robot_shape_ys[0] =-0.10f;
+	robot_shape_xs[1] =0;	robot_shape_ys[1] = 0.10f;
+	robot_shape_xs[2] =0.2f;	robot_shape_ys[2] = 0;
 
 
 	// GT plot ------------
@@ -743,8 +743,8 @@ slamdemoFrame::slamdemoFrame(wxWindow* parent,wxWindowID id)
 	INIT_DA_PLOT(JCBB);
 
 	// Set some default params:
-	m_SLAM.options.std_sensor_range = 0.03;
-	m_SLAM.options.std_sensor_yaw   = DEG2RAD(0.5);
+	m_SLAM.options.std_sensor_range = 0.03f;
+	m_SLAM.options.std_sensor_yaw   = DEG2RAD(0.5f);
 
 	options.sensor_max_range = 5;
 	options.sensor_min_range = 0.50;

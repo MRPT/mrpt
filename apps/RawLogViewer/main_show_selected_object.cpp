@@ -16,7 +16,7 @@
 #include <mrpt/opengl/CAxis.h>
 #include <mrpt/opengl/CPointCloudColoured.h>
 
-#include "../wx-common/CMyRedirector.h"
+#include <mrpt/gui/CMyRedirector.h>
 
 #define MRPT_NO_WARN_BIG_HDR // It's ok to include ALL hdrs here.
 #include <mrpt/obs.h>

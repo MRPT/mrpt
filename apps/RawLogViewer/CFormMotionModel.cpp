@@ -23,7 +23,7 @@
 #include <wx/busyinfo.h>
 #include <wx/log.h>
 #include <wx/textdlg.h>
-#include "../wx-common/wx28-fixes.h"
+#include <mrpt/gui/wx28-fixes.h>
 
 // General global variables:
 #include <mrpt/utils/CFileGZInputStream.h>

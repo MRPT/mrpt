@@ -28,7 +28,7 @@
 
 #include <mrpt/vision/chessboard_camera_calib.h>
 #include <mrpt/hwdrivers/CCameraSensor.h>
-#include "../wx-common/CMyRedirector.h"
+#include <mrpt/gui/CMyRedirector.h>
 
 
 class CDlgCalibWizardOnline: public wxDialog

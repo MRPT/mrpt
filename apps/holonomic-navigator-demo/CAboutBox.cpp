@@ -18,7 +18,7 @@
 //*)
 
 #include "holonomic_navigator_demoMain.h"
-#include "../wx-common/CMyRedirector.h"
+#include <mrpt/gui/CMyRedirector.h>
 #include <mrpt/gui/WxUtils.h>
 
 #include <mrpt/system/os.h>

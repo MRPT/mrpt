@@ -18,7 +18,7 @@
 //*)
 
 #include "_DSceneViewerMain.h"
-#include "../wx-common/CMyRedirector.h"
+#include <mrpt/gui/CMyRedirector.h>
 
 #include <mrpt/system/os.h>
 #include <mrpt/utils/utils_defs.h>

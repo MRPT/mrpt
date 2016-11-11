@@ -19,7 +19,7 @@
 //*)
 
 #include "navlog_viewer_GUI_designMain.h"
-#include "../wx-common/CMyRedirector.h"
+#include <mrpt/gui/CMyRedirector.h>
 
 // For CV_VERSION
 #include <mrpt/config.h>

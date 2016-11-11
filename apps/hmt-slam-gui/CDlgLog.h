@@ -18,7 +18,7 @@
 #include <wx/timer.h>
 //*)
 
-#include "../wx-common/CMyRedirector.h"
+#include <mrpt/gui/CMyRedirector.h>
 
 
 class CDlgLog: public wxDialog
