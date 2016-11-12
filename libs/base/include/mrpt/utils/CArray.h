@@ -298,20 +298,5 @@ namespace utils
         return !(x<y);
     }
 
-	/** Auxiliary class used in CMatrixTemplate:size(), CMatrixTemplate::resize(), CMatrixFixedNumeric::size(), CMatrixFixedNumeric::resize(), to mimic the behavior of STL-containers */
-	struct CMatrixTemplateSize : public CArray<size_t,2>
-	{
-		typedef CArray<size_t,2> Base;
-		typedef CMatrixTemplateSize mrpt_autotype;
-
-		inline CMatrixTemplateSize() : CArray<size_t,2>() {}
-		inline CMatrixTemplateSize(const size_t *d) { (*this)[0]=d[0]; (*this)[1]=d[1];  }
-
-		inline bool operator==(const CMatrixTemplateSize&o) const { return Base::operator[](0)==o[0] && Base::operator[](1)==o[1]; }
-		inline bool operator!=(const CMatrixTemplateSize&o) const { return !(*this==o); }
-		/** This operator allows the size(N,M) to be compared with a plain size_t N*M  */
-		inline operator size_t(void) const { return 2; }
-	};
-
 } // End of namespace
 } // End of namespace
