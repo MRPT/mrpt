@@ -66,7 +66,7 @@ TEST(ts_hash_map, stdstring_key)
 	}
 
 	{
-		auto &it = m.find("uno");
+		const auto &it = m.find("uno");
 		EXPECT_TRUE( it->second==1.0 );
 	}
 }
