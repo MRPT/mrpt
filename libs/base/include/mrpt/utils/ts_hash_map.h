@@ -45,7 +45,7 @@ namespace mrpt
 		template <
 			typename KEY,
 			typename VALUE,
-			unsigned int NUM_BYTES_HASH_TABLE = 2,
+			unsigned int NUM_BYTES_HASH_TABLE = 1,
 			unsigned int NUM_HAS_TABLE_COLLISIONS_ALLOWED = 5,
 			typename VECTOR_T = mrpt::utils::CArray< mrpt::utils::CArray<ts_map_entry<KEY,VALUE>, NUM_HAS_TABLE_COLLISIONS_ALLOWED>, 1u << (8*NUM_BYTES_HASH_TABLE)>
 			>
@@ -59,40 +59,44 @@ namespace mrpt
 			typedef ts_map_entry<KEY,VALUE>                 value_type;
 			typedef VECTOR_T                                vec_t;
 
+			struct iterator;
 			struct const_iterator
 			{
 			public:
-				const_iterator() : m_vec(NULL), m_idx_outer(0), m_idx_inner(0) {}
-				const_iterator(const VECTOR_T &vec, size_t idx_outer, size_t idx_inner) : m_vec(const_cast<VECTOR_T*>(&vec)), m_idx_outer(idx_outer), m_idx_inner(idx_inner) {}
+				const_iterator() : m_vec(NULL), m_parent(NULL), m_idx_outer(0), m_idx_inner(0) {}
+				const_iterator(const VECTOR_T &vec, const self_t &parent, int idx_outer, int idx_inner) : m_vec(const_cast<VECTOR_T*>(&vec)), m_parent(const_cast<self_t*>(&parent)), m_idx_outer(idx_outer), m_idx_inner(idx_inner) {}
 				const_iterator & operator = (const const_iterator& o) { m_vec = o.m_vec; m_idx_outer = o.m_idx_outer; m_idx_inner = o.m_idx_inner; return *this; }
-				bool operator == (const const_iterator& o) { return m_vec == o.m_vec && m_idx_outer == o.m_idx_outer && m_idx_inner == o.m_idx_inner; }
-				bool operator != (const const_iterator& o) { return !(*this==o); }
+				bool operator == (const const_iterator& o) const { return m_vec == o.m_vec && m_idx_outer == o.m_idx_outer && m_idx_inner == o.m_idx_inner; }
+				bool operator != (const const_iterator& o) const { return !(*this==o); }
 				const value_type & operator *() { return (*m_vec)[m_idx_outer][m_idx_inner]; }
 				const value_type * operator ->() { return &(*m_vec)[m_idx_outer][m_idx_inner]; }
 				inline const_iterator operator ++(int) { /* Post: it++ */ const_iterator aux = *this; ++(*this); return aux; }
 				inline const_iterator& operator ++() {  /* pre: ++it */ incr(); return *this; }
 			protected:
 				VECTOR_T  *m_vec;
-				size_t    m_idx_outer, m_idx_inner;
+				self_t    *m_parent;
+				int        m_idx_outer, m_idx_inner;
 				void incr() {
-					if (++m_idx_inner >= NUM_HAS_TABLE_COLLISIONS_ALLOWED) {
-						m_idx_inner = 0;
-						m_idx_outer++;
-					}
+					// This loop ends with the first used entry in the nested arrays, or an iterator pointing to "end()".
+					do {
+						if (++m_idx_inner >= NUM_HAS_TABLE_COLLISIONS_ALLOWED) {
+							m_idx_inner = 0;
+							m_idx_outer++;
+						}
+					} while (m_idx_outer<m_parent->m_vec.size() && !(*m_vec)[m_idx_outer][m_idx_inner].used);
 				}
 			};
 
 			struct iterator : public const_iterator
 			{
 			public:
-				iterator() : m_vec(NULL), m_idx_outer(0), m_idx_inner(0) {}
-				iterator(VECTOR_T &vec, size_t idx_outer, size_t idx_inner) : m_vec(&vec), m_idx_outer(idx_outer), m_idx_inner(idx_inner) {}
+				iterator() : const_iterator() {}
+				iterator(VECTOR_T &vec, self_t &parent, int idx_outer, int idx_inner) : const_iterator(vec,parent,idx_outer,idx_inner) {}
 				value_type & operator *() { return (*m_vec)[m_idx_outer][m_idx_inner]; }
 				value_type * operator ->() { return &(*m_vec)[m_idx_outer][m_idx_inner]; }
 				inline iterator operator ++(int) { /* Post: it++ */ iterator aux = *this; ++(*this); return aux; }
 				inline iterator& operator ++() {  /* pre: ++it */ const_iterator::incr(); return *this; }
 			};
-
 			/** @} */
 		private:
 			vec_t  m_vec;  //!< The actual container
@@ -106,32 +110,48 @@ namespace mrpt
 			{ 
 			}
 			/** Clear the contents of this container */
-			inline void clear() {
-				throw std::runtime_error("todo");
+			void clear() {
+				m_size = 0;
+				for (size_t oi = 0; oi < m_vec.size(); oi++)
+					for (size_t ii = 0; ii < NUM_HAS_TABLE_COLLISIONS_ALLOWED; ii++)
+						m_vec[oi][ii] = value_type();
 			}
 
-			/** Write/read via [i] operator, that creates all elements up to (and including) the i'th if they didn't exist already. */
-			inline VALUE & operator[](const size_t i) {
-				if (m_vec.size()<=i) m_vec.resize(i+1);
-				m_vec[i].first=i;
-				return m_vec[i].second;
-			}
+			bool empty() const { return m_size == 0; }
 
-			bool empty() const {
-				throw std::runtime_error("todo");
-			}
-
+			/** Write/read via [i] operator, that creates an element if it didn't exist already. */
 			VALUE & operator [](const KEY &key) {
-				throw std::runtime_error("todo");
+				typename mrpt::utils::uint_select_by_bytecount<NUM_BYTES_HASH_TABLE>::type hash;
+				reduced_hash(key, hash);
+				mrpt::utils::CArray<ts_map_entry<KEY, VALUE>,NUM_HAS_TABLE_COLLISIONS_ALLOWED> & match_arr = m_vec[hash];
+				for (unsigned int i = 0; i < NUM_HAS_TABLE_COLLISIONS_ALLOWED; i++)
+				{
+					if (!match_arr[i].used) {
+						m_size++;
+						match_arr[i].used = true;
+						match_arr[i].first = key;
+						return match_arr[i].second;
+					}
+					if (match_arr[i].first == key) return match_arr[i].second;
+				}
+				THROW_EXCEPTION("ts_hash_map: too many hash collisions!");
 			}
 			const_iterator find(const KEY &key) const {
-				throw std::runtime_error("todo");
+				typename mrpt::utils::uint_select_by_bytecount<NUM_BYTES_HASH_TABLE>::type hash;
+				reduced_hash(key, hash);
+				const mrpt::utils::CArray<ts_map_entry<KEY, VALUE>, NUM_HAS_TABLE_COLLISIONS_ALLOWED> & match_arr = m_vec[hash];
+				for (unsigned int i = 0; i < NUM_HAS_TABLE_COLLISIONS_ALLOWED; i++)
+				{
+					if (match_arr[i].used && match_arr[i].first == key)
+						return const_iterator(m_vec,*this, hash,i);
+				}
+				return this->end();
 			}
 
-			iterator begin() { throw std::runtime_error("todo"); }
-			iterator end() { throw std::runtime_error("todo"); }
-			const_iterator begin() const { throw std::runtime_error("todo"); }
-			const_iterator end() const { throw std::runtime_error("todo"); }
+			const_iterator begin() const { const_iterator it(m_vec, *this, 0, -1); ++it; return it; }
+			const_iterator end() const { return const_iterator(m_vec, *this, m_vec.size(), 0); }
+			iterator begin() { iterator it(m_vec, *this, 0, -1); ++it; return it; }
+			iterator end() { return iterator(m_vec, *this, m_vec.size(), 0); }
 
 			/** @} */
 
