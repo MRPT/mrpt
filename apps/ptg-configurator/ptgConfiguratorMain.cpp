@@ -526,6 +526,7 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent,wxWindowID id) :
 
 ptgConfiguratorframe::~ptgConfiguratorframe()
 {
+	delete m_myRedirector;
     //(*Destroy(ptgConfiguratorframe)
     //*)
 	if (ptg) {
