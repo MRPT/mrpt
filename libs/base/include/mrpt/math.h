@@ -31,7 +31,7 @@
 #include <mrpt/math/CMatrixB.h>
 #include <mrpt/math/CMatrixTemplateObjects.h>
 #include <mrpt/math/CMatrixFixedNumeric.h>
-#include <mrpt/math/CArray.h>
+#include <mrpt/math/CArrayNumeric.h>
 
 #include <mrpt/math/CPolygon.h>
 #include <mrpt/math/geometry.h>
