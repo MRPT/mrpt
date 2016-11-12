@@ -107,7 +107,7 @@ public:
 			m_strbuf+=str;
 		}
 		if (m_also_to_cout_cerr) ::printf("%s",str.c_str());
-		if (m_yieldApplication)  wxTheApp->Yield(true);  // Let the app. process messages
+		if (m_yieldApplication && wxThread::IsMain())  wxTheApp->Yield(true);  // Let the app. process messages
 	}
 
 	/** Writes all the stored strings to the text control (only for threadSafe mode).
