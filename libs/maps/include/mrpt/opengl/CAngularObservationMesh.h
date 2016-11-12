@@ -364,7 +364,7 @@ namespace opengl	{
 				o.resizeScan(values.size());
 				for (size_t i=0;i<values.size();i++) {
 					o.setScanRange(i, values[i]);
-					o.setScanRangeValidity(i, valid[i]);
+					o.setScanRangeValidity(i, valid[i]!=0);
 				}
 				vObs.push_back(o);
 			}

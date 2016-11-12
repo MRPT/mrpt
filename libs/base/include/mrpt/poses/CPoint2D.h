@@ -11,7 +11,7 @@
 
 #include <mrpt/utils/CSerializable.h>
 #include <mrpt/poses/CPoint.h>
-#include <mrpt/math/CArray.h>
+#include <mrpt/math/CArrayNumeric.h>
 
 namespace mrpt
 {
