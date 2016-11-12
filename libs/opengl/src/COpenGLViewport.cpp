@@ -66,7 +66,7 @@ COpenGLViewport::COpenGLViewport( COpenGLScene *parent, const string &name  ) :
 	m_clip_min(0.1),
 	m_clip_max(10000),
 	m_custom_backgb_color(false),
-	m_background_color(0.6,0.6,0.6),
+	m_background_color(0.6f,0.6f,0.6f),
 	m_isImageView(false),
 	m_imageview_img(),
 	m_objects(),

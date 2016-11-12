@@ -13,9 +13,10 @@
 #include <mrpt/utils/COutputLogger.h>
 #include <mrpt/utils/compiler_fixes.h>
 #include <mrpt/utils/mrpt_macros.h>
+#include <mrpt/utils/ts_hash_map.h>
 #include <vector>
 #include <stack>
-#include <map>
+//#include <map>
 
 namespace mrpt
 {
@@ -50,7 +51,8 @@ namespace mrpt
 				bool has_time_units;
 			};
 
-			std::map<std::string,TCallData>  m_data;
+			typedef mrpt::utils::ts_hash_map<std::string, TCallData, 1 /* bytes hash */, 10 /* allowed hash collisions */> TDataMap;
+			TDataMap  m_data;  //Was: std::map<std::string,TCallData>  m_data;
 
 			void do_enter( const char *func_name );
 			double do_leave( const char *func_name );
