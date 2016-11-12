@@ -6,19 +6,17 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
-#ifndef _MRPT_CArray_H
-#define _MRPT_CArray_H
+#pragma once
 
 #include <mrpt/utils/core_defs.h>
 #include <stdexcept>
-#include <mrpt/utils/TTypeName.h>
 
 namespace mrpt
 {
-namespace math
+namespace utils
 {
 	// ----------------  CArray -------------------------
-	/** A STL container (as wrapper) for arrays of constant size defined at compile time - <b>Users will most likely prefer to use CArrayPOD and its derived classes instead</b>.
+	/** A STL container (as wrapper) for arrays of constant size defined at compile time.
 	 *
 	 * This code is an adapted version from Boost, modifed for its integration
 	 *	within MRPT (JLBC, Dec/2009) (Renamed array -> CArray to avoid possible potential conflicts).
@@ -48,7 +46,7 @@ namespace math
 	 * \note This class DOES NOT support mathematical operations on its elements: it's a generic container, it doesn't assume they are numerical.
 	 * \note For a summary and classification of all MRPT vector, array and matrix classes see: http://www.mrpt.org/Matrices_vectors_arrays_and_Linear_Algebra_MRPT_and_Eigen_classes
 	 *
-     * \sa CArrayNumeric (for another, non-related base template class that DOES support maths)
+     * \sa mrpt::math::CArrayNumeric (for another, non-related base template class that DOES support maths)
 	 * \ingroup mrpt_base_grp
 	 */
     template <typename T, std::size_t N>
@@ -316,8 +314,4 @@ namespace math
 	};
 
 } // End of namespace
-
 } // End of namespace
-
-
-#endif
