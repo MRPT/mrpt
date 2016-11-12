@@ -315,7 +315,7 @@ CFeatureExtraction::TOptions::TOptions(const TFeatureType _featsType) :
 	ORBOptions.extract_patch			= false;
 	ORBOptions.min_distance				= 0;
 	ORBOptions.n_levels					= 8;
-	ORBOptions.scale_factor				= 1.2;
+	ORBOptions.scale_factor				= 1.2f;
 
 	// SpinImages Options:
 	SpinImagesOptions.hist_size_distance  = 10;
