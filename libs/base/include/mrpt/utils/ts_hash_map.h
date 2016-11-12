@@ -79,11 +79,11 @@ namespace mrpt
 				void incr() {
 					// This loop ends with the first used entry in the nested arrays, or an iterator pointing to "end()".
 					do {
-						if (++m_idx_inner >= NUM_HAS_TABLE_COLLISIONS_ALLOWED) {
+						if (++m_idx_inner >= (int)NUM_HAS_TABLE_COLLISIONS_ALLOWED) {
 							m_idx_inner = 0;
 							m_idx_outer++;
 						}
-					} while (m_idx_outer<m_parent->m_vec.size() && !(*m_vec)[m_idx_outer][m_idx_inner].used);
+					} while (m_idx_outer<(int)m_parent->m_vec.size() && !(*m_vec)[m_idx_outer][m_idx_inner].used);
 				}
 			};
 
@@ -92,8 +92,8 @@ namespace mrpt
 			public:
 				iterator() : const_iterator() {}
 				iterator(VECTOR_T &vec, self_t &parent, int idx_outer, int idx_inner) : const_iterator(vec,parent,idx_outer,idx_inner) {}
-				value_type & operator *() { return (*m_vec)[m_idx_outer][m_idx_inner]; }
-				value_type * operator ->() { return &(*m_vec)[m_idx_outer][m_idx_inner]; }
+				value_type & operator *() { return (*const_iterator::m_vec)[const_iterator::m_idx_outer][const_iterator::m_idx_inner]; }
+				value_type * operator ->() { return &(*const_iterator::m_vec)[const_iterator::m_idx_outer][const_iterator::m_idx_inner]; }
 				inline iterator operator ++(int) { /* Post: it++ */ iterator aux = *this; ++(*this); return aux; }
 				inline iterator& operator ++() {  /* pre: ++it */ const_iterator::incr(); return *this; }
 			};
