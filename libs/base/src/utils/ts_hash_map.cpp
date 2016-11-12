@@ -20,7 +20,7 @@ void mrpt::utils::reduced_hash(const std::string &value, uint64_t &out_hash)
 	uint64_t hash = 5381;
 	const char * str = value.c_str();
 	int c;
-	while (c = *str++)
+	while ((c = *str++)!=0)
 		hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
 	out_hash = hash;
 }
