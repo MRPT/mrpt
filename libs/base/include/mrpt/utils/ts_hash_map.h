@@ -68,8 +68,8 @@ namespace mrpt
 				const_iterator & operator = (const const_iterator& o) { m_vec = o.m_vec; m_idx_outer = o.m_idx_outer; m_idx_inner = o.m_idx_inner; return *this; }
 				bool operator == (const const_iterator& o) const { return m_vec == o.m_vec && m_idx_outer == o.m_idx_outer && m_idx_inner == o.m_idx_inner; }
 				bool operator != (const const_iterator& o) const { return !(*this==o); }
-				const value_type & operator *() { return (*m_vec)[m_idx_outer][m_idx_inner]; }
-				const value_type * operator ->() { return &(*m_vec)[m_idx_outer][m_idx_inner]; }
+				const value_type & operator *() const { return (*m_vec)[m_idx_outer][m_idx_inner]; }
+				const value_type * operator ->()  const { return &(*m_vec)[m_idx_outer][m_idx_inner]; }
 				inline const_iterator operator ++(int) { /* Post: it++ */ const_iterator aux = *this; ++(*this); return aux; }
 				inline const_iterator& operator ++() {  /* pre: ++it */ incr(); return *this; }
 			protected:
