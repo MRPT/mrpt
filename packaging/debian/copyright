@@ -768,3 +768,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   
   Creative Commons may be contacted at http://creativecommons.org/.
   
+ * exprtk: C++ Mathematical Expression Toolkit Library  
+ Arash Partow (1999-2016) 
+  Common Public License  http://www.opensource.org/licenses/cpl1.0.php

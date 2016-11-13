@@ -794,8 +794,8 @@ void ptgConfiguratorframe::rebuild3Dview()
 		// TPS:
 		if (ptg && ptg->isInitialized())
 		{
-			int k;
-			double norm_d;
+			int k=0;
+			double norm_d=0;
 			bool is_exact = ptg->inverseMap_WS2TP(tx,ty,k,norm_d);
 			const double dir = ptg->index2alpha(k);
 			if (is_exact)
