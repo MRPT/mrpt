@@ -13,6 +13,7 @@
 #include <mrpt/system/os.h>
 #include <mrpt/vision/utils.h>
 #include <mrpt/math/lightweight_geom_data.h>
+#include <mrpt/math/CArrayNumeric.h>
 
 namespace mrpt
 {
@@ -27,7 +28,7 @@ namespace mrpt
 		 *    - 2009-2010: Rewritten by various authors.
 		 *
 		 * \sa mrpt::utils::TCamera, CMonoSlam, the application <a href="http://www.mrpt.org/Application:camera-calib-gui" >camera-calib-gui</a> for calibrating a camera
-		 * \ingroup mrpt_vision_grp 
+		 * \ingroup mrpt_vision_grp
 		 */
 		class VISION_IMPEXP  CCamModel : public mrpt::utils::CLoadableOptions
 		{
@@ -233,8 +234,8 @@ namespace mrpt
 				static mrpt::math::CMatrixFixedNumeric<double,4,2> J2(secondInverseJacobian());
 				static mrpt::math::CMatrixFixedNumeric<double,3,4> J3(thirdInverseJacobian());
 				static mrpt::math::CMatrixFixedNumeric<double,2,3> J4;	//This is not initialized in a special way, although declaring it
-				mrpt::math::CArray<double,4> tmp1;
-				mrpt::math::CArray<double,2> tmp2;	//This would be a CArray<double,3>, but to avoid copying, we let "R2" lie in tmp1.
+				mrpt::math::CArrayNumeric<double,4> tmp1;
+				mrpt::math::CArrayNumeric<double,2> tmp2;	//This would be a CArray<double,3>, but to avoid copying, we let "R2" lie in tmp1.
 				//Camera Parameters
 				double cx=cam.cx(),cy=cam.cy(),ifx=1/cam.fx(),ify=1/cam.fy();
 				double K1=cam.k1(),K2=cam.k2(),p1=cam.p1(),p2=cam.p2(),K3=cam.k3();
