@@ -51,6 +51,7 @@
 			- New class mrpt::utils::CRateTimer
 			- mrpt::poses::CRobot2DPoseEstimator now uses a more generic odometry-based velocity model (vx,vy,omega).
 			- New template mrpt::utils::ts_hash_map<> for thread-safe, std::map-like containers based on hash functions.
+			- Included exprtk header-only library to runtime compile & evaluation of mathematical expressions, under `<mrpt/otherlibs/exprtk.hpp>`
 		- \ref mrpt_bayes_grp
 			-  [API change] `verbose` is no longer a field of mrpt::bayes::CParticleFilter::TParticleFilterOptions. Use the setVerbosityLevel() method of the CParticleFilter class itself.
 		- \ref mrpt_gui_grp
