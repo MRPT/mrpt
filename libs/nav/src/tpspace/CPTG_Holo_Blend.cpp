@@ -50,12 +50,11 @@ const double eps = 1e-4;               // epsilon for detecting 1/0 situation
 
 
 // As a macro instead of a function (uglier) to allow for const variables (safer)
-MRPT_TODO("Reconsider constant W_MAX");
 #define COMMON_PTG_DESIGN_PARAMS \
-	const double vxf = V_MAX * cos(dir), vyf = V_MAX * sin(dir); \
 	const double vxi = curVelLocal.vx, vyi = curVelLocal.vy; \
-	const double T_ramp = T_ramp_max;
-
+	const double vf_mod = internal_get_v(dir); \
+	const double vxf = vf_mod*cos(dir), vyf = vf_mod* sin(dir); \
+	const double T_ramp = internal_get_T_ramp(dir);
 
 // Axiliary function for calc_trans_distance_t_below_Tramp() and others:
 static double calc_trans_distance_t_below_Tramp_abc(double t, double a,double b, double c)
@@ -125,22 +124,6 @@ dd = sqrt( (4*k2^2 + 4*k4^2)*t^2 + (4*k2*vxi + 4*k4*vyi)*t + vxi^2 + vyi^2 ) dt
 	}
 }
 
-CPTG_Holo_Blend::CPTG_Holo_Blend() :
-	T_ramp_max(-1.0),
-	V_MAX(-1.0),
-	W_MAX(-1.0),
-	turningRadiusReference(0.30),
-	curVelLocal(0,0,0)
-{
-}
-
-CPTG_Holo_Blend::CPTG_Holo_Blend(const mrpt::utils::CConfigFileBase &cfg,const std::string &sSection) :
-	turningRadiusReference(0.30),
-	curVelLocal(0,0,0)
-{
-	this->loadFromConfigFile(cfg,sSection);
-}
-
 void CPTG_Holo_Blend::updateCurrentRobotVel(const mrpt::math::TTwist2D &curVelLocal)
 {
 	this->curVelLocal = curVelLocal;
@@ -171,6 +154,10 @@ void CPTG_Holo_Blend::loadFromConfigFile(const mrpt::utils::CConfigFileBase &cfg
 	MRPT_LOAD_HERE_CONFIG_VAR(vxi  ,double, curVelLocal.vx, cfg,sSection);
 	MRPT_LOAD_HERE_CONFIG_VAR(vyi  ,double, curVelLocal.vy, cfg,sSection);
 	MRPT_LOAD_HERE_CONFIG_VAR_DEGREES(wi   ,double, curVelLocal.omega, cfg, sSection);
+
+	MRPT_LOAD_HERE_CONFIG_VAR(expr_V, string, expr_V, cfg, sSection);
+	MRPT_LOAD_HERE_CONFIG_VAR(expr_W, string, expr_W, cfg, sSection);
+	MRPT_LOAD_HERE_CONFIG_VAR(expr_T_ramp, string, expr_T_ramp, cfg, sSection);
 }
 void CPTG_Holo_Blend::saveToConfigFile(mrpt::utils::CConfigFileBase &cfg,const std::string &sSection) const
 {
@@ -187,6 +174,11 @@ void CPTG_Holo_Blend::saveToConfigFile(mrpt::utils::CConfigFileBase &cfg,const s
 	cfg.write(sSection,"vxi",curVelLocal.vx,   WN,WV, "(Only for debugging) Current robot velocity vx [m/s].");
 	cfg.write(sSection,"vyi",curVelLocal.vy,   WN,WV, "(Only for debugging) Current robot velocity vy [m/s].");
 	cfg.write(sSection, "wi", mrpt::utils::RAD2DEG(curVelLocal.omega),WN,WV,"(Only for debugging) Current robot velocity omega [deg/s].");
+
+	cfg.write(sSection, "expr_V", expr_V, WN, WV, "Math expr for |V| as a function of `dir`,`V_MAX`,`W_MAX`,`T_ramp_max`.");
+	cfg.write(sSection, "expr_W", expr_W, WN, WV, "Math expr for |omega| (disregarding the sign, only the module) as a function of `dir`,`V_MAX`,`W_MAX`,`T_ramp_max`.");
+	cfg.write(sSection, "expr_T_ramp", expr_T_ramp, WN, WV, "Math expr for `T_ramp` as a function of `dir`,`V_MAX`,`W_MAX`,`T_ramp_max`.");
+
 	CPTG_RobotShape_Circular::saveToConfigFile(cfg,sSection);
 
 	MRPT_END
@@ -209,6 +201,7 @@ void CPTG_Holo_Blend::readFromStream(mrpt::utils::CStream &in, int version)
 	case 1:
 	case 2:
 	case 3:
+	case 4:
 		if (version>=1) {
 			CPTG_RobotShape_Circular::internal_shape_loadFromStream(in);
 		}
@@ -217,6 +210,9 @@ void CPTG_Holo_Blend::readFromStream(mrpt::utils::CStream &in, int version)
 		if (version==2) {
 			double dummy_maxAllowedDirAngle; // removed in v3
 			in >> dummy_maxAllowedDirAngle;
+		}
+		if (version >= 4) {
+			in >> expr_V >> expr_W >> expr_T_ramp;
 		}
 		break;
 	default:
@@ -228,7 +224,7 @@ void CPTG_Holo_Blend::writeToStream(mrpt::utils::CStream &out, int *version) con
 {
 	if (version)
 	{
-		*version = 3;
+		*version = 4;
 		return;
 	}
 
@@ -236,6 +232,7 @@ void CPTG_Holo_Blend::writeToStream(mrpt::utils::CStream &out, int *version) con
 	CPTG_RobotShape_Circular::internal_shape_saveToStream(out);
 
 	out << T_ramp_max << V_MAX << W_MAX << turningRadiusReference;
+	out << expr_V << expr_W << expr_T_ramp;
 }
 
 bool CPTG_Holo_Blend::inverseMap_WS2TP(double x, double y, int &out_k, double &out_d, double tolerance_dist) const
@@ -248,7 +245,6 @@ bool CPTG_Holo_Blend::inverseMap_WS2TP(double x, double y, int &out_k, double &o
 	const double err_threshold = 1e-3;
 	const double T_ramp = T_ramp_max;
 	const double vxi = curVelLocal.vx, vyi = curVelLocal.vy;
-	const double V_MAXsq = V_MAX*V_MAX;
 
 	// Use a Newton iterative non-linear optimizer to find the "exact" solution for (t,alpha)
 	// in each case: (1) t<T_ramp and (2) t>T_ramp
@@ -279,7 +275,9 @@ bool CPTG_Holo_Blend::inverseMap_WS2TP(double x, double y, int &out_k, double &o
 			r[0] = vxi * q[0] + q[0]*q[0] * TR2_ * (q[1]-vxi)   - x;
 			r[1] = vyi * q[0] + q[0]*q[0] * TR2_ * (q[2]-vyi)   - y;
 		}
-		r[2] = q[1]*q[1]+q[2]*q[2]   - V_MAXsq;
+		const double alpha = atan2(q[2], q[1]);
+		const double V_MAXsq = mrpt::utils::square(this->internal_get_v(alpha));
+		r[2] = q[1]*q[1]+q[2]*q[2] - V_MAXsq;
 
 		// Jacobian: q=[t vxf vyf]   q0=t   q1=vxf   q2=vyf
 		//  dx/dt  dx/dvxf  dx/dvyf
@@ -329,20 +327,6 @@ bool CPTG_Holo_Blend::PTG_IsIntoDomain(double x, double y ) const
 	return inverseMap_WS2TP(x,y,k,d);
 }
 
-void CPTG_Holo_Blend::internal_initialize(const std::string & cacheFilename, const bool verbose )
-{
-	// No need to initialize anything, just do some params sanity checks:
-	ASSERT_(T_ramp_max>0);
-	ASSERT_(V_MAX>0);
-	ASSERT_(W_MAX>0);
-	ASSERT_(m_alphaValuesCount>0);
-	ASSERT_(m_robotRadius>0);
-
-#ifdef DO_PERFORMANCE_BENCHMARK
-	tl.dumpAllStats();
-#endif
-}
-
 void CPTG_Holo_Blend::internal_deinitialize()
 {
 	// Nothing to do in a closed-form PTG.
@@ -353,13 +337,12 @@ mrpt::kinematics::CVehicleVelCmdPtr CPTG_Holo_Blend::directionToMotionCommand( u
 	const double dir_local = CParameterizedTrajectoryGenerator::index2alpha(k);
 
 	mrpt::kinematics::CVehicleVelCmd_Holo * cmd = new mrpt::kinematics::CVehicleVelCmd_Holo();
-	cmd->vel = V_MAX;
+	cmd->vel = internal_get_v(dir_local);
 	cmd->dir_local = dir_local;
-	cmd->ramp_time = T_ramp_max;
-	cmd->rot_speed = mrpt::utils::signWithZero(dir_local) * W_MAX;
+	cmd->ramp_time = internal_get_w(dir_local);
+	cmd->rot_speed = mrpt::utils::signWithZero(dir_local) * internal_get_w(dir_local);
 
 	return mrpt::kinematics::CVehicleVelCmdPtr(cmd);
-
 }
 
 size_t CPTG_Holo_Blend::getPathStepCount(uint16_t k) const
@@ -376,7 +359,7 @@ void CPTG_Holo_Blend::getPathPose(uint16_t k, uint16_t step, mrpt::math::TPose2D
 	const double t = PATH_TIME_STEP*step;
 	const double dir = CParameterizedTrajectoryGenerator::index2alpha(k);
 	COMMON_PTG_DESIGN_PARAMS;
-	const double wf = mrpt::utils::signWithZero(dir) * W_MAX;
+	const double wf = mrpt::utils::signWithZero(dir) * this->internal_get_w(dir);
 	const double TR2_ = 1.0/(2*T_ramp);
 
 	// Translational part:
@@ -606,7 +589,7 @@ void CPTG_Holo_Blend::updateTPObstacleSingle(double ox, double oy, uint16_t k, d
 		const double c1 = TR_2*(vxi - vxf) - ox;
 		const double c2 = TR_2*(vyi - vyf) - oy;
 
-		const double a = V_MAX*V_MAX;
+		const double a = vf_mod*vf_mod;
 		const double b = 2 * (c1*vxf + c2*vyf);
 		const double c = c1*c1 + c2*c2 - R*R;
 
