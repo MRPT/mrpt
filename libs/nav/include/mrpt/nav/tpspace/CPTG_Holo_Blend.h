@@ -53,6 +53,8 @@ namespace mrpt
 		double getPathDist(uint16_t k, uint16_t step) const  MRPT_OVERRIDE;
 		bool getPathStepForDist(uint16_t k, double dist, uint16_t &out_step) const MRPT_OVERRIDE;
 		double getPathStepDuration() const MRPT_OVERRIDE;
+		double getMaxLinVel() const MRPT_OVERRIDE { return V_MAX; }
+		double getMaxAngVel() const MRPT_OVERRIDE { return W_MAX; }
 
 		void updateTPObstacle(double ox, double oy, std::vector<double> &tp_obstacles) const MRPT_OVERRIDE;
 		void updateTPObstacleSingle(double ox, double oy, uint16_t k, double &tp_obstacle_k) const MRPT_OVERRIDE;
