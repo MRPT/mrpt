@@ -504,10 +504,10 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(wxWindow* parent,wxWi
 	gl_target->setVisibility(false);
 	{
 		mrpt::opengl::CArrowPtr obj;
-		obj = mrpt::opengl::CArrow::Create( 1,0,0,  0.2,0,0, 0.4,0.05, 0.15 ); obj->setColor_u8( TColor(0,0,255) ); gl_target->insert(obj);
-		obj = mrpt::opengl::CArrow::Create(-1,0,0, -0.2,0,0, 0.4,0.05, 0.15 ); obj->setColor_u8( TColor(0,0,255) ); gl_target->insert(obj);
-		obj = mrpt::opengl::CArrow::Create( 0,1,0,  0,0.2,0, 0.4,0.05, 0.15 ); obj->setColor_u8( TColor(0,0,255) ); gl_target->insert(obj);
-		obj = mrpt::opengl::CArrow::Create(0,-1,0,  0,-0.2,0, 0.4,0.05, 0.15 ); obj->setColor_u8( TColor(0,0,255) ); gl_target->insert(obj);
+		obj = mrpt::opengl::CArrow::Create( 1,0,0,  0.2f,0,0, 0.4f,0.05f, 0.15f ); obj->setColor_u8( TColor(0,0,255) ); gl_target->insert(obj);
+		obj = mrpt::opengl::CArrow::Create(-1,0,0, -0.2f,0,0, 0.4f,0.05f, 0.15f ); obj->setColor_u8( TColor(0,0,255) ); gl_target->insert(obj);
+		obj = mrpt::opengl::CArrow::Create( 0,1,0,  0,0.2f,0, 0.4f,0.05f, 0.15f ); obj->setColor_u8( TColor(0,0,255) ); gl_target->insert(obj);
+		obj = mrpt::opengl::CArrow::Create(0,-1,0,  0,-0.2f,0, 0.4f,0.05f, 0.15f ); obj->setColor_u8( TColor(0,0,255) ); gl_target->insert(obj);
 		m_plot3D->m_openGLScene->insert(gl_target);
 	}
 
@@ -523,10 +523,10 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(wxWindow* parent,wxWi
 		m_gl_placing_nav_target = opengl::CSetOfObjects::Create();
 
 		mrpt::opengl::CArrowPtr obj;
-		obj = mrpt::opengl::CArrow::Create( 1,0,0,  0.2,0,0, 0.4,0.05, 0.15 ); obj->setColor_u8( TColor(0,0,255) ); m_gl_placing_nav_target->insert(obj);
-		obj = mrpt::opengl::CArrow::Create(-1,0,0, -0.2,0,0, 0.4,0.05, 0.15 ); obj->setColor_u8( TColor(0,0,255) ); m_gl_placing_nav_target->insert(obj);
-		obj = mrpt::opengl::CArrow::Create( 0,1,0,  0,0.2,0, 0.4,0.05, 0.15 ); obj->setColor_u8( TColor(0,0,255) ); m_gl_placing_nav_target->insert(obj);
-		obj = mrpt::opengl::CArrow::Create(0,-1,0,  0,-0.2,0, 0.4,0.05, 0.15 ); obj->setColor_u8( TColor(0,0,255) ); m_gl_placing_nav_target->insert(obj);
+		obj = mrpt::opengl::CArrow::Create( 1,0,0,  0.2f,0,0, 0.4f,0.05f, 0.15f ); obj->setColor_u8( TColor(0,0,255) ); m_gl_placing_nav_target->insert(obj);
+		obj = mrpt::opengl::CArrow::Create(-1,0,0, -0.2f,0,0, 0.4f,0.05f, 0.15f ); obj->setColor_u8( TColor(0,0,255) ); m_gl_placing_nav_target->insert(obj);
+		obj = mrpt::opengl::CArrow::Create( 0,1,0,  0,0.2f,0, 0.4f,0.05f, 0.15f ); obj->setColor_u8( TColor(0,0,255) ); m_gl_placing_nav_target->insert(obj);
+		obj = mrpt::opengl::CArrow::Create(0,-1,0,  0,-0.2f,0, 0.4f,0.05f, 0.15f ); obj->setColor_u8( TColor(0,0,255) ); m_gl_placing_nav_target->insert(obj);
 		m_gl_placing_nav_target->setVisibility(false); // Start invisible.
 		m_plot3D->m_openGLScene->insert(m_gl_placing_nav_target);
 	}
@@ -542,7 +542,7 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(wxWindow* parent,wxWi
 	{	// Sign of "drawing obstacles":
 		m_gl_drawing_obs = opengl::CSetOfObjects::Create();
 
-		mrpt::opengl::CCylinderPtr obj = mrpt::opengl::CCylinder::Create(0.05, 0.10,1.0);
+		mrpt::opengl::CCylinderPtr obj = mrpt::opengl::CCylinder::Create(0.05f, 0.10f,1.0f);
 		obj->setColor_u8( mrpt::utils::TColor(0xff,0x00,0x00,0x70) );
 		m_gl_drawing_obs->insert(obj);
 
@@ -575,7 +575,7 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(wxWindow* parent,wxWi
 
 	// 2D view ==============
 	{
-		mrpt::opengl::CGridPlaneXYPtr obj = mrpt::opengl::CGridPlaneXY::Create(-1,1.001, -1,1.001, 0, 1);
+		mrpt::opengl::CGridPlaneXYPtr obj = mrpt::opengl::CGridPlaneXY::Create(-1,1.001f, -1,1.001f, 0, 1);
 		obj->setColor_u8(TColor(30,30,30,50));
 		m_plotLocalView->m_openGLScene->insert( obj );
 	}
@@ -597,7 +597,7 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(wxWindow* parent,wxWi
 	gl_rel_robot->insertPoint(0, 0, 0);
 	m_plotLocalView->m_openGLScene->insert(gl_rel_robot);
 
-	m_plotLocalView->m_openGLScene->insert( mrpt::opengl::stock_objects::CornerXYSimple(0.1,2) );
+	m_plotLocalView->m_openGLScene->insert( mrpt::opengl::stock_objects::CornerXYSimple(0.1f,2) );
 	m_plotLocalView->m_openGLScene->insert( gl_robot_local );
 
 	gl_tp_obstacles = mrpt::opengl::CSetOfLines::Create();
@@ -618,7 +618,7 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(wxWindow* parent,wxWi
 	m_plotLocalView->cameraPointingX=0;
 	m_plotLocalView->cameraPointingY=0;
 	m_plotLocalView->cameraPointingZ=0;
-	m_plotLocalView->cameraZoomDistance = 2.2;
+	m_plotLocalView->cameraZoomDistance = 2.2f;
 	m_plotLocalView->cameraElevationDeg = 90;
 	m_plotLocalView->cameraAzimuthDeg = -90;
 	m_plotLocalView->cameraIsProjective = false;
@@ -1079,7 +1079,7 @@ void reactive_navigator_demoframe::simulateOneStep(double time_step)
 		gl_waypoints_clicking->clear();
 		for (const auto &p : m_waypoints_clicked.waypoints)
 		{
-			mrpt::opengl::CDiskPtr gl_pt = mrpt::opengl::CDisk::Create(0.3,0.2, 20);
+			mrpt::opengl::CDiskPtr gl_pt = mrpt::opengl::CDisk::Create(0.3f,0.2f, 20);
 			gl_pt->setLocation(p.target.x,p.target.y,0.01);
 			gl_pt->setColor_u8(mrpt::utils::TColor(0x00,0x00,0xff));
 			gl_waypoints_clicking->insert(gl_pt);
@@ -1095,7 +1095,7 @@ void reactive_navigator_demoframe::simulateOneStep(double time_step)
 			{
 				const bool is_cur_goal = (int(idx)==wp_status.waypoint_index_current_goal);
 
-				mrpt::opengl::CDiskPtr gl_pt = mrpt::opengl::CDisk::Create(is_cur_goal ? 0.4 : 0.3,0.2, 20);
+				mrpt::opengl::CDiskPtr gl_pt = mrpt::opengl::CDisk::Create(is_cur_goal ? 0.4f : 0.3f,0.2f, 20);
 				gl_pt->setLocation(p.target.x,p.target.y,0.01);
 				gl_pt->setName(mrpt::format("WayPt #%2u Reach:%s",idx, p.reached ? "YES":"NO"));
 				gl_pt->enableShowName(true);
@@ -1441,7 +1441,7 @@ void create_viz_robot_holo( mrpt::opengl::CSetOfObjects &objs )
 		objs.insert( gl_xyz );
 	}
 
-	mrpt::opengl::CCylinderPtr obj = mrpt::opengl::CCylinder::Create(0.36 /*base radius*/,0.20 /*top radius */,1.2 /*height*/);
+	mrpt::opengl::CCylinderPtr obj = mrpt::opengl::CCylinder::Create(0.36f /*base radius*/,0.20f /*top radius */,1.2f /*height*/);
 	obj->setColor_u8( TColor::red );
 	objs.insert( obj );
 }
