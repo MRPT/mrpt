@@ -82,16 +82,14 @@ namespace mrpt
 			// See docs in parent class
 			bool implementSenseObstacles(mrpt::system::TTimeStamp &obs_timestamp) MRPT_OVERRIDE;
 
-			// See docs in parent class
-			void STEP3_WSpaceToTPSpace(const size_t ptg_idx,std::vector<double> &out_TPObstacles, const mrpt::poses::CPose2D &rel_pose_PTG_origin_wrt_sense) MRPT_OVERRIDE;
-
 			/** Generates a pointcloud of obstacles, and the robot shape, to be saved in the logging record for the current timestep */
 			virtual void loggingGetWSObstaclesAndShape(CLogFileRecord &out_log) MRPT_OVERRIDE;
 
-			mrpt::maps::CSimplePointsMap m_WS_Obstacles;  //!< The obstacle points, as seen from the local robot frame.
-
 		protected:
 			void internal_loadConfigFile(const mrpt::utils::CConfigFileBase &ini, const std::string &section_prefix="") MRPT_OVERRIDE;
+			mrpt::maps::CSimplePointsMap m_WS_Obstacles;  //!< The obstacle points, as seen from the local robot frame.
+			// See docs in parent class
+			void STEP3_WSpaceToTPSpace(const size_t ptg_idx, std::vector<double> &out_TPObstacles, const mrpt::poses::CPose2D &rel_pose_PTG_origin_wrt_sense) MRPT_OVERRIDE;
 
 		}; // end class
 	}
