@@ -371,7 +371,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 				ptg, indexPTG, 
 				relTarget, rel_pose_PTG_origin_wrt_sense,
 				ipf, holonomicMovement,
-				newLogRec, false /* this is a regular PTG reactive case */);
+				newLogRec, false /* this is a regular PTG reactive case */, m_holonomicMethod[indexPTG]);
 		} // end for each PTG
 
 		// Round #2: Evaluate dont sending any new velocity command ("NOP" motion)
@@ -410,7 +410,8 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 					ptg, m_lastSentVelCmd.ptg_index,
 					relTarget_NOP, rel_pose_PTG_origin_wrt_sense_NOP,
 					ipf_NOP, holonomicMovements[nPTGs],
-					newLogRec, true /* this is the PTG continuation (NOP) choice */, rel_cur_pose_wrt_last_vel_cmd_NOP);
+					newLogRec, true /* this is the PTG continuation (NOP) choice */, 
+					m_holonomicMethod[m_lastSentVelCmd.ptg_index], rel_cur_pose_wrt_last_vel_cmd_NOP);
 
 			} // end valid interpolated origin pose
 		} //end can_do_NOP_motion
@@ -939,6 +940,7 @@ void CAbstractPTGBasedReactive::ptg_eval_target_build_obstacles(
 	THolonomicMovement &holonomicMovement,
 	CLogFileRecord &newLogRec,
 	const bool this_is_PTG_continuation,
+	mrpt::nav::CAbstractHolonomicReactiveMethod *holoMethod,
 	const mrpt::poses::CPose2D &rel_cur_pose_wrt_last_vel_cmd_NOP
 	)
 {
@@ -1015,8 +1017,8 @@ void CAbstractPTGBasedReactive::ptg_eval_target_build_obstacles(
 		{
 			tictac.Tic();
 
-			ASSERT_(m_holonomicMethod[indexPTG]);
-			m_holonomicMethod[indexPTG]->navigate(
+			ASSERT_(holoMethod);
+			holoMethod->navigate(
 					ipf.TP_Target,     // Normalized [0,1]
 					ipf.TP_Obstacles,  // Normalized [0,1]
 					1.0, // Was: ptg->getMax_V_inTPSpace(),
