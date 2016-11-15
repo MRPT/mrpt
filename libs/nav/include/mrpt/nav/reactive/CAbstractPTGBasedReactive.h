@@ -237,7 +237,7 @@ namespace mrpt
 		virtual void onStartNewNavigation() MRPT_OVERRIDE;
 
 		bool m_closing_navigator; //!< Signal that the destructor has been called, so no more calls are accepted from other threads
-	private:
+
 		mrpt::system::TTimeStamp m_WS_Obstacles_timestamp;
 
 		struct TInfoPerPTG
@@ -251,6 +251,21 @@ namespace mrpt
 
 		std::vector<TInfoPerPTG> m_infoPerPTG; //!< Temporary buffers for working with each PTG during a navigationStep()
 		mrpt::system::TTimeStamp m_infoPerPTG_timestamp;
+
+		void ptg_eval_target_build_obstacles(
+			CParameterizedTrajectoryGenerator * ptg,
+			const size_t indexPTG,
+			const mrpt::math::TPose2D &relTarget,
+			const mrpt::poses::CPose2D &rel_pose_PTG_origin_wrt_sense,
+			TInfoPerPTG &ipf,
+			THolonomicMovement &holonomicMovement,
+			CLogFileRecord &newLogRec,
+			const bool this_is_PTG_continuation,
+			mrpt::nav::CAbstractHolonomicReactiveMethod *holoMethod,
+			const mrpt::poses::CPose2D &relPoseVelCmd_NOP = mrpt::poses::CPose2D()
+		);
+
+	private:
 
 		void deleteHolonomicObjects(); //!< Delete m_holonomicMethod
 		static void robotPoseExtrapolateIncrement(const mrpt::math::TTwist2D & globalVel, const double time_offset, mrpt::poses::CPose2D & out_pose);
@@ -269,19 +284,6 @@ namespace mrpt
 		};
 
 		TSentVelCmd m_lastSentVelCmd;
-
-		void ptg_eval_target_build_obstacles(
-			CParameterizedTrajectoryGenerator * ptg,
-			const size_t indexPTG,
-			const mrpt::math::TPose2D &relTarget,
-			const mrpt::poses::CPose2D &rel_pose_PTG_origin_wrt_sense,
-			TInfoPerPTG &ipf,
-			THolonomicMovement &holonomicMovement,
-			CLogFileRecord &newLogRec,
-			const bool this_is_PTG_continuation,
-			const mrpt::poses::CPose2D &relPoseVelCmd_NOP = mrpt::poses::CPose2D()
-			);
-
 
 	}; // end of CAbstractPTGBasedReactive
   }
