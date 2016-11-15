@@ -99,8 +99,12 @@ public:
 #else
 			s = _U(str.c_str());
 #endif
-			//COutputLogger
+
+#if wxCHECK_VERSION(3,0,0)
 			m_txt->GetEventHandler()->CallAfter(&wxTextCtrl::WriteText, s);
+#else
+			m_txt->WriteText(s);  // bad solution, but at least compiles (and may work, unsafely) for old wx2.8 in Ubuntu precise
+#endif
 		}
 		else
 		{	// Critical section is already adquired.
