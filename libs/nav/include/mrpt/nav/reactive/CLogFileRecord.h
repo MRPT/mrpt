@@ -22,23 +22,20 @@ namespace mrpt
 {
 namespace nav
 {
+	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CLogFileRecord, mrpt::utils::CSerializable, NAV_IMPEXP )
 
 	/** A class for storing, saving and loading a reactive navigation
 	 *   log record for the CReactiveNavigationSystem class.
 	 * \sa CReactiveNavigationSystem, CHolonomicLogFileRecord
 	 *  \ingroup nav_reactive
 	 */
-	template<typename VELCMD>
-	class NAV_IMPEXP  CLogFileRecord_template : public mrpt::utils::CSerializable
+	class NAV_IMPEXP  CLogFileRecord : public mrpt::utils::CSerializable
 	{
+		DEFINE_SERIALIZABLE( CLogFileRecord )
 
 	public:
-		CLogFileRecord_template() : nPTGs     ( 0 )
-		{
-			infoPerPTG.clear();
-			WS_Obstacles.clear();
-		}  //!< Constructor, builds an empty record.
-		virtual ~CLogFileRecord_template() {};   //!< Destructor, free all objects.
+		CLogFileRecord();  //!< Constructor, builds an empty record.
+		virtual ~CLogFileRecord();   //!< Destructor, free all objects.
 
 		/** The structure used to store all relevant information about each
 		  *  transformation into TP-Space.
@@ -61,7 +58,7 @@ namespace nav
 		uint32_t       nPTGs;  //!< The number of PTGS:
 
 		 /** The info for each applied PTG: must contain "nPTGs * nSecDistances" elements */
-		typename mrpt::aligned_containers<TInfoPerPTG>::vector_t infoPerPTG;
+		mrpt::aligned_containers<TInfoPerPTG>::vector_t infoPerPTG;
 
 		int32_t					nSelectedPTG;   //!< The selected PTG.
 		/** Known values: 
@@ -80,8 +77,8 @@ namespace nav
 		mrpt::poses::CPose2D          relPoseSense, relPoseVelCmd; //! Relative poses (wrt to robotOdometryPose) for extrapolated paths at two instants: time of obstacle sense, and future pose of motion comman
 		mrpt::math::TPoint2D          WS_target_relative;  //!< The relative location of target point in WS.
 
-		VELCMD    cmd_vel;  //!< The final motion command sent to robot, in "m/sec" and "rad/sec".
-		VELCMD    cmd_vel_original;  //!< Motion command as comes out from the PTG, before scaling speed limit filtering.
+		mrpt::kinematics::CVehicleVelCmdPtr    cmd_vel;  //!< The final motion command sent to robot, in "m/sec" and "rad/sec".
+		mrpt::kinematics::CVehicleVelCmdPtr    cmd_vel_original;  //!< Motion command as comes out from the PTG, before scaling speed limit filtering.
 		mrpt::math::TTwist2D   cur_vel; //!< The actual robot velocities in global (map) coordinates, as read from sensors, in "m/sec" and "rad/sec".
 		mrpt::math::TTwist2D   cur_vel_local; //!< The actual robot velocities in local (robot) coordinates, as read from sensors, in "m/sec" and "rad/sec".
 
@@ -95,13 +92,7 @@ namespace nav
 		mrpt::math::TTwist2D   ptg_last_curRobotVelLocal;
 
 	};
-	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CLogFileRecord, mrpt::utils::CSerializable, NAV_IMPEXP )
-	class CLogFileRecord : public CLogFileRecord_template<mrpt::kinematics::CVehicleVelCmdPtr>
-	{
-		DEFINE_SERIALIZABLE( CLogFileRecord )
-	};
-
-	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CLogFileRecord, mrpt::utils::CSerializable, NAV_IMPEXP )
+	  DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CLogFileRecord, mrpt::utils::CSerializable, NAV_IMPEXP )
 
 }
 }
