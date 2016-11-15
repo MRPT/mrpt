@@ -361,8 +361,6 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 
 		for (size_t indexPTG=0;indexPTG<nPTGs;indexPTG++)
 		{
-			//  STEP3(a): Transform target location into TP-Space for each PTG
-			// -----------------------------------------------------------------------------
 			CParameterizedTrajectoryGenerator * ptg = getPTG(indexPTG);
 			TInfoPerPTG &ipf = m_infoPerPTG[indexPTG];
 
