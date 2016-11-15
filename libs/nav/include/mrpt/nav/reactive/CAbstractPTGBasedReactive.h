@@ -265,12 +265,7 @@ namespace mrpt
 			const mrpt::poses::CPose2D &relPoseVelCmd_NOP = mrpt::poses::CPose2D()
 		);
 
-	private:
-
-		void deleteHolonomicObjects(); //!< Delete m_holonomicMethod
-		static void robotPoseExtrapolateIncrement(const mrpt::math::TTwist2D & globalVel, const double time_offset, mrpt::poses::CPose2D & out_pose);
-
-		struct TSentVelCmd
+		struct NAV_IMPEXP TSentVelCmd
 		{
 			int ptg_index; //!< 0-based index of used PTG
 			int ptg_alpha_index; //!< Path index for selected PTG
@@ -284,6 +279,10 @@ namespace mrpt
 		};
 
 		TSentVelCmd m_lastSentVelCmd;
+
+	private:
+		void deleteHolonomicObjects(); //!< Delete m_holonomicMethod
+		static void robotPoseExtrapolateIncrement(const mrpt::math::TTwist2D & globalVel, const double time_offset, mrpt::poses::CPose2D & out_pose);
 
 	}; // end of CAbstractPTGBasedReactive
   }
