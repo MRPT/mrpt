@@ -20,21 +20,6 @@ using namespace mrpt::nav;
 
 IMPLEMENTS_SERIALIZABLE( CLogFileRecord, CSerializable,mrpt::nav )
 
-
-/*---------------------------------------------------------------
-					Constructor
-  ---------------------------------------------------------------*/
-CLogFileRecord::CLogFileRecord() :
-    nPTGs     ( 0 )
-{
-	infoPerPTG.clear();
-	WS_Obstacles.clear();
-}
-
-CLogFileRecord::~CLogFileRecord()
-{
-}
-
 /*---------------------------------------------------------------
 						writeToStream
  ---------------------------------------------------------------*/
