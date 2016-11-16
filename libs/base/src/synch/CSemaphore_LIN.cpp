@@ -50,8 +50,8 @@ CSemaphore::CSemaphore(
 	MRPT_START
 
 	// Reserve memory for my data:
-    m_data.resize( sizeof(sem_private_struct) );
-    sem_private token = m_data.getAs<sem_private>();
+	m_data.resize( sizeof(sem_private_struct) );
+	sem_private token = m_data.getAsPtr<sem_private_struct>();
 
 	// Unnamed semaphore:
 	token->has_to_free_mem = true;  // sem_init() requires an already allocated "sem_t"
@@ -76,7 +76,7 @@ CSemaphore::~CSemaphore()
 {
 	if (m_data.alias_count()==1)
 	{
-		sem_private token = m_data.getAs<sem_private>();
+		sem_private token = m_data.getAsPtr<sem_private_struct>();
 		
 		// Unnamed sems: sem_destroy()
 		sem_destroy((sem_t *)token->semid);
@@ -95,7 +95,7 @@ bool CSemaphore::waitForSignal( unsigned int timelimit )
 {
 	MRPT_START
 
-    sem_private token = m_data.getAs<sem_private>();
+    sem_private token = m_data.getAsPtr<sem_private_struct>();
 
 
 	int rc;
@@ -147,7 +147,7 @@ void CSemaphore::release(unsigned int increaseCount )
 {
 	MRPT_START
 
-    sem_private token = m_data.getAs<sem_private>();
+    sem_private token = m_data.getAsPtr<sem_private_struct>();
 
     for (unsigned int i=0;i<increaseCount;i++)
     	if (sem_post(token->semid))
