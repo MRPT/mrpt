@@ -14,6 +14,8 @@
 #include <mrpt/nav/tpspace/CPTG_Holo_Blend.h>
 #include <mrpt/otherlibs/exprtk.hpp>
 
+PIMPL_IMPLEMENT(exprtk::expression<double>);
+
 using namespace mrpt::nav;
 
 CPTG_Holo_Blend::CPTG_Holo_Blend() :
@@ -21,20 +23,14 @@ CPTG_Holo_Blend::CPTG_Holo_Blend() :
 	V_MAX(-1.0),
 	W_MAX(-1.0),
 	turningRadiusReference(0.30),
-	curVelLocal(0,0,0),
-	PIMPL_CTOR_INIT(exprtk::expression<double>, m_expr_v),
-	PIMPL_CTOR_INIT(exprtk::expression<double>, m_expr_w),
-	PIMPL_CTOR_INIT(exprtk::expression<double>, m_expr_T_ramp)
+	curVelLocal(0,0,0)
 {
 	internal_init_exprtks();
 }
 
 CPTG_Holo_Blend::CPTG_Holo_Blend(const mrpt::utils::CConfigFileBase &cfg,const std::string &sSection) :
 	turningRadiusReference(0.30),
-	curVelLocal(0,0,0),
-	PIMPL_CTOR_INIT(exprtk::expression<double>, m_expr_v),
-	PIMPL_CTOR_INIT(exprtk::expression<double>, m_expr_w),
-	PIMPL_CTOR_INIT(exprtk::expression<double>, m_expr_T_ramp)
+	curVelLocal(0,0,0)
 {
 	internal_init_exprtks();
 	this->loadFromConfigFile(cfg,sSection);
@@ -42,9 +38,6 @@ CPTG_Holo_Blend::CPTG_Holo_Blend(const mrpt::utils::CConfigFileBase &cfg,const s
 
 CPTG_Holo_Blend::~CPTG_Holo_Blend()
 {
-	PIMPL_DESTROY(exprtk::expression<double>, m_expr_v);
-	PIMPL_DESTROY(exprtk::expression<double>, m_expr_w);
-	PIMPL_DESTROY(exprtk::expression<double>, m_expr_T_ramp);
 }
 
 void CPTG_Holo_Blend::internal_init_exprtks()
