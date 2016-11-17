@@ -28,12 +28,17 @@ IMPLEMENTS_SERIALIZABLE( CHolonomicFullEval, CAbstractHolonomicReactiveMethod,mr
 
 
 CHolonomicFullEval::CHolonomicFullEval(const mrpt::utils::CConfigFileBase *INI_FILE ) :
+	CAbstractHolonomicReactiveMethod("FULL_EVAL_CONFIG"),
 	m_last_selected_sector ( std::numeric_limits<unsigned int>::max() )
 {
 	if (INI_FILE!=NULL)
 		initialize( *INI_FILE );
 }
 
+void CHolonomicFullEval::initialize(const mrpt::utils::CConfigFileBase &INI_FILE)
+{
+	options.loadFromConfigFile(INI_FILE, getConfigFileSectionName());
+}
 
 void  CHolonomicFullEval::navigate(
 	const mrpt::math::TPoint2D &target,

@@ -19,12 +19,22 @@ using namespace mrpt::nav;
 IMPLEMENTS_VIRTUAL_SERIALIZABLE(CAbstractHolonomicReactiveMethod, CSerializable, mrpt::nav)
 
 
-CAbstractHolonomicReactiveMethod::CAbstractHolonomicReactiveMethod() :
-	m_associatedPTG(NULL)
+CAbstractHolonomicReactiveMethod::CAbstractHolonomicReactiveMethod(const std::string &defaultCfgSectionName) :
+	m_associatedPTG(NULL),
+	m_cfgSectionName(defaultCfgSectionName)
 {
 }
 CAbstractHolonomicReactiveMethod::~CAbstractHolonomicReactiveMethod()
 {
+}
+
+/** Defines the name of the section (Default: "FULL_EVAL_CONFIG") */
+void CAbstractHolonomicReactiveMethod::setConfigFileSectionName(const std::string &sectName)
+{
+	m_cfgSectionName = sectName;
+}
+std::string CAbstractHolonomicReactiveMethod::getConfigFileSectionName() const {
+	return m_cfgSectionName;
 }
 
 void CAbstractHolonomicReactiveMethod::setAssociatedPTG(mrpt::nav::CParameterizedTrajectoryGenerator *ptg)

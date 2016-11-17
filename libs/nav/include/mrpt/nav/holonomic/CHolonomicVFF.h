@@ -42,6 +42,7 @@ namespace mrpt
 	 * These are the optional parameters of the method which can be set by means of a configuration file passed to the constructor or to CHolonomicND::initialize (see also the field CHolonomicVFF::options).
 	 *
 	 * \code
+	 * # Section name can be changed via setConfigFileSectionName()
 	 * [VFF_CONFIG]
 	 * TARGET_SLOW_APPROACHING_DISTANCE = 0.10  // For stopping gradually
 	 * TARGET_ATTRACTIVE_FORCE          = 20    // Dimension-less (may have to be tuned depending on the density of obstacle sampling)
@@ -76,11 +77,7 @@ namespace mrpt
 							CHolonomicLogFileRecordPtr &logRecord,
 			const double    max_obstacle_dist ) MRPT_OVERRIDE;
 
-		/**  Initialize the parameters of the navigator from section "VFF_CONFIG" of a config file. \sa options */
-		void  initialize( const mrpt::utils::CConfigFileBase &INI_FILE ) MRPT_OVERRIDE
-		{
-			options.loadFromConfigFile(INI_FILE, std::string("VFF_CONFIG"));
-		}
+		void initialize(const mrpt::utils::CConfigFileBase &INI_FILE) MRPT_OVERRIDE; // See base class docs
 
 		/** Algorithm options */
 		struct NAV_IMPEXP TOptions : public mrpt::utils::CLoadableOptions

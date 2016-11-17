@@ -82,11 +82,13 @@ namespace mrpt
 			this->navigate(target,obs, maxRobotSpeed,desiredDirection,desiredSpeed,logRecord,max_obstacle_dist);
 		}
 
-		CAbstractHolonomicReactiveMethod();  //!< ctor
+		CAbstractHolonomicReactiveMethod(const std::string &defaultCfgSectionName);  //!< ctor
 		virtual ~CAbstractHolonomicReactiveMethod(); //!< virtual dtor
 
-		 /**  Initialize the parameters of the navigator */
-		 virtual void  initialize( const mrpt::utils::CConfigFileBase &INI_FILE  ) = 0;
+		/** Initialize the parameters of the navigator, reading from the default section name (see derived classes) or the one set via setConfigFileSectionName() */
+		virtual void  initialize( const mrpt::utils::CConfigFileBase &INI_FILE  ) = 0;
+		void setConfigFileSectionName(const std::string &sectName); //!< Defines the name of the section used in initialize()
+		std::string getConfigFileSectionName() const; //!< Gets the name of the section used in initialize()
 
 		/** Class factory from class name, e.g. `"CHolonomicVFF"`, etc.
 		  * \exception std::logic_error On invalid or missing parameters. */
@@ -96,6 +98,8 @@ namespace mrpt
 		mrpt::nav::CParameterizedTrajectoryGenerator * getAssociatedPTG() const; //!< Returns the pointer set by setAssociatedPTG()
 	protected:
 		mrpt::nav::CParameterizedTrajectoryGenerator *m_associatedPTG; //!< If applicable, this will contain the argument of the most recent call to setAssociatedPTG()
+	private:
+		std::string m_cfgSectionName; //!< used in setConfigFileSectionName(), initialize()
 	};
 	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CAbstractHolonomicReactiveMethod, mrpt::utils::CSerializable, NAV_IMPEXP )
 	  /** @} */

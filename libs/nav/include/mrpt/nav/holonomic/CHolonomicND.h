@@ -32,6 +32,7 @@ namespace mrpt
 	 * These are the optional parameters of the method which can be set by means of a configuration file passed to the constructor or to CHolonomicND::initialize() or directly in \a CHolonomicND::options
 	 *
 	 * \code
+	 * # Section name can be changed via setConfigFileSectionName()
 	 * [ND_CONFIG]
 	 * factorWeights=1.0 0.5 2.0 0.4
 	 * // 1: Free space
@@ -87,10 +88,7 @@ namespace mrpt
 		};
 
 		/**  Initialize the parameters of the navigator. */
-		void  initialize( const mrpt::utils::CConfigFileBase &INI_FILE ) MRPT_OVERRIDE
-		{
-			options.loadFromConfigFile(INI_FILE, std::string("ND_CONFIG"));
-		}
+		void  initialize(const mrpt::utils::CConfigFileBase &INI_FILE) MRPT_OVERRIDE;
 
 		/** Algorithm options */
 		struct NAV_IMPEXP TOptions : public mrpt::utils::CLoadableOptions

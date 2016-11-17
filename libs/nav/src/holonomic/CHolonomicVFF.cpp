@@ -24,11 +24,18 @@ IMPLEMENTS_SERIALIZABLE( CHolonomicVFF, CAbstractHolonomicReactiveMethod,mrpt::n
 /*---------------------------------------------------------------
 						initialize
   ---------------------------------------------------------------*/
-CHolonomicVFF::CHolonomicVFF(const mrpt::utils::CConfigFileBase *INI_FILE)
+CHolonomicVFF::CHolonomicVFF(const mrpt::utils::CConfigFileBase *INI_FILE) :
+	CAbstractHolonomicReactiveMethod("VFF_CONFIG")
 {
 	if (INI_FILE!=NULL)
 		initialize( *INI_FILE );
 }
+
+void CHolonomicVFF::initialize(const mrpt::utils::CConfigFileBase &INI_FILE)
+{
+	options.loadFromConfigFile(INI_FILE, getConfigFileSectionName());
+}
+
 
 /*---------------------------------------------------------------
 						navigate
