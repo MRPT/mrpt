@@ -53,8 +53,8 @@ namespace mrpt {
 	template <> pimpl<_TYPE>::pimpl() : ptr() {} \
 	template <> pimpl<_TYPE>::~pimpl() {} \
 	/* Movable */ \
-	pimpl<_TYPE>::pimpl(pimpl<_TYPE> && op) noexcept : ptr(std::move(op.ptr)) {} \
-	pimpl<_TYPE>& pimpl<_TYPE>::operator=(pimpl<_TYPE>&& op) noexcept { ptr = std::move(op.ptr); return *this; } \
+	template <> pimpl<_TYPE>::pimpl(pimpl<_TYPE> && op) noexcept : ptr(std::move(op.ptr)) {} \
+	template <> pimpl<_TYPE>& pimpl<_TYPE>::operator=(pimpl<_TYPE>&& op) noexcept { ptr = std::move(op.ptr); return *this; } \
 	/* Copyable: */ \
 	template <> pimpl<_TYPE>::pimpl(const pimpl<_TYPE> & op) { \
 		if (op.ptr.get() == ptr.get()) return; \
