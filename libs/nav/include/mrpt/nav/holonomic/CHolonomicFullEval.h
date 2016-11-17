@@ -27,6 +27,7 @@ namespace mrpt
 	 * These are the optional parameters of the method which can be set by means of a configuration file passed to the constructor or to CHolonomicFullEval::initialize() or directly in \a CHolonomicFullEval::options
 	 *
 	 * \code
+	 * # Section name can be changed via setConfigFileSectionName()
 	 * [FULL_EVAL_CONFIG]
 	 * factorWeights=1.0 1.0 1.0 0.05 1.0
 	 * // 0: Clearness in direction
@@ -61,11 +62,7 @@ namespace mrpt
 							CHolonomicLogFileRecordPtr &logRecord,
 			const double    max_obstacle_dist ) MRPT_OVERRIDE;
 
-		/** Initialize the parameters of the navigator */
-		void initialize( const mrpt::utils::CConfigFileBase &INI_FILE ) MRPT_OVERRIDE
-		{
-			options.loadFromConfigFile(INI_FILE, std::string("FULL_EVAL_CONFIG"));
-		}
+		void initialize(const mrpt::utils::CConfigFileBase &INI_FILE) MRPT_OVERRIDE; // See base class docs
 
 		/** Algorithm options */
 		struct NAV_IMPEXP TOptions : public mrpt::utils::CLoadableOptions

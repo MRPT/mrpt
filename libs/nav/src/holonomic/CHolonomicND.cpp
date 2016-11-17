@@ -28,12 +28,17 @@ IMPLEMENTS_SERIALIZABLE( CHolonomicND, CAbstractHolonomicReactiveMethod,mrpt::na
 *    configuration file, or default values if filename is set to NULL.
 */
 CHolonomicND::CHolonomicND(const mrpt::utils::CConfigFileBase *INI_FILE ) :
+	CAbstractHolonomicReactiveMethod("ND_CONFIG"),
 	m_last_selected_sector ( std::numeric_limits<unsigned int>::max() )
 {
 	if (INI_FILE!=NULL)
 		initialize( *INI_FILE );
 }
 
+void CHolonomicND::initialize(const mrpt::utils::CConfigFileBase &INI_FILE)
+{
+	options.loadFromConfigFile(INI_FILE, getConfigFileSectionName());
+}
 
 /*---------------------------------------------------------------
 						Navigate
