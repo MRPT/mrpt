@@ -23,6 +23,7 @@ using namespace mrpt::system;
 
 IMPLEMENTS_SERIALIZABLE(CPTG_Holo_Blend,CParameterizedTrajectoryGenerator,mrpt::nav)
 
+
 /*
 Closed-form PTG. Parameters:
 - Initial velocity vector (xip, yip)

@@ -45,7 +45,7 @@ CSemaphore::CSemaphore(
   MRPT_START
 
 	m_data.resize(sizeof(semaphore_t));
-	semaphore_t * sem = m_data.getAs<semaphore_t *>();
+	semaphore_t * sem = m_data.getAsPtr<semaphore_t>();
 
 	kern_return_t error = semaphore_create(mach_task_self(), sem, SYNC_POLICY_FIFO, initialCount);
 	if(error != KERN_SUCCESS)
@@ -61,7 +61,7 @@ CSemaphore::~CSemaphore()
 
   if (m_data.alias_count()==1)
   {
-	semaphore_t * sem = m_data.getAs<semaphore_t *>();
+	semaphore_t * sem = m_data.getAsPtr<semaphore_t>();
 	semaphore_destroy(mach_task_self(), *sem);
   }
 
@@ -73,7 +73,7 @@ bool CSemaphore::waitForSignal( unsigned int timelimit )
 {
   MRPT_START
 
-	semaphore_t * sem = m_data.getAs<semaphore_t *>();
+	semaphore_t * sem = m_data.getAsPtr<semaphore_t>();
 
 	if(timelimit == 0)
 	{
@@ -100,7 +100,7 @@ void CSemaphore::release(unsigned int increaseCount )
 {
   MRPT_START
 
-	semaphore_t * sem = m_data.getAs<semaphore_t *>();
+	semaphore_t * sem = m_data.getAsPtr<semaphore_t>();
 	for(unsigned int i=0; i<increaseCount; ++i)
 	{
 		kern_return_t result = semaphore_signal(*sem);

@@ -43,7 +43,7 @@ CCriticalSection::CCriticalSection( const char *name )
 	m_data.resize( sizeof( CRIT_SECT_LIN ) + 10 );
 
 	pthread_mutex_t cs = PTHREAD_MUTEX_INITIALIZER;
-	m_data.getAs<CRIT_SECT_LIN*>()->cs = cs;
+	m_data.getAsPtr<CRIT_SECT_LIN>()->cs = cs;
 
 	if (name!=NULL)
             m_name = name;
@@ -58,8 +58,8 @@ CCriticalSection::~CCriticalSection()
 	if (m_data.alias_count()==1)
 	{
 		// JL (mar/2011): Disabled to avoid weird errors when suddenly closing a pogram with running mrpt::gui windows.
-//		if ( m_data.getAs<CRIT_SECT_LIN*>()->currentThreadOwner != 0 )
-//			THROW_EXCEPTION(format("Destroying a critical section ('%s') currently locked by thread 0x%08lX", m_name.c_str(), m_data.getAs<CRIT_SECT_LIN*>()->currentThreadOwner ) );
+//		if ( m_data.getAsPtr<CRIT_SECT_LIN>()->currentThreadOwner != 0 )
+//			THROW_EXCEPTION(format("Destroying a critical section ('%s') currently locked by thread 0x%08lX", m_name.c_str(), m_data.getAsPtr<CRIT_SECT_LIN>()->currentThreadOwner ) );
 	}
 }
 
@@ -72,7 +72,7 @@ void  CCriticalSection::enter() const
 
 	if (m_debugOut)	m_debugOut->printf("[CCriticalSection:%s] Entering Thread ID:0x%08lX\n",m_name.c_str(),threadid );
 
-	CRIT_SECT_LIN *myCS = const_cast<CRIT_SECT_LIN *>( m_data.getAs<const CRIT_SECT_LIN*>() );
+	CRIT_SECT_LIN *myCS = const_cast<CRIT_SECT_LIN *>( m_data.getAsPtr<CRIT_SECT_LIN>() );
 
 	if( myCS->currentThreadOwner == threadid )
 		THROW_EXCEPTION(format("Detected recursive lock on critical section ('%s') by the same thread: 0x%08lX",m_name.c_str(),threadid))
@@ -95,7 +95,7 @@ void  CCriticalSection::leave() const
 
 	if (m_debugOut)	m_debugOut->printf("[CCriticalSection:%s] Leaving Thread ID:0x%08lX\n",m_name.c_str(),threadid );
 
-	CRIT_SECT_LIN *myCS = const_cast<CRIT_SECT_LIN *>( m_data.getAs<const CRIT_SECT_LIN*>() );
+	CRIT_SECT_LIN *myCS = const_cast<CRIT_SECT_LIN *>( m_data.getAsPtr<CRIT_SECT_LIN>() );
 
 	if ( myCS->currentThreadOwner!=threadid )
 		THROW_EXCEPTION(format("Trying to release a critical section  ('%s') locked by a different thread.",m_name.c_str()));

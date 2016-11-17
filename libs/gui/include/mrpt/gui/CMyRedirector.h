@@ -52,14 +52,14 @@ public:
 		bool also_cerr = false,
 		bool threadSafe = false,
 		bool also_to_cout_cerr = false ) : m_txt(obj), m_yieldApplication(yieldApplication), m_also_cerr(also_cerr),m_threadSafe(threadSafe), m_also_to_cout_cerr(also_to_cout_cerr)
-    {
-        if (bufferSize)
-        {
-            char *ptr = new char[bufferSize];
-            setp(ptr, ptr + bufferSize);
-        }
-        else
-            setp(0, 0);
+	{
+		if (bufferSize)
+		{
+			char *ptr = new char[bufferSize];
+			setp(ptr, ptr + bufferSize);
+		}
+		else
+			setp(0, 0);
 
 		// Redirect:
 		sbOld = std::cout.rdbuf();
@@ -70,19 +70,19 @@ public:
 			sbOldErr = std::cerr.rdbuf();
 			std::cerr.rdbuf( this );
 		}
-    }
-    virtual ~CMyRedirector()
-    {
-        sync();
+	}
+	virtual ~CMyRedirector()
+	{
+		sync();
 
 		// Restore normal output:
-        std::cout.rdbuf(sbOld);
+		std::cout.rdbuf(sbOld);
 
-        if (m_also_cerr)
+		if (m_also_cerr)
 			std::cerr.rdbuf(sbOldErr);
 
-        delete[] pbase();
-    }
+		delete[] pbase();
+	}
 
 	void flush()
 	{
@@ -115,8 +115,8 @@ public:
 	}
 
 	/** Writes all the stored strings to the text control (only for threadSafe mode).
-	    CALL THIS METHOD FROM THE MAIN THREAD!
-	    */
+		CALL THIS METHOD FROM THE MAIN THREAD!
+		*/
 	void dumpNow()
 	{
 		wxCriticalSectionLocker  lock(m_cs);
@@ -134,39 +134,39 @@ public:
 	}
 
 private:
-    int	overflow(int c)
-    {
-        sync();
+	int	overflow(int c)
+	{
+		sync();
 
-        if (c != EOF)
-        {
+		if (c != EOF)
+		{
 			wxCriticalSectionLocker  lock(m_cs);
-            if (pbase() == epptr())
-            {
-                std::string temp;
-                temp += char(c);
-                writeString(temp);
-            }
-            else
-                sputc(c);
-        }
+			if (pbase() == epptr())
+			{
+				std::string temp;
+				temp += char(c);
+				writeString(temp);
+			}
+			else
+				sputc(c);
+		}
 
-        return 0;
-    }
+		return 0;
+	}
 
-    int	sync()
-    {
+	int	sync()
+	{
 		wxCriticalSectionLocker  lock(m_cs);
 
-        if (pbase() != pptr())
-        {
-            int len = int(pptr() - pbase());
-            std::string temp(pbase(), len);
-            writeString(temp);
-            setp(pbase(), epptr());
-        }
-        return 0;
-    }
+		if (pbase() != pptr())
+		{
+			int len = int(pptr() - pbase());
+			std::string temp(pbase(), len);
+			writeString(temp);
+			setp(pbase(), epptr());
+		}
+		return 0;
+	}
 };
 
 #endif
