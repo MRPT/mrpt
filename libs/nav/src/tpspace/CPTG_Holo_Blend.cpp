@@ -339,7 +339,7 @@ mrpt::kinematics::CVehicleVelCmdPtr CPTG_Holo_Blend::directionToMotionCommand( u
 	mrpt::kinematics::CVehicleVelCmd_Holo * cmd = new mrpt::kinematics::CVehicleVelCmd_Holo();
 	cmd->vel = internal_get_v(dir_local);
 	cmd->dir_local = dir_local;
-	cmd->ramp_time = internal_get_w(dir_local);
+	cmd->ramp_time = internal_get_T_ramp(dir_local);
 	cmd->rot_speed = mrpt::utils::signWithZero(dir_local) * internal_get_w(dir_local);
 
 	return mrpt::kinematics::CVehicleVelCmdPtr(cmd);
