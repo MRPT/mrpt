@@ -5452,7 +5452,7 @@ namespace exprtk
          : value_(v)
          {
             rp_.n0_c = std::make_pair<bool,std::size_t>(true,0);
-            rp_.n1_c = std::make_pair<bool,std::size_t>(true,v.size() - 1);
+            rp_.n1_c = std::make_pair(true, size_t(v.size() - 1));
             rp_.cache.first  = rp_.n0_c.second;
             rp_.cache.second = rp_.n1_c.second;
          }
@@ -7361,7 +7361,7 @@ namespace exprtk
          : value_(&v)
          {
             rp_.n0_c = std::make_pair<bool,std::size_t>(true,0);
-            rp_.n1_c = std::make_pair<bool,std::size_t>(true,v.size() - 1);
+            rp_.n1_c = std::make_pair(true, size_t(v.size() - 1));
             rp_.cache.first  = rp_.n0_c.second;
             rp_.cache.second = rp_.n1_c.second;
          }
