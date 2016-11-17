@@ -11,6 +11,8 @@
 #include <mrpt/nav/tpspace/CParameterizedTrajectoryGenerator.h>
 #include <mrpt/utils/pimpl.h>
 
+PIMPL_FORWARD_DECLARATION(namespace exprtk { template <typename T> class expression; })
+
 namespace mrpt
 {
   namespace nav
