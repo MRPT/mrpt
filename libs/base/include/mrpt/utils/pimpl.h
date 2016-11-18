@@ -10,6 +10,7 @@
 #pragma once
 
 #include <mrpt/config.h>
+#include <mrpt/utils/mrpt_macros.h>
 #include <memory>
 
 /** \file Macros to help implementing the PIMPL idiom and make all 
@@ -26,7 +27,7 @@ namespace mrpt {
 			// This should be only parsed by MRPT sources (which since 1.5.0 require C++11). 
 			// It does not matter if user code, using C++98, does not see this declaration, since PIMPL 
 			// are always "private" or "protected".
-#if MRPT_HAS_CXX11
+#if MRPT_HAS_UNIQUE_PTR
 			std::unique_ptr<T> ptr;
 
 			// All these must be defined in a .cpp file with PIMPL_DEFINE(_TYPE), after including the 

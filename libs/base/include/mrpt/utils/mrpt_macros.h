@@ -72,6 +72,12 @@
 #	define MRPT_NO_THROWS  throw()
 #endif
 
+/** C++11 unique_ptr<> */
+#if MRPT_CHECK_VISUALC_VERSION(10) || (MRPT_CHECK_GCC_VERSION(4,4) || defined(__clang__)) && MRPT_HAS_CXX11)
+#	define MRPT_HAS_UNIQUE_PTR  1
+#else
+#	define MRPT_HAS_UNIQUE_PTR  0
+#endif
 
 // A cross-compiler definition for "deprecated"-warnings
 /** Usage: MRPT_DEPRECATED("Use XX instead") void myFunc(double); */
