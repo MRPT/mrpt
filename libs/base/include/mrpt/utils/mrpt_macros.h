@@ -45,7 +45,7 @@
 
 
 /** Does the compiler support C++11? */
-#if (__cplusplus>199711L || defined(__GXX_EXPERIMENTAL_CXX0X__) || MRPT_CHECK_VISUALC_VERSION(11) )
+#if (__cplusplus>199711L || MRPT_CHECK_VISUALC_VERSION(11) )
 #	define MRPT_HAS_CXX11  1
 #else
 #	define MRPT_HAS_CXX11  0
@@ -73,7 +73,7 @@
 #endif
 
 /** C++11 unique_ptr<> */
-#if MRPT_CHECK_VISUALC_VERSION(10) || (MRPT_CHECK_GCC_VERSION(4,4) || defined(__clang__)) && MRPT_HAS_CXX11)
+#if MRPT_CHECK_VISUALC_VERSION(10) || (MRPT_CHECK_GCC_VERSION(4,4) || defined(__clang__)) && (MRPT_HAS_CXX11 || defined(__GXX_EXPERIMENTAL_CXX0X__))
 #	define MRPT_HAS_UNIQUE_PTR  1
 #else
 #	define MRPT_HAS_UNIQUE_PTR  0
