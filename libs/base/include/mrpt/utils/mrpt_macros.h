@@ -45,7 +45,7 @@
 
 
 /** Does the compiler support C++11? */
-#if (__cplusplus>199711L || MRPT_CHECK_VISUALC_VERSION(11) )
+#if (__cplusplus>199711L || defined(__GXX_EXPERIMENTAL_CXX0X__) || MRPT_CHECK_VISUALC_VERSION(11) )
 #	define MRPT_HAS_CXX11  1
 #else
 #	define MRPT_HAS_CXX11  0
