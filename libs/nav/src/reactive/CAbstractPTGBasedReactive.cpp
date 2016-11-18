@@ -224,7 +224,7 @@ void CAbstractPTGBasedReactive::setHolonomicMethod(const std::string & method, c
 		m_holonomicMethod[i] = CAbstractHolonomicReactiveMethod::Create(method);
 		if (!m_holonomicMethod[i])
 			THROW_EXCEPTION_CUSTOM_MSG1("Non-registered holonomic method className=`%s`", method.c_str());
-		
+
 		m_holonomicMethod[i]->setAssociatedPTG(this->getPTG(i));
 		m_holonomicMethod[i]->initialize(ini); // load params
 	}
@@ -368,7 +368,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 			THolonomicMovement &holonomicMovement = holonomicMovements[indexPTG];
 
 			ptg_eval_target_build_obstacles(
-				ptg, indexPTG, 
+				ptg, indexPTG,
 				relTarget, rel_pose_PTG_origin_wrt_sense,
 				ipf, holonomicMovement,
 				newLogRec, false /* this is a regular PTG reactive case */, m_holonomicMethod[indexPTG]);
@@ -410,7 +410,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 					ptg, m_lastSentVelCmd.ptg_index,
 					relTarget_NOP, rel_pose_PTG_origin_wrt_sense_NOP,
 					ipf_NOP, holonomicMovements[nPTGs],
-					newLogRec, true /* this is the PTG continuation (NOP) choice */, 
+					newLogRec, true /* this is the PTG continuation (NOP) choice */,
 					m_holonomicMethod[m_lastSentVelCmd.ptg_index], rel_cur_pose_wrt_last_vel_cmd_NOP);
 
 			} // end valid interpolated origin pose
@@ -613,9 +613,9 @@ void CAbstractPTGBasedReactive::STEP5_PTGEvaluator(
 	// ----------------------------------------------------------------------
 	double factor1 = in_TPObstacles[kDirection];
 
-	// Special case for NOP motion cmd: 
+	// Special case for NOP motion cmd:
 	// consider only the empty space *after* the current robot pose, which is not at the origin.
-	if (this_is_PTG_continuation && 
+	if (this_is_PTG_continuation &&
 		( rel_cur_pose_wrt_last_vel_cmd_NOP.x()!=0 || rel_cur_pose_wrt_last_vel_cmd_NOP.y()!=0) // edge case: if the rel pose is (0,0), the evaluation is exactly as in an no-NOP case.
 		)
 	{
@@ -876,11 +876,11 @@ bool CAbstractPTGBasedReactive::impl_waypoint_is_reachable(const mrpt::math::TPo
 		const std::vector<double> & tp_obs = m_infoPerPTG[i].TP_Obstacles; // normalized distances
 		if (tp_obs.size() != ptg->getPathCount() )
 			continue; // May be this PTG has not been used so far? (Target out of domain,...)
-		
+
 		int wp_k;
 		double wp_norm_d;
 		bool is_into_domain = ptg->inverseMap_WS2TP(wp.x,wp.y,  wp_k, wp_norm_d);
-		if (!is_into_domain) 
+		if (!is_into_domain)
 			continue;
 
 		ASSERT_(wp_k<int(tp_obs.size()));
@@ -1031,6 +1031,7 @@ void CAbstractPTGBasedReactive::ptg_eval_target_build_obstacles(
 
 			// Security: Scale down the velocity when heading towards obstacles,
 			//  such that it's assured that we never go thru an obstacle!
+			MRPT_TODO("Take into account the future robot pose after NOP motion iterations to slow down accordingly *now*");
 			const int kDirection = static_cast<int>(holonomicMovement.PTG->alpha2index(holonomicMovement.direction));
 			const double obsFreeNormalizedDistance = ipf.TP_Obstacles[kDirection];
 			double velScale = 1.0;
