@@ -14,7 +14,10 @@
 #include "navlog_viewer_GUI_designMain.h"
 #include <wx/image.h>
 //*)
-
+#include <wx/cmdline.h>
+#ifdef MRPT_OS_LINUX
+#include <dlfcn.h>
+#endif
 #include <mrpt/gui/WxUtils.h>
 
 IMPLEMENT_APP(navlog_viewer_GUI_designApp)
@@ -28,23 +31,38 @@ bool navlog_viewer_GUI_designApp::OnInit()
 	//  the default wxWidgets settings. (JL @ Sep-2009)
 	wxSetlocale(LC_NUMERIC,wxString(wxT("C")));
 
-    // Process cmd line arguments (for the case of opening a file):
-    if (argc>1)
-        global_fileToOpen = wxString(wxApp::argv[1]).mb_str();
+	static const wxCmdLineEntryDesc cmdLineDesc[] =
+	{
+#ifdef MRPT_OS_LINUX
+		{wxCMD_LINE_OPTION, "l", "load", "load a library", wxCMD_LINE_VAL_STRING, 0},
+#endif
+		{wxCMD_LINE_PARAM, nullptr, nullptr, "Input File", wxCMD_LINE_VAL_STRING, wxCMD_LINE_PARAM_OPTIONAL},
+		{wxCMD_LINE_NONE, nullptr, nullptr, nullptr, wxCMD_LINE_VAL_NONE, 0}
+	};
 
-    //(*AppInitialize
-    bool wxsOK = true;
-    wxInitAllImageHandlers();
-    if ( wxsOK )
-    {
-	navlog_viewer_GUI_designDialog* Frame = new navlog_viewer_GUI_designDialog (NULL);
-	Frame->Show();
-	SetTopWindow(Frame);
-    wxsOK = true;
-    }
-    //*)
-    return wxsOK;
+	wxCmdLineParser parser(cmdLineDesc, argc, argv);
+	parser.Parse(true);
+#ifdef MRPT_OS_LINUX
+        wxString libraryPath;
+        if(parser.Found("l", &libraryPath))
+		dlopen(libraryPath.mb_str(), RTLD_LAZY);
+#endif
+	if(parser.GetParamCount() == 1)
+		global_fileToOpen = parser.GetParam().mb_str();
 
+
+	//(*AppInitialize
+	bool wxsOK = true;
+	wxInitAllImageHandlers();
+	if ( wxsOK )
+	{
+		navlog_viewer_GUI_designDialog* Frame = new navlog_viewer_GUI_designDialog (NULL);
+		Frame->Show();
+		SetTopWindow(Frame);
+		wxsOK = true;
+	}
+	//*)
+	return wxsOK;
 }
 
 
