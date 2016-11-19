@@ -785,19 +785,19 @@ bool CDisplayWindow_WXAPP::OnInit()
 	//  the default wxWidgets settings. (JL @ Sep-2009)
 	wxSetlocale(LC_NUMERIC, wxString(wxT("C")) );
 
-    wxInitAllImageHandlers();
+	wxInitAllImageHandlers();
 
-    //cout << "[wxApp::OnInit] wxApplication OnInit called." << endl;
+	//cout << "[wxApp::OnInit] wxApplication OnInit called." << endl;
 
-    // Create a dummy frame:
-    WxSubsystem::CWXMainFrame* Frame = new WxSubsystem::CWXMainFrame(0);
-    Frame->Hide();
+	// Create a dummy frame:
+	WxSubsystem::CWXMainFrame* Frame = new WxSubsystem::CWXMainFrame(0);
+	Frame->Hide();
 
-    // We are ready!!
-    //cout << "[wxMainThread] Signaling semaphore." << endl;
-    WxSubsystem::GetWxMainThreadInstance().m_semWxMainThreadReady.release();
+	// We are ready!!
+	//cout << "[wxMainThread] Signaling semaphore." << endl;
+	WxSubsystem::GetWxMainThreadInstance().m_semWxMainThreadReady.release();
 
-    return true;
+	return true;
 }
 
 // This will be called when all the windows / frames are closed.
