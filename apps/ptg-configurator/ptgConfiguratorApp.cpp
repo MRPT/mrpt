@@ -13,6 +13,10 @@
 #include "ptgConfiguratorMain.h"
 #include <wx/image.h>
 //*)
+#include <wx/cmdline.h>
+#ifdef MRPT_OS_LINUX
+#include <dlfcn.h>
+#endif
 
 IMPLEMENT_APP(ptgConfiguratorApp)
 
@@ -22,17 +26,32 @@ bool ptgConfiguratorApp::OnInit()
 	//  if we want numbers to use "." in all countries. The App::OnInit() is a perfect place to undo
 	//  the default wxWidgets settings. (JL @ Sep-2009)
 	wxSetlocale(LC_NUMERIC,wxString(wxT("C")));
+	static const wxCmdLineEntryDesc cmdLineDesc[] =
+	{
+#ifdef MRPT_OS_LINUX
+		{wxCMD_LINE_OPTION, "l", "load", "load a library", wxCMD_LINE_VAL_STRING, 0},
+#endif
+		{wxCMD_LINE_NONE, nullptr, nullptr, nullptr, wxCMD_LINE_VAL_NONE, 0}
+	};
 
-    //(*AppInitialize
-    bool wxsOK = true;
-    wxInitAllImageHandlers();
-    if ( wxsOK )
-    {
-    	ptgConfiguratorframe* Frame = new ptgConfiguratorframe(0);
-    	Frame->Show();
-    	SetTopWindow(Frame);
-    }
-    //*)
-    return wxsOK;
+	wxCmdLineParser parser(cmdLineDesc, argc, argv);
+	parser.Parse(true);
+#ifdef MRPT_OS_LINUX
+        wxString libraryPath;
+        if(parser.Found("l", &libraryPath))
+		dlopen(libraryPath.mb_str(), RTLD_LAZY);
+#endif
+
+	//(*AppInitialize
+	bool wxsOK = true;
+	wxInitAllImageHandlers();
+	if ( wxsOK )
+	{
+		ptgConfiguratorframe* Frame = new ptgConfiguratorframe(0);
+		Frame->Show();
+		SetTopWindow(Frame);
+	}
+	//*)
+	return wxsOK;
 
 }
