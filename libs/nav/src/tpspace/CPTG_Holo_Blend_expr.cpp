@@ -12,6 +12,7 @@
 
 #include "nav-precomp.h" // Precomp header
 #include <mrpt/nav/tpspace/CPTG_Holo_Blend.h>
+#define exprtk_disable_string_capabilities   // Workaround a bug in Ubuntu precise's GCC+libstdc++
 #include <mrpt/otherlibs/exprtk.hpp>
 
 PIMPL_IMPLEMENT(exprtk::expression<double>);
