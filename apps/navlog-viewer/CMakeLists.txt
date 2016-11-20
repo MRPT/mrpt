@@ -32,7 +32,10 @@ IF(CMAKE_MRPT_HAS_WXWIDGETS)
 
 	SET(TMP_TARGET_NAME "navlog-viewer")
 
-	
+	# -ldl required by the plugin load mechanism of this app:
+	IF(UNIX)
+	        TARGET_LINK_LIBRARIES(${TMP_TARGET_NAME} dl)
+	ENDIF()
 
 	# Add the required libraries for linking:
 	TARGET_LINK_LIBRARIES(${TMP_TARGET_NAME} ${wxWidgets_LIBRARIES} )
@@ -40,9 +43,9 @@ IF(CMAKE_MRPT_HAS_WXWIDGETS)
 
 	TARGET_LINK_LIBRARIES(${TMP_TARGET_NAME} mrptwxthings)
 	ADD_DEPENDENCIES(${TMP_TARGET_NAME} mrptwxthings)
-	
+
 	# Dependencies on MRPT libraries:
-	#  Just mention the top-level dependency, the rest will be detected automatically, 
+	#  Just mention the top-level dependency, the rest will be detected automatically,
 	#  and all the needed #include<> dirs added (see the script DeclareAppDependencies.cmake for further details)
 	DeclareAppDependencies(${TMP_TARGET_NAME} mrpt-gui mrpt-nav)
 
@@ -56,4 +59,3 @@ ELSE()
 	# ----------------------------------------------------------------------------------
     MESSAGE(STATUS "wxWidgets not found!: **This target will not be included in the Makefiles**")
 ENDIF()
-
