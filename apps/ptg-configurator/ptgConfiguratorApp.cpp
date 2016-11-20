@@ -38,7 +38,7 @@ bool ptgConfiguratorApp::OnInit()
 	parser.Parse(true);
 #ifdef MRPT_OS_LINUX
         wxString libraryPath;
-        if(parser.Found("l", &libraryPath))
+        if(parser.Found(wxT_2("l"), &libraryPath))
 		dlopen(libraryPath.mb_str(), RTLD_LAZY);
 #endif
 
