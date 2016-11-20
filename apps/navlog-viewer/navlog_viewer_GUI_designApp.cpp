@@ -34,7 +34,11 @@ bool navlog_viewer_GUI_designApp::OnInit()
 	static const wxCmdLineEntryDesc cmdLineDesc[] =
 	{
 #ifdef MRPT_OS_LINUX
+#	if wxCHECK_VERSION(2,9,0)
+		{wxCMD_LINE_OPTION, "l", "load", "load a library", wxCMD_LINE_VAL_STRING, 0},
+#	else
 		{wxCMD_LINE_OPTION, wxT("l"), wxT("load"), wxT("load a library"), wxCMD_LINE_VAL_STRING, 0},
+#	endif
 #endif
 		{wxCMD_LINE_PARAM, nullptr, nullptr, "Input File", wxCMD_LINE_VAL_STRING, wxCMD_LINE_PARAM_OPTIONAL},
 		{wxCMD_LINE_NONE, nullptr, nullptr, nullptr, wxCMD_LINE_VAL_NONE, 0}
