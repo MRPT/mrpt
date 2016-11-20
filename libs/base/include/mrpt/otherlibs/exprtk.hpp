@@ -5422,6 +5422,7 @@ namespace exprtk
          virtual const range_t& range_ref() const = 0;
       };
 
+      #ifndef exprtk_disable_string_capabilities
       template <typename T>
       class string_base_node
       {
@@ -5452,7 +5453,7 @@ namespace exprtk
          : value_(v)
          {
             rp_.n0_c = std::make_pair<bool,std::size_t>(true,0);
-            rp_.n1_c = std::make_pair(true, size_t(v.size() - 1));
+            rp_.n1_c = std::make_pair<bool,std::size_t>(true,v.size() - 1);
             rp_.cache.first  = rp_.n0_c.second;
             rp_.cache.second = rp_.n1_c.second;
          }
@@ -5505,6 +5506,7 @@ namespace exprtk
          const std::string value_;
          range_t rp_;
       };
+      #endif
 
       template <typename T>
       class unary_node : public expression_node<T>
@@ -7361,7 +7363,7 @@ namespace exprtk
          : value_(&v)
          {
             rp_.n0_c = std::make_pair<bool,std::size_t>(true,0);
-            rp_.n1_c = std::make_pair(true, size_t(v.size() - 1));
+            rp_.n1_c = std::make_pair<bool,std::size_t>(true,v.size() - 1);
             rp_.cache.first  = rp_.n0_c.second;
             rp_.cache.second = rp_.n1_c.second;
          }
@@ -11174,6 +11176,7 @@ namespace exprtk
                   ts.data = vi->vds().data();
                   ts.type = type_store_t::e_vector;
                }
+               #ifndef exprtk_disable_string_capabilities
                else if (is_generally_string_node(arg_list_[i]))
                {
                   string_base_node<T>* sbn = reinterpret_cast<string_base_node<T>*>(0);
@@ -11209,6 +11212,7 @@ namespace exprtk
                   else
                      range_list_[i].range = &(ri->range_ref());
                }
+               #endif
                else if (is_variable_node(arg_list_[i]))
                {
                   variable_node_ptr_t var = variable_node_ptr_t(0);
@@ -11282,10 +11286,11 @@ namespace exprtk
                      type_store_t& ts = typestore_list_[i];
 
                      ts.size = rp.cache_size();
-
+                     #ifndef exprtk_disable_string_capabilities
                      if (ts.type == type_store_t::e_string)
                         ts.data = const_cast<char*>(rdt.str_node->base()) + rp.cache.first;
                      else
+                     #endif
                         ts.data = static_cast<char*>(rdt.data) + (rp.cache.first * rdt.type_size);
                   }
                   else
@@ -11307,6 +11312,7 @@ namespace exprtk
          mutable range_list_t range_list_;
       };
 
+      #ifndef exprtk_disable_string_capabilities
       template <typename T, typename StringFunction>
       class string_function_node : public generic_function_node<T,StringFunction>,
                                    public string_base_node<T>,
@@ -11390,6 +11396,7 @@ namespace exprtk
          mutable range_t     range_;
          mutable std::string ret_string_;
       };
+      #endif
 
       template <typename T, typename GenericFunction>
       class multimode_genfunction_node : public generic_function_node<T,GenericFunction>
@@ -11434,6 +11441,7 @@ namespace exprtk
          std::size_t param_seq_index_;
       };
 
+      #ifndef exprtk_disable_string_capabilities
       template <typename T, typename StringFunction>
       class multimode_strfunction_node : public string_function_node<T,StringFunction>
       {
@@ -11482,6 +11490,7 @@ namespace exprtk
 
          std::size_t param_seq_index_;
       };
+      #endif
 
       class return_exception
       {};
@@ -22776,6 +22785,7 @@ namespace exprtk
          return result;
       }
 
+      #ifndef exprtk_disable_string_capabilities
       inline expression_node_ptr parse_string_function_call(igeneric_function<T>* function, const std::string& function_name)
       {
          std::vector<expression_node_ptr> arg_list;
@@ -22856,6 +22866,7 @@ namespace exprtk
 
          return result;
       }
+      #endif
 
       template <typename Type, std::size_t NumberOfParameters>
       struct parse_special_function_impl
@@ -24235,6 +24246,7 @@ namespace exprtk
             }
          }
 
+         #ifndef exprtk_disable_string_capabilities
          {
             // Are we dealing with a vararg string returning function?
             igeneric_function<T>* string_function = symtab_store_.get_string_function(symbol);
@@ -24259,6 +24271,7 @@ namespace exprtk
                }
             }
          }
+         #endif
 
          // Are we dealing with a vector?
          if (symtab_store_.is_vector(symbol))
@@ -26373,6 +26386,7 @@ namespace exprtk
             }
          }
 
+         #ifndef exprtk_disable_string_capabilities
          inline expression_node_ptr string_function_call(igeneric_function_t* gf,
                                                          std::vector<expression_node_ptr>& arg_list,
                                                          const std::size_t& param_seq_index = std::numeric_limits<std::size_t>::max())
@@ -26425,6 +26439,7 @@ namespace exprtk
                return error_node();
             }
          }
+         #endif
 
          inline expression_node_ptr return_call(std::vector<expression_node_ptr>& arg_list)
          {
