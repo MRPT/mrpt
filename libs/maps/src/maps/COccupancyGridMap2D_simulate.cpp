@@ -285,5 +285,7 @@ void COccupancyGridMap2D::laserScanSimulatorWithUncertainty(
 		out_results.scanWithUncert.rangeScan.setScanRangeValidity(i, true);
 	}
 
+	// Add minimum uncertainty: grid cell resolution:
+	out_results.scanWithUncert.rangesCovar.diagonal().array() += 0.5*resolution*resolution;
 }
 
