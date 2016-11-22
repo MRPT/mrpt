@@ -284,6 +284,8 @@ namespace mrpt
 		void deleteHolonomicObjects(); //!< Delete m_holonomicMethod
 		static void robotPoseExtrapolateIncrement(const mrpt::math::TTwist2D & globalVel, const double time_offset, mrpt::poses::CPose2D & out_pose);
 
+		mrpt::math::TPose2D m_lastTarget; //!< To detect changes
+
 	}; // end of CAbstractPTGBasedReactive
   }
 }
