@@ -241,6 +241,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 	// Security tests:
 	if (m_closing_navigator) return;  // Are we closing in the main thread?
 	if (!m_init_done) THROW_EXCEPTION("Have you called loadConfigFile() before?")
+	ASSERT_(m_navigationParams)
 
 	const size_t nPTGs = this->getPTG_count();
 
@@ -280,6 +281,10 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 		// Compute target location relative to current robot pose:
 		// ---------------------------------------------------------------------
 		const TPose2D relTarget = TPose2D(CPose2D(m_navigationParams->target) - CPose2D(m_curPoseVel.pose));
+
+		// Detect changes in target since last iteration (for NOP):
+		const bool target_changed_since_last_iteration = m_navigationParams->target != m_lastTarget;
+		m_lastTarget = m_navigationParams->target;
 
 		STEP1_InitPTGs(); // Will only recompute if "m_PTGsMustBeReInitialized==true"
 
@@ -378,6 +383,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 		// =========
 		// This approach is only possible if:
 		const bool can_do_nop_motion = (m_lastSentVelCmd.isValid() &&
+			!target_changed_since_last_iteration &&
 			getPTG(m_lastSentVelCmd.ptg_index)->supportVelCmdNOP()) &&
 			mrpt::system::timeDifference(m_lastSentVelCmd.tim_send_cmd_vel, tim_start_iteration) < getPTG(m_lastSentVelCmd.ptg_index)->maxTimeInVelCmdNOP(m_lastSentVelCmd.ptg_alpha_index);
 
@@ -1031,9 +1037,16 @@ void CAbstractPTGBasedReactive::ptg_eval_target_build_obstacles(
 
 			// Security: Scale down the velocity when heading towards obstacles,
 			//  such that it's assured that we never go thru an obstacle!
-			MRPT_TODO("Take into account the future robot pose after NOP motion iterations to slow down accordingly *now*");
 			const int kDirection = static_cast<int>(holonomicMovement.PTG->alpha2index(holonomicMovement.direction));
-			const double obsFreeNormalizedDistance = ipf.TP_Obstacles[kDirection];
+			double obsFreeNormalizedDistance = ipf.TP_Obstacles[kDirection];
+
+			// Take into account the future robot pose after NOP motion iterations to slow down accordingly *now*
+			if (ptg->supportVelCmdNOP()) {
+				const double v = ::hypot(m_curPoseVel.velLocal.vx, m_curPoseVel.velLocal.vy);
+				const double d = v * ptg->maxTimeInVelCmdNOP(kDirection);
+				obsFreeNormalizedDistance = std::max(0.05, obsFreeNormalizedDistance - d);
+			}
+
 			double velScale = 1.0;
 			ASSERT_(secureDistanceEnd > secureDistanceStart);
 			if (obsFreeNormalizedDistance < secureDistanceEnd)
