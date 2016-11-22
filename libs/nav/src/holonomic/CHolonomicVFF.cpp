@@ -92,8 +92,11 @@ void  CHolonomicVFF::navigate(
 
 	// Speed control: Reduction factors
 	// ---------------------------------------------
-	const double targetNearnessFactor = std::min( 1.0, target.norm()/(options.TARGET_SLOW_APPROACHING_DISTANCE));
-	desiredSpeed = maxRobotSpeed * std::min(obstacleNearnessFactor, targetNearnessFactor);
+	if (m_enableApproachTargetSlowDown)
+	{
+		const double targetNearnessFactor = std::min(1.0, target.norm() / (options.TARGET_SLOW_APPROACHING_DISTANCE));
+		desiredSpeed = maxRobotSpeed * std::min(obstacleNearnessFactor, targetNearnessFactor);
+	}
 }
 
 void  CHolonomicVFF::writeToStream(mrpt::utils::CStream &out,int *version) const

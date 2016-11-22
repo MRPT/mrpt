@@ -256,7 +256,10 @@ void  CHolonomicFullEval::navigate(
 
 		// Speed control: Reduction factors
 		// ---------------------------------------------
-		const double targetNearnessFactor = std::min( 1.0, target.norm()/(options.TARGET_SLOW_APPROACHING_DISTANCE));
+		const double targetNearnessFactor = m_enableApproachTargetSlowDown ?
+			std::min(1.0, target.norm() / (options.TARGET_SLOW_APPROACHING_DISTANCE))
+			:
+			1.0;
 		const double riskFactor = 1.0;
 		desiredSpeed = maxRobotSpeed * std::min(riskFactor,targetNearnessFactor);
 	}
