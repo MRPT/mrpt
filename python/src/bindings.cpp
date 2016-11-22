@@ -102,8 +102,13 @@ BOOST_PYTHON_MODULE(pymrpt)
 ////////////
     export_slam();
     
+///////////
+// kinematics //
+///////////
+	export_kinematics();
+
 ////////////
-//  slam  //
+//  pnp  //
 ////////////
     export_pnp();
 

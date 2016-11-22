@@ -274,8 +274,6 @@ void export_obs()
 
     // CActionCollection
     {
-        MAKE_PTR(CActionCollection)
-
         class_<CActionCollection>("CActionCollection", init<>())
             .def("clear", &CActionCollection::clear, "Erase all actions from the list.")
             .def("insert", &CActionCollection::insert, "Add a new object to the list.")

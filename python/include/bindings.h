@@ -115,6 +115,7 @@ void export_poses_stl();
 void export_system();
 void export_utils();
 void export_utils_stl();
+void export_kinematics();
 void export_bayes();
 void export_pnp();
 
