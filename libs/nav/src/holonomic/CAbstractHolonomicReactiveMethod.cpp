@@ -21,6 +21,7 @@ IMPLEMENTS_VIRTUAL_SERIALIZABLE(CAbstractHolonomicReactiveMethod, CSerializable,
 
 CAbstractHolonomicReactiveMethod::CAbstractHolonomicReactiveMethod(const std::string &defaultCfgSectionName) :
 	m_associatedPTG(NULL),
+	m_enableApproachTargetSlowDown(true),
 	m_cfgSectionName(defaultCfgSectionName)
 {
 }

@@ -96,8 +96,12 @@ namespace mrpt
 
 		void setAssociatedPTG(mrpt::nav::CParameterizedTrajectoryGenerator *ptg); //!< Optionally, sets the associated PTG, just in case a derived class requires this info (not required for methods where the robot kinematics are totally abstracted)
 		mrpt::nav::CParameterizedTrajectoryGenerator * getAssociatedPTG() const; //!< Returns the pointer set by setAssociatedPTG()
+
+		void enableApproachTargetSlowDown(bool enable) { m_enableApproachTargetSlowDown = enable; }
 	protected:
 		mrpt::nav::CParameterizedTrajectoryGenerator *m_associatedPTG; //!< If applicable, this will contain the argument of the most recent call to setAssociatedPTG()
+		bool  m_enableApproachTargetSlowDown; //!< Whether to decrease speed when approaching target
+
 	private:
 		std::string m_cfgSectionName; //!< used in setConfigFileSectionName(), initialize()
 	};

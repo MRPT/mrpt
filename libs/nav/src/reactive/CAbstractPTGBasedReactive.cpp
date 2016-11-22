@@ -1018,6 +1018,8 @@ void CAbstractPTGBasedReactive::ptg_eval_target_build_obstacles(
 			tictac.Tic();
 
 			ASSERT_(holoMethod);
+			holoMethod->enableApproachTargetSlowDown( !m_navigationParams->targetIsIntermediaryWaypoint );
+
 			holoMethod->navigate(
 					ipf.TP_Target,     // Normalized [0,1]
 					ipf.TP_Obstacles,  // Normalized [0,1]
@@ -1026,8 +1028,6 @@ void CAbstractPTGBasedReactive::ptg_eval_target_build_obstacles(
 					holonomicMovement.speed,
 					HLFR,
 					1.0 /* max obstacle dist*/);
-
-			MRPT_TODO("Honor targetIsIntermediaryWaypoint wrt approaching slow down");
 
 			// Security: Scale down the velocity when heading towards obstacles,
 			//  such that it's assured that we never go thru an obstacle!

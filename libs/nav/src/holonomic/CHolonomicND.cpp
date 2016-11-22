@@ -96,7 +96,11 @@ void  CHolonomicND::navigate(
 
 		// Speed control: Reduction factors
 		// ---------------------------------------------
-		const double targetNearnessFactor = std::min( 1.0, target.norm()/(options.TARGET_SLOW_APPROACHING_DISTANCE));
+		const double targetNearnessFactor = m_enableApproachTargetSlowDown ? 
+			std::min(1.0, target.norm() / (options.TARGET_SLOW_APPROACHING_DISTANCE))
+			:
+			1.0;
+
 		const double riskFactor = std::min(1.0, riskEvaluation / options.RISK_EVALUATION_DISTANCE );
 		desiredSpeed = maxRobotSpeed * std::min(riskFactor,targetNearnessFactor);
 	}
