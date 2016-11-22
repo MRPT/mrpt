@@ -85,7 +85,7 @@ void CAbstractPTGBasedReactive::preDestructor()
 
 	// Just in case.
 	try {
-		m_robot.stop();
+		this->stop();
 	} catch (...) { }
 
 	mrpt::utils::delete_safe(m_logFile);
@@ -435,7 +435,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 		if (best_is_NOP_cmdvel)
 		{
 			// Notify the robot that we want it to keep executing the last cmdvel:
-			if (!m_robot.changeSpeedsNOP())
+			if (!this->changeSpeedsNOP())
 			{
 				doEmergencyStop("\nERROR calling changeSpeedsNOP()!! Stopping robot and finishing navigation\n");
 				return;
@@ -454,7 +454,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 
 			if (new_vel_cmd->isStopCmd()) {
 				MRPT_LOG_DEBUG("Best velocity command is STOP, calling robot.stop()");
-				m_robot.stop();
+				this->stop();
 			}
 			else
 			{
@@ -463,7 +463,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 					mrpt::utils::CTimeLoggerEntry tle(m_timlog_delays, "changeSpeeds()");
 					tim_send_cmd_vel = mrpt::system::now();
 					newLogRec.timestamps["tim_send_cmd_vel"] = tim_send_cmd_vel;
-					if (!m_robot.changeSpeeds(*new_vel_cmd))
+					if (!this->changeSpeeds(*new_vel_cmd))
 					{
 						doEmergencyStop("\nERROR calling changeSpeeds()!! Stopping robot and finishing navigation\n");
 						return;
