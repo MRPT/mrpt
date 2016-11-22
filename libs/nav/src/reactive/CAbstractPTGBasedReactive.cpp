@@ -1044,7 +1044,7 @@ void CAbstractPTGBasedReactive::ptg_eval_target_build_obstacles(
 			if (ptg->supportVelCmdNOP()) {
 				const double v = ::hypot(m_curPoseVel.velLocal.vx, m_curPoseVel.velLocal.vy);
 				const double d = v * ptg->maxTimeInVelCmdNOP(kDirection);
-				obsFreeNormalizedDistance = std::max(0.05, obsFreeNormalizedDistance - d);
+				obsFreeNormalizedDistance = std::max(0.90, obsFreeNormalizedDistance - d);
 			}
 
 			double velScale = 1.0;
