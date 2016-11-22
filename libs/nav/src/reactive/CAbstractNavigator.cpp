@@ -83,7 +83,7 @@ void CAbstractNavigator::cancel()
 	mrpt::synch::CCriticalSectionLocker csl(&m_nav_cs);
 	MRPT_LOG_DEBUG("CAbstractNavigator::cancel() called.");
 	m_navigationState = IDLE;
-	m_robot.stop();
+	this->stop();
 }
 
 
@@ -139,7 +139,7 @@ void CAbstractNavigator::navigationStep()
 			if ( m_lastNavigationState == NAVIGATING )
 			{
 				MRPT_LOG_INFO("[CAbstractNavigator::navigationStep()] Navigation stopped.");
-				// m_robot.stop();  stop() is called by the method switching the "state", so we have more flexibility
+				// this->stop();  stop() is called by the method switching the "state", so we have more flexibility
 				m_robot.stopWatchdog();
 			}
 		} catch (...) { }
@@ -156,7 +156,7 @@ void CAbstractNavigator::navigationStep()
 			if ( m_lastNavigationState == NAVIGATING )
 			{
 				MRPT_LOG_ERROR("[CAbstractNavigator::navigationStep()] Stoping Navigation due to a NAV_ERROR state!");
-				m_robot.stop();
+				this->stop();
 				m_robot.stopWatchdog();
 			}
 		} catch (...) { }
@@ -211,7 +211,7 @@ void CAbstractNavigator::navigationStep()
 			if ( targetDist < m_navigationParams->targetAllowedDistance )
 			{
 				if (!m_navigationParams->targetIsIntermediaryWaypoint) {
-					m_robot.stop();
+					this->stop();
 				}
 				m_navigationState = IDLE;
 				logFmt(mrpt::utils::LVL_WARN, "Navigation target (%.03f,%.03f) was reached\n", m_navigationParams->target.x,m_navigationParams->target.y);
@@ -263,7 +263,7 @@ void CAbstractNavigator::navigationStep()
 void CAbstractNavigator::doEmergencyStop( const std::string &msg )
 {
 	try {
-		m_robot.stop();
+		this->stop();
 	}
 	catch (...) { }
 	m_navigationState = NAV_ERROR;
@@ -311,7 +311,7 @@ void CAbstractNavigator::updateCurrentPoseAndSpeeds(bool update_seq_latest_poses
 		{
 			m_navigationState = NAV_ERROR;
 			try { 
-				m_robot.stop(); 
+				this->stop();
 			}
 			catch (...) {}
 			MRPT_LOG_ERROR("ERROR calling m_robot.getCurrentPoseAndSpeeds, stopping robot and finishing navigation");
@@ -332,3 +332,15 @@ void CAbstractNavigator::updateCurrentPoseAndSpeeds(bool update_seq_latest_poses
 	}
 }
 
+bool CAbstractNavigator::changeSpeeds(const mrpt::kinematics::CVehicleVelCmd &vel_cmd)
+{
+	return m_robot.changeSpeeds(vel_cmd);
+}
+bool CAbstractNavigator::changeSpeedsNOP()
+{
+	return m_robot.changeSpeedsNOP();
+}
+bool CAbstractNavigator::stop()
+{
+	return m_robot.stop();
+}

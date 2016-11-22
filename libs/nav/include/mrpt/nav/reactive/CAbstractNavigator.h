@@ -118,6 +118,10 @@ namespace mrpt
 		/** Stops the robot and set navigation state to error */
 		void doEmergencyStop( const std::string &msg );
 
+		virtual bool changeSpeeds(const mrpt::kinematics::CVehicleVelCmd &vel_cmd); //!< Default: forward call to m_robot.changeSpeed(). Can be overriden.
+		virtual bool changeSpeedsNOP(); //!< Default: forward call to m_robot.changeSpeedsNOP(). Can be overriden.
+		virtual bool stop(); //!< Default: forward call to m_robot.stop(). Can be overriden.
+
 		TState             m_navigationState;  //!< Current internal state of navigator:
 		TNavigationParams  *m_navigationParams;  //!< Current navigation parameters
 

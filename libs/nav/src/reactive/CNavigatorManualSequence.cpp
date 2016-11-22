@@ -80,9 +80,9 @@ void CNavigatorManualSequence::navigationStep()
 		// Send cmd:
 		logFmt( mrpt::utils::LVL_DEBUG, "[CNavigatorManualSequence] Sending cmd: t=%f\n",programmed_orders.begin()->first);
 
-		if (! m_robot.changeSpeeds(*krc.cmd_vel) )
+		if (!this->changeSpeeds(*krc.cmd_vel) )
 		{
-			m_robot.stop();
+			this->stop();
 			logFmt( mrpt::utils::LVL_ERROR, "[CNavigatorManualSequence] **ERROR** sending cmd to robot.");
 			return;
 		}
