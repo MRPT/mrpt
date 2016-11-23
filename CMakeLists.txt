@@ -367,7 +367,7 @@ MARK_AS_ADVANCED(MRPT_WHOLE_PROGRAM_OPTIMIZATION)
 # Even more warnings for different compilers
 IF(MRPT_EXTRA_WARNINGS)
    IF (${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU" OR ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
-      SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wreturn-type -Wextra -Wtype-limits -Wcast-align -Wzero-as-null-pointer-constant -Wparentheses -Wno-unused-parameter") # -Wold-style-cast  -Woverloaded-virtual
+      SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wreturn-type -Wextra -Wtype-limits -Wcast-align -Wparentheses -Wno-unused-parameter") # -Wold-style-cast  -Woverloaded-virtual
    ENDIF()
 ENDIF()
 
