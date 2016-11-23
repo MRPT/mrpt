@@ -7,7 +7,7 @@ INCLUDE(../../cmakemodules/AssureCMakeRootFile.cmake) # Avoid user mistake in CM
 #
 #  October 2007, Jose Luis Blanco <jlblanco@ctima.uma.es>
 #-----------------------------------------------------------------
-PROJECT(camera_calib)
+PROJECT(camera-calib)
 
 IF(CMAKE_MRPT_HAS_WXWIDGETS)
 
@@ -28,26 +28,22 @@ IF(CMAKE_MRPT_HAS_WXWIDGETS)
 	ENDIF()
 
 	# Define the executable target:
-	ADD_EXECUTABLE(camera-calib WIN32 ${SRCS} ${MRPT_VERSION_RC_FILE})
-
-	SET(TMP_TARGET_NAME "camera-calib")
-
-
+	ADD_EXECUTABLE(${PROJECT_NAME} WIN32 ${SRCS} ${MRPT_VERSION_RC_FILE})
 
 
 	# Add the required libraries for linking:
 	INCLUDE_DIRECTORIES( ${wxWidgets_INCLUDE_DIRS} )
-	TARGET_LINK_LIBRARIES(${TMP_TARGET_NAME} ${wxWidgets_LIBRARIES} )
-	TARGET_LINK_LIBRARIES(${TMP_TARGET_NAME} ${MRPT_LINKER_LIBS})
+	TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${wxWidgets_LIBRARIES} )
+	TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${MRPT_LINKER_LIBS})
 
 	# Dependencies on MRPT libraries:
 	#  Just mention the top-level dependency, the rest will be detected automatically,
 	#  and all the needed #include<> dirs added (see the script DeclareAppDependencies.cmake for further details)
-	DeclareAppDependencies(${TMP_TARGET_NAME} mrpt-vision mrpt-gui mrpt-hwdrivers)
+	DeclareAppDependencies(${PROJECT_NAME} mrpt-vision mrpt-gui mrpt-hwdrivers)
 
-	DeclareAppForInstall(${TMP_TARGET_NAME})
+	DeclareAppForInstall(${PROJECT_NAME})
 
-	AppStartMenuLink(${TMP_TARGET_NAME} "Camera calibration GUI")   # Add link to the Start menu (in Windows Installable packages)
+	AppStartMenuLink(${PROJECT_NAME} "Camera calibration GUI")   # Add link to the Start menu (in Windows Installable packages)
 
 ELSE()
 	# ----------------------------------------------------------------------------------

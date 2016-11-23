@@ -6,18 +6,15 @@ PROJECT(gps2rawlog)
 # TARGET: gps2rawlog
 # ================================================
 # Define the executable target:
-ADD_EXECUTABLE(gps2rawlog
+ADD_EXECUTABLE(${PROJECT_NAME}
 	# Main:
 	gps2rawlog_main.cpp
 	${MRPT_VERSION_RC_FILE}
  	)
-SET(TMP_TARGET_NAME "gps2rawlog")
 
 # Add the required libraries for linking:
-TARGET_LINK_LIBRARIES(${TMP_TARGET_NAME} ${MRPT_LINKER_LIBS})
-DeclareAppForInstall(${TMP_TARGET_NAME})
+TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${MRPT_LINKER_LIBS})
+DeclareAppForInstall(${PROJECT_NAME})
 # Dependencies on MRPT libraries: Just mention the top-level dependency, the rest will be detected automatically,
 #  and all the needed #include<> dirs added (see the script DeclareAppDependencies.cmake for further details)
-DeclareAppDependencies(${TMP_TARGET_NAME} mrpt-hwdrivers)
-
-
+DeclareAppDependencies(${PROJECT_NAME} mrpt-hwdrivers)
