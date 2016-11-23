@@ -99,23 +99,10 @@ void CRobot2DPoseEstimator::processUpdateNewOdometry(
 		m_robot_vel_local = velLocal;
 	}
 	else
-	{
-		if (m_last_odo_time!=INVALID_TIMESTAMP)
-		{
-			// make something up!
-			const double dT = timeDifference(m_last_odo_time,cur_tim);
-			ASSERTMSG_(dT>0, "timestamp must be newer than the last one")
-
-			m_robot_vel_local.omega = mrpt::math::angDistance(m_last_odo.phi,newGlobalOdometry.phi)/dT;
-			TPoint2D dxy;
-			CPose2D(m_last_odo).inverseComposePoint(TPoint2D(newGlobalOdometry), dxy);
-			m_robot_vel_local.vx = dxy.x/dT;
-			m_robot_vel_local.vy = dxy.y/dT;
-		}
-		else
-		{	// Nothing we can do here...
-			m_robot_vel_local = TTwist2D(.0, .0, .0);
-		}
+	{ // Note: JLBC 23/Nov/2016: I have removed an estimation of velocity from increments of odometry
+		// because it was really bad. Just don't make up things: if the user doesn't provide us velocities,
+		// we don't use velocities.
+		m_robot_vel_local = TTwist2D(.0, .0, .0);
 	}
 
 	// And now times & odo:
@@ -202,8 +189,8 @@ void CRobot2DPoseEstimator::extrapolateRobotPose(
 		new_p = p;
 	}
 	else
-	if (velLocal.vy!=0)
-	{	// Straight line:
+	if (std::abs(velLocal.vy)>1e-2)
+	{	// non-Ackermann-like vehicle: extrapolate as a straight line:
 		const TPoint2D dp=TPoint2D(delta_time*velLocal.vx, delta_time*velLocal.vy);
 		TPoint2D pg;
 		CPose2D(p).composePoint(dp, pg);
@@ -213,7 +200,7 @@ void CRobot2DPoseEstimator::extrapolateRobotPose(
 	}
 	else
 	{
-		// generic arc:
+		// vy==0, assume we are in a Ackermann-like steering vehicle: compute an arc:
 		const double R = velLocal.vx / velLocal.omega; // Radius
 		const double theta = velLocal.omega*delta_time; // traversed arc
 		const double cc = cos(p.phi);
