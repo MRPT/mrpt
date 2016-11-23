@@ -29,30 +29,25 @@ IF(CMAKE_MRPT_HAS_WXWIDGETS AND CMAKE_MRPT_HAS_OPENGL_GLUT)
 	INCLUDE_DIRECTORIES("${MRPT_SOURCE_DIR}/otherlibs/wxThings/")
 
 	# Define the executable target:
-	ADD_EXECUTABLE(SceneViewer3D WIN32 ${SRCS} ${MRPT_VERSION_RC_FILE})
-
-	SET(TMP_TARGET_NAME "SceneViewer3D")
-
-
-
+	ADD_EXECUTABLE(${PROJECT_NAME} WIN32 ${SRCS} ${MRPT_VERSION_RC_FILE})
 
 	# Add the required libraries for linking:
 	INCLUDE_DIRECTORIES( ${wxWidgets_INCLUDE_DIRS} )
-	TARGET_LINK_LIBRARIES(${TMP_TARGET_NAME} ${wxWidgets_LIBRARIES} )
+	TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${wxWidgets_LIBRARIES} )
 
-	TARGET_LINK_LIBRARIES(${TMP_TARGET_NAME} ${MRPT_LINKER_LIBS})
+	TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${MRPT_LINKER_LIBS})
 
-	TARGET_LINK_LIBRARIES(${TMP_TARGET_NAME} mrptwxthings)
-	ADD_DEPENDENCIES(${TMP_TARGET_NAME} mrptwxthings)
+	TARGET_LINK_LIBRARIES(${PROJECT_NAME} mrptwxthings)
+	ADD_DEPENDENCIES(${PROJECT_NAME} mrptwxthings)
 
 	# Dependencies on MRPT libraries:
 	#  Just mention the top-level dependency, the rest will be detected automatically,
 	#  and all the needed #include<> dirs added (see the script DeclareAppDependencies.cmake for further details)
-	DeclareAppDependencies(${TMP_TARGET_NAME} mrpt-opengl mrpt-gui mrpt-maps)
+	DeclareAppDependencies(${PROJECT_NAME} mrpt-opengl mrpt-gui mrpt-maps)
 
-	DeclareAppForInstall(${TMP_TARGET_NAME})
+	DeclareAppForInstall(${PROJECT_NAME})
 
-	AppStartMenuLink(${TMP_TARGET_NAME} "Scene Viewer 3D")   # Add link to the Start menu (in Windows Installable packages)
+	AppStartMenuLink(${PROJECT_NAME} "Scene Viewer 3D")   # Add link to the Start menu (in Windows Installable packages)
 
 ELSE()
 	# ----------------------------------------------------------------------------------
