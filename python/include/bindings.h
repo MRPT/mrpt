@@ -76,22 +76,19 @@ struct StlListLike
     typedef typename T::value_type V;
     static V& get(T & x, uint i)
     {
-        //if( i<0 ) i+=x.size();
-        if( i>=0 && i<x.size() ) return x[i];
+        if(i<x.size() ) return x[i];
         IndexError();
         // only for removing the return-type warning; code is never reached:
         return x[0];
     }
     static void set(T & x, uint i, V const& v)
     {
-        //if( i<0 ) i+=x.size();
-        if( i>=0 && i<x.size() ) x[i]=v;
+        if(i<x.size() ) x[i]=v;
         else IndexError();
     }
     static void del(T & x, uint i)
     {
-        //if( i<0 ) i+=x.size();
-        if( i>=0 && i<x.size() ) x.erase(x.begin() + i);
+        if(i<x.size() ) x.erase(x.begin() + i);
         else IndexError();
     }
     static void add(T & x, V const& v)
