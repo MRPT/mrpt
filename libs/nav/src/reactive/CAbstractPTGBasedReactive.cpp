@@ -1023,7 +1023,7 @@ void CAbstractPTGBasedReactive::ptg_eval_target_build_obstacles(
 		{
 			tictac.Tic();
 
-			ASSERT_(holoMethod);
+			ASSERT_(holoMethod && m_navigationParams);
 			holoMethod->enableApproachTargetSlowDown( !m_navigationParams->targetIsIntermediaryWaypoint );
 
 			holoMethod->navigate(
