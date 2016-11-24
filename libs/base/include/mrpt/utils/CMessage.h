@@ -22,20 +22,15 @@ namespace mrpt
 		/** A class that contain generic messages, that can be sent and received from a "CClientTCPSocket" object.
 		  *  A message consists of a "header" (or type), and a "body" (or content).
 		  *  Apart from arbitrary data, specific methods are provided for easing the serialization of MRPT's "CSerializable" objects.
-		  *  This class is also used for passing data to hardware interfaces (see )
+		  *  This class is also used for passing data to hardware interfaces (see mrpt::hwdrivers::CSerialPort) 
 		  * \sa CClientTCPSocket
 		 * \ingroup mrpt_base_grp
 		  */
 		class BASE_IMPEXP CMessage
 		{
 		public:
-			/** An identifier of the message type.
-			  */
-			uint32_t						type;
-
-			/** The contents of the message (memory is automatically handled by the std::vector object)
-			  */
-			std::vector<unsigned char>	content;
+			uint32_t             type;  //!< An identifier of the message type (only the least-sig byte is typically sent)
+			std::vector<uint8_t> content; //!< The contents of the message (memory is automatically handled by the std::vector object)
 
 			/** A method for serializing a MRPT's object into the content.
 			  *  Any modification to data in "content" after this will corrupt the object serialization.
