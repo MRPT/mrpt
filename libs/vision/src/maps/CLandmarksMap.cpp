@@ -21,6 +21,7 @@
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/CObservationGPS.h>
 #include <mrpt/poses/CPointPDFGaussian.h>
+#include <mrpt/obs/CObservationRobotPose.h>
 #include <mrpt/obs/CObservationBeaconRanges.h>
 #include <mrpt/obs/CObservationVisualLandmarks.h>
 #include <mrpt/system/os.h>
@@ -350,6 +351,41 @@ double	 CLandmarksMap::internal_computeObservationLikelihood(
 		return ret;
 
 	} // end of likelihood of CObservationBeaconRanges
+	else
+	if ( CLASS_ID(CObservationRobotPose)==obs->GetRuntimeClass() )
+	{
+		/********************************************************************
+
+				OBSERVATION TYPE: CObservationRobotPose
+
+				Lik. between "this" and "robotPose";
+
+		********************************************************************/
+		const CObservationRobotPose 	*o = static_cast<const CObservationRobotPose*>( obs );
+
+		// Compute the 3D position of the sensor:
+		CPose3D sensorPose3D = robotPose3D + o->sensorPose;
+
+		// Compute the likelihood according to mahalanobis distance between poses:
+		CMatrixD dij(1,6), Cij(6,6), Cij_1;
+		dij(0,0) =          o->pose.mean.x()     - sensorPose3D.x();
+		dij(0,1) =          o->pose.mean.y()     - sensorPose3D.y();
+		dij(0,2) =          o->pose.mean.z()     - sensorPose3D.z();
+		dij(0,3) = wrapToPi(o->pose.mean.roll()  - sensorPose3D.roll());
+		dij(0,4) = wrapToPi(o->pose.mean.pitch() - sensorPose3D.pitch());
+		dij(0,5) = wrapToPi(o->pose.mean.yaw()   - sensorPose3D.yaw());
+
+		// Equivalent covariance from "i" to "j":
+		Cij = CMatrixDouble(o->pose.cov);
+		Cij_1 = Cij.inv();
+
+		double distMahaFlik2 =  dij.multiply_HCHt_scalar(Cij_1); //( dij * Cij_1 * (~dij) )(0,0);
+		double ret = -0.5f * distMahaFlik2;
+
+		MRPT_CHECK_NORMAL_NUMBER(ret);
+		return ret;
+
+	} // end of likelihood of CObservation
 	else
 	if ( CLASS_ID(CObservationGPS)==obs->GetRuntimeClass() )
 	{
