@@ -262,6 +262,7 @@ namespace mrpt
 			CLogFileRecord &newLogRec,
 			const bool this_is_PTG_continuation,
 			mrpt::nav::CAbstractHolonomicReactiveMethod *holoMethod,
+			const TNavigationParamsPTG &navp = TNavigationParamsPTG(),
 			const mrpt::poses::CPose2D &relPoseVelCmd_NOP = mrpt::poses::CPose2D()
 		);
 
