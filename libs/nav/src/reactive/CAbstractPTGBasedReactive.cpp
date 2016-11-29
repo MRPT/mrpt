@@ -372,15 +372,14 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 			// The picked movement in TP-Space (to be determined by holonomic method below)
 			THolonomicMovement &holonomicMovement = holonomicMovements[indexPTG];
 
-			const TNavigationParamsPTG * navp = dynamic_cast<const TNavigationParamsPTG*>(m_navigationParams);
-			ASSERT_(navp);
+			ASSERT_(m_navigationParams);
 			ptg_eval_target_build_obstacles(
 				ptg, indexPTG,
 				relTarget, rel_pose_PTG_origin_wrt_sense,
 				ipf, holonomicMovement,
 				newLogRec, false /* this is a regular PTG reactive case */,
 				m_holonomicMethod[indexPTG],
-				*navp);
+				*m_navigationParams);
 		} // end for each PTG
 
 		// Round #2: Evaluate dont sending any new velocity command ("NOP" motion)
@@ -416,15 +415,14 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 					newLogRec.additional_debug_msgs["robot_pose_at_send_cmd"] = robot_pose_at_send_cmd.asString();
 				}
 
-				const TNavigationParamsPTG * navp = dynamic_cast<const TNavigationParamsPTG*>(m_navigationParams);
-				ASSERT_(navp);
+				ASSERT_(m_navigationParams);
 				ptg_eval_target_build_obstacles(
 					ptg, m_lastSentVelCmd.ptg_index,
 					relTarget_NOP, rel_pose_PTG_origin_wrt_sense_NOP,
 					ipf_NOP, holonomicMovements[nPTGs],
 					newLogRec, true /* this is the PTG continuation (NOP) choice */,
 					m_holonomicMethod[m_lastSentVelCmd.ptg_index],
-					*navp,
+					*m_navigationParams,
 					rel_cur_pose_wrt_last_vel_cmd_NOP);
 
 			} // end valid interpolated origin pose
@@ -955,7 +953,7 @@ void CAbstractPTGBasedReactive::ptg_eval_target_build_obstacles(
 	CLogFileRecord &newLogRec,
 	const bool this_is_PTG_continuation,
 	mrpt::nav::CAbstractHolonomicReactiveMethod *holoMethod,
-	const TNavigationParamsPTG &navp,
+	const TNavigationParams &navp,
 	const mrpt::poses::CPose2D &rel_cur_pose_wrt_last_vel_cmd_NOP
 	)
 {
@@ -969,11 +967,12 @@ void CAbstractPTGBasedReactive::ptg_eval_target_build_obstacles(
 	// If the user doesn't want to use this PTG, just mark it as invalid:
 	ipf.valid_TP = true;
 	{
-		if (!navp.restrict_PTG_indices.empty())
+		const TNavigationParamsPTG * navpPTG = dynamic_cast<const TNavigationParamsPTG*>(&navp);
+		if (navpPTG && !navpPTG->restrict_PTG_indices.empty())
 		{
 			bool use_this_ptg = false;
-			for (size_t i = 0; i < navp.restrict_PTG_indices.size() && !use_this_ptg; i++) {
-				if (navp.restrict_PTG_indices[i] == indexPTG)
+			for (size_t i = 0; i < navpPTG->restrict_PTG_indices.size() && !use_this_ptg; i++) {
+				if (navpPTG->restrict_PTG_indices[i] == indexPTG)
 					use_this_ptg = true;
 			}
 			ipf.valid_TP = use_this_ptg;
