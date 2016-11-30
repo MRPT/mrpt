@@ -713,15 +713,17 @@ void CAbstractPTGBasedReactive::STEP5_PTGEvaluator(
 	{
 		mrpt::kinematics::CVehicleVelCmdPtr desired_cmd;
 		desired_cmd = holonomicMovement.PTG->directionToMotionCommand(kDirection);
-		ASSERT_EQUAL_(m_last_vel_cmd->getVelCmdLength(), desired_cmd->getVelCmdLength());
+		if(typeid(*m_last_vel_cmd) == typeid(*desired_cmd)){
+			ASSERT_EQUAL_(m_last_vel_cmd->getVelCmdLength(), desired_cmd->getVelCmdLength());
 
-		double simil_score = 0.5;
-		for (size_t i = 0; i < desired_cmd->getVelCmdLength(); i++)
-		{
-			const double scr = exp(-std::abs(desired_cmd->getVelCmdElement(i) - m_last_vel_cmd->getVelCmdElement(i)) / 0.20);
-			mrpt::utils::keep_min(simil_score, scr);
+			double simil_score = 0.5;
+			for (size_t i = 0; i < desired_cmd->getVelCmdLength(); i++)
+			{
+				const double scr = exp(-std::abs(desired_cmd->getVelCmdElement(i) - m_last_vel_cmd->getVelCmdElement(i)) / 0.20);
+				mrpt::utils::keep_min(simil_score, scr);
+			}
+			factor5 = simil_score;
 		}
-		factor5 = simil_score;
 	}
 
 	// Factor6: free space
