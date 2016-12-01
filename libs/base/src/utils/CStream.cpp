@@ -166,12 +166,21 @@ CStream& utils::operator << (mrpt::utils::CStream&out, const std::string &str)
 void CStream::WriteObject(const  CSerializable *o )
 {
     MRPT_START
-	ASSERT_(o!=NULL)
+
 
 	int		version;
 
 	// First, the "classname".
- 	const char *className = o->GetRuntimeClass()->className;
+	const char *className;
+	if(o != NULL)
+	{
+		className = o->GetRuntimeClass()->className;
+	}
+	else
+	{
+		className = "nullptr";	
+	}
+	
 	int8_t  classNamLen = strlen(className);
 	int8_t  classNamLen_mod = classNamLen | 0x80;
 
@@ -179,15 +188,17 @@ void CStream::WriteObject(const  CSerializable *o )
 	this->WriteBuffer( className, classNamLen);
 
 	// Next, the version number:
-	o->writeToStream(*this, &version);
+	if(o != NULL)
+	{
+		o->writeToStream(*this, &version);
+		ASSERT_(version>=0 && version<255);
 
-	ASSERT_(version>=0 && version<255);
+		int8_t	actualVersion = int8_t(version);
+		(*this) << actualVersion;
 
-	int8_t	actualVersion = int8_t(version);
-	(*this) << actualVersion;
-
-	// Next, the object data.
-	o->writeToStream(*this, NULL);
+		// Next, the object data.
+		o->writeToStream(*this, NULL);
+	}
 
 	// In MRPT 0.5.5 a end flag is introduced:
 	static const uint8_t    endFlag = SERIALIZATION_END_FLAG;
@@ -395,9 +406,8 @@ void CStream::internal_ReadObject(CSerializablePtr &newObj,CSerializable *existi
 			ASSERT_(version_old>=0 && version_old<255);
 			version = int8_t(version_old);
 		}
-		else
+		else if (strClassName != "nullptr" && sizeof(version)!=ReadBuffer( (void*)&version, sizeof(version) ))
 		{
-			if (sizeof(version)!=ReadBuffer( (void*)&version, sizeof(version) ))
 				THROW_EXCEPTION("Cannot read object streaming version from stream!");
 		}
 
@@ -410,15 +420,18 @@ void CStream::internal_ReadObject(CSerializablePtr &newObj,CSerializable *existi
 		if (EXISTING_OBJ)
 		{	// (Existing object)
 			// Now, compare to existing class:
-			ASSERT_(existingObj)
-			const TRuntimeClassId	*id  = existingObj->GetRuntimeClass();
-			const TRuntimeClassId	*id2 = findRegisteredClass(strClassName);
-			if (!id2) THROW_EXCEPTION_CUSTOM_MSG1("Stored object has class '%s' which is not registered!",strClassName.c_str());
-			if ( id!=id2 ) THROW_EXCEPTION(format("Stored class does not match with existing object!!:\n Stored: %s\n Expected: %s", id2->className,id->className ));
-			// It matches, OK
-			obj = existingObj;
+			if(strClassName != "nullptr")
+			{
+				ASSERT_(existingObj)
+				const TRuntimeClassId	*id  = existingObj->GetRuntimeClass();
+				const TRuntimeClassId	*id2 = findRegisteredClass(strClassName);
+				if (!id2) THROW_EXCEPTION_CUSTOM_MSG1("Stored object has class '%s' which is not registered!",strClassName.c_str());
+				if ( id!=id2 ) THROW_EXCEPTION(format("Stored class does not match with existing object!!:\n Stored: %s\n Expected: %s", id2->className,id->className ));
+				// It matches, OK
+				obj = existingObj;
+			}
 		}
-		else
+		else if (strClassName != "nullptr")
 		{	// (New object)
 			// Get the mapping to the "TRuntimeClassId*" in the registered classes table:
 			const TRuntimeClassId *classId = findRegisteredClass( strClassName );
@@ -432,9 +445,11 @@ void CStream::internal_ReadObject(CSerializablePtr &newObj,CSerializable *existi
 			newObj = CSerializablePtr(obj);
 		}
 
-		// Go on, read it:
-		obj->readFromStream( *this, (int)version );
-
+		if(strClassName != "nullptr")
+		{
+			// Go on, read it:
+			obj->readFromStream( *this, (int)version );
+		}
 		// Check end flag (introduced in MRPT 0.5.5)
 		if (!isOldFormat)
 		{
@@ -442,6 +457,7 @@ void CStream::internal_ReadObject(CSerializablePtr &newObj,CSerializable *existi
 			if (sizeof(endFlag)!=ReadBuffer( (void*)&endFlag, sizeof(endFlag) )) THROW_EXCEPTION("Cannot read object streaming version from stream!");
 			if (endFlag!=SERIALIZATION_END_FLAG) THROW_EXCEPTION_CUSTOM_MSG1("end-flag missing: There is a bug in the deserialization method of class: '%s'",strClassName.c_str());
 		}
+		ASSERT_(!EXISTING_OBJ || strClassName != "nullptr");
 	}
 	catch (std::bad_alloc &)
 	{
