@@ -45,12 +45,12 @@ mrpt::system::TTimeStamp  mrpt::system::time_tToTimestamp(const time_t &t )
 	return uint64_t(t) * UINT64_C(10000000) +  UINT64_C(116444736) * UINT64_C(1000000000);
 }
 
-mrpt::system::TTimeStamp  mrpt::system::time_tToTimestamp(const double &t )
+mrpt::system::TTimeStamp  mrpt::system::time_tToTimestamp(const double t )
 {
 	return uint64_t(t*10000000.0)+ UINT64_C(116444736)*UINT64_C(1000000000);
 }
 
-double mrpt::system::timestampTotime_t( const mrpt::system::TTimeStamp  &t )
+double mrpt::system::timestampTotime_t( const mrpt::system::TTimeStamp t )
 {
 	return double(t - UINT64_C(116444736)*UINT64_C(1000000000)) / 10000000.0;
 }
@@ -194,7 +194,7 @@ mrpt::system::TTimeStamp  mrpt::system::getCurrentLocalTime()
 #endif
 }
 
-mrpt::system::TTimeStamp mrpt::system::timestampAdd( const mrpt::system::TTimeStamp &tim, const double num_seconds)
+mrpt::system::TTimeStamp mrpt::system::timestampAdd( const mrpt::system::TTimeStamp tim, const double num_seconds)
 {
 	return static_cast<mrpt::system::TTimeStamp>(tim + static_cast<int64_t>(num_seconds*10000000.0));
 }
@@ -202,7 +202,7 @@ mrpt::system::TTimeStamp mrpt::system::timestampAdd( const mrpt::system::TTimeSt
 /*---------------------------------------------------------------
 					timeDifference
   ---------------------------------------------------------------*/
-double mrpt::system::timeDifference( const mrpt::system::TTimeStamp &t1, const mrpt::system::TTimeStamp &t2 )
+double mrpt::system::timeDifference( const mrpt::system::TTimeStamp t1, const mrpt::system::TTimeStamp t2 )
 {
 	MRPT_START
 	ASSERT_(t1!=INVALID_TIMESTAMP)
@@ -216,7 +216,7 @@ double mrpt::system::timeDifference( const mrpt::system::TTimeStamp &t1, const m
 /*---------------------------------------------------------------
 					secondsToTimestamp
   ---------------------------------------------------------------*/
-mrpt::system::TTimeStamp mrpt::system::secondsToTimestamp( const double &nSeconds )
+mrpt::system::TTimeStamp mrpt::system::secondsToTimestamp( const double nSeconds )
 {
 	return (mrpt::system::TTimeStamp)(nSeconds*10000000.0);
 }
@@ -224,7 +224,7 @@ mrpt::system::TTimeStamp mrpt::system::secondsToTimestamp( const double &nSecond
 /*---------------------------------------------------------------
 					formatTimeInterval
   ---------------------------------------------------------------*/
-string mrpt::system::formatTimeInterval( const double &t )
+string mrpt::system::formatTimeInterval( const double t )
 {
 	double timeSeconds = (t<0) ? (-t) : t;
 
@@ -244,7 +244,7 @@ string mrpt::system::formatTimeInterval( const double &t )
 /*---------------------------------------------------------------
   Convert a timestamp into this textual form: YEAR/MONTH/DAY,HH:MM:SS.MMM
   ---------------------------------------------------------------*/
-string  mrpt::system::dateTimeToString(const mrpt::system::TTimeStamp &t)
+string  mrpt::system::dateTimeToString(const mrpt::system::TTimeStamp t)
 {
 	if (t==INVALID_TIMESTAMP) return string("INVALID_TIMESTAMP");
 
@@ -271,7 +271,7 @@ string  mrpt::system::dateTimeToString(const mrpt::system::TTimeStamp &t)
   Convert a timestamp into this textual form (in local time):
       YEAR/MONTH/DAY,HH:MM:SS.MMM
   ---------------------------------------------------------------*/
-string  mrpt::system::dateTimeLocalToString(const mrpt::system::TTimeStamp &t)
+string  mrpt::system::dateTimeLocalToString(const mrpt::system::TTimeStamp t)
 {
 	if (t==INVALID_TIMESTAMP) return string("INVALID_TIMESTAMP");
 
@@ -296,7 +296,7 @@ string  mrpt::system::dateTimeLocalToString(const mrpt::system::TTimeStamp &t)
 /*---------------------------------------------------------------
 						extractDayTimeFromTimestamp
   ---------------------------------------------------------------*/
-double  mrpt::system::extractDayTimeFromTimestamp(const mrpt::system::TTimeStamp &t)
+double  mrpt::system::extractDayTimeFromTimestamp(const mrpt::system::TTimeStamp t)
 {
 	MRPT_START
 	ASSERT_(t!=INVALID_TIMESTAMP)
@@ -318,7 +318,7 @@ double  mrpt::system::extractDayTimeFromTimestamp(const mrpt::system::TTimeStamp
 /*---------------------------------------------------------------
   Convert a timestamp into this textual form: HH:MM:SS.MMM
   ---------------------------------------------------------------*/
-string  mrpt::system::timeLocalToString(const mrpt::system::TTimeStamp &t, unsigned int secondFractionDigits)
+string  mrpt::system::timeLocalToString(const mrpt::system::TTimeStamp t, unsigned int secondFractionDigits)
 {
 	if (t==INVALID_TIMESTAMP) return string("INVALID_TIMESTAMP");
 
@@ -339,7 +339,7 @@ string  mrpt::system::timeLocalToString(const mrpt::system::TTimeStamp &t, unsig
 /*---------------------------------------------------------------
   Convert a timestamp into this textual form: HH:MM:SS.MMM
   ---------------------------------------------------------------*/
-string  mrpt::system::timeToString(const mrpt::system::TTimeStamp &t)
+string  mrpt::system::timeToString(const mrpt::system::TTimeStamp t)
 {
 	if (t==INVALID_TIMESTAMP) return string("INVALID_TIMESTAMP");
 
@@ -361,7 +361,7 @@ string  mrpt::system::timeToString(const mrpt::system::TTimeStamp &t)
 /*---------------------------------------------------------------
   Convert a timestamp into this textual form: YEAR/MONTH/DAY
   ---------------------------------------------------------------*/
-string  mrpt::system::dateToString(const mrpt::system::TTimeStamp &t)
+string  mrpt::system::dateToString(const mrpt::system::TTimeStamp t)
 {
 	if (t==INVALID_TIMESTAMP) return string("INVALID_TIMESTAMP");
 
