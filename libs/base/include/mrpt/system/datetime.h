@@ -79,7 +79,7 @@ namespace mrpt
 		/** Transform from standard "time_t" (actually a double number, it can contain fractions of seconds) to TTimeStamp.
 		  * \sa timestampTotime_t
 		  */
-		mrpt::system::TTimeStamp  BASE_IMPEXP time_tToTimestamp( const double &t );
+		mrpt::system::TTimeStamp  BASE_IMPEXP time_tToTimestamp( const double t );
 
 		/** Transform from standard "time_t" to TTimeStamp.
 		  * \sa timestampTotime_t
@@ -89,53 +89,53 @@ namespace mrpt
 		/** Transform from TTimeStamp to standard "time_t" (actually a double number, it can contain fractions of seconds).
 		  * \sa time_tToTimestamp, secondsToTimestamp
 		  */
-		double BASE_IMPEXP timestampTotime_t( const mrpt::system::TTimeStamp  &t );
+		double BASE_IMPEXP timestampTotime_t( const mrpt::system::TTimeStamp  t );
 
 		/** Transform from TTimeStamp to standard "time_t" (actually a double number, it can contain fractions of seconds).
 		  * This function is just an (inline) alias of timestampTotime_t(), with a more significant name.
 		  * \sa time_tToTimestamp, secondsToTimestamp
 		  */
-		inline double timestampToDouble( const mrpt::system::TTimeStamp  &t ) { return timestampTotime_t(t); }
+		inline double timestampToDouble( const mrpt::system::TTimeStamp  t ) { return timestampTotime_t(t); }
 
-		double BASE_IMPEXP timeDifference( const mrpt::system::TTimeStamp &t_first, const mrpt::system::TTimeStamp &t_later ); //!< Returns the time difference from t1 to t2 (positive if t2 is posterior to t1), in seconds \sa secondsToTimestamp
+		double BASE_IMPEXP timeDifference( const mrpt::system::TTimeStamp t_first, const mrpt::system::TTimeStamp t_later ); //!< Returns the time difference from t1 to t2 (positive if t2 is posterior to t1), in seconds \sa secondsToTimestamp
 
-		mrpt::system::TTimeStamp BASE_IMPEXP timestampAdd( const mrpt::system::TTimeStamp &tim, const double num_seconds); //!< Shifts a timestamp the given amount of seconds (>0: forwards in time, <0: backwards) \sa secondsToTimestamp 
+		mrpt::system::TTimeStamp BASE_IMPEXP timestampAdd( const mrpt::system::TTimeStamp tim, const double num_seconds); //!< Shifts a timestamp the given amount of seconds (>0: forwards in time, <0: backwards) \sa secondsToTimestamp
 
 		/** Transform a time interval (in seconds) into TTimeStamp (e.g. which can be added to an existing valid timestamp)
 		  * \sa timeDifference
 		  */
-		mrpt::system::TTimeStamp BASE_IMPEXP secondsToTimestamp( const double &nSeconds );
+		mrpt::system::TTimeStamp BASE_IMPEXP secondsToTimestamp( const double nSeconds );
 
 		/** Returns a formated string with the given time difference (passed as the number of seconds), as a string [H]H:MM:SS.MILISECS
 		  * \sa unitsFormat
 		  */
-		std::string BASE_IMPEXP formatTimeInterval( const double &timeSeconds );
+		std::string BASE_IMPEXP formatTimeInterval( const double timeSeconds );
 
 		/** Convert a timestamp into this textual form (UTC time): YEAR/MONTH/DAY,HH:MM:SS.MMM
 		  * \sa dateTimeLocalToString
 		  */
-		std::string  BASE_IMPEXP dateTimeToString(const mrpt::system::TTimeStamp &t);
+		std::string  BASE_IMPEXP dateTimeToString(const mrpt::system::TTimeStamp t);
 
 		/** Convert a timestamp into this textual form (in local time): YEAR/MONTH/DAY,HH:MM:SS.MMM
 		  * \sa dateTimeToString
 		  */
-		std::string  BASE_IMPEXP dateTimeLocalToString(const mrpt::system::TTimeStamp &t);
+		std::string  BASE_IMPEXP dateTimeLocalToString(const mrpt::system::TTimeStamp t);
 
 		/** Convert a timestamp into this textual form: YEAR/MONTH/DAY
 		 */
-		std::string  BASE_IMPEXP dateToString(const mrpt::system::TTimeStamp &t);
+		std::string  BASE_IMPEXP dateToString(const mrpt::system::TTimeStamp t);
 
 		/** Returns the number of seconds ellapsed from midnight in the given timestamp
 		 */
-		double  BASE_IMPEXP extractDayTimeFromTimestamp(const mrpt::system::TTimeStamp &t);
+		double  BASE_IMPEXP extractDayTimeFromTimestamp(const mrpt::system::TTimeStamp t);
 
 		/** Convert a timestamp into this textual form (UTC): HH:MM:SS.MMMMMM
 		 */
-		std::string  BASE_IMPEXP timeToString(const mrpt::system::TTimeStamp &t);
+		std::string  BASE_IMPEXP timeToString(const mrpt::system::TTimeStamp t);
 
 		/** Convert a timestamp into this textual form (in local time): HH:MM:SS.MMMMMM
 		 */
-		std::string  BASE_IMPEXP timeLocalToString(const mrpt::system::TTimeStamp &t, unsigned int secondFractionDigits=6);
+		std::string  BASE_IMPEXP timeLocalToString(const mrpt::system::TTimeStamp t, unsigned int secondFractionDigits=6);
 
 		/** This function implements time interval formatting: Given a time in seconds, it will return a string describing the interval with the most appropriate unit.
 		 * E.g.: 1.23 year, 3.50 days, 9.3 hours, 5.3 minutes, 3.34 sec, 178.1 ms,  87.1 us.
