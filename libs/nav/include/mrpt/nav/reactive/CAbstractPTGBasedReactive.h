@@ -231,7 +231,7 @@ namespace mrpt
 			const bool this_is_PTG_continuation,
 			const mrpt::poses::CPose2D & relPoseVelCmd_NOP);
 
-		virtual void STEP7_GenerateSpeedCommands(const THolonomicMovement &in_movement, mrpt::kinematics::CVehicleVelCmdPtr &cmd_vel_original, mrpt::kinematics::CVehicleVelCmdPtr &new_vel_cmd );
+		virtual void STEP7_GenerateSpeedCommands(const THolonomicMovement &in_movement, mrpt::kinematics::CVehicleVelCmdPtr &new_vel_cmd );
 
 		void preDestructor(); //!< To be called during children destructors to assure thread-safe destruction, and free of shared objects.
 		virtual void onStartNewNavigation() MRPT_OVERRIDE;

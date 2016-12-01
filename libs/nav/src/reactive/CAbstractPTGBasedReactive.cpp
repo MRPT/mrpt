@@ -443,7 +443,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 		// ---------------------------------------------------------------------
 		//				SEND MOVEMENT COMMAND TO THE ROBOT
 		// ---------------------------------------------------------------------
-		mrpt::kinematics::CVehicleVelCmdPtr cmd_vel_original, new_vel_cmd;
+		mrpt::kinematics::CVehicleVelCmdPtr new_vel_cmd;
 		if (best_is_NOP_cmdvel)
 		{
 			// Notify the robot that we want it to keep executing the last cmdvel:
@@ -460,7 +460,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 			if (!best_is_NOP_cmdvel)
 			{
 				CTimeLoggerEntry tle(m_timelogger, "navigationStep.STEP7_NonHolonomicMovement");
-				STEP7_GenerateSpeedCommands(selectedHolonomicMovement, cmd_vel_original, new_vel_cmd);
+				STEP7_GenerateSpeedCommands(selectedHolonomicMovement, new_vel_cmd);
 			}
 			ASSERT_(new_vel_cmd);
 
@@ -544,7 +544,6 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 			newLogRec.cur_vel             = m_curPoseVel.velGlobal;
 			newLogRec.cur_vel_local       = m_curPoseVel.velLocal;
 			newLogRec.cmd_vel = new_vel_cmd;
-			newLogRec.cmd_vel_original = cmd_vel_original;
 			newLogRec.values["estimatedExecutionPeriod"] = meanExecutionPeriod.getLastOutput();
 			newLogRec.values["executionTime"] = executionTimeValue;
 			newLogRec.values["executionTime_avr"] = meanExecutionTime.getLastOutput();
@@ -782,24 +781,21 @@ void CAbstractPTGBasedReactive::STEP5_PTGEvaluator(
 	MRPT_END;
 }
 
-void CAbstractPTGBasedReactive::STEP7_GenerateSpeedCommands( const THolonomicMovement &in_movement,mrpt::kinematics::CVehicleVelCmdPtr &cmd_vel_original, mrpt::kinematics::CVehicleVelCmdPtr &new_vel_cmd )
+void CAbstractPTGBasedReactive::STEP7_GenerateSpeedCommands( const THolonomicMovement &in_movement, mrpt::kinematics::CVehicleVelCmdPtr &new_vel_cmd )
 {
 	mrpt::utils::CTimeLoggerEntry tle(m_timelogger, "STEP7_GenerateSpeedCommands");
 	try
 	{
-		cmd_vel_original = in_movement.PTG->getSupportedKinematicVelocityCommand();
 		if (in_movement.speed == 0)
 		{
 			// The robot will stop:
 			new_vel_cmd = in_movement.PTG->getSupportedKinematicVelocityCommand();
 			new_vel_cmd->setToStop();
-			*cmd_vel_original = *new_vel_cmd;
 		}
 		else
 		{
 			// Take the normalized movement command:
 			new_vel_cmd = in_movement.PTG->directionToMotionCommand( in_movement.PTG->alpha2index( in_movement.direction ) );
-			*cmd_vel_original = *new_vel_cmd;
 
 			// Scale holonomic speeds to real-world one:
 			MRPT_LOG_DEBUG_FMT("STEP7_GenerateSpeedCommands: new_vel_cmd=0x%p in_movement.speed=%f", (void*)new_vel_cmd.pointer(), in_movement.speed );
