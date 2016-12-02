@@ -50,6 +50,13 @@ void CLevMarqGSO<GRAPH_t>::initCLevMarqGSO() {
 	this->setLoggerName("CLevMarqGSO");
 	this->logging_enable_keep_record = true;
 
+	// should I fully optimize my graph
+	m_curr_used_consec_lcs = 0;
+	m_curr_ignored_consec_lcs = 0;
+	m_optimization_policy = FOP_USE_LC;
+
+	m_just_fully_optimized_graph = false;
+
 	MRPT_END;
 }
 
@@ -419,7 +426,6 @@ void CLevMarqGSO<GRAPH_t>::optimizeGraph() {
 	MRPT_END;
 }
 
-// TODO - do something meaningful with these parameters
 template<class GRAPH_t>
 void CLevMarqGSO<GRAPH_t>::_optimizeGraph() {
 	MRPT_START;
@@ -436,13 +442,12 @@ void CLevMarqGSO<GRAPH_t>::_optimizeGraph() {
 	std::set< mrpt::utils::TNodeID>* nodes_to_optimize;
 
 	// fill in the nodes in certain distance to the current node, only if
-	// full_update is not instructed
-
-	bool full_update = opt_params.optimization_distance == -1 || this->checkForLoopClosures();
-	if (full_update) {
+	// is_full_update is not instructed
+	bool is_full_update = this->checkForFullOptimization();
+	if (is_full_update) {
+  	// nodes_to_optimize: List of nodes to optimize. NULL -> all but the root
+  	// node.
 		nodes_to_optimize = NULL;
-		this->logFmt(mrpt::utils::LVL_DEBUG,
-				"Commencing with FULL graph optimization... ");
 	}
 	else {
 		nodes_to_optimize = new std::set<mrpt::utils::TNodeID>;
@@ -462,9 +467,17 @@ void CLevMarqGSO<GRAPH_t>::_optimizeGraph() {
 	mrpt::graphslam::optimize_graph_spa_levmarq(
 			*m_graph,
 			levmarq_info,
-			nodes_to_optimize,  // List of nodes to optimize. NULL -> all but the root node.
+			nodes_to_optimize,
 			opt_params.cfg,
 			&CLevMarqGSO<GRAPH_t>::levMarqFeedback); // functor feedback
+
+	if (is_full_update) {
+		m_just_fully_optimized_graph = true;
+	}
+	else {
+		m_just_fully_optimized_graph = false;
+	}
+
 
 	double elapsed_time = optimization_timer.Tac();
 	this->logFmt(mrpt::utils::LVL_DEBUG,
@@ -519,7 +532,81 @@ bool CLevMarqGSO<GRAPH_t>::checkForLoopClosures() {
 	MRPT_END;
 }
 
-	template<class GRAPH_t>
+template<class GRAPH_t>
+bool CLevMarqGSO<GRAPH_t>::checkForFullOptimization() {
+	bool is_full_update = false;
+
+	if (opt_params.optimization_distance == -1) { // always optimize fully
+		return true;
+	}
+
+	bool added_lc = this->checkForLoopClosures();
+
+	// Decide on the LoopClosingAttitude I am in
+	if (!added_lc) { // reset both ignored and used counters
+		if (m_curr_used_consec_lcs != 0 || m_curr_ignored_consec_lcs != 0) {
+			MRPT_LOG_DEBUG_STREAM << "No new Loop Closure found.";
+		}
+
+		m_curr_used_consec_lcs = 0;
+		m_curr_ignored_consec_lcs = 0;
+		m_optimization_policy = FOP_USE_LC;
+
+		return is_full_update;
+	}
+	else { // lc found.
+		// have I used enough consecutive loop closures?
+		bool use_limit_reached =
+			m_curr_used_consec_lcs == m_max_used_consec_lcs;
+		// have I ignored enough consecutive loop closures?
+		bool ignore_limit_reached =
+			m_curr_ignored_consec_lcs == m_max_ignored_consec_lcs;
+
+		// Have I reached any of the limits above?
+		if (ignore_limit_reached || use_limit_reached) {
+			m_curr_ignored_consec_lcs = 0;
+			m_curr_used_consec_lcs = 0;
+
+			// decide of the my policy on full optimization
+			if (ignore_limit_reached) {
+				m_optimization_policy = FOP_USE_LC;
+			}
+			if (use_limit_reached) {
+				m_optimization_policy = FOP_IGNORE_LC;
+			}
+		}
+		else { // no limits reached yet.
+			if (m_optimization_policy == FOP_USE_LC) {
+				m_curr_used_consec_lcs += 1;
+			}
+			else {
+				m_curr_ignored_consec_lcs += 1;
+			}
+		}
+	}
+
+	// Decide on whether to fully optimize the graph based on the mode I am in
+	if (m_optimization_policy == FOP_IGNORE_LC) {
+		is_full_update = false;
+		MRPT_LOG_WARN_STREAM <<
+			"*PARTIAL* graph optimization.. ignoring new loop closure";
+	}
+	else {
+		is_full_update = true;
+		MRPT_LOG_INFO_STREAM <<
+			"Commencing with *FULL* graph optimization... ";
+	}
+	return is_full_update;
+
+}
+
+template<class GRAPH_t>
+bool CLevMarqGSO<GRAPH_t>::justFullyOptimizedGraph() const {
+	return m_just_fully_optimized_graph;
+}
+
+
+template<class GRAPH_t>
 void CLevMarqGSO<GRAPH_t>::levMarqFeedback(
 		const GRAPH_t &graph,
 		const size_t iter,
@@ -565,8 +652,20 @@ void CLevMarqGSO<GRAPH_t>::loadParams(const std::string& source_fname) {
 	opt_params.loadFromConfigFileName(source_fname, "OptimizerParameters");
 	viz_params.loadFromConfigFileName(source_fname, "VisualizationParameters");
 
-	// set the logging level if given by the user
 	CConfigFile source(source_fname);
+
+	// TODO - check that these work
+	m_max_used_consec_lcs = source.read_int(
+			"OptimizerParameters",
+			"max_used_consecutive_loop_closures",
+			2, false);
+
+	m_max_ignored_consec_lcs = source.read_int(
+			"OptimizerParameters",
+			"max_ignored_consecutive_loop_closures",
+			15, false);
+
+	// set the logging level if given by the user
 	// Minimum verbosity level of the logger
 	int min_verbosity_level = source.read_int(
 			"OptimizerParameters",

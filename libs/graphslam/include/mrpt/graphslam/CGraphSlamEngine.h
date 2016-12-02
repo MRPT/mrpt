@@ -781,7 +781,7 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		 */
 		bool m_request_to_exit;
 
-		/**\name gridmap-related
+		/**\name Gridmap-related objects
 		 * \brief Cached version and corresponding flag of occupancy gridmap
 		 */
 		/**\{*/
