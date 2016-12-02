@@ -59,6 +59,11 @@ class CGraphSlamOptimizer : public mrpt::graphslam::CRegistrationDeciderOrOptimi
 				mrpt::obs::CSensoryFramePtr observations,
 				mrpt::obs::CObservationPtr observation ) = 0;
 
+    /**\brief Used by the caller to query for possible full graph optimization
+     * on the latest optimizer run
+     */
+    virtual bool justFullyOptimizedGraph() const {return false;}
+
 	protected:
 		/**\brief method called for optimizing the underlying graph.
 		 */

@@ -547,7 +547,7 @@ bool CGraphSlamEngine<GRAPH_t>::execGraphSlamStep(
 
 		if (m_enable_visuals && m_visualize_map) {
 			mrpt::synch::CCriticalSectionLocker m_graph_lock(&m_graph_section);
-			bool full_update = m_edge_registrar->justInsertedLoopClosure();
+			bool full_update = m_optimizer->justFullyOptimizedGraph();
 			this->updateMapVisualization(m_graph, m_nodes_to_laser_scans2D, full_update);
 		}
 
@@ -647,7 +647,6 @@ bool CGraphSlamEngine<GRAPH_t>::execGraphSlamStep(
 		}
 		else if (mrpt::system::strCmpI(m_GT_file_format, "navsimul")) {
 			if (m_observation_only_dataset) { // 1/2loops
-				MRPT_LOG_DEBUG_STREAM("observation_only_dataset: Updating GTVisualization");
 				if (rawlog_entry % 2 == 0) {
 		      if (m_enable_visuals) {
 			      this->updateGTVisualization(); // I have already taken care of the step
@@ -658,7 +657,6 @@ bool CGraphSlamEngine<GRAPH_t>::execGraphSlamStep(
 			}
 			else { // 1/loop
 				// get both action and observation at a single step - same rate as GT
-				MRPT_LOG_DEBUG_STREAM("action-observations dataset: Updating GTVisualization");
 		    if (m_enable_visuals) {
 			    this->updateGTVisualization(); // I have already taken care of the step
 			  }
@@ -1625,7 +1623,7 @@ void CGraphSlamEngine<GRAPH_t>::updateMapVisualization(
 			// for all the nodes get the node position and the corresponding laser scan
 			// if they were recorded and visualize them
 			m_graph.getAllNodes(nodes_set);
-			MRPT_LOG_INFO_STREAM( "Executing full update of the map");
+			MRPT_LOG_DEBUG_STREAM << "Executing full update of the map visuals";
 
 		} // IF FULL UPDATE
 		else { // add only current CSimplePointMap

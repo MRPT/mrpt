@@ -149,7 +149,9 @@ class CLevMarqGSO:
 		/**\brief Get a list of the window events that happened since the last
 		 * call.
 		 */
-		void notifyOfWindowEvents(const std::map<std::string, bool>& events_occurred);
+		void notifyOfWindowEvents(
+				const std::map<std::string,
+				bool>& events_occurred);
 		/**\brief Struct for holding the optimization-related variables in a
 		 * compact form
 		 */
@@ -184,9 +186,6 @@ class CLevMarqGSO:
 				typename GRAPH_t::edges_map_t last_pair_nodes_to_edge;
 		};
 
-		void loadParams(const std::string& source_fname);
-		void printParams() const;
-
 		/**\brief struct for holding the graph visualization-related variables in a
 		 * compact form
 		 */
@@ -209,7 +208,12 @@ class CLevMarqGSO:
 				double offset_y_graph;
 
 		};
+
+		void loadParams(const std::string& source_fname);
+		void printParams() const;
 		void getDescriptiveReport(std::string* report_str) const;
+
+    bool justFullyOptimizedGraph() const;
 
 		// Public members
 		// ////////////////////////////
@@ -242,16 +246,26 @@ class CLevMarqGSO:
 		 * \sa _optimizeGraph()
 		 */
 		void optimizeGraph();
-		/**\brief Checks if a loop closure edge was added in the graph.
+		/**\brief Check if a loop closure edge was added in the graph.
 		 *
 		 * Match the previously registered edges in the graph with the current. If
 		 * there is a node difference *in any new edge* greater than
-		 * \b LC_min_nodeid_diff (see .ini parameter) then a full graph optimization
-		 * is issued.
+		 * \b LC_min_nodeid_diff (see .ini parameter) then new constraint is
+		 * considered a Loop Closure
 		 *
-		 * \return True on new loop closure
+		 * \return True if \b any of the newly added edges is considered a loop
+		 * closure
 		 */
 		bool checkForLoopClosures();
+		/**\brief Decide whether to issue a full graph optimization
+		 *
+		 * In case N consecutive full optimizations have been issued, skip some of
+		 * the next as they slow down the overall execution and they don't reduce
+		 * the overall error
+		 */
+		bool checkForFullOptimization();
+		/**\brief Initialize objects relateed to the Graph Visualization
+		 */
 		void initGraphVisualization();
 		/**\brief Called internally for updating the visualization scene for the graph
 		 * building procedure
@@ -306,6 +320,57 @@ class CLevMarqGSO:
 		// Use second thread for graph optimization
 		mrpt::system::TThreadHandle m_thread_optimize;
 		mrpt::utils::CTimeLogger m_time_logger; /**<Time logger instance */
+
+
+		/**\brief Enumeration that defines the behaviors towards using or ignoring a
+		 * newly added loop closure to fully optimize the graph
+		 */
+		enum FullOptimizationPolicy {
+			FOP_IGNORE_LC=0,
+			FOP_USE_LC
+		};
+		/**\brief Should I fully optimize the graph on loop closure?
+		 */
+		FullOptimizationPolicy m_optimization_policy;
+
+		/**\name Smart Full-Optimization Command
+		 *
+		 * Instead of issuing a full optimization every time a loop closure is
+		 * detected, ignore current loop closure when enough consecutive loop
+		 * closures have already been utilised.
+		 * This avoids the added computational cost that is needed for optimizing
+		 * the graph without reducing the accuracy of the overall operation
+		 */
+		/**\{*/
+
+		/**\brief Number of maximum cosecutive loop closures that are allowed to be
+		 * issued.
+		 *
+		 * \sa m_curr_used_consec_lcs, m_max_ignored_consec_lcs
+		 */
+		size_t m_max_used_consec_lcs;
+		/**\brief Number of consecutive loop closures that are currently registered
+		 *
+		 * \sa m_max_used_consec_lcs
+		 */
+		size_t m_curr_used_consec_lcs;
+		/**\brief Number of consecutive loop closures to ignore after \b
+		 * m_max_used_consec_lcs have already been issued.
+		 *
+		 * \sa m_curr_ignored_consec_lcs, m_max_used_consec_lcs
+		 */
+		size_t m_max_ignored_consec_lcs;
+		/**\brief Consecutive Loop Closures that have currently been ignored
+		 *
+		 * \sa m_max_ignored_consec_lcs
+		 */
+		size_t m_curr_ignored_consec_lcs;
+
+		/**\}*/
+
+		/**\brief Indicates whether a full graph optimization was just issued.
+		 */
+		bool m_just_fully_optimized_graph;
 };
 
 } } } // end of namespaces
