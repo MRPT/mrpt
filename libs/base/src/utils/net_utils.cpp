@@ -427,7 +427,6 @@ void thread_DNS_solver_async(TDNSThreadData &dat); // Frd decl.
   *
   * \return true on success, false on timeout or other error.
   */
-
 bool net::DNS_resolve_async(
 	const std::string &server_name,
 	std::string	 &out_ip,

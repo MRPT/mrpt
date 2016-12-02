@@ -106,9 +106,10 @@ namespace mrpt
 				edges.insert(edges.end(), entry);
 			}
 
-			/** Test is the given directed edge exists. */
-			inline bool edgeExists(TNodeID from_nodeID, TNodeID to_nodeID) const
-			{ return edges.find(std::make_pair(from_nodeID,to_nodeID))!=edges.end(); }
+			/** Test if the given directed edge exists. */
+			inline bool edgeExists(TNodeID from_nodeID, TNodeID to_nodeID) const { 
+				return edges.find(std::make_pair(from_nodeID,to_nodeID))!=edges.end();
+			}
 
 			/** Return a reference to the content of a given edge.
 			  *  If several edges exist between the given nodes, the first one is returned.
@@ -138,11 +139,11 @@ namespace mrpt
 
 			/** Return a pair<first,last> of iterators to the range of edges between two given nodes. \sa getEdge  */
 			std::pair<iterator,iterator> getEdges(TNodeID from_nodeID, TNodeID to_nodeID) {
-				return edges.equal_range( std::make_pair(from_nodeID,to_nodeID) );
+				return edges.equal_range(std::make_pair(from_nodeID,to_nodeID));
 			}
 			/** Return a pair<first,last> of const iterators to the range of edges between two given nodes.  \sa getEdge */
 			std::pair<const_iterator,const_iterator> getEdges(TNodeID from_nodeID, TNodeID to_nodeID) const {
-				return edges.equal_range( std::make_pair(from_nodeID,to_nodeID) );
+				return edges.equal_range(std::make_pair(from_nodeID,to_nodeID));
 			}
 
 			/** Erase all edges between the given nodes (it has no effect if no edge existed)
