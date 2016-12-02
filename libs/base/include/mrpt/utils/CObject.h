@@ -188,8 +188,8 @@ namespace mrpt
 				typedef class_name value_type; \
 				inline class_name##Ptr() : base_name##Ptr(static_cast<base_name*>(NULL)) { } \
 				inline explicit class_name##Ptr(class_name* p) : base_name##Ptr( static_cast<base_name*>(p) ) { } \
-				inline explicit class_name##Ptr(const base_name##Ptr & p) : base_name##Ptr(p) { ASSERTMSG_( p->GetRuntimeClass()->derivedFrom(#class_name),::mrpt::format("Wrong typecasting of smart pointers: %s -> %s",p->GetRuntimeClass()->className, #class_name) )  } \
-				inline explicit class_name##Ptr(const mrpt::utils::CObjectPtr & p) : base_name##Ptr(p) { ASSERTMSG_( p->GetRuntimeClass()->derivedFrom(#class_name),::mrpt::format("Wrong typecasting of smart pointers: %s -> %s",p->GetRuntimeClass()->className, #class_name) )  } \
+				inline explicit class_name##Ptr(const base_name##Ptr & p) : base_name##Ptr(p) { if(!p.null()) ASSERTMSG_( p->GetRuntimeClass()->derivedFrom(#class_name),::mrpt::format("Wrong typecasting of smart pointers: %s -> %s",p->GetRuntimeClass()->className, #class_name) )  } \
+				inline explicit class_name##Ptr(const mrpt::utils::CObjectPtr & p) : base_name##Ptr(p) { if(!p.null())ASSERTMSG_( p->GetRuntimeClass()->derivedFrom(#class_name),::mrpt::format("Wrong typecasting of smart pointers: %s -> %s",p->GetRuntimeClass()->className, #class_name) )  } \
 				inline void setFromPointerDoNotFreeAtDtor(const class_name* p) { this->set(const_cast<mrpt::utils::CObject*>(static_cast<const mrpt::utils::CObject*>(p))); m_holder->increment(); } \
 				/*! Return the internal plain C++ pointer */ \
 				inline class_name * pointer() { return dynamic_cast<class_name*>(base_name##Ptr::pointer()); } \
