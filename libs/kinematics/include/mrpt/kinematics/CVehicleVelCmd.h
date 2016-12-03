@@ -10,6 +10,7 @@
 
 #include <mrpt/kinematics/link_pragmas.h>
 #include <mrpt/utils/CSerializable.h>
+#include <mrpt/utils/CConfigFileBase.h>
 #include <string>
 
 namespace mrpt
@@ -36,6 +37,32 @@ namespace mrpt
 			virtual bool isStopCmd() const = 0; //!< Returns true if the command means "do not move" / "stop". \sa setToStop
 			virtual void setToStop() = 0; //!< Set to a command that means "do not move" / "stop". \sa isStopCmd
 			std::string asString() const; //!< Returns a human readable description of the cmd
+
+			/** Virtual base class for parameters required by cmdVel_limits() in derived classes. */
+			struct KINEMATICS_IMPEXP TVelCmdParams
+			{
+				TVelCmdParams();
+				virtual ~TVelCmdParams();
+				/** Load any parameter required by a derived class. */
+				virtual void loadConfigFile(const mrpt::utils::CConfigFileBase &cfg, const std::string &section) = 0;
+			};
+
+			/** Scale a velocity command.
+			* \param[in,out] vel_cmd The raw motion command from the selected reactive method, with the same meaning than in changeSpeeds(). Upon return,
+			*                        this should contain the resulting scaled-down velocity command. This will be subsequently filtered by cmdVel_limits().
+			* \param[in] vel_scale A scale within [0,1] reflecting how much should be the raw velocity command be lessen (e.g. for safety reasons,...).
+			* \param[out] out_vel_cmd
+			*
+			* Users can directly inherit from existing implementations instead of manually redefining this method:
+			*  - mrpt::nav::CReactiveInterfaceImplementation_DiffDriven
+			*  - mrpt::nav::CReactiveInterfaceImplementation_Holo
+			*/
+			virtual void cmdVel_scale(mrpt::kinematics::CVehicleVelCmd &vel_cmd, double vel_scale) = 0;
+
+			/** Should compute a blended version of `beta` (within [0,1]) of `vel_cmd` and `1-beta` of `prev_vel_cmd`, simultaneously
+			* to honoring any user-side maximum velocities.
+			*/
+			virtual void cmdVel_limits(mrpt::kinematics::CVehicleVelCmd &vel_cmd, const mrpt::kinematics::CVehicleVelCmd &prev_vel_cmd, const double beta, const TVelCmdParams &params) = 0;
 		};
 		DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(CVehicleVelCmd, mrpt::utils::CSerializable, KINEMATICS_IMPEXP)
 

@@ -47,3 +47,10 @@ CVehicleVelCmd & CVehicleVelCmd::operator =(const CVehicleVelCmd &other)
 		this->setVelCmdElement(i, other.getVelCmdElement(i) );
 	return *this;
 }
+
+CVehicleVelCmd::TVelCmdParams::TVelCmdParams()
+{
+}
+CVehicleVelCmd::TVelCmdParams::~TVelCmdParams()
+{
+}
