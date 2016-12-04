@@ -101,3 +101,27 @@ void CVehicleVelCmd_Holo::writeToStream(mrpt::utils::CStream &out, int *version)
 	}
 	out << vel << dir_local << ramp_time << rot_speed;
 }
+
+
+void CVehicleVelCmd_Holo::cmdVel_scale(double vel_scale)
+{
+	vel *= vel_scale; // |(vx,vy)|
+	rot_speed *= vel_scale; // rot_speed
+	// ramp_time: leave unchanged
+}
+
+void CVehicleVelCmd_Holo::cmdVel_limits(const mrpt::kinematics::CVehicleVelCmd &prev_vel_cmd, const double beta, const TVelCmdParams &params)
+{
+	ASSERTMSG_(params.robotMax_V_mps >= .0, "[CVehicleVelCmd_Holo] `robotMax_V_mps` must be set to valid values: either assign values programatically or call loadConfigFile()");
+	const mrpt::kinematics::CVehicleVelCmd_Holo *prevcmd = dynamic_cast<const mrpt::kinematics::CVehicleVelCmd_Holo*>(&prev_vel_cmd);
+	ASSERTMSG_(prevcmd, "Expected prevcmd of type `CVehicleVelCmd_Holo`");
+
+	double f = 1.0;
+	if (vel>params.robotMax_V_mps) f = params.robotMax_V_mps / vel;
+
+	vel *= f; // |(vx,vy)|
+	rot_speed *= f; // rot_speed
+	// ramp_time: leave unchanged
+	// Blending with "beta" not required, since the ramp_time already blends cmds for holo robots.
+}
+
