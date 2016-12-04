@@ -37,6 +37,10 @@ namespace mrpt
 			void setVelCmdElement(const int index, const double val)  MRPT_OVERRIDE;
 			bool isStopCmd() const MRPT_OVERRIDE;
 			void setToStop() MRPT_OVERRIDE;
+
+			// See base class docs.
+			void cmdVel_scale(double vel_scale) MRPT_OVERRIDE;
+			void cmdVel_limits(const mrpt::kinematics::CVehicleVelCmd &prev_vel_cmd, const double beta, const TVelCmdParams &params)  MRPT_OVERRIDE;
 		};
 		DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(CVehicleVelCmd_Holo, CVehicleVelCmd, KINEMATICS_IMPEXP)
 

@@ -38,18 +38,19 @@ namespace mrpt
 			virtual void setToStop() = 0; //!< Set to a command that means "do not move" / "stop". \sa isStopCmd
 			std::string asString() const; //!< Returns a human readable description of the cmd
 
-			/** Virtual base class for parameters required by cmdVel_limits() in derived classes. */
+			/** Parameters that may be used by cmdVel_limits() in any derived classes. */
 			struct KINEMATICS_IMPEXP TVelCmdParams
 			{
+				double  robotMax_V_mps;       //!< Max. linear speed (m/s) [Default=-1 (not set), will raise exception if needed and not set]
+				double  robotMax_W_radps;     //!< Max. angular speed (rad/s) [Default=-1 (not set), will raise exception if needed and not set]
+				double  robotMinCurvRadius;   //!< Min. radius of curvature of paths (m) [Default=-1 (not set), will raise exception if needed and not set]
+
 				TVelCmdParams();
-				virtual ~TVelCmdParams();
-				/** Load any parameter required by a derived class. */
-				virtual void loadConfigFile(const mrpt::utils::CConfigFileBase &cfg, const std::string &section) = 0;
+				/** Load any parameter required by a CVehicleVelCmd derived class. */
+				void loadConfigFile(const mrpt::utils::CConfigFileBase &cfg, const std::string &section);
 			};
 
-			/** Scale a velocity command.
-			* \param[in,out] vel_cmd The raw motion command from the selected reactive method, with the same meaning than in changeSpeeds(). Upon return,
-			*                        this should contain the resulting scaled-down velocity command. This will be subsequently filtered by cmdVel_limits().
+			/** Scale the velocity command encoded in this object.
 			* \param[in] vel_scale A scale within [0,1] reflecting how much should be the raw velocity command be lessen (e.g. for safety reasons,...).
 			* \param[out] out_vel_cmd
 			*
@@ -57,12 +58,12 @@ namespace mrpt
 			*  - mrpt::nav::CReactiveInterfaceImplementation_DiffDriven
 			*  - mrpt::nav::CReactiveInterfaceImplementation_Holo
 			*/
-			virtual void cmdVel_scale(mrpt::kinematics::CVehicleVelCmd &vel_cmd, double vel_scale) = 0;
+			virtual void cmdVel_scale(double vel_scale) = 0;
 
-			/** Should compute a blended version of `beta` (within [0,1]) of `vel_cmd` and `1-beta` of `prev_vel_cmd`, simultaneously
+			/** Updates this command, computing a blended version of `beta` (within [0,1]) of `vel_cmd` and `1-beta` of `prev_vel_cmd`, simultaneously
 			* to honoring any user-side maximum velocities.
 			*/
-			virtual void cmdVel_limits(mrpt::kinematics::CVehicleVelCmd &vel_cmd, const mrpt::kinematics::CVehicleVelCmd &prev_vel_cmd, const double beta, const TVelCmdParams &params) = 0;
+			virtual void cmdVel_limits(const mrpt::kinematics::CVehicleVelCmd &prev_vel_cmd, const double beta, const TVelCmdParams &params) = 0;
 		};
 		DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(CVehicleVelCmd, mrpt::utils::CSerializable, KINEMATICS_IMPEXP)
 
