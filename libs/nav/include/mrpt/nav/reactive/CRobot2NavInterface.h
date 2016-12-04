@@ -128,67 +128,6 @@ namespace mrpt
 		mrpt::utils::CTicTac  m_navtime; //!< For getNavigationTime
 	};
 
-	/** Partial implementation of CRobot2NavInterface for differential-driven robots
-	  *  \ingroup nav_reactive
-	  */
-	class NAV_IMPEXP CRobot2NavInterface_DiffDriven : public CRobot2NavInterface
-	{
-	public:
-		// See base class docs.
-
-	};
-
-	/** Partial implementation of CRobot2NavInterface for holonomic robots
-	  *  \ingroup nav_reactive
-	  */
-	class NAV_IMPEXP CRobot2NavInterface_Holo : public CRobot2NavInterface
-	{
-	public:
-		// See base class docs.
-
-		/** See docs of method in base class. 
-		  * For holonomic robots, `vel_cmd=[vel dir_local ramp_time rot_speed]`
-		  */
-		void cmdVel_scale(mrpt::kinematics::CVehicleVelCmd &vel_cmd, double vel_scale) MRPT_OVERRIDE
-		{
-			mrpt::kinematics::CVehicleVelCmd_Holo *cmd = dynamic_cast<mrpt::kinematics::CVehicleVelCmd_Holo*>(&vel_cmd);
-			ASSERTMSG_(cmd, "Expected velcmd of type `CVehicleVelCmd_Holo`");
-			cmd->vel       *= vel_scale; // |(vx,vy)|
-			cmd->rot_speed *= vel_scale; // rot_speed
-			// ramp_time: leave unchanged
-		}
-
-		// See base class docs.
-		void cmdVel_limits(mrpt::kinematics::CVehicleVelCmd &vel_cmd, const mrpt::kinematics::CVehicleVelCmd &prev_vel_cmd, const double beta) MRPT_OVERRIDE
-		{ // remember:  `vel_cmd=[vel dir_local ramp_time rot_speed]`
-			ASSERTMSG_(robotMax_V_mps >= .0, "[CReactiveInterfaceImplementation_Holo] `robotMax_V_mps` must be set to valid values: either assign values programatically or call loadConfigFile()");
-			mrpt::kinematics::CVehicleVelCmd_Holo *newcmd = dynamic_cast<mrpt::kinematics::CVehicleVelCmd_Holo*>(&vel_cmd);
-			const mrpt::kinematics::CVehicleVelCmd_Holo *prevcmd = dynamic_cast<const mrpt::kinematics::CVehicleVelCmd_Holo*>(&prev_vel_cmd);
-			ASSERTMSG_(newcmd && prevcmd, "Expected velcmd of type `CVehicleVelCmd_Holo`");
-
-			double f=1.0;
-			if (newcmd->vel>robotMax_V_mps) f = robotMax_V_mps/ newcmd->vel;
-
-			newcmd->vel *= f; // |(vx,vy)|
-			newcmd->rot_speed *= f; // rot_speed
-			// ramp_time: leave unchanged
-			// Blending with "beta" not required, since the ramp_time already blends cmds for holo robots.
-		}
-
-		/** This class recognizes these parameters: `robotMax_V_mps` */
-		virtual void loadConfigFile(const mrpt::utils::CConfigFileBase &cfg, const std::string &section) MRPT_OVERRIDE 
-		{
-			MRPT_LOAD_CONFIG_VAR_NO_DEFAULT(robotMax_V_mps,double,  cfg,section);
-		}
-
-		double  robotMax_V_mps;       //!< Max. instantaneous linear speed (m/s)
-
-		CRobot2NavInterface_Holo() :
-			robotMax_V_mps(-1.0)
-		{
-		}
-	};
-
   }
 }
 

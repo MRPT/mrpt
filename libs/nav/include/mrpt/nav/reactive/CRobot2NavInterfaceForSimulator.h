@@ -16,13 +16,13 @@ namespace mrpt
 {
   namespace nav
   {
-	/** CRobot2NavInterface_Holo implemented for a simulator object based on mrpt::kinematics::CVehicleSimul_Holo.
+	/** CRobot2NavInterface implemented for a simulator object based on mrpt::kinematics::CVehicleSimul_Holo.
 	  * Only `senseObstacles()` remains virtual for the user to implement it.
 	  *
 	  * \sa CReactiveNavigationSystem, CAbstractNavigator, mrpt::kinematics::CVehicleSimulVirtualBase
 	  *  \ingroup nav_reactive
 	  */
-	class NAV_IMPEXP CRobot2NavInterfaceForSimulator_Holo : public CRobot2NavInterface_Holo
+	class NAV_IMPEXP CRobot2NavInterfaceForSimulator_Holo : public CRobot2NavInterface
 	{
 	private:
 		mrpt::kinematics::CVehicleSimul_Holo & m_simul;
@@ -62,13 +62,13 @@ namespace mrpt
 	};
 
 
-	/** CRobot2NavInterface_DiffDriven implemented for a simulator object based on mrpt::kinematics::CVehicleSimul_DiffDriven
+	/** CRobot2NavInterface implemented for a simulator object based on mrpt::kinematics::CVehicleSimul_DiffDriven
 	  * Only `senseObstacles()` remains virtual for the user to implement it.
 	  *
 	  * \sa CReactiveNavigationSystem, CAbstractNavigator, mrpt::kinematics::CVehicleSimulVirtualBase
 	  *  \ingroup nav_reactive
 	  */
-	class NAV_IMPEXP CRobot2NavInterfaceForSimulator_DiffDriven : public CRobot2NavInterface_DiffDriven
+	class NAV_IMPEXP CRobot2NavInterfaceForSimulator_DiffDriven : public CRobot2NavInterface
 	{
 	private:
 		mrpt::kinematics::CVehicleSimul_DiffDriven & m_simul;
