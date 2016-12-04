@@ -16,7 +16,7 @@ namespace kinematics
 {
 	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE(CVehicleVelCmd_DiffDriven, CVehicleVelCmd, KINEMATICS_IMPEXP)
 
-	/** Kinematic model for
+	/** Kinematic model for Ackermann-like or differential-driven vehicles.
 	 *
 	 * \ingroup mrpt_kinematics_grp
 	 */
@@ -35,6 +35,19 @@ namespace kinematics
 		void setVelCmdElement(const int index, const double val) MRPT_OVERRIDE;
 		bool isStopCmd() const MRPT_OVERRIDE;
 		void setToStop() MRPT_OVERRIDE;
+
+		/** See docs of method in base class. The implementation for differential-driven robots of this method
+		* just multiplies all the components of vel_cmd times vel_scale, which is appropriate
+		*  for differential-driven kinematic models (v,w).
+		*/
+		void cmdVel_scale(double vel_scale) MRPT_OVERRIDE;
+
+		/** See base class docs.
+		 * Tecognizes these parameters: `robotMax_V_mps`, `robotMax_W_degps` */
+		void cmdVel_limits(const mrpt::kinematics::CVehicleVelCmd &prev_vel_cmd, const double beta, const TVelCmdParams &params)  MRPT_OVERRIDE;
+
+	private:
+		void filter_max_vw(double &v, double &w, const TVelCmdParams &p);
 	};
 	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(CVehicleVelCmd_DiffDriven, CVehicleVelCmd, KINEMATICS_IMPEXP)
 

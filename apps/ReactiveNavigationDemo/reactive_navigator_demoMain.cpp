@@ -770,7 +770,7 @@ bool reactive_navigator_demoframe::reinitSimulator()
 		// Params for simulator-to-nav interface:
 		CConfigFileMemory cfg;
 		cfg.setContent( std::string(edParamsReactive->GetValue().mb_str() ) );
-		m_robotSimul2NavInterface->loadConfigFile(cfg, "GLOBAL_CONFIG");
+		//m_robotSimul2NavInterface->loadConfigFile(cfg, "GLOBAL_CONFIG");
 	}
 
 	// Delete old & build new navigator:

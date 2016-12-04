@@ -798,15 +798,16 @@ void CAbstractPTGBasedReactive::STEP7_GenerateSpeedCommands( const THolonomicMov
 			new_vel_cmd = in_movement.PTG->directionToMotionCommand( in_movement.PTG->alpha2index( in_movement.direction ) );
 
 			// Scale holonomic speeds to real-world one:
-			MRPT_LOG_DEBUG_FMT("STEP7_GenerateSpeedCommands: new_vel_cmd=0x%p in_movement.speed=%f", (void*)new_vel_cmd.pointer(), in_movement.speed );
-			m_robot.cmdVel_scale(*new_vel_cmd, in_movement.speed );
+			new_vel_cmd->cmdVel_scale(in_movement.speed);
 
 			if (!m_last_vel_cmd) // first iteration? Use default values:
 				m_last_vel_cmd = in_movement.PTG->getSupportedKinematicVelocityCommand();
 
 			// Honor user speed limits & "blending":
 			const double beta = meanExecutionPeriod.getLastOutput() / (meanExecutionPeriod.getLastOutput() + SPEEDFILTER_TAU);
-			m_robot.cmdVel_limits(*new_vel_cmd, *m_last_vel_cmd, beta);
+			new_vel_cmd->cmdVel_limits(*m_last_vel_cmd, beta, this->robotVelocityParams);
+			
+			MRPT_LOG_DEBUG_FMT("STEP7_GenerateSpeedCommands: new_cmd_vel=%s after speedScale=%.03f beta=%.03f", new_vel_cmd->asString().c_str(), in_movement.speed, beta);
 		}
 
 		m_last_vel_cmd = new_vel_cmd; // Save for filtering in next step
@@ -853,7 +854,7 @@ void CAbstractPTGBasedReactive::loadConfigFile(const mrpt::utils::CConfigFileBas
 	this->internal_loadConfigFile(cfg, section_prefix);
 
 	// ========= Load "Global params" (must be called after initialization of PTGs in `internal_loadConfigFile()`)
-	this->m_robot.loadConfigFile(cfg,sectGlobal); // robot interface params
+	this->robotVelocityParams.loadConfigFile(cfg,sectGlobal); // robot interface params
 	this->loadWaypointsParamsConfigFile(cfg,sectCfg);
 	this->loadHolonomicMethodConfig(cfg,sectGlobal); // Load holonomic method params
 	ASSERT_(!m_holonomicMethod.empty())

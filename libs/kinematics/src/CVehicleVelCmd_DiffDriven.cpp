@@ -93,3 +93,50 @@ void CVehicleVelCmd_DiffDriven::writeToStream(mrpt::utils::CStream &out, int *ve
 	}
 	out << lin_vel << ang_vel;
 }
+
+void CVehicleVelCmd_DiffDriven::cmdVel_scale(double vel_scale)
+{
+	lin_vel *= vel_scale;
+	ang_vel *= vel_scale;
+}
+
+void CVehicleVelCmd_DiffDriven::cmdVel_limits(const mrpt::kinematics::CVehicleVelCmd &prev_vel_cmd, const double beta, const TVelCmdParams &params)
+{
+	ASSERT_(params.robotMax_V_mps>0);
+	ASSERT_(params.robotMax_W_radps>0);
+	const mrpt::kinematics::CVehicleVelCmd_DiffDriven *prevcmd = dynamic_cast<const mrpt::kinematics::CVehicleVelCmd_DiffDriven*>(&prev_vel_cmd);
+	ASSERTMSG_(prevcmd, "Expected prevcmd of type `CVehicleVelCmd_DiffDriven`");
+	filter_max_vw(lin_vel, ang_vel, params);
+	if (std::abs(lin_vel) < 0.01) // i.e. new behavior is nearly a pure rotation
+	{ // thus, it's OK to blend the rotational component
+		ang_vel = beta*ang_vel + (1 - beta)*prevcmd->ang_vel;
+	}
+	else // there is a non-zero translational component
+	{
+		// must maintain the ratio of w to v (while filtering v)
+		float ratio = ang_vel / lin_vel;
+		lin_vel = beta*lin_vel + (1 - beta)*prevcmd->lin_vel;   // blend new v value
+		ang_vel = ratio * lin_vel;  // ensure new w implements expected path curvature
+
+		filter_max_vw(lin_vel, ang_vel, params);
+	}
+}
+
+void CVehicleVelCmd_DiffDriven::filter_max_vw(double &v, double &w, const TVelCmdParams &p)
+{
+	// Ensure maximum speeds:
+	if (std::abs(v) > p.robotMax_V_mps) {
+		// Scale:
+		const double F = std::abs(p.robotMax_V_mps / v);
+		v *= F;
+		w *= F;
+	}
+
+	if (std::abs(w) > p.robotMax_W_radps) {
+		// Scale:
+		const double F = std::abs(p.robotMax_W_radps / w);
+		v *= F;
+		w *= F;
+	}
+}
+
