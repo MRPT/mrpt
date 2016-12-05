@@ -533,3 +533,39 @@ std::string mrpt::utils::net::getLastSocketErrorStr()
 #endif
 }
 
+
+MRPT_TODO("Modify ping to run on Windows + Test this");
+bool mrpt::utils::net::Ping(
+		const std::string& address,
+    const int& max_attempts,
+    std::string* output_str/*=NULL*/)
+{
+	using namespace std;
+
+  // Format a command string
+	string cmd_str = "ping";
+
+  // different "count" argument for Windows and *NIX  systems
+#if defined(MRPT_OS_LINUX) || defined(MRPT_OS_APPLE)
+	string count_arg_str = "-c " + num2str(max_attempts);
+#else
+	string count_arg_str = "-n " + num2str(max_attempts);
+#endif
+
+	string redirection_str = "2>&1";
+
+	// Join the command subparts
+	string cmd_full_str = mrpt::format("%s %s %s %s",
+			cmd_str.c_str(),
+			count_arg_str.c_str(),
+			address.c_str(),
+			redirection_str.c_str());
+
+  // Finally exec the command
+  int code = executeCommand(cmd_full_str, output_str);
+
+  return (code == 0);
+}
+
+
+
