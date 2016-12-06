@@ -472,6 +472,8 @@ void navlog_viewer_GUI_designDialog::UpdateInfoFromLoadedLog()
 		wxScrollEvent d;
 		OnslidLogCmdScroll(d);
 
+		MRPT_TODO("Refactor this to handle different cmdvel types during one log");
+#if 0
 		CDisplayWindowPlotsPtr &win = m_mywins["VW"];
 		if (!win)  {
 			win= CDisplayWindowPlots::Create("Commanded v (red)/w (blue)",400,200);
@@ -509,6 +511,7 @@ void navlog_viewer_GUI_designDialog::UpdateInfoFromLoadedLog()
 		}
 		win->axis_fit();
 		win->setWindowTitle(sCmdVelTitle);
+#endif
 	}
 
 	std::string sDuration("???");
