@@ -549,6 +549,8 @@ bool mrpt::utils::net::Ping(
 #if defined(MRPT_OS_LINUX) || defined(MRPT_OS_APPLE)
 	string count_arg_str = "-c " + num2str(max_attempts);
 #else
+	THROW_EXCEPTION("Ping not implemented on Windows Yet.")
+
 	string count_arg_str = "-n " + num2str(max_attempts);
 #endif
 
