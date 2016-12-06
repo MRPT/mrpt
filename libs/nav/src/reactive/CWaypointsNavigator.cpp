@@ -17,7 +17,8 @@ using namespace std;
 
 CWaypointsNavigator::CWaypointsNavigator(CRobot2NavInterface &robot_if) :
 	CAbstractNavigator(robot_if),
-	MAX_DISTANCE_TO_ALLOW_SKIP_WAYPOINT(-1.0)
+	MAX_DISTANCE_TO_ALLOW_SKIP_WAYPOINT(-1.0),
+	MIN_TIMESTEPS_CONFIRM_SKIP_WAYPOINTS(1)
 {
 }
 
@@ -143,7 +144,11 @@ void CWaypointsNavigator::navigationStep()
 				const bool is_reachable = this->impl_waypoint_is_reachable(wp_local_wrt_robot);
 
 				if (is_reachable) {
-					most_advanced_wp = idx;
+					// Robustness filter: only skip to a future waypoint if it is seen as "reachable" during 
+					// a given number of timesteps:
+					if (++wps.waypoints[idx].counter_seen_reachable > MIN_TIMESTEPS_CONFIRM_SKIP_WAYPOINTS) {
+						most_advanced_wp = idx;
+					}
 				}
 
 				// Is allowed to skip it?
@@ -191,7 +196,8 @@ void CWaypointsNavigator::navigationStep()
 
 void CWaypointsNavigator::loadWaypointsParamsConfigFile(const mrpt::utils::CConfigFileBase &cfg, const std::string &sectionName)
 {
-	MRPT_LOAD_CONFIG_VAR(MAX_DISTANCE_TO_ALLOW_SKIP_WAYPOINT, double,   cfg, sectionName);
+	MRPT_LOAD_CONFIG_VAR(MAX_DISTANCE_TO_ALLOW_SKIP_WAYPOINT,  double,   cfg, sectionName);
+	MRPT_LOAD_CONFIG_VAR(MIN_TIMESTEPS_CONFIRM_SKIP_WAYPOINTS, int, cfg, sectionName);
 }
 
 void CWaypointsNavigator::onStartNewNavigation()
