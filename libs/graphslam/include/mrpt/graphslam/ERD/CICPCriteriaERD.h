@@ -137,9 +137,6 @@ class CICPCriteriaERD :
 				mrpt::obs::CSensoryFramePtr observations,
 				mrpt::obs::CObservationPtr observation );
 
-
-		void setGraphPtr(GRAPH_t* graph);
-		void setWindowManagerPtr(mrpt::graphslam::CWindowManager* win_manager);
 		void notifyOfWindowEvents(
 				const std::map<std::string, bool>& events_occurred);
 		void getEdgesStats(
@@ -217,11 +214,6 @@ class CICPCriteriaERD :
 		// Private variables
 		//////////////////////////////////////////////////////////////
 
-		GRAPH_t* m_graph; /**<\brief Pointer to the graph under construction */
-		mrpt::gui::CDisplayWindow3D* m_win;
-		mrpt::graphslam::CWindowManager* m_win_manager;
-		mrpt::graphslam::CWindowObserver* m_win_observer;
-
 		bool m_initialized_visuals;
 		bool m_just_inserted_loop_closure;
 		bool m_is_using_3DScan;
@@ -250,7 +242,6 @@ class CICPCriteriaERD :
 		size_t m_consecutive_invalid_format_instances;
 		const size_t m_consecutive_invalid_format_instances_thres;
 
-		mrpt::utils::CTimeLogger m_time_logger; /**<Time logger instance */
 };
 
 } } } // end of namespaces

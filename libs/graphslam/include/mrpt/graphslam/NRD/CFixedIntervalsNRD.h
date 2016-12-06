@@ -78,6 +78,9 @@ class CFixedIntervalsNRD:
 		// Public functions
 		//////////////////////////////////////////////////////////////
 
+		/**\brief Node Registration Decider */
+		typedef mrpt::graphslam::deciders::CNodeRegistrationDecider<GRAPH_t> node_reg;
+
 		/**\brief type of graph constraints */
 		typedef typename GRAPH_t::constraint_t constraint_t;
 		/**\brief type of underlying poses (2D/3D). */
@@ -92,12 +95,13 @@ class CFixedIntervalsNRD:
 		/**\brief Class destructor */
 		~CFixedIntervalsNRD();
 
-		void setGraphPtr(GRAPH_t* graph);
 
 		void loadParams(const std::string& source_fname);
 		void printParams() const;
 		void getDescriptiveReport(std::string* report_str) const;
 		pose_t getCurrentRobotPosEstimation() const;
+
+		void setGraphPtr(GRAPH_t* graph);
 
 		/**\brief Method makes use of the CActionCollection/CObservation to update the
 		 * odometry estimation from the last inserted pose
@@ -147,14 +151,9 @@ class CFixedIntervalsNRD:
 		/**\brief Initialization function to be called from the various constructors
 		 */
 		void initCFixedIntervalsNRD();
-		void checkIfInvalidDataset(mrpt::obs::CActionCollectionPtr action,
-				mrpt::obs::CSensoryFramePtr observations,
-				mrpt::obs::CObservationPtr observation );
 
 		// Private members
 		//////////////////////////////////////////////////////////////
-		GRAPH_t* m_graph; /**<\brief Pointer to the graph under construction */
-		mrpt::gui::CDisplayWindow3D* m_win;
 		/**\brief Store the last registered NodeID .
 		 *
 		 * Not his pose since it will most likely change due to calls to the
@@ -169,21 +168,21 @@ class CFixedIntervalsNRD:
 
 		/**\brief Current estimated position */
 		pose_t m_curr_estimated_pose;
-		/**\brief pose_t estimation using only odometry information. Handy for observation-only rawlogs.  */
+		/**\brief pose_t estimation using only odometry information. Handy for
+		 * observation-only rawlogs.
+		 */
 		pose_t m_curr_odometry_only_pose;
-		/**\brief pose_t estimation using only odometry information. Handy for observation-only rawlogs.  */
+		/**\brief pose_t estimation using only odometry information. Handy for
+		 * observation-only rawlogs.
+		 */
 		pose_t m_last_odometry_only_pose;
-		/**\brief Keep track of whether we are reading from an
-		 * observation-only rawlog file or from an action-observation rawlog
+		/**\brief Keep track of whether we are reading from an observation-only
+		 * rawlog file or from an action-observation rawlog
 		 */
 		bool m_observation_only_rawlog;
 
 		// find out if decider is invalid for the given dataset
-		bool m_checked_for_usuable_dataset;
-		size_t m_consecutive_invalid_format_instances;
-		const size_t m_consecutive_invalid_format_instances_thres;
 
-		mrpt::utils::CTimeLogger m_time_logger; /**<Time logger instance */
 };
 
 } } } // end of namespaces

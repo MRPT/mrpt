@@ -16,17 +16,12 @@ namespace mrpt { namespace graphslam { namespace deciders {
 //////////////////////////////////////////////////////////////
 
 template<class GRAPH_t>
-CFixedIntervalsNRD<GRAPH_t>::CFixedIntervalsNRD():
-	m_consecutive_invalid_format_instances_thres(20) // large threshold just to make sure
-{
+CFixedIntervalsNRD<GRAPH_t>::CFixedIntervalsNRD() {
 	this->initCFixedIntervalsNRD();
 }
 template<class GRAPH_t>
 void CFixedIntervalsNRD<GRAPH_t>::initCFixedIntervalsNRD() {
 	using namespace mrpt::utils;
-
-	m_win = NULL;
-	m_graph = NULL;
 
 	m_prev_registered_node = INVALID_NODEID;
 
@@ -38,9 +33,6 @@ void CFixedIntervalsNRD<GRAPH_t>::initCFixedIntervalsNRD() {
 	InfMat init_path_uncertainty(tmp);
 	m_since_prev_node_PDF.cov_inv = init_path_uncertainty;
 	m_since_prev_node_PDF.mean = pose_t();
-
-	m_checked_for_usuable_dataset = false;
-	m_consecutive_invalid_format_instances = 0;
 
 	this->logging_enable_keep_record = true;
 	this->setLoggerName("CFixedIntervalsNRD");
@@ -108,7 +100,7 @@ bool CFixedIntervalsNRD<GRAPH_t>::updateState(
 		}
 	} // ELSE - FORMAT #1
 
-	m_curr_estimated_pose = m_graph->nodes[m_prev_registered_node] +
+	m_curr_estimated_pose = this->m_graph->nodes[m_prev_registered_node] +
 		m_since_prev_node_PDF.getMeanVal();
 
 	bool registered = this->checkRegistrationCondition();
@@ -119,10 +111,6 @@ bool CFixedIntervalsNRD<GRAPH_t>::updateState(
 			m_last_odometry_only_pose = m_curr_odometry_only_pose;
 		}
 		m_since_prev_node_PDF = constraint_t();
-	}
-
-	if (!m_checked_for_usuable_dataset) {
-		this->checkIfInvalidDataset(action, observations, observation );
 	}
 
 	return registered;
@@ -139,7 +127,7 @@ bool CFixedIntervalsNRD<GRAPH_t>::checkRegistrationCondition() {
 
 	//cout << "in checkRegistrationCondition..." << endl;
 
-	pose_t last_pose_inserted = m_graph->nodes[m_prev_registered_node];
+	pose_t last_pose_inserted = this->m_graph->nodes[m_prev_registered_node];
 
 	// odometry criterion
 	if ( (last_pose_inserted.distanceTo(m_curr_estimated_pose)
@@ -168,8 +156,8 @@ void CFixedIntervalsNRD<GRAPH_t>::registerNewNode() {
 	mrpt::utils::TNodeID from = m_prev_registered_node;
 	mrpt::utils::TNodeID to = ++m_prev_registered_node;
 
-	m_graph->nodes[to] = m_graph->nodes[from] + m_since_prev_node_PDF.getMeanVal();
-	m_graph->insertEdgeAtEnd(from, to, m_since_prev_node_PDF);
+	this->m_graph->nodes[to] = this->m_graph->nodes[from] + m_since_prev_node_PDF.getMeanVal();
+	this->m_graph->insertEdgeAtEnd(from, to, m_since_prev_node_PDF);
 
 	MRPT_LOG_DEBUG_STREAM("Registered new node:" << endl <<
 		"\t" << from << " => " << to << endl <<
@@ -179,50 +167,11 @@ void CFixedIntervalsNRD<GRAPH_t>::registerNewNode() {
 }
 template<class GRAPH_t>
 void CFixedIntervalsNRD<GRAPH_t>::setGraphPtr(GRAPH_t* graph) {
-	using namespace mrpt::utils;
+	// call the parent method first
+	node_reg::setGraphPtr(graph);
 
-	m_graph = graph;
 	// get the last registrered node + corresponding pose - root
-	m_prev_registered_node = m_graph->root;
-	this->logFmt(LVL_DEBUG, "Fetched the graph successfully");
-}
-
-template<class GRAPH_t>
-void CFixedIntervalsNRD<GRAPH_t>::checkIfInvalidDataset(
-		mrpt::obs::CActionCollectionPtr action,
-		mrpt::obs::CSensoryFramePtr observations,
-		mrpt::obs::CObservationPtr observation ) {
-	MRPT_START;
-	using namespace mrpt;
-	using namespace mrpt::obs;
-	using namespace mrpt::utils;
-
-	MRPT_UNUSED_PARAM(observations);
-	MRPT_UNUSED_PARAM(action);
-
-	if (observation.present()) { // FORMAT #2
-		if (IS_CLASS(observation, CObservationOdometry)) {
-			m_checked_for_usuable_dataset = true;
-			return;
-		}
-		else {
-			m_consecutive_invalid_format_instances++;
-		}
-	}
-	else {
-		// TODO - make a real check here
-		m_checked_for_usuable_dataset = true;
-		return;
-	}
-
-	if (m_consecutive_invalid_format_instances > m_consecutive_invalid_format_instances_thres) {
-		this->logFmt(LVL_ERROR,
-				"Can't find usuable data in the given dataset.\nMake sure dataset contains valid odometry data.");
-		mrpt::system::sleep(5000);
-		m_checked_for_usuable_dataset = true;
-	}
-
-	MRPT_END;
+	m_prev_registered_node = this->m_graph->root;
 }
 
 template<class GRAPH_t>
@@ -269,7 +218,7 @@ void CFixedIntervalsNRD<GRAPH_t>::getDescriptiveReport(std::string* report_str) 
 	class_props_ss << header_sep << std::endl;
 
 	// time and output logging
-	const std::string time_res = m_time_logger.getStatsAsText();
+	const std::string time_res = this->m_time_logger.getStatsAsText();
 	const std::string output_res = this->getLogAsString();
 
 	// merge the individual reports

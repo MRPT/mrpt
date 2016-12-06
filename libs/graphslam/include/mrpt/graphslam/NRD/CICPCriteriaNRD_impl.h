@@ -34,8 +34,6 @@ void CICPCriteriaNRD<GRAPH_t>::initCICPCriteriaNRD() {
 	m_use_distance_node_reg = true;
 
 
-	m_graph = NULL;
-
 	// Current node registration decider *decides* how many nodes are there
 	// currently in the graph (no need to ask m_graph->nodeCount)..
 	m_nodeID_max  = INVALID_NODEID;
@@ -83,7 +81,7 @@ CICPCriteriaNRD<GRAPH_t>::getCurrentRobotPosEstimation() const {
 	MRPT_START;
 
 	mrpt::utils::TNodeID from = m_nodeID_max;
-	return m_graph->nodes.find(from)->second +
+	return this->m_graph->nodes.find(from)->second +
 		m_since_prev_node_PDF.getMeanVal();
 
 	MRPT_END;
@@ -96,7 +94,7 @@ bool CICPCriteriaNRD<GRAPH_t>::updateState(
 		mrpt::obs::CObservationPtr observation )  {
 	MRPT_START;
 	MRPT_UNUSED_PARAM(action);
-	m_time_logger.enter("CICPCriteriaNRD::updateState");
+	this->m_time_logger.enter("CICPCriteriaNRD::updateState");
 
 	using namespace mrpt::obs;
 	using namespace mrpt::poses;
@@ -161,8 +159,7 @@ bool CICPCriteriaNRD<GRAPH_t>::updateState(
 		m_since_prev_node_PDF = constraint_t();
 	}
 
-	// TODO - implement checkIfInvalidDataset
-	m_time_logger.leave("CICPCriteriaNRD::updateState");
+	this->m_time_logger.leave("CICPCriteriaNRD::updateState");
 	return registered_new_node;
 
 	MRPT_END;
@@ -384,8 +381,8 @@ void CICPCriteriaNRD<GRAPH_t>::registerNewNode() {
 	mrpt::utils::TNodeID from = m_nodeID_max;
 	mrpt::utils::TNodeID to = ++m_nodeID_max;
 
-	m_graph->nodes[to] = this->getCurrentRobotPosEstimation();
-	m_graph->insertEdgeAtEnd(from, to, m_since_prev_node_PDF);
+	this->m_graph->nodes[to] = this->getCurrentRobotPosEstimation();
+	this->m_graph->insertEdgeAtEnd(from, to, m_since_prev_node_PDF);
 
 	this->logFmt(LVL_DEBUG,
 			"Registered new node:\n\t%lu => %lu\n\tEdge: %s",
@@ -399,12 +396,10 @@ void CICPCriteriaNRD<GRAPH_t>::registerNewNode() {
 template<class GRAPH_t>
 void CICPCriteriaNRD<GRAPH_t>::setGraphPtr(GRAPH_t* graph) {
 	using namespace mrpt::utils;
+	node_reg::setGraphPtr(graph);
 
-	m_graph = graph;
 	// get the last registrered node + corresponding pose - root
-	m_nodeID_max = m_graph->root;
-
-	this->logFmt(LVL_DEBUG, "Fetched the graph successfully");
+	m_nodeID_max = this->m_graph->root;
 }
 template<class GRAPH_t>
 void CICPCriteriaNRD<GRAPH_t>::loadParams(const std::string& source_fname) {
@@ -454,7 +449,7 @@ void CICPCriteriaNRD<GRAPH_t>::getDescriptiveReport(std::string* report_str) con
 	class_props_ss << header_sep << std::endl;
 
 	// time and output logging
-	const std::string time_res = m_time_logger.getStatsAsText();
+	const std::string time_res = this->m_time_logger.getStatsAsText();
 	const std::string output_res = this->getLogAsString();
 
 	// merge the individual reports

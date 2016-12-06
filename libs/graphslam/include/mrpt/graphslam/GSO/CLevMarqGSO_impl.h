@@ -35,9 +35,6 @@ void CLevMarqGSO<GRAPH_t>::initCLevMarqGSO() {
 
 	using namespace mrpt::utils;
 
-	m_graph = NULL;
-	m_win_manager = NULL;
-	m_win_observer = NULL;
 	m_graph_section = NULL;
 
 
@@ -71,12 +68,12 @@ bool CLevMarqGSO<GRAPH_t>::updateState(
 	using namespace mrpt::utils;
 	this->logFmt(LVL_DEBUG, "In updateOptimizerState... ");
 
-	if (m_graph->nodeCount() > m_last_total_num_of_nodes) {
-		m_last_total_num_of_nodes = m_graph->nodeCount();
+	if (this->m_graph->nodeCount() > m_last_total_num_of_nodes) {
+		m_last_total_num_of_nodes = this->m_graph->nodeCount();
 		registered_new_node = true;
 
 		if (m_first_time_call) {
-			opt_params.last_pair_nodes_to_edge = m_graph->edges;
+			opt_params.last_pair_nodes_to_edge = this->m_graph->edges;
 			m_first_time_call = true;
 		}
 
@@ -101,35 +98,6 @@ bool CLevMarqGSO<GRAPH_t>::updateState(
 	MRPT_END;
 }
 
-template<class GRAPH_t>
-void CLevMarqGSO<GRAPH_t>::setGraphPtr(GRAPH_t* graph) {
-	MRPT_START;
-	using namespace mrpt::utils;
-
-	m_graph = graph;
-
-	this->logFmt(mrpt::utils::LVL_DEBUG, "Fetched the graph successfully");
-
-	MRPT_END;
-}
-
-template<class GRAPH_t>
-void CLevMarqGSO<GRAPH_t>::setWindowManagerPtr(
-		mrpt::graphslam::CWindowManager* win_manager) {
-	MRPT_START;
-	ASSERT_(win_manager);
-
-	m_win_manager = win_manager;
-	if (m_win_manager) {
-		m_win = m_win_manager->win;
-
-		m_win_observer = m_win_manager->observer;
-	}
-	this->logFmt(mrpt::utils::LVL_DEBUG, "Fetched the CDisplayWindow successfully");
-
-	MRPT_END;
-}
-
 template <class GRAPH_t>
 void CLevMarqGSO<GRAPH_t>::setCriticalSectionPtr(
 		mrpt::synch::CCriticalSection* graph_section) {
@@ -145,13 +113,13 @@ void CLevMarqGSO<GRAPH_t>::setCriticalSectionPtr(
 template<class GRAPH_t>
 void CLevMarqGSO<GRAPH_t>::initializeVisuals() {
 	MRPT_START;
-	ASSERT_(m_win_manager);
+	ASSERT_(this->m_win_manager);
 	this->logFmt(mrpt::utils::LVL_DEBUG, "Initializing visuals");
 
-	ASSERTMSG_(m_win,
+	ASSERTMSG_(this->m_win,
 			"Visualization of data was requested but no CDisplayWindow3D pointer "
 			" was given.");
-	ASSERTMSG_(m_win_manager, "No CWindowManager* is given");
+	ASSERTMSG_(this->m_win_manager, "No CWindowManager* is given");
 	ASSERT_(m_has_read_config);
 
 	this->initGraphVisualization();
@@ -164,9 +132,9 @@ void CLevMarqGSO<GRAPH_t>::initializeVisuals() {
 template<class GRAPH_t>
 void CLevMarqGSO<GRAPH_t>::updateVisuals() {
 	MRPT_START;
-	ASSERTMSG_(m_win_manager, "No CWindowManager* is given");
+	ASSERTMSG_(this->m_win_manager, "No CWindowManager* is given");
 	ASSERT_(m_initialized_visuals);
-	ASSERTMSG_(m_win,
+	ASSERTMSG_(this->m_win,
 			"Visualization of data was requested but no CDisplayWindow3D pointer was given.");
 
 	this->updateOptDistanceVisualization();
@@ -180,7 +148,7 @@ void CLevMarqGSO<GRAPH_t>::notifyOfWindowEvents(
 		const std::map<std::string, bool>& events_occurred)
 {
 	MRPT_START;
-	ASSERTMSG_(m_win_manager, "No CWindowManager* is given");
+	ASSERTMSG_(this->m_win_manager, "No CWindowManager* is given");
 	using namespace std;
 
 	//// print the keys for debuggging reasons
@@ -222,15 +190,15 @@ void CLevMarqGSO<GRAPH_t>::notifyOfWindowEvents(
 template<class GRAPH_t>
 inline void CLevMarqGSO<GRAPH_t>::initGraphVisualization() {
 	MRPT_START;
-	ASSERTMSG_(m_win_manager, "No CWindowManager* is given");
+	ASSERTMSG_(this->m_win_manager, "No CWindowManager* is given");
 
 	if (viz_params.visualize_optimized_graph) {
-		m_win_observer->registerKeystroke(viz_params.keystroke_graph_toggle,
+		this->m_win_observer->registerKeystroke(viz_params.keystroke_graph_toggle,
 				"Toggle Graph visualization");
-		m_win_observer->registerKeystroke(viz_params.keystroke_graph_autofit,
+		this->m_win_observer->registerKeystroke(viz_params.keystroke_graph_autofit,
 				"Fit Graph in view");
 
-		m_win_manager->assignTextMessageParameters(
+		this->m_win_manager->assignTextMessageParameters(
 				/* offset_y*	= */ &viz_params.offset_y_graph,
 				/* text_index* = */ &viz_params.text_index_graph );
 
@@ -242,14 +210,14 @@ inline void CLevMarqGSO<GRAPH_t>::initGraphVisualization() {
 template<class GRAPH_t>
 inline void CLevMarqGSO<GRAPH_t>::updateGraphVisualization() {
 	MRPT_START;
-	ASSERTMSG_(m_win_manager, "No CWindowManager* is given");
+	ASSERTMSG_(this->m_win_manager, "No CWindowManager* is given");
 	using namespace mrpt::opengl;
 	using namespace mrpt::utils;
 
 	this->logFmt(mrpt::utils::LVL_DEBUG, "In the updateGraphVisualization function");
 
 	// update the graph (clear and rewrite..)
-	COpenGLScenePtr& scene = m_win->get3DSceneAndLock();
+	COpenGLScenePtr& scene = this->m_win->get3DSceneAndLock();
 
 	// remove previous graph and insert the new instance
 	CRenderizablePtr prev_object = scene->getByName("optimized_graph");
@@ -260,19 +228,19 @@ inline void CLevMarqGSO<GRAPH_t>::updateGraphVisualization() {
 	scene->removeObject(prev_object);
 
 	CSetOfObjectsPtr graph_obj =
-		graph_tools::graph_visualize(*m_graph, viz_params.cfg);
+		graph_tools::graph_visualize(*this->m_graph, viz_params.cfg);
 	graph_obj->setName("optimized_graph");
 	graph_obj->setVisibility(prev_visibility);
 	scene->insert(graph_obj);
-	m_win->unlockAccess3DScene();
+	this->m_win->unlockAccess3DScene();
 
-	m_win_manager->addTextMessage(5,-viz_params.offset_y_graph,
+	this->m_win_manager->addTextMessage(5,-viz_params.offset_y_graph,
 			format("Optimized Graph: #nodes %d",
-				static_cast<int>(m_graph->nodeCount())),
+				static_cast<int>(this->m_graph->nodeCount())),
 			TColorf(0.0, 0.0, 0.0),
 			/* unique_index = */ viz_params.text_index_graph);
 
-	m_win->forceRepaint();
+	this->m_win->forceRepaint();
 
 	if (m_autozoom_active) {
 		this->fitGraphInView();
@@ -286,13 +254,13 @@ void CLevMarqGSO<GRAPH_t>::toggleGraphVisualization() {
 	MRPT_START;
 	using namespace mrpt::opengl;
 
-	COpenGLScenePtr& scene = m_win->get3DSceneAndLock();
+	COpenGLScenePtr& scene = this->m_win->get3DSceneAndLock();
 
 	CRenderizablePtr graph_obj = scene->getByName("optimized_graph");
 	graph_obj->setVisibility(!graph_obj->isVisible());
 
-	m_win->unlockAccess3DScene();
-	m_win->forceRepaint();
+	this->m_win->unlockAccess3DScene();
+	this->m_win->forceRepaint();
 
 	MRPT_END;
 }
@@ -302,15 +270,15 @@ void CLevMarqGSO<GRAPH_t>::fitGraphInView() {
 	MRPT_START;
 	using namespace mrpt::opengl;
 
-	ASSERTMSG_(m_win,
+	ASSERTMSG_(this->m_win,
 			"\nVisualization of data was requested but no CDisplayWindow3D pointer was given\n");
 
 	// first fetch the graph object
-	COpenGLScenePtr& scene = m_win->get3DSceneAndLock();
+	COpenGLScenePtr& scene = this->m_win->get3DSceneAndLock();
 	CRenderizablePtr obj = scene->getByName("optimized_graph");
 	CSetOfObjectsPtr graph_obj = static_cast<CSetOfObjectsPtr>(obj);
-	m_win->unlockAccess3DScene();
-	m_win->forceRepaint();
+	this->m_win->unlockAccess3DScene();
+	this->m_win->forceRepaint();
 
 	// autofit it based on its grid
 	CGridPlaneXYPtr obj_grid = graph_obj->CSetOfObjects::getByClass<CGridPlaneXY>();
@@ -318,12 +286,12 @@ void CLevMarqGSO<GRAPH_t>::fitGraphInView() {
 		float x_min,x_max, y_min,y_max;
 		obj_grid->getPlaneLimits(x_min,x_max, y_min,y_max);
 		const float z_min = obj_grid->getPlaneZcoord();
-		m_win->setCameraPointingToPoint( 0.5*(x_min+x_max), 0.5*(y_min+y_max), z_min );
-		m_win->setCameraZoom( 2.0f * std::max(10.0f, std::max(x_max-x_min, y_max-y_min) ) );
+		this->m_win->setCameraPointingToPoint( 0.5*(x_min+x_max), 0.5*(y_min+y_max), z_min );
+		this->m_win->setCameraZoom( 2.0f * std::max(10.0f, std::max(x_max-x_min, y_max-y_min) ) );
 	}
-	m_win->setCameraAzimuthDeg(60);
-	m_win->setCameraElevationDeg(75);
-	m_win->setCameraProjective(true);
+	this->m_win->setCameraAzimuthDeg(60);
+	this->m_win->setCameraElevationDeg(75);
+	this->m_win->setCameraProjective(true);
 
 	MRPT_END;
 }
@@ -332,14 +300,14 @@ void CLevMarqGSO<GRAPH_t>::fitGraphInView() {
 template<class GRAPH_t>
 void CLevMarqGSO<GRAPH_t>::initOptDistanceVisualization() {
 	MRPT_START;
-	ASSERTMSG_(m_win_manager, "No CWindowManager* is given");
+	ASSERTMSG_(this->m_win_manager, "No CWindowManager* is given");
 	using namespace mrpt::opengl;
 
 	if (opt_params.optimization_distance > 0) {
-		m_win_observer->registerKeystroke(opt_params.keystroke_optimization_distance,
+		this->m_win_observer->registerKeystroke(opt_params.keystroke_optimization_distance,
 				"Toggle optimization distance on/off");
 
-		COpenGLScenePtr scene = m_win->get3DSceneAndLock();
+		COpenGLScenePtr scene = this->m_win->get3DSceneAndLock();
 
 		CDiskPtr obj = CDisk::Create();
 		pose_t initial_pose;
@@ -350,15 +318,15 @@ void CLevMarqGSO<GRAPH_t>::initOptDistanceVisualization() {
 				opt_params.optimization_distance-0.1);
 		scene->insert(obj);
 
-		m_win->unlockAccess3DScene();
-		m_win->forceRepaint();
+		this->m_win->unlockAccess3DScene();
+		this->m_win->forceRepaint();
 
 		// optimization distance disk - textMessage
-		m_win_manager->assignTextMessageParameters(
+		this->m_win_manager->assignTextMessageParameters(
 				&opt_params.offset_y_optimization_distance,
 				&opt_params.text_index_optimization_distance);
 
-		m_win_manager->addTextMessage(5,-opt_params.offset_y_optimization_distance,
+		this->m_win_manager->addTextMessage(5,-opt_params.offset_y_optimization_distance,
 				format("Radius for graph optimization"),
 				mrpt::utils::TColorf(opt_params.optimization_distance_color),
 				/* unique_index = */ opt_params.text_index_optimization_distance );
@@ -371,20 +339,20 @@ void CLevMarqGSO<GRAPH_t>::initOptDistanceVisualization() {
 template<class GRAPH_t>
 void CLevMarqGSO<GRAPH_t>::updateOptDistanceVisualization() {
 	MRPT_START;
-	ASSERTMSG_(m_win_manager, "No CWindowManager* is given");
+	ASSERTMSG_(this->m_win_manager, "No CWindowManager* is given");
 	using namespace mrpt::opengl;
 
 	// update ICP_max_distance Disk
 	if (opt_params.optimization_distance > 0) {
-		COpenGLScenePtr scene = m_win->get3DSceneAndLock();
+		COpenGLScenePtr scene = this->m_win->get3DSceneAndLock();
 
 		CRenderizablePtr obj = scene->getByName("optimization_distance_disk");
 		CDiskPtr disk_obj = static_cast<CDiskPtr>(obj);
 
-		disk_obj->setPose(m_graph->nodes[m_graph->nodeCount()-1]);
+		disk_obj->setPose(this->m_graph->nodes[this->m_graph->nodeCount()-1]);
 
-		m_win->unlockAccess3DScene();
-		m_win->forceRepaint();
+		this->m_win->unlockAccess3DScene();
+		this->m_win->forceRepaint();
 	}
 
 	MRPT_END;
@@ -394,16 +362,16 @@ void CLevMarqGSO<GRAPH_t>::updateOptDistanceVisualization() {
 template<class GRAPH_t>
 void CLevMarqGSO<GRAPH_t>::toggleOptDistanceVisualization() {
 	MRPT_START;
-	ASSERTMSG_(m_win_manager, "No CWindowManager* is given");
+	ASSERTMSG_(this->m_win_manager, "No CWindowManager* is given");
 	using namespace mrpt::opengl;
 
-	COpenGLScenePtr scene = m_win->get3DSceneAndLock();
+	COpenGLScenePtr scene = this->m_win->get3DSceneAndLock();
 
 	CRenderizablePtr obj = scene->getByName("optimization_distance_disk");
 	obj->setVisibility(!obj->isVisible());
 
-	m_win->unlockAccess3DScene();
-	m_win->forceRepaint();
+	this->m_win->unlockAccess3DScene();
+	this->m_win->forceRepaint();
 
 	MRPT_END;
 }
@@ -429,7 +397,7 @@ void CLevMarqGSO<GRAPH_t>::optimizeGraph() {
 template<class GRAPH_t>
 void CLevMarqGSO<GRAPH_t>::_optimizeGraph() {
 	MRPT_START;
-	m_time_logger.enter("CLevMarqGSO::_optimizeGraph");
+	this->m_time_logger.enter("CLevMarqGSO::_optimizeGraph");
 	this->logFmt(mrpt::utils::LVL_DEBUG, "In _optimizeGraph");
 
 	using namespace mrpt::utils;
@@ -456,16 +424,16 @@ void CLevMarqGSO<GRAPH_t>::_optimizeGraph() {
 		// optimization procedure starts only after certain number of nodes has
 		// been added
 		this->getNearbyNodesOf(nodes_to_optimize,
-				m_graph->nodeCount()-1,
+				this->m_graph->nodeCount()-1,
 				opt_params.optimization_distance);
-		nodes_to_optimize->insert(m_graph->nodeCount()-1);
+		nodes_to_optimize->insert(this->m_graph->nodeCount()-1);
 	}
 
 	graphslam::TResultInfoSpaLevMarq	levmarq_info;
 
 	// Execute the optimization
 	mrpt::graphslam::optimize_graph_spa_levmarq(
-			*m_graph,
+			*(this->m_graph),
 			levmarq_info,
 			nodes_to_optimize,
 			opt_params.cfg,
@@ -487,7 +455,7 @@ void CLevMarqGSO<GRAPH_t>::_optimizeGraph() {
 	delete nodes_to_optimize;
 	nodes_to_optimize = NULL;
 
-	m_time_logger.leave("CLevMarqGSO::_optimizeGraph");
+	this->m_time_logger.leave("CLevMarqGSO::_optimizeGraph");
 	MRPT_UNUSED_PARAM(elapsed_time);
 	MRPT_END;
 }
@@ -497,7 +465,7 @@ bool CLevMarqGSO<GRAPH_t>::checkForLoopClosures() {
 	MRPT_START;
 
 	bool is_loop_closure = false;
-	typename GRAPH_t::edges_map_t curr_pair_nodes_to_edge =  m_graph->edges;
+	typename GRAPH_t::edges_map_t curr_pair_nodes_to_edge =  this->m_graph->edges;
 
 	// find the *node pairs* that exist in current but not the last nodes_to_edge
 	// map If the distance of any of these pairs is greater than
@@ -623,16 +591,18 @@ void CLevMarqGSO<GRAPH_t>::getNearbyNodesOf(
 
 	if (distance > 0) {
 		// check all but the last node.
-		for (mrpt::utils::TNodeID nodeID = 0; nodeID < m_graph->nodeCount()-1; ++nodeID) {
-			double curr_distance = m_graph->nodes[nodeID].distanceTo(
-					m_graph->nodes[cur_nodeID]);
+		for (mrpt::utils::TNodeID nodeID = 0;
+				nodeID < this->m_graph->nodeCount()-1;
+				++nodeID) {
+			double curr_distance = this->m_graph->nodes[nodeID].distanceTo(
+					this->m_graph->nodes[cur_nodeID]);
 			if (curr_distance <= distance) {
 				nodes_set->insert(nodeID);
 			}
 		}
 	}
 	else { // check against all nodes
-		m_graph->getAllNodes(*nodes_set);
+		this->m_graph->getAllNodes(*nodes_set);
 	}
 
 	MRPT_END;
@@ -693,7 +663,7 @@ void CLevMarqGSO<GRAPH_t>::getDescriptiveReport(std::string* report_str) const {
 	class_props_ss << header_sep << std::endl;
 
 	// time and output logging
-	const std::string time_res = m_time_logger.getStatsAsText();
+	const std::string time_res = this->m_time_logger.getStatsAsText();
 	const std::string output_res = this->getLogAsString();
 
 	// merge the individual reports
