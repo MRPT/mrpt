@@ -236,6 +236,9 @@ class CLoopCloserERD:
 	public mrpt::graphslam::deciders::CRangeScanRegistrationDecider<GRAPH_t>
 {
 	public:
+		/**\brief Node Registration Decider */
+		typedef mrpt::graphslam::deciders::CEdgeRegistrationDecider<GRAPH_t> edge_reg;
+
 		/**\brief type of graph constraints */
 		typedef typename GRAPH_t::constraint_t constraint_t;
 		/**\brief type of underlying poses (2D/3D). */
@@ -259,7 +262,6 @@ class CLoopCloserERD:
 				mrpt::obs::CSensoryFramePtr observations,
 				mrpt::obs::CObservationPtr observation );
 
-		void setGraphPtr(GRAPH_t* graph);
 		void setWindowManagerPtr(mrpt::graphslam::CWindowManager* win_manager);
 		void notifyOfWindowEvents(
 				const std::map<std::string, bool>& events_occurred);
@@ -654,11 +656,6 @@ class CLoopCloserERD:
 		/**\brief Instance responsible for partitioning the map */
 		mrpt::slam::CIncrementalMapPartitioner m_partitioner;
 
-		GRAPH_t* m_graph; /**<\brief Pointer to the graph under construction */
-		mrpt::gui::CDisplayWindow3D* m_win;
-		mrpt::graphslam::CWindowManager* m_win_manager;
-		mrpt::graphslam::CWindowObserver* m_win_observer;
-
 		bool m_initialized_visuals;
 		bool m_just_inserted_loop_closure;
 
@@ -706,11 +703,8 @@ class CLoopCloserERD:
 		 * certanty of each node position
 		 */
 		std::map<mrpt::utils::TNodeID, TPath*> m_node_optimal_paths;
-		mrpt::utils::CTimeLogger m_time_logger; /**<Time logger instance */
 
 		const std::string m_class_name;
-
-
 };
 
 } } } // end of namespaces

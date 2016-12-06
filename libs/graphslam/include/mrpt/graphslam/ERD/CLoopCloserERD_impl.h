@@ -29,10 +29,6 @@ template<class GRAPH_t>
 void CLoopCloserERD<GRAPH_t>::initCLoopCloserERD() {
 	MRPT_START;
 
-	m_win = NULL;
-	m_win_manager = NULL;
-	m_graph = NULL;
-
 	m_initialized_visuals = false;
 	m_visualize_curr_node_covariance = false;
 	m_just_inserted_loop_closure = false;
@@ -49,7 +45,7 @@ void CLoopCloserERD<GRAPH_t>::initCLoopCloserERD() {
 
 	m_partitions_full_update = false;
 
-	m_time_logger.setName(m_class_name);
+	this->m_time_logger.setName(m_class_name);
 	this->logging_enable_keep_record = true;
 	this->setLoggerName(m_class_name);
 	this->logFmt(mrpt::utils::LVL_DEBUG, "Initialized class object");
@@ -81,7 +77,7 @@ bool CLoopCloserERD<GRAPH_t>::updateState(
 		mrpt::obs::CObservationPtr observation ) {
 	MRPT_START;
 	MRPT_UNUSED_PARAM(action);
-	m_time_logger.enter("updateState");
+	this->m_time_logger.enter("updateState");
 	using namespace std;
 	using namespace mrpt;
 	using namespace mrpt::obs;
@@ -93,9 +89,9 @@ bool CLoopCloserERD<GRAPH_t>::updateState(
 	bool registered_new_node = false;
 
 	// was a new node registered?
-	if (m_last_total_num_of_nodes < m_graph->nodeCount()) {
+	if (m_last_total_num_of_nodes < this->m_graph->nodeCount()) {
 		registered_new_node = true;
-		m_last_total_num_of_nodes = m_graph->nodeCount();
+		m_last_total_num_of_nodes = this->m_graph->nodeCount();
 		this->logFmt(mrpt::utils::LVL_DEBUG, "New node has been registered!");
 	}
 
@@ -121,16 +117,16 @@ bool CLoopCloserERD<GRAPH_t>::updateState(
 
 	if (registered_new_node) {
 		// register the new node-laserScan pair
-		m_nodes_to_laser_scans2D[m_graph->nodeCount()-1] = m_last_laser_scan2D;
+		m_nodes_to_laser_scans2D[this->m_graph->nodeCount()-1] = m_last_laser_scan2D;
 
 		if (m_laser_params.use_scan_matching) {
 			// scan match with previous X nodes
-			this->addScanMatchingEdges(m_graph->nodeCount()-1);
+			this->addScanMatchingEdges(this->m_graph->nodeCount()-1);
 		}
 
 		// update the partitioned map
 		m_partitions_full_update = (
-				(m_graph->nodeCount() % m_lc_params.full_partition_per_nodes) == 0 ||
+				(this->m_graph->nodeCount() % m_lc_params.full_partition_per_nodes) == 0 ||
 				m_just_inserted_loop_closure)
 			?  true: false;
 		this->updateMapPartitions(m_partitions_full_update);
@@ -146,7 +142,7 @@ bool CLoopCloserERD<GRAPH_t>::updateState(
 
 	}
 
-	m_time_logger.leave("updateState");
+	this->m_time_logger.leave("updateState");
 	return true;
 	MRPT_END;
 }
@@ -228,7 +224,7 @@ bool CLoopCloserERD<GRAPH_t>::getICPEdge(
 		mrpt::slam::CICP::TReturnInfo* icp_info) {
 	MRPT_START;
 	ASSERT_(rel_edge);
-	m_time_logger.enter("getICPEdge");
+	this->m_time_logger.enter("getICPEdge");
 
 	using namespace mrpt::obs;
 	using namespace mrpt::utils;
@@ -257,8 +253,8 @@ bool CLoopCloserERD<GRAPH_t>::getICPEdge(
 	}
 
 	// make use of initial node position difference for the ICP edge
-	pose_t initial_estim = m_graph->nodes.at(to) -
-		m_graph->nodes.at(from);
+	pose_t initial_estim = this->m_graph->nodes.at(to) -
+		this->m_graph->nodes.at(from);
 
 	range_scanner_t::getICPEdge(
 			*from_laser_scan,
@@ -267,7 +263,7 @@ bool CLoopCloserERD<GRAPH_t>::getICPEdge(
 			&initial_estim,
 			icp_info);
 
-	m_time_logger.leave("getICPEdge");
+	this->m_time_logger.leave("getICPEdge");
 	return true;
 	MRPT_END;
 }
@@ -276,7 +272,7 @@ template<class GRAPH_t>
 void CLoopCloserERD<GRAPH_t>::checkPartitionsForLC(
 		partitions_t* partitions_for_LC) {
 	MRPT_START;
-	m_time_logger.enter("LoopClosureEvaluation");
+	this->m_time_logger.enter("LoopClosureEvaluation");
 
 	using namespace std;
 	using namespace mrpt;
@@ -302,7 +298,7 @@ void CLoopCloserERD<GRAPH_t>::checkPartitionsForLC(
 		// partition - if not, ignore it.
 		if (m_lc_params.LC_check_curr_partition_only) {
 			bool curr_node_in_curr_partition =
-				((find(partitions_it->begin(), partitions_it->end(), m_graph->nodeCount()-1))
+				((find(partitions_it->begin(), partitions_it->end(), this->m_graph->nodeCount()-1))
 				 != partitions_it->end());
 			if (!curr_node_in_curr_partition) {
 				continue;
@@ -359,7 +355,7 @@ void CLoopCloserERD<GRAPH_t>::checkPartitionsForLC(
 		this->logFmt(mrpt::utils::LVL_DEBUG, "Successfully checked partition: %d", partitionID);
 	}
 
-	m_time_logger.leave("LoopClosureEvaluation");
+	this->m_time_logger.leave("LoopClosureEvaluation");
 	MRPT_END;
 }
 
@@ -371,7 +367,7 @@ void CLoopCloserERD<GRAPH_t>::evaluatePartitionsForLC(
 	using namespace mrpt::math;
 	using namespace mrpt::utils;
 	using namespace std;
-	m_time_logger.enter("LoopClosureEvaluation");
+	this->m_time_logger.enter("LoopClosureEvaluation");
 
 	if (partitions.size() == 0) return;
 
@@ -608,7 +604,7 @@ void CLoopCloserERD<GRAPH_t>::evaluatePartitionsForLC(
 	}
 
 	this->logFmt(mrpt::utils::LVL_DEBUG, "\n%s", header_sep.c_str());
-	m_time_logger.leave("LoopClosureEvaluation");
+	this->m_time_logger.leave("LoopClosureEvaluation");
 
 	MRPT_END;
 }
@@ -625,7 +621,7 @@ bool CLoopCloserERD<GRAPH_t>::computeDominantEigenVector(
 	using namespace std;
 	ASSERT_(eigvec);
 
-	m_time_logger.enter("DominantEigenvectorComputation");
+	this->m_time_logger.enter("DominantEigenvectorComputation");
 
 	double lambda1, lambda2; // eigenvalues to use
 	bool valid_lambda_ratio = false;
@@ -672,7 +668,7 @@ bool CLoopCloserERD<GRAPH_t>::computeDominantEigenVector(
 	}
 	this->logFmt(mrpt::utils::LVL_DEBUG, "%s", ss.str().c_str());
 
-	m_time_logger.leave("DominantEigenvectorComputation");
+	this->m_time_logger.leave("DominantEigenvectorComputation");
 	return valid_lambda_ratio;
 
 	MRPT_END;
@@ -784,15 +780,15 @@ void CLoopCloserERD<GRAPH_t>::execDijkstraProjection(
 	// - Recognizing places using spectrally cllustered local matches - E.Olson,
 	// p.6
 	
-	m_time_logger.enter("Dijkstra Projection");
+	this->m_time_logger.enter("Dijkstra Projection");
 
 	// ending_node is either INVALID_NODEID or one of the already registered
 	// nodeIDs
 	ASSERT_(ending_node == INVALID_NODEID ||
-			(ending_node >= 0 && ending_node < m_graph->nodeCount()) );
+			(ending_node >= 0 && ending_node < this->m_graph->nodeCount()) );
 	ASSERTMSG_(starting_node != ending_node, "Starting and Ending nodes coincede");
 	// if uncertainties already updated - do nothing
-	if (m_graph->nodeCount() < 5) return;
+	if (this->m_graph->nodeCount() < 5) return;
 
 	// debugging message
 	stringstream ss_debug("");
@@ -806,12 +802,12 @@ void CLoopCloserERD<GRAPH_t>::execDijkstraProjection(
 	MRPT_LOG_DEBUG_STREAM(ss_debug.str());
 
 	// keep track of the nodes that I have visited
-	std::vector<bool> visited_nodes(m_graph->nodeCount(), false);
+	std::vector<bool> visited_nodes(this->m_graph->nodeCount(), false);
 	m_node_optimal_paths.clear();
 
 	// get the neighbors of each node
 	std::map<TNodeID, std::set<TNodeID> >  neighbors_of;
-	m_graph->getAdjacencyMatrix(neighbors_of);
+	this->m_graph->getAdjacencyMatrix(neighbors_of);
 
 	// initialize a pool of TPaths - draw the minimum-uncertainty path during
 	// execution
@@ -857,7 +853,7 @@ void CLoopCloserERD<GRAPH_t>::execDijkstraProjection(
 			if (visited_nodes.at(ending_node)) {
 				this->logFmt(mrpt::utils::LVL_DEBUG,
 						"----------- Done with Dijkstra Projection... ----------");
-				m_time_logger.leave("Dijkstra Projection");
+				this->m_time_logger.leave("Dijkstra Projection");
 				return;
 			}
 		}
@@ -896,7 +892,7 @@ void CLoopCloserERD<GRAPH_t>::execDijkstraProjection(
 	}
 
 	this->logFmt(mrpt::utils::LVL_DEBUG, "----------- Done with Dijkstra Projection... ----------");
-	m_time_logger.leave("Dijkstra Projection");
+	this->m_time_logger.leave("Dijkstra Projection");
 	MRPT_END;
 }
 
@@ -961,7 +957,9 @@ void CLoopCloserERD<GRAPH_t>::getMinUncertaintyPath(
 	using namespace mrpt::math;
 	using namespace std;
 
-	ASSERTMSG_(m_graph->edgeExists(from, to) || m_graph->edgeExists(to, from),
+	ASSERTMSG_(
+			this->m_graph->edgeExists(from, to) ||
+			this->m_graph->edgeExists(to, from),
 			mrpt::format("\nEdge between the provided nodeIDs"
 				"(%lu <-> %lu) does not exist\n", from, to) );
 	ASSERT_(path_between_nodes);
@@ -976,7 +974,7 @@ void CLoopCloserERD<GRAPH_t>::getMinUncertaintyPath(
 	double curr_determinant = 0;
 	// forward edges from -> to
 	std::pair<edges_citerator, edges_citerator> fwd_edges_pair =
-		m_graph->getEdges(from, to);
+		this->m_graph->getEdges(from, to);
 
 	//cout << "Forward edges: " << endl;
 	//for (edges_citerator e_it = fwd_edges_pair.first; e_it != fwd_edges_pair.second;
@@ -1012,7 +1010,7 @@ void CLoopCloserERD<GRAPH_t>::getMinUncertaintyPath(
 	}
 	// backwards edges to -> from
 	std::pair<edges_citerator, edges_citerator> bwd_edges_pair =
-		m_graph->getEdges(to, from);
+		this->m_graph->getEdges(to, from);
 
 	//cout << "Backwards edges: " << endl;
 	//for (edges_citerator e_it = bwd_edges_pair.first; e_it != bwd_edges_pair.second;
@@ -1088,7 +1086,7 @@ bool CLoopCloserERD<GRAPH_t>::mahalanobisDistanceOdometryToICPEdge(
 	using namespace mrpt::utils;
 
 	// mean difference
-	pose_t initial_estim = m_graph->nodes.at(to) - m_graph->nodes.at(from);
+	pose_t initial_estim = this->m_graph->nodes.at(to) - this->m_graph->nodes.at(from);
 	dynamic_vector<double> mean_diff;
 	(rel_edge.getMeanVal()-initial_estim).getAsVector(mean_diff);
 	
@@ -1149,37 +1147,31 @@ void CLoopCloserERD<GRAPH_t>::registerNewEdge(
 	}
 
 	//  actuall registration
-	m_graph->insertEdge(from,  to, rel_edge);
+	this->m_graph->insertEdge(from,  to, rel_edge);
 
 	MRPT_END;
 }
 
-template<class GRAPH_t>
-void CLoopCloserERD<GRAPH_t>::setGraphPtr(GRAPH_t* graph) {
-	MRPT_START;
-	m_graph = graph;
-	this->logFmt(mrpt::utils::LVL_DEBUG, "Fetched the graph successfully");
-	MRPT_END;
-}
 template<class GRAPH_t>
 void CLoopCloserERD<GRAPH_t>::setWindowManagerPtr(
 		mrpt::graphslam::CWindowManager* win_manager) {
-	m_win_manager = win_manager;
+	// call parent class method
+	edge_reg::setWindowManagerPtr(win_manager);
+
+	using namespace mrpt::utils;
 
 	// may still be null..
-	if (m_win_manager) {
-		m_win = m_win_manager->win;
-		m_win_observer = m_win_manager->observer;
+	if (this->m_win_manager) {
 
-		if (m_win_observer) {
-			m_win_observer->registerKeystroke(m_laser_params.keystroke_laser_scans,
+		if (this->m_win_observer) {
+			this->m_win_observer->registerKeystroke(m_laser_params.keystroke_laser_scans,
 					"Toggle LaserScans Visualization");
-			m_win_observer->registerKeystroke(m_lc_params.keystroke_map_partitions,
+			this->m_win_observer->registerKeystroke(m_lc_params.keystroke_map_partitions,
 					"Toggle Map Partitions Visualization");
 
 		}
 
-		this->logFmt(mrpt::utils::LVL_DEBUG,
+		this->logFmt(LVL_DEBUG,
 				"Fetched the window manager, window observer  successfully.");
 	}
 
@@ -1210,7 +1202,7 @@ void CLoopCloserERD<GRAPH_t>::initMapPartitionsVisualization() {
 
 	// textmessage - display the number of partitions
 	if (!m_lc_params.LC_check_curr_partition_only) {
-		m_win_manager->assignTextMessageParameters(
+		this->m_win_manager->assignTextMessageParameters(
 				/* offset_y*	= */ &m_lc_params.offset_y_map_partitions,
 				/* text_index* = */ &m_lc_params.text_index_map_partitions);
 	}
@@ -1219,10 +1211,10 @@ void CLoopCloserERD<GRAPH_t>::initMapPartitionsVisualization() {
 	CSetOfObjectsPtr map_partitions_obj = CSetOfObjects::Create();
 	map_partitions_obj->setName("map_partitions");
 
-	COpenGLScenePtr& scene = m_win->get3DSceneAndLock();
+	COpenGLScenePtr& scene = this->m_win->get3DSceneAndLock();
 	scene->insert(map_partitions_obj);
-	m_win->unlockAccess3DScene();
-	m_win->forceRepaint();
+	this->m_win->unlockAccess3DScene();
+	this->m_win->forceRepaint();
 
 }
 
@@ -1239,7 +1231,7 @@ void CLoopCloserERD<GRAPH_t>::updateMapPartitionsVisualization() {
 	if (!m_lc_params.LC_check_curr_partition_only) {
 		std::stringstream title;
 		title << "# Partitions: " << m_curr_partitions.size();
-		m_win_manager->addTextMessage(5,-m_lc_params.offset_y_map_partitions,
+		this->m_win_manager->addTextMessage(5,-m_lc_params.offset_y_map_partitions,
 				title.str(),
 				mrpt::utils::TColorf(m_lc_params.balloon_std_color),
 				/* unique_index = */ m_lc_params.text_index_map_partitions);
@@ -1247,7 +1239,7 @@ void CLoopCloserERD<GRAPH_t>::updateMapPartitionsVisualization() {
 
 	// update the partitioning visualization
 	// ////////////////////////////////////////////////////////////
-	COpenGLScenePtr& scene = m_win->get3DSceneAndLock();
+	COpenGLScenePtr& scene = this->m_win->get3DSceneAndLock();
 
 	// fetch the partitions CSetOfObjects
 	CSetOfObjectsPtr map_partitions_obj;
@@ -1266,7 +1258,7 @@ void CLoopCloserERD<GRAPH_t>::updateMapPartitionsVisualization() {
 		vector_uint nodes_list = *p_it;
 
 		// finding the partition in which the last node is in
-		if (std::find(nodes_list.begin(), nodes_list.end(), m_graph->nodeCount()-1)
+		if (std::find(nodes_list.begin(), nodes_list.end(), this->m_graph->nodeCount()-1)
 				!= nodes_list.end()) {
 			partition_contains_last_node = true;
 		}
@@ -1358,7 +1350,7 @@ void CLoopCloserERD<GRAPH_t>::updateMapPartitionsVisualization() {
 
 			for (vector_uint::const_iterator it = nodes_list.begin();
 					it != nodes_list.end(); ++it) {
-				CPose3D curr_pose(m_graph->nodes.at(*it));
+				CPose3D curr_pose(this->m_graph->nodes.at(*it));
 				TPoint3D curr_node_location(curr_pose);
 
 				TSegment3D connecting_line(curr_node_location, balloon_location);
@@ -1388,20 +1380,20 @@ void CLoopCloserERD<GRAPH_t>::updateMapPartitionsVisualization() {
 	this->logFmt(mrpt::utils::LVL_DEBUG, "Done working on the partitions visualization.");
 
 
-	m_win->unlockAccess3DScene();
-	m_win->forceRepaint();
+	this->m_win->unlockAccess3DScene();
+	this->m_win->forceRepaint();
 }
 
 template<class GRAPH_t>
 void CLoopCloserERD<GRAPH_t>::toggleMapPartitionsVisualization() {
 	MRPT_START;
-	ASSERTMSG_(m_win, "No CDisplayWindow3D* was provided");
-	ASSERTMSG_(m_win_manager, "No CWindowManager* was provided");
+	ASSERTMSG_(this->m_win, "No CDisplayWindow3D* was provided");
+	ASSERTMSG_(this->m_win_manager, "No CWindowManager* was provided");
 	using namespace mrpt::utils;
 	using namespace mrpt::opengl;
 
 	this->logFmt(LVL_INFO, "Toggling map partitions  visualization...");
-	mrpt::opengl::COpenGLScenePtr scene = m_win->get3DSceneAndLock();
+	mrpt::opengl::COpenGLScenePtr scene = this->m_win->get3DSceneAndLock();
 
 	if (m_lc_params.visualize_map_partitions) {
 		mrpt::opengl::CRenderizablePtr obj = scene->getByName("map_partitions");
@@ -1411,8 +1403,8 @@ void CLoopCloserERD<GRAPH_t>::toggleMapPartitionsVisualization() {
 		this->dumpVisibilityErrorMsg("visualize_map_partitions");
 	}
 
-	m_win->unlockAccess3DScene();
-	m_win->forceRepaint();
+	this->m_win->unlockAccess3DScene();
+	this->m_win->forceRepaint();
 
 	MRPT_END;
 }
@@ -1429,7 +1421,7 @@ void CLoopCloserERD<GRAPH_t>::computeCentroidOfNodesVector(
 	double centroid_y = 0;
 	for (vector_uint::const_iterator node_it = nodes_list.begin();
 			node_it != nodes_list.end(); ++node_it) {
-		pose_t curr_node_pos = m_graph->nodes.at(*node_it);
+		pose_t curr_node_pos = this->m_graph->nodes.at(*node_it);
 		centroid_x +=  curr_node_pos.x();
 		centroid_y +=  curr_node_pos.y();
 
@@ -1449,7 +1441,7 @@ void CLoopCloserERD<GRAPH_t>::initLaserScansVisualization() {
 
 	// laser scan visualization
 	if (m_laser_params.visualize_laser_scans) {
-		mrpt::opengl::COpenGLScenePtr scene = m_win->get3DSceneAndLock();
+		mrpt::opengl::COpenGLScenePtr scene = this->m_win->get3DSceneAndLock();
 
 		mrpt::opengl::CPlanarLaserScanPtr laser_scan_viz = 
 			mrpt::opengl::CPlanarLaserScan::Create();
@@ -1465,8 +1457,8 @@ void CLoopCloserERD<GRAPH_t>::initLaserScansVisualization() {
 		laser_scan_viz->setName("laser_scan_viz");
 
 		scene->insert(laser_scan_viz);
-		m_win->unlockAccess3DScene();
-		m_win->forceRepaint();
+		this->m_win->unlockAccess3DScene();
+		this->m_win->forceRepaint();
 	}
 
 	MRPT_END;
@@ -1478,7 +1470,7 @@ void CLoopCloserERD<GRAPH_t>::updateLaserScansVisualization() {
 
 	// update laser scan visual
 	if (m_laser_params.visualize_laser_scans && !m_last_laser_scan2D.null()) {
-		mrpt::opengl::COpenGLScenePtr scene = m_win->get3DSceneAndLock();
+		mrpt::opengl::COpenGLScenePtr scene = this->m_win->get3DSceneAndLock();
 
 		mrpt::opengl::CRenderizablePtr obj = scene->getByName("laser_scan_viz");
 		mrpt::opengl::CPlanarLaserScanPtr laser_scan_viz =
@@ -1488,9 +1480,9 @@ void CLoopCloserERD<GRAPH_t>::updateLaserScansVisualization() {
 
 		// set the pose of the laser scan
 		typename GRAPH_t::global_poses_t::const_iterator search =
-			m_graph->nodes.find(m_graph->nodeCount()-1);
-		if (search != m_graph->nodes.end()) {
-			laser_scan_viz->setPose(m_graph->nodes[m_graph->nodeCount()-1]);
+			this->m_graph->nodes.find(this->m_graph->nodeCount()-1);
+		if (search != this->m_graph->nodes.end()) {
+			laser_scan_viz->setPose(this->m_graph->nodes[this->m_graph->nodeCount()-1]);
 			// put the laser scan underneath the graph, so that you can still
 			// visualize the loop closures with the nodes ahead
 			laser_scan_viz->setPose(mrpt::poses::CPose3D(
@@ -1501,8 +1493,8 @@ void CLoopCloserERD<GRAPH_t>::updateLaserScansVisualization() {
 						));
 		}
 
-		m_win->unlockAccess3DScene();
-		m_win->forceRepaint();
+		this->m_win->unlockAccess3DScene();
+		this->m_win->forceRepaint();
 	}
 
 	MRPT_END;
@@ -1512,13 +1504,13 @@ void CLoopCloserERD<GRAPH_t>::updateLaserScansVisualization() {
 template<class GRAPH_t>
 void CLoopCloserERD<GRAPH_t>::toggleLaserScansVisualization() {
 	MRPT_START;
-	ASSERTMSG_(m_win, "No CDisplayWindow3D* was provided");
-	ASSERTMSG_(m_win_manager, "No CWindowManager* was provided");
+	ASSERTMSG_(this->m_win, "No CDisplayWindow3D* was provided");
+	ASSERTMSG_(this->m_win_manager, "No CWindowManager* was provided");
 	using namespace mrpt::utils;
 
 	this->logFmt(LVL_INFO, "Toggling LaserScans visualization...");
 
-	mrpt::opengl::COpenGLScenePtr scene = m_win->get3DSceneAndLock();
+	mrpt::opengl::COpenGLScenePtr scene = this->m_win->get3DSceneAndLock();
 
 	if (m_laser_params.visualize_laser_scans) {
 		mrpt::opengl::CRenderizablePtr obj = scene->getByName("laser_scan_viz");
@@ -1528,8 +1520,8 @@ void CLoopCloserERD<GRAPH_t>::toggleLaserScansVisualization() {
 		this->dumpVisibilityErrorMsg("visualize_laser_scans");
 	}
 
-	m_win->unlockAccess3DScene();
-	m_win->forceRepaint();
+	this->m_win->unlockAccess3DScene();
+	this->m_win->forceRepaint();
 
 	MRPT_END;
 }
@@ -1547,13 +1539,13 @@ template<class GRAPH_t>
 void CLoopCloserERD<GRAPH_t>::initializeVisuals() {
 	MRPT_START;
 	this->logFmt(mrpt::utils::LVL_DEBUG, "Initializing visuals");
-	m_time_logger.enter("Visuals");
+	this->m_time_logger.enter("Visuals");
 
 	ASSERTMSG_(m_laser_params.has_read_config,
 			"Configuration parameters aren't loaded yet");
-	ASSERTMSG_(m_win, "No CDisplayWindow3D* was provided");
-	ASSERTMSG_(m_win_manager, "No CWindowManager* was provided");
-	ASSERTMSG_(m_win_observer, "No CWindowObserver* was provided");
+	ASSERTMSG_(this->m_win, "No CDisplayWindow3D* was provided");
+	ASSERTMSG_(this->m_win_manager, "No CWindowManager* was provided");
+	ASSERTMSG_(this->m_win_observer, "No CWindowObserver* was provided");
 
 	if (m_laser_params.visualize_laser_scans) {
 		this->initLaserScansVisualization();
@@ -1567,7 +1559,7 @@ void CLoopCloserERD<GRAPH_t>::initializeVisuals() {
 	}
 
 	m_initialized_visuals = true;
-	m_time_logger.leave("Visuals");
+	this->m_time_logger.leave("Visuals");
 	MRPT_END;
 }
 template<class GRAPH_t>
@@ -1575,7 +1567,7 @@ void CLoopCloserERD<GRAPH_t>::updateVisuals() {
 	MRPT_START;
 	ASSERT_(m_initialized_visuals);
 	this->logFmt(mrpt::utils::LVL_DEBUG, "Updating visuals");
-	m_time_logger.enter("Visuals");
+	this->m_time_logger.enter("Visuals");
 
 	if (m_laser_params.visualize_laser_scans) {
 	this->updateLaserScansVisualization();
@@ -1587,7 +1579,7 @@ void CLoopCloserERD<GRAPH_t>::updateVisuals() {
 		this->updateCurrCovarianceVisualization();
 	}
 
-	m_time_logger.leave("Visuals");
+	this->m_time_logger.leave("Visuals");
 	MRPT_END;
 }
 
@@ -1598,12 +1590,12 @@ void CLoopCloserERD<GRAPH_t>::initCurrCovarianceVisualization() {
 	using namespace mrpt::opengl;
 
 	// text message for covariance ellipsis
-	m_win_manager->assignTextMessageParameters(
+	this->m_win_manager->assignTextMessageParameters(
 			/* offset_y*	= */ &m_offset_y_curr_node_covariance,
 			/* text_index* = */ &m_text_index_curr_node_covariance);
 
 	std::string title("Position uncertainty");
-	m_win_manager->addTextMessage(5,-m_offset_y_curr_node_covariance,
+	this->m_win_manager->addTextMessage(5,-m_offset_y_curr_node_covariance,
 			title,
 			mrpt::utils::TColorf(m_curr_node_covariance_color),
 			/* unique_index = */ m_text_index_curr_node_covariance);
@@ -1616,10 +1608,10 @@ void CLoopCloserERD<GRAPH_t>::initCurrCovarianceVisualization() {
 	cov_ellipsis_obj->setLocation(0, 0, 0);
 	//cov_ellipsis_obj->setQuantiles(2.0);
 
-	mrpt::opengl::COpenGLScenePtr scene = m_win->get3DSceneAndLock();
+	mrpt::opengl::COpenGLScenePtr scene = this->m_win->get3DSceneAndLock();
 	scene->insert(cov_ellipsis_obj);
-	m_win->unlockAccess3DScene();
-	m_win->forceRepaint();
+	this->m_win->unlockAccess3DScene();
+	this->m_win->forceRepaint();
 	
 	MRPT_END;
 }
@@ -1633,7 +1625,7 @@ void CLoopCloserERD<GRAPH_t>::updateCurrCovarianceVisualization() {
 	using namespace mrpt::gui;
 
 	// get the optimal path to the current node
-	mrpt::utils::TNodeID curr_node = m_graph->nodeCount()-1;
+	mrpt::utils::TNodeID curr_node = this->m_graph->nodeCount()-1;
 	TPath* path =	queryOptimalPath(curr_node);
 	if (!path) return;
 
@@ -1641,14 +1633,14 @@ void CLoopCloserERD<GRAPH_t>::updateCurrCovarianceVisualization() {
 	ASSERT_(path);
 	CMatrixDouble33 mat;
 	path->curr_pose_pdf.getCovariance(mat);
-	pose_t curr_position = m_graph->nodes.at(curr_node);
+	pose_t curr_position = this->m_graph->nodes.at(curr_node);
 
 	stringstream ss_mat; ss_mat << mat;
 	this->logFmt(mrpt::utils::LVL_DEBUG, "In updateCurrCovarianceVisualization\n"
 			"Covariance matrix:\n%s\n"
 			"determinant : %f", ss_mat.str().c_str(), mat.det() );
 
-	mrpt::opengl::COpenGLScenePtr scene = m_win->get3DSceneAndLock();
+	mrpt::opengl::COpenGLScenePtr scene = this->m_win->get3DSceneAndLock();
 	CRenderizablePtr obj = scene->getByName("cov_ellipsis_obj");
 	CEllipsoidPtr cov_ellipsis_obj = static_cast<CEllipsoidPtr>(obj);
 
@@ -1658,8 +1650,8 @@ void CLoopCloserERD<GRAPH_t>::updateCurrCovarianceVisualization() {
 	//cov_ellipsis_obj->setLocation(loc.x(), loc.y(), 0);
 	cov_ellipsis_obj->setCovMatrix(mat, 2);
 
-	m_win->unlockAccess3DScene();
-	m_win->forceRepaint();
+	this->m_win->unlockAccess3DScene();
+	this->m_win->forceRepaint();
 
 	MRPT_END;
 }
@@ -1770,7 +1762,7 @@ void CLoopCloserERD<GRAPH_t>::getDescriptiveReport(std::string* report_str) cons
 	class_props_ss << header_sep << std::endl;
 
 	// time and output logging
-	const std::string time_res = m_time_logger.getStatsAsText();
+	const std::string time_res = this->m_time_logger.getStatsAsText();
 	const std::string output_res = this->getLogAsString();
 
 	// merge the individual reports
@@ -1794,8 +1786,8 @@ void CLoopCloserERD<GRAPH_t>::updateMapPartitions(bool full_update /* = false */
 	using namespace mrpt::utils;
 	using namespace std;
 
-	m_time_logger.enter("updateMapPartitions");
-	
+	this->m_time_logger.enter("updateMapPartitions");
+
  	// Initialize the nodeIDs => LaserScans map
  	nodes_to_scans2D_t nodes_to_scans;
 	if (full_update) {
@@ -1811,7 +1803,7 @@ void CLoopCloserERD<GRAPH_t>::updateMapPartitions(bool full_update /* = false */
 		// just use the last node-laser scan pair
 		nodes_to_scans.insert(
 				make_pair(
-					m_graph->root, m_nodes_to_laser_scans2D.at(m_graph->nodeCount()-1)));
+					this->m_graph->root, m_nodes_to_laser_scans2D.at(this->m_graph->nodeCount()-1)));
 	}
 
 	// for each one of the above nodes - add its position and correspoding
@@ -1822,7 +1814,7 @@ void CLoopCloserERD<GRAPH_t>::updateMapPartitions(bool full_update /* = false */
 
 		// find pose of node, if it exists...
 		typename GRAPH_t::global_poses_t::const_iterator search;
-		search = m_graph->nodes.find(it->first);
+		search = this->m_graph->nodes.find(it->first);
 		if (search == m_graph->nodes.end()) {
 			MRPT_LOG_WARN_STREAM("Couldn't find pose for nodeID " << it->first);
 			continue;
@@ -1848,7 +1840,7 @@ void CLoopCloserERD<GRAPH_t>::updateMapPartitions(bool full_update /* = false */
 	m_partitioner.updatePartitions(m_curr_partitions);
 
 	this->logFmt(mrpt::utils::LVL_DEBUG, "Updated map partitions successfully.");
-	m_time_logger.leave("updateMapPartitions");
+	this->m_time_logger.leave("updateMapPartitions");
 	MRPT_END;
 }
 

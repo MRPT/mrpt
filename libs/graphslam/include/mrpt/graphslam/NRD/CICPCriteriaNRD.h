@@ -105,9 +105,8 @@ class CICPCriteriaNRD:
 	public:
 		// Public functions
 		//////////////////////////////////////////////////////////////
-
-		typedef mrpt::graphslam::deciders::CNodeRegistrationDecider<GRAPH_t> superA;
-		typedef mrpt::graphslam::deciders::CRangeScanRegistrationDecider<GRAPH_t> superB;
+		/**\brief Node Registration Decider */
+		typedef mrpt::graphslam::deciders::CNodeRegistrationDecider<GRAPH_t> node_reg;
 
 		/**\brief type of graph constraints */
 		typedef typename GRAPH_t::constraint_t constraint_t;
@@ -129,12 +128,13 @@ class CICPCriteriaNRD:
 		/**\brief Class destructor */
 		~CICPCriteriaNRD();
 
-		void setGraphPtr(GRAPH_t* graph);
 		void loadParams(const std::string& source_fname);
 		void printParams() const;
 		void getDescriptiveReport(std::string* report_str) const;
 
 		pose_t getCurrentRobotPosEstimation() const;
+
+		void setGraphPtr(GRAPH_t* graph);
 
 		/**\brief Update the decider state using the latest dataset measurements.
 		 *
@@ -203,7 +203,6 @@ class CICPCriteriaNRD:
 
 		// Private members
 		//////////////////////////////////////////////////////////////
-		GRAPH_t* m_graph; /**<\brief Pointer to the graph under construction */
 
 		/**\brief Tracking the PDF of the current position of the robot with regards to
 		 * the \b previous registered node
@@ -248,8 +247,6 @@ class CICPCriteriaNRD:
 		 * limit.
 		 */
 		TSlidingWindow m_mahal_distance_ICP_odom;
-
-		mrpt::utils::CTimeLogger m_time_logger; /**<Time logger instance */
 
 		// criteria for adding new a new node
 		bool m_use_angle_difference_node_reg;

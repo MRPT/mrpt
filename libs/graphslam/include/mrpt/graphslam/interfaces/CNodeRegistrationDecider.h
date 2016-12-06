@@ -40,6 +40,7 @@ namespace mrpt { namespace graphslam { namespace deciders {
 template<class GRAPH_t=typename mrpt::graphs::CNetworkOfPoses2DInf>
 class CNodeRegistrationDecider : public mrpt::graphslam::CRegistrationDeciderOrOptimizer<GRAPH_t> {
 	public:
+		typedef mrpt::graphslam::CRegistrationDeciderOrOptimizer<GRAPH_t> parent;
 		/**\brief type of graph constraints */
 		typedef typename GRAPH_t::constraint_t constraint_t;
 		/**\brief type of underlying poses (2D/3D). */

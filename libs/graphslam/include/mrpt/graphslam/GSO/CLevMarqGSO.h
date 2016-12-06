@@ -141,8 +141,6 @@ class CLevMarqGSO:
 				mrpt::obs::CSensoryFramePtr observations,
 				mrpt::obs::CObservationPtr observation );
 
-		void setGraphPtr(GRAPH_t* graph);
-		void setWindowManagerPtr(mrpt::graphslam::CWindowManager* win_manager);
 		void setCriticalSectionPtr(mrpt::synch::CCriticalSection* graph_section);
 		void initializeVisuals();
 		void updateVisuals();
@@ -301,10 +299,6 @@ class CLevMarqGSO:
 
 		// Private members
 		//////////////////////////////////////////////////////////////
-		GRAPH_t* m_graph; /**<\brief Pointer to the graph under construction */
-		mrpt::gui::CDisplayWindow3D* m_win;
-		mrpt::graphslam::CWindowManager* m_win_manager;
-		mrpt::graphslam::CWindowObserver* m_win_observer;
 		mrpt::synch::CCriticalSection* m_graph_section;
 
 		bool m_first_time_call;
@@ -319,7 +313,6 @@ class CLevMarqGSO:
 
 		// Use second thread for graph optimization
 		mrpt::system::TThreadHandle m_thread_optimize;
-		mrpt::utils::CTimeLogger m_time_logger; /**<Time logger instance */
 
 
 		/**\brief Enumeration that defines the behaviors towards using or ignoring a
