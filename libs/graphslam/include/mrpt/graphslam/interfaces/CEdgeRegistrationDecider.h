@@ -41,14 +41,20 @@ namespace mrpt { namespace graphslam { namespace deciders {
 template<class GRAPH_t=typename mrpt::graphs::CNetworkOfPoses2DInf>
 class CEdgeRegistrationDecider : public mrpt::graphslam::CRegistrationDeciderOrOptimizer<GRAPH_t> {
   public:
+		/**\brief Handy typedefs */
+		/**\{*/
+		/**\brief Parent of current class */
+		typedef mrpt::graphslam::CRegistrationDeciderOrOptimizer<GRAPH_t> parent;
 		/**\brief type of graph constraints */
 		typedef typename GRAPH_t::constraint_t constraint_t;
 		/**\brief type of underlying poses (2D/3D). */
 		typedef typename GRAPH_t::constraint_t::type_value pose_t;
+		/**\}*/
 
 
 		/**\brief Default class constructor.*/
-    CEdgeRegistrationDecider() {}
+    CEdgeRegistrationDecider():
+			m_just_inserted_loop_closure(false) { }
 		/**\brief Default class destructor.*/
     virtual ~CEdgeRegistrationDecider() {};
 		/**\brief Generic method for fetching the incremental action/observation
@@ -70,8 +76,10 @@ class CEdgeRegistrationDecider : public mrpt::graphslam::CRegistrationDeciderOrO
     /**\brief Used by the caller to query for possible loop closures in the
      * last edge registration procedure.
      */
-    virtual bool justInsertedLoopClosure() const {return false;}
-
+    virtual bool justInsertedLoopClosure() const {
+    	return m_just_inserted_loop_closure;
+    }
+		virtual void getDescriptiveReport(std::string* report_str) const; 
   protected:
   	/**\name Registration criteria checks
 		 *\brief Check whether a new edge should be registered in the
@@ -87,14 +95,22 @@ class CEdgeRegistrationDecider : public mrpt::graphslam::CRegistrationDeciderOrO
 		virtual void checkRegistrationCondition(
 				const std::set<mrpt::utils::TNodeID>&) {}
 		/**\}*/
-
-		/**\brief Wrapper around GRAPH_t::insertEdge method
+		/**\brief Register a new constraint/edge in the current graph.
+		 *
+		 * Implementations of this class should provide a wrapper around
+		 * GRAPH_t::insertEdge method.
      */
     virtual void registerNewEdge(
     		const mrpt::utils::TNodeID& from,
     		const mrpt::utils::TNodeID& to,
-    		const constraint_t& rel_edge) = 0;
+    		const constraint_t& rel_edge);
+
+		bool m_just_inserted_loop_closure;
+
 };
 
 } } } // end of namespaces
+
+#include "CEdgeRegistrationDecider_impl.h"
+
 #endif /* end of include guard: CEDGEREGISTRATIONDECIDER_H */
