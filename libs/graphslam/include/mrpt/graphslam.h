@@ -45,6 +45,7 @@ MRPT_WARNING("Including <mrpt/graphslam.h> makes compilation much slower, consid
 #include "graphslam/misc/CWindowManager.h"
 #include "graphslam/misc/CWindowObserver.h"
 #include "graphslam/misc/TSlidingWindow.h"
+#include "graphslam/misc/TUncertaintyPath.h"
 
 // App-Related headers
 #include "graphslam/apps_related/TUserOptionsChecker.h"

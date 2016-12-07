@@ -10,8 +10,11 @@
 #ifndef CLOOPCLOSERERD_H
 #define CLOOPCLOSERERD_H
 
+#include <mrpt/graphslam/misc/TUncertaintyPath.h>
+
 #include <mrpt/math/CMatrix.h>
 #include <mrpt/math/utils.h>
+#include <mrpt/math/data_utils.h>
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/utils/CConfigFile.h>
@@ -35,7 +38,6 @@
 #include <mrpt/slam/CICP.h>
 #include <mrpt/system/os.h>
 #include <mrpt/system/threads.h>
-#include <mrpt/math/data_utils.h>
 
 #include <mrpt/graphslam/interfaces/CEdgeRegistrationDecider.h>
 #include <mrpt/graphslam/misc/TSlidingWindow.h>
@@ -236,21 +238,29 @@ class CLoopCloserERD:
 	public mrpt::graphslam::deciders::CRangeScanRegistrationDecider<GRAPH_t>
 {
 	public:
-		/**\brief Node Registration Decider */
-		typedef mrpt::graphslam::deciders::CEdgeRegistrationDecider<GRAPH_t> edge_reg;
+		/**\brief Edge Registration Decider */
+		typedef mrpt::graphslam::deciders::CEdgeRegistrationDecider<GRAPH_t>
+			parent;
 
+		/**\brief Handy typedefs */
+		/**\{*/
 		/**\brief type of graph constraints */
 		typedef typename GRAPH_t::constraint_t constraint_t;
 		/**\brief type of underlying poses (2D/3D). */
 		typedef typename GRAPH_t::constraint_t::type_value pose_t;
-		/**\brief Typedef for accessing methods of the RangeScanRegistrationDecider_t parent class. */
-		typedef mrpt::graphslam::deciders::CRangeScanRegistrationDecider<GRAPH_t> range_scanner_t;
+		/**\brief Typedef for accessing methods of the
+		 * RangeScanRegistrationDecider_t parent class.
+		 */
+		typedef mrpt::graphslam::deciders::CRangeScanRegistrationDecider<GRAPH_t>
+			range_scanner_t;
 		typedef CLoopCloserERD<GRAPH_t> decider_t; /**< self type - Handy typedef */
 		/**\brief New typedef for splitting the nodes into groups */
 		typedef std::vector<mrpt::vector_uint> partitions_t;
-		typedef std::map<mrpt::utils::TNodeID, mrpt::obs::CObservation2DRangeScanPtr> nodes_to_scans2D_t;
+		typedef std::map<mrpt::utils::TNodeID,
+						mrpt::obs::CObservation2DRangeScanPtr> nodes_to_scans2D_t;
 		typedef typename GRAPH_t::edges_map_t::const_iterator edges_citerator;
 		typedef typename GRAPH_t::edges_map_t::iterator edges_iterator;
+		/**\}*/
 
 		// Public methods
 		//////////////////////////////////////////////////////////////
@@ -270,7 +280,6 @@ class CLoopCloserERD:
 
 		void initializeVisuals();
 		void updateVisuals();
-		bool justInsertedLoopClosure() const;
 		void loadParams(const std::string& source_fname);
 		void printParams() const;
 
@@ -386,78 +395,22 @@ class CLoopCloserERD:
 		TLaserParams m_laser_params;
 		TLoopClosureParams m_lc_params;
 
-		/**\brief Holds the data of an information path.
+		/**\brief graphSLAM Hypothesis.
 		 *
-		 * Instances of this struct are used during the Dijkstra projection method
+		 * Struct practically provides a wrapper around the constraint_t instance
+		 * and represents a hypothesis for a potential, perhaps loop closing ,edge.
 		 */
-		struct TPath : public mrpt::utils::CLoadableOptions {
-
-			// methods
-			// ////////////////////////////
-			TPath();
-			TPath(mrpt::utils::TNodeID starting_node);
-			~TPath();
-			void clear();
-
-			// no need to load anything..
-			void loadFromConfigFile(
-					const mrpt::utils::CConfigFileBase &source,
-					const std::string &section);
-			void 	dumpToTextStream(mrpt::utils::CStream &out) const;
-			std::string getAsString() const;
-			void getAsString(std::string* str) const;
-
-			mrpt::utils::TNodeID getSource() const;
-			mrpt::utils::TNodeID getDestination() const;
-
-			double getDeterminant();
-
-			/**\brief Test if the current path has a lower uncertainty than the other
-			 * path.
-			 *
-			 * \return True if the current path does have a lower uncertainty
-			 */
-			bool hasLowerUncertaintyThan(const TPath& other) const;
-
-			/**\brief add a new link in the current path.
-			 *
-			 * Add the node that the path traverses and the information matrix of
-			 * the extra link
-			 */
-			void addToPath(mrpt::utils::TNodeID node, constraint_t edge);
-
-			/**brief Test weather the constraints are of type CPosePDFGaussianInf.*/
-			bool isGaussianInfType() const;
-			/**brief Test weather the constraints are of type CPosePDFGaussian.  */
-			bool isGaussianType() const;
-
-			TPath& operator+=(const TPath& other);
-			// results...
-			bool operator==(const TPath& other);
-			bool operator!=(const TPath& other);
-
-			// members
-			// ////////////////////////////
-
-			/**\brief Nodes that the path comprises of.
-			 * Nodes in the path are added to the end of the vector
-			 */
-			std::vector<mrpt::utils::TNodeID> nodes_traversed;
-			/**\brief Current path position + related covariance */
-			constraint_t curr_pose_pdf;
-
-			bool determinant_updated;
-			double determinant_cached;
-
-		};
 		struct THypothesis {
 			THypothesis() {is_valid = true; }
 			~THypothesis() { }
 			std::string getAsString(bool oneline=true) const;
 			void getAsString(std::string* str, bool oneline=true) const;
 
+			/**\brief ID of the current hypothesis */
 			int id;
+			/** Starting node of the hypothesis */
 			mrpt::utils::TNodeID from;
+			/** Ending node of the hypothesis */
 			mrpt::utils::TNodeID to;
 
 			constraint_t edge;
@@ -508,9 +461,6 @@ class CLoopCloserERD:
 		void toggleLaserScansVisualization();
 		void dumpVisibilityErrorMsg(std::string viz_flag,
 				int sleep_time=500 /* ms */);
-		void checkIfInvalidDataset(mrpt::obs::CActionCollectionPtr action,
-				mrpt::obs::CSensoryFramePtr observations,
-				mrpt::obs::CObservationPtr observation );
 		/**\brief Split the currently registered graph nodes into partitions.  */
 		void updateMapPartitions(bool full_update=false);
 		/**\brief Initialize the visualization of the map partition objects. */
@@ -529,14 +479,6 @@ class CLoopCloserERD:
 
 		void computeCentroidOfNodesVector(const vector_uint& nodes_list,
 				std::pair<double, double>* centroid_coords) const;
-
-		template<class T>
-		static void printVectorOfVectors(const T& t);
-		template<class T>
-		static void printVector(const T& t);
-		template<class T>
-		static std::string getVectorAsString(const T& t);
-
 
 		/**\brief Check the registered so far partitions for potential loop
 		 * closures.
@@ -618,15 +560,18 @@ class CLoopCloserERD:
 		void getMinUncertaintyPath(
 				const mrpt::utils::TNodeID from,
 				const mrpt::utils::TNodeID to,
-				TPath* path) const;
-		/**\brief Find the minimum uncertainty path from te given pool of TPath
-		 * instances.
+				typename mrpt::graphslam::TUncertaintyPath<GRAPH_t>* path) const;
+		/**\brief Find the minimum uncertainty path from te given pool of
+		 * TUncertaintyPath instances.
 		 *
 		 * Removes (and returns) the found path from the pool.
 		 *
 		 * \return Minimum uncertainty path from the pool provided
 		 */
-		TPath* popMinUncertaintyPath(std::set<TPath*>* pool_of_paths) const;
+		typename mrpt::graphslam::TUncertaintyPath<GRAPH_t>* popMinUncertaintyPath(
+				std::set<
+				typename mrpt::graphslam::TUncertaintyPath<GRAPH_t>*>* pool_of_paths)
+			const;
 		/**\brief  Append the paths starting from the current node.
 		 *
 		 * \param[in] pool_of_paths Paths that are currently registered
@@ -635,8 +580,9 @@ class CLoopCloserERD:
 		 * \param[in] neighbors std::set of neighboring nodes to the last node of
 		 * the current path
 		 */
-		void addToPaths(std::set<TPath*>* pool_of_paths,
-				const TPath& curr_path,
+		void addToPaths(
+				typename std::set<mrpt::graphslam::TUncertaintyPath<GRAPH_t>*>* pool_of_paths,
+				const typename mrpt::graphslam::TUncertaintyPath<GRAPH_t>& curr_path,
 				const std::set<mrpt::utils::TNodeID>& neibors) const;
 		/**\brief
 		 * Query for the optimal path of a nodeID. 
@@ -649,14 +595,14 @@ class CLoopCloserERD:
 		 * \return Optimal path corresponding to the given nodeID or NULL if the
 		 * former is not found.
 		 */
-		TPath* queryOptimalPath(const mrpt::utils::TNodeID node) const;
+		typename mrpt::graphslam::TUncertaintyPath<GRAPH_t>* queryOptimalPath(
+				const mrpt::utils::TNodeID node) const;
 
 		// Private variables
 		//////////////////////////////////////////////////////////////
 		/**\brief Instance responsible for partitioning the map */
 		mrpt::slam::CIncrementalMapPartitioner m_partitioner;
 
-		bool m_initialized_visuals;
 		bool m_just_inserted_loop_closure;
 
 		bool m_visualize_curr_node_covariance;
@@ -694,17 +640,14 @@ class CLoopCloserERD:
 		 */
 		std::map<int, vector_uint> m_partitionID_to_prev_nodes_list;
 
-		// find out if decider is invalid for the given dataset
-		bool m_checked_for_usuable_dataset;
-		size_t m_consecutive_invalid_format_instances;
-		const size_t m_consecutive_invalid_format_instances_thres;
-		
-		/**\brief Map for holding the information matrix representing the
-		 * certanty of each node position
+		/**\brief Map that stores the lowest uncertainty path from one Node to
+		 * another Node.
 		 */
-		std::map<mrpt::utils::TNodeID, TPath*> m_node_optimal_paths;
+		std::map<
+			mrpt::utils::TNodeID,
+			typename mrpt::graphslam::TUncertaintyPath<GRAPH_t>*>
+				m_node_optimal_paths;
 
-		const std::string m_class_name;
 };
 
 } } } // end of namespaces
