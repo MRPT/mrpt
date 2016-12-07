@@ -19,8 +19,7 @@ template<class GRAPH_t>
 CICPCriteriaERD<GRAPH_t>::CICPCriteriaERD():
 	params(*this), // pass reference to self when initializing the parameters
 	m_search_disk_color(142, 142, 56),
-	m_laser_scans_color(0, 20, 255),
-	m_consecutive_invalid_format_instances_thres(20) // high threshold just to make sure
+	m_laser_scans_color(0, 20, 255)
 {
 	MRPT_START;
 
@@ -32,8 +31,8 @@ template<class GRAPH_t>
 void CICPCriteriaERD<GRAPH_t>::initCICPCriteriaERD() {
 	MRPT_START;
 	using namespace mrpt::utils;
+	this->initializeLoggers("CICPCriteriaERD");
 
-	m_initialized_visuals = false;
 	m_just_inserted_loop_closure = false;
 	m_is_using_3DScan = false;
 
@@ -45,11 +44,6 @@ void CICPCriteriaERD<GRAPH_t>::initCICPCriteriaERD() {
 	m_edge_types_to_nums["ICP3D"] = 0;
 	m_edge_types_to_nums["LC"] = 0;
 
-	m_checked_for_usuable_dataset = false;
-	m_consecutive_invalid_format_instances = 0;
-
-	this->logging_enable_keep_record = true;
-	this->setLoggerName("CICPCriteriaERD");
 	this->logFmt(LVL_DEBUG, "Initialized class object");
 
 	MRPT_END;
@@ -154,10 +148,6 @@ template<class GRAPH_t> bool CICPCriteriaERD<GRAPH_t>::updateState(
 		else {
 			checkRegistrationCondition2D(nodes_to_check_ICP);
 		}
-	}
-
-	if (!m_checked_for_usuable_dataset) {
-		this->checkIfInvalidDataset(action, observations, observation);
 	}
 
 	return true;
@@ -309,12 +299,11 @@ void CICPCriteriaERD<GRAPH_t>::registerNewEdge(
 		const mrpt::utils::TNodeID& from,
 		const mrpt::utils::TNodeID& to,
 		const constraint_t& rel_edge ) {
-	MRPT_START;
 	using namespace mrpt::utils;
+	parent::registerNewEdge(from, to, rel_edge);
 
 	this->m_graph->insertEdge(from,  to, rel_edge);
 
-	MRPT_END;
 }
 
 template<class GRAPH_t>
@@ -348,7 +337,7 @@ template<class GRAPH_t>
 void CICPCriteriaERD<GRAPH_t>::notifyOfWindowEvents(
 		const std::map<std::string, bool>& events_occurred) {
 	MRPT_START;
-	ASSERT_(this->m_win_manager);
+	parent::notifyOfWindowEvents(events_occurred);
 
 	// I know the key exists - I put it there explicitly
 	if (events_occurred.find(params.keystroke_laser_scans)->second) {
@@ -398,17 +387,13 @@ void CICPCriteriaERD<GRAPH_t>::getEdgesStats(
 template<class GRAPH_t>
 void CICPCriteriaERD<GRAPH_t>::initializeVisuals() {
 	MRPT_START;
-	ASSERT_(this->m_win_manager);
-
+	using namespace mrpt::opengl;
 	this->logFmt(mrpt::utils::LVL_DEBUG, "Initializing visuals");
 	this->m_time_logger.enter("CICPCriteriaERD::Visuals");
-	using namespace mrpt::opengl;
+	parent::initializeVisuals();
 
 	ASSERTMSG_(params.has_read_config,
 			"Configuration parameters aren't loaded yet");
-	ASSERTMSG_(this->m_win, "No CDisplayWindow3D* was provided");
-	ASSERTMSG_(this->m_win_manager, "No CWindowManager* was provided");
-	ASSERTMSG_(this->m_win_observer, "No CWindowObserver* was provided");
 
 	this->m_win_observer->registerKeystroke(params.keystroke_laser_scans,
 			"Toggle LaserScans Visualization");
@@ -462,21 +447,18 @@ void CICPCriteriaERD<GRAPH_t>::initializeVisuals() {
 				/* unique_index = */ m_text_index_search_disk );
 	}
 
-	m_initialized_visuals = true;
 	this->m_time_logger.leave("CICPCriteriaERD::Visuals");
 	MRPT_END;
 }
 template<class GRAPH_t>
 void CICPCriteriaERD<GRAPH_t>::updateVisuals() {
 	MRPT_START;
-	ASSERT_(this->m_win_manager);
-	ASSERT_(m_initialized_visuals);
 	this->m_time_logger.enter("CICPCriteriaERD::Visuals");
 	using namespace mrpt::opengl;
 	using namespace mrpt::utils;
 	using namespace mrpt::math;
 	using namespace mrpt::poses;
-	this->logFmt(LVL_DEBUG, "Updating visuals");
+	parent::updateVisuals();
 
 	// update ICP_max_distance Disk
 	if (this->m_win && params.ICP_max_distance > 0) {
@@ -531,45 +513,6 @@ void CICPCriteriaERD<GRAPH_t>::updateVisuals() {
 	this->m_time_logger.leave("CICPCriteriaERD::Visuals");
 	MRPT_END;
 }
-template<class GRAPH_t>
-bool CICPCriteriaERD<GRAPH_t>::justInsertedLoopClosure() const {
-	return m_just_inserted_loop_closure;
-}
-
-template<class GRAPH_t>
-void CICPCriteriaERD<GRAPH_t>::checkIfInvalidDataset(
-		mrpt::obs::CActionCollectionPtr action,
-		mrpt::obs::CSensoryFramePtr observations,
-		mrpt::obs::CObservationPtr observation ) {
-	MRPT_START;
-	MRPT_UNUSED_PARAM(action);
-	using namespace mrpt::utils;
-	using namespace mrpt::obs;
-
-	if (observation.present()) { // FORMAT #2
-		if (IS_CLASS(observation, CObservation2DRangeScan) ||
-				IS_CLASS(observation, CObservation3DRangeScan)) {
-			m_checked_for_usuable_dataset = true;
-			return;
-		}
-		else {
-			m_consecutive_invalid_format_instances++;
-		}
-	}
-	else {
-		// TODO - what if it's in this format but only has odometry information?
-		m_checked_for_usuable_dataset = true;
-		return;
-	}
-	if (m_consecutive_invalid_format_instances > m_consecutive_invalid_format_instances_thres) {
-		this->logFmt(LVL_ERROR,
-				"Can't find usuable data in the given dataset.\nMake sure dataset contains valid CObservation2DRangeScan/CObservation3DRangeScan data.");
-		mrpt::system::sleep(5000);
-		m_checked_for_usuable_dataset = true;
-	}
-
-	MRPT_END;
-}
 
 template<class GRAPH_t>
 void CICPCriteriaERD<GRAPH_t>::dumpVisibilityErrorMsg(
@@ -593,6 +536,7 @@ template<class GRAPH_t>
 void CICPCriteriaERD<GRAPH_t>::loadParams(const std::string& source_fname) {
 	MRPT_START;
 	using namespace mrpt::utils;
+	parent::loadParams(source_fname);
 
 	params.loadFromConfigFileName(source_fname,
 			"EdgeRegistrationDeciderParameters");
@@ -611,6 +555,7 @@ void CICPCriteriaERD<GRAPH_t>::loadParams(const std::string& source_fname) {
 template<class GRAPH_t>
 void CICPCriteriaERD<GRAPH_t>::printParams() const {
 	MRPT_START;
+	parent::printParams();
 
 	params.dumpToConsole();
 
@@ -636,6 +581,7 @@ void CICPCriteriaERD<GRAPH_t>::getDescriptiveReport(std::string* report_str) con
 
 	// merge the individual reports
 	report_str->clear();
+	parent::getDescriptiveReport(report_str);
 
 	*report_str += class_props_ss.str();
 	*report_str += report_sep;

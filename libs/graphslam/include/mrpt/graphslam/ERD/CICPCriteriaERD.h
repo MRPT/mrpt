@@ -119,13 +119,20 @@ class CICPCriteriaERD :
 	public mrpt::graphslam::deciders::CRangeScanRegistrationDecider<GRAPH_t>
 {
 	public:
+		/**\brief Handy typedefs */
+		/**\{*/
 		/**\brief type of graph constraints */
 		typedef typename GRAPH_t::constraint_t constraint_t;
 		/**\brief type of underlying poses (2D/3D). */
 		typedef typename GRAPH_t::constraint_t::type_value pose_t;
-		/**\brief Typedef for accessing methods of the RangeScanRegistrationDecider_t parent class. */
-		typedef mrpt::graphslam::deciders::CRangeScanRegistrationDecider<GRAPH_t> range_scanner_t;
+		/**\brief Typedef for accessing methods of the
+		 * RangeScanRegistrationDecider_t parent class. */
+		typedef mrpt::graphslam::deciders::CRangeScanRegistrationDecider<GRAPH_t>
+			range_scanner_t;
 		typedef CICPCriteriaERD<GRAPH_t> decider_t; /**< self type - Handy typedef */
+		/**\brief Edge Registration Decider */
+		typedef mrpt::graphslam::deciders::CEdgeRegistrationDecider<GRAPH_t> parent;
+		/**\}*/
 
 		// Public methods
 		//////////////////////////////////////////////////////////////
@@ -144,7 +151,6 @@ class CICPCriteriaERD :
 
 		void initializeVisuals();
 		void updateVisuals();
-		bool justInsertedLoopClosure() const;
 		void loadParams(const std::string& source_fname);
 		void printParams() const;
 
@@ -214,7 +220,6 @@ class CICPCriteriaERD :
 		// Private variables
 		//////////////////////////////////////////////////////////////
 
-		bool m_initialized_visuals;
 		bool m_just_inserted_loop_closure;
 		bool m_is_using_3DScan;
 
@@ -236,11 +241,6 @@ class CICPCriteriaERD :
 		// fake 2D laser scan generated from corresponding 3DRangeScan for
 		// visualization reasons
 		mrpt::obs::CObservation2DRangeScanPtr m_fake_laser_scan2D;
-
-		// find out if decider is invalid for the given dataset
-		bool m_checked_for_usuable_dataset;
-		size_t m_consecutive_invalid_format_instances;
-		const size_t m_consecutive_invalid_format_instances_thres;
 
 };
 

@@ -105,9 +105,8 @@ class CICPCriteriaNRD:
 	public:
 		// Public functions
 		//////////////////////////////////////////////////////////////
-		/**\brief Node Registration Decider */
-		typedef mrpt::graphslam::deciders::CNodeRegistrationDecider<GRAPH_t> node_reg;
-
+		/**\brief Handy typedefs */
+		/**\{*/
 		/**\brief type of graph constraints */
 		typedef typename GRAPH_t::constraint_t constraint_t;
 		/**\brief type of underlying poses (2D/3D). */
@@ -122,6 +121,9 @@ class CICPCriteriaNRD:
 		typedef mrpt::graphslam::deciders::CRangeScanRegistrationDecider<GRAPH_t>
 			range_scanner_t;
 		typedef CICPCriteriaNRD<GRAPH_t> decider_t; /**< self type - Handy typedef */
+		/**\brief Node Registration Decider */
+		typedef mrpt::graphslam::deciders::CNodeRegistrationDecider<GRAPH_t> parent;
+		/**\}*/
 
 		/**\brief Class constructor */
 		CICPCriteriaNRD();

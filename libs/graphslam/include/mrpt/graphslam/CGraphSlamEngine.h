@@ -187,17 +187,18 @@ template<class GRAPH_t=typename mrpt::graphs::CNetworkOfPoses2DInf>
 class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 	public:
 
+		/**\brief Handy typedefs */
 		/**\{*/
-		/**\brief Handy typedef for managing output file streams.*/
+		/**\brief Map for managing output file streams.*/
 		typedef std::map<std::string, mrpt::utils::CFileOutputStream*> fstreams_out;
-		/**\brief Handy typedef for managing output file streams.*/
+		/**\brief Map for iterating over output file streams.*/
 		typedef std::map<std::string, mrpt::utils::CFileOutputStream*>::iterator fstreams_out_it;
-		/**\}*/
 
-		/**\brief type of graph constraints */
+		/**\brief Type of graph constraints */
 		typedef typename GRAPH_t::constraint_t constraint_t;
-		/**\brief type of underlying poses (2D/3D). */
+		/**\brief Type of underlying poses (2D/3D). */
 		typedef typename GRAPH_t::constraint_t::type_value pose_t;
+		/**\}*/
 
 		/**\brief Constructor of CGraphSlamEngine class template.
 		 *

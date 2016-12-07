@@ -538,7 +538,9 @@ bool CGraphSlamEngine<GRAPH_t>::execGraphSlamStep(
 		{
 			mrpt::synch::CCriticalSectionLocker m_graph_lock(&m_graph_section);
 			m_time_logger.enter("dijkstra_nodes_estimation");
+
 			m_graph.dijkstra_nodes_estimate();
+
 			m_time_logger.leave("dijkstra_nodes_estimation");
 		}
 
@@ -555,9 +557,11 @@ bool CGraphSlamEngine<GRAPH_t>::execGraphSlamStep(
 		if (m_enable_visuals) {
 			mrpt::synch::CCriticalSectionLocker m_graph_lock(&m_graph_section);
 			m_time_logger.enter("Visuals");
+
 			m_node_registrar->updateVisuals();
 			m_edge_registrar->updateVisuals();
 			m_optimizer->updateVisuals();
+
 			m_time_logger.leave("Visuals");
 		}
 

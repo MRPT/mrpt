@@ -39,8 +39,11 @@ namespace mrpt { namespace graphslam { namespace optimizers {
 template<class GRAPH_t=typename mrpt::graphs::CNetworkOfPoses2DInf>
 class CGraphSlamOptimizer : public mrpt::graphslam::CRegistrationDeciderOrOptimizer<GRAPH_t> {
 	public:
+		/**\brief Handy typedefs */
+		/**\{*/
 		typedef typename GRAPH_t::constraint_t constraint_t; // type of underlying constraints
 		typedef typename GRAPH_t::constraint_t::type_value pose_t; // type of underlying poses (2D/3D)
+		/**\}*/
 
 		CGraphSlamOptimizer() { }
 		~CGraphSlamOptimizer() { }
