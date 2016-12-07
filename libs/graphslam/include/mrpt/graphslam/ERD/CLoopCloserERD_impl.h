@@ -369,6 +369,7 @@ void CLoopCloserERD<GRAPH_t>::evaluatePartitionsForLC(
 	using namespace mrpt;
 	using namespace mrpt::math;
 	using namespace mrpt::utils;
+	using namespace mrpt::graphslam::detail;
 	using namespace std;
 	this->m_time_logger.enter("LoopClosureEvaluation");
 
@@ -430,7 +431,9 @@ void CLoopCloserERD<GRAPH_t>::evaluatePartitionsForLC(
 		// formed
 		int hypothesis_counter = 0;
 		int invalid_hypotheses = 0;
-		std::map<std::pair<TNodeID, TNodeID>, THypothesis*> nodeIDs_to_hypots;
+		std::map<
+			std::pair<TNodeID, TNodeID>,
+			TGraphSlamHypothesis<GRAPH_t>*> nodeIDs_to_hypots;
 		{
 			for (vector_uint::const_iterator
 					b_it = groupB.begin();
@@ -443,7 +446,7 @@ void CLoopCloserERD<GRAPH_t>::evaluatePartitionsForLC(
 					mrpt::slam::CICP::TReturnInfo icp_info;
 					// by default hypotheses will direct bi => ai; If the hypothesis is
 					// traversed the opposite way take the opposite of the constraint
-					THypothesis* hypot = new THypothesis;
+					TGraphSlamHypothesis<GRAPH_t>* hypot = new TGraphSlamHypothesis<GRAPH_t>;
 					hypot->from = *b_it;
 					hypot->to = *a_it;
 					hypot->id = hypothesis_counter++;
@@ -473,8 +476,11 @@ void CLoopCloserERD<GRAPH_t>::evaluatePartitionsForLC(
 
 		// compute the pair-wise consistency for groups of hypotheses between
 		// groups A, B
-		std::map<std::pair<THypothesis*, THypothesis*>, double>
-			hypots_to_consistencies;
+		std::map<
+			std::pair<TGraphSlamHypothesis<GRAPH_t>*,
+								TGraphSlamHypothesis<GRAPH_t>*>,
+			double> hypots_to_consistencies;
+
 		for (vector_uint::const_iterator
 				b_out_it = groupB.begin();
 				b_out_it != groupB.end();
@@ -490,13 +496,15 @@ void CLoopCloserERD<GRAPH_t>::evaluatePartitionsForLC(
 						a_out_it != groupA.end();
 						++a_out_it) {
 					TNodeID a1 = *a_out_it;
-					THypothesis* h_b2a1 = nodeIDs_to_hypots.at(make_pair(b2, a1));
+					TGraphSlamHypothesis<GRAPH_t>* h_b2a1 =
+						nodeIDs_to_hypots.at(make_pair(b2, a1));
 					for (vector_uint::const_iterator
 							a_in_it = a_out_it+1;
 							a_in_it != groupA.end();
 							++a_in_it) {
 						TNodeID a2 = *a_in_it;
-						THypothesis* h_b1a2 = nodeIDs_to_hypots.at(make_pair(b1, a2));
+						TGraphSlamHypothesis<GRAPH_t>* h_b1a2 =
+							nodeIDs_to_hypots.at(make_pair(b1, a2));
 
 						double consistency;
 						bool hypots_are_valid = (h_b2a1->is_valid && h_b1a2->is_valid &&
@@ -530,8 +538,10 @@ void CLoopCloserERD<GRAPH_t>::evaluatePartitionsForLC(
 		// generate the pair-wise consistency matrix of the relevant edges and find
 		// the submatrix of the most consistent hypotheses inside it.
 		CMatrixDouble consist_matrix(hypothesis_counter, hypothesis_counter);
-		for (typename std::map< std::pair<THypothesis*, THypothesis*>,
-														double>::const_iterator
+		for (typename std::map<
+					std::pair<TGraphSlamHypothesis<GRAPH_t>*,
+										TGraphSlamHypothesis<GRAPH_t>*>,
+					double>::const_iterator
 				it = hypots_to_consistencies.begin();
 				it != hypots_to_consistencies.end();
 				++it)  {
@@ -590,8 +600,9 @@ void CLoopCloserERD<GRAPH_t>::evaluatePartitionsForLC(
 				if (w(wi) == 1)  {
 					// search through the potential hypotheses, find the one with the
 					// correct ID and register it.
-					typename std::map<std::pair<TNodeID, TNodeID>,
-									 THypothesis*>::const_iterator h_it;
+					typename std::map<
+						std::pair<TNodeID, TNodeID>,
+						TGraphSlamHypothesis<GRAPH_t>*>::const_iterator h_it;
 					for (h_it = nodeIDs_to_hypots.begin();
 							h_it != nodeIDs_to_hypots.end();
 							++h_it) {
@@ -611,8 +622,10 @@ void CLoopCloserERD<GRAPH_t>::evaluatePartitionsForLC(
 		// delete the hypotheses - generated in the heap...
 		this->logFmt(mrpt::utils::LVL_DEBUG, "Deleting the generated hypotheses pool..." );
 		for (typename std::map<std::pair<TNodeID, TNodeID>,
-					CLoopCloserERD<GRAPH_t>::THypothesis*>::const_iterator it =
-				nodeIDs_to_hypots.begin(); it != nodeIDs_to_hypots.end(); ++it)  {
+					TGraphSlamHypothesis<GRAPH_t>*>::const_iterator
+					it = nodeIDs_to_hypots.begin();
+					it != nodeIDs_to_hypots.end();
+					++it) {
 			delete it->second;
 		}
 
@@ -696,14 +709,18 @@ double CLoopCloserERD<GRAPH_t>::generatePWConsistencyElement(
 		const mrpt::utils::TNodeID& a2,
 		const mrpt::utils::TNodeID& b1,
 		const mrpt::utils::TNodeID& b2,
-		const typename std::map<std::pair<mrpt::utils::TNodeID, mrpt::utils::TNodeID>,
-		typename CLoopCloserERD<GRAPH_t>::THypothesis*>& nodeIDs_to_hypots) {
+		const typename std::map<
+			std::pair<
+				mrpt::utils::TNodeID,
+				mrpt::utils::TNodeID>,
+			mrpt::graphslam::detail::TGraphSlamHypothesis<GRAPH_t>*>& nodeIDs_to_hypots) {
 	MRPT_START;
 	using namespace std;
 	using namespace mrpt;
 	using namespace mrpt::math;
 	using namespace mrpt::utils;
 	using namespace mrpt::graphslam;
+	using namespace mrpt::graphslam::detail;
 
 	// get the dijkstra links
 	// a1=>a2
@@ -729,8 +746,9 @@ double CLoopCloserERD<GRAPH_t>::generatePWConsistencyElement(
 	// by default hypotheses are stored bi => ai
 	std::pair<TNodeID, TNodeID> curr_pair;
 	constraint_t edge_a2b1, edge_b2a1;
-	typename std::map<std::pair<TNodeID, TNodeID>,
-					 CLoopCloserERD<GRAPH_t>::THypothesis*>::const_iterator search;
+	typename std::map<
+		std::pair<TNodeID, TNodeID>,
+		mrpt::graphslam::detail::TGraphSlamHypothesis<GRAPH_t>*>::const_iterator search;
 	{
 		// Backwards edge: a2=>b1
 		curr_pair = make_pair(b1, a2);
@@ -1142,7 +1160,7 @@ bool CLoopCloserERD<GRAPH_t>::mahalanobisDistanceOdometryToICPEdge(
 
 template<class GRAPH_t>
 void CLoopCloserERD<GRAPH_t>::registerHypothesis(
-		const typename CLoopCloserERD<GRAPH_t>::THypothesis& h) {
+		const mrpt::graphslam::detail::TGraphSlamHypothesis<GRAPH_t>& h) {
 	this->logFmt(mrpt::utils::LVL_DEBUG, "Registering hypothesis: %s", h.getAsString(/*oneline=*/ true).c_str());
 	this->registerNewEdge(h.from, h.to, h.edge);
 }
@@ -1959,36 +1977,6 @@ void CLoopCloserERD<GRAPH_t>::TLoopClosureParams::loadFromConfigFile(
 
 	has_read_config = true;
 	MRPT_END;
-}
-
-template<class GRAPH_t>
-std::string CLoopCloserERD<GRAPH_t>::THypothesis::getAsString(bool oneline/*=true*/) const {
-	std::string str;
-	this->getAsString(&str, oneline);
-	return str;
-}
-
-template<class GRAPH_t>
-void CLoopCloserERD<GRAPH_t>::THypothesis::getAsString(std::string* str,
-		bool oneline /*=true*/) const {
-	using namespace std;
-
-	stringstream ss;
-	if (!oneline) { // multiline report
-		ss << "Hypothesis #" << id << endl;
-		ss << from << " => " << to << endl;
-		ss << edge << endl;
-	}
-	else {
-		ss << "Hypothesis #" << id << "|\t ";
-		ss << from << " => " << to << "|\t ";
-		ss << edge.getMeanVal().asString(); 
-		ss << "|\tgoodness: " << goodness;
-		ss << "|\tvalid: " << is_valid;
-	}
-
-	ASSERT_(str);
-	*str = ss.str();
 }
 
 } } } // end of namespaces

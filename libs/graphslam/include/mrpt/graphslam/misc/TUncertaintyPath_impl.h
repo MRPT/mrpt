@@ -12,10 +12,6 @@
 
 // Implementattion file for TUncertaintyPath struct
 
-using namespace mrpt;
-using namespace mrpt::math;
-using namespace mrpt::poses;
-using namespace std;
 
 // TUncertaintyPath - Implementation of Member Methods
 ///////////////////////////////////////////////////////
@@ -36,6 +32,10 @@ TUncertaintyPath<GRAPH_t>::~TUncertaintyPath() { }
 
 template<class GRAPH_t>
 void TUncertaintyPath<GRAPH_t>::clear() {
+	using namespace mrpt;
+	using namespace mrpt::math;
+	using namespace mrpt::poses;
+	using namespace std;
 
 	// clear the vector of traversed nodes
 	nodes_traversed.clear();
@@ -57,6 +57,10 @@ template<class GRAPH_t>
 TUncertaintyPath<GRAPH_t>&
 TUncertaintyPath<GRAPH_t>::operator+=(
 		const TUncertaintyPath<GRAPH_t>& other) {
+	using namespace mrpt;
+	using namespace mrpt::math;
+	using namespace mrpt::poses;
+	using namespace std;
 
 	// other path should start where this ends
 	ASSERTMSG_(other.nodes_traversed.begin()[0] ==
@@ -97,6 +101,10 @@ TUncertaintyPath<GRAPH_t>::operator+=(
 template<class GRAPH_t>
 bool TUncertaintyPath<GRAPH_t>::operator==(
 		const TUncertaintyPath<GRAPH_t>& other) {
+	using namespace mrpt;
+	using namespace mrpt::math;
+	using namespace mrpt::poses;
+	using namespace std;
 
 		// check if the traversed nodes are the same as well as the
 		// CPoseGaussianInfs are the same..
@@ -140,7 +148,10 @@ void TUncertaintyPath<GRAPH_t>::dumpToTextStream(
 
 template<class GRAPH_t>
 void TUncertaintyPath<GRAPH_t>::getAsString(std::string* str) const{
+	using namespace mrpt;
 	using namespace mrpt::math;
+	using namespace mrpt::poses;
+	using namespace std;
 
 	stringstream ss;
 	string header_sep(30, '=');
@@ -187,6 +198,10 @@ mrpt::utils::TNodeID TUncertaintyPath<GRAPH_t>::getDestination() const {
 
 template<class GRAPH_t>
 double TUncertaintyPath<GRAPH_t>::getDeterminant() {
+	using namespace mrpt;
+	using namespace mrpt::math;
+	using namespace mrpt::poses;
+	using namespace std;
 
 	// if determinant is up-to-date then return the cached version...
 	if (determinant_is_updated) return determinant_cached;
@@ -212,6 +227,11 @@ double TUncertaintyPath<GRAPH_t>::getDeterminant() {
 template<class GRAPH_t>
 bool TUncertaintyPath<GRAPH_t>::hasLowerUncertaintyThan(
 		const TUncertaintyPath<GRAPH_t>& other) const {
+	using namespace mrpt;
+	using namespace mrpt::math;
+	using namespace mrpt::poses;
+	using namespace std;
+
 	ASSERTMSG_(
 			(this->isGaussianInfType() && other->isGaussianInfType()) ||
 			(this->isGaussianType() && other->isGaussianType()),
@@ -234,10 +254,12 @@ bool TUncertaintyPath<GRAPH_t>::hasLowerUncertaintyThan(
 
 template<class GRAPH_t>
 bool TUncertaintyPath<GRAPH_t>::isGaussianInfType() const {
+	using namespace mrpt::poses;
 	return curr_pose_pdf.GetRuntimeClass() == CLASS_ID(CPosePDFGaussianInf);
 }
 template<class GRAPH_t>
 bool TUncertaintyPath<GRAPH_t>::isGaussianType() const {
+	using namespace mrpt::poses;
 	return curr_pose_pdf.GetRuntimeClass() == CLASS_ID(CPosePDFGaussian);
 }
 

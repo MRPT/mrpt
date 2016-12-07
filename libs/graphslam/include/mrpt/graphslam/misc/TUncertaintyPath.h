@@ -31,12 +31,16 @@ namespace mrpt { namespace graphslam {
  * Only consecutive nodes are connected by edges, thus \em path.
  *
  * \sa mrpt::deciders::CLoopCloserERD
+ * \ingroup mrpt_graphslam_grp
  */
 template<class GRAPH_t=typename mrpt::graphs::CNetworkOfPoses2DInf>
 struct TUncertaintyPath : public mrpt::utils::CLoadableOptions {
 	/**\brief Handy typedefs */
 	/**\{*/
-	typedef typename GRAPH_t::constraint_t::type_value pose_t;
+	/**\brief type of graph constraints */
+	typedef typename GRAPH_t::constraint_t constraint_t;
+	/**\brief type of underlying poses (2D/3D). */
+	typedef typename constraint_t::type_value pose_t;
 	/**\}*/
 
 	// methods

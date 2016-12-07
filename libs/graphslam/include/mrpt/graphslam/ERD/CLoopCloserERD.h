@@ -10,7 +10,6 @@
 #ifndef CLOOPCLOSERERD_H
 #define CLOOPCLOSERERD_H
 
-#include <mrpt/graphslam/misc/TUncertaintyPath.h>
 
 #include <mrpt/math/CMatrix.h>
 #include <mrpt/math/utils.h>
@@ -42,6 +41,8 @@
 #include <mrpt/graphslam/interfaces/CEdgeRegistrationDecider.h>
 #include <mrpt/graphslam/misc/TSlidingWindow.h>
 #include <mrpt/graphslam/misc/CRangeScanRegistrationDecider.h>
+#include <mrpt/graphslam/misc/TGraphSlamHypothesis.h>
+#include <mrpt/graphslam/misc/TUncertaintyPath.h>
 
 #include <Eigen/Dense>
 
@@ -395,30 +396,6 @@ class CLoopCloserERD:
 		TLaserParams m_laser_params;
 		TLoopClosureParams m_lc_params;
 
-		/**\brief graphSLAM Hypothesis.
-		 *
-		 * Struct practically provides a wrapper around the constraint_t instance
-		 * and represents a hypothesis for a potential, perhaps loop closing ,edge.
-		 */
-		struct THypothesis {
-			THypothesis() {is_valid = true; }
-			~THypothesis() { }
-			std::string getAsString(bool oneline=true) const;
-			void getAsString(std::string* str, bool oneline=true) const;
-
-			/**\brief ID of the current hypothesis */
-			int id;
-			/** Starting node of the hypothesis */
-			mrpt::utils::TNodeID from;
-			/** Ending node of the hypothesis */
-			mrpt::utils::TNodeID to;
-
-			constraint_t edge;
-			double goodness;
-			bool is_valid;
-
-		};
-
 		/**brief Compare the suggested ICP edge against the initial node
 		 * difference.
 		 *
@@ -434,9 +411,9 @@ class CLoopCloserERD:
 				const mrpt::utils::TNodeID& to, const constraint_t& rel_edge);
 
 		/**\brief Wrapper around the registerNewEdge method which accepts a
-		 * THypothesis object instead.
+		 * TGraphSlamHypothesis object instead.
 		 */
-		void registerHypothesis(const THypothesis& h);
+		void registerHypothesis(const mrpt::graphslam::detail::TGraphSlamHypothesis<GRAPH_t>& h);
 
 		/** \brief Initialization function to be called from the various
 		 * constructors.
@@ -522,8 +499,10 @@ class CLoopCloserERD:
 				const mrpt::utils::TNodeID& a2,
 				const mrpt::utils::TNodeID& b1,
 				const mrpt::utils::TNodeID& b2,
-				const std::map<std::pair<mrpt::utils::TNodeID, mrpt::utils::TNodeID>,
-					THypothesis*>& hypots_map);
+				const typename std::map<
+					std::pair<mrpt::utils::TNodeID,
+										mrpt::utils::TNodeID>,
+					mrpt::graphslam::detail::TGraphSlamHypothesis<GRAPH_t>*>& nodeIDs_to_hypots);
 		
 		/** Get the ICP Edge between the provided nodes.
 		 *
