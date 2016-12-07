@@ -126,12 +126,16 @@ class CLevMarqGSO:
 	public:
 		// Public methods
 		//////////////////////////////////////////////////////////////
-
+		/**\brief Handy typedefs */
+		/**\{*/
 		typedef typename GRAPH_t::constraint_t constraint_t;
 		typedef typename GRAPH_t::constraint_t::type_value pose_t; // type of underlying poses (2D/3D)
 		typedef mrpt::math::CMatrixFixedNumeric<double,
 						constraint_t::state_length,
 						constraint_t::state_length> InfMat;
+		typedef mrpt::graphslam::CRegistrationDeciderOrOptimizer<GRAPH_t> grandpa;
+		typedef mrpt::graphslam::optimizers::CGraphSlamOptimizer<GRAPH_t> parent;
+		/**\}*/
 
 		CLevMarqGSO();
 		~CLevMarqGSO();
@@ -141,7 +145,6 @@ class CLevMarqGSO:
 				mrpt::obs::CSensoryFramePtr observations,
 				mrpt::obs::CObservationPtr observation );
 
-		void setCriticalSectionPtr(mrpt::synch::CCriticalSection* graph_section);
 		void initializeVisuals();
 		void updateVisuals();
 		/**\brief Get a list of the window events that happened since the last
@@ -299,10 +302,8 @@ class CLevMarqGSO:
 
 		// Private members
 		//////////////////////////////////////////////////////////////
-		mrpt::synch::CCriticalSection* m_graph_section;
 
 		bool m_first_time_call;
-		bool m_initialized_visuals;
 		bool m_has_read_config;
 		bool registered_new_node;
 		bool m_autozoom_active;

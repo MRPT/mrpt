@@ -29,7 +29,10 @@ template<class GRAPH_t=typename mrpt::graphs::CNetworkOfPoses2DInf>
 class CEmptyNRD:
 	public mrpt::graphslam::deciders::CNodeRegistrationDecider<GRAPH_t>
 {
+	/**\brief Handy typedefs */
+	/**\{*/
 	typedef typename GRAPH_t::constraint_t::type_value pose_t;
+	/**\}*/
 	public:
 		CEmptyNRD();
 		~CEmptyNRD();

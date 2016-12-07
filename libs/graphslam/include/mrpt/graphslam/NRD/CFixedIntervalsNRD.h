@@ -78,6 +78,8 @@ class CFixedIntervalsNRD:
 		// Public functions
 		//////////////////////////////////////////////////////////////
 
+		/**\brief Handy typedefs */
+		/**\{*/
 		/**\brief Node Registration Decider */
 		typedef mrpt::graphslam::deciders::CNodeRegistrationDecider<GRAPH_t> node_reg;
 
@@ -89,6 +91,9 @@ class CFixedIntervalsNRD:
 		typedef mrpt::math::CMatrixFixedNumeric<double,
 						constraint_t::state_length,
 						constraint_t::state_length> InfMat;
+		/**\brief Node Registration Decider */
+		typedef mrpt::graphslam::deciders::CNodeRegistrationDecider<GRAPH_t> parent;
+		/**\}*/
 
 		/**\brief Class constructor */
 		CFixedIntervalsNRD();

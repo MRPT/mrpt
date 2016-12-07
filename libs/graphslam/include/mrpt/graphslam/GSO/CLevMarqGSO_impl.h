@@ -32,20 +32,13 @@ CLevMarqGSO<GRAPH_t>::~CLevMarqGSO() {
 template<class GRAPH_t>
 void CLevMarqGSO<GRAPH_t>::initCLevMarqGSO() {
 	MRPT_START;
-
 	using namespace mrpt::utils;
-
-	m_graph_section = NULL;
-
+	this->initializeLoggers("CLevMarqGSO");
 
 	m_first_time_call = false;
-	m_initialized_visuals = false;
 	m_has_read_config = false;
 	m_last_total_num_of_nodes = 5;
 	m_autozoom_active = true;
-
-	this->setLoggerName("CLevMarqGSO");
-	this->logging_enable_keep_record = true;
 
 	// should I fully optimize my graph
 	m_curr_used_consec_lcs = 0;
@@ -98,44 +91,22 @@ bool CLevMarqGSO<GRAPH_t>::updateState(
 	MRPT_END;
 }
 
-template <class GRAPH_t>
-void CLevMarqGSO<GRAPH_t>::setCriticalSectionPtr(
-		mrpt::synch::CCriticalSection* graph_section) {
-	MRPT_START;
-
-	m_graph_section = graph_section;
-
-	this->logFmt(mrpt::utils::LVL_DEBUG, "Fetched the CCRiticalSection successfully");
-	MRPT_END;
-}
-
-
 template<class GRAPH_t>
 void CLevMarqGSO<GRAPH_t>::initializeVisuals() {
 	MRPT_START;
-	ASSERT_(this->m_win_manager);
-	this->logFmt(mrpt::utils::LVL_DEBUG, "Initializing visuals");
-
-	ASSERTMSG_(this->m_win,
-			"Visualization of data was requested but no CDisplayWindow3D pointer "
-			" was given.");
-	ASSERTMSG_(this->m_win_manager, "No CWindowManager* is given");
 	ASSERT_(m_has_read_config);
+	parent::initializeVisuals();
 
 	this->initGraphVisualization();
 	this->initOptDistanceVisualization();
 
-	m_initialized_visuals = true;
 	MRPT_END;
 }
 
 template<class GRAPH_t>
 void CLevMarqGSO<GRAPH_t>::updateVisuals() {
 	MRPT_START;
-	ASSERTMSG_(this->m_win_manager, "No CWindowManager* is given");
-	ASSERT_(m_initialized_visuals);
-	ASSERTMSG_(this->m_win,
-			"Visualization of data was requested but no CDisplayWindow3D pointer was given.");
+	parent::updateVisuals();
 
 	this->updateOptDistanceVisualization();
 	this->updateGraphVisualization();
@@ -148,8 +119,8 @@ void CLevMarqGSO<GRAPH_t>::notifyOfWindowEvents(
 		const std::map<std::string, bool>& events_occurred)
 {
 	MRPT_START;
-	ASSERTMSG_(this->m_win_manager, "No CWindowManager* is given");
 	using namespace std;
+	parent::notifyOfWindowEvents(events_occurred);
 
 	//// print the keys for debuggging reasons
 	//for (std::map<std::string, bool>::const_iterator cit = events_occurred.begin();
@@ -332,8 +303,6 @@ void CLevMarqGSO<GRAPH_t>::initOptDistanceVisualization() {
 				/* unique_index = */ opt_params.text_index_optimization_distance );
 	}
 
-	m_initialized_visuals = true;
-
 	MRPT_END;
 }
 template<class GRAPH_t>
@@ -386,7 +355,7 @@ void CLevMarqGSO<GRAPH_t>::optimizeGraph() {
 				"In optimizeGraph\n\tThreadID: %lu\n\tTrying to grab lock... ",
 				mrpt::system::getCurrentThreadId());
 
-	mrpt::synch::CCriticalSectionLocker m_graph_lock(m_graph_section);
+	mrpt::synch::CCriticalSectionLocker m_graph_lock(this->m_graph_section);
 	this->_optimizeGraph();
 
 	this->logFmt(mrpt::utils::LVL_DEBUG, "2nd thread grabbed the lock..");
@@ -610,14 +579,16 @@ void CLevMarqGSO<GRAPH_t>::getNearbyNodesOf(
 
 template<class GRAPH_t>
 void CLevMarqGSO<GRAPH_t>::printParams() const {
+	parent::printParams();
+
 	opt_params.dumpToConsole();
 	viz_params.dumpToConsole();
 }
 template<class GRAPH_t>
 void CLevMarqGSO<GRAPH_t>::loadParams(const std::string& source_fname) {
 	MRPT_START;
-
 	using namespace mrpt::utils;
+	parent::loadParams(source_fname);
 
 	opt_params.loadFromConfigFileName(source_fname, "OptimizerParameters");
 	viz_params.loadFromConfigFileName(source_fname, "VisualizationParameters");
@@ -668,6 +639,7 @@ void CLevMarqGSO<GRAPH_t>::getDescriptiveReport(std::string* report_str) const {
 
 	// merge the individual reports
 	report_str->clear();
+	parent::getDescriptiveReport(report_str);
 
 	*report_str += class_props_ss.str();
 	*report_str += report_sep;

@@ -25,6 +25,7 @@ CICPCriteriaNRD<GRAPH_t>::CICPCriteriaNRD():
 template<class GRAPH_t>
 void CICPCriteriaNRD<GRAPH_t>::initCICPCriteriaNRD() {
 	using namespace mrpt::utils;
+	this->initializeLoggers("CICPCriteriaNRD");
 
 	m_first_time_call2D = true;
 	m_first_time_call3D = true;
@@ -66,9 +67,6 @@ void CICPCriteriaNRD<GRAPH_t>::initCICPCriteriaNRD() {
 	m_times_used_ICP = 0;
 	m_times_used_odom = 0;
 
-	// logger initialization
-	this->logging_enable_keep_record = true;
-	this->setLoggerName("CICPCriteriaNRD");
 	this->logFmt(LVL_DEBUG, "Initialized class object");
 }
 template<class GRAPH_t>
@@ -396,7 +394,7 @@ void CICPCriteriaNRD<GRAPH_t>::registerNewNode() {
 template<class GRAPH_t>
 void CICPCriteriaNRD<GRAPH_t>::setGraphPtr(GRAPH_t* graph) {
 	using namespace mrpt::utils;
-	node_reg::setGraphPtr(graph);
+	parent::setGraphPtr(graph);
 
 	// get the last registrered node + corresponding pose - root
 	m_nodeID_max = this->m_graph->root;
@@ -404,6 +402,7 @@ void CICPCriteriaNRD<GRAPH_t>::setGraphPtr(GRAPH_t* graph) {
 template<class GRAPH_t>
 void CICPCriteriaNRD<GRAPH_t>::loadParams(const std::string& source_fname) {
 	MRPT_START;
+	parent::loadParams(source_fname);
 
 	using namespace mrpt::utils;
 
@@ -427,6 +426,7 @@ void CICPCriteriaNRD<GRAPH_t>::loadParams(const std::string& source_fname) {
 template<class GRAPH_t>
 void CICPCriteriaNRD<GRAPH_t>::printParams() const {
 	MRPT_START;
+	parent::printParams();
 
 	params.dumpToConsole();
 	//m_mahal_distance_ICP_odom.dumpToConsole();
@@ -437,7 +437,6 @@ void CICPCriteriaNRD<GRAPH_t>::printParams() const {
 template<class GRAPH_t>
 void CICPCriteriaNRD<GRAPH_t>::getDescriptiveReport(std::string* report_str) const {
 	MRPT_START;
-
 	using namespace std;
 
 	const std::string report_sep(2, '\n');
@@ -454,6 +453,7 @@ void CICPCriteriaNRD<GRAPH_t>::getDescriptiveReport(std::string* report_str) con
 
 	// merge the individual reports
 	report_str->clear();
+	parent::getDescriptiveReport(report_str);
 
 	*report_str += class_props_ss.str();
 	*report_str += report_sep;

@@ -22,6 +22,7 @@ CFixedIntervalsNRD<GRAPH_t>::CFixedIntervalsNRD() {
 template<class GRAPH_t>
 void CFixedIntervalsNRD<GRAPH_t>::initCFixedIntervalsNRD() {
 	using namespace mrpt::utils;
+	this->initializeLoggers("CFixedIntervalsNRD");
 
 	m_prev_registered_node = INVALID_NODEID;
 
@@ -34,9 +35,6 @@ void CFixedIntervalsNRD<GRAPH_t>::initCFixedIntervalsNRD() {
 	m_since_prev_node_PDF.cov_inv = init_path_uncertainty;
 	m_since_prev_node_PDF.mean = pose_t();
 
-	this->logging_enable_keep_record = true;
-	this->setLoggerName("CFixedIntervalsNRD");
-	this->setMinLoggingLevel(LVL_DEBUG);
 
 	this->logFmt(LVL_DEBUG, "IntervalsNRD: Initialized class object");
 }
@@ -151,8 +149,6 @@ void CFixedIntervalsNRD<GRAPH_t>::registerNewNode() {
 	using namespace mrpt::utils;
 	using namespace std;
 
-	this->logFmt(LVL_DEBUG, "In registerNewNode...");
-
 	mrpt::utils::TNodeID from = m_prev_registered_node;
 	mrpt::utils::TNodeID to = ++m_prev_registered_node;
 
@@ -168,7 +164,7 @@ void CFixedIntervalsNRD<GRAPH_t>::registerNewNode() {
 template<class GRAPH_t>
 void CFixedIntervalsNRD<GRAPH_t>::setGraphPtr(GRAPH_t* graph) {
 	// call the parent method first
-	node_reg::setGraphPtr(graph);
+	parent::setGraphPtr(graph);
 
 	// get the last registrered node + corresponding pose - root
 	m_prev_registered_node = this->m_graph->root;
@@ -178,6 +174,7 @@ template<class GRAPH_t>
 void CFixedIntervalsNRD<GRAPH_t>::loadParams(const std::string& source_fname) {
 	MRPT_START;
 	using namespace mrpt::utils;
+	parent::loadParams(source_fname);
 
 	params.loadFromConfigFileName(source_fname,
 			"NodeRegistrationDeciderParameters");
@@ -199,6 +196,7 @@ void CFixedIntervalsNRD<GRAPH_t>::loadParams(const std::string& source_fname) {
 template<class GRAPH_t>
 void CFixedIntervalsNRD<GRAPH_t>::printParams() const {
 	MRPT_START;
+	parent::printParams();
 	params.dumpToConsole();
 
 	MRPT_END;
@@ -214,7 +212,8 @@ void CFixedIntervalsNRD<GRAPH_t>::getDescriptiveReport(std::string* report_str) 
 
 	// Report on graph
 	stringstream class_props_ss;
-	class_props_ss << "Fixed Intervals odometry-based Node Registration Decider Summary: " << std::endl;
+	class_props_ss << "Strategy: " <<
+		"Fixed Odometry-based Intervals" << std::endl;
 	class_props_ss << header_sep << std::endl;
 
 	// time and output logging
@@ -223,6 +222,7 @@ void CFixedIntervalsNRD<GRAPH_t>::getDescriptiveReport(std::string* report_str) 
 
 	// merge the individual reports
 	report_str->clear();
+	parent::getDescriptiveReport(report_str);
 
 	*report_str += class_props_ss.str();
 	*report_str += report_sep;
