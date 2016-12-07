@@ -20,11 +20,51 @@ namespace mrpt
 	 */
 	namespace math
 	{
-		/**\brief Absolute difference between two numbers */
-		template< typename T >
-		T absDiff(const T& lhs, const T& rhs)
-		{
+		/**\brief Absolute difference between two numbers.
+		 *
+		 */
+		template<class T>
+		T absDiff(const T& lhs, const T& rhs) {
   			return lhs>rhs ? lhs-rhs : rhs-lhs;
+		}
+
+		/**\brief Return a vector in std::string form.
+		 *
+		 * \param[in] t Template vector
+		 * \return String form of given vector
+		 */
+		template<class T>
+		std::string getVectorAsString(const T& t) {
+			using namespace std;
+			stringstream ss;
+			for (typename T::const_iterator it = t.begin(); it != t.end(); ++it) {
+				ss << *it << ", ";
+			}
+			return ss.str();
+		}
+		/**\brief Print the given vector t.
+		 *
+		 * \param[in] t Template vector
+		 */
+		template<class T>
+		void printVector(const T& t) {
+			using namespace std;
+			cout << getVectorAsString(t) << endl;
+		}
+		/**\brief Print the given vector of vectors t.
+		 *
+		 * \param[in] t Template vector (containing other vectors)
+		 */
+		template<class T>
+		void printVectorOfVectors(const T& t) {
+			using namespace std;
+
+			int i = 0;
+			for (typename T::const_iterator it = t.begin();
+					it  != t.end(); ++i, ++it) {
+				cout << "Vector " << i << "/" << t.size() << endl << "\t";
+				printVector(*it);
+			}
 		}
 
 		/** \addtogroup container_ops_grp
