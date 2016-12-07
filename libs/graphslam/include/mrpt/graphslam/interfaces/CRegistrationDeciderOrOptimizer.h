@@ -6,6 +6,7 @@
 	 | See: http://www.mrpt.org/Authors - All rights reserved.                   |
 	 | Released under BSD License. See details in http://www.mrpt.org/License    |
 	 +---------------------------------------------------------------------------+ */
+
 #ifndef CREGISTRATIONDECIDEROROPTIMIZER_H
 #define CREGISTRATIONDECIDEROROPTIMIZER_H
 
@@ -16,7 +17,6 @@
 #include <mrpt/graphs/CNetworkOfPoses.h>
 #include <mrpt/utils/COutputLogger.h>
 #include <mrpt/utils/CTimeLogger.h>
-
 #include <mrpt/graphslam/misc/CWindowManager.h>
 
 #include <string>
@@ -125,11 +125,24 @@ class CRegistrationDeciderOrOptimizer : public mrpt::utils::COutputLogger {
 		/**\brief Fetch the graph on which the decider/optimizer will work on. */
 		virtual void setGraphPtr(GRAPH_t* graph);
 
+		/**\brief Initialize the COutputLogger, CTimeLogger instances given the name of the
+		 * decider/optimizer at hand */
+		virtual void initializeLoggers(std::string class_name);
+
 	protected:
-		/** \name Visuals-related variables
+		/**\brief Handy function for making all the visuals assertions in a compact
+		 * manner
+		 */
+		virtual void assertVisualsVars();
+
+		/**\brief Pointer to the graph that is under construction */
+		GRAPH_t* m_graph;
+
+		mrpt::synch::CCriticalSection* m_graph_section;
+
+		/** \name Visuals-related variables methods
 		 */
 		/**\{*/
-
 		/**\brief Pointer to the CWindowManager object used to store
 		 * visuals-related instances
 		 */
@@ -139,14 +152,16 @@ class CRegistrationDeciderOrOptimizer : public mrpt::utils::COutputLogger {
 		/**\brief CWindowObserver object for monitoring various visual-oriented
 		 * events.*/
 		mrpt::graphslam::CWindowObserver* m_win_observer;
-		/**\}*/
 
-		/**\brief Pointer to the graph that is under construction */
-		GRAPH_t* m_graph;
+		bool m_initialized_visuals;
+
+		/**\}*/
 
 		/**\brief Time logger instance */
 		mrpt::utils::CTimeLogger m_time_logger;
 
+		/**\brief Name of the class instance */
+		std::string m_class_name;
 };
 
 } } // end of namespaces

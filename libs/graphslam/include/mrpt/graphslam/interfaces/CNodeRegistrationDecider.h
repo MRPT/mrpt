@@ -40,11 +40,15 @@ namespace mrpt { namespace graphslam { namespace deciders {
 template<class GRAPH_t=typename mrpt::graphs::CNetworkOfPoses2DInf>
 class CNodeRegistrationDecider : public mrpt::graphslam::CRegistrationDeciderOrOptimizer<GRAPH_t> {
 	public:
+		/**\brief Handy typedefs */
+		/**\{*/
+		/**\brief Parent of current class */
 		typedef mrpt::graphslam::CRegistrationDeciderOrOptimizer<GRAPH_t> parent;
 		/**\brief type of graph constraints */
 		typedef typename GRAPH_t::constraint_t constraint_t;
 		/**\brief type of underlying poses (2D/3D). */
 		typedef typename GRAPH_t::constraint_t::type_value pose_t;
+		/**\}*/
 
 		/**\brief Default class constructor.*/
 		CNodeRegistrationDecider() {}
@@ -55,8 +59,8 @@ class CNodeRegistrationDecider : public mrpt::graphslam::CRegistrationDeciderOrO
 		 */
 		virtual pose_t getCurrentRobotPosEstimation() const = 0;
 
-		/**\brief Generic method for fetching the incremental action-observations (or
-		 * observation-only) depending on the rawlog format readings from the
+		/**\brief Generic method for fetching the incremental action-observations
+		 * (or observation-only) depending on the rawlog format readings from the
 		 * calling function.
 		 *
 		 * Implementations of this interface should use (part of) the specified
@@ -69,6 +73,7 @@ class CNodeRegistrationDecider : public mrpt::graphslam::CRegistrationDeciderOrO
 				mrpt::obs::CActionCollectionPtr action,
 				mrpt::obs::CSensoryFramePtr observations,
 				mrpt::obs::CObservationPtr observation ) = 0;
+		virtual void getDescriptiveReport(std::string* report_str) const; 
 
 	protected:
 		/**\brief Check whether a new node should be registered in the
@@ -80,7 +85,7 @@ class CNodeRegistrationDecider : public mrpt::graphslam::CRegistrationDeciderOrO
 		 *
 		 * \return True upon successful node registration in the graph
 		 */
-		virtual bool checkRegistrationCondition() {return false;}
+		virtual bool checkRegistrationCondition();
 		/**\brief Generic method of adding new poses to the graph.
 		 */
 		virtual void registerNewNode() = 0;
@@ -88,5 +93,7 @@ class CNodeRegistrationDecider : public mrpt::graphslam::CRegistrationDeciderOrO
 };
 
 } } } // end of namespaces
+
+#include "CNodeRegistrationDecider_impl.h"
 
 #endif /* end of include guard: CNODEREGISTRATIONDECIDER_H */
