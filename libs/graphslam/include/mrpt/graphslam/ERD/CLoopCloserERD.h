@@ -42,7 +42,6 @@
 #include <mrpt/graphslam/misc/CRangeScanRegistrationDecider.h>
 #include <mrpt/graphslam/misc/TGraphSlamHypothesis.h>
 #include <mrpt/graphslam/misc/TUncertaintyPath.h>
-#include <mrpt/graphslam/misc/CSpectrallyClusteredMatches.h>
 
 #include <Eigen/Dense>
 
@@ -237,7 +236,7 @@ transformation is the identity matrix (i.e., T = [0 0 0])"
 template<class GRAPH_t=typename mrpt::graphs::CNetworkOfPoses2DInf >
 class CLoopCloserERD:
 	public mrpt::graphslam::deciders::CRangeScanRegistrationDecider<GRAPH_t>,
-	public mrpt::graphslam::deciders::CEdgeRegistrationDecider<GRAPH_t>,
+	public mrpt::graphslam::deciders::CEdgeRegistrationDecider<GRAPH_t>
 {
 	public:
 		/**\brief Edge Registration Decider */
@@ -506,7 +505,24 @@ class CLoopCloserERD:
 					std::pair<mrpt::utils::TNodeID,
 										mrpt::utils::TNodeID>,
 					mrpt::graphslam::detail::TGraphSlamHypothesis<GRAPH_t>*>& nodeIDs_to_hypots);
-		/** Get the ICP Edge between the provided nodes.
+		/**\brief Given a vector of TGraphSlamHypothesis objects, find the one that
+		 * has the given start and end nodes.
+		 *
+		 * \note If multiple hypothesis between the same start and end node exist,
+		 * only the first one is returned
+		 *
+		 * \param[in] vec_hypots Vector of hypothesis to check
+		 * \param[in] from Starting Node for hypothesis
+		 * \param[in] to Ending Node for hypothesis
+		 *
+		 * \return Pointer to the found hypothesis if that is found, otherwise NULL.
+		 *
+		 */
+		mrpt::graphslam::detail::TGraphSlamHypothesis<GRAPH_t>*
+			findHypotWithEnds(
+				std::vector<mrpt::graphslam::detail::TGraphSlamHypothesis<GRAPH_t>*>& vec_hypots,
+				mrpt::utils::TNodeID from, mrpt::utils::TNodeID to);
+		/**\brief Get the ICP Edge between the provided nodes.
 		 *
 		 * Handy for not having to manually fetch the laser scans, as the method
 		 * takes care of this.

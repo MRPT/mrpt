@@ -47,6 +47,17 @@ void TGraphSlamHypothesis<GRAPH_t>::getAsString(
 	*str = ss.str();
 }
 
+template<class GRAPH_t>
+bool TGraphSlamHypothesis<GRAPH_t>::sameEndsWith(const TGraphSlamHypothesis<GRAPH_t>& other) {
+	return (this->from == other.from && this->to == other.to);
+}
+
+template<class GRAPH_t>
+bool TGraphSlamHypothesis<GRAPH_t>::hasEnds(
+		mrpt::utils::TNodeID from_in,
+		mrpt::utils::TNodeID to_in) {
+	return (this->from == from_in && this->to == to_in);
+}
 
 } } } // end of namespaces
 

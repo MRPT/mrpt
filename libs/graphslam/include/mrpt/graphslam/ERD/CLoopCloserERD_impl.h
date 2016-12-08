@@ -822,6 +822,30 @@ double CLoopCloserERD<GRAPH_t>::generatePWConsistencyElement(
 }
 
 template<class GRAPH_t>
+mrpt::graphslam::detail::TGraphSlamHypothesis<GRAPH_t>*
+CLoopCloserERD<GRAPH_t>::findHypotWithEnds(
+		std::vector< mrpt::graphslam::detail::TGraphSlamHypothesis<GRAPH_t>* >& vec_hypots,
+				mrpt::utils::TNodeID from, mrpt::utils::TNodeID to) {
+
+	using namespace mrpt::graphslam::detail;
+
+
+	for (typename std::vector<TGraphSlamHypothesis<GRAPH_t>*>::const_iterator v_cit =
+			vec_hypots.begin();
+			v_cit != vec_hypots.end();
+			v_cit++) {
+
+		if (v_cit->hasEnds(from, to)) {
+			return *v_cit;
+		}
+	}
+
+	// not found.
+	return NULL;
+
+}
+
+template<class GRAPH_t>
 void CLoopCloserERD<GRAPH_t>::execDijkstraProjection(
 		mrpt::utils::TNodeID starting_node/*=0*/,
 		mrpt::utils::TNodeID ending_node/*=INVALID_NODEID*/) {

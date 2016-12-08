@@ -73,6 +73,18 @@ struct TGraphSlamHypothesis {
 	/**\brief Indicates the sensor used to register the current edge */
 	mrpt::graphslam::detail::SensorSourceOfMeasurements meas_source;
 
+	/**\brief Compare the start and end nodes of two hypothesis
+	 *
+	 * \return True if ends match.
+	 */
+	bool sameEndsWith(const TGraphSlamHypothesis<GRAPH_t>& other);
+	/**\brief Check if the start, end nodes are the ones given
+	 *
+	 * \return True if ends are the given ones
+	 */
+	bool hasEnds(
+			const mrpt::utils::TNodeID from,
+			const mrpt::utils::TNodeID to);
 
 };
 
