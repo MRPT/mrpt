@@ -42,6 +42,7 @@
 #include <mrpt/graphslam/misc/CRangeScanRegistrationDecider.h>
 #include <mrpt/graphslam/misc/TGraphSlamHypothesis.h>
 #include <mrpt/graphslam/misc/TUncertaintyPath.h>
+#include <mrpt/graphslam/misc/CSpectrallyClusteredMatches.h>
 
 #include <Eigen/Dense>
 
@@ -150,7 +151,7 @@ transformation is the identity matrix (i.e., T = [0 0 0])"
  *   increases since the hypotheses do not form a correct loop. Therefore the
  *   worse the rigid-body transformation the higher the exponent term,
  *   therefore the higher the consistency element
- * - Author uses the information matrix \f$ \Sigma_T^{-1} \f$ in the exponential.  
+ * - Author uses the information matrix \f$ \Sigma_T^{-1} \f$ in the exponential.
  *   However in the optimal case (high certainty of two correct loop closure
  *   hypotheses) information matrix and rigid body transformation vector T
  *   have opposite effects in the exponent term:
@@ -179,7 +180,7 @@ transformation is the identity matrix (i.e., T = [0 0 0])"
  *   + \a Required      : FALSE
  *   + \a Description   :Indicates whether the decider uses scan matching
  *   between the current and previous laser scans to correct the robot
- *   trajectory. 
+ *   trajectory.
  *
  * - \b visualize_laser_scans
  *   + \a Section       : VisualizationParameters
@@ -235,8 +236,8 @@ transformation is the identity matrix (i.e., T = [0 0 0])"
  */
 template<class GRAPH_t=typename mrpt::graphs::CNetworkOfPoses2DInf >
 class CLoopCloserERD:
+	public mrpt::graphslam::deciders::CRangeScanRegistrationDecider<GRAPH_t>,
 	public mrpt::graphslam::deciders::CEdgeRegistrationDecider<GRAPH_t>,
-	public mrpt::graphslam::deciders::CRangeScanRegistrationDecider<GRAPH_t>
 {
 	public:
 		/**\brief Edge Registration Decider */
@@ -255,7 +256,7 @@ class CLoopCloserERD:
 		typedef mrpt::graphslam::deciders::CRangeScanRegistrationDecider<GRAPH_t>
 			range_scanner_t;
 		typedef CLoopCloserERD<GRAPH_t> decider_t; /**< self type - Handy typedef */
-		/**\brief New typedef for splitting the nodes into groups */
+		/**\brief Typedef for referring to a list of partitions */
 		typedef std::vector<mrpt::vector_uint> partitions_t;
 		typedef std::map<mrpt::utils::TNodeID,
 						mrpt::obs::CObservation2DRangeScanPtr> nodes_to_scans2D_t;
@@ -371,7 +372,7 @@ class CLoopCloserERD:
 				/**\brief how many remote nodes (large nodID difference should there be
 				 * before I consider the potential loop closure.
 				 */
-				int LC_min_remote_nodes; 
+				int LC_min_remote_nodes;
 				/**\brief Full partition of map only afer X new nodes have been
 				 * registered
 				 */
@@ -473,7 +474,8 @@ class CLoopCloserERD:
 		 *
 		 * Call this method when you have identified potential loop closures - e.g.
 		 * far away nodes in the same partitions - and you want to evaluate the
-		 * potential hypotheses in the group
+		 * potential hypotheses in the group. Comprises the main function that
+		 * tests potential loop closures in <b>partitions of nodes</b>
 		 *
 		 * \sa checkPartitionsForLC
 		 */
@@ -491,7 +493,7 @@ class CLoopCloserERD:
 		 * - b2=>a1 (hypothesis - ICP edge)
 		 *
 		 * Given the transformation vector \f$ (x,y,\phi)\f$ of the above composition (e.g. T) the
-		 * pairwise consistency element would then be: 
+		 * pairwise consistency element would then be:
  		 * <br><center> \f$ A_{i,j} = e^{-T \Sigma_T T^T} \f$ </center>
 		 *
 		 */
@@ -563,7 +565,7 @@ class CLoopCloserERD:
 				const typename mrpt::graphslam::TUncertaintyPath<GRAPH_t>& curr_path,
 				const std::set<mrpt::utils::TNodeID>& neibors) const;
 		/**\brief
-		 * Query for the optimal path of a nodeID. 
+		 * Query for the optimal path of a nodeID.
 		 *
 		 * Method handles calls to out-of-bounds nodes as well as nodes whose paths
 		 * have not yet been computed.
@@ -598,6 +600,31 @@ class CLoopCloserERD:
 		size_t m_last_total_num_of_nodes;
 		/**\brief Surpass this to start adding edges */
 		int m_threshold_to_start;
+
+		/**\brief Split an existing partition to Groups
+		 *
+		 *	 Have two groups A, B.
+		 *	 - Group A consists of the lower nodeIDs. They correspond to the start
+		 *	 of the course
+		 *	 - Group B consists of the higher (more recent) nodeIDs. They
+		 *	 correspond to the end of the course find where to split the current
+		 *	 partition
+		 *
+		 *	 \note Method is used in single-robot graphSLAM for spliting a
+		 *	 partition of nodes to lower and higher node IDs
+		 *
+		 *	 \param[in] partition Partition to be split.
+		 *	 \param[out] groupA First group of nodes.
+		 *	 \param[out] groupB Second group of nodes.
+		 *	 \param[in] max_nodes_in_group Max number of nodes that are to exist in
+		 *	 each group (Use -1 to disable this threshold).
+		 */
+		void splitPartitionToGroups(
+				vector_uint& partition,
+				vector_uint* groupA,
+				vector_uint* groupB,
+				int max_nodes_in_group=5);
+
 
 		/**\brief Map for keeping track of the observation recorded at each graph
 		 * position

@@ -41,7 +41,9 @@ namespace mrpt { namespace graphslam {
  * \ingroup mrpt_graphslam_grp
  */
 template<class GRAPH_t=typename mrpt::graphs::CNetworkOfPoses2DInf>
-class CRegistrationDeciderOrOptimizer : public mrpt::utils::COutputLogger {
+class CRegistrationDeciderOrOptimizer :
+	public mrpt::utils::COutputLogger
+{
 	public:
 
 		/**\Default Ctor*/
