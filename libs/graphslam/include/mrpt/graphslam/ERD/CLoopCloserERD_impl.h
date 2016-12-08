@@ -86,7 +86,7 @@ bool CLoopCloserERD<GRAPH_t>::updateState(
 	if (m_last_total_num_of_nodes < this->m_graph->nodeCount()) {
 		registered_new_node = true;
 		m_last_total_num_of_nodes = this->m_graph->nodeCount();
-		this->logFmt(mrpt::utils::LVL_DEBUG, "New node has been registered!");
+		MRPT_LOG_DEBUG_STREAM << "New node has been registered!";
 	}
 
 	// update last laser scan to use
@@ -315,11 +315,12 @@ void CLoopCloserERD<GRAPH_t>::checkPartitionsForLC(
 		}
 		else {
 			if (*partitions_it == finder->second) {
-				this->logFmt(mrpt::utils::LVL_DEBUG, "Partition %d remained unchanged. ", partitionID);
+				MRPT_LOG_DEBUG_STREAM << "Partition " << partitionID
+					<< " remained unchanged. ";
 				continue; // same list as before.. no need to check this...
 			}
 			else { // list was changed  - update the previous nodes list
-				this->logFmt(mrpt::utils::LVL_DEBUG, "Partition %d CHANGED. ", partitionID);
+				MRPT_LOG_DEBUG_STREAM << "Partition " << partitionID << " CHANGED. ";
 				finder->second = *partitions_it;
 			}
 		}
@@ -587,14 +588,14 @@ void CLoopCloserERD<GRAPH_t>::evaluatePartitionsForLC(
 				w(i) = 0; // revert the change
 			}
 			ss << endl;
-			this->logFmt(mrpt::utils::LVL_DEBUG, "%s", ss.str().c_str());
+			MRPT_LOG_DEBUG_STREAM << ss.str();
 		}
 		cout << "Outcome of discretization: " << w.transpose() << endl;
 		//mrpt::system::pause();
 
 		// register the indicated hypotheses
 		if (!w.isZero()) {
-			this->logFmt(mrpt::utils::LVL_DEBUG, "Registering Hypotheses...");
+			MRPT_LOG_DEBUG_STREAM << "Registering Hypotheses...";
 
 			for (int wi = 0; wi != w.size(); ++wi) {
 				if (w(wi) == 1)  {
@@ -620,7 +621,7 @@ void CLoopCloserERD<GRAPH_t>::evaluatePartitionsForLC(
 
 
 		// delete the hypotheses - generated in the heap...
-		this->logFmt(mrpt::utils::LVL_DEBUG, "Deleting the generated hypotheses pool..." );
+		MRPT_LOG_DEBUG_STREAM << "Deleting the generated hypotheses pool..." ;
 		for (typename std::map<std::pair<TNodeID, TNodeID>,
 					TGraphSlamHypothesis<GRAPH_t>*>::const_iterator
 					it = nodeIDs_to_hypots.begin();
@@ -631,7 +632,7 @@ void CLoopCloserERD<GRAPH_t>::evaluatePartitionsForLC(
 
 	}
 
-	this->logFmt(mrpt::utils::LVL_DEBUG, "\n%s", header_sep.c_str());
+	MRPT_LOG_DEBUG_STREAM << "\n" << header_sep;
 	this->m_time_logger.leave("LoopClosureEvaluation");
 
 	MRPT_END;
@@ -694,7 +695,7 @@ bool CLoopCloserERD<GRAPH_t>::computeDominantEigenVector(
 		ss << "| Threshold ratio: " << m_lc_params.LC_eigenvalues_ratio_thresh;
 		ss << "| Lambda threshold not passed or lambda2 = 0!" << endl;
 	}
-	this->logFmt(mrpt::utils::LVL_DEBUG, "%s", ss.str().c_str());
+	MRPT_LOG_DEBUG_STREAM << ss.str();
 
 	this->m_time_logger.leave("DominantEigenvectorComputation");
 	return valid_lambda_ratio;
@@ -813,7 +814,7 @@ void CLoopCloserERD<GRAPH_t>::execDijkstraProjection(
 	using namespace mrpt::math;
 
 	// for the full algorithm see
-	// - Recognizing places using spectrally cllustered local matches - E.Olson,
+	// - Recognizing places using spectrally clustered local matches - E.Olson,
 	// p.6
 
 	this->m_time_logger.enter("Dijkstra Projection");
@@ -888,8 +889,8 @@ void CLoopCloserERD<GRAPH_t>::execDijkstraProjection(
 		// it is found.
 		if (ending_node != INVALID_NODEID) {
 			if (visited_nodes.at(ending_node)) {
-				this->logFmt(mrpt::utils::LVL_DEBUG,
-						"----------- Done with Dijkstra Projection... ----------");
+				MRPT_LOG_DEBUG_STREAM <<
+					"----------- Done with Dijkstra Projection... ----------";
 				this->m_time_logger.leave("Dijkstra Projection");
 				return;
 			}
@@ -930,7 +931,8 @@ void CLoopCloserERD<GRAPH_t>::execDijkstraProjection(
 		}
 	}
 
-	this->logFmt(mrpt::utils::LVL_DEBUG, "----------- Done with Dijkstra Projection... ----------");
+	MRPT_LOG_DEBUG_STREAM <<
+		"----------- Done with Dijkstra Projection... ----------";
 	this->m_time_logger.leave("Dijkstra Projection");
 	MRPT_END;
 }
@@ -1161,7 +1163,8 @@ bool CLoopCloserERD<GRAPH_t>::mahalanobisDistanceOdometryToICPEdge(
 template<class GRAPH_t>
 void CLoopCloserERD<GRAPH_t>::registerHypothesis(
 		const mrpt::graphslam::detail::TGraphSlamHypothesis<GRAPH_t>& h) {
-	this->logFmt(mrpt::utils::LVL_DEBUG, "Registering hypothesis: %s", h.getAsString(/*oneline=*/ true).c_str());
+	MRPT_LOG_DEBUG_STREAM << "Registering hypothesis: " <<
+		h.getAsString(/*oneline=*/ true);
 	this->registerNewEdge(h.from, h.to, h.edge);
 }
 
@@ -1298,7 +1301,7 @@ void CLoopCloserERD<GRAPH_t>::updateMapPartitionsVisualization() {
 	for (partitions_t::const_iterator p_it = m_curr_partitions.begin();
 			p_it != m_curr_partitions.end(); ++p_it, ++partitionID) {
 
-		this->logFmt(mrpt::utils::LVL_DEBUG, "Working on Partition #%d", partitionID);
+		MRPT_LOG_DEBUG_STREAM << "Working on Partition #" << partitionID;
 		vector_uint nodes_list = *p_it;
 
 		// finding the partition in which the last node is in
@@ -1317,25 +1320,26 @@ void CLoopCloserERD<GRAPH_t>::updateMapPartitionsVisualization() {
 		CRenderizablePtr obj = map_partitions_obj->getByName(partition_obj_name);
 		CSetOfObjectsPtr curr_partition_obj;
 		if (obj) {
-			this->logFmt(mrpt::utils::LVL_DEBUG, 
-					"\tFetching CSetOfObjects partition object for partition #%d",
-					partitionID);
+			MRPT_LOG_DEBUG_STREAM << 
+					"\tFetching CSetOfObjects partition object for partition #" <<
+					partitionID;
 			curr_partition_obj = static_cast<CSetOfObjectsPtr>(obj);
 			if (m_lc_params.LC_check_curr_partition_only) { // make all but the last partition invisible
 				curr_partition_obj->setVisibility(partition_contains_last_node); 
 			}
 		}
 		else {
-			this->logFmt(mrpt::utils::LVL_DEBUG, 
-					"\tCreating a new CSetOfObjects partition object for partition #%d",
-					partitionID);
+			MRPT_LOG_DEBUG_STREAM <<
+				"\tCreating a new CSetOfObjects partition object for partition #" <<
+				partitionID;
 			curr_partition_obj = CSetOfObjects::Create();
 			curr_partition_obj->setName(partition_obj_name);
-			if (m_lc_params.LC_check_curr_partition_only) { // make all but the last partition invisible
+			if (m_lc_params.LC_check_curr_partition_only) {
+ 				// make all but the last partition invisible
 				curr_partition_obj->setVisibility(partition_contains_last_node); 
 			}
 
-			this->logFmt(mrpt::utils::LVL_DEBUG, "\t\tCreating a new CSphere balloon object");
+			MRPT_LOG_DEBUG_STREAM << "\t\tCreating a new CSphere balloon object";
 			CSpherePtr balloon_obj = CSphere::Create();
 			balloon_obj->setName(balloon_obj_name);
 			balloon_obj->setRadius(m_lc_params.balloon_radius);
@@ -1345,7 +1349,7 @@ void CLoopCloserERD<GRAPH_t>::updateMapPartitionsVisualization() {
 			curr_partition_obj->insert(balloon_obj);
 
 			// set of lines connecting the graph nodes to the balloon
-			this->logFmt(mrpt::utils::LVL_DEBUG, "\t\tCreating set of lines that will connect to the Balloon");
+			MRPT_LOG_DEBUG_STREAM << "\t\tCreating set of lines that will connect to the Balloon";
 			CSetOfLinesPtr connecting_lines_obj = CSetOfLines::Create();
 			connecting_lines_obj->setName("connecting_lines");
 			connecting_lines_obj->setColor_u8(m_lc_params.connecting_lines_color);
@@ -1356,7 +1360,7 @@ void CLoopCloserERD<GRAPH_t>::updateMapPartitionsVisualization() {
 			// add the created CSetOfObjects to the total CSetOfObjects responsible
 			// for the map partitioning
 			map_partitions_obj->insert(curr_partition_obj);
-			this->logFmt(mrpt::utils::LVL_DEBUG, "\tInserted new CSetOfObjects successfully");
+			MRPT_LOG_DEBUG_STREAM << "\tInserted new CSetOfObjects successfully";
 		}
 		// up to now the CSetOfObjects exists and the balloon inside it as well..
 
@@ -1366,7 +1370,7 @@ void CLoopCloserERD<GRAPH_t>::updateMapPartitionsVisualization() {
 		TPoint3D balloon_location(centroid_coords.first, centroid_coords.second,
 				m_lc_params.balloon_elevation);
 
-		this->logFmt(mrpt::utils::LVL_DEBUG, "\tUpdating the balloon position");
+		MRPT_LOG_DEBUG_STREAM << "\tUpdating the balloon position";
 		// set the balloon properties
 		CSpherePtr balloon_obj;
 		{
@@ -1380,7 +1384,7 @@ void CLoopCloserERD<GRAPH_t>::updateMapPartitionsVisualization() {
 				balloon_obj->setColor_u8(m_lc_params.balloon_std_color);
 		}
 
-		this->logFmt(mrpt::utils::LVL_DEBUG, "\tUpdating the lines connecting nodes to balloon");
+		MRPT_LOG_DEBUG_STREAM << "\tUpdating the lines connecting nodes to balloon";
 		// set the lines connecting the nodes of the partition to the partition
 		// balloon - set it from scratch all the times since the node positions
 		// tend to change according to the dijkstra position estimation
@@ -1402,7 +1406,7 @@ void CLoopCloserERD<GRAPH_t>::updateMapPartitionsVisualization() {
 			}
 
 		}
-		this->logFmt(mrpt::utils::LVL_DEBUG, "Done working on partition #%d", partitionID);
+		MRPT_LOG_DEBUG_STREAM << "Done working on partition #" << partitionID;
 	}
 
 	// remove outdated partitions
@@ -1412,16 +1416,18 @@ void CLoopCloserERD<GRAPH_t>::updateMapPartitionsVisualization() {
 	size_t prev_size = m_last_partitions.size();
 	size_t curr_size = m_curr_partitions.size();
 	if (curr_size < prev_size) {
-		this->logFmt(mrpt::utils::LVL_DEBUG, "Removing outdated partitions in visual");
+		MRPT_LOG_DEBUG_STREAM("Removing outdated partitions in visual");
 		for (size_t partitionID = curr_size; partitionID != prev_size; ++partitionID) {
-			this->logFmt(mrpt::utils::LVL_DEBUG, "\tRemoving partition %lu", partitionID);
-			std::string partition_obj_name = mrpt::format("partition_%lu", partitionID);
+			MRPT_LOG_DEBUG_STREAM("\tRemoving partition " << partitionID);
+			std::string partition_obj_name = mrpt::format(
+					"partition_%lu",
+					static_cast<unsigned long>(partitionID));
 
 			CRenderizablePtr obj = map_partitions_obj->getByName(partition_obj_name);
 			map_partitions_obj->removeObject(obj);
 		}
 	}
-	this->logFmt(mrpt::utils::LVL_DEBUG, "Done working on the partitions visualization.");
+	MRPT_LOG_DEBUG_STREAM << "Done working on the partitions visualization.";
 
 
 	this->m_win->unlockAccess3DScene();
@@ -1583,7 +1589,7 @@ template<class GRAPH_t>
 void CLoopCloserERD<GRAPH_t>::initializeVisuals() {
 	MRPT_START;
 	parent::initializeVisuals();
-	this->logFmt(mrpt::utils::LVL_DEBUG, "Initializing visuals");
+	MRPT_LOG_DEBUG_STREAM << "Initializing visuals";
 	this->m_time_logger.enter("Visuals");
 
 	ASSERTMSG_(m_laser_params.has_read_config,
@@ -1606,7 +1612,7 @@ template<class GRAPH_t>
 void CLoopCloserERD<GRAPH_t>::updateVisuals() {
 	MRPT_START;
 	parent::updateVisuals();
-	this->logFmt(mrpt::utils::LVL_DEBUG, "Updating visuals");
+	MRPT_LOG_DEBUG_STREAM << "Updating visuals";
 	this->m_time_logger.enter("Visuals");
 
 	if (m_laser_params.visualize_laser_scans) {
@@ -1733,7 +1739,7 @@ void CLoopCloserERD<GRAPH_t>::loadParams(const std::string& source_fname) {
 			1, false);
 	this->setMinLoggingLevel(mrpt::utils::VerbosityLevel(min_verbosity_level));
 
-	this->logFmt(mrpt::utils::LVL_DEBUG, "Successfully loaded parameters. ");
+	MRPT_LOG_DEBUG_STREAM << "Successfully loaded parameters. ";
 	MRPT_END;
 }
 template<class GRAPH_t>
@@ -1748,7 +1754,7 @@ void CLoopCloserERD<GRAPH_t>::printParams() const {
 	m_lc_params.dumpToConsole();
 	range_scanner_t::params.dumpToConsole();
 
-	this->logFmt(mrpt::utils::LVL_DEBUG, "Printed the relevant parameters");
+	MRPT_LOG_DEBUG_STREAM << "Printed the relevant parameters";
 	MRPT_END;
 }
 
