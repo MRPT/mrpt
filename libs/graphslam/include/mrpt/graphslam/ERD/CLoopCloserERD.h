@@ -10,7 +10,6 @@
 #ifndef CLOOPCLOSERERD_H
 #define CLOOPCLOSERERD_H
 
-
 #include <mrpt/math/CMatrix.h>
 #include <mrpt/math/utils.h>
 #include <mrpt/math/data_utils.h>
@@ -231,6 +230,7 @@ transformation is the identity matrix (i.e., T = [0 0 0])"
  * section. Refer to mrpt::slam::CIncrementalMapPartitioner documentation for
  * its list of configuration parameters
  *
+ * \sa mrpt::slam::CIncrementalMapPartitioner
  * \ingroup mrpt_graphslam_grp
  */
 template<class GRAPH_t=typename mrpt::graphs::CNetworkOfPoses2DInf >
@@ -409,12 +409,10 @@ class CLoopCloserERD:
 		 */
 		bool mahalanobisDistanceOdometryToICPEdge(const mrpt::utils::TNodeID& from,
 				const mrpt::utils::TNodeID& to, const constraint_t& rel_edge);
-
 		/**\brief Wrapper around the registerNewEdge method which accepts a
 		 * TGraphSlamHypothesis object instead.
 		 */
 		void registerHypothesis(const mrpt::graphslam::detail::TGraphSlamHypothesis<GRAPH_t>& h);
-
 		/** \brief Initialization function to be called from the various
 		 * constructors.
 		 */
@@ -430,7 +428,6 @@ class CLoopCloserERD:
 		 * TLaserParams::prev_nodes_for_ICP)
 		 */
 		void addScanMatchingEdges(mrpt::utils::TNodeID curr_nodeID);
-
 		void initLaserScansVisualization();
 		void updateLaserScansVisualization();
 		/**\brief togle the LaserScans visualization on and off
@@ -450,13 +447,17 @@ class CLoopCloserERD:
 		 * TLoopClosureParams::keystroke_map_partitions)
 		 */
 		void toggleMapPartitionsVisualization();
-
 		void initCurrCovarianceVisualization();
 		void updateCurrCovarianceVisualization();
-
+		/**\brief Compute the Centroid of a group of a vector of node positions.
+		 *
+		 * \param[in] nodes_list List of node IDs whose positions are taken into account
+		 * \param[out] centroid_coords Contains the Centroid coordinates as a pair [x,y]
+		 *
+		 * \note Method is used during the visualization of the map partitions.
+		 */
 		void computeCentroidOfNodesVector(const vector_uint& nodes_list,
 				std::pair<double, double>* centroid_coords) const;
-
 		/**\brief Check the registered so far partitions for potential loop
 		 * closures.
 		 *
@@ -503,7 +504,6 @@ class CLoopCloserERD:
 					std::pair<mrpt::utils::TNodeID,
 										mrpt::utils::TNodeID>,
 					mrpt::graphslam::detail::TGraphSlamHypothesis<GRAPH_t>*>& nodeIDs_to_hypots);
-		
 		/** Get the ICP Edge between the provided nodes.
 		 *
 		 * Handy for not having to manually fetch the laser scans, as the method
@@ -518,7 +518,6 @@ class CLoopCloserERD:
 				const mrpt::utils::TNodeID& to,
 				constraint_t* rel_edge,
 				mrpt::slam::CICP::TReturnInfo* icp_info=NULL);
-
 		/**\brief compute the minimum uncertainty of each node position with
 		 * regards to the graph root.
 		 *
