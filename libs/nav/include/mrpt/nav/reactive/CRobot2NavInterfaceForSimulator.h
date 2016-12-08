@@ -45,9 +45,9 @@ namespace mrpt
 			return true; // ok
 		}
 
-		bool stop() MRPT_OVERRIDE
+		bool stop(bool isEmergencyStop) MRPT_OVERRIDE
 		{
-			m_simul.sendVelRampCmd(0.0 /*vel*/, 0 /*dir*/, 0.1 /* ramp_time */, 0.0 /*rot speed */);
+			m_simul.sendVelRampCmd(0.0 /*vel*/, 0 /*dir*/, isEmergencyStop ? 0.1 : 1.0 /* ramp_time */, 0.0 /*rot speed */);
 			return true;
 		}
 
@@ -91,7 +91,7 @@ namespace mrpt
 			return true; // ok
 		}
 
-		bool stop() MRPT_OVERRIDE
+		bool stop(bool isEmergencyStop) MRPT_OVERRIDE
 		{
 			mrpt::kinematics::CVehicleVelCmd_DiffDriven cmd;
 			cmd.setToStop();

@@ -82,7 +82,7 @@ void CNavigatorManualSequence::navigationStep()
 
 		if (!this->changeSpeeds(*krc.cmd_vel) )
 		{
-			this->stop();
+			this->stop(true /*not emergency*/);
 			logFmt( mrpt::utils::LVL_ERROR, "[CNavigatorManualSequence] **ERROR** sending cmd to robot.");
 			return;
 		}
