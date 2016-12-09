@@ -745,7 +745,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 								gl_shape = mrpt::opengl::CSetOfLinesPtr(gl_shape_r);
 							}
 							gl_shape->clear();
-							const mrpt::math::TTwist2D &velLocal = log.cur_vel;
+							const mrpt::math::TTwist2D &velLocal = log.cur_vel_local;
 							gl_shape->appendLine(0,0,0, velLocal.vx, velLocal.vy, 0);
 						}
 					}
@@ -792,7 +792,6 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 		ADD_WIN_TEXTMSG(mrpt::format("cmd_vel=%s", log.cmd_vel ? log.cmd_vel->asString().c_str() : "NOP (Continue last PTG)"));
 
 		ADD_WIN_TEXTMSG(mrpt::format("cur_vel=[%.02f m/s, %0.2f m/s, %.02f dps] cur_vel_local=[%.02f m/s, %0.2f m/s, %.02f dps]",
-			log.cur_vel.vx, log.cur_vel.vy, mrpt::utils::RAD2DEG(log.cur_vel.omega),
 			log.cur_vel_local.vx, log.cur_vel_local.vy, mrpt::utils::RAD2DEG(log.cur_vel_local.omega))
 			);
 
