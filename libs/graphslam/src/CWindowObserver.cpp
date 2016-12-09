@@ -88,7 +88,9 @@ void CWindowObserver::OnEvent(const mrpt::utils::mrptEvent &e) {
 				}
 				m_key_codes_to_pressed["h"] = true;
 				break;
-			case 3: // <C-c>
+			case 'c':
+			case 'C':
+			//case 3: // <C-c>
 				if (ev.key_modifiers == 8192) {
 					std::cout << "Pressed C-c inside CDisplayWindow3D" << std::endl;
 					m_key_codes_to_pressed["Ctrl+c"] = true;
