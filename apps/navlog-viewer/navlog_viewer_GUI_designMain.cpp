@@ -745,7 +745,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 								gl_shape = mrpt::opengl::CSetOfLinesPtr(gl_shape_r);
 							}
 							gl_shape->clear();
-							const mrpt::math::TTwist2D &velLocal = log.cur_vel_local;
+							const mrpt::math::TTwist2D &velLocal = log.cur_vel;
 							gl_shape->appendLine(0,0,0, velLocal.vx, velLocal.vy, 0);
 						}
 					}
