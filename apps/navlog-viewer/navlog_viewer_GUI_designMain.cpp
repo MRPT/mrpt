@@ -732,6 +732,22 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 							gl_shape->clear();
 							ptg->add_robotShape_to_setOfLines(*gl_shape);
 						}
+						{
+							mrpt::opengl::CSetOfLinesPtr   gl_shape;
+							mrpt::opengl::CRenderizablePtr gl_shape_r = gl_robot_frame->getByName("velocity");  // Get or create if new
+							if (!gl_shape_r) {
+								gl_shape = mrpt::opengl::CSetOfLines::Create();
+								gl_shape->setName("velocity");
+								gl_shape->setLineWidth(4.0);
+								gl_shape->setColor_u8( mrpt::utils::TColor(0x00,0xff,0xff) );
+								gl_robot_frame->insert(gl_shape);
+							} else {
+								gl_shape = mrpt::opengl::CSetOfLinesPtr(gl_shape_r);
+							}
+							gl_shape->clear();
+							const mrpt::math::TTwist2D &velLocal = log.cur_vel_local;
+							gl_shape->appendLine(0,0,0, velLocal.vx, velLocal.vy, 0);
+						}
 					}
 				}
 			}
