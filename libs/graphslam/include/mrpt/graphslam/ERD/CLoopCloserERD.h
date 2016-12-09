@@ -261,6 +261,9 @@ class CLoopCloserERD:
 						mrpt::obs::CObservation2DRangeScanPtr> nodes_to_scans2D_t;
 		typedef typename GRAPH_t::edges_map_t::const_iterator edges_citerator;
 		typedef typename GRAPH_t::edges_map_t::iterator edges_iterator;
+		typedef typename mrpt::graphslam::detail::TGraphSlamHypothesis<GRAPH_t> hypot_t;
+		typedef std::vector<hypot_t> hypots_t;
+		typedef std::vector<hypot_t*> hypotsp_t;
 		/**\}*/
 
 		// Public methods
@@ -412,7 +415,7 @@ class CLoopCloserERD:
 		/**\brief Wrapper around the registerNewEdge method which accepts a
 		 * TGraphSlamHypothesis object instead.
 		 */
-		void registerHypothesis(const mrpt::graphslam::detail::TGraphSlamHypothesis<GRAPH_t>& h);
+		void registerHypothesis(const hypot_t& h);
 		/** \brief Initialization function to be called from the various
 		 * constructors.
 		 */
@@ -479,6 +482,12 @@ class CLoopCloserERD:
 		 * \sa checkPartitionsForLC
 		 */
 		void evaluatePartitionsForLC(const partitions_t& partitions);
+		/**\brief Generate the hypothesis pool for all the inter-group constraints
+		 * between two groups of nodes.
+		 */
+		void generateHypotsPool(
+				const vector_uint& groupA,
+				const vector_uint& groupB);
 		bool computeDominantEigenVector(const mrpt::math::CMatrixDouble& consist_matrix,
 				mrpt::math::dynamic_vector<double>* eigvec,
 				bool use_power_method=false);
@@ -494,6 +503,12 @@ class CLoopCloserERD:
 		 * Given the transformation vector \f$ (x,y,\phi)\f$ of the above composition (e.g. T) the
 		 * pairwise consistency element would then be:
  		 * <br><center> \f$ A_{i,j} = e^{-T \Sigma_T T^T} \f$ </center>
+ 		 *
+ 		 * \param hypots Hypothesis corresponding to the potential inter-group
+ 		 * constraints 
+ 		 *
+ 		 * \return Pairwise consistency eleement of the composition of
+ 		 * transformations
 		 *
 		 */
 		double generatePWConsistencyElement(
@@ -501,27 +516,45 @@ class CLoopCloserERD:
 				const mrpt::utils::TNodeID& a2,
 				const mrpt::utils::TNodeID& b1,
 				const mrpt::utils::TNodeID& b2,
-				const typename std::map<
-					std::pair<mrpt::utils::TNodeID,
-										mrpt::utils::TNodeID>,
-					mrpt::graphslam::detail::TGraphSlamHypothesis<GRAPH_t>*>& nodeIDs_to_hypots);
+				const hypotsp_t& hypots);
 		/**\brief Given a vector of TGraphSlamHypothesis objects, find the one that
 		 * has the given start and end nodes.
 		 *
 		 * \note If multiple hypothesis between the same start and end node exist,
-		 * only the first one is returned
+		 * only the first one is returned.
 		 *
 		 * \param[in] vec_hypots Vector of hypothesis to check
 		 * \param[in] from Starting Node for hypothesis
 		 * \param[in] to Ending Node for hypothesis
+		 * \param[in] throw_exc If true and hypothesis is not found, <b>throw a
+		 * HypothesisNotFoundException</b>
 		 *
 		 * \return Pointer to the found hypothesis if that is found, otherwise NULL.
 		 *
 		 */
-		mrpt::graphslam::detail::TGraphSlamHypothesis<GRAPH_t>*
-			findHypotWithEnds(
-				std::vector<mrpt::graphslam::detail::TGraphSlamHypothesis<GRAPH_t>*>& vec_hypots,
-				mrpt::utils::TNodeID from, mrpt::utils::TNodeID to);
+		hypot_t* findHypotByEnds(
+				const hypotsp_t& vec_hypots,
+				const mrpt::utils::TNodeID& from,
+				const mrpt::utils::TNodeID& to,
+				bool throw_exc=true) const;
+		/**\brief Given a vector of TGraphSlamHypothesis objects, find the one that
+		 * has the given ID.
+		 *
+		 * \note If multiple hypothesis with the same ID exist, only the first one
+		 * is returned.
+		 *
+		 * \param[in] vec_hypots Vector of hypothesis to check
+		 * \param[in] id, ID of the hypothesis to be returned
+		 * \param[in] throw_exc If true and hypothesis is not found, <b>throw a
+		 * HypothesisNotFoundException</b>
+		 *
+		 * \return Pointer to the hypothesis with the given ID if that is found,
+		 * otherwies NULL.
+		 */
+		hypot_t* findHypotByID(
+				const hypotsp_t& vec_hypots,
+				const size_t& id,
+				bool throw_exc=true) const;
 		/**\brief Get the ICP Edge between the provided nodes.
 		 *
 		 * Handy for not having to manually fetch the laser scans, as the method
