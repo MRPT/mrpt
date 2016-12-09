@@ -8,6 +8,7 @@ namespace mrpt { namespace graphslam { namespace detail {
 template<class GRAPH_t>
 TGraphSlamHypothesis<GRAPH_t>::TGraphSlamHypothesis():
 	is_valid(true),
+	goodness(0),
 	meas_source(mrpt::graphslam::detail::SSOM_Laser) {}
 
 template<class GRAPH_t>
@@ -39,7 +40,7 @@ void TGraphSlamHypothesis<GRAPH_t>::getAsString(
 	else {
 		ss << "Hypothesis #" << id << "|\t ";
 		ss << from << " => " << to << "|\t ";
-		ss << edge.getMeanVal().asString(); 
+		ss << edge.getMeanVal().asString();
 		ss << "|\tgoodness: " << goodness;
 		ss << "|\tvalid: " << is_valid;
 	}
@@ -47,16 +48,61 @@ void TGraphSlamHypothesis<GRAPH_t>::getAsString(
 	*str = ss.str();
 }
 
+// TODO - test these
 template<class GRAPH_t>
-bool TGraphSlamHypothesis<GRAPH_t>::sameEndsWith(const TGraphSlamHypothesis<GRAPH_t>& other) {
+bool TGraphSlamHypothesis<GRAPH_t>::sameEndsWith(
+		const TGraphSlamHypothesis<GRAPH_t>& other) const {
 	return (this->from == other.from && this->to == other.to);
 }
 
 template<class GRAPH_t>
 bool TGraphSlamHypothesis<GRAPH_t>::hasEnds(
 		mrpt::utils::TNodeID from_in,
-		mrpt::utils::TNodeID to_in) {
+		mrpt::utils::TNodeID to_in) const {
 	return (this->from == from_in && this->to == to_in);
+}
+
+template<class GRAPH_t>
+void TGraphSlamHypothesis<GRAPH_t>::getEdge(constraint_t* edge) const {
+	ASSERT_(edge);
+	edge->copyFrom(this->edge);
+}
+
+template<class GRAPH_t>
+typename GRAPH_t::constraint_t TGraphSlamHypothesis<GRAPH_t>::getEdge() const {
+
+	return this->edge;
+}
+
+template<class GRAPH_t>
+void TGraphSlamHypothesis<GRAPH_t>::setEdge(const constraint_t& edge) {
+	this->edge.copyFrom(edge);
+}
+
+template<class GRAPH_t>
+void TGraphSlamHypothesis<GRAPH_t>::getInverseEdge(constraint_t* edge) const {
+	ASSERT_(edge);
+	this->edge.inverse(*edge);
+}
+
+template<class GRAPH_t>
+typename GRAPH_t::constraint_t TGraphSlamHypothesis<GRAPH_t>::getInverseEdge() const {
+	constraint_t inverse_edge;
+	this->getInverseEdge(&inverse_edge);
+
+	return inverse_edge;
+}
+
+template<class GRAPH_t>
+void TGraphSlamHypothesis<GRAPH_t>::inverseHypothesis() {
+	// inverse the start/end nodes
+	mrpt::utils::TNodeID tmp = from;
+	from = to;
+	to = tmp;
+
+	// inverse the edge
+	constraint_t edge_tmp = this->getInverseEdge();
+	this->edge.copyFrom(edge_tmp);
 }
 
 } } } // end of namespaces

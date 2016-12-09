@@ -260,14 +260,14 @@ int main(int argc, char **argv)
 
 	}
 	catch (exception& e) {
-		logger.logFmt(LVL_ERROR, "Program finished for an exception!!\n%s\n",
+		logger.logFmt(LVL_ERROR, "Program finished due to an exception!!\n%s\n",
 				e.what());
 
 		mrpt::system::pause();
 		return -1;
 	}
 	catch (...) {
-		logger.logFmt(LVL_ERROR, "Program finished for an untyped exception!!");
+		logger.logFmt(LVL_ERROR, "Program finished due to an untyped exception!!");
 		mrpt::system::pause();
 		return -1;
 	}
