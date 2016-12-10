@@ -264,6 +264,7 @@ class CLoopCloserERD:
 		typedef typename mrpt::graphslam::detail::TGraphSlamHypothesis<GRAPH_t> hypot_t;
 		typedef std::vector<hypot_t> hypots_t;
 		typedef std::vector<hypot_t*> hypotsp_t;
+		typedef std::map< std::pair<hypot_t*, hypot_t*>, double > hypotsp_to_consist_t;
 		/**\}*/
 
 		// Public methods
@@ -484,10 +485,14 @@ class CLoopCloserERD:
 		void evaluatePartitionsForLC(const partitions_t& partitions);
 		/**\brief Generate the hypothesis pool for all the inter-group constraints
 		 * between two groups of nodes.
+		 *
+		 * \param[in] groupA First group to be tested
+		 * \param[in] groupB Second group to be tested
 		 */
 		void generateHypotsPool(
 				const vector_uint& groupA,
-				const vector_uint& groupB);
+				const vector_uint& groupB,
+				hypotsp_t* generated_hypots);
 		bool computeDominantEigenVector(const mrpt::math::CMatrixDouble& consist_matrix,
 				mrpt::math::dynamic_vector<double>* eigvec,
 				bool use_power_method=false);

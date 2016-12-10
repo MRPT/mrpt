@@ -237,8 +237,6 @@ bool CLoopCloserERD<GRAPH_t>::getICPEdge(
 	}
 
 	// what if invalid Laser Scans?
-	//ASSERT_(from_laser_scan.present());
-	//ASSERT_(to_laser_scan.present());
 	if (!from_laser_scan.present() || !to_laser_scan.present()) {
 		MRPT_LOG_DEBUG_STREAM(
 			"Either node #" << from <<
@@ -390,59 +388,12 @@ void CLoopCloserERD<GRAPH_t>::evaluatePartitionsForLC(
 				&groupA, &groupB,
 				/*max_nodes_in_group=*/5);
 
-		// generate the hypothesis pool
-		// use a hypothesis ID with which the consistency matrix will then be
-		// formed
-		int hypothesis_counter = 0;
-		int invalid_hypotheses = 0;
 		hypotsp_t hypots_pool;
-		{
-			for (vector_uint::const_iterator
-					b_it = groupB.begin();
-					b_it != groupB.end();
-					++b_it) {
-				for (vector_uint::const_iterator
-						a_it = groupA.begin();
-						a_it != groupA.end();
-						++a_it) {
-					mrpt::slam::CICP::TReturnInfo icp_info;
-					// by default hypotheses will direct bi => ai; If the hypothesis is
-					// traversed the opposite way, take the opposite of the constraint
-					hypot_t* hypot = new hypot_t;
-					hypot->from = *b_it;
-					hypot->to = *a_it;
-					hypot->id = hypothesis_counter++;
-
-					constraint_t edge;
-					bool found_edge = this->getICPEdge(
-							*b_it,
-							*a_it,
-							&edge,
-							&icp_info);
-
-					hypot->setEdge(edge);
-					hypot->goodness = icp_info.goodness; // goodness related to the edge
-					//cout << "Goodness: " << icp_info.goodness << endl;
-					//cout << hypot->getAsString() << endl;
-					// Mark as invalid, do not use it from now on...
-					if (!found_edge || hypot->goodness == 0) {
-						hypot->is_valid = false;
-						invalid_hypotheses++;
-					}
-					hypots_pool.push_back(hypot);
-					MRPT_LOG_DEBUG_STREAM << hypot->getAsString();
-				}
-			}
-			MRPT_LOG_DEBUG_STREAM(
-				"Generated pool of hypotheses...\tnodeIDs_to_hypots.size() = "
-				<< nodeIDs_to_hypots.size()
-				<< "\tinvalid hypotheses: " << invalid_hypotheses);
-		}
-		//mrpt::system::pause();
+		this->generateHypotsPool(groupA, groupB, &hypots_pool);
 
 		// compute the pair-wise consistency for groups of hypotheses between
 		// groups A, B
-		std::map< std::pair<hypot_t*, hypot_t*>, double > hypots_to_consistencies;
+		hypotsp_to_consist_t hypots_to_consistencies;
 
 		for (vector_uint::const_iterator
 				b_out_it = groupB.begin(); b_out_it != groupB.end(); ++b_out_it) {
@@ -502,12 +453,8 @@ void CLoopCloserERD<GRAPH_t>::evaluatePartitionsForLC(
 
 		// generate the pair-wise consistency matrix of the relevant edges and find
 		// the submatrix of the most consistent hypotheses inside it.
-		// TODO - use the size of the vector here.
-		CMatrixDouble consist_matrix(hypothesis_counter, hypothesis_counter);
-		for (typename std::map<
-					std::pair<hypot_t*,
-										hypot_t*>,
-					double>::const_iterator
+		CMatrixDouble consist_matrix(hypots_pool.size(), hypots_pool.size());
+		for (typename hypotsp_to_consist_t::const_iterator
 				it = hypots_to_consistencies.begin();
 				it != hypots_to_consistencies.end();
 				++it)  {
@@ -645,12 +592,68 @@ void CLoopCloserERD<GRAPH_t>::splitPartitionToGroups(
 }
 
 
-// TODO - implement this. Make it generic so that it can be used for both inter-trajectory things 
-// and also between different robot trajectories
 template<class GRAPH_t>
 void CLoopCloserERD<GRAPH_t>::generateHypotsPool(
 		const vector_uint& groupA,
-		const vector_uint& groupB) { }
+		const vector_uint& groupB,
+		hypotsp_t* generated_hypots) {
+	MRPT_START;
+	ASSERTMSG_(generated_hypots,
+			"generateHypotsPool: Given hypotsp_t pointer is invalid.");
+
+	// use a hypothesis ID with which the consistency matrix will then be
+	// formed
+	int hypot_counter = 0;
+	int invalid_hypots = 0; // just for keeping track of them.
+	{
+		// iterate over all the nodes in both groups
+		for (vector_uint::const_iterator
+				b_it = groupB.begin();
+				b_it != groupB.end();
+				++b_it) {
+			for (vector_uint::const_iterator
+					a_it = groupA.begin();
+					a_it != groupA.end();
+					++a_it) {
+				mrpt::slam::CICP::TReturnInfo icp_info;
+				// by default hypotheses will direct bi => ai; If the hypothesis is
+				// traversed the opposite way, take the opposite of the constraint
+				hypot_t* hypot = new hypot_t;
+				hypot->from = *b_it;
+				hypot->to = *a_it;
+				hypot->id = hypot_counter++;
+
+				// TODO - how am I going to do it for the mr case?
+				// fetch the ICP constraint bi => ai
+				constraint_t edge;
+				bool found_edge = this->getICPEdge(
+						*b_it,
+						*a_it,
+						&edge,
+						&icp_info);
+
+				hypot->setEdge(edge);
+				hypot->goodness = icp_info.goodness; // goodness related to the edge
+				//cout << "Goodness: " << icp_info.goodness << endl;
+				//cout << hypot->getAsString() << endl;
+				// Mark as invalid, do not use it from now on...
+				if (!found_edge || hypot->goodness == 0) {
+					hypot->is_valid = false;
+					invalid_hypots++;
+				}
+				generated_hypots->push_back(hypot);
+				MRPT_LOG_DEBUG_STREAM << hypot->getAsString();
+			}
+		}
+		MRPT_LOG_DEBUG_STREAM <<
+			"Generated pool of hypotheses...\tsize = "
+			<< generated_hypots->size()
+			<< "\tinvalid hypotheses: " << invalid_hypots;
+	}
+	//mrpt::system::pause();
+
+	MRPT_END;
+}
 
 
 
