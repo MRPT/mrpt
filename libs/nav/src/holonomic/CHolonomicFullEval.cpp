@@ -105,9 +105,9 @@ void  CHolonomicFullEval::navigate(
 
 		// Factor #1: Clearness
 		// -----------------------------------------------------
-		if (mrpt::utils::abs_diff(i,target_sector)<=1 && target_dist<1)
-		      scores[0] = std::min(target_dist,obstacles[i]) / target_dist;
-		else  scores[0] = obstacles[i];
+		if (mrpt::utils::abs_diff(i,target_sector)<=1 && target_dist<1.0-options.TOO_CLOSE_OBSTACLE)
+		scores[0] = std::min(target_dist,obstacles[i]) / (target_dist+options.TOO_CLOSE_OBSTACLE);
+		else  scores[0] = std::max(0.0, obstacles[i]-options.TOO_CLOSE_OBSTACLE);
 
 		// Factor #2: Closest approach to target along straight line (Euclidean)
 		// -------------------------------------------
@@ -134,10 +134,10 @@ void  CHolonomicFullEval::navigate(
 		if (m_last_selected_sector != std::numeric_limits<unsigned int>::max() )
 		{
 			const unsigned int hist_dist = mrpt::utils::abs_diff(m_last_selected_sector, i);  // It's fine here to consider that -PI is far from +PI.
-			
+
 			if (hist_dist >= options.HYSTERESIS_SECTOR_COUNT)
 			     scores[3] = square( 1.0-(hist_dist-options.HYSTERESIS_SECTOR_COUNT)/double(nDirs) );
-			else scores[3] = 1.0; 
+			else scores[3] = 1.0;
 		}
 		else {
 			scores[3] = 1.0;
@@ -174,7 +174,7 @@ void  CHolonomicFullEval::navigate(
 	for (unsigned int l : options.PHASE1_FACTORS) weights_sum_phase1+=options.factorWeights[l];
 	ASSERT_(weights_sum_phase1>.0);
 	const double weights_sum_phase1_inv = 1.0/weights_sum_phase1;
-	
+
 	double weights_sum_phase2=.0;
 	for (unsigned int l : options.PHASE2_FACTORS) weights_sum_phase2+=options.factorWeights[l];
 	ASSERT_(weights_sum_phase2>.0);
@@ -189,7 +189,7 @@ void  CHolonomicFullEval::navigate(
 		// Sum up:
 		for (unsigned int l : options.PHASE1_FACTORS)
 			phase1_score[i] += options.factorWeights[l] * m_dirs_scores(i,l);
-	
+
 		phase1_score[i]*=weights_sum_phase1_inv;
 
 		mrpt::utils::keep_max(phase1_max, phase1_score[i]);
@@ -341,7 +341,7 @@ void CHolonomicFullEval::TOptions::loadFromConfigFile(const mrpt::utils::CConfig
 
 	source.read_vector(section,"PHASE1_FACTORS", PHASE1_FACTORS, PHASE1_FACTORS );
 	ASSERT_(PHASE1_FACTORS.size()>0);
-	
+
 	source.read_vector(section,"PHASE2_FACTORS", PHASE2_FACTORS, PHASE2_FACTORS );
 	ASSERT_(PHASE2_FACTORS.size()>0);
 
@@ -357,7 +357,7 @@ void CHolonomicFullEval::TOptions::saveToConfigFile(mrpt::utils::CConfigFileBase
 	cfg.write(section,"TARGET_SLOW_APPROACHING_DISTANCE",TARGET_SLOW_APPROACHING_DISTANCE,   WN,WV, "Start to reduce speed when closer than this to target.");
 	cfg.write(section,"HYSTERESIS_SECTOR_COUNT",HYSTERESIS_SECTOR_COUNT,   WN,WV, "Range of `sectors` (directions) for hysteresis over succesive timesteps");
 	cfg.write(section,"PHASE1_THRESHOLD",PHASE1_THRESHOLD,   WN,WV, "Phase1 scores must be above this relative range threshold [0,1] to be considered in phase 2 (Default:`0.75`)");
-	
+
 	ASSERT_EQUAL_(factorWeights.size(),5)
 	cfg.write(section,"factorWeights", mrpt::system::sprintf_container("%.2f ",factorWeights),   WN,WV, "[0]=Free space, [1]=Dist. in sectors, [2]=Closer to target (Euclidean), [3]=Hysteresis, [4]=Clearness along path");
 
@@ -374,7 +374,7 @@ void  CHolonomicFullEval::writeToStream(mrpt::utils::CStream &out,int *version) 
 	else
 	{
 		// Params:
-		out << options.factorWeights << options.HYSTERESIS_SECTOR_COUNT << 
+		out << options.factorWeights << options.HYSTERESIS_SECTOR_COUNT <<
 			options.PHASE1_FACTORS << options.PHASE2_FACTORS <<
 			options.TARGET_SLOW_APPROACHING_DISTANCE << options.TOO_CLOSE_OBSTACLE << options.PHASE1_THRESHOLD;
 		// State:
@@ -388,7 +388,7 @@ void  CHolonomicFullEval::readFromStream(mrpt::utils::CStream &in,int version)
 	case 0:
 		{
 		// Params:
-		in >> options.factorWeights >> options.HYSTERESIS_SECTOR_COUNT >> 
+		in >> options.factorWeights >> options.HYSTERESIS_SECTOR_COUNT >>
 			options.PHASE1_FACTORS >> options.PHASE2_FACTORS >>
 			options.TARGET_SLOW_APPROACHING_DISTANCE >> options.TOO_CLOSE_OBSTACLE >> options.PHASE1_THRESHOLD;
 		// State:

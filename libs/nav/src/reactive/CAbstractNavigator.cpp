@@ -83,7 +83,7 @@ void CAbstractNavigator::cancel()
 	mrpt::synch::CCriticalSectionLocker csl(&m_nav_cs);
 	MRPT_LOG_DEBUG("CAbstractNavigator::cancel() called.");
 	m_navigationState = IDLE;
-	this->stop();
+	this->stop(false /*not emergency*/);
 }
 
 
@@ -156,7 +156,7 @@ void CAbstractNavigator::navigationStep()
 			if ( m_lastNavigationState == NAVIGATING )
 			{
 				MRPT_LOG_ERROR("[CAbstractNavigator::navigationStep()] Stoping Navigation due to a NAV_ERROR state!");
-				this->stop();
+				this->stop(false /*not emergency*/);
 				m_robot.stopWatchdog();
 			}
 		} catch (...) { }
@@ -211,7 +211,7 @@ void CAbstractNavigator::navigationStep()
 			if ( targetDist < m_navigationParams->targetAllowedDistance )
 			{
 				if (!m_navigationParams->targetIsIntermediaryWaypoint) {
-					this->stop();
+					this->stop(false /*not emergency*/);
 				}
 				m_navigationState = IDLE;
 				logFmt(mrpt::utils::LVL_WARN, "Navigation target (%.03f,%.03f) was reached\n", m_navigationParams->target.x,m_navigationParams->target.y);
@@ -263,7 +263,7 @@ void CAbstractNavigator::navigationStep()
 void CAbstractNavigator::doEmergencyStop( const std::string &msg )
 {
 	try {
-		this->stop();
+		this->stop(true /* emergency*/);
 	}
 	catch (...) { }
 	m_navigationState = NAV_ERROR;
@@ -311,7 +311,7 @@ void CAbstractNavigator::updateCurrentPoseAndSpeeds(bool update_seq_latest_poses
 		{
 			m_navigationState = NAV_ERROR;
 			try { 
-				this->stop();
+				this->stop(true /*emergency*/);
 			}
 			catch (...) {}
 			MRPT_LOG_ERROR("ERROR calling m_robot.getCurrentPoseAndSpeeds, stopping robot and finishing navigation");
@@ -340,7 +340,7 @@ bool CAbstractNavigator::changeSpeedsNOP()
 {
 	return m_robot.changeSpeedsNOP();
 }
-bool CAbstractNavigator::stop()
+bool CAbstractNavigator::stop(bool isEmergencyStop)
 {
-	return m_robot.stop();
+	return m_robot.stop(isEmergencyStop);
 }

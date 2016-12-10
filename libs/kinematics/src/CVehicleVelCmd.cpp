@@ -41,7 +41,7 @@ std::string mrpt::kinematics::CVehicleVelCmd::asString() const
 
 CVehicleVelCmd & CVehicleVelCmd::operator =(const CVehicleVelCmd &other)
 {
-	size_t nThis = this->getVelCmdLength(), nOther = other.getVelCmdLength();
+	const size_t nThis = this->getVelCmdLength();
 	ASSERTMSG_(typeid(*this) == typeid(other), "Trying to copy incompatible classes");
 	for (size_t i = 0; i < nThis; i++)
 		this->setVelCmdElement(i, other.getVelCmdElement(i) );

@@ -53,6 +53,7 @@ namespace mrpt
 		mrpt::synch::CCriticalSectionRecursive m_nav_waypoints_cs;
 
 		double  MAX_DISTANCE_TO_ALLOW_SKIP_WAYPOINT; //!< In meters. <0: unlimited
+		int     MIN_TIMESTEPS_CONFIRM_SKIP_WAYPOINTS; //!< How many times shall a future waypoint be seen as reachable to skip to it (Default: 1)
 
 		/** Implements the way to waypoint is free function in children classes: `true` must be returned 
 		  * if, according to the information gathered at the last navigation step, there is a free path to 

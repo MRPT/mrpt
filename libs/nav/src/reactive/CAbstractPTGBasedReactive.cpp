@@ -85,7 +85,7 @@ void CAbstractPTGBasedReactive::preDestructor()
 
 	// Just in case.
 	try {
-		this->stop();
+		this->stop(false /*not emergency*/);
 	} catch (...) { }
 
 	mrpt::utils::delete_safe(m_logFile);
@@ -466,7 +466,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 
 			if (new_vel_cmd->isStopCmd()) {
 				MRPT_LOG_DEBUG("Best velocity command is STOP, calling robot.stop()");
-				this->stop();
+				this->stop(false /*not emergency*/);
 			}
 			else
 			{
