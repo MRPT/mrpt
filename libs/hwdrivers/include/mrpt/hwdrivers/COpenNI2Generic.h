@@ -112,7 +112,7 @@ namespace mrpt
 		protected:
 
 			/** The list of available devices */
-			class CDevice;
+			class HWDRIVERS_IMPEXP CDevice;
 			static std::vector<stlplus::smart_ptr<CDevice> > vDevices;
 			static int                        numInstances;
 
