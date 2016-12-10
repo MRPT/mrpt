@@ -265,6 +265,7 @@ class CLoopCloserERD:
 		typedef std::vector<hypot_t> hypots_t;
 		typedef std::vector<hypot_t*> hypotsp_t;
 		typedef std::map< std::pair<hypot_t*, hypot_t*>, double > hypotsp_to_consist_t;
+		typedef mrpt::graphslam::TUncertaintyPath<GRAPH_t> path_t;
 		/**\}*/
 
 		// Public methods
@@ -493,7 +494,8 @@ class CLoopCloserERD:
 				const vector_uint& groupA,
 				const vector_uint& groupB,
 				hypotsp_t* generated_hypots);
-		bool computeDominantEigenVector(const mrpt::math::CMatrixDouble& consist_matrix,
+		bool computeDominantEigenVector(
+				const mrpt::math::CMatrixDouble& consist_matrix,
 				mrpt::math::dynamic_vector<double>* eigvec,
 				bool use_power_method=false);
 		/**\brief Return the pair-wise consistency between the observations of the
@@ -522,6 +524,19 @@ class CLoopCloserERD:
 				const mrpt::utils::TNodeID& b1,
 				const mrpt::utils::TNodeID& b2,
 				const hypotsp_t& hypots);
+		/**\brief Compute the pair-wise consistencies Matrix.
+		 *
+		 * \param[in] groupA First group to be used
+		 * \param[in] groupB Second group to be used
+		 * \param[in] hypots_pool Pool of hypothesis that has been generated
+		 * between the two groups
+		 * \pram[out] consist_matrix Pair-wise consistencies matrix
+		 */
+		void generatePWConsistenciesMatrix(
+				const vector_uint& groupA,
+				const vector_uint& groupB,
+				const hypotsp_t& hypots_pool,
+				mrpt::math::CMatrixDouble* consist_matrix);
 		/**\brief Given a vector of TGraphSlamHypothesis objects, find the one that
 		 * has the given start and end nodes.
 		 *
@@ -594,7 +609,7 @@ class CLoopCloserERD:
 		void getMinUncertaintyPath(
 				const mrpt::utils::TNodeID from,
 				const mrpt::utils::TNodeID to,
-				typename mrpt::graphslam::TUncertaintyPath<GRAPH_t>* path) const;
+				path_t* path) const;
 		/**\brief Find the minimum uncertainty path from te given pool of
 		 * TUncertaintyPath instances.
 		 *
@@ -602,10 +617,8 @@ class CLoopCloserERD:
 		 *
 		 * \return Minimum uncertainty path from the pool provided
 		 */
-		typename mrpt::graphslam::TUncertaintyPath<GRAPH_t>* popMinUncertaintyPath(
-				std::set<
-				typename mrpt::graphslam::TUncertaintyPath<GRAPH_t>*>* pool_of_paths)
-			const;
+		typename mrpt::graphslam::TUncertaintyPath<GRAPH_t>*
+			popMinUncertaintyPath(std::set<path_t*>* pool_of_paths) const;
 		/**\brief  Append the paths starting from the current node.
 		 *
 		 * \param[in] pool_of_paths Paths that are currently registered
@@ -615,11 +628,10 @@ class CLoopCloserERD:
 		 * the current path
 		 */
 		void addToPaths(
-				typename std::set<mrpt::graphslam::TUncertaintyPath<GRAPH_t>*>* pool_of_paths,
-				const typename mrpt::graphslam::TUncertaintyPath<GRAPH_t>& curr_path,
+				std::set<path_t*>* pool_of_paths,
+				const path_t& curr_path,
 				const std::set<mrpt::utils::TNodeID>& neibors) const;
-		/**\brief
-		 * Query for the optimal path of a nodeID.
+		/**\brief Query for the optimal path of a nodeID.
 		 *
 		 * Method handles calls to out-of-bounds nodes as well as nodes whose paths
 		 * have not yet been computed.
@@ -629,8 +641,8 @@ class CLoopCloserERD:
 		 * \return Optimal path corresponding to the given nodeID or NULL if the
 		 * former is not found.
 		 */
-		typename mrpt::graphslam::TUncertaintyPath<GRAPH_t>* queryOptimalPath(
-				const mrpt::utils::TNodeID node) const;
+		typename mrpt::graphslam::TUncertaintyPath<GRAPH_t>*
+			queryOptimalPath(const mrpt::utils::TNodeID node) const;
 
 		// Private variables
 		//////////////////////////////////////////////////////////////
@@ -702,10 +714,7 @@ class CLoopCloserERD:
 		/**\brief Map that stores the lowest uncertainty path from one Node to
 		 * another Node.
 		 */
-		std::map<
-			mrpt::utils::TNodeID,
-			typename mrpt::graphslam::TUncertaintyPath<GRAPH_t>*>
-				m_node_optimal_paths;
+		typename std::map< mrpt::utils::TNodeID, path_t* > m_node_optimal_paths;
 
 };
 
