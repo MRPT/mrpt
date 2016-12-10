@@ -113,8 +113,6 @@ void CVehicleVelCmd_Holo::cmdVel_scale(double vel_scale)
 void CVehicleVelCmd_Holo::cmdVel_limits(const mrpt::kinematics::CVehicleVelCmd &prev_vel_cmd, const double beta, const TVelCmdParams &params)
 {
 	ASSERTMSG_(params.robotMax_V_mps >= .0, "[CVehicleVelCmd_Holo] `robotMax_V_mps` must be set to valid values: either assign values programatically or call loadConfigFile()");
-	const mrpt::kinematics::CVehicleVelCmd_Holo *prevcmd = dynamic_cast<const mrpt::kinematics::CVehicleVelCmd_Holo*>(&prev_vel_cmd);
-	ASSERTMSG_(prevcmd, "Expected prevcmd of type `CVehicleVelCmd_Holo`");
 
 	double f = 1.0;
 	if (vel>params.robotMax_V_mps) f = params.robotMax_V_mps / vel;

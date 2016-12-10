@@ -528,6 +528,10 @@ void CPTG_Holo_Blend::updateTPObstacleSingle(double ox, double oy, uint16_t k, d
 
 	double sol_t = -1.0; // candidate solution for shortest time to collision
 
+	// Note: It's tempting to try to solve first for t>T_ramp because it has simpler (faster) equations, 
+	// but there are cases in which we will have valid collisions for t>T_ramp but other valid ones 
+	// for t<T_ramp as well, so the only SAFE way to detect shortest distances is to check over increasing values of "t".
+
 	// Try to solve first for t<T_ramp:
 	const double k2 = (vxf - vxi)*TR2_;
 	const double k4 = (vyf - vyi)*TR2_;
@@ -583,10 +587,9 @@ void CPTG_Holo_Blend::updateTPObstacleSingle(double ox, double oy, uint16_t k, d
 	// Invalid with these equations?
 	if (sol_t<0 || sol_t>T_ramp_thres101)
 	{
-		// Attempt to solve with the equations for t<T_ramp
+		// Now, attempt to solve with the equations for t>T_ramp:
 		sol_t = -1.0;
 
-		// Solve for t>T_ramp:
 		const double c1 = TR_2*(vxi - vxf) - ox;
 		const double c2 = TR_2*(vyi - vyf) - oy;
 

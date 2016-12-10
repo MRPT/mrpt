@@ -145,7 +145,7 @@ navlog_viewer_GUI_designDialog::navlog_viewer_GUI_designDialog(wxWindow* parent,
     wxFlexGridSizer* FlexGridSizer6;
     wxStaticBoxSizer* StaticBoxSizer1;
     wxFlexGridSizer* FlexGridSizer1;
-    
+
     Create(parent, wxID_ANY, _("Navigation log viewer - Part of the MRPT project"), wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE, _T("wxID_ANY"));
     Move(wxPoint(20,20));
     FlexGridSizer1 = new wxFlexGridSizer(1, 1, 0, 0);
@@ -268,7 +268,7 @@ navlog_viewer_GUI_designDialog::navlog_viewer_GUI_designDialog(wxWindow* parent,
     mnuMoreOps.Append(mnuSaveScoreMatrix);
     FlexGridSizer1->Fit(this);
     FlexGridSizer1->SetSizeHints(this);
-    
+
     Connect(ID_BUTTON1,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&navlog_viewer_GUI_designDialog::OnbtnLoadClick);
     Connect(ID_BUTTON2,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&navlog_viewer_GUI_designDialog::OnbtnHelpClick);
     Connect(ID_BUTTON3,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&navlog_viewer_GUI_designDialog::OnbtnQuitClick);
@@ -472,6 +472,8 @@ void navlog_viewer_GUI_designDialog::UpdateInfoFromLoadedLog()
 		wxScrollEvent d;
 		OnslidLogCmdScroll(d);
 
+		MRPT_TODO("Refactor this to handle different cmdvel types during one log");
+#if 0
 		CDisplayWindowPlotsPtr &win = m_mywins["VW"];
 		if (!win)  {
 			win= CDisplayWindowPlots::Create("Commanded v (red)/w (blue)",400,200);
@@ -509,6 +511,7 @@ void navlog_viewer_GUI_designDialog::UpdateInfoFromLoadedLog()
 		}
 		win->axis_fit();
 		win->setWindowTitle(sCmdVelTitle);
+#endif
 	}
 
 	std::string sDuration("???");
@@ -729,6 +732,22 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 							gl_shape->clear();
 							ptg->add_robotShape_to_setOfLines(*gl_shape);
 						}
+						{
+							mrpt::opengl::CSetOfLinesPtr   gl_shape;
+							mrpt::opengl::CRenderizablePtr gl_shape_r = gl_robot_frame->getByName("velocity");  // Get or create if new
+							if (!gl_shape_r) {
+								gl_shape = mrpt::opengl::CSetOfLines::Create();
+								gl_shape->setName("velocity");
+								gl_shape->setLineWidth(4.0);
+								gl_shape->setColor_u8( mrpt::utils::TColor(0x00,0xff,0xff) );
+								gl_robot_frame->insert(gl_shape);
+							} else {
+								gl_shape = mrpt::opengl::CSetOfLinesPtr(gl_shape_r);
+							}
+							gl_shape->clear();
+							const mrpt::math::TTwist2D &velLocal = log.cur_vel_local;
+							gl_shape->appendLine(0,0,0, velLocal.vx, velLocal.vy, 0);
+						}
 					}
 				}
 			}
@@ -772,10 +791,8 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 
 		ADD_WIN_TEXTMSG(mrpt::format("cmd_vel=%s", log.cmd_vel ? log.cmd_vel->asString().c_str() : "NOP (Continue last PTG)"));
 
-		ADD_WIN_TEXTMSG(mrpt::format("cur_vel=[%.02f m/s, %0.2f m/s, %.02f dps] cur_vel_local=[%.02f m/s, %0.2f m/s, %.02f dps]",
-			log.cur_vel.vx, log.cur_vel.vy, mrpt::utils::RAD2DEG(log.cur_vel.omega),
-			log.cur_vel_local.vx, log.cur_vel_local.vy, mrpt::utils::RAD2DEG(log.cur_vel_local.omega))
-			);
+		ADD_WIN_TEXTMSG(mrpt::format("cur_vel      =[%.02f m/s, %0.2f m/s, %.02f dps]",log.cur_vel.vx, log.cur_vel.vy, mrpt::utils::RAD2DEG(log.cur_vel.omega)) );
+		ADD_WIN_TEXTMSG(mrpt::format("cur_vel_local=[%.02f m/s, %0.2f m/s, %.02f dps]", log.cur_vel_local.vx, log.cur_vel_local.vy, mrpt::utils::RAD2DEG(log.cur_vel_local.omega)) );
 
 		ADD_WIN_TEXTMSG(mrpt::format("robot_pose=%s", log.robotOdometryPose.asString().c_str()));
 

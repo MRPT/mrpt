@@ -22,7 +22,8 @@ TWaypoint::TWaypoint() :
 	target(INVALID_NUM,INVALID_NUM),
 	target_heading(INVALID_NUM),
 	allowed_distance(INVALID_NUM),
-	allow_skip(true)
+	allow_skip(true),
+	counter_seen_reachable(0)
 {
 }
 
@@ -30,7 +31,8 @@ TWaypoint::TWaypoint(double target_x, double target_y, double allowed_distance_,
 	target(target_x,target_y),
 	target_heading(INVALID_NUM),
 	allowed_distance(allowed_distance_),
-	allow_skip(allow_skip_)
+	allow_skip(allow_skip_),
+	counter_seen_reachable(0)
 {
 }
 

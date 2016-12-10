@@ -72,10 +72,11 @@ namespace mrpt
 		  * \sa changeSpeeds(), startWatchdog() */
 		virtual bool changeSpeedsNOP() { std::cout << "[changeSpeedsNOP] Not implemented by the user." << std::endl; return true; }
 
-		/** Stop the robot right now.
+		/** Stop the robot right now. 
+		 *  \param[in] isEmergencyStop true if stop is due to some unexpected error. false if "stop" happens as part of a normal operation (e.g. target reached).
 		 * \return false on any error.
 		 */
-		virtual bool stop() = 0;
+		virtual bool stop(bool isEmergencyStop=true) = 0;
 
 		/** Start the watchdog timer of the robot platform, if any, for maximum expected delay between consecutive calls to changeSpeeds().
 		 * \param T_ms Period, in ms.

@@ -38,6 +38,8 @@ namespace mrpt
 		  */
 		bool    allow_skip;
 
+		int counter_seen_reachable; //!< (Initialized to 0 automatically) How many times this waypoint has been seen as "reachable" before it being the current active waypoint.
+
 		bool isValid() const; //!< Check whether all the minimum mandatory fields have been filled by the user.
 		TWaypoint(); //!< Ctor with default values
 		TWaypoint(double target_x, double target_y, double allowed_distance, bool allow_skip = true);

@@ -654,6 +654,13 @@ void ptgConfiguratorframe::rebuild3Dview()
 			}
 		}
 
+		try {
+			const double ptg_alpha = ptg->index2alpha(edIndexHighlightPath->GetValue());
+			StaticText12->SetLabel(wxString::Format(_("Selected path trajectory: Phi [deg]. PTG alpha=%.03f [deg]"), mrpt::utils::RAD2DEG(ptg_alpha) ) );
+		}
+		catch (...) {
+		}
+
 		const size_t nPTGPaths = ptg->getPathCount();
 		// All paths:
 		gl_robot_ptg_prediction->clear();
