@@ -64,20 +64,13 @@ static double calc_trans_distance_t_below_Tramp_abc(double t, double a,double b,
 	if (t==0.0) return .0;
 
 	double dist;
-	// Handle special case: degenerate (a*t^2+b*t+c) =  (t-r)^2
+	// Handle special case: degenerate sqrt(a*t^2+b*t+c) =  sqrt((t-r)^2) = |t-r|
 	const double discr = b*b-4*a*c;
 	if (std::abs(discr)<1e-6)
 	{
 		const double r = -b/(2*a);
 		// dist= definite integral [0,t] of: |t-r| dt
-		if (r<0) {
-			dist=+0.5*t*t-r*t;
-		} else if (r>t) {
-			dist=-0.5*t*t+r*t;
-		} else {
-			// r in [0,t]
-			dist=0.5*(r*r+(t-r)*(t-r));
-		}
+		dist = r*std::abs(r)*0.5 + (t - r)*std::abs(t - r)*0.5;
 	}
 	else
 	{
