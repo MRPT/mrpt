@@ -99,6 +99,7 @@ namespace mrpt
 		template <typename T>
 		inline int signWithZero(T x)	{ return (x==0 || x==-0)?0:sign(x);}
 
+		/** Returns the lowest, possitive among two numbers. If both are non-positive (<=0), the lowest one is returned. */
 		template <typename T>
 		T lowestPositive(const T a, const T b)
 		{
