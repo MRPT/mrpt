@@ -30,7 +30,7 @@ namespace mrpt
 	class NAV_IMPEXP CPTG_Holo_Blend : public CPTG_RobotShape_Circular
 	{
 		DEFINE_SERIALIZABLE(CPTG_Holo_Blend)
-	 public:
+	public:
 		CPTG_Holo_Blend();
 		CPTG_Holo_Blend(const mrpt::utils::CConfigFileBase &cfg,const std::string &sSection);
 		virtual ~CPTG_Holo_Blend();
@@ -61,7 +61,10 @@ namespace mrpt
 		void updateTPObstacle(double ox, double oy, std::vector<double> &tp_obstacles) const MRPT_OVERRIDE;
 		void updateTPObstacleSingle(double ox, double oy, uint16_t k, double &tp_obstacle_k) const MRPT_OVERRIDE;
 
-	 protected:
+		static double PATH_TIME_STEP;  //!< Duration of each PTG "step"  (default: 10e-3=10 ms)
+		static double eps;             //!< Mathematical "epsilon", to detect ill-conditioned situations (e.g. 1/0) (Default: 1e-4)
+
+	protected:
 		double T_ramp_max;
 		double V_MAX, W_MAX;
 		double turningRadiusReference;
@@ -82,6 +85,14 @@ namespace mrpt
 		void internal_processNewRobotShape() MRPT_OVERRIDE;
 		void internal_initialize(const std::string & cacheFilename = std::string(), const bool verbose = true) MRPT_OVERRIDE;
 		void internal_deinitialize() MRPT_OVERRIDE;
+
+	public:
+
+		/** Axiliary function for computing the line-integral distance along the trajectory, handling special cases of 1/0: */
+		static double calc_trans_distance_t_below_Tramp(double k2, double k4, double vxi, double vyi, double t);
+		/** Axiliary function for calc_trans_distance_t_below_Tramp() and others */
+		static double calc_trans_distance_t_below_Tramp_abc(double t, double a, double b, double c);
+
 	};
 	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(CPTG_Holo_Blend, CParameterizedTrajectoryGenerator, NAV_IMPEXP)
 
