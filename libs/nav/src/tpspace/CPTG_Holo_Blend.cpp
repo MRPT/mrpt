@@ -46,9 +46,8 @@ Number of steps "d" for each PTG path "k":
 	#define PERFORMANCE_BENCHMARK
 #endif
 
-const double PATH_TIME_STEP = 10e-3;   // 10 ms
-const double eps = 1e-4;               // epsilon for detecting 1/0 situation
-
+double CPTG_Holo_Blend::PATH_TIME_STEP = 10e-3;   // 10 ms
+double CPTG_Holo_Blend::eps = 1e-4;               // epsilon for detecting 1/0 situation
 
 // As a macro instead of a function (uglier) to allow for const variables (safer)
 #define COMMON_PTG_DESIGN_PARAMS \
@@ -58,7 +57,7 @@ const double eps = 1e-4;               // epsilon for detecting 1/0 situation
 	const double T_ramp = internal_get_T_ramp(dir);
 
 // Axiliary function for calc_trans_distance_t_below_Tramp() and others:
-static double calc_trans_distance_t_below_Tramp_abc(double t, double a,double b, double c)
+double CPTG_Holo_Blend::calc_trans_distance_t_below_Tramp_abc(double t, double a,double b, double c)
 {
 	ASSERT_(t>=0);
 	if (t==0.0) return .0;
@@ -91,7 +90,7 @@ static double calc_trans_distance_t_below_Tramp_abc(double t, double a,double b,
 
 
 // Axiliary function for computing the line-integral distance along the trajectory, handling special cases of 1/0:
-static double calc_trans_distance_t_below_Tramp(double k2, double k4, double vxi,double vyi, double t)
+double CPTG_Holo_Blend::calc_trans_distance_t_below_Tramp(double k2, double k4, double vxi,double vyi, double t)
 {
 /*
 dd = sqrt( (4*k2^2 + 4*k4^2)*t^2 + (4*k2*vxi + 4*k4*vyi)*t + vxi^2 + vyi^2 ) dt
