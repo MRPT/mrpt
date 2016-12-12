@@ -25,7 +25,7 @@
 #include <iostream>
 
 /**\brief Manage variables and methods related to applications executing
- * graphSLAM using the mrpt-graphslam API
+ * graphSLAM using the mrpt-graphslam API.
  *
  * As a quick overview, class instances deal with the following:
  * - Manage user interaction with the visuals (e.g. CDisplayWindow instance)

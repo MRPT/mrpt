@@ -42,6 +42,7 @@
 #include <mrpt/graphslam/misc/CRangeScanRegistrationDecider.h>
 #include <mrpt/graphslam/misc/TGraphSlamHypothesis.h>
 #include <mrpt/graphslam/misc/TUncertaintyPath.h>
+#include <mrpt/graphslam/misc/CHypothesisNotFoundException.h>
 
 #include <Eigen/Dense>
 
@@ -295,8 +296,8 @@ class CLoopCloserERD:
 		// Public variables
 		// ////////////////////////////
 
-	private:
-		// Private functions
+	protected:
+		// protected functions
 		//////////////////////////////////////////////////////////////
 
 		/**\brief Struct for storing together the parameters needed for ICP
@@ -644,12 +645,10 @@ class CLoopCloserERD:
 		typename mrpt::graphslam::TUncertaintyPath<GRAPH_t>*
 			queryOptimalPath(const mrpt::utils::TNodeID node) const;
 
-		// Private variables
+		// protected variables
 		//////////////////////////////////////////////////////////////
 		/**\brief Instance responsible for partitioning the map */
 		mrpt::slam::CIncrementalMapPartitioner m_partitioner;
-
-		bool m_just_inserted_loop_closure;
 
 		bool m_visualize_curr_node_covariance;
 		const mrpt::utils::TColor m_curr_node_covariance_color;

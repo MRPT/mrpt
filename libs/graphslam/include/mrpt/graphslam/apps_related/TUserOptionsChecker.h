@@ -27,40 +27,65 @@
 #include <iostream>
 #include <vector>
 
-namespace mrpt { namespace graphslam { namespace supplementary {
+namespace mrpt { namespace graphslam { namespace detail {
 
+/**\brief Properties struct for both the Registration Decider and Optimizer
+	* classes
+	*/
+struct GRAPHSLAM_IMPEXP TRegistrationDeciderOrOptimizerProps {
+	TRegistrationDeciderOrOptimizerProps():
+		name(""),
+		description(""),
+		is_mr_slam_class(false) {}
+	~TRegistrationDeciderOrOptimizerProps() {}
+
+  /**\brief Name of the decider or optimizer class
+   */
+  std::string name;
+  /**\brief General description of the decicder or optimizer class*/
+  std::string description;
+  /**\brief Class indicating if the current decider/optimizer class can be used
+   * in a multi-robot SLAM operation
+   */
+  bool is_mr_slam_class;
+
+};
 
 /**\brief Properties struct for the Registration Decider classes.
  *
  * \ingroup mrpt_graphslam_grp
  */
-struct GRAPHSLAM_IMPEXP TRegistrationDeciderProps {
-	TRegistrationDeciderProps() {}
+struct GRAPHSLAM_IMPEXP TRegistrationDeciderProps :
+	public TRegistrationDeciderOrOptimizerProps
+{
+	TRegistrationDeciderProps():
+		type(""),
+		rawlog_format("") {}
 	~TRegistrationDeciderProps() {}
 
-  std::string name;
-  std::string description;
-  std::string type; // type of registration decider - node/edge?
-  std::string rawlog_format; // rawlog formats that the decider can be used in
+  /**\brief Type of decider.
+   *
+   * Available options are:
+   * - node
+   * - edge
+   */
+  std::string type;
+ 	/**\brief Rawlog formats that the decider can be used in */
+  std::string rawlog_format;
+  /**\brief Measurements that the current decider class can utilize */
   std::vector<std::string> observations_used;
 };
-
-//////////////////////////////////////////////////////////////////////
 
 /**\brief Properties struct for the Optimizer classes.
  *
  * \ingroup mrpt_graphslam_grp
  */
-struct GRAPHSLAM_IMPEXP TOptimizerProps {
+struct GRAPHSLAM_IMPEXP TOptimizerProps :
+	public TRegistrationDeciderOrOptimizerProps
+{
 	TOptimizerProps() {}
 	~TOptimizerProps() {}
-
-	std::string name;
-	std::string description;
-
 };
-
-//////////////////////////////////////////////////////////////////////
 
 
 /**\brief Class containing the declarations of supplementary methods that can
@@ -96,33 +121,33 @@ struct GRAPHSLAM_IMPEXP TUserOptionsChecker {
 	/**\brief Constructor */
 	TUserOptionsChecker();
 	/**\brief Destructor */
-	~TUserOptionsChecker();
+	virtual ~TUserOptionsChecker();
 	/**\brief Create the necessary mappings from strings to the corresponding
 	 * instance creation funtors.
 	 *
 	 * \note Method is by default called upon initialization
 	 */
-	void createDeciderOptimizerMappings();
+	virtual void createDeciderOptimizerMappings();
 	/**\brief Populate the available deciders, optimizer classes available in
 	 * user applications
 	 *
 	 * \note Method is by default called upon initialization
 	 */
-	void populateDeciderOptimizerProperties();
+	virtual void populateDeciderOptimizerProperties();
 	/**\brief Check if the given registrator decider exists in the vector of
  	 * deciders.
  	 * \param[in] given_reg String specifying the type of decider - This should
  	 * either be "node" or "edge"
  	 * \return True if it exists, false otherwise
  	 */
-	bool checkRegistrationDeciderExists(
+	virtual bool checkRegistrationDeciderExists(
 			std::string given_reg,
 			std::string reg_type) const;
 
 	/**\brief Check if the given optimizer exists in the vector of optimizers.
  	 * \return True if it exists, false otherwise
  	 */
-	bool checkOptimizerExists(
+	virtual bool checkOptimizerExists(
 			std::string given_opt) const;
 
 	/**\brief Print the registration deciders vector in a formatted manner to the
@@ -131,21 +156,11 @@ struct GRAPHSLAM_IMPEXP TUserOptionsChecker {
  	 * and edge registration deciders of the given vector unless specified
  	 * otherwise. The available argument options are "node", "edge", "all"
  	 */
-	void dumpRegistrarsToConsole(std::string reg_type="all") const;
+	virtual void dumpRegistrarsToConsole(std::string reg_type="all") const;
 	/**\brief Print the optimizers vector in a formatted manner to the standard
  	 * output.
  	 */
-	void dumpOptimizersToConsole() const;
-
-	// TODO - Implement this
-	/**\brief Add a new Node Registration Decider 
-	 */
-	// TODO - Implement this
-	/**\brief Add a new Edge Registration Decider
-	 */
-	// TODO - Implement this
-	/**\brief Add a new Optimizer
-	 */
+	virtual void dumpOptimizersToConsole() const;
 
 	/**\name Methods for initializing decider/optimizer instances based on the user
  	 * command line choices - http://stackoverflow.com/a/582456/2843583
@@ -170,9 +185,6 @@ struct GRAPHSLAM_IMPEXP TUserOptionsChecker {
 	}
 	/**}*/
 
-	//
-	// member variables
-	//
 	/**\name Mappings from registration decider/optimizer names to functors
 	 * for creating instances of the corresponding classes
 	 */
@@ -183,7 +195,7 @@ struct GRAPHSLAM_IMPEXP TUserOptionsChecker {
 	/**\}*/
 
 	/**\name Vectors containing descriptions about the available
-	 * deciders/optimizers. 
+	 * deciders/optimizers.
 	 *
 	 * Handy for displaying information to the user (e.g. in help text)
 	 */

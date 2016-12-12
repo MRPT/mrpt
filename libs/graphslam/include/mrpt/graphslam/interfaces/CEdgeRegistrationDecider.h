@@ -53,10 +53,9 @@ class CEdgeRegistrationDecider : public mrpt::graphslam::CRegistrationDeciderOrO
 
 
 		/**\brief Default class constructor.*/
-    CEdgeRegistrationDecider():
-			m_just_inserted_loop_closure(false) { }
+    CEdgeRegistrationDecider();
 		/**\brief Default class destructor.*/
-    virtual ~CEdgeRegistrationDecider() {};
+    virtual ~CEdgeRegistrationDecider();
 		/**\brief Generic method for fetching the incremental action/observation
 		 * readings from the calling function. 
 		 *
@@ -77,7 +76,7 @@ class CEdgeRegistrationDecider : public mrpt::graphslam::CRegistrationDeciderOrO
      * last edge registration procedure.
      */
     virtual bool justInsertedLoopClosure() const {
-    	return m_just_inserted_loop_closure;
+    	return m_just_inserted_lc;
     }
 		virtual void getDescriptiveReport(std::string* report_str) const; 
   protected:
@@ -105,7 +104,7 @@ class CEdgeRegistrationDecider : public mrpt::graphslam::CRegistrationDeciderOrO
     		const mrpt::utils::TNodeID& to,
     		const constraint_t& rel_edge);
 
-		bool m_just_inserted_loop_closure;
+		bool m_just_inserted_lc;
 
 };
 

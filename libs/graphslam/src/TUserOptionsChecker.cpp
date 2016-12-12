@@ -10,20 +10,12 @@
 #include "graphslam-precomp.h"  // Precompiled headers
 #include <mrpt/graphslam/apps_related/TUserOptionsChecker.h>
 
-namespace mrpt { namespace graphslam { namespace supplementary {
+namespace mrpt { namespace graphslam { namespace detail {
 
-//////////////////////////////////////////////////////////////
 TUserOptionsChecker::TUserOptionsChecker():
 	sep_header(40, '='),
 	sep_subheader(20, '-')
-{
-	MRPT_START;
-
-	this->createDeciderOptimizerMappings();
-	this->populateDeciderOptimizerProperties();
-
-	MRPT_END;
-}
+{ }
 TUserOptionsChecker::~TUserOptionsChecker(){
 	using namespace std;
 
@@ -74,9 +66,8 @@ void TUserOptionsChecker::createDeciderOptimizerMappings() {
 	MRPT_END;
 }
 
-//////////////////////////////////////////////////////////////
 void TUserOptionsChecker::dumpRegistrarsToConsole(
-		std::string reg_type /* = "all" */) const {
+		std::string reg_type/*="all"*/) const {
 	MRPT_START;
 	using namespace std;
 	using  namespace mrpt;
@@ -92,7 +83,8 @@ void TUserOptionsChecker::dumpRegistrarsToConsole(
 
 		cout << endl << "Available " << system::upperCase(reg_type) << " Registration Deciders: " << endl;
 		cout << sep_header << endl;
-		for (vector<TRegistrationDeciderProps*>::const_iterator dec_it = regs_descriptions.begin();
+		for (vector<TRegistrationDeciderProps*>::const_iterator
+				dec_it = regs_descriptions.begin();
 				dec_it != regs_descriptions.end(); ++dec_it) {
 			TRegistrationDeciderProps* dec = *dec_it;
 			if ( system::strCmpI(dec->type, reg_type) ) {
@@ -101,6 +93,8 @@ void TUserOptionsChecker::dumpRegistrarsToConsole(
 				cout << "\t- " << "Description: " <<  dec->description << endl;
 				cout << "\t- " << "Rawlog Format: " <<  dec->rawlog_format << endl;
 				cout << "\t- " << "Observations that can be used: " << endl;
+				cout << "\t- " << "Multi-robot SLAM capable decider: " <<
+					(dec->is_mr_slam_class? "TRUE": "FALSE");
 				for (vector<string>::const_iterator obs_it = dec->observations_used.begin();
 						obs_it != dec->observations_used.end(); ++obs_it) {
 					cout << "\t\t+ " << *obs_it << endl;
@@ -116,7 +110,6 @@ void TUserOptionsChecker::dumpRegistrarsToConsole(
 	MRPT_END;
 }
 
-//////////////////////////////////////////////////////////////
 void TUserOptionsChecker::dumpOptimizersToConsole() const {
 	MRPT_START;
 
@@ -136,7 +129,6 @@ void TUserOptionsChecker::dumpOptimizersToConsole() const {
 	MRPT_END;
 }
 
-//////////////////////////////////////////////////////////////
 bool TUserOptionsChecker::checkRegistrationDeciderExists(
 		std::string given_reg,
 		std::string reg_type) const {
@@ -167,7 +159,6 @@ bool TUserOptionsChecker::checkRegistrationDeciderExists(
 	MRPT_END;
 }
 
-//////////////////////////////////////////////////////////////
 bool TUserOptionsChecker::checkOptimizerExists(std::string given_opt) const {
 	MRPT_START;
 	using namespace std;
@@ -188,7 +179,6 @@ bool TUserOptionsChecker::checkOptimizerExists(std::string given_opt) const {
 	return found;
 	MRPT_END;
 }
-//////////////////////////////////////////////////////////////
 
 void TUserOptionsChecker::populateDeciderOptimizerProperties() {
 	MRPT_START;

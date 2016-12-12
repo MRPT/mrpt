@@ -221,9 +221,9 @@ class CLevMarqGSO:
 		OptimizationParams opt_params; /**<Parameters relevant to the optimizatio nfo the graph. */
 		GraphVisualizationParams viz_params; /**<Parameters relevant to the visualization of the graph. */
 
-	private:
+	protected:
 
-		// Private methods
+		// protected methods
 		// ////////////////////////////
 
 		/**\brief Feedback of the Levenberg-Marquardt graph optimization procedure.
@@ -300,7 +300,7 @@ class CLevMarqGSO:
 				const mrpt::utils::TNodeID& cur_nodeID,
 				double distance );
 
-		// Private members
+		// protected members
 		//////////////////////////////////////////////////////////////
 
 		bool m_first_time_call;
@@ -315,7 +315,6 @@ class CLevMarqGSO:
 		// Use second thread for graph optimization
 		mrpt::system::TThreadHandle m_thread_optimize;
 
-
 		/**\brief Enumeration that defines the behaviors towards using or ignoring a
 		 * newly added loop closure to fully optimize the graph
 		 */
@@ -326,7 +325,6 @@ class CLevMarqGSO:
 		/**\brief Should I fully optimize the graph on loop closure?
 		 */
 		FullOptimizationPolicy m_optimization_policy;
-
 		/**\name Smart Full-Optimization Command
 		 *
 		 * Instead of issuing a full optimization every time a loop closure is

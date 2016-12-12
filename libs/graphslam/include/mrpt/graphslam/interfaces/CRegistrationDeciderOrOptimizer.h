@@ -130,16 +130,15 @@ class CRegistrationDeciderOrOptimizer :
 		/**\brief Initialize the COutputLogger, CTimeLogger instances given the name of the
 		 * decider/optimizer at hand */
 		virtual void initializeLoggers(std::string class_name);
+		bool isMultiRobotSlamClass();
 
 	protected:
 		/**\brief Handy function for making all the visuals assertions in a compact
 		 * manner
 		 */
 		virtual void assertVisualsVars();
-
 		/**\brief Pointer to the graph that is under construction */
 		GRAPH_t* m_graph;
-
 		mrpt::synch::CCriticalSection* m_graph_section;
 
 		/** \name Visuals-related variables methods
@@ -154,16 +153,17 @@ class CRegistrationDeciderOrOptimizer :
 		/**\brief CWindowObserver object for monitoring various visual-oriented
 		 * events.*/
 		mrpt::graphslam::CWindowObserver* m_win_observer;
-
 		bool m_initialized_visuals;
-
 		/**\}*/
 
 		/**\brief Time logger instance */
 		mrpt::utils::CTimeLogger m_time_logger;
-
 		/**\brief Name of the class instance */
 		std::string m_class_name;
+		/**\brief Boolean indicating if the current class can be used in multi-robot
+		 * SLAM operations
+		 */
+		bool is_mr_slam_class;
 };
 
 } } // end of namespaces

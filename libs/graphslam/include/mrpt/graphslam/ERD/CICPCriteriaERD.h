@@ -187,8 +187,8 @@ class CICPCriteriaERD :
 		// ////////////////////////////
 		TParams params;
 
-	private:
-		// Private functions
+	protected:
+		// protected functions
 		//////////////////////////////////////////////////////////////
 		/** \brief Initialization function to be called from the various constructors
 		 */
@@ -217,10 +217,9 @@ class CICPCriteriaERD :
 		void dumpVisibilityErrorMsg(std::string viz_flag,
 				int sleep_time=500 /* ms */);
 
-		// Private variables
+		// protected variables
 		//////////////////////////////////////////////////////////////
 
-		bool m_just_inserted_loop_closure;
 		bool m_is_using_3DScan;
 
 		mrpt::utils::TColor m_search_disk_color; //!< see Constructor for initialization

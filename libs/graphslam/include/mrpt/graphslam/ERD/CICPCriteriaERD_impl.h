@@ -33,7 +33,6 @@ void CICPCriteriaERD<GRAPH_t>::initCICPCriteriaERD() {
 	using namespace mrpt::utils;
 	this->initializeLoggers("CICPCriteriaERD");
 
-	m_just_inserted_loop_closure = false;
 	m_is_using_3DScan = false;
 
 	// start ICP constraint registration only when
@@ -139,7 +138,7 @@ template<class GRAPH_t> bool CICPCriteriaERD<GRAPH_t>::updateState(
 				this->m_graph->nodeCount()-1);
 
 		// reset the loop_closure flag and run registration
-		m_just_inserted_loop_closure = false;
+		this->m_just_inserted_lc = false;
 		registered_new_node = false;
 
 		if (m_is_using_3DScan) {
@@ -223,7 +222,7 @@ void CICPCriteriaERD<GRAPH_t>::checkRegistrationCondition2D(
 					if (absDiff(curr_nodeID, *node_it) >
 							params.LC_min_nodeid_diff) {
 						m_edge_types_to_nums["LC"]++;
-						m_just_inserted_loop_closure = true;
+						this->m_just_inserted_lc = true;
 					}
 				}
 			}
@@ -284,7 +283,7 @@ void CICPCriteriaERD<GRAPH_t>::checkRegistrationCondition3D(
 					// in case of loop closure
 					if (absDiff(curr_nodeID, *node_it) > params.LC_min_nodeid_diff) {
 						m_edge_types_to_nums["LC"]++;
-						m_just_inserted_loop_closure = true;
+						this->m_just_inserted_lc = true;
 					}
 				}
 			}
