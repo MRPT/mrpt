@@ -143,8 +143,8 @@ class CFixedIntervalsNRD:
 		// ////////////////////////////
 		TParams params;
 
-	private:
-		// Private functions
+	protected:
+		// protected functions
 		//////////////////////////////////////////////////////////////
 		/**\brief If estimated position surpasses the registration max values since
 		 * the previous registered node, register a new node in the graph.
@@ -157,7 +157,7 @@ class CFixedIntervalsNRD:
 		 */
 		void initCFixedIntervalsNRD();
 
-		// Private members
+		// protected members
 		//////////////////////////////////////////////////////////////
 		/**\brief Store the last registered NodeID .
 		 *

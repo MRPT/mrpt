@@ -11,6 +11,13 @@ using namespace std;
 //
 
 template<class GRAPH_t>
+CEdgeRegistrationDecider<GRAPH_t>::CEdgeRegistrationDecider():
+	m_just_inserted_lc(false) { }
+
+template<class GRAPH_t>
+CEdgeRegistrationDecider<GRAPH_t>::~CEdgeRegistrationDecider() { }
+
+template<class GRAPH_t>
 void CEdgeRegistrationDecider<GRAPH_t>::getDescriptiveReport(std::string* report_str) const {
 	stringstream ss("");
 	parent::getDescriptiveReport(report_str);

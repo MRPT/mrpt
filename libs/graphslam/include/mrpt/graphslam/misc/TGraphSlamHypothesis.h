@@ -19,7 +19,6 @@
 #include <iostream>
 #include <string>
 #include <sstream>
-#include <stdexcept>
 
 namespace mrpt { namespace graphslam { namespace detail {
 
@@ -119,78 +118,6 @@ struct TGraphSlamHypothesis {
 	constraint_t edge;
 
 };
-
-	// TODO - not working
-class HypothesisNotFoundException: public std::runtime_error {
- 	public:
-  	HypothesisNotFoundException(
-  			mrpt::utils::TNodeID from,
-  			mrpt::utils::TNodeID to):
-  		runtime_error("Hypothesis between set of nodes was not found") {
-
-				this->clear();
-				m_to = to;
-				m_from = from;
-
-				std::stringstream ss;
-    		ss << std::runtime_error::what() << ":\t" <<
-    			"From = " << m_from << " | " <<
-    			"To = " << m_to << std::endl;
-				m_msg = ss.str();
-				std::cout << "m_msg: " << m_msg << std::endl;
-  		}
-  	HypothesisNotFoundException(size_t id):
-  		runtime_error("Hypothesis with the given ID was not found") {
-
-  			this->clear();
-  			m_id = id;
-
-				std::stringstream ss;
-    		ss << std::runtime_error::what() << ":\t" <<
-    			"ID = " << m_id << std::endl;
-
-				// TODO - When a HypohtesisNotFoundException is thrown, and what()
-				// method is called from logFmt in grahpslam-engine catch statement, an
-				// memory error is reported
-				// `double free or corruption (!prev).`
-				// what() output is not printed if I use the logger.logFmt method  but
-				// IS printed if I used a printf call.
-				MRPT_TODO("Double free or corruption error if HypothesisNotFoundException is raised.");
-				std::cout << ss.str() << std::endl;
-				m_msg = ss.str();
-  		}
-
-  	void clear() {
-  		m_to = INVALID_NODEID;
-  		m_from = INVALID_NODEID;
-  		m_id = SIZE_MAX;
-  		m_msg.clear();
-  	}
-  	~HypothesisNotFoundException() throw() {}
-  	
-		std::string getErrorMsg() const throw() {
-  		return m_msg;
-  	}
-
-	const char* what() const throw() {
-   		m_cnvt.str("");
-    	m_cnvt << getErrorMsg();
-    	return m_cnvt.str().c_str();
-	}
-
- 	private:
-	mrpt::utils::TNodeID m_from;
-	mrpt::utils::TNodeID m_to;
-
-	/**\brief Hypothesis ID */
-	size_t m_id;
-
-	/**\brief Error message */
-	std::string m_msg;
-	static std::ostringstream m_cnvt;
-};
-
-std::ostringstream HypothesisNotFoundException::m_cnvt;
 
 } } } // end of namespaces
 

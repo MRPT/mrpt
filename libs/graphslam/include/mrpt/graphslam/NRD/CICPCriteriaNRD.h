@@ -184,8 +184,8 @@ class CICPCriteriaNRD:
 		// ////////////////////////////
 		TParams params;
 
-	private:
-		// Private functions
+	protected:
+		// protected functions
 		//////////////////////////////////////////////////////////////
 		bool checkRegistrationCondition();
 		/**\brief Specialized checkRegistrationCondtion method used solely when dealing with
@@ -203,7 +203,7 @@ class CICPCriteriaNRD:
 		/**\brief General initialization method to call from the Class Constructors*/
 		void initCICPCriteriaNRD();
 
-		// Private members
+		// protected members
 		//////////////////////////////////////////////////////////////
 
 		/**\brief Tracking the PDF of the current position of the robot with regards to

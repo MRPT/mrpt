@@ -121,7 +121,7 @@ bool CLoopCloserERD<GRAPH_t>::updateState(
 		// update the partitioned map
 		m_partitions_full_update = (
 				(this->m_graph->nodeCount() % m_lc_params.full_partition_per_nodes) == 0 ||
-				m_just_inserted_loop_closure)
+				this->m_just_inserted_lc)
 			?  true: false;
 		this->updateMapPartitions(m_partitions_full_update);
 
@@ -1247,11 +1247,11 @@ void CLoopCloserERD<GRAPH_t>::registerNewEdge(
 	//  keep track of the registered edges...
 	if (absDiff(to, from) > m_lc_params.LC_min_nodeid_diff)  {
 		m_edge_types_to_nums["LC"]++;
-		m_just_inserted_loop_closure = true;
+		this->m_just_inserted_lc = true;
 		this->logFmt(LVL_INFO, "\tLoop Closure edge!");
 	}
 	else {
-		m_just_inserted_loop_closure = false;
+		this->m_just_inserted_lc = false;
 	}
 
 	//  actuall registration

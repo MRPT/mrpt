@@ -7,8 +7,8 @@
 	 | Released under BSD License. See details in http://www.mrpt.org/License    |
 	 +---------------------------------------------------------------------------+ */
 
-#ifndef CGRAPHOPTIMIZER_H
-#define CGRAPHOPTIMIZER_H
+#ifndef CGRAPHSLAMOPTIMIZER_H
+#define CGRAPHSLAMOPTIMIZER_H
 
 #include <mrpt/obs/CActionCollection.h>
 #include <mrpt/obs/CSensoryFrame.h>
@@ -76,4 +76,4 @@ class CGraphSlamOptimizer : public mrpt::graphslam::CRegistrationDeciderOrOptimi
 
 } } } // end of namespaces
 
-#endif /* end of include guard: CGRAPHOPTIMIZER_H */
+#endif /* end of include guard: CGRAPHSLAMOPTIMIZER_H */

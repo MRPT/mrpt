@@ -20,7 +20,8 @@ CRegistrationDeciderOrOptimizer<GRAPH_t>::CRegistrationDeciderOrOptimizer():
 	m_win(NULL),
 	m_win_observer(NULL),
 	m_initialized_visuals(false),
-	m_class_name("CRegistrationDeciderOrOptimizer") { }
+	m_class_name("CRegistrationDeciderOrOptimizer"),
+	is_mr_slam_class(false) { }
 
 
 template<class GRAPH_t>
@@ -121,6 +122,11 @@ void CRegistrationDeciderOrOptimizer<GRAPH_t>::setGraphPtr(GRAPH_t* graph) {
 
 	m_graph = graph;
 	MRPT_LOG_DEBUG_STREAM << "Fetched the graph pointer successfully";
+}
+
+template<class GRAPH_t>
+bool CRegistrationDeciderOrOptimizer<GRAPH_t>::isMultiRobotSlamClass() {
+	return is_mr_slam_class;
 }
 
 #endif /* end of include guard: CREGISTRATIONDECIDEROROPTIMIZER_IMPL_H */
