@@ -12,6 +12,7 @@
 #include <mrpt/obs/CAction.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPosePDF.h>
+#include <mrpt/math/lightweight_geom_data.h>
 
 namespace mrpt
 {
@@ -23,6 +24,7 @@ namespace mrpt
 		 *
 		 *  See the tutorial on <a href="http://www.mrpt.org/Probabilistic_Motion_Models" >probabilistic motion models</a>.
 		 *
+		 * \note [New in MRPT 1.5.0] Velocity is now encoded as mrpt::math::TTwist2D as a more general version of the old (linVel, angVel).
 		 * \sa CAction
 	 	 * \ingroup mrpt_obs_grp
 		 */
@@ -56,8 +58,11 @@ namespace mrpt
 			  */
 			int32_t					encoderLeftTicks,encoderRightTicks;
 
-			bool					hasVelocities; //!< If "true" means that "velocityLin" and "velocityAng" contain valid values.
-			float					velocityLin, velocityAng; //!< The velocity of the robot, linear in meters/sec and angular in rad/sec.
+			bool  hasVelocities; //!< If "true" means that "velocityLin" and "velocityAng" contain valid values.
+			mrpt::math::TTwist2D velocityLocal; //!< If "hasVelocities"=true, the robot velocity in local (robot frame, +X forward) coordinates.
+
+			double velocityLin() const { return velocityLocal.vx; }
+			double velocityAng() const { return velocityLocal.omega; }
 
 			enum TDrawSampleMotionModel
 			{

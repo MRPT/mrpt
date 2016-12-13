@@ -37,8 +37,7 @@ CActionRobotMovement2D::CActionRobotMovement2D() :
 	encoderLeftTicks(0),
 	encoderRightTicks(0),
 	hasVelocities(false),
-	velocityLin(0),
-	velocityAng(0),
+	velocityLocal(.0,.0,.0),
 	motionModelConfiguration(),
 	m_fastDrawGauss_Z(),
 	m_fastDrawGauss_M()
@@ -58,8 +57,7 @@ CActionRobotMovement2D::CActionRobotMovement2D(const CActionRobotMovement2D &o) 
 	encoderLeftTicks(o.encoderLeftTicks),
 	encoderRightTicks(o.encoderRightTicks),
 	hasVelocities(o.hasVelocities),
-	velocityLin(o.velocityLin),
-	velocityAng(o.velocityAng),
+	velocityLocal(o.velocityLocal),
 	motionModelConfiguration(o.motionModelConfiguration),
 	m_fastDrawGauss_Z(),
 	m_fastDrawGauss_M()
@@ -72,6 +70,7 @@ CActionRobotMovement2D::CActionRobotMovement2D(const CActionRobotMovement2D &o) 
   ---------------------------------------------------------------*/
 CActionRobotMovement2D & CActionRobotMovement2D::operator =(const CActionRobotMovement2D &o)
 {
+	MRPT_TODO("rest of members copy");
 	if (this==&o) return *this;
 	poseChange = o.poseChange;
 	poseChange.make_unique();
