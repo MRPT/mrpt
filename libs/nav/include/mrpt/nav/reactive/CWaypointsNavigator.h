@@ -48,6 +48,11 @@ namespace mrpt
 		virtual void getWaypointNavStatus(TWaypointStatusSequence & out_nav_status) const;
 		/** @}*/
 
+		/** Returns `true` if, according to the information gathered at the last navigation step, 
+		* there is a free path to the given point; `false` otherwise: if way is blocked or there is missing information, 
+		* the point is out of range for the existing PTGs, etc. */
+		bool isRelativePointReachable(const mrpt::math::TPoint2D &wp_local_wrt_robot) const;
+
 	protected:
 		TWaypointStatusSequence  m_waypoint_nav_status; //!< The latest waypoints navigation command and the up-to-date control status.
 		mrpt::synch::CCriticalSectionRecursive m_nav_waypoints_cs;

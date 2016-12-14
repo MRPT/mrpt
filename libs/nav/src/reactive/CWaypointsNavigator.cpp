@@ -204,3 +204,8 @@ void CWaypointsNavigator::onStartNewNavigation()
 {
 
 }
+
+bool CWaypointsNavigator::isRelativePointReachable(const mrpt::math::TPoint2D &wp_local_wrt_robot) const
+{
+	return impl_waypoint_is_reachable(wp_local_wrt_robot);
+}
