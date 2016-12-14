@@ -12,6 +12,7 @@
 #include <mrpt/obs/CAction.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPosePDF.h>
+#include <mrpt/utils/clone_ptr.h>
 #include <mrpt/math/lightweight_geom_data.h>
 
 namespace mrpt
@@ -43,11 +44,8 @@ namespace mrpt
 			};
 
 			CActionRobotMovement2D(); //!< Constructor
-			CActionRobotMovement2D(const CActionRobotMovement2D &o);  //!< Copy constructor
-			CActionRobotMovement2D & operator =(const CActionRobotMovement2D &o); //!< Copy operator
-			~CActionRobotMovement2D();  //!< Destructor
 
-			mrpt::poses::CPosePDFPtr				poseChange; //!< The 2D pose change probabilistic estimation.
+			mrpt::utils::clone_ptr_ptr<mrpt::poses::CPosePDFPtr> poseChange; //!< The 2D pose change probabilistic estimation.
 			/** This is the raw odometry reading, and only is used when "estimationMethod" is "TEstimationMethod::emOdometry" */
 			mrpt::poses::CPose2D					rawOdometryIncrementReading;
 			TEstimationMethod		estimationMethod; //!< This fields indicates the way in which this estimation was obtained.
