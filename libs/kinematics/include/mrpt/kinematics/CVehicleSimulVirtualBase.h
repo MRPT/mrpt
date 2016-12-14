@@ -39,9 +39,10 @@ namespace kinematics
 		void simulateOneTimeStep(const double dt);
 
 		/** Returns the instantaneous, ground truth pose in world coordinates */
-		const mrpt::math::TPose2D  & getCurrentGTPose() const { return m_pose; }
+		const mrpt::math::TPose2D  & getCurrentGTPose() const { return m_GT_pose; }
 		/** Brute-force move robot to target coordinates ("teleport") */
 		void setCurrentGTPose(const mrpt::math::TPose2D  &pose);
+
 
 		/** Returns the current pose according to (noisy) odometry \sa setOdometryErrors */
 		const mrpt::math::TPose2D  & getCurrentOdometricPose() const { return m_odometry; }
@@ -50,9 +51,15 @@ namespace kinematics
 		void setCurrentOdometricPose(const T &pose) { m_odometry = mrpt::math::TPose2D(pose); }
 
 		/** Returns the instantaneous, ground truth velocity vector (vx,vy,omega) in world coordinates */
-		const mrpt::math::TTwist2D & getCurrentGTVel() const { return m_vel; }
+		const mrpt::math::TTwist2D & getCurrentGTVel() const { return m_GT_vel; }
 		/** Returns the instantaneous, ground truth velocity vector (vx,vy,omega) in the robot local frame */
 		mrpt::math::TTwist2D getCurrentGTVelLocal() const;
+
+		/** Returns the instantaneous, odometric velocity vector (vx,vy,omega) in world coordinates */
+		const mrpt::math::TTwist2D & getCurrentOdometricVel() const { return m_odometric_vel; }
+		/** Returns the instantaneous, odometric velocity vector (vx,vy,omega) in the robot local frame */
+		mrpt::math::TTwist2D getCurrentOdometricVelLocal() const;
+
 
 		/** Get the current simulation time */
 		double getTime() const { return m_time;}
@@ -92,8 +99,9 @@ namespace kinematics
 		/** @name State vector
 		 *  @{ */
 		double                m_time;  //!< simulation running time
-		mrpt::math::TPose2D   m_pose;  //!< ground truth pose in world coordinates.
-		mrpt::math::TTwist2D  m_vel;   //!< Velocity in (x,y,omega)
+		mrpt::math::TPose2D   m_GT_pose;  //!< ground truth pose in world coordinates.
+		mrpt::math::TTwist2D  m_GT_vel;   //!< Velocity in (x,y,omega)
+		mrpt::math::TTwist2D  m_odometric_vel;   //!< Velocity in (x,y,omega)
 		mrpt::math::TPose2D   m_odometry;
 		/** @} */
 		double m_firmware_control_period;  //!< The period at which the low-level controller updates velocities (Default: 0.5 ms)
@@ -103,7 +111,7 @@ namespace kinematics
 		double m_Ay_err_bias, m_Ay_err_std;
 		double m_Aphi_err_bias, m_Aphi_err_std;
 
-		virtual void internal_simulStep(const double dt) = 0;
+		virtual void internal_simulControlStep(const double dt) = 0;
 		virtual void internal_clear() =0; //!< Resets all pending cmds
 	private:
 

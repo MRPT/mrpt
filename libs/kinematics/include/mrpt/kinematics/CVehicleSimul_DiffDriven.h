@@ -70,7 +70,7 @@ namespace kinematics
 		double cTAU;  //!< The time-constants for the first order low-pass filter for the velocities changes.
 		double cDELAY; //!< The delay constant for the velocities changes
 
-		void internal_simulStep(const double dt) MRPT_OVERRIDE;
+		void internal_simulControlStep(const double dt) MRPT_OVERRIDE;
 		void internal_clear() MRPT_OVERRIDE;
 	};
 
