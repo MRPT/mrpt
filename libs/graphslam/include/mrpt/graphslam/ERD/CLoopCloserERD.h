@@ -644,28 +644,6 @@ class CLoopCloserERD:
 		 */
 		typename mrpt::graphslam::TUncertaintyPath<GRAPH_t>*
 			queryOptimalPath(const mrpt::utils::TNodeID node) const;
-
-		// protected variables
-		//////////////////////////////////////////////////////////////
-		/**\brief Instance responsible for partitioning the map */
-		mrpt::slam::CIncrementalMapPartitioner m_partitioner;
-
-		bool m_visualize_curr_node_covariance;
-		const mrpt::utils::TColor m_curr_node_covariance_color;
-		double m_offset_y_curr_node_covariance;
-		int m_text_index_curr_node_covariance;
-
-		/**\brief Keep track of the registered edge types.
-		 *
-		 * Handy for displaying them in the Visualization window.
-		 */
-		std::map<std::string, int> m_edge_types_to_nums;
- 		/**\brief Keep track of the total number of registered nodes since the last
- 		 * time class method was called */
-		size_t m_last_total_num_of_nodes;
-		/**\brief Surpass this to start adding edges */
-		int m_threshold_to_start;
-
 		/**\brief Split an existing partition to Groups
 		 *
 		 *	 Have two groups A, B.
@@ -690,26 +668,42 @@ class CLoopCloserERD:
 				vector_uint* groupB,
 				int max_nodes_in_group=5);
 
+		// protected variables
+		//////////////////////////////////////////////////////////////
+		/**\brief Instance responsible for partitioning the map */
+		mrpt::slam::CIncrementalMapPartitioner m_partitioner;
 
+		bool m_visualize_curr_node_covariance;
+		const mrpt::utils::TColor m_curr_node_covariance_color;
+		double m_offset_y_curr_node_covariance;
+		int m_text_index_curr_node_covariance;
+
+		/**\brief Keep track of the registered edge types.
+		 *
+		 * Handy for displaying them in the Visualization window.
+		 */
+		std::map<std::string, int> m_edge_types_to_nums;
+ 		/**\brief Keep track of the total number of registered nodes since the last
+ 		 * time class method was called */
+		size_t m_last_total_num_nodes;
+		/**\brief Surpass this to start adding edges */
+		int m_threshold_to_start;
 		/**\brief Map for keeping track of the observation recorded at each graph
 		 * position
 		 */
 		nodes_to_scans2D_t  m_nodes_to_laser_scans2D;
 		/**\brief Keep the last laser scan for visualization purposes */
 		mrpt::obs::CObservation2DRangeScanPtr m_last_laser_scan2D;
-
 		/**\brief Previous partitions vector */
 		partitions_t m_last_partitions;
 		/**\brief Current partitions vector */
 		partitions_t m_curr_partitions;
 		/**\brief Indicate whether the partitions have been updated recently */
 		bool m_partitions_full_update;
-
 		/**\brief Keep track of the evaluated partitions so they are not checked
 		 * again if nothing changed in them.
 		 */
 		std::map<int, vector_uint> m_partitionID_to_prev_nodes_list;
-
 		/**\brief Map that stores the lowest uncertainty path from one Node to
 		 * another Node.
 		 */

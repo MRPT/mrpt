@@ -582,6 +582,7 @@ bool CGraphSlamEngine<GRAPH_t>::execGraphSlamStep(
 				}
 			}
 		}
+
 		// update the graph visualization
 
 		if (m_enable_curr_pos_viewport) {
