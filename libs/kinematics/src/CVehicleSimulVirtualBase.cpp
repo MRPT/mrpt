@@ -14,7 +14,7 @@
 using namespace mrpt::kinematics;
 
 CVehicleSimulVirtualBase::CVehicleSimulVirtualBase() :
-m_firmware_control_period(500e-6)
+m_firmware_control_period(500e-6), m_use_odo_error(false)
 {
 }
 
