@@ -26,11 +26,25 @@ namespace mrpt
 				CStream		*m_stream;
 			public:
 				inline ObjectReadFromStream(mrpt::utils::CStream *stream) : m_stream(stream) {  }
-
 				// T can be CSerializablePtr, CSerializable, or any other class implementing ">>"
 				template <typename T> 
 				inline void operator()(T &obj) {
 					(*m_stream) >> obj;
+				}
+			};
+
+			template <typename ptr_t>
+			struct ObjectReadFromStreamToPtrs
+			{
+			private:
+				CStream *m_stream;
+			public:
+				inline ObjectReadFromStreamToPtrs(mrpt::utils::CStream *stream) : m_stream(stream) {  }
+				template <typename ptr2ptr_t>
+				inline void operator()(ptr2ptr_t &obj) {
+					ptr_t p;
+					(*m_stream) >> p;
+					obj = p;
 				}
 			};
 
