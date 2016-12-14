@@ -44,9 +44,6 @@ CPosePDFParticles::CPosePDFParticles( size_t M )
 	resetDeterministic( nullPose );
 }
 
-/*---------------------------------------------------------------
-						operator =
-  ---------------------------------------------------------------*/
 void  CPosePDFParticles::copyFrom(const CPosePDF &o)
 {
 	MRPT_START

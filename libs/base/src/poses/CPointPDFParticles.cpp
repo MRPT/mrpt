@@ -182,10 +182,6 @@ void  CPointPDFParticles::readFromStream(mrpt::utils::CStream &in,int version)
 	};
 }
 
-
-/*---------------------------------------------------------------
-						operator =
-  ---------------------------------------------------------------*/
 void  CPointPDFParticles::copyFrom(const CPointPDF &o)
 {
 	if (this == &o) return;		// It may be used sometimes

@@ -44,13 +44,8 @@ CPosePDFGrid::CPosePDFGrid(
 	uniformDistribution();
 }
 
-/*---------------------------------------------------------------
-						operator =
-  ---------------------------------------------------------------*/
 void  CPosePDFGrid::copyFrom(const CPosePDF &o)
 {
-//	int		i;
-
 	if (this == &o) return;		// It may be used sometimes
 
 	THROW_EXCEPTION("Not implemented yet!");
