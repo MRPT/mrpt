@@ -130,7 +130,7 @@ struct MapGetAs3DObject
 
 	template <typename PTR>
 	inline void operator()(PTR &ptr) {
-		if (ptr.present()) ptr->getAs3DObject(obj_gl);
+		if (ptr) ptr->getAs3DObject(obj_gl);
 	}
 }; // end of MapGetAs3DObject
 
@@ -140,7 +140,7 @@ struct MapAuxPFCleanup
 
 	template <typename PTR>
 	inline void operator()(PTR &ptr) {
-		if (ptr.present()) ptr->auxParticleFilterCleanUp();
+		if (ptr) ptr->auxParticleFilterCleanUp();
 	}
 }; // end of MapAuxPFCleanup
 
@@ -156,7 +156,7 @@ struct MapIsEmpty
 
 	template <typename PTR>
 	inline void operator()(PTR &ptr) {
-		if (ptr.present())
+		if (ptr)
 			is_empty = is_empty && ptr->isEmpty();
 	}
 }; // end of MapIsEmpty
@@ -185,27 +185,6 @@ CMultiMetricMap::CMultiMetricMap(const TSetOfMetricMapInitializers *initializers
 	MRPT_START
 	setListOfMaps(initializers);
 	MRPT_END
-}
-
-// Copy ctor
-CMultiMetricMap::CMultiMetricMap(const mrpt::maps::CMultiMetricMap &other ) :
-	maps(),
-	m_pointsMaps(maps),
-	m_gridMaps(maps),
-	m_octoMaps(maps),
-	m_colourOctoMaps(maps),
-	m_gasGridMaps(maps),
-	m_wifiGridMaps(maps),
-	m_heightMaps(maps),
-	m_heightMRFMaps(maps),
-	m_reflectivityMaps(maps),
-	m_colourPointsMap(maps),
-	m_weightedPointsMap(maps),
-	m_landmarksMap(maps),
-	m_beaconMap(maps),
-	m_ID(0)
-{
-	*this = other;	// Call the "=" operator
 }
 
 /*---------------------------------------------------------------
@@ -248,40 +227,11 @@ void  CMultiMetricMap::internal_clear()
 	MapExecutor::run(*this, op);
 }
 
-/*---------------------------------------------------------------
-		Copy constructor
-  ---------------------------------------------------------------*/
-mrpt::maps::CMultiMetricMap & CMultiMetricMap::operator = ( const CMultiMetricMap &other )
-{
-	MRPT_START
-
-	if (this == &other) return *this;			// Who knows! :-)
-
-	m_ID	  = other.m_ID;
-
-	// Copy all maps and then make_unique() to really duplicate the objects:
-	this->maps = other.maps;
-	// invoke make_unique() operation on each smart pointer:
-	ObjectMakeUnique op;
-	MapExecutor::run(*this, op);
-
-	return *this;
-	MRPT_END
-}
-
-/*---------------------------------------------------------------
-		Destructor
-  ---------------------------------------------------------------*/
-CMultiMetricMap::~CMultiMetricMap()
-{
-	deleteAllMaps();
-}
-
 // Deletes all maps and clears the internal lists of maps (with clear_unique(), so user copies remain alive)
 void  CMultiMetricMap::deleteAllMaps()
 {
 	// Clear smart pointers:
-	ObjectClearUnique op_clear_unique;
+	ObjectClearUnique<mrpt::utils::poly_ptr_ptr<mrpt::maps::CMetricMapPtr> > op_clear_unique;
 	MapExecutor::run(*this, op_clear_unique);
 
 	// Clear list:
@@ -326,7 +276,7 @@ void  CMultiMetricMap::readFromStream(mrpt::utils::CStream &in, int version)
 			uint32_t  n;
 			in >> n;
 			this->maps.resize(n);
-			for_each( maps.begin(), maps.end(), ObjectReadFromStream(&in) );
+			for_each( maps.begin(), maps.end(), ObjectReadFromStreamToPtrs<mrpt::maps::CMetricMapPtr>(&in) );
 
 		} break;
 	default:
@@ -488,5 +438,5 @@ CSimplePointsMap * CMultiMetricMap::getAsSimplePointsMap()
 mrpt::maps::CMetricMapPtr CMultiMetricMap::getMapByIndex(size_t idx) const
 {
 	ASSERT_BELOW_(idx,maps.size())
-	return maps[idx];
+	return maps[idx].get_ptr();
 }

@@ -26,6 +26,7 @@
 #include <mrpt/utils/CSerializable.h>
 #include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/utils/TEnumType.h>
+#include <mrpt/utils/poly_ptr_ptr.h>
 #include <mrpt/obs/obs_frwds.h>
 
 #include <mrpt/slam/link_pragmas.h>
@@ -139,7 +140,7 @@ namespace maps
 	public:
 		/** @name Access to internal list of maps: direct list, iterators, utility methods and proxies
 		    @{ */
-		typedef std::deque<mrpt::maps::CMetricMapPtr> TListMaps;
+		typedef std::deque< mrpt::utils::poly_ptr_ptr<mrpt::maps::CMetricMapPtr> > TListMaps;
 
 		/** The list of MRPT metric maps in this object. Use dynamic_cast or smart pointer-based downcast to access maps by their actual type.
 		  * You can directly manipulate this list. Helper methods to initialize it are described in the docs of CMultiMetricMap 
@@ -197,7 +198,7 @@ namespace maps
 				size_t cnt=0;
 				for(typename CONTAINER::const_iterator it=m_source.begin();it!=m_source.end();++it)
 					if ( dynamic_cast<const_ptr_t>(it->pointer()) ) 
-						if (cnt++ == index) { return SELECTED_CLASS_PTR(*it); }
+						if (cnt++ == index) { return SELECTED_CLASS_PTR(it->get_ptr()); }
 				throw std::out_of_range("Index is out of range");
 			}
 			template <typename ELEMENT>
@@ -265,9 +266,6 @@ namespace maps
 		 *  If initializers is NULL, no internal map will be created.
 		 */
 		CMultiMetricMap(const mrpt::maps::TSetOfMetricMapInitializers	*initializers = NULL);
-		CMultiMetricMap(const mrpt::maps::CMultiMetricMap &other );  //!< Copy constructor
-		mrpt::maps::CMultiMetricMap &operator = ( const mrpt::maps::CMultiMetricMap &other ); //!< Copy operator from "other" object.
-		virtual ~CMultiMetricMap( ); //!< Destructor.
 
 		/** Sets the list of internal map according to the passed list of map initializers (Current maps' content will be deleted!) */
 		void  setListOfMaps( const mrpt::maps::TSetOfMetricMapInitializers	*initializers );
