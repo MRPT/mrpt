@@ -169,11 +169,6 @@ void  CPose3DPDFSOG::readFromStream(mrpt::utils::CStream &in,int version)
 	};
 }
 
-
-
-/*---------------------------------------------------------------
-						operator =
-  ---------------------------------------------------------------*/
 void  CPose3DPDFSOG::copyFrom(const CPose3DPDF &o)
 {
 	MRPT_START

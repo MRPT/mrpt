@@ -127,10 +127,6 @@ void  CPose3DPDFGaussianInf::readFromStream(mrpt::utils::CStream &in,int version
 	};
 }
 
-
-/*---------------------------------------------------------------
-						operator =
-  ---------------------------------------------------------------*/
 void  CPose3DPDFGaussianInf::copyFrom(const CPose3DPDF &o)
 {
 	if (this == &o) return;		// It may be used sometimes
@@ -150,9 +146,6 @@ void  CPose3DPDFGaussianInf::copyFrom(const CPose3DPDF &o)
 	}
 }
 
-/*---------------------------------------------------------------
-						operator =
-  ---------------------------------------------------------------*/
 void  CPose3DPDFGaussianInf::copyFrom(const CPosePDF &o)
 {
 	if (IS_CLASS(&o, CPosePDFGaussianInf))

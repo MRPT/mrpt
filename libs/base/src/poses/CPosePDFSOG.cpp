@@ -193,11 +193,6 @@ void  CPosePDFSOG::readFromStream(mrpt::utils::CStream &in,int version)
 	};
 }
 
-
-
-/*---------------------------------------------------------------
-						operator =
-  ---------------------------------------------------------------*/
 void  CPosePDFSOG::copyFrom(const CPosePDF &o)
 {
 	MRPT_START

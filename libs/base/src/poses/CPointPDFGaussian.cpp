@@ -113,9 +113,6 @@ void  CPointPDFGaussian::readFromStream(mrpt::utils::CStream &in,int version)
 }
 
 
-/*---------------------------------------------------------------
-						operator =
-  ---------------------------------------------------------------*/
 void  CPointPDFGaussian::copyFrom(const CPointPDF &o)
 {
 	if (this == &o) return;		// It may be used sometimes

@@ -40,9 +40,6 @@ CPose3DPDFParticles::CPose3DPDFParticles( size_t M )
 	resetDeterministic( nullPose );
 }
 
-/*---------------------------------------------------------------
-						operator =
-  ---------------------------------------------------------------*/
 void  CPose3DPDFParticles::copyFrom(const CPose3DPDF &o)
 {
 	MRPT_START

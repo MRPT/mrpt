@@ -278,11 +278,6 @@ void  CPose3DPDFGaussian::readFromStream(mrpt::utils::CStream &in,int version)
 	};
 }
 
-
-
-/*---------------------------------------------------------------
-						operator =
-  ---------------------------------------------------------------*/
 void  CPose3DPDFGaussian::copyFrom(const CPose3DPDF &o)
 {
 	if (this == &o) return;		// It may be used sometimes
@@ -291,9 +286,6 @@ void  CPose3DPDFGaussian::copyFrom(const CPose3DPDF &o)
 	o.getCovarianceAndMean(cov,mean);
 }
 
-/*---------------------------------------------------------------
-						operator =
-  ---------------------------------------------------------------*/
 void  CPose3DPDFGaussian::copyFrom(const CPosePDF &o)
 {
 	// Convert to gaussian pdf:

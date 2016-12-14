@@ -42,38 +42,6 @@ CActionCollection::CActionCollection(CAction &a ) : m_actions()
 }
 
 /*---------------------------------------------------------------
-						Copy constructor
-  ---------------------------------------------------------------*/
-CActionCollection::CActionCollection(const CActionCollection &o ) : CSerializable(), m_actions()
-{
-	m_actions = o.m_actions;
-	for_each(m_actions.begin(),m_actions.end(), ObjectMakeUnique() );
-}
-
-/*---------------------------------------------------------------
-						Copy operator
-  ---------------------------------------------------------------*/
-CActionCollection& CActionCollection::operator = (const CActionCollection &o )
-{
-	if (this==&o) return *this;
-
-	m_actions = o.m_actions;
-	for_each(m_actions.begin(),m_actions.end(), ObjectMakeUnique() );
-
-	return *this;
-}
-
-
-/*---------------------------------------------------------------
-						Destructor
-  ---------------------------------------------------------------*/
-CActionCollection::~CActionCollection()
-{
-	clear();
-}
-
-
-/*---------------------------------------------------------------
   Implements the writing to a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
 void  CActionCollection::writeToStream(mrpt::utils::CStream &out, int *version) const
@@ -106,7 +74,7 @@ void  CActionCollection::readFromStream(mrpt::utils::CStream &in, int version)
 
 			in >> n;
 			m_actions.resize(n);
-			for_each( begin(),end(), ObjectReadFromStream(&in) );
+			for_each( begin(),end(), ObjectReadFromStreamToPtrs<CActionPtr>(&in) );
 
 		} break;
 	default:
@@ -130,7 +98,7 @@ CActionPtr CActionCollection::get(size_t index)
 	if (index>=m_actions.size())
 		THROW_EXCEPTION("Index out of bounds");
 
-	return m_actions[index];
+	return m_actions[index].get_ptr();
 }
 
 
@@ -164,7 +132,7 @@ CActionRobotMovement2DPtr  CActionCollection::getBestMovementEstimation() const
 	{
 		if ((*it)->GetRuntimeClass()->derivedFrom( CLASS_ID( CActionRobotMovement2D ) ) )
 		{
-			CActionRobotMovement2DPtr temp = CActionRobotMovement2DPtr( *it );
+			CActionRobotMovement2DPtr temp = CActionRobotMovement2DPtr( it->get_ptr() );
 
 			if (temp->estimationMethod == CActionRobotMovement2D::emScan2DMatching )
 			{
@@ -208,7 +176,7 @@ CActionRobotMovement2DPtr CActionCollection::getMovementEstimationByType( CActio
 	{
 		if ((*it)->GetRuntimeClass()->derivedFrom( CLASS_ID( CActionRobotMovement2D ) ) )
 		{
-			CActionRobotMovement2DPtr temp = CActionRobotMovement2DPtr( *it );
+			CActionRobotMovement2DPtr temp = CActionRobotMovement2DPtr( it->get_ptr() );
 
 			// Is it of the required type?
 			if ( temp->estimationMethod == method )
