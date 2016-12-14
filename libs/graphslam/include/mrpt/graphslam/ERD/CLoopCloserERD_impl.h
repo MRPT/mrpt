@@ -30,8 +30,8 @@ void CLoopCloserERD<GRAPH_t>::initCLoopCloserERD() {
 	m_visualize_curr_node_covariance = false;
 
 	// start the edge registration procedure only when this num is surpassed
-	// nodeCount > m_last_total_num_of_nodes
-	m_threshold_to_start = m_last_total_num_of_nodes = 0;
+	// nodeCount > m_last_total_num_nodes
+	m_threshold_to_start = m_last_total_num_nodes = 0;
 
 	m_edge_types_to_nums["ICP2D"] = 0;
 	m_edge_types_to_nums["LC"] = 0;
@@ -81,16 +81,16 @@ bool CLoopCloserERD<GRAPH_t>::updateState(
 	bool registered_new_node = false;
 
 	// was a new node registered?
-	if (m_last_total_num_of_nodes < this->m_graph->nodeCount()) {
+	if (m_last_total_num_nodes < this->m_graph->nodeCount()) {
 		registered_new_node = true;
-		m_last_total_num_of_nodes = this->m_graph->nodeCount();
+		m_last_total_num_nodes = this->m_graph->nodeCount();
 		MRPT_LOG_DEBUG_STREAM << "New node has been registered!";
 	}
 
 	// update last laser scan to use
 	if (observation.present()) { // observation-only rawlog format
 		if (IS_CLASS(observation, CObservation2DRangeScan)) {
-			m_last_laser_scan2D = 
+			m_last_laser_scan2D =
 				static_cast<mrpt::obs::CObservation2DRangeScanPtr>(observation);
 
 		}
@@ -240,8 +240,8 @@ bool CLoopCloserERD<GRAPH_t>::getICPEdge(
 	if (!from_laser_scan.present() || !to_laser_scan.present()) {
 		MRPT_LOG_DEBUG_STREAM(
 			"Either node #" << from <<
-			"or node #" << to <<
-			"doesn't contain a valid LaserScan. Ignoring this...");
+			" or node #" << to <<
+			" doesn't contain a valid LaserScan. Ignoring this...";
 		return false;
 	}
 
@@ -1360,6 +1360,7 @@ void CLoopCloserERD<GRAPH_t>::updateMapPartitionsVisualization() {
 
 	int partitionID = 0;
 	bool partition_contains_last_node = false;
+	bool found_last_node = false; // last node must exist in one partition at all cost TODO
 	for (partitions_t::const_iterator p_it = m_curr_partitions.begin();
 			p_it != m_curr_partitions.end(); ++p_it, ++partitionID) {
 
@@ -1367,8 +1368,9 @@ void CLoopCloserERD<GRAPH_t>::updateMapPartitionsVisualization() {
 		vector_uint nodes_list = *p_it;
 
 		// finding the partition in which the last node is in
-		if (std::find(nodes_list.begin(), nodes_list.end(), this->m_graph->nodeCount()-1)
-				!= nodes_list.end()) {
+		if (std::find(nodes_list.begin(),
+					nodes_list.end(),
+					this->m_graph->nodeCount()-1) != nodes_list.end()) {
 			partition_contains_last_node = true;
 		}
 		else {
@@ -1382,7 +1384,7 @@ void CLoopCloserERD<GRAPH_t>::updateMapPartitionsVisualization() {
 		CRenderizablePtr obj = map_partitions_obj->getByName(partition_obj_name);
 		CSetOfObjectsPtr curr_partition_obj;
 		if (obj) {
-			MRPT_LOG_DEBUG_STREAM << 
+			MRPT_LOG_DEBUG_STREAM <<
 					"\tFetching CSetOfObjects partition object for partition #" <<
 					partitionID;
 			curr_partition_obj = static_cast<CSetOfObjectsPtr>(obj);
@@ -1875,7 +1877,8 @@ void CLoopCloserERD<GRAPH_t>::updateMapPartitions(bool full_update /* = false */
 		// just use the last node-laser scan pair
 		nodes_to_scans.insert(
 				make_pair(
-					this->m_graph->root, m_nodes_to_laser_scans2D.at(this->m_graph->nodeCount()-1)));
+					this->m_graph->nodeCount()-1,
+					m_nodes_to_laser_scans2D.at(this->m_graph->nodeCount()-1)));
 	}
 
 	// for each one of the above nodes - add its position and correspoding
@@ -1892,6 +1895,7 @@ void CLoopCloserERD<GRAPH_t>::updateMapPartitions(bool full_update /* = false */
 			continue;
 		}
 
+		// pose
 		pose_t curr_pose = search->second;
 		mrpt::poses::CPosePDFPtr posePDF(new constraint_t(curr_pose));
 
@@ -1900,6 +1904,10 @@ void CLoopCloserERD<GRAPH_t>::updateMapPartitions(bool full_update /* = false */
 		sf->insert(it->second);
 
 		m_partitioner.addMapFrame(sf, posePDF);
+
+		//MRPT_LOG_DEBUG_STREAM << "nodeID: " << it->first << endl
+			//<< "pose: " << curr_pose << endl;
+		//mrpt::system::pause();
 	}
 
 	// update the last partitions list
@@ -1982,7 +1990,7 @@ CLoopCloserERD<GRAPH_t>::TLoopClosureParams::TLoopClosureParams():
 	balloon_curr_color(102, 0, 102),
 	connecting_lines_color(balloon_std_color),
 	has_read_config(false)
-{ 
+{
 }
 
 template<class GRAPH_t>
