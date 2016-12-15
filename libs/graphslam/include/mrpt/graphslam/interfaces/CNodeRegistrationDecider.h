@@ -101,6 +101,13 @@ class CNodeRegistrationDecider : public mrpt::graphslam::CRegistrationDeciderOrO
 		 */
 		mrpt::utils::TNodeID m_prev_registered_node;
 
+		/**\brief Initial information matrix for paths
+		 *
+		 * Large values for this indicate that I am sure of the corresponding
+		 * (initial) pose
+		 */
+		mrpt::math::CMatrixDouble33  m_init_inf_mat;
+
 };
 
 } } } // end of namespaces
