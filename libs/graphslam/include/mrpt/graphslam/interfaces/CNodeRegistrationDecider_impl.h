@@ -8,6 +8,14 @@ using namespace std;
 
 // Implementation of classes defined in the CNodeRegistrationDecider class
 // template.
+//
+template<class GRAPH_t>
+CNodeRegistrationDecider<GRAPH_t>::CNodeRegistrationDecider() {
+}
+
+template<class GRAPH_t>
+CNodeRegistrationDecider<GRAPH_t>::~CNodeRegistrationDecider() {
+}
 
 template<class GRAPH_t>
 void CNodeRegistrationDecider<GRAPH_t>::getDescriptiveReport(std::string* report_str) const {

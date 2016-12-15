@@ -24,7 +24,7 @@ void CFixedIntervalsNRD<GRAPH_t>::initCFixedIntervalsNRD() {
 	using namespace mrpt::utils;
 	this->initializeLoggers("CFixedIntervalsNRD");
 
-	m_prev_registered_node = INVALID_NODEID;
+	this->m_prev_registered_node = INVALID_NODEID;
 
 	// I am sure of the initial position, set to identity matrix
 	double tmp[] = {
@@ -34,7 +34,6 @@ void CFixedIntervalsNRD<GRAPH_t>::initCFixedIntervalsNRD() {
 	InfMat init_path_uncertainty(tmp);
 	m_since_prev_node_PDF.cov_inv = init_path_uncertainty;
 	m_since_prev_node_PDF.mean = pose_t();
-
 
 	this->logFmt(LVL_DEBUG, "IntervalsNRD: Initialized class object");
 }
@@ -60,11 +59,10 @@ bool CFixedIntervalsNRD<GRAPH_t>::updateState(
 	using namespace mrpt::math;
 	using namespace mrpt::utils;
 
-	//cout << "in updateState..." << endl;
 	// don't use the measurements in this implementation
 	MRPT_UNUSED_PARAM(observations);
 
-	if (observation.present()) { // FORMAT #2
+	if (observation.present()) { // FORMAT #2 - observation-only format
 		m_observation_only_rawlog = true;
 
 		if (IS_CLASS(observation, CObservationOdometry)) {
@@ -81,8 +79,8 @@ bool CFixedIntervalsNRD<GRAPH_t>::updateState(
 			m_since_prev_node_PDF.mean =
 				m_curr_odometry_only_pose - m_last_odometry_only_pose;
 		}
-	} // IF FORMAT #2 - observation-only
-	else { // FORMAT #1
+	}
+	else { // FORMAT #1 - action-observation format
 		m_observation_only_rawlog = false;
 
 		if (action->getBestMovementEstimation() ) {
@@ -98,8 +96,10 @@ bool CFixedIntervalsNRD<GRAPH_t>::updateState(
 		}
 	} // ELSE - FORMAT #1
 
-	m_curr_estimated_pose = this->m_graph->nodes[m_prev_registered_node] +
-		m_since_prev_node_PDF.getMeanVal();
+	if (m_prev_registered_node != INVALID_NODEID) {
+		m_curr_estimated_pose = this->m_graph->nodes.at(m_prev_registered_node);
+	}
+	m_curr_estimated_pose += m_since_prev_node_PDF.getMeanVal();
 
 	bool registered = this->checkRegistrationCondition();
 
@@ -123,9 +123,9 @@ bool CFixedIntervalsNRD<GRAPH_t>::checkRegistrationCondition() {
 
 	bool registered = false;
 
-	//cout << "in checkRegistrationCondition..." << endl;
-
-	pose_t last_pose_inserted = this->m_graph->nodes[m_prev_registered_node];
+	// check that a node has already been registered - if not default to (0,0,0)
+	pose_t last_pose_inserted = m_prev_registered_node != INVALID_NODEID? 
+		this->m_graph->nodes.at(m_prev_registered_node): pose_t();
 
 	// odometry criterion
 	if ( (last_pose_inserted.distanceTo(m_curr_estimated_pose)
@@ -134,8 +134,8 @@ bool CFixedIntervalsNRD<GRAPH_t>::checkRegistrationCondition() {
 			 > params.registration_max_angle ) ) {
 
 		// register the new node
-		registered = true;
 		this->registerNewNode();
+		registered = true;
 	}
 
 	return registered;
@@ -149,10 +149,18 @@ void CFixedIntervalsNRD<GRAPH_t>::registerNewNode() {
 	using namespace mrpt::utils;
 	using namespace std;
 
+	// register the initial node if it doesn't exist.
+	if (m_prev_registered_node == INVALID_NODEID) {
+		MRPT_LOG_WARN_STREAM << "Registering root node..." << endl;
+		//mrpt::system::pause();
+		this->m_graph->nodes[this->m_graph->root] = pose_t();
+		m_prev_registered_node = this->m_graph->root;
+	}
+
 	mrpt::utils::TNodeID from = m_prev_registered_node;
 	mrpt::utils::TNodeID to = ++m_prev_registered_node;
 
-	this->m_graph->nodes[to] = this->m_graph->nodes[from] + m_since_prev_node_PDF.getMeanVal();
+	this->m_graph->nodes[to] = this->m_graph->nodes.at(from) + m_since_prev_node_PDF.getMeanVal();
 	this->m_graph->insertEdgeAtEnd(from, to, m_since_prev_node_PDF);
 
 	MRPT_LOG_DEBUG_STREAM("Registered new node:" << endl <<
@@ -166,8 +174,6 @@ void CFixedIntervalsNRD<GRAPH_t>::setGraphPtr(GRAPH_t* graph) {
 	// call the parent method first
 	parent::setGraphPtr(graph);
 
-	// get the last registrered node + corresponding pose - root
-	m_prev_registered_node = this->m_graph->root;
 }
 
 template<class GRAPH_t>

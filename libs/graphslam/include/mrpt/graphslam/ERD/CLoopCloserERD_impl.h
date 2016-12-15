@@ -29,9 +29,8 @@ void CLoopCloserERD<GRAPH_t>::initCLoopCloserERD() {
 
 	m_visualize_curr_node_covariance = false;
 
-	// start the edge registration procedure only when this num is surpassed
-	// nodeCount > m_last_total_num_nodes
-	m_threshold_to_start = m_last_total_num_nodes = 0;
+	m_last_total_num_nodes = 0;
+	m_is_first_time_node_reg = true;
 
 	m_edge_types_to_nums["ICP2D"] = 0;
 	m_edge_types_to_nums["LC"] = 0;
@@ -63,6 +62,17 @@ CLoopCloserERD<GRAPH_t>::~CLoopCloserERD() {
 // //////////////////////////////////
 
 template<class GRAPH_t>
+void CLoopCloserERD<GRAPH_t>::setLastLaserScan2D(const mrpt::obs::CObservation2DRangeScanPtr scan) {
+	m_last_laser_scan2D = scan;
+
+	// check if the first laser scan has been recorded yet.
+	if (!m_first_laser_scan) {
+		MRPT_LOG_DEBUG_STREAM << "Keeping track of the first recorded laser scan." << endl;
+		m_first_laser_scan = scan;
+	}
+}
+
+template<class GRAPH_t>
 bool CLoopCloserERD<GRAPH_t>::updateState(
 		mrpt::obs::CActionCollectionPtr action,
 		mrpt::obs::CSensoryFramePtr observations,
@@ -77,38 +87,53 @@ bool CLoopCloserERD<GRAPH_t>::updateState(
 	using namespace mrpt::poses;
 	using namespace mrpt::math;
 
-	// check possible prior node registration
-	bool registered_new_node = false;
-
-	// was a new node registered?
-	if (m_last_total_num_nodes < this->m_graph->nodeCount()) {
-		registered_new_node = true;
-		m_last_total_num_nodes = this->m_graph->nodeCount();
-		MRPT_LOG_DEBUG_STREAM << "New node has been registered!";
-	}
-
-	// update last laser scan to use
+	// Track the last recorded laser scan
 	if (observation.present()) { // observation-only rawlog format
 		if (IS_CLASS(observation, CObservation2DRangeScan)) {
-			m_last_laser_scan2D =
+			CObservation2DRangeScanPtr laser_scan_obs =
 				static_cast<mrpt::obs::CObservation2DRangeScanPtr>(observation);
-
+			this->setLastLaserScan2D(laser_scan_obs);
 		}
 	}
 	else { // action-observations format
-		// action part
-
-		// observation part
-		CObservationPtr curr_observation =
+		CObservation2DRangeScanPtr laser_scan_obs =
 			observations->getObservationByClass<CObservation2DRangeScan>();
-		if (curr_observation) {
-			m_last_laser_scan2D =
-				observations->getObservationByClass<CObservation2DRangeScan>();
+		if (laser_scan_obs && laser_scan_obs.present()) {
+			this->setLastLaserScan2D(laser_scan_obs);
 		}
 	}
 
+	// check possible prior node registration
+	// was a new node registered?
+	size_t num_registered = absDiff(
+			m_last_total_num_nodes, this->m_graph->nodeCount());
+	bool registered_new_node = num_registered > 0;
 
 	if (registered_new_node) {
+		MRPT_LOG_DEBUG_STREAM << "New node has been registered in the graph!";
+		registered_new_node = true;
+
+		// either single node registration, or double node registration for the
+		// first time only.
+		if (!((num_registered == 1) ^ (num_registered == 2 && m_is_first_time_node_reg))) {
+			MRPT_LOG_ERROR_STREAM <<
+				"Invalid number of registered nodes since last call to updateStates; Found \""
+				<< num_registered << "\" new nodes.";
+			THROW_EXCEPTION("Invalid number of registered nodes.");
+		}
+
+		// first time call:
+		// NRD should have registered *2* nodes; one for the root node and one for
+		// the first added constraint. Add the first measurement taken to the root
+		// and the second as usual
+		if (m_is_first_time_node_reg) {
+			MRPT_LOG_WARN_STREAM << "Assigning first laserScan to the graph root node.";
+
+			m_nodes_to_laser_scans2D[this->m_graph->root] = m_first_laser_scan;
+			m_is_first_time_node_reg = false;
+		}
+		//mrpt::system::pause();
+
 		// register the new node-laserScan pair
 		m_nodes_to_laser_scans2D[this->m_graph->nodeCount()-1] =
 			m_last_laser_scan2D;
@@ -118,12 +143,12 @@ bool CLoopCloserERD<GRAPH_t>::updateState(
 			this->addScanMatchingEdges(this->m_graph->nodeCount()-1);
 		}
 
-		// update the partitioned map
+		// update partitioning scheme with the latest pose/measurement
 		m_partitions_full_update = (
 				(this->m_graph->nodeCount() % m_lc_params.full_partition_per_nodes) == 0 ||
-				this->m_just_inserted_lc)
-			?  true: false;
-		this->updateMapPartitions(m_partitions_full_update);
+				this->m_just_inserted_lc) ?  true: false;
+		this->updateMapPartitions(m_partitions_full_update,
+				/* is_first_time_node_reg = */ num_registered == 2);
 
 		// check for loop closures
 		partitions_t partitions_for_LC;
@@ -134,6 +159,7 @@ bool CLoopCloserERD<GRAPH_t>::updateState(
 			this->execDijkstraProjection();
 		}
 
+		m_last_total_num_nodes = this->m_graph->nodeCount();
 	}
 
 	this->m_time_logger.leave("updateState");
@@ -1372,6 +1398,9 @@ void CLoopCloserERD<GRAPH_t>::updateMapPartitionsVisualization() {
 					nodes_list.end(),
 					this->m_graph->nodeCount()-1) != nodes_list.end()) {
 			partition_contains_last_node = true;
+
+			ASSERTMSG_(!found_last_node, "Last node already found in another partition.");
+			found_last_node = true;
 		}
 		else {
 			partition_contains_last_node = false;
@@ -1472,6 +1501,9 @@ void CLoopCloserERD<GRAPH_t>::updateMapPartitionsVisualization() {
 		}
 		MRPT_LOG_DEBUG_STREAM << "Done working on partition #" << partitionID;
 	}
+
+	ASSERTMSG_(found_last_node,
+			"Last inserted node was not found in any partition.");
 
 	// remove outdated partitions
 	// these occur when more partitions existed during the previous visualization
@@ -1855,9 +1887,12 @@ void CLoopCloserERD<GRAPH_t>::getDescriptiveReport(std::string* report_str) cons
 }
 
 template<class GRAPH_t>
-void CLoopCloserERD<GRAPH_t>::updateMapPartitions(bool full_update /* = false */) {
+void CLoopCloserERD<GRAPH_t>::updateMapPartitions(
+		bool full_update /* = false */,
+		bool is_first_time_node_reg /* = false */) {
 	MRPT_START;
 	using namespace mrpt::utils;
+	using namespace mrpt::math;
 	using namespace std;
 
 	this->m_time_logger.enter("updateMapPartitions");
@@ -1874,6 +1909,13 @@ void CLoopCloserERD<GRAPH_t>::updateMapPartitions(bool full_update /* = false */
 		nodes_to_scans = m_nodes_to_laser_scans2D;
 	}
 	else {
+		// if registering measurement for root node as well...
+		if (is_first_time_node_reg) {
+			nodes_to_scans.insert(
+					make_pair(this->m_graph->root,
+						m_nodes_to_laser_scans2D.at(this->m_graph->root)));
+		}
+
 		// just use the last node-laser scan pair
 		nodes_to_scans.insert(
 				make_pair(
@@ -1885,9 +1927,14 @@ void CLoopCloserERD<GRAPH_t>::updateMapPartitions(bool full_update /* = false */
 	// laserScan to the partitioner object
 	for (nodes_to_scans2D_t::const_iterator it = nodes_to_scans.begin();
 			it != nodes_to_scans.end(); ++it) {
-		if ((it->second).null()) { continue; } // if laserScan invalid go to next...
+		if ((it->second).null()) { // if laserScan invalid go to next...
+			MRPT_LOG_WARN_STREAM <<
+				"nodeID \"" << it->first << "\" has invalid laserScan";
+			continue;
+		}
 
 		// find pose of node, if it exists...
+		// TODO - investigate this case. Why should this be happening?
 		typename GRAPH_t::global_poses_t::const_iterator search;
 		search = this->m_graph->nodes.find(it->first);
 		if (search == m_graph->nodes.end()) {
@@ -1905,15 +1952,15 @@ void CLoopCloserERD<GRAPH_t>::updateMapPartitions(bool full_update /* = false */
 
 		m_partitioner.addMapFrame(sf, posePDF);
 
-		//MRPT_LOG_DEBUG_STREAM << "nodeID: " << it->first << endl
-			//<< "pose: " << curr_pose << endl;
+		MRPT_LOG_DEBUG_STREAM << "nodeID: " << it->first << endl
+			<< "pose: " << curr_pose << endl;
 		//mrpt::system::pause();
 	}
 
 	// update the last partitions list
-	size_t n = m_curr_partitions.size();
-	m_last_partitions.resize(n);
-	for (size_t i = 0; i < n; i++)	{
+	size_t curr_size = m_curr_partitions.size();
+	m_last_partitions.resize(curr_size);
+	for (size_t i = 0; i < curr_size; i++)	{
 		m_last_partitions[i] = m_curr_partitions[i];
 	}
 	//update current partitions list
@@ -1987,7 +2034,7 @@ CLoopCloserERD<GRAPH_t>::TLoopClosureParams::TLoopClosureParams():
 	balloon_elevation(3),
 	balloon_radius(0.5),
 	balloon_std_color(153, 0, 153),
-	balloon_curr_color(102, 0, 102),
+	balloon_curr_color(62, 0, 80),
 	connecting_lines_color(balloon_std_color),
 	has_read_config(false)
 {

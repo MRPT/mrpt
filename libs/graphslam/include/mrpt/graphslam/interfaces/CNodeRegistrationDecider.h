@@ -51,9 +51,9 @@ class CNodeRegistrationDecider : public mrpt::graphslam::CRegistrationDeciderOrO
 		/**\}*/
 
 		/**\brief Default class constructor.*/
-		CNodeRegistrationDecider() {}
+		CNodeRegistrationDecider();
 		/**\brief Default class destructor.*/
-		virtual ~CNodeRegistrationDecider() {};
+		virtual ~CNodeRegistrationDecider();
 
 		/** \return Latest estimated robot position
 		 */

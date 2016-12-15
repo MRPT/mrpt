@@ -442,7 +442,9 @@ class CLoopCloserERD:
 		void dumpVisibilityErrorMsg(std::string viz_flag,
 				int sleep_time=500 /* ms */);
 		/**\brief Split the currently registered graph nodes into partitions.  */
-		void updateMapPartitions(bool full_update=false);
+		void updateMapPartitions(
+				bool full_update=false,
+				bool is_first_time_node_reg=false);
 		/**\brief Initialize the visualization of the map partition objects. */
 		void initMapPartitionsVisualization();
 		/**\brief Update the map partitions visualization. */
@@ -667,6 +669,15 @@ class CLoopCloserERD:
 				vector_uint* groupA,
 				vector_uint* groupB,
 				int max_nodes_in_group=5);
+		/**\brief Assign the last recorded 2D Laser scan
+		 *
+		 * \note Compact way of assigning the last recorded laser scan for both
+		 * MRPT rawlog formats.
+		 *
+		 * Method takes into account the start of graphSLAM proc. when two nodes
+		 * are added at the graph at the same time (root + node for 1st constraint)
+		 */
+		void setLastLaserScan2D(mrpt::obs::CObservation2DRangeScanPtr scan);
 
 		// protected variables
 		//////////////////////////////////////////////////////////////
@@ -686,8 +697,6 @@ class CLoopCloserERD:
  		/**\brief Keep track of the total number of registered nodes since the last
  		 * time class method was called */
 		size_t m_last_total_num_nodes;
-		/**\brief Surpass this to start adding edges */
-		int m_threshold_to_start;
 		/**\brief Map for keeping track of the observation recorded at each graph
 		 * position
 		 */
@@ -708,6 +717,19 @@ class CLoopCloserERD:
 		 * another Node.
 		 */
 		typename std::map< mrpt::utils::TNodeID, path_t* > m_node_optimal_paths;
+		/**\brief Keep track of the first recorded laser scan so that it can be
+		 * assigned to the root node when the NRD adds the first *two* nodes to the
+		 * graph.
+		 */
+		mrpt::obs::CObservation2DRangeScanPtr m_first_laser_scan;
+		/**\brief Track the first node registration happens
+		 *
+		 * Handy so that we can assign a measurement to the root node as well.
+		 */
+		bool m_is_first_time_node_reg;
+
+
+
 
 };
 
