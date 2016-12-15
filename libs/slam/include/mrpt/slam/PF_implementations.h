@@ -673,7 +673,7 @@ namespace mrpt
 				// ------------------------------------------------------------------------------
 				double		delta_1 = 1.0 - KLD_options.KLD_delta;
 				double		epsilon_1 = 0.5 / KLD_options.KLD_epsilon;
-				bool		doResample = me->ESS() < 0.5;
+				bool		doResample = me->ESS() < PF_options.BETA;
 				//double	maxLik = math::maximum(m_pfAuxiliaryPFOptimal_maxLikelihood); // For normalization purposes only
 
 				// The desired dynamic number of m_particles (to be modified dynamically below):
