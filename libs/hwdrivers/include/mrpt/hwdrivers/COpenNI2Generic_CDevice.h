@@ -152,6 +152,8 @@ class COpenNI2Generic::CDevice{
 
 		static Ptr create(const openni::DeviceInfo& info, openni::PixelFormat rgb, openni::PixelFormat depth, bool verbose);
 
+		openni::Device & getDevicePtr(){ return m_device; }
+
     private:
         bool getSerialNumber(std::string& sn);
 
