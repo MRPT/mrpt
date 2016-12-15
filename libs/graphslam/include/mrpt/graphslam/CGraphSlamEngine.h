@@ -564,13 +564,43 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		void computeSlamMetric(mrpt::utils::TNodeID nodeID,
 				size_t gt_index);
 
-		/**\brief Wrapper method that makes use of the COutputLogger instance.
+		/**\brief Wrapper method that used for printing error messages in a
+		 * consistent manner 
 		 *
-		 * Used for printing error messages in a consistent manner when toggling certain
-		 * visual features in the display window
+		 * Makes use of the COutputLogger instance. Prints error message when
+		 * toggling illegal visual features in the display window
 		 */
 		void dumpVisibilityErrorMsg(std::string viz_flag,
 				int sleep_time=500 /* ms */);
+		/**\brief Fill the TTimestamp in a consistent manner.
+		 *
+		 * Method can be used in both MRPT Rawlog formats
+		 *
+		 * \param[in] action_ptr Pointer to the action (action-observations format)
+		 * \param[in] observations Pointer to list of observations (action-observations format)
+		 * \param[in] observation Pointer to single observation (observation-only format)
+		 *
+		 * \note if both action_ptr and observation_ptr contains valid timestamps, the
+		 * action is preferred.
+		 *
+		 * \return mrpt::system::TTimeStamp
+		 */
+		static mrpt::system::TTimeStamp getTimeStamp(
+				const mrpt::obs::CActionCollectionPtr action,
+				const mrpt::obs::CSensoryFramePtr observations,
+				const mrpt::obs::CObservationPtr observation);
+
+		/**\brief Assert that the given nodes number matches the registered graph
+		 * nodes, otherwise throw exception
+		 *
+		 * \note Method locks the graph internally.
+		 *
+		 * \raise logic_error if the expected node count mismatches with the
+		 * graph current node count.
+		 */
+		void monitorNodeRegistration(
+				bool registered=false,
+				std::string class_name="Class");
 
 		// VARIABLES
 		//////////////////////////////////////////////////////////////
@@ -579,8 +609,9 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		/**\brief The graph object to be built and optimized. */
 		GRAPH_t m_graph;
 
-		/**\name Decider/Optimizer instances. Delegating the GRAPH_t tasks to these classes
-		 * makes up for a modular and configurable design */
+		/**\name Decider/Optimizer instances. Delegating the GRAPH_t tasks to these
+		 * classes makes up for a modular and configurable design
+		 */
 		/**\{*/
 		mrpt::graphslam::deciders::CNodeRegistrationDecider<GRAPH_t>* m_node_registrar;
 		mrpt::graphslam::deciders::CEdgeRegistrationDecider<GRAPH_t>* m_edge_registrar;
@@ -600,8 +631,10 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 
 		std::string	m_fname_GT;
 
-		size_t m_GT_poses_index; /**\brief Counter for reading back the GT_poses. */
-		size_t m_GT_poses_step; //**\brief Rate at which to read the GT poses. */
+ 		/**\brief Counter for reading back the GT_poses. */
+		size_t m_GT_poses_index;
+		/**\brief Rate at which to read the GT poses. */
+		size_t m_GT_poses_step;
 
 		bool m_user_decides_about_output_dir;
 
@@ -794,6 +827,11 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		/**\}*/
 
 		const std::string m_class_name;
+		/**\brief Track the first node registration occurance
+		 *
+		 * Handy so that we can assign a measurement to the root node as well.
+		 */
+		bool m_is_first_time_node_reg;
 };
 
 } } // end of namespaces

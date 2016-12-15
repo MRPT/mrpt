@@ -34,11 +34,6 @@ void CICPCriteriaNRD<GRAPH_t>::initCICPCriteriaNRD() {
 	m_use_angle_difference_node_reg = true;
 	m_use_distance_node_reg = true;
 
-
-	// Current node registration decider *decides* how many nodes are there
-	// currently in the graph (no need to ask m_graph->nodeCount)..
-	m_nodeID_max  = INVALID_NODEID;
-
 	{
 		// I am sure of the initial position, set to identity matrix
 		double tmp[] = {
@@ -77,9 +72,13 @@ template<class GRAPH_t>
 typename GRAPH_t::constraint_t::type_value
 CICPCriteriaNRD<GRAPH_t>::getCurrentRobotPosEstimation() const {
 	MRPT_START;
+	using namespace std;
 
-	mrpt::utils::TNodeID from = m_nodeID_max;
-	return this->m_graph->nodes.find(from)->second +
+	MRPT_LOG_ERROR_STREAM << "m_prev_registered_node: " << this->m_prev_registered_node << endl;
+	MRPT_LOG_ERROR_STREAM << "m_since_prev_node_PDF: " << m_since_prev_node_PDF << endl;
+	MRPT_LOG_ERROR_STREAM << "this->m_graph->nodes.at(this->m_prev_registered_node)" << this->m_graph->nodes.at(this->m_prev_registered_node) << endl;
+
+	return this->m_graph->nodes.at(this->m_prev_registered_node)+
 		m_since_prev_node_PDF.getMeanVal();
 
 	MRPT_END;
@@ -190,7 +189,6 @@ bool CICPCriteriaNRD<GRAPH_t>::checkRegistrationCondition2D() {
 	using namespace mrpt::utils;
 
 	bool registered_new_node = false;
-	this->logFmt(LVL_DEBUG, "In checkRegistrationCondition2D..");
 
 	constraint_t rel_edge;
 	mrpt::slam::CICP::TReturnInfo icp_info;
@@ -341,7 +339,6 @@ bool CICPCriteriaNRD<GRAPH_t>::checkRegistrationCondition() {
 	MRPT_START;
 	using namespace mrpt::utils;
 
-	bool registered_new_node = false;
 	this->logFmt(LVL_DEBUG, "In checkRegistrationCondition");
 	using namespace mrpt::math;
 
@@ -361,44 +358,15 @@ bool CICPCriteriaNRD<GRAPH_t>::checkRegistrationCondition() {
 	}
 
 	// actual check
+	bool registered = false;
 	if (distance_crit || angle_crit) {
-		registered_new_node = true;
-		this->registerNewNode();
+		registered = this->registerNewNode(m_since_prev_node_PDF);
 	}
 
-	return registered_new_node;
+	return registered;
 	MRPT_END;
 }
 
-template<class GRAPH_t>
-void CICPCriteriaNRD<GRAPH_t>::registerNewNode() {
-	MRPT_START;
-
-	using namespace mrpt::utils;
-
-	mrpt::utils::TNodeID from = m_nodeID_max;
-	mrpt::utils::TNodeID to = ++m_nodeID_max;
-
-	this->m_graph->nodes[to] = this->getCurrentRobotPosEstimation();
-	this->m_graph->insertEdgeAtEnd(from, to, m_since_prev_node_PDF);
-
-	this->logFmt(LVL_DEBUG,
-			"Registered new node:\n\t%lu => %lu\n\tEdge: %s",
-			from,
-			to,
-			m_since_prev_node_PDF.getMeanVal().asString().c_str());
-
-	MRPT_END;
-}
-
-template<class GRAPH_t>
-void CICPCriteriaNRD<GRAPH_t>::setGraphPtr(GRAPH_t* graph) {
-	using namespace mrpt::utils;
-	parent::setGraphPtr(graph);
-
-	// get the last registrered node + corresponding pose - root
-	m_nodeID_max = this->m_graph->root;
-}
 template<class GRAPH_t>
 void CICPCriteriaNRD<GRAPH_t>::loadParams(const std::string& source_fname) {
 	MRPT_START;
