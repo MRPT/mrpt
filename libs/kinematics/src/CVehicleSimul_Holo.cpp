@@ -43,7 +43,7 @@ void CVehicleSimul_Holo::internal_simulControlStep(const double dt)
 			m_odometric_vel.vx = m_vel_ramp_cmd.target_vel_x;
 			m_odometric_vel.vy = m_vel_ramp_cmd.target_vel_y;
 		}
-#if 0;
+#if 0
 		// Proportional controller in angle:
 		//const double KP = 1.0;
 		//m_vel.phi = KP* mrpt::math::wrapToPi(m_vel_ramp_cmd.dir - m_GT_pose.phi) * m_vel_ramp_cmd.rot_speed;
