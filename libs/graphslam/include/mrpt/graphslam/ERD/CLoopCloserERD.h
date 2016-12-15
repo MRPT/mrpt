@@ -722,7 +722,7 @@ class CLoopCloserERD:
 		 * graph.
 		 */
 		mrpt::obs::CObservation2DRangeScanPtr m_first_laser_scan;
-		/**\brief Track the first node registration happens
+		/**\brief Track the first node registration occurance
 		 *
 		 * Handy so that we can assign a measurement to the root node as well.
 		 */

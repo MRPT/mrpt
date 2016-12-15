@@ -136,8 +136,6 @@ class CICPCriteriaNRD:
 
 		pose_t getCurrentRobotPosEstimation() const;
 
-		void setGraphPtr(GRAPH_t* graph);
-
 		/**\brief Update the decider state using the latest dataset measurements.
 		 *
 		 * \note Depending on the observations at hand, update of the state is
@@ -161,8 +159,7 @@ class CICPCriteriaNRD:
 		 * 3DRangeScan information.
 		 * \sa updateState2D
 		 */
-		bool updateState3D(
-				mrpt::obs::CObservation3DRangeScanPtr observation);
+		bool updateState3D(mrpt::obs::CObservation3DRangeScanPtr observation);
 
 		struct TParams: public mrpt::utils::CLoadableOptions {
 			public:
@@ -198,8 +195,6 @@ class CICPCriteriaNRD:
 		 * \sa checkRegistrationCondition2D
 		 */
 		bool checkRegistrationCondition3D();
-
-		void registerNewNode();
 		/**\brief General initialization method to call from the Class Constructors*/
 		void initCICPCriteriaNRD();
 
@@ -237,10 +232,6 @@ class CICPCriteriaNRD:
 		 * Resets next time an ICP edge is successfully registered.
 		 */
 		pose_t m_last_odometry_only_pose;
-
-		// last inserted node in the graph
-		mrpt::utils::TNodeID m_nodeID_max;
-
 		/**\brief Keeps track of the last N measurements between the ICP edge and
 		 * the corresponding odometry measurements.
 		 *

@@ -54,11 +54,9 @@ class CNodeRegistrationDecider : public mrpt::graphslam::CRegistrationDeciderOrO
 		CNodeRegistrationDecider();
 		/**\brief Default class destructor.*/
 		virtual ~CNodeRegistrationDecider();
-
 		/** \return Latest estimated robot position
 		 */
 		virtual pose_t getCurrentRobotPosEstimation() const = 0;
-
 		/**\brief Generic method for fetching the incremental action-observations
 		 * (or observation-only) depending on the rawlog format readings from the
 		 * calling function.
@@ -87,8 +85,21 @@ class CNodeRegistrationDecider : public mrpt::graphslam::CRegistrationDeciderOrO
 		 */
 		virtual bool checkRegistrationCondition();
 		/**\brief Generic method of adding new poses to the graph.
+		 *
+		 * \param[in] constraint Constraint Transformation from the latest to the
+		 * new node.
+		 *
+		 * \return True upon successful node registration.
 		 */
-		virtual void registerNewNode() = 0;
+		virtual bool registerNewNode(
+				const typename GRAPH_t::constraint_t constraint);
+
+		/**\brief Store the last registered NodeID.
+		 *
+		 * We don't store its pose since it will most likely change due to calls to the
+		 * graph-optimization procedure / dijkstra_node_estimation
+		 */
+		mrpt::utils::TNodeID m_prev_registered_node;
 
 };
 

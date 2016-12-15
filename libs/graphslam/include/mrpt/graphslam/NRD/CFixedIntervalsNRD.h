@@ -106,8 +106,6 @@ class CFixedIntervalsNRD:
 		void getDescriptiveReport(std::string* report_str) const;
 		pose_t getCurrentRobotPosEstimation() const;
 
-		void setGraphPtr(GRAPH_t* graph);
-
 		/**\brief Method makes use of the CActionCollection/CObservation to update the
 		 * odometry estimation from the last inserted pose
 		 *
@@ -152,19 +150,12 @@ class CFixedIntervalsNRD:
 		 * \return True on successful registration.
 		 */
 		bool checkRegistrationCondition();
-		void registerNewNode();
 		/**\brief Initialization function to be called from the various constructors
 		 */
 		void initCFixedIntervalsNRD();
 
 		// protected members
 		//////////////////////////////////////////////////////////////
-		/**\brief Store the last registered NodeID .
-		 *
-		 * Not his pose since it will most likely change due to calls to the
-		 * graph-optimization procedure / dijkstra_node_estimation
-		 */
-		mrpt::utils::TNodeID m_prev_registered_node;
 
 		/**\brief Tracking the PDF of the current position of the robot with regards to
 		 * the <b> previous registered node </b>
@@ -185,8 +176,6 @@ class CFixedIntervalsNRD:
 		 * rawlog file or from an action-observation rawlog
 		 */
 		bool m_observation_only_rawlog;
-
-		// find out if decider is invalid for the given dataset
 
 };
 

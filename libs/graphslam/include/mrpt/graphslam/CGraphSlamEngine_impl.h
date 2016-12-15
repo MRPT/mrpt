@@ -40,7 +40,8 @@ CGraphSlamEngine<GRAPH_t>::CGraphSlamEngine(
 	m_optimized_map_color(255, 0, 0),
 	m_robot_model_size(1),
 	m_graph_section("graph_sec"), // give the CCriticalSection a name for easier debugging
-	m_class_name("CGraphSlamEngine")
+	m_class_name("CGraphSlamEngine"),
+	m_is_first_time_node_reg(true)
 {
 
 	this->initCGraphSlamEngine();
@@ -148,8 +149,7 @@ void CGraphSlamEngine<GRAPH_t>::initCGraphSlamEngine() {
 	m_request_to_exit = false;
 
 	// max node number already in the graph
-	m_nodeID_max = 0;
-	m_graph.root = TNodeID(0);
+	m_nodeID_max = INVALID_NODEID;
 
 	m_program_paused  = false;
 	m_GT_poses_index  = 0;
@@ -414,12 +414,12 @@ bool CGraphSlamEngine<GRAPH_t>::execGraphSlamStep(
 
 	// read first measurement independently if we haven't already
 	if (m_init_timestamp == INVALID_TIMESTAMP) {
-		MRPT_LOG_DEBUG_STREAM( "execGraphSlamStep: first run");
+		m_init_timestamp = getTimeStamp(action, observations, observation);
+		MRPT_LOG_DEBUG_STREAM("execGraphSlamStep: first run");
 
 		if (observation.present()) {
 			MRPT_LOG_DEBUG_STREAM( "Observation only dataset!");
 			m_observation_only_dataset = true; // false by default
-			m_init_timestamp = observation->timestamp;
 		}
 		else {
 			MRPT_LOG_DEBUG_STREAM( "Action-observation dataset!");
@@ -431,14 +431,11 @@ bool CGraphSlamEngine<GRAPH_t>::execGraphSlamStep(
 				CPosePDFPtr increment = robot_move->poseChange.get_ptr();
 				pose_t increment_pose = increment->getMeanVal();
 				m_curr_odometry_only_pose += increment_pose;
-
-				m_init_timestamp = robot_move->timestamp;
 			}
 		}
 	}
 
-
-	// node registration procedure
+	// NRD
 	bool registered_new_node;
 	{
 		mrpt::synch::CCriticalSectionLocker m_graph_lock(&m_graph_section);
@@ -446,15 +443,31 @@ bool CGraphSlamEngine<GRAPH_t>::execGraphSlamStep(
 		registered_new_node = m_node_registrar->updateState(
 				action, observations, observation);
 		m_time_logger.leave("node_registrar");
-		if (registered_new_node) {
-			m_edge_counter.addEdge("Odometry");
-			m_nodeID_max++;
-		}
 	}
-	// Edge registration procedure
-	// run this so that the decider can be updated with the latest
+	if (registered_new_node) {
+
+		if (m_is_first_time_node_reg) { // must have registered 2 nodes.
+			mrpt::synch::CCriticalSectionLocker m_graph_lock(&m_graph_section);
+			m_nodeID_max = 0;
+			if (m_graph.nodeCount() != 2) {
+				MRPT_LOG_ERROR_STREAM << "Expected [2] new registered nodes"
+					<< " but saw [" << m_graph.nodeCount() << "]";
+				THROW_EXCEPTION(format("Illegal node registration"));
+			}
+			m_is_first_time_node_reg = false;
+		}
+
+		m_nodeID_max++;
+		// either way add just one odometry edge
+		m_edge_counter.addEdge("Odometry");
+	}
+	this->monitorNodeRegistration(registered_new_node,
+			"NodeRegistrationDecider");
+
+	// Edge registration procedure - Optimization
+	// run this so that the ERD, GSO can be updated with the latest
 	// observations even when no new nodes have been added to the graph
-	{
+	{ // ERD
 		mrpt::synch::CCriticalSectionLocker m_graph_lock(&m_graph_section);
 
 		m_time_logger.enter("edge_registrar");
@@ -463,6 +476,12 @@ bool CGraphSlamEngine<GRAPH_t>::execGraphSlamStep(
 				observations,
 				observation );
 		m_time_logger.leave("edge_registrar");
+	}
+	this->monitorNodeRegistration(registered_new_node,
+			"EdgeRegistrationDecider");
+
+	{ // GSO
+		mrpt::synch::CCriticalSectionLocker m_graph_lock(&m_graph_section);
 
 		m_time_logger.enter("optimizer");
 		m_optimizer->updateState(
@@ -471,15 +490,15 @@ bool CGraphSlamEngine<GRAPH_t>::execGraphSlamStep(
 				observation );
 		m_time_logger.leave("optimizer");
 	}
+	this->monitorNodeRegistration(registered_new_node,
+			"EdgeRegistrationDecider");
 
 	// current timestamp - to be filled depending on the format
-	mrpt::system::TTimeStamp timestamp;
+	mrpt::system::TTimeStamp curr_timestamp = getTimeStamp(action, observations, observation);
 
 	if (observation.present()) {
 		// Read a single observation from the rawlog
 		// (Format #2 rawlog file)
-
-		timestamp = observation->timestamp;
 
 		// odometry
 		if (IS_CLASS(observation, CObservationOdometry)) {
@@ -513,11 +532,10 @@ bool CGraphSlamEngine<GRAPH_t>::execGraphSlamStep(
 		// parse the current action
 		CActionRobotMovement2DPtr robot_move =
 			action->getBestMovementEstimation();
+		ASSERT_(robot_move);
 		CPosePDFPtr increment = robot_move->poseChange.get_ptr();
 		pose_t increment_pose = increment->getMeanVal();
 		m_curr_odometry_only_pose += increment_pose;
-
-		timestamp = robot_move->timestamp;
 
 		// add to the odometry vector
 		{
@@ -622,9 +640,9 @@ bool CGraphSlamEngine<GRAPH_t>::execGraphSlamStep(
 	// Use the dataset timestamp otherwise fallback to
 	// mrpt::system::getCurrentTime
 	if (m_enable_visuals) {
-		if (timestamp != INVALID_TIMESTAMP) {
+		if (curr_timestamp != INVALID_TIMESTAMP) {
 			m_win_manager->addTextMessage(5,-m_offset_y_timestamp,
-					format("Simulated time: %s", timeToString(timestamp).c_str()),
+					format("Simulated time: %s", timeToString(curr_timestamp).c_str()),
 					TColorf(1.0, 1.0, 1.0),
 					/* unique_index = */ m_text_index_timestamp );
 		}
@@ -689,12 +707,38 @@ bool CGraphSlamEngine<GRAPH_t>::execGraphSlamStep(
 
 	m_dataset_grab_time = mrpt::system::timeDifference(
 			m_init_timestamp,
-			timestamp);
+			curr_timestamp);
 	m_time_logger.leave("proc_time");
 
 	return !m_request_to_exit;
 	MRPT_END;
 } // END OF EXECGRAPHSLAM
+
+template<class GRAPH_t>
+void CGraphSlamEngine<GRAPH_t>::monitorNodeRegistration(
+		bool registered/*=false*/,
+		std::string class_name/*="Class"*/) {
+	MRPT_START;
+	using namespace mrpt::utils;
+	mrpt::synch::CCriticalSectionLocker m_graph_lock(&m_graph_section);
+	size_t listed_nodeCount = (m_nodeID_max == INVALID_NODEID? 0 : m_nodeID_max + 1);
+
+	if (!registered) { // just check that it's the same.
+		ASSERT_(listed_nodeCount == m_graph.nodeCount())
+	}
+	else {
+		if (listed_nodeCount != m_graph.nodeCount()) {
+			MRPT_LOG_ERROR_STREAM << class_name << 
+				" illegally added new nodes to the graph " <<
+				", wanted to see [" << listed_nodeCount << "] but saw ["
+				<< m_graph.nodeCount() << "]";
+			THROW_EXCEPTION(format("Illegal node registration by %s.",
+						class_name.c_str()));
+		}
+	}
+	MRPT_END;
+}
+
 template<class GRAPH_t>
 void CGraphSlamEngine<GRAPH_t>::getOccupancyGridMap2D(
 		mrpt::maps::COccupancyGridMap2D* map_ptr,
@@ -1602,6 +1646,35 @@ void CGraphSlamEngine<GRAPH_t>::dumpVisibilityErrorMsg(
 			<< ") is set to true in the .ini file.");
 	mrpt::system::sleep(sleep_time);
 
+	MRPT_END;
+}
+
+template<class GRAPH_t>
+mrpt::system::TTimeStamp CGraphSlamEngine<GRAPH_t>::getTimeStamp(
+		const mrpt::obs::CActionCollectionPtr action,
+		const mrpt::obs::CSensoryFramePtr observations,
+		const mrpt::obs::CObservationPtr observation) {
+	MRPT_START;
+	using namespace mrpt::obs;
+	using namespace mrpt::system;
+
+	// make sure that adequate data is given.
+	ASSERTMSG_(action.present() || observation.present(),
+			"Neither action or observation contains valid data.");
+
+	mrpt::system::TTimeStamp timestamp;
+	if (observation.present()) {
+		timestamp = observation->timestamp;
+	}
+	else {
+		CActionRobotMovement2DPtr robot_move =
+			action->getBestMovementEstimation();
+		ASSERT_(robot_move);
+
+		timestamp = robot_move->timestamp;
+	}
+
+	return timestamp;
 	MRPT_END;
 }
 
