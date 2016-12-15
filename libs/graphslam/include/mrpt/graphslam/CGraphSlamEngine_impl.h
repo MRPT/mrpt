@@ -754,6 +754,7 @@ void CGraphSlamEngine<GRAPH_t>::computeOccupancyGridMap2D() const {
 
 		bool laser_scan_exists = !curr_laser_scan.null();
 
+		// TODO - Correct this. Laser scan should exist at all cost.
 		bool pose_found = true;
 		typename mrpt::graphs::CNetworkOfPoses2DInf::global_poses_t::const_iterator
 			pose_search = m_graph.nodes.find(curr_node);
