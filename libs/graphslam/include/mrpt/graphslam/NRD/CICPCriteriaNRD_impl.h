@@ -25,6 +25,7 @@ CICPCriteriaNRD<GRAPH_t>::CICPCriteriaNRD():
 template<class GRAPH_t>
 void CICPCriteriaNRD<GRAPH_t>::initCICPCriteriaNRD() {
 	using namespace mrpt::utils;
+	using namespace mrpt::math;
 	this->initializeLoggers("CICPCriteriaNRD");
 
 	m_first_time_call2D = true;
@@ -34,27 +35,16 @@ void CICPCriteriaNRD<GRAPH_t>::initCICPCriteriaNRD() {
 	m_use_angle_difference_node_reg = true;
 	m_use_distance_node_reg = true;
 
+	// set the PDF of relevant transformations
+	// - Transformation from the previous registered node
+	// - Transformation from <...> using odometry information only
 	{
-		// I am sure of the initial position, set to identity matrix
-		double tmp[] = {
-			1.0, 0.0, 0.0,
-			0.0, 1.0 ,0.0,
-			0.0, 0.0, 1.0 };
-		InfMat init_path_uncertainty(tmp);
-		m_since_prev_node_PDF.cov_inv = init_path_uncertainty;
+		m_since_prev_node_PDF.cov_inv = this->m_init_inf_mat;
 		m_since_prev_node_PDF.mean = pose_t();
-	}
 
-	{
-		// I am sure of the initial position, set to identity matrix
-		double tmp[] = {
-			1.0, 0.0, 0.0,
-			0.0, 1.0 ,0.0,
-			0.0, 0.0, 1.0 };
-		InfMat init_path_uncertainty(tmp);
 		// odometry only estimation initialization
 		m_latest_odometry_PDF.mean = pose_t();
-		m_latest_odometry_PDF.cov_inv = init_path_uncertainty;
+		m_latest_odometry_PDF.cov_inv = this->m_init_inf_mat;
 
 		//m_mahal_distance_ICP_odom.resizeWindow(1000); // use the last X mahalanobis distance values
 	}
@@ -74,6 +64,7 @@ CICPCriteriaNRD<GRAPH_t>::getCurrentRobotPosEstimation() const {
 	MRPT_START;
 	using namespace std;
 
+	// TODO - Remove these.
 	MRPT_LOG_ERROR_STREAM << "m_prev_registered_node: " << this->m_prev_registered_node << endl;
 	MRPT_LOG_ERROR_STREAM << "m_since_prev_node_PDF: " << m_since_prev_node_PDF << endl;
 	MRPT_LOG_ERROR_STREAM << "this->m_graph->nodes.at(this->m_prev_registered_node)" << this->m_graph->nodes.at(this->m_prev_registered_node) << endl;
@@ -154,6 +145,7 @@ bool CICPCriteriaNRD<GRAPH_t>::updateState(
 	// reset the constraint since the last registered node
 	if (registered_new_node) {
 		m_since_prev_node_PDF = constraint_t();
+		m_since_prev_node_PDF.cov_inv = this->m_init_inf_mat;
 	}
 
 	this->m_time_logger.leave("CICPCriteriaNRD::updateState");
@@ -216,12 +208,8 @@ bool CICPCriteriaNRD<GRAPH_t>::checkRegistrationCondition2D() {
 
 	// evaluate the mahalanobis distance of the above..
 	// If over an (adaptive) threshold, trust the odometry
-	double tmp[] = {
-		1.0, 0.0, 0.0,
-		0.0, 1.0 ,0.0,
-		0.0, 0.0, 1.0 };
 	constraint_t latest_odometry_PDF(m_latest_odometry_PDF.getMeanVal(),
-			CMatrixDouble33(tmp)/* cov= unity */ );
+			this->m_init_inf_mat.inverse());
 	double mahal_distance = rel_edge.mahalanobisDistanceTo(latest_odometry_PDF);
 	//m_mahal_distance_ICP_odom.addNewMeasurement(mahal_distance);
 

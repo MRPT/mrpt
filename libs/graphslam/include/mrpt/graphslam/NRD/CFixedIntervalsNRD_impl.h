@@ -24,13 +24,7 @@ void CFixedIntervalsNRD<GRAPH_t>::initCFixedIntervalsNRD() {
 	using namespace mrpt::utils;
 	this->initializeLoggers("CFixedIntervalsNRD");
 
-	// I am sure of the initial position, set to identity matrix
-	double tmp[] = {
-		1.0, 0.0, 0.0,
-		0.0, 1.0 ,0.0,
-		0.0, 0.0, 1.0 };
-	InfMat init_path_uncertainty(tmp);
-	m_since_prev_node_PDF.cov_inv = init_path_uncertainty;
+	m_since_prev_node_PDF.cov_inv = this->m_init_inf_mat;
 	m_since_prev_node_PDF.mean = pose_t();
 
 	this->logFmt(LVL_DEBUG, "IntervalsNRD: Initialized class object");
@@ -107,6 +101,7 @@ bool CFixedIntervalsNRD<GRAPH_t>::updateState(
 			m_last_odometry_only_pose = m_curr_odometry_only_pose;
 		}
 		m_since_prev_node_PDF = constraint_t();
+		m_since_prev_node_PDF.cov_inv = this->m_init_inf_mat;
 	}
 
 	return registered;
