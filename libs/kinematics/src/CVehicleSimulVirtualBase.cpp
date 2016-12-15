@@ -48,8 +48,8 @@ void CVehicleSimulVirtualBase::simulateOneTimeStep(const double dt)
 				m_GT_vel.vy*m_firmware_control_period,
 				m_GT_vel.omega*m_firmware_control_period
 			);
-		mrpt::math::wrapToPi(nextOdometry.phi());
-		mrpt::math::wrapToPi(nextGT.phi());
+		nextOdometry.phi(mrpt::math::wrapToPi(nextOdometry.phi()));
+		nextGT.phi(mrpt::math::wrapToPi(nextGT.phi()));
 
 		this->internal_simulControlStep(m_firmware_control_period);
 
