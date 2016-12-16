@@ -16,6 +16,7 @@
 #include <mrpt/synch/CPipe.h>
 #include <mrpt/system/threads.h>
 #include <list>
+#include <memory>
 
 namespace mrpt
 {
@@ -334,8 +335,13 @@ namespace mrpt
 
 				void * taskHandle;
 				mrpt::system::TThreadHandle hThread;
+#if MRPT_HAS_CXX11
+				std::unique_ptr<mrpt::synch::CPipeReadEndPoint> read_pipe;
+				std::unique_ptr<mrpt::synch::CPipeWriteEndPoint> write_pipe;
+#else
 				std::auto_ptr<mrpt::synch::CPipeReadEndPoint> read_pipe;
 				std::auto_ptr<mrpt::synch::CPipeWriteEndPoint> write_pipe;
+#endif
 				bool must_close, is_closed;
 				mrpt::synch::CAtomicCounter  new_obs_available;
 
