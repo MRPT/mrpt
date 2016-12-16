@@ -184,31 +184,33 @@ namespace maps
 		{
 			typedef typename SELECTED_CLASS_PTR::value_type* ptr_t;
 			typedef const typename SELECTED_CLASS_PTR::value_type* const_ptr_t;
-			ProxyFilterContainerByClass(CONTAINER &source) : m_source(source) {}
+			ProxyFilterContainerByClass(CONTAINER &source) : m_source(&source) {}
+			ProxyFilterContainerByClass(ProxyFilterContainerByClass<SELECTED_CLASS_PTR, CONTAINER>& ) : m_source() {} // m_source init in parent copy ctor
 
 			ProxyFilterContainerByClass<SELECTED_CLASS_PTR, CONTAINER>& operator=(const ProxyFilterContainerByClass<SELECTED_CLASS_PTR, CONTAINER>&o) { return *this; } // Do nothing, we must keep refs to our own parent
 #if (__cplusplus>199711L)
+			ProxyFilterContainerByClass(ProxyFilterContainerByClass<SELECTED_CLASS_PTR, CONTAINER>&& ) : m_source() {}  // m_source init in parent copy ctor
 			ProxyFilterContainerByClass<SELECTED_CLASS_PTR, CONTAINER>& operator=(ProxyFilterContainerByClass<SELECTED_CLASS_PTR, CONTAINER>&&o) { return *this; } // Do nothing, we must keep refs to our own parent
 #endif
 			bool empty() const { return size()==0; }
 			size_t size() const {
 				size_t cnt=0;
-				for(typename CONTAINER::const_iterator it=m_source.begin();it!=m_source.end();++it)
+				for(typename CONTAINER::const_iterator it=m_source->begin();it!=m_source->end();++it)
 					if ( dynamic_cast<const_ptr_t>(it->pointer()) )
 						cnt++;
 				return cnt;
 			}
 			SELECTED_CLASS_PTR operator [](size_t index) const {
 				size_t cnt=0;
-				for(typename CONTAINER::const_iterator it=m_source.begin();it!=m_source.end();++it)
+				for(typename CONTAINER::const_iterator it=m_source->begin();it!=m_source->end();++it)
 					if ( dynamic_cast<const_ptr_t>(it->pointer()) ) 
 						if (cnt++ == index) { return SELECTED_CLASS_PTR(it->get_ptr()); }
 				throw std::out_of_range("Index is out of range");
 			}
 			template <typename ELEMENT>
-			void push_back(const ELEMENT &element) { m_source.push_back(element); }
+			void push_back(const ELEMENT &element) { m_source->push_back(element); }
 		private:
-			CONTAINER & m_source;
+			CONTAINER * m_source;
 		}; // end ProxyFilterContainerByClass
 
 		/** A proxy like ProxyFilterContainerByClass, but it directly appears as if 
@@ -219,9 +221,11 @@ namespace maps
 			typedef typename SELECTED_CLASS_PTR::value_type pointee_t;
 			typedef typename SELECTED_CLASS_PTR::value_type* ptr_t;
 			typedef const typename SELECTED_CLASS_PTR::value_type* const_ptr_t;
-			ProxySelectorContainerByClass(CONTAINER &source) : m_source(source) {}
+			ProxySelectorContainerByClass(CONTAINER &source) : m_source(&source) {}
+			ProxySelectorContainerByClass(ProxySelectorContainerByClass<SELECTED_CLASS_PTR, CONTAINER>& ) : m_source() {} // m_source init in parent copy ctor
 			ProxySelectorContainerByClass<SELECTED_CLASS_PTR, CONTAINER>& operator=(const ProxySelectorContainerByClass<SELECTED_CLASS_PTR, CONTAINER>&o) { return *this; } // Do nothing, we must keep refs to our own parent
 #if (__cplusplus>199711L)
+			ProxySelectorContainerByClass(ProxySelectorContainerByClass<SELECTED_CLASS_PTR, CONTAINER>&& ) : m_source() {} // m_source init in parent copy ctor
 			ProxySelectorContainerByClass<SELECTED_CLASS_PTR, CONTAINER>& operator=(ProxySelectorContainerByClass<SELECTED_CLASS_PTR, CONTAINER>&&o) { return *this; } // Do nothing, we must keep refs to our own parent
 #endif
 
@@ -240,10 +244,10 @@ namespace maps
 				else throw std::runtime_error("Tried to derefer NULL pointer");
 			}
 		private:
-			CONTAINER & m_source;
+			CONTAINER * m_source;
 			mutable SELECTED_CLASS_PTR m_ret;
 			void internal_update_ref() const {
-				for(typename CONTAINER::const_iterator it=m_source.begin();it!=m_source.end();++it) {
+				for(typename CONTAINER::const_iterator it=m_source->begin();it!=m_source->end();++it) {
 					if ( dynamic_cast<const_ptr_t>(it->pointer()) ) {
 						m_ret=SELECTED_CLASS_PTR(it->get_ptr());
 						return;
@@ -275,6 +279,14 @@ namespace maps
 		 *  If initializers is NULL, no internal map will be created.
 		 */
 		CMultiMetricMap(const mrpt::maps::TSetOfMetricMapInitializers	*initializers = NULL);
+
+		CMultiMetricMap(const CMultiMetricMap &o);
+		CMultiMetricMap& operator =(const CMultiMetricMap &o);
+
+#if (__cplusplus>199711L)
+		CMultiMetricMap(CMultiMetricMap &&o);
+		CMultiMetricMap& operator =(CMultiMetricMap &&o);
+#endif
 
 		/** Sets the list of internal map according to the passed list of map initializers (Current maps' content will be deleted!) */
 		void  setListOfMaps( const mrpt::maps::TSetOfMetricMapInitializers	*initializers );
