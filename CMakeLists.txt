@@ -273,7 +273,7 @@ include(cmakemodules/script_isense.cmake REQUIRED)		# Support for INTERSENSE Sen
 include(cmakemodules/script_nite2.cmake REQUIRED)		# Check for NITE2 library
 include(cmakemodules/script_yamlcpp.cmake REQUIRED)		# Check for YAMLCPP library
 include(cmakemodules/script_pcap.cmake REQUIRED)        # Check for the libpcap library
-include(cmakemodules/script_ros1.cmake REQUIRED)        # Check for ROS
+#include(cmakemodules/script_ros1.cmake REQUIRED)        # Check for ROS
 
 # ---------------------------------------------------------------------------
 #			OPTIONS
