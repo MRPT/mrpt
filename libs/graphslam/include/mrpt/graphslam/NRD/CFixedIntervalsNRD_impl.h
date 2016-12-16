@@ -97,7 +97,7 @@ bool CFixedIntervalsNRD<GRAPH_t>::updateState(
 
 		if (action->getBestMovementEstimation() ) {
 			mrpt::obs::CActionRobotMovement2DPtr robot_move = action->getBestMovementEstimation();
-			mrpt::poses::CPosePDFPtr increment = robot_move->poseChange;
+			mrpt::poses::CPosePDFPtr increment = robot_move->poseChange.get_ptr();
 			pose_t increment_pose = increment->getMeanVal();
 			InfMat increment_inf_mat;
 			increment->getInformationMatrix(increment_inf_mat);

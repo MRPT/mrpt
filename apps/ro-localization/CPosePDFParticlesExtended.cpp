@@ -46,7 +46,7 @@ CPosePDFParticlesExtended::CPosePDFParticlesExtended( size_t M )
 	m_particles.resize(M);
 
 	for (CParticleList::iterator it=m_particles.begin();it!=m_particles.end();++it)
-		it->d = new TExtendedCPose2D();
+		it->d.reset( new TExtendedCPose2D());
 
 	static TExtendedCPose2D	nullPose;
 	resetDeterministic( nullPose );
@@ -70,31 +70,7 @@ void  CPosePDFParticlesExtended::copyFrom(const CPosePDF &o)
 		CPosePDFParticlesExtended	*pdf = (CPosePDFParticlesExtended*) &o;
 
 		// Both are particles:
-		if (m_particles.size()==pdf->m_particles.size())
-		{
-			for ( itSrc=pdf->m_particles.begin(), itDest = m_particles.begin();
-				   itSrc!=pdf->m_particles.end();
-			      itSrc++, itDest++ )
-			{
-				(*itDest->d) = (*itSrc->d);
-				itDest->log_w = itSrc->log_w;
-			}
-		}
-		else
-		{
-			for ( itDest = m_particles.begin();itDest!=m_particles.end();itDest++ )
-				delete itDest->d;
-
-			m_particles.resize( pdf->m_particles.size() );
-
-			for ( itSrc=pdf->m_particles.begin(), itDest = m_particles.begin();
-				   itSrc!=pdf->m_particles.end();
-			      itSrc++, itDest++ )
-			{
-				itDest->d = new TExtendedCPose2D( *itSrc->d );
-				itDest->log_w = itSrc->log_w;
-			}
-		}
+		m_particles = pdf->m_particles;
 	}
 	else
 	if (o.GetRuntimeClass()==CLASS_ID(CPosePDFGaussian))
@@ -106,16 +82,13 @@ void  CPosePDFParticlesExtended::copyFrom(const CPosePDF &o)
 
 		randomGenerator.drawGaussianMultivariateMany(parts,M,pdf->cov);
 
-		for ( itDest = m_particles.begin();itDest!=m_particles.end();itDest++ )
-				delete itDest->d;
-
 		m_particles.clear();
 		m_particles.resize(M);
 
 		for ( itDest = m_particles.begin(),partsIt=parts.begin();itDest!=m_particles.end();itDest++,partsIt++ )
 		{
 			itDest->log_w = 0;
-            itDest->d = new TExtendedCPose2D();
+			itDest->d.reset( new TExtendedCPose2D());
 			itDest->d->pose.x( pdf->mean.x() + (*partsIt)[0] );
 			itDest->d->pose.x( pdf->mean.y() + (*partsIt)[1] );
 			itDest->d->pose.phi(  pdf->mean.phi() + (*partsIt)[2] );
