@@ -135,7 +135,7 @@ namespace bayes
 				else
 				{
 					/* Make a copy of the particle's data: */
-					ASSERT_( derived().m_particles[ sorted_idx ].d != NULL);
+					ASSERT_( derived().m_particles[ sorted_idx ].d );
 					parts[i].d.reset(new typename Derived::CParticleDataContent(*derived().m_particles[sorted_idx].d));
 				}
 			}

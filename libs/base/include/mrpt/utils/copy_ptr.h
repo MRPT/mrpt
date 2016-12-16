@@ -38,16 +38,17 @@ namespace mrpt
 			copy_ptr<T> &operator =(const copy_ptr<T> & o) {
 				if (this == &o) return *this;
 				this->reset();
-				m_ptr = copier_t().copy(o.m_ptr);
+				ptr_base_t::m_ptr = typename ptr_base_t::copier_t().copy(o.m_ptr);
 				return *this;
 			}
 #if (__cplusplus>199711L)
 			/** move ctor */
 			copy_ptr(copy_ptr<T> && o) : ptr_base_t(o) {}
 			/** move operator */
-			copy_ptr<T> &operator =(const copy_ptr<T> && o) {
+			copy_ptr<T> &operator =(copy_ptr<T> && o) {
 				if (this == &o) return *this;
-				ptr_base_t::operator =(o);
+				ptr_base_t::m_ptr = o.m_ptr;
+				o.m_ptr = nullptr;
 				return *this;
 			}
 #endif
