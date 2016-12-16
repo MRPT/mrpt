@@ -51,11 +51,6 @@ namespace mrpt
 			{
 			}
 
-			virtual ~CLSLAMParticleData()
-			{
-				robotPoses.clear();
-			}
-
 			mrpt::maps::CMultiMetricMap            metricMaps;
 			TMapPoseID2Pose3D  robotPoses;
 		};
