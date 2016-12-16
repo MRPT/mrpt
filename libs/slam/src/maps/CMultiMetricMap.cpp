@@ -163,28 +163,61 @@ struct MapIsEmpty
 
 // ------------------- End of map-operations helper templates -------------------
 
+#define ALL_PROXIES_INIT \
+	m_pointsMaps(maps), \
+	m_gridMaps(maps), \
+	m_octoMaps(maps), \
+	m_colourOctoMaps(maps), \
+	m_gasGridMaps(maps), \
+	m_wifiGridMaps(maps), \
+	m_heightMaps(maps), \
+	m_heightMRFMaps(maps), \
+	m_reflectivityMaps(maps), \
+	m_colourPointsMap(maps), \
+	m_weightedPointsMap(maps), \
+	m_landmarksMap(maps), \
+	m_beaconMap(maps)
+
 // Ctor
 CMultiMetricMap::CMultiMetricMap(const TSetOfMetricMapInitializers *initializers) :
 	maps(),
-	m_pointsMaps(maps),
-	m_gridMaps(maps),
-	m_octoMaps(maps),
-	m_colourOctoMaps(maps),
-	m_gasGridMaps(maps),
-	m_wifiGridMaps(maps),
-	m_heightMaps(maps),
-	m_heightMRFMaps(maps),
-	m_reflectivityMaps(maps),
-	m_colourPointsMap(maps),
-	m_weightedPointsMap(maps),
-	m_landmarksMap(maps),
-	m_beaconMap(maps),
+	ALL_PROXIES_INIT,
 	m_ID(0)
 {
 	MRPT_START
 	setListOfMaps(initializers);
 	MRPT_END
 }
+
+CMultiMetricMap::CMultiMetricMap(const CMultiMetricMap &o) :
+	maps(o.maps),
+	ALL_PROXIES_INIT,
+	m_ID(o.m_ID)
+{
+}
+
+CMultiMetricMap& CMultiMetricMap::operator =(const CMultiMetricMap &o)
+{
+	maps = o.maps;
+	m_ID = o.m_ID;
+	return *this;
+}
+
+#if (__cplusplus>199711L)
+CMultiMetricMap::CMultiMetricMap(CMultiMetricMap &&o) :
+	maps(std::move(o.maps)),
+	ALL_PROXIES_INIT,
+	m_ID(o.m_ID)
+{
+}
+
+CMultiMetricMap& CMultiMetricMap::operator =(CMultiMetricMap &&o)
+{
+	maps = std::move(o.maps);
+	m_ID = o.m_ID;
+	return *this;
+}
+#endif
 
 /*---------------------------------------------------------------
 			setListOfMaps
