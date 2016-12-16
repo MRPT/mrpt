@@ -712,7 +712,9 @@ void CAbstractPTGBasedReactive::STEP5_PTGEvaluator(
 	{
 		mrpt::kinematics::CVehicleVelCmdPtr desired_cmd;
 		desired_cmd = holonomicMovement.PTG->directionToMotionCommand(kDirection);
-		if(typeid(*m_last_vel_cmd) == typeid(*desired_cmd)){
+		const mrpt::kinematics::CVehicleVelCmd *ptr1 = m_last_vel_cmd.pointer();
+		const mrpt::kinematics::CVehicleVelCmd *ptr2 = desired_cmd.pointer();
+		if(typeid(*ptr1) == typeid(*ptr2)){
 			ASSERT_EQUAL_(m_last_vel_cmd->getVelCmdLength(), desired_cmd->getVelCmdLength());
 
 			double simil_score = 0.5;
