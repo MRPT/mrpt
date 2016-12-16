@@ -156,9 +156,6 @@ namespace mrpt
 			/** Constructor */
 			CMetricMap();
 
-			/** Destructor */
-			virtual ~CMetricMap();
-
 			/** Computes the matching between this and another 2D point map, which includes finding:
 			 *   - The set of points pairs in each map
 			 *   - The mean squared distance between corresponding pairs.

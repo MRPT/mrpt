@@ -7,7 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/utils/clone_ptr.h>
+#include <mrpt/utils/poly_ptr.h>
 #include <mrpt/utils/copy_ptr.h>
 
 #include <mrpt/poses/CPose2D.h>
@@ -67,9 +67,9 @@ TEST(copy_ptr, StlContainer)
 	EXPECT_TRUE(v[3]->second == 3);
 }
 
-TEST(clone_ptr, SimpleOps)
+TEST(poly_ptr, SimpleOps)
 {
-	mrpt::utils::clone_ptr<mrpt::poses::CPose2D> ptr1;
+	mrpt::utils::poly_ptr<mrpt::poses::CPose2D> ptr1;
 	EXPECT_FALSE(ptr1);
 
 	ptr1.reset(new mrpt::poses::CPose2D());
@@ -79,14 +79,14 @@ TEST(clone_ptr, SimpleOps)
 	EXPECT_NEAR( ptr1->x(), 123.0, 1e-9);
 
 	{
-		mrpt::utils::clone_ptr<mrpt::poses::CPose2D> ptr2 = ptr1;
+		mrpt::utils::poly_ptr<mrpt::poses::CPose2D> ptr2 = ptr1;
 		EXPECT_TRUE(*ptr1 == *ptr2);
 
 		ptr2->x_incr(1.0);
 		EXPECT_FALSE(*ptr1 == *ptr2);
 	}
 	{
-		mrpt::utils::clone_ptr<mrpt::poses::CPose2D> ptr2;
+		mrpt::utils::poly_ptr<mrpt::poses::CPose2D> ptr2;
 		ptr2 = ptr1;
 		EXPECT_TRUE(*ptr1 == *ptr2);
 
@@ -95,9 +95,9 @@ TEST(clone_ptr, SimpleOps)
 	}
 }
 
-TEST(clone_ptr, StlContainer)
+TEST(poly_ptr, StlContainer)
 {
-	typedef mrpt::utils::clone_ptr< mrpt::poses::CPose2D > str2d_ptr;
+	typedef mrpt::utils::poly_ptr< mrpt::poses::CPose2D > str2d_ptr;
 
 	str2d_ptr ptr;
 	EXPECT_FALSE(ptr);

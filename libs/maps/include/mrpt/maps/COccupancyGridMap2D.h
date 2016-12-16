@@ -786,7 +786,7 @@ namespace maps
 		// See docs in base class
 		double internal_computeObservationLikelihood( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D &takenFrom ) MRPT_OVERRIDE;
 		// See docs in base class
-		bool internal_canComputeObservationLikelihood( const mrpt::obs::CObservation *obs ) MRPT_OVERRIDE;
+		bool internal_canComputeObservationLikelihood( const mrpt::obs::CObservation *obs ) const MRPT_OVERRIDE;
 
 		/** Returns a byte with the occupancy of the 8 sorrounding cells.
 		 * \param cx The cell index
