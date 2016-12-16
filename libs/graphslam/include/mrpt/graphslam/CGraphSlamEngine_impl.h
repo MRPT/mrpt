@@ -430,7 +430,7 @@ bool CGraphSlamEngine<GRAPH_t>::execGraphSlamStep(
 
 				CActionRobotMovement2DPtr robot_move =
 					action->getBestMovementEstimation();
-				CPosePDFPtr increment = robot_move->poseChange;
+				CPosePDFPtr increment = robot_move->poseChange.get_ptr();
 				pose_t increment_pose = increment->getMeanVal();
 				m_curr_odometry_only_pose += increment_pose;
 
@@ -515,7 +515,7 @@ bool CGraphSlamEngine<GRAPH_t>::execGraphSlamStep(
 		// parse the current action
 		CActionRobotMovement2DPtr robot_move =
 			action->getBestMovementEstimation();
-		CPosePDFPtr increment = robot_move->poseChange;
+		CPosePDFPtr increment = robot_move->poseChange.get_ptr();
 		pose_t increment_pose = increment->getMeanVal();
 		m_curr_odometry_only_pose += increment_pose;
 
