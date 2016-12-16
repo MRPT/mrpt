@@ -73,9 +73,6 @@ void CWaypointsNavigator::navigationStep()
 
 	using mrpt::utils::square;
 
-	// Call base navigation step to execute one-single waypoint navigation, as usual:
-	CAbstractNavigator::navigationStep();  // This internally locks "m_nav_cs"
-
 	// --------------------------------------
 	//     Waypoint navigation algorithm
 	// --------------------------------------
@@ -190,6 +187,12 @@ void CWaypointsNavigator::navigationStep()
 			this->navigate( &nav_cmd );
 		}
 	}
+
+	// Note: navigationStep() called *after* waypoints part to get end-of-navigation events *after*
+	//       waypoints-related events:
+
+	// Call base navigation step to execute one-single waypoint navigation, as usual:
+	CAbstractNavigator::navigationStep();  // This internally locks "m_nav_cs"
 
 	MRPT_END
 }
