@@ -362,8 +362,9 @@ void CActivMediaRobotBase::doProcess()
 		obsOdom->encoderLeftTicks = lticks;
 		obsOdom->encoderRightTicks = rticks;
 		obsOdom->hasVelocities = true;
-		obsOdom->velocityLin = vel;
-		obsOdom->velocityAng = w;
+		obsOdom->velocityLocal.vx = vel;
+		obsOdom->velocityLocal.vy = .0;
+		obsOdom->velocityLocal.omega = w;
 
 		this->appendObservation(obsOdom);	// Send to the output queue
 	}
