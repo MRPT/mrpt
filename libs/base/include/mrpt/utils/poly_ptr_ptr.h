@@ -57,7 +57,7 @@ namespace mrpt
 				o.m_smartptr.clear_unique();
 			}
 			/** move operator */
-			poly_ptr_ptr<T> &operator =(const poly_ptr_ptr<T> && o) {
+			poly_ptr_ptr<T> &operator =(poly_ptr_ptr<T> && o) {
 				if (this == &o) return *this;
 				m_smartptr = o.m_smartptr;
 				o.m_smartptr.clear_unique();
