@@ -20,7 +20,7 @@ namespace mrpt
 		/** Smart pointer for non-polymorphic classes.
 		* No shared copies, that is, each `copy_ptr<T>` owns a unique instance of `T`.
 		* Copying a `copy_ptr<T>` invokes the copy operator for `T`.
-		* \sa clone_ptr<T>
+		* \sa poly_ptr<T>
 		*/
 		template <typename T>
 		class copy_ptr : public internal::generic_copier_ptr<T, internal::CopyStatic<T> >
@@ -33,7 +33,7 @@ namespace mrpt
 			/** Default ctor; init to nullptr. */
 			copy_ptr() : ptr_base_t() {}
 			/** copy ctor: makes a copy of the object via `clone()` */
-			copy_ptr(const copy_ptr & o) : ptr_base_t(o) {}
+			copy_ptr(const copy_ptr<T> & o) : ptr_base_t(o) {}
 			/** copy operator */
 			copy_ptr<T> &operator =(const copy_ptr<T> & o) {
 				if (this == &o) return *this;
@@ -41,6 +41,16 @@ namespace mrpt
 				m_ptr = copier_t().copy(o.m_ptr);
 				return *this;
 			}
+#if (__cplusplus>199711L)
+			/** move ctor */
+			copy_ptr(copy_ptr<T> && o) : ptr_base_t(o) {}
+			/** move operator */
+			copy_ptr<T> &operator =(const copy_ptr<T> && o) {
+				if (this == &o) return *this;
+				ptr_base_t::operator =(o);
+				return *this;
+			}
+#endif
 		};
 
 		/** @} */  // end of grouping

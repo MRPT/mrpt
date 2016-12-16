@@ -50,16 +50,29 @@ namespace mrpt
 				m_smartptr.make_unique();
 				return *this;
 			}
-
+#if (__cplusplus>199711L)
+			/** move ctor */
+			poly_ptr_ptr(poly_ptr_ptr && o) {
+				m_smartptr = o.m_smartptr;
+				o.m_smartptr.clear_unique();
+			}
+			/** move operator */
+			poly_ptr_ptr<T> &operator =(const poly_ptr_ptr<T> && o) {
+				if (this == &o) return *this;
+				m_smartptr = o.m_smartptr;
+				o.m_smartptr.clear_unique();
+				return *this;
+			}
+#endif
 			~poly_ptr_ptr() {}
 
 			typename T::value_type * pointer() {
 				if (m_smartptr) return m_smartptr.pointer();
-				else throw std::runtime_error("dereferencing NULL clone_ptr");
+				else throw std::runtime_error("dereferencing NULL poly_ptr");
 			}
 			const typename T::value_type * pointer() const {
 				if (m_smartptr) return m_smartptr.pointer();
-				else throw std::runtime_error("dereferencing NULL clone_ptr");
+				else throw std::runtime_error("dereferencing NULL poly_ptr");
 			}
 
 			typename T::value_type * operator->() { return pointer(); }
