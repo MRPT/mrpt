@@ -129,7 +129,7 @@ namespace bayes
 				if (!oldParticlesReused[sorted_idx])
 				{
 					/* Reuse the data from the particle: */
-					parts[i].d = derived().m_particles[ sorted_idx ].d;
+					parts[i].d.move_from( derived().m_particles[ sorted_idx ].d );
 					oldParticlesReused[sorted_idx]=true;
 				}
 				else
