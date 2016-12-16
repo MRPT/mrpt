@@ -24,21 +24,14 @@ using namespace mrpt::system;
 IMPLEMENTS_SERIALIZABLE( CPointPDFParticles, CPointPDF, mrpt::poses )
 IMPLEMENTS_SERIALIZABLE( TSimple3DPoint, CSerializable, mrpt::poses )
 
-
-/*---------------------------------------------------------------
-		Constructor
-  ---------------------------------------------------------------*/
 CPointPDFParticles::CPointPDFParticles(size_t numParticles)
 {
 	setSize(numParticles);
 }
 
-/*---------------------------------------------------------------
-		Destructor
-  ---------------------------------------------------------------*/
-CPointPDFParticles::~CPointPDFParticles()
-{
-	clear();
+/** Clear all the particles (free memory) */
+void CPointPDFParticles::clear() { 
+	setSize(0); 
 }
 
 /*---------------------------------------------------------------
@@ -48,16 +41,12 @@ void CPointPDFParticles::setSize(
 	size_t	numberParticles,
 	const	CPoint3D &defaultValue)
 {
-	// Free old particles:
-	CParticleList::iterator	it;
-	for (it=m_particles.begin();it!=m_particles.end();++it)
-		delete it->d;
-
+	// Free old particles: automatic via smart ptr
 	m_particles.resize(numberParticles);
-	for (it=m_particles.begin();it!=m_particles.end();++it)
+	for (auto &it : m_particles)
 	{
-		it->log_w = 0;
-		it->d = new TSimple3DPoint(defaultValue);
+		it.log_w = 0;
+		it.d.reset(new TSimple3DPoint(defaultValue));
 	}
 }
 
@@ -182,10 +171,6 @@ void  CPointPDFParticles::readFromStream(mrpt::utils::CStream &in,int version)
 	};
 }
 
-
-/*---------------------------------------------------------------
-						operator =
-  ---------------------------------------------------------------*/
 void  CPointPDFParticles::copyFrom(const CPointPDF &o)
 {
 	if (this == &o) return;		// It may be used sometimes

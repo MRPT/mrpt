@@ -134,10 +134,6 @@ void  CPose3DQuatPDFGaussian::readFromStream(mrpt::utils::CStream &in,int versio
 	};
 }
 
-
-/*---------------------------------------------------------------
-						operator =
-  ---------------------------------------------------------------*/
 void  CPose3DQuatPDFGaussian::copyFrom(const CPose3DQuatPDF &o)
 {
 	if (this == &o) return;		// It may be used sometimes
@@ -146,9 +142,6 @@ void  CPose3DQuatPDFGaussian::copyFrom(const CPose3DQuatPDF &o)
 	o.getCovarianceAndMean(cov,mean);
 }
 
-/*---------------------------------------------------------------
-						operator =
-  ---------------------------------------------------------------*/
 void  CPose3DQuatPDFGaussian::copyFrom(const CPosePDF &o)
 {
 	CPose3DPDFGaussian aux;
@@ -172,9 +165,7 @@ void aux_poseypr2posequat(const CArrayDouble<6> &x,const double&dummy, CArrayDou
 	y[5] = q[2];
 	y[6] = q[3];
 }
-/*---------------------------------------------------------------
-						operator =
-  ---------------------------------------------------------------*/
+
 void  CPose3DQuatPDFGaussian::copyFrom(const CPose3DPDFGaussian &o)
 {
 	if (!mrpt::global_settings::USE_SUT_EULER2QUAT_CONVERSION)

@@ -12,6 +12,8 @@
 #include <mrpt/obs/CAction.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPosePDF.h>
+#include <mrpt/utils/poly_ptr_ptr.h>
+#include <mrpt/math/lightweight_geom_data.h>
 
 namespace mrpt
 {
@@ -23,6 +25,7 @@ namespace mrpt
 		 *
 		 *  See the tutorial on <a href="http://www.mrpt.org/Probabilistic_Motion_Models" >probabilistic motion models</a>.
 		 *
+		 * \note [New in MRPT 1.5.0] Velocity is now encoded as mrpt::math::TTwist2D as a more general version of the old (linVel, angVel).
 		 * \sa CAction
 	 	 * \ingroup mrpt_obs_grp
 		 */
@@ -41,11 +44,8 @@ namespace mrpt
 			};
 
 			CActionRobotMovement2D(); //!< Constructor
-			CActionRobotMovement2D(const CActionRobotMovement2D &o);  //!< Copy constructor
-			CActionRobotMovement2D & operator =(const CActionRobotMovement2D &o); //!< Copy operator
-			~CActionRobotMovement2D();  //!< Destructor
 
-			mrpt::poses::CPosePDFPtr				poseChange; //!< The 2D pose change probabilistic estimation.
+			mrpt::utils::poly_ptr_ptr<mrpt::poses::CPosePDFPtr> poseChange; //!< The 2D pose change probabilistic estimation.
 			/** This is the raw odometry reading, and only is used when "estimationMethod" is "TEstimationMethod::emOdometry" */
 			mrpt::poses::CPose2D					rawOdometryIncrementReading;
 			TEstimationMethod		estimationMethod; //!< This fields indicates the way in which this estimation was obtained.
@@ -56,8 +56,11 @@ namespace mrpt
 			  */
 			int32_t					encoderLeftTicks,encoderRightTicks;
 
-			bool					hasVelocities; //!< If "true" means that "velocityLin" and "velocityAng" contain valid values.
-			float					velocityLin, velocityAng; //!< The velocity of the robot, linear in meters/sec and angular in rad/sec.
+			bool  hasVelocities; //!< If "true" means that "velocityLin" and "velocityAng" contain valid values.
+			mrpt::math::TTwist2D velocityLocal; //!< If "hasVelocities"=true, the robot velocity in local (robot frame, +X forward) coordinates.
+
+			double velocityLin() const { return velocityLocal.vx; }
+			double velocityAng() const { return velocityLocal.omega; }
 
 			enum TDrawSampleMotionModel
 			{

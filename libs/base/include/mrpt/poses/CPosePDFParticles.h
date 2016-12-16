@@ -39,25 +39,12 @@ namespace mrpt
 			DEFINE_SERIALIZABLE( CPosePDFParticles )
 
 		public:
-			/** Free all the memory associated to m_particles, and set the number of parts = 0
-			  */
-			void  clear();
+			void  clear(); //!< Free all the memory associated to m_particles, and set the number of parts = 0
 
 			/** Constructor
 			  * \param M The number of m_particles.
 			  */
 			CPosePDFParticles( size_t M = 1 );
-
-			/** Copy constructor:
-			  */
-			inline CPosePDFParticles( const CPosePDFParticles& obj )
-			{
-				copyFrom( obj );
-			}
-
-			/** Destructor
-			 */
-			virtual ~CPosePDFParticles();
 
 			/** Copy operator, translating if necesary (for example, between m_particles and gaussian representations)
 			  */

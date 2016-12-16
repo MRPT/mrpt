@@ -194,7 +194,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView( const CSerializablePtr & sel_ob
 
 			if (act->poseChange->GetRuntimeClass()==CLASS_ID(CPosePDFParticles))
 			{
-				CPosePDFParticlesPtr aux = CPosePDFParticlesPtr( act->poseChange );
+				CPosePDFParticlesPtr aux = CPosePDFParticlesPtr( act->poseChange.get_ptr() );
 				cout << format (" (Particle count = %u)\n", (unsigned)aux->m_particles.size() );
 			}
 			cout << endl;
@@ -222,7 +222,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView( const CSerializablePtr & sel_ob
 
 			if (act->hasVelocities)
 			{
-				cout << format(" Velocity info: v=%.03f m/s  w=%.03f deg/s\n", act->velocityLin, RAD2DEG(act->velocityAng) );
+				cout << format(" Velocity info: v=%s\n", act->velocityLocal.asString().c_str());
 			}
 			else    cout << "Velocity info: Not available!\n";
 

@@ -30,11 +30,6 @@ CMetricMap::CMetricMap()
 {
 }
 
-CMetricMap::~CMetricMap()
-{
-
-}
-
 /** Erase all the contents of the map */
 void  CMetricMap::clear()
 {
@@ -96,7 +91,7 @@ double CMetricMap::computeObservationLikelihood( const CObservation *obs, const 
 /*---------------------------------------------------------------
 				canComputeObservationLikelihood
   ---------------------------------------------------------------*/
-bool CMetricMap::canComputeObservationsLikelihood( const CSensoryFrame &sf )
+bool CMetricMap::canComputeObservationsLikelihood( const CSensoryFrame &sf ) const
 {
 	bool can = false;
 	for (CSensoryFrame::const_iterator it=sf.begin();!can && it!=sf.end();++it)
@@ -130,7 +125,7 @@ bool CMetricMap::insertObservationPtr(
 	MRPT_END
 }
 
-bool CMetricMap::canComputeObservationLikelihood( const CObservationPtr &obs ) {
+bool CMetricMap::canComputeObservationLikelihood( const CObservationPtr &obs ) const {
 	return canComputeObservationLikelihood(obs.pointer());
 }
 
@@ -191,7 +186,7 @@ float CMetricMap::squareDistanceToClosestCorrespondence(
 	MRPT_END
 }
 
-bool CMetricMap::canComputeObservationLikelihood( const mrpt::obs::CObservation *obs ) 
+bool CMetricMap::canComputeObservationLikelihood( const mrpt::obs::CObservation *obs ) const
 { 
 	if (genericMapParams.enableObservationLikelihood)
 			return internal_canComputeObservationLikelihood(obs); 

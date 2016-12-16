@@ -44,15 +44,6 @@ namespace mrpt
 			  */
 			CPose3DPDFParticles( size_t M = 1 );
 
-			/** Copy constructor */
-			inline CPose3DPDFParticles( const CPose3DPDFParticles& obj ) :
-				CPose3DPDF(),
-				CParticleFilterData<CPose3D>()
-			{
-				copyFrom( obj );
-			}
-			virtual ~CPose3DPDFParticles();//!< Destructor
-
 			void copyFrom(const CPose3DPDF &o) MRPT_OVERRIDE; //!< Copy operator, translating if necesary (for example, between m_particles and gaussian representations)
 
 			/** Reset the PDF to a single point: All m_particles will be set exactly to the supplied pose.

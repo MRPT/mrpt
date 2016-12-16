@@ -157,7 +157,7 @@ void CHMTSLAM::perform_TLC(
 		for (size_t i=0;i<pi.pdf.size();i++)
 		{
 			// Transport coordinates:
-			CPose3D  &p = *pi.pdf.m_particles[i].d;
+			const CPose3D  &p = *pi.pdf.m_particles[i].d;
 			LMH.m_particles[i].d->robotPoses[poseId] = AeRefInLMH + p;
 			//pi.sf.insertObservationsInto( &LMH.m_particles[i].d->metricMaps, pi.pdf.m_particles[i].d );
 		}

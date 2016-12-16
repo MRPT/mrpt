@@ -198,11 +198,6 @@ void  CPointPDFSOG::readFromStream(mrpt::utils::CStream &in,int version)
 	};
 }
 
-
-
-/*---------------------------------------------------------------
-						operator =
-  ---------------------------------------------------------------*/
 void  CPointPDFSOG::copyFrom(const CPointPDF &o)
 {
 	MRPT_START

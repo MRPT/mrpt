@@ -136,7 +136,7 @@ bool CICPCriteriaNRD<GRAPH_t>::updateState(
 			// if it exists use the odometry information to reject wrong ICP matches
 			mrpt::obs::CActionRobotMovement2DPtr robot_move =
 				action->getBestMovementEstimation();
-			mrpt::poses::CPosePDFPtr increment = robot_move->poseChange;
+			mrpt::poses::CPosePDFPtr increment = robot_move->poseChange.get_ptr();
 			mrpt::poses::CPosePDFGaussianInf increment_gaussian;
 			increment_gaussian.copyFrom(*increment);
 			m_latest_odometry_PDF += increment_gaussian;

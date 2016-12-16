@@ -30,19 +30,16 @@ CPose3DPDFParticles::CPose3DPDFParticles( size_t M )
 {
 	m_particles.resize(M);
 
-	for (CPose3DPDFParticles::CParticleList::iterator it=m_particles.begin();it!=m_particles.end();++it)
+	for (auto &it : m_particles)
 	{
-		it->log_w	= 0;
-		it->d		= new CPose3D();
+		it.log_w = .0;
+		it.d.reset(new CPose3D());
 	}
 
-	static CPose3D	nullPose(0,0,0);
+	CPose3D	nullPose(0,0,0);
 	resetDeterministic( nullPose );
 }
 
-/*---------------------------------------------------------------
-						operator =
-  ---------------------------------------------------------------*/
 void  CPose3DPDFParticles::copyFrom(const CPose3DPDF &o)
 {
 	MRPT_START
@@ -54,34 +51,10 @@ void  CPose3DPDFParticles::copyFrom(const CPose3DPDF &o)
 
 	if (o.GetRuntimeClass()==CLASS_ID(CPose3DPDFParticles))
 	{
-		const CPose3DPDFParticles	*pdf = static_cast<const CPose3DPDFParticles*>( &o );
+		const CPose3DPDFParticles	*pdf = dynamic_cast<const CPose3DPDFParticles*>( &o );
+		ASSERT_(pdf);
 
-		// Both are m_particles:
-		if (m_particles.size()==pdf->m_particles.size())
-		{
-			for ( itSrc=pdf->m_particles.begin(), itDest = m_particles.begin();
-				   itSrc!=pdf->m_particles.end();
-			      itSrc++, itDest++ )
-			{
-				(*itDest->d) = (*itSrc->d);
-				itDest->log_w = itSrc->log_w;
-			}
-		}
-		else
-		{
-			for ( itDest = m_particles.begin();itDest!=m_particles.end();++itDest )
-				delete itDest->d;
-
-			m_particles.resize( pdf->m_particles.size() );
-
-			for ( itSrc=pdf->m_particles.begin(), itDest = m_particles.begin();
-				   itSrc!=pdf->m_particles.end();
-			      ++itSrc, ++itDest )
-			{
-				itDest->d = new CPose3D( *itSrc->d );
-				itDest->log_w = itSrc->log_w;
-			}
-		}
+		m_particles = pdf->m_particles;
 	}
 	else
 	if (o.GetRuntimeClass()==CLASS_ID(CPose3DPDFGaussian))
@@ -90,14 +63,6 @@ void  CPose3DPDFParticles::copyFrom(const CPose3DPDF &o)
 	}
 
 	MRPT_END
-}
-
-/*---------------------------------------------------------------
-	Destructor
-  ---------------------------------------------------------------*/
-CPose3DPDFParticles::~CPose3DPDFParticles( )
-{
-	clearParticles();
 }
 
 /*---------------------------------------------------------------
@@ -401,8 +366,8 @@ void  CPose3DPDFParticles::resetDeterministic( const CPose3D &location,
 	{
 		clearParticles();
 		m_particles.resize(particlesCount);
-		for (it=m_particles.begin();it!=m_particles.end();++it)
-			it->d = new CPose3D();
+		for (it = m_particles.begin(); it != m_particles.end(); ++it)
+			it->d.reset(new CPose3D());
 	}
 
 	for (it=m_particles.begin();it!=m_particles.end();++it)

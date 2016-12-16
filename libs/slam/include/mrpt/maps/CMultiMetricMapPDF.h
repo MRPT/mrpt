@@ -45,8 +45,8 @@ namespace maps
 		{
 		}
 
-		CMultiMetricMap			mapTillNow;
-		std::deque<mrpt::math::TPose3D>		robotPath;
+		CMultiMetricMap                 mapTillNow;
+		std::deque<mrpt::math::TPose3D> robotPath;
 	};
 	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CRBPFParticleData, mrpt::utils::CSerializable, SLAM_IMPEXP )
 
@@ -71,29 +71,19 @@ namespace maps
 		DEFINE_SERIALIZABLE( CMultiMetricMapPDF )
 
 	protected:
-		/** The PF algorithm implementation.
-		  */
+		// PF algorithm implementations:
 		void  prediction_and_update_pfStandardProposal(
 			const mrpt::obs::CActionCollection	* action,
 			const mrpt::obs::CSensoryFrame		* observation,
 			const bayes::CParticleFilter::TParticleFilterOptions &PF_options ) MRPT_OVERRIDE;
-
-		/** The PF algorithm implementation.
-		  */
 		void  prediction_and_update_pfOptimalProposal(
 			const mrpt::obs::CActionCollection	* action,
 			const mrpt::obs::CSensoryFrame		* observation,
 			const bayes::CParticleFilter::TParticleFilterOptions &PF_options ) MRPT_OVERRIDE;
-
-		/** The PF algorithm implementation.
-		  */
 		void  prediction_and_update_pfAuxiliaryPFOptimal(
 			const mrpt::obs::CActionCollection	* action,
 			const mrpt::obs::CSensoryFrame		* observation,
 			const bayes::CParticleFilter::TParticleFilterOptions &PF_options ) MRPT_OVERRIDE;
-
-		/** The PF algorithm implementation.
-		  */
 		void  prediction_and_update_pfAuxiliaryPFStandard(
 			const mrpt::obs::CActionCollection	* action,
 			const mrpt::obs::CSensoryFrame		* observation,
@@ -105,18 +95,8 @@ namespace maps
 		mrpt::maps::CMultiMetricMap			averageMap;
 		bool					averageMapIsUpdated;
 
-		/** The SFs and their corresponding pose estimations:
-		 */
-		mrpt::maps::CSimpleMap	SFs;
-
-		/** A mapping between indexes in the SFs to indexes in the robot paths from particles.
-		  */
-		std::vector<uint32_t>	SF2robotPath;
-
-
-		/** Entropy aux. function
-		  */
-		float  H(float p);
+		mrpt::maps::CSimpleMap  SFs; //!< The SFs and their corresponding pose estimations
+		std::vector<uint32_t>   SF2robotPath; //!< A mapping between indexes in the SFs to indexes in the robot paths from particles.
 
 	public:
 
@@ -165,15 +145,9 @@ namespace maps
 			const mrpt::maps::TSetOfMetricMapInitializers		    *mapsInitializers = NULL,
 			const TPredictionParams						    *predictionOptions = NULL );
 
-		/** Destructor
-		 */
-		virtual ~CMultiMetricMapPDF();
-
 		/** Clear all elements of the maps, and restore all paths to a single starting pose */
 		void  clear( const mrpt::poses::CPose2D &initialPose );
-
-		/** Clear all elements of the maps, and restore all paths to a single starting pose */
-		void  clear( const mrpt::poses::CPose3D &initialPose );
+		void  clear( const mrpt::poses::CPose3D &initialPose ); //!< \overload
 
 		 /** Returns the estimate of the robot pose as a particles PDF for the instant of time "timeStep", from 0 to N-1.
 		  * \sa getEstimatedPosePDF
@@ -190,11 +164,10 @@ namespace maps
 		/** Returns the weighted averaged map based on the current best estimation. If you need a persistent copy of this object, please use "CSerializable::duplicate" and use the copy.
 		  * \sa Almost 100% sure you would prefer the best current map, given by getCurrentMostLikelyMetricMap()
 		  */
-		CMultiMetricMap * getCurrentMetricMapEstimation( );
+		const CMultiMetricMap * getAveragedMetricMapEstimation();
 
-		/** Returns a pointer to the current most likely map (associated to the most likely particle).
-		  */
-		CMultiMetricMap  * getCurrentMostLikelyMetricMap( );
+		/** Returns a pointer to the current most likely map (associated to the most likely particle) */
+		const CMultiMetricMap  * getCurrentMostLikelyMetricMap() const;
 
 		/** Get the number of CSensoryFrame inserted into the internal member SFs */
 		size_t  getNumberOfObservationsInSimplemap() const { return SFs.size(); }
@@ -226,16 +199,11 @@ namespace maps
 		  */
 		void  saveCurrentPathEstimationToTextFile( const std::string  &fil );
 
-		/** An index [0,1] measuring how much information an observation aports to the map (Typ. threshold=0.07)
-		  */
-		float						newInfoIndex;
-
 	 private:
-		/** Rebuild the "expected" grid map. Used internally, do not call
-		  */
+		/** Rebuild the "expected" grid map. Used internally, do not call  */
 		void  rebuildAverageMap();
 
-
+		float newInfoIndex; //!< An index [0,1] measuring how much information an observation aports to the map (Typ. threshold=0.07)
 
 	public:
 			/** \name Virtual methods that the PF_implementations assume exist.
