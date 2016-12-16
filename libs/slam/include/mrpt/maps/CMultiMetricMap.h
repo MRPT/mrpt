@@ -133,7 +133,7 @@ namespace maps
 		 * \param obs The observation.
 		 * \sa computeObservationLikelihood
 		 */
-		bool internal_canComputeObservationLikelihood( const mrpt::obs::CObservation *obs ) MRPT_OVERRIDE;
+		bool internal_canComputeObservationLikelihood( const mrpt::obs::CObservation *obs ) const MRPT_OVERRIDE;
 		// See docs in base class
 		double	 internal_computeObservationLikelihood( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D &takenFrom ) MRPT_OVERRIDE;
 
@@ -172,7 +172,7 @@ namespace maps
 			for (const_iterator it = begin();it!=end();++it)
 				if ( (*it)->GetRuntimeClass()->derivedFrom( class_ID ) )
 					if (foundCount++ == ith)
-						return typename T::SmartPtr(*it);
+						return typename T::SmartPtr(it->get_ptr());
 			return typename T::SmartPtr();	// Not found: return empty smart pointer
 		}
 
@@ -186,6 +186,10 @@ namespace maps
 			typedef const typename SELECTED_CLASS_PTR::value_type* const_ptr_t;
 			ProxyFilterContainerByClass(CONTAINER &source) : m_source(source) {}
 
+			ProxyFilterContainerByClass<SELECTED_CLASS_PTR, CONTAINER>& operator=(const ProxyFilterContainerByClass<SELECTED_CLASS_PTR, CONTAINER>&o) { return *this; } // Do nothing, we must keep refs to our own parent
+#if (__cplusplus>199711L)
+			ProxyFilterContainerByClass<SELECTED_CLASS_PTR, CONTAINER>& operator=(ProxyFilterContainerByClass<SELECTED_CLASS_PTR, CONTAINER>&&o) { return *this; } // Do nothing, we must keep refs to our own parent
+#endif
 			bool empty() const { return size()==0; }
 			size_t size() const {
 				size_t cnt=0;
@@ -216,6 +220,11 @@ namespace maps
 			typedef typename SELECTED_CLASS_PTR::value_type* ptr_t;
 			typedef const typename SELECTED_CLASS_PTR::value_type* const_ptr_t;
 			ProxySelectorContainerByClass(CONTAINER &source) : m_source(source) {}
+			ProxySelectorContainerByClass<SELECTED_CLASS_PTR, CONTAINER>& operator=(const ProxySelectorContainerByClass<SELECTED_CLASS_PTR, CONTAINER>&o) { return *this; } // Do nothing, we must keep refs to our own parent
+#if (__cplusplus>199711L)
+			ProxySelectorContainerByClass<SELECTED_CLASS_PTR, CONTAINER>& operator=(ProxySelectorContainerByClass<SELECTED_CLASS_PTR, CONTAINER>&&o) { return *this; } // Do nothing, we must keep refs to our own parent
+#endif
+
 			operator const SELECTED_CLASS_PTR & () const { internal_update_ref(); return m_ret; }
 			operator bool() const { internal_update_ref(); return m_ret.present(); }
 			bool present() const { internal_update_ref(); return m_ret.present(); }
@@ -236,7 +245,7 @@ namespace maps
 			void internal_update_ref() const {
 				for(typename CONTAINER::const_iterator it=m_source.begin();it!=m_source.end();++it) {
 					if ( dynamic_cast<const_ptr_t>(it->pointer()) ) {
-						m_ret=SELECTED_CLASS_PTR(*it);
+						m_ret=SELECTED_CLASS_PTR(it->get_ptr());
 						return;
 					}
 				}

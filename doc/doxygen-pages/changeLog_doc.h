@@ -52,9 +52,10 @@
 			- mrpt::poses::CRobot2DPoseEstimator now uses a more generic odometry-based velocity model (vx,vy,omega).
 			- New template mrpt::utils::ts_hash_map<> for thread-safe, std::map-like containers based on hash functions.
 			- Included exprtk header-only library to runtime compile & evaluation of mathematical expressions, under `<mrpt/otherlibs/exprtk.hpp>`
-			- New smart pointer templates: `mrpt::utils::copy_ptr<>`, `mrpt::utils::clone_ptr<>`.
+			- New smart pointer templates: `mrpt::utils::copy_ptr<>`, `mrpt::utils::poly_ptr<>`.
 		- \ref mrpt_bayes_grp
-			-  [API change] `verbose` is no longer a field of mrpt::bayes::CParticleFilter::TParticleFilterOptions. Use the setVerbosityLevel() method of the CParticleFilter class itself.
+			- [API change] `verbose` is no longer a field of mrpt::bayes::CParticleFilter::TParticleFilterOptions. Use the setVerbosityLevel() method of the CParticleFilter class itself.
+			- [API change] mrpt::bayes::CProbabilityParticle (which affects all PF-based classes in MRPT) has been greatly simplified via usage of the new mrpt::utils::copy_ptr<> pointee-copy-semantics smart pointer.
 		- \ref mrpt_gui_grp
 			- mrpt::gui::CMyGLCanvasBase is now derived from mrpt::opengl::CTextMessageCapable so they can draw text labels
 			- New class mrpt::gui::CDisplayWindow3DLocker for exception-safe 3D scene lock in 3D windows.
@@ -83,6 +84,7 @@
 			- [ABI change] mrpt::opengl::CAxis now has many new options exposed to configure its look.
 		- \ref mrpt_slam_grp
 			- [API change] mrpt::slam::CMetricMapBuilder::TOptions does not have a `verbose` field anymore. It's supersedded now by the verbosity level of the CMetricMapBuilder class itself.
+			- [API change] getCurrentMetricMapEstimation() renamed mrpt::slam::CMultiMetricMapPDF::getAveragedMetricMapEstimation() to avoid confusions.
 		- \ref mrpt_hwdrivers_grp
 			- mrpt::hwdrivers::CGenericSensor: external image format is now `png` by default instead of `jpg` to avoid losses.
 			- [ABI change] mrpt::hwdrivers::COpenNI2Generic:

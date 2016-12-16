@@ -60,24 +60,16 @@ namespace poses
 		DEFINE_SERIALIZABLE( CPointPDFParticles )
 
 	 public:
-		/** Default constructor
-		  */
+		/** Default constructor */
 		CPointPDFParticles(size_t numParticles = 1);
 
-		/** Destructor
-		  */
-		virtual ~CPointPDFParticles();
+		/** Clear all the particles (free memory) */
+		void clear();
 
-		/** Clear all the particles (free memory)
-		  */
-		void clear()  { setSize(0);	}
-
-		/** Erase all the previous particles and change the number of particles, with a given initial value
-		  */
+		/** Erase all the previous particles and change the number of particles, with a given initial value  */
 		void setSize(size_t numberParticles, const CPoint3D &defaultValue = CPoint3D(0,0,0) );
 
-		/** Returns the number of particles
-		  */
+		/** Returns the number of particles */
 		size_t size() const
 		{
 			return m_particles.size();

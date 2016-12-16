@@ -814,7 +814,7 @@ void  CPosePDFParticlesExtended::prediction_and_update_pfAuxiliaryPFOptimal(
 		for (i=0;i<M;i++)
 		{
 			oldParticles[i].log_w = m_particles[i].log_w;
-			oldParticles[i].d = new TExtendedCPose2D(*m_particles[i].d);
+			oldParticles[i].d.reset( new TExtendedCPose2D(*m_particles[i].d));
 		}
 
 
@@ -952,8 +952,8 @@ void  CPosePDFParticlesExtended::resetUniform(
 	{
 		clear();
 		m_particles.resize(particlesCount);
-		for (int i=0;i<particlesCount;i++)
-			m_particles[i].d = new TExtendedCPose2D();
+		for (int i = 0; i < particlesCount; i++)
+			m_particles[i].d.reset(new TExtendedCPose2D());
 	}
 
 	size_t		i,M = m_particles.size();

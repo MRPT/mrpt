@@ -511,7 +511,7 @@ bool  CBeaconMap::internal_insertObservation( const mrpt::obs::CObservation *obs
 								{
 									if ( it->log_w < (maxW-insertionOptions.MC_thresholdNegligible) )
 									{
-										delete it->d; it->d=NULL;
+										it->d.reset();
 										it = beac->m_locationMC.m_particles.erase( it );
 									}
 									else ++it;

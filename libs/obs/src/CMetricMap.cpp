@@ -30,11 +30,6 @@ CMetricMap::CMetricMap()
 {
 }
 
-CMetricMap::~CMetricMap()
-{
-
-}
-
 /** Erase all the contents of the map */
 void  CMetricMap::clear()
 {

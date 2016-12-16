@@ -163,7 +163,6 @@ struct MapIsEmpty
 
 // ------------------- End of map-operations helper templates -------------------
 
-
 // Ctor
 CMultiMetricMap::CMultiMetricMap(const TSetOfMetricMapInitializers *initializers) :
 	maps(),
@@ -300,7 +299,7 @@ double	 CMultiMetricMap::internal_computeObservationLikelihood(
 }
 
 // Read docs in base class
-bool CMultiMetricMap::internal_canComputeObservationLikelihood( const CObservation *obs )
+bool CMultiMetricMap::internal_canComputeObservationLikelihood( const CObservation *obs ) const
 {
 	bool can_comp;
 
