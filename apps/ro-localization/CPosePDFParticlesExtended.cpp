@@ -114,7 +114,6 @@ CPosePDFParticlesExtended::~CPosePDFParticlesExtended( )
   ---------------------------------------------------------------*/
 void  CPosePDFParticlesExtended::clear( )
 {
-	for (unsigned int i=0;i<m_particles.size();i++)	delete m_particles[i].d;
 	m_particles.clear();
 }
 
@@ -400,7 +399,7 @@ void  CPosePDFParticlesExtended::prediction_and_update_pfStandardProposal(
 		// ---------------------
 		// Initialize random sample generator:
 		mrpt::poses::CPoseRandomSampler	poseSamplesGen;
-		poseSamplesGen.setPosePDF( robotMovement->poseChange );
+		poseSamplesGen.setPosePDF( robotMovement->poseChange.get_ptr() );
 
 		CPose2D		increment_i;
 		for (i=0;i<M;i++)			// Update particle poses:
@@ -478,7 +477,7 @@ void  CPosePDFParticlesExtended::prediction_and_update_pfAuxiliaryPFOptimal(
 	// ----------------------------------------------------------------------
 	// Initialize random sample generator:
 	mrpt::poses::CPoseRandomSampler	m_movementDrawer;
-	m_movementDrawer.setPosePDF( robotMovement->poseChange );
+	m_movementDrawer.setPosePDF( robotMovement->poseChange.get_ptr() );
 
 	CPose2D  mean_movement;
 	robotMovement->poseChange->getMean(mean_movement);
@@ -639,7 +638,7 @@ void  CPosePDFParticlesExtended::prediction_and_update_pfAuxiliaryPFOptimal(
 			itDest!=m_particles.end();
 		    itDest++,itSrc++,itW++)
 	{
-		itDest->d = *itSrc;
+		itDest->d.reset( *itSrc );
 		itDest->log_w = *itW;
 	}
 	newParticles.clear();
