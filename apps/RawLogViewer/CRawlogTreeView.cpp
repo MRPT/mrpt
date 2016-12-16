@@ -166,14 +166,14 @@ void CRawlogTreeView::reloadFromRawlog( int hint_rawlog_items )
 					m_tree_nodes.push_back( TNodeData() );
 					TNodeData  &d = m_tree_nodes.back();
 					d.level = 2;
-					d.data = (*a);
+					d.data = a->get_ptr();
 
-                    if ((*a)->timestamp!=INVALID_TIMESTAMP)
-                    {
-                        m_rawlog_last = (*a)->timestamp;
-                        if (m_rawlog_start == INVALID_TIMESTAMP)
-                            m_rawlog_start = (*a)->timestamp;
-                    }
+					if ((*a)->timestamp!=INVALID_TIMESTAMP)
+					{
+						m_rawlog_last = (*a)->timestamp;
+						if (m_rawlog_start == INVALID_TIMESTAMP)
+							m_rawlog_start = (*a)->timestamp;
+					}
 				}
 			}
 			else

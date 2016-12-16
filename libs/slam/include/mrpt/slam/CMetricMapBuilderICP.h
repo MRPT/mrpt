@@ -101,22 +101,15 @@ namespace slam
 		  */
 		void  processObservation(const mrpt::obs::CObservationPtr &obs);
 
-
-		/** Fills "out_map" with the set of "poses"-"sensory-frames", thus the so far built map.
-		  */
+		/** Fills "out_map" with the set of "poses"-"sensory-frames", thus the so far built map */
 		void  getCurrentlyBuiltMap(mrpt::maps::CSimpleMap &out_map) const;
 
-
-		 /** Returns the 2D points of current local map
-		   */
+		/** Returns the 2D points of current local map */
 		void  getCurrentMapPoints( std::vector<float> &x, std::vector<float> &y);
 
-		/** Returns the map built so far. NOTE that for efficiency a pointer to the internal object is passed, DO NOT delete nor modify the object in any way, if desired, make a copy of ir with "duplicate()".
-		  */
-		mrpt::maps::CMultiMetricMap*   getCurrentlyBuiltMetricMap();
+		const mrpt::maps::CMultiMetricMap* getCurrentlyBuiltMetricMap() const MRPT_OVERRIDE;
 
-		/** Returns just how many sensory-frames are stored in the currently build map.
-		  */
+		/** Returns just how many sensory-frames are stored in the currently build map */
 		unsigned int  getCurrentlyBuiltMapSize();
 
 		/** A useful method for debugging: the current map (and/or poses) estimation is dumped to an image file.

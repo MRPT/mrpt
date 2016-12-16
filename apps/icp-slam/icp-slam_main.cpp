@@ -473,7 +473,7 @@ void MapBuilding_ICP(const string &INI_FILENAME, const string &override_rawlog_f
 	printf("Dumping final map in binary format to: %s\n", str.c_str() );
 	mapBuilder.saveCurrentMapToFile(str);
 
-	CMultiMetricMap  *finalPointsMap = mapBuilder.getCurrentlyBuiltMetricMap();
+	const CMultiMetricMap  *finalPointsMap = mapBuilder.getCurrentlyBuiltMetricMap();
 	str = format("%s/_finalmaps_.txt",OUT_DIR);
 	printf("Dumping final metric maps to %s_XXX\n", str.c_str() );
 	finalPointsMap->saveMetricMapRepresentationToFile( str );

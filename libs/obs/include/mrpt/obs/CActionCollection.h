@@ -34,7 +34,7 @@ namespace mrpt
 			DEFINE_SERIALIZABLE( CActionCollection )
 
 		protected:
-			std::deque<mrpt::utils:: poly_ptr_ptr<CActionPtr> >	m_actions;  //!< The robot "actionss"
+			std::deque<mrpt::utils::poly_ptr_ptr<CActionPtr> >	m_actions;  //!< The robot "actionss"
 
 		 public:
 			CActionCollection(); //!< ctor

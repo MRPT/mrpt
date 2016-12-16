@@ -14,6 +14,7 @@
 #include <mrpt/obs/CObservation.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPose3D.h>
+#include <mrpt/math/lightweight_geom_data.h>
 
 namespace mrpt
 {
@@ -34,25 +35,16 @@ namespace mrpt
 			DEFINE_SERIALIZABLE( CObservationOdometry )
 
 		 public:
-			/** Constructor
-			 */
-			CObservationOdometry( );
+			CObservationOdometry(); //!< Default ctor
 
-			poses::CPose2D		odometry;		//!< The absolute odometry measurement (IT IS NOT INCREMENTAL)
+			mrpt::poses::CPose2D odometry; //!< The absolute odometry measurement (IT IS NOT INCREMENTAL)
 
 			bool  hasEncodersInfo; //!< "true" means that "encoderLeftTicks" and "encoderRightTicks" contain valid values.
-
-			/** For odometry only: the ticks count for each wheel in ABSOLUTE VALUE (IT IS NOT INCREMENTAL) (positive means FORWARD, for both wheels);
-			  * \sa hasEncodersInfo
-			  */
+			/** For differential-driven robots: The ticks count for each wheel in ABSOLUTE VALUE (IT IS NOT INCREMENTAL) (positive means FORWARD, for both wheels); \sa hasEncodersInfo  */
 			int32_t	 encoderLeftTicks,encoderRightTicks;
 
-			bool	hasVelocities;		//!< "true" means that "velocityLin" and "velocityAng" contain valid values.
-
-			/** The velocity of the robot, linear in meters/sec and angular in rad/sec.
-			  */
-			float	velocityLin, velocityAng;
-
+			bool                 hasVelocities;  //!< "true" means that `velocityLocal` contains valid values.
+			mrpt::math::TTwist2D velocityLocal; //!< Velocity, in the robot (local) frame of reference (+X=forward).
 
 			// See base class docs
 			void getSensorPose( mrpt::poses::CPose3D &out_sensorPose ) const MRPT_OVERRIDE { out_sensorPose=mrpt::poses::CPose3D(0,0,0); }
