@@ -335,7 +335,6 @@ void  CPosePDFParticlesExtended::readFromStream(mrpt::utils::CStream &in, int ve
 			uint32_t	n;
 
 			// Delete previous content:
-			for (it=m_particles.begin();it!=m_particles.end();it++)	delete it->d;
 			m_particles.clear();
 
 			// The data
@@ -433,7 +432,7 @@ void  CPosePDFParticlesExtended::prediction_and_update_pfStandardProposal(
 		// Update particle's likelihood using the particle's pose:
 		CParticleList::iterator	it;
 		for (it=m_particles.begin(),i=0;it!=m_particles.end();it++,i++)
-			it->log_w += auxiliarComputeObservationLikelihood(PF_options, this,i,sf, it->d ) * PF_options.powFactor;
+			it->log_w += auxiliarComputeObservationLikelihood(PF_options, this,i,sf, it->d.get() ) * PF_options.powFactor;
 	};
 
 	MRPT_END
@@ -895,7 +894,7 @@ void  CPosePDFParticlesExtended::resetDeterministic(
 		clear();
 		m_particles.resize(particlesCount);
 		for (it=m_particles.begin();it!=m_particles.end();it++)
-			it->d = new TExtendedCPose2D();
+			it->d.reset( new TExtendedCPose2D() );
 	}
 
 	for (it=m_particles.begin();it!=m_particles.end();it++)
@@ -1015,8 +1014,6 @@ void  CPosePDFParticlesExtended::drawSingleSample( CPose2D &outPart ) const
  ---------------------------------------------------------------*/
 void  CPosePDFParticlesExtended::drawManySamples( size_t N, std::vector<CVectorDouble> & outSamples ) const
 {
-	TExtendedCPose2D	*ptr;
-
 	CParticleFilter::TParticleFilterOptions  PF_options;
 	PF_options.adaptiveSampleSize = true;
 	PF_options.resamplingMethod = CParticleFilter::prMultinomial;
@@ -1026,7 +1023,7 @@ void  CPosePDFParticlesExtended::drawManySamples( size_t N, std::vector<CVectorD
 	outSamples.resize(N);
 	for (size_t i=0;i<N;i++)
 	{
-		ptr = m_particles[ fastDrawSample( PF_options ) ].d;
+		const TExtendedCPose2D *ptr = m_particles[ fastDrawSample( PF_options ) ].d.get();
 
 		// Copy pose:
 		outSamples[i].resize(3);
