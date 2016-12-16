@@ -41,8 +41,7 @@ CMetricMapBuilderRBPF::CMetricMapBuilderRBPF(  const TConstructionOptions &initi
 	localizeLinDistance(initializationOptions.localizeLinDistance),
 	localizeAngDistance(initializationOptions.localizeAngDistance),
 	odoIncrementSinceLastLocalization(),
-	odoIncrementSinceLastMapUpdate(),
-	currentMetricMapEstimation(NULL)
+	odoIncrementSinceLastMapUpdate()
 {
 	setLoggerName("CMetricMapBuilderRBPF");
 	setVerbosityLevel(initializationOptions.verbosity_level);
@@ -72,7 +71,6 @@ CMetricMapBuilderRBPF & CMetricMapBuilderRBPF::operator =(const CMetricMapBuilde
 	localizeAngDistance = src.localizeAngDistance;
 	odoIncrementSinceLastLocalization = src.odoIncrementSinceLastLocalization;
 	odoIncrementSinceLastMapUpdate = src.odoIncrementSinceLastMapUpdate;
-	currentMetricMapEstimation = NULL;
 	m_statsLastIteration = src.m_statsLastIteration;
 	return *this;
 }
@@ -318,14 +316,9 @@ void  CMetricMapBuilderRBPF::getCurrentlyBuiltMap(
 	out_map = mapPDF.SFs;
 }
 
-/*---------------------------------------------------------------
-						getCurrentlyBuiltMetricMap
-  ---------------------------------------------------------------*/
-CMultiMetricMap*   CMetricMapBuilderRBPF::getCurrentlyBuiltMetricMap()
+const CMultiMetricMap* CMetricMapBuilderRBPF::getCurrentlyBuiltMetricMap() const
 {
-	currentMetricMapEstimation = mapPDF.getCurrentMetricMapEstimation(  );
-
-	return currentMetricMapEstimation.get();
+	return mapPDF.getCurrentMostLikelyMetricMap();
 }
 
 /*---------------------------------------------------------------
@@ -350,9 +343,7 @@ void  CMetricMapBuilderRBPF::drawCurrentEstimationToImage( utils::CCanvas *img )
 
 	MRPT_START
 
-	// Estimated map:
-//		currentMetricMapEstimation = mapPDF.getCurrentMetricMapEstimation( );
-	currentMetricMapEstimation = mapPDF.getCurrentMostLikelyMetricMap( );
+	const mrpt::maps::CMultiMetricMap * currentMetricMapEstimation = mapPDF.getCurrentMostLikelyMetricMap( );
 
 	ASSERT_( currentMetricMapEstimation->m_gridMaps.size()>0 );
 

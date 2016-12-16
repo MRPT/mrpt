@@ -225,7 +225,7 @@ void MapBuilding_RBPF()
 		mapBuilder.initialize(dummySimpleMap,&startPose);
 
 		for (CMultiMetricMapPDF::CParticleList::iterator it=mapBuilder.mapPDF.m_particles.begin();it!=mapBuilder.mapPDF.m_particles.end();++it) {
-			CRBPFParticleData* part_d = it->d;
+			CRBPFParticleData* part_d = it->d.get();
 			CMultiMetricMap &mmap = part_d->mapTillNow;
 			mrpt::maps::COccupancyGridMap2DPtr it_grid = mmap.getMapByClass<mrpt::maps::COccupancyGridMap2D>();
 			ASSERTMSG_(it_grid.present(), "No gridmap in multimetric map definition, but metric map continuation was set (!)" );
@@ -370,17 +370,17 @@ void MapBuilding_RBPF()
 
 			if (0==(step % LOG_FREQUENCY))
 			{
-				CMultiMetricMap		*mostLikMap = mapBuilder.mapPDF.getCurrentMostLikelyMetricMap();
+				const CMultiMetricMap *mostLikMap = mapBuilder.mapPDF.getCurrentMostLikelyMetricMap();
 
 				if (GENERATE_LOG_INFO)
 				{
-
 					printf("Saving info log information...");
 
 					tictac_JH.Tic();
 
-					ASSERT_( mapBuilder.getCurrentlyBuiltMetricMap()->m_gridMaps.size()>0 );
-					COccupancyGridMap2DPtr grid = mapBuilder.getCurrentlyBuiltMetricMap()->m_gridMaps[0];
+					const CMultiMetricMap * avrMap = mapBuilder.mapPDF.getAveragedMetricMapEstimation();
+					ASSERT_(avrMap->m_gridMaps.size()>0 );
+					COccupancyGridMap2DPtr grid = avrMap->m_gridMaps[0];
 					grid->computeEntropy( entropy );
 
 					grid->saveAsBitmapFile(format("%s/EMMI_gridmap_%03u.bmp",OUT_DIR,step));
@@ -600,7 +600,7 @@ void MapBuilding_RBPF()
 	filOut << finalMap;
 
 	// Save gridmap extend (if exists):
-	CMultiMetricMap		*mostLikMap = mapBuilder.mapPDF.getCurrentMostLikelyMetricMap();
+	const CMultiMetricMap *mostLikMap = mapBuilder.mapPDF.getCurrentMostLikelyMetricMap();
 	if (mostLikMap->m_gridMaps.size()>0)
 	{
 		CMatrix		auxMat(1,4);

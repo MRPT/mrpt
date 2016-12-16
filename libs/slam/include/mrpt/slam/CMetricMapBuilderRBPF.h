@@ -63,9 +63,6 @@ namespace slam
 		mrpt::poses::CPose3DPDFGaussian	odoIncrementSinceLastLocalization;	//!< Traveled distance since last localization update
 		mrpt::poses::CPose3D			odoIncrementSinceLastMapUpdate;		//!< Traveled distance since last map update
 
-		/** A buffer: memory is actually hold within "mapPDF" */
-		mrpt::utils::non_copiable_ptr<mrpt::maps::CMultiMetricMap>  currentMetricMapEstimation;
-
 	public:
 
 		/** Options for building a CMetricMapBuilderRBPF object, passed to the constructor.
@@ -137,7 +134,7 @@ of type CMetricMapBuilderRBPF  */
 
 		/** Returns the map built so far. NOTE that for efficiency a pointer to the internal object is passed, DO NOT delete nor modify the object in any way, if desired, make a copy of ir with "duplicate()".
 		  */
-		mrpt::maps::CMultiMetricMap*   getCurrentlyBuiltMetricMap();
+		const mrpt::maps::CMultiMetricMap* getCurrentlyBuiltMetricMap() const;
 
 		/** Returns just how many sensory-frames are stored in the currently build map.
 		  */

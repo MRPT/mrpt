@@ -57,14 +57,12 @@ namespace bayes
 			if ( outSamples.size() != desiredSamples )
 			{
 				// Free old memory:
-				for (it = outSamples.begin();it!=outSamples.end();++it)
-					delete (it->d);
 				outSamples.clear();
 
 				// Reserve new memory:
 				outSamples.resize( desiredSamples );
-				for (it = outSamples.begin();it!=outSamples.end();++it)
-					it->d = new TStateSpace;
+				for (it = outSamples.begin(); it != outSamples.end(); ++it)
+					it->d.reset(new TStateSpace);
 			}
 
 			// Rejection sampling loop:

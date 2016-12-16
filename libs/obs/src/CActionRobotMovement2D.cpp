@@ -30,58 +30,17 @@ IMPLEMENTS_SERIALIZABLE(CActionRobotMovement2D, CAction, mrpt::obs)
 						Constructor
   ---------------------------------------------------------------*/
 CActionRobotMovement2D::CActionRobotMovement2D() :
-	poseChange(),
+	poseChange(CPosePDFGaussian::Create()),
 	rawOdometryIncrementReading(),
 	estimationMethod(emOdometry),
 	hasEncodersInfo(false),
 	encoderLeftTicks(0),
 	encoderRightTicks(0),
 	hasVelocities(false),
-	velocityLin(0),
-	velocityAng(0),
+	velocityLocal(.0,.0,.0),
 	motionModelConfiguration(),
 	m_fastDrawGauss_Z(),
 	m_fastDrawGauss_M()
-{
-	poseChange = CPosePDFGaussian::Create();
-}
-
-/*---------------------------------------------------------------
-				     Copy Constructor
-  ---------------------------------------------------------------*/
-CActionRobotMovement2D::CActionRobotMovement2D(const CActionRobotMovement2D &o) :
-    CAction(o),
-	poseChange( o.poseChange ),
-	rawOdometryIncrementReading(o.rawOdometryIncrementReading),
-	estimationMethod(o.estimationMethod),
-	hasEncodersInfo(o.hasEncodersInfo),
-	encoderLeftTicks(o.encoderLeftTicks),
-	encoderRightTicks(o.encoderRightTicks),
-	hasVelocities(o.hasVelocities),
-	velocityLin(o.velocityLin),
-	velocityAng(o.velocityAng),
-	motionModelConfiguration(o.motionModelConfiguration),
-	m_fastDrawGauss_Z(),
-	m_fastDrawGauss_M()
-{
-	poseChange.make_unique();
-}
-
-/*---------------------------------------------------------------
-				     Copy operator
-  ---------------------------------------------------------------*/
-CActionRobotMovement2D & CActionRobotMovement2D::operator =(const CActionRobotMovement2D &o)
-{
-	if (this==&o) return *this;
-	poseChange = o.poseChange;
-	poseChange.make_unique();
-	return *this;
-}
-
-/*---------------------------------------------------------------
-						Destructor
-  ---------------------------------------------------------------*/
-CActionRobotMovement2D::~CActionRobotMovement2D()
 {
 }
 
@@ -91,7 +50,7 @@ CActionRobotMovement2D::~CActionRobotMovement2D()
 void  CActionRobotMovement2D::writeToStream(mrpt::utils::CStream &out, int *version) const
 {
 	if (version)
-		*version = 6;
+		*version = 7;
 	else
 	{
 		uint32_t	i  = static_cast<uint32_t>(estimationMethod);
@@ -130,8 +89,13 @@ void  CActionRobotMovement2D::writeToStream(mrpt::utils::CStream &out, int *vers
 		}
 
 		// Added in version 1:
-		out << hasVelocities << velocityLin << velocityAng;
-		out << hasEncodersInfo << encoderLeftTicks << encoderRightTicks;
+		out << hasVelocities;
+		if (hasVelocities)
+			out << velocityLocal; // v7
+
+		out << hasEncodersInfo;
+		if (hasEncodersInfo)
+			out << encoderLeftTicks << encoderRightTicks;  // added if() in v7
 
 		// Added in version 6
 		out << timestamp;
@@ -148,6 +112,7 @@ void  CActionRobotMovement2D::readFromStream(mrpt::utils::CStream &in, int versi
 	case 4:
 	case 5:
 	case 6:
+	case 7:
 		{
 			int32_t	i;
 
@@ -195,14 +160,32 @@ void  CActionRobotMovement2D::readFromStream(mrpt::utils::CStream &in, int versi
 			else
 			{
 				// Read the PDF directly from the stream:
-				in >> poseChange;
+				CPosePDFPtr pc;
+				in >> pc;
+				poseChange = pc;
 			}
 
-			in >> hasVelocities >> velocityLin >> velocityAng;
+			in >> hasVelocities;
+			if (version >= 7) {
+				if (hasVelocities)
+					in >> velocityLocal;
+			}
+			else {
+				float velocityLin, velocityAng;
+				in >> velocityLin >> velocityAng;
+				velocityLocal.vx = velocityLin;
+				velocityLocal.vy = .0f;
+				velocityLocal.omega = velocityAng;
+			}
 			in >> hasEncodersInfo;
-
-			in >> i; encoderLeftTicks=i;
-			in >> i; encoderRightTicks=i;
+			if (version < 7 || hasEncodersInfo) {
+				in >> i; encoderLeftTicks = i;
+				in >> i; encoderRightTicks = i;
+			}
+			else {
+				encoderLeftTicks = 0;
+				encoderRightTicks = 0;
+			}
 
 			if (version>=6)
 				in >> timestamp;
@@ -243,10 +226,19 @@ void  CActionRobotMovement2D::readFromStream(mrpt::utils::CStream &in, int versi
 			else
 			{
 				// Read the PDF directly from the stream:
-				in >> poseChange;
+				CPosePDFPtr pc;
+				in >> pc;
+				poseChange = pc;
 			}
 
-			in >> hasVelocities >> velocityLin >> velocityAng;
+			in >> hasVelocities;
+			{
+				float velocityLin, velocityAng;
+				in >> velocityLin >> velocityAng;
+				velocityLocal.vx = velocityLin;
+				velocityLocal.vy = .0f;
+				velocityLocal.omega = velocityAng;
+			}
 			in >> hasEncodersInfo;
 
 			in >> i; encoderLeftTicks=i;
@@ -282,10 +274,19 @@ void  CActionRobotMovement2D::readFromStream(mrpt::utils::CStream &in, int versi
 			else
 			{
 				// Read the PDF directly from the stream:
-				in >> poseChange;
+				CPosePDFPtr pc;
+				in >> pc;
+				poseChange = pc;
 			}
 
-			in >> hasVelocities >> velocityLin >> velocityAng;
+			in >> hasVelocities;
+			{
+				float velocityLin, velocityAng;
+				in >> velocityLin >> velocityAng;
+				velocityLocal.vx = velocityLin;
+				velocityLocal.vy = .0f;
+				velocityLocal.omega = velocityAng;
+			}
 			in >> hasEncodersInfo;
 			in >> i; encoderLeftTicks=i;
 			in >> i; encoderRightTicks=i;
@@ -295,7 +296,11 @@ void  CActionRobotMovement2D::readFromStream(mrpt::utils::CStream &in, int versi
 	case 1:
 		{
 			int32_t	i;
-			in >> poseChange;
+			{
+				CPosePDFPtr pc;
+				in >> pc;
+				poseChange = pc;
+			}
 			in >> i;
 
 			// copy:
@@ -308,7 +313,14 @@ void  CActionRobotMovement2D::readFromStream(mrpt::utils::CStream &in, int versi
 
 			if (version>=1)
 			{
-				in >> hasVelocities >> velocityLin >> velocityAng;
+				in >> hasVelocities;
+				{
+					float velocityLin, velocityAng;
+					in >> velocityLin >> velocityAng;
+					velocityLocal.vx = velocityLin;
+					velocityLocal.vy = .0f;
+					velocityLocal.omega = velocityAng;
+				}
 				in >> hasEncodersInfo;
 				in >> i; encoderLeftTicks = i;
 				in >> i; encoderRightTicks = i;
@@ -318,7 +330,7 @@ void  CActionRobotMovement2D::readFromStream(mrpt::utils::CStream &in, int versi
 				// Default values:
 				hasVelocities  = hasEncodersInfo = false;
 				encoderLeftTicks= encoderRightTicks= 0;
-				velocityLin = velocityAng = 0;
+				velocityLocal = mrpt::math::TTwist2D(.0, .0, .0);
 			}
 
 		} break;

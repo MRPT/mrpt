@@ -106,7 +106,7 @@ CSetOfObjectsPtr CSetOfObjects::posePDF2opengl(const CPosePDF &o)
 
 		for (size_t i=0;i<p->size();++i)
 		{
-			const mrpt::poses::CPose2D *po = p->m_particles[i].d;
+			const mrpt::poses::CPose2D *po = p->m_particles[i].d.get();
 			pnts->insertPoint(po->x(), po->y(), 0);
 			lins->appendLine(
 				po->x(), po->y(), 0,

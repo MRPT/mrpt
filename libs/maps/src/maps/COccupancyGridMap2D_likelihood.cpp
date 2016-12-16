@@ -907,7 +907,7 @@ void  COccupancyGridMap2D::TLikelihoodOptions::dumpToTextStream(mrpt::utils::CSt
  * \param obs The observation.
  * \sa computeObservationLikelihood
  */
-bool COccupancyGridMap2D::internal_canComputeObservationLikelihood( const mrpt::obs::CObservation *obs )
+bool COccupancyGridMap2D::internal_canComputeObservationLikelihood( const mrpt::obs::CObservation *obs ) const
 {
 	// Ignore laser scans if they are not planar or they are not
 	//  at the altitude of this grid map:

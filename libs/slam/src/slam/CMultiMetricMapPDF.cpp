@@ -38,8 +38,8 @@ using namespace mrpt::utils;
 using namespace mrpt::system;
 using namespace std;
 
-IMPLEMENTS_SERIALIZABLE( CMultiMetricMapPDF, CSerializable, mrpt::maps )
-IMPLEMENTS_SERIALIZABLE( CRBPFParticleData,  CSerializable, mrpt::maps )
+IMPLEMENTS_SERIALIZABLE(CMultiMetricMapPDF, CSerializable, mrpt::maps)
+IMPLEMENTS_SERIALIZABLE(CRBPFParticleData, CSerializable, mrpt::maps)
 
 /*---------------------------------------------------------------
 				Constructor
@@ -59,11 +59,11 @@ CMultiMetricMapPDF::CMultiMetricMapPDF(
 	for (CParticleList::iterator it=m_particles.begin();it!=m_particles.end();++it)
 	{
 		it->log_w = 0;
-		it->d = new CRBPFParticleData( mapsInitializers );
+		it->d.reset(new CRBPFParticleData(mapsInitializers));
 	}
 
 	// Initialize:
-	static const CPose3D nullPose(0,0,0);
+	const CPose3D nullPose(0,0,0);
 	clear(nullPose);
 
 	// If provided, copy the whole set of params now:
@@ -104,16 +104,6 @@ void  CMultiMetricMapPDF::clear( const CPose3D &initialPose )
 }
 
 /*---------------------------------------------------------------
-	Destructor
-  ---------------------------------------------------------------*/
-CMultiMetricMapPDF::~CMultiMetricMapPDF( )
-{
-	clearParticles();
-	SFs.clear();
-	SF2robotPath.clear();
-}
-
-/*---------------------------------------------------------------
 						getEstimatedPosePDF
   Returns an estimate of the pose, (the mean, or mathematical expectation of the PDF), computed
 		as a weighted average over all m_particles.
@@ -141,7 +131,7 @@ void  CMultiMetricMapPDF::getEstimatedPosePDFAtTime(
 	out_estimation.m_particles.resize(n);
 	for (i=0;i<n;i++)
 	{
-		out_estimation.m_particles[i].d = new CPose3D( m_particles[i].d->robotPath[ timeStep ] );
+		out_estimation.m_particles[i].d.reset(new CPose3D(m_particles[i].d->robotPath[timeStep]));
 		out_estimation.m_particles[i].log_w = m_particles[i].log_w;
 	}
 
@@ -218,7 +208,7 @@ void  CMultiMetricMapPDF::readFromStream(mrpt::utils::CStream &in, int version)
 			m_particles.resize(n);
 			for (i=0;i<n;i++)
 			{
-				m_particles[i].d = new CRBPFParticleData();
+				m_particles[i].d.reset(new CRBPFParticleData());
 
 				// Load
 				in >> m_particles[i].log_w >> m_particles[i].d->mapTillNow;
@@ -252,13 +242,9 @@ const TPose3D* CMultiMetricMapPDF::getLastPose(const size_t i) const
 	else	return NULL;
 }
 
-/*---------------------------------------------------------------
-						getCurrentMetricMapEstimation
- ---------------------------------------------------------------*/
-CMultiMetricMap *  CMultiMetricMapPDF::getCurrentMetricMapEstimation( )
+const CMultiMetricMap * CMultiMetricMapPDF::getAveragedMetricMapEstimation( )
 {
 	rebuildAverageMap();
-
 	return &averageMap;
 }
 
@@ -500,20 +486,7 @@ double  CMultiMetricMapPDF::getCurrentJointEntropy()
 	return	H_joint;
 }
 
-/*---------------------------------------------------------------
-					Entropy aux. function
- ---------------------------------------------------------------*/
-float  CMultiMetricMapPDF::H(float p)
-{
-	if (p==0 || p==1)	return 0;
-	else				return -p*log(p);
-}
-
-
-/*---------------------------------------------------------------
-					getCurrentMostLikelyMetricMap
-  ---------------------------------------------------------------*/
-CMultiMetricMap  * CMultiMetricMapPDF::getCurrentMostLikelyMetricMap( )
+const CMultiMetricMap  * CMultiMetricMapPDF::getCurrentMostLikelyMetricMap() const
 {
 	size_t		i,max_i=0, n = m_particles.size();
 	double		max_w = m_particles[0].log_w;

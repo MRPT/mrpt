@@ -99,10 +99,6 @@ void  CPose3DQuatPDFGaussianInf::readFromStream(mrpt::utils::CStream &in,int ver
 	};
 }
 
-
-/*---------------------------------------------------------------
-						operator =
-  ---------------------------------------------------------------*/
 void  CPose3DQuatPDFGaussianInf::copyFrom(const CPose3DQuatPDF &o)
 {
 	if (this == &o) return;		// It may be used sometimes

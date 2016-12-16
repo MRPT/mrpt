@@ -392,7 +392,7 @@ CPosePDFPtr CGridMapAligner::AlignPDF_robustMatch(
 				// Simplify the SOG by merging close modes:
 				// -------------------------------------------------
 				size_t nB = pdf_SOG->size();
-				outInfo.sog1 = pdf_SOG; outInfo.sog1.make_unique();
+				outInfo.sog1 = pdf_SOG;
 
 				// Keep only the most-likely Gaussian mode:
 				CPosePDFSOG::TGaussianMode best_mode;
@@ -408,7 +408,7 @@ CPosePDFPtr CGridMapAligner::AlignPDF_robustMatch(
 
 				pdf_SOG->clear();
 				pdf_SOG->push_back( best_mode );
-				outInfo.sog2 = pdf_SOG; outInfo.sog2.make_unique();
+				outInfo.sog2 = pdf_SOG;
 
 				MRPT_LOG_INFO_STREAM << "[CGridMapAligner] amRobustMatch: "<< nB << " SOG modes reduced to "<< pdf_SOG->size() << " (most-likely) (min.inliers="<< min_inliers << ")\n";
 
@@ -750,13 +750,13 @@ CPosePDFPtr CGridMapAligner::AlignPDF_robustMatch(
 				// Simplify the SOG by merging close modes:
 				// -------------------------------------------------
 				size_t nB = pdf_SOG->size();
-				outInfo.sog1 = pdf_SOG; outInfo.sog1.make_unique();
+				outInfo.sog1 = pdf_SOG;
 
 				CTicTac	merge_clock;
 				pdf_SOG->mergeModes( options.maxKLd_for_merge,false);
 				const double merge_clock_tim = merge_clock.Tac();
 
-				outInfo.sog2 = pdf_SOG; outInfo.sog2.make_unique();
+				outInfo.sog2 = pdf_SOG;
 				size_t nA = pdf_SOG->size();
 				MRPT_LOG_INFO(mrpt::format("[CGridMapAligner] amModifiedRANSAC: %u SOG modes merged to %u in %.03fsec\n", (unsigned int)nB, (unsigned int)nA, merge_clock_tim ) );
 
@@ -849,7 +849,7 @@ CPosePDFPtr CGridMapAligner::AlignPDF_robustMatch(
 				} // end for i
 
 				// Merge:
-				outInfo.sog3 = pdf_SOG; outInfo.sog3.make_unique();
+				outInfo.sog3 = pdf_SOG;
 
 				pdf_SOG->mergeModes( options.maxKLd_for_merge, false );
 				MRPT_LOG_DEBUG_STREAM << "[CGridMapAligner] " << pdf_SOG->size() << " SOG modes merged after ICP.";

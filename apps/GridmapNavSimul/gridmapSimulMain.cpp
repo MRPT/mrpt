@@ -802,11 +802,8 @@ void gridmapSimulFrame::OntimRunTrigger(wxTimerEvent& event)
 
 					odo_obs.odometry = odo_now;
 
-					const mrpt::math::TTwist2D vel_local = the_robot.getCurrentGTVelLocal();
-
 					odo_obs.hasVelocities = true;
-					odo_obs.velocityLin = vel_local.vx;
-					odo_obs.velocityAng = vel_local.omega;
+					odo_obs.velocityLocal = the_robot.getCurrentGTVelLocal();
 
 					outs << odo_obs << the_scan;
 				}

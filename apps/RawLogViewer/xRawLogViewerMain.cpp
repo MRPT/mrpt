@@ -4061,7 +4061,7 @@ void xRawLogViewerFrame::OnMenuModifyICPActionsUncertainty(wxCommandEvent& event
 						{
 							ASSERT_( actMov->poseChange->GetRuntimeClass() == CLASS_ID(CPosePDFGaussian) );
 
-							CPosePDFGaussianPtr aux = CPosePDFGaussianPtr( actMov->poseChange );
+							CPosePDFGaussianPtr aux = CPosePDFGaussianPtr( actMov->poseChange.get_ptr() );
 							aux->cov.zeros();
 							aux->cov(0,0) =
 								aux->cov(1,1) = std_xy2;

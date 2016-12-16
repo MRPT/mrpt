@@ -88,7 +88,7 @@ namespace mrpt
 		class BASE_IMPEXP CCriticalSectionLocker
 		{
 		protected:
-			const CAbstractMutex	*m_cs;
+			const CAbstractMutex	*m_cs; // it's safe for copy ctor & =op to copy this ptr
 
 		public:
 			/** Constructor: enters the critical section.
@@ -96,18 +96,9 @@ namespace mrpt
 			  */
 			CCriticalSectionLocker( const CAbstractMutex *cs  );
 
-			CCriticalSectionLocker(const CCriticalSectionLocker &o) : m_cs(o.m_cs)
-			{
-			}
+			CCriticalSectionLocker(const CCriticalSectionLocker &o) : m_cs(o.m_cs) {}
 
-			CCriticalSectionLocker & operator = (const CCriticalSectionLocker&o)
-			{
-				m_cs = o.m_cs;
-				return *this;
-			}
-
-			/** Destructor: leaves the critical section.
-			  */
+			/** Destructor: leaves the critical section. */
 			~CCriticalSectionLocker();
 
 		}; // end of CCriticalSectionLocker
