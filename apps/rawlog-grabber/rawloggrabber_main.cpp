@@ -249,9 +249,7 @@ int main(int argc, char **argv)
 						act->encoderRightTicks = rticks_incr;
 
 						act->hasVelocities = true;
-						act->velocityLin = odom->velocityLin;
-						act->velocityAng = odom->velocityAng;
-
+						act->velocityLocal = odom->velocityLocal;
 
 						out_file << curSF;
 						cout << "[" << dateTimeToString(now()) << "] Saved SF with " << curSF.size() << " objects." << endl;
