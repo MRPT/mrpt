@@ -38,7 +38,7 @@ namespace mrpt
 			poly_ptr<T> &operator =(const poly_ptr<T> & o) {
 				if (this == &o) return *this;
 				this->reset();
-				m_ptr = copier_t().copy(o.m_ptr);
+				ptr_base_t::m_ptr = typename ptr_base_t::copier_t().copy(o.m_ptr);
 				return *this;
 			}
 #if (__cplusplus>199711L)
