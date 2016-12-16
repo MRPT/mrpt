@@ -108,7 +108,7 @@ DECLARE_OP_FUNCTION(op_export_odometry_txt)
 				sampleTime, 
 				obs->odometry.x(), obs->odometry.y(), obs->odometry.phi(),
 				static_cast<int>(obs->hasEncodersInfo ? 1:0), static_cast<int>(obs->encoderLeftTicks), static_cast<int>(obs->encoderRightTicks), 
-				static_cast<int>(obs->hasVelocities ? 1:0), obs->velocityLin, obs->velocityAng
+				static_cast<int>(obs->hasVelocities ? 1:0), obs->velocityLocal.vx, obs->velocityLocal.omega
 				);
 			m_entriesSaved++;
 			return true; // All ok
