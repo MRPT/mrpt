@@ -486,17 +486,6 @@ double  CMultiMetricMapPDF::getCurrentJointEntropy()
 	return	H_joint;
 }
 
-/*---------------------------------------------------------------
-					Entropy aux. function
- ---------------------------------------------------------------*/
-static float H(float p)
-{
-	if (p==0 || p==1)
-		return 0.0f;
-	else
-		return -p*log(p);
-}
-
 const CMultiMetricMap  * CMultiMetricMapPDF::getCurrentMostLikelyMetricMap() const
 {
 	size_t		i,max_i=0, n = m_particles.size();
