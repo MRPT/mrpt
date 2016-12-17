@@ -77,13 +77,16 @@ void CWaypointsNavigator::navigationStep()
 	//     Waypoint navigation algorithm
 	// --------------------------------------
 	{
-		mrpt::synch::CCriticalSectionLocker csl(&m_nav_waypoints_cs);
+	mrpt::synch::CCriticalSectionLocker csl(&m_nav_waypoints_cs);
 
-		TWaypointStatusSequence &wps = m_waypoint_nav_status; // shortcut to save typing
+	TWaypointStatusSequence &wps = m_waypoint_nav_status; // shortcut to save typing
 
-		if ( wps.waypoints.empty() || wps.final_goal_reached )
-			return; // No nav request is pending or it was canceled
-
+	if (wps.waypoints.empty() || wps.final_goal_reached)
+	{
+		// No nav request is pending or it was canceled
+	}
+	else
+	{
 		// 0) Get current robot pose:
 		CAbstractNavigator::updateCurrentPoseAndSpeeds();
 
@@ -186,6 +189,7 @@ void CWaypointsNavigator::navigationStep()
 
 			this->navigate( &nav_cmd );
 		}
+	}
 	}
 
 	// Note: navigationStep() called *after* waypoints part to get end-of-navigation events *after*
