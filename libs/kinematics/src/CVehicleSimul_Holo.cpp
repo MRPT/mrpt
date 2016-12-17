@@ -29,6 +29,7 @@ void CVehicleSimul_Holo::internal_simulControlStep(const double dt)
 		const double T = m_vel_ramp_cmd.ramp_time;
 		const double vxi = m_vel_ramp_cmd.init_vel.vx;
 		const double vyi = m_vel_ramp_cmd.init_vel.vy;
+		const double wi  = m_vel_ramp_cmd.init_vel.omega;
 		const double vxf = m_vel_ramp_cmd.target_vel_x;
 		const double vyf = m_vel_ramp_cmd.target_vel_y;
 
@@ -43,16 +44,25 @@ void CVehicleSimul_Holo::internal_simulControlStep(const double dt)
 			m_odometric_vel.vx = m_vel_ramp_cmd.target_vel_x;
 			m_odometric_vel.vy = m_vel_ramp_cmd.target_vel_y;
 		}
-#if 0
-		// Proportional controller in angle:
-		//const double KP = 1.0;
-		//m_vel.phi = KP* mrpt::math::wrapToPi(m_vel_ramp_cmd.dir - m_GT_pose.phi) * m_vel_ramp_cmd.rot_speed;
-#else
-		// Constant rotational velocity:
+
+		// Ramp rotvel until aligned:
 		const double Aang = mrpt::math::wrapToPi(m_vel_ramp_cmd.dir - m_odometry.phi);
-		MRPT_TODO("Fix emulation of rotvel ramp time")
-		m_odometric_vel.omega = ( std::abs(Aang)<mrpt::utils::DEG2RAD(1.0) ? 0.0 : mrpt::utils::sign(Aang) )  * std::abs(m_vel_ramp_cmd.rot_speed);
-#endif
+		if (std::abs(Aang) < mrpt::utils::DEG2RAD(1.0)) {
+			m_odometric_vel.omega = .0; // we are aligned.
+		}
+		else
+		{
+			const double wf = mrpt::utils::sign(Aang) * std::abs(m_vel_ramp_cmd.rot_speed);
+			if (t <= m_vel_ramp_cmd.ramp_time)
+			{
+				m_odometric_vel.omega = wi + t*(wf - wi) / T;
+			}
+			else
+			{
+				m_odometric_vel.omega = wf;
+			}
+		}
+
 	}
 }
 
