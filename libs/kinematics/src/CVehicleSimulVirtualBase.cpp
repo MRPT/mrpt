@@ -61,9 +61,10 @@ void CVehicleSimulVirtualBase::simulateOneTimeStep(const double dt)
 		//Add some errors
 		if (m_use_odo_error)
 		{
-			m_GT_vel.vx    -= m_Ax_err_bias   + m_Ax_err_std * mrpt::random::randomGenerator.drawGaussian1D_normalized();
-			m_GT_vel.vy    -= m_Ay_err_bias   + m_Ay_err_std * mrpt::random::randomGenerator.drawGaussian1D_normalized();
-			m_GT_vel.omega -= m_Aphi_err_bias + m_Aphi_err_std * mrpt::random::randomGenerator.drawGaussian1D_normalized();
+			nextGT.x_incr(m_Ax_err_bias + m_Ax_err_std * mrpt::random::randomGenerator.drawGaussian1D_normalized());
+			nextGT.y_incr(m_Ay_err_bias + m_Ay_err_std * mrpt::random::randomGenerator.drawGaussian1D_normalized());
+			nextGT.phi_incr(m_Aphi_err_bias + m_Aphi_err_std * mrpt::random::randomGenerator.drawGaussian1D_normalized());
+			nextGT.phi(mrpt::math::wrapToPi(nextGT.phi()));
 		}
 
 		m_odometry = nextOdometry;
