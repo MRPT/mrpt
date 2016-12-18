@@ -35,19 +35,20 @@ void CVehicleSimulVirtualBase::simulateOneTimeStep(const double dt)
 	const double final_t = m_time + dt;
 	while (m_time <= final_t)
 	{
-        // Simulate movement during At:
-		CPose2D nextOdometry = CPose2D(m_odometry) +
+		// Simulate movement during At:
+		CPose2D nextOdometry(mrpt::poses::UNINITIALIZED_POSE), nextGT(mrpt::poses::UNINITIALIZED_POSE);
+		nextOdometry.composeFrom(CPose2D(m_odometry),
 			CPose2D (
 				m_odometric_vel.vx*m_firmware_control_period,
 				m_odometric_vel.vy*m_firmware_control_period,
 				m_odometric_vel.omega*m_firmware_control_period
-			);
-		CPose2D nextGT = CPose2D(m_GT_pose) +
+			));
+		nextGT.composeFrom(CPose2D(m_GT_pose),
 			CPose2D(
 				m_GT_vel.vx*m_firmware_control_period,
 				m_GT_vel.vy*m_firmware_control_period,
 				m_GT_vel.omega*m_firmware_control_period
-			);
+			));
 		nextOdometry.phi(mrpt::math::wrapToPi(nextOdometry.phi()));
 		nextGT.phi(mrpt::math::wrapToPi(nextGT.phi()));
 
