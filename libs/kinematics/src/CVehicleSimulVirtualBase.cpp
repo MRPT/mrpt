@@ -31,26 +31,22 @@ void CVehicleSimulVirtualBase::setCurrentGTPose(const mrpt::math::TPose2D  &pose
 
 void CVehicleSimulVirtualBase::simulateOneTimeStep(const double dt)
 {
-	using mrpt::poses::CPose2D;
+	using mrpt::math::TPose2D;
 	const double final_t = m_time + dt;
 	while (m_time <= final_t)
 	{
 		// Simulate movement during At:
-		CPose2D nextOdometry(mrpt::poses::UNINITIALIZED_POSE), nextGT(mrpt::poses::UNINITIALIZED_POSE);
-		nextOdometry.composeFrom(CPose2D(m_odometry),
-			CPose2D (
-				m_odometric_vel.vx*m_firmware_control_period,
-				m_odometric_vel.vy*m_firmware_control_period,
-				m_odometric_vel.omega*m_firmware_control_period
-			));
-		nextGT.composeFrom(CPose2D(m_GT_pose),
-			CPose2D(
-				m_GT_vel.vx*m_firmware_control_period,
-				m_GT_vel.vy*m_firmware_control_period,
-				m_GT_vel.omega*m_firmware_control_period
-			));
-		nextOdometry.phi(mrpt::math::wrapToPi(nextOdometry.phi()));
-		nextGT.phi(mrpt::math::wrapToPi(nextGT.phi()));
+		TPose2D nextOdometry = m_odometry;
+		nextOdometry.x += m_odometric_vel.vx*m_firmware_control_period;
+		nextOdometry.y += m_odometric_vel.vy*m_firmware_control_period;
+		nextOdometry.phi += m_odometric_vel.omega*m_firmware_control_period;
+		mrpt::math::wrapToPiInPlace(nextOdometry.phi);
+
+		TPose2D nextGT = m_GT_pose;
+		nextGT.x += m_GT_vel.vx*m_firmware_control_period;
+		nextGT.y += m_GT_vel.vy*m_firmware_control_period;
+		nextGT.phi += m_GT_vel.omega*m_firmware_control_period;
+		mrpt::math::wrapToPiInPlace(nextGT.phi);
 
 		this->internal_simulControlStep(m_firmware_control_period);
 
@@ -61,10 +57,10 @@ void CVehicleSimulVirtualBase::simulateOneTimeStep(const double dt)
 		//Add some errors
 		if (m_use_odo_error)
 		{
-			nextGT.x_incr(m_Ax_err_bias + m_Ax_err_std * mrpt::random::randomGenerator.drawGaussian1D_normalized());
-			nextGT.y_incr(m_Ay_err_bias + m_Ay_err_std * mrpt::random::randomGenerator.drawGaussian1D_normalized());
-			nextGT.phi_incr(m_Aphi_err_bias + m_Aphi_err_std * mrpt::random::randomGenerator.drawGaussian1D_normalized());
-			nextGT.phi(mrpt::math::wrapToPi(nextGT.phi()));
+			nextGT.x += m_Ax_err_bias + m_Ax_err_std * mrpt::random::randomGenerator.drawGaussian1D_normalized();
+			nextGT.y += m_Ay_err_bias + m_Ay_err_std * mrpt::random::randomGenerator.drawGaussian1D_normalized();
+			nextGT.phi += m_Aphi_err_bias + m_Aphi_err_std * mrpt::random::randomGenerator.drawGaussian1D_normalized();
+			mrpt::math::wrapToPiInPlace(nextGT.phi);
 		}
 
 		m_odometry = nextOdometry;
