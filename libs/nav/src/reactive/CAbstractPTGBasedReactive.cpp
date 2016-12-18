@@ -612,7 +612,7 @@ void CAbstractPTGBasedReactive::STEP5_PTGEvaluator(
 	const int      kDirection   = static_cast<int>( holonomicMovement.PTG->alpha2index( holonomicMovement.direction ) );
 
 	// Coordinates of the trajectory end for the given PTG and "alpha":
-	const double d = min( in_TPObstacles[ kDirection ], 0.90*TargetDist);
+	const double d = min( in_TPObstacles[ kDirection ], 0.99*TargetDist);
 	uint16_t nStep;
 	bool pt_in_range = holonomicMovement.PTG->getPathStepForDist(kDirection, d, nStep);
 	ASSERT_(pt_in_range)
@@ -698,9 +698,8 @@ void CAbstractPTGBasedReactive::STEP5_PTGEvaluator(
 	//  Moving away of the target is negatively valued
 	// ---------------------------------------------------------------------------
 	const double dist_eucl_final = std::sqrt(square(WS_Target.x- pose.x)+square(WS_Target.y- pose.y));
-	const double dist_eucl_now   = std::sqrt(square(WS_Target.x)+square(WS_Target.y));
-
-	const double factor4 = min(2.0*refDist,max(0.0,((dist_eucl_now - dist_eucl_final)+refDist)))/(2*refDist);
+	double factor4 = (refDist - dist_eucl_final) / refDist;
+	mrpt::utils::saturate(factor4, 0.0, 1.0);
 
 	// Factor5: Hysteresis:
 	// -----------------------------------------------------
