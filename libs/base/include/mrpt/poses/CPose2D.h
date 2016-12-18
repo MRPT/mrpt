@@ -172,7 +172,7 @@ namespace poses
 		 /** Scalar sum of components: This is diferent from poses
 		  *    composition, which is implemented as "+" operators in "CPose" derived classes.
 		  */
-		 void AddComponents(CPose2D &p);
+		 void AddComponents(const CPose2D &p);
 
 		 /** Scalar multiplication.
 		  */
