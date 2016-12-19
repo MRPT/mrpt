@@ -517,10 +517,12 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 		if (m_enableConsoleOutput)
 		{
 			MRPT_LOG_DEBUG(mrpt::format(
-				"CMD: %s \t"
-				"T=%.01lfms Exec:%.01lfms|%.01lfms \t"
+				"CMD: %s "
+				"speedScale=%.04f "
+				"T=%.01lfms Exec:%.01lfms|%.01lfms "
 				"E=%.01lf PTG#%i\n",
 					new_vel_cmd ? new_vel_cmd->asString().c_str() : "NOP",
+					selectedHolonomicMovement.speed,
 					1000.0*meanExecutionPeriod.getLastOutput(),
 					1000.0*meanExecutionTime.getLastOutput(),
 					1000.0*meanTotalExecutionTime.getLastOutput(),
@@ -807,8 +809,6 @@ void CAbstractPTGBasedReactive::STEP7_GenerateSpeedCommands( const THolonomicMov
 			// Honor user speed limits & "blending":
 			const double beta = meanExecutionPeriod.getLastOutput() / (meanExecutionPeriod.getLastOutput() + SPEEDFILTER_TAU);
 			new_vel_cmd->cmdVel_limits(*m_last_vel_cmd, beta, this->robotVelocityParams);
-			
-			MRPT_LOG_DEBUG_FMT("STEP7_GenerateSpeedCommands: new_cmd_vel=%s after speedScale=%.03f beta=%.03f", new_vel_cmd->asString().c_str(), in_movement.speed, beta);
 		}
 
 		m_last_vel_cmd = new_vel_cmd; // Save for filtering in next step
