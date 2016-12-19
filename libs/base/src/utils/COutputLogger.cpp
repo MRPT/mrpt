@@ -129,7 +129,7 @@ std::string COutputLogger::getLoggerName() const { return m_logger_name; }
 void COutputLogger::setMinLoggingLevel(const VerbosityLevel level /*= LVL_INFO */) {
 	m_min_verbosity_level = level;
 }
-void COutputLogger::setVerbosityLevel(const VerbosityLevel level) { 
+void COutputLogger::setVerbosityLevel(const VerbosityLevel level) {
 	m_min_verbosity_level = level;
 }
 
@@ -207,14 +207,14 @@ void COutputLogger::TMsg::reset() {
 	timestamp = INVALID_TIMESTAMP;
 	level = LVL_INFO;
 	name = "Message"; // default name
-	body.clear(); 
+	body.clear();
 }
 
 std::string COutputLogger::TMsg::getAsString() const {
 	stringstream out;
 	out.str("");
-	out << "[" << name <<  "|" << COutputLogger::logging_levels_to_names[level]  << "|" 
-		<< mrpt::system::timeLocalToString(timestamp,4) 
+	out << "[" << name <<  "|" << COutputLogger::logging_levels_to_names[level]  << "|"
+	<< mrpt::system::timeLocalToString(timestamp,4) 
 		<< "] " << body;
 	if (!body.empty() && *body.rbegin()!='\n')
 		out<<std::endl;
@@ -265,4 +265,3 @@ void COutputLogger::logDeregisterCallback(output_logger_callback_t  userFunc, vo
 	cbe.userParam = userParam;
 	m_listCallbacks.erase(cbe);
 }
-
