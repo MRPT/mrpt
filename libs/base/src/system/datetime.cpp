@@ -323,16 +323,21 @@ string  mrpt::system::timeLocalToString(const mrpt::system::TTimeStamp t, unsign
 	if (t==INVALID_TIMESTAMP) return string("INVALID_TIMESTAMP");
 
 	uint64_t        tmp = (t - ((uint64_t)116444736*1000000000));
-    time_t          auxTime = tmp / (uint64_t)10000000;
-    unsigned int	secFractions = (unsigned int)( 1000000 * (tmp % 10000000) / 10000000.0 );
-    tm  *ptm = localtime( &auxTime );
+	const time_t          auxTime = tmp / (uint64_t)10000000;
+	const tm  *ptm = localtime( &auxTime );
+
+	unsigned int	secFractions = (unsigned int)( 1000000 * (tmp % 10000000) / 10000000.0 );
+	// We start with 10^{-6} second units: reduce if requested by user:
+	const unsigned int user_secondFractionDigits = secondFractionDigits;
+	while (secondFractionDigits++<6)
+		secFractions = secFractions / 10;
 
 	return format(
 		"%02u:%02u:%02u.%0*u",
 		ptm->tm_hour,
 		ptm->tm_min,
 		(unsigned int)ptm->tm_sec,
-		secondFractionDigits,
+		user_secondFractionDigits,
 		secFractions );
 }
 
