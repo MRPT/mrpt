@@ -13,7 +13,8 @@
 #include <mrpt/math/CQuaternion.h>
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/maps/COccupancyGridMap2D.h>
-#include <mrpt/maps/CMultiMetricMap.h>
+//#include <mrpt/maps/CMultiMetricMap.h>
+#include <mrpt/maps/COctoMap.h>
 #include <mrpt/graphs/CNetworkOfPoses.h>
 #include <mrpt/gui/CBaseGUIWindow.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
@@ -294,20 +295,18 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		 */
 		/**\{*/
 		/* \brief Method is a wrapper around the computeMap method
-		 * \param[out] map Pointer to the COccupancyGridMap2D instance that is
+		 * \param[out] map Pointer to the map instance that is
 		 * to be filled
-		 * \param[out] acquisition_time Timestamp that the gridmap was computed at.
+		 * \param[out] acquisition_time Timestamp that the map was computed at.
 		 * This does not (necessarily) matches with the query time since the
 		 * cached version is used as long as a new node has not been registered
 		 * since the last time the gridmap was computed.
 		 *
-		 * \note Method is used only in 2D datasets
-		 *
 		 * \sa computeMap
 		 */
-		void getMap(mrpt::maps::COccupancyGridMap2D* map,
+		void getMap(mrpt::maps::COccupancyGridMap2DPtr map,
 				mrpt::system::TTimeStamp* acquisition_time=NULL) const;
-		void getMap(mrpt::maps::CMultiMetricMapPtr map,
+		void getMap(mrpt::maps::COctoMapPtr map,
 				mrpt::system::TTimeStamp* acquisition_time=NULL) const;
 		/**\brief	Compute the map of the environment based on the
 		 * recorded measurements.
@@ -882,13 +881,20 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		 */
 		bool m_request_to_exit;
 
-		/**\name Gridmap-related objects
-		 * \brief Cached version and corresponding flag of occupancy gridmap
+		/**\name Map-related objects
+		 * \brief Cached version and corresponding flag of map 
 		 */
 		/**\{*/
 		mutable mrpt::maps::COccupancyGridMap2DPtr m_gridmap_cached;
+		mutable mrpt::maps::COctoMapPtr m_octomap_cached;
+		/**\brief Indicates if the map is cached.
+		 *
+		 *\note Common var for both 2D and 3D maps.
+		 */
 		mutable bool m_map_is_cached;
 		/**\brief Timestamp at which the map was computed
+		 *
+		 *\note Common var for both 2D and 3D maps.
 		 */
 		mutable mrpt::system::TTimeStamp m_map_acq_time;
 		/**\}*/
