@@ -821,7 +821,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 			     col = mrpt::utils::TColorf(1,1,1);
 			else col = mrpt::utils::TColorf(.8f,.8f,.8f);
 
-			ADD_WIN_TEXTMSG(mrpt::format("PTG#%u: Eval=%5.03f factors=%s", nPTG, pI.evaluation, sprintf_vector("%5.02f ", pI.evalFactors).c_str()));
+			ADD_WIN_TEXTMSG(mrpt::format("PTG#%u: SelDir=%+7.01f deg SelSpeed=%.03f Eval=%5.03f factors=%s", nPTG, mrpt::utils::RAD2DEG(pI.desiredDirection), pI.desiredSpeed, pI.evaluation, sprintf_vector("%5.02f ", pI.evalFactors).c_str()));
 		}
 
 		ADD_WIN_TEXTMSG(mrpt::format("relPoseSense: %s relPoseVelCmd:%s",
@@ -875,8 +875,8 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 		ys.resize(2);
 		xs[0] = 0; ys[0] = 0;
 		const double aDir = pI.desiredDirection;
-		xs[1] = 0.8*cos(aDir);
-		ys[1] = 0.8*sin(aDir);
+		xs[1] = pI.desiredSpeed*cos(aDir);
+		ys[1] = pI.desiredSpeed*sin(aDir);
 
 		win->plot(xs,ys,"g-5","SEL_DIR");
 
