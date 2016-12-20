@@ -63,10 +63,18 @@ typename GRAPH_t::constraint_t::type_value
 CICPCriteriaNRD<GRAPH_t>::getCurrentRobotPosEstimation() const {
 	MRPT_START;
 	using namespace std;
+	using namespace mrpt::utils;
+
+	// In case no nodes have been registered...
+	if (this->m_prev_registered_node == INVALID_NODEID) {
+		return pose_t();
+	}
+	ASSERT_(this->m_prev_registered_node != INVALID_NODEID);
 
 	return this->m_graph->nodes.at(this->m_prev_registered_node)+
 		m_since_prev_node_PDF.getMeanVal();
 
+std::cout << "TODO - Remove me. Kalimera ==> " << 18 << std::endl;
 	MRPT_END;
 }
 

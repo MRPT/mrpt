@@ -388,8 +388,44 @@ void CGraphSlamEngine<GRAPH_t>::initCGraphSlamEngine() {
 
 	m_init_timestamp = INVALID_TIMESTAMP;
 
-	m_map_is_cached = false;
-	m_gridmap_cached = mrpt::maps::COccupancyGridMap2D::Create();
+	// COccupancyGridMap2D Initialization
+	{
+		mrpt::maps::COccupancyGridMap2DPtr gridmap = mrpt::maps::COccupancyGridMap2D::Create();
+		
+		gridmap->setSize(
+				/* min_x = */ -20.0f,
+				/* float max_x = */ 20.0f,
+				/* float min_y = */ -20.0f,
+				/* float max_y = */ 20.0f,
+				/* float resolution = */ 0.05f);
+
+		// TODO - Read these from the .ini file
+		// observation insertion options
+  	gridmap->insertionOptions.maxOccupancyUpdateCertainty = 0.8f;
+
+  	gridmap->insertionOptions.maxDistanceInsertion = 15;
+  	gridmap->insertionOptions.wideningBeamsWithDistance = true;
+  	gridmap->insertionOptions.decimation = 2;
+
+	  m_gridmap_cached = gridmap;
+		m_map_is_cached = false;
+  }
+
+  // COctoMap Initialization
+  {
+		mrpt::maps::COctoMapPtr octomap = mrpt::maps::COctoMap::Create();
+
+		// TODO - adjust the insertionoptions...
+		// TODO - Read these from the .ini file
+  	octomap->insertionOptions.setOccupancyThres(0.5);
+  	octomap->insertionOptions.setProbHit(0.7);
+  	octomap->insertionOptions.setProbMiss(0.4);
+  	octomap->insertionOptions.setClampingThresMin(0.1192);
+  	octomap->insertionOptions.setClampingThresMax(0.971);
+
+  	m_octomap_cached = octomap;
+  	m_map_is_cached = false;
+  }
 
 
 	// In case we are given an RGBD TUM Dataset - try and read the info file so
@@ -769,7 +805,7 @@ void CGraphSlamEngine<GRAPH_t>::monitorNodeRegistration(
 
 template<class GRAPH_t>
 void CGraphSlamEngine<GRAPH_t>::getMap(
-		mrpt::maps::COccupancyGridMap2D* map,
+		mrpt::maps::COccupancyGridMap2DPtr map,
 		mrpt::system::TTimeStamp* acquisition_time/*=NULL*/) const {
 	MRPT_START;
 	ASSERT_(map);
@@ -777,7 +813,6 @@ void CGraphSlamEngine<GRAPH_t>::getMap(
 	if (!m_map_is_cached){
 		this->computeMap();
 	}
-
 	map->copyMapContentFrom(*m_gridmap_cached);
 
 	// fill the timestamp if this is given
@@ -786,18 +821,33 @@ void CGraphSlamEngine<GRAPH_t>::getMap(
 	}
 	MRPT_END;
 }
-
 template<class GRAPH_t>
-void CGraphSlamEngine<GRAPH_t>::getMap(
-		mrpt::maps::CMultiMetricMapPtr map,
+void CGraphSlamEngine<GRAPH_t>::getMap(mrpt::maps::COctoMapPtr map,
 		mrpt::system::TTimeStamp* acquisition_time/*=NULL*/) const {
-	THROW_EXCEPTION("Not implemented.");
+	MRPT_START;
+	THROW_EXCEPTION("Not Implemented Yet.");
+
+	if (!m_map_is_cached){
+		this->computeMap();
+	}
+	map = dynamic_cast<mrpt::maps::COctoMap*>(m_octomap_cached->duplicate());
+
+	// fill the timestamp if this is given
+	if (acquisition_time) {
+		*acquisition_time = m_map_acq_time;
+	}
+
+	MRPT_END;
 }
-
-
 
 template<class GRAPH_t>
 void CGraphSlamEngine<GRAPH_t>::computeMap() const {
+	// see specializations
+	THROW_EXCEPTION("Not Implemented.");
+}
+
+template<>
+inline void CGraphSlamEngine<mrpt::graphs::CNetworkOfPoses2DInf>::computeMap() const {
 	MRPT_START;
 	using namespace std;
 	using namespace mrpt::maps;
@@ -807,20 +857,8 @@ void CGraphSlamEngine<GRAPH_t>::computeMap() const {
 	MRPT_LOG_DEBUG_STREAM( "Computing the occupancy gridmap...");
 	mrpt::synch::CCriticalSectionLocker m_graph_lock(&m_graph_section);
 
-	// set the map parameters
-	mrpt::maps::COccupancyGridMap2D gridmap(
-			/* min_x = */ -20.0f,
-			/* float max_x = */ 20.0f,
-			/* float min_y = */ -20.0f,
-			/* float max_y = */ 20.0f,
-			/* float resolution = */ 0.05f);
-
-	// observation insertion options
-  gridmap.insertionOptions.maxOccupancyUpdateCertainty = 0.8f;
-
-  gridmap.insertionOptions.maxDistanceInsertion = 15;
-  gridmap.insertionOptions.wideningBeamsWithDistance = true;
-  gridmap.insertionOptions.decimation = 2;
+	mrpt::maps::COccupancyGridMap2DPtr gridmap = m_gridmap_cached;
+	gridmap->clear();
 
 	// traverse all the nodes - add their laser scans at their corresponding poses
 	for (std::map<mrpt::utils::TNodeID,
@@ -832,7 +870,7 @@ void CGraphSlamEngine<GRAPH_t>::computeMap() const {
 		mrpt::obs::CObservation2DRangeScanPtr curr_laser_scan = it->second;
 		pose_t curr_pose;
 
-		// TODO - Correct this. Laser scan should exist at all cost.
+		// TODO - Correct this. Laser scan should exist anyway
 		bool laser_scan_exists = !curr_laser_scan.null();
 
 		// TODO - Correct this. Pose should exist at all cost.
@@ -848,19 +886,27 @@ void CGraphSlamEngine<GRAPH_t>::computeMap() const {
 
 		if (laser_scan_exists && pose_found) {
 			CPose3D pose_3d(curr_pose);
-			gridmap.insertObservation(curr_laser_scan.pointer(), &pose_3d);
+			gridmap->insertObservation(curr_laser_scan.pointer(), &pose_3d);
 		}
 	}
 
-	// TODO - make m_gridmap_cached a method argument
-	m_gridmap_cached->copyMapContentFrom(gridmap);
 	m_map_is_cached = true;
 	m_map_acq_time = mrpt::system::now();
 
-	MRPT_LOG_DEBUG_STREAM( "Computed the occupancy gridmap successfully.");
+	MRPT_LOG_DEBUG_STREAM("Computed the occupancy gridmap successfully.");
 	MRPT_END;
 }
 
+template<>
+inline void CGraphSlamEngine<mrpt::graphs::CNetworkOfPoses3DInf>::computeMap() const {
+	MRPT_START;
+
+	mrpt::synch::CCriticalSectionLocker m_graph_lock(&m_graph_section);
+	THROW_EXCEPTION("Not Implemented Yet. Method is to compute a COctoMap");
+
+	//MRPT_LOG_DEBUG_STREAM << "Computed COctoMap successfully.";
+	MRPT_END;
+}
 
 
 template<class GRAPH_t>

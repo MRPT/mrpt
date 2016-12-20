@@ -238,14 +238,14 @@ bool execGraphSlamEngine(mrpt::utils::COutputLogger* logger) {
 	}
 
 	// get the occupancy map that was built
-	//if (graphslam_handler.save_map) {
-		//COccupancyGridMap2D map;
-		//graphslam_engine.getMap(&map);
-		//map.saveMetricMapRepresentationToFile(
-				//graphslam_handler.output_dir_fname +
-				//"/" +
-				//graphslam_handler.save_map_fname);
-	//}
+	if (graphslam_handler.save_map) {
+		COccupancyGridMap2DPtr map = mrpt::maps::COccupancyGridMap2D::Create();
+		graphslam_engine.getMap(map);
+		map->saveMetricMapRepresentationToFile(
+				graphslam_handler.output_dir_fname +
+				"/" +
+				graphslam_handler.save_map_fname);
+	}
 
 	return 0;
 }

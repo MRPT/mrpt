@@ -22,7 +22,7 @@ class HypothesisNotFoundException: public std::runtime_error {
 				mrpt::utils::TNodeID from,
   			mrpt::utils::TNodeID to);
   	HypothesisNotFoundException(size_t id);
-		~HypothesisNotFoundException();
+		~HypothesisNotFoundException() throw();
 		void clear();
 		std::string getErrorMsg() const throw();
 		const char* what() const throw();

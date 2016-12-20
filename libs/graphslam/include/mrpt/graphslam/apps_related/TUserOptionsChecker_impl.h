@@ -71,7 +71,7 @@ void TUserOptionsChecker<GRAPH_t>::_createDeciderOptimizerMappings() { }
 
 // deciders/optpimizers specific to the 2D SLAM cases
 template<>
-void TUserOptionsChecker<mrpt::graphs::CNetworkOfPoses2DInf>::_createDeciderOptimizerMappings() {
+inline void TUserOptionsChecker<mrpt::graphs::CNetworkOfPoses2DInf>::_createDeciderOptimizerMappings() {
 	using namespace mrpt::graphs;
 
 	node_regs_map["CICPCriteriaNRD"] =
@@ -85,7 +85,7 @@ void TUserOptionsChecker<mrpt::graphs::CNetworkOfPoses2DInf>::_createDeciderOpti
 
 // deciders/optpimizers specific to the 3D SLAM cases
 template<>
-void TUserOptionsChecker<mrpt::graphs::CNetworkOfPoses3DInf>::_createDeciderOptimizerMappings() {
+inline void TUserOptionsChecker<mrpt::graphs::CNetworkOfPoses3DInf>::_createDeciderOptimizerMappings() {
 
 }
 
