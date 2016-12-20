@@ -99,9 +99,9 @@ void CGraphSlamHandler::readConfigFname(const std::string& fname) {
 			"GeneralConfiguration",
 			"save_3DScene",
 			true, false);
-	save_gridmap = cfg_file.read_bool(
+	save_map = cfg_file.read_bool(
 			"GeneralConfiguration",
-			"save_gridmap",
+			"save_map",
 			true, false);
 	save_graph_fname = cfg_file.read_string(
 			"GeneralConfiguration",
@@ -111,13 +111,23 @@ void CGraphSlamHandler::readConfigFname(const std::string& fname) {
 			"GeneralConfiguration",
 			"save_3DScene_fname",
 			"scene.3DScene", false);
-	save_gridmap_fname = cfg_file.read_string(
+	save_map_fname = cfg_file.read_string(
 			"GeneralConfiguration",
-			"save_gridmap_fname",
-			"output_gridmap", false);
+			"save_map_fname",
+			"output_map", false);
 
 	MRPT_END;
 }
+
+void CGraphSlamHandler::save3DSceneToFile() {
+	THROW_EXCEPTION("Not Implemented Yet.");
+}
+void CGraphSlamHandler::saveMapRepresentationToFile() {
+	THROW_EXCEPTION("Not Implemented Yet.");
+}
+
+
+
 //////////////////////////////////////////////////////////////////////////////
 
 void CGraphSlamHandler::printParams() const {

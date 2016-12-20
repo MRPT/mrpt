@@ -90,7 +90,7 @@ class CFixedIntervalsNRD:
 
 		typedef mrpt::math::CMatrixFixedNumeric<double,
 						constraint_t::state_length,
-						constraint_t::state_length> InfMat;
+						constraint_t::state_length> inf_mat_t;
 		/**\brief Node Registration Decider */
 		typedef mrpt::graphslam::deciders::CNodeRegistrationDecider<GRAPH_t> parent;
 		/**\}*/
@@ -144,12 +144,16 @@ class CFixedIntervalsNRD:
 	protected:
 		// protected functions
 		//////////////////////////////////////////////////////////////
+		/**\name Registration Conditions Specifiers
+		 */
 		/**\brief If estimated position surpasses the registration max values since
 		 * the previous registered node, register a new node in the graph.
 		 *
 		 * \return True on successful registration.
 		 */
 		bool checkRegistrationCondition();
+		bool checkRegistrationCondition(mrpt::poses::CPose2D p1, mrpt::poses::CPose2D p2);
+		bool checkRegistrationCondition(mrpt::poses::CPose3D p1, mrpt::poses::CPose3D p2);
 		/**\brief Initialization function to be called from the various constructors
 		 */
 		void initCFixedIntervalsNRD();

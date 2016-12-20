@@ -50,6 +50,7 @@ bool CFixedIntervalsNRD<GRAPH_t>::updateState(
 	using namespace mrpt::obs;
 	using namespace mrpt::math;
 	using namespace mrpt::utils;
+	using namespace mrpt::poses;
 
 	// don't use the measurements in this implementation
 	MRPT_UNUSED_PARAM(observations);
@@ -75,17 +76,28 @@ bool CFixedIntervalsNRD<GRAPH_t>::updateState(
 	else { // FORMAT #1 - action-observation format
 		m_observation_only_rawlog = false;
 
-		if (action->getBestMovementEstimation() ) {
-			mrpt::obs::CActionRobotMovement2DPtr robot_move = action->getBestMovementEstimation();
-			mrpt::poses::CPosePDFPtr increment = robot_move->poseChange.get_ptr();
-			pose_t increment_pose = increment->getMeanVal();
-			InfMat increment_inf_mat;
-			increment->getInformationMatrix(increment_inf_mat);
-
+		mrpt::poses::CPose3DPDFGaussian move_pdf;
+		bool found = action->getFirstMovementEstimation(move_pdf);
+		if (found) {
 			// update the relative PDF of the path since the LAST node was inserted
-			constraint_t incremental_constraint(increment_pose, increment_inf_mat);
-			m_since_prev_node_PDF += incremental_constraint;
+			constraint_t incr_constraint;
+			incr_constraint.copyFrom(move_pdf);
+			m_since_prev_node_PDF += incr_constraint;
 		}
+
+		// TODO - remove these
+		//if (action->getBestMovementEstimation() ) {
+			//mrpt::obs::CActionRobotMovement2DPtr robot_move = action->getBestMovementEstimation();
+			//mrpt::poses::CPosePDFPtr increment = robot_move->poseChange;
+			//pose_t increment_pose = increment->getMeanVal();
+			//inf_mat_t increment_inf_mat;
+			//increment->getInformationMatrix(increment_inf_mat);
+
+			////update the relative PDF of the path since the LAST node was inserted
+			//constraint_t incr_constraint(increment_pose, increment_inf_mat);
+			//m_since_prev_node_PDF += incr_constraint;
+		//}
+
 	} // ELSE - FORMAT #1
 
 	if (this->m_prev_registered_node != INVALID_NODEID) {
@@ -112,7 +124,6 @@ bool CFixedIntervalsNRD<GRAPH_t>::updateState(
 template<class GRAPH_t>
 bool CFixedIntervalsNRD<GRAPH_t>::checkRegistrationCondition() {
 	MRPT_START;
-	using namespace mrpt::math;
 
 	// check that a node has already been registered - if not default to (0,0,0)
 	pose_t last_pose_inserted = this->m_prev_registered_node != INVALID_NODEID? 
@@ -120,18 +131,48 @@ bool CFixedIntervalsNRD<GRAPH_t>::checkRegistrationCondition() {
 
 	// odometry criterion
 	bool registered = false;
-	if ( (last_pose_inserted.distanceTo(m_curr_estimated_pose)
-				> params.registration_max_distance) ||
-			(fabs(wrapToPi(last_pose_inserted.phi() - m_curr_estimated_pose.phi()))
-			 > params.registration_max_angle ) ) {
-
-		// register the new node
+	if (this->checkRegistrationCondition(
+				last_pose_inserted,
+				m_curr_estimated_pose)) {
 		registered = this->registerNewNode(m_since_prev_node_PDF);
 	}
 
 	return registered;
 
 	MRPT_END;
+}
+
+template<class GRAPH_t>
+bool CFixedIntervalsNRD<GRAPH_t>::checkRegistrationCondition(
+		mrpt::poses::CPose2D p1,
+		mrpt::poses::CPose2D p2) {
+	using namespace mrpt::math;
+	
+	bool res = false;
+	if ((p1.distanceTo(p2) > params.registration_max_distance) ||
+			(fabs(wrapToPi(p1.phi() - p2.phi())) > params.registration_max_angle)) {
+		res = true;
+	}
+
+	return res;
+}
+
+// TODO - check this
+template<class GRAPH_t>
+bool CFixedIntervalsNRD<GRAPH_t>::checkRegistrationCondition(
+		mrpt::poses::CPose3D p1,
+		mrpt::poses::CPose3D p2) {
+	using namespace mrpt::math;
+	
+	bool res = false;
+	if ((p1.distanceTo(p2) > params.registration_max_distance) ||
+			(fabs(wrapToPi(p1.roll() - p2.roll())) > params.registration_max_angle) ||
+			(fabs(wrapToPi(p1.pitch() - p2.pitch())) > params.registration_max_angle) ||
+			(fabs(wrapToPi(p1.yaw() - p2.yaw())) > params.registration_max_angle)) {
+		res = true;
+	}
+
+	return res;
 }
 
 template<class GRAPH_t>

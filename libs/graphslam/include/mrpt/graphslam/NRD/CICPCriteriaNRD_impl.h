@@ -64,11 +64,6 @@ CICPCriteriaNRD<GRAPH_t>::getCurrentRobotPosEstimation() const {
 	MRPT_START;
 	using namespace std;
 
-	// TODO - Remove these.
-	MRPT_LOG_ERROR_STREAM << "m_prev_registered_node: " << this->m_prev_registered_node << endl;
-	MRPT_LOG_ERROR_STREAM << "m_since_prev_node_PDF: " << m_since_prev_node_PDF << endl;
-	MRPT_LOG_ERROR_STREAM << "this->m_graph->nodes.at(this->m_prev_registered_node)" << this->m_graph->nodes.at(this->m_prev_registered_node) << endl;
-
 	return this->m_graph->nodes.at(this->m_prev_registered_node)+
 		m_since_prev_node_PDF.getMeanVal();
 

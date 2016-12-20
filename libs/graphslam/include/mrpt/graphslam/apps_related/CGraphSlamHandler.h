@@ -75,6 +75,8 @@ public:
 	 * \return True if graphslam execution is to be continued normally
 	 */
 	bool queryObserverForEvents();
+	void saveMapRepresentationToFile();
+	void save3DSceneToFile();
 	
 
 	//
@@ -85,13 +87,13 @@ public:
 
 	bool save_graph;
 	bool save_3DScene;
-	bool save_gridmap;
+	bool save_map;
 
 	std::string rawlog_fname;
 
 	std::string save_graph_fname;
 	std::string save_3DScene_fname;
-	std::string save_gridmap_fname;
+	std::string save_map_fname;
 
 	mrpt::graphslam::CWindowManager* win_manager;
 	mrpt::graphslam::CWindowObserver* win_observer;

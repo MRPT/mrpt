@@ -38,6 +38,7 @@ CGraphSlamEngine<GRAPH_t>::CGraphSlamEngine(
 	m_GT_color(0, 255, 0),
 	m_estimated_traj_color(255, 165, 0),
 	m_optimized_map_color(255, 0, 0),
+	m_current_constraint_type_color(0, 0, 0),
 	m_robot_model_size(1),
 	m_graph_section("graph_sec"), // give the CCriticalSection a name for easier debugging
 	m_class_name("CGraphSlamEngine"),
@@ -63,15 +64,6 @@ CGraphSlamEngine<GRAPH_t>::~CGraphSlamEngine() {
 			MRPT_LOG_INFO_STREAM( "Closing file: " << (it->first));
 			(it->second)->close();
 		}
-	}
-
-	// delete m_odometry_poses
-	if (m_odometry_poses.size()) {
-		MRPT_LOG_DEBUG_STREAM( "Releasing m_odometry_poses vector; size: " << m_odometry_poses.size());
-		for (size_t i = 0; i != m_odometry_poses.size(); ++i) {
-			delete m_odometry_poses[i];
-		}
-		MRPT_LOG_DEBUG_STREAM( "Released m_odometry_poses vector");
 	}
 
 	// change back the CImage path
@@ -105,7 +97,7 @@ CGraphSlamEngine<GRAPH_t>::getCurrentRobotPosEstimation() const {
 
 template<class GRAPH_t>
 void CGraphSlamEngine<GRAPH_t>::getRobotEstimatedTrajectory(
-		mrpt::graphs::CNetworkOfPoses2DInf::global_poses_t* graph_poses) const {
+		typename GRAPH_t::global_poses_t* graph_poses) const {
 	MRPT_START;
 
 	mrpt::synch::CCriticalSectionLocker m_graph_lock(&m_graph_section);
@@ -122,12 +114,42 @@ void CGraphSlamEngine<GRAPH_t>::initCGraphSlamEngine() {
 	using namespace mrpt;
 	using namespace mrpt::utils;
 	using namespace mrpt::opengl;
-	using namespace std;
 
+	using namespace std;
 	// logger instance properties
 	m_time_logger.setName(m_class_name);
 	this->logging_enable_keep_record = true;
 	this->setLoggerName(m_class_name);
+	
+	// Assrt that the graph class used is supported.
+	{
+		MRPT_LOG_INFO_STREAM << "Verifying support for given MRPT graph class...";
+
+		// TODO - initialize vector in a smarter way.
+		m_supported_constraint_types.push_back("CPosePDFGaussianInf");
+		m_supported_constraint_types.push_back("CPose3DPDFGaussianInf");
+
+		constraint_t c;
+		const string c_str(c.GetRuntimeClass()->className);
+
+		bool found = (std::find(
+				m_supported_constraint_types.begin(),
+				m_supported_constraint_types.end(),
+				c_str) != m_supported_constraint_types.end());
+
+		if (found) {
+			MRPT_LOG_INFO_STREAM << "[OK] Class: " << c_str;
+		}
+		else {
+			MRPT_LOG_WARN_STREAM <<
+				"Given graph class " << c_str <<
+				" has not been tested consistently yet." <<
+				"Proceed at your own risk.";
+			mrpt::system::pause();
+		}
+
+		m_current_constraint_type = c_str;
+	}
 
 	// If a valid CWindowManager pointer is given then visuals are on.
 	if (m_enable_visuals) {
@@ -193,17 +215,19 @@ void CGraphSlamEngine<GRAPH_t>::initCGraphSlamEngine() {
 	m_use_GT = !m_fname_GT.empty();
 	if (m_use_GT) {
 		if (mrpt::system::strCmpI(m_GT_file_format, "rgbd_tum")) {
+			THROW_EXCEPTION("Not Implemented Yet.");
 			this->alignOpticalWithMRPTFrame();
-			this->readGTFileRGBD_TUM(m_fname_GT, &m_GT_poses);
+			//this->readGTFileRGBD_TUM(m_fname_GT, &m_GT_poses);
 		}
 		else if (mrpt::system::strCmpI(m_GT_file_format, "navsimul")) {
-			this->readGTFileNavSimulOutput(m_fname_GT, &m_GT_poses);
+			this->readGTFile(m_fname_GT, &m_GT_poses);
 		}
 	}
 
 	// plot the GT related visuals only if ground-truth file is given
 	if (!m_use_GT) {
-		MRPT_LOG_WARN_STREAM( "Ground truth file was not provided. Switching the related visualization parameters off...");
+		MRPT_LOG_WARN_STREAM(
+				"Ground truth file was not provided. Switching the related visualization parameters off...");
 		m_visualize_GT          = 0;
 		m_visualize_SLAM_metric = 0;
 	}
@@ -310,7 +334,8 @@ void CGraphSlamEngine<GRAPH_t>::initCGraphSlamEngine() {
 		double offset_y_total_edges, offset_y_loop_closures;
 		int text_index_total_edges, text_index_loop_closures;
 
-		m_win_manager->assignTextMessageParameters(&offset_y_total_edges,
+		m_win_manager->assignTextMessageParameters(
+				&offset_y_total_edges,
 				&text_index_total_edges);
 
 
@@ -336,6 +361,20 @@ void CGraphSlamEngine<GRAPH_t>::initCGraphSlamEngine() {
 				offset_y_loop_closures, text_index_loop_closures);
 	}
 
+	// Type of the generated graph
+	if (m_enable_visuals) {
+		m_win_manager->assignTextMessageParameters(
+				&m_offset_y_current_constraint_type,
+				&m_text_index_current_constraint_type);
+		m_win_manager->addTextMessage(m_offset_x_left,
+				-m_offset_y_current_constraint_type,
+				m_current_constraint_type,
+				TColorf(m_current_constraint_type_color),
+				m_text_index_current_constraint_type);
+	}
+
+
+
 	// query node/edge deciders for visual objects initialization
 	if (m_enable_visuals) {
 		mrpt::synch::CCriticalSectionLocker m_graph_lock(&m_graph_section);
@@ -348,7 +387,7 @@ void CGraphSlamEngine<GRAPH_t>::initCGraphSlamEngine() {
 
 	m_init_timestamp = INVALID_TIMESTAMP;
 
-	m_gridmap_is_cached = false;
+	m_map_is_cached = false;
 	m_gridmap_cached = mrpt::maps::COccupancyGridMap2D::Create();
 
 
@@ -423,16 +462,18 @@ bool CGraphSlamEngine<GRAPH_t>::execGraphSlamStep(
 		}
 		else {
 			MRPT_LOG_DEBUG_STREAM( "Action-observation dataset!");
+			MRPT_LOG_DEBUG_STREAM << "Action-observation dataset!";
+			ASSERT_(action.present());
 			m_observation_only_dataset = false;
-			if (action->getBestMovementEstimation()) {
 
-				CActionRobotMovement2DPtr robot_move =
-					action->getBestMovementEstimation();
-				CPosePDFPtr increment = robot_move->poseChange.get_ptr();
-				pose_t increment_pose = increment->getMeanVal();
-				m_curr_odometry_only_pose += increment_pose;
-			}
+			CPose3D increment_pose_3d;
+			action->getFirstMovementEstimationMean(increment_pose_3d);
+			pose_t increment_pose(increment_pose_3d);
+			m_curr_odometry_only_pose += increment_pose;
 		}
+
+		// TODO enable this and test this.
+		// return true;
 	}
 
 	// NRD
@@ -506,12 +547,7 @@ bool CGraphSlamEngine<GRAPH_t>::execGraphSlamStep(
 				static_cast<CObservationOdometryPtr>(observation);
 
 			m_curr_odometry_only_pose = obs_odometry->odometry;
-			// add to the odometry vector
-			{
-				pose_t* odometry_pose = new pose_t;
-				*odometry_pose = m_curr_odometry_only_pose;
-				m_odometry_poses.push_back(odometry_pose);
-			}
+			m_odometry_poses.push_back(m_curr_odometry_only_pose);
 		}
 		// laser scans
 		else if (IS_CLASS(observation, CObservation2DRangeScan)) {
@@ -529,20 +565,11 @@ bool CGraphSlamEngine<GRAPH_t>::execGraphSlamStep(
 		// action, observations should contain a pair of valid data
 		// (Format #1 rawlog file)
 
-		// parse the current action
-		CActionRobotMovement2DPtr robot_move =
-			action->getBestMovementEstimation();
-		ASSERT_(robot_move);
-		CPosePDFPtr increment = robot_move->poseChange.get_ptr();
-		pose_t increment_pose = increment->getMeanVal();
+		CPose3D increment_pose_3d;
+		action->getFirstMovementEstimationMean(increment_pose_3d);
+		pose_t increment_pose(increment_pose_3d);
 		m_curr_odometry_only_pose += increment_pose;
-
-		// add to the odometry vector
-		{
-			pose_t* odometry_pose = new pose_t;
-			*odometry_pose = m_curr_odometry_only_pose;
-			m_odometry_poses.push_back(odometry_pose);
-		}
+		m_odometry_poses.push_back(m_curr_odometry_only_pose);
 
 		// get the last laser scan
 		m_last_laser_scan2D =
@@ -627,8 +654,8 @@ bool CGraphSlamEngine<GRAPH_t>::execGraphSlamStep(
 			}
 		}
 
-		// mark the gridmap outdated
-		m_gridmap_is_cached = false;
+		// mark the map outdated
+		m_map_is_cached = false;
 
 	} // IF REGISTERED_NEW_NODE
 
@@ -641,13 +668,13 @@ bool CGraphSlamEngine<GRAPH_t>::execGraphSlamStep(
 	// mrpt::system::getCurrentTime
 	if (m_enable_visuals) {
 		if (curr_timestamp != INVALID_TIMESTAMP) {
-			m_win_manager->addTextMessage(5,-m_offset_y_timestamp,
+			m_win_manager->addTextMessage(m_offset_x_left, -m_offset_y_timestamp,
 					format("Simulated time: %s", timeToString(curr_timestamp).c_str()),
 					TColorf(1.0, 1.0, 1.0),
 					/* unique_index = */ m_text_index_timestamp );
 		}
 		else {
-			m_win_manager->addTextMessage(5,-m_offset_y_timestamp,
+			m_win_manager->addTextMessage(m_offset_x_left, -m_offset_y_timestamp,
 					format("Wall time: %s", timeToString(mrpt::system::getCurrentTime()).c_str()),
 					TColorf(1.0, 1.0, 1.0),
 					/* unique_index = */ m_text_index_timestamp );
@@ -740,28 +767,36 @@ void CGraphSlamEngine<GRAPH_t>::monitorNodeRegistration(
 }
 
 template<class GRAPH_t>
-void CGraphSlamEngine<GRAPH_t>::getOccupancyGridMap2D(
-		mrpt::maps::COccupancyGridMap2D* map_ptr,
-		mrpt::system::TTimeStamp* acquisition_time /* = NULL */) const {
+void CGraphSlamEngine<GRAPH_t>::getMap(
+		mrpt::maps::COccupancyGridMap2D* map,
+		mrpt::system::TTimeStamp* acquisition_time/*=NULL*/) const {
 	MRPT_START;
-	ASSERT_(map_ptr);
+	ASSERT_(map);
 
-	if (!m_gridmap_is_cached){
-		this->computeOccupancyGridMap2D();
+	if (!m_map_is_cached){
+		this->computeMap();
 	}
 
-	map_ptr->copyMapContentFrom(*m_gridmap_cached);
+	map->copyMapContentFrom(*m_gridmap_cached);
 
 	// fill the timestamp if this is given
 	if (acquisition_time) {
-		*acquisition_time = m_gridmap_acq_time;
+		*acquisition_time = m_map_acq_time;
 	}
 	MRPT_END;
 }
 
+template<class GRAPH_t>
+void CGraphSlamEngine<GRAPH_t>::getMap(
+		mrpt::maps::CMultiMetricMapPtr map,
+		mrpt::system::TTimeStamp* acquisition_time/*=NULL*/) const {
+	THROW_EXCEPTION("Not implemented.");
+}
+
+
 
 template<class GRAPH_t>
-void CGraphSlamEngine<GRAPH_t>::computeOccupancyGridMap2D() const {
+void CGraphSlamEngine<GRAPH_t>::computeMap() const {
 	MRPT_START;
 	using namespace std;
 	using namespace mrpt::maps;
@@ -796,9 +831,10 @@ void CGraphSlamEngine<GRAPH_t>::computeOccupancyGridMap2D() const {
 		mrpt::obs::CObservation2DRangeScanPtr curr_laser_scan = it->second;
 		pose_t curr_pose;
 
+		// TODO - Correct this. Laser scan should exist at all cost.
 		bool laser_scan_exists = !curr_laser_scan.null();
 
-		// TODO - Correct this. Laser scan should exist at all cost.
+		// TODO - Correct this. Pose should exist at all cost.
 		bool pose_found = true;
 		typename mrpt::graphs::CNetworkOfPoses2DInf::global_poses_t::const_iterator
 			pose_search = m_graph.nodes.find(curr_node);
@@ -815,9 +851,10 @@ void CGraphSlamEngine<GRAPH_t>::computeOccupancyGridMap2D() const {
 		}
 	}
 
+	// TODO - make m_gridmap_cached a method argument
 	m_gridmap_cached->copyMapContentFrom(gridmap);
-	m_gridmap_is_cached = true;
-	m_gridmap_acq_time = mrpt::system::now();
+	m_map_is_cached = true;
+	m_map_acq_time = mrpt::system::now();
 
 	MRPT_LOG_DEBUG_STREAM( "Computed the occupancy gridmap successfully.");
 	MRPT_END;
@@ -1241,9 +1278,9 @@ inline void CGraphSlamEngine<GRAPH_t>::updateCurrPosViewport() {
 }
 
 template<class GRAPH_t>
-void CGraphSlamEngine<GRAPH_t>::readGTFileNavSimulOutput(
+void CGraphSlamEngine<GRAPH_t>::readGTFile(
 		const std::string& fname_GT,
-		std::vector<pose_t>* gt_poses,
+		std::vector<mrpt::poses::CPose2D>* gt_poses,
 		std::vector<mrpt::system::TTimeStamp>* gt_timestamps /* = NULL */) {
 	MRPT_START;
 	using namespace std;
@@ -1257,9 +1294,8 @@ void CGraphSlamEngine<GRAPH_t>::readGTFileNavSimulOutput(
 				"m_visualize_GT flag to false\n", fname_GT.c_str()));
 
 	CFileInputStream file_GT(fname_GT);
-	ASSERT_(file_GT.fileOpenCorrectly() &&
-			"\nreadGTFileNavSimulOutput: Couldn't open GT file\n");
-	ASSERTMSG_(gt_poses, "No valid std::vector<pose_t>* was given");
+	ASSERTMSG_(file_GT.fileOpenCorrectly(), "\nCouldn't open GT file\n");
+	ASSERTMSG_(gt_poses, "\nNo valid std::vector<pose_t>* was given\n");
 
 	string curr_line;
 
@@ -1292,11 +1328,18 @@ void CGraphSlamEngine<GRAPH_t>::readGTFileNavSimulOutput(
 
 	MRPT_END;
 }
+template<class GRAPH_t>
+void CGraphSlamEngine<GRAPH_t>::readGTFile(
+		const std::string& fname_GT,
+		std::vector<mrpt::poses::CPose3D>* gt_poses,
+		std::vector<mrpt::system::TTimeStamp>* gt_timestamps /* = NULL */) {
+	THROW_EXCEPTION("Not implemented.");
+}
 
 template<class GRAPH_t>
 void CGraphSlamEngine<GRAPH_t>::readGTFileRGBD_TUM(
 		const std::string& fname_GT,
-		std::vector<pose_t>* gt_poses,
+		std::vector<mrpt::poses::CPose2D>* gt_poses,
 		std::vector<mrpt::system::TTimeStamp>* gt_timestamps/*= NULL */) {
 	MRPT_START;
 	using namespace std;
@@ -1662,18 +1705,25 @@ mrpt::system::TTimeStamp CGraphSlamEngine<GRAPH_t>::getTimeStamp(
 	ASSERTMSG_(action.present() || observation.present(),
 			"Neither action or observation contains valid data.");
 
-	mrpt::system::TTimeStamp timestamp;
+	mrpt::system::TTimeStamp timestamp = INVALID_TIMESTAMP;
 	if (observation.present()) {
 		timestamp = observation->timestamp;
 	}
 	else {
-		CActionRobotMovement2DPtr robot_move =
-			action->getBestMovementEstimation();
-		ASSERT_(robot_move);
+		// querry action part first
+		timestamp = action->get(0).timestamp;
 
-		timestamp = robot_move->timestamp;
+		// if still not available query the observations in the CSensoryFrame
+		if (timestamp == INVALID_TIMESTAMP) {
+			for (mrpt::obs::CSensoryFrame::const_iterator sens_it = observations->begin();
+					sens_it != observations->end(); ++sens_it) {
+				timestamp = (*sens_it)->timestamp;
+				if (timestamp != INVALID_TIMESTAMP) {
+					break;
+				}
+			}
+		}
 	}
-
 	return timestamp;
 	MRPT_END;
 }
@@ -1856,7 +1906,7 @@ void CGraphSlamEngine<GRAPH_t>::initGTVisualization() {
 	m_win_manager->assignTextMessageParameters(
 			/* offset_y*		= */ &m_offset_y_GT,
 			/* text_index* = */ &m_text_index_GT);
-	m_win_manager->addTextMessage(5,-m_offset_y_GT,
+	m_win_manager->addTextMessage(m_offset_x_left, -m_offset_y_GT,
 			mrpt::format("Ground truth path"),
 			TColorf(m_GT_color),
 			/* unique_index = */ m_text_index_GT );
@@ -1864,7 +1914,7 @@ void CGraphSlamEngine<GRAPH_t>::initGTVisualization() {
 	m_win->forceRepaint();
 
 	MRPT_END;
-}
+} // end of initGTVisualization
 
 template<class GRAPH_t>
 void CGraphSlamEngine<GRAPH_t>::updateGTVisualization() {
@@ -1885,22 +1935,19 @@ void CGraphSlamEngine<GRAPH_t>::updateGTVisualization() {
 		CPointCloudPtr GT_cloud = static_cast<CPointCloudPtr>(obj);
 
 		// add the latest GT pose
-		pose_t gt_pose = m_GT_poses[m_GT_poses_index];
-		GT_cloud->insertPoint(
-				gt_pose.x(),
-				gt_pose.y(),
-				0 );
+		mrpt::poses::CPose3D p(m_GT_poses[m_GT_poses_index]);
+		GT_cloud->insertPoint(p.x(), p.y(), p.z());
 
 		// robot model of GT trajectory
 		obj = scene->getByName("robot_GT");
 		CSetOfObjectsPtr robot_obj = static_cast<CSetOfObjectsPtr>(obj);
-		robot_obj->setPose(gt_pose);
+		robot_obj->setPose(p);
 		m_win->unlockAccess3DScene();
 		m_win->forceRepaint();
 	}
 
 	MRPT_END;
-}
+} // end of updateGTVisualization
 
 template<class GRAPH_t>
 void CGraphSlamEngine<GRAPH_t>::initOdometryVisualization() {
@@ -1937,7 +1984,7 @@ void CGraphSlamEngine<GRAPH_t>::initOdometryVisualization() {
 	m_win_manager->assignTextMessageParameters(
 			/* offset_y* = */ &m_offset_y_odometry,
 			/* text_index* = */ &m_text_index_odometry);
-	m_win_manager->addTextMessage(5,-m_offset_y_odometry,
+	m_win_manager->addTextMessage(m_offset_x_left, -m_offset_y_odometry,
 			mrpt::format("Odometry path"),
 			TColorf(m_odometry_color),
 			/* unique_index = */ m_text_index_odometry );
@@ -1960,17 +2007,17 @@ void CGraphSlamEngine<GRAPH_t>::updateOdometryVisualization() {
 	// point cloud
 	CRenderizablePtr obj = scene->getByName("odometry_poses_cloud");
 	CPointCloudPtr odometry_poses_cloud = static_cast<CPointCloudPtr>(obj);
-	pose_t* odometry_pose = m_odometry_poses.back();
+	mrpt::poses::CPose3D p(m_odometry_poses.back());
 
 	odometry_poses_cloud->insertPoint(
-			odometry_pose->x(),
-			odometry_pose->y(),
-			0 );
+			p.x(),
+			p.y(),
+			p.z());
 
 	// robot model
 	obj = scene->getByName("robot_odometry_poses");
 	CSetOfObjectsPtr robot_obj = static_cast<CSetOfObjectsPtr>(obj);
-	robot_obj->setPose(*odometry_pose);
+	robot_obj->setPose(p);
 
 	m_win->unlockAccess3DScene();
 	m_win->forceRepaint();
@@ -2015,7 +2062,7 @@ void CGraphSlamEngine<GRAPH_t>::initEstimatedTrajectoryVisualization() {
 	if (m_visualize_estimated_trajectory) {
 		m_win_manager->assignTextMessageParameters( /* offset_y* = */ &m_offset_y_estimated_traj,
 				/* text_index* = */ &m_text_index_estimated_traj);
-		m_win_manager->addTextMessage(5,-m_offset_y_estimated_traj,
+		m_win_manager->addTextMessage(m_offset_x_left, -m_offset_y_estimated_traj,
 				mrpt::format("Estimated trajectory"),
 				TColorf(m_estimated_traj_color),
 				/* unique_index = */ m_text_index_estimated_traj );
@@ -2063,13 +2110,15 @@ updateEstimatedTrajectoryVisualization(bool full_update) {
 		}
 		// append line for each node in the set
 		for (std::set<mrpt::utils::TNodeID>::const_iterator
-				nodeID_it = nodes_set.begin();
-				nodeID_it != nodes_set.end(); ++nodeID_it) {
+				it = nodes_set.begin();
+				it != nodes_set.end(); ++it) {
+
+			mrpt::poses::CPose3D p(m_graph.nodes.at(*it));
 
 			estimated_traj_setoflines->appendLineStrip(
-					m_graph.nodes[*nodeID_it].x(),
-					m_graph.nodes[*nodeID_it].y(),
-					0.05f);
+					p.x(),
+					p.y(),
+					p.z());
 		}
 	}
 
@@ -2237,6 +2286,7 @@ void CGraphSlamEngine<GRAPH_t>::computeSlamMetric(mrpt::utils::TNodeID nodeID, s
 	MRPT_START;
 	using namespace mrpt::utils;
 	using namespace mrpt::math;
+	using namespace mrpt::poses;
 
 	// start updating the metric after a certain number of nodes have been added
 	if ( m_graph.nodeCount() < 4 ) {
@@ -2249,10 +2299,10 @@ void CGraphSlamEngine<GRAPH_t>::computeSlamMetric(mrpt::utils::TNodeID nodeID, s
 	// initialize the loop variables only once
 	pose_t curr_node_pos;
 	pose_t curr_gt_pos;
-	pose_t node_delta;
+	pose_t node_delta_pos;
 	pose_t gt_delta;
-	double trans_diff;
-	double rot_diff;
+	double trans_diff = 0;
+	double rot_diff = 0;
 
 	size_t indices_size = m_nodeID_to_gt_indices.size();
 
@@ -2274,6 +2324,9 @@ void CGraphSlamEngine<GRAPH_t>::computeSlamMetric(mrpt::utils::TNodeID nodeID, s
 	pose_t prev_node_pos = m_graph.nodes[prev_it->first];
 	pose_t prev_gt_pos = m_GT_poses[prev_it->second];
 
+	// temporary constraint type 
+	constraint_t c;
+
 	for (std::map<mrpt::utils::TNodeID, size_t>::const_iterator
 			index_it = start_it;
 			index_it != m_nodeID_to_gt_indices.end();
@@ -2281,11 +2334,11 @@ void CGraphSlamEngine<GRAPH_t>::computeSlamMetric(mrpt::utils::TNodeID nodeID, s
 		curr_node_pos = m_graph.nodes[index_it->first];
 		curr_gt_pos = m_GT_poses[index_it->second];
 
-		node_delta = curr_node_pos - prev_node_pos;
+		node_delta_pos = curr_node_pos - prev_node_pos;
 		gt_delta = curr_gt_pos - prev_gt_pos;
 
-		trans_diff = gt_delta.distanceTo(node_delta);
-		rot_diff = wrapToPi(gt_delta.phi() - node_delta.phi());
+		trans_diff = gt_delta.distanceTo(node_delta_pos);
+		rot_diff = this->accumulateAngleDiffs(gt_delta, node_delta_pos);
 
 		m_curr_deformation_energy += (pow(trans_diff, 2) + pow(rot_diff, 2));
 		m_curr_deformation_energy /= indices_size;
@@ -2300,6 +2353,26 @@ void CGraphSlamEngine<GRAPH_t>::computeSlamMetric(mrpt::utils::TNodeID nodeID, s
 	MRPT_LOG_DEBUG_STREAM("Total deformation energy: " << m_curr_deformation_energy);
 
 	MRPT_END;
+}
+
+template<class GRAPH_t>
+double CGraphSlamEngine<GRAPH_t>::accumulateAngleDiffs(
+				mrpt::poses::CPose2D p1,
+				mrpt::poses::CPose2D p2) {
+	return mrpt::math::wrapToPi(p1.phi() - p2.phi());
+}
+template<class GRAPH_t>
+double CGraphSlamEngine<GRAPH_t>::accumulateAngleDiffs(
+				mrpt::poses::CPose3D p1,
+				mrpt::poses::CPose3D p2) {
+	using namespace mrpt::math;
+	double res = 0;
+
+	res += wrapToPi(p1.roll() - p2.roll());
+	res += wrapToPi(p1.pitch() - p2.pitch());
+	res += wrapToPi(p1.yaw() - p2.yaw());
+
+	return res;
 }
 
 template<class GRAPH_t>
