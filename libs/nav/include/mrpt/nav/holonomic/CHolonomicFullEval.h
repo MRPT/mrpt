@@ -32,7 +32,7 @@ namespace mrpt
 	 * factorWeights=1.0 1.0 1.0 0.05 1.0
 	 * // 0: Clearness in direction
 	 * // 1: Closest approach to target along straight line (Euclidean)
-	 * // 2: Distance of end colission-free point to target (Euclidean)
+	 * // 2: Distance of end collision-free point to target (Euclidean)
 	 * // 3: Hysteresis
 	 * // 4: Clearness to nearest obstacle along path
 	 * TARGET_SLOW_APPROACHING_DISTANCE = 0.20   // Start to reduce speed when closer than this to target.

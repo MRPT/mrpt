@@ -120,7 +120,7 @@ void  CHolonomicFullEval::navigate(
 			scores[1] = 1.0 / (1.0 + square(min_dist_target_along_path) );
 		}
 
-		// Factor #3: Distance of end colission-free point to target (Euclidean)
+		// Factor #3: Distance of end collision-free point to target (Euclidean)
 		// -----------------------------------------------------
 		{
 			const double endpt_dist_to_target = (target - TPoint2D(x,y)).norm();
