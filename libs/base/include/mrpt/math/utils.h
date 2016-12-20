@@ -62,7 +62,7 @@ namespace mrpt
 			int i = 0;
 			for (typename T::const_iterator it = t.begin();
 					it  != t.end(); ++i, ++it) {
-				cout << "Vector " << i << "/" << t.size() << endl << "\t";
+				cout << "Vector " << i+1 << "/" << t.size() << endl << "\t";
 				printVector(*it);
 			}
 		}
