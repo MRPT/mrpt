@@ -595,7 +595,7 @@ void CPTG_Holo_Blend::updateTPObstacleSingle(double ox, double oy, uint16_t k, d
 			const double sol_t0 = (-b + sqrt(discr)) / (2 * a);
 			const double sol_t1 = (-b - sqrt(discr)) / (2 * a);
 
-			// Identify the shortest valid colission time:
+			// Identify the shortest valid collision time:
 			if (sol_t0<T_ramp && sol_t1<T_ramp) sol_t = -1.0;
 			else if (sol_t0<T_ramp && sol_t1 >= T_ramp_thres099) sol_t = sol_t1;
 			else if (sol_t1<T_ramp && sol_t0 >= T_ramp_thres099) sol_t = sol_t0;
