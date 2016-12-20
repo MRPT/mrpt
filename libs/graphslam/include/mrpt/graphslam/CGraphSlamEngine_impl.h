@@ -38,7 +38,7 @@ CGraphSlamEngine<GRAPH_t>::CGraphSlamEngine(
 	m_GT_color(0, 255, 0),
 	m_estimated_traj_color(255, 165, 0),
 	m_optimized_map_color(255, 0, 0),
-	m_current_constraint_type_color(0, 0, 0),
+	m_current_constraint_type_color(255, 255, 255),
 	m_robot_model_size(1),
 	m_graph_section("graph_sec"), // give the CCriticalSection a name for easier debugging
 	m_class_name("CGraphSlamEngine"),
@@ -149,6 +149,7 @@ void CGraphSlamEngine<GRAPH_t>::initCGraphSlamEngine() {
 		}
 
 		m_current_constraint_type = c_str;
+		m_current_constraint_type = "Constraints: " + m_current_constraint_type;
 	}
 
 	// If a valid CWindowManager pointer is given then visuals are on.
@@ -1890,12 +1891,10 @@ void CGraphSlamEngine<GRAPH_t>::initGTVisualization() {
 	GT_cloud->setName("GT_cloud");
 
 	// robot model
-	CSetOfObjectsPtr robot_model = stock_objects::RobotPioneer();
-	pose_t initial_pose;
-	robot_model->setPose(initial_pose);
-	robot_model->setName("robot_GT");
-	robot_model->setColor_u8(m_GT_color);
-	robot_model->setScale(m_robot_model_size);
+	CSetOfObjectsPtr robot_model = this->setCurrentPositionModel(
+			/*name = */"robot_GT",
+			/*color = */m_GT_color,
+			/*scale = */m_robot_model_size);
 
 	// insert them to the scene
 	COpenGLScenePtr scene = m_win->get3DSceneAndLock();
@@ -1968,12 +1967,16 @@ void CGraphSlamEngine<GRAPH_t>::initOdometryVisualization() {
 	odometry_poses_cloud->setName("odometry_poses_cloud");
 
 	// robot model
-	CSetOfObjectsPtr robot_model = stock_objects::RobotPioneer();
-	pose_t initial_pose;
-	robot_model->setPose(initial_pose);
-	robot_model->setName("robot_odometry_poses");
-	robot_model->setColor_u8(m_odometry_color);
-	robot_model->setScale(m_robot_model_size);
+	//CSetOfObjectsPtr robot_model = stock_objects::RobotPioneer();
+	//pose_t initial_pose;
+	//robot_model->setPose(initial_pose);
+	//robot_model->setName("robot_odometry_poses");
+	//robot_model->setColor_u8(m_odometry_color);
+	//robot_model->setScale(m_robot_model_size);
+	CSetOfObjectsPtr robot_model = this->setCurrentPositionModel(
+			"robot_odometry_poses",
+			m_odometry_color,
+			m_robot_model_size);
 
 	// insert them to the scene
 	COpenGLScenePtr scene = m_win->get3DSceneAndLock();
@@ -2044,12 +2047,16 @@ void CGraphSlamEngine<GRAPH_t>::initEstimatedTrajectoryVisualization() {
 			/* 2nd */ 0, 0, 0);
 
 	// robot model
-	CSetOfObjectsPtr robot_model = stock_objects::RobotPioneer();
-	pose_t initial_pose;
-	robot_model->setPose(initial_pose);
-	robot_model->setName("robot_estimated_traj");
-	robot_model->setColor_u8(m_estimated_traj_color);
-	robot_model->setScale(m_robot_model_size);
+	//CSetOfObjectsPtr robot_model = stock_objects::RobotPioneer();
+	//pose_t initial_pose;
+	//robot_model->setPose(initial_pose);
+	//robot_model->setName("robot_estimated_traj");
+	//robot_model->setColor_u8(m_estimated_traj_color);
+	//robot_model->setScale(m_robot_model_size);
+	CSetOfObjectsPtr robot_model = this->setCurrentPositionModel(
+			"robot_estimated_traj",
+			m_estimated_traj_color,
+			m_robot_model_size);
 
 	// insert objects in the graph
 	COpenGLScenePtr scene = m_win->get3DSceneAndLock();
@@ -2542,7 +2549,35 @@ void CGraphSlamEngine<GRAPH_t>::generateReportFiles(
 
 	MRPT_END;
 }
+template<class GRAPH_t>
+mrpt::opengl::CSetOfObjectsPtr
+CGraphSlamEngine<GRAPH_t>::setCurrentPositionModel(
+		const std::string& model_name,
+		const mrpt::utils::TColor& model_color,
+		const size_t model_size,
+		const pose_t& init_pose) {
+	using namespace mrpt::poses;
+	using namespace mrpt::opengl;
+	ASSERTMSG_(!model_name.empty(), "Model name provided is empty.");
 
+	mrpt::opengl::CSetOfObjectsPtr model;
+	// set the robot model depending on the type of slam 2D/3D
+	pose_t p;
+	if (IS_CLASS(&p, CPose2D)) {
+		model = stock_objects::RobotPioneer();
+	}
+	else {
+		model = stock_objects::RobotRhodon();
+	}
+	ASSERT_(model.present());
+
+	model->setName(model_name);
+	model->setColor_u8(model_color);
+	model->setScale(model_size);
+	model->setPose(init_pose);
+
+	return model;
+}
 
 // TODO - check this
 template<class GRAPH_t>

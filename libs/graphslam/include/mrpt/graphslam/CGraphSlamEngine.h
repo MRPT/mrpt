@@ -622,6 +622,25 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 				mrpt::poses::CPose3D p1,
 				mrpt::poses::CPose3D p2);
 		/**\}*/
+		// TODO - Use an airplane/quad model for 3D operations
+		/**\brief Set the opengl model that indicates the latest position of the
+		 * trajectory at hand
+		 *
+		 * \param[in] model_name Name of the resulting opengl object.
+		 * \param[in] model_color Color of the object.
+		 * \param[in] model_size Scaling of the object.
+		 * \param[in] init_pose Initial position of the object.
+		 *
+		 * \returns CSetOfObjectsPtr instance.
+		 *
+		 * \note Different model is used depending on whether we are running 2D or
+		 * 3D SLAM.
+		 */
+		mrpt::opengl::CSetOfObjectsPtr setCurrentPositionModel(
+				const std::string& model_name,
+				const mrpt::utils::TColor& model_color=mrpt::utils::TColor(0,0,0),
+				const size_t model_size=1,
+				const pose_t& init_pose=pose_t());
 
 		/**\brief Assert that the given nodes number matches the registered graph
 		 * nodes, otherwise throw exception
