@@ -268,7 +268,7 @@ void  CHolonomicFullEval::navigate(
 
 		const double obs_clearness = m_dirs_scores(best_dir, 4);
 		const double obs_dist = std::min(obstacles[best_dir], obs_clearness);
-		const double obs_dist_th = std::max(options.TOO_CLOSE_OBSTACLE, 0.5*max_obstacle_dist);
+		const double obs_dist_th = std::max(options.TOO_CLOSE_OBSTACLE, options.OBSTACLE_SLOW_DOWN_DISTANCE*max_obstacle_dist);
 		double riskFactor = 1.0;
 		if (obs_dist <= options.TOO_CLOSE_OBSTACLE) {
 			riskFactor = 0.0;
@@ -333,6 +333,7 @@ CHolonomicFullEval::TOptions::TOptions() :
 	// Default values:
 	TOO_CLOSE_OBSTACLE                 ( 0.15 ),
 	TARGET_SLOW_APPROACHING_DISTANCE   ( 0.60 ),
+	OBSTACLE_SLOW_DOWN_DISTANCE        ( 0.15 ),
 	HYSTERESIS_SECTOR_COUNT            ( 5 ),
 	PHASE1_THRESHOLD( 0.75 )
 {
@@ -348,7 +349,8 @@ void CHolonomicFullEval::TOptions::loadFromConfigFile(const mrpt::utils::CConfig
 
 	// Load from config text:
 	MRPT_LOAD_CONFIG_VAR(TOO_CLOSE_OBSTACLE,double,  source,section );
-	MRPT_LOAD_CONFIG_VAR(TARGET_SLOW_APPROACHING_DISTANCE,double,  source,section );
+	MRPT_LOAD_CONFIG_VAR(TARGET_SLOW_APPROACHING_DISTANCE, double, source, section);
+	MRPT_LOAD_CONFIG_VAR(OBSTACLE_SLOW_DOWN_DISTANCE,double,  source,section );
 	MRPT_LOAD_CONFIG_VAR(HYSTERESIS_SECTOR_COUNT,double,  source,section );
 	MRPT_LOAD_CONFIG_VAR(PHASE1_THRESHOLD,double,  source,section );
 
@@ -370,7 +372,8 @@ void CHolonomicFullEval::TOptions::saveToConfigFile(mrpt::utils::CConfigFileBase
 	const int WN = 25, WV = 30;
 
 	cfg.write(section,"TOO_CLOSE_OBSTACLE",TOO_CLOSE_OBSTACLE,   WN,WV, "Directions with collision-free distances below this threshold are not elegible.");
-	cfg.write(section,"TARGET_SLOW_APPROACHING_DISTANCE",TARGET_SLOW_APPROACHING_DISTANCE,   WN,WV, "Start to reduce speed when closer than this to target.");
+	cfg.write(section, "TARGET_SLOW_APPROACHING_DISTANCE", TARGET_SLOW_APPROACHING_DISTANCE, WN, WV, "Start to reduce speed when closer than this to target.");
+	cfg.write(section,"OBSTACLE_SLOW_DOWN_DISTANCE", OBSTACLE_SLOW_DOWN_DISTANCE,   WN,WV, "Start to reduce speed when clearance is below this value ([0,1] ratio wrt obstacle reference/max distance)");
 	cfg.write(section,"HYSTERESIS_SECTOR_COUNT",HYSTERESIS_SECTOR_COUNT,   WN,WV, "Range of `sectors` (directions) for hysteresis over succesive timesteps");
 	cfg.write(section,"PHASE1_THRESHOLD",PHASE1_THRESHOLD,   WN,WV, "Phase1 scores must be above this relative range threshold [0,1] to be considered in phase 2 (Default:`0.75`)");
 
@@ -386,13 +389,15 @@ void CHolonomicFullEval::TOptions::saveToConfigFile(mrpt::utils::CConfigFileBase
 void  CHolonomicFullEval::writeToStream(mrpt::utils::CStream &out,int *version) const
 {
 	if (version)
-		*version = 0;
+		*version = 1;
 	else
 	{
 		// Params:
 		out << options.factorWeights << options.HYSTERESIS_SECTOR_COUNT <<
 			options.PHASE1_FACTORS << options.PHASE2_FACTORS <<
-			options.TARGET_SLOW_APPROACHING_DISTANCE << options.TOO_CLOSE_OBSTACLE << options.PHASE1_THRESHOLD;
+			options.TARGET_SLOW_APPROACHING_DISTANCE << options.TOO_CLOSE_OBSTACLE << options.PHASE1_THRESHOLD
+			<< options.OBSTACLE_SLOW_DOWN_DISTANCE; // v1
+
 		// State:
 		out << m_last_selected_sector;
 	}
@@ -402,11 +407,14 @@ void  CHolonomicFullEval::readFromStream(mrpt::utils::CStream &in,int version)
 	switch(version)
 	{
 	case 0:
+	case 1:
 		{
 		// Params:
 		in >> options.factorWeights >> options.HYSTERESIS_SECTOR_COUNT >>
 			options.PHASE1_FACTORS >> options.PHASE2_FACTORS >>
 			options.TARGET_SLOW_APPROACHING_DISTANCE >> options.TOO_CLOSE_OBSTACLE >> options.PHASE1_THRESHOLD;
+		if (version >= 1)
+			in >> options.OBSTACLE_SLOW_DOWN_DISTANCE;
 		// State:
 		in >> m_last_selected_sector;
 		} break;
