@@ -13,6 +13,8 @@
 #include <mrpt/system/filesystem.h>
 #include <mrpt/utils/mrpt_macros.h>
 #include <mrpt/graphs/CNetworkOfPoses.h>
+#include <mrpt/poses/CPosePDFGaussianInf.h>
+#include <mrpt/poses/CPose3DPDFGaussianInf.h>
 
 #include <mrpt/graphslam/link_pragmas.h>
 #include <mrpt/graphslam/NRD/CFixedIntervalsNRD.h>
@@ -36,7 +38,9 @@ struct GRAPHSLAM_IMPEXP TRegistrationDeciderOrOptimizerProps {
 	TRegistrationDeciderOrOptimizerProps():
 		name(""),
 		description(""),
-		is_mr_slam_class(false) {}
+		is_mr_slam_class(false),
+		is_slam_2d(false),
+		is_slam_3d(false) {}
 	~TRegistrationDeciderOrOptimizerProps() {}
 
   /**\brief Name of the decider or optimizer class
@@ -48,6 +52,8 @@ struct GRAPHSLAM_IMPEXP TRegistrationDeciderOrOptimizerProps {
    * in a multi-robot SLAM operation
    */
   bool is_mr_slam_class;
+  bool is_slam_2d;
+  bool is_slam_3d;
 
 };
 
@@ -96,23 +102,24 @@ struct GRAPHSLAM_IMPEXP TOptimizerProps :
  *
  * \ingroup mrpt_graphslam_grp
  */
-struct GRAPHSLAM_IMPEXP TUserOptionsChecker {
+template<class GRAPH_t>
+struct TUserOptionsChecker {
 	/**\name handy typedefs for the creation of deciders/optimzer instances from
 	 * the corresponding strings
 	 */
 	/**\{*/
+	typedef typename GRAPH_t::constraint_t constraint_t;
+		typedef typename GRAPH_t::constraint_t::type_value pose_t;
 	typedef std::map<
 		std::string,
-		mrpt::graphslam::deciders::CNodeRegistrationDecider<
-			mrpt::graphs::CNetworkOfPoses2DInf>*(*)()> node_regs_t;
+		mrpt::graphslam::deciders::CNodeRegistrationDecider<GRAPH_t>*(*)()> node_regs_t;
 	typedef std::map<
 		std::string,
-		mrpt::graphslam::deciders::CEdgeRegistrationDecider<
-			mrpt::graphs::CNetworkOfPoses2DInf>*(*)()> edge_regs_t;
+		mrpt::graphslam::deciders::CEdgeRegistrationDecider<GRAPH_t>*(*)()> edge_regs_t;
 	typedef std::map<
 		std::string,
-		mrpt::graphslam::optimizers::CGraphSlamOptimizer<
-			mrpt::graphs::CNetworkOfPoses2DInf>*(*)()> optimizers_t;
+		mrpt::graphslam::optimizers::CGraphSlamOptimizer<GRAPH_t>*(*)()> optimizers_t;
+
 	/**\}*/
 
 	//
@@ -123,15 +130,17 @@ struct GRAPHSLAM_IMPEXP TUserOptionsChecker {
 	/**\brief Destructor */
 	virtual ~TUserOptionsChecker();
 	/**\brief Create the necessary mappings from strings to the corresponding
-	 * instance creation funtors.
+	 * instance creation functors.
 	 *
-	 * \note Method is by default called upon initialization
+	 * Method is used for populating a map from string to instance creation
+	 * function. The decider/optimzer can then be spawned according to the user
+	 * selection.
+	 *
 	 */
 	virtual void createDeciderOptimizerMappings();
-	/**\brief Populate the available deciders, optimizer classes available in
+	virtual void _createDeciderOptimizerMappings();
+	/**\brief Populate the available decider, optimizer classes available in
 	 * user applications
-	 *
-	 * \note Method is by default called upon initialization
 	 */
 	virtual void populateDeciderOptimizerProperties();
 	/**\brief Check if the given registrator decider exists in the vector of
@@ -168,18 +177,18 @@ struct GRAPHSLAM_IMPEXP TUserOptionsChecker {
  	 * \warning Caller is responsible for deleting the initialized instances
  	 */
 	/**\{*/
-	template<typename T>
-	static mrpt::graphslam::deciders::CNodeRegistrationDecider<mrpt::graphs::CNetworkOfPoses2DInf>*
+	template<class T>
+	static mrpt::graphslam::deciders::CNodeRegistrationDecider<GRAPH_t>*
 	createNodeRegistrationDecider() {
 		return new T;
 	}
-	template<typename T>
-	static mrpt::graphslam::deciders::CEdgeRegistrationDecider<mrpt::graphs::CNetworkOfPoses2DInf>*
+	template<class T>
+	static mrpt::graphslam::deciders::CEdgeRegistrationDecider<GRAPH_t>*
 	createEdgeRegistrationDecider() {
 		return new T;
 	}
-	template<typename T>
-	static mrpt::graphslam::optimizers::CGraphSlamOptimizer<mrpt::graphs::CNetworkOfPoses2DInf>*
+	template<class T>
+	static mrpt::graphslam::optimizers::CGraphSlamOptimizer<GRAPH_t>*
 	createGraphSlamOptimizer() {
 		return new T;
 	}
@@ -211,5 +220,6 @@ struct GRAPHSLAM_IMPEXP TUserOptionsChecker {
 
 
 } } } // END OF NAMESPACES
+#include "TUserOptionsChecker_impl.h"
 
 #endif /* end of include guard: TUSEROPTIONSCHECKER_H */

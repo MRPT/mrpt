@@ -12,6 +12,7 @@ using namespace std;
 template<class GRAPH_t>
 CNodeRegistrationDecider<GRAPH_t>::CNodeRegistrationDecider():
 	m_prev_registered_node(INVALID_NODEID) {
+		using namespace mrpt::poses;
 
 		m_init_inf_mat.unit();
 		m_init_inf_mat *= 10000;

@@ -48,6 +48,9 @@ class CNodeRegistrationDecider : public mrpt::graphslam::CRegistrationDeciderOrO
 		typedef typename GRAPH_t::constraint_t constraint_t;
 		/**\brief type of underlying poses (2D/3D). */
 		typedef typename GRAPH_t::constraint_t::type_value pose_t;
+		typedef mrpt::math::CMatrixFixedNumeric<double,
+						constraint_t::state_length,
+						constraint_t::state_length> inf_mat_t;
 		/**\}*/
 
 		/**\brief Default class constructor.*/
@@ -106,8 +109,7 @@ class CNodeRegistrationDecider : public mrpt::graphslam::CRegistrationDeciderOrO
 		 * Large values for this indicate that I am sure of the corresponding
 		 * (initial) pose
 		 */
-		mrpt::math::CMatrixDouble33  m_init_inf_mat;
-
+		inf_mat_t m_init_inf_mat;
 };
 
 } } } // end of namespaces

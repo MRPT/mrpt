@@ -37,6 +37,7 @@ MRPT_WARNING("Including <mrpt/graphslam.h> makes compilation much slower, consid
 #include "graphslam/ERD/CLoopCloserERD.h"
 
 // GraphSlamOptimizers
+#include "graphslam/GSO/CEmptyGSO.h"
 #include "graphslam/GSO/CLevMarqGSO.h"
 
 // Graph SLAM Engine - Relevant headers
