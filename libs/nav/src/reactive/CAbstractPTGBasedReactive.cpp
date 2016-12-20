@@ -673,7 +673,7 @@ void CAbstractPTGBasedReactive::STEP5_PTGEvaluator(
 		}
 
 		factor1 -= cur_norm_d;
-		if (factor1 < 0.10) {
+		if (factor1 < 0.50) {
 			// Don't trust this step: we are reaching too close to obstacles:
 			newLogRec.additional_debug_msgs["PTGEvaluator"] = "PTG-continuation not allowed, too close to obstacles.";
 			holonomicMovement.evaluation = .0;
@@ -1051,7 +1051,7 @@ void CAbstractPTGBasedReactive::ptg_eval_target_build_obstacles(
 			if (ptg->supportVelCmdNOP()) {
 				const double v = ::hypot(m_curPoseVel.velLocal.vx, m_curPoseVel.velLocal.vy);
 				const double d = v * ptg->maxTimeInVelCmdNOP(kDirection);
-				obsFreeNormalizedDistance = std::max(0.90, obsFreeNormalizedDistance - d);
+				obsFreeNormalizedDistance = std::min(obsFreeNormalizedDistance, std::max(0.90, obsFreeNormalizedDistance - d) );
 			}
 
 			double velScale = 1.0;
