@@ -812,7 +812,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 			ADD_WIN_TEXTMSG(ss.str());
 		}
 
-		for (unsigned int nPTG=0;nPTG<log.nPTGs;nPTG++)
+		for (unsigned int nPTG=0;nPTG<log.infoPerPTG.size();nPTG++)
 		{
 			const CLogFileRecord::TInfoPerPTG &pI = log.infoPerPTG[nPTG];
 
