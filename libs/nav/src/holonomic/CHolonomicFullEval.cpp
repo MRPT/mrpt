@@ -148,16 +148,20 @@ void  CHolonomicFullEval::navigate(
 		MRPT_TODO("Revise after refactoring all holo nav interface and impl. PTG nearness output?");
 		{
 			// "Temporary" (?) approximation:
-			double avr_path_clearness = 1.0;
-			int i0 = i-nDirs/4;
-			int i1 = i+nDirs/4;
+			double avr_path_clearness = 0.0;
+			size_t num_avrs = 0;
+			const int W = std::max( size_t(1), nDirs / 10);
+			const int i0 = i - W;
+			const int i1 = i + W;
 			for (int ki=i0;ki<=i1;ki++)
 			{
 				const int k = ((ki<0) ? (ki+nDirs) : ki) % nDirs;
-				if (obstacles[k]<0.99*max_obstacle_dist)
-					mrpt::utils::keep_min(avr_path_clearness, sg.distance(obstacles_2d[k]) );
+				if (obstacles[k] < 0.99*max_obstacle_dist) {
+					avr_path_clearness += sg.distance(obstacles_2d[k]);
+					num_avrs++;
+				}
 			}
-			scores[4] = avr_path_clearness;
+			scores[4] = num_avrs != 0 ? (avr_path_clearness / num_avrs) : 0.0;
 		}
 
 		// Save stats for debugging:
@@ -260,7 +264,19 @@ void  CHolonomicFullEval::navigate(
 			std::min(1.0, target.norm() / (options.TARGET_SLOW_APPROACHING_DISTANCE))
 			:
 			1.0;
-		const double riskFactor = 1.0;
+
+
+		const double obs_clearness = m_dirs_scores(best_dir, 4);
+		const double obs_dist = std::min(obstacles[best_dir], obs_clearness);
+		const double obs_dist_th = std::max(options.TOO_CLOSE_OBSTACLE, 0.5*max_obstacle_dist);
+		double riskFactor = 1.0;
+		if (obs_dist <= options.TOO_CLOSE_OBSTACLE) {
+			riskFactor = 0.0;
+		}
+		else if (obs_dist< obs_dist_th && obs_dist_th>options.TOO_CLOSE_OBSTACLE)
+		{
+			riskFactor = (obs_dist - options.TOO_CLOSE_OBSTACLE) / (obs_dist_th - options.TOO_CLOSE_OBSTACLE);
+		}
 		desiredSpeed = maxRobotSpeed * std::min(riskFactor,targetNearnessFactor);
 	}
 
