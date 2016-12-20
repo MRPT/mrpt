@@ -622,9 +622,10 @@ void CAbstractPTGBasedReactive::STEP5_PTGEvaluator(
 	mrpt::math::TPose2D pose;
 	holonomicMovement.PTG->getPathPose(kDirection, nStep,pose);
 
+	std::vector<double> eval_factors(6);
 	// Factor 1: Free distance for the chosen PTG and "alpha" in the TP-Space:
 	// ----------------------------------------------------------------------
-	double factor1 = in_TPObstacles[kDirection];
+	eval_factors[0] = in_TPObstacles[kDirection];
 
 	// Special case for NOP motion cmd:
 	// consider only the empty space *after* the current robot pose, which is not at the origin.
@@ -672,8 +673,8 @@ void CAbstractPTGBasedReactive::STEP5_PTGEvaluator(
 			}
 		}
 
-		factor1 -= cur_norm_d;
-		if (factor1 < 0.50) {
+		eval_factors[0] -= cur_norm_d;
+		if (eval_factors[0] < 0.50) {
 			// Don't trust this step: we are reaching too close to obstacles:
 			newLogRec.additional_debug_msgs["PTGEvaluator"] = "PTG-continuation not allowed, too close to obstacles.";
 			holonomicMovement.evaluation = .0;
@@ -686,7 +687,7 @@ void CAbstractPTGBasedReactive::STEP5_PTGEvaluator(
 	int dif = std::abs(TargetSector - kDirection);
 	const size_t nSectors = in_TPObstacles.size();
 	if ( dif > int(nSectors/2)) dif = nSectors - dif;
-	const double factor2 = exp(-square( dif / (nSectors/3.0))) ;
+	eval_factors[1] = exp(-square( dif / (nSectors/3.0))) ;
 
 	// Factor 3: Angle between the robot at the end of the chosen trajectory and the target
 	// -------------------------------------------------------------------------------------
@@ -694,21 +695,21 @@ void CAbstractPTGBasedReactive::STEP5_PTGEvaluator(
 	t_ang -= pose.phi;
 	mrpt::math::wrapToPiInPlace(t_ang);
 
-	const double factor3 = exp(-square( t_ang / (0.5*M_PI)) );
+	eval_factors[2] = exp(-square( t_ang / (0.5*M_PI)) );
 
 	// Factor4:		Decrease in euclidean distance between (x,y) and the target:
 	//  Moving away of the target is negatively valued
 	// ---------------------------------------------------------------------------
 	const double dist_eucl_final = std::sqrt(square(WS_Target.x- pose.x)+square(WS_Target.y- pose.y));
-	double factor4 = (refDist - dist_eucl_final) / refDist;
-	mrpt::utils::saturate(factor4, 0.0, 1.0);
+	eval_factors[3] = (refDist - dist_eucl_final) / refDist;
+	mrpt::utils::saturate(eval_factors[3], 0.0, 1.0);
 
 	// Factor5: Hysteresis:
 	// -----------------------------------------------------
-	double factor5 = .0;
+	eval_factors[4] = .0;
 
 	if (this_is_PTG_continuation)
-		factor5 = 1.0;
+		eval_factors[4] = 1.0;
 	else if (m_last_vel_cmd)
 	{
 		mrpt::kinematics::CVehicleVelCmdPtr desired_cmd;
@@ -724,7 +725,7 @@ void CAbstractPTGBasedReactive::STEP5_PTGEvaluator(
 				const double scr = exp(-std::abs(desired_cmd->getVelCmdElement(i) - m_last_vel_cmd->getVelCmdElement(i)) / 0.20);
 				mrpt::utils::keep_min(simil_score, scr);
 			}
-			factor5 = simil_score;
+			eval_factors[4] = simil_score;
 		}
 	}
 
@@ -736,16 +737,11 @@ void CAbstractPTGBasedReactive::STEP5_PTGEvaluator(
 
 	aver_obs = aver_obs/in_TPObstacles.size();
 
-	const double factor6 = aver_obs; // *want_v;
+	eval_factors[5] = aver_obs;
 
 	//  SAVE LOG
-	log.evalFactors.resize(6);
-	log.evalFactors[0] = factor1;
-	log.evalFactors[1] = factor2;
-	log.evalFactors[2] = factor3;
-	log.evalFactors[3] = factor4;
-	log.evalFactors[4] = factor5;
-	log.evalFactors[5] = factor6;
+	log.evalFactors.resize(eval_factors.size());
+	mrpt::utils::metaprogramming::copy_container_typecasting(eval_factors, log.evalFactors);
 
 	if (holonomicMovement.speed == 0)
 	{
@@ -754,31 +750,15 @@ void CAbstractPTGBasedReactive::STEP5_PTGEvaluator(
 	}
 	else
 	{
-#if 0
-// 15/Oct/2016: JLBC: this may be dangerous if the goal is right close to a sharp corner. Shortcut code disabled for now.
-		if (dif<2 /* heading almost exactly towards goal */ &&
-			in_TPObstacles[kDirection]*0.95f>TargetDist // and free space towards the target
-			)
-		{
-			//	Direct path to target:
-			const double normalizedDistAlongPTG = holonomicMovement.PTG->getPathDist(kDirection, nStep) / holonomicMovement.PTG->getRefDistance();
-
-			// Return a score >1.0 so we ensure this option is preferred over any other which does not reach the target:
-			holonomicMovement.evaluation = 1.0f + (1.0 - normalizedDistAlongPTG) + factor5 * weights[4] + factor6*weights[5];
-		}
-		else
-#endif
-		{
 		// General case:
-		holonomicMovement.evaluation = holonomicMovement.PTG->getScorePriority() *(
-			factor1 * weights[0] +
-			factor2 * weights[1] +
-			factor3 * weights[2] +
-			factor4 * weights[3] +
-			factor5 * weights[4] +
-			factor6 * weights[5]
-			) / ( math::sum(weights));
-		}
+		double global_eval = .0;
+		for (size_t i = 0; i < eval_factors.size(); i++)
+			global_eval += weights[i] * eval_factors[i];
+		global_eval /= math::sum(weights);
+
+		// Don't reduce the priority of "PTG continuation" "NOPs".
+		if (!this_is_PTG_continuation)
+			global_eval *= holonomicMovement.PTG->getScorePriority();
 	}
 
 	MRPT_END;
