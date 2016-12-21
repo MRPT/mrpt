@@ -469,7 +469,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 
 			if (!new_vel_cmd /* which means best_PTG_eval==.0*/ || new_vel_cmd->isStopCmd()) {
 				MRPT_LOG_DEBUG("Best velocity command is STOP (no way found), calling robot.stop()");
-				this->stop(false /*not emergency*/);
+				this->stop(true /* emergency */);
 			}
 			else
 			{
