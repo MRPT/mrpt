@@ -167,7 +167,8 @@ namespace mrpt
 		std::string robotName;       //!< Robot name
 		double refDistance;          //!< "D_{max}" in papers.
 		double SPEEDFILTER_TAU;     //!< Time constant (in seconds) for the low-pass filter applied to kinematic velocity commands (default=0: no filtering)
-		std::vector<float> weights;  //!< length: 6 [0,5]
+		std::vector<float> weights;  //!< length: 6 [0,5], or empty if using PTG-specific weights. \sa weights4ptg
+		std::vector<std::vector<float> > weights4ptg;
 
 		/** In normalized distances, the start and end of a ramp function that scales the velocity
 		  *  output from the holonomic navigator:
@@ -234,7 +235,8 @@ namespace mrpt
 			CLogFileRecord::TInfoPerPTG & log,
 			CLogFileRecord & newLogRec,
 			const bool this_is_PTG_continuation,
-			const mrpt::poses::CPose2D & relPoseVelCmd_NOP);
+			const mrpt::poses::CPose2D & relPoseVelCmd_NOP,
+			const unsigned int ptg_idx4weights);
 
 		virtual void STEP7_GenerateSpeedCommands(const THolonomicMovement &in_movement, mrpt::kinematics::CVehicleVelCmdPtr &new_vel_cmd );
 
