@@ -431,14 +431,17 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 		// STEP6: After all PTGs have been evaluated, pick the best scored:
 		// ---------------------------------------------------------------------
 		int nSelectedPTG = 0;
+		double best_PTG_eval = .0;
 		for (size_t indexPTG=0;indexPTG<=nPTGs;indexPTG++) {
-			if ( holonomicMovements[indexPTG].evaluation > holonomicMovements[nSelectedPTG].evaluation )
+			if (holonomicMovements[indexPTG].evaluation > best_PTG_eval) {
 				nSelectedPTG = indexPTG;
+				best_PTG_eval = holonomicMovements[nSelectedPTG].evaluation;
+			}
 		}
 		const THolonomicMovement & selectedHolonomicMovement = holonomicMovements[nSelectedPTG];
 
 		// If the selected PTG is (N+1), it means the NOP cmd. vel is selected as the best alternative, i.e. do NOT send any new motion command.
-		const bool best_is_NOP_cmdvel =  (nSelectedPTG==int(nPTGs));
+		const bool best_is_NOP_cmdvel =  (nSelectedPTG==int(nPTGs) && best_PTG_eval>0);
 
 		// ---------------------------------------------------------------------
 		//				SEND MOVEMENT COMMAND TO THE ROBOT
@@ -457,15 +460,15 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 		{
 			// STEP7: Get the non-holonomic movement command.
 			// ---------------------------------------------------------------------
-			if (!best_is_NOP_cmdvel)
+			if (best_PTG_eval>0)
 			{
 				CTimeLoggerEntry tle(m_timelogger, "navigationStep.STEP7_NonHolonomicMovement");
 				STEP7_GenerateSpeedCommands(selectedHolonomicMovement, new_vel_cmd);
+				ASSERT_(new_vel_cmd);
 			}
-			ASSERT_(new_vel_cmd);
 
-			if (new_vel_cmd->isStopCmd()) {
-				MRPT_LOG_DEBUG("Best velocity command is STOP, calling robot.stop()");
+			if (!new_vel_cmd /* which means best_PTG_eval==.0*/ || new_vel_cmd->isStopCmd()) {
+				MRPT_LOG_DEBUG("Best velocity command is STOP (no way found), calling robot.stop()");
 				this->stop(false /*not emergency*/);
 			}
 			else
@@ -526,7 +529,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 					1000.0*meanExecutionPeriod.getLastOutput(),
 					1000.0*meanExecutionTime.getLastOutput(),
 					1000.0*meanTotalExecutionTime.getLastOutput(),
-					(double)selectedHolonomicMovement.evaluation,
+					best_PTG_eval,
 					nSelectedPTG
 					) );
 		}
