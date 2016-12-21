@@ -106,7 +106,8 @@ void CVehicleVelCmd_Holo::writeToStream(mrpt::utils::CStream &out, int *version)
 void CVehicleVelCmd_Holo::cmdVel_scale(double vel_scale)
 {
 	vel *= vel_scale; // |(vx,vy)|
-	rot_speed *= vel_scale; // rot_speed
+	// rot_speed *= vel_scale; // rot_speed
+	// Note: No need to scale "rot_speed" since a holonomic robot's path will be invariant 
 	// ramp_time: leave unchanged
 }
 
