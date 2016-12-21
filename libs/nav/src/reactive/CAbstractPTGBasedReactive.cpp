@@ -605,7 +605,8 @@ void CAbstractPTGBasedReactive::STEP5_PTGEvaluator(
 	CLogFileRecord::TInfoPerPTG & log,
 	CLogFileRecord & newLogRec,
 	const bool this_is_PTG_continuation,
-	const mrpt::poses::CPose2D & rel_cur_pose_wrt_last_vel_cmd_NOP)
+	const mrpt::poses::CPose2D & rel_cur_pose_wrt_last_vel_cmd_NOP,
+	const unsigned int ptg_idx4weights)
 {
 	MRPT_START;
 
@@ -755,9 +756,16 @@ void CAbstractPTGBasedReactive::STEP5_PTGEvaluator(
 	{
 		// General case:
 		double global_eval = .0;
+
+		// Select set of weights:
+		ASSERT_(!weights.empty() || weights4ptg.size()>ptg_idx4weights);
+		const std::vector<float> & w = this->weights.empty() ? this->weights4ptg[ptg_idx4weights] : this->weights;
+		ASSERT_EQUAL_(w.size(),eval_factors.size());
+		
+		// Sum:
 		for (size_t i = 0; i < eval_factors.size(); i++)
-			global_eval += weights[i] * eval_factors[i];
-		global_eval /= math::sum(weights);
+			global_eval += w[i] * eval_factors[i];
+		global_eval /= math::sum(w);
 
 		// Don't reduce the priority of "PTG continuation" "NOPs".
 		if (!this_is_PTG_continuation)
@@ -828,9 +836,6 @@ void CAbstractPTGBasedReactive::loadConfigFile(const mrpt::utils::CConfigFileBas
 	DIST_TO_TARGET_FOR_SENDING_EVENT = cfg.read_float(sectCfg, "DIST_TO_TARGET_FOR_SENDING_EVENT", DIST_TO_TARGET_FOR_SENDING_EVENT, false);
 	m_badNavAlarm_AlarmTimeout = cfg.read_double(sectCfg,"ALARM_SEEMS_NOT_APPROACHING_TARGET_TIMEOUT", m_badNavAlarm_AlarmTimeout, false);
 
-	cfg.read_vector(sectCfg, "weights", vector<float> (0), weights, 1);
-	ASSERT_(weights.size()==6);
-
 	// =========  Show configuration parameters:
 	MRPT_LOG_INFO("-------------------------------------------------------------\n");
 	MRPT_LOG_INFO("       PTG-based Reactive Navigation parameters               \n");
@@ -838,6 +843,22 @@ void CAbstractPTGBasedReactive::loadConfigFile(const mrpt::utils::CConfigFileBas
 
 	// ========= Load Derived class-specific params:
 	this->internal_loadConfigFile(cfg, section_prefix);
+
+	// weights: read global or PTG specific weights:
+	cfg.read_vector(sectCfg, "weights", vector<float>(0), weights, false /* don't fail if not found */);
+	ASSERT_(weights.size() == 6 || weights.empty() );
+	if (weights.empty())
+	{
+		weights4ptg.resize(getPTG_count());
+		for (unsigned int i = 0; i < getPTG_count(); i++)
+		{
+			std::vector<float> w;
+			const std::string sKey = mrpt::format("PTG%u_weights", i);
+			cfg.read_vector(sectCfg, sKey, vector<float>(0), w, false /* don't fail if not found */);
+			ASSERTMSG_(w.size()==6, mrpt::format("Found neither `weights` nor `%s`. Please, specify one of them.", sKey.c_str()) );
+			weights4ptg[i] = w;
+		}
+	}
 
 	// ========= Load "Global params" (must be called after initialization of PTGs in `internal_loadConfigFile()`)
 	this->robotVelocityParams.loadConfigFile(cfg,sectGlobal); // robot interface params
@@ -1073,7 +1094,8 @@ void CAbstractPTGBasedReactive::ptg_eval_target_build_obstacles(
 				relTarget,
 				ipf.TP_Target,
 				newLogRec.infoPerPTG[idx_in_log_infoPerPTGs], newLogRec,
-				this_is_PTG_continuation, rel_cur_pose_wrt_last_vel_cmd_NOP);
+				this_is_PTG_continuation, rel_cur_pose_wrt_last_vel_cmd_NOP,
+				indexPTG);
 		}
 
 
