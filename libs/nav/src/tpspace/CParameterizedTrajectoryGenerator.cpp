@@ -97,13 +97,29 @@ void CParameterizedTrajectoryGenerator::internal_writeToStream(mrpt::utils::CStr
 	out << refDistance << m_alphaValuesCount << m_score_priority << m_clearance_dist_resolution /* v1 */; 
 }
 
-uint16_t CParameterizedTrajectoryGenerator::alpha2index( double alpha ) const 
+double CParameterizedTrajectoryGenerator::index2alpha(uint16_t k, const unsigned int num_paths)
+{
+	if (k >= num_paths) throw std::runtime_error("PTG: alpha value out of range!");
+	return M_PI * (-1.0 + 2.0 * (k + 0.5) / num_paths);
+}
+
+double CParameterizedTrajectoryGenerator::index2alpha(uint16_t k) const
+{
+	return index2alpha(k, m_alphaValuesCount);
+}
+
+uint16_t CParameterizedTrajectoryGenerator::alpha2index(double alpha, const unsigned int num_paths)
 {
 	mrpt::math::wrapToPi(alpha);
-	int k = mrpt::utils::round(0.5*(m_alphaValuesCount*(1.0+alpha/M_PI) - 1.0));
-	if (k<0) k=0;
-	if (k>=m_alphaValuesCount) k=m_alphaValuesCount-1;
+	int k = mrpt::utils::round(0.5*(num_paths*(1.0 + alpha / M_PI) - 1.0));
+	if (k<0) k = 0;
+	if (k >= static_cast<int>(num_paths) ) k = num_paths - 1;
 	return (uint16_t)k;
+}
+
+uint16_t CParameterizedTrajectoryGenerator::alpha2index( double alpha ) const 
+{
+	return alpha2index(alpha, m_alphaValuesCount);
 }
 
 void CParameterizedTrajectoryGenerator::renderPathAsSimpleLine(

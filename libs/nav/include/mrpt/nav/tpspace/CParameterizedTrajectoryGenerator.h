@@ -202,13 +202,12 @@ namespace nav
 		uint16_t getPathCount() const { return m_alphaValuesCount; }
 
 		/** Alpha value for the discrete corresponding value \sa alpha2index */
-		double index2alpha( uint16_t k ) const {
-			if (k>=m_alphaValuesCount) throw std::runtime_error("PTG: alpha value out of range!");
-			return M_PI * (-1.0 + 2.0 * (k+0.5)/m_alphaValuesCount );
-		}
+		double index2alpha(uint16_t k) const;
+		static double index2alpha(uint16_t k, const unsigned int num_paths);
 
 		/** Discrete index value for the corresponding alpha value \sa index2alpha */
 		uint16_t alpha2index( double alpha ) const;
+		static uint16_t alpha2index(double alpha, const unsigned int num_paths);
 
 		inline double getRefDistance() const { return refDistance; }
 

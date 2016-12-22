@@ -10,6 +10,7 @@
 #include "nav-precomp.h" // Precomp header
 
 #include <mrpt/nav/holonomic/ClearanceDiagram.h>
+#include <mrpt/nav/tpspace/CParameterizedTrajectoryGenerator.h>
 #include <mrpt/opengl/CMesh.h>
 
 using namespace mrpt::nav;
@@ -33,20 +34,43 @@ void ClearanceDiagram::renderAs3DObject(
 	const double dx = (max_x - min_x) / nX;
 	const double dy = (max_y - min_y) / nY;
 
+	mrpt::math::CMatrixFloat Z(nX, nY);
+
+	if (raw_clearances.empty())
+		return; // Nothing to do: empty structure!
+
+	const unsigned num_paths = raw_clearances.size();
+
 	for (int iX = 0; iX < nX; iX++)
 	{
+		const double x = min_x + dx*(0.5+ iX);
 		for (int iY = 0; iY < nY; iY++)
 		{
-			MRPT_TODO("finish render");
+			const double y = min_y + dy*(0.5 + iY);
 
+			double clear_val = .0;
+			if (x != 0 || y != 0)
+			{
+				const double alpha = ::atan2(y, x);
+				const uint16_t k = CParameterizedTrajectoryGenerator::alpha2index(alpha, num_paths);
+				const double dist = std::hypot(x, y);
+				clear_val = this->getClearance(k, dist);
+			}
+			Z(iX, iY) = clear_val;
 		}
 	}
+
+	mesh.setZ(Z);
+	mesh.enableColorFromZ(true);
+	mesh.enableTransparency(true);
+	mesh.setColorA_u8(0x50);
+	mesh.enableWireFrame(false);
 }
 
 double ClearanceDiagram::getClearance(uint16_t k, double dist) const
 {
 	MRPT_TODO("continue");
-	return .0;
+	return dist;
 }
 
 void ClearanceDiagram::clear()
