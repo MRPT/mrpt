@@ -47,9 +47,12 @@ void  CHolonomicFullEval::navigate(
 	double			&desiredDirection,
 	double			&desiredSpeed,
 	CHolonomicLogFileRecordPtr &logRecord,
-	const double    max_obstacle_dist)
+	const double    max_obstacle_dist,
+	const mrpt::nav::ClearanceDiagram *clearance)
 {
 	using mrpt::utils::square;
+
+	ASSERT_(clearance!=nullptr);
 
 	CLogFileRecord_FullEvalPtr log;
 
@@ -103,7 +106,7 @@ void  CHolonomicFullEval::navigate(
 		const double x = d*cos(k2dir[i]);
 		const double y = d*sin(k2dir[i]);
 
-		// Factor #1: Clearness
+		// Factor #1: clearance
 		// -----------------------------------------------------
 		if (mrpt::utils::abs_diff(i,target_sector)<=1 && target_dist<1.0-options.TOO_CLOSE_OBSTACLE)
 		scores[0] = std::min(target_dist,obstacles[i]) / (target_dist+options.TOO_CLOSE_OBSTACLE);
@@ -143,25 +146,22 @@ void  CHolonomicFullEval::navigate(
 			scores[3] = 1.0;
 		}
 
-		// Factor #5: Clearness to nearest obstacle along path
+		// Factor #5: clearance to nearest obstacle along path
 		// ------------------------------------------------------------------------------------------
-		MRPT_TODO("Revise after refactoring all holo nav interface and impl. PTG nearness output?");
 		{
-			// "Temporary" (?) approximation:
-			double avr_path_clearness = 0.0;
+			double avr_path_clearance = 0.0;
 			size_t num_avrs = 0;
-			const int W = std::max( size_t(1), nDirs / 10);
-			const int i0 = i - W;
-			const int i1 = i + W;
-			for (int ki=i0;ki<=i1;ki++)
+			for (
+				auto it = clearance->raw_clearances[i /*path index*/].begin();
+				it != clearance->raw_clearances[i].end() && it->first <= target_dist*1.01;
+				++it, ++num_avrs)
 			{
-				const int k = ((ki<0) ? (ki+nDirs) : ki) % nDirs;
-				if (obstacles[k] < 0.99*max_obstacle_dist) {
-					avr_path_clearness += sg.distance(obstacles_2d[k]);
-					num_avrs++;
-				}
+				const double clearance = it->second;
+
+				MRPT_TODO("Consider alternative weightings?");
+				avr_path_clearance += clearance;
 			}
-			scores[4] = num_avrs != 0 ? (avr_path_clearness / num_avrs) : 0.0;
+			scores[4] = num_avrs != 0 ? (avr_path_clearance / num_avrs) : 0.0;
 		}
 
 		// Save stats for debugging:
@@ -266,8 +266,8 @@ void  CHolonomicFullEval::navigate(
 			1.0;
 
 
-		const double obs_clearness = m_dirs_scores(best_dir, 4);
-		const double obs_dist = std::min(obstacles[best_dir], obs_clearness);
+		const double obs_clearance = m_dirs_scores(best_dir, 4);
+		const double obs_dist = std::min(obstacles[best_dir], obs_clearance);
 		const double obs_dist_th = std::max(options.TOO_CLOSE_OBSTACLE, options.OBSTACLE_SLOW_DOWN_DISTANCE*max_obstacle_dist);
 		double riskFactor = 1.0;
 		if (obs_dist <= options.TOO_CLOSE_OBSTACLE) {
@@ -378,7 +378,7 @@ void CHolonomicFullEval::TOptions::saveToConfigFile(mrpt::utils::CConfigFileBase
 	cfg.write(section,"PHASE1_THRESHOLD",PHASE1_THRESHOLD,   WN,WV, "Phase1 scores must be above this relative range threshold [0,1] to be considered in phase 2 (Default:`0.75`)");
 
 	ASSERT_EQUAL_(factorWeights.size(),5)
-	cfg.write(section,"factorWeights", mrpt::system::sprintf_container("%.2f ",factorWeights),   WN,WV, "[0]=Free space, [1]=Dist. in sectors, [2]=Closer to target (Euclidean), [3]=Hysteresis, [4]=Clearness along path");
+	cfg.write(section,"factorWeights", mrpt::system::sprintf_container("%.2f ",factorWeights),   WN,WV, "[0]=Free space, [1]=Dist. in sectors, [2]=Closer to target (Euclidean), [3]=Hysteresis, [4]=clearance along path");
 
 	cfg.write(section,"PHASE1_FACTORS", mrpt::system::sprintf_container("%d ",PHASE1_FACTORS),   WN,WV, "Indices of the factors above to be considered in phase 1");
 	cfg.write(section,"PHASE2_FACTORS", mrpt::system::sprintf_container("%d ",PHASE2_FACTORS),   WN,WV, "Indices of the factors above to be considered in phase 2");

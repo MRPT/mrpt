@@ -14,6 +14,7 @@
 #include <mrpt/utils/CConfigFileBase.h>
 #include <mrpt/utils/CSerializable.h>
 #include <mrpt/nav/tpspace/CParameterizedTrajectoryGenerator.h>
+#include <mrpt/nav/holonomic/ClearanceDiagram.h>
 
 #include "CHolonomicLogFileRecord.h"
 
@@ -53,6 +54,7 @@ namespace mrpt
 		   *  \param desiredSpeed [OUT] The desired motion speed in that direction, in "pseudometers"/sec. (See note below)
 		   *  \param logRecord [IN/OUT] A placeholder for a pointer to a log record with extra info about the execution. Set to NULL if not required. User <b>must free memory</b> using "delete logRecord" after using it.
 		   *  \param max_obstacle_dist[in] Maximum expected value to be found in `obstacles`. Typically, values in `obstacles` larger or equal to this value mean there is no visible obstacle in that direction.
+		   *  \param clearance[in] The computed clearance for each direction (optional in some implementations).
 		   *
 		   *  NOTE: With "pseudometers" we refer to the distance unit in TP-Space, thus:
 		   *     <br><center><code>pseudometer<sup>2</sup>= meter<sup>2</sup> + (rad * r)<sup>2</sup></code><br></center>
@@ -64,7 +66,8 @@ namespace mrpt
 			double			&desiredDirection,
 			double			&desiredSpeed,
 			CHolonomicLogFileRecordPtr &logRecord,
-			const double    max_obstacle_dist) = 0;
+			const double    max_obstacle_dist,
+			const mrpt::nav::ClearanceDiagram *clearance = NULL) = 0;
 
 		/** Overload with a generic container for obstacles (for backwards compatibility with std::vector<float> and other future uses) */
 		template <class OBSTACLES_LIST>
