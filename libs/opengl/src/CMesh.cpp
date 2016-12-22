@@ -50,9 +50,12 @@ void CMesh::updateTriangles() const	{
 	// we have 1 more row & col of vertices than of triangles:
 	vertex_normals.assign((1+cols)*(1+rows), std::pair<TPoint3D,size_t>(TPoint3D(0,0,0),0) );
 
-	float cR[3],cG[3],cB[3];
-	if ((m_colorFromZ)||(m_isImage)) updateColorsMatrix();
-	else	{
+	float cR[3], cG[3], cB[3], cA[3];
+	cA[0] = cA[1] = cA[2] = m_color.A / 255.f;
+
+	if ((m_colorFromZ) || (m_isImage)) {
+		updateColorsMatrix();
+	} else {
 		cR[0]=cR[1]=cR[2]=m_color.R/255.f;
 		cG[0]=cG[1]=cG[2]=m_color.G/255.f;
 		cB[0]=cB[1]=cB[2]=m_color.B/255.f;
@@ -93,6 +96,8 @@ void CMesh::updateTriangles() const	{
 			tri.x[1]=tri.x[2];
 			tri.y[1]=tri.y[0];
 			tri.z[1]=Z(iX+1,iY);
+			for (int i=0;i<3;i++) tri.a[i] = cA[i];  // Assign alpha channel
+
 			if (m_colorFromZ)	{
 				colormap(m_colorMap,C(iX,iY),tri.r[0],tri.g[0],tri.b[0]);
 				colormap(m_colorMap,C(iX+1,iY),tri.r[1],tri.g[1],tri.b[1]);
@@ -222,6 +227,7 @@ void CMesh::updateTriangles() const	{
 void CMesh::render_dl() const	{
 #if MRPT_HAS_OPENGL_GLUT
 	if (m_enableTransparency)	{
+		glDisable(GL_DEPTH_TEST);
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 	}	else	{
@@ -256,6 +262,7 @@ void CMesh::render_dl() const	{
 	if (!m_isWireFrame) glEnd();
 	glDisable(GL_BLEND);
 	glDisable(GL_NORMALIZE);
+	glEnable(GL_DEPTH_TEST);
 #endif
 }
 
