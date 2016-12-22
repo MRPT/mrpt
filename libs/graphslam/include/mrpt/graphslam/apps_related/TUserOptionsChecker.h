@@ -39,7 +39,7 @@ struct GRAPHSLAM_IMPEXP TRegistrationDeciderOrOptimizerProps {
 		name(""),
 		description(""),
 		is_mr_slam_class(false),
-		is_slam_2d(false),
+		is_slam_2d(true), // by default the decider/optimizer is considered 2D
 		is_slam_3d(false) {}
 	~TRegistrationDeciderOrOptimizerProps() {}
 
