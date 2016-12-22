@@ -325,8 +325,24 @@
 								<object class="wxPanel" name="ID_PANEL2" variable="Panel2" member="yes">
 									<object class="wxFlexGridSizer" variable="FlexGridSizer10" member="no">
 										<cols>1</cols>
+										<rows>2</rows>
 										<growablecols>0</growablecols>
-										<growablerows>0</growablerows>
+										<growablerows>1</growablerows>
+										<object class="sizeritem">
+											<object class="wxRadioBox" name="ID_RADIOBOX1" variable="rbShowTPSelect" member="yes">
+												<label>Show:</label>
+												<content>
+													<item>TP-Obstacles</item>
+													<item>Clearance</item>
+												</content>
+												<default>-1</default>
+												<style>wxRA_VERTICAL</style>
+												<handler function="OnrbShowTPSelectSelect" entry="EVT_RADIOBOX" />
+											</object>
+											<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
+											<border>2</border>
+											<option>1</option>
+										</object>
 										<object class="sizeritem">
 											<object class="Custom" name="ID_CUSTOM2" subclass="CMyGLCanvas" variable="m_plotTPSpace" member="yes">
 												<creating_code>$(THIS) = new $(CLASS)($(PARENT),$(ID),$(POS),$(SIZE),$(STYLE),$(NAME));</creating_code>
