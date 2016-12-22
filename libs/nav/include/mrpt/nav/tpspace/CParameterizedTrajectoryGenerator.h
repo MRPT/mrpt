@@ -185,6 +185,11 @@ namespace nav
 		/** Returns true if the point lies within the robot shape. */
 		virtual bool isPointInsideRobotShape(const double x, const double y) const = 0;
 
+		/** Evals the robot clearance for each robot pose along path `k`, for the real distances in 
+		  * the key of the map<>, then keep in the map value the minimum of its current stored clearance, 
+		  * or the computed clearance. In case of collision, clearance is zero. */
+		virtual void evalClearanceSingleObstacle(const double ox, const double oy,const uint16_t k, std::map<double, double> & inout_realdist2clearance) const = 0;
+
 		/** @} */  // --- end of virtual methods
 
 		static std::string OUTPUT_DEBUG_PATH_PREFIX; //!< The path used as defaul output in, for example, debugDumpInFiles. (Default="./reactivenav.logs/")
@@ -303,6 +308,7 @@ protected:
 		void setRobotShape(const mrpt::math::CPolygon & robotShape);
 		const mrpt::math::CPolygon & getRobotShape() const { return m_robotShape; }
 		double getApproxRobotRadius() const MRPT_OVERRIDE;
+		void evalClearanceSingleObstacle(const double ox, const double oy, const uint16_t k, std::map<double, double> & inout_realdist2clearance) const MRPT_OVERRIDE;
 		/** @} */
 		bool isPointInsideRobotShape(const double x, const double y) const MRPT_OVERRIDE;
 		void add_robotShape_to_setOfLines(mrpt::opengl::CSetOfLines &gl_shape, const mrpt::poses::CPose2D &origin = mrpt::poses::CPose2D ()) const  MRPT_OVERRIDE;
@@ -333,6 +339,7 @@ protected:
 		void setRobotShapeRadius(const double robot_radius);
 		double getRobotShapeRadius() const { return m_robotRadius; }
 		double getApproxRobotRadius() const MRPT_OVERRIDE;
+		void evalClearanceSingleObstacle(const double ox, const double oy, const uint16_t k, std::map<double, double> & inout_realdist2clearance) const MRPT_OVERRIDE;
 		/** @} */
 		void add_robotShape_to_setOfLines(mrpt::opengl::CSetOfLines &gl_shape, const mrpt::poses::CPose2D &origin = mrpt::poses::CPose2D ()) const  MRPT_OVERRIDE;
 		bool isPointInsideRobotShape(const double x, const double y) const MRPT_OVERRIDE;

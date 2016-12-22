@@ -305,7 +305,9 @@ void CParameterizedTrajectoryGenerator::updateClearance(const double ox, const d
 		}
 	}
 
-	MRPT_TODO("continue");
+	// evaluate in derived-class: this function also keeps the minimum automatically.
+	for (uint16_t k=0;k<m_alphaValuesCount;k++)
+		this->evalClearanceSingleObstacle(ox,oy,k, cd.raw_clearances[k]);
 }
 
 
