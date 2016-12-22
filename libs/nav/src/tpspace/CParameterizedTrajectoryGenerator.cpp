@@ -14,7 +14,6 @@
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
 #include <mrpt/opengl/CSetOfLines.h>
-#include <mrpt/opengl/CMesh.h>
 
 using namespace mrpt::nav;
 
@@ -270,41 +269,7 @@ void CParameterizedTrajectoryGenerator::internal_TPObsDistancePostprocess(const 
 	}
 }
 
-CParameterizedTrajectoryGenerator::ClearanceDiagram::ClearanceDiagram()
-{
-}
-
-void CParameterizedTrajectoryGenerator::ClearanceDiagram::renderAs3DObject(
-	mrpt::opengl::CMesh &mesh, double min_x, double max_x, double min_y, double max_y, double cell_res) const
-{
-	ASSERT_(cell_res>0.0);
-	ASSERT_(max_x>min_x);
-	ASSERT_(max_y>min_y);
-
-	mesh.setXBounds(min_x, max_x);
-	mesh.setYBounds(min_y, max_y);
-	const int nX = (int)::ceil((max_x - min_x) / cell_res);
-	const int nY = (int)::ceil((max_y - min_y) / cell_res);
-	const double dx = (max_x - min_x) / nX;
-	const double dy = (max_y - min_y) / nY;
-
-	for (int iX = 0; iX < nX; iX++)
-	{
-		for (int iY = 0; iY < nY; iY++)
-		{
-			MRPT_TODO("finish render");
-
-		}
-	}
-}
-
-double CParameterizedTrajectoryGenerator::ClearanceDiagram::getClearance(uint16_t k, double dist) const
-{
-	MRPT_TODO("continue");
-	return .0;
-}
-
-void CParameterizedTrajectoryGenerator::clearanceUpdate(ClearanceDiagram & cd, const double ox, const double oy)
+void CParameterizedTrajectoryGenerator::updateClearance(const double ox, const double oy, ClearanceDiagram & cd)
 {
 	// Collect max dist for each path (they may be costly to evaluate, avoid dupl. calls below):
 	std::vector<double> max_dists(m_alphaValuesCount);

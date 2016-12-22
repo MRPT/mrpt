@@ -47,7 +47,8 @@ void  CHolonomicVFF::navigate(
 	double			&desiredDirection,
 	double			&desiredSpeed,
 	CHolonomicLogFileRecordPtr &logRecord,
-	const double    max_obstacle_dist)
+	const double    max_obstacle_dist,
+	const mrpt::nav::ClearanceDiagram *clearance)
 {
 	// Create a log record for returning data.
 	if (!logRecord)

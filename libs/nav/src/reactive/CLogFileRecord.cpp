@@ -31,17 +31,13 @@ CLogFileRecord::CLogFileRecord() :
 	WS_Obstacles.clear();
 }
 
-CLogFileRecord::~CLogFileRecord()
-{
-}
-
 /*---------------------------------------------------------------
 						writeToStream
  ---------------------------------------------------------------*/
 void  CLogFileRecord::writeToStream(mrpt::utils::CStream &out,int *version) const
 {
 	if (version)
-		*version = 18;
+		*version = 19;
 	else
 	{
 		uint32_t	i,n;
@@ -68,6 +64,8 @@ void  CLogFileRecord::writeToStream(mrpt::utils::CStream &out,int *version) cons
 			out << there_is_ptg_data;
 			if (there_is_ptg_data)
 				out << infoPerPTG[i].ptg;
+
+			out << infoPerPTG[i].clearance.raw_clearances; // v19
 		}
 		out << nSelectedPTG << WS_Obstacles << robotOdometryPose << WS_target_relative /*v8*/;
 		// v16:
@@ -139,6 +137,7 @@ void  CLogFileRecord::readFromStream(mrpt::utils::CStream &in,int version)
 	case 16:
 	case 17:
 	case 18:
+	case 19:
 		{
 			// Version 0 --------------
 			uint32_t  i,n;
@@ -191,6 +190,13 @@ void  CLogFileRecord::readFromStream(mrpt::utils::CStream &in,int version)
 					in >> there_is_ptg_data;
 					if (there_is_ptg_data)
 						infoPerPTG[i].ptg = mrpt::nav::CParameterizedTrajectoryGeneratorPtr( in.ReadObject() );
+				}
+
+				if (version >= 19) {
+					in >> infoPerPTG[i].clearance.raw_clearances;
+				}
+				else {
+					infoPerPTG[i].clearance.raw_clearances.clear();
 				}
 			}
 

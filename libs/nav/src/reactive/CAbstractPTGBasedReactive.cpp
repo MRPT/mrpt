@@ -1019,7 +1019,7 @@ void CAbstractPTGBasedReactive::ptg_eval_target_build_obstacles(
 			ptg->initTPObstacles(ipf.TP_Obstacles);
 
 			// Implementation-dependent conversion:
-			STEP3_WSpaceToTPSpace(indexPTG, ipf.TP_Obstacles, -rel_pose_PTG_origin_wrt_sense);
+			STEP3_WSpaceToTPSpace(indexPTG, ipf.TP_Obstacles, ipf.clearance, -rel_pose_PTG_origin_wrt_sense);
 
 			// Distances in TP-Space are normalized to [0,1]:
 			const double _refD = 1.0 / ptg->getRefDistance();
@@ -1046,7 +1046,8 @@ void CAbstractPTGBasedReactive::ptg_eval_target_build_obstacles(
 					holonomicMovement.direction,
 					holonomicMovement.speed,
 					HLFR,
-					1.0 /* max obstacle dist*/);
+					1.0 /* max obstacle dist*/,
+					&ipf.clearance);
 
 			// Security: Scale down the velocity when heading towards obstacles,
 			//  such that it's assured that we never go thru an obstacle!
