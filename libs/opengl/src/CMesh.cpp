@@ -64,8 +64,6 @@ void CMesh::updateTriangles() const	{
 		ASSERT_(mask.getColCount()==cols&&mask.getRowCount()==rows);
 		useMask=true;
 	}
-	//const float sCellX=(xMax-xMin)/(cols-1);
-	//const float sCellY=(yMax-yMin)/(rows-1);
 	const float sCellX=(xMax-xMin)/(rows-1);
 	const float sCellY=(yMax-yMin)/(cols-1);
 
