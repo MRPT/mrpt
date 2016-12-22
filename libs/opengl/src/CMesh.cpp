@@ -41,6 +41,12 @@ void CMesh::updateTriangles() const	{
 	const size_t rows=Z.getRowCount();
 
 	actualMesh.clear();
+	if (cols == 0 && rows == 0)
+		return; // empty mesh
+
+	ASSERT_(cols>0 && rows>0)
+	ASSERT_(xMax>xMin&&yMax>yMin)
+
 	// we have 1 more row & col of vertices than of triangles:
 	vertex_normals.assign((1+cols)*(1+rows), std::pair<TPoint3D,size_t>(TPoint3D(0,0,0),0) );
 
@@ -52,8 +58,6 @@ void CMesh::updateTriangles() const	{
 		cB[0]=cB[1]=cB[2]=m_color.B/255.f;
 	}
 
-	ASSERT_(cols>0&&rows>0)
-	ASSERT_(xMax>xMin&&yMax>yMin)
 
 	bool useMask=false;
 	if (mask.getColCount()!=0&&mask.getRowCount()!=0)	{
