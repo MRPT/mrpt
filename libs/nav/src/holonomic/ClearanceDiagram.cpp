@@ -69,8 +69,26 @@ void ClearanceDiagram::renderAs3DObject(
 
 double ClearanceDiagram::getClearance(uint16_t k, double dist) const
 {
-	MRPT_TODO("continue");
-	return dist;
+	ASSERT_(k<raw_clearances.size());
+
+	const auto & rc_k = raw_clearances[k];
+	ASSERT_(rc_k.size()>2);  // we need some data points to interpolate!
+	
+	auto it_low = rc_k.begin(), it_up = rc_k.begin();
+	while (it_up != rc_k.end() && it_up->first < dist) {
+		it_low = it_up++;
+	}
+
+	if (it_up == rc_k.end()) {
+		// query is beyond the LUT: return the last known value in this path
+		return rc_k.rbegin()->second;
+	}
+
+	// linear interpolate:
+	const double d0 = it_low->first, d1 = it_up->first;
+	const double c0 = it_low->second, c1 = it_up->second;
+
+	return c0 + (c1-c0)*(dist-d0)/(d1-d0);
 }
 
 void ClearanceDiagram::clear()
