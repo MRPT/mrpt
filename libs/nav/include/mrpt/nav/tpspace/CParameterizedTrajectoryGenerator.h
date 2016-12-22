@@ -20,7 +20,7 @@
 #include <mrpt/kinematics/CVehicleVelCmd.h>
 #include <mrpt/otherlibs/stlplus/smart_ptr.hpp>  // STL+ library
 
-namespace mrpt { namespace opengl { class CSetOfLines; } }
+namespace mrpt { namespace opengl { class CSetOfLines; class CMesh; } }
 
 namespace mrpt
 {
@@ -219,6 +219,9 @@ namespace nav
 		double getScorePriority() const { return m_score_priority; }
 		void setScorePriorty(double prior) { m_score_priority = prior; }
 
+		double getClearanceDistanceResolution() const { return m_clearance_dist_resolution; }
+		void setClearanceDistanceResolution(const double res) { m_clearance_dist_resolution = res; }
+
 		/** Returns the representation of one trajectory of this PTG as a 3D OpenGL object (a simple curved line).
 		  * \param[in] k The 0-based index of the selected trajectory (discrete "alpha" parameter).
 		  * \param[out] gl_obj Output object.
@@ -252,10 +255,38 @@ namespace nav
 		 */
 		static PTG_collision_behavior_t COLLISION_BEHAVIOR;
 
+		/** @name Clearance structures and API 
+		    @{ */
+
+		/** Clearance information for one particular PTG and one set of obstacles. 
+		  * Usage: declare an object of this type (it will be initialized to "empty"), then 
+		  * repeatedly call CParameterizedTrajectoryGenerator::clearanceUpdate() for each 2D obstacle point. */
+		class NAV_IMPEXP ClearanceDiagram
+		{
+		public:
+			/** Container: [path_k][real_distance_over_path] => clearance_for_exactly_that_robot_pose  */
+			std::vector<std::map<double,double> > raw_clearances;
+
+			ClearanceDiagram(); //!< default ctor
+			double getClearance(uint16_t k, double dist) const; //!< Interpolate raw_clearances to get a smooth clearance function over paths.
+			void renderAs3DObject(mrpt::opengl::CMesh &mesh, double min_x, double max_x, double min_y, double max_y, double cell_res) const;
+		};
+
+		/** Updates the clearance diagram given one (ox,oy) obstacle point, in coordinates relative 
+		  * to the PTG path origin.
+		  * \param[in,out] cd The clearance will be updated here. 
+		  * \sa m_clearance_dist_resolution
+		  */
+		void clearanceUpdate(ClearanceDiagram & cd, const double ox, const double oy);
+
+		/** @} */
+
+
 protected:
 		double    refDistance;
 		uint16_t  m_alphaValuesCount; //!< The number of discrete values for "alpha" between -PI and +PI.
 		double    m_score_priority;
+		double    m_clearance_dist_resolution; //!< Length of steps for the piecewise-constant approximation of clearance [m] (Default=0.25 m) \sa clearanceUpdate()
 
 		bool      m_is_initialized;
 
