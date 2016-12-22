@@ -93,6 +93,7 @@ const long ptgConfiguratorframe::ID_TEXTCTRL1 = wxNewId();
 const long ptgConfiguratorframe::ID_BUTTON5 = wxNewId();
 const long ptgConfiguratorframe::ID_PANEL1 = wxNewId();
 const long ptgConfiguratorframe::ID_XY_GLCANVAS = wxNewId();
+const long ptgConfiguratorframe::ID_RADIOBOX1 = wxNewId();
 const long ptgConfiguratorframe::ID_CUSTOM2 = wxNewId();
 const long ptgConfiguratorframe::ID_PANEL2 = wxNewId();
 const long ptgConfiguratorframe::ID_CUSTOM1 = wxNewId();
@@ -266,9 +267,16 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent,wxWindowID id) :
     FlexGridSizer9->Add(m_plot, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
     Notebook1 = new wxNotebook(this, ID_NOTEBOOK1, wxDefaultPosition, wxDefaultSize, 0, _T("ID_NOTEBOOK1"));
     Panel2 = new wxPanel(Notebook1, ID_PANEL2, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL2"));
-    FlexGridSizer10 = new wxFlexGridSizer(0, 1, 0, 0);
+    FlexGridSizer10 = new wxFlexGridSizer(2, 1, 0, 0);
     FlexGridSizer10->AddGrowableCol(0);
-    FlexGridSizer10->AddGrowableRow(0);
+    FlexGridSizer10->AddGrowableRow(1);
+    wxString __wxRadioBoxChoices_1[2] = 
+    {
+    	_("TP-Obstacles"),
+    	_("Clearance")
+    };
+    rbShowTPSelect = new wxRadioBox(Panel2, ID_RADIOBOX1, _("Show:"), wxDefaultPosition, wxDefaultSize, 2, __wxRadioBoxChoices_1, 1, wxRA_VERTICAL, wxDefaultValidator, _T("ID_RADIOBOX1"));
+    FlexGridSizer10->Add(rbShowTPSelect, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 2);
     m_plotTPSpace = new CMyGLCanvas(Panel2,ID_CUSTOM2,wxDefaultPosition,wxSize(150,300),wxTAB_TRAVERSAL,_T("ID_CUSTOM2"));
     FlexGridSizer10->Add(m_plotTPSpace, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
     Panel2->SetSizer(FlexGridSizer10);
@@ -390,6 +398,7 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent,wxWindowID id) :
     Connect(ID_BUTTON2,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&ptgConfiguratorframe::OnbtnRebuildTPObsClick);
     Connect(ID_BUTTON4,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&ptgConfiguratorframe::OnbtnPlaceTargetClick);
     Connect(ID_BUTTON5,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&ptgConfiguratorframe::OnButton1Click);
+    Connect(ID_RADIOBOX1,wxEVT_COMMAND_RADIOBOX_SELECTED,(wxObjectEventFunction)&ptgConfiguratorframe::OnrbShowTPSelectSelect);
     Connect(idMenuQuit,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&ptgConfiguratorframe::OnQuit);
     Connect(idMenuAbout,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&ptgConfiguratorframe::OnAbout);
     //*)
@@ -420,6 +429,11 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent,wxWindowID id) :
 	// ---------------------------
 	gl_view_WS      = m_plot->m_openGLScene->getViewport();
 	gl_view_TPSpace = m_plotTPSpace->m_openGLScene->getViewport();
+
+	gl_TPSpace_TP_obstacles = mrpt::opengl::CSetOfObjects::Create();
+	gl_TPSpace_TP_obstacles->setVisibility(true);
+	gl_TPSpace_clearance = mrpt::opengl::CSetOfObjects::Create();
+	gl_TPSpace_clearance->setVisibility(false);
 
 	m_plot->addTextMessage(0.01,5,"Workspace", mrpt::utils::TColorf(1,1,1,0.75), "sans", 15,mrpt::opengl::NICE, 1);
 	m_plotTPSpace->addTextMessage(0.01,5,"TP-Space", mrpt::utils::TColorf(1,1,1,0.75), "sans", 15,mrpt::opengl::NICE, 2);
@@ -1013,4 +1027,16 @@ void ptgConfiguratorframe::OnedIndexHighlightPathChange(wxSpinEvent& event)
 void ptgConfiguratorframe::OnButton1Click(wxCommandEvent& event)
 {
     loadPlugin();
+}
+
+void ptgConfiguratorframe::OnrbShowTPSelectSelect(wxCommandEvent& event)
+{
+	WX_START_TRY;
+
+	gl_TPSpace_TP_obstacles->setVisibility( rbShowTPSelect->GetSelection()==0 );
+	gl_TPSpace_clearance->setVisibility(rbShowTPSelect->GetSelection() == 1);
+
+	m_plotTPSpace->Refresh();
+
+	WX_END_TRY;
 }

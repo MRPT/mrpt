@@ -13,6 +13,7 @@
 #include <wx/notebook.h>
 #include <wx/sizer.h>
 #include <wx/stattext.h>
+#include <wx/radiobox.h>
 #include <wx/menu.h>
 #include <wx/textctrl.h>
 #include <wx/checkbox.h>
@@ -76,6 +77,7 @@ class ptgConfiguratorframe: public wxFrame
         void OnedIndexHighlightPathChange(wxSpinEvent& event);
         void OnedCfgText(wxCommandEvent& event);
         void OnButton1Click(wxCommandEvent& event);
+        void OnrbShowTPSelectSelect(wxCommandEvent& event);
         //*)
 
         //(*Identifiers(ptgConfiguratorframe)
@@ -107,6 +109,7 @@ class ptgConfiguratorframe: public wxFrame
         static const long ID_BUTTON5;
         static const long ID_PANEL1;
         static const long ID_XY_GLCANVAS;
+        static const long ID_RADIOBOX1;
         static const long ID_CUSTOM2;
         static const long ID_PANEL2;
         static const long ID_CUSTOM1;
@@ -192,6 +195,7 @@ class ptgConfiguratorframe: public wxFrame
         wxStaticText* StaticText4;
         wxTextCtrl* edTargetY;
         wxSlider* slidPathHighlight;
+        wxRadioBox* rbShowTPSelect;
         //*)
 
         DECLARE_EVENT_TABLE()
@@ -219,6 +223,7 @@ class ptgConfiguratorframe: public wxFrame
 
 		// ========= Opengl View =======
 		mrpt::opengl::COpenGLViewportPtr  gl_view_WS, gl_view_TPSpace;
+		mrpt::opengl::CSetOfObjectsPtr    gl_TPSpace_TP_obstacles, gl_TPSpace_clearance;
 		mrpt::opengl::CCameraPtr          gl_view_TPSpace_cam;
 		mrpt::opengl::CAxisPtr            gl_axis_WS, gl_axis_TPS;
 		mrpt::opengl::CSetOfLinesPtr      gl_robot_ptg_prediction, gl_robot_ptg_prediction_highlight, gl_tp_obstacles;
