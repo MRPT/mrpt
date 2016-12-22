@@ -14,6 +14,7 @@
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
 #include <mrpt/opengl/CSetOfLines.h>
+#include <mrpt/opengl/CMesh.h>
 
 using namespace mrpt::nav;
 
@@ -27,6 +28,7 @@ CParameterizedTrajectoryGenerator::CParameterizedTrajectoryGenerator() :
 	refDistance(.0),
 	m_alphaValuesCount(0),
 	m_score_priority(1.0),
+	m_clearance_dist_resolution(0.25),
 	m_is_initialized(false)
 { }
 
@@ -35,6 +37,7 @@ void CParameterizedTrajectoryGenerator::loadDefaultParams()
 	m_alphaValuesCount = 121;
 	refDistance = 6.0;
 	m_score_priority = 1.0;
+	m_clearance_dist_resolution = 0.25;
 }
 
 bool CParameterizedTrajectoryGenerator::supportVelCmdNOP() const
@@ -52,6 +55,7 @@ void CParameterizedTrajectoryGenerator::loadFromConfigFile(const mrpt::utils::CC
 	MRPT_LOAD_HERE_CONFIG_VAR_NO_DEFAULT(num_paths   , uint64_t, m_alphaValuesCount, cfg,sSection);
 	MRPT_LOAD_CONFIG_VAR_NO_DEFAULT     (refDistance , double,  cfg,sSection);
 	MRPT_LOAD_HERE_CONFIG_VAR(score_priority , double, m_score_priority, cfg,sSection);
+	MRPT_LOAD_HERE_CONFIG_VAR(clearance_dist_resolution, double, m_clearance_dist_resolution, cfg, sSection);
 }
 void CParameterizedTrajectoryGenerator::saveToConfigFile(mrpt::utils::CConfigFileBase &cfg,const std::string &sSection) const
 {
@@ -61,6 +65,7 @@ void CParameterizedTrajectoryGenerator::saveToConfigFile(mrpt::utils::CConfigFil
 	cfg.write(sSection,"num_paths",m_alphaValuesCount,   WN,WV, "Number of discrete paths (`resolution`) in the PTG");
 	cfg.write(sSection,"refDistance",refDistance,   WN,WV, "Maximum distance (meters) for building trajectories (visibility range)");
 	cfg.write(sSection,"score_priority",m_score_priority,   WN,WV, "When used in path planning, a multiplying factor (default=1.0) for the scores for this PTG. Assign values <1 to PTGs with low priority.");
+	cfg.write(sSection,"clearance_dist_resolution", m_clearance_dist_resolution,   WN,WV, "Length of steps for the piecewise-constant approximation of clearance [m] (Default=0.25 m).");
 
 	MRPT_END
 }
@@ -75,7 +80,10 @@ void CParameterizedTrajectoryGenerator::internal_readFromStream(mrpt::utils::CSt
 	switch (version)
 	{
 	case 0:
+	case 1:
 		in >> refDistance >> m_alphaValuesCount >> m_score_priority;
+		if (version >= 1)
+			in >> m_clearance_dist_resolution;
 		break;
 	default:
 		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
@@ -84,10 +92,10 @@ void CParameterizedTrajectoryGenerator::internal_readFromStream(mrpt::utils::CSt
 
 void CParameterizedTrajectoryGenerator::internal_writeToStream(mrpt::utils::CStream &out) const
 {
-	const uint8_t version = 0;
+	const uint8_t version = 1;
 	out << version;
 
-	out << refDistance << m_alphaValuesCount << m_score_priority;
+	out << refDistance << m_alphaValuesCount << m_score_priority << m_clearance_dist_resolution /* v1 */; 
 }
 
 uint16_t CParameterizedTrajectoryGenerator::alpha2index( double alpha ) const 
@@ -260,6 +268,63 @@ void CParameterizedTrajectoryGenerator::internal_TPObsDistancePostprocess(const 
 	default:
 		THROW_EXCEPTION("Obstacle postprocessing enum not implemented!");
 	}
+}
+
+CParameterizedTrajectoryGenerator::ClearanceDiagram::ClearanceDiagram()
+{
+}
+
+void CParameterizedTrajectoryGenerator::ClearanceDiagram::renderAs3DObject(
+	mrpt::opengl::CMesh &mesh, double min_x, double max_x, double min_y, double max_y, double cell_res) const
+{
+	ASSERT_(cell_res>0.0);
+	ASSERT_(max_x>min_x);
+	ASSERT_(max_y>min_y);
+
+	mesh.setXBounds(min_x, max_x);
+	mesh.setYBounds(min_y, max_y);
+	const int nX = (int)::ceil((max_x - min_x) / cell_res);
+	const int nY = (int)::ceil((max_y - min_y) / cell_res);
+	const double dx = (max_x - min_x) / nX;
+	const double dy = (max_y - min_y) / nY;
+
+	for (int iX = 0; iX < nX; iX++)
+	{
+		for (int iY = 0; iY < nY; iY++)
+		{
+			MRPT_TODO("finish render");
+
+		}
+	}
+}
+
+double CParameterizedTrajectoryGenerator::ClearanceDiagram::getClearance(uint16_t k, double dist) const
+{
+	MRPT_TODO("continue");
+	return .0;
+}
+
+void CParameterizedTrajectoryGenerator::clearanceUpdate(ClearanceDiagram & cd, const double ox, const double oy)
+{
+	// Collect max dist for each path (they may be costly to evaluate, avoid dupl. calls below):
+	std::vector<double> max_dists(m_alphaValuesCount);
+	for (unsigned int k = 0; k < m_alphaValuesCount; k++)
+		max_dists[k] = getPathDist(k, getPathStepCount(k));
+
+
+	// Initialize CD on first call:
+	ASSERT_(cd.raw_clearances.size() == m_alphaValuesCount || cd.raw_clearances.empty());
+	if (cd.raw_clearances.empty())
+	{
+		cd.raw_clearances.resize(m_alphaValuesCount);
+		for (unsigned int k = 0; k < m_alphaValuesCount; k++) {
+			for (double d = 0.0; d < max_dists[k]; d += m_clearance_dist_resolution) {
+				cd.raw_clearances[k][d] = refDistance;
+			}
+		}
+	}
+
+	MRPT_TODO("continue");
 }
 
 

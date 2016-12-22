@@ -120,19 +120,19 @@ namespace mrpt
 			inline float getXMax() const	{ return xMax; }
 			inline float getYMin() const	{ return yMin; }
 			inline float getYMax() const	{ return yMax; }
-			inline void setXMin(const float &nxm)	{
+			inline void setXMin(const float nxm)	{
 				xMin=nxm;
 				trianglesUpToDate=false; CRenderizableDisplayList::notifyChange();
 			}
-			inline void setXMax(const float &nxm)	{
+			inline void setXMax(const float nxm)	{
 				xMax=nxm;
 				trianglesUpToDate=false; CRenderizableDisplayList::notifyChange();
 			}
-			inline void setYMin(const float &nym)	{
+			inline void setYMin(const float nym)	{
 				yMin=nym;
 				trianglesUpToDate=false; CRenderizableDisplayList::notifyChange();
 			}
-			inline void setYMax(const float &nym)	{
+			inline void setYMax(const float nym)	{
 				yMax=nym;
 				trianglesUpToDate=false; CRenderizableDisplayList::notifyChange();
 			}
@@ -144,12 +144,12 @@ namespace mrpt
 				min=yMin;
 				max=yMax;
 			}
-			inline void setXBounds(const float &min,const float &max)	{
+			inline void setXBounds(const float min,const float max)	{
 				xMin=min;
 				xMax=max;
 				trianglesUpToDate=false; CRenderizableDisplayList::notifyChange();
 			}
-			inline void setYBounds(const float &min,const float &max)	{
+			inline void setYBounds(const float min,const float max)	{
 				yMin=min;
 				yMax=max;
 				trianglesUpToDate=false; CRenderizableDisplayList::notifyChange();
