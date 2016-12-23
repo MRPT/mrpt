@@ -110,8 +110,40 @@ bool CPTG_RobotShape_Circular::isPointInsideRobotShape(const double x, const dou
 
 void CPTG_RobotShape_Circular::evalClearanceSingleObstacle(const double ox, const double oy, const uint16_t k, std::map<double, double> & inout_realdist2clearance) const
 {
-	MRPT_TODO("Implement!");
-	THROW_EXCEPTION("TODO");
+	bool had_collision = false;
+
+	for (auto &e : inout_realdist2clearance)
+	{
+		const double dist_over_path = e.first;
+		double & inout_clearance = e.second;
+
+		if (had_collision) {
+			// We found a collision in a previous step along this "k" path, so 
+			// it does not make sense to evaluate the clearance of a pose which is not reachable:
+			inout_clearance = .0;
+			continue;
+		}
+
+		MRPT_TODO("Store precomputed step counts to save time?");
+		uint16_t step;
+		this->getPathStepForDist(k, dist_over_path, step);
+		mrpt::math::TPose2D pose;
+		this->getPathPose(k, step, pose);
+
+		// obstacle to robot clearance:
+		const double obs2robot_dist = ::hypot(ox-pose.x, oy-pose.y);
+		if (obs2robot_dist <= m_robotRadius) {
+			// Collision:
+			had_collision = true;
+			inout_clearance = .0;
+		}
+		else {
+			const double this_clearance = obs2robot_dist - m_robotRadius;
+			// Update minimum in output structure
+			mrpt::utils::keep_min(inout_clearance, this_clearance);
+		}
+
+	}
 }
 
 
