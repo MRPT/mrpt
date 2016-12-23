@@ -27,7 +27,7 @@ CParameterizedTrajectoryGenerator::CParameterizedTrajectoryGenerator() :
 	refDistance(.0),
 	m_alphaValuesCount(0),
 	m_score_priority(1.0),
-	m_clearance_dist_resolution(0.25),
+	m_clearance_dist_resolution(1.0),
 	m_is_initialized(false)
 { }
 
@@ -36,7 +36,7 @@ void CParameterizedTrajectoryGenerator::loadDefaultParams()
 	m_alphaValuesCount = 121;
 	refDistance = 6.0;
 	m_score_priority = 1.0;
-	m_clearance_dist_resolution = 0.25;
+	m_clearance_dist_resolution = 1.0;
 }
 
 bool CParameterizedTrajectoryGenerator::supportVelCmdNOP() const
@@ -64,7 +64,7 @@ void CParameterizedTrajectoryGenerator::saveToConfigFile(mrpt::utils::CConfigFil
 	cfg.write(sSection,"num_paths",m_alphaValuesCount,   WN,WV, "Number of discrete paths (`resolution`) in the PTG");
 	cfg.write(sSection,"refDistance",refDistance,   WN,WV, "Maximum distance (meters) for building trajectories (visibility range)");
 	cfg.write(sSection,"score_priority",m_score_priority,   WN,WV, "When used in path planning, a multiplying factor (default=1.0) for the scores for this PTG. Assign values <1 to PTGs with low priority.");
-	cfg.write(sSection,"clearance_dist_resolution", m_clearance_dist_resolution,   WN,WV, "Length of steps for the piecewise-constant approximation of clearance [m] (Default=0.25 m).");
+	cfg.write(sSection,"clearance_dist_resolution", m_clearance_dist_resolution,   WN,WV, "Length of steps for the piecewise-constant approximation of clearance [m] (Default=1.0 m).");
 
 	MRPT_END
 }

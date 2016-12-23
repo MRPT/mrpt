@@ -339,7 +339,7 @@ protected:
 		void setRobotShapeRadius(const double robot_radius);
 		double getRobotShapeRadius() const { return m_robotRadius; }
 		double getApproxRobotRadius() const MRPT_OVERRIDE;
-		void evalClearanceSingleObstacle(const double ox, const double oy, const uint16_t k, std::map<double, double> & inout_realdist2clearance) const MRPT_OVERRIDE;
+		virtual void evalClearanceSingleObstacle(const double ox, const double oy, const uint16_t k, std::map<double, double> & inout_realdist2clearance) const MRPT_OVERRIDE;
 		/** @} */
 		void add_robotShape_to_setOfLines(mrpt::opengl::CSetOfLines &gl_shape, const mrpt::poses::CPose2D &origin = mrpt::poses::CPose2D ()) const  MRPT_OVERRIDE;
 		bool isPointInsideRobotShape(const double x, const double y) const MRPT_OVERRIDE;

@@ -692,15 +692,24 @@ void ptgConfiguratorframe::rebuild3Dview()
 
 				// Clearance diagram:
 				mrpt::nav::ClearanceDiagram cd;
+				double tim_build_cd=.0;
 				{
 					timer.Tic();
 					ptg->updateClearance(ox, oy, cd);
-					const double t = timer.Tac();
-					StatusBar1->SetStatusText(wxString::Format(wxT("Clearance-diagram build time: %ss"), mrpt::system::unitsFormat(t, 2).c_str()), 3);
+					tim_build_cd  = timer.Tac();
 				}
 
-				const double D = 1.0;
+				const double D = ptg->getRefDistance();
+				timer.Tic();
 				cd.renderAs3DObject(*gl_TPSpace_clearance, -D, D, -D, D, 0.05);
+				gl_TPSpace_clearance->setScale(1.0 / ptg->getRefDistance()); // Normalized display in 3D view (for X,Y,Z)
+				const double tim_render_cd = timer.Tac();
+
+				StatusBar1->SetStatusText(
+					wxString::Format(wxT("Clearance-diagram time: build=%ss render=%ss"), 
+					mrpt::system::unitsFormat(tim_build_cd, 2).c_str(),
+					mrpt::system::unitsFormat(tim_render_cd, 2).c_str()
+					), 3);
 			}
 		}
 
