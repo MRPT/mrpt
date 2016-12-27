@@ -424,7 +424,13 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		 * \sa m_deformation_energy_vec
 		 */
 		void getDeformationEnergyVector(std::vector<double>* vec_out) const;
-
+		/**\brief Fill the given maps with stats regarding the overall execution of
+		 * graphslam.
+		 */
+		bool getGraphSlamStats(
+				std::map<std::string, int>* node_stats,
+				std::map<std::string, int>* edge_stats,
+				mrpt::system::TTimeStamp* timestamp=NULL);
 
 	private:
 		// Private function definitions
@@ -776,7 +782,7 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		/**\brief Instance to keep track of all the edges + visualization related
  		 * operations
  		 */
-		mrpt::graphslam::supplementary::CEdgeCounter m_edge_counter;
+		mrpt::graphslam::detail::CEdgeCounter m_edge_counter;
 
 		/**\brief Flag for specifying if we are going to use ground truth data at all.
 		 *
@@ -810,15 +816,13 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		// reference frame
 		// TODO - either use it or lose it...
 		mrpt::math::CMatrixDouble33  m_rot_TUM_to_MRPT;
-
-		size_t m_robot_model_size; /**< How big are the robots going to be in the scene */
-
+ 		/** How big are the robots going to be in the scene */
+		size_t m_robot_model_size;
 		/**\brief Internal counter for querying for the number of nodeIDs.
 		 *
 		 * Handy for not locking the m_graph resource
 		 */
 		mrpt::utils::TNodeID m_nodeID_max;
-
 		/** Mark graph modification/accessing explicitly for multithreaded
 		 * implementation
 		 */
@@ -831,9 +835,9 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 
 		/**\name Slam Metric related variables */
 		/**\{*/
-		/** Map from nodeIDs to their corresponding closest GT pose index.  Keep
-		 * track of the nodeIDs instead of the node positions as the latter are
-		 * about to change in the Edge Registration / Loop closing procedures
+		/**\brief Map from nodeIDs to their corresponding closest GT pose index. 
+		 * Keep track of the nodeIDs instead of the node positions as the latter
+		 * are about to change in the Edge Registration / Loop closing procedures
 		 */
 		std::map<mrpt::utils::TNodeID, size_t> m_nodeID_to_gt_indices;
 		double m_curr_deformation_energy;
@@ -873,6 +877,8 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 
 		/**\brief First recorded timestamp in the dataset. */
 		mrpt::system::TTimeStamp m_init_timestamp;
+		/**\brief Current dataset timestamp */
+		mrpt::system::TTimeStamp m_curr_timestamp;
 		/**\brief Current robot position based solely on odometry */
 		pose_t m_curr_odometry_only_pose;
 
