@@ -23,6 +23,7 @@
 #include <mrpt/utils/traits_map.h>
 #include <mrpt/utils/stl_serialization.h>
 #include <mrpt/poses/poses_frwds.h>
+#include <mrpt/system/os.h>
 
 namespace mrpt
 {
@@ -181,6 +182,135 @@ namespace mrpt
 					sqErr+=detail::graph_ops<self_t>::graph_edge_sqerror(this,itEdge,ignoreCovariances);
 				return sqErr;
 			}
+
+			/**\brief Find the edges between the nodes in the node_IDs set and fill
+			 * given graph pointer accordingly.
+			 *
+			 * \param[in] node_IDs Set of nodes, between which, edges should be found
+			 * and inserted in the given sub_graph pointer
+			 * \param[in] root_node_in Node ID to be used as the root node of
+			 * sub_graph. If this is not given, the lowest nodeID is to be used.
+			 * \param[out] CNetworkOfPoses pointer that is to be filled.
+			 *
+			 * TODO - what happens if the resulting graph is not connected in all its nodes?
+			 */
+			void extractSubGraph(const std::set<TNodeID>& node_IDs, self_t* sub_graph,
+					const TNodeID root_node_in=INVALID_NODEID) {
+				using namespace std;
+
+				// assert that the given pointers are valid
+				ASSERTMSG_(sub_graph,
+						"\nInvalid pointer to a CNetworkOfPoses instance is given. Exiting..\n");
+				sub_graph->clear();
+
+				// assert that the root_node actually exists in the given node_IDs set
+				TNodeID root_node = root_node_in;
+				if (root_node != INVALID_NODEID) {
+					ASSERTMSG_(node_IDs.find(root_node) != node_IDs.end(),
+							"\nroot_node does not exist in the given node_IDs set. Exiting.\n");
+				}
+
+				// add all the nodes of the node_IDs set to sub_graph
+				for (std::set<TNodeID>::const_iterator node_IDs_it = node_IDs.begin();
+						node_IDs_it != node_IDs.end(); ++node_IDs_it) {
+
+					// assert that current node exists in *own* graph
+					typename global_poses_t::const_iterator own_it;
+					for (own_it = nodes.begin(); own_it != nodes.end(); ++own_it) {
+						if (own_it->first == *node_IDs_it) {
+							break;
+						}
+					}
+					ASSERT_(own_it != nodes.end());
+
+					sub_graph->nodes.insert(make_pair(*node_IDs_it, nodes.at(*node_IDs_it)));
+				}
+
+				// set the extracted graph root
+				if (root_node == INVALID_NODEID) {
+					// smallest nodeID by default
+					//
+					// http://stackoverflow.com/questions/1342045/how-do-i-find-the-largest-int-in-a-stdsetint
+					// std::set sorts elements in ascending order
+					root_node = sub_graph->nodes.begin()->first;
+				}
+				sub_graph->root = root_node;
+
+				// set the corresponding root pose
+				sub_graph->nodes.at(sub_graph->root) = nodes.at(sub_graph->root);
+
+
+				// find all edges that exist between the given set of nodes; add them
+				// to the given graph
+				sub_graph->clearEdges();
+				for (typename BASE::const_iterator it = BASE::edges.begin();
+						it != BASE::edges.end();
+						++it) {
+
+					const TNodeID& from = it->first.first;
+					const TNodeID& to = it->first.second;
+					const typename BASE::edge_t& curr_edge = it->second;
+
+					// if both nodes exist in the given set, add the corresponding edge
+					if (sub_graph->nodes.find(from) != sub_graph->nodes.end() &&
+							sub_graph->nodes.find(to) != sub_graph->nodes.end()) {
+						sub_graph->insertEdge(from, to, curr_edge);
+					}
+				}
+
+				//// for any node that is not connected to any edge in the subgraph, add
+				//// a virtual edge between that node and the nearest nodeID
+				//for (std::map<TNodeID, bool>::iterator
+						//b_it = node_ID_found_in_edge.begin();
+						//b_it != node_ID_found_in_edge.end();
+						//++b_it) {
+					//if (!b_it->second) { // no found in any edge
+						//cout << "No edge connecting nodeID " << b_it->first << "was found." << endl;
+						//cout << "Adding virtual edge..." << endl;
+						//mrpt::system::pause();
+
+						//const TNodeID& curr_node = b_it->first;
+
+						//// add virtual edge with previous 
+						//if (b_it != node_ID_found_in_edge.begin()) { // if not first node
+							//// find first previous nodeID
+							//std::map<TNodeID, bool>::const_reverse_iterator b_in_it;
+							//for (b_in_it = std::prev(
+										//static_cast<std::map<TNodeID, bool>::const_reverse_iterator>(b_it),1);
+									//b_in_it != node_ID_found_in_edge.rend();
+									//++b_in_it) {
+								//const TNodeID& prev_node = b_in_it->first;
+
+								//typename BASE::edge_t virt_edge(nodes.at(curr_node) - nodes.at(prev_node));
+								//sub_graph->insertEdge(prev_node, curr_node, virt_edge);
+								////if (b_in_it = true) { // found a "true" pair.
+									////break;
+								////}
+							//}
+						//}
+						//else { // if first node do this with the next non-zero node
+							//// find first next nodeID
+							//std::map<TNodeID, bool>::const_iterator b_in_it;
+							//for (b_in_it = std::next(b_it,1);
+									//b_in_it != node_ID_found_in_edge.end();
+									//++b_in_it) {
+								//const TNodeID& next_node = b_in_it->first;
+
+								//typename BASE::edge_t virt_edge(nodes.at(next_node) - nodes.at(curr_node));
+								//sub_graph->insertEdge(curr_node, next_node, virt_edge);
+								////if (b_in_it = true) { // found a "true" pair.
+									////break;
+								////}
+							//}
+						//}
+					//}
+					//b_it->second = true;
+				//}
+
+				// estimate the node positions according to the edges - root is (0, 0, 0)
+				sub_graph->dijkstra_nodes_estimate();
+
+			} // end of extractSubGraph
 
 			/** Computes the square error of one pose constraints (edge) with respect to the global poses in \a nodes
 			  *  If \a ignoreCovariances is false, the squared Mahalanobis distance will be computed instead of the straight square error.

@@ -68,9 +68,11 @@ namespace mrpt
 			typedef typename mrpt::aligned_containers<TPairNodeIDs,edge_t>::multimap_t	edges_map_t;  //!< The type of the member \a edges
 			typedef typename edges_map_t::iterator         iterator;
 			typedef typename edges_map_t::const_iterator   const_iterator;
+			/**\brief Handy self type */
+			typedef CDirectedGraph<TYPE_EDGES, EDGE_ANNOTATIONS> self_t;
 
 			/** The public member with the directed edges in the graph */
-			edges_map_t   edges;
+			edges_map_t edges;
 
 
 			inline CDirectedGraph(const edges_map_t &obj) : edges(obj) { }  //!< Copy constructor from a multimap<pair< >, >
@@ -191,6 +193,12 @@ namespace mrpt
 					else if (it->first.second==nodeID)
 						neighborIDs.insert(it->first.first);
 				}
+			}
+			/** Return the list of all neighbors of "nodeID", by creating a list of their node IDs. \sa getAdjacencyMatrix */
+			std::set<TNodeID> getNeighborsOf(const TNodeID nodeID) const {
+				std::set<TNodeID> neighborIDs;
+				this->getNeighborsOf(nodeID, neighborIDs);
+				return neighborIDs;
 			}
 
 			/** Return a map from node IDs to all its neighbors (that is, connected nodes, regardless of the edge direction)
