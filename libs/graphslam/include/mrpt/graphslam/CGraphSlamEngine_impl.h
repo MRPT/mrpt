@@ -572,7 +572,7 @@ bool CGraphSlamEngine<GRAPH_t>::execGraphSlamStep(
 			"EdgeRegistrationDecider");
 
 	// current timestamp - to be filled depending on the format
-	mrpt::system::TTimeStamp curr_timestamp = getTimeStamp(action, observations, observation);
+ 	m_curr_timestamp = getTimeStamp(action, observations, observation);
 
 	if (observation.present()) {
 		// Read a single observation from the rawlog
@@ -704,9 +704,9 @@ bool CGraphSlamEngine<GRAPH_t>::execGraphSlamStep(
 	// Use the dataset timestamp otherwise fallback to
 	// mrpt::system::getCurrentTime
 	if (m_enable_visuals) {
-		if (curr_timestamp != INVALID_TIMESTAMP) {
+		if (m_curr_timestamp != INVALID_TIMESTAMP) {
 			m_win_manager->addTextMessage(m_offset_x_left, -m_offset_y_timestamp,
-					format("Simulated time: %s", timeToString(curr_timestamp).c_str()),
+					format("Simulated time: %s", timeToString(m_curr_timestamp).c_str()),
 					TColorf(1.0, 1.0, 1.0),
 					/* unique_index = */ m_text_index_timestamp );
 		}
@@ -771,7 +771,7 @@ bool CGraphSlamEngine<GRAPH_t>::execGraphSlamStep(
 
 	m_dataset_grab_time = mrpt::system::timeDifference(
 			m_init_timestamp,
-			curr_timestamp);
+			m_curr_timestamp);
 	m_time_logger.leave("proc_time");
 
 	return !m_request_to_exit;
@@ -2532,6 +2532,45 @@ void CGraphSlamEngine<GRAPH_t>::getDescriptiveReport(std::string* report_str) co
 }
 
 template<class GRAPH_t>
+bool CGraphSlamEngine<GRAPH_t>::getGraphSlamStats(
+		std::map<std::string, int>* node_stats,
+		std::map<std::string, int>* edge_stats,
+		mrpt::system::TTimeStamp* timestamp/*=NULL*/) {
+	MRPT_START;
+	using namespace std;
+	using namespace mrpt::graphslam::detail;
+
+	ASSERTMSG_(node_stats, "Invalid pointer to node_stats is given");
+	ASSERTMSG_(edge_stats, "Invalid pointer to edge_stats is given");
+
+	if (m_nodeID_max == 0) {
+		return false;
+	}
+
+	// fill the node stats
+	(*node_stats)["nodes_total"] = m_nodeID_max + 1;
+
+	// fill the edge stats
+	for (CEdgeCounter::const_iterator it = m_edge_counter.begin();
+			it != m_edge_counter.end();
+			++it) {
+		(*edge_stats)[it->first] = it->second;
+	}
+
+	(*edge_stats)["loop_closures"] = m_edge_counter.getLoopClosureEdges();
+	(*edge_stats)["edges_total"] = m_edge_counter.getTotalNumOfEdges();
+
+	// fill the timestamp
+	if (timestamp) {
+		*timestamp = m_curr_timestamp;
+	}
+
+	return true;
+	MRPT_END;
+}
+
+
+template<class GRAPH_t>
 void CGraphSlamEngine<GRAPH_t>::generateReportFiles(
 		const std::string& output_dir_fname) {
 	MRPT_START;
@@ -2587,7 +2626,8 @@ void CGraphSlamEngine<GRAPH_t>::generateReportFiles(
 		this->initResultsFile(fname);
 
 		m_out_streams[fname]->printf("%s\n", desc.c_str());
-		for (std::vector<double>::const_iterator vec_it = m_deformation_energy_vec.begin();
+		for (std::vector<double>::const_iterator
+				vec_it = m_deformation_energy_vec.begin();
 				vec_it != m_deformation_energy_vec.end(); ++vec_it) {
 			m_out_streams[fname]->printf("%f\n", *vec_it);
 		}
