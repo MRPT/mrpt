@@ -53,6 +53,7 @@
 			- New template mrpt::utils::ts_hash_map<> for thread-safe, std::map-like containers based on hash functions.
 			- Included exprtk header-only library to runtime compile & evaluation of mathematical expressions, under `<mrpt/otherlibs/exprtk.hpp>`
 			- New smart pointer templates: `mrpt::utils::copy_ptr<>`, `mrpt::utils::poly_ptr<>`.
+			- New colormap: mrpt::utils::hot2rgb()
 		- \ref mrpt_bayes_grp
 			- [API change] `verbose` is no longer a field of mrpt::bayes::CParticleFilter::TParticleFilterOptions. Use the setVerbosityLevel() method of the CParticleFilter class itself.
 			- [API change] mrpt::bayes::CProbabilityParticle (which affects all PF-based classes in MRPT) has been greatly simplified via usage of the new mrpt::utils::copy_ptr<> pointee-copy-semantics smart pointer.

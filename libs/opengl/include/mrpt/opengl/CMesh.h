@@ -90,7 +90,7 @@ namespace mrpt
 
 			void enableTransparency( bool v )	{ m_enableTransparency = v; CRenderizableDisplayList::notifyChange(); }
 			void enableWireFrame( bool v ) 		{ m_isWireFrame = v; CRenderizableDisplayList::notifyChange(); }
-			void enableColorFromZ( bool v, mrpt::utils::TColormap	colorMap = mrpt::utils::cmJET )
+			void enableColorFromZ( bool v, mrpt::utils::TColormap	colorMap = mrpt::utils::cmHOT )
 			{
 				m_colorFromZ = v;
 				m_colorMap   = colorMap;
@@ -191,29 +191,11 @@ namespace mrpt
 			bool traceRay(const mrpt::poses::CPose3D &o,double &dist) const MRPT_OVERRIDE;
 
 		private:
-			/** Constructor
-			  */
-			CMesh( bool enableTransparency = false, float xMin = 0.0f, float xMax = 0.0f, float yMin = 0.0f, float yMax = 0.0f ) :
-				m_textureImage(0,0),
-				m_enableTransparency(enableTransparency),
-				m_colorFromZ(false),
-				m_isWireFrame(false),
-				m_isImage(false),
-				Z(0,0), mask(0,0), U(0,0), V(0,0), C(0,0), C_r(0,0), C_g(0,0), C_b(0,0),
-				m_colorMap( mrpt::utils::cmJET ),
-				m_modified_Z(true),
-				m_modified_Image(false),
-				xMin(xMin), xMax(xMax), yMin(yMin), yMax(yMax),
-				trianglesUpToDate(false)
-			{
-				m_color.A = 255;
-				m_color.R = 0;
-				m_color.G = 0;
-				m_color.B = 150;
-			}
-			/** Private, virtual destructor: only can be deleted from smart pointers */
-			virtual ~CMesh() { }
+			/** Constructor  */
+			CMesh(bool enableTransparency = false, float xMin = 0.0f, float xMax = 0.0f, float yMin = 0.0f, float yMax = 0.0f);
 
+			/** Private, virtual destructor: only can be deleted from smart pointers */
+			virtual ~CMesh();
 		};
 		DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CMesh, CRenderizableDisplayList, OPENGL_IMPEXP )
 
