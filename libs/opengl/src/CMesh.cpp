@@ -26,6 +26,30 @@ using namespace std;
 
 IMPLEMENTS_SERIALIZABLE( CMesh, CRenderizableDisplayList, mrpt::opengl )
 
+CMesh::CMesh(bool enableTransparency, float xMin, float xMax, float yMin, float yMax) :
+	m_textureImage(0, 0),
+	m_enableTransparency(enableTransparency),
+	m_colorFromZ(false),
+	m_isWireFrame(false),
+	m_isImage(false),
+	Z(0, 0), mask(0, 0), U(0, 0), V(0, 0), C(0, 0), C_r(0, 0), C_g(0, 0), C_b(0, 0),
+	m_colorMap(mrpt::utils::cmHOT),
+	m_modified_Z(true),
+	m_modified_Image(false),
+	xMin(xMin), xMax(xMax), yMin(yMin), yMax(yMax),
+	trianglesUpToDate(false)
+{
+	m_color.A = 255;
+	m_color.R = 0;
+	m_color.G = 0;
+	m_color.B = 150;
+}
+
+CMesh::~CMesh()
+{
+}
+
+
 CMeshPtr CMesh::Create(bool enableTransparency, float xMin, float xMax , float yMin , float yMax  )
 {
 	return CMeshPtr( new CMesh( enableTransparency, xMin ,xMax , yMin ,yMax ) );
