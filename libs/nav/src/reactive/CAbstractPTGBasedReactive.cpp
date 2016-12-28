@@ -1106,12 +1106,13 @@ void CAbstractPTGBasedReactive::ptg_eval_target_build_obstacles(
 	const bool fill_log_record = (m_logFile != NULL || m_enableKeepLogRecords);
 	if (fill_log_record)
 	{
-		metaprogramming::copy_container_typecasting(ipf.TP_Obstacles, newLogRec.infoPerPTG[idx_in_log_infoPerPTGs].TP_Obstacles);
 		CLogFileRecord::TInfoPerPTG &ipp = newLogRec.infoPerPTG[idx_in_log_infoPerPTGs];
 		if (!this_is_PTG_continuation)
 		     ipp.PTG_desc = ptg->getDescription();
 		else ipp.PTG_desc = mrpt::format("NOP cmdvel (prev PTG idx=%u)", static_cast<unsigned int>(m_lastSentVelCmd.ptg_index) );
 
+		metaprogramming::copy_container_typecasting(ipf.TP_Obstacles, ipp.TP_Obstacles);
+		ipp.clearance = ipf.clearance;
 		ipp.TP_Target = ipf.TP_Target;
 		ipp.HLFR = HLFR;
 		ipp.desiredDirection = holonomicMovement.direction;
