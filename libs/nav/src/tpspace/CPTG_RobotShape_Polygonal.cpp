@@ -141,8 +141,8 @@ bool CPTG_RobotShape_Polygonal::isPointInsideRobotShape(const double x, const do
 	return m_robotShape.contains(mrpt::math::TPoint2D(x, y));
 }
 
-void CPTG_RobotShape_Polygonal::evalClearanceSingleObstacle(const double ox, const double oy, const uint16_t k, std::map<double, double> & inout_realdist2clearance) const
+double CPTG_RobotShape_Polygonal::evalClearanceToRobotShape(const double ox, const double oy) const
 {
-	MRPT_TODO("Implement!");
-	THROW_EXCEPTION("TODO");
+	MRPT_TODO("IMPL");
+	return .0;
 }

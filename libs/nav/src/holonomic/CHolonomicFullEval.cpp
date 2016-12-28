@@ -165,7 +165,22 @@ void  CHolonomicFullEval::navigate(
 		for (int l=0;l<NUM_FACTORS;l++) m_dirs_scores(i,l)= scores[l];
 	}
 
-	// Phase 1: average of normalized PHASE1_FACTORS and thresholding:
+	// Normalize factors?
+	ASSERT_(options.factorNormalizeOrNot.size() == NUM_FACTORS);
+	for (int l = 0; l < NUM_FACTORS; l++)
+	{
+		if (!options.factorNormalizeOrNot[l]) continue;
+
+		const double mmax = m_dirs_scores.col(l).maxCoeff();
+		const double mmin = m_dirs_scores.col(l).minCoeff();
+		const double span = mmax - mmin;
+		if (span <= .0) continue;
+
+		m_dirs_scores.col(l).array() -= mmin;
+		m_dirs_scores.col(l).array() /= span;
+	}
+
+	// Phase 1: average of PHASE1_FACTORS and thresholding:
 	// ----------------------------------------------------------------------
 	const unsigned int PHASE1_NUM_FACTORS = options.PHASE1_FACTORS.size(), PHASE2_NUM_FACTORS = options.PHASE2_FACTORS.size();
 	ASSERT_(PHASE1_NUM_FACTORS>0);
@@ -339,6 +354,7 @@ CHolonomicFullEval::TOptions::TOptions() :
 	PHASE1_THRESHOLD( 0.75 )
 {
 	factorWeights = mrpt::math::make_vector<5,double>(1.0, 1.0, 1.0, 0.1, 1.0);
+	factorNormalizeOrNot = mrpt::math::make_vector<5, int>(0, 0, 0, 0, 1);
 
 	PHASE1_FACTORS = mrpt::math::make_vector<3,int>(0,1,2);
 	PHASE2_FACTORS = mrpt::math::make_vector<2,int>(3,4);
@@ -357,6 +373,9 @@ void CHolonomicFullEval::TOptions::loadFromConfigFile(const mrpt::utils::CConfig
 
 	source.read_vector(section,"factorWeights", std::vector<double>(), factorWeights, true );
 	ASSERT_(factorWeights.size()==5);
+
+	source.read_vector(section, "factorNormalizeOrNot", factorNormalizeOrNot, factorNormalizeOrNot);
+	ASSERT_(factorNormalizeOrNot.size() == factorWeights.size());
 
 	source.read_vector(section,"PHASE1_FACTORS", PHASE1_FACTORS, PHASE1_FACTORS );
 	ASSERT_(PHASE1_FACTORS.size()>0);
@@ -380,6 +399,7 @@ void CHolonomicFullEval::TOptions::saveToConfigFile(mrpt::utils::CConfigFileBase
 
 	ASSERT_EQUAL_(factorWeights.size(),5)
 	cfg.write(section,"factorWeights", mrpt::system::sprintf_container("%.2f ",factorWeights),   WN,WV, "[0]=Free space, [1]=Dist. in sectors, [2]=Closer to target (Euclidean), [3]=Hysteresis, [4]=clearance along path");
+	cfg.write(section,"factorNormalizeOrNot", mrpt::system::sprintf_container("%.2f ", factorNormalizeOrNot), WN, WV, "Normalize factors or not (1/0)");
 
 	cfg.write(section,"PHASE1_FACTORS", mrpt::system::sprintf_container("%d ",PHASE1_FACTORS),   WN,WV, "Indices of the factors above to be considered in phase 1");
 	cfg.write(section,"PHASE2_FACTORS", mrpt::system::sprintf_container("%d ",PHASE2_FACTORS),   WN,WV, "Indices of the factors above to be considered in phase 2");
@@ -390,14 +410,15 @@ void CHolonomicFullEval::TOptions::saveToConfigFile(mrpt::utils::CConfigFileBase
 void  CHolonomicFullEval::writeToStream(mrpt::utils::CStream &out,int *version) const
 {
 	if (version)
-		*version = 1;
+		*version = 2;
 	else
 	{
 		// Params:
 		out << options.factorWeights << options.HYSTERESIS_SECTOR_COUNT <<
 			options.PHASE1_FACTORS << options.PHASE2_FACTORS <<
 			options.TARGET_SLOW_APPROACHING_DISTANCE << options.TOO_CLOSE_OBSTACLE << options.PHASE1_THRESHOLD
-			<< options.OBSTACLE_SLOW_DOWN_DISTANCE; // v1
+			<< options.OBSTACLE_SLOW_DOWN_DISTANCE // v1
+			<< options.factorNormalizeOrNot; // v2
 
 		// State:
 		out << m_last_selected_sector;
@@ -409,6 +430,7 @@ void  CHolonomicFullEval::readFromStream(mrpt::utils::CStream &in,int version)
 	{
 	case 0:
 	case 1:
+	case 2:
 		{
 		// Params:
 		in >> options.factorWeights >> options.HYSTERESIS_SECTOR_COUNT >>
@@ -416,6 +438,9 @@ void  CHolonomicFullEval::readFromStream(mrpt::utils::CStream &in,int version)
 			options.TARGET_SLOW_APPROACHING_DISTANCE >> options.TOO_CLOSE_OBSTACLE >> options.PHASE1_THRESHOLD;
 		if (version >= 1)
 			in >> options.OBSTACLE_SLOW_DOWN_DISTANCE;
+		if (version >= 2)
+			in >> options.factorNormalizeOrNot;
+
 		// State:
 		in >> m_last_selected_sector;
 		} break;
