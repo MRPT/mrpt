@@ -26,7 +26,6 @@ using namespace std;
 IMPLEMENTS_SERIALIZABLE( CLogFileRecord_FullEval, CHolonomicLogFileRecord,mrpt::nav )
 IMPLEMENTS_SERIALIZABLE( CHolonomicFullEval, CAbstractHolonomicReactiveMethod,mrpt::nav)
 
-
 CHolonomicFullEval::CHolonomicFullEval(const mrpt::utils::CConfigFileBase *INI_FILE ) :
 	CAbstractHolonomicReactiveMethod("FULL_EVAL_CONFIG"),
 	m_last_selected_sector ( std::numeric_limits<unsigned int>::max() )
@@ -152,8 +151,8 @@ void  CHolonomicFullEval::navigate(
 			double avr_path_clearance = 0.0;
 			size_t num_avrs = 0;
 			for (
-				auto it = clearance->raw_clearances[i /*path index*/].begin();
-				it != clearance->raw_clearances[i].end() && it->first <= target_dist*1.01;
+				auto it = ++clearance->raw_clearances[i /*path index*/].begin();
+				it != clearance->raw_clearances[i].end() && it->first <= target_dist*1.5;
 				++it, ++num_avrs)
 			{
 				const double clearance = it->second;
@@ -222,8 +221,12 @@ void  CHolonomicFullEval::navigate(
 			for (unsigned int l : options.PHASE2_FACTORS) this_dir_eval+=options.factorWeights[l] * m_dirs_scores(i,l);
 			this_dir_eval*=weights_sum_phase2_inv;
 
-			// Boost score of directions that take us straight to the target:
-			if (target_sector==i && obstacles[i]>=0.99*target_dist)
+			// Boost score of directions that: 
+			if (
+				target_sector==i &&                // take us straight to the target, and 
+				obstacles[i]>=1.05*target_dist &&  // are safe (no collision), and
+				m_dirs_scores(i, 4)> options.TOO_CLOSE_OBSTACLE*3.0
+				)
 				this_dir_eval+=std::max(0.0, 1.0-target_dist);
 		}
 

@@ -12,9 +12,9 @@
 #include <mrpt/nav/holonomic/ClearanceDiagram.h>
 #include <mrpt/nav/tpspace/CParameterizedTrajectoryGenerator.h>
 #include <mrpt/opengl/CMesh.h>
+#include <limits>
 
 using namespace mrpt::nav;
-
 
 ClearanceDiagram::ClearanceDiagram()
 {
@@ -72,23 +72,26 @@ double ClearanceDiagram::getClearance(uint16_t k, double dist) const
 	ASSERT_(k<raw_clearances.size());
 
 	const auto & rc_k = raw_clearances[k];
-	ASSERT_(rc_k.size()>2);  // we need some data points to interpolate!
-	
-	auto it_low = rc_k.begin(), it_up = rc_k.begin();
-	while (it_up != rc_k.end() && it_up->first < dist) {
-		it_low = it_up++;
+
+	double res = std::numeric_limits<double>::max();
+	bool valid = false;
+	for (const auto &e : rc_k)
+	{
+		if (e.first == 0)
+			continue;  // Ignore clearance at (0,0)
+
+		if (e.first>dist)
+			break; // target dist reached.
+		
+		// Keep min clearance along straight path:
+		mrpt::utils::keep_min(res, e.second);
+		valid = true;
 	}
 
-	if (it_up == rc_k.end()) {
-		// query is beyond the LUT: return the last known value in this path
-		return rc_k.rbegin()->second;
-	}
+	if (!valid)
+		res = rc_k.begin()->second;
 
-	// linear interpolate:
-	const double d0 = it_low->first, d1 = it_up->first;
-	const double c0 = it_low->second, c1 = it_up->second;
-
-	return c0 + (c1-c0)*(dist-d0)/(d1-d0);
+	return res;
 }
 
 void ClearanceDiagram::clear()
