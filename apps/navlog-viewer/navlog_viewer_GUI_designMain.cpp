@@ -40,6 +40,8 @@
 #include <mrpt/utils/printf_vector.h>
 #include <mrpt/system/string_utils.h>
 #include <mrpt/opengl/CSetOfLines.h>
+#include <mrpt/opengl/CMesh.h>
+#include <mrpt/opengl/CDisk.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/CPointCloud.h>
 #include <mrpt/opengl/stock_objects.h>
@@ -311,8 +313,8 @@ navlog_viewer_GUI_designDialog::~navlog_viewer_GUI_designDialog()
     //(*Destroy(navlog_viewer_GUI_designDialog)
     //*)
 	// Clean all windows:
-	this->m_mywins.clear();
-	this->m_mywins3D.clear();
+	m_mywins.clear();
+	m_mywins3D.clear();
 	mrpt::system::sleep(100);
 }
 
@@ -843,86 +845,178 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 	// --------------------------------
 	for (unsigned int nPTG=0;nPTG<log.infoPerPTG.size();nPTG++)  // log.infoPerPTG.size() may be != nPTGs in the last entry is used for "NOP cmdvel"
 	{
-		CDisplayWindowPlotsPtr &win = m_mywins[format("PTG%u",nPTG)];
+		CDisplayWindow3DPtr &win = m_mywins3D[format("PTG%u",nPTG)];
 		if (!win)  {
 			const static int W = 290;
 			const static int H = 270;
 
-			win= CDisplayWindowPlots::Create(format("%u|TP-Obstacles [%s]",nPTG,log.infoPerPTG[nPTG].PTG_desc.c_str()),W,H);
+			win= CDisplayWindow3D::Create(format("%u|TP-Obstacles [%s]",nPTG,log.infoPerPTG[nPTG].PTG_desc.c_str()),W,H);
 			win->setPos(20+(W+30)*nPTG, 380);
-			win->axis(-1,1,-1,1, true);
 
-			// Draw static stuff:
-			win->plot( make_vector<1,double>(0),make_vector<1,double>(0),"r.5",  "central_dot");
-
-			vector<float> xs,ys;
-			for (size_t i=0;i<100;++i)
 			{
-				xs.push_back(cos(i*2*M_PI/100));
-				ys.push_back(sin(i*2*M_PI/100));
-			}
-			win->plot(xs,ys,"k-", "out_circle");
-		}
-		// Draw dynamic stuff:
-		const CLogFileRecord::TInfoPerPTG &pI = log.infoPerPTG[nPTG];
-		vector<float> xs,ys;
+				mrpt::opengl::COpenGLScenePtr scene;
+				mrpt::gui::CDisplayWindow3DLocker locker(*win, scene);
 
-		const size_t nAlphas = pI.TP_Obstacles.size();
-		//ASSERT_(nAlphas>0)  // In case of "invalid" PTGs during navigation, TP_Obstacles may be left uncomputed.
+				scene->insert(mrpt::opengl::CGridPlaneXY::Create(-1.0f, 1.0f, -1.0f, 1.0f, .0f, 1.0f));
+				scene->insert(mrpt::opengl::stock_objects::CornerXYSimple(0.4f,2.0f) );
 
-		// Chosen direction:
-		xs.resize(2);
-		ys.resize(2);
-		xs[0] = 0; ys[0] = 0;
-		const double aDir = pI.desiredDirection;
-		xs[1] = pI.desiredSpeed*cos(aDir);
-		ys[1] = pI.desiredSpeed*sin(aDir);
+				win->setCameraAzimuthDeg(-90);
+				win->setCameraElevationDeg(90);
+				win->setCameraZoom(4.0f);
 
-		win->plot(xs,ys,"g-5","SEL_DIR");
-
-
-		// obstacles:
-		xs.clear(); ys.clear();
-		xs.reserve(nAlphas); ys.reserve(nAlphas);
-		for (size_t i=0;i<nAlphas;++i)
-		{
-			const double a = -M_PI + (i+0.5)*2*M_PI/double(nAlphas);
-			const double r = pI.TP_Obstacles[i];
-			xs.push_back(r*cos(a));
-			ys.push_back(r*sin(a));
-		}
-		win->plot(xs,ys,"b-1", "TPOBS");
-		win->plot(xs,ys,"b.3", "TPOBSdot");
-
-		// Target:
-		win->plot(make_vector<1,double>(pI.TP_Target.x),make_vector<1,double>(pI.TP_Target.y),"k.9", "TPTARGET");
-		// Current robot pt (normally in pure reactive, at (0,0)):
-		win->plot(make_vector<1, double>(pI.TP_Robot.x), make_vector<1, double>(pI.TP_Robot.y), "r.7", "TPROBOT");
-
-		// In the case of ND algorithm: draw gaps
-		if (pI.HLFR && IS_CLASS(pI.HLFR, CLogFileRecord_ND))
-		{
-			CLogFileRecord_NDPtr log_ND = CLogFileRecord_NDPtr(pI.HLFR);
-			const size_t nGaps = log_ND->gaps_ini.size();
-			ASSERT_( log_ND->gaps_end.size()==nGaps );
-			xs.clear(); ys.clear();
-			for (size_t nG=0;nG<nGaps;nG++)
-			{
-				const int32_t ang_ini = log_ND->gaps_ini[nG];
-				const int32_t ang_end = log_ND->gaps_end[nG];
-
-				xs.push_back(0);ys.push_back(0);
-				for (int i=ang_ini;i<ang_end;i++)
 				{
-					const double a = -M_PI + (i+0.5)*2*M_PI/double(nAlphas);
-					const double r = pI.TP_Obstacles[i] - 0.04;
-					xs.push_back(r*cos(a));
-					ys.push_back(r*sin(a));
+					auto gl_obj = mrpt::opengl::CDisk::Create();
+					gl_obj->setDiskRadius(1.01f, 1.0);
+					gl_obj->setSlicesCount(30);
+					gl_obj->setColor_u8(mrpt::utils::TColor(0x30, 0x30, 0x30, 0xff));
+					scene->insert(gl_obj);
 				}
-				xs.push_back(0);ys.push_back(0);
-			}
-			win->plot(xs,ys,"k-2", "TPOBS-Gaps");
+				{
+					auto gl_obj = mrpt::opengl::CSetOfLines::Create();
+					gl_obj->setName("tp_obstacles");
+					gl_obj->setLineWidth(1.0f);
+					gl_obj->setColor_u8(mrpt::utils::TColor(0x00, 0x00, 0xff, 0xff));
+					scene->insert(gl_obj);
+				}
+				{
+					auto gl_tp_obstacles_dot = mrpt::opengl::CPointCloud::Create();
+					gl_tp_obstacles_dot->setName("tp_obstacles_dot");
+					gl_tp_obstacles_dot->setPointSize(2.0f);
+					gl_tp_obstacles_dot->setColor_u8(mrpt::utils::TColor(0x00, 0x00, 0xff, 0xff));
+					scene->insert(gl_tp_obstacles_dot);
+				}
+				{
+					auto gl_obj = mrpt::opengl::CPointCloud::Create();
+					gl_obj->setName("tp_target");
+					gl_obj->setPointSize(5.0f);
+					gl_obj->setColor_u8(mrpt::utils::TColor(0x30, 0x30, 0x30, 0xff));
+					scene->insert(gl_obj);
+				}
+				{
+					auto gl_obj = mrpt::opengl::CPointCloud::Create();
+					gl_obj->setName("tp_robot");
+					gl_obj->setPointSize(4.0f);
+					gl_obj->setColor_u8(mrpt::utils::TColor(0xff, 0x00, 0x00, 0xa0));
+					scene->insert(gl_obj);
+				}
+				{
+					auto gl_obj = mrpt::opengl::CSetOfLines::Create();
+					gl_obj->setName("tp_selected_dir");
+					gl_obj->setLineWidth(5.0f);
+					gl_obj->setColor_u8(mrpt::utils::TColor(0x00, 0xff, 0x00, 0xff));
+					scene->insert(gl_obj);
+				}
+				{
+					auto gl_obj = mrpt::opengl::CMesh::Create(true /*transparency*/);
+					gl_obj->setName("tp_clearance");
+					scene->insert(gl_obj);
+				}
+			}  // End window locker:
 		}
+
+		{
+			mrpt::opengl::COpenGLScenePtr scene;
+			mrpt::gui::CDisplayWindow3DLocker locker(*win, scene);
+
+			// Draw dynamic stuff:
+			const CLogFileRecord::TInfoPerPTG &pI = log.infoPerPTG[nPTG];
+			vector<float> xs,ys;
+
+			const size_t nAlphas = pI.TP_Obstacles.size();
+			//ASSERT_(nAlphas>0)  // In case of "invalid" PTGs during navigation, TP_Obstacles may be left uncomputed.
+
+			// Chosen direction:
+			{
+				const double aDir = pI.desiredDirection;
+
+				auto gl_obj = mrpt::opengl::CSetOfLinesPtr(scene->getByName("tp_selected_dir"));
+				gl_obj->clear();
+				gl_obj->appendLine(
+					0, 0, 0,
+					pI.desiredSpeed*cos(aDir), pI.desiredSpeed*sin(aDir), 0);
+			}
+
+			// obstacles:
+			xs.clear(); ys.clear();
+			xs.reserve(nAlphas); ys.reserve(nAlphas);
+			for (size_t i=0;i<nAlphas;++i)
+			{
+				const double a = -M_PI + (i+0.5)*2*M_PI/double(nAlphas);
+				const double r = pI.TP_Obstacles[i];
+				xs.push_back(r*cos(a));
+				ys.push_back(r*sin(a));
+			}
+			{
+				auto gl_obj = mrpt::opengl::CSetOfLinesPtr(scene->getByName("tp_obstacles"));
+				gl_obj->clear();
+				if (nAlphas>2)
+				{
+					gl_obj->appendLine(xs[0], ys[0], 0, xs[1], ys[1], 0);
+					for (size_t i = 2; i < nAlphas; i++)
+						gl_obj->appendLineStrip(xs[i], ys[i], 0);
+				}
+
+				auto gl_obj_dot = mrpt::opengl::CPointCloudPtr(scene->getByName("tp_obstacles_dot"));
+				gl_obj_dot->clear();
+				for (size_t i = 0; i < nAlphas; i++)
+					gl_obj_dot->insertPoint(xs[i], ys[i],0);
+			}
+
+			// Target:
+			{
+				auto gl_obj = mrpt::opengl::CPointCloudPtr(scene->getByName("tp_target"));
+				gl_obj->clear();
+				gl_obj->insertPoint(pI.TP_Target.x, pI.TP_Target.y,0);
+			}
+
+			// Current robot pt (normally in pure reactive, at (0,0)):
+			{
+				auto gl_obj = mrpt::opengl::CPointCloudPtr(scene->getByName("tp_robot"));
+				gl_obj->clear();
+				gl_obj->insertPoint(pI.TP_Robot.x, pI.TP_Robot.y, 0);
+			}
+
+			// Clearance-diagram:
+			{
+				auto gl_obj = mrpt::opengl::CMeshPtr(scene->getByName("tp_clearance"));
+				if (pI.clearance.raw_clearances.empty())
+					gl_obj->setVisibility(false);
+				else
+				{
+					gl_obj->setVisibility(true);
+					pI.clearance.renderAs3DObject(*gl_obj, -1.0, 1.0, -1.0, 1.0, 0.15);
+				}
+			}
+
+			// In the case of ND algorithm: draw gaps
+#if 0
+			if (pI.HLFR && IS_CLASS(pI.HLFR, CLogFileRecord_ND))
+			{
+				CLogFileRecord_NDPtr log_ND = CLogFileRecord_NDPtr(pI.HLFR);
+				const size_t nGaps = log_ND->gaps_ini.size();
+				ASSERT_( log_ND->gaps_end.size()==nGaps );
+				xs.clear(); ys.clear();
+				for (size_t nG=0;nG<nGaps;nG++)
+				{
+					const int32_t ang_ini = log_ND->gaps_ini[nG];
+					const int32_t ang_end = log_ND->gaps_end[nG];
+
+					xs.push_back(0);ys.push_back(0);
+					for (int i=ang_ini;i<ang_end;i++)
+					{
+						const double a = -M_PI + (i+0.5)*2*M_PI/double(nAlphas);
+						const double r = pI.TP_Obstacles[i] - 0.04;
+						xs.push_back(r*cos(a));
+						ys.push_back(r*sin(a));
+					}
+					xs.push_back(0);ys.push_back(0);
+				}
+				//win->plot(xs,ys,"k-2", "TPOBS-Gaps");
+			}
+#endif
+		}  // End window locker:
+
+		win->repaint();
 
 	} // end for each PTG
 
