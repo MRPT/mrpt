@@ -109,59 +109,10 @@ bool CPTG_RobotShape_Circular::isPointInsideRobotShape(const double x, const dou
 	return ::hypot(x, y) < m_robotRadius;
 }
 
-void CPTG_RobotShape_Circular::evalClearanceSingleObstacle(const double ox, const double oy, const uint16_t k, std::map<double, double> & inout_realdist2clearance) const
+double CPTG_RobotShape_Circular::evalClearanceToRobotShape(const double ox, const double oy) const
 {
-	bool had_collision = false;
-
-	const size_t numPathSteps = getPathStepCount(k);
-	ASSERT_(numPathSteps >  inout_realdist2clearance.size() );
-
-	const double numStepsPerIncr = (numPathSteps - 1.0) / (inout_realdist2clearance.size() - 1);
-
-	double step_pointer_dbl = 0.0;
-
-	for (auto &e : inout_realdist2clearance)
-	{
-		step_pointer_dbl += numStepsPerIncr;
-		const size_t step = mrpt::utils::round(step_pointer_dbl);
-
-		const double dist_over_path = e.first;
-		double & inout_clearance = e.second;
-
-		if (dist_over_path == .0) {
-			// Special case: don't eval clearance at init pose, to 
-			// 1) avoid biasing the rest of the path for near obstacles, and
-			// 2) let the obstacle_behavior to work when in a "collision state":
-			const double fake_clearance = m_robotRadius / refDistance;
-			mrpt::utils::keep_min(inout_clearance, fake_clearance);
-			continue;
-		}
-
-		if (had_collision) {
-			// We found a collision in a previous step along this "k" path, so 
-			// it does not make sense to evaluate the clearance of a pose which is not reachable:
-			inout_clearance = .0;
-			continue;
-		}
-
-		mrpt::math::TPose2D pose;
-		this->getPathPose(k, step, pose);
-
-		// obstacle to robot clearance:
-		const double obs2robot_dist = ::hypot(ox-pose.x, oy-pose.y);
-		if (obs2robot_dist <= m_robotRadius) {
-			// Collision:
-			had_collision = true;
-			inout_clearance = .0;
-		}
-		else {
-			const double this_clearance = obs2robot_dist - m_robotRadius;
-			const double this_clearance_norm = this_clearance / this->refDistance;
-
-			// Update minimum in output structure
-			mrpt::utils::keep_min(inout_clearance, this_clearance_norm);
-		}
-	}
+	return ::hypot(ox, oy) - m_robotRadius;
 }
+
 
 
