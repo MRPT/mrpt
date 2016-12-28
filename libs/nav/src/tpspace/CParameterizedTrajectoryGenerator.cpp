@@ -27,7 +27,7 @@ CParameterizedTrajectoryGenerator::CParameterizedTrajectoryGenerator() :
 	refDistance(.0),
 	m_alphaValuesCount(0),
 	m_score_priority(1.0),
-	m_clearance_num_points(5),
+	m_clearance_num_points(15),
 	m_is_initialized(false)
 { }
 
@@ -36,7 +36,7 @@ void CParameterizedTrajectoryGenerator::loadDefaultParams()
 	m_alphaValuesCount = 121;
 	refDistance = 6.0;
 	m_score_priority = 1.0;
-	m_clearance_num_points = 5;
+	m_clearance_num_points = 15;
 }
 
 bool CParameterizedTrajectoryGenerator::supportVelCmdNOP() const

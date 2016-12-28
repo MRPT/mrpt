@@ -132,6 +132,8 @@ void CPTG_RobotShape_Circular::evalClearanceSingleObstacle(const double ox, cons
 			// Special case: don't eval clearance at init pose, to 
 			// 1) avoid biasing the rest of the path for near obstacles, and
 			// 2) let the obstacle_behavior to work when in a "collision state":
+			const double fake_clearance = m_robotRadius / refDistance;
+			mrpt::utils::keep_min(inout_clearance, fake_clearance);
 			continue;
 		}
 
