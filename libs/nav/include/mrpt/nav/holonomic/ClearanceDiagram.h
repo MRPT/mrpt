@@ -29,12 +29,12 @@ namespace nav
 	class NAV_IMPEXP ClearanceDiagram
 	{
 	public:
-		/** Container: [path_k][real_distance_over_path] => clearance_for_exactly_that_robot_pose  */
+		/** Container: [path_k][TPS_distance] => normalized_clearance_for_exactly_that_robot_pose  */
 		std::vector<std::map<double,double> > raw_clearances;
 
 		ClearanceDiagram(); //!< default ctor
 		void clear(); //!< Reset to default, empty state
-		double getClearance(uint16_t k, double dist) const; //!< Interpolate raw_clearances to get a smooth clearance function over paths.
+		double getClearance(uint16_t k, double TPS_query_distance) const; //!< Interpolate raw_clearances to get a smooth clearance function over paths.
 		void renderAs3DObject(mrpt::opengl::CMesh &mesh, double min_x, double max_x, double min_y, double max_y, double cell_res) const;
 	};
 

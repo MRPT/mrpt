@@ -224,8 +224,8 @@ namespace nav
 		double getScorePriority() const { return m_score_priority; }
 		void setScorePriorty(double prior) { m_score_priority = prior; }
 
-		double getClearanceDistanceResolution() const { return m_clearance_dist_resolution; }
-		void setClearanceDistanceResolution(const double res) { m_clearance_dist_resolution = res; }
+		double getClearanceStepCount() const { return m_clearance_num_points; }
+		void setClearanceStepCount(const double res) { m_clearance_num_points = res; }
 
 		/** Returns the representation of one trajectory of this PTG as a 3D OpenGL object (a simple curved line).
 		  * \param[in] k The 0-based index of the selected trajectory (discrete "alpha" parameter).
@@ -271,7 +271,7 @@ protected:
 		double    refDistance;
 		uint16_t  m_alphaValuesCount; //!< The number of discrete values for "alpha" between -PI and +PI.
 		double    m_score_priority;
-		double    m_clearance_dist_resolution; //!< Length of steps for the piecewise-constant approximation of clearance [m] (Default=0.25 m) \sa updateClearance()
+		uint16_t  m_clearance_num_points; //!< Number of steps for the piecewise-constant approximation of clearance from TPS distances [0,1] (Default=5) \sa updateClearance()
 
 		bool      m_is_initialized;
 
