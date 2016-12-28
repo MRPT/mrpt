@@ -157,8 +157,6 @@ void  CHolonomicFullEval::navigate(
 				++it, ++num_avrs)
 			{
 				const double clearance = it->second;
-
-				MRPT_TODO("Consider alternative weightings?");
 				avr_path_clearance += clearance;
 			}
 			scores[4] = num_avrs != 0 ? (avr_path_clearance / num_avrs) : 0.0;

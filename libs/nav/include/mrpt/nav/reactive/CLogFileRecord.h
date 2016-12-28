@@ -15,6 +15,7 @@
 #include <mrpt/utils/CMemoryStream.h>
 
 #include <mrpt/nav/holonomic/CHolonomicLogFileRecord.h>
+#include <mrpt/nav/holonomic/ClearanceDiagram.h>
 #include <mrpt/nav/tpspace/CParameterizedTrajectoryGenerator.h>
 #include <mrpt/kinematics/CVehicleVelCmd.h>
 

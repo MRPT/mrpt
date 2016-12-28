@@ -238,7 +238,13 @@ bool CParameterizedTrajectoryGenerator::isInitialized() const
 void CParameterizedTrajectoryGenerator::initialize(const std::string & cacheFilename, const bool verbose)
 {
 	if (m_is_initialized) return;
-	this->internal_initialize(cacheFilename,verbose);
+	
+	const std::string sCache = !cacheFilename.empty() ?
+		cacheFilename
+		:
+		mrpt::system::fileNameStripInvalidChars(getDescription());
+
+	this->internal_initialize(sCache,verbose);
 	m_is_initialized = true;
 }
 void CParameterizedTrajectoryGenerator::deinitialize()
@@ -287,16 +293,15 @@ void CParameterizedTrajectoryGenerator::internal_TPObsDistancePostprocess(const 
 
 void CParameterizedTrajectoryGenerator::updateClearance(const double ox, const double oy, ClearanceDiagram & cd)
 {
-	// Collect max dist for each path (they may be costly to evaluate, avoid dupl. calls below):
-	std::vector<double> max_dists(m_alphaValuesCount);
-	for (unsigned int k = 0; k < m_alphaValuesCount; k++)
-		max_dists[k] = getPathDist(k, getPathStepCount(k));
-
-
 	// Initialize CD on first call:
 	ASSERT_(cd.raw_clearances.size() == m_alphaValuesCount || cd.raw_clearances.empty());
 	if (cd.raw_clearances.empty())
 	{
+		// Collect max dist for each path (they may be costly to evaluate, avoid dupl. calls below):
+		std::vector<double> max_dists(m_alphaValuesCount);
+		for (unsigned int k = 0; k < m_alphaValuesCount; k++)
+			max_dists[k] = getPathDist(k, getPathStepCount(k) - 1);
+
 		cd.raw_clearances.resize(m_alphaValuesCount);
 		for (unsigned int k = 0; k < m_alphaValuesCount; k++) {
 			for (double d = 0.0; d < max_dists[k]; d += m_clearance_dist_resolution) {
