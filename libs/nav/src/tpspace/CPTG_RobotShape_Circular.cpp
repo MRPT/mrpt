@@ -117,6 +117,13 @@ void CPTG_RobotShape_Circular::evalClearanceSingleObstacle(const double ox, cons
 		const double dist_over_path = e.first;
 		double & inout_clearance = e.second;
 
+		if (dist_over_path == .0) {
+			// Special case: don't eval clearance at init pose, to 
+			// 1) avoid biasing the rest of the path for near obstacles, and
+			// 2) let the obstacle_behavior to work when in a "collision state":
+			continue;
+		}
+
 		if (had_collision) {
 			// We found a collision in a previous step along this "k" path, so 
 			// it does not make sense to evaluate the clearance of a pose which is not reachable:
