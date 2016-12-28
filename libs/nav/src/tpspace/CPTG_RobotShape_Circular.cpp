@@ -12,6 +12,7 @@
 #include <mrpt/nav/tpspace/CParameterizedTrajectoryGenerator.h>
 #include <mrpt/opengl/CSetOfLines.h>
 #include <mrpt/utils/CStream.h>
+#include <mrpt/utils/round.h>
 
 using namespace mrpt::nav;
 
@@ -112,8 +113,18 @@ void CPTG_RobotShape_Circular::evalClearanceSingleObstacle(const double ox, cons
 {
 	bool had_collision = false;
 
+	const size_t numPathSteps = getPathStepCount(k);
+	ASSERT_(numPathSteps >  inout_realdist2clearance.size() );
+
+	const double numStepsPerIncr = (numPathSteps - 1.0) / (inout_realdist2clearance.size() - 1);
+
+	double step_pointer_dbl = 0.0;
+
 	for (auto &e : inout_realdist2clearance)
 	{
+		step_pointer_dbl += numStepsPerIncr;
+		const size_t step = mrpt::utils::round(step_pointer_dbl);
+
 		const double dist_over_path = e.first;
 		double & inout_clearance = e.second;
 
@@ -131,9 +142,6 @@ void CPTG_RobotShape_Circular::evalClearanceSingleObstacle(const double ox, cons
 			continue;
 		}
 
-		MRPT_TODO("Store precomputed step counts to save time?");
-		uint16_t step;
-		this->getPathStepForDist(k, dist_over_path, step);
 		mrpt::math::TPose2D pose;
 		this->getPathPose(k, step, pose);
 
@@ -146,10 +154,11 @@ void CPTG_RobotShape_Circular::evalClearanceSingleObstacle(const double ox, cons
 		}
 		else {
 			const double this_clearance = obs2robot_dist - m_robotRadius;
-			// Update minimum in output structure
-			mrpt::utils::keep_min(inout_clearance, this_clearance);
-		}
+			const double this_clearance_norm = this_clearance / this->refDistance;
 
+			// Update minimum in output structure
+			mrpt::utils::keep_min(inout_clearance, this_clearance_norm);
+		}
 	}
 }
 

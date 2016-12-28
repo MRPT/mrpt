@@ -27,7 +27,7 @@ CParameterizedTrajectoryGenerator::CParameterizedTrajectoryGenerator() :
 	refDistance(.0),
 	m_alphaValuesCount(0),
 	m_score_priority(1.0),
-	m_clearance_dist_resolution(1.0),
+	m_clearance_num_points(5),
 	m_is_initialized(false)
 { }
 
@@ -36,7 +36,7 @@ void CParameterizedTrajectoryGenerator::loadDefaultParams()
 	m_alphaValuesCount = 121;
 	refDistance = 6.0;
 	m_score_priority = 1.0;
-	m_clearance_dist_resolution = 1.0;
+	m_clearance_num_points = 5;
 }
 
 bool CParameterizedTrajectoryGenerator::supportVelCmdNOP() const
@@ -54,7 +54,7 @@ void CParameterizedTrajectoryGenerator::loadFromConfigFile(const mrpt::utils::CC
 	MRPT_LOAD_HERE_CONFIG_VAR_NO_DEFAULT(num_paths   , uint64_t, m_alphaValuesCount, cfg,sSection);
 	MRPT_LOAD_CONFIG_VAR_NO_DEFAULT     (refDistance , double,  cfg,sSection);
 	MRPT_LOAD_HERE_CONFIG_VAR(score_priority , double, m_score_priority, cfg,sSection);
-	MRPT_LOAD_HERE_CONFIG_VAR(clearance_dist_resolution, double, m_clearance_dist_resolution, cfg, sSection);
+	MRPT_LOAD_HERE_CONFIG_VAR(clearance_num_points, double, m_clearance_num_points, cfg, sSection);
 }
 void CParameterizedTrajectoryGenerator::saveToConfigFile(mrpt::utils::CConfigFileBase &cfg,const std::string &sSection) const
 {
@@ -64,7 +64,7 @@ void CParameterizedTrajectoryGenerator::saveToConfigFile(mrpt::utils::CConfigFil
 	cfg.write(sSection,"num_paths",m_alphaValuesCount,   WN,WV, "Number of discrete paths (`resolution`) in the PTG");
 	cfg.write(sSection,"refDistance",refDistance,   WN,WV, "Maximum distance (meters) for building trajectories (visibility range)");
 	cfg.write(sSection,"score_priority",m_score_priority,   WN,WV, "When used in path planning, a multiplying factor (default=1.0) for the scores for this PTG. Assign values <1 to PTGs with low priority.");
-	cfg.write(sSection,"clearance_dist_resolution", m_clearance_dist_resolution,   WN,WV, "Length of steps for the piecewise-constant approximation of clearance [m] (Default=1.0 m).");
+	cfg.write(sSection,"clearance_num_points", m_clearance_num_points,   WN,WV, "Number of steps for the piecewise-constant approximation of clearance (Default=5).");
 
 	MRPT_END
 }
@@ -82,7 +82,7 @@ void CParameterizedTrajectoryGenerator::internal_readFromStream(mrpt::utils::CSt
 	case 1:
 		in >> refDistance >> m_alphaValuesCount >> m_score_priority;
 		if (version >= 1)
-			in >> m_clearance_dist_resolution;
+			in >> m_clearance_num_points;
 		break;
 	default:
 		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
@@ -94,7 +94,7 @@ void CParameterizedTrajectoryGenerator::internal_writeToStream(mrpt::utils::CStr
 	const uint8_t version = 1;
 	out << version;
 
-	out << refDistance << m_alphaValuesCount << m_score_priority << m_clearance_dist_resolution /* v1 */; 
+	out << refDistance << m_alphaValuesCount << m_score_priority << m_clearance_num_points /* v1 */;
 }
 
 double CParameterizedTrajectoryGenerator::index2alpha(uint16_t k, const unsigned int num_paths)
@@ -295,17 +295,15 @@ void CParameterizedTrajectoryGenerator::updateClearance(const double ox, const d
 {
 	// Initialize CD on first call:
 	ASSERT_(cd.raw_clearances.size() == m_alphaValuesCount || cd.raw_clearances.empty());
+	ASSERT_(m_clearance_num_points>0 && m_clearance_num_points<10000);
+
 	if (cd.raw_clearances.empty())
 	{
-		// Collect max dist for each path (they may be costly to evaluate, avoid dupl. calls below):
-		std::vector<double> max_dists(m_alphaValuesCount);
-		for (unsigned int k = 0; k < m_alphaValuesCount; k++)
-			max_dists[k] = getPathDist(k, getPathStepCount(k) - 1);
-
+		const double dd = 1.0 / m_clearance_num_points;
 		cd.raw_clearances.resize(m_alphaValuesCount);
 		for (unsigned int k = 0; k < m_alphaValuesCount; k++) {
-			for (double d = 0.0; d < max_dists[k]; d += m_clearance_dist_resolution) {
-				cd.raw_clearances[k][d] = refDistance;
+			for (double d = 0.0; d < 1.0; d += dd) {
+				cd.raw_clearances[k][d] = 1.0;
 			}
 		}
 	}

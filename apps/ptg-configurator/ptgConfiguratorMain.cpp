@@ -699,10 +699,8 @@ void ptgConfiguratorframe::rebuild3Dview()
 					tim_build_cd  = timer.Tac();
 				}
 
-				const double D = ptg->getRefDistance();
 				timer.Tic();
-				cd.renderAs3DObject(*gl_TPSpace_clearance, -D, D, -D, D, 0.05);
-				gl_TPSpace_clearance->setScale(1.0 / ptg->getRefDistance()); // Normalized display in 3D view (for X,Y,Z)
+				cd.renderAs3DObject(*gl_TPSpace_clearance, -1.0,1.0, -1.0, 1.0, 0.05);
 				const double tim_render_cd = timer.Tac();
 
 				StatusBar1->SetStatusText(
