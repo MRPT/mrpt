@@ -83,6 +83,7 @@
 			- mrpt::obs::CRawLog can now holds objects of arbitrary type, not only actions/observations. This may be useful for richer logs aimed at debugging.
 		- \ref mrpt_opengl_grp
 			- [ABI change] mrpt::opengl::CAxis now has many new options exposed to configure its look.
+			- mrpt::opengl::CSetOfLines can now optionally show vertices as dots.
 		- \ref mrpt_slam_grp
 			- [API change] mrpt::slam::CMetricMapBuilder::TOptions does not have a `verbose` field anymore. It's supersedded now by the verbosity level of the CMetricMapBuilder class itself.
 			- [API change] getCurrentMetricMapEstimation() renamed mrpt::slam::CMultiMetricMapPDF::getAveragedMetricMapEstimation() to avoid confusions.
