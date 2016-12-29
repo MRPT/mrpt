@@ -242,7 +242,7 @@ void CParameterizedTrajectoryGenerator::initialize(const std::string & cacheFile
 	const std::string sCache = !cacheFilename.empty() ?
 		cacheFilename
 		:
-		mrpt::system::fileNameStripInvalidChars(getDescription());
+		std::string("cache_")+mrpt::system::fileNameStripInvalidChars(getDescription())+std::string(".bin.gz");
 
 	this->internal_initialize(sCache,verbose);
 	m_is_initialized = true;
@@ -320,7 +320,7 @@ void CParameterizedTrajectoryGenerator::evalClearanceSingleObstacle(const double
 	const size_t numPathSteps = getPathStepCount(k);
 	ASSERT_(numPathSteps >  inout_realdist2clearance.size());
 
-	const double numStepsPerIncr = (numPathSteps - 1.0) / (inout_realdist2clearance.size() - 1);
+	const double numStepsPerIncr = (numPathSteps - 1.0) / (inout_realdist2clearance.size());
 
 	double step_pointer_dbl = 0.0;
 
