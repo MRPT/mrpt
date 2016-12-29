@@ -27,7 +27,8 @@ CParameterizedTrajectoryGenerator::CParameterizedTrajectoryGenerator() :
 	refDistance(.0),
 	m_alphaValuesCount(0),
 	m_score_priority(1.0),
-	m_clearance_num_points(15),
+	m_clearance_num_points(5),
+	m_use_approx_clearance(true),
 	m_is_initialized(false)
 { }
 
@@ -36,7 +37,8 @@ void CParameterizedTrajectoryGenerator::loadDefaultParams()
 	m_alphaValuesCount = 121;
 	refDistance = 6.0;
 	m_score_priority = 1.0;
-	m_clearance_num_points = 15;
+	m_clearance_num_points = 5;
+	m_use_approx_clearance = true;
 }
 
 bool CParameterizedTrajectoryGenerator::supportVelCmdNOP() const
@@ -55,6 +57,7 @@ void CParameterizedTrajectoryGenerator::loadFromConfigFile(const mrpt::utils::CC
 	MRPT_LOAD_CONFIG_VAR_NO_DEFAULT     (refDistance , double,  cfg,sSection);
 	MRPT_LOAD_HERE_CONFIG_VAR(score_priority , double, m_score_priority, cfg,sSection);
 	MRPT_LOAD_HERE_CONFIG_VAR(clearance_num_points, double, m_clearance_num_points, cfg, sSection);
+	MRPT_LOAD_HERE_CONFIG_VAR(use_approx_clearance, bool, m_use_approx_clearance, cfg, sSection);
 }
 void CParameterizedTrajectoryGenerator::saveToConfigFile(mrpt::utils::CConfigFileBase &cfg,const std::string &sSection) const
 {
@@ -64,8 +67,9 @@ void CParameterizedTrajectoryGenerator::saveToConfigFile(mrpt::utils::CConfigFil
 	cfg.write(sSection,"num_paths",m_alphaValuesCount,   WN,WV, "Number of discrete paths (`resolution`) in the PTG");
 	cfg.write(sSection,"refDistance",refDistance,   WN,WV, "Maximum distance (meters) for building trajectories (visibility range)");
 	cfg.write(sSection,"score_priority",m_score_priority,   WN,WV, "When used in path planning, a multiplying factor (default=1.0) for the scores for this PTG. Assign values <1 to PTGs with low priority.");
-	cfg.write(sSection,"clearance_num_points", m_clearance_num_points,   WN,WV, "Number of steps for the piecewise-constant approximation of clearance (Default=5).");
-
+	cfg.write(sSection, "clearance_num_points", m_clearance_num_points, WN, WV, "Number of steps for the piecewise-constant approximation of clearance (Default=5).");
+	cfg.write(sSection,"use_approx_clearance", m_use_approx_clearance,   WN,WV, "Use approximate (faster) clearance calculation. (Default=true).");
+	
 	MRPT_END
 }
 
@@ -80,9 +84,10 @@ void CParameterizedTrajectoryGenerator::internal_readFromStream(mrpt::utils::CSt
 	{
 	case 0:
 	case 1:
+	case 2:
 		in >> refDistance >> m_alphaValuesCount >> m_score_priority;
-		if (version >= 1)
-			in >> m_clearance_num_points;
+		if (version >= 1) in >> m_clearance_num_points;
+		if (version >= 2) in >> m_use_approx_clearance;
 		break;
 	default:
 		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
@@ -91,10 +96,10 @@ void CParameterizedTrajectoryGenerator::internal_readFromStream(mrpt::utils::CSt
 
 void CParameterizedTrajectoryGenerator::internal_writeToStream(mrpt::utils::CStream &out) const
 {
-	const uint8_t version = 1;
+	const uint8_t version = 2;
 	out << version;
 
-	out << refDistance << m_alphaValuesCount << m_score_priority << m_clearance_num_points /* v1 */;
+	out << refDistance << m_alphaValuesCount << m_score_priority << m_clearance_num_points /* v1 */ << m_use_approx_clearance /*v2*/;
 }
 
 double CParameterizedTrajectoryGenerator::index2alpha(uint16_t k, const unsigned int num_paths)
@@ -291,9 +296,6 @@ void CParameterizedTrajectoryGenerator::internal_TPObsDistancePostprocess(const 
 	}
 }
 
-MRPT_TODO("move to a proper location!!")
-bool ptg_use_approx_clearance = true;
-
 void CParameterizedTrajectoryGenerator::updateClearance(const double ox, const double oy, ClearanceDiagram & cd) const
 {
 	// Initialize CD on first call:
@@ -311,7 +313,7 @@ void CParameterizedTrajectoryGenerator::updateClearance(const double ox, const d
 		}
 	}
 
-	if (ptg_use_approx_clearance)
+	if (m_use_approx_clearance)
 		return; // will be actually computed in updateClearancePost();
 
 	// evaluate in derived-class: this function also keeps the minimum automatically.
@@ -322,7 +324,7 @@ void CParameterizedTrajectoryGenerator::updateClearance(const double ox, const d
 void CParameterizedTrajectoryGenerator::updateClearancePost(ClearanceDiagram & cd, const std::vector<double> &TP_obstacles) const
 {
 	// Use only when in approx mode:
-	if (!ptg_use_approx_clearance)
+	if (!m_use_approx_clearance)
 		return;
 
 	ASSERT_(cd.raw_clearances.size() == m_alphaValuesCount);
