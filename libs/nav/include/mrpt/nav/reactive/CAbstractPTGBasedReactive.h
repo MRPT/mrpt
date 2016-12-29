@@ -13,6 +13,7 @@
 #include <mrpt/nav/tpspace/CParameterizedTrajectoryGenerator.h>
 #include <mrpt/nav/reactive/CLogFileRecord.h>
 #include <mrpt/nav/holonomic/CAbstractHolonomicReactiveMethod.h>
+#include <mrpt/nav/holonomic/ClearanceDiagram.h>
 #include <mrpt/utils/CTimeLogger.h>
 #include <mrpt/system/datetime.h>
 #include <mrpt/math/filters.h>
@@ -221,7 +222,7 @@ namespace mrpt
 		/** Builds TP-Obstacles from Workspace obstacles for the given PTG.
 		  * "out_TPObstacles" is already initialized to the proper length and maximum collision-free distance for each "k" trajectory index.
 		  * Distances are in "pseudo-meters". They will be normalized automatically to [0,1] upon return. */
-		virtual void STEP3_WSpaceToTPSpace(const size_t ptg_idx,std::vector<double> &out_TPObstacles, const mrpt::poses::CPose2D &rel_pose_PTG_origin_wrt_sense) = 0;
+		virtual void STEP3_WSpaceToTPSpace(const size_t ptg_idx,std::vector<double> &out_TPObstacles, mrpt::nav::ClearanceDiagram &out_clearance, const mrpt::poses::CPose2D &rel_pose_PTG_origin_wrt_sense) = 0;
 
 		/** Generates a pointcloud of obstacles, and the robot shape, to be saved in the logging record for the current timestep */
 		virtual void loggingGetWSObstaclesAndShape(CLogFileRecord &out_log) = 0;
@@ -254,6 +255,7 @@ namespace mrpt
 			double               target_alpha,target_dist;  //!< TP-Target
 			int                  target_k; //!< The discrete version of target_alpha
 			std::vector<double>  TP_Obstacles; //!< One distance per discretized alpha value, describing the "polar plot" of TP obstacles.
+			ClearanceDiagram     clearance;    //!< Clearance for each path
 		};
 
 		std::vector<TInfoPerPTG> m_infoPerPTG; //!< Temporary buffers for working with each PTG during a navigationStep()

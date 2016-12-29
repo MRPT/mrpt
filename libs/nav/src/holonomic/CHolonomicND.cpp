@@ -50,7 +50,8 @@ void  CHolonomicND::navigate(
 	double			&desiredDirection,
 	double			&desiredSpeed,
 	CHolonomicLogFileRecordPtr &logRecord,
-	const double    max_obstacle_dist)
+	const double    max_obstacle_dist,
+	const mrpt::nav::ClearanceDiagram *clearance)
 {
 	TGapArray			gaps;
 	TSituations			situation;

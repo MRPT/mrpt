@@ -93,6 +93,8 @@ const long ptgConfiguratorframe::ID_TEXTCTRL1 = wxNewId();
 const long ptgConfiguratorframe::ID_BUTTON5 = wxNewId();
 const long ptgConfiguratorframe::ID_PANEL1 = wxNewId();
 const long ptgConfiguratorframe::ID_XY_GLCANVAS = wxNewId();
+const long ptgConfiguratorframe::ID_CHECKBOX5 = wxNewId();
+const long ptgConfiguratorframe::ID_CHECKBOX6 = wxNewId();
 const long ptgConfiguratorframe::ID_CUSTOM2 = wxNewId();
 const long ptgConfiguratorframe::ID_PANEL2 = wxNewId();
 const long ptgConfiguratorframe::ID_CUSTOM1 = wxNewId();
@@ -150,12 +152,14 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent,wxWindowID id) :
     wxFlexGridSizer* FlexGridSizer2;
     wxMenu* Menu1;
     wxFlexGridSizer* FlexGridSizer7;
+    wxFlexGridSizer* FlexGridSizer15;
     wxFlexGridSizer* FlexGridSizer8;
     wxFlexGridSizer* FlexGridSizer14;
     wxFlexGridSizer* FlexGridSizer13;
     wxFlexGridSizer* FlexGridSizer12;
     wxMenuBar* MenuBar1;
     wxFlexGridSizer* FlexGridSizer6;
+    wxStaticBoxSizer* StaticBoxSizer1;
     wxFlexGridSizer* FlexGridSizer1;
     wxFlexGridSizer* FlexGridSizer11;
     wxMenu* Menu2;
@@ -251,8 +255,8 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent,wxWindowID id) :
     FlexGridSizer3->Add(FlexGridSizer5, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
     FlexGridSizer2->Add(FlexGridSizer3, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
     FlexGridSizer6 = new wxFlexGridSizer(0, 3, 0, 0);
-    Button1 = new wxButton(Panel1, ID_BUTTON5, _("Load Plugin"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON5"));
-    FlexGridSizer6->Add(Button1, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    btnLoadPlugin = new wxButton(Panel1, ID_BUTTON5, _("Load Plugin"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON5"));
+    FlexGridSizer6->Add(btnLoadPlugin, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     FlexGridSizer2->Add(FlexGridSizer6, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
     Panel1->SetSizer(FlexGridSizer2);
     FlexGridSizer2->Fit(Panel1);
@@ -266,9 +270,19 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent,wxWindowID id) :
     FlexGridSizer9->Add(m_plot, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
     Notebook1 = new wxNotebook(this, ID_NOTEBOOK1, wxDefaultPosition, wxDefaultSize, 0, _T("ID_NOTEBOOK1"));
     Panel2 = new wxPanel(Notebook1, ID_PANEL2, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL2"));
-    FlexGridSizer10 = new wxFlexGridSizer(0, 1, 0, 0);
+    FlexGridSizer10 = new wxFlexGridSizer(2, 1, 0, 0);
     FlexGridSizer10->AddGrowableCol(0);
-    FlexGridSizer10->AddGrowableRow(0);
+    FlexGridSizer10->AddGrowableRow(1);
+    StaticBoxSizer1 = new wxStaticBoxSizer(wxHORIZONTAL, Panel2, _(" Show: "));
+    FlexGridSizer15 = new wxFlexGridSizer(0, 4, 0, 0);
+    cbShowTPObs = new wxCheckBox(Panel2, ID_CHECKBOX5, _("TP-Obstacles"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX5"));
+    cbShowTPObs->SetValue(true);
+    FlexGridSizer15->Add(cbShowTPObs, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    cbShowClearance = new wxCheckBox(Panel2, ID_CHECKBOX6, _("Clearance diagram"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX6"));
+    cbShowClearance->SetValue(true);
+    FlexGridSizer15->Add(cbShowClearance, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    StaticBoxSizer1->Add(FlexGridSizer15, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
+    FlexGridSizer10->Add(StaticBoxSizer1, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 2);
     m_plotTPSpace = new CMyGLCanvas(Panel2,ID_CUSTOM2,wxDefaultPosition,wxSize(150,300),wxTAB_TRAVERSAL,_T("ID_CUSTOM2"));
     FlexGridSizer10->Add(m_plotTPSpace, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
     Panel2->SetSizer(FlexGridSizer10);
@@ -367,10 +381,10 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent,wxWindowID id) :
     MenuBar1->Append(Menu2, _("Help"));
     SetMenuBar(MenuBar1);
     StatusBar1 = new wxStatusBar(this, ID_STATUSBAR1, 0, _T("ID_STATUSBAR1"));
-    int __wxStatusBarWidths_1[3] = { -2, -2, -3 };
-    int __wxStatusBarStyles_1[3] = { wxSB_NORMAL, wxSB_NORMAL, wxSB_NORMAL };
-    StatusBar1->SetFieldsCount(3,__wxStatusBarWidths_1);
-    StatusBar1->SetStatusStyles(3,__wxStatusBarStyles_1);
+    int __wxStatusBarWidths_1[4] = { -2, -5, -3, -3 };
+    int __wxStatusBarStyles_1[4] = { wxSB_NORMAL, wxSB_NORMAL, wxSB_NORMAL, wxSB_NORMAL };
+    StatusBar1->SetFieldsCount(4,__wxStatusBarWidths_1);
+    StatusBar1->SetStatusStyles(4,__wxStatusBarStyles_1);
     SetStatusBar(StatusBar1);
     FlexGridSizer1->SetSizeHints(this);
     Center();
@@ -390,6 +404,8 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent,wxWindowID id) :
     Connect(ID_BUTTON2,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&ptgConfiguratorframe::OnbtnRebuildTPObsClick);
     Connect(ID_BUTTON4,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&ptgConfiguratorframe::OnbtnPlaceTargetClick);
     Connect(ID_BUTTON5,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&ptgConfiguratorframe::OnButton1Click);
+    Connect(ID_CHECKBOX5,wxEVT_COMMAND_CHECKBOX_CLICKED,(wxObjectEventFunction)&ptgConfiguratorframe::OnrbShowTPSelectSelect);
+    Connect(ID_CHECKBOX6,wxEVT_COMMAND_CHECKBOX_CLICKED,(wxObjectEventFunction)&ptgConfiguratorframe::OnrbShowTPSelectSelect);
     Connect(idMenuQuit,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&ptgConfiguratorframe::OnQuit);
     Connect(idMenuAbout,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&ptgConfiguratorframe::OnAbout);
     //*)
@@ -420,6 +436,12 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent,wxWindowID id) :
 	// ---------------------------
 	gl_view_WS      = m_plot->m_openGLScene->getViewport();
 	gl_view_TPSpace = m_plotTPSpace->m_openGLScene->getViewport();
+
+	gl_TPSpace_TP_obstacles = mrpt::opengl::CSetOfObjects::Create();
+	gl_TPSpace_clearance = mrpt::opengl::CMesh::Create(true, -5.0f, 5.0f, -5.0f, 5.0f);
+
+	gl_view_TPSpace->insert(gl_TPSpace_TP_obstacles);
+	gl_view_TPSpace->insert(gl_TPSpace_clearance);
 
 	m_plot->addTextMessage(0.01,5,"Workspace", mrpt::utils::TColorf(1,1,1,0.75), "sans", 15,mrpt::opengl::NICE, 1);
 	m_plotTPSpace->addTextMessage(0.01,5,"TP-Space", mrpt::utils::TColorf(1,1,1,0.75), "sans", 15,mrpt::opengl::NICE, 2);
@@ -482,7 +504,9 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent,wxWindowID id) :
 	gl_tp_obstacles->setName("tp_obstacles");
 	gl_tp_obstacles->setLineWidth(2.0f);
 	gl_tp_obstacles->setColor_u8( mrpt::utils::TColor(0x00,0x00,0x00,0xff) );
-	gl_view_TPSpace->insert(gl_tp_obstacles);
+
+	gl_TPSpace_TP_obstacles->insert(gl_tp_obstacles);
+
 
 	// Set camera:
 	m_plot->cameraPointingX=0;
@@ -493,12 +517,24 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent,wxWindowID id) :
 	m_plot->cameraAzimuthDeg = -90;
 	m_plot->cameraIsProjective = false;
 
+#if 0
+	// Fixed camera:
 	gl_view_TPSpace_cam = mrpt::opengl::CCamera::Create();
 	gl_view_TPSpace->insert ( gl_view_TPSpace_cam );
 	gl_view_TPSpace_cam->setAzimuthDegrees( -90 );
 	gl_view_TPSpace_cam->setElevationDegrees(90);
 	gl_view_TPSpace_cam->setProjectiveModel( false );
 	gl_view_TPSpace_cam->setZoomDistance(2.1f);
+#else
+	// User can rotate view:
+	m_plotTPSpace->cameraPointingX = 0;
+	m_plotTPSpace->cameraPointingY = 0;
+	m_plotTPSpace->cameraPointingZ = 0;
+	m_plotTPSpace->cameraZoomDistance = 2.1f;
+	m_plotTPSpace->cameraElevationDeg = 90;
+	m_plotTPSpace->cameraAzimuthDeg = -90;
+	m_plotTPSpace->cameraIsProjective = false;
+#endif
 
 	// Populate list of existing PTGs:
 	{
@@ -639,18 +675,39 @@ void ptgConfiguratorframe::rebuild3Dview()
 		ptg->initTPObstacles(TP_Obstacles);
 
 		gl_WS_obs->clear();
-		if (cbBuildTPObs->IsChecked())
 		{
 			double ox,oy;
 			bool ok_x = edObsX->GetValue().ToDouble(&ox);
 			bool ok_y = edObsY->GetValue().ToDouble(&oy);
 			if (ok_x && ok_y)
 			{
-				gl_WS_obs->insertPoint(ox,oy,0);
+				if (cbBuildTPObs->IsChecked())
+				{
+					gl_WS_obs->insertPoint(ox, oy, 0);
+					timer.Tic();
+					ptg->updateTPObstacle(ox, oy, TP_Obstacles);
+					const double t = timer.Tac();
+					StatusBar1->SetStatusText(wxString::Format(wxT("TP-Obstacle build time: %ss"), mrpt::system::unitsFormat(t, 2).c_str()), 2);
+				}
+
+				// Clearance diagram:
+				mrpt::nav::ClearanceDiagram cd;
+				double tim_build_cd=.0;
+				{
+					timer.Tic();
+					ptg->updateClearance(ox, oy, cd);
+					tim_build_cd  = timer.Tac();
+				}
+
 				timer.Tic();
-				ptg->updateTPObstacle(ox,oy, TP_Obstacles);
-				const double t =timer.Tac();
-				StatusBar1->SetStatusText(wxString::Format(wxT("TP-Obstacle build time: %ss"), mrpt::system::unitsFormat(t,2).c_str() ), 2);
+				cd.renderAs3DObject(*gl_TPSpace_clearance, -1.0,1.0, -1.0, 1.0, 0.05);
+				const double tim_render_cd = timer.Tac();
+
+				StatusBar1->SetStatusText(
+					wxString::Format(wxT("Clearance-diagram time: build=%ss render=%ss"), 
+					mrpt::system::unitsFormat(tim_build_cd, 2).c_str(),
+					mrpt::system::unitsFormat(tim_render_cd, 2).c_str()
+					), 3);
 			}
 		}
 
@@ -1013,4 +1070,15 @@ void ptgConfiguratorframe::OnedIndexHighlightPathChange(wxSpinEvent& event)
 void ptgConfiguratorframe::OnButton1Click(wxCommandEvent& event)
 {
     loadPlugin();
+}
+
+void ptgConfiguratorframe::OnrbShowTPSelectSelect(wxCommandEvent& event)
+{
+	WX_START_TRY;
+
+	gl_TPSpace_TP_obstacles->setVisibility( cbShowTPObs->IsChecked() );
+	gl_TPSpace_clearance->setVisibility( cbShowClearance->IsChecked() );
+
+	m_plotTPSpace->Refresh();
+	WX_END_TRY;
 }

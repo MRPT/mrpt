@@ -15,6 +15,7 @@
 #include <mrpt/utils/CMemoryStream.h>
 
 #include <mrpt/nav/holonomic/CHolonomicLogFileRecord.h>
+#include <mrpt/nav/holonomic/ClearanceDiagram.h>
 #include <mrpt/nav/tpspace/CParameterizedTrajectoryGenerator.h>
 #include <mrpt/kinematics/CVehicleVelCmd.h>
 
@@ -35,7 +36,6 @@ namespace nav
 
 	public:
 		CLogFileRecord();  //!< Constructor, builds an empty record.
-		virtual ~CLogFileRecord();   //!< Destructor, free all objects.
 
 		/** The structure used to store all relevant information about each
 		  *  transformation into TP-Space.
@@ -52,6 +52,7 @@ namespace nav
 			mrpt::math::CVectorFloat   evalFactors;   //!< Evaluation factors
 			CHolonomicLogFileRecordPtr HLFR;          //!< Other useful info about holonomic method execution.
 			mrpt::nav::CParameterizedTrajectoryGeneratorPtr ptg; //!< Only for the FIRST entry in a log file, this will contain a copy of the PTG with trajectories, suitable to render trajectories, etc.
+			mrpt::nav::ClearanceDiagram  clearance;    //!< Clearance for each path
 		};
 
 		//mrpt::system::TTimeStamp   timestamp;  //!< The timestamp of when this log was processed by the reactive algorithm (It can be INVALID_TIMESTAMP for navigation logs in MRPT <0.9.5)
