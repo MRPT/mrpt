@@ -263,8 +263,9 @@ namespace nav
 		  * \param[in,out] cd The clearance will be updated here. 
 		  * \sa m_clearance_dist_resolution
 		  */
-		void updateClearance(const double ox, const double oy, ClearanceDiagram & cd);
+		void updateClearance(const double ox, const double oy, ClearanceDiagram & cd) const;
 
+		void updateClearancePost(ClearanceDiagram & cd, const std::vector<double> &TP_obstacles) const;
 protected:
 		double    refDistance;
 		uint16_t  m_alphaValuesCount; //!< The number of discrete values for "alpha" between -PI and +PI.
@@ -273,7 +274,7 @@ protected:
 
 		bool      m_is_initialized;
 
-		/** To be called by implementors of updateTPObstacle() and updateTPObstacleSingle() to 
+		/** To be called by implementors of updateTPObstacle() and updateTPObstacleSingle() to
 		  * honor the user settings regarding COLLISION_BEHAVIOR.
 		  * \param new_tp_obs_dist The newly determiend collision-free ranges, in "pseudometers", un-normalized, for some "k" direction.
 		  * \param inout_tp_obs The target where to store the new TP-Obs distance, if it fulfills the criteria determined by the collision behavior.

@@ -1020,6 +1020,7 @@ void CAbstractPTGBasedReactive::ptg_eval_target_build_obstacles(
 
 			// Implementation-dependent conversion:
 			STEP3_WSpaceToTPSpace(indexPTG, ipf.TP_Obstacles, ipf.clearance, -rel_pose_PTG_origin_wrt_sense);
+			ptg->updateClearancePost(ipf.clearance, ipf.TP_Obstacles);
 
 			// Distances in TP-Space are normalized to [0,1]:
 			const double _refD = 1.0 / ptg->getRefDistance();

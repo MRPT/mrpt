@@ -291,7 +291,10 @@ void CParameterizedTrajectoryGenerator::internal_TPObsDistancePostprocess(const 
 	}
 }
 
-void CParameterizedTrajectoryGenerator::updateClearance(const double ox, const double oy, ClearanceDiagram & cd)
+MRPT_TODO("move to a proper location!!")
+bool ptg_use_approx_clearance = true;
+
+void CParameterizedTrajectoryGenerator::updateClearance(const double ox, const double oy, ClearanceDiagram & cd) const
 {
 	// Initialize CD on first call:
 	ASSERT_(cd.raw_clearances.size() == m_alphaValuesCount || cd.raw_clearances.empty());
@@ -308,9 +311,54 @@ void CParameterizedTrajectoryGenerator::updateClearance(const double ox, const d
 		}
 	}
 
+	if (ptg_use_approx_clearance)
+		return; // will be actually computed in updateClearancePost();
+
 	// evaluate in derived-class: this function also keeps the minimum automatically.
 	for (uint16_t k=0;k<m_alphaValuesCount;k++)
 		this->evalClearanceSingleObstacle(ox,oy,k, cd.raw_clearances[k]);
+}
+
+void CParameterizedTrajectoryGenerator::updateClearancePost(ClearanceDiagram & cd, const std::vector<double> &TP_obstacles) const
+{
+	// Use only when in approx mode:
+	if (!ptg_use_approx_clearance)
+		return;
+
+	ASSERT_(cd.raw_clearances.size() == m_alphaValuesCount);
+
+	std::vector<double> k2dir(m_alphaValuesCount);
+	for (uint16_t k = 0; k < m_alphaValuesCount; k++)
+		k2dir[k] = M_PI*(-1 + 2 * (0.5 + k) / m_alphaValuesCount);
+
+	mrpt::math::TSegment2D sg;
+	sg.point1.x = 0;
+	sg.point1.y = 0;
+
+	for (uint16_t k = 0; k < m_alphaValuesCount; k++)
+	{
+		// For each segment (path):
+		const double ak = k2dir[k];
+
+		for (auto &e : cd.raw_clearances[k])
+		{
+			const double d = e.first;  TP_obstacles[k]; // std::min(TP_obstacles[k], 0.95*target_dist);
+			sg.point2.x = d*cos(ak);
+			sg.point2.y = d*sin(ak);
+
+			for (uint16_t i = 0; i < m_alphaValuesCount; i++)
+			{
+				const double ai = k2dir[i];
+				double di = TP_obstacles[i]; // std::min(TP_obstacles[k], 0.95*target_dist); ??
+				if (di >= 0.99) di = 2.0;
+
+				const double this_clearance_norm = sg.distance(mrpt::math::TPoint2D(di*cos(ai), di*sin(ai)));
+
+				// Update minimum in output structure
+				mrpt::utils::keep_min(e.second, this_clearance_norm);
+			}
+		}
+	}
 }
 
 void CParameterizedTrajectoryGenerator::evalClearanceSingleObstacle(const double ox, const double oy, const uint16_t k, std::map<double, double> & inout_realdist2clearance) const
