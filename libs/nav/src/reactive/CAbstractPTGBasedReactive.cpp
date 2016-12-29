@@ -600,6 +600,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 void CAbstractPTGBasedReactive::STEP5_PTGEvaluator(
 	THolonomicMovement         & holonomicMovement,
 	const std::vector<double>        & in_TPObstacles,
+	const mrpt::nav::ClearanceDiagram & in_clearance,
 	const mrpt::math::TPose2D  & WS_Target,
 	const mrpt::math::TPoint2D & TP_Target,
 	CLogFileRecord::TInfoPerPTG & log,
@@ -733,15 +734,9 @@ void CAbstractPTGBasedReactive::STEP5_PTGEvaluator(
 		}
 	}
 
-	// Factor6: free space
+	// Factor6: clearance
 	// -----------------------------------------------------
-	float aver_obs = 0;
-	for (size_t i=0; i<in_TPObstacles.size(); i++)
-		aver_obs += in_TPObstacles[i];
-
-	aver_obs = aver_obs/in_TPObstacles.size();
-
-	eval_factors[5] = aver_obs;
+	eval_factors[5] = in_clearance.getClearance(kDirection, TargetDist*1.01 );
 
 	//  SAVE LOG
 	log.evalFactors.resize(eval_factors.size());
@@ -1093,6 +1088,7 @@ void CAbstractPTGBasedReactive::ptg_eval_target_build_obstacles(
 			STEP5_PTGEvaluator(
 				holonomicMovement,
 				ipf.TP_Obstacles,
+				ipf.clearance,
 				relTarget,
 				ipf.TP_Target,
 				newLogRec.infoPerPTG[idx_in_log_infoPerPTGs], newLogRec,
