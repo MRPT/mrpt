@@ -237,7 +237,23 @@
 												</object>
 											</object>
 											<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
-											<border>5</border>
+											<border>2</border>
+											<option>1</option>
+										</object>
+										<object class="sizeritem">
+											<object class="wxRadioBox" name="ID_RADIOBOX1" variable="rbPerPTGPlots" member="yes">
+												<label> Per PTG plots: </label>
+												<content>
+													<item>TP-Obstacles only</item>
+													<item>+ phase1 score</item>
+													<item>+ phase2 score</item>
+												</content>
+												<default>-1</default>
+												<style>wxRA_HORIZONTAL</style>
+												<handler function="OnrbPerPTGPlotsSelect" entry="EVT_RADIOBOX" />
+											</object>
+											<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
+											<border>2</border>
 											<option>1</option>
 										</object>
 									</object>

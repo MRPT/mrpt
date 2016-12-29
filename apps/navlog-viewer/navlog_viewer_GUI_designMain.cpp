@@ -82,6 +82,7 @@ const long navlog_viewer_GUI_designDialog::ID_STATICTEXT5 = wxNewId();
 const long navlog_viewer_GUI_designDialog::ID_STATICTEXT6 = wxNewId();
 const long navlog_viewer_GUI_designDialog::ID_STATICTEXT7 = wxNewId();
 const long navlog_viewer_GUI_designDialog::ID_PANEL3 = wxNewId();
+const long navlog_viewer_GUI_designDialog::ID_RADIOBOX1 = wxNewId();
 const long navlog_viewer_GUI_designDialog::ID_CHECKBOX1 = wxNewId();
 const long navlog_viewer_GUI_designDialog::ID_CHECKBOX2 = wxNewId();
 const long navlog_viewer_GUI_designDialog::ID_CHECKBOX3 = wxNewId();
@@ -225,7 +226,15 @@ navlog_viewer_GUI_designDialog::navlog_viewer_GUI_designDialog(wxWindow* parent,
     FlexGridSizer9->Fit(Panel3);
     FlexGridSizer9->SetSizeHints(Panel3);
     StaticBoxSizer2->Add(Panel3, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
-    flexGridRightHand->Add(StaticBoxSizer2, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 5);
+    flexGridRightHand->Add(StaticBoxSizer2, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 2);
+    wxString __wxRadioBoxChoices_1[3] =
+    {
+    	_("TP-Obstacles only"),
+    	_("+ phase1 score"),
+    	_("+ phase2 score")
+    };
+    rbPerPTGPlots = new wxRadioBox(Panel_AUX, ID_RADIOBOX1, _(" Per PTG plots: "), wxDefaultPosition, wxDefaultSize, 3, __wxRadioBoxChoices_1, 1, wxRA_HORIZONTAL, wxDefaultValidator, _T("ID_RADIOBOX1"));
+    flexGridRightHand->Add(rbPerPTGPlots, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 2);
     FlexGridSizer4->Add(flexGridRightHand, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
     FlexGridSizer2->Add(FlexGridSizer4, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
     FlexGridSizer8 = new wxFlexGridSizer(0, 3, 0, 0);
@@ -278,6 +287,7 @@ navlog_viewer_GUI_designDialog::navlog_viewer_GUI_designDialog(wxWindow* parent,
     Connect(ID_SLIDER1,wxEVT_SCROLL_CHANGED,(wxObjectEventFunction)&navlog_viewer_GUI_designDialog::OnslidLogCmdScroll);
     Connect(ID_BUTTON4,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&navlog_viewer_GUI_designDialog::OnbtnPlayClick);
     Connect(ID_BUTTON5,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&navlog_viewer_GUI_designDialog::OnbtnStopClick);
+    Connect(ID_RADIOBOX1,wxEVT_COMMAND_RADIOBOX_SELECTED,(wxObjectEventFunction)&navlog_viewer_GUI_designDialog::OnrbPerPTGPlotsSelect);
     Connect(ID_CHECKBOX1,wxEVT_COMMAND_CHECKBOX_CLICKED,(wxObjectEventFunction)&navlog_viewer_GUI_designDialog::OncbGlobalFrameClick);
     Connect(ID_CHECKBOX2,wxEVT_COMMAND_CHECKBOX_CLICKED,(wxObjectEventFunction)&navlog_viewer_GUI_designDialog::OncbGlobalFrameClick);
     Connect(ID_CHECKBOX3,wxEVT_COMMAND_CHECKBOX_CLICKED,(wxObjectEventFunction)&navlog_viewer_GUI_designDialog::OncbGlobalFrameClick);
@@ -875,15 +885,25 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 					auto gl_obj = mrpt::opengl::CSetOfLines::Create();
 					gl_obj->setName("tp_obstacles");
 					gl_obj->setLineWidth(1.0f);
+					gl_obj->setVerticesPointSize(4.0f);
 					gl_obj->setColor_u8(mrpt::utils::TColor(0x00, 0x00, 0xff, 0xff));
 					scene->insert(gl_obj);
 				}
 				{
-					auto gl_tp_obstacles_dot = mrpt::opengl::CPointCloud::Create();
-					gl_tp_obstacles_dot->setName("tp_obstacles_dot");
-					gl_tp_obstacles_dot->setPointSize(2.0f);
-					gl_tp_obstacles_dot->setColor_u8(mrpt::utils::TColor(0x00, 0x00, 0xff, 0xff));
-					scene->insert(gl_tp_obstacles_dot);
+					auto gl_obj = mrpt::opengl::CSetOfLines::Create();
+					gl_obj->setName("score_phase1");
+					gl_obj->setLineWidth(1.0f);
+					gl_obj->setVerticesPointSize(2.0f);
+					gl_obj->setColor_u8(mrpt::utils::TColor(0xff, 0xff, 0x00, 0xff));
+					scene->insert(gl_obj);
+				}
+				{
+					auto gl_obj = mrpt::opengl::CSetOfLines::Create();
+					gl_obj->setName("score_phase2");
+					gl_obj->setLineWidth(1.0f);
+					gl_obj->setVerticesPointSize(2.0f);
+					gl_obj->setColor_u8(mrpt::utils::TColor(0xff, 0xff, 0xff, 0xff));
+					scene->insert(gl_obj);
 				}
 				{
 					auto gl_obj = mrpt::opengl::CPointCloud::Create();
@@ -909,6 +929,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 				{
 					auto gl_obj = mrpt::opengl::CMesh::Create(true /*transparency*/);
 					gl_obj->setName("tp_clearance");
+					gl_obj->setScale(1.0f, 1.0f, 5.0f);
 					scene->insert(gl_obj);
 				}
 			}  // End window locker:
@@ -955,11 +976,6 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 					for (size_t i = 2; i < nAlphas; i++)
 						gl_obj->appendLineStrip(xs[i], ys[i], 0);
 				}
-
-				auto gl_obj_dot = mrpt::opengl::CPointCloudPtr(scene->getByName("tp_obstacles_dot"));
-				gl_obj_dot->clear();
-				for (size_t i = 0; i < nAlphas; i++)
-					gl_obj_dot->insertPoint(xs[i], ys[i],0);
 			}
 
 			// Target:
@@ -985,6 +1001,46 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 				{
 					gl_obj->setVisibility(true);
 					pI.clearance.renderAs3DObject(*gl_obj, -1.0, 1.0, -1.0, 1.0, 0.15);
+				}
+			}
+			// Clearance-diagram:
+			{
+				auto gl_obj1 = mrpt::opengl::CSetOfLinesPtr(scene->getByName("score_phase1"));
+				auto gl_obj2 = mrpt::opengl::CSetOfLinesPtr(scene->getByName("score_phase2"));
+				const bool visible1 = rbPerPTGPlots->GetSelection() >= 1;
+				const bool visible2 = rbPerPTGPlots->GetSelection() >= 2;
+				gl_obj1->clear();
+				gl_obj2->clear();
+				gl_obj1->setVisibility(visible1);
+				gl_obj2->setVisibility(visible2);
+
+				if ((visible1 || visible2) && pI.HLFR && IS_CLASS(pI.HLFR, CLogFileRecord_FullEval) && nAlphas>2)
+				{
+					CLogFileRecord_FullEvalPtr log_FE = CLogFileRecord_FullEvalPtr(pI.HLFR);
+
+					const mrpt::math::CMatrixD &scores = log_FE->dirs_scores;
+					if (scores.rows() == nAlphas && scores.cols() >= 6)
+					{
+						vector<float> xs1, ys1, xs2,ys2;
+						xs1.reserve(nAlphas); ys1.reserve(nAlphas);
+						xs2.reserve(nAlphas); ys2.reserve(nAlphas);
+						for (size_t i = 0; i<nAlphas; ++i)
+						{
+							const double a = -M_PI + (i + 0.5) * 2 * M_PI / double(nAlphas);
+							const double r1 = scores(i, 5), r2 = scores(i, 6);
+							xs1.push_back(r1*cos(a));
+							ys1.push_back(r1*sin(a));
+							xs2.push_back(r2*cos(a));
+							ys2.push_back(r2*sin(a));
+						}
+						gl_obj1->appendLine(xs1[0], ys1[0], 0, xs1[1], ys1[1], 0);
+						for (size_t i = 2; i < nAlphas; i++)
+							gl_obj1->appendLineStrip(xs1[i], ys1[i], 0);
+
+						gl_obj2->appendLine(xs2[0], ys2[0], 0, xs2[1], ys2[1], 0);
+						for (size_t i = 2; i < nAlphas; i++)
+							gl_obj2->appendLineStrip(xs2[i], ys2[i], 0);
+					}
 				}
 			}
 
@@ -1271,4 +1327,10 @@ void navlog_viewer_GUI_designDialog::OncbShowXYClick(wxCommandEvent& event)
 	if (cbShowXY->IsChecked())
 	     timMouseXY.Start(100, false);
 	else timMouseXY.Stop();
+}
+
+void navlog_viewer_GUI_designDialog::OnrbPerPTGPlotsSelect(wxCommandEvent& event)
+{
+	wxScrollEvent d;
+	OnslidLogCmdScroll(d);
 }
