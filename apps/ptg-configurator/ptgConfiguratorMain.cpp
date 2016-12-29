@@ -696,6 +696,7 @@ void ptgConfiguratorframe::rebuild3Dview()
 				{
 					timer.Tic();
 					ptg->updateClearance(ox, oy, cd);
+					ptg->updateClearancePost(cd, TP_Obstacles);
 					tim_build_cd  = timer.Tac();
 				}
 
