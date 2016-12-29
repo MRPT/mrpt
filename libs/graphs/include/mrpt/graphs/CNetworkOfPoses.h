@@ -192,10 +192,16 @@ namespace mrpt
 			 * sub_graph. If this is not given, the lowest nodeID is to be used.
 			 * \param[out] CNetworkOfPoses pointer that is to be filled.
 			 *
-			 * TODO - what happens if the resulting graph is not connected in all its nodes?
+			 * \param[in] auto_expand_set If true and in case the node_IDs set
+			 * contains non-consecutive nodes the returned set is expanded with the
+			 * in-between nodes. This makes sure that the final graph is always
+			 * connected. 
+			 * TODO Otherwise virtual edges (dijkstra link) are added between nodes
+			 * of the disconnected nodes sets so that the final graph is connected
 			 */
 			void extractSubGraph(const std::set<TNodeID>& node_IDs, self_t* sub_graph,
-					const TNodeID root_node_in=INVALID_NODEID) {
+					const TNodeID root_node_in=INVALID_NODEID,
+					const bool& auto_expand_set=true) {
 				using namespace std;
 
 				// assert that the given pointers are valid
@@ -210,9 +216,30 @@ namespace mrpt
 							"\nroot_node does not exist in the given node_IDs set. Exiting.\n");
 				}
 
-				// add all the nodes of the node_IDs set to sub_graph
-				for (std::set<TNodeID>::const_iterator node_IDs_it = node_IDs.begin();
-						node_IDs_it != node_IDs.end(); ++node_IDs_it) {
+				// find out if querry contains non-consecutive nodes.
+				// Assumption: Standard, ascending order, is used in the set.
+				std::set<TNodeID> node_IDs_real; // actual set of nodes to be used.
+				if (*node_IDs.rbegin() - *node_IDs.begin() + 1 == node_IDs.size()) {
+					node_IDs_real = node_IDs;
+				}
+				else { // contains non-consecutive nodes
+					if (auto_expand_set) {
+						for (TNodeID curr_node_ID = *node_IDs.begin();
+								curr_node_ID != *node_IDs.rbegin(); ++curr_node_ID) {
+							node_IDs_real.insert(curr_node_ID);
+						}
+					}
+					else { // add virtual edges accordingly
+						THROW_EXCEPTION(
+								"Non virtual edges addition is not yet implemented.");
+					}
+				}
+
+				// add all the nodes of the node_IDs_real set to sub_graph
+				for (std::set<TNodeID>::const_iterator 
+						node_IDs_it = node_IDs_real.begin();
+						node_IDs_it != node_IDs_real.end();
+						++node_IDs_it) {
 
 					// assert that current node exists in *own* graph
 					typename global_poses_t::const_iterator own_it;
@@ -226,10 +253,9 @@ namespace mrpt
 					sub_graph->nodes.insert(make_pair(*node_IDs_it, nodes.at(*node_IDs_it)));
 				}
 
-				// set the extracted graph root
+				// set the root of the extracted graph
 				if (root_node == INVALID_NODEID) {
 					// smallest nodeID by default
-					//
 					// http://stackoverflow.com/questions/1342045/how-do-i-find-the-largest-int-in-a-stdsetint
 					// std::set sorts elements in ascending order
 					root_node = sub_graph->nodes.begin()->first;
