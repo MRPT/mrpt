@@ -29,7 +29,8 @@ namespace mrpt
 	 * \code
 	 * # Section name can be changed via setConfigFileSectionName()
 	 * [FULL_EVAL_CONFIG]
-	 * factorWeights=1.0 1.0 1.0 0.05 1.0
+	 * factorWeights        = 1.0 1.0 1.0 0.05 1.0
+	 * factorNormalizeOrNot =   0   0   0    0   1
 	 * // 0: Clearness in direction
 	 * // 1: Closest approach to target along straight line (Euclidean)
 	 * // 2: Distance of end collision-free point to target (Euclidean)
@@ -54,13 +55,15 @@ namespace mrpt
 		CHolonomicFullEval( const mrpt::utils::CConfigFileBase *INI_FILE = NULL );
 
 		// See base class docs
-		void  navigate(	const mrpt::math::TPoint2D &target,
-							const std::vector<double>	&obstacles,
-							double			maxRobotSpeed,
-							double			&desiredDirection,
-							double			&desiredSpeed,
-							CHolonomicLogFileRecordPtr &logRecord,
-			const double    max_obstacle_dist ) MRPT_OVERRIDE;
+		void  navigate(
+			const mrpt::math::TPoint2D &target,
+			const std::vector<double>	&obstacles,
+			double			maxRobotSpeed,
+			double			&desiredDirection,
+			double			&desiredSpeed,
+			CHolonomicLogFileRecordPtr &logRecord,
+			const double    max_obstacle_dist,
+			const mrpt::nav::ClearanceDiagram *clearance = NULL) MRPT_OVERRIDE;
 
 		void initialize(const mrpt::utils::CConfigFileBase &INI_FILE) MRPT_OVERRIDE; // See base class docs
 
@@ -72,6 +75,7 @@ namespace mrpt
 			double OBSTACLE_SLOW_DOWN_DISTANCE;      //!< Start to reduce speed when clearance is below this value ([0,1] ratio wrt obstacle reference/max distance)
 			double HYSTERESIS_SECTOR_COUNT; //!< Range of "sectors" (directions) for hysteresis over succesive timesteps
 			std::vector<double>   factorWeights;  //!< See docs above
+			std::vector<int32_t>  factorNormalizeOrNot; //!< 0/1 to normalize factors.
 			std::vector<int32_t>  PHASE1_FACTORS, PHASE2_FACTORS; //!< Factor indices [0,4] for the factors to consider in each phase of the movement decision (Defaults: `PHASE1_FACTORS=0 1 2`, `PHASE2_FACTORS=`3 4`)
 			double                PHASE1_THRESHOLD;   //!< Phase1 scores must be above this relative range threshold [0,1] to be considered in phase 2 (Default:`0.75`)
 

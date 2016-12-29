@@ -16,6 +16,7 @@
 #include <mrpt/math/CPolygon.h>
 #include <mrpt/utils/mrpt_stdint.h>    // compiler-independent version of "stdint.h"
 #include <mrpt/nav/link_pragmas.h>
+#include <mrpt/nav/holonomic/ClearanceDiagram.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/kinematics/CVehicleVelCmd.h>
 #include <mrpt/otherlibs/stlplus/smart_ptr.hpp>  // STL+ library
@@ -184,6 +185,9 @@ namespace nav
 		/** Returns true if the point lies within the robot shape. */
 		virtual bool isPointInsideRobotShape(const double x, const double y) const = 0;
 
+		/** Evals the clearance from an obstacle (ox,oy) in coordinates relative to the robot center. Zero or negative means collision. */
+		virtual double evalClearanceToRobotShape(const double ox, const double oy) const = 0;
+
 		/** @} */  // --- end of virtual methods
 
 		static std::string OUTPUT_DEBUG_PATH_PREFIX; //!< The path used as defaul output in, for example, debugDumpInFiles. (Default="./reactivenav.logs/")
@@ -201,13 +205,12 @@ namespace nav
 		uint16_t getPathCount() const { return m_alphaValuesCount; }
 
 		/** Alpha value for the discrete corresponding value \sa alpha2index */
-		double index2alpha( uint16_t k ) const {
-			if (k>=m_alphaValuesCount) throw std::runtime_error("PTG: alpha value out of range!");
-			return M_PI * (-1.0 + 2.0 * (k+0.5)/m_alphaValuesCount );
-		}
+		double index2alpha(uint16_t k) const;
+		static double index2alpha(uint16_t k, const unsigned int num_paths);
 
 		/** Discrete index value for the corresponding alpha value \sa index2alpha */
 		uint16_t alpha2index( double alpha ) const;
+		static uint16_t alpha2index(double alpha, const unsigned int num_paths);
 
 		inline double getRefDistance() const { return refDistance; }
 
@@ -218,6 +221,9 @@ namespace nav
 		/** When used in path planning, a multiplying factor (default=1.0) for the scores for this PTG. Assign values <1 to PTGs with low priority. */
 		double getScorePriority() const { return m_score_priority; }
 		void setScorePriorty(double prior) { m_score_priority = prior; }
+
+		double getClearanceStepCount() const { return m_clearance_num_points; }
+		void setClearanceStepCount(const double res) { m_clearance_num_points = res; }
 
 		/** Returns the representation of one trajectory of this PTG as a 3D OpenGL object (a simple curved line).
 		  * \param[in] k The 0-based index of the selected trajectory (discrete "alpha" parameter).
@@ -252,14 +258,24 @@ namespace nav
 		 */
 		static PTG_collision_behavior_t COLLISION_BEHAVIOR;
 
+		/** Updates the clearance diagram given one (ox,oy) obstacle point, in coordinates relative 
+		  * to the PTG path origin.
+		  * \param[in,out] cd The clearance will be updated here. 
+		  * \sa m_clearance_dist_resolution
+		  */
+		void updateClearance(const double ox, const double oy, ClearanceDiagram & cd) const;
+
+		void updateClearancePost(ClearanceDiagram & cd, const std::vector<double> &TP_obstacles) const;
 protected:
 		double    refDistance;
 		uint16_t  m_alphaValuesCount; //!< The number of discrete values for "alpha" between -PI and +PI.
 		double    m_score_priority;
+		uint16_t  m_clearance_num_points; //!< Number of steps for the piecewise-constant approximation of clearance from TPS distances [0,1] (Default=5) \sa updateClearance()
+		bool      m_use_approx_clearance; //!< Approx clearance by directly calc distances in TP-Space, without checking WS robot shape directly (Default=true)
 
 		bool      m_is_initialized;
 
-		/** To be called by implementors of updateTPObstacle() and updateTPObstacleSingle() to 
+		/** To be called by implementors of updateTPObstacle() and updateTPObstacleSingle() to
 		  * honor the user settings regarding COLLISION_BEHAVIOR.
 		  * \param new_tp_obs_dist The newly determiend collision-free ranges, in "pseudometers", un-normalized, for some "k" direction.
 		  * \param inout_tp_obs The target where to store the new TP-Obs distance, if it fulfills the criteria determined by the collision behavior.
@@ -268,6 +284,11 @@ protected:
 
 		virtual void internal_readFromStream(mrpt::utils::CStream &in);
 		virtual void internal_writeToStream(mrpt::utils::CStream &out) const;
+
+		/** Evals the robot clearance for each robot pose along path `k`, for the real distances in
+		* the key of the map<>, then keep in the map value the minimum of its current stored clearance,
+		* or the computed clearance. In case of collision, clearance is zero. */
+		virtual void evalClearanceSingleObstacle(const double ox, const double oy, const uint16_t k, std::map<double, double> & inout_realdist2clearance) const;
 
 	}; // end of class
 	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CParameterizedTrajectoryGenerator, mrpt::utils::CSerializable, NAV_IMPEXP )
@@ -292,6 +313,7 @@ protected:
 		void setRobotShape(const mrpt::math::CPolygon & robotShape);
 		const mrpt::math::CPolygon & getRobotShape() const { return m_robotShape; }
 		double getApproxRobotRadius() const MRPT_OVERRIDE;
+		virtual double evalClearanceToRobotShape(const double ox, const double oy) const MRPT_OVERRIDE;
 		/** @} */
 		bool isPointInsideRobotShape(const double x, const double y) const MRPT_OVERRIDE;
 		void add_robotShape_to_setOfLines(mrpt::opengl::CSetOfLines &gl_shape, const mrpt::poses::CPose2D &origin = mrpt::poses::CPose2D ()) const  MRPT_OVERRIDE;
@@ -322,6 +344,7 @@ protected:
 		void setRobotShapeRadius(const double robot_radius);
 		double getRobotShapeRadius() const { return m_robotRadius; }
 		double getApproxRobotRadius() const MRPT_OVERRIDE;
+		virtual double evalClearanceToRobotShape(const double ox, const double oy) const MRPT_OVERRIDE;
 		/** @} */
 		void add_robotShape_to_setOfLines(mrpt::opengl::CSetOfLines &gl_shape, const mrpt::poses::CPose2D &origin = mrpt::poses::CPose2D ()) const  MRPT_OVERRIDE;
 		bool isPointInsideRobotShape(const double x, const double y) const MRPT_OVERRIDE;

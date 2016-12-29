@@ -1019,7 +1019,8 @@ void CAbstractPTGBasedReactive::ptg_eval_target_build_obstacles(
 			ptg->initTPObstacles(ipf.TP_Obstacles);
 
 			// Implementation-dependent conversion:
-			STEP3_WSpaceToTPSpace(indexPTG, ipf.TP_Obstacles, -rel_pose_PTG_origin_wrt_sense);
+			STEP3_WSpaceToTPSpace(indexPTG, ipf.TP_Obstacles, ipf.clearance, -rel_pose_PTG_origin_wrt_sense);
+			ptg->updateClearancePost(ipf.clearance, ipf.TP_Obstacles);
 
 			// Distances in TP-Space are normalized to [0,1]:
 			const double _refD = 1.0 / ptg->getRefDistance();
@@ -1046,7 +1047,8 @@ void CAbstractPTGBasedReactive::ptg_eval_target_build_obstacles(
 					holonomicMovement.direction,
 					holonomicMovement.speed,
 					HLFR,
-					1.0 /* max obstacle dist*/);
+					1.0 /* max obstacle dist*/,
+					&ipf.clearance);
 
 			// Security: Scale down the velocity when heading towards obstacles,
 			//  such that it's assured that we never go thru an obstacle!
@@ -1105,12 +1107,13 @@ void CAbstractPTGBasedReactive::ptg_eval_target_build_obstacles(
 	const bool fill_log_record = (m_logFile != NULL || m_enableKeepLogRecords);
 	if (fill_log_record)
 	{
-		metaprogramming::copy_container_typecasting(ipf.TP_Obstacles, newLogRec.infoPerPTG[idx_in_log_infoPerPTGs].TP_Obstacles);
 		CLogFileRecord::TInfoPerPTG &ipp = newLogRec.infoPerPTG[idx_in_log_infoPerPTGs];
 		if (!this_is_PTG_continuation)
 		     ipp.PTG_desc = ptg->getDescription();
 		else ipp.PTG_desc = mrpt::format("NOP cmdvel (prev PTG idx=%u)", static_cast<unsigned int>(m_lastSentVelCmd.ptg_index) );
 
+		metaprogramming::copy_container_typecasting(ipf.TP_Obstacles, ipp.TP_Obstacles);
+		ipp.clearance = ipf.clearance;
 		ipp.TP_Target = ipf.TP_Target;
 		ipp.HLFR = HLFR;
 		ipp.desiredDirection = holonomicMovement.direction;

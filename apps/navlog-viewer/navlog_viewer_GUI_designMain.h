@@ -14,6 +14,7 @@
 //(*Headers(navlog_viewer_GUI_designDialog)
 #include <wx/sizer.h>
 #include <wx/stattext.h>
+#include <wx/radiobox.h>
 #include <wx/menu.h>
 #include <wx/textctrl.h>
 #include <wx/checkbox.h>
@@ -63,6 +64,7 @@ class navlog_viewer_GUI_designDialog: public wxFrame //wxDialog
 		void OncbGlobalFrameClick(wxCommandEvent& event);
 		void OnmnuSaveScoreMatrixSelected(wxCommandEvent& event);
 		void OncbShowXYClick(wxCommandEvent& event);
+		void OnrbPerPTGPlotsSelect(wxCommandEvent& event);
 		//*)
 		void OntimMouseXY(wxTimerEvent& event);
 
@@ -85,6 +87,7 @@ class navlog_viewer_GUI_designDialog: public wxFrame //wxDialog
 		static const long ID_STATICTEXT6;
 		static const long ID_STATICTEXT7;
 		static const long ID_PANEL3;
+		static const long ID_RADIOBOX1;
 		static const long ID_CHECKBOX1;
 		static const long ID_CHECKBOX2;
 		static const long ID_CHECKBOX3;
@@ -111,6 +114,7 @@ class navlog_viewer_GUI_designDialog: public wxFrame //wxDialog
 		wxStaticText* txtLogDuration;
 		wxStaticText* StaticText2;
 		wxCheckBox* cbDrawShapePath;
+		wxRadioBox* rbPerPTGPlots;
 		wxStaticText* StaticText6;
 		wxTimer timAutoload;
 		wxFlexGridSizer* FlexGridSizer9;

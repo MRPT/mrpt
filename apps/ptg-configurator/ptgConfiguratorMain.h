@@ -35,6 +35,7 @@
 #include <mrpt/opengl/CPointCloud.h>
 #include <mrpt/opengl/COpenGLViewport.h>
 #include <mrpt/opengl/CAxis.h>
+#include <mrpt/opengl/CMesh.h>
 
 // JLBC: Unix X headers have these funny things...
 #ifdef Button1
@@ -76,6 +77,7 @@ class ptgConfiguratorframe: public wxFrame
         void OnedIndexHighlightPathChange(wxSpinEvent& event);
         void OnedCfgText(wxCommandEvent& event);
         void OnButton1Click(wxCommandEvent& event);
+        void OnrbShowTPSelectSelect(wxCommandEvent& event);
         //*)
 
         //(*Identifiers(ptgConfiguratorframe)
@@ -107,6 +109,8 @@ class ptgConfiguratorframe: public wxFrame
         static const long ID_BUTTON5;
         static const long ID_PANEL1;
         static const long ID_XY_GLCANVAS;
+        static const long ID_CHECKBOX5;
+        static const long ID_CHECKBOX6;
         static const long ID_CUSTOM2;
         static const long ID_PANEL2;
         static const long ID_CUSTOM1;
@@ -142,6 +146,7 @@ class ptgConfiguratorframe: public wxFrame
         mpWindow* m_plotPathW;
         wxStaticText* StaticText9;
         wxTextCtrl* edObsY;
+        wxButton* btnLoadPlugin;
         wxPanel* Panel5;
         mpWindow* m_plotHeadAngAll;
         mpWindow* m_plotPathY;
@@ -152,7 +157,6 @@ class ptgConfiguratorframe: public wxFrame
         wxPanel* Panel4;
         wxStaticText* StaticText14;
         wxCheckBox* cbDrawShapePath;
-        wxButton* Button1;
         wxCheckBox* cbShowOnlySelectedTraj;
         wxSpinCtrl* edPTGIndex;
         wxStaticText* StaticText6;
@@ -165,6 +169,7 @@ class ptgConfiguratorframe: public wxFrame
         wxStaticText* StaticText11;
         wxPanel* Panel1;
         wxStaticText* StaticText1;
+        wxCheckBox* cbShowTPObs;
         wxStaticText* StaticText3;
         wxChoice* cbPTGClass;
         wxPanel* Panel6;
@@ -190,6 +195,7 @@ class ptgConfiguratorframe: public wxFrame
         wxPanel* Panel2;
         wxTextCtrl* edMinDistBtwShapes;
         wxStaticText* StaticText4;
+        wxCheckBox* cbShowClearance;
         wxTextCtrl* edTargetY;
         wxSlider* slidPathHighlight;
         //*)
@@ -219,6 +225,8 @@ class ptgConfiguratorframe: public wxFrame
 
 		// ========= Opengl View =======
 		mrpt::opengl::COpenGLViewportPtr  gl_view_WS, gl_view_TPSpace;
+		mrpt::opengl::CSetOfObjectsPtr    gl_TPSpace_TP_obstacles;
+		mrpt::opengl::CMeshPtr            gl_TPSpace_clearance;
 		mrpt::opengl::CCameraPtr          gl_view_TPSpace_cam;
 		mrpt::opengl::CAxisPtr            gl_axis_WS, gl_axis_TPS;
 		mrpt::opengl::CSetOfLinesPtr      gl_robot_ptg_prediction, gl_robot_ptg_prediction_highlight, gl_tp_obstacles;
