@@ -872,7 +872,8 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 
 				win->setCameraAzimuthDeg(-90);
 				win->setCameraElevationDeg(90);
-				win->setCameraZoom(4.0f);
+				win->setCameraZoom(2.1f);
+				win->setCameraProjective(false);
 
 				{
 					auto gl_obj = mrpt::opengl::CDisk::Create();
