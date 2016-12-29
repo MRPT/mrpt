@@ -66,11 +66,6 @@ namespace mrpt
 			  */
 			int BASE_IMPEXP fprintf(FILE *fil, const char *format, ...)  MRPT_NO_THROWS MRPT_printf_format_check(2,3);
 
-			/** An OS-independent version of fscanf
-			  * \return The number of fields correctly assigned
-			  */
-			//int BASE_IMPEXP fscanf(FILE *fil, const char *format, ...)  MRPT_NO_THROWS MRPT_scanf_format_check(2,3);
-
 			/** An OS-independent version of fclose.
 			  * \exception std::exception On trying to close a NULL file descriptor.
 			  */
