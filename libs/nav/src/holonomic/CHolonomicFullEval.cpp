@@ -233,8 +233,8 @@ void  CHolonomicFullEval::navigate(
 		else
 		{
 			this_dir_eval = .0;
-			for (unsigned int l : options.PHASE2_FACTORS) this_dir_eval+=options.factorWeights[l] * m_dirs_scores(i,l);
-			this_dir_eval*=weights_sum_phase2_inv;
+			for (unsigned int l : options.PHASE2_FACTORS) this_dir_eval += options.factorWeights[l] * std::log(m_dirs_scores(i, l)+1e-6);
+			this_dir_eval = std::exp(this_dir_eval*weights_sum_phase2_inv);
 
 			// Boost score of directions that: 
 			if (

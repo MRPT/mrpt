@@ -231,6 +231,7 @@ namespace mrpt
 		void STEP5_PTGEvaluator(
 			THolonomicMovement         & holonomicMovement,
 			const std::vector<double>        & in_TPObstacles,
+			const mrpt::nav::ClearanceDiagram & in_clearance,
 			const mrpt::math::TPose2D  & WS_Target,
 			const mrpt::math::TPoint2D & TP_Target,
 			CLogFileRecord::TInfoPerPTG & log,
