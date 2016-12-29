@@ -333,10 +333,6 @@ void CParameterizedTrajectoryGenerator::updateClearancePost(ClearanceDiagram & c
 	for (uint16_t k = 0; k < m_alphaValuesCount; k++)
 		k2dir[k] = M_PI*(-1 + 2 * (0.5 + k) / m_alphaValuesCount);
 
-	mrpt::math::TSegment2D sg;
-	sg.point1.x = 0;
-	sg.point1.y = 0;
-
 	for (uint16_t k = 0; k < m_alphaValuesCount; k++)
 	{
 		// For each segment (path):
@@ -344,18 +340,16 @@ void CParameterizedTrajectoryGenerator::updateClearancePost(ClearanceDiagram & c
 
 		for (auto &e : cd.raw_clearances[k])
 		{
-			const double d = e.first;  TP_obstacles[k]; // std::min(TP_obstacles[k], 0.95*target_dist);
-			sg.point2.x = d*cos(ak);
-			sg.point2.y = d*sin(ak);
+			const double d = e.first;
+			const double x = d*cos(ak), y = d*sin(ak);
 
 			for (uint16_t i = 0; i < m_alphaValuesCount; i++)
 			{
 				const double ai = k2dir[i];
-				double di = TP_obstacles[i]; // std::min(TP_obstacles[k], 0.95*target_dist); ??
+				double di = TP_obstacles[i] / refDistance; // std::min(TP_obstacles[k], 0.95*target_dist); ??
 				if (di >= 0.99) di = 2.0;
 
-				const double this_clearance_norm = sg.distance(mrpt::math::TPoint2D(di*cos(ai), di*sin(ai)));
-
+				const double this_clearance_norm = ::hypot(di*cos(ai) - x, di*sin(ai) - y);
 				// Update minimum in output structure
 				mrpt::utils::keep_min(e.second, this_clearance_norm);
 			}
