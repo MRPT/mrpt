@@ -8,14 +8,11 @@
    +---------------------------------------------------------------------------+ */
 
 /**
-  This file is intended for examples in the MRPT distribution to locate needed
-  data files independently of where the user decides to build the library.
+  This file is used by mrpt::system::find_mrpt_shared_dir().
 */
    
-#ifndef MRPT_EXAMPLES_CONFIG_H
-#define MRPT_EXAMPLES_CONFIG_H
+#pragma once
 
-#define MRPT_EXAMPLES_BASE_DIRECTORY "${CMAKE_MRPT_EXAMPLES_BASE_DIRECTORY}"
-
-#endif
+#define MRPT_SOURCE_BASE_DIRECTORY "${CMAKE_SOURCE_DIR}"
+#define MRPT_INSTALL_PREFIX_DIRECTORY "${CMAKE_INSTALL_PREFIX}"
 
