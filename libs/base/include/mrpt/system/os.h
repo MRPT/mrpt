@@ -151,6 +151,9 @@ namespace mrpt
 		/** Returns a const ref to a text with the same text that appears at the beginning of each MRPT file (useful for displaying the License text in GUIs) */
 		const std::string BASE_IMPEXP & getMRPTLicense();
 
+		/** Finds the "[MRPT]/share/mrpt/" directory, if available in the system. This searches in (1) source code tree, (2) install target paths. */
+		std::string BASE_IMPEXP find_mrpt_shared_dir();
+
 		/** For use in  setConsoleColor */
 		enum TConsoleColor
 		{

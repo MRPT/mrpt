@@ -679,6 +679,9 @@ IF(BUILD_MATLAB)
         add_subdirectory(mex/apps)# The MEX applications
 ENDIF()
 
+# Generate .h to locate MRPT sources:
+CONFIGURE_FILE("${CMAKE_SOURCE_DIR}/parse-files/mrpt_paths_config.h.in" "${MRPT_CONFIG_FILE_INCLUDE_DIR}/mrpt/mrpt_paths_config.h")
+
 # Documentation targets (must be AFTER "apps" because it uses the aux program "mrpt-perfdata2html")
 add_subdirectory(doc)
 
