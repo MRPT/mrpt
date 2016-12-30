@@ -61,6 +61,7 @@ wxBitmap MyArtProvider::CreateBitmap(const wxArtID& id,
 #include <mrpt/gui.h>
 #include <mrpt/opengl.h>
 #include <mrpt/system/filesystem.h>
+#include <mrpt/system/os.h>
 
 using namespace mrpt;
 using namespace mrpt::maps;
@@ -434,6 +435,13 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(wxWindow* parent,wxWi
     Connect(idMenuAbout,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&reactive_navigator_demoframe::OnAbout);
     Connect(ID_TIMER1,wxEVT_TIMER,(wxObjectEventFunction)&reactive_navigator_demoframe::OntimRunSimulTrigger);
     //*)
+
+	// Load updated cfg file:
+	try {
+		const std::string sFil = mrpt::system::find_mrpt_shared_dir() + std::string("config_files/navigation-ptgs/reactivenav-app-config.ini");
+		edParamsReactive->LoadFile(_U(sFil.c_str()));
+	}
+	catch (...) {}
 
 	btnStart->SetToolTip(wxT("Initializes and starts the simulator."));
 	btnPlaceTarget->SetToolTip(wxT("Left-click on the map to place a navigation command."));

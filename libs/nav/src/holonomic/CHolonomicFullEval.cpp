@@ -148,7 +148,10 @@ void  CHolonomicFullEval::navigate(
 		// Factor #5: clearance to nearest obstacle along path
 		// ------------------------------------------------------------------------------------------
 		{
-			double avr_path_clearance = 0.0;
+#if 1
+			double avr_path_clearance = clearance->getClearance(i /*path index*/, std::min(0.99, target_dist*0.95));
+			scores[4] = avr_path_clearance;
+#else
 			size_t num_avrs = 0;
 			for (
 				auto it = ++clearance->raw_clearances[i /*path index*/].begin();
@@ -159,6 +162,7 @@ void  CHolonomicFullEval::navigate(
 				avr_path_clearance += clearance;
 			}
 			scores[4] = num_avrs != 0 ? (avr_path_clearance / num_avrs) : 0.0;
+#endif
 		}
 
 		// Save stats for debugging:
@@ -399,7 +403,7 @@ void CHolonomicFullEval::TOptions::saveToConfigFile(mrpt::utils::CConfigFileBase
 
 	ASSERT_EQUAL_(factorWeights.size(),5)
 	cfg.write(section,"factorWeights", mrpt::system::sprintf_container("%.2f ",factorWeights),   WN,WV, "[0]=Free space, [1]=Dist. in sectors, [2]=Closer to target (Euclidean), [3]=Hysteresis, [4]=clearance along path");
-	cfg.write(section,"factorNormalizeOrNot", mrpt::system::sprintf_container("%.2f ", factorNormalizeOrNot), WN, WV, "Normalize factors or not (1/0)");
+	cfg.write(section,"factorNormalizeOrNot", mrpt::system::sprintf_container("%u ", factorNormalizeOrNot), WN, WV, "Normalize factors or not (1/0)");
 
 	cfg.write(section,"PHASE1_FACTORS", mrpt::system::sprintf_container("%d ",PHASE1_FACTORS),   WN,WV, "Indices of the factors above to be considered in phase 1");
 	cfg.write(section,"PHASE2_FACTORS", mrpt::system::sprintf_container("%d ",PHASE2_FACTORS),   WN,WV, "Indices of the factors above to be considered in phase 2");
