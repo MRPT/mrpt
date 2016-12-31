@@ -110,7 +110,9 @@ namespace maps
 	  * \sa mrpt::maps::CGasConcentrationGridMap2D, mrpt::maps::CWirelessPowerGridMap2D, mrpt::maps::CMetricMap, mrpt::utils::CDynamicGrid, The application icp-slam, mrpt::maps::CMultiMetricMap
 	  * \ingroup mrpt_maps_grp
 	  */
-	class CRandomFieldGridMap2D : public mrpt::maps::CMetricMap, public utils::CDynamicGrid<TRandomFieldCell>
+	class CRandomFieldGridMap2D : 
+		public mrpt::maps::CMetricMap, 
+		public mrpt::utils::CDynamicGrid<TRandomFieldCell>
 	{
 		typedef utils::CDynamicGrid<TRandomFieldCell> BASE;
 

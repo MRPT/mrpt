@@ -20,7 +20,7 @@ namespace maps
 {
 	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CHeightGridMap2D_MRF , CRandomFieldGridMap2D, MAPS_IMPEXP )
 
-	/** CHeightGridMap2D_MRF represents a PDF of gas concentrations over a 2D area
+	/** CHeightGridMap2D_MRF represents digital-elevation-model over a 2D area, with uncertainty, based on a Markov-Random-Field (MRF) estimator.
 	  *
 	  *  There are a number of methods available to build the gas grid-map, depending on the value of
 	  *    "TMapRepresentation maptype" passed in the constructor (see base class mrpt::maps::CRandomFieldGridMap2D).
