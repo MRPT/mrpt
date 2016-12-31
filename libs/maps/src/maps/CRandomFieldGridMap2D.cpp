@@ -11,6 +11,7 @@
 
 #include <mrpt/maps/CRandomFieldGridMap2D.h>
 #include <mrpt/maps/CSimpleMap.h>
+#include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/system/os.h>
 #include <mrpt/math/CMatrix.h>
 #include <mrpt/math/utils.h>
@@ -210,139 +211,73 @@ void  CRandomFieldGridMap2D::internal_clear()
 
 	case mrGMRF_G:
 		{
-			CTicTac	tictac;
-			tictac.Tic();
-
-			if (m_rfgm_verbose)
-				printf("[CRandomFieldGridMap2D::clear] Generating Prior based on Gaussian\n");
-
 			// Set the grid to initial values:
 			TRandomFieldCell	def(0,0);		// mean, std
-			fill( def );
+			this->fill( def );
 
-			//Set initial restrictions: L "cell Constraints" + O "Observations constraints"
-			const uint16_t Gsize = m_insertOptions_common->GMRF_constraintsSize;
-			const uint16_t Gside = mrpt::utils::round((Gsize-1)/2);
-			const float Gsigma = m_insertOptions_common->GMRF_constraintsSigma;
-			gauss_val.resize(2*Gside);
-			const size_t N = m_map.size();
-
-			// Weigths of the constratints
-			for (uint16_t i=1;i<=2*Gside;i++)  // Compute larger distances than Gside to account for "diagonal" distances.
-				gauss_val[i-1] = exp( -0.5 *i /Gsigma );		//Fixed constraints are modeled as Gaussian
-
-			//Determine the number of Initial constraints --> L+M
-			nPriorFactors = 0;		// L
-			nObsFactors = 0;		// M
-
+			class MyPriorInformer : public mrpt::math::GaussianMarkovRandomField::InitPriorInformer
 			{
-				// Avoid the costly % and / operations:
-				size_t cx = 0; // ( j % m_size_x );		// [0, m_size_x-1]
-				size_t	cy = 0; // ( j / m_size_x );		// [0, m_size_y-1]
-				for (size_t j=0; j<N; j++)
+				CRandomFieldGridMap2D &m_parent;
+				std::vector<double>  m_gauss_val;  // For factor Weigths (only for mrGMRF_G)
+				const uint16_t  Gsize;
+				const double Gsigma;
+				const uint16_t Gside;
+			public:
+				MyPriorInformer(CRandomFieldGridMap2D &parent) : 
+					m_parent(parent),
+					Gsize(parent.m_insertOptions_common->GMRF_constraintsSize),
+					Gsigma(parent.m_insertOptions_common->GMRF_constraintsSigma),
+					Gside( mrpt::utils::round((Gsize - 1) / 2) )
 				{
-					//Determine the Number of restrictions of the current cell j
-					//Determine num of columns out of the gridmap
-					size_t outc_left = max( 0 , int(Gside-cx) );
-					size_t outc_right = max(int (0) , int (Gside-(m_size_x-cx-1)) );
-					size_t outc = outc_left + outc_right;
-					//Determine num of rows out of the gridmap
-					size_t outr_down = max( 0 , int(Gside-(cy)) );
-					size_t outr_up = max(int (0) , int (Gside-(m_size_y-cy-1)) );
-					size_t outr = outr_up + outr_down;
-
-					nPriorFactors += (Gsize - outc -1) + (Gsize - outr -1 );   //only vertical and horizontal restrictions
-
-					//Increment (row(x), col(y))
-					if (++cx>=m_size_x)
-					{
-						cx=0;
-						cy++;
-					}
+					// initial restrictions: L "cell Constraints" + O "Observations constraints"
+					m_gauss_val.resize(2 * Gside);
+					// Weigths of the constratints
+					for (uint16_t i = 1; i <= 2 * Gside; i++)  // Compute larger distances than Gside to account for "diagonal" distances.
+						m_gauss_val[i - 1] = exp(-0.5 *i / Gsigma);		//Fixed constraints are modeled as Gaussian
 				}
-			}
 
-			nFactors = nPriorFactors + nObsFactors;
-			if (m_rfgm_verbose) cout << "Generating " << nFactors << " cell constraints for a map size of N=" << N << endl;
-
-			//Reset the vector of maps (Hessian_vm), the gradient, and the vector of active observations
-#if EIGEN_VERSION_AT_LEAST(3,1,0)
-			H_prior.clear();
-			H_prior.reserve(nPriorFactors);
-#endif
-			g.resize(N);			//Initially the gradient is all 0
-			g.fill(0.0);
-			activeObs.resize(N);	//No initial Observations
-
-			// Load default values:
-			{
-				// Avoid the costly % and / operations:
-				size_t cx = 0; // ( j % m_size_x );		// [0, m_size_x-1]
-				size_t cy = 0; // ( j / m_size_x );		// [0, m_size_y-1]
-				size_t count = 0;
-				for (size_t j=0; j<N; j++)
+				size_t getNodeCount() const override
 				{
-					//Determine the Number of restrictions of the current cell j
-					//Determine num of columns out of the gridmap
-					int outc_left = max( 0 , int(Gside-cx) );
-					int outc_right = max(int (0) , int (Gside-(m_size_x-cx-1)) );
-					int outc = outc_left + outc_right;
-					//Determine num of rows out of the gridmap
-					int outr_down = max( 0 , int(Gside-(cy)) );
-					int outr_up = max(int (0) , int (Gside-(m_size_y-cy-1)) );
-					int outr = outr_up + outr_down;
+					return m_parent.m_map.size();
+				}
 
-					size_t nConsFixed_j = (Gsize - outc -1) + (Gsize - outr -1 );   //only vertical and horizontal restrictions
-
-					//Set constraints of cell j with all neighbord cells i
-					for (int kr=-(Gside-outr_down); kr<=(Gside-outr_up); kr++ )
+				size_t getPriorFactorsCount() const override
+				{
+					const size_t N = m_parent.m_map.size();
+					size_t nPriorFactors = 0;
 					{
-						for (int kc=-(Gside-outc_left); kc<=(Gside-outc_right); kc++)
+						// Avoid the costly % and / operations:
+						size_t cx = 0; // ( j % m_size_x );		// [0, m_size_x-1]
+						size_t	cy = 0; // ( j / m_size_x );		// [0, m_size_y-1]
+						for (size_t j = 0; j<N; j++)
 						{
-							// get index of cell i
-							size_t icx = cx + kc;
-							size_t icy = cy + kr;
-							size_t i = icx + icy*m_size_x;
+							//Determine the Number of restrictions of the current cell j
+							//Determine num of columns out of the gridmap
+							size_t outc_left = std::max(0, int(Gside - cx));
+							size_t outc_right = std::max(int(0), int(Gside - (m_parent.getSizeX() - cx - 1)));
+							size_t outc = outc_left + outc_right;
+							//Determine num of rows out of the gridmap
+							size_t outr_down = std::max(0, int(Gside - (cy)));
+							size_t outr_up = std::max(int(0), int(Gside - (m_parent.getSizeY() - cy - 1)));
+							size_t outr = outr_up + outr_down;
 
-							if (j==i)
+							nPriorFactors += (Gsize - outc - 1) + (Gsize - outr - 1);   //only vertical and horizontal restrictions
+							if (++cx >= m_parent.getSizeX()) //Increment (row(x), col(y))
 							{
-								//H_ii = N constraints * Lambda_cell * (J_ij^2 +1)
-#if EIGEN_VERSION_AT_LEAST(3,1,0)
-								//std::pair<size_t,float> Hentry (j , nConsFixed_j * m_insertOptions_common->GMRF_lambdaPrior * (square(1.0/gauss_val[abs(kr+kc)]) + 1) );
-								//H_vm.at(i).insert(Hentry);
-
-								Eigen::Triplet<double> Hentry(i,j , nConsFixed_j * m_insertOptions_common->GMRF_lambdaPrior * (square(1.0/gauss_val[abs(kr+kc)]) + 1) );
-								H_prior.push_back( Hentry );
-#endif
-							}
-							else
-							{
-								if (kr==0 || kc==0)      //only vertical and horizontal restrictions/constraints
-								{
-									// H_ji = 2 * Lambda_cell * J_ij
-#if EIGEN_VERSION_AT_LEAST(3,1,0)
-									Eigen::Triplet<double> Hentry(i,j , -2 * m_insertOptions_common->GMRF_lambdaPrior * 1/gauss_val[abs(kr+kc)-1]);
-									H_prior.push_back( Hentry );
-#endif
-									//g_j = [m(j) - alpha*m(i) ]* lambda
-									g[j] += (m_map[j].gmrf_mean - m_map[i].gmrf_mean) * m_insertOptions_common->GMRF_lambdaPrior;
-
-									count++;
-								}
+								cx = 0;
+								cy++;
 							}
 						}
 					}
+					return nPriorFactors;
+				}
 
-					// Increment (row(x), col(y))
-					if (++cx>=m_size_x)
-					{
-						cx=0;
-						cy++;
-					}
-				} // end for "j"
-			}
+			}; // end MyPriorInformer
 
-			if (m_rfgm_verbose) cout << "		Ready in: " << tictac.Tac() << "s" << endl;
+			MyPriorInformer priorInformer(*this);
+
+			m_gmrf.init_priors(priorInformer);
+			
 			
 			if (m_rfgm_run_update_upon_clear) {
 				//Solve system and update map estimation
@@ -2481,7 +2416,7 @@ void CRandomFieldGridMap2D::updateMapEstimation_GMRF()
 						{
 							if (kr==0 || kc==0)      //only vertical and horizontal restrictions/constraints
 							{
-								g[j] += ( m_map[j].gmrf_mean - (m_map[i].gmrf_mean * gauss_val[abs(kr+kc)-1])) * m_insertOptions_common->GMRF_lambdaPrior;
+								g[j] += ( m_map[j].gmrf_mean - (m_map[i].gmrf_mean * m_gauss_val[abs(kr+kc)-1])) * m_insertOptions_common->GMRF_lambdaPrior;
 							}
 						}
 					}

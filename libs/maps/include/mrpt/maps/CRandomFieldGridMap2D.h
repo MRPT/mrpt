@@ -17,18 +17,16 @@
 #include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/utils/TEnumType.h>
 #include <mrpt/maps/CMetricMap.h>
-#include <mrpt/maps/COccupancyGridMap2D.h>
+#include <mrpt/math/GaussianMarkovRandomField.h>
 
 #include <mrpt/maps/link_pragmas.h>
-#if EIGEN_VERSION_AT_LEAST(3,1,0) // eigen 3.1+
-	#include <Eigen/SparseCore>
-	#include <Eigen/SparseCholesky>
-#endif
 
 namespace mrpt
 {
 namespace maps
 {
+	class COccupancyGridMap2D;
+
 	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CRandomFieldGridMap2D , CMetricMap, MAPS_IMPEXP )
 
 	// Pragma defined to ensure no structure packing: since we'll serialize TRandomFieldCell to streams, we want it not to depend on compiler options, etc.
@@ -329,30 +327,7 @@ namespace maps
 		size_t              m_average_normreadings_count;
 		/** @} */
 
-		/** @name Auxiliary vars for GMRF method
-		    @{ */
-#if EIGEN_VERSION_AT_LEAST(3,1,0)
-		std::vector<Eigen::Triplet<double> >  H_prior;	// the prior part of H
-#endif
-		Eigen::VectorXd g;								// Gradient vector
-		size_t nPriorFactors;							// L
-		size_t nObsFactors;								// M
-		size_t nFactors;								// L+M
-		std::multimap<size_t,size_t> cell_interconnections;		//Store the interconnections (relations) of each cell with its neighbourds
-
-		std::vector<float> gauss_val;					// For factor Weigths (only for mrGMRF_G)
-
-		struct TobservationGMRF
-		{
-			double obsValue;
-			double Lambda;
-			bool   time_invariant;						//if the observation will lose weight (lambda) as time goes on (default false)
-		};
-
-		std::vector<std::vector<TobservationGMRF> > activeObs;		//Vector with the active observations and their respective Information
-
-
-		/** @} */
+		mrpt::math::GaussianMarkovRandomField  m_gmrf;
 
 		/** The implementation of "insertObservation" for Achim Lilienthal's map models DM & DM+V.
 		  * \param normReading Is a [0,1] normalized concentration reading.
