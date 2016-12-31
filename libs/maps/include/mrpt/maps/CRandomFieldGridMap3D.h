@@ -60,6 +60,7 @@ namespace maps
 	  *
 	  * \sa mrpt::maps::CRandomFieldGridMap2D
 	  * \ingroup mrpt_maps_grp
+	  * \note [New in MRPT 1.5.0]
 	  */
 	class CRandomFieldGridMap3D :
 		public mrpt::utils::CDynamicGrid3D<TRandomFieldVoxel>,
