@@ -94,10 +94,10 @@ namespace maps
 	  *		- `mrKalmanFilter`: A "brute-force" approach to estimate the entire map with a dense (linear) Kalman filter. Will be very slow for mid or large maps. It's provided just for comparison purposes, not useful in practice.
 	  *		- `mrKalmanApproximate`: A compressed/sparse Kalman filter approach. See:
 	  *			- "A Kalman Filter Based Approach to Probabilistic Gas Distribution Mapping", JL Blanco, JG Monroy, J Gonzalez-Jimenez, A Lilienthal, 28th Symposium On Applied Computing (SAC), 2013.
-	  *		- `mrGMRF_G` and `mrGMRF_SD`: A Gaussian Markov Random Field (GMRF) estimator, with these constraints:
-	  *			- `mrGMRF_G`: Each cell connected to a square area of neighbors cells.
+	  *		- `mrGMRF_SD`: A Gaussian Markov Random Field (GMRF) estimator, with these constraints:
 	  *			- `mrGMRF_SD`: Each cell only connected to its 4 immediate neighbors (Up, down, left, right).
-	  *			- See papers: 
+	  *			- (Removed in MRPT 1.5.0: `mrGMRF_G`: Each cell connected to a square area of neighbors cells)
+	  *			- See papers:
 	  *				- "Time-variant gas distribution mapping with obstacle information", Monroy, J. G., Blanco, J. L., & Gonzalez-Jimenez, J. Autonomous Robots, 40(1), 1-16, 2016.
 	  *
 	  *  Note that this class is virtual, since derived classes still have to implement:
@@ -139,7 +139,7 @@ namespace maps
 			mrKalmanFilter,  //!< "Brute-force" Kalman filter (see discussion in mrpt::maps::CRandomFieldGridMap2D)
 			mrKalmanApproximate, //!< (see discussion in mrpt::maps::CRandomFieldGridMap2D)
 			mrKernelDMV,     //!< Double mean + variance Gaussian kernel-based estimator (see discussion in mrpt::maps::CRandomFieldGridMap2D)
-			mrGMRF_G,   //!< Gaussian Markov Random Field, Gaussian prior weights between neighboring cells up to a certain distance (see discussion in mrpt::maps::CRandomFieldGridMap2D)
+			// Removed in MRPT 1.5.0: mrGMRF_G,   //!< Gaussian Markov Random Field, Gaussian prior weights between neighboring cells up to a certain distance (see discussion in mrpt::maps::CRandomFieldGridMap2D)
 			mrGMRF_SD   //!< Gaussian Markov Random Field, squared differences prior weights between 4 neighboring cells (see discussion in mrpt::maps::CRandomFieldGridMap2D)
 		};
 
@@ -208,7 +208,7 @@ namespace maps
 			uint16_t	KF_W_size;	//!< [mrKalmanApproximate] The size of the window of neighbor cells.
 			/** @} */
 
-			/** @name Gaussian Markov Random Fields methods (mrGMRF_G & mrGMRF_SD)
+			/** @name Gaussian Markov Random Fields methods (mrGMRF_SD)
 			    @{ */
 			double GMRF_lambdaPrior;		//!< The information (Lambda) of fixed map constraints
 			double GMRF_lambdaObs;			//!< The initial information (Lambda) of each observation (this information will decrease with time)
@@ -221,8 +221,6 @@ namespace maps
 			size_t GMRF_gridmap_image_cx;			//!< Pixel coordinates of the origin for the occupancy_gridmap
 			size_t GMRF_gridmap_image_cy;			//!< Pixel coordinates of the origin for the occupancy_gridmap
 
-			uint16_t  GMRF_constraintsSize;	//!< [mrGMRF_G only] The size of the Gaussian window to impose fixed restrictions between cells.
-			double    GMRF_constraintsSigma;  //!< [mrGMRF_G only] The sigma of the Gaussian window to impose fixed restrictions between cells.
 			double    GMRF_saturate_min, GMRF_saturate_max; //!< (Default:-inf,+inf) Saturate the estimated mean in these limits
 			bool      GMRF_skip_variance;     //!< (Default:false) Skip the computation of the variance, just compute the mean
 			/** @} */
@@ -329,6 +327,30 @@ namespace maps
 
 		mrpt::math::GaussianMarkovRandomField  m_gmrf;
 
+		struct TObservationGMRF : public mrpt::math::GaussianMarkovRandomField::UnaryFactorVirtualBase
+		{
+			double obsValue;       //!< Observation value
+			double Lambda;         //!< "Information" of the observation (=inverse of the variance)
+			bool   time_invariant; //!< whether the observation will lose weight (lambda) as time goes on (default false)
+
+			double evaluateResidual() const MRPT_OVERRIDE;
+			double getInformation() const  MRPT_OVERRIDE;
+
+			TObservationGMRF() : obsValue(.0), Lambda(.0), time_invariant(false) {}
+		};
+
+		struct TPriorFactorGMRF : public mrpt::math::GaussianMarkovRandomField::BinaryFactorVirtualBase
+		{
+			double Lambda;         //!< "Information" of the observation (=inverse of the variance)
+
+			double evaluateResidual() const MRPT_OVERRIDE;
+			double getInformation() const MRPT_OVERRIDE;
+			TPriorFactorGMRF() : Lambda(.0) {}
+		};
+
+		std::vector<std::deque<TObservationGMRF> > m_mrf_factors_activeObs; //!< Vector with the active observations and their respective Information
+		std::deque<TPriorFactorGMRF>               m_mrf_factors_priors; //!< Vector with the precomputed priors for each GMRF model
+
 		/** The implementation of "insertObservation" for Achim Lilienthal's map models DM & DM+V.
 		  * \param normReading Is a [0,1] normalized concentration reading.
 		  * \param point Is the sensor location on the map
@@ -412,7 +434,6 @@ namespace maps
 				m_map.insert(maps::CRandomFieldGridMap2D::mrKalmanFilter,      "mrKalmanFilter");
 				m_map.insert(maps::CRandomFieldGridMap2D::mrKalmanApproximate, "mrKalmanApproximate");
 				m_map.insert(maps::CRandomFieldGridMap2D::mrKernelDMV,         "mrKernelDMV");
-				m_map.insert(maps::CRandomFieldGridMap2D::mrGMRF_G,			   "mrGMRF_G");
 				m_map.insert(maps::CRandomFieldGridMap2D::mrGMRF_SD,		   "mrGMRF_SD");
 			}
 		};
