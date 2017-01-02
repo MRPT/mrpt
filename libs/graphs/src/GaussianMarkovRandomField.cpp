@@ -21,6 +21,11 @@ using namespace std;
 #	include <Eigen/SparseQR>
 #endif
 
+
+GaussianMarkovRandomField::FactorBase::~FactorBase()
+{
+}
+
 GaussianMarkovRandomField::GaussianMarkovRandomField() :
 	COutputLogger("GMRF"),
 	m_enable_profiler(true)
@@ -51,6 +56,28 @@ void GaussianMarkovRandomField::addConstraint(const BinaryFactorVirtualBase &c)
 {
 	m_factors_binary.push_back(&c);
 }
+
+bool GaussianMarkovRandomField::eraseConstraint(const FactorBase &c)
+{
+	{
+		auto it = std::find(m_factors_unary.begin(), m_factors_unary.end(), &c);
+		if (it != m_factors_unary.end())
+		{
+			m_factors_unary.erase(it);
+			return true;
+		}
+	}
+	{
+		auto it = std::find(m_factors_binary.begin(), m_factors_binary.end(), &c);
+		if (it != m_factors_binary.end())
+		{
+			m_factors_binary.erase(it);
+			return true;
+		}
+	}
+	return false;
+}
+
 
 /* Method:
   (\Sigma)^{-1/2) *  d( h(x) )/d( x )  * x_incr = - (\Sigma)^{-1/2) * r(x)
