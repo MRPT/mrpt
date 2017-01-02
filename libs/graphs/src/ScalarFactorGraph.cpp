@@ -9,7 +9,7 @@
 
 #include "graphs-precomp.h"  // Precompiled headers
 
-#include <mrpt/graphs/GaussianMarkovRandomField.h>
+#include <mrpt/graphs/ScalarFactorGraph.h>
 #include <mrpt/utils/CTicTac.h>
 
 using namespace mrpt;
@@ -18,21 +18,22 @@ using namespace mrpt::utils;
 using namespace std;
 
 #if EIGEN_VERSION_AT_LEAST(3,1,0) // Requires Eigen>=3.1
+#	include <Eigen/SparseCore>
 #	include <Eigen/SparseQR>
 #endif
 
 
-GaussianMarkovRandomField::FactorBase::~FactorBase()
+ScalarFactorGraph::FactorBase::~FactorBase()
 {
 }
 
-GaussianMarkovRandomField::GaussianMarkovRandomField() :
+ScalarFactorGraph::ScalarFactorGraph() :
 	COutputLogger("GMRF"),
 	m_enable_profiler(true)
 {
 }
 
-void GaussianMarkovRandomField::clear()
+void ScalarFactorGraph::clear()
 {
 	MRPT_LOG_DEBUG("clear() called");
 
@@ -41,23 +42,23 @@ void GaussianMarkovRandomField::clear()
 	m_factors_binary.clear();
 }
 
-void GaussianMarkovRandomField::initialize(const size_t nodeCount)
+void ScalarFactorGraph::initialize(const size_t nodeCount)
 {
 	MRPT_LOG_DEBUG_STREAM << "initialize() called, nodeCount=" << nodeCount;
 
 	m_numNodes = nodeCount;
 }
 
-void GaussianMarkovRandomField::addConstraint(const UnaryFactorVirtualBase &c)
+void ScalarFactorGraph::addConstraint(const UnaryFactorVirtualBase &c)
 {
 	m_factors_unary.push_back( &c );
 }
-void GaussianMarkovRandomField::addConstraint(const BinaryFactorVirtualBase &c)
+void ScalarFactorGraph::addConstraint(const BinaryFactorVirtualBase &c)
 {
 	m_factors_binary.push_back(&c);
 }
 
-bool GaussianMarkovRandomField::eraseConstraint(const FactorBase &c)
+bool ScalarFactorGraph::eraseConstraint(const FactorBase &c)
 {
 	{
 		auto it = std::find(m_factors_unary.begin(), m_factors_unary.end(), &c);
@@ -86,7 +87,7 @@ bool GaussianMarkovRandomField::eraseConstraint(const FactorBase &c)
 
    A * x_incr = b         --> SparseQR.
 */
-void GaussianMarkovRandomField::updateEstimation(
+void ScalarFactorGraph::updateEstimation(
 	Eigen::VectorXd & solved_x_inc,                 //!< Output increment of the current estimate. Caller must add this vector to current state vector to obtain the optimal estimation.
 	Eigen::VectorXd * solved_variances  //!< If !=NULL, the covariance of the estimate will be stored here.
 )

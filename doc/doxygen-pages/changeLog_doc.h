@@ -60,7 +60,7 @@
 			- [API change] `verbose` is no longer a field of mrpt::bayes::CParticleFilter::TParticleFilterOptions. Use the setVerbosityLevel() method of the CParticleFilter class itself.
 			- [API change] mrpt::bayes::CProbabilityParticle (which affects all PF-based classes in MRPT) has been greatly simplified via usage of the new mrpt::utils::copy_ptr<> pointee-copy-semantics smart pointer.
 		- \ref mrpt_graphs_grp
-			- New class mrpt::graphs::GaussianMarkovRandomField, a simple but extensible linear GMRF solver. Refactored from mrpt::maps::CGasConcentrationGridMap2D, etc.
+			- New class mrpt::graphs::ScalarFactorGraph, a simple but extensible linear GMRF solver. Refactored from mrpt::maps::CGasConcentrationGridMap2D, etc.
 		- \ref mrpt_gui_grp
 			- mrpt::gui::CMyGLCanvasBase is now derived from mrpt::opengl::CTextMessageCapable so they can draw text labels
 			- New class mrpt::gui::CDisplayWindow3DLocker for exception-safe 3D scene lock in 3D windows.
