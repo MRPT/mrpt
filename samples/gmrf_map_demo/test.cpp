@@ -11,6 +11,7 @@
 #include <mrpt/gui.h>
 #include <mrpt/random.h>
 #include <mrpt/opengl/stock_objects.h>
+#include <mrpt/opengl/CPointCloud.h>
 
 using namespace mrpt;
 using namespace mrpt::maps;
@@ -32,12 +33,17 @@ void Example_GMRF()
 		RESOLUTION /* resolution */
 		);
 
+	mrpt::opengl::CPointCloudPtr gl_data = mrpt::opengl::CPointCloud::Create();
+	gl_data->setPointSize(3.0f);
+
 	for (int i=0;i<20;i++)
 	{
 		const double value = randomGenerator.drawUniform(0.01,0.99);
 		const double x = randomGenerator.drawUniform(0.1, 0.95*X_SIZE);
 		const double y = randomGenerator.drawUniform(0.1, 0.95*Y_SIZE);
+		
 		printf("Observation: (x,y)=(%6.02f,%6.02f,)  => value: %6.03f\n", x,y,value);
+		gl_data->insertPoint(x, y, value);
 
 		gasmap.insertIndividualReading(value,  TPoint2D(x,y), false /*dont update map now*/ );
 	}
@@ -53,6 +59,7 @@ void Example_GMRF()
 
 	mrpt::opengl::COpenGLScenePtr &scene = win.get3DSceneAndLock();
 	scene->insert(mrpt::opengl::stock_objects::CornerXYZSimple(1.0f, 4.0f) );
+	scene->insert(gl_data);
 	scene->insert( glObj );
 	win.unlockAccess3DScene();
 	win.repaint();
