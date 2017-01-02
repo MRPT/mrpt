@@ -48,21 +48,24 @@ namespace graphs
 	public:
 		GaussianMarkovRandomField();
 
-		/** Simple, scalar (1-dim) constraint (edge) for a GMRF */
-		struct GRAPHS_IMPEXP UnaryFactorVirtualBase
+		struct GRAPHS_IMPEXP FactorBase
 		{
-			size_t node_id;
+			virtual ~FactorBase();
 			virtual double evaluateResidual() const = 0; //!< Return the residual/error of this observation.
 			virtual double getInformation() const = 0; //!< Return the inverse of the variance of this constraint
+		};
+
+		/** Simple, scalar (1-dim) constraint (edge) for a GMRF */
+		struct GRAPHS_IMPEXP UnaryFactorVirtualBase : public FactorBase
+		{
+			size_t node_id;
 			virtual void evalJacobian(double &dr_dx) const = 0; //!< Returns the derivative of the residual wrt the node value
 		};
 
 		/** Simple, scalar (1-dim) constraint (edge) for a GMRF */
-		struct GRAPHS_IMPEXP BinaryFactorVirtualBase
+		struct GRAPHS_IMPEXP BinaryFactorVirtualBase : public FactorBase
 		{
 			size_t node_id_i, node_id_j;
-			virtual double evaluateResidual() const = 0; //!< Return the residual/error of this observation.
-			virtual double getInformation() const = 0; //!< Return the inverse of the variance of this constraint
 			virtual void evalJacobian(double &dr_dxi, double &dr_dxj) const = 0; //!< Returns the derivative of the residual wrt the node values
 		};
 
@@ -80,6 +83,8 @@ namespace graphs
 		  */
 		void addConstraint(const UnaryFactorVirtualBase &listOfConstraints);
 		void addConstraint(const BinaryFactorVirtualBase &listOfConstraints);
+
+		bool eraseConstraint(const FactorBase &c); //!< Removes a constraint. Return true if found and deleted correctly.
 
 		void updateEstimation(
 			Eigen::VectorXd & solved_x_inc,                       //!< Output increment of the current estimate. Caller must add this vector to current state vector to obtain the optimal estimation.

@@ -20,6 +20,7 @@
 #include <mrpt/graphs/GaussianMarkovRandomField.h>
 
 #include <mrpt/maps/link_pragmas.h>
+#include <list>
 
 namespace mrpt
 {
@@ -335,8 +336,11 @@ namespace maps
 
 			double evaluateResidual() const MRPT_OVERRIDE;
 			double getInformation() const  MRPT_OVERRIDE;
+			void evalJacobian(double &dr_dx) const MRPT_OVERRIDE;
 
-			TObservationGMRF() : obsValue(.0), Lambda(.0), time_invariant(false) {}
+			TObservationGMRF( CRandomFieldGridMap2D &parent ) : obsValue(.0), Lambda(.0), time_invariant(false), m_parent(&parent) {}
+		private:
+			CRandomFieldGridMap2D *m_parent;
 		};
 
 		struct TPriorFactorGMRF : public mrpt::graphs::GaussianMarkovRandomField::BinaryFactorVirtualBase
@@ -345,10 +349,15 @@ namespace maps
 
 			double evaluateResidual() const MRPT_OVERRIDE;
 			double getInformation() const MRPT_OVERRIDE;
-			TPriorFactorGMRF() : Lambda(.0) {}
+			void evalJacobian(double &dr_dx_i, double &dr_dx_j) const MRPT_OVERRIDE;
+			
+			TPriorFactorGMRF(CRandomFieldGridMap2D &parent) : Lambda(.0), m_parent(&parent) {}
+		private:
+			CRandomFieldGridMap2D *m_parent;
 		};
 
-		std::vector<std::deque<TObservationGMRF> > m_mrf_factors_activeObs; //!< Vector with the active observations and their respective Information
+		// Important: converted to a std::list<> so pointers are NOT invalidated upon deletion.
+		std::vector<std::list<TObservationGMRF> > m_mrf_factors_activeObs; //!< Vector with the active observations and their respective Information
 		std::deque<TPriorFactorGMRF>               m_mrf_factors_priors; //!< Vector with the precomputed priors for each GMRF model
 
 		/** The implementation of "insertObservation" for Achim Lilienthal's map models DM & DM+V.
