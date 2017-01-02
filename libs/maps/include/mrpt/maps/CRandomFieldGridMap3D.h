@@ -17,16 +17,11 @@
 
 #include <mrpt/maps/link_pragmas.h>
 
-#if EIGEN_VERSION_AT_LEAST(3,1,0) // eigen 3.1+
-	#include <Eigen/SparseCore>
-	#include <Eigen/SparseCholesky>
-#endif
-
 namespace mrpt
 {
 namespace maps
 {
-	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE(CRandomFieldGridMap3D, CSerializable, MAPS_IMPEXP )
+	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE(CRandomFieldGridMap3D, mrpt::utils::CSerializable, MAPS_IMPEXP )
 
 	/** The contents of each voxel in a CRandomFieldGridMap3D map.
 	  * \ingroup mrpt_maps_grp
@@ -149,74 +144,11 @@ namespace maps
 		void updateMapEstimation(); //!< Run the method-specific procedure required to ensure that the mean & variances are up-to-date with all inserted observations, using parameters in insertionOptions
 
 	protected:
-		/** @name Auxiliary vars for GMRF method
-		    @{ */
-#if EIGEN_VERSION_AT_LEAST(3,1,0)
-		std::vector<Eigen::Triplet<double> >  H_prior;	// the prior part of H
-#endif
-		Eigen::VectorXd g;								// Gradient vector
-		size_t nPriorFactors;							// L
-		size_t nObsFactors;								// M
-		size_t nFactors;								// L+M
-		std::multimap<size_t,size_t> cell_interconnections;		//Store the interconnections (relations) of each voxel with its neighbourds
 
-		struct TObservationGMRF
-		{
-			double obsValue;
-			double Lambda;
-			//bool   time_invariant;						//if the observation will lose weight (lambda) as time goes on (default false)
-		};
 
-		std::vector<std::vector<TObservationGMRF> > activeObs;		//Vector with the active observations and their respective Information
-		/** @} */
-
-		/** The implementation of "insertObservation" for the Gaussian Markov Random Field map model.
-		  * \param normReading Is a [0,1] normalized concentration reading.
-		  * \param point Is the sensor location on the map
-		  */
-		void  insertObservation_GMRF(double normReading,const mrpt::math::TPoint2D &point, const bool update_map,const bool time_invariant);
-
-		/** solves the minimum quadratic system to determine the new concentration of each voxel */
-		void  updateMapEstimation_GMRF();
-
-		/** Erase all the contents of the map */
-		virtual void  internal_clear() MRPT_OVERRIDE;
-
-		/** Check if two cells of the gridmap (m_map) are connected, based on the provided occupancy gridmap*/
-		bool exist_relation_between2cells(
-			const mrpt::maps::COccupancyGridMap2D *m_Ocgridmap,
-			size_t cxo_min, 
-			size_t cxo_max, 
-			size_t cyo_min, 
-			size_t cyo_max, 
-			const size_t seed_cxo, 
-			const size_t seed_cyo, 
-			const size_t objective_cxo, 
-			const size_t objective_cyo);
 	};
-	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CRandomFieldGridMap3D , CSerializable, MAPS_IMPEXP )
+	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CRandomFieldGridMap3D , mrpt::utils::CSerializable, MAPS_IMPEXP )
 
-
-	} // End of namespace
-
-
-	// Specializations MUST occur at the same namespace:
-	namespace utils
-	{
-		template <>
-		struct TEnumTypeFiller<maps::CRandomFieldGridMap3D::TMapRepresentation>
-		{
-			typedef maps::CRandomFieldGridMap3D::TMapRepresentation enum_t;
-			static void fill(bimap<enum_t,std::string>  &m_map)
-			{
-				m_map.insert(maps::CRandomFieldGridMap3D::mrKernelDM,          "mrKernelDM");
-				m_map.insert(maps::CRandomFieldGridMap3D::mrKalmanFilter,      "mrKalmanFilter");
-				m_map.insert(maps::CRandomFieldGridMap3D::mrKalmanApproximate, "mrKalmanApproximate");
-				m_map.insert(maps::CRandomFieldGridMap3D::mrKernelDMV,         "mrKernelDMV");
-				m_map.insert(maps::CRandomFieldGridMap3D::mrGMRF_G,			   "mrGMRF_G");
-				m_map.insert(maps::CRandomFieldGridMap3D::mrGMRF_SD,		   "mrGMRF_SD");
-			}
-		};
 	} // End of namespace
 } // End of namespace
 

@@ -2185,8 +2185,6 @@ void CRandomFieldGridMap2D::insertObservation_GMRF(
 	if (update_map) updateMapEstimation_GMRF();
 }
 
-bool CRandomFieldGridMap2D::ENABLE_GMRF_PROFILER  = false;
-
 /*---------------------------------------------------------------
 					updateMapEstimation_GMRF
   ---------------------------------------------------------------*/

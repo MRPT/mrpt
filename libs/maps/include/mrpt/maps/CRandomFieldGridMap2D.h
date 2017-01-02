@@ -118,7 +118,6 @@ namespace maps
 		// This must be added to any CSerializable derived class:
 		DEFINE_VIRTUAL_SERIALIZABLE( CRandomFieldGridMap2D )
 	public:
-		static bool ENABLE_GMRF_PROFILER; //!< [default:false] Enables a profiler to show a performance report at application end.
 
 		/** Calls the base CMetricMap::clear
 		  * Declared here to avoid ambiguity between the two clear() in both base classes.
