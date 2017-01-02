@@ -97,7 +97,7 @@ void GaussianMarkovRandomField::updateEstimation(
 		double dr_dx;
 		e->evalJacobian(dr_dx);
 		const int node_id = e->node_id;
-		A_tri.push_back(Eigen::Triplet<double>(edge_counter, node_id, dr_dx));
+		A_tri.push_back(Eigen::Triplet<double>(edge_counter, node_id, w*dr_dx));
 		// gradient:
 		m_g[edge_counter] -= w*e->evaluateResidual();
 
@@ -111,8 +111,8 @@ void GaussianMarkovRandomField::updateEstimation(
 		double dr_dxi, dr_dxj;
 		e->evalJacobian(dr_dxi, dr_dxj);
 		const int node_id_i = e->node_id_i, node_id_j = e->node_id_j;
-		A_tri.push_back(Eigen::Triplet<double>(edge_counter, node_id_i, dr_dxi));
-		A_tri.push_back(Eigen::Triplet<double>(edge_counter, node_id_j, dr_dxj));
+		A_tri.push_back(Eigen::Triplet<double>(edge_counter, node_id_i, w*dr_dxi));
+		A_tri.push_back(Eigen::Triplet<double>(edge_counter, node_id_j, w*dr_dxj));
 		// gradient:
 		m_g[edge_counter] -= w*e->evaluateResidual();
 
@@ -150,23 +150,25 @@ void GaussianMarkovRandomField::updateEstimation(
 	{
 		mrpt::utils::CTimeLoggerEntry tle(m_timelogger, "GMRF.variance");
 
-		MRPT_TODO("Implement the efficient method!");
-#if 0
+#if 1
 		// VARIANCE SIGMA = inv(P) * inv( P*H*inv(P) ) * P
 		//Get triangular supperior P*H*inv(P) = UT' * UT = P * R'*R * inv(P)
 		MRPT_TODO("Use compressed access instead of coeff() below");
 
-		Eigen::SparseMatrix<double> UT = solver.matrixU();
-		Sigma.reserve(UT.nonZeros());
+		MRPT_TODO("UT=R... check!");
+		Eigen::SparseMatrix<double> UT = solver.matrixR();
+		*solved_covariance = Eigen::SparseMatrix<double>(n,n);
+		solved_covariance->reserve(UT.nonZeros());
 
 		//Apply custom equations to obtain the inverse -> inv( P*H*inv(P) )
-		for (int l = N - 1; l >= 0; l--)
+		for (int l = n - 1; l >= 0; l--)
 		{
-			if (m_rfgm_verbose && !(l % 100)) printf("[CRandomFieldGridMap2D] Computing variance %6.02f%%... \r", (100.0*(N - l - 1)) / N);
+			if (!(l % 100))
+				MRPT_LOG_DEBUG_FMT("Computing variance %6.02f%%... \r", (100.0*(n - l - 1)) / n);
 
 			//Computes variances in the inferior submatrix of "l"
 			double subSigmas = 0.0;
-			for (size_t j = l + 1; j < N; j++)
+			for (size_t j = l + 1; j < n; j++)
 			{
 				if (UT.coeff(l, j) != 0)
 				{
@@ -178,24 +180,24 @@ void GaussianMarkovRandomField::updateEstimation(
 					{
 						if (UT.coeff(l, i) != 0)
 						{
-							sum += UT.coeff(l, i) * Sigma.coeff(i, j);
+							sum += UT.coeff(l, i) * solved_covariance->coeff(i, j);
 						}
 					}
 					//SUM 2
-					for (size_t i = j + 1; i < N; ++i)
+					for (size_t i = j + 1; i < n; ++i)
 					{
 						if (UT.coeff(l, i) != 0)
 						{
-							sum += UT.coeff(l, i) * Sigma.coeff(j, i);
+							sum += UT.coeff(l, i) * solved_covariance->coeff(j, i);
 						}
 					}
 					//Save off-diagonal variance (only Upper triangular)
-					Sigma.insert(l, j) = (-sum / UT.coeff(l, l));
-					subSigmas += UT.coeff(l, j) * Sigma.coeff(l, j);
+					solved_covariance->insert(l, j) = (-sum / UT.coeff(l, l));
+					subSigmas += UT.coeff(l, j) * solved_covariance->coeff(l, j);
 				}
 			}
 
-			Sigma.insert(l, l) = (1 / UT.coeff(l, l)) * (1 / UT.coeff(l, l) - subSigmas);
+			solved_covariance->insert(l, l) = (1 / UT.coeff(l, l)) * (1 / UT.coeff(l, l) - subSigmas);
 		}
 #else
 		// Naive method: (much slower!)
