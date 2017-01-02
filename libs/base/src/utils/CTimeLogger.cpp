@@ -51,6 +51,40 @@ CTimeLogger::~CTimeLogger()
         dumpAllStats();
 }
 
+CTimeLogger::CTimeLogger(const CTimeLogger&o) :
+	COutputLogger(o),
+	m_enabled(o.m_enabled),
+	m_name(o.m_name),
+	m_data(o.m_data)
+{
+}
+CTimeLogger &CTimeLogger::operator =(const CTimeLogger&o)
+{
+	COutputLogger::operator=(o);
+	m_enabled = o.m_enabled;
+	m_name = o.m_name;
+	m_data = o.m_data;
+	return *this;
+}
+#if MRPT_HAS_CXX11
+CTimeLogger::CTimeLogger(CTimeLogger&&o) :
+	COutputLogger(o),
+	m_enabled(o.m_enabled),
+	m_name(o.m_name),
+	m_data(o.m_data)
+{
+}
+CTimeLogger &CTimeLogger::operator =(CTimeLogger&&o)
+{
+	COutputLogger::operator=(o);
+	m_enabled = o.m_enabled;
+	m_name = o.m_name;
+	m_data = o.m_data;
+	return *this;
+}
+#endif
+
+
 void CTimeLogger::clear(bool deep_clear)
 {
 	if (deep_clear)
