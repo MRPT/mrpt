@@ -2234,6 +2234,31 @@ bool CRandomFieldGridMap2D::ENABLE_GMRF_PROFILER  = false;
 void CRandomFieldGridMap2D::updateMapEstimation_GMRF()
 {
 	m_gmrf.updateEstimation();
+
+
+	// Update Information/Strength of Active Observations
+	//---------------------------------------------------------
+	if (m_insertOptions_common->GMRF_lambdaObsLoss != 0) {
+		for (size_t j = 0; j<activeObs.size(); j++)
+		{
+			std::vector<TobservationGMRF>::iterator ito = activeObs[j].begin();
+			while (ito != activeObs[j].end())
+			{
+				if (!ito->time_invariant)
+				{
+					ito->Lambda -= m_insertOptions_common->GMRF_lambdaObsLoss;
+					if (ito->Lambda <= 0.0)
+						ito = activeObs[j].erase(ito);
+					else
+						++ito;
+				}
+				else
+					++ito;
+			}
+		}
+	}
+
+
 }
 
 

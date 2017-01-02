@@ -12,49 +12,58 @@
 #include <mrpt/utils/types_math.h>
 #include <mrpt/utils/COutputLogger.h>
 #include <mrpt/utils/CTimeLogger.h>
-#include <mrpt/base/link_pragmas.h>
 #include <deque>
 
 #if EIGEN_VERSION_AT_LEAST(3,1,0) // Requires Eigen>=3.1
+#	include <Eigen/SparseCore>
+#endif
 
-#include <Eigen/SparseCore>
+#include <mrpt/graphs/link_pragmas.h>
 
 namespace mrpt
 {
-namespace math
+namespace graphs
 {
-
-	/** Sparse solver for GMRF (Gaussian Markov Random Fields) graphical models. 
+	/** Sparse solver for GMRF (Gaussian Markov Random Fields) graphical models.
 	 *  The design of this class is optimized for large problems (e.g. >1e3 nodes, >1e4 constrainst) 
 	 *  by leaving to the user/caller the responsibility of allocating all "nodes" and constraints.
+	 *  This class can be seen as an intermediary solution between current methods in mrpt::graphslam and the well-known G2O library:
+	 *
+	 *  Assumptions/limitations:
+	 *   - Linear error functions (for now).
+	 *   - Scalar (1-dim) error functions.
+	 *   - Solver: Eigen SparseQR.
+	 *
 	 *  Usage:
 	 *   - Call initialize() to set the number of nodes.
 	 *   - Call addConstraints() to insert constraints. This may be called more than once.
-	 *   - Call updateEstimation() to run one step of the linear solver, using a Sparse Cholesky solver.
+	 *   - Call updateEstimation() to run one step of the linear solver, using a SparseQR solver.
 	 *
-	 * \ingroup mrpt_base_grp
+	 * \ingroup mrpt_graph_grp
 	 * \note [New in MRPT 1.5.0] Requires Eigen>=3.1
 	 */
-	class BASE_IMPEXP GaussianMarkovRandomField : 
+	class GRAPHS_IMPEXP GaussianMarkovRandomField : 
 		public mrpt::utils::COutputLogger
 	{
 	public:
 		GaussianMarkovRandomField();
 
 		/** Simple, scalar (1-dim) constraint (edge) for a GMRF */
-		struct BASE_IMPEXP UnaryFactorVirtualBase
+		struct GRAPHS_IMPEXP UnaryFactorVirtualBase
 		{
 			size_t node_id;
 			virtual double evaluateResidual() const = 0; //!< Return the residual/error of this observation.
 			virtual double getInformation() const = 0; //!< Return the inverse of the variance of this constraint
+			virtual void evalJacobian(double &dr_dx) const = 0; //!< Returns the derivative of the residual wrt the node value
 		};
 
 		/** Simple, scalar (1-dim) constraint (edge) for a GMRF */
-		struct BASE_IMPEXP BinaryFactorVirtualBase
+		struct GRAPHS_IMPEXP BinaryFactorVirtualBase
 		{
-			size_t node_id1, node_id2;
+			size_t node_id_i, node_id_j;
 			virtual double evaluateResidual() const = 0; //!< Return the residual/error of this observation.
 			virtual double getInformation() const = 0; //!< Return the inverse of the variance of this constraint
+			virtual void evalJacobian(double &dr_dxi, double &dr_dxj) const = 0; //!< Returns the derivative of the residual wrt the node values
 		};
 
 		void clear(); //!< Reset state: remove all constraints and nodes.
@@ -72,10 +81,14 @@ namespace math
 		void addConstraint(const UnaryFactorVirtualBase &listOfConstraints);
 		void addConstraint(const BinaryFactorVirtualBase &listOfConstraints);
 
-		void updateEstimation();
+#if EIGEN_VERSION_AT_LEAST(3,1,0) // Requires Eigen>=3.1
+		void updateEstimation(
+			Eigen::VectorXd & solved_x_inc,                       //!< Output increment of the current estimate. Caller must add this vector to current state vector to obtain the optimal estimation.
+			Eigen::SparseMatrix<double> *solved_covariance = NULL //!< If !=NULL, the covariance of the estimate will be stored here.
+		);
+#endif
 
 	private:
-		//std::vector<Eigen::Triplet<double> >  m_H_prior; // the prior part of H
 		Eigen::VectorXd m_g;       //!< Gradient vector. The length of this vector implicitly stores the number of nodes in the graph.
 
 		std::deque<const UnaryFactorVirtualBase*>  m_factors_unary;
@@ -89,4 +102,3 @@ namespace math
 } // End of namespace
 } // End of namespace
 
-#endif // Eigen>=3.1
