@@ -17,7 +17,7 @@
 #include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/utils/TEnumType.h>
 #include <mrpt/maps/CMetricMap.h>
-#include <mrpt/graphs/GaussianMarkovRandomField.h>
+#include <mrpt/graphs/ScalarFactorGraph.h>
 
 #include <mrpt/maps/link_pragmas.h>
 #include <list>
@@ -325,9 +325,9 @@ namespace maps
 		size_t              m_average_normreadings_count;
 		/** @} */
 
-		mrpt::graphs::GaussianMarkovRandomField  m_gmrf;
+		mrpt::graphs::ScalarFactorGraph  m_gmrf;
 
-		struct TObservationGMRF : public mrpt::graphs::GaussianMarkovRandomField::UnaryFactorVirtualBase
+		struct TObservationGMRF : public mrpt::graphs::ScalarFactorGraph::UnaryFactorVirtualBase
 		{
 			double obsValue;       //!< Observation value
 			double Lambda;         //!< "Information" of the observation (=inverse of the variance)
@@ -342,7 +342,7 @@ namespace maps
 			CRandomFieldGridMap2D *m_parent;
 		};
 
-		struct TPriorFactorGMRF : public mrpt::graphs::GaussianMarkovRandomField::BinaryFactorVirtualBase
+		struct TPriorFactorGMRF : public mrpt::graphs::ScalarFactorGraph::BinaryFactorVirtualBase
 		{
 			double Lambda;         //!< "Information" of the observation (=inverse of the variance)
 

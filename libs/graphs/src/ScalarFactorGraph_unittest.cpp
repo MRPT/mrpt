@@ -8,7 +8,7 @@
    +---------------------------------------------------------------------------+ */
 
 
-#include <mrpt/graphs/GaussianMarkovRandomField.h>
+#include <mrpt/graphs/ScalarFactorGraph.h>
 #include <gtest/gtest.h>
 
 using namespace mrpt;
@@ -17,7 +17,7 @@ using namespace std;
 
 #if EIGEN_VERSION_AT_LEAST(3,1,0) // Requires Eigen>=3.1
 
-struct MySimpleUnaryEdge : public GaussianMarkovRandomField::UnaryFactorVirtualBase
+struct MySimpleUnaryEdge : public ScalarFactorGraph::UnaryFactorVirtualBase
 {
 	MySimpleUnaryEdge(vector<double> &parent, size_t nodeid, double observation, double information) :
 		m_parent(parent),
@@ -45,7 +45,7 @@ protected:
 	double m_observation, m_information;
 };
 
-struct MySimpleBinaryEdge : public GaussianMarkovRandomField::BinaryFactorVirtualBase
+struct MySimpleBinaryEdge : public ScalarFactorGraph::BinaryFactorVirtualBase
 {
 	MySimpleBinaryEdge(vector<double> &parent, size_t nodeid_i, size_t nodeid_j, double information) :
 		m_parent(parent),
@@ -74,12 +74,12 @@ protected:
 	double m_information;
 };
 
-TEST(GaussianMarkovRandomField, MiniMRF_UnaryEdges)
+TEST(ScalarFactorGraph, MiniMRF_UnaryEdges)
 {
 	const size_t N = 4;
 	vector<double> my_map(N, .0);
 
-	GaussianMarkovRandomField  gmrf;
+	ScalarFactorGraph  gmrf;
 	gmrf.enableProfiler(false);
 
 	gmrf.initialize(N);
@@ -137,12 +137,12 @@ TEST(GaussianMarkovRandomField, MiniMRF_UnaryEdges)
 	}
 }
 
-TEST(GaussianMarkovRandomField, MiniMRF_BinaryEdges)
+TEST(ScalarFactorGraph, MiniMRF_BinaryEdges)
 {
 	const size_t N = 4;
 	vector<double> my_map(N, .0);
 
-	GaussianMarkovRandomField  gmrf;
+	ScalarFactorGraph  gmrf;
 	gmrf.enableProfiler(false);
 
 	gmrf.initialize(N);

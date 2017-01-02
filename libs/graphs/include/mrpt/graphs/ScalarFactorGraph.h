@@ -14,10 +14,6 @@
 #include <mrpt/utils/CTimeLogger.h>
 #include <deque>
 
-#if EIGEN_VERSION_AT_LEAST(3,1,0) // Requires Eigen>=3.1
-#	include <Eigen/SparseCore>
-#endif
-
 #include <mrpt/graphs/link_pragmas.h>
 
 namespace mrpt
@@ -32,6 +28,7 @@ namespace graphs
 	 *  Assumptions/limitations:
 	 *   - Linear error functions (for now).
 	 *   - Scalar (1-dim) error functions.
+	 *   - Gaussian factors.
 	 *   - Solver: Eigen SparseQR.
 	 *
 	 *  Usage:
@@ -42,11 +39,11 @@ namespace graphs
 	 * \ingroup mrpt_graph_grp
 	 * \note [New in MRPT 1.5.0] Requires Eigen>=3.1
 	 */
-	class GRAPHS_IMPEXP GaussianMarkovRandomField : 
+	class GRAPHS_IMPEXP ScalarFactorGraph : 
 		public mrpt::utils::COutputLogger
 	{
 	public:
-		GaussianMarkovRandomField();
+		ScalarFactorGraph();
 
 		struct GRAPHS_IMPEXP FactorBase
 		{
