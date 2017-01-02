@@ -37,7 +37,7 @@ namespace graphs
 	 *  Usage:
 	 *   - Call initialize() to set the number of nodes.
 	 *   - Call addConstraints() to insert constraints. This may be called more than once.
-	 *   - Call updateEstimation() to run one step of the linear solver, using a SparseQR solver.
+	 *   - Call updateEstimation() to run one step of the linear SparseQR solver.
 	 *
 	 * \ingroup mrpt_graph_grp
 	 * \note [New in MRPT 1.5.0] Requires Eigen>=3.1
@@ -81,15 +81,16 @@ namespace graphs
 		void addConstraint(const UnaryFactorVirtualBase &listOfConstraints);
 		void addConstraint(const BinaryFactorVirtualBase &listOfConstraints);
 
-#if EIGEN_VERSION_AT_LEAST(3,1,0) // Requires Eigen>=3.1
 		void updateEstimation(
 			Eigen::VectorXd & solved_x_inc,                       //!< Output increment of the current estimate. Caller must add this vector to current state vector to obtain the optimal estimation.
-			Eigen::SparseMatrix<double> *solved_covariance = NULL //!< If !=NULL, the covariance of the estimate will be stored here.
+			Eigen::VectorXd * solved_variances = NULL //!< If !=NULL, the variances of each estimate will be stored here.
 		);
-#endif
+
+		bool isProfilerEnabled() const { return m_enable_profiler; }
+		void enableProfiler(bool enable=true) { m_enable_profiler=enable;}
 
 	private:
-		Eigen::VectorXd m_g;       //!< Gradient vector. The length of this vector implicitly stores the number of nodes in the graph.
+		size_t          m_numNodes; //!< number of nodes in the graph
 
 		std::deque<const UnaryFactorVirtualBase*>  m_factors_unary;
 		std::deque<const BinaryFactorVirtualBase*> m_factors_binary;
