@@ -17,10 +17,7 @@ using namespace mrpt::graphs;
 using namespace mrpt::utils;
 using namespace std;
 
-MRPT_TODO("API: add a way to reflect priors/static constraints");
-
 #if EIGEN_VERSION_AT_LEAST(3,1,0) // Requires Eigen>=3.1
-//#	include <Eigen/SparseCholesky>
 #	include <Eigen/SparseQR>
 #endif
 
@@ -34,7 +31,7 @@ void GaussianMarkovRandomField::clear()
 {
 	MRPT_LOG_DEBUG("clear() called");
 
-	m_g.resize(0);
+	m_numNodes = 0;
 	m_factors_unary.clear();
 	m_factors_binary.clear();
 }
@@ -43,8 +40,7 @@ void GaussianMarkovRandomField::initialize(const size_t nodeCount)
 {
 	MRPT_LOG_DEBUG_STREAM << "initialize() called, nodeCount=" << nodeCount;
 
-	m_g.resize(nodeCount); //Initially the gradient is all 0
-	m_g.fill(0.0);
+	m_numNodes = nodeCount;
 }
 
 void GaussianMarkovRandomField::addConstraint(const UnaryFactorVirtualBase &c)
@@ -65,15 +61,17 @@ void GaussianMarkovRandomField::addConstraint(const BinaryFactorVirtualBase &c)
 */
 void GaussianMarkovRandomField::updateEstimation(
 	Eigen::VectorXd & solved_x_inc,                 //!< Output increment of the current estimate. Caller must add this vector to current state vector to obtain the optimal estimation.
-	Eigen::SparseMatrix<double> *solved_covariance  //!< If !=NULL, the covariance of the estimate will be stored here.
+	Eigen::VectorXd * solved_variances  //!< If !=NULL, the covariance of the estimate will be stored here.
 )
 {
+	ASSERT_(m_numNodes>0);
+
 	m_timelogger.enable(m_enable_profiler);
 
 #if EIGEN_VERSION_AT_LEAST(3,1,0)
 
 	// Number of vertices:
-	const size_t n = m_g.size();
+	const size_t n = m_numNodes;
 	solved_x_inc.setZero(n);
 
 	// Number of edges:
@@ -87,7 +85,9 @@ void GaussianMarkovRandomField::updateEstimation(
 	std::vector<Eigen::Triplet<double> > A_tri;
 	A_tri.reserve(m1 + 2 * m2);
 
-	m_g.setZero();
+	Eigen::VectorXd g; // Error vector
+
+	g.setZero(m);
 	int edge_counter = 0;
 	for (const auto &e : m_factors_unary)
 	{
@@ -99,7 +99,7 @@ void GaussianMarkovRandomField::updateEstimation(
 		const int node_id = e->node_id;
 		A_tri.push_back(Eigen::Triplet<double>(edge_counter, node_id, w*dr_dx));
 		// gradient:
-		m_g[edge_counter] -= w*e->evaluateResidual();
+		g[edge_counter] -= w*e->evaluateResidual();
 
 		++edge_counter;
 	}
@@ -114,7 +114,7 @@ void GaussianMarkovRandomField::updateEstimation(
 		A_tri.push_back(Eigen::Triplet<double>(edge_counter, node_id_i, w*dr_dxi));
 		A_tri.push_back(Eigen::Triplet<double>(edge_counter, node_id_j, w*dr_dxj));
 		// gradient:
-		m_g[edge_counter] -= w*e->evaluateResidual();
+		g[edge_counter] -= w*e->evaluateResidual();
 
 		++edge_counter;
 	}
@@ -127,9 +127,6 @@ void GaussianMarkovRandomField::updateEstimation(
 		mrpt::utils::CTimeLoggerEntry tle(m_timelogger, "GMRF.build_A_compress");
 
 		A.setFromTriplets(A_tri.begin(), A_tri.end());
-#if 0 // For debug only
-		mrpt::math::saveEigenSparseTripletsToFile("H_tri.txt", H_tri);
-#endif
 		A.makeCompressed();
 	}
 
@@ -140,25 +137,26 @@ void GaussianMarkovRandomField::updateEstimation(
 		mrpt::utils::CTimeLoggerEntry tle(m_timelogger, "GMRF.solve");
 
 		solver.compute(A);
-		solved_x_inc = solver.solve(m_g);
+		solved_x_inc = solver.solve(g);
 	}
 
 	// Recover covariance
 	// -----------------------
-	bool use_variance_perm = true;
-	if (solved_covariance)
+	if (solved_variances)
 	{
 		mrpt::utils::CTimeLoggerEntry tle(m_timelogger, "GMRF.variance");
 
-#if 1
+		solved_variances->resize(n);
+
 		// VARIANCE SIGMA = inv(P) * inv( P*H*inv(P) ) * P
 		//Get triangular supperior P*H*inv(P) = UT' * UT = P * R'*R * inv(P)
+		// (QR factor: Use UT=R)
+
 		MRPT_TODO("Use compressed access instead of coeff() below");
 
-		MRPT_TODO("UT=R... check!");
 		Eigen::SparseMatrix<double> UT = solver.matrixR();
-		*solved_covariance = Eigen::SparseMatrix<double>(n,n);
-		solved_covariance->reserve(UT.nonZeros());
+		Eigen::SparseMatrix<double> solved_covariance(n,n);
+		solved_covariance.reserve(UT.nonZeros());
 
 		//Apply custom equations to obtain the inverse -> inv( P*H*inv(P) )
 		for (int l = n - 1; l >= 0; l--)
@@ -180,7 +178,7 @@ void GaussianMarkovRandomField::updateEstimation(
 					{
 						if (UT.coeff(l, i) != 0)
 						{
-							sum += UT.coeff(l, i) * solved_covariance->coeff(i, j);
+							sum += UT.coeff(l, i) * solved_covariance.coeff(i, j);
 						}
 					}
 					//SUM 2
@@ -188,25 +186,26 @@ void GaussianMarkovRandomField::updateEstimation(
 					{
 						if (UT.coeff(l, i) != 0)
 						{
-							sum += UT.coeff(l, i) * solved_covariance->coeff(j, i);
+							sum += UT.coeff(l, i) * solved_covariance.coeff(j, i);
 						}
 					}
 					//Save off-diagonal variance (only Upper triangular)
-					solved_covariance->insert(l, j) = (-sum / UT.coeff(l, l));
-					subSigmas += UT.coeff(l, j) * solved_covariance->coeff(l, j);
+					solved_covariance.insert(l, j) = (-sum / UT.coeff(l, l));
+					subSigmas += UT.coeff(l, j) * solved_covariance.coeff(l, j);
 				}
 			}
 
-			solved_covariance->insert(l, l) = (1 / UT.coeff(l, l)) * (1 / UT.coeff(l, l) - subSigmas);
+			solved_covariance.insert(l, l) = (1 / UT.coeff(l, l)) * (1 / UT.coeff(l, l) - subSigmas);
 		}
-#else
-		// Naive method: (much slower!)
-		Eigen::SparseMatrix<double> I(n, n);
-		I.setIdentity();
-		*solved_covariance = solver.solve(I);
-		use_variance_perm = false;
-#endif
-	}
+
+		for (unsigned int i = 0; i < n; i++)
+		{
+			const int idx = (int)solver.colsPermutation().indices().coeff(i);
+			const double variance = solved_covariance.coeff(i, i);
+			(*solved_variances)[idx] = variance;
+		}
+
+	} // end calc variances
 
 #else
 	THROW_EXCEPTION("This method requires Eigen 3.1.0 or above")
