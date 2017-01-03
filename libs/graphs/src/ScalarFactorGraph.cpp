@@ -29,7 +29,7 @@ ScalarFactorGraph::FactorBase::~FactorBase()
 
 ScalarFactorGraph::ScalarFactorGraph() :
 	COutputLogger("GMRF"),
-	m_enable_profiler(true)
+	m_enable_profiler(false)
 {
 }
 
