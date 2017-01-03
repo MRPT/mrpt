@@ -40,7 +40,7 @@ namespace maps
 		CHeightGridMap2D_MRF(
 			TMapRepresentation	mapType = mrGMRF_SD,
 			double x_min = -2, double x_max = 2,
-			double y_min = -2, double y_max = 2, double resolution = 0.1,
+			double y_min = -2, double y_max = 2, double resolution = 0.5,
 			bool  run_first_map_estimation_now=true  //!< [in] Whether to call updateMapEstimation(). If false, make sure of calling that function before accessing map contents.
 			);
 
