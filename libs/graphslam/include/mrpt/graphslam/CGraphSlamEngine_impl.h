@@ -18,8 +18,8 @@ namespace mrpt { namespace graphslam {
 template<class GRAPH_t>
 CGraphSlamEngine<GRAPH_t>::CGraphSlamEngine(
 		const std::string& config_file,
-		const std::string rawlog_fname/* ="" */,
-		const std::string fname_GT /* ="" */,
+		const std::string& rawlog_fname/* ="" */,
+		const std::string& fname_GT /* ="" */,
 		mrpt::graphslam::CWindowManager* win_manager /* = NULL */,
 		mrpt::graphslam::deciders::CNodeRegistrationDecider<GRAPH_t>* node_reg /* = NULL */,
 		mrpt::graphslam::deciders::CEdgeRegistrationDecider<GRAPH_t>* edge_reg /* = NULL */,
@@ -463,8 +463,8 @@ bool CGraphSlamEngine<GRAPH_t>::execGraphSlamStep(
 	CActionCollectionPtr action;
 	CSensoryFramePtr observations;
 
-	return this->execGraphSlamStep(action, observations, observation, rawlog_entry);
-}
+	return this->execGraphSlamStep(action, observations, observation,
+			rawlog_entry); }
 
 template<class GRAPH_t>
 bool CGraphSlamEngine<GRAPH_t>::execGraphSlamStep(

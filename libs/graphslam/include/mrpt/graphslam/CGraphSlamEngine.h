@@ -231,15 +231,15 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		 */
 		CGraphSlamEngine(
 				const std::string& config_file,
-				const std::string rawlog_fname="",
-				const std::string fname_GT="",
+				const std::string& rawlog_fname="",
+				const std::string& fname_GT="",
 				mrpt::graphslam::CWindowManager* win_manager=NULL,
 				mrpt::graphslam::deciders::CNodeRegistrationDecider<GRAPH_t>* node_reg=NULL,
 				mrpt::graphslam::deciders::CEdgeRegistrationDecider<GRAPH_t>* edge_reg=NULL,
 				mrpt::graphslam::optimizers::CGraphSlamOptimizer<GRAPH_t>* optimizer=NULL
 				);
 		/**\brief Default Destructor. */
-		~CGraphSlamEngine();
+		virtual ~CGraphSlamEngine();
 
 		// Public function definitions
 		//////////////////////////////////////////////////////////////
@@ -324,7 +324,7 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		void printParams() const;
 		/**\name graphSLAM Execution methods
 		 *
-		 * \brief Method for processing incoming observations 
+		 * \brief Method for processing incoming observations
 		 */
 		/**\{*/
 		/**\brief Wrapper method around execGraphSlamStep.
@@ -333,7 +333,7 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		 * \return False if the user has requested to exit the graphslam execution
 		 * (e.g. pressed ctrl-c), True otherwise
 		 */
-		bool execGraphSlamStep(
+		virtual bool execGraphSlamStep(
 				mrpt::obs::CObservationPtr& observation,
 				size_t& rawlog_entry);
 		/**\brief Main class method responsible for parsing each measurement and
@@ -346,7 +346,7 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		 * \return False if the user has requested to exit the graphslam execution
 		 * (e.g. pressed ctrl-c), True otherwise
 		 **/
-		bool execGraphSlamStep(
+		virtual bool execGraphSlamStep(
 				mrpt::obs::CActionCollectionPtr& action,
 				mrpt::obs::CSensoryFramePtr& observations,
 				mrpt::obs::CObservationPtr& observation,
@@ -432,7 +432,7 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 				std::map<std::string, int>* edge_stats,
 				mrpt::system::TTimeStamp* timestamp=NULL);
 
-	private:
+	protected:
 		// Private function definitions
 		//////////////////////////////////////////////////////////////
 
