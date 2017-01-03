@@ -34,6 +34,7 @@ TEST(SerializeTestMaps, WriteReadToMem)
 		CLASS_ID( CReflectivityGridMap2D),
 		CLASS_ID( COccupancyGridMap2D),
 		CLASS_ID( CSimplePointsMap),
+		CLASS_ID( CRandomFieldGridMap3D ),
 		CLASS_ID( CWeightedPointsMap),
 		CLASS_ID( COctoMap)
 		};

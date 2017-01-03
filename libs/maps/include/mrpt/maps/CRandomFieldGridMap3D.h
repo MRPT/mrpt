@@ -65,7 +65,7 @@ namespace maps
 		typedef utils::CDynamicGrid3D<TRandomFieldVoxel> BASE;
 
 		// This must be added to any CSerializable derived class:
-		DEFINE_VIRTUAL_SERIALIZABLE( CRandomFieldGridMap3D )
+		DEFINE_SERIALIZABLE( CRandomFieldGridMap3D )
 	public:
 		static bool ENABLE_GMRF_PROFILER; //!< [default:false] Enables a profiler to show a performance report at application end.
 
@@ -74,8 +74,12 @@ namespace maps
 			double x_min = -2, double x_max = 2,
 			double y_min = -2, double y_max = 2,
 			double z_min = -2, double z_max = 2,
-			double voxel_size = 0.5
+			double voxel_size = 0.5, 
+			bool call_initialize_now = true
 			);
+
+		/** Must be called after each change of resolution, size, etc. to build the prior factor information */
+		void initialize();
 
 		/** Save the current estimated mean values to a CSV file with fields `x y z mean_value`.
 		  * Optionally, std deviations can be also saved to another file with fields `x y z stddev_value`, if `filName_stddev` is provided.
