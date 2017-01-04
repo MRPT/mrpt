@@ -351,6 +351,25 @@ Description: Mobile Robot Programming Toolkit - kinematics library
  More about MRPT libraries in: http://www.mrpt.org/Libraries
 
 
+Package: libmrpt-graphs@MRPT_VER_MM@
+Section: libs
+Architecture: any
+Pre-Depends: ${misc:Pre-Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends},
+ 	  libmrpt-base@MRPT_VER_MM@
+#Multi-Arch: same
+Description: Mobile Robot Programming Toolkit - graphs library
+ The Mobile Robot Programming Toolkit (MRPT) is an extensive, cross-platform,
+ and open source C++ library aimed to help robotics researchers to design and
+ implement algorithms in the fields of Simultaneous Localization and Mapping
+ (SLAM, Graph-SLAM, Bundle Adjustment), computer vision, and motion planning
+ (obstacle avoidance).
+ .
+ This package includes the mrpt-graphs library.
+ .
+ More about MRPT libraries in: http://www.mrpt.org/Libraries
+
+
 Package: libmrpt-dev
 Section: libdevel
 Architecture: any
@@ -370,6 +389,7 @@ Depends: ${shlibs:Depends}, ${misc:Depends}, libeigen3-dev,
          libmrpt-slam@MRPT_VER_MM@ (= ${binary:Version}),
          libmrpt-topography@MRPT_VER_MM@ (= ${binary:Version}),
          libmrpt-vision@MRPT_VER_MM@ (= ${binary:Version}),
+         libmrpt-graphs@MRPT_VER_MM@ (= ${binary:Version}),
          libsuitesparse-dev
 Description: Mobile Robot Programming Toolkit - Development headers
  The Mobile Robot Programming Toolkit (MRPT) is an extensive, cross-platform,
