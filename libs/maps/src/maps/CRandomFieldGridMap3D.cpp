@@ -11,23 +11,12 @@
 
 #include <mrpt/maps/CRandomFieldGridMap3D.h>
 #include <mrpt/utils/CConfigFileBase.h>
-
-//#include <mrpt/math/CMatrix.h>
-//#include <mrpt/math/utils.h>
-//#include <mrpt/utils/CTimeLogger.h>
-//#include <mrpt/utils/color_maps.h>
-//#include <mrpt/utils/round.h>
-//#include <mrpt/utils/CFileGZInputStream.h>
-//#include <mrpt/opengl/CSetOfObjects.h>
-//#include <mrpt/opengl/CSetOfTriangles.h>
-//#include <numeric>
+#include <mrpt/utils/CTicTac.h>
+#include <mrpt/utils/CFileOutputStream.h>
 
 using namespace mrpt;
 using namespace mrpt::maps;
-using namespace mrpt::math;
 using namespace mrpt::utils;
-using namespace mrpt::poses;
-using namespace mrpt::system;
 using namespace std;
 
 IMPLEMENTS_SERIALIZABLE(CRandomFieldGridMap3D, CSerializable,mrpt::maps)
@@ -42,13 +31,14 @@ CRandomFieldGridMap3D::CRandomFieldGridMap3D(
 	double voxel_size,
 	bool call_initialize_now
 ) :
-	CDynamicGrid3D<TRandomFieldVoxel>( x_min,x_max,y_min,y_max, z_min, z_max, voxel_size /*xy*/, voxel_size /*z*/ )
+	CDynamicGrid3D<TRandomFieldVoxel>( x_min,x_max,y_min,y_max, z_min, z_max, voxel_size /*xy*/, voxel_size /*z*/ ),
+	COutputLogger("CRandomFieldGridMap3D")
 {
 	if (call_initialize_now)
-		this->initialize();
+		this->internal_initialize();
 }
 
-/** Changes the size of the grid, erasing previous contents. \sa resize */
+/** Changes the size of the grid, erasing previous contents */
 void CRandomFieldGridMap3D::setSize(
 	const double x_min, const double x_max,
 	const double y_min, const double y_max,
@@ -56,72 +46,108 @@ void CRandomFieldGridMap3D::setSize(
 	const double resolution_xy, const double resolution_z,
 	const  TRandomFieldVoxel* fill_value)
 {
+	MRPT_START;
+
 	CDynamicGrid3D<TRandomFieldVoxel>::setSize(x_min, x_max, y_min, y_max, z_min, z_max, resolution_xy, resolution_z, fill_value);
-	this->initialize();
+	this->internal_initialize();
+
+	MRPT_END;
 }
 
-void CRandomFieldGridMap3D::initialize()
+void  CRandomFieldGridMap3D::resize(
+	double new_x_min, double new_x_max,
+	double new_y_min, double new_y_max,
+	double new_z_min, double new_z_max,
+	const TRandomFieldVoxel& defaultValueNewCells, double additionalMarginMeters)
 {
-	// Set the gridmap (m_map) to initial values:
-	TRandomFieldVoxel  def(0, 0); // mean, std
-	fill(def);
+	MRPT_START;
 
+	CDynamicGrid3D<TRandomFieldVoxel>::resize(new_x_min, new_x_max, new_y_min, new_y_max, new_z_min, new_z_max, defaultValueNewCells, additionalMarginMeters);
+	this->internal_initialize(false);
+
+	MRPT_END;
+}
+
+void CRandomFieldGridMap3D::clear()
+{
+	internal_initialize();
+}
+
+void CRandomFieldGridMap3D::internal_initialize(bool erase_prev_contents)
+{
+	if (erase_prev_contents)
 	{
-		// Initiating prior (fully connected)\n";
-		//---------------------------------------------------------------
-		// Load default values for H_prior without Occupancy information:
-		//---------------------------------------------------------------
-		size_t cx = 0;
-		size_t cy = 0;
-		for (size_t j = 0; j<nodeCount; j++)
+		// Set the gridmap (m_map) to initial values:
+		TRandomFieldVoxel  def(0, 0); // mean, std
+		fill(def);
+	}
+
+	// Reset gmrf:
+	m_gmrf.setVerbosityLevel(this->getMinLoggingLevel());
+	if (erase_prev_contents)
+	{
+		m_gmrf.clear();
+		m_mrf_factors_activeObs.clear();
+	}
+	else 
+	{
+		// Only remove priors, leave observations:
+		m_gmrf.clearAllConstraintsByType_Binary();
+	}
+	m_mrf_factors_priors.clear();
+
+	// Initiating prior (fully connected)
+	const size_t nodeCount = m_map.size();
+	ASSERT_EQUAL_(nodeCount, m_size_x*m_size_y*m_size_z);
+	ASSERT_EQUAL_(m_size_x_times_y, m_size_x*m_size_y);
+
+	MRPT_LOG_DEBUG_STREAM << "[internal_initialize] Creating priors for GMRF with " << nodeCount << " nodes." << std::endl;
+	CTicTac tictac;
+	tictac.Tic();
+
+	m_mrf_factors_activeObs.resize(nodeCount); // Alloc space for obs
+	m_gmrf.initialize(nodeCount);
+
+	size_t cx = 0, cy = 0, cz = 0;
+	for (size_t j = 0; j<nodeCount; j++)
+	{
+		// add factors between this node and: 
+		// 1) the right node: j +1
+		// 2) the back node:  j+m_size_x
+		// 3) the top node: j+m_size_x*m_size*y
+		//-------------------------------------------------
+		const size_t c_idx_to_check[3] = { cx,cy,cz };
+		const size_t c_idx_to_check_limits[3] = { m_size_x - 1,m_size_y - 1,m_size_z - 1 };
+		const size_t c_neighbor_idx_incr[3] = { 1,m_size_x,m_size_x_times_y };
+
+		for (int dir = 0; dir < 3; dir++)
 		{
-			//Factor with the right node: H_ji = - Lamda_prior
-			//-------------------------------------------------
-			if (cx<(m_size_x - 1))
-			{
-				size_t i = j + 1;
+			if (c_idx_to_check[dir] >= c_idx_to_check_limits[dir])
+				continue;
 
-				TPriorFactorGMRF new_prior(*this);
-				new_prior.node_id_i = i;
-				new_prior.node_id_j = j;
-				new_prior.Lambda = m_insertOptions_common->GMRF_lambdaPrior;
+			const size_t i = j + c_neighbor_idx_incr[dir];
+			ASSERT_(i<nodeCount);
 
-				m_mrf_factors_priors.push_back(new_prior);
-				m_gmrf.addConstraint(*m_mrf_factors_priors.rbegin()); // add to graph
+			TPriorFactorGMRF new_prior(*this);
+			new_prior.node_id_i = i;
+			new_prior.node_id_j = j;
+			new_prior.Lambda = insertionOptions.GMRF_lambdaPrior;
+
+			m_mrf_factors_priors.push_back(new_prior);
+			m_gmrf.addConstraint(*m_mrf_factors_priors.rbegin()); // add to graph
+		}
+
+		// Increment coordinates:
+		if (++cx >= m_size_x) {
+			cx = 0;
+			if (++cy >= m_size_y) {
+				cy = 0;
+				cz++;
 			}
+		}
+	} // end for "j"
 
-			//Factor with the above node: H_ji = - Lamda_prior
-			//-------------------------------------------------
-			if (cy<(m_size_y - 1))
-			{
-				size_t i = j + m_size_x;
-
-				TPriorFactorGMRF new_prior(*this);
-				new_prior.node_id_i = i;
-				new_prior.node_id_j = j;
-				new_prior.Lambda = m_insertOptions_common->GMRF_lambdaPrior;
-
-				m_mrf_factors_priors.push_back(new_prior);
-				m_gmrf.addConstraint(*m_mrf_factors_priors.rbegin()); // add to graph
-			}
-
-			// Increment j coordinates (row(x), col(y))
-			if (++cx >= m_size_x) {
-				cx = 0;
-				cy++;
-			}
-		} // end for "j"
-	} // end if_use_Occupancy
-
-	if (m_rfgm_verbose) {
-		cout << " [CRandomFieldGridMap2D::clear] Prior built in " << tictac.Tac() << " s ----------\n";
-	}
-
-	if (m_rfgm_run_update_upon_clear) {
-		//Solve system and update map estimation
-		updateMapEstimation_GMRF();
-	}
-
+	MRPT_LOG_DEBUG_STREAM << "[internal_initialize] Prior built in " << tictac.Tac() << " s\n" << std::endl;
 }
 
 /*---------------------------------------------------------------
@@ -129,52 +155,79 @@ void CRandomFieldGridMap3D::initialize()
  ---------------------------------------------------------------*/
 CRandomFieldGridMap3D::TInsertionOptions::TInsertionOptions() :
 	GMRF_lambdaPrior			( 0.01f ),		// [GMRF model] The information (Lambda) of fixed map constraints
-	GMRF_lambdaObs				( 10.0f ),		// [GMRF model] The initial information (Lambda) of each observation (this information will decrease with time)
 	GMRF_skip_variance			(false)
 {
 }
 
 void  CRandomFieldGridMap3D::TInsertionOptions::dumpToTextStream(mrpt::utils::CStream	&out) const
 {
-	out.printf("GMRF_lambdaPrior						= %f\n", GMRF_lambdaPrior);
-	out.printf("GMRF_lambdaObs	                        = %f\n", GMRF_lambdaObs);
+	out.printf("GMRF_lambdaPrior                     = %f\n", GMRF_lambdaPrior);
+	out.printf("GMRF_skip_variance                   = %s\n", GMRF_skip_variance ? "true":"false");
 }
 
 void  CRandomFieldGridMap3D::TInsertionOptions::loadFromConfigFile(
 	const mrpt::utils::CConfigFileBase  &iniFile,
 	const std::string &section)
 {
-	GMRF_lambdaPrior		= iniFile.read_float(section.c_str(),"GMRF_lambdaPrior",GMRF_lambdaPrior);
-	GMRF_lambdaObs			= iniFile.read_float(section.c_str(),"GMRF_lambdaObs",GMRF_lambdaObs);
-}
-
-
-/*---------------------------------------------------------------
-					resize
- ---------------------------------------------------------------*/
-void  CRandomFieldGridMap3D::resize(
-	double new_x_min, double new_x_max,
-	double new_y_min, double new_y_max,
-	double new_z_min, double new_z_max,
-	const TRandomFieldVoxel& defaultValueNewCells, double additionalMarginMeters)
-{
-	MRPT_START
-
-	MRPT_TODO("IMPL");
-
-	MRPT_END
+	GMRF_lambdaPrior = iniFile.read_double(section.c_str(), "GMRF_lambdaPrior", GMRF_lambdaPrior);
+	GMRF_skip_variance = iniFile.read_bool(section.c_str(),"GMRF_skip_variance", GMRF_skip_variance);
 }
 
 
 bool mrpt::maps::CRandomFieldGridMap3D::saveAsCSV(const std::string & filName_mean, const std::string & filName_stddev) const
 {
-	MRPT_TODO("Impl");
-	return false;
+	CFileOutputStream f_mean, f_stddev;
+
+	if (!f_mean.open(filName_mean))
+		return false;
+
+	if (!filName_stddev.empty()) {
+		if (!f_stddev.open(filName_stddev))
+			return false;
+	}
+
+	const size_t nodeCount = m_map.size();
+	size_t cx = 0, cy = 0, cz = 0;
+	for (size_t j = 0; j<nodeCount; j++)
+	{
+		const double x = idx2x(cx), y = idx2y(cy), z = idx2z(cz);
+		const double mean_val = m_map[j].mean_value;
+		const double stddev_val = m_map[j].stddev_value;
+
+		f_mean.printf("%f %f %f %e\n", x, y, z, mean_val);
+		
+		if (f_stddev.is_open())
+			f_stddev.printf("%f %f %f %e\n", x, y, z, stddev_val);
+
+		// Increment coordinates:
+		if (++cx >= m_size_x) {
+			cx = 0;
+			if (++cy >= m_size_y) {
+				cy = 0;
+				cz++;
+			}
+		}
+	} // end for "j"
+
+	return true;
 }
 
 void CRandomFieldGridMap3D::updateMapEstimation()
 {
-	MRPT_TODO("Impl");
+	ASSERTMSG_(!m_mrf_factors_activeObs.empty(), "Cannot update a map with no observations!");
+
+	Eigen::VectorXd x_incr, x_var;
+	m_gmrf.updateEstimation(x_incr, insertionOptions.GMRF_skip_variance ? NULL:&x_var);
+
+	ASSERT_(m_map.size() == x_incr.size());
+	ASSERT_(insertionOptions.GMRF_skip_variance || m_map.size() == x_var.size());
+
+	// Update Mean-Variance in the base grid class
+	for (size_t j = 0; j<m_map.size(); j++)
+	{
+		m_map[j].mean_value += x_incr[j];
+		m_map[j].stddev_value = insertionOptions.GMRF_skip_variance ? .0 : std::sqrt(x_var[j]);
+	}
 }
 
 bool CRandomFieldGridMap3D::insertIndividualReading(
@@ -185,9 +238,29 @@ bool CRandomFieldGridMap3D::insertIndividualReading(
 	const bool update_map                    //!< [in] Run a global map update after inserting this observatin (algorithm-dependant)
 )
 {
-	MRPT_TODO("Impl");
+	MRPT_START;
 
-	return false;
+	ASSERT_ABOVE_(sensorVariance, .0);
+	ASSERTMSG_(m_mrf_factors_activeObs.size()==m_map.size(), "Trying to insert observation in uninitialized map (!)");
+
+	const size_t cell_idx = cellAbsIndexFromCXCYCZ(x2idx(point.x), y2idx(point.y), z2idx(point.z));
+	if (cell_idx == INVALID_VOXEL_IDX)
+		return false;
+
+	TObservationGMRF new_obs(*this);
+	new_obs.node_id = cell_idx;
+	new_obs.obsValue = sensorReading;
+	new_obs.Lambda = 1.0 / sensorVariance;
+
+	m_mrf_factors_activeObs[cell_idx].push_back(new_obs);
+	m_gmrf.addConstraint(*m_mrf_factors_activeObs[cell_idx].rbegin()); // add to graph
+
+	if (update_map)
+		this->updateMapEstimation();
+
+	return true;
+
+	MRPT_END;
 }
 
 void CRandomFieldGridMap3D::writeToStream(mrpt::utils::CStream &out, int *version) const
@@ -217,8 +290,7 @@ void CRandomFieldGridMap3D::writeToStream(mrpt::utils::CStream &out, int *versio
 		out.WriteBuffer(&m_map[0], sizeof(m_map[0])*m_map.size());
 #endif
 
-		out << insertionOptions.GMRF_lambdaObs
-			<< insertionOptions.GMRF_lambdaPrior
+		out << insertionOptions.GMRF_lambdaPrior
 			<< insertionOptions.GMRF_skip_variance;
 	}
 }
@@ -248,8 +320,7 @@ void CRandomFieldGridMap3D::readFromStream(mrpt::utils::CStream &in, int version
 		// Little endian: just read all at once:
 		in.ReadBuffer(&m_map[0], sizeof(m_map[0])*m_map.size());
 #endif
-		in >> insertionOptions.GMRF_lambdaObs
-		   >> insertionOptions.GMRF_lambdaPrior
+		in >> insertionOptions.GMRF_lambdaPrior
 		   >> insertionOptions.GMRF_skip_variance;
 
 	} break;
@@ -259,4 +330,32 @@ void CRandomFieldGridMap3D::readFromStream(mrpt::utils::CStream &in, int version
 
 }
 
+
+// ============ TObservationGMRF ===========
+double CRandomFieldGridMap3D::TObservationGMRF::evaluateResidual() const
+{
+	return m_parent->m_map[this->node_id].mean_value - this->obsValue;
+}
+double CRandomFieldGridMap3D::TObservationGMRF::getInformation() const
+{
+	return this->Lambda;
+}
+void CRandomFieldGridMap3D::TObservationGMRF::evalJacobian(double &dr_dx) const
+{
+	dr_dx = 1.0;
+}
+// ============ TPriorFactorGMRF ===========
+double CRandomFieldGridMap3D::TPriorFactorGMRF::evaluateResidual() const
+{
+	return m_parent->m_map[this->node_id_i].mean_value - m_parent->m_map[this->node_id_j].mean_value;
+}
+double CRandomFieldGridMap3D::TPriorFactorGMRF::getInformation() const
+{
+	return this->Lambda;
+}
+void CRandomFieldGridMap3D::TPriorFactorGMRF::evalJacobian(double &dr_dx_i, double &dr_dx_j) const
+{
+	dr_dx_i = +1.0;
+	dr_dx_j = -1.0;
+}
 

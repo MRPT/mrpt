@@ -44,8 +44,6 @@ namespace maps
 			bool  run_first_map_estimation_now=true  //!< [in] Whether to call updateMapEstimation(). If false, make sure of calling that function before accessing map contents.
 			);
 
-		virtual ~CHeightGridMap2D_MRF(); //!< Destructor
-
 		/** Parameters related with inserting observations into the map */
 		struct MAPS_IMPEXP TInsertionOptions :
 			public utils::CLoadableOptions,

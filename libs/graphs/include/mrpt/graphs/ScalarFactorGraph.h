@@ -83,6 +83,9 @@ namespace graphs
 
 		bool eraseConstraint(const FactorBase &c); //!< Removes a constraint. Return true if found and deleted correctly.
 
+		void clearAllConstraintsByType_Unary() { m_factors_unary.clear(); }
+		void clearAllConstraintsByType_Binary() { m_factors_binary.clear(); }
+
 		void updateEstimation(
 			Eigen::VectorXd & solved_x_inc,                       //!< Output increment of the current estimate. Caller must add this vector to current state vector to obtain the optimal estimation.
 			Eigen::VectorXd * solved_variances = NULL //!< If !=NULL, the variances of each estimate will be stored here.
