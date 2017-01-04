@@ -89,7 +89,7 @@ void CRandomFieldGridMap3D::internal_initialize(bool erase_prev_contents)
 		m_gmrf.clear();
 		m_mrf_factors_activeObs.clear();
 	}
-	else 
+	else
 	{
 		// Only remove priors, leave observations:
 		m_gmrf.clearAllConstraintsByType_Binary();
@@ -111,7 +111,7 @@ void CRandomFieldGridMap3D::internal_initialize(bool erase_prev_contents)
 	size_t cx = 0, cy = 0, cz = 0;
 	for (size_t j = 0; j<nodeCount; j++)
 	{
-		// add factors between this node and: 
+		// add factors between this node and:
 		// 1) the right node: j +1
 		// 2) the back node:  j+m_size_x
 		// 3) the top node: j+m_size_x*m_size*y
@@ -195,7 +195,7 @@ bool mrpt::maps::CRandomFieldGridMap3D::saveAsCSV(const std::string & filName_me
 		const double stddev_val = m_map[j].stddev_value;
 
 		f_mean.printf("%f %f %f %e\n", x, y, z, mean_val);
-		
+
 		if (f_stddev.is_open())
 			f_stddev.printf("%f %f %f %e\n", x, y, z, stddev_val);
 
@@ -219,8 +219,8 @@ void CRandomFieldGridMap3D::updateMapEstimation()
 	Eigen::VectorXd x_incr, x_var;
 	m_gmrf.updateEstimation(x_incr, insertionOptions.GMRF_skip_variance ? NULL:&x_var);
 
-	ASSERT_(m_map.size() == x_incr.size());
-	ASSERT_(insertionOptions.GMRF_skip_variance || m_map.size() == x_var.size());
+	ASSERT_(size_t(m_map.size()) == size_t(x_incr.size()));
+	ASSERT_(insertionOptions.GMRF_skip_variance || size_t(m_map.size()) == size_t(x_var.size()));
 
 	// Update Mean-Variance in the base grid class
 	for (size_t j = 0; j<m_map.size(); j++)
@@ -358,4 +358,3 @@ void CRandomFieldGridMap3D::TPriorFactorGMRF::evalJacobian(double &dr_dx_i, doub
 	dr_dx_i = +1.0;
 	dr_dx_j = -1.0;
 }
-
