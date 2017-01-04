@@ -133,7 +133,9 @@ void CEdgeCounter::addEdge(const std::string& name,
 
 		// specify warning if is_new = true
 		if (is_new) {
-			std::string str_err = "Specified edge type already exists but is_new is also specified!";
+			std::string str_err = mrpt::format(
+					"Specified edge type [%s] already exists but is_new is also specified!",
+					name.c_str());
 			THROW_EXCEPTION(str_err)
 				//std::stringstream ss_warn;
 				//ss_warn << "Commencing with the increment normally" << std::endl;
@@ -170,7 +172,7 @@ void CEdgeCounter::addEdgeType(const std::string& name) {
 
 	if ( search != m_name_to_edges_num.end() ) {
 		THROW_EXCEPTION(
-				mrpt::format("Specified edge type %s already exists", name.c_str()))
+				mrpt::format("Specified edge type [%s] already exists", name.c_str()))
 	}
 	else {
 		m_name_to_edges_num[name] = 0;
