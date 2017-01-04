@@ -36,19 +36,21 @@ namespace mrpt
 				double new_z_min, double new_z_max,
 				const T& defaultValueNewCells, double additionalMarginMeters = 2.0)
 			{
-				MRPT_TODO("port to 3D!");
-				THROW_EXCEPTION("TO DO");
-#if 0
 				// Is resize really necesary?
 				if (new_x_min >= m_x_min &&
 					new_y_min >= m_y_min &&
+					new_z_min >= m_z_min &&
 					new_x_max <= m_x_max &&
-					new_y_max <= m_y_max)	return;
+					new_y_max <= m_y_max &&
+					new_z_max <= m_z_max)
+					return;
 
 				if (new_x_min>m_x_min) new_x_min = m_x_min;
 				if (new_x_max<m_x_max) new_x_max = m_x_max;
 				if (new_y_min>m_y_min) new_y_min = m_y_min;
 				if (new_y_max<m_y_max) new_y_max = m_y_max;
+				if (new_z_min>m_z_min) new_z_min = m_z_min;
+				if (new_z_max<m_z_max) new_z_max = m_z_max;
 
 				// Additional margin:
 				if (additionalMarginMeters>0)
@@ -57,39 +59,51 @@ namespace mrpt
 					if (new_x_max>m_x_max) new_x_max = ceil(new_x_max + additionalMarginMeters);
 					if (new_y_min<m_y_min) new_y_min = floor(new_y_min - additionalMarginMeters);
 					if (new_y_max>m_y_max) new_y_max = ceil(new_y_max + additionalMarginMeters);
+					if (new_z_min<m_z_min) new_z_min = floor(new_z_min - additionalMarginMeters);
+					if (new_z_max>m_z_max) new_z_max = ceil(new_z_max + additionalMarginMeters);
 				}
 
 				// Adjust sizes to adapt them to full sized cells acording to the resolution:
-				if (fabs(new_x_min / m_resolution - round(new_x_min / m_resolution))>0.05f)
-					new_x_min = m_resolution*round(new_x_min / m_resolution);
-				if (fabs(new_y_min / m_resolution - round(new_y_min / m_resolution))>0.05f)
-					new_y_min = m_resolution*round(new_y_min / m_resolution);
-				if (fabs(new_x_max / m_resolution - round(new_x_max / m_resolution))>0.05f)
-					new_x_max = m_resolution*round(new_x_max / m_resolution);
-				if (fabs(new_y_max / m_resolution - round(new_y_max / m_resolution))>0.05f)
-					new_y_max = m_resolution*round(new_y_max / m_resolution);
+				if (fabs(new_x_min / m_resolution_xy - round(new_x_min / m_resolution_xy))>0.05)
+					new_x_min = m_resolution_xy*round(new_x_min / m_resolution_xy);
+				if (fabs(new_y_min / m_resolution_xy - round(new_y_min / m_resolution_xy))>0.05)
+					new_y_min = m_resolution_xy*round(new_y_min / m_resolution_xy);
+				if (fabs(new_z_min / m_resolution_z - round(new_z_min / m_resolution_z))>0.05)
+					new_z_min = m_resolution_z*round(new_z_min / m_resolution_z);
+				if (fabs(new_x_max / m_resolution_xy - round(new_x_max / m_resolution_xy))>0.05)
+					new_x_max = m_resolution_xy*round(new_x_max / m_resolution_xy);
+				if (fabs(new_y_max / m_resolution_xy - round(new_y_max / m_resolution_xy))>0.05)
+					new_y_max = m_resolution_xy*round(new_y_max / m_resolution_xy);
+				if (fabs(new_z_max / m_resolution_z - round(new_z_max / m_resolution_z))>0.05)
+					new_z_max = m_resolution_z*round(new_z_max / m_resolution_z);
 
 				// Change the map size: Extensions at each side:
-				unsigned int extra_x_izq = round((m_x_min - new_x_min) / m_resolution);
-				unsigned int extra_y_arr = round((m_y_min - new_y_min) / m_resolution);
+				size_t extra_x_izq = round((m_x_min - new_x_min) / m_resolution_xy);
+				size_t extra_y_arr = round((m_y_min - new_y_min) / m_resolution_xy);
+				size_t extra_z_top = round((m_z_min - new_z_min) / m_resolution_z);
 
-				unsigned int new_size_x = round((new_x_max - new_x_min) / m_resolution);
-				unsigned int new_size_y = round((new_y_max - new_y_min) / m_resolution);
+				size_t new_size_x = round((new_x_max - new_x_min) / m_resolution_xy);
+				size_t new_size_y = round((new_y_max - new_y_min) / m_resolution_xy);
+				size_t new_size_z = round((new_z_max - new_z_min) / m_resolution_z);
+				size_t new_size_x_times_y = new_size_x*new_size_y;
 
 				// Reserve new memory:
 				typename std::vector<T> new_map;
-				new_map.resize(new_size_x*new_size_y, defaultValueNewCells);
+				new_map.resize(new_size_x*new_size_y*new_size_z, defaultValueNewCells);
 
 				// Copy previous rows:
-				unsigned int x, y;
+				size_t x, y, z;
 				typename std::vector<T>::iterator itSrc, itDst;
-				for (y = 0; y<m_size_y; y++)
+				for (z = 0; z < m_size_z; z++)
 				{
-					for (x = 0, itSrc = (m_map.begin() + y*m_size_x), itDst = (new_map.begin() + extra_x_izq + (y + extra_y_arr)*new_size_x);
-						x<m_size_x;
-						++x, ++itSrc, ++itDst)
+					for (y = 0; y < m_size_y; y++)
 					{
-						*itDst = *itSrc;
+						for (x = 0, itSrc = (m_map.begin() + y*m_size_x+z*m_size_x_times_y), itDst = (new_map.begin() + extra_x_izq + (y + extra_y_arr)*new_size_x + (z+extra_z_top)*new_size_x_times_y );
+							x < m_size_x;
+							++x, ++itSrc, ++itDst)
+						{
+							*itDst = *itSrc;
+						}
 					}
 				}
 
@@ -98,13 +112,16 @@ namespace mrpt
 				m_x_max = new_x_max;
 				m_y_min = new_y_min;
 				m_y_max = new_y_max;
+				m_z_min = new_z_min;
+				m_z_max = new_z_max;
 
 				m_size_x = new_size_x;
 				m_size_y = new_size_y;
+				m_size_z = new_size_z;
+				m_size_x_times_y = new_size_x_times_y;
 
 				// Keep the new map only:
 				m_map.swap(new_map);
-#endif
 			}
 
 			/** Changes the size of the grid, ERASING all previous contents.
@@ -112,15 +129,18 @@ namespace mrpt
 			  *  their old values, the new ones will have the default voxel value, but the location of old values
 			  *  may change wrt their old places).
 			  * If \a fill_value is not NULL, it is assured that all cells will have a copy of that value after resizing.
+			  * If `resolution_z`<0, the same resolution will be used for all dimensions x,y,z as given in `resolution_xy`
 			  * \sa resize, fill
 			  */
 			virtual void  setSize(
 				const double x_min, const double x_max,
 				const double y_min, const double y_max,
 				const double z_min, const double z_max,
-				const double resolution_xy, const double resolution_z, 
+				const double resolution_xy, const double resolution_z_=-1.0, 
 				const T * fill_value = NULL)
 			{
+				const double resolution_z = resolution_z_ > 0.0 ? resolution_z_ : resolution_xy;
+
 				// Adjust sizes to adapt them to full sized cells acording to the resolution:
 				m_x_min = x_min;
 				m_y_min = y_min;
@@ -159,46 +179,49 @@ namespace mrpt
 						*it=value;
 			}
 
+			static const size_t INVALID_VOXEL_IDX = size_t(-1);
+
+			/** Gets the absolute index of a voxel in the linear container m_map[] from its cx,cy,cz indices, or -1 if out of map bounds (in any dimension). \sa x2idx(), y2idx(), z2idx() */
+			inline size_t cellAbsIndexFromCXCYCZ(const int cx, const int cy, const int cz) const {
+				if (cx<0 || cx >= static_cast<int>(m_size_x)) return INVALID_VOXEL_IDX;
+				if (cy<0 || cy >= static_cast<int>(m_size_y)) return INVALID_VOXEL_IDX;
+				if (cz<0 || cy >= static_cast<int>(m_size_z)) return INVALID_VOXEL_IDX;
+				return cx + cy*m_size_x + cz * m_size_x_times_y;
+			}
+				
+
 			/** Returns a pointer to the contents of a voxel given by its coordinates, or NULL if it is out of the map extensions.
 				*/
 			inline T*	cellByPos( double x, double y, double z )
 			{
-				const int cx = x2idx(x);
-				const int cy = y2idx(y);
-				const int cz = z2idx(z);
-				if( cx<0 || cx>=static_cast<int>(m_size_x) ) return NULL;
-				if( cy<0 || cy>=static_cast<int>(m_size_y) ) return NULL;
-				if (cz<0 || cy >= static_cast<int>(m_size_z)) return NULL;
-				return &m_map[ cx + cy*m_size_x  + cz * m_size_x_times_y];
+				const size_t cidx = cellAbsIndexFromCXCYCZ(x2idx(x), y2idx(y), z2idx(z));
+				if (cidx == INVALID_VOXEL_IDX) return NULL;
+				return &m_map[cidx];
 			}
 			/** \overload */
 			inline const T*	cellByPos( double x, double y, double z ) const
 			{
-				const int cx = x2idx(x);
-				const int cy = y2idx(y);
-				const int cz = z2idx(z);
-				if( cx<0 || cx>=static_cast<int>(m_size_x) ) return NULL;
-				if( cy<0 || cy>=static_cast<int>(m_size_y) ) return NULL;
-				if (cz<0 || cy >= static_cast<int>(m_size_z)) return NULL;
-				return &m_map[ cx + cy*m_size_x + cz * m_size_x_times_y];
+				const size_t cidx = cellAbsIndexFromCXCYCZ(x2idx(x), y2idx(y), z2idx(z));
+				if (cidx == INVALID_VOXEL_IDX) return NULL;
+				return &m_map[cidx];
 			}
 
 			/** Returns a pointer to the contents of a voxel given by its voxel indexes, or NULL if it is out of the map extensions.
 				*/
 			inline  T*	cellByIndex( unsigned int cx, unsigned int cy, unsigned int cz )
 			{
-				if( cx>=m_size_x || cy>=m_size_y || cz>=m_size_z)
-					return NULL;
-				else return &m_map[ cx + cy*m_size_x + cz * m_size_x_times_y];
+				const size_t cidx = cellAbsIndexFromCXCYCZ(cx, cy, cz);
+				if (cidx == INVALID_VOXEL_IDX) return NULL;
+				return &m_map[cidx];
 			}
 
 			/** Returns a pointer to the contents of a voxel given by its voxel indexes, or NULL if it is out of the map extensions.
 				*/
 			inline const T* cellByIndex( unsigned int cx, unsigned int cy, unsigned int cz  ) const
 			{
-				if (cx >= m_size_x || cy >= m_size_y || cz >= m_size_z)
-					return NULL;
-				else return &m_map[ cx + cy*m_size_x + cz * m_size_x_times_y];
+				const size_t cidx = cellAbsIndexFromCXCYCZ(cx, cy, cz);
+				if (cidx == INVALID_VOXEL_IDX) return NULL;
+				return &m_map[cidx];
 			}
 
 			inline size_t getSizeX() const { return m_size_x; }

@@ -59,6 +59,8 @@
 		- \ref mrpt_bayes_grp
 			- [API change] `verbose` is no longer a field of mrpt::bayes::CParticleFilter::TParticleFilterOptions. Use the setVerbosityLevel() method of the CParticleFilter class itself.
 			- [API change] mrpt::bayes::CProbabilityParticle (which affects all PF-based classes in MRPT) has been greatly simplified via usage of the new mrpt::utils::copy_ptr<> pointee-copy-semantics smart pointer.
+		- \ref mrpt_graphs_grp
+			- New class mrpt::graphs::ScalarFactorGraph, a simple but extensible linear GMRF solver. Refactored from mrpt::maps::CGasConcentrationGridMap2D, etc.
 		- \ref mrpt_gui_grp
 			- mrpt::gui::CMyGLCanvasBase is now derived from mrpt::opengl::CTextMessageCapable so they can draw text labels
 			- New class mrpt::gui::CDisplayWindow3DLocker for exception-safe 3D scene lock in 3D windows.
@@ -72,6 +74,7 @@
 		- \ref mrpt_maps_grp
 			- mrpt::maps::COccupancyGridMap2D::loadFromBitmapFile() correct description of `yCentralPixel` parameter.
 			- mrpt::maps::CPointsMap `liblas` import/export methods are now in a separate header. See \ref mrpt_maps_liblas_grp and \ref dep-liblas
+			- New class mrpt::maps::CRandomFieldGridMap3D
 		- \ref mrpt_obs_grp
 			- [ABI change] mrpt::obs::CObservation2DRangeScan
 				- range scan vectors are now protected for safety.
