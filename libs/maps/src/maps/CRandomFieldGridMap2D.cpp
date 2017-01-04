@@ -371,7 +371,7 @@ void  CRandomFieldGridMap2D::internal_clear()
 							new_prior.node_id_i = i;
 							new_prior.node_id_j = j;
 							new_prior.Lambda = m_insertOptions_common->GMRF_lambdaPrior;
-							
+
 							m_mrf_factors_priors.push_back(new_prior);
 							m_gmrf.addConstraint(*m_mrf_factors_priors.rbegin()); // add to graph
 
@@ -1231,7 +1231,7 @@ void  CRandomFieldGridMap2D::saveMetricMapRepresentationToFile(
 				{
 					MEAN(i,j) = cellByIndex(j,i)->gmrf_mean;
 					STDs(i,j) = cellByIndex(j,i)->gmrf_std;
-					
+
 					XYZ(idx,0) = idx2x(j);
 					XYZ(idx,1) = idx2y(i);
 					XYZ(idx,2) = cellByIndex(j,i)->gmrf_mean;
@@ -1726,7 +1726,7 @@ void CRandomFieldGridMap2D::predictMeasurement(
 		if (x<=m_x_min+m_resolution*0.5 ||
 			y<=m_y_min+m_resolution*0.5 ||
 			x>=m_x_max-m_resolution*0.5 ||
-			x>=m_x_max-m_resolution*0.5) 
+			x>=m_x_max-m_resolution*0.5)
 		{
 			// Too close to a border:
 			queries.resize(1);
@@ -1798,7 +1798,7 @@ void CRandomFieldGridMap2D::predictMeasurement(
 		case mrKalmanApproximate:
 		case mrGMRF_SD:
 			{
-				if (m_mapType==mrKalmanApproximate && m_hasToRecoverMeanAndCov) 
+				if (m_mapType==mrKalmanApproximate && m_hasToRecoverMeanAndCov)
 					recoverMeanAndCov();	// Just for KF2
 
 				if (!cell) {
@@ -2191,15 +2191,15 @@ void CRandomFieldGridMap2D::insertObservation_GMRF(
 void CRandomFieldGridMap2D::updateMapEstimation_GMRF()
 {
 	Eigen::VectorXd x_incr, x_var;
-	m_gmrf.updateEstimation(x_incr, &x_var);
+	m_gmrf.updateEstimation(x_incr, m_insertOptions_common->GMRF_skip_variance ? NULL: &x_var);
 
-	ASSERT_(m_map.size() == x_incr.size());
-	ASSERT_(m_map.size() == x_var.size());
+	ASSERT_(size_t(m_map.size()) == size_t(x_incr.size()));
+	ASSERT_(m_insertOptions_common->GMRF_skip_variance || size_t(m_map.size()) == size_t(x_var.size()));
 
 	// Update Mean-Variance in the base grid class
 	for (size_t j = 0; j<m_map.size(); j++)
 	{
-		m_map[j].gmrf_std  = std::sqrt(x_var[j] );
+		m_map[j].gmrf_std  = m_insertOptions_common->GMRF_skip_variance ? .0 : std::sqrt(x_var[j] );
 		m_map[j].gmrf_mean += x_incr[j];
 
 		mrpt::utils::saturate(m_map[j].gmrf_mean, m_insertOptions_common->GMRF_saturate_min, m_insertOptions_common->GMRF_saturate_max);
@@ -2207,10 +2207,10 @@ void CRandomFieldGridMap2D::updateMapEstimation_GMRF()
 
 	// Update Information/Strength of Active Observations
 	//---------------------------------------------------------
-	if (m_insertOptions_common->GMRF_lambdaObsLoss != 0) 
+	if (m_insertOptions_common->GMRF_lambdaObsLoss != 0)
 	{
 		for (auto &obs : m_mrf_factors_activeObs) {
-			for (auto ito = obs.begin(); ito != obs.end(); ) 
+			for (auto ito = obs.begin(); ito != obs.end(); )
 			{
 				if (!ito->time_invariant) {
 					++ito;
