@@ -540,7 +540,7 @@ void  CFeatureExtraction::internal_computeSiftDescriptors( const CImage	&in_img,
 			aux.loadFromTextFile( filOut );
 			size_t nRows = aux.getRowCount();
 
-			printf("[computeSiftFeatures1] %u features\n", nRows);
+			std::cout << "[computeSiftFeatures1] " << nRows << " features.\n";
 
 			unsigned int i;
 			float lx,ly;
