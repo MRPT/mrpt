@@ -436,8 +436,12 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		// Private function definitions
 		//////////////////////////////////////////////////////////////
 
-		/**\brief General initialization method to call from the Class Constructors*/
-		void initCGraphSlamEngine();
+		/**\brief General initialization method to call from the Class
+		 * Constructors.
+		 *
+		 * \note Method is automatically called in the class constructor
+		 */
+		void initClass();
 		/**\brief Initialize (clean up and create new files) the output directory.
 		 *
 		 * If directory already exists (most probably from previous runs), the user
@@ -479,7 +483,7 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		 * Methods used for initializing various visualization features relevant to
 		 * the application at hand. If the visual feature is specified by the user
 		 * (via the .ini file) and if it is relevant to the application then the
-		 * corresponding method is called in the initCGraphSlamEngine class method
+		 * corresponding method is called in the initClass class method
 		 */
 		/**\{*/
 
@@ -670,8 +674,8 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		 * classes makes up for a modular and configurable design
 		 */
 		/**\{*/
-		mrpt::graphslam::deciders::CNodeRegistrationDecider<GRAPH_t>* m_node_registrar;
-		mrpt::graphslam::deciders::CEdgeRegistrationDecider<GRAPH_t>* m_edge_registrar;
+		mrpt::graphslam::deciders::CNodeRegistrationDecider<GRAPH_t>* m_node_reg;
+		mrpt::graphslam::deciders::CEdgeRegistrationDecider<GRAPH_t>* m_edge_reg;
 		mrpt::graphslam::optimizers::CGraphSlamOptimizer<GRAPH_t>* m_optimizer;
 		/**\}*/
 

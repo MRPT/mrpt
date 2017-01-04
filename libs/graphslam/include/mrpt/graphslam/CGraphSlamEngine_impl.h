@@ -25,8 +25,8 @@ CGraphSlamEngine<GRAPH_t>::CGraphSlamEngine(
 		mrpt::graphslam::deciders::CEdgeRegistrationDecider<GRAPH_t>* edge_reg /* = NULL */,
 		mrpt::graphslam::optimizers::CGraphSlamOptimizer<GRAPH_t>* optimizer /* = NULL */
 		):
-	m_node_registrar(node_reg),
-	m_edge_registrar(edge_reg),
+	m_node_reg(node_reg),
+	m_edge_reg(edge_reg),
 	m_optimizer(optimizer),
 	m_enable_visuals(win_manager != NULL),
 	m_config_fname(config_file),
@@ -45,7 +45,8 @@ CGraphSlamEngine<GRAPH_t>::CGraphSlamEngine(
 	m_is_first_time_node_reg(true)
 {
 
-	this->initCGraphSlamEngine();
+	this->initClass();
+
 };
 
 template<class GRAPH_t>
@@ -90,7 +91,7 @@ CGraphSlamEngine<GRAPH_t>::getCurrentRobotPosEstimation() const {
 	MRPT_START;
 
 	mrpt::synch::CCriticalSectionLocker m_graph_lock(&m_graph_section);
-	return m_node_registrar->getCurrentRobotPosEstimation();
+	return m_node_reg->getCurrentRobotPosEstimation();
 
 	MRPT_END;
 }
@@ -109,19 +110,24 @@ void CGraphSlamEngine<GRAPH_t>::getRobotEstimatedTrajectory(
 
 
 template<class GRAPH_t>
-void CGraphSlamEngine<GRAPH_t>::initCGraphSlamEngine() {
+void CGraphSlamEngine<GRAPH_t>::initClass() {
 	MRPT_START;
 	using namespace mrpt;
 	using namespace mrpt::utils;
 	using namespace mrpt::opengl;
-
 	using namespace std;
+
 	// logger instance properties
 	m_time_logger.setName(m_class_name);
 	this->logging_enable_keep_record = true;
 	this->setLoggerName(m_class_name);
+
+	// Assert that the deciders/optimizer pointers are valid
+	ASSERT_(m_node_reg);
+	ASSERT_(m_edge_reg);
+	ASSERT_(m_optimizer);
 	
-	// Assrt that the graph class used is supported.
+	// Assert that the graph class used is supported.
 	{
 		MRPT_LOG_INFO_STREAM << "Verifying support for given MRPT graph class...";
 
@@ -179,22 +185,22 @@ void CGraphSlamEngine<GRAPH_t>::initCGraphSlamEngine() {
 
 	// pass the necessary variables/objects to the deciders/optimizes
 	// pass a graph ptr after the instance initialization
-	m_node_registrar->setGraphPtr(&m_graph);
-	m_edge_registrar->setGraphPtr(&m_graph);
+	m_node_reg->setGraphPtr(&m_graph);
+	m_edge_reg->setGraphPtr(&m_graph);
 	m_optimizer->setGraphPtr(&m_graph);
 
 	// pass the window manager pointer
 	// note: m_win_manager contains a pointer to the CDisplayWindow3D instance
 	if (m_enable_visuals) {
-		m_node_registrar->setWindowManagerPtr(m_win_manager);
-		m_edge_registrar->setWindowManagerPtr(m_win_manager);
+		m_node_reg->setWindowManagerPtr(m_win_manager);
+		m_edge_reg->setWindowManagerPtr(m_win_manager);
 		m_optimizer->setWindowManagerPtr(m_win_manager);
 		m_edge_counter.setWindowManagerPtr(m_win_manager);
 	}
 
 	// pass a lock in case of multithreaded implementation
-	m_node_registrar->setCriticalSectionPtr(&m_graph_section);
-	m_edge_registrar->setCriticalSectionPtr(&m_graph_section);
+	m_node_reg->setCriticalSectionPtr(&m_graph_section);
+	m_edge_reg->setCriticalSectionPtr(&m_graph_section);
 	m_optimizer->setCriticalSectionPtr(&m_graph_section);
 
 	// Load the parameters that each one of the self/deciders/optimizer classes
@@ -380,8 +386,8 @@ void CGraphSlamEngine<GRAPH_t>::initCGraphSlamEngine() {
 	if (m_enable_visuals) {
 		mrpt::synch::CCriticalSectionLocker m_graph_lock(&m_graph_section);
 		m_time_logger.enter("Visuals");
-		m_node_registrar->initializeVisuals();
-		m_edge_registrar->initializeVisuals();
+		m_node_reg->initializeVisuals();
+		m_edge_reg->initializeVisuals();
 		m_optimizer->initializeVisuals();
 		m_time_logger.leave("Visuals");
 	}
@@ -518,7 +524,7 @@ bool CGraphSlamEngine<GRAPH_t>::execGraphSlamStep(
 	{
 		mrpt::synch::CCriticalSectionLocker m_graph_lock(&m_graph_section);
 		m_time_logger.enter("node_registrar");
-		registered_new_node = m_node_registrar->updateState(
+		registered_new_node = m_node_reg->updateState(
 				action, observations, observation);
 		m_time_logger.leave("node_registrar");
 	}
@@ -549,7 +555,7 @@ bool CGraphSlamEngine<GRAPH_t>::execGraphSlamStep(
 		mrpt::synch::CCriticalSectionLocker m_graph_lock(&m_graph_section);
 
 		m_time_logger.enter("edge_registrar");
-		m_edge_registrar->updateState(
+		m_edge_reg->updateState(
 				action,
 				observations,
 				observation );
@@ -640,8 +646,8 @@ bool CGraphSlamEngine<GRAPH_t>::execGraphSlamStep(
 			mrpt::synch::CCriticalSectionLocker m_graph_lock(&m_graph_section);
 			m_time_logger.enter("Visuals");
 
-			m_node_registrar->updateVisuals();
-			m_edge_registrar->updateVisuals();
+			m_node_reg->updateVisuals();
+			m_edge_reg->updateVisuals();
 			m_optimizer->updateVisuals();
 
 			m_time_logger.leave("Visuals");
@@ -649,7 +655,7 @@ bool CGraphSlamEngine<GRAPH_t>::execGraphSlamStep(
 
 		// update the edge counter
 		std::map<std::string, int> edge_types_to_nums;
-		m_edge_registrar->getEdgesStats(&edge_types_to_nums);
+		m_edge_reg->getEdgesStats(&edge_types_to_nums);
 		if (edge_types_to_nums.size()) {
 			for (std::map<std::string, int>::const_iterator it =
 					edge_types_to_nums.begin(); it != edge_types_to_nums.end();
@@ -984,8 +990,8 @@ void CGraphSlamEngine<GRAPH_t>::loadParams(
 			"enable_intensity_viewport",
 			false, false);
 
-	m_node_registrar->loadParams(fname);
-	m_edge_registrar->loadParams(fname);
+	m_node_reg->loadParams(fname);
+	m_edge_reg->loadParams(fname);
 	m_optimizer->loadParams(fname);
 
 	m_has_read_config = true;
@@ -1054,8 +1060,8 @@ void CGraphSlamEngine<GRAPH_t>::printParams() const {
 	MRPT_START;
 	std::cout << getParamsAsString();
 
-	m_node_registrar->printParams();
-	m_edge_registrar->printParams();
+	m_node_reg->printParams();
+	m_edge_reg->printParams();
 	m_optimizer->printParams();
 
 	MRPT_END;
@@ -2600,14 +2606,14 @@ void CGraphSlamEngine<GRAPH_t>::generateReportFiles(
 		report_str.clear();
 		fname = output_dir_fname + "/" + "node_registrar" + ext;
 		this->initResultsFile(fname);
-		m_node_registrar->getDescriptiveReport(&report_str);
+		m_node_reg->getDescriptiveReport(&report_str);
 		m_out_streams[fname]->printf("%s", report_str.c_str());
 	}
 	{ // edge_registrar
 		report_str.clear();
 		fname = output_dir_fname + "/" + "edge_registrar" + ext;
 		this->initResultsFile(fname);
-		m_edge_registrar->getDescriptiveReport(&report_str);
+		m_edge_reg->getDescriptiveReport(&report_str);
 		m_out_streams[fname]->printf("%s", report_str.c_str());
 	}
 	{ // optimizer

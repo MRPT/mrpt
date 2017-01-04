@@ -39,7 +39,7 @@ namespace mrpt { namespace graphslam { namespace deciders {
  * \ingroup mrpt_graphslam_grp
  */
 template<class GRAPH_t=typename mrpt::graphs::CNetworkOfPoses2DInf>
-class CEdgeRegistrationDecider : public mrpt::graphslam::CRegistrationDeciderOrOptimizer<GRAPH_t> {
+class CEdgeRegistrationDecider : public virtual mrpt::graphslam::CRegistrationDeciderOrOptimizer<GRAPH_t> {
   public:
 		/**\brief Handy typedefs */
 		/**\{*/
