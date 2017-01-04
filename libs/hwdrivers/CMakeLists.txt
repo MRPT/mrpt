@@ -170,6 +170,8 @@ define_mrpt_lib(
 	mrpt-opengl  # needed by mrpt-gui
 	mrpt-maps # needed by laser preview
 	mrpt-vision  # needed to stereo rectification
+	#
+	mrpt-graphs  # dep of mrpt-maps
 	)
 
 IF(BUILD_mrpt-hwdrivers)
@@ -326,8 +328,12 @@ IF(BUILD_mrpt-hwdrivers)
 
 	# Ignore precompiled headers in RPLIDAR sources:
 	IF(CMAKE_MRPT_HAS_ROBOPEAK_LIDAR)
-		IF(MRPT_ENABLE_PRECOMPILED_HDRS AND MSVC)
-			set_source_files_properties(${RoboPeakLidar_FILES} PROPERTIES COMPILE_FLAGS "/Y-")
+		IF(MSVC)
+			set(flags_set "/DWIN64")
+			IF(MRPT_ENABLE_PRECOMPILED_HDRS)
+				set(flags_set "${flags_set} /Y-")
+			ENDIF()
+			set_source_files_properties(${RoboPeakLidar_FILES} PROPERTIES COMPILE_FLAGS "${flags_set}")
 		ENDIF()
 	ENDIF()
 
