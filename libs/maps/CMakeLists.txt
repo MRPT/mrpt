@@ -28,6 +28,7 @@ define_mrpt_lib(
 	maps
 	# Dependencies:
 	mrpt-obs
+	mrpt-graphs
 	# Deps of deps:
 	mrpt-opengl
 	mrpt-base

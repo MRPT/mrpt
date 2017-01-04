@@ -137,7 +137,7 @@ void do_test_clipOutOfRange()
 	// Clip:
 	{
 		CPoint2D pivot(0,0);
-		const float radius = 1.1;
+		const float radius = 1.1f;
 
 		MAP  pts = pts0;
 		pts.clipOutOfRange(pivot,radius);

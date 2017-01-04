@@ -11,6 +11,7 @@
 
 #include <mrpt/maps/CRandomFieldGridMap2D.h>
 #include <mrpt/maps/CSimpleMap.h>
+#include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/system/os.h>
 #include <mrpt/math/CMatrix.h>
 #include <mrpt/math/utils.h>
@@ -208,149 +209,6 @@ void  CRandomFieldGridMap2D::internal_clear()
 		}
 		break;
 
-	case mrGMRF_G:
-		{
-			CTicTac	tictac;
-			tictac.Tic();
-
-			if (m_rfgm_verbose)
-				printf("[CRandomFieldGridMap2D::clear] Generating Prior based on Gaussian\n");
-
-			// Set the grid to initial values:
-			TRandomFieldCell	def(0,0);		// mean, std
-			fill( def );
-
-			//Set initial restrictions: L "cell Constraints" + O "Observations constraints"
-			const uint16_t Gsize = m_insertOptions_common->GMRF_constraintsSize;
-			const uint16_t Gside = mrpt::utils::round((Gsize-1)/2);
-			const float Gsigma = m_insertOptions_common->GMRF_constraintsSigma;
-			gauss_val.resize(2*Gside);
-			const size_t N = m_map.size();
-
-			// Weigths of the constratints
-			for (uint16_t i=1;i<=2*Gside;i++)  // Compute larger distances than Gside to account for "diagonal" distances.
-				gauss_val[i-1] = exp( -0.5 *i /Gsigma );		//Fixed constraints are modeled as Gaussian
-
-			//Determine the number of Initial constraints --> L+M
-			nPriorFactors = 0;		// L
-			nObsFactors = 0;		// M
-
-			{
-				// Avoid the costly % and / operations:
-				size_t cx = 0; // ( j % m_size_x );		// [0, m_size_x-1]
-				size_t	cy = 0; // ( j / m_size_x );		// [0, m_size_y-1]
-				for (size_t j=0; j<N; j++)
-				{
-					//Determine the Number of restrictions of the current cell j
-					//Determine num of columns out of the gridmap
-					size_t outc_left = max( 0 , int(Gside-cx) );
-					size_t outc_right = max(int (0) , int (Gside-(m_size_x-cx-1)) );
-					size_t outc = outc_left + outc_right;
-					//Determine num of rows out of the gridmap
-					size_t outr_down = max( 0 , int(Gside-(cy)) );
-					size_t outr_up = max(int (0) , int (Gside-(m_size_y-cy-1)) );
-					size_t outr = outr_up + outr_down;
-
-					nPriorFactors += (Gsize - outc -1) + (Gsize - outr -1 );   //only vertical and horizontal restrictions
-
-					//Increment (row(x), col(y))
-					if (++cx>=m_size_x)
-					{
-						cx=0;
-						cy++;
-					}
-				}
-			}
-
-			nFactors = nPriorFactors + nObsFactors;
-			if (m_rfgm_verbose) cout << "Generating " << nFactors << " cell constraints for a map size of N=" << N << endl;
-
-			//Reset the vector of maps (Hessian_vm), the gradient, and the vector of active observations
-#if EIGEN_VERSION_AT_LEAST(3,1,0)
-			H_prior.clear();
-			H_prior.reserve(nPriorFactors);
-#endif
-			g.resize(N);			//Initially the gradient is all 0
-			g.fill(0.0);
-			activeObs.resize(N);	//No initial Observations
-
-			// Load default values:
-			{
-				// Avoid the costly % and / operations:
-				size_t cx = 0; // ( j % m_size_x );		// [0, m_size_x-1]
-				size_t cy = 0; // ( j / m_size_x );		// [0, m_size_y-1]
-				size_t count = 0;
-				for (size_t j=0; j<N; j++)
-				{
-					//Determine the Number of restrictions of the current cell j
-					//Determine num of columns out of the gridmap
-					int outc_left = max( 0 , int(Gside-cx) );
-					int outc_right = max(int (0) , int (Gside-(m_size_x-cx-1)) );
-					int outc = outc_left + outc_right;
-					//Determine num of rows out of the gridmap
-					int outr_down = max( 0 , int(Gside-(cy)) );
-					int outr_up = max(int (0) , int (Gside-(m_size_y-cy-1)) );
-					int outr = outr_up + outr_down;
-
-					size_t nConsFixed_j = (Gsize - outc -1) + (Gsize - outr -1 );   //only vertical and horizontal restrictions
-
-					//Set constraints of cell j with all neighbord cells i
-					for (int kr=-(Gside-outr_down); kr<=(Gside-outr_up); kr++ )
-					{
-						for (int kc=-(Gside-outc_left); kc<=(Gside-outc_right); kc++)
-						{
-							// get index of cell i
-							size_t icx = cx + kc;
-							size_t icy = cy + kr;
-							size_t i = icx + icy*m_size_x;
-
-							if (j==i)
-							{
-								//H_ii = N constraints * Lambda_cell * (J_ij^2 +1)
-#if EIGEN_VERSION_AT_LEAST(3,1,0)
-								//std::pair<size_t,float> Hentry (j , nConsFixed_j * m_insertOptions_common->GMRF_lambdaPrior * (square(1.0/gauss_val[abs(kr+kc)]) + 1) );
-								//H_vm.at(i).insert(Hentry);
-
-								Eigen::Triplet<double> Hentry(i,j , nConsFixed_j * m_insertOptions_common->GMRF_lambdaPrior * (square(1.0/gauss_val[abs(kr+kc)]) + 1) );
-								H_prior.push_back( Hentry );
-#endif
-							}
-							else
-							{
-								if (kr==0 || kc==0)      //only vertical and horizontal restrictions/constraints
-								{
-									// H_ji = 2 * Lambda_cell * J_ij
-#if EIGEN_VERSION_AT_LEAST(3,1,0)
-									Eigen::Triplet<double> Hentry(i,j , -2 * m_insertOptions_common->GMRF_lambdaPrior * 1/gauss_val[abs(kr+kc)-1]);
-									H_prior.push_back( Hentry );
-#endif
-									//g_j = [m(j) - alpha*m(i) ]* lambda
-									g[j] += (m_map[j].gmrf_mean - m_map[i].gmrf_mean) * m_insertOptions_common->GMRF_lambdaPrior;
-
-									count++;
-								}
-							}
-						}
-					}
-
-					// Increment (row(x), col(y))
-					if (++cx>=m_size_x)
-					{
-						cx=0;
-						cy++;
-					}
-				} // end for "j"
-			}
-
-			if (m_rfgm_verbose) cout << "		Ready in: " << tictac.Tac() << "s" << endl;
-			
-			if (m_rfgm_run_update_upon_clear) {
-				//Solve system and update map estimation
-				updateMapEstimation_GMRF();
-			}
-		}
-		break;
-
 	case mrGMRF_SD:
 		{
 			CTicTac	tictac;
@@ -372,12 +230,6 @@ void  CRandomFieldGridMap2D::internal_clear()
 			{	//Load Occupancy Gridmap and resize
 				if( !m_insertOptions_common->GMRF_simplemap_file.empty() )
 				{
-					//TSetOfMetricMapInitializers	mapList;
-					//mapList.loadFromConfigFile(m_ini,"MetricMap");
-
-					//CMultiMetricMap	 metricMap;
-					//metricMap.setListOfMaps( &mapList );
-
 					mrpt::maps::CSimpleMap simpleMap;
 					CFileGZInputStream(this->m_insertOptions_common->GMRF_simplemap_file) >> simpleMap;
 					ASSERT_(!simpleMap.empty())
@@ -408,27 +260,25 @@ void  CRandomFieldGridMap2D::internal_clear()
 					printf("New map dimensions: %u cells, cx=%u cy=%u\n", static_cast<unsigned int>(m_map.size()), static_cast<unsigned int>(getSizeX()), static_cast<unsigned int>(getSizeY()));
 				}
 
-				m_Ocgridmap.saveAsBitmapFile("./obstacle_map_from_MRPT.png");
+				m_Ocgridmap.saveAsBitmapFile("./obstacle_map_from_MRPT_for_GMRF.png");
 			}
 
 			//m_map number of cells
-			const size_t N = m_map.size();
+			const size_t nodeCount = m_map.size();
 
 			//Set initial factors: L "prior factors" + 0 "Observation factors"
-			nPriorFactors = (this->getSizeX() -1) * this->getSizeY() + this->getSizeX() * (this->getSizeY() -1);		// L = (Nr-1)*Nc + Nr*(Nc-1); Full connected
-			nObsFactors = 0;		// M
-			nFactors = nPriorFactors + nObsFactors;
-			if (m_rfgm_verbose) cout << "[CRandomFieldGridMap2D::clear] Generating " << nFactors << " factors for a map size of N=" << N << endl;
+			const size_t nPriorFactors = (this->getSizeX() -1) * this->getSizeY() + this->getSizeX() * (this->getSizeY() -1);		// L = (Nr-1)*Nc + Nr*(Nc-1); Full connected
+			//const size_t nObsFactors = 0;		// M
+			//const size_t nFactors = nPriorFactors + nObsFactors;
+			if (m_rfgm_verbose) cout << "[CRandomFieldGridMap2D::clear] Generating " << nPriorFactors << " prior factors for a map size of N=" << nodeCount << endl;
 
+			m_gmrf.clear();
+			m_gmrf.initialize(nodeCount);
 
-#if EIGEN_VERSION_AT_LEAST(3,1,0)
-			//Initialize H_prior, gradient = 0, and the vector of active observations = empty
-			H_prior.clear();
-			H_prior.reserve(nPriorFactors);
+			m_mrf_factors_activeObs.clear();
+			m_mrf_factors_activeObs.resize(nodeCount); // All cells, no observation
 
-			g.resize(N);			//Initially the gradient is all 0
-			g.fill(0.0);
-			activeObs.resize(N);	//No initial Observations
+			m_mrf_factors_priors.clear();
 
 			//-------------------------------------
 			// Load default values for H_prior:
@@ -451,7 +301,9 @@ void  CRandomFieldGridMap2D::internal_clear()
 				size_t cxo_min, cxo_max, cyo_min, cyo_max;										//Cell i+j limits in the Occupancy
 				//bool first_obs = false;
 
-				for (size_t j=0; j<N; j++)		//For each cell in the map
+				std::multimap<size_t, size_t> cell_interconnections; //Store the interconnections (relations) of each cell with its neighbourds
+
+				for (size_t j=0; j<nodeCount; j++)		//For each cell in the map
 				{
 					// Get cell_j indx-limits in Occuppancy gridmap
 					cxoj_min = floor(cx*res_coef);
@@ -462,35 +314,40 @@ void  CRandomFieldGridMap2D::internal_clear()
 					seed_cxo = cxoj_min + ceil(res_coef/2-1);
 					seed_cyo = cyoj_min + ceil(res_coef/2-1);
 
-								//DEBUG
-								//If cell occpuped then add observation
-								if ( m_Ocgridmap.getCell(seed_cxo,seed_cyo) < 0.5 )
-								{
-									TobservationGMRF new_obs;
-									new_obs.obsValue = 0.0;
-									new_obs.Lambda = 10e-5f;
-									new_obs.time_invariant = true;	//Obs that will not dissapear with time.
-									activeObs[j].push_back(new_obs);
-								}
-
-								//// Insert 1 observation in the vector of Active Observations for a free cell
-								//if( ( m_Ocgridmap.getCell(seed_cxo,seed_cyo) > 0.5 ) && first_obs )
-								//{
-								//	TobservationGMRF new_obs;
-								//	new_obs.obsValue = 0.0;
-								//	new_obs.Lambda = m_insertOptions_common->GMRF_lambdaObs;
-								//	activeObs[j].push_back(new_obs);
-								//	first_obs = false;
-								//	cout << " **** Inserting Observation at cell: " << j << endl;
-								//}
+					//If cell occpuped then add fake observation: to allow all cells having a solution
+					if ( m_Ocgridmap.getCell(seed_cxo,seed_cyo) < 0.5 )
+					{
+						TObservationGMRF new_obs(*this);
+						new_obs.node_id = j;
+						new_obs.obsValue = 0.0;
+						new_obs.Lambda = 10e-5;
+						new_obs.time_invariant = true; //Obs that will not dissapear with time.
+						m_mrf_factors_activeObs[j].push_back(new_obs);
+						m_gmrf.addConstraint(*m_mrf_factors_activeObs[j].rbegin()); // add to graph
+					}
 
 					//Factor with the right node: H_ji = - Lamda_prior
+					//Factor with the upper node: H_ji = - Lamda_prior
 					//-------------------------------------------------
-					if (cx<(m_size_x-1))
+					for (int neighbor=0;neighbor<2; neighbor++)
 					{
-						size_t i = j+1;
-						size_t cxi = cx+1;
-						size_t cyi = cy;
+						size_t i, cxi, cyi;
+
+						if (neighbor == 0) {
+							if (cx >= (m_size_x - 1))
+								continue;
+							i = j + 1;
+							cxi = cx + 1;
+							cyi = cy;
+						}
+
+						if (neighbor == 1) {
+							if (cy >= (m_size_y - 1))
+								continue;
+							i = j + m_size_x;
+							cxi = cx;
+							cyi = cy + 1;
+						}
 
 						// Get cell_i indx-limits in Occuppancy gridmap
 						cxoi_min = floor(cxi*res_coef);
@@ -510,62 +367,20 @@ void  CRandomFieldGridMap2D::internal_clear()
 						//Check using Region growing if cell j is connected to cell i (Occupancy gridmap)
 						if( exist_relation_between2cells(&m_Ocgridmap, cxo_min,cxo_max,cyo_min,cyo_max,seed_cxo,seed_cyo,objective_cxo,objective_cyo))
 						{
-							Eigen::Triplet<double> Hentry(i,j, - m_insertOptions_common->GMRF_lambdaPrior);
-							H_prior.push_back( Hentry );
+							TPriorFactorGMRF new_prior(*this);
+							new_prior.node_id_i = i;
+							new_prior.node_id_j = j;
+							new_prior.Lambda = m_insertOptions_common->GMRF_lambdaPrior;
+
+							m_mrf_factors_priors.push_back(new_prior);
+							m_gmrf.addConstraint(*m_mrf_factors_priors.rbegin()); // add to graph
 
 							//Save relation between cells
 							cell_interconnections.insert ( std::pair<size_t,size_t>(j,i) );
 							cell_interconnections.insert ( std::pair<size_t,size_t>(i,j) );
 						}
-					}
 
-					//Factor with the upper node: H_ji = - Lamda_prior
-					//-------------------------------------------------
-					if (cy<(m_size_y-1))
-					{
-						size_t i = j+m_size_x;
-						size_t cxi = cx;
-						size_t cyi = cy+1;
-
-						// Get cell_i indx-limits in Occuppancy gridmap
-						cxoi_min = floor(cxi*res_coef);
-						cxoi_max = cxoi_min + ceil(res_coef-1);
-						cyoi_min = floor(cyi*res_coef);
-						cyoi_max = cyoi_min + ceil(res_coef-1);
-
-						objective_cxo = cxoi_min + ceil(res_coef/2-1);
-						objective_cyo = cyoi_min + ceil(res_coef/2-1);
-
-						//Get overall indx-limits of both cells together
-						cxo_min = min(cxoj_min, cxoi_min );
-						cxo_max = max(cxoj_max, cxoi_max );
-						cyo_min = min(cyoj_min, cyoi_min );
-						cyo_max = max(cyoj_max, cyoi_max );
-
-						//Check using Region growing if cell j is connected to cell i (Occupancy gridmap)
-						if( exist_relation_between2cells(&m_Ocgridmap, cxo_min,cxo_max,cyo_min,cyo_max,seed_cxo,seed_cyo,objective_cxo,objective_cyo))
-						{
-							Eigen::Triplet<double> Hentry(i,j, - m_insertOptions_common->GMRF_lambdaPrior);
-							H_prior.push_back( Hentry );
-
-							//Save relation
-							cell_interconnections.insert ( std::pair<size_t,size_t>(j,i) );
-							cell_interconnections.insert ( std::pair<size_t,size_t>(i,j) );
-						}
-					}
-
-					//Factors of cell_j: H_jj = N factors * Lambda_prior
-					//----------------------------------------------------
-					std::pair < std::multimap<size_t,size_t>::iterator, std::multimap<size_t,size_t>::iterator > range;
-					range = cell_interconnections.equal_range(j);
-					size_t nFactors_j = 0;
-					while ( range.first!=range.second )
-					{
-						nFactors_j++;
-						range.first++;
-					}
-					Eigen::Triplet<double> Hentry(j,j , nFactors_j * m_insertOptions_common->GMRF_lambdaPrior );
-					H_prior.push_back( Hentry );
+					} // end for 2 neighbors
 
 					// Increment j coordinates (row(x), col(y))
 					if (++cx>=m_size_x)
@@ -574,15 +389,6 @@ void  CRandomFieldGridMap2D::internal_clear()
 						cy++;
 					}
 				} // end for "j"
-
-#if 0
-				//DEBUG - Save cell interconnections to file
-				ofstream myfile;
-				myfile.open("MRF.txt");
-				for (std::multimap<size_t,size_t>::iterator it=cell_interconnections.begin(); it!=cell_interconnections.end(); ++it)
-					myfile << (*it).first << " " << (*it).second << '\n';
-				myfile.close();
-#endif
 			}
 			else
 			{
@@ -592,15 +398,21 @@ void  CRandomFieldGridMap2D::internal_clear()
 				//---------------------------------------------------------------
 				size_t cx = 0;
 				size_t cy = 0;
-				for (size_t j=0; j<N; j++)
+				for (size_t j=0; j<nodeCount; j++)
 				{
 					//Factor with the right node: H_ji = - Lamda_prior
 					//-------------------------------------------------
 					if (cx<(m_size_x-1))
 					{
 						size_t i = j+1;
-						Eigen::Triplet<double> Hentry(i,j, - m_insertOptions_common->GMRF_lambdaPrior);
-						H_prior.push_back( Hentry );
+
+						TPriorFactorGMRF new_prior(*this);
+						new_prior.node_id_i = i;
+						new_prior.node_id_j= j;
+						new_prior.Lambda = m_insertOptions_common->GMRF_lambdaPrior;
+
+						m_mrf_factors_priors.push_back(new_prior);
+						m_gmrf.addConstraint(*m_mrf_factors_priors.rbegin()); // add to graph
 					}
 
 					//Factor with the above node: H_ji = - Lamda_prior
@@ -608,15 +420,15 @@ void  CRandomFieldGridMap2D::internal_clear()
 					if (cy<(m_size_y-1))
 					{
 						size_t i = j+m_size_x;
-						Eigen::Triplet<double> Hentry(i,j, - m_insertOptions_common->GMRF_lambdaPrior);
-						H_prior.push_back( Hentry );
-					}
 
-					//Factors of cell_i: H_ii = N factors * Lambda_prior
-					//----------------------------------------------------
-					size_t nFactors_j = 4 - (cx==0) - (cx==m_size_x-1) - (cy==0) - (cy==m_size_y-1);
-					Eigen::Triplet<double> Hentry(j,j , nFactors_j * m_insertOptions_common->GMRF_lambdaPrior );
-					H_prior.push_back( Hentry );
+						TPriorFactorGMRF new_prior(*this);
+						new_prior.node_id_i = i;
+						new_prior.node_id_j = j;
+						new_prior.Lambda = m_insertOptions_common->GMRF_lambdaPrior;
+
+						m_mrf_factors_priors.push_back(new_prior);
+						m_gmrf.addConstraint(*m_mrf_factors_priors.rbegin()); // add to graph
+					}
 
 					// Increment j coordinates (row(x), col(y))
 					if (++cx>=m_size_x) {
@@ -634,7 +446,7 @@ void  CRandomFieldGridMap2D::internal_clear()
 				//Solve system and update map estimation
 				updateMapEstimation_GMRF();
 			}
-#endif
+
 		}//end case
 		break;
 	default:
@@ -768,9 +580,6 @@ CRandomFieldGridMap2D::TInsertionOptionsCommon::TInsertionOptionsCommon() :
 	GMRF_gridmap_image_cx			( 0 ),
 	GMRF_gridmap_image_cy			( 0 ),
 
-	GMRF_constraintsSize		( 3	),
-	GMRF_constraintsSigma		( 4.0f ),
-
 	GMRF_saturate_min			( -std::numeric_limits<double>::max() ),
 	GMRF_saturate_max			(  std::numeric_limits<double>::max() ),
 	GMRF_skip_variance			(false)
@@ -804,9 +613,6 @@ void  CRandomFieldGridMap2D::TInsertionOptionsCommon::internal_dumpToTextStream_
 	out.printf("GMRF_gridmap_image_res					= %f\n", GMRF_gridmap_image_res);
 	out.printf("GMRF_gridmap_image_cx					= %u\n", static_cast<unsigned int>(GMRF_gridmap_image_cx));
 	out.printf("GMRF_gridmap_image_cy					= %u\n", static_cast<unsigned int>(GMRF_gridmap_image_cy));
-
-	out.printf("GMRF_constraintsSize                    = %u\n", (unsigned)GMRF_constraintsSize);
-	out.printf("GMRF_constraintsSigma	                = %f\n", GMRF_constraintsSigma);
 }
 
 /*---------------------------------------------------------------
@@ -838,9 +644,6 @@ void  CRandomFieldGridMap2D::TInsertionOptionsCommon::internal_loadFromConfigFil
 	GMRF_gridmap_image_res			= iniFile.read_float(section.c_str(),"gridmap_image_res",0.01f,false);
 	GMRF_gridmap_image_cx			= iniFile.read_int(section.c_str(),"gridmap_image_cx",0,false);
 	GMRF_gridmap_image_cy			= iniFile.read_int(section.c_str(),"gridmap_image_cy",0,false);
-
-	GMRF_constraintsSigma	= iniFile.read_float(section.c_str(),"GMRF_constraintsSigma",GMRF_constraintsSigma);
-	MRPT_LOAD_CONFIG_VAR(GMRF_constraintsSize, int,   iniFile, section );
 }
 
 
@@ -885,7 +688,6 @@ void CRandomFieldGridMap2D::getAsMatrix( mrpt::math::CMatrixDouble &cells_mat) c
 			case mrKalmanApproximate:
 				c = cell->kf_mean;
 				break;
-			case mrGMRF_G:
 			case mrGMRF_SD:
 				c = cell->gmrf_mean;
 				break;
@@ -1415,7 +1217,6 @@ void  CRandomFieldGridMap2D::saveMetricMapRepresentationToFile(
 		}
 		break;
 
-	case mrGMRF_G:
 	case mrGMRF_SD:
 		{
 			// Save the mean and std matrix:
@@ -1430,7 +1231,7 @@ void  CRandomFieldGridMap2D::saveMetricMapRepresentationToFile(
 				{
 					MEAN(i,j) = cellByIndex(j,i)->gmrf_mean;
 					STDs(i,j) = cellByIndex(j,i)->gmrf_std;
-					
+
 					XYZ(idx,0) = idx2x(j);
 					XYZ(idx,1) = idx2y(i);
 					XYZ(idx,2) = cellByIndex(j,i)->gmrf_mean;
@@ -1458,7 +1259,7 @@ void  CRandomFieldGridMap2D::saveAsMatlab3DGraph(const std::string  &filName) co
 
 	const double std_times = 3;
 
-	ASSERT_( m_mapType == mrKalmanFilter || m_mapType==mrKalmanApproximate|| m_mapType==mrGMRF_G || m_mapType==mrGMRF_SD );
+	ASSERT_( m_mapType == mrKalmanFilter || m_mapType==mrKalmanApproximate || m_mapType==mrGMRF_SD );
 
 	recoverMeanAndCov();
 
@@ -1619,7 +1420,6 @@ void  CRandomFieldGridMap2D::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&mean
 	{
 	case mrKalmanFilter:
 	case mrKalmanApproximate:
-	case mrGMRF_G:
 	case mrGMRF_SD:
 		{
 			// for Kalman models:
@@ -1926,7 +1726,7 @@ void CRandomFieldGridMap2D::predictMeasurement(
 		if (x<=m_x_min+m_resolution*0.5 ||
 			y<=m_y_min+m_resolution*0.5 ||
 			x>=m_x_max-m_resolution*0.5 ||
-			x>=m_x_max-m_resolution*0.5) 
+			x>=m_x_max-m_resolution*0.5)
 		{
 			// Too close to a border:
 			queries.resize(1);
@@ -1996,10 +1796,9 @@ void CRandomFieldGridMap2D::predictMeasurement(
 
 		case mrKalmanFilter:
 		case mrKalmanApproximate:
-		case mrGMRF_G:
 		case mrGMRF_SD:
 			{
-				if (m_mapType==mrKalmanApproximate && m_hasToRecoverMeanAndCov) 
+				if (m_mapType==mrKalmanApproximate && m_hasToRecoverMeanAndCov)
 					recoverMeanAndCov();	// Just for KF2
 
 				if (!cell) {
@@ -2330,7 +2129,6 @@ void CRandomFieldGridMap2D::updateMapEstimation()
 			// Nothing to do, already done in the insert method...
 			break;
 
-		case mrGMRF_G:
 		case mrGMRF_SD:
 			this->updateMapEstimation_GMRF();
 			break;
@@ -2347,7 +2145,6 @@ void CRandomFieldGridMap2D::insertIndividualReading(const double sensorReading,c
 		case mrKernelDMV:          insertObservation_KernelDM_DMV(sensorReading,point, true); break;
 		case mrKalmanFilter:       insertObservation_KF(sensorReading,point); break;
 		case mrKalmanApproximate:  insertObservation_KF2(sensorReading,point);break;
-		case mrGMRF_G:			   insertObservation_GMRF(sensorReading,point,update_map,time_invariant); break;
 		case mrGMRF_SD:			   insertObservation_GMRF(sensorReading,point,update_map,time_invariant); break;
 	default:
 		THROW_EXCEPTION("insertObservation() isn't implemented for selected 'mapType'")
@@ -2366,16 +2163,20 @@ void CRandomFieldGridMap2D::insertObservation_GMRF(
 
 	try{
 		//Get index of observed cell
-		const int			cellIdx = xy2idx( point.x, point.y );
-		TRandomFieldCell	*cell = cellByPos( point.x, point.y );
+		const int         cellIdx = xy2idx( point.x, point.y );
+		TRandomFieldCell *cell = cellByPos( point.x, point.y );
 		ASSERT_(cell!=NULL);
 
 		// Insert observation in the vector of Active Observations
-		TobservationGMRF new_obs;
+		TObservationGMRF new_obs(*this);
+		new_obs.node_id = cellIdx;
 		new_obs.obsValue = normReading;
 		new_obs.Lambda = m_insertOptions_common->GMRF_lambdaObs;
 		new_obs.time_invariant = time_invariant;
-		activeObs[cellIdx].push_back(new_obs);
+
+		m_mrf_factors_activeObs[cellIdx].push_back(new_obs);
+		m_gmrf.addConstraint(*m_mrf_factors_activeObs[cellIdx].rbegin()); // add to graph
+
 	}catch(std::exception e){
 		cerr << "Exception while Inserting new Observation: "  << e.what() << endl;
 	}
@@ -2384,275 +2185,49 @@ void CRandomFieldGridMap2D::insertObservation_GMRF(
 	if (update_map) updateMapEstimation_GMRF();
 }
 
-bool CRandomFieldGridMap2D::ENABLE_GMRF_PROFILER  = false;
-
 /*---------------------------------------------------------------
 					updateMapEstimation_GMRF
   ---------------------------------------------------------------*/
 void CRandomFieldGridMap2D::updateMapEstimation_GMRF()
 {
-#if EIGEN_VERSION_AT_LEAST(3,1,0)
-	const size_t N = m_map.size();
+	Eigen::VectorXd x_incr, x_var;
+	m_gmrf.updateEstimation(x_incr, m_insertOptions_common->GMRF_skip_variance ? NULL: &x_var);
 
-
-	static mrpt::utils::CTimeLogger timelogger;
-	timelogger.enable(ENABLE_GMRF_PROFILER);
-
-	timelogger.enter("GMRF.build_hessian");
-
-	//------------------
-	//  1- HESSIAN
-	//------------------
-	//Build Sparse Hessian H, from list of triplets (Hprior):
-	ASSERT_(!H_prior.empty())
-	std::vector<Eigen::Triplet<double> > H_tri(H_prior.size());
-	H_tri.reserve( H_prior.size()+N );
-	std::copy( H_prior.begin(), H_prior.end(), H_tri.begin() );
-	
-	size_t numActiveObs = 0;
-	//Add H_obs
-	for (size_t j=0; j<N; j++)
-	{
-		//Sum the information of all observations on cell j
-		double Lambda_obs_j = 0.0;
-		numActiveObs+=activeObs[j].size();
-		for (std::vector<TobservationGMRF>::const_iterator ito = activeObs[j].begin(); ito !=activeObs[j].end(); ++ito)
-			Lambda_obs_j += ito->Lambda;
-
-		if (Lambda_obs_j != 0.0)
-			H_tri.push_back( Eigen::Triplet<double>(j,j, Lambda_obs_j ) ); // Duplicated entries (from obs + from the prior) will be summed in setFromTriplets()
-	}
-
-	Eigen::SparseMatrix<double> Hsparse(N,N);				// declares a column-major sparse matrix type of float
-	Hsparse.setFromTriplets(H_tri.begin(), H_tri.end() );
-
-#if 0 // For debug only
-	mrpt::math::saveEigenSparseTripletsToFile( "H_tri.txt", H_tri);
-#endif
-
-	timelogger.leave("GMRF.build_hessian");
-
-	if (!numActiveObs) {
-		if (m_rfgm_verbose) printf("[CRandomFieldGridMap2D] 0 active observations: skipping map update.\n");
-		return;
-	}
-
-	timelogger.enter("GMRF.build_grad");
-
-	//------------------
-	//  2- GRADIENT
-	//------------------
-	//Reset and Built Gradient Vector
-	g.setZero();
-	size_t cx = 0;
-	size_t cy = 0;
-	for (size_t j=0; j<N; j++)
-	{
-		//A- Gradient due to Observations
-		for (std::vector<TobservationGMRF>::const_iterator ito = activeObs[j].begin(); ito !=activeObs[j].end(); ++ito)
-			g[j] += ((m_map[j].gmrf_mean - ito->obsValue) * ito->Lambda);
-
-		//B- Gradient due to Prior
-		switch (m_mapType)
-		{
-		case mrGMRF_G:
-			{
-				const uint16_t Gsize = m_insertOptions_common->GMRF_constraintsSize;
-				const uint16_t Gside = mrpt::utils::round((Gsize-1)/2);
-				//Determine num of columns out of the gridmap
-				int outc_left = max( 0 , int(Gside-cx) );
-				int outc_right = max(int (0) , int (Gside-(m_size_x-cx-1)) );
-
-				//Determine num of rows out of the gridmap
-				int outr_down = max( 0 , int(Gside-(cy)) );
-				int outr_up = max(int (0) , int (Gside-(m_size_y-cy-1)) );
-
-				//Gradients between cell j and all neighbord cells i that have constraints
-				for (int kr=-(Gside-outr_down); kr<=(Gside-outr_up); kr++ )
-				{
-					for (int kc=-(Gside-outc_left); kc<=(Gside-outc_right); kc++)
-					{
-						// get index of cell i
-						size_t icx = cx + kc;
-						size_t icy = cy + kr;
-						size_t i = icx + icy*m_size_x;
-
-						if (j!=i)
-						{
-							if (kr==0 || kc==0)      //only vertical and horizontal restrictions/constraints
-							{
-								g[j] += ( m_map[j].gmrf_mean - (m_map[i].gmrf_mean * gauss_val[abs(kr+kc)-1])) * m_insertOptions_common->GMRF_lambdaPrior;
-							}
-						}
-					}
-				}
-			}
-			break;
-
-		case mrGMRF_SD:
-			{
-				if (this->m_insertOptions_common->GMRF_use_occupancy_information)
-				{
-					//Consider only cells correlated with the cell j
-					std::pair < std::multimap<size_t,size_t>::iterator, std::multimap<size_t,size_t>::iterator > range;
-					range = cell_interconnections.equal_range(j);
-					while ( range.first!=range.second )
-					{
-						size_t cell_i_indx = range.first->second;
-						g[j] += ( m_map[j].gmrf_mean - m_map[cell_i_indx].gmrf_mean) * m_insertOptions_common->GMRF_lambdaPrior;
-						range.first++;
-					}
-
-				}
-				else
-				{
-					//Gradient with all 4 neighbours
-					if (cx != 0)	//factor with left node
-						g[j] += ( m_map[j].gmrf_mean - m_map[j-1].gmrf_mean) * m_insertOptions_common->GMRF_lambdaPrior;
-
-					if (cx != (m_size_x-1))	//factor with right node
-						g[j] += ( m_map[j].gmrf_mean - m_map[j+1].gmrf_mean) * m_insertOptions_common->GMRF_lambdaPrior;
-
-					if (cy != 0)	//factor with benith node
-						g[j] += ( m_map[j].gmrf_mean - m_map[j-m_size_x].gmrf_mean) * m_insertOptions_common->GMRF_lambdaPrior;
-
-					if (cy != (m_size_y-1))	//factor with upper node
-						g[j] += ( m_map[j].gmrf_mean - m_map[j+m_size_x].gmrf_mean) * m_insertOptions_common->GMRF_lambdaPrior;
-				}
-			}
-			break;
-
-		default:
-			THROW_EXCEPTION("Gradient estimation error: Unknown method!");
-		};
-
-		// Increment j coordinates (row(x), col(y))
-		if (++cx>=m_size_x)
-		{
-			cx=0;
-			cy++;
-		}
-	}//end-for
-
-	timelogger.leave("GMRF.build_grad");
-	timelogger.enter("GMRF.solve");
-
-	if (m_rfgm_verbose) printf("[CRandomFieldGridMap2D] Solving...\n");
-	//Cholesky Factorization of Hessian --> Realmente se hace: chol( P * H * inv(P) )
-	Eigen::SimplicialLLT< Eigen::SparseMatrix <double> > solver;
-	solver.compute(Hsparse);
-	// Solve System:    m = m + H\(-g);
-	// Note: we solve for (+g) to avoid creating a temporary "-g", then we'll substract the result in m_inc instead of adding it:
-
-
-	Eigen::VectorXd m_inc = solver.solve(g);
-	if (m_rfgm_verbose) printf("[CRandomFieldGridMap2D] Solved.\n");
-
-	timelogger.leave("GMRF.solve");
-
-	Eigen::SparseMatrix<double> Sigma(N,N);								//Variance Matrix
-	bool use_variance_perm = true;
-	if(!m_insertOptions_common->GMRF_skip_variance)
-	{
-	timelogger.enter("GMRF.variance");
-
-#if 1
-	// VARIANCE SIGMA = inv(P) * inv( P*H*inv(P) ) * P
-	//Get triangular supperior P*H*inv(P) = UT' * UT = P * R'*R * inv(P)
-	MRPT_TODO("Use compressed access instead of coeff() below");
-
-	if (m_rfgm_verbose) printf("[CRandomFieldGridMap2D] Computing variance: U matrix...\n");
-	Eigen::SparseMatrix<double> UT = solver.matrixU();
-	if (m_rfgm_verbose) printf("[CRandomFieldGridMap2D] Computing variance: U done.\n");
-	Sigma.reserve(UT.nonZeros());
-
-	//Apply custom equations to obtain the inverse -> inv( P*H*inv(P) )
-	for (int l=N-1; l>=0; l--)
-	{
-		if (m_rfgm_verbose && !(l%100)) printf("[CRandomFieldGridMap2D] Computing variance %6.02f%%... \r", (100.0*(N-l-1))/N );
-
-		//Computes variances in the inferior submatrix of "l"
-		double subSigmas = 0.0;
-		for(size_t j=l+1; j<N; j++)
-		{
-			if (UT.coeff(l,j) != 0)
-			{
-				//Compute off-diagonal variances Sigma(j,l) = Sigma(l,j);
-
-				//SUM 1
-				double sum = 0.0;
-				for(size_t i=l+1; i<=j; i++)
-				{
-					if( UT.coeff(l,i) !=0 )
-					{
-						sum += UT.coeff(l,i) * Sigma.coeff(i,j);
-					}
-				}
-				//SUM 2
-				for(size_t i=j+1; i<N; ++i)
-				{
-					if( UT.coeff(l,i) !=0 )
-					{
-						sum += UT.coeff(l,i) * Sigma.coeff(j,i);
-					}
-				}
-				//Save off-diagonal variance (only Upper triangular)
-				Sigma.insert(l,j) = ( -sum/UT.coeff(l,l) );
-				subSigmas += UT.coeff(l,j) * Sigma.coeff(l,j);
-			}
-		}
-
-		Sigma.insert(l,l) = (1/UT.coeff(l,l)) * ( 1/UT.coeff(l,l) - subSigmas );
-	}
-#else
-	// Naive method: (much slower!)
-	Eigen::SparseMatrix<double> I(N,N);
-	I.setIdentity();
-	Sigma = solver.solve(I);
-	use_variance_perm = false;
-#endif
-	timelogger.leave("GMRF.variance");
-	}
-	timelogger.enter("GMRF.copy_to_map");
+	ASSERT_(size_t(m_map.size()) == size_t(x_incr.size()));
+	ASSERT_(m_insertOptions_common->GMRF_skip_variance || size_t(m_map.size()) == size_t(x_var.size()));
 
 	// Update Mean-Variance in the base grid class
-	for (size_t j=0; j<N; j++)
+	for (size_t j = 0; j<m_map.size(); j++)
 	{
-		// Recover the diagonal covariance values, undoing the permutation:
-		const int idx = use_variance_perm ? (int)solver.permutationP().indices().coeff(j) : (int)j;
-		const double variance = Sigma.coeff(idx,idx);
-
-		m_map[j].gmrf_std = std::sqrt(variance);
-		m_map[j].gmrf_mean -= m_inc[j]; // "-" because we solved for "+grad" instead of "-grad".
+		m_map[j].gmrf_std  = m_insertOptions_common->GMRF_skip_variance ? .0 : std::sqrt(x_var[j] );
+		m_map[j].gmrf_mean += x_incr[j];
 
 		mrpt::utils::saturate(m_map[j].gmrf_mean, m_insertOptions_common->GMRF_saturate_min, m_insertOptions_common->GMRF_saturate_max);
 	}
 
 	// Update Information/Strength of Active Observations
 	//---------------------------------------------------------
-	if (m_insertOptions_common->GMRF_lambdaObsLoss!=0) {
-		for (size_t j=0; j<activeObs.size(); j++)
-		{
-			std::vector<TobservationGMRF>::iterator ito = activeObs[j].begin();
-			while ( ito!=activeObs[j].end() )
+	if (m_insertOptions_common->GMRF_lambdaObsLoss != 0)
+	{
+		for (auto &obs : m_mrf_factors_activeObs) {
+			for (auto ito = obs.begin(); ito != obs.end(); )
 			{
-				if (!ito->time_invariant)
+				if (!ito->time_invariant) {
+					++ito;
+					continue;
+				}
+
+				ito->Lambda -= m_insertOptions_common->GMRF_lambdaObsLoss;
+				if (ito->Lambda < 0)
 				{
-					ito->Lambda -= m_insertOptions_common->GMRF_lambdaObsLoss;
-					if (ito->Lambda <= 0.0)
-						ito = activeObs[j].erase(ito);
-					else
-						++ito;
-				}else
+					m_gmrf.eraseConstraint(*ito);
+					ito = obs.erase(ito);
+				}
+				else
 					++ito;
 			}
 		}
 	}
-
-	timelogger.leave("GMRF.copy_to_map");
-#else
-	THROW_EXCEPTION("This method requires Eigen 3.1.0 or above")
-#endif
 }
 
 
@@ -2763,3 +2338,31 @@ float  CRandomFieldGridMap2D::compute3DMatchingRatio(const mrpt::maps::CMetricMa
 	return 0;
 }
 
+
+// ============ TObservationGMRF ===========
+double CRandomFieldGridMap2D::TObservationGMRF::evaluateResidual() const
+{
+	return m_parent->m_map[this->node_id].gmrf_mean - this->obsValue;
+}
+double CRandomFieldGridMap2D::TObservationGMRF::getInformation() const
+{
+	return this->Lambda;
+}
+void CRandomFieldGridMap2D::TObservationGMRF::evalJacobian(double &dr_dx) const
+{
+	dr_dx = 1.0;
+}
+// ============ TPriorFactorGMRF ===========
+double CRandomFieldGridMap2D::TPriorFactorGMRF::evaluateResidual() const
+{
+	return m_parent->m_map[this->node_id_i].gmrf_mean - m_parent->m_map[this->node_id_j].gmrf_mean;
+}
+double CRandomFieldGridMap2D::TPriorFactorGMRF::getInformation() const
+{
+	return this->Lambda;
+}
+void CRandomFieldGridMap2D::TPriorFactorGMRF::evalJacobian(double &dr_dx_i, double &dr_dx_j) const
+{
+	dr_dx_i = +1.0;
+	dr_dx_j = -1.0;
+}

@@ -31,6 +31,7 @@ MRPT_INITIALIZER(registerAllClasses_mrpt_maps)
 	registerClass( CLASS_ID( COccupancyGridMap2D ) );
 	registerClass( CLASS_ID( CGasConcentrationGridMap2D ) );
 	registerClass( CLASS_ID( CWirelessPowerGridMap2D ) );
+	registerClass( CLASS_ID( CRandomFieldGridMap3D ) );
 	registerClass( CLASS_ID( CHeightGridMap2D ) );
 	registerClass( CLASS_ID( CHeightGridMap2D_MRF ) );
 	registerClass( CLASS_ID( CReflectivityGridMap2D ) );

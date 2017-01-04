@@ -3,7 +3,7 @@ digraph MRPT_LIBS {
 	node [shape=box,style=filled, fillcolor="#D0D0D0"];
 
 	base 		[label="mrpt-base",URL="group__mrpt__base__grp.html"];
-	graphs		[label="mrpt-graphs (.h)",URL="group__mrpt__graphs__grp.html"];
+	graphs		[label="mrpt-graphs",URL="group__mrpt__graphs__grp.html"];
 	bayes 		[label="mrpt-bayes (.h)",URL="group__mrpt__bayes__grp.html"];
 	opengl 		[label="mrpt-opengl", URL="group__mrpt__opengl__grp.html"];
 	gui 		[label="mrpt-gui",URL="group__mrpt__gui__grp.html"];
@@ -50,6 +50,7 @@ digraph MRPT_LIBS {
 	vision -> obs;
 	
 	maps -> obs;
+	maps -> graphs;
 
 	slam -> maps;
 	slam -> vision;
