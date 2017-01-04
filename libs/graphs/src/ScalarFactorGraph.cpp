@@ -92,7 +92,7 @@ void ScalarFactorGraph::updateEstimation(
 	Eigen::VectorXd * solved_variances  //!< If !=NULL, the covariance of the estimate will be stored here.
 )
 {
-	ASSERT_(m_numNodes>0);
+	ASSERTMSG_(m_numNodes>0, "numNodes=0. Have you called initialize()?");
 
 	m_timelogger.enable(m_enable_profiler);
 
@@ -187,9 +187,10 @@ void ScalarFactorGraph::updateEstimation(
 		solved_covariance.reserve(UT.nonZeros());
 
 		//Apply custom equations to obtain the inverse -> inv( P*H*inv(P) )
+		const int show_progress_steps = std::max(int(20), int(n / 20));
 		for (int l = n - 1; l >= 0; l--)
 		{
-			if (!(l % 100))
+			if (!(l % show_progress_steps))
 				MRPT_LOG_DEBUG_FMT("Computing variance %6.02f%%... \r", (100.0*(n - l - 1)) / n);
 
 			//Computes variances in the inferior submatrix of "l"
@@ -225,6 +226,8 @@ void ScalarFactorGraph::updateEstimation(
 
 			solved_covariance.insert(l, l) = (1 / UT.coeff(l, l)) * (1 / UT.coeff(l, l) - subSigmas);
 		}
+
+		MRPT_LOG_DEBUG_FMT("Computing variance %6.02f%%... \r", 100.0);
 
 		for (unsigned int i = 0; i < n; i++)
 		{

@@ -89,11 +89,6 @@ CHeightGridMap2D_MRF::CHeightGridMap2D_MRF(
 	CMetricMap::clear();
 }
 
-CHeightGridMap2D_MRF::~CHeightGridMap2D_MRF()
-{
-}
-
-
 bool CHeightGridMap2D_MRF::insertIndividualPoint(const double x,const double y,const double z, const CHeightGridMap2D_Base::TPointInsertParams & params)
 {
 	const TRandomFieldCell *cell = cellByPos(x,y);

@@ -12,33 +12,56 @@
 
 TEST(CRandomFieldGridMap3D, insertCheckMapBounds)
 {
+	using mrpt::math::TPoint3D;
+
 	mrpt::maps::CRandomFieldGridMap3D::TVoxelInterpolationMethod im = mrpt::maps::CRandomFieldGridMap3D::gimNearest;
 
-	mrpt::maps::CRandomFieldGridMap3D grid3d; //mrpt::maps::CHeightGridMap2D grid3d;
-	grid3d.setSize(-4.0, 4.0, 0.0, 4.0, 1.0); // x:[-10,10] * y:[0,5]
+	mrpt::maps::CRandomFieldGridMap3D grid3d;
+	//grid3d.setMinLoggingLevel(mrpt::utils::LVL_DEBUG);
+
+	grid3d.setSize(-4.0,4.0, 0.0, 4.0, 0.0,4.0,  1.0 /*voxel size*/); // x:[-10,10] * y:[0,5] * z:[0,4]
+
+	const double val = 55.0, var = 1.0;
+
 	// Inside:
-	EXPECT_TRUE(grid3d.insertIndividualReading(2.0, 3.0, 56.0, pt_params));
-	EXPECT_TRUE(grid3d.insertIndividualReading(-3.0, 0.4, 56.0, pt_params));
-	EXPECT_TRUE(grid3d.insertIndividualReading(3.0, 3.8, 56.0, pt_params));
+	EXPECT_TRUE(grid3d.insertIndividualReading(val, var, TPoint3D(2.0, 3.0, 1.0), im, false));
+	EXPECT_TRUE(grid3d.insertIndividualReading(val, var, TPoint3D(-3.0, 0.4,1.0), im, false));
+	EXPECT_TRUE(grid3d.insertIndividualReading(val, var, TPoint3D(3.0, 3.8,1.0), im, false));
 	// Outside:
-	EXPECT_FALSE(grid3d.insertIndividualReading(-11.0, 2.0, 56.0, pt_params));
-	EXPECT_FALSE(grid3d.insertIndividualReading(11.0, 2.0, 56.0, pt_params));
-	EXPECT_FALSE(grid3d.insertIndividualReading(2.0, -1.0, 56.0, pt_params));
-	EXPECT_FALSE(grid3d.insertIndividualReading(2.0, 6.0, 56.0, pt_params));
+	EXPECT_FALSE(grid3d.insertIndividualReading(val, var, TPoint3D(-11.0, 2.0, 2.0), im, false));
+	EXPECT_FALSE(grid3d.insertIndividualReading(val, var, TPoint3D(11.0, 2.0, 3.0), im, false));
+	EXPECT_FALSE(grid3d.insertIndividualReading(val, var, TPoint3D(2.0, -1.0, 11.0), im, false));
+	EXPECT_FALSE(grid3d.insertIndividualReading(val, var, TPoint3D(2.0, 6.0, 3.0), im, false));
 }
 
 TEST(CRandomFieldGridMap3D, insertPointsAndRead)
 {
-#if 0
-	MAP grid3d;
-	grid3d.setSize(0.0, 5.0, 0.0, 5.0, 0.5); // x:[-10,10] * y:[0,5]
-											 // Inside:
-	const double x = 2.1, y = 3.1, z_write = 56.0;
-	grid3d.insertIndividualPoint(x, y, z_write);
-	double z_read;
-	bool res = grid3d.dem_get_z(x, y, z_read);
-	EXPECT_TRUE(res);
-	EXPECT_NEAR(z_read, z_write, 1e-6);
-#endif
+	using mrpt::math::TPoint3D;
+
+	mrpt::maps::CRandomFieldGridMap3D::TVoxelInterpolationMethod im = mrpt::maps::CRandomFieldGridMap3D::gimNearest;
+	mrpt::maps::CRandomFieldGridMap3D grid3d;
+	//grid3d.setMinLoggingLevel(mrpt::utils::LVL_DEBUG);
+
+	grid3d.setSize(-4.0, 4.0, 0.0, 4.0, 0.0, 4.0, 1.0 /*voxel size*/); // x:[-10,10] * y:[0,5] * z:[0,4]
+
+	const double val = 55.0, var = 1.0;
+
+	EXPECT_TRUE(grid3d.insertIndividualReading(val, var, TPoint3D(2.0, 3.0, 1.0), im, false));
+
+	grid3d.insertionOptions.GMRF_skip_variance = true;
+	grid3d.updateMapEstimation();
+
+	{
+		const double map_value = grid3d.cellByPos(2.0, 3.0, 1.0)->mean_value;
+		EXPECT_NEAR(map_value, val, 1e-6);
+	}
+
+	// Test after map enlarge:
+	grid3d.resize(-5.0, 5.0, -1.0, 5.0, -1.0, 5.0, mrpt::maps::TRandomFieldVoxel(), .0);
+	{
+		const double map_value = grid3d.cellByPos(2.0, 3.0, 1.0)->mean_value;
+		EXPECT_NEAR(map_value, val, 1e-6);
+	}
+
 }
 
