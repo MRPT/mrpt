@@ -93,12 +93,7 @@ bool CHeightGridMap2D_MRF::insertIndividualPoint(const double x,const double y,c
 {
 	const TRandomFieldCell *cell = cellByPos(x,y);
 	if (!cell) return false;
-
-	MRPT_TODO("insertIndividualPoint: allow different std values")
-	if (params.pt_z_std!=0.0)
-		throw std::runtime_error("CHeightGridMap2D_MRF::insertIndividualPoint() point variable variance not implemented yet!");
-
-	this->insertIndividualReading(z, mrpt::math::TPoint2D(x,y), params.update_map_after_insertion );
+	this->insertIndividualReading(z, mrpt::math::TPoint2D(x,y), params.update_map_after_insertion, true /*time invariant*/, params.pt_z_std);
 	return true;
 }
 double CHeightGridMap2D_MRF::dem_get_resolution() const {
