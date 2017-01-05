@@ -89,7 +89,7 @@ namespace maps
 			);
 
 		/** Erases all added observations and start again with an empty gridmap. */
-		void clear();
+		void clear() MRPT_OVERRIDE;
 
 		/** Save the current estimated mean values to a CSV file with fields `x y z mean_value`.
 		  * Optionally, std deviations can be also saved to another file with fields `x y z stddev_value`, if `filName_stddev` is provided.
