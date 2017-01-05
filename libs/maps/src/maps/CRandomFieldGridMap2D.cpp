@@ -151,7 +151,7 @@ void  CRandomFieldGridMap2D::internal_clear()
 			CTicTac	tictac;
 			tictac.Tic();
 
-			MRPT_LOG_DEBUG_FMT("[CRandomFieldGridMap2D::clear] Resetting compressed cov. matrix and cells\n");
+			MRPT_LOG_DEBUG("[CRandomFieldGridMap2D::clear] Resetting compressed cov. matrix and cells\n");
 			TRandomFieldCell	def(
 				m_insertOptions_common->KF_defaultCellMeanValue,									// mean
 				m_insertOptions_common->KF_initialCellStd		// std
@@ -211,7 +211,7 @@ void  CRandomFieldGridMap2D::internal_clear()
 			CTicTac	tictac;
 			tictac.Tic();
 
-			MRPT_LOG_DEBUG_FMT("[clear] Generating Prior based on 'Squared Differences'\n");
+			MRPT_LOG_DEBUG("[clear] Generating Prior based on 'Squared Differences'\n");
 			MRPT_LOG_DEBUG_FMT("[clear] Initial map dimension: %u cells, x=(%.2f,%.2f) y=(%.2f,%.2f)\n", static_cast<unsigned int>(m_map.size()), getXMin(),getXMax(),getYMin(),getYMax());
 
 			// Set the gridmap (m_map) to initial values:
@@ -243,7 +243,7 @@ void  CRandomFieldGridMap2D::internal_clear()
 				}
 
 				//Resize MRF Map to match Occupancy Gridmap dimmensions
-				MRPT_LOG_DEBUG_FMT("Resizing m_map to match Occupancy Gridmap dimensions");
+				MRPT_LOG_DEBUG("Resizing m_map to match Occupancy Gridmap dimensions");
 
 				resize(m_Ocgridmap.getXMin(),m_Ocgridmap.getXMax(),m_Ocgridmap.getYMin(),m_Ocgridmap.getYMax(),def,0.0);
 
@@ -276,7 +276,7 @@ void  CRandomFieldGridMap2D::internal_clear()
 			//-------------------------------------
 			if (this->m_insertOptions_common->GMRF_use_occupancy_information)
 			{
-				MRPT_LOG_DEBUG_FMT("LOADING PRIOR BASED ON OCCUPANCY GRIDMAP \n");
+				MRPT_LOG_DEBUG("LOADING PRIOR BASED ON OCCUPANCY GRIDMAP \n");
 				MRPT_LOG_DEBUG_FMT("MRF Map Dimmensions: %u x %u cells \n", static_cast<unsigned int>(m_size_x), static_cast<unsigned int>(m_size_y));
 				MRPT_LOG_DEBUG_FMT("Occupancy map Dimmensions: %i x %i cells \n", m_Ocgridmap.getSizeX(), m_Ocgridmap.getSizeY());
 				MRPT_LOG_DEBUG_FMT("Res_Coeff = %f pixels/celda",res_coef);
@@ -381,7 +381,7 @@ void  CRandomFieldGridMap2D::internal_clear()
 			}
 			else
 			{
-				MRPT_LOG_DEBUG_FMT("[CRandomFieldGridMap2D::clear] Initiating prior (fully connected)");
+				MRPT_LOG_DEBUG("[CRandomFieldGridMap2D::clear] Initiating prior (fully connected)");
 				//---------------------------------------------------------------
 				// Load default values for H_prior without Occupancy information:
 				//---------------------------------------------------------------
@@ -504,7 +504,7 @@ void  CRandomFieldGridMap2D::insertObservation_KernelDM_DMV(
 			}
 		}
 
-		MRPT_LOG_DEBUG_FMT("[CRandomFieldGridMap2D::insertObservation_KernelDM_DMV] Done!");
+		MRPT_LOG_DEBUG("[CRandomFieldGridMap2D::insertObservation_KernelDM_DMV] Done!");
 	} // end of computing the gauss. window.
 
 	//	Fuse with current content of grid (the MEAN of each cell):
@@ -1019,7 +1019,7 @@ void  CRandomFieldGridMap2D::insertObservation_KF(
 	std::vector<TRandomFieldCell>::iterator	it;
 
 	static CTicTac tictac;
-	MRPT_LOG_DEBUG_FMT("[insertObservation_KF] Updating mean values...");
+	MRPT_LOG_DEBUG("[insertObservation_KF] Updating mean values...");
 	tictac.Tic();
 
 	// Update mean values:
@@ -1034,7 +1034,7 @@ void  CRandomFieldGridMap2D::insertObservation_KF(
 	// ---------------------------------------------------------
 	N = m_cov.getRowCount();
 
-	MRPT_LOG_DEBUG_FMT("[insertObservation_KF] Updating covariance matrix...");
+	MRPT_LOG_DEBUG("[insertObservation_KF] Updating covariance matrix...");
 	tictac.Tic();
 
 	// We need to refer to the old cov: make an efficient copy of it:
@@ -1863,7 +1863,7 @@ void  CRandomFieldGridMap2D::insertObservation_KF2(
 	double		sk_1 = 1.0 / sk;
 
 	static CTicTac tictac;
-	MRPT_LOG_DEBUG_FMT("[insertObservation_KF2] Updating mean values...");
+	MRPT_LOG_DEBUG("[insertObservation_KF2] Updating mean values...");
 	tictac.Tic();
 
 	// ------------------------------------------------------------
