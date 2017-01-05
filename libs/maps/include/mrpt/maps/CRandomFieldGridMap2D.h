@@ -111,7 +111,8 @@ namespace maps
 	  */
 	class CRandomFieldGridMap2D : 
 		public mrpt::maps::CMetricMap, 
-		public mrpt::utils::CDynamicGrid<TRandomFieldCell>
+		public mrpt::utils::CDynamicGrid<TRandomFieldCell>,
+		public mrpt::utils::COutputLogger
 	{
 		typedef utils::CDynamicGrid<TRandomFieldCell> BASE;
 
@@ -264,7 +265,8 @@ namespace maps
 			const double sensorReading,          //!< [in] The value observed in the (x,y) position
 			const mrpt::math::TPoint2D & point,  //!< [in] The (x,y) location
 			const bool update_map = true,        //!< [in] Run a global map update after inserting this observatin (algorithm-dependant)
-			const bool time_invariant = true     //!< [in] Whether the observation "vanishes" with time (false) or not (true) [Only for GMRF methods]
+			const bool time_invariant = true,     //!< [in] Whether the observation "vanishes" with time (false) or not (true) [Only for GMRF methods]
+			const double reading_stddev = .0      //!< [in] The uncertainty (standard deviation) of the reading. Default="0.0" means use the default settings per map-wide parameters.
 			);
 
 		enum TGridInterpolationMethod {
@@ -293,11 +295,10 @@ namespace maps
 
 		void updateMapEstimation(); //!< Run the method-specific procedure required to ensure that the mean & variances are up-to-date with all inserted observations.
 
-		void enableVerbose(bool enable_verbose) { m_rfgm_verbose = enable_verbose; }
-		bool isEnabledVerbose() const { return m_rfgm_verbose; }
+		void enableVerbose(bool enable_verbose) { this->setMinLoggingLevel(mrpt::utils::LVL_DEBUG); }
+		bool isEnabledVerbose() const { return this->getMinLoggingLevel()== mrpt::utils::LVL_DEBUG; }
 
 	protected:
-		bool m_rfgm_verbose; //!< Enable verbose debug output for Random Field grid map operations (Default: false)
 		bool m_rfgm_run_update_upon_clear;
 
 		/** Common options to all random-field grid maps: pointer that is set to the derived-class instance of "insertOptions" upon construction of this class. */
@@ -389,7 +390,7 @@ namespace maps
 		  * \param normReading Is a [0,1] normalized concentration reading.
 		  * \param point Is the sensor location on the map
 		  */
-		void  insertObservation_GMRF(double normReading,const mrpt::math::TPoint2D &point, const bool update_map,const bool time_invariant);
+		void  insertObservation_GMRF(double normReading,const mrpt::math::TPoint2D &point, const bool update_map,const bool time_invariant, const double reading_information);
 
 		/** solves the minimum quadratic system to determine the new concentration of each cell */
 		void  updateMapEstimation_GMRF();

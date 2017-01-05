@@ -46,7 +46,7 @@ CRandomFieldGridMap2D::CRandomFieldGridMap2D(
 	double resolution
 	) :
 		CDynamicGrid<TRandomFieldCell>( x_min,x_max,y_min,y_max,resolution ),
-		m_rfgm_verbose(false),
+		COutputLogger("CRandomFieldGridMap2D"),
 		m_rfgm_run_update_upon_clear(true),
 		m_insertOptions_common( NULL ),
 		m_mapType(mapType),
@@ -100,8 +100,7 @@ void  CRandomFieldGridMap2D::internal_clear()
 
 	case mrKalmanFilter:
 		{
-			if (m_rfgm_verbose)
-				printf("[CRandomFieldGridMap2D::clear] Setting covariance matrix to %ux%u\n",(unsigned int)(m_size_y*m_size_x),(unsigned int)(m_size_y*m_size_x));
+			MRPT_LOG_DEBUG_FMT("[clear] Setting covariance matrix to %ux%u\n",(unsigned int)(m_size_y*m_size_x),(unsigned int)(m_size_y*m_size_x));
 
 			TRandomFieldCell	def(
 				m_insertOptions_common->KF_defaultCellMeanValue,		// mean
@@ -152,8 +151,7 @@ void  CRandomFieldGridMap2D::internal_clear()
 			CTicTac	tictac;
 			tictac.Tic();
 
-			if (m_rfgm_verbose)
-				printf("[CRandomFieldGridMap2D::clear] Resetting compressed cov. matrix and cells\n");
+			MRPT_LOG_DEBUG_FMT("[CRandomFieldGridMap2D::clear] Resetting compressed cov. matrix and cells\n");
 			TRandomFieldCell	def(
 				m_insertOptions_common->KF_defaultCellMeanValue,									// mean
 				m_insertOptions_common->KF_initialCellStd		// std
@@ -204,8 +202,7 @@ void  CRandomFieldGridMap2D::internal_clear()
 				}
 			}
 
-			if (m_rfgm_verbose)
-				printf("[CRandomFieldGridMap2D::clear] %ux%u cells done in %.03fms\n", unsigned(m_size_x),unsigned(m_size_y),1000*tictac.Tac());
+			MRPT_LOG_DEBUG_FMT("[clear] %ux%u cells done in %.03fms\n", unsigned(m_size_x),unsigned(m_size_y),1000*tictac.Tac());
 		}
 		break;
 
@@ -214,10 +211,8 @@ void  CRandomFieldGridMap2D::internal_clear()
 			CTicTac	tictac;
 			tictac.Tic();
 
-			if (m_rfgm_verbose) {
-				printf("[CRandomFieldGridMap2D::clear] Generating Prior based on 'Squared Differences'\n");
-				printf("[CRandomFieldGridMap2D::clear] Initial map dimension: %u cells, x=(%.2f,%.2f) y=(%.2f,%.2f)\n", static_cast<unsigned int>(m_map.size()), getXMin(),getXMax(),getYMin(),getYMax());
-			}
+			MRPT_LOG_DEBUG_FMT("[clear] Generating Prior based on 'Squared Differences'\n");
+			MRPT_LOG_DEBUG_FMT("[clear] Initial map dimension: %u cells, x=(%.2f,%.2f) y=(%.2f,%.2f)\n", static_cast<unsigned int>(m_map.size()), getXMin(),getXMax(),getYMin(),getYMax());
 
 			// Set the gridmap (m_map) to initial values:
 			TRandomFieldCell	def(0,0);		// mean, std
@@ -248,17 +243,14 @@ void  CRandomFieldGridMap2D::internal_clear()
 				}
 
 				//Resize MRF Map to match Occupancy Gridmap dimmensions
-				if (m_rfgm_verbose) {
-					printf("Resizing m_map to match Occupancy Gridmap dimensions \n");
-				}
+				MRPT_LOG_DEBUG_FMT("Resizing m_map to match Occupancy Gridmap dimensions");
+
 				resize(m_Ocgridmap.getXMin(),m_Ocgridmap.getXMax(),m_Ocgridmap.getYMin(),m_Ocgridmap.getYMax(),def,0.0);
 
-				if (m_rfgm_verbose) {
-					printf("Occupancy Gridmap dimensions: x=(%.2f,%.2f)m y=(%.2f,%.2f)m \n",m_Ocgridmap.getXMin(),m_Ocgridmap.getXMax(),m_Ocgridmap.getYMin(),m_Ocgridmap.getYMax());
-					printf("Occupancy Gridmap dimensions: %u cells, cx=%i cy=%i\n\n", static_cast<unsigned int>(m_Ocgridmap.getSizeX()*m_Ocgridmap.getSizeY()), m_Ocgridmap.getSizeX(), m_Ocgridmap.getSizeY());
-					printf("New map dimensions: %u cells, x=(%.2f,%.2f) y=(%.2f,%.2f)\n", static_cast<unsigned int>(m_map.size()), getXMin(),getXMax(),getYMin(),getYMax());
-					printf("New map dimensions: %u cells, cx=%u cy=%u\n", static_cast<unsigned int>(m_map.size()), static_cast<unsigned int>(getSizeX()), static_cast<unsigned int>(getSizeY()));
-				}
+				MRPT_LOG_DEBUG_FMT("Occupancy Gridmap dimensions: x=(%.2f,%.2f)m y=(%.2f,%.2f)m \n",m_Ocgridmap.getXMin(),m_Ocgridmap.getXMax(),m_Ocgridmap.getYMin(),m_Ocgridmap.getYMax());
+				MRPT_LOG_DEBUG_FMT("Occupancy Gridmap dimensions: %u cells, cx=%i cy=%i\n\n", static_cast<unsigned int>(m_Ocgridmap.getSizeX()*m_Ocgridmap.getSizeY()), m_Ocgridmap.getSizeX(), m_Ocgridmap.getSizeY());
+				MRPT_LOG_DEBUG_FMT("New map dimensions: %u cells, x=(%.2f,%.2f) y=(%.2f,%.2f)\n", static_cast<unsigned int>(m_map.size()), getXMin(),getXMax(),getYMin(),getYMax());
+				MRPT_LOG_DEBUG_FMT("New map dimensions: %u cells, cx=%u cy=%u\n", static_cast<unsigned int>(m_map.size()), static_cast<unsigned int>(getSizeX()), static_cast<unsigned int>(getSizeY()));
 
 				m_Ocgridmap.saveAsBitmapFile("./obstacle_map_from_MRPT_for_GMRF.png");
 			}
@@ -268,9 +260,8 @@ void  CRandomFieldGridMap2D::internal_clear()
 
 			//Set initial factors: L "prior factors" + 0 "Observation factors"
 			const size_t nPriorFactors = (this->getSizeX() -1) * this->getSizeY() + this->getSizeX() * (this->getSizeY() -1);		// L = (Nr-1)*Nc + Nr*(Nc-1); Full connected
-			//const size_t nObsFactors = 0;		// M
-			//const size_t nFactors = nPriorFactors + nObsFactors;
-			if (m_rfgm_verbose) cout << "[CRandomFieldGridMap2D::clear] Generating " << nPriorFactors << " prior factors for a map size of N=" << nodeCount << endl;
+
+			MRPT_LOG_DEBUG_STREAM << "[clear] Generating " << nPriorFactors << " prior factors for a map size of N=" << nodeCount << endl;
 
 			m_gmrf.clear();
 			m_gmrf.initialize(nodeCount);
@@ -285,12 +276,10 @@ void  CRandomFieldGridMap2D::internal_clear()
 			//-------------------------------------
 			if (this->m_insertOptions_common->GMRF_use_occupancy_information)
 			{
-				if (m_rfgm_verbose) {
-					printf("LOADING PRIOR BASED ON OCCUPANCY GRIDMAP \n");
-					printf("MRF Map Dimmensions: %u x %u cells \n", static_cast<unsigned int>(m_size_x), static_cast<unsigned int>(m_size_y));
-					printf("Occupancy map Dimmensions: %i x %i cells \n", m_Ocgridmap.getSizeX(), m_Ocgridmap.getSizeY());
-					printf("Res_Coeff = %f pixels/celda",res_coef);
-				}
+				MRPT_LOG_DEBUG_FMT("LOADING PRIOR BASED ON OCCUPANCY GRIDMAP \n");
+				MRPT_LOG_DEBUG_FMT("MRF Map Dimmensions: %u x %u cells \n", static_cast<unsigned int>(m_size_x), static_cast<unsigned int>(m_size_y));
+				MRPT_LOG_DEBUG_FMT("Occupancy map Dimmensions: %i x %i cells \n", m_Ocgridmap.getSizeX(), m_Ocgridmap.getSizeY());
+				MRPT_LOG_DEBUG_FMT("Res_Coeff = %f pixels/celda",res_coef);
 
 				//Use region growing algorithm to determine the cell interconnections (Factors)
 				size_t cx = 0;
@@ -392,7 +381,7 @@ void  CRandomFieldGridMap2D::internal_clear()
 			}
 			else
 			{
-				if (m_rfgm_verbose) cout << "[CRandomFieldGridMap2D::clear] Initiating prior (fully connected)\n";
+				MRPT_LOG_DEBUG_FMT("[CRandomFieldGridMap2D::clear] Initiating prior (fully connected)");
 				//---------------------------------------------------------------
 				// Load default values for H_prior without Occupancy information:
 				//---------------------------------------------------------------
@@ -438,9 +427,7 @@ void  CRandomFieldGridMap2D::internal_clear()
 				} // end for "j"
 			} // end if_use_Occupancy
 
-			if (m_rfgm_verbose) {
-				cout << " [CRandomFieldGridMap2D::clear] Prior built in " << tictac.Tac() << " s ----------\n";
-			}
+			MRPT_LOG_DEBUG_STREAM << "[clear] Prior built in " << tictac.Tac() << " s ----------";
 
 			if (m_rfgm_run_update_upon_clear) {
 				//Solve system and update map estimation
@@ -496,7 +483,7 @@ void  CRandomFieldGridMap2D::insertObservation_KernelDM_DMV(
 	if ( m_DM_lastCutOff!=m_insertOptions_common->cutoffRadius ||
 			m_DM_gaussWindow.size() != square(Ac_all) )
 	{
-		if (m_rfgm_verbose) printf("[CRandomFieldGridMap2D::insertObservation_KernelDM_DMV] Precomputing window %ux%u\n",Ac_all,Ac_all);
+		MRPT_LOG_DEBUG_FMT("[CRandomFieldGridMap2D::insertObservation_KernelDM_DMV] Precomputing window %ux%u\n",Ac_all,Ac_all);
 
 		double	dist;
 		double	std = m_insertOptions_common->sigma;
@@ -517,7 +504,7 @@ void  CRandomFieldGridMap2D::insertObservation_KernelDM_DMV(
 			}
 		}
 
-		if (m_rfgm_verbose) printf("[CRandomFieldGridMap2D::insertObservation_KernelDM_DMV] Done!\n");
+		MRPT_LOG_DEBUG_FMT("[CRandomFieldGridMap2D::insertObservation_KernelDM_DMV] Done!");
 	} // end of computing the gauss. window.
 
 	//	Fuse with current content of grid (the MEAN of each cell):
@@ -907,13 +894,12 @@ void  CRandomFieldGridMap2D::resize(
 			//   to "m_insertOptions_common->KF_initialCellStd", then adapt appropriately
 			//   the compressed cov. matrix:
 
-
-			/*printf("[CRandomFieldGridMap2D::resize] Resizing from %ux%u to %ux%u (%u cells)\n",
+			MRPT_LOG_DEBUG_FMT("[resize] Resizing from %ux%u to %ux%u (%u cells)\n",
 				static_cast<unsigned>(old_sizeX),
 				static_cast<unsigned>(old_sizeY),
 				static_cast<unsigned>(m_size_x),
 				static_cast<unsigned>(m_size_y),
-				static_cast<unsigned>(m_size_x*m_size_y) );*/
+				static_cast<unsigned>(m_size_x*m_size_y) );
 
 			// Adapt the size of the cov. matrix:
 			const signed	W = m_insertOptions_common->KF_W_size;
@@ -1001,10 +987,6 @@ void  CRandomFieldGridMap2D::insertObservation_KF(
 				m_insertOptions_common->KF_initialCellStd			// std
 				);
 
-	// DEBUG
-	// Save to file the actual cov_matrix to plot it with matlab
-	//m_cov.saveToTextFile( std::string("LOG_ICP-SLAM\_mean_compressed_cov.txt"), MATRIX_FORMAT_FIXED );
-
 	// Assure we have room enough in the grid!
 	resize(	point.x - 1,
 			point.x + 1,
@@ -1034,19 +1016,11 @@ void  CRandomFieldGridMap2D::insertObservation_KF(
 	double		sk_1 = 1.0 / sk;
 
 	// The kalman gain:
-//	CMatrixD		Kk;
-//	CVectorDouble	Kk;
-//	m_cov.extractCol( cellIdx,Kk );
-//	Kk *= 1.0/sk;
-	//Kk.saveToTextFile("__debug_Kk.txt");
-
 	std::vector<TRandomFieldCell>::iterator	it;
 
 	static CTicTac tictac;
-	if (m_rfgm_verbose) {
-		printf("[insertObservation_KF] Updating mean values...");
-		tictac.Tic();
-	}
+	MRPT_LOG_DEBUG_FMT("[insertObservation_KF] Updating mean values...");
+	tictac.Tic();
 
 	// Update mean values:
 	// ---------------------------------------------------------
@@ -1054,21 +1028,16 @@ void  CRandomFieldGridMap2D::insertObservation_KF(
 		//it->kf_mean =  it->kf_mean + yk * sk_1 * m_cov.get_unsafe(i,cellIdx);
 		it->kf_mean +=  yk * sk_1 * m_cov(i,cellIdx);
 
-	if (m_rfgm_verbose) {
-		printf("Done in %.03fms\n",	tictac.Tac()*1000 );
-	}
+	MRPT_LOG_DEBUG_FMT("Done in %.03fms\n", tictac.Tac() * 1000);
 
 	// Update covariance matrix values:
 	// ---------------------------------------------------------
 	N = m_cov.getRowCount();
 
-	if (m_rfgm_verbose) {
-		printf("[insertObservation_KF] Updating covariance matrix...");
-		tictac.Tic();
-	}
+	MRPT_LOG_DEBUG_FMT("[insertObservation_KF] Updating covariance matrix...");
+	tictac.Tic();
 
 	// We need to refer to the old cov: make an efficient copy of it:
-	//CMatrixD		oldCov( m_cov );
 	double	*oldCov	= (double*)/*mrpt_alloca*/malloc( sizeof(double)*N*N );
 	double  *oldCov_ptr = oldCov;
 	for (i=0;i<N;i++)
@@ -1077,11 +1046,7 @@ void  CRandomFieldGridMap2D::insertObservation_KF(
 		oldCov_ptr+=N;
 	}
 
-//	m_cov.saveToTextFile("bef.txt");
-
-	if (m_rfgm_verbose) {
-		printf("Copy matrix %ux%u: %.06fms\n",	(unsigned)m_cov.getRowCount(), (unsigned)m_cov.getColCount(),  tictac.Tac()*1000 );
-	}
+	MRPT_LOG_DEBUG_FMT("Copy matrix %ux%u: %.06fms\n",	(unsigned)m_cov.getRowCount(), (unsigned)m_cov.getColCount(),  tictac.Tac()*1000 );
 
 	// The following follows from the expansion of Kalman Filter matrix equations
 	// TODO: Add references to some paper (if any)?
@@ -1104,24 +1069,19 @@ void  CRandomFieldGridMap2D::insertObservation_KF(
 			if (i==j)
 			{
 				if (m_cov(i,i)<0){
-					// JL on static_cast<unsigned int>(i): gcc warns (rightly!) that size_t != unsigned int ("%u")
 					printf("Wrong insertion in KF! m_cov(%u,%u) = %.5f",static_cast<unsigned int>(i),static_cast<unsigned int>(i),m_cov(i,i));
 				}
 
 				ASSERT_( m_cov(i,i)>=0 );
 				m_map[ i ].kf_std = sqrt( new_cov_ij );
 			}
-			//ASSERT_( !isNaN( m_cov(i,j) ) );
-
 		} // j
 	} // i
 
 	// Free mem:
 	/*mrpt_alloca_*/ free( oldCov );
 
-	if (m_rfgm_verbose) {
-		printf("Done! %.03fms\n",	tictac.Tac()*1000 );
-	}
+	MRPT_LOG_DEBUG_FMT("Done! %.03fms\n",	tictac.Tac()*1000 );
 
 	MRPT_END
 }
@@ -1842,7 +1802,7 @@ void  CRandomFieldGridMap2D::insertObservation_KF2(
 {
 	MRPT_START
 
-	if (m_rfgm_verbose) cout << "Inserting KF2: (" << normReading << ") at Postion" << point << endl;
+	MRPT_LOG_DEBUG_STREAM << "Inserting KF2: (" << normReading << ") at Postion" << point << endl;
 
 	const signed	W = m_insertOptions_common->KF_W_size;
 	const size_t	K = 2*W*(W+1)+1;
@@ -1903,10 +1863,8 @@ void  CRandomFieldGridMap2D::insertObservation_KF2(
 	double		sk_1 = 1.0 / sk;
 
 	static CTicTac tictac;
-	if (m_rfgm_verbose) {
-		printf("[insertObservation_KF2] Updating mean values...");
-		tictac.Tic();
-	}
+	MRPT_LOG_DEBUG_FMT("[insertObservation_KF2] Updating mean values...");
+	tictac.Tic();
 
 	// ------------------------------------------------------------
 	// Update mean values:
@@ -2039,9 +1997,7 @@ void  CRandomFieldGridMap2D::insertObservation_KF2(
 	} // end for i
 
 
-	if (m_rfgm_verbose) {
-		printf("Done in %.03fms\n",	tictac.Tac()*1000 );
-	}
+	MRPT_LOG_DEBUG_FMT("Done in %.03fms\n",	tictac.Tac()*1000 );
 
 	MRPT_END
 }
@@ -2137,7 +2093,7 @@ void CRandomFieldGridMap2D::updateMapEstimation()
 	};
 }
 
-void CRandomFieldGridMap2D::insertIndividualReading(const double sensorReading,const mrpt::math::TPoint2D & point, const bool update_map,const bool time_invariant)
+void CRandomFieldGridMap2D::insertIndividualReading(const double sensorReading,const mrpt::math::TPoint2D & point, const bool update_map,const bool time_invariant, const double reading_stddev )
 {
 	switch (m_mapType)
 	{
@@ -2145,7 +2101,13 @@ void CRandomFieldGridMap2D::insertIndividualReading(const double sensorReading,c
 		case mrKernelDMV:          insertObservation_KernelDM_DMV(sensorReading,point, true); break;
 		case mrKalmanFilter:       insertObservation_KF(sensorReading,point); break;
 		case mrKalmanApproximate:  insertObservation_KF2(sensorReading,point);break;
-		case mrGMRF_SD:			   insertObservation_GMRF(sensorReading,point,update_map,time_invariant); break;
+		case mrGMRF_SD:			   insertObservation_GMRF(sensorReading,point,update_map,time_invariant, 
+			reading_stddev==.0 
+			?
+			m_insertOptions_common->GMRF_lambdaObs   // default information
+			:
+			1.0/mrpt::utils::square(reading_stddev)
+		); break;
 	default:
 		THROW_EXCEPTION("insertObservation() isn't implemented for selected 'mapType'")
 	};
@@ -2158,7 +2120,8 @@ void CRandomFieldGridMap2D::insertIndividualReading(const double sensorReading,c
 void CRandomFieldGridMap2D::insertObservation_GMRF(
 	double normReading,
 	const mrpt::math::TPoint2D &point,const bool update_map,
-	const bool time_invariant)
+	const bool time_invariant, 
+	const double reading_information)
 {
 
 	try{
@@ -2171,7 +2134,7 @@ void CRandomFieldGridMap2D::insertObservation_GMRF(
 		TObservationGMRF new_obs(*this);
 		new_obs.node_id = cellIdx;
 		new_obs.obsValue = normReading;
-		new_obs.Lambda = m_insertOptions_common->GMRF_lambdaObs;
+		new_obs.Lambda = reading_information;
 		new_obs.time_invariant = time_invariant;
 
 		m_mrf_factors_activeObs[cellIdx].push_back(new_obs);
