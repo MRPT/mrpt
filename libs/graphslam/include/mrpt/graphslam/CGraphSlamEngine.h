@@ -892,7 +892,7 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		bool m_request_to_exit;
 
 		/**\name Map-related objects
-		 * \brief Cached version and corresponding flag of map 
+		 * \brief Cached version and corresponding flag of map
 		 */
 		/**\{*/
 		mutable mrpt::maps::COccupancyGridMap2DPtr m_gridmap_cached;
@@ -909,7 +909,7 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		mutable mrpt::system::TTimeStamp m_map_acq_time;
 		/**\}*/
 
-		const std::string m_class_name;
+		std::string m_class_name;
 		/**\brief Track the first node registration occurance
 		 *
 		 * Handy so that we can assign a measurement to the root node as well.
