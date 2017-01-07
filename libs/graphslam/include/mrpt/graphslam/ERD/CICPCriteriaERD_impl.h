@@ -698,7 +698,7 @@ void CICPCriteriaERD<GRAPH_t>::TParams::dumpToTextStream(
 	out.printf("------------------[ Goodness-based ICP Edge Registration ]------------------\n");
 	out.printf("ICP goodness threshold         = %.2f%% \n", ICP_goodness_thresh*100);
 	out.printf("ICP max radius for edge search = %.2f\n", ICP_max_distance);
-	out.printf("Min. node difference for LC    = %d\n", LC_min_nodeid_diff);
+	out.printf("Min. node difference for LC    = %lu\n", LC_min_nodeid_diff);
 	out.printf("Visualize laser scans          = %d\n", visualize_laser_scans);
 	out.printf("3DScans Image Directory        = %s\n", scans_img_external_dir.c_str());
 

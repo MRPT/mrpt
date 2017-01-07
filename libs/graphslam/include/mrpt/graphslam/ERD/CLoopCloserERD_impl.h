@@ -391,7 +391,7 @@ void CLoopCloserERD<GRAPH_t>::evaluatePartitionsForLC(
 		//
 		// find where to split the current partition
 		TNodeID prev_nodeID = 0;
-		int index_to_split = 1;
+		size_t index_to_split = 1;
 		for (vector_uint::const_iterator it = p_it->begin()+1;
 				it != p_it->end(); ++it, ++index_to_split) {
 			TNodeID curr_nodeID = *it;
@@ -407,8 +407,8 @@ void CLoopCloserERD<GRAPH_t>::evaluatePartitionsForLC(
 		// groupA
 		// use only the first nodes of groupA
 		vector_uint groupA(p_it->begin(), p_it->begin()+index_to_split);
-		int first_nodes_to_use = 5;
-		if (groupA.size() > first_nodes_to_use && first_nodes_to_use!=-1) {
+		size_t first_nodes_to_use = 5;
+		if (groupA.size() > first_nodes_to_use) {
 			vector_uint group_tmp(groupA.begin(), groupA.begin()+first_nodes_to_use);
 			groupA = group_tmp;
 		}
@@ -416,8 +416,8 @@ void CLoopCloserERD<GRAPH_t>::evaluatePartitionsForLC(
 		// groupB
 		// use only the last nodes of groupB..
 		vector_uint groupB(p_it->begin()+index_to_split, p_it->end());
-		int last_nodes_to_use = 5;
-		if (groupB.size() > last_nodes_to_use && last_nodes_to_use!=-1) {
+		size_t last_nodes_to_use = 5;
+		if (groupB.size() > last_nodes_to_use) {
 			vector_uint group_tmp(groupB.end()-last_nodes_to_use, groupB.end());
 			groupB = group_tmp;
 		}
@@ -1368,9 +1368,9 @@ void CLoopCloserERD<GRAPH_t>::updateMapPartitionsVisualization() {
 	size_t curr_size = m_curr_partitions.size();
 	if (curr_size < prev_size) {
 		this->logFmt(mrpt::utils::LVL_DEBUG, "Removing outdated partitions in visual");
-		for (int partitionID = curr_size; partitionID != prev_size; ++partitionID) {
-			this->logFmt(mrpt::utils::LVL_DEBUG, "\tRemoving partition %d", partitionID);
-			std::string partition_obj_name = mrpt::format("partition_%d", partitionID);
+		for (size_t partitionID = curr_size; partitionID != prev_size; ++partitionID) {
+			this->logFmt(mrpt::utils::LVL_DEBUG, "\tRemoving partition %lu", partitionID);
+			std::string partition_obj_name = mrpt::format("partition_%lu", partitionID);
 
 			CRenderizablePtr obj = map_partitions_obj->getByName(partition_obj_name);
 			map_partitions_obj->removeObject(obj);
@@ -1833,7 +1833,7 @@ void CLoopCloserERD<GRAPH_t>::updateMapPartitions(bool full_update /* = false */
 	// update the last partitions list
 	size_t n = m_curr_partitions.size();
 	m_last_partitions.resize(n);
-	for (int i = 0; i < n; i++)	{
+	for (size_t i = 0; i < n; i++)	{
 		m_last_partitions[i] = m_curr_partitions[i];
 	}
 	//update current partitions list
@@ -1898,7 +1898,7 @@ void CLoopCloserERD<GRAPH_t>::TLaserParams::dumpToTextStream(
 
 	out.printf("Use scan-matching constraints               = %s\n",
 			use_scan_matching? "TRUE": "FALSE");
-	out.printf("Num. of previous nodes to check ICP against =  %d\n",
+	out.printf("Num. of previous nodes to check ICP against =  %lu\n",
 			prev_nodes_for_ICP);
 	out.printf("Visualize laser scans                       = %s\n",
 			visualize_laser_scans? "TRUE": "FALSE");
@@ -1952,7 +1952,7 @@ void CLoopCloserERD<GRAPH_t>::TLoopClosureParams::dumpToTextStream(
 		mrpt::utils::CStream &out) const {
 	MRPT_START;
 
-	out.printf("Min. node difference for loop closure                 = %d\n",
+	out.printf("Min. node difference for loop closure                 = %lu\n",
 			LC_min_nodeid_diff);
 	out.printf("Remote NodeIDs to consider the potential loop closure = %d\n",
 			LC_min_remote_nodes);
