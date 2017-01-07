@@ -14,6 +14,11 @@
 #include <mrpt/utils/CTicTac.h>
 #include <mrpt/utils/CFileOutputStream.h>
 
+#include <mrpt/config.h>
+#if MRPT_HAVE_VTK
+#include <vtkStructuredGrid.h>
+#endif
+
 using namespace mrpt;
 using namespace mrpt::maps;
 using namespace mrpt::utils;
@@ -179,12 +184,18 @@ bool mrpt::maps::CRandomFieldGridMap3D::saveAsCSV(const std::string & filName_me
 {
 	CFileOutputStream f_mean, f_stddev;
 
-	if (!f_mean.open(filName_mean))
+	if (!f_mean.open(filName_mean)) {
 		return false;
+	} else {
+		f_mean.printf("x coord, y coord, z coord, scalar\n");
+	}
 
 	if (!filName_stddev.empty()) {
-		if (!f_stddev.open(filName_stddev))
+		if (!f_stddev.open(filName_stddev)) {
 			return false;
+		} else {
+			f_mean.printf("x coord, y coord, z coord, scalar\n");
+		}
 	}
 
 	const size_t nodeCount = m_map.size();
@@ -195,10 +206,10 @@ bool mrpt::maps::CRandomFieldGridMap3D::saveAsCSV(const std::string & filName_me
 		const double mean_val = m_map[j].mean_value;
 		const double stddev_val = m_map[j].stddev_value;
 
-		f_mean.printf("%f %f %f %e\n", x, y, z, mean_val);
+		f_mean.printf("%f, %f, %f, %e\n", x, y, z, mean_val);
 
 		if (f_stddev.is_open())
-			f_stddev.printf("%f %f %f %e\n", x, y, z, stddev_val);
+			f_stddev.printf("%f, %f, %f, %e\n", x, y, z, stddev_val);
 
 		// Increment coordinates:
 		if (++cx >= m_size_x) {
@@ -331,6 +342,70 @@ void CRandomFieldGridMap3D::readFromStream(mrpt::utils::CStream &in, int version
 
 }
 
+void CRandomFieldGridMap3D::getAsVtkStructuredGrid(vtkStructuredGrid* output) const
+{
+#if MRPT_HAVE_VTK
+	// int extent[6]
+	int num_values = (extent[1] - extent[0] + 1) *
+		(extent[3] - extent[2] + 1) *
+		(extent[5] - extent[4] + 1);
+
+	vtkDataArray* xarray = vtkArrayDownCast<vtkDataArray>(
+		input->GetColumnByName(this->XColumn));
+	vtkDataArray* yarray = vtkArrayDownCast<vtkDataArray>(
+		input->GetColumnByName(this->YColumn));
+	vtkDataArray* zarray = vtkArrayDownCast<vtkDataArray>(
+		input->GetColumnByName(this->ZColumn));
+	if (!xarray || !yarray || !zarray)
+	{
+		vtkErrorMacro("Failed to locate  the columns to use for the point"
+			" coordinates");
+		return 0;
+	}
+
+	vtkPoints* newPoints = vtkPoints::New();
+	if (xarray == yarray && yarray == zarray &&
+		this->XComponent == 0 &&
+		this->YComponent == 1 &&
+		this->ZComponent == 2 &&
+		xarray->GetNumberOfComponents() == 3)
+	{
+		newPoints->SetData(xarray);
+	}
+	else
+	{
+		vtkDoubleArray* newData = vtkDoubleArray::New();
+		newData->SetNumberOfComponents(3);
+		newData->SetNumberOfTuples(input->GetNumberOfRows());
+		vtkIdType numtuples = newData->GetNumberOfTuples();
+		for (vtkIdType cc = 0; cc < numtuples; cc++)
+		{
+			newData->SetComponent(cc, 0, xarray->GetComponent(cc, this->XComponent));
+			newData->SetComponent(cc, 1, yarray->GetComponent(cc, this->YComponent));
+			newData->SetComponent(cc, 2, zarray->GetComponent(cc, this->ZComponent));
+		}
+		newPoints->SetData(newData);
+		newData->Delete();
+	}
+
+	output->SetExtent(extent);
+	output->SetPoints(newPoints);
+	newPoints->Delete();
+
+	// Add all other columns as point data.
+	for (int cc = 0; cc < input->GetNumberOfColumns(); cc++)
+	{
+		vtkAbstractArray* arr = input->GetColumn(cc);
+		if (arr != xarray && arr != yarray && arr != zarray)
+		{
+			output->GetPointData()->AddArray(arr);
+		}
+	}
+	return 1;
+#else
+	THROW_EXCEPTION("This method requires building MRPT against VTK!");
+#endif // VTK
+}
 
 // ============ TObservationGMRF ===========
 double CRandomFieldGridMap3D::TObservationGMRF::evaluateResidual() const
@@ -359,3 +434,6 @@ void CRandomFieldGridMap3D::TPriorFactorGMRF::evalJacobian(double &dr_dx_i, doub
 	dr_dx_i = +1.0;
 	dr_dx_j = -1.0;
 }
+
+
+
