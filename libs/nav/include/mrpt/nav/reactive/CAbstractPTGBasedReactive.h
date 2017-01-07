@@ -241,7 +241,7 @@ namespace mrpt
 			const unsigned int ptg_idx4weights);
 
 		virtual void STEP7_GenerateSpeedCommands(const THolonomicMovement &in_movement, mrpt::kinematics::CVehicleVelCmdPtr &new_vel_cmd );
-
+		void STEP8_GenerateLogRecord(CLogFileRecord &newLogRec,const mrpt::math::TPose2D& relTarget,int nSelectedPTG, const mrpt::kinematics::CVehicleVelCmdPtr &new_vel_cmd, int nPTGs, const bool best_is_NOP_cmdvel, const mrpt::poses::CPose2D &rel_cur_pose_wrt_last_vel_cmd_NOP, const mrpt::poses::CPose2D &rel_pose_PTG_origin_wrt_sense_NOP, const double executionTimeValue, const double tim_changeSpeed, const mrpt::system::TTimeStamp &tim_start_iteration);
 		void preDestructor(); //!< To be called during children destructors to assure thread-safe destruction, and free of shared objects.
 		virtual void onStartNewNavigation() MRPT_OVERRIDE;
 
