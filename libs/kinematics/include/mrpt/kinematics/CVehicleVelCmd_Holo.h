@@ -30,6 +30,7 @@ namespace mrpt
 			double rot_speed; //!<: (rad/s) rotational speed for rotating such as the robot slowly faces forward.
 
 			CVehicleVelCmd_Holo();
+			CVehicleVelCmd_Holo(double vel, double dir_local, double ramp_time, double rot_speed);
 			virtual ~CVehicleVelCmd_Holo();
 			size_t getVelCmdLength() const MRPT_OVERRIDE;
 			std::string getVelCmdDescription(const int index) const MRPT_OVERRIDE;
