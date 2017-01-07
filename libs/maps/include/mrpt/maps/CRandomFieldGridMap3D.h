@@ -19,6 +19,9 @@
 
 #include <mrpt/maps/link_pragmas.h>
 
+// Fwdr decl:
+class vtkStructuredGrid;
+
 namespace mrpt
 {
 namespace maps
@@ -91,7 +94,7 @@ namespace maps
 		/** Erases all added observations and start again with an empty gridmap. */
 		void clear() MRPT_OVERRIDE;
 
-		/** Save the current estimated mean values to a CSV file with fields `x y z mean_value`.
+		/** Save the current estimated mean values to a CSV file (compatible with Paraview) with fields `x y z mean_value`.
 		  * Optionally, std deviations can be also saved to another file with fields `x y z stddev_value`, if `filName_stddev` is provided.
 		  * \return false on error writing to file
 		  */
@@ -154,6 +157,9 @@ namespace maps
 			);
 
 		void updateMapEstimation(); //!< Run the method-specific procedure required to ensure that the mean & variances are up-to-date with all inserted observations, using parameters in insertionOptions
+
+		/** Returns the 3D grid contents as an VTK grid. */
+		void getAsVtkStructuredGrid(vtkStructuredGrid* output) const;
 
 	protected:
 		/** Internal: called called after each change of resolution, size, etc. to build the prior factor information */
