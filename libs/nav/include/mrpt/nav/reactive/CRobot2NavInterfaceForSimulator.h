@@ -51,6 +51,16 @@ namespace mrpt
 			return true;
 		}
 
+		mrpt::kinematics::CVehicleVelCmdPtr getEmergencyStopCmd() MRPT_OVERRIDE
+		{
+			return mrpt::kinematics::CVehicleVelCmdPtr(new mrpt::kinematics::CVehicleVelCmd_Holo(0.0,0.0,0.1,0.0));
+		}
+
+		mrpt::kinematics::CVehicleVelCmdPtr getStopCmd() MRPT_OVERRIDE
+		{
+			return mrpt::kinematics::CVehicleVelCmdPtr(new mrpt::kinematics::CVehicleVelCmd_Holo(0.0,0.0,1.0,0.0));
+		}
+
 		/** See CRobot2NavInterface::getNavigationTime(). In this class, simulation time is returned instead of wall-clock time. */
 		double getNavigationTime() MRPT_OVERRIDE {
 			return m_simul.getTime()-m_simul_time_start;
@@ -98,6 +108,19 @@ namespace mrpt
 			m_simul.sendVelCmd(cmd);
 			return true;
 		}
+
+
+		mrpt::kinematics::CVehicleVelCmdPtr getStopCmd() MRPT_OVERRIDE
+		{
+			mrpt::kinematics::CVehicleVelCmdPtr cmd(new mrpt::kinematics::CVehicleVelCmd_DiffDriven());
+			cmd->setToStop();
+			return cmd;
+		}
+		mrpt::kinematics::CVehicleVelCmdPtr getEmergencyStopCmd() MRPT_OVERRIDE
+		{
+			return getStopCmd();
+		}
+
 		/** See CRobot2NavInterface::getNavigationTime(). In this class, simulation time is returned instead of wall-clock time. */
 		double getNavigationTime() MRPT_OVERRIDE {
 			return m_simul.getTime()-m_simul_time_start;
