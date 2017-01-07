@@ -298,6 +298,9 @@ namespace maps
 		void enableVerbose(bool enable_verbose) { this->setMinLoggingLevel(mrpt::utils::LVL_DEBUG); }
 		bool isEnabledVerbose() const { return this->getMinLoggingLevel()== mrpt::utils::LVL_DEBUG; }
 
+		void enableProfiler(bool enable = true) { this->m_gmrf.enableProfiler(enable); }
+		bool isProfilerEnabled() const { return this->m_gmrf.isProfilerEnabled() ; }
+
 	protected:
 		bool m_rfgm_run_update_upon_clear;
 
