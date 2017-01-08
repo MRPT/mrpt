@@ -203,6 +203,8 @@ MRPT_START;
 	writer->SetInputData(vtkGrid);
 	int ret = writer->Write();
 
+	vtkGrid->Delete();
+
 	return ret==0;
 #else
 	THROW_EXCEPTION("This method requires building MRPT against VTK!");
