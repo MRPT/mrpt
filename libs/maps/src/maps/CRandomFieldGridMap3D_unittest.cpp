@@ -36,6 +36,7 @@ TEST(CRandomFieldGridMap3D, insertCheckMapBounds)
 #if 0
 	grid3d.updateMapEstimation();
 	grid3d.saveAsCSV("map3D.csv");
+	grid3d.saveAsVtkStructuredGrid("map3D.vts");
 #endif
 }
 

@@ -43,6 +43,10 @@ IF(BUILD_mrpt-maps)
 		target_link_libraries(mrpt-maps ${LAS_LIBS})
 	ENDIF()
 
+	IF (CMAKE_MRPT_HAS_VTK)
+		target_link_libraries(mrpt-maps ${VTK_LIBRARIES})
+	ENDIF()
+
 	# Ignore precompiled headers in some sources:
 	IF(MRPT_ENABLE_PRECOMPILED_HDRS AND MSVC)
 		set_source_files_properties(

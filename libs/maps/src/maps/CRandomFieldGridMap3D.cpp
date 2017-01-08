@@ -15,8 +15,17 @@
 #include <mrpt/utils/CFileOutputStream.h>
 
 #include <mrpt/config.h>
-#if MRPT_HAVE_VTK
-#include <vtkStructuredGrid.h>
+
+#if MRPT_HAS_VTK
+ #include <vtkStructuredGrid.h>
+ #include <vtkDoubleArray.h>
+ #include <vtkPointData.h>
+ #include <vtkVersion.h>
+ #include <vtkCellArray.h>
+ #include <vtkPoints.h>
+ #include <vtkXMLStructuredGridWriter.h>
+ #include <vtkStructuredGrid.h>
+ #include <vtkSmartPointer.h>
 #endif
 
 using namespace mrpt;
@@ -177,6 +186,28 @@ void  CRandomFieldGridMap3D::TInsertionOptions::loadFromConfigFile(
 {
 	GMRF_lambdaPrior = iniFile.read_double(section.c_str(), "GMRF_lambdaPrior", GMRF_lambdaPrior);
 	GMRF_skip_variance = iniFile.read_bool(section.c_str(),"GMRF_skip_variance", GMRF_skip_variance);
+}
+
+/** Save the current estimated grid to a VTK file (.vts) as a "structured grid". \sa saveAsCSV */
+bool CRandomFieldGridMap3D::saveAsVtkStructuredGrid(const std::string &fil) const
+{
+MRPT_START;
+#if MRPT_HAS_VTK
+
+	vtkStructuredGrid *vtkGrid = vtkStructuredGrid::New();
+	this->getAsVtkStructuredGrid(vtkGrid);
+
+	// Write file
+	vtkSmartPointer<vtkXMLStructuredGridWriter> writer = vtkSmartPointer<vtkXMLStructuredGridWriter>::New();
+	writer->SetFileName( fil.c_str() );
+	writer->SetInputData(vtkGrid);
+	int ret = writer->Write();
+
+	return ret==0;
+#else
+	THROW_EXCEPTION("This method requires building MRPT against VTK!");
+#endif
+MRPT_END
 }
 
 
@@ -342,69 +373,75 @@ void CRandomFieldGridMap3D::readFromStream(mrpt::utils::CStream &in, int version
 
 }
 
-void CRandomFieldGridMap3D::getAsVtkStructuredGrid(vtkStructuredGrid* output) const
+void CRandomFieldGridMap3D::getAsVtkStructuredGrid(vtkStructuredGrid* output, const std::string &label_mean, const std::string &label_stddev ) const
 {
-#if MRPT_HAVE_VTK
-	// int extent[6]
-	int num_values = (extent[1] - extent[0] + 1) *
-		(extent[3] - extent[2] + 1) *
-		(extent[5] - extent[4] + 1);
+	MRPT_START;
+#if MRPT_HAS_VTK
 
-	vtkDataArray* xarray = vtkArrayDownCast<vtkDataArray>(
-		input->GetColumnByName(this->XColumn));
-	vtkDataArray* yarray = vtkArrayDownCast<vtkDataArray>(
-		input->GetColumnByName(this->YColumn));
-	vtkDataArray* zarray = vtkArrayDownCast<vtkDataArray>(
-		input->GetColumnByName(this->ZColumn));
-	if (!xarray || !yarray || !zarray)
-	{
-		vtkErrorMacro("Failed to locate  the columns to use for the point"
-			" coordinates");
-		return 0;
-	}
+	const size_t nx = this->getSizeX(), ny = this->getSizeY(), nz = this->getSizeZ();
+
+	const int num_values = nx*ny*nz;
 
 	vtkPoints* newPoints = vtkPoints::New();
-	if (xarray == yarray && yarray == zarray &&
-		this->XComponent == 0 &&
-		this->YComponent == 1 &&
-		this->ZComponent == 2 &&
-		xarray->GetNumberOfComponents() == 3)
+
+	vtkDoubleArray* newData = vtkDoubleArray::New();
+	newData->SetNumberOfComponents(3);
+	newData->SetNumberOfTuples(num_values);
+
+	vtkDoubleArray* mean_arr = vtkDoubleArray::New();
+	mean_arr->SetNumberOfComponents(1);
+	mean_arr->SetNumberOfTuples(num_values);
+
+	vtkDoubleArray* std_arr = vtkDoubleArray::New();
+	std_arr->SetNumberOfComponents(1);
+	std_arr->SetNumberOfTuples(num_values);
+
+	vtkIdType numtuples = newData->GetNumberOfTuples();
+
 	{
-		newPoints->SetData(xarray);
-	}
-	else
-	{
-		vtkDoubleArray* newData = vtkDoubleArray::New();
-		newData->SetNumberOfComponents(3);
-		newData->SetNumberOfTuples(input->GetNumberOfRows());
-		vtkIdType numtuples = newData->GetNumberOfTuples();
+		size_t cx = 0, cy = 0, cz = 0;
 		for (vtkIdType cc = 0; cc < numtuples; cc++)
 		{
-			newData->SetComponent(cc, 0, xarray->GetComponent(cc, this->XComponent));
-			newData->SetComponent(cc, 1, yarray->GetComponent(cc, this->YComponent));
-			newData->SetComponent(cc, 2, zarray->GetComponent(cc, this->ZComponent));
+			const double x = idx2x(cx), y = idx2y(cy), z = idx2z(cz);
+
+			newData->SetComponent(cc, 0, x);
+			newData->SetComponent(cc, 1, y);
+			newData->SetComponent(cc, 2, z);
+
+			mean_arr->SetComponent(cc, 0, m_map[cc].mean_value);
+			std_arr->SetComponent(cc, 0, m_map[cc].stddev_value);
+
+			// Increment coordinates:
+			if (++cx >= m_size_x) {
+				cx = 0;
+				if (++cy >= m_size_y) {
+					cy = 0;
+					cz++;
+				}
+			}
 		}
-		newPoints->SetData(newData);
-		newData->Delete();
+		ASSERT_( size_t( m_map.size() ) == size_t( numtuples ) );
 	}
 
-	output->SetExtent(extent);
+	newPoints->SetData(newData);
+	newData->Delete();
+
+	output->SetExtent(0,nx-1, 0, ny-1, 0,nz-1);
 	output->SetPoints(newPoints);
 	newPoints->Delete();
 
-	// Add all other columns as point data.
-	for (int cc = 0; cc < input->GetNumberOfColumns(); cc++)
-	{
-		vtkAbstractArray* arr = input->GetColumn(cc);
-		if (arr != xarray && arr != yarray && arr != zarray)
-		{
-			output->GetPointData()->AddArray(arr);
-		}
-	}
-	return 1;
+	mean_arr->SetName(label_mean.c_str());
+	std_arr->SetName(label_stddev.c_str());
+	output->GetPointData()->AddArray(mean_arr);
+	output->GetPointData()->AddArray(std_arr);
+
+	mean_arr->Delete();
+	std_arr->Delete();
+
 #else
 	THROW_EXCEPTION("This method requires building MRPT against VTK!");
 #endif // VTK
+	MRPT_END;
 }
 
 // ============ TObservationGMRF ===========
@@ -434,6 +471,3 @@ void CRandomFieldGridMap3D::TPriorFactorGMRF::evalJacobian(double &dr_dx_i, doub
 	dr_dx_i = +1.0;
 	dr_dx_j = -1.0;
 }
-
-
-
