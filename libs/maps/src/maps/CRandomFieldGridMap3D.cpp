@@ -200,7 +200,13 @@ MRPT_START;
 	// Write file
 	vtkSmartPointer<vtkXMLStructuredGridWriter> writer = vtkSmartPointer<vtkXMLStructuredGridWriter>::New();
 	writer->SetFileName( fil.c_str() );
+
+#if VTK_MAJOR_VERSION <= 5
+	writer->SetInput(vtkGrid);
+#else
 	writer->SetInputData(vtkGrid);
+#endif
+
 	int ret = writer->Write();
 
 	vtkGrid->Delete();
