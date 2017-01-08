@@ -8,7 +8,7 @@
 #  For compiling instructions for all compilers and platforms, see
 #   http://www.mrpt.org/Building_and_Installing_Instructions
 #
-#  2007-2016, Jose Luis Blanco <jlblanco@ual.es>
+#  2007-2017, Jose Luis Blanco <jlblanco@ual.es>
 #
 #  NOTE: CMake can be obtained at http://www.cmake.org/
 # ----------------------------------------------------------------------------
@@ -274,6 +274,7 @@ include(cmakemodules/script_nite2.cmake REQUIRED)		# Check for NITE2 library
 include(cmakemodules/script_yamlcpp.cmake REQUIRED)		# Check for YAMLCPP library
 include(cmakemodules/script_pcap.cmake REQUIRED)        # Check for the libpcap library
 #include(cmakemodules/script_ros1.cmake REQUIRED)        # Check for ROS
+include(cmakemodules/script_vtk.cmake REQUIRED)        # Check for VTK
 
 # ---------------------------------------------------------------------------
 #			OPTIONS
