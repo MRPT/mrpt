@@ -463,9 +463,9 @@ IF(CMAKE_COMPILER_IS_GNUCXX)
 
 	# Enable C++11 features in GCC 4.7+
 	IF (NOT CMAKE_MRPT_GCC_VERSION LESS 47)
-		add_definitions(-std=c++11) # Use C++11
+		SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 	ELSEIF(NOT CMAKE_MRPT_GCC_VERSION LESS 46)
-		add_definitions(-std=c++0x) # Use C++11
+		SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
 	ENDIF ()
 
 	# Parallel stdlibc++?
