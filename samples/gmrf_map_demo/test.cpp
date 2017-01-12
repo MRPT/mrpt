@@ -20,6 +20,25 @@ using namespace mrpt::random;
 using namespace std;
 
 
+// Example of custom connectivity pattern:
+struct MyConnectivityVisitor : public mrpt::maps::CRandomFieldGridMap2D::ConnectivityDescriptor
+{
+	/** Implement the check of whether node i=(icx,icy) is connected with node j=(jcx,jcy).
+	* This visitor method will be called only for immediate neighbors.
+	* \return true if connected (and the "information" value should be also updated in out_edge_information), false otherwise.
+	*/
+	bool getEdgeInformation(
+		const CRandomFieldGridMap2D *parent,  //!< The parent map on which we are running
+		size_t icx, size_t icy,               //!< (cx,cy) for node "i"
+		size_t jcx, size_t jcy,               //!< (cx,cy) for node "j"
+		double &out_edge_information          //!< Must output here the inverse of the variance of the constraint edge.
+	) MRPT_OVERRIDE
+	{
+		out_edge_information = 1.0/(1.0+ icx+icy);
+		return true;
+	}
+};
+
 void Example_GMRF()
 {
 	const double X_SIZE     = 10.0;
@@ -32,6 +51,14 @@ void Example_GMRF()
 		0,Y_SIZE,
 		RESOLUTION /* resolution */
 		);
+
+	mrpt::maps::CGasConcentrationGridMap2D::ConnectivityDescriptorPtr conn =
+		mrpt::maps::CGasConcentrationGridMap2D::ConnectivityDescriptorPtr(
+			new MyConnectivityVisitor
+		);
+	gasmap.setMinLoggingLevel(mrpt::utils::LVL_DEBUG);
+	gasmap.setCellsConnectivity(conn);
+	gasmap.clear(); // for the connectivity to be taken into account.
 
 	mrpt::opengl::CPointCloudPtr gl_data = mrpt::opengl::CPointCloud::Create();
 	gl_data->setPointSize(3.0f);

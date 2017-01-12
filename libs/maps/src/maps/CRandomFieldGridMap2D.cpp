@@ -74,6 +74,10 @@ void CRandomFieldGridMap2D::setSize(const double x_min, const double x_max, cons
 	CMetricMap::clear();
 }
 
+void CRandomFieldGridMap2D::setCellsConnectivity(const ConnectivityDescriptorPtr &new_connectivity_descriptor)
+{
+	m_gmrf_connectivity = new_connectivity_descriptor;
+}
 
 /*---------------------------------------------------------------
 						clear
@@ -274,7 +278,7 @@ void  CRandomFieldGridMap2D::internal_clear()
 			//-------------------------------------
 			// Load default values for H_prior:
 			//-------------------------------------
-			if (this->m_insertOptions_common->GMRF_use_occupancy_information)
+			if (!m_gmrf_connectivity.present() && this->m_insertOptions_common->GMRF_use_occupancy_information)
 			{
 				MRPT_LOG_DEBUG("LOADING PRIOR BASED ON OCCUPANCY GRIDMAP \n");
 				MRPT_LOG_DEBUG_FMT("MRF Map Dimmensions: %u x %u cells \n", static_cast<unsigned int>(m_size_x), static_cast<unsigned int>(m_size_y));
@@ -381,39 +385,54 @@ void  CRandomFieldGridMap2D::internal_clear()
 			}
 			else
 			{
-				MRPT_LOG_DEBUG("[CRandomFieldGridMap2D::clear] Initiating prior (fully connected)");
+				ConnectivityDescriptor * custom_connectivity = m_gmrf_connectivity.pointer(); // Use a raw ptr to avoid the cost in the inner loops
+				if (custom_connectivity!=NULL)
+				     MRPT_LOG_DEBUG("[CRandomFieldGridMap2D::clear] Initiating prior (using user-supplied connectivity pattern)");
+				else MRPT_LOG_DEBUG("[CRandomFieldGridMap2D::clear] Initiating prior (fully connected)");
+
 				//---------------------------------------------------------------
 				// Load default values for H_prior without Occupancy information:
 				//---------------------------------------------------------------
-				size_t cx = 0;
-				size_t cy = 0;
+				size_t cx = 0, cy = 0;
 				for (size_t j=0; j<nodeCount; j++)
 				{
-					//Factor with the right node: H_ji = - Lamda_prior
+					// add factors between this node and:
+					// 1) the right node: j +1
+					// 2) the bottom node:  j+m_size_x
 					//-------------------------------------------------
-					if (cx<(m_size_x-1))
+					const size_t c_idx_to_check[2] = { cx,cy };
+					const size_t c_idx_to_check_limits[2] = { m_size_x - 1,m_size_y - 1 };
+					const size_t c_neighbor_idx_incr[2] = { 1,m_size_x };
+
+					for (int dir = 0; dir < 2; dir++)
 					{
-						size_t i = j+1;
+						if (c_idx_to_check[dir] >= c_idx_to_check_limits[dir])
+							continue;
 
-						TPriorFactorGMRF new_prior(*this);
-						new_prior.node_id_i = i;
-						new_prior.node_id_j= j;
-						new_prior.Lambda = m_insertOptions_common->GMRF_lambdaPrior;
+						const size_t i = j + c_neighbor_idx_incr[dir];
+						ASSERT_(i<nodeCount);
 
-						m_mrf_factors_priors.push_back(new_prior);
-						m_gmrf.addConstraint(*m_mrf_factors_priors.rbegin()); // add to graph
-					}
 
-					//Factor with the above node: H_ji = - Lamda_prior
-					//-------------------------------------------------
-					if (cy<(m_size_y-1))
-					{
-						size_t i = j+m_size_x;
-
+						double edge_lamdba = .0;
+						if (custom_connectivity != NULL)
+						{
+							const bool is_connected = custom_connectivity->getEdgeInformation(
+								this,
+								cx, cy,
+								cx + (dir==0 ? 1:0), cy + (dir == 1 ? 1 : 0),
+								edge_lamdba
+							);
+							if (!is_connected)
+								continue;
+						}
+						else
+						{
+							edge_lamdba = m_insertOptions_common->GMRF_lambdaPrior;
+						}
 						TPriorFactorGMRF new_prior(*this);
 						new_prior.node_id_i = i;
 						new_prior.node_id_j = j;
-						new_prior.Lambda = m_insertOptions_common->GMRF_lambdaPrior;
+						new_prior.Lambda = edge_lamdba;
 
 						m_mrf_factors_priors.push_back(new_prior);
 						m_gmrf.addConstraint(*m_mrf_factors_priors.rbegin()); // add to graph
