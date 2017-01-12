@@ -180,6 +180,13 @@ namespace nav
 		  * \param path_k Queried path `k` index  [0,N-1] */
 		virtual double maxTimeInVelCmdNOP(int path_k) const;
 
+		/** Returns the actual distance (in meters) of the path, discounting possible circular loops of the path (e.g. if it comes back to the origin). 
+		  * Default: refDistance */
+		virtual double getActualUnloopedPathLength(uint16_t k) const { return this->refDistance; }
+
+		/** Query the PTG for the relative priority factor (0,1) of this PTG, in comparison to others, if the k-th path is to be selected. */
+		virtual double evalPathRelativePriority(uint16_t k) const { return 1.0; }
+
 		/** Returns an approximation of the robot radius. */
 		virtual double getApproxRobotRadius() const = 0;
 		/** Returns true if the point lies within the robot shape. */

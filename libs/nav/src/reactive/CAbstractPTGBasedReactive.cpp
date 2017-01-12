@@ -822,7 +822,12 @@ void CAbstractPTGBasedReactive::STEP5_PTGEvaluator(
 
 		// Don't reduce the priority of "PTG continuation" "NOPs".
 		if (!this_is_PTG_continuation)
+		{
 			global_eval *= holonomicMovement.PTG->getScorePriority();
+
+			// Use PTG-specific relative scoring priority:
+			global_eval *= holonomicMovement.PTG->evalPathRelativePriority(kDirection);
+		}
 
 		holonomicMovement.evaluation = global_eval;
 	}

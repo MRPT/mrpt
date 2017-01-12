@@ -111,6 +111,14 @@ void  CHolonomicFullEval::navigate(
 		scores[0] = std::min(target_dist,obstacles[i]) / (target_dist+options.TOO_CLOSE_OBSTACLE);
 		else  scores[0] = std::max(0.0, obstacles[i]-options.TOO_CLOSE_OBSTACLE);
 
+		// Discount "circular loop aparent free distance" here, but don't count it for clearance, since those are not real obstacle points.
+		if (getAssociatedPTG()) {
+			const double max_real_freespace = getAssociatedPTG()->getActualUnloopedPathLength(i);
+			const double max_real_freespace_norm = max_real_freespace / getAssociatedPTG()->getRefDistance();
+
+			mrpt::utils::keep_min(scores[0], max_real_freespace_norm);
+		}
+
 		// Factor #2: Closest approach to target along straight line (Euclidean)
 		// -------------------------------------------
 		{
