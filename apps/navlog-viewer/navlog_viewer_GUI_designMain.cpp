@@ -1015,33 +1015,31 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 				gl_obj1->setVisibility(visible1);
 				gl_obj2->setVisibility(visible2);
 
-				if ((visible1 || visible2) && pI.HLFR && IS_CLASS(pI.HLFR, CLogFileRecord_FullEval) && nAlphas>2)
+				if ((visible1 || visible2) && pI.HLFR && nAlphas>2)
 				{
-					CLogFileRecord_FullEvalPtr log_FE = CLogFileRecord_FullEvalPtr(pI.HLFR);
+					const bool has_scores = pI.HLFR->dirs_eval.size() == nAlphas;
+					const bool has_alt_scores = pI.HLFR->alt_dirs_eval.size() == nAlphas;
 
-					const mrpt::math::CMatrixD &scores = log_FE->dirs_scores;
-					if (scores.rows() == nAlphas && scores.cols() >= 6)
+					vector<float> xs1, ys1, xs2,ys2;
+					xs1.reserve(nAlphas); ys1.reserve(nAlphas);
+					xs2.reserve(nAlphas); ys2.reserve(nAlphas);
+					for (size_t i = 0; i<nAlphas; ++i)
 					{
-						vector<float> xs1, ys1, xs2,ys2;
-						xs1.reserve(nAlphas); ys1.reserve(nAlphas);
-						xs2.reserve(nAlphas); ys2.reserve(nAlphas);
-						for (size_t i = 0; i<nAlphas; ++i)
-						{
-							const double a = -M_PI + (i + 0.5) * 2 * M_PI / double(nAlphas);
-							const double r1 = scores(i, 5), r2 = scores(i, 6);
-							xs1.push_back(r1*cos(a));
-							ys1.push_back(r1*sin(a));
-							xs2.push_back(r2*cos(a));
-							ys2.push_back(r2*sin(a));
-						}
-						gl_obj1->appendLine(xs1[0], ys1[0], 0, xs1[1], ys1[1], 0);
-						for (size_t i = 2; i < nAlphas; i++)
-							gl_obj1->appendLineStrip(xs1[i], ys1[i], 0);
-
-						gl_obj2->appendLine(xs2[0], ys2[0], 0, xs2[1], ys2[1], 0);
-						for (size_t i = 2; i < nAlphas; i++)
-							gl_obj2->appendLineStrip(xs2[i], ys2[i], 0);
+						const double a = -M_PI + (i + 0.5) * 2 * M_PI / double(nAlphas);
+						const double r1 = has_scores ? pI.HLFR->dirs_eval[i] : .0;
+						const double r2 = has_alt_scores ? pI.HLFR->alt_dirs_eval[i] : .0;
+						xs1.push_back(r1*cos(a));
+						ys1.push_back(r1*sin(a));
+						xs2.push_back(r2*cos(a));
+						ys2.push_back(r2*sin(a));
 					}
+					gl_obj1->appendLine(xs1[0], ys1[0], 0, xs1[1], ys1[1], 0);
+					for (size_t i = 2; i < nAlphas; i++)
+						gl_obj1->appendLineStrip(xs1[i], ys1[i], 0);
+
+					gl_obj2->appendLine(xs2[0], ys2[0], 0, xs2[1], ys2[1], 0);
+					for (size_t i = 2; i < nAlphas; i++)
+						gl_obj2->appendLineStrip(xs2[i], ys2[i], 0);
 				}
 			}
 
