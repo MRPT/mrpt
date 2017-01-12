@@ -307,8 +307,13 @@ void  CHolonomicFullEval::navigate(
 	{
 		log->selectedSector = best_dir;
 		log->evaluation = best_eval;
+
 		log->dirs_eval  = dirs_eval;
-		log->dirs_scores = m_dirs_scores;
+		log->alt_dirs_eval = phase1_score;
+
+		if (options.LOG_SCORE_MATRIX) {
+			log->dirs_scores = m_dirs_scores;
+		}
 	}
 }
 
@@ -323,10 +328,10 @@ unsigned int CHolonomicFullEval::direction2sector(const double a, const unsigned
 void  CLogFileRecord_FullEval::writeToStream(mrpt::utils::CStream &out,int *version) const
 {
 	if (version)
-		*version = 0;
+		*version = 1;
 	else
 	{
-		out << dirs_eval << dirs_scores << selectedSector << evaluation;
+		out << CHolonomicLogFileRecord::dirs_eval << CHolonomicLogFileRecord::alt_dirs_eval << dirs_scores << selectedSector << evaluation;
 	}
 }
 
@@ -338,8 +343,13 @@ void  CLogFileRecord_FullEval::readFromStream(mrpt::utils::CStream &in,int versi
 	switch(version)
 	{
 	case 0:
+	case 1:
 		{
-			in >> dirs_eval >> dirs_scores >> selectedSector >> evaluation;
+		in >> CHolonomicLogFileRecord::dirs_eval;
+		if (version >= 1) {
+			in >> CHolonomicLogFileRecord::alt_dirs_eval;
+		}
+		in >> dirs_scores >> selectedSector >> evaluation;
 		} break;
 	default:
 		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
@@ -355,7 +365,8 @@ CHolonomicFullEval::TOptions::TOptions() :
 	TARGET_SLOW_APPROACHING_DISTANCE   ( 0.60 ),
 	OBSTACLE_SLOW_DOWN_DISTANCE        ( 0.15 ),
 	HYSTERESIS_SECTOR_COUNT            ( 5 ),
-	PHASE1_THRESHOLD( 0.75 )
+	PHASE1_THRESHOLD( 0.75 ),
+	LOG_SCORE_MATRIX(false)
 {
 	factorWeights = mrpt::math::make_vector<5,double>(1.0, 1.0, 1.0, 0.1, 1.0);
 	factorNormalizeOrNot = mrpt::math::make_vector<5, int>(0, 0, 0, 0, 1);
@@ -373,7 +384,8 @@ void CHolonomicFullEval::TOptions::loadFromConfigFile(const mrpt::utils::CConfig
 	MRPT_LOAD_CONFIG_VAR(TARGET_SLOW_APPROACHING_DISTANCE, double, source, section);
 	MRPT_LOAD_CONFIG_VAR(OBSTACLE_SLOW_DOWN_DISTANCE,double,  source,section );
 	MRPT_LOAD_CONFIG_VAR(HYSTERESIS_SECTOR_COUNT,double,  source,section );
-	MRPT_LOAD_CONFIG_VAR(PHASE1_THRESHOLD,double,  source,section );
+	MRPT_LOAD_CONFIG_VAR(PHASE1_THRESHOLD, double, source, section);
+	MRPT_LOAD_CONFIG_VAR(LOG_SCORE_MATRIX,bool,  source,section );
 
 	source.read_vector(section,"factorWeights", std::vector<double>(), factorWeights, true );
 	ASSERT_(factorWeights.size()==5);
@@ -399,7 +411,8 @@ void CHolonomicFullEval::TOptions::saveToConfigFile(mrpt::utils::CConfigFileBase
 	cfg.write(section, "TARGET_SLOW_APPROACHING_DISTANCE", TARGET_SLOW_APPROACHING_DISTANCE, WN, WV, "Start to reduce speed when closer than this to target.");
 	cfg.write(section,"OBSTACLE_SLOW_DOWN_DISTANCE", OBSTACLE_SLOW_DOWN_DISTANCE,   WN,WV, "Start to reduce speed when clearance is below this value ([0,1] ratio wrt obstacle reference/max distance)");
 	cfg.write(section,"HYSTERESIS_SECTOR_COUNT",HYSTERESIS_SECTOR_COUNT,   WN,WV, "Range of `sectors` (directions) for hysteresis over succesive timesteps");
-	cfg.write(section,"PHASE1_THRESHOLD",PHASE1_THRESHOLD,   WN,WV, "Phase1 scores must be above this relative range threshold [0,1] to be considered in phase 2 (Default:`0.75`)");
+	cfg.write(section, "PHASE1_THRESHOLD", PHASE1_THRESHOLD, WN, WV, "Phase1 scores must be above this relative range threshold [0,1] to be considered in phase 2 (Default:`0.75`)");
+	cfg.write(section,"LOG_SCORE_MATRIX", LOG_SCORE_MATRIX,   WN,WV, "Log entire score matrix");
 
 	ASSERT_EQUAL_(factorWeights.size(),5)
 	cfg.write(section,"factorWeights", mrpt::system::sprintf_container("%.2f ",factorWeights),   WN,WV, "[0]=Free space, [1]=Dist. in sectors, [2]=Closer to target (Euclidean), [3]=Hysteresis, [4]=clearance along path");
