@@ -305,6 +305,7 @@ navlog_viewer_GUI_designDialog::navlog_viewer_GUI_designDialog(wxWindow* parent,
 	Connect(ID_TIMER3, wxEVT_TIMER, (wxObjectEventFunction)&navlog_viewer_GUI_designDialog::OntimMouseXY);
 
 	cbShowAllDebugEntries->SetValue(false);
+	rbPerPTGPlots->SetSelection(2);
 
 	{
     	wxIcon FrameIcon;
@@ -860,8 +861,11 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 			const static int W = 290;
 			const static int H = 270;
 
-			win= CDisplayWindow3D::Create(format("%u|TP-Obstacles [%s]",nPTG,log.infoPerPTG[nPTG].PTG_desc.c_str()),W,H);
+			win= CDisplayWindow3D::Create(format("%u|TP-Obstacles",nPTG),W,H);
 			win->setPos(20+(W+30)*nPTG, 380);
+			win->addTextMessage(4,4, 
+				format("[%u]:%s",nPTG,log.infoPerPTG[nPTG].PTG_desc.c_str()), 
+				TColorf(1.0f,1.0f,1.0f),"sans",8, mrpt::opengl::NICE, 0 /*id*/, 1.5,0.1, true /*shadow*/ );
 
 			{
 				mrpt::opengl::COpenGLScenePtr scene;
