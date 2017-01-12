@@ -111,7 +111,7 @@ void CRandomFieldGridMap3D::internal_initialize(bool erase_prev_contents)
 	}
 	m_mrf_factors_priors.clear();
 
-	// Initiating prior (fully connected)
+	// Initiating prior:
 	const size_t nodeCount = m_map.size();
 	ASSERT_EQUAL_(nodeCount, m_size_x*m_size_y*m_size_z);
 	ASSERT_EQUAL_(m_size_x_times_y, m_size_x*m_size_y);
@@ -122,6 +122,8 @@ void CRandomFieldGridMap3D::internal_initialize(bool erase_prev_contents)
 
 	m_mrf_factors_activeObs.resize(nodeCount); // Alloc space for obs
 	m_gmrf.initialize(nodeCount);
+
+	ConnectivityDescriptor * custom_connectivity = m_gmrf_connectivity.pointer(); // Use a raw ptr to avoid the cost in the inner loops
 
 	size_t cx = 0, cy = 0, cz = 0;
 	for (size_t j = 0; j<nodeCount; j++)
@@ -143,10 +145,27 @@ void CRandomFieldGridMap3D::internal_initialize(bool erase_prev_contents)
 			const size_t i = j + c_neighbor_idx_incr[dir];
 			ASSERT_(i<nodeCount);
 
+			double edge_lamdba = .0;
+			if (custom_connectivity != NULL)
+			{
+				const bool is_connected = custom_connectivity->getEdgeInformation(
+					this,
+					cx, cy,cz,
+					cx + (dir == 0 ? 1 : 0), cy + (dir == 1 ? 1 : 0), cz+ (dir==2 ? 1:0),
+					edge_lamdba
+				);
+				if (!is_connected)
+					continue;
+			}
+			else
+			{
+				edge_lamdba = insertionOptions.GMRF_lambdaPrior;
+			}
+
 			TPriorFactorGMRF new_prior(*this);
 			new_prior.node_id_i = i;
 			new_prior.node_id_j = j;
-			new_prior.Lambda = insertionOptions.GMRF_lambdaPrior;
+			new_prior.Lambda = edge_lamdba;
 
 			m_mrf_factors_priors.push_back(new_prior);
 			m_gmrf.addConstraint(*m_mrf_factors_priors.rbegin()); // add to graph
@@ -279,6 +298,11 @@ void CRandomFieldGridMap3D::updateMapEstimation()
 		m_map[j].mean_value += x_incr[j];
 		m_map[j].stddev_value = insertionOptions.GMRF_skip_variance ? .0 : std::sqrt(x_var[j]);
 	}
+}
+
+void mrpt::maps::CRandomFieldGridMap3D::setVoxelsConnectivity(const ConnectivityDescriptorPtr & new_connectivity_descriptor)
+{
+	m_gmrf_connectivity = new_connectivity_descriptor;
 }
 
 bool CRandomFieldGridMap3D::insertIndividualReading(
