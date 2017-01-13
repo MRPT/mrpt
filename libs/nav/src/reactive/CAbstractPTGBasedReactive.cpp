@@ -678,7 +678,7 @@ void CAbstractPTGBasedReactive::STEP5_PTGEvaluator(
 
 	// Coordinates of the trajectory end for the given PTG and "alpha":
 	const double d = min( in_TPObstacles[ kDirection ], 0.99*TargetDist);
-	uint16_t nStep;
+	uint32_t nStep;
 	bool pt_in_range = holonomicMovement.PTG->getPathStepForDist(kDirection, d, nStep);
 	ASSERT_(pt_in_range)
 
@@ -693,7 +693,7 @@ void CAbstractPTGBasedReactive::STEP5_PTGEvaluator(
 	// Special case for NOP motion cmd:
 	// consider only the empty space *after* the current robot pose, which is not at the origin.
 	if (this_is_PTG_continuation &&
-		( rel_cur_pose_wrt_last_vel_cmd_NOP.x()!=0 || rel_cur_pose_wrt_last_vel_cmd_NOP.y()!=0) // edge case: if the rel pose is (0,0), the evaluation is exactly as in an no-NOP case.
+		( std::abs(rel_cur_pose_wrt_last_vel_cmd_NOP.x())>0.10 || std::abs(rel_cur_pose_wrt_last_vel_cmd_NOP.y())>0.10) // edge case: if the rel pose is (0,0), the evaluation is exactly as in an no-NOP case.
 		)
 	{
 		int cur_k=0;
@@ -713,7 +713,7 @@ void CAbstractPTGBasedReactive::STEP5_PTGEvaluator(
 			log.TP_Robot.y = sin(cur_a)*cur_norm_d;
 		}
 		{
-			uint16_t cur_ptg_step;
+			uint32_t cur_ptg_step;
 			bool ok1 = holonomicMovement.PTG->getPathStepForDist(m_lastSentVelCmd.ptg_alpha_index, cur_norm_d * holonomicMovement.PTG->getRefDistance(), cur_ptg_step);
 			if (ok1) {
 				mrpt::math::TPose2D predicted_rel_pose;
