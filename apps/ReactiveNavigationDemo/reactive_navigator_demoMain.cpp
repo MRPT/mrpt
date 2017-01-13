@@ -1046,7 +1046,7 @@ void reactive_navigator_demoframe::simulateOneStep(double time_step)
 					double min_shape_dists = 1.0;
 					for (double d=min_shape_dists;d<max_dist;d+=min_shape_dists)
 					{
-						uint16_t step;
+						uint32_t step;
 						if (!ptg->getPathStepForDist(selected_k, d, step))
 							continue;
 						mrpt::math::TPose2D p;

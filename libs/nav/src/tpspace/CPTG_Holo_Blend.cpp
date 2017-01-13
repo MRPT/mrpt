@@ -340,7 +340,7 @@ mrpt::kinematics::CVehicleVelCmdPtr CPTG_Holo_Blend::directionToMotionCommand( u
 
 size_t CPTG_Holo_Blend::getPathStepCount(uint16_t k) const
 {
-	uint16_t step;
+	uint32_t step;
 	if (!getPathStepForDist(k,this->refDistance,step)) {
 		THROW_EXCEPTION_CUSTOM_MSG1("Could not solve closed-form distance for k=%u",static_cast<unsigned>(k));
 	}
@@ -421,7 +421,7 @@ double CPTG_Holo_Blend::getPathDist(uint16_t k, uint16_t step) const
 	}
 }
 
-bool CPTG_Holo_Blend::getPathStepForDist(uint16_t k, double dist, uint16_t &out_step) const
+bool CPTG_Holo_Blend::getPathStepForDist(uint16_t k, double dist, uint32_t &out_step) const
 {
 	PERFORMANCE_BENCHMARK;
 
