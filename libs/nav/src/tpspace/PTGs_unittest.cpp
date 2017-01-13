@@ -71,7 +71,7 @@ TEST(NavTests, PTGs_tests)
 				bool any_good = false;
 				for (size_t k=0;k<num_paths;k++)
 				{
-					uint16_t step;
+					uint32_t step;
 
 					if (ptg->getPathStepForDist(k,dist,step))
 					{
@@ -105,7 +105,7 @@ TEST(NavTests, PTGs_tests)
 					{
 						any_ok = true;
 						// Now, do the inverse operation:
-						uint16_t step;
+						uint32_t step;
 						bool step_ok = ptg->getPathStepForDist(k,normalized_d*refDist,step);
 						EXPECT_TRUE(step_ok) << "PTG: " << sPTGDesc << endl << "(tx,ty): " << tx << " " << ty << " k= " << k << " normalized_d=" << normalized_d << endl;
 						if (step_ok)

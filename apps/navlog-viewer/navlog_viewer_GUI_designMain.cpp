@@ -721,7 +721,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 
 							for (double d=min_shape_dists;d<max_dist;d+=min_shape_dists)
 							{
-								uint16_t step;
+								uint32_t step;
 								if (!ptg->getPathStepForDist(selected_k, d, step))
 									continue;
 								mrpt::math::TPose2D p;

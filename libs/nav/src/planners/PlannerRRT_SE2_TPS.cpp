@@ -319,7 +319,7 @@ void PlannerRRT_SE2_TPS::solve(
 				// [Algo `tp_space_rrt`: Line 14]: PTG function
 				// ------------------------------------------------------------
 				//given d_rand and k_rand provides x,y,phi of the point in c-space
-				uint16_t nStep;
+				uint32_t nStep;
 				m_PTGs[idxPTG]->getPathStepForDist(k_rand, d_new, nStep);
 
 				mrpt::math::TPose2D rel_pose;

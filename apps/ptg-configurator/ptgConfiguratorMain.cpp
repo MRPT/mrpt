@@ -748,7 +748,7 @@ void ptgConfiguratorframe::rebuild3Dview()
 				for (double d=max_dist; !done ;d-=min_shape_dists)
 				{
 					if (d<0) { d=0; done=true; }
-					uint16_t step;
+					uint32_t step;
 					if (!ptg->getPathStepForDist(k, d, step))
 						continue;
 					mrpt::math::TPose2D p;

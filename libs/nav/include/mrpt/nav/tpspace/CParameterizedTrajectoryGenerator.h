@@ -150,7 +150,7 @@ namespace nav
 		  * \return false if no step fulfills the condition for the given trajectory `k` (e.g. out of reference distance).
 		  * Note that, anyway, the maximum distance (closest point) is returned in `out_step`.
 		  * \sa getPathStepCount(), getAlphaValuesCount() */
-		virtual bool getPathStepForDist(uint16_t k, double dist, uint16_t &out_step) const = 0;
+		virtual bool getPathStepForDist(uint16_t k, double dist, uint32_t &out_step) const = 0;
 
 		/** Updates the radial map of closest TP-Obstacles given a single obstacle point at (ox,oy)
 		  * \param [in,out] tp_obstacles A vector of length `getAlphaValuesCount()`, initialized with `initTPObstacles()` (collision-free ranges, in "pseudometers", un-normalized).

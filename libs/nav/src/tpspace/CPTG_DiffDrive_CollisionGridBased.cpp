@@ -769,7 +769,7 @@ double CPTG_DiffDrive_CollisionGridBased::getPathDist(uint16_t k, uint16_t step)
 	return m_trajectory[k][step].dist;
 }
 
-bool CPTG_DiffDrive_CollisionGridBased::getPathStepForDist(uint16_t k, double dist, uint16_t &out_step) const
+bool CPTG_DiffDrive_CollisionGridBased::getPathStepForDist(uint16_t k, double dist, uint32_t &out_step) const
 {
 	ASSERT_(k<m_trajectory.size());
 	const size_t numPoints = m_trajectory[k].size();
