@@ -59,6 +59,7 @@ CAbstractPTGBasedReactive::CAbstractPTGBasedReactive(CRobot2NavInterface &react_
 	secureDistanceEnd            (0.20),
 	USE_DELAYS_MODEL             (false),
 	MAX_DISTANCE_PREDICTED_ACTUAL_PATH(0.05),
+	MIN_NORMALIZED_FREE_SPACE_FOR_PTG_CONTINUATION(0.2),
 	m_timelogger                 (false), // default: disabled
 	m_PTGsMustBeReInitialized    (true),
 	meanExecutionTime            (ESTIM_LOWPASSFILTER_ALPHA, 0.1),
@@ -737,7 +738,7 @@ void CAbstractPTGBasedReactive::STEP5_PTGEvaluator(
 		}
 
 		eval_factors[0] -= cur_norm_d;
-		if (eval_factors[0] < 0.50) {
+		if (eval_factors[0] < this->MIN_NORMALIZED_FREE_SPACE_FOR_PTG_CONTINUATION) {
 			// Don't trust this step: we are reaching too close to obstacles:
 			newLogRec.additional_debug_msgs["PTGEvaluator"] = "PTG-continuation not allowed, too close to obstacles.";
 			holonomicMovement.evaluation = .0;
@@ -890,6 +891,7 @@ void CAbstractPTGBasedReactive::loadConfigFile(const mrpt::utils::CConfigFileBas
 
 	USE_DELAYS_MODEL = cfg.read_bool(sectCfg, "USE_DELAYS_MODEL", USE_DELAYS_MODEL);
 	MAX_DISTANCE_PREDICTED_ACTUAL_PATH = cfg.read_double(sectCfg, "MAX_DISTANCE_PREDICTED_ACTUAL_PATH", MAX_DISTANCE_PREDICTED_ACTUAL_PATH);
+	MIN_NORMALIZED_FREE_SPACE_FOR_PTG_CONTINUATION = cfg.read_double(sectCfg, "MIN_NORMALIZED_FREE_SPACE_FOR_PTG_CONTINUATION", MIN_NORMALIZED_FREE_SPACE_FOR_PTG_CONTINUATION);
 
 	DIST_TO_TARGET_FOR_SENDING_EVENT = cfg.read_float(sectCfg, "DIST_TO_TARGET_FOR_SENDING_EVENT", DIST_TO_TARGET_FOR_SENDING_EVENT, false);
 	m_badNavAlarm_AlarmTimeout = cfg.read_double(sectCfg,"ALARM_SEEMS_NOT_APPROACHING_TARGET_TIMEOUT", m_badNavAlarm_AlarmTimeout, false);

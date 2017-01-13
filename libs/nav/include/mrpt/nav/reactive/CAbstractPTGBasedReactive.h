@@ -190,6 +190,7 @@ namespace mrpt
 		double secureDistanceStart,secureDistanceEnd;
 		bool   USE_DELAYS_MODEL;
 		double MAX_DISTANCE_PREDICTED_ACTUAL_PATH; //!< for ptg continuation [meters] (default= 0.05)
+		double MIN_NORMALIZED_FREE_SPACE_FOR_PTG_CONTINUATION;
 
 		mrpt::kinematics::CVehicleVelCmd::TVelCmdParams robotVelocityParams; //!< Params related to speed limits. Loaded during loadConfigFile()
 
