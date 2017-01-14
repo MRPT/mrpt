@@ -427,8 +427,8 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 
 				if (fill_log_record)
 				{
-					newLogRec.additional_debug_msgs["rel_cur_pose_wrt_last_vel_cmd_NOP"] = rel_cur_pose_wrt_last_vel_cmd_NOP.asString();
-					newLogRec.additional_debug_msgs["robot_pose_at_send_cmd"] = robot_pose_at_send_cmd.asString();
+					newLogRec.additional_debug_msgs["rel_cur_pose_wrt_last_vel_cmd_NOP(interp)"] = rel_cur_pose_wrt_last_vel_cmd_NOP.asString();
+					newLogRec.additional_debug_msgs["robot_pose_at_send_cmd(interp)"] = robot_pose_at_send_cmd.asString();
 				}
 
 				ASSERT_(m_navigationParams);
@@ -442,6 +442,11 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 					rel_cur_pose_wrt_last_vel_cmd_NOP);
 
 			} // end valid interpolated origin pose
+			else
+			{
+				// Can't interpolate pose, hence can't evaluate NOP:
+				holonomicMovements[nPTGs].evaluation = 0;
+			}
 		} //end can_do_NOP_motion
 
 		// STEP6: After all PTGs have been evaluated, pick the best scored:
@@ -705,7 +710,7 @@ void CAbstractPTGBasedReactive::STEP5_PTGEvaluator(
 		{
 			// Don't trust this step: we are not 100% sure of the robot pose in TP-Space for this "PTG continuation" step:
 			holonomicMovement.evaluation = .0;
-			newLogRec.additional_debug_msgs["PTGEvaluator"] = "PTG-continuation not allowed, cur. pose out of PTG domain.";
+			newLogRec.additional_debug_msgs["PTG_eval"] = "PTG-continuation not allowed, cur. pose out of PTG domain.";
 			return;
 		}
 		{
@@ -721,18 +726,19 @@ void CAbstractPTGBasedReactive::STEP5_PTGEvaluator(
 				holonomicMovement.PTG->getPathPose(m_lastSentVelCmd.ptg_alpha_index, cur_ptg_step, predicted_rel_pose);
 				const CPose2D predicted_pose_global = CPose2D(m_lastSentVelCmd.curRobotPose) + CPose2D(predicted_rel_pose);
 				const double predicted2real_dist = predicted_pose_global.distance2DTo(m_curPoseVel.pose.x, m_curPoseVel.pose.y);
-				newLogRec.additional_debug_msgs["PTGEvaluator.PTGcont"] = mrpt::format("last_cmdvel_pose=%s mismatchDistance=%.03f cm", m_lastSentVelCmd.curRobotPose.asString().c_str(), 1e2*predicted2real_dist );
+				newLogRec.additional_debug_msgs["PTG_eval.lastCmdPose(raw)"] = m_lastSentVelCmd.curRobotPose.asString();
+				newLogRec.additional_debug_msgs["PTG_eval.PTGcont"] = mrpt::format("mismatchDistance=%.03f cm", 1e2*predicted2real_dist);
 
 				if (predicted2real_dist > MAX_DISTANCE_PREDICTED_ACTUAL_PATH)
 				{
 					holonomicMovement.evaluation = .0;
-					newLogRec.additional_debug_msgs["PTGEvaluator"] = "PTG-continuation not allowed, mismatchDistance above threshold.";
+					newLogRec.additional_debug_msgs["PTG_eval"] = "PTG-continuation not allowed, mismatchDistance above threshold.";
 					return;
 				}
 			}
 			else {
 				holonomicMovement.evaluation = .0;
-				newLogRec.additional_debug_msgs["PTGEvaluator"] = "PTG-continuation not allowed, couldn't get PTG step for cur. robot pose.";
+				newLogRec.additional_debug_msgs["PTG_eval"] = "PTG-continuation not allowed, couldn't get PTG step for cur. robot pose.";
 				return;
 			}
 		}
@@ -740,7 +746,7 @@ void CAbstractPTGBasedReactive::STEP5_PTGEvaluator(
 		eval_factors[0] -= cur_norm_d;
 		if (eval_factors[0] < this->MIN_NORMALIZED_FREE_SPACE_FOR_PTG_CONTINUATION) {
 			// Don't trust this step: we are reaching too close to obstacles:
-			newLogRec.additional_debug_msgs["PTGEvaluator"] = "PTG-continuation not allowed, too close to obstacles.";
+			newLogRec.additional_debug_msgs["PTG_eval"] = "PTG-continuation not allowed, too close to obstacles.";
 			holonomicMovement.evaluation = .0;
 			return;
 		}
