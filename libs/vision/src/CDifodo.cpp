@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -26,8 +26,8 @@ CDifodo::CDifodo()
 {
 	rows = 60;
 	cols = 80;
-	fovh = M_PI*58.6/180.0;
-	fovv = M_PI*45.6/180.0;
+	fovh = M_PIf*58.6f/180.0f;
+	fovv = M_PIf*45.6f/180.0f;
 	cam_mode = 1;			// (1 - 640 x 480, 2 - 320 x 240, 4 - 160 x 120)
 	downsample = 1;
 	ctf_levels = 1;

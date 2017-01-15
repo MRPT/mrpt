@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -34,5 +34,10 @@ MRPT_INITIALIZER( registerAllNavigationClasses )
 	registerClass(CLASS_ID( CLogFileRecord_ND ));
 	registerClass(CLASS_ID( CLogFileRecord_VFF ));
 	registerClass(CLASS_ID( CLogFileRecord_FullEval ));
+
+	// Holo methods:
+	registerClass(CLASS_ID(CHolonomicVFF));
+	registerClass(CLASS_ID(CHolonomicND));
+	registerClass(CLASS_ID(CHolonomicFullEval));
 #endif
 }

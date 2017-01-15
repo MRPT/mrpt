@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -16,6 +16,7 @@
 #include <mrpt/math/CPolygon.h>
 #include <mrpt/utils/mrpt_stdint.h>    // compiler-independent version of "stdint.h"
 #include <mrpt/nav/link_pragmas.h>
+#include <mrpt/nav/holonomic/ClearanceDiagram.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/kinematics/CVehicleVelCmd.h>
 #include <mrpt/otherlibs/stlplus/smart_ptr.hpp>  // STL+ library
@@ -26,6 +27,16 @@ namespace mrpt
 {
 namespace nav
 {
+
+	/** Defines behaviors for where there is an obstacle *inside* the robot shape right at the beginning of a PTG trajectory.
+	  *\ingroup nav_tpspace
+	  * \sa Used in CParameterizedTrajectoryGenerator::COLLISION_BEHAVIOR
+	  */
+	enum PTG_collision_behavior_t {
+		COLL_BEH_BACK_AWAY = 0,    //!< Favor getting back from too-close (almost collision) obstacles.
+		COLL_BEH_STOP              //!< Totally dissallow any movement if there is any too-close (almost collision) obstacles.
+	};
+
 	/** \defgroup nav_tpspace TP-Space and PTG classes
 	  * \ingroup mrpt_nav_grp
 	  */
@@ -125,12 +136,21 @@ namespace nav
 		  * \sa getPathStepCount(), getAlphaValuesCount() */
 		virtual double getPathDist(uint16_t k, uint16_t step) const = 0;
 
+		/** Returns the duration (in seconds) of each "step"
+		* \sa getPathStepCount() */
+		virtual double getPathStepDuration() const = 0;
+
+		/** Returns the maximum linear velocity expected from this PTG [m/s] */
+		virtual double getMaxLinVel() const = 0;
+		/** Returns the maximum angular velocity expected from this PTG [rad/s] */
+		virtual double getMaxAngVel() const = 0;
+
 		/** Access path `k` ([0,N-1]=>[-pi,pi] in alpha): largest step count for which the traversed distance is < `dist`
 		  * \param[in] dist Distance in pseudometers (real distance, NOT normalized to [0,1] for [0,refDist])
 		  * \return false if no step fulfills the condition for the given trajectory `k` (e.g. out of reference distance).
 		  * Note that, anyway, the maximum distance (closest point) is returned in `out_step`.
 		  * \sa getPathStepCount(), getAlphaValuesCount() */
-		virtual bool getPathStepForDist(uint16_t k, double dist, uint16_t &out_step) const = 0;
+		virtual bool getPathStepForDist(uint16_t k, double dist, uint32_t &out_step) const = 0;
 
 		/** Updates the radial map of closest TP-Obstacles given a single obstacle point at (ox,oy)
 		  * \param [in,out] tp_obstacles A vector of length `getAlphaValuesCount()`, initialized with `initTPObstacles()` (collision-free ranges, in "pseudometers", un-normalized).
@@ -138,8 +158,12 @@ namespace nav
 		  * \param [in] oy Obstacle point (Y), relative coordinates wrt origin of the PTG.
 		  * \note The length of tp_obstacles is not checked for efficiency since this method is potentially called thousands of times per
 		  *  navigation timestap, so it is left to the user responsibility to provide a valid buffer.
+		  * \note `tp_obstacles` must be initialized with initTPObstacle() before call.
 		  */
 		virtual void updateTPObstacle(double ox, double oy, std::vector<double> &tp_obstacles) const = 0;
+
+		/** Like updateTPObstacle() but for one direction only (`k`) in TP-Space. `tp_obstacle_k` must be initialized with initTPObstacleSingle() before call (collision-free ranges, in "pseudometers", un-normalized). */
+		virtual void updateTPObstacleSingle(double ox, double oy, uint16_t k, double &tp_obstacle_k) const = 0;
 
 		/** Loads a set of default parameters into the PTG. Users normally will call `loadFromConfigFile()` instead, this method is provided 
 		  * exclusively for the PTG-configurator tool. */
@@ -155,6 +179,21 @@ namespace nav
 		  * navigation implementations will check for many other conditions. Default method in the base virtual class returns 0. 
 		  * \param path_k Queried path `k` index  [0,N-1] */
 		virtual double maxTimeInVelCmdNOP(int path_k) const;
+
+		/** Returns the actual distance (in meters) of the path, discounting possible circular loops of the path (e.g. if it comes back to the origin). 
+		  * Default: refDistance */
+		virtual double getActualUnloopedPathLength(uint16_t k) const { return this->refDistance; }
+
+		/** Query the PTG for the relative priority factor (0,1) of this PTG, in comparison to others, if the k-th path is to be selected. */
+		virtual double evalPathRelativePriority(uint16_t k) const { return 1.0; }
+
+		/** Returns an approximation of the robot radius. */
+		virtual double getApproxRobotRadius() const = 0;
+		/** Returns true if the point lies within the robot shape. */
+		virtual bool isPointInsideRobotShape(const double x, const double y) const = 0;
+
+		/** Evals the clearance from an obstacle (ox,oy) in coordinates relative to the robot center. Zero or negative means collision. */
+		virtual double evalClearanceToRobotShape(const double ox, const double oy) const = 0;
 
 		/** @} */  // --- end of virtual methods
 
@@ -173,30 +212,33 @@ namespace nav
 		uint16_t getPathCount() const { return m_alphaValuesCount; }
 
 		/** Alpha value for the discrete corresponding value \sa alpha2index */
-		double index2alpha( uint16_t k ) const {
-			if (k>=m_alphaValuesCount) throw std::runtime_error("PTG: alpha value out of range!");
-			return M_PI * (-1.0 + 2.0 * (k+0.5)/m_alphaValuesCount );
-		}
+		double index2alpha(uint16_t k) const;
+		static double index2alpha(uint16_t k, const unsigned int num_paths);
 
 		/** Discrete index value for the corresponding alpha value \sa index2alpha */
 		uint16_t alpha2index( double alpha ) const;
+		static uint16_t alpha2index(double alpha, const unsigned int num_paths);
 
 		inline double getRefDistance() const { return refDistance; }
 
 		/** Resizes and populates the initial appropriate contents in a vector of tp-obstacles (collision-free ranges, in "pseudometers", un-normalized). \sa updateTPObstacle()  */
 		void initTPObstacles(std::vector<double> &TP_Obstacles) const;
+		void initTPObstacleSingle(uint16_t k, double &TP_Obstacle_k) const;
 
 		/** When used in path planning, a multiplying factor (default=1.0) for the scores for this PTG. Assign values <1 to PTGs with low priority. */
 		double getScorePriority() const { return m_score_priority; }
 		void setScorePriorty(double prior) { m_score_priority = prior; }
 
+		double getClearanceStepCount() const { return m_clearance_num_points; }
+		void setClearanceStepCount(const double res) { m_clearance_num_points = res; }
+
 		/** Returns the representation of one trajectory of this PTG as a 3D OpenGL object (a simple curved line).
 		  * \param[in] k The 0-based index of the selected trajectory (discrete "alpha" parameter).
 		  * \param[out] gl_obj Output object.
 		  * \param[in] decimate_distance Minimum distance between path points (in meters).
-		  * \param[in] max_path_distance If >0, cut the path at this distance (in meters).
+		  * \param[in] max_path_distance If >=0, cut the path at this distance (in meters).
 		  */
-		virtual void renderPathAsSimpleLine(const uint16_t k,mrpt::opengl::CSetOfLines &gl_obj,const float decimate_distance = 0.1f,const float max_path_distance = 0.0f) const;
+		virtual void renderPathAsSimpleLine(const uint16_t k,mrpt::opengl::CSetOfLines &gl_obj,const double decimate_distance = 0.1,const double max_path_distance = -1.0) const;
 
 		/** Dump PTG trajectories in four text files: `./reactivenav.logs/PTGs/PTG%i_{x,y,phi,d}.txt`
 		  * Text files are loadable from MATLAB/Octave, and can be visualized with the script `[MRPT_DIR]/scripts/viewPTG.m` 
@@ -218,15 +260,42 @@ namespace nav
 		/** Auxiliary function for rendering */
 		virtual void add_robotShape_to_setOfLines(mrpt::opengl::CSetOfLines &gl_shape, const mrpt::poses::CPose2D &origin = mrpt::poses::CPose2D ()) const  = 0;
 
+		/** Defines the behavior when there is an obstacle *inside* the robot shape right at the beginning of a PTG trajectory.
+		 * Default value: COLL_BEH_BACK_AWAY
+		 */
+		static PTG_collision_behavior_t COLLISION_BEHAVIOR;
+
+		/** Updates the clearance diagram given one (ox,oy) obstacle point, in coordinates relative 
+		  * to the PTG path origin.
+		  * \param[in,out] cd The clearance will be updated here. 
+		  * \sa m_clearance_dist_resolution
+		  */
+		void updateClearance(const double ox, const double oy, ClearanceDiagram & cd) const;
+
+		void updateClearancePost(ClearanceDiagram & cd, const std::vector<double> &TP_obstacles) const;
 protected:
 		double    refDistance;
 		uint16_t  m_alphaValuesCount; //!< The number of discrete values for "alpha" between -PI and +PI.
 		double    m_score_priority;
+		uint16_t  m_clearance_num_points; //!< Number of steps for the piecewise-constant approximation of clearance from TPS distances [0,1] (Default=5) \sa updateClearance()
+		bool      m_use_approx_clearance; //!< Approx clearance by directly calc distances in TP-Space, without checking WS robot shape directly (Default=true)
 
 		bool      m_is_initialized;
 
+		/** To be called by implementors of updateTPObstacle() and updateTPObstacleSingle() to
+		  * honor the user settings regarding COLLISION_BEHAVIOR.
+		  * \param new_tp_obs_dist The newly determiend collision-free ranges, in "pseudometers", un-normalized, for some "k" direction.
+		  * \param inout_tp_obs The target where to store the new TP-Obs distance, if it fulfills the criteria determined by the collision behavior.
+		  */
+		void internal_TPObsDistancePostprocess(const double ox, const double oy, const double new_tp_obs_dist, double &inout_tp_obs) const;
+
 		virtual void internal_readFromStream(mrpt::utils::CStream &in);
 		virtual void internal_writeToStream(mrpt::utils::CStream &out) const;
+
+		/** Evals the robot clearance for each robot pose along path `k`, for the real distances in
+		* the key of the map<>, then keep in the map value the minimum of its current stored clearance,
+		* or the computed clearance. In case of collision, clearance is zero. */
+		virtual void evalClearanceSingleObstacle(const double ox, const double oy, const uint16_t k, std::map<double, double> & inout_realdist2clearance) const;
 
 	}; // end of class
 	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CParameterizedTrajectoryGenerator, mrpt::utils::CSerializable, NAV_IMPEXP )
@@ -242,29 +311,29 @@ protected:
 	class NAV_IMPEXP CPTG_RobotShape_Polygonal : public CParameterizedTrajectoryGenerator
 	{
 	public:
-		CPTG_RobotShape_Polygonal() : m_robotShape() {}
-		virtual ~CPTG_RobotShape_Polygonal() {}
+		CPTG_RobotShape_Polygonal();
+		virtual ~CPTG_RobotShape_Polygonal();
 
 		/** @name Robot shape
 		  * @{ **/
 		/** Robot shape must be set before initialization, either from ctor params or via this method. */
-		void setRobotShape(const mrpt::math::CPolygon & robotShape) {
-			m_robotShape = robotShape;
-			internal_processNewRobotShape();
-		}
+		void setRobotShape(const mrpt::math::CPolygon & robotShape);
 		const mrpt::math::CPolygon & getRobotShape() const { return m_robotShape; }
+		double getApproxRobotRadius() const MRPT_OVERRIDE;
+		virtual double evalClearanceToRobotShape(const double ox, const double oy) const MRPT_OVERRIDE;
 		/** @} */
-
+		bool isPointInsideRobotShape(const double x, const double y) const MRPT_OVERRIDE;
 		void add_robotShape_to_setOfLines(mrpt::opengl::CSetOfLines &gl_shape, const mrpt::poses::CPose2D &origin = mrpt::poses::CPose2D ()) const  MRPT_OVERRIDE;
 	protected:
 		virtual void internal_processNewRobotShape() = 0; //!< Will be called whenever the robot shape is set / updated
 		mrpt::math::CPolygon m_robotShape;
+		double m_robotApproxRadius;
 		void loadShapeFromConfigFile(const mrpt::utils::CConfigFileBase & source,const std::string & section);
-		void saveToConfigFile(mrpt::utils::CConfigFileBase &cfg,const std::string &sSection) const;
+		void saveToConfigFile(mrpt::utils::CConfigFileBase &cfg,const std::string &sSection) const MRPT_OVERRIDE;
 		void internal_shape_loadFromStream(mrpt::utils::CStream &in);
 		void internal_shape_saveToStream(mrpt::utils::CStream &out) const;
 		/** Loads a set of default parameters; provided  exclusively for the PTG-configurator tool. */
-		void loadDefaultParams();
+		void loadDefaultParams() MRPT_OVERRIDE;
 	};
 
 	/** Base class for all PTGs using a 2D circular robot shape model.
@@ -273,28 +342,28 @@ protected:
 	class NAV_IMPEXP CPTG_RobotShape_Circular : public CParameterizedTrajectoryGenerator
 	{
 	public:
-		CPTG_RobotShape_Circular() : m_robotRadius(.0) {}
-		virtual ~CPTG_RobotShape_Circular() {}
+		CPTG_RobotShape_Circular();
+		virtual ~CPTG_RobotShape_Circular();
 
 		/** @name Robot shape
 		  * @{ **/
 		/** Robot shape must be set before initialization, either from ctor params or via this method. */
-		void setRobotShapeRadius(const double robot_radius) {
-			m_robotRadius = robot_radius;
-			internal_processNewRobotShape();
-		}
+		void setRobotShapeRadius(const double robot_radius);
 		double getRobotShapeRadius() const { return m_robotRadius; }
+		double getApproxRobotRadius() const MRPT_OVERRIDE;
+		virtual double evalClearanceToRobotShape(const double ox, const double oy) const MRPT_OVERRIDE;
 		/** @} */
 		void add_robotShape_to_setOfLines(mrpt::opengl::CSetOfLines &gl_shape, const mrpt::poses::CPose2D &origin = mrpt::poses::CPose2D ()) const  MRPT_OVERRIDE;
+		bool isPointInsideRobotShape(const double x, const double y) const MRPT_OVERRIDE;
 	protected:
 		virtual void internal_processNewRobotShape() = 0; //!< Will be called whenever the robot shape is set / updated
 		double m_robotRadius;
 		void loadShapeFromConfigFile(const mrpt::utils::CConfigFileBase & source,const std::string & section);
-		void saveToConfigFile(mrpt::utils::CConfigFileBase &cfg,const std::string &sSection) const;
+		void saveToConfigFile(mrpt::utils::CConfigFileBase &cfg,const std::string &sSection) const MRPT_OVERRIDE;
 		void internal_shape_loadFromStream(mrpt::utils::CStream &in);
 		void internal_shape_saveToStream(mrpt::utils::CStream &out) const;
 		/** Loads a set of default parameters; provided  exclusively for the PTG-configurator tool. */
-		void loadDefaultParams();
+		void loadDefaultParams() MRPT_OVERRIDE;
 	};
 
 }

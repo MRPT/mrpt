@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -235,7 +235,7 @@ namespace poses
 		inline void composePoint(double lx,double ly,double lz, float &gx, float &gy, float &gz ) const {
 			double ggx, ggy,ggz;
 			composePoint(lx,ly,lz,ggx,ggy,ggz);
-			gx = ggx; gy = ggy; gz = ggz;
+			gx = static_cast<float>(ggx); gy = static_cast<float>(ggy); gz = static_cast<float>(ggz);
 		}
 
 		/**  Computes the 3D point L such as \f$ L = G \ominus this \f$.

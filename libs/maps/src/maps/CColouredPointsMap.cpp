@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -580,7 +580,7 @@ bool CColouredPointsMap::colourFromObservation( const CObservationImage &obs, co
 	else { chR = 0; chG = 1; chB = 2; }
 
 	unsigned int n_proj = 0;
-	const float factor = 1.0/255;	// Normalize pixels:
+	const float factor = 1.0f/255;	// Normalize pixels:
 
 	// Get the colour of the projected points
 	size_t k;

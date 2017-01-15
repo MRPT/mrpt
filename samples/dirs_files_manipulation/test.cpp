@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -113,7 +113,7 @@ void renameDirContents() {
   // finally rename the directory itself
   cout << "Renaming directory " << dir_name << " to: " <<
     dir_name << string_to_add << endl;
-  string* err_msg; // flag for catching the error msg if any..
+  string* err_msg = NULL; // flag for catching the error msg if any..
   success = renameFile(dir_name, 
       dir_name+string_to_add, err_msg);
   if (success) {

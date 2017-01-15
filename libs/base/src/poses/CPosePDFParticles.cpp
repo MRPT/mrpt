@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -37,16 +37,16 @@ CPosePDFParticles::CPosePDFParticles( size_t M )
 {
 	m_particles.resize(M);
 
-	for (CParticleList::iterator it=m_particles.begin();it!=m_particles.end();++it)
-		it->d = new CPose2D();
+	for (auto & p : m_particles)
+	{
+		p.log_w = .0;
+		p.d.reset(new CPose2D());
+	}
 
-	static CPose2D	nullPose(0,0,0);
+	CPose2D nullPose(0,0,0);
 	resetDeterministic( nullPose );
 }
 
-/*---------------------------------------------------------------
-						operator =
-  ---------------------------------------------------------------*/
 void  CPosePDFParticles::copyFrom(const CPosePDF &o)
 {
 	MRPT_START
@@ -58,34 +58,11 @@ void  CPosePDFParticles::copyFrom(const CPosePDF &o)
 
 	if (o.GetRuntimeClass()==CLASS_ID(CPosePDFParticles))
 	{
-		const CPosePDFParticles	*pdf = static_cast<const CPosePDFParticles*>( &o );
+		const CPosePDFParticles	*pdf = dynamic_cast<const CPosePDFParticles*>( &o );
+		ASSERT_(pdf);
 
 		// Both are m_particles:
-		if (m_particles.size()==pdf->m_particles.size())
-		{
-			for ( itSrc=pdf->m_particles.begin(), itDest = m_particles.begin();
-				   itSrc!=pdf->m_particles.end();
-			      ++itSrc, ++itDest )
-			{
-				(*itDest->d) = (*itSrc->d);
-				itDest->log_w = itSrc->log_w;
-			}
-		}
-		else
-		{
-			for ( itDest = m_particles.begin();itDest!=m_particles.end();++itDest )
-				delete itDest->d;
-
-			m_particles.resize( pdf->m_particles.size() );
-
-			for ( itSrc=pdf->m_particles.begin(), itDest = m_particles.begin();
-				   itSrc!=pdf->m_particles.end();
-			      ++itSrc, ++itDest )
-			{
-				itDest->d = new CPose2D( *itSrc->d );
-				itDest->log_w = itSrc->log_w;
-			}
-		}
+		m_particles = pdf->m_particles;
 	}
 	else
 	if (o.GetRuntimeClass()==CLASS_ID(CPosePDFGaussian))
@@ -103,9 +80,11 @@ void  CPosePDFParticles::copyFrom(const CPosePDF &o)
 		for ( itDest = m_particles.begin(),partsIt=parts.begin();itDest!=m_particles.end();++itDest,++partsIt )
 		{
 			itDest->log_w = 0;
-            itDest->d = new CPose2D( ( pdf->mean.x() + (*partsIt)[0] ),
-									 ( pdf->mean.y() + (*partsIt)[1] ),
-                                     ( pdf->mean.phi() + (*partsIt)[2] ) );
+			itDest->d.reset(new CPose2D(
+				(pdf->mean.x() + (*partsIt)[0]),
+				(pdf->mean.y() + (*partsIt)[1]),
+				(pdf->mean.phi() + (*partsIt)[2]))
+			);
 			itDest->d->normalizePhi();
 		}
 
@@ -114,17 +93,6 @@ void  CPosePDFParticles::copyFrom(const CPosePDF &o)
 	MRPT_END
 }
 
-/*---------------------------------------------------------------
-	Destructor
-  ---------------------------------------------------------------*/
-CPosePDFParticles::~CPosePDFParticles( )
-{
-	clear();
-}
-
-/*---------------------------------------------------------------
-			clear
-  ---------------------------------------------------------------*/
 void  CPosePDFParticles::clear( )
 {
 	clearParticles();
@@ -249,20 +217,18 @@ void  CPosePDFParticles::readFromStream(mrpt::utils::CStream &in, int version)
 void  CPosePDFParticles::resetDeterministic( const CPose2D &location,
 										size_t	particlesCount)
 {
-	CParticleList::iterator		it;
-
 	if (particlesCount>0)
 	{
 		clear();
 		m_particles.resize(particlesCount);
-		for (it=m_particles.begin();it!=m_particles.end();++it)
-			it->d = new CPose2D();
+		for (auto &p: m_particles)
+			p.d.resetDefaultCtor();
 	}
 
-	for (it=m_particles.begin();it!=m_particles.end();++it)
+	for (auto &p: m_particles)
 	{
-		*it->d	= location;
-		it->log_w	= 0;
+		*p.d = location;
+		p.log_w = .0;
 	}
 }
 
@@ -284,8 +250,8 @@ void  CPosePDFParticles::resetUniform(
 	{
 		clear();
 		m_particles.resize(particlesCount);
-		for (int i=0;i<particlesCount;i++)
-			m_particles[i].d = new CPose2D();
+		for (int i = 0; i < particlesCount; i++)
+			m_particles[i].d.reset(new CPose2D());
 	}
 
 	size_t		i,M = m_particles.size();
@@ -321,7 +287,7 @@ void  CPosePDFParticles::resetAroundSetOfPoses(
 		const mrpt::math::TPose2D & p = list_poses[nSpot];
 		for (size_t k=0;k<num_particles_per_pose;k++,i++)
 		{
-			m_particles[i].d = new CPose2D();
+			m_particles[i].d.reset(new CPose2D());
 			m_particles[i].d->x( randomGenerator.drawUniform( p.x - spread_x*0.5, p.x + spread_x*0.5 ) );
 			m_particles[i].d->y( randomGenerator.drawUniform( p.y - spread_y*0.5, p.y + spread_y*0.5 ) );
 			m_particles[i].d->phi( randomGenerator.drawUniform( p.phi - spread_phi_rad*0.5, p.phi + spread_phi_rad*0.5 ) );
@@ -343,6 +309,7 @@ void  CPosePDFParticles::saveToTextFile(const std::string &file) const
 {
 	FILE	*f=os::fopen(file.c_str(),"wt");
 	if (!f) return;
+	os::fprintf(f,"%% x  y  yaw[rad] log_weight\n");
 
 	for (unsigned int i=0;i<m_particles.size();i++)
 		os::fprintf(f,"%f %f %f %e\n",
@@ -412,7 +379,7 @@ void  CPosePDFParticles::append( CPosePDFParticles &o )
 	for (unsigned int i=0;i<o.m_particles.size();i++)
 	{
 		CParticleData		part;
-		part.d = new CPose2D( *o.m_particles[i].d );
+		part.d.reset(new CPose2D(*o.m_particles[i].d));
 		part.log_w = o.m_particles[i].log_w;
 		m_particles.push_back( part );
 	}

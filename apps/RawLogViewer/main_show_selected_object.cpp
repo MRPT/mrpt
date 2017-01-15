@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -16,7 +16,7 @@
 #include <mrpt/opengl/CAxis.h>
 #include <mrpt/opengl/CPointCloudColoured.h>
 
-#include "../wx-common/CMyRedirector.h"
+#include <mrpt/gui/CMyRedirector.h>
 
 #define MRPT_NO_WARN_BIG_HDR // It's ok to include ALL hdrs here.
 #include <mrpt/obs.h>
@@ -194,7 +194,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView( const CSerializablePtr & sel_ob
 
 			if (act->poseChange->GetRuntimeClass()==CLASS_ID(CPosePDFParticles))
 			{
-				CPosePDFParticlesPtr aux = CPosePDFParticlesPtr( act->poseChange );
+				CPosePDFParticlesPtr aux = CPosePDFParticlesPtr( act->poseChange.get_ptr() );
 				cout << format (" (Particle count = %u)\n", (unsigned)aux->m_particles.size() );
 			}
 			cout << endl;
@@ -222,7 +222,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView( const CSerializablePtr & sel_ob
 
 			if (act->hasVelocities)
 			{
-				cout << format(" Velocity info: v=%.03f m/s  w=%.03f deg/s\n", act->velocityLin, RAD2DEG(act->velocityAng) );
+				cout << format(" Velocity info: v=%s\n", act->velocityLocal.asString().c_str());
 			}
 			else    cout << "Velocity info: Not available!\n";
 

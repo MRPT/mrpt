@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -89,7 +89,7 @@ Passed passed;
 // The compiler refuses to reserve a register for this,
 // even though xmm6 and xmm7 go unused.
 // It loads it from memory each time.  I am stymied.
-register const __m128i barriers = _mm_set1_epi8((uint8_t)barrier);
+const __m128i barriers = _mm_set1_epi8((uint8_t)barrier);
 
 for (int i=3; i<I->height-3; ++i) {
 	const uint8_t* p = (const uint8_t*)I->imageData + I->widthStep*i; //  I[i];

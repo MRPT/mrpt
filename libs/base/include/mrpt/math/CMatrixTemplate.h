@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -12,13 +12,28 @@
 #include <mrpt/utils/utils_defs.h>
 #include <mrpt/system/memory.h>
 #include <mrpt/math/math_frwds.h>  // forward declarations
-#include <mrpt/math/CArray.h>  // type CMatrixTemplateSize
+#include <mrpt/utils/CArray.h>  // type CMatrixTemplateSize
 #include <algorithm>  // swap()
 
 namespace mrpt
 {
 	namespace math
 	{
+		/** Auxiliary class used in CMatrixTemplate:size(), CMatrixTemplate::resize(), CMatrixFixedNumeric::size(), CMatrixFixedNumeric::resize(), to mimic the behavior of STL-containers */
+		struct CMatrixTemplateSize : public mrpt::utils::CArray<size_t, 2>
+		{
+			typedef mrpt::utils::CArray<size_t, 2> Base;
+			typedef CMatrixTemplateSize mrpt_autotype;
+
+			inline CMatrixTemplateSize() : mrpt::utils::CArray<size_t, 2>() {}
+			inline CMatrixTemplateSize(const size_t *d) { (*this)[0] = d[0]; (*this)[1] = d[1]; }
+
+			inline bool operator==(const CMatrixTemplateSize&o) const { return Base::operator[](0) == o[0] && Base::operator[](1) == o[1]; }
+			inline bool operator!=(const CMatrixTemplateSize&o) const { return !(*this == o); }
+			/** This operator allows the size(N,M) to be compared with a plain size_t N*M  */
+			inline operator size_t(void) const { return 2; }
+		};
+
 
 		/**  This template class provides the basic functionality for a general 2D any-size, resizable container of numerical or non-numerical elements.
 		 * NOTES:

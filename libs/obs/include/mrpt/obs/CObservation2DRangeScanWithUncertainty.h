@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -31,6 +31,7 @@ namespace obs
 			double prob_outliers;          //!< (Default: 0.5) Probability of having an outlier (dynamic obstacles, not mapped) in each scan ray.
 			double prob_lost_ray;          //!< (Default: 0.3) Conditional probability: how many of the "no return" ranges come from a failure to detect a real obstacle.
 			double max_prediction_std_dev; //!< (Default: 1.0m) Maximum std deviation of overall uncertainty for a range prediction to be considered as reliable for evaluation
+			double min_ray_log_lik;        //!< (Default: -20) Minimum log-likelihood of a single ray
 
 			TEvalParams();
 		};

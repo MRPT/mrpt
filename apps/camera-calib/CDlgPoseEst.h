@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -28,7 +28,7 @@
 
 #include <mrpt/vision/chessboard_camera_calib.h>
 #include <mrpt/hwdrivers/CCameraSensor.h>
-#include "../wx-common/CMyRedirector.h"
+#include <mrpt/gui/CMyRedirector.h>
 
 #include <mrpt/gui/CDisplayWindow3D.h>
 
@@ -136,8 +136,6 @@ class CDlgPoseEst: public wxDialog
 		mrpt::hwdrivers::CCameraSensorPtr m_video;
 		CMyGLCanvas* m_3Dview_cam;
 		mrpt::vision::pnp::CPnP pnp_algos;
-		typedef  bool (mrpt::vision::pnp::CPnP::*CPNP_PTR) (const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<Eigen::MatrixXd> img_pts, int n, const Eigen::Ref<Eigen::MatrixXd> cam_intrinsic, Eigen::Ref<Eigen::MatrixXd> pose_mat);
-		CPNP_PTR pose_algos[9]= {&mrpt::vision::pnp::CPnP::epnp, &mrpt::vision::pnp::CPnP::dls, &mrpt::vision::pnp::CPnP::upnp, &mrpt::vision::pnp::CPnP::p3p, &mrpt::vision::pnp::CPnP::lhm, &mrpt::vision::pnp::CPnP::posit, &mrpt::vision::pnp::CPnP::ppnp, &mrpt::vision::pnp::CPnP::rpnp, &mrpt::vision::pnp::CPnP::so3};
 		Eigen::MatrixXd obj_pts, img_pts, pose_mat, cam_intrinsic, I3;
 
 		mrpt::opengl::COpenGLScenePtr	scene;
@@ -145,6 +143,8 @@ class CDlgPoseEst: public wxDialog
 		mrpt::opengl::CGridPlaneXYPtr	grid;
 
 	public:
+		typedef  bool (mrpt::vision::pnp::CPnP::*CPNP_PTR) (const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<Eigen::MatrixXd> img_pts, int n, const Eigen::Ref<Eigen::MatrixXd> cam_intrinsic, Eigen::Ref<Eigen::MatrixXd> pose_mat);
+
 		/** The list of selected frames to use in camera calibration */
 		mrpt::vision::TCalibrationImageList	  m_calibFrames;
 

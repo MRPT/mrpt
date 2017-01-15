@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -66,7 +66,7 @@ COpenGLViewport::COpenGLViewport( COpenGLScene *parent, const string &name  ) :
 	m_clip_min(0.1),
 	m_clip_max(10000),
 	m_custom_backgb_color(false),
-	m_background_color(0.6,0.6,0.6),
+	m_background_color(0.6f,0.6f,0.6f),
 	m_isImageView(false),
 	m_imageview_img(),
 	m_objects(),
@@ -85,13 +85,13 @@ COpenGLViewport::COpenGLViewport( COpenGLScene *parent, const string &name  ) :
 	m_lights[1].setPosition(1,2,-1,0);
 	m_lights[1].setDirection(1,2,1);
 
-	m_lights[1].color_diffuse[0] = 0.3;
-	m_lights[1].color_diffuse[1] = 0.3;
-	m_lights[1].color_diffuse[2] = 0.3;
+	m_lights[1].color_diffuse[0] = 0.3f;
+	m_lights[1].color_diffuse[1] = 0.3f;
+	m_lights[1].color_diffuse[2] = 0.3f;
 
-	m_lights[1].color_ambient[0] = 0.3;
-	m_lights[1].color_ambient[1] = 0.3;
-	m_lights[1].color_ambient[2] = 0.3;
+	m_lights[1].color_ambient[0] = 0.3f;
+	m_lights[1].color_ambient[1] = 0.3f;
+	m_lights[1].color_ambient[2] = 0.3f;
 
 }
 

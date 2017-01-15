@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -12,6 +12,7 @@
 #include <mrpt/obs/CAction.h>
 #include <mrpt/obs/CActionRobotMovement2D.h>
 #include <mrpt/utils/CSerializable.h>
+#include <mrpt/utils/poly_ptr_ptr.h>
 #include <mrpt/poses/CPose3DPDFGaussian.h>
 
 namespace mrpt
@@ -33,38 +34,19 @@ namespace mrpt
 			DEFINE_SERIALIZABLE( CActionCollection )
 
 		protected:
-			/** The actions:
-			  */
-			std::deque<CActionPtr>	m_actions;
+			std::deque<mrpt::utils::poly_ptr_ptr<CActionPtr> >	m_actions;  //!< The robot "actionss"
 
 		 public:
-			 /** Constructor
-			   */
-			CActionCollection();
-
-			/** Constructor from a single action.
-			   */
-			CActionCollection( CAction &a );
-
-			/** Copy Constructor
-			   */
-			CActionCollection(const CActionCollection &o );
-
-			/** Copy operator
-			  */
-			CActionCollection&  operator = (const CActionCollection &o );
-
-			/** Destructor
-			   */
-			virtual ~CActionCollection();
+			CActionCollection(); //!< ctor
+			CActionCollection( CAction &a ); //!< Constructor from a single action.
 
 			/** You can use CActionCollection::begin to get a iterator to the first element.
 			  */
-			typedef std::deque<CActionPtr>::iterator		iterator;
+			typedef std::deque<mrpt::utils::poly_ptr_ptr<CActionPtr> >::iterator		iterator;
 
 			/** You can use CActionCollection::begin to get a iterator to the first element.
 			  */
-			typedef std::deque<CActionPtr>::const_iterator	const_iterator;
+			typedef std::deque<mrpt::utils::poly_ptr_ptr<CActionPtr> >::const_iterator	const_iterator;
 
 			/** Returns a iterator to the first action: this is an example of usage:
 			  * \code
@@ -149,7 +131,7 @@ namespace mrpt
 				for (const_iterator it = begin();it!=end();++it)
 					if ( (*it)->GetRuntimeClass()->derivedFrom( class_ID ) )
 						if (foundCount++ == ith)
-							return typename T::SmartPtr(*it);
+							return typename T::SmartPtr(it->get_ptr());
 				return typename T::SmartPtr();	// Not found: return empty smart pointer
 				MRPT_END
 			 }

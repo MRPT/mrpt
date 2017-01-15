@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -131,7 +131,7 @@ void CReactiveNavigationSystem::STEP1_InitPTGs()
 		{
 			PTGs[i]->deinitialize();
 
-			logFmt(mrpt::utils::LVL_INFO,"[loadConfigFile] Initializing PTG#%u (`%s`)...", i,PTGs[i]->getDescription().c_str());
+			logFmt(mrpt::utils::LVL_INFO,"[CReactiveNavigationSystem::STEP1_InitPTGs] Initializing PTG#%u (`%s`)...", i,PTGs[i]->getDescription().c_str());
 
 			// Polygonal robot shape?
 			{
@@ -183,9 +183,10 @@ bool CReactiveNavigationSystem::implementSenseObstacles(mrpt::system::TTimeStamp
 
 }
 
-void CReactiveNavigationSystem::STEP3_WSpaceToTPSpace(const size_t ptg_idx,std::vector<double> &out_TPObstacles, const mrpt::poses::CPose2D &rel_pose_PTG_origin_wrt_sense)
+void CReactiveNavigationSystem::STEP3_WSpaceToTPSpace(const size_t ptg_idx,std::vector<double> &out_TPObstacles, mrpt::nav::ClearanceDiagram &out_clearance, const mrpt::poses::CPose2D &rel_pose_PTG_origin_wrt_sense)
 {
-	CParameterizedTrajectoryGenerator	*ptg = this->PTGs[ptg_idx];
+	CParameterizedTrajectoryGenerator	*ptg = this->getPTG(ptg_idx);
+	out_clearance.clear();
 
 	const float OBS_MAX_XY = this->refDistance*1.1f;
 
@@ -204,6 +205,7 @@ void CReactiveNavigationSystem::STEP3_WSpaceToTPSpace(const size_t ptg_idx,std::
 			oz>=minObstaclesHeight && oz<=maxObstaclesHeight)
 		{
 			ptg->updateTPObstacle(ox, oy, out_TPObstacles);
+			ptg->updateClearance(ox, oy, out_clearance);
 		}
 	}
 }

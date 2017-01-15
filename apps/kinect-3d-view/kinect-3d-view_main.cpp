@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -238,7 +238,7 @@ void Test_Kinect()
 
 				// Normalize the image
 				static CMatrixFloat  range2D;   // Static to save time allocating the matrix in every iteration
-				range2D = last_obs->rangeImage * (1.0/ 5.0); //kinect.getMaxRange());
+				range2D = last_obs->rangeImage * (1.0f/ 5.0f); //kinect.getMaxRange());
 
 				img.setFromMatrix(range2D);
 
@@ -264,7 +264,9 @@ void Test_Kinect()
 				// For alternative ways to generate the 3D point cloud, read:
 				// http://www.mrpt.org/tutorials/programming/miscellaneous/generating_3d_point_clouds_from_rgb_d_observations/
 				win3D.get3DSceneAndLock();
-					last_obs->project3DPointsFromDepthImageInto( *gl_points, false /* without obs.sensorPose */ );
+				mrpt::obs::T3DPointsProjectionParams  pp;
+				pp.takeIntoAccountSensorPoseOnRobot = false;
+				last_obs->project3DPointsFromDepthImageInto( *gl_points, pp );
 				win3D.unlockAccess3DScene();
 #else
 				mrpt::maps::CColouredOctoMap  octoMap(0.10);

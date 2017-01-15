@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -83,7 +83,7 @@ namespace math
 		/** Retuns the elements count into the selected bin index, where first one is 0.
 		 * \exception std::exception On invalid index
 		 */
-		int		getBinCount(const size_t index) const;
+		size_t getBinCount(const size_t index) const;
 
 		/** Retuns the ratio in [0,1] range for the selected bin index, where first one is 0.
 		 *  It returns 0 if no elements have been added.

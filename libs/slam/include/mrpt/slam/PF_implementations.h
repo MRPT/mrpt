@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -104,7 +104,7 @@ namespace mrpt
 					m_accumRobotMovement2D.rawOdometryIncrementReading,
 					m_accumRobotMovement2D.motionModelConfiguration );
 
-				m_movementDrawer.setPosePDF( theResultingRobotMov.poseChange );  // <--- Set mov. drawer
+				m_movementDrawer.setPosePDF( theResultingRobotMov.poseChange.get_ptr() );  // <--- Set mov. drawer
 				m_accumRobotMovement2DIsValid = false; // Reset odometry for next iteration
 			}
 			return true;
@@ -169,7 +169,7 @@ namespace mrpt
 					// If there is no 2D action, look for a 3D action:
 					if (robotMovement2D.present())
 					{
-						m_movementDrawer.setPosePDF( robotMovement2D->poseChange );
+						m_movementDrawer.setPosePDF( robotMovement2D->poseChange.get_ptr() );
 						motionModelMeanIncr = robotMovement2D->poseChange->getMeanVal();
 					}
 					else
@@ -199,7 +199,7 @@ namespace mrpt
 						CPose3D finalPose = CPose3D(*getLastPose(i)) + incrPose;
 
 						// Update the particle with the new pose: this part is caller-dependant and must be implemented there:
-						PF_SLAM_implementation_custom_update_particle_with_new_pose( me->m_particles[i].d, TPose3D(finalPose) );
+						PF_SLAM_implementation_custom_update_particle_with_new_pose( me->m_particles[i].d.get(), TPose3D(finalPose) );
 					}
 				}
 				else
@@ -245,7 +245,7 @@ namespace mrpt
 						// Now, look if the particle falls in a new bin or not:
 						// --------------------------------------------------------
 						BINTYPE	p;
-						KLF_loadBinFromParticle<PARTICLE_TYPE,BINTYPE>(p,KLD_options, me->m_particles[drawn_idx].d, &newPose_s);
+						KLF_loadBinFromParticle<PARTICLE_TYPE,BINTYPE>(p,KLD_options, me->m_particles[drawn_idx].d.get(), &newPose_s);
 
 						if (stateSpaceBins.find( p )==stateSpaceBins.end())
 						{
@@ -651,7 +651,7 @@ namespace mrpt
 				{
 					// Load the bin from the path data:
 					BINTYPE	p;
-					KLF_loadBinFromParticle<PARTICLE_TYPE,BINTYPE>(p, KLD_options,partIt->d );
+					KLF_loadBinFromParticle<PARTICLE_TYPE,BINTYPE>(p, KLD_options,partIt->d.get() );
 
 					// Is it a new bin?
 					typename TSetStateSpaceBins::iterator posFound=stateSpaceBinsLastTimestep.find(p);
@@ -673,7 +673,7 @@ namespace mrpt
 				// ------------------------------------------------------------------------------
 				double		delta_1 = 1.0 - KLD_options.KLD_delta;
 				double		epsilon_1 = 0.5 / KLD_options.KLD_epsilon;
-				bool		doResample = me->ESS() < 0.5;
+				bool		doResample = me->ESS() < PF_options.BETA;
 				//double	maxLik = math::maximum(m_pfAuxiliaryPFOptimal_maxLikelihood); // For normalization purposes only
 
 				// The desired dynamic number of m_particles (to be modified dynamically below):
@@ -774,7 +774,7 @@ namespace mrpt
 					// ----------------------------------------------------------------
 					BINTYPE	p;
 					const TPose3D  newPose_s = newPose;
-					KLF_loadBinFromParticle<PARTICLE_TYPE,BINTYPE>( p,KLD_options, me->m_particles[k].d, &newPose_s );
+					KLF_loadBinFromParticle<PARTICLE_TYPE,BINTYPE>( p,KLD_options, me->m_particles[k].d.get(), &newPose_s );
 
 					// -----------------------------------------------------------------------------
 					// Look for the bin "p" into "stateSpaceBins": If it is not yet into the set,

@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -11,6 +11,8 @@
 
 #include <mrpt/utils/utils_defs.h>
 #include <mrpt/system/string_utils.h>
+#include <sstream>
+#include <iomanip>
 
 namespace mrpt
 {
@@ -36,27 +38,16 @@ namespace utils
 		void  writeString(const std::string &section,const std::string &name, const std::string &str, const int name_padding_width, const int value_padding_width, const std::string &comment);
 
 		/** A virtual method to read a generic string.
-         * \exception std::exception If the key name is not found and "failIfNotFound" is true. Otherwise the "defaultValue" is returned.
-		 */
-		virtual std::string  readString(
-            const std::string &section,
-            const std::string &name,
-            const std::string &defaultStr,
-            bool failIfNotFound = false) const = 0;
+		* \exception std::exception If the key name is not found and "failIfNotFound" is true. Otherwise the "defaultValue" is returned. */
+		virtual std::string  readString(const std::string &section,const std::string &name,const std::string &defaultStr,bool failIfNotFound = false) const = 0;
 
 	public:
-        /** Virtual destructor...
-         */
-         virtual ~CConfigFileBase()
-         {
-         }
+		virtual ~CConfigFileBase(); //!< dtor
 
-		/** Returns a list with all the section names.
-		  */
+		/** Returns a list with all the section names. */
 		virtual void getAllSections( vector_string	&sections ) const = 0 ;
 
-		/** Returs a list with all the keys into a section.
-		  */
+		/** Returs a list with all the keys into a section */
 		virtual void getAllKeys( const std::string &section, vector_string	&keys ) const = 0;
 
 		/** Checks if a given section exists (name is case insensitive) */
@@ -64,17 +55,22 @@ namespace utils
 
 		/** @name Save a configuration parameter. Optionally pads with spaces up to the desired width in number of characters (-1: no fill), and add a final comment field at the end of the line (a "// " prefix is automatically inserted).
 		  * @{ */
+		template <typename data_t>
+		void write(const std::string &section, const std::string &name, const data_t &value, const int name_padding_width = -1, const int value_padding_width = -1, const std::string &comment = std::string())
+		{
+			std::stringstream ss; ss.flags(ss.flags() | std::ios::boolalpha);
+			ss << value;
+			writeString(section, name, ss.str(), name_padding_width, value_padding_width, comment);
+		}
+		template <typename data_t>
+		void write(const std::string &section, const std::string &name, const std::vector<data_t> &value, const int name_padding_width = -1, const int value_padding_width = -1, const std::string &comment = std::string())
+		{
+			std::stringstream ss; ss.flags(ss.flags() | std::ios::boolalpha);
+			for (typename std::vector<data_t>::const_iterator it=value.begin();it!=value.end();++it) ss << *it << " ";
+			writeString(section, name, ss.str(), name_padding_width, value_padding_width, comment);
+		}
 		void  write(const std::string &section, const std::string &name, double value, const int name_padding_width=-1, const int value_padding_width=-1, const std::string &comment = std::string() );
 		void  write(const std::string &section, const std::string &name, float value , const int name_padding_width=-1, const int value_padding_width=-1, const std::string &comment = std::string() );
-		void  write(const std::string &section, const std::string &name, int value   , const int name_padding_width=-1, const int value_padding_width=-1, const std::string &comment = std::string() );
-		void  write(const std::string &section, const std::string &name, uint32_t value , const int name_padding_width=-1, const int value_padding_width=-1, const std::string &comment = std::string() );
-		void  write(const std::string &section, const std::string &name, uint64_t value, const int name_padding_width=-1, const int value_padding_width=-1, const std::string &comment = std::string() );
-		void  write(const std::string &section, const std::string &name, const std::string &value        , const int name_padding_width=-1, const int value_padding_width=-1, const std::string &comment = std::string() );
-		void  write(const std::string &section, const std::string &name, const std::vector<int> &value   , const int name_padding_width=-1, const int value_padding_width=-1, const std::string &comment = std::string() );
-		void  write(const std::string &section, const std::string &name, const std::vector<unsigned int> &value, const int name_padding_width=-1, const int value_padding_width=-1, const std::string &comment = std::string() );
-		void  write(const std::string &section, const std::string &name, const std::vector<float> &value , const int name_padding_width=-1, const int value_padding_width=-1, const std::string &comment = std::string() );
-		void  write(const std::string &section, const std::string &name, const std::vector<double> &value, const int name_padding_width=-1, const int value_padding_width=-1, const std::string &comment = std::string() );
-		void  write(const std::string &section, const std::string &name, const std::vector<bool> &value  , const int name_padding_width=-1, const int value_padding_width=-1, const std::string &comment = std::string() );
 		/** @} */
 
 		/** @name Read a configuration parameter, launching exception if key name is not found and `failIfNotFound`=true
@@ -211,6 +207,9 @@ namespace utils
 	} catch (std::exception &) { \
 		THROW_EXCEPTION( mrpt::format( "Value for '%s' not found in config file in section '%s'", static_cast<const char*>(#variableName ), std::string(sectionNameStr).c_str() )); \
 	} }
+
+#define MRPT_LOAD_HERE_CONFIG_VAR_DEGREES(variableName,variableType,targetVariable,configFileObject,sectionNameStr) \
+		targetVariable = mrpt::utils::DEG2RAD( configFileObject.read_##variableType(sectionNameStr,#variableName,mrpt::utils::RAD2DEG(targetVariable),false));
 
 #define MRPT_LOAD_HERE_CONFIG_VAR_DEGREES_NO_DEFAULT(variableName,variableType,targetVariable,configFileObject,sectionNameStr) \
 	{ try { \

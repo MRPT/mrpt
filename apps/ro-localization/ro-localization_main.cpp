@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -336,7 +336,7 @@ void TestParticlesLocalization()
 					opengl::CSpherePtr parts = opengl::CSphere::Create();
 					parts->setColor(1,0,0);
 					parts->setLocation( metricMap.m_landmarksMap->landmarks.get(k)->pose_mean );
-					parts->setRadius(0.2);
+					parts->setRadius(0.2f);
 
 					parts->setName(format(" B%i",int(k+1)));
 					parts->enableShowName();
@@ -651,8 +651,8 @@ void TestParticlesLocalization()
 									square(dist->sensedData[k].sensedDistance) -
 									square(dist->sensedData[k].sensorLocationOnRobot.z() - lm->pose_mean.z);
 
-								if (R>0) R=sqrt(R); else R=0.08;
-								sphere->setDiskRadius(R+0.08, R-0.08);
+								if (R>0) R=sqrt(R); else R=0.08f;
+								sphere->setDiskRadius(R+0.08f, R-0.08f);
 
 								if( !obj.present() )
 								{
@@ -677,7 +677,7 @@ void TestParticlesLocalization()
 						else
 							sphere = opengl::CSpherePtr(obj);
 						sphere->setColor(0,1,0);
-						sphere->setRadius(0.05);
+						sphere->setRadius(0.05f);
 						sphere->setName( "franc");
 
 						CObservationBeaconRangesPtr dist= observations->getObservationByClass<CObservationBeaconRanges>();
@@ -712,7 +712,7 @@ void TestParticlesLocalization()
 						opengl::CSpherePtr sphere = opengl::CSphere::Create();
 	#endif
 						sphere->setColor( 0,0,1);
-						sphere->setRadius(0.05);
+						sphere->setRadius(0.05f);
 						sphere->setName( "mean_parts" );
 
 						sphere->setLocation( pdfEstimation.x(), pdfEstimation.y(), 0.05);
@@ -741,7 +741,7 @@ void TestParticlesLocalization()
 						opengl::CSpherePtr sphere = opengl::CSphere::Create();
 	#endif
 						sphere->setColor(0,0,0);
-						sphere->setRadius(0.10);
+						sphere->setRadius(0.10f);
 						sphere->setName("GT");
 
 						sphere->setLocation(GT_Pose.x(), GT_Pose.y(), 0.05);

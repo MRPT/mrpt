@@ -110,8 +110,8 @@ object CObservationOdometry_to_ROS_RawOdometry_msg(CObservationOdometry &self, s
     // set data
     raw_odometry_msg.attr("encoder_left_ticks") = self.encoderLeftTicks;
     raw_odometry_msg.attr("encoder_right_ticks") = self.encoderRightTicks;
-    raw_odometry_msg.attr("velocity_lin") = self.velocityLin;
-    raw_odometry_msg.attr("velocity_ang") = self.velocityAng;
+    raw_odometry_msg.attr("velocity_lin") = self.velocityLocal.vx;
+    raw_odometry_msg.attr("velocity_ang") = self.velocityLocal.omega;
     return raw_odometry_msg;
 }
 
@@ -125,8 +125,9 @@ void CObservationOdometry_from_ROS_RawOdometry_msg(CObservationOdometry &self, o
     // set data
     self.encoderLeftTicks = extract<int>(raw_odometry_msg.attr("encoder_left_ticks"));
     self.encoderRightTicks = extract<int>(raw_odometry_msg.attr("encoder_right_ticks"));
-    self.velocityLin = extract<float>(raw_odometry_msg.attr("velocity_lin"));
-    self.velocityAng = extract<float>(raw_odometry_msg.attr("velocity_ang"));
+    self.velocityLocal.vx = extract<float>(raw_odometry_msg.attr("velocity_lin"));
+		self.velocityLocal.vy = 0;
+    self.velocityLocal.omega = extract<float>(raw_odometry_msg.attr("velocity_ang"));
 }
 #endif
 // end of CObservationOdometry
@@ -274,8 +275,6 @@ void export_obs()
 
     // CActionCollection
     {
-        MAKE_PTR(CActionCollection)
-
         class_<CActionCollection>("CActionCollection", init<>())
             .def("clear", &CActionCollection::clear, "Erase all actions from the list.")
             .def("insert", &CActionCollection::insert, "Add a new object to the list.")
@@ -320,7 +319,7 @@ void export_obs()
             // TMotionModelOptions
             scope s = class_<CActionRobotMovement2D::TMotionModelOptions>("TMotionModelOptions", init<>())
                 .def_readwrite("modelSelection", &CActionRobotMovement2D::TMotionModelOptions::modelSelection)
-                .def_readwrite("gausianModel", &CActionRobotMovement2D::TMotionModelOptions::gausianModel)
+                .def_readwrite("gaussianModel", &CActionRobotMovement2D::TMotionModelOptions::gaussianModel)
                 .def_readwrite("thrunModel", &CActionRobotMovement2D::TMotionModelOptions::thrunModel)
             ;
 
@@ -372,8 +371,7 @@ void export_obs()
             .def_readwrite("encoderLeftTicks", &CObservationOdometry::encoderLeftTicks)
             .def_readwrite("encoderRightTicks", &CObservationOdometry::encoderRightTicks)
             .def_readwrite("hasVelocities", &CObservationOdometry::hasVelocities)
-            .def_readwrite("velocityLin", &CObservationOdometry::velocityLin)
-            .def_readwrite("velocityAng", &CObservationOdometry::velocityAng)
+			.def_readwrite("velocityLocal", &CObservationOdometry::velocityLocal)
             MAKE_CREATE(CObservationOdometry)
 #ifdef ROS_EXTENSIONS
             .def("to_ROS_RawOdometry_msg", &CObservationOdometry_to_ROS_RawOdometry_msg, "Convert to ROS pymrpt_msgs/RawOdometry.")

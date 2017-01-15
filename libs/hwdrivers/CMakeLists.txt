@@ -4,8 +4,6 @@
 
 # Build xSens MT3?
 IF(CMAKE_MRPT_HAS_xSENS_MT3)
-	SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -pthread")
-
 	LIST(APPEND hwdrivers_EXTRA_SRCS
 		"${MRPT_LIBS_ROOT}/hwdrivers/src/xSens_MT3/*.cpp"
 		"${MRPT_LIBS_ROOT}/hwdrivers/src/xSens_MT3/*.h"
@@ -152,6 +150,13 @@ IF(CMAKE_MRPT_HAS_LIBPCAP)
 	INCLUDE_DIRECTORIES(${PCAP_INCLUDE_DIR})
 ENDIF()
 
+# We need pthread's
+if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR CMAKE_COMPILER_IS_GNUCXX)
+	IF (UNIX OR APPLE)
+		SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
+		SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -pthread")
+	ENDIF()
+endif()
 
 # Macro declared in "DeclareMRPTLib.cmake":
 define_mrpt_lib(
@@ -165,6 +170,8 @@ define_mrpt_lib(
 	mrpt-opengl  # needed by mrpt-gui
 	mrpt-maps # needed by laser preview
 	mrpt-vision  # needed to stereo rectification
+	#
+	mrpt-graphs  # dep of mrpt-maps
 	)
 
 IF(BUILD_mrpt-hwdrivers)
@@ -321,8 +328,12 @@ IF(BUILD_mrpt-hwdrivers)
 
 	# Ignore precompiled headers in RPLIDAR sources:
 	IF(CMAKE_MRPT_HAS_ROBOPEAK_LIDAR)
-		IF(MRPT_ENABLE_PRECOMPILED_HDRS AND MSVC)
-			set_source_files_properties(${RoboPeakLidar_FILES} PROPERTIES COMPILE_FLAGS "/Y-")
+		IF(MSVC)
+			set(flags_set "/DWIN64")
+			IF(MRPT_ENABLE_PRECOMPILED_HDRS)
+				set(flags_set "${flags_set} /Y-")
+			ENDIF()
+			set_source_files_properties(${RoboPeakLidar_FILES} PROPERTIES COMPILE_FLAGS "${flags_set}")
 		ENDIF()
 	ENDIF()
 

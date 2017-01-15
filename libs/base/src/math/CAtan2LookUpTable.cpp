@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -27,7 +27,9 @@ CAtan2LookUpTable::CAtan2LookUpTable(double xmin,double xmax,double ymin,double 
 void CAtan2LookUpTable::resize(double xmin,double xmax,double ymin,double ymax, double resolution) MRPT_NO_THROWS
 {
 	const double def = .0;
-	m_grid.resize(xmin,xmax,ymin,ymax, def, .0);
+	if (m_grid.getResolution()==resolution)
+	     m_grid.resize(xmin,xmax,ymin,ymax, def, .0);
+	else m_grid.setSize(xmin, xmax, ymin, ymax, resolution, &def);
 	
 	const size_t nx = m_grid.getSizeX(), ny = m_grid.getSizeY();
 

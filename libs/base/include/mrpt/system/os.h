@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -65,11 +65,6 @@ namespace mrpt
 			/** An OS-independent version of fprintf
 			  */
 			int BASE_IMPEXP fprintf(FILE *fil, const char *format, ...)  MRPT_NO_THROWS MRPT_printf_format_check(2,3);
-
-			/** An OS-independent version of fscanf
-			  * \return The number of fields correctly assigned
-			  */
-			//int BASE_IMPEXP fscanf(FILE *fil, const char *format, ...)  MRPT_NO_THROWS MRPT_scanf_format_check(2,3);
 
 			/** An OS-independent version of fclose.
 			  * \exception std::exception On trying to close a NULL file descriptor.
@@ -155,6 +150,9 @@ namespace mrpt
 
 		/** Returns a const ref to a text with the same text that appears at the beginning of each MRPT file (useful for displaying the License text in GUIs) */
 		const std::string BASE_IMPEXP & getMRPTLicense();
+
+		/** Finds the "[MRPT]/share/mrpt/" directory, if available in the system. This searches in (1) source code tree, (2) install target paths. */
+		std::string BASE_IMPEXP find_mrpt_shared_dir();
 
 		/** For use in  setConsoleColor */
 		enum TConsoleColor

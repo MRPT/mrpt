@@ -2,7 +2,7 @@
 |                     Mobile Robot Programming Toolkit (MRPT)               |
 |                          http://www.mrpt.org/                             |
 |                                                                           |
-| Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+| Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
 | See: http://www.mrpt.org/Authors - All rights reserved.                   |
 | Released under BSD License. See details in http://www.mrpt.org/License    |
 +---------------------------------------------------------------------------+ */
@@ -19,7 +19,7 @@
 #include <wx/intl.h>
 #include <wx/font.h>
 //*)
-#include "../wx-common/wx28-fixes.h"
+#include <mrpt/gui/wx28-fixes.h>
 
 using namespace std;
 using namespace mrpt;
@@ -58,6 +58,10 @@ BEGIN_EVENT_TABLE(CDlgPoseEst,wxDialog)
 //(*EventTable(CDlgPoseEst)
 //*)
 END_EVENT_TABLE()
+
+CDlgPoseEst::CPNP_PTR pose_algos[9] = {
+	&mrpt::vision::pnp::CPnP::epnp, &mrpt::vision::pnp::CPnP::dls, &mrpt::vision::pnp::CPnP::upnp, &mrpt::vision::pnp::CPnP::p3p, &mrpt::vision::pnp::CPnP::lhm, &mrpt::vision::pnp::CPnP::posit, &mrpt::vision::pnp::CPnP::ppnp, &mrpt::vision::pnp::CPnP::rpnp, &mrpt::vision::pnp::CPnP::so3 }
+;
 
 CDlgPoseEst::CDlgPoseEst(wxWindow* parent,wxWindowID id,const wxPoint& pos,const wxSize& size)
 {

@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -42,7 +42,7 @@ CSemaphore::CSemaphore(
 
 	m_data.resize( sizeof(HANDLE) );
 
-	* m_data.getAs<HANDLE*>() = hSem;
+	* m_data.getAsPtr<HANDLE>() = hSem;
 
 	MRPT_END
 }
@@ -54,7 +54,7 @@ CSemaphore::~CSemaphore()
 {
 	if (m_data.alias_count()==1)
 	{
-		CloseHandle( * m_data.getAs<HANDLE*>() );
+		CloseHandle( * m_data.getAsPtr<HANDLE>() );
 	}
 }
 
@@ -68,7 +68,7 @@ bool CSemaphore::waitForSignal( unsigned int timeout_ms )
 	MRPT_START
 
 	DWORD tim = (timeout_ms==0) ? INFINITE : timeout_ms;
-	DWORD ret = WaitForSingleObject( * m_data.getAs<HANDLE*>(), tim );
+	DWORD ret = WaitForSingleObject( * m_data.getAsPtr<HANDLE>(), tim );
 
 	return (ret==WAIT_OBJECT_0);
 
@@ -83,7 +83,7 @@ void CSemaphore::release(unsigned int increaseCount )
 	MRPT_START
 
 	if (!ReleaseSemaphore(
-		*m_data.getAs<HANDLE*>(),		// handle of the semaphore object
+		*m_data.getAsPtr<HANDLE>(),		// handle of the semaphore object
 		increaseCount,		// amount to add to current count
 		NULL ))				// address of previous count
 			THROW_EXCEPTION("Error increasing semaphore count!");

@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -17,18 +17,17 @@
 #include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/utils/TEnumType.h>
 #include <mrpt/maps/CMetricMap.h>
-#include <mrpt/maps/COccupancyGridMap2D.h>
+#include <mrpt/graphs/ScalarFactorGraph.h>
 
 #include <mrpt/maps/link_pragmas.h>
-#if EIGEN_VERSION_AT_LEAST(3,1,0) // eigen 3.1+
-	#include <Eigen/SparseCore>
-	#include <Eigen/SparseCholesky>
-#endif
+#include <list>
 
 namespace mrpt
 {
 namespace maps
 {
+	class COccupancyGridMap2D;
+
 	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CRandomFieldGridMap2D , CMetricMap, MAPS_IMPEXP )
 
 	// Pragma defined to ensure no structure packing: since we'll serialize TRandomFieldCell to streams, we want it not to depend on compiler options, etc.
@@ -96,10 +95,10 @@ namespace maps
 	  *		- `mrKalmanFilter`: A "brute-force" approach to estimate the entire map with a dense (linear) Kalman filter. Will be very slow for mid or large maps. It's provided just for comparison purposes, not useful in practice.
 	  *		- `mrKalmanApproximate`: A compressed/sparse Kalman filter approach. See:
 	  *			- "A Kalman Filter Based Approach to Probabilistic Gas Distribution Mapping", JL Blanco, JG Monroy, J Gonzalez-Jimenez, A Lilienthal, 28th Symposium On Applied Computing (SAC), 2013.
-	  *		- `mrGMRF_G` and `mrGMRF_SD`: A Gaussian Markov Random Field (GMRF) estimator, with these constraints:
-	  *			- `mrGMRF_G`: Each cell connected to a square area of neighbors cells.
+	  *		- `mrGMRF_SD`: A Gaussian Markov Random Field (GMRF) estimator, with these constraints:
 	  *			- `mrGMRF_SD`: Each cell only connected to its 4 immediate neighbors (Up, down, left, right).
-	  *			- See papers: 
+	  *			- (Removed in MRPT 1.5.0: `mrGMRF_G`: Each cell connected to a square area of neighbors cells)
+	  *			- See papers:
 	  *				- "Time-variant gas distribution mapping with obstacle information", Monroy, J. G., Blanco, J. L., & Gonzalez-Jimenez, J. Autonomous Robots, 40(1), 1-16, 2016.
 	  *
 	  *  Note that this class is virtual, since derived classes still have to implement:
@@ -107,17 +106,21 @@ namespace maps
 	  *		- mrpt::maps::CMetricMap::internal_insertObservation()
 	  *		- Serialization methods: writeToStream() and readFromStream()
 	  *
+	  * [GMRF only] A custom connectivity pattern between cells can be defined by calling setCellsConnectivity().
+	  *
 	  * \sa mrpt::maps::CGasConcentrationGridMap2D, mrpt::maps::CWirelessPowerGridMap2D, mrpt::maps::CMetricMap, mrpt::utils::CDynamicGrid, The application icp-slam, mrpt::maps::CMultiMetricMap
 	  * \ingroup mrpt_maps_grp
 	  */
-	class CRandomFieldGridMap2D : public mrpt::maps::CMetricMap, public utils::CDynamicGrid<TRandomFieldCell>
+	class CRandomFieldGridMap2D : 
+		public mrpt::maps::CMetricMap, 
+		public mrpt::utils::CDynamicGrid<TRandomFieldCell>,
+		public mrpt::utils::COutputLogger
 	{
 		typedef utils::CDynamicGrid<TRandomFieldCell> BASE;
 
 		// This must be added to any CSerializable derived class:
 		DEFINE_VIRTUAL_SERIALIZABLE( CRandomFieldGridMap2D )
 	public:
-		static bool ENABLE_GMRF_PROFILER; //!< [default:false] Enables a profiler to show a performance report at application end.
 
 		/** Calls the base CMetricMap::clear
 		  * Declared here to avoid ambiguity between the two clear() in both base classes.
@@ -139,7 +142,7 @@ namespace maps
 			mrKalmanFilter,  //!< "Brute-force" Kalman filter (see discussion in mrpt::maps::CRandomFieldGridMap2D)
 			mrKalmanApproximate, //!< (see discussion in mrpt::maps::CRandomFieldGridMap2D)
 			mrKernelDMV,     //!< Double mean + variance Gaussian kernel-based estimator (see discussion in mrpt::maps::CRandomFieldGridMap2D)
-			mrGMRF_G,   //!< Gaussian Markov Random Field, Gaussian prior weights between neighboring cells up to a certain distance (see discussion in mrpt::maps::CRandomFieldGridMap2D)
+			// Removed in MRPT 1.5.0: mrGMRF_G,   //!< Gaussian Markov Random Field, Gaussian prior weights between neighboring cells up to a certain distance (see discussion in mrpt::maps::CRandomFieldGridMap2D)
 			mrGMRF_SD   //!< Gaussian Markov Random Field, squared differences prior weights between 4 neighboring cells (see discussion in mrpt::maps::CRandomFieldGridMap2D)
 		};
 
@@ -208,21 +211,19 @@ namespace maps
 			uint16_t	KF_W_size;	//!< [mrKalmanApproximate] The size of the window of neighbor cells.
 			/** @} */
 
-			/** @name Gaussian Markov Random Fields methods (mrGMRF_G & mrGMRF_SD)
+			/** @name Gaussian Markov Random Fields methods (mrGMRF_SD)
 			    @{ */
 			double GMRF_lambdaPrior;		//!< The information (Lambda) of fixed map constraints
 			double GMRF_lambdaObs;			//!< The initial information (Lambda) of each observation (this information will decrease with time)
 			double GMRF_lambdaObsLoss;		//!< The loss of information of the observations with each iteration
 			
-			bool GMRF_use_occupancy_information;	//!< whether to use information of an occupancy_gridmap map for buidling the GMRF
+			bool GMRF_use_occupancy_information;	//!< whether to use information of an occupancy_gridmap map for building the GMRF
 			std::string GMRF_simplemap_file;		//!< simplemap_file name of the occupancy_gridmap
 			std::string GMRF_gridmap_image_file;	//!< image name of the occupancy_gridmap
 			double GMRF_gridmap_image_res;			//!< occupancy_gridmap resolution: size of each pixel (m)
 			size_t GMRF_gridmap_image_cx;			//!< Pixel coordinates of the origin for the occupancy_gridmap
 			size_t GMRF_gridmap_image_cy;			//!< Pixel coordinates of the origin for the occupancy_gridmap
 
-			uint16_t  GMRF_constraintsSize;	//!< [mrGMRF_G only] The size of the Gaussian window to impose fixed restrictions between cells.
-			double    GMRF_constraintsSigma;  //!< [mrGMRF_G only] The sigma of the Gaussian window to impose fixed restrictions between cells.
 			double    GMRF_saturate_min, GMRF_saturate_max; //!< (Default:-inf,+inf) Saturate the estimated mean in these limits
 			bool      GMRF_skip_variance;     //!< (Default:false) Skip the computation of the variance, just compute the mean
 			/** @} */
@@ -231,8 +232,30 @@ namespace maps
 		/** Changes the size of the grid, maintaining previous contents. \sa setSize */
 		virtual void  resize(double new_x_min, double new_x_max, double new_y_min, double new_y_max, const TRandomFieldCell& defaultValueNewCells, double additionalMarginMeters = 1.0f ) MRPT_OVERRIDE;
 
-		/** Changes the size of the grid, erasing previous contents. \sa resize */
+		/** Changes the size of the grid, erasing previous contents. 
+		  *  \param[in] connectivity_descriptor Optional user-supplied object that will visit all grid cells to define their connectivity with neighbors and the strength of existing edges. If present, it overrides all options in insertionOptions
+		  * \sa resize 
+		  */
 		virtual void setSize(const double x_min, const double x_max, const double y_min, const double y_max, const double resolution, const TRandomFieldCell * fill_value = NULL);
+
+		/** Base class for user-supplied objects capable of describing cells connectivity, used to build prior factors of the MRF graph. \sa setCellsConnectivity() */
+		struct MAPS_IMPEXP ConnectivityDescriptor
+		{
+			/** Implement the check of whether node i=(icx,icy) is connected with node j=(jcx,jcy). 
+			  * This visitor method will be called only for immediate neighbors.
+			  * \return true if connected (and the "information" value should be also updated in out_edge_information), false otherwise.
+			  */
+			virtual bool getEdgeInformation(
+				const CRandomFieldGridMap2D *parent,  //!< The parent map on which we are running
+				size_t icx, size_t icy,               //!< (cx,cy) for node "i"
+				size_t jcx, size_t jcy,               //!< (cx,cy) for node "j"
+				double &out_edge_information          //!< Must output here the inverse of the variance of the constraint edge.
+			) = 0;
+		};
+		typedef stlplus::smart_ptr<ConnectivityDescriptor> ConnectivityDescriptorPtr;
+
+		/** Sets a custom object to define the connectivity between cells. Must call clear() or setSize() afterwards for the changes to take place. */
+		void setCellsConnectivity(const ConnectivityDescriptorPtr &new_connectivity_descriptor);
 
 		/** See docs in base class: in this class this always returns 0 */
 		float compute3DMatchingRatio(const mrpt::maps::CMetricMap *otherMap, const mrpt::poses::CPose3D &otherMapPose, const TMatchingRatioParams &params) const MRPT_OVERRIDE;
@@ -266,7 +289,8 @@ namespace maps
 			const double sensorReading,          //!< [in] The value observed in the (x,y) position
 			const mrpt::math::TPoint2D & point,  //!< [in] The (x,y) location
 			const bool update_map = true,        //!< [in] Run a global map update after inserting this observatin (algorithm-dependant)
-			const bool time_invariant = true     //!< [in] Whether the observation "vanishes" with time (false) or not (true) [Only for GMRF methods]
+			const bool time_invariant = true,     //!< [in] Whether the observation "vanishes" with time (false) or not (true) [Only for GMRF methods]
+			const double reading_stddev = .0      //!< [in] The uncertainty (standard deviation) of the reading. Default="0.0" means use the default settings per map-wide parameters.
 			);
 
 		enum TGridInterpolationMethod {
@@ -295,11 +319,13 @@ namespace maps
 
 		void updateMapEstimation(); //!< Run the method-specific procedure required to ensure that the mean & variances are up-to-date with all inserted observations.
 
-		void enableVerbose(bool enable_verbose) { m_rfgm_verbose = enable_verbose; }
-		bool isEnabledVerbose() const { return m_rfgm_verbose; }
+		void enableVerbose(bool enable_verbose) { this->setMinLoggingLevel(mrpt::utils::LVL_DEBUG); }
+		bool isEnabledVerbose() const { return this->getMinLoggingLevel()== mrpt::utils::LVL_DEBUG; }
+
+		void enableProfiler(bool enable = true) { this->m_gmrf.enableProfiler(enable); }
+		bool isProfilerEnabled() const { return this->m_gmrf.isProfilerEnabled() ; }
 
 	protected:
-		bool m_rfgm_verbose; //!< Enable verbose debug output for Random Field grid map operations (Default: false)
 		bool m_rfgm_run_update_upon_clear;
 
 		/** Common options to all random-field grid maps: pointer that is set to the derived-class instance of "insertOptions" upon construction of this class. */
@@ -327,30 +353,41 @@ namespace maps
 		size_t              m_average_normreadings_count;
 		/** @} */
 
-		/** @name Auxiliary vars for GMRF method
-		    @{ */
-#if EIGEN_VERSION_AT_LEAST(3,1,0)
-		std::vector<Eigen::Triplet<double> >  H_prior;	// the prior part of H
-#endif
-		Eigen::VectorXd g;								// Gradient vector
-		size_t nPriorFactors;							// L
-		size_t nObsFactors;								// M
-		size_t nFactors;								// L+M
-		std::multimap<size_t,size_t> cell_interconnections;		//Store the interconnections (relations) of each cell with its neighbourds
+		ConnectivityDescriptorPtr m_gmrf_connectivity; //!< Empty: default
 
-		std::vector<float> gauss_val;					// For factor Weigths (only for mrGMRF_G)
+		mrpt::graphs::ScalarFactorGraph  m_gmrf;
 
-		struct TobservationGMRF
+		struct TObservationGMRF : public mrpt::graphs::ScalarFactorGraph::UnaryFactorVirtualBase
 		{
-			double obsValue;
-			double Lambda;
-			bool   time_invariant;						//if the observation will lose weight (lambda) as time goes on (default false)
+			double obsValue;       //!< Observation value
+			double Lambda;         //!< "Information" of the observation (=inverse of the variance)
+			bool   time_invariant; //!< whether the observation will lose weight (lambda) as time goes on (default false)
+
+			double evaluateResidual() const MRPT_OVERRIDE;
+			double getInformation() const  MRPT_OVERRIDE;
+			void evalJacobian(double &dr_dx) const MRPT_OVERRIDE;
+
+			TObservationGMRF( CRandomFieldGridMap2D &parent ) : obsValue(.0), Lambda(.0), time_invariant(false), m_parent(&parent) {}
+		private:
+			CRandomFieldGridMap2D *m_parent;
 		};
 
-		std::vector<std::vector<TobservationGMRF> > activeObs;		//Vector with the active observations and their respective Information
+		struct TPriorFactorGMRF : public mrpt::graphs::ScalarFactorGraph::BinaryFactorVirtualBase
+		{
+			double Lambda;         //!< "Information" of the observation (=inverse of the variance)
 
+			double evaluateResidual() const MRPT_OVERRIDE;
+			double getInformation() const MRPT_OVERRIDE;
+			void evalJacobian(double &dr_dx_i, double &dr_dx_j) const MRPT_OVERRIDE;
+			
+			TPriorFactorGMRF(CRandomFieldGridMap2D &parent) : Lambda(.0), m_parent(&parent) {}
+		private:
+			CRandomFieldGridMap2D *m_parent;
+		};
 
-		/** @} */
+		// Important: converted to a std::list<> so pointers are NOT invalidated upon deletion.
+		std::vector<std::list<TObservationGMRF> > m_mrf_factors_activeObs; //!< Vector with the active observations and their respective Information
+		std::deque<TPriorFactorGMRF>               m_mrf_factors_priors; //!< Vector with the precomputed priors for each GMRF model
 
 		/** The implementation of "insertObservation" for Achim Lilienthal's map models DM & DM+V.
 		  * \param normReading Is a [0,1] normalized concentration reading.
@@ -382,7 +419,7 @@ namespace maps
 		  * \param normReading Is a [0,1] normalized concentration reading.
 		  * \param point Is the sensor location on the map
 		  */
-		void  insertObservation_GMRF(double normReading,const mrpt::math::TPoint2D &point, const bool update_map,const bool time_invariant);
+		void  insertObservation_GMRF(double normReading,const mrpt::math::TPoint2D &point, const bool update_map,const bool time_invariant, const double reading_information);
 
 		/** solves the minimum quadratic system to determine the new concentration of each cell */
 		void  updateMapEstimation_GMRF();
@@ -435,7 +472,6 @@ namespace maps
 				m_map.insert(maps::CRandomFieldGridMap2D::mrKalmanFilter,      "mrKalmanFilter");
 				m_map.insert(maps::CRandomFieldGridMap2D::mrKalmanApproximate, "mrKalmanApproximate");
 				m_map.insert(maps::CRandomFieldGridMap2D::mrKernelDMV,         "mrKernelDMV");
-				m_map.insert(maps::CRandomFieldGridMap2D::mrGMRF_G,			   "mrGMRF_G");
 				m_map.insert(maps::CRandomFieldGridMap2D::mrGMRF_SD,		   "mrGMRF_SD");
 			}
 		};

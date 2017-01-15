@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -51,14 +51,48 @@ CTimeLogger::~CTimeLogger()
         dumpAllStats();
 }
 
+CTimeLogger::CTimeLogger(const CTimeLogger&o) :
+	COutputLogger(o),
+	m_enabled(o.m_enabled),
+	m_name(o.m_name),
+	m_data(o.m_data)
+{
+}
+CTimeLogger &CTimeLogger::operator =(const CTimeLogger&o)
+{
+	COutputLogger::operator=(o);
+	m_enabled = o.m_enabled;
+	m_name = o.m_name;
+	m_data = o.m_data;
+	return *this;
+}
+#if MRPT_HAS_CXX11
+CTimeLogger::CTimeLogger(CTimeLogger&&o) :
+	COutputLogger(o),
+	m_enabled(o.m_enabled),
+	m_name(o.m_name),
+	m_data(o.m_data)
+{
+}
+CTimeLogger &CTimeLogger::operator =(CTimeLogger&&o)
+{
+	COutputLogger::operator=(o);
+	m_enabled = o.m_enabled;
+	m_name = o.m_name;
+	m_data = o.m_data;
+	return *this;
+}
+#endif
+
+
 void CTimeLogger::clear(bool deep_clear)
 {
 	if (deep_clear)
 		m_data.clear();
 	else
 	{
-		for (map<string,TCallData>::iterator i=m_data.begin();i!=m_data.end();++i)
-			i->second = TCallData();
+		for (auto &e : m_data)
+			e.second = TCallData();
 	}
 }
 
@@ -78,15 +112,15 @@ std::string  aux_format_string_multilines(const std::string &s, const size_t len
 void CTimeLogger::getStats(std::map<std::string,TCallStats> &out_stats) const
 {
 	out_stats.clear();
-	for (map<string,TCallData>::const_iterator i=m_data.begin();i!=m_data.end();++i)
+	for (const auto e : m_data)
 	{
-		TCallStats &cs = out_stats[i->first];
-		cs.min_t   = i->second.min_t;
-		cs.max_t   = i->second.max_t;
-		cs.total_t = i->second.mean_t;
-		cs.mean_t  = i->second.n_calls ? i->second.mean_t/i->second.n_calls : 0;
-		cs.n_calls = i->second.n_calls;
-		cs.last_t  = i->second.last_t;
+		TCallStats &cs = out_stats[e.first];
+		cs.min_t   = e.second.min_t;
+		cs.max_t   = e.second.max_t;
+		cs.total_t = e.second.mean_t;
+		cs.mean_t  = e.second.n_calls ? e.second.mean_t/ e.second.n_calls : 0;
+		cs.n_calls = e.second.n_calls;
+		cs.last_t  = e.second.last_t;
 	}
 }
 
@@ -116,20 +150,20 @@ std::string CTimeLogger::getStatsAsText(const size_t column_width)  const
 	stats_text += bottom_header + "\n";
 
 	// for all the timed sections
-	for (map<string,TCallData>::const_iterator i=m_data.begin();i!=m_data.end();++i)
+	for (const auto i : m_data)
 	{
-		const string sMinT   = unitsFormat(i->second.min_t,1,false);
-		const string sMaxT   = unitsFormat(i->second.max_t,1,false);
-		const string sTotalT = unitsFormat(i->second.mean_t,1,false);
-		const string sMeanT  = unitsFormat(i->second.n_calls ? i->second.mean_t/i->second.n_calls : 0,1,false);
+		const string sMinT   = unitsFormat(i.second.min_t,1,false);
+		const string sMaxT   = unitsFormat(i.second.max_t,1,false);
+		const string sTotalT = unitsFormat(i.second.mean_t,1,false);
+		const string sMeanT  = unitsFormat(i.second.n_calls ? i.second.mean_t/i.second.n_calls : 0,1,false);
 
 		stats_text+=format("%s %7u %6s%c %6s%c %6s%c %6s%c\n",
-			aux_format_string_multilines(i->first,39).c_str(),
-			static_cast<unsigned int>(i->second.n_calls),
-			sMinT.c_str(), i->second.has_time_units ? 's':' ',
-			sMeanT.c_str(),i->second.has_time_units ? 's':' ',
-			sMaxT.c_str(),i->second.has_time_units ? 's':' ',
-			sTotalT.c_str(),i->second.has_time_units ? 's':' ' );
+			aux_format_string_multilines(i.first,39).c_str(),
+			static_cast<unsigned int>(i.second.n_calls),
+			sMinT.c_str(), i.second.has_time_units ? 's':' ',
+			sMeanT.c_str(),i.second.has_time_units ? 's':' ',
+			sMaxT.c_str(),i.second.has_time_units ? 's':' ',
+			sTotalT.c_str(),i.second.has_time_units ? 's':' ' );
 	}
 
 	std::string footer(top_header);
@@ -142,16 +176,16 @@ void CTimeLogger::saveToCSVFile(const std::string &csv_file)  const
 {
 	std::string s;
 	s+="FUNCTION, #CALLS, LAST.T, MIN.T, MEAN.T, MAX.T, TOTAL.T\n";
-	for (map<string,TCallData>::const_iterator i=m_data.begin();i!=m_data.end();++i)
+	for (const auto &i : m_data)
 	{
 		s+=format("\"%s\",\"%7u\",\"%e\",\"%e\",\"%e\",\"%e\",\"%e\"\n",
-			i->first.c_str(),
-			static_cast<unsigned int>(i->second.n_calls),
-			i->second.last_t,
-			i->second.min_t,
-			i->second.n_calls ? i->second.mean_t/i->second.n_calls : 0,
-			i->second.max_t,
-			i->second.mean_t );
+			i.first.c_str(),
+			static_cast<unsigned int>(i.second.n_calls),
+			i.second.last_t,
+			i.second.min_t,
+			i.second.n_calls ? i.second.mean_t/i.second.n_calls : 0,
+			i.second.max_t,
+			i.second.mean_t );
 	}
 	CFileOutputStream(csv_file).printf("%s",s.c_str() );
 }
@@ -233,14 +267,14 @@ CTimeLogger::TCallData::TCallData() :
 
 double CTimeLogger::getMeanTime(const std::string &name)  const
 {
-	map<string,TCallData>::const_iterator it = m_data.find(name);
+	TDataMap::const_iterator it = m_data.find(name);
 	if (it==m_data.end())
 		 return 0;
 	else return it->second.n_calls ? it->second.mean_t/it->second.n_calls : 0;
 }
 double CTimeLogger::getLastTime(const std::string &name) const
 {
-	map<string, TCallData>::const_iterator it = m_data.find(name);
+	TDataMap::const_iterator it = m_data.find(name);
 	if (it == m_data.end())
 		return 0;
 	else return it->second.last_t;

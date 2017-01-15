@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -20,7 +20,7 @@ namespace maps
 {
 	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CHeightGridMap2D_MRF , CRandomFieldGridMap2D, MAPS_IMPEXP )
 
-	/** CHeightGridMap2D_MRF represents a PDF of gas concentrations over a 2D area
+	/** CHeightGridMap2D_MRF represents digital-elevation-model over a 2D area, with uncertainty, based on a Markov-Random-Field (MRF) estimator.
 	  *
 	  *  There are a number of methods available to build the gas grid-map, depending on the value of
 	  *    "TMapRepresentation maptype" passed in the constructor (see base class mrpt::maps::CRandomFieldGridMap2D).
@@ -40,11 +40,9 @@ namespace maps
 		CHeightGridMap2D_MRF(
 			TMapRepresentation	mapType = mrGMRF_SD,
 			double x_min = -2, double x_max = 2,
-			double y_min = -2, double y_max = 2, double resolution = 0.1,
+			double y_min = -2, double y_max = 2, double resolution = 0.5,
 			bool  run_first_map_estimation_now=true  //!< [in] Whether to call updateMapEstimation(). If false, make sure of calling that function before accessing map contents.
 			);
-
-		virtual ~CHeightGridMap2D_MRF(); //!< Destructor
 
 		/** Parameters related with inserting observations into the map */
 		struct MAPS_IMPEXP TInsertionOptions :

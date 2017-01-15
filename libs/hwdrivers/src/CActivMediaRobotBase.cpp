@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -47,8 +47,8 @@ CActivMediaRobotBase::CActivMediaRobotBase() :
 	m_simpleConnector	(NULL),
 	m_lastTimeSonars	(0),
 	m_enableJoyControl 	(false),
-    m_joy_max_v			(0.20),
-    m_joy_max_w			(DEG2RAD(20)),
+    m_joy_max_v			(0.20f),
+    m_joy_max_w			(DEG2RAD(20.0f)),
 	m_joystick			(),
 	m_last_do_process	(INVALID_TIMESTAMP),
 	m_capture_rate		(10.0)
@@ -362,8 +362,9 @@ void CActivMediaRobotBase::doProcess()
 		obsOdom->encoderLeftTicks = lticks;
 		obsOdom->encoderRightTicks = rticks;
 		obsOdom->hasVelocities = true;
-		obsOdom->velocityLin = vel;
-		obsOdom->velocityAng = w;
+		obsOdom->velocityLocal.vx = vel;
+		obsOdom->velocityLocal.vy = .0;
+		obsOdom->velocityLocal.omega = w;
 
 		this->appendObservation(obsOdom);	// Send to the output queue
 	}

@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -61,6 +61,7 @@ namespace mrpt
 			  *
 			  *  This implementation is highly inspired on Peter Kovesi's MATLAB scripts (http://www.csse.uwa.edu.au/~pk).
 			  * \return false if no good solution can be found, true on success.
+			  * \note [MRPT 1.5.0] `verbose` parameter has been removed, supersedded by COutputLogger settings.
 			  */
 			bool execute(
 				const CMatrixTemplateNumeric<NUMTYPE>	  &data,
@@ -71,7 +72,6 @@ namespace mrpt
 				const unsigned int			minimumSizeSamplesToFit,
 				mrpt::vector_size_t			&out_best_inliers,
 				CMatrixTemplateNumeric<NUMTYPE> &out_best_model,
-				bool						verbose = false,
 				const double                prob_good_sample = 0.999,
 				const size_t				maxIter = 2000
 				) const;

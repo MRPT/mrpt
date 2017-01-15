@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -13,7 +13,7 @@
 #include <mrpt/utils/CUncopiable.h>
 #include <mrpt/utils/CStream.h>
 #include <string>
-#include <memory> // for auto_ptr<>
+#include <memory> // for auto_ptr<>, unique_ptr<>
 
 namespace mrpt
 {
@@ -27,8 +27,8 @@ namespace mrpt
 		  * Read more on pipes here: http://www.gnu.org/software/libc/manual/html_node/Pipes-and-FIFOs.html
 		  *
 		  *  \code
-		  *    std::auto_ptr<CPipeReadEndPoint>  read_pipe;
-		  *    std::auto_ptr<CPipeWriteEndPoint> write_pipe;
+		  *    std::unique_ptr<CPipeReadEndPoint>  read_pipe;
+		  *    std::unique_ptr<CPipeWriteEndPoint> write_pipe;
 		  *
 		  *    CPipe::createPipe(read_pipe,write_pipe);
 		  *

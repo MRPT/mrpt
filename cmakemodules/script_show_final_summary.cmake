@@ -133,6 +133,7 @@ SHOW_CONFIG_LINE_SYSTEM("GLUT                                " CMAKE_MRPT_HAS_GL
 SHOW_CONFIG_LINE_SYSTEM("PCAP (Wireshark logs for Velodyne)  " CMAKE_MRPT_HAS_LIBPCAP)
 SHOW_CONFIG_LINE_SYSTEM("PCL (Pointscloud library)           " CMAKE_MRPT_HAS_PCL  "[Version: ${PCL_VERSION}]")
 SHOW_CONFIG_LINE("SuiteSparse                         " CMAKE_MRPT_HAS_SUITESPARSE)
+SHOW_CONFIG_LINE("VTK                                 " CMAKE_MRPT_HAS_VTK)
 SHOW_CONFIG_LINE_SYSTEM("wxWidgets                           " CMAKE_MRPT_HAS_WXWIDGETS)
 SHOW_CONFIG_LINE_SYSTEM("zlib (compression)                  " CMAKE_MRPT_HAS_ZLIB)
 SHOW_CONFIG_LINE_SYSTEM("yamlcpp (YAML file format)          " CMAKE_MRPT_HAS_YAMLCPP "[Version: ${LIBYAMLCPP_VERSION}]")
@@ -143,6 +144,7 @@ SHOW_CONFIG_LINE_SYSTEM("Matlab / mex files        " CMAKE_MRPT_HAS_MATLAB "[Ver
 SHOW_CONFIG_LINE("Python bindings (pymrpt)  " CMAKE_MRPT_HAS_PYTHON_BINDINGS)
 SHOW_CONFIG_LINE(" - dep: Boost found?      " Boost_FOUND)
 SHOW_CONFIG_LINE(" - dep: PythonLibs found? " PYTHONLIBS_FOUND)
+SHOW_CONFIG_LINE("ROS1 (ros_comm)           " CMAKE_MRPT_HAS_ROS)
 MESSAGE(STATUS "")
 
 MESSAGE(STATUS " _____________________ HARDWARE & SENSORS _______________________")
@@ -181,4 +183,3 @@ IF (NOT CMAKE_MRPT_HAS_OPENCV AND NOT DISABLE_OPENCV)
 	MESSAGE(STATUS "***********************************************************************")
 	MESSAGE(STATUS "")
 ENDIF(NOT CMAKE_MRPT_HAS_OPENCV AND NOT DISABLE_OPENCV)
-

@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -14,8 +14,38 @@
 #include <sstream> // ostringstream
 #include <stdexcept> // logic_error
 
+/**  MRPT_CHECK_GCC_VERSION(MAJ,MIN) */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+#	define MRPT_CHECK_GCC_VERSION( major, minor ) ( ( __GNUC__ > (major) )  || ( __GNUC__ == (major) && __GNUC_MINOR__ >= (minor) ) )
+#else
+#	define MRPT_CHECK_GCC_VERSION( major, minor ) 0
+#endif
+
+/** MRPT_CHECK_VISUALC_VERSION(Version) Version=8 for 2005, 9=2008, 10=2010, 11=2012, 12=2013, 14=2015 */
+#ifndef _MSC_VER
+#   define MRPT_VISUALC_VERSION(major) 0
+#   define MRPT_CHECK_VISUALC_VERSION(major) 0
+#else
+   /* (From wxWidgets macros):
+   Things used to be simple with the _MSC_VER value and the version number
+   increasing in lock step, but _MSC_VER value of 1900 is VC14 and not the
+   non existing (presumably for the superstitious reasons) VC13, so we now
+   need to account for this with an extra offset.
+   */
+#   define MRPT_VISUALC_VERSION(major) ( (6 + (major >= 14 ? (-1) : 0) + major) * 100 )
+#   define MRPT_CHECK_VISUALC_VERSION(major) ( _MSC_VER >= MRPT_VISUALC_VERSION(major) )
+#endif
+
+#ifndef __has_feature
+#	define __has_feature(x) 0  // Compatibility with non-clang compilers.
+#endif
+#ifndef __has_extension
+#	define __has_extension __has_feature // Compatibility with pre-3.0 compilers.
+#endif
+
+
 /** Does the compiler support C++11? */
-#if (__cplusplus>199711L || (defined(_MSC_VER) && (_MSC_VER >= 1700)) )
+#if (__cplusplus>199711L || MRPT_CHECK_VISUALC_VERSION(11) )
 #	define MRPT_HAS_CXX11  1
 #else
 #	define MRPT_HAS_CXX11  0
@@ -28,27 +58,25 @@
 #	define MRPT_OVERRIDE
 #endif
 
-
-/**  MRPT_CHECK_GCC_VERSION(MAJ,MIN) */
-#if defined(__GNUC__) && defined(__GNUC_MINOR__)
-#	define MRPT_CHECK_GCC_VERSION( major, minor ) ( ( __GNUC__ > (major) )  || ( __GNUC__ == (major) && __GNUC_MINOR__ >= (minor) ) )
+/** C++11 deleted function declarations */
+#if MRPT_CHECK_VISUALC_VERSION(12) || __has_extension(cxx_deleted_functions) || (MRPT_CHECK_GCC_VERSION(4,4) && MRPT_HAS_CXX11)
+#	define MRPT_DELETED_FUNC   =delete
 #else
-#	define MRPT_CHECK_GCC_VERSION( major, minor ) 0
+#	define MRPT_DELETED_FUNC
 #endif
 
-/** MRPT_CHECK_VISUALC_VERSION(Version) */
-#ifndef _MSC_VER
-#   define MRPT_VISUALC_VERSION(major) 0
-#   define MRPT_CHECK_VISUALC_VERSION(major) 0
+/** C++11 noexcept: Used after member declarations */
+#if MRPT_CHECK_VISUALC_VERSION(14) || __has_extension(cxx_noexcept) || (MRPT_CHECK_GCC_VERSION(4,6) && MRPT_HAS_CXX11)
+#	define MRPT_NO_THROWS noexcept
 #else
-/* (From wxWidgets macros):
-Things used to be simple with the _MSC_VER value and the version number
-increasing in lock step, but _MSC_VER value of 1900 is VC14 and not the
-non existing (presumably for the superstitious reasons) VC13, so we now
-need to account for this with an extra offset.
-*/
-#   define MRPT_VISUALC_VERSION(major) ( (6 + (major >= 14 ? 1 : 0) + major) * 100 )
-#   define MRPT_CHECK_VISUALC_VERSION(major) ( _MSC_VER >= MRPT_VISUALC_VERSION(major) )
+#	define MRPT_NO_THROWS  throw()
+#endif
+
+/** C++11 unique_ptr<> */
+#if MRPT_CHECK_VISUALC_VERSION(10) || (MRPT_CHECK_GCC_VERSION(4,4) || defined(__clang__)) && (MRPT_HAS_CXX11 || defined(__GXX_EXPERIMENTAL_CXX0X__))
+#	define MRPT_HAS_UNIQUE_PTR  1
+#else
+#	define MRPT_HAS_UNIQUE_PTR  0
 #endif
 
 // A cross-compiler definition for "deprecated"-warnings
@@ -99,10 +127,6 @@ need to account for this with an extra offset.
 #	define MRPT_scanf_format_check(_FMT_,_VARARGS_)
 #endif
 
-/** Used after member declarations */
-#define MRPT_NO_THROWS		throw()
-
-
 // A cross-compiler definition for aligned memory structures:
 #if defined(_MSC_VER)
 	#define MRPT_ALIGN16 __declspec(align(16))
@@ -116,9 +140,7 @@ need to account for this with an extra offset.
 #endif
 
 /** A macro for obtaining the name of the current function:  */
-#if defined(__BORLANDC__)
-		#define	__CURRENT_FUNCTION_NAME__	__FUNC__
-#elif defined(_MSC_VER) && (_MSC_VER>=1300)
+#if defined(_MSC_VER) && (_MSC_VER>=1300)
 		#define	__CURRENT_FUNCTION_NAME__	__FUNCTION__
 #else
 		#define	__CURRENT_FUNCTION_NAME__	__PRETTY_FUNCTION__
@@ -184,10 +206,10 @@ need to account for this with an extra offset.
  */
 #define THROW_STACKED_EXCEPTION(e)	\
 	{\
-		std::string str( e.what() );\
-		str+= __CURRENT_FUNCTION_NAME__;\
-		str+= mrpt::format(", line %i:\n", __LINE__ );\
-		throw std::logic_error( str );\
+		std::string _tse_str( e.what() );\
+		_tse_str+= __CURRENT_FUNCTION_NAME__;\
+		_tse_str+= mrpt::format(", line %i:\n", __LINE__ );\
+		throw std::logic_error( _tse_str );\
 	}
 
 /** \def THROW_STACKED_EXCEPTION_CUSTOM_MSG
@@ -244,7 +266,7 @@ need to account for this with an extra offset.
 	}
 
 // Static asserts: use compiler version if we have a modern GCC (>=4.3) or MSVC (>=2010) version, otherwise rely on custom implementation:
-#if (defined(_MSC_VER) && (_MSC_VER>=1600 /*VS2010*/)) || (defined(__GNUC__) && __cplusplus>=201100L )
+#if MRPT_CHECK_VISUALC_VERSION(10) || __has_extension(cxx_static_assert) || (MRPT_CHECK_GCC_VERSION(4,3) && MRPT_HAS_CXX11)
 	#define MRPT_COMPILE_TIME_ASSERT(expression) static_assert(expression,#expression);
 #else
 	// The following macro is based on dclib:
@@ -404,9 +426,6 @@ need to account for this with an extra offset.
 #	define MRPT_scanf_format_check(_FMT_,_VARARGS_)
 #endif
 
-
-/** Used after member declarations */
-#define MRPT_NO_THROWS		throw()
 
 /** Tells the compiler we really want to inline that function */
 #if (defined _MSC_VER) || (defined __INTEL_COMPILER)

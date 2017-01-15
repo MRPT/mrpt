@@ -1,7 +1,13 @@
 /*
- * Copyright (c) 2014, RoboPeak
- * All rights reserved.
+ *  RPLIDAR SDK
  *
+ *  Copyright (c) 2009 - 2014 RoboPeak Team
+ *  http://www.robopeak.com
+ *  Copyright (c) 2014 - 2016 Shanghai Slamtec Co., Ltd.
+ *  http://www.slamtec.com
+ *
+ */
+/*
  * Redistribution and use in source and binary forms, with or without 
  * modification, are permitted provided that the following conditions are met:
  *
@@ -24,14 +30,6 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, 
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- */
-/*
- *  RoboPeak LIDAR System
- *  Driver Interface
- *
- *  Copyright 2009 - 2014 RoboPeak Team
- *  http://www.robopeak.com
- * 
  */
 
 #pragma once
@@ -106,27 +104,64 @@ public:
     /// \param timeout       The operation timeout value (in millisecond) for the serial port communication  
     virtual u_result getDeviceInfo(rplidar_response_device_info_t & info, _u32 timeout = DEFAULT_TIMEOUT) = 0;
 
-
-    /// Calculate RPLIDAR's current scanning frequency from the given scan data
-    /// Please refer to the application note doc for details
-    /// Remark: the calculation will be incorrect if the specified scan data doesn't contain enough data
+    /// Get the sample duration information of the RPLIDAR.
+    /// 
+    /// \param rateInfo      The sample duration information returned from the RPLIDAR
     ///
-    /// \param nodebuffer    The buffer belongs to a 360degress scan data
+    /// \param timeout       The operation timeout value (in millisecond) for the serial port communication
+    virtual u_result getSampleDuration_uS(rplidar_response_sample_rate_t & rateInfo, _u32 timeout = DEFAULT_TIMEOUT) = 0;
+    
+    /// Set the RPLIDAR's motor pwm when using accessory board, currently valid for A2 only.
+    /// 
+    /// \param pwm           The motor pwm value would like to set 
+    virtual u_result setMotorPWM(_u16 pwm) = 0;
+
+    /// Start RPLIDAR's motor when using accessory board
+    virtual u_result startMotor() = 0;
+
+    /// Stop RPLIDAR's motor when using accessory board
+    virtual u_result stopMotor() = 0;
+
+    /// Check whether the device support motor control.
+    /// Note: this API will disable grab.
+    /// 
+    /// \param support       Return the result.
+    ///
+    /// \param timeout       The operation timeout value (in millisecond) for the serial port communication. 
+    virtual u_result checkMotorCtrlSupport(bool & support, _u32 timeout = DEFAULT_TIMEOUT) = 0;
+
+    /// Calcuate RPLIDAR's current scanning frequency from the given scan data
+    /// Please refer to the application note doc for details
+    /// Remark: the calcuation will be incorrect if the specified scan data doesn't contains enough data
+    ///
+    /// \param inExpressMode Indicate whether the RPLIDAR is in express mode
     ///
     /// \param count         The number of sample nodes inside the given buffer
     ///
-    //  \param frequency     The scanning frequency (in HZ) calcuated by the interface.
-    virtual u_result getFrequency(rplidar_response_measurement_node_t * nodebuffer, size_t count, float & frequency) = 0;
+    /// \param frequency     The scanning frequency (in HZ) calcuated by the interface.
+    ///
+    /// \param is4kmode      Return whether the RPLIDAR is working on 4k sample rate mode.
+    virtual u_result getFrequency(bool inExpressMode, size_t count, float & frequency, bool & is4kmode) = 0;
 
-    /// Ask the RPLIDAR core system to enter the scan mode
+    /// Ask the RPLIDAR core system to enter the scan mode(Normal/Express, Express mode is 4k mode)
     /// A background thread will be created by the RPLIDAR driver to fetch the scan data continuously.
     /// User Application can use the grabScanData() interface to retrieved the scan data cached previous by this background thread.
     ///
     /// \param force         Force the core system to output scan data regardless whether the scanning motor is rotating or not.
     ///
-    /// \param timeout       The operation timeout value (in millisecond) for the serial port communication 
-    virtual u_result startScan(bool force = false, _u32 timeout = DEFAULT_TIMEOUT) = 0;
+    /// \param autoExpressMode Force the core system to trying express mode first, if the system does not support express mode, it will use normal mode.
+    ///
+    /// \param timeout       The operation timeout value (in millisecond) for the serial port communication.
+    virtual u_result startScan(bool force = false, bool autoExpressMode = true) = 0;
+    virtual u_result startScanNormal(bool force, _u32 timeout = DEFAULT_TIMEOUT) = 0;
+    virtual u_result startScanExpress(bool fixedAngle, _u32 timeout = DEFAULT_TIMEOUT) = 0;
 
+    /// Check whether the device support express mode.
+    /// 
+    /// \param support       Return the result.
+    ///
+    /// \param timeout       The operation timeout value (in millisecond) for the serial port communication.
+    virtual u_result checkExpressScanSupported(bool & support, _u32 timeout = DEFAULT_TIMEOUT) = 0;
 
     /// Ask the RPLIDAR core system to stop the current scan operation and enter idle state. The background thread will be terminated
     ///
@@ -162,9 +197,6 @@ public:
     /// The interface will return RESULT_OPERATION_FAIL when all the scan data is invalid. 
     virtual u_result ascendScanData(rplidar_response_measurement_node_t * nodebuffer, size_t count) = 0;
 
-	virtual u_result stopMotor() = 0;
-	virtual u_result startMotor() = 0;
-	
 protected:
     RPlidarDriver() {}
     virtual ~RPlidarDriver() {}

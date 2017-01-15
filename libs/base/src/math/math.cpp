@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -1735,11 +1735,11 @@ bool mrpt::math::isFinite(double v) MRPT_NO_THROWS
 	---------------------------------------------------------------*/
 	bool  mrpt::math::isNaN(long double f) MRPT_NO_THROWS
 	{
-	#if defined(__BORLANDC__) || defined(_MSC_VER)
-		return 0!=_isnan(f);
-	#else
+#if MRPT_CHECK_VISUALC_VERSION(14) || defined(__GNUC__)
 		return std::isnan(f);
-	#endif
+#else
+		return 0!=_isnan(f);
+#endif
 	}
 
 	/*---------------------------------------------------------------
@@ -1747,11 +1747,11 @@ bool mrpt::math::isFinite(double v) MRPT_NO_THROWS
 	---------------------------------------------------------------*/
 	bool  mrpt::math::isFinite(long double f) MRPT_NO_THROWS
 	{
-	#if defined(__BORLANDC__) || defined(_MSC_VER)
-		return 0!=_finite(f);
-	#else
+#if MRPT_CHECK_VISUALC_VERSION(14) || defined(__GNUC__)
 		return std::isfinite(f);
-	#endif
+#else
+		return 0!=_finite(f);
+#endif
 	}
 #endif
 
@@ -2112,12 +2112,12 @@ void  mrpt::math::cross_correlation_FFT(
 			float	r1 = I1_R.get_unsafe(y,x);
 			float	r2 = I2_R.get_unsafe(y,x);
 
-			float	i1 = I1_I.get_unsafe(y,x);
-			float	i2 = I2_I.get_unsafe(y,x);
+			float	ii1 = I1_I.get_unsafe(y,x);
+			float	ii2 = I2_I.get_unsafe(y,x);
 
-			float	den = square(r1)+square(i1);
-			I2_R.set_unsafe(y,x, (r1*r2+i1*i2)/den);
-			I2_I.set_unsafe(y,x, (i2*r1-r2*i1)/den);
+			float	den = square(r1)+square(ii1);
+			I2_R.set_unsafe(y,x, (r1*r2+ii1*ii2)/den);
+			I2_I.set_unsafe(y,x, (ii2*r1-r2*ii1)/den);
 		}
 
 	// IFFT:
@@ -2158,7 +2158,7 @@ void mrpt::math::medianFilter( const std::vector<double> &inV, std::vector<doubl
 	MRPT_UNUSED_PARAM(numberOfSigmas);
     ASSERT_( (int)inV.size() >= _winSize );
     ASSERT_( _winSize >= 2 );                    // The minimum window size is 3 elements
-    int winSize = _winSize;
+    size_t winSize = _winSize;
 
     if( !(winSize%2) )                            // We use an odd number of elements for the window size
         winSize++;
@@ -2167,22 +2167,22 @@ void mrpt::math::medianFilter( const std::vector<double> &inV, std::vector<doubl
     outV.resize( sz );
 
     std::vector<double> aux(winSize);
-    int mpoint = winSize/2;
-    for( int k = 0; k < (int)sz; ++k )
+    size_t mpoint = winSize/2;
+    for( size_t k = 0; k < sz; ++k )
     {
         aux.clear();
 
-        int idx_to_start    = max( 0, k-mpoint );                                   // Dealing with the boundaries
-        int n_elements      = min( min( winSize, int(sz+mpoint-k) ), k+mpoint+1 );
+        size_t idx_to_start    = std::max( size_t(0), k-mpoint );                                   // Dealing with the boundaries
+        size_t n_elements      = std::min(std::min( winSize, sz+mpoint-k), k+mpoint+1 );
 
         aux.resize(n_elements);
-        for( int m = idx_to_start, n = 0; m < idx_to_start+n_elements; ++m, ++n )
+        for(size_t m = idx_to_start, n = 0; m < idx_to_start+n_elements; ++m, ++n )
             aux[n] = inV[m];
 
         std::sort( aux.begin(), aux.end() );
 
         size_t  auxSz       = aux.size();
-        int     auxMPoint   = auxSz*0.5;
+        size_t auxMPoint   = auxSz/2;
         outV[k] = (auxSz%2) ? (aux[auxMPoint]) : (0.5*(aux[auxMPoint-1]+aux[auxMPoint]));     // If the window is even, take the mean value of the middle points
     } // end-for
 } // end medianFilter

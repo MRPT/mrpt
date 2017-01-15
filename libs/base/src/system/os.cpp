@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -11,6 +11,7 @@
 
 #include <mrpt/utils/CTicTac.h>
 #include <mrpt/system/os.h>
+#include <mrpt/system/filesystem.h>
 
 #ifndef HAVE_TIMEGM
 #   include <mrpt/synch/CCriticalSection.h>
@@ -526,10 +527,11 @@ const char* sLicenseTextF =
 " See: http://www.mrpt.org/Authors - All rights reserved.                   \n"
 " Released under BSD License. See details in http://www.mrpt.org/License    \n";
 
-std::string sLicenseText;
-bool sLicenseTextReady=false;
 const std::string & mrpt::system::getMRPTLicense()
 {
+	static bool sLicenseTextReady = false;
+	static std::string sLicenseText;
+
 	if (!sLicenseTextReady)
 	{
 		// Automatically update the last year of the copyright to the compilation date:
@@ -544,6 +546,53 @@ const std::string & mrpt::system::getMRPTLicense()
 		sLicenseTextReady=true;
 	}
 	return sLicenseText;
+}
+
+#include <mrpt/mrpt_paths_config.h>
+std::string mrpt::system::find_mrpt_shared_dir()
+{
+	static bool mrpt_shared_first_call = true;
+	static std::string found_mrpt_shared_dir;
+
+	if (mrpt_shared_first_call)
+	{
+		mrpt_shared_first_call = false;
+
+		for (int attempt = 0; ; attempt++)
+		{
+			std::string dir;
+			switch (attempt)
+			{
+			case 0:
+				dir = string(MRPT_SOURCE_BASE_DIRECTORY) + string("/share/mrpt/");
+				break;
+			case 1:
+				dir = string(MRPT_INSTALL_PREFIX_DIRECTORY) + string("/share/mrpt/");
+				break;
+#ifdef _WIN32
+			case 2:
+			{
+				char curExe[4096];
+				GetModuleFileNameA(NULL,curExe, sizeof(curExe));
+				
+				dir = mrpt::system::extractFileDirectory(std::string(curExe)) + "/../share/mrpt/";
+			}
+				break;
+#endif
+
+			default:
+				found_mrpt_shared_dir = ".";
+				break;
+			};
+			if (!dir.empty() && mrpt::system::directoryExists(dir))
+				found_mrpt_shared_dir = dir;
+
+			if (!found_mrpt_shared_dir.empty())
+				break;
+		}
+	}
+
+	return found_mrpt_shared_dir;
 }
 
 

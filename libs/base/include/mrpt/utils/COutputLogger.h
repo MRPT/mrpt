@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -192,6 +192,14 @@ class BASE_IMPEXP COutputLogger {
 		{
 			output_logger_callback_t  func;
 			void *userParam;
+
+			bool operator <(const mrpt::utils::COutputLogger::TCallbackEntry &e2) const {
+				return func<e2.func;
+			}
+			bool operator == (const mrpt::utils::COutputLogger::TCallbackEntry &c2) const {
+				return func == c2.func && userParam == c2.userParam;
+			}
+
 		};
 
 	protected:
@@ -250,7 +258,6 @@ class BASE_IMPEXP COutputLogger {
 		mutable std::deque<TMsg> m_history;   // deque is better than vector to avoid memory reallocs
 
 		std::set<TCallbackEntry> m_listCallbacks;
-
 };
 
 	/** For use in MRPT_LOG_DEBUG_STREAM, etc. */
@@ -264,6 +271,12 @@ class BASE_IMPEXP COutputLogger {
 			m_str << val;
 			return m_str;
 		}
+		// Overload for std::stringstream objects
+		std::stringstream & operator << (const std::stringstream &val) {
+			m_str << val.str();
+			return m_str;
+		}
+
 	private:
 		std::stringstream m_str;
 		VerbosityLevel m_level;

@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -2215,14 +2215,14 @@ TMatchingOptions::TMatchingOptions() :
 	addMatches( false ),
 	useDisparityLimits( false ),
 
-	min_disp(1.0), max_disp(1e4),
+	min_disp(1.0f), max_disp(1e4f),
 
 	matching_method ( mmCorrelation ),	// Matching method
 	epipolar_TH	( 1.5f ),				// Epipolar constraint (rows of pixels)
 
 	// SIFT
-	maxEDD_TH	( 90 ),					// Maximum Euclidean Distance Between SIFT Descriptors
-	EDD_RATIO   ( 0.6 ),				// Boundary Ratio between the two lowest EDD
+	maxEDD_TH	( 90.0f ),					// Maximum Euclidean Distance Between SIFT Descriptors
+	EDD_RATIO   ( 0.6f ),				// Boundary Ratio between the two lowest EDD
 
 	// KLT
 	minCC_TH	( 0.95f ),				// Minimum Value of the Cross Correlation
@@ -2230,8 +2230,8 @@ TMatchingOptions::TMatchingOptions() :
 	rCC_TH		( 0.92f ),				// Maximum Ratio Between the two highest CC values
 
 	// SURF
-	maxEDSD_TH	( 0.15 ),				// Maximum Euclidean Distance Between SURF Descriptors
-	EDSD_RATIO  ( 0.6 ),				// Boundary Ratio between the two lowest SURF EDSD
+	maxEDSD_TH	( 0.15f ),				// Maximum Euclidean Distance Between SURF Descriptors
+	EDSD_RATIO  ( 0.6f ),				// Boundary Ratio between the two lowest SURF EDSD
 
 	// SAD
 	maxSAD_TH	( 0.4 ),
@@ -2240,10 +2240,6 @@ TMatchingOptions::TMatchingOptions() :
 	// For estimating depth
 	estimateDepth       ( false ),
 	maxDepthThreshold   ( 15.0 )
-//	fx                  ( 0.0 ),
-//	cx                  ( 0.0 ),
-//	cy                  ( 0.0 ),
-//	baseline            ( 0.0 )
 {
 } // end constructor TMatchingOptions
 

@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -14,7 +14,7 @@
 #include <mrpt/utils/TCamera.h>
 #include <mrpt/utils/TParameters.h>
 #include <mrpt/math/lightweight_geom_data.h>
-#include <mrpt/math/CArray.h>
+#include <mrpt/utils/CArray.h>
 
 // The methods declared in this file are implemented in separate files in: vision/src/ba_*.cpp
 namespace mrpt
@@ -117,7 +117,7 @@ namespace mrpt
 			const mrpt::utils::TCamera                        & camera_params,
 			const mrpt::vision::TFramePosesVec                 & frame_poses,
 			const mrpt::vision::TLandmarkLocationsVec          & landmark_points,
-			std::vector<mrpt::math::CArray<double,2> > & out_residuals,
+			std::vector<mrpt::utils::CArray<double,2> > & out_residuals,
 			const bool  frame_poses_are_inverse,
 			const bool  use_robust_kernel = true,
 			const double kernel_param = 3.0,
@@ -130,7 +130,7 @@ namespace mrpt
 			const mrpt::utils::TCamera                        & camera_params,
 			const mrpt::vision::TFramePosesMap                 & frame_poses,
 			const mrpt::vision::TLandmarkLocationsMap          & landmark_points,
-			std::vector<mrpt::math::CArray<double,2> > & out_residuals,
+			std::vector<mrpt::utils::CArray<double,2> > & out_residuals,
 			const bool  frame_poses_are_inverse,
 			const bool  use_robust_kernel = true,
 			const double kernel_param = 3.0,
