@@ -2,7 +2,7 @@
 |                     Mobile Robot Programming Toolkit (MRPT)               |
 |                          http://www.mrpt.org/                             |
 |                                                                           |
-| Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+| Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
 | See: http://www.mrpt.org/Authors - All rights reserved.                   |
 | Released under BSD License. See details in http://www.mrpt.org/License    |
 +---------------------------------------------------------------------------+ */
@@ -11,6 +11,13 @@
 #include <cstring>
 #include <cmath>
 #include <iostream>
+
+// Opencv 2.3 had a broken <opencv/eigen.h> in Ubuntu 14.04 Trusty => Disable PNP classes
+#include <mrpt/config.h>
+#if MRPT_HAS_OPENCV && MRPT_OPENCV_VERSION_NUM<0x240
+#	undef MRPT_HAS_OPENCV
+#	define MRPT_HAS_OPENCV 0
+#endif
 
 #include "polynom_solver.h"
 #include "p3p.h"

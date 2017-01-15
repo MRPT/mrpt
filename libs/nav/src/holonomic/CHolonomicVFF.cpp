@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -24,11 +24,18 @@ IMPLEMENTS_SERIALIZABLE( CHolonomicVFF, CAbstractHolonomicReactiveMethod,mrpt::n
 /*---------------------------------------------------------------
 						initialize
   ---------------------------------------------------------------*/
-CHolonomicVFF::CHolonomicVFF(const mrpt::utils::CConfigFileBase *INI_FILE)
+CHolonomicVFF::CHolonomicVFF(const mrpt::utils::CConfigFileBase *INI_FILE) :
+	CAbstractHolonomicReactiveMethod("VFF_CONFIG")
 {
 	if (INI_FILE!=NULL)
 		initialize( *INI_FILE );
 }
+
+void CHolonomicVFF::initialize(const mrpt::utils::CConfigFileBase &INI_FILE)
+{
+	options.loadFromConfigFile(INI_FILE, getConfigFileSectionName());
+}
+
 
 /*---------------------------------------------------------------
 						navigate
@@ -40,7 +47,8 @@ void  CHolonomicVFF::navigate(
 	double			&desiredDirection,
 	double			&desiredSpeed,
 	CHolonomicLogFileRecordPtr &logRecord,
-	const double    max_obstacle_dist)
+	const double    max_obstacle_dist,
+	const mrpt::nav::ClearanceDiagram *clearance)
 {
 	// Create a log record for returning data.
 	if (!logRecord)
@@ -85,8 +93,11 @@ void  CHolonomicVFF::navigate(
 
 	// Speed control: Reduction factors
 	// ---------------------------------------------
-	const double targetNearnessFactor = std::min( 1.0, target.norm()/(options.TARGET_SLOW_APPROACHING_DISTANCE));
-	desiredSpeed = maxRobotSpeed * std::min(obstacleNearnessFactor, targetNearnessFactor);
+	if (m_enableApproachTargetSlowDown)
+	{
+		const double targetNearnessFactor = std::min(1.0, target.norm() / (options.TARGET_SLOW_APPROACHING_DISTANCE));
+		desiredSpeed = maxRobotSpeed * std::min(obstacleNearnessFactor, targetNearnessFactor);
+	}
 }
 
 void  CHolonomicVFF::writeToStream(mrpt::utils::CStream &out,int *version) const
@@ -166,7 +177,7 @@ void CHolonomicVFF::TOptions::loadFromConfigFile(const mrpt::utils::CConfigFileB
 void CHolonomicVFF::TOptions::saveToConfigFile(mrpt::utils::CConfigFileBase &cfg , const std::string &section) const
 {
 	MRPT_START
-	const int WN = 40, WV = 20;
+	const int WN = 25, WV = 30;
 
 	cfg.write(section,"TARGET_SLOW_APPROACHING_DISTANCE",TARGET_SLOW_APPROACHING_DISTANCE,   WN,WV, "For stopping gradually");
 	cfg.write(section,"TARGET_ATTRACTIVE_FORCE",TARGET_ATTRACTIVE_FORCE,   WN,WV, "Dimension-less (may have to be tuned depending on the density of obstacle sampling)");

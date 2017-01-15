@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -29,6 +29,7 @@ CPTG_DiffDrive_CollisionGridBased::CPTG_DiffDrive_CollisionGridBased() :
 	V_MAX(.0), W_MAX(.0),
 	turningRadiusReference(.10),
 	m_resolution(0.05),
+	m_stepTimeDuration(0.01),
 	m_collisionGrid(-1,1,-1,1,0.5,this)
 {
 }
@@ -57,7 +58,7 @@ void CPTG_DiffDrive_CollisionGridBased::loadFromConfigFile(const mrpt::utils::CC
 void CPTG_DiffDrive_CollisionGridBased::saveToConfigFile(mrpt::utils::CConfigFileBase &cfg,const std::string &sSection) const
 {
 	MRPT_START
-	const int WN = 40, WV = 20;
+	const int WN = 25, WV = 30;
 
 	CParameterizedTrajectoryGenerator::saveToConfigFile(cfg,sSection);
 
@@ -101,6 +102,8 @@ void CPTG_DiffDrive_CollisionGridBased::simulateTrajectories(
 	using mrpt::utils::square;
 
 	internal_deinitialize(); // Free previous paths
+
+	m_stepTimeDuration = diferencial_t;
 
 	// Reserve the size in the buffers:
 	m_trajectory.resize( m_alphaValuesCount );
@@ -766,7 +769,7 @@ double CPTG_DiffDrive_CollisionGridBased::getPathDist(uint16_t k, uint16_t step)
 	return m_trajectory[k][step].dist;
 }
 
-bool CPTG_DiffDrive_CollisionGridBased::getPathStepForDist(uint16_t k, double dist, uint16_t &out_step) const
+bool CPTG_DiffDrive_CollisionGridBased::getPathStepForDist(uint16_t k, double dist, uint32_t &out_step) const
 {
 	ASSERT_(k<m_trajectory.size());
 	const size_t numPoints = m_trajectory[k].size();
@@ -793,8 +796,22 @@ void CPTG_DiffDrive_CollisionGridBased::updateTPObstacle(
 	ASSERTMSG_(!m_trajectory.empty(), "PTG has not been initialized!");
 	const TCollisionCell & cell = m_collisionGrid.getTPObstacle(ox, oy);
 	// Keep the minimum distance:
+	for (TCollisionCell::const_iterator i = cell.begin(); i != cell.end(); ++i) {
+		const double dist = i->second;
+		internal_TPObsDistancePostprocess(ox,oy,dist, tp_obstacles[i->first]);
+	}
+}
+
+void CPTG_DiffDrive_CollisionGridBased::updateTPObstacleSingle(double ox, double oy, uint16_t k, double &tp_obstacle_k) const
+{
+	ASSERTMSG_(!m_trajectory.empty(), "PTG has not been initialized!");
+	const TCollisionCell & cell = m_collisionGrid.getTPObstacle(ox, oy);
+	// Keep the minimum distance:
 	for (TCollisionCell::const_iterator i = cell.begin(); i != cell.end(); ++i)
-		mrpt::utils::keep_min(tp_obstacles[i->first], i->second);
+		if (i->first == k) {
+			const double dist = i->second;
+			internal_TPObsDistancePostprocess(ox,oy,dist, tp_obstacle_k);
+		}
 }
 
 void CPTG_DiffDrive_CollisionGridBased::internal_readFromStream(mrpt::utils::CStream &in)
@@ -838,3 +855,9 @@ mrpt::kinematics::CVehicleVelCmdPtr CPTG_DiffDrive_CollisionGridBased::getSuppor
 {
 	return mrpt::kinematics::CVehicleVelCmdPtr( new mrpt::kinematics::CVehicleVelCmd_DiffDriven() );
 }
+
+double CPTG_DiffDrive_CollisionGridBased::getPathStepDuration() const
+{
+	return m_stepTimeDuration;
+}
+

@@ -22,12 +22,20 @@ function build ()
   make -j2
 }
 
+command_exists () {
+    type "$1" &> /dev/null ;
+}
+
 function test ()
 {
   mkdir $BUILD_DIR && cd $BUILD_DIR
   cmake $MRPT_DIR -DBUILD_APPLICATIONS=FALSE
-  # The following is like "make test" but showing stack traces of failing unit tests.
-  make test_gdb
+  # Use `test_gdb` to show stack traces of failing unit tests.
+  if command_exists gdb ; then
+    make test_gdb
+  else
+    make test
+  fi
 }
 
 function doc ()
@@ -38,6 +46,5 @@ function doc ()
 case $TASK in
   build ) build;;
   test ) test;;
-  testhwdrivers ) testhwdrivers;;
   doc ) doc;;
 esac

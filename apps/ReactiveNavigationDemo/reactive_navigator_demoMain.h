@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -41,7 +41,7 @@
 #include <memory> // unique_ptr<>
 
 #include <mrpt/kinematics/CVehicleSimul_DiffDriven.h>
-#include "../wx-common/CMyRedirector.h"
+#include <mrpt/gui/CMyRedirector.h>
 
 // JLBC: Unix X headers have these funny things...
 #ifdef Button1
@@ -259,11 +259,12 @@ class reactive_navigator_demoframe: public wxFrame
 				mrpt::nav::CRobot2NavInterfaceForSimulator_DiffDriven(simul),
 				MyNavIFBase(ref_latest_obstacles)
 			{}
-			virtual bool senseObstacles(mrpt::maps::CSimplePointsMap &obstacles, mrpt::system::TTimeStamp &timestamp) MRPT_OVERRIDE {
+			bool senseObstacles(mrpt::maps::CSimplePointsMap &obstacles, mrpt::system::TTimeStamp &timestamp) MRPT_OVERRIDE {
 				obstacles = latest_obstacles;
 				timestamp = mrpt::system::now();
 				return true;
 			}
+			bool changeSpeedsNOP() MRPT_OVERRIDE { return true; }
 		};
 		class MyRobot2NavInterface_Holo : public mrpt::nav::CRobot2NavInterfaceForSimulator_Holo, public MyNavIFBase
 		{
@@ -272,11 +273,12 @@ class reactive_navigator_demoframe: public wxFrame
 				mrpt::nav::CRobot2NavInterfaceForSimulator_Holo(simul),
 				MyNavIFBase(ref_latest_obstacles)
 			{}
-			virtual bool senseObstacles( mrpt::maps::CSimplePointsMap &obstacles, mrpt::system::TTimeStamp &timestamp ) MRPT_OVERRIDE {
+			bool senseObstacles( mrpt::maps::CSimplePointsMap &obstacles, mrpt::system::TTimeStamp &timestamp ) MRPT_OVERRIDE {
 				obstacles = latest_obstacles;
 				timestamp = mrpt::system::now();
 				return true;
 			}
+			bool changeSpeedsNOP() MRPT_OVERRIDE { return true; }
 		};
 
 		std::unique_ptr<mrpt::nav::CAbstractNavigator>  m_navMethod;

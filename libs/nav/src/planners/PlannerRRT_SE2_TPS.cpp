@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -29,6 +29,25 @@ using namespace mrpt::math;
 using namespace mrpt::poses;
 using namespace std;
 
+MRPT_TODO("Optimize getNearestNode() with KD-tree!")
+
+PlannerRRT_SE2_TPS::TAlgorithmParams::TAlgorithmParams() :
+	robot_shape_circular_radius(0.30),
+	ptg_cache_files_directory("."),
+	goalBias(0.05),
+	maxLength(1.0),
+	minDistanceBetweenNewNodes(0.10),
+	minAngBetweenNewNodes(mrpt::utils::DEG2RAD(15)),
+	ptg_verbose(true),
+	save_3d_log_freq(0)
+{
+	robot_shape.push_back(mrpt::math::TPoint2D(-0.5, -0.5));
+	robot_shape.push_back(mrpt::math::TPoint2D(0.8, -0.4));
+	robot_shape.push_back(mrpt::math::TPoint2D(0.8, 0.4));
+	robot_shape.push_back(mrpt::math::TPoint2D(-0.5, 0.5));
+}
+
+
 PlannerRRT_SE2_TPS::PlannerRRT_SE2_TPS() :
 	m_initialized(false)
 {
@@ -39,19 +58,25 @@ void PlannerRRT_SE2_TPS::loadConfig(const mrpt::utils::CConfigFileBase &ini, con
 {
 	// Robot shape:
 	// ==========================
+	// polygonal shape
 	{
 		// Robot shape is a bit special to load:
-		const std::string sShape = ini.read_string(sSect,"robot_shape","",true);
-		CMatrixDouble mShape;
-		if (!mShape.fromMatlabStringFormat(sShape))
-			THROW_EXCEPTION_CUSTOM_MSG1("Error parsing robot_shape matrix: '%s'",sShape.c_str());
-		ASSERT_(size(mShape,1)==2)
-		ASSERT_(size(mShape,2)>=3)
+		params.robot_shape.clear(); 
+		const std::string sShape = ini.read_string(sSect,"robot_shape","");
+		if (!sShape.empty())
+		{
+			CMatrixDouble mShape;
+			if (!mShape.fromMatlabStringFormat(sShape))
+				THROW_EXCEPTION_CUSTOM_MSG1("Error parsing robot_shape matrix: '%s'", sShape.c_str());
+			ASSERT_(size(mShape, 1) == 2);
+			ASSERT_(size(mShape, 2) >= 3);
 
-		params.robot_shape.clear();
-		for (size_t i=0;i<size(mShape,2);i++)
-			params.robot_shape.push_back(TPoint2D(mShape(0,i),mShape(1,i)));
+			for (size_t i = 0; i < size(mShape, 2); i++)
+				params.robot_shape.push_back(TPoint2D(mShape(0, i), mShape(1, i)));
+		}
 	}
+	// circular shape
+	params.robot_shape_circular_radius = ini.read_double(sSect, "robot_shape_circular_radius", 0.0);
 
 	// Load PTG tables:
 	// ==========================
@@ -69,11 +94,12 @@ void PlannerRRT_SE2_TPS::loadConfig(const mrpt::utils::CConfigFileBase &ini, con
 /** Must be called after setting all params (see `loadConfig()`) and before calling `solve()` */
 void PlannerRRT_SE2_TPS::initialize()
 {
-	ASSERT_ABOVEEQ_(params.robot_shape.size(),3);
 	ASSERTMSG_(!m_PTGs.empty(),"No PTG was defined! At least one must be especified.");
 
 	// Convert to CPolygon for API requisites:
 	mrpt::math::CPolygon poly_robot_shape;
+	poly_robot_shape.clear();
+	if (!params.robot_shape.empty())
 	{
 		vector<double> xm,ym;
 		params.robot_shape.getPlotData(xm,ym);
@@ -84,10 +110,21 @@ void PlannerRRT_SE2_TPS::initialize()
 	{
 		mrpt::utils::CTimeLoggerEntry tle(m_timelogger, "PTG_initialization");
 
+		// Polygonal robot shape?
 		{
 			mrpt::nav::CPTG_DiffDrive_CollisionGridBased * diff_ptg = dynamic_cast<mrpt::nav::CPTG_DiffDrive_CollisionGridBased *>(m_PTGs[i].pointer());
-			if (diff_ptg)
+			if (diff_ptg) {
+				ASSERTMSG_(!poly_robot_shape.empty(), "No polygonal robot shape specified, and PTG requires one!");
 				diff_ptg->setRobotShape(poly_robot_shape);
+			}
+		}
+		// Circular robot shape?
+		{
+			mrpt::nav::CPTG_RobotShape_Circular *ptg = dynamic_cast<mrpt::nav::CPTG_RobotShape_Circular *>(m_PTGs[i].pointer());
+			if (ptg) {
+				ASSERTMSG_(params.robot_shape_circular_radius>0, "No circular robot shape specified, and PTG requires one!");
+				ptg->setRobotShapeRadius(params.robot_shape_circular_radius);
+			}
 		}
 
 		m_PTGs[i]->initialize(
@@ -111,9 +148,14 @@ void PlannerRRT_SE2_TPS::solve(
 
 	// Calc maximum vehicle shape radius:
 	double max_veh_radius=0.;
-	for (size_t i=0;i<params.robot_shape.size();i++)
-		mrpt::utils::keep_max(max_veh_radius, params.robot_shape[i].norm() );
-	ASSERT_ABOVE_(max_veh_radius,0.0);
+	if (!params.robot_shape.empty())
+	{
+		for (size_t i = 0; i < params.robot_shape.size(); i++)
+			mrpt::utils::keep_max(max_veh_radius, params.robot_shape[i].norm());
+		ASSERT_ABOVE_(max_veh_radius, 0.0);
+	}
+	if (params.robot_shape_circular_radius>0)
+		mrpt::utils::keep_max(max_veh_radius, params.robot_shape_circular_radius);
 
 	// [Algo `tp_space_rrt`: Line 1]: Init tree adding the initial pose
 	if (result.move_tree.getAllNodes().empty())
@@ -240,7 +282,7 @@ void PlannerRRT_SE2_TPS::solve(
 			// [Algo `tp_space_rrt`: Line 8]: TP-Obstacles
 			// ------------------------------------------------------------
 			// Transform obstacles as seen from x_nearest_node -> TP_obstacles
-			vector<double> TP_Obstacles;
+			double TP_Obstacles_k_rand = .0; //vector<double> TP_Obstacles;
 			const double MAX_DIST_FOR_OBSTACLES = 1.5*m_PTGs[idxPTG]->getRefDistance(); // Maximum Euclidean distance (radius) for considering obstacles around the current robot pose
 			
 			ASSERT_ABOVE_(m_PTGs[idxPTG]->getRefDistance(),1.1*max_veh_radius); // Make sure the PTG covers at least a bit more than the vehicle shape!! (should be much, much higher)
@@ -251,14 +293,13 @@ void PlannerRRT_SE2_TPS::solve(
 				//local_obs_ok=true;
 			}
 			{
-				MRPT_TODO("Speed-up: Write a new spaceTransformer() for just one k-direction of interest")
 				CTimeLoggerEntry tle(m_timelogger,"PT_RRT::solve.SpaceTransformer");
-				spaceTransformer(m_local_obs, m_PTGs[idxPTG].pointer(), MAX_DIST_FOR_OBSTACLES,  TP_Obstacles );
+				spaceTransformerOneDirectionOnly(k_rand, m_local_obs, m_PTGs[idxPTG].pointer(), MAX_DIST_FOR_OBSTACLES, TP_Obstacles_k_rand);
 			}
 
 			// directions k_rand in TP_obstacles[k_rand] = d_free
 			// this is the collision free distance to the TP_target
-			d_free = TP_Obstacles[k_rand];
+			d_free = TP_Obstacles_k_rand; // TP_Obstacles[k_rand];
 
 			// [Algo `tp_space_rrt`: Line 10]: d_new
 			// ------------------------------------------------------------
@@ -278,7 +319,7 @@ void PlannerRRT_SE2_TPS::solve(
 				// [Algo `tp_space_rrt`: Line 14]: PTG function
 				// ------------------------------------------------------------
 				//given d_rand and k_rand provides x,y,phi of the point in c-space
-				uint16_t nStep;
+				uint32_t nStep;
 				m_PTGs[idxPTG]->getPathStepForDist(k_rand, d_new, nStep);
 
 				mrpt::math::TPose2D rel_pose;
@@ -522,6 +563,57 @@ void PlannerRRT_SE2_TPS::spaceTransformer(
 	}
 }
 
+void PlannerRRT_SE2_TPS::spaceTransformerOneDirectionOnly(
+	const int tp_space_k_direction,
+	const mrpt::maps::CSimplePointsMap &in_obstacles,
+	const mrpt::nav::CParameterizedTrajectoryGenerator *in_PTG,
+	const double MAX_DIST,
+	double &out_TPObstacle_k
+)
+{
+	using namespace mrpt::nav;
+	try
+	{
+		// Take "k_rand"s and "distances" such that the collision hits the obstacles
+		// in the "grid" of the given PT
+		// --------------------------------------------------------------------
+		size_t nObs;
+		const float *obs_xs, *obs_ys, *obs_zs;
+		// = in_obstacles.getPointsCount();
+		in_obstacles.getPointsBuffer(nObs, obs_xs, obs_ys, obs_zs);
+
+		// Init obs ranges: 
+		in_PTG->initTPObstacleSingle(tp_space_k_direction, out_TPObstacle_k);
+
+		for (size_t obs = 0; obs<nObs; obs++)
+		{
+			const float ox = obs_xs[obs];
+			const float oy = obs_ys[obs];
+
+			if (std::abs(ox)>MAX_DIST || std::abs(oy)>MAX_DIST)
+				continue;   // ignore this obstacle: anyway, I don't know how to map it to TP-Obs!
+
+			in_PTG->updateTPObstacleSingle(ox, oy, tp_space_k_direction, out_TPObstacle_k);
+		}
+
+		// Leave distances in out_TPObstacles un-normalized ([0,1]), so they just represent real distances in meters.
+	}
+	catch (std::exception &e)
+	{
+		cerr << "[PT_RRT::SpaceTransformer] Exception:" << endl;
+		cerr << e.what() << endl;
+	}
+	catch (...)
+	{
+		cerr << "\n[PT_RRT::SpaceTransformer] Unexpected exception!:\n";
+		cerr << format("*in_PTG = %p\n", (void*)in_PTG);
+		if (in_PTG)
+			cerr << format("PTG = %s\n", in_PTG->getDescription().c_str());
+		cerr << endl;
+	}
+}
+
+
 void PlannerRRT_SE2_TPS::renderMoveTree(
 	mrpt::opengl::COpenGLScene &scene,
 	const PlannerRRT_SE2_TPS::TPlannerInput  &pi,
@@ -536,16 +628,36 @@ void PlannerRRT_SE2_TPS::renderMoveTree(
 		gl_veh_shape->setLineWidth(options.vehicle_line_width);
 		gl_veh_shape->setColor_u8(options.color_vehicle );
 		
-		double max_veh_radius=0;
-		gl_veh_shape->appendLine(
-			params.robot_shape[0].x,params.robot_shape[0].y, 0,
-			params.robot_shape[1].x,params.robot_shape[1].y, 0);
-		for (size_t i=2;i<=params.robot_shape.size();i++)
+		double max_veh_radius = 0.;
+		if (!params.robot_shape.empty())
 		{
-			const size_t idx=i % params.robot_shape.size();
-			mrpt::utils::keep_max(max_veh_radius, params.robot_shape[idx].norm() );
-			gl_veh_shape->appendLineStrip(params.robot_shape[idx].x,params.robot_shape[idx].y,0);
+			gl_veh_shape->appendLine(
+				params.robot_shape[0].x, params.robot_shape[0].y, 0,
+				params.robot_shape[1].x, params.robot_shape[1].y, 0);
+			for (size_t i = 2; i <= params.robot_shape.size(); i++)
+			{
+				const size_t idx = i % params.robot_shape.size();
+				mrpt::utils::keep_max(max_veh_radius, params.robot_shape[idx].norm());
+				gl_veh_shape->appendLineStrip(params.robot_shape[idx].x, params.robot_shape[idx].y, 0);
+			}
+		} 
+		else if (params.robot_shape_circular_radius>0)
+		{
+			const int NUM_VERTICES = 10;
+			const double R = params.robot_shape_circular_radius;
+			for (int i = 0; i <= NUM_VERTICES; i++)
+			{
+				const size_t idx  = i % NUM_VERTICES;
+				const size_t idxn = (i+1) % NUM_VERTICES;
+				const double ang  = idx  * 2 * M_PI / (NUM_VERTICES - 1);
+				const double angn = idxn * 2 * M_PI / (NUM_VERTICES - 1);
+				gl_veh_shape->appendLine(
+					R*cos(ang), R*sin(ang), 0,
+					R*cos(angn), R*sin(angn), 0);
+			}
+			mrpt::utils::keep_max(max_veh_radius, R);
 		}
+
 		xyzcorners_scale = max_veh_radius * 0.5;
 	}
 	// Override with user scale?

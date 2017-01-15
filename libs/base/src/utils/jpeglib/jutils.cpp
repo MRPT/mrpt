@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -113,13 +113,13 @@ jcopy_sample_rows (JSAMPARRAY input_array, int source_row,
  * The source and destination arrays must be at least as wide as num_cols.
  */
 {
-  register JSAMPROW inptr, outptr;
+  JSAMPROW inptr, outptr;
 #ifdef FMEMCOPY
-  register size_t count = (size_t) (num_cols * SIZEOF(JSAMPLE));
+  size_t count = (size_t) (num_cols * SIZEOF(JSAMPLE));
 #else
-  register JDIMENSION count;
+  JDIMENSION count;
 #endif
-  register int row;
+  int row;
 
   input_array += source_row;
   output_array += dest_row;
@@ -145,8 +145,8 @@ jcopy_block_row (JBLOCKROW input_row, JBLOCKROW output_row,
 #ifdef FMEMCOPY
   FMEMCOPY(output_row, input_row, num_blocks * (DCTSIZE2 * SIZEOF(JCOEF)));
 #else
-  register JCOEFPTR inptr, outptr;
-  register long count;
+  JCOEFPTR inptr, outptr;
+  long count;
 
   inptr = (JCOEFPTR) input_row;
   outptr = (JCOEFPTR) output_row;
@@ -165,8 +165,8 @@ jzero_far (void FAR * target, size_t bytestozero)
 #ifdef FMEMZERO
   FMEMZERO(target, bytestozero);
 #else
-  register char FAR * ptr = (char FAR *) target;
-  register size_t count;
+  char FAR * ptr = (char FAR *) target;
+  size_t count;
 
   for (count = bytestozero; count > 0; count--) {
     *ptr++ = 0;

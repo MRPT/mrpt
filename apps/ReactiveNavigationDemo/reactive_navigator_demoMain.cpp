@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -61,6 +61,7 @@ wxBitmap MyArtProvider::CreateBitmap(const wxArtID& id,
 #include <mrpt/gui.h>
 #include <mrpt/opengl.h>
 #include <mrpt/system/filesystem.h>
+#include <mrpt/system/os.h>
 
 using namespace mrpt;
 using namespace mrpt::maps;
@@ -286,7 +287,7 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(wxWindow* parent,wxWi
     FlexGridSizer7->AddGrowableRow(0);
     edParamsGeneral = new wxTextCtrl(pnParamsGeneral, ID_TEXTCTRL1, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_PROCESS_ENTER|wxTE_PROCESS_TAB|wxTE_MULTILINE|wxHSCROLL|wxVSCROLL|wxALWAYS_SHOW_SB, wxDefaultValidator, _T("ID_TEXTCTRL1"));
     edParamsGeneral->SetMinSize(wxSize(-1,100));
-    wxFont edParamsGeneralFont(8,wxFONTFAMILY_TELETYPE,wxFONTSTYLE_NORMAL,wxNORMAL,false,wxEmptyString,wxFONTENCODING_DEFAULT);
+    wxFont edParamsGeneralFont(8,wxTELETYPE,wxFONTSTYLE_NORMAL,wxNORMAL,false,wxEmptyString,wxFONTENCODING_DEFAULT);
     edParamsGeneral->SetFont(edParamsGeneralFont);
     FlexGridSizer7->Add(edParamsGeneral, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 2);
     pnParamsGeneral->SetSizer(FlexGridSizer7);
@@ -295,9 +296,9 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(wxWindow* parent,wxWi
     FlexGridSizer8 = new wxFlexGridSizer(1, 1, 0, 0);
     FlexGridSizer8->AddGrowableCol(0);
     FlexGridSizer8->AddGrowableRow(0);
-	edParamsReactive = new wxTextCtrl(pnParamsReactive, ID_TEXTCTRL4, _("# ------------------------------------------------------------------------\n# Example configuration file for MRPT Reactive Navigation engine.\n# See C++ documentation: http://reference.mrpt.org/svn/classmrpt_1_1nav_1_1_c_reactive_navigation_system.html\n# See ROS node documentation: http://wiki.ros.org/mrpt_reactivenav2d\n# ------------------------------------------------------------------------\n\n[GLOBAL_CONFIG]\n# 0 or `hmVIRTUAL_FORCE_FIELDS`: Virtual Force Field\n# 1 or `hmSEARCH_FOR_BEST_GAP`: Nearness Diagram (ND)\n# `hmFULL_EVAL`: Evaluation of all possible directions\nHOLONOMIC_METHOD = hmFULL_EVAL\nALARM_SEEMS_NOT_APPROACHING_TARGET_TIMEOUT=100 # (seconds)\n\nrobotMax_V_mps = 2.0\t\t# Speed limits\nrobotMax_W_degps =120\n\n\n# Parameters for the \"FullEval\" Holonomic method\n# ----------------------------------------------------\n[FULL_EVAL_CONFIG]\nfactorWeights=1.0 1.0 1.0 0.05 1.0\n// 0: Clearness in direction\n// 1: Closest approach to target along straight line (Euclidean)\n// 2: Distance of end colission-free point to target (Euclidean)\n// 3: Hysteresis\n// 4: Clearness to nearest obstacle along path\n\nTARGET_SLOW_APPROACHING_DISTANCE = 0.20 // Start to reduce speed when closer than this to target.\nTOO_CLOSE_OBSTACLE = 0.02 // Directions with collision-free distances below this threshold are not elegible.\nHYSTERESIS_SECTOR_COUNT = 5 // Range of \"sectors\" (directions) for hysteresis over succesive timesteps\n\nPHASE1_FACTORS = 0 1 2 // Indices of the factors above to be considered in phase 1\nPHASE2_FACTORS = 3 4 // Indices of the factors above to be considered in phase 2\nPHASE1_THRESHOLD = 0.75 // Indices of the factors above to be considered in phase 1\n\n#\tParameters for the \"VFF\" Holonomic method\n# ----------------------------------------------------\n[VFF_CONFIG]\nTARGET_SLOW_APPROACHING_DISTANCE = 0.1 // For stopping gradually\nTARGET_ATTRACTIVE_FORCE = 2.000000e+001 // Dimension-less (may have to be tuned depending on the density of obstacle sampling)\n\n#\tParameters for the \"Nearness diagram\" Holonomic method\n# ----------------------------------------------------\n[ND_CONFIG]\nWIDE_GAP_SIZE_PERCENT = 2.500000e-001 \nMAX_SECTOR_DIST_FOR_D2_PERCENT = 2.500000e-001 \nRISK_EVALUATION_SECTORS_PERCENT = 1.000000e-001 \nRISK_EVALUATION_DISTANCE = 4.000000e-001 // In normalized ps-meters [0,1]\nTOO_CLOSE_OBSTACLE = 1.500000e-001 // For stopping gradually\nTARGET_SLOW_APPROACHING_DISTANCE = 0.1 // In normalized ps-meters\nfactorWeights = 1.00 0.50 2.00 0.40 // [0]=Free space, [1]=Dist. in sectors, [2]=Closer to target (Euclidean), [3]=Hysteresis\n\n# ----------------------------------------------------\n#\tParameters for navigation: DIFFERENTIAL DRIVEN Robot\n# ----------------------------------------------------\n[DIFF_ReactiveParams]\nweights=0.5 0.05 0.5 2.0 0.5 0.3\n# 1: Free space\n# 2: Dist. in sectors\t\t\t\n# 3: Heading toward target\n# 4: Closer to target (euclidean)\n# 5: Hysteresis\n# 6: Security Distance\n\nDIST_TO_TARGET_FOR_SENDING_EVENT=0\t# Minimum. distance to target for sending the end event. Set to 0 to send it just on navigation end\n\nMinObstaclesHeight=0.0 \t\t# Minimum coordinate in the \"z\" axis for an obstacle to be taken into account.\nMaxObstaclesHeight=1.40 \t# Maximum coordinate in the \"z\" axis for an obstacle to be taken into account.\n\nMAX_REFERENCE_DISTANCE = 10.0 # Maximum distance to build PTGs (in meters), i.e. the visibility \"range\" of tentative paths\n\n# The constant time of a first-order low-pass filter of outgoing speed commands, \n# i.e. can be used to impose a maximum acceleration.\nSPEEDFILTER_TAU = 0.5 // seconds\n\n# PTGs: See classes derived from mrpt::nav::CParameterizedTrajectoryGenerator ( http://reference.mrpt.org/svn/classmrpt_1_1nav_1_1_c_parameterized_trajectory_generator.html)# refer to papers for details.\n#------------------------------------------------------------------------------\nPTG_COUNT = 3\n\nPTG0_Type = CPTG_DiffDrive_C\nPTG0_resolution = 0.05 # Look-up-table cell size or resolution (in meters)\nPTG0_refDistance= 10.0 # Maximum distance to build PTGs (in meters), i.e. the visibility \"range\" of tentative paths\nPTG0_num_paths= 121\nPTG0_v_max_mps = 1.0\nPTG0_w_max_dps = 60\nPTG0_K = 1.0\nPTG0_score_priority = 1.0\n\nPTG1_Type = CPTG_DiffDrive_alpha\nPTG1_resolution = 0.05 # Look-up-table cell size or resolution (in meters)\nPTG1_refDistance= 10.0 # Maximum distance to build PTGs (in meters), i.e. the visibility \"range\" of tentative paths\nPTG1_num_paths = 121\nPTG1_v_max_mps = 1.0\nPTG1_w_max_dps = 60\nPTG1_cte_a0v_deg = 57\nPTG1_cte_a0w_deg = 57\nPTG1_score_priority = 1.0\n\nPTG2_Type = CPTG_DiffDrive_C\nPTG2_resolution = 0.05 # Look-up-table cell size or resolution (in meters)\nPTG2_refDistance= 10.0 # Maximum distance to build PTGs (in meters), i.e. the visibility \"range\" of tentative paths\nPTG2_num_paths = 121\nPTG2_v_max_mps = 1.0\nPTG2_w_max_dps = 60\nPTG2_K = -1.0\nPTG2_score_priority = 0.5\n\n\n# Default 2D robot shape for collision checks: (ignored in ROS, superseded by node parameters)\n# Each PTG will use only one of either (a) polygonal 2D shape or, (b) radius of a circular shape\nRobotModel_shape2D_xs=-0.2 0.5 0.5 -0.2\nRobotModel_shape2D_ys=0.3 0.3 -0.3 -0.3\nRobotModel_circular_shape_radius = 0.5\n\n# ----------------------------------------------------\n#\tParameters for navigation: DIFFERENTIAL DRIVEN Robot\n# ----------------------------------------------------\n[HOLO_ReactiveParams]\nweights=0.5 0.05 0.5 2.0 0.5 0.3\n# 1: Free space\n# 2: Dist. in sectors\t\t\t\n# 3: Heading toward target\n# 4: Closer to target (euclidean)\n# 5: Hysteresis\n# 6: Security Distance\n\nDIST_TO_TARGET_FOR_SENDING_EVENT=0.6\t# Minimum. distance to target for sending the end event. Set to 0 to send it just on navigation end\n\nMinObstaclesHeight=0.0 \t\t# Minimum coordinate in the \"z\" axis for an obstacle to be taken into account.\nMaxObstaclesHeight=1.40 \t# Maximum coordinate in the \"z\" axis for an obstacle to be taken into account.\n\nMAX_REFERENCE_DISTANCE = 10.0 # Maximum distance to build PTGs (in meters), i.e. the visibility \"range\" of tentative paths\n\n# PTGs: See classes derived from mrpt::nav::CParameterizedTrajectoryGenerator ( http://reference.mrpt.org/svn/classmrpt_1_1nav_1_1_c_parameterized_trajectory_generator.html)# refer to papers for details.\n#------------------------------------------------------------------------------\nPTG_COUNT = 1\n\nPTG0_Type = CPTG_Holo_Blend\nPTG0_refDistance= 6.0 # Maximum distance to build PTGs (in meters), i.e. the visibility \"range\" of tentative paths\nPTG0_num_paths = 100\nPTG0_v_max_mps = 2.0\nPTG0_w_max_dps = 120\nPTG0_T_ramp_max = 0.8\nPTG0_score_priority = 1.0\nPTG0_maxAllowedDirAngle = 90\n\n# Each PTG will use only one of either (a) polygonal 2D shape or, (b) radius of a circular shape\nRobotModel_circular_shape_radius = 0.36\n\n"), wxDefaultPosition, wxSize(226, 111), wxTE_PROCESS_ENTER | wxTE_PROCESS_TAB | wxTE_MULTILINE | wxHSCROLL | wxVSCROLL | wxALWAYS_SHOW_SB, wxDefaultValidator, _T("ID_TEXTCTRL4"));
-	edParamsReactive->SetMinSize(wxSize(-1,100));
-    wxFont edParamsReactiveFont(8,wxFONTFAMILY_TELETYPE,wxFONTSTYLE_NORMAL,wxNORMAL,false,wxEmptyString,wxFONTENCODING_DEFAULT);
+    edParamsReactive = new wxTextCtrl(pnParamsReactive, ID_TEXTCTRL4, _("# ------------------------------------------------------------------------\n# Example configuration file for MRPT Reactive Navigation engine.\n# See C++ documentation: http://reference.mrpt.org/svn/classmrpt_1_1nav_1_1_c_reactive_navigation_system.html\n# See ROS node documentation: http://wiki.ros.org/mrpt_reactivenav2d\n# ------------------------------------------------------------------------\n\n[GLOBAL_CONFIG]\n# 0 or `hmVIRTUAL_FORCE_FIELDS`: Virtual Force Field\n# 1 or `hmSEARCH_FOR_BEST_GAP`: Nearness Diagram (ND)\n# `hmFULL_EVAL`: Evaluation of all possible directions\nHOLONOMIC_METHOD = hmFULL_EVAL\nALARM_SEEMS_NOT_APPROACHING_TARGET_TIMEOUT=100 # (seconds)\n\nrobotMax_V_mps = 2.0\t\t# Speed limits\nrobotMax_W_degps =120\n\n\n# Parameters for the \"FullEval\" Holonomic method\n# ----------------------------------------------------\n[FULL_EVAL_CONFIG]\nfactorWeights=1.0 1.0 1.0 0.01 3.0\n// 0: Clearness in direction\n// 1: Closest approach to target along straight line (Euclidean)\n// 2: Distance of end collision-free point to target (Euclidean)\n// 3: Hysteresis\n// 4: Clearness to nearest obstacle along path\n\nTARGET_SLOW_APPROACHING_DISTANCE = 0.70 // Start to reduce speed when closer than this to target.\nTOO_CLOSE_OBSTACLE = 0.05 // Directions with collision-free distances below this threshold are not elegible.\nHYSTERESIS_SECTOR_COUNT = 5 // Range of \"sectors\" (directions) for hysteresis over succesive timesteps\n\nPHASE1_FACTORS = 0 1 2 // Indices of the factors above to be considered in phase 1\nPHASE2_FACTORS = 1 4 // Indices of the factors above to be considered in phase 2\nPHASE1_THRESHOLD = 0.6 // Indices of the factors above to be considered in phase 1\n\n#\tParameters for the \"VFF\" Holonomic method\n# ----------------------------------------------------\n[VFF_CONFIG]\nTARGET_SLOW_APPROACHING_DISTANCE = 0.1 // For stopping gradually\nTARGET_ATTRACTIVE_FORCE = 2.000000e+001 // Dimension-less (may have to be tuned depending on the density of obstacle sampling)\n\n#\tParameters for the \"Nearness diagram\" Holonomic method\n# ----------------------------------------------------\n[ND_CONFIG]\nWIDE_GAP_SIZE_PERCENT = 2.500000e-001 \nMAX_SECTOR_DIST_FOR_D2_PERCENT = 2.500000e-001 \nRISK_EVALUATION_SECTORS_PERCENT = 1.000000e-001 \nRISK_EVALUATION_DISTANCE = 4.000000e-001 // In normalized ps-meters [0,1]\nTOO_CLOSE_OBSTACLE = 1.500000e-001 // For stopping gradually\nTARGET_SLOW_APPROACHING_DISTANCE = 0.1 // In normalized ps-meters\nfactorWeights = 1.00 0.50 2.00 0.40 // [0]=Free space, [1]=Dist. in sectors, [2]=Closer to target (Euclidean), [3]=Hysteresis\n\n# ----------------------------------------------------\n#\tParameters for navigation: DIFFERENTIAL DRIVEN Robot\n# ----------------------------------------------------\n[DIFF_ReactiveParams]\nweights=0.5 0.05 0.5 2.0 0.5 0.3\n# 1: Free space\n# 2: Dist. in sectors\t\t\t\n# 3: Heading toward target\n# 4: Closer to target (euclidean)\n# 5: Hysteresis\n# 6: Security Distance\n\nDIST_TO_TARGET_FOR_SENDING_EVENT=0\t# Minimum. distance to target for sending the end event. Set to 0 to send it just on navigation end\n\nMinObstaclesHeight=0.0 \t\t# Minimum coordinate in the \"z\" axis for an obstacle to be taken into account.\nMaxObstaclesHeight=1.40 \t# Maximum coordinate in the \"z\" axis for an obstacle to be taken into account.\n\nMAX_REFERENCE_DISTANCE = 10.0 # Maximum distance to build PTGs (in meters), i.e. the visibility \"range\" of tentative paths\n\n# The constant time of a first-order low-pass filter of outgoing speed commands, \n# i.e. can be used to impose a maximum acceleration.\nSPEEDFILTER_TAU = 0.5 // seconds\n\n# PTGs: See classes derived from mrpt::nav::CParameterizedTrajectoryGenerator ( http://reference.mrpt.org/svn/classmrpt_1_1nav_1_1_c_parameterized_trajectory_generator.html)# refer to papers for details.\n#------------------------------------------------------------------------------\nPTG_COUNT = 3\n\nPTG0_Type = CPTG_DiffDrive_C\nPTG0_resolution = 0.05 # Look-up-table cell size or resolution (in meters)\nPTG0_refDistance= 10.0 # Maximum distance to build PTGs (in meters), i.e. the visibility \"range\" of tentative paths\nPTG0_num_paths= 121\nPTG0_v_max_mps = 1.0\nPTG0_w_max_dps = 60\nPTG0_K = 1.0\nPTG0_score_priority = 1.0\n\nPTG1_Type = CPTG_DiffDrive_alpha\nPTG1_resolution = 0.05 # Look-up-table cell size or resolution (in meters)\nPTG1_refDistance= 10.0 # Maximum distance to build PTGs (in meters), i.e. the visibility \"range\" of tentative paths\nPTG1_num_paths = 121\nPTG1_v_max_mps = 1.0\nPTG1_w_max_dps = 60\nPTG1_cte_a0v_deg = 57\nPTG1_cte_a0w_deg = 57\nPTG1_score_priority = 1.0\n\nPTG2_Type = CPTG_DiffDrive_C\nPTG2_resolution = 0.05 # Look-up-table cell size or resolution (in meters)\nPTG2_refDistance= 10.0 # Maximum distance to build PTGs (in meters), i.e. the visibility \"range\" of tentative paths\nPTG2_num_paths = 121\nPTG2_v_max_mps = 1.0\nPTG2_w_max_dps = 60\nPTG2_K = -1.0\nPTG2_score_priority = 0.5\n\n\n# Default 2D robot shape for collision checks: (ignored in ROS, superseded by node parameters)\n# Each PTG will use only one of either (a) polygonal 2D shape or, (b) radius of a circular shape\nRobotModel_shape2D_xs=-0.2 0.5 0.5 -0.2\nRobotModel_shape2D_ys=0.3 0.3 -0.3 -0.3\nRobotModel_circular_shape_radius = 0.5\n\n# ----------------------------------------------------\n#\tParameters for navigation: DIFFERENTIAL DRIVEN Robot\n# ----------------------------------------------------\n[HOLO_ReactiveParams]\nweights=0.5 0.05 0.5 2.0 0.2 0.3\n# 1: Free space\n# 2: Dist. in sectors\t\t\t\n# 3: Heading toward target\n# 4: Closer to target (euclidean)\n# 5: Hysteresis\n# 6: Security Distance\n\nDIST_TO_TARGET_FOR_SENDING_EVENT=0.6\t# Minimum. distance to target for sending the end event. Set to 0 to send it just on navigation end\n\nMinObstaclesHeight=0.0 \t\t# Minimum coordinate in the \"z\" axis for an obstacle to be taken into account.\nMaxObstaclesHeight=1.40 \t# Maximum coordinate in the \"z\" axis for an obstacle to be taken into account.\n\nMAX_REFERENCE_DISTANCE = 10.0 # Maximum distance to build PTGs (in meters), i.e. the visibility \"range\" of tentative paths\n\n# PTGs: See classes derived from mrpt::nav::CParameterizedTrajectoryGenerator ( http://reference.mrpt.org/svn/classmrpt_1_1nav_1_1_c_parameterized_trajectory_generator.html)# refer to papers for details.\n#------------------------------------------------------------------------------\nPTG_COUNT = 1\n\nPTG0_Type = CPTG_Holo_Blend\nPTG0_refDistance= 6.0 # Maximum distance to build PTGs (in meters), i.e. the visibility \"range\" of tentative paths\nPTG0_num_paths = 100\nPTG0_v_max_mps = 1.5\nPTG0_w_max_dps = 90\nPTG0_T_ramp_max = 0.8\nPTG0_score_priority = 1.0\n\n# Each PTG will use only one of either (a) polygonal 2D shape or, (b) radius of a circular shape\nRobotModel_circular_shape_radius = 0.36\n\n"), wxDefaultPosition, wxSize(226,111), wxTE_PROCESS_ENTER|wxTE_PROCESS_TAB|wxTE_MULTILINE|wxHSCROLL|wxVSCROLL|wxALWAYS_SHOW_SB, wxDefaultValidator, _T("ID_TEXTCTRL4"));
+    edParamsReactive->SetMinSize(wxSize(-1,100));
+    wxFont edParamsReactiveFont(8,wxTELETYPE,wxFONTSTYLE_NORMAL,wxNORMAL,false,wxEmptyString,wxFONTENCODING_DEFAULT);
     edParamsReactive->SetFont(edParamsReactiveFont);
     FlexGridSizer8->Add(edParamsReactive, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 2);
     pnParamsReactive->SetSizer(FlexGridSizer8);
@@ -309,7 +310,7 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(wxWindow* parent,wxWi
     FlexGridSizer6->AddGrowableRow(0);
     edManualSeqs = new wxTextCtrl(pnParamsPreprog, ID_TEXTCTRL3, _("# Params for mode \"Preprogrammed sequences\" \n# Used for debug / testing. Separate sections for different robot kinematic models. # Enter below a list of velocity cmds and they will be executed sequentially. \n\n# Kinematics: Diff driven \n# Format: cmd{%d} = {time_of_the_cmd_sec} {lin_vel_mps} {rot_speed_radps}\n[DIFF_CMDS]\ncmd1= 1.0 0.5 0.0\ncmd2= 4.0 1.0 0.5\ncmd3= 6.0 0.0 0.0\n\n\n# Kinematics: Holonomic \n# Format: cmd{%d} = {time_of_the_cmd_sec} {velocity_mps} {global_orientation_rad} {ramp_time_secs} {rot_speed_radps}\n[HOLO_CMDS]\ncmd1= 1.0 0.5 0.1.0 1.0 0.9\ncmd2= 4.0 1.0 0.4 1.0 0.9\ncmd3= 6.0 0.0 0.0 1.0 0.0\n"), wxDefaultPosition, wxSize(230,167), wxTE_PROCESS_ENTER|wxTE_PROCESS_TAB|wxTE_MULTILINE|wxHSCROLL|wxVSCROLL|wxALWAYS_SHOW_SB, wxDefaultValidator, _T("ID_TEXTCTRL3"));
     edManualSeqs->SetMinSize(wxSize(-1,100));
-    wxFont edManualSeqsFont(8,wxFONTFAMILY_TELETYPE,wxFONTSTYLE_NORMAL,wxNORMAL,false,wxEmptyString,wxFONTENCODING_DEFAULT);
+    wxFont edManualSeqsFont(8,wxTELETYPE,wxFONTSTYLE_NORMAL,wxNORMAL,false,wxEmptyString,wxFONTENCODING_DEFAULT);
     edManualSeqs->SetFont(edManualSeqsFont);
     FlexGridSizer6->Add(edManualSeqs, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
     pnParamsPreprog->SetSizer(FlexGridSizer6);
@@ -335,7 +336,7 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(wxWindow* parent,wxWi
     edLog = new wxTextCtrl(Panel2, ID_TEXTCTRL5, wxEmptyString, wxDefaultPosition, wxSize(612,85), wxTE_MULTILINE|wxTE_READONLY|wxTE_DONTWRAP|wxALWAYS_SHOW_SB, wxDefaultValidator, _T("ID_TEXTCTRL5"));
     edLog->SetMinSize(wxSize(-1,70));
     edLog->SetBackgroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_BTNFACE));
-    wxFont edLogFont(8,wxFONTFAMILY_TELETYPE,wxFONTSTYLE_NORMAL,wxNORMAL,false,wxEmptyString,wxFONTENCODING_DEFAULT);
+    wxFont edLogFont(8,wxTELETYPE,wxFONTSTYLE_NORMAL,wxNORMAL,false,wxEmptyString,wxFONTENCODING_DEFAULT);
     edLog->SetFont(edLogFont);
     FlexGridSizer10->Add(edLog, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
     Panel2->SetSizer(FlexGridSizer10);
@@ -364,7 +365,7 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(wxWindow* parent,wxWi
     edInfoLocalView = new wxTextCtrl(Panel3, ID_TEXTCTRL2, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE|wxTE_READONLY|wxTE_DONTWRAP|wxALWAYS_SHOW_SB, wxDefaultValidator, _T("ID_TEXTCTRL2"));
     edInfoLocalView->SetMinSize(wxSize(-1,50));
     edInfoLocalView->SetBackgroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_BTNFACE));
-    wxFont edInfoLocalViewFont(8,wxFONTFAMILY_TELETYPE,wxFONTSTYLE_NORMAL,wxNORMAL,false,wxEmptyString,wxFONTENCODING_DEFAULT);
+    wxFont edInfoLocalViewFont(8,wxTELETYPE,wxFONTSTYLE_NORMAL,wxNORMAL,false,wxEmptyString,wxFONTENCODING_DEFAULT);
     edInfoLocalView->SetFont(edInfoLocalViewFont);
     FlexGridSizer11->Add(edInfoLocalView, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 2);
     FlexGridSizer5->Add(FlexGridSizer11, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
@@ -435,6 +436,13 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(wxWindow* parent,wxWi
     Connect(ID_TIMER1,wxEVT_TIMER,(wxObjectEventFunction)&reactive_navigator_demoframe::OntimRunSimulTrigger);
     //*)
 
+	// Load updated cfg file:
+	try {
+		const std::string sFil = mrpt::system::find_mrpt_shared_dir() + std::string("config_files/navigation-ptgs/reactivenav-app-config.ini");
+		edParamsReactive->LoadFile(_U(sFil.c_str()));
+	}
+	catch (...) {}
+
 	btnStart->SetToolTip(wxT("Initializes and starts the simulator."));
 	btnPlaceTarget->SetToolTip(wxT("Left-click on the map to place a navigation command."));
 	btnStop->SetToolTip(wxT("Stops the simulation."));
@@ -504,10 +512,10 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(wxWindow* parent,wxWi
 	gl_target->setVisibility(false);
 	{
 		mrpt::opengl::CArrowPtr obj;
-		obj = mrpt::opengl::CArrow::Create( 1,0,0,  0.2,0,0, 0.4,0.05, 0.15 ); obj->setColor_u8( TColor(0,0,255) ); gl_target->insert(obj);
-		obj = mrpt::opengl::CArrow::Create(-1,0,0, -0.2,0,0, 0.4,0.05, 0.15 ); obj->setColor_u8( TColor(0,0,255) ); gl_target->insert(obj);
-		obj = mrpt::opengl::CArrow::Create( 0,1,0,  0,0.2,0, 0.4,0.05, 0.15 ); obj->setColor_u8( TColor(0,0,255) ); gl_target->insert(obj);
-		obj = mrpt::opengl::CArrow::Create(0,-1,0,  0,-0.2,0, 0.4,0.05, 0.15 ); obj->setColor_u8( TColor(0,0,255) ); gl_target->insert(obj);
+		obj = mrpt::opengl::CArrow::Create( 1,0,0,  0.2f,0,0, 0.4f,0.05f, 0.15f ); obj->setColor_u8( TColor(0,0,255) ); gl_target->insert(obj);
+		obj = mrpt::opengl::CArrow::Create(-1,0,0, -0.2f,0,0, 0.4f,0.05f, 0.15f ); obj->setColor_u8( TColor(0,0,255) ); gl_target->insert(obj);
+		obj = mrpt::opengl::CArrow::Create( 0,1,0,  0,0.2f,0, 0.4f,0.05f, 0.15f ); obj->setColor_u8( TColor(0,0,255) ); gl_target->insert(obj);
+		obj = mrpt::opengl::CArrow::Create(0,-1,0,  0,-0.2f,0, 0.4f,0.05f, 0.15f ); obj->setColor_u8( TColor(0,0,255) ); gl_target->insert(obj);
 		m_plot3D->m_openGLScene->insert(gl_target);
 	}
 
@@ -523,10 +531,10 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(wxWindow* parent,wxWi
 		m_gl_placing_nav_target = opengl::CSetOfObjects::Create();
 
 		mrpt::opengl::CArrowPtr obj;
-		obj = mrpt::opengl::CArrow::Create( 1,0,0,  0.2,0,0, 0.4,0.05, 0.15 ); obj->setColor_u8( TColor(0,0,255) ); m_gl_placing_nav_target->insert(obj);
-		obj = mrpt::opengl::CArrow::Create(-1,0,0, -0.2,0,0, 0.4,0.05, 0.15 ); obj->setColor_u8( TColor(0,0,255) ); m_gl_placing_nav_target->insert(obj);
-		obj = mrpt::opengl::CArrow::Create( 0,1,0,  0,0.2,0, 0.4,0.05, 0.15 ); obj->setColor_u8( TColor(0,0,255) ); m_gl_placing_nav_target->insert(obj);
-		obj = mrpt::opengl::CArrow::Create(0,-1,0,  0,-0.2,0, 0.4,0.05, 0.15 ); obj->setColor_u8( TColor(0,0,255) ); m_gl_placing_nav_target->insert(obj);
+		obj = mrpt::opengl::CArrow::Create( 1,0,0,  0.2f,0,0, 0.4f,0.05f, 0.15f ); obj->setColor_u8( TColor(0,0,255) ); m_gl_placing_nav_target->insert(obj);
+		obj = mrpt::opengl::CArrow::Create(-1,0,0, -0.2f,0,0, 0.4f,0.05f, 0.15f ); obj->setColor_u8( TColor(0,0,255) ); m_gl_placing_nav_target->insert(obj);
+		obj = mrpt::opengl::CArrow::Create( 0,1,0,  0,0.2f,0, 0.4f,0.05f, 0.15f ); obj->setColor_u8( TColor(0,0,255) ); m_gl_placing_nav_target->insert(obj);
+		obj = mrpt::opengl::CArrow::Create(0,-1,0,  0,-0.2f,0, 0.4f,0.05f, 0.15f ); obj->setColor_u8( TColor(0,0,255) ); m_gl_placing_nav_target->insert(obj);
 		m_gl_placing_nav_target->setVisibility(false); // Start invisible.
 		m_plot3D->m_openGLScene->insert(m_gl_placing_nav_target);
 	}
@@ -542,7 +550,7 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(wxWindow* parent,wxWi
 	{	// Sign of "drawing obstacles":
 		m_gl_drawing_obs = opengl::CSetOfObjects::Create();
 
-		mrpt::opengl::CCylinderPtr obj = mrpt::opengl::CCylinder::Create(0.05, 0.10,1.0);
+		mrpt::opengl::CCylinderPtr obj = mrpt::opengl::CCylinder::Create(0.05f, 0.10f,1.0f);
 		obj->setColor_u8( mrpt::utils::TColor(0xff,0x00,0x00,0x70) );
 		m_gl_drawing_obs->insert(obj);
 
@@ -575,7 +583,7 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(wxWindow* parent,wxWi
 
 	// 2D view ==============
 	{
-		mrpt::opengl::CGridPlaneXYPtr obj = mrpt::opengl::CGridPlaneXY::Create(-1,1.001, -1,1.001, 0, 1);
+		mrpt::opengl::CGridPlaneXYPtr obj = mrpt::opengl::CGridPlaneXY::Create(-1,1.001f, -1,1.001f, 0, 1);
 		obj->setColor_u8(TColor(30,30,30,50));
 		m_plotLocalView->m_openGLScene->insert( obj );
 	}
@@ -597,7 +605,7 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(wxWindow* parent,wxWi
 	gl_rel_robot->insertPoint(0, 0, 0);
 	m_plotLocalView->m_openGLScene->insert(gl_rel_robot);
 
-	m_plotLocalView->m_openGLScene->insert( mrpt::opengl::stock_objects::CornerXYSimple(0.1,2) );
+	m_plotLocalView->m_openGLScene->insert( mrpt::opengl::stock_objects::CornerXYSimple(0.1f,2) );
 	m_plotLocalView->m_openGLScene->insert( gl_robot_local );
 
 	gl_tp_obstacles = mrpt::opengl::CSetOfLines::Create();
@@ -618,7 +626,7 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(wxWindow* parent,wxWi
 	m_plotLocalView->cameraPointingX=0;
 	m_plotLocalView->cameraPointingY=0;
 	m_plotLocalView->cameraPointingZ=0;
-	m_plotLocalView->cameraZoomDistance = 2.2;
+	m_plotLocalView->cameraZoomDistance = 2.2f;
 	m_plotLocalView->cameraElevationDeg = 90;
 	m_plotLocalView->cameraAzimuthDeg = -90;
 	m_plotLocalView->cameraIsProjective = false;
@@ -770,7 +778,7 @@ bool reactive_navigator_demoframe::reinitSimulator()
 		// Params for simulator-to-nav interface:
 		CConfigFileMemory cfg;
 		cfg.setContent( std::string(edParamsReactive->GetValue().mb_str() ) );
-		m_robotSimul2NavInterface->loadConfigFile(cfg, "GLOBAL_CONFIG");
+		//m_robotSimul2NavInterface->loadConfigFile(cfg, "GLOBAL_CONFIG");
 	}
 
 	// Delete old & build new navigator:
@@ -1038,7 +1046,7 @@ void reactive_navigator_demoframe::simulateOneStep(double time_step)
 					double min_shape_dists = 1.0;
 					for (double d=min_shape_dists;d<max_dist;d+=min_shape_dists)
 					{
-						uint16_t step;
+						uint32_t step;
 						if (!ptg->getPathStepForDist(selected_k, d, step))
 							continue;
 						mrpt::math::TPose2D p;
@@ -1079,7 +1087,7 @@ void reactive_navigator_demoframe::simulateOneStep(double time_step)
 		gl_waypoints_clicking->clear();
 		for (const auto &p : m_waypoints_clicked.waypoints)
 		{
-			mrpt::opengl::CDiskPtr gl_pt = mrpt::opengl::CDisk::Create(0.3,0.2, 20);
+			mrpt::opengl::CDiskPtr gl_pt = mrpt::opengl::CDisk::Create(0.3f,0.2f, 20);
 			gl_pt->setLocation(p.target.x,p.target.y,0.01);
 			gl_pt->setColor_u8(mrpt::utils::TColor(0x00,0x00,0xff));
 			gl_waypoints_clicking->insert(gl_pt);
@@ -1095,7 +1103,7 @@ void reactive_navigator_demoframe::simulateOneStep(double time_step)
 			{
 				const bool is_cur_goal = (int(idx)==wp_status.waypoint_index_current_goal);
 
-				mrpt::opengl::CDiskPtr gl_pt = mrpt::opengl::CDisk::Create(is_cur_goal ? 0.4 : 0.3,0.2, 20);
+				mrpt::opengl::CDiskPtr gl_pt = mrpt::opengl::CDisk::Create(is_cur_goal ? 0.4f : 0.3f,0.2f, 20);
 				gl_pt->setLocation(p.target.x,p.target.y,0.01);
 				gl_pt->setName(mrpt::format("WayPt #%2u Reach:%s",idx, p.reached ? "YES":"NO"));
 				gl_pt->enableShowName(true);
@@ -1441,7 +1449,7 @@ void create_viz_robot_holo( mrpt::opengl::CSetOfObjects &objs )
 		objs.insert( gl_xyz );
 	}
 
-	mrpt::opengl::CCylinderPtr obj = mrpt::opengl::CCylinder::Create(0.36 /*base radius*/,0.20 /*top radius */,1.2 /*height*/);
+	mrpt::opengl::CCylinderPtr obj = mrpt::opengl::CCylinder::Create(0.36f /*base radius*/,0.20f /*top radius */,1.2f /*height*/);
 	obj->setColor_u8( TColor::red );
 	objs.insert( obj );
 }

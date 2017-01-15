@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -29,13 +29,13 @@ CSetOfLinesPtr CSetOfLines::Create(const std::vector<TSegment3D> &sgms, const bo
 }
 /** Constructor */
 CSetOfLines::CSetOfLines()
-	: mSegments(),mLineWidth(1.0),m_antiAliasing(true)
+	: mSegments(),mLineWidth(1.0),m_antiAliasing(true), m_verticesPointSize(.0f)
 {
 }
 
 /** Constructor with a initial set of lines. */
 CSetOfLines::CSetOfLines(const std::vector<TSegment3D> &sgms,bool antiAliasing)
-	: mSegments(sgms),mLineWidth(1.0),m_antiAliasing(antiAliasing)
+	: mSegments(sgms),mLineWidth(1.0),m_antiAliasing(antiAliasing), m_verticesPointSize(.0f)
 {
 }
 
@@ -48,6 +48,16 @@ void CSetOfLines::setLineByIndex(size_t index,const mrpt::math::TSegment3D &segm
 	CRenderizableDisplayList::notifyChange();
 	mSegments[index]=segm;
 	MRPT_END
+}
+
+float CSetOfLines::getVerticesPointSize() const 
+{ 
+	return m_verticesPointSize; 
+}
+void CSetOfLines::setVerticesPointSize(const float size_points) 
+{
+	m_verticesPointSize = size_points; 
+	CRenderizableDisplayList::notifyChange();
 }
 
 /*---------------------------------------------------------------
@@ -78,10 +88,34 @@ void   CSetOfLines::render_dl() const
 	}
 	glEnd();
 	checkOpenGLError();
+
+	// Draw vertices?
+	if (m_verticesPointSize > 0)
+	{
+		glPointSize(m_verticesPointSize);
+		if (m_antiAliasing)
+			glEnable(GL_POINT_SMOOTH);
+		else 	glDisable(GL_POINT_SMOOTH);
+
+		glBegin(GL_POINTS);
+		glColor4ub(m_color.R, m_color.G, m_color.B, m_color.A);
+		bool first = true;
+		for (const auto &seg : mSegments)
+		{
+			if (first) {
+				glVertex3d(seg.point1.x, seg.point1.y, seg.point1.z);
+				first = false;
+			}
+			glVertex3d(seg.point2.x, seg.point2.y, seg.point2.z);
+		}
+
+		glEnd();
+	}
+
 	glEnable(GL_LIGHTING);  // Disable lights when drawing lines
 
 	// End of antialiasing:
-    glPopAttrib();
+	glPopAttrib();
 
 #endif
 }
@@ -92,11 +126,12 @@ void   CSetOfLines::render_dl() const
   ---------------------------------------------------------------*/
 void  CSetOfLines::writeToStream(mrpt::utils::CStream &out,int *version) const
 {
-	if (version) *version=3;
+	if (version) *version=4;
 	else	{
 		writeToStreamRender(out);
 		out<<mSegments<<mLineWidth;
 		out << m_antiAliasing; // Added in v3
+		out << m_verticesPointSize; // v4
 	}
 }
 
@@ -129,6 +164,7 @@ void  CSetOfLines::readFromStream(mrpt::utils::CStream &in,int version)
 		}	break;
 	case 2:
 	case 3:
+	case 4:
 		{
 			readFromStreamRender(in);
 			in>>mSegments;
@@ -136,6 +172,9 @@ void  CSetOfLines::readFromStream(mrpt::utils::CStream &in,int version)
 			if (version>=3)
 				in >> m_antiAliasing;
 			else m_antiAliasing = true;
+			if (version >= 4)
+				in >> m_verticesPointSize; 
+			else m_verticesPointSize = .0f;
 		}
 		break;
 	default:

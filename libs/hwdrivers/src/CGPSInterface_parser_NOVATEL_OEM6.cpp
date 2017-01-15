@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -24,7 +24,7 @@ bool  CGPSInterface::implement_parser_NOVATEL_OEM6(size_t &out_minimum_rx_buf_to
 {
 	// to be grabbed from the last Message_NV_OEM6_IONUTC msg
 	static uint32_t num_leap_seconds = getenv("MRPT_HWDRIVERS_DEFAULT_LEAP_SECONDS")==NULL ? 
-		17 : atoi(getenv("MRPT_HWDRIVERS_DEFAULT_LEAP_SECONDS"));
+		18 : atoi(getenv("MRPT_HWDRIVERS_DEFAULT_LEAP_SECONDS"));
 
 	using namespace mrpt::obs::gnss;
 

@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -211,7 +211,7 @@ void  CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 		// If there is no 2D action, look for a 3D action:
 		if (robotMovement2D.present())
 		{
-			robotActionSampler.setPosePDF( robotMovement2D->poseChange );
+			robotActionSampler.setPosePDF( robotMovement2D->poseChange.get_ptr() );
 			motionModelMeanIncr = robotMovement2D->poseChange->getMeanVal();
 		}
 		else
@@ -897,7 +897,7 @@ bool CMultiMetricMapPDF::PF_SLAM_implementation_doWeHaveValidObservations(
 {
 	if (sf==NULL) return false;
 	ASSERT_(!particles.empty())
-	return particles.begin()->d->mapTillNow.canComputeObservationsLikelihood( *sf );
+	return particles.begin()->d.get()->mapTillNow.canComputeObservationsLikelihood( *sf );
 }
 
 /** Do not move the particles until the map is populated.  */
@@ -919,7 +919,7 @@ double CMultiMetricMapPDF::PF_SLAM_computeObservationLikelihoodForParticle(
 	const CPose3D			&x ) const
 {
 	MRPT_UNUSED_PARAM(PF_options);
-	CMultiMetricMap	*map = &m_particles[particleIndexForMap].d->mapTillNow;
+	CMultiMetricMap *map = const_cast<CMultiMetricMap *>(&m_particles[particleIndexForMap].d->mapTillNow);
 	double	ret = 0;
 	for (CSensoryFrame::const_iterator it=observation.begin();it!=observation.end();++it)
 		ret += map->computeObservationLikelihood( (CObservation*)it->pointer(), x );

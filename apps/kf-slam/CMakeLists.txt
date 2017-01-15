@@ -7,29 +7,24 @@ INCLUDE(../../cmakemodules/AssureCMakeRootFile.cmake) # Avoid user mistake in CM
 #
 #  December 2007, Jose Luis Blanco <jlblanco@ctima.uma.es>
 #-----------------------------------------------------------------
-PROJECT(KF_SLAM)
+PROJECT(kf-slam)
 
-#MESSAGE(STATUS "Makefile for application: /apps/kf-slam ")
+
 
 # ---------------------------------------------
 # TARGET:
 # ---------------------------------------------
 # Define the executable target:
-ADD_EXECUTABLE(kf-slam
+ADD_EXECUTABLE(${PROJECT_NAME}
                kf-slam_main.cpp
 			    ${MRPT_VERSION_RC_FILE})
 
-SET(TMP_TARGET_NAME "kf-slam")
-
-
-
 # Add the required libraries for linking:
-TARGET_LINK_LIBRARIES(${TMP_TARGET_NAME} ${MRPT_LINKER_LIBS})
+TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${MRPT_LINKER_LIBS})
 
 # Dependencies on MRPT libraries:
-#  Just mention the top-level dependency, the rest will be detected automatically, 
+#  Just mention the top-level dependency, the rest will be detected automatically,
 #  and all the needed #include<> dirs added (see the script DeclareAppDependencies.cmake for further details)
-DeclareAppDependencies(${TMP_TARGET_NAME} mrpt-slam mrpt-gui mrpt-bayes)
+DeclareAppDependencies(${PROJECT_NAME} mrpt-slam mrpt-gui mrpt-bayes)
 
-DeclareAppForInstall(${TMP_TARGET_NAME})
-
+DeclareAppForInstall(${PROJECT_NAME})

@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -268,10 +268,10 @@ void  CLSLAM_RBPF_2DLASER::prediction_and_update_pfAuxiliaryPFOptimal(
 
 	// Over
 	keep_max(
-		LMH->m_accumRobotMovement.motionModelConfiguration.gausianModel.minStdXY,
+		LMH->m_accumRobotMovement.motionModelConfiguration.gaussianModel.minStdXY,
 		LMH->m_parent->m_options.MIN_ODOMETRY_STD_XY);
 	keep_max(
-		LMH->m_accumRobotMovement.motionModelConfiguration.gausianModel.minStdPHI,
+		LMH->m_accumRobotMovement.motionModelConfiguration.gaussianModel.minStdPHI,
 		LMH->m_parent->m_options.MIN_ODOMETRY_STD_PHI);
 
 	theResultingRobotMov.computeFromOdometry( LMH->m_accumRobotMovement.rawOdometryIncrementReading, LMH->m_accumRobotMovement.motionModelConfiguration );
@@ -469,8 +469,8 @@ void  CLSLAM_RBPF_2DLASER::prediction_and_update_pfAuxiliaryPFOptimal(
 		if (!oldParticleAlreadyCopied[newParticlesDerivedFromIdx[i]])
 		{
 			// The first copy of this old particle:
-			newPartData = LMH->m_particles[ newParticlesDerivedFromIdx[i] ].d;
-            oldParticleAlreadyCopied[newParticlesDerivedFromIdx[i]] = true;
+			newPartData = LMH->m_particles[ newParticlesDerivedFromIdx[i] ].d.release();
+			oldParticleAlreadyCopied[newParticlesDerivedFromIdx[i]] = true;
 		}
 		else
 		{
@@ -478,7 +478,7 @@ void  CLSLAM_RBPF_2DLASER::prediction_and_update_pfAuxiliaryPFOptimal(
 			newPartData = new CLSLAMParticleData( *LMH->m_particles[ newParticlesDerivedFromIdx[i] ].d );
 		}
 
-		newPartIt->d = newPartData;
+		newPartIt->d.reset(newPartData);
 	} // end for "newPartIt"
 
 
@@ -489,10 +489,7 @@ void  CLSLAM_RBPF_2DLASER::prediction_and_update_pfAuxiliaryPFOptimal(
 	// Free those old m_particles not being copied into the new ones:
 	for (i=0;i<LMH->m_particles.size();i++)
 	{
-		if (!oldParticleAlreadyCopied[i])
-			delete LMH->m_particles[ i ].d;
-		// And set all to NULL, so don't try to delete them below:
-		LMH->m_particles[ i ].d = NULL;
+		LMH->m_particles[ i ].d.reset();
 	}
 
 	// Copy into "m_particles":
@@ -500,8 +497,7 @@ void  CLSLAM_RBPF_2DLASER::prediction_and_update_pfAuxiliaryPFOptimal(
 	for (newPartIt=newParticlesArray.begin(),trgPartIt=LMH->m_particles.begin(); newPartIt!=newParticlesArray.end(); newPartIt++, trgPartIt++ )
 	{
 		trgPartIt->log_w = newPartIt->log_w;
-		trgPartIt->d = newPartIt->d;
-		newPartIt->d = NULL;
+		trgPartIt->d.move_from(newPartIt->d);
 	}
 
 	// Free buffers:
@@ -630,7 +626,7 @@ double  CLSLAM_RBPF_2DLASER::auxiliarComputeObservationLikelihood(
 {
 	MRPT_UNUSED_PARAM(PF_options);
 	const CLocalMetricHypothesis  *theObj = static_cast<const CLocalMetricHypothesis*>(obj);
-	CMultiMetricMap			*map = &theObj->m_particles[particleIndexForMap].d->metricMaps;
+	CMultiMetricMap         *map = const_cast<CMultiMetricMap*>( &theObj->m_particles[particleIndexForMap].d->metricMaps );
 
 	return map->computeObservationsLikelihood( *observation, *x );
 }
@@ -813,7 +809,7 @@ void  CLSLAM_RBPF_2DLASER::prediction_and_update_pfOptimalProposal(
 
 	// Build local map:
 	localMapPoints.clear();
-	localMapPoints.insertionOptions.minDistBetweenLaserPoints =  0.02;
+	localMapPoints.insertionOptions.minDistBetweenLaserPoints =  0.02f;
 	sf->insertObservationsInto( &localMapPoints );
 
 	// Process the particles

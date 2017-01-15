@@ -33,14 +33,14 @@ The following list is roughly sorted in reverse cronological order.
 * Hunter (2016-) https://github.com/jolting
   - Add-ons to 2D range scan observations.
   - Port towards C++11 for MRPT 2.0
-  - Code clean ups. 
+  - Code clean ups.
   - Multiple bug fixes.
-  
+
 * Nikos Koukis, National Technical University of Athens, Greece (2016) - https://github.com/bergercookie
   - Support for executing graphSLAM in graphslam lib/ + Corresponding
   	graphslam-engine application
   - Initial version of MRPT logging module - COutputLogger
-  
+
 * Chandra Mangipudi, University of Minnesota (2016) - https://github.com/mangi020
   - The PnP module in mrpt::vision
 

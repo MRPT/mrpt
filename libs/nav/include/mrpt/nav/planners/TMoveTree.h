@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -79,7 +79,6 @@ namespace mrpt
 				const std::set<mrpt::utils::TNodeID> *ignored_nodes = NULL
 				) const
 			{
-				MRPT_TODO("Optimize this query with KD-tree!")
 				ASSERT_(!m_nodes.empty())
 
 				double min_d = std::numeric_limits<double>::max();

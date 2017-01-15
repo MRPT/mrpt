@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -28,6 +28,8 @@
 	#include <errno.h>
 	#include <stdio.h>
 #endif
+
+#include <cstring>
 
 #include <mrpt/system/CFileSystemWatcher.h>
 #include <mrpt/system/filesystem.h>
@@ -209,8 +211,10 @@ void CFileSystemWatcher::getChanges( TFileSystemChangeList &out_list )
 
 		while (i < len)
 		{
-			struct inotify_event *event;
-			event = (struct inotify_event *) &buf[i];
+			struct inotify_event event_val;
+			::memcpy(&event_val, &buf[i], sizeof(event_val)); // Was: event = (struct inotify_event *) ;
+			struct inotify_event *event = &event_val;
+
 			i += EVENT_SIZE + event->len;
 
 //			printf ("wd=%d mask=%u cookie=%u len=%u\n",event->wd, event->mask,event->cookie, event->len);

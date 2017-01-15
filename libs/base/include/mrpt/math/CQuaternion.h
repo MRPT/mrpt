@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -65,7 +65,7 @@ namespace mrpt
 			(*this)[1] = x;
 			(*this)[2] = y;
 			(*this)[3] = z;
-			ASSERTMSG_(std::abs(normSqr()-1.0)<1e-5, mrpt::format("Initialization data for quaternion is not normalized: %f %f %f %f -> sqrNorm=%f",r,x,y,z,normSqr()) );
+			ASSERTMSG_(std::abs(normSqr()-1.0)<1e-3, mrpt::format("Initialization data for quaternion is not normalized: %f %f %f %f -> sqrNorm=%f",r,x,y,z,normSqr()) );
 		}
 
 		/* @}

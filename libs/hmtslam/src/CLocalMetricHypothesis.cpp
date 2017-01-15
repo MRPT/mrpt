@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -168,8 +168,8 @@ void CLocalMetricHypothesis::getAs3DScene( opengl::CSetOfObjectsPtr &objs ) cons
 		// Add an arrow for the mean direction also:
 		{
 			mrpt::opengl::CArrowPtr obj = mrpt::opengl::CArrow::Create(
-        		0,0,0,
-				0.20,0,0,
+				0,0,0,
+				0.20f,0,0,
 				0.25f,0.005f,0.02f);
 			obj->setColor(1,0,0);
 			obj->setPose(pdf.mean);
@@ -422,7 +422,7 @@ void CLocalMetricHypothesis::getPathParticles( std::map< TPoseID, CPose3DPDFPart
 	if (m_particles.empty()) return;
 
 	// For each poseID:
-	for ( TMapPoseID2Pose3D::iterator itPoseID= m_particles.begin()->d->robotPoses.begin(); itPoseID!=m_particles.begin()->d->robotPoses.end();++itPoseID )
+	for ( TMapPoseID2Pose3D::const_iterator itPoseID= m_particles.begin()->d->robotPoses.begin(); itPoseID!=m_particles.begin()->d->robotPoses.end();++itPoseID )
 	{
 		CPose3DPDFParticles								auxPDF( m_particles.size() );
 		CParticleList::const_iterator  					it;
@@ -430,7 +430,7 @@ void CLocalMetricHypothesis::getPathParticles( std::map< TPoseID, CPose3DPDFPart
 		for ( it = m_particles.begin(), itP = auxPDF.m_particles.begin(); it!=m_particles.end(); it++, itP++ )
 		{
 			itP->log_w = it->log_w;
-			*itP->d    = it->d->robotPoses[ itPoseID->first ];
+			*itP->d    = it->d->robotPoses.find( itPoseID->first )->second;
 		}
 
 		// Save PDF:
@@ -476,7 +476,7 @@ void CLocalMetricHypothesis::clearRobotPoses()
 	{
 		// Create particle:
 		it->log_w = 0;
-		it->d = new CLSLAMParticleData( &m_parent->m_options.defaultMapsInitializers );
+		it->d.reset(new CLSLAMParticleData( &m_parent->m_options.defaultMapsInitializers ));
 
 		// Fill in:
 		it->d->robotPoses.clear();
@@ -545,7 +545,7 @@ void CLocalMetricHypothesis::changeCoordinateOrigin( const TPoseID &newOrigin )
 {
 	CPose3DPDFParticles		originPDF( m_particles.size() );
 
-	CParticleList::const_iterator it;
+	CParticleList::iterator it;
 	CPose3DPDFParticles::CParticleList::iterator	itOrgPDF;
 
 	for ( it = m_particles.begin(), itOrgPDF=originPDF.m_particles.begin(); it!=m_particles.end(); it++, itOrgPDF++ )

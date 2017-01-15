@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -10,7 +10,6 @@
 #include "kinematics-precomp.h"  // Precompiled header
 
 #include <mrpt/kinematics/CVehicleSimul_DiffDriven.h>
-#include <mrpt/random.h>
 
 using namespace mrpt::kinematics;
 
@@ -34,11 +33,8 @@ void CVehicleSimul_DiffDriven::internal_clear()
 	m_v=m_w=0;
 }
 
-void CVehicleSimul_DiffDriven::internal_simulStep(const double AAt)
+void CVehicleSimul_DiffDriven::internal_simulControlStep(const double AAt)
 {
-	using namespace mrpt::random;
-	using mrpt::poses::CPose2D;
-
 	// Change velocities:
 	// ----------------------------------------------------------------
 	double elapsed_time = this->m_time - Command_Time;
@@ -57,23 +53,10 @@ void CVehicleSimul_DiffDriven::internal_simulStep(const double AAt)
 	}
 
 	// Local to global frame:
-	m_vel.vx   = cos(m_pose.phi) * m_v;
-	m_vel.vy   = sin(m_pose.phi) * m_v;
-	m_vel.omega = m_w;
+	m_odometric_vel.vx   = cos(m_odometry.phi) * m_v;
+	m_odometric_vel.vy   = sin(m_odometry.phi) * m_v;
+	m_odometric_vel.omega = m_w;
 
-	// Simulate movement during At:
-	const CPose2D  dP( m_v*AAt,  0, m_w*AAt );
-	m_pose = CPose2D(m_pose) + dP;
-
-	// odometry:
-	CPose2D dPodo = dP;
-	if (m_use_odo_error)
-	{
-		dPodo.x( dP.x() + AAt*m_Ax_err_bias + AAt*m_Ax_err_std * randomGenerator.drawGaussian1D_normalized() );
-		dPodo.y( dP.y() + AAt*m_Ay_err_bias + AAt*m_Ay_err_std * randomGenerator.drawGaussian1D_normalized() );
-		dPodo.phi( dP.phi() + AAt*m_Aphi_err_bias + AAt*m_Aphi_err_std * randomGenerator.drawGaussian1D_normalized() );
-	}
-	m_odometry = CPose2D(m_odometry) + dPodo;
 }
 
 /*************************************************************************

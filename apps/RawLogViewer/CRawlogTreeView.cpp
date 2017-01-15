@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -19,7 +19,7 @@
 #include <wx/dcclient.h>
 #include <wx/imaglist.h>
 #include <wx/dcbuffer.h>
-#include "../wx-common/wx28-fixes.h"
+#include <mrpt/gui/wx28-fixes.h>
 
 IMPLEMENT_DYNAMIC_CLASS(CRawlogTreeView, wxScrolledWindow)
 
@@ -166,14 +166,14 @@ void CRawlogTreeView::reloadFromRawlog( int hint_rawlog_items )
 					m_tree_nodes.push_back( TNodeData() );
 					TNodeData  &d = m_tree_nodes.back();
 					d.level = 2;
-					d.data = (*a);
+					d.data = a->get_ptr();
 
-                    if ((*a)->timestamp!=INVALID_TIMESTAMP)
-                    {
-                        m_rawlog_last = (*a)->timestamp;
-                        if (m_rawlog_start == INVALID_TIMESTAMP)
-                            m_rawlog_start = (*a)->timestamp;
-                    }
+					if ((*a)->timestamp!=INVALID_TIMESTAMP)
+					{
+						m_rawlog_last = (*a)->timestamp;
+						if (m_rawlog_start == INVALID_TIMESTAMP)
+							m_rawlog_start = (*a)->timestamp;
+					}
 				}
 			}
 			else

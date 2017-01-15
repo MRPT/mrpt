@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -249,7 +249,12 @@ void Test_Kinect()
 				CObservation2DRangeScanPtr obs_2d = CObservation2DRangeScan::Create();
 				const float vert_FOV = DEG2RAD( gl_frustum->getVertFOV() );
 
-				last_obs->convertTo2DScan(*obs_2d, "KINECT_2D_SCAN", .5f*vert_FOV, .5f*vert_FOV );
+				mrpt::obs::T3DPointsTo2DScanParams sp;
+				sp.angle_inf = .5f*vert_FOV;
+				sp.angle_sup = .5f*vert_FOV;
+				sp.sensorLabel = "KINECT_2D_SCAN";
+
+				last_obs->convertTo2DScan(*obs_2d, sp);
 
 				// And load scan in the OpenGL object:
 				gl_2d_scan->setScan(*obs_2d);
@@ -268,7 +273,10 @@ void Test_Kinect()
 			if (last_obs->hasPoints3D )
 			{
 				win3D.get3DSceneAndLock();
-					last_obs->project3DPointsFromDepthImageInto(*gl_points, false /* ignore pose_on_robot of the sensor */ );
+				mrpt::obs::T3DPointsProjectionParams pp;
+				pp.takeIntoAccountSensorPoseOnRobot = false;
+
+				last_obs->project3DPointsFromDepthImageInto(*gl_points, pp);
 				win3D.unlockAccess3DScene();
 				do_refresh=true;
 			}

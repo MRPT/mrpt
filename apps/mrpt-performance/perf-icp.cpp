@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -48,13 +48,13 @@ double icp_test_1(int a1, int a2)
 	if (use_grid)
 	{
 		COccupancyGridMap2D::TMapDefinition def;
-		def.resolution = 0.05;
+		def.resolution = 0.05f;
 		metricMapsOpts.push_back( def );
 	}
 	else
 	{
 		CSimplePointsMap::TMapDefinition def;
-		def.insertionOpts.minDistBetweenLaserPoints = 0.03;
+		def.insertionOpts.minDistBetweenLaserPoints = 0.03f;
 		metricMapsOpts.push_back( def );
 	}
 

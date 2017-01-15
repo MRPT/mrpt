@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -11,7 +11,8 @@
 #define ba_internals_H
 
 #include <mrpt/math/CMatrixFixedNumeric.h>
-#include <mrpt/math/CArray.h>
+#include <mrpt/utils/CArray.h>
+#include <mrpt/math/CArrayNumeric.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/utils/aligned_containers.h>
 #include <mrpt/vision/types.h>
@@ -208,7 +209,7 @@ namespace mrpt
 		  */
 		void ba_build_gradient_Hessians(
 			const TSequenceFeatureObservations          & observations,
-			const std::vector<mrpt::math::CArray<double,2> >              & residual_vec,
+			const std::vector<mrpt::utils::CArray<double,2> >              & residual_vec,
 			const mrpt::aligned_containers<JacData<6,3,2> >::vector_t & jac_data_vec,
 			mrpt::aligned_containers<mrpt::math::CMatrixFixedNumeric<double,6,6> >::vector_t  & U,
 			mrpt::aligned_containers<CArrayDouble<6> >::vector_t & eps_frame,

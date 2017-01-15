@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -31,17 +31,13 @@ CLogFileRecord::CLogFileRecord() :
 	WS_Obstacles.clear();
 }
 
-CLogFileRecord::~CLogFileRecord()
-{
-}
-
 /*---------------------------------------------------------------
 						writeToStream
  ---------------------------------------------------------------*/
 void  CLogFileRecord::writeToStream(mrpt::utils::CStream &out,int *version) const
 {
 	if (version)
-		*version = 17;
+		*version = 19;
 	else
 	{
 		uint32_t	i,n;
@@ -68,6 +64,8 @@ void  CLogFileRecord::writeToStream(mrpt::utils::CStream &out,int *version) cons
 			out << there_is_ptg_data;
 			if (there_is_ptg_data)
 				out << infoPerPTG[i].ptg;
+
+			out << infoPerPTG[i].clearance.raw_clearances; // v19
 		}
 		out << nSelectedPTG << WS_Obstacles << robotOdometryPose << WS_target_relative /*v8*/;
 		// v16:
@@ -109,6 +107,7 @@ void  CLogFileRecord::writeToStream(mrpt::utils::CStream &out,int *version) cons
 		out << relPoseSense << relPoseVelCmd; // v14
 
 		// v15: cmd_vel converted from std::vector<double> into CSerializable
+		out << additional_debug_msgs; // v18
 	}
 }
 
@@ -137,6 +136,8 @@ void  CLogFileRecord::readFromStream(mrpt::utils::CStream &in,int version)
 	case 15:
 	case 16:
 	case 17:
+	case 18:
+	case 19:
 		{
 			// Version 0 --------------
 			uint32_t  i,n;
@@ -189,6 +190,13 @@ void  CLogFileRecord::readFromStream(mrpt::utils::CStream &in,int version)
 					in >> there_is_ptg_data;
 					if (there_is_ptg_data)
 						infoPerPTG[i].ptg = mrpt::nav::CParameterizedTrajectoryGeneratorPtr( in.ReadObject() );
+				}
+
+				if (version >= 19) {
+					in >> infoPerPTG[i].clearance.raw_clearances;
+				}
+				else {
+					infoPerPTG[i].clearance.raw_clearances.clear();
 				}
 			}
 
@@ -374,6 +382,10 @@ void  CLogFileRecord::readFromStream(mrpt::utils::CStream &in,int version)
 			else {
 				relPoseSense = relPoseVelCmd = mrpt::poses::CPose2D();
 			}
+
+			if (version>=18) 
+			     in >> additional_debug_msgs;
+			else additional_debug_msgs.clear();
 
 		} break;
 	default:

@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -166,8 +166,8 @@ void do_pf_localization(const std::string &ini_fil, const std::string &cmdline_r
 	//  Only used for observations-only rawlogs:
 	CActionRobotMovement2D::TMotionModelOptions dummy_odom_params;
 	dummy_odom_params.modelSelection = CActionRobotMovement2D::mmGaussian;
-	dummy_odom_params.gausianModel.minStdXY  = cfg.read_double("DummyOdometryParams","minStdXY",0.04);
-	dummy_odom_params.gausianModel.minStdPHI = DEG2RAD(cfg.read_double("DummyOdometryParams","minStdPHI", 2.0));
+	dummy_odom_params.gaussianModel.minStdXY  = cfg.read_double("DummyOdometryParams","minStdXY",0.04);
+	dummy_odom_params.gaussianModel.minStdPHI = DEG2RAD(cfg.read_double("DummyOdometryParams","minStdPHI", 2.0));
 
 
 	// PF-algorithm Options:
@@ -546,7 +546,7 @@ void do_pf_localization(const std::string &ini_fil, const std::string &cmdline_r
 									GTpt->setName( "GT" );
 									GTpt->setColor(0,0,0, 0.9);
 
-									getAs<CDisk>(GTpt)->setDiskRadius(0.04);
+									getAs<CDisk>(GTpt)->setDiskRadius(0.04f);
 									ptrScene->insert( GTpt );
 								}
 
@@ -801,7 +801,7 @@ void do_pf_localization(const std::string &ini_fil, const std::string &cmdline_r
 								GTpt->setName( "GT" );
 								GTpt->setColor(0,0,0, 0.9);
 
-								getAs<CDisk>(GTpt)->setDiskRadius(0.04);
+								getAs<CDisk>(GTpt)->setDiskRadius(0.04f);
 								scene.insert( GTpt );
 							}
 

@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -30,58 +30,17 @@ IMPLEMENTS_SERIALIZABLE(CActionRobotMovement2D, CAction, mrpt::obs)
 						Constructor
   ---------------------------------------------------------------*/
 CActionRobotMovement2D::CActionRobotMovement2D() :
-	poseChange(),
+	poseChange(CPosePDFGaussian::Create()),
 	rawOdometryIncrementReading(),
 	estimationMethod(emOdometry),
 	hasEncodersInfo(false),
 	encoderLeftTicks(0),
 	encoderRightTicks(0),
 	hasVelocities(false),
-	velocityLin(0),
-	velocityAng(0),
+	velocityLocal(.0,.0,.0),
 	motionModelConfiguration(),
 	m_fastDrawGauss_Z(),
 	m_fastDrawGauss_M()
-{
-	poseChange = CPosePDFGaussian::Create();
-}
-
-/*---------------------------------------------------------------
-				     Copy Constructor
-  ---------------------------------------------------------------*/
-CActionRobotMovement2D::CActionRobotMovement2D(const CActionRobotMovement2D &o) :
-    CAction(o),
-	poseChange( o.poseChange ),
-	rawOdometryIncrementReading(o.rawOdometryIncrementReading),
-	estimationMethod(o.estimationMethod),
-	hasEncodersInfo(o.hasEncodersInfo),
-	encoderLeftTicks(o.encoderLeftTicks),
-	encoderRightTicks(o.encoderRightTicks),
-	hasVelocities(o.hasVelocities),
-	velocityLin(o.velocityLin),
-	velocityAng(o.velocityAng),
-	motionModelConfiguration(o.motionModelConfiguration),
-	m_fastDrawGauss_Z(),
-	m_fastDrawGauss_M()
-{
-	poseChange.make_unique();
-}
-
-/*---------------------------------------------------------------
-				     Copy operator
-  ---------------------------------------------------------------*/
-CActionRobotMovement2D & CActionRobotMovement2D::operator =(const CActionRobotMovement2D &o)
-{
-	if (this==&o) return *this;
-	poseChange = o.poseChange;
-	poseChange.make_unique();
-	return *this;
-}
-
-/*---------------------------------------------------------------
-						Destructor
-  ---------------------------------------------------------------*/
-CActionRobotMovement2D::~CActionRobotMovement2D()
 {
 }
 
@@ -91,7 +50,7 @@ CActionRobotMovement2D::~CActionRobotMovement2D()
 void  CActionRobotMovement2D::writeToStream(mrpt::utils::CStream &out, int *version) const
 {
 	if (version)
-		*version = 6;
+		*version = 7;
 	else
 	{
 		uint32_t	i  = static_cast<uint32_t>(estimationMethod);
@@ -108,12 +67,12 @@ void  CActionRobotMovement2D::writeToStream(mrpt::utils::CStream &out, int *vers
 
 			i = static_cast<uint32_t>(motionModelConfiguration.modelSelection);
 			out << i;
-			out << motionModelConfiguration.gausianModel.a1
-                << motionModelConfiguration.gausianModel.a2
-                << motionModelConfiguration.gausianModel.a3
-                << motionModelConfiguration.gausianModel.a4
-                << motionModelConfiguration.gausianModel.minStdXY
-                << motionModelConfiguration.gausianModel.minStdPHI;
+			out << motionModelConfiguration.gaussianModel.a1
+                << motionModelConfiguration.gaussianModel.a2
+                << motionModelConfiguration.gaussianModel.a3
+                << motionModelConfiguration.gaussianModel.a4
+                << motionModelConfiguration.gaussianModel.minStdXY
+                << motionModelConfiguration.gaussianModel.minStdPHI;
 
 			out << motionModelConfiguration.thrunModel.nParticlesCount
 				<< motionModelConfiguration.thrunModel.alfa1_rot_rot
@@ -130,8 +89,13 @@ void  CActionRobotMovement2D::writeToStream(mrpt::utils::CStream &out, int *vers
 		}
 
 		// Added in version 1:
-		out << hasVelocities << velocityLin << velocityAng;
-		out << hasEncodersInfo << encoderLeftTicks << encoderRightTicks;
+		out << hasVelocities;
+		if (hasVelocities)
+			out << velocityLocal; // v7
+
+		out << hasEncodersInfo;
+		if (hasEncodersInfo)
+			out << encoderLeftTicks << encoderRightTicks;  // added if() in v7
 
 		// Added in version 6
 		out << timestamp;
@@ -148,6 +112,7 @@ void  CActionRobotMovement2D::readFromStream(mrpt::utils::CStream &in, int versi
 	case 4:
 	case 5:
 	case 6:
+	case 7:
 		{
 			int32_t	i;
 
@@ -165,12 +130,12 @@ void  CActionRobotMovement2D::readFromStream(mrpt::utils::CStream &in, int versi
 				in >> i;
 				motionModelConfiguration.modelSelection = static_cast<TDrawSampleMotionModel>(i);
 
-				in >> motionModelConfiguration.gausianModel.a1
-					>> motionModelConfiguration.gausianModel.a2
-					>> motionModelConfiguration.gausianModel.a3
-					>> motionModelConfiguration.gausianModel.a4
-					>> motionModelConfiguration.gausianModel.minStdXY
-					>> motionModelConfiguration.gausianModel.minStdPHI;
+				in >> motionModelConfiguration.gaussianModel.a1
+					>> motionModelConfiguration.gaussianModel.a2
+					>> motionModelConfiguration.gaussianModel.a3
+					>> motionModelConfiguration.gaussianModel.a4
+					>> motionModelConfiguration.gaussianModel.minStdXY
+					>> motionModelConfiguration.gaussianModel.minStdPHI;
 
 				in  >> i; motionModelConfiguration.thrunModel.nParticlesCount=i;
 				in  >> motionModelConfiguration.thrunModel.alfa1_rot_rot
@@ -195,14 +160,32 @@ void  CActionRobotMovement2D::readFromStream(mrpt::utils::CStream &in, int versi
 			else
 			{
 				// Read the PDF directly from the stream:
-				in >> poseChange;
+				CPosePDFPtr pc;
+				in >> pc;
+				poseChange = pc;
 			}
 
-			in >> hasVelocities >> velocityLin >> velocityAng;
+			in >> hasVelocities;
+			if (version >= 7) {
+				if (hasVelocities)
+					in >> velocityLocal;
+			}
+			else {
+				float velocityLin, velocityAng;
+				in >> velocityLin >> velocityAng;
+				velocityLocal.vx = velocityLin;
+				velocityLocal.vy = .0f;
+				velocityLocal.omega = velocityAng;
+			}
 			in >> hasEncodersInfo;
-
-			in >> i; encoderLeftTicks=i;
-			in >> i; encoderRightTicks=i;
+			if (version < 7 || hasEncodersInfo) {
+				in >> i; encoderLeftTicks = i;
+				in >> i; encoderRightTicks = i;
+			}
+			else {
+				encoderLeftTicks = 0;
+				encoderRightTicks = 0;
+			}
 
 			if (version>=6)
 				in >> timestamp;
@@ -230,7 +213,7 @@ void  CActionRobotMovement2D::readFromStream(mrpt::utils::CStream &in, int versi
 
 				float   dum1,dum2,dum3;
 
-				in >> dum1 >> dum2 >> dum3 >> motionModelConfiguration.gausianModel.minStdXY >> motionModelConfiguration.gausianModel.minStdPHI;
+				in >> dum1 >> dum2 >> dum3 >> motionModelConfiguration.gaussianModel.minStdXY >> motionModelConfiguration.gaussianModel.minStdPHI;
 
 				// Leave the default values for a1,a2,a3,a4:
 				in  >> i; motionModelConfiguration.thrunModel.nParticlesCount=i;
@@ -243,10 +226,19 @@ void  CActionRobotMovement2D::readFromStream(mrpt::utils::CStream &in, int versi
 			else
 			{
 				// Read the PDF directly from the stream:
-				in >> poseChange;
+				CPosePDFPtr pc;
+				in >> pc;
+				poseChange = pc;
 			}
 
-			in >> hasVelocities >> velocityLin >> velocityAng;
+			in >> hasVelocities;
+			{
+				float velocityLin, velocityAng;
+				in >> velocityLin >> velocityAng;
+				velocityLocal.vx = velocityLin;
+				velocityLocal.vy = .0f;
+				velocityLocal.omega = velocityAng;
+			}
 			in >> hasEncodersInfo;
 
 			in >> i; encoderLeftTicks=i;
@@ -282,10 +274,19 @@ void  CActionRobotMovement2D::readFromStream(mrpt::utils::CStream &in, int versi
 			else
 			{
 				// Read the PDF directly from the stream:
-				in >> poseChange;
+				CPosePDFPtr pc;
+				in >> pc;
+				poseChange = pc;
 			}
 
-			in >> hasVelocities >> velocityLin >> velocityAng;
+			in >> hasVelocities;
+			{
+				float velocityLin, velocityAng;
+				in >> velocityLin >> velocityAng;
+				velocityLocal.vx = velocityLin;
+				velocityLocal.vy = .0f;
+				velocityLocal.omega = velocityAng;
+			}
 			in >> hasEncodersInfo;
 			in >> i; encoderLeftTicks=i;
 			in >> i; encoderRightTicks=i;
@@ -295,7 +296,11 @@ void  CActionRobotMovement2D::readFromStream(mrpt::utils::CStream &in, int versi
 	case 1:
 		{
 			int32_t	i;
-			in >> poseChange;
+			{
+				CPosePDFPtr pc;
+				in >> pc;
+				poseChange = pc;
+			}
 			in >> i;
 
 			// copy:
@@ -308,7 +313,14 @@ void  CActionRobotMovement2D::readFromStream(mrpt::utils::CStream &in, int versi
 
 			if (version>=1)
 			{
-				in >> hasVelocities >> velocityLin >> velocityAng;
+				in >> hasVelocities;
+				{
+					float velocityLin, velocityAng;
+					in >> velocityLin >> velocityAng;
+					velocityLocal.vx = velocityLin;
+					velocityLocal.vy = .0f;
+					velocityLocal.omega = velocityAng;
+				}
 				in >> hasEncodersInfo;
 				in >> i; encoderLeftTicks = i;
 				in >> i; encoderRightTicks = i;
@@ -318,7 +330,7 @@ void  CActionRobotMovement2D::readFromStream(mrpt::utils::CStream &in, int versi
 				// Default values:
 				hasVelocities  = hasEncodersInfo = false;
 				encoderLeftTicks= encoderRightTicks= 0;
-				velocityLin = velocityAng = 0;
+				velocityLocal = mrpt::math::TTwist2D(.0, .0, .0);
 			}
 
 		} break;
@@ -383,16 +395,16 @@ void  CActionRobotMovement2D::computeFromOdometry(
  ---------------------------------------------------------------*/
 CActionRobotMovement2D::TMotionModelOptions::TMotionModelOptions() :
 	modelSelection( CActionRobotMovement2D::mmGaussian ),
-	gausianModel(),
+	gaussianModel(),
 	thrunModel()
 {
-	gausianModel.a1		    = 0.01f;
-	gausianModel.a2		    = RAD2DEG( 0.001f );
-	gausianModel.a3		    = DEG2RAD( 1.0f );
-	gausianModel.a4		    = 0.05f;
+	gaussianModel.a1		    = 0.01f;
+	gaussianModel.a2		    = RAD2DEG( 0.001f );
+	gaussianModel.a3		    = DEG2RAD( 1.0f );
+	gaussianModel.a4		    = 0.05f;
 
-	gausianModel.minStdXY	= 0.01f;
-	gausianModel.minStdPHI	= DEG2RAD(0.2f);
+	gaussianModel.minStdXY	= 0.01f;
+	gaussianModel.minStdPHI	= DEG2RAD(0.2f);
 
 	thrunModel.nParticlesCount		= 300;
 	thrunModel.alfa1_rot_rot		= 0.05f;
@@ -424,9 +436,9 @@ void  CActionRobotMovement2D::computeFromOdometry_modelGaussian(
 	double	Al = odometryIncrement.norm();
 	CMatrixDouble31 ODO_INCR = CMatrixDouble31(odometryIncrement);
 	CMatrixDouble33 C_ODO;
-	C_ODO(0,0) =square( o.gausianModel.minStdXY + o.gausianModel.a1*Al + o.gausianModel.a2*fabs( odometryIncrement.phi() ) );
-	C_ODO(1,1) =square( o.gausianModel.minStdXY + o.gausianModel.a1*Al + o.gausianModel.a2*fabs( odometryIncrement.phi() ) );
-	C_ODO(2,2) =square( o.gausianModel.minStdPHI + o.gausianModel.a3*Al + o.gausianModel.a4*fabs( odometryIncrement.phi() ) );
+	C_ODO(0,0) =square( o.gaussianModel.minStdXY + o.gaussianModel.a1*Al + o.gaussianModel.a2*fabs( odometryIncrement.phi() ) );
+	C_ODO(1,1) =square( o.gaussianModel.minStdXY + o.gaussianModel.a1*Al + o.gaussianModel.a2*fabs( odometryIncrement.phi() ) );
+	C_ODO(2,2) =square( o.gaussianModel.minStdPHI + o.gaussianModel.a3*Al + o.gaussianModel.a4*fabs( odometryIncrement.phi() ) );
 
     // Build the transformation matrix:
     CMatrixDouble33 H;

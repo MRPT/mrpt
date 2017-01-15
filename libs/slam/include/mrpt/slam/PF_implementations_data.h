@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -191,7 +191,7 @@ namespace mrpt
 					if (!oldParticleAlreadyCopied[newParticlesDerivedFromIdx[i]])
 					{
 						// The first copy of this old particle:
-						newPartData = old_particles[ newParticlesDerivedFromIdx[i] ].d;
+						newPartData = old_particles[newParticlesDerivedFromIdx[i]].d.release();
 						oldParticleAlreadyCopied[newParticlesDerivedFromIdx[i]] = true;
 					}
 					else
@@ -200,19 +200,16 @@ namespace mrpt
 						newPartData = new PARTICLE_TYPE( *old_particles[ newParticlesDerivedFromIdx[i] ].d );
 					}
 
-					newPartIt->d = newPartData;
+					newPartIt->d.reset(newPartData);
 				} // end for "newPartIt"
 
 				// Now add the new robot pose to the paths:
 				//  (this MUST be done after the above loop, separately):
 				// Update the particle with the new pose: this part is caller-dependant and must be implemented there:
 				for (newPartIt=newParticlesArray.begin(),i=0;i<N;++newPartIt,++i)
-					PF_SLAM_implementation_custom_update_particle_with_new_pose( newPartIt->d, newParticles[i] );
+					PF_SLAM_implementation_custom_update_particle_with_new_pose( newPartIt->d.get(), newParticles[i] );
 
-				// Free those old m_particles not being copied into the new ones:
-				for (size_t i=0;i<old_particles.size();i++)
-					if (!oldParticleAlreadyCopied[i])
-						mrpt::utils::delete_safe( old_particles[ i ].d );
+				// Free those old m_particles not being copied into the new ones: not needed since use of smart ptr.
 
 				// Copy into "m_particles"
 				old_particles.resize( newParticlesArray.size() );
@@ -220,7 +217,7 @@ namespace mrpt
 				for (newPartIt=newParticlesArray.begin(),trgPartIt=old_particles.begin(); newPartIt!=newParticlesArray.end(); ++newPartIt, ++trgPartIt )
 				{
 					trgPartIt->log_w = newPartIt->log_w;
-					trgPartIt->d = newPartIt->d;
+					trgPartIt->d.move_from( newPartIt->d );
 				}
 			} // end of PF_SLAM_implementation_replaceByNewParticleSet
 

@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -60,12 +60,12 @@ void CServerTCPSocket::setupSocket(
 	desiredIP.sin_addr.s_addr	= inet_addr( IPaddress.c_str() );
 	desiredIP.sin_port			= htons((unsigned short)listenPort);
 
-	if( int(INVALID_SOCKET) == ::bind(m_serverSock,(struct sockaddr *)(&desiredIP),sizeof(desiredIP)) )
+	if( INVALID_SOCKET == ::bind(m_serverSock,(struct sockaddr *)(&desiredIP),sizeof(desiredIP)) )
 		THROW_EXCEPTION( getLastErrorStr() );
 
 	// Put in listen mode:
 	// ----------------------------
-	if ( int(INVALID_SOCKET) ==  listen(m_serverSock,maxConnectionsWaiting) )
+	if ( INVALID_SOCKET ==  listen(m_serverSock,maxConnectionsWaiting) )
 		THROW_EXCEPTION( getLastErrorStr() );
 
 	MRPT_LOG_DEBUG( format("[CServerTCPSocket] Listening at %s:%i\n",IPaddress.c_str(), listenPort ));
@@ -122,7 +122,7 @@ CClientTCPSocket *  CServerTCPSocket::accept( int timeout_ms )
 					 NULL,			// Wait for except.
 					 ptrTimeout);	// Timeout
 
-	if( selRet==int(INVALID_SOCKET))
+	if( selRet==INVALID_SOCKET)
 	{
 	    fprintf(stderr,"%s\n", getLastErrorStr().c_str());
 		return NULL;
@@ -150,7 +150,7 @@ CClientTCPSocket *  CServerTCPSocket::accept( int timeout_ms )
 			(struct sockaddr*)&otherPart,
 			&otherPartSize );
 
-		if (aceptdSock==int(INVALID_SOCKET))
+		if (aceptdSock==INVALID_SOCKET)
 		{
 			fprintf(stderr,"%s\n",getLastErrorStr().c_str());
 			delete ret;

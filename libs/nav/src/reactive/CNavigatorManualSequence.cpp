@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -80,9 +80,9 @@ void CNavigatorManualSequence::navigationStep()
 		// Send cmd:
 		logFmt( mrpt::utils::LVL_DEBUG, "[CNavigatorManualSequence] Sending cmd: t=%f\n",programmed_orders.begin()->first);
 
-		if (! m_robot.changeSpeeds(*krc.cmd_vel) )
+		if (!this->changeSpeeds(*krc.cmd_vel) )
 		{
-			m_robot.stop();
+			this->stop(true /*not emergency*/);
 			logFmt( mrpt::utils::LVL_ERROR, "[CNavigatorManualSequence] **ERROR** sending cmd to robot.");
 			return;
 		}

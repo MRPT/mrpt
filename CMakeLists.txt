@@ -8,7 +8,7 @@
 #  For compiling instructions for all compilers and platforms, see
 #   http://www.mrpt.org/Building_and_Installing_Instructions
 #
-#  2007-2016, Jose Luis Blanco <jlblanco@ual.es>
+#  2007-2017, Jose Luis Blanco <jlblanco@ual.es>
 #
 #  NOTE: CMake can be obtained at http://www.cmake.org/
 # ----------------------------------------------------------------------------
@@ -155,8 +155,8 @@ ENDIF()
 # Build the RoboPeak Lidar library?
 SET(DEFAULT_BUILD_ROBOPEAK_LIDAR ON) # Default: Yes
 if (${CMAKE_MRPT_KERNEL} MATCHES "GNU" OR APPLE)   # Unless in HURD
-	SET(DEFAULT_BUILD_ROBOPEAK_LIDAR OR APPLE)
-endif (${CMAKE_MRPT_KERNEL} MATCHES "GNU" OR APPLE)
+	SET(DEFAULT_BUILD_ROBOPEAK_LIDAR OFF)
+endif ()
 # Decl option:
 SET(BUILD_ROBOPEAK_LIDAR ${DEFAULT_BUILD_ROBOPEAK_LIDAR} CACHE BOOL "Build an embedded version of RoboPeak LIDAR SDK (interface to low-cost lidar)")
 IF(BUILD_ROBOPEAK_LIDAR)
@@ -273,6 +273,8 @@ include(cmakemodules/script_isense.cmake REQUIRED)		# Support for INTERSENSE Sen
 include(cmakemodules/script_nite2.cmake REQUIRED)		# Check for NITE2 library
 include(cmakemodules/script_yamlcpp.cmake REQUIRED)		# Check for YAMLCPP library
 include(cmakemodules/script_pcap.cmake REQUIRED)        # Check for the libpcap library
+#include(cmakemodules/script_ros1.cmake REQUIRED)        # Check for ROS
+include(cmakemodules/script_vtk.cmake REQUIRED)        # Check for VTK
 
 # ---------------------------------------------------------------------------
 #			OPTIONS
@@ -346,8 +348,6 @@ include(cmakemodules/script_create_version_h.cmake REQUIRED)  # Build version.h
 INCLUDE_DIRECTORIES(".")
 INCLUDE_DIRECTORIES("${MRPT_CONFIG_FILE_INCLUDE_DIR}")
 
-LINK_DIRECTORIES("${CMAKE_BINARY_DIR}/lib")
-
 # Add user supplied extra options (optimization, etc...)
 SET(USER_EXTRA_CPP_FLAGS "" CACHE STRING "Put extra compiler options here if desired")
 
@@ -368,7 +368,7 @@ MARK_AS_ADVANCED(MRPT_WHOLE_PROGRAM_OPTIMIZATION)
 # Even more warnings for different compilers
 IF(MRPT_EXTRA_WARNINGS)
    IF (${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU" OR ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
-      SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wreturn-type -Wextra -Wno-unused-parameter") # -Wold-style-cast  -Woverloaded-virtual
+      SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wreturn-type -Wextra -Wtype-limits -Wcast-align -Wparentheses -Wno-unused-parameter") # -Wold-style-cast  -Woverloaded-virtual
    ENDIF()
 ENDIF()
 
@@ -377,7 +377,9 @@ SET(MRPT_ENABLE_PROFILING OFF CACHE BOOL "Enable profiling (add -g -pg in GCC/CL
 
 IF(MSVC)
 	SET(EXTRA_CPP_FLAGS "/W3 /D _CRT_SECURE_NO_DEPRECATE /D _CRT_NONSTDC_NO_DEPRECATE")
-	
+
+	LINK_DIRECTORIES("${CMAKE_BINARY_DIR}/lib")  # Required to find libraries
+
 	IF (NOT BUILD_SHARED_LIBS)
 		# static libs in Win: don't optimize out the initializers for class auto registration:
 		set(CMAKE_SHARED_LINKER_FLAGS_RELEASE "${CMAKE_SHARED_LINKER_FLAGS_RELEASE} /OPT:NOREF")
@@ -506,12 +508,6 @@ if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR CMAKE_COMPILER_IS_GNUCXX)
 	IF(MRPT_WARNINGS_ARE_ERRORS)
 		SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror")
 		SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Werror")
-	ENDIF()
-
-	# We need pthread's
-	IF (UNIX AND NOT APPLE)
-		SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
-		SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -pthread")
 	ENDIF()
 
 	IF(CMAKE_BUILD_TYPE MATCHES "Debug")
@@ -684,6 +680,9 @@ IF(BUILD_MATLAB)
         add_subdirectory(mex/apps)# The MEX applications
 ENDIF()
 
+# Generate .h to locate MRPT sources:
+CONFIGURE_FILE("${CMAKE_SOURCE_DIR}/parse-files/mrpt_paths_config.h.in" "${MRPT_CONFIG_FILE_INCLUDE_DIR}/mrpt/mrpt_paths_config.h")
+
 # Documentation targets (must be AFTER "apps" because it uses the aux program "mrpt-perfdata2html")
 add_subdirectory(doc)
 
@@ -692,8 +691,6 @@ add_subdirectory(doc)
 SET( BUILD_TESTING ON CACHE BOOL "Build MRPT tests")
 IF( BUILD_TESTING)
 	# Try using libgtest (Google testing library) from the system, if available
-	# Note: In gtest 1.6.0 things changed and there's no prebuilt system lib anymore.
-	# TODO: Is it possible to compile here the /usr/src/gtest/ sources??
 	IF(${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" AND APPLE)
 		add_definitions(-DGTEST_USE_OWN_TR1_TUPLE=1)
 	ENDIF()

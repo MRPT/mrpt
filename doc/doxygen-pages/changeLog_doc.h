@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -55,6 +55,7 @@
 				- MRPT_LOG_DEBUG_STREAM, MRPT_LOG_INFO_STREAM, MRPT_LOG_WARN_STREAM, MRPT_LOG_ERROR_STREAM
 			- New functions for polynomial roots: see \ref polynomial_roots
 			- New functions for signal filtering: see \ref filtering_grp
+			- New functions for Fresnel integrals: see \fresnel_integrals_grp
 			- New classes mrpt::math::CAtan2LookUpTable, mrpt::math::CAtan2LookUpTableMultiRes
 			- [API change] The following functions are no longer static methods: (since their classes are now derived from the state-aware mrpt::utils::COutputLogger)
 				- mrpt::math::RANSAC_Template::execute()
@@ -65,11 +66,22 @@
 			- Removed mrpt::utils::CStartUpClassesRegister, replaced by the new macro MRPT_INITIALIZER()
 			- New class mrpt::utils::CRateTimer
 			- mrpt::poses::CRobot2DPoseEstimator now uses a more generic odometry-based velocity model (vx,vy,omega).
+			- New template mrpt::utils::ts_hash_map<> for thread-safe, std::map-like containers based on hash functions.
+			- Included exprtk header-only library to runtime compile & evaluation of mathematical expressions, under `<mrpt/otherlibs/exprtk.hpp>`
+			- New smart pointer templates: `mrpt::utils::copy_ptr<>`, `mrpt::utils::poly_ptr<>`.
+			- New colormap: mrpt::utils::hot2rgb()
+			- New function mrpt::system::find_mrpt_shared_dir()
+			- New class mrpt::utils::CDynamicGrid3D<>
 		- \ref mrpt_bayes_grp
-			-  [API change] `verbose` is no longer a field of mrpt::bayes::CParticleFilter::TParticleFilterOptions. Use the setVerbosityLevel() method of the CParticleFilter class itself.
+			- [API change] `verbose` is no longer a field of mrpt::bayes::CParticleFilter::TParticleFilterOptions. Use the setVerbosityLevel() method of the CParticleFilter class itself.
+			- [API change] mrpt::bayes::CProbabilityParticle (which affects all PF-based classes in MRPT) has been greatly simplified via usage of the new mrpt::utils::copy_ptr<> pointee-copy-semantics smart pointer.
+		- \ref mrpt_graphs_grp
+			- New class mrpt::graphs::ScalarFactorGraph, a simple but extensible linear GMRF solver. Refactored from mrpt::maps::CGasConcentrationGridMap2D, etc.
 		- \ref mrpt_gui_grp
 			- mrpt::gui::CMyGLCanvasBase is now derived from mrpt::opengl::CTextMessageCapable so they can draw text labels
 			- New class mrpt::gui::CDisplayWindow3DLocker for exception-safe 3D scene lock in 3D windows.
+		- \ref mrpt_hwdrivers_grp
+			- Using rplidar newest SDK 1.5.6 instead of 1.4.3, which support rplidar A1 and rplidar A2
 		- \ref mrpt_kinematics_grp
 			- New classes for 2D robot simulation:
 				- mrpt::kinematics::CVehicleSimul_DiffDriven
@@ -78,6 +90,7 @@
 		- \ref mrpt_maps_grp
 			- mrpt::maps::COccupancyGridMap2D::loadFromBitmapFile() correct description of `yCentralPixel` parameter.
 			- mrpt::maps::CPointsMap `liblas` import/export methods are now in a separate header. See \ref mrpt_maps_liblas_grp and \ref dep-liblas
+			- New class mrpt::maps::CRandomFieldGridMap3D
 		- \ref mrpt_obs_grp
 			- [ABI change] mrpt::obs::CObservation2DRangeScan
 				- range scan vectors are now protected for safety.
@@ -91,8 +104,10 @@
 			- mrpt::obs::CRawLog can now holds objects of arbitrary type, not only actions/observations. This may be useful for richer logs aimed at debugging.
 		- \ref mrpt_opengl_grp
 			- [ABI change] mrpt::opengl::CAxis now has many new options exposed to configure its look.
+			- mrpt::opengl::CSetOfLines can now optionally show vertices as dots.
 		- \ref mrpt_slam_grp
 			- [API change] mrpt::slam::CMetricMapBuilder::TOptions does not have a `verbose` field anymore. It's supersedded now by the verbosity level of the CMetricMapBuilder class itself.
+			- [API change] getCurrentMetricMapEstimation() renamed mrpt::slam::CMultiMetricMapPDF::getAveragedMetricMapEstimation() to avoid confusions.
 		- \ref mrpt_hwdrivers_grp
 			- mrpt::hwdrivers::CGenericSensor: external image format is now `png` by default instead of `jpg` to avoid losses.
 			- [ABI change] mrpt::hwdrivers::COpenNI2Generic:
@@ -124,6 +139,7 @@
 		- Update of embedded copy of nanoflann to version 1.2.0.
 		- New script for automated dumping stack traces on unit tests failures (`tests/run_all_tests_gdb.sh`)
 		- Fix build against wxWidgets 3.1.*
+		- Embedded version of gtest upgraded to 1.8.0
 	- BUG FIXES:
 		- Fix inconsistent state after calling mrpt::obs::CObservation3DRangeScan::swap()
 		- Fix SEGFAULT in mrpt::obs::CObservation3DRangeScan if trying to build a pointcloud in an external container (mrpt::opengl, mrpt::maps)

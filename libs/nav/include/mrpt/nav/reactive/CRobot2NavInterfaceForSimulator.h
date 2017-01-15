@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -16,13 +16,13 @@ namespace mrpt
 {
   namespace nav
   {
-	/** CRobot2NavInterface_Holo implemented for a simulator object based on mrpt::kinematics::CVehicleSimul_Holo.
+	/** CRobot2NavInterface implemented for a simulator object based on mrpt::kinematics::CVehicleSimul_Holo.
 	  * Only `senseObstacles()` remains virtual for the user to implement it.
 	  *
 	  * \sa CReactiveNavigationSystem, CAbstractNavigator, mrpt::kinematics::CVehicleSimulVirtualBase
 	  *  \ingroup nav_reactive
 	  */
-	class NAV_IMPEXP CRobot2NavInterfaceForSimulator_Holo : public CRobot2NavInterface_Holo
+	class NAV_IMPEXP CRobot2NavInterfaceForSimulator_Holo : public CRobot2NavInterface
 	{
 	private:
 		mrpt::kinematics::CVehicleSimul_Holo & m_simul;
@@ -45,10 +45,20 @@ namespace mrpt
 			return true; // ok
 		}
 
-		bool stop() MRPT_OVERRIDE
+		bool stop(bool isEmergencyStop) MRPT_OVERRIDE
 		{
-			m_simul.sendVelRampCmd(0.0 /*vel*/, 0 /*dir*/, 0.1 /* ramp_time */, 0.0 /*rot speed */);
+			m_simul.sendVelRampCmd(0.0 /*vel*/, 0 /*dir*/, isEmergencyStop ? 0.1 : 1.0 /* ramp_time */, 0.0 /*rot speed */);
 			return true;
+		}
+
+		mrpt::kinematics::CVehicleVelCmdPtr getEmergencyStopCmd() MRPT_OVERRIDE
+		{
+			return mrpt::kinematics::CVehicleVelCmdPtr(new mrpt::kinematics::CVehicleVelCmd_Holo(0.0,0.0,0.1,0.0));
+		}
+
+		mrpt::kinematics::CVehicleVelCmdPtr getStopCmd() MRPT_OVERRIDE
+		{
+			return mrpt::kinematics::CVehicleVelCmdPtr(new mrpt::kinematics::CVehicleVelCmd_Holo(0.0,0.0,1.0,0.0));
 		}
 
 		/** See CRobot2NavInterface::getNavigationTime(). In this class, simulation time is returned instead of wall-clock time. */
@@ -62,13 +72,13 @@ namespace mrpt
 	};
 
 
-	/** CRobot2NavInterface_DiffDriven implemented for a simulator object based on mrpt::kinematics::CVehicleSimul_DiffDriven
+	/** CRobot2NavInterface implemented for a simulator object based on mrpt::kinematics::CVehicleSimul_DiffDriven
 	  * Only `senseObstacles()` remains virtual for the user to implement it.
 	  *
 	  * \sa CReactiveNavigationSystem, CAbstractNavigator, mrpt::kinematics::CVehicleSimulVirtualBase
 	  *  \ingroup nav_reactive
 	  */
-	class NAV_IMPEXP CRobot2NavInterfaceForSimulator_DiffDriven : public CRobot2NavInterface_DiffDriven
+	class NAV_IMPEXP CRobot2NavInterfaceForSimulator_DiffDriven : public CRobot2NavInterface
 	{
 	private:
 		mrpt::kinematics::CVehicleSimul_DiffDriven & m_simul;
@@ -91,13 +101,26 @@ namespace mrpt
 			return true; // ok
 		}
 
-		bool stop() MRPT_OVERRIDE
+		bool stop(bool isEmergencyStop) MRPT_OVERRIDE
 		{
 			mrpt::kinematics::CVehicleVelCmd_DiffDriven cmd;
 			cmd.setToStop();
 			m_simul.sendVelCmd(cmd);
 			return true;
 		}
+
+
+		mrpt::kinematics::CVehicleVelCmdPtr getStopCmd() MRPT_OVERRIDE
+		{
+			mrpt::kinematics::CVehicleVelCmdPtr cmd(new mrpt::kinematics::CVehicleVelCmd_DiffDriven());
+			cmd->setToStop();
+			return cmd;
+		}
+		mrpt::kinematics::CVehicleVelCmdPtr getEmergencyStopCmd() MRPT_OVERRIDE
+		{
+			return getStopCmd();
+		}
+
 		/** See CRobot2NavInterface::getNavigationTime(). In this class, simulation time is returned instead of wall-clock time. */
 		double getNavigationTime() MRPT_OVERRIDE {
 			return m_simul.getTime()-m_simul_time_start;

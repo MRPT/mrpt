@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -184,14 +184,14 @@ TEST_F(ICPTests, RayTracingICP3D)
 	{
 		CSetOfObjectsPtr origin1= opengl::stock_objects::CornerXYZ();
 		origin1->setPose(viewpoint1);
-		origin1->setScale(0.6);
+		origin1->setScale(0.6f);
 		scene1->insert( origin1 );
 		scene2->insert( origin1 );
 	}
 	{
 		CSetOfObjectsPtr origin2= opengl::stock_objects::CornerXYZ();
 		origin2->setPose(viewpoint2);
-		origin2->setScale(0.6);
+		origin2->setScale(0.6f);
 		scene1->insert( origin2 );
 		scene2->insert( origin2 );
 	}
@@ -232,7 +232,7 @@ TEST_F(ICPTests, RayTracingICP3D)
 	CICP	icp;
 	CICP::TReturnInfo	icp_info;
 
-	icp.options.thresholdDist = 0.40;
+	icp.options.thresholdDist = 0.40f;
 	icp.options.thresholdAng = 0;
 
 	CPose3DPDFPtr pdf= icp.Align3D(

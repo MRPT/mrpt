@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -96,8 +96,14 @@ namespace mrpt
 				  *  \code
 				  *   robot_shape = [-0.2 0.2 0.2 -0.2; -0.1 -0.1 0.1 0.1]
 				  *  \endcode
+				  * \note PTGs will use only one of either `robot_shape` or `robot_shape_circular_radius`
 				  */
 				mrpt::math::TPolygon2D robot_shape;
+				/** The radius of a circular-shape-model of the robot shape.
+				  * \note PTGs will use only one of either `robot_shape` or `robot_shape_circular_radius`
+				  */
+				double                 robot_shape_circular_radius;
+
 				std::string ptg_cache_files_directory; //!< (Default: ".")
 
 				double goalBias;  //!< Probabily of picking the goal as random target (in [0,1], default=0.05)
@@ -108,20 +114,7 @@ namespace mrpt
 
 				size_t save_3d_log_freq; //!< Frequency (in iters) of saving tree state to debug log files viewable in SceneViewer3D (default=0, disabled)
 
-				TAlgorithmParams() :
-					ptg_cache_files_directory("."),
-					goalBias(0.05),
-					maxLength(1.0),
-					minDistanceBetweenNewNodes(0.10),
-					minAngBetweenNewNodes(mrpt::utils::DEG2RAD(15)),
-					ptg_verbose(true),
-					save_3d_log_freq(0)
-				{
-					robot_shape.push_back( mrpt::math::TPoint2D(-0.5,-0.5) );
-					robot_shape.push_back( mrpt::math::TPoint2D( 0.8,-0.4) );
-					robot_shape.push_back( mrpt::math::TPoint2D( 0.8, 0.4) );
-					robot_shape.push_back( mrpt::math::TPoint2D(-0.5, 0.5) );
-				}
+				TAlgorithmParams();
 			};
 			TAlgorithmParams params; //!< Parameters specific to this path solver algorithm
 
@@ -280,6 +273,15 @@ namespace mrpt
 				const double MAX_DIST,
 				std::vector<double> &out_TPObstacles
 				);
+
+			void spaceTransformerOneDirectionOnly(
+				const int tp_space_k_direction,
+				const mrpt::maps::CSimplePointsMap &in_obstacles,
+				const mrpt::nav::CParameterizedTrajectoryGenerator *in_PTG,
+				const double MAX_DIST,
+				double &out_TPObstacle_k
+			);
+
 
 		}; // end class PlannerRRT_SE2_TPS
 		

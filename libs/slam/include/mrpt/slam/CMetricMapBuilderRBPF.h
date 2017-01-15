@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -62,9 +62,6 @@ namespace slam
 
 		mrpt::poses::CPose3DPDFGaussian	odoIncrementSinceLastLocalization;	//!< Traveled distance since last localization update
 		mrpt::poses::CPose3D			odoIncrementSinceLastMapUpdate;		//!< Traveled distance since last map update
-
-		/** A buffer: memory is actually hold within "mapPDF" */
-		mrpt::utils::non_copiable_ptr<mrpt::maps::CMultiMetricMap>  currentMetricMapEstimation;
 
 	public:
 
@@ -137,7 +134,7 @@ of type CMetricMapBuilderRBPF  */
 
 		/** Returns the map built so far. NOTE that for efficiency a pointer to the internal object is passed, DO NOT delete nor modify the object in any way, if desired, make a copy of ir with "duplicate()".
 		  */
-		mrpt::maps::CMultiMetricMap*   getCurrentlyBuiltMetricMap();
+		const mrpt::maps::CMultiMetricMap* getCurrentlyBuiltMetricMap() const;
 
 		/** Returns just how many sensory-frames are stored in the currently build map.
 		  */

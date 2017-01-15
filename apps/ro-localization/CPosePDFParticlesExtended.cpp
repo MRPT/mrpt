@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -46,7 +46,7 @@ CPosePDFParticlesExtended::CPosePDFParticlesExtended( size_t M )
 	m_particles.resize(M);
 
 	for (CParticleList::iterator it=m_particles.begin();it!=m_particles.end();++it)
-		it->d = new TExtendedCPose2D();
+		it->d.reset( new TExtendedCPose2D());
 
 	static TExtendedCPose2D	nullPose;
 	resetDeterministic( nullPose );
@@ -70,31 +70,7 @@ void  CPosePDFParticlesExtended::copyFrom(const CPosePDF &o)
 		CPosePDFParticlesExtended	*pdf = (CPosePDFParticlesExtended*) &o;
 
 		// Both are particles:
-		if (m_particles.size()==pdf->m_particles.size())
-		{
-			for ( itSrc=pdf->m_particles.begin(), itDest = m_particles.begin();
-				   itSrc!=pdf->m_particles.end();
-			      itSrc++, itDest++ )
-			{
-				(*itDest->d) = (*itSrc->d);
-				itDest->log_w = itSrc->log_w;
-			}
-		}
-		else
-		{
-			for ( itDest = m_particles.begin();itDest!=m_particles.end();itDest++ )
-				delete itDest->d;
-
-			m_particles.resize( pdf->m_particles.size() );
-
-			for ( itSrc=pdf->m_particles.begin(), itDest = m_particles.begin();
-				   itSrc!=pdf->m_particles.end();
-			      itSrc++, itDest++ )
-			{
-				itDest->d = new TExtendedCPose2D( *itSrc->d );
-				itDest->log_w = itSrc->log_w;
-			}
-		}
+		m_particles = pdf->m_particles;
 	}
 	else
 	if (o.GetRuntimeClass()==CLASS_ID(CPosePDFGaussian))
@@ -106,16 +82,13 @@ void  CPosePDFParticlesExtended::copyFrom(const CPosePDF &o)
 
 		randomGenerator.drawGaussianMultivariateMany(parts,M,pdf->cov);
 
-		for ( itDest = m_particles.begin();itDest!=m_particles.end();itDest++ )
-				delete itDest->d;
-
 		m_particles.clear();
 		m_particles.resize(M);
 
 		for ( itDest = m_particles.begin(),partsIt=parts.begin();itDest!=m_particles.end();itDest++,partsIt++ )
 		{
 			itDest->log_w = 0;
-            itDest->d = new TExtendedCPose2D();
+			itDest->d.reset( new TExtendedCPose2D());
 			itDest->d->pose.x( pdf->mean.x() + (*partsIt)[0] );
 			itDest->d->pose.x( pdf->mean.y() + (*partsIt)[1] );
 			itDest->d->pose.phi(  pdf->mean.phi() + (*partsIt)[2] );
@@ -141,7 +114,6 @@ CPosePDFParticlesExtended::~CPosePDFParticlesExtended( )
   ---------------------------------------------------------------*/
 void  CPosePDFParticlesExtended::clear( )
 {
-	for (unsigned int i=0;i<m_particles.size();i++)	delete m_particles[i].d;
 	m_particles.clear();
 }
 
@@ -363,7 +335,6 @@ void  CPosePDFParticlesExtended::readFromStream(mrpt::utils::CStream &in, int ve
 			uint32_t	n;
 
 			// Delete previous content:
-			for (it=m_particles.begin();it!=m_particles.end();it++)	delete it->d;
 			m_particles.clear();
 
 			// The data
@@ -427,7 +398,7 @@ void  CPosePDFParticlesExtended::prediction_and_update_pfStandardProposal(
 		// ---------------------
 		// Initialize random sample generator:
 		mrpt::poses::CPoseRandomSampler	poseSamplesGen;
-		poseSamplesGen.setPosePDF( robotMovement->poseChange );
+		poseSamplesGen.setPosePDF( robotMovement->poseChange.get_ptr() );
 
 		CPose2D		increment_i;
 		for (i=0;i<M;i++)			// Update particle poses:
@@ -461,7 +432,7 @@ void  CPosePDFParticlesExtended::prediction_and_update_pfStandardProposal(
 		// Update particle's likelihood using the particle's pose:
 		CParticleList::iterator	it;
 		for (it=m_particles.begin(),i=0;it!=m_particles.end();it++,i++)
-			it->log_w += auxiliarComputeObservationLikelihood(PF_options, this,i,sf, it->d ) * PF_options.powFactor;
+			it->log_w += auxiliarComputeObservationLikelihood(PF_options, this,i,sf, it->d.get() ) * PF_options.powFactor;
 	};
 
 	MRPT_END
@@ -505,7 +476,7 @@ void  CPosePDFParticlesExtended::prediction_and_update_pfAuxiliaryPFOptimal(
 	// ----------------------------------------------------------------------
 	// Initialize random sample generator:
 	mrpt::poses::CPoseRandomSampler	m_movementDrawer;
-	m_movementDrawer.setPosePDF( robotMovement->poseChange );
+	m_movementDrawer.setPosePDF( robotMovement->poseChange.get_ptr() );
 
 	CPose2D  mean_movement;
 	robotMovement->poseChange->getMean(mean_movement);
@@ -666,7 +637,7 @@ void  CPosePDFParticlesExtended::prediction_and_update_pfAuxiliaryPFOptimal(
 			itDest!=m_particles.end();
 		    itDest++,itSrc++,itW++)
 	{
-		itDest->d = *itSrc;
+		itDest->d.reset( *itSrc );
 		itDest->log_w = *itW;
 	}
 	newParticles.clear();
@@ -675,238 +646,6 @@ void  CPosePDFParticlesExtended::prediction_and_update_pfAuxiliaryPFOptimal(
 	MRPT_END
 }
 
-
-/*
-{
-	MRPT_START
-
-	size_t				i,M = m_particles.size();
-	CActionRobotMovement2DPtr robotMovement;
-	//std::vector<CVectorDouble>	rndSamples;
-
-	ASSERT_(sf!=NULL);
-
-	// ----------------------------------------------------------------------
-	//						PREDICTION STAGE
-	// ----------------------------------------------------------------------
-	ASSERT_(actions!=NULL);
-
-	// Find a robot movement estimation:
-	robotMovement = actions->getBestMovementEstimation();
-
-	// Assure one has been found:
-	if ( !robotMovement )
-		THROW_EXCEPTION("Action list does not contain any CActionRobotMovement2D derived object!");
-
-	// Initialize random sample generator:
-	mrpt::poses::CPoseRandomSampler	poseSamplesGen;
-	poseSamplesGen.setPosePDF( robotMovement->poseChange );
-
-
-	// For the mixture proposal...
-	//CPosePDFGaussian	approxMotionModel( robotMovement->poseChange->getEstimatedPose(),robotMovement->poseChange->getEstimatedCovariance() );
-	//approxMotionModel.cov(2,2)=1000;	// IGNORE HEADING for this!
-	//approxMotionModel.cov(0,2)=approxMotionModel.cov(2,0)=
-	//approxMotionModel.cov(1,2)=approxMotionModel.cov(2,1)=
-	//approxMotionModel.cov(1,2)=approxMotionModel.cov(2,1)=0;
-	//approxMotionModel.cov(0,0) = approxMotionModel.cov(1,1) = square(0.30f);
-
-	//CRejectionSamplingRangeOnlyLocalization								RS;
-	//std::vector<CRejectionSamplingRangeOnlyLocalization::TParticle>		RS_output;
-
-	//  Prediction:
-	// -----------------------------
-	if ( !PF_options.adaptiveSampleSize )
-	{
-		// ---------------------
-		//   FIXES SAMPLE SIZE
-		// ---------------------
-		CPose2D		increment_i;
-
-		// Prepare rejection sampling:
-		ASSERT_( options.metricMap->GetRuntimeClass()==CLASS_ID(CMultiMetricMap));
-		ASSERT_(((CMultiMetricMap*)options.metricMap)->m_landmarksMap);
-		CObservationBeaconRangesPtr	obsBeacon = sf->getObservationByClass<CObservationBeaconRanges>();
-
-		// Compute selection weights for particles:
-		CVectorDouble	selectionW(M,0);
-		for (i=0;i<M;i++)
-		{
-			if ( obsBeacon )
-			{
-				CPose2D		oldPose=m_particles[i].d->pose;
-				size_t		N_MONTECARLO = 50;
-				for (size_t q=0;q<N_MONTECARLO;q++)
-				{
-					// Prediction of the robot pose:
-					poseSamplesGen.drawSample(increment_i);
-					m_particles[i].d->pose = oldPose + increment_i;
-
-					// Prediction of the BIAS "state vector":
-					for (size_t k=0;k<m_particles[i].d->state.size();k++)
-						offsetTransitionModel( m_particles[i].d->state[k] );
-
-					selectionW[i] += exp(auxiliarComputeObservationLikelihood( PF_options, this,i,sf, m_particles[i].d ));
-				}
-				selectionW[i] -= log(double(N_MONTECARLO)); // Average (aprox. of integral....)
-			}
-			else
-			{
-				selectionW[i]=0;
-			}
-		}
-		selectionW = selectionW- mrpt::math::maximum(selectionW);
-
-		CVectorDouble	selectionWlin(M);
-		double			sumW = 0;
-		for (i=0;i<M;i++)
-		{
-			sumW+=exp(selectionW[i]);
-			selectionWlin[i]=exp(selectionW[i]);
-		}
-		selectionWlin/=sumW;
-
-		// Build CDF:
-		CVectorDouble		Q,T;
-		vector_int			indx;
-//		int					M = particlesCount();
-		size_t				j;
-		double				S=0;
-
-		// Vectors:
-		// --------------------
-		Q.resize(M);
-		T.resize(M+1);
-		indx.resize(M);
-		for (i=0;i<M;i++)
-		{
-			// cumsum:
-			S+= selectionWlin[i];
-			Q[i] = S;
-
-			// Uniform random vector:
-			T[i] = randomGenerator.drawUniform(0.0f,0.9999f);
-		}
-
-		// Sort:
-		// --------------------
-		T[M] = 1;
-		Q[M-1] = 1.1;
-		std::sort( T.begin(), T.end() );
-
-		i=j=0;
-
-		while (i < M)
-		{
-			if (T[i]<Q[j])
-			{
-					indx[i++] = (unsigned int)j;
-			}
-			else
-			{
-				j++;
-				if (j>=M) j=M-1;
-			}
-		}
-
-		// Copy of particles:
-		CParticleList	oldParticles(M);
-		for (i=0;i<M;i++)
-		{
-			oldParticles[i].log_w = m_particles[i].log_w;
-			oldParticles[i].d = new TExtendedCPose2D(*m_particles[i].d);
-		}
-
-
-		// Propagate particles:
-		for (i=0;i<M;i++)
-		{
-			// Optimal proposal:
-			if ( obsBeacon )
-			{
-				// Manipulate observation to include state-space offsets!!
-				//CObservationBeaconRanges	dummObs(*obsBeacon);
-				//ASSERT_( m_particles[i].d->state.size() == dummObs.sensedData.size() );
-				//for (size_t q=0;q<dummObs.sensedData.size();q++)
-				//	dummObs.sensedData[q].sensedDistance -= m_particles[i].d->state[q];
-				//RS.setParams(
-				//	*((CMultiMetricMap*)options.metricMap)->m_landmarksMap,		// The beacons map
-				//	dummObs,													// Observation
-				//	((CMultiMetricMap*)options.metricMap)->m_landmarksMap->likelihoodOptions.beaconRangesStd,
-				//	m_particles[i].d->pose,										// Old pose
-				//	0 + 1.12f,													// TODO!!!! Robot height + antenna_z !!!!
-				//	false
-				//	);
-				//RS.rejectionSampling( 1, RS_output,500 );
-				//m_particles[i].d->pose = *RS_output[0].d;
-				//m_particles[i].log_w  += RS_output[0].log_w;
-				////std::cout << "RS: " << RS_output[0].log_w << "\n";
-
-				// Compute the weight:
-				double		maxProb=-1e10,acceptanceProb;
-				TExtendedCPose2D		maxPose,oldPose=*oldParticles[indx[i]].d;
-
-				*m_particles[i].d = *oldParticles[indx[i]].d;
-				m_particles[i].log_w = oldParticles[indx[i]].log_w;
-
-				// Perform rejection sampling:
-				size_t      MAX_TIMEOUT = 100, timeout = 0;
-
-				do
-				{
-					// Prediction of the robot pose:
-					poseSamplesGen.drawSample(increment_i);
-
-					m_particles[i].d->pose = oldPose.pose + increment_i;
-					// Prediction of the BIAS "state vector":
-					for (size_t k=0;k<m_particles[i].d->state.size();k++)
-						offsetTransitionModel( m_particles[i].d->state[k] );
-
-					acceptanceProb = exp(auxiliarComputeObservationLikelihood(PF_options,this,i,sf, m_particles[i].d ));
-					if (acceptanceProb>maxProb)
-					{
-						maxPose = *m_particles[i].d;
-						maxProb = acceptanceProb;
-					}
-				}
-				//while ( acceptanceProb < UTILS::randomGenerator.drawUniform(0.0,0.999) && ++timeout<MAX_TIMEOUT);
-				while ( acceptanceProb < 0.9 && ++timeout<MAX_TIMEOUT);
-
-				m_particles[i].log_w = 0;
-				if (timeout>=MAX_TIMEOUT)
-				{
-					*m_particles[i].d = maxPose;
-					m_particles[i].log_w += maxProb;
-				}
-
-			}
-			else
-			{
-				*m_particles[i].d = *oldParticles[indx[i]].d;
-				m_particles[i].log_w = oldParticles[indx[i]].log_w;
-
-				// Draw from odometry only:
-				poseSamplesGen.drawSample(increment_i);
-
-				m_particles[i].d->pose = m_particles[i].d->pose + increment_i;
-				m_particles[i].log_w = 0;
-			}
-		}
-
-		// Free mem:
-		for (i=0;i<M;i++)
-			delete oldParticles[i].d;
-
-
-	} // end of fixed sample size
-	else
-	{
-		THROW_EXCEPTION("DYNAMIC SAMPLE SIZE NOT IMPLEMENTED IN THIS CLASS!");
-	} // end of ADAPTIVE SAMPLE SIZE
-
-	MRPT_END
-}
-*/
 
 /*---------------------------------------------------------------
 							resetDeterministic
@@ -923,7 +662,7 @@ void  CPosePDFParticlesExtended::resetDeterministic(
 		clear();
 		m_particles.resize(particlesCount);
 		for (it=m_particles.begin();it!=m_particles.end();it++)
-			it->d = new TExtendedCPose2D();
+			it->d.reset( new TExtendedCPose2D() );
 	}
 
 	for (it=m_particles.begin();it!=m_particles.end();it++)
@@ -952,8 +691,8 @@ void  CPosePDFParticlesExtended::resetUniform(
 	{
 		clear();
 		m_particles.resize(particlesCount);
-		for (int i=0;i<particlesCount;i++)
-			m_particles[i].d = new TExtendedCPose2D();
+		for (int i = 0; i < particlesCount; i++)
+			m_particles[i].d.reset(new TExtendedCPose2D());
 	}
 
 	size_t		i,M = m_particles.size();
@@ -1043,8 +782,6 @@ void  CPosePDFParticlesExtended::drawSingleSample( CPose2D &outPart ) const
  ---------------------------------------------------------------*/
 void  CPosePDFParticlesExtended::drawManySamples( size_t N, std::vector<CVectorDouble> & outSamples ) const
 {
-	TExtendedCPose2D	*ptr;
-
 	CParticleFilter::TParticleFilterOptions  PF_options;
 	PF_options.adaptiveSampleSize = true;
 	PF_options.resamplingMethod = CParticleFilter::prMultinomial;
@@ -1054,7 +791,7 @@ void  CPosePDFParticlesExtended::drawManySamples( size_t N, std::vector<CVectorD
 	outSamples.resize(N);
 	for (size_t i=0;i<N;i++)
 	{
-		ptr = m_particles[ fastDrawSample( PF_options ) ].d;
+		const TExtendedCPose2D *ptr = m_particles[ fastDrawSample( PF_options ) ].d.get();
 
 		// Copy pose:
 		outSamples[i].resize(3);
@@ -1292,5 +1029,3 @@ double  CPosePDFParticlesExtended::particlesEvaluator_AuxPFOptimal(
 
 	MRPT_END
 }
-
-

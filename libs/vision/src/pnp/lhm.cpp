@@ -2,7 +2,7 @@
 |                     Mobile Robot Programming Toolkit (MRPT)               |
 |                          http://www.mrpt.org/                             |
 |                                                                           |
-| Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+| Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
 | See: http://www.mrpt.org/Authors - All rights reserved.                   |
 | Released under BSD License. See details in http://www.mrpt.org/License    |
 +---------------------------------------------------------------------------+ */
@@ -14,6 +14,14 @@
 #include <Eigen/Dense>
 #include <Eigen/SVD>
 #include <Eigen/StdVector>
+
+// Opencv 2.3 had a broken <opencv/eigen.h> in Ubuntu 14.04 Trusty => Disable PNP classes
+#include <mrpt/config.h>
+#if MRPT_HAS_OPENCV && MRPT_OPENCV_VERSION_NUM<0x240
+#	undef MRPT_HAS_OPENCV
+#	define MRPT_HAS_OPENCV 0
+#endif
+
 
 #include "lhm.h"
 using namespace mrpt::vision::pnp;
@@ -210,7 +218,7 @@ bool lhm::compute_pose(Eigen::Ref<Eigen::Matrix3d> R_, Eigen::Ref<Eigen::Vector3
 	err2 = 1000;
 	absKernel();
 
-	while (abs(err2 - err) > TOL_LHM && err2 > EPSILON_LHM)
+	while (std::abs(err2 - err) > TOL_LHM && err2 > EPSILON_LHM)
 	{
 		err = err2;
 
