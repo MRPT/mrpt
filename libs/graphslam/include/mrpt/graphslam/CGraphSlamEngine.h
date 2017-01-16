@@ -322,18 +322,13 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		 * \sa getParamsAsString
 		 */
 		void printParams() const;
-		/**\name graphSLAM Execution methods
-		 *
-		 * \brief Method for processing incoming observations
-		 */
-		/**\{*/
-		/**\brief Wrapper method around execGraphSlamStep.
+		/**\brief Wrapper method around _execGraphSlamStep.
 		 *
 		 * Handy for not having to specify any action/observations objects
 		 * \return False if the user has requested to exit the graphslam execution
 		 * (e.g. pressed ctrl-c), True otherwise
 		 */
-		virtual bool execGraphSlamStep(
+		bool execGraphSlamStep(
 				mrpt::obs::CObservationPtr& observation,
 				size_t& rawlog_entry);
 		/**\brief Main class method responsible for parsing each measurement and
@@ -346,12 +341,12 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		 * \return False if the user has requested to exit the graphslam execution
 		 * (e.g. pressed ctrl-c), True otherwise
 		 **/
-		virtual bool execGraphSlamStep(
+		virtual bool _execGraphSlamStep(
 				mrpt::obs::CActionCollectionPtr& action,
 				mrpt::obs::CSensoryFramePtr& observations,
 				mrpt::obs::CObservationPtr& observation,
 				size_t& rawlog_entry);
-		/**\}*/
+
 		/**\brief Return a reference to the underlying GRAPH_t instance. */
 		const GRAPH_t& getGraph() const { return m_graph; }
 		/**\brief Return the filename of the used rawlog file.*/
@@ -435,7 +430,6 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 	protected:
 		// Private function definitions
 		//////////////////////////////////////////////////////////////
-
 		/**\brief General initialization method to call from the Class
 		 * Constructors.
 		 *
@@ -525,8 +519,8 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		 * \sa updateEstimatedTrajectoryVisualization
 		 */
 		void updateMapVisualization(const GRAPH_t& gr,
-				std::map<mrpt::utils::TNodeID,
-				mrpt::obs::CObservation2DRangeScanPtr> m_nodes_to_laser_scans,
+				const std::map<mrpt::utils::TNodeID,
+					mrpt::obs::CObservation2DRangeScanPtr>& nodes_to_laser_scans2D,
 				bool full_update=false );
 		/**\brief Display the next ground truth position in the visualization window.
 		 *
@@ -801,10 +795,15 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 
 		std::string m_GT_file_format;
 
+		/**\brief Map of NodeIDs to their corresponding LaserScans.
+		 */
 		std::map<mrpt::utils::TNodeID,
 			mrpt::obs::CObservation2DRangeScanPtr> m_nodes_to_laser_scans2D;
+		/**\brief Last laser scan that the current class instance received.
+		 */
 		mrpt::obs::CObservation2DRangeScanPtr m_last_laser_scan2D;
-
+		/**\brief Last laser scan that the current class instance received.
+		 */
 		mrpt::obs::CObservation3DRangeScanPtr m_last_laser_scan3D;
 
 		/**\name Trajectories colors */

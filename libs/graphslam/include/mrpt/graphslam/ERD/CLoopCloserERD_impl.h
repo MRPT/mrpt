@@ -367,7 +367,7 @@ void CLoopCloserERD<GRAPH_t>::checkPartitionsForLC(
 					MRPT_LOG_WARN_STREAM(
 							"Found potential loop closures:" << endl <<
 							"\tPartitionID: " << partitionID << endl <<
-							"\tPartition: " << getVectorAsString(*partitions_it).c_str() << endl
+							"\tPartition: " << getSTLContainerAsString(*partitions_it).c_str() << endl
 							<< "\t" << prev_nodeID << " ==> " << curr_nodeID << endl <<
 							"\tNumber of LC nodes: " << num_after_nodes);
 					partitions_for_LC->push_back(*partitions_it);
@@ -539,9 +539,9 @@ void CLoopCloserERD<GRAPH_t>::splitPartitionToGroups(
 		}
 	}
 
-	MRPT_LOG_DEBUG_STREAM << "groupA:\n\t" << getVectorAsString(*groupA) <<
+	MRPT_LOG_DEBUG_STREAM << "groupA:\n\t" << getSTLContainerAsString(*groupA) <<
 		" - size: " << groupA->size() << endl;
-	MRPT_LOG_DEBUG_STREAM << "groupB:\n\t" << getVectorAsString(*groupB) <<
+	MRPT_LOG_DEBUG_STREAM << "groupB:\n\t" << getSTLContainerAsString(*groupB) <<
 		" - size: " << groupB->size() << endl;
 	//mrpt::system::pause();
 }
@@ -958,7 +958,7 @@ void CLoopCloserERD<GRAPH_t>::execDijkstraProjection(
 	//cout << "Pool of Paths: " << endl;
 	//for (typename std::set<path_t*>::const_iterator it = pool_of_paths.begin();
 			//it != pool_of_paths.end(); ++it) {
-		//printVector((*it)->nodes_traversed);
+		//printSTLContainer((*it)->nodes_traversed);
 	//}
 	//cout << "------ Done with the starting node ... ------" << endl;
 	//int iters = 0;
@@ -997,15 +997,15 @@ void CLoopCloserERD<GRAPH_t>::execDijkstraProjection(
 		//for (typename std::set<path_t*>::const_iterator
 				//it = pool_of_paths.begin();
 				//it != pool_of_paths.end(); ++it) {
-			//printVector((*it)->nodes_traversed);
+			//printSTLContainer((*it)->nodes_traversed);
 		//}
 		//cout << "Nodes visited: " << endl;
 		//std::vector<int> tmp_vec;
 		//for (int i = 0; i != visited_nodes.size(); ++i) {
 			//tmp_vec.push_back(i);
 		//}
-		//printVector(tmp_vec); cout << endl; // indices of numbers
-		//printVector(visited_nodes);         // actual flags
+		//printSTLContainer(tmp_vec); cout << endl; // indices of numbers
+		//printSTLContainer(visited_nodes);         // actual flags
 		//cout << std::string(40, '<') << " " << iters++ << endl;
 		//mrpt::system::pause();
 		//// TODO Remove these - <<<<<<<<<<<<<<<<<<<<<

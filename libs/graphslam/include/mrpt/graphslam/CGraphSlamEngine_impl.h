@@ -469,11 +469,12 @@ bool CGraphSlamEngine<GRAPH_t>::execGraphSlamStep(
 	CActionCollectionPtr action;
 	CSensoryFramePtr observations;
 
-	return this->execGraphSlamStep(action, observations, observation,
-			rawlog_entry); }
+	return this->_execGraphSlamStep(action, observations, observation,
+			rawlog_entry);
+}
 
 template<class GRAPH_t>
-bool CGraphSlamEngine<GRAPH_t>::execGraphSlamStep(
+bool CGraphSlamEngine<GRAPH_t>::_execGraphSlamStep(
 		mrpt::obs::CActionCollectionPtr& action,
 		mrpt::obs::CSensoryFramePtr& observations,
 		mrpt::obs::CObservationPtr& observation,
@@ -1784,8 +1785,8 @@ mrpt::system::TTimeStamp CGraphSlamEngine<GRAPH_t>::getTimeStamp(
 template<class GRAPH_t>
 void CGraphSlamEngine<GRAPH_t>::updateMapVisualization(
 		const GRAPH_t& gr,
-		std::map<mrpt::utils::TNodeID,
-		mrpt::obs::CObservation2DRangeScanPtr> m_nodes_to_laser_scans2D,
+		const std::map<mrpt::utils::TNodeID,
+			mrpt::obs::CObservation2DRangeScanPtr>& nodes_to_laser_scans2D,
 		bool full_update /*= false */) {
 	MRPT_START;
 	ASSERT_(m_enable_visuals);
@@ -1829,10 +1830,11 @@ void CGraphSlamEngine<GRAPH_t>::updateMapVisualization(
 		CObservation2DRangeScanPtr scan_content;
 		std::map<mrpt::utils::TNodeID,
 			mrpt::obs::CObservation2DRangeScanPtr>::const_iterator search =
-				m_nodes_to_laser_scans2D.find(*node_it);
+				nodes_to_laser_scans2D.find(*node_it);
 
 		// make sure that the laser scan exists and is valid
-		if (search != m_nodes_to_laser_scans2D.end() && !(search->second.null())) {
+		if (search != nodes_to_laser_scans2D.end() &&
+				!(search->second.null())) {
 			scan_content = search->second;
 
 			CObservation2DRangeScan scan_decimated;

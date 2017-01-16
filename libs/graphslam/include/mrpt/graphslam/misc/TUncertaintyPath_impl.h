@@ -162,7 +162,7 @@ void TUncertaintyPath<GRAPH_t>::getAsString(std::string* str) const{
 	ss << "- CPosePDFGaussianInf: "
 		<< (this->isGaussianInfType()?  "TRUE" : "FALSE") << endl;
 	ss << "- Nodes list: \n\t< " <<
-		getVectorAsString(nodes_traversed)
+		getSTLContainerAsString(nodes_traversed)
 		<< "\b\b>" << endl;
 
 	ss << endl;
