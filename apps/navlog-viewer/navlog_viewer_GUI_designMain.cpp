@@ -643,21 +643,40 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 			}
 
 			{
-				// Obstacles:
+				// Obstacles: original
+				mrpt::opengl::CPointCloudPtr gl_obs;
+				mrpt::opengl::CRenderizablePtr gl_obs_r = gl_robot_frame->getByName("obs-raw");  // Get or create if new
+				if (!gl_obs_r) {
+					gl_obs = mrpt::opengl::CPointCloud::Create();
+					gl_obs->setName("obs-raw");
+					gl_obs->setPointSize(1.5);
+					gl_obs->setColor_u8( mrpt::utils::TColor(0xff,0x00,0x00));
+					gl_robot_frame->insert(gl_obs);
+				} else {
+					gl_obs = mrpt::opengl::CPointCloudPtr(gl_obs_r);
+				}
+				gl_obs->loadFromPointsMap(&log.WS_Obstacles_original);
+				if (cbShowRelPoses->IsChecked())
+						gl_obs->setPose(log.relPoseSense);
+				else	gl_obs->setPose(mrpt::poses::CPose3D());
+			}
+			{
+				// Obstacles: after optional filtering
 				mrpt::opengl::CPointCloudPtr gl_obs;
 				mrpt::opengl::CRenderizablePtr gl_obs_r = gl_robot_frame->getByName("obs");  // Get or create if new
 				if (!gl_obs_r) {
 					gl_obs = mrpt::opengl::CPointCloud::Create();
 					gl_obs->setName("obs");
 					gl_obs->setPointSize(3.0);
-					gl_obs->setColor_u8( mrpt::utils::TColor(0x00,0x00,0xff));
+					gl_obs->setColor_u8(mrpt::utils::TColor(0x00, 0x00, 0xff));
 					gl_robot_frame->insert(gl_obs);
-				} else {
+				}
+				else {
 					gl_obs = mrpt::opengl::CPointCloudPtr(gl_obs_r);
 				}
 				gl_obs->loadFromPointsMap(&log.WS_Obstacles);
 				if (cbShowRelPoses->IsChecked())
-						gl_obs->setPose(log.relPoseSense);
+					gl_obs->setPose(log.relPoseSense);
 				else	gl_obs->setPose(mrpt::poses::CPose3D());
 			}
 

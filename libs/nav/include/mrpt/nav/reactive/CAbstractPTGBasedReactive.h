@@ -19,6 +19,7 @@
 #include <mrpt/math/filters.h>
 #include <mrpt/synch/CCriticalSection.h>
 #include <mrpt/math/CPolygon.h>
+#include <mrpt/maps/CPointCloudFilterBase.h>
 
 namespace mrpt
 {
@@ -249,6 +250,7 @@ namespace mrpt
 		bool m_closing_navigator; //!< Signal that the destructor has been called, so no more calls are accepted from other threads
 
 		mrpt::system::TTimeStamp m_WS_Obstacles_timestamp;
+		mrpt::maps::CPointCloudFilterBasePtr m_WS_filter;   //!< Default: none
 
 		struct TInfoPerPTG
 		{
@@ -297,6 +299,7 @@ namespace mrpt
 		static void robotPoseExtrapolateIncrement(const mrpt::math::TTwist2D & globalVel, const double time_offset, mrpt::poses::CPose2D & out_pose);
 
 		mrpt::math::TPose2D m_lastTarget; //!< To detect changes
+		bool   ENABLE_OBSTACLE_FILTERING;
 
 	}; // end of CAbstractPTGBasedReactive
   }
