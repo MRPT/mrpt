@@ -88,6 +88,7 @@ namespace mrpt
 		
 			void internal_loadConfigFile(const mrpt::utils::CConfigFileBase &ini, const std::string &section_prefix="") MRPT_OVERRIDE;
 			mrpt::maps::CSimplePointsMap m_WS_Obstacles;  //!< The obstacle points, as seen from the local robot frame.
+			mrpt::maps::CSimplePointsMap m_WS_Obstacles_original;  //!< Obstacle points, before filtering (if filtering is enabled).
 			// See docs in parent class
 			void STEP3_WSpaceToTPSpace(const size_t ptg_idx, std::vector<double> &out_TPObstacles, mrpt::nav::ClearanceDiagram &out_clearance, const mrpt::poses::CPose2D &rel_pose_PTG_origin_wrt_sense) MRPT_OVERRIDE;
 

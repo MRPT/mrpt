@@ -21,6 +21,7 @@
 #include <mrpt/utils/metaprogramming.h>
 #include <mrpt/utils/CFileOutputStream.h>
 #include <mrpt/utils/CMemoryStream.h>
+#include <mrpt/maps/CPointCloudFilterByDistance.h>
 #include <limits>
 #include <iomanip>
 
@@ -71,7 +72,8 @@ CAbstractPTGBasedReactive::CAbstractPTGBasedReactive(CRobot2NavInterface &react_
 	timoff_sendVelCmd_avr        (ESTIM_LOWPASSFILTER_ALPHA),
 	m_closing_navigator          (false),
 	m_WS_Obstacles_timestamp     (INVALID_TIMESTAMP),
-	m_infoPerPTG_timestamp       (INVALID_TIMESTAMP)
+	m_infoPerPTG_timestamp       (INVALID_TIMESTAMP),
+	ENABLE_OBSTACLE_FILTERING(false)
 {
 	this->enableLogFile( enableLogFile );
 }
@@ -885,6 +887,7 @@ void CAbstractPTGBasedReactive::loadConfigFile(const mrpt::utils::CConfigFileBas
 	// ========= Config file section name:
 	const std::string sectRob = section_prefix + std::string("ROBOT_CONFIG");
 	const std::string sectCfg = section_prefix + std::string("ReactiveParams");
+	const std::string sectFilter = section_prefix + std::string("ObstacleFiltering");
 	const std::string sectGlobal("GLOBAL_CONFIG");
 
 	// ========= Load parameters of this base class:
@@ -901,6 +904,19 @@ void CAbstractPTGBasedReactive::loadConfigFile(const mrpt::utils::CConfigFileBas
 
 	DIST_TO_TARGET_FOR_SENDING_EVENT = cfg.read_float(sectCfg, "DIST_TO_TARGET_FOR_SENDING_EVENT", DIST_TO_TARGET_FOR_SENDING_EVENT, false);
 	m_badNavAlarm_AlarmTimeout = cfg.read_double(sectCfg,"ALARM_SEEMS_NOT_APPROACHING_TARGET_TIMEOUT", m_badNavAlarm_AlarmTimeout, false);
+
+	// ========= Optional filtering ===========
+	MRPT_LOAD_CONFIG_VAR(ENABLE_OBSTACLE_FILTERING, bool  ,cfg, sectCfg);
+	if (ENABLE_OBSTACLE_FILTERING)
+	{
+		mrpt::maps::CPointCloudFilterByDistance *filter = new mrpt::maps::CPointCloudFilterByDistance;
+		m_WS_filter = mrpt::maps::CPointCloudFilterBasePtr(filter);
+		filter->options.loadFromConfigFile(cfg, sectFilter);
+	}
+	else
+	{
+		m_WS_filter.clear_unique();
+	}
 
 	// =========  Show configuration parameters:
 	MRPT_LOG_INFO("-------------------------------------------------------------\n");
