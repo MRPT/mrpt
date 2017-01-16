@@ -199,10 +199,12 @@ namespace mrpt
 			 * TODO Otherwise virtual edges (dijkstra link) are added between nodes
 			 * of the disconnected nodes sets so that the final graph is connected
 			 */
-			void extractSubGraph(const std::set<TNodeID>& node_IDs, self_t* sub_graph,
+			void extractSubGraph(const std::set<TNodeID>& node_IDs,
+					self_t* sub_graph,
 					const TNodeID root_node_in=INVALID_NODEID,
-					const bool& auto_expand_set=true) {
+					const bool& auto_expand_set=true) const {
 				using namespace std;
+				using namespace mrpt;
 
 				// assert that the given pointers are valid
 				ASSERTMSG_(sub_graph,
@@ -217,7 +219,7 @@ namespace mrpt
 				}
 
 				// find out if querry contains non-consecutive nodes.
-				// Assumption: Standard, ascending order, is used in the set.
+				// Assumption: Set elements are in standard, ascending order.
 				std::set<TNodeID> node_IDs_real; // actual set of nodes to be used.
 				if (*node_IDs.rbegin() - *node_IDs.begin() + 1 == node_IDs.size()) {
 					node_IDs_real = node_IDs;
@@ -231,7 +233,7 @@ namespace mrpt
 					}
 					else { // add virtual edges accordingly
 						THROW_EXCEPTION(
-								"Non virtual edges addition is not yet implemented.");
+								"auto_expand_set flag=false is not yet implemented.");
 					}
 				}
 
@@ -244,11 +246,13 @@ namespace mrpt
 					// assert that current node exists in *own* graph
 					typename global_poses_t::const_iterator own_it;
 					for (own_it = nodes.begin(); own_it != nodes.end(); ++own_it) {
-						if (own_it->first == *node_IDs_it) {
+						if (*node_IDs_it == own_it->first) {
 							break;
 						}
 					}
-					ASSERT_(own_it != nodes.end());
+					ASSERTMSG_(own_it != nodes.end(),
+							format("NodeID [%lu] can't be found in the initial graph.",
+								static_cast<unsigned long>(*node_IDs_it)));
 
 					sub_graph->nodes.insert(make_pair(*node_IDs_it, nodes.at(*node_IDs_it)));
 				}
@@ -283,56 +287,6 @@ namespace mrpt
 						sub_graph->insertEdge(from, to, curr_edge);
 					}
 				}
-
-				//// for any node that is not connected to any edge in the subgraph, add
-				//// a virtual edge between that node and the nearest nodeID
-				//for (std::map<TNodeID, bool>::iterator
-						//b_it = node_ID_found_in_edge.begin();
-						//b_it != node_ID_found_in_edge.end();
-						//++b_it) {
-					//if (!b_it->second) { // no found in any edge
-						//cout << "No edge connecting nodeID " << b_it->first << "was found." << endl;
-						//cout << "Adding virtual edge..." << endl;
-						//mrpt::system::pause();
-
-						//const TNodeID& curr_node = b_it->first;
-
-						//// add virtual edge with previous 
-						//if (b_it != node_ID_found_in_edge.begin()) { // if not first node
-							//// find first previous nodeID
-							//std::map<TNodeID, bool>::const_reverse_iterator b_in_it;
-							//for (b_in_it = std::prev(
-										//static_cast<std::map<TNodeID, bool>::const_reverse_iterator>(b_it),1);
-									//b_in_it != node_ID_found_in_edge.rend();
-									//++b_in_it) {
-								//const TNodeID& prev_node = b_in_it->first;
-
-								//typename BASE::edge_t virt_edge(nodes.at(curr_node) - nodes.at(prev_node));
-								//sub_graph->insertEdge(prev_node, curr_node, virt_edge);
-								////if (b_in_it = true) { // found a "true" pair.
-									////break;
-								////}
-							//}
-						//}
-						//else { // if first node do this with the next non-zero node
-							//// find first next nodeID
-							//std::map<TNodeID, bool>::const_iterator b_in_it;
-							//for (b_in_it = std::next(b_it,1);
-									//b_in_it != node_ID_found_in_edge.end();
-									//++b_in_it) {
-								//const TNodeID& next_node = b_in_it->first;
-
-								//typename BASE::edge_t virt_edge(nodes.at(next_node) - nodes.at(curr_node));
-								//sub_graph->insertEdge(curr_node, next_node, virt_edge);
-								////if (b_in_it = true) { // found a "true" pair.
-									////break;
-								////}
-							//}
-						//}
-					//}
-					//b_it->second = true;
-				//}
-
 				// estimate the node positions according to the edges - root is (0, 0, 0)
 				sub_graph->dijkstra_nodes_estimate();
 

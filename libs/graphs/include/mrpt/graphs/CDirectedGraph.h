@@ -66,8 +66,10 @@ namespace mrpt
 
 
 			typedef typename mrpt::aligned_containers<TPairNodeIDs,edge_t>::multimap_t	edges_map_t;  //!< The type of the member \a edges
-			typedef typename edges_map_t::iterator         iterator;
-			typedef typename edges_map_t::const_iterator   const_iterator;
+			typedef typename edges_map_t::iterator                iterator;
+			typedef typename edges_map_t::reverse_iterator        reverse_iterator;
+			typedef typename edges_map_t::const_iterator          const_iterator;
+			typedef typename edges_map_t::const_reverse_iterator  const_reverse_iterator;
 			/**\brief Handy self type */
 			typedef CDirectedGraph<TYPE_EDGES, EDGE_ANNOTATIONS> self_t;
 
@@ -79,9 +81,13 @@ namespace mrpt
 			inline CDirectedGraph() : edges() {}  //!< Default constructor
 
 			inline iterator begin() { return edges.begin(); }
+			inline iterator rbegin() { return edges.rbegin(); }
 			inline iterator end() { return edges.end(); }
+			inline iterator rend() { return edges.rend(); }
 			inline const_iterator begin() const { return edges.begin(); }
+			inline const_iterator rbegin() const { return edges.rbegin(); }
 			inline const_iterator end() const { return edges.end(); }
+			inline const_iterator rend() const { return edges.rend(); }
 
 			/** @name Edges/nodes utility methods
 				@{ */
