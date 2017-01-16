@@ -20,3 +20,9 @@ CPointCloudFilterBase::CPointCloudFilterBase()
 CPointCloudFilterBase::~CPointCloudFilterBase()
 {
 }
+
+mrpt::maps::CPointCloudFilterBase::TExtraFilterParams::TExtraFilterParams() :
+	out_deletion_mask(nullptr),
+	do_not_delete(false)
+{
+}

@@ -75,6 +75,7 @@
 			- mrpt::maps::COccupancyGridMap2D::loadFromBitmapFile() correct description of `yCentralPixel` parameter.
 			- mrpt::maps::CPointsMap `liblas` import/export methods are now in a separate header. See \ref mrpt_maps_liblas_grp and \ref dep-liblas
 			- New class mrpt::maps::CRandomFieldGridMap3D
+			- New class mrpt::maps::CPointCloudFilterByDistance
 		- \ref mrpt_obs_grp
 			- [ABI change] mrpt::obs::CObservation2DRangeScan
 				- range scan vectors are now protected for safety.
