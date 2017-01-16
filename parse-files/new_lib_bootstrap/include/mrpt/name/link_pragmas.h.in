@@ -20,10 +20,7 @@
 #if defined(MRPT_OS_WINDOWS)
 	#define MRPT_@NAME@_EXPORT __declspec(dllexport)
 	#define MRPT_@NAME@_IMPORT __declspec(dllimport)
-#endif
-
-/* for other platforms/compilers we don't anything */
-#ifndef MRPT_@NAME@_EXPORT
+#else
 #    define MRPT_@NAME@_EXPORT
 #    define MRPT_@NAME@_IMPORT
 #endif

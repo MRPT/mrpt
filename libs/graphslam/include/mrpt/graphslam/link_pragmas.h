@@ -24,10 +24,7 @@
 #if defined(MRPT_OS_WINDOWS)
 	#define MRPT_GRAPHSLAM_EXPORT __declspec(dllexport)
 	#define MRPT_GRAPHSLAM_IMPORT __declspec(dllimport)
-#endif
-
-/* for other platforms/compilers we don't anything */
-#ifndef MRPT_GRAPHSLAM_EXPORT
+#else
 #    define MRPT_GRAPHSLAM_EXPORT
 #    define MRPT_GRAPHSLAM_IMPORT
 #endif

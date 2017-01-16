@@ -24,10 +24,7 @@
 #if defined(MRPT_OS_WINDOWS)
 	#define MRPT_VISION_EXPORT __declspec(dllexport)
 	#define MRPT_VISION_IMPORT __declspec(dllimport)
-#endif
-
-/* for other platforms/compilers we don't anything */
-#ifndef MRPT_VISION_EXPORT
+#else
 #    define MRPT_VISION_EXPORT
 #    define MRPT_VISION_IMPORT
 #endif

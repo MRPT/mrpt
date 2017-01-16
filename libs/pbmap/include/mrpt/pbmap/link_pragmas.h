@@ -24,10 +24,7 @@
 #if defined(MRPT_OS_WINDOWS)
 	#define MRPT_PBMAP_EXPORT __declspec(dllexport)
 	#define MRPT_PBMAP_IMPORT __declspec(dllimport)
-#endif
-
-/* for other platforms/compilers we don't anything */
-#ifndef MRPT_PBMAP_EXPORT
+#else
 #    define MRPT_PBMAP_EXPORT
 #    define MRPT_PBMAP_IMPORT
 #endif

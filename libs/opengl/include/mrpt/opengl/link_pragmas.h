@@ -25,10 +25,7 @@
 #if defined(MRPT_OS_WINDOWS)
 	#define MRPT_OPENGL_EXPORT __declspec(dllexport)
 	#define MRPT_OPENGL_IMPORT __declspec(dllimport)
-#endif
-
-/* for other platforms/compilers we don't anything */
-#ifndef MRPT_OPENGL_EXPORT
+#else
 #    define MRPT_OPENGL_EXPORT
 #    define MRPT_OPENGL_IMPORT
 #endif

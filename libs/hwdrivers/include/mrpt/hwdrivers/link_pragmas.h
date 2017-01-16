@@ -25,10 +25,7 @@
 #if defined(MRPT_OS_WINDOWS)
 	#define MRPT_HWDRIVERS_EXPORT __declspec(dllexport)
 	#define MRPT_HWDRIVERS_IMPORT __declspec(dllimport)
-#endif
-
-/* for other platforms/compilers we don't anything */
-#ifndef MRPT_HWDRIVERS_EXPORT
+#else
 #    define MRPT_HWDRIVERS_EXPORT
 #    define MRPT_HWDRIVERS_IMPORT
 #endif

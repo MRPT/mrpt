@@ -25,10 +25,7 @@
 #if defined(MRPT_OS_WINDOWS)
 	#define MRPT_NAV_EXPORT __declspec(dllexport)
 	#define MRPT_NAV_IMPORT __declspec(dllimport)
-#endif
-
-/* for other platforms/compilers we don't anything */
-#ifndef MRPT_NAV_EXPORT
+#else
 #    define MRPT_NAV_EXPORT
 #    define MRPT_NAV_IMPORT
 #endif
