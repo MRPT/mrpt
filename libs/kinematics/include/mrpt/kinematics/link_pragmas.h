@@ -24,10 +24,7 @@
 #if defined(MRPT_OS_WINDOWS)
 	#define MRPT_KINEMATICS_EXPORT __declspec(dllexport)
 	#define MRPT_KINEMATICS_IMPORT __declspec(dllimport)
-#endif
-
-/* for other platforms/compilers we don't anything */
-#ifndef MRPT_KINEMATICS_EXPORT
+#else
 #    define MRPT_KINEMATICS_EXPORT
 #    define MRPT_KINEMATICS_IMPORT
 #endif

@@ -24,10 +24,7 @@
 #if defined(MRPT_OS_WINDOWS)
 	#define MRPT_GUI_EXPORT __declspec(dllexport)
 	#define MRPT_GUI_IMPORT __declspec(dllimport)
-#endif
-
-/* for other platforms/compilers we don't anything */
-#ifndef MRPT_GUI_EXPORT
+#else
 #    define MRPT_GUI_EXPORT
 #    define MRPT_GUI_IMPORT
 #endif

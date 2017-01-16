@@ -24,10 +24,7 @@
 #if defined(MRPT_OS_WINDOWS)
 	#define MRPT_GRAPHS_EXPORT __declspec(dllexport)
 	#define MRPT_GRAPHS_IMPORT __declspec(dllimport)
-#endif
-
-/* for other platforms/compilers we don't anything */
-#ifndef MRPT_GRAPHS_EXPORT
+#else
 #    define MRPT_GRAPHS_EXPORT
 #    define MRPT_GRAPHS_IMPORT
 #endif

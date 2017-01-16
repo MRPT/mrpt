@@ -24,10 +24,7 @@
 #if defined(MRPT_OS_WINDOWS)
 	#define MRPT_OBS_EXPORT __declspec(dllexport)
 	#define MRPT_OBS_IMPORT __declspec(dllimport)
-#endif
-
-/* for other platforms/compilers we don't anything */
-#ifndef MRPT_OBS_EXPORT
+#else
 #    define MRPT_OBS_EXPORT
 #    define MRPT_OBS_IMPORT
 #endif

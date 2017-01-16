@@ -24,10 +24,7 @@
 #if defined(MRPT_OS_WINDOWS)
 	#define MRPT_HMTSLAM_EXPORT __declspec(dllexport)
 	#define MRPT_HMTSLAM_IMPORT __declspec(dllimport)
-#endif
-
-/* for other platforms/compilers we don't anything */
-#ifndef MRPT_HMTSLAM_EXPORT
+#else
 #    define MRPT_HMTSLAM_EXPORT
 #    define MRPT_HMTSLAM_IMPORT
 #endif

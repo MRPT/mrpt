@@ -24,10 +24,7 @@
 #if defined(MRPT_OS_WINDOWS)
 	#define MRPT_SLAM_EXPORT __declspec(dllexport)
 	#define MRPT_SLAM_IMPORT __declspec(dllimport)
-#endif
-
-/* for other platforms/compilers we don't anything */
-#ifndef MRPT_SLAM_EXPORT
+#else
 #    define MRPT_SLAM_EXPORT
 #    define MRPT_SLAM_IMPORT
 #endif

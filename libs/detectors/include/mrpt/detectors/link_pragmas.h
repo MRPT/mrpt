@@ -24,10 +24,7 @@
 #if defined(MRPT_OS_WINDOWS)
 	#define MRPT_DETECTORS_EXPORT __declspec(dllexport)
 	#define MRPT_DETECTORS_IMPORT __declspec(dllimport)
-#endif
-
-/* for other platforms/compilers we don't anything */
-#ifndef MRPT_DETECTORS_EXPORT
+#else
 #    define MRPT_DETECTORS_EXPORT
 #    define MRPT_DETECTORS_IMPORT
 #endif

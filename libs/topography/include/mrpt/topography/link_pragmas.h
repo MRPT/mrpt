@@ -24,10 +24,7 @@
 #if defined(MRPT_OS_WINDOWS)
 	#define MRPT_TOPO_EXPORT __declspec(dllexport)
 	#define MRPT_TOPO_IMPORT __declspec(dllimport)
-#endif
-
-/* for other platforms/compilers we don't anything */
-#ifndef MRPT_TOPO_EXPORT
+#else
 #    define MRPT_TOPO_EXPORT
 #    define MRPT_TOPO_IMPORT
 #endif
