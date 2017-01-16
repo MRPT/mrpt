@@ -11,6 +11,7 @@
 #include <mrpt/system/datetime.h>
 #include <mrpt/maps/link_pragmas.h>
 #include <mrpt/otherlibs/stlplus/smart_ptr.hpp>
+#include <vector>
 
 namespace mrpt
 {
@@ -29,11 +30,20 @@ namespace mrpt
 			CPointCloudFilterBase();
 			virtual ~CPointCloudFilterBase();
 
+			struct MAPS_IMPEXP TExtraFilterParams
+			{
+				std::vector<bool>  * out_deletion_mask; //!< If a pointer is provided to a user-given container, the list of points to be deleted will be marked here with `true`.
+				bool do_not_delete;                     //!< (Default:false) If true, only `out_deletion_mask` is filled in, but the filtered-out points will be not actually removed.
+
+				TExtraFilterParams();
+			};
+
 			/** Apply the filtering algorithm to the pointcloud. */
 			virtual void filter(
-				mrpt::maps::CPointsMap * inout_pointcloud,            //!< [in,out] The input pointcloud, which will be modified upon return after filtering.
-				const mrpt::system::TTimeStamp pc_timestamp,          //!< [in] The timestamp of the input pointcloud
-				const mrpt::poses::CPose3D * pc_reference_pose = NULL //!< [in] If NULL, the PC is assumed to be given in global coordinates. Otherwise, it will be transformed from local coordinates to global using this transformation.
+				mrpt::maps::CPointsMap * inout_pointcloud,       //!< [in,out] The input pointcloud, which will be modified upon return after filtering.
+				const mrpt::system::TTimeStamp pc_timestamp,     //!< [in] The timestamp of the input pointcloud
+				const mrpt::poses::CPose3D & pc_reference_pose,  //!< [in] If NULL, the PC is assumed to be given in global coordinates. Otherwise, it will be transformed from local coordinates to global using this transformation.
+				TExtraFilterParams * params = nullptr            //!< [in,out] additional in/out parameters
 			) = 0;
 		};
 

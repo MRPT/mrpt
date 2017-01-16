@@ -12,22 +12,30 @@
 #include <mrpt/maps/CPointCloudFilterByDistance.h>
 #include <mrpt/utils/CConfigFileBase.h>
 
-using namespace mrpt::poses;
 using namespace mrpt::maps;
 using namespace mrpt::utils;
 
 void CPointCloudFilterByDistance::filter(
-	mrpt::maps::CPointsMap * pc,            //!< [in,out] The input pointcloud, which will be modified upon return after filtering.
-	const mrpt::system::TTimeStamp pc_timestamp,          //!< [in] The timestamp of the input pointcloud
-	const mrpt::poses::CPose3D * pc_reference_pose        //!< [in] If NULL, the PC is assumed to be given in global coordinates. Otherwise, it will be transformed from local coordinates to global using this transformation.
+	mrpt::maps::CPointsMap * pc,       //!< [in,out] The input pointcloud, which will be modified upon return after filtering.
+	const mrpt::system::TTimeStamp pc_timestamp,     //!< [in] The timestamp of the input pointcloud
+	const mrpt::poses::CPose3D & cur_pc_pose,  //!< [in] If NULL, the PC is assumed to be given in global coordinates. Otherwise, it will be transformed from local coordinates to global using this transformation.
+	TExtraFilterParams * params                      //!< [in,out] additional in/out parameters
 )
 {
+	using namespace mrpt::poses;
+	using namespace mrpt::math;
+	using mrpt::utils::square;
+
 	MRPT_START;
 	ASSERT_(pc_timestamp!=INVALID_TIMESTAMP);
 	ASSERT_(pc != nullptr);
 
 	// 1) Filter:
 	// ---------------------
+	const size_t N = pc->size();
+	std::vector<bool> deletion_mask;
+	deletion_mask.assign(N, false);
+
 	// get reference, previous PC:
 	if (!m_last_frames.empty() && 
 		mrpt::system::timeDifference(m_last_frames.rbegin()->first, pc_timestamp) < options.too_old_seconds
@@ -35,34 +43,53 @@ void CPointCloudFilterByDistance::filter(
 	{
 		const FrameInfo & prev_pc = m_last_frames.rbegin()->second;
 
-		const size_t N = pc->size();
-		std::vector<bool> deletion_mask;
-		deletion_mask.assign(N, false);
-
 		// Reference poses of each PC:
 		// Previous: prev_pc.pose
-		CPose3D cur_pc_pose;
-		if (pc_reference_pose) cur_pc_pose = *pc_reference_pose;
-
 		const CPose3D rel_pose = cur_pc_pose - prev_pc.pose;
 		// The idea is that we can now find matches between pt{i} in time_{k}, composed with rel_pose
 		// with the local points in time_{k-1}.
 
 		for (size_t i = 0; i < N; i++)
 		{
-			float lx_k, ly_k, lz_k;
-			pc->getPointFast(i, lx_k, ly_k, lz_k);
+			// get i-th point in time=k:
+			TPoint3Df ptf_k;
+			pc->getPointFast(i, ptf_k.x, ptf_k.y, ptf_k.z);
+			const TPoint3D pt_k = TPoint3D(ptf_k);
 
-			float lx_km1, ly_km1, lz_km1;
-			rel_pose.composePoint(lx_k, ly_k, lz_k, lx_km1, ly_km1, lz_km1);
-			
-			MRPT_TODO("impl!");
+			// Point, referred to time=k-1 frame of reference
+			TPoint3D pt_km1;
+			rel_pose.composePoint(pt_k, pt_km1);
+
+			// Look for neighbors in "time=k"
+			std::vector<TPoint3D> neig_k;
+			std::vector<float>    neig_sq_dist_k;
+			pc->kdTreeNClosestPoint3D(pt_k, 2 /*num queries*/, neig_k, neig_sq_dist_k);
+
+			// Look for neighbors in "time=k-1"
+			std::vector<TPoint3D> neig_km1;
+			std::vector<float>    neig_sq_dist_km1;
+			prev_pc.pc->kdTreeNClosestPoint3D(pt_km1, 1 /*num queries*/, neig_km1, neig_sq_dist_km1);
+
+			// Rule:
+			// we must have at least 1 neighbor in t=k, and 1 neighbor in t=k-1
+			const double max_allowed_dist_sq = square(options.min_dist + options.angle_tolerance * pt_k.norm());
+
+			const bool ok_t   = neig_k.size() > 1 && neig_sq_dist_k[1] < max_allowed_dist_sq;
+			const bool ok_tm1 = neig_sq_dist_km1.size() >= 1 && neig_sq_dist_km1[0] < max_allowed_dist_sq;
+
+			// Delete?
+			deletion_mask[i] = !(ok_t && ok_tm1);
 		}
 
 		// Remove points:
-		pc->applyDeletionMask(deletion_mask);
-
+		if (params == nullptr || params->do_not_delete == false) {
+			pc->applyDeletionMask(deletion_mask);
+		}
 	} // we can do filter
+
+	if (params != nullptr && params->out_deletion_mask != nullptr) {
+		*params->out_deletion_mask = deletion_mask;
+	}
 
 	// 2) Add PC to list
 	// ---------------------
@@ -70,9 +97,7 @@ void CPointCloudFilterByDistance::filter(
 		FrameInfo fi;
 		fi.pc = CSimplePointsMap::Create();
 		fi.pc->copyFrom(*pc);
-		if (pc_reference_pose) {
-			fi.pose = *pc_reference_pose;
-		}
+		fi.pose = cur_pc_pose;
 
 		m_last_frames[pc_timestamp] = fi;
 	}
