@@ -7,11 +7,9 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#ifndef obs_link_pragmas_H
-#define obs_link_pragmas_H
+#pragma once
 
 #include <mrpt/config.h>
-#include <mrpt/utils/boost_join.h>
 
 // ** Important! **
 // In each mrpt library, search and replace:
@@ -24,40 +22,8 @@
 	 under the wxWindows licence.
 */
 #if defined(MRPT_OS_WINDOWS)
-    /*
-       __declspec works in BC++ 5 and later, Watcom C++ 11.0 and later as well
-       as VC++ and gcc
-     */
-#    if defined(_MSC_VER) || defined(__BORLANDC__) || defined(__GNUC__) || defined(__WATCOMC__)
-#        define MRPT_OBS_EXPORT __declspec(dllexport)
-#        define MRPT_OBS_IMPORT __declspec(dllimport)
-#    else /* compiler doesn't support __declspec() */
-#        define MRPT_OBS_EXPORT
-#        define MRPT_OBS_IMPORT
-#    endif
-#elif defined(MRPT_OS_OS2)		/* was __WXPM__ */
-#    if defined (__WATCOMC__)
-#        define MRPT_OBS_EXPORT __declspec(dllexport)
-        /*
-           __declspec(dllimport) prepends __imp to imported symbols. We do NOT
-           want that!
-         */
-#        define MRPT_OBS_IMPORT
-#    elif defined(__EMX__)
-#        define MRPT_OBS_EXPORT
-#        define MRPT_OBS_IMPORT
-#    elif (!(defined(__VISAGECPP__) && (__IBMCPP__ < 400 || __IBMC__ < 400 )))
-#        define MRPT_OBS_EXPORT _Export
-#        define MRPT_OBS_IMPORT _Export
-#    endif
-#elif defined(MRPT_OS_APPLE)
-#    ifdef __MWERKS__
-#        define MRPT_OBS_EXPORT __declspec(export)
-#        define MRPT_OBS_IMPORT __declspec(import)
-#    endif
-#elif defined(__CYGWIN__)
-#    define MRPT_OBS_EXPORT __declspec(dllexport)
-#    define MRPT_OBS_IMPORT __declspec(dllimport)
+	#define MRPT_OBS_EXPORT __declspec(dllexport)
+	#define MRPT_OBS_IMPORT __declspec(dllimport)
 #endif
 
 /* for other platforms/compilers we don't anything */
@@ -78,5 +44,3 @@
 #    define OBS_IMPEXP
 #endif
 
-
-#endif
