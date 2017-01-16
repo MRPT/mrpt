@@ -13,6 +13,7 @@
 #include <cstdarg>
 #include <cstdio>
 #include <mrpt/math/eigen_frwds.h>
+#include <map>
 
 namespace mrpt
 {
@@ -28,13 +29,13 @@ namespace mrpt
   			return lhs>rhs ? lhs-rhs : rhs-lhs;
 		}
 
-		/**\brief Return a vector in std::string form.
+		/**\brief Return a STL container in std::string form.
 		 *
-		 * \param[in] t Template vector
-		 * \return String form of given vector
+		 * \param[in] t Template STL container (e.g. vector)
+		 * \return String form of given STL container
 		 */
 		template<class T>
-		std::string getVectorAsString(const T& t) {
+		std::string getSTLContainerAsString(const T& t) {
 			using namespace std;
 			stringstream ss;
 			for (typename T::const_iterator it = t.begin(); it != t.end(); ++it) {
@@ -47,24 +48,57 @@ namespace mrpt
 		 * \param[in] t Template vector
 		 */
 		template<class T>
-		void printVector(const T& t) {
+		void printSTLContainer(const T& t) {
 			using namespace std;
-			cout << getVectorAsString(t) << endl;
+			cout << getSTLContainerAsString(t) << endl;
 		}
-		/**\brief Print the given vector of vectors t.
+		/**\brief Print the given STL container of containers t.
 		 *
-		 * \param[in] t Template vector (containing other vectors)
+		 * \param[in] t Template STL container (containing other containers)
 		 */
 		template<class T>
-		void printVectorOfVectors(const T& t) {
+		void printSTLContainerOfContainers(const T& t) {
 			using namespace std;
 
 			int i = 0;
 			for (typename T::const_iterator it = t.begin();
 					it  != t.end(); ++i, ++it) {
-				cout << "Vector " << i+1 << "/" << t.size() << endl << "\t";
-				printVector(*it);
+				cout << "List " << i+1 << "/" << t.size() << endl << "\t";
+				printSTLContainer(*it);
 			}
+		}
+
+		/**\brief Return contents of map in a string representation
+		 *
+		 * \param[in] m Template map
+		 * \param[in] sep String that seperates visually each key and its value. Defaults to " => "
+		 * \return std::string representation of map
+		 * */
+		template<class T1, class T2>
+		std::string getMapAsString(const std::map<T1, T2>& m,
+				const std::string& sep=" => ") {
+			using namespace std;
+			stringstream ss("");
+
+			for (typename map<T1, T2>::const_iterator it = m.begin();
+					it != m.end();
+					++it) {
+
+				ss << it->first << " => " << it->second << endl;
+			}
+
+			return ss.str();
+		}
+
+		/**\brief Print the given map m
+		 *
+		 * \param[in] m Template map
+		 */
+		template<class T1, class T2>
+		void printMap(const std::map<T1, T2>& m) {
+			using namespace std;
+
+			cout << getMapAsString(m) << endl;
 		}
 
 		/** \addtogroup container_ops_grp
