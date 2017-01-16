@@ -55,13 +55,13 @@ namespace nav
 			mrpt::nav::ClearanceDiagram  clearance;    //!< Clearance for each path
 		};
 
-		//mrpt::system::TTimeStamp   timestamp;  //!< The timestamp of when this log was processed by the reactive algorithm (It can be INVALID_TIMESTAMP for navigation logs in MRPT <0.9.5)
-		uint32_t       nPTGs;  //!< The number of PTGS:
+		uint32_t  nPTGs;  //!< The number of PTGS:
 
 		 /** The info for each applied PTG: must contain "nPTGs * nSecDistances" elements */
 		mrpt::aligned_containers<TInfoPerPTG>::vector_t infoPerPTG;
 
-		int32_t					nSelectedPTG;   //!< The selected PTG.
+		int32_t   nSelectedPTG;   //!< The selected PTG.
+
 		/** Known values: 
 		 *	- "executionTime": The total computation time, excluding sensing.
 		 *	- "estimatedExecutionPeriod": The estimated execution period.
@@ -73,7 +73,7 @@ namespace nav
 		 */
 		std::map<std::string, mrpt::system::TTimeStamp>  timestamps;
 		std::map<std::string, std::string>  additional_debug_msgs;  //!< Additional debug traces
-		mrpt::maps::CSimplePointsMap  WS_Obstacles;  //!< The WS-Obstacles
+		mrpt::maps::CSimplePointsMap  WS_Obstacles, WS_Obstacles_original;  //!< The WS-Obstacles
 		mrpt::poses::CPose2D          robotOdometryPose; //!< The robot pose (from raw odometry or a localization system).
 		mrpt::poses::CPose2D          relPoseSense, relPoseVelCmd; //! Relative poses (wrt to robotOdometryPose) for extrapolated paths at two instants: time of obstacle sense, and future pose of motion comman
 		mrpt::math::TPoint2D          WS_target_relative;  //!< The relative location of target point in WS.
