@@ -205,7 +205,7 @@ bool execGraphSlamEngine(mrpt::utils::COutputLogger* logger) {
 
 		// actual call to the graphSLAM execution method
 		// Exit if user pressed C-c
-		cont_exec = graphslam_engine.execGraphSlamStep(
+		cont_exec = graphslam_engine._execGraphSlamStep(
 				action,
 				observations,
 				observation,
