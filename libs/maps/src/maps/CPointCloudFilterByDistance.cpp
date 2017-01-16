@@ -30,6 +30,9 @@ void CPointCloudFilterByDistance::filter(
 	ASSERT_(pc_timestamp!=INVALID_TIMESTAMP);
 	ASSERT_(pc != nullptr);
 
+	CSimplePointsMapPtr original_pc = CSimplePointsMap::Create();
+	original_pc->copyFrom(*pc);
+
 	// 1) Filter:
 	// ---------------------
 	const size_t N = pc->size();
@@ -95,8 +98,7 @@ void CPointCloudFilterByDistance::filter(
 	// ---------------------
 	{
 		FrameInfo fi;
-		fi.pc = CSimplePointsMap::Create();
-		fi.pc->copyFrom(*pc);
+		fi.pc = original_pc;
 		fi.pose = cur_pc_pose;
 
 		m_last_frames[pc_timestamp] = fi;
@@ -118,8 +120,8 @@ void CPointCloudFilterByDistance::filter(
 }
 
 CPointCloudFilterByDistance::TOptions::TOptions() :
-	min_dist(0.05),
-	angle_tolerance( mrpt::utils::DEG2RAD(2)),
+	min_dist(0.10),
+	angle_tolerance( mrpt::utils::DEG2RAD(5)),
 	too_old_seconds(1.0)
 {
 }
