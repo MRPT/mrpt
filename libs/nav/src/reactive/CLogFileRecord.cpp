@@ -37,7 +37,7 @@ CLogFileRecord::CLogFileRecord() :
 void  CLogFileRecord::writeToStream(mrpt::utils::CStream &out,int *version) const
 {
 	if (version)
-		*version = 19;
+		*version = 20;
 	else
 	{
 		uint32_t	i,n;
@@ -67,7 +67,9 @@ void  CLogFileRecord::writeToStream(mrpt::utils::CStream &out,int *version) cons
 
 			out << infoPerPTG[i].clearance.raw_clearances; // v19
 		}
-		out << nSelectedPTG << WS_Obstacles << robotOdometryPose << WS_target_relative /*v8*/;
+		out << nSelectedPTG << WS_Obstacles;
+		out << WS_Obstacles_original; // v20
+		out << robotOdometryPose << WS_target_relative /*v8*/;
 		// v16:
 		out << ptg_index_NOP << ptg_last_k_NOP  << rel_cur_pose_wrt_last_vel_cmd_NOP << rel_pose_PTG_origin_wrt_sense_NOP;
 		out << ptg_last_curRobotVelLocal; // v17
@@ -138,6 +140,7 @@ void  CLogFileRecord::readFromStream(mrpt::utils::CStream &in,int version)
 	case 17:
 	case 18:
 	case 19:
+	case 20:
 		{
 			// Version 0 --------------
 			uint32_t  i,n;
@@ -200,7 +203,15 @@ void  CLogFileRecord::readFromStream(mrpt::utils::CStream &in,int version)
 				}
 			}
 
-			in >> nSelectedPTG >> WS_Obstacles >> robotOdometryPose;
+			in >> nSelectedPTG >> WS_Obstacles;
+			if (version >= 20) {
+				in >> WS_Obstacles_original; // v20
+			}
+			else {
+				WS_Obstacles_original = WS_Obstacles;
+			}
+
+			in >> robotOdometryPose;
 
 			if (version>=8)
 				in >> WS_target_relative;
