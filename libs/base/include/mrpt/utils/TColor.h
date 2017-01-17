@@ -13,6 +13,7 @@
 #include <mrpt/utils/mrpt_stdint.h>    // compiler-independent version of "stdint.h"
 #include <mrpt/base/link_pragmas.h>
 #include <iosfwd>
+#include <iostream>
 
 namespace mrpt
 {
@@ -101,11 +102,6 @@ namespace mrpt
 		TColor operator-(const TColor& first, const TColor& second);
 		bool operator==(const TColor& first, const TColor& second);
 		//bool operator!=(const TColor& first, const TColor& second);
-
-
-		/**\brief Dummy operator. Handy for making std::find work
-		 */
-		bool operator<(const TColor& first, const TColor& second);
 
 		// Text streaming:
 		std::ostream BASE_IMPEXP & operator << (std::ostream& o, const TColorf & c);

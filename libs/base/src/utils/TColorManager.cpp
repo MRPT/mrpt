@@ -1,7 +1,6 @@
-#include <mrpt/opengl/TColorManager.h>
+#include <mrpt/utils/TColorManager.h>
 
 using namespace mrpt::utils;
-using namespace mrpt::opengl::graph_tools;
 using namespace std;
 
 TColorManager::TColorManager(
@@ -93,10 +92,11 @@ void TColorManager::advanceRGBCounters() {
 
 void TColorManager::markColorAsUsed(TColor color) {
 
+	using namespace std;
 	pair<set<TColor>::const_iterator, bool> ret =
 		used_colors.insert(color);
 
-	// this should always return True as this shouldn't exist prior to this call
+	// Should always return True as element shouldn't exist prior to this call
 	ASSERT_(ret.second);
 }
 

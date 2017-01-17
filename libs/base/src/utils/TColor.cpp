@@ -84,15 +84,6 @@ bool mrpt::utils::operator==(const TColor& first, const TColor& second) {
 	//return (!(first == second));
 //}
 
-bool mrpt::utils::operator<(const TColor& first, const TColor& second) {
-
-	int sum1 = first.R + first.G + first.B + first.A;
-	int sum2 = second.R + second.G + second.B + second.A;
-
-	return sum1 < sum2;
-}
-
-
 // Text streaming:
 std::ostream & mrpt::utils::operator << (std::ostream& o, const TColor & c)
 {
