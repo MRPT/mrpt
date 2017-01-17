@@ -85,10 +85,6 @@ void  CHolonomicFullEval::navigate(
 
 	ASSERT_(options.factorWeights.size()==NUM_FACTORS);
 
-	mrpt::math::TSegment2D sg;
-	sg.point1.x = 0;
-	sg.point1.y = 0;
-
 	for (unsigned int i=0;i<nDirs;i++)
 	{
 		double scores[NUM_FACTORS];  // scores for each criterion
@@ -121,21 +117,32 @@ void  CHolonomicFullEval::navigate(
 
 		// Factor #2: Closest approach to target along straight line (Euclidean)
 		// -------------------------------------------
-		{
-			sg.point2.x = x;
-			sg.point2.y = y;
-			// Range of attainable values: 0=passes thru target. 2=opposite direction
-			const double min_dist_target_along_path = sg.distance(target);
+		mrpt::math::TSegment2D sg;
+		sg.point1.x = 0;
+		sg.point1.y = 0;
+		sg.point2.x = x;
+		sg.point2.y = y;
 
-			scores[1] = 1.0 / (1.0 + square(min_dist_target_along_path) );
+		// Range of attainable values: 0=passes thru target. 2=opposite direction
+		double min_dist_target_along_path = sg.distance(target);
+
+		// Idea: if this segment is taking us *away* from target, don't make the segment to start at (0,0), since all 
+		// paths "running away" will then have identical minimum distances to target. Use the middle of the segment instead:
+		const double endpt_dist_to_target = (target - TPoint2D(x, y)).norm();
+		const double endpt_dist_to_target_norm = std::min(1.0, endpt_dist_to_target);
+
+		if (endpt_dist_to_target_norm > target_dist && endpt_dist_to_target_norm >= 0.95 * target_dist) {
+			// path takes us away:
+			sg.point1.x = x*0.5;
+			sg.point1.y = y*0.5;
+			min_dist_target_along_path = sg.distance(target);
 		}
+
+		scores[1] = 1.0 / (1.0 + square(min_dist_target_along_path) );
 
 		// Factor #3: Distance of end collision-free point to target (Euclidean)
 		// -----------------------------------------------------
 		{
-			const double endpt_dist_to_target = (target - TPoint2D(x,y)).norm();
-			const double endpt_dist_to_target_norm = std::min(1.0, endpt_dist_to_target );
-
 			scores[2] = std::sqrt(1.01 - endpt_dist_to_target_norm); // the 1.01 instead of 1.0 is to be 100% sure we don't get a domain error in sqrt()
 		}
 
