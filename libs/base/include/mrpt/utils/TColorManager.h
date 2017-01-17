@@ -1,10 +1,14 @@
+#ifndef TCOLORMANAGER_H
+#define TCOLORMANAGER_H
+
 #include <mrpt/utils/TColor.h>
 #include <mrpt/utils/mrpt_macros.h>
 #include <utility>
 #include <set>
 #include <cstdlib>
+#include <iostream>
 
-namespace mrpt { namespace opengl { namespace graph_tools {
+namespace mrpt { namespace utils {
 
 // TODO - finish this.
 /**\brief Manager the R, G, B colors and ask class instance of the next
@@ -63,5 +67,6 @@ struct TColorManager {
 		void markColorAsUsed(mrpt::utils::TColor color);
 };
 
-} } } // end of namespaces
+} } // end of namespaces
 
+#endif /* end of include guard: TCOLORMANAGER_H */

@@ -50,7 +50,6 @@ CGraphSlamEngine<GRAPH_t>::CGraphSlamEngine(
 };
 
 template<class GRAPH_t>
-
 CGraphSlamEngine<GRAPH_t>::~CGraphSlamEngine() {
 	using namespace mrpt::utils;
 	using namespace mrpt;
