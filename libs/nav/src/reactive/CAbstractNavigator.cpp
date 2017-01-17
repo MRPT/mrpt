@@ -60,6 +60,7 @@ CAbstractNavigator::CAbstractNavigator(CRobot2NavInterface &react_iterf_impl) :
 	m_navigationParams    ( NULL ),
 	m_robot               ( react_iterf_impl ),
 	m_curPoseVel          (),
+	m_last_curPoseVelUpdate_time(INVALID_TIMESTAMP),
 	m_latestPoses         (),
 	m_timlog_delays       (true, "CAbstractNavigator::m_timlog_delays"),
 	m_badNavAlarm_AlarmTimeout(30.0),
@@ -305,6 +306,16 @@ void CAbstractNavigator::navigate(const CAbstractNavigator::TNavigationParams *p
 
 void CAbstractNavigator::updateCurrentPoseAndSpeeds(bool update_seq_latest_poses)
 {
+	// Ignore calls too-close in time, e.g. from the navigationStep() methods of 
+	// AbstractNavigator and a derived, overriding class.
+	const mrpt::system::TTimeStamp tim_now = mrpt::system::now();
+	const double MIN_TIME_BETWEEN_POSE_UPDATES = 20e-3;
+	if (m_last_curPoseVelUpdate_time!=INVALID_TIMESTAMP && 
+		mrpt::system::timeDifference(m_last_curPoseVelUpdate_time, tim_now)<MIN_TIME_BETWEEN_POSE_UPDATES)
+	{
+		return;  // previous data is still valid: don't query the robot again
+	}
+
 	{
 		mrpt::utils::CTimeLoggerEntry tle(m_timlog_delays, "getCurrentPoseAndSpeeds()");
 		if (!m_robot.getCurrentPoseAndSpeeds(m_curPoseVel.pose, m_curPoseVel.velGlobal, m_curPoseVel.timestamp))
@@ -320,6 +331,8 @@ void CAbstractNavigator::updateCurrentPoseAndSpeeds(bool update_seq_latest_poses
 	}
 	m_curPoseVel.velLocal = m_curPoseVel.velGlobal;
 	m_curPoseVel.velLocal.rotate(-m_curPoseVel.pose.phi);
+
+	m_last_curPoseVelUpdate_time = tim_now;
 
 	// Append to list of past poses:
 	m_latestPoses.insert(m_curPoseVel.timestamp, mrpt::poses::CPose3D(mrpt::math::TPose3D(m_curPoseVel.pose)));
