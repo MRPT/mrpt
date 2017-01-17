@@ -746,12 +746,6 @@ void CAbstractPTGBasedReactive::STEP5_PTGEvaluator(
 		}
 
 		eval_factors[0] -= cur_norm_d;
-		if (eval_factors[0] < this->MIN_NORMALIZED_FREE_SPACE_FOR_PTG_CONTINUATION) {
-			// Don't trust this step: we are reaching too close to obstacles:
-			newLogRec.additional_debug_msgs["PTG_eval"] = "PTG-continuation not allowed, too close to obstacles.";
-			holonomicMovement.evaluation = .0;
-			return;
-		}
 	}
 
 	// Factor 2: Distance in sectors:
@@ -804,6 +798,14 @@ void CAbstractPTGBasedReactive::STEP5_PTGEvaluator(
 	// Factor6: clearance
 	// -----------------------------------------------------
 	eval_factors[5] = in_clearance.getClearance(kDirection, TargetDist*1.01 );
+
+	// Don't trust PTG continuation if we are too close to obstacles:
+	if (this_is_PTG_continuation && std::min(eval_factors[0], eval_factors[5]) < this->MIN_NORMALIZED_FREE_SPACE_FOR_PTG_CONTINUATION)
+	{
+		newLogRec.additional_debug_msgs["PTG_eval"] = "PTG-continuation not allowed, too close to obstacles.";
+		holonomicMovement.evaluation = .0;
+		return;
+	}
 
 	//  SAVE LOG
 	log.evalFactors.resize(eval_factors.size());
