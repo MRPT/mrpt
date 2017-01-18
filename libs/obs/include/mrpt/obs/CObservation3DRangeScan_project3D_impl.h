@@ -15,8 +15,8 @@ namespace mrpt {
 namespace obs {
 namespace detail {
 	// Auxiliary functions which implement SSE-optimized proyection of 3D point cloud:
-	template <class POINTMAP> void do_project_3d_pointcloud(const int H,const int W,const float *kys,const float *kzs,const mrpt::math::CMatrix &rangeImage, mrpt::utils::PointCloudAdapter<POINTMAP> &pca, std::vector<uint16_t> &idxs_x, std::vector<uint16_t> &idxs_y,const mrpt::obs::TRangeImageFilterParams &filterParams);
-	template <class POINTMAP> void do_project_3d_pointcloud_SSE2(const int H,const int W,const float *kys,const float *kzs,const mrpt::math::CMatrix &rangeImage, mrpt::utils::PointCloudAdapter<POINTMAP> &pca, std::vector<uint16_t> &idxs_x, std::vector<uint16_t> &idxs_y,const mrpt::obs::TRangeImageFilterParams &filterParams);
+	template <class POINTMAP> void do_project_3d_pointcloud(const int H,const int W,const float *kys,const float *kzs,const mrpt::math::CMatrix &rangeImage, mrpt::utils::PointCloudAdapter<POINTMAP> &pca, std::vector<uint16_t> &idxs_x, std::vector<uint16_t> &idxs_y,const mrpt::obs::TRangeImageFilterParams &filterParams, bool MAKE_DENSE);
+	template <class POINTMAP> void do_project_3d_pointcloud_SSE2(const int H,const int W,const float *kys,const float *kzs,const mrpt::math::CMatrix &rangeImage, mrpt::utils::PointCloudAdapter<POINTMAP> &pca, std::vector<uint16_t> &idxs_x, std::vector<uint16_t> &idxs_y,const mrpt::obs::TRangeImageFilterParams &filterParams, bool MAKE_DENSE);
 
 	template <class POINTMAP>
 	void project3DPointsFromDepthImageInto(
@@ -86,10 +86,10 @@ namespace detail {
 				}
 	#if MRPT_HAS_SSE2
 				if ((W & 0x07)==0 && projectParams.USE_SSE2)
-					 do_project_3d_pointcloud_SSE2(H,W,kys,kzs,src_obs.rangeImage,pca, src_obs.points3D_idxs_x, src_obs.points3D_idxs_y,filterParams );
-				else do_project_3d_pointcloud(H,W,kys,kzs,src_obs.rangeImage,pca, src_obs.points3D_idxs_x, src_obs.points3D_idxs_y,filterParams );  // if image width is not 8*N, use standard method
+					 do_project_3d_pointcloud_SSE2(H,W,kys,kzs,src_obs.rangeImage,pca, src_obs.points3D_idxs_x, src_obs.points3D_idxs_y, filterParams, projectParams.MAKE_DENSE);
+				else do_project_3d_pointcloud(H,W,kys,kzs,src_obs.rangeImage,pca, src_obs.points3D_idxs_x, src_obs.points3D_idxs_y, filterParams, projectParams.MAKE_DENSE);  // if image width is not 8*N, use standard method
 	#else
-				do_project_3d_pointcloud(H,W,kys,kzs,src_obs.rangeImage,pca,src_obs.points3D_idxs_x, src_obs.points3D_idxs_y,filterParams);
+				do_project_3d_pointcloud(H,W,kys,kzs,src_obs.rangeImage,pca,src_obs.points3D_idxs_x, src_obs.points3D_idxs_y,filterParams, projectParams.MAKE_DENSE);
 	#endif
 			}
 			else
@@ -276,7 +276,7 @@ namespace detail {
 
 	// Auxiliary functions which implement proyection of 3D point clouds:
 	template <class POINTMAP>
-	inline void do_project_3d_pointcloud(const int H,const int W,const float *kys,const float *kzs,const mrpt::math::CMatrix &rangeImage, mrpt::utils::PointCloudAdapter<POINTMAP> &pca, std::vector<uint16_t> &idxs_x, std::vector<uint16_t> &idxs_y,const mrpt::obs::TRangeImageFilterParams &fp)
+	inline void do_project_3d_pointcloud(const int H,const int W,const float *kys,const float *kzs,const mrpt::math::CMatrix &rangeImage, mrpt::utils::PointCloudAdapter<POINTMAP> &pca, std::vector<uint16_t> &idxs_x, std::vector<uint16_t> &idxs_y,const mrpt::obs::TRangeImageFilterParams &fp, bool MAKE_DENSE)
 	{
 		TRangeImageFilter rif(fp);
 		// Preconditions: minRangeMask() has the right size
@@ -285,8 +285,14 @@ namespace detail {
 			for (int c=0;c<W;c++)
 			{
 				const float D = rangeImage.coeff(r,c);
-				if (!rif.do_range_filter(r,c,D))
+				if (!rif.do_range_filter(r,c,D)){
+					if (!MAKE_DENSE)
+					{
+						//pca.setInvalidPoint(idx);
+						++idx;
+					}
 					continue;
+				}
 
 				pca.setPointXYZ(idx, D /*x*/, *kys++ * D /*y*/, *kzs++ * D /*z*/);
 				idxs_x[idx]=c;
@@ -298,7 +304,7 @@ namespace detail {
 
 	// Auxiliary functions which implement proyection of 3D point clouds:
 	template <class POINTMAP>
-	inline void do_project_3d_pointcloud_SSE2(const int H,const int W,const float *kys,const float *kzs,const mrpt::math::CMatrix &rangeImage, mrpt::utils::PointCloudAdapter<POINTMAP> &pca, std::vector<uint16_t> &idxs_x, std::vector<uint16_t> &idxs_y,const mrpt::obs::TRangeImageFilterParams &filterParams)
+	inline void do_project_3d_pointcloud_SSE2(const int H,const int W,const float *kys,const float *kzs,const mrpt::math::CMatrix &rangeImage, mrpt::utils::PointCloudAdapter<POINTMAP> &pca, std::vector<uint16_t> &idxs_x, std::vector<uint16_t> &idxs_y,const mrpt::obs::TRangeImageFilterParams &filterParams, bool MAKE_DENSE)
 	{
 	#if MRPT_HAS_SSE2
 			// Preconditions: minRangeMask() has the right size
@@ -372,6 +378,11 @@ namespace detail {
 								pca.setPointXYZ(idx,xs[q],ys[q],zs[q]);
 								idxs_x[idx]=(c<<2)+q;
 								idxs_y[idx]=r;
+								++idx;
+							}
+							else if (!MAKE_DENSE)
+							{
+								//pca.setInvalidPoint(idx);
 								++idx;
 							}
 					}
