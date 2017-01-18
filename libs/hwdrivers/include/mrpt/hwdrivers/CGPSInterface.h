@@ -163,6 +163,10 @@ namespace mrpt
 
 			void enableAppendMsgTypeToSensorLabel(bool enable) { m_sensorLabelAppendMsgType = enable; }
 
+			/** If set to non-empty, RAW GPS serial data will be also dumped to a separate file. */
+			void setRawDumpFilePrefix(const std::string &filePrefix) { m_raw_dump_file_prefix=filePrefix; }
+			std::string getRawDumpFilePrefix() const { return m_raw_dump_file_prefix; }
+
 			/** Send a custom data block to the GNSS device right now. Can be used to change its behavior online as needed. 
 			  \return false on communication error */
 			bool sendCustomCommand(const void* data, const size_t datalen);
