@@ -20,9 +20,9 @@ using namespace std;
 
 const double PREVIOUS_POSES_MAX_AGE = 20; // seconds
 
-// Ctor: CAbstractNavigator::TNavigationParams 
+// Ctor: CAbstractNavigator::TNavigationParams
 CAbstractNavigator::TNavigationParams::TNavigationParams() :
-	target(0,0,0), 
+	target(0,0,0),
 	targetAllowedDistance(0.5),
 	targetIsRelative(false),
 	targetIsIntermediaryWaypoint(false)
@@ -30,7 +30,7 @@ CAbstractNavigator::TNavigationParams::TNavigationParams() :
 }
 
 // Gets navigation params as a human-readable format:
-std::string CAbstractNavigator::TNavigationParams::getAsText() const 
+std::string CAbstractNavigator::TNavigationParams::getAsText() const
 {
 	string s;
 	s+= mrpt::format("navparams.target = (%.03f,%.03f,%.03f deg)\n", target.x, target.y,target.phi );
@@ -45,7 +45,7 @@ CAbstractNavigator::TRobotPoseVel::TRobotPoseVel() :
 	pose(0,0,0),
 	velGlobal(0,0,0),
 	velLocal(0,0,0),
-	timestamp(INVALID_TIMESTAMP) 
+	timestamp(INVALID_TIMESTAMP)
 {
 }
 
@@ -244,7 +244,7 @@ void CAbstractNavigator::navigationStep()
 				}
 			}
 
-			// ==== The normal execution of the navigation: Execute one step ==== 
+			// ==== The normal execution of the navigation: Execute one step ====
 			performNavigationStep();
 
 		}
@@ -285,7 +285,7 @@ void CAbstractNavigator::navigate(const CAbstractNavigator::TNavigationParams *p
 	// Transform: relative -> absolute, if needed.
 	if ( m_navigationParams->targetIsRelative )
 	{
-		this->updateCurrentPoseAndSpeeds(false /*update_seq_latest_poses*/);
+		this->updateCurrentPoseAndSpeeds();
 
 		const mrpt::poses::CPose2D relTarget(m_navigationParams->target);
 		mrpt::poses::CPose2D absTarget;
@@ -304,13 +304,13 @@ void CAbstractNavigator::navigate(const CAbstractNavigator::TNavigationParams *p
 	m_badNavAlarm_lastMinDistTime = mrpt::system::getCurrentTime();
 }
 
-void CAbstractNavigator::updateCurrentPoseAndSpeeds(bool update_seq_latest_poses)
+void CAbstractNavigator::updateCurrentPoseAndSpeeds()
 {
-	// Ignore calls too-close in time, e.g. from the navigationStep() methods of 
+	// Ignore calls too-close in time, e.g. from the navigationStep() methods of
 	// AbstractNavigator and a derived, overriding class.
 	const mrpt::system::TTimeStamp tim_now = mrpt::system::now();
 	const double MIN_TIME_BETWEEN_POSE_UPDATES = 20e-3;
-	if (m_last_curPoseVelUpdate_time!=INVALID_TIMESTAMP && 
+	if (m_last_curPoseVelUpdate_time!=INVALID_TIMESTAMP &&
 		mrpt::system::timeDifference(m_last_curPoseVelUpdate_time, tim_now)<MIN_TIME_BETWEEN_POSE_UPDATES)
 	{
 		return;  // previous data is still valid: don't query the robot again
@@ -321,7 +321,7 @@ void CAbstractNavigator::updateCurrentPoseAndSpeeds(bool update_seq_latest_poses
 		if (!m_robot.getCurrentPoseAndSpeeds(m_curPoseVel.pose, m_curPoseVel.velGlobal, m_curPoseVel.timestamp))
 		{
 			m_navigationState = NAV_ERROR;
-			try { 
+			try {
 				this->stop(true /*emergency*/);
 			}
 			catch (...) {}
@@ -338,7 +338,7 @@ void CAbstractNavigator::updateCurrentPoseAndSpeeds(bool update_seq_latest_poses
 	m_latestPoses.insert(m_curPoseVel.timestamp, mrpt::poses::CPose3D(mrpt::math::TPose3D(m_curPoseVel.pose)));
 
 	// Purge old ones:
-	while (!m_latestPoses.empty() &&
+	while (m_latestPoses.size()>1 &&
 		mrpt::system::timeDifference(m_latestPoses.begin()->first, m_latestPoses.rbegin()->first) > PREVIOUS_POSES_MAX_AGE)
 	{
 		m_latestPoses.erase(m_latestPoses.begin());
