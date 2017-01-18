@@ -11,6 +11,7 @@
 
 #include <mrpt/maps/CPointCloudFilterByDistance.h>
 #include <mrpt/utils/CConfigFileBase.h>
+#include <mrpt/utils/aligned_containers.h>
 
 using namespace mrpt::maps;
 using namespace mrpt::utils;
@@ -38,19 +39,49 @@ void CPointCloudFilterByDistance::filter(
 	const size_t N = pc->size();
 	std::vector<bool> deletion_mask;
 	deletion_mask.assign(N, false);
+	size_t del_count = 0;
 
 	// get reference, previous PC:
-	if (!m_last_frames.empty() && 
-		mrpt::system::timeDifference(m_last_frames.rbegin()->first, pc_timestamp) < options.too_old_seconds
-		)
-	{
-		const FrameInfo & prev_pc = m_last_frames.rbegin()->second;
+	ASSERT_(options.previous_keyframes >= 1);
+	bool can_do_filter = true;
 
+	std::vector<FrameInfo*> prev_pc; // (options.previous_keyframes, nullptr);
+	{
+		auto it = m_last_frames.rbegin();
+		for (int i = 0; i < options.previous_keyframes && it!=m_last_frames.rend(); ++i, ++it)
+		{
+			prev_pc.push_back(&it->second);
+		}
+	}
+
+	if (prev_pc.size() < options.previous_keyframes) {
+		can_do_filter = false;
+	}
+	else {
+		for (int i = 0; can_do_filter && i < options.previous_keyframes; ++i) 
+		{
+			if (mrpt::system::timeDifference(m_last_frames.rbegin()->first, pc_timestamp) > options.too_old_seconds)
+			{
+				can_do_filter = false; // A required keyframe is too old
+				break;
+			}
+		}
+	}
+
+	if (can_do_filter)
+	{
 		// Reference poses of each PC:
 		// Previous: prev_pc.pose
-		const CPose3D rel_pose = cur_pc_pose - prev_pc.pose;
+		mrpt::aligned_containers<CPose3D>::vector_t rel_poses;
+		for (int k = 0; k < options.previous_keyframes; ++k) {
+			const CPose3D rel_pose = cur_pc_pose - prev_pc[k]->pose;
+			rel_poses.push_back(rel_pose);
+		}
+
 		// The idea is that we can now find matches between pt{i} in time_{k}, composed with rel_pose
 		// with the local points in time_{k-1}.
+
+		std::vector<TPoint3D> pt_km1(options.previous_keyframes);
 
 		for (size_t i = 0; i < N; i++)
 		{
@@ -60,32 +91,53 @@ void CPointCloudFilterByDistance::filter(
 			const TPoint3D pt_k = TPoint3D(ptf_k);
 
 			// Point, referred to time=k-1 frame of reference
-			TPoint3D pt_km1;
-			rel_pose.composePoint(pt_k, pt_km1);
+			for (int k = 0; k < options.previous_keyframes; ++k)
+				rel_poses[k].composePoint(pt_k, pt_km1[k]);
 
 			// Look for neighbors in "time=k"
 			std::vector<TPoint3D> neig_k;
 			std::vector<float>    neig_sq_dist_k;
 			pc->kdTreeNClosestPoint3D(pt_k, 2 /*num queries*/, neig_k, neig_sq_dist_k);
 
-			// Look for neighbors in "time=k-1"
-			std::vector<TPoint3D> neig_km1;
-			std::vector<float>    neig_sq_dist_km1;
-			prev_pc.pc->kdTreeNClosestPoint3D(pt_km1, 1 /*num queries*/, neig_km1, neig_sq_dist_km1);
+			// Look for neighbors in "time=k-i"
+			std::vector<TPoint3D> neig_kmi(options.previous_keyframes);
+			std::vector<float>    neig_sq_dist_kmi(options.previous_keyframes, .0);
+
+			for (int k = 0; k < options.previous_keyframes; ++k)
+			{
+				for (int prev_tim_idx = 0; prev_tim_idx < options.previous_keyframes; prev_tim_idx++)
+				{
+					prev_pc[prev_tim_idx]->pc->kdTreeClosestPoint3D(pt_km1[prev_tim_idx], neig_kmi[prev_tim_idx], neig_sq_dist_kmi[prev_tim_idx]);
+				}
+			}
 
 			// Rule:
-			// we must have at least 1 neighbor in t=k, and 1 neighbor in t=k-1
+			// we must have at least 1 neighbor in t=k, and 1 neighbor in t=k-i
 			const double max_allowed_dist_sq = square(options.min_dist + options.angle_tolerance * pt_k.norm());
 
+			bool ok_total = true;
 			const bool ok_t   = neig_k.size() > 1 && neig_sq_dist_k[1] < max_allowed_dist_sq;
-			const bool ok_tm1 = neig_sq_dist_km1.size() >= 1 && neig_sq_dist_km1[0] < max_allowed_dist_sq;
+			ok_total = ok_total && ok_t;
+
+			for (int k = 0; k < options.previous_keyframes; ++k)
+			{
+				const bool ok_tm1 = neig_sq_dist_kmi[k] < max_allowed_dist_sq;
+				ok_total = ok_total && ok_tm1;
+			}
 
 			// Delete?
-			deletion_mask[i] = !(ok_t && ok_tm1);
+			const bool do_delete = !(ok_total);
+			deletion_mask[i] = do_delete;
+
+			if (do_delete) del_count++;
 		}
 
 		// Remove points:
-		if (params == nullptr || params->do_not_delete == false) {
+		if ( (params == nullptr || params->do_not_delete == false) &&
+			N>0 && 
+			del_count/double(N) < options.max_deletion_ratio  // If we are deleting too many points, it may be that the filter is plainly wrong
+			)
+		{
 			pc->applyDeletionMask(deletion_mask);
 		}
 	} // we can do filter
@@ -122,7 +174,9 @@ void CPointCloudFilterByDistance::filter(
 CPointCloudFilterByDistance::TOptions::TOptions() :
 	min_dist(0.10),
 	angle_tolerance( mrpt::utils::DEG2RAD(5)),
-	too_old_seconds(1.0)
+	too_old_seconds(1.0),
+	previous_keyframes(1),
+	max_deletion_ratio(.4)
 {
 }
 
@@ -131,6 +185,8 @@ void CPointCloudFilterByDistance::TOptions::loadFromConfigFile(const mrpt::utils
 	MRPT_LOAD_CONFIG_VAR(min_dist, double, c, s);
 	MRPT_LOAD_CONFIG_VAR_DEGREES(angle_tolerance, c, s);
 	MRPT_LOAD_CONFIG_VAR(too_old_seconds, double, c, s);
+	MRPT_LOAD_CONFIG_VAR(previous_keyframes, int, c, s);
+	MRPT_LOAD_CONFIG_VAR(max_deletion_ratio, double, c, s);
 }
 
 void CPointCloudFilterByDistance::TOptions::dumpToTextStream(mrpt::utils::CStream &out) const
@@ -138,4 +194,6 @@ void CPointCloudFilterByDistance::TOptions::dumpToTextStream(mrpt::utils::CStrea
 	LOADABLEOPTS_DUMP_VAR(min_dist, double);
 	LOADABLEOPTS_DUMP_VAR_DEG(angle_tolerance);
 	LOADABLEOPTS_DUMP_VAR(too_old_seconds, double);
+	LOADABLEOPTS_DUMP_VAR(previous_keyframes, int);
+	LOADABLEOPTS_DUMP_VAR(max_deletion_ratio, double);
 }
