@@ -433,30 +433,6 @@ void CVelodyneScanner::initialize()
 #endif
 	}
 
-	// Save to PCAP file?
-	if (!m_pcap_output_file.empty())
-	{
-#if MRPT_HAS_LIBPCAP
-		char errbuf[PCAP_ERRBUF_SIZE];
-
-		mrpt::system::TTimeParts parts;
-		mrpt::system::timestampToParts(mrpt::system::now(), parts, true);
-		string	sFilePostfix = "_";
-		sFilePostfix += format("%04u-%02u-%02u_%02uh%02um%02us",(unsigned int)parts.year, (unsigned int)parts.month, (unsigned int)parts.day, (unsigned int)parts.hour, (unsigned int)parts.minute, (unsigned int)parts.second );
-		const string sFileName = m_pcap_output_file + mrpt::system::fileNameStripInvalidChars( sFilePostfix ) + string(".pcap");
-
-		m_pcap_out = pcap_open_dead(DLT_EN10MB, 65535);
-		ASSERTMSG_(m_pcap_out!=NULL, "Error creating PCAP live capture handle");
-
-		printf("\n[CVelodyneScanner] Writing to PCAP file \"%s\"\n", sFileName.c_str());
-		if ((m_pcap_dumper = pcap_dump_open(reinterpret_cast<pcap_t*>(m_pcap_out),sFileName.c_str())) == NULL) {
-			THROW_EXCEPTION_CUSTOM_MSG1("Error creating PCAP live dumper: '%s'",errbuf);
-		}
-#else
-		THROW_EXCEPTION("Velodyne: Writing PCAP files requires building MRPT with libpcap support!");
-#endif
-	}
-
 	m_last_pos_packet_timestamp=INVALID_TIMESTAMP;
 	m_last_gps_rmc_age=INVALID_TIMESTAMP;
 	m_state = ssInitializing;
@@ -559,6 +535,31 @@ bool CVelodyneScanner::receivePackets(
 
 	// Optional PCAP dump:
 #if MRPT_HAS_LIBPCAP
+	// Save to PCAP file?
+	if (!m_pcap_output_file.empty() && !m_pcap_out) // 1st time: create output file
+	{
+#if MRPT_HAS_LIBPCAP
+		char errbuf[PCAP_ERRBUF_SIZE];
+
+		mrpt::system::TTimeParts parts;
+		mrpt::system::timestampToParts(mrpt::system::now(), parts, true);
+		string	sFilePostfix = "_";
+		sFilePostfix += format("%04u-%02u-%02u_%02uh%02um%02us",(unsigned int)parts.year, (unsigned int)parts.month, (unsigned int)parts.day, (unsigned int)parts.hour, (unsigned int)parts.minute, (unsigned int)parts.second );
+		const string sFileName = m_pcap_output_file + mrpt::system::fileNameStripInvalidChars( sFilePostfix ) + string(".pcap");
+
+		m_pcap_out = pcap_open_dead(DLT_EN10MB, 65535);
+		ASSERTMSG_(m_pcap_out!=NULL, "Error creating PCAP live capture handle");
+
+		printf("\n[CVelodyneScanner] Writing to PCAP file \"%s\"\n", sFileName.c_str());
+		if ((m_pcap_dumper = pcap_dump_open(reinterpret_cast<pcap_t*>(m_pcap_out),sFileName.c_str())) == NULL) {
+			THROW_EXCEPTION_CUSTOM_MSG1("Error creating PCAP live dumper: '%s'",errbuf);
+		}
+#else
+		THROW_EXCEPTION("Velodyne: Writing PCAP files requires building MRPT with libpcap support!");
+#endif
+	}
+
+
 	if (m_pcap_out && m_pcap_dumper && (data_pkt_timestamp!=INVALID_TIMESTAMP || pos_pkt_timestamp!=INVALID_TIMESTAMP)) 
 	{
 		struct pcap_pkthdr header;
