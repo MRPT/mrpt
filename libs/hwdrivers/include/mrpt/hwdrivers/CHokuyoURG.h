@@ -18,7 +18,7 @@ namespace mrpt
 {
 	namespace hwdrivers
 	{
-		/** This software driver implements the protocol SCIP-2.0 for interfacing HOKUYO URG, UTM and UXM laser scanners (USB or Ethernet)
+		/** This software driver implements the protocol SCIP-2.0 for interfacing HOKUYO URG/UTM/UXM/UST laser scanners (USB or Ethernet).
 		  *  Refer to the example code [HOKUYO_laser_test](http://www.mrpt.org/tutorials/mrpt-examples/example_hokuyo_urgutm_laser_scanner/) 
 		  *  and to example rawlog-grabber [config files](https://github.com/MRPT/mrpt/tree/master/share/mrpt/config_files/rawlog-grabber)
 		  *
