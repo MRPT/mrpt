@@ -34,7 +34,8 @@ namespace obs
 		const mrpt::poses::CPose3D *robotPoseInTheWorld; //!< (Default: NULL) Read takeIntoAccountSensorPoseOnRobot
 		bool PROJ3D_USE_LUT; //!< (Default:true) [Only used when `range_is_depth`=true] Whether to use a Look-up-table (LUT) to speed up the conversion. It's thread safe in all situations <b>except</b> when you call this method from different threads <b>and</b> with different camera parameter matrices. In all other cases, it is a good idea to left it enabled.
 		bool USE_SSE2; //!< (Default:true) If possible, use SSE2 optimized code.
-		T3DPointsProjectionParams() :  takeIntoAccountSensorPoseOnRobot(false), robotPoseInTheWorld(NULL), PROJ3D_USE_LUT(true),USE_SSE2(true)
+		bool MAKE_DENSE; //!< (Default:true) set to false if you want to preserve the organization of the point cloud
+		T3DPointsProjectionParams() :  takeIntoAccountSensorPoseOnRobot(false), robotPoseInTheWorld(NULL), PROJ3D_USE_LUT(true),USE_SSE2(true), MAKE_DENSE(true)
 		{}
 	};
 	/** Used in CObservation3DRangeScan::convertTo2DScan() */
