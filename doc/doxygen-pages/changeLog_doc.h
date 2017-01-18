@@ -56,6 +56,7 @@
 			- New colormap: mrpt::utils::hot2rgb()
 			- New function mrpt::system::find_mrpt_shared_dir()
 			- New class mrpt::utils::CDynamicGrid3D<>
+			- New function mrpt::utils::net::http_request()
 		- \ref mrpt_bayes_grp
 			- [API change] `verbose` is no longer a field of mrpt::bayes::CParticleFilter::TParticleFilterOptions. Use the setVerbosityLevel() method of the CParticleFilter class itself.
 			- [API change] mrpt::bayes::CProbabilityParticle (which affects all PF-based classes in MRPT) has been greatly simplified via usage of the new mrpt::utils::copy_ptr<> pointee-copy-semantics smart pointer.
