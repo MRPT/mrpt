@@ -649,8 +649,8 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 				if (!gl_obs_r) {
 					gl_obs = mrpt::opengl::CPointCloud::Create();
 					gl_obs->setName("obs-raw");
-					gl_obs->setPointSize(1.5);
-					gl_obs->setColor_u8( mrpt::utils::TColor(0xff,0x00,0x00));
+					gl_obs->setPointSize(3);
+					gl_obs->setColor_u8( mrpt::utils::TColor(0xff,0xff,0x00));
 					gl_robot_frame->insert(gl_obs);
 				} else {
 					gl_obs = mrpt::opengl::CPointCloudPtr(gl_obs_r);
@@ -819,6 +819,18 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 		if (cbShowAllDebugEntries->IsChecked()) {
 			for (const auto &e : log.timestamps)
 				ADD_WIN_TEXTMSG(mrpt::format("Timestamp %-20s=%s", e.first.c_str(), mrpt::system::dateTimeLocalToString(e.second).c_str()) );
+		}
+
+		{
+			const unsigned int nObsOrg = log.WS_Obstacles_original.size(), nObs = log.WS_Obstacles.size();
+			const unsigned int nObsFiltered = nObsOrg - nObs;
+
+			if (nObsFiltered) {
+				ADD_WIN_TEXTMSG(mrpt::format("Obstacle points=%u (%u filtered out)", nObs, nObsFiltered));
+			}
+			else {
+				ADD_WIN_TEXTMSG(mrpt::format("Obstacle points=%u", nObs));
+			}
 		}
 
 		ADD_WIN_TEXTMSG(mrpt::format("cmd_vel=%s", log.cmd_vel ? log.cmd_vel->asString().c_str() : "NOP (Continue last PTG)"));
