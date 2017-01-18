@@ -104,7 +104,9 @@ CVelodyneScanner::CVelodyneScanner() :
 	m_pcap_repeat_delay(0.0),
 	m_hDataSock(INVALID_SOCKET),
 	m_hPositionSock(INVALID_SOCKET),
-	m_last_gps_rmc_age(INVALID_TIMESTAMP)
+	m_last_gps_rmc_age(INVALID_TIMESTAMP),
+	m_lidar_rpm(0),
+	m_lidar_return(UNCHANGED)
 {
 	m_sensorLabel = "Velodyne";
 
@@ -179,6 +181,10 @@ void CVelodyneScanner::loadConfig_sensorSpecific(
 			static_cast<unsigned int>(m_model),
 			TModelPropertiesFactory::getListKnownModels().c_str()))
 	}
+
+	// Optional HTTP-based settings:
+	MRPT_LOAD_HERE_CONFIG_VAR(rpm, int, m_lidar_rpm, cfg, sect);
+	m_lidar_return = cfg.read_enum<return_type_t>(sect, "return_type", m_lidar_return);
 
 	MRPT_END
 }
@@ -357,6 +363,15 @@ void CVelodyneScanner::initialize()
 	// -------------------------------
 	if (m_pcap_input_file.empty())
 	{ // Online
+
+		if (m_lidar_rpm>0) {
+			if (!setLidarRPM(m_lidar_rpm))
+				THROW_EXCEPTION("Error in setLidarRPM()!");
+		}
+		if (m_lidar_return != UNCHANGED) {
+			if (!setLidarReturnType(m_lidar_return))
+				THROW_EXCEPTION("Error in setLidarReturnType()!");
+		}
 
 		// (1) Create LIDAR DATA socket
 		// --------------------------------
@@ -816,3 +831,93 @@ bool CVelodyneScanner::internal_read_PCAP_packet(
 	THROW_EXCEPTION("MRPT needs to be built against libpcap to enable this functionality")
 #endif
 }
+
+bool CVelodyneScanner::setLidarReturnType(return_type_t ret_type)
+{
+	/* HTTP-based config: http://10.0.0.100/tab/config.html
+		<form name='returns' method="post" action="/cgi/setting">
+		<span>Return&nbsp;Type:&nbsp;</span> <select name="returns"
+		onchange='javascript:this.form.submit()'>
+		<option>Strongest</option>
+		<option>Last</option>
+		<option>Dual</option>
+		</select>
+		</form>	*/
+	MRPT_START;
+	std::string strRet;
+	switch (ret_type)
+	{
+	case STRONGEST: strRet = "Strongest"; break;
+	case DUAL:      strRet = "Dual"; break;
+	case LAST:      strRet = "Last"; break;
+	case UNCHANGED: return true;
+	default:
+		THROW_EXCEPTION("Invalid value for return type!");
+	};
+
+	const std::string cmd = mrpt::format("returns=%s", strRet.c_str());
+	return this->internal_send_http_post(cmd);
+	MRPT_END;
+}
+
+bool CVelodyneScanner::setLidarRPM(int rpm)
+{
+	/* HTTP-based config: http://10.0.0.100/tab/config.html
+	<form name='rpm' method="post" action="/cgi/setting">
+	Motor
+	&nbsp;RPM:&nbsp;<input type="text" name="rpm" size="5" style="text-align:right" /><input type="button" value="+" onclick="javascript:this.form.rpm.value++;this.form.submit()" /><input type="button" value="-" onclick="javascript:this.form.rpm.value--;this.form.submit()" />
+	&nbsp;<input type="submit" value="Set" />
+	</form>	*/
+
+	MRPT_START;
+	const std::string cmd = mrpt::format("rpm=%i", rpm);
+	return this->internal_send_http_post(cmd);
+	MRPT_END;
+}
+
+bool CVelodyneScanner::setLidarOnOff(bool on)
+{
+	// laser = on|off
+	MRPT_START;
+	const std::string cmd = mrpt::format("laser=%s", on ? "on":"off");
+	return this->internal_send_http_post(cmd);
+	MRPT_END;
+}
+
+bool CVelodyneScanner::internal_send_http_post(const std::string &post_data)
+{
+	MRPT_START;
+
+	ASSERTMSG_(!m_device_ip.empty(), "A device IP address must be specified first!");
+
+	using namespace mrpt::utils::net;
+
+	vector_byte post_out;
+	string post_err_str;
+
+	int http_rep_code;
+	mrpt::utils::TParameters<string> extra_headers, out_headers;
+
+	extra_headers["Origin"] = mrpt::format("http://%s", m_device_ip.c_str());
+	extra_headers["Referer"] = mrpt::format("http://%s", m_device_ip.c_str());
+	extra_headers["Upgrade-Insecure-Requests"] = "1";
+	extra_headers["Content-Type"] = "application/x-www-form-urlencoded";
+
+	ERRORCODE_HTTP ret = http_request(
+		"POST",
+		post_data,
+		mrpt::format("http://%s/cgi/setting", m_device_ip.c_str()),
+		post_out,
+		post_err_str,
+		80 /* port */,
+		string(), string(), // user,pass
+		&http_rep_code,
+		&extra_headers,
+		&out_headers
+		);
+
+	return http_rep_code == 200 || http_rep_code == 204; // OK codes
+
+	MRPT_END;
+}
+
