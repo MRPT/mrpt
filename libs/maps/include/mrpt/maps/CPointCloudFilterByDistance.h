@@ -42,6 +42,8 @@ namespace mrpt
 				double min_dist;               //!< (Default: 0.05 m)
 				double angle_tolerance;        //!< (Default: 2 deg) Stored in rad.
 				double too_old_seconds;        //!< (Default: 1 s)
+				int    previous_keyframes;     //!< (Default: 1) How many previous keyframes will be compared with the latest pointcloud.
+				double max_deletion_ratio;     //!< (Default: 0.4) If the ratio [0,1] of points considered invalid ("deletion") is larger than this ratio, no point will be deleted since it'd be too suspicious and may indicate a failure of this filter.
 
 				TOptions();
 				void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source, const std::string &section) MRPT_OVERRIDE; // See base docs
