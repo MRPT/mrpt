@@ -774,8 +774,10 @@ void CAbstractPTGBasedReactive::STEP5_PTGEvaluator(
 	// -----------------------------------------------------
 	eval_factors[4] = .0;
 
-	if (this_is_PTG_continuation)
-		eval_factors[4] = 1.0;
+	if (holonomicMovement.PTG->supportVelCmdNOP()) 
+	{
+		eval_factors[4] = this_is_PTG_continuation ? 1.0 : 0.;
+	}
 	else if (m_last_vel_cmd)
 	{
 		mrpt::kinematics::CVehicleVelCmdPtr desired_cmd;
