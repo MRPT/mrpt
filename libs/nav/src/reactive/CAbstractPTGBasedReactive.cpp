@@ -1015,7 +1015,10 @@ void CAbstractPTGBasedReactive::robotPoseExtrapolateIncrement(const mrpt::math::
 
 void CAbstractPTGBasedReactive::onStartNewNavigation()
 {
+	m_last_curPoseVelUpdate_time = INVALID_TIMESTAMP;
 	m_lastSentVelCmd.reset();
+
+	CWaypointsNavigator::onStartNewNavigation(); // Call base method we override
 }
 
 CAbstractPTGBasedReactive::TSentVelCmd::TSentVelCmd()
