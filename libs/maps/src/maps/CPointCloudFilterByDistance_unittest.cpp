@@ -36,8 +36,8 @@ void run_pc_filter_test(
 	const mrpt::system::TTimeStamp pts2_tim = mrpt::system::timestampAdd(pts1_tim, 0.2+ map2_tim_off);
 
 	mrpt::maps::CSimplePointsMap map1, map2;
-	for (int i = 0; i< sizeof(pts1) / sizeof(pts1[0]); i++) map1.insertPoint(pts1[i][0], pts1[i][1], pts1[i][2]);
-	for (int i = 0; i < sizeof(pts1) / sizeof(pts1[0]); i++) 
+	for (size_t i = 0; i< sizeof(pts1) / sizeof(pts1[0]); i++) map1.insertPoint(pts1[i][0], pts1[i][1], pts1[i][2]);
+	for (size_t i = 0; i < sizeof(pts1) / sizeof(pts1[0]); i++) 
 	{
 		double x, y, z;
 		pts2_pose.inverseComposePoint(pts1[i][0], pts1[i][1], pts1[i][2], x, y, z);
