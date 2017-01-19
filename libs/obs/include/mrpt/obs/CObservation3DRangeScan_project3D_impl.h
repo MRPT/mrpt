@@ -288,7 +288,7 @@ namespace detail {
 				if (!rif.do_range_filter(r,c,D)){
 					if (!MAKE_DENSE)
 					{
-						//pca.setInvalidPoint(idx);
+						pca.setInvalidPoint(idx);
 						++idx;
 					}
 					continue;
@@ -382,7 +382,7 @@ namespace detail {
 							}
 							else if (!MAKE_DENSE)
 							{
-								//pca.setInvalidPoint(idx);
+								pca.setInvalidPoint(idx);
 								++idx;
 							}
 					}
