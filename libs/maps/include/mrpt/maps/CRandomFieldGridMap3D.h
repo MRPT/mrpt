@@ -149,6 +149,8 @@ namespace maps
 		/** Base class for user-supplied objects capable of describing voxels connectivity, used to build prior factors of the MRF graph. \sa setvoxelsConnectivity() */
 		struct MAPS_IMPEXP ConnectivityDescriptor
 		{
+			//Virtual destructor for polymorphic type.
+			virtual ~ConnectivityDescriptor() {};
 			/** Implement the check of whether node i=(icx,icy,icz) is connected with node j=(jcx,jcy,jcy).
 			* This visitor method will be called only for immediate neighbors.
 			* \return true if connected (and the "information" value should be also updated in out_edge_information), false otherwise.
