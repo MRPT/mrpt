@@ -310,10 +310,14 @@ void CAbstractNavigator::updateCurrentPoseAndSpeeds()
 	// AbstractNavigator and a derived, overriding class.
 	const mrpt::system::TTimeStamp tim_now = mrpt::system::now();
 	const double MIN_TIME_BETWEEN_POSE_UPDATES = 20e-3;
-	if (m_last_curPoseVelUpdate_time!=INVALID_TIMESTAMP &&
-		mrpt::system::timeDifference(m_last_curPoseVelUpdate_time, tim_now)<MIN_TIME_BETWEEN_POSE_UPDATES)
+	if (m_last_curPoseVelUpdate_time != INVALID_TIMESTAMP)
 	{
-		return;  // previous data is still valid: don't query the robot again
+		const double last_call_age = mrpt::system::timeDifference(m_last_curPoseVelUpdate_time, tim_now);
+		if (last_call_age < MIN_TIME_BETWEEN_POSE_UPDATES)
+		{
+			MRPT_LOG_DEBUG_FMT("updateCurrentPoseAndSpeeds: ignoring call, since last call was only %f ms ago.", last_call_age*1e3);
+			return;  // previous data is still valid: don't query the robot again
+		}
 	}
 
 	{
@@ -343,6 +347,7 @@ void CAbstractNavigator::updateCurrentPoseAndSpeeds()
 	{
 		m_latestPoses.erase(m_latestPoses.begin());
 	}
+	MRPT_LOG_DEBUG_STREAM << "updateCurrentPoseAndSpeeds: " << m_latestPoses.size() << " poses in list of latest robot poses.";
 }
 
 bool CAbstractNavigator::changeSpeeds(const mrpt::kinematics::CVehicleVelCmd &vel_cmd)

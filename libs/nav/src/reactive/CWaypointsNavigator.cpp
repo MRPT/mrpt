@@ -209,7 +209,6 @@ void CWaypointsNavigator::loadWaypointsParamsConfigFile(const mrpt::utils::CConf
 
 void CWaypointsNavigator::onStartNewNavigation()
 {
-
 }
 
 bool CWaypointsNavigator::isRelativePointReachable(const mrpt::math::TPoint2D &wp_local_wrt_robot) const
