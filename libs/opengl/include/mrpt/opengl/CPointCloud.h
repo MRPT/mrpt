@@ -281,6 +281,11 @@ namespace mrpt
 				m_obj.setPoint_fast(idx,x,y,z);
 			}
 
+			/** Set XYZ coordinates of i'th point */
+			inline void setInvalidPoint(const size_t idx) {
+				THROW_EXCEPTION("mrpt::opengl::CPointCloud needs to be dense");
+			}
+
 		}; // end of PointCloudAdapter<mrpt::opengl::CPointCloud>
 	}
 
