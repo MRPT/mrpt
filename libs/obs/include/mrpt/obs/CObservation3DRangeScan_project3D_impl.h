@@ -386,6 +386,14 @@ namespace detail {
 								++idx;
 							}
 					}
+					else if (!MAKE_DENSE)
+					{
+						for( int q=0; q<4; q++)
+						{
+							pca.setInvalidPoint(idx);
+							++idx;
+						}
+					}
 					D_ptr+=4;
 					if (Dgt_ptr) Dgt_ptr+=4;
 					if (Dlt_ptr) Dlt_ptr+=4;
