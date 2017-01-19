@@ -265,6 +265,11 @@ namespace mrpt
 				m_obj.setPoint_fast(idx, x,y,z);
 			}
 
+			inline void setInvalidPoint(const size_t idx)
+			{
+				THROW_EXCEPTION("mrpt::opengl::CPointCloudColoured needs to be dense");
+			}
+
 			/** Get XYZ_RGBf coordinates of i'th point */
 			template <typename T>
 			inline void getPointXYZ_RGBf(const size_t idx, T &x,T &y, T &z, float &r,float &g,float &b) const {

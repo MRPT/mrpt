@@ -633,6 +633,12 @@ namespace obs
 				m_obj.points3D_y[idx]=y;
 				m_obj.points3D_z[idx]=z;
 			}
+			/** Set XYZ coordinates of i'th point */
+			inline void setInvalidPoint(const size_t idx)
+			{
+				THROW_EXCEPTION("mrpt::obs::CObservation3DRangeScan requires needs to be dense");
+			}
+
 		}; // end of PointCloudAdapter<CObservation3DRangeScan>
 	}
 } // End of namespace
