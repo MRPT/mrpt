@@ -47,8 +47,9 @@ namespace nav
 			mrpt::math::CVectorFloat TP_Obstacles;  //!< Distances until obstacles, in "pseudometers", first index for -PI direction, last one for PI direction.
 			mrpt::math::TPoint2D     TP_Target;     //!< Target location in TP-Space
 			mrpt::math::TPoint2D     TP_Robot;      //!< Robot location in TP-Space: normally (0,0), except during "NOP cmd vel" steps
-			double  timeForTPObsTransformation,timeForHolonomicMethod;  //!< Time, in seconds.
-			double  desiredDirection,desiredSpeed, evaluation;          //!< The results from the holonomic method.
+			double timeForTPObsTransformation,timeForHolonomicMethod;  //!< Time, in seconds.
+			double desiredDirection,desiredSpeed;          //!< The results from the holonomic method.
+			double evaluation_org, evaluation_priority, evaluation; //!< should be: evaluation = evaluation_org * evaluation_priority.
 			mrpt::math::CVectorFloat   evalFactors;   //!< Evaluation factors
 			CHolonomicLogFileRecordPtr HLFR;          //!< Other useful info about holonomic method execution.
 			mrpt::nav::CParameterizedTrajectoryGeneratorPtr ptg; //!< Only for the FIRST entry in a log file, this will contain a copy of the PTG with trajectories, suitable to render trajectories, etc.

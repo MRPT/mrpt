@@ -834,15 +834,18 @@ void CAbstractPTGBasedReactive::STEP5_PTGEvaluator(
 		global_eval /= math::sum(w);
 
 		// Don't reduce the priority of "PTG continuation" "NOPs".
+		holonomicMovement.eval_org = global_eval;
+		holonomicMovement.eval_prio = 1.0;
+
 		if (!this_is_PTG_continuation)
 		{
-			global_eval *= holonomicMovement.PTG->getScorePriority();
+			holonomicMovement.eval_prio *= holonomicMovement.PTG->getScorePriority();
 
 			// Use PTG-specific relative scoring priority:
-			global_eval *= holonomicMovement.PTG->evalPathRelativePriority(kDirection);
+			holonomicMovement.eval_prio *= holonomicMovement.PTG->evalPathRelativePriority(kDirection);
 		}
 
-		holonomicMovement.evaluation = global_eval;
+		holonomicMovement.evaluation = holonomicMovement.eval_org * holonomicMovement.eval_prio;
 	}
 
 	MRPT_END;
@@ -1206,6 +1209,9 @@ void CAbstractPTGBasedReactive::ptg_eval_target_build_obstacles(
 		ipp.desiredDirection = holonomicMovement.direction;
 		ipp.desiredSpeed = holonomicMovement.speed;
 		ipp.evaluation = holonomicMovement.evaluation;
+		ipp.evaluation_org = holonomicMovement.eval_org;
+		ipp.evaluation_priority = holonomicMovement.eval_prio;
+
 		ipp.timeForTPObsTransformation = timeForTPObsTransformation;
 		ipp.timeForHolonomicMethod = timeForHolonomicMethod;
 	}
