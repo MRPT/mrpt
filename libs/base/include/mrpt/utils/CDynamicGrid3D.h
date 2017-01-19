@@ -231,7 +231,8 @@ namespace mrpt
 
 			inline double getXMin()const  { return m_x_min; }
 			inline double getXMax()const  { return m_x_max; }
-
+			inline double getYMin()const { return m_y_min; }
+			inline double getYMax()const { return m_y_max; }
 			inline double getZMin()const  { return m_z_min; }
 			inline double getZMax()const  { return m_z_max; }
 
