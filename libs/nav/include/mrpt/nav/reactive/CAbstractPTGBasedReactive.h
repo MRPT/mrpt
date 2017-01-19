@@ -143,10 +143,11 @@ namespace mrpt
 		struct THolonomicMovement 
 		{
 			CParameterizedTrajectoryGenerator	*PTG;	//!< The associated PTG
-			double	direction, speed;					//!< The holonomic movement. Speed is normalized wrt to [0,1]
-			double	evaluation;							//!< An evaluation in the range [0,1] for the goodness of the movement
+			double direction, speed;					//!< The holonomic movement. Speed is normalized wrt to [0,1]
+			double evaluation;							//!< An evaluation in the range [0,1] for the goodness of the movement
+			double eval_org, eval_prio;  //!< Optional fields for logging, explaining the result in evaluation = eval_org * eval_prio
 
-			THolonomicMovement() : PTG(NULL),direction(0),speed(0),evaluation(0) {}
+			THolonomicMovement() : PTG(NULL),direction(0),speed(0),evaluation(0),eval_org(0), eval_prio(1) {}
 		};
 
 		/** The main method for the navigator */

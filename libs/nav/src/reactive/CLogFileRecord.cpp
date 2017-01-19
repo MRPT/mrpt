@@ -37,7 +37,7 @@ CLogFileRecord::CLogFileRecord() :
 void  CLogFileRecord::writeToStream(mrpt::utils::CStream &out,int *version) const
 {
 	if (version)
-		*version = 20;
+		*version = 21;
 	else
 	{
 		uint32_t	i,n;
@@ -57,6 +57,7 @@ void  CLogFileRecord::writeToStream(mrpt::utils::CStream &out,int *version) cons
 			out << infoPerPTG[i].TP_Robot; // v17
 			out << infoPerPTG[i].timeForTPObsTransformation << infoPerPTG[i].timeForHolonomicMethod; // made double in v12
 			out << infoPerPTG[i].desiredDirection << infoPerPTG[i].desiredSpeed << infoPerPTG[i].evaluation; // made double in v12
+			out << infoPerPTG[i].evaluation_org << infoPerPTG[i].evaluation_priority; // added in v21
 			out << *infoPerPTG[i].HLFR;
 
 			// Version 9: Removed security distances. Added optional field with PTG info.
@@ -141,6 +142,7 @@ void  CLogFileRecord::readFromStream(mrpt::utils::CStream &in,int version)
 	case 18:
 	case 19:
 	case 20:
+	case 21:
 		{
 			// Version 0 --------------
 			uint32_t  i,n;
@@ -181,6 +183,13 @@ void  CLogFileRecord::readFromStream(mrpt::utils::CStream &in,int version)
 					in.ReadAsAndCastTo<float,double>(infoPerPTG[i].desiredDirection);
 					in.ReadAsAndCastTo<float,double>(infoPerPTG[i].desiredSpeed);
 					in.ReadAsAndCastTo<float,double>(infoPerPTG[i].evaluation);
+				}
+				if (version >= 21) {
+					in >> infoPerPTG[i].evaluation_org >> infoPerPTG[i].evaluation_priority;
+				}
+				else {
+					infoPerPTG[i].evaluation_org = infoPerPTG[i].evaluation;
+					infoPerPTG[i].evaluation_priority = 1.0;
 				}
 
 				in >> infoPerPTG[i].HLFR;
