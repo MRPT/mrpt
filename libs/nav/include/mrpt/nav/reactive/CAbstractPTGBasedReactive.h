@@ -301,6 +301,7 @@ namespace mrpt
 
 		mrpt::math::TPose2D m_lastTarget; //!< To detect changes
 		bool   ENABLE_OBSTACLE_FILTERING;
+		double TIME_OFFSET_POSE2VELCMD_OVERRIDE; //!< (Default:-1) If >=0, overrides the automatic estimation of timoffPose2Velcmd in delays model
 
 	}; // end of CAbstractPTGBasedReactive
   }

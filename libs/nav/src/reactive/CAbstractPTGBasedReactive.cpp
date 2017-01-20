@@ -73,7 +73,8 @@ CAbstractPTGBasedReactive::CAbstractPTGBasedReactive(CRobot2NavInterface &react_
 	m_closing_navigator          (false),
 	m_WS_Obstacles_timestamp     (INVALID_TIMESTAMP),
 	m_infoPerPTG_timestamp       (INVALID_TIMESTAMP),
-	ENABLE_OBSTACLE_FILTERING(false)
+	ENABLE_OBSTACLE_FILTERING(false),
+	TIME_OFFSET_POSE2VELCMD_OVERRIDE(-1.0)
 {
 	this->enableLogFile( enableLogFile );
 }
@@ -337,6 +338,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 			*                timoff_obstacles <-+                |               +--> timoff_curPoseVelAge           |
 			*                                                    |<---------------------------------+--------------->|
 			*                                                                                       +--> timoff_sendVelCmd_avr (estimation)
+			*
 			*                                                                                                |<-------------------->|
 			*                                                                                                   tim_changeSpeed_avr (estim)
 			*
@@ -357,12 +359,19 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 
 			// time offset estimations:
 			const double timoff_pose2sense = timoff_obstacles - timoff_curPoseVelAge;
-			const double timoff_pose2VelCmd = timoff_sendVelCmd_avr.getLastOutput() + 0.5*tim_changeSpeed_avr.getLastOutput() - timoff_curPoseVelAge;
-			newLogRec.values["timoff_pose2sense"] = timoff_pose2sense;
-			newLogRec.values["timoff_pose2VelCmd"] = timoff_pose2VelCmd;
 
-			if (std::abs(timoff_pose2sense) > 0.5) MRPT_LOG_WARN_FMT("timoff_pose2sense=%e is too large! Path extrapolation may be not accurate.", timoff_pose2sense);
-			if (std::abs(timoff_pose2VelCmd) > 0.5) MRPT_LOG_WARN_FMT("timoff_pose2VelCmd=%e is too large! Path extrapolation may be not accurate.", timoff_pose2VelCmd);
+			double timoff_pose2VelCmd;
+			if (TIME_OFFSET_POSE2VELCMD_OVERRIDE >= .0) {
+				timoff_pose2VelCmd = TIME_OFFSET_POSE2VELCMD_OVERRIDE;
+			}
+			else {
+				timoff_pose2VelCmd = timoff_sendVelCmd_avr.getLastOutput() + 0.5*tim_changeSpeed_avr.getLastOutput() - timoff_curPoseVelAge;
+			}
+			newLogRec.values["timoff_pose2sense"] = timoff_pose2sense;
+			newLogRec.values["timoff_pose2VelCmd"] =  timoff_pose2VelCmd;
+
+			if (std::abs(timoff_pose2sense) > 1.25) MRPT_LOG_WARN_FMT("timoff_pose2sense=%e is too large! Path extrapolation may be not accurate.", timoff_pose2sense);
+			if (std::abs(timoff_pose2VelCmd) > 1.25) MRPT_LOG_WARN_FMT("timoff_pose2VelCmd=%e is too large! Path extrapolation may be not accurate.", timoff_pose2VelCmd);
 
 			// Path extrapolation: robot relative poses along current path estimation:
 			robotPoseExtrapolateIncrement(m_curPoseVel.velLocal, timoff_pose2sense, relPoseSense);
@@ -412,9 +421,15 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 
 		if (can_do_nop_motion)
 		{
+			// Add the estimation of how long it takes to run the changeSpeeds() callback (usually a tiny period):
+			const mrpt::system::TTimeStamp tim_send_cmd_vel_corrected = 
+				mrpt::system::timestampAdd(
+					m_lastSentVelCmd.tim_send_cmd_vel, 
+					tim_changeSpeed_avr.getLastOutput());
+
 			CPose3D robot_pose3d_at_send_cmd;
 			bool valid_pose;
-			m_latestPoses.interpolate(m_lastSentVelCmd.tim_send_cmd_vel, robot_pose3d_at_send_cmd, valid_pose);
+			m_latestPoses.interpolate(tim_send_cmd_vel_corrected, robot_pose3d_at_send_cmd, valid_pose);
 			if (valid_pose)
 			{
 				const CPose2D robot_pose_at_send_cmd = CPose2D(robot_pose3d_at_send_cmd);
@@ -911,6 +926,8 @@ void CAbstractPTGBasedReactive::loadConfigFile(const mrpt::utils::CConfigFileBas
 
 	DIST_TO_TARGET_FOR_SENDING_EVENT = cfg.read_float(sectCfg, "DIST_TO_TARGET_FOR_SENDING_EVENT", DIST_TO_TARGET_FOR_SENDING_EVENT, false);
 	m_badNavAlarm_AlarmTimeout = cfg.read_double(sectCfg,"ALARM_SEEMS_NOT_APPROACHING_TARGET_TIMEOUT", m_badNavAlarm_AlarmTimeout, false);
+
+	MRPT_LOAD_CONFIG_VAR(TIME_OFFSET_POSE2VELCMD_OVERRIDE, double, cfg, sectCfg);
 
 	// ========= Optional filtering ===========
 	MRPT_LOAD_CONFIG_VAR(ENABLE_OBSTACLE_FILTERING, bool  ,cfg, sectCfg);
