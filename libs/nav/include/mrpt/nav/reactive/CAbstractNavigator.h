@@ -124,6 +124,7 @@ namespace mrpt
 
 		TState             m_navigationState;  //!< Current internal state of navigator:
 		TNavigationParams  *m_navigationParams;  //!< Current navigation parameters
+		bool                m_lastNavTargetReached; //!< Whether the last target was reached successfully.
 
 		CRobot2NavInterface   &m_robot; //!< The navigator-robot interface.
 
