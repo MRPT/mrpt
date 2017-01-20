@@ -58,6 +58,7 @@ CAbstractNavigator::CAbstractNavigator(CRobot2NavInterface &react_iterf_impl) :
 	m_navigationEndEventSent(false),
 	m_navigationState     ( IDLE ),
 	m_navigationParams    ( NULL ),
+	m_lastNavTargetReached(false),
 	m_robot               ( react_iterf_impl ),
 	m_curPoseVel          (),
 	m_last_curPoseVelUpdate_time(INVALID_TIMESTAMP),
@@ -84,6 +85,7 @@ void CAbstractNavigator::cancel()
 	mrpt::synch::CCriticalSectionLocker csl(&m_nav_cs);
 	MRPT_LOG_DEBUG("CAbstractNavigator::cancel() called.");
 	m_navigationState = IDLE;
+	m_lastNavTargetReached = false;
 	this->stop(false /*not emergency*/);
 }
 
@@ -211,6 +213,8 @@ void CAbstractNavigator::navigationStep()
 			// Have we really reached the target?
 			if ( targetDist < m_navigationParams->targetAllowedDistance )
 			{
+				m_lastNavTargetReached = true;
+
 				if (!m_navigationParams->targetIsIntermediaryWaypoint) {
 					this->stop(false /*not emergency*/);
 				}
@@ -277,6 +281,7 @@ void CAbstractNavigator::navigate(const CAbstractNavigator::TNavigationParams *p
 	mrpt::synch::CCriticalSectionLocker csl(&m_nav_cs);
 
 	m_navigationEndEventSent = false;
+	m_lastNavTargetReached = false;
 
 	// Copy data:
 	mrpt::utils::delete_safe(m_navigationParams);
