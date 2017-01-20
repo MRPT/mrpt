@@ -160,6 +160,9 @@ void saveLastUsedDirectoryToCfgFile(const std::string &fil)
 
 void CMyGLCanvas::OnRenderError( const wxString &str )
 {
+	if (!logWin)
+		logWin = new wxLogWindow(this, wxT("Log window"), false);
+
 	wxLogError(str);
 	logWin->Show();
 }
@@ -375,8 +378,6 @@ END_EVENT_TABLE()
 _DSceneViewerFrame::_DSceneViewerFrame(wxWindow* parent,wxWindowID id)
 	: m_travelling_start_time(INVALID_TIMESTAMP), maxv(0)
 {
-	//wxLogNull logQuiet;  // There're some issues with the toolbar icons.. just ignore them
-	logWin = new wxLogWindow(this,wxT("Log window"),false);
 	theWindow = this;
 
 	// Load my custom icons:
