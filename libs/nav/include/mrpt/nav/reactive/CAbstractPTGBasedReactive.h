@@ -59,8 +59,8 @@ namespace mrpt
 
 			TNavigationParamsPTG() { }
 			virtual ~TNavigationParamsPTG() { }
-			virtual std::string getAsText() const;
-			virtual TNavigationParams* clone() const { return new TNavigationParamsPTG(*this); }
+			virtual std::string getAsText() const MRPT_OVERRIDE;
+			virtual TNavigationParams* clone() const MRPT_OVERRIDE { return new TNavigationParamsPTG(*this); }
 		};
 
 
@@ -284,9 +284,8 @@ namespace mrpt
 		{
 			int ptg_index; //!< 0-based index of used PTG
 			int ptg_alpha_index; //!< Path index for selected PTG
-			mrpt::system::TTimeStamp tim_send_cmd_vel, tim_poseVel; //!< Timestamp of when the cmd was sent, and when the robot pose was queried in that iteration.
-			mrpt::math::TTwist2D curRobotVelLocal;
-			mrpt::math::TPose2D  curRobotPose;
+			mrpt::system::TTimeStamp tim_send_cmd_vel; //!< Timestamp of when the cmd was sent
+			TRobotPoseVel  poseVel;  //!< Robot pose & velocities and timestamp of when it was queried
 
 			bool isValid() const;
 			void reset();
