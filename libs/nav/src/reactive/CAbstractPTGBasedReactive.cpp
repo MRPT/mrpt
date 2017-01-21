@@ -435,7 +435,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 				const CPose2D robot_pose_at_send_cmd = CPose2D(robot_pose3d_at_send_cmd);
 
 				CParameterizedTrajectoryGenerator * ptg = getPTG(m_lastSentVelCmd.ptg_index);
-				ptg->updateCurrentRobotVel(m_lastSentVelCmd.curRobotVelLocal);
+				ptg->updateCurrentRobotVel(m_lastSentVelCmd.poseVel.velLocal);
 
 				TInfoPerPTG ipf_NOP;
 				const TPose2D relTarget_NOP = TPose2D(CPose2D(m_navigationParams->target) - robot_pose_at_send_cmd);
@@ -556,10 +556,8 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 				// Save last sent cmd:
 				m_lastSentVelCmd.ptg_index = nSelectedPTG;
 				m_lastSentVelCmd.ptg_alpha_index = selectedHolonomicMovement.PTG->alpha2index(selectedHolonomicMovement.direction);
-				m_lastSentVelCmd.tim_poseVel = m_curPoseVel.timestamp;
+				m_lastSentVelCmd.poseVel = m_curPoseVel;
 				m_lastSentVelCmd.tim_send_cmd_vel = tim_send_cmd_vel;
-				m_lastSentVelCmd.curRobotVelLocal = m_curPoseVel.velLocal;
-				m_lastSentVelCmd.curRobotPose = m_curPoseVel.pose;
 
 
 				// Update delay model:
@@ -655,7 +653,7 @@ void CAbstractPTGBasedReactive::STEP8_GenerateLogRecord(CLogFileRecord &newLogRe
 	newLogRec.rel_pose_PTG_origin_wrt_sense_NOP = rel_pose_PTG_origin_wrt_sense_NOP;
 	newLogRec.ptg_index_NOP = best_is_NOP_cmdvel ? m_lastSentVelCmd.ptg_index : -1;
 	newLogRec.ptg_last_k_NOP = m_lastSentVelCmd.ptg_alpha_index;
-	newLogRec.ptg_last_curRobotVelLocal = m_lastSentVelCmd.curRobotVelLocal;
+	newLogRec.ptg_last_curRobotVelLocal = m_lastSentVelCmd.poseVel.velLocal;
 
 	// Last entry in info-per-PTG:
 	{
@@ -741,9 +739,9 @@ void CAbstractPTGBasedReactive::STEP5_PTGEvaluator(
 			if (ok1) {
 				mrpt::math::TPose2D predicted_rel_pose;
 				holonomicMovement.PTG->getPathPose(m_lastSentVelCmd.ptg_alpha_index, cur_ptg_step, predicted_rel_pose);
-				const CPose2D predicted_pose_global = CPose2D(m_lastSentVelCmd.curRobotPose) + CPose2D(predicted_rel_pose);
+				const CPose2D predicted_pose_global = CPose2D(m_lastSentVelCmd.poseVel.pose) + CPose2D(predicted_rel_pose);
 				const double predicted2real_dist = predicted_pose_global.distance2DTo(m_curPoseVel.pose.x, m_curPoseVel.pose.y);
-				newLogRec.additional_debug_msgs["PTG_eval.lastCmdPose(raw)"] = m_lastSentVelCmd.curRobotPose.asString();
+				newLogRec.additional_debug_msgs["PTG_eval.lastCmdPose(raw)"] = m_lastSentVelCmd.poseVel.pose.asString();
 				newLogRec.additional_debug_msgs["PTG_eval.PTGcont"] = mrpt::format("mismatchDistance=%.03f cm", 1e2*predicted2real_dist);
 
 				if (predicted2real_dist > MAX_DISTANCE_PREDICTED_ACTUAL_PATH)
@@ -1047,14 +1045,11 @@ void CAbstractPTGBasedReactive::TSentVelCmd::reset()
 	ptg_index = -1;
 	ptg_alpha_index = -1;
 	tim_send_cmd_vel = INVALID_TIMESTAMP;
-	tim_poseVel = INVALID_TIMESTAMP;
-	curRobotVelLocal.vx = .0;
-	curRobotVelLocal.vy = .0;
-	curRobotVelLocal.omega = .0;
+	poseVel = TRobotPoseVel();
 }
 bool CAbstractPTGBasedReactive::TSentVelCmd::isValid() const
 {
-	return tim_poseVel != INVALID_TIMESTAMP;
+	return this->poseVel.timestamp != INVALID_TIMESTAMP;
 }
 
 
