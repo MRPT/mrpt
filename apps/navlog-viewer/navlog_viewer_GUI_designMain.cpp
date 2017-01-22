@@ -1409,9 +1409,9 @@ void navlog_viewer_GUI_designDialog::OnmnuMatlabExportPaths(wxCommandEvent & eve
 		{
 			const auto it = logptr->timestamps.find("tim_send_cmd_vel");
 			if (it != logptr->timestamps.end()) {
-				const double tim_curPoseAndVel = mrpt::system::timestampToDouble(it->second);
+				const double tim_send_cmd_vel = mrpt::system::timestampToDouble(it->second);
 
-				auto & p = cmdvels[mrpt::system::timestampToDouble(it->second)];
+				auto & p = cmdvels[tim_send_cmd_vel];
 				p.setZero();
 				for (size_t i = 0; i < logptr->cmd_vel->getVelCmdLength(); i++)
 					p(i) = logptr->cmd_vel->getVelCmdElement(i);
