@@ -46,7 +46,7 @@ public:
 	 */
 	virtual void 	getAs3DObject(
 			mrpt::opengl::CSetOfObjectsPtr& object,
-			mrpt::utils::TParametersDouble viz_params);
+			mrpt::utils::TParametersDouble viz_params) const;
 
 protected:
 	/**\name Work-splitting methods
@@ -58,15 +58,15 @@ protected:
 	 */
 	/**\{ */
 	virtual void drawGroundGrid(mrpt::opengl::CSetOfObjectsPtr& object,
-			const mrpt::utils::TParametersDouble* viz_params=NULL);
+			const mrpt::utils::TParametersDouble* viz_params=NULL) const;
 	virtual void drawNodeCorners(mrpt::opengl::CSetOfObjectsPtr& object,
-			const mrpt::utils::TParametersDouble* viz_params=NULL);
+			const mrpt::utils::TParametersDouble* viz_params=NULL) const;
 	virtual void drawNodePoints(mrpt::opengl::CSetOfObjectsPtr& object,
-			const mrpt::utils::TParametersDouble* viz_params=NULL);
+			const mrpt::utils::TParametersDouble* viz_params=NULL) const;
 	virtual void drawEdgeRelPoses(mrpt::opengl::CSetOfObjectsPtr& object,
-			const mrpt::utils::TParametersDouble* viz_params=NULL);
+			const mrpt::utils::TParametersDouble* viz_params=NULL) const;
 	virtual void drawEdges(mrpt::opengl::CSetOfObjectsPtr& object,
-			const mrpt::utils::TParametersDouble* viz_params=NULL);
+			const mrpt::utils::TParametersDouble* viz_params=NULL) const;
 
 	/**\} */
 

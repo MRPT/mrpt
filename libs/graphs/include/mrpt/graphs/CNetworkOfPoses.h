@@ -9,8 +9,8 @@
 #ifndef CONSTRAINED_POSE_NETWORK_H
 #define CONSTRAINED_POSE_NETWORK_H
 
-/** \file The main class in this file is mrpt::poses::CNetworkOfPoses<>, a generic 
-           basic template for predefined 2D/3D graphs of pose contraints. 
+/** \file The main class in this file is mrpt::poses::CNetworkOfPoses<>, a generic
+           basic template for predefined 2D/3D graphs of pose contraints.
 */
 
 #include <iostream>
@@ -24,9 +24,11 @@
 #include <mrpt/utils/TParameters.h>
 #include <mrpt/utils/traits_map.h>
 #include <mrpt/utils/stl_serialization.h>
+#include <mrpt/math/utils.h>
 #include <mrpt/poses/poses_frwds.h>
 #include <mrpt/system/os.h>
 #include <mrpt/opengl/CSetOfObjects.h>
+#include <mrpt/graphs/dijkstra.h>
 
 namespace mrpt
 {
@@ -64,16 +66,16 @@ namespace mrpt
 		 *   depending on the desired representation of edges:
 		 *      - mrpt::graphs::CNetworkOfPoses2D    : 2D edges as a simple CPose2D (x y phi)
 		 *      - mrpt::graphs::CNetworkOfPoses3D    : 3D edges as a simple mrpt::poses::CPose3D (x y z yaw pitch roll)
-		 *      - mrpt::graphs::CNetworkOfPoses2DInf : 2D edges as a Gaussian PDF with information matrix ( CPosePDFGaussianInf )
-		 *      - mrpt::graphs::CNetworkOfPoses3DInf : 3D edges as a Gaussian PDF with information matrix ( CPose3DPDFGaussianInf )
-		 *      - mrpt::graphs::CNetworkOfPoses2DCov : 2D edges as a Gaussian PDF with covariance matrix ( CPosePDFGaussian ). It's more efficient to use the information matrix version instead!
-		 *      - mrpt::graphs::CNetworkOfPoses3DCov : 3D edges as a Gaussian PDF with covariance matrix ( CPose3DPDFGaussian ). It's more efficient to use the information matrix version instead!
+		 *      - mrpt::graphs::CNetworkOfPoses2DInf : 2D edges as a Gaussian PDF with information matrix (CPosePDFGaussianInf)
+		 *      - mrpt::graphs::CNetworkOfPoses3DInf : 3D edges as a Gaussian PDF with information matrix (CPose3DPDFGaussianInf)
+		 *      - mrpt::graphs::CNetworkOfPoses2DCov : 2D edges as a Gaussian PDF with covariance matrix (CPosePDFGaussian). It's more efficient to use the information matrix version instead!
+		 *      - mrpt::graphs::CNetworkOfPoses3DCov : 3D edges as a Gaussian PDF with covariance matrix (CPose3DPDFGaussian). It's more efficient to use the information matrix version instead!
 		 *
 		 *  Two main members store all the information in this class:
 		 *		- \a edges  (in the base class mrpt::graphs::CDirectedGraph::edges): A map from pairs of node ID -> pose constraints.
 		 *		- \a nodes : A map from node ID -> estimated pose of that node (actually, read below on the template argument MAPS_IMPLEMENTATION).
 		 *
-		 *  Graphs can be loaded and saved to text file in the format used by TORO & HoG-man (more on the format <a href="http://www.mrpt.org/Robotics_file_formats" >here</a> ),
+		 *  Graphs can be loaded and saved to text file in the format used by TORO & HoG-man (more on the format <a href="http://www.mrpt.org/Robotics_file_formats" >here</a>),
 		 *   using \a loadFromTextFile and \a saveToTextFile.
 		 *
 		 *  This class is the base for representing networks of poses, which are the main data type of a series
@@ -152,7 +154,7 @@ namespace mrpt
 			    @{ */
 
 			/** Saves to a text file in the format used by TORO & HoG-man (more on
-			 * the format <a href="http://www.mrpt.org/Robotics_file_formats" * >here</a> )
+			 * the format <a href="http://www.mrpt.org/Robotics_file_formats" * >here</a>)
 			 * For 2D graphs only VERTEX2 & EDGE2 entries will be saved,
 			 * and VERTEX3 & EDGE3 entries for 3D graphs.  Note that EQUIV entries
 			 * will not be saved, but instead several EDGEs will be stored between
@@ -161,11 +163,11 @@ namespace mrpt
 			 * \sa saveToBinaryFile, loadFromTextFile
 			 * \exception On any error
 			 */
-			inline void saveToTextFile( const std::string &fileName ) const {
+			inline void saveToTextFile(const std::string &fileName) const {
 				detail::graph_ops<self_t>::save_graph_of_poses_to_text_file(this,fileName);
 			}
 
-			/** Loads from a text file in the format used by TORO & HoG-man (more on the format <a href="http://www.mrpt.org/Robotics_file_formats" >here</a> )
+			/** Loads from a text file in the format used by TORO & HoG-man (more on the format <a href="http://www.mrpt.org/Robotics_file_formats" >here</a>)
 			 *   Recognized line entries are: VERTEX2, VERTEX3, EDGE2, EDGE3, EQUIV.
 			 *   If an unknown entry is found, a warning is dumped to std::cerr (only once for each unknown keyword).
 			 *   An exception will be raised if trying to load a 3D graph into a 2D class (in the opposite case, missing 3D data will default to zero).
@@ -180,7 +182,7 @@ namespace mrpt
 			 * \exception On any error, as a malformed line or loading a 3D graph in
 			 * a 2D graph.
 			 */
-			inline void loadFromTextFile( const std::string &fileName, bool collapse_dup_edges = true ) {
+			inline void loadFromTextFile(const std::string &fileName, bool collapse_dup_edges = true) {
 				detail::graph_ops<self_t>::load_graph_of_poses_from_text_file(this,fileName);
 				if (collapse_dup_edges) this->collapseDuplicatedEdges();
 			}
@@ -193,7 +195,7 @@ namespace mrpt
 			 *
 			 * Method makes the call to the corresponding method of the CVisualizer class instance.
 			 */
-			inline void getAs3DObject(mrpt::opengl::CSetOfObjectsPtr object, mrpt::utils::TParametersDouble viz_params) {
+			inline void getAs3DObject(mrpt::opengl::CSetOfObjectsPtr object, const mrpt::utils::TParametersDouble& viz_params) const {
 
 				visualizer->getAs3DObject(object, viz_params);
 			}
@@ -239,9 +241,10 @@ namespace mrpt
 			 * \param[in] auto_expand_set If true and in case the node_IDs set
 			 * contains non-consecutive nodes the returned set is expanded with the
 			 * in-between nodes. This makes sure that the final graph is always
-			 * connected. 
-			 * TODO Otherwise virtual edges (dijkstra link) are added between nodes
-			 * of the disconnected nodes sets so that the final graph is connected
+			 * connected.
+			 * If auto_expand_set is false  but there exist
+			 * non-consecutive nodes, virtual edges are inserted in the parts that
+			 * the graph is not connected
 			 */
 			void extractSubGraph(const std::set<TNodeID>& node_IDs,
 					self_t* sub_graph,
@@ -249,6 +252,9 @@ namespace mrpt
 					const bool& auto_expand_set=true) const {
 				using namespace std;
 				using namespace mrpt;
+				using namespace mrpt::graphs::detail;
+
+				typedef CDijkstra<self_t, MAPS_IMPLEMENTATION> dijkstra_t;
 
 				// assert that the given pointers are valid
 				ASSERTMSG_(sub_graph,
@@ -264,25 +270,27 @@ namespace mrpt
 
 				// find out if querry contains non-consecutive nodes.
 				// Assumption: Set elements are in standard, ascending order.
+				bool is_fully_connected_graph = true;
 				std::set<TNodeID> node_IDs_real; // actual set of nodes to be used.
 				if (*node_IDs.rbegin() - *node_IDs.begin() + 1 == node_IDs.size()) {
 					node_IDs_real = node_IDs;
 				}
 				else { // contains non-consecutive nodes
-					if (auto_expand_set) {
+					is_fully_connected_graph = false;
+
+					if (auto_expand_set) { // set auto-expansion
 						for (TNodeID curr_node_ID = *node_IDs.begin();
 								curr_node_ID != *node_IDs.rbegin(); ++curr_node_ID) {
 							node_IDs_real.insert(curr_node_ID);
 						}
 					}
-					else { // add virtual edges accordingly
-						THROW_EXCEPTION(
-								"auto_expand_set flag=false is not yet implemented.");
+					else { // virtual_edge_addition strategy
+						node_IDs_real = node_IDs;
 					}
 				}
 
 				// add all the nodes of the node_IDs_real set to sub_graph
-				for (std::set<TNodeID>::const_iterator 
+				for (std::set<TNodeID>::const_iterator
 						node_IDs_it = node_IDs_real.begin();
 						node_IDs_it != node_IDs_real.end();
 						++node_IDs_it) {
@@ -299,6 +307,7 @@ namespace mrpt
 								static_cast<unsigned long>(*node_IDs_it)));
 
 					sub_graph->nodes.insert(make_pair(*node_IDs_it, nodes.at(*node_IDs_it)));
+
 				}
 
 				// set the root of the extracted graph
@@ -314,8 +323,8 @@ namespace mrpt
 				sub_graph->nodes.at(sub_graph->root) = nodes.at(sub_graph->root);
 
 
-				// find all edges that exist between the given set of nodes; add them
-				// to the given graph
+				// find all edges (in the initial graph), that exist in the given set
+				// of nodes; add them to the given graph
 				sub_graph->clearEdges();
 				for (typename BASE::const_iterator it = BASE::edges.begin();
 						it != BASE::edges.end();
@@ -332,6 +341,36 @@ namespace mrpt
 					}
 				}
 				// estimate the node positions according to the edges - root is (0, 0, 0)
+				if (!auto_expand_set && !is_fully_connected_graph) {
+					// Addition of virtual edges between non-connected graph parts is necessary
+
+					// as long as the graph is unconnected (as indicated by Dijkstra) add a virtual edge between
+					bool dijkstra_runs_successfully = false;
+					int times_caught = 0;
+
+					while (!dijkstra_runs_successfully) {
+						try {
+							dijkstra_t dijkstra(*sub_graph, sub_graph->root);
+							dijkstra_runs_successfully = true;
+						}
+						catch (const mrpt::graphs::detail::NotConnectedGraph& ex) {
+							cout << "Adding a virtual edge... times: " << times_caught << endl;
+							dijkstra_runs_successfully = false;
+
+							set<TNodeID> unconnected_nodeIDs;
+							ex.getUnconnectedNodeIDs(&unconnected_nodeIDs);
+							mrpt::math::getSTLContainerAsString(unconnected_nodeIDs);
+							// what's the from_node(s), to_node?
+							// TODO
+							this->addVirtualEdge(sub_graph, 15, 18);
+						}
+					}
+
+				}
+				else {
+				}
+
+				// just execute dijkstra once for grabbing the updated node positions.
 				sub_graph->dijkstra_nodes_estimate();
 
 			} // end of extractSubGraph
@@ -343,7 +382,15 @@ namespace mrpt
 			 *
 			 * \exception std::exception On global poses not in \a nodes
 			 */
-			inline double getEdgeSquareError(const typename BASE::edges_map_t::const_iterator &itEdge, bool ignoreCovariances = true) const { return detail::graph_ops<self_t>::graph_edge_sqerror(this,itEdge,ignoreCovariances); }
+			inline double getEdgeSquareError(
+					const typename BASE::edges_map_t::const_iterator &itEdge,
+					bool ignoreCovariances = true) const {
+
+				return detail::graph_ops<self_t>::graph_edge_sqerror(
+						this,
+						itEdge,
+						ignoreCovariances);
+			}
 
 			/** Computes the square error of one pose constraints (edge) with respect
 			 * to the global poses in \a nodes If \a ignoreCovariances is false, the
@@ -353,9 +400,9 @@ namespace mrpt
 			 * \exception std::exception On edge not existing or global poses not in
 			 * \a nodes
 			 */
-			double getEdgeSquareError(const mrpt::utils::TNodeID from_id, const mrpt::utils::TNodeID to_id, bool ignoreCovariances = true ) const
+			double getEdgeSquareError(const mrpt::utils::TNodeID from_id, const mrpt::utils::TNodeID to_id, bool ignoreCovariances = true) const
 			{
-				const typename BASE::edges_map_t::const_iterator itEdge = BASE::edges.find( std::make_pair(from_id,to_id) );
+				const typename BASE::edges_map_t::const_iterator itEdge = BASE::edges.find(std::make_pair(from_id,to_id));
 				ASSERTMSG_(itEdge!=BASE::edges.end(),format("Request for edge %u->%u that doesn't exist in graph.",static_cast<unsigned int>(from_id),static_cast<unsigned int>(to_id)));
 				return getEdgeSquareError(itEdge,ignoreCovariances);
 			}
@@ -407,15 +454,30 @@ namespace mrpt
 							EDGE_ANNOTATIONS>(*this);
 				}
 				delete n;
-			
+
 			}
 			~CNetworkOfPoses() {
 				//delete visualizer;
-			
+
 			}
 			/** @} */
 
 		private:
+			/**\brief Add a virtual edge between two nodes in the given graph.
+			 *
+			 * Edge is called virtual as its value will be determined solely on the
+			 * pose difference of the given nodeIDs
+			 */
+			inline static void addVirtualEdge(self_t* graph, TNodeID from, TNodeID to) {
+				ASSERTMSG_(graph, "Invalid pointer to the graph instance was provided.");
+
+				typename self_t::global_pose_t& p_from = graph->nodes.at(from);
+				typename self_t::global_pose_t& p_to = graph->nodes.at(to);
+				typename self_t::template edge_t virt_edge(p_to - p_from);
+
+				graph->insertEdge(from, to, virt_edge);
+			}
+
 			mrpt::graphs::detail::CVisualizer<CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS, EDGE_ANNOTATIONS>* visualizer;
 
 		};
