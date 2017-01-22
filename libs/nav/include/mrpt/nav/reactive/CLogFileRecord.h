@@ -69,8 +69,9 @@ namespace nav
 		 */
 		std::map<std::string, double>  values;
 		/** Known values:
-		*	- "tim_start_iteration":
-		*	- "tim_send_cmd_vel":
+		*	- "tim_start_iteration": Time of start of navigationStep() implementation.
+		*	- "tim_send_cmd_vel": Time of sending cmdvel to robot.
+		*	- "curPoseAndVel":  Time of querying robot pose and velocities.
 		 */
 		std::map<std::string, mrpt::system::TTimeStamp>  timestamps;
 		std::map<std::string, std::string>  additional_debug_msgs;  //!< Additional debug traces

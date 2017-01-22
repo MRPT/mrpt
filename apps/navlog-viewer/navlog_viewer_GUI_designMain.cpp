@@ -99,6 +99,8 @@ const long navlog_viewer_GUI_designDialog::ID_MENUITEM1 = wxNewId();
 const long navlog_viewer_GUI_designDialog::ID_MENUITEM3 = wxNewId();
 //*)
 
+const long ID_MENUITEM_SAVE_MATLAB_PATH = wxNewId();
+
 const long navlog_viewer_GUI_designDialog::ID_TIMER3 = wxNewId();
 
 BEGIN_EVENT_TABLE(navlog_viewer_GUI_designDialog,wxFrame)
@@ -301,6 +303,13 @@ navlog_viewer_GUI_designDialog::navlog_viewer_GUI_designDialog(wxWindow* parent,
     Connect(ID_MENUITEM3,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&navlog_viewer_GUI_designDialog::OnmnuSaveScoreMatrixSelected);
     //*)
 
+	{
+		wxMenuItem* mnuMatlabExportPaths;
+		mnuMatlabExportPaths = new wxMenuItem((&mnuMoreOps), ID_MENUITEM_SAVE_MATLAB_PATH, _("Export paths info to MATLAB..."), wxEmptyString, wxITEM_NORMAL);
+		mnuMoreOps.Append(mnuMatlabExportPaths);
+		Connect(ID_MENUITEM_SAVE_MATLAB_PATH, wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&navlog_viewer_GUI_designDialog::OnmnuMatlabExportPaths);
+	}
+
 	timMouseXY.SetOwner(this, ID_TIMER3);
 	Connect(ID_TIMER3, wxEVT_TIMER, (wxObjectEventFunction)&navlog_viewer_GUI_designDialog::OntimMouseXY);
 
@@ -485,46 +494,8 @@ void navlog_viewer_GUI_designDialog::UpdateInfoFromLoadedLog()
 		wxScrollEvent d;
 		OnslidLogCmdScroll(d);
 
-		MRPT_TODO("Refactor this to handle different cmdvel types during one log");
-#if 0
-		CDisplayWindowPlotsPtr &win = m_mywins["VW"];
-		if (!win)  {
-			win= CDisplayWindowPlots::Create("Commanded v (red)/w (blue)",400,200);
-			win->setPos(900,20);
-			win->axis(-5,5,-5,5, true);
-		}
-
-		std::vector<std::vector<double> > cmd_vels;
-		std::string sCmdVelTitle = "Velocity cmd: ";
-		const char cols[4] = { 'r','b','k','g' };
-		const char* cols_txt[4] = { "red","blue","black","green" };
-
-		for (size_t i=0;i<N;i++)
-		{
-			CLogFileRecordPtr logptr = CLogFileRecordPtr(m_logdata[i]);
-			const CLogFileRecord &log = *logptr;
-			if (!log.cmd_vel) continue; // NOP cmd
-			const size_t vel_len = log.cmd_vel->getVelCmdLength();
-			if (i==0) {
-				cmd_vels.resize( vel_len );
-				for (size_t k = 0; k < vel_len; k++) {
-					cmd_vels[k].resize(N);
-					sCmdVelTitle += log.cmd_vel->getVelCmdDescription(k);
-					sCmdVelTitle += mrpt::format(" (%s), ",cols_txt[k%4]);
-				}
-			}
-			for (size_t k = 0; k < vel_len; k++)
-				cmd_vels[k][i] = log.cmd_vel->getVelCmdElement(k);
-		}
-		win->clf();
-		for (size_t i=0;i<cmd_vels.size();i++)
-		{
-			win->plot(cmd_vels[i],mrpt::format("%c-",cols[i%4]),mrpt::format("vc%u",(unsigned int)i));
-			win->plot(cmd_vels[i],mrpt::format("%c3.",cols[i%4]),mrpt::format("vp%u",(unsigned int)i));
-		}
-		win->axis_fit();
-		win->setWindowTitle(sCmdVelTitle);
-#endif
+		// In the past there was a window here to draw cmd_vels: it's now replaced by a more versatile system to log
+		// data to MATLAB/Octave files.
 	}
 
 	std::string sDuration("???");
@@ -1358,6 +1329,155 @@ void navlog_viewer_GUI_designDialog::OntimMouseXY(wxTimerEvent& event)
 		}
 	}
 
+}
+
+void navlog_viewer_GUI_designDialog::OnmnuMatlabExportPaths(wxCommandEvent & event)
+{
+	WX_START_TRY;
+
+	const size_t N = m_logdata.size();
+	ASSERTMSG_(N > 0, "Log is empty! Load a valid log first...");
+
+	wxFileDialog dialog(
+		this,
+		_("Save MATLAB/Octave script with path info...") /*caption*/,
+		_(".") /* defaultDir */,
+		_U( (mrpt::system::extractFileName( std::string(this->edLogFile->GetValue().mb_str()) )+std::string("_log.m")).c_str() )  /* defaultFilename */,
+		_("MATLAB/Octave script (*.m)|*.m") /* wildcard */,
+		wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
+	if (dialog.ShowModal() != wxID_OK) return;
+
+	const string filName(dialog.GetPath().mb_str());
+
+	ofstream f(filName.c_str());
+	if (!f.is_open())
+		throw runtime_error("Error writing to file!");
+
+	f << "% Script for drawing navigation paths\n"
+		<< "% Generated automatically by navlog-viewer - MRPT " << mrpt::system::MRPT_getVersion() << "\n"
+		<< "%  From log: " << string(edLogFile->GetLabel().mbc_str()) << "\n"
+		<< "% -------------------------------------------------------------------------\n\n";
+
+	std::map<double, int>   selected_PTG_over_time; // time: tim_start_iteration
+	std::map<double, double> iteration_duration; // time: tim_start_iteration
+	struct TRobotPoseVel
+	{
+		mrpt::math::TPose2D pose;
+		mrpt::math::TTwist2D velGlobal, velLocal;
+	};
+	std::map<double, TRobotPoseVel> global_local_vel; // time: curPoseAndVel
+
+	const int MAX_CMDVEL_COMPONENTS = 15;
+	typedef Eigen::Matrix<double, 1, MAX_CMDVEL_COMPONENTS> cmdvel_vector_t;
+	mrpt::aligned_containers<double, cmdvel_vector_t>::map_t  cmdvels; // time: tim_send_cmd_vel
+
+	for (size_t i = 0; i<N; i++)
+	{
+		const CLogFileRecordPtr logsptr = CLogFileRecordPtr(m_logdata[i]);
+		const CLogFileRecord * logptr = logsptr.pointer();
+
+		{
+			const auto it = logptr->timestamps.find("tim_start_iteration");
+			if (it != logptr->timestamps.end())
+			{
+				const double tim_start_iteration = mrpt::system::timestampToDouble(it->second);
+				// selected PTG:
+				selected_PTG_over_time[tim_start_iteration] = logptr->nSelectedPTG;
+
+				// iter dur:
+				{
+					auto itExecT = logptr->values.find("executionTime");
+					if (itExecT != logptr->values.end())
+						iteration_duration[tim_start_iteration] = itExecT->second;
+				}
+			}
+		}
+
+		// robot vel:
+		{
+			const auto it = logptr->timestamps.find("curPoseAndVel");
+			if (it != logptr->timestamps.end()) {
+				auto & p = global_local_vel[mrpt::system::timestampToDouble(it->second)];
+				p.pose = logptr->robotOdometryPose;
+				p.velGlobal = logptr->cur_vel;
+				p.velLocal = logptr->cur_vel_local;
+			}
+		}
+
+		// send cmd vels:
+		if (logptr->cmd_vel)
+		{
+			const auto it = logptr->timestamps.find("tim_send_cmd_vel");
+			if (it != logptr->timestamps.end()) {
+				const double tim_curPoseAndVel = mrpt::system::timestampToDouble(it->second);
+
+				auto & p = cmdvels[mrpt::system::timestampToDouble(it->second)];
+				p.setZero();
+				for (size_t i = 0; i < logptr->cmd_vel->getVelCmdLength(); i++)
+					p(i) = logptr->cmd_vel->getVelCmdElement(i);
+			}
+		}
+
+	} // end for each timestep
+
+	double t_ref = 0;
+	if (!selected_PTG_over_time.empty()) {
+		t_ref = selected_PTG_over_time.begin()->first;
+	}
+
+	f << "% Selected PTG over time. Columns: [tim_start_iteration, 0-based index selected PTG]\n"
+		"selected_PTG = [";
+	for (const auto &e : selected_PTG_over_time) {
+		f << (e.first-t_ref) << "," << e.second << " ; ";
+	}
+	f << "];\n"
+		"figure(); plot(selected_PTG(:,1),selected_PTG(:,2), 'x'); xlabel('Time'); ylabel('Selected PTG');\n\n";
+
+	f << "% Iteration duration. Columns: [tim_start_iteration, iter_duration_seconds]\n"
+		"iteration_duration = [";
+	for (const auto &e : iteration_duration) {
+		f << (e.first - t_ref) << "," << e.second << " ; ";
+	}
+	f << "];\n"
+		"figure(); plot(iteration_duration(:,1),iteration_duration(:,2), 'x');\n"
+		"hold on;\n"
+		"plot(iteration_duration(1:(end-1),1),diff(selected_PTG(:,1)),'.');"
+		"xlabel('Time'); legend('Iteration duration', 'Diff consecutive call time'); title('rnav_iter_call_time_duration');\n\n";
+
+	f << "% robot pose over time. Columns: [time curPoseAndVel, x,y,phi_rad]\n"
+		"robot_pose = [";
+	for (const auto &e : global_local_vel) {
+		f << (e.first - t_ref) << "," << e.second.pose.x << "," << e.second.pose.y << "," << e.second.pose.phi << " ; ";
+	}
+	f << "];\n"
+		"figure(); plot(robot_pose(:,1),robot_pose(:,2:4), '.',robot_pose(:,1),robot_pose(:,2:4), '-'); xlabel('Time'); legend('x','y','phi');\n\n";
+
+	f << "% robot vel over time. Columns: [time curPoseAndVel, vx,vy,omega_rad_sec]\n"
+		"robot_vel_global = [";
+	for (const auto &e : global_local_vel) {
+		f << (e.first - t_ref) << "," << e.second.velGlobal.vx << "," << e.second.velGlobal.vy << "," << e.second.velGlobal.omega<< " ; ";
+	}
+	f << "];\n"
+		"figure(); plot(robot_vel_global(:,1),robot_vel_global(:,2:4), '.', robot_vel_global(:,1),robot_vel_global(:,2:4), '-'); xlabel('Time'); title('Velocities (global)'); legend('vx','vy','omega');\n\n";
+
+	f << "robot_vel_local = [";
+	for (const auto &e : global_local_vel) {
+		f << (e.first - t_ref) << "," << e.second.velLocal.vx << "," << e.second.velLocal.vy << "," << e.second.velLocal.omega << " ; ";
+	}
+	f << "];\n"
+		"figure(); plot(robot_vel_local(:,1),robot_vel_local(:,2:4), '.', robot_vel_local(:,1),robot_vel_local(:,2:4), '-'); xlabel('Time'); title('Velocities (local)'); legend('vx','vy','omega');\n\n";
+
+	// cmdvels:
+	f << "% Movement commands sent to robot. Columns: [time curPoseAndVel, vx,vy,omega_rad_sec]\n"
+	     "cmdvels = [";
+	for (const auto &e : cmdvels) {
+		f << (e.first - t_ref) << " "; 
+		f << e.second << " ; ";
+	}
+	f << "];\n"
+		"figure(); plot(cmdvels(:,1),cmdvels(:,2:"<< (MAX_CMDVEL_COMPONENTS+1) <<"), '.', cmdvels(:,1),cmdvels(:,2:" << (MAX_CMDVEL_COMPONENTS + 1) << "), '-'); xlabel('Time'); title('Issued motion commands (meaning CVehicleVelCmd-dependend)');\n\n";
+
+	WX_END_TRY;
 }
 
 void navlog_viewer_GUI_designDialog::OncbShowXYClick(wxCommandEvent& event)
