@@ -5,6 +5,7 @@
 
 #include <mrpt/graphs/CVisualizer.h>
 #include <mrpt/graphs/TMRSlamNodeAnnotations.h>
+#include <utility>
 
 namespace mrpt { namespace graphs { namespace detail {
 
@@ -42,9 +43,9 @@ public:
 
 	~CMRVisualizer();
 	void drawNodePoints(mrpt::opengl::CSetOfObjectsPtr& object,
-			const mrpt::utils::TParametersDouble* viz_params=NULL);
+			const mrpt::utils::TParametersDouble* viz_params=NULL) const;
 	void drawEdges(mrpt::opengl::CSetOfObjectsPtr& object,
-			const mrpt::utils::TParametersDouble* viz_params=NULL);
+			const mrpt::utils::TParametersDouble* viz_params=NULL) const;
 
 private:
 };
@@ -73,9 +74,9 @@ public:
 
 	~CMRVisualizer();
 	void drawNodePoints(mrpt::opengl::CSetOfObjectsPtr& object,
-			const mrpt::utils::TParametersDouble* viz_params=NULL);
+			const mrpt::utils::TParametersDouble* viz_params=NULL) const;
 	void drawEdges(mrpt::opengl::CSetOfObjectsPtr& object,
-			const mrpt::utils::TParametersDouble* viz_params=NULL);
+			const mrpt::utils::TParametersDouble* viz_params=NULL) const;
 
 private:
 };

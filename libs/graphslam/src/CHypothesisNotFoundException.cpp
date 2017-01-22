@@ -20,6 +20,8 @@ HypothesisNotFoundException::HypothesisNotFoundException(
 		m_to = to;
 		m_from = from;
 
+		// TODO - Do not allocate it on the stack
+		// http://stackoverflow.com/a/23742555/2843583
 		std::stringstream ss;
     ss << std::runtime_error::what() << ":\t" <<
     	"From = " << m_from << " | " <<

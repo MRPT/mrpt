@@ -199,8 +199,11 @@ inline void CLevMarqGSO<GRAPH_t>::updateGraphVisualization() {
 	}
 	scene->removeObject(prev_object);
 
-	CSetOfObjectsPtr graph_obj =
-		graph_tools::graph_visualize(*this->m_graph, viz_params.cfg);
+	//CSetOfObjectsPtr graph_obj =
+		//graph_tools::graph_visualize(*this->m_graph, viz_params.cfg);
+	CSetOfObjectsPtr graph_obj = CSetOfObjects::Create();
+	this->m_graph->getAs3DObject(graph_obj, viz_params.cfg);
+
 	graph_obj->setName("optimized_graph");
 	graph_obj->setVisibility(prev_visibility);
 	scene->insert(graph_obj);
@@ -807,13 +810,13 @@ void CLevMarqGSO<GRAPH_t>::GraphVisualizationParams::loadFromConfigFile(
 			section,
 			"optimized_nodes_corner_scale",
 			0.7, false);
-	cfg["point_size"] = source.read_int(
+	cfg["nodes_point_size"] = source.read_int(
 			section,
-			"optimized_point_size",
-			0, false);
-	cfg["point_color"] = source.read_int(
+			"optimized_nodes_point_size",
+			5, false);
+	cfg["nodes_point_color"] = source.read_int(
 			section,
-			"optimized_point_color",
+			"optimized_nodes_point_color",
 			10526880, false);
 
 	MRPT_END;
