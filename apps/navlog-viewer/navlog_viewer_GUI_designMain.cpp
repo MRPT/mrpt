@@ -770,7 +770,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 				}
 				// Move the map & add a point at (0,0,0) so the name label appears at the target:
 				gl_trg->clear();
-				gl_trg->setLocation(log.WS_target_relative.x,log.WS_target_relative.y,0);
+				gl_trg->setLocation(log.WS_target_relative.x,log.WS_target_relative.y, .05f);
 				gl_trg->insertPoint(0,0,0);
 			}
 		}
@@ -917,10 +917,18 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 					scene->insert(gl_obj);
 				}
 				{
+					auto gl_obj = mrpt::opengl::CSetOfLines::Create();
+					gl_obj->setName("tp_selected_dir");
+					gl_obj->setLineWidth(5.0f);
+					gl_obj->setColor_u8(mrpt::utils::TColor(0x00, 0xff, 0x00, 0xff));
+					scene->insert(gl_obj);
+				}
+				{
 					auto gl_obj = mrpt::opengl::CPointCloud::Create();
 					gl_obj->setName("tp_target");
 					gl_obj->setPointSize(5.0f);
 					gl_obj->setColor_u8(mrpt::utils::TColor(0x30, 0x30, 0x30, 0xff));
+					gl_obj->setLocation(0, 0, 0.02f);
 					scene->insert(gl_obj);
 				}
 				{
@@ -928,13 +936,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 					gl_obj->setName("tp_robot");
 					gl_obj->setPointSize(4.0f);
 					gl_obj->setColor_u8(mrpt::utils::TColor(0xff, 0x00, 0x00, 0xa0));
-					scene->insert(gl_obj);
-				}
-				{
-					auto gl_obj = mrpt::opengl::CSetOfLines::Create();
-					gl_obj->setName("tp_selected_dir");
-					gl_obj->setLineWidth(5.0f);
-					gl_obj->setColor_u8(mrpt::utils::TColor(0x00, 0xff, 0x00, 0xff));
+					gl_obj->setLocation(0, 0, 0.02f);
 					scene->insert(gl_obj);
 				}
 				{
@@ -1366,6 +1368,7 @@ void navlog_viewer_GUI_designDialog::OnmnuMatlabExportPaths(wxCommandEvent & eve
 		mrpt::math::TTwist2D velGlobal, velLocal;
 	};
 	std::map<double, TRobotPoseVel> global_local_vel; // time: curPoseAndVel
+	std::map<double, double> vals_timoff_obstacles, vals_timoff_curPoseVelAge, vals_timoff_sendVelCmd; // time: tim_start_iteration
 
 	const int MAX_CMDVEL_COMPONENTS = 15;
 	typedef Eigen::Matrix<double, 1, MAX_CMDVEL_COMPONENTS> cmdvel_vector_t;
@@ -1376,11 +1379,13 @@ void navlog_viewer_GUI_designDialog::OnmnuMatlabExportPaths(wxCommandEvent & eve
 		const CLogFileRecordPtr logsptr = CLogFileRecordPtr(m_logdata[i]);
 		const CLogFileRecord * logptr = logsptr.pointer();
 
+		double tim_start_iteration = .0;
+
 		{
 			const auto it = logptr->timestamps.find("tim_start_iteration");
 			if (it != logptr->timestamps.end())
 			{
-				const double tim_start_iteration = mrpt::system::timestampToDouble(it->second);
+				tim_start_iteration = mrpt::system::timestampToDouble(it->second);
 				// selected PTG:
 				selected_PTG_over_time[tim_start_iteration] = logptr->nSelectedPTG;
 
@@ -1391,9 +1396,31 @@ void navlog_viewer_GUI_designDialog::OnmnuMatlabExportPaths(wxCommandEvent & eve
 						iteration_duration[tim_start_iteration] = itExecT->second;
 				}
 			}
+			else {
+				tim_start_iteration++; // just in case we don't have valid iteration timestamp (??)
+			}
 		}
 
-		// robot vel:
+		// timoff_obstacles;
+		{
+			const auto it = logptr->values.find("timoff_obstacles");
+			if (it != logptr->values.end())
+				vals_timoff_obstacles[tim_start_iteration] = it->second;
+		}
+		// timoff_curPoseVelAge;
+		{
+			const auto it = logptr->values.find("timoff_curPoseVelAge");
+			if (it != logptr->values.end())
+				vals_timoff_curPoseVelAge[tim_start_iteration] = it->second;
+		}
+		// timoff_sendVelCmd
+		{
+			const auto it = logptr->values.find("timoff_sendVelCmd");
+			if (it != logptr->values.end())
+				vals_timoff_sendVelCmd[tim_start_iteration] = it->second;
+		}
+
+		// curPoseAndVel:
 		{
 			const auto it = logptr->timestamps.find("curPoseAndVel");
 			if (it != logptr->timestamps.end()) {
@@ -1444,14 +1471,34 @@ void navlog_viewer_GUI_designDialog::OnmnuMatlabExportPaths(wxCommandEvent & eve
 		"plot(iteration_duration(1:(end-1),1),diff(selected_PTG(:,1)),'.');"
 		"xlabel('Time'); legend('Iteration duration', 'Diff consecutive call time'); title('rnav_iter_call_time_duration');\n\n";
 
-	f << "% robot pose over time. Columns: [time curPoseAndVel, x,y,phi_rad]\n"
-		"robot_pose = [";
-	for (const auto &e : global_local_vel) {
-		f << (e.first - t_ref) << "," << e.second.pose.x << "," << e.second.pose.y << "," << e.second.pose.phi << " ; ";
+	if (!vals_timoff_obstacles.empty()) {
+		f << "% vals_timoff_obstacles. Columns: [tim_start_iteration, value]\n"
+			"timoff_obstacles = [";
+		for (const auto &e : vals_timoff_obstacles) {
+			f << (e.first - t_ref) <<" , " << e.second << " ; ";
+		}
+		f << "];\n"
+			"figure(); plot(timoff_obstacles(:,1),timoff_obstacles(:,2), '.',timoff_obstacles(:,1),timoff_obstacles(:,2), '-'); xlabel('Time'); title('timoff_obstacles');\n\n";
 	}
-	f << "];\n"
-		"figure(); plot(robot_pose(:,1),robot_pose(:,2:4), '.',robot_pose(:,1),robot_pose(:,2:4), '-'); xlabel('Time'); legend('x','y','phi');\n\n";
-
+	if (!vals_timoff_curPoseVelAge.empty()) {
+		f << "% vals_timoff_curPoseVelAge. Columns: [tim_start_iteration, value]\n"
+			"timoff_curPoseVelAge = [";
+		for (const auto &e : vals_timoff_curPoseVelAge) {
+			f << (e.first - t_ref) << " , " << e.second << " ; ";
+		}
+		f << "];\n"
+			"figure(); plot(timoff_curPoseVelAge(:,1),timoff_curPoseVelAge(:,2), '.',timoff_curPoseVelAge(:,1),timoff_curPoseVelAge(:,2), '-'); xlabel('Time'); title('timoff_curPoseVelAge');\n\n";
+	}
+	if (!vals_timoff_sendVelCmd.empty()) {
+		f << "% vals_timoff_sendVelCmd. Columns: [tim_start_iteration, value]\n"
+			"timoff_sendVelCmd = [";
+		for (const auto &e : vals_timoff_sendVelCmd) {
+			f << (e.first - t_ref) << " , " << e.second << " ; ";
+		}
+		f << "];\n"
+			"figure(); plot(timoff_sendVelCmd (:,1),timoff_sendVelCmd (:,2), '.',timoff_sendVelCmd (:,1),timoff_sendVelCmd (:,2), '-'); xlabel('Time'); title('timoff_sendVelCmd ');\n\n";
+	}
+	
 	f << "% robot vel over time. Columns: [time curPoseAndVel, vx,vy,omega_rad_sec]\n"
 		"robot_vel_global = [";
 	for (const auto &e : global_local_vel) {

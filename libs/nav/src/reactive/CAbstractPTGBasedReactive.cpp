@@ -73,8 +73,7 @@ CAbstractPTGBasedReactive::CAbstractPTGBasedReactive(CRobot2NavInterface &react_
 	m_closing_navigator          (false),
 	m_WS_Obstacles_timestamp     (INVALID_TIMESTAMP),
 	m_infoPerPTG_timestamp       (INVALID_TIMESTAMP),
-	ENABLE_OBSTACLE_FILTERING(false),
-	TIME_OFFSET_POSE2VELCMD_OVERRIDE(-1.0)
+	ENABLE_OBSTACLE_FILTERING(false)
 {
 	this->enableLogFile( enableLogFile );
 }
@@ -284,8 +283,6 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 
 		// Compute target location relative to current robot pose:
 		// ---------------------------------------------------------------------
-		const TPose2D relTarget = TPose2D(CPose2D(m_navigationParams->target) - CPose2D(m_curPoseVel.pose));
-
 		// Detect changes in target since last iteration (for NOP):
 		const bool target_changed_since_last_iteration = m_navigationParams->target != m_lastTarget;
 		m_lastTarget = m_navigationParams->target;
@@ -305,7 +302,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 			{
 				CPose2D rel_cur_pose_wrt_last_vel_cmd_NOP, rel_pose_PTG_origin_wrt_sense_NOP;
 				STEP8_GenerateLogRecord(newLogRec,
-					relTarget,
+					mrpt::math::TPose2D() /*fake target*/,
 					-1, // nSelectedPTG,
 					m_robot.getEmergencyStopCmd(),
 					nPTGs,
@@ -361,12 +358,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 			const double timoff_pose2sense = timoff_obstacles - timoff_curPoseVelAge;
 
 			double timoff_pose2VelCmd;
-			if (TIME_OFFSET_POSE2VELCMD_OVERRIDE >= .0) {
-				timoff_pose2VelCmd = TIME_OFFSET_POSE2VELCMD_OVERRIDE;
-			}
-			else {
-				timoff_pose2VelCmd = timoff_sendVelCmd_avr.getLastOutput() + 0.5*tim_changeSpeed_avr.getLastOutput() - timoff_curPoseVelAge;
-			}
+			timoff_pose2VelCmd = timoff_sendVelCmd_avr.getLastOutput() + 0.5*tim_changeSpeed_avr.getLastOutput() - timoff_curPoseVelAge;
 			newLogRec.values["timoff_pose2sense"] = timoff_pose2sense;
 			newLogRec.values["timoff_pose2VelCmd"] =  timoff_pose2VelCmd;
 
@@ -386,6 +378,8 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 		else {
 			// No delays model: poses to their default values.
 		}
+
+		const TPose2D relTarget = TPose2D(CPose2D(m_navigationParams->target) - (CPose2D(m_curPoseVel.pose) + relPoseVelCmd));
 
 		m_infoPerPTG.resize(nPTGs);
 		m_infoPerPTG_timestamp = tim_start_iteration;
@@ -924,8 +918,6 @@ void CAbstractPTGBasedReactive::loadConfigFile(const mrpt::utils::CConfigFileBas
 
 	DIST_TO_TARGET_FOR_SENDING_EVENT = cfg.read_float(sectCfg, "DIST_TO_TARGET_FOR_SENDING_EVENT", DIST_TO_TARGET_FOR_SENDING_EVENT, false);
 	m_badNavAlarm_AlarmTimeout = cfg.read_double(sectCfg,"ALARM_SEEMS_NOT_APPROACHING_TARGET_TIMEOUT", m_badNavAlarm_AlarmTimeout, false);
-
-	MRPT_LOAD_CONFIG_VAR(TIME_OFFSET_POSE2VELCMD_OVERRIDE, double, cfg, sectCfg);
 
 	// ========= Optional filtering ===========
 	MRPT_LOAD_CONFIG_VAR(ENABLE_OBSTACLE_FILTERING, bool  ,cfg, sectCfg);
