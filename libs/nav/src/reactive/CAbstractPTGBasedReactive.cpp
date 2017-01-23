@@ -575,8 +575,13 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 		tim_changeSpeed_avr.filter(tim_changeSpeed);
 
 		// Running period estim:
-		meanExecutionPeriod.filter( timerForExecutionPeriod.Tac());
+		const double period_tim= timerForExecutionPeriod.Tac();
+		if (period_tim > 1.5* meanExecutionPeriod.getLastOutput()) {
+			MRPT_LOG_WARN_FMT("Timing warning: Suspicious executionTime=%.03f ms is far above the average of %.03f ms", 1e3*period_tim, meanExecutionPeriod.getLastOutput()*1e3);
+		}
+		meanExecutionPeriod.filter(period_tim);
 		timerForExecutionPeriod.Tic();
+
 
 		if (m_enableConsoleOutput)
 		{
