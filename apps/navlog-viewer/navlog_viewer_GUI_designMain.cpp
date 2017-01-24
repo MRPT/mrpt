@@ -1452,6 +1452,27 @@ void navlog_viewer_GUI_designDialog::OnmnuMatlabExportPaths(wxCommandEvent & eve
 		t_ref = selected_PTG_over_time.begin()->first;
 	}
 
+	f << "clear; close all;\n";
+
+	f << "% robot pose over time. Columns: [time curPoseAndVel, x,y,phi_rad]\n"
+		"robot_pose = [";
+	for (const auto &e : global_local_vel) {
+		f << (e.first - t_ref) << "," << e.second.pose.x << "," << e.second.pose.y << "," << e.second.pose.phi << " ; ";
+	}
+	f <<
+		"];\n"
+		"robot_pose(:,4) = unwrap(robot_pose(:,4));\n"
+		"figure(); subplot(2,1,1); \n"
+		"plot(robot_pose(:, 1), robot_pose(:, 2 : 4), '.', robot_pose(:, 1), robot_pose(:, 2 : 4), '-'); xlabel('Time'); legend('x', 'y', 'phi (rad)'); title('robot pose'); \n"
+		"xl=xlim; subplot(2,1,2);\n"
+		"robot_pose_diff = diff(robot_pose(:, 2 : 4));\n"
+		"idxs_rob_incr_z = find(robot_pose_diff(:, 1) == 0 & robot_pose_diff(:, 2) == 0 & robot_pose_diff(:, 3) == 0);\n"
+		"plot(robot_pose(2:end, 1), diff(robot_pose(:, 2 : 4)), '.');\n"
+		"hold on;\n"
+		"plot(robot_pose(idxs_rob_incr_z, 1), robot_pose_diff(idxs_rob_incr_z, :), 'k', 'MarkerSize', 11, 'Marker', 'square');\n"
+		"xlabel('Time'); legend('x', 'y', 'phi (rad)'); title('Robot pose *increments*');\n"
+		"xlim(xl);\n\n";
+
 	f << "% Selected PTG over time. Columns: [tim_start_iteration, 0-based index selected PTG]\n"
 		"selected_PTG = [";
 	for (const auto &e : selected_PTG_over_time) {
