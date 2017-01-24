@@ -646,7 +646,7 @@ double CPTG_Holo_Blend::maxTimeInVelCmdNOP(int path_k) const
 //	const double dir_local = CParameterizedTrajectoryGenerator::index2alpha(path_k);
 
 	const size_t nSteps = getPathStepCount(path_k);
-	const double max_t = nSteps * PATH_TIME_STEP;
+	const double max_t = PATH_TIME_STEP * (nSteps * 0.7 /* leave room for obstacle detection ahead when we are far down the predicted PTG path */);
 	return max_t;
 }
 
