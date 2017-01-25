@@ -210,7 +210,6 @@ namespace mrpt
 
 				using namespace std;
 
-				TNodeID last_updated_nodeID;
 				TNodeID u;
 				// as long as there are nodes not yet visited.
 				do { // The algorithm:
@@ -274,7 +273,6 @@ namespace mrpt
 					// Update distance (for possible future reference...) and remove this node from "non-visited":
 					m_distances[u]=m_distances_non_visited[u];
 					m_distances_non_visited.erase(u);
-					last_updated_nodeID = u;
 
 					visitedCount++;
 
