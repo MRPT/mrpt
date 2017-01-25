@@ -381,7 +381,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 
 		const TPose2D relTarget = TPose2D(CPose2D(m_navigationParams->target) - (CPose2D(m_curPoseVel.pose) + relPoseVelCmd));
 
-		m_infoPerPTG.resize(nPTGs);
+		m_infoPerPTG.resize(nPTGs+1);
 		m_infoPerPTG_timestamp = tim_start_iteration;
 		vector<THolonomicMovement> holonomicMovements(nPTGs+1); // the last extra one is for the evaluation of "NOP motion command" choice.
 
@@ -431,7 +431,6 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 				CParameterizedTrajectoryGenerator * ptg = getPTG(m_lastSentVelCmd.ptg_index);
 				ptg->updateCurrentRobotVel(m_lastSentVelCmd.poseVel.velLocal);
 
-				TInfoPerPTG ipf_NOP;
 				const TPose2D relTarget_NOP = TPose2D(CPose2D(m_navigationParams->target) - robot_pose_at_send_cmd);
 				rel_pose_PTG_origin_wrt_sense_NOP = robot_pose_at_send_cmd - (CPose2D(m_curPoseVel.pose) + relPoseSense);
 				rel_cur_pose_wrt_last_vel_cmd_NOP = CPose2D(m_curPoseVel.pose) - robot_pose_at_send_cmd;
@@ -446,7 +445,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 				ptg_eval_target_build_obstacles(
 					ptg, m_lastSentVelCmd.ptg_index,
 					relTarget_NOP, rel_pose_PTG_origin_wrt_sense_NOP,
-					ipf_NOP, holonomicMovements[nPTGs],
+					m_infoPerPTG[nPTGs], holonomicMovements[nPTGs],
 					newLogRec, true /* this is the PTG continuation (NOP) choice */,
 					m_holonomicMethod[m_lastSentVelCmd.ptg_index],
 					*m_navigationParams,
@@ -462,6 +461,49 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 
 		// STEP6: After all PTGs have been evaluated, pick the best scored:
 		// ---------------------------------------------------------------------
+		
+		// Qualitative scoring:
+		// ---------------------------
+		{
+			// Criterion #1: If a PTG directly leads to target without colliding, then make it the preferred option. 
+			// If more than one such case exist, pick the one with the shortest path. Having a clearance enough is a 
+			// responsibility of the "holonomic navigator" algorithms while deciding the preferred PTG path index.
+			std::map<double, size_t>  pathlen_to_ptgindex;
+			for (size_t i = 0; i <= nPTGs; i++)
+			{
+				THolonomicMovement & hm = holonomicMovements[i];
+				if (!hm.PTG) continue;
+				if (hm.evaluation == 0) continue; // e.g. for invalid "NOP".
+
+				const auto & ipp = m_infoPerPTG[i];
+
+				const auto dir_selected = hm.PTG->alpha2index(hm.direction);
+				const auto dir_target = hm.PTG->alpha2index(ipp.target_alpha);
+				if (dir_target != dir_selected)
+					continue;
+				if (ipp.TP_Obstacles[dir_selected] < ipp.target_dist*1.02)
+					continue;
+				// OK, we have a direct path to target without collisions.
+				const double path_len_meters = ipp.target_dist * hm.PTG->getRefDistance();
+
+				pathlen_to_ptgindex[path_len_meters] = i;
+			}
+
+			// Pick the shortest path, if any:
+			if (!pathlen_to_ptgindex.empty()) {
+				const size_t best_ptg_idx = pathlen_to_ptgindex.begin()->second;
+				// boost up this selection!
+				const double extra_score = 1.0;
+				holonomicMovements[best_ptg_idx].evaluation += extra_score;
+				// Update log scores as well (it was saved above!)
+				if (newLogRec.infoPerPTG.size() > best_ptg_idx) {
+					newLogRec.infoPerPTG[best_ptg_idx].evaluation += extra_score;
+				}
+			}
+		}
+
+		// Select best scored:
+		// ---------------------------
 		int nSelectedPTG = 0;
 		double best_PTG_eval = .0;
 		for (size_t indexPTG=0;indexPTG<=nPTGs;indexPTG++) {
@@ -982,7 +1024,7 @@ bool CAbstractPTGBasedReactive::impl_waypoint_is_reachable(const mrpt::math::TPo
 	MRPT_START;
 
 	const size_t N = this->getPTG_count();
-	if (N!=m_infoPerPTG.size() ||
+	if (m_infoPerPTG.size()<N ||
 		m_infoPerPTG_timestamp == INVALID_TIMESTAMP ||
 		mrpt::system::timeDifference(m_infoPerPTG_timestamp, mrpt::system::now() ) > 0.5
 		)
