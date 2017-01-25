@@ -30,6 +30,8 @@
 #include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/graphs/dijkstra.h>
 
+#include <iterator>
+
 namespace mrpt
 {
 	namespace graphs
@@ -252,6 +254,7 @@ namespace mrpt
 					const bool& auto_expand_set=true) const {
 				using namespace std;
 				using namespace mrpt;
+				using namespace mrpt::math;
 				using namespace mrpt::graphs::detail;
 
 				typedef CDijkstra<self_t, MAPS_IMPLEMENTATION> dijkstra_t;
@@ -307,8 +310,8 @@ namespace mrpt
 								static_cast<unsigned long>(*node_IDs_it)));
 
 					sub_graph->nodes.insert(make_pair(*node_IDs_it, nodes.at(*node_IDs_it)));
-
 				}
+				//cout << "Extracting subgraph for nodeIDs: " << getSTLContainerAsString(node_IDs_real) << endl;
 
 				// set the root of the extracted graph
 				if (root_node == INVALID_NODEID) {
@@ -340,40 +343,191 @@ namespace mrpt
 						sub_graph->insertEdge(from, to, curr_edge);
 					}
 				}
-				// estimate the node positions according to the edges - root is (0, 0, 0)
+
 				if (!auto_expand_set && !is_fully_connected_graph) {
 					// Addition of virtual edges between non-connected graph parts is necessary
+
+					// make sure that the root nodeID is connected to at least one node
+					{
+						std::set<TNodeID> root_neighbors;
+						sub_graph->getNeighborsOf(sub_graph->root, root_neighbors);
+
+						if (root_neighbors.empty()) {
+							// add an edge between the root and an adjacent nodeID
+							typename global_poses_t::iterator root_it =
+								sub_graph->nodes.find(sub_graph->root);
+							ASSERT_(root_it != sub_graph->nodes.end());
+							if ((*root_it == *sub_graph->nodes.rbegin())) { // is the last nodeID
+								// add with previous node
+								TNodeID next_to_root = (--root_it)->first;
+								self_t::addVirtualEdge(sub_graph, next_to_root, sub_graph->root);
+								cout << "next_to_root = " << next_to_root;
+							}
+							else {
+								TNodeID next_to_root = (++root_it)->first;
+								cout << "next_to_root = " << next_to_root;
+								self_t::addVirtualEdge(sub_graph, sub_graph->root, next_to_root);
+							}
+
+						}
+					}
+
 
 					// as long as the graph is unconnected (as indicated by Dijkstra) add a virtual edge between
 					bool dijkstra_runs_successfully = false;
 					int times_caught = 0;
 
+					// loop until the graph is fully connected (i.e. I can reach every
+					// node of the graph starting from its root)
 					while (!dijkstra_runs_successfully) {
 						try {
 							dijkstra_t dijkstra(*sub_graph, sub_graph->root);
 							dijkstra_runs_successfully = true;
 						}
 						catch (const mrpt::graphs::detail::NotConnectedGraph& ex) {
-							cout << "Adding a virtual edge... times: " << times_caught << endl;
+							cout << "Adding a virtual edge... times: " << ++times_caught << endl;
 							dijkstra_runs_successfully = false;
 
 							set<TNodeID> unconnected_nodeIDs;
 							ex.getUnconnectedNodeIDs(&unconnected_nodeIDs);
-							mrpt::math::getSTLContainerAsString(unconnected_nodeIDs);
-							// what's the from_node(s), to_node?
-							// TODO
-							this->addVirtualEdge(sub_graph, 15, 18);
+							cout << "Unconnected nodeIDs: " << mrpt::math::getSTLContainerAsString(unconnected_nodeIDs) << endl;
+							// mainland: set of nodes that the root nodeID is in
+							// island: set of nodes that the Dijkstra graph traversal can't
+							// reach starting from the root. These essentially are groups of
+							// nodes.
+							// [!] There may be multiple sets of these nodes
+							TNodeID from_nodeID;
+							TNodeID to_nodeID;
+							// set::rend() is the element with the highest value
+							// set::begin() is the element with the lowest value
+							const TNodeID& island_highest = *unconnected_nodeIDs.rbegin();
+							const TNodeID& island_lowest = *unconnected_nodeIDs.begin();
+							cout << "island_highest: " << island_highest << endl;
+							cout << "island_lowest: " << island_lowest << endl;
+							cout << "root: " << sub_graph->root << endl;
+
+							// find out which nodes are in the same partition with the root
+							// (i.e. mainland)
+							std::set<TNodeID> mainland;
+							// for all nodes in sub_graph
+							for (typename global_poses_t::const_iterator
+									n_it = sub_graph->nodes.begin();
+									n_it != sub_graph->nodes.end();
+									++n_it) {
+								bool is_there = false;
+
+								// for all unconnected nodes
+								for (typename std::set<TNodeID>::const_iterator
+										uncon_it = unconnected_nodeIDs.begin();
+										uncon_it != unconnected_nodeIDs.end();
+										++uncon_it) {
+
+									if (n_it->first == *uncon_it) {
+										is_there = true;
+										break;
+									}
+								}
+
+								if (!is_there) {
+									mainland.insert(n_it->first);
+								}
+							}
+
+							bool is_single_island = (island_highest - island_lowest + 1 ==
+									unconnected_nodeIDs.size());
+
+							if (is_single_island) { // single island
+								// Possible scenarios:
+								// | island                       |                            | mainland                                   |
+								// | <low nodeIDs>  island_highest|  --- <virtual_edge> --->>  | mainland_lowest <high nodeIDs> ... root ...|
+								// --- OR ---
+								// | mainland                       |                            | island                       |
+								// | <low nodeIDs>  mainland_highest|  --- <virtual_edge> --->>  | island_lowest <high nodeIDs> |
+
+								const std::set<TNodeID>& island = unconnected_nodeIDs;
+								this->connectGraphPartitions(sub_graph, island, mainland);
+
+							}
+							else { // multiple islands
+								// add a virtual edge between the last group before the mainland and the mainland
+
+								// split the unconnected_nodeIDs to smaller groups of  nodes
+								// we only care about the nodes that are prior to the root
+								std::vector<std::set<TNodeID> > vec_of_islands;
+								std::set<TNodeID> curr_island;
+								TNodeID prev_nodeID = *unconnected_nodeIDs.begin();
+								curr_island.insert(prev_nodeID); // add the initial node;
+								for (std::set<TNodeID>::const_iterator
+										it = ++unconnected_nodeIDs.begin();
+										*it < sub_graph->root && it != unconnected_nodeIDs.end();
+										++it) {
+									if (!(absDiff(*it, prev_nodeID) == 1)) {
+										vec_of_islands.push_back(curr_island);
+										curr_island.clear();
+									}
+									curr_island.insert(*it);
+
+									// update the previous nodeID
+									prev_nodeID = *it;
+								}
+								vec_of_islands.push_back(curr_island);
+
+								cout << "last_island: " << getSTLContainerAsString(vec_of_islands.back()) << endl;
+								cout << "mainland: " << getSTLContainerAsString(mainland) << endl;
+								this->connectGraphPartitions(sub_graph, vec_of_islands.back(), mainland);
+							}
 						}
 					}
 
+					// estimate the node positions according to the edges - root is (0, 0, 0)
+					// just execute dijkstra once for grabbing the updated node positions.
+					sub_graph->dijkstra_nodes_estimate();
 				}
-				else {
-				}
-
-				// just execute dijkstra once for grabbing the updated node positions.
-				sub_graph->dijkstra_nodes_estimate();
 
 			} // end of extractSubGraph
+
+			/**\brief Add an edge between the last node of the group with the lower nodeIDs
+			 * and the first node of the higher nodeIDs
+			 *
+			 * Given groups of nodes should only contain consecutive nodeIDs and
+			 * there should be no overlapping between them
+			 *
+			 * \note It is assumed that the sets of nodes are \b already in ascending
+			 * order (default std::set behavior.
+			 */
+			inline static void connectGraphPartitions(
+					self_t* sub_graph,
+					const std::set<TNodeID>& groupA,
+					const std::set<TNodeID>& groupB) {
+				using namespace mrpt::math;
+
+				ASSERTMSG_(sub_graph,
+						"\nInvalid pointer to a CNetworkOfPoses instance is given. Exiting..\n");
+				ASSERTMSG_(!groupA.empty(), "\ngroupA is empty.");
+				ASSERTMSG_(!groupB.empty(), "\ngroupB is empty.");
+
+				// TODO - verify that the nodes of the partitions are in strictly ascending order
+
+
+				// assertion - non-overlapping groups
+				ASSERTMSG_(
+						*groupA.rend() < *groupB.rbegin() ||
+						*groupA.rbegin() > *groupB.rend(),
+						"Groups A, B contain overlapping nodeIDs");
+
+				// decide what group contains the low/high nodeIDs
+				// just compare any two nodes of the sets (they are non-overlapping
+				const std::set<TNodeID>& low_nodeIDs =
+						*groupA.rbegin() < *groupB.rbegin() ?  groupA : groupB;
+				const std::set<TNodeID>& high_nodeIDs =
+						*groupA.rbegin() > *groupB.rbegin() ? groupA : groupB;
+
+				// add virtual edge
+				const TNodeID& from_nodeID = *low_nodeIDs.rbegin();
+				const TNodeID& to_nodeID = *high_nodeIDs.begin();
+				self_t::addVirtualEdge(sub_graph, from_nodeID, to_nodeID);
+
+			}
 
 			/** Computes the square error of one pose constraints (edge) with respect
 			 * to the global poses in \a nodes If \a ignoreCovariances is false, the
@@ -468,7 +622,10 @@ namespace mrpt
 			 * Edge is called virtual as its value will be determined solely on the
 			 * pose difference of the given nodeIDs
 			 */
-			inline static void addVirtualEdge(self_t* graph, TNodeID from, TNodeID to) {
+			inline static void addVirtualEdge(
+					self_t* graph,
+					const TNodeID& from,
+					const TNodeID& to) {
 				ASSERTMSG_(graph, "Invalid pointer to the graph instance was provided.");
 
 				typename self_t::global_pose_t& p_from = graph->nodes.at(from);
@@ -478,6 +635,8 @@ namespace mrpt
 				graph->insertEdge(from, to, virt_edge);
 			}
 
+			/**\brief Pointer to the CVisualizer instance used to visualize the graph in the opengl window
+			 */
 			mrpt::graphs::detail::CVisualizer<CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS, EDGE_ANNOTATIONS>* visualizer;
 
 		};

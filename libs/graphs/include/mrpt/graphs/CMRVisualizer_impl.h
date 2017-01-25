@@ -112,9 +112,6 @@ drawNodePoints(mrpt::opengl::CSetOfObjectsPtr& object,
 			curr_cloud->setPointSize(nodes_point_size);
 			curr_cloud->enablePointSmooth();
 
-			// TODO - Remove this
-			cout << "Registering CPointCloud for strid: " << curr_strid  << endl;
-
 		} // end of (is CPointCloud/Color registered)
 
 		// CPointCloud is initialized
