@@ -564,7 +564,7 @@ void TestOpenGLObjects()
 	// CColorMap
 	{
 		{
-			opengl::CColorBarPtr obj = opengl::CColorBar::Create();
+			opengl::CColorBarPtr obj = opengl::CColorBar::Create(mrpt::utils::cmHOT, 0.2,1.0, 0.0,1.0,  -50.0, 100.0, "%7.02f m/s");
 			obj->setLocation(off_x, 0, 0);
 			theScene->insert(obj);
 		}
@@ -574,7 +574,6 @@ void TestOpenGLObjects()
 		theScene->insert(gl_txt);
 	}
 	off_x += STEP_X;
-
 
 	// CSetOfLines
 	{
