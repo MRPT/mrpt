@@ -147,7 +147,9 @@ namespace mrpt
 			double evaluation;							//!< An evaluation in the range [0,1] for the goodness of the movement
 			double eval_org, eval_prio;  //!< Optional fields for logging, explaining the result in evaluation = eval_org * eval_prio
 
-			THolonomicMovement() : PTG(NULL),direction(0),speed(0),evaluation(0),eval_org(0), eval_prio(1) {}
+			double starting_robot_dir, starting_robot_dist; //!< Default to 0, they can be used to reflect a robot starting at a position not at (0,0). Used in "PTG continuation"
+
+			THolonomicMovement() : PTG(NULL),direction(0),speed(0),evaluation(0),eval_org(0), eval_prio(1), starting_robot_dir(0), starting_robot_dist(0) {}
 		};
 
 		/** The main method for the navigator */
