@@ -59,7 +59,7 @@ CAbstractPTGBasedReactive::CAbstractPTGBasedReactive(CRobot2NavInterface &react_
 	secureDistanceStart          (0.05),
 	secureDistanceEnd            (0.20),
 	USE_DELAYS_MODEL             (false),
-	MAX_DISTANCE_PREDICTED_ACTUAL_PATH(0.05),
+	MAX_DISTANCE_PREDICTED_ACTUAL_PATH(0.15),
 	MIN_NORMALIZED_FREE_SPACE_FOR_PTG_CONTINUATION(0.2),
 	m_timelogger                 (false), // default: disabled
 	m_PTGsMustBeReInitialized    (true),
@@ -406,10 +406,15 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 		// Round #2: Evaluate dont sending any new velocity command ("NOP" motion)
 		// =========
 		// This approach is only possible if:
+		bool NOP_not_too_old = true;
 		const bool can_do_nop_motion = (m_lastSentVelCmd.isValid() &&
 			!target_changed_since_last_iteration &&
 			getPTG(m_lastSentVelCmd.ptg_index)->supportVelCmdNOP()) &&
-			mrpt::system::timeDifference(m_lastSentVelCmd.tim_send_cmd_vel, tim_start_iteration) < getPTG(m_lastSentVelCmd.ptg_index)->maxTimeInVelCmdNOP(m_lastSentVelCmd.ptg_alpha_index);
+			(NOP_not_too_old = mrpt::system::timeDifference(m_lastSentVelCmd.tim_send_cmd_vel, tim_start_iteration) < getPTG(m_lastSentVelCmd.ptg_index)->maxTimeInVelCmdNOP(m_lastSentVelCmd.ptg_alpha_index));
+
+		if (!NOP_not_too_old) {
+			newLogRec.additional_debug_msgs["PTG_cont"] = "PTG-continuation not allowed: previous command timed-out.";
+		}
 
 		CPose2D rel_cur_pose_wrt_last_vel_cmd_NOP, rel_pose_PTG_origin_wrt_sense_NOP;
 
@@ -466,9 +471,10 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 		// ---------------------------
 		{
 			// Criterion #1: If a PTG directly leads to target without colliding, then make it the preferred option. 
-			// If more than one such case exist, pick the one with the shortest path. Having a clearance enough is a 
+			// If more than one such case exist, pick the one with the shortest ETA (Estimated Time of Arrival). 
+			// Having a clearance enough is a 
 			// responsibility of the "holonomic navigator" algorithms while deciding the preferred PTG path index.
-			std::map<double, size_t>  pathlen_to_ptgindex;
+			std::map<double, size_t>  ETA_to_ptgindex;
 			for (size_t i = 0; i <= nPTGs; i++)
 			{
 				THolonomicMovement & hm = holonomicMovements[i];
@@ -485,19 +491,50 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 					continue;
 				// OK, we have a direct path to target without collisions.
 				const double path_len_meters = ipp.target_dist * hm.PTG->getRefDistance();
+				
+				// Calculate their ETA
+				uint32_t target_step;
+				bool valid_step = hm.PTG->getPathStepForDist(dir_selected, path_len_meters, target_step);
+				if (!valid_step)
+					continue;
 
-				pathlen_to_ptgindex[path_len_meters] = i;
+				uint32_t robot_step = 0;
+				if (hm.starting_robot_dist != 0) {
+					valid_step = hm.PTG->getPathStepForDist(dir_selected, hm.starting_robot_dist /* normalized dist */ * hm.PTG->getRefDistance(), robot_step);
+					if (!valid_step)
+						continue;
+				}
+				const double target_dist_steps = std::max(0,int(target_step)-int(robot_step)); /* For PTG continuation, substract the part of path already done by the robot */
+
+				const double path_ETA = hm.PTG->getPathStepDuration() * target_dist_steps	/* PTG original time to get to target point */
+					* hm.speed /* times the speed scale factor*/;
+				ETA_to_ptgindex[path_ETA] = i;
+
+				// Log:
+				newLogRec.additional_debug_msgs["shortest_path_boost"] += mrpt::format("[%u]: trg=%u rob=%u ETA=%.02fs. ", (unsigned int)i,(unsigned int)target_step, (unsigned int)robot_step, path_ETA);
 			}
 
 			// Pick the shortest path, if any:
-			if (!pathlen_to_ptgindex.empty()) {
-				const size_t best_ptg_idx = pathlen_to_ptgindex.begin()->second;
-				// boost up this selection!
-				const double extra_score = 1.0;
-				holonomicMovements[best_ptg_idx].evaluation += extra_score;
-				// Update log scores as well (it was saved above!)
-				if (newLogRec.infoPerPTG.size() > best_ptg_idx) {
-					newLogRec.infoPerPTG[best_ptg_idx].evaluation += extra_score;
+			if (!ETA_to_ptgindex.empty()) 
+			{
+				const double BEST_ETA_MARGIN_TOLERANCE_WRT_BEST = 1.05; // Boost more than one PTG if they all "win" in an almost "draw" situation.
+
+				// Pick the shortest value, sorted in the std::map<>
+				const double best_ETA_in_seconds = ETA_to_ptgindex.begin()->first;
+				
+				for (const auto & e : ETA_to_ptgindex)
+				{
+					if (e.first > best_ETA_in_seconds*BEST_ETA_MARGIN_TOLERANCE_WRT_BEST)
+						continue; // not among the best solutions.
+
+					const size_t best_ptg_idx = e.second;
+					// boost up this selection!
+					const double extra_score = 1.0;
+					holonomicMovements[best_ptg_idx].evaluation += extra_score;
+					// Update log scores as well (it was saved above!)
+					if (newLogRec.infoPerPTG.size() > best_ptg_idx) {
+						newLogRec.infoPerPTG[best_ptg_idx].evaluation += extra_score;
+					}
 				}
 			}
 		}
@@ -773,6 +810,8 @@ void CAbstractPTGBasedReactive::STEP5_PTGEvaluator(
 			const double cur_a = holonomicMovement.PTG->index2alpha(cur_k);
 			log.TP_Robot.x = cos(cur_a)*cur_norm_d;
 			log.TP_Robot.y = sin(cur_a)*cur_norm_d;
+			holonomicMovement.starting_robot_dir = cur_a;
+			holonomicMovement.starting_robot_dist = cur_norm_d;
 		}
 		{
 			uint32_t cur_ptg_step;
