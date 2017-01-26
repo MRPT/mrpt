@@ -40,6 +40,7 @@ namespace opengl	{
 		std::string m_label_format;
 		double m_min_col, m_max_col, m_min_value, m_max_value; 
 		double m_label_font_size;
+		bool m_disable_depth_test;
 
 	public:
 		/** Constructor returning a smart pointer to the newly created object. */
@@ -48,8 +49,8 @@ namespace opengl	{
 			double width, double height,   //!< size of the color bar
 			double min_col, double max_col,  //!< limits for [0,1] colormap indices
 			double min_value, double max_value, //!< limits for values associated to extreme colors
-			const std::string &label_format = std::string("%.02f"), //!< sprintf-like format string for values
-			double label_font_size = 9.0 //!< Label text font size
+			const std::string &label_format = std::string("%7.02f"), //!< sprintf-like format string for values
+			double label_font_size = .05 //!< Label text font size
 		);
 
 		/** Render
@@ -59,6 +60,7 @@ namespace opengl	{
 
 		void setColormap(const mrpt::utils::TColormap colormap);
 		void setColorAndValueLimits(double col_min, double col_max, double value_min, double value_max);
+		void enableDepthTest(bool enable);
 
 		/** Evaluates the bounding box of this object (including possible children) in the coordinate frame of the object parent. */
 		void getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const MRPT_OVERRIDE;
@@ -70,8 +72,8 @@ namespace opengl	{
 			double width=0.2, double height=1.0,   //!< size of the color bar
 			double min_col=.0, double max_col=1.0,  //!< limits for [0,1] colormap indices
 			double min_value=.0, double max_value=1.0, //!< limits for values associated to extreme colors
-			const std::string &label_format= std::string("%.02f"), //!< sprintf-like format string for values
-			double label_font_size = 9.0 //!< Label text font size
+			const std::string &label_format= std::string("%7.02f"), //!< sprintf-like format string for values
+			double label_font_size = .05 //!< Label text font size
 		);
 
 	};
