@@ -325,9 +325,9 @@ namespace maps
 			mark_as_modified();
 		}
 		/// \overload
-		inline void  setPoint(size_t index,mrpt::math::TPoint2D &p) {  setPoint(index,p.x,p.y,0); }
+		inline void  setPoint(size_t index, const mrpt::math::TPoint2D &p) {  setPoint(index,p.x,p.y,0); }
 		/// \overload
-		inline void  setPoint(size_t index,mrpt::math::TPoint3D &p)  { setPoint(index,p.x,p.y,p.z); }
+		inline void  setPoint(size_t index, const mrpt::math::TPoint3D &p)  { setPoint(index,p.x,p.y,p.z); }
 		/// \overload
 		inline void  setPoint(size_t index,float x, float y) { setPoint(index,x,y,0); }
 		/// overload (RGB data is ignored in classes without color information)
