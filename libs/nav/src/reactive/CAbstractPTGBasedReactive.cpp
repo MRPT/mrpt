@@ -797,7 +797,7 @@ void CAbstractPTGBasedReactive::STEP5_PTGEvaluator(
 	// Special case for NOP motion cmd:
 	// consider only the empty space *after* the current robot pose, which is not at the origin.
 	if (this_is_PTG_continuation &&
-		( std::abs(rel_cur_pose_wrt_last_vel_cmd_NOP.x())>0.10 || std::abs(rel_cur_pose_wrt_last_vel_cmd_NOP.y())>0.10) // edge case: if the rel pose is (0,0), the evaluation is exactly as in an no-NOP case.
+		( std::abs(rel_cur_pose_wrt_last_vel_cmd_NOP.x())>0.05 || std::abs(rel_cur_pose_wrt_last_vel_cmd_NOP.y())>0.05) // edge case: if the rel pose is (0,0), the evaluation is exactly as in an no-NOP case.
 		)
 	{
 		int cur_k=0;
@@ -843,8 +843,12 @@ void CAbstractPTGBasedReactive::STEP5_PTGEvaluator(
 			}
 		}
 
+		// Path following isn't perfect: we can't be 100% sure of whether the robot followed exactly 
+		// the intended path (`kDirection`), or if it's actually a bit shifted, as reported in `cur_k`.
+		// Take the least favorable case:
+		eval_factors[0] = std::min(in_TPObstacles[kDirection], in_TPObstacles[cur_k]);
+		// Only discount free space if there was a real obstacle, not the "end of path" due to limited refDistance.
 		if (eval_factors[0] < 0.99) {
-			// Only discount free space if there was a real obstacle, not the "end of path" due to limited refDistance.
 			eval_factors[0] -= cur_norm_d;
 		}
 	}
