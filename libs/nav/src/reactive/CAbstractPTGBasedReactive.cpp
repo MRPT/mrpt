@@ -843,7 +843,10 @@ void CAbstractPTGBasedReactive::STEP5_PTGEvaluator(
 			}
 		}
 
-		eval_factors[0] -= cur_norm_d;
+		if (eval_factors[0] < 0.99) {
+			// Only discount free space if there was a real obstacle, not the "end of path" due to limited refDistance.
+			eval_factors[0] -= cur_norm_d;
+		}
 	}
 
 	// Factor 2: Distance in sectors:
