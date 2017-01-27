@@ -302,7 +302,9 @@ namespace mrpt
 		static void robotPoseExtrapolateIncrement(const mrpt::math::TTwist2D & globalVel, const double time_offset, mrpt::poses::CPose2D & out_pose);
 
 		mrpt::math::TPose2D m_lastTarget; //!< To detect changes
-		bool   ENABLE_OBSTACLE_FILTERING;
+		bool   ENABLE_BOOST_SHORTEST_ETA;
+		double BEST_ETA_MARGIN_TOLERANCE_WRT_BEST;
+		bool  ENABLE_OBSTACLE_FILTERING;
 
 	}; // end of CAbstractPTGBasedReactive
   }
