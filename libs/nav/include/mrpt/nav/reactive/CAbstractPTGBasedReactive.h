@@ -286,6 +286,7 @@ namespace mrpt
 		{
 			int ptg_index; //!< 0-based index of used PTG
 			int ptg_alpha_index; //!< Path index for selected PTG
+			int tp_target_k;     //!< Path index of target in TP-space in this instant
 			mrpt::system::TTimeStamp tim_send_cmd_vel; //!< Timestamp of when the cmd was sent
 			TRobotPoseVel  poseVel;  //!< Robot pose & velocities and timestamp of when it was queried
 
