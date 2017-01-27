@@ -89,7 +89,7 @@ void  CHolonomicFullEval::navigate(
 	{
 		double scores[NUM_FACTORS];  // scores for each criterion
 
-		if ( obstacles[i] < options.TOO_CLOSE_OBSTACLE ) // Too close to obstacles ?
+		if ( obstacles[i] < options.TOO_CLOSE_OBSTACLE && !(i==target_sector && obstacles[i]>1.02*target_dist) ) // Too close to obstacles? (unless target is in between obstacles and the robot)
 		{
 			for (int l=0;l<NUM_FACTORS;l++) m_dirs_scores(i,l)= .0;
 			continue;
