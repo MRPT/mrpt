@@ -231,7 +231,7 @@ class ptgConfiguratorframe: public wxFrame
 		mrpt::opengl::CAxisPtr            gl_axis_WS, gl_axis_TPS;
 		mrpt::opengl::CSetOfLinesPtr      gl_robot_ptg_prediction, gl_robot_ptg_prediction_highlight, gl_tp_obstacles;
 		mrpt::opengl::CPointCloudPtr      gl_WS_obs;
-		mrpt::opengl::CPointCloudPtr      gl_WS_target,gl_TP_target;
+		mrpt::opengl::CPointCloudPtr      gl_WS_target, gl_TP_target, gl_WS_target_reprojected;
 
 		// 2D plot views:
 		mpFXYVector  *m_graph_head_all, *m_graph_head_indiv;
