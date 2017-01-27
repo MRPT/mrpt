@@ -90,7 +90,6 @@ void   CTexturedPlane::render_texturedobj() const
 
 	glEnd();
 	checkOpenGLError();
-	glEnable(GL_CULL_FACE);
 
 	MRPT_END
 #endif
