@@ -471,6 +471,14 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent,wxWindowID id) :
 	gl_WS_target->enableShowName(true);
 	gl_view_WS->insert(gl_WS_target);
 
+	gl_WS_target_reprojected = mrpt::opengl::CPointCloud::Create();
+	gl_WS_target_reprojected->setPointSize(5.0);
+	gl_WS_target_reprojected->setColor_u8(0xff, 0xff, 0x00, 0xe0);
+	gl_WS_target_reprojected->insertPoint(0, 0, 0);
+	gl_WS_target_reprojected->setName("WS-target-reproj");
+	gl_WS_target_reprojected->enableShowName(true);
+	gl_view_WS->insert(gl_WS_target_reprojected);
+
 	gl_TP_target = mrpt::opengl::CPointCloud::Create();
 	gl_TP_target->setPointSize(7.0);
 	gl_TP_target->setColor_u8(0xff,0,0);
@@ -875,6 +883,18 @@ void ptgConfiguratorframe::rebuild3Dview()
 				wxT("TP-Target: k=%i (alpha=%.03f deg) norm_d=%.03f is_exact:%s"),
 				k,dir*180/M_PI,norm_d,(is_exact ? "yes":"NO")),
 				1);
+
+			// Sanity check: reproject TP_target back to WS:
+			uint32_t check_step;
+			if (ptg->getPathStepForDist(k, norm_d * ptg->getRefDistance(), check_step)) {
+				mrpt::math::TPose2D p;
+				ptg->getPathPose(k, check_step, p);
+				gl_WS_target_reprojected->setLocation(p.x, p.y, 0);
+				gl_WS_target_reprojected->setName("WS-Target-reproj");
+			}
+			else {
+				gl_WS_target_reprojected->setName("WS-Target-reproj (not exact!)");
+			}
 		}
 	}
 
