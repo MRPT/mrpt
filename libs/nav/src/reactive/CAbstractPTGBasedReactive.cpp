@@ -50,7 +50,6 @@ CAbstractPTGBasedReactive::CAbstractPTGBasedReactive(CRobot2NavInterface &react_
 	m_holonomicMethod            (),
 	m_logFile                    (NULL),
 	m_enableKeepLogRecords       (false),
-
 	m_enableConsoleOutput        (enableConsoleOutput),
 	m_init_done                  (false),
 	ptg_cache_files_directory    ("."),
@@ -73,6 +72,8 @@ CAbstractPTGBasedReactive::CAbstractPTGBasedReactive(CRobot2NavInterface &react_
 	m_closing_navigator          (false),
 	m_WS_Obstacles_timestamp     (INVALID_TIMESTAMP),
 	m_infoPerPTG_timestamp       (INVALID_TIMESTAMP),
+	ENABLE_BOOST_SHORTEST_ETA(false),
+	BEST_ETA_MARGIN_TOLERANCE_WRT_BEST(1.05),
 	ENABLE_OBSTACLE_FILTERING(false)
 {
 	this->enableLogFile( enableLogFile );
@@ -469,6 +470,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 		
 		// Qualitative scoring:
 		// ---------------------------
+		if (ENABLE_BOOST_SHORTEST_ETA)
 		{
 			// Criterion #1: If a PTG directly leads to target without colliding, then make it the preferred option. 
 			// If more than one such case exist, pick the one with the shortest ETA (Estimated Time of Arrival). 
@@ -521,8 +523,6 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 			// Pick the shortest path, if any:
 			if (!ETA_to_ptgindex.empty()) 
 			{
-				const double BEST_ETA_MARGIN_TOLERANCE_WRT_BEST = 1.05; // Boost more than one PTG if they all "win" in an almost "draw" situation.
-
 				// Pick the shortest value, sorted in the std::map<>
 				const double best_ETA_in_seconds = ETA_to_ptgindex.begin()->first;
 				
@@ -1013,6 +1013,8 @@ void CAbstractPTGBasedReactive::loadConfigFile(const mrpt::utils::CConfigFileBas
 	USE_DELAYS_MODEL = cfg.read_bool(sectCfg, "USE_DELAYS_MODEL", USE_DELAYS_MODEL);
 	MAX_DISTANCE_PREDICTED_ACTUAL_PATH = cfg.read_double(sectCfg, "MAX_DISTANCE_PREDICTED_ACTUAL_PATH", MAX_DISTANCE_PREDICTED_ACTUAL_PATH);
 	MIN_NORMALIZED_FREE_SPACE_FOR_PTG_CONTINUATION = cfg.read_double(sectCfg, "MIN_NORMALIZED_FREE_SPACE_FOR_PTG_CONTINUATION", MIN_NORMALIZED_FREE_SPACE_FOR_PTG_CONTINUATION);
+	MRPT_LOAD_CONFIG_VAR(ENABLE_BOOST_SHORTEST_ETA, bool, cfg, sectCfg);
+	MRPT_LOAD_CONFIG_VAR(BEST_ETA_MARGIN_TOLERANCE_WRT_BEST, double, cfg, sectCfg);
 
 	DIST_TO_TARGET_FOR_SENDING_EVENT = cfg.read_float(sectCfg, "DIST_TO_TARGET_FOR_SENDING_EVENT", DIST_TO_TARGET_FOR_SENDING_EVENT, false);
 	m_badNavAlarm_AlarmTimeout = cfg.read_double(sectCfg,"ALARM_SEEMS_NOT_APPROACHING_TARGET_TIMEOUT", m_badNavAlarm_AlarmTimeout, false);
