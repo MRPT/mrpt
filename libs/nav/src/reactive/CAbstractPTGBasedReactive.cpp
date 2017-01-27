@@ -477,14 +477,16 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 			std::map<double, size_t>  ETA_to_ptgindex;
 			for (size_t i = 0; i <= nPTGs; i++)
 			{
+				const bool is_ptg_NOP = (i == nPTGs);
+
 				THolonomicMovement & hm = holonomicMovements[i];
 				if (!hm.PTG) continue;
 				if (hm.evaluation == 0) continue; // e.g. for invalid "NOP".
 
 				const auto & ipp = m_infoPerPTG[i];
 
-				const auto dir_selected = hm.PTG->alpha2index(hm.direction);
-				const auto dir_target = hm.PTG->alpha2index(ipp.target_alpha);
+				const auto dir_selected = is_ptg_NOP ? m_lastSentVelCmd.ptg_alpha_index : hm.PTG->alpha2index(hm.direction);
+				const auto dir_target = is_ptg_NOP ? m_lastSentVelCmd.tp_target_k : hm.PTG->alpha2index(ipp.target_alpha);
 				if (dir_target != dir_selected)
 					continue;
 				if (ipp.TP_Obstacles[dir_selected] < ipp.target_dist*1.02)
@@ -498,20 +500,22 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 				if (!valid_step)
 					continue;
 
-				uint32_t robot_step = 0;
-				if (hm.starting_robot_dist != 0) {
-					valid_step = hm.PTG->getPathStepForDist(dir_selected, hm.starting_robot_dist /* normalized dist */ * hm.PTG->getRefDistance(), robot_step);
-					if (!valid_step)
-						continue;
-				}
-				const double target_dist_steps = std::max(0,int(target_step)-int(robot_step)); /* For PTG continuation, substract the part of path already done by the robot */
-
-				const double path_ETA = hm.PTG->getPathStepDuration() * target_dist_steps	/* PTG original time to get to target point */
+				double path_ETA = hm.PTG->getPathStepDuration() * target_step /* PTG original time to get to target point */
 					* hm.speed /* times the speed scale factor*/;
+
+				double discount_time = .0;
+				if (is_ptg_NOP) {
+					// Heuristic: discount the time already executed.
+					// Note that hm.speed above scales the overall path time using the current speed scale, not the exact
+					// integration over the past timesteps. It's an approximation, probably good enough...
+					discount_time = mrpt::system::timeDifference(m_lastSentVelCmd.tim_send_cmd_vel, tim_start_iteration);
+				}
+				path_ETA -= discount_time; // This could even become negative if the approximation is poor...
+
 				ETA_to_ptgindex[path_ETA] = i;
 
 				// Log:
-				newLogRec.additional_debug_msgs["shortest_path_boost"] += mrpt::format("[%u]: trg=%u rob=%u ETA=%.02fs. ", (unsigned int)i,(unsigned int)target_step, (unsigned int)robot_step, path_ETA);
+				newLogRec.additional_debug_msgs["shortest_path_boost"] += mrpt::format("[%u]: trg=%u discount=%.02fs ETA=%.02fs. ", (unsigned int)i,(unsigned int)target_step, discount_time, path_ETA);
 			}
 
 			// Pick the shortest path, if any:
@@ -525,7 +529,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 				for (const auto & e : ETA_to_ptgindex)
 				{
 					if (e.first > best_ETA_in_seconds*BEST_ETA_MARGIN_TOLERANCE_WRT_BEST)
-						continue; // not among the best solutions.
+						break; // no more good candidates
 
 					const size_t best_ptg_idx = e.second;
 					// boost up this selection!
@@ -629,6 +633,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 				// Save last sent cmd:
 				m_lastSentVelCmd.ptg_index = nSelectedPTG;
 				m_lastSentVelCmd.ptg_alpha_index = selectedHolonomicMovement.PTG->alpha2index(selectedHolonomicMovement.direction);
+				m_lastSentVelCmd.tp_target_k = selectedHolonomicMovement.PTG->alpha2index(m_infoPerPTG[nSelectedPTG].target_alpha);
 				m_lastSentVelCmd.poseVel = m_curPoseVel;
 				m_lastSentVelCmd.tim_send_cmd_vel = tim_send_cmd_vel;
 
@@ -1122,6 +1127,7 @@ void CAbstractPTGBasedReactive::TSentVelCmd::reset()
 {
 	ptg_index = -1;
 	ptg_alpha_index = -1;
+	tp_target_k = -1;
 	tim_send_cmd_vel = INVALID_TIMESTAMP;
 	poseVel = TRobotPoseVel();
 }
