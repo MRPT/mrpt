@@ -792,7 +792,14 @@ void CAbstractPTGBasedReactive::STEP5_PTGEvaluator(
 	std::vector<double> eval_factors(6);
 	// Factor 1: Free distance for the chosen PTG and "alpha" in the TP-Space:
 	// ----------------------------------------------------------------------
-	eval_factors[0] = in_TPObstacles[kDirection];
+	if (kDirection == TargetSector && TargetDist>.0 && in_TPObstacles[kDirection]>TargetDist+0.05 /*small margin*/) {
+		// If we head straight to target, don't count the possible collisions ahead:
+		eval_factors[0] = mrpt::utils::saturate_val(in_TPObstacles[kDirection] / (TargetDist + 0.05 /* give a minimum margin */), 0.0, 1.0);
+	}
+	else {
+		// Normal case: distance to collision:
+		eval_factors[0] = in_TPObstacles[kDirection];
+	}
 
 	// Special case for NOP motion cmd:
 	// consider only the empty space *after* the current robot pose, which is not at the origin.
