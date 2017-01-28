@@ -76,8 +76,8 @@ namespace mrpt
 			double HYSTERESIS_SECTOR_COUNT; //!< Range of "sectors" (directions) for hysteresis over succesive timesteps
 			std::vector<double>   factorWeights;  //!< See docs above
 			std::vector<int32_t>  factorNormalizeOrNot; //!< 0/1 to normalize factors.
-			std::vector<int32_t>  PHASE1_FACTORS, PHASE2_FACTORS; //!< Factor indices [0,4] for the factors to consider in each phase of the movement decision (Defaults: `PHASE1_FACTORS=0 1 2`, `PHASE2_FACTORS=`3 4`)
-			double                PHASE1_THRESHOLD;   //!< Phase1 scores must be above this relative range threshold [0,1] to be considered in phase 2 (Default:`0.75`)
+			std::vector<std::vector<int32_t> >  PHASE_FACTORS; //!< Factor indices [0,4] for the factors to consider in each phase 1,2,...N of the movement decision (Defaults: `PHASE1_FACTORS=0 1 2`, `PHASE2_FACTORS=`3 4`)
+			std::vector<double>                 PHASE_THRESHOLDS;   //!< Phase 1,2,N-1... scores must be above this relative range threshold [0,1] to be considered in phase 2 (Default:`0.75`)
 
 			bool LOG_SCORE_MATRIX; //!< (default:false, to save space)
 

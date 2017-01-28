@@ -242,11 +242,11 @@
 										</object>
 										<object class="sizeritem">
 											<object class="wxRadioBox" name="ID_RADIOBOX1" variable="rbPerPTGPlots" member="yes">
-												<label> Per PTG plots: </label>
+												<label>Per PTG plots:</label>
 												<content>
 													<item>TP-Obstacles only</item>
-													<item>+ phase1 score</item>
-													<item>+ phase2 score</item>
+													<item>+ final scores</item>
+													<item>+ preliminary scores</item>
 												</content>
 												<default>-1</default>
 												<style>wxRA_HORIZONTAL</style>
