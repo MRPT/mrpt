@@ -150,7 +150,7 @@ navlog_viewer_GUI_designDialog::navlog_viewer_GUI_designDialog(wxWindow* parent,
     wxFlexGridSizer* FlexGridSizer6;
     wxStaticBoxSizer* StaticBoxSizer1;
     wxFlexGridSizer* FlexGridSizer1;
-
+    
     Create(parent, wxID_ANY, _("Navigation log viewer - Part of the MRPT project"), wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE, _T("wxID_ANY"));
     Move(wxPoint(20,20));
     FlexGridSizer1 = new wxFlexGridSizer(1, 1, 0, 0);
@@ -229,13 +229,13 @@ navlog_viewer_GUI_designDialog::navlog_viewer_GUI_designDialog(wxWindow* parent,
     FlexGridSizer9->SetSizeHints(Panel3);
     StaticBoxSizer2->Add(Panel3, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
     flexGridRightHand->Add(StaticBoxSizer2, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 2);
-    wxString __wxRadioBoxChoices_1[3] =
+    wxString __wxRadioBoxChoices_1[3] = 
     {
     	_("TP-Obstacles only"),
-    	_("+ phase1 score"),
-    	_("+ phase2 score")
+    	_("+ final scores"),
+    	_("+ preliminary scores")
     };
-    rbPerPTGPlots = new wxRadioBox(Panel_AUX, ID_RADIOBOX1, _(" Per PTG plots: "), wxDefaultPosition, wxDefaultSize, 3, __wxRadioBoxChoices_1, 1, wxRA_HORIZONTAL, wxDefaultValidator, _T("ID_RADIOBOX1"));
+    rbPerPTGPlots = new wxRadioBox(Panel_AUX, ID_RADIOBOX1, _("Per PTG plots:"), wxDefaultPosition, wxDefaultSize, 3, __wxRadioBoxChoices_1, 1, wxRA_HORIZONTAL, wxDefaultValidator, _T("ID_RADIOBOX1"));
     flexGridRightHand->Add(rbPerPTGPlots, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 2);
     FlexGridSizer4->Add(flexGridRightHand, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
     FlexGridSizer2->Add(FlexGridSizer4, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
@@ -281,7 +281,7 @@ navlog_viewer_GUI_designDialog::navlog_viewer_GUI_designDialog(wxWindow* parent,
     mnuMoreOps.Append(mnuSaveScoreMatrix);
     FlexGridSizer1->Fit(this);
     FlexGridSizer1->SetSizeHints(this);
-
+    
     Connect(ID_BUTTON1,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&navlog_viewer_GUI_designDialog::OnbtnLoadClick);
     Connect(ID_BUTTON2,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&navlog_viewer_GUI_designDialog::OnbtnHelpClick);
     Connect(ID_BUTTON3,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&navlog_viewer_GUI_designDialog::OnbtnQuitClick);
@@ -919,8 +919,8 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 				{
 					auto gl_obj = mrpt::opengl::CSetOfLines::Create();
 					gl_obj->setName("tp_selected_dir");
-					gl_obj->setLineWidth(5.0f);
-					gl_obj->setColor_u8(mrpt::utils::TColor(0x00, 0xff, 0x00, 0xff));
+					gl_obj->setLineWidth(3.0f);
+					gl_obj->setColor_u8(mrpt::utils::TColor(0x00, 0xff, 0x00, 0xd0));
 					scene->insert(gl_obj);
 				}
 				{
@@ -1029,29 +1029,27 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 
 				if ((visible1 || visible2) && pI.HLFR && nAlphas>2)
 				{
-					const bool has_scores = pI.HLFR->dirs_eval.size() == nAlphas;
-					const bool has_alt_scores = pI.HLFR->alt_dirs_eval.size() == nAlphas;
-
-					vector<float> xs1, ys1, xs2,ys2;
-					xs1.reserve(nAlphas); ys1.reserve(nAlphas);
-					xs2.reserve(nAlphas); ys2.reserve(nAlphas);
-					for (size_t i = 0; i<nAlphas; ++i)
+					const auto &dir_evals = pI.HLFR->dirs_eval;
+					const bool has_scores = !dir_evals.empty() && dir_evals[0].size() == nAlphas;
+					const size_t num_scores = dir_evals.size();
+					
+					for (size_t iScore = 0; has_scores && iScore < num_scores; iScore++)
 					{
-						const double a = -M_PI + (i + 0.5) * 2 * M_PI / double(nAlphas);
-						const double r1 = has_scores ? pI.HLFR->dirs_eval[i] : .0;
-						const double r2 = has_alt_scores ? pI.HLFR->alt_dirs_eval[i] : .0;
-						xs1.push_back(r1*cos(a));
-						ys1.push_back(r1*sin(a));
-						xs2.push_back(r2*cos(a));
-						ys2.push_back(r2*sin(a));
-					}
-					gl_obj1->appendLine(xs1[0], ys1[0], 0, xs1[1], ys1[1], 0);
-					for (size_t i = 2; i < nAlphas; i++)
-						gl_obj1->appendLineStrip(xs1[i], ys1[i], 0);
+						vector<mrpt::math::TPoint2D>  pts;
+						pts.reserve(nAlphas);
+						for (size_t i = 0; i < nAlphas; ++i)
+						{
+							const double a = -M_PI + (i + 0.5) * 2 * M_PI / double(nAlphas);
+							const double r = dir_evals[iScore][i];
+							pts.push_back( mrpt::math::TPoint2D(r*cos(a), r*sin(a)));
+						}
 
-					gl_obj2->appendLine(xs2[0], ys2[0], 0, xs2[1], ys2[1], 0);
-					for (size_t i = 2; i < nAlphas; i++)
-						gl_obj2->appendLineStrip(xs2[i], ys2[i], 0);
+						mrpt::opengl::CSetOfLinesPtr &gl_obj = iScore == (num_scores-1) ? gl_obj1 : gl_obj2;
+
+						gl_obj->appendLine( pts[0].x, pts[0].y, 0, pts[1].x, pts[1].y, 0);
+						for (size_t i = 2; i < nAlphas; i++)
+							gl_obj->appendLineStrip(pts[i].x, pts[i].y, 0);
+					}
 				}
 			}
 
