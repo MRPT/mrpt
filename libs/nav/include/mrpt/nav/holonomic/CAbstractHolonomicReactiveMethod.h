@@ -46,44 +46,37 @@ namespace mrpt
 	{
 		DEFINE_VIRTUAL_SERIALIZABLE(CAbstractHolonomicReactiveMethod)
 	public:
-		 /** This method performs the holonomic navigation itself.
-		   *  \param target [IN] The relative location (x,y) of target point.
-		   *  \param obstacles [IN] Distance to obstacles from robot location (0,0). First index refers to -PI direction, and last one to +PI direction. Distances can be dealed as "meters", although they are "pseudometers", see note below, but normalized in the range [0,1]
-		   *  \param maxRobotSpeed [IN] Maximum robot speed, in "pseudometers/sec". See note below.
-		   *  \param desiredDirection [OUT] The desired motion direction, in the range [-PI,PI]
-		   *  \param desiredSpeed [OUT] The desired motion speed in that direction, in "pseudometers"/sec. (See note below)
-		   *  \param logRecord [IN/OUT] A placeholder for a pointer to a log record with extra info about the execution. Set to NULL if not required. User <b>must free memory</b> using "delete logRecord" after using it.
-		   *  \param max_obstacle_dist[in] Maximum expected value to be found in `obstacles`. Typically, values in `obstacles` larger or equal to this value mean there is no visible obstacle in that direction.
-		   *  \param clearance[in] The computed clearance for each direction (optional in some implementations).
-		   *
-		   *  NOTE: With "pseudometers" we refer to the distance unit in TP-Space, thus:
-		   *     <br><center><code>pseudometer<sup>2</sup>= meter<sup>2</sup> + (rad * r)<sup>2</sup></code><br></center>
-		   */
-		virtual void  navigate(
-			const mrpt::math::TPoint2D &target,
-			const std::vector<double>	&obstacles,
-			double			maxRobotSpeed,
-			double			&desiredDirection,
-			double			&desiredSpeed,
-			CHolonomicLogFileRecordPtr &logRecord,
-			const double    max_obstacle_dist,
-			const mrpt::nav::ClearanceDiagram *clearance = NULL) = 0;
-
-		/** Overload with a generic container for obstacles (for backwards compatibility with std::vector<float> and other future uses) */
-		template <class OBSTACLES_LIST>
-		void navigate(
-			const mrpt::math::TPoint2D &target,
-			const OBSTACLES_LIST &obstacles,
-			double			maxRobotSpeed,
-			double			&desiredDirection,
-			double			&desiredSpeed,
-			CHolonomicLogFileRecordPtr &logRecord,
-			const double    max_obstacle_dist)
+		/** Input parameters for CAbstractHolonomicReactiveMethod::navigate() */
+		struct NAV_IMPEXP NavInput
 		{
-			std::vector<double>  obs(obstacles.size());
-			std::copy(obstacles.begin(), obstacles.end(), obs.begin() );
-			this->navigate(target,obs, maxRobotSpeed,desiredDirection,desiredSpeed,logRecord,max_obstacle_dist);
-		}
+			/** Distance to obstacles in polar coordinates, relative to the robot. 
+			  * First index refers to -PI direction, and last one to +PI direction. 
+			  * Distances can be dealed as "meters", although when used inside the PTG-based navigation system, they are "pseudometers", normalized to the range [0,1].
+			  */
+			std::vector<double>   obstacles;
+			mrpt::math::TPoint2D  target;            //!< The relative location (x,y) of target point. In the same units than `obstacles`
+			double                maxRobotSpeed;     //!< Maximum robot speed, in the same units than `obstacles`, per second.
+			double                maxObstacleDist;   //!< Maximum expected value to be found in `obstacles`. Typically, values in `obstacles` larger or equal to this value mean there is no visible obstacle in that direction.
+			mrpt::nav::ClearanceDiagram *clearance;  //!< The computed clearance for each direction (optional in some implementations). Leave to default (NULL) if not needed.
+
+			NavInput();
+		};
+
+		/** Output for CAbstractHolonomicReactiveMethod::navigate() */
+		struct NAV_IMPEXP NavOutput
+		{
+			double    desiredDirection; //!< The desired motion direction, in the range [-PI, PI]
+			double    desiredSpeed;     //!< The desired motion speed in that direction, from 0 up to NavInput::maxRobotSpeed
+
+			/** The navigation method will create a log record and store it here via a smart pointer. Input value is ignored. */
+			CHolonomicLogFileRecordPtr  logRecord;
+
+			NavOutput();
+		};
+
+
+		/** Invokes the holonomic navigation algorithm itself. See the description of the input/output structures for details on each parameter. */
+		virtual void navigate(const NavInput & ni, NavOutput &no) = 0;
 
 		CAbstractHolonomicReactiveMethod(const std::string &defaultCfgSectionName);  //!< ctor
 		virtual ~CAbstractHolonomicReactiveMethod(); //!< virtual dtor

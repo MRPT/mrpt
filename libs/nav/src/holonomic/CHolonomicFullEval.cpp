@@ -40,33 +40,20 @@ void CHolonomicFullEval::initialize(const mrpt::utils::CConfigFileBase &INI_FILE
 	options.loadFromConfigFile(INI_FILE, getConfigFileSectionName());
 }
 
-void  CHolonomicFullEval::navigate(
-	const mrpt::math::TPoint2D &target,
-	const std::vector<double>	&obstacles,
-	double			maxRobotSpeed,
-	double			&desiredDirection,
-	double			&desiredSpeed,
-	CHolonomicLogFileRecordPtr &logRecord,
-	const double    max_obstacle_dist,
-	const mrpt::nav::ClearanceDiagram *clearance)
+void CHolonomicFullEval::navigate(const NavInput & ni, NavOutput &no)
 {
 	using mrpt::utils::square;
 
-	ASSERT_(clearance!=nullptr);
-
-	CLogFileRecord_FullEvalPtr log;
+	ASSERT_(ni.clearance!=nullptr);
 
 	// Create a log record for returning data.
-	if (!logRecord.present())
-	{
-		log = CLogFileRecord_FullEval::Create();
-		logRecord = log;
-	}
+	CLogFileRecord_FullEvalPtr log = CLogFileRecord_FullEval::Create();
+	no.logRecord = log;
 
-	const size_t nDirs = obstacles.size();
-	const double target_dir = ::atan2(target.y,target.x);
+	const size_t nDirs = ni.obstacles.size();
+	const double target_dir = ::atan2(ni.target.y, ni.target.x);
 	const unsigned int target_sector = mrpt::utils::round( -0.5 + (target_dir/M_PI + 1)*nDirs*0.5 );
-	const double target_dist = target.norm();
+	const double target_dist = ni.target.norm();
 
 	m_dirs_scores.resize(nDirs, options.factorWeights.size() + 2 );
 
@@ -76,9 +63,9 @@ void  CHolonomicFullEval::navigate(
 
 	for (unsigned int i=0;i<nDirs;i++)
 	{
-		k2dir[i] = M_PI*(-1 + 2*(0.5+i)/nDirs);
-		obstacles_2d[i].x = obstacles[i] * cos(k2dir[i]);
-		obstacles_2d[i].y = obstacles[i] * sin(k2dir[i]);
+		k2dir[i] = CParameterizedTrajectoryGenerator::index2alpha(i, nDirs);
+		obstacles_2d[i].x = ni.obstacles[i] * cos(k2dir[i]);
+		obstacles_2d[i].y = ni.obstacles[i] * sin(k2dir[i]);
 	}
 
 	const int NUM_FACTORS = 5;
@@ -89,13 +76,13 @@ void  CHolonomicFullEval::navigate(
 	{
 		double scores[NUM_FACTORS];  // scores for each criterion
 
-		if ( obstacles[i] < options.TOO_CLOSE_OBSTACLE && !(i==target_sector && obstacles[i]>1.02*target_dist) ) // Too close to obstacles? (unless target is in between obstacles and the robot)
+		if (ni.obstacles[i] < options.TOO_CLOSE_OBSTACLE && !(i==target_sector &&ni.obstacles[i]>1.02*target_dist) ) // Too close to obstacles? (unless target is in between obstacles and the robot)
 		{
 			for (int l=0;l<NUM_FACTORS;l++) m_dirs_scores(i,l)= .0;
 			continue;
 		}
 
-		const double d = std::min(obstacles[i], 0.95*target_dist );
+		const double d = std::min(ni.obstacles[i], 0.95*target_dist );
 
 		// The TP-Space representative coordinates for this direction:
 		const double x = d*cos(k2dir[i]);
@@ -103,14 +90,14 @@ void  CHolonomicFullEval::navigate(
 
 		// Factor #1: clearance
 		// -----------------------------------------------------
-		if (mrpt::utils::abs_diff(i, target_sector) <= 1 && target_dist < 1.0 - options.TOO_CLOSE_OBSTACLE && obstacles[i]>1.05*target_dist)
+		if (mrpt::utils::abs_diff(i, target_sector) <= 1 && target_dist < 1.0 - options.TOO_CLOSE_OBSTACLE &&ni.obstacles[i]>1.05*target_dist)
 		{
 			// Don't count obstacles ahead of the target.
-			scores[0] = std::max(target_dist, obstacles[i]) / (target_dist*1.05);
+			scores[0] = std::max(target_dist,ni.obstacles[i]) / (target_dist*1.05);
 		}
 		else
 		{
-			scores[0] = std::max(0.0, obstacles[i] - options.TOO_CLOSE_OBSTACLE);
+			scores[0] = std::max(0.0,ni.obstacles[i] - options.TOO_CLOSE_OBSTACLE);
 		}
 
 		// Discount "circular loop aparent free distance" here, but don't count it for clearance, since those are not real obstacle points.
@@ -130,18 +117,18 @@ void  CHolonomicFullEval::navigate(
 		sg.point2.y = y;
 
 		// Range of attainable values: 0=passes thru target. 2=opposite direction
-		double min_dist_target_along_path = sg.distance(target);
+		double min_dist_target_along_path = sg.distance(ni.target);
 
 		// Idea: if this segment is taking us *away* from target, don't make the segment to start at (0,0), since all 
 		// paths "running away" will then have identical minimum distances to target. Use the middle of the segment instead:
-		const double endpt_dist_to_target = (target - TPoint2D(x, y)).norm();
+		const double endpt_dist_to_target = (ni.target - TPoint2D(x, y)).norm();
 		const double endpt_dist_to_target_norm = std::min(1.0, endpt_dist_to_target);
 
 		if (endpt_dist_to_target_norm > target_dist && endpt_dist_to_target_norm >= 0.95 * target_dist) {
 			// path takes us away:
 			sg.point1.x = x*0.5;
 			sg.point1.y = y*0.5;
-			min_dist_target_along_path = sg.distance(target);
+			min_dist_target_along_path = sg.distance(ni.target);
 		}
 
 		scores[1] = 1.0 / (1.0 + square(min_dist_target_along_path) );
@@ -169,7 +156,7 @@ void  CHolonomicFullEval::navigate(
 		// Factor #5: clearance to nearest obstacle along path
 		// ------------------------------------------------------------------------------------------
 		{
-			double avr_path_clearance = clearance->getClearance(i /*path index*/, std::min(0.99, target_dist*0.95));
+			double avr_path_clearance = ni.clearance->getClearance(i /*path index*/, std::min(0.99, target_dist*0.95));
 			scores[4] = avr_path_clearance;
 		}
 
@@ -216,7 +203,7 @@ void  CHolonomicFullEval::navigate(
 		{
 			double this_dir_eval = 0;
 
-			if (obstacles[i] < options.TOO_CLOSE_OBSTACLE ||  // Too close to obstacles ?
+			if (ni.obstacles[i] < options.TOO_CLOSE_OBSTACLE ||  // Too close to obstacles ?
 				(phase_idx>0 && phase_scores[phase_idx-1][i]<last_phase_threshold)  // thresholding of the previous phase
 				)
 			{
@@ -231,20 +218,13 @@ void  CHolonomicFullEval::navigate(
 				this_dir_eval *= weights_sum_phase_inv[phase_idx];
 
 				// For the last phase, boost score of directions that: 
-				if (//phase_idx == (NUM_PHASES - 1) &&
+				if (phase_idx == (NUM_PHASES - 1) &&
 					target_sector == i &&                // take us straight to the target, and 
-					obstacles[i] >= 1.05*target_dist &&  // are safe (no collision), and
+					ni.obstacles[i] >= 1.05*target_dist &&  // are safe (no collision), and
 					m_dirs_scores(i, 4) > options.TOO_CLOSE_OBSTACLE
 					)
 				{
-					const double extra_score =
-#if 0
-						// Square law:
-						mrpt::utils::square(target_dist - 1.0);
-#else
-						// Linear law:
-						1.0 - target_dist;
-#endif
+					const double extra_score = (m_dirs_scores(i, 4) + 1.0) * std::max(0.0, 1.0 - target_dist);
 					this_dir_eval += std::max(0.0, extra_score);
 				}
 
@@ -283,25 +263,25 @@ void  CHolonomicFullEval::navigate(
 	if (best_eval==.0)
 	{
 		// No way found!
-		desiredDirection = 0;
-		desiredSpeed = 0;
+		no.desiredDirection = 0;
+		no.desiredSpeed = 0;
 	}
 	else
 	{
 		// A valid movement:
-		desiredDirection = (double)(M_PI*(-1 + 2*(0.5+best_dir)/((double)obstacles.size())));
+		no.desiredDirection = CParameterizedTrajectoryGenerator::index2alpha(best_dir, ni.obstacles.size());
 
 		// Speed control: Reduction factors
 		// ---------------------------------------------
 		const double targetNearnessFactor = m_enableApproachTargetSlowDown ?
-			std::min(1.0, target.norm() / (options.TARGET_SLOW_APPROACHING_DISTANCE))
+			std::min(1.0, ni.target.norm() / (options.TARGET_SLOW_APPROACHING_DISTANCE))
 			:
 			1.0;
 
 
 		const double obs_clearance = m_dirs_scores(best_dir, 4);
-		const double obs_dist = std::min(obstacles[best_dir], obs_clearance);
-		const double obs_dist_th = std::max(options.TOO_CLOSE_OBSTACLE, options.OBSTACLE_SLOW_DOWN_DISTANCE*max_obstacle_dist);
+		const double obs_dist = std::min(ni.obstacles[best_dir], obs_clearance);
+		const double obs_dist_th = std::max(options.TOO_CLOSE_OBSTACLE, options.OBSTACLE_SLOW_DOWN_DISTANCE*ni.maxObstacleDist);
 		double riskFactor = 1.0;
 		if (obs_dist <= options.TOO_CLOSE_OBSTACLE) {
 			riskFactor = 0.0;
@@ -310,7 +290,7 @@ void  CHolonomicFullEval::navigate(
 		{
 			riskFactor = (obs_dist - options.TOO_CLOSE_OBSTACLE) / (obs_dist_th - options.TOO_CLOSE_OBSTACLE);
 		}
-		desiredSpeed = maxRobotSpeed * std::min(riskFactor,targetNearnessFactor);
+		no.desiredSpeed = ni.maxRobotSpeed * std::min(riskFactor,targetNearnessFactor);
 	}
 
 	m_last_selected_sector = best_dir;

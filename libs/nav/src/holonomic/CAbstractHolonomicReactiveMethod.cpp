@@ -68,3 +68,16 @@ CAbstractHolonomicReactiveMethod * CAbstractHolonomicReactiveMethod::Create(cons
 	}
 }
 
+CAbstractHolonomicReactiveMethod::NavInput::NavInput() :
+	target(0,0),
+	maxRobotSpeed(1.0),
+	maxObstacleDist(1.0),
+	clearance(nullptr)
+{
+}
+
+CAbstractHolonomicReactiveMethod::NavOutput::NavOutput() :
+	desiredDirection(0),
+	desiredSpeed(0)
+{
+}
