@@ -1242,17 +1242,25 @@ void CAbstractPTGBasedReactive::ptg_eval_target_build_obstacles(
 			tictac.Tic();
 
 			ASSERT_(holoMethod);
+			// Don't slow down if we are approaching a target that is not the final waypoint:
 			holoMethod->enableApproachTargetSlowDown( !navp.targetIsIntermediaryWaypoint );
 
-			holoMethod->navigate(
-					ipf.TP_Target,     // Normalized [0,1]
-					ipf.TP_Obstacles,  // Normalized [0,1]
-					1.0, // Was: ptg->getMax_V_inTPSpace(),
-					holonomicMovement.direction,
-					holonomicMovement.speed,
-					HLFR,
-					1.0 /* max obstacle dist*/,
-					&ipf.clearance);
+			// Prepare holonomic algorithm call:
+			CAbstractHolonomicReactiveMethod::NavInput ni;
+			ni.clearance = &ipf.clearance;
+			ni.maxObstacleDist = 1.0;
+			ni.maxRobotSpeed = 1.0; // So, we use a normalized max speed here.
+			ni.obstacles = ipf.TP_Obstacles;  // Normalized [0,1]
+			ni.target = ipf.TP_Target; // Normalized [0,1]
+
+			CAbstractHolonomicReactiveMethod::NavOutput no;
+
+			holoMethod->navigate(ni, no);
+
+			// Extract resuls:
+			holonomicMovement.direction = no.desiredDirection;
+			holonomicMovement.speed = no.desiredSpeed;
+			HLFR = no.logRecord;
 
 			// Security: Scale down the velocity when heading towards obstacles,
 			//  such that it's assured that we never go thru an obstacle!

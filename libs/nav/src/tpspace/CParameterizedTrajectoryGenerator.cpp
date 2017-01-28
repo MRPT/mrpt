@@ -331,7 +331,7 @@ void CParameterizedTrajectoryGenerator::updateClearancePost(ClearanceDiagram & c
 
 	std::vector<double> k2dir(m_alphaValuesCount);
 	for (uint16_t k = 0; k < m_alphaValuesCount; k++)
-		k2dir[k] = M_PI*(-1 + 2 * (0.5 + k) / m_alphaValuesCount);
+		k2dir[k] = CParameterizedTrajectoryGenerator::index2alpha(k, m_alphaValuesCount);
 
 	for (uint16_t k = 0; k < m_alphaValuesCount; k++)
 	{

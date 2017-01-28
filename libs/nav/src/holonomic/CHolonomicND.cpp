@@ -43,41 +43,28 @@ void CHolonomicND::initialize(const mrpt::utils::CConfigFileBase &INI_FILE)
 /*---------------------------------------------------------------
 						Navigate
   ---------------------------------------------------------------*/
-void  CHolonomicND::navigate(
-	const mrpt::math::TPoint2D &target,
-	const std::vector<double>	&obstacles,
-	double			maxRobotSpeed,
-	double			&desiredDirection,
-	double			&desiredSpeed,
-	CHolonomicLogFileRecordPtr &logRecord,
-	const double    max_obstacle_dist,
-	const mrpt::nav::ClearanceDiagram *clearance)
+void CHolonomicND::navigate(const NavInput & ni, NavOutput &no)
 {
 	TGapArray			gaps;
 	TSituations			situation;
 	unsigned int		selectedSector;
 	double				riskEvaluation;
-	CLogFileRecord_NDPtr log;
 	double				evaluation;
 
 	// Create a log record for returning data.
-	if (!logRecord.present())
-	{
-		log = CLogFileRecord_ND::Create();
-		logRecord = log;
-	}
-
+	CLogFileRecord_NDPtr  log = CLogFileRecord_ND::Create();
+	no.logRecord = log;
 
 	// Search gaps:
 	gaps.clear();
-	gapsEstimator( obstacles, target, gaps);
+	gapsEstimator( ni.obstacles, ni.target, gaps);
 
 
 	// Select best gap:
-	searchBestGap(	obstacles,
+	searchBestGap(	ni.obstacles,
 					1.0,
 					gaps,
-					target,
+					ni.target,
 					selectedSector,
 					evaluation,
 					situation,
@@ -87,23 +74,23 @@ void  CHolonomicND::navigate(
 	if (situation == SITUATION_NO_WAY_FOUND)
 	{
 		// No way found!
-		desiredDirection = 0;
-		desiredSpeed = 0;
+		no.desiredDirection = 0;
+		no.desiredSpeed = 0;
 	}
 	else
 	{
 		// A valid movement:
-		desiredDirection = (double)(M_PI*(-1 + 2*(0.5f+selectedSector)/((double)obstacles.size())));
+		no.desiredDirection = CParameterizedTrajectoryGenerator::index2alpha(selectedSector, ni.obstacles.size());
 
 		// Speed control: Reduction factors
 		// ---------------------------------------------
 		const double targetNearnessFactor = m_enableApproachTargetSlowDown ? 
-			std::min(1.0, target.norm() / (options.TARGET_SLOW_APPROACHING_DISTANCE))
+			std::min(1.0, ni.target.norm() / (options.TARGET_SLOW_APPROACHING_DISTANCE))
 			:
 			1.0;
 
 		const double riskFactor = std::min(1.0, riskEvaluation / options.RISK_EVALUATION_DISTANCE );
-		desiredSpeed = maxRobotSpeed * std::min(riskFactor,targetNearnessFactor);
+		no.desiredSpeed = ni.maxRobotSpeed * std::min(riskFactor,targetNearnessFactor);
 	}
 
 	m_last_selected_sector = selectedSector;
@@ -506,9 +493,9 @@ void  CHolonomicND::evaluateGaps(
 {
 	out_gaps_evaluation.resize( gaps.size());
 
-	double	targetAng = M_PI*(-1 + 2*(0.5+target_sector)/double(obstacles.size()));
-	double	target_x =  target_dist*cos(targetAng);
-	double	target_y =  target_dist*sin(targetAng);
+	const double targetAng = CParameterizedTrajectoryGenerator::index2alpha(target_sector, obstacles.size());
+	const double target_x =  target_dist*cos(targetAng);
+	const double target_y =  target_dist*sin(targetAng);
 
 	for (unsigned int i=0;i<gaps.size();i++)
 	{
@@ -521,9 +508,9 @@ void  CHolonomicND::evaluateGaps(
 			0.95*target_dist );
 
 		// The TP-Space representative coordinates for this gap:
-		const double	phi = M_PI*(-1 + 2*(0.5+gap->representative_sector)/double(obstacles.size()));
-		const double	x =  d*cos(phi);
-		const double	y =  d*sin(phi);
+		const double phi = CParameterizedTrajectoryGenerator::index2alpha(gap->representative_sector, obstacles.size());
+		const double x =  d*cos(phi);
+		const double y =  d*sin(phi);
 
 
 		// Factor #1: Maximum reachable distance with this PTG:

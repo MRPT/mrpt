@@ -74,16 +74,15 @@ double ClearanceDiagram::getClearance(uint16_t k, double dist) const
 	const auto & rc_k = raw_clearances[k];
 
 	double res = 0;
-	int step = 1, avr_count = 0;  //weighted avrg: closer to query points weight more than at path start.
+	int avr_count = 0;  //weighted avrg: closer to query points weight more than at path start.
 	for (const auto &e : rc_k)
 	{
 		if (e.first>dist)
 			break; // target dist reached.
 		
 		// Keep min clearance along straight path:
-		res += step*e.second;
-		avr_count += step;
-		step++;
+		res += e.second;
+		avr_count ++;
 	}
 
 	if (!avr_count) {
