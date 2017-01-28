@@ -28,7 +28,7 @@ CParameterizedTrajectoryGenerator::CParameterizedTrajectoryGenerator() :
 	m_alphaValuesCount(0),
 	m_score_priority(1.0),
 	m_clearance_num_points(5),
-	m_use_approx_clearance(true),
+	m_use_approx_clearance(false),
 	m_is_initialized(false)
 { }
 
@@ -38,7 +38,7 @@ void CParameterizedTrajectoryGenerator::loadDefaultParams()
 	refDistance = 6.0;
 	m_score_priority = 1.0;
 	m_clearance_num_points = 5;
-	m_use_approx_clearance = true;
+	m_use_approx_clearance = false;
 }
 
 bool CParameterizedTrajectoryGenerator::supportVelCmdNOP() const
@@ -366,6 +366,7 @@ void CParameterizedTrajectoryGenerator::evalClearanceSingleObstacle(const double
 
 	const double obs_r = ::hypot(ox, oy);
 	const double numStepsPerIncr = (numPathSteps - 1.0) / (inout_realdist2clearance.size());
+	const double threshold_distant_obstacle = 5 * this->getApproxRobotRadius();
 
 	double step_pointer_dbl = 0.0;
 
@@ -377,6 +378,7 @@ void CParameterizedTrajectoryGenerator::evalClearanceSingleObstacle(const double
 		const double dist_over_path = e.first;
 		double & inout_clearance = e.second;
 
+#if 0
 		if (dist_over_path == .0) {
 			// Special case: don't eval clearance at init pose, to 
 			// 1) avoid biasing the rest of the path for near obstacles, and
@@ -385,6 +387,7 @@ void CParameterizedTrajectoryGenerator::evalClearanceSingleObstacle(const double
 			mrpt::utils::keep_min(inout_clearance, fake_clearance);
 			continue;
 		}
+#endif
 
 		if (had_collision) {
 			// We found a collision in a previous step along this "k" path, so 
@@ -397,7 +400,9 @@ void CParameterizedTrajectoryGenerator::evalClearanceSingleObstacle(const double
 		this->getPathPose(k, step, pose);
 
 		// obstacle to robot clearance:
-		const double this_clearance = this->evalClearanceToRobotShape(ox - pose.x, oy - pose.y);
+		double oxl, oyl; // obstacle in robot frame
+		mrpt::poses::CPose2D(pose).inverseComposePoint(ox, oy, oxl, oyl);
+		const double this_clearance = this->evalClearanceToRobotShape(oxl, oyl);
 		if (this_clearance <= .0) {
 			// Collision:
 			had_collision = true;
@@ -407,7 +412,7 @@ void CParameterizedTrajectoryGenerator::evalClearanceSingleObstacle(const double
 		{
 			// The obstacle is not a direct collision.
 			// Ignore it if it's way ahead of the current robot pose:
-			if (obs_r > ::hypot(pose.x, pose.y) * 1.05)
+			if (::hypot(oxl, oyl)> threshold_distant_obstacle)
 				continue;
 
 			const double this_clearance_norm = this_clearance / this->refDistance;
