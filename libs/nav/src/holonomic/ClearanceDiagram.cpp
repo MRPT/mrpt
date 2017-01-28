@@ -73,24 +73,24 @@ double ClearanceDiagram::getClearance(uint16_t k, double dist) const
 
 	const auto & rc_k = raw_clearances[k];
 
-	double res = std::numeric_limits<double>::max();
-	bool valid = false;
+	double res = 0;
+	int step = 1, avr_count = 0;  //weighted avrg: closer to query points weight more than at path start.
 	for (const auto &e : rc_k)
 	{
-		if (e.first == 0)
-			continue;  // Ignore clearance at (0,0)
-
 		if (e.first>dist)
 			break; // target dist reached.
 		
 		// Keep min clearance along straight path:
-		mrpt::utils::keep_min(res, e.second);
-		valid = true;
+		res += step*e.second;
+		avr_count += step;
+		step++;
 	}
 
-	if (!valid)
+	if (!avr_count) {
 		res = rc_k.begin()->second;
-
+	} else {
+		res = res / avr_count;
+	}
 	return res;
 }
 
