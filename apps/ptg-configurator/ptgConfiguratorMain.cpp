@@ -110,6 +110,8 @@ const long ptgConfiguratorframe::ID_STATICTEXT11 = wxNewId();
 const long ptgConfiguratorframe::ID_CUSTOM6 = wxNewId();
 const long ptgConfiguratorframe::ID_STATICTEXT12 = wxNewId();
 const long ptgConfiguratorframe::ID_CUSTOM7 = wxNewId();
+const long ptgConfiguratorframe::ID_STATICTEXT16 = wxNewId();
+const long ptgConfiguratorframe::ID_CUSTOM11 = wxNewId();
 const long ptgConfiguratorframe::ID_PANEL5 = wxNewId();
 const long ptgConfiguratorframe::ID_STATICTEXT13 = wxNewId();
 const long ptgConfiguratorframe::ID_CUSTOM8 = wxNewId();
@@ -273,7 +275,7 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent,wxWindowID id) :
     FlexGridSizer10 = new wxFlexGridSizer(2, 1, 0, 0);
     FlexGridSizer10->AddGrowableCol(0);
     FlexGridSizer10->AddGrowableRow(1);
-    StaticBoxSizer1 = new wxStaticBoxSizer(wxHORIZONTAL, Panel2, _(" Show: "));
+    StaticBoxSizer1 = new wxStaticBoxSizer(wxHORIZONTAL, Panel2, _("Show:"));
     FlexGridSizer15 = new wxFlexGridSizer(0, 4, 0, 0);
     cbShowTPObs = new wxCheckBox(Panel2, ID_CHECKBOX5, _("TP-Obstacles"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX5"));
     cbShowTPObs->SetValue(true);
@@ -314,11 +316,12 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent,wxWindowID id) :
     FlexGridSizer12->Fit(Panel4);
     FlexGridSizer12->SetSizeHints(Panel4);
     Panel5 = new wxPanel(Notebook1, ID_PANEL5, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL5"));
-    FlexGridSizer13 = new wxFlexGridSizer(6, 1, 0, 0);
+    FlexGridSizer13 = new wxFlexGridSizer(8, 1, 0, 0);
     FlexGridSizer13->AddGrowableCol(0);
     FlexGridSizer13->AddGrowableRow(1);
     FlexGridSizer13->AddGrowableRow(3);
     FlexGridSizer13->AddGrowableRow(5);
+    FlexGridSizer13->AddGrowableRow(7);
     StaticText10 = new wxStaticText(Panel5, ID_STATICTEXT10, _("Selected path trajectory: X [m]"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT10"));
     FlexGridSizer13->Add(StaticText10, 1, wxALL|wxALIGN_LEFT|wxALIGN_TOP, 5);
     m_plotPathX = new mpWindow(Panel5,ID_CUSTOM5,wxDefaultPosition,wxDefaultSize,0);
@@ -331,6 +334,10 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent,wxWindowID id) :
     FlexGridSizer13->Add(StaticText12, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 5);
     m_plotPathPhi = new mpWindow(Panel5,ID_CUSTOM7,wxDefaultPosition,wxDefaultSize,0);
     FlexGridSizer13->Add(m_plotPathPhi, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
+    StaticText16 = new wxStaticText(Panel5, ID_STATICTEXT16, _("Selected path trajectory: traversed distance [m]"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT16"));
+    FlexGridSizer13->Add(StaticText16, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 5);
+    m_plotPathDist = new mpWindow(Panel5,ID_CUSTOM11,wxDefaultPosition,wxDefaultSize,0);
+    FlexGridSizer13->Add(m_plotPathDist, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
     Panel5->SetSizer(FlexGridSizer13);
     FlexGridSizer13->Fit(Panel5);
     FlexGridSizer13->SetSizeHints(Panel5);
@@ -427,6 +434,7 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent,wxWindowID id) :
 	prepareRobotPathPlot(m_plotPathX, &m_graph_path_x, "x");
 	prepareRobotPathPlot(m_plotPathY, &m_graph_path_y, "y");
 	prepareRobotPathPlot(m_plotPathPhi, &m_graph_path_phi, "phi");
+	prepareRobotPathPlot(m_plotPathDist, &m_graph_path_dist, "dist");
 	//
 	prepareRobotPathPlot(m_plotPathXp, &m_graph_path_vx, "vx");
 	prepareRobotPathPlot(m_plotPathYp, &m_graph_path_vy, "vy");
@@ -768,7 +776,7 @@ void ptgConfiguratorframe::rebuild3Dview()
 
 		// 2D angle to robot head plots:
 		std::vector<double> robotHeadAng_x, robotHeadAng_y, robotHeadAngAll_x(nPTGPaths), robotHeadAngAll_y(nPTGPaths);
-		std::vector<double> robotPath_x, robotPath_y, robotPath_phi;
+		std::vector<double> robotPath_x, robotPath_y, robotPath_phi, robotPath_dist;
 		std::vector<double> robotPath_vx, robotPath_vy, robotPath_w;
 		const double dt = ptg->getPathStepDuration();
 
@@ -785,6 +793,7 @@ void ptgConfiguratorframe::rebuild3Dview()
 				robotPath_x.resize(nSteps);
 				robotPath_y.resize(nSteps);
 				robotPath_phi.resize(nSteps);
+				robotPath_dist.resize(nSteps);
 				robotPath_vx.resize(nSteps);
 				robotPath_vy.resize(nSteps);
 				robotPath_w.resize(nSteps);
@@ -811,7 +820,7 @@ void ptgConfiguratorframe::rebuild3Dview()
 						robotPath_x[j] = curPose.x;
 						robotPath_y[j] = curPose.y;
 						robotPath_phi[j] = mrpt::utils::RAD2DEG(curPose.phi);
-
+						robotPath_dist[j] = ptg->getPathDist(k, j);
 
 						robotPath_vx[j] = dx / dt;
 						robotPath_vy[j] = dy / dt;
@@ -831,6 +840,7 @@ void ptgConfiguratorframe::rebuild3Dview()
 		m_graph_path_x->SetData(robotHeadAng_x, robotPath_x);
 		m_graph_path_y->SetData(robotHeadAng_x, robotPath_y);
 		m_graph_path_phi->SetData(robotHeadAng_x, robotPath_phi);
+		m_graph_path_dist->SetData(robotHeadAng_x, robotPath_dist);
 
 		m_graph_path_vx->SetData(robotHeadAng_x, robotPath_vx);
 		m_graph_path_vy->SetData(robotHeadAng_x, robotPath_vy);
@@ -907,6 +917,7 @@ void ptgConfiguratorframe::rebuild3Dview()
 	m_plotPathXp->Fit();
 	m_plotPathYp->Fit();
 	m_plotPathW->Fit();
+	m_plotPathDist->Fit();
 
 	m_plotHeadAngAll->UpdateAll();
 	m_plotHeadAngIndiv->UpdateAll();
@@ -916,6 +927,7 @@ void ptgConfiguratorframe::rebuild3Dview()
 	m_plotPathXp->UpdateAll();
 	m_plotPathYp->UpdateAll();
 	m_plotPathW->UpdateAll();
+	m_plotPathDist->UpdateAll();
 
 	m_plot->Refresh();
 	m_plotTPSpace->Refresh();
