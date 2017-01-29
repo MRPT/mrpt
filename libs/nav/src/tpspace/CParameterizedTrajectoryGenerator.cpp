@@ -69,7 +69,7 @@ void CParameterizedTrajectoryGenerator::saveToConfigFile(mrpt::utils::CConfigFil
 	cfg.write(sSection,"score_priority",m_score_priority,   WN,WV, "When used in path planning, a multiplying factor (default=1.0) for the scores for this PTG. Assign values <1 to PTGs with low priority.");
 	cfg.write(sSection, "clearance_num_points", m_clearance_num_points, WN, WV, "Number of steps for the piecewise-constant approximation of clearance (Default=5).");
 	cfg.write(sSection,"use_approx_clearance", m_use_approx_clearance,   WN,WV, "Use approximate (faster) clearance calculation. (Default=true).");
-	
+
 	MRPT_END
 }
 
@@ -122,15 +122,15 @@ uint16_t CParameterizedTrajectoryGenerator::alpha2index(double alpha, const unsi
 	return (uint16_t)k;
 }
 
-uint16_t CParameterizedTrajectoryGenerator::alpha2index( double alpha ) const 
+uint16_t CParameterizedTrajectoryGenerator::alpha2index( double alpha ) const
 {
 	return alpha2index(alpha, m_alphaValuesCount);
 }
 
 void CParameterizedTrajectoryGenerator::renderPathAsSimpleLine(
-	const uint16_t k, 
-	mrpt::opengl::CSetOfLines &gl_obj, 
-	const double decimate_distance, 
+	const uint16_t k,
+	mrpt::opengl::CSetOfLines &gl_obj,
+	const double decimate_distance,
 	const double max_path_distance) const
 {
 	const size_t nPointsInPath = getPathStepCount(k);
@@ -182,7 +182,7 @@ bool CParameterizedTrajectoryGenerator::debugDumpInFiles( const std::string &ptg
 	using namespace std;
 
 	const char *sPath = CParameterizedTrajectoryGenerator::OUTPUT_DEBUG_PATH_PREFIX.c_str();
-	
+
 	mrpt::system::createDirectory( sPath );
 	mrpt::system::createDirectory( mrpt::format("%s/PTGs",sPath) );
 
@@ -235,15 +235,15 @@ bool CParameterizedTrajectoryGenerator::debugDumpInFiles( const std::string &ptg
 }
 
 
-bool CParameterizedTrajectoryGenerator::isInitialized() const 
-{ 
-	return m_is_initialized; 
+bool CParameterizedTrajectoryGenerator::isInitialized() const
+{
+	return m_is_initialized;
 }
 
 void CParameterizedTrajectoryGenerator::initialize(const std::string & cacheFilename, const bool verbose)
 {
 	if (m_is_initialized) return;
-	
+
 	const std::string sCache = !cacheFilename.empty() ?
 		cacheFilename
 		:
@@ -278,13 +278,13 @@ void CParameterizedTrajectoryGenerator::internal_TPObsDistancePostprocess(const 
 	case COLL_BEH_BACK_AWAY:
 		{
 			if (new_tp_obs_dist < getApproxRobotRadius() ) {
-				// This means that we are getting apart of the obstacle: 
+				// This means that we are getting apart of the obstacle:
 				// ignore it to allow the robot to get off the near-collision:
 				// Don't change inout_tp_obs.
 				return;
 			}
 			else {
-				// This means we are already in collision and trying to get even closer 
+				// This means we are already in collision and trying to get even closer
 				// to the obstacle: totally disprove this action:
 				inout_tp_obs = .0;
 			}
@@ -364,7 +364,6 @@ void CParameterizedTrajectoryGenerator::evalClearanceSingleObstacle(const double
 	const size_t numPathSteps = getPathStepCount(k);
 	ASSERT_(numPathSteps >  inout_realdist2clearance.size());
 
-	const double obs_r = ::hypot(ox, oy);
 	const double numStepsPerIncr = (numPathSteps - 1.0) / (inout_realdist2clearance.size());
 	const double threshold_distant_obstacle = 5 * this->getApproxRobotRadius();
 
@@ -375,12 +374,12 @@ void CParameterizedTrajectoryGenerator::evalClearanceSingleObstacle(const double
 		step_pointer_dbl += numStepsPerIncr;
 		const size_t step = mrpt::utils::round(step_pointer_dbl);
 
-		const double dist_over_path = e.first;
 		double & inout_clearance = e.second;
 
 #if 0
+		const double dist_over_path = e.first;
 		if (dist_over_path == .0) {
-			// Special case: don't eval clearance at init pose, to 
+			// Special case: don't eval clearance at init pose, to
 			// 1) avoid biasing the rest of the path for near obstacles, and
 			// 2) let the obstacle_behavior to work when in a "collision state":
 			const double fake_clearance =  this->getApproxRobotRadius() / refDistance;
@@ -390,7 +389,7 @@ void CParameterizedTrajectoryGenerator::evalClearanceSingleObstacle(const double
 #endif
 
 		if (had_collision) {
-			// We found a collision in a previous step along this "k" path, so 
+			// We found a collision in a previous step along this "k" path, so
 			// it does not make sense to evaluate the clearance of a pose which is not reachable:
 			inout_clearance = .0;
 			continue;
@@ -408,7 +407,7 @@ void CParameterizedTrajectoryGenerator::evalClearanceSingleObstacle(const double
 			had_collision = true;
 			inout_clearance = .0;
 		}
-		else 
+		else
 		{
 			// The obstacle is not a direct collision.
 			// Ignore it if it's way ahead of the current robot pose:
@@ -422,7 +421,3 @@ void CParameterizedTrajectoryGenerator::evalClearanceSingleObstacle(const double
 		}
 	}
 }
-
-
-
-

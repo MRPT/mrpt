@@ -54,11 +54,11 @@ void CPointCloudFilterByDistance::filter(
 		}
 	}
 
-	if (prev_pc.size() < options.previous_keyframes) {
+	if (prev_pc.size() < static_cast<size_t>(options.previous_keyframes) ) {
 		can_do_filter = false;
 	}
 	else {
-		for (int i = 0; can_do_filter && i < options.previous_keyframes; ++i) 
+		for (int i = 0; can_do_filter && i < options.previous_keyframes; ++i)
 		{
 			if (mrpt::system::timeDifference(m_last_frames.rbegin()->first, pc_timestamp) > options.too_old_seconds)
 			{
@@ -134,7 +134,7 @@ void CPointCloudFilterByDistance::filter(
 
 		// Remove points:
 		if ( (params == nullptr || params->do_not_delete == false) &&
-			N>0 && 
+			N>0 &&
 			del_count/double(N) < options.max_deletion_ratio  // If we are deleting too many points, it may be that the filter is plainly wrong
 			)
 		{

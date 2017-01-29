@@ -150,7 +150,7 @@ navlog_viewer_GUI_designDialog::navlog_viewer_GUI_designDialog(wxWindow* parent,
     wxFlexGridSizer* FlexGridSizer6;
     wxStaticBoxSizer* StaticBoxSizer1;
     wxFlexGridSizer* FlexGridSizer1;
-    
+
     Create(parent, wxID_ANY, _("Navigation log viewer - Part of the MRPT project"), wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE, _T("wxID_ANY"));
     Move(wxPoint(20,20));
     FlexGridSizer1 = new wxFlexGridSizer(1, 1, 0, 0);
@@ -229,7 +229,7 @@ navlog_viewer_GUI_designDialog::navlog_viewer_GUI_designDialog(wxWindow* parent,
     FlexGridSizer9->SetSizeHints(Panel3);
     StaticBoxSizer2->Add(Panel3, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
     flexGridRightHand->Add(StaticBoxSizer2, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 2);
-    wxString __wxRadioBoxChoices_1[3] = 
+    wxString __wxRadioBoxChoices_1[3] =
     {
     	_("TP-Obstacles only"),
     	_("+ final scores"),
@@ -281,7 +281,7 @@ navlog_viewer_GUI_designDialog::navlog_viewer_GUI_designDialog(wxWindow* parent,
     mnuMoreOps.Append(mnuSaveScoreMatrix);
     FlexGridSizer1->Fit(this);
     FlexGridSizer1->SetSizeHints(this);
-    
+
     Connect(ID_BUTTON1,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&navlog_viewer_GUI_designDialog::OnbtnLoadClick);
     Connect(ID_BUTTON2,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&navlog_viewer_GUI_designDialog::OnbtnHelpClick);
     Connect(ID_BUTTON3,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&navlog_viewer_GUI_designDialog::OnbtnQuitClick);
@@ -667,7 +667,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 				} else {
 					gl_path = mrpt::opengl::CSetOfLinesPtr(gl_path_r);
 				}
-				if (sel_ptg_idx<m_logdata_ptg_paths.size() && sel_ptg_idx>=0)
+				if (sel_ptg_idx<int(m_logdata_ptg_paths.size()) && sel_ptg_idx>=0)
 				{
 					mrpt::nav::CParameterizedTrajectoryGeneratorPtr ptg = m_logdata_ptg_paths[sel_ptg_idx];
 					if (ptg)
@@ -838,8 +838,8 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 			else col = mrpt::utils::TColorf(.8f,.8f,.8f);
 
 			ADD_WIN_TEXTMSG(mrpt::format(
-				"PTG#%u: SelDir=%+7.01f deg SelSpeed=%.03f Eval=%5.03f*%4.02f=%5.03f scores=%s", 
-				nPTG, mrpt::utils::RAD2DEG(pI.desiredDirection), pI.desiredSpeed, 
+				"PTG#%u: SelDir=%+7.01f deg SelSpeed=%.03f Eval=%5.03f*%4.02f=%5.03f scores=%s",
+				nPTG, mrpt::utils::RAD2DEG(pI.desiredDirection), pI.desiredSpeed,
 				pI.evaluation_org, pI.evaluation_priority, pI.evaluation,
 				sprintf_vector("%4.02f ", pI.evalFactors).c_str()));
 		}
@@ -870,8 +870,8 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 
 			win= CDisplayWindow3D::Create(format("%u|TP-Obstacles",nPTG),W,H);
 			win->setPos(20+(W+30)*nPTG, 380);
-			win->addTextMessage(4,4, 
-				format("[%u]:%s",nPTG,log.infoPerPTG[nPTG].PTG_desc.c_str()), 
+			win->addTextMessage(4,4,
+				format("[%u]:%s",nPTG,log.infoPerPTG[nPTG].PTG_desc.c_str()),
 				TColorf(1.0f,1.0f,1.0f),"sans",8, mrpt::opengl::NICE, 0 /*id*/, 1.5,0.1, true /*shadow*/ );
 
 			{
@@ -1000,7 +1000,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 
 				double ang = ::atan2(pI.TP_Target.y, pI.TP_Target.x);
 				int tp_target_k=0;
-				if (sel_ptg_idx < m_logdata_ptg_paths.size() && sel_ptg_idx >= 0)
+				if (sel_ptg_idx < int(m_logdata_ptg_paths.size()) && sel_ptg_idx >= 0)
 				{
 					mrpt::nav::CParameterizedTrajectoryGeneratorPtr ptg = m_logdata_ptg_paths[sel_ptg_idx];
 					tp_target_k = ptg->alpha2index(ang);
@@ -1045,7 +1045,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 					const auto &dir_evals = pI.HLFR->dirs_eval;
 					const bool has_scores = !dir_evals.empty() && dir_evals[0].size() == nAlphas;
 					const size_t num_scores = dir_evals.size();
-					
+
 					for (size_t iScore = 0; has_scores && iScore < num_scores; iScore++)
 					{
 						vector<mrpt::math::TPoint2D>  pts;
@@ -1530,7 +1530,7 @@ void navlog_viewer_GUI_designDialog::OnmnuMatlabExportPaths(wxCommandEvent & eve
 		f << "];\n"
 			"figure(); plot(timoff_sendVelCmd (:,1),timoff_sendVelCmd (:,2), '.',timoff_sendVelCmd (:,1),timoff_sendVelCmd (:,2), '-'); xlabel('Time'); title('timoff_sendVelCmd ');\n\n";
 	}
-	
+
 	f << "% robot vel over time. Columns: [time curPoseAndVel, vx,vy,omega_rad_sec]\n"
 		"robot_vel_global = [";
 	for (const auto &e : global_local_vel) {
@@ -1550,7 +1550,7 @@ void navlog_viewer_GUI_designDialog::OnmnuMatlabExportPaths(wxCommandEvent & eve
 	f << "% Movement commands sent to robot. Columns: [time curPoseAndVel, vx,vy,omega_rad_sec]\n"
 	     "cmdvels = [";
 	for (const auto &e : cmdvels) {
-		f << (e.first - t_ref) << " "; 
+		f << (e.first - t_ref) << " ";
 		f << e.second << " ; ";
 	}
 	f << "];\n"
