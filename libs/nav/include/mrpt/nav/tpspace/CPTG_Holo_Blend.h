@@ -71,6 +71,7 @@ namespace mrpt
 		mrpt::math::TTwist2D curVelLocal;
 
 		std::string expr_V, expr_W, expr_T_ramp;
+		mutable std::vector<int> m_pathStepCountCache;
 
 		// Compilation of user-given expressions
 		PIMPL_DECLARE_TYPE(exprtk::expression<double>, m_expr_v);

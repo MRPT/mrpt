@@ -69,7 +69,7 @@ double CPTG_Holo_Blend::calc_trans_distance_t_below_Tramp_abc(double t, double a
 	{
 		const double r = -b/(2*a);
 		// dist= definite integral [0,t] of: |t-r| dt
-		dist = r*std::abs(r)*0.5 + (t - r)*std::abs(t - r)*0.5;
+		dist = r*std::abs(r)*0.5 - (r-t)*std::abs(r-t)*0.5;
 	}
 	else
 	{
@@ -120,6 +120,7 @@ dd = sqrt( (4*k2^2 + 4*k4^2)*t^2 + (4*k2*vxi + 4*k4*vyi)*t + vxi^2 + vyi^2 ) dt
 void CPTG_Holo_Blend::updateCurrentRobotVel(const mrpt::math::TTwist2D &curVelLocal)
 {
 	this->curVelLocal = curVelLocal;
+	m_pathStepCountCache.assign(m_alphaValuesCount, -1); // mark as invalid
 }
 
 void CPTG_Holo_Blend::loadDefaultParams()
@@ -340,10 +341,18 @@ mrpt::kinematics::CVehicleVelCmdPtr CPTG_Holo_Blend::directionToMotionCommand( u
 
 size_t CPTG_Holo_Blend::getPathStepCount(uint16_t k) const
 {
+	if (m_pathStepCountCache.size() > k && m_pathStepCountCache[k] > 0)
+		return m_pathStepCountCache[k];
+
 	uint32_t step;
 	if (!getPathStepForDist(k,this->refDistance,step)) {
 		THROW_EXCEPTION_CUSTOM_MSG1("Could not solve closed-form distance for k=%u",static_cast<unsigned>(k));
 	}
+	ASSERT_(step>0);
+	if (m_pathStepCountCache.size() != m_alphaValuesCount) {
+		m_pathStepCountCache.assign(m_alphaValuesCount, -1);
+	}
+	m_pathStepCountCache[k] = step;
 	return step;
 }
 
