@@ -103,4 +103,6 @@ void CPTG_Holo_Blend::internal_initialize(const std::string & cacheFilename, con
 #ifdef DO_PERFORMANCE_BENCHMARK
 	tl.dumpAllStats();
 #endif
+
+	m_pathStepCountCache.clear();
 }
