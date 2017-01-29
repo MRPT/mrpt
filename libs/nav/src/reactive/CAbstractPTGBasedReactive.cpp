@@ -48,7 +48,8 @@ const double ESTIM_LOWPASSFILTER_ALPHA = 0.7;
 CAbstractPTGBasedReactive::CAbstractPTGBasedReactive(CRobot2NavInterface &react_iterf_impl, bool enableConsoleOutput, bool enableLogFile):
 	CWaypointsNavigator(react_iterf_impl),
 	m_holonomicMethod            (),
-	m_logFile                    (NULL),
+	m_logFile                    (nullptr),
+	m_prev_logfile               (nullptr),
 	m_enableKeepLogRecords       (false),
 	m_enableConsoleOutput        (enableConsoleOutput),
 	m_init_done                  (false),
@@ -256,10 +257,9 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 
 	// At the beginning of each log file, add an introductory block explaining which PTGs are we using:
 	{
-		static mrpt::utils::CStream  *prev_logfile = NULL;
-		if (m_logFile && m_logFile!=prev_logfile)  // Only the first time
+		if (m_logFile && m_logFile!= m_prev_logfile)  // Only the first time
 		{
-			prev_logfile=m_logFile;
+			m_prev_logfile = m_logFile;
 			for (size_t i=0;i<nPTGs;i++)
 			{
 				// If we make a direct copy (=) we will store the entire, heavy, collision grid.
