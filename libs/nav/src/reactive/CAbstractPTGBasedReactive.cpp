@@ -545,15 +545,30 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 
 		// Select best scored:
 		// ---------------------------
-		int nSelectedPTG = 0;
+		int nSelectedPTG = -1;       // If left to -1, it means there is no good option (-> emergency stop)
 		double best_PTG_eval = .0;
+#if 1
+		// Method #1: Pick the largest weighted score:
 		for (size_t indexPTG=0;indexPTG<=nPTGs;indexPTG++) {
 			if (holonomicMovements[indexPTG].evaluation > best_PTG_eval) {
 				nSelectedPTG = indexPTG;
 				best_PTG_eval = holonomicMovements[nSelectedPTG].evaluation;
 			}
 		}
-		const THolonomicMovement & selectedHolonomicMovement = holonomicMovements[nSelectedPTG];
+#else
+		// Method #2: Multi-stage thresholding:
+		// holonomicMovement.eval_factors
+		const score_index_t phase1_score = SCOREIDX_COLISION_FREE_DISTANCE;
+
+
+
+#endif
+
+		// Pick best movement (or null if none is good)
+		const THolonomicMovement * selectedHolonomicMovement = nullptr;
+		if (nSelectedPTG >= 0) {
+			selectedHolonomicMovement = &holonomicMovements[nSelectedPTG];
+		}
 
 		// If the selected PTG is (N+1), it means the NOP cmd. vel is selected as the best alternative, i.e. do NOT send any new motion command.
 		const bool best_is_NOP_cmdvel =  (nSelectedPTG==int(nPTGs) && best_PTG_eval>0);
@@ -589,10 +604,10 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 		{
 			// STEP7: Get the non-holonomic movement command.
 			// ---------------------------------------------------------------------
-			if (best_PTG_eval>0)
+			if (best_PTG_eval>0 && selectedHolonomicMovement) // both conditions should be equivalent
 			{
 				CTimeLoggerEntry tle(m_timelogger, "navigationStep.STEP7_NonHolonomicMovement");
-				STEP7_GenerateSpeedCommands(selectedHolonomicMovement, new_vel_cmd);
+				STEP7_GenerateSpeedCommands(*selectedHolonomicMovement, new_vel_cmd);
 				ASSERT_(new_vel_cmd);
 			}
 
@@ -632,8 +647,13 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 				}
 				// Save last sent cmd:
 				m_lastSentVelCmd.ptg_index = nSelectedPTG;
-				m_lastSentVelCmd.ptg_alpha_index = selectedHolonomicMovement.PTG->alpha2index(selectedHolonomicMovement.direction);
-				m_lastSentVelCmd.tp_target_k = selectedHolonomicMovement.PTG->alpha2index(m_infoPerPTG[nSelectedPTG].target_alpha);
+				m_lastSentVelCmd.ptg_alpha_index = selectedHolonomicMovement ?
+					selectedHolonomicMovement->PTG->alpha2index(selectedHolonomicMovement->direction)
+					:
+					0;
+				m_lastSentVelCmd.tp_target_k = selectedHolonomicMovement ?
+					selectedHolonomicMovement->PTG->alpha2index(m_infoPerPTG[nSelectedPTG].target_alpha) :
+					0;
 				m_lastSentVelCmd.poseVel = m_curPoseVel;
 				m_lastSentVelCmd.tim_send_cmd_vel = tim_send_cmd_vel;
 
@@ -675,7 +695,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 				"T=%.01lfms Exec:%.01lfms|%.01lfms "
 				"E=%.01lf PTG#%i\n",
 					new_vel_cmd ? new_vel_cmd->asString().c_str() : "NOP",
-					selectedHolonomicMovement.speed,
+					selectedHolonomicMovement ? selectedHolonomicMovement->speed : .0,
 					1000.0*meanExecutionPeriod.getLastOutput(),
 					1000.0*meanExecutionTime.getLastOutput(),
 					1000.0*meanTotalExecutionTime.getLastOutput(),
@@ -781,7 +801,7 @@ void CAbstractPTGBasedReactive::STEP5_PTGEvaluator(
 	const int      kDirection   = static_cast<int>( holonomicMovement.PTG->alpha2index( holonomicMovement.direction ) );
 
 	// Coordinates of the trajectory end for the given PTG and "alpha":
-	const double d = min( in_TPObstacles[ kDirection ], 0.99*TargetDist);
+	const double d = std::min( in_TPObstacles[ kDirection ], 0.99*TargetDist);
 	uint32_t nStep;
 	bool pt_in_range = holonomicMovement.PTG->getPathStepForDist(kDirection, d, nStep);
 	ASSERT_(pt_in_range)
@@ -789,16 +809,16 @@ void CAbstractPTGBasedReactive::STEP5_PTGEvaluator(
 	mrpt::math::TPose2D pose;
 	holonomicMovement.PTG->getPathPose(kDirection, nStep,pose);
 
-	std::vector<double> eval_factors(6);
+	std::vector<double> eval_factors(PTG_RNAV_SCORE_COUNT);
 	// Factor 1: Free distance for the chosen PTG and "alpha" in the TP-Space:
 	// ----------------------------------------------------------------------
 	if (kDirection == TargetSector && TargetDist>.0 && in_TPObstacles[kDirection]>TargetDist+0.05 /*small margin*/) {
 		// If we head straight to target, don't count the possible collisions ahead:
-		eval_factors[0] = mrpt::utils::saturate_val(in_TPObstacles[kDirection] / (TargetDist + 0.05 /* give a minimum margin */), 0.0, 1.0);
+		eval_factors[SCOREIDX_COLISION_FREE_DISTANCE] = mrpt::utils::saturate_val(in_TPObstacles[kDirection] / (TargetDist + 0.05 /* give a minimum margin */), 0.0, 1.0);
 	}
 	else {
 		// Normal case: distance to collision:
-		eval_factors[0] = in_TPObstacles[kDirection];
+		eval_factors[SCOREIDX_COLISION_FREE_DISTANCE] = in_TPObstacles[kDirection];
 	}
 
 	// Special case for NOP motion cmd:
@@ -853,10 +873,10 @@ void CAbstractPTGBasedReactive::STEP5_PTGEvaluator(
 		// Path following isn't perfect: we can't be 100% sure of whether the robot followed exactly 
 		// the intended path (`kDirection`), or if it's actually a bit shifted, as reported in `cur_k`.
 		// Take the least favorable case:
-		eval_factors[0] = std::min(in_TPObstacles[kDirection], in_TPObstacles[cur_k]);
+		eval_factors[SCOREIDX_COLISION_FREE_DISTANCE] = std::min(in_TPObstacles[kDirection], in_TPObstacles[cur_k]);
 		// Only discount free space if there was a real obstacle, not the "end of path" due to limited refDistance.
-		if (eval_factors[0] < 0.99) {
-			eval_factors[0] -= cur_norm_d;
+		if (eval_factors[SCOREIDX_COLISION_FREE_DISTANCE] < 0.99) {
+			eval_factors[SCOREIDX_COLISION_FREE_DISTANCE] -= cur_norm_d;
 		}
 	}
 
@@ -865,7 +885,7 @@ void CAbstractPTGBasedReactive::STEP5_PTGEvaluator(
 	int dif = std::abs(TargetSector - kDirection);
 	const size_t nSectors = in_TPObstacles.size();
 	if ( dif > int(nSectors/2)) dif = nSectors - dif;
-	eval_factors[1] = exp(-square( dif / (nSectors/3.0))) ;
+	eval_factors[SCOREIDX_TPS_DIRECTION] = exp(-square( dif / (nSectors/3.0))) ;
 
 	// Factor 3: Angle between the robot at the end of the chosen trajectory and the target
 	// -------------------------------------------------------------------------------------
@@ -873,22 +893,22 @@ void CAbstractPTGBasedReactive::STEP5_PTGEvaluator(
 	t_ang -= pose.phi;
 	mrpt::math::wrapToPiInPlace(t_ang);
 
-	eval_factors[2] = exp(-square( t_ang / (0.5*M_PI)) );
+	eval_factors[SCOREIDX_ORIENTATION_AT_END] = exp(-square( t_ang / (0.5*M_PI)) );
 
 	// Factor4:		Decrease in euclidean distance between (x,y) and the target:
 	//  Moving away of the target is negatively valued
 	// ---------------------------------------------------------------------------
 	const double dist_eucl_final = std::sqrt(square(WS_Target.x- pose.x)+square(WS_Target.y- pose.y));
-	eval_factors[3] = (refDist - dist_eucl_final) / refDist;
-	mrpt::utils::saturate(eval_factors[3], 0.0, 1.0);
+	eval_factors[SCOREIDX_NEARNESS_TARGET] = (refDist - dist_eucl_final) / refDist;
+	mrpt::utils::saturate(eval_factors[SCOREIDX_NEARNESS_TARGET], 0.0, 1.0);
 
 	// Factor5: Hysteresis:
 	// -----------------------------------------------------
-	eval_factors[4] = .0;
+	eval_factors[SCOREIDX_HYSTERESIS] = .0;
 
 	if (holonomicMovement.PTG->supportVelCmdNOP()) 
 	{
-		eval_factors[4] = this_is_PTG_continuation ? 1.0 : 0.;
+		eval_factors[SCOREIDX_HYSTERESIS] = this_is_PTG_continuation ? 1.0 : 0.;
 	}
 	else if (m_last_vel_cmd)
 	{
@@ -905,16 +925,17 @@ void CAbstractPTGBasedReactive::STEP5_PTGEvaluator(
 				const double scr = exp(-std::abs(desired_cmd->getVelCmdElement(i) - m_last_vel_cmd->getVelCmdElement(i)) / 0.20);
 				mrpt::utils::keep_min(simil_score, scr);
 			}
-			eval_factors[4] = simil_score;
+			eval_factors[SCOREIDX_HYSTERESIS] = simil_score;
 		}
 	}
 
 	// Factor6: clearance
 	// -----------------------------------------------------
-	eval_factors[5] = in_clearance.getClearance(kDirection, TargetDist*1.01 );
+	eval_factors[SCOREIDX_CLEARANCE] = in_clearance.getClearance(kDirection, TargetDist*1.01 );
 
 	// Don't trust PTG continuation if we are too close to obstacles:
-	if (this_is_PTG_continuation && std::min(eval_factors[0], eval_factors[5]) < this->MIN_NORMALIZED_FREE_SPACE_FOR_PTG_CONTINUATION)
+	if (this_is_PTG_continuation && 
+		std::min(eval_factors[SCOREIDX_COLISION_FREE_DISTANCE], eval_factors[SCOREIDX_CLEARANCE]) < this->MIN_NORMALIZED_FREE_SPACE_FOR_PTG_CONTINUATION)
 	{
 		newLogRec.additional_debug_msgs["PTG_eval"] = "PTG-continuation not allowed, too close to obstacles.";
 		holonomicMovement.evaluation = .0;
@@ -929,6 +950,7 @@ void CAbstractPTGBasedReactive::STEP5_PTGEvaluator(
 	{
 		// If no movement has been found -> the worst evaluation:
 		holonomicMovement.evaluation = 0;
+		holonomicMovement.eval_factors.clear();
 	}
 	else
 	{
@@ -937,8 +959,10 @@ void CAbstractPTGBasedReactive::STEP5_PTGEvaluator(
 
 		// Select set of weights:
 		ASSERT_(!weights.empty() || weights4ptg.size()>ptg_idx4weights);
-		const std::vector<float> & w = this->weights.empty() ? this->weights4ptg[ptg_idx4weights] : this->weights;
+		const std::vector<double> & w = this->weights.empty() ? this->weights4ptg[ptg_idx4weights] : this->weights;
 		ASSERT_EQUAL_(w.size(),eval_factors.size());
+
+		holonomicMovement.eval_factors = w;
 		
 		// Sum:
 		for (size_t i = 0; i < eval_factors.size(); i++)
@@ -1048,17 +1072,17 @@ void CAbstractPTGBasedReactive::loadConfigFile(const mrpt::utils::CConfigFileBas
 	this->internal_loadConfigFile(cfg, section_prefix);
 
 	// weights: read global or PTG specific weights:
-	cfg.read_vector(sectCfg, "weights", vector<float>(0), weights, false /* don't fail if not found */);
-	ASSERT_(weights.size() == 6 || weights.empty() );
+	cfg.read_vector(sectCfg, "weights", vector<double>(0), weights, false /* don't fail if not found */);
+	ASSERT_(weights.size() == PTG_RNAV_SCORE_COUNT || weights.empty() );
 	if (weights.empty())
 	{
 		weights4ptg.resize(getPTG_count());
 		for (unsigned int i = 0; i < getPTG_count(); i++)
 		{
-			std::vector<float> w;
+			std::vector<double> w;
 			const std::string sKey = mrpt::format("PTG%u_weights", i);
-			cfg.read_vector(sectCfg, sKey, vector<float>(0), w, false /* don't fail if not found */);
-			ASSERTMSG_(w.size()==6, mrpt::format("Found neither `weights` nor `%s`. Please, specify one of them.", sKey.c_str()) );
+			cfg.read_vector(sectCfg, sKey, vector<double>(0), w, false /* don't fail if not found */);
+			ASSERTMSG_(w.size()== PTG_RNAV_SCORE_COUNT, mrpt::format("Found neither `weights` nor `%s`. Please, specify one of them.", sKey.c_str()) );
 			weights4ptg[i] = w;
 		}
 	}
