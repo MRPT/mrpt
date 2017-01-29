@@ -1019,9 +1019,9 @@ void reactive_navigator_demoframe::simulateOneStep(double time_step)
 		if (lfr.nSelectedPTG<=(int)ptg_nav->getPTG_count())  // the == case is for "NOP motion cmd"
 		{
 			const bool is_NOP_op = (lfr.nSelectedPTG == (int)ptg_nav->getPTG_count());
-			const size_t idx_ptg = is_NOP_op ? lfr.ptg_index_NOP : lfr.nSelectedPTG;
+			const int idx_ptg = is_NOP_op ? lfr.ptg_index_NOP : lfr.nSelectedPTG;
 
-			mrpt::nav::CParameterizedTrajectoryGenerator* ptg = ptg_nav->getPTG(idx_ptg);
+			mrpt::nav::CParameterizedTrajectoryGenerator* ptg = idx_ptg >= 0 ? ptg_nav->getPTG(idx_ptg) : nullptr;
 			if (ptg)
 			{
 				// Draw path:
