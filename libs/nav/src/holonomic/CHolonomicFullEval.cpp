@@ -213,9 +213,10 @@ void CHolonomicFullEval::navigate(const NavInput & ni, NavOutput &no)
 			{
 				// Weighted avrg of factors:
 				for (unsigned int l : options.PHASE_FACTORS[phase_idx])
-					this_dir_eval += options.factorWeights[l] * m_dirs_scores(i, l);
+					this_dir_eval += options.factorWeights[l] * std::log( std::max(1e-6, m_dirs_scores(i, l) ));
 
 				this_dir_eval *= weights_sum_phase_inv[phase_idx];
+				this_dir_eval = std::exp(this_dir_eval);
 
 				// For the last phase, boost score of directions that: 
 				if (phase_idx == (NUM_PHASES - 1) &&
