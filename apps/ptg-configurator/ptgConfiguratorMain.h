@@ -126,6 +126,8 @@ class ptgConfiguratorframe: public wxFrame
         static const long ID_CUSTOM6;
         static const long ID_STATICTEXT12;
         static const long ID_CUSTOM7;
+        static const long ID_STATICTEXT16;
+        static const long ID_CUSTOM11;
         static const long ID_PANEL5;
         static const long ID_STATICTEXT13;
         static const long ID_CUSTOM8;
@@ -169,6 +171,7 @@ class ptgConfiguratorframe: public wxFrame
         wxStaticText* StaticText11;
         wxPanel* Panel1;
         wxStaticText* StaticText1;
+        mpWindow* m_plotPathDist;
         wxCheckBox* cbShowTPObs;
         wxStaticText* StaticText3;
         wxChoice* cbPTGClass;
@@ -196,6 +199,7 @@ class ptgConfiguratorframe: public wxFrame
         wxTextCtrl* edMinDistBtwShapes;
         wxStaticText* StaticText4;
         wxCheckBox* cbShowClearance;
+        wxStaticText* StaticText16;
         wxTextCtrl* edTargetY;
         wxSlider* slidPathHighlight;
         //*)
@@ -235,7 +239,7 @@ class ptgConfiguratorframe: public wxFrame
 
 		// 2D plot views:
 		mpFXYVector  *m_graph_head_all, *m_graph_head_indiv;
-		mpFXYVector  *m_graph_path_x, *m_graph_path_y, *m_graph_path_phi;
+		mpFXYVector  *m_graph_path_x, *m_graph_path_y, *m_graph_path_phi, *m_graph_path_dist;
 		mpFXYVector  *m_graph_path_vx, *m_graph_path_vy, *m_graph_path_omega;
 
 		static void prepareRobotPathPlot(mpWindow *plot, mpFXYVector  **graph, const std::string &name);
