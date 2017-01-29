@@ -524,6 +524,9 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 
 	txtSelectedPTG->SetLabel( wxString::Format(_("%i from [0-%u]"), static_cast<int>(log.nSelectedPTG), static_cast<unsigned int>(log.nPTGs-1) ) );
 
+	const bool is_NOP_cmd = log.ptg_index_NOP >= 0;
+	const int sel_ptg_idx = !is_NOP_cmd ? log.nSelectedPTG : log.ptg_index_NOP;
+
 	// Draw WS-obstacles
 	// --------------------------------
 	{
@@ -664,8 +667,6 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 				} else {
 					gl_path = mrpt::opengl::CSetOfLinesPtr(gl_path_r);
 				}
-				const bool is_NOP_cmd = log.ptg_index_NOP >= 0;
-				const int sel_ptg_idx = !is_NOP_cmd ? log.nSelectedPTG : log.ptg_index_NOP;
 				if (sel_ptg_idx<m_logdata_ptg_paths.size() && sel_ptg_idx>=0)
 				{
 					mrpt::nav::CParameterizedTrajectoryGeneratorPtr ptg = m_logdata_ptg_paths[sel_ptg_idx];
@@ -999,9 +1000,12 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 
 				double ang = ::atan2(pI.TP_Target.y, pI.TP_Target.x);
 				int tp_target_k=0;
-				if (pI.ptg) {
-					tp_target_k = pI.ptg->alpha2index(ang);
+				if (sel_ptg_idx < m_logdata_ptg_paths.size() && sel_ptg_idx >= 0)
+				{
+					mrpt::nav::CParameterizedTrajectoryGeneratorPtr ptg = m_logdata_ptg_paths[sel_ptg_idx];
+					tp_target_k = ptg->alpha2index(ang);
 				}
+
 				win->addTextMessage(4, -12,
 					format("TP_Target=(%.02f,%.02f) k=%i ang=%.02f deg", pI.TP_Target.x, pI.TP_Target.y, tp_target_k, mrpt::utils::RAD2DEG(ang)),
 					TColorf(1.0f, 1.0f, 1.0f), "sans", 8, mrpt::opengl::NICE, 1 /*id*/, 1.5, 0.1, false /*shadow*/);
