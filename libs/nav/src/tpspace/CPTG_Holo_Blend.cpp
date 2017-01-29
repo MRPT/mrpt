@@ -40,8 +40,8 @@ Number of steps "d" for each PTG path "k":
 //#define DO_PERFORMANCE_BENCHMARK
 
 #ifdef DO_PERFORMANCE_BENCHMARK
-	mrpt::utils::CTimeLogger tl;
-	#define PERFORMANCE_BENCHMARK  CTimeLoggerEntry  tle(tl, __CURRENT_FUNCTION_NAME__);
+	mrpt::utils::CTimeLogger tl_holo("CPTG_Holo_Blend");
+	#define PERFORMANCE_BENCHMARK  CTimeLoggerEntry  tle(tl_holo, __CURRENT_FUNCTION_NAME__);
 #else
 	#define PERFORMANCE_BENCHMARK
 #endif
@@ -56,36 +56,76 @@ double CPTG_Holo_Blend::eps = 1e-4;               // epsilon for detecting 1/0 s
 	const double vxf = vf_mod*cos(dir), vyf = vf_mod* sin(dir); \
 	const double T_ramp = internal_get_T_ramp(dir);
 
-// Axiliary function for calc_trans_distance_t_below_Tramp() and others:
-double CPTG_Holo_Blend::calc_trans_distance_t_below_Tramp_abc(double t, double a,double b, double c)
+static double calc_trans_distance_t_below_Tramp_abc_analytic(double t, double a, double b, double c)
 {
-	ASSERT_(t>=0);
-	if (t==0.0) return .0;
+	PERFORMANCE_BENCHMARK;
+
+	ASSERT_(t >= 0);
+	if (t == 0.0) return .0;
 
 	double dist;
 	// Handle special case: degenerate sqrt(a*t^2+b*t+c) =  sqrt((t-r)^2) = |t-r|
-	const double discr = b*b-4*a*c;
+	const double discr = b*b - 4 * a*c;
 	if (std::abs(discr)<1e-6)
 	{
-		const double r = -b/(2*a);
+		const double r = -b / (2 * a);
 		// dist= definite integral [0,t] of: |t-r| dt
-		dist = r*std::abs(r)*0.5 - (r-t)*std::abs(r-t)*0.5;
+		dist = r*std::abs(r)*0.5 - (r - t)*std::abs(r - t)*0.5;
 	}
 	else
 	{
 		// General case:
 		// Indefinite integral of sqrt(a*t^2+b*t+c):
-		const double int_t = (t*(1.0/2.0)+(b*(1.0/4.0))/a)*sqrt(c+b*t+a*(t*t))+1.0/pow(a,3.0/2.0)*log(1.0/sqrt(a)*(b*(1.0/2.0)+a*t)+sqrt(c+b*t+a*(t*t)))*(a*c-(b*b)*(1.0/4.0))*(1.0/2.0);
+		const double int_t = (t*(1.0 / 2.0) + (b*(1.0 / 4.0)) / a)*sqrt(c + b*t + a*(t*t)) + 1.0 / pow(a, 3.0 / 2.0)*log(1.0 / sqrt(a)*(b*(1.0 / 2.0) + a*t) + sqrt(c + b*t + a*(t*t)))*(a*c - (b*b)*(1.0 / 4.0))*(1.0 / 2.0);
 		// Limit when t->0:
-		const double int_t0 = (b*sqrt(c)*(1.0/4.0))/a+1.0/pow(a,3.0/2.0)*log(1.0/sqrt(a)*(b+sqrt(a)*sqrt(c)*2.0)*(1.0/2.0))*(a*c-(b*b)*(1.0/4.0))*(1.0/2.0);
-		dist=int_t - int_t0;// Definite integral [0,t]
+		const double int_t0 = (b*sqrt(c)*(1.0 / 4.0)) / a + 1.0 / pow(a, 3.0 / 2.0)*log(1.0 / sqrt(a)*(b + sqrt(a)*sqrt(c)*2.0)*(1.0 / 2.0))*(a*c - (b*b)*(1.0 / 4.0))*(1.0 / 2.0);
+		dist = int_t - int_t0;// Definite integral [0,t]
 	}
 #ifdef _DEBUG
 	using namespace mrpt;
 	MRPT_CHECK_NORMAL_NUMBER(dist);
-	ASSERT_(dist>=.0);
+	ASSERT_(dist >= .0);
 #endif
 	return dist;
+}
+
+// Numeric integration of: sqrt(a*t^2+b*t+c) for t=[0,T]
+static double calc_trans_distance_t_below_Tramp_abc_numeric(double T, double a, double b, double c)
+{
+	PERFORMANCE_BENCHMARK;
+
+	double d = .0;
+	const unsigned int NUM_STEPS = 15;
+
+	double feval_t = std::sqrt(c); // t (initial: t=0)
+	double feval_tp1; // t+1
+
+	const double At = T / (NUM_STEPS);
+	double t = .0;
+	for (unsigned int i = 0; i < NUM_STEPS; i++)
+	{
+		// Eval function at t+1:
+		t += At;
+		feval_tp1 = sqrt(a*t*t + b*t + c);
+
+		// Trapezoidal rule:
+		d += At*(feval_t+ feval_tp1)*0.5;
+
+		// for next step:
+		feval_t = feval_tp1;
+	}
+
+	return d;
+}
+
+// Axiliary function for calc_trans_distance_t_below_Tramp() and others:
+double CPTG_Holo_Blend::calc_trans_distance_t_below_Tramp_abc(double t, double a,double b, double c)
+{
+	// JLB (29 Jan 2017): it turns out that numeric integration is *faster* and more accurate (does not have "special cases")...
+//	double ret = calc_trans_distance_t_below_Tramp_abc_analytic(t, a, b, c);
+	double ret = calc_trans_distance_t_below_Tramp_abc_numeric(t, a, b, c);
+
+	return ret;
 }
 
 
@@ -96,11 +136,11 @@ double CPTG_Holo_Blend::calc_trans_distance_t_below_Tramp(double k2, double k4, 
 dd = sqrt( (4*k2^2 + 4*k4^2)*t^2 + (4*k2*vxi + 4*k4*vyi)*t + vxi^2 + vyi^2 ) dt
             a t^2 + b t + c
 */
-	const double c = (vxi*vxi+vyi*vyi);
+	const double c = (vxi*vxi + vyi*vyi);
 	if (std::abs(k2)>eps || std::abs(k4)>eps)
 	{
-		const double a = ((k2*k2)*4.0+(k4*k4)*4.0);
-		const double b = (k2*vxi*4.0+k4*vyi*4.0);
+		const double a = ((k2*k2)*4.0 + (k4*k4)*4.0);
+		const double b = (k2*vxi*4.0 + k4*vyi*4.0);
 
 		// Numerically-ill case: b=c=0 (initial vel=0)
 		if (std::abs(b)<eps && std::abs(c)<eps) {
