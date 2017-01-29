@@ -32,9 +32,9 @@ CColorBar::CColorBar(
 ) :
 	m_colormap(colormap),
 	m_width(width), m_height(height),
+	m_label_format(label_format),
 	m_min_col(min_col), m_max_col(max_col),
 	m_min_value(min_value), m_max_value(max_value),
-	m_label_format(label_format),
 	m_label_font_size(label_font_size),
 	m_disable_depth_test(true)
 {
@@ -49,13 +49,13 @@ CColorBarPtr CColorBar::Create(
 	const std::string &label_format, //!< sprintf-like format string for values
 	double label_font_size //!< Label text font size
 )
-{ 
-	return CColorBarPtr(new CColorBar(colormap,width,height,min_col,max_col, min_value, max_value, label_format, label_font_size)); 
+{
+	return CColorBarPtr(new CColorBar(colormap,width,height,min_col,max_col, min_value, max_value, label_format, label_font_size));
 }
 
 void CColorBar::setColormap(const mrpt::utils::TColormap colormap)
 {
-	m_colormap = colormap; 
+	m_colormap = colormap;
 	CRenderizableDisplayList::notifyChange();
 }
 
@@ -112,7 +112,7 @@ void CColorBar::render_dl() const	{
 		glVertex3f(pt10.x, pt10.y, pt10.z);
 		glColor3f(cols[i + 1].R, cols[i + 1].G, cols[i + 1].B);
 		glVertex3f(pt11.x, pt11.y, pt11.z);
-		// 
+		//
 		glColor3f(cols[i].R, cols[i].G, cols[i].B);
 		glVertex3f(pt00.x, pt00.y, pt00.z);
 		glColor3f(cols[i + 1].R, cols[i + 1].G, cols[i + 1].B);
@@ -126,7 +126,7 @@ void CColorBar::render_dl() const	{
 	for (unsigned int i = 0; i < num_divisions; i++)
 	{
 		const double val = m_min_value + i*(m_max_value - m_min_value) / (num_divisions - 1);
-		const double y0 = Ay*i, y1 = Ay*(i + 1);
+		const double y0 = Ay*i; //, y1 = Ay*(i + 1);
 
 		// Text label:
 		bool draw_label = (i % one_label_each_nth) == 0 || i == (num_divisions - 1);

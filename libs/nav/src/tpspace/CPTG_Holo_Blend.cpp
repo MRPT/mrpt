@@ -56,6 +56,7 @@ double CPTG_Holo_Blend::eps = 1e-4;               // epsilon for detecting 1/0 s
 	const double vxf = vf_mod*cos(dir), vyf = vf_mod* sin(dir); \
 	const double T_ramp = internal_get_T_ramp(dir);
 
+#if 0
 static double calc_trans_distance_t_below_Tramp_abc_analytic(double t, double a, double b, double c)
 {
 	PERFORMANCE_BENCHMARK;
@@ -88,6 +89,7 @@ static double calc_trans_distance_t_below_Tramp_abc_analytic(double t, double a,
 #endif
 	return dist;
 }
+#endif
 
 // Numeric integration of: sqrt(a*t^2+b*t+c) for t=[0,T]
 static double calc_trans_distance_t_below_Tramp_abc_numeric(double T, double a, double b, double c)
@@ -122,8 +124,11 @@ static double calc_trans_distance_t_below_Tramp_abc_numeric(double T, double a, 
 double CPTG_Holo_Blend::calc_trans_distance_t_below_Tramp_abc(double t, double a,double b, double c)
 {
 	// JLB (29 Jan 2017): it turns out that numeric integration is *faster* and more accurate (does not have "special cases")...
-//	double ret = calc_trans_distance_t_below_Tramp_abc_analytic(t, a, b, c);
+#if 0
+	double ret = calc_trans_distance_t_below_Tramp_abc_analytic(t, a, b, c);
+#else
 	double ret = calc_trans_distance_t_below_Tramp_abc_numeric(t, a, b, c);
+#endif
 
 	return ret;
 }
@@ -569,8 +574,8 @@ void CPTG_Holo_Blend::updateTPObstacleSingle(double ox, double oy, uint16_t k, d
 
 	double sol_t = -1.0; // candidate solution for shortest time to collision
 
-	// Note: It's tempting to try to solve first for t>T_ramp because it has simpler (faster) equations, 
-	// but there are cases in which we will have valid collisions for t>T_ramp but other valid ones 
+	// Note: It's tempting to try to solve first for t>T_ramp because it has simpler (faster) equations,
+	// but there are cases in which we will have valid collisions for t>T_ramp but other valid ones
 	// for t<T_ramp as well, so the only SAFE way to detect shortest distances is to check over increasing values of "t".
 
 	// Try to solve first for t<T_ramp:
