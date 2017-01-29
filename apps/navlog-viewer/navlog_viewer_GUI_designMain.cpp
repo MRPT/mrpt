@@ -809,7 +809,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 		ADD_WIN_TEXTMSG(mrpt::format("cur_vel      =[%.02f m/s, %0.2f m/s, %.02f dps]",log.cur_vel.vx, log.cur_vel.vy, mrpt::utils::RAD2DEG(log.cur_vel.omega)) );
 		ADD_WIN_TEXTMSG(mrpt::format("cur_vel_local=[%.02f m/s, %0.2f m/s, %.02f dps]", log.cur_vel_local.vx, log.cur_vel_local.vy, mrpt::utils::RAD2DEG(log.cur_vel_local.omega)) );
 
-		ADD_WIN_TEXTMSG(mrpt::format("robot_pose=%s", log.robotOdometryPose.asString().c_str()));
+		ADD_WIN_TEXTMSG(mrpt::format("robot_pose=%s rel_target=%s", log.robotOdometryPose.asString().c_str(), log.WS_target_relative.asString().c_str()));
 
 		if (log.cmd_vel_original)
 		{
@@ -996,6 +996,15 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 				auto gl_obj = mrpt::opengl::CPointCloudPtr(scene->getByName("tp_target"));
 				gl_obj->clear();
 				gl_obj->insertPoint(pI.TP_Target.x, pI.TP_Target.y,0);
+
+				double ang = ::atan2(pI.TP_Target.y, pI.TP_Target.x);
+				int tp_target_k=0;
+				if (pI.ptg) {
+					tp_target_k = pI.ptg->alpha2index(ang);
+				}
+				win->addTextMessage(4, -12,
+					format("TP_Target=(%.02f,%.02f) k=%i ang=%.02f deg", pI.TP_Target.x, pI.TP_Target.y, tp_target_k, mrpt::utils::RAD2DEG(ang)),
+					TColorf(1.0f, 1.0f, 1.0f), "sans", 8, mrpt::opengl::NICE, 1 /*id*/, 1.5, 0.1, false /*shadow*/);
 			}
 
 			// Current robot pt (normally in pure reactive, at (0,0)):
