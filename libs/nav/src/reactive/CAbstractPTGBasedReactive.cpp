@@ -73,6 +73,7 @@ CAbstractPTGBasedReactive::CAbstractPTGBasedReactive(CRobot2NavInterface &react_
 	m_closing_navigator          (false),
 	m_WS_Obstacles_timestamp     (INVALID_TIMESTAMP),
 	m_infoPerPTG_timestamp       (INVALID_TIMESTAMP),
+	m_lastTarget                 (0,0,0),
 	ENABLE_BOOST_SHORTEST_ETA(false),
 	BEST_ETA_MARGIN_TOLERANCE_WRT_BEST(1.05),
 	ENABLE_OBSTACLE_FILTERING(false)
@@ -422,9 +423,9 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 		if (can_do_nop_motion)
 		{
 			// Add the estimation of how long it takes to run the changeSpeeds() callback (usually a tiny period):
-			const mrpt::system::TTimeStamp tim_send_cmd_vel_corrected = 
+			const mrpt::system::TTimeStamp tim_send_cmd_vel_corrected =
 				mrpt::system::timestampAdd(
-					m_lastSentVelCmd.tim_send_cmd_vel, 
+					m_lastSentVelCmd.tim_send_cmd_vel,
 					tim_changeSpeed_avr.getLastOutput());
 
 			CPose3D robot_pose3d_at_send_cmd;
@@ -467,14 +468,14 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 
 		// STEP6: After all PTGs have been evaluated, pick the best scored:
 		// ---------------------------------------------------------------------
-		
+
 		// Qualitative scoring:
 		// ---------------------------
 		if (ENABLE_BOOST_SHORTEST_ETA)
 		{
-			// Criterion #1: If a PTG directly leads to target without colliding, then make it the preferred option. 
-			// If more than one such case exist, pick the one with the shortest ETA (Estimated Time of Arrival). 
-			// Having a clearance enough is a 
+			// Criterion #1: If a PTG directly leads to target without colliding, then make it the preferred option.
+			// If more than one such case exist, pick the one with the shortest ETA (Estimated Time of Arrival).
+			// Having a clearance enough is a
 			// responsibility of the "holonomic navigator" algorithms while deciding the preferred PTG path index.
 			std::map<double, size_t>  ETA_to_ptgindex;
 			for (size_t i = 0; i <= nPTGs; i++)
@@ -495,7 +496,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 					continue;
 				// OK, we have a direct path to target without collisions.
 				const double path_len_meters = ipp.target_dist * hm.PTG->getRefDistance();
-				
+
 				// Calculate their ETA
 				uint32_t target_step;
 				bool valid_step = hm.PTG->getPathStepForDist(dir_selected, path_len_meters, target_step);
@@ -521,11 +522,11 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 			}
 
 			// Pick the shortest path, if any:
-			if (!ETA_to_ptgindex.empty()) 
+			if (!ETA_to_ptgindex.empty())
 			{
 				// Pick the shortest value, sorted in the std::map<>
 				const double best_ETA_in_seconds = ETA_to_ptgindex.begin()->first;
-				
+
 				for (const auto & e : ETA_to_ptgindex)
 				{
 					if (e.first > best_ETA_in_seconds*BEST_ETA_MARGIN_TOLERANCE_WRT_BEST)
@@ -870,7 +871,7 @@ void CAbstractPTGBasedReactive::STEP5_PTGEvaluator(
 			}
 		}
 
-		// Path following isn't perfect: we can't be 100% sure of whether the robot followed exactly 
+		// Path following isn't perfect: we can't be 100% sure of whether the robot followed exactly
 		// the intended path (`kDirection`), or if it's actually a bit shifted, as reported in `cur_k`.
 		// Take the least favorable case:
 		eval_factors[SCOREIDX_COLISION_FREE_DISTANCE] = std::min(in_TPObstacles[kDirection], in_TPObstacles[cur_k]);
@@ -906,7 +907,7 @@ void CAbstractPTGBasedReactive::STEP5_PTGEvaluator(
 	// -----------------------------------------------------
 	eval_factors[SCOREIDX_HYSTERESIS] = .0;
 
-	if (holonomicMovement.PTG->supportVelCmdNOP()) 
+	if (holonomicMovement.PTG->supportVelCmdNOP())
 	{
 		eval_factors[SCOREIDX_HYSTERESIS] = this_is_PTG_continuation ? 1.0 : 0.;
 	}
@@ -934,7 +935,7 @@ void CAbstractPTGBasedReactive::STEP5_PTGEvaluator(
 	eval_factors[SCOREIDX_CLEARANCE] = in_clearance.getClearance(kDirection, TargetDist*1.01 );
 
 	// Don't trust PTG continuation if we are too close to obstacles:
-	if (this_is_PTG_continuation && 
+	if (this_is_PTG_continuation &&
 		std::min(eval_factors[SCOREIDX_COLISION_FREE_DISTANCE], eval_factors[SCOREIDX_CLEARANCE]) < this->MIN_NORMALIZED_FREE_SPACE_FOR_PTG_CONTINUATION)
 	{
 		newLogRec.additional_debug_msgs["PTG_eval"] = "PTG-continuation not allowed, too close to obstacles.";
@@ -963,7 +964,7 @@ void CAbstractPTGBasedReactive::STEP5_PTGEvaluator(
 		ASSERT_EQUAL_(w.size(),eval_factors.size());
 
 		holonomicMovement.eval_factors = w;
-		
+
 		// Sum:
 		for (size_t i = 0; i < eval_factors.size(); i++)
 			global_eval += w[i] * eval_factors[i];
