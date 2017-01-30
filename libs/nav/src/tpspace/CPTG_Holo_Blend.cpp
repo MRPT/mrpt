@@ -99,6 +99,8 @@ static double calc_trans_distance_t_below_Tramp_abc_numeric(double T, double a, 
 	double d = .0;
 	const unsigned int NUM_STEPS = 15;
 
+	ASSERT_(a >= .0);
+	ASSERT_(c >= .0);
 	double feval_t = std::sqrt(c); // t (initial: t=0)
 	double feval_tp1; // t+1
 
@@ -108,7 +110,13 @@ static double calc_trans_distance_t_below_Tramp_abc_numeric(double T, double a, 
 	{
 		// Eval function at t+1:
 		t += At;
-		feval_tp1 = sqrt(a*t*t + b*t + c);
+		double dd = a*t*t + b*t + c;
+
+		// handle numerical innacuracies near t=T_ramp:
+		ASSERT_(dd>-1e-5);
+		if (dd < 0) dd = .0;
+
+		feval_tp1 = sqrt(dd);
 
 		// Trapezoidal rule:
 		d += At*(feval_t+ feval_tp1)*0.5;
