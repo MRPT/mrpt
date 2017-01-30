@@ -21,7 +21,7 @@ ClearanceDiagram::ClearanceDiagram()
 }
 
 void ClearanceDiagram::renderAs3DObject(
-	mrpt::opengl::CMesh &mesh, double min_x, double max_x, double min_y, double max_y, double cell_res) const
+	mrpt::opengl::CMesh &mesh, double min_x, double max_x, double min_y, double max_y, double cell_res, bool integrate_over_path) const
 {
 	ASSERT_(cell_res>0.0);
 	ASSERT_(max_x>min_x);
@@ -54,7 +54,7 @@ void ClearanceDiagram::renderAs3DObject(
 				const double alpha = ::atan2(y, x);
 				const uint16_t k = CParameterizedTrajectoryGenerator::alpha2index(alpha, num_paths);
 				const double dist = std::hypot(x, y);
-				clear_val = this->getClearance(k, dist);
+				clear_val = this->getClearance(k, dist, integrate_over_path);
 			}
 			Z(iX, iY) = clear_val;
 		}
@@ -67,7 +67,7 @@ void ClearanceDiagram::renderAs3DObject(
 	mesh.enableWireFrame(false);
 }
 
-double ClearanceDiagram::getClearance(uint16_t k, double dist) const
+double ClearanceDiagram::getClearance(uint16_t k, double dist, bool integrate_over_path) const
 {
 	ASSERT_(k<raw_clearances.size());
 
@@ -77,12 +77,17 @@ double ClearanceDiagram::getClearance(uint16_t k, double dist) const
 	int avr_count = 0;  //weighted avrg: closer to query points weight more than at path start.
 	for (const auto &e : rc_k)
 	{
-		if (e.first>dist)
-			break; // target dist reached.
-		
+		if (!integrate_over_path) { 
+			// dont integrate: forget past part:
+			res = 0;
+			avr_count = 0;
+		}
 		// Keep min clearance along straight path:
 		res += e.second;
 		avr_count ++;
+
+		if (e.first>dist)
+			break; // target dist reached.
 	}
 
 	if (!avr_count) {

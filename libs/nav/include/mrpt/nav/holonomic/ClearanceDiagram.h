@@ -34,8 +34,12 @@ namespace nav
 
 		ClearanceDiagram(); //!< default ctor
 		void clear(); //!< Reset to default, empty state
-		double getClearance(uint16_t k, double TPS_query_distance) const; //!< Interpolate raw_clearances to get a smooth clearance function over paths.
-		void renderAs3DObject(mrpt::opengl::CMesh &mesh, double min_x, double max_x, double min_y, double max_y, double cell_res) const;
+		/** Gets the clearance for path `k` and distance `TPS_query_distance` in one of two modes: 
+		  * - [integrate_over_path=false] clearance from that specific spot, or 
+		  * - [integrate_over_path=true] average clearance over the path from the origin to that specific spot.
+		  */
+		double getClearance(uint16_t k, double TPS_query_distance, bool integrate_over_path) const;
+		void renderAs3DObject(mrpt::opengl::CMesh &mesh, double min_x, double max_x, double min_y, double max_y, double cell_res, bool integrate_over_path) const;
 	};
 
 

@@ -1026,7 +1026,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 				else
 				{
 					gl_obj->setVisibility(true);
-					pI.clearance.renderAs3DObject(*gl_obj, -1.0, 1.0, -1.0, 1.0, 0.15);
+					pI.clearance.renderAs3DObject(*gl_obj, -1.0, 1.0, -1.0, 1.0, 0.15, false /*interp over path*/);
 				}
 			}
 			// Clearance-diagram:

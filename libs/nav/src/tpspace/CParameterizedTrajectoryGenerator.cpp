@@ -304,11 +304,17 @@ void CParameterizedTrajectoryGenerator::updateClearance(const double ox, const d
 
 	if (cd.raw_clearances.empty())
 	{
-		const double dd = 1.0 / m_clearance_num_points;
 		cd.raw_clearances.resize(m_alphaValuesCount);
-		for (unsigned int k = 0; k < m_alphaValuesCount; k++) {
-			for (double d = 0.0; d < 1.0; d += dd) {
-				cd.raw_clearances[k][d] = 1.0;
+		for (unsigned int k = 0; k < m_alphaValuesCount; k++) 
+		{
+			const size_t numPathSteps = getPathStepCount(k);
+			const double numStepsPerIncr = (numPathSteps - 1.0) / double(m_clearance_num_points);
+
+			for (double step_pointer_dbl = 0.0; step_pointer_dbl < numPathSteps; step_pointer_dbl += numStepsPerIncr)
+			{
+				const size_t step = mrpt::utils::round(step_pointer_dbl);
+				const double dist_over_path = this->getPathDist(k, step);
+				cd.raw_clearances[k][dist_over_path] = 1.0; // create entry in map<>
 			}
 		}
 	}
@@ -320,8 +326,7 @@ void CParameterizedTrajectoryGenerator::updateClearance(const double ox, const d
 
 void CParameterizedTrajectoryGenerator::updateClearancePost(ClearanceDiagram & cd, const std::vector<double> &TP_obstacles) const
 {
-	// Use only when in approx mode:
-	// (Removed 30/01/2017)
+	// Used only when in approx mode (Removed 30/01/2017)
 }
 
 void CParameterizedTrajectoryGenerator::evalClearanceSingleObstacle(const double ox, const double oy, const uint16_t k, std::map<double, double> & inout_realdist2clearance) const
@@ -340,20 +345,8 @@ void CParameterizedTrajectoryGenerator::evalClearanceSingleObstacle(const double
 	{
 		step_pointer_dbl += numStepsPerIncr;
 		const size_t step = mrpt::utils::round(step_pointer_dbl);
-
+		//const double dist_over_path = e.first;
 		double & inout_clearance = e.second;
-
-#if 0
-		const double dist_over_path = e.first;
-		if (dist_over_path == .0) {
-			// Special case: don't eval clearance at init pose, to
-			// 1) avoid biasing the rest of the path for near obstacles, and
-			// 2) let the obstacle_behavior to work when in a "collision state":
-			const double fake_clearance =  this->getApproxRobotRadius() / refDistance;
-			mrpt::utils::keep_min(inout_clearance, fake_clearance);
-			continue;
-		}
-#endif
 
 		if (had_collision) {
 			// We found a collision in a previous step along this "k" path, so

@@ -156,8 +156,10 @@ void CHolonomicFullEval::navigate(const NavInput & ni, NavOutput &no)
 		// Factor #5: clearance to nearest obstacle along path
 		// ------------------------------------------------------------------------------------------
 		{
-			double avr_path_clearance = ni.clearance->getClearance(i /*path index*/, std::min(0.99, target_dist*0.95));
-			scores[4] = avr_path_clearance;
+			const double query_dist_norm = std::min(0.99, target_dist*0.95);
+			const double avr_path_clearance = ni.clearance->getClearance(i /*path index*/, query_dist_norm, true /*interpolate path*/);
+			const double point_clearance = ni.clearance->getClearance(i /*path index*/, query_dist_norm, false /*interpolate path*/);
+			scores[4] = 0.5* (avr_path_clearance + point_clearance);
 		}
 
 		// Save stats for debugging:

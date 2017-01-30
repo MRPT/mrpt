@@ -354,6 +354,15 @@
 															<border>5</border>
 															<option>1</option>
 														</object>
+														<object class="sizeritem">
+															<object class="wxCheckBox" name="ID_CHECKBOX7" variable="cbClearanceInterp" member="yes">
+																<label>Interpolate clearance diagram</label>
+																<handler function="OnrbShowTPSelectSelect" entry="EVT_CHECKBOX" />
+															</object>
+															<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+															<border>5</border>
+															<option>1</option>
+														</object>
 													</object>
 													<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 													<option>1</option>

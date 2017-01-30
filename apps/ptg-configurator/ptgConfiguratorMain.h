@@ -111,6 +111,7 @@ class ptgConfiguratorframe: public wxFrame
         static const long ID_XY_GLCANVAS;
         static const long ID_CHECKBOX5;
         static const long ID_CHECKBOX6;
+        static const long ID_CHECKBOX7;
         static const long ID_CUSTOM2;
         static const long ID_PANEL2;
         static const long ID_CUSTOM1;
@@ -174,6 +175,7 @@ class ptgConfiguratorframe: public wxFrame
         mpWindow* m_plotPathDist;
         wxCheckBox* cbShowTPObs;
         wxStaticText* StaticText3;
+        wxCheckBox* cbClearanceInterp;
         wxChoice* cbPTGClass;
         wxPanel* Panel6;
         wxPanel* Panel3;
@@ -230,7 +232,7 @@ class ptgConfiguratorframe: public wxFrame
 		// ========= Opengl View =======
 		mrpt::opengl::COpenGLViewportPtr  gl_view_WS, gl_view_TPSpace;
 		mrpt::opengl::CSetOfObjectsPtr    gl_TPSpace_TP_obstacles;
-		mrpt::opengl::CMeshPtr            gl_TPSpace_clearance;
+		mrpt::opengl::CMeshPtr            gl_TPSpace_clearance, gl_TPSpace_clearance_interp;
 		mrpt::opengl::CCameraPtr          gl_view_TPSpace_cam;
 		mrpt::opengl::CAxisPtr            gl_axis_WS, gl_axis_TPS;
 		mrpt::opengl::CSetOfLinesPtr      gl_robot_ptg_prediction, gl_robot_ptg_prediction_highlight, gl_tp_obstacles;
