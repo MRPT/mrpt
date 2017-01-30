@@ -72,7 +72,8 @@ namespace mrpt
 		CAbstractPTGBasedReactive(
 			CRobot2NavInterface &react_iterf_impl,
 			bool enableConsoleOutput = true,
-			bool enableLogFile = false);
+			bool enableLogFile = false,
+			const std::string &logFileDirectory = std::string("./reactivenav.logs"));
 
 		virtual ~CAbstractPTGBasedReactive();
 
@@ -106,6 +107,11 @@ namespace mrpt
 
 		/** Enables/disables saving log files. */
 		void enableLogFile(bool enable);
+
+		/** Changes the prefix for new log files. */
+		void setLogFileDirectory(const std::string &sDir) { m_navlogfiles_dir = sDir; }
+		std::string getLogFileDirectory() const { return m_navlogfiles_dir; }
+
 
 		/** Enables/disables the detailed time logger (default:disabled upon construction)
 			*  When enabled, a report will be dumped to std::cout upon destruction.
@@ -317,6 +323,8 @@ namespace mrpt
 		bool   ENABLE_BOOST_SHORTEST_ETA;
 		double BEST_ETA_MARGIN_TOLERANCE_WRT_BEST;
 		bool  ENABLE_OBSTACLE_FILTERING;
+
+		std::string m_navlogfiles_dir; //!< Default: "./reactivenav.logs"
 
 	}; // end of CAbstractPTGBasedReactive
   }
