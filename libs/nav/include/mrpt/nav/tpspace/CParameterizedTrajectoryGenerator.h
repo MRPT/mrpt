@@ -278,7 +278,6 @@ protected:
 		uint16_t  m_alphaValuesCount; //!< The number of discrete values for "alpha" between -PI and +PI.
 		double    m_score_priority;
 		uint16_t  m_clearance_num_points; //!< Number of steps for the piecewise-constant approximation of clearance from TPS distances [0,1] (Default=5) \sa updateClearance()
-		bool      m_use_approx_clearance; //!< Approx clearance by directly calc distances in TP-Space, without checking WS robot shape directly (Default=true)
 
 		bool      m_is_initialized;
 

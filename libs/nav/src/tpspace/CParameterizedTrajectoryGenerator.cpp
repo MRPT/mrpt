@@ -28,7 +28,6 @@ CParameterizedTrajectoryGenerator::CParameterizedTrajectoryGenerator() :
 	m_alphaValuesCount(0),
 	m_score_priority(1.0),
 	m_clearance_num_points(5),
-	m_use_approx_clearance(false),
 	m_is_initialized(false)
 { }
 
@@ -38,7 +37,6 @@ void CParameterizedTrajectoryGenerator::loadDefaultParams()
 	refDistance = 6.0;
 	m_score_priority = 1.0;
 	m_clearance_num_points = 5;
-	m_use_approx_clearance = false;
 }
 
 bool CParameterizedTrajectoryGenerator::supportVelCmdNOP() const
@@ -57,7 +55,6 @@ void CParameterizedTrajectoryGenerator::loadFromConfigFile(const mrpt::utils::CC
 	MRPT_LOAD_CONFIG_VAR_NO_DEFAULT     (refDistance , double,  cfg,sSection);
 	MRPT_LOAD_HERE_CONFIG_VAR(score_priority , double, m_score_priority, cfg,sSection);
 	MRPT_LOAD_HERE_CONFIG_VAR(clearance_num_points, double, m_clearance_num_points, cfg, sSection);
-	MRPT_LOAD_HERE_CONFIG_VAR(use_approx_clearance, bool, m_use_approx_clearance, cfg, sSection);
 }
 void CParameterizedTrajectoryGenerator::saveToConfigFile(mrpt::utils::CConfigFileBase &cfg,const std::string &sSection) const
 {
@@ -68,7 +65,6 @@ void CParameterizedTrajectoryGenerator::saveToConfigFile(mrpt::utils::CConfigFil
 	cfg.write(sSection,"refDistance",refDistance,   WN,WV, "Maximum distance (meters) for building trajectories (visibility range)");
 	cfg.write(sSection,"score_priority",m_score_priority,   WN,WV, "When used in path planning, a multiplying factor (default=1.0) for the scores for this PTG. Assign values <1 to PTGs with low priority.");
 	cfg.write(sSection, "clearance_num_points", m_clearance_num_points, WN, WV, "Number of steps for the piecewise-constant approximation of clearance (Default=5).");
-	cfg.write(sSection,"use_approx_clearance", m_use_approx_clearance,   WN,WV, "Use approximate (faster) clearance calculation. (Default=true).");
 
 	MRPT_END
 }
@@ -85,9 +81,13 @@ void CParameterizedTrajectoryGenerator::internal_readFromStream(mrpt::utils::CSt
 	case 0:
 	case 1:
 	case 2:
+	case 3:
 		in >> refDistance >> m_alphaValuesCount >> m_score_priority;
 		if (version >= 1) in >> m_clearance_num_points;
-		if (version >= 2) in >> m_use_approx_clearance;
+		if (version == 2) {
+			bool old_use_approx_clearance;
+			in >> old_use_approx_clearance; // ignored in v>=3
+		}
 		break;
 	default:
 		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
@@ -96,10 +96,10 @@ void CParameterizedTrajectoryGenerator::internal_readFromStream(mrpt::utils::CSt
 
 void CParameterizedTrajectoryGenerator::internal_writeToStream(mrpt::utils::CStream &out) const
 {
-	const uint8_t version = 2;
+	const uint8_t version = 3;
 	out << version;
 
-	out << refDistance << m_alphaValuesCount << m_score_priority << m_clearance_num_points /* v1 */ << m_use_approx_clearance /*v2*/;
+	out << refDistance << m_alphaValuesCount << m_score_priority << m_clearance_num_points /* v1 */;
 }
 
 double CParameterizedTrajectoryGenerator::index2alpha(uint16_t k, const unsigned int num_paths)
@@ -313,9 +313,6 @@ void CParameterizedTrajectoryGenerator::updateClearance(const double ox, const d
 		}
 	}
 
-	if (m_use_approx_clearance)
-		return; // will be actually computed in updateClearancePost();
-
 	// evaluate in derived-class: this function also keeps the minimum automatically.
 	for (uint16_t k=0;k<m_alphaValuesCount;k++)
 		this->evalClearanceSingleObstacle(ox,oy,k, cd.raw_clearances[k]);
@@ -324,37 +321,7 @@ void CParameterizedTrajectoryGenerator::updateClearance(const double ox, const d
 void CParameterizedTrajectoryGenerator::updateClearancePost(ClearanceDiagram & cd, const std::vector<double> &TP_obstacles) const
 {
 	// Use only when in approx mode:
-	if (!m_use_approx_clearance)
-		return;
-
-	ASSERT_(cd.raw_clearances.size() == m_alphaValuesCount);
-
-	std::vector<double> k2dir(m_alphaValuesCount);
-	for (uint16_t k = 0; k < m_alphaValuesCount; k++)
-		k2dir[k] = CParameterizedTrajectoryGenerator::index2alpha(k, m_alphaValuesCount);
-
-	for (uint16_t k = 0; k < m_alphaValuesCount; k++)
-	{
-		// For each segment (path):
-		const double ak = k2dir[k];
-
-		for (auto &e : cd.raw_clearances[k])
-		{
-			const double d = e.first;
-			const double x = d*cos(ak), y = d*sin(ak);
-
-			for (uint16_t i = 0; i < m_alphaValuesCount; i++)
-			{
-				const double ai = k2dir[i];
-				double di = TP_obstacles[i] / refDistance; // std::min(TP_obstacles[k], 0.95*target_dist); ??
-				if (di >= 0.99) di = 2.0;
-
-				const double this_clearance_norm = ::hypot(di*cos(ai) - x, di*sin(ai) - y);
-				// Update minimum in output structure
-				mrpt::utils::keep_min(e.second, this_clearance_norm);
-			}
-		}
-	}
+	// (Removed 30/01/2017)
 }
 
 void CParameterizedTrajectoryGenerator::evalClearanceSingleObstacle(const double ox, const double oy, const uint16_t k, std::map<double, double> & inout_realdist2clearance) const
