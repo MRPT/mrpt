@@ -215,13 +215,13 @@ bool CJoystick::getJoystickPosition(
 	if (nAxis>=2)
 	{
 		y = -1+2*( m_joystate_axes[1] - m_y_min ) / (float)( m_y_max-m_y_min );
-		if (raw_y_pos) *raw_x_pos = m_joystate_axes[1];
+		if (raw_y_pos) *raw_y_pos = m_joystate_axes[1];
 	}
 
 	if (nAxis>=3)
 	{
 		z = -1+2*( m_joystate_axes[2] - m_z_min ) / (float)( m_z_max-m_z_min );
-		if (raw_z_pos) *raw_x_pos = m_joystate_axes[2];
+		if (raw_z_pos) *raw_z_pos = m_joystate_axes[2];
 	}
 	else
 	{
