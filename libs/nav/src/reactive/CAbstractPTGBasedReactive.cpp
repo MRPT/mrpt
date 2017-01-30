@@ -45,7 +45,7 @@ std::string CAbstractPTGBasedReactive::TNavigationParamsPTG::getAsText() const
 const double ESTIM_LOWPASSFILTER_ALPHA = 0.7;
 
 // Ctor:
-CAbstractPTGBasedReactive::CAbstractPTGBasedReactive(CRobot2NavInterface &react_iterf_impl, bool enableConsoleOutput, bool enableLogFile):
+CAbstractPTGBasedReactive::CAbstractPTGBasedReactive(CRobot2NavInterface &react_iterf_impl, bool enableConsoleOutput, bool enableLogFile, const std::string &sLogDir):
 	CWaypointsNavigator(react_iterf_impl),
 	m_holonomicMethod            (),
 	m_logFile                    (nullptr),
@@ -76,7 +76,8 @@ CAbstractPTGBasedReactive::CAbstractPTGBasedReactive(CRobot2NavInterface &react_
 	m_lastTarget                 (0,0,0),
 	ENABLE_BOOST_SHORTEST_ETA(false),
 	BEST_ETA_MARGIN_TOLERANCE_WRT_BEST(1.05),
-	ENABLE_OBSTACLE_FILTERING(false)
+	ENABLE_OBSTACLE_FILTERING(false),
+	m_navlogfiles_dir(sLogDir)
 {
 	this->enableLogFile( enableLogFile );
 }
@@ -144,16 +145,19 @@ void CAbstractPTGBasedReactive::enableLogFile(bool enable)
 			if (m_logFile) return; // Already enabled:
 
 			// Open file, find the first free file-name.
-			char	aux[100];
+			char	aux[300];
 			unsigned int nFile = 0;
 			bool    free_name = false;
 
-			system::createDirectory("./reactivenav.logs");
+			mrpt::system::createDirectory(m_navlogfiles_dir);
+			if (!mrpt::system::directoryExists(m_navlogfiles_dir)) {
+				THROW_EXCEPTION_CUSTOM_MSG1("Could not create directory for navigation logs: `%s`", m_navlogfiles_dir.c_str());
+			}
 
 			while (!free_name)
 			{
 				nFile++;
-				sprintf(aux, "./reactivenav.logs/log_%03u.reactivenavlog", nFile );
+				sprintf(aux, "%s/log_%03u.reactivenavlog", m_navlogfiles_dir.c_str(), nFile );
 				free_name = !system::fileExists(aux);
 			}
 
