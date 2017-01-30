@@ -74,7 +74,9 @@ namespace mrpt
 			CReactiveNavigationSystem3D(
 				CRobot2NavInterface &react_iterf_impl,
 				bool enableConsoleOutput = true,
-				bool enableLogFile = false);
+				bool enableLogFile = false,
+				const std::string &logFileDirectory = std::string("./reactivenav.logs")
+			);
 
 			/** Destructor */
 			virtual ~CReactiveNavigationSystem3D();

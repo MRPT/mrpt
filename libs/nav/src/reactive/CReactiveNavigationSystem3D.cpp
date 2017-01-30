@@ -41,9 +41,11 @@ CReactiveNavigationSystem3D::TPTGmultilevel::~TPTGmultilevel()
 CReactiveNavigationSystem3D::CReactiveNavigationSystem3D(
 	CRobot2NavInterface   &react_iterf_impl,
     bool					enableConsoleOutput,
-    bool					enableLogToFile)
+    bool					enableLogToFile,
+	const std::string &logFileDirectory
+)
 	:
-	CAbstractPTGBasedReactive(react_iterf_impl,enableConsoleOutput,enableLogToFile)
+	CAbstractPTGBasedReactive(react_iterf_impl,enableConsoleOutput,enableLogToFile, logFileDirectory)
 {
 }
 
