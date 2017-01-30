@@ -932,7 +932,7 @@ void CAbstractPTGBasedReactive::STEP5_PTGEvaluator(
 
 	// Factor6: clearance
 	// -----------------------------------------------------
-	eval_factors[SCOREIDX_CLEARANCE] = in_clearance.getClearance(kDirection, TargetDist*1.01 );
+	eval_factors[SCOREIDX_CLEARANCE] = in_clearance.getClearance(kDirection, TargetDist*1.01, false /* spot, dont interpolate */ );
 
 	// Don't trust PTG continuation if we are too close to obstacles:
 	if (this_is_PTG_continuation &&

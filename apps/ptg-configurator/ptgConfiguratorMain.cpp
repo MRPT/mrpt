@@ -95,6 +95,7 @@ const long ptgConfiguratorframe::ID_PANEL1 = wxNewId();
 const long ptgConfiguratorframe::ID_XY_GLCANVAS = wxNewId();
 const long ptgConfiguratorframe::ID_CHECKBOX5 = wxNewId();
 const long ptgConfiguratorframe::ID_CHECKBOX6 = wxNewId();
+const long ptgConfiguratorframe::ID_CHECKBOX7 = wxNewId();
 const long ptgConfiguratorframe::ID_CUSTOM2 = wxNewId();
 const long ptgConfiguratorframe::ID_PANEL2 = wxNewId();
 const long ptgConfiguratorframe::ID_CUSTOM1 = wxNewId();
@@ -283,6 +284,9 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent,wxWindowID id) :
     cbShowClearance = new wxCheckBox(Panel2, ID_CHECKBOX6, _("Clearance diagram"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX6"));
     cbShowClearance->SetValue(true);
     FlexGridSizer15->Add(cbShowClearance, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    cbClearanceInterp = new wxCheckBox(Panel2, ID_CHECKBOX7, _("Interpolate clearance diagram"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX7"));
+    cbClearanceInterp->SetValue(false);
+    FlexGridSizer15->Add(cbClearanceInterp, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     StaticBoxSizer1->Add(FlexGridSizer15, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
     FlexGridSizer10->Add(StaticBoxSizer1, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 2);
     m_plotTPSpace = new CMyGLCanvas(Panel2,ID_CUSTOM2,wxDefaultPosition,wxSize(150,300),wxTAB_TRAVERSAL,_T("ID_CUSTOM2"));
@@ -413,6 +417,7 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent,wxWindowID id) :
     Connect(ID_BUTTON5,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&ptgConfiguratorframe::OnButton1Click);
     Connect(ID_CHECKBOX5,wxEVT_COMMAND_CHECKBOX_CLICKED,(wxObjectEventFunction)&ptgConfiguratorframe::OnrbShowTPSelectSelect);
     Connect(ID_CHECKBOX6,wxEVT_COMMAND_CHECKBOX_CLICKED,(wxObjectEventFunction)&ptgConfiguratorframe::OnrbShowTPSelectSelect);
+    Connect(ID_CHECKBOX7,wxEVT_COMMAND_CHECKBOX_CLICKED,(wxObjectEventFunction)&ptgConfiguratorframe::OnrbShowTPSelectSelect);
     Connect(idMenuQuit,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&ptgConfiguratorframe::OnQuit);
     Connect(idMenuAbout,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&ptgConfiguratorframe::OnAbout);
     //*)
@@ -447,9 +452,12 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent,wxWindowID id) :
 
 	gl_TPSpace_TP_obstacles = mrpt::opengl::CSetOfObjects::Create();
 	gl_TPSpace_clearance = mrpt::opengl::CMesh::Create(true, -5.0f, 5.0f, -5.0f, 5.0f);
+	gl_TPSpace_clearance_interp = mrpt::opengl::CMesh::Create(true, -5.0f, 5.0f, -5.0f, 5.0f);	
+	gl_TPSpace_clearance_interp->setVisibility(false);
 
 	gl_view_TPSpace->insert(gl_TPSpace_TP_obstacles);
 	gl_view_TPSpace->insert(gl_TPSpace_clearance);
+	gl_view_TPSpace->insert(gl_TPSpace_clearance_interp);
 
 	m_plot->addTextMessage(0.01,5,"Workspace", mrpt::utils::TColorf(1,1,1,0.75), "sans", 15,mrpt::opengl::NICE, 1);
 	m_plotTPSpace->addTextMessage(0.01,5,"TP-Space", mrpt::utils::TColorf(1,1,1,0.75), "sans", 15,mrpt::opengl::NICE, 2);
@@ -632,6 +640,7 @@ void ptgConfiguratorframe::OnbtnReloadParamsClick(wxCommandEvent& event)
 	edIndexHighlightPath->SetRange(0, ptg->getPathCount() - 1);
 	slidPathHighlight->SetRange(0, ptg->getPathCount() - 1);
 
+
 	// first time full GUI refresh:
 	rebuild3Dview();
 
@@ -717,7 +726,8 @@ void ptgConfiguratorframe::rebuild3Dview()
 				}
 
 				timer.Tic();
-				cd.renderAs3DObject(*gl_TPSpace_clearance, -1.0,1.0, -1.0, 1.0, 0.05);
+				cd.renderAs3DObject(*gl_TPSpace_clearance, -1.0, 1.0, -1.0, 1.0, 0.05, false /*interpolate*/);
+				cd.renderAs3DObject(*gl_TPSpace_clearance_interp, -1.0,1.0, -1.0, 1.0, 0.05, true /*interpolate*/);
 				const double tim_render_cd = timer.Tac();
 
 				StatusBar1->SetStatusText(
@@ -1110,7 +1120,8 @@ void ptgConfiguratorframe::OnrbShowTPSelectSelect(wxCommandEvent& event)
 	WX_START_TRY;
 
 	gl_TPSpace_TP_obstacles->setVisibility( cbShowTPObs->IsChecked() );
-	gl_TPSpace_clearance->setVisibility( cbShowClearance->IsChecked() );
+	gl_TPSpace_clearance->setVisibility(cbShowClearance->IsChecked() && !cbClearanceInterp->IsChecked());
+	gl_TPSpace_clearance_interp->setVisibility( cbShowClearance->IsChecked() && cbClearanceInterp->IsChecked() );
 
 	m_plotTPSpace->Refresh();
 	WX_END_TRY;
