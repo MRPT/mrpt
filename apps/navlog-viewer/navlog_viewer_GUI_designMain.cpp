@@ -1385,31 +1385,33 @@ void navlog_viewer_GUI_designDialog::OnmnuMatlabExportPaths(wxCommandEvent & eve
 	typedef Eigen::Matrix<double, 1, MAX_CMDVEL_COMPONENTS> cmdvel_vector_t;
 	mrpt::aligned_containers<double, cmdvel_vector_t>::map_t  cmdvels; // time: tim_send_cmd_vel
 
+	double tim_start_iteration = .0;
+
 	for (size_t i = 0; i<N; i++)
 	{
 		const CLogFileRecordPtr logsptr = CLogFileRecordPtr(m_logdata[i]);
 		const CLogFileRecord * logptr = logsptr.pointer();
-
-		double tim_start_iteration = .0;
 
 		{
 			const auto it = logptr->timestamps.find("tim_start_iteration");
 			if (it != logptr->timestamps.end())
 			{
 				tim_start_iteration = mrpt::system::timestampToDouble(it->second);
-				// selected PTG:
-				selected_PTG_over_time[tim_start_iteration] = logptr->nSelectedPTG;
-
-				// iter dur:
-				{
-					auto itExecT = logptr->values.find("executionTime");
-					if (itExecT != logptr->values.end())
-						iteration_duration[tim_start_iteration] = itExecT->second;
-				}
 			}
-			else {
+			else
+			{
 				tim_start_iteration++; // just in case we don't have valid iteration timestamp (??)
 			}
+		}
+
+		// selected PTG:
+		selected_PTG_over_time[tim_start_iteration] = logptr->nSelectedPTG;
+
+		// iter dur:
+		{
+			auto itExecT = logptr->values.find("executionTime");
+			if (itExecT != logptr->values.end())
+				iteration_duration[tim_start_iteration] = itExecT->second;
 		}
 
 		// timoff_obstacles;
@@ -1433,27 +1435,32 @@ void navlog_viewer_GUI_designDialog::OnmnuMatlabExportPaths(wxCommandEvent & eve
 
 		// curPoseAndVel:
 		{
+			double tim_pose = tim_start_iteration; // default
+
 			const auto it = logptr->timestamps.find("curPoseAndVel");
 			if (it != logptr->timestamps.end()) {
-				auto & p = global_local_vel[mrpt::system::timestampToDouble(it->second)];
-				p.pose = logptr->robotOdometryPose;
-				p.velGlobal = logptr->cur_vel;
-				p.velLocal = logptr->cur_vel_local;
+				tim_pose = mrpt::system::timestampToDouble(it->second);
 			}
+
+			auto & p = global_local_vel[tim_pose];
+			p.pose = logptr->robotOdometryPose;
+			p.velGlobal = logptr->cur_vel;
+			p.velLocal = logptr->cur_vel_local;
 		}
 
 		// send cmd vels:
 		if (logptr->cmd_vel)
 		{
+			double tim_send_cmd_vel = tim_start_iteration; // default
 			const auto it = logptr->timestamps.find("tim_send_cmd_vel");
 			if (it != logptr->timestamps.end()) {
-				const double tim_send_cmd_vel = mrpt::system::timestampToDouble(it->second);
-
-				auto & p = cmdvels[tim_send_cmd_vel];
-				p.setZero();
-				for (size_t i = 0; i < logptr->cmd_vel->getVelCmdLength(); i++)
-					p(i) = logptr->cmd_vel->getVelCmdElement(i);
+				tim_send_cmd_vel = mrpt::system::timestampToDouble(it->second);
 			}
+
+			auto & p = cmdvels[tim_send_cmd_vel];
+			p.setZero();
+			for (size_t i = 0; i < logptr->cmd_vel->getVelCmdLength(); i++)
+				p(i) = logptr->cmd_vel->getVelCmdElement(i);
 		}
 
 	} // end for each timestep
@@ -1492,16 +1499,19 @@ void navlog_viewer_GUI_designDialog::OnmnuMatlabExportPaths(wxCommandEvent & eve
 	f << "];\n"
 		"figure(); plot(selected_PTG(:,1),selected_PTG(:,2), 'x'); xlabel('Time'); ylabel('Selected PTG');\n\n";
 
-	f << "% Iteration duration. Columns: [tim_start_iteration, iter_duration_seconds]\n"
-		"iteration_duration = [";
-	for (const auto &e : iteration_duration) {
-		f << (e.first - t_ref) << "," << e.second << " ; ";
+	if (!iteration_duration.empty())
+	{
+		f << "% Iteration duration. Columns: [tim_start_iteration, iter_duration_seconds]\n"
+			"iteration_duration = [";
+		for (const auto &e : iteration_duration) {
+			f << (e.first - t_ref) << "," << e.second << " ; ";
+		}
+		f << "];\n"
+			"figure(); plot(iteration_duration(:,1),iteration_duration(:,2), 'x');\n"
+			"hold on;\n"
+			"plot(iteration_duration(1:(end-1),1),diff(selected_PTG(:,1)),'.');"
+			"xlabel('Time'); legend('Iteration duration', 'Diff consecutive call time'); title('rnav_iter_call_time_duration');\n\n";
 	}
-	f << "];\n"
-		"figure(); plot(iteration_duration(:,1),iteration_duration(:,2), 'x');\n"
-		"hold on;\n"
-		"plot(iteration_duration(1:(end-1),1),diff(selected_PTG(:,1)),'.');"
-		"xlabel('Time'); legend('Iteration duration', 'Diff consecutive call time'); title('rnav_iter_call_time_duration');\n\n";
 
 	if (!vals_timoff_obstacles.empty()) {
 		f << "% vals_timoff_obstacles. Columns: [tim_start_iteration, value]\n"
