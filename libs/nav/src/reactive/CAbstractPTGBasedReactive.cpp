@@ -16,6 +16,7 @@
 #include <mrpt/system/filesystem.h>
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/math/geometry.h>
+#include <mrpt/math/utils.h>  // make_vector<>
 #include <mrpt/math/ops_containers.h> // sum()
 #include <mrpt/utils/printf_vector.h>
 #include <mrpt/utils/metaprogramming.h>
@@ -470,6 +471,115 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 			}
 		} //end can_do_NOP_motion
 
+		// Evaluate the "evaluation" for each PTG:
+		// -----------------------------------------
+		{
+			std::vector<double> maxScore, minScore;
+			for (size_t i = 0; i <= nPTGs; i++)
+			{
+				THolonomicMovement &holonomicMovement = holonomicMovements[i];
+				if (holonomicMovement.eval_factors.empty())
+					continue; // not evaluated for some reason.
+				
+				const size_t N = holonomicMovement.eval_factors.size();
+				if (maxScore.size() != N) {
+					// 1st loop:
+					maxScore.assign(N, .0);
+					minScore.assign(N, std::numeric_limits<double>::max());
+				}
+				for (size_t k = 0; k < N; k++) {
+					mrpt::utils::keep_min(minScore[k], holonomicMovement.eval_factors[k]);
+					mrpt::utils::keep_max(maxScore[k], holonomicMovement.eval_factors[k]);
+				}
+			}
+
+			const size_t numScores = maxScore.size();
+			ASSERT_(numScores);
+			std::vector<double> spanScore(numScores);
+
+			std::vector<bool> scores_to_normalize = mrpt::math::make_vector<6,bool>(false, false, false, false, false, true);
+			ASSERT_(scores_to_normalize.size()==numScores);
+
+			for (size_t i = 0; i < numScores; i++)
+			{
+				if (!scores_to_normalize[i])
+					continue;
+
+				const double K = maxScore[i] != 0 ? (1.0 / maxScore[i]) : 1.0;
+
+				for (size_t k = 0; k <= nPTGs; k++)
+				{
+					THolonomicMovement &holonomicMovement = holonomicMovements[k];
+					if (holonomicMovement.eval_factors.empty())
+						continue;
+					holonomicMovement.eval_factors[i] *= K;
+				}
+			}
+
+			// Eval global, weighted score:
+			for (size_t i = 0; i<=nPTGs; i++)
+			{
+				TInfoPerPTG &ipf = m_infoPerPTG[i];
+				THolonomicMovement &holonomicMovement = holonomicMovements[i];
+
+				if ((i!=nPTGs /* speed=0 in NOP */ && holonomicMovement.speed == 0) || (i== nPTGs && !can_do_nop_motion))
+				{
+					// If no movement has been found -> the worst evaluation:
+					holonomicMovement.evaluation = 0;
+					holonomicMovement.eval_factors.clear();
+					continue;
+				}
+
+				const bool this_is_PTG_continuation = (i == nPTGs);
+				const size_t indexPTG = (this_is_PTG_continuation) ? m_lastSentVelCmd.ptg_index : i;
+				CParameterizedTrajectoryGenerator * ptg = getPTG(indexPTG);
+
+				// General case:
+				double global_eval = .0;
+
+				// Select set of weights:
+				ASSERT_(!weights.empty() || weights4ptg.size()>indexPTG);
+				const std::vector<double> & w = this->weights.empty() ? this->weights4ptg[indexPTG] : this->weights;
+				ASSERT_EQUAL_(w.size(), holonomicMovement.eval_factors.size());
+
+
+				// Sum:
+				for (size_t i = 0; i < holonomicMovement.eval_factors.size(); i++)
+					global_eval += w[i] * holonomicMovement.eval_factors[i];
+				global_eval /= math::sum(w);
+
+				// Don't reduce the priority of "PTG continuation" "NOPs".
+				holonomicMovement.eval_org = global_eval;
+				holonomicMovement.eval_prio = 1.0;
+
+				ASSERT_(holonomicMovement.PTG != nullptr);
+
+				if (!this_is_PTG_continuation)
+				{
+					holonomicMovement.eval_prio *= holonomicMovement.PTG->getScorePriority();
+
+					// Use PTG-specific relative scoring priority:
+					const int kDirection = static_cast<int>(holonomicMovement.PTG->alpha2index(holonomicMovement.direction));
+					holonomicMovement.eval_prio *= holonomicMovement.PTG->evalPathRelativePriority(kDirection, ::hypot(relTarget.x,relTarget.y));
+				}
+
+				holonomicMovement.evaluation = holonomicMovement.eval_org * holonomicMovement.eval_prio;
+
+				if (fill_log_record)
+				{
+					CLogFileRecord::TInfoPerPTG &ipp = newLogRec.infoPerPTG[i];
+
+					ipp.evalFactors.resize(holonomicMovement.eval_factors.size());
+					mrpt::utils::metaprogramming::copy_container_typecasting(holonomicMovement.eval_factors, ipp.evalFactors);
+					ipp.evaluation = holonomicMovement.evaluation;
+					ipp.evaluation_org = holonomicMovement.eval_org;
+					ipp.evaluation_priority = holonomicMovement.eval_prio;
+				}
+			} // end for each PTG
+
+		} // end evaluate all PTGs
+
+
 		// STEP6: After all PTGs have been evaluated, pick the best scored:
 		// ---------------------------------------------------------------------
 
@@ -814,7 +924,9 @@ void CAbstractPTGBasedReactive::STEP5_PTGEvaluator(
 	mrpt::math::TPose2D pose;
 	holonomicMovement.PTG->getPathPose(kDirection, nStep,pose);
 
-	std::vector<double> eval_factors(PTG_RNAV_SCORE_COUNT);
+	std::vector<double> & eval_factors = holonomicMovement.eval_factors;
+	eval_factors.assign(PTG_RNAV_SCORE_COUNT, .0);
+
 	// Factor 1: Free distance for the chosen PTG and "alpha" in the TP-Space:
 	// ----------------------------------------------------------------------
 	if (kDirection == TargetSector && TargetDist>.0 && in_TPObstacles[kDirection]>TargetDist+0.05 /*small margin*/) {
@@ -951,43 +1063,7 @@ void CAbstractPTGBasedReactive::STEP5_PTGEvaluator(
 	log.evalFactors.resize(eval_factors.size());
 	mrpt::utils::metaprogramming::copy_container_typecasting(eval_factors, log.evalFactors);
 
-	if (holonomicMovement.speed == 0)
-	{
-		// If no movement has been found -> the worst evaluation:
-		holonomicMovement.evaluation = 0;
-		holonomicMovement.eval_factors.clear();
-	}
-	else
-	{
-		// General case:
-		double global_eval = .0;
-
-		// Select set of weights:
-		ASSERT_(!weights.empty() || weights4ptg.size()>ptg_idx4weights);
-		const std::vector<double> & w = this->weights.empty() ? this->weights4ptg[ptg_idx4weights] : this->weights;
-		ASSERT_EQUAL_(w.size(),eval_factors.size());
-
-		holonomicMovement.eval_factors = w;
-
-		// Sum:
-		for (size_t i = 0; i < eval_factors.size(); i++)
-			global_eval += w[i] * eval_factors[i];
-		global_eval /= math::sum(w);
-
-		// Don't reduce the priority of "PTG continuation" "NOPs".
-		holonomicMovement.eval_org = global_eval;
-		holonomicMovement.eval_prio = 1.0;
-
-		if (!this_is_PTG_continuation)
-		{
-			holonomicMovement.eval_prio *= holonomicMovement.PTG->getScorePriority();
-
-			// Use PTG-specific relative scoring priority:
-			holonomicMovement.eval_prio *= holonomicMovement.PTG->evalPathRelativePriority(kDirection);
-		}
-
-		holonomicMovement.evaluation = holonomicMovement.eval_org * holonomicMovement.eval_prio;
-	}
+	// holonomicMovement.evaluation is filled in the caller site, to allow for normalization once we know all the max/min scores for all PTGs.
 
 	MRPT_END;
 }
@@ -1360,10 +1436,6 @@ void CAbstractPTGBasedReactive::ptg_eval_target_build_obstacles(
 		ipp.HLFR = HLFR;
 		ipp.desiredDirection = holonomicMovement.direction;
 		ipp.desiredSpeed = holonomicMovement.speed;
-		ipp.evaluation = holonomicMovement.evaluation;
-		ipp.evaluation_org = holonomicMovement.eval_org;
-		ipp.evaluation_priority = holonomicMovement.eval_prio;
-
 		ipp.timeForTPObsTransformation = timeForTPObsTransformation;
 		ipp.timeForHolonomicMethod = timeForHolonomicMethod;
 	}
