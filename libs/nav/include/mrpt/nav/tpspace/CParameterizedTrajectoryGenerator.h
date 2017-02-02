@@ -185,7 +185,7 @@ namespace nav
 		virtual double getActualUnloopedPathLength(uint16_t k) const { return this->refDistance; }
 
 		/** Query the PTG for the relative priority factor (0,1) of this PTG, in comparison to others, if the k-th path is to be selected. */
-		virtual double evalPathRelativePriority(uint16_t k) const { return 1.0; }
+		virtual double evalPathRelativePriority(uint16_t k, double target_distance) const { return 1.0; }
 
 		/** Returns an approximation of the robot radius. */
 		virtual double getApproxRobotRadius() const = 0;
