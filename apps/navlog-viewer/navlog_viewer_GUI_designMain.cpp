@@ -49,8 +49,11 @@
 extern std::string global_fileToOpen;
 
 const double fy = 9, Ay = 12;   // Font size & line spaces for GUI-overlayed text lines
+#define ADD_WIN_TEXTMSG_COL(__MSG,__COL) \
+	win1->addTextMessage(5.0, 5 + (lineY++) * Ay, __MSG, __COL, "mono", fy, mrpt::opengl::NICE, unique_id++);
+
 #define ADD_WIN_TEXTMSG(__MSG) \
-	win1->addTextMessage(5.0, 5 + (lineY++) * Ay, __MSG, mrpt::utils::TColorf(1, 1, 1), "mono", fy, mrpt::opengl::NICE, unique_id++);
+	ADD_WIN_TEXTMSG_COL(__MSG, mrpt::utils::TColorf(1, 1, 1))
 
 
 using namespace std;
@@ -837,11 +840,11 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 			     col = mrpt::utils::TColorf(1,1,1);
 			else col = mrpt::utils::TColorf(.8f,.8f,.8f);
 
-			ADD_WIN_TEXTMSG(mrpt::format(
+			ADD_WIN_TEXTMSG_COL(mrpt::format(
 				"PTG#%u: SelDir=%+7.01f deg SelSpeed=%.03f Eval=%5.03f*%4.02f=%5.03f scores=%s",
 				nPTG, mrpt::utils::RAD2DEG(pI.desiredDirection), pI.desiredSpeed,
 				pI.evaluation_org, pI.evaluation_priority, pI.evaluation,
-				sprintf_vector("%4.02f ", pI.evalFactors).c_str()));
+				sprintf_vector("%4.02f ", pI.evalFactors).c_str()), col);
 		}
 
 		ADD_WIN_TEXTMSG(mrpt::format("relPoseSense: %s relPoseVelCmd:%s",
