@@ -505,14 +505,14 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 				if (!scores_to_normalize[i])
 					continue;
 
-				const double K = maxScore[i] != minScore[i] ? (1.0 / (maxScore[i] - minScore[i])) : 1.0;
+				const double K = maxScore[i] != 0 ? (1.0 / maxScore[i]) : 1.0;
 
-				for (size_t i = 0; i <= nPTGs; i++)
+				for (size_t k = 0; k <= nPTGs; k++)
 				{
-					THolonomicMovement &holonomicMovement = holonomicMovements[i];
+					THolonomicMovement &holonomicMovement = holonomicMovements[k];
 					if (holonomicMovement.eval_factors.empty())
 						continue;
-					holonomicMovement.eval_factors[i] = (holonomicMovement.eval_factors[i] - minScore[i]) * K;
+					holonomicMovement.eval_factors[i] *= K;
 				}
 			}
 
@@ -522,7 +522,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 				TInfoPerPTG &ipf = m_infoPerPTG[i];
 				THolonomicMovement &holonomicMovement = holonomicMovements[i];
 
-				if (!can_do_nop_motion || holonomicMovement.speed == 0)
+				if ((i!=nPTGs /* speed=0 in NOP */ && holonomicMovement.speed == 0) || (i== nPTGs && !can_do_nop_motion))
 				{
 					// If no movement has been found -> the worst evaluation:
 					holonomicMovement.evaluation = 0;
@@ -560,14 +560,17 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 
 					// Use PTG-specific relative scoring priority:
 					const int kDirection = static_cast<int>(holonomicMovement.PTG->alpha2index(holonomicMovement.direction));
-					holonomicMovement.eval_prio *= holonomicMovement.PTG->evalPathRelativePriority(kDirection);
+					holonomicMovement.eval_prio *= holonomicMovement.PTG->evalPathRelativePriority(kDirection, ::hypot(relTarget.x,relTarget.y));
 				}
 
 				holonomicMovement.evaluation = holonomicMovement.eval_org * holonomicMovement.eval_prio;
 
 				if (fill_log_record)
 				{
-					CLogFileRecord::TInfoPerPTG &ipp = newLogRec.infoPerPTG[indexPTG];
+					CLogFileRecord::TInfoPerPTG &ipp = newLogRec.infoPerPTG[i];
+
+					ipp.evalFactors.resize(holonomicMovement.eval_factors.size());
+					mrpt::utils::metaprogramming::copy_container_typecasting(holonomicMovement.eval_factors, ipp.evalFactors);
 					ipp.evaluation = holonomicMovement.evaluation;
 					ipp.evaluation_org = holonomicMovement.eval_org;
 					ipp.evaluation_priority = holonomicMovement.eval_prio;
