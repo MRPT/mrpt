@@ -52,7 +52,8 @@ void  CObservationSkeleton::writeToStream(CStream &out, int *version) const
 		WRITE_JOINT(right_foot)
 
 		out << sensorLabel
-		    << timestamp;
+		    << timestamp
+		    << sensorPose;
 	}
 }
 
@@ -86,7 +87,7 @@ void  CObservationSkeleton::readFromStream(CStream &in, int version)
 
 			in >> sensorLabel;
 			in >> timestamp;
-
+			in >> sensorPose;
 		} break;
 	default:
 		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
