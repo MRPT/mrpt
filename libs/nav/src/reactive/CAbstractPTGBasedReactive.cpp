@@ -20,7 +20,7 @@
 #include <mrpt/math/ops_containers.h> // sum()
 #include <mrpt/utils/printf_vector.h>
 #include <mrpt/utils/metaprogramming.h>
-#include <mrpt/utils/CFileOutputStream.h>
+#include <mrpt/utils/CFileGZOutputStream.h>
 #include <mrpt/utils/CMemoryStream.h>
 #include <mrpt/maps/CPointCloudFilterByDistance.h>
 #include <limits>
@@ -164,13 +164,23 @@ void CAbstractPTGBasedReactive::enableLogFile(bool enable)
 			}
 
 			// Open log file:
-			m_logFile = new CFileOutputStream(aux);
+			{
+				CFileGZOutputStream *fil = new CFileGZOutputStream();
+				bool ok = fil->open(aux, 1 /* compress level */);
+				if (!ok) {
+					delete fil;
+					THROW_EXCEPTION_CUSTOM_MSG1("Error opening log file: `%s`",aux);
+				}
+				else {
+					m_logFile = fil;
+				}
+			}
 
 			MRPT_LOG_DEBUG(mrpt::format("[CAbstractPTGBasedReactive::enableLogFile] Logging to file `%s`\n",aux));
 
 		}
-	} catch (...) {
-		MRPT_LOG_ERROR("[CAbstractPTGBasedReactive::enableLogFile] Exception!!");
+	} catch (std::exception &e) {
+		MRPT_LOG_ERROR_FMT("[CAbstractPTGBasedReactive::enableLogFile] Exception: %s",e.what());
 	}
 
 }
