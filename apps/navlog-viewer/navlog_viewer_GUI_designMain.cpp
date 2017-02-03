@@ -31,7 +31,7 @@
 #include <wx/statbox.h>
 
 #include <mrpt/system.h>
-#include <mrpt/utils/CFileInputStream.h>
+#include <mrpt/utils/CFileGZInputStream.h>
 #include <mrpt/utils/CConfigFileMemory.h>
 #include <mrpt/utils/CConfigFilePrefixer.h>
 #include <mrpt/system/string_utils.h>
@@ -369,7 +369,7 @@ void navlog_viewer_GUI_designDialog::loadLogfile(const std::string &filName)
 
 	this->edLogFile->SetLabel(_U(filName.c_str()));
 
-	CFileInputStream f(filName);
+	CFileGZInputStream f(filName);
 
 	m_logdata.clear();
 	m_logdata_ptg_paths.clear();
