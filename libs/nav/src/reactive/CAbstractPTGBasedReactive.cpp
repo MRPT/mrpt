@@ -25,6 +25,7 @@
 #include <mrpt/maps/CPointCloudFilterByDistance.h>
 #include <limits>
 #include <iomanip>
+#include <array>
 
 using namespace mrpt;
 using namespace mrpt::poses;
@@ -497,8 +498,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 			ASSERT_(numScores);
 			std::vector<double> spanScore(numScores);
 
-			std::vector<bool> scores_to_normalize = mrpt::math::make_vector<6,bool>(false, false, false, false, false, true);
-			ASSERT_(scores_to_normalize.size()==numScores);
+			const std::array<bool,6> scores_to_normalize{ false, false, false, false, false, true }; // TODO: make this a parameter, if worth?
 
 			for (size_t i = 0; i < numScores; i++)
 			{
