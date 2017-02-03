@@ -10,6 +10,8 @@
 #ifndef _mrpt_graphs_H
 #define _mrpt_graphs_H
 
+#include <mrpt/graphs/TNodeAnnotations.h>
+#include <mrpt/graphs/TMRSlamNodeAnnotations.h>
 #include <mrpt/graphs/CAStarAlgorithm.h>
 #include <mrpt/graphs/CGraphPartitioner.h>
 #include <mrpt/graphs/CNetworkOfPoses.h>

@@ -15,15 +15,15 @@ namespace mrpt { namespace graphslam { namespace deciders {
 // Ctors, Dtors
 //////////////////////////////////////////////////////////////
 
-template<class GRAPH_t>
-CICPCriteriaNRD<GRAPH_t>::CICPCriteriaNRD():
+template<class GRAPH_T>
+CICPCriteriaNRD<GRAPH_T>::CICPCriteriaNRD():
 	params(*this) // pass reference to self when initializing the parameters
 	//m_mahal_distance_ICP_odom("Mahalanobis dist (ICP - odom)")
 {
 	this->initCICPCriteriaNRD();
 }
-template<class GRAPH_t>
-void CICPCriteriaNRD<GRAPH_t>::initCICPCriteriaNRD() {
+template<class GRAPH_T>
+void CICPCriteriaNRD<GRAPH_T>::initCICPCriteriaNRD() {
 	using namespace mrpt::utils;
 	using namespace mrpt::math;
 	this->initializeLoggers("CICPCriteriaNRD");
@@ -54,38 +54,35 @@ void CICPCriteriaNRD<GRAPH_t>::initCICPCriteriaNRD() {
 
 	this->logFmt(LVL_DEBUG, "Initialized class object");
 }
-template<class GRAPH_t>
-CICPCriteriaNRD<GRAPH_t>::~CICPCriteriaNRD() {
+template<class GRAPH_T>
+CICPCriteriaNRD<GRAPH_T>::~CICPCriteriaNRD() {
 }
 
-template<class GRAPH_t>
-typename GRAPH_t::constraint_t::type_value
-CICPCriteriaNRD<GRAPH_t>::getCurrentRobotPosEstimation() const {
+template<class GRAPH_T>
+typename GRAPH_T::global_pose_t
+CICPCriteriaNRD<GRAPH_T>::getCurrentRobotPosEstimation() const {
 	MRPT_START;
 	using namespace std;
 	using namespace mrpt::utils;
 
-	// In case no nodes have been registered...
-	if (this->m_prev_registered_node == INVALID_NODEID) {
-		return pose_t();
-	}
-	ASSERT_(this->m_prev_registered_node != INVALID_NODEID);
+	global_pose_t pose_out;
 
-	return this->m_graph->nodes.at(this->m_prev_registered_node)+
+	if (!(this->m_prev_registered_nodeID == INVALID_NODEID)) {
+		pose_out = this->m_graph->nodes.at(this->m_prev_registered_nodeID)+
 		m_since_prev_node_PDF.getMeanVal();
-
-std::cout << "TODO - Remove me. Kalimera ==> " << 18 << std::endl;
+	}
+	return this->addNodeAnnotsToPose(pose_out);
 	MRPT_END;
 }
 
-template<class GRAPH_t>
-bool CICPCriteriaNRD<GRAPH_t>::updateState(
+template<class GRAPH_T>
+bool CICPCriteriaNRD<GRAPH_T>::updateState(
 		mrpt::obs::CActionCollectionPtr action,
 		mrpt::obs::CSensoryFramePtr observations,
 		mrpt::obs::CObservationPtr observation )  {
 	MRPT_START;
 	MRPT_UNUSED_PARAM(action);
-	this->m_time_logger.enter("CICPCriteriaNRD::updateState");
+	this->m_time_logger.enter("updateState");
 
 	using namespace mrpt::obs;
 	using namespace mrpt::poses;
@@ -96,13 +93,13 @@ bool CICPCriteriaNRD<GRAPH_t>::updateState(
 		// delegate the action to the method responsible
 		if (IS_CLASS(observation, CObservation2DRangeScan) ) { // 2D
 			mrpt::obs::CObservation2DRangeScanPtr curr_laser_scan =
-				static_cast<mrpt::obs::CObservation2DRangeScanPtr>(observation);
+				static_cast<CObservation2DRangeScanPtr>(observation);
 			registered_new_node = updateState2D(curr_laser_scan);
 
 		}
 		else if (IS_CLASS(observation, CObservation3DRangeScan) ) { // 3D
 			CObservation3DRangeScanPtr curr_laser_scan =
-				static_cast<mrpt::obs::CObservation3DRangeScanPtr>(observation);
+				static_cast<CObservation3DRangeScanPtr>(observation);
 			registered_new_node = updateState3D(curr_laser_scan);
 		}
 		else if (IS_CLASS(observation, CObservationOdometry) ) { // odometry
@@ -123,10 +120,10 @@ bool CICPCriteriaNRD<GRAPH_t>::updateState(
 		// Action part
 		if (action->getBestMovementEstimation()) {
 			// if it exists use the odometry information to reject wrong ICP matches
-			mrpt::obs::CActionRobotMovement2DPtr robot_move =
+			CActionRobotMovement2DPtr robot_move =
 				action->getBestMovementEstimation();
-			mrpt::poses::CPosePDFPtr increment = robot_move->poseChange.get_ptr();
-			mrpt::poses::CPosePDFGaussianInf increment_gaussian;
+			CPosePDFPtr increment = robot_move->poseChange.get_ptr();
+			CPosePDFGaussianInf increment_gaussian;
 			increment_gaussian.copyFrom(*increment);
 			m_latest_odometry_PDF += increment_gaussian;
 		}
@@ -151,14 +148,14 @@ bool CICPCriteriaNRD<GRAPH_t>::updateState(
 		m_since_prev_node_PDF.cov_inv = this->m_init_inf_mat;
 	}
 
-	this->m_time_logger.leave("CICPCriteriaNRD::updateState");
+	this->m_time_logger.leave("updateState");
 	return registered_new_node;
 
 	MRPT_END;
 }
 
-template<class GRAPH_t>
-bool CICPCriteriaNRD<GRAPH_t>::updateState2D(
+template<class GRAPH_T>
+bool CICPCriteriaNRD<GRAPH_T>::updateState2D(
 		mrpt::obs::CObservation2DRangeScanPtr scan2d) {
 	MRPT_START;
 	bool registered_new_node = false;
@@ -176,8 +173,8 @@ bool CICPCriteriaNRD<GRAPH_t>::updateState2D(
 	return registered_new_node;
 	MRPT_END;
 }
-template<class GRAPH_t>
-bool CICPCriteriaNRD<GRAPH_t>::checkRegistrationCondition2D() {
+template<class GRAPH_T>
+bool CICPCriteriaNRD<GRAPH_T>::checkRegistrationCondition2D() {
 	MRPT_START;
 
 	using namespace mrpt::math;
@@ -257,8 +254,8 @@ bool CICPCriteriaNRD<GRAPH_t>::checkRegistrationCondition2D() {
 	return registered_new_node;
 	MRPT_END;
 }
-template<class GRAPH_t>
-bool CICPCriteriaNRD<GRAPH_t>::updateState3D(
+template<class GRAPH_T>
+bool CICPCriteriaNRD<GRAPH_T>::updateState3D(
 		mrpt::obs::CObservation3DRangeScanPtr scan3d) {
 	MRPT_START;
 	bool registered_new_node = false;
@@ -280,8 +277,8 @@ bool CICPCriteriaNRD<GRAPH_t>::updateState3D(
 	MRPT_END;
 }
 
-template<class GRAPH_t>
-bool CICPCriteriaNRD<GRAPH_t>::checkRegistrationCondition3D() {
+template<class GRAPH_T>
+bool CICPCriteriaNRD<GRAPH_T>::checkRegistrationCondition3D() {
 	MRPT_START;
 	using namespace mrpt::utils;
 	bool registered_new_node = false;
@@ -325,8 +322,8 @@ bool CICPCriteriaNRD<GRAPH_t>::checkRegistrationCondition3D() {
 	MRPT_END;
 }
 
-template<class GRAPH_t>
-bool CICPCriteriaNRD<GRAPH_t>::checkRegistrationCondition() {
+template<class GRAPH_T>
+bool CICPCriteriaNRD<GRAPH_T>::checkRegistrationCondition() {
 	MRPT_START;
 	using namespace mrpt::utils;
 
@@ -351,17 +348,17 @@ bool CICPCriteriaNRD<GRAPH_t>::checkRegistrationCondition() {
 	// actual check
 	bool registered = false;
 	if (distance_crit || angle_crit) {
-		registered = this->registerNewNode(m_since_prev_node_PDF);
+		registered = this->registerNewNodeAtEnd(m_since_prev_node_PDF);
 	}
 
 	return registered;
 	MRPT_END;
 }
 
-template<class GRAPH_t>
-void CICPCriteriaNRD<GRAPH_t>::loadParams(const std::string& source_fname) {
+template<class GRAPH_T>
+void CICPCriteriaNRD<GRAPH_T>::loadParams(const std::string& source_fname) {
 	MRPT_START;
-	parent::loadParams(source_fname);
+	parent_t::loadParams(source_fname);
 
 	using namespace mrpt::utils;
 
@@ -382,10 +379,10 @@ void CICPCriteriaNRD<GRAPH_t>::loadParams(const std::string& source_fname) {
 	this->logFmt(LVL_DEBUG, "Successfully loaded parameters.");
 	MRPT_END;
 }
-template<class GRAPH_t>
-void CICPCriteriaNRD<GRAPH_t>::printParams() const {
+template<class GRAPH_T>
+void CICPCriteriaNRD<GRAPH_T>::printParams() const {
 	MRPT_START;
-	parent::printParams();
+	parent_t::printParams();
 
 	params.dumpToConsole();
 	//m_mahal_distance_ICP_odom.dumpToConsole();
@@ -393,8 +390,9 @@ void CICPCriteriaNRD<GRAPH_t>::printParams() const {
 	MRPT_END;
 }
 
-template<class GRAPH_t>
-void CICPCriteriaNRD<GRAPH_t>::getDescriptiveReport(std::string* report_str) const {
+template<class GRAPH_T>
+void CICPCriteriaNRD<GRAPH_T>::getDescriptiveReport(
+		std::string* report_str) const {
 	MRPT_START;
 	using namespace std;
 
@@ -403,7 +401,8 @@ void CICPCriteriaNRD<GRAPH_t>::getDescriptiveReport(std::string* report_str) con
 
 	// Report on graph
 	stringstream class_props_ss;
-	class_props_ss << "ICP Goodness-based Registration Procedure Summary: " << std::endl;
+	class_props_ss << "ICP Goodness-based Registration Procedure Summary: "
+		<< std::endl;
 	class_props_ss << header_sep << std::endl;
 
 	// time and output logging
@@ -412,7 +411,7 @@ void CICPCriteriaNRD<GRAPH_t>::getDescriptiveReport(std::string* report_str) con
 
 	// merge the individual reports
 	report_str->clear();
-	parent::getDescriptiveReport(report_str);
+	parent_t::getDescriptiveReport(report_str);
 
 	*report_str += class_props_ss.str();
 	*report_str += report_sep;
@@ -430,14 +429,14 @@ void CICPCriteriaNRD<GRAPH_t>::getDescriptiveReport(std::string* report_str) con
 
 // TParams
 //////////////////////////////////////////////////////////////
-template<class GRAPH_t>
-CICPCriteriaNRD<GRAPH_t>::TParams::TParams(decider_t& d):
+template<class GRAPH_T>
+CICPCriteriaNRD<GRAPH_T>::TParams::TParams(decider_t& d):
 	decider(d)
 { }
-template<class GRAPH_t>
-CICPCriteriaNRD<GRAPH_t>::TParams::~TParams() { }
-template<class GRAPH_t>
-void CICPCriteriaNRD<GRAPH_t>::TParams::dumpToTextStream(
+template<class GRAPH_T>
+CICPCriteriaNRD<GRAPH_T>::TParams::~TParams() { }
+template<class GRAPH_T>
+void CICPCriteriaNRD<GRAPH_T>::TParams::dumpToTextStream(
 		mrpt::utils::CStream &out) const {
 	MRPT_START;
 
@@ -454,8 +453,8 @@ void CICPCriteriaNRD<GRAPH_t>::TParams::dumpToTextStream(
 
 	MRPT_END;
 }
-template<class GRAPH_t>
-void CICPCriteriaNRD<GRAPH_t>::TParams::loadFromConfigFile(
+template<class GRAPH_T>
+void CICPCriteriaNRD<GRAPH_T>::TParams::loadFromConfigFile(
 		const mrpt::utils::CConfigFileBase &source,
 		const std::string &section) {
 	MRPT_START;

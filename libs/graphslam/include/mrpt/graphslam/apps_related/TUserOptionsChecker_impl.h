@@ -60,6 +60,7 @@ void TUserOptionsChecker<GRAPH_t>::createDeciderOptimizerMappings() {
 	optimizers_map["CEmptyGSO"] =
 		&createGraphSlamOptimizer<CLevMarqGSO<GRAPH_t> >;
 
+	// create the decider optimizer, specific to the GRAPH_T template type
 	this->_createDeciderOptimizerMappings();
 
 
@@ -67,7 +68,9 @@ void TUserOptionsChecker<GRAPH_t>::createDeciderOptimizerMappings() {
 }
 
 template<class GRAPH_t>
-void TUserOptionsChecker<GRAPH_t>::_createDeciderOptimizerMappings() { }
+void TUserOptionsChecker<GRAPH_t>::_createDeciderOptimizerMappings() {
+std::cout << "TODO - Remove me. Kalimera ==> " << 12 << std::endl;
+}
 
 // deciders/optpimizers specific to the 2D SLAM cases
 template<>
@@ -81,6 +84,17 @@ inline void TUserOptionsChecker<mrpt::graphs::CNetworkOfPoses2DInf>::_createDeci
 	edge_regs_map["CLoopCloserERD"] =
 			&createEdgeRegistrationDecider<CLoopCloserERD<CNetworkOfPoses2DInf> >;
 
+}
+template<>
+inline void TUserOptionsChecker<mrpt::graphs::CNetworkOfPoses2DInf_NA>::_createDeciderOptimizerMappings() {
+	using namespace mrpt::graphs;
+
+	node_regs_map["CICPCriteriaNRD"] =
+		&createNodeRegistrationDecider<CICPCriteriaNRD<CNetworkOfPoses2DInf_NA> >;
+	edge_regs_map["CICPCriteriaERD"] =
+			&createEdgeRegistrationDecider<CICPCriteriaERD<CNetworkOfPoses2DInf_NA> >;
+	edge_regs_map["CLoopCloserERD"] =
+			&createEdgeRegistrationDecider<CLoopCloserERD<CNetworkOfPoses2DInf_NA> >;
 }
 
 // deciders/optpimizers specific to the 3D SLAM cases

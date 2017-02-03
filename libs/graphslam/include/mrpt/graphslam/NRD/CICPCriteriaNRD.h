@@ -54,7 +54,7 @@ namespace mrpt { namespace graphslam { namespace deciders {
  * graph)
  * \sa loadParams, TParams::loadFromConfigFile
  *
- * Decider *does not guarantee* thread safety when accessing the GRAPH_t
+ * Decider *does not guarantee* thread safety when accessing the GRAPH_T
  * resource. This is handled by the CGraphSlamEngine class.
  *
  * ### Specifications
@@ -97,10 +97,10 @@ namespace mrpt { namespace graphslam { namespace deciders {
  *
  * \ingroup mrpt_graphslam_grp
  */
-template<class GRAPH_t>
+template<class GRAPH_T>
 class CICPCriteriaNRD:
-	public mrpt::graphslam::deciders::CNodeRegistrationDecider<GRAPH_t>,
-	public mrpt::graphslam::deciders::CRangeScanRegistrationDecider<GRAPH_t>
+	public mrpt::graphslam::deciders::CNodeRegistrationDecider<GRAPH_T>,
+	public mrpt::graphslam::deciders::CRangeScanRegistrationDecider<GRAPH_T>
 {
 	public:
 		// Public functions
@@ -108,9 +108,10 @@ class CICPCriteriaNRD:
 		/**\brief Handy typedefs */
 		/**\{*/
 		/**\brief type of graph constraints */
-		typedef typename GRAPH_t::constraint_t constraint_t;
+		typedef typename GRAPH_T::constraint_t constraint_t;
 		/**\brief type of underlying poses (2D/3D). */
-		typedef typename GRAPH_t::constraint_t::type_value pose_t;
+		typedef typename GRAPH_T::constraint_t::type_value pose_t;
+		typedef typename GRAPH_T::global_pose_t global_pose_t;
 
 		typedef mrpt::math::CMatrixFixedNumeric<double,
 						constraint_t::state_length,
@@ -118,11 +119,11 @@ class CICPCriteriaNRD:
 		/**\brief Typedef for accessing methods of the RangeScanRegistrationDecider
 		 * parent class.
 		 */
-		typedef mrpt::graphslam::deciders::CRangeScanRegistrationDecider<GRAPH_t>
+		typedef mrpt::graphslam::deciders::CRangeScanRegistrationDecider<GRAPH_T>
 			range_scanner_t;
-		typedef CICPCriteriaNRD<GRAPH_t> decider_t; /**< self type - Handy typedef */
+		typedef CICPCriteriaNRD<GRAPH_T> decider_t; /**< self type - Handy typedef */
 		/**\brief Node Registration Decider */
-		typedef mrpt::graphslam::deciders::CNodeRegistrationDecider<GRAPH_t> parent;
+		typedef mrpt::graphslam::deciders::CNodeRegistrationDecider<GRAPH_T> parent_t;
 		/**\}*/
 
 		/**\brief Class constructor */
@@ -134,7 +135,7 @@ class CICPCriteriaNRD:
 		void printParams() const;
 		void getDescriptiveReport(std::string* report_str) const;
 
-		pose_t getCurrentRobotPosEstimation() const;
+		global_pose_t getCurrentRobotPosEstimation() const;
 
 		/**\brief Update the decider state using the latest dataset measurements.
 		 *
@@ -142,6 +143,10 @@ class CICPCriteriaNRD:
 		 * handled either by updateState2D, or by updateState3D methods. This
 		 * helps in separating the 2D, 3D RangeScans handling altogether, which in
 		 * turn simplifies the overall procedure
+		 *
+		 * Order of calls:
+		 * updateState (calls) ==> updateState2D/3D ==> 
+		 * checkRegistrationCondition2D/3D ==> CheckRegistrationCondition
 		 *
 		 * \sa updateState2D, updateState3D
 		 */
@@ -153,8 +158,7 @@ class CICPCriteriaNRD:
 		 * 2DRangeScan information.
 		 * \sa updateState3D
 		 */
-		bool updateState2D(
-				mrpt::obs::CObservation2DRangeScanPtr observation);
+		bool updateState2D(mrpt::obs::CObservation2DRangeScanPtr observation);
 		/**\brief Specialized updateState method used solely when dealing with
 		 * 3DRangeScan information.
 		 * \sa updateState2D
@@ -185,24 +189,26 @@ class CICPCriteriaNRD:
 		// protected functions
 		//////////////////////////////////////////////////////////////
 		bool checkRegistrationCondition();
-		/**\brief Specialized checkRegistrationCondtion method used solely when dealing with
-		 * 2DRangeScan information
+		/**\brief Specialized checkRegistrationCondtion method used solely when
+		 * dealing with 2DRangeScan information
 		 * \sa checkRegistrationCondition3D
 		 */
 		bool checkRegistrationCondition2D();
-		/**\brief Specialized checkRegistrationCondition method used solely when dealing with
-		 * 3DRangeScan information
+		/**\brief Specialized checkRegistrationCondition method used solely when
+		 * dealing with 3DRangeScan information
 		 * \sa checkRegistrationCondition2D
 		 */
 		bool checkRegistrationCondition3D();
-		/**\brief General initialization method to call from the Class Constructors*/
+		/**\brief General initialization method to call from the Class
+		 * Constructors
+		 */
 		void initCICPCriteriaNRD();
 
 		// protected members
 		//////////////////////////////////////////////////////////////
 
-		/**\brief Tracking the PDF of the current position of the robot with regards to
-		 * the \b previous registered node
+		/**\brief Tracking the PDF of the current position of the robot with
+		 * regards to the \b previous registered node
 		 */
 		constraint_t	m_since_prev_node_PDF;
 

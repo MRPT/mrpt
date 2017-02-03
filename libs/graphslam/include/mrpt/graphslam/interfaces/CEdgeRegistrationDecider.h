@@ -38,17 +38,19 @@ namespace mrpt { namespace graphslam { namespace deciders {
  *
  * \ingroup mrpt_graphslam_grp
  */
-template<class GRAPH_t=typename mrpt::graphs::CNetworkOfPoses2DInf>
-class CEdgeRegistrationDecider : public virtual mrpt::graphslam::CRegistrationDeciderOrOptimizer<GRAPH_t> {
+template<class GRAPH_T=typename mrpt::graphs::CNetworkOfPoses2DInf>
+class CEdgeRegistrationDecider :
+	public virtual mrpt::graphslam::CRegistrationDeciderOrOptimizer<GRAPH_T>
+{
   public:
 		/**\brief Handy typedefs */
 		/**\{*/
 		/**\brief Parent of current class */
-		typedef mrpt::graphslam::CRegistrationDeciderOrOptimizer<GRAPH_t> parent;
+		typedef mrpt::graphslam::CRegistrationDeciderOrOptimizer<GRAPH_T> parent;
 		/**\brief type of graph constraints */
-		typedef typename GRAPH_t::constraint_t constraint_t;
+		typedef typename GRAPH_T::constraint_t constraint_t;
 		/**\brief type of underlying poses (2D/3D). */
-		typedef typename GRAPH_t::constraint_t::type_value pose_t;
+		typedef typename GRAPH_T::constraint_t::type_value pose_t;
 		/**\}*/
 
 
@@ -97,7 +99,7 @@ class CEdgeRegistrationDecider : public virtual mrpt::graphslam::CRegistrationDe
 		/**\brief Register a new constraint/edge in the current graph.
 		 *
 		 * Implementations of this class should provide a wrapper around
-		 * GRAPH_t::insertEdge method.
+		 * GRAPH_T::insertEdge method.
      */
     virtual void registerNewEdge(
     		const mrpt::utils::TNodeID& from,
@@ -105,6 +107,13 @@ class CEdgeRegistrationDecider : public virtual mrpt::graphslam::CRegistrationDe
     		const constraint_t& rel_edge);
 
 		bool m_just_inserted_lc;
+		/**\brief Indicates whether the ERD implementation expects, at most one
+		 * single node to be registered, between successive calls to the
+		 * updateState method.
+		 *
+		 * By default set to false.
+		 */
+		bool m_override_registered_nodes_check;
 
 };
 

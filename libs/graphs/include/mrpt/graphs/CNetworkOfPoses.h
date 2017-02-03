@@ -17,7 +17,6 @@
 
 #include <mrpt/graphs/CDirectedGraph.h>
 #include <mrpt/graphs/CDirectedTree.h>
-#include <mrpt/graphs/TMRSlamNodeAnnotations.h>
 #include <mrpt/utils/CSerializable.h>
 #include <mrpt/utils/CFileGZInputStream.h>
 #include <mrpt/utils/CFileGZOutputStream.h>
@@ -29,6 +28,8 @@
 #include <mrpt/system/os.h>
 #include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/graphs/dijkstra.h>
+#include <mrpt/graphs/TNodeAnnotations.h>
+#include <mrpt/graphs/TMRSlamNodeAnnotations.h>
 
 #include <iterator>
 
@@ -40,8 +41,6 @@ namespace mrpt
 		namespace detail
 		{
 			template <class GRAPH_T> struct graph_ops;
-			/** An empty structure */
-			struct node_annotations_empty {  };
 
 			// forward declaration of CVisualizer
 			template<
@@ -93,7 +92,7 @@ namespace mrpt
 		template<
 			class CPOSE, // Type of edges
 			class MAPS_IMPLEMENTATION = mrpt::utils::map_traits_stdmap, // Use std::map<> vs. std::vector<>
-			class NODE_ANNOTATIONS = mrpt::graphs::detail::node_annotations_empty,
+			class NODE_ANNOTATIONS = mrpt::graphs::detail::TNodeAnnotationsEmpty,
 			class EDGE_ANNOTATIONS = mrpt::graphs::detail::edge_annotations_empty
 			>
 		class CNetworkOfPoses : public mrpt::graphs::CDirectedGraph< CPOSE, EDGE_ANNOTATIONS >
@@ -111,13 +110,28 @@ namespace mrpt
 			typedef MAPS_IMPLEMENTATION         maps_implementation_t; //!< The type of map's implementation (=MAPS_IMPLEMENTATION template argument)
 			typedef typename CPOSE::type_value  constraint_no_pdf_t;   //!< The type of edges or their means if they are PDFs (that is, a simple "edge" value)
 
-			/** The type of each global pose in \a nodes: an extension of the \a constraint_no_pdf_t pose with any optional user-defined data */
+			/** The type of each global pose in \a nodes: an extension of the \a
+			 * constraint_no_pdf_t pose with any optional user-defined data
+			 */
 			struct global_pose_t : public constraint_no_pdf_t, public NODE_ANNOTATIONS
 			{
 				// Replicate possible constructors:
+				/**\brief Potential class constructors
+				 */
+				/**\{ */
 				inline global_pose_t() : constraint_no_pdf_t() { }
 				template <typename ARG1> inline global_pose_t(const ARG1 &a1) : constraint_no_pdf_t(a1) { }
 				template <typename ARG1,typename ARG2> inline global_pose_t(const ARG1 &a1,const ARG2 &a2) : constraint_no_pdf_t(a1,a2) { }
+				/**\} */
+
+				/**\brief Copy constructor - delegate copying to the NODE_ANNOTATIONS
+				 * struct
+				 */
+				inline global_pose_t(const global_pose_t& other):
+					constraint_no_pdf_t(other),
+					NODE_ANNOTATIONS(other)
+				{ }
+
 			};
 
 			/** A map from pose IDs to their global coordinate estimates, with uncertainty */
@@ -193,11 +207,15 @@ namespace mrpt
 
 			/** @name Utility methods
 			    @{ */
-			/**\brief Return 3D Visual Representation of the edges and nodes in the network of poses
+			/**\brief Return 3D Visual Representation of the edges and nodes in the
+			 * network of poses
 			 *
-			 * Method makes the call to the corresponding method of the CVisualizer class instance.
+			 * Method makes the call to the corresponding method of the CVisualizer
+			 * class instance.
 			 */
-			inline void getAs3DObject(mrpt::opengl::CSetOfObjectsPtr object, const mrpt::utils::TParametersDouble& viz_params) const {
+			inline void getAs3DObject(
+					mrpt::opengl::CSetOfObjectsPtr object,
+					const mrpt::utils::TParametersDouble& viz_params) const {
 
 				visualizer->getAs3DObject(object, viz_params);
 			}
@@ -206,14 +224,21 @@ namespace mrpt
 			 * coordinates of each node just from the information in all edges,
 			 * sorted in a Dijkstra tree based on the current "root" node.
 			 *
-			 *  Note that "global" coordinates are with respect to the node with the ID specified in \a root.
-			 * \note This method takes into account the value of \a edges_store_inverse_poses
+			 * \note The "global" coordinates are with respect to the node with the
+			 * ID specified in \a root.
+			 *
+			 * \note This method takes into account the
+			 * value of \a edges_store_inverse_poses
+			 *
 			 * \sa node, root
 			 */
 			inline void dijkstra_nodes_estimate() { detail::graph_ops<self_t>::graph_of_poses_dijkstra_init(this); }
 
-			/** Look for duplicated edges (even in opposite directions) between all pairs of nodes and fuse them.
-			 *  Upon return, only one edge remains between each pair of nodes with the mean & covariance (or information matrix) corresponding to the Bayesian fusion of all the Gaussians.
+			/** Look for duplicated edges (even in opposite directions) between all
+			 * pairs of nodes and fuse them.  Upon return, only one edge remains
+			 * between each pair of nodes with the mean & covariance (or information
+			 * matrix) corresponding to the Bayesian fusion of all the Gaussians.
+			 *
 			 * \return Overall number of removed edges.
 			 */
 			inline size_t collapseDuplicatedEdges() { return detail::graph_ops<self_t>::graph_of_poses_collapse_dup_edges(this); }
@@ -268,7 +293,7 @@ namespace mrpt
 				TNodeID root_node = root_node_in;
 				if (root_node != INVALID_NODEID) {
 					ASSERTMSG_(node_IDs.find(root_node) != node_IDs.end(),
-							"\nroot_node does not exist in the given node_IDs set. Exiting.\n");
+							"\nRoot_node does not exist in the given node_IDs set. Exiting.\n");
 				}
 
 				// find out if querry contains non-consecutive nodes.
@@ -309,7 +334,9 @@ namespace mrpt
 							format("NodeID [%lu] can't be found in the initial graph.",
 								static_cast<unsigned long>(*node_IDs_it)));
 
-					sub_graph->nodes.insert(make_pair(*node_IDs_it, nodes.at(*node_IDs_it)));
+					global_pose_t curr_node(nodes.at(*node_IDs_it));
+					sub_graph->nodes.insert(make_pair(*node_IDs_it, curr_node));
+
 				}
 				//cout << "Extracting subgraph for nodeIDs: " << getSTLContainerAsString(node_IDs_real) << endl;
 
@@ -322,9 +349,9 @@ namespace mrpt
 				}
 				sub_graph->root = root_node;
 
+				// TODO - Remove these lines - not needed
 				// set the corresponding root pose
-				sub_graph->nodes.at(sub_graph->root) = nodes.at(sub_graph->root);
-
+				//sub_graph->nodes.at(sub_graph->root) = nodes.at(sub_graph->root);
 
 				// find all edges (in the initial graph), that exist in the given set
 				// of nodes; add them to the given graph
@@ -361,11 +388,11 @@ namespace mrpt
 								// add with previous node
 								TNodeID next_to_root = (--root_it)->first;
 								self_t::addVirtualEdge(sub_graph, next_to_root, sub_graph->root);
-								cout << "next_to_root = " << next_to_root;
+								//cout << "next_to_root = " << next_to_root;
 							}
 							else {
 								TNodeID next_to_root = (++root_it)->first;
-								cout << "next_to_root = " << next_to_root;
+								//cout << "next_to_root = " << next_to_root;
 								self_t::addVirtualEdge(sub_graph, sub_graph->root, next_to_root);
 							}
 
@@ -375,7 +402,6 @@ namespace mrpt
 
 					// as long as the graph is unconnected (as indicated by Dijkstra) add a virtual edge between
 					bool dijkstra_runs_successfully = false;
-					int times_caught = 0;
 
 					// loop until the graph is fully connected (i.e. I can reach every
 					// node of the graph starting from its root)
@@ -385,12 +411,11 @@ namespace mrpt
 							dijkstra_runs_successfully = true;
 						}
 						catch (const mrpt::graphs::detail::NotConnectedGraph& ex) {
-							cout << "Adding a virtual edge... times: " << ++times_caught << endl;
 							dijkstra_runs_successfully = false;
 
 							set<TNodeID> unconnected_nodeIDs;
 							ex.getUnconnectedNodeIDs(&unconnected_nodeIDs);
-							cout << "Unconnected nodeIDs: " << mrpt::math::getSTLContainerAsString(unconnected_nodeIDs) << endl;
+							//cout << "Unconnected nodeIDs: " << mrpt::math::getSTLContainerAsString(unconnected_nodeIDs) << endl;
 							// mainland: set of nodes that the root nodeID is in
 							// island: set of nodes that the Dijkstra graph traversal can't
 							// reach starting from the root. These essentially are groups of
@@ -402,9 +427,9 @@ namespace mrpt
 							// set::begin() is the element with the lowest value
 							const TNodeID& island_highest = *unconnected_nodeIDs.rbegin();
 							const TNodeID& island_lowest = *unconnected_nodeIDs.begin();
-							cout << "island_highest: " << island_highest << endl;
-							cout << "island_lowest: " << island_lowest << endl;
-							cout << "root: " << sub_graph->root << endl;
+							//cout << "island_highest: " << island_highest << endl;
+							//cout << "island_lowest: " << island_lowest << endl;
+							//cout << "root: " << sub_graph->root << endl;
 
 							// find out which nodes are in the same partition with the root
 							// (i.e. mainland)
@@ -472,17 +497,17 @@ namespace mrpt
 								}
 								vec_of_islands.push_back(curr_island);
 
-								cout << "last_island: " << getSTLContainerAsString(vec_of_islands.back()) << endl;
-								cout << "mainland: " << getSTLContainerAsString(mainland) << endl;
+								//cout << "last_island: " << getSTLContainerAsString(vec_of_islands.back()) << endl;
+								//cout << "mainland: " << getSTLContainerAsString(mainland) << endl;
 								this->connectGraphPartitions(sub_graph, vec_of_islands.back(), mainland);
 							}
 						}
 					}
-
-					// estimate the node positions according to the edges - root is (0, 0, 0)
-					// just execute dijkstra once for grabbing the updated node positions.
-					sub_graph->dijkstra_nodes_estimate();
 				}
+
+				// estimate the node positions according to the edges - root is (0, 0, 0)
+				// just execute dijkstra once for grabbing the updated node positions.
+				sub_graph->dijkstra_nodes_estimate();
 
 			} // end of extractSubGraph
 
@@ -588,6 +613,7 @@ namespace mrpt
 				edges_store_inverse_poses(false)
 			{
 				// Initialize instance of class visualizer
+				// TODO - delete afterwards
 				global_pose_t* n = new global_pose_t();
 				mrpt::graphs::detail::TMRSlamNodeAnnotations* node_annots =
 					dynamic_cast<mrpt::graphs::detail::TMRSlamNodeAnnotations*>(n);
@@ -661,14 +687,21 @@ namespace mrpt
 			}
 
 		/** \addtogroup mrpt_graphs_grp
-		    @{ */
+		 * \name Handy typedefs for CNetworkOfPoses commonly used types
+		 @{ */
 
-		typedef CNetworkOfPoses<mrpt::poses::CPose2D,mrpt::utils::map_traits_stdmap>               CNetworkOfPoses2D;     //!< The specialization of CNetworkOfPoses for poses of type CPose2D (not a PDF!), also implementing serialization.
-		typedef CNetworkOfPoses<mrpt::poses::CPose3D,mrpt::utils::map_traits_stdmap>               CNetworkOfPoses3D;     //!< The specialization of CNetworkOfPoses for poses of type mrpt::poses::CPose3D (not a PDF!), also implementing serialization.
-		typedef CNetworkOfPoses<mrpt::poses::CPosePDFGaussian,mrpt::utils::map_traits_stdmap>      CNetworkOfPoses2DCov;  //!< The specialization of CNetworkOfPoses for poses of type CPosePDFGaussian, also implementing serialization.
-		typedef CNetworkOfPoses<mrpt::poses::CPose3DPDFGaussian,mrpt::utils::map_traits_stdmap>    CNetworkOfPoses3DCov;  //!< The specialization of CNetworkOfPoses for poses of type CPose3DPDFGaussian, also implementing serialization.
-		typedef CNetworkOfPoses<mrpt::poses::CPosePDFGaussianInf,mrpt::utils::map_traits_stdmap>   CNetworkOfPoses2DInf;  //!< The specialization of CNetworkOfPoses for poses of type CPosePDFGaussianInf, also implementing serialization.
-		typedef CNetworkOfPoses<mrpt::poses::CPose3DPDFGaussianInf,mrpt::utils::map_traits_stdmap> CNetworkOfPoses3DInf;  //!< The specialization of CNetworkOfPoses for poses of type CPose3DPDFGaussianInf, also implementing serialization.
+		typedef CNetworkOfPoses<mrpt::poses::CPose2D,mrpt::utils::map_traits_stdmap> CNetworkOfPoses2D;     //!< The specialization of CNetworkOfPoses for poses of type CPose2D (not a PDF!), also implementing serialization.
+		typedef CNetworkOfPoses<mrpt::poses::CPose3D,mrpt::utils::map_traits_stdmap> CNetworkOfPoses3D;     //!< The specialization of CNetworkOfPoses for poses of type mrpt::poses::CPose3D (not a PDF!), also implementing serialization.
+		typedef CNetworkOfPoses<mrpt::poses::CPosePDFGaussian, mrpt::utils::map_traits_stdmap> CNetworkOfPoses2DCov;  //!< The specialization of CNetworkOfPoses for poses of type CPosePDFGaussian, also implementing serialization.
+		typedef CNetworkOfPoses<mrpt::poses::CPose3DPDFGaussian, mrpt::utils::map_traits_stdmap> CNetworkOfPoses3DCov;  //!< The specialization of CNetworkOfPoses for poses of type CPose3DPDFGaussian, also implementing serialization.
+		typedef CNetworkOfPoses<mrpt::poses::CPosePDFGaussianInf, mrpt::utils::map_traits_stdmap> CNetworkOfPoses2DInf;  //!< The specialization of CNetworkOfPoses for poses of type CPosePDFGaussianInf, also implementing serialization.
+		typedef CNetworkOfPoses<mrpt::poses::CPose3DPDFGaussianInf, mrpt::utils::map_traits_stdmap> CNetworkOfPoses3DInf;  //!< The specialization of CNetworkOfPoses for poses of type CPose3DPDFGaussianInf, also implementing serialization.
+
+		/**\brief Specializations of CNetworkOfPoses for graphs whose nodes inherit from TMRSlamNodeAnnotations struct */
+		/**\{ */
+		typedef CNetworkOfPoses<mrpt::poses::CPosePDFGaussianInf, mrpt::utils::map_traits_stdmap, mrpt::graphs::detail::TMRSlamNodeAnnotations> CNetworkOfPoses2DInf_NA;
+		typedef CNetworkOfPoses<mrpt::poses::CPose3DPDFGaussianInf, mrpt::utils::map_traits_stdmap, mrpt::graphs::detail::TMRSlamNodeAnnotations> CNetworkOfPoses3DInf_NA;
+		/**\} */
 
 		/** @} */  // end of grouping
 
@@ -698,8 +731,6 @@ namespace mrpt
 			}
 		};
 
-
-		MRPT_DECLARE_TTYPENAME(mrpt::graphs::detail::node_annotations_empty)
 		MRPT_DECLARE_TTYPENAME(mrpt::utils::map_traits_stdmap)
 		MRPT_DECLARE_TTYPENAME(mrpt::utils::map_traits_map_as_vector)
 

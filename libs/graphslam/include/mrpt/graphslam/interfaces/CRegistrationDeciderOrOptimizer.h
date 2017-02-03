@@ -22,7 +22,6 @@
 #include <string>
 #include <map>
 
-
 namespace mrpt { namespace graphslam {
 
 /**\brief Interface for implementing node/edge registration deciders or
@@ -40,7 +39,7 @@ namespace mrpt { namespace graphslam {
  *
  * \ingroup mrpt_graphslam_grp
  */
-template<class GRAPH_t=typename mrpt::graphs::CNetworkOfPoses2DInf>
+template<class GRAPH_T=typename mrpt::graphs::CNetworkOfPoses2DInf>
 class CRegistrationDeciderOrOptimizer :
 	public mrpt::utils::COutputLogger
 {
@@ -69,7 +68,7 @@ class CRegistrationDeciderOrOptimizer :
 		virtual void setWindowManagerPtr(
 				mrpt::graphslam::CWindowManager* win_manager);
 
-		/**\brief Fetch a mrpt::synch::CCriticalSection for locking the GRAPH_t
+		/**\brief Fetch a mrpt::synch::CCriticalSection for locking the GRAPH_T
 		 * resource.
 		 *
 		 * Handy for realising multithreading in the derived classes.
@@ -125,12 +124,14 @@ class CRegistrationDeciderOrOptimizer :
 		virtual void getDescriptiveReport(std::string* report_str) const; 
 
 		/**\brief Fetch the graph on which the decider/optimizer will work on. */
-		virtual void setGraphPtr(GRAPH_t* graph);
+		virtual void setGraphPtr(GRAPH_T* graph);
 
 		/**\brief Initialize the COutputLogger, CTimeLogger instances given the name of the
 		 * decider/optimizer at hand */
 		virtual void initializeLoggers(std::string class_name);
 		bool isMultiRobotSlamClass();
+
+		std::string getClassName() const { return m_class_name; };
 
 	protected:
 		/**\brief Handy function for making all the visuals assertions in a compact
@@ -138,7 +139,7 @@ class CRegistrationDeciderOrOptimizer :
 		 */
 		virtual void assertVisualsVars();
 		/**\brief Pointer to the graph that is under construction */
-		GRAPH_t* m_graph;
+		GRAPH_T* m_graph;
 		mrpt::synch::CCriticalSection* m_graph_section;
 
 		/** \name Visuals-related variables methods
@@ -164,6 +165,11 @@ class CRegistrationDeciderOrOptimizer :
 		 * SLAM operations
 		 */
 		bool is_mr_slam_class;
+
+		/**\brief Separator string to be used in debugging messages
+		 */
+		static const std::string header_sep;
+		static const std::string report_sep;
 };
 
 } } // end of namespaces

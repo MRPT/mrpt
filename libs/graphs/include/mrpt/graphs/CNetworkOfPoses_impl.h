@@ -24,6 +24,7 @@
 #include <mrpt/poses/CPosePDFGaussianInf.h>
 #include <mrpt/poses/CPose3DPDFGaussian.h>
 #include <mrpt/poses/CPose3DPDFGaussianInf.h>
+#include <mrpt/graphs/TNodeAnnotations.h>
 
 namespace mrpt
 {
@@ -60,13 +61,13 @@ namespace mrpt
 				static void write_VERTEX_line(const TNodeID id, const mrpt::poses::CPose2D &p, std::ofstream &f)
 				{
 					//  VERTEX2 id x y phi
-					f << "VERTEX2 " << id << " " << p.x() << " " << p.y() << " " << p.phi() << endl;
+					f << "VERTEX2 " << id << " " << p.x() << " " << p.y() << " " << p.phi();
 				}
 				static void write_VERTEX_line(const TNodeID id, const mrpt::poses::CPose3D &p, std::ofstream &f)
 				{
 					//  VERTEX3 id x y z roll pitch yaw
 					// **CAUTION** In the TORO graph format angles are in the RPY order vs. MRPT's YPR.
-					f << "VERTEX3 " << id << " " << p.x() << " " << p.y() << " " << p.z()<< " " << p.roll()<< " " << p.pitch()<< " " << p.yaw() << endl;
+					f << "VERTEX3 " << id << " " << p.x() << " " << p.y() << " " << p.z()<< " " << p.roll()<< " " << p.pitch()<< " " << p.yaw();
 				}
 
 
@@ -133,8 +134,16 @@ namespace mrpt
 						THROW_EXCEPTION_FMT("Error opening file '%s' for writing",fil.c_str());
 
 					// 1st: Nodes
-					for (typename graph_t::global_poses_t::const_iterator itNod = g->nodes.begin();itNod!=g->nodes.end();++itNod)
+					for (typename graph_t::global_poses_t::const_iterator
+							itNod = g->nodes.begin();
+							itNod!=g->nodes.end();
+							++itNod) {
 						write_VERTEX_line(itNod->first, itNod->second, f);
+
+						// write whatever the NODE_ANNOTATION instance want's to write.
+						f << " | " << itNod->second.retAnnotsAsString() << endl;
+
+					}
 
 					// 2nd: Edges:
 					for (typename graph_t::const_iterator it=g->begin();it!=g->end();++it)
@@ -570,7 +579,8 @@ namespace mrpt
 				// --------------------------------------------------------------------------------
 				static void graph_of_poses_dijkstra_init(graph_t *g)
 				{
-					MRPT_START
+					MRPT_START;
+					using namespace std;
 
 					// Do Dijkstra shortest path from "root" to all other nodes:
 					typedef CDijkstra<graph_t,typename graph_t::maps_implementation_t> dijkstra_t;
@@ -596,7 +606,8 @@ namespace mrpt
 							const TNodeID  child_id = edge_to_child.id;
 
 							// Compute the pose of "child_id" as parent_pose (+) edge_delta_pose,
-							//  taking into account that that edge may be in reverse order and then have to invert the delta_pose:
+							//  taking into account that that edge may be in reverse order
+							//  and then have to invert the delta_pose:
 							if ((!edge_to_child.reverse && !m_g->edges_store_inverse_poses) ||
 								 (edge_to_child.reverse &&  m_g->edges_store_inverse_poses)
 								)
@@ -611,12 +622,50 @@ namespace mrpt
 					};
 
 					// Remove all global poses but for the root node, which is the origin:
+					//
+					// Keep track of the NODE_ANNOTATIONS for each node and put it after
+					// the global pose computation
+					bool empty_node_annots = g->nodes.begin()->second.is_node_annots_empty;
+					map<const TNodeID, TNodeAnnotations*> nodeID_to_annots;
+					if (!empty_node_annots) {
+						for (typename graph_t::global_poses_t::const_iterator
+								poses_cit = g->nodes.begin();
+								poses_cit != g->nodes.end();
+								++poses_cit) {
+
+							nodeID_to_annots.insert(
+									make_pair(
+										poses_cit->first, poses_cit->second.getCopyOfAnnots()));
+						}
+					}
+
 					g->nodes.clear();
-					g->nodes[g->root] = typename constraint_t::type_value();  // Typ: CPose2D() or CPose3D()
+					g->nodes[g->root] = typename constraint_t::type_value(); // Typ: CPose2D() or CPose3D()
 
 					// Run the visit thru all nodes in the tree:
 					VisitorComputePoses  myVisitor(g);
 					treeView.visitBreadthFirst(treeView.root, myVisitor);
+
+					// Fill the NODE_ANNOTATIONS again
+					if (!empty_node_annots) {
+						for (typename graph_t::global_poses_t::iterator
+								poses_cit = g->nodes.begin();
+								poses_cit != g->nodes.end();
+								++poses_cit) {
+
+							TNodeAnnotations* node_annots = nodeID_to_annots.at(poses_cit->first);
+							bool res = poses_cit->second.setAnnots(*node_annots);
+
+							// free dynamically allocated mem
+							delete node_annots;
+							node_annots = NULL;
+
+							// make sure setting annotations was successful
+							ASSERTMSG_(res, mrpt::format(
+										"Setting annotations for nodeID \"%lu\" was unsuccessful",
+										static_cast<unsigned long>(poses_cit->first)));
+						}
+					}
 
 					MRPT_END
 				} // end of graph_of_poses_dijkstra_init

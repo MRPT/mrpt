@@ -10,10 +10,15 @@
 #ifndef CREGISTRATIONDECIDEROROPTIMIZER_IMPL_H
 #define CREGISTRATIONDECIDEROROPTIMIZER_IMPL_H
 
-using namespace mrpt::graphslam;
+namespace mrpt { namespace graphslam {
 
-template<class GRAPH_t>
-CRegistrationDeciderOrOptimizer<GRAPH_t>::CRegistrationDeciderOrOptimizer():
+template<class GRAPH_T>
+const std::string CRegistrationDeciderOrOptimizer<GRAPH_T>::header_sep = std::string(80, '-');
+template<class GRAPH_T>
+const std::string CRegistrationDeciderOrOptimizer<GRAPH_T>::report_sep = std::string(2, '\n');
+
+template<class GRAPH_T>
+CRegistrationDeciderOrOptimizer<GRAPH_T>::CRegistrationDeciderOrOptimizer():
 	m_graph(NULL),
 	m_graph_section(NULL),
 	m_win_manager(NULL),
@@ -24,13 +29,13 @@ CRegistrationDeciderOrOptimizer<GRAPH_t>::CRegistrationDeciderOrOptimizer():
 	is_mr_slam_class(false) { }
 
 
-template<class GRAPH_t>
-CRegistrationDeciderOrOptimizer<GRAPH_t>::~CRegistrationDeciderOrOptimizer() {
+template<class GRAPH_T>
+CRegistrationDeciderOrOptimizer<GRAPH_T>::~CRegistrationDeciderOrOptimizer() {
 
 }
 
-template<class GRAPH_t>
-void CRegistrationDeciderOrOptimizer<GRAPH_t>::initializeLoggers(
+template<class GRAPH_T>
+void CRegistrationDeciderOrOptimizer<GRAPH_T>::initializeLoggers(
 		std::string class_name) {
 	using namespace std;
 	using namespace mrpt::utils;
@@ -47,8 +52,8 @@ void CRegistrationDeciderOrOptimizer<GRAPH_t>::initializeLoggers(
 }
 
 
-template<class GRAPH_t>
-void CRegistrationDeciderOrOptimizer<GRAPH_t>::setWindowManagerPtr(
+template<class GRAPH_T>
+void CRegistrationDeciderOrOptimizer<GRAPH_T>::setWindowManagerPtr(
 		mrpt::graphslam::CWindowManager* win_manager) {
 	ASSERT_(win_manager);
 	m_win_manager = win_manager;
@@ -60,16 +65,16 @@ void CRegistrationDeciderOrOptimizer<GRAPH_t>::setWindowManagerPtr(
 	}
 }
 
-template<class GRAPH_t>
-void CRegistrationDeciderOrOptimizer<GRAPH_t>::setCriticalSectionPtr(
+template<class GRAPH_T>
+void CRegistrationDeciderOrOptimizer<GRAPH_T>::setCriticalSectionPtr(
 		mrpt::synch::CCriticalSection* graph_section) {
 
 	m_graph_section = graph_section;
 	this->logFmt(mrpt::utils::LVL_DEBUG, "Fetched the CCRiticalSection successfully");
 }
 
-template<class GRAPH_t>
-void CRegistrationDeciderOrOptimizer<GRAPH_t>::initializeVisuals() {
+template<class GRAPH_T>
+void CRegistrationDeciderOrOptimizer<GRAPH_T>::initializeVisuals() {
 	using namespace mrpt::utils;
 	MRPT_LOG_DEBUG_STREAM << "Initializing visuals";
 
@@ -77,56 +82,58 @@ void CRegistrationDeciderOrOptimizer<GRAPH_t>::initializeVisuals() {
 	m_initialized_visuals = true;
 }
 
-template<class GRAPH_t>
-void CRegistrationDeciderOrOptimizer<GRAPH_t>::assertVisualsVars() {
+template<class GRAPH_T>
+void CRegistrationDeciderOrOptimizer<GRAPH_T>::assertVisualsVars() {
 	ASSERTMSG_(this->m_win, "No CDisplayWindow3D* was provided");
 	ASSERTMSG_(this->m_win_manager, "No CWindowManager* was provided");
 	ASSERTMSG_(this->m_win_observer, "No CWindowObserver* was provided");
 }
 
-template<class GRAPH_t>
-void CRegistrationDeciderOrOptimizer<GRAPH_t>::updateVisuals() {
+template<class GRAPH_T>
+void CRegistrationDeciderOrOptimizer<GRAPH_T>::updateVisuals() {
 	ASSERT_(m_initialized_visuals);
-	MRPT_LOG_DEBUG_STREAM << "Updating visuals";
+	//MRPT_LOG_DEBUG_STREAM << "Updating visuals";
 }
 
-template<class GRAPH_t>
-void CRegistrationDeciderOrOptimizer<GRAPH_t>::notifyOfWindowEvents(
+template<class GRAPH_T>
+void CRegistrationDeciderOrOptimizer<GRAPH_T>::notifyOfWindowEvents(
 		const std::map<std::string, bool>& events_occurred) {
 	this->assertVisualsVars();
-	MRPT_LOG_DEBUG_STREAM << "Querrying window events...";
+	//MRPT_LOG_DEBUG_STREAM << "Querrying window events...";
 }
 
-template<class GRAPH_t>
-void CRegistrationDeciderOrOptimizer<GRAPH_t>::loadParams(
+template<class GRAPH_T>
+void CRegistrationDeciderOrOptimizer<GRAPH_T>::loadParams(
 		const std::string& source_fname) {
 	MRPT_LOG_DEBUG_STREAM << "Loading corresponding parameters";
 }
 
-template<class GRAPH_t>
-void CRegistrationDeciderOrOptimizer<GRAPH_t>::printParams() const {
+template<class GRAPH_T>
+void CRegistrationDeciderOrOptimizer<GRAPH_T>::printParams() const {
 	MRPT_LOG_DEBUG_STREAM << "Printing corresponding parameters";
 }
 
-template<class GRAPH_t>
-void CRegistrationDeciderOrOptimizer<GRAPH_t>::getDescriptiveReport(
+template<class GRAPH_T>
+void CRegistrationDeciderOrOptimizer<GRAPH_T>::getDescriptiveReport(
 		std::string* report_str) const {
 	MRPT_LOG_DEBUG_STREAM << "Generating corresponding report";
 	// TODO - give the compact form here!
 
 }
 
-template<class GRAPH_t>
-void CRegistrationDeciderOrOptimizer<GRAPH_t>::setGraphPtr(GRAPH_t* graph) {
+template<class GRAPH_T>
+void CRegistrationDeciderOrOptimizer<GRAPH_T>::setGraphPtr(GRAPH_T* graph) {
 	using namespace mrpt::utils;
 
 	m_graph = graph;
 	MRPT_LOG_DEBUG_STREAM << "Fetched the graph pointer successfully";
 }
 
-template<class GRAPH_t>
-bool CRegistrationDeciderOrOptimizer<GRAPH_t>::isMultiRobotSlamClass() {
+template<class GRAPH_T>
+bool CRegistrationDeciderOrOptimizer<GRAPH_T>::isMultiRobotSlamClass() {
 	return is_mr_slam_class;
 }
+
+} } // end of namespaces
 
 #endif /* end of include guard: CREGISTRATIONDECIDEROROPTIMIZER_IMPL_H */

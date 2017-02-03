@@ -10,15 +10,17 @@ using namespace std;
 // template.
 //
 
-template<class GRAPH_t>
-CEdgeRegistrationDecider<GRAPH_t>::CEdgeRegistrationDecider():
-	m_just_inserted_lc(false) { }
+template<class GRAPH_T>
+CEdgeRegistrationDecider<GRAPH_T>::CEdgeRegistrationDecider():
+	m_just_inserted_lc(false),
+ 	m_override_registered_nodes_check(false)
+{ }
 
-template<class GRAPH_t>
-CEdgeRegistrationDecider<GRAPH_t>::~CEdgeRegistrationDecider() { }
+template<class GRAPH_T>
+CEdgeRegistrationDecider<GRAPH_T>::~CEdgeRegistrationDecider() { }
 
-template<class GRAPH_t>
-void CEdgeRegistrationDecider<GRAPH_t>::getDescriptiveReport(std::string* report_str) const {
+template<class GRAPH_T>
+void CEdgeRegistrationDecider<GRAPH_T>::getDescriptiveReport(std::string* report_str) const {
 	stringstream ss("");
 	parent::getDescriptiveReport(report_str);
 
@@ -26,8 +28,8 @@ void CEdgeRegistrationDecider<GRAPH_t>::getDescriptiveReport(std::string* report
 	*report_str += ss.str();
 }
 
-template<class GRAPH_t>
-void CEdgeRegistrationDecider<GRAPH_t>::registerNewEdge(
+template<class GRAPH_T>
+void CEdgeRegistrationDecider<GRAPH_T>::registerNewEdge(
     const mrpt::utils::TNodeID& from,
     const mrpt::utils::TNodeID& to,
     const constraint_t& rel_edge) {

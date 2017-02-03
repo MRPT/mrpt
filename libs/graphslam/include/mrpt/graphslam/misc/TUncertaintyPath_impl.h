@@ -12,9 +12,7 @@
 
 // Implementattion file for TUncertaintyPath struct
 
-
-// TUncertaintyPath - Implementation of Member Methods
-///////////////////////////////////////////////////////
+namespace mrpt { namespace graphslam {
 
 template<class GRAPH_t>
 TUncertaintyPath<GRAPH_t>::TUncertaintyPath() {
@@ -262,5 +260,7 @@ bool TUncertaintyPath<GRAPH_t>::isGaussianType() const {
 	using namespace mrpt::poses;
 	return curr_pose_pdf.GetRuntimeClass() == CLASS_ID(CPosePDFGaussian);
 }
+
+} } // end of namespaces
 
 #endif /* end of include guard: TUNCERTAINTYPATH_IMPL_H */
