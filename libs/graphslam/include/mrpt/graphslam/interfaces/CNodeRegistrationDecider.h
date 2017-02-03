@@ -37,17 +37,20 @@ namespace mrpt { namespace graphslam { namespace deciders {
  *
  * \ingroup mrpt_graphslam_grp
  */
-template<class GRAPH_t=typename mrpt::graphs::CNetworkOfPoses2DInf>
-class CNodeRegistrationDecider : public virtual mrpt::graphslam::CRegistrationDeciderOrOptimizer<GRAPH_t> {
+template<class GRAPH_T=typename mrpt::graphs::CNetworkOfPoses2DInf>
+class CNodeRegistrationDecider :
+	public virtual mrpt::graphslam::CRegistrationDeciderOrOptimizer<GRAPH_T>
+{
 	public:
 		/**\brief Handy typedefs */
 		/**\{*/
 		/**\brief Parent of current class */
-		typedef mrpt::graphslam::CRegistrationDeciderOrOptimizer<GRAPH_t> parent;
+		typedef mrpt::graphslam::CRegistrationDeciderOrOptimizer<GRAPH_T> parent_t;
 		/**\brief type of graph constraints */
-		typedef typename GRAPH_t::constraint_t constraint_t;
+		typedef typename GRAPH_T::constraint_t constraint_t;
 		/**\brief type of underlying poses (2D/3D). */
-		typedef typename GRAPH_t::constraint_t::type_value pose_t;
+		typedef typename GRAPH_T::constraint_t::type_value pose_t;
+		typedef typename GRAPH_T::global_pose_t global_pose_t;
 		typedef mrpt::math::CMatrixFixedNumeric<double,
 						constraint_t::state_length,
 						constraint_t::state_length> inf_mat_t;
@@ -59,7 +62,7 @@ class CNodeRegistrationDecider : public virtual mrpt::graphslam::CRegistrationDe
 		virtual ~CNodeRegistrationDecider();
 		/** \return Latest estimated robot position
 		 */
-		virtual pose_t getCurrentRobotPosEstimation() const = 0;
+		virtual global_pose_t getCurrentRobotPosEstimation() const = 0;
 		/**\brief Generic method for fetching the incremental action-observations
 		 * (or observation-only) depending on the rawlog format readings from the
 		 * calling function.
@@ -81,28 +84,38 @@ class CNodeRegistrationDecider : public virtual mrpt::graphslam::CRegistrationDe
 		 * graph.
 		 *
 		 * This should be the key-method in any implementation of this
-		 * interface. Should call registerNewNode method if the registration
+		 * interface. Should call registerNewNodeAtEnd method if the registration
 		 * condition is satisfied.
 		 *
 		 * \return True upon successful node registration in the graph
 		 */
 		virtual bool checkRegistrationCondition();
-		/**\brief Generic method of adding new poses to the graph.
-		 *
+		/**\brief Utility methods for adding new poses to the graph.
+		 */
+		 /**\{*/
+		/** Add a new constraint at the end of the graph.
 		 * \param[in] constraint Constraint Transformation from the latest to the
 		 * new node.
 		 *
 		 * \return True upon successful node registration.
 		 */
-		virtual bool registerNewNode(
-				const typename GRAPH_t::constraint_t constraint);
+		virtual bool registerNewNodeAtEnd(
+				const typename GRAPH_T::constraint_t constraint);
+		/**\brief Get a global_pose_t and fill the NODE_ANNOTATIONS-related fields
+		 * 
+		 * \note Users are encouraged to override this method in case they have
+		 * defined a new TNodeAnnotations struct and want to use this metadata in
+		 * the graph nodes.
+		 */
+		virtual global_pose_t addNodeAnnotsToPose(const global_pose_t& pose) const;
+		 /**\}*/
 
 		/**\brief Store the last registered NodeID.
 		 *
 		 * We don't store its pose since it will most likely change due to calls to the
 		 * graph-optimization procedure / dijkstra_node_estimation
 		 */
-		mrpt::utils::TNodeID m_prev_registered_node;
+		mrpt::utils::TNodeID m_prev_registered_nodeID;
 
 		/**\brief Initial information matrix for paths
 		 *

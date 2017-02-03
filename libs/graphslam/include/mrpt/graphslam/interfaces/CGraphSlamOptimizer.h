@@ -37,7 +37,9 @@ namespace mrpt { namespace graphslam { namespace optimizers {
  * \ingroup mrpt_graphslam_grp
  */
 template<class GRAPH_t=typename mrpt::graphs::CNetworkOfPoses2DInf>
-class CGraphSlamOptimizer : public virtual mrpt::graphslam::CRegistrationDeciderOrOptimizer<GRAPH_t> {
+class CGraphSlamOptimizer :
+	public virtual mrpt::graphslam::CRegistrationDeciderOrOptimizer<GRAPH_t>
+{
 	public:
 		/**\brief Handy typedefs */
 		/**\{*/

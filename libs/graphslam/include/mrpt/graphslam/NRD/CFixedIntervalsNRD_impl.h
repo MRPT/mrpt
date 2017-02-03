@@ -15,12 +15,12 @@ namespace mrpt { namespace graphslam { namespace deciders {
 // Ctors, Dtors
 //////////////////////////////////////////////////////////////
 
-template<class GRAPH_t>
-CFixedIntervalsNRD<GRAPH_t>::CFixedIntervalsNRD() {
+template<class GRAPH_T>
+CFixedIntervalsNRD<GRAPH_T>::CFixedIntervalsNRD() {
 	this->initCFixedIntervalsNRD();
 }
-template<class GRAPH_t>
-void CFixedIntervalsNRD<GRAPH_t>::initCFixedIntervalsNRD() {
+template<class GRAPH_T>
+void CFixedIntervalsNRD<GRAPH_T>::initCFixedIntervalsNRD() {
 	using namespace mrpt::utils;
 	this->initializeLoggers("CFixedIntervalsNRD");
 
@@ -29,20 +29,20 @@ void CFixedIntervalsNRD<GRAPH_t>::initCFixedIntervalsNRD() {
 
 	this->logFmt(LVL_DEBUG, "IntervalsNRD: Initialized class object");
 }
-template<class GRAPH_t>
-CFixedIntervalsNRD<GRAPH_t>::~CFixedIntervalsNRD() { }
+template<class GRAPH_T>
+CFixedIntervalsNRD<GRAPH_T>::~CFixedIntervalsNRD() { }
 
 // Member function implementations
 //////////////////////////////////////////////////////////////
 
-template<class GRAPH_t>
-typename GRAPH_t::constraint_t::type_value
-CFixedIntervalsNRD<GRAPH_t>::getCurrentRobotPosEstimation() const {
-	return m_curr_estimated_pose;
+template<class GRAPH_T>
+typename GRAPH_T::global_pose_t
+CFixedIntervalsNRD<GRAPH_T>::getCurrentRobotPosEstimation() const {
+	return this->addNodeAnnotsToPose(m_curr_estimated_pose);
 }
 
-template<class GRAPH_t>
-bool CFixedIntervalsNRD<GRAPH_t>::updateState(
+template<class GRAPH_T>
+bool CFixedIntervalsNRD<GRAPH_T>::updateState(
 		mrpt::obs::CActionCollectionPtr action,
 		mrpt::obs::CSensoryFramePtr observations,
 		mrpt::obs::CObservationPtr observation )  {
@@ -100,8 +100,8 @@ bool CFixedIntervalsNRD<GRAPH_t>::updateState(
 
 	} // ELSE - FORMAT #1
 
-	if (this->m_prev_registered_node != INVALID_NODEID) {
-		m_curr_estimated_pose = this->m_graph->nodes.at(this->m_prev_registered_node);
+	if (this->m_prev_registered_nodeID != INVALID_NODEID) {
+		m_curr_estimated_pose = this->m_graph->nodes.at(this->m_prev_registered_nodeID);
 	}
 	m_curr_estimated_pose += m_since_prev_node_PDF.getMeanVal();
 
@@ -121,20 +121,20 @@ bool CFixedIntervalsNRD<GRAPH_t>::updateState(
 	MRPT_END;
 }
 
-template<class GRAPH_t>
-bool CFixedIntervalsNRD<GRAPH_t>::checkRegistrationCondition() {
+template<class GRAPH_T>
+bool CFixedIntervalsNRD<GRAPH_T>::checkRegistrationCondition() {
 	MRPT_START;
 
 	// check that a node has already been registered - if not default to (0,0,0)
-	pose_t last_pose_inserted = this->m_prev_registered_node != INVALID_NODEID? 
-		this->m_graph->nodes.at(this->m_prev_registered_node): pose_t();
+	pose_t last_pose_inserted = this->m_prev_registered_nodeID != INVALID_NODEID? 
+		this->m_graph->nodes.at(this->m_prev_registered_nodeID): pose_t();
 
 	// odometry criterion
 	bool registered = false;
 	if (this->checkRegistrationCondition(
 				last_pose_inserted,
 				m_curr_estimated_pose)) {
-		registered = this->registerNewNode(m_since_prev_node_PDF);
+		registered = this->registerNewNodeAtEnd(m_since_prev_node_PDF);
 	}
 
 	return registered;
@@ -142,8 +142,8 @@ bool CFixedIntervalsNRD<GRAPH_t>::checkRegistrationCondition() {
 	MRPT_END;
 }
 
-template<class GRAPH_t>
-bool CFixedIntervalsNRD<GRAPH_t>::checkRegistrationCondition(
+template<class GRAPH_T>
+bool CFixedIntervalsNRD<GRAPH_T>::checkRegistrationCondition(
 		mrpt::poses::CPose2D p1,
 		mrpt::poses::CPose2D p2) {
 	using namespace mrpt::math;
@@ -158,8 +158,8 @@ bool CFixedIntervalsNRD<GRAPH_t>::checkRegistrationCondition(
 }
 
 // TODO - check this
-template<class GRAPH_t>
-bool CFixedIntervalsNRD<GRAPH_t>::checkRegistrationCondition(
+template<class GRAPH_T>
+bool CFixedIntervalsNRD<GRAPH_T>::checkRegistrationCondition(
 		mrpt::poses::CPose3D p1,
 		mrpt::poses::CPose3D p2) {
 	using namespace mrpt::math;
@@ -175,11 +175,11 @@ bool CFixedIntervalsNRD<GRAPH_t>::checkRegistrationCondition(
 	return res;
 }
 
-template<class GRAPH_t>
-void CFixedIntervalsNRD<GRAPH_t>::loadParams(const std::string& source_fname) {
+template<class GRAPH_T>
+void CFixedIntervalsNRD<GRAPH_T>::loadParams(const std::string& source_fname) {
 	MRPT_START;
 	using namespace mrpt::utils;
-	parent::loadParams(source_fname);
+	parent_t::loadParams(source_fname);
 
 	params.loadFromConfigFileName(source_fname,
 			"NodeRegistrationDeciderParameters");
@@ -198,17 +198,17 @@ void CFixedIntervalsNRD<GRAPH_t>::loadParams(const std::string& source_fname) {
 	MRPT_END;
 }
 
-template<class GRAPH_t>
-void CFixedIntervalsNRD<GRAPH_t>::printParams() const {
+template<class GRAPH_T>
+void CFixedIntervalsNRD<GRAPH_T>::printParams() const {
 	MRPT_START;
-	parent::printParams();
+	parent_t::printParams();
 	params.dumpToConsole();
 
 	MRPT_END;
 }
 
-template<class GRAPH_t>
-void CFixedIntervalsNRD<GRAPH_t>::getDescriptiveReport(std::string* report_str) const {
+template<class GRAPH_T>
+void CFixedIntervalsNRD<GRAPH_T>::getDescriptiveReport(std::string* report_str) const {
 	MRPT_START;
 	using namespace std;
 
@@ -227,7 +227,7 @@ void CFixedIntervalsNRD<GRAPH_t>::getDescriptiveReport(std::string* report_str) 
 
 	// merge the individual reports
 	report_str->clear();
-	parent::getDescriptiveReport(report_str);
+	parent_t::getDescriptiveReport(report_str);
 
 	*report_str += class_props_ss.str();
 	*report_str += report_sep;
@@ -248,21 +248,21 @@ void CFixedIntervalsNRD<GRAPH_t>::getDescriptiveReport(std::string* report_str) 
 
 // TParams
 //////////////////////////////////////////////////////////////
-template<class GRAPH_t>
-CFixedIntervalsNRD<GRAPH_t>::TParams::TParams() {
+template<class GRAPH_T>
+CFixedIntervalsNRD<GRAPH_T>::TParams::TParams() {
 }
-template<class GRAPH_t>
-CFixedIntervalsNRD<GRAPH_t>::TParams::~TParams() {
+template<class GRAPH_T>
+CFixedIntervalsNRD<GRAPH_T>::TParams::~TParams() {
 }
-template<class GRAPH_t>
-void CFixedIntervalsNRD<GRAPH_t>::TParams::dumpToTextStream(
+template<class GRAPH_T>
+void CFixedIntervalsNRD<GRAPH_T>::TParams::dumpToTextStream(
 		mrpt::utils::CStream &out) const {
 	MRPT_START;
 	out.printf("%s", this->getAsString().c_str());
 	MRPT_END;
 }
-template<class GRAPH_t>
-void CFixedIntervalsNRD<GRAPH_t>::TParams::loadFromConfigFile(
+template<class GRAPH_T>
+void CFixedIntervalsNRD<GRAPH_T>::TParams::loadFromConfigFile(
 		const mrpt::utils::CConfigFileBase &source,
 		const std::string &section) {
 	MRPT_START;
@@ -280,8 +280,8 @@ void CFixedIntervalsNRD<GRAPH_t>::TParams::loadFromConfigFile(
 	MRPT_END;
 }
 
-template<class GRAPH_t>
-void CFixedIntervalsNRD<GRAPH_t>::TParams::getAsString(std::string* params_out) const {
+template<class GRAPH_T>
+void CFixedIntervalsNRD<GRAPH_T>::TParams::getAsString(std::string* params_out) const {
 	MRPT_START;
 	using namespace mrpt::math;
 	using namespace mrpt::utils;
@@ -295,8 +295,8 @@ void CFixedIntervalsNRD<GRAPH_t>::TParams::getAsString(std::string* params_out) 
 
 	MRPT_END;
 }
-template<class GRAPH_t>
-std::string CFixedIntervalsNRD<GRAPH_t>::TParams::getAsString() const {
+template<class GRAPH_T>
+std::string CFixedIntervalsNRD<GRAPH_T>::TParams::getAsString() const {
 	MRPT_START;
 
 	std::string str;

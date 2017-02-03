@@ -38,7 +38,7 @@ namespace mrpt { namespace graphslam { namespace deciders {
  *
  * Current decider is a minimal, simple implementation of the
  * CNodeRegistrationDecider interface which can be used for 2D datasets.
- * Decider *does not guarantee* thread safety when accessing the GRAPH_t
+ * Decider *does not guarantee* thread safety when accessing the GRAPH_T
  * resource. This is handled by the CGraphSlamEngine instance.
  *
  * ### Specifications
@@ -70,9 +70,9 @@ namespace mrpt { namespace graphslam { namespace deciders {
  *
  * \ingroup mrpt_graphslam_grp
  */
-template<class GRAPH_t=typename mrpt::graphs::CNetworkOfPoses2DInf>
+template<class GRAPH_T=typename mrpt::graphs::CNetworkOfPoses2DInf>
 class CFixedIntervalsNRD:
-	public mrpt::graphslam::deciders::CNodeRegistrationDecider<GRAPH_t>
+	public mrpt::graphslam::deciders::CNodeRegistrationDecider<GRAPH_T>
 {
 	public:
 		// Public functions
@@ -81,18 +81,19 @@ class CFixedIntervalsNRD:
 		/**\brief Handy typedefs */
 		/**\{*/
 		/**\brief Node Registration Decider */
-		typedef mrpt::graphslam::deciders::CNodeRegistrationDecider<GRAPH_t> node_reg;
+		typedef mrpt::graphslam::deciders::CNodeRegistrationDecider<GRAPH_T> node_reg;
 
 		/**\brief type of graph constraints */
-		typedef typename GRAPH_t::constraint_t constraint_t;
+		typedef typename GRAPH_T::constraint_t constraint_t;
 		/**\brief type of underlying poses (2D/3D). */
-		typedef typename GRAPH_t::constraint_t::type_value pose_t;
+		typedef typename GRAPH_T::constraint_t::type_value pose_t;
+		typedef typename GRAPH_T::global_pose_t global_pose_t;
 
 		typedef mrpt::math::CMatrixFixedNumeric<double,
 						constraint_t::state_length,
 						constraint_t::state_length> inf_mat_t;
 		/**\brief Node Registration Decider */
-		typedef mrpt::graphslam::deciders::CNodeRegistrationDecider<GRAPH_t> parent;
+		typedef mrpt::graphslam::deciders::CNodeRegistrationDecider<GRAPH_T> parent_t;
 		/**\}*/
 
 		/**\brief Class constructor */
@@ -104,7 +105,7 @@ class CFixedIntervalsNRD:
 		void loadParams(const std::string& source_fname);
 		void printParams() const;
 		void getDescriptiveReport(std::string* report_str) const;
-		pose_t getCurrentRobotPosEstimation() const;
+		global_pose_t getCurrentRobotPosEstimation() const;
 
 		/**\brief Method makes use of the CActionCollection/CObservation to update the
 		 * odometry estimation from the last inserted pose
@@ -167,7 +168,7 @@ class CFixedIntervalsNRD:
 		constraint_t	m_since_prev_node_PDF;
 
 		/**\brief Current estimated position */
-		pose_t m_curr_estimated_pose;
+		global_pose_t m_curr_estimated_pose;
 		/**\brief pose_t estimation using only odometry information. Handy for
 		 * observation-only rawlogs.
 		 */

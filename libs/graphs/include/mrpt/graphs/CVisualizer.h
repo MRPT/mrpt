@@ -21,7 +21,7 @@ namespace mrpt { namespace graphs { namespace detail {
 template<
 	class CPOSE, // Type of edges
 	class MAPS_IMPLEMENTATION, // Use std::map<> vs. std::vector<>
-	class NODE_ANNOTATIONS=mrpt::graphs::detail::node_annotations_empty,
+	class NODE_ANNOTATIONS=mrpt::graphs::detail::TNodeAnnotations,
 	class EDGE_ANNOTATIONS=mrpt::graphs::detail::edge_annotations_empty
 	>
 class CVisualizer

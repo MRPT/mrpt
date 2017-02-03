@@ -76,16 +76,14 @@ void CGraphSlamHandler::readConfigFname(const std::string& fname) {
 	ASSERTMSG_(mrpt::system::fileExists(fname),
 			mrpt::format("\nConfiguration file not found: \n%s\n", fname.c_str()));
 
+	output_dir_fname = "graphslam";
+
 	if (logger) {
 		logger->logFmt(LVL_INFO, "Reading the .ini file... ");
 	}
 
 	CConfigFile cfg_file(fname);
 
-	output_dir_fname = cfg_file.read_string(
-			"GeneralConfiguration",
-			"output_dir_fname",
-			"graphslam_engine_results", false);
 	user_decides_about_output_dir = cfg_file.read_bool(
 			"GeneralConfiguration",
 			"user_decides_about_output_dir",

@@ -23,12 +23,12 @@ namespace mrpt { namespace graphslam { namespace optimizers {
  * Handy when you are testing other parts of the application but not the
  * specific registration procedure
  */
-template<class GRAPH_t=typename mrpt::graphs::CNetworkOfPoses2DInf >
+template<class GRAPH_T=typename mrpt::graphs::CNetworkOfPoses2DInf >
 class CEmptyGSO:
-	public mrpt::graphslam::optimizers::CGraphSlamOptimizer<GRAPH_t>
+	public mrpt::graphslam::optimizers::CGraphSlamOptimizer<GRAPH_T>
 {
 	public:
-		typedef typename GRAPH_t::constraint_t constraint_t;
+		typedef typename GRAPH_T::constraint_t constraint_t;
 
 		CEmptyGSO();
 		~CEmptyGSO();
@@ -47,19 +47,19 @@ class CEmptyGSO:
 
 //////////////////////////////////////////////////////////////////////////////
 
-template<class GRAPH_t>
-CEmptyGSO<GRAPH_t>::CEmptyGSO() { }
-template<class GRAPH_t>
-CEmptyGSO<GRAPH_t>::~CEmptyGSO() { }
+template<class GRAPH_T>
+CEmptyGSO<GRAPH_T>::CEmptyGSO() { }
+template<class GRAPH_T>
+CEmptyGSO<GRAPH_T>::~CEmptyGSO() { }
 
-template<class GRAPH_t>
-bool CEmptyGSO<GRAPH_t>::updateState(
+template<class GRAPH_T>
+bool CEmptyGSO<GRAPH_T>::updateState(
 		mrpt::obs::CActionCollectionPtr action,
 		mrpt::obs::CSensoryFramePtr observations,
 		mrpt::obs::CObservationPtr observation ) {return true;}
 
-template<class GRAPH_t>
-void CEmptyGSO<GRAPH_t>::registerNewEdge(
+template<class GRAPH_T>
+void CEmptyGSO<GRAPH_T>::registerNewEdge(
 		const mrpt::utils::TNodeID& from,
 		const mrpt::utils::TNodeID& to,
 		const constraint_t& rel_edge ) { }
