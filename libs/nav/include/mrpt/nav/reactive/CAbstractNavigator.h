@@ -11,6 +11,7 @@
 #include <mrpt/nav/reactive/CRobot2NavInterface.h>
 #include <mrpt/utils/COutputLogger.h>
 #include <mrpt/utils/CTimeLogger.h>
+#include <mrpt/utils/TEnumType.h>
 #include <mrpt/poses/CPose3DInterpolator.h>
 #include <mrpt/synch/CCriticalSection.h>
 #include <mrpt/obs/obs_frwds.h>
@@ -154,4 +155,21 @@ namespace mrpt
 		MRPT_MAKE_ALIGNED_OPERATOR_NEW
 	};
   }
+
+	// Specializations MUST occur at the same namespace:
+	namespace utils
+	{
+		template <>
+		struct TEnumTypeFiller<mrpt::nav::CAbstractNavigator::TState>
+		{
+			typedef mrpt::nav::CAbstractNavigator::TState enum_t;
+			static void fill(bimap<enum_t, std::string>  &m_map)
+			{
+				m_map.insert(mrpt::nav::CAbstractNavigator::IDLE, "IDLE");
+				m_map.insert(mrpt::nav::CAbstractNavigator::NAVIGATING, "NAVIGATING");
+				m_map.insert(mrpt::nav::CAbstractNavigator::SUSPENDED, "SUSPENDED");
+				m_map.insert(mrpt::nav::CAbstractNavigator::NAV_ERROR, "NAV_ERROR");
+			}
+		};
+	} // End of namespace
 }
