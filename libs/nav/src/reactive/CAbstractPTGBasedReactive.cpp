@@ -505,24 +505,26 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 			}
 
 			const size_t numScores = maxScore.size();
-			ASSERT_(numScores);
-			std::vector<double> spanScore(numScores);
-
-			const std::array<bool,6> scores_to_normalize{ false, false, false, false, false, true }; // TODO: make this a parameter, if worth?
-
-			for (size_t i = 0; i < numScores; i++)
+			if (!numScores) // it may be empty if no PTG gave acceptable possible motions
 			{
-				if (!scores_to_normalize[i])
-					continue;
+				std::vector<double> spanScore(numScores);
 
-				const double K = maxScore[i] != 0 ? (1.0 / maxScore[i]) : 1.0;
+				const std::array<bool, 6> scores_to_normalize{ false, false, false, false, false, true }; // TODO: make this a parameter, if worth?
 
-				for (size_t k = 0; k <= nPTGs; k++)
+				for (size_t i = 0; i < numScores; i++)
 				{
-					THolonomicMovement &holonomicMovement = holonomicMovements[k];
-					if (holonomicMovement.eval_factors.empty())
+					if (!scores_to_normalize[i])
 						continue;
-					holonomicMovement.eval_factors[i] *= K;
+
+					const double K = maxScore[i] != 0 ? (1.0 / maxScore[i]) : 1.0;
+
+					for (size_t k = 0; k <= nPTGs; k++)
+					{
+						THolonomicMovement &holonomicMovement = holonomicMovements[k];
+						if (holonomicMovement.eval_factors.empty())
+							continue;
+						holonomicMovement.eval_factors[i] *= K;
+					}
 				}
 			}
 
@@ -551,7 +553,6 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 				ASSERT_(!weights.empty() || weights4ptg.size()>indexPTG);
 				const std::vector<double> & w = this->weights.empty() ? this->weights4ptg[indexPTG] : this->weights;
 				ASSERT_EQUAL_(w.size(), holonomicMovement.eval_factors.size());
-
 
 				// Sum:
 				for (size_t i = 0; i < holonomicMovement.eval_factors.size(); i++)
