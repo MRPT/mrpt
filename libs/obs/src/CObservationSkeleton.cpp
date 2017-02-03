@@ -30,7 +30,7 @@ IMPLEMENTS_SERIALIZABLE(CObservationSkeleton, CObservation, mrpt::obs)
 void  CObservationSkeleton::writeToStream(CStream &out, int *version) const
 {
 	if (version)
-		*version = 1;
+		*version = 2;
 	else
 	{
 		WRITE_JOINT(head)
@@ -66,6 +66,7 @@ void  CObservationSkeleton::readFromStream(CStream &in, int version)
 	{
 	case 0:
 	case 1:
+	case 2:
 		{
 			READ_JOINT(head)
 			READ_JOINT(neck)
@@ -87,7 +88,9 @@ void  CObservationSkeleton::readFromStream(CStream &in, int version)
 
 			in >> sensorLabel;
 			in >> timestamp;
-			in >> sensorPose;
+			if (version >= 2){
+				in >> sensorPose;
+			}
 		} break;
 	default:
 		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
