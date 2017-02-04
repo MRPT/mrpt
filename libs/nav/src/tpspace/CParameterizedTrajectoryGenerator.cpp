@@ -104,7 +104,8 @@ void CParameterizedTrajectoryGenerator::internal_writeToStream(mrpt::utils::CStr
 
 double CParameterizedTrajectoryGenerator::index2alpha(uint16_t k, const unsigned int num_paths)
 {
-	if (k >= num_paths) throw std::runtime_error("PTG: alpha value out of range!");
+	ASSERT_BELOW_(k, num_paths)
+
 	return M_PI * (-1.0 + 2.0 * (k + 0.5) / num_paths);
 }
 
