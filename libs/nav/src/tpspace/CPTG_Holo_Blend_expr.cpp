@@ -26,14 +26,14 @@ CPTG_Holo_Blend::CPTG_Holo_Blend() :
 	turningRadiusReference(0.30),
 	curVelLocal(0,0,0)
 {
-	internal_init_exprtks();
+	internal_constuct_exprs();
 }
 
 CPTG_Holo_Blend::CPTG_Holo_Blend(const mrpt::utils::CConfigFileBase &cfg,const std::string &sSection) :
 	turningRadiusReference(0.30),
 	curVelLocal(0,0,0)
 {
-	internal_init_exprtks();
+	internal_constuct_exprs();
 	this->loadFromConfigFile(cfg,sSection);
 }
 
@@ -41,7 +41,7 @@ CPTG_Holo_Blend::~CPTG_Holo_Blend()
 {
 }
 
-void CPTG_Holo_Blend::internal_init_exprtks()
+void CPTG_Holo_Blend::internal_constuct_exprs()
 {
 	PIMPL_CONSTRUCT(exprtk::expression<double>, m_expr_v);
 	PIMPL_CONSTRUCT(exprtk::expression<double>, m_expr_w);

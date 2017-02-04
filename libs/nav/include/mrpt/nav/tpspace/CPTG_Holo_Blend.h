@@ -78,7 +78,7 @@ namespace mrpt
 		PIMPL_DECLARE_TYPE(exprtk::expression<double>, m_expr_w);
 		PIMPL_DECLARE_TYPE(exprtk::expression<double>, m_expr_T_ramp);
 		double m_expr_dir;  // Used as symbol "dir" in m_expr_v and m_expr_w
-		void internal_init_exprtks();
+		void internal_constuct_exprs();
 		double internal_get_v(const double dir) const;  //!< Evals expr_v
 		double internal_get_w(const double dir) const;  //!< Evals expr_w
 		double internal_get_T_ramp(const double dir) const;  //!< Evals expr_T_ramp
