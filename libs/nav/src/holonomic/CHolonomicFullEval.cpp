@@ -34,7 +34,7 @@ CHolonomicFullEval::CHolonomicFullEval(const mrpt::utils::CConfigFileBase *INI_F
 	CAbstractHolonomicReactiveMethod("FULL_EVAL_CONFIG"),
 	m_last_selected_sector ( std::numeric_limits<unsigned int>::max() )
 {
-	internal_constuct_exprs();
+	internal_construct_exprs();
 
 	if (INI_FILE!=NULL)
 		initialize( *INI_FILE );
@@ -529,7 +529,7 @@ void CHolonomicFullEval::postProcessDirectionEvaluations(std::vector<double> &di
 	// Default: do nothing
 }
 
-void CHolonomicFullEval::internal_constuct_exprs()
+void CHolonomicFullEval::internal_construct_exprs()
 {
 	PIMPL_CONSTRUCT(exprtk::expression<double>, m_expr_target_dir_boost_score);
 

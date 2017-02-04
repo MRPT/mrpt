@@ -27,6 +27,9 @@
 #include <iomanip>
 #include <array>
 
+#define exprtk_disable_string_capabilities   // Workaround a bug in Ubuntu precise's GCC+libstdc++
+#include <mrpt/otherlibs/exprtk.hpp>
+
 using namespace mrpt;
 using namespace mrpt::poses;
 using namespace mrpt::math;
@@ -79,8 +82,10 @@ CAbstractPTGBasedReactive::CAbstractPTGBasedReactive(CRobot2NavInterface &react_
 	ENABLE_BOOST_SHORTEST_ETA(false),
 	BEST_ETA_MARGIN_TOLERANCE_WRT_BEST(1.05),
 	ENABLE_OBSTACLE_FILTERING(false),
-	m_navlogfiles_dir(sLogDir)
+	m_navlogfiles_dir(sLogDir),
+	m_exprstr_score2_formula("var dif:=abs(k_target-k); if (dif>(num_paths/2)) { dif:=num_paths-dif; } var result := exp(-abs(dif / (num_paths/10.0)));")
 {
+	internal_construct_exprs();
 	this->enableLogFile( enableLogFile );
 }
 
@@ -114,6 +119,8 @@ void CAbstractPTGBasedReactive::initialize()
 	mrpt::synch::CCriticalSectionLocker csl(&m_nav_cs);
 
 	m_infoPerPTG_timestamp = INVALID_TIMESTAMP;
+
+	internal_compile_exprs();
 
 	// Compute collision grids:
 	STEP1_InitPTGs();
@@ -1010,10 +1017,14 @@ void CAbstractPTGBasedReactive::STEP5_PTGEvaluator(
 
 	// Factor 2: Distance in sectors:
 	// -------------------------------------------
-	int dif = std::abs(TargetSector - kDirection);
-	const size_t nSectors = in_TPObstacles.size();
-	if ( dif > int(nSectors/2)) dif = nSectors - dif;
-	eval_factors[SCOREIDX_TPS_DIRECTION] = exp(-square( dif / (nSectors/3.0))) ;
+	//int dif = std::abs(TargetSector - kDirection);
+	//if ( dif > int(nSectors/2)) dif = nSectors - dif;
+	m_expr_var_k = kDirection;
+	m_expr_var_k_target = TargetSector;
+	m_expr_var_num_paths = in_TPObstacles.size();
+
+	// Was: eval_factors[SCOREIDX_TPS_DIRECTION] = exp(-std::abs( dif / (nSectors/10.0)));
+	eval_factors[SCOREIDX_TPS_DIRECTION] = PIMPL_GET_CONSTREF(exprtk::expression<double>, m_expr_score2_formula).value();
 
 	// Factor 3: Angle between the robot at the end of the chosen trajectory and the target
 	// -------------------------------------------------------------------------------------
@@ -1141,6 +1152,8 @@ void CAbstractPTGBasedReactive::loadConfigFile(const mrpt::utils::CConfigFileBas
 
 	DIST_TO_TARGET_FOR_SENDING_EVENT = cfg.read_float(sectCfg, "DIST_TO_TARGET_FOR_SENDING_EVENT", DIST_TO_TARGET_FOR_SENDING_EVENT, false);
 	m_badNavAlarm_AlarmTimeout = cfg.read_double(sectCfg,"ALARM_SEEMS_NOT_APPROACHING_TARGET_TIMEOUT", m_badNavAlarm_AlarmTimeout, false);
+
+	MRPT_LOAD_HERE_CONFIG_VAR(score2_formula, string, m_exprstr_score2_formula, cfg, sectCfg);
 
 	// ========= Optional filtering ===========
 	MRPT_LOAD_CONFIG_VAR(ENABLE_OBSTACLE_FILTERING, bool  ,cfg, sectCfg);
@@ -1450,4 +1463,27 @@ void CAbstractPTGBasedReactive::ptg_eval_target_build_obstacles(
 		ipp.timeForTPObsTransformation = timeForTPObsTransformation;
 		ipp.timeForHolonomicMethod = timeForHolonomicMethod;
 	}
+}
+
+void CAbstractPTGBasedReactive::internal_construct_exprs()
+{
+	PIMPL_CONSTRUCT(exprtk::expression<double>, m_expr_score2_formula);
+
+	exprtk::symbol_table<double> symbol_table;
+
+	symbol_table.add_variable("k", m_expr_var_k);
+	symbol_table.add_variable("k_target", m_expr_var_k_target);
+	symbol_table.add_variable("num_paths", m_expr_var_num_paths);
+	symbol_table.add_constants();
+
+	PIMPL_GET_REF(exprtk::expression<double>, m_expr_score2_formula).register_symbol_table(symbol_table);
+}
+
+void CAbstractPTGBasedReactive::internal_compile_exprs()
+{
+	// Compile user-given expressions:
+	exprtk::parser<double> parser;
+
+	if (!parser.compile(m_exprstr_score2_formula, PIMPL_GET_REF(exprtk::expression<double>, m_expr_score2_formula)))
+		THROW_EXCEPTION(mrpt::format("Error compiling `score2_formula` expression: `%s`. Error: `%s`", m_exprstr_score2_formula.c_str(), parser.error().c_str()));
 }

@@ -92,7 +92,7 @@ namespace mrpt
 		
 		PIMPL_DECLARE_TYPE(exprtk::expression<double>, m_expr_target_dir_boost_score);
 		double m_expr_var_target_dist, m_expr_var_clearance, m_expr_var_free_space, m_expr_var_alpha;
-		void internal_constuct_exprs();
+		void internal_construct_exprs();
 		void internal_compile_exprs();
 
 		virtual void postProcessDirectionEvaluations(std::vector<double> &dir_evals); // If desired, override in a derived class to manipulate the final evaluations of each directions
