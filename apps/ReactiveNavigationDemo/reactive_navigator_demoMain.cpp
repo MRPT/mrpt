@@ -855,6 +855,8 @@ bool reactive_navigator_demoframe::reinitSimulator()
 
 void reactive_navigator_demoframe::simulateOneStep(double time_step)
 {
+	WX_START_TRY
+
 	const double simul_time = m_robotSimul->getTime();
 
 	static double LAST_TIM_LIDAR    = -1e6;
@@ -1114,6 +1116,8 @@ void reactive_navigator_demoframe::simulateOneStep(double time_step)
 			}
 		}
 	}
+
+	WX_END_TRY
 }
 
 void reactive_navigator_demoframe::updateViewsDynamicObjects()

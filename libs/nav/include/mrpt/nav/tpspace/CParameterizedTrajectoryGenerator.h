@@ -109,6 +109,9 @@ namespace nav
 			return inverseMap_WS2TP(x,y,k,d);
 		}
 
+		/** Returns true if a given TP-Space point maps to a unique point in Workspace, and viceversa. Default implementation returns `true`. */
+		virtual bool isBijectiveAt(uint16_t k, uint32_t step) const { return true; }
+
 		/** Converts a discretized "alpha" value into a feasible motion command or action. See derived classes for the meaning of these actions */
 		virtual mrpt::kinematics::CVehicleVelCmdPtr directionToMotionCommand( uint16_t k ) const = 0;
 
@@ -129,12 +132,12 @@ namespace nav
 
 		/** Access path `k` ([0,N-1]=>[-pi,pi] in alpha): pose of the vehicle at discrete step `step`.
 		  * \sa getPathStepCount(), getAlphaValuesCount() */
-		virtual void getPathPose(uint16_t k, uint16_t step, mrpt::math::TPose2D &p) const = 0;
+		virtual void getPathPose(uint16_t k, uint32_t step, mrpt::math::TPose2D &p) const = 0;
 
 		/** Access path `k` ([0,N-1]=>[-pi,pi] in alpha): traversed distance at discrete step `step`.
 		  * \return Distance in pseudometers (real distance, NOT normalized to [0,1] for [0,refDist])
 		  * \sa getPathStepCount(), getAlphaValuesCount() */
-		virtual double getPathDist(uint16_t k, uint16_t step) const = 0;
+		virtual double getPathDist(uint16_t k, uint32_t step) const = 0;
 
 		/** Returns the duration (in seconds) of each "step"
 		* \sa getPathStepCount() */

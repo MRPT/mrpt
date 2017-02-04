@@ -432,13 +432,14 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 		// =========
 		// This approach is only possible if:
 		bool NOP_not_too_old = true;
+		double NOP_max_time = -1.0, NOP_At = -1.0;
 		const bool can_do_nop_motion = (m_lastSentVelCmd.isValid() &&
 			!target_changed_since_last_iteration &&
 			getPTG(m_lastSentVelCmd.ptg_index)->supportVelCmdNOP()) &&
-			(NOP_not_too_old = mrpt::system::timeDifference(m_lastSentVelCmd.tim_send_cmd_vel, tim_start_iteration) < getPTG(m_lastSentVelCmd.ptg_index)->maxTimeInVelCmdNOP(m_lastSentVelCmd.ptg_alpha_index));
+			(NOP_not_too_old = (NOP_At=mrpt::system::timeDifference(m_lastSentVelCmd.tim_send_cmd_vel, tim_start_iteration)) < (NOP_max_time=getPTG(m_lastSentVelCmd.ptg_index)->maxTimeInVelCmdNOP(m_lastSentVelCmd.ptg_alpha_index)) );
 
 		if (!NOP_not_too_old) {
-			newLogRec.additional_debug_msgs["PTG_cont"] = "PTG-continuation not allowed: previous command timed-out.";
+			newLogRec.additional_debug_msgs["PTG_cont"] = mrpt::format("PTG-continuation not allowed: previous command timed-out (At=%.03f > Max_At=%.03f)", NOP_At, NOP_max_time);
 		}
 
 		CPose2D rel_cur_pose_wrt_last_vel_cmd_NOP, rel_pose_PTG_origin_wrt_sense_NOP;
@@ -572,14 +573,11 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 
 				ASSERT_(holonomicMovement.PTG != nullptr);
 
-				if (!this_is_PTG_continuation)
-				{
-					holonomicMovement.eval_prio *= holonomicMovement.PTG->getScorePriority();
+				holonomicMovement.eval_prio *= holonomicMovement.PTG->getScorePriority();
 
-					// Use PTG-specific relative scoring priority:
-					const int kDirection = static_cast<int>(holonomicMovement.PTG->alpha2index(holonomicMovement.direction));
-					holonomicMovement.eval_prio *= holonomicMovement.PTG->evalPathRelativePriority(kDirection, ::hypot(relTarget.x,relTarget.y));
-				}
+				// Use PTG-specific relative scoring priority:
+				const int kDirection = static_cast<int>(holonomicMovement.PTG->alpha2index(holonomicMovement.direction));
+				holonomicMovement.eval_prio *= holonomicMovement.PTG->evalPathRelativePriority(kDirection, ::hypot(relTarget.x,relTarget.y));
 
 				holonomicMovement.evaluation = holonomicMovement.eval_org * holonomicMovement.eval_prio;
 
@@ -973,17 +971,32 @@ void CAbstractPTGBasedReactive::STEP5_PTGEvaluator(
 			newLogRec.additional_debug_msgs["PTG_eval"] = "PTG-continuation not allowed, cur. pose out of PTG domain.";
 			return;
 		}
+		uint32_t cur_ptg_step = 0;
+		bool WS_point_is_unique = true; 
 		{
-			const double cur_a = holonomicMovement.PTG->index2alpha(cur_k);
-			log.TP_Robot.x = cos(cur_a)*cur_norm_d;
-			log.TP_Robot.y = sin(cur_a)*cur_norm_d;
-			holonomicMovement.starting_robot_dir = cur_a;
-			holonomicMovement.starting_robot_dist = cur_norm_d;
-		}
-		{
-			uint32_t cur_ptg_step;
 			bool ok1 = holonomicMovement.PTG->getPathStepForDist(m_lastSentVelCmd.ptg_alpha_index, cur_norm_d * holonomicMovement.PTG->getRefDistance(), cur_ptg_step);
 			if (ok1) {
+				// Check bijective:
+				WS_point_is_unique = holonomicMovement.PTG->isBijectiveAt(cur_k, cur_ptg_step);
+				const uint32_t predicted_step = mrpt::system::timeDifference(m_lastSentVelCmd.tim_send_cmd_vel, mrpt::system::now()) / holonomicMovement.PTG->getPathStepDuration();
+				WS_point_is_unique = WS_point_is_unique && holonomicMovement.PTG->isBijectiveAt(kDirection, predicted_step);
+				newLogRec.additional_debug_msgs["PTG_eval.bijective"] = mrpt::format("isBijectiveAt(): k=%i step=%i -> %s", (int)cur_k, (int)cur_ptg_step, WS_point_is_unique ? "yes" : "no");
+
+				if (!WS_point_is_unique)
+				{
+					// Don't trust direction:
+					cur_k = kDirection;
+					cur_ptg_step = predicted_step;
+					cur_norm_d = holonomicMovement.PTG->getPathDist(cur_k, cur_ptg_step);
+				}
+				{
+					const double cur_a = holonomicMovement.PTG->index2alpha(cur_k);
+					log.TP_Robot.x = cos(cur_a)*cur_norm_d;
+					log.TP_Robot.y = sin(cur_a)*cur_norm_d;
+					holonomicMovement.starting_robot_dir = cur_a;
+					holonomicMovement.starting_robot_dist = cur_norm_d;
+				}
+
 				mrpt::math::TPose2D predicted_rel_pose;
 				holonomicMovement.PTG->getPathPose(m_lastSentVelCmd.ptg_alpha_index, cur_ptg_step, predicted_rel_pose);
 				const CPose2D predicted_pose_global = CPose2D(m_lastSentVelCmd.poseVel.pose) + CPose2D(predicted_rel_pose);
@@ -1007,8 +1020,14 @@ void CAbstractPTGBasedReactive::STEP5_PTGEvaluator(
 
 		// Path following isn't perfect: we can't be 100% sure of whether the robot followed exactly
 		// the intended path (`kDirection`), or if it's actually a bit shifted, as reported in `cur_k`.
-		// Take the least favorable case:
-		eval_factors[SCOREIDX_COLISION_FREE_DISTANCE] = std::min(in_TPObstacles[kDirection], in_TPObstacles[cur_k]);
+		// Take the least favorable case.
+		// [Update] Do this only when the PTG gave us a unique-mapped WS<->TPS point:
+
+		eval_factors[SCOREIDX_COLISION_FREE_DISTANCE] = WS_point_is_unique ?
+			std::min(in_TPObstacles[kDirection], in_TPObstacles[cur_k])
+			:
+			in_TPObstacles[kDirection];
+
 		// Only discount free space if there was a real obstacle, not the "end of path" due to limited refDistance.
 		if (eval_factors[SCOREIDX_COLISION_FREE_DISTANCE] < 0.99) {
 			eval_factors[SCOREIDX_COLISION_FREE_DISTANCE] -= cur_norm_d;

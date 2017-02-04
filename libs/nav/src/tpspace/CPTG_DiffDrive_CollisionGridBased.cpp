@@ -751,7 +751,7 @@ size_t CPTG_DiffDrive_CollisionGridBased::getPathStepCount(uint16_t k) const
 	return m_trajectory[k].size();
 }
 
-void CPTG_DiffDrive_CollisionGridBased::getPathPose(uint16_t k, uint16_t step, mrpt::math::TPose2D &p) const
+void CPTG_DiffDrive_CollisionGridBased::getPathPose(uint16_t k, uint32_t step, mrpt::math::TPose2D &p) const
 {
 	ASSERT_(k<m_trajectory.size());
 	ASSERT_(step<m_trajectory[k].size());
@@ -761,7 +761,7 @@ void CPTG_DiffDrive_CollisionGridBased::getPathPose(uint16_t k, uint16_t step, m
 	p.phi = m_trajectory[k][step].phi;
 }
 
-double CPTG_DiffDrive_CollisionGridBased::getPathDist(uint16_t k, uint16_t step) const
+double CPTG_DiffDrive_CollisionGridBased::getPathDist(uint16_t k, uint32_t step) const
 {
 	ASSERT_(k<m_trajectory.size());
 	ASSERT_(step<m_trajectory[k].size());
