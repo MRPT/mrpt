@@ -83,7 +83,7 @@ CAbstractPTGBasedReactive::CAbstractPTGBasedReactive(CRobot2NavInterface &react_
 	BEST_ETA_MARGIN_TOLERANCE_WRT_BEST(1.05),
 	ENABLE_OBSTACLE_FILTERING(false),
 	m_navlogfiles_dir(sLogDir),
-	m_exprstr_score2_formula("var dif:=abs(k_target-k); if (dif>(num_paths/2)) { dif:=num_paths-dif; } var result := exp(-abs(dif / (num_paths/10.0)));")
+	m_exprstr_score2_formula("var dif:=abs(k_target-k); if (dif>(num_paths/2)) { dif:=num_paths-dif; }; exp(-abs(dif / (num_paths/10.0)));")
 {
 	internal_construct_exprs();
 	this->enableLogFile( enableLogFile );
