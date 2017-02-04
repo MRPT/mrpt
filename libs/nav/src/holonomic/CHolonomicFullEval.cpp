@@ -18,6 +18,9 @@
 #include <mrpt/utils/stl_serialization.h>
 #include <cmath>
 
+#define exprtk_disable_string_capabilities   // Workaround a bug in Ubuntu precise's GCC+libstdc++
+#include <mrpt/otherlibs/exprtk.hpp>
+
 using namespace mrpt;
 using namespace mrpt::utils;
 using namespace mrpt::math;
@@ -31,6 +34,8 @@ CHolonomicFullEval::CHolonomicFullEval(const mrpt::utils::CConfigFileBase *INI_F
 	CAbstractHolonomicReactiveMethod("FULL_EVAL_CONFIG"),
 	m_last_selected_sector ( std::numeric_limits<unsigned int>::max() )
 {
+	internal_constuct_exprs();
+
 	if (INI_FILE!=NULL)
 		initialize( *INI_FILE );
 }
@@ -38,6 +43,8 @@ CHolonomicFullEval::CHolonomicFullEval(const mrpt::utils::CConfigFileBase *INI_F
 void CHolonomicFullEval::initialize(const mrpt::utils::CConfigFileBase &INI_FILE)
 {
 	options.loadFromConfigFile(INI_FILE, getConfigFileSectionName());
+
+	internal_compile_exprs();
 }
 
 void CHolonomicFullEval::navigate(const NavInput & ni, NavOutput &no)
@@ -227,7 +234,15 @@ void CHolonomicFullEval::navigate(const NavInput & ni, NavOutput &no)
 					m_dirs_scores(i, 4) > options.TOO_CLOSE_OBSTACLE
 					)
 				{
-					const double extra_score = (m_dirs_scores(i, 4) + 1.0) * std::max(0.0, 1.0 - target_dist);
+					// Update expression variables:
+					m_expr_var_free_space = m_dirs_scores(i, 0);
+					m_expr_var_clearance = m_dirs_scores(i, 4);
+					m_expr_var_alpha = target_dir;
+					m_expr_var_target_dist = target_dist;
+
+					// Evaluate: Was: const double extra_score = (clearance + 1.0) * std::max(0.0, 1.0 - target_dist);
+					const double extra_score = PIMPL_GET_CONSTREF(exprtk::expression<double>, m_expr_target_dir_boost_score).value();
+
 					this_dir_eval += std::max(0.0, extra_score);
 				}
 
@@ -369,7 +384,8 @@ CHolonomicFullEval::TOptions::TOptions() :
 	TARGET_SLOW_APPROACHING_DISTANCE   ( 0.60 ),
 	OBSTACLE_SLOW_DOWN_DISTANCE        ( 0.15 ),
 	HYSTERESIS_SECTOR_COUNT            ( 5 ),
-	LOG_SCORE_MATRIX(false)
+	LOG_SCORE_MATRIX(false),
+	exprstr_target_dir_boost_score( "(clearance + 1) * max(0, 1 - target_dist^2)" )
 {
 	factorWeights = mrpt::math::make_vector<5,double>(1.0, 1.0, 1.0, 0.1, 1.0);
 	factorNormalizeOrNot = mrpt::math::make_vector<5, int>(0, 0, 0, 0, 1);
@@ -392,6 +408,7 @@ void CHolonomicFullEval::TOptions::loadFromConfigFile(const mrpt::utils::CConfig
 	MRPT_LOAD_CONFIG_VAR(OBSTACLE_SLOW_DOWN_DISTANCE,double,  c,s );
 	MRPT_LOAD_CONFIG_VAR(HYSTERESIS_SECTOR_COUNT,double,  c,s );
 	MRPT_LOAD_CONFIG_VAR(LOG_SCORE_MATRIX,bool,  c,s );
+	MRPT_LOAD_HERE_CONFIG_VAR(target_dir_boost_score, string, exprstr_target_dir_boost_score, c, s);
 
 	c.read_vector(s,"factorWeights", std::vector<double>(), factorWeights, true );
 	ASSERT_(factorWeights.size()==5);
@@ -429,13 +446,13 @@ void CHolonomicFullEval::TOptions::saveToConfigFile(mrpt::utils::CConfigFileBase
 	cfg.write(section, "TARGET_SLOW_APPROACHING_DISTANCE", TARGET_SLOW_APPROACHING_DISTANCE, WN, WV, "Start to reduce speed when closer than this to target.");
 	cfg.write(section,"OBSTACLE_SLOW_DOWN_DISTANCE", OBSTACLE_SLOW_DOWN_DISTANCE,   WN,WV, "Start to reduce speed when clearance is below this value ([0,1] ratio wrt obstacle reference/max distance)");
 	cfg.write(section,"HYSTERESIS_SECTOR_COUNT",HYSTERESIS_SECTOR_COUNT,   WN,WV, "Range of `sectors` (directions) for hysteresis over succesive timesteps");
-	cfg.write(section,"LOG_SCORE_MATRIX", LOG_SCORE_MATRIX,   WN,WV, "Log entire score matrix");
+	cfg.write(section, "LOG_SCORE_MATRIX", LOG_SCORE_MATRIX, WN, WV, "Log entire score matrix");
+	cfg.write(section,"target_dir_boost_score", exprstr_target_dir_boost_score,   WN,WV, "Formula for target direction boost in score");
 
 	ASSERT_EQUAL_(factorWeights.size(),5)
 	cfg.write(section,"factorWeights", mrpt::system::sprintf_container("%.2f ",factorWeights),   WN,WV, "[0]=Free space, [1]=Dist. in sectors, [2]=Closer to target (Euclidean), [3]=Hysteresis, [4]=clearance along path");
 	cfg.write(section,"factorNormalizeOrNot", mrpt::system::sprintf_container("%u ", factorNormalizeOrNot), WN, WV, "Normalize factors or not (1/0)");
 
-	
 	cfg.write(section, "PHASE_COUNT", PHASE_FACTORS.size(), WN, WV, "Number of evaluation phases to run (params for each phase below)");
 
 	for (unsigned int i = 0; i < PHASE_FACTORS.size(); i++)
@@ -510,4 +527,27 @@ void  CHolonomicFullEval::readFromStream(mrpt::utils::CStream &in,int version)
 void CHolonomicFullEval::postProcessDirectionEvaluations(std::vector<double> &dir_evals)
 {
 	// Default: do nothing
+}
+
+void CHolonomicFullEval::internal_constuct_exprs()
+{
+	PIMPL_CONSTRUCT(exprtk::expression<double>, m_expr_target_dir_boost_score);
+
+	exprtk::symbol_table<double> symbol_table;
+
+	symbol_table.add_variable("clearance", m_expr_var_clearance);
+	symbol_table.add_variable("free_space", m_expr_var_free_space);
+	symbol_table.add_variable("alpha", m_expr_var_alpha);
+	symbol_table.add_variable("target_dist", m_expr_var_target_dist);
+	symbol_table.add_constants();
+
+	PIMPL_GET_REF(exprtk::expression<double>, m_expr_target_dir_boost_score).register_symbol_table(symbol_table);
+}
+void CHolonomicFullEval::internal_compile_exprs()
+{
+	// Compile user-given expressions:
+	exprtk::parser<double> parser;
+
+	if (!parser.compile(options.exprstr_target_dir_boost_score, PIMPL_GET_REF(exprtk::expression<double>, m_expr_target_dir_boost_score)))
+		THROW_EXCEPTION(mrpt::format("Error compiling `target_dir_boost_score` expression: `%s`. Error: `%s`", options.exprstr_target_dir_boost_score.c_str(), parser.error().c_str()));
 }
