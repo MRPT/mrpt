@@ -482,8 +482,8 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 			}
 		} //end can_do_NOP_motion
 
-		// Evaluate the "evaluation" for each PTG:
-		// -----------------------------------------
+		// Evaluate the "overall score" for each PTG:
+		// -------------------------------------------
 		{
 			std::vector<double> maxScore, minScore;
 			for (size_t i = 0; i <= nPTGs; i++)
@@ -505,10 +505,8 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 			}
 
 			const size_t numScores = maxScore.size();
-			if (!numScores) // it may be empty if no PTG gave acceptable possible motions
+			if (numScores!=0) // it may be empty if no PTG gave acceptable possible motions
 			{
-				std::vector<double> spanScore(numScores);
-
 				const std::array<bool, 6> scores_to_normalize{ false, false, false, false, false, true }; // TODO: make this a parameter, if worth?
 
 				for (size_t i = 0; i < numScores; i++)
@@ -534,11 +532,13 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 				TInfoPerPTG &ipf = m_infoPerPTG[i];
 				THolonomicMovement &holonomicMovement = holonomicMovements[i];
 
-				if ((i!=nPTGs /* speed=0 in NOP */ && holonomicMovement.speed == 0) || (i== nPTGs && !can_do_nop_motion))
+				if ((holonomicMovement.speed <= 0 /* speed=-1 is used to mark invalid NOP holoMovs */) || (i== nPTGs && !can_do_nop_motion))
 				{
 					// If no movement has been found -> the worst evaluation:
-					holonomicMovement.evaluation = 0;
-					holonomicMovement.eval_factors.clear();
+					holonomicMovement.evaluation = .0;
+					holonomicMovement.eval_org = .0;
+					holonomicMovement.eval_prio = .0;
+					//holonomicMovement.eval_factors.clear(); // Leave them for debugging in log files.
 					continue;
 				}
 
@@ -962,7 +962,7 @@ void CAbstractPTGBasedReactive::STEP5_PTGEvaluator(
 		if (!is_exact)
 		{
 			// Don't trust this step: we are not 100% sure of the robot pose in TP-Space for this "PTG continuation" step:
-			holonomicMovement.evaluation = .0;
+			holonomicMovement.speed = -0.01; // this enforces a 0 global evaluation score
 			newLogRec.additional_debug_msgs["PTG_eval"] = "PTG-continuation not allowed, cur. pose out of PTG domain.";
 			return;
 		}
@@ -986,13 +986,13 @@ void CAbstractPTGBasedReactive::STEP5_PTGEvaluator(
 
 				if (predicted2real_dist > MAX_DISTANCE_PREDICTED_ACTUAL_PATH)
 				{
-					holonomicMovement.evaluation = .0;
+					holonomicMovement.speed = -0.01; // this enforces a 0 global evaluation score
 					newLogRec.additional_debug_msgs["PTG_eval"] = "PTG-continuation not allowed, mismatchDistance above threshold.";
 					return;
 				}
 			}
 			else {
-				holonomicMovement.evaluation = .0;
+				holonomicMovement.speed = -0.01; // this enforces a 0 global evaluation score
 				newLogRec.additional_debug_msgs["PTG_eval"] = "PTG-continuation not allowed, couldn't get PTG step for cur. robot pose.";
 				return;
 			}
@@ -1066,7 +1066,7 @@ void CAbstractPTGBasedReactive::STEP5_PTGEvaluator(
 		std::min(eval_factors[SCOREIDX_COLISION_FREE_DISTANCE], eval_factors[SCOREIDX_CLEARANCE]) < this->MIN_NORMALIZED_FREE_SPACE_FOR_PTG_CONTINUATION)
 	{
 		newLogRec.additional_debug_msgs["PTG_eval"] = "PTG-continuation not allowed, too close to obstacles.";
-		holonomicMovement.evaluation = .0;
+		holonomicMovement.speed = -0.01; // this enforces a 0 global evaluation score
 		return;
 	}
 
