@@ -47,7 +47,7 @@ namespace mrpt
 
 				TOptions();
 				void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source, const std::string &section) MRPT_OVERRIDE; // See base docs
-				void dumpToTextStream(mrpt::utils::CStream &out) const MRPT_OVERRIDE; // See base docs
+				void saveToConfigFile(mrpt::utils::CConfigFileBase &c, const std::string &section) const MRPT_OVERRIDE;
 			};
 
 			TOptions options;

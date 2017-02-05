@@ -55,11 +55,14 @@ namespace mrpt
 		* - SEP/2012: First design.
 		* - JUL/2013: Integrated into MRPT library.
 		* - DEC/2013: Code refactoring between this class and CAbstractHolonomicReactiveMethod
+		* - FEB/2017: Refactoring of all parameters for a consistent organization in sections by class names (MRPT 1.5.0)
 		*
 		* This class requires a number of parameters which are usually provided via an external config (".ini") file.
 		* Alternatively, a memory-only object can be used to avoid physical files, see mrpt::utils::CConfigFileMemory.
 		*
-		* Next we provide a self-documented template config file: 
+		* A template config file can be generated at any moment by the user by calling saveConfigFile() with a default-constructed object.
+		*
+		* Next we provide a self-documented template config file; or see it online: https://github.com/MRPT/mrpt/blob/master/share/mrpt/config_files/navigation-ptgs/reactive3d_config.ini
 		* \verbinclude reactive3d_config.ini
 		*
 		*  \sa CAbstractNavigator, CParameterizedTrajectoryGenerator, CAbstractHolonomicReactiveMethod
@@ -94,6 +97,9 @@ namespace mrpt
 				ASSERT_(!m_ptgmultilevel.empty() && !m_ptgmultilevel[0].PTGs.empty())
 				return m_ptgmultilevel[0].PTGs[i];  // Return for the 0'th level (ptgs are replicated at each level)
 			}
+
+			virtual void loadConfigFile(const mrpt::utils::CConfigFileBase &c) MRPT_OVERRIDE; // See base class docs!
+			virtual void saveConfigFile(mrpt::utils::CConfigFileBase &c) const MRPT_OVERRIDE; // See base class docs!
 
 		private:
 			// ------------------------------------------------------
@@ -138,8 +144,6 @@ namespace mrpt
 			/** Generates a pointcloud of obstacles, and the robot shape, to be saved in the logging record for the current timestep */
 			virtual void loggingGetWSObstaclesAndShape(CLogFileRecord &out_log) MRPT_OVERRIDE;
 
-		protected:
-			void internal_loadConfigFile(const mrpt::utils::CConfigFileBase &ini, const std::string &section_prefix="") MRPT_OVERRIDE;
 
 		}; // end class
 	}

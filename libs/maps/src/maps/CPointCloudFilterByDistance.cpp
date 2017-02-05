@@ -189,11 +189,11 @@ void CPointCloudFilterByDistance::TOptions::loadFromConfigFile(const mrpt::utils
 	MRPT_LOAD_CONFIG_VAR(max_deletion_ratio, double, c, s);
 }
 
-void CPointCloudFilterByDistance::TOptions::dumpToTextStream(mrpt::utils::CStream &out) const
+void CPointCloudFilterByDistance::TOptions::saveToConfigFile(mrpt::utils::CConfigFileBase &c, const std::string &s) const
 {
-	LOADABLEOPTS_DUMP_VAR(min_dist, double);
-	LOADABLEOPTS_DUMP_VAR_DEG(angle_tolerance);
-	LOADABLEOPTS_DUMP_VAR(too_old_seconds, double);
-	LOADABLEOPTS_DUMP_VAR(previous_keyframes, int);
-	LOADABLEOPTS_DUMP_VAR(max_deletion_ratio, double);
+	MRPT_SAVE_CONFIG_VAR_COMMENT(min_dist, "");
+	MRPT_SAVE_CONFIG_VAR_DEGREES_COMMENT("angle_tolerance",angle_tolerance, "");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(too_old_seconds, "");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(previous_keyframes, "(Default: 1) How many previous keyframes will be compared with the latest pointcloud.");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(max_deletion_ratio, "(Default: 0.4) If the ratio [0,1] of points considered invalid (`deletion` ) is larger than this ratio, no point will be deleted since it'd be too suspicious and may indicate a failure of this filter.");
 }

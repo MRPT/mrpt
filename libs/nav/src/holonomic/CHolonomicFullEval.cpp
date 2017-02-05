@@ -31,7 +31,7 @@ IMPLEMENTS_SERIALIZABLE( CLogFileRecord_FullEval, CHolonomicLogFileRecord,mrpt::
 IMPLEMENTS_SERIALIZABLE( CHolonomicFullEval, CAbstractHolonomicReactiveMethod,mrpt::nav)
 
 CHolonomicFullEval::CHolonomicFullEval(const mrpt::utils::CConfigFileBase *INI_FILE ) :
-	CAbstractHolonomicReactiveMethod("FULL_EVAL_CONFIG"),
+	CAbstractHolonomicReactiveMethod("CHolonomicFullEval"),
 	m_last_selected_sector ( std::numeric_limits<unsigned int>::max() )
 {
 	internal_construct_exprs();
@@ -40,9 +40,14 @@ CHolonomicFullEval::CHolonomicFullEval(const mrpt::utils::CConfigFileBase *INI_F
 		initialize( *INI_FILE );
 }
 
-void CHolonomicFullEval::initialize(const mrpt::utils::CConfigFileBase &INI_FILE)
+void CHolonomicFullEval::saveConfigFile(mrpt::utils::CConfigFileBase &c) const
 {
-	options.loadFromConfigFile(INI_FILE, getConfigFileSectionName());
+	options.saveToConfigFile(c, getConfigFileSectionName());
+}
+
+void CHolonomicFullEval::initialize(const mrpt::utils::CConfigFileBase &c)
+{
+	options.loadFromConfigFile(c, getConfigFileSectionName());
 
 	internal_compile_exprs();
 }
@@ -437,31 +442,35 @@ void CHolonomicFullEval::TOptions::loadFromConfigFile(const mrpt::utils::CConfig
 	MRPT_END
 }
 
-void CHolonomicFullEval::TOptions::saveToConfigFile(mrpt::utils::CConfigFileBase &cfg , const std::string &section) const
+void CHolonomicFullEval::TOptions::saveToConfigFile(mrpt::utils::CConfigFileBase &c , const std::string &s) const
 {
-	MRPT_START
-	const int WN = 25, WV = 30;
+	MRPT_START;
 
-	cfg.write(section,"TOO_CLOSE_OBSTACLE",TOO_CLOSE_OBSTACLE,   WN,WV, "Directions with collision-free distances below this threshold are not elegible.");
-	cfg.write(section, "TARGET_SLOW_APPROACHING_DISTANCE", TARGET_SLOW_APPROACHING_DISTANCE, WN, WV, "Start to reduce speed when closer than this to target.");
-	cfg.write(section,"OBSTACLE_SLOW_DOWN_DISTANCE", OBSTACLE_SLOW_DOWN_DISTANCE,   WN,WV, "Start to reduce speed when clearance is below this value ([0,1] ratio wrt obstacle reference/max distance)");
-	cfg.write(section,"HYSTERESIS_SECTOR_COUNT",HYSTERESIS_SECTOR_COUNT,   WN,WV, "Range of `sectors` (directions) for hysteresis over succesive timesteps");
-	cfg.write(section, "LOG_SCORE_MATRIX", LOG_SCORE_MATRIX, WN, WV, "Log entire score matrix");
-	cfg.write(section,"target_dir_boost_score", exprstr_target_dir_boost_score,   WN,WV, "Formula for target direction boost in score");
+	const int WN = mrpt::utils::MRPT_SAVE_NAME_PADDING, WV = mrpt::utils::MRPT_SAVE_VALUE_PADDING;
+
+	MRPT_SAVE_CONFIG_VAR_COMMENT(TOO_CLOSE_OBSTACLE, "Directions with collision-free distances below this threshold are not elegible.");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(TARGET_SLOW_APPROACHING_DISTANCE, "Start to reduce speed when closer than this to target.");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(OBSTACLE_SLOW_DOWN_DISTANCE,"Start to reduce speed when clearance is below this value ([0,1] ratio wrt obstacle reference/max distance)");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(HYSTERESIS_SECTOR_COUNT,"Range of `sectors` (directions) for hysteresis over succesive timesteps");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(LOG_SCORE_MATRIX, "Save the entire score matrix in log files");
+	
+	c.write(s,"target_dir_boost_score", exprstr_target_dir_boost_score, WN, WV, "exprtk formula for target direction boost in score");
 
 	ASSERT_EQUAL_(factorWeights.size(),5)
-	cfg.write(section,"factorWeights", mrpt::system::sprintf_container("%.2f ",factorWeights),   WN,WV, "[0]=Free space, [1]=Dist. in sectors, [2]=Closer to target (Euclidean), [3]=Hysteresis, [4]=clearance along path");
-	cfg.write(section,"factorNormalizeOrNot", mrpt::system::sprintf_container("%u ", factorNormalizeOrNot), WN, WV, "Normalize factors or not (1/0)");
+	c.write(s,"factorWeights", mrpt::system::sprintf_container("%.2f ",factorWeights), WN,WV, "[0]=Free space, [1]=Dist. in sectors, [2]=Closer to target (Euclidean), [3]=Hysteresis, [4]=clearance along path");
+	c.write(s,"factorNormalizeOrNot", mrpt::system::sprintf_container("%u ", factorNormalizeOrNot), WN, WV, "Normalize factors or not (1/0)");
 
-	cfg.write(section, "PHASE_COUNT", PHASE_FACTORS.size(), WN, WV, "Number of evaluation phases to run (params for each phase below)");
+	c.write(s, "PHASE_COUNT", PHASE_FACTORS.size(), WN, WV, "Number of evaluation phases to run (params for each phase below)");
 
 	for (unsigned int i = 0; i < PHASE_FACTORS.size(); i++)
 	{
-		cfg.write(section, mrpt::format("PHASE%u_THRESHOLD",i+1), PHASE_THRESHOLDS[i], WN, WV, "Phase scores must be above this relative range threshold [0,1] to be considered in next phase (Default:`0.75`)");
-		cfg.write(section, mrpt::format("PHASE%u_FACTORS", i + 1), mrpt::system::sprintf_container("%d ", PHASE_FACTORS[i]), WN, WV, "Indices of the factors above to be considered in this phase");
+		if (i != PHASE_FACTORS.size() - 1) {
+			c.write(s, mrpt::format("PHASE%u_THRESHOLD", i + 1), PHASE_THRESHOLDS[i], WN, WV, "Phase scores must be above this relative range threshold [0,1] to be considered in next phase (Default:`0.75`)");
+		}
+		c.write(s, mrpt::format("PHASE%u_FACTORS", i + 1), mrpt::system::sprintf_container("%d ", PHASE_FACTORS[i]), WN, WV, "Indices of the factors above to be considered in this phase");
 	}
 
-	MRPT_END
+	MRPT_END;
 }
 
 void  CHolonomicFullEval::writeToStream(mrpt::utils::CStream &out,int *version) const

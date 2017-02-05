@@ -83,6 +83,7 @@ namespace mrpt
 
 		/**  Initialize the parameters of the navigator. */
 		void  initialize(const mrpt::utils::CConfigFileBase &INI_FILE) MRPT_OVERRIDE;
+		virtual void saveConfigFile(mrpt::utils::CConfigFileBase &c) const MRPT_OVERRIDE; // See base class docs
 
 		/** Algorithm options */
 		struct NAV_IMPEXP TOptions : public mrpt::utils::CLoadableOptions

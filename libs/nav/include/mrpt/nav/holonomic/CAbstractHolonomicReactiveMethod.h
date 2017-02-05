@@ -82,9 +82,12 @@ namespace mrpt
 		virtual ~CAbstractHolonomicReactiveMethod(); //!< virtual dtor
 
 		/** Initialize the parameters of the navigator, reading from the default section name (see derived classes) or the one set via setConfigFileSectionName() */
-		virtual void  initialize( const mrpt::utils::CConfigFileBase &INI_FILE  ) = 0;
+		virtual void  initialize( const mrpt::utils::CConfigFileBase &c ) = 0;
+		virtual void saveConfigFile(mrpt::utils::CConfigFileBase &c) const = 0; //!< saves all available parameters, in a forma loadable by `initialize()`
 		void setConfigFileSectionName(const std::string &sectName); //!< Defines the name of the section used in initialize()
 		std::string getConfigFileSectionName() const; //!< Gets the name of the section used in initialize()
+
+
 
 		/** Class factory from class name, e.g. `"CHolonomicVFF"`, etc.
 		  * \exception std::logic_error On invalid or missing parameters. */
