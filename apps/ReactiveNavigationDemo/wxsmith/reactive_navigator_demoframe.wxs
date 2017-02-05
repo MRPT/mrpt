@@ -310,6 +310,15 @@
 											<border>5</border>
 											<option>1</option>
 										</object>
+										<object class="sizeritem">
+											<object class="wxButton" name="ID_BUTTON13" variable="btnGenerateTemplate" member="yes">
+												<label>Generate template config file...</label>
+												<handler function="OnbtnGenerateTemplateClick" entry="EVT_BUTTON" />
+											</object>
+											<flag>wxALL|wxALIGN_LEFT|wxALIGN_TOP</flag>
+											<border>5</border>
+											<option>1</option>
+										</object>
 									</object>
 								</object>
 								<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>

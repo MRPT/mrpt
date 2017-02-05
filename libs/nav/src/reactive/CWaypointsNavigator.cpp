@@ -16,9 +16,7 @@ using namespace mrpt::nav;
 using namespace std;
 
 CWaypointsNavigator::CWaypointsNavigator(CRobot2NavInterface &robot_if) :
-	CAbstractNavigator(robot_if),
-	MAX_DISTANCE_TO_ALLOW_SKIP_WAYPOINT(-1.0),
-	MIN_TIMESTEPS_CONFIRM_SKIP_WAYPOINTS(1)
+	CAbstractNavigator(robot_if)
 {
 }
 
@@ -150,7 +148,7 @@ void CWaypointsNavigator::navigationStep()
 				mrpt::math::TPoint2D wp_local_wrt_robot;
 				robot_pose.inverseComposePoint(wps.waypoints[idx].target, wp_local_wrt_robot);
 
-				if (MAX_DISTANCE_TO_ALLOW_SKIP_WAYPOINT>0 && wp_local_wrt_robot.norm()>MAX_DISTANCE_TO_ALLOW_SKIP_WAYPOINT)
+				if (params_waypoints_navigator.max_distance_to_allow_skip_waypoint>0 && wp_local_wrt_robot.norm()>params_waypoints_navigator.max_distance_to_allow_skip_waypoint)
 					continue; // Skip this one, it is too far away
 
 				const bool is_reachable = this->impl_waypoint_is_reachable(wp_local_wrt_robot);
@@ -158,7 +156,7 @@ void CWaypointsNavigator::navigationStep()
 				if (is_reachable) {
 					// Robustness filter: only skip to a future waypoint if it is seen as "reachable" during 
 					// a given number of timesteps:
-					if (++wps.waypoints[idx].counter_seen_reachable > MIN_TIMESTEPS_CONFIRM_SKIP_WAYPOINTS) {
+					if (++wps.waypoints[idx].counter_seen_reachable > params_waypoints_navigator.min_timesteps_confirm_skip_waypoints) {
 						most_advanced_wp = idx;
 					}
 				}
@@ -213,12 +211,6 @@ void CWaypointsNavigator::navigationStep()
 	MRPT_END
 }
 
-void CWaypointsNavigator::loadWaypointsParamsConfigFile(const mrpt::utils::CConfigFileBase &cfg, const std::string &sectionName)
-{
-	MRPT_LOAD_CONFIG_VAR(MAX_DISTANCE_TO_ALLOW_SKIP_WAYPOINT,  double,   cfg, sectionName);
-	MRPT_LOAD_CONFIG_VAR(MIN_TIMESTEPS_CONFIRM_SKIP_WAYPOINTS, int, cfg, sectionName);
-}
-
 void CWaypointsNavigator::onStartNewNavigation()
 {
 }
@@ -226,4 +218,38 @@ void CWaypointsNavigator::onStartNewNavigation()
 bool CWaypointsNavigator::isRelativePointReachable(const mrpt::math::TPoint2D &wp_local_wrt_robot) const
 {
 	return impl_waypoint_is_reachable(wp_local_wrt_robot);
+}
+
+void CWaypointsNavigator::loadConfigFile(const mrpt::utils::CConfigFileBase &c)
+{
+	MRPT_START
+	
+	params_waypoints_navigator.loadFromConfigFile(c, "CWaypointsNavigator");
+	CAbstractNavigator::loadConfigFile(c);
+
+	MRPT_END
+}
+
+void CWaypointsNavigator::saveConfigFile(mrpt::utils::CConfigFileBase &c) const
+{
+	CAbstractNavigator::saveConfigFile(c);
+	params_waypoints_navigator.saveToConfigFile(c, "CWaypointsNavigator");
+}
+
+void mrpt::nav::CWaypointsNavigator::TWaypointsNavigatorParams::loadFromConfigFile(const mrpt::utils::CConfigFileBase & c, const std::string & s)
+{
+	MRPT_LOAD_CONFIG_VAR(max_distance_to_allow_skip_waypoint, double, c, s);
+	MRPT_LOAD_CONFIG_VAR(min_timesteps_confirm_skip_waypoints, int, c, s);
+}
+
+void mrpt::nav::CWaypointsNavigator::TWaypointsNavigatorParams::saveToConfigFile(mrpt::utils::CConfigFileBase & c, const std::string & s) const
+{
+	MRPT_SAVE_CONFIG_VAR_COMMENT(max_distance_to_allow_skip_waypoint, "Max distance to `foresee` waypoints [meters]. (<0: unlimited)");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(min_timesteps_confirm_skip_waypoints, "Min timesteps a `future` waypoint must be seen as reachable to become the active one.");
+}
+
+CWaypointsNavigator::TWaypointsNavigatorParams::TWaypointsNavigatorParams() :
+	max_distance_to_allow_skip_waypoint(-1.0),
+	min_timesteps_confirm_skip_waypoints(1)
+{
 }

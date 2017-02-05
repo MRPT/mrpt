@@ -28,6 +28,7 @@
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/utils/CFileGZInputStream.h>
 #include <mrpt/utils/CFileGZOutputStream.h>
+#include <mrpt/utils/CConfigFilePrefixer.h>
 #include "imgs/main_icon.xpm"
 #include "../wx-common/mrpt_logo.xpm"
 
@@ -95,6 +96,7 @@ const long reactive_navigator_demoframe::ID_CHECKBOX3 = wxNewId();
 const long reactive_navigator_demoframe::ID_CHECKBOX4 = wxNewId();
 const long reactive_navigator_demoframe::ID_CHECKBOX5 = wxNewId();
 const long reactive_navigator_demoframe::ID_RADIOBOX1 = wxNewId();
+const long reactive_navigator_demoframe::ID_BUTTON13 = wxNewId();
 const long reactive_navigator_demoframe::ID_PANEL6 = wxNewId();
 const long reactive_navigator_demoframe::ID_TEXTCTRL1 = wxNewId();
 const long reactive_navigator_demoframe::ID_PANEL2 = wxNewId();
@@ -168,7 +170,7 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(wxWindow* parent,wxWi
     wxFlexGridSizer* FlexGridSizer11;
     wxBoxSizer* BoxSizer3;
     wxMenu* Menu2;
-    
+
     Create(parent, wxID_ANY, _("Reactive Navigation Tester - Part of MRPT"), wxDefaultPosition, wxDefaultSize, wxDEFAULT_FRAME_STYLE, _T("wxID_ANY"));
     SetClientSize(wxSize(893,576));
     {
@@ -242,7 +244,7 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(wxWindow* parent,wxWi
     pnNavSelButtons = new wxPanel(Panel1, ID_PANEL6, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL6"));
     FlexGridSizer9 = new wxFlexGridSizer(0, 2, 0, 0);
     FlexGridSizer9->AddGrowableCol(0);
-    wxString __wxRadioBoxChoices_1[2] = 
+    wxString __wxRadioBoxChoices_1[2] =
     {
     	_("Autonavigation (reactive)"),
     	_("Preprogrammed sequences")
@@ -268,13 +270,15 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(wxWindow* parent,wxWi
     cbWaypointsAllowSkip->SetValue(true);
     FlexGridSizer3->Add(cbWaypointsAllowSkip, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 5);
     FlexGridSizer9->Add(FlexGridSizer3, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 5);
-    wxString __wxRadioBoxChoices_2[2] = 
+    wxString __wxRadioBoxChoices_2[2] =
     {
     	_("Differential (Ackermann) drive"),
     	_("Holonomic")
     };
     rbKinType = new wxRadioBox(pnNavSelButtons, ID_RADIOBOX1, _("Robot kinematics type"), wxDefaultPosition, wxDefaultSize, 2, __wxRadioBoxChoices_2, 1, wxRA_SPECIFY_COLS, wxDefaultValidator, _T("ID_RADIOBOX1"));
     FlexGridSizer9->Add(rbKinType, 1, wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
+    btnGenerateTemplate = new wxButton(pnNavSelButtons, ID_BUTTON13, _("Generate template config file..."), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON13"));
+    FlexGridSizer9->Add(btnGenerateTemplate, 1, wxALL|wxALIGN_LEFT|wxALIGN_TOP, 5);
     pnNavSelButtons->SetSizer(FlexGridSizer9);
     FlexGridSizer9->Fit(pnNavSelButtons);
     FlexGridSizer9->SetSizeHints(pnNavSelButtons);
@@ -411,7 +415,7 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(wxWindow* parent,wxWi
     timRunSimul.Start(10, false);
     FlexGridSizer1->SetSizeHints(this);
     Center();
-    
+
     Connect(ID_BUTTON4,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&reactive_navigator_demoframe::OnbtnStartClick);
     Connect(ID_BUTTON5,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&reactive_navigator_demoframe::OnbtnStopClick);
     Connect(ID_BUTTON7,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&reactive_navigator_demoframe::OnbtnPlaceTargetClick);
@@ -425,6 +429,7 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(wxWindow* parent,wxWi
     Connect(ID_BUTTON2,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&reactive_navigator_demoframe::OnAbout);
     Connect(ID_BUTTON3,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&reactive_navigator_demoframe::OnbtnQuitClick);
     Connect(ID_RADIOBOX1,wxEVT_COMMAND_RADIOBOX_SELECTED,(wxObjectEventFunction)&reactive_navigator_demoframe::OnrbKinTypeSelect);
+    Connect(ID_BUTTON13,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&reactive_navigator_demoframe::OnbtnGenerateTemplateClick);
     Connect(ID_TEXTCTRL3,wxEVT_COMMAND_TEXT_UPDATED,(wxObjectEventFunction)&reactive_navigator_demoframe::OnedManualKinRampsText);
     Connect(ID_NOTEBOOK1,wxEVT_COMMAND_NOTEBOOK_PAGE_CHANGED,(wxObjectEventFunction)&reactive_navigator_demoframe::OnNotebook1PageChanged1);
     Connect(ID_MENUITEM4,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&reactive_navigator_demoframe::OnbtnLoadMapClick);
@@ -818,7 +823,13 @@ bool reactive_navigator_demoframe::reinitSimulator()
 		throw std::runtime_error("Invalid kinematic model selected!");
 	};
 
-	m_navMethod->loadConfigFile(cfg,sKinPrefix);
+	{
+		mrpt::utils::CConfigFilePrefixer cfg_prefixer;
+		cfg_prefixer.bind(cfg);
+		cfg_prefixer.setPrefixes(sKinPrefix /*sections*/, "" /*keys*/);
+
+		m_navMethod->loadConfigFile(cfg_prefixer);
+	}
 	m_navMethod->initialize();
 
 	// params for simulator itself:
@@ -1063,12 +1074,12 @@ void reactive_navigator_demoframe::simulateOneStep(double time_step)
 	CWaypointsNavigator *wp_nav = dynamic_cast<CWaypointsNavigator *>(m_navMethod.get());
 	if (wp_nav)
 	{
-		static wxFrame *wxFrWpInfo = nullptr; 
+		static wxFrame *wxFrWpInfo = nullptr;
 		static wxTextCtrl * edWpLog = nullptr;
 		if (!wxFrWpInfo)
 		{
 			wxFrWpInfo= new wxFrame(this, -1, wxT("Waypoints info"), wxDefaultPosition, wxSize(400,150), wxRESIZE_BORDER | wxMINIMIZE_BOX | wxMAXIMIZE_BOX | wxCAPTION | wxCLIP_CHILDREN | wxSTAY_ON_TOP );
-			
+
 			edWpLog = new wxTextCtrl(wxFrWpInfo,wxNewId(), wxEmptyString, wxDefaultPosition, wxSize(400,150), wxTE_MULTILINE|wxTE_READONLY|wxTE_DONTWRAP|wxALWAYS_SHOW_SB, wxDefaultValidator, _T("ID_TEXTCTRL_WP"));
 			edWpLog->SetMinSize(wxSize(190,60));
 			wxFont edLogFont(8,wxFONTFAMILY_TELETYPE,wxFONTSTYLE_NORMAL,wxNORMAL,false,wxEmptyString,wxFONTENCODING_DEFAULT);
@@ -1610,4 +1621,18 @@ void reactive_navigator_demoframe::OnbtnSetWaypointSeqClick(wxCommandEvent& even
 	btnSetWaypointSeq->SetValue( m_cursorPickState == cpsPickWaypoints ); btnSetWaypointSeq->Refresh();
 	m_gl_placing_nav_target->setVisibility(m_cursorPickState==cpsPickWaypoints);
 	m_plot3D->Refresh();
+}
+
+void reactive_navigator_demoframe::OnbtnGenerateTemplateClick(wxCommandEvent& event)
+{
+	WX_START_TRY;
+
+	mrpt::nav::CReactiveNavigationSystem react(*m_robotSimul2NavInterface);
+
+	mrpt::utils::CConfigFileMemory cfgMem;
+	react.saveConfigFile(cfgMem);
+	edParamsReactive->SetValue(_U(cfgMem.getContent().c_str()));
+
+
+	WX_END_TRY;
 }

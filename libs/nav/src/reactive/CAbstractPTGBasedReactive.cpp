@@ -58,14 +58,6 @@ CAbstractPTGBasedReactive::CAbstractPTGBasedReactive(CRobot2NavInterface &react_
 	m_enableKeepLogRecords       (false),
 	m_enableConsoleOutput        (enableConsoleOutput),
 	m_init_done                  (false),
-	ptg_cache_files_directory    ("."),
-	refDistance                  (4.0f),
-	SPEEDFILTER_TAU              (0.0),
-	secureDistanceStart          (0.05),
-	secureDistanceEnd            (0.20),
-	USE_DELAYS_MODEL             (false),
-	MAX_DISTANCE_PREDICTED_ACTUAL_PATH(0.15),
-	MIN_NORMALIZED_FREE_SPACE_FOR_PTG_CONTINUATION(0.2),
 	m_timelogger                 (false), // default: disabled
 	m_PTGsMustBeReInitialized    (true),
 	meanExecutionTime            (ESTIM_LOWPASSFILTER_ALPHA, 0.1),
@@ -79,11 +71,7 @@ CAbstractPTGBasedReactive::CAbstractPTGBasedReactive(CRobot2NavInterface &react_
 	m_WS_Obstacles_timestamp     (INVALID_TIMESTAMP),
 	m_infoPerPTG_timestamp       (INVALID_TIMESTAMP),
 	m_lastTarget                 (0,0,0),
-	ENABLE_BOOST_SHORTEST_ETA(false),
-	BEST_ETA_MARGIN_TOLERANCE_WRT_BEST(1.05),
-	ENABLE_OBSTACLE_FILTERING(false),
-	m_navlogfiles_dir(sLogDir),
-	m_exprstr_score2_formula("var dif:=abs(k_target-k); if (dif>(num_paths/2)) { dif:=num_paths-dif; }; exp(-abs(dif / (num_paths/10.0)));")
+	m_navlogfiles_dir(sLogDir)
 {
 	internal_construct_exprs();
 	this->enableLogFile( enableLogFile );
@@ -211,27 +199,6 @@ static std::string holoMethodEnum2ClassName(const THolonomicMethod method)
 	return className;
 }
 
-void CAbstractPTGBasedReactive::loadHolonomicMethodConfig(
-	const mrpt::utils::CConfigFileBase &ini,
-	const std::string &section )
-{
-	std::string  holoMethodName = ini.read_string(section, "HOLONOMIC_METHOD", "", true);
-
-	// Backwards compatible with numeric entries:
-	if (!holoMethodName.empty() && isdigit(holoMethodName[0])) {
-		holoMethodName = holoMethodEnum2ClassName(static_cast<THolonomicMethod>(atoi(&holoMethodName[0])));
-	}
-	// Backwards compatible with enum type name:
-	try {
-		holoMethodName = holoMethodEnum2ClassName(mrpt::utils::TEnumType<THolonomicMethod>::name2value(holoMethodName));
-	}
-	catch (...) {
-		// Ignore exception if string is not an enum.
-	}
-
-	this->setHolonomicMethod(holoMethodName, ini );
-}
-
 void CAbstractPTGBasedReactive::deleteHolonomicObjects()
 {
 	for (size_t i=0;i<m_holonomicMethod.size();i++)
@@ -348,7 +315,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 		// =========
 
 		CPose2D rel_pose_PTG_origin_wrt_sense,relPoseSense, relPoseVelCmd;
-		if (USE_DELAYS_MODEL)
+		if (params_abstract_ptg_navigator.use_delays_model)
 		{
 			/*
 			*                                          Delays model
@@ -558,8 +525,8 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 				double global_eval = .0;
 
 				// Select set of weights:
-				ASSERT_(!weights.empty() || weights4ptg.size()>indexPTG);
-				const std::vector<double> & w = this->weights.empty() ? this->weights4ptg[indexPTG] : this->weights;
+				ASSERT_(!params_abstract_ptg_navigator.weights.empty());
+				const std::vector<double> & w = params_abstract_ptg_navigator.weights;
 				ASSERT_EQUAL_(w.size(), holonomicMovement.eval_factors.size());
 
 				// Sum:
@@ -601,7 +568,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 
 		// Qualitative scoring:
 		// ---------------------------
-		if (ENABLE_BOOST_SHORTEST_ETA)
+		if (params_abstract_ptg_navigator.enable_boost_shortest_eta)
 		{
 			// Criterion #1: If a PTG directly leads to target without colliding, then make it the preferred option.
 			// If more than one such case exist, pick the one with the shortest ETA (Estimated Time of Arrival).
@@ -659,7 +626,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 
 				for (const auto & e : ETA_to_ptgindex)
 				{
-					if (e.first > best_ETA_in_seconds*BEST_ETA_MARGIN_TOLERANCE_WRT_BEST)
+					if (e.first > best_ETA_in_seconds*params_abstract_ptg_navigator.best_eta_margin_tolerance_wrt_best)
 						break; // no more good candidates
 
 					const size_t best_ptg_idx = e.second;
@@ -1004,7 +971,7 @@ void CAbstractPTGBasedReactive::STEP5_PTGEvaluator(
 				newLogRec.additional_debug_msgs["PTG_eval.lastCmdPose(raw)"] = m_lastSentVelCmd.poseVel.pose.asString();
 				newLogRec.additional_debug_msgs["PTG_eval.PTGcont"] = mrpt::format("mismatchDistance=%.03f cm", 1e2*predicted2real_dist);
 
-				if (predicted2real_dist > MAX_DISTANCE_PREDICTED_ACTUAL_PATH)
+				if (predicted2real_dist > params_abstract_ptg_navigator.max_distance_predicted_actual_path)
 				{
 					holonomicMovement.speed = -0.01; // this enforces a 0 global evaluation score
 					newLogRec.additional_debug_msgs["PTG_eval"] = "PTG-continuation not allowed, mismatchDistance above threshold.";
@@ -1093,7 +1060,7 @@ void CAbstractPTGBasedReactive::STEP5_PTGEvaluator(
 
 	// Don't trust PTG continuation if we are too close to obstacles:
 	if (this_is_PTG_continuation &&
-		std::min(eval_factors[SCOREIDX_COLISION_FREE_DISTANCE], eval_factors[SCOREIDX_CLEARANCE]) < this->MIN_NORMALIZED_FREE_SPACE_FOR_PTG_CONTINUATION)
+		std::min(eval_factors[SCOREIDX_COLISION_FREE_DISTANCE], eval_factors[SCOREIDX_CLEARANCE]) < params_abstract_ptg_navigator.min_normalized_free_space_for_ptg_continuation)
 	{
 		newLogRec.additional_debug_msgs["PTG_eval"] = "PTG-continuation not allowed, too close to obstacles.";
 		holonomicMovement.speed = -0.01; // this enforces a 0 global evaluation score
@@ -1132,8 +1099,8 @@ void CAbstractPTGBasedReactive::STEP7_GenerateSpeedCommands( const THolonomicMov
 				m_last_vel_cmd = in_movement.PTG->getSupportedKinematicVelocityCommand();
 
 			// Honor user speed limits & "blending":
-			const double beta = meanExecutionPeriod.getLastOutput() / (meanExecutionPeriod.getLastOutput() + SPEEDFILTER_TAU);
-			new_vel_cmd->cmdVel_limits(*m_last_vel_cmd, beta, this->robotVelocityParams);
+			const double beta = meanExecutionPeriod.getLastOutput() / (meanExecutionPeriod.getLastOutput() + params_abstract_ptg_navigator.speedfilter_tau);
+			new_vel_cmd->cmdVel_limits(*m_last_vel_cmd, beta, params_abstract_ptg_navigator.robot_absolute_speed_limits);
 		}
 
 		m_last_vel_cmd = new_vel_cmd; // Save for filtering in next step
@@ -1142,89 +1109,6 @@ void CAbstractPTGBasedReactive::STEP7_GenerateSpeedCommands( const THolonomicMov
 	{
 		MRPT_LOG_ERROR_STREAM << "[CAbstractPTGBasedReactive::STEP7_GenerateSpeedCommands] Exception: " << e.what();
 	}
-}
-
-void CAbstractPTGBasedReactive::loadConfigFile(const mrpt::utils::CConfigFileBase &cfg, const std::string &section_prefix)
-{
-	MRPT_START;
-	m_PTGsMustBeReInitialized = true;
-
-	// ========= Config file section name:
-	const std::string sectRob = section_prefix + std::string("ROBOT_CONFIG");
-	const std::string sectCfg = section_prefix + std::string("ReactiveParams");
-	const std::string sectFilter = section_prefix + std::string("ObstacleFiltering");
-	const std::string sectGlobal("GLOBAL_CONFIG");
-
-	// ========= Load parameters of this base class:
-	robotName = cfg.read_string(sectRob,"Name", "MyRobot", false );
-
-	refDistance = cfg.read_double(sectCfg,"MAX_REFERENCE_DISTANCE", refDistance, true);
-	SPEEDFILTER_TAU =  cfg.read_float(sectCfg,"SPEEDFILTER_TAU", .0);
-	secureDistanceStart = cfg.read_float(sectCfg,"secureDistanceStart", secureDistanceStart);
-	secureDistanceEnd = cfg.read_float(sectCfg,"secureDistanceEnd", secureDistanceEnd);
-
-	USE_DELAYS_MODEL = cfg.read_bool(sectCfg, "USE_DELAYS_MODEL", USE_DELAYS_MODEL);
-	MAX_DISTANCE_PREDICTED_ACTUAL_PATH = cfg.read_double(sectCfg, "MAX_DISTANCE_PREDICTED_ACTUAL_PATH", MAX_DISTANCE_PREDICTED_ACTUAL_PATH);
-	MIN_NORMALIZED_FREE_SPACE_FOR_PTG_CONTINUATION = cfg.read_double(sectCfg, "MIN_NORMALIZED_FREE_SPACE_FOR_PTG_CONTINUATION", MIN_NORMALIZED_FREE_SPACE_FOR_PTG_CONTINUATION);
-	MRPT_LOAD_CONFIG_VAR(ENABLE_BOOST_SHORTEST_ETA, bool, cfg, sectCfg);
-	MRPT_LOAD_CONFIG_VAR(BEST_ETA_MARGIN_TOLERANCE_WRT_BEST, double, cfg, sectCfg);
-
-	DIST_TO_TARGET_FOR_SENDING_EVENT = cfg.read_float(sectCfg, "DIST_TO_TARGET_FOR_SENDING_EVENT", DIST_TO_TARGET_FOR_SENDING_EVENT, false);
-	m_badNavAlarm_AlarmTimeout = cfg.read_double(sectCfg,"ALARM_SEEMS_NOT_APPROACHING_TARGET_TIMEOUT", m_badNavAlarm_AlarmTimeout, false);
-
-	MRPT_LOAD_HERE_CONFIG_VAR(score2_formula, string, m_exprstr_score2_formula, cfg, sectCfg);
-
-	// ========= Optional filtering ===========
-	MRPT_LOAD_CONFIG_VAR(ENABLE_OBSTACLE_FILTERING, bool  ,cfg, sectCfg);
-	if (ENABLE_OBSTACLE_FILTERING)
-	{
-		mrpt::maps::CPointCloudFilterByDistance *filter = new mrpt::maps::CPointCloudFilterByDistance;
-		m_WS_filter = mrpt::maps::CPointCloudFilterBasePtr(filter);
-		filter->options.loadFromConfigFile(cfg, sectFilter);
-	}
-	else
-	{
-		m_WS_filter.clear_unique();
-	}
-
-	// =========  Show configuration parameters:
-	MRPT_LOG_INFO("-------------------------------------------------------------\n");
-	MRPT_LOG_INFO("       PTG-based Reactive Navigation parameters               \n");
-	MRPT_LOG_INFO("-------------------------------------------------------------\n");
-
-	// ========= Load Derived class-specific params:
-	this->internal_loadConfigFile(cfg, section_prefix);
-
-	// weights: read global or PTG specific weights:
-	cfg.read_vector(sectCfg, "weights", vector<double>(0), weights, false /* don't fail if not found */);
-	ASSERT_(weights.size() == PTG_RNAV_SCORE_COUNT || weights.empty() );
-	if (weights.empty())
-	{
-		weights4ptg.resize(getPTG_count());
-		for (unsigned int i = 0; i < getPTG_count(); i++)
-		{
-			std::vector<double> w;
-			const std::string sKey = mrpt::format("PTG%u_weights", i);
-			cfg.read_vector(sectCfg, sKey, vector<double>(0), w, false /* don't fail if not found */);
-			ASSERTMSG_(w.size()== PTG_RNAV_SCORE_COUNT, mrpt::format("Found neither `weights` nor `%s`. Please, specify one of them.", sKey.c_str()) );
-			weights4ptg[i] = w;
-		}
-	}
-
-	// ========= Load "Global params" (must be called after initialization of PTGs in `internal_loadConfigFile()`)
-	this->robotVelocityParams.loadConfigFile(cfg,sectGlobal); // robot interface params
-	this->loadWaypointsParamsConfigFile(cfg,sectCfg);
-	this->loadHolonomicMethodConfig(cfg,sectGlobal); // Load holonomic method params
-	ASSERT_(!m_holonomicMethod.empty())
-
-	MRPT_LOG_INFO_FMT(" Holonomic method   = %s\n", m_holonomicMethod[0]->GetRuntimeClass()->className );
-	MRPT_LOG_INFO_FMT(" PTG Count          = %u\n", static_cast<unsigned int>( this->getPTG_count() ) );
-	MRPT_LOG_INFO_FMT(" Reference distance = %f\n", refDistance );
-
-	// ========= If we reached this point without an exception, all is good.
-	m_init_done = true;
-
-	MRPT_END;
 }
 
 bool CAbstractPTGBasedReactive::impl_waypoint_is_reachable(const mrpt::math::TPoint2D &wp) const
@@ -1423,12 +1307,12 @@ void CAbstractPTGBasedReactive::ptg_eval_target_build_obstacles(
 			}
 
 			double velScale = 1.0;
-			ASSERT_(secureDistanceEnd > secureDistanceStart);
-			if (obsFreeNormalizedDistance < secureDistanceEnd)
+			ASSERT_(params_abstract_ptg_navigator.secure_distance_end > params_abstract_ptg_navigator.secure_distance_start);
+			if (obsFreeNormalizedDistance < params_abstract_ptg_navigator.secure_distance_end)
 			{
-				if (obsFreeNormalizedDistance <= secureDistanceStart)
+				if (obsFreeNormalizedDistance <= params_abstract_ptg_navigator.secure_distance_start)
 					velScale = 0.0; // security stop
-				else velScale = (obsFreeNormalizedDistance - secureDistanceStart) / (secureDistanceEnd - secureDistanceStart);
+				else velScale = (obsFreeNormalizedDistance - params_abstract_ptg_navigator.secure_distance_start) / (params_abstract_ptg_navigator.secure_distance_end - params_abstract_ptg_navigator.secure_distance_start);
 			}
 
 			// Scale:
@@ -1503,6 +1387,161 @@ void CAbstractPTGBasedReactive::internal_compile_exprs()
 	// Compile user-given expressions:
 	exprtk::parser<double> parser;
 
-	if (!parser.compile(m_exprstr_score2_formula, PIMPL_GET_REF(exprtk::expression<double>, m_expr_score2_formula)))
-		THROW_EXCEPTION(mrpt::format("Error compiling `score2_formula` expression: `%s`. Error: `%s`", m_exprstr_score2_formula.c_str(), parser.error().c_str()));
+	if (!parser.compile(params_abstract_ptg_navigator.score2_formula, PIMPL_GET_REF(exprtk::expression<double>, m_expr_score2_formula)))
+		THROW_EXCEPTION(mrpt::format("Error compiling `score2_formula` expression: `%s`. Error: `%s`", params_abstract_ptg_navigator.score2_formula.c_str(), parser.error().c_str()));
 }
+
+void CAbstractPTGBasedReactive::TAbstractPTGNavigatorParams::loadFromConfigFile(const mrpt::utils::CConfigFileBase & c, const std::string & s)
+{
+	MRPT_START;
+
+	robot_absolute_speed_limits.loadConfigFile(c, s);
+	
+	MRPT_LOAD_CONFIG_VAR_REQUIRED_CS(holonomic_method, string);
+	MRPT_LOAD_CONFIG_VAR_REQUIRED_CS(ref_distance, double);
+	MRPT_LOAD_CONFIG_VAR_CS(speedfilter_tau, double);
+	MRPT_LOAD_CONFIG_VAR_CS(secure_distance_start, double);
+	MRPT_LOAD_CONFIG_VAR_CS(secure_distance_end, double);
+	MRPT_LOAD_CONFIG_VAR_CS(use_delays_model, bool);
+	MRPT_LOAD_CONFIG_VAR_CS(max_distance_predicted_actual_path, double);
+	MRPT_LOAD_CONFIG_VAR_CS(min_normalized_free_space_for_ptg_continuation, double);
+	MRPT_LOAD_CONFIG_VAR_CS(enable_boost_shortest_eta, bool);
+	MRPT_LOAD_CONFIG_VAR_CS(best_eta_margin_tolerance_wrt_best, double);
+	MRPT_LOAD_CONFIG_VAR_CS(score2_formula, string);
+	MRPT_LOAD_CONFIG_VAR_CS(enable_obstacle_filtering, bool);
+
+	// weights: read global or PTG specific weights:
+	c.read_vector(s, "weights", vector<double>(0), weights, true /* fail if not found */);
+	ASSERT_EQUAL_(weights.size(), size_t(PTG_RNAV_SCORE_COUNT));
+
+	MRPT_END;
+}
+
+void CAbstractPTGBasedReactive::TAbstractPTGNavigatorParams::saveToConfigFile(mrpt::utils::CConfigFileBase & c, const std::string & s) const
+{
+	robot_absolute_speed_limits.saveToConfigFile(c, s);
+
+	// Build list of known holo methods:
+	string lstHoloStr = "# List of known classes:\n";
+	{
+		const std::vector<const TRuntimeClassId*> lst = mrpt::utils::getAllRegisteredClasses();
+		std::vector<const TRuntimeClassId*> lst_holo_methods;
+		for (const auto &c : lst) {
+			if (c->derivedFrom("CAbstractHolonomicReactiveMethod")) {
+				lst_holo_methods.push_back(c);
+				lstHoloStr += string("# - `") + string(c->className) + string("`\n");
+			}
+		}
+	}
+	MRPT_SAVE_CONFIG_VAR_COMMENT(holonomic_method, string("C++ class name of the holonomic navigation method to run in the transformed TP-Space.\n")+ lstHoloStr);
+
+	MRPT_SAVE_CONFIG_VAR_COMMENT(ref_distance, "Maximum distance up to obstacles will be considered (D_{max} in papers).");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(speedfilter_tau, "Time constant (in seconds) for the low-pass filter applied to kinematic velocity commands (default=0: no filtering)");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(secure_distance_start, "In normalized distance [0,1], start/end of a ramp function that scales the holonomic navigator output velocity.");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(secure_distance_end, "In normalized distance [0,1], start/end of a ramp function that scales the holonomic navigator output velocity.");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(use_delays_model, "Whether to use robot pose inter/extrapolation to improve accuracy (Default:false)");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(max_distance_predicted_actual_path, "Max distance [meters] to discard current PTG and issue a new vel cmd (default= 0.05)");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(min_normalized_free_space_for_ptg_continuation, "Min normalized dist [0,1] after current pose in a PTG continuation to allow it.");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(enable_boost_shortest_eta, "(Default: false)");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(best_eta_margin_tolerance_wrt_best, "(Default: 1.05)");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(score2_formula, "exprtk formula for evaluation score #2 (path index closeness to target)");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(enable_obstacle_filtering, "Enabled obstacle filtering (params in its own section)");
+
+	// weights: read global or PTG specific weights:
+	c.write(s, "weights", weights, mrpt::utils::MRPT_SAVE_NAME_PADDING, mrpt::utils::MRPT_SAVE_VALUE_PADDING,
+		"\n"
+		"# 1: Collision - free distance\n"
+		"# 2: Distance in `path indexes` to target path\n"
+		"# 3: Heading toward target\n"
+		"# 4: Closer to target(euclidean)\n"
+		"# 5: Hysteresis\n"
+		"# 6: Security Distance\n"
+		);
+}
+
+CAbstractPTGBasedReactive::TAbstractPTGNavigatorParams::TAbstractPTGNavigatorParams() :
+	holonomic_method(),
+	ptg_cache_files_directory("."),
+	ref_distance(4.0),
+	speedfilter_tau(0.0),
+	score2_formula("var dif:=abs(k_target-k); if (dif>(num_paths/2)) { dif:=num_paths-dif; }; exp(-abs(dif / (num_paths/10.0)));"),
+	secure_distance_start(0.05),
+	secure_distance_end(0.20),
+	use_delays_model(false),
+	max_distance_predicted_actual_path(0.15),
+	min_normalized_free_space_for_ptg_continuation(0.2),
+	robot_absolute_speed_limits(),
+	enable_boost_shortest_eta(false),
+	best_eta_margin_tolerance_wrt_best(1.05),
+	enable_obstacle_filtering(true)
+{
+}
+
+void CAbstractPTGBasedReactive::loadConfigFile(const mrpt::utils::CConfigFileBase & c)
+{
+	MRPT_START;
+	m_PTGsMustBeReInitialized = true;
+
+	// At this point, we have been called from the derived class, who must be already 
+	// loaded all its specific params, including PTGs.
+
+	// Load my params:
+	params_abstract_ptg_navigator.loadFromConfigFile(c, "CAbstractPTGBasedReactive");
+
+	// Filtering:
+	if (params_abstract_ptg_navigator.enable_obstacle_filtering)
+	{
+		mrpt::maps::CPointCloudFilterByDistance *filter = new mrpt::maps::CPointCloudFilterByDistance;
+		m_WS_filter = mrpt::maps::CPointCloudFilterBasePtr(filter);
+		filter->options.loadFromConfigFile(c,"CPointCloudFilterByDistance");
+	}
+	else
+	{
+		m_WS_filter.clear_unique();
+	}
+
+	// Holo method:
+	this->setHolonomicMethod(params_abstract_ptg_navigator.holonomic_method, c);
+	ASSERT_(!m_holonomicMethod.empty())
+
+	CWaypointsNavigator::loadConfigFile(c); // Load parent params
+
+	m_init_done = true; // If we reached this point without an exception, all is good.
+	MRPT_END;
+}
+
+void CAbstractPTGBasedReactive::saveConfigFile(mrpt::utils::CConfigFileBase & c) const
+{
+	CWaypointsNavigator::saveConfigFile(c);
+	params_abstract_ptg_navigator.saveToConfigFile(c, "CAbstractPTGBasedReactive");
+
+	// Filtering:
+	{
+		mrpt::maps::CPointCloudFilterByDistance filter;
+		filter.options.saveToConfigFile(c, "CPointCloudFilterByDistance");
+	}
+
+	// Holo method:
+	if (!m_holonomicMethod.empty() && m_holonomicMethod[0]) 
+	{
+		// Save my current settings:
+		m_holonomicMethod[0]->saveConfigFile(c);
+	}
+	else
+	{
+		// save options of ALL known methods:
+		const std::vector<const TRuntimeClassId*> lst = mrpt::utils::getAllRegisteredClasses();
+		std::vector<const TRuntimeClassId*> lst_holo_methods;
+		for (const auto &cl : lst) {
+			if (cl->derivedFrom("CAbstractHolonomicReactiveMethod")) {
+				mrpt::utils::CObject *obj = cl->createObject();
+				CAbstractHolonomicReactiveMethod * holo = dynamic_cast<CAbstractHolonomicReactiveMethod *>(obj);
+				if (holo) {
+					holo->saveConfigFile(c);
+				}
+				delete obj;
+			}
+		}
+	}
+}
+
