@@ -315,6 +315,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 		// =========
 
 		CPose2D rel_pose_PTG_origin_wrt_sense,relPoseSense, relPoseVelCmd;
+		MRPT_TODO("port all delays-model to double and use robotTime() to make this compatible with faster-than-real-time simulators!");
 		if (params_abstract_ptg_navigator.use_delays_model)
 		{
 			/*
@@ -1161,7 +1162,7 @@ void CAbstractPTGBasedReactive::robotPoseExtrapolateIncrement(const mrpt::math::
 
 void CAbstractPTGBasedReactive::onStartNewNavigation()
 {
-	m_last_curPoseVelUpdate_time = INVALID_TIMESTAMP;
+	m_last_curPoseVelUpdate_robot_time = -1e9;
 	m_lastSentVelCmd.reset();
 
 	CWaypointsNavigator::onStartNewNavigation(); // Call base method we override

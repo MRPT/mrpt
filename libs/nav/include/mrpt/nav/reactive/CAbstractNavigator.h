@@ -160,7 +160,7 @@ namespace mrpt
 		};
 
 		TRobotPoseVel m_curPoseVel; //!< Current robot pose (updated in CAbstractNavigator::navigationStep() )
-		mrpt::system::TTimeStamp m_last_curPoseVelUpdate_time;
+		double  m_last_curPoseVelUpdate_robot_time;
 		mrpt::poses::CPose3DInterpolator m_latestPoses; //!< Latest robot poses and velocities (updated in CAbstractNavigator::navigationStep() )
 
 		mrpt::utils::CTimeLogger m_timlog_delays; //!< Time logger to collect delay-related stats
