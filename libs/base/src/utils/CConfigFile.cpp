@@ -76,6 +76,11 @@ void CConfigFile::writeNow()
     MRPT_END
 }
 
+void CConfigFile::discardSavingChanges()
+{
+	m_modified = false;
+}
+
 /*---------------------------------------------------------------
 					Destructor
  ---------------------------------------------------------------*/
