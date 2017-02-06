@@ -165,8 +165,7 @@ namespace mrpt
 			* \sa getTimeLogger
 			*/
 		void enableTimeLog(bool enable=true) {
-			MRPT_UNUSED_PARAM(enable);
-			m_timelogger.enable(true);
+			m_timelogger.enable(enable);
 		}
 
 		/** Gives access to a const-ref to the internal time logger \sa enableTimeLog */

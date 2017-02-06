@@ -52,7 +52,20 @@ void run_rnav_test(const std::string &sFilename, const std::string &sHoloMethod,
 	MyDummyRobotIF robot2nav_if(robot_simul);
 
 	RNAVCLASS rnav(robot2nav_if, false /*no console output*/);
-	rnav.setMinLoggingLevel(mrpt::utils::LVL_ERROR); // quiet
+	// Logging:
+	{
+		rnav.enableTimeLog(false);
+#ifdef _DEBUG
+		rnav.setMinLoggingLevel(mrpt::utils::LVL_DEBUG);
+#else
+		rnav.setMinLoggingLevel(mrpt::utils::LVL_ERROR); // quiet
+#endif
+		const std::string sTmpFil = mrpt::system::getTempFileName();
+		const std::string sTmpDir = mrpt::system::extractFileDirectory(sTmpFil);
+		//printf("[run_rnav_test] navlog dir: `%s`\n", sTmpDir.c_str());
+		rnav.setLogFileDirectory(sTmpDir);
+		rnav.enableLogFile(true);
+	}
 
 	// Load options:
 	rnav.loadConfigFile(cfg);
@@ -70,7 +83,7 @@ void run_rnav_test(const std::string &sFilename, const std::string &sHoloMethod,
 	unsigned int MAX_ITERS = 100;
 	for (unsigned int i = 0; i < MAX_ITERS; i++)
 	{
-		printf("[run_rnav_test] iter: %i robot_pose: %s\n",i, robot_simul.getCurrentGTPose().asString().c_str());
+		//printf("[run_rnav_test] iter: %i robot_pose: %s\n",i, robot_simul.getCurrentGTPose().asString().c_str());
 		// Run nav:
 		rnav.navigationStep();
 
