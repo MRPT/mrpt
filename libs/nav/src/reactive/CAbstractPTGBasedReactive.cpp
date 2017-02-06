@@ -1253,6 +1253,7 @@ void CAbstractPTGBasedReactive::ptg_eval_target_build_obstacles(
 			// Initialize TP-Obstacles:
 			const size_t Ki = ptg->getAlphaValuesCount();
 			ptg->initTPObstacles(ipf.TP_Obstacles);
+			ptg->initClearanceDiagram(ipf.clearance);
 
 			// Implementation-dependent conversion:
 			STEP3_WSpaceToTPSpace(indexPTG, ipf.TP_Obstacles, ipf.clearance, -rel_pose_PTG_origin_wrt_sense);

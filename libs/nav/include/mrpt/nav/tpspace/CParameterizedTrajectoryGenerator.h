@@ -268,6 +268,8 @@ namespace nav
 		 */
 		static PTG_collision_behavior_t COLLISION_BEHAVIOR;
 
+		void initClearanceDiagram(ClearanceDiagram & cd) const; //!< Must be called to resize a CD to its correct size, before calling updateClearance()
+
 		/** Updates the clearance diagram given one (ox,oy) obstacle point, in coordinates relative 
 		  * to the PTG path origin.
 		  * \param[in,out] cd The clearance will be updated here. 
