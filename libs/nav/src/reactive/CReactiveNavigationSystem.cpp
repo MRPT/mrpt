@@ -203,7 +203,6 @@ bool CReactiveNavigationSystem::implementSenseObstacles(mrpt::system::TTimeStamp
 void CReactiveNavigationSystem::STEP3_WSpaceToTPSpace(const size_t ptg_idx,std::vector<double> &out_TPObstacles, mrpt::nav::ClearanceDiagram &out_clearance, const mrpt::poses::CPose2D &rel_pose_PTG_origin_wrt_sense)
 {
 	CParameterizedTrajectoryGenerator	*ptg = this->getPTG(ptg_idx);
-	out_clearance.clear();
 
 	const float OBS_MAX_XY = params_abstract_ptg_navigator.ref_distance*1.1f;
 

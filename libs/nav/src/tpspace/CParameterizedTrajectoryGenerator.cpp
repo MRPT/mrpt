@@ -297,28 +297,28 @@ void CParameterizedTrajectoryGenerator::internal_TPObsDistancePostprocess(const 
 	}
 }
 
+void mrpt::nav::CParameterizedTrajectoryGenerator::initClearanceDiagram(ClearanceDiagram & cd) const
+{
+	cd.raw_clearances.resize(m_alphaValuesCount);
+	for (unsigned int k = 0; k < m_alphaValuesCount; k++)
+	{
+		const size_t numPathSteps = getPathStepCount(k);
+		const double numStepsPerIncr = (numPathSteps - 1.0) / double(m_clearance_num_points);
+
+		for (double step_pointer_dbl = 0.0; step_pointer_dbl < numPathSteps; step_pointer_dbl += numStepsPerIncr)
+		{
+			const size_t step = mrpt::utils::round(step_pointer_dbl);
+			const double dist_over_path = this->getPathDist(k, step);
+			cd.raw_clearances[k][dist_over_path] = 1.0; // create entry in map<>
+		}
+	}
+}
+
 void CParameterizedTrajectoryGenerator::updateClearance(const double ox, const double oy, ClearanceDiagram & cd) const
 {
 	// Initialize CD on first call:
-	ASSERT_(cd.raw_clearances.size() == m_alphaValuesCount || cd.raw_clearances.empty());
+	ASSERT_(cd.raw_clearances.size() == m_alphaValuesCount);
 	ASSERT_(m_clearance_num_points>0 && m_clearance_num_points<10000);
-
-	if (cd.raw_clearances.empty())
-	{
-		cd.raw_clearances.resize(m_alphaValuesCount);
-		for (unsigned int k = 0; k < m_alphaValuesCount; k++) 
-		{
-			const size_t numPathSteps = getPathStepCount(k);
-			const double numStepsPerIncr = (numPathSteps - 1.0) / double(m_clearance_num_points);
-
-			for (double step_pointer_dbl = 0.0; step_pointer_dbl < numPathSteps; step_pointer_dbl += numStepsPerIncr)
-			{
-				const size_t step = mrpt::utils::round(step_pointer_dbl);
-				const double dist_over_path = this->getPathDist(k, step);
-				cd.raw_clearances[k][dist_over_path] = 1.0; // create entry in map<>
-			}
-		}
-	}
 
 	// evaluate in derived-class: this function also keeps the minimum automatically.
 	for (uint16_t k=0;k<m_alphaValuesCount;k++)
