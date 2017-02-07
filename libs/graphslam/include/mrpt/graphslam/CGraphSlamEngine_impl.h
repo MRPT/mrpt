@@ -1061,95 +1061,6 @@ void CGraphSlamEngine<GRAPH_T>::printParams() const {
 }
 
 template<class GRAPH_T>
-void CGraphSlamEngine<GRAPH_T>::initOutputDir(
-		const std::string& output_dir_fname /* = graphslam_results */) {
-	MRPT_START;
-	using namespace std;
-	using namespace mrpt::utils;
-	using namespace mrpt::system;
-
-	MRPT_LOG_INFO_STREAM( "Setting up output directory: " << output_dir_fname);
-
-	// current time vars - handy in the rest of the function.
-	mrpt::system::TTimeStamp cur_date(getCurrentTime());
-	string cur_date_str(dateTimeToString(cur_date));
-	string cur_date_validstr(fileNameStripInvalidChars(cur_date_str));
-
-	ASSERTMSG_(m_has_read_config,
-			"\nCannot initialize output directory, \nMake sure that you have parsed the configuration file first\n");
-
-	// Determine what to do with existing results if previous output directory
-	// exists
-	if (directoryExists(output_dir_fname)) {
-		int answer_int;
-		if (m_user_decides_about_output_dir) {
-			stringstream question;
-			string answer;
-
-			question << "Directory exists. Choose between the "
-				<< "following options" << std::endl;
-			question << "\t 1: Rename current folder and start new "
-				<< "output directory (default)" << std::endl;
-			question << "\t 2: Remove existing contents and continue execution "
-				<< std::endl;
-			question << "\t 3: Handle potential conflict manually "
-				"(Halts program execution)" << std::endl;
-			question << "\t [ 1 | 2 | 3 ] --> ";
-			std::cout << question.str();
-
-			getline(cin, answer);
-			answer = mrpt::system::trim(answer);
-			answer_int = atoi(&answer[0]);
-		}
-		else {
-			answer_int = 2;
-		}
-
-		switch (answer_int)
-		{
-			case 2:
-				{
-					MRPT_LOG_INFO_STREAM( "Deleting existing files...");
-					// purge directory
-					deleteFilesInDirectory(output_dir_fname,
-							/*deleteDirectoryAsWell = */ false);
-					break;
-				}
-			case 3:
-				{
-					// I don't need to exit gracefully here..
-					exit(0);
-				}
-			case 1:
-			default:
-				{
-					// rename the whole directory to DATE_TIME_${OUTPUT_DIR_NAME}
-					string dst_fname = output_dir_fname + cur_date_validstr;
-					MRPT_LOG_INFO_STREAM( "Renaming directory to: " << dst_fname);
-					string* error_msg = NULL;
-					bool did_rename = renameFile(output_dir_fname,
-							dst_fname,
-							error_msg);
-					ASSERTMSG_(did_rename,
-							format("\nError while trying to rename the output directory: %s",
-								error_msg->c_str()) );
-					break;
-				}
-		} // SWITCH (ANSWER_INT)
-	} // IF DIRECTORY EXISTS..
-
-	// Now rebuild the directory from scratch
-	MRPT_LOG_INFO_STREAM( "Creating the new directory structure...");
-	string cur_fname;
-
-	// debug_fname
-	createDirectory(output_dir_fname);
-	MRPT_LOG_INFO_STREAM( "Finished initializing output directory.");
-
-	MRPT_END;
-} // end of initOutputDir
-
-template<class GRAPH_T>
 void CGraphSlamEngine<GRAPH_T>::initResultsFile(
 		const std::string& fname) {
 	MRPT_START;
@@ -2085,7 +1996,7 @@ void CGraphSlamEngine<GRAPH_T>::initEstimatedTrajectoryVisualization() {
 	// SetOfLines
 	CSetOfLinesPtr estimated_traj_setoflines = CSetOfLines::Create();
 	estimated_traj_setoflines->setColor_u8(m_estimated_traj_color);
-	estimated_traj_setoflines->setLineWidth(0.5);
+	estimated_traj_setoflines->setLineWidth(1.5);
 	estimated_traj_setoflines->setName("estimated_traj_setoflines");
 	// append a dummy line so that you can later use append using
 	// CSetOfLines::appendLienStrip method.
@@ -2576,11 +2487,11 @@ void CGraphSlamEngine<GRAPH_T>::generateReportFiles(
 	MRPT_START;
 	using namespace mrpt::utils;
 	using namespace mrpt::system;
-	using namespace format;
+	using namespace mrpt;
 
 	ASSERTMSG_(directoryExists(output_dir_fname),
 			format("Output directory \"%s\" doesn't exist",
-				output_dir_fname));
+				output_dir_fname.c_str()));
 
 	MRPT_LOG_INFO_STREAM( "Generating detailed class report...");
 	mrpt::synch::CCriticalSectionLocker m_graph_lock(&m_graph_section);

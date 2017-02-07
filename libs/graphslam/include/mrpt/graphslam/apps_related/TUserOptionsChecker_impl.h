@@ -8,7 +8,7 @@
    +---------------------------------------------------------------------------+ */
 
 // implementation of the TUserOptionsChecker class template methods
-namespace mrpt { namespace graphslam { namespace detail {
+namespace mrpt { namespace graphslam { namespace apps {
 
 template<class GRAPH_t>
 TUserOptionsChecker<GRAPH_t>::TUserOptionsChecker():
