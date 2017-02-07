@@ -29,7 +29,7 @@
 #include <iostream>
 #include <vector>
 
-namespace mrpt { namespace graphslam { namespace detail {
+namespace mrpt { namespace graphslam { namespace apps {
 
 /**\brief Properties struct for both the Registration Decider and Optimizer
 	* classes

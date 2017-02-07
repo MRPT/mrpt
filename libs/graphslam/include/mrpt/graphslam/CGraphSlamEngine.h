@@ -411,7 +411,7 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		 * \param[in] output_dir_fname directory name to generate the files in.
 		 * Directory must be crated prior to this call
 		 *
-		 * \sa getDescriptiveReport, initOutputDir
+		 * \sa getDescriptiveReport, CGraphSlamHandler::initOutputDir
 		 */
 		void generateReportFiles(const std::string& output_dir_fname_in);
 		/**\brief Fill the given vector with the deformation energy values computed
@@ -438,30 +438,13 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		 * \note Method is automatically called in the class constructor
 		 */
 		void initClass();
-		/**\brief Initialize (clean up and create new files) the output directory.
-		 *
-		 * If directory already exists (most probably from previous runs), the user
-		 * is given 3 options:
-		 * - Remove the current directory contents
-		 * - Rename (and keep) the current directory contents
-		 * - Manually handle the conflict
-		 *
-		 * User can also set the .ini parameter user_decides_about_output_dir  flag
-		 * to false, if he doesn't care about the previous results directory. In
-		 * this case the 1st choice is picked.
-		 *
-		 * \param[in] Name of the output directory to be used
-		 *
-		 * \sa CGraphSlamEngine::initResultsFile
-		 */
-		void initOutputDir(const std::string& output_dir_fname="graphslam_results");
 		/**\brief Automate the creation and initialization of a results file relevant to
 		 * the application.
 		 *
 		 * Open the file (corresponding to the provided filename) and write an
 		 * introductory message.
 		 *
-		 * \sa initOutputDir
+		 * \sa CGraphSlamHandler::initOutputDir
 		 */
 		void initResultsFile(const std::string& fname);
 		/**\brief Fill the provided string with a detailed report of the class state
@@ -481,9 +464,7 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		 * (via the .ini file) and if it is relevant to the application then the
 		 * corresponding method is called in the initClass class method
 		 */
-		/**\brief 
 		/**\{*/
-
 		void initVisualization();
 
 		void initRangeImageViewport();
