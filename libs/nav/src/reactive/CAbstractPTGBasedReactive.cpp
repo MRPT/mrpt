@@ -16,7 +16,6 @@
 #include <mrpt/system/filesystem.h>
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/math/geometry.h>
-#include <mrpt/math/utils.h>  // make_vector<>
 #include <mrpt/math/ops_containers.h> // sum()
 #include <mrpt/utils/printf_vector.h>
 #include <mrpt/utils/metaprogramming.h>
@@ -295,7 +294,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 				CPose2D rel_cur_pose_wrt_last_vel_cmd_NOP, rel_pose_PTG_origin_wrt_sense_NOP;
 				STEP8_GenerateLogRecord(newLogRec,
 					mrpt::math::TPose2D() /*fake target*/,
-					-1, // nSelectedPTG,
+					-1, // best_ptg_idx,
 					m_robot.getEmergencyStopCmd(),
 					nPTGs,
 					false, //best_is_NOP_cmdvel,
@@ -376,7 +375,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 
 		m_infoPerPTG.resize(nPTGs+1);
 		m_infoPerPTG_timestamp = tim_start_iteration;
-		vector<THolonomicMovement> holonomicMovements(nPTGs+1); // the last extra one is for the evaluation of "NOP motion command" choice.
+		vector<TCandidateMovementPTG> candidate_movs(nPTGs+1); // the last extra one is for the evaluation of "NOP motion command" choice.
 
 		for (size_t indexPTG=0;indexPTG<nPTGs;indexPTG++)
 		{
@@ -384,13 +383,13 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 			TInfoPerPTG &ipf = m_infoPerPTG[indexPTG];
 
 			// The picked movement in TP-Space (to be determined by holonomic method below)
-			THolonomicMovement &holonomicMovement = holonomicMovements[indexPTG];
+			TCandidateMovementPTG &cm = candidate_movs[indexPTG];
 
 			ASSERT_(m_navigationParams);
-			ptg_eval_target_build_obstacles(
+			build_movement_candidate(
 				ptg, indexPTG,
 				relTarget, rel_pose_PTG_origin_wrt_sense,
-				ipf, holonomicMovement,
+				ipf, cm,
 				newLogRec, false /* this is a regular PTG reactive case */,
 				m_holonomicMethod[indexPTG],
 				*m_navigationParams);
@@ -441,10 +440,10 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 				}
 
 				ASSERT_(m_navigationParams);
-				ptg_eval_target_build_obstacles(
+				build_movement_candidate(
 					ptg, m_lastSentVelCmd.ptg_index,
 					relTarget_NOP, rel_pose_PTG_origin_wrt_sense_NOP,
-					m_infoPerPTG[nPTGs], holonomicMovements[nPTGs],
+					m_infoPerPTG[nPTGs], candidate_movs[nPTGs],
 					newLogRec, true /* this is the PTG continuation (NOP) choice */,
 					m_holonomicMethod[m_lastSentVelCmd.ptg_index],
 					*m_navigationParams,
@@ -454,223 +453,24 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 			else
 			{
 				// Can't interpolate pose, hence can't evaluate NOP:
-				holonomicMovements[nPTGs].evaluation = 0;
+				candidate_movs[nPTGs].speed = -0.01; // <0 means inviable movement
 			}
 		} //end can_do_NOP_motion
 
-		// Evaluate the "overall score" for each PTG:
-		// -------------------------------------------
-		{
-			std::vector<double> maxScore, minScore;
-			for (size_t i = 0; i <= nPTGs; i++)
-			{
-				THolonomicMovement &holonomicMovement = holonomicMovements[i];
-				if (holonomicMovement.eval_factors.empty())
-					continue; // not evaluated for some reason.
-				
-				const size_t N = holonomicMovement.eval_factors.size();
-				if (maxScore.size() != N) {
-					// 1st loop:
-					maxScore.assign(N, .0);
-					minScore.assign(N, std::numeric_limits<double>::max());
-				}
-				for (size_t k = 0; k < N; k++) {
-					mrpt::utils::keep_min(minScore[k], holonomicMovement.eval_factors[k]);
-					mrpt::utils::keep_max(maxScore[k], holonomicMovement.eval_factors[k]);
-				}
-			}
-
-			const size_t numScores = maxScore.size();
-			if (numScores!=0) // it may be empty if no PTG gave acceptable possible motions
-			{
-				const std::array<bool, 6> scores_to_normalize{ false, false, false, false, false, true }; // TODO: make this a parameter, if worth?
-
-				for (size_t i = 0; i < numScores; i++)
-				{
-					if (!scores_to_normalize[i])
-						continue;
-
-					const double K = maxScore[i] != 0 ? (1.0 / maxScore[i]) : 1.0;
-
-					for (size_t k = 0; k <= nPTGs; k++)
-					{
-						THolonomicMovement &holonomicMovement = holonomicMovements[k];
-						if (holonomicMovement.eval_factors.empty())
-							continue;
-						holonomicMovement.eval_factors[i] *= K;
-					}
-				}
-			}
-
-			// Eval global, weighted score:
-			for (size_t i = 0; i<=nPTGs; i++)
-			{
-				TInfoPerPTG &ipf = m_infoPerPTG[i];
-				THolonomicMovement &holonomicMovement = holonomicMovements[i];
-
-				if ((holonomicMovement.speed <= 0 /* speed=-1 is used to mark invalid NOP holoMovs */) || (i== nPTGs && !can_do_nop_motion))
-				{
-					// If no movement has been found -> the worst evaluation:
-					holonomicMovement.evaluation = .0;
-					holonomicMovement.eval_org = .0;
-					holonomicMovement.eval_prio = .0;
-					//holonomicMovement.eval_factors.clear(); // Leave them for debugging in log files.
-					continue;
-				}
-
-				const bool this_is_PTG_continuation = (i == nPTGs);
-				const size_t indexPTG = (this_is_PTG_continuation) ? m_lastSentVelCmd.ptg_index : i;
-				CParameterizedTrajectoryGenerator * ptg = getPTG(indexPTG);
-
-				// General case:
-				double global_eval = .0;
-
-				// Select set of weights:
-				ASSERT_(!params_abstract_ptg_navigator.weights.empty());
-				const std::vector<double> & w = params_abstract_ptg_navigator.weights;
-				ASSERT_EQUAL_(w.size(), holonomicMovement.eval_factors.size());
-
-				// Sum:
-				for (size_t i = 0; i < holonomicMovement.eval_factors.size(); i++)
-					global_eval += w[i] * holonomicMovement.eval_factors[i];
-				global_eval /= math::sum(w);
-
-				// Don't reduce the priority of "PTG continuation" "NOPs".
-				holonomicMovement.eval_org = global_eval;
-				holonomicMovement.eval_prio = 1.0;
-
-				ASSERT_(holonomicMovement.PTG != nullptr);
-
-				holonomicMovement.eval_prio *= holonomicMovement.PTG->getScorePriority();
-
-				// Use PTG-specific relative scoring priority:
-				const int kDirection = static_cast<int>(holonomicMovement.PTG->alpha2index(holonomicMovement.direction));
-				holonomicMovement.eval_prio *= holonomicMovement.PTG->evalPathRelativePriority(kDirection, ::hypot(relTarget.x,relTarget.y));
-
-				holonomicMovement.evaluation = holonomicMovement.eval_org * holonomicMovement.eval_prio;
-
-				if (fill_log_record)
-				{
-					CLogFileRecord::TInfoPerPTG &ipp = newLogRec.infoPerPTG[i];
-
-					ipp.evalFactors.resize(holonomicMovement.eval_factors.size());
-					mrpt::utils::metaprogramming::copy_container_typecasting(holonomicMovement.eval_factors, ipp.evalFactors);
-					ipp.evaluation = holonomicMovement.evaluation;
-					ipp.evaluation_org = holonomicMovement.eval_org;
-					ipp.evaluation_priority = holonomicMovement.eval_prio;
-				}
-			} // end for each PTG
-
-		} // end evaluate all PTGs
-
-
-		// STEP6: After all PTGs have been evaluated, pick the best scored:
-		// ---------------------------------------------------------------------
-
-		// Qualitative scoring:
-		// ---------------------------
-		if (params_abstract_ptg_navigator.enable_boost_shortest_eta)
-		{
-			// Criterion #1: If a PTG directly leads to target without colliding, then make it the preferred option.
-			// If more than one such case exist, pick the one with the shortest ETA (Estimated Time of Arrival).
-			// Having a clearance enough is a
-			// responsibility of the "holonomic navigator" algorithms while deciding the preferred PTG path index.
-			std::map<double, size_t>  ETA_to_ptgindex;
-			for (size_t i = 0; i <= nPTGs; i++)
-			{
-				const bool is_ptg_NOP = (i == nPTGs);
-
-				THolonomicMovement & hm = holonomicMovements[i];
-				if (!hm.PTG) continue;
-				if (hm.evaluation == 0) continue; // e.g. for invalid "NOP".
-
-				const auto & ipp = m_infoPerPTG[i];
-
-				const auto dir_selected = is_ptg_NOP ? m_lastSentVelCmd.ptg_alpha_index : hm.PTG->alpha2index(hm.direction);
-				const auto dir_target = is_ptg_NOP ? m_lastSentVelCmd.tp_target_k : hm.PTG->alpha2index(ipp.target_alpha);
-				if (dir_target != dir_selected)
-					continue;
-				if (ipp.TP_Obstacles[dir_selected] < ipp.target_dist*1.02)
-					continue;
-				// OK, we have a direct path to target without collisions.
-				const double path_len_meters = ipp.target_dist * hm.PTG->getRefDistance();
-
-				// Calculate their ETA
-				uint32_t target_step;
-				bool valid_step = hm.PTG->getPathStepForDist(dir_selected, path_len_meters, target_step);
-				if (!valid_step)
-					continue;
-
-				double path_ETA = hm.PTG->getPathStepDuration() * target_step /* PTG original time to get to target point */
-					* hm.speed /* times the speed scale factor*/;
-
-				double discount_time = .0;
-				if (is_ptg_NOP) {
-					// Heuristic: discount the time already executed.
-					// Note that hm.speed above scales the overall path time using the current speed scale, not the exact
-					// integration over the past timesteps. It's an approximation, probably good enough...
-					discount_time = mrpt::system::timeDifference(m_lastSentVelCmd.tim_send_cmd_vel, tim_start_iteration);
-				}
-				path_ETA -= discount_time; // This could even become negative if the approximation is poor...
-
-				ETA_to_ptgindex[path_ETA] = i;
-
-				// Log:
-				newLogRec.additional_debug_msgs["shortest_path_boost"] += mrpt::format("[%u]: trg=%u discount=%.02fs ETA=%.02fs. ", (unsigned int)i,(unsigned int)target_step, discount_time, path_ETA);
-			}
-
-			// Pick the shortest path, if any:
-			if (!ETA_to_ptgindex.empty())
-			{
-				// Pick the shortest value, sorted in the std::map<>
-				const double best_ETA_in_seconds = ETA_to_ptgindex.begin()->first;
-
-				for (const auto & e : ETA_to_ptgindex)
-				{
-					if (e.first > best_ETA_in_seconds*params_abstract_ptg_navigator.best_eta_margin_tolerance_wrt_best)
-						break; // no more good candidates
-
-					const size_t best_ptg_idx = e.second;
-					// boost up this selection!
-					const double extra_score = 1.0;
-					holonomicMovements[best_ptg_idx].evaluation += extra_score;
-					// Update log scores as well (it was saved above!)
-					if (newLogRec.infoPerPTG.size() > best_ptg_idx) {
-						newLogRec.infoPerPTG[best_ptg_idx].evaluation += extra_score;
-					}
-				}
-			}
-		}
-
-		// Select best scored:
-		// ---------------------------
-		int nSelectedPTG = -1;       // If left to -1, it means there is no good option (-> emergency stop)
-		double best_PTG_eval = .0;
-#if 1
-		// Method #1: Pick the largest weighted score:
-		for (size_t indexPTG=0;indexPTG<=nPTGs;indexPTG++) {
-			if (holonomicMovements[indexPTG].evaluation > best_PTG_eval) {
-				nSelectedPTG = indexPTG;
-				best_PTG_eval = holonomicMovements[nSelectedPTG].evaluation;
-			}
-		}
-#else
-		// Method #2: Multi-stage thresholding:
-		// holonomicMovement.eval_factors
-		const score_index_t phase1_score = SCOREIDX_COLISION_FREE_DISTANCE;
-
-
-
-#endif
+		// Evaluate all the candidates and pick the "best" one, using 
+		// the user-defined multiobjective optimizer
+		// --------------------------------------------------------------
+		CMultiObjectiveMotionOptimizerBase::TResultInfo momo_info;
+		int best_ptg_idx = m_multiobjopt.decide(candidate_movs, momo_info);
 
 		// Pick best movement (or null if none is good)
-		const THolonomicMovement * selectedHolonomicMovement = nullptr;
-		if (nSelectedPTG >= 0) {
-			selectedHolonomicMovement = &holonomicMovements[nSelectedPTG];
+		const TCandidateMovementPTG * selectedHolonomicMovement = nullptr;
+		if (best_ptg_idx >= 0) {
+			selectedHolonomicMovement = &candidate_movs[best_ptg_idx];
 		}
 
 		// If the selected PTG is (N+1), it means the NOP cmd. vel is selected as the best alternative, i.e. do NOT send any new motion command.
-		const bool best_is_NOP_cmdvel =  (nSelectedPTG==int(nPTGs) && best_PTG_eval>0);
+		const bool best_is_NOP_cmdvel =  (best_ptg_idx==int(nPTGs));
 
 		// ---------------------------------------------------------------------
 		//				SEND MOVEMENT COMMAND TO THE ROBOT
@@ -686,7 +486,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 				{
 					STEP8_GenerateLogRecord(newLogRec,
 						relTarget,
-						nSelectedPTG,
+						best_ptg_idx,
 						m_robot.getEmergencyStopCmd(),
 						nPTGs,
 						best_is_NOP_cmdvel,
@@ -703,10 +503,10 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 		{
 			// STEP7: Get the non-holonomic movement command.
 			// ---------------------------------------------------------------------
-			if (best_PTG_eval>0 && selectedHolonomicMovement) // both conditions should be equivalent
+			if (selectedHolonomicMovement)
 			{
-				CTimeLoggerEntry tle(m_timelogger, "navigationStep.STEP7_NonHolonomicMovement");
-				STEP7_GenerateSpeedCommands(*selectedHolonomicMovement, new_vel_cmd);
+				CTimeLoggerEntry tle(m_timelogger, "navigationStep.selectedHolonomicMovement");
+				generate_vel_cmd(*selectedHolonomicMovement, new_vel_cmd);
 				ASSERT_(new_vel_cmd);
 			}
 
@@ -731,7 +531,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 							new_vel_cmd = m_robot.getEmergencyStopCmd();
 							STEP8_GenerateLogRecord(newLogRec,
 								relTarget,
-								nSelectedPTG,
+								best_ptg_idx,
 								new_vel_cmd,
 								nPTGs,
 								best_is_NOP_cmdvel,
@@ -745,13 +545,13 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 					}
 				}
 				// Save last sent cmd:
-				m_lastSentVelCmd.ptg_index = nSelectedPTG;
+				m_lastSentVelCmd.ptg_index = best_ptg_idx;
 				m_lastSentVelCmd.ptg_alpha_index = selectedHolonomicMovement ?
 					selectedHolonomicMovement->PTG->alpha2index(selectedHolonomicMovement->direction)
 					:
 					0;
 				m_lastSentVelCmd.tp_target_k = selectedHolonomicMovement ?
-					selectedHolonomicMovement->PTG->alpha2index(m_infoPerPTG[nSelectedPTG].target_alpha) :
+					selectedHolonomicMovement->PTG->alpha2index(m_infoPerPTG[best_ptg_idx].target_alpha) :
 					0;
 				m_lastSentVelCmd.poseVel = m_curPoseVel;
 				m_lastSentVelCmd.tim_send_cmd_vel = tim_send_cmd_vel;
@@ -792,21 +592,20 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 				"CMD: %s "
 				"speedScale=%.04f "
 				"T=%.01lfms Exec:%.01lfms|%.01lfms "
-				"E=%.01lf PTG#%i\n",
+				"PTG#%i\n",
 					new_vel_cmd ? new_vel_cmd->asString().c_str() : "NOP",
 					selectedHolonomicMovement ? selectedHolonomicMovement->speed : .0,
 					1000.0*meanExecutionPeriod.getLastOutput(),
 					1000.0*meanExecutionTime.getLastOutput(),
 					1000.0*meanTotalExecutionTime.getLastOutput(),
-					best_PTG_eval,
-					nSelectedPTG
+					best_ptg_idx
 					) );
 		}
 		if (fill_log_record)
 		{
 			STEP8_GenerateLogRecord(newLogRec,
 				relTarget,
-				nSelectedPTG,
+				best_ptg_idx,
 				new_vel_cmd,
 				nPTGs,
 				best_is_NOP_cmdvel,
@@ -878,8 +677,8 @@ void CAbstractPTGBasedReactive::STEP8_GenerateLogRecord(CLogFileRecord &newLogRe
 	}
 }
 
-void CAbstractPTGBasedReactive::STEP5_PTGEvaluator(
-	THolonomicMovement         & holonomicMovement,
+void CAbstractPTGBasedReactive::calc_move_candidate_scores(
+	TCandidateMovementPTG         & cm,
 	const std::vector<double>        & in_TPObstacles,
 	const mrpt::nav::ClearanceDiagram & in_clearance,
 	const mrpt::math::TPose2D  & WS_Target,
@@ -892,34 +691,46 @@ void CAbstractPTGBasedReactive::STEP5_PTGEvaluator(
 {
 	MRPT_START;
 
-	const double   refDist	    = holonomicMovement.PTG->getRefDistance();
-	const double   TargetDir    = (TP_Target.x!=0 || TP_Target.y!=0) ? atan2( TP_Target.y, TP_Target.x) : 0.0;
-	const int      TargetSector = static_cast<int>( holonomicMovement.PTG->alpha2index( TargetDir ) );
-	const double   TargetDist   = TP_Target.norm();
+	const double   ref_dist      = cm.PTG->getRefDistance();
+	const double   target_dir    = (TP_Target.x!=0 || TP_Target.y!=0) ? atan2( TP_Target.y, TP_Target.x) : 0.0;
+	const int      target_k = static_cast<int>( cm.PTG->alpha2index( target_dir ) );
+	const double   target_d_norm   = TP_Target.norm();
 	// Picked movement direction:
-	const int      kDirection   = static_cast<int>( holonomicMovement.PTG->alpha2index( holonomicMovement.direction ) );
+	const int      move_k   = static_cast<int>( cm.PTG->alpha2index( cm.direction ) );
 
 	// Coordinates of the trajectory end for the given PTG and "alpha":
-	const double d = std::min( in_TPObstacles[ kDirection ], 0.99*TargetDist);
+	const double d = std::min( in_TPObstacles[ move_k ], 0.99*target_d_norm);
 	uint32_t nStep;
-	bool pt_in_range = holonomicMovement.PTG->getPathStepForDist(kDirection, d, nStep);
+	bool pt_in_range = cm.PTG->getPathStepForDist(move_k, d, nStep);
 	ASSERT_(pt_in_range)
 
 	mrpt::math::TPose2D pose;
-	holonomicMovement.PTG->getPathPose(kDirection, nStep,pose);
+	cm.PTG->getPathPose(move_k, nStep,pose);
 
-	std::vector<double> & eval_factors = holonomicMovement.eval_factors;
-	eval_factors.assign(PTG_RNAV_SCORE_COUNT, .0);
+	// Start storing params in the candidate move structure: 
+	cm.props["ref_dist"] = ref_dist;
+	cm.props["target_dir"] = target_dir;
+	cm.props["target_k"] = target_k;
+	cm.props["target_d_norm"] = target_d_norm;
+	cm.props["move_k"] = move_k;
+	cm.props["is_PTG_cont"] = this_is_PTG_continuation ? 1 : 0;
+	cm.props["num_paths"] = in_TPObstacles.size();
+	cm.props["WS_target_x"] = WS_Target.x;
+	cm.props["WS_target_y"] = WS_Target.y;
+	cm.props["robpose_x"] = pose.x;
+	cm.props["robpose_y"] = pose.y;
+	cm.props["robpose_phi"] = pose.phi;
 
 	// Factor 1: Free distance for the chosen PTG and "alpha" in the TP-Space:
 	// ----------------------------------------------------------------------
-	if (kDirection == TargetSector && TargetDist>.0 && in_TPObstacles[kDirection]>TargetDist+0.05 /*small margin*/) {
+	double & colfree = cm.props["colision_free_distance"];
+	if (move_k == target_k && target_d_norm>.0 && in_TPObstacles[move_k]>target_d_norm+0.05 /*small margin*/) {
 		// If we head straight to target, don't count the possible collisions ahead:
-		eval_factors[SCOREIDX_COLISION_FREE_DISTANCE] = mrpt::utils::saturate_val(in_TPObstacles[kDirection] / (TargetDist + 0.05 /* give a minimum margin */), 0.0, 1.0);
+		colfree = mrpt::utils::saturate_val(in_TPObstacles[move_k] / (target_d_norm + 0.05 /* give a minimum margin */), 0.0, 1.0);
 	}
 	else {
 		// Normal case: distance to collision:
-		eval_factors[SCOREIDX_COLISION_FREE_DISTANCE] = in_TPObstacles[kDirection];
+		colfree = in_TPObstacles[move_k];
 	}
 
 	// Special case for NOP motion cmd:
@@ -930,43 +741,43 @@ void CAbstractPTGBasedReactive::STEP5_PTGEvaluator(
 	{
 		int cur_k=0;
 		double cur_norm_d=.0;
-		bool is_exact = holonomicMovement.PTG->inverseMap_WS2TP(rel_cur_pose_wrt_last_vel_cmd_NOP.x(), rel_cur_pose_wrt_last_vel_cmd_NOP.y(), cur_k, cur_norm_d);
+		bool is_exact = cm.PTG->inverseMap_WS2TP(rel_cur_pose_wrt_last_vel_cmd_NOP.x(), rel_cur_pose_wrt_last_vel_cmd_NOP.y(), cur_k, cur_norm_d);
 
 		if (!is_exact)
 		{
 			// Don't trust this step: we are not 100% sure of the robot pose in TP-Space for this "PTG continuation" step:
-			holonomicMovement.speed = -0.01; // this enforces a 0 global evaluation score
+			cm.speed = -0.01; // this enforces a 0 global evaluation score
 			newLogRec.additional_debug_msgs["PTG_eval"] = "PTG-continuation not allowed, cur. pose out of PTG domain.";
 			return;
 		}
 		uint32_t cur_ptg_step = 0;
 		bool WS_point_is_unique = true; 
 		{
-			bool ok1 = holonomicMovement.PTG->getPathStepForDist(m_lastSentVelCmd.ptg_alpha_index, cur_norm_d * holonomicMovement.PTG->getRefDistance(), cur_ptg_step);
+			bool ok1 = cm.PTG->getPathStepForDist(m_lastSentVelCmd.ptg_alpha_index, cur_norm_d * cm.PTG->getRefDistance(), cur_ptg_step);
 			if (ok1) {
 				// Check bijective:
-				WS_point_is_unique = holonomicMovement.PTG->isBijectiveAt(cur_k, cur_ptg_step);
-				const uint32_t predicted_step = mrpt::system::timeDifference(m_lastSentVelCmd.tim_send_cmd_vel, mrpt::system::now()) / holonomicMovement.PTG->getPathStepDuration();
-				WS_point_is_unique = WS_point_is_unique && holonomicMovement.PTG->isBijectiveAt(kDirection, predicted_step);
+				WS_point_is_unique = cm.PTG->isBijectiveAt(cur_k, cur_ptg_step);
+				const uint32_t predicted_step = mrpt::system::timeDifference(m_lastSentVelCmd.tim_send_cmd_vel, mrpt::system::now()) / cm.PTG->getPathStepDuration();
+				WS_point_is_unique = WS_point_is_unique && cm.PTG->isBijectiveAt(move_k, predicted_step);
 				newLogRec.additional_debug_msgs["PTG_eval.bijective"] = mrpt::format("isBijectiveAt(): k=%i step=%i -> %s", (int)cur_k, (int)cur_ptg_step, WS_point_is_unique ? "yes" : "no");
 
 				if (!WS_point_is_unique)
 				{
 					// Don't trust direction:
-					cur_k = kDirection;
+					cur_k = move_k;
 					cur_ptg_step = predicted_step;
-					cur_norm_d = holonomicMovement.PTG->getPathDist(cur_k, cur_ptg_step);
+					cur_norm_d = cm.PTG->getPathDist(cur_k, cur_ptg_step);
 				}
 				{
-					const double cur_a = holonomicMovement.PTG->index2alpha(cur_k);
+					const double cur_a = cm.PTG->index2alpha(cur_k);
 					log.TP_Robot.x = cos(cur_a)*cur_norm_d;
 					log.TP_Robot.y = sin(cur_a)*cur_norm_d;
-					holonomicMovement.starting_robot_dir = cur_a;
-					holonomicMovement.starting_robot_dist = cur_norm_d;
+					cm.starting_robot_dir = cur_a;
+					cm.starting_robot_dist = cur_norm_d;
 				}
 
 				mrpt::math::TPose2D predicted_rel_pose;
-				holonomicMovement.PTG->getPathPose(m_lastSentVelCmd.ptg_alpha_index, cur_ptg_step, predicted_rel_pose);
+				cm.PTG->getPathPose(m_lastSentVelCmd.ptg_alpha_index, cur_ptg_step, predicted_rel_pose);
 				const CPose2D predicted_pose_global = CPose2D(m_lastSentVelCmd.poseVel.pose) + CPose2D(predicted_rel_pose);
 				const double predicted2real_dist = predicted_pose_global.distance2DTo(m_curPoseVel.pose.x, m_curPoseVel.pose.y);
 				newLogRec.additional_debug_msgs["PTG_eval.lastCmdPose(raw)"] = m_lastSentVelCmd.poseVel.pose.asString();
@@ -974,13 +785,13 @@ void CAbstractPTGBasedReactive::STEP5_PTGEvaluator(
 
 				if (predicted2real_dist > params_abstract_ptg_navigator.max_distance_predicted_actual_path)
 				{
-					holonomicMovement.speed = -0.01; // this enforces a 0 global evaluation score
+					cm.speed = -0.01; // this enforces a 0 global evaluation score
 					newLogRec.additional_debug_msgs["PTG_eval"] = "PTG-continuation not allowed, mismatchDistance above threshold.";
 					return;
 				}
 			}
 			else {
-				holonomicMovement.speed = -0.01; // this enforces a 0 global evaluation score
+				cm.speed = -0.01; // this enforces a 0 global evaluation score
 				newLogRec.additional_debug_msgs["PTG_eval"] = "PTG-continuation not allowed, couldn't get PTG step for cur. robot pose.";
 				return;
 			}
@@ -991,55 +802,54 @@ void CAbstractPTGBasedReactive::STEP5_PTGEvaluator(
 		// Take the least favorable case.
 		// [Update] Do this only when the PTG gave us a unique-mapped WS<->TPS point:
 
-		eval_factors[SCOREIDX_COLISION_FREE_DISTANCE] = WS_point_is_unique ?
-			std::min(in_TPObstacles[kDirection], in_TPObstacles[cur_k])
+		colfree = WS_point_is_unique ?
+			std::min(in_TPObstacles[move_k], in_TPObstacles[cur_k])
 			:
-			in_TPObstacles[kDirection];
+			in_TPObstacles[move_k];
 
 		// Only discount free space if there was a real obstacle, not the "end of path" due to limited refDistance.
-		if (eval_factors[SCOREIDX_COLISION_FREE_DISTANCE] < 0.99) {
-			eval_factors[SCOREIDX_COLISION_FREE_DISTANCE] -= cur_norm_d;
+		if (colfree < 0.99) {
+			colfree -= cur_norm_d;
 		}
 	}
 
-	// Factor 2: Distance in sectors:
-	// -------------------------------------------
-	//int dif = std::abs(TargetSector - kDirection);
-	//if ( dif > int(nSectors/2)) dif = nSectors - dif;
-	m_expr_var_k = kDirection;
-	m_expr_var_k_target = TargetSector;
-	m_expr_var_num_paths = in_TPObstacles.size();
+	//// Factor 2: Distance in sectors:
+	//// -------------------------------------------
+	////int dif = std::abs(TargetSector - kDirection);
+	////if ( dif > int(nSectors/2)) dif = nSectors - dif;
+	//m_expr_var_k = move_k;
+	//m_expr_var_k_target = target_k;
+	//m_expr_var_num_paths = in_TPObstacles.size();
 
-	// Was: eval_factors[SCOREIDX_TPS_DIRECTION] = exp(-std::abs( dif / (nSectors/10.0)));
-	eval_factors[SCOREIDX_TPS_DIRECTION] = PIMPL_GET_CONSTREF(exprtk::expression<double>, m_expr_score2_formula).value();
+	//// Was: eval_factors[SCOREIDX_TPS_DIRECTION] = exp(-std::abs( dif / (nSectors/10.0)));
+	//eval_factors[SCOREIDX_TPS_DIRECTION] = PIMPL_GET_CONSTREF(exprtk::expression<double>, m_expr_score2_formula).value();
 
 	// Factor 3: Angle between the robot at the end of the chosen trajectory and the target
 	// -------------------------------------------------------------------------------------
-	double t_ang = atan2( WS_Target.y - pose.y, WS_Target.x - pose.x );
-	t_ang -= pose.phi;
-	mrpt::math::wrapToPiInPlace(t_ang);
+	//double t_ang = atan2( WS_Target.y - pose.y, WS_Target.x - pose.x );
+	//t_ang -= pose.phi;
+	//mrpt::math::wrapToPiInPlace(t_ang);
 
-	eval_factors[SCOREIDX_ORIENTATION_AT_END] = exp(-square( t_ang / (0.5*M_PI)) );
+	//eval_factors[SCOREIDX_ORIENTATION_AT_END] = exp(-square( t_ang / (0.5*M_PI)) );
 
-	// Factor4:		Decrease in euclidean distance between (x,y) and the target:
-	//  Moving away of the target is negatively valued
+	// Factor4: Decrease in euclidean distance between (x,y) and the target:
+	//  Moving away of the target is negatively valued.
 	// ---------------------------------------------------------------------------
-	const double dist_eucl_final = std::sqrt(square(WS_Target.x- pose.x)+square(WS_Target.y- pose.y));
-	eval_factors[SCOREIDX_NEARNESS_TARGET] = (refDist - dist_eucl_final) / refDist;
-	mrpt::utils::saturate(eval_factors[SCOREIDX_NEARNESS_TARGET], 0.0, 1.0);
+	cm.props["dist_eucl_final"] = std::hypot(WS_Target.x- pose.x, WS_Target.y- pose.y);
 
 	// Factor5: Hysteresis:
 	// -----------------------------------------------------
-	eval_factors[SCOREIDX_HYSTERESIS] = .0;
+	double &hysteresis = cm.props["hysteresis"];
+	hysteresis = .0;
 
-	if (holonomicMovement.PTG->supportVelCmdNOP())
+	if (cm.PTG->supportVelCmdNOP())
 	{
-		eval_factors[SCOREIDX_HYSTERESIS] = this_is_PTG_continuation ? 1.0 : 0.;
+		hysteresis = this_is_PTG_continuation ? 1.0 : 0.;
 	}
 	else if (m_last_vel_cmd)
 	{
 		mrpt::kinematics::CVehicleVelCmdPtr desired_cmd;
-		desired_cmd = holonomicMovement.PTG->directionToMotionCommand(kDirection);
+		desired_cmd = cm.PTG->directionToMotionCommand(move_k);
 		const mrpt::kinematics::CVehicleVelCmd *ptr1 = m_last_vel_cmd.pointer();
 		const mrpt::kinematics::CVehicleVelCmd *ptr2 = desired_cmd.pointer();
 		if(typeid(*ptr1) == typeid(*ptr2)){
@@ -1051,35 +861,68 @@ void CAbstractPTGBasedReactive::STEP5_PTGEvaluator(
 				const double scr = exp(-std::abs(desired_cmd->getVelCmdElement(i) - m_last_vel_cmd->getVelCmdElement(i)) / 0.20);
 				mrpt::utils::keep_min(simil_score, scr);
 			}
-			eval_factors[SCOREIDX_HYSTERESIS] = simil_score;
+			hysteresis = simil_score;
 		}
 	}
 
 	// Factor6: clearance
 	// -----------------------------------------------------
-	eval_factors[SCOREIDX_CLEARANCE] = in_clearance.getClearance(kDirection, TargetDist*1.01, false /* spot, dont interpolate */ );
+	double &clearance = cm.props["clearance"];
+	clearance = in_clearance.getClearance(move_k, target_d_norm*1.01, false /* spot, dont interpolate */ );
 
+#if 0 // ->leave this to the multiobjective optimizer
 	// Don't trust PTG continuation if we are too close to obstacles:
 	if (this_is_PTG_continuation &&
 		std::min(eval_factors[SCOREIDX_COLISION_FREE_DISTANCE], eval_factors[SCOREIDX_CLEARANCE]) < params_abstract_ptg_navigator.min_normalized_free_space_for_ptg_continuation)
 	{
 		newLogRec.additional_debug_msgs["PTG_eval"] = "PTG-continuation not allowed, too close to obstacles.";
-		holonomicMovement.speed = -0.01; // this enforces a 0 global evaluation score
+		cm.speed = -0.01; // this enforces a 0 global evaluation score
 		return;
+	}
+#endif
+
+	// Factor: ETA (Estimated Time of Arrival to target or to closest obstacle, whatever it's first)
+	// -----------------------------------------------------
+	double &eta = cm.props["eta"];
+	eta = .0;
+	if (cm.PTG && cm.speed>.0) // for valid cases only
+	{
+		// OK, we have a direct path to target without collisions.
+		const double path_len_meters = d * ref_dist;
+
+		// Calculate their ETA
+		uint32_t target_step;
+		bool valid_step = cm.PTG->getPathStepForDist(move_k, path_len_meters, target_step);
+		if (valid_step)
+		{
+			eta = cm.PTG->getPathStepDuration() * target_step /* PTG original time to get to target point */
+				* cm.speed /* times the speed scale factor*/;
+
+			double discount_time = .0;
+			if (this_is_PTG_continuation) 
+			{
+				// Heuristic: discount the time already executed.
+				// Note that hm.speed above scales the overall path time using the current speed scale, not the exact
+				// integration over the past timesteps. It's an approximation, probably good enough...
+				
+				MRPT_TODO("support for simulation time here too!");
+				discount_time = mrpt::system::timeDifference(m_lastSentVelCmd.tim_send_cmd_vel, tim_start_iteration);
+			}
+			eta -= discount_time; // This could even become negative if the approximation is poor...
+		}
 	}
 
 	//  SAVE LOG
-	log.evalFactors.resize(eval_factors.size());
-	mrpt::utils::metaprogramming::copy_container_typecasting(eval_factors, log.evalFactors);
+	log.evalFactors = cm.props;
 
-	// holonomicMovement.evaluation is filled in the caller site, to allow for normalization once we know all the max/min scores for all PTGs.
+	// cm.evaluation is evaluated at the caller site.
 
 	MRPT_END;
 }
 
-void CAbstractPTGBasedReactive::STEP7_GenerateSpeedCommands( const THolonomicMovement &in_movement, mrpt::kinematics::CVehicleVelCmdPtr &new_vel_cmd )
+void CAbstractPTGBasedReactive::generate_vel_cmd( const TCandidateMovementPTG &in_movement, mrpt::kinematics::CVehicleVelCmdPtr &new_vel_cmd )
 {
-	mrpt::utils::CTimeLoggerEntry tle(m_timelogger, "STEP7_GenerateSpeedCommands");
+	mrpt::utils::CTimeLoggerEntry tle(m_timelogger, "generate_vel_cmd");
 	try
 	{
 		if (in_movement.speed == 0)
@@ -1108,7 +951,7 @@ void CAbstractPTGBasedReactive::STEP7_GenerateSpeedCommands( const THolonomicMov
 	}
 	catch (std::exception &e)
 	{
-		MRPT_LOG_ERROR_STREAM << "[CAbstractPTGBasedReactive::STEP7_GenerateSpeedCommands] Exception: " << e.what();
+		MRPT_LOG_ERROR_STREAM << "[CAbstractPTGBasedReactive::generate_vel_cmd] Exception: " << e.what();
 	}
 }
 
@@ -1186,13 +1029,13 @@ bool CAbstractPTGBasedReactive::TSentVelCmd::isValid() const
 }
 
 
-void CAbstractPTGBasedReactive::ptg_eval_target_build_obstacles(
+void CAbstractPTGBasedReactive::build_movement_candidate(
 	CParameterizedTrajectoryGenerator * ptg,
 	const size_t indexPTG,
 	const TPose2D &relTarget,
 	const CPose2D &rel_pose_PTG_origin_wrt_sense,
 	TInfoPerPTG &ipf,
-	THolonomicMovement &holonomicMovement,
+	TCandidateMovementPTG &cm,
 	CLogFileRecord &newLogRec,
 	const bool this_is_PTG_continuation,
 	mrpt::nav::CAbstractHolonomicReactiveMethod *holoMethod,
@@ -1205,7 +1048,7 @@ void CAbstractPTGBasedReactive::ptg_eval_target_build_obstacles(
 	const size_t idx_in_log_infoPerPTGs = this_is_PTG_continuation ? getPTG_count() : indexPTG;
 
 	CHolonomicLogFileRecordPtr HLFR;
-	holonomicMovement.PTG = ptg;
+	cm.PTG = ptg;
 
 	// If the user doesn't want to use this PTG, just mark it as invalid:
 	ipf.valid_TP = true;
@@ -1292,13 +1135,13 @@ void CAbstractPTGBasedReactive::ptg_eval_target_build_obstacles(
 			holoMethod->navigate(ni, no);
 
 			// Extract resuls:
-			holonomicMovement.direction = no.desiredDirection;
-			holonomicMovement.speed = no.desiredSpeed;
+			cm.direction = no.desiredDirection;
+			cm.speed = no.desiredSpeed;
 			HLFR = no.logRecord;
 
 			// Security: Scale down the velocity when heading towards obstacles,
 			//  such that it's assured that we never go thru an obstacle!
-			const int kDirection = static_cast<int>(holonomicMovement.PTG->alpha2index(holonomicMovement.direction));
+			const int kDirection = static_cast<int>(cm.PTG->alpha2index(cm.direction));
 			double obsFreeNormalizedDistance = ipf.TP_Obstacles[kDirection];
 
 			// Take into account the future robot pose after NOP motion iterations to slow down accordingly *now*
@@ -1318,7 +1161,7 @@ void CAbstractPTGBasedReactive::ptg_eval_target_build_obstacles(
 			}
 
 			// Scale:
-			holonomicMovement.speed *= velScale;
+			cm.speed *= velScale;
 
 			timeForHolonomicMethod = tictac.Tac();
 			if (m_timelogger.isEnabled())
@@ -1327,17 +1170,17 @@ void CAbstractPTGBasedReactive::ptg_eval_target_build_obstacles(
 		else
 		{
 			// "NOP cmdvel" case: don't need to re-run holo algorithm, just keep the last selection:
-			holonomicMovement.direction = ptg->index2alpha( m_lastSentVelCmd.ptg_alpha_index );
-			holonomicMovement.speed = 1.0; // Not used.
+			cm.direction = ptg->index2alpha( m_lastSentVelCmd.ptg_alpha_index );
+			cm.speed = 1.0; // Not used.
 		}
 
 		// STEP5: Evaluate each movement to assign them a "evaluation" value.
 		// ---------------------------------------------------------------------
 		{
-			CTimeLoggerEntry tle(m_timelogger, "navigationStep.STEP5_PTGEvaluator");
+			CTimeLoggerEntry tle(m_timelogger, "navigationStep.calc_move_candidate_scores");
 
-			STEP5_PTGEvaluator(
-				holonomicMovement,
+			calc_move_candidate_scores(
+				cm,
 				ipf.TP_Obstacles,
 				ipf.clearance,
 				relTarget,
@@ -1363,8 +1206,8 @@ void CAbstractPTGBasedReactive::ptg_eval_target_build_obstacles(
 		ipp.clearance = ipf.clearance;
 		ipp.TP_Target = ipf.TP_Target;
 		ipp.HLFR = HLFR;
-		ipp.desiredDirection = holonomicMovement.direction;
-		ipp.desiredSpeed = holonomicMovement.speed;
+		ipp.desiredDirection = cm.direction;
+		ipp.desiredSpeed = cm.speed;
 		ipp.timeForTPObsTransformation = timeForTPObsTransformation;
 		ipp.timeForHolonomicMethod = timeForHolonomicMethod;
 	}
@@ -1407,8 +1250,6 @@ void CAbstractPTGBasedReactive::TAbstractPTGNavigatorParams::loadFromConfigFile(
 	MRPT_LOAD_CONFIG_VAR_CS(use_delays_model, bool);
 	MRPT_LOAD_CONFIG_VAR_CS(max_distance_predicted_actual_path, double);
 	MRPT_LOAD_CONFIG_VAR_CS(min_normalized_free_space_for_ptg_continuation, double);
-	MRPT_LOAD_CONFIG_VAR_CS(enable_boost_shortest_eta, bool);
-	MRPT_LOAD_CONFIG_VAR_CS(best_eta_margin_tolerance_wrt_best, double);
 	MRPT_LOAD_CONFIG_VAR_CS(score2_formula, string);
 	MRPT_LOAD_CONFIG_VAR_CS(enable_obstacle_filtering, bool);
 
@@ -1444,8 +1285,6 @@ void CAbstractPTGBasedReactive::TAbstractPTGNavigatorParams::saveToConfigFile(mr
 	MRPT_SAVE_CONFIG_VAR_COMMENT(use_delays_model, "Whether to use robot pose inter/extrapolation to improve accuracy (Default:false)");
 	MRPT_SAVE_CONFIG_VAR_COMMENT(max_distance_predicted_actual_path, "Max distance [meters] to discard current PTG and issue a new vel cmd (default= 0.05)");
 	MRPT_SAVE_CONFIG_VAR_COMMENT(min_normalized_free_space_for_ptg_continuation, "Min normalized dist [0,1] after current pose in a PTG continuation to allow it.");
-	MRPT_SAVE_CONFIG_VAR_COMMENT(enable_boost_shortest_eta, "(Default: false)");
-	MRPT_SAVE_CONFIG_VAR_COMMENT(best_eta_margin_tolerance_wrt_best, "(Default: 1.05)");
 	MRPT_SAVE_CONFIG_VAR_COMMENT(score2_formula, "exprtk formula for evaluation score #2 (path index closeness to target)");
 	MRPT_SAVE_CONFIG_VAR_COMMENT(enable_obstacle_filtering, "Enabled obstacle filtering (params in its own section)");
 
@@ -1473,8 +1312,6 @@ CAbstractPTGBasedReactive::TAbstractPTGNavigatorParams::TAbstractPTGNavigatorPar
 	max_distance_predicted_actual_path(0.15),
 	min_normalized_free_space_for_ptg_continuation(0.2),
 	robot_absolute_speed_limits(),
-	enable_boost_shortest_eta(false),
-	best_eta_margin_tolerance_wrt_best(1.05),
 	enable_obstacle_filtering(true)
 {
 }
