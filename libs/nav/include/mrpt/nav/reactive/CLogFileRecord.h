@@ -13,6 +13,7 @@
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/utils/CMemoryStream.h>
+#include <mrpt/utils/TParameters.h>
 
 #include <mrpt/nav/holonomic/CHolonomicLogFileRecord.h>
 #include <mrpt/nav/holonomic/ClearanceDiagram.h>
@@ -50,7 +51,7 @@ namespace nav
 			double timeForTPObsTransformation,timeForHolonomicMethod;  //!< Time, in seconds.
 			double desiredDirection,desiredSpeed;          //!< The results from the holonomic method.
 			double evaluation_org, evaluation_priority, evaluation; //!< should be: evaluation = evaluation_org * evaluation_priority.
-			mrpt::math::CVectorFloat   evalFactors;   //!< Evaluation factors
+			mrpt::utils::TParametersDouble  evalFactors;   //!< Evaluation factors
 			CHolonomicLogFileRecordPtr HLFR;          //!< Other useful info about holonomic method execution.
 			mrpt::nav::CParameterizedTrajectoryGeneratorPtr ptg; //!< Only for the FIRST entry in a log file, this will contain a copy of the PTG with trajectories, suitable to render trajectories, etc.
 			mrpt::nav::ClearanceDiagram  clearance;    //!< Clearance for each path

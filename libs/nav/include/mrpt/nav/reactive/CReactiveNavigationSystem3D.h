@@ -111,7 +111,7 @@ namespace mrpt
 			{
 				std::vector<CParameterizedTrajectoryGenerator*> PTGs;
 				mrpt::math::TPoint2D TP_Target;
-				THolonomicMovement   holonomicmov;
+				TCandidateMovementPTG   holonomicmov;
 
 				TPTGmultilevel();
 				~TPTGmultilevel();
