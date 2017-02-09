@@ -174,7 +174,7 @@ namespace utils
 				return mrpt::utils::TEnumType<ENUMTYPE>::name2value(sVal);
 				} catch (std::exception &)
 				{
-					THROW_EXCEPTION(mrpt::format("Invalid value '%s' for enum type while reading key='%s'.",sVal.c_str(),name.c_str()))
+					THROW_EXCEPTION_FMT("Invalid value '%s' for enum type while reading key='%s'.",sVal.c_str(),name.c_str())
 				}
 			}
 			MRPT_END

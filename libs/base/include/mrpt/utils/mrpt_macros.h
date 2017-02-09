@@ -160,6 +160,9 @@
 		throw std::logic_error( auxCompStr.str() );\
 	}\
 
+#define THROW_EXCEPTION_FMT(_FORMAT_STRING,...) \
+	THROW_EXCEPTION(mrpt::format(_FORMAT_STRING,__VA_ARGS__))
+
 /** \def THROW_EXCEPTION_CUSTOM_MSG1
   * \param e The caught exception.
   *	\param msg Is a char* or literal string.

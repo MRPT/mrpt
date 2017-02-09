@@ -69,7 +69,6 @@ CAbstractPTGBasedReactive::CAbstractPTGBasedReactive(CRobot2NavInterface &react_
 	m_lastTarget                 (0,0,0),
 	m_navlogfiles_dir(sLogDir)
 {
-	internal_construct_exprs();
 	this->enableLogFile( enableLogFile );
 }
 
@@ -104,7 +103,8 @@ void CAbstractPTGBasedReactive::initialize()
 
 	m_infoPerPTG_timestamp = INVALID_TIMESTAMP;
 
-	internal_compile_exprs();
+	ASSERT_(m_multiobjopt);
+	m_multiobjopt->clear();
 
 	// Compute collision grids:
 	STEP1_InitPTGs();

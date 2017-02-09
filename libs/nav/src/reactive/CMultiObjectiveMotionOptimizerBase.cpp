@@ -58,14 +58,13 @@ int CMultiObjectiveMotionOptimizerBase::decide(const std::vector<mrpt::nav::TCan
 				// Compile user-given expressions:
 				exprtk::parser<double> parser;
 				if (!parser.compile(f.second, PIMPL_GET_REF(exprtk::expression<double>, se.compiled_formula)))
-					THROW_EXCEPTION(mrpt::format("Error compiling score `%s` expression: `%s`. Error: `%s`", f.first.c_str(), f.second.c_str(), parser.error().c_str()));
+					THROW_EXCEPTION_FMT("Error compiling score `%s` expression: `%s`. Error: `%s`", f.first.c_str(), f.second.c_str(), parser.error().c_str());
 			}
 		}
 
 		// For each score: evaluate it
 		for (auto &sc : m_score_exprs)
 		{
-			PIMPL_GET_REF(exprtk::expression<double>, sc.second.compiled_formula).clear_symbol_tables();
 			PIMPL_GET_REF(exprtk::expression<double>, sc.second.compiled_formula).register_symbol_table(symbol_table);
 			
 			// Evaluate:
@@ -73,7 +72,7 @@ int CMultiObjectiveMotionOptimizerBase::decide(const std::vector<mrpt::nav::TCan
 
 			if (val != val /* NaN */)
 			{
-				THROW_EXCEPTION(mrpt::format("Undefined value evaluating score `%s`!", sc.first.c_str()));
+				THROW_EXCEPTION_FMT("Undefined value evaluating score `%s`!", sc.first.c_str());
 			}
 
 			// Store:
@@ -112,4 +111,14 @@ CMultiObjectiveMotionOptimizerBase * CMultiObjectiveMotionOptimizerBase::Create(
 CMultiObjectiveMotionOptimizerBase::TScoreData::TScoreData()
 {
 	PIMPL_CONSTRUCT(exprtk::expression<double>, compiled_formula);
+}
+
+CMultiObjectiveMotionOptimizerBase::TParamsBase::TParamsBase()
+{
+	// Default scores:
+	formula_score["colision_free_distance"] = "colision_free_distance";
+	formula_score["path_index_near_target"] = "var dif:=abs(target_k-move_k); if (dif>(num_paths/2)) { dif:=num_paths-dif; }; exp(-abs(dif / (num_paths/10.0)));";
+	formula_score["dist_eucl_final"] = "dist_eucl_final";
+	formula_score["hysteresis"] = "hysteresis";
+	formula_score["clearance"] = "clearance";
 }

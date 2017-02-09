@@ -558,5 +558,5 @@ void CHolonomicFullEval::internal_compile_exprs()
 	exprtk::parser<double> parser;
 
 	if (!parser.compile(options.exprstr_target_dir_boost_score, PIMPL_GET_REF(exprtk::expression<double>, m_expr_target_dir_boost_score)))
-		THROW_EXCEPTION(mrpt::format("Error compiling `target_dir_boost_score` expression: `%s`. Error: `%s`", options.exprstr_target_dir_boost_score.c_str(), parser.error().c_str()));
+		THROW_EXCEPTION_FMT("Error compiling `target_dir_boost_score` expression: `%s`. Error: `%s`", options.exprstr_target_dir_boost_score.c_str(), parser.error().c_str());
 }

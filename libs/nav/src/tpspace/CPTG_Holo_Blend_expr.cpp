@@ -94,11 +94,11 @@ void CPTG_Holo_Blend::internal_initialize(const std::string & cacheFilename, con
 	exprtk::parser<double> parser;
 
 	if (!parser.compile(expr_V, PIMPL_GET_REF(exprtk::expression<double>, m_expr_v)))
-		THROW_EXCEPTION(mrpt::format("Error compiling `expr_V` expression: `%s`. Error: `%s`", expr_V.c_str(),parser.error().c_str()));
+		THROW_EXCEPTION_FMT("Error compiling `expr_V` expression: `%s`. Error: `%s`", expr_V.c_str(),parser.error().c_str());
 	if (!parser.compile(expr_W, PIMPL_GET_REF(exprtk::expression<double>, m_expr_w)))
-		THROW_EXCEPTION(mrpt::format("Error compiling `expr_W` expression: `%s`. Error: `%s`", expr_W.c_str(), parser.error().c_str()));
+		THROW_EXCEPTION_FMT("Error compiling `expr_W` expression: `%s`. Error: `%s`", expr_W.c_str(), parser.error().c_str());
 	if (!parser.compile(expr_T_ramp, PIMPL_GET_REF(exprtk::expression<double>, m_expr_T_ramp)))
-		THROW_EXCEPTION(mrpt::format("Error compiling `expr_T_ramp` expression: `%s`. Error: `%s`", expr_T_ramp.c_str(), parser.error().c_str()));
+		THROW_EXCEPTION_FMT("Error compiling `expr_T_ramp` expression: `%s`. Error: `%s`", expr_T_ramp.c_str(), parser.error().c_str());
 
 #ifdef DO_PERFORMANCE_BENCHMARK
 	tl.dumpAllStats();

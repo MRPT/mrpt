@@ -42,9 +42,9 @@ namespace mrpt
 				obj.clear(); \
 				std::string pref,stored_T; \
 				in >> pref; \
-				if (pref!=#CONTAINER) THROW_EXCEPTION(mrpt::format("Error: serialized container %s<%s>'s preambles is wrong: '%s'",#CONTAINER,TTypeName<T>::get().c_str(),pref.c_str() )) \
+				if (pref!=#CONTAINER) THROW_EXCEPTION_FMT("Error: serialized container %s<%s>'s preambles is wrong: '%s'",#CONTAINER,TTypeName<T>::get().c_str(),pref.c_str() ) \
 				in >> stored_T; \
-				if (stored_T != mrpt::utils::TTypeName<T>::get() ) THROW_EXCEPTION(mrpt::format("Error: serialized container %s< %s != %s >",#CONTAINER,stored_T.c_str(),TTypeName<T>::get().c_str() )) \
+				if (stored_T != mrpt::utils::TTypeName<T>::get() ) THROW_EXCEPTION_FMT("Error: serialized container %s< %s != %s >",#CONTAINER,stored_T.c_str(),TTypeName<T>::get().c_str() ) \
 				uint32_t n; \
 				in >> n; \
 				obj.resize(n); \
