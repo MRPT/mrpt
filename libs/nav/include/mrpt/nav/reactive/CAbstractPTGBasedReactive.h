@@ -22,9 +22,6 @@
 #include <mrpt/synch/CCriticalSection.h>
 #include <mrpt/math/CPolygon.h>
 #include <mrpt/maps/CPointCloudFilterBase.h>
-#include <mrpt/utils/pimpl.h>
-
-PIMPL_FORWARD_DECLARATION(namespace exprtk { template <typename T> class expression; })
 
 namespace mrpt
 {
@@ -320,11 +317,7 @@ namespace mrpt
 		mrpt::math::TPose2D m_lastTarget; //!< To detect changes
 		std::string m_navlogfiles_dir; //!< Default: "./reactivenav.logs"
 
-		PIMPL_DECLARE_TYPE(exprtk::expression<double>, m_expr_score2_formula);
-
 		double m_expr_var_k, m_expr_var_k_target, m_expr_var_num_paths;
-		void internal_construct_exprs();
-		void internal_compile_exprs();
 
 	}; // end of CAbstractPTGBasedReactive
   }
