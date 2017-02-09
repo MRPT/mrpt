@@ -58,6 +58,7 @@
 			- New class mrpt::utils::CDynamicGrid3D<>
 			- New function mrpt::utils::net::http_request()
 			- New function mrpt::system::now_double()
+			- New function mrpt::utils::getAllRegisteredClassesChildrenOf()
 		- \ref mrpt_bayes_grp
 			- [API change] `verbose` is no longer a field of mrpt::bayes::CParticleFilter::TParticleFilterOptions. Use the setVerbosityLevel() method of the CParticleFilter class itself.
 			- [API change] mrpt::bayes::CProbabilityParticle (which affects all PF-based classes in MRPT) has been greatly simplified via usage of the new mrpt::utils::copy_ptr<> pointee-copy-semantics smart pointer.
@@ -117,6 +118,8 @@
 				- Parameters are no longer passed via a mrpt::utils::TParameters class, but via a mrpt::utils::CConfigFileBase which makes parameter passing to PTGs much more maintainable and consistent.
 				- PTGs now have a score_priority field to manually set hints about preferences for path planning.
 				- PTGs are now mrpt::utils::CLoadableOptions classes
+			- New classes:
+				- mrpt::nav::CMultiObjectiveMotionOptimizerBase
 	- Changes in build system:
 		- [Windows only] `DLL`s/`LIB`s now have the signature `lib-${name}${2-digits-version}${compiler-name}_{x32|x64}.{dll/lib}`, allowing several MRPT versions to coexist in the system PATH.
 		- [Visual Studio only] There are no longer `pragma comment(lib...)` in any MRPT header, so it is the user responsibility to correctly tell user projects to link against MRPT libraries.
