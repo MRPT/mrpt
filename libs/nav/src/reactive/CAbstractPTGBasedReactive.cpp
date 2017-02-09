@@ -1276,26 +1276,19 @@ void CAbstractPTGBasedReactive::TAbstractPTGNavigatorParams::saveToConfigFile(mr
 	// Build list of known holo methods:
 	string lstHoloStr = "# List of known classes:\n";
 	{
-		const std::vector<const TRuntimeClassId*> lst = mrpt::utils::getAllRegisteredClasses();
-		for (const auto &c : lst) {
-			if (c->derivedFrom("CAbstractHolonomicReactiveMethod")) {
-				lstHoloStr += string("# - `") + string(c->className) + string("`\n");
-			}
-		}
+		const auto lst = mrpt::utils::getAllRegisteredClassesChildrenOf(CLASS_ID(CAbstractHolonomicReactiveMethod));
+		for (const auto &c : lst) 
+			lstHoloStr += string("# - `") + string(c->className) + string("`\n");
 	}
 	MRPT_SAVE_CONFIG_VAR_COMMENT(holonomic_method, string("C++ class name of the holonomic navigation method to run in the transformed TP-Space.\n")+ lstHoloStr);
 
 	// Build list of known decider methods:
 	string lstDecidersStr = "# List of known classes:\n";
 	{
-		const std::vector<const TRuntimeClassId*> lst = mrpt::utils::getAllRegisteredClasses();
-		for (const auto &c : lst) {
-			if (c->derivedFrom("CMultiObjectiveMotionOptimizerBase")) {
-				lstDecidersStr += string("# - `") + string(c->className) + string("`\n");
-			}
-		}
+		const auto lst = mrpt::utils::getAllRegisteredClassesChildrenOf(CLASS_ID(CMultiObjectiveMotionOptimizerBase));
+		for (const auto &c : lst)
+			lstDecidersStr += string("# - `") + string(c->className) + string("`\n");
 	}
-	
 	MRPT_SAVE_CONFIG_VAR_COMMENT(motion_decider_method, string("C++ class name of the motion decider method.\n") + lstDecidersStr);
 
 	MRPT_SAVE_CONFIG_VAR_COMMENT(ref_distance, "Maximum distance up to obstacles will be considered (D_{max} in papers).");
@@ -1389,7 +1382,7 @@ void CAbstractPTGBasedReactive::saveConfigFile(mrpt::utils::CConfigFileBase & c)
 	}
 
 	// Holo method:
-	if (!m_holonomicMethod.empty() && m_holonomicMethod[0]) 
+	if (!m_holonomicMethod.empty() && m_holonomicMethod[0])
 	{
 		// Save my current settings:
 		m_holonomicMethod[0]->saveConfigFile(c);
@@ -1397,17 +1390,32 @@ void CAbstractPTGBasedReactive::saveConfigFile(mrpt::utils::CConfigFileBase & c)
 	else
 	{
 		// save options of ALL known methods:
-		const std::vector<const TRuntimeClassId*> lst = mrpt::utils::getAllRegisteredClasses();
+		const auto lst = mrpt::utils::getAllRegisteredClassesChildrenOf(CLASS_ID(CAbstractHolonomicReactiveMethod));
 		for (const auto &cl : lst) {
-			if (cl->derivedFrom("CAbstractHolonomicReactiveMethod")) {
-				mrpt::utils::CObject *obj = cl->createObject();
-				CAbstractHolonomicReactiveMethod * holo = dynamic_cast<CAbstractHolonomicReactiveMethod *>(obj);
-				if (holo) {
-					holo->saveConfigFile(c);
-				}
-				delete obj;
+			mrpt::utils::CObjectPtr obj = mrpt::utils::CObjectPtr(cl->createObject());
+			CAbstractHolonomicReactiveMethod * holo = dynamic_cast<CAbstractHolonomicReactiveMethod *>(obj.pointer());
+			if (holo) {
+				holo->saveConfigFile(c);
+			}
+		}
+	}
+
+	// Decider method:
+	if (m_multiobjopt)
+	{
+		// Save my current settings:
+		m_multiobjopt->saveConfigFile(c);
+	}
+	else
+	{
+		// save options of ALL known methods:
+		const auto lst = mrpt::utils::getAllRegisteredClassesChildrenOf(CLASS_ID(CMultiObjectiveMotionOptimizerBase));
+		for (const auto &cl : lst) {
+			mrpt::utils::CObjectPtr obj = mrpt::utils::CObjectPtr(cl->createObject());
+			CMultiObjectiveMotionOptimizerBase * momo = dynamic_cast<CMultiObjectiveMotionOptimizerBase *>(obj.pointer());
+			if (momo) {
+				momo->saveConfigFile(c);
 			}
 		}
 	}
 }
-
