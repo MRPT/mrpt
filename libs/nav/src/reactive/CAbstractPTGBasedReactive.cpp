@@ -711,6 +711,7 @@ void CAbstractPTGBasedReactive::calc_move_candidate_scores(
 	cm.PTG->getPathPose(move_k, nStep,pose);
 
 	// Start storing params in the candidate move structure: 
+	cm.props["ptg_idx"] = ptg_idx4weights;
 	cm.props["ref_dist"] = ref_dist;
 	cm.props["target_dir"] = target_dir;
 	cm.props["target_k"] = target_k;
@@ -1233,12 +1234,7 @@ void CAbstractPTGBasedReactive::TAbstractPTGNavigatorParams::loadFromConfigFile(
 	MRPT_LOAD_CONFIG_VAR_CS(use_delays_model, bool);
 	MRPT_LOAD_CONFIG_VAR_CS(max_distance_predicted_actual_path, double);
 	MRPT_LOAD_CONFIG_VAR_CS(min_normalized_free_space_for_ptg_continuation, double);
-	MRPT_LOAD_CONFIG_VAR_CS(score2_formula, string);
 	MRPT_LOAD_CONFIG_VAR_CS(enable_obstacle_filtering, bool);
-
-	// weights: read global or PTG specific weights:
-	c.read_vector(s, "weights", vector<double>(0), weights, true /* fail if not found */);
-	ASSERT_EQUAL_(weights.size(), size_t(PTG_RNAV_SCORE_COUNT));
 
 	MRPT_END;
 }
@@ -1272,19 +1268,7 @@ void CAbstractPTGBasedReactive::TAbstractPTGNavigatorParams::saveToConfigFile(mr
 	MRPT_SAVE_CONFIG_VAR_COMMENT(use_delays_model, "Whether to use robot pose inter/extrapolation to improve accuracy (Default:false)");
 	MRPT_SAVE_CONFIG_VAR_COMMENT(max_distance_predicted_actual_path, "Max distance [meters] to discard current PTG and issue a new vel cmd (default= 0.05)");
 	MRPT_SAVE_CONFIG_VAR_COMMENT(min_normalized_free_space_for_ptg_continuation, "Min normalized dist [0,1] after current pose in a PTG continuation to allow it.");
-	MRPT_SAVE_CONFIG_VAR_COMMENT(score2_formula, "exprtk formula for evaluation score #2 (path index closeness to target)");
 	MRPT_SAVE_CONFIG_VAR_COMMENT(enable_obstacle_filtering, "Enabled obstacle filtering (params in its own section)");
-
-	// weights: read global or PTG specific weights:
-	c.write(s, "weights", weights, mrpt::utils::MRPT_SAVE_NAME_PADDING, mrpt::utils::MRPT_SAVE_VALUE_PADDING,
-		"\n"
-		"# 1: Collision - free distance\n"
-		"# 2: Distance in `path indexes` to target path\n"
-		"# 3: Heading toward target\n"
-		"# 4: Closer to target(euclidean)\n"
-		"# 5: Hysteresis\n"
-		"# 6: Security Distance\n"
-		);
 }
 
 CAbstractPTGBasedReactive::TAbstractPTGNavigatorParams::TAbstractPTGNavigatorParams() :
@@ -1292,7 +1276,6 @@ CAbstractPTGBasedReactive::TAbstractPTGNavigatorParams::TAbstractPTGNavigatorPar
 	ptg_cache_files_directory("."),
 	ref_distance(4.0),
 	speedfilter_tau(0.0),
-	score2_formula("var dif:=abs(k_target-k); if (dif>(num_paths/2)) { dif:=num_paths-dif; }; exp(-abs(dif / (num_paths/10.0)));"),
 	secure_distance_start(0.05),
 	secure_distance_end(0.20),
 	use_delays_model(false),

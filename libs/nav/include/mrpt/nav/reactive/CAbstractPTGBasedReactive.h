@@ -118,10 +118,6 @@ namespace mrpt
 			std::string ptg_cache_files_directory; //!< (Default: ".")
 			double ref_distance;          //!< Maximum distance up to obstacles will be considered (D_{max} in papers).
 			double speedfilter_tau;     //!< Time constant (in seconds) for the low-pass filter applied to kinematic velocity commands (default=0: no filtering)
-			std::vector<double> weights;  //!< length: 6 [0,5], or empty if using PTG-specific weights. \sa weights4ptg
-			std::vector<std::vector<double> > weights4ptg;
-
-			std::string  score2_formula;
 
 			/** In normalized distances, the start and end of a ramp function that scales the velocity
 			*  output from the holonomic navigator:
@@ -182,17 +178,6 @@ namespace mrpt
 		mrpt::kinematics::CVehicleVelCmd::TVelCmdParams & changeCurrentRobotSpeedLimits() { 
 			return params_abstract_ptg_navigator.robot_absolute_speed_limits;
 		}
-
-		enum score_index_t {
-			SCOREIDX_COLISION_FREE_DISTANCE = 0,
-			SCOREIDX_TPS_DIRECTION,
-			SCOREIDX_ORIENTATION_AT_END,
-			SCOREIDX_NEARNESS_TARGET,
-			SCOREIDX_HYSTERESIS,
-			SCOREIDX_CLEARANCE,
-			// 
-			PTG_RNAV_SCORE_COUNT
-		};
 
 	protected:
 		/** The main method for the navigator */

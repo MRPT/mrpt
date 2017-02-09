@@ -37,7 +37,9 @@ namespace mrpt
 
 			struct NAV_IMPEXP TResultInfo
 			{
-				std::map<std::string, double> score_values; //!< Numerical evaluation of all scores defined in TParamsBase::formula_score
+				/** For each candidate, the numerical evaluation of all scores defined in TParamsBase::formula_score. 
+				  * A value of 0 means unsuitable candidate. */
+				std::vector<std::map<std::string, double> > score_values;
 			};
 
 			/** The main entry point for the class: returns the 0-based index of the best of the N motion candidates in `movs`. 
@@ -57,6 +59,14 @@ namespace mrpt
 				  * the list of "score" factors to evaluate.
 				  */
 				std::map<std::string, std::string>  formula_score;
+
+				/** A list of exprtk expressions for conditions that any candidate movement must 
+				  * fulfill in order to get through the evaluation process. *All* assert conditions must be satisfied.
+				  */
+				std::vector<std::string>  movement_assert;
+
+				virtual void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source, const std::string &section) MRPT_OVERRIDE; // See base docs
+				virtual void saveToConfigFile(mrpt::utils::CConfigFileBase &cfg, const std::string &section) const MRPT_OVERRIDE; // See base docs
 			};
 
 			void clear();  //!< Resets the object state; use if the parameters change, so they are re-read and applied.
@@ -68,14 +78,15 @@ namespace mrpt
 			// This virtual method is called by decide().
 			virtual int impl_decide(const std::vector<mrpt::nav::TCandidateMovementPTG> &movs, TResultInfo &extra_info) = 0;
 
-			struct TScoreData
+			struct TCompiledFormulaWrapper
 			{
-				TScoreData();
+				TCompiledFormulaWrapper();
 
 				PIMPL_DECLARE_TYPE(exprtk::expression<double>, compiled_formula);
 			};
 
-			std::map<std::string, TScoreData> m_score_exprs;  //!< score names -> score compiled expressions
+			std::map<std::string, TCompiledFormulaWrapper> m_score_exprs;  //!< score names -> score compiled expressions
+			std::vector<TCompiledFormulaWrapper>  m_movement_assert_exprs;
 			std::map<std::string, double>     m_expr_vars;
 
 		};
