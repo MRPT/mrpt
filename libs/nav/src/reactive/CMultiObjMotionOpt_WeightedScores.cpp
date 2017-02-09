@@ -42,13 +42,38 @@ CMultiObjMotionOpt_WeightedScores::TParams::TParams()
 
 }
 
-void CMultiObjMotionOpt_WeightedScores::TParams::loadFromConfigFile(const mrpt::utils::CConfigFileBase &source, const std::string &section)
+void CMultiObjMotionOpt_WeightedScores::TParams::loadFromConfigFile(const mrpt::utils::CConfigFileBase &c, const std::string &s)
 {
-	// TParamsBase::formula_score
+	// Load: TParamsBase::formula_score
+	{
+		TParamsBase::formula_score.clear();
+		int idx = 1;
+		for (;;)
+		{
+			const std::string sKeyName = mrpt::format("score%i_name"), sKeyValue = mrpt::format("score%i_formula");
+			const std::string sName  = c.read_string(s, sKeyName, "");
+			const std::string sValue = c.read_string(s, sKeyValue,"");
+
+			const bool none = (sName.empty() && sValue.empty());
+			const bool both = (!sName.empty() && !sValue.empty());
+
+			if (none && idx==1)
+				THROW_EXCEPTION_FMT("Expect at least a first `%s` and `%s` pair defining one score in section `[%s]`", sKeyName.c_str(), sKeyValue.c_str(),s.c_str());
+
+			if (none)
+				break;
+
+			if (!both) {
+				THROW_EXCEPTION_FMT("Both `%s` and `%s` must be provided in section `[%s]`", sKeyName.c_str(), sKeyValue.c_str(), s.c_str());
+			}
+
+			formula_score[sName] = sValue;
+		}
+	}
 
 }
 
-void CMultiObjMotionOpt_WeightedScores::TParams::saveToConfigFile(mrpt::utils::CConfigFileBase &cfg, const std::string &section) const
+void CMultiObjMotionOpt_WeightedScores::TParams::saveToConfigFile(mrpt::utils::CConfigFileBase &c, const std::string &s) const
 {
 	// TParamsBase::formula_score
 }

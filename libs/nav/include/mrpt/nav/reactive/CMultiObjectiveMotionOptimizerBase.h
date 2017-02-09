@@ -51,6 +51,8 @@ namespace mrpt
 			/** Common params for all children */
 			struct NAV_IMPEXP TParamsBase : public mrpt::utils::CLoadableOptions
 			{
+				TParamsBase();
+
 				/** A list of `name` -> mathematical expression (in the format of the exprtk library) for 
 				  * the list of "score" factors to evaluate.
 				  */
