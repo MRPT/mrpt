@@ -27,16 +27,24 @@ CMultiObjectiveMotionOptimizerBase::CMultiObjectiveMotionOptimizerBase(TParamsBa
 int CMultiObjectiveMotionOptimizerBase::decide(const std::vector<mrpt::nav::TCandidateMovementPTG>& movs, TResultInfo & extra_info)
 {
 	auto & score_values = extra_info.score_values;
+	score_values.resize(movs.size());
 
-	// Mark all vars as NaN so we detect uninitialized values:
-	for (auto &p : m_expr_vars) {
-		p.second = std::numeric_limits<double>::quiet_NaN();
-	}
-
-	// Register / update variable names so we can evaluate the score formulas for each movement:
 	// For each movement:
-	for (const auto &m : movs)
+	for (unsigned int mov_idx = 0; mov_idx< movs.size();++mov_idx)
 	{
+		const auto &m = movs[mov_idx];
+
+		if (m.speed <= 0) // Invalid candidate:
+		{
+			score_values[mov_idx].clear();
+			continue;
+		}
+
+		// Mark all vars as NaN so we detect uninitialized values:
+		for (auto &p : m_expr_vars) {
+			p.second = std::numeric_limits<double>::quiet_NaN();
+		}
+
 		exprtk::symbol_table<double> symbol_table;
 		for (const auto &prop : m.props) {
 			double & var = m_expr_vars[prop.first];
@@ -46,7 +54,7 @@ int CMultiObjectiveMotionOptimizerBase::decide(const std::vector<mrpt::nav::TCan
 		symbol_table.add_constant("M_PI", M_PI);
 		symbol_table.add_constants();
 
-		// Upon first iteration: compile expression:
+		// Upon first iteration: compile expressions
 		if (m_score_exprs.size() != m_params_base.formula_score.size())
 		{
 			m_score_exprs.clear();
@@ -55,6 +63,7 @@ int CMultiObjectiveMotionOptimizerBase::decide(const std::vector<mrpt::nav::TCan
 			{
 				auto &se = m_score_exprs[f.first];
 		
+				PIMPL_GET_REF(exprtk::expression<double>, se.compiled_formula).register_symbol_table(symbol_table);
 				// Compile user-given expressions:
 				exprtk::parser<double> parser;
 				if (!parser.compile(f.second, PIMPL_GET_REF(exprtk::expression<double>, se.compiled_formula)))
@@ -62,21 +71,41 @@ int CMultiObjectiveMotionOptimizerBase::decide(const std::vector<mrpt::nav::TCan
 			}
 		}
 
+		// Upon first iteration: compile expressions
+		if (m_movement_assert_exprs.size() != m_params_base.movement_assert.size())
+		{
+			const size_t N = m_params_base.movement_assert.size();
+			m_movement_assert_exprs.clear();
+			m_movement_assert_exprs.resize(N);
+			for (size_t i=0;i<N;i++)
+			{
+				const auto &str = m_params_base.movement_assert[i];
+				auto &ce = m_movement_assert_exprs[i];
+
+				PIMPL_GET_REF(exprtk::expression<double>, ce.compiled_formula).register_symbol_table(symbol_table);
+
+				// Compile user-given expressions:
+				exprtk::parser<double> parser;
+				if (!parser.compile(str, PIMPL_GET_REF(exprtk::expression<double>, ce.compiled_formula)))
+					THROW_EXCEPTION_FMT("Error compiling assert expression: `%s`. Error: `%s`", str.c_str(), parser.error().c_str());
+			}
+		}
+
 		// For each score: evaluate it
 		for (auto &sc : m_score_exprs)
 		{
-			PIMPL_GET_REF(exprtk::expression<double>, sc.second.compiled_formula).register_symbol_table(symbol_table);
+			//PIMPL_GET_REF(exprtk::expression<double>, sc.second.compiled_formula).register_symbol_table(symbol_table);
 			
 			// Evaluate:
 			const double val = PIMPL_GET_CONSTREF(exprtk::expression<double>, sc.second.compiled_formula).value();
 
 			if (val != val /* NaN */)
 			{
-				THROW_EXCEPTION_FMT("Undefined value evaluating score `%s`!", sc.first.c_str());
+				THROW_EXCEPTION_FMT("Undefined value evaluating score `%s` for mov_idx=%u!", sc.first.c_str(), mov_idx);
 			}
 
 			// Store:
-			score_values[sc.first] = val;
+			score_values[mov_idx][sc.first] = val;
 		}
 	}
 
@@ -108,7 +137,7 @@ CMultiObjectiveMotionOptimizerBase * CMultiObjectiveMotionOptimizerBase::Create(
 	}
 }
 
-CMultiObjectiveMotionOptimizerBase::TScoreData::TScoreData()
+CMultiObjectiveMotionOptimizerBase::TCompiledFormulaWrapper::TCompiledFormulaWrapper()
 {
 	PIMPL_CONSTRUCT(exprtk::expression<double>, compiled_formula);
 }
@@ -121,4 +150,90 @@ CMultiObjectiveMotionOptimizerBase::TParamsBase::TParamsBase()
 	formula_score["dist_eucl_final"] = "dist_eucl_final";
 	formula_score["hysteresis"] = "hysteresis";
 	formula_score["clearance"] = "clearance";
+
+}
+
+void CMultiObjectiveMotionOptimizerBase::TParamsBase::loadFromConfigFile(const mrpt::utils::CConfigFileBase &c, const std::string &s)
+{
+	// Load: formula_score
+	{
+		formula_score.clear();
+		int idx = 1;
+		for (;;idx++)
+		{
+			const std::string sKeyName = mrpt::format("score%i_name",idx), sKeyValue = mrpt::format("score%i_formula", idx);
+			const std::string sName = c.read_string(s, sKeyName, "");
+			const std::string sValue = c.read_string(s, sKeyValue, "");
+
+			const bool none = (sName.empty() && sValue.empty());
+			const bool both = (!sName.empty() && !sValue.empty());
+
+			if (none && idx == 1)
+				THROW_EXCEPTION_FMT("Expect at least a first `%s` and `%s` pair defining one score in section `[%s]`", sKeyName.c_str(), sKeyValue.c_str(), s.c_str());
+
+			if (none)
+				break;
+
+			if (!both) {
+				THROW_EXCEPTION_FMT("Both `%s` and `%s` must be provided in section `[%s]`", sKeyName.c_str(), sKeyValue.c_str(), s.c_str());
+			}
+
+			formula_score[sName] = sValue;
+		}
+	}
+
+	// Load: movement_assert
+	{
+		movement_assert.clear();
+		int idx = 1;
+		for (;; idx++)
+		{
+			const std::string sKey = mrpt::format("movement_assert%i", idx);
+			const std::string sValue = c.read_string(s, sKey, "");
+			if (sValue.empty())
+				break;
+			movement_assert.push_back(sValue);
+		}
+	}
+}
+
+void CMultiObjectiveMotionOptimizerBase::TParamsBase::saveToConfigFile(mrpt::utils::CConfigFileBase &c, const std::string &s) const
+{
+	// Save: formula_score
+
+	{
+		const std::string sComment = "\n"
+			"# Next follows a list of `score%i_{name,formula}` pairs for i=1,...,N\n"
+			"# Each one defines one of the scores that will be evaluated for each candidate movement.\n"
+			"# Multiobjective optimizers will then use those scores to select the best candidate, \n"
+			"# possibly using more parameters that follow below.\n"
+			;
+		c.write(s, "dummy", "", mrpt::utils::MRPT_SAVE_NAME_PADDING, mrpt::utils::MRPT_SAVE_VALUE_PADDING, sComment);
+
+		int idx = 0;
+		for (const auto &p : this->formula_score)
+		{
+			++idx;
+			const std::string sKeyName = mrpt::format("score%i_name", idx), sKeyValue = mrpt::format("score%i_formula", idx);
+			c.write(s, sKeyName, p.first, mrpt::utils::MRPT_SAVE_NAME_PADDING, mrpt::utils::MRPT_SAVE_VALUE_PADDING);
+			c.write(s, sKeyValue, p.second, mrpt::utils::MRPT_SAVE_NAME_PADDING, mrpt::utils::MRPT_SAVE_VALUE_PADDING);
+		}
+	}
+
+	// Load: movement_assert
+	{
+		const std::string sComment = "\n"
+			"# Next follows a list of `movement_assert%i` exprtk expressions for i=1,...,N\n"
+			"# defining expressions for conditions that any candidate movement must fulfill\n"
+			"# in order to get through the evaluation process. *All* assert conditions must be satisfied.\n"
+			;
+		c.write(s, "dummy2", "", mrpt::utils::MRPT_SAVE_NAME_PADDING, mrpt::utils::MRPT_SAVE_VALUE_PADDING, sComment);
+
+		for (unsigned int idx=0;idx<movement_assert.size();idx++)
+		{
+			const std::string sKey = mrpt::format("movement_assert%i", idx+1);
+			c.write(s, sKey, movement_assert[idx], mrpt::utils::MRPT_SAVE_NAME_PADDING, mrpt::utils::MRPT_SAVE_VALUE_PADDING);
+		}
+	}
+
 }
