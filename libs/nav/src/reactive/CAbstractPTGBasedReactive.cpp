@@ -314,7 +314,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 		// =========
 
 		CPose2D rel_pose_PTG_origin_wrt_sense,relPoseSense, relPoseVelCmd;
-		MRPT_TODO("port all delays-model to double and use robotTime() to make this compatible with faster-than-real-time simulators!");
+		MRPT_TODO("port all delays-model to double and use robotTime() to make this compatible with faster-than-real-time simulators??");
 		if (params_abstract_ptg_navigator.use_delays_model)
 		{
 			/*
@@ -392,7 +392,9 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 				ipf, cm,
 				newLogRec, false /* this is a regular PTG reactive case */,
 				m_holonomicMethod[indexPTG],
-				*m_navigationParams);
+				tim_start_iteration,
+				*m_navigationParams
+				);
 		} // end for each PTG
 
 		// Round #2: Evaluate dont sending any new velocity command ("NOP" motion)
@@ -427,6 +429,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 				const CPose2D robot_pose_at_send_cmd = CPose2D(robot_pose3d_at_send_cmd);
 
 				CParameterizedTrajectoryGenerator * ptg = getPTG(m_lastSentVelCmd.ptg_index);
+				ASSERT_(ptg!=nullptr);
 				ptg->updateCurrentRobotVel(m_lastSentVelCmd.poseVel.velLocal);
 
 				const TPose2D relTarget_NOP = TPose2D(CPose2D(m_navigationParams->target) - robot_pose_at_send_cmd);
@@ -446,6 +449,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 					m_infoPerPTG[nPTGs], candidate_movs[nPTGs],
 					newLogRec, true /* this is the PTG continuation (NOP) choice */,
 					m_holonomicMethod[m_lastSentVelCmd.ptg_index],
+					tim_start_iteration,
 					*m_navigationParams,
 					rel_cur_pose_wrt_last_vel_cmd_NOP);
 
@@ -460,8 +464,9 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 		// Evaluate all the candidates and pick the "best" one, using 
 		// the user-defined multiobjective optimizer
 		// --------------------------------------------------------------
-		CMultiObjectiveMotionOptimizerBase::TResultInfo momo_info;
-		int best_ptg_idx = m_multiobjopt.decide(candidate_movs, momo_info);
+		CMultiObjectiveMotionOptimizerBase::TResultInfo mo_info;
+		ASSERT_(m_multiobjopt);
+		int best_ptg_idx = m_multiobjopt->decide(candidate_movs, mo_info);
 
 		// Pick best movement (or null if none is good)
 		const TCandidateMovementPTG * selectedHolonomicMovement = nullptr;
@@ -687,7 +692,8 @@ void CAbstractPTGBasedReactive::calc_move_candidate_scores(
 	CLogFileRecord & newLogRec,
 	const bool this_is_PTG_continuation,
 	const mrpt::poses::CPose2D & rel_cur_pose_wrt_last_vel_cmd_NOP,
-	const unsigned int ptg_idx4weights)
+	const unsigned int ptg_idx4weights,
+	const mrpt::system::TTimeStamp tim_start_iteration)
 {
 	MRPT_START;
 
@@ -1039,6 +1045,7 @@ void CAbstractPTGBasedReactive::build_movement_candidate(
 	CLogFileRecord &newLogRec,
 	const bool this_is_PTG_continuation,
 	mrpt::nav::CAbstractHolonomicReactiveMethod *holoMethod,
+	const mrpt::system::TTimeStamp tim_start_iteration,
 	const TNavigationParams &navp,
 	const mrpt::poses::CPose2D &rel_cur_pose_wrt_last_vel_cmd_NOP
 	)
@@ -1187,7 +1194,8 @@ void CAbstractPTGBasedReactive::build_movement_candidate(
 				ipf.TP_Target,
 				newLogRec.infoPerPTG[idx_in_log_infoPerPTGs], newLogRec,
 				this_is_PTG_continuation, rel_cur_pose_wrt_last_vel_cmd_NOP,
-				indexPTG);
+				indexPTG, 
+				tim_start_iteration);
 		}
 
 
@@ -1243,6 +1251,7 @@ void CAbstractPTGBasedReactive::TAbstractPTGNavigatorParams::loadFromConfigFile(
 	robot_absolute_speed_limits.loadConfigFile(c, s);
 	
 	MRPT_LOAD_CONFIG_VAR_REQUIRED_CS(holonomic_method, string);
+	MRPT_LOAD_CONFIG_VAR_REQUIRED_CS(motion_decider_method, string);
 	MRPT_LOAD_CONFIG_VAR_REQUIRED_CS(ref_distance, double);
 	MRPT_LOAD_CONFIG_VAR_CS(speedfilter_tau, double);
 	MRPT_LOAD_CONFIG_VAR_CS(secure_distance_start, double);
@@ -1268,15 +1277,26 @@ void CAbstractPTGBasedReactive::TAbstractPTGNavigatorParams::saveToConfigFile(mr
 	string lstHoloStr = "# List of known classes:\n";
 	{
 		const std::vector<const TRuntimeClassId*> lst = mrpt::utils::getAllRegisteredClasses();
-		std::vector<const TRuntimeClassId*> lst_holo_methods;
 		for (const auto &c : lst) {
 			if (c->derivedFrom("CAbstractHolonomicReactiveMethod")) {
-				lst_holo_methods.push_back(c);
 				lstHoloStr += string("# - `") + string(c->className) + string("`\n");
 			}
 		}
 	}
 	MRPT_SAVE_CONFIG_VAR_COMMENT(holonomic_method, string("C++ class name of the holonomic navigation method to run in the transformed TP-Space.\n")+ lstHoloStr);
+
+	// Build list of known decider methods:
+	string lstDecidersStr = "# List of known classes:\n";
+	{
+		const std::vector<const TRuntimeClassId*> lst = mrpt::utils::getAllRegisteredClasses();
+		for (const auto &c : lst) {
+			if (c->derivedFrom("CMultiObjectiveMotionOptimizerBase")) {
+				lstDecidersStr += string("# - `") + string(c->className) + string("`\n");
+			}
+		}
+	}
+	
+	MRPT_SAVE_CONFIG_VAR_COMMENT(motion_decider_method, string("C++ class name of the motion decider method.\n") + lstDecidersStr);
 
 	MRPT_SAVE_CONFIG_VAR_COMMENT(ref_distance, "Maximum distance up to obstacles will be considered (D_{max} in papers).");
 	MRPT_SAVE_CONFIG_VAR_COMMENT(speedfilter_tau, "Time constant (in seconds) for the low-pass filter applied to kinematic velocity commands (default=0: no filtering)");
@@ -1339,6 +1359,14 @@ void CAbstractPTGBasedReactive::loadConfigFile(const mrpt::utils::CConfigFileBas
 		m_WS_filter.clear_unique();
 	}
 
+	// Movement chooser:
+	m_multiobjopt = CMultiObjectiveMotionOptimizerBasePtr(CMultiObjectiveMotionOptimizerBase::Create(params_abstract_ptg_navigator.motion_decider_method));
+	if (!m_multiobjopt)
+		THROW_EXCEPTION_CUSTOM_MSG1("Non-registered CMultiObjectiveMotionOptimizerBase className=`%s`", params_abstract_ptg_navigator.motion_decider_method.c_str());
+
+	m_multiobjopt->loadConfigFile(c);
+
+
 	// Holo method:
 	this->setHolonomicMethod(params_abstract_ptg_navigator.holonomic_method, c);
 	ASSERT_(!m_holonomicMethod.empty())
@@ -1370,7 +1398,6 @@ void CAbstractPTGBasedReactive::saveConfigFile(mrpt::utils::CConfigFileBase & c)
 	{
 		// save options of ALL known methods:
 		const std::vector<const TRuntimeClassId*> lst = mrpt::utils::getAllRegisteredClasses();
-		std::vector<const TRuntimeClassId*> lst_holo_methods;
 		for (const auto &cl : lst) {
 			if (cl->derivedFrom("CAbstractHolonomicReactiveMethod")) {
 				mrpt::utils::CObject *obj = cl->createObject();

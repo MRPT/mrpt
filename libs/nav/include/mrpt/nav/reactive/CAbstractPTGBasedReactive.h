@@ -15,6 +15,7 @@
 #include <mrpt/nav/holonomic/CAbstractHolonomicReactiveMethod.h>
 #include <mrpt/nav/holonomic/ClearanceDiagram.h>
 #include <mrpt/nav/reactive/TCandidateMovementPTG.h>
+#include <mrpt/nav/reactive/CMultiObjectiveMotionOptimizerBase.h>
 #include <mrpt/utils/CTimeLogger.h>
 #include <mrpt/system/datetime.h>
 #include <mrpt/math/filters.h>
@@ -115,6 +116,7 @@ namespace mrpt
 		struct NAV_IMPEXP TAbstractPTGNavigatorParams : public mrpt::utils::CLoadableOptions
 		{
 			std::string holonomic_method; //!< C++ class name of the holonomic navigation method to run in the transformed TP-Space
+			std::string motion_decider_method; //!< C++ class name of the motion chooser
 
 			std::string ptg_cache_files_directory; //!< (Default: ".")
 			double ref_distance;          //!< Maximum distance up to obstacles will be considered (D_{max} in papers).
@@ -252,7 +254,8 @@ namespace mrpt
 			CLogFileRecord & newLogRec,
 			const bool this_is_PTG_continuation,
 			const mrpt::poses::CPose2D & relPoseVelCmd_NOP,
-			const unsigned int ptg_idx4weights);
+			const unsigned int ptg_idx4weights,
+			const mrpt::system::TTimeStamp tim_start_iteration);
 
 		virtual void generate_vel_cmd(const TCandidateMovementPTG &in_movement, mrpt::kinematics::CVehicleVelCmdPtr &new_vel_cmd );
 		void STEP8_GenerateLogRecord(CLogFileRecord &newLogRec,const mrpt::math::TPose2D& relTarget,int nSelectedPTG, const mrpt::kinematics::CVehicleVelCmdPtr &new_vel_cmd, int nPTGs, const bool best_is_NOP_cmdvel, const mrpt::poses::CPose2D &rel_cur_pose_wrt_last_vel_cmd_NOP, const mrpt::poses::CPose2D &rel_pose_PTG_origin_wrt_sense_NOP, const double executionTimeValue, const double tim_changeSpeed, const mrpt::system::TTimeStamp &tim_start_iteration);
@@ -263,6 +266,9 @@ namespace mrpt
 
 		mrpt::system::TTimeStamp m_WS_Obstacles_timestamp;
 		mrpt::maps::CPointCloudFilterBasePtr m_WS_filter;   //!< Default: none
+
+		mrpt::nav::CMultiObjectiveMotionOptimizerBasePtr m_multiobjopt;
+
 
 		struct TInfoPerPTG
 		{
@@ -287,6 +293,7 @@ namespace mrpt
 			CLogFileRecord &newLogRec,
 			const bool this_is_PTG_continuation,
 			mrpt::nav::CAbstractHolonomicReactiveMethod *holoMethod,
+			const mrpt::system::TTimeStamp tim_start_iteration,
 			const TNavigationParams &navp = TNavigationParams(),
 			const mrpt::poses::CPose2D &relPoseVelCmd_NOP = mrpt::poses::CPose2D()
 		);

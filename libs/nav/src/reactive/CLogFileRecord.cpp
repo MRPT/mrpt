@@ -37,7 +37,7 @@ CLogFileRecord::CLogFileRecord() :
 void  CLogFileRecord::writeToStream(mrpt::utils::CStream &out,int *version) const
 {
 	if (version)
-		*version = 21;
+		*version = 22;
 	else
 	{
 		uint32_t	i,n;
@@ -91,13 +91,8 @@ void  CLogFileRecord::writeToStream(mrpt::utils::CStream &out,int *version) cons
 		//out << estimatedExecutionPeriod; // removed v13
 
 		// Version 3 ----------
-		for (i=0;i<infoPerPTG.size();i++)
-		{
-			n = infoPerPTG[i].evalFactors.size();
-
-			out << n;
-			for (unsigned int j=0;j<n;j++)
-				out << infoPerPTG[i].evalFactors[j];
+		for (i=0;i<infoPerPTG.size();i++) {
+			out << infoPerPTG[i].evalFactors; // v22: this is now a TParameters
 		}
 
 		out << nPTGs; // v4
@@ -143,6 +138,7 @@ void  CLogFileRecord::readFromStream(mrpt::utils::CStream &in,int version)
 	case 19:
 	case 20:
 	case 21:
+	case 22:
 		{
 			// Version 0 --------------
 			uint32_t  i,n;
@@ -321,23 +317,27 @@ void  CLogFileRecord::readFromStream(mrpt::utils::CStream &in,int version)
 				values["estimatedExecutionPeriod"] = old_estim_period;
 			}
 
+			for (i = 0; i < infoPerPTG.size(); i++) {
+				infoPerPTG[i].evalFactors.clear();
+			}
 			if (version > 2)
 			{
-				// Version 3 ----------
+				// Version 3..22 ----------
 				for (i=0;i<infoPerPTG.size();i++)
 				{
-
-					in >> n;
-					infoPerPTG[i].evalFactors.resize(n);
-					for (unsigned int j=0;j<n;j++)
-						in >> infoPerPTG[i].evalFactors[j];
+					if (version < 22) {
+						in >> n;
+						for (unsigned int j = 0; j < n; j++) {
+							float f;
+							in >> f; 
+							infoPerPTG[i].evalFactors[mrpt::format("f%u", j)] = f;
+						}
+					}
+					else {
+						in >> infoPerPTG[i].evalFactors;
+					}
 				}
 
-			}
-			else
-			{
-				for (i=0;i<infoPerPTG.size();i++)
-					infoPerPTG[i].evalFactors.resize(0);
 			}
 
 			if (version > 3)
