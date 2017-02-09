@@ -32,6 +32,16 @@ namespace mrpt
 			void loadConfigFile(const mrpt::utils::CConfigFileBase & c) MRPT_OVERRIDE;
 			void saveConfigFile(mrpt::utils::CConfigFileBase & c) const MRPT_OVERRIDE;
 
+			struct NAV_IMPEXP TParams : public mrpt::nav::CMultiObjectiveMotionOptimizerBase::TParamsBase
+			{
+				TParams();
+				void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source, const std::string &section) MRPT_OVERRIDE; // See base docs
+				void saveToConfigFile(mrpt::utils::CConfigFileBase &cfg, const std::string &section) const MRPT_OVERRIDE; // See base docs
+
+			};
+
+			TParams parameters;
+
 		protected:
 			// This virtual method is called by decide().
 			int impl_decide(const std::vector<mrpt::nav::TCandidateMovementPTG> &movs, TResultInfo &extra_info) MRPT_OVERRIDE;

@@ -26,9 +26,6 @@
 #include <iomanip>
 #include <array>
 
-#define exprtk_disable_string_capabilities   // Workaround a bug in Ubuntu precise's GCC+libstdc++
-#include <mrpt/otherlibs/exprtk.hpp>
-
 using namespace mrpt;
 using namespace mrpt::poses;
 using namespace mrpt::math;
@@ -1219,29 +1216,6 @@ void CAbstractPTGBasedReactive::build_movement_candidate(
 		ipp.timeForTPObsTransformation = timeForTPObsTransformation;
 		ipp.timeForHolonomicMethod = timeForHolonomicMethod;
 	}
-}
-
-void CAbstractPTGBasedReactive::internal_construct_exprs()
-{
-	PIMPL_CONSTRUCT(exprtk::expression<double>, m_expr_score2_formula);
-
-	exprtk::symbol_table<double> symbol_table;
-
-	symbol_table.add_variable("k", m_expr_var_k);
-	symbol_table.add_variable("k_target", m_expr_var_k_target);
-	symbol_table.add_variable("num_paths", m_expr_var_num_paths);
-	symbol_table.add_constants();
-
-	PIMPL_GET_REF(exprtk::expression<double>, m_expr_score2_formula).register_symbol_table(symbol_table);
-}
-
-void CAbstractPTGBasedReactive::internal_compile_exprs()
-{
-	// Compile user-given expressions:
-	exprtk::parser<double> parser;
-
-	if (!parser.compile(params_abstract_ptg_navigator.score2_formula, PIMPL_GET_REF(exprtk::expression<double>, m_expr_score2_formula)))
-		THROW_EXCEPTION(mrpt::format("Error compiling `score2_formula` expression: `%s`. Error: `%s`", params_abstract_ptg_navigator.score2_formula.c_str(), parser.error().c_str()));
 }
 
 void CAbstractPTGBasedReactive::TAbstractPTGNavigatorParams::loadFromConfigFile(const mrpt::utils::CConfigFileBase & c, const std::string & s)
