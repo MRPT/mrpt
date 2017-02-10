@@ -17,9 +17,10 @@ namespace mrpt
 	{
 		DEFINE_MRPT_OBJECT_PRE_CUSTOM_LINKAGE(CMultiObjMotionOpt_WeightedScores, NAV_IMPEXP)
 
-			/** Virtual base class for multi-objective motion choosers, as used for reactive navigation engines.
-			  *\sa CReactiveNavigationSystem, CReactiveNavigationSystem3D
-			  *  \ingroup nav_reactive
+			/** Implementation of multi-objective motion chooser, using a simple rule: each score has an associated weight, 
+			  * the candidate with the highest final evaluation wins.
+			  * \sa CReactiveNavigationSystem, CReactiveNavigationSystem3D
+			  * \ingroup nav_reactive
 			  */
 		class NAV_IMPEXP CMultiObjMotionOpt_WeightedScores: public mrpt::nav::CMultiObjectiveMotionOptimizerBase
 		{
