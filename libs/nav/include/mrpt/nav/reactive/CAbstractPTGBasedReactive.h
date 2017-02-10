@@ -142,6 +142,7 @@ namespace mrpt
 
 			mrpt::kinematics::CVehicleVelCmd::TVelCmdParams robot_absolute_speed_limits; //!< Params related to speed limits.
 			bool  enable_obstacle_filtering;
+			bool  evaluate_clearance; //!< Default: false
 
 			virtual void loadFromConfigFile(const mrpt::utils::CConfigFileBase &c, const std::string &s) MRPT_OVERRIDE;
 			virtual void saveToConfigFile(mrpt::utils::CConfigFileBase &c, const std::string &s) const MRPT_OVERRIDE;
@@ -220,7 +221,7 @@ namespace mrpt
 		/** Builds TP-Obstacles from Workspace obstacles for the given PTG.
 		  * "out_TPObstacles" is already initialized to the proper length and maximum collision-free distance for each "k" trajectory index.
 		  * Distances are in "pseudo-meters". They will be normalized automatically to [0,1] upon return. */
-		virtual void STEP3_WSpaceToTPSpace(const size_t ptg_idx,std::vector<double> &out_TPObstacles, mrpt::nav::ClearanceDiagram &out_clearance, const mrpt::poses::CPose2D &rel_pose_PTG_origin_wrt_sense) = 0;
+		virtual void STEP3_WSpaceToTPSpace(const size_t ptg_idx,std::vector<double> &out_TPObstacles, mrpt::nav::ClearanceDiagram &out_clearance, const mrpt::poses::CPose2D &rel_pose_PTG_origin_wrt_sense, const bool eval_clearance) = 0;
 
 		/** Generates a pointcloud of obstacles, and the robot shape, to be saved in the logging record for the current timestep */
 		virtual void loggingGetWSObstaclesAndShape(CLogFileRecord &out_log) = 0;

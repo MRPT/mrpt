@@ -370,7 +370,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 
 		const TPose2D relTarget = TPose2D(CPose2D(m_navigationParams->target) - (CPose2D(m_curPoseVel.pose) + relPoseVelCmd));
 
-		m_infoPerPTG.resize(nPTGs+1);
+		m_infoPerPTG.assign(nPTGs+1, TInfoPerPTG());  // reset contents
 		m_infoPerPTG_timestamp = tim_start_iteration;
 		vector<TCandidateMovementPTG> candidate_movs(nPTGs+1); // the last extra one is for the evaluation of "NOP motion command" choice.
 
@@ -1089,6 +1089,8 @@ void CAbstractPTGBasedReactive::build_movement_candidate(
 		ipf.target_k = 0;
 		ipf.target_dist = 0;
 
+		newLogRec.additional_debug_msgs[mrpt::format("mov_candidate_%u", static_cast<unsigned int>(indexPTG))] = "PTG discarded since target is out of domain.";
+
 		{   // Invalid PTG (target out of reachable space):
 			// - holonomicMovement= Leave default values
 			HLFR = CLogFileRecord_VFF::Create();
@@ -1108,11 +1110,16 @@ void CAbstractPTGBasedReactive::build_movement_candidate(
 			// Initialize TP-Obstacles:
 			const size_t Ki = ptg->getAlphaValuesCount();
 			ptg->initTPObstacles(ipf.TP_Obstacles);
-			ptg->initClearanceDiagram(ipf.clearance);
+			if (params_abstract_ptg_navigator.evaluate_clearance) {
+				ptg->initClearanceDiagram(ipf.clearance);
+			}
 
 			// Implementation-dependent conversion:
-			STEP3_WSpaceToTPSpace(indexPTG, ipf.TP_Obstacles, ipf.clearance, -rel_pose_PTG_origin_wrt_sense);
-			ptg->updateClearancePost(ipf.clearance, ipf.TP_Obstacles);
+			STEP3_WSpaceToTPSpace(indexPTG, ipf.TP_Obstacles, ipf.clearance, -rel_pose_PTG_origin_wrt_sense, params_abstract_ptg_navigator.evaluate_clearance);
+
+			if (params_abstract_ptg_navigator.evaluate_clearance) {
+				ptg->updateClearancePost(ipf.clearance, ipf.TP_Obstacles);
+			}
 
 			// Distances in TP-Space are normalized to [0,1]:
 			const double _refD = 1.0 / ptg->getRefDistance();
@@ -1241,6 +1248,7 @@ void CAbstractPTGBasedReactive::TAbstractPTGNavigatorParams::loadFromConfigFile(
 	MRPT_LOAD_CONFIG_VAR_CS(max_distance_predicted_actual_path, double);
 	MRPT_LOAD_CONFIG_VAR_CS(min_normalized_free_space_for_ptg_continuation, double);
 	MRPT_LOAD_CONFIG_VAR_CS(enable_obstacle_filtering, bool);
+	MRPT_LOAD_CONFIG_VAR_CS(evaluate_clearance, bool);
 
 	MRPT_END;
 }
@@ -1275,6 +1283,7 @@ void CAbstractPTGBasedReactive::TAbstractPTGNavigatorParams::saveToConfigFile(mr
 	MRPT_SAVE_CONFIG_VAR_COMMENT(max_distance_predicted_actual_path, "Max distance [meters] to discard current PTG and issue a new vel cmd (default= 0.05)");
 	MRPT_SAVE_CONFIG_VAR_COMMENT(min_normalized_free_space_for_ptg_continuation, "Min normalized dist [0,1] after current pose in a PTG continuation to allow it.");
 	MRPT_SAVE_CONFIG_VAR_COMMENT(enable_obstacle_filtering, "Enabled obstacle filtering (params in its own section)");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(evaluate_clearance, "Enable exact computation of clearance (default=false)");
 }
 
 CAbstractPTGBasedReactive::TAbstractPTGNavigatorParams::TAbstractPTGNavigatorParams() :
@@ -1288,7 +1297,8 @@ CAbstractPTGBasedReactive::TAbstractPTGNavigatorParams::TAbstractPTGNavigatorPar
 	max_distance_predicted_actual_path(0.15),
 	min_normalized_free_space_for_ptg_continuation(0.2),
 	robot_absolute_speed_limits(),
-	enable_obstacle_filtering(true)
+	enable_obstacle_filtering(true),
+	evaluate_clearance(false)
 {
 }
 
