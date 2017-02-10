@@ -15,7 +15,7 @@
 #include <mrpt/nav/reactive/CAbstractNavigator.h>
 #include <mrpt/nav/reactive/CRobot2NavInterfaceForSimulator.h>
 #include <mrpt/nav/reactive/CMultiObjectiveMotionOptimizerBase.h>
-#include <mrpt/nav/reactive/CMultiObjMotionOpt_WeightedScores.h>
+#include <mrpt/nav/reactive/CMultiObjMotionOpt_Scalarization.h>
 
 #include <mrpt/nav/holonomic/CHolonomicVFF.h>
 #include <mrpt/nav/holonomic/CHolonomicND.h>

@@ -465,6 +465,13 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 		ASSERT_(m_multiobjopt);
 		int best_ptg_idx = m_multiobjopt->decide(candidate_movs, mo_info);
 
+		if (fill_log_record && mo_info.final_evaluation.size()== newLogRec.infoPerPTG.size())
+		{
+			for (unsigned int i = 0; i < newLogRec.infoPerPTG.size(); i++) {
+				newLogRec.infoPerPTG[i].evaluation = mo_info.final_evaluation[i];
+			}
+		}
+
 		// Pick best movement (or null if none is good)
 		const TCandidateMovementPTG * selectedHolonomicMovement = nullptr;
 		if (best_ptg_idx >= 0) {
@@ -919,8 +926,6 @@ void CAbstractPTGBasedReactive::calc_move_candidate_scores(
 
 	//  SAVE LOG
 	log.evalFactors = cm.props;
-
-	// cm.evaluation is evaluated at the caller site.
 
 	MRPT_END;
 }

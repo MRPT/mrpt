@@ -42,6 +42,6 @@ MRPT_INITIALIZER( registerAllNavigationClasses )
 
 	// Motion choosers:
 	registerClass(CLASS_ID(CMultiObjectiveMotionOptimizerBase));
-	registerClass(CLASS_ID(CMultiObjMotionOpt_WeightedScores));
+	registerClass(CLASS_ID(CMultiObjMotionOpt_Scalarization));
 #endif
 }
