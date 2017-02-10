@@ -537,7 +537,6 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 			// Eval global, weighted score:
 			for (size_t i = 0; i<=nPTGs; i++)
 			{
-				TInfoPerPTG &ipf = m_infoPerPTG[i];
 				THolonomicMovement &holonomicMovement = holonomicMovements[i];
 
 				if ((holonomicMovement.speed <= 0 /* speed=-1 is used to mark invalid NOP holoMovs */) || (i== nPTGs && !can_do_nop_motion))
@@ -552,7 +551,6 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 
 				const bool this_is_PTG_continuation = (i == nPTGs);
 				const size_t indexPTG = (this_is_PTG_continuation) ? m_lastSentVelCmd.ptg_index : i;
-				CParameterizedTrajectoryGenerator * ptg = getPTG(indexPTG);
 
 				// General case:
 				double global_eval = .0;
