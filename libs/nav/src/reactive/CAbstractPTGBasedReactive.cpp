@@ -724,6 +724,7 @@ void CAbstractPTGBasedReactive::calc_move_candidate_scores(
 	cm.props["robpose_x"] = pose.x;
 	cm.props["robpose_y"] = pose.y;
 	cm.props["robpose_phi"] = pose.phi;
+	cm.props["ptg_priority"] = cm.PTG->getScorePriority() *  cm.PTG->evalPathRelativePriority(target_k, target_d_norm);
 
 	// Factor 1: Free distance for the chosen PTG and "alpha" in the TP-Space:
 	// ----------------------------------------------------------------------
