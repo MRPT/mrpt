@@ -239,7 +239,13 @@ void COpenNI2Generic::open(unsigned sensor_id)
 	  showLog(mrpt::format(" The sensor [%d] is already opened\n", sensor_id));
 		return;
 	}
-    if (m_verbose) printf("[COpenNI2Generic] DBG: [%s] about to call vDevices[%d]->open()\n",__FUNCTION__,sensor_id);
+	if (m_verbose) printf("[COpenNI2Generic] DBG: [%s] about to call vDevices[%d]->open()\n",__FUNCTION__,sensor_id);
+	if(sensor_id == openni::SENSOR_IR)
+		//Don't mess with IR stream
+		vDevices[openni::SENSOR_IR]->open(640, 480, m_fps);
+	else
+		vDevices[sensor_id]->open(m_width, m_height, m_fps);
+
 	vDevices[sensor_id]->open(m_width, m_height, m_fps);
 	showLog(vDevices[sensor_id]->getLog() + "\n");
 	showLog(mrpt::format(" Device [%d] ", sensor_id));
@@ -277,9 +283,11 @@ unsigned int COpenNI2Generic::openDevicesBySerialNum(const std::set<unsigned>& s
       num_open_dev++;
       continue;
     }
+    int width  = sensor_id == openni::SENSOR_IR ? 640 : m_width;
+    int height = sensor_id == openni::SENSOR_IR ? 480 : m_height;
     if (m_verbose) printf("[COpenNI2Generic] DBG: [%s] about to call vDevices[%d]->open(%d,%d,%d)\n",
-    __FUNCTION__,sensor_id,m_width,m_height,(int)m_fps);
-    if(vDevices[sensor_id]->open(m_width, m_height, m_fps) == false){
+    __FUNCTION__,sensor_id,width,height,(int)m_fps);
+    if(vDevices[sensor_id]->open(width, height, m_fps) == false){
       showLog(vDevices[sensor_id]->getLog());
       continue;
     }
