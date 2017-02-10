@@ -87,7 +87,7 @@ int CMultiObjMotionOpt_Scalarization::impl_decide(const std::vector<mrpt::nav::T
 
 		// Update variables & evaluate formula:
 		for (const auto &score : extra_info.score_values[i]) {
-			auto & it = m_expr_scalar_vars.find(score.first); // this should never *create* a new entry...
+			const auto & it = m_expr_scalar_vars.find(score.first); // this should never *create* a new entry...
 			if (it == m_expr_scalar_vars.cend()) {
 				THROW_EXCEPTION_FMT("Error: found unexpected (unregistered) score named `%s`.", score.first.c_str());
 			}
