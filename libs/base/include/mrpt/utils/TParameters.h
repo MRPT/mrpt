@@ -14,6 +14,8 @@
 #include <cstdio>
 #include <map>
 #include <string>
+#include <sstream>
+#include <iostream>
 
 namespace mrpt
 {
