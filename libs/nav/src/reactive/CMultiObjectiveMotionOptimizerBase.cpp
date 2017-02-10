@@ -35,12 +35,6 @@ int CMultiObjectiveMotionOptimizerBase::decide(const std::vector<mrpt::nav::TCan
 	{
 		const auto &m = movs[mov_idx];
 
-		if (m.speed <= 0) // Invalid candidate:
-		{
-			score_values[mov_idx].clear();
-			continue;
-		}
-
 		// Mark all vars as NaN so we detect uninitialized values:
 		for (auto &p : m_expr_vars) {
 			p.second = std::numeric_limits<double>::quiet_NaN();
@@ -93,8 +87,8 @@ int CMultiObjectiveMotionOptimizerBase::decide(const std::vector<mrpt::nav::TCan
 		}
 
 		// For each assert, evaluate it:
+		bool assert_failed = false;
 		{
-			bool assert_failed = false;
 			for (auto &ma : m_movement_assert_exprs)
 			{
 				const double val = PIMPL_GET_CONSTREF(exprtk::expression<double>, ma.compiled_formula).value();
@@ -103,17 +97,21 @@ int CMultiObjectiveMotionOptimizerBase::decide(const std::vector<mrpt::nav::TCan
 					break;
 				}
 			}
-			if (assert_failed) {
-				score_values[mov_idx].clear();
-				continue;
-			}
 		}
 
 		// For each score: evaluate it
 		for (auto &sc : m_score_exprs)
 		{
 			// Evaluate:
-			const double val = PIMPL_GET_CONSTREF(exprtk::expression<double>, sc.second.compiled_formula).value();
+			double val;
+			if (m.speed <= 0 || assert_failed) // Invalid candidate
+			{
+				val = .0;
+			} 
+			else
+			{
+				val = PIMPL_GET_CONSTREF(exprtk::expression<double>, sc.second.compiled_formula).value();
+			}
 
 			if (val != val /* NaN */)
 			{

@@ -259,13 +259,10 @@ void CHolonomicFullEval::navigate(const NavInput & ni, NavOutput &no)
 
 		} // for each direction
 
-		if (phase_idx < (NUM_PHASES - 1))
-		{
-			ASSERT_(options.PHASE_THRESHOLDS.size() >= (NUM_PHASES - 1));
-			ASSERT_(options.PHASE_THRESHOLDS[phase_idx] > .0 && options.PHASE_THRESHOLDS[phase_idx] < 1.0);
+		ASSERT_(options.PHASE_THRESHOLDS.size() == NUM_PHASES);
+		ASSERT_(options.PHASE_THRESHOLDS[phase_idx] > .0 && options.PHASE_THRESHOLDS[phase_idx] < 1.0);
 
-			last_phase_threshold = options.PHASE_THRESHOLDS[phase_idx] * phase_max + (1.0 - options.PHASE_THRESHOLDS[phase_idx]) * phase_min;
-		}
+		last_phase_threshold = options.PHASE_THRESHOLDS[phase_idx] * phase_max + (1.0 - options.PHASE_THRESHOLDS[phase_idx]) * phase_min;
 	} // end for each phase
 	
 	// Give a chance for a derived class to manipulate the final evaluations:
@@ -274,15 +271,23 @@ void CHolonomicFullEval::navigate(const NavInput & ni, NavOutput &no)
 	postProcessDirectionEvaluations(dirs_eval);
 
 	// Search for best direction:
-	unsigned int best_dir  = std::numeric_limits<unsigned int>::max();
+	unsigned int best_dir = std::numeric_limits<unsigned int>::max();
 	double       best_eval = .0;
+#if 0
+	// Individual direction search:
 	for (unsigned int i=0;i<nDirs;i++) {
 		if (dirs_eval[i]>best_eval) {
 			best_eval = dirs_eval[i];
 			best_dir = i;
 		}
 	}
+#else
+	// Of those directions above "last_phase_threshold", keep the GAP with the largest maximum value within; 
+	// then pick the MIDDLE point as the final selection.
+	MRPT_TODO("Continue");
+	THROW_EXCEPTION("to do!");
 
+#endif
 	if (best_eval==.0)
 	{
 		// No way found!
@@ -303,7 +308,7 @@ void CHolonomicFullEval::navigate(const NavInput & ni, NavOutput &no)
 
 
 		const double obs_clearance = m_dirs_scores(best_dir, 4);
-		const double obs_dist = std::min(ni.obstacles[best_dir], obs_clearance);
+		const double obs_dist = ni.obstacles[best_dir]; // Was: min with obs_clearance too.
 		const double obs_dist_th = std::max(options.TOO_CLOSE_OBSTACLE, options.OBSTACLE_SLOW_DOWN_DISTANCE*ni.maxObstacleDist);
 		double riskFactor = 1.0;
 		if (obs_dist <= options.TOO_CLOSE_OBSTACLE) {
@@ -395,12 +400,11 @@ CHolonomicFullEval::TOptions::TOptions() :
 	factorWeights = mrpt::math::make_vector<5,double>(1.0, 1.0, 1.0, 0.1, 1.0);
 	factorNormalizeOrNot = mrpt::math::make_vector<5, int>(0, 0, 0, 0, 1);
 
-	PHASE_THRESHOLDS = mrpt::math::make_vector<2, double>(0.6);
+	PHASE_THRESHOLDS = mrpt::math::make_vector<2, double>(0.6, 0.8);
 
-	PHASE_FACTORS.resize(3);
-	PHASE_FACTORS[0] = mrpt::math::make_vector<1, int>(0);
-	PHASE_FACTORS[1] = mrpt::math::make_vector<1, int>(1);
-	PHASE_FACTORS[2] = mrpt::math::make_vector<1, int>(4);
+	PHASE_FACTORS.resize(2);
+	PHASE_FACTORS[0] = mrpt::math::make_vector<2, int>(1,2);
+	PHASE_FACTORS[1] = mrpt::math::make_vector<1, int>(0,2);
 }
 
 void CHolonomicFullEval::TOptions::loadFromConfigFile(const mrpt::utils::CConfigFileBase &c,const std::string &s)
@@ -426,17 +430,14 @@ void CHolonomicFullEval::TOptions::loadFromConfigFile(const mrpt::utils::CConfig
 	MRPT_LOAD_CONFIG_VAR_NO_DEFAULT(PHASE_COUNT,int, c,s);
 
 	PHASE_FACTORS.resize(PHASE_COUNT);
-	PHASE_THRESHOLDS.resize(PHASE_COUNT-1);
+	PHASE_THRESHOLDS.resize(PHASE_COUNT);
 	for (int i = 0; i < PHASE_COUNT; i++)
 	{
 		c.read_vector(s, mrpt::format("PHASE%i_FACTORS",i + 1), PHASE_FACTORS[i], PHASE_FACTORS[i], true);
 		ASSERT_(!PHASE_FACTORS[i].empty());
 		
-		if (i != (PHASE_COUNT - 1)) // last stage does not need threshold, since its evaluation is the final output.
-		{
-			PHASE_THRESHOLDS[i] = c.read_double(s, mrpt::format("PHASE%i_THRESHOLD", i + 1),.0, true);
-			ASSERT_(PHASE_THRESHOLDS[i]>=.0 && PHASE_THRESHOLDS[i]<=1.0);
-		}
+		PHASE_THRESHOLDS[i] = c.read_double(s, mrpt::format("PHASE%i_THRESHOLD", i + 1),.0, true);
+		ASSERT_(PHASE_THRESHOLDS[i]>=.0 && PHASE_THRESHOLDS[i]<=1.0);
 	}
 
 	MRPT_END
@@ -464,9 +465,7 @@ void CHolonomicFullEval::TOptions::saveToConfigFile(mrpt::utils::CConfigFileBase
 
 	for (unsigned int i = 0; i < PHASE_FACTORS.size(); i++)
 	{
-		if (i != PHASE_FACTORS.size() - 1) {
-			c.write(s, mrpt::format("PHASE%u_THRESHOLD", i + 1), PHASE_THRESHOLDS[i], WN, WV, "Phase scores must be above this relative range threshold [0,1] to be considered in next phase (Default:`0.75`)");
-		}
+		c.write(s, mrpt::format("PHASE%u_THRESHOLD", i + 1), PHASE_THRESHOLDS[i], WN, WV, "Phase scores must be above this relative range threshold [0,1] to be considered in next phase (Default:`0.75`)");
 		c.write(s, mrpt::format("PHASE%u_FACTORS", i + 1), mrpt::system::sprintf_container("%d ", PHASE_FACTORS[i]), WN, WV, "Indices of the factors above to be considered in this phase");
 	}
 
