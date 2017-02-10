@@ -50,7 +50,7 @@ namespace nav
 			mrpt::math::TPoint2D     TP_Robot;      //!< Robot location in TP-Space: normally (0,0), except during "NOP cmd vel" steps
 			double timeForTPObsTransformation,timeForHolonomicMethod;  //!< Time, in seconds.
 			double desiredDirection,desiredSpeed;          //!< The results from the holonomic method.
-			double evaluation_org, evaluation_priority, evaluation; //!< should be: evaluation = evaluation_org * evaluation_priority.
+			double evaluation;                       //!< Final score of this candidate
 			mrpt::utils::TParametersDouble  evalFactors;   //!< Evaluation factors
 			CHolonomicLogFileRecordPtr HLFR;          //!< Other useful info about holonomic method execution.
 			mrpt::nav::CParameterizedTrajectoryGeneratorPtr ptg; //!< Only for the FIRST entry in a log file, this will contain a copy of the PTG with trajectories, suitable to render trajectories, etc.
