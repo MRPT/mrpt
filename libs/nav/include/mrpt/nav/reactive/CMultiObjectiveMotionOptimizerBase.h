@@ -37,7 +37,7 @@ namespace mrpt
 
 			struct NAV_IMPEXP TResultInfo
 			{
-				/** For each candidate, the numerical evaluation of all scores defined in TParamsBase::formula_score. 
+				/** For each candidate (vector indices), the numerical evaluation of all scores defined in TParamsBase::formula_score. 
 				  * A value of 0 means unsuitable candidate. */
 				std::vector<std::map<std::string, double> > score_values;
 			};
@@ -64,6 +64,10 @@ namespace mrpt
 				  * fulfill in order to get through the evaluation process. *All* assert conditions must be satisfied.
 				  */
 				std::vector<std::string>  movement_assert;
+
+				/** List of score names (as defined in the key of `formula_score`) that must be normalized 
+				  * across all candidates, such that the maximum value is 1. */
+				std::vector<std::string> scores_to_normalize;
 
 				virtual void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source, const std::string &section) MRPT_OVERRIDE; // See base docs
 				virtual void saveToConfigFile(mrpt::utils::CConfigFileBase &cfg, const std::string &section) const MRPT_OVERRIDE; // See base docs

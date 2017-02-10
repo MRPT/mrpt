@@ -10,6 +10,7 @@
 #include "nav-precomp.h" // Precomp header
 
 #include <mrpt/nav/reactive/CMultiObjectiveMotionOptimizerBase.h>
+#include <mrpt/system/string_utils.h>
 
 #define exprtk_disable_string_capabilities   // Workaround a bug in Ubuntu precise's GCC+libstdc++
 #include <mrpt/otherlibs/exprtk.hpp>
@@ -91,11 +92,26 @@ int CMultiObjectiveMotionOptimizerBase::decide(const std::vector<mrpt::nav::TCan
 			}
 		}
 
+		// For each assert, evaluate it:
+		{
+			bool assert_failed = false;
+			for (auto &ma : m_movement_assert_exprs)
+			{
+				const double val = PIMPL_GET_CONSTREF(exprtk::expression<double>, ma.compiled_formula).value();
+				if (val == 0) {
+					assert_failed = true;
+					break;
+				}
+			}
+			if (assert_failed) {
+				score_values[mov_idx].clear();
+				continue;
+			}
+		}
+
 		// For each score: evaluate it
 		for (auto &sc : m_score_exprs)
 		{
-			//PIMPL_GET_REF(exprtk::expression<double>, sc.second.compiled_formula).register_symbol_table(symbol_table);
-			
 			// Evaluate:
 			const double val = PIMPL_GET_CONSTREF(exprtk::expression<double>, sc.second.compiled_formula).value();
 
@@ -106,6 +122,32 @@ int CMultiObjectiveMotionOptimizerBase::decide(const std::vector<mrpt::nav::TCan
 
 			// Store:
 			score_values[mov_idx][sc.first] = val;
+		}
+	}
+
+	// Optional score post-processing: normalize highest value to 1.0
+	for (const auto& sScoreName : m_params_base.scores_to_normalize)
+	{
+		// Find max:
+		double maxScore = .0;
+		for (const auto &s : score_values)
+		{
+			const auto it = s.find(sScoreName);
+			if (it != s.cend())
+				mrpt::utils::keep_max(maxScore, it->second);
+		}
+
+		// Normalize:
+		if (maxScore > 0 && maxScore!=1.0 /* already normalized! */)
+		{
+			double K = 1.0 / maxScore;
+			for (auto &s : score_values)
+			{
+				auto it = s.find(sScoreName);
+				if (it != s.end()) {
+					it->second *= K;
+				}
+			}
 		}
 	}
 
@@ -147,10 +189,12 @@ CMultiObjectiveMotionOptimizerBase::TParamsBase::TParamsBase()
 	// Default scores:
 	formula_score["colision_free_distance"] = "colision_free_distance";
 	formula_score["path_index_near_target"] = "var dif:=abs(target_k-move_k); if (dif>(num_paths/2)) { dif:=num_paths-dif; }; exp(-abs(dif / (num_paths/10.0)));";
-	formula_score["dist_eucl_final"] = "dist_eucl_final";
+	formula_score["euclidean_nearness"] = "(ref_dist - dist_eucl_final) / ref_dist";
 	formula_score["hysteresis"] = "hysteresis";
 	formula_score["clearance"] = "clearance";
 
+	// Default:
+	scores_to_normalize.push_back("clearance");
 }
 
 void CMultiObjectiveMotionOptimizerBase::TParamsBase::loadFromConfigFile(const mrpt::utils::CConfigFileBase &c, const std::string &s)
@@ -195,6 +239,15 @@ void CMultiObjectiveMotionOptimizerBase::TParamsBase::loadFromConfigFile(const m
 			movement_assert.push_back(sValue);
 		}
 	}
+
+	{
+		scores_to_normalize.clear();
+		std::string sLst = c.read_string(s, "scores_to_normalize", "");
+		if (!sLst.empty()) {
+			mrpt::system::tokenize(sLst, ", \t", scores_to_normalize);
+		}
+	}
+	
 }
 
 void CMultiObjectiveMotionOptimizerBase::TParamsBase::saveToConfigFile(mrpt::utils::CConfigFileBase &c, const std::string &s) const
@@ -234,6 +287,15 @@ void CMultiObjectiveMotionOptimizerBase::TParamsBase::saveToConfigFile(mrpt::uti
 			const std::string sKey = mrpt::format("movement_assert%i", idx+1);
 			c.write(s, sKey, movement_assert[idx], mrpt::utils::MRPT_SAVE_NAME_PADDING, mrpt::utils::MRPT_SAVE_VALUE_PADDING);
 		}
+	}
+
+	{
+		std::string sLst;
+		for (const auto& s : scores_to_normalize) {
+			sLst += s;
+			sLst += std::string(",");
+		}
+		c.write(s, "scores_to_normalize", sLst);
 	}
 
 }
