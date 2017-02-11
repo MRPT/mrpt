@@ -195,7 +195,7 @@ void CSensoryFrame::insert(const CObservationPtr &obs)
 void CSensoryFrame::eraseByIndex(const size_t &idx)
 {
 	MRPT_START
-	if (idx>=size()) THROW_EXCEPTION_CUSTOM_MSG1("Index %u out of range.", static_cast<unsigned>(idx) );
+	if (idx>=size()) THROW_EXCEPTION_FMT("Index %u out of range.", static_cast<unsigned>(idx) );
 
 	m_cachedMap.clear();
 	iterator it = begin()+idx;
@@ -212,7 +212,7 @@ void CSensoryFrame::eraseByIndex(const size_t &idx)
 CObservationPtr CSensoryFrame::getObservationByIndex( const size_t &idx ) const
 {
 	MRPT_START
-	if (idx>=size()) THROW_EXCEPTION_CUSTOM_MSG1("Index %u out of range.", static_cast<unsigned>(idx) );
+	if (idx>=size()) THROW_EXCEPTION_FMT("Index %u out of range.", static_cast<unsigned>(idx) );
 
 	const_iterator it = begin()+idx;
 	return *it;

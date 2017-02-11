@@ -135,7 +135,7 @@ namespace utils
 			{
 				// Parse the text into a vector:
 				if (!outMatrix.fromMatlabStringFormat(aux))
-					THROW_EXCEPTION_CUSTOM_MSG1("Error parsing matrix: '%s'",aux.c_str())
+					THROW_EXCEPTION_FMT("Error parsing matrix: '%s'",aux.c_str())
 			}
 		}
 

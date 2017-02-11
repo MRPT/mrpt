@@ -35,7 +35,7 @@ CFileGZOutputStream::CFileGZOutputStream( const string	&fileName ) :
 {
 	MRPT_START
 	if (!open(fileName))
-		THROW_EXCEPTION_CUSTOM_MSG1( "Error trying to open file: '%s'",fileName.c_str() );
+		THROW_EXCEPTION_FMT( "Error trying to open file: '%s'",fileName.c_str() );
 	MRPT_END
 }
 

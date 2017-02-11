@@ -75,7 +75,7 @@ void  CObservationBearingRange::writeToStream(mrpt::utils::CStream &out, int *ve
 			if (id!=INVALID_LANDMARK_ID)
 			{
 				if (0!=lstIDs.count(id))
-					THROW_EXCEPTION_CUSTOM_MSG1("Duplicate landmark ID=%i found.",(int)id);
+					THROW_EXCEPTION_FMT("Duplicate landmark ID=%i found.",(int)id);
 				lstIDs.insert(id);
 			}
 
@@ -158,7 +158,7 @@ void  CObservationBearingRange::readFromStream(mrpt::utils::CStream &in, int ver
 				if (id!=INVALID_LANDMARK_ID)
 				{
 					if (0!=lstIDs.count(id))
-						THROW_EXCEPTION_CUSTOM_MSG1("Duplicate landmark ID=%i found.",(int)id);
+						THROW_EXCEPTION_FMT("Duplicate landmark ID=%i found.",(int)id);
 					lstIDs.insert(id);
 				}
 			}

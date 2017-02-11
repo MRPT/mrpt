@@ -2136,7 +2136,7 @@ void  mrpt::math::cross_correlation_FFT(
 double mrpt::math::interpolate2points(const double x, const double x0, const double y0, const double x1, const double y1, bool wrap2pi )
 {
 	MRPT_START
-	if (x0==x1) THROW_EXCEPTION_CUSTOM_MSG1("ERROR: Both x0 and x1 are equal (=%f)",x0);
+	if (x0==x1) THROW_EXCEPTION_FMT("ERROR: Both x0 and x1 are equal (=%f)",x0);
 
 	const double Ax = x1-x0;
 	const double Ay = y1-y0;

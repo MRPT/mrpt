@@ -133,7 +133,7 @@ void  CInterfaceFTDI::OpenBySerialNumber( const std::string &serialNumber )
 	}
 
 	if (!myDev)
-		THROW_EXCEPTION_CUSTOM_MSG1("USB device with serial number '%s' not found.",serialNumber.c_str());
+		THROW_EXCEPTION_FMT("USB device with serial number '%s' not found.",serialNumber.c_str());
 
 	// Open it:
 	ftdi_context *ctx = static_cast<ftdi_context *>(m_ftdi_context);

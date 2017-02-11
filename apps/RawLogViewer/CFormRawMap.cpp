@@ -484,7 +484,7 @@ void CFormRawMap::OnbtnGenerateClick(wxCommandEvent& )
 				}
 
 				if ( !poseIncrementLoaded && i<last )
-					THROW_EXCEPTION_CUSTOM_MSG1("ERROR: Odometry not found at step %d!",(int)i);
+					THROW_EXCEPTION_FMT("ERROR: Odometry not found at step %d!",(int)i);
 
 				curPose = curPose + poseIncrement;
 				addNewPathEntry=true;
@@ -753,7 +753,7 @@ void CFormRawMap::OnbtnGeneratePathsClick(wxCommandEvent& )
 					}
 
 					if ( !poseIncrementLoaded )
-						THROW_EXCEPTION_CUSTOM_MSG1("ERROR: Odometry not found at step %d!",(int)i);
+						THROW_EXCEPTION_FMT("ERROR: Odometry not found at step %d!",(int)i);
 
 					curPose = curPose + poseIncrement;
 					pathX.push_back( curPose.x() );

@@ -238,7 +238,7 @@ CMatrixDouble33 vision::defaultIntrinsicParamsMatrix(
 
 	default:
 		{
-			THROW_EXCEPTION_CUSTOM_MSG1( "Unknown camera index!! for 'camIndex'=%u",camIndex );
+			THROW_EXCEPTION_FMT( "Unknown camera index!! for 'camIndex'=%u",camIndex );
 		}
 	}
 

@@ -92,7 +92,7 @@ void CNTRIPEmitter::initialize()
 
 	string errstr;
 	if (!m_client.open(m_ntrip_args,errstr))
-		THROW_EXCEPTION_CUSTOM_MSG1("ERROR trying to connect to NTRIP caster: %s",errstr.c_str());
+		THROW_EXCEPTION_FMT("ERROR trying to connect to NTRIP caster: %s",errstr.c_str());
 }
 
 
