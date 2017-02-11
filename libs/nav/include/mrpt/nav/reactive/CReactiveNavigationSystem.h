@@ -87,8 +87,6 @@ namespace mrpt
 
 		private:
 			std::vector<CParameterizedTrajectoryGenerator*>	PTGs;  //!< The list of PTGs to use for navigation
-			mrpt::math::CPolygon m_robotShape;     //!< The robot 2D shape model. Only one of `robot_shape` or `robot_shape_circular_radius` will be used in each PTG
-			double m_robotShapeCircularRadius;   //!< Radius of the robot if approximated as a circle. Only one of `robot_shape` or `robot_shape_circular_radius` will be used in each PTG
 
 			// Steps for the reactive navigation sytem.
 			// ----------------------------------------------------------------------------
@@ -97,6 +95,9 @@ namespace mrpt
 			// See docs in parent class
 			bool implementSenseObstacles(mrpt::system::TTimeStamp &obs_timestamp) MRPT_OVERRIDE;
 		protected:
+			mrpt::math::CPolygon m_robotShape;     //!< The robot 2D shape model. Only one of `robot_shape` or `robot_shape_circular_radius` will be used in each PTG
+			double m_robotShapeCircularRadius;   //!< Radius of the robot if approximated as a circle. Only one of `robot_shape` or `robot_shape_circular_radius` will be used in each PTG
+
 			/** Generates a pointcloud of obstacles, and the robot shape, to be saved in the logging record for the current timestep */
 			virtual void loggingGetWSObstaclesAndShape(CLogFileRecord &out_log) MRPT_OVERRIDE;
 
