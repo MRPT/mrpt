@@ -40,12 +40,12 @@ CParameterizedTrajectoryGenerator * CParameterizedTrajectoryGenerator::CreatePTG
 	// Factory:
 	const mrpt::utils::TRuntimeClassId *classId = mrpt::utils::findRegisteredClass( ptgClassName );
 	if (!classId) {
-		THROW_EXCEPTION_CUSTOM_MSG1("[CreatePTG] No PTG named `%s` is registered!",ptgClassName.c_str());
+		THROW_EXCEPTION_FMT("[CreatePTG] No PTG named `%s` is registered!",ptgClassName.c_str());
 	}
 	
 	CParameterizedTrajectoryGenerator *ptg = dynamic_cast<CParameterizedTrajectoryGenerator*>( classId->createObject() );
 	if (!ptg) {
-		THROW_EXCEPTION_CUSTOM_MSG1("[CreatePTG] Object of type `%s` seems not to be a PTG!",ptgClassName.c_str());
+		THROW_EXCEPTION_FMT("[CreatePTG] Object of type `%s` seems not to be a PTG!",ptgClassName.c_str());
 	}
 
 	// Wrapper to transparently add prefixes to all config keys:

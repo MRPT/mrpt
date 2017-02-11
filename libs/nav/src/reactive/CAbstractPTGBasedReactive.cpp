@@ -144,7 +144,7 @@ void CAbstractPTGBasedReactive::enableLogFile(bool enable)
 
 			mrpt::system::createDirectory(m_navlogfiles_dir);
 			if (!mrpt::system::directoryExists(m_navlogfiles_dir)) {
-				THROW_EXCEPTION_CUSTOM_MSG1("Could not create directory for navigation logs: `%s`", m_navlogfiles_dir.c_str());
+				THROW_EXCEPTION_FMT("Could not create directory for navigation logs: `%s`", m_navlogfiles_dir.c_str());
 			}
 
 			while (!free_name)
@@ -160,7 +160,7 @@ void CAbstractPTGBasedReactive::enableLogFile(bool enable)
 				bool ok = fil->open(aux, 1 /* compress level */);
 				if (!ok) {
 					delete fil;
-					THROW_EXCEPTION_CUSTOM_MSG1("Error opening log file: `%s`",aux);
+					THROW_EXCEPTION_FMT("Error opening log file: `%s`",aux);
 				}
 				else {
 					m_logFile = fil;
@@ -190,7 +190,7 @@ static std::string holoMethodEnum2ClassName(const THolonomicMethod method)
 	case hmSEARCH_FOR_BEST_GAP:  className = "CHolonomicND";  break;
 	case hmVIRTUAL_FORCE_FIELDS: className = "CHolonomicVFF"; break;
 	case hmFULL_EVAL: className = "CHolonomicFullEval"; break;
-	default: THROW_EXCEPTION_CUSTOM_MSG1("Unknown Holonomic method: %u", static_cast<unsigned int>(method))
+	default: THROW_EXCEPTION_FMT("Unknown Holonomic method: %u", static_cast<unsigned int>(method))
 	};
 	return className;
 }
@@ -215,7 +215,7 @@ void CAbstractPTGBasedReactive::setHolonomicMethod(const std::string & method, c
 	{
 		m_holonomicMethod[i] = CAbstractHolonomicReactiveMethod::Create(method);
 		if (!m_holonomicMethod[i])
-			THROW_EXCEPTION_CUSTOM_MSG1("Non-registered holonomic method className=`%s`", method.c_str());
+			THROW_EXCEPTION_FMT("Non-registered holonomic method className=`%s`", method.c_str());
 
 		m_holonomicMethod[i]->setAssociatedPTG(this->getPTG(i));
 		m_holonomicMethod[i]->initialize(ini); // load params
@@ -1328,7 +1328,7 @@ void CAbstractPTGBasedReactive::loadConfigFile(const mrpt::utils::CConfigFileBas
 	// Movement chooser:
 	m_multiobjopt = CMultiObjectiveMotionOptimizerBasePtr(CMultiObjectiveMotionOptimizerBase::Create(params_abstract_ptg_navigator.motion_decider_method));
 	if (!m_multiobjopt)
-		THROW_EXCEPTION_CUSTOM_MSG1("Non-registered CMultiObjectiveMotionOptimizerBase className=`%s`", params_abstract_ptg_navigator.motion_decider_method.c_str());
+		THROW_EXCEPTION_FMT("Non-registered CMultiObjectiveMotionOptimizerBase className=`%s`", params_abstract_ptg_navigator.motion_decider_method.c_str());
 
 	m_multiobjopt->loadConfigFile(c);
 

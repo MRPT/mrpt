@@ -149,7 +149,7 @@
 /** \def THROW_EXCEPTION(msg)
  * \param msg This can be a char*, a std::string, or a literal string.
  * Defines a unified way of reporting exceptions
- * \sa MRPT_TRY_START, MRPT_TRY_END, THROW_EXCEPTION_CUSTOM_MSG1
+ * \sa MRPT_TRY_START, MRPT_TRY_END, THROW_EXCEPTION_FMT
  */
 #define THROW_EXCEPTION(msg)	\
 	{\
@@ -163,22 +163,8 @@
 #define THROW_EXCEPTION_FMT(_FORMAT_STRING,...) \
 	THROW_EXCEPTION(mrpt::format(_FORMAT_STRING,__VA_ARGS__))
 
-/** \def THROW_EXCEPTION_CUSTOM_MSG1
-  * \param e The caught exception.
-  *	\param msg Is a char* or literal string.
-  */
-#define THROW_EXCEPTION_CUSTOM_MSG1(msg,param1)	\
-	{\
-		std::ostringstream auxCompStr;\
-		auxCompStr << "\n\n =============== MRPT EXCEPTION =============\n";\
-		auxCompStr << __CURRENT_FUNCTION_NAME__ << ", line " << __LINE__ << ":\n";\
-		auxCompStr << mrpt::format(msg,param1)<< std::endl; \
-		throw std::logic_error( auxCompStr.str() );\
-	}\
-
-
 /** \def THROW_TYPED_EXCEPTION(msg,exceptionClass)
- * Defines a unified way of reporting exceptions of type different from "std::exception"
+ * Defines a unified way of reporting exceptions of type different than "std::exception"
  * \sa MRPT_TRY_START, MRPT_TRY_END
  */
 #define THROW_TYPED_EXCEPTION(msg,exceptionClass)	\
@@ -190,19 +176,8 @@
 		throw exceptionClass( auxCompStr.str() );\
 	}\
 
-/** \def THROW_EXCEPTION_CUSTOM_MSG1
-  * \param e The caught exception.
-  *	\param msg Is a char* or literal string.
-  */
-#define THROW_TYPED_EXCEPTION_CUSTOM_MSG1(msg,param1,exceptionClass)	\
-	{\
-		std::ostringstream auxCompStr;\
-		auxCompStr << "\n\n =============== MRPT EXCEPTION =============\n";\
-		auxCompStr << __CURRENT_FUNCTION_NAME__ << ", line " << __LINE__ << ":\n";\
-		auxCompStr << mrpt::format(msg,param1)<< std::endl; \
-		throw exceptionClass( auxCompStr.str() );\
-	}\
-
+#define THROW_TYPED_EXCEPTION_FMT(exceptionClass,_FORMAT_STRING,...)	\
+	THROW_TYPED_EXCEPTION(mrpt::format(_FORMAT_STRING,__VA_ARGS__), exceptionClass)
 
 /** \def THROW_STACKED_EXCEPTION
  * \sa MRPT_TRY_START, MRPT_TRY_END

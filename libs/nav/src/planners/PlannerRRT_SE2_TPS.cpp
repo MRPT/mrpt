@@ -67,7 +67,7 @@ void PlannerRRT_SE2_TPS::loadConfig(const mrpt::utils::CConfigFileBase &ini, con
 		{
 			CMatrixDouble mShape;
 			if (!mShape.fromMatlabStringFormat(sShape))
-				THROW_EXCEPTION_CUSTOM_MSG1("Error parsing robot_shape matrix: '%s'", sShape.c_str());
+				THROW_EXCEPTION_FMT("Error parsing robot_shape matrix: '%s'", sShape.c_str());
 			ASSERT_(size(mShape, 1) == 2);
 			ASSERT_(size(mShape, 2) >= 3);
 

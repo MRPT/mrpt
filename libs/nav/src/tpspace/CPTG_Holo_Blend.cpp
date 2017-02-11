@@ -399,7 +399,7 @@ size_t CPTG_Holo_Blend::getPathStepCount(uint16_t k) const
 
 	uint32_t step;
 	if (!getPathStepForDist(k,this->refDistance,step)) {
-		THROW_EXCEPTION_CUSTOM_MSG1("Could not solve closed-form distance for k=%u",static_cast<unsigned>(k));
+		THROW_EXCEPTION_FMT("Could not solve closed-form distance for k=%u",static_cast<unsigned>(k));
 	}
 	ASSERT_(step>0);
 	if (m_pathStepCountCache.size() != m_alphaValuesCount) {

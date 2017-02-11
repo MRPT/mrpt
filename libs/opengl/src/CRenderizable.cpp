@@ -90,7 +90,7 @@ unsigned int CRenderizable::getNewTextureNumber()
 		ret = ret % MAX_GL_TEXTURE_IDS_MASK;
 
 		if (++tries>=MAX_GL_TEXTURE_IDS)
-			THROW_EXCEPTION_CUSTOM_MSG1("Maximum number of textures (%u) excedeed! (are you deleting them?)", (unsigned int)MAX_GL_TEXTURE_IDS);
+			THROW_EXCEPTION_FMT("Maximum number of textures (%u) excedeed! (are you deleting them?)", (unsigned int)MAX_GL_TEXTURE_IDS);
 	}
 
 	booker.freeTextureNames[ret] = true; // mark as used.
@@ -216,7 +216,7 @@ void  CRenderizable::readFromStreamRender(mrpt::utils::CStream &in)
 			}
 			break;
 		default:
-			THROW_EXCEPTION_CUSTOM_MSG1("Can't parse CRenderizable standard data field: corrupt data stream or format in a newer MRPT format? (serialization version=%u)",static_cast<unsigned int>(serialization_version))
+			THROW_EXCEPTION_FMT("Can't parse CRenderizable standard data field: corrupt data stream or format in a newer MRPT format? (serialization version=%u)",static_cast<unsigned int>(serialization_version))
 		};
 	}
 	else

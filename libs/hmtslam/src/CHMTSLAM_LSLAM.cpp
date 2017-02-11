@@ -294,7 +294,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA( const TMessageLSLAMfromAA &myMsg )
 			for (vector< TPoseIDList >::const_iterator	it= myMsg.partitions.begin(); it!=myMsg.partitions.end();++it)
 				for (TPoseIDList::const_iterator itPose = it->begin();itPose!=it->end();++itPose)
 					if (LMH->m_SFs.find( *itPose ) == LMH->m_SFs.end() )
-						THROW_EXCEPTION_CUSTOM_MSG1("PoseID %i in AA's partition but not in LMH.\n", (int)*itPose );
+						THROW_EXCEPTION_FMT("PoseID %i in AA's partition but not in LMH.\n", (int)*itPose );
 
 
 			// All poses in the LMH must be in the AA's partitions:
@@ -310,7 +310,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA( const TMessageLSLAMfromAA &myMsg )
 								found=true;
 								break;
 							}
-					if (!found)	THROW_EXCEPTION_CUSTOM_MSG1("LMH's pose %i not found in AA's partitions.", (int)itA->first );
+					if (!found)	THROW_EXCEPTION_FMT("LMH's pose %i not found in AA's partitions.", (int)itA->first );
 				}
 			}
 		}
@@ -1044,7 +1044,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA( const TMessageLSLAMfromAA &myMsg )
 					}
 					else
 					{
-						THROW_EXCEPTION_CUSTOM_MSG1("Area %i seems unconnected??", (int)area_ID);
+						THROW_EXCEPTION_FMT("Area %i seems unconnected??", (int)area_ID);
 					}
 				}
 			}

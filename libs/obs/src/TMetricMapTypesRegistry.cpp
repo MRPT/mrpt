@@ -47,7 +47,7 @@ mrpt::maps::CMetricMap* TMetricMapTypesRegistry::factoryMapObjectFromDefinition(
 {
 	TListRegisteredMaps::const_iterator it=m_registry.find( mi.getMetricMapClassType()->className );
 	if (it==m_registry.end()) {
-		THROW_EXCEPTION_CUSTOM_MSG1("[TMetricMapTypesRegistry] Error: Cannot create map of unregistered map type '%s'",mi.getMetricMapClassType()->className); 
+		THROW_EXCEPTION_FMT("[TMetricMapTypesRegistry] Error: Cannot create map of unregistered map type '%s'",mi.getMetricMapClassType()->className); 
 	}
 
 	ASSERT_(it->second.second!=NULL)

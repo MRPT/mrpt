@@ -130,7 +130,7 @@ namespace mrpt
 					std::ofstream  f;
 					f.open(fil.c_str());
 					if (!f.is_open())
-						THROW_EXCEPTION_CUSTOM_MSG1("Error opening file '%s' for writing",fil.c_str());
+						THROW_EXCEPTION_FMT("Error opening file '%s' for writing",fil.c_str());
 
 					// 1st: Nodes
 					for (typename graph_t::global_poses_t::const_iterator itNod = g->nodes.begin();itNod!=g->nodes.end();++itNod)

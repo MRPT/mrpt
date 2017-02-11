@@ -586,7 +586,7 @@ void CFormMotionModel::applyToRawlogFile()
             }
             else
             {   // Unknown class:
-                THROW_EXCEPTION_CUSTOM_MSG1( "Unexpected class found in the file: '%s'",newObj->GetRuntimeClass()->className );
+                THROW_EXCEPTION_FMT( "Unexpected class found in the file: '%s'",newObj->GetRuntimeClass()->className );
             }
         }
         catch (exception &e)
@@ -936,7 +936,7 @@ void CFormMotionModel::OnbtnGetFromFileClick(wxCommandEvent& event)
             }
             else
             {   // Unknown class:
-                THROW_EXCEPTION_CUSTOM_MSG1("Unexpected class found in the file: '%s'",newObj->GetRuntimeClass()->className);
+                THROW_EXCEPTION_FMT("Unexpected class found in the file: '%s'",newObj->GetRuntimeClass()->className);
             }
 
         newObj.clear();  // FREE MEMORY!

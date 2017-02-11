@@ -2008,7 +2008,7 @@ void  CRandomFieldGridMap2D::insertObservation_KF2(
 			double &cov_to_change = m_stackedCov(idx_i,idx_j_in_i);
 			double Delta_cov = cov_c_j * cov_c_i * sk_1;
 			if (i==j && cov_to_change<Delta_cov)
-				THROW_EXCEPTION_CUSTOM_MSG1("Negative variance value appeared! Please increase the size of the window (W).\n(m_insertOptions_common->KF_covSigma=%f)",m_insertOptions_common->KF_covSigma);
+				THROW_EXCEPTION_FMT("Negative variance value appeared! Please increase the size of the window (W).\n(m_insertOptions_common->KF_covSigma=%f)",m_insertOptions_common->KF_covSigma);
 
 			cov_to_change -= Delta_cov;
 

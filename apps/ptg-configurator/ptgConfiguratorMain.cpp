@@ -664,12 +664,12 @@ void ptgConfiguratorframe::OncbPTGClassSelect(wxCommandEvent& event)
 	// Factory:
 	const mrpt::utils::TRuntimeClassId *classId = mrpt::utils::findRegisteredClass( sSelPTG );
 	if (!classId) {
-		THROW_EXCEPTION_CUSTOM_MSG1("[CreatePTG] No PTG named `%s` is registered!",sSelPTG.c_str());
+		THROW_EXCEPTION_FMT("[CreatePTG] No PTG named `%s` is registered!",sSelPTG.c_str());
 	}
 
 	ptg = dynamic_cast<mrpt::nav::CParameterizedTrajectoryGenerator*>( classId->createObject() );
 	if (!ptg) {
-		THROW_EXCEPTION_CUSTOM_MSG1("[CreatePTG] Object of type `%s` seems not to be a PTG!",sSelPTG.c_str());
+		THROW_EXCEPTION_FMT("[CreatePTG] Object of type `%s` seems not to be a PTG!",sSelPTG.c_str());
 	}
 
 	// Set some common defaults:
