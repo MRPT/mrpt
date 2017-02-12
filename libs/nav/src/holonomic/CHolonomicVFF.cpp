@@ -25,7 +25,7 @@ IMPLEMENTS_SERIALIZABLE( CHolonomicVFF, CAbstractHolonomicReactiveMethod,mrpt::n
 						initialize
   ---------------------------------------------------------------*/
 CHolonomicVFF::CHolonomicVFF(const mrpt::utils::CConfigFileBase *INI_FILE) :
-	CAbstractHolonomicReactiveMethod("VFF_CONFIG")
+	CAbstractHolonomicReactiveMethod("CHolonomicVFF")
 {
 	if (INI_FILE!=NULL)
 		initialize( *INI_FILE );
@@ -35,7 +35,10 @@ void CHolonomicVFF::initialize(const mrpt::utils::CConfigFileBase &INI_FILE)
 {
 	options.loadFromConfigFile(INI_FILE, getConfigFileSectionName());
 }
-
+void CHolonomicVFF::saveConfigFile(mrpt::utils::CConfigFileBase &c) const
+{
+	options.saveToConfigFile(c, getConfigFileSectionName());
+}
 
 /*---------------------------------------------------------------
 						navigate
@@ -163,13 +166,12 @@ void CHolonomicVFF::TOptions::loadFromConfigFile(const mrpt::utils::CConfigFileB
 	MRPT_END
 }
 
-void CHolonomicVFF::TOptions::saveToConfigFile(mrpt::utils::CConfigFileBase &cfg , const std::string &section) const
+void CHolonomicVFF::TOptions::saveToConfigFile(mrpt::utils::CConfigFileBase &c , const std::string &s) const
 {
-	MRPT_START
-	const int WN = 25, WV = 30;
+	MRPT_START;
 
-	cfg.write(section,"TARGET_SLOW_APPROACHING_DISTANCE",TARGET_SLOW_APPROACHING_DISTANCE,   WN,WV, "For stopping gradually");
-	cfg.write(section,"TARGET_ATTRACTIVE_FORCE",TARGET_ATTRACTIVE_FORCE,   WN,WV, "Dimension-less (may have to be tuned depending on the density of obstacle sampling)");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(TARGET_SLOW_APPROACHING_DISTANCE, "For stopping gradually");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(TARGET_ATTRACTIVE_FORCE, "Dimension-less (may have to be tuned depending on the density of obstacle sampling)");
 
-	MRPT_END
+	MRPT_END;
 }

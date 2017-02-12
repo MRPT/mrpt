@@ -157,7 +157,7 @@ bool mrpt::vision::checkerBoardCameraCalibration(
 			if (!dat.img_original.isExternallyStored() && !mrpt::system::extractFileExtension(it->first).empty()  )
 			{
 				if (!dat.img_original.loadFromFile(it->first))
-					THROW_EXCEPTION_CUSTOM_MSG1("Error reading image: %s",it->first.c_str());
+					THROW_EXCEPTION_FMT("Error reading image: %s",it->first.c_str());
 
 				dat.img_checkboard = dat.img_original;
 				dat.img_rectified  = dat.img_original;

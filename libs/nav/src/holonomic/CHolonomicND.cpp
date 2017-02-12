@@ -28,7 +28,7 @@ IMPLEMENTS_SERIALIZABLE( CHolonomicND, CAbstractHolonomicReactiveMethod,mrpt::na
 *    configuration file, or default values if filename is set to NULL.
 */
 CHolonomicND::CHolonomicND(const mrpt::utils::CConfigFileBase *INI_FILE ) :
-	CAbstractHolonomicReactiveMethod("ND_CONFIG"),
+	CAbstractHolonomicReactiveMethod("CHolonomicND"),
 	m_last_selected_sector ( std::numeric_limits<unsigned int>::max() )
 {
 	if (INI_FILE!=NULL)
@@ -38,6 +38,10 @@ CHolonomicND::CHolonomicND(const mrpt::utils::CConfigFileBase *INI_FILE ) :
 void CHolonomicND::initialize(const mrpt::utils::CConfigFileBase &INI_FILE)
 {
 	options.loadFromConfigFile(INI_FILE, getConfigFileSectionName());
+}
+void CHolonomicND::saveConfigFile(mrpt::utils::CConfigFileBase &c) const
+{
+	options.saveToConfigFile(c, getConfigFileSectionName());
 }
 
 /*---------------------------------------------------------------
@@ -683,20 +687,20 @@ void CHolonomicND::TOptions::loadFromConfigFile(const mrpt::utils::CConfigFileBa
 	MRPT_END
 }
 
-void CHolonomicND::TOptions::saveToConfigFile(mrpt::utils::CConfigFileBase &cfg , const std::string &section) const
+void CHolonomicND::TOptions::saveToConfigFile(mrpt::utils::CConfigFileBase &c , const std::string &s) const
 {
-	MRPT_START
-	const int WN = 25, WV = 30;
+	MRPT_START;
+	const int WN = mrpt::utils::MRPT_SAVE_NAME_PADDING, WV = mrpt::utils::MRPT_SAVE_VALUE_PADDING;
 
-	cfg.write(section,"WIDE_GAP_SIZE_PERCENT",WIDE_GAP_SIZE_PERCENT,   WN,WV, "");
-	cfg.write(section,"MAX_SECTOR_DIST_FOR_D2_PERCENT",MAX_SECTOR_DIST_FOR_D2_PERCENT,   WN,WV, "");
-	cfg.write(section,"RISK_EVALUATION_SECTORS_PERCENT",RISK_EVALUATION_SECTORS_PERCENT,   WN,WV, "");
-	cfg.write(section,"RISK_EVALUATION_DISTANCE",RISK_EVALUATION_DISTANCE,   WN,WV, "In normalized ps-meters [0,1]");
-	cfg.write(section,"TOO_CLOSE_OBSTACLE",TOO_CLOSE_OBSTACLE,   WN,WV, "For stopping gradually");
-	cfg.write(section,"TARGET_SLOW_APPROACHING_DISTANCE",TARGET_SLOW_APPROACHING_DISTANCE,   WN,WV, "In normalized ps-meters");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(WIDE_GAP_SIZE_PERCENT,"");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(MAX_SECTOR_DIST_FOR_D2_PERCENT,"");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(RISK_EVALUATION_SECTORS_PERCENT,"");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(RISK_EVALUATION_DISTANCE,"In normalized ps-meters [0,1]");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(TOO_CLOSE_OBSTACLE,"For stopping gradually");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(TARGET_SLOW_APPROACHING_DISTANCE, "In normalized ps-meters");
 
 	ASSERT_EQUAL_(factorWeights.size(),4)
-	cfg.write(section,"factorWeights",mrpt::format("%.2f %.2f %.2f %.2f",factorWeights[0],factorWeights[1],factorWeights[2],factorWeights[3]),   WN,WV, "[0]=Free space, [1]=Dist. in sectors, [2]=Closer to target (Euclidean), [3]=Hysteresis");
+	c.write(s,"factorWeights",mrpt::format("%.2f %.2f %.2f %.2f",factorWeights[0],factorWeights[1],factorWeights[2],factorWeights[3]),   WN,WV, "[0]=Free space, [1]=Dist. in sectors, [2]=Closer to target (Euclidean), [3]=Hysteresis");
 
 	MRPT_END
 }

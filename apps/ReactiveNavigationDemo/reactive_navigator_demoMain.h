@@ -23,6 +23,7 @@
 #include "MyGLCanvas.h"
 #include <wx/panel.h>
 #include <wx/choice.h>
+#include <wx/button.h>
 #include <wx/frame.h>
 #include <wx/timer.h>
 #include <wx/statusbr.h>
@@ -89,6 +90,7 @@ class reactive_navigator_demoframe: public wxFrame
         void OnbtnSaveMapClick(wxCommandEvent& event);
         void OnbtnDrawEmptyClick(wxCommandEvent& event);
         void OnbtnSetWaypointSeqClick(wxCommandEvent& event);
+        void OnbtnGenerateTemplateClick(wxCommandEvent& event);
         //*)
 
         //(*Identifiers(reactive_navigator_demoframe)
@@ -111,6 +113,7 @@ class reactive_navigator_demoframe: public wxFrame
         static const long ID_CHECKBOX4;
         static const long ID_CHECKBOX5;
         static const long ID_RADIOBOX1;
+        static const long ID_BUTTON13;
         static const long ID_PANEL6;
         static const long ID_TEXTCTRL1;
         static const long ID_PANEL2;
@@ -165,6 +168,7 @@ class reactive_navigator_demoframe: public wxFrame
         wxRadioBox* rbNavMode;
         wxMenu* Menu3;
         wxSplitterWindow* SplitterWindow2;
+        wxButton* btnGenerateTemplate;
         wxCustomButton* btnLoadMap;
         wxCustomButton* btnQuit;
         wxPanel* Panel1;

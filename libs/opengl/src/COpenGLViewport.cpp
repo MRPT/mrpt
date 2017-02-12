@@ -326,7 +326,7 @@ void  COpenGLViewport::render( const int render_width, const int render_height  
 
 				COpenGLViewportPtr view = m_parent->getViewport( m_clonedViewport );
 				if (!view)
-					THROW_EXCEPTION_CUSTOM_MSG1("Cloned viewport '%s' not found in parent COpenGLScene",m_clonedViewport.c_str());
+					THROW_EXCEPTION_FMT("Cloned viewport '%s' not found in parent COpenGLScene",m_clonedViewport.c_str());
 
 				objectsToRender = &view->m_objects;
 				viewForGetCamera = m_isClonedCamera ? view.pointer() : const_cast<COpenGLViewport*>(this);

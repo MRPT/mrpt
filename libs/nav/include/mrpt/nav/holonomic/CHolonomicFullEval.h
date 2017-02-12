@@ -10,9 +10,6 @@
 
 #include "CAbstractHolonomicReactiveMethod.h"
 #include <mrpt/utils/CLoadableOptions.h>
-#include <mrpt/utils/pimpl.h>
-
-PIMPL_FORWARD_DECLARATION(namespace exprtk { template <typename T> class expression; })
 
 namespace mrpt
 {
@@ -60,7 +57,8 @@ namespace mrpt
 		// See base class docs
 		void navigate(const NavInput & ni, NavOutput &no) MRPT_OVERRIDE;
 
-		void initialize(const mrpt::utils::CConfigFileBase &INI_FILE) MRPT_OVERRIDE; // See base class docs
+		virtual void initialize(const mrpt::utils::CConfigFileBase &INI_FILE) MRPT_OVERRIDE; // See base class docs
+		virtual void saveConfigFile(mrpt::utils::CConfigFileBase &c) const MRPT_OVERRIDE; // See base class docs
 
 		/** Algorithm options */
 		struct NAV_IMPEXP TOptions : public mrpt::utils::CLoadableOptions
@@ -76,7 +74,8 @@ namespace mrpt
 
 			bool LOG_SCORE_MATRIX; //!< (default:false, to save space)
 
-			std::string exprstr_target_dir_boost_score;
+			double clearance_threshold_ratio;   //!<  Ratio [0,1], times path_count, gives the minimum number of paths at each side of a target direction to be accepted as desired direction
+			double gap_width_ratio_threshold;   //!<  Ratio [0,1], times path_count, gives the minimum gap width to accept a direct motion towards target.
 
 			TOptions();
 			void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) MRPT_OVERRIDE; // See base docs
@@ -90,11 +89,6 @@ namespace mrpt
 		unsigned int direction2sector(const double a, const unsigned int N);
 		mrpt::math::CMatrixD m_dirs_scores; //!< Individual scores for each direction: (i,j), i (row) are directions, j (cols) are scores. Not all directions may have evaluations, in which case a "-1" value will be found.
 		
-		PIMPL_DECLARE_TYPE(exprtk::expression<double>, m_expr_target_dir_boost_score);
-		double m_expr_var_target_dist, m_expr_var_clearance, m_expr_var_free_space, m_expr_var_alpha;
-		void internal_construct_exprs();
-		void internal_compile_exprs();
-
 		virtual void postProcessDirectionEvaluations(std::vector<double> &dir_evals); // If desired, override in a derived class to manipulate the final evaluations of each directions
 
 	}; // end of CHolonomicFullEval

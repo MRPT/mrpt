@@ -322,7 +322,7 @@ void COpenNI2Sensor::setPathForExternalImages( const std::string &directory )
 
 	//	if (!mrpt::system::createDirectory( directory ))
 	//	{
-	//		THROW_EXCEPTION_CUSTOM_MSG1("Error: Cannot create the directory for externally saved images: %s",directory.c_str() )
+	//		THROW_EXCEPTION_FMT("Error: Cannot create the directory for externally saved images: %s",directory.c_str() )
 	//	}
 	//	m_path_for_external_images = directory;
 }

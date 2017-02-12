@@ -39,5 +39,9 @@ MRPT_INITIALIZER( registerAllNavigationClasses )
 	registerClass(CLASS_ID(CHolonomicVFF));
 	registerClass(CLASS_ID(CHolonomicND));
 	registerClass(CLASS_ID(CHolonomicFullEval));
+
+	// Motion choosers:
+	registerClass(CLASS_ID(CMultiObjectiveMotionOptimizerBase));
+	registerClass(CLASS_ID(CMultiObjMotionOpt_Scalarization));
 #endif
 }

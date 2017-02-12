@@ -36,7 +36,7 @@ std::string CVehicleVelCmd_DiffDriven::getVelCmdDescription(const int index) con
 	case 0: return "lin_vel"; break;
 	case 1: return "ang_vel"; break;
 	default:
-		THROW_EXCEPTION_CUSTOM_MSG1("index out of bounds: %i", index);
+		THROW_EXCEPTION_FMT("index out of bounds: %i", index);
 	};
 }
 
@@ -47,7 +47,7 @@ double CVehicleVelCmd_DiffDriven::getVelCmdElement(const int index) const
 	case 0: return lin_vel; break;
 	case 1: return ang_vel; break;
 	default:
-		THROW_EXCEPTION_CUSTOM_MSG1("index out of bounds: %i", index);
+		THROW_EXCEPTION_FMT("index out of bounds: %i", index);
 	};
 }
 
@@ -58,7 +58,7 @@ void CVehicleVelCmd_DiffDriven::setVelCmdElement(const int index, const double v
 	case 0: lin_vel = val; break;
 	case 1: ang_vel = val; break;
 	default:
-		THROW_EXCEPTION_CUSTOM_MSG1("index out of bounds: %i", index);
+		THROW_EXCEPTION_FMT("index out of bounds: %i", index);
 	};
 }
 

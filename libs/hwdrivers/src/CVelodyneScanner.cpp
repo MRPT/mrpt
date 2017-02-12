@@ -423,7 +423,7 @@ void CVelodyneScanner::initialize()
 
 		if (m_pcap_verbose) printf("\n[CVelodyneScanner] Opening PCAP file \"%s\"\n", m_pcap_input_file.c_str());
 		if ((m_pcap = pcap_open_offline(m_pcap_input_file.c_str(), errbuf) ) == NULL) {
-			THROW_EXCEPTION_CUSTOM_MSG1("Error opening PCAP file: '%s'",errbuf);
+			THROW_EXCEPTION_FMT("Error opening PCAP file: '%s'",errbuf);
 		}
 
 		// Build PCAP filter:
@@ -567,7 +567,7 @@ bool CVelodyneScanner::receivePackets(
 
 		printf("\n[CVelodyneScanner] Writing to PCAP file \"%s\"\n", sFileName.c_str());
 		if ((m_pcap_dumper = pcap_dump_open(reinterpret_cast<pcap_t*>(m_pcap_out),sFileName.c_str())) == NULL) {
-			THROW_EXCEPTION_CUSTOM_MSG1("Error creating PCAP live dumper: '%s'",errbuf);
+			THROW_EXCEPTION_FMT("Error creating PCAP live dumper: '%s'",errbuf);
 		}
 #else
 		THROW_EXCEPTION("Velodyne: Writing PCAP files requires building MRPT with libpcap support!");
@@ -823,7 +823,7 @@ bool CVelodyneScanner::internal_read_PCAP_packet(
 		// rewind the file
 		pcap_close( reinterpret_cast<pcap_t*>(m_pcap) );
 		if ((m_pcap = pcap_open_offline(m_pcap_input_file.c_str(), errbuf) ) == NULL) {
-			THROW_EXCEPTION_CUSTOM_MSG1("Error opening PCAP file: '%s'",errbuf);
+			THROW_EXCEPTION_FMT("Error opening PCAP file: '%s'",errbuf);
 		}
 		m_pcap_file_empty = true;              // maybe the file disappeared?
 	} // loop back and try again
@@ -842,7 +842,8 @@ bool CVelodyneScanner::setLidarReturnType(return_type_t ret_type)
 		<option>Last</option>
 		<option>Dual</option>
 		</select>
-		</form>	*/
+		</form>
+	*/
 	MRPT_START;
 	std::string strRet;
 	switch (ret_type)
@@ -867,7 +868,8 @@ bool CVelodyneScanner::setLidarRPM(int rpm)
 	Motor
 	&nbsp;RPM:&nbsp;<input type="text" name="rpm" size="5" style="text-align:right" /><input type="button" value="+" onclick="javascript:this.form.rpm.value++;this.form.submit()" /><input type="button" value="-" onclick="javascript:this.form.rpm.value--;this.form.submit()" />
 	&nbsp;<input type="submit" value="Set" />
-	</form>	*/
+	</form>
+	*/
 
 	MRPT_START;
 	const std::string cmd = mrpt::format("rpm=%i", rpm);

@@ -96,7 +96,7 @@ CActionCollectionPtr  CRawlog::getAsAction( size_t index ) const
 
 	if ( obj->GetRuntimeClass() == CLASS_ID(CActionCollection) )
 			return CActionCollectionPtr( obj );
-	else	THROW_EXCEPTION_CUSTOM_MSG1("Element at index %i is not a CActionCollection",(int)index);
+	else	THROW_EXCEPTION_FMT("Element at index %i is not a CActionCollection",(int)index);
 	MRPT_END
 }
 
@@ -111,7 +111,7 @@ CObservationPtr  CRawlog::getAsObservation( size_t index ) const
 
 	if ( obj->GetRuntimeClass()->derivedFrom( CLASS_ID(CObservation) ) )
 			return CObservationPtr( obj );
-	else	THROW_EXCEPTION_CUSTOM_MSG1("Element at index %i is not a CObservation",(int)index);
+	else	THROW_EXCEPTION_FMT("Element at index %i is not a CObservation",(int)index);
 	MRPT_END
 }
 
@@ -154,7 +154,7 @@ CSensoryFramePtr  CRawlog::getAsObservations( size_t index ) const
 
 	if ( obj->GetRuntimeClass()->derivedFrom( CLASS_ID(CSensoryFrame) ))
 			return CSensoryFramePtr( obj );
-	else	THROW_EXCEPTION_CUSTOM_MSG1("Element at index %i is not a CSensoryFrame",(int)index);
+	else	THROW_EXCEPTION_FMT("Element at index %i is not a CSensoryFrame",(int)index);
 	MRPT_END
 }
 

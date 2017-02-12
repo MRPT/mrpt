@@ -174,6 +174,18 @@ std::vector<const TRuntimeClassId*> utils::getAllRegisteredClasses()
 	return CClassRegistry::Instance().getListOfAllRegisteredClasses();
 }
 
+std::vector<const TRuntimeClassId*> utils::getAllRegisteredClassesChildrenOf(const TRuntimeClassId* parent_id)
+{
+	std::vector<const TRuntimeClassId*> res;
+	const auto lst = mrpt::utils::getAllRegisteredClasses();
+	for (const auto &c : lst) {
+		if (c->derivedFrom(parent_id) && c!=parent_id) {
+			res.push_back(c);
+		}
+	}
+	return res;
+}
+
 /*---------------------------------------------------------------
 					findRegisteredClass
  ---------------------------------------------------------------*/

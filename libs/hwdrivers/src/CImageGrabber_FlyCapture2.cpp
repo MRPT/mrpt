@@ -30,10 +30,10 @@
 	#include <opencv2/imgproc/imgproc_c.h>
 #endif
 
-#define CHECK_FC2_ERROR(_err) { if (_err != PGRERROR_OK) { THROW_EXCEPTION_CUSTOM_MSG1("FlyCapture2 error:\n%s",_err.GetDescription()) } }
+#define CHECK_FC2_ERROR(_err) { if (_err != PGRERROR_OK) { THROW_EXCEPTION_FMT("FlyCapture2 error:\n%s",_err.GetDescription()) } }
 #define CHECK_TRICLOPS_ERROR(_err)	\
 {  if( _err != TriclopsErrorOk ) \
-	{ THROW_EXCEPTION_CUSTOM_MSG1("Triclops Error:\n'%s'",triclopsErrorToString( _err )) }	\
+	{ THROW_EXCEPTION_FMT("Triclops Error:\n'%s'",triclopsErrorToString( _err )) }	\
 }
 #define FC2_CAM  reinterpret_cast<FlyCapture2::Camera*>(m_camera)
 #define FC2_CAM_INFO  reinterpret_cast<FlyCapture2::CameraInfo*>(m_camera_info)
@@ -112,7 +112,7 @@ T fc2_defstr2num(const std::string &str)
 		if (mrpt::system::strCmpI(fc2_vals[i].str,s.c_str()))
 			return fc2_vals[i].val;
 	}
-	THROW_EXCEPTION_CUSTOM_MSG1("Error: Unknown FlyCapture2 constant: %s",s.c_str())
+	THROW_EXCEPTION_FMT("Error: Unknown FlyCapture2 constant: %s",s.c_str())
 }
 
 
@@ -124,7 +124,7 @@ const char* fc2_defnum2str(const T &val)
 	 if (i < fc2_vals.size())
 		  return fc2_vals[i].str;
 	 else
-		  THROW_EXCEPTION_CUSTOM_MSG1("Error: Unknown FlyCapture2 enum: %i",static_cast<int>(val))
+		  THROW_EXCEPTION_FMT("Error: Unknown FlyCapture2 enum: %i",static_cast<int>(val))
 }
 #endif
 
@@ -550,7 +550,7 @@ void CImageGrabber_FlyCapture2::startSyncCapture( int numCameras, const CImageGr
 	for (int i=0;i<numCameras;i++)
 	{
 		const CImageGrabber_FlyCapture2 *obj = cameras_array[i];
-		if (!obj->m_camera) { THROW_EXCEPTION_CUSTOM_MSG1("Camera #%i in list is not opened. Call open() first.",i) }
+		if (!obj->m_camera) { THROW_EXCEPTION_FMT("Camera #%i in list is not opened. Call open() first.",i) }
 
 		FlyCapture2::Camera *cam = reinterpret_cast<FlyCapture2::Camera*>(obj->m_camera);
 		cam_ptrs[i] = cam;

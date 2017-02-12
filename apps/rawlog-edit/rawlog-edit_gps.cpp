@@ -399,7 +399,7 @@ DECLARE_OP_FUNCTION(op_export_gps_txt)
 
 				f_this = lstFiles[ obs->sensorLabel ] = os::fopen( fileName.c_str(), "wt");
 				if (!f_this)
-					THROW_EXCEPTION_CUSTOM_MSG1("Cannot open output file for write: %s", fileName.c_str() );
+					THROW_EXCEPTION_FMT("Cannot open output file for write: %s", fileName.c_str() );
 
 				// The first line is a description of the columns:
 				::fprintf(f_this,
@@ -617,7 +617,7 @@ DECLARE_OP_FUNCTION(op_export_gps_all)
 
 					f_this = lstFiles[sLabelMsg ] = os::fopen( fileName.c_str(), "wt");
 					if (!f_this)
-						THROW_EXCEPTION_CUSTOM_MSG1("Cannot open output file for write: %s", fileName.c_str() );
+						THROW_EXCEPTION_FMT("Cannot open output file for write: %s", fileName.c_str() );
 
 					// The first line is a description of the columns:
 					std::stringstream buf;
