@@ -88,14 +88,14 @@ namespace mrpt
 			void changeRobotShape( TRobotShape robotShape );
 
 			// See base class docs:
-			virtual size_t getPTG_count() const  MRPT_OVERRIDE { ASSERT_(!m_ptgmultilevel.empty());  return m_ptgmultilevel.begin()->PTGs.size(); }
+			virtual size_t getPTG_count() const  MRPT_OVERRIDE { ASSERT_(!m_ptgmultilevel.empty());  return m_ptgmultilevel.size(); }
 			virtual CParameterizedTrajectoryGenerator* getPTG(size_t i)  MRPT_OVERRIDE {
-				ASSERT_(!m_ptgmultilevel.empty() && !m_ptgmultilevel[0].PTGs.empty())
-				return m_ptgmultilevel[0].PTGs[i];  // Return for the 0'th level (ptgs are replicated at each level)
+				ASSERT_(!m_ptgmultilevel.empty() && !m_ptgmultilevel[i].PTGs.empty())
+				return m_ptgmultilevel[i].PTGs[0];  // Return for the 0'th level (ptgs are replicated at each level)
 			}
 			virtual const CParameterizedTrajectoryGenerator* getPTG(size_t i) const  MRPT_OVERRIDE {
-				ASSERT_(!m_ptgmultilevel.empty() && !m_ptgmultilevel[0].PTGs.empty())
-				return m_ptgmultilevel[0].PTGs[i];  // Return for the 0'th level (ptgs are replicated at each level)
+				ASSERT_(!m_ptgmultilevel.empty() && !m_ptgmultilevel[i].PTGs.empty())
+				return m_ptgmultilevel[i].PTGs[0];  // Return for the 0'th level (ptgs are replicated at each level)
 			}
 
 			virtual void loadConfigFile(const mrpt::utils::CConfigFileBase &c) MRPT_OVERRIDE; // See base class docs!
@@ -127,7 +127,7 @@ namespace mrpt
 			/** The robot 3D shape model */
 			TRobotShape		m_robotShape;
 
-			/** The set of PTG-transformations to be used: */
+			/** The set of PTG-transformations to be used: indices are [ptg_index][height_index] */
 			std::vector <TPTGmultilevel>	m_ptgmultilevel;
 
 
