@@ -33,22 +33,40 @@ namespace mrpt { namespace graphslam {
  * \sa mrpt::deciders::CLoopCloserERD
  * \ingroup mrpt_graphslam_grp
  */
-template<class GRAPH_t=typename mrpt::graphs::CNetworkOfPoses2DInf>
+template<class GRAPH_T=typename mrpt::graphs::CNetworkOfPoses2DInf>
 struct TUncertaintyPath : public mrpt::utils::CLoadableOptions {
 	/**\brief Handy typedefs */
 	/**\{*/
 	/**\brief type of graph constraints */
-	typedef typename GRAPH_t::constraint_t constraint_t;
+	typedef typename GRAPH_T::constraint_t constraint_t;
 	/**\brief type of underlying poses (2D/3D). */
 	typedef typename constraint_t::type_value pose_t;
+	typedef TUncertaintyPath<GRAPH_T> self_t;
 	/**\}*/
 
 	// methods
 	// ////////////////////////////
 	TUncertaintyPath();
-	TUncertaintyPath(mrpt::utils::TNodeID starting_node);
+	TUncertaintyPath(const mrpt::utils::TNodeID& starting_node);
+	TUncertaintyPath(
+			const mrpt::utils::TNodeID& starting_node,
+			const mrpt::utils::TNodeID& ending_node,
+			const constraint_t& edge);
 	~TUncertaintyPath();
 	void clear();
+	/**\return True if it is indeed empty.
+	 */
+	bool isEmpty() const;
+	/**\brief Assert that the current path is between the given nodeIDs.
+	 *
+	 * Call to this method practically checks if the give nodes match the source
+	 * and destination nodeIDs.
+	 *
+	 * \exception std::runtime_error in case the conditions don't hold 
+	 */
+	void assertIsBetweenNodeIDs(
+			const mrpt::utils::TNodeID& from,
+			const mrpt::utils::TNodeID& to) const;
 
 	// no need to load anything..
 	void loadFromConfigFile(
@@ -59,9 +77,9 @@ struct TUncertaintyPath : public mrpt::utils::CLoadableOptions {
 	void getAsString(std::string* str) const;
 
 	/**\brief Return the source node of this path */
-	mrpt::utils::TNodeID getSource() const;
+	const mrpt::utils::TNodeID& getSource() const;
 	/**\brief Return the Destination node of this path */
-	mrpt::utils::TNodeID getDestination() const;
+	const mrpt::utils::TNodeID& getDestination() const;
 	double getDeterminant();
 	/**\brief Test if the current path has a lower uncertainty than the other
 	 * path.
@@ -69,23 +87,25 @@ struct TUncertaintyPath : public mrpt::utils::CLoadableOptions {
 	 * \return True if the current path does have a lower uncertainty
 	 */
 	bool hasLowerUncertaintyThan(
-			const TUncertaintyPath<GRAPH_t>& other) const;
+			const self_t& other) const;
 	/**\brief add a new link in the current path.
 	 *
 	 * Add the node that the path traverses and the information matrix of
 	 * the extra link
 	 */
-	void addToPath(mrpt::utils::TNodeID node, typename GRAPH_t::constraint_t edge);
+	void addToPath(
+			const mrpt::utils::TNodeID& node,
+			const constraint_t& edge);
 	/**brief Test weather the constraints are of type CPosePDFGaussianInf.*/
 	bool isGaussianInfType() const;
 	/**brief Test weather the constraints are of type CPosePDFGaussian.  */
 	bool isGaussianType() const;
 
-	TUncertaintyPath<GRAPH_t>& operator+=(
-			const TUncertaintyPath<GRAPH_t>& other);
+	self_t& operator+=(
+			const self_t& other);
 	// results...
-	bool operator==(const TUncertaintyPath<GRAPH_t>& other);
-	bool operator!=(const TUncertaintyPath<GRAPH_t>& other);
+	bool operator==(const self_t& other) const;
+	bool operator!=(const self_t& other) const;
 
 	/**\brief Nodes that the Path comprises of.
 	 *
@@ -93,7 +113,7 @@ struct TUncertaintyPath : public mrpt::utils::CLoadableOptions {
 	 */
 	std::vector<mrpt::utils::TNodeID> nodes_traversed;
 	/**\brief Current path position + corresponding covariance */
-	typename GRAPH_t::constraint_t curr_pose_pdf;
+	constraint_t curr_pose_pdf;
 
 	/**Determine whether the determinant of the Path is up-to-date and
 	 * can be directly fetched or has to be computed again */

@@ -69,9 +69,10 @@ CICPCriteriaNRD<GRAPH_T>::getCurrentRobotPosEstimation() const {
 
 	if (!(this->m_prev_registered_nodeID == INVALID_NODEID)) {
 		pose_out = this->m_graph->nodes.at(this->m_prev_registered_nodeID)+
-		m_since_prev_node_PDF.getMeanVal();
+			m_since_prev_node_PDF.getMeanVal();
 	}
-	return this->addNodeAnnotsToPose(pose_out);
+
+	return pose_out;
 	MRPT_END;
 }
 
@@ -360,6 +361,7 @@ void CICPCriteriaNRD<GRAPH_T>::loadParams(const std::string& source_fname) {
 	MRPT_START;
 	parent_t::loadParams(source_fname);
 
+
 	using namespace mrpt::utils;
 
 	params.loadFromConfigFileName(source_fname,
@@ -375,7 +377,6 @@ void CICPCriteriaNRD<GRAPH_T>::loadParams(const std::string& source_fname) {
 			"class_verbosity",
 			1, false);
 	this->setMinLoggingLevel(VerbosityLevel(min_verbosity_level));
-
 	this->logFmt(LVL_DEBUG, "Successfully loaded parameters.");
 	MRPT_END;
 }
@@ -449,7 +450,7 @@ void CICPCriteriaNRD<GRAPH_T>::TParams::dumpToTextStream(
 	out.printf("Max Angle for registration    = %.2f deg\n",
 			RAD2DEG(registration_max_angle));
 
-	decider.range_scanner_t::params.dumpToTextStream(out);
+	decider.range_ops_t::params.dumpToTextStream(out);
 
 	MRPT_END;
 }
@@ -471,7 +472,7 @@ void CICPCriteriaNRD<GRAPH_T>::TParams::loadFromConfigFile(
 	registration_max_angle = DEG2RAD(registration_max_angle);
 
 	// load the icp parameters - from "ICP" section explicitly
-	decider.range_scanner_t::params.loadFromConfigFile(source, "ICP");
+	decider.range_ops_t::params.loadFromConfigFile(source, "ICP");
 
 	MRPT_END;
 }

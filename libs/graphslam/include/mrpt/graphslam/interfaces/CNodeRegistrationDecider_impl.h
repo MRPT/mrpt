@@ -50,21 +50,49 @@ bool CNodeRegistrationDecider<GRAPH_T>::registerNewNodeAtEnd(
 	using namespace std;
 
 	// register the initial node if it doesn't exist.
+	// Runs only once.
 	if (this->m_prev_registered_nodeID == INVALID_NODEID) { // root
 		MRPT_LOG_WARN_STREAM << "Registering root node..." << endl;
-		this->m_graph->nodes[this->m_graph->root] =
+		global_pose_t tmp_pose =
 			this->getCurrentRobotPosEstimation();
+		this->addNodeAnnotsToPose(&tmp_pose);
+
+		// make sure that this pair hasn't been registered yet.
+		std::pair<typename GRAPH_T::global_poses_t::const_iterator, bool> res =
+			this->m_graph->nodes.insert(make_pair(
+						this->m_graph->root, tmp_pose));
+		ASSERTMSG_(res.second, 
+				mrpt::format(
+					"nodeID \"%lu\" with pose \"%s\" seems to be already registered.",
+					this->m_graph->root, tmp_pose.asString().c_str()));
+
 		this->m_prev_registered_nodeID = this->m_graph->root;
 	}
 
+	// FROM nodeID
 	TNodeID from = this->m_prev_registered_nodeID;
-	TNodeID to = from + 1;
+	// TO nodeID
+	// In all cases this is going to be ONE AFTER the last registered nodeID
+	TNodeID to = this->m_graph->nodeCount();
 
-	
-	this->m_graph->nodes[to] = this->getCurrentRobotPosEstimation();
-	this->m_graph->insertEdgeAtEnd(from, to, constraint);
+	// add the new pose.
+	{
+		global_pose_t tmp_pose = 
+			this->getCurrentRobotPosEstimation();
+		this->addNodeAnnotsToPose(&tmp_pose);
 
-	m_prev_registered_nodeID++;
+		// make sure that this pair hasn't been registered yet.
+		std::pair<typename GRAPH_T::global_poses_t::const_iterator, bool> res =
+			this->m_graph->nodes.insert(make_pair(
+						to, tmp_pose));
+		ASSERTMSG_(res.second, 
+				mrpt::format(
+					"nodeID \"%lu\" with pose \"%s\" seems to be already registered.",
+					to, tmp_pose.asString().c_str()));
+		this->m_graph->insertEdgeAtEnd(from, to, constraint);
+	}
+
+	m_prev_registered_nodeID = to;
 
 	MRPT_LOG_DEBUG_STREAM << "Registered new node:" << endl <<
 		"\t" << from << " => " << to << endl <<
@@ -74,10 +102,8 @@ bool CNodeRegistrationDecider<GRAPH_T>::registerNewNodeAtEnd(
 	MRPT_END;
 }
 
-
 template<class GRAPH_T>
-typename GRAPH_T::global_pose_t
-CNodeRegistrationDecider<GRAPH_T>::addNodeAnnotsToPose(
-		const global_pose_t& pose) const {return pose;}
+void CNodeRegistrationDecider<GRAPH_T>::addNodeAnnotsToPose(
+		global_pose_t* pose) const { }
 
 #endif /* end of include guard: CNODEREGISTRATIONDECIDER_IMPL_H */

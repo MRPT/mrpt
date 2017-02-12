@@ -72,7 +72,7 @@ namespace mrpt { namespace graphslam { namespace deciders {
  */
 template<class GRAPH_T=typename mrpt::graphs::CNetworkOfPoses2DInf>
 class CFixedIntervalsNRD:
-	public mrpt::graphslam::deciders::CNodeRegistrationDecider<GRAPH_T>
+	public virtual mrpt::graphslam::deciders::CNodeRegistrationDecider<GRAPH_T>
 {
 	public:
 		// Public functions

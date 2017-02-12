@@ -128,7 +128,8 @@ class CRegistrationDeciderOrOptimizer :
 
 		/**\brief Initialize the COutputLogger, CTimeLogger instances given the name of the
 		 * decider/optimizer at hand */
-		virtual void initializeLoggers(std::string class_name);
+		virtual void initializeLoggers(const std::string& name);
+		virtual void setClassName(const std::string& name);
 		bool isMultiRobotSlamClass();
 
 		std::string getClassName() const { return m_class_name; };

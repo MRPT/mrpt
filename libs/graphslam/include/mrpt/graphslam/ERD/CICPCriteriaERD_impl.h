@@ -15,8 +15,8 @@ namespace mrpt { namespace graphslam { namespace deciders {
 // Ctors, Dtors
 // //////////////////////////////////
 
-template<class GRAPH_t>
-CICPCriteriaERD<GRAPH_t>::CICPCriteriaERD():
+template<class GRAPH_T>
+CICPCriteriaERD<GRAPH_T>::CICPCriteriaERD():
 	params(*this), // pass reference to self when initializing the parameters
 	m_search_disk_color(142, 142, 56),
 	m_laser_scans_color(0, 20, 255)
@@ -27,8 +27,8 @@ CICPCriteriaERD<GRAPH_t>::CICPCriteriaERD():
 
 	MRPT_END;
 }
-template<class GRAPH_t>
-void CICPCriteriaERD<GRAPH_t>::initCICPCriteriaERD() {
+template<class GRAPH_T>
+void CICPCriteriaERD<GRAPH_T>::initCICPCriteriaERD() {
 	MRPT_START;
 	using namespace mrpt::utils;
 	this->initializeLoggers("CICPCriteriaERD");
@@ -47,13 +47,13 @@ void CICPCriteriaERD<GRAPH_t>::initCICPCriteriaERD() {
 
 	MRPT_END;
 }
-template<class GRAPH_t>
-CICPCriteriaERD<GRAPH_t>::~CICPCriteriaERD() { }
+template<class GRAPH_T>
+CICPCriteriaERD<GRAPH_T>::~CICPCriteriaERD() { }
 
 // Methods implementations
 // //////////////////////////////////
 
-template<class GRAPH_t> bool CICPCriteriaERD<GRAPH_t>::updateState(
+template<class GRAPH_T> bool CICPCriteriaERD<GRAPH_T>::updateState(
 		mrpt::obs::CActionCollectionPtr action,
 		mrpt::obs::CSensoryFramePtr observations,
 		mrpt::obs::CObservationPtr observation ) {
@@ -99,7 +99,7 @@ template<class GRAPH_t> bool CICPCriteriaERD<GRAPH_t>::updateState(
 		// add the last laser_scan
 		if (registered_new_node) {
 			if (!m_last_laser_scan2D.null()) {
-				m_nodes_to_laser_scans2D[
+				this->m_nodes_to_laser_scans2D[
 					this->m_graph->nodeCount()-1] = m_last_laser_scan2D;
 				this->logFmt(LVL_DEBUG,
 						"Added laser scans of nodeID: %lu",
@@ -119,7 +119,7 @@ template<class GRAPH_t> bool CICPCriteriaERD<GRAPH_t>::updateState(
 		m_last_laser_scan2D =
 			observations->getObservationByClass<CObservation2DRangeScan>();
 		if (registered_new_node && m_last_laser_scan2D) {
-			m_nodes_to_laser_scans2D[
+			this->m_nodes_to_laser_scans2D[
 				this->m_graph->nodeCount()-1] = m_last_laser_scan2D;
 		}
 	}
@@ -153,8 +153,8 @@ template<class GRAPH_t> bool CICPCriteriaERD<GRAPH_t>::updateState(
 	MRPT_END;
 }
 
-template<class GRAPH_t>
-void CICPCriteriaERD<GRAPH_t>::checkRegistrationCondition2D(
+template<class GRAPH_T>
+void CICPCriteriaERD<GRAPH_T>::checkRegistrationCondition2D(
 		const std::set<mrpt::utils::TNodeID>& nodes_set) {
 	MRPT_START;
 	using namespace mrpt;
@@ -163,12 +163,11 @@ void CICPCriteriaERD<GRAPH_t>::checkRegistrationCondition2D(
 
 	mrpt::utils::TNodeID curr_nodeID = this->m_graph->nodeCount()-1;
 	CObservation2DRangeScanPtr curr_laser_scan;
-	std::map<mrpt::utils::TNodeID,
-		mrpt::obs::CObservation2DRangeScanPtr>::const_iterator search;
+	typename nodes_to_scans2D_t::const_iterator search;
 
 	// search for curr_laser_scan
-	search = m_nodes_to_laser_scans2D.find(curr_nodeID);
-	if (search != m_nodes_to_laser_scans2D.end()) {
+	search = this->m_nodes_to_laser_scans2D.find(curr_nodeID);
+	if (search != this->m_nodes_to_laser_scans2D.end()) {
 		curr_laser_scan = search->second;
 	}
 
@@ -185,8 +184,8 @@ void CICPCriteriaERD<GRAPH_t>::checkRegistrationCondition2D(
 			CObservation2DRangeScanPtr prev_laser_scan;
 
 			// search for prev_laser_scan
-			search = m_nodes_to_laser_scans2D.find(*node_it);
-			if (search != m_nodes_to_laser_scans2D.end()) {
+			search = this->m_nodes_to_laser_scans2D.find(*node_it);
+			if (search != this->m_nodes_to_laser_scans2D.end()) {
 				prev_laser_scan = search->second;
 
 				// make use of initial node position difference for the ICP edge
@@ -231,8 +230,8 @@ void CICPCriteriaERD<GRAPH_t>::checkRegistrationCondition2D(
 
 	MRPT_END;
 }
-template<class GRAPH_t>
-void CICPCriteriaERD<GRAPH_t>::checkRegistrationCondition3D(
+template<class GRAPH_T>
+void CICPCriteriaERD<GRAPH_T>::checkRegistrationCondition3D(
 		const std::set<mrpt::utils::TNodeID>& nodes_set) {
 	MRPT_START;
 	using namespace std;
@@ -293,20 +292,20 @@ void CICPCriteriaERD<GRAPH_t>::checkRegistrationCondition3D(
 	MRPT_END;
 }
 
-template<class GRAPH_t>
-void CICPCriteriaERD<GRAPH_t>::registerNewEdge(
+template<class GRAPH_T>
+void CICPCriteriaERD<GRAPH_T>::registerNewEdge(
 		const mrpt::utils::TNodeID& from,
 		const mrpt::utils::TNodeID& to,
 		const constraint_t& rel_edge ) {
 	using namespace mrpt::utils;
-	parent::registerNewEdge(from, to, rel_edge);
+	parent_t::registerNewEdge(from, to, rel_edge);
 
 	this->m_graph->insertEdge(from,  to, rel_edge);
 
 }
 
-template<class GRAPH_t>
-void CICPCriteriaERD<GRAPH_t>::getNearbyNodesOf(
+template<class GRAPH_T>
+void CICPCriteriaERD<GRAPH_T>::getNearbyNodesOf(
 		std::set<mrpt::utils::TNodeID> *nodes_set,
 		const mrpt::utils::TNodeID& cur_nodeID,
 		double distance ) {
@@ -332,11 +331,11 @@ void CICPCriteriaERD<GRAPH_t>::getNearbyNodesOf(
 	MRPT_END;
 }
 
-template<class GRAPH_t>
-void CICPCriteriaERD<GRAPH_t>::notifyOfWindowEvents(
+template<class GRAPH_T>
+void CICPCriteriaERD<GRAPH_T>::notifyOfWindowEvents(
 		const std::map<std::string, bool>& events_occurred) {
 	MRPT_START;
-	parent::notifyOfWindowEvents(events_occurred);
+	parent_t::notifyOfWindowEvents(events_occurred);
 
 	// I know the key exists - I put it there explicitly
 	if (events_occurred.find(params.keystroke_laser_scans)->second) {
@@ -346,8 +345,8 @@ void CICPCriteriaERD<GRAPH_t>::notifyOfWindowEvents(
 	MRPT_END;
 }
 
-template<class GRAPH_t>
-void CICPCriteriaERD<GRAPH_t>::toggleLaserScansVisualization() {
+template<class GRAPH_T>
+void CICPCriteriaERD<GRAPH_T>::toggleLaserScansVisualization() {
 	MRPT_START;
 	ASSERTMSG_(this->m_win, "No CDisplayWindow3D* was provided");
 	ASSERTMSG_(this->m_win_manager, "No CWindowManager* was provided");
@@ -373,8 +372,8 @@ void CICPCriteriaERD<GRAPH_t>::toggleLaserScansVisualization() {
 }
 
 
-template<class GRAPH_t>
-void CICPCriteriaERD<GRAPH_t>::getEdgesStats(
+template<class GRAPH_T>
+void CICPCriteriaERD<GRAPH_T>::getEdgesStats(
 		std::map<std::string, int>* edge_types_to_num) const {
 	MRPT_START;
 
@@ -383,13 +382,13 @@ void CICPCriteriaERD<GRAPH_t>::getEdgesStats(
 	MRPT_END;
 }
 
-template<class GRAPH_t>
-void CICPCriteriaERD<GRAPH_t>::initializeVisuals() {
+template<class GRAPH_T>
+void CICPCriteriaERD<GRAPH_T>::initializeVisuals() {
 	MRPT_START;
 	using namespace mrpt::opengl;
 	this->logFmt(mrpt::utils::LVL_DEBUG, "Initializing visuals");
 	this->m_time_logger.enter("CICPCriteriaERD::Visuals");
-	parent::initializeVisuals();
+	parent_t::initializeVisuals();
 
 	ASSERTMSG_(params.has_read_config,
 			"Configuration parameters aren't loaded yet");
@@ -449,15 +448,15 @@ void CICPCriteriaERD<GRAPH_t>::initializeVisuals() {
 	this->m_time_logger.leave("CICPCriteriaERD::Visuals");
 	MRPT_END;
 }
-template<class GRAPH_t>
-void CICPCriteriaERD<GRAPH_t>::updateVisuals() {
+template<class GRAPH_T>
+void CICPCriteriaERD<GRAPH_T>::updateVisuals() {
 	MRPT_START;
 	this->m_time_logger.enter("CICPCriteriaERD::Visuals");
 	using namespace mrpt::opengl;
 	using namespace mrpt::utils;
 	using namespace mrpt::math;
 	using namespace mrpt::poses;
-	parent::updateVisuals();
+	parent_t::updateVisuals();
 
 	// update ICP_max_distance Disk
 	if (this->m_win && params.ICP_max_distance > 0) {
@@ -490,7 +489,7 @@ void CICPCriteriaERD<GRAPH_t>::updateVisuals() {
 		}
 
 		// set the pose of the laser scan
-		typename GRAPH_t::global_poses_t::const_iterator search =
+		typename GRAPH_T::global_poses_t::const_iterator search =
 			this->m_graph->nodes.find(this->m_graph->nodeCount()-1);
 		if (search != this->m_graph->nodes.end()) {
 			laser_scan_viz->setPose(
@@ -513,8 +512,8 @@ void CICPCriteriaERD<GRAPH_t>::updateVisuals() {
 	MRPT_END;
 }
 
-template<class GRAPH_t>
-void CICPCriteriaERD<GRAPH_t>::dumpVisibilityErrorMsg(
+template<class GRAPH_T>
+void CICPCriteriaERD<GRAPH_T>::dumpVisibilityErrorMsg(
 		std::string viz_flag, int sleep_time /* = 500 milliseconds */) {
 	MRPT_START;
 	using namespace mrpt::utils;
@@ -531,11 +530,11 @@ void CICPCriteriaERD<GRAPH_t>::dumpVisibilityErrorMsg(
 }
 
 
-template<class GRAPH_t>
-void CICPCriteriaERD<GRAPH_t>::loadParams(const std::string& source_fname) {
+template<class GRAPH_T>
+void CICPCriteriaERD<GRAPH_T>::loadParams(const std::string& source_fname) {
 	MRPT_START;
 	using namespace mrpt::utils;
-	parent::loadParams(source_fname);
+	parent_t::loadParams(source_fname);
 
 	params.loadFromConfigFileName(source_fname,
 			"EdgeRegistrationDeciderParameters");
@@ -551,18 +550,17 @@ void CICPCriteriaERD<GRAPH_t>::loadParams(const std::string& source_fname) {
 
 	MRPT_END;
 }
-template<class GRAPH_t>
-void CICPCriteriaERD<GRAPH_t>::printParams() const {
+template<class GRAPH_T>
+void CICPCriteriaERD<GRAPH_T>::printParams() const {
 	MRPT_START;
-	parent::printParams();
-
+	parent_t::printParams();
 	params.dumpToConsole();
 
 	MRPT_END;
 }
 
-template<class GRAPH_t>
-void CICPCriteriaERD<GRAPH_t>::getDescriptiveReport(std::string* report_str) const {
+template<class GRAPH_T>
+void CICPCriteriaERD<GRAPH_T>::getDescriptiveReport(std::string* report_str) const {
 	MRPT_START;
 	using namespace std;
 
@@ -580,7 +578,7 @@ void CICPCriteriaERD<GRAPH_t>::getDescriptiveReport(std::string* report_str) con
 
 	// merge the individual reports
 	report_str->clear();
-	parent::getDescriptiveReport(report_str);
+	parent_t::getDescriptiveReport(report_str);
 
 	*report_str += class_props_ss.str();
 	*report_str += report_sep;
@@ -599,19 +597,19 @@ void CICPCriteriaERD<GRAPH_t>::getDescriptiveReport(std::string* report_str) con
 // TParameter
 // //////////////////////////////////
 
-template<class GRAPH_t>
-CICPCriteriaERD<GRAPH_t>::TParams::TParams(decider_t& d):
+template<class GRAPH_T>
+CICPCriteriaERD<GRAPH_T>::TParams::TParams(decider_t& d):
 	decider(d),
 	keystroke_laser_scans("l"),
 	has_read_config(false)
 { }
 
-template<class GRAPH_t>
-CICPCriteriaERD<GRAPH_t>::TParams::~TParams() {
+template<class GRAPH_T>
+CICPCriteriaERD<GRAPH_T>::TParams::~TParams() {
 }
 
-template<class GRAPH_t>
-void CICPCriteriaERD<GRAPH_t>::TParams::dumpToTextStream(
+template<class GRAPH_T>
+void CICPCriteriaERD<GRAPH_T>::TParams::dumpToTextStream(
 		mrpt::utils::CStream &out) const {
 	MRPT_START;
 
@@ -622,12 +620,10 @@ void CICPCriteriaERD<GRAPH_t>::TParams::dumpToTextStream(
 	out.printf("Visualize laser scans          = %d\n", visualize_laser_scans);
 	out.printf("3DScans Image Directory        = %s\n", scans_img_external_dir.c_str());
 
-	decider.range_scanner_t::params.dumpToTextStream(out);
-
 	MRPT_END;
 }
-template<class GRAPH_t>
-void CICPCriteriaERD<GRAPH_t>::TParams::loadFromConfigFile(
+template<class GRAPH_T>
+void CICPCriteriaERD<GRAPH_T>::TParams::loadFromConfigFile(
 		const mrpt::utils::CConfigFileBase& source,
 		const std::string& section) {
 	MRPT_START;
@@ -652,9 +648,6 @@ void CICPCriteriaERD<GRAPH_t>::TParams::loadFromConfigFile(
 			section,
 			"scan_images_external_directory",
 			"./", false);
-
-	// load the icp parameters - from "ICP" section explicitly
-	decider.range_scanner_t::params.loadFromConfigFile(source, "ICP");
 
 	has_read_config = true;
 

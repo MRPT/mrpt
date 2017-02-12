@@ -38,7 +38,7 @@ CFixedIntervalsNRD<GRAPH_T>::~CFixedIntervalsNRD() { }
 template<class GRAPH_T>
 typename GRAPH_T::global_pose_t
 CFixedIntervalsNRD<GRAPH_T>::getCurrentRobotPosEstimation() const {
-	return this->addNodeAnnotsToPose(m_curr_estimated_pose);
+	return m_curr_estimated_pose;
 }
 
 template<class GRAPH_T>
@@ -84,24 +84,11 @@ bool CFixedIntervalsNRD<GRAPH_T>::updateState(
 			incr_constraint.copyFrom(move_pdf);
 			m_since_prev_node_PDF += incr_constraint;
 		}
-
-		// TODO - remove these
-		//if (action->getBestMovementEstimation() ) {
-			//mrpt::obs::CActionRobotMovement2DPtr robot_move = action->getBestMovementEstimation();
-			//mrpt::poses::CPosePDFPtr increment = robot_move->poseChange;
-			//pose_t increment_pose = increment->getMeanVal();
-			//inf_mat_t increment_inf_mat;
-			//increment->getInformationMatrix(increment_inf_mat);
-
-			////update the relative PDF of the path since the LAST node was inserted
-			//constraint_t incr_constraint(increment_pose, increment_inf_mat);
-			//m_since_prev_node_PDF += incr_constraint;
-		//}
-
 	} // ELSE - FORMAT #1
 
 	if (this->m_prev_registered_nodeID != INVALID_NODEID) {
-		m_curr_estimated_pose = this->m_graph->nodes.at(this->m_prev_registered_nodeID);
+		m_curr_estimated_pose =
+			this->m_graph->nodes.at(this->m_prev_registered_nodeID);
 	}
 	m_curr_estimated_pose += m_since_prev_node_PDF.getMeanVal();
 
@@ -126,7 +113,7 @@ bool CFixedIntervalsNRD<GRAPH_T>::checkRegistrationCondition() {
 	MRPT_START;
 
 	// check that a node has already been registered - if not default to (0,0,0)
-	pose_t last_pose_inserted = this->m_prev_registered_nodeID != INVALID_NODEID? 
+	pose_t last_pose_inserted = this->m_prev_registered_nodeID != INVALID_NODEID?
 		this->m_graph->nodes.at(this->m_prev_registered_nodeID): pose_t();
 
 	// odometry criterion
@@ -157,7 +144,6 @@ bool CFixedIntervalsNRD<GRAPH_T>::checkRegistrationCondition(
 	return res;
 }
 
-// TODO - check this
 template<class GRAPH_T>
 bool CFixedIntervalsNRD<GRAPH_T>::checkRegistrationCondition(
 		mrpt::poses::CPose3D p1,

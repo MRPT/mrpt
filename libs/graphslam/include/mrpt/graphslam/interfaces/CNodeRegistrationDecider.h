@@ -15,7 +15,6 @@
 #include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/obs/CObservation.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
-#include <mrpt/graphs/CNetworkOfPoses.h>
 #include <mrpt/synch/CCriticalSection.h>
 #include <mrpt/utils/TParameters.h>
 #include <mrpt/utils/CTimeLogger.h>
@@ -37,7 +36,7 @@ namespace mrpt { namespace graphslam { namespace deciders {
  *
  * \ingroup mrpt_graphslam_grp
  */
-template<class GRAPH_T=typename mrpt::graphs::CNetworkOfPoses2DInf>
+template<class GRAPH_T>
 class CNodeRegistrationDecider :
 	public virtual mrpt::graphslam::CRegistrationDeciderOrOptimizer<GRAPH_T>
 {
@@ -107,7 +106,7 @@ class CNodeRegistrationDecider :
 		 * defined a new TNodeAnnotations struct and want to use this metadata in
 		 * the graph nodes.
 		 */
-		virtual global_pose_t addNodeAnnotsToPose(const global_pose_t& pose) const;
+		virtual void addNodeAnnotsToPose(global_pose_t* pose) const;
 		 /**\}*/
 
 		/**\brief Store the last registered NodeID.

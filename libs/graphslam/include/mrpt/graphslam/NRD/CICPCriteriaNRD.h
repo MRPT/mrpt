@@ -33,7 +33,7 @@
 #include <mrpt/system/threads.h>
 
 #include <mrpt/graphslam/interfaces/CNodeRegistrationDecider.h>
-#include <mrpt/graphslam/misc/CRangeScanRegistrationDecider.h>
+#include <mrpt/graphslam/misc/CRangeScanOps.h>
 #include <mrpt/graphslam/misc/TSlidingWindow.h>
 
 #include <string>
@@ -84,9 +84,9 @@ namespace mrpt { namespace graphslam { namespace deciders {
  *  + \a Default value : 10 // degrees
  *  + \a Required      : FALSE
  *
- * \note Since the decider inherits from the CRangeScanRegistrationDecider
+ * \note Since the decider inherits from the CRangeScanOps
  * class, it parses the configuration parameters of the latter as well from the
- * "ICP" section. Refer to the CRangeScanRegistrationDecider documentation for
+ * "ICP" section. Refer to the CRangeScanOps documentation for
  * its list of configuration
  * parameters
  *
@@ -99,8 +99,8 @@ namespace mrpt { namespace graphslam { namespace deciders {
  */
 template<class GRAPH_T>
 class CICPCriteriaNRD:
-	public mrpt::graphslam::deciders::CNodeRegistrationDecider<GRAPH_T>,
-	public mrpt::graphslam::deciders::CRangeScanRegistrationDecider<GRAPH_T>
+	public virtual mrpt::graphslam::deciders::CNodeRegistrationDecider<GRAPH_T>,
+	public mrpt::graphslam::deciders::CRangeScanOps<GRAPH_T>
 {
 	public:
 		// Public functions
@@ -119,8 +119,8 @@ class CICPCriteriaNRD:
 		/**\brief Typedef for accessing methods of the RangeScanRegistrationDecider
 		 * parent class.
 		 */
-		typedef mrpt::graphslam::deciders::CRangeScanRegistrationDecider<GRAPH_T>
-			range_scanner_t;
+		typedef mrpt::graphslam::deciders::CRangeScanOps<GRAPH_T>
+			range_ops_t;
 		typedef CICPCriteriaNRD<GRAPH_T> decider_t; /**< self type - Handy typedef */
 		/**\brief Node Registration Decider */
 		typedef mrpt::graphslam::deciders::CNodeRegistrationDecider<GRAPH_T> parent_t;

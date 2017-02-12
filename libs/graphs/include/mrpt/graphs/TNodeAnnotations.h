@@ -36,6 +36,13 @@ struct TNodeAnnotations {
 		return s;
 	}
 
+	virtual bool operator==(const TNodeAnnotations& other) const {
+		return true;
+	}
+	virtual bool operator!=(const TNodeAnnotations& other) const {
+		return (!(*this == other));
+	}
+
 	/**\brief Create and return a copy of the TNodeAnnotations object at hand.
 	 *
 	 * \warning Caller is responsible of afterwards deleting the object which is

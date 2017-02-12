@@ -177,7 +177,7 @@ void CGraphSlamEngine<GRAPH_T>::initClass() {
 	// max node number already in the graph
 	m_nodeID_max = INVALID_NODEID;
 
-	m_program_paused  = false;
+	m_is_paused  = false;
 	m_GT_poses_index  = 0;
 
 	// pass the necessary variables/objects to the deciders/optimizes
@@ -477,12 +477,14 @@ bool CGraphSlamEngine<GRAPH_T>::_execGraphSlamStep(
 		mrpt::obs::CObservationPtr& observation,
 		size_t& rawlog_entry) {
 	MRPT_START;
+this->logFmt(mrpt::utils::LVL_INFO, "TODO - Remove me. Kalimera %d", 54);
 
 	using namespace std;
 	using namespace mrpt;
 	using namespace mrpt::utils;
 	using namespace mrpt::poses;
 	using namespace mrpt::obs;
+	using namespace mrpt::obs::utils;
 	using namespace mrpt::opengl;
 	using namespace mrpt::system;
 
@@ -516,6 +518,7 @@ bool CGraphSlamEngine<GRAPH_T>::_execGraphSlamStep(
 		// TODO enable this and test this.
 		// return true;
 	}
+this->logFmt(mrpt::utils::LVL_INFO, "TODO - Remove me. Kalimera %d", 55);
 
 	// NRD
 	bool registered_new_node;
@@ -526,6 +529,15 @@ bool CGraphSlamEngine<GRAPH_T>::_execGraphSlamStep(
 				action, observations, observation);
 		m_time_logger.leave("node_registrar");
 	}
+this->logFmt(mrpt::utils::LVL_INFO, "TODO - Remove me. Kalimera %d", 56);
+
+	{ // get the 2D laser scan, if there
+		CObservation2DRangeScanPtr scan =
+			getObservation<CObservation2DRangeScan>(observations, observation);
+		if (scan.present()) { m_last_laser_scan2D = scan; }
+	}
+this->logFmt(mrpt::utils::LVL_INFO, "TODO - Remove me. Kalimera %d", 57);
+
 	if (registered_new_node) {
 
 		// At the first node registration, must have registered exactly 2 nodes
@@ -539,14 +551,21 @@ bool CGraphSlamEngine<GRAPH_T>::_execGraphSlamStep(
 				THROW_EXCEPTION(format("Illegal node registration"));
 			}
 			m_is_first_time_node_reg = false;
-		}
 
+			m_nodes_to_laser_scans2D.insert(
+					make_pair(m_nodeID_max, m_last_laser_scan2D));
+		}
+this->logFmt(mrpt::utils::LVL_INFO, "TODO - Remove me. Kalimera %d", 58);
+
+		// going to be incremented in monitorNodeRegistration anyway.
 		m_nodeID_max++;
+
 		// either way add just one odometry edge
 		m_edge_counter.addEdge("Odometry");
 	}
 	this->monitorNodeRegistration(registered_new_node,
 			"NodeRegistrationDecider");
+this->logFmt(mrpt::utils::LVL_INFO, "TODO - Remove me. Kalimera %d", 59);
 
 	// Edge registration procedure - Optimization
 	// run this so that the ERD, GSO can be updated with the latest
@@ -563,6 +582,7 @@ bool CGraphSlamEngine<GRAPH_T>::_execGraphSlamStep(
 	}
 	this->monitorNodeRegistration(registered_new_node,
 			"EdgeRegistrationDecider");
+this->logFmt(mrpt::utils::LVL_INFO, "TODO - Remove me. Kalimera %d", 60);
 
 	{ // GSO
 		mrpt::synch::CCriticalSectionLocker m_graph_lock(&m_graph_section);
@@ -575,7 +595,8 @@ bool CGraphSlamEngine<GRAPH_T>::_execGraphSlamStep(
 		m_time_logger.leave("optimizer");
 	}
 	this->monitorNodeRegistration(registered_new_node,
-			"EdgeRegistrationDecider");
+			"GraphSlamOptimizer");
+this->logFmt(mrpt::utils::LVL_INFO, "TODO - Remove me. Kalimera %d", 61);
 
 	// current timestamp - to be filled depending on the format
  	m_curr_timestamp = getTimeStamp(action, observations, observation);
@@ -592,12 +613,6 @@ bool CGraphSlamEngine<GRAPH_T>::_execGraphSlamStep(
 			m_curr_odometry_only_pose = obs_odometry->odometry;
 			m_odometry_poses.push_back(m_curr_odometry_only_pose);
 		}
-		// laser scans
-		else if (IS_CLASS(observation, CObservation2DRangeScan)) {
-			m_last_laser_scan2D =
-				static_cast<mrpt::obs::CObservation2DRangeScanPtr>(observation);
-
-		}
 		else if (IS_CLASS(observation, CObservation3DRangeScan)) {
 			m_last_laser_scan3D =
 				static_cast<mrpt::obs::CObservation3DRangeScanPtr>(observation);
@@ -607,18 +622,16 @@ bool CGraphSlamEngine<GRAPH_T>::_execGraphSlamStep(
 	else {
 		// action, observations should contain a pair of valid data
 		// (Format #1 rawlog file)
+		ASSERT_(observations.present());
+		ASSERT_(action.present());
 
 		CPose3D increment_pose_3d;
 		action->getFirstMovementEstimationMean(increment_pose_3d);
 		pose_t increment_pose(increment_pose_3d);
 		m_curr_odometry_only_pose += increment_pose;
 		m_odometry_poses.push_back(m_curr_odometry_only_pose);
-
-		// get the last laser scan
-		m_last_laser_scan2D =
-			observations->getObservationByClass<CObservation2DRangeScan>();
-
 	} // ELSE FORMAT #1 - Action/Observations
+this->logFmt(mrpt::utils::LVL_INFO, "TODO - Remove me. Kalimera %d", 62);
 
 	if (registered_new_node) {
 
@@ -671,6 +684,7 @@ bool CGraphSlamEngine<GRAPH_T>::_execGraphSlamStep(
 			}
 		}
 
+this->logFmt(mrpt::utils::LVL_INFO, "TODO - Remove me. Kalimera %d", 63);
 		// update the graph visualization
 
 		if (m_enable_curr_pos_viewport) {
@@ -723,6 +737,7 @@ bool CGraphSlamEngine<GRAPH_T>::_execGraphSlamStep(
 					/* unique_index = */ m_text_index_timestamp );
 		}
 	}
+this->logFmt(mrpt::utils::LVL_INFO, "TODO - Remove me. Kalimera %d", 64);
 
 	// Odometry visualization
 	if (m_visualize_odometry_poses && m_odometry_poses.size()) {
@@ -745,7 +760,6 @@ bool CGraphSlamEngine<GRAPH_T>::_execGraphSlamStep(
 			      this->updateGTVisualization(); // I have already taken care of the step
 			    }
 					m_GT_poses_index += m_GT_poses_step;
-					MRPT_LOG_DEBUG_STREAM( "rawlog_entry%2==0 " << std::endl);
 				}
 			}
 			else { // 1/loop
@@ -757,6 +771,7 @@ bool CGraphSlamEngine<GRAPH_T>::_execGraphSlamStep(
 			}
 		}
 	}
+this->logFmt(mrpt::utils::LVL_INFO, "TODO - Remove me. Kalimera %d", 65);
 
 	// 3DRangeScans viewports update
 	if (mrpt::system::strCmpI(m_GT_file_format, "rgbd_tum")) {
@@ -779,6 +794,7 @@ bool CGraphSlamEngine<GRAPH_T>::_execGraphSlamStep(
 			m_init_timestamp,
 			m_curr_timestamp);
 	m_time_logger.leave("proc_time");
+this->logFmt(mrpt::utils::LVL_INFO, "TODO - Remove me. Kalimera %d", 66);
 
 	return !m_request_to_exit;
 	MRPT_END;
@@ -790,15 +806,22 @@ void CGraphSlamEngine<GRAPH_T>::monitorNodeRegistration(
 		std::string class_name/*="Class"*/) {
 	MRPT_START;
 	using namespace mrpt::utils;
+	using namespace mrpt;
+this->logFmt(mrpt::utils::LVL_INFO, "TODO - Remove me. Kalimera %d", 67);
+
 	mrpt::synch::CCriticalSectionLocker m_graph_lock(&m_graph_section);
-	size_t listed_nodeCount = (m_nodeID_max == INVALID_NODEID? 0 : m_nodeID_max + 1);
+	size_t listed_nodeCount = (m_nodeID_max == INVALID_NODEID?
+			0 : m_nodeID_max + 1);
 
 	if (!registered) { // just check that it's the same.
-		ASSERT_(listed_nodeCount == m_graph.nodeCount())
+		ASSERTMSG_(listed_nodeCount == m_graph.nodeCount(),
+				format("listed_nodeCount [%lu] != nodeCount() [%lu]",
+					static_cast<unsigned long>(listed_nodeCount),
+					static_cast<unsigned long>(m_graph.nodeCount())));
 	}
 	else {
 		if (listed_nodeCount != m_graph.nodeCount()) {
-			MRPT_LOG_ERROR_STREAM << class_name << 
+			MRPT_LOG_ERROR_STREAM << class_name <<
 				" illegally added new nodes to the graph " <<
 				", wanted to see [" << listed_nodeCount << "] but saw ["
 				<< m_graph.nodeCount() << "]";
@@ -806,6 +829,7 @@ void CGraphSlamEngine<GRAPH_T>::monitorNodeRegistration(
 						class_name.c_str()));
 		}
 	}
+this->logFmt(mrpt::utils::LVL_INFO, "TODO - Remove me. Kalimera %d", 68);
 	MRPT_END;
 }
 
@@ -862,7 +886,7 @@ inline void CGraphSlamEngine<GRAPH_T>::computeMap() const {
 	mrpt::synch::CCriticalSectionLocker m_graph_lock(&m_graph_section);
 
 	if (!constraint_t::is_3D()) { // 2D Poses
-		MRPT_LOG_DEBUG_STREAM << "Computing the occupancy gridmap...";
+		//MRPT_LOG_DEBUG_STREAM << "Computing the occupancy gridmap...";
 		mrpt::maps::COccupancyGridMap2DPtr gridmap = m_gridmap_cached;
 		gridmap->clear();
 
@@ -1070,8 +1094,14 @@ void CGraphSlamEngine<GRAPH_T>::initResultsFile(
 
 	MRPT_LOG_INFO_STREAM( "Setting up file: " << fname);
 
-	// current time vars - handy in the rest of the function.
+	// current time vars
+#if defined(MRPT_OS_APPLE)
 	mrpt::system::TTimeStamp cur_date(getCurrentTime());
+	std::string time_spec = "UTC Time";
+#else
+	mrpt::system::TTimeStamp cur_date(getCurrentLocalTime());
+	std::string time_spec = "Time";
+#endif
 	string cur_date_str(dateTimeToString(cur_date));
 	string cur_date_validstr(fileNameStripInvalidChars(cur_date_str));
 
@@ -1085,7 +1115,9 @@ void CGraphSlamEngine<GRAPH_T>::initResultsFile(
 	m_out_streams[fname]->printf("# Mobile Robot Programming Toolkit (MRPT)\n");
 	m_out_streams[fname]->printf("# http::/www.mrpt.org\n");
 	m_out_streams[fname]->printf("# GraphSlamEngine Application\n");
-	m_out_streams[fname]->printf("# Automatically generated file - %s\n", cur_date_str.c_str());
+	m_out_streams[fname]->printf("# Automatically generated file - %s: %s\n", 
+			time_spec.c_str(),
+			cur_date_str.c_str());
 	m_out_streams[fname]->printf("%s\n\n", sep.c_str());
 
 	MRPT_END;
@@ -1491,27 +1523,13 @@ void CGraphSlamEngine<GRAPH_T>::queryObserverForEvents() {
 	}
 	// pause/resume program execution
 	if (events_occurred[m_keystroke_pause_exec]) {
-		m_program_paused = !m_program_paused;
-
-		// message to the user
-		if (m_program_paused) {
-			MRPT_LOG_INFO_STREAM("Program is paused. "
-				<< "Press \"p\" or \"P\" in the dipslay window to resume");
-		}
-		else {
-			MRPT_LOG_INFO_STREAM( "Program resumed.");
-		}
-
-		while (m_program_paused) {
-			mrpt::system::sleep(1000);
-			this->queryObserverForEvents();
-		}
+		this->togglePause();
 	}
 
 	// notify the deciders/optimizer of any events they may be interested in
-	MRPT_LOG_DEBUG_STREAM( "Notifying deciders/optimizer for events");
-	m_node_registrar->notifyOfWindowEvents(events_occurred);
-	m_edge_registrar->notifyOfWindowEvents(events_occurred);
+	//MRPT_LOG_DEBUG_STREAM << "Notifying deciders/optimizer for events";
+	m_node_reg->notifyOfWindowEvents(events_occurred);
+	m_edge_reg->notifyOfWindowEvents(events_occurred);
 	m_optimizer->notifyOfWindowEvents(events_occurred);
 
 	MRPT_END;
@@ -1689,7 +1707,8 @@ mrpt::system::TTimeStamp CGraphSlamEngine<GRAPH_T>::getTimeStamp(
 template<class GRAPH_T>
 void CGraphSlamEngine<GRAPH_T>::updateMapVisualization(
 		const GRAPH_T& gr,
-		const std::map<mrpt::utils::TNodeID,
+		const std::map<
+			mrpt::utils::TNodeID,
 			mrpt::obs::CObservation2DRangeScanPtr>& nodes_to_laser_scans2D,
 		bool full_update /*= false */) {
 	MRPT_START;
@@ -1709,7 +1728,7 @@ void CGraphSlamEngine<GRAPH_T>::updateMapVisualization(
 		if (full_update) {
 			// for all the nodes get the node position and the corresponding laser scan
 			// if they were recorded and visualize them
-			m_graph.getAllNodes(nodes_set);
+			gr.getAllNodes(nodes_set);
 			MRPT_LOG_DEBUG_STREAM << "Executing full update of the map visuals";
 
 		} // IF FULL UPDATE
@@ -1723,7 +1742,7 @@ void CGraphSlamEngine<GRAPH_T>::updateMapVisualization(
 			node_it = nodes_set.begin();
 			node_it != nodes_set.end(); ++node_it) {
 
-		pose_t scan_pose = m_graph.nodes.find(*node_it)->second;
+		pose_t scan_pose = gr.nodes.find(*node_it)->second;
 
 		// name of gui object
 		stringstream scan_name("");
@@ -2217,6 +2236,12 @@ void CGraphSlamEngine<GRAPH_T>::save3DScene(
 	using namespace mrpt::utils;
 
 	COpenGLScenePtr scene = m_win->get3DSceneAndLock();
+
+	if (!scene.present()) {
+		MRPT_LOG_ERROR_STREAM
+			<< "Could not fetch 3D Scene. Display window must already be closed.";
+		return;
+	}
 
 	// TODO - what else is there to be excluded from the scene?
 	// remove the CPlanarLaserScan if it exists

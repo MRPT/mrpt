@@ -39,8 +39,7 @@
 #include <map>
 #include <string>
 
-#include <mrpt/graphslam/interfaces/CEdgeRegistrationDecider.h>
-#include <mrpt/graphslam/misc/CRangeScanRegistrationDecider.h>
+#include <mrpt/graphslam/interfaces/CRangeScanEdgeRegistrationDecider.h>
 
 
 namespace mrpt { namespace graphslam { namespace deciders {
@@ -106,32 +105,23 @@ namespace mrpt { namespace graphslam { namespace deciders {
  *   + \a Description   : Only applicable in datasets with 3DRangeScans that
  *   are externally stored (not stored in the given .rawlog file).
  *
- * \note Since the decider inherits from the CRangeScanRegistrationDecider
- * class, it parses the configuration parameters of the latter as well from the
- * "ICP" section. Refer to the CRangeScanRegistrationDecider documentation for
- * its list of configuration parameters
- *
  * \ingroup mrpt_graphslam_grp
  */
-template<class GRAPH_t=typename mrpt::graphs::CNetworkOfPoses2DInf >
+template<class GRAPH_T=typename mrpt::graphs::CNetworkOfPoses2DInf >
 class CICPCriteriaERD :
-	public mrpt::graphslam::deciders::CEdgeRegistrationDecider<GRAPH_t>,
-	public mrpt::graphslam::deciders::CRangeScanRegistrationDecider<GRAPH_t>
+	public mrpt::graphslam::deciders::CRangeScanEdgeRegistrationDecider<GRAPH_T>
 {
 	public:
 		/**\brief Handy typedefs */
 		/**\{*/
 		/**\brief type of graph constraints */
-		typedef typename GRAPH_t::constraint_t constraint_t;
+		typedef typename GRAPH_T::constraint_t constraint_t;
 		/**\brief type of underlying poses (2D/3D). */
-		typedef typename GRAPH_t::constraint_t::type_value pose_t;
-		/**\brief Typedef for accessing methods of the
-		 * RangeScanRegistrationDecider_t parent class. */
-		typedef mrpt::graphslam::deciders::CRangeScanRegistrationDecider<GRAPH_t>
-			range_scanner_t;
-		typedef CICPCriteriaERD<GRAPH_t> decider_t; /**< self type - Handy typedef */
-		/**\brief Edge Registration Decider */
-		typedef mrpt::graphslam::deciders::CEdgeRegistrationDecider<GRAPH_t> parent;
+		typedef typename GRAPH_T::constraint_t::type_value pose_t;
+		typedef CRangeScanEdgeRegistrationDecider<GRAPH_T> parent_t;
+		typedef typename parent_t::range_ops_t range_ops_t;
+		typedef CICPCriteriaERD<GRAPH_T> decider_t; /**< self type - Handy typedef */
+		typedef typename parent_t::nodes_to_scans2D_t nodes_to_scans2D_t;
 		/**\}*/
 
 		// Public methods
@@ -166,7 +156,6 @@ class CICPCriteriaERD :
 				void 	dumpToTextStream(mrpt::utils::CStream &out) const;
 
 				decider_t& decider;
-				mrpt::slam::CICP icp;
 				// maximum distance for checking other nodes for ICP constraints
 				double ICP_max_distance;
 				// threshold for accepting an ICP constraint in the graph
