@@ -80,7 +80,7 @@ namespace mrpt
 
 		protected:
 			CMultiObjectiveMotionOptimizerBase(TParamsBase & params);
-			struct TCompiledFormulaWrapper
+			struct NAV_IMPEXP TCompiledFormulaWrapper
 			{
 				TCompiledFormulaWrapper();
 				PIMPL_DECLARE_TYPE(exprtk::expression<double>, compiled_formula);
