@@ -53,7 +53,6 @@ class CEdgeRegistrationDecider :
 		typedef typename GRAPH_T::constraint_t::type_value pose_t;
 		/**\}*/
 
-
 		/**\brief Default class constructor.*/
     CEdgeRegistrationDecider();
 		/**\brief Default class destructor.*/

@@ -12,7 +12,7 @@
 #include <mrpt/config.h>
 #if MRPT_ENABLE_PRECOMPILED_HDRS
 
-
+#include <mrpt/graphs.h>
 
 #endif
-
+>>>>>>> mrpt-graphslam: Add to the Edge Registration inheritance structure

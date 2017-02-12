@@ -47,7 +47,8 @@ CGraphSlamHandler<GRAPH_T>::~CGraphSlamHandler() {
 
 	// keep the window open until user closes it.
 	if (m_win) {
-		m_logger->logFmt(LVL_WARN, "Application will exit when the display window is closed.");
+		m_logger->logFmt(LVL_WARN,
+				"Application will exit when the display window is closed.");
 		bool break_exec = false;
 		while (m_win->isOpen() && break_exec == false) {
 			break_exec = !this->queryObserverForEvents();
@@ -363,6 +364,8 @@ void CGraphSlamHandler<GRAPH_T>::saveResults(
 	if (m_save_map) {
 		this->saveMap(output_dir_fname + "/" + m_save_map_fname);
 	}
+
+	m_logger->logFmt(LVL_INFO, "Generated report.");
 }
 
 template<class GRAPH_T>

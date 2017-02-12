@@ -7,43 +7,42 @@
 	 | Released under BSD License. See details in http://www.mrpt.org/License    |
 	 +---------------------------------------------------------------------------+ */
 
-#ifndef TGRAPHSLAMHYPOTHESIS_H
-#define TGRAPHSLAMHYPOTHESIS_H
+#ifndef THYPOTHESIS_H
+#define THYPOTHESIS_H
 
-#include <mrpt/graphs/CNetworkOfPoses.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/utils/types_simple.h>
-#include <mrpt/graphslam/misc/SensorSourceOfMeasurements.h>
 
 #include <iostream>
 #include <string>
 #include <sstream>
 
-namespace mrpt { namespace graphslam { namespace detail {
+namespace mrpt { namespace graphs{ namespace detail {
 
-/**\brief A graphSLAM Hypothesis.
+/**\brief An edge hypothesis between two nodeIDs.
  *
- * Struct practically provides a wrapper around the GRAPH_t::constraint_t instance.
- * Represents a hypothesis for a potential, perhaps loop closing, edge.
+ * Struct practically provides a wrapper around the GRAPH_T::constraint_t
+ * instance. Represents a hypothesis for a potential, perhaps loop closing,
+ * edge (i.e. a graph constraint/edge), between two nodeIDs of the graph.
  *
  * \sa mrpt::deciders::CLoopCloserERD
- * \ingroup mrpt_graphslam_grp
- * (i.e. a graph constraint/edge)
+ * \ingroup mrpt_graphs_grp
  */
-template<class GRAPH_t=typename mrpt::graphs::CNetworkOfPoses2DInf>
-struct TGraphSlamHypothesis {
+template<class GRAPH_T>
+struct THypothesis {
 	/**\brief Handy typedefs */
 	/**\{*/
 	/**\brief type of graph constraints */
-	typedef typename GRAPH_t::constraint_t constraint_t;
+	typedef typename GRAPH_T::constraint_t constraint_t;
 	/**\brief type of underlying poses (2D/3D). */
 	typedef typename constraint_t::type_value pose_t;
+	typedef THypothesis<GRAPH_T> self_t;
 	/**\}*/
 	/**\brief Constructor */
-	TGraphSlamHypothesis();
+	THypothesis();
 	/**\brief Destructor */
-	~TGraphSlamHypothesis();
+	~THypothesis();
 	/**\brief Return a string representation of the object at hand
 	 *
 	 */
@@ -96,15 +95,11 @@ struct TGraphSlamHypothesis {
 	 * \sa edge, mrpt::slam::CICP::goodness
 	 */
 	double goodness;
-	// TODO
-	/**\brief Indicates the sensor used to register the current edge */
-	mrpt::graphslam::detail::SensorSourceOfMeasurements meas_source;
-
 	/**\brief Compare the start and end nodes of two hypothesis
 	 *
 	 * \return True if ends match.
 	 */
-	bool sameEndsWith(const TGraphSlamHypothesis<GRAPH_t>& other) const;
+	bool sameEndsWith(const self_t& other) const;
 	/**\brief Check if the start, end nodes are the ones given
 	 *
 	 * \return True if ends are the given ones
@@ -112,6 +107,15 @@ struct TGraphSlamHypothesis {
 	bool hasEnds(
 			const mrpt::utils::TNodeID from,
 			const mrpt::utils::TNodeID to) const;
+
+	/**\brief Handy operator for using THypothesis in std::set
+	 */
+	bool operator<(const self_t& other) const;
+
+	inline friend std::ostream& operator<<(std::ostream& o, const THypothesis<GRAPH_T>& h) {
+		o << h.getAsString(/*oneline=*/ true) << std::endl;
+		return o;
+	}
 
 	private:
 	/**\brief Edge connecting the two nodes */
@@ -121,6 +125,6 @@ struct TGraphSlamHypothesis {
 
 } } } // end of namespaces
 
-#include "TGraphSlamHypothesis_impl.h"
+#include "THypothesis_impl.h"
 
-#endif /* end of include guard: TGRAPHSLAMHYPOTHESIS_H */
+#endif /* end of include guard: THYPOTHESIS_H */

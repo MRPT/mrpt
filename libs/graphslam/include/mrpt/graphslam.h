@@ -24,6 +24,7 @@ MRPT_WARNING("Including <mrpt/graphslam.h> makes compilation much slower, consid
 #include "graphslam/interfaces/CRegistrationDeciderOrOptimizer.h"
 #include "graphslam/interfaces/CNodeRegistrationDecider.h"
 #include "graphslam/interfaces/CEdgeRegistrationDecider.h"
+#include "graphslam/interfaces/CRangeScanEdgeRegistrationDecider.h"
 #include "graphslam/interfaces/CGraphSlamOptimizer.h"
 
 // Node Registration Deciders
@@ -41,13 +42,12 @@ MRPT_WARNING("Including <mrpt/graphslam.h> makes compilation much slower, consid
 #include "graphslam/GSO/CLevMarqGSO.h"
 
 // Graph SLAM Engine - Relevant headers
-#include "graphslam/misc/CRangeScanRegistrationDecider.h"
+#include "graphslam/misc/CRangeScanOps.h"
 #include "graphslam/misc/CEdgeCounter.h"
 #include "graphslam/misc/CWindowManager.h"
 #include "graphslam/misc/CWindowObserver.h"
 #include "graphslam/misc/TSlidingWindow.h"
 #include "graphslam/misc/TUncertaintyPath.h"
-#include "graphslam/misc/CHypothesisNotFoundException.h"
 
 // App-Related headers
 #include "graphslam/apps_related/TUserOptionsChecker.h"

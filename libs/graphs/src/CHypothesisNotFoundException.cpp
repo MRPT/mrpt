@@ -7,48 +7,40 @@
 	 | Released under BSD License. See details in http://www.mrpt.org/License    |
 	 +---------------------------------------------------------------------------+ */
 
-#include <mrpt/graphslam/misc/CHypothesisNotFoundException.h>
+#include <mrpt/graphs/CHypothesisNotFoundException.h>
 
 std::ostringstream HypothesisNotFoundException::m_cnvt;
 
 HypothesisNotFoundException::HypothesisNotFoundException(
   	mrpt::utils::TNodeID from,
   	mrpt::utils::TNodeID to):
-  runtime_error("Hypothesis between set of nodes was not found") {
+  runtime_error("Hypothesis between set of nodes was not found")
+{
+  using namespace mrpt;
 
-		this->clear();
-		m_to = to;
-		m_from = from;
+	this->clear();
+	m_to = to;
+	m_from = from;
 
-		// TODO - Do not allocate it on the stack
-		// http://stackoverflow.com/a/23742555/2843583
-		std::stringstream ss;
-    ss << std::runtime_error::what() << ":\t" <<
-    	"From = " << m_from << " | " <<
-    	"To = " << m_to << std::endl;
-		m_msg = ss.str();
-		std::cout << "m_msg: " << m_msg << std::endl;
-  }
+	// TODO - Do not allocate it on the stack
+	// http://stackoverflow.com/a/23742555/2843583
+  m_msg = std::runtime_error::what();
+  m_msg += "- ";
+  m_msg += format("[from] %lu ==> ", static_cast<unsigned long>(m_from)).c_str();
+  m_msg += format("[to] %lu", static_cast<unsigned long>(m_to)).c_str();
+}
+
 HypothesisNotFoundException::HypothesisNotFoundException(size_t id):
-  runtime_error("Hypothesis with the given ID was not found") {
+  runtime_error("Hypothesis with the given ID was not found")
+{
+  using namespace mrpt;
 
-  	this->clear();
-  	m_id = id;
+  this->clear();
+  m_id = id;
 
-		std::stringstream ss;
-    ss << std::runtime_error::what() << ":\t" <<
-    	"ID = " << m_id << std::endl;
-
-		// TODO - When a HypohtesisNotFoundException is thrown, and what()
-		// method is called from logFmt in grahpslam-engine catch statement, an
-		// memory error is reported
-		// `double free or corruption (!prev).`
-		// what() output is not printed if I use the logger.logFmt method  but
-		// IS printed if I used a printf call.
-		MRPT_TODO("Double free or corruption error if HypothesisNotFoundException is raised.");
-		std::cout << ss.str() << std::endl;
-		m_msg = ss.str();
-  }
+	m_msg = std::runtime_error::what();
+	m_msg += format("- ID:%lu", static_cast<unsigned long>(id)).c_str();
+}
 
 void HypothesisNotFoundException::clear() {
   m_to = INVALID_NODEID;
@@ -56,6 +48,7 @@ void HypothesisNotFoundException::clear() {
   m_id = SIZE_MAX;
   m_msg.clear();
 }
+
 HypothesisNotFoundException::~HypothesisNotFoundException() throw() {}
 
 std::string HypothesisNotFoundException::getErrorMsg() const throw() {

@@ -42,15 +42,18 @@ void CWindowObserver::returnEventsStruct(
 
 	// reset the code flags
 	if (reset_keypresses) {
-		for ( std::map<std::string, bool>::iterator map_it = 
-				m_key_codes_to_pressed.begin(); map_it != m_key_codes_to_pressed.end();
+		for (std::map<std::string, bool>::iterator
+				map_it = m_key_codes_to_pressed.begin();
+				map_it != m_key_codes_to_pressed.end();
 				++map_it ) {
 			map_it->second = false;
 		}
 }
 }
 
-void CWindowObserver::registerKeystroke(const std::string key_str, const std::string key_desc) {
+void CWindowObserver::registerKeystroke(
+		const std::string key_str,
+		const std::string key_desc) {
 	help_msg += std::string("\n") + " - " + 
 		key_str + "/" + mrpt::system::upperCase(key_str) +
 		": " + key_desc;
@@ -60,17 +63,20 @@ void CWindowObserver::registerKeystroke(const std::string key_str, const std::st
 
 void CWindowObserver::OnEvent(const mrpt::utils::mrptEvent &e) {
 	if (e.isOfType<mrpt::utils::mrptEventOnDestroy>()) {
-		const mrpt::utils::mrptEventOnDestroy &ev = static_cast<const mrpt::utils::mrptEventOnDestroy &>(e);
+		const mrpt::utils::mrptEventOnDestroy &ev =
+			static_cast<const mrpt::utils::mrptEventOnDestroy &>(e);
 		MRPT_UNUSED_PARAM(ev);
 		std::cout  << "Event received: mrptEventOnDestroy" << std::endl;
 	}
 	else if (e.isOfType<mrpt::gui::mrptEventWindowResize>()) {
-		const mrpt::gui::mrptEventWindowResize &ev = static_cast<const mrpt::gui::mrptEventWindowResize &>(e);
+		const mrpt::gui::mrptEventWindowResize &ev =
+			static_cast<const mrpt::gui::mrptEventWindowResize &>(e);
 		std::cout  << "Resize event received from: " << ev.source_object
 			<< ", new size: " << ev.new_width << " x " << ev.new_height << std::endl;
 	}
 	else if (e.isOfType<mrpt::gui::mrptEventWindowChar>()) {
-		const mrpt::gui::mrptEventWindowChar &ev = static_cast<const mrpt::gui::mrptEventWindowChar &>(e);
+		const mrpt::gui::mrptEventWindowChar &ev =
+			static_cast<const mrpt::gui::mrptEventWindowChar &>(e);
 		std::cout  << "Char event received from: " << ev.source_object
 			<< ". Char code: " <<  ev.char_code << " modif: " << ev.key_modifiers << std::endl;;
 

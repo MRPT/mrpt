@@ -23,6 +23,7 @@
 #include <mrpt/obs/CActionCollection.h>
 #include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/obs/CRawlog.h>
+#include <mrpt/obs/obs_utils.h>
 #include <mrpt/opengl/COpenGLScene.h>
 #include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/opengl/CSetOfLines.h>
@@ -37,12 +38,11 @@
 #include <mrpt/system/os.h>
 #include <mrpt/system/threads.h>
 
-#include <mrpt/graphslam/interfaces/CEdgeRegistrationDecider.h>
+#include <mrpt/graphslam/interfaces/CRangeScanEdgeRegistrationDecider.h>
 #include <mrpt/graphslam/misc/TSlidingWindow.h>
-#include <mrpt/graphslam/misc/CRangeScanRegistrationDecider.h>
-#include <mrpt/graphslam/misc/TGraphSlamHypothesis.h>
 #include <mrpt/graphslam/misc/TUncertaintyPath.h>
-#include <mrpt/graphslam/misc/CHypothesisNotFoundException.h>
+#include <mrpt/graphs/THypothesis.h>
+#include <mrpt/graphs/CHypothesisNotFoundException.h>
 
 #include <Eigen/Dense>
 
@@ -219,12 +219,7 @@ transformation is the identity matrix (i.e., T = [0 0 0])"
  *   + \a Section       : VisualizationParameters
  *   + \a Default value : TRUE
  *   + \a Required      : FALSE
- *
- * \note Since the decider inherits from the CRangeScanRegistrationDecider
- * class, it parses the configuration parameters of the latter as well from the
- * "ICP" section. Refer to the CRangeScanRegistrationDecider documentation for
- * its list of configuration parameters
- *
+  *
  * \note Class contains an instance of the
  * mrpt::slam::CIncrementalMapPartitioner class and it parses the configuration
  * parameters of the latter from the "EdgeRegistrationDeciderParameters"
@@ -236,13 +231,11 @@ transformation is the identity matrix (i.e., T = [0 0 0])"
  */
 template<class GRAPH_T=typename mrpt::graphs::CNetworkOfPoses2DInf >
 class CLoopCloserERD:
-	public mrpt::graphslam::deciders::CRangeScanRegistrationDecider<GRAPH_T>,
-	public mrpt::graphslam::deciders::CEdgeRegistrationDecider<GRAPH_T>
+	public virtual mrpt::graphslam::deciders::CRangeScanEdgeRegistrationDecider<GRAPH_T>
 {
 	public:
 		/**\brief Edge Registration Decider */
-		typedef mrpt::graphslam::deciders::CEdgeRegistrationDecider<GRAPH_T>
-			parent_t;
+		typedef CRangeScanEdgeRegistrationDecider<GRAPH_T> parent_t;
 
 		/**\brief Handy typedefs */
 		/**\{*/
@@ -251,23 +244,19 @@ class CLoopCloserERD:
 		/**\brief type of underlying poses (2D/3D). */
 		typedef typename GRAPH_T::constraint_t::type_value pose_t;
 		typedef typename GRAPH_T::global_pose_t global_pose_t;
-		/**\brief Typedef for accessing methods of the
-		 * RangeScanRegistrationDecider_t parent class.
-		 */
-		typedef mrpt::graphslam::deciders::CRangeScanRegistrationDecider<GRAPH_T>
-			range_scanner_t;
 		typedef CLoopCloserERD<GRAPH_T> decider_t; /**< self type - Handy typedef */
+		typedef typename parent_t::range_ops_t range_ops_t;
+		typedef typename parent_t::nodes_to_scans2D_t nodes_to_scans2D_t;
 		/**\brief Typedef for referring to a list of partitions */
 		typedef std::vector<mrpt::vector_uint> partitions_t;
-		typedef std::map<mrpt::utils::TNodeID,
-						mrpt::obs::CObservation2DRangeScanPtr> nodes_to_scans2D_t;
 		typedef typename GRAPH_T::edges_map_t::const_iterator edges_citerator;
 		typedef typename GRAPH_T::edges_map_t::iterator edges_iterator;
-		typedef typename mrpt::graphslam::detail::TGraphSlamHypothesis<GRAPH_T> hypot_t;
+		typedef typename mrpt::graphs::detail::THypothesis<GRAPH_T> hypot_t;
 		typedef std::vector<hypot_t> hypots_t;
 		typedef std::vector<hypot_t*> hypotsp_t;
 		typedef std::map< std::pair<hypot_t*, hypot_t*>, double > hypotsp_to_consist_t;
 		typedef mrpt::graphslam::TUncertaintyPath<GRAPH_T> path_t;
+		typedef std::vector<path_t> paths_t;
 		/**\}*/
 
 		// Public methods
@@ -294,6 +283,16 @@ class CLoopCloserERD:
 		void getDescriptiveReport(std::string* report_str) const;
 		void getCurrPartitions(partitions_t* partitions_out) const;
 		const partitions_t& getCurrPartitions() const;
+		/**\brief Return the minimum number of nodes that should exist in the graph
+		 * prior to running Dijkstra
+		 */
+		size_t getDijkstraExecutionThresh() const {
+			return m_dijkstra_node_count_thresh;
+		}
+		void setDijkstraExecutionThresh(size_t new_thresh) {
+			m_dijkstra_node_count_thresh = new_thresh;
+		}
+
 
 		/**\name Helper structs */
 		/**\{ */
@@ -308,6 +307,24 @@ class CLoopCloserERD:
 				this->scan = other.scan;
 				return *this;
 			}
+
+			void getAsString(std::string* str) const {
+				ASSERT_(str);
+				str->clear();
+				*str += mrpt::format("Pose: %s|\t", this->pose.asString().c_str());
+				if (this->scan.present()) {
+					*str += mrpt::format("Scan #%lu", this->scan->getScanSize());
+				}
+				else {
+					*str += "Scan: NONE";
+				}
+				*str += "\n";
+			}
+			std::string getAsString() const {
+				std::string str;
+				this->getAsString(&str);
+				return str;
+			}
 		};
 		/**
 		 * \brief Struct for passing additional parameters to the getICPEdge call
@@ -316,20 +333,40 @@ class CLoopCloserERD:
 		 * search for the node's LaserScan
 		 */
 		struct TGetICPEdgeAdParams {
+			typedef TGetICPEdgeAdParams self_t;
+
 			TNodeProps from_params; /**< Ad. params for the from_node */
 			TNodeProps to_params; /**< Ad. params for the to_node */
+			void getAsString(std::string* str) const {
+				using namespace std;
+				ASSERT_(str);
+				str->clear();
+				*str  += mrpt::format("from_params: %s", from_params.getAsString().c_str());
+				*str += mrpt::format("to_params: %s\n", to_params.getAsString().c_str());
+			}
+			std::string getAsString() const {
+				std::string str;
+				this->getAsString(&str);
+				return str;
+			}
+			friend std::ostream& operator<<(std::ostream& o, const self_t& params) {
+				o << params.getAsString() << endl;
+				return o;
+			}
+
 		};
 		/**\brief Struct for passing additional parameters to the
 		 * generateHypotsPool call
 		 */
 		struct TGenerateHypotsPoolAdParams {
+			typedef std::map<mrpt::utils::TNodeID, TNodeProps> group_t;
+
 			/**\brief  Ad. params for groupA */
-			std::map<mrpt::utils::TNodeID, TNodeProps> groupA_params;
+			group_t groupA_params;
 			/**\brief  Ad. params for groupB */
-			std::map<mrpt::utils::TNodeID, TNodeProps> groupB_params;
+			group_t groupB_params;
 		};
 		/**\} */
-
 
 		/**\brief Generate the hypothesis pool for all the inter-group constraints
 		 * between two groups of nodes.
@@ -345,21 +382,42 @@ class CLoopCloserERD:
 				const vector_uint& groupB,
 				hypotsp_t* generated_hypots,
 				const TGenerateHypotsPoolAdParams* ad_params=NULL);
-		/**\brief Evalute the given pool of potential hypotheses 
+		/**\brief Compute the pair-wise consistencies Matrix.
 		 *
-		 * \param[in] groupA First group to be tested
-		 * \param[in] groupB Second group to be tested
+		 * \param[in] groupA First group to be used
+		 * \param[in] groupB Second group to be used
+		 * \param[in] hypots_pool Pool of hypothesis that has been generated
+		 * between the two groups
+		 * \pram[out] consist_matrix Pointer to Pair-wise consistencies matrix that
+		 * is to be filled
+		 
+		 * \param[in] groupA_opt_paths Pointer to vector of optimal paths that can
+		 * be used instead of making queries to the m_node_optimal_paths class
+		 * vector. See corresponding argument in generatePWConsistencyElement
+		 * method
+		 * \param[in] groupB_opt_paths 
 		 *
-		 * \note Pool of potential hypothesis is generated prior to the call to
-		 * this method. This is to ensure proper memory release since the pool of
-		 * hypothesis is to exist after returning from this method.
+		 * \sa generatePWConsistencyElement
+		 * \sa evalPWConsistenciesMatrix
 		 */
-		void evaluateGroups(
+		void generatePWConsistenciesMatrix(
 				const vector_uint& groupA,
 				const vector_uint& groupB,
 				const hypotsp_t& hypots_pool,
+				mrpt::math::CMatrixDouble* consist_matrix,
+				const paths_t* groupA_opt_paths=NULL,
+				const paths_t* groupB_opt_paths=NULL);
+		/**\brief Evalute the consistencies matrix, fill the valid hypotheses
+		 *
+		 * Call to this method should be made right after generating the
+		 * consistencies matrix using the generatePWConsistenciesMatrix method
+		 *
+		 * \sa generatePWConsistenciesMatrix
+		 */
+		void evalPWConsistenciesMatrix(
+				const mrpt::math::CMatrixDouble& consist_matrix,
+				const hypotsp_t& hypots_pool,
 				hypotsp_t* valid_hypots);
-
 		// Public variables
 		// ////////////////////////////
 	protected:
@@ -367,11 +425,16 @@ class CLoopCloserERD:
 		//////////////////////////////////////////////////////////////
 
 		/**\brief Fill the TNodeProps instance using the parameters from the map
+		 *
+		 * \param[in] nodeID ID of node corresponding to the TNodeProps struct that
+		 * is to be filled
+		 * \param[in] group_params Map of TNodeID to corresponding TNodeProps
+		 * instance.
+		 * \param[out] node_props Pointer to the TNodeProps struct to be filled.
+		 *
 		 * 
 		 * \return True if operation was successful, false otherwise.
 		 */
-		// TODO - Add doc.
-		// TODO - Check this
 		bool fillNodePropsFromGroupParams(
 				const mrpt::utils::TNodeID& nodeID,
 				const std::map<mrpt::utils::TNodeID, TNodeProps>& group_params,
@@ -380,13 +443,9 @@ class CLoopCloserERD:
 		 * Pose and LaserScan are either fetched from the TNodeProps struct if it
 		 * contains valid data, otherwise from the corresponding class vars
 		 *
-		 * Handy method for not repeating the fetching process multiple times for
-		 * multiple nodes
-		 *
 		 * \return True if operation was successful and pose, scan contain valid
 		 * data.
 		 */
-		// TODO - check this
 		bool getPropsOfNodeID(
 				const mrpt::utils::TNodeID& nodeID,
 				global_pose_t* pose,
@@ -407,8 +466,9 @@ class CLoopCloserERD:
 				void 	dumpToTextStream(mrpt::utils::CStream &out) const;
 
 				mrpt::slam::CICP icp;
-				// threshold for accepting an ICP constraint in the graph
-				size_t prev_nodes_for_ICP; // how many nodes back to check ICP against?
+ 				/**\brief How many nodes back to check ICP against?
+ 				 */
+				int prev_nodes_for_ICP;
 
  				/** see Constructor for initialization */
 				const mrpt::utils::TColor laser_scans_color;
@@ -490,7 +550,6 @@ class CLoopCloserERD:
 
 				bool has_read_config;
 
-
 		};
 		TLaserParams m_laser_params;
 		TLoopClosureParams m_lc_params;
@@ -509,7 +568,7 @@ class CLoopCloserERD:
 		bool mahalanobisDistanceOdometryToICPEdge(const mrpt::utils::TNodeID& from,
 				const mrpt::utils::TNodeID& to, const constraint_t& rel_edge);
 		/**\brief Wrapper around the registerNewEdge method which accepts a
-		 * TGraphSlamHypothesis object instead.
+		 * THypothesis object instead.
 		 */
 		void registerHypothesis(const hypot_t& h);
 		void registerNewEdge(
@@ -594,33 +653,27 @@ class CLoopCloserERD:
 		 * pairwise consistency element would then be:
  		 * <br><center> \f$ A_{i,j} = e^{-T \Sigma_T T^T} \f$ </center>
  		 *
- 		 * \param hypots Hypothesis corresponding to the potential inter-group
+ 		 * \param[in] hypots Hypothesis corresponding to the potential inter-group
  		 * constraints 
+ 		 * \param[in] opt_paths Vector of optimal paths that can be used instead of
+ 		 * making queries to the m_node_optimal_paths class vector. See
+ 		 * corresponding argument in generatePWConsistenciesMatrix method
+ 		 * - 1st element \rightarrow a1->a2 path
+ 		 * - 2nd element \rightarrow b1->b2 path
  		 *
  		 * \return Pairwise consistency eleement of the composition of
  		 * transformations
-		 *
+ 		 *
+ 		 * \sa generatePWConsistenciesMatrix
 		 */
 		double generatePWConsistencyElement(
 				const mrpt::utils::TNodeID& a1,
 				const mrpt::utils::TNodeID& a2,
 				const mrpt::utils::TNodeID& b1,
 				const mrpt::utils::TNodeID& b2,
-				const hypotsp_t& hypots);
-		/**\brief Compute the pair-wise consistencies Matrix.
-		 *
-		 * \param[in] groupA First group to be used
-		 * \param[in] groupB Second group to be used
-		 * \param[in] hypots_pool Pool of hypothesis that has been generated
-		 * between the two groups
-		 * \pram[out] consist_matrix Pair-wise consistencies matrix
-		 */
-		void generatePWConsistenciesMatrix(
-				const vector_uint& groupA,
-				const vector_uint& groupB,
-				const hypotsp_t& hypots_pool,
-				mrpt::math::CMatrixDouble* consist_matrix);
-		/**\brief Given a vector of TGraphSlamHypothesis objects, find the one that
+				const hypotsp_t& hypots,
+				const paths_t* opt_paths=NULL);
+		/**\brief Given a vector of THypothesis objects, find the one that
 		 * has the given start and end nodes.
 		 *
 		 * \note If multiple hypothesis between the same start and end node exist,
@@ -640,7 +693,24 @@ class CLoopCloserERD:
 				const mrpt::utils::TNodeID& from,
 				const mrpt::utils::TNodeID& to,
 				bool throw_exc=true);
-		/**\brief Given a vector of TGraphSlamHypothesis objects, find the one that
+		/**\brief Given a vector of TUncertaintyPath objects, find the one that has
+		 * the given source and destination nodeIDs.
+		 *
+		 * \note If multiple paths between the same start and end node exist,
+		 * only the first one is returned.
+		 *
+		 * \return NULL if a path with the given source and destination NodeIDs is
+		 * not found, otherwise a pointer to the matching TUncertaintyPath.
+		 *
+		 * \exception std::runtime_error if path was not found and throw_exc is set
+		 * to true
+		 */
+		static const path_t* findPathByEnds(
+				const paths_t& vec_paths,
+				const mrpt::utils::TNodeID& src,
+				const mrpt::utils::TNodeID& dst,
+				bool throw_exc=true);
+		/**\brief Given a vector of THypothesis objects, find the one that
 		 * has the given ID.
 		 *
 		 * \note If multiple hypothesis with the same ID exist, only the first one
@@ -784,10 +854,6 @@ class CLoopCloserERD:
  		/**\brief Keep track of the total number of registered nodes since the last
  		 * time class method was called */
 		size_t m_last_total_num_nodes;
-		/**\brief Map for keeping track of the observation recorded at each graph
-		 * position
-		 */
-		nodes_to_scans2D_t  m_nodes_to_laser_scans2D;
 		/**\brief Keep the last laser scan for visualization purposes */
 		mrpt::obs::CObservation2DRangeScanPtr m_last_laser_scan2D;
 		/**\name Partition vectors */
@@ -803,8 +869,9 @@ class CLoopCloserERD:
 		 * again if nothing changed in them.
 		 */
 		std::map<int, vector_uint> m_partitionID_to_prev_nodes_list;
-		/**\brief Map that stores the lowest uncertainty path from one Node to
-		 * another Node.
+		/**\brief Map that stores the lowest uncertainty path towards a node.
+		 * Starting node depends on the starting node as used in the
+		 * execDijkstraProjection method
 		 */
 		typename std::map< mrpt::utils::TNodeID, path_t* > m_node_optimal_paths;
 		/**\brief Keep track of the first recorded laser scan so that it can be
@@ -817,6 +884,9 @@ class CLoopCloserERD:
 		 * Handy so that we can assign a measurement to the root node as well.
 		 */
 		bool m_is_first_time_node_reg;
+		/**\brief Node Count lower bound before executing dijkstra
+		 */
+		size_t m_dijkstra_node_count_thresh;
 
 };
 

@@ -36,19 +36,24 @@ CRegistrationDeciderOrOptimizer<GRAPH_T>::~CRegistrationDeciderOrOptimizer() {
 
 template<class GRAPH_T>
 void CRegistrationDeciderOrOptimizer<GRAPH_T>::initializeLoggers(
-		std::string class_name) {
+		const std::string& name) {
 	using namespace std;
 	using namespace mrpt::utils;
 
-	this->m_class_name = class_name;
-
-	this->m_time_logger.setName(this->m_class_name);
+	this->setClassName(name); // all the names in one call
 	this->logging_enable_keep_record = true;
-	this->setLoggerName(this->m_class_name);
 
-	// just for the first message, set it to debug.
+	// just for the messages until reading the actual verbosity level, set it to debug.
 	this->setMinLoggingLevel(LVL_DEBUG);
 	MRPT_LOG_DEBUG_STREAM << "Initialized time, output logger instances." << endl;
+}
+
+template<class GRAPH_T>
+void CRegistrationDeciderOrOptimizer<GRAPH_T>::setClassName(
+		const std::string& name) {
+	this->m_class_name = name;
+	this->m_time_logger.setName(this->m_class_name);
+	this->setLoggerName(this->m_class_name);
 }
 
 
@@ -60,7 +65,6 @@ void CRegistrationDeciderOrOptimizer<GRAPH_T>::setWindowManagerPtr(
 
 	if (m_win_manager) {
 		m_win = m_win_manager->win;
-
 		m_win_observer = m_win_manager->observer;
 	}
 }
@@ -76,7 +80,7 @@ void CRegistrationDeciderOrOptimizer<GRAPH_T>::setCriticalSectionPtr(
 template<class GRAPH_T>
 void CRegistrationDeciderOrOptimizer<GRAPH_T>::initializeVisuals() {
 	using namespace mrpt::utils;
-	MRPT_LOG_DEBUG_STREAM << "Initializing visuals";
+	//MRPT_LOG_DEBUG_STREAM << "Initializing visuals";
 
 	this->assertVisualsVars();
 	m_initialized_visuals = true;

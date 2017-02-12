@@ -18,5 +18,7 @@
 #include <mrpt/graphs/dijkstra.h>
 #include <mrpt/graphs/CDirectedGraph.h>
 #include <mrpt/graphs/CDirectedTree.h>
+#include <mrpt/graphs/THypothesis.h>
+#include <mrpt/graphs/CHypothesisNotFoundException.h>
 
 #endif

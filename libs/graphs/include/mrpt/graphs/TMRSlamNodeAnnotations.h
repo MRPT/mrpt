@@ -49,6 +49,20 @@ struct TMRSlamNodeAnnotations : public TNodeAnnotations {
 		return res;
 	}
 
+	bool operator==(const TNodeAnnotations& other) const {
+		const TMRSlamNodeAnnotations* mr_slam_annots =
+			dynamic_cast<const TMRSlamNodeAnnotations*>(&other);
+
+		bool res = false;
+		if (mr_slam_annots) {
+			res = (
+					this->agent_ID_str == mr_slam_annots->agent_ID_str &&
+					this->nodeID_loc == mr_slam_annots->nodeID_loc);
+		}
+
+		return res;
+	}
+
 	void getAnnotsAsString(std::string* s) const {
 		parent_t::getAnnotsAsString(s);
 

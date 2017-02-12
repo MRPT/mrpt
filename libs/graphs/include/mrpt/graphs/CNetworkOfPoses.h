@@ -30,8 +30,10 @@
 #include <mrpt/graphs/dijkstra.h>
 #include <mrpt/graphs/TNodeAnnotations.h>
 #include <mrpt/graphs/TMRSlamNodeAnnotations.h>
+#include <mrpt/graphs/THypothesis.h>
 
 #include <iterator>
+#include <algorithm>
 
 namespace mrpt
 {
@@ -115,7 +117,8 @@ namespace mrpt
 			 */
 			struct global_pose_t : public constraint_no_pdf_t, public NODE_ANNOTATIONS
 			{
-				// Replicate possible constructors:
+				typedef typename CNetworkOfPoses<CPOSE,MAPS_IMPLEMENTATION,NODE_ANNOTATIONS,EDGE_ANNOTATIONS>::global_pose_t self_t;
+
 				/**\brief Potential class constructors
 				 */
 				/**\{ */
@@ -131,6 +134,20 @@ namespace mrpt
 					constraint_no_pdf_t(other),
 					NODE_ANNOTATIONS(other)
 				{ }
+
+				inline bool operator==(const global_pose_t& other) const {
+					return (
+							static_cast<const constraint_no_pdf_t>(*this) == static_cast<const constraint_no_pdf_t>(other) &&
+							static_cast<const NODE_ANNOTATIONS>(*this) == static_cast<const NODE_ANNOTATIONS>(other));
+				}
+				inline bool operator!=(const global_pose_t& other) const {
+					return ( !(*this == other) );
+				}
+
+				inline friend std::ostream& operator<<(std::ostream& o, const self_t& global_pose) {
+					o << global_pose.asString() << "| " <<  global_pose.retAnnotsAsString();
+					return o;
+				}
 
 			};
 
@@ -296,6 +313,13 @@ namespace mrpt
 							"\nRoot_node does not exist in the given node_IDs set. Exiting.\n");
 				}
 
+				// ask for at least 2 nodes
+				ASSERTMSG_(node_IDs.size() >= 2,
+						format(
+							"Very few nodes [%lu] for which to extract a subgraph. Exiting\n",
+							static_cast<unsigned long>(node_IDs.size())));
+
+
 				// find out if querry contains non-consecutive nodes.
 				// Assumption: Set elements are in standard, ascending order.
 				bool is_fully_connected_graph = true;
@@ -327,7 +351,7 @@ namespace mrpt
 					typename global_poses_t::const_iterator own_it;
 					for (own_it = nodes.begin(); own_it != nodes.end(); ++own_it) {
 						if (*node_IDs_it == own_it->first) {
-							break;
+							break; // I throw exception afterwards
 						}
 					}
 					ASSERTMSG_(own_it != nodes.end(),
@@ -338,7 +362,8 @@ namespace mrpt
 					sub_graph->nodes.insert(make_pair(*node_IDs_it, curr_node));
 
 				}
-				//cout << "Extracting subgraph for nodeIDs: " << getSTLContainerAsString(node_IDs_real) << endl;
+				//cout << "Extracting subgraph for nodeIDs: " <<
+					//getSTLContainerAsString(node_IDs_real) << endl;
 
 				// set the root of the extracted graph
 				if (root_node == INVALID_NODEID) {
@@ -510,9 +535,142 @@ namespace mrpt
 				sub_graph->dijkstra_nodes_estimate();
 
 			} // end of extractSubGraph
+			/**\brief Integrate given graph into own graph using the list of provided
+			 * common THypotheses. Nodes of the other graph are renumbered upon
+			 * integration in own graph.
+			 *
+			 * \param[in] other Graph (of the same type) that is to be integrated with own graph.
+			 * \param[in] Hypotheses that join own and other graph.
+			 * \param[in] hypots_from_other_to_self Specify the direction of the
+			 * THypothesis objects in the common_hypots. If true (default) they are
+			 * directed from other to own graph (other \rightarrow own), 
+			 *
+			 * \param[out] old_to_new_nodeID_mappings_in Map from the old nodeIDs
+			 * that are in the given graph to the new nodeIDs that have been inserted
+			 * (by this method) in own graph.
+			 */
+			inline void mergeGraph(
+					const self_t& other,
+					const typename std::vector<detail::THypothesis<self_t> >& common_hypots,
+					const bool hypots_from_other_to_self=true,
+					std::map<TNodeID, TNodeID>* old_to_new_nodeID_mappings_in=NULL) {
+				MRPT_START;
+				using namespace mrpt::graphs;
+				using namespace mrpt::utils;
+				using namespace mrpt::graphs::detail;
+				using namespace std;
 
-			/**\brief Add an edge between the last node of the group with the lower nodeIDs
-			 * and the first node of the higher nodeIDs
+				typedef typename vector<THypothesis<self_t> >::const_iterator hypots_cit_t;
+				typedef typename global_poses_t::const_iterator nodes_cit_t;
+
+				const self_t& graph_from = (hypots_from_other_to_self? other : *this);
+				const self_t& graph_to = (hypots_from_other_to_self? *this : other);
+
+				// assert that both own and other graph have at least two nodes.
+				ASSERT_(graph_from.nodes.size() >= 2);
+				ASSERT_(graph_to.nodes.size() >= 2);
+
+				// Assert that from-nodeIds, to-nodeIDs in common_hypots exist in own
+				// and other graph respectively
+				for (hypots_cit_t h_cit = common_hypots.begin();
+						h_cit != common_hypots.end();
+						++h_cit) {
+
+					ASSERTMSG_(graph_from.nodes.find(h_cit->from) != graph_from.nodes.end(),
+							format("NodeID %lu is not found in (from) graph", h_cit->from))
+					ASSERTMSG_(graph_to.nodes.find(h_cit->to) != graph_to.nodes.end(),
+							format("NodeID %lu is not found in (to) graph", h_cit->to))
+				}
+
+				// find the max nodeID in existing graph
+				TNodeID max_nodeID = 0;
+				for (nodes_cit_t n_cit = this->nodes.begin();
+						n_cit != this->nodes.end();
+						++n_cit) {
+					if (n_cit->first > max_nodeID) {
+						max_nodeID = n_cit->first;
+					}
+				}
+				TNodeID renum_start = max_nodeID + 1;
+				size_t renum_counter = 0;
+				//cout << "renum_start: " << renum_start << endl;
+
+				// Renumber nodeIDs of other graph so that they don't overlap with own
+				// graph nodeIDs
+				std::map<TNodeID, TNodeID>* old_to_new_nodeID_mappings;
+
+				// map of TNodeID->TNodeID correspondences to address to if the
+				// old_to_new_nodeID_mappings_in is not given.
+				// Handy for not having to allocate old_to_new_nodeID_mappings in the
+				// heap
+				std::map<TNodeID, TNodeID> mappings_tmp;
+
+				// If given, use the old_to_new_nodeID_mappings map.
+				if (old_to_new_nodeID_mappings_in) {
+					old_to_new_nodeID_mappings = old_to_new_nodeID_mappings_in;
+				}
+				else {
+					old_to_new_nodeID_mappings = &mappings_tmp;
+				}
+				old_to_new_nodeID_mappings->clear();
+
+				// add all nodes of other graph - Take care of renumbering them
+				//cout << "Adding nodes of other graph" << endl;
+				//cout << "====================" << endl;
+				for (nodes_cit_t n_cit = other.nodes.begin();
+						n_cit != other.nodes.end();
+						++n_cit) {
+					TNodeID new_nodeID = renum_start + renum_counter++;
+					old_to_new_nodeID_mappings->insert(make_pair(
+								n_cit->first,
+								new_nodeID));
+					this->nodes.insert(make_pair(
+								new_nodeID, n_cit->second));
+
+					//cout << "Adding nodeID: " << new_nodeID << endl;
+				}
+
+				// add common constraints
+				//cout << "Adding common constraints" << endl;
+				//cout << "====================" << endl;
+				for (hypots_cit_t h_cit = common_hypots.begin();
+						h_cit != common_hypots.end();
+						++h_cit) {
+					TNodeID from, to;
+					if (hypots_from_other_to_self) {
+						from = old_to_new_nodeID_mappings->at(h_cit->from);
+						to = h_cit->to;
+					}
+					else {
+						from = h_cit->from;
+						to = old_to_new_nodeID_mappings->at(h_cit->to);
+					}
+					this->insertEdge(from, to, h_cit->getEdge());
+					//cout << from << " -> " << to << " => " << h_cit->getEdge() << endl;
+				}
+
+				// add all constraints of the other graph
+				//cout << "Adding constraints of other graph" << endl;
+				//cout << "====================" << endl;
+				for (typename self_t::const_iterator
+						g_cit = other.begin();
+						g_cit != other.end();
+						++g_cit) {
+					TNodeID new_from = old_to_new_nodeID_mappings->at(g_cit->first.first);
+					TNodeID new_to = old_to_new_nodeID_mappings->at(g_cit->first.second);
+					this->insertEdge(new_from, new_to, g_cit->second);
+
+					//cout << "[" << new_from << "] -> [" << new_to << "]" << " => " << g_cit->second << endl;
+				}
+
+				// run Dijkstra to update the node positions
+				this->dijkstra_nodes_estimate();
+
+				MRPT_END;
+			}
+
+			/**\brief Add an edge between the last node of the group with the lower
+			 * nodeIDs and the first node of the higher nodeIDs.
 			 *
 			 * Given groups of nodes should only contain consecutive nodeIDs and
 			 * there should be no overlapping between them

@@ -34,6 +34,7 @@
 #include <mrpt/obs/CObservationImage.h>
 #include <mrpt/obs/CRawlog.h>
 #include <mrpt/obs/CSensoryFrame.h>
+#include <mrpt/obs/obs_utils.h>
 #include <mrpt/utils/CProbabilityDensityFunction.h>
 #include <mrpt/poses/CPosePDF.h>
 #include <mrpt/poses/CPose2D.h>
@@ -201,6 +202,9 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		/**\brief Type of underlying poses (2D/3D). */
 		typedef typename GRAPH_T::constraint_t::type_value pose_t;
 		typedef typename GRAPH_T::global_pose_t global_pose_t;
+		typedef std::map<
+			mrpt::utils::TNodeID,
+			mrpt::obs::CObservation2DRangeScanPtr> nodes_to_scans2D_t;
 		/**\}*/
 
 		/**\brief Constructor of CGraphSlamEngine class template.
@@ -429,6 +433,38 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 				std::map<std::string, int>* edge_stats,
 				mrpt::system::TTimeStamp* timestamp=NULL);
 
+		bool isPaused() const {
+			return m_is_paused;
+		}
+
+		void togglePause() {
+			if (isPaused()) {
+				this->resume();
+			}
+			else {
+				this->pause();
+			}
+		}
+		void resume() const {
+			if (!isPaused()) { return; }
+			MRPT_LOG_INFO_STREAM << "Program resumed.";
+			m_is_paused = false;
+		}
+
+		void pause() {
+			if (isPaused()) { return; }
+			MRPT_LOG_INFO_STREAM << "Program is paused. "
+				<< "Press \"" << m_keystroke_pause_exec << 
+				" or \"" << system::upperCase(m_keystroke_pause_exec) << 
+				"\" in the dipslay window to resume";
+			m_is_paused = true;
+
+			while (this->isPaused()) {
+				mrpt::system::sleep(1000);
+				this->queryObserverForEvents();
+			}
+		}
+
 	protected:
 		// Private function definitions
 		//////////////////////////////////////////////////////////////
@@ -503,7 +539,8 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		 * \sa updateEstimatedTrajectoryVisualization
 		 */
 		void updateMapVisualization(const GRAPH_T& gr,
-				const std::map<mrpt::utils::TNodeID,
+				const std::map<
+					mrpt::utils::TNodeID,
 					mrpt::obs::CObservation2DRangeScanPtr>& nodes_to_laser_scans2D,
 				bool full_update=false );
 		/**\brief Display the next ground truth position in the visualization window.
@@ -717,7 +754,7 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 
 		/**\brief Indicated if program is temporarily paused by the user
 		 */
-		bool m_program_paused;
+		mutable bool m_is_paused;
 
 		/**\name textMessage - related Parameters
 		 * Parameters relevant to the textMessages appearing in the visualization
@@ -777,8 +814,7 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 
 		/**\brief Map of NodeIDs to their corresponding LaserScans.
 		 */
-		std::map<mrpt::utils::TNodeID,
-			mrpt::obs::CObservation2DRangeScanPtr> m_nodes_to_laser_scans2D;
+		nodes_to_scans2D_t m_nodes_to_laser_scans2D;
 		/**\brief Last laser scan that the current class instance received.
 		 */
 		mrpt::obs::CObservation2DRangeScanPtr m_last_laser_scan2D;
