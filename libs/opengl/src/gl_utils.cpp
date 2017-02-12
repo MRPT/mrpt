@@ -48,7 +48,8 @@ void gl_utils::renderSetOfObjects(const CListOpenGLObjects &objectsToRender)
 			glMatrixMode(GL_MODELVIEW);
 			glPushMatrix();
 
-			//glPushAttrib(GL_ALL_ATTRIB_BITS);
+			glPushAttrib(GL_CURRENT_BIT);   // drawing color, etc
+			glPushAttrib(GL_LIGHTING_BIT);  // lighting
 			//gl_utils::checkOpenGLError();
 
 			// It's more efficient to prepare the 4x4 matrix ourselves and load it directly into opengl stack:
@@ -101,7 +102,8 @@ void gl_utils::renderSetOfObjects(const CListOpenGLObjects &objectsToRender)
 				glEnable(GL_DEPTH_TEST);
 			}
 
-			//glPopAttrib();
+			glPopAttrib();
+			glPopAttrib();
 //			gl_utils::checkOpenGLError();
 
 			glPopMatrix();
