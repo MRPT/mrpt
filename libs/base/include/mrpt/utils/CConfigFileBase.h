@@ -22,6 +22,8 @@ namespace utils
 	template <typename ENUMTYPE> struct TEnumType;
 	class CConfigFilePrefixer;
 
+	extern int BASE_IMPEXP MRPT_SAVE_NAME_PADDING, MRPT_SAVE_VALUE_PADDING; //!< Default padding sizes for macros MRPT_SAVE_CONFIG_VAR_COMMENT(), etc.
+
 	/** This class allows loading and storing values and vectors of different types from a configuration text, which can be implemented as a ".ini" file, a memory-stored string, etc...
 	  *   This is a virtual class, use only as a pointer to an implementation of one of the derived classes.
 		 * \ingroup mrpt_base_grp
@@ -133,7 +135,7 @@ namespace utils
 			{
 				// Parse the text into a vector:
 				if (!outMatrix.fromMatlabStringFormat(aux))
-					THROW_EXCEPTION_CUSTOM_MSG1("Error parsing matrix: '%s'",aux.c_str())
+					THROW_EXCEPTION_FMT("Error parsing matrix: '%s'",aux.c_str())
 			}
 		}
 
@@ -172,7 +174,7 @@ namespace utils
 				return mrpt::utils::TEnumType<ENUMTYPE>::name2value(sVal);
 				} catch (std::exception &)
 				{
-					THROW_EXCEPTION(mrpt::format("Invalid value '%s' for enum type while reading key='%s'.",sVal.c_str(),name.c_str()))
+					THROW_EXCEPTION_FMT("Invalid value '%s' for enum type while reading key='%s'.",sVal.c_str(),name.c_str())
 				}
 			}
 			MRPT_END
@@ -185,6 +187,9 @@ namespace utils
 	  */
 #define MRPT_LOAD_CONFIG_VAR(variableName,variableType,configFileObject,sectionNameStr) \
 	{ variableName = configFileObject.read_##variableType(sectionNameStr,#variableName,variableName); }
+	
+	/** Shortcut for MRPT_LOAD_CONFIG_VAR() for config file object named `c` and section string named `s` */
+#define MRPT_LOAD_CONFIG_VAR_CS(variableName,variableType) MRPT_LOAD_CONFIG_VAR(variableName,variableType,c,s)
 
 	/** Loads a double variable, stored as radians but entered in the INI-file as degrees */
 #define MRPT_LOAD_CONFIG_VAR_DEGREES(variableName,configFileObject,sectionNameStr) \
@@ -227,6 +232,9 @@ namespace utils
 		THROW_EXCEPTION( mrpt::format( "Value for '%s' not found in config file in section '%s'", static_cast<const char*>(#variableName ), std::string(sectionNameStr).c_str() )); \
 	} }\
 
+	/** Shortcut for MRPT_LOAD_CONFIG_VAR_NO_DEFAULT() for REQUIRED variables config file object named `c` and section string named `s` */
+#define MRPT_LOAD_CONFIG_VAR_REQUIRED_CS(variableName,variableType) MRPT_LOAD_CONFIG_VAR_NO_DEFAULT(variableName,variableType,c,s)
+
 #define MRPT_LOAD_CONFIG_VAR_CAST_NO_DEFAULT(variableName,variableType,variableTypeCast,configFileObject,sectionNameStr) \
 	{ try { \
 		variableName = static_cast<variableTypeCast>(configFileObject.read_##variableType(sectionNameStr,#variableName,variableName,true)); \
@@ -252,8 +260,12 @@ namespace utils
 	{ configFileObject.write(sectionNameStr,#variableName,variableName); }
 
 #define MRPT_SAVE_CONFIG_VAR_DEGREES(variableName,configFileObject,sectionNameStr) \
-	{ configFileObject.write(sectionNameStr,#variableName, RAD2DEG(variableName)); }
+	{ configFileObject.write(sectionNameStr,#variableName, mrpt::utils::RAD2DEG(variableName)); }
 
+#define MRPT_SAVE_CONFIG_VAR_COMMENT(variableName,__comment) \
+	{ c.write(s,#variableName,variableName,mrpt::utils::MRPT_SAVE_NAME_PADDING, mrpt::utils::MRPT_SAVE_VALUE_PADDING,__comment); }
+#define MRPT_SAVE_CONFIG_VAR_DEGREES_COMMENT(__entryName,__variable,__comment) \
+	{ c.write(s,__entryName,mrpt::utils::RAD2DEG(__variable),mrpt::utils::MRPT_SAVE_NAME_PADDING, mrpt::utils::MRPT_SAVE_VALUE_PADDING,__comment); }
 
 	} // End of namespace
 } // end of namespace

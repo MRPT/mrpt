@@ -69,6 +69,9 @@ void ClearanceDiagram::renderAs3DObject(
 
 double ClearanceDiagram::getClearance(uint16_t k, double dist, bool integrate_over_path) const
 {
+	if (raw_clearances.empty()) // If we are not using clearance values, just return a fixed value:
+		return 0.0;
+
 	ASSERT_(k<raw_clearances.size());
 
 	const auto & rc_k = raw_clearances[k];

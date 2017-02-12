@@ -425,7 +425,7 @@ void CStream::internal_ReadObject(CSerializablePtr &newObj,CSerializable *existi
 				ASSERT_(existingObj)
 				const TRuntimeClassId	*id  = existingObj->GetRuntimeClass();
 				const TRuntimeClassId	*id2 = findRegisteredClass(strClassName);
-				if (!id2) THROW_EXCEPTION_CUSTOM_MSG1("Stored object has class '%s' which is not registered!",strClassName.c_str());
+				if (!id2) THROW_EXCEPTION_FMT("Stored object has class '%s' which is not registered!",strClassName.c_str());
 				if ( id!=id2 ) THROW_EXCEPTION(format("Stored class does not match with existing object!!:\n Stored: %s\n Expected: %s", id2->className,id->className ));
 				// It matches, OK
 				obj = existingObj;
@@ -455,7 +455,7 @@ void CStream::internal_ReadObject(CSerializablePtr &newObj,CSerializable *existi
 		{
 			uint8_t	endFlag;
 			if (sizeof(endFlag)!=ReadBuffer( (void*)&endFlag, sizeof(endFlag) )) THROW_EXCEPTION("Cannot read object streaming version from stream!");
-			if (endFlag!=SERIALIZATION_END_FLAG) THROW_EXCEPTION_CUSTOM_MSG1("end-flag missing: There is a bug in the deserialization method of class: '%s'",strClassName.c_str());
+			if (endFlag!=SERIALIZATION_END_FLAG) THROW_EXCEPTION_FMT("end-flag missing: There is a bug in the deserialization method of class: '%s'",strClassName.c_str());
 		}
 		ASSERT_(!EXISTING_OBJ || strClassName != "nullptr");
 	}

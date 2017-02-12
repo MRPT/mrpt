@@ -31,7 +31,7 @@ void TSequenceFeatureObservations::saveToTextFile(const std::string &filName, bo
 	MRPT_START
 
 	ofstream f(filName.c_str());
-	if (!f.is_open()) THROW_EXCEPTION_CUSTOM_MSG1("Can't open file: %s",filName.c_str())
+	if (!f.is_open()) THROW_EXCEPTION_FMT("Can't open file: %s",filName.c_str())
 
 	if (!skipFirstCommentLine)
 		f << "% FRAME_ID  FEAT_ID   X         Y     \n"
@@ -51,7 +51,7 @@ void TSequenceFeatureObservations::loadFromTextFile(const std::string &filName)
 	BASE::clear();	// Erase previous contents
 
 	ifstream f(filName.c_str());
-	if (!f.is_open()) THROW_EXCEPTION_CUSTOM_MSG1("Can't open file: %s",filName.c_str())
+	if (!f.is_open()) THROW_EXCEPTION_FMT("Can't open file: %s",filName.c_str())
 
 	unsigned int linNum = 0;
 	while (!f.fail())

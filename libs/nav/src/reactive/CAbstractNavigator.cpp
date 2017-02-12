@@ -13,6 +13,7 @@
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/math/geometry.h>
 #include <mrpt/math/lightweight_geom_data.h>
+#include <mrpt/utils/CConfigFileMemory.h>
 #include <limits>
 
 using namespace mrpt::nav;
@@ -61,11 +62,9 @@ CAbstractNavigator::CAbstractNavigator(CRobot2NavInterface &react_iterf_impl) :
 	m_lastNavTargetReached(false),
 	m_robot               ( react_iterf_impl ),
 	m_curPoseVel          (),
-	m_last_curPoseVelUpdate_time(INVALID_TIMESTAMP),
+	m_last_curPoseVelUpdate_robot_time(-1e9),
 	m_latestPoses         (),
-	m_timlog_delays       (true, "CAbstractNavigator::m_timlog_delays"),
-	m_badNavAlarm_AlarmTimeout(30.0),
-	DIST_TO_TARGET_FOR_SENDING_EVENT(.0)
+	m_timlog_delays       (true, "CAbstractNavigator::m_timlog_delays")
 {
 	m_latestPoses.setInterpolationMethod(mrpt::poses::CPose3DInterpolator::imLinear2Neig);
 	this->setVerbosityLevel(mrpt::utils::LVL_DEBUG);
@@ -122,6 +121,28 @@ void CAbstractNavigator::resetNavError()
 	MRPT_LOG_DEBUG("CAbstractNavigator::resetNavError() called.");
 	if ( m_navigationState == NAV_ERROR )
 		m_navigationState  = IDLE;
+}
+
+void CAbstractNavigator::loadConfigFile(const mrpt::utils::CConfigFileBase & c)
+{
+	MRPT_START
+
+	params_abstract_navigator.loadFromConfigFile(c, "CAbstractNavigator");
+
+	// At this point, all derived classes have already loaded their parameters.
+	// Dump them to debug output:
+	{
+		mrpt::utils::CConfigFileMemory cfg_mem;
+		this->saveConfigFile(cfg_mem);
+		MRPT_LOG_INFO(cfg_mem.getContent());
+	}
+
+	MRPT_END
+}
+
+void CAbstractNavigator::saveConfigFile(mrpt::utils::CConfigFileBase & c) const
+{
+	params_abstract_navigator.saveToConfigFile(c, "CAbstractNavigator");
 }
 
 /*---------------------------------------------------------------
@@ -204,7 +225,7 @@ void CAbstractNavigator::navigationStep()
 			const double targetDist = seg_robot_mov.distance( mrpt::math::TPoint2D(m_navigationParams->target) );
 
 			// Should "End of navigation" event be sent??
-			if (!m_navigationParams->targetIsIntermediaryWaypoint && !m_navigationEndEventSent && targetDist < DIST_TO_TARGET_FOR_SENDING_EVENT)
+			if (!m_navigationParams->targetIsIntermediaryWaypoint && !m_navigationEndEventSent && targetDist < params_abstract_navigator.dist_to_target_for_sending_event)
 			{
 				m_navigationEndEventSent = true;
 				m_robot.sendNavigationEndEvent();
@@ -239,7 +260,7 @@ void CAbstractNavigator::navigationStep()
 			else
 			{
 				// Too much time have passed?
-				if (mrpt::system::timeDifference( m_badNavAlarm_lastMinDistTime, mrpt::system::getCurrentTime() ) > m_badNavAlarm_AlarmTimeout)
+				if (mrpt::system::timeDifference( m_badNavAlarm_lastMinDistTime, mrpt::system::getCurrentTime() ) > params_abstract_navigator.alarm_seems_not_approaching_target_timeout)
 				{
 					MRPT_LOG_WARN("--------------------------------------------\nWARNING: Timeout for approaching toward the target expired!! Aborting navigation!! \n---------------------------------\n");
 					m_navigationState = NAV_ERROR;
@@ -313,11 +334,12 @@ void CAbstractNavigator::updateCurrentPoseAndSpeeds()
 {
 	// Ignore calls too-close in time, e.g. from the navigationStep() methods of
 	// AbstractNavigator and a derived, overriding class.
-	const mrpt::system::TTimeStamp tim_now = mrpt::system::now();
+	const double robot_time_secs = m_robot.getNavigationTime();  // this is clockwall time for real robots, simulated time in simulators.
+
 	const double MIN_TIME_BETWEEN_POSE_UPDATES = 20e-3;
-	if (m_last_curPoseVelUpdate_time != INVALID_TIMESTAMP)
+	if (m_last_curPoseVelUpdate_robot_time >=.0)
 	{
-		const double last_call_age = mrpt::system::timeDifference(m_last_curPoseVelUpdate_time, tim_now);
+		const double last_call_age = robot_time_secs - m_last_curPoseVelUpdate_robot_time;
 		if (last_call_age < MIN_TIME_BETWEEN_POSE_UPDATES)
 		{
 			MRPT_LOG_DEBUG_FMT("updateCurrentPoseAndSpeeds: ignoring call, since last call was only %f ms ago.", last_call_age*1e3);
@@ -341,7 +363,7 @@ void CAbstractNavigator::updateCurrentPoseAndSpeeds()
 	m_curPoseVel.velLocal = m_curPoseVel.velGlobal;
 	m_curPoseVel.velLocal.rotate(-m_curPoseVel.pose.phi);
 
-	m_last_curPoseVelUpdate_time = tim_now;
+	m_last_curPoseVelUpdate_robot_time = robot_time_secs;
 
 	// Append to list of past poses:
 	m_latestPoses.insert(m_curPoseVel.timestamp, mrpt::poses::CPose3D(mrpt::math::TPose3D(m_curPoseVel.pose)));
@@ -366,4 +388,20 @@ bool CAbstractNavigator::changeSpeedsNOP()
 bool CAbstractNavigator::stop(bool isEmergencyStop)
 {
 	return m_robot.stop(isEmergencyStop);
+}
+
+CAbstractNavigator::TAbstractNavigatorParams::TAbstractNavigatorParams() :
+	dist_to_target_for_sending_event(0),
+	alarm_seems_not_approaching_target_timeout(30)
+{
+}
+void CAbstractNavigator::TAbstractNavigatorParams::loadFromConfigFile(const mrpt::utils::CConfigFileBase &c, const std::string &s)
+{
+	MRPT_LOAD_CONFIG_VAR_CS(dist_to_target_for_sending_event, double);
+	MRPT_LOAD_CONFIG_VAR_CS(alarm_seems_not_approaching_target_timeout, double);
+}
+void CAbstractNavigator::TAbstractNavigatorParams::saveToConfigFile(mrpt::utils::CConfigFileBase &c, const std::string &s) const
+{
+	MRPT_SAVE_CONFIG_VAR_COMMENT(dist_to_target_for_sending_event, "Default value=0, means use the `targetAllowedDistance` passed by the user in the navigation request.");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(alarm_seems_not_approaching_target_timeout, "navigator timeout (seconds) [Default=30 sec]");
 }

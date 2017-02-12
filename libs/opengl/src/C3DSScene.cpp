@@ -555,7 +555,7 @@ void C3DSScene::loadFrom3DSFile( const std::string &filepath )
 		// Load compressed file:
 		vector_byte		out_data;
 		if (!mrpt::compress::zip::decompress_gz_file(filepath, out_data))
-			THROW_EXCEPTION_CUSTOM_MSG1("Error loading compressed file: %s",filepath.c_str())
+			THROW_EXCEPTION_FMT("Error loading compressed file: %s",filepath.c_str())
 
 		// Save to tmp file & load:
 		string	tmpFil = mrpt::system::getTempFileName();
@@ -575,7 +575,7 @@ void C3DSScene::loadFrom3DSFile( const std::string &filepath )
 
 	if (!file)
 	{
-		THROW_EXCEPTION_CUSTOM_MSG1("Error loading 3DS file: %s", filepath.c_str() );
+		THROW_EXCEPTION_FMT("Error loading 3DS file: %s", filepath.c_str() );
 	}
 
 

@@ -12,6 +12,7 @@
 #include <mrpt/utils/COutputLogger.h>
 #include <mrpt/utils/CTimeLogger.h>
 #include <mrpt/utils/TEnumType.h>
+#include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/poses/CPose3DInterpolator.h>
 #include <mrpt/synch/CCriticalSection.h>
 #include <mrpt/obs/obs_frwds.h>
@@ -73,9 +74,15 @@ namespace mrpt
 
 		/** \name Navigation control API
 		  * @{ */
-		virtual void loadConfigFile(const mrpt::utils::CConfigFileBase &cfg, const std::string &section_prefix="") = 0; //!< Loads the configuration from a file. To be called before initialize()
-		virtual void initialize() = 0; //!<  Must be called before any other navigation command
 
+		/** Loads all params from a file. To be called before initialize(). 
+		  * Each derived class *MUST* load its own parameters, and then call *ITS PARENT'S* overriden method to ensure all params are loaded. */
+		virtual void loadConfigFile(const mrpt::utils::CConfigFileBase &c);
+		/** Saves all current options to a config file.
+		  * Each derived class *MUST* save its own parameters, and then call *ITS PARENT'S* overriden method to ensure all params are saved. */
+		virtual void saveConfigFile(mrpt::utils::CConfigFileBase &c) const;
+
+		virtual void initialize() = 0; //!<  Must be called before any other navigation command
 		virtual void navigationStep(); //!< This method must be called periodically in order to effectively run the navigation
 
 		/** Navigation request to a single target location. It starts a new navigation.
@@ -101,6 +108,19 @@ namespace mrpt
 		inline TState getCurrentState() const { return m_navigationState; }
 
 		/** @}*/
+
+		struct NAV_IMPEXP TAbstractNavigatorParams : public mrpt::utils::CLoadableOptions
+		{
+			double dist_to_target_for_sending_event;  //!< Default value=0, means use the "targetAllowedDistance" passed by the user in the navigation request.
+			double alarm_seems_not_approaching_target_timeout; //!< navigator timeout (seconds) [Default=30 sec]
+
+			virtual void loadFromConfigFile(const mrpt::utils::CConfigFileBase &c, const std::string &s) MRPT_OVERRIDE;
+			virtual void saveToConfigFile(mrpt::utils::CConfigFileBase &c, const std::string &s) const MRPT_OVERRIDE;
+			TAbstractNavigatorParams();
+		};
+
+		TAbstractNavigatorParams params_abstract_navigator;
+
 
 	private:
 		TState  m_lastNavigationState; //!< Last internal state of navigator:
@@ -140,7 +160,7 @@ namespace mrpt
 		};
 
 		TRobotPoseVel m_curPoseVel; //!< Current robot pose (updated in CAbstractNavigator::navigationStep() )
-		mrpt::system::TTimeStamp m_last_curPoseVelUpdate_time;
+		double  m_last_curPoseVelUpdate_robot_time;
 		mrpt::poses::CPose3DInterpolator m_latestPoses; //!< Latest robot poses and velocities (updated in CAbstractNavigator::navigationStep() )
 
 		mrpt::utils::CTimeLogger m_timlog_delays; //!< Time logger to collect delay-related stats
@@ -148,8 +168,6 @@ namespace mrpt
 		/** For sending an alarm (error event) when it seems that we are not approaching toward the target in a while... */
 		double                   m_badNavAlarm_minDistTarget;
 		mrpt::system::TTimeStamp m_badNavAlarm_lastMinDistTime;
-		double                   m_badNavAlarm_AlarmTimeout;
-		double DIST_TO_TARGET_FOR_SENDING_EVENT;  //!< Default value=0, means use the "targetAllowedDistance" passed by the user in the navigation request.
 
 	public:
 		MRPT_MAKE_ALIGNED_OPERATOR_NEW

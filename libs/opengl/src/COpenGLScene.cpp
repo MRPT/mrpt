@@ -203,7 +203,7 @@ void COpenGLScene::insert( const CRenderizablePtr &newObject, const std::string 
 			return;
 		}
 	}
-	THROW_EXCEPTION_CUSTOM_MSG1("Error: viewport '%s' not found.",viewportName.c_str());
+	THROW_EXCEPTION_FMT("Error: viewport '%s' not found.",viewportName.c_str());
 	MRPT_END
 }
 

@@ -49,7 +49,7 @@ void CRovio::initialize() //string &errormsg, string url_out, string user_out, s
 		cout<<"[CRovio::Initialize] Response:\n"<<response<<endl;
 
 	if (!errormsg.empty())
-		THROW_EXCEPTION_CUSTOM_MSG1("Error initializing Rovio: %s",errormsg.c_str() );
+		THROW_EXCEPTION_FMT("Error initializing Rovio: %s",errormsg.c_str() );
 }
 
 /*-------------------------------------------------

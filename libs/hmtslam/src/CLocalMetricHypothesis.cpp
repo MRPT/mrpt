@@ -743,7 +743,7 @@ unsigned int CLocalMetricHypothesis::TRobotPosesPartitioning::pose2idx(const TPo
 	for (std::map<uint32_t,TPoseID>::const_iterator it=idx2pose.begin();it!=idx2pose.end();++it)
 		if (it->second == id)
 			return it->first;
-	THROW_EXCEPTION_CUSTOM_MSG1("PoseID=%i not found.", static_cast<int>(id) );
+	THROW_EXCEPTION_FMT("PoseID=%i not found.", static_cast<int>(id) );
 }
 
 /*---------------------------------------------------------------

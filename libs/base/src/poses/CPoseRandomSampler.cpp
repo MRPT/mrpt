@@ -93,7 +93,7 @@ void CPoseRandomSampler::setPosePDF( const CPosePDF *pdf )
     }
     else
     {
-        THROW_EXCEPTION_CUSTOM_MSG1("Unsuported class: %s", m_pdf2D->GetRuntimeClass()->className );
+        THROW_EXCEPTION_FMT("Unsuported class: %s", m_pdf2D->GetRuntimeClass()->className );
     }
 
 
@@ -138,7 +138,7 @@ void CPoseRandomSampler::setPosePDF( const CPose3DPDF *pdf )
     }
     else
     {
-        THROW_EXCEPTION_CUSTOM_MSG1("Unsoported class: %s", m_pdf3D->GetRuntimeClass()->className );
+        THROW_EXCEPTION_FMT("Unsoported class: %s", m_pdf3D->GetRuntimeClass()->className );
     }
 
     MRPT_END
@@ -247,7 +247,7 @@ void CPoseRandomSampler::do_sample_2D( CPose2D &p ) const
 		pdf->drawSingleSample(p);
 	}
 	else
-		THROW_EXCEPTION_CUSTOM_MSG1("Unsoported class: %s", m_pdf2D->GetRuntimeClass()->className );
+		THROW_EXCEPTION_FMT("Unsoported class: %s", m_pdf2D->GetRuntimeClass()->className );
 
 	MRPT_END
 }
@@ -301,7 +301,7 @@ void CPoseRandomSampler::do_sample_3D( CPose3D &p ) const
 		pdf->drawSingleSample(p);
 	}
 	else
-		THROW_EXCEPTION_CUSTOM_MSG1("Unsoported class: %s", m_pdf3D->GetRuntimeClass()->className );
+		THROW_EXCEPTION_FMT("Unsoported class: %s", m_pdf3D->GetRuntimeClass()->className );
 
 	MRPT_END
 }

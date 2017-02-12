@@ -12,7 +12,6 @@
 #include <mrpt/nav/reactive/CReactiveNavigationSystem3D.h>
 #include <mrpt/nav/tpspace/CPTG_DiffDrive_CollisionGridBased.h>
 #include <mrpt/poses/CPose3D.h>
-#include <typeinfo>  // For typeid()
 
 using namespace mrpt;
 using namespace mrpt::poses;
@@ -76,30 +75,38 @@ void CReactiveNavigationSystem3D::changeRobotShape( TRobotShape robotShape )
 }
 
 
+void CReactiveNavigationSystem3D::saveConfigFile(mrpt::utils::CConfigFileBase &c) const
+{
+	const std::string s = "CReactiveNavigationSystem3D";
 
-void CReactiveNavigationSystem3D::internal_loadConfigFile(const mrpt::utils::CConfigFileBase &ini, const std::string &section_prefix)
+	unsigned int HEIGHT_LEVELS = m_robotShape.size();
+	MRPT_SAVE_CONFIG_VAR_COMMENT(HEIGHT_LEVELS, "Number of robot vertical sections");
+
+	unsigned int PTG_COUNT = m_ptgmultilevel.size();
+	MRPT_SAVE_CONFIG_VAR_COMMENT(PTG_COUNT, "Number of PTGs");
+}
+
+void CReactiveNavigationSystem3D::loadConfigFile(const mrpt::utils::CConfigFileBase &c)
 {
 	MRPT_START
 
 	m_PTGsMustBeReInitialized = true;
 
-	const std::string sectRob = section_prefix + std::string("ROBOT_CONFIG");
-	const std::string sectCfg = section_prefix + std::string("ReactiveParams"); // Was: "NAVIGATION_CONFIG". JLB changed this to make it consistent with 2D version and allow refactoring this method.
+	// 1st: load my own params; at the end, call parent's overriden method:
+	const std::string s = "CReactiveNavigationSystem3D";
 
-	// Load config from INI file:
-	// ------------------------------------------------------------
 	unsigned int num_levels;
 	vector <float> xaux,yaux;
 
 	//Read config params which describe the robot shape
-	num_levels = ini.read_int(sectRob,"HEIGHT_LEVELS", 1, true);
+	num_levels = c.read_int(s,"HEIGHT_LEVELS", 1, true);
 	m_robotShape.resize(num_levels);
 	for (unsigned int i=1;i<=num_levels;i++)
 	{
-		m_robotShape.setHeight(i-1, ini.read_float(sectRob,format("LEVEL%d_HEIGHT",i), 1.0, true) );
-		m_robotShape.setRadius(i-1, ini.read_float(sectRob,format("LEVEL%d_RADIUS",i), 0.5, false) );
-		ini.read_vector(sectRob,format("LEVEL%d_VECTORX",i), vector<float> (0), xaux, false);
-		ini.read_vector(sectRob,format("LEVEL%d_VECTORY",i), vector<float> (0), yaux, false);
+		m_robotShape.setHeight(i-1, c.read_float(s,format("LEVEL%d_HEIGHT",i), 1.0, true) );
+		m_robotShape.setRadius(i-1, c.read_float(s,format("LEVEL%d_RADIUS",i), 0.5, false) );
+		c.read_vector(s,format("LEVEL%d_VECTORX",i), vector<float> (0), xaux, false);
+		c.read_vector(s,format("LEVEL%d_VECTORY",i), vector<float> (0), yaux, false);
 		ASSERT_(xaux.size() == yaux.size());
 		for (unsigned int j=0;j<xaux.size();j++)
 			m_robotShape.polygon(i-1).AddVertex(xaux[j], yaux[j]);
@@ -109,7 +116,7 @@ void CReactiveNavigationSystem3D::internal_loadConfigFile(const mrpt::utils::CCo
 	// ---------------------------------------------
 	// levels = m_robotShape.heights.size()
 
-	unsigned int num_ptgs = ini.read_int(sectCfg,"PTG_COUNT", 1, true);
+	unsigned int num_ptgs = c.read_int(s,"PTG_COUNT", 1, true);
 	m_ptgmultilevel.resize(num_ptgs);
 
 	// Read each PTG parameters, and generate K x N collisiongrids
@@ -120,15 +127,15 @@ void CReactiveNavigationSystem3D::internal_loadConfigFile(const mrpt::utils::CCo
 		for (unsigned int i=1; i<=m_robotShape.size(); i++)
 		{
 			MRPT_LOG_INFO_FMT("[loadConfigFile] Generating PTG#%u at level %u...",j,i);
-			const std::string sPTGName = ini.read_string(sectCfg,format("PTG%d_TYPE",j),"",true);
-			CParameterizedTrajectoryGenerator *ptgaux = CParameterizedTrajectoryGenerator::CreatePTG(sPTGName,ini,sectCfg,format("PTG%d_",j));
+			const std::string sPTGName = c.read_string(s,format("PTG%d_TYPE",j),"",true);
+			CParameterizedTrajectoryGenerator *ptgaux = CParameterizedTrajectoryGenerator::CreatePTG(sPTGName,c,s,format("PTG%d_",j));
 			m_ptgmultilevel[j-1].PTGs.push_back(ptgaux);
 		}
 	}
 
 	MRPT_LOG_DEBUG_FMT(" Robot height sections = %u\n", static_cast<unsigned int>(m_robotShape.size()) );
 
-	//this->STEP1_InitPTGs();
+	CAbstractPTGBasedReactive::loadConfigFile(c); // call parent's overriden method:
 
 	MRPT_END
 }
@@ -163,7 +170,7 @@ void CReactiveNavigationSystem3D::STEP1_InitPTGs()
 				}
 
 				m_ptgmultilevel[j].PTGs[i]->initialize(
-					format("%s/ReacNavGrid_%s_%03u_L%02u.dat.gz", ptg_cache_files_directory.c_str(), robotName.c_str(), i, j),
+					format("%s/ReacNavGrid_%03u_L%02u.dat.gz", params_abstract_ptg_navigator.ptg_cache_files_directory.c_str(), i, j),
 					m_enableConsoleOutput /*verbose*/
 				);
 				MRPT_LOG_INFO("...Done.");
@@ -208,7 +215,7 @@ bool CReactiveNavigationSystem3D::implementSenseObstacles(mrpt::system::TTimeSta
 	size_t nPts;
 	const float *xs,*ys,*zs;
 	m_WS_Obstacles_unsorted.getPointsBuffer(nPts,xs,ys,zs);
-	const float OBS_MAX_XY = this->refDistance*1.1f;
+	const float OBS_MAX_XY = params_abstract_ptg_navigator.ref_distance*1.1f;
 
 	for (size_t j=0; j<nPts; j++)
 	{
@@ -243,9 +250,11 @@ void CReactiveNavigationSystem3D::STEP3_WSpaceToTPSpace(
 	const size_t ptg_idx,
 	std::vector<double> &out_TPObstacles,
 	mrpt::nav::ClearanceDiagram &out_clearance,
-	const mrpt::poses::CPose2D &rel_pose_PTG_origin_wrt_sense)
+	const mrpt::poses::CPose2D &rel_pose_PTG_origin_wrt_sense,
+	const bool eval_clearance)
 {
-	ASSERT_EQUAL_(m_WS_Obstacles_inlevels.size(),m_robotShape.size())
+	ASSERT_EQUAL_(m_WS_Obstacles_inlevels.size(), m_robotShape.size());
+	ASSERT_(!m_ptgmultilevel.empty() && m_ptgmultilevel.begin()->PTGs.size()==m_robotShape.size());
 
 	for (size_t j=0;j<m_robotShape.size();j++)
 	{
@@ -258,8 +267,9 @@ void CReactiveNavigationSystem3D::STEP3_WSpaceToTPSpace(
 			double ox, oy;
 			rel_pose_PTG_origin_wrt_sense.composePoint(xs[obs], ys[obs], ox, oy);
 			m_ptgmultilevel[ptg_idx].PTGs[j]->updateTPObstacle(ox, oy, out_TPObstacles);
-			m_ptgmultilevel[ptg_idx].PTGs[j]->updateClearance(ox, oy, out_clearance);
-
+			if (eval_clearance) {
+				m_ptgmultilevel[ptg_idx].PTGs[j]->updateClearance(ox, oy, out_clearance);
+			}
 		}
 	}
 

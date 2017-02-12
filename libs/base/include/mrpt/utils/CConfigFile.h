@@ -56,6 +56,8 @@ namespace utils
 		/** Dumps the changes to the physical configuration file now, not waiting until destruction. */
 		void writeNow();
 
+		void discardSavingChanges(); //!< Discard saving (current) changes to physical file upon destruction
+
 		/** Returns the file currently open by this object. */
 		std::string getAssociatedFile() const { return m_file; }
 

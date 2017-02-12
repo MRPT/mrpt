@@ -565,7 +565,7 @@ void CSwissRanger3DCamera::setPathForExternalImages( const std::string &director
 
 	if (!mrpt::system::createDirectory( directory ))
 	{
-		THROW_EXCEPTION_CUSTOM_MSG1("Error: Cannot create the directory for externally saved images: %s",directory.c_str() )
+		THROW_EXCEPTION_FMT("Error: Cannot create the directory for externally saved images: %s",directory.c_str() )
 	}
 	m_path_for_external_images = directory;
 }

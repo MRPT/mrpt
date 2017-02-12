@@ -128,7 +128,7 @@ void  CTypeSelector::setType(const std::string  &type)
 	}
 
 	// Not in the list:
-	THROW_EXCEPTION_CUSTOM_MSG1("Type '%s' is not one of the posibilities", type.c_str());
+	THROW_EXCEPTION_FMT("Type '%s' is not one of the posibilities", type.c_str());
 }
 
 /*---------------------------------------------------------------
