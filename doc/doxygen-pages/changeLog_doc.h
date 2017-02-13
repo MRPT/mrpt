@@ -59,6 +59,7 @@
 			- New function mrpt::utils::net::http_request()
 			- New function mrpt::system::now_double()
 			- New function mrpt::utils::getAllRegisteredClassesChildrenOf()
+			- Safer CClassRegistry: detect and raise exception on attempts to duplicated class registration.
 		- \ref mrpt_bayes_grp
 			- [API change] `verbose` is no longer a field of mrpt::bayes::CParticleFilter::TParticleFilterOptions. Use the setVerbosityLevel() method of the CParticleFilter class itself.
 			- [API change] mrpt::bayes::CProbabilityParticle (which affects all PF-based classes in MRPT) has been greatly simplified via usage of the new mrpt::utils::copy_ptr<> pointee-copy-semantics smart pointer.

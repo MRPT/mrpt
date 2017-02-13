@@ -14,6 +14,8 @@
 
 #include <map>
 #include <cstdarg>
+#include <mutex>
+#include <atomic>
 
 #include "internal_class_registry.h"
 
@@ -69,7 +71,15 @@ namespace mrpt
 			{
 				m_being_modified=true;
 				{
-					mrpt::synch::CCriticalSectionLocker lock(&m_cs);
+					std::unique_lock<std::mutex> lk(m_cs);
+
+					// Sanity check: don't allow registering twice the same class name!
+					const auto it = registeredClasses.find(className);
+					if (it != registeredClasses.cend()) {
+						if (it->second != &id) {
+							THROW_EXCEPTION_FMT("[MRPT class registry] Error: trying to register twice className=`%s` with different `TRuntimeClassId`!", className.c_str());
+						}
+					}
 					registeredClasses[className] = &id;
 				}
 				m_being_modified=false;
@@ -81,19 +91,19 @@ namespace mrpt
 				bool has_to_unlock = false;
 				if (m_being_modified)
 				{
-					m_cs.enter();
+					m_cs.lock();
 					has_to_unlock = true;
 				}
 				const TRuntimeClassId *ret = registeredClasses[className];
-				if (has_to_unlock) m_cs.leave();
+				if (has_to_unlock) m_cs.unlock();
 				return ret;
 			}
 
 			std::vector<const TRuntimeClassId*> getListOfAllRegisteredClasses()
 			{
-				mrpt::synch::CCriticalSectionLocker lock(&m_cs);
+				std::unique_lock<std::mutex> lk(m_cs);
 
-				std::vector<const TRuntimeClassId*>	ret;
+				std::vector<const TRuntimeClassId*> ret;
 				for (TClassnameToRuntimeId::iterator it=registeredClasses.begin();it!=registeredClasses.end();++it)
 					ret.push_back( it->second );
 				return ret;
@@ -111,8 +121,8 @@ namespace mrpt
 			// functions and it cannot be assured that classesKeeper will be
 			// initialized before other classes that call it...
 			TClassnameToRuntimeId			registeredClasses;
-			mrpt::synch::CCriticalSection 	m_cs;
-			volatile bool                   m_being_modified;
+			std::mutex        m_cs;
+			std::atomic<bool> m_being_modified;
 
 		};
 
