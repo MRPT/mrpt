@@ -29,6 +29,21 @@ namespace mrpt
 	class NAV_IMPEXP CWaypointsNavigator : public  mrpt::nav::CAbstractNavigator
 	{
 	public:
+		/** The struct for configuring navigation requests to CWaypointsNavigator and derived classes. */
+		struct NAV_IMPEXP TNavigationParamsWaypoints : public CAbstractNavigator::TNavigationParams
+		{
+			/** If not empty, this will prevail over the base class single goal target. 
+			  * Semantic is: any of these targets will be good for heading the robot towards them, 
+			  * but the priority is for the latest ones in the sequence. */
+			std::vector<mrpt::math::TPose2D>  multiple_targets;
+
+			TNavigationParamsWaypoints() { }
+			virtual ~TNavigationParamsWaypoints() { }
+			virtual std::string getAsText() const MRPT_OVERRIDE;
+			virtual TNavigationParams* clone() const MRPT_OVERRIDE { return new TNavigationParamsWaypoints(*this); }
+		};
+
+
 		CWaypointsNavigator( CRobot2NavInterface &robot_interface_impl );  //!< ctor
 		virtual ~CWaypointsNavigator(); //!< dtor
 

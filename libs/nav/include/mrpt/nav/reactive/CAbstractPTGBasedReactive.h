@@ -53,7 +53,7 @@ namespace mrpt
 		MRPT_MAKE_ALIGNED_OPERATOR_NEW
 
 		/** The struct for configuring navigation requests to CAbstractPTGBasedReactive and derived classes. */
-		struct NAV_IMPEXP TNavigationParamsPTG : public CAbstractNavigator::TNavigationParams
+		struct NAV_IMPEXP TNavigationParamsPTG : public CWaypointsNavigator::TNavigationParamsWaypoints
 		{
 			/** (Default=empty) Optionally, a list of PTG indices can be sent such that
 			 *  the navigator will restrict itself to only employ those PTGs. */

@@ -36,7 +36,7 @@ using namespace std;
 // ------ CAbstractPTGBasedReactive::TNavigationParamsPTG -----
 std::string CAbstractPTGBasedReactive::TNavigationParamsPTG::getAsText() const
 {
-	std::string s = TNavigationParams::getAsText();
+	std::string s = CWaypointsNavigator::TNavigationParamsWaypoints::getAsText();
 	s += "restrict_PTG_indices: ";
 	s += mrpt::utils::sprintf_vector("%u ",this->restrict_PTG_indices);
 	s += "\n";
