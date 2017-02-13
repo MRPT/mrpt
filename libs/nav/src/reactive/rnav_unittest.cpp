@@ -20,8 +20,8 @@ using mrpt::math::TPoint2D;
 
 template <typename RNAVCLASS>
 void run_rnav_test(
-	const std::string &sFilename, 
-	const std::string &sHoloMethod, 
+	const std::string &sFilename,
+	const std::string &sHoloMethod,
 	const TPoint2D &nav_target,
 	const TPoint2D &world_topleft,
 	const TPoint2D &world_rightbottom,
@@ -66,13 +66,13 @@ void run_rnav_test(
 	{
 		mrpt::maps::COccupancyGridMap2D &m_grid;
 
-		MyDummyRobotIF(mrpt::kinematics::CVehicleSimul_DiffDriven &sim, mrpt::maps::COccupancyGridMap2D &grid) : 
-			CRobot2NavInterfaceForSimulator_DiffDriven(sim), 
+		MyDummyRobotIF(mrpt::kinematics::CVehicleSimul_DiffDriven &sim, mrpt::maps::COccupancyGridMap2D &grid) :
+			CRobot2NavInterfaceForSimulator_DiffDriven(sim),
 			m_grid(grid)
 		{
 		}
 
-		bool senseObstacles(mrpt::maps::CSimplePointsMap &obstacles, mrpt::system::TTimeStamp &timestamp) override
+		bool senseObstacles(mrpt::maps::CSimplePointsMap &obstacles, mrpt::system::TTimeStamp &timestamp) MRPT_OVERRIDE
 		{
 			obstacles.clear();
 			timestamp = mrpt::system::now();
