@@ -15,6 +15,22 @@
 using namespace mrpt::nav;
 using namespace std;
 
+std::string CWaypointsNavigator::TNavigationParamsWaypoints::getAsText() const
+{
+	std::string s = TNavigationParams::getAsText();
+	if (!multiple_targets.empty())
+	{
+		s += "multiple_targets: [";
+		for (const auto &e : multiple_targets) {
+			s += e.asString();
+			s += std::string(" ");
+		}
+		s += "]\n";
+	}
+	return s;
+}
+
+
 CWaypointsNavigator::CWaypointsNavigator(CRobot2NavInterface &robot_if) :
 	CAbstractNavigator(robot_if)
 {
