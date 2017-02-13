@@ -16,6 +16,7 @@
 #include <cstdarg>
 #include <mutex>
 #include <atomic>
+#include <iostream>
 
 #include "internal_class_registry.h"
 
@@ -77,7 +78,7 @@ namespace mrpt
 					const auto it = registeredClasses.find(className);
 					if (it != registeredClasses.cend()) {
 						if (it->second != &id) {
-							THROW_EXCEPTION_FMT("[MRPT class registry] Error: trying to register twice className=`%s` with different `TRuntimeClassId`!", className.c_str());
+							std::cerr << mrpt::format("[MRPT class registry] Warning: overwriting already registered className=`%s` with different `TRuntimeClassId`!\n", className.c_str());
 						}
 					}
 					registeredClasses[className] = &id;
@@ -203,4 +204,3 @@ const TRuntimeClassId *mrpt::utils::findRegisteredClass(const std::string &class
 {
 	return CClassRegistry::Instance().Get( className );
 }
-
