@@ -537,35 +537,30 @@ void CPointsMap::determineMatching2D(
 	{
 		//if (!params.onlyKeepTheClosest)  THROW_EXCEPTION("ERROR: onlyKeepTheClosest must be also set to true when onlyUniqueRobust=true.")
 
-		vector<TMatchingPairPtr>	bestMatchForThisMap( nGlobalPoints, TMatchingPairPtr(NULL) );
-		TMatchingPairList::iterator it;
+		vector<TMatchingPairPtr>	bestMatchForThisMap( nGlobalPoints, TMatchingPairPtr(nullptr) );
 
 		//   1) Go through all the correspondences and keep the best corresp.
 		//       for each "global map" (this) point.
-		for (it=_correspondences.begin();it!=_correspondences.end();++it)
+		for (auto &c: _correspondences) 
 		{
-			if (!bestMatchForThisMap[it->this_idx])
+			if (bestMatchForThisMap[c.this_idx] == nullptr ||  // first one
+				c.errorSquareAfterTransformation < bestMatchForThisMap[c.this_idx]->errorSquareAfterTransformation // or better
+				)
 			{
-				bestMatchForThisMap[it->this_idx] = &(*it);
-			}
-			else
-			{
-				if ( it->errorSquareAfterTransformation < bestMatchForThisMap[it->this_idx]->errorSquareAfterTransformation )
-					bestMatchForThisMap[it->this_idx] = &(*it);
+				bestMatchForThisMap[c.this_idx] = &c;
 			}
 		}
 
 		//   2) Go again through the list of correspondences and remove those
 		//       who are not the best one for their corresponding global map.
-		for (it=_correspondences.begin();it!=_correspondences.end(); ++it)
-		{
-			if ( bestMatchForThisMap[it->this_idx] != &(*it) )
-                correspondences.push_back( *it );   				// Add to the output
+		for (auto &c : _correspondences) {
+			if ( bestMatchForThisMap[c.this_idx] == &c )
+				correspondences.push_back( c ); // Add to the output
 		}
 	} // end of additional consistency filer for "onlyKeepTheClosest"
 	else
 	{
-	    correspondences.swap(_correspondences);
+		correspondences.swap(_correspondences);
 	}
 
 	// If requested, copy sum of squared distances to output pointer:
