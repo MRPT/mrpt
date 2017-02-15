@@ -512,10 +512,11 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 		{
 			// STEP7: Get the non-holonomic movement command.
 			// ---------------------------------------------------------------------
+			double cmd_vel_speed_ratio = 1.0;
 			if (selectedHolonomicMovement)
 			{
 				CTimeLoggerEntry tle(m_timelogger, "navigationStep.selectedHolonomicMovement");
-				generate_vel_cmd(*selectedHolonomicMovement, new_vel_cmd);
+				cmd_vel_speed_ratio = generate_vel_cmd(*selectedHolonomicMovement, new_vel_cmd);
 				ASSERT_(new_vel_cmd);
 			}
 
@@ -554,6 +555,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 					}
 				}
 				// Save last sent cmd:
+				m_lastSentVelCmd.speed_scale = cmd_vel_speed_ratio;
 				m_lastSentVelCmd.ptg_index = best_ptg_idx;
 				m_lastSentVelCmd.ptg_alpha_index = selectedHolonomicMovement ?
 					selectedHolonomicMovement->PTG->alpha2index(selectedHolonomicMovement->direction)
@@ -754,13 +756,24 @@ void CAbstractPTGBasedReactive::calc_move_candidate_scores(
 
 	// Special case for NOP motion cmd:
 	// consider only the empty space *after* the current robot pose, which is not at the origin.
-	if (this_is_PTG_continuation &&
-		( std::abs(rel_cur_pose_wrt_last_vel_cmd_NOP.x())>0.05 || std::abs(rel_cur_pose_wrt_last_vel_cmd_NOP.y())>0.05) // edge case: if the rel pose is (0,0), the evaluation is exactly as in an no-NOP case.
-		)
+	if (this_is_PTG_continuation)
 	{
 		int cur_k=0;
 		double cur_norm_d=.0;
-		bool is_exact = cm.PTG->inverseMap_WS2TP(rel_cur_pose_wrt_last_vel_cmd_NOP.x(), rel_cur_pose_wrt_last_vel_cmd_NOP.y(), cur_k, cur_norm_d);
+		bool is_exact;
+
+		// Use: time-based prediction for shorter distances, PTG inverse mapping-based for longer ranges:
+		const double maxD = params_abstract_ptg_navigator.max_dist_for_timebased_path_prediction;
+		if (std::abs(rel_cur_pose_wrt_last_vel_cmd_NOP.x()) > maxD || std::abs(rel_cur_pose_wrt_last_vel_cmd_NOP.y()) > maxD) {
+			is_exact = cm.PTG->inverseMap_WS2TP(rel_cur_pose_wrt_last_vel_cmd_NOP.x(), rel_cur_pose_wrt_last_vel_cmd_NOP.y(), cur_k, cur_norm_d);
+		}
+		else {
+			// Use time: 
+			is_exact = true; // well, sort of...
+			const double NOP_At = m_lastSentVelCmd.speed_scale * mrpt::system::timeDifference(m_lastSentVelCmd.tim_send_cmd_vel, tim_start_iteration);
+			cur_k = move_k;
+			cur_norm_d = cm.PTG->getPathDist(cur_k, mrpt::utils::round(NOP_At / cm.PTG->getPathStepDuration())) / cm.PTG->getRefDistance();
+		}
 
 		if (!is_exact)
 		{
@@ -937,9 +950,10 @@ void CAbstractPTGBasedReactive::calc_move_candidate_scores(
 	MRPT_END;
 }
 
-void CAbstractPTGBasedReactive::generate_vel_cmd( const TCandidateMovementPTG &in_movement, mrpt::kinematics::CVehicleVelCmdPtr &new_vel_cmd )
+double CAbstractPTGBasedReactive::generate_vel_cmd( const TCandidateMovementPTG &in_movement, mrpt::kinematics::CVehicleVelCmdPtr &new_vel_cmd )
 {
 	mrpt::utils::CTimeLoggerEntry tle(m_timelogger, "generate_vel_cmd");
+	double cmdvel_speed_scale = 1.0;
 	try
 	{
 		if (in_movement.speed == 0)
@@ -955,13 +969,14 @@ void CAbstractPTGBasedReactive::generate_vel_cmd( const TCandidateMovementPTG &i
 
 			// Scale holonomic speeds to real-world one:
 			new_vel_cmd->cmdVel_scale(in_movement.speed);
+			cmdvel_speed_scale *= in_movement.speed;
 
 			if (!m_last_vel_cmd) // first iteration? Use default values:
 				m_last_vel_cmd = in_movement.PTG->getSupportedKinematicVelocityCommand();
 
 			// Honor user speed limits & "blending":
 			const double beta = meanExecutionPeriod.getLastOutput() / (meanExecutionPeriod.getLastOutput() + params_abstract_ptg_navigator.speedfilter_tau);
-			new_vel_cmd->cmdVel_limits(*m_last_vel_cmd, beta, params_abstract_ptg_navigator.robot_absolute_speed_limits);
+			cmdvel_speed_scale *= new_vel_cmd->cmdVel_limits(*m_last_vel_cmd, beta, params_abstract_ptg_navigator.robot_absolute_speed_limits);
 		}
 
 		m_last_vel_cmd = new_vel_cmd; // Save for filtering in next step
@@ -970,6 +985,7 @@ void CAbstractPTGBasedReactive::generate_vel_cmd( const TCandidateMovementPTG &i
 	{
 		MRPT_LOG_ERROR_STREAM << "[CAbstractPTGBasedReactive::generate_vel_cmd] Exception: " << e.what();
 	}
+	return cmdvel_speed_scale;
 }
 
 bool CAbstractPTGBasedReactive::impl_waypoint_is_reachable(const mrpt::math::TPoint2D &wp) const
@@ -1040,6 +1056,7 @@ void CAbstractPTGBasedReactive::TSentVelCmd::reset()
 	tim_send_cmd_vel = INVALID_TIMESTAMP;
 	poseVel = TRobotPoseVel();
 	colfreedist_move_k = .0;
+	speed_scale = 1.0;
 }
 bool CAbstractPTGBasedReactive::TSentVelCmd::isValid() const
 {
@@ -1264,6 +1281,7 @@ void CAbstractPTGBasedReactive::TAbstractPTGNavigatorParams::loadFromConfigFile(
 	MRPT_LOAD_CONFIG_VAR_CS(min_normalized_free_space_for_ptg_continuation, double);
 	MRPT_LOAD_CONFIG_VAR_CS(enable_obstacle_filtering, bool);
 	MRPT_LOAD_CONFIG_VAR_CS(evaluate_clearance, bool);
+	MRPT_LOAD_CONFIG_VAR_CS(max_dist_for_timebased_path_prediction, double);
 
 	MRPT_END;
 }
@@ -1299,6 +1317,7 @@ void CAbstractPTGBasedReactive::TAbstractPTGNavigatorParams::saveToConfigFile(mr
 	MRPT_SAVE_CONFIG_VAR_COMMENT(min_normalized_free_space_for_ptg_continuation, "Min normalized dist [0,1] after current pose in a PTG continuation to allow it.");
 	MRPT_SAVE_CONFIG_VAR_COMMENT(enable_obstacle_filtering, "Enabled obstacle filtering (params in its own section)");
 	MRPT_SAVE_CONFIG_VAR_COMMENT(evaluate_clearance, "Enable exact computation of clearance (default=false)");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(max_dist_for_timebased_path_prediction, "Max dist [meters] to use time-based path prediction for NOP evaluation");
 }
 
 CAbstractPTGBasedReactive::TAbstractPTGNavigatorParams::TAbstractPTGNavigatorParams() :
@@ -1313,7 +1332,8 @@ CAbstractPTGBasedReactive::TAbstractPTGNavigatorParams::TAbstractPTGNavigatorPar
 	min_normalized_free_space_for_ptg_continuation(0.2),
 	robot_absolute_speed_limits(),
 	enable_obstacle_filtering(true),
-	evaluate_clearance(false)
+	evaluate_clearance(false),
+	max_dist_for_timebased_path_prediction(2.0)
 {
 }
 
