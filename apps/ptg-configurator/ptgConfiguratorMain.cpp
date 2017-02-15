@@ -717,6 +717,7 @@ void ptgConfiguratorframe::rebuild3Dview()
 
 				// Clearance diagram:
 				mrpt::nav::ClearanceDiagram cd;
+				ptg->initClearanceDiagram(cd);
 				double tim_build_cd=.0;
 				{
 					timer.Tic();
