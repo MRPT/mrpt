@@ -14,11 +14,13 @@ function build ()
   # gcc is too slow and we have a time limit in Travis CI: exclude examples when building with gcc
   if [ "$CC" == "gcc" ]; then
     BUILD_EXAMPLES=FALSE
+	BUILD_ARIA=FALSE
   else
     BUILD_EXAMPLES=TRUE
+	BUILD_ARIA=ON
   fi
 
-  cmake $MRPT_DIR -DBUILD_EXAMPLES=$BUILD_EXAMPLES -DBUILD_APPLICATIONS=TRUE -DBUILD_TESTING=FALSE
+  cmake $MRPT_DIR -DBUILD_EXAMPLES=$BUILD_EXAMPLES -DBUILD_APPLICATIONS=TRUE -DBUILD_TESTING=FALSE -DBUILD_ARIA=$BUILD_ARIA
   make -j2
 }
 
