@@ -120,7 +120,7 @@ void CVehicleVelCmd_Holo::cmdVel_scale(double vel_scale)
 	// ramp_time: leave unchanged
 }
 
-void CVehicleVelCmd_Holo::cmdVel_limits(const mrpt::kinematics::CVehicleVelCmd &prev_vel_cmd, const double beta, const TVelCmdParams &params)
+double CVehicleVelCmd_Holo::cmdVel_limits(const mrpt::kinematics::CVehicleVelCmd &prev_vel_cmd, const double beta, const TVelCmdParams &params)
 {
 	ASSERTMSG_(params.robotMax_V_mps >= .0, "[CVehicleVelCmd_Holo] `robotMax_V_mps` must be set to valid values: either assign values programatically or call loadConfigFile()");
 
@@ -131,5 +131,7 @@ void CVehicleVelCmd_Holo::cmdVel_limits(const mrpt::kinematics::CVehicleVelCmd &
 	rot_speed *= f; // rot_speed
 	// ramp_time: leave unchanged
 	// Blending with "beta" not required, since the ramp_time already blends cmds for holo robots.
+
+	return f;
 }
 
