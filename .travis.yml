@@ -24,6 +24,9 @@ install:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install opencv         ; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install assimp         ; fi
 
+after_success:
+  - coveralls
+  
 script:
   - bash .travis.sh
 
