@@ -559,9 +559,16 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 					selectedHolonomicMovement->PTG->alpha2index(selectedHolonomicMovement->direction)
 					:
 					0;
+
+				m_lastSentVelCmd.colfreedist_move_k = best_ptg_idx >= 0 ?
+					m_infoPerPTG[best_ptg_idx].TP_Obstacles[m_lastSentVelCmd.ptg_alpha_index]
+					:
+					.0;
+
 				m_lastSentVelCmd.tp_target_k = selectedHolonomicMovement ?
 					selectedHolonomicMovement->PTG->alpha2index(m_infoPerPTG[best_ptg_idx].target_alpha) :
 					0;
+
 				m_lastSentVelCmd.poseVel = m_curPoseVel;
 				m_lastSentVelCmd.tim_send_cmd_vel = tim_send_cmd_vel;
 
@@ -1032,6 +1039,7 @@ void CAbstractPTGBasedReactive::TSentVelCmd::reset()
 	tp_target_k = -1;
 	tim_send_cmd_vel = INVALID_TIMESTAMP;
 	poseVel = TRobotPoseVel();
+	colfreedist_move_k = .0;
 }
 bool CAbstractPTGBasedReactive::TSentVelCmd::isValid() const
 {
@@ -1207,6 +1215,13 @@ void CAbstractPTGBasedReactive::build_movement_candidate(
 				this_is_PTG_continuation, rel_cur_pose_wrt_last_vel_cmd_NOP,
 				indexPTG, 
 				tim_start_iteration);
+
+			// Store NOP related extra vars:
+			cm.props["original_col_free_dist"] =
+				this_is_PTG_continuation ?
+				m_lastSentVelCmd.colfreedist_move_k
+				:
+				.0;
 		}
 
 

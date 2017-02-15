@@ -288,6 +288,7 @@ namespace mrpt
 			int tp_target_k;     //!< Path index of target in TP-space in this instant
 			mrpt::system::TTimeStamp tim_send_cmd_vel; //!< Timestamp of when the cmd was sent
 			TRobotPoseVel  poseVel;  //!< Robot pose & velocities and timestamp of when it was queried
+			double colfreedist_move_k; //!< TP-Obstacles in the move direction at the instant of picking this movement
 
 			bool isValid() const;
 			void reset();

@@ -141,8 +141,13 @@ void CHolonomicFullEval::navigate(const NavInput & ni, NavOutput &no)
 		const double endpt_dist_to_target = (ni.target - TPoint2D(x, y)).norm();
 		const double endpt_dist_to_target_norm = std::min(1.0, endpt_dist_to_target);
 
-		if (endpt_dist_to_target_norm > target_dist && endpt_dist_to_target_norm >= 0.95 * target_dist) {
-			// path takes us away:
+		if (
+			(endpt_dist_to_target_norm > target_dist && endpt_dist_to_target_norm >= 0.95 * target_dist)
+			&& min_dist_target_along_path > 1.05 * std::min(target_dist, endpt_dist_to_target_norm) // the path does not get any closer to trg
+			//|| (ni.obstacles[i]<0.95*target_dist)
+			)
+		{
+			// path takes us away or way blocked:
 			sg.point1.x = x*0.5;
 			sg.point1.y = y*0.5;
 			min_dist_target_along_path = sg.distance(ni.target);
