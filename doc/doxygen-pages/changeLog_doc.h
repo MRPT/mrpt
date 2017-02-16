@@ -144,6 +144,7 @@
 		- Fix wrong units for negative numbers in mrpt::system::unitsFormat()
 		- Fix potential thread-unsafe conditions while inserting a mrpt::obs::CObservation2DRangeScan into a pointmap with SSE2 optimizations enabled.
 		- CStream: Fix memory leak if an exception (e.g. EOF) is found during object deserialization.
+		- Fix a bug in the `onlyUniqueRobust` option for point cloud matching (affecting CICP, etc.). Thanks [Shuo](https://github.com/ygzhangsoya)!
 
 <hr>
 <a name="1.4.0">
