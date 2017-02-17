@@ -338,7 +338,6 @@ void CParameterizedTrajectoryGenerator::evalClearanceSingleObstacle(const double
 	ASSERT_(numPathSteps >  inout_realdist2clearance.size());
 
 	const double numStepsPerIncr = (numPathSteps - 1.0) / (inout_realdist2clearance.size());
-	const double threshold_distant_obstacle = 5 * this->getApproxRobotRadius();
 
 	double step_pointer_dbl = 0.0;
 
