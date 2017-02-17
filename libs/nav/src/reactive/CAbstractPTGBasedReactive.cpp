@@ -598,7 +598,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 		// Running period estim:
 		const double period_tim= timerForExecutionPeriod.Tac();
 		if (period_tim > 1.5* meanExecutionPeriod.getLastOutput()) {
-			MRPT_LOG_WARN_FMT("Timing warning: Suspicious executionTime=%.03f ms is far above the average of %.03f ms", 1e3*period_tim, meanExecutionPeriod.getLastOutput()*1e3);
+			MRPT_LOG_WARN_FMT("Timing warning: Suspicious executionPeriod=%.03f ms is far above the average of %.03f ms", 1e3*period_tim, meanExecutionPeriod.getLastOutput()*1e3);
 		}
 		meanExecutionPeriod.filter(period_tim);
 		timerForExecutionPeriod.Tic();
@@ -663,6 +663,8 @@ void CAbstractPTGBasedReactive::STEP8_GenerateLogRecord(CLogFileRecord &newLogRe
 	newLogRec.values["executionTime_avr"] = meanExecutionTime.getLastOutput();
 	newLogRec.values["time_changeSpeeds()"] = tim_changeSpeed;
 	newLogRec.values["time_changeSpeeds()_avr"] = tim_changeSpeed_avr.getLastOutput();
+	newLogRec.values["CWaypointsNavigator::navigationStep()"] = m_timlog_delays.getLastTime("CWaypointsNavigator::navigationStep()");
+	newLogRec.values["CAbstractNavigator::navigationStep()"] = m_timlog_delays.getLastTime("CAbstractNavigator::navigationStep()");
 	newLogRec.timestamps["tim_start_iteration"] = tim_start_iteration;
 	newLogRec.timestamps["curPoseAndVel"] = m_curPoseVel.timestamp;
 	newLogRec.nPTGs = nPTGs;
@@ -760,7 +762,8 @@ void CAbstractPTGBasedReactive::calc_move_candidate_scores(
 	{
 		int cur_k=0;
 		double cur_norm_d=.0;
-		bool is_exact;
+		bool is_exact, is_time_based = false;
+		uint32_t cur_ptg_step = 0;
 
 		// Use: time-based prediction for shorter distances, PTG inverse mapping-based for longer ranges:
 		const double maxD = params_abstract_ptg_navigator.max_dist_for_timebased_path_prediction;
@@ -769,10 +772,20 @@ void CAbstractPTGBasedReactive::calc_move_candidate_scores(
 		}
 		else {
 			// Use time: 
+			is_time_based = true;
 			is_exact = true; // well, sort of...
 			const double NOP_At = m_lastSentVelCmd.speed_scale * mrpt::system::timeDifference(m_lastSentVelCmd.tim_send_cmd_vel, tim_start_iteration);
+			newLogRec.additional_debug_msgs["PTG_eval.NOP_At"] = mrpt::format("%.06f s",NOP_At);
 			cur_k = move_k;
-			cur_norm_d = cm.PTG->getPathDist(cur_k, mrpt::utils::round(NOP_At / cm.PTG->getPathStepDuration())) / cm.PTG->getRefDistance();
+			cur_ptg_step = mrpt::utils::round(NOP_At / cm.PTG->getPathStepDuration());
+			cur_norm_d = cm.PTG->getPathDist(cur_k, cur_ptg_step) / cm.PTG->getRefDistance();
+			{
+				const double cur_a = cm.PTG->index2alpha(cur_k);
+				log.TP_Robot.x = cos(cur_a)*cur_norm_d;
+				log.TP_Robot.y = sin(cur_a)*cur_norm_d;
+				cm.starting_robot_dir = cur_a;
+				cm.starting_robot_dist = cur_norm_d;
+			}
 		}
 
 		if (!is_exact)
@@ -782,8 +795,8 @@ void CAbstractPTGBasedReactive::calc_move_candidate_scores(
 			newLogRec.additional_debug_msgs["PTG_eval"] = "PTG-continuation not allowed, cur. pose out of PTG domain.";
 			return;
 		}
-		uint32_t cur_ptg_step = 0;
 		bool WS_point_is_unique = true; 
+		if (!is_time_based)
 		{
 			bool ok1 = cm.PTG->getPathStepForDist(m_lastSentVelCmd.ptg_alpha_index, cur_norm_d * cm.PTG->getRefDistance(), cur_ptg_step);
 			if (ok1) {
