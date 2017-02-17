@@ -663,6 +663,8 @@ void CAbstractPTGBasedReactive::STEP8_GenerateLogRecord(CLogFileRecord &newLogRe
 	newLogRec.values["executionTime_avr"] = meanExecutionTime.getLastOutput();
 	newLogRec.values["time_changeSpeeds()"] = tim_changeSpeed;
 	newLogRec.values["time_changeSpeeds()_avr"] = tim_changeSpeed_avr.getLastOutput();
+	newLogRec.values["CWaypointsNavigator::navigationStep()"] = m_timlog_delays.getLastTime("CWaypointsNavigator::navigationStep()");
+	newLogRec.values["CAbstractNavigator::navigationStep()"] = m_timlog_delays.getLastTime("CAbstractNavigator::navigationStep()");
 	newLogRec.timestamps["tim_start_iteration"] = tim_start_iteration;
 	newLogRec.timestamps["curPoseAndVel"] = m_curPoseVel.timestamp;
 	newLogRec.nPTGs = nPTGs;

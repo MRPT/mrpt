@@ -30,6 +30,7 @@ void CWaypointsNavigator::navigateWaypoints( const TWaypointSequence & nav_reque
 
 	mrpt::synch::CCriticalSectionLocker csl(&m_nav_waypoints_cs);
 
+
 	m_waypoint_nav_status = TWaypointStatusSequence();
 	m_waypoint_nav_status.timestamp_nav_started = mrpt::system::now();
 
@@ -75,6 +76,7 @@ void CWaypointsNavigator::navigationStep()
 	//     Waypoint navigation algorithm
 	// --------------------------------------
 	{
+	mrpt::utils::CTimeLoggerEntry tle(m_timlog_delays,"CWaypointsNavigator::navigationStep()");
 	mrpt::synch::CCriticalSectionLocker csl(&m_nav_waypoints_cs);
 
 	TWaypointStatusSequence &wps = m_waypoint_nav_status; // shortcut to save typing
