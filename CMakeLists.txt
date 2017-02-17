@@ -492,9 +492,6 @@ if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
 		SET(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -stdlib=libstdc++")
 	ENDIF()
 
-	# This is to fix the compilation of C++ templates
-	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fdelayed-template-parsing")
-
 endif()
 
 # Shared options between GCC and CLANG:
