@@ -14,7 +14,7 @@
 # ----------------------------------------------------------------------------
 PROJECT(MRPT)
 
-CMAKE_MINIMUM_REQUIRED(VERSION 2.6.4)
+CMAKE_MINIMUM_REQUIRED(VERSION 2.8.7)
 
 # -------------------------
 #        Setup CMake

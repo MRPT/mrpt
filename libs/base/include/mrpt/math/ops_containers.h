@@ -41,6 +41,7 @@
 
 #include <mrpt/math/CHistogram.h>  // Used in ::histogram()
 
+#include "ops_vectors.h"
 
 namespace mrpt
 {
