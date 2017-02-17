@@ -270,6 +270,13 @@ macro(internal_define_mrpt_lib name headers_only is_metalib)
 					COMPILE_FLAGS "/Yc${name}-precomp.h")
 			ELSE()
 				# Use cotire module for GCC/CLANG:
+				list(APPEND COTIRE_PREFIX_HEADER_IGNORE_PATH
+					${OpenCV_INCLUDE_DIR}"
+					"${MRPT_LIBS_ROOT}/${name}/src"
+				)
+				set_target_properties(mrpt-${name} PROPERTIES
+					COTIRE_PREFIX_HEADER_IGNORE_PATH "${COTIRE_PREFIX_HEADER_IGNORE_PATH}"
+				)
 				set_target_properties(mrpt-${name} PROPERTIES	COTIRE_CXX_PREFIX_HEADER_INIT "${CMAKE_SOURCE_DIR}/libs/${name}/src/${name}-precomp.h")
 				cotire(mrpt-${name})
 
