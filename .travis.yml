@@ -3,19 +3,11 @@ cache: ccache
 sudo: true
 dist: trusty
 
-compiler: 
-  - gcc
-  - clang  
-
-os:
-  - linux
-  - osx
-  
 before_install:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then  sudo add-apt-repository ppa:v-launchpad-jochen-sprickerhof-de/pcl -y  ; fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then  sudo apt-get update -d  ; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update          ; fi
-  
+
 
 install:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then  sudo apt-get install build-essential pkg-config cmake libwxgtk3.0-dev libftdi-dev freeglut3-dev zlib1g-dev libusb-1.0-0-dev  libdc1394-22-dev libavformat-dev libswscale-dev libassimp-dev libjpeg-dev libopencv-dev libgtest-dev libeigen3-dev libsuitesparse-dev libpcl-all libopenni2-dev libudev-dev gdb libboost-python-dev libpython-dev python-numpy -y ; fi
@@ -28,7 +20,23 @@ install:
 script:
   - bash .travis.sh
 
-env:
-  - TASK="build"
-  - TASK="test"
-
+matrix:
+  include:
+  - compiler: gcc
+    os: linux
+    env: TASK="build"
+  - compiler: gcc
+    os: linux
+    env: TASK="test"
+  - compiler: clang
+    os: linux
+    env: TASK="build"
+  - compiler: clang
+    os: linux
+    env: TASK="test"
+  - compiler: gcc
+    os: osx
+    env: TASK="test"
+  - compiler: clang
+    os: osx
+    env: TASK="test"
