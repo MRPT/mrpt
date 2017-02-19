@@ -716,3 +716,82 @@ double CPTG_Holo_Blend::getPathStepDuration() const
 {
 	return PATH_TIME_STEP;
 }
+
+CPTG_Holo_Blend::CPTG_Holo_Blend() :
+	T_ramp_max(-1.0),
+	V_MAX(-1.0),
+	W_MAX(-1.0),
+	turningRadiusReference(0.30),
+	curVelLocal(0, 0, 0)
+{
+	internal_construct_exprs();
+}
+
+CPTG_Holo_Blend::CPTG_Holo_Blend(const mrpt::utils::CConfigFileBase &cfg, const std::string &sSection) :
+	turningRadiusReference(0.30),
+	curVelLocal(0, 0, 0)
+{
+	internal_construct_exprs();
+	this->loadFromConfigFile(cfg, sSection);
+}
+
+CPTG_Holo_Blend::~CPTG_Holo_Blend()
+{
+}
+
+void CPTG_Holo_Blend::internal_construct_exprs()
+{
+	std::map<std::string, double *> symbols;
+	symbols["dir"] = &m_expr_dir;
+	symbols["V_MAX"] = &V_MAX;
+	symbols["W_MAX"] = &W_MAX;
+	symbols["T_ramp_max"] = &T_ramp_max;
+	symbols["T_ramp_max"] = &T_ramp_max;
+
+	m_expr_v.register_symbol_table(symbols);
+	m_expr_w.register_symbol_table(symbols);
+	m_expr_T_ramp.register_symbol_table(symbols);
+
+	// Default expressions (can be overloaded by values in a config file)
+	expr_V = "V_MAX";
+	expr_W = "W_MAX";
+	expr_T_ramp = "T_ramp_max";
+}
+
+double CPTG_Holo_Blend::internal_get_v(const double dir) const
+{
+	const_cast<double&>(m_expr_dir) = dir;
+	return std::abs(m_expr_v.eval());
+}
+double CPTG_Holo_Blend::internal_get_w(const double dir) const
+{
+	const_cast<double&>(m_expr_dir) = dir;
+	return std::abs(m_expr_w.eval());
+}
+double CPTG_Holo_Blend::internal_get_T_ramp(const double dir) const
+{
+	const_cast<double&>(m_expr_dir) = dir;
+	return m_expr_T_ramp.eval();
+}
+
+void CPTG_Holo_Blend::internal_initialize(const std::string & cacheFilename, const bool verbose)
+{
+	// No need to initialize anything, just do some params sanity checks:
+	ASSERT_(T_ramp_max>0);
+	ASSERT_(V_MAX>0);
+	ASSERT_(W_MAX>0);
+	ASSERT_(m_alphaValuesCount>0);
+	ASSERT_(m_robotRadius>0);
+
+	// Compile user-given expressions:
+	m_expr_v.compile(expr_V, std::map<std::string, double>(), "expr_V");
+	m_expr_w.compile(expr_W, std::map<std::string, double>(), "expr_w");
+	m_expr_T_ramp.compile(expr_T_ramp, std::map<std::string, double>(), "expr_T_ramp");
+
+#ifdef DO_PERFORMANCE_BENCHMARK
+	tl.dumpAllStats();
+#endif
+
+	m_pathStepCountCache.clear();
+}
+
