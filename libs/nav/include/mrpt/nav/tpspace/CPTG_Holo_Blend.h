@@ -9,9 +9,7 @@
 #pragma once
 
 #include <mrpt/nav/tpspace/CParameterizedTrajectoryGenerator.h>
-#include <mrpt/utils/pimpl.h>
-
-PIMPL_FORWARD_DECLARATION(namespace exprtk { template <typename T> class expression; })
+#include <mrpt/math/CRuntimeCompiledExpression.h>
 
 namespace mrpt
 {
@@ -74,14 +72,14 @@ namespace mrpt
 		mutable std::vector<int> m_pathStepCountCache;
 
 		// Compilation of user-given expressions
-		PIMPL_DECLARE_TYPE(exprtk::expression<double>, m_expr_v);
-		PIMPL_DECLARE_TYPE(exprtk::expression<double>, m_expr_w);
-		PIMPL_DECLARE_TYPE(exprtk::expression<double>, m_expr_T_ramp);
+		mrpt::math::CRuntimeCompiledExpression m_expr_v, m_expr_w, m_expr_T_ramp;
 		double m_expr_dir;  // Used as symbol "dir" in m_expr_v and m_expr_w
-		void internal_construct_exprs();
+
 		double internal_get_v(const double dir) const;  //!< Evals expr_v
 		double internal_get_w(const double dir) const;  //!< Evals expr_w
 		double internal_get_T_ramp(const double dir) const;  //!< Evals expr_T_ramp
+
+		void internal_construct_exprs();
 
 		void internal_processNewRobotShape() MRPT_OVERRIDE;
 		void internal_initialize(const std::string & cacheFilename = std::string(), const bool verbose = true) MRPT_OVERRIDE;

@@ -12,9 +12,6 @@
 #include <mrpt/nav/reactive/CMultiObjectiveMotionOptimizerBase.h>
 #include <mrpt/system/string_utils.h>
 
-#define exprtk_disable_string_capabilities   // Workaround a bug in Ubuntu precise's GCC+libstdc++
-#include <mrpt/otherlibs/exprtk.hpp>
-
 using namespace mrpt::nav;
 using namespace mrpt::utils;
 
@@ -40,14 +37,10 @@ int CMultiObjectiveMotionOptimizerBase::decide(const std::vector<mrpt::nav::TCan
 			p.second = std::numeric_limits<double>::quiet_NaN();
 		}
 
-		exprtk::symbol_table<double> symbol_table;
 		for (const auto &prop : m.props) {
 			double & var = m_expr_vars[prop.first];
 			var = prop.second;
-			symbol_table.add_variable(prop.first, var);
 		}
-		symbol_table.add_constant("M_PI", M_PI);
-		symbol_table.add_constants();
 
 		// Upon first iteration: compile expressions
 		if (m_score_exprs.size() != m_params_base.formula_score.size())
@@ -57,12 +50,7 @@ int CMultiObjectiveMotionOptimizerBase::decide(const std::vector<mrpt::nav::TCan
 			for (const auto &f : m_params_base.formula_score)
 			{
 				auto &se = m_score_exprs[f.first];
-		
-				PIMPL_GET_REF(exprtk::expression<double>, se.compiled_formula).register_symbol_table(symbol_table);
-				// Compile user-given expressions:
-				exprtk::parser<double> parser;
-				if (!parser.compile(f.second, PIMPL_GET_REF(exprtk::expression<double>, se.compiled_formula)))
-					THROW_EXCEPTION_FMT("Error compiling score `%s` expression: `%s`. Error: `%s`", f.first.c_str(), f.second.c_str(), parser.error().c_str());
+				se.compile(f.second, m_expr_vars, std::string("score: ") + f.first);
 			}
 		}
 
@@ -76,13 +64,7 @@ int CMultiObjectiveMotionOptimizerBase::decide(const std::vector<mrpt::nav::TCan
 			{
 				const auto &str = m_params_base.movement_assert[i];
 				auto &ce = m_movement_assert_exprs[i];
-
-				PIMPL_GET_REF(exprtk::expression<double>, ce.compiled_formula).register_symbol_table(symbol_table);
-
-				// Compile user-given expressions:
-				exprtk::parser<double> parser;
-				if (!parser.compile(str, PIMPL_GET_REF(exprtk::expression<double>, ce.compiled_formula)))
-					THROW_EXCEPTION_FMT("Error compiling assert expression: `%s`. Error: `%s`", str.c_str(), parser.error().c_str());
+				ce.compile(str, m_expr_vars, "assert" );
 			}
 		}
 
@@ -91,7 +73,7 @@ int CMultiObjectiveMotionOptimizerBase::decide(const std::vector<mrpt::nav::TCan
 		{
 			for (auto &ma : m_movement_assert_exprs)
 			{
-				const double val = PIMPL_GET_CONSTREF(exprtk::expression<double>, ma.compiled_formula).value();
+				const double val = ma.eval();
 				if (val == 0) {
 					assert_failed = true;
 					break;
@@ -110,7 +92,7 @@ int CMultiObjectiveMotionOptimizerBase::decide(const std::vector<mrpt::nav::TCan
 			} 
 			else
 			{
-				val = PIMPL_GET_CONSTREF(exprtk::expression<double>, sc.second.compiled_formula).value();
+				val = sc.second.eval();
 			}
 
 			if (val != val /* NaN */)
@@ -175,11 +157,6 @@ CMultiObjectiveMotionOptimizerBase * CMultiObjectiveMotionOptimizerBase::Create(
 	{
 		return nullptr;
 	}
-}
-
-CMultiObjectiveMotionOptimizerBase::TCompiledFormulaWrapper::TCompiledFormulaWrapper()
-{
-	PIMPL_CONSTRUCT(exprtk::expression<double>, compiled_formula);
 }
 
 CMultiObjectiveMotionOptimizerBase::TParamsBase::TParamsBase()
