@@ -121,6 +121,8 @@ namespace mrpt
 
 		TAbstractNavigatorParams params_abstract_navigator;
 
+		/** Gives access to a const-ref to the internal time logger used to estimate delays \sa getTimeLogger() in derived classes */
+		const mrpt::utils::CTimeLogger & getDelaysTimeLogger() const { return m_timlog_delays; }
 
 	private:
 		TState  m_lastNavigationState; //!< Last internal state of navigator:
