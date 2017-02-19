@@ -3,6 +3,10 @@ cache: ccache
 sudo: true
 dist: trusty
 
+env:
+  global:
+    - CCACHE_SLOPPINESS=pch_defines,time_macros
+
 before_install:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then  sudo add-apt-repository ppa:v-launchpad-jochen-sprickerhof-de/pcl -y  ; fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then  sudo apt-get update -d  ; fi
