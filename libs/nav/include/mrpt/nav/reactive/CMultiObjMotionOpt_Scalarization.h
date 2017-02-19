@@ -49,8 +49,8 @@ namespace mrpt
 			virtual void clear() MRPT_OVERRIDE;
 
 		protected:
-			TCompiledFormulaWrapper           m_expr_scalar_formula;
-			std::map<std::string, double>     m_expr_scalar_vars;
+			mrpt::math::CRuntimeCompiledExpression m_expr_scalar_formula;
+			std::map<std::string, double>          m_expr_scalar_vars;
 
 			// This virtual method is called by decide().
 			int impl_decide(const std::vector<mrpt::nav::TCandidateMovementPTG> &movs, TResultInfo &extra_info) MRPT_OVERRIDE;
