@@ -30,7 +30,7 @@ namespace math
 	 * This wrapper is provided to reduce the (very large) compilation time and memory required by the original 
 	 * library, at the cost of only exposing the most commonly used part of its API:
 	 *  - Only expressions returning `double` are supported.
-	 *  - Variables must be provided via a `std::map` container.
+	 *  - Variables must be provided via a `std::map` container **or** pointers to user-stored variables.
 	 *
 	 * See examples of usage in the [unit test file](https://github.com/MRPT/mrpt/blob/master/libs/base/src/math/CRuntimeCompiledExpression_unittest.cpp).
 	 *
@@ -44,10 +44,17 @@ namespace math
 
 		/** Initializes the object by compiling an expression. 
 		  * \exception std::runtime_error On any syntax error or undefined symbol while compiling the expression. The `e.what()` message describes what is exactly the problem.
+		  * \sa register_symbol_table()
 		  */
 		void compile(
 			const std::string &expression,                  //!< [in] The expression to be compiled.
-			const std::map<std::string, double> &variables  //!< [in] Map of variables/constants by `name` ->  `value`. The references to the values in this map **must** be ensured to be valid thoughout all the life of the compiled expression.
+			const std::map<std::string, double> &variables = std::map<std::string, double>(),  //!< [in] Map of variables/constants by `name` ->  `value`. The references to the values in this map **must** be ensured to be valid thoughout all the life of the compiled expression.
+			const std::string &expr_name_for_error_reporting = std::string()  //!< A descriptive name of this formula, to be used when generating error reports via an  exception, if needed
+		);
+
+		/** Can be used **before** calling compile() to register additional variables by means of **pointers** instead of a std::map  */
+		void register_symbol_table(
+			const std::map<std::string, double *> &variables  //!< [in] Map of variables/constants by `name` ->  `value`. The references to the values in this map **must** be ensured to be valid thoughout all the life of the compiled expression.
 		);
 
 		/** Evaluates the current value of the precompiled formula. 
