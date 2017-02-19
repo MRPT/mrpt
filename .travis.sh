@@ -30,8 +30,13 @@ command_exists () {
 
 function test ()
 {
+  # gcc is too slow and we have a time limit in Travis CI:
+  if [ "$CC" == "gcc" ] && [ "$TRAVIS_OS_NAME" == "osx" ]; then
+	return
+  fi
+  
   mkdir $BUILD_DIR && cd $BUILD_DIR
-  cmake $MRPT_DIR -DBUILD_APPLICATIONS=FALSE
+  cmake $MRPT_DIR -DBUILD_APPLICATIONS=FALSE -DBUILD_ARIA=FALSE
   # Use `test_gdb` to show stack traces of failing unit tests.
   if command_exists gdb ; then
     make test_gdb
