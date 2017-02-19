@@ -268,6 +268,27 @@ macro(internal_define_mrpt_lib name headers_only is_metalib)
 				set_source_files_properties("${CMAKE_SOURCE_DIR}/libs/${name}/src/${name}-precomp.cpp"
 					PROPERTIES
 					COMPILE_FLAGS "/Yc${name}-precomp.h")
+			ELSE()
+				# Use cotire module for GCC/CLANG:
+				list(APPEND COTIRE_PREFIX_HEADER_IGNORE_PATH
+					"${OpenCV_INCLUDE_DIR}"
+					"${MRPT_LIBS_ROOT}/${name}/src"
+				)
+				set_target_properties(mrpt-${name} PROPERTIES
+					COTIRE_PREFIX_HEADER_IGNORE_PATH "${COTIRE_PREFIX_HEADER_IGNORE_PATH}"
+				)
+				set_target_properties(mrpt-${name} PROPERTIES	COTIRE_CXX_PREFIX_HEADER_INIT "${CMAKE_SOURCE_DIR}/libs/${name}/src/${name}-precomp.h")
+				cotire(mrpt-${name})
+
+				IF($ENV{VERBOSE})
+					#get_target_property(_unitySource example COTIRE_CXX_UNITY_SOURCE)
+					#get_target_property(_unityTargetName mrpt-${name} COTIRE_UNITY_TARGET_NAME)
+					get_target_property(_prefixHeader mrpt-${name} COTIRE_CXX_PREFIX_HEADER)
+					get_target_property(_precompiledHeader mrpt-${name} COTIRE_CXX_PRECOMPILED_HEADER)
+					MESSAGE(STATUS "  mrpt-${name}: Prefix header=${_prefixHeader}")
+					MESSAGE(STATUS "  mrpt-${name}: PCH header=${_precompiledHeader}")
+				ENDIF()
+
 			ENDIF (MSVC)
 
 			SOURCE_GROUP("Precompiled headers" FILES
@@ -369,7 +390,7 @@ macro(internal_define_mrpt_lib name headers_only is_metalib)
 			set_source_files_properties(${${_N}_FILES} PROPERTIES COMPILE_FLAGS "/Y-")
 		ENDFOREACH()
 	ENDIF()
-	
+
 	# --- End of conditional build of module ---
 	ENDIF(BUILD_mrpt-${name})
 
