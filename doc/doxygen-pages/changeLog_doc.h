@@ -71,6 +71,7 @@
 			- New class mrpt::gui::CDisplayWindow3DLocker for exception-safe 3D scene lock in 3D windows.
 		- \ref mrpt_hwdrivers_grp
 			- Using rplidar newest SDK 1.5.6 instead of 1.4.3, which support rplidar A1 and rplidar A2
+			- mrpt::hwdrivers::CNTRIPEmitter can now also dump raw NTRIP data to a file
 		- \ref mrpt_kinematics_grp
 			- New classes for 2D robot simulation:
 				- mrpt::kinematics::CVehicleSimul_DiffDriven
