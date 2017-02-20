@@ -12,6 +12,7 @@
 #include <mrpt/math/CMatrixTemplateNumeric.h>
 #include <mrpt/math/CMatrixFixedNumeric.h>
 #include <mrpt/math/math_frwds.h>
+#include <mrpt/poses/pose_traits.h>
 
 namespace mrpt
 {
@@ -30,6 +31,7 @@ namespace mrpt
 		public:
 			static const size_t state_length = STATE_LEN;	//!< The length of the variable, for example, 3 for a 3D point, 6 for a 3D pose (x y z yaw pitch roll).
 			typedef TDATA type_value;  //!< The type of the state the PDF represents
+			typedef CProbabilityDensityFunction<TDATA, STATE_LEN> self_t;
 
 			 /** Returns the mean, or mathematical expectation of the probability density distribution (PDF).
 			   * \sa getCovarianceAndMean, getInformationMatrix
@@ -89,7 +91,14 @@ namespace mrpt
 				this->getCovarianceAndMean(cov,p);
 				return cov;
 			}
-
+			
+			/** Returns whether the class instance holds the uncertainty in covariance or information form.
+			 * \note By default this is going to be covariance form. *Inf classes
+			 * (e.g. CPosePDFGaussianInf) store it in information form.
+			 *
+			 * \sa mrpt::poses_traits::is_inf_type
+			 */
+			virtual bool isInfType() const { return false; }
 
 			/** Returns the information (inverse covariance) matrix (a STATE_LEN x STATE_LEN matrix)
 			  *  Unless reimplemented in derived classes, this method first reads the covariance, then invert it.

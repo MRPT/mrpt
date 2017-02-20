@@ -34,7 +34,8 @@ namespace poses
 	class BASE_IMPEXP CPosePDFGaussianInf : public CPosePDF
 	{
 		// This must be added to any CSerializable derived class:
-		DEFINE_SERIALIZABLE( CPosePDFGaussianInf )
+		DEFINE_SERIALIZABLE( CPosePDFGaussianInf );
+		typedef CPosePDFGaussianInf self_t;
 
 	protected:
 		/** Assures the symmetry of the covariance matrix (eventually certain operations in the math-coprocessor lead to non-symmetric matrixes!)
@@ -73,6 +74,7 @@ namespace poses
 		void getMean(CPose2D &mean_pose) const MRPT_OVERRIDE {
 			mean_pose = mean;
 		}
+		bool isInfType() const { return mrpt::traits::is_inf_type<self_t>::value; }
 
 		/** Returns an estimate of the pose covariance matrix (3x3 cov matrix) and the mean, both at once.
 		  * \sa getMean */
