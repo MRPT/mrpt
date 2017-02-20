@@ -12,6 +12,7 @@
 
 #include <mrpt/math/CQuaternion.h>
 #include <mrpt/maps/CSimplePointsMap.h>
+#include <mrpt/maps/CSimpleMap.h>
 #include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/maps/COctoMap.h>
 #include <mrpt/graphs/CNetworkOfPoses.h>
@@ -433,37 +434,53 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 				std::map<std::string, int>* edge_stats,
 				mrpt::system::TTimeStamp* timestamp=NULL);
 
+		/**\name pause/resume execution */
+		/**\{ */
 		bool isPaused() const {
 			return m_is_paused;
 		}
 
 		void togglePause() {
 			if (isPaused()) {
-				this->resume();
+				this->resumeExec();
 			}
 			else {
-				this->pause();
+				this->pauseExec();
 			}
 		}
-		void resume() const {
+		void resumeExec() const {
 			if (!isPaused()) { return; }
 			MRPT_LOG_INFO_STREAM << "Program resumed.";
 			m_is_paused = false;
+
+			if (m_enable_visuals) {
+				this->m_win->addTextMessage(
+						0.3, 0.8, "",
+						mrpt::utils::TColorf(1.0, 0, 0),
+						m_text_index_paused_message);
+			}
 		}
 
-		void pause() {
+		void pauseExec() {
 			if (isPaused()) { return; }
-			MRPT_LOG_INFO_STREAM << "Program is paused. "
+			MRPT_LOG_WARN_STREAM << "Program is paused. "
 				<< "Press \"" << m_keystroke_pause_exec << 
 				" or \"" << system::upperCase(m_keystroke_pause_exec) << 
 				"\" in the dipslay window to resume";
 			m_is_paused = true;
+			if (m_enable_visuals) {
+				this->m_win->addTextMessage(
+						0.3, 0.8, m_paused_message,
+						mrpt::utils::TColorf(1.0, 0, 0),
+						m_text_index_paused_message);
+			}
 
 			while (this->isPaused()) {
 				mrpt::system::sleep(1000);
 				this->queryObserverForEvents();
 			}
 		}
+		/**\} */
 
 	protected:
 		// Private function definitions
@@ -530,6 +547,7 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		 * procedure in the estimated position of the robot
 		 */
 		inline void updateCurrPosViewport();
+		void initMapVisualization();
 		/**\brief Update the map visualization based on the current graphSLAM
 		 * state.
 		 *
@@ -538,7 +556,7 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		 *
 		 * \sa updateEstimatedTrajectoryVisualization
 		 */
-		void updateMapVisualization(const GRAPH_T& gr,
+		void updateMapVisualization(
 				const std::map<
 					mrpt::utils::TNodeID,
 					mrpt::obs::CObservation2DRangeScanPtr>& nodes_to_laser_scans2D,
@@ -646,7 +664,6 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 				mrpt::poses::CPose3D p1,
 				mrpt::poses::CPose3D p2);
 		/**\}*/
-		// TODO - Use an airplane/quad model for 3D operations
 		/**\brief Set the opengl model that indicates the latest position of the
 		 * trajectory at hand
 		 *
@@ -654,6 +671,8 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		 * \param[in] model_color Color of the object.
 		 * \param[in] model_size Scaling of the object.
 		 * \param[in] init_pose Initial position of the object.
+		 *
+		 * \todo Use an airplane/quad model for 3D operations
 		 *
 		 * \returns CSetOfObjectsPtr instance.
 		 *
@@ -756,6 +775,9 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		 */
 		mutable bool m_is_paused;
 
+		/**\brief Message to be displayed while paused. */
+		const std::string m_paused_message;
+
 		/**\name textMessage - related Parameters
 		 * Parameters relevant to the textMessages appearing in the visualization
 		 * window. These are divided into
@@ -774,12 +796,14 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		double m_offset_y_estimated_traj;
 		double m_offset_y_timestamp;
 		double m_offset_y_current_constraint_type;
+		double m_offset_y_paused_message;
 
 		int m_text_index_odometry;
 		int m_text_index_GT;
 		int m_text_index_estimated_traj;
 		int m_text_index_timestamp;
 		int m_text_index_current_constraint_type;
+		int m_text_index_paused_message;
 		/**\}*/
 
 		/**\name User available keystrokes
@@ -818,6 +842,8 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		/**\brief Last laser scan that the current class instance received.
 		 */
 		mrpt::obs::CObservation2DRangeScanPtr m_last_laser_scan2D;
+		/**\brief First recorded laser scan - assigned to the root */
+		mrpt::obs::CObservation2DRangeScanPtr m_first_laser_scan2D;
 		/**\brief Last laser scan that the current class instance received.
 		 */
 		mrpt::obs::CObservation3DRangeScanPtr m_last_laser_scan3D;
@@ -911,6 +937,8 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		 */
 		/**\{*/
 		mutable mrpt::maps::COccupancyGridMap2DPtr m_gridmap_cached;
+		/**\brief Acquired map in CSimpleMap representation */
+		mutable mrpt::maps::CSimpleMap m_simple_map_cached;
 		mutable mrpt::maps::COctoMapPtr m_octomap_cached;
 		/**\brief Indicates if the map is cached.
 		 *
@@ -938,6 +966,10 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		/**\brief Type of constraint currently in use.
 		 */
 		std::string m_current_constraint_type;
+		/**\brief Separator string to be used in debugging messages
+		 */
+		static const std::string header_sep;
+		static const std::string report_sep;
 };
 
 } } // end of namespaces

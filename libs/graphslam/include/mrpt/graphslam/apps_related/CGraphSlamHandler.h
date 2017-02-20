@@ -1,4 +1,5 @@
 /* +---------------------------------------------------------------------------+
+
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |

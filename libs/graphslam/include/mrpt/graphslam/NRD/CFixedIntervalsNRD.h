@@ -105,7 +105,6 @@ class CFixedIntervalsNRD:
 		void loadParams(const std::string& source_fname);
 		void printParams() const;
 		void getDescriptiveReport(std::string* report_str) const;
-		global_pose_t getCurrentRobotPosEstimation() const;
 
 		/**\brief Method makes use of the CActionCollection/CObservation to update the
 		 * odometry estimation from the last inserted pose
@@ -147,28 +146,24 @@ class CFixedIntervalsNRD:
 		//////////////////////////////////////////////////////////////
 		/**\name Registration Conditions Specifiers
 		 */
+		/**\{ */
 		/**\brief If estimated position surpasses the registration max values since
 		 * the previous registered node, register a new node in the graph.
 		 *
 		 * \return True on successful registration.
 		 */
 		bool checkRegistrationCondition();
-		bool checkRegistrationCondition(mrpt::poses::CPose2D p1, mrpt::poses::CPose2D p2);
-		bool checkRegistrationCondition(mrpt::poses::CPose3D p1, mrpt::poses::CPose3D p2);
-		/**\brief Initialization function to be called from the various constructors
-		 */
-		void initCFixedIntervalsNRD();
+		bool checkRegistrationCondition(
+				const mrpt::poses::CPose2D& p1,
+				const mrpt::poses::CPose2D& p2) const;
+		bool checkRegistrationCondition(
+				const mrpt::poses::CPose3D& p1,
+				const mrpt::poses::CPose3D& p2) const;
+		/**\} */
 
 		// protected members
 		//////////////////////////////////////////////////////////////
 
-		/**\brief Tracking the PDF of the current position of the robot with regards to
-		 * the <b> previous registered node </b>
-		 */
-		constraint_t	m_since_prev_node_PDF;
-
-		/**\brief Current estimated position */
-		global_pose_t m_curr_estimated_pose;
 		/**\brief pose_t estimation using only odometry information. Handy for
 		 * observation-only rawlogs.
 		 */

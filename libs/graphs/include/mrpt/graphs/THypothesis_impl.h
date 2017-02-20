@@ -37,11 +37,11 @@ void THypothesis<GRAPH_T>::getAsString(
 		ss << edge << endl;
 	}
 	else {
-		ss << "Hypothesis #" << id << "|\t ";
-		ss << from << " => " << to << "|\t ";
+		ss << "Hypothesis #" << id << "| ";
+		ss << from << " => " << to << "| ";
 		ss << edge.getMeanVal().asString();
-		ss << "|\tgoodness: " << goodness;
-		ss << "|\tvalid: " << is_valid;
+		ss << "|goodness: " << goodness;
+		ss << "|valid: " << is_valid;
 	}
 
 	*str = ss.str();

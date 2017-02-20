@@ -621,7 +621,7 @@ namespace mrpt
 						}
 					};
 
-					// Remove all global poses but for the root node, which is the origin:
+					// Remove all global poses except for the root node, which is the origin:
 					//
 					// Keep track of the NODE_ANNOTATIONS for each node and put it after
 					// the global pose computation
@@ -646,7 +646,7 @@ namespace mrpt
 					VisitorComputePoses  myVisitor(g);
 					treeView.visitBreadthFirst(treeView.root, myVisitor);
 
-					// Fill the NODE_ANNOTATIONS again
+					// Fill the NODE_ANNOTATIONS part again
 					if (!empty_node_annots) {
 						for (typename graph_t::global_poses_t::iterator
 								poses_cit = g->nodes.begin();

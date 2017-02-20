@@ -135,8 +135,6 @@ class CICPCriteriaNRD:
 		void printParams() const;
 		void getDescriptiveReport(std::string* report_str) const;
 
-		global_pose_t getCurrentRobotPosEstimation() const;
-
 		/**\brief Update the decider state using the latest dataset measurements.
 		 *
 		 * \note Depending on the observations at hand, update of the state is
@@ -199,43 +197,41 @@ class CICPCriteriaNRD:
 		 * \sa checkRegistrationCondition2D
 		 */
 		bool checkRegistrationCondition3D();
-		/**\brief General initialization method to call from the Class
-		 * Constructors
-		 */
-		void initCICPCriteriaNRD();
 
 		// protected members
 		//////////////////////////////////////////////////////////////
-
-		/**\brief Tracking the PDF of the current position of the robot with
-		 * regards to the \b previous registered node
-		 */
-		constraint_t	m_since_prev_node_PDF;
-
-		bool m_first_time_call2D;
-		bool m_first_time_call3D;
 		bool m_is_using_3DScan;
 
-		// handy laser scans to use in the class methods
+		/**\brief handy laser scans to use in the class methods
+		 */
+		 /**\{ */
+		/**\brief 2D LaserScan corresponding to the latest registered node in the graph */
 		mrpt::obs::CObservation2DRangeScanPtr m_last_laser_scan2D;
+		/**\brief Current LaserScan. Set during the new measurements acquisition in
+		 * updateState method
+		 */
 		mrpt::obs::CObservation2DRangeScanPtr m_curr_laser_scan2D;
 
 		mrpt::obs::CObservation3DRangeScanPtr m_last_laser_scan3D;
 		mrpt::obs::CObservation3DRangeScanPtr m_curr_laser_scan3D;
+		 /**\} */
 
-		/**\brief Latest odometry rigid body transformation.
+		/**\brief Odometry rigid-body transformation since the last accepted LaserScan.
 		 *
 		 * Decider can use it to smoothen the trajectory in the case of high noise
 		 * in the laser measurements
 		 */
 		constraint_t m_latest_odometry_PDF;
-		/**\brief pose_t estimation using only odometry information. Handy for
-		 * observation-only rawlogs.  */
-		pose_t m_curr_odometry_only_pose;
-		/**\brief pose_t estimation using only odometry information. Handy for
-		 * observation-only rawlogs.
+		/**\brief pose_t estimation using only odometry information.
+		 * \note Utilized only in observation-only rawlogs.
 		 *
-		 * Resets next time an ICP edge is successfully registered.
+		 */
+		pose_t m_curr_odometry_only_pose;
+		/**\brief pose_t estimation using only odometry information.
+		 * \note Utilized only in observation-only rawlogs.
+		 *
+		 * Resets next time an ICP edge/Odometry measurement is utilized for
+		 * updating the estimated robot position.
 		 */
 		pose_t m_last_odometry_only_pose;
 		/**\brief Keeps track of the last N measurements between the ICP edge and

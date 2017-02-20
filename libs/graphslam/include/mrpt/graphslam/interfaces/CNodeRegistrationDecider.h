@@ -18,6 +18,7 @@
 #include <mrpt/synch/CCriticalSection.h>
 #include <mrpt/utils/TParameters.h>
 #include <mrpt/utils/CTimeLogger.h>
+#include <mrpt/utils/CProbabilityDensityFunction.h>
 
 #include <mrpt/graphslam/misc/CWindowManager.h>
 #include "CRegistrationDeciderOrOptimizer.h"
@@ -59,9 +60,13 @@ class CNodeRegistrationDecider :
 		CNodeRegistrationDecider();
 		/**\brief Default class destructor.*/
 		virtual ~CNodeRegistrationDecider();
-		/** \return Latest estimated robot position
+		/**\brief Getter method for fetching the currently estimated robot position.
+		 *
+		 * In single-robot situations this is most likely going to be the last
+		 * registered node position + an position/uncertainty increment from that
+		 * position
 		 */
-		virtual global_pose_t getCurrentRobotPosEstimation() const = 0;
+		virtual global_pose_t getCurrentRobotPosEstimation() const;
 		/**\brief Generic method for fetching the incremental action-observations
 		 * (or observation-only) depending on the rawlog format readings from the
 		 * calling function.
@@ -79,6 +84,10 @@ class CNodeRegistrationDecider :
 		virtual void getDescriptiveReport(std::string* report_str) const; 
 
 	protected:
+		/**\brief Reset the given PDF method and assign a fixed high-certainty
+		 * Covariance/Information matrix
+		 */
+		void resetPDF(constraint_t* c);
 		/**\brief Check whether a new node should be registered in the
 		 * graph.
 		 *
@@ -93,13 +102,17 @@ class CNodeRegistrationDecider :
 		 */
 		 /**\{*/
 		/** Add a new constraint at the end of the graph.
-		 * \param[in] constraint Constraint Transformation from the latest to the
-		 * new node.
+		 * \param[in] constraint Constraint transformation from the latest
+		 * registered to the new node.
 		 *
 		 * \return True upon successful node registration.
 		 */
-		virtual bool registerNewNodeAtEnd(
-				const typename GRAPH_T::constraint_t constraint);
+		bool registerNewNodeAtEnd(
+				const typename GRAPH_T::constraint_t& constraint);
+		/**\brief Same goal as the previous method - uses the m_since_prev_node_PDF
+		 * as the constraint at the end.
+		 */
+		bool registerNewNodeAtEnd();
 		/**\brief Get a global_pose_t and fill the NODE_ANNOTATIONS-related fields
 		 * 
 		 * \note Users are encouraged to override this method in case they have
@@ -115,7 +128,10 @@ class CNodeRegistrationDecider :
 		 * graph-optimization procedure / dijkstra_node_estimation
 		 */
 		mrpt::utils::TNodeID m_prev_registered_nodeID;
-
+		/**\brief Tracking the PDF of the current position of the robot with
+		 * regards to the <b previous registered node</b>.
+		 */
+		constraint_t	m_since_prev_node_PDF;
 		/**\brief Initial information matrix for paths
 		 *
 		 * Large values for this indicate that I am sure of the corresponding

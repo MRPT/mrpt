@@ -99,8 +99,8 @@ template<class GRAPH_T> bool CICPCriteriaERD<GRAPH_T>::updateState(
 		// add the last laser_scan
 		if (registered_new_node) {
 			if (!m_last_laser_scan2D.null()) {
-				this->m_nodes_to_laser_scans2D[
-					this->m_graph->nodeCount()-1] = m_last_laser_scan2D;
+				this->m_nodes_to_laser_scans2D[this->m_graph->nodeCount()-1] =
+					m_last_laser_scan2D;
 				this->logFmt(LVL_DEBUG,
 						"Added laser scans of nodeID: %lu",
 						this->m_graph->nodeCount()-1);

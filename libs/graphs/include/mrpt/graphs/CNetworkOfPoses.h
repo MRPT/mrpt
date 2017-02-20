@@ -545,7 +545,7 @@ namespace mrpt
 			 * THypothesis objects in the common_hypots. If true (default) they are
 			 * directed from other to own graph (other \rightarrow own), 
 			 *
-			 * \param[out] old_to_new_nodeID_mappings_in Map from the old nodeIDs
+			 * \param[out] old_to_new_nodeID_mappings_out Map from the old nodeIDs
 			 * that are in the given graph to the new nodeIDs that have been inserted
 			 * (by this method) in own graph.
 			 */
@@ -553,7 +553,7 @@ namespace mrpt
 					const self_t& other,
 					const typename std::vector<detail::THypothesis<self_t> >& common_hypots,
 					const bool hypots_from_other_to_self=true,
-					std::map<TNodeID, TNodeID>* old_to_new_nodeID_mappings_in=NULL) {
+					std::map<TNodeID, TNodeID>* old_to_new_nodeID_mappings_out=NULL) {
 				MRPT_START;
 				using namespace mrpt::graphs;
 				using namespace mrpt::utils;
@@ -600,14 +600,14 @@ namespace mrpt
 				std::map<TNodeID, TNodeID>* old_to_new_nodeID_mappings;
 
 				// map of TNodeID->TNodeID correspondences to address to if the
-				// old_to_new_nodeID_mappings_in is not given.
+				// old_to_new_nodeID_mappings_out is not given.
 				// Handy for not having to allocate old_to_new_nodeID_mappings in the
 				// heap
 				std::map<TNodeID, TNodeID> mappings_tmp;
 
 				// If given, use the old_to_new_nodeID_mappings map.
-				if (old_to_new_nodeID_mappings_in) {
-					old_to_new_nodeID_mappings = old_to_new_nodeID_mappings_in;
+				if (old_to_new_nodeID_mappings_out) {
+					old_to_new_nodeID_mappings = old_to_new_nodeID_mappings_out;
 				}
 				else {
 					old_to_new_nodeID_mappings = &mappings_tmp;
