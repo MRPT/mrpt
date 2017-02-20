@@ -13,6 +13,14 @@
 
 namespace mrpt { namespace graphslam { namespace deciders {
 
+// helper methods	
+bool essentiallyEqual(float a, float b, float epsilon) {
+	return fabs(a - b) <= ( (fabs(a) > fabs(b) ? fabs(b) : fabs(a)) * epsilon);
+}
+bool essentiallyEqual(float a, float b) {
+	return essentiallyEqual(a, b, std::numeric_limits<double>::epsilon());
+}
+
 // Ctors, Dtors
 // //////////////////////////////////
 template<class GRAPH_T>
@@ -194,7 +202,9 @@ void CLoopCloserERD<GRAPH_T>::addScanMatchingEdges(
 		if (!isNaN(icp_info.goodness) || icp_info.goodness != 0) {
 			m_laser_params.goodness_threshold_win.addNewMeasurement(icp_info.goodness);
 		}
-		double goodness_thresh = m_laser_params.goodness_threshold_win.getMedian()*0.9;
+		double goodness_thresh =
+			m_laser_params.goodness_threshold_win.getMedian() *
+			m_consec_icp_constraint_factor;
 		bool accept_goodness = icp_info.goodness > goodness_thresh;
 		MRPT_LOG_DEBUG_STREAM("Curr. Goodness: " << icp_info.goodness
 				<< "|\t Threshold: " << goodness_thresh << " => " << (accept_goodness? "ACCEPT" : "REJECT"));
@@ -211,7 +221,7 @@ void CLoopCloserERD<GRAPH_T>::addScanMatchingEdges(
 	}
 
 	MRPT_END;
-}
+} // end of addScanMatchingEdges
 template<class GRAPH_T>
 bool CLoopCloserERD<GRAPH_T>::getICPEdge(
 		const mrpt::utils::TNodeID& from,
@@ -234,6 +244,7 @@ bool CLoopCloserERD<GRAPH_T>::getICPEdge(
 	global_pose_t from_pose;
 	global_pose_t to_pose;
 
+	MRPT_LOG_DEBUG_STREAM << "****In getICPEdge method: ";
 	if (ad_params) {
 		MRPT_LOG_DEBUG_STREAM << "TGetICPEdgeAdParams:\n"
 			<< ad_params->getAsString() << endl;
@@ -246,6 +257,7 @@ bool CLoopCloserERD<GRAPH_T>::getICPEdge(
 	const TNodeProps* to_params = ad_params ? &ad_params->to_params : NULL;
 	bool to_success = this->getPropsOfNodeID(to, &to_pose, to_scan, to_params);
 
+
 	if (!from_success || !to_success) {
 		MRPT_LOG_DEBUG_STREAM(
 			"Either node #" << from <<
@@ -256,19 +268,27 @@ bool CLoopCloserERD<GRAPH_T>::getICPEdge(
 
 	// make use of initial node position difference for the ICP edge
 	// from_node pose
-	global_pose_t initial_estim =
-		to_pose - from_pose;
-	pose_t* initial_estim_pose = dynamic_cast<pose_t*>(&initial_estim);
-	ASSERTMSG_(
-			initial_estim_pose,
-			"Dynamic cast from global_pose_t to pose_t pointer type!");
+	pose_t initial_estim;
+	if (ad_params) {
+		initial_estim = ad_params->init_estim;
+	}
+	else {
+ 		initial_estim = to_pose - from_pose;
+ 	}
+
+	MRPT_LOG_DEBUG_STREAM << "from_pose: " << from_pose
+		<< "| to_pose: " << to_pose
+		<< "| init_estim: " << initial_estim;
 
 	range_ops_t::getICPEdge(
 			*from_scan,
 			*to_scan,
 			rel_edge,
-			initial_estim_pose,
+			&initial_estim,
 			icp_info);
+	MRPT_LOG_ERROR_STREAM << from << " -> " << to << ": " << rel_edge->getMeanVal()
+		<< " ==> Goodness : " << icp_info->goodness;
+	MRPT_LOG_DEBUG_STREAM << "*************";
 
 	this->m_time_logger.leave("getICPEdge");
 	return true;
@@ -553,6 +573,7 @@ void CLoopCloserERD<GRAPH_T>::evalPWConsistenciesMatrix(
 
 	// discretize the indicator vector - maximize the dot product of
 	// w_unit .* u
+	ASSERT_(u.size());
 	dynamic_vector<double> w(u.size(), 0); // discretized  indicator vector
 	double dot_product = 0;
 	for (int i = 0; i != w.size(); ++i) {
@@ -755,10 +776,20 @@ void CLoopCloserERD<GRAPH_T>::generateHypotsPool(
 
 				hypot->setEdge(edge);
 				hypot->goodness = icp_info.goodness; // goodness related to the edge
-				//cout << "Goodness: " << icp_info.goodness << endl;
-				//cout << hypot->getAsString() << endl;
-				// Mark as invalid, do not use it from now on...
-				if (!found_edge || hypot->goodness == 0) {
+
+				// Check if invalid
+				//
+				// Goodness Threshold
+				double goodness_thresh =
+					m_laser_params.goodness_threshold_win.getMedian() *
+					m_lc_icp_constraint_factor;
+				bool accept_goodness = icp_info.goodness > goodness_thresh;
+				MRPT_LOG_DEBUG_STREAM 
+					<< "generateHypotsPool:\nCurr. Goodness: " << icp_info.goodness
+					<< "|\t Threshold: " << goodness_thresh << " => " <<
+					(accept_goodness? "ACCEPT" : "REJECT") << endl;
+
+				if (!found_edge || !accept_goodness) {
 					hypot->is_valid = false;
 					invalid_hypots++;
 				}
@@ -778,7 +809,7 @@ void CLoopCloserERD<GRAPH_T>::generateHypotsPool(
 	//mrpt::system::pause();
 
 	MRPT_END;
-}
+} // end of generateHypotsPool
 
 template<class GRAPH_T>
 bool CLoopCloserERD<GRAPH_T>::computeDominantEigenVector(
@@ -795,7 +826,7 @@ bool CLoopCloserERD<GRAPH_T>::computeDominantEigenVector(
 	this->m_time_logger.enter("DominantEigenvectorComputation");
 
 	double lambda1, lambda2; // eigenvalues to use
-	bool valid_lambda_ratio = false;
+	bool is_valid_lambda_ratio = false;
 
 	if (use_power_method) {
 		THROW_EXCEPTION(
@@ -803,7 +834,9 @@ bool CLoopCloserERD<GRAPH_T>::computeDominantEigenVector(
 	}
 	else { // call to eigenVectors method
 		CMatrixDouble eigvecs, eigvals;
+this->logFmt(mrpt::utils::LVL_INFO, "TODO - Remove me. Kalimera %d", 12);
 		consist_matrix.eigenVectors(eigvecs, eigvals);
+this->logFmt(mrpt::utils::LVL_INFO, "TODO - Remove me. Kalimera %d", 13);
 
 		// assert that the eivenvectors, eigenvalues, consistency matrix are of the
 		// same size
@@ -818,9 +851,13 @@ bool CLoopCloserERD<GRAPH_T>::computeDominantEigenVector(
 					static_cast<unsigned long>(eigvals.size()),
 					static_cast<unsigned long>(consist_matrix.size())));
 
+this->logFmt(mrpt::utils::LVL_INFO, "TODO - Remove me. Kalimera %d", 14);
 		eigvecs.extractCol(eigvecs.getColCount()-1, *eigvec);
+this->logFmt(mrpt::utils::LVL_INFO, "TODO - Remove me. Kalimera %d", 15);
 		lambda1 = eigvals(eigvals.getRowCount()-1, eigvals.getColCount()-1);
+this->logFmt(mrpt::utils::LVL_INFO, "TODO - Remove me. Kalimera %d", 16);
 		lambda2 = eigvals(eigvals.getRowCount()-2, eigvals.getColCount()-2);
+this->logFmt(mrpt::utils::LVL_INFO, "TODO - Remove me. Kalimera %d", 17);
 	}
 
 	// I don't care about the sign of the eigenvector element
@@ -830,22 +867,20 @@ bool CLoopCloserERD<GRAPH_T>::computeDominantEigenVector(
 
 	// check the ratio of the two eigenvalues - reject hypotheses set if ratio
 	// smaller than threshold
-	ASSERT_(lambda2 != 0); 
-	double curr_lambda_ratio = lambda1 / lambda2;
-	stringstream ss;
-	ss << "lambda1 = " << lambda1 << " | lambda2 = " << lambda2 << endl;
-
-	valid_lambda_ratio =
-		(curr_lambda_ratio > m_lc_params.LC_eigenvalues_ratio_thresh || lambda2 != 0);
-	if (!valid_lambda_ratio) {
-		ss << "Current Lambda ratio: " << curr_lambda_ratio;
-		ss << "| Threshold ratio: " << m_lc_params.LC_eigenvalues_ratio_thresh;
-		ss << "| Lambda threshold not passed or lambda2 = 0!" << endl;
+	if (essentiallyEqual(0, lambda2, /**limit = */ 0.00001)) {
+		MRPT_LOG_ERROR_STREAM << "Bad lambda2 value: " << lambda2
+			<< " => Skipping current evaluation." << endl;
+		return false;
 	}
-	MRPT_LOG_DEBUG_STREAM << ss.str();
+	double curr_lambda_ratio = lambda1 / lambda2;
+	MRPT_LOG_DEBUG_STREAM << "lambda1 = " << lambda1 << " | lambda2 = " << lambda2
+		<< "| ratio = " << curr_lambda_ratio << endl;
+
+	is_valid_lambda_ratio =
+		(curr_lambda_ratio > m_lc_params.LC_eigenvalues_ratio_thresh);
 
 	this->m_time_logger.leave("DominantEigenvectorComputation");
-	return valid_lambda_ratio;
+	return is_valid_lambda_ratio;
 
 	MRPT_END;
 } // end of computeDominantEigenVector
@@ -874,7 +909,7 @@ void CLoopCloserERD<GRAPH_T>::generatePWConsistenciesMatrix(
 		<< "In generatePWConsistencyMatrix:\n"
 		<< "\tgroupA: " << getSTLContainerAsString(groupA) << endl
 		<< "\tgroupB: " << getSTLContainerAsString(groupB) << endl
-		<< "\tHypots pool: " << " " << "| Size: " << hypots_pool.size();
+		<< "\tHypots pool Size: " << hypots_pool.size();
 
 	// b1
 	for (vector_uint::const_iterator
@@ -902,12 +937,9 @@ void CLoopCloserERD<GRAPH_T>::generatePWConsistenciesMatrix(
 					//MRPT_LOG_DEBUG_STREAM << "hypot_b1_a2: " << hypot_b1_a2->getAsString();
 
 					double consistency;
-					bool hypots_are_valid = (
-							hypot_b2_a1->is_valid && hypot_b1_a2->is_valid &&
-							hypot_b2_a1->goodness > 0.25 && hypot_b1_a2->goodness > 0.25);
 
 					// compute consistency element
-					if (hypots_are_valid) {
+					if (hypot_b2_a1->is_valid && hypot_b1_a2->is_valid) {
 						// extract vector of hypotheses that connect the given nodes,
 						// instead of passing the whole hypothesis pool.
 						hypotsp_t extracted_hypots;
@@ -974,6 +1006,10 @@ void CLoopCloserERD<GRAPH_T>::generatePWConsistenciesMatrix(
 		}
 	}
 
+	//MRPT_LOG_WARN_STREAM << "Consistency matrix:" << endl
+		//<< this->header_sep << endl
+		//<< *consist_matrix << endl;
+
 	MRPT_END;
 } // end of generatePWConsistenciesMatrix
 
@@ -1016,7 +1052,7 @@ double CLoopCloserERD<GRAPH_T>::generatePWConsistencyElement(
 	// a1 ==> a2
 	const path_t* path_a1_a2;
 	if (!opt_paths || opt_paths->begin()->isEmpty()) {
-		//MRPT_LOG_DEBUG_STREAM << "Running dijkstra [a1] " << a1 << " => [a2] "<< a2;
+		MRPT_LOG_DEBUG_STREAM << "Running dijkstra [a1] " << a1 << " => [a2] "<< a2;
 		execDijkstraProjection(/*starting_node=*/ a1, /*ending_node=*/ a2);
 		path_a1_a2 = this->queryOptimalPath(a2);
 	}
@@ -1030,7 +1066,7 @@ double CLoopCloserERD<GRAPH_T>::generatePWConsistencyElement(
 	// b1 ==> b2
 	const path_t* path_b1_b2;
 	if (!opt_paths || opt_paths->rend()->isEmpty()) {
-		//MRPT_LOG_DEBUG_STREAM << "Running djkstra [b1] " << b1 << " => [b2] "<< b2;
+		MRPT_LOG_DEBUG_STREAM << "Running djkstra [b1] " << b1 << " => [b2] "<< b2;
 		execDijkstraProjection(/*starting_node=*/ b1, /*ending_node=*/ b2);
 		path_b1_b2 = this->queryOptimalPath(b2);
 	}
@@ -1049,21 +1085,28 @@ double CLoopCloserERD<GRAPH_T>::generatePWConsistencyElement(
 
 	// Composition of Poses
 	// Order : a1 ==> a2 ==> b1 ==> b2 ==> a1
-	constraint_t res(path_a1_a2->curr_pose_pdf);
-	res += hypot_b1_a2->getInverseEdge();
-	res += path_b1_b2->curr_pose_pdf;
-	res += hypot_b2_a1->getEdge();
+	constraint_t res_transform(path_a1_a2->curr_pose_pdf);
+	res_transform += hypot_b1_a2->getInverseEdge();
+	res_transform += path_b1_b2->curr_pose_pdf;
+	res_transform += hypot_b2_a1->getEdge();
 
-	cout << "Resulting Transformation: " << endl
-		<< res << endl;
+	MRPT_LOG_DEBUG_STREAM << "\n-----------Resulting Transformation----------- Hypots: #"
+		<< hypot_b1_a2->id << ", #" << hypot_b2_a1->id << endl
+		<< "a1 --> a2 => b1 --> b2 => a1: "
+		<< a1 << " --> " << a2 << " => " << b1 << " --> " << b2 << " => " << a1 << endl
+		<< res_transform << endl << endl
+		<< "DIJKSTRA: " << a1 << " --> " << a2 << ": " << path_a1_a2->curr_pose_pdf << endl
+		<< "DIJKSTRA: " << b1 << " --> " << b2 << ": " << path_b1_b2->curr_pose_pdf << endl
+		<< "hypot_b1_a2(inv):\n" << hypot_b1_a2->getInverseEdge() << endl
+		<< "hypot_b2_a1:\n" << hypot_b2_a1->getEdge() << endl;
 
 	// get the vector of the corresponding transformation - [x, y, phi] form
 	dynamic_vector<double> T;
-	res.getMeanVal().getAsVector(T);
+	res_transform.getMeanVal().getAsVector(T);
 
 	// information matrix
 	CMatrixDouble33 cov_mat;
-	res.getCovariance(cov_mat);
+	res_transform.getCovariance(cov_mat);
 
 	// there has to be an error with the initial Olson formula - p.15.
 	// There must be a minus in the exponent and the covariance matrix instead of
@@ -2108,25 +2151,42 @@ void CLoopCloserERD<GRAPH_T>::loadParams(const std::string& source_fname) {
 	m_lc_params.loadFromConfigFileName(source_fname,
 			"EdgeRegistrationDeciderParameters");
 
-	// set the logging level if given by the user
 	mrpt::utils::CConfigFile source(source_fname);
+
+	m_consec_icp_constraint_factor = source.read_double(
+			"EdgeRegistrationDeciderParameters",
+			"consec_icp_constraint_factor",
+			0.90, false);
+	m_lc_icp_constraint_factor = source.read_double(
+			"EdgeRegistrationDeciderParameters",
+			"lc_icp_constraint_factor",
+			0.70, false);
+
+
+	// set the logging level if given by the user
 	int min_verbosity_level = source.read_int(
 			"EdgeRegistrationDeciderParameters",
 			"class_verbosity",
 			1, false);
+
+
 	this->setMinLoggingLevel(mrpt::utils::VerbosityLevel(min_verbosity_level));
 	MRPT_END;
 }
 template<class GRAPH_T>
 void CLoopCloserERD<GRAPH_T>::printParams() const {
 	MRPT_START;
+	using namespace std;
 
-	std::cout << "------------------[Pair-wise Consistency of ICP Edges - Registration Procedure Summary]------------------" << std::endl;
+	cout << "------------------[Pair-wise Consistency of ICP Edges - Registration Procedure Summary]------------------" << endl;
 
 	parent_t::printParams();
 	m_partitioner.options.dumpToConsole();
 	m_laser_params.dumpToConsole();
 	m_lc_params.dumpToConsole();
+
+	cout << "Scan-matching ICP Constraint factor: " << m_consec_icp_constraint_factor << endl;
+	cout << "Loop-closure ICP Constraint factor:  " << m_lc_icp_constraint_factor << endl;
 
 	MRPT_LOG_DEBUG_STREAM << "Printed the relevant parameters";
 	MRPT_END;

@@ -325,6 +325,11 @@ class CLoopCloserERD:
 				this->getAsString(&str);
 				return str;
 			}
+
+			friend std::ostream& operator<<(std::ostream& o, const TNodeProps& obj) {
+				o << obj.getAsString() << endl;
+				return o;
+			}
 		};
 		/**
 		 * \brief Struct for passing additional parameters to the getICPEdge call
@@ -337,12 +342,16 @@ class CLoopCloserERD:
 
 			TNodeProps from_params; /**< Ad. params for the from_node */
 			TNodeProps to_params; /**< Ad. params for the to_node */
+			pose_t init_estim; /**< Initial ICP estimation */
+
 			void getAsString(std::string* str) const {
 				using namespace std;
+				using namespace mrpt;
 				ASSERT_(str);
 				str->clear();
-				*str  += mrpt::format("from_params: %s", from_params.getAsString().c_str());
-				*str += mrpt::format("to_params: %s\n", to_params.getAsString().c_str());
+				*str  += format("from_params: %s", from_params.getAsString().c_str());
+				*str += format("to_params: %s", to_params.getAsString().c_str());
+				*str += format("init_estim: %s\n", init_estim.asString().c_str());
 			}
 			std::string getAsString() const {
 				std::string str;
@@ -887,6 +896,12 @@ class CLoopCloserERD:
 		/**\brief Node Count lower bound before executing dijkstra
 		 */
 		size_t m_dijkstra_node_count_thresh;
+		/**\brief Factor used for accepting an ICP Constraint as valid.
+		 */
+		double m_consec_icp_constraint_factor;
+		/**\brief Factor used for accepting an ICP Constraint in the loop closure proc.
+		 */
+		double m_lc_icp_constraint_factor;
 
 };
 

@@ -179,6 +179,7 @@ void TUncertaintyPath<GRAPH_T>::getAsString(std::string* str) const{
 	using namespace mrpt::math;
 	using namespace mrpt::poses;
 	using namespace std;
+	using namespace mrpt::traits;
 
 	stringstream ss;
 	string header_sep(30, '=');
@@ -187,7 +188,7 @@ void TUncertaintyPath<GRAPH_T>::getAsString(std::string* str) const{
 	ss << header_sep << endl << endl;
 
 	ss << "- CPosePDFGaussianInf: "
-		<< (this->isGaussianInfType()?  "TRUE" : "FALSE") << endl;
+		<< (curr_pose_pdf.isInfType()?  "TRUE" : "FALSE") << endl;
 	ss << "- Nodes list: \n\t< " <<
 		getSTLContainerAsString(nodes_traversed)
 		<< "\b\b>" << endl;
@@ -197,11 +198,11 @@ void TUncertaintyPath<GRAPH_T>::getAsString(std::string* str) const{
 	ss << endl;
 
 	CMatrixDouble33 mat;
-	if (this->isGaussianType()) {
-		curr_pose_pdf.getCovariance(mat);
-	}
-	else if (this->isGaussianInfType()) {
+	if (curr_pose_pdf.isInfType()) {
 		curr_pose_pdf.getInformationMatrix(mat);
+	}
+	else {
+		curr_pose_pdf.getCovariance(mat);
 	}
 	ss << "Determinant: " << mat.det();
 
@@ -231,16 +232,17 @@ double TUncertaintyPath<GRAPH_T>::getDeterminant() {
 	using namespace mrpt::math;
 	using namespace mrpt::poses;
 	using namespace std;
+	using namespace mrpt::traits;
 
 	// if determinant is up-to-date then return the cached version...
 	if (determinant_is_updated) return determinant_cached;
 
 	// update the cached version and return it.
 	CMatrixDouble33 mat;
-	if (this->isGaussianInfType()) {
+	if (curr_pose_pdf.isInfType()) {
 		curr_pose_pdf.getInformationMatrix(mat);
 	}
-	else if (this->isGaussianType()) {
+	else {
 		curr_pose_pdf.getCovariance(mat);
 	}
 	double determinant = mat.det();
@@ -260,10 +262,11 @@ bool TUncertaintyPath<GRAPH_T>::hasLowerUncertaintyThan(
 	using namespace mrpt::math;
 	using namespace mrpt::poses;
 	using namespace std;
+	using namespace mrpt::traits;
 
 	ASSERTMSG_(
-			(this->isGaussianInfType() && other->isGaussianInfType()) ||
-			(this->isGaussianType() && other->isGaussianType()),
+			(curr_pose_pdf.isInfType() && other.curr_pose_pdf.isInfType()) ||
+			(!curr_pose_pdf.isInfType() && !other.curr_pose_pdf.isInfType()),
 			mrpt::format(
 				"Constraints of given paths don't have the same representation of uncertainty"));
 
@@ -271,25 +274,14 @@ bool TUncertaintyPath<GRAPH_T>::hasLowerUncertaintyThan(
 	// determinant the more confident we are.
 	// if we are talking about covariances then the *lower*.
 	bool has_lower = false;
-	if (this->isGaussianInfType()) {
-		has_lower = this->getDeterminant() > other->getDeterminant();
+	if (curr_pose_pdf.isInfType()) {
+		has_lower = this->getDeterminant() > other.getDeterminant();
 	}
-	else if (this->isGaussianType()) {
-		has_lower = this->getDeterminant() < other->getDeterminant();
+	else {
+		has_lower = this->getDeterminant() < other.getDeterminant();
 	}
 
 	return has_lower;
-}
-
-template<class GRAPH_T>
-bool TUncertaintyPath<GRAPH_T>::isGaussianInfType() const {
-	using namespace mrpt::poses;
-	return curr_pose_pdf.GetRuntimeClass() == CLASS_ID(CPosePDFGaussianInf);
-}
-template<class GRAPH_T>
-bool TUncertaintyPath<GRAPH_T>::isGaussianType() const {
-	using namespace mrpt::poses;
-	return curr_pose_pdf.GetRuntimeClass() == CLASS_ID(CPosePDFGaussian);
 }
 
 } } // end of namespaces

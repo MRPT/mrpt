@@ -19,6 +19,7 @@
 #include <mrpt/utils/types_simple.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPose3D.h>
+#include <mrpt/utils/CProbabilityDensityFunction.h>
 
 #include <string>
 #include <sstream>
@@ -96,16 +97,16 @@ struct TUncertaintyPath : public mrpt::utils::CLoadableOptions {
 	void addToPath(
 			const mrpt::utils::TNodeID& node,
 			const constraint_t& edge);
-	/**brief Test weather the constraints are of type CPosePDFGaussianInf.*/
-	bool isGaussianInfType() const;
-	/**brief Test weather the constraints are of type CPosePDFGaussian.  */
-	bool isGaussianType() const;
-
 	self_t& operator+=(
 			const self_t& other);
 	// results...
 	bool operator==(const self_t& other) const;
 	bool operator!=(const self_t& other) const;
+
+	friend std::ostream& operator<<(std::ostream& o, const self_t& obj) {
+		o << obj.getAsString() << endl;
+		return o;
+	}
 
 	/**\brief Nodes that the Path comprises of.
 	 *

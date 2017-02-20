@@ -16,6 +16,7 @@ CNodeRegistrationDecider<GRAPH_T>::CNodeRegistrationDecider():
 
 		m_init_inf_mat.unit();
 		m_init_inf_mat *= 10000;
+		resetPDF(&this->m_since_prev_node_PDF);
 	
 }
 
@@ -38,13 +39,11 @@ void CNodeRegistrationDecider<GRAPH_T>::getDescriptiveReport(
 }
 
 template<class GRAPH_T>
-bool CNodeRegistrationDecider<GRAPH_T>::checkRegistrationCondition() {
-	return false;
-}
+bool CNodeRegistrationDecider<GRAPH_T>::checkRegistrationCondition() { return false; }
 
 template<class GRAPH_T>
 bool CNodeRegistrationDecider<GRAPH_T>::registerNewNodeAtEnd(
-		const typename GRAPH_T::constraint_t constraint) {
+		const typename GRAPH_T::constraint_t& constraint) {
 	MRPT_START;
 	using namespace mrpt::utils;
 	using namespace std;
@@ -94,6 +93,7 @@ bool CNodeRegistrationDecider<GRAPH_T>::registerNewNodeAtEnd(
 
 	m_prev_registered_nodeID = to;
 
+
 	MRPT_LOG_DEBUG_STREAM << "Registered new node:" << endl <<
 		"\t" << from << " => " << to << endl <<
 		"\tEdge: " << constraint.getMeanVal().asString();
@@ -103,7 +103,45 @@ bool CNodeRegistrationDecider<GRAPH_T>::registerNewNodeAtEnd(
 }
 
 template<class GRAPH_T>
+bool CNodeRegistrationDecider<GRAPH_T>::registerNewNodeAtEnd() {
+	bool res = this->registerNewNodeAtEnd(this->m_since_prev_node_PDF);
+
+	// reset the PDF since the last registered node position
+	this->resetPDF(&m_since_prev_node_PDF);
+
+	return res;
+}
+
+template<class GRAPH_T>
+void CNodeRegistrationDecider<GRAPH_T>::resetPDF(constraint_t* c) {
+	MRPT_START;
+	using namespace mrpt::traits;
+	ASSERT_(c);
+
+	*c = constraint_t();
+	ASSERT_(c->isInfType());
+	c->cov_inv = this->m_init_inf_mat;
+
+	MRPT_END;
+} // end of resetPDF
+
+
+template<class GRAPH_T>
 void CNodeRegistrationDecider<GRAPH_T>::addNodeAnnotsToPose(
 		global_pose_t* pose) const { }
+
+template<class GRAPH_T>
+typename GRAPH_T::global_pose_t CNodeRegistrationDecider<GRAPH_T>::
+getCurrentRobotPosEstimation() const {
+	global_pose_t pose_out;
+
+	if (this->m_prev_registered_nodeID != INVALID_NODEID) {
+		pose_out =
+			this->m_graph->nodes.at(this->m_prev_registered_nodeID);
+	}
+
+	pose_out += m_since_prev_node_PDF.getMeanVal();
+	return pose_out;
+}
 
 #endif /* end of include guard: CNODEREGISTRATIONDECIDER_IMPL_H */

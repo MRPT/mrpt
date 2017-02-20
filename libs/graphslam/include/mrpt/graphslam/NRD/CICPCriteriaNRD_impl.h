@@ -20,34 +20,17 @@ CICPCriteriaNRD<GRAPH_T>::CICPCriteriaNRD():
 	params(*this) // pass reference to self when initializing the parameters
 	//m_mahal_distance_ICP_odom("Mahalanobis dist (ICP - odom)")
 {
-	this->initCICPCriteriaNRD();
-}
-template<class GRAPH_T>
-void CICPCriteriaNRD<GRAPH_T>::initCICPCriteriaNRD() {
 	using namespace mrpt::utils;
 	using namespace mrpt::math;
 	this->initializeLoggers("CICPCriteriaNRD");
 
-	m_first_time_call2D = true;
-	m_first_time_call3D = true;
 	m_is_using_3DScan = false;
 
 	m_use_angle_difference_node_reg = true;
 	m_use_distance_node_reg = true;
+	this->resetPDF(&m_latest_odometry_PDF);
 
-	// set the PDF of relevant transformations
-	// - Transformation from the previous registered node
-	// - Transformation from <...> using odometry information only
-	{
-		m_since_prev_node_PDF.cov_inv = this->m_init_inf_mat;
-		m_since_prev_node_PDF.mean = pose_t();
-
-		// odometry only estimation initialization
-		m_latest_odometry_PDF.mean = pose_t();
-		m_latest_odometry_PDF.cov_inv = this->m_init_inf_mat;
-
-		//m_mahal_distance_ICP_odom.resizeWindow(1000); // use the last X mahalanobis distance values
-	}
+	//m_mahal_distance_ICP_odom.resizeWindow(1000); // use the last X mahalanobis distance values
 
 	m_times_used_ICP = 0;
 	m_times_used_odom = 0;
@@ -56,24 +39,6 @@ void CICPCriteriaNRD<GRAPH_T>::initCICPCriteriaNRD() {
 }
 template<class GRAPH_T>
 CICPCriteriaNRD<GRAPH_T>::~CICPCriteriaNRD() {
-}
-
-template<class GRAPH_T>
-typename GRAPH_T::global_pose_t
-CICPCriteriaNRD<GRAPH_T>::getCurrentRobotPosEstimation() const {
-	MRPT_START;
-	using namespace std;
-	using namespace mrpt::utils;
-
-	global_pose_t pose_out;
-
-	if (!(this->m_prev_registered_nodeID == INVALID_NODEID)) {
-		pose_out = this->m_graph->nodes.at(this->m_prev_registered_nodeID)+
-			m_since_prev_node_PDF.getMeanVal();
-	}
-
-	return pose_out;
-	MRPT_END;
 }
 
 template<class GRAPH_T>
@@ -104,7 +69,8 @@ bool CICPCriteriaNRD<GRAPH_T>::updateState(
 			registered_new_node = updateState3D(curr_laser_scan);
 		}
 		else if (IS_CLASS(observation, CObservationOdometry) ) { // odometry
-			// if it exists use the odometry information to reject wrong ICP matches
+			// if it exists use the odometry information to reject wrong ICP
+			// matches
 			CObservationOdometryPtr obs_odometry =
 				static_cast<CObservationOdometryPtr>(observation);
 
@@ -143,17 +109,11 @@ bool CICPCriteriaNRD<GRAPH_T>::updateState(
 
 	}
 
-	// reset the constraint since the last registered node
-	if (registered_new_node) {
-		m_since_prev_node_PDF = constraint_t();
-		m_since_prev_node_PDF.cov_inv = this->m_init_inf_mat;
-	}
-
 	this->m_time_logger.leave("updateState");
 	return registered_new_node;
 
 	MRPT_END;
-}
+} // end of updateState
 
 template<class GRAPH_T>
 bool CICPCriteriaNRD<GRAPH_T>::updateState2D(
@@ -173,7 +133,8 @@ bool CICPCriteriaNRD<GRAPH_T>::updateState2D(
 
 	return registered_new_node;
 	MRPT_END;
-}
+} // end of updateState2D
+
 template<class GRAPH_T>
 bool CICPCriteriaNRD<GRAPH_T>::checkRegistrationCondition2D() {
 	MRPT_START;
@@ -183,6 +144,7 @@ bool CICPCriteriaNRD<GRAPH_T>::checkRegistrationCondition2D() {
 
 	bool registered_new_node = false;
 
+	// Constraint that *may* update incrementally the m_since_prev_node_PDF.
 	constraint_t rel_edge;
 	mrpt::slam::CICP::TReturnInfo icp_info;
 
@@ -209,9 +171,7 @@ bool CICPCriteriaNRD<GRAPH_T>::checkRegistrationCondition2D() {
 
 	// evaluate the mahalanobis distance of the above..
 	// If over an (adaptive) threshold, trust the odometry
-	constraint_t latest_odometry_PDF(m_latest_odometry_PDF.getMeanVal(),
-			this->m_init_inf_mat.inverse());
-	double mahal_distance = rel_edge.mahalanobisDistanceTo(latest_odometry_PDF);
+	double mahal_distance = rel_edge.mahalanobisDistanceTo(m_latest_odometry_PDF);
 	//m_mahal_distance_ICP_odom.addNewMeasurement(mahal_distance);
 
 	// TODO - Find out a proper criterion
@@ -222,9 +182,11 @@ bool CICPCriteriaNRD<GRAPH_T>::checkRegistrationCondition2D() {
 		//m_mahal_distance_ICP_odom.getMean() + m_mahal_distance_ICP_odom.getStdDev();
 	double mahal_distance_lim = 0.18; // visual introspection
 
+	//
 	// check whether to use ICP or odometry Edge.
-	// if the norm of the odometry edge is 0 => no odometry edge available. =>
-	// use ICP
+	//
+	// if the norm of the odometry edge is 0, no odometry edge available
+	// => use ICP
 	if (mahal_distance < mahal_distance_lim ||
 			m_latest_odometry_PDF.getMeanVal().norm() == 0) {
 		this->logFmt(LVL_DEBUG, "Using ICP Edge");
@@ -239,95 +201,39 @@ bool CICPCriteriaNRD<GRAPH_T>::checkRegistrationCondition2D() {
 	this->logFmt(LVL_DEBUG, "Times that the ICP Edge was used: %d/%d",
 			m_times_used_ICP, m_times_used_ICP + m_times_used_odom);
 
-	// update the Probability Density Function until last registered
-	// node
-	m_since_prev_node_PDF += rel_edge;
+	// update the PDF until last registered node
+	this->m_since_prev_node_PDF += rel_edge;
 	m_last_laser_scan2D = m_curr_laser_scan2D;
 	registered_new_node = this->checkRegistrationCondition();
 
 	// reset the odometry tracking as well.
 	m_last_odometry_only_pose = m_curr_odometry_only_pose;
-	m_latest_odometry_PDF.mean = pose_t();
-
+	this->resetPDF(&m_latest_odometry_PDF);
 
 	this->logFmt(LVL_DEBUG,
 			"<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
 	return registered_new_node;
 	MRPT_END;
-}
+} // end of checkRegistrationCondition2D
+
 template<class GRAPH_T>
 bool CICPCriteriaNRD<GRAPH_T>::updateState3D(
 		mrpt::obs::CObservation3DRangeScanPtr scan3d) {
-	MRPT_START;
-	bool registered_new_node = false;
-
-	m_curr_laser_scan3D = scan3d;
-	m_curr_laser_scan3D->load();
-	m_curr_laser_scan3D->project3DPointsFromDepthImage();
-
-	if (m_last_laser_scan3D.null()) {
-		// initialize the last_laser_scan here - afterwards updated inside the
-		// checkRegistrationCondition*D method
-		m_last_laser_scan3D = m_curr_laser_scan3D;
-	}
-	else {
-		registered_new_node = checkRegistrationCondition3D();
-	}
-
-	return registered_new_node;
-	MRPT_END;
-}
+	THROW_EXCEPTION("Not yet implemented.");
+	return false;
+} // end of updateState3D
 
 template<class GRAPH_T>
 bool CICPCriteriaNRD<GRAPH_T>::checkRegistrationCondition3D() {
-	MRPT_START;
-	using namespace mrpt::utils;
-	bool registered_new_node = false;
+	THROW_EXCEPTION("Not yet implemented.");
+	return false;
+} // end of checkRegistrationCondition3D
 
-	this->logFmt(mrpt::utils::LVL_DEBUG, "In checkRegistrationCondition3D..");
-
-	constraint_t* rel_edge = new constraint_t;
-	mrpt::slam::CICP::TReturnInfo icp_info;
-
-	this->getICPEdge(
-			*m_last_laser_scan3D,
-			*m_curr_laser_scan3D,
-			rel_edge,
-			NULL,
-			&icp_info);
-
-	// Criterions for updating PDF since last registered node
-	// - ICP goodness > threshold goodness
-	// - Small Z displacement
-
-	if (!rel_edge) {
-		this->logFmt(LVL_DEBUG, "NULL rel_edge from getICPEdge procedure");
-		return false;
-	}
-
-	this->logFmt(LVL_DEBUG, "Current ICP constraint: \n\tEdge: %s\n\tNorm: %f",
-				rel_edge->getMeanVal().asString().c_str(),
-				rel_edge->getMeanVal().norm());
-	std::string debug_msg = mrpt::format(
-			"ICP Alignment operation:\n\tnIterations: %d\\n\tquality: %f\n\tgoodness: %.f\n",
-			icp_info.nIterations,
-			icp_info.quality,
-			icp_info.goodness);
-		this->logFmt(LVL_DEBUG, "%s", debug_msg.c_str());
-
-	m_since_prev_node_PDF += *rel_edge;
-	m_last_laser_scan3D = m_curr_laser_scan3D;
-	registered_new_node = this->checkRegistrationCondition();
-
-	return registered_new_node;
-	MRPT_END;
-}
 
 template<class GRAPH_T>
 bool CICPCriteriaNRD<GRAPH_T>::checkRegistrationCondition() {
 	MRPT_START;
 	using namespace mrpt::utils;
-
 	this->logFmt(LVL_DEBUG, "In checkRegistrationCondition");
 	using namespace mrpt::math;
 
@@ -337,30 +243,29 @@ bool CICPCriteriaNRD<GRAPH_T>::checkRegistrationCondition() {
 
 	bool angle_crit = false;
 	if (m_use_angle_difference_node_reg) {
-		angle_crit = fabs(wrapToPi(m_since_prev_node_PDF.getMeanVal().phi())) >
+		angle_crit = fabs(wrapToPi(this->m_since_prev_node_PDF.getMeanVal().phi())) >
 			params.registration_max_angle;
 	}
 	bool distance_crit = false;
 	if (m_use_distance_node_reg) {
 		distance_crit =
-			m_since_prev_node_PDF.getMeanVal().norm() > params.registration_max_distance;
-	}
+			this->m_since_prev_node_PDF.getMeanVal().norm() >
+			params.registration_max_distance; }
 
 	// actual check
 	bool registered = false;
 	if (distance_crit || angle_crit) {
-		registered = this->registerNewNodeAtEnd(m_since_prev_node_PDF);
+		registered = this->registerNewNodeAtEnd();
 	}
 
 	return registered;
 	MRPT_END;
-}
+} // end of checkRegistrationCondition
 
 template<class GRAPH_T>
 void CICPCriteriaNRD<GRAPH_T>::loadParams(const std::string& source_fname) {
 	MRPT_START;
 	parent_t::loadParams(source_fname);
-
 
 	using namespace mrpt::utils;
 
@@ -379,7 +284,8 @@ void CICPCriteriaNRD<GRAPH_T>::loadParams(const std::string& source_fname) {
 	this->setMinLoggingLevel(VerbosityLevel(min_verbosity_level));
 	this->logFmt(LVL_DEBUG, "Successfully loaded parameters.");
 	MRPT_END;
-}
+} // end of loadParams
+
 template<class GRAPH_T>
 void CICPCriteriaNRD<GRAPH_T>::printParams() const {
 	MRPT_START;
@@ -389,7 +295,7 @@ void CICPCriteriaNRD<GRAPH_T>::printParams() const {
 	//m_mahal_distance_ICP_odom.dumpToConsole();
 
 	MRPT_END;
-}
+} // end of printParams
 
 template<class GRAPH_T>
 void CICPCriteriaNRD<GRAPH_T>::getDescriptiveReport(
@@ -425,7 +331,7 @@ void CICPCriteriaNRD<GRAPH_T>::getDescriptiveReport(
 	*report_str += report_sep;
 
 	MRPT_END;
-}
+} // end of getDescriptiveReport
 
 
 // TParams
@@ -444,7 +350,8 @@ void CICPCriteriaNRD<GRAPH_T>::TParams::dumpToTextStream(
 	using namespace mrpt::utils;
 	using namespace mrpt::math;
 
-	out.printf("------------------[ ICP Fixed Intervals Node Registration ]------------------\n");
+	out.printf(
+			"------------------[ ICP Fixed Intervals Node Registration ]------------------\n");
 	out.printf("Max distance for registration = %.2f m\n",
 			registration_max_distance);
 	out.printf("Max Angle for registration    = %.2f deg\n",

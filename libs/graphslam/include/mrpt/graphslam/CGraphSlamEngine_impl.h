@@ -1,5 +1,5 @@
 /* +---------------------------------------------------------------------------+
-	 |                     Mobile Robot Programming Toolkit (MRPT)               |
+ |                     Mobile Robot Programming Toolkit (MRPT)               |
 	 |                          http://www.mrpt.org/                             |
 	 |                                                                           |
 	 | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
@@ -11,6 +11,11 @@
 #define CGRAPHSLAMENGINE_IMPL_H
 
 namespace mrpt { namespace graphslam {
+
+template<class GRAPH_T>
+const std::string CGraphSlamEngine<GRAPH_T>::header_sep = std::string(80, '-');
+template<class GRAPH_T>
+const std::string CGraphSlamEngine<GRAPH_T>::report_sep = std::string(2, '\n');
 
  // Ctors, Dtors implementations
 //////////////////////////////////////////////////////////////
@@ -34,6 +39,8 @@ CGraphSlamEngine<GRAPH_T>::CGraphSlamEngine(
 	m_fname_GT(fname_GT),
 	m_GT_poses_step(1),
 	m_win_manager(win_manager),
+	m_paused_message("Program is paused. Press \"p/P\" to resume."),
+	m_text_index_paused_message(345), // just a large number.
 	m_odometry_color(0, 0, 255),
 	m_GT_color(0, 255, 0),
 	m_estimated_traj_color(255, 165, 0),
@@ -242,6 +249,10 @@ void CGraphSlamEngine<GRAPH_T>::initClass() {
 				&m_text_index_timestamp);
 	}
 
+	if (m_visualize_map) {
+		this->initMapVisualization();
+	}
+
 	// Configuration of various trajectories visualization
 	ASSERT_(m_has_read_config);
 	if (m_enable_visuals) {
@@ -296,7 +307,6 @@ void CGraphSlamEngine<GRAPH_T>::initClass() {
 		m_win->unlockAccess3DScene();
 		m_win->forceRepaint();
 	}
-
 
 	// Add additional keystrokes in the CDisplayWindow3D help textBox
 	if (m_enable_visuals) {
@@ -454,8 +464,16 @@ void CGraphSlamEngine<GRAPH_T>::initClass() {
 		this->initSlamMetricVisualization();
 	}
 
+	// Message to be displayed on pause
+	if (m_enable_visuals) {
+		this->m_win->addTextMessage(
+				0.5, 0.3, "",
+				mrpt::utils::TColorf(1.0, 0, 0),
+				m_text_index_paused_message);
+	}
+
 	MRPT_END;
-}
+} // end of initClass
 
 template<class GRAPH_T>
 bool CGraphSlamEngine<GRAPH_T>::execGraphSlamStep(
@@ -468,7 +486,7 @@ bool CGraphSlamEngine<GRAPH_T>::execGraphSlamStep(
 
 	return this->_execGraphSlamStep(action, observations, observation,
 			rawlog_entry);
-}
+} // end of execGraphSlamStep
 
 template<class GRAPH_T>
 bool CGraphSlamEngine<GRAPH_T>::_execGraphSlamStep(
@@ -477,8 +495,8 @@ bool CGraphSlamEngine<GRAPH_T>::_execGraphSlamStep(
 		mrpt::obs::CObservationPtr& observation,
 		size_t& rawlog_entry) {
 	MRPT_START;
-this->logFmt(mrpt::utils::LVL_INFO, "TODO - Remove me. Kalimera %d", 54);
 
+this->logFmt(mrpt::utils::LVL_INFO, "TODO - Remove me. Kalimera %d", 1);
 	using namespace std;
 	using namespace mrpt;
 	using namespace mrpt::utils;
@@ -489,6 +507,7 @@ this->logFmt(mrpt::utils::LVL_INFO, "TODO - Remove me. Kalimera %d", 54);
 	using namespace mrpt::system;
 
 	m_time_logger.enter("proc_time");
+this->logFmt(mrpt::utils::LVL_INFO, "TODO - Remove me. Kalimera %d", 2);
 
 	ASSERTMSG_(m_has_read_config,
 			format("\nConfig file is not read yet.\nExiting... \n"));
@@ -518,8 +537,8 @@ this->logFmt(mrpt::utils::LVL_INFO, "TODO - Remove me. Kalimera %d", 54);
 		// TODO enable this and test this.
 		// return true;
 	}
-this->logFmt(mrpt::utils::LVL_INFO, "TODO - Remove me. Kalimera %d", 55);
 
+this->logFmt(mrpt::utils::LVL_INFO, "TODO - Remove me. Kalimera %d", 3);
 	// NRD
 	bool registered_new_node;
 	{
@@ -529,15 +548,20 @@ this->logFmt(mrpt::utils::LVL_INFO, "TODO - Remove me. Kalimera %d", 55);
 				action, observations, observation);
 		m_time_logger.leave("node_registrar");
 	}
-this->logFmt(mrpt::utils::LVL_INFO, "TODO - Remove me. Kalimera %d", 56);
 
 	{ // get the 2D laser scan, if there
 		CObservation2DRangeScanPtr scan =
 			getObservation<CObservation2DRangeScan>(observations, observation);
-		if (scan.present()) { m_last_laser_scan2D = scan; }
-	}
-this->logFmt(mrpt::utils::LVL_INFO, "TODO - Remove me. Kalimera %d", 57);
+		if (scan.present()) {
+			m_last_laser_scan2D = scan;
 
+			if (!m_first_laser_scan2D) { // capture first laser scan seperately
+				m_first_laser_scan2D = m_last_laser_scan2D;
+			}
+		}
+	}
+
+this->logFmt(mrpt::utils::LVL_INFO, "TODO - Remove me. Kalimera %d", 4);
 	if (registered_new_node) {
 
 		// At the first node registration, must have registered exactly 2 nodes
@@ -553,9 +577,8 @@ this->logFmt(mrpt::utils::LVL_INFO, "TODO - Remove me. Kalimera %d", 57);
 			m_is_first_time_node_reg = false;
 
 			m_nodes_to_laser_scans2D.insert(
-					make_pair(m_nodeID_max, m_last_laser_scan2D));
+					make_pair(m_nodeID_max, m_first_laser_scan2D));
 		}
-this->logFmt(mrpt::utils::LVL_INFO, "TODO - Remove me. Kalimera %d", 58);
 
 		// going to be incremented in monitorNodeRegistration anyway.
 		m_nodeID_max++;
@@ -565,7 +588,6 @@ this->logFmt(mrpt::utils::LVL_INFO, "TODO - Remove me. Kalimera %d", 58);
 	}
 	this->monitorNodeRegistration(registered_new_node,
 			"NodeRegistrationDecider");
-this->logFmt(mrpt::utils::LVL_INFO, "TODO - Remove me. Kalimera %d", 59);
 
 	// Edge registration procedure - Optimization
 	// run this so that the ERD, GSO can be updated with the latest
@@ -582,7 +604,6 @@ this->logFmt(mrpt::utils::LVL_INFO, "TODO - Remove me. Kalimera %d", 59);
 	}
 	this->monitorNodeRegistration(registered_new_node,
 			"EdgeRegistrationDecider");
-this->logFmt(mrpt::utils::LVL_INFO, "TODO - Remove me. Kalimera %d", 60);
 
 	{ // GSO
 		mrpt::synch::CCriticalSectionLocker m_graph_lock(&m_graph_section);
@@ -596,7 +617,6 @@ this->logFmt(mrpt::utils::LVL_INFO, "TODO - Remove me. Kalimera %d", 60);
 	}
 	this->monitorNodeRegistration(registered_new_node,
 			"GraphSlamOptimizer");
-this->logFmt(mrpt::utils::LVL_INFO, "TODO - Remove me. Kalimera %d", 61);
 
 	// current timestamp - to be filled depending on the format
  	m_curr_timestamp = getTimeStamp(action, observations, observation);
@@ -631,7 +651,6 @@ this->logFmt(mrpt::utils::LVL_INFO, "TODO - Remove me. Kalimera %d", 61);
 		m_curr_odometry_only_pose += increment_pose;
 		m_odometry_poses.push_back(m_curr_odometry_only_pose);
 	} // ELSE FORMAT #1 - Action/Observations
-this->logFmt(mrpt::utils::LVL_INFO, "TODO - Remove me. Kalimera %d", 62);
 
 	if (registered_new_node) {
 
@@ -650,8 +669,9 @@ this->logFmt(mrpt::utils::LVL_INFO, "TODO - Remove me. Kalimera %d", 62);
 
 		if (m_enable_visuals && m_visualize_map) {
 			mrpt::synch::CCriticalSectionLocker m_graph_lock(&m_graph_section);
-			bool full_update = m_optimizer->justFullyOptimizedGraph();
-			this->updateMapVisualization(m_graph, m_nodes_to_laser_scans2D, full_update);
+			//bool full_update = m_optimizer->justFullyOptimizedGraph();
+			bool full_update = true;
+			this->updateMapVisualization(m_nodes_to_laser_scans2D, full_update);
 		}
 
 		// query node/edge deciders for visual objects update
@@ -684,7 +704,6 @@ this->logFmt(mrpt::utils::LVL_INFO, "TODO - Remove me. Kalimera %d", 62);
 			}
 		}
 
-this->logFmt(mrpt::utils::LVL_INFO, "TODO - Remove me. Kalimera %d", 63);
 		// update the graph visualization
 
 		if (m_enable_curr_pos_viewport) {
@@ -692,7 +711,7 @@ this->logFmt(mrpt::utils::LVL_INFO, "TODO - Remove me. Kalimera %d", 63);
 		}
 		// update visualization of estimated trajectory
 		if (m_enable_visuals) {
-			bool full_update = true;
+			bool full_update = true; // don't care, do it anyway.
 			m_time_logger.enter("Visuals");
 			this->updateEstimatedTrajectoryVisualization(full_update);
 			m_time_logger.leave("Visuals");
@@ -737,13 +756,14 @@ this->logFmt(mrpt::utils::LVL_INFO, "TODO - Remove me. Kalimera %d", 63);
 					/* unique_index = */ m_text_index_timestamp );
 		}
 	}
-this->logFmt(mrpt::utils::LVL_INFO, "TODO - Remove me. Kalimera %d", 64);
+this->logFmt(mrpt::utils::LVL_INFO, "TODO - Remove me. Kalimera %d", 5);
 
 	// Odometry visualization
 	if (m_visualize_odometry_poses && m_odometry_poses.size()) {
 		this->updateOdometryVisualization();
 	}
 
+this->logFmt(mrpt::utils::LVL_INFO, "TODO - Remove me. Kalimera %d", 6);
 	// ensure that the GT is visualized at the same rate as the SLAM procedure
 	// handle RGBD-TUM datasets manually. Advance the GT index accordingly
 	if (m_use_GT) {
@@ -771,7 +791,7 @@ this->logFmt(mrpt::utils::LVL_INFO, "TODO - Remove me. Kalimera %d", 64);
 			}
 		}
 	}
-this->logFmt(mrpt::utils::LVL_INFO, "TODO - Remove me. Kalimera %d", 65);
+this->logFmt(mrpt::utils::LVL_INFO, "TODO - Remove me. Kalimera %d", 7);
 
 	// 3DRangeScans viewports update
 	if (mrpt::system::strCmpI(m_GT_file_format, "rgbd_tum")) {
@@ -794,11 +814,11 @@ this->logFmt(mrpt::utils::LVL_INFO, "TODO - Remove me. Kalimera %d", 65);
 			m_init_timestamp,
 			m_curr_timestamp);
 	m_time_logger.leave("proc_time");
-this->logFmt(mrpt::utils::LVL_INFO, "TODO - Remove me. Kalimera %d", 66);
+this->logFmt(mrpt::utils::LVL_INFO, "TODO - Remove me. Kalimera %d", 8);
 
 	return !m_request_to_exit;
 	MRPT_END;
-} // END OF EXECGRAPHSLAM
+} // end of _execGraphSlamStep
 
 template<class GRAPH_T>
 void CGraphSlamEngine<GRAPH_T>::monitorNodeRegistration(
@@ -807,7 +827,6 @@ void CGraphSlamEngine<GRAPH_T>::monitorNodeRegistration(
 	MRPT_START;
 	using namespace mrpt::utils;
 	using namespace mrpt;
-this->logFmt(mrpt::utils::LVL_INFO, "TODO - Remove me. Kalimera %d", 67);
 
 	mrpt::synch::CCriticalSectionLocker m_graph_lock(&m_graph_section);
 	size_t listed_nodeCount = (m_nodeID_max == INVALID_NODEID?
@@ -829,7 +848,6 @@ this->logFmt(mrpt::utils::LVL_INFO, "TODO - Remove me. Kalimera %d", 67);
 						class_name.c_str()));
 		}
 	}
-this->logFmt(mrpt::utils::LVL_INFO, "TODO - Remove me. Kalimera %d", 68);
 	MRPT_END;
 }
 
@@ -855,6 +873,7 @@ void CGraphSlamEngine<GRAPH_T>::getMap(
 	}
 	MRPT_END;
 }
+
 template<class GRAPH_T>
 void CGraphSlamEngine<GRAPH_T>::getMap(
 		mrpt::maps::COctoMapPtr map,
@@ -897,7 +916,7 @@ inline void CGraphSlamEngine<GRAPH_T>::computeMap() const {
 				it = m_nodes_to_laser_scans2D.begin();
 				it != m_nodes_to_laser_scans2D.end(); ++it) {
 
-			TNodeID curr_node = it->first;
+			TNodeID& curr_node = it->first;
 			mrpt::obs::CObservation2DRangeScanPtr curr_laser_scan = it->second;
 
 			// TODO - Correct this. Laser scan should exist anyway
@@ -1705,8 +1724,19 @@ mrpt::system::TTimeStamp CGraphSlamEngine<GRAPH_T>::getTimeStamp(
 }
 
 template<class GRAPH_T>
+void CGraphSlamEngine<GRAPH_T>::initMapVisualization() {
+	using namespace mrpt::opengl;
+
+	CSetOfObjectsPtr map_obj = CSetOfObjects::Create();
+	map_obj->setName("map");
+	COpenGLScenePtr& scene = this->m_win->get3DSceneAndLock();
+	scene->insert(map_obj);
+	this->m_win->unlockAccess3DScene();
+	this->m_win->forceRepaint();
+}
+
+template<class GRAPH_T>
 void CGraphSlamEngine<GRAPH_T>::updateMapVisualization(
-		const GRAPH_T& gr,
 		const std::map<
 			mrpt::utils::TNodeID,
 			mrpt::obs::CObservation2DRangeScanPtr>& nodes_to_laser_scans2D,
@@ -1718,23 +1748,31 @@ void CGraphSlamEngine<GRAPH_T>::updateMapVisualization(
 	using namespace mrpt::opengl;
 	using namespace std;
 	using namespace mrpt::poses;
+	COpenGLScenePtr scene = m_win->get3DSceneAndLock();
+	CSetOfObjectsPtr map_obj;
+	{
+		CRenderizablePtr obj = scene->getByName("map");
+		map_obj = static_cast<CSetOfObjectsPtr>(obj);
+		ASSERT_(map_obj);
+	}
 
 	CTicTac map_update_timer;
 	map_update_timer.Tic();
 
-	// get set of nodes to run the update for
+	// get the set of nodes for which to run the update
 	std::set<mrpt::utils::TNodeID> nodes_set;
 	{
 		if (full_update) {
 			// for all the nodes get the node position and the corresponding laser scan
 			// if they were recorded and visualize them
-			gr.getAllNodes(nodes_set);
+			m_graph.getAllNodes(nodes_set);
 			MRPT_LOG_DEBUG_STREAM << "Executing full update of the map visuals";
+			map_obj->clear();
 
-		} // IF FULL UPDATE
-		else { // add only current CSimplePointMap
+		} // END_IF FULL UPDATE
+		else { // add only current nodeID
 			nodes_set.insert(m_nodeID_max);
-		} // if PARTIAL_UPDATE
+		} // END_IF PARTIAL_UPDATE
 	}
 
 	// for all the nodes in the previously populated set
@@ -1742,7 +1780,7 @@ void CGraphSlamEngine<GRAPH_T>::updateMapVisualization(
 			node_it = nodes_set.begin();
 			node_it != nodes_set.end(); ++node_it) {
 
-		pose_t scan_pose = gr.nodes.find(*node_it)->second;
+		pose_t scan_pose = m_graph.nodes.at(*node_it);
 
 		// name of gui object
 		stringstream scan_name("");
@@ -1764,13 +1802,11 @@ void CGraphSlamEngine<GRAPH_T>::updateMapVisualization(
 			this->decimateLaserScan(*scan_content, &scan_decimated,
 					/*keep_every_n_entries = */ 5);
 
-			// if the scan doesn't already exist, add it to the scene, otherwise just
+			// if the scan doesn't already exist, add it to the map object, otherwise just
 			// adjust its pose
-			COpenGLScenePtr scene = m_win->get3DSceneAndLock();
-			CRenderizablePtr obj = scene->getByName(scan_name.str());
-
-			CSetOfObjectsPtr scan_obj;
-			if (obj.null()) {
+			CRenderizablePtr obj = map_obj->getByName(scan_name.str());
+			CSetOfObjectsPtr scan_obj = static_cast<CSetOfObjectsPtr>(obj);
+			if (scan_obj.null()) {
 				MRPT_LOG_DEBUG_STREAM("CSetOfObjects for nodeID " << *node_it <<
 					"doesn't exist. Creating it...");
 
@@ -1790,29 +1826,30 @@ void CGraphSlamEngine<GRAPH_T>::updateMapVisualization(
 				{
 					stringstream prev_scan_name("");
 					prev_scan_name << "laser_scan_" << *node_it - 1;
-					CRenderizablePtr prev_obj = scene->getByName(prev_scan_name.str());
+					CRenderizablePtr prev_obj = map_obj->getByName(prev_scan_name.str());
 					if (prev_obj) {
 						scan_obj->setVisibility(prev_obj->isVisible());
 					}
 				}
 
-				scene->insert(scan_obj);
+				map_obj->insert(scan_obj);
 			}
 			else {
-				scan_obj = static_cast<CSetOfObjectsPtr>(obj);
+				scan_obj = static_cast<CSetOfObjectsPtr>(scan_obj);
 			}
 
 			// finally set the pose correctly - as computed by graphSLAM
 			scan_obj->setPose(CPose3D(scan_pose));
 
-			m_win->unlockAccess3DScene();
-			m_win->forceRepaint();
 		}
 		else {
 			MRPT_LOG_DEBUG_STREAM("Laser scans of NodeID " << *node_it << "are  empty/invalid");
 		}
-	}
 
+	} // end for set of nodes
+
+	m_win->unlockAccess3DScene();
+	m_win->forceRepaint();
 
 	double elapsed_time = map_update_timer.Tac();
 	MRPT_LOG_DEBUG_STREAM("updateMapVisualization took: " << elapsed_time << "s");
@@ -2026,10 +2063,6 @@ void CGraphSlamEngine<GRAPH_T>::initEstimatedTrajectoryVisualization() {
 	// robot model
 	//CSetOfObjectsPtr robot_model = stock_objects::RobotPioneer();
 	//pose_t initial_pose;
-	//robot_model->setPose(initial_pose);
-	//robot_model->setName("robot_estimated_traj");
-	//robot_model->setColor_u8(m_estimated_traj_color);
-	//robot_model->setScale(m_robot_model_size);
 	CSetOfObjectsPtr robot_model = this->setCurrentPositionModel(
 			"robot_estimated_traj",
 			m_estimated_traj_color,
@@ -2074,15 +2107,17 @@ updateEstimatedTrajectoryVisualization(bool full_update) {
 	if (m_visualize_estimated_trajectory) {
 		// set of lines
 		obj = scene->getByName("estimated_traj_setoflines");
-		CSetOfLinesPtr estimated_traj_setoflines = static_cast<CSetOfLinesPtr>(obj);
+		CSetOfLinesPtr estimated_traj_setoflines =
+			static_cast<CSetOfLinesPtr>(obj);
 
-		// gather set of nodes for which to append lines - all of the nodes in the
-		// graph or just the last inserted..
+		// gather set of nodes for which to append lines - all of the nodes in
+		// the graph or just the last inserted..
 		std::set<mrpt::utils::TNodeID> nodes_set;
 		{
 			if (full_update) {
 				m_graph.getAllNodes(nodes_set);
 				estimated_traj_setoflines->clear();
+				// dummy way so that I can use appendLineStrip afterwards.
 				estimated_traj_setoflines->appendLine(
 						/* 1st */ 0, 0, 0,
 						/* 2nd */ 0, 0, 0);
@@ -2117,7 +2152,8 @@ updateEstimatedTrajectoryVisualization(bool full_update) {
 	m_win->unlockAccess3DScene();
 	m_win->forceRepaint();
 	MRPT_END;
-}
+} // end of updateEstimatedTrajectoryVisualization
+
 
 // TRGBDInfoFileParams
 // ////////////////////////////////
@@ -2427,13 +2463,10 @@ void CGraphSlamEngine<GRAPH_T>::getDescriptiveReport(std::string* report_str) co
 	using namespace std;
 	using namespace mrpt::utils;
 
-	const std::string report_sep(2, '\n');
-	const std::string header_sep(80, '#');
-
 	// Summary of Results
 	stringstream results_ss;
 	results_ss << "Summary: " << std::endl;
-	results_ss << header_sep << std::endl;
+	results_ss << this->header_sep << std::endl;
 	results_ss << "\tProcessing time: " <<
 		m_time_logger.getMeanTime("proc_time") << std::endl;;
 	results_ss << "\tDataset Grab time: " << m_dataset_grab_time << std::endl;
@@ -2454,16 +2487,16 @@ void CGraphSlamEngine<GRAPH_T>::getDescriptiveReport(std::string* report_str) co
 	report_str->clear();
 
 	*report_str += results_ss.str();
-	*report_str += report_sep;
+	*report_str += this->report_sep;
 
 	*report_str += config_params;
-	*report_str += report_sep;
+	*report_str += this->report_sep;
 
 	*report_str += time_res;
-	*report_str += report_sep;
+	*report_str += this->report_sep;
 
 	*report_str += output_res;
-	*report_str += report_sep;
+	*report_str += this->report_sep;
 
 	MRPT_END;
 }

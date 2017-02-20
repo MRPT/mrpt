@@ -17,15 +17,8 @@ namespace mrpt { namespace graphslam { namespace deciders {
 
 template<class GRAPH_T>
 CFixedIntervalsNRD<GRAPH_T>::CFixedIntervalsNRD() {
-	this->initCFixedIntervalsNRD();
-}
-template<class GRAPH_T>
-void CFixedIntervalsNRD<GRAPH_T>::initCFixedIntervalsNRD() {
 	using namespace mrpt::utils;
 	this->initializeLoggers("CFixedIntervalsNRD");
-
-	m_since_prev_node_PDF.cov_inv = this->m_init_inf_mat;
-	m_since_prev_node_PDF.mean = pose_t();
 
 	this->logFmt(LVL_DEBUG, "IntervalsNRD: Initialized class object");
 }
@@ -34,12 +27,6 @@ CFixedIntervalsNRD<GRAPH_T>::~CFixedIntervalsNRD() { }
 
 // Member function implementations
 //////////////////////////////////////////////////////////////
-
-template<class GRAPH_T>
-typename GRAPH_T::global_pose_t
-CFixedIntervalsNRD<GRAPH_T>::getCurrentRobotPosEstimation() const {
-	return m_curr_estimated_pose;
-}
 
 template<class GRAPH_T>
 bool CFixedIntervalsNRD<GRAPH_T>::updateState(
@@ -69,7 +56,7 @@ bool CFixedIntervalsNRD<GRAPH_T>::updateState(
 
 			// I don't have any information about the covariane of the move in
 			// observation-only format
-			m_since_prev_node_PDF.mean =
+			this->m_since_prev_node_PDF.mean =
 				m_curr_odometry_only_pose - m_last_odometry_only_pose;
 		}
 	}
@@ -82,15 +69,9 @@ bool CFixedIntervalsNRD<GRAPH_T>::updateState(
 			// update the relative PDF of the path since the LAST node was inserted
 			constraint_t incr_constraint;
 			incr_constraint.copyFrom(move_pdf);
-			m_since_prev_node_PDF += incr_constraint;
+			this->m_since_prev_node_PDF += incr_constraint;
 		}
 	} // ELSE - FORMAT #1
-
-	if (this->m_prev_registered_nodeID != INVALID_NODEID) {
-		m_curr_estimated_pose =
-			this->m_graph->nodes.at(this->m_prev_registered_nodeID);
-	}
-	m_curr_estimated_pose += m_since_prev_node_PDF.getMeanVal();
 
 	bool registered = this->checkRegistrationCondition();
 
@@ -99,40 +80,38 @@ bool CFixedIntervalsNRD<GRAPH_T>::updateState(
 			// keep track of the odometry-only pose_t at the last inserted graph node
 			m_last_odometry_only_pose = m_curr_odometry_only_pose;
 		}
-		m_since_prev_node_PDF = constraint_t();
-		m_since_prev_node_PDF.cov_inv = this->m_init_inf_mat;
 	}
 
 	return registered;
 
 	MRPT_END;
-}
+} // end of updateState
 
 template<class GRAPH_T>
 bool CFixedIntervalsNRD<GRAPH_T>::checkRegistrationCondition() {
 	MRPT_START;
 
-	// check that a node has already been registered - if not default to (0,0,0)
+	// check that a node has already been registered - if not, default to (0,0,0)
 	pose_t last_pose_inserted = this->m_prev_registered_nodeID != INVALID_NODEID?
 		this->m_graph->nodes.at(this->m_prev_registered_nodeID): pose_t();
 
 	// odometry criterion
 	bool registered = false;
+
 	if (this->checkRegistrationCondition(
 				last_pose_inserted,
-				m_curr_estimated_pose)) {
-		registered = this->registerNewNodeAtEnd(m_since_prev_node_PDF);
+				this->getCurrentRobotPosEstimation())) {
+		registered = this->registerNewNodeAtEnd();
 	}
 
 	return registered;
-
 	MRPT_END;
-}
+} // end of checkRegistrationCondition
 
 template<class GRAPH_T>
 bool CFixedIntervalsNRD<GRAPH_T>::checkRegistrationCondition(
-		mrpt::poses::CPose2D p1,
-		mrpt::poses::CPose2D p2) {
+		const mrpt::poses::CPose2D& p1,
+		const mrpt::poses::CPose2D& p2) const {
 	using namespace mrpt::math;
 	
 	bool res = false;
@@ -142,12 +121,12 @@ bool CFixedIntervalsNRD<GRAPH_T>::checkRegistrationCondition(
 	}
 
 	return res;
-}
+} // end of checkRegistrationCondition2D
 
 template<class GRAPH_T>
 bool CFixedIntervalsNRD<GRAPH_T>::checkRegistrationCondition(
-		mrpt::poses::CPose3D p1,
-		mrpt::poses::CPose3D p2) {
+		const mrpt::poses::CPose3D& p1,
+		const mrpt::poses::CPose3D& p2) const {
 	using namespace mrpt::math;
 	
 	bool res = false;
@@ -159,7 +138,7 @@ bool CFixedIntervalsNRD<GRAPH_T>::checkRegistrationCondition(
 	}
 
 	return res;
-}
+} // end of checkRegistrationCondition3D
 
 template<class GRAPH_T>
 void CFixedIntervalsNRD<GRAPH_T>::loadParams(const std::string& source_fname) {
@@ -180,7 +159,6 @@ void CFixedIntervalsNRD<GRAPH_T>::loadParams(const std::string& source_fname) {
 
 
 	this->logFmt(LVL_DEBUG, "Successfully loaded parameters.");
-
 	MRPT_END;
 }
 
@@ -275,9 +253,12 @@ void CFixedIntervalsNRD<GRAPH_T>::TParams::getAsString(std::string* params_out) 
 	double max_angle_deg = RAD2DEG(registration_max_angle);
 	params_out->clear();
 
-	*params_out += "------------------[ Fixed Intervals Node Registration ]------------------\n";
-	*params_out += mrpt::format("Max distance for registration = %.2f m\n", registration_max_distance);
-	*params_out += mrpt::format("Max angle for registration    = %.2f deg\n", max_angle_deg);
+	*params_out +=
+		"------------------[ Fixed Intervals Node Registration ]------------------\n";
+	*params_out += mrpt::format(
+			"Max distance for registration = %.2f m\n", registration_max_distance);
+	*params_out += mrpt::format(
+			"Max angle for registration    = %.2f deg\n", max_angle_deg);
 
 	MRPT_END;
 }
