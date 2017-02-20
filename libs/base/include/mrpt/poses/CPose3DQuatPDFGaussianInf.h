@@ -40,7 +40,8 @@ namespace poses
 	class BASE_IMPEXP CPose3DQuatPDFGaussianInf : public CPose3DQuatPDF
 	{
 		// This must be added to any CSerializable derived class:
-		DEFINE_SERIALIZABLE( CPose3DQuatPDFGaussianInf )
+		DEFINE_SERIALIZABLE( CPose3DQuatPDFGaussianInf );
+		typedef CPose3DQuatPDFGaussianInf self_t;
 
 	 public:
 		 /** Default constructor - set all values to zero. */
@@ -66,6 +67,7 @@ namespace poses
 		void getMean(CPose3DQuat &mean_pose) const MRPT_OVERRIDE {
 			mean_pose = mean;
 		}
+		bool isInfType() const { return mrpt::traits::is_inf_type<self_t>::value; }
 
 		/** Returns an estimate of the pose covariance matrix (7x7 cov matrix) and the mean, both at once. \sa getMean */
 		void getCovarianceAndMean(mrpt::math::CMatrixDouble77 &cov,CPose3DQuat &mean_point) const MRPT_OVERRIDE {
@@ -122,5 +124,8 @@ namespace poses
 	std::ostream  BASE_IMPEXP & operator << (std::ostream & out, const CPose3DQuatPDFGaussianInf& obj);
 
 	} // End of namespace
+
+
+
 } // End of namespace
 #endif
