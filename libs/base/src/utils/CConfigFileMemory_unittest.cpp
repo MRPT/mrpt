@@ -8,40 +8,27 @@
    +---------------------------------------------------------------------------+ */
 
 #include <mrpt/utils/CConfigFileMemory.h>
-#include <mrpt/system/os.h>
-
-#include "simpleini/SimpleIni.h"
-
 #include <gtest/gtest.h>
 
 using namespace mrpt;
 using namespace mrpt::utils;
-using namespace mrpt::utils::simpleini;
 using namespace std;
-
-class TConfig : public CConfigFileMemory {
-	public:
-	using CConfigFileMemory::writeString;
-	using CConfigFileMemory::readString;
-	using CConfigFileMemory::getAllSections;
-	using CConfigFileMemory::getAllKeys;
-	};
 
 TEST(CConfigFileMemory, readwrite)
 {
-	const std::string a = "check", b = "test", c = "final //comment", d = "final";
-	TConfig second;
-	second.writeString(a,b,c);
-	EXPECT_STREQ("final ", second.readString(a,b,d).c_str());	
+	const std::string a = "check", b = "test", c = "final //comments";
+	CConfigFileMemory first;
+	first.write(a,b,c);
+	EXPECT_STREQ("final", first.read_string(a,b,b).c_str());	
 }
 
 TEST(CConfigFileMemory, Sections)
 {
 	vector_string sections;
-	TConfig third;
-	third.writeString("one","name","val");
-	third.writeString("two","names","value");
-	third.getAllSections(sections);
+	CConfigFileMemory second;
+	second.write("one","name","val");
+	second.write("two","names","value");
+	second.getAllSections(sections);
 	EXPECT_STREQ("one",sections[0].c_str());
 	EXPECT_STREQ("two",sections[1].c_str());
 	EXPECT_EQ(2,sections.size());
@@ -50,11 +37,21 @@ TEST(CConfigFileMemory, Sections)
 TEST(CConfigFileMemory, Names)
 {
 	vector_string names;
-	TConfig fourth;
-	fourth.writeString("sec","name","val");
-	fourth.writeString("sec","names","value");
-	fourth.getAllKeys("sec", names);
+	CConfigFileMemory third;
+	third.write("sec","name","val");
+	third.write("sec","names","value");
+	third.getAllKeys("sec", names);
 	EXPECT_STREQ("name",names[0].c_str());
 	EXPECT_STREQ("names",names[1].c_str());
 	EXPECT_EQ(2,names.size());
+}
+
+TEST(CConfigFileMemory, multiline)
+{
+	const std::string a = "check", b = "test" , val = "This is a"
+	" string with multiple lines"
+	" used for testing";
+	CConfigFileMemory fourth;
+	fourth.write(a,b,val);
+	EXPECT_STREQ(val.c_str(), fourth.read_string(a,b,a).c_str());
 }
