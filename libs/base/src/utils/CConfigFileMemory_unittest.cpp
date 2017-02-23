@@ -29,9 +29,11 @@ TEST(CConfigFileMemory, Sections)
 	second.write("one","name","val");
 	second.write("two","names","value");
 	second.getAllSections(sections);
-	EXPECT_STREQ("one",sections[0].c_str());
-	EXPECT_STREQ("two",sections[1].c_str());
-	EXPECT_EQ(2,sections.size());
+	EXPECT_EQ(2, sections.size());
+	if (sections.size() == 2) {  // avoid potential crash if fails
+		EXPECT_STREQ("one", sections[0].c_str());
+		EXPECT_STREQ("two", sections[1].c_str());
+	}
 }
 
 TEST(CConfigFileMemory, Names)
@@ -41,17 +43,47 @@ TEST(CConfigFileMemory, Names)
 	third.write("sec","name","val");
 	third.write("sec","names","value");
 	third.getAllKeys("sec", names);
-	EXPECT_STREQ("name",names[0].c_str());
-	EXPECT_STREQ("names",names[1].c_str());
-	EXPECT_EQ(2,names.size());
+	EXPECT_EQ(2, names.size());
+	if (names.size() == 2) {  // avoid potential crash if fails
+		EXPECT_STREQ("name", names[0].c_str());
+		EXPECT_STREQ("names", names[1].c_str());
+	}
 }
 
-TEST(CConfigFileMemory, multiline)
+TEST(CConfigFileMemory, setFromString)
 {
-	const std::string a = "check", b = "test" , val = "This is a"
-	" string with multiple lines"
-	" used for testing";
-	CConfigFileMemory fourth;
-	fourth.write(a,b,val);
-	EXPECT_STREQ(val.c_str(), fourth.read_string(a,b,a).c_str());
+	const std::string sampleCfgTxt =
+		"# example config file from std::string\n"
+		"[test]\n"
+		"key_num = 4\n"
+		"key_str = pepe\n"
+		;
+
+	CConfigFileMemory cfg;
+	cfg.setContent(sampleCfgTxt);
+
+	EXPECT_EQ(cfg.read_int("test", "key_num", 0), 4);
+	EXPECT_EQ(cfg.read_string("test","key_str",""),std::string("pepe"));
 }
+
+TEST(CConfigFileMemory, readMultiLineStrings)
+{
+	MRPT_TODO("Implement me!");
+
+	// Being able of read 
+	const std::string sampleCfgTxt =
+		"[test]\n"
+		"key_str = this is a \\\n"
+		"long value that can be \\\n"
+		"split into several lines\\\n"
+		"but read as a single line. \n";
+		;
+
+	CConfigFileMemory cfg;
+	cfg.setContent(sampleCfgTxt);
+
+	// ..
+	
+}
+
+
