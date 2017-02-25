@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -434,10 +434,10 @@ CGasConcentrationGridMap2D::TInsertionOptions::TInsertionOptions() :
 	gasSensorType				( 0x0000 ),		//By default use the mean between all e-nose sensors
 	windSensorLabel				( "windSensor" ),
 	useWindInformation			( false ),		//By default dont use wind
-	std_windNoise_phi			( 0.2 ),
-	std_windNoise_mod			( 0.2 ),
-	default_wind_direction		( 0.0 ),
-	default_wind_speed			( 1.0 )
+	std_windNoise_phi			( 0.2f ),
+	std_windNoise_mod			( 0.2f ),
+	default_wind_direction		( 0.0f ),
+	default_wind_speed			( 1.0f )
 {
 }
 
@@ -546,7 +546,7 @@ void  CGasConcentrationGridMap2D::getAs3DObject(
 void  CGasConcentrationGridMap2D::getWindAs3DObject( mrpt::opengl::CSetOfObjectsPtr &windObj) const
 {
 	//Return an arrow map of the wind state (module(color) and direction).
-	float scale = 0.2;
+	float scale = 0.2f;
 	size_t arrow_separation = 5;	//distance between arrows, expresed as times the cell resolution
 
 
@@ -859,9 +859,9 @@ bool CGasConcentrationGridMap2D::build_Gaussian_Wind_Grid()
 	std::string filename = format("Gaussian_Wind_Weights_res(%f)_stdPhi(%f)_stdR(%f).gz",LUT.resolution,LUT.std_phi,LUT.std_r);
 
 	// Fixed Params:
-	LUT.phi_inc = M_PI/8;									//Increment in the wind Angle. (rad)
+	LUT.phi_inc = M_PIf/8;									//Increment in the wind Angle. (rad)
 	LUT.phi_count = round(2*M_PI/LUT.phi_inc)+1;			//Number of angles to generate
-	LUT.r_inc = 0.1;										//Increment in the wind Module. (m)
+	LUT.r_inc = 0.1f;										//Increment in the wind Module. (m)
 	LUT.max_r = 2;											//maximum distance (m) to simulate
 	LUT.r_count = round(LUT.max_r/LUT.r_inc)+1;				//Number of wind modules to simulate
 

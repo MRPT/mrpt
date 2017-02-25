@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -18,16 +18,16 @@ using namespace mrpt::utils;
 using namespace mrpt::poses;
 
 // This must be added to any CSerializable class implementation file.
-IMPLEMENTS_SERIALIZABLE(CObservationOdometry, CObservation,mrpt::obs)
+IMPLEMENTS_SERIALIZABLE(CObservationOdometry, CObservation, mrpt::obs)
 
 /** Constructor
  */
-CObservationOdometry::CObservationOdometry( ) :
+	CObservationOdometry::CObservationOdometry() :
 	odometry(),
 	hasEncodersInfo(false),
-	encoderLeftTicks(0),encoderRightTicks(0),
+	encoderLeftTicks(0), encoderRightTicks(0),
 	hasVelocities(false),
-	velocityLin(0), velocityAng(0)
+	velocityLocal(.0, .0, .0)
 {
 }
 
@@ -39,7 +39,7 @@ void  CObservationOdometry::writeToStream(mrpt::utils::CStream &out, int *versio
 {
 	MRPT_UNUSED_PARAM(out);
 	if (version)
-		*version = 1;
+		*version = 2;
 	else
 	{
 		// The data
@@ -47,10 +47,13 @@ void  CObservationOdometry::writeToStream(mrpt::utils::CStream &out, int *versio
 			<< sensorLabel
 			<< timestamp
 			// Added in V1:
-			<< 	hasEncodersInfo
-			<< encoderLeftTicks << encoderRightTicks
-			<< hasVelocities
-			<< velocityLin << velocityAng;
+			<< hasEncodersInfo;
+		if (hasEncodersInfo)
+			out << encoderLeftTicks << encoderRightTicks;
+
+		out << hasVelocities; 
+		if (hasVelocities)
+			out << velocityLocal;
 	}
 }
 
@@ -64,6 +67,7 @@ void  CObservationOdometry::readFromStream(mrpt::utils::CStream &in, int version
 	{
 	case 0:
 	case 1:
+	case 2:
 		{
 			in	>> odometry
 			    >> sensorLabel
@@ -71,17 +75,29 @@ void  CObservationOdometry::readFromStream(mrpt::utils::CStream &in, int version
 
 			if (version>=1)
 			{
-				in 	>> hasEncodersInfo
-					>> encoderLeftTicks >> encoderRightTicks
-					>> hasVelocities
-					>> velocityLin >> velocityAng;
+				in >> hasEncodersInfo;
+				if (hasEncodersInfo || version < 2)
+					in >> encoderLeftTicks >> encoderRightTicks;
+				
+				in >> hasVelocities;
+				if (version < 2) {
+					float vx, w;
+					in >> vx >> w;
+					velocityLocal.vx = vx;
+					velocityLocal.vy = .0;
+					velocityLocal.omega = w;
+				}
+				else
+				{// v2
+					if (hasVelocities)
+						in >> velocityLocal;
+				}
 			}
 			else
-			{
+			{  
 				hasEncodersInfo = false;
 				encoderLeftTicks = encoderRightTicks = 0;
 				hasVelocities = false;
-				velocityLin = velocityAng = 0;
 			}
 
 		} break;
@@ -106,7 +122,7 @@ void CObservationOdometry::getDescriptionAsText(std::ostream &o) const
 
 	if (hasVelocities)
 	{
-		o << format(" Velocity info: v=%.03f m/s  w=%.03f deg/s\n", velocityLin, RAD2DEG(velocityAng) );
+		o << format("Velocity info: %s\n", velocityLocal.asString().c_str());
 	}
 	else   o << "Velocity info: Not available!\n";
 

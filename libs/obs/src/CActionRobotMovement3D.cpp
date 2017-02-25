@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -12,6 +12,7 @@
 #include <mrpt/random.h>
 #include <mrpt/utils/CStream.h>
 #include <mrpt/obs/CActionRobotMovement3D.h>
+#include <mrpt/poses/CPose3DPDFParticles.h>
 
 using namespace mrpt;
 using namespace mrpt::obs;
@@ -34,15 +35,8 @@ CActionRobotMovement3D::CActionRobotMovement3D() :
 	velocities(6)
 {
 	velocities.assign(.0);
-
 }
 
-/*---------------------------------------------------------------
-						Destructor
-  ---------------------------------------------------------------*/
-CActionRobotMovement3D::~CActionRobotMovement3D()
-{
-}
 
 /*---------------------------------------------------------------
   Implements the writing to a CStream capability of CSerializable objects
@@ -143,23 +137,18 @@ void  CActionRobotMovement3D::computeFromOdometry_model6DOF(
 	const TMotionModelOptions	&o
 	)
 {
-
-
 	// The Gaussian PDF:
 	// ---------------------------
 	CPose3DPDFParticles		*aux;
 	static CPose3D			nullPose(0,0,0,0,0,0);
 
-	poseChangeTemp = CPose3DPDFParticles::Create();
+	mrpt::poses::CPose3DPDFPtr poseChangeTemp = CPose3DPDFParticles::Create();
 	aux = static_cast<CPose3DPDFParticles*>( poseChangeTemp.pointer() );
 
 	// Set the number of particles:
 	aux->resetDeterministic(nullPose, o.mm6DOFModel.nParticlesCount );
 
-
-
 	//The motion model: A. L. Ballardini, A. Furlan, A. Galbiati, M. Matteucci, F. Sacchi, D. G. Sorrenti An effective 6DoF motion model for 3D-6DoF Monte Carlo Localization 4th Workshop on Planning, Perception and Navigation for Intelligent Vehicles, IROS, 2012
-
 
 	/*
 		The brief description:

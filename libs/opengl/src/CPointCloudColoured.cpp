@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -256,7 +256,7 @@ void CPointCloudColoured::recolorizeByCoordinate(const float coord_min, const fl
 	const float coord_range_1 = coord_range!=0.0f ? 1.0f/coord_range : 1.0f;
 	for (size_t i=0;i<m_points.size();i++)
 	{
-		float coord;
+		float coord =.0f;
 		switch (coord_index) {
 		case 0: coord = m_points[i].x; break;
 		case 1: coord = m_points[i].y; break;
@@ -264,7 +264,7 @@ void CPointCloudColoured::recolorizeByCoordinate(const float coord_min, const fl
 		};
 		const float col_idx = std::max(0.0f, std::min(1.0f,(coord-coord_min)*coord_range_1 ) );
 		float r,g,b;
-		mrpt::utils::colormap( mrpt::utils::cmJET, col_idx,r,g,b);
+		mrpt::utils::colormap(color_map, col_idx,r,g,b);
 		this->setPointColor_fast(i,r,g,b);
 	}
 }

@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -17,7 +17,8 @@ using namespace std;
 
 CWaypointsNavigator::CWaypointsNavigator(CRobot2NavInterface &robot_if) :
 	CAbstractNavigator(robot_if),
-	MAX_DISTANCE_TO_ALLOW_SKIP_WAYPOINT(-1.0)
+	MAX_DISTANCE_TO_ALLOW_SKIP_WAYPOINT(-1.0),
+	MIN_TIMESTEPS_CONFIRM_SKIP_WAYPOINTS(1)
 {
 }
 
@@ -72,20 +73,20 @@ void CWaypointsNavigator::navigationStep()
 
 	using mrpt::utils::square;
 
-	// Call base navigation step to execute one-single waypoint navigation, as usual:
-	CAbstractNavigator::navigationStep();  // This internally locks "m_nav_cs"
-
 	// --------------------------------------
 	//     Waypoint navigation algorithm
 	// --------------------------------------
 	{
-		mrpt::synch::CCriticalSectionLocker csl(&m_nav_waypoints_cs);
+	mrpt::synch::CCriticalSectionLocker csl(&m_nav_waypoints_cs);
 
-		TWaypointStatusSequence &wps = m_waypoint_nav_status; // shortcut to save typing
+	TWaypointStatusSequence &wps = m_waypoint_nav_status; // shortcut to save typing
 
-		if ( wps.waypoints.empty() || wps.final_goal_reached )
-			return; // No nav request is pending or it was canceled
-
+	if (wps.waypoints.empty() || wps.final_goal_reached)
+	{
+		// No nav request is pending or it was canceled
+	}
+	else
+	{
 		// 0) Get current robot pose:
 		CAbstractNavigator::updateCurrentPoseAndSpeeds();
 
@@ -123,7 +124,7 @@ void CWaypointsNavigator::navigationStep()
 
 		// 2) More advanced policy: if available, use children class methods to decide 
 		//     which is the best candidate for the next waypoint, if we can skip current one:
-		if (!wps.final_goal_reached)
+		if (!wps.final_goal_reached && wps.waypoint_index_current_goal >= 0)
 		{
 			const mrpt::poses::CPose2D robot_pose(m_curPoseVel.pose);
 			int most_advanced_wp = wps.waypoint_index_current_goal;
@@ -143,7 +144,11 @@ void CWaypointsNavigator::navigationStep()
 				const bool is_reachable = this->impl_waypoint_is_reachable(wp_local_wrt_robot);
 
 				if (is_reachable) {
-					most_advanced_wp = idx;
+					// Robustness filter: only skip to a future waypoint if it is seen as "reachable" during 
+					// a given number of timesteps:
+					if (++wps.waypoints[idx].counter_seen_reachable > MIN_TIMESTEPS_CONFIRM_SKIP_WAYPOINTS) {
+						most_advanced_wp = idx;
+					}
 				}
 
 				// Is allowed to skip it?
@@ -185,16 +190,29 @@ void CWaypointsNavigator::navigationStep()
 			this->navigate( &nav_cmd );
 		}
 	}
+	}
+
+	// Note: navigationStep() called *after* waypoints part to get end-of-navigation events *after*
+	//       waypoints-related events:
+
+	// Call base navigation step to execute one-single waypoint navigation, as usual:
+	CAbstractNavigator::navigationStep();  // This internally locks "m_nav_cs"
 
 	MRPT_END
 }
 
 void CWaypointsNavigator::loadWaypointsParamsConfigFile(const mrpt::utils::CConfigFileBase &cfg, const std::string &sectionName)
 {
-	MRPT_LOAD_CONFIG_VAR(MAX_DISTANCE_TO_ALLOW_SKIP_WAYPOINT, double,   cfg, sectionName);
+	MRPT_LOAD_CONFIG_VAR(MAX_DISTANCE_TO_ALLOW_SKIP_WAYPOINT,  double,   cfg, sectionName);
+	MRPT_LOAD_CONFIG_VAR(MIN_TIMESTEPS_CONFIRM_SKIP_WAYPOINTS, int, cfg, sectionName);
 }
 
 void CWaypointsNavigator::onStartNewNavigation()
 {
 
+}
+
+bool CWaypointsNavigator::isRelativePointReachable(const mrpt::math::TPoint2D &wp_local_wrt_robot) const
+{
+	return impl_waypoint_is_reachable(wp_local_wrt_robot);
 }

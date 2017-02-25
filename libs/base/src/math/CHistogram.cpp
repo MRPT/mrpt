@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -53,7 +53,7 @@ void CHistogram::add(const double x)
 /*---------------------------------------------------------------
 					getBinCount
  ---------------------------------------------------------------*/
-int CHistogram::getBinCount(const size_t index) const
+size_t CHistogram::getBinCount(const size_t index) const
 {
 	if (index>=m_bins.size()) THROW_EXCEPTION("Index out of bounds")
 
@@ -79,7 +79,7 @@ void CHistogram::getHistogram( std::vector<double> &x, std::vector<double> &hits
 	linspace(m_min,m_max,m_bins.size(), x);
 	const size_t N= m_bins.size();
 	hits.resize(N);
-	for (size_t i=0;i<N;i++) hits[i] = m_bins[i]; // metaprogramming::copy_container_typecasting(m_bins,);
+	for (size_t i=0;i<N;i++) hits[i] = static_cast<double>(m_bins[i]); // metaprogramming::copy_container_typecasting(m_bins,);
 }
 
 

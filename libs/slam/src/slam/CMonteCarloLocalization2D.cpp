@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -210,16 +210,14 @@ void CMonteCarloLocalization2D::PF_SLAM_implementation_replaceByNewParticleSet(
 	const vector<size_t>		&newParticlesDerivedFromIdx ) const
 {
 	MRPT_UNUSED_PARAM(newParticlesDerivedFromIdx);
-	ASSERT_EQUAL_(size_t(newParticlesWeight.size()),size_t(newParticles.size()))
+	ASSERT_EQUAL_(size_t(newParticlesWeight.size()), size_t(newParticles.size()));
 
 	// ---------------------------------------------------------------------------------
 	// Substitute old by new particle set:
 	//   Old are in "m_particles"
 	//   New are in "newParticles", "newParticlesWeight","newParticlesDerivedFromIdx"
 	// ---------------------------------------------------------------------------------
-	// Free old m_particles:
-	for (size_t i=0;i<old_particles.size();i++)
-			mrpt::utils::delete_safe( old_particles[ i ].d );
+	// Free old m_particles: not needed since "d" is now a smart ptr
 
 	// Copy into "m_particles"
 	const size_t N = newParticles.size();
@@ -227,7 +225,7 @@ void CMonteCarloLocalization2D::PF_SLAM_implementation_replaceByNewParticleSet(
 	for (size_t i=0;i<N;i++)
 	{
 		old_particles[i].log_w = newParticlesWeight[i];
-		old_particles[i].d = new CPose2D( TPose2D( newParticles[i] ));
+		old_particles[i].d.reset(new CPose2D(TPose2D(newParticles[i])));
 	}
 }
 
@@ -289,8 +287,8 @@ void  CMonteCarloLocalization2D::resetUniformFreeSpace(
 	{
 		clear();
 		m_particles.resize(particlesCount);
-		for (int i=0;i<particlesCount;i++)
-			m_particles[i].d = new CPose2D();
+		for (int i = 0; i < particlesCount; i++)
+			m_particles[i].d.reset(new CPose2D());
 	}
 
 	const size_t M = m_particles.size();

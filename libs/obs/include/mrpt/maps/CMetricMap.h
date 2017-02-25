@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -68,7 +68,7 @@ namespace mrpt
 			/** Internal method called by computeObservationLikelihood() */
 			virtual double internal_computeObservationLikelihood( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D &takenFrom ) = 0;
 			/** Internal method called by canComputeObservationLikelihood() */
-			virtual bool internal_canComputeObservationLikelihood( const mrpt::obs::CObservation *obs )
+			virtual bool internal_canComputeObservationLikelihood( const mrpt::obs::CObservation *obs ) const
 			{
 				MRPT_UNUSED_PARAM(obs);
 				return true; // Unless implemented otherwise, assume we can always compute the likelihood.
@@ -133,10 +133,10 @@ namespace mrpt
 			 * \param obs The observation.
 			 * \sa computeObservationLikelihood, genericMapParams.enableObservationLikelihood
 			 */
-			virtual bool canComputeObservationLikelihood( const mrpt::obs::CObservation *obs );
+			virtual bool canComputeObservationLikelihood( const mrpt::obs::CObservation *obs ) const;
 
 			/** \overload */
-			bool canComputeObservationLikelihood( const mrpt::obs::CObservationPtr &obs );
+			bool canComputeObservationLikelihood( const mrpt::obs::CObservationPtr &obs ) const;
 
 			/** Returns the sum of the log-likelihoods of each individual observation within a mrpt::obs::CSensoryFrame.
 			 *
@@ -151,13 +151,10 @@ namespace mrpt
 			 * \param sf The observations.
 			 * \sa canComputeObservationLikelihood
 			 */
-			bool canComputeObservationsLikelihood( const mrpt::obs::CSensoryFrame &sf );
+			bool canComputeObservationsLikelihood( const mrpt::obs::CSensoryFrame &sf ) const;
 
 			/** Constructor */
 			CMetricMap();
-
-			/** Destructor */
-			virtual ~CMetricMap();
 
 			/** Computes the matching between this and another 2D point map, which includes finding:
 			 *   - The set of points pairs in each map

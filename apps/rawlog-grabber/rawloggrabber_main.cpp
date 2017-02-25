@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -249,9 +249,7 @@ int main(int argc, char **argv)
 						act->encoderRightTicks = rticks_incr;
 
 						act->hasVelocities = true;
-						act->velocityLin = odom->velocityLin;
-						act->velocityAng = odom->velocityAng;
-
+						act->velocityLocal = odom->velocityLocal;
 
 						out_file << curSF;
 						cout << "[" << dateTimeToString(now()) << "] Saved SF with " << curSF.size() << " objects." << endl;

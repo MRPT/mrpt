@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -37,7 +37,7 @@ CCriticalSection::CCriticalSection( const char *name )
 
 	m_data.resize( sizeof(CRIT_SECT_WIN) + 30 );
 
-	InitializeCriticalSection( & m_data.getAs<CRIT_SECT_WIN*>()->cs );
+	InitializeCriticalSection( & m_data.getAsPtr<CRIT_SECT_WIN>()->cs );
 
 	if (name!=NULL)
 		m_name = name;
@@ -53,12 +53,12 @@ CCriticalSection::~CCriticalSection()
 {
 	if (m_data.alias_count()==1)
 	{
-		//unsigned long	cur_own = m_data.getAs<CRIT_SECT_WIN*>()->currentThreadOwner;
+		//unsigned long	cur_own = m_data.getAsPtr<CRIT_SECT_WIN>()->currentThreadOwner;
 		// JL (mar/2011): Disabled to avoid weird errors when suddenly closing a pogram with running mrpt::gui windows.
 //		if ( cur_own != 0 )
 //			THROW_EXCEPTION(format("Destroying a critical section ('%s') currently locked by thread %lu", m_name.c_str(), cur_own ) )
 
-		DeleteCriticalSection( & m_data.getAs<CRIT_SECT_WIN*>()->cs );
+		DeleteCriticalSection( & m_data.getAsPtr<CRIT_SECT_WIN>()->cs );
 
 		m_data.clear();
 	}
@@ -73,7 +73,7 @@ void  CCriticalSection::enter() const
 
 	if (m_debugOut) m_debugOut->printf("[CCriticalSection:%s] Entering Thread ID:%lu\n", m_name.c_str(), threadid  );
 
-	CRIT_SECT_WIN *myCS = const_cast<CRIT_SECT_WIN  *>(  m_data.getAs<const CRIT_SECT_WIN*>() );
+	CRIT_SECT_WIN *myCS = const_cast<CRIT_SECT_WIN  *>(  m_data.getAsPtr<CRIT_SECT_WIN>() );
 
 	if( myCS->currentThreadOwner == threadid )
 		THROW_EXCEPTION(format("Detected recursive lock on critical section ('%s') by the same thread: %lu",m_name.c_str(),threadid ) )
@@ -95,7 +95,7 @@ void  CCriticalSection::leave() const
 
 	if (m_debugOut) m_debugOut->printf("[CCriticalSection:%s] Leaving Thread ID:%lu\n",m_name.c_str(),threadid );
 
-	CRIT_SECT_WIN *myCS = const_cast<CRIT_SECT_WIN  *>(  m_data.getAs<const CRIT_SECT_WIN*>() );
+	CRIT_SECT_WIN *myCS = const_cast<CRIT_SECT_WIN  *>(  m_data.getAsPtr<CRIT_SECT_WIN>() );
 
 	if ( myCS->currentThreadOwner!=threadid )
 		THROW_EXCEPTION(format("Trying to release a critical section  ('%s') locked by a different thread.",m_name.c_str()));

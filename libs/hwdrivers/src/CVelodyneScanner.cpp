@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -18,6 +18,7 @@
 
 // socket's hdrs:
 #ifdef MRPT_OS_WINDOWS
+	#define _WINSOCK_DEPRECATED_NO_WARNINGS
 	#if defined(_WIN32_WINNT) && (_WIN32_WINNT<0x600)
 	#undef _WIN32_WINNT
 	#define _WIN32_WINNT 0x600 // Minimum: Windows Vista (required to pollfd)
@@ -419,8 +420,9 @@ void CVelodyneScanner::initialize()
 			if( !m_device_ip.empty() )
 				filter_str += "&& src host " + m_device_ip;
 
+			static std::string sMsgError = "[CVelodyneScanner] Error calling pcap_compile: "; // This is to avoid the ill-formed signature of pcap_error() accepting "char*", not "const char*"... sigh
 			if (pcap_compile( reinterpret_cast<pcap_t*>(m_pcap), reinterpret_cast<bpf_program*>(m_pcap_bpf_program), filter_str.c_str(), 1, PCAP_NETMASK_UNKNOWN) <0)
-				pcap_perror(reinterpret_cast<pcap_t*>(m_pcap),"[CVelodyneScanner] Error calling pcap_compile: ");
+				pcap_perror(reinterpret_cast<pcap_t*>(m_pcap), &sMsgError[0] );
 		}
 
 		m_pcap_file_empty = true;

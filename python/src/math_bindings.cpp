@@ -86,6 +86,18 @@ MAKE_GETITEM(TPose3D, double)
 MAKE_SETITEM(TPose3D, double)
 // end of TPose3D
 
+// TTwist2D
+MAKE_AS_STR(TTwist2D)
+MAKE_GETITEM(TTwist2D, double)
+MAKE_SETITEM(TTwist2D, double)
+// end of TTwist2D
+
+// TTwist3D
+MAKE_AS_STR(TTwist3D)
+MAKE_GETITEM(TTwist3D, double)
+MAKE_SETITEM(TTwist3D, double)
+// end of TTwist2D
+
 // TPose3DQuat
 MAKE_AS_STR(TPose3DQuat)
 MAKE_GETITEM(TPose3DQuat, double)

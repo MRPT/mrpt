@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -4061,7 +4061,7 @@ void xRawLogViewerFrame::OnMenuModifyICPActionsUncertainty(wxCommandEvent& event
 						{
 							ASSERT_( actMov->poseChange->GetRuntimeClass() == CLASS_ID(CPosePDFGaussian) );
 
-							CPosePDFGaussianPtr aux = CPosePDFGaussianPtr( actMov->poseChange );
+							CPosePDFGaussianPtr aux = CPosePDFGaussianPtr( actMov->poseChange.get_ptr() );
 							aux->cov.zeros();
 							aux->cov(0,0) =
 								aux->cov(1,1) = std_xy2;

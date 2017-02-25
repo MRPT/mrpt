@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -88,7 +88,7 @@ namespace mrpt
 		class BASE_IMPEXP CCriticalSectionLocker
 		{
 		protected:
-			const CAbstractMutex	*m_cs;
+			const CAbstractMutex	*m_cs; // it's safe for copy ctor & =op to copy this ptr
 
 		public:
 			/** Constructor: enters the critical section.
@@ -96,18 +96,9 @@ namespace mrpt
 			  */
 			CCriticalSectionLocker( const CAbstractMutex *cs  );
 
-			CCriticalSectionLocker(const CCriticalSectionLocker &o) : m_cs(o.m_cs)
-			{
-			}
+			CCriticalSectionLocker(const CCriticalSectionLocker &o) : m_cs(o.m_cs) {}
 
-			CCriticalSectionLocker & operator = (const CCriticalSectionLocker&o)
-			{
-				m_cs = o.m_cs;
-				return *this;
-			}
-
-			/** Destructor: leaves the critical section.
-			  */
+			/** Destructor: leaves the critical section. */
 			~CCriticalSectionLocker();
 
 		}; // end of CCriticalSectionLocker

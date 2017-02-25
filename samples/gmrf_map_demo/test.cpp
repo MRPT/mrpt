@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -10,6 +10,8 @@
 #include <mrpt/maps/CGasConcentrationGridMap2D.h>
 #include <mrpt/gui.h>
 #include <mrpt/random.h>
+#include <mrpt/opengl/stock_objects.h>
+#include <mrpt/opengl/CPointCloud.h>
 
 using namespace mrpt;
 using namespace mrpt::maps;
@@ -18,6 +20,25 @@ using namespace mrpt::random;
 using namespace std;
 
 
+// Example of custom connectivity pattern:
+struct MyConnectivityVisitor : public mrpt::maps::CRandomFieldGridMap2D::ConnectivityDescriptor
+{
+	/** Implement the check of whether node i=(icx,icy) is connected with node j=(jcx,jcy).
+	* This visitor method will be called only for immediate neighbors.
+	* \return true if connected (and the "information" value should be also updated in out_edge_information), false otherwise.
+	*/
+	bool getEdgeInformation(
+		const CRandomFieldGridMap2D *parent,  //!< The parent map on which we are running
+		size_t icx, size_t icy,               //!< (cx,cy) for node "i"
+		size_t jcx, size_t jcy,               //!< (cx,cy) for node "j"
+		double &out_edge_information          //!< Must output here the inverse of the variance of the constraint edge.
+	) MRPT_OVERRIDE
+	{
+		out_edge_information = 1.0/(1.0+ icx+icy);
+		return true;
+	}
+};
+
 void Example_GMRF()
 {
 	const double X_SIZE     = 10.0;
@@ -25,22 +46,37 @@ void Example_GMRF()
 	const double RESOLUTION = 0.5;
 
 	mrpt::maps::CGasConcentrationGridMap2D  gasmap(
-		CRandomFieldGridMap2D::mrGMRF_G /*map type*/,
+		CRandomFieldGridMap2D::mrGMRF_SD /*map type*/,
 		0,X_SIZE,
 		0,Y_SIZE,
 		RESOLUTION /* resolution */
 		);
 
+	mrpt::maps::CGasConcentrationGridMap2D::ConnectivityDescriptorPtr conn =
+		mrpt::maps::CGasConcentrationGridMap2D::ConnectivityDescriptorPtr(
+			new MyConnectivityVisitor
+		);
+	gasmap.setMinLoggingLevel(mrpt::utils::LVL_DEBUG);
+	gasmap.setCellsConnectivity(conn);
+	gasmap.clear(); // for the connectivity to be taken into account.
+
+	mrpt::opengl::CPointCloudPtr gl_data = mrpt::opengl::CPointCloud::Create();
+	gl_data->setPointSize(3.0f);
+
 	for (int i=0;i<20;i++)
 	{
 		const double value = randomGenerator.drawUniform(0.01,0.99);
-
 		const double x = randomGenerator.drawUniform(0.1, 0.95*X_SIZE);
 		const double y = randomGenerator.drawUniform(0.1, 0.95*Y_SIZE);
+		
+		printf("Observation: (x,y)=(%6.02f,%6.02f,)  => value: %6.03f\n", x,y,value);
+		gl_data->insertPoint(x, y, value);
 
-		gasmap.insertIndividualReading(value,  TPoint2D(x,y) );
+		gasmap.insertIndividualReading(value,  TPoint2D(x,y), false /*dont update map now*/ );
 	}
 
+	// Update only once now:
+	gasmap.updateMapEstimation();
 
 	// 3D view:
 	mrpt::opengl::CSetOfObjectsPtr glObj = mrpt::opengl::CSetOfObjects::Create();
@@ -49,6 +85,8 @@ void Example_GMRF()
 	mrpt::gui::CDisplayWindow3D win("Map",640,480);
 
 	mrpt::opengl::COpenGLScenePtr &scene = win.get3DSceneAndLock();
+	scene->insert(mrpt::opengl::stock_objects::CornerXYZSimple(1.0f, 4.0f) );
+	scene->insert(gl_data);
 	scene->insert( glObj );
 	win.unlockAccess3DScene();
 	win.repaint();

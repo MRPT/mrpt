@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -27,11 +27,13 @@ namespace mrpt
 	 * These are the optional parameters of the method which can be set by means of a configuration file passed to the constructor or to CHolonomicFullEval::initialize() or directly in \a CHolonomicFullEval::options
 	 *
 	 * \code
+	 * # Section name can be changed via setConfigFileSectionName()
 	 * [FULL_EVAL_CONFIG]
-	 * factorWeights=1.0 1.0 1.0 0.05 1.0
+	 * factorWeights        = 1.0 1.0 1.0 0.05 1.0
+	 * factorNormalizeOrNot =   0   0   0    0   1
 	 * // 0: Clearness in direction
 	 * // 1: Closest approach to target along straight line (Euclidean)
-	 * // 2: Distance of end colission-free point to target (Euclidean)
+	 * // 2: Distance of end collision-free point to target (Euclidean)
 	 * // 3: Hysteresis
 	 * // 4: Clearness to nearest obstacle along path
 	 * TARGET_SLOW_APPROACHING_DISTANCE = 0.20   // Start to reduce speed when closer than this to target.
@@ -53,29 +55,31 @@ namespace mrpt
 		CHolonomicFullEval( const mrpt::utils::CConfigFileBase *INI_FILE = NULL );
 
 		// See base class docs
-		void  navigate(	const mrpt::math::TPoint2D &target,
-							const std::vector<double>	&obstacles,
-							double			maxRobotSpeed,
-							double			&desiredDirection,
-							double			&desiredSpeed,
-							CHolonomicLogFileRecordPtr &logRecord,
-			const double    max_obstacle_dist );
+		void  navigate(
+			const mrpt::math::TPoint2D &target,
+			const std::vector<double>	&obstacles,
+			double			maxRobotSpeed,
+			double			&desiredDirection,
+			double			&desiredSpeed,
+			CHolonomicLogFileRecordPtr &logRecord,
+			const double    max_obstacle_dist,
+			const mrpt::nav::ClearanceDiagram *clearance = NULL) MRPT_OVERRIDE;
 
-		/** Initialize the parameters of the navigator */
-		void initialize( const mrpt::utils::CConfigFileBase &INI_FILE )
-		{
-			options.loadFromConfigFile(INI_FILE, std::string("FULL_EVAL_CONFIG"));
-		}
+		void initialize(const mrpt::utils::CConfigFileBase &INI_FILE) MRPT_OVERRIDE; // See base class docs
 
 		/** Algorithm options */
 		struct NAV_IMPEXP TOptions : public mrpt::utils::CLoadableOptions
 		{
 			double TOO_CLOSE_OBSTACLE;  //!< Directions with collision-free distances below this threshold are not elegible.
 			double TARGET_SLOW_APPROACHING_DISTANCE; //!< Start to reduce speed when closer than this to target.
+			double OBSTACLE_SLOW_DOWN_DISTANCE;      //!< Start to reduce speed when clearance is below this value ([0,1] ratio wrt obstacle reference/max distance)
 			double HYSTERESIS_SECTOR_COUNT; //!< Range of "sectors" (directions) for hysteresis over succesive timesteps
 			std::vector<double>   factorWeights;  //!< See docs above
+			std::vector<int32_t>  factorNormalizeOrNot; //!< 0/1 to normalize factors.
 			std::vector<int32_t>  PHASE1_FACTORS, PHASE2_FACTORS; //!< Factor indices [0,4] for the factors to consider in each phase of the movement decision (Defaults: `PHASE1_FACTORS=0 1 2`, `PHASE2_FACTORS=`3 4`)
 			double                PHASE1_THRESHOLD;   //!< Phase1 scores must be above this relative range threshold [0,1] to be considered in phase 2 (Default:`0.75`)
+
+			bool LOG_SCORE_MATRIX; //!< (default:false, to save space)
 
 			TOptions();
 			void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) MRPT_OVERRIDE; // See base docs
@@ -89,6 +93,8 @@ namespace mrpt
 		unsigned int direction2sector(const double a, const unsigned int N);
 		mrpt::math::CMatrixD m_dirs_scores; //!< Individual scores for each direction: (i,j), i (row) are directions, j (cols) are scores. Not all directions may have evaluations, in which case a "-1" value will be found.
 
+		virtual void postProcessDirectionEvaluations(std::vector<double> &dir_evals); // If desired, override in a derived class to manipulate the final evaluations of each directions
+
 	}; // end of CHolonomicFullEval
 	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CHolonomicFullEval, CAbstractHolonomicReactiveMethod, NAV_IMPEXP )
 
@@ -100,7 +106,6 @@ namespace mrpt
 		DEFINE_SERIALIZABLE( CLogFileRecord_FullEval )
 	public:
 		 /** Member data */
-		std::vector<double>  dirs_eval; //!< Evaluation of each direction, in the same order of TP-Obstacles.
 		int32_t              selectedSector;
 		double               evaluation;
 		mrpt::math::CMatrixD dirs_scores; //!< Individual scores for each direction: (i,j), i (row) are directions, j (cols) are scores. Not all directions may have evaluations, in which case a "-1" value will be found.

@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -1506,7 +1506,7 @@ void CHMTSLAM::LSLAM_process_message_from_TBI( const TMessageLSLAMfromTBI &myMsg
 			pdfPartsHMap,
 			myMsg.hypothesisID,
 			100,
-			0.10,DEG2RAD(1)  // Extra noise in each "arc"
+			0.10f,DEG2RAD(1.0f)  // Extra noise in each "arc"
 			);
 
 		CPose3DPDFGaussian	pdfDeltaMap;

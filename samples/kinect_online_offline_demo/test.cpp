@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -347,7 +347,11 @@ void Test_KinectOnlineOffline(bool is_online, const string &rawlog_file = string
 #if 1
 				win3D.get3DSceneAndLock();
 				logger.enter("RGBD->3D.projectInto");
-					newObs->project3DPointsFromDepthImageInto(*gl_points, false /* without obs.sensorPose */);
+				mrpt::obs::T3DPointsProjectionParams pp;
+				pp.takeIntoAccountSensorPoseOnRobot = false;
+
+				newObs->project3DPointsFromDepthImageInto(*gl_points, pp);
+
 				logger.leave("RGBD->3D.projectInto");
 				win3D.unlockAccess3DScene();
 #endif

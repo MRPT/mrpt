@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -35,9 +35,9 @@ namespace kinematics
 		void sendVelRampCmd(double vel, double dir, double ramp_time, double rot_speed);
 
 		void sendVelCmd(const CVehicleVelCmd &cmd_vel) MRPT_OVERRIDE {
-			const kinematic_cmd_t* cmd = reinterpret_cast<const kinematic_cmd_t*>(&cmd_vel);
+			const kinematic_cmd_t* cmd = dynamic_cast<const kinematic_cmd_t*>(&cmd_vel);
 			ASSERTMSG_(cmd, "Wrong vehicle kinematic class, expected `CVehicleVelCmd_Holo`");
-			sendVelRampCmd(cmd->vel, cmd->dir_local + m_pose.phi /* local to global dir */ ,cmd->ramp_time,cmd->rot_speed);
+			sendVelRampCmd(cmd->vel, cmd->dir_local + m_odometry.phi /* local to odometry dir */ ,cmd->ramp_time,cmd->rot_speed);
 		}
 		CVehicleVelCmdPtr getVelCmdType() const MRPT_OVERRIDE {
 			return CVehicleVelCmdPtr(new kinematic_cmd_t());
@@ -57,7 +57,7 @@ namespace kinematics
 		TVelRampCmd m_vel_ramp_cmd; //!< the last cmd received from the user.
 		/** @} */
 		
-		void internal_simulStep(const double dt) MRPT_OVERRIDE;
+		void internal_simulControlStep(const double dt) MRPT_OVERRIDE;
 		void internal_clear() MRPT_OVERRIDE;
 
 	};

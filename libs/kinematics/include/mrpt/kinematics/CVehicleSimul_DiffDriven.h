@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -46,7 +46,7 @@ namespace kinematics
 		void  movementCommand(double lin_vel, double ang_vel );
 
 		void sendVelCmd(const CVehicleVelCmd &cmd_vel) MRPT_OVERRIDE {
-			const kinematic_cmd_t* cmd = reinterpret_cast<const kinematic_cmd_t*>(&cmd_vel);
+			const kinematic_cmd_t* cmd = dynamic_cast<const kinematic_cmd_t*>(&cmd_vel);
 			ASSERTMSG_(cmd, "Wrong vehicle kinematic class, expected `CVehicleVelCmd_DiffDriven`");
 			movementCommand(cmd->lin_vel, cmd->ang_vel);
 		}
@@ -70,7 +70,7 @@ namespace kinematics
 		double cTAU;  //!< The time-constants for the first order low-pass filter for the velocities changes.
 		double cDELAY; //!< The delay constant for the velocities changes
 
-		void internal_simulStep(const double dt) MRPT_OVERRIDE;
+		void internal_simulControlStep(const double dt) MRPT_OVERRIDE;
 		void internal_clear() MRPT_OVERRIDE;
 	};
 

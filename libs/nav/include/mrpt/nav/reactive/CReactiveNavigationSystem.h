@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -62,35 +62,34 @@ namespace mrpt
 			void changeRobotCircularShapeRadius( const double R );
 
 			// See base class docs:
-			virtual size_t getPTG_count() const { return PTGs.size(); }
-			virtual CParameterizedTrajectoryGenerator* getPTG(size_t i) { ASSERT_(i<PTGs.size()); return PTGs[i]; }
-			virtual const CParameterizedTrajectoryGenerator* getPTG(size_t i) const { ASSERT_(i<PTGs.size()); return PTGs[i]; }
+			virtual size_t getPTG_count() const  MRPT_OVERRIDE { return PTGs.size(); }
+			virtual CParameterizedTrajectoryGenerator* getPTG(size_t i)  MRPT_OVERRIDE { ASSERT_(i<PTGs.size()); return PTGs[i]; }
+			virtual const CParameterizedTrajectoryGenerator* getPTG(size_t i) const  MRPT_OVERRIDE { ASSERT_(i<PTGs.size()); return PTGs[i]; }
 
-		private:
+		protected:
 			float	minObstaclesHeight, maxObstaclesHeight; // The range of "z" coordinates for obstacles to be considered
 
 			math::CPolygon m_robotShape;               //!< The robot 2D shape model. Only one of `m_robotShape` or `m_robotShape` will be used in each PTG
 			double         m_robotShapeCircularRadius; //!< Radius of the robot if approximated as a circle. Only one of `m_robotShape` or `m_robotShape` will be used in each PTG
 
+		private:
 			std::vector<CParameterizedTrajectoryGenerator*>	PTGs;  //!< The list of PTGs to use for navigation
 
 			// Steps for the reactive navigation sytem.
 			// ----------------------------------------------------------------------------
-			virtual void STEP1_InitPTGs();
+			virtual void STEP1_InitPTGs() MRPT_OVERRIDE;
 
 			// See docs in parent class
 			bool implementSenseObstacles(mrpt::system::TTimeStamp &obs_timestamp) MRPT_OVERRIDE;
-
-			// See docs in parent class
-			void STEP3_WSpaceToTPSpace(const size_t ptg_idx,std::vector<double> &out_TPObstacles, const mrpt::poses::CPose2D &rel_pose_PTG_origin_wrt_sense) MRPT_OVERRIDE;
-
-			/** Generates a pointcloud of obstacles, and the robot shape, to be saved in the logging record for the current timestep */
-			virtual void loggingGetWSObstaclesAndShape(CLogFileRecord &out_log);
-
-			mrpt::maps::CSimplePointsMap m_WS_Obstacles;  //!< The obstacle points, as seen from the local robot frame.
-
 		protected:
+			/** Generates a pointcloud of obstacles, and the robot shape, to be saved in the logging record for the current timestep */
+			virtual void loggingGetWSObstaclesAndShape(CLogFileRecord &out_log) MRPT_OVERRIDE;
+
+		
 			void internal_loadConfigFile(const mrpt::utils::CConfigFileBase &ini, const std::string &section_prefix="") MRPT_OVERRIDE;
+			mrpt::maps::CSimplePointsMap m_WS_Obstacles;  //!< The obstacle points, as seen from the local robot frame.
+			// See docs in parent class
+			void STEP3_WSpaceToTPSpace(const size_t ptg_idx, std::vector<double> &out_TPObstacles, mrpt::nav::ClearanceDiagram &out_clearance, const mrpt::poses::CPose2D &rel_pose_PTG_origin_wrt_sense) MRPT_OVERRIDE;
 
 		}; // end class
 	}

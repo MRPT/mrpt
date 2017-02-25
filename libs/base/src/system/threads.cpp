@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -540,7 +540,7 @@ void mrpt::system::terminateThread(TThreadHandle &threadHandle) MRPT_NO_THROWS
 	if (threadHandle.isClear()) return; // done
 
 #ifdef MRPT_OS_WINDOWS
-	TerminateThread(threadHandle.hThread,-1);
+	TerminateThread(threadHandle.hThread, DWORD(-1));
 #elif defined(MRPT_OS_APPLE)
 	pthread_cancel(reinterpret_cast<pthread_t>(threadHandle.idThread));
 #else

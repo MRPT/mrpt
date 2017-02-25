@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -750,7 +750,7 @@ void CObservation3DRangeScan::getZoneAsObs(
 	if ( hasConfidenceImage )
 		confidenceImage.extract_patch( obs.confidenceImage, c1, r1, c2-c1, r2-r1 );
 
-	MRPT_TODO("Extract zone of labels")
+	// Zone labels: It's too complex, just document that pixel labels are NOT extracted.
 
 	// Copy zone of scanned points
 	obs.hasPoints3D = hasPoints3D;

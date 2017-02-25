@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -99,6 +99,17 @@ namespace mrpt
 		template <typename T>
 		inline int signWithZero(T x)	{ return (x==0 || x==-0)?0:sign(x);}
 
+		/** Returns the lowest, possitive among two numbers. If both are non-positive (<=0), the lowest one is returned. */
+		template <typename T>
+		T lowestPositive(const T a, const T b)
+		{
+			if (a > 0 && a <= b)
+				return a; // a positive and smaller than b
+			else if (b > 0)
+			     return b;  // b is positive and either smaller than a or a is negative
+			else return a; // at least b is negative, we might not have an answer
+		}
+
 		/** Efficient and portable evaluation of the absolute difference of two unsigned integer values
 		  * (but will also work for signed and floating point types) */
 		template <typename T>
@@ -194,6 +205,14 @@ namespace mrpt
 			return len;
 		}
 
+#define SELBYTE0(v)  (v & 0xff)
+#define SELBYTE1(v)  ((v>>8) & 0xff)
+#define SELBYTE2(v)  ((v>>16) & 0xff)
+#define SELBYTE3(v)  ((v>>24) & 0xff)
+
+#define MAKEWORD16B(__LOBYTE,__HILOBYTE)  ((__LOBYTE) | ((__HILOBYTE)<<8))
+#define MAKEWORD32B(__LOWORD16,__HIWORD16)  ((__LOWORD16) | ((__HIWORD16)<<16))
+#define MAKEWORD64B(__LOWORD32,__HIWORD32)  ((__LOWORD32) | ((__HIWORD32)<<32))
 
 	} // End of namespace
 } // end of namespace

@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -47,7 +47,7 @@ using namespace mrpt::vision;
 using namespace mrpt::gui;
 using namespace std;
 
-#include "../wx-common/CMyRedirector.h"
+#include <mrpt/gui/CMyRedirector.h>
 
 #include "CAboutBox.h"
 
@@ -741,7 +741,7 @@ void camera_calib_guiDialog::show3Dview()
 			mrpt::opengl::CSetOfObjectsPtr	cor = mrpt::opengl::stock_objects::CornerXYZ();
 			cor->setName( mrpt::system::extractFileName(it->first) );
 			cor->enableShowName(true);
-			cor->setScale(0.1);
+			cor->setScale(0.1f);
 			cor->setPose( it->second.reconstructed_camera_pose );
 
 			scene->insert( cor );

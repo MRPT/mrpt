@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -310,23 +310,21 @@ bool mrpt::system::renameFile( const string &oldFileName, const string &newFileN
 /*---------------------------------------------------------------
 			fileNameStripInvalidChars
 ---------------------------------------------------------------*/
-std::string mrpt::system::fileNameStripInvalidChars( const std::string &filename)
+std::string mrpt::system::fileNameStripInvalidChars(const std::string &filename, const char replacement_to_invalid_chars)
 {
-	string	ret(filename);
+	const char forbid[] = {'<','>',':','"','/','\\','|','?','*'};
+	const unsigned int nForbid = sizeof(forbid) / sizeof(forbid[0]);
+
+	string	ret(filename	);
 	for (string::iterator c=ret.begin();c!=ret.end();++c)
 	{
-		if (!isalnum(*c) &&
-			*c !='.' &&
-			*c !='-' &&
-			*c !='#' &&
-			*c !='%' &&
-			*c !='$' &&
-			*c !='&' &&
-			*c !='+' &&
-			*c !='(' && *c !=')' &&
-			*c !='[' && *c !=']' &&
-			*c !='{' && *c !='}' )
-				*c = '_';
+		bool invalid = (*c < 32);
+
+		for (unsigned int i = 0; !invalid && i < nForbid; i++)
+			if (*c == forbid[i])
+				invalid = true;
+
+		if (invalid) *c = '_';
 	}
 	return ret;
 }

@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -38,7 +38,7 @@ CObservation2DRangeScan::CObservation2DRangeScan( ) :
 	scan( m_scan ), // proxy ctor
 	intensity( m_intensity ), // proxy ctor
 	validRange( m_validRange ), // proxy ctor
-	aperture( M_PI ),
+	aperture( M_PIf ),
 	rightToLeft( true ),
 	maxRange( 80.0f ),
 	sensorPose(),
@@ -465,7 +465,10 @@ void CObservation2DRangeScan::getScanProperties(T2DScanProperties& p) const
 
 bool mrpt::obs::operator<(const T2DScanProperties&a, const T2DScanProperties&b)
 {
-	return (a.nRays<b.nRays || a.aperture<b.aperture || (a.rightToLeft && !b.rightToLeft));
+	if (a.nRays != b.nRays) return a.nRays<b.nRays;
+	if (a.aperture != b.aperture) return a.aperture < b.aperture;
+	if (a.rightToLeft != b.rightToLeft) return a.rightToLeft;
+	return false;
 }
 
 

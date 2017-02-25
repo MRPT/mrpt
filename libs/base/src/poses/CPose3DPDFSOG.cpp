@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -169,11 +169,6 @@ void  CPose3DPDFSOG::readFromStream(mrpt::utils::CStream &in,int version)
 	};
 }
 
-
-
-/*---------------------------------------------------------------
-						operator =
-  ---------------------------------------------------------------*/
 void  CPose3DPDFSOG::copyFrom(const CPose3DPDF &o)
 {
 	MRPT_START
@@ -236,7 +231,7 @@ void  CPose3DPDFSOG::bayesianFusion(const  CPose3DPDF &p1_,const  CPose3DPDF &p2
 	ASSERT_( p2_.GetRuntimeClass() == CLASS_ID(CPose3DPDFSOG) );
 
 	THROW_EXCEPTION("TODO!!!");
-
+#if 0
 /*
 	CPose3DPDFSOG		*p1 = (CPose3DPDFSOG*)&p1_;
 	CPose3DPDFSOG		*p2 = (CPose3DPDFSOG*)&p2_;
@@ -300,7 +295,7 @@ void  CPose3DPDFSOG::bayesianFusion(const  CPose3DPDF &p1_,const  CPose3DPDF &p2
 	}
 */
 	normalizeWeights();
-
+#endif
 	MRPT_END
 }
 

@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -366,7 +366,7 @@ public:
 			}
 
 			//The likelihood values of the grid are updated
-			float angle_cell, dif_angle, rango = M_PI/6 - 0.05;
+			float angle_cell, dif_angle, rango = M_PIf/6 - 0.05f;
 
 			for (unsigned int i=0; i<num_col; i++)
 			{
@@ -436,14 +436,6 @@ public:
 		return true;
 	}
 
-
-	bool changeSpeeds( float v, float w )
-	{
-		robotSim.movementCommand(v,w);
-		return true;
-	}
-
-
 	bool senseObstacles( mrpt::maps::CSimplePointsMap 	&obstacles, mrpt::system::TTimeStamp &timestamp ) MRPT_OVERRIDE
 	{
 		last_pose = new_pose;
@@ -492,7 +484,7 @@ public:
 		COccupancyGridMap2D grid;
 		CImage myImg;
 		//int family = ini.read_int("MAP_CONFIG","FAMILY", 1, true);
-		float resolution = ini.read_float("MAP_CONFIG","MAP_RESOLUTION", 0.02, true);
+		float resolution = ini.read_float("MAP_CONFIG","MAP_RESOLUTION", 0.02f, true);
 		//int num_maps = ini.read_int("MAP_CONFIG","NUM_MAPS", 1, true);
 
 		//Maps are loaded here. Different maps can be loaded changing these lines
@@ -525,8 +517,8 @@ public:
 			ini.read_vector("LASER_CONFIG",format("LASER%d_POSE",i), std::vector<double> (0), lasercoord , true);
 			mrpt::obs::CObservation2DRangeScan &scan = lasers[i-1].m_scan;
 			scan.maxRange = ini.read_float("LASER_CONFIG",format("LASER%d_MAX_RANGE",i), 50, true);
-			scan.aperture = ini.read_float("LASER_CONFIG",format("LASER%d_APERTURE",i), M_PI, true);
-			scan.stdError = ini.read_float("LASER_CONFIG",format("LASER%d_STD_ERROR",i), 0.05, true);
+			scan.aperture = ini.read_float("LASER_CONFIG",format("LASER%d_APERTURE",i), M_PIf, true);
+			scan.stdError = ini.read_float("LASER_CONFIG",format("LASER%d_STD_ERROR",i), 0.05f, true);
 			scan.sensorPose.setFromValues(lasercoord[0],lasercoord[1],lasercoord[2],lasercoord[3],lasercoord[4],lasercoord[5]);
 			lasers[i-1].m_level = ini.read_int("LASER_CONFIG",format("LASER%d_LEVEL",i), 1, true);
 			lasers[i-1].m_segments = ini.read_int("LASER_CONFIG",format("LASER%d_SEGMENTS",i), 181, true);
@@ -549,7 +541,7 @@ public:
 			kinects[i-1].m_pitch_angle = DEG2RAD(ini.read_float("KINECT_CONFIG",format("KINECT%d_PITCH",i), 0, true));
 			kinects[i-1].m_rows = ini.read_int("KINECT_CONFIG",format("KINECT%d_ROWS",i), 10, true);
 			kinects[i-1].m_columns = ini.read_int("KINECT_CONFIG",format("KINECT%d_COLUMNS",i), 10, true);
-			kinects[i-1].m_std_error = ini.read_float("KINECT_CONFIG",format("KINECT%d_STD_ERROR",i), 0.05, true);
+			kinects[i-1].m_std_error = ini.read_float("KINECT_CONFIG",format("KINECT%d_STD_ERROR",i), 0.05f, true);
 		}
 
 		//Read config params which describe the robot shape
@@ -569,7 +561,7 @@ public:
 		}
 
 		//Read other params associated with the robot model and its navigation
-		CRobot2NavInterface_DiffDriven::loadConfigFile(ini, "ReactiveParams");
+		//CRobot2NavInterface_DiffDriven::loadConfigFile(ini, "ReactiveParams");
 		float tau = 0.f; //ini.read_float("ReactiveParams","ROBOTMODEL_TAU", 0, true);
 		float delay = 0.f; //ini.read_float("ReactiveParams","ROBOTMODEL_DELAY", 0, true);
 		float x_ini = ini.read_float("ReactiveParams","X0", 0, true);
@@ -582,12 +574,12 @@ public:
 
 		//Read the "short term memory" parameters
 		stm.is_active = ini.read_bool("STM_CONFIG","Stm_active", 0, 1);
-		float grid_length = ini.read_float("STM_CONFIG","Obs_grid_length", 0.8, 1);
-		float grid_resolution = ini.read_float("STM_CONFIG","Obs_grid_resolution", 0.1, 1);
-		stm.vision_limit = ini.read_float("STM_CONFIG","Vision_limit", 0.6, 1);
-		stm.likelihood_incr = ini.read_float("STM_CONFIG","Pos_likelihood_incr", 0.55, 1);
-		stm.likelihood_decr = ini.read_float("STM_CONFIG","Neg_likelihood_incr", 0.45, 1);
-		stm.occupancy_threshold = ini.read_float("STM_CONFIG","Occupancy_threshold", 0.8, 1);
+		float grid_length = ini.read_float("STM_CONFIG","Obs_grid_length", 0.8f, 1);
+		float grid_resolution = ini.read_float("STM_CONFIG","Obs_grid_resolution", 0.1f, 1);
+		stm.vision_limit = ini.read_float("STM_CONFIG","Vision_limit", 0.6f, 1);
+		stm.likelihood_incr = ini.read_float("STM_CONFIG","Pos_likelihood_incr", 0.55f, 1);
+		stm.likelihood_decr = ini.read_float("STM_CONFIG","Neg_likelihood_incr", 0.45f, 1);
+		stm.occupancy_threshold = ini.read_float("STM_CONFIG","Occupancy_threshold", 0.8f, 1);
 
 		if (stm.is_active)
 		{
@@ -647,7 +639,7 @@ public:
 
 		//The target is inserted
 		{
-			CDiskPtr obj = opengl::CDisk::Create(0.4, 0.3);
+			CDiskPtr obj = opengl::CDisk::Create(0.4f, 0.3f);
 			obj->setLocation(0, 0, 0);
 			obj->setColor(0.2,0.3,0.9);
 			scene->insert( obj );

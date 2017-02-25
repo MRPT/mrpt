@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -630,7 +630,7 @@ void CIncrementalMapPartitioner::getAs3DScene(
 		i_pdf->getMean(i_mean);
 
 		opengl::CSpherePtr   i_sph = opengl::CSphere::Create();
-		i_sph->setRadius(0.02);
+		i_sph->setRadius(0.02f);
 		i_sph->setColor(0,0,1);
 
 		if (!renameIndexes)

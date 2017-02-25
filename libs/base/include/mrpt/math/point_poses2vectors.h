@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -23,7 +23,7 @@ namespace mrpt
 		CONTAINER & containerFromPoseOrPoint(CONTAINER &C, const POINT_OR_POSE &p) {
 			const size_t DIMS = POINT_OR_POSE::static_size;
 			C.resize(DIMS,1);
-			for (size_t i=0;i<DIMS;i++)  C.coeffRef(i,0)=p[i];
+			for (size_t i=0;i<DIMS;i++)  C.coeffRef(i,0)= static_cast<typename CONTAINER::Scalar>(p[i]);
 			return C;
 		}
 
