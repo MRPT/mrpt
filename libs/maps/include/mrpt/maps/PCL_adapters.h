@@ -53,6 +53,13 @@ namespace mrpt
 				pcl::PointXYZ &p=m_obj.points[idx];
 				p.x=x; p.y=y; p.z=z;
 			}
+			
+			/** Set Invalid Point */
+			inline void setInvalidPoint(const size_t idx)
+			{
+				pcl::PointXYZ &p=m_obj.points[idx];
+				p.x = p.y = p.z = std::numeric_limits<float>::quiet_NaN();
+			}
 		}; // end of mrpt::utils::PointCloudAdapter<pcl::PointCloud<pcl::PointXYZ> >
 
 
@@ -138,6 +145,7 @@ namespace mrpt
 				p.r=r; p.g=g; p.b=b;
 			}
 
+			
 		}; // end of mrpt::utils::PointCloudAdapter<pcl::PointCloud<pcl::PointXYZRGB> >
 
 
@@ -173,6 +181,13 @@ namespace mrpt
 				p.r=p.g=p.b=255;
 			}
 
+			/** Set Invalid Point */
+			inline void setInvalidPoint(const size_t idx)
+			{
+				pcl::PointXYZRGBA &p=m_obj.points[idx];
+				p.x = p.y = p.z = std::numeric_limits<float>::quiet_NaN();
+			}
+			
 			/** Get XYZ_RGBf coordinates of i'th point */
 			template <typename T>
 			inline void getPointXYZ_RGBf(const size_t idx, T &x,T &y, T &z, float &r,float &g,float &b) const {

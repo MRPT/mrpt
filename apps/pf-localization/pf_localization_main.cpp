@@ -248,7 +248,7 @@ void do_pf_localization(const std::string &ini_fil, const std::string &cmdline_r
 		}
 		else
 		{
-			THROW_EXCEPTION_CUSTOM_MSG1("Map file has unknown extension: '%s'",mapExt.c_str());
+			THROW_EXCEPTION_FMT("Map file has unknown extension: '%s'",mapExt.c_str());
 		}
 
 	}

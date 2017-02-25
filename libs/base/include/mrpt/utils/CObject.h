@@ -77,6 +77,10 @@ namespace mrpt
 		  */
 		std::vector<const mrpt::utils::TRuntimeClassId*> BASE_IMPEXP getAllRegisteredClasses();
 
+		/** Like getAllRegisteredClasses(), but filters the list to only include children clases of a given base one.
+		  * \sa getAllRegisteredClasses(), getAllRegisteredClassesChildrenOf()  */
+		std::vector<const TRuntimeClassId*> BASE_IMPEXP getAllRegisteredClassesChildrenOf(const TRuntimeClassId* parent_id);
+
 		/** Return info about a given class by its name, or NULL if the class is not registered
 		  * \sa registerClass, getAllRegisteredClasses
 		  */

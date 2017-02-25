@@ -506,7 +506,7 @@ float CFeature::descriptorDistanceTo(
 	case descORB:
 		return float(descriptorORBDistanceTo(oFeature));
 	default:
-		THROW_EXCEPTION_CUSTOM_MSG1("Unknown value for 'descriptorToUse'=%u",(unsigned)descriptorToUse);
+		THROW_EXCEPTION_FMT("Unknown value for 'descriptorToUse'=%u",(unsigned)descriptorToUse);
 	}
 
 

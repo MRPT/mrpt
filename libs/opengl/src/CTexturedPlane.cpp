@@ -73,6 +73,7 @@ void   CTexturedPlane::render_texturedobj() const
 	m_tex_y_min = 0;
 	m_tex_y_max = 1.0f-((float)m_pad_y_bottom) / r_height;
 
+	glDisable(GL_CULL_FACE);
 	glBegin(GL_QUADS);
 
 	glTexCoord2d(m_tex_x_min,m_tex_y_min);

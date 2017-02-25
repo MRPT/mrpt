@@ -132,7 +132,7 @@ void run_test_pf_localization(CPose2D &meanPose, CMatrixDouble33 &cov)
 		}
 		else
 		{
-			THROW_EXCEPTION_CUSTOM_MSG1("Map file has unknown extension: '%s'",mapExt.c_str());
+			THROW_EXCEPTION_FMT("Map file has unknown extension: '%s'",mapExt.c_str());
 		}
 
 	}

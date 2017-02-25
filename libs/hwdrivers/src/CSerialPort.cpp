@@ -112,7 +112,7 @@ void  CSerialPort::open( )
 			0)))
 	{
 		hCOM = NULL;
-		THROW_EXCEPTION_CUSTOM_MSG1("Error trying to open serial port: %s", m_serialName.c_str());
+		THROW_EXCEPTION_FMT("Error trying to open serial port: %s", m_serialName.c_str());
 	}
 
 	// Set recommended buffer sizes:
@@ -127,7 +127,7 @@ void  CSerialPort::open( )
 	// The O_NOCTTY flag tells UNIX that this program doesn't want to be the "controlling terminal" for that port.
 	// The O_NDELAY flag tells UNIX that this program doesn't care what state the DCD signal line is in - whether the other end of the port is up and running.
 	if ( -1==( hCOM= ::open( m_serialName.c_str(),  O_RDWR | O_NOCTTY | O_NDELAY ) ) )
-		THROW_EXCEPTION_CUSTOM_MSG1("Error trying to open the serial port %s!!",m_serialName.c_str());
+		THROW_EXCEPTION_FMT("Error trying to open the serial port %s!!",m_serialName.c_str());
 
 	// Clear flags:
 	fcntl( hCOM, F_SETFL, 0 );
@@ -159,13 +159,13 @@ void  CSerialPort::open( )
 		* Flush the input buffer associated with the port.
 		*/
 	if ( tcflush( hCOM,TCIFLUSH ) < 0 )
-		THROW_EXCEPTION_CUSTOM_MSG1("Cannot flush serial port: %s",strerror(errno) );
+		THROW_EXCEPTION_FMT("Cannot flush serial port: %s",strerror(errno) );
 
 	/*
 		* Write the new settings to the port.
 		*/
 	if ( tcsetattr( hCOM,TCSANOW,&port_settings ) < 0 )
-		THROW_EXCEPTION_CUSTOM_MSG1("Cannot set the new config to the serial port: %s",strerror(errno) ) ;
+		THROW_EXCEPTION_FMT("Cannot set the new config to the serial port: %s",strerror(errno) ) ;
 
 
 	// Do NOT block on read.
@@ -228,7 +228,7 @@ void  CSerialPort::setConfig(
 	case 115200: BR = CBR_115200; break;
 	default:
 		BR = baudRate;
-		//THROW_EXCEPTION_CUSTOM_MSG1("Invalid desired baud rate value: %i",baudRate ) ;
+		//THROW_EXCEPTION_FMT("Invalid desired baud rate value: %i",baudRate ) ;
 		break;
 	}
 
@@ -248,7 +248,7 @@ void  CSerialPort::setConfig(
 		dcb_conf.StopBits = TWOSTOPBITS;
 		break;
 	default:
-		THROW_EXCEPTION_CUSTOM_MSG1("Invalid number of stop bits: %i", nStopBits);
+		THROW_EXCEPTION_FMT("Invalid number of stop bits: %i", nStopBits);
 		break;
 	}
 
@@ -368,11 +368,11 @@ void  CSerialPort::setConfig(
 
 	termios port_settings;
 	if ( tcgetattr( hCOM, & port_settings ) < 0 )
-		THROW_EXCEPTION_CUSTOM_MSG1("Cannot get the current settings: %s",strerror(errno) ) ;
+		THROW_EXCEPTION_FMT("Cannot get the current settings: %s",strerror(errno) ) ;
 
 	if ( ( cfsetispeed( &port_settings,BR ) < 0 ) ||
 			( cfsetospeed( &port_settings,BR) < 0 ) )
-		THROW_EXCEPTION_CUSTOM_MSG1("Cannot change baudRate in setting structure: %s",strerror(errno) ) ;
+		THROW_EXCEPTION_FMT("Cannot change baudRate in setting structure: %s",strerror(errno) ) ;
 
 	//
 	// Set the character size.
@@ -393,7 +393,7 @@ void  CSerialPort::setConfig(
 		port_settings.c_cflag |= CS8;
 		break;
 	default:
-		THROW_EXCEPTION_CUSTOM_MSG1("Invalid character size: %i",bits ) ;
+		THROW_EXCEPTION_FMT("Invalid character size: %i",bits ) ;
 		break;
 	}
 
@@ -414,7 +414,7 @@ void  CSerialPort::setConfig(
 		port_settings.c_iflag |= IGNPAR;
 		break ;
 	default:
-		THROW_EXCEPTION_CUSTOM_MSG1("Invalid parity selection: %i",parity) ;
+		THROW_EXCEPTION_FMT("Invalid parity selection: %i",parity) ;
 		break;
 	}
 
@@ -428,7 +428,7 @@ void  CSerialPort::setConfig(
 		port_settings.c_cflag |= CSTOPB ;
 		break ;
 	default:
-		THROW_EXCEPTION_CUSTOM_MSG1("Invalid number of stop bits: %i",nStopBits) ;
+		THROW_EXCEPTION_FMT("Invalid number of stop bits: %i",nStopBits) ;
 		break;
 	}
 
@@ -449,12 +449,12 @@ void  CSerialPort::setConfig(
 	/* Write the new settings to the port.
 		*/
 	if ( tcsetattr( hCOM,TCSANOW,&port_settings ) < 0 )
-		THROW_EXCEPTION_CUSTOM_MSG1("Cannot set the new settings: %s",strerror(errno) );
+		THROW_EXCEPTION_FMT("Cannot set the new settings: %s",strerror(errno) );
 
 	// Check:
 	termios port_settings_verif;
 	if ( tcgetattr( hCOM, & port_settings_verif) < 0 )
-		THROW_EXCEPTION_CUSTOM_MSG1("Cannot get the settings to verify: %s",strerror(errno) ) ;
+		THROW_EXCEPTION_FMT("Cannot get the settings to verify: %s",strerror(errno) ) ;
 
 #if 0
 	if (!special_rate)
@@ -512,7 +512,7 @@ void  CSerialPort::setTimeouts(
 	// VMIN & VTIME
 	termios port_settings;
 	if (tcgetattr(hCOM, &port_settings) < 0)
-		THROW_EXCEPTION_CUSTOM_MSG1("Cannot get the current settings: %s", strerror(errno));
+		THROW_EXCEPTION_FMT("Cannot get the current settings: %s", strerror(errno));
 
 	// We set VMIN=0 and VTIME=ReadIntervalTimeout (in thenth of seconds)
 	//
@@ -522,7 +522,7 @@ void  CSerialPort::setTimeouts(
 	/* Write the new settings to the port.
 	*/
 	if (tcsetattr(hCOM, TCSANOW, &port_settings) < 0)
-		THROW_EXCEPTION_CUSTOM_MSG1("Cannot set the new settings: %s", strerror(errno));
+		THROW_EXCEPTION_FMT("Cannot set the new settings: %s", strerror(errno));
 #endif
 	MRPT_END
 }
@@ -786,7 +786,7 @@ size_t  CSerialPort::Write(const void *Buffer, size_t Count)
 				( !errno || EAGAIN == errno ) ) ;
 		//
 		if ( num_of_bytes_written < 0 )  // This means we exit the loop due to a bad "errno".
-			THROW_EXCEPTION_CUSTOM_MSG1("Error writing data to the serial port: %s",strerror(errno) ) ;
+			THROW_EXCEPTION_FMT("Error writing data to the serial port: %s",strerror(errno) ) ;
 
 		// Make sure the queue is drained
 		// Synchronous IO doesnt always work
@@ -812,7 +812,7 @@ void  CSerialPort::purgeBuffers()
 #else
 	/* Flush the input buffer associated with the port. */
 	if ( tcflush( hCOM,TCIFLUSH ) < 0 )
-		THROW_EXCEPTION_CUSTOM_MSG1("Cannot flush serial port: %s",strerror(errno) ) ;
+		THROW_EXCEPTION_FMT("Cannot flush serial port: %s",strerror(errno) ) ;
 #endif
 
 	MRPT_END

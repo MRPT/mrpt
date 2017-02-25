@@ -19,62 +19,35 @@ namespace mrpt
 namespace utils
 {
 	/** This class implements a config file-like interface over a memory-stored string list.
+	*
+	 * Use base class `CConfigFileBase`'s methods `read_{int,float,double,string,...}()` and `write()` to actually read and write values.
 	 * \ingroup mrpt_base_grp
 	  */
 	class BASE_IMPEXP CConfigFileMemory : public CConfigFileBase
 	{
-	private:
-		void_ptr_noncopy		m_ini; //!< The IniFile object
-
-	protected:
-		/** A virtual method to write a generic string. */
-		void  writeString(const std::string &section,const std::string &name, const std::string &str) MRPT_OVERRIDE;
-
-		/** A virtual method to read a generic string.
-		  */
-		std::string  readString(
-            const std::string &section,
-            const std::string &name,
-            const std::string &defaultStr,
-			bool failIfNotFound = false) const MRPT_OVERRIDE;
-
 	public:
-		/** Constructor and initialize from a list of strings */
-		CConfigFileMemory( const utils::CStringList &stringList );
+		CConfigFileMemory(); //!< Empty constructor. Upon construction, call any of the "setContent" method
+		CConfigFileMemory( const utils::CStringList &stringList ); //!< Constructor and initialize from a list of strings
+		CConfigFileMemory( const std::string &str ); //!< Constructor and initialize from string with the whole "config file"
+		virtual ~CConfigFileMemory(); //!< dtor
 
-		/** Constructor and initialize from string with the whole "config file"  */
-		CConfigFileMemory( const std::string &str );
+		CConfigFileMemory(const CConfigFileMemory& o); //!< Copy constructor
+		CConfigFileMemory& operator = (const CConfigFileMemory& o); //!< Copy operator
 
-		/** Empty constructor. Upon construction, call any of the "setContent" method. */
-		CConfigFileMemory();
-
-		/** Copy constructor */
-		CConfigFileMemory(const CConfigFileMemory& o);
-
-		/** Copy operator */
-		CConfigFileMemory& operator = (const CConfigFileMemory& o);
-
-		/** Changes the contents of the virtual "config file" */
-		void setContent(  const utils::CStringList &stringList  );
-
-		/** Changes the contents of the virtual "config file" */
-		void setContent(  const std::string &str );
-
-		/** Return the currnet contents of the virtual "config file" */
-		void getContent(  std::string &str ) const;
-
-		/** Return the currnet contents of the virtual "config file" */
+		void setContent(  const utils::CStringList &stringList  ); //!< Changes the contents of the virtual "config file"
+		void setContent(  const std::string &str ); //!< Changes the contents of the virtual "config file"
+		void getContent(std::string &str) const; //!< Return the current contents of the virtual "config file"
+		/** \overload */
 		inline std::string getContent() const {  std::string s; getContent(s); return s; }
 
-		/** Destructor
-		 */
-		virtual ~CConfigFileMemory( );
+		void getAllSections( vector_string	&sections ) const MRPT_OVERRIDE; //!< Returns a list with all the section names
+		void getAllKeys( const std::string &section, vector_string	&keys ) const MRPT_OVERRIDE; //!< Returs a list with all the keys into a section
 
-		/** Returns a list with all the section names */
-		void getAllSections( vector_string	&sections ) const MRPT_OVERRIDE;
-
-		/** Returs a list with all the keys into a section */
-		void getAllKeys( const std::string &section, vector_string	&keys ) const MRPT_OVERRIDE;
+	private:
+		void_ptr_noncopy m_ini; //!< The IniFile object
+	protected:
+		void  writeString(const std::string &section, const std::string &name, const std::string &str) MRPT_OVERRIDE; //!< A virtual method to write a generic string
+		std::string  readString(const std::string &section, const std::string &name, const std::string &defaultStr, bool failIfNotFound = false) const MRPT_OVERRIDE; //!< A virtual method to read a generic string
 
 	}; // End of class def.
 

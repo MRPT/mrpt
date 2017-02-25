@@ -95,6 +95,7 @@ const long ptgConfiguratorframe::ID_PANEL1 = wxNewId();
 const long ptgConfiguratorframe::ID_XY_GLCANVAS = wxNewId();
 const long ptgConfiguratorframe::ID_CHECKBOX5 = wxNewId();
 const long ptgConfiguratorframe::ID_CHECKBOX6 = wxNewId();
+const long ptgConfiguratorframe::ID_CHECKBOX7 = wxNewId();
 const long ptgConfiguratorframe::ID_CUSTOM2 = wxNewId();
 const long ptgConfiguratorframe::ID_PANEL2 = wxNewId();
 const long ptgConfiguratorframe::ID_CUSTOM1 = wxNewId();
@@ -110,6 +111,8 @@ const long ptgConfiguratorframe::ID_STATICTEXT11 = wxNewId();
 const long ptgConfiguratorframe::ID_CUSTOM6 = wxNewId();
 const long ptgConfiguratorframe::ID_STATICTEXT12 = wxNewId();
 const long ptgConfiguratorframe::ID_CUSTOM7 = wxNewId();
+const long ptgConfiguratorframe::ID_STATICTEXT16 = wxNewId();
+const long ptgConfiguratorframe::ID_CUSTOM11 = wxNewId();
 const long ptgConfiguratorframe::ID_PANEL5 = wxNewId();
 const long ptgConfiguratorframe::ID_STATICTEXT13 = wxNewId();
 const long ptgConfiguratorframe::ID_CUSTOM8 = wxNewId();
@@ -273,7 +276,7 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent,wxWindowID id) :
     FlexGridSizer10 = new wxFlexGridSizer(2, 1, 0, 0);
     FlexGridSizer10->AddGrowableCol(0);
     FlexGridSizer10->AddGrowableRow(1);
-    StaticBoxSizer1 = new wxStaticBoxSizer(wxHORIZONTAL, Panel2, _(" Show: "));
+    StaticBoxSizer1 = new wxStaticBoxSizer(wxHORIZONTAL, Panel2, _("Show:"));
     FlexGridSizer15 = new wxFlexGridSizer(0, 4, 0, 0);
     cbShowTPObs = new wxCheckBox(Panel2, ID_CHECKBOX5, _("TP-Obstacles"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX5"));
     cbShowTPObs->SetValue(true);
@@ -281,6 +284,9 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent,wxWindowID id) :
     cbShowClearance = new wxCheckBox(Panel2, ID_CHECKBOX6, _("Clearance diagram"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX6"));
     cbShowClearance->SetValue(true);
     FlexGridSizer15->Add(cbShowClearance, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    cbClearanceInterp = new wxCheckBox(Panel2, ID_CHECKBOX7, _("Interpolate clearance diagram"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX7"));
+    cbClearanceInterp->SetValue(false);
+    FlexGridSizer15->Add(cbClearanceInterp, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     StaticBoxSizer1->Add(FlexGridSizer15, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
     FlexGridSizer10->Add(StaticBoxSizer1, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 2);
     m_plotTPSpace = new CMyGLCanvas(Panel2,ID_CUSTOM2,wxDefaultPosition,wxSize(150,300),wxTAB_TRAVERSAL,_T("ID_CUSTOM2"));
@@ -314,11 +320,12 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent,wxWindowID id) :
     FlexGridSizer12->Fit(Panel4);
     FlexGridSizer12->SetSizeHints(Panel4);
     Panel5 = new wxPanel(Notebook1, ID_PANEL5, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL5"));
-    FlexGridSizer13 = new wxFlexGridSizer(6, 1, 0, 0);
+    FlexGridSizer13 = new wxFlexGridSizer(8, 1, 0, 0);
     FlexGridSizer13->AddGrowableCol(0);
     FlexGridSizer13->AddGrowableRow(1);
     FlexGridSizer13->AddGrowableRow(3);
     FlexGridSizer13->AddGrowableRow(5);
+    FlexGridSizer13->AddGrowableRow(7);
     StaticText10 = new wxStaticText(Panel5, ID_STATICTEXT10, _("Selected path trajectory: X [m]"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT10"));
     FlexGridSizer13->Add(StaticText10, 1, wxALL|wxALIGN_LEFT|wxALIGN_TOP, 5);
     m_plotPathX = new mpWindow(Panel5,ID_CUSTOM5,wxDefaultPosition,wxDefaultSize,0);
@@ -331,6 +338,10 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent,wxWindowID id) :
     FlexGridSizer13->Add(StaticText12, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 5);
     m_plotPathPhi = new mpWindow(Panel5,ID_CUSTOM7,wxDefaultPosition,wxDefaultSize,0);
     FlexGridSizer13->Add(m_plotPathPhi, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
+    StaticText16 = new wxStaticText(Panel5, ID_STATICTEXT16, _("Selected path trajectory: traversed distance [m]"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT16"));
+    FlexGridSizer13->Add(StaticText16, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 5);
+    m_plotPathDist = new mpWindow(Panel5,ID_CUSTOM11,wxDefaultPosition,wxDefaultSize,0);
+    FlexGridSizer13->Add(m_plotPathDist, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
     Panel5->SetSizer(FlexGridSizer13);
     FlexGridSizer13->Fit(Panel5);
     FlexGridSizer13->SetSizeHints(Panel5);
@@ -406,6 +417,7 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent,wxWindowID id) :
     Connect(ID_BUTTON5,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&ptgConfiguratorframe::OnButton1Click);
     Connect(ID_CHECKBOX5,wxEVT_COMMAND_CHECKBOX_CLICKED,(wxObjectEventFunction)&ptgConfiguratorframe::OnrbShowTPSelectSelect);
     Connect(ID_CHECKBOX6,wxEVT_COMMAND_CHECKBOX_CLICKED,(wxObjectEventFunction)&ptgConfiguratorframe::OnrbShowTPSelectSelect);
+    Connect(ID_CHECKBOX7,wxEVT_COMMAND_CHECKBOX_CLICKED,(wxObjectEventFunction)&ptgConfiguratorframe::OnrbShowTPSelectSelect);
     Connect(idMenuQuit,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&ptgConfiguratorframe::OnQuit);
     Connect(idMenuAbout,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&ptgConfiguratorframe::OnAbout);
     //*)
@@ -427,6 +439,7 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent,wxWindowID id) :
 	prepareRobotPathPlot(m_plotPathX, &m_graph_path_x, "x");
 	prepareRobotPathPlot(m_plotPathY, &m_graph_path_y, "y");
 	prepareRobotPathPlot(m_plotPathPhi, &m_graph_path_phi, "phi");
+	prepareRobotPathPlot(m_plotPathDist, &m_graph_path_dist, "dist");
 	//
 	prepareRobotPathPlot(m_plotPathXp, &m_graph_path_vx, "vx");
 	prepareRobotPathPlot(m_plotPathYp, &m_graph_path_vy, "vy");
@@ -439,9 +452,12 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent,wxWindowID id) :
 
 	gl_TPSpace_TP_obstacles = mrpt::opengl::CSetOfObjects::Create();
 	gl_TPSpace_clearance = mrpt::opengl::CMesh::Create(true, -5.0f, 5.0f, -5.0f, 5.0f);
+	gl_TPSpace_clearance_interp = mrpt::opengl::CMesh::Create(true, -5.0f, 5.0f, -5.0f, 5.0f);	
+	gl_TPSpace_clearance_interp->setVisibility(false);
 
 	gl_view_TPSpace->insert(gl_TPSpace_TP_obstacles);
 	gl_view_TPSpace->insert(gl_TPSpace_clearance);
+	gl_view_TPSpace->insert(gl_TPSpace_clearance_interp);
 
 	m_plot->addTextMessage(0.01,5,"Workspace", mrpt::utils::TColorf(1,1,1,0.75), "sans", 15,mrpt::opengl::NICE, 1);
 	m_plotTPSpace->addTextMessage(0.01,5,"TP-Space", mrpt::utils::TColorf(1,1,1,0.75), "sans", 15,mrpt::opengl::NICE, 2);
@@ -470,6 +486,14 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent,wxWindowID id) :
 	gl_WS_target->setName("WS-target");
 	gl_WS_target->enableShowName(true);
 	gl_view_WS->insert(gl_WS_target);
+
+	gl_WS_target_reprojected = mrpt::opengl::CPointCloud::Create();
+	gl_WS_target_reprojected->setPointSize(5.0);
+	gl_WS_target_reprojected->setColor_u8(0xff, 0xff, 0x00, 0xe0);
+	gl_WS_target_reprojected->insertPoint(0, 0, 0);
+	gl_WS_target_reprojected->setName("WS-target-reproj");
+	gl_WS_target_reprojected->enableShowName(true);
+	gl_view_WS->insert(gl_WS_target_reprojected);
 
 	gl_TP_target = mrpt::opengl::CPointCloud::Create();
 	gl_TP_target->setPointSize(7.0);
@@ -616,6 +640,7 @@ void ptgConfiguratorframe::OnbtnReloadParamsClick(wxCommandEvent& event)
 	edIndexHighlightPath->SetRange(0, ptg->getPathCount() - 1);
 	slidPathHighlight->SetRange(0, ptg->getPathCount() - 1);
 
+
 	// first time full GUI refresh:
 	rebuild3Dview();
 
@@ -639,12 +664,12 @@ void ptgConfiguratorframe::OncbPTGClassSelect(wxCommandEvent& event)
 	// Factory:
 	const mrpt::utils::TRuntimeClassId *classId = mrpt::utils::findRegisteredClass( sSelPTG );
 	if (!classId) {
-		THROW_EXCEPTION_CUSTOM_MSG1("[CreatePTG] No PTG named `%s` is registered!",sSelPTG.c_str());
+		THROW_EXCEPTION_FMT("[CreatePTG] No PTG named `%s` is registered!",sSelPTG.c_str());
 	}
 
 	ptg = dynamic_cast<mrpt::nav::CParameterizedTrajectoryGenerator*>( classId->createObject() );
 	if (!ptg) {
-		THROW_EXCEPTION_CUSTOM_MSG1("[CreatePTG] Object of type `%s` seems not to be a PTG!",sSelPTG.c_str());
+		THROW_EXCEPTION_FMT("[CreatePTG] Object of type `%s` seems not to be a PTG!",sSelPTG.c_str());
 	}
 
 	// Set some common defaults:
@@ -692,6 +717,7 @@ void ptgConfiguratorframe::rebuild3Dview()
 
 				// Clearance diagram:
 				mrpt::nav::ClearanceDiagram cd;
+				ptg->initClearanceDiagram(cd);
 				double tim_build_cd=.0;
 				{
 					timer.Tic();
@@ -701,7 +727,8 @@ void ptgConfiguratorframe::rebuild3Dview()
 				}
 
 				timer.Tic();
-				cd.renderAs3DObject(*gl_TPSpace_clearance, -1.0,1.0, -1.0, 1.0, 0.05);
+				cd.renderAs3DObject(*gl_TPSpace_clearance, -1.0, 1.0, -1.0, 1.0, 0.05, false /*interpolate*/);
+				cd.renderAs3DObject(*gl_TPSpace_clearance_interp, -1.0,1.0, -1.0, 1.0, 0.05, true /*interpolate*/);
 				const double tim_render_cd = timer.Tac();
 
 				StatusBar1->SetStatusText(
@@ -760,7 +787,7 @@ void ptgConfiguratorframe::rebuild3Dview()
 
 		// 2D angle to robot head plots:
 		std::vector<double> robotHeadAng_x, robotHeadAng_y, robotHeadAngAll_x(nPTGPaths), robotHeadAngAll_y(nPTGPaths);
-		std::vector<double> robotPath_x, robotPath_y, robotPath_phi;
+		std::vector<double> robotPath_x, robotPath_y, robotPath_phi, robotPath_dist;
 		std::vector<double> robotPath_vx, robotPath_vy, robotPath_w;
 		const double dt = ptg->getPathStepDuration();
 
@@ -777,6 +804,7 @@ void ptgConfiguratorframe::rebuild3Dview()
 				robotPath_x.resize(nSteps);
 				robotPath_y.resize(nSteps);
 				robotPath_phi.resize(nSteps);
+				robotPath_dist.resize(nSteps);
 				robotPath_vx.resize(nSteps);
 				robotPath_vy.resize(nSteps);
 				robotPath_w.resize(nSteps);
@@ -803,7 +831,7 @@ void ptgConfiguratorframe::rebuild3Dview()
 						robotPath_x[j] = curPose.x;
 						robotPath_y[j] = curPose.y;
 						robotPath_phi[j] = mrpt::utils::RAD2DEG(curPose.phi);
-
+						robotPath_dist[j] = ptg->getPathDist(k, j);
 
 						robotPath_vx[j] = dx / dt;
 						robotPath_vy[j] = dy / dt;
@@ -823,6 +851,7 @@ void ptgConfiguratorframe::rebuild3Dview()
 		m_graph_path_x->SetData(robotHeadAng_x, robotPath_x);
 		m_graph_path_y->SetData(robotHeadAng_x, robotPath_y);
 		m_graph_path_phi->SetData(robotHeadAng_x, robotPath_phi);
+		m_graph_path_dist->SetData(robotHeadAng_x, robotPath_dist);
 
 		m_graph_path_vx->SetData(robotHeadAng_x, robotPath_vx);
 		m_graph_path_vy->SetData(robotHeadAng_x, robotPath_vy);
@@ -875,6 +904,18 @@ void ptgConfiguratorframe::rebuild3Dview()
 				wxT("TP-Target: k=%i (alpha=%.03f deg) norm_d=%.03f is_exact:%s"),
 				k,dir*180/M_PI,norm_d,(is_exact ? "yes":"NO")),
 				1);
+
+			// Sanity check: reproject TP_target back to WS:
+			uint32_t check_step;
+			if (ptg->getPathStepForDist(k, norm_d * ptg->getRefDistance(), check_step)) {
+				mrpt::math::TPose2D p;
+				ptg->getPathPose(k, check_step, p);
+				gl_WS_target_reprojected->setLocation(p.x, p.y, 0);
+				gl_WS_target_reprojected->setName("WS-Target-reproj");
+			}
+			else {
+				gl_WS_target_reprojected->setName("WS-Target-reproj (not exact!)");
+			}
 		}
 	}
 
@@ -887,6 +928,7 @@ void ptgConfiguratorframe::rebuild3Dview()
 	m_plotPathXp->Fit();
 	m_plotPathYp->Fit();
 	m_plotPathW->Fit();
+	m_plotPathDist->Fit();
 
 	m_plotHeadAngAll->UpdateAll();
 	m_plotHeadAngIndiv->UpdateAll();
@@ -896,6 +938,7 @@ void ptgConfiguratorframe::rebuild3Dview()
 	m_plotPathXp->UpdateAll();
 	m_plotPathYp->UpdateAll();
 	m_plotPathW->UpdateAll();
+	m_plotPathDist->UpdateAll();
 
 	m_plot->Refresh();
 	m_plotTPSpace->Refresh();
@@ -1078,7 +1121,8 @@ void ptgConfiguratorframe::OnrbShowTPSelectSelect(wxCommandEvent& event)
 	WX_START_TRY;
 
 	gl_TPSpace_TP_obstacles->setVisibility( cbShowTPObs->IsChecked() );
-	gl_TPSpace_clearance->setVisibility( cbShowClearance->IsChecked() );
+	gl_TPSpace_clearance->setVisibility(cbShowClearance->IsChecked() && !cbClearanceInterp->IsChecked());
+	gl_TPSpace_clearance_interp->setVisibility( cbShowClearance->IsChecked() && cbClearanceInterp->IsChecked() );
 
 	m_plotTPSpace->Refresh();
 	WX_END_TRY;

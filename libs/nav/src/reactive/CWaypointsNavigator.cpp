@@ -16,9 +16,7 @@ using namespace mrpt::nav;
 using namespace std;
 
 CWaypointsNavigator::CWaypointsNavigator(CRobot2NavInterface &robot_if) :
-	CAbstractNavigator(robot_if),
-	MAX_DISTANCE_TO_ALLOW_SKIP_WAYPOINT(-1.0),
-	MIN_TIMESTEPS_CONFIRM_SKIP_WAYPOINTS(1)
+	CAbstractNavigator(robot_if)
 {
 }
 
@@ -31,6 +29,7 @@ void CWaypointsNavigator::navigateWaypoints( const TWaypointSequence & nav_reque
 	MRPT_START
 
 	mrpt::synch::CCriticalSectionLocker csl(&m_nav_waypoints_cs);
+
 
 	m_waypoint_nav_status = TWaypointStatusSequence();
 	m_waypoint_nav_status.timestamp_nav_started = mrpt::system::now();
@@ -77,6 +76,7 @@ void CWaypointsNavigator::navigationStep()
 	//     Waypoint navigation algorithm
 	// --------------------------------------
 	{
+	mrpt::utils::CTimeLoggerEntry tle(m_timlog_delays,"CWaypointsNavigator::navigationStep()");
 	mrpt::synch::CCriticalSectionLocker csl(&m_nav_waypoints_cs);
 
 	TWaypointStatusSequence &wps = m_waypoint_nav_status; // shortcut to save typing
@@ -107,18 +107,30 @@ void CWaypointsNavigator::navigationStep()
 		}
 		wps.last_robot_pose = m_curPoseVel.pose; // save for next iters
 
-		if (wps.waypoint_index_current_goal>=0 && 
-			robot_move_seg.distance( wps.waypoints[wps.waypoint_index_current_goal].target ) < wps.waypoints[wps.waypoint_index_current_goal].allowed_distance )
+		if (wps.waypoint_index_current_goal >= 0)
 		{
-			wps.waypoints[wps.waypoint_index_current_goal].reached = true;
-			m_robot.sendWaypointReachedEvent(wps.waypoint_index_current_goal);
+			const double dist2target = robot_move_seg.distance(wps.waypoints[wps.waypoint_index_current_goal].target);
+			if (
+				dist2target < wps.waypoints[wps.waypoint_index_current_goal].allowed_distance
+				||
+				m_lastNavTargetReached   // This may be set from CAbstractNavigator if the target is reached
+				)
+			{
+				MRPT_LOG_DEBUG_STREAM << "[CWaypointsNavigator::navigationStep] Waypoint " <<
+					(wps.waypoint_index_current_goal+1) << "/" << wps.waypoints.size() << " reached."
+					" segment-to-target dist: " << dist2target << ", allowed_dist: " << wps.waypoints[wps.waypoint_index_current_goal].allowed_distance
+					<< " reach detected by CAbstractNavigator?: " << (m_lastNavTargetReached ? "YES" : "NO");
 
-			// Was this the final goal??
-			if ( wps.waypoint_index_current_goal < int(wps.waypoints.size()-1) ) {
-				wps.waypoint_index_current_goal++;
-			}
-			else {
-				wps.final_goal_reached = true;
+				wps.waypoints[wps.waypoint_index_current_goal].reached = true;
+				m_robot.sendWaypointReachedEvent(wps.waypoint_index_current_goal);
+
+				// Was this the final goal??
+				if (wps.waypoint_index_current_goal < int(wps.waypoints.size() - 1)) {
+					wps.waypoint_index_current_goal++;
+				}
+				else {
+					wps.final_goal_reached = true;
+				}
 			}
 		}
 
@@ -138,7 +150,7 @@ void CWaypointsNavigator::navigationStep()
 				mrpt::math::TPoint2D wp_local_wrt_robot;
 				robot_pose.inverseComposePoint(wps.waypoints[idx].target, wp_local_wrt_robot);
 
-				if (MAX_DISTANCE_TO_ALLOW_SKIP_WAYPOINT>0 && wp_local_wrt_robot.norm()>MAX_DISTANCE_TO_ALLOW_SKIP_WAYPOINT)
+				if (params_waypoints_navigator.max_distance_to_allow_skip_waypoint>0 && wp_local_wrt_robot.norm()>params_waypoints_navigator.max_distance_to_allow_skip_waypoint)
 					continue; // Skip this one, it is too far away
 
 				const bool is_reachable = this->impl_waypoint_is_reachable(wp_local_wrt_robot);
@@ -146,7 +158,7 @@ void CWaypointsNavigator::navigationStep()
 				if (is_reachable) {
 					// Robustness filter: only skip to a future waypoint if it is seen as "reachable" during 
 					// a given number of timesteps:
-					if (++wps.waypoints[idx].counter_seen_reachable > MIN_TIMESTEPS_CONFIRM_SKIP_WAYPOINTS) {
+					if (++wps.waypoints[idx].counter_seen_reachable > params_waypoints_navigator.min_timesteps_confirm_skip_waypoints) {
 						most_advanced_wp = idx;
 					}
 				}
@@ -201,18 +213,45 @@ void CWaypointsNavigator::navigationStep()
 	MRPT_END
 }
 
-void CWaypointsNavigator::loadWaypointsParamsConfigFile(const mrpt::utils::CConfigFileBase &cfg, const std::string &sectionName)
-{
-	MRPT_LOAD_CONFIG_VAR(MAX_DISTANCE_TO_ALLOW_SKIP_WAYPOINT,  double,   cfg, sectionName);
-	MRPT_LOAD_CONFIG_VAR(MIN_TIMESTEPS_CONFIRM_SKIP_WAYPOINTS, int, cfg, sectionName);
-}
-
 void CWaypointsNavigator::onStartNewNavigation()
 {
-
 }
 
 bool CWaypointsNavigator::isRelativePointReachable(const mrpt::math::TPoint2D &wp_local_wrt_robot) const
 {
 	return impl_waypoint_is_reachable(wp_local_wrt_robot);
+}
+
+void CWaypointsNavigator::loadConfigFile(const mrpt::utils::CConfigFileBase &c)
+{
+	MRPT_START
+	
+	params_waypoints_navigator.loadFromConfigFile(c, "CWaypointsNavigator");
+	CAbstractNavigator::loadConfigFile(c);
+
+	MRPT_END
+}
+
+void CWaypointsNavigator::saveConfigFile(mrpt::utils::CConfigFileBase &c) const
+{
+	CAbstractNavigator::saveConfigFile(c);
+	params_waypoints_navigator.saveToConfigFile(c, "CWaypointsNavigator");
+}
+
+void mrpt::nav::CWaypointsNavigator::TWaypointsNavigatorParams::loadFromConfigFile(const mrpt::utils::CConfigFileBase & c, const std::string & s)
+{
+	MRPT_LOAD_CONFIG_VAR(max_distance_to_allow_skip_waypoint, double, c, s);
+	MRPT_LOAD_CONFIG_VAR(min_timesteps_confirm_skip_waypoints, int, c, s);
+}
+
+void mrpt::nav::CWaypointsNavigator::TWaypointsNavigatorParams::saveToConfigFile(mrpt::utils::CConfigFileBase & c, const std::string & s) const
+{
+	MRPT_SAVE_CONFIG_VAR_COMMENT(max_distance_to_allow_skip_waypoint, "Max distance to `foresee` waypoints [meters]. (<0: unlimited)");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(min_timesteps_confirm_skip_waypoints, "Min timesteps a `future` waypoint must be seen as reachable to become the active one.");
+}
+
+CWaypointsNavigator::TWaypointsNavigatorParams::TWaypointsNavigatorParams() :
+	max_distance_to_allow_skip_waypoint(-1.0),
+	min_timesteps_confirm_skip_waypoints(1)
+{
 }

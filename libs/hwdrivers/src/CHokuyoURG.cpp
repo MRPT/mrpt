@@ -1063,6 +1063,7 @@ bool  CHokuyoURG::checkCOMisOpen()
 			// Try to open the serial port:
 			CClientTCPSocket	*theCOM = new CClientTCPSocket();
 
+			printf("[CHokuyoURG] Connecting to %s:%u...\n", m_ip_dir.c_str(), m_port_dir);
 			theCOM->connect( m_ip_dir, m_port_dir );
 
 			if (!theCOM->isConnected())

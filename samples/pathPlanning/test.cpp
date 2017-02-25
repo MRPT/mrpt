@@ -39,7 +39,7 @@ void TestPathPlanning()
 	COccupancyGridMap2D		gridmap;
 
 	if (!mrpt::system::fileExists(myGridMap))
-		THROW_EXCEPTION_CUSTOM_MSG1("Map file '%s' not found",myGridMap.c_str());
+		THROW_EXCEPTION_FMT("Map file '%s' not found",myGridMap.c_str());
 
 	printf("Loading gridmap...");
 	CFileGZInputStream(myGridMap) >> gridmap;

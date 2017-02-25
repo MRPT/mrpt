@@ -589,24 +589,25 @@ void holonomic_navigator_demoFrame::simulateOneStep(double time_step)
 	mrpt::math::TPoint2D relTargetPose = mrpt::math::TPoint2D( mrpt::poses::CPoint2D(m_targetPoint) - mrpt::poses::CPose2D(m_robotPose) );
 	relTargetPose*= 1.0/simulatedScan.maxRange;     // Normalized relative target:
 
-	double desiredDirection,desiredSpeed;
-	mrpt::nav::CHolonomicLogFileRecordPtr  out_log;
-
 	//tictac.Tic();
-	this->m_holonomicMethod->navigate(
-		relTargetPose,
-		simulatedScan.scan,
-		m_simul_options.ROBOT_MAX_SPEED,
-		desiredDirection,
-		desiredSpeed,
-		out_log,
-		m_simul_options.MAX_SENSOR_RADIUS
-		);
-	// Tac
+	CAbstractHolonomicReactiveMethod::NavOutput no;
+	CAbstractHolonomicReactiveMethod::NavInput ni;
+	ni.target = relTargetPose;
+	
+	ni.obstacles.resize(simulatedScan.getScanSize());
+	for (unsigned int i = 0; i < ni.obstacles.size(); i++)
+		ni.obstacles[i] = simulatedScan.getScanRange(i);
+
+	ni.maxRobotSpeed = m_simul_options.ROBOT_MAX_SPEED;
+	ni.maxObstacleDist = m_simul_options.MAX_SENSOR_RADIUS;
+
+	this->m_holonomicMethod->navigate(ni, no);
+
+	mrpt::nav::CHolonomicLogFileRecordPtr  out_log = no.logRecord;
 
 	// Move robot:
-	m_robotPose.x += cos(desiredDirection) * desiredSpeed * time_step;
-	m_robotPose.y += sin(desiredDirection) * desiredSpeed * time_step;
+	m_robotPose.x += cos(no.desiredDirection) * no.desiredSpeed * time_step;
+	m_robotPose.y += sin(no.desiredDirection) * no.desiredSpeed * time_step;
 
 	// Update path graph:
 	const TPoint3D  cur_pt(m_robotPose.x,m_robotPose.y,0.01);
@@ -652,10 +653,10 @@ void holonomic_navigator_demoFrame::simulateOneStep(double time_step)
 	}
 
 	// Movement direction:
-	const double d = desiredSpeed/m_simul_options.ROBOT_MAX_SPEED;
+	const double d = no.desiredSpeed/m_simul_options.ROBOT_MAX_SPEED;
 	gl_line_direction->setLineCoords(
 		0,0,0,
-		cos(desiredDirection) * d, sin(desiredDirection) * d, 0 );
+		cos(no.desiredDirection) * d, sin(no.desiredDirection) * d, 0 );
 
 
 }

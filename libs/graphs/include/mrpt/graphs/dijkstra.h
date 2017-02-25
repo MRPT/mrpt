@@ -124,7 +124,7 @@ namespace mrpt
 				const size_t nNodes = m_lstNode_IDs.size();
 
 				if ( m_lstNode_IDs.find(source_node_ID)==m_lstNode_IDs.end() )
-					THROW_EXCEPTION_CUSTOM_MSG1("Cannot find the source node_ID=%u in the graph",static_cast<unsigned int>(source_node_ID));
+					THROW_EXCEPTION_FMT("Cannot find the source node_ID=%u in the graph",static_cast<unsigned int>(source_node_ID));
 
 				// Init:
 				// m_distances: already initialized to infinity by default.

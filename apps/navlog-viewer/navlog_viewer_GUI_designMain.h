@@ -67,6 +67,7 @@ class navlog_viewer_GUI_designDialog: public wxFrame //wxDialog
 		void OnrbPerPTGPlotsSelect(wxCommandEvent& event);
 		//*)
 		void OntimMouseXY(wxTimerEvent& event);
+		void OnmnuMatlabExportPaths(wxCommandEvent& event);
 
 		//(*Identifiers(navlog_viewer_GUI_designDialog)
 		static const long ID_BUTTON1;

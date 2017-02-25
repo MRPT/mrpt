@@ -65,8 +65,8 @@ int TestStereoCalibrate(int argc, char** argv)
 		
 #if 1
 		// Load all images in memory:
-		if (!stereo_dat.left.img_original.loadFromFile(sImgL))  THROW_EXCEPTION_CUSTOM_MSG1("Error loading: %s",sImgL.c_str())
-		if (!stereo_dat.right.img_original.loadFromFile(sImgR)) THROW_EXCEPTION_CUSTOM_MSG1("Error loading: %s",sImgR.c_str())
+		if (!stereo_dat.left.img_original.loadFromFile(sImgL))  THROW_EXCEPTION_FMT("Error loading: %s",sImgL.c_str())
+		if (!stereo_dat.right.img_original.loadFromFile(sImgR)) THROW_EXCEPTION_FMT("Error loading: %s",sImgR.c_str())
 #else
 		// Don't load images in memory until really needed.
 		stereo_dat.left.img_original.setExternalStorage(sImgL);

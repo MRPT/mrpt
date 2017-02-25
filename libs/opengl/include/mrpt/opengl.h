@@ -22,6 +22,7 @@
 #include <mrpt/opengl/CBox.h>
 #include <mrpt/opengl/CFrustum.h>
 #include <mrpt/opengl/CCamera.h>
+#include <mrpt/opengl/CColorBar.h>
 #include <mrpt/opengl/CDisk.h>
 #include <mrpt/opengl/CEllipsoid.h>
 #include <mrpt/opengl/CGridPlaneXY.h>

@@ -31,11 +31,14 @@ namespace mrpt
 		* - 29/SEP/2005: Totally rewritten again, for integration into MRPT library and according to the ICRA paper.
 		* - 17/OCT/2007: Whole code updated to accomodate to MRPT 0.5 and make it portable to Linux.
 		* - DEC/2013: Code refactoring between this class and CAbstractHolonomicReactiveMethod
+		* - FEB/2017: Refactoring of all parameters for a consistent organization in sections by class names (MRPT 1.5.0)
 		*
 		* This class requires a number of parameters which are usually provided via an external config (".ini") file.
 		* Alternatively, a memory-only object can be used to avoid physical files, see mrpt::utils::CConfigFileMemory.
 		*
-		* Next we provide a self-documented template config file: 
+		* A template config file can be generated at any moment by the user by calling saveConfigFile() with a default-constructed object.
+		*
+		* Next we provide a self-documented template config file; or see it online: https://github.com/MRPT/mrpt/blob/master/share/mrpt/config_files/navigation-ptgs/reactive2d_config.ini
 		* \verbinclude reactive2d_config.ini
 		*
 		*  \sa CAbstractNavigator, CParameterizedTrajectoryGenerator, CAbstractHolonomicReactiveMethod
@@ -50,7 +53,9 @@ namespace mrpt
 			CReactiveNavigationSystem(
 				CRobot2NavInterface &react_iterf_impl,
 				bool enableConsoleOutput = true,
-				bool enableLogFile = false);
+				bool enableLogFile = false, 
+				const std::string &logFileDirectory = std::string("./reactivenav.logs")
+			);
 
 			/** Destructor
 			 */
@@ -66,11 +71,19 @@ namespace mrpt
 			virtual CParameterizedTrajectoryGenerator* getPTG(size_t i)  MRPT_OVERRIDE { ASSERT_(i<PTGs.size()); return PTGs[i]; }
 			virtual const CParameterizedTrajectoryGenerator* getPTG(size_t i) const  MRPT_OVERRIDE { ASSERT_(i<PTGs.size()); return PTGs[i]; }
 
-		protected:
-			float	minObstaclesHeight, maxObstaclesHeight; // The range of "z" coordinates for obstacles to be considered
+			struct NAV_IMPEXP TReactiveNavigatorParams : public mrpt::utils::CLoadableOptions
+			{
+				double min_obstacles_height, max_obstacles_height; // The range of "z" coordinates for obstacles to be considered
 
-			math::CPolygon m_robotShape;               //!< The robot 2D shape model. Only one of `m_robotShape` or `m_robotShape` will be used in each PTG
-			double         m_robotShapeCircularRadius; //!< Radius of the robot if approximated as a circle. Only one of `m_robotShape` or `m_robotShape` will be used in each PTG
+				virtual void loadFromConfigFile(const mrpt::utils::CConfigFileBase &c, const std::string &s) MRPT_OVERRIDE;
+				virtual void saveToConfigFile(mrpt::utils::CConfigFileBase &c, const std::string &s) const MRPT_OVERRIDE;
+				TReactiveNavigatorParams();
+			};
+
+			TReactiveNavigatorParams params_reactive_nav;
+
+			virtual void loadConfigFile(const mrpt::utils::CConfigFileBase &c) MRPT_OVERRIDE; // See base class docs!
+			virtual void saveConfigFile(mrpt::utils::CConfigFileBase &c) const MRPT_OVERRIDE; // See base class docs!
 
 		private:
 			std::vector<CParameterizedTrajectoryGenerator*>	PTGs;  //!< The list of PTGs to use for navigation
@@ -82,14 +95,16 @@ namespace mrpt
 			// See docs in parent class
 			bool implementSenseObstacles(mrpt::system::TTimeStamp &obs_timestamp) MRPT_OVERRIDE;
 		protected:
+			mrpt::math::CPolygon m_robotShape;     //!< The robot 2D shape model. Only one of `robot_shape` or `robot_shape_circular_radius` will be used in each PTG
+			double m_robotShapeCircularRadius;   //!< Radius of the robot if approximated as a circle. Only one of `robot_shape` or `robot_shape_circular_radius` will be used in each PTG
+
 			/** Generates a pointcloud of obstacles, and the robot shape, to be saved in the logging record for the current timestep */
 			virtual void loggingGetWSObstaclesAndShape(CLogFileRecord &out_log) MRPT_OVERRIDE;
 
-		
-			void internal_loadConfigFile(const mrpt::utils::CConfigFileBase &ini, const std::string &section_prefix="") MRPT_OVERRIDE;
 			mrpt::maps::CSimplePointsMap m_WS_Obstacles;  //!< The obstacle points, as seen from the local robot frame.
+			mrpt::maps::CSimplePointsMap m_WS_Obstacles_original;  //!< Obstacle points, before filtering (if filtering is enabled).
 			// See docs in parent class
-			void STEP3_WSpaceToTPSpace(const size_t ptg_idx, std::vector<double> &out_TPObstacles, mrpt::nav::ClearanceDiagram &out_clearance, const mrpt::poses::CPose2D &rel_pose_PTG_origin_wrt_sense) MRPT_OVERRIDE;
+			void STEP3_WSpaceToTPSpace(const size_t ptg_idx, std::vector<double> &out_TPObstacles, mrpt::nav::ClearanceDiagram &out_clearance, const mrpt::poses::CPose2D &rel_pose_PTG_origin_wrt_sense, const bool eval_clearance) MRPT_OVERRIDE;
 
 		}; // end class
 	}

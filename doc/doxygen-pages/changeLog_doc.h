@@ -72,6 +72,11 @@
 			- New colormap: mrpt::utils::hot2rgb()
 			- New function mrpt::system::find_mrpt_shared_dir()
 			- New class mrpt::utils::CDynamicGrid3D<>
+			- New function mrpt::utils::net::http_request()
+			- New function mrpt::system::now_double()
+			- New function mrpt::utils::getAllRegisteredClassesChildrenOf()
+			- Safer CClassRegistry: detect and warn on attempts to duplicated class registration.
+			- New class mrpt::math::CRuntimeCompiledExpression
 		- \ref mrpt_bayes_grp
 			- [API change] `verbose` is no longer a field of mrpt::bayes::CParticleFilter::TParticleFilterOptions. Use the setVerbosityLevel() method of the CParticleFilter class itself.
 			- [API change] mrpt::bayes::CProbabilityParticle (which affects all PF-based classes in MRPT) has been greatly simplified via usage of the new mrpt::utils::copy_ptr<> pointee-copy-semantics smart pointer.
@@ -82,6 +87,7 @@
 			- New class mrpt::gui::CDisplayWindow3DLocker for exception-safe 3D scene lock in 3D windows.
 		- \ref mrpt_hwdrivers_grp
 			- Using rplidar newest SDK 1.5.6 instead of 1.4.3, which support rplidar A1 and rplidar A2
+			- mrpt::hwdrivers::CNTRIPEmitter can now also dump raw NTRIP data to a file
 		- \ref mrpt_kinematics_grp
 			- New classes for 2D robot simulation:
 				- mrpt::kinematics::CVehicleSimul_DiffDriven
@@ -91,6 +97,7 @@
 			- mrpt::maps::COccupancyGridMap2D::loadFromBitmapFile() correct description of `yCentralPixel` parameter.
 			- mrpt::maps::CPointsMap `liblas` import/export methods are now in a separate header. See \ref mrpt_maps_liblas_grp and \ref dep-liblas
 			- New class mrpt::maps::CRandomFieldGridMap3D
+			- New class mrpt::maps::CPointCloudFilterByDistance
 		- \ref mrpt_obs_grp
 			- [ABI change] mrpt::obs::CObservation2DRangeScan
 				- range scan vectors are now protected for safety.
@@ -130,6 +137,8 @@
 				- Parameters are no longer passed via a mrpt::utils::TParameters class, but via a mrpt::utils::CConfigFileBase which makes parameter passing to PTGs much more maintainable and consistent.
 				- PTGs now have a score_priority field to manually set hints about preferences for path planning.
 				- PTGs are now mrpt::utils::CLoadableOptions classes
+			- New classes:
+				- mrpt::nav::CMultiObjectiveMotionOptimizerBase
 	- Changes in build system:
 		- [Windows only] `DLL`s/`LIB`s now have the signature `lib-${name}${2-digits-version}${compiler-name}_{x32|x64}.{dll/lib}`, allowing several MRPT versions to coexist in the system PATH.
 		- [Visual Studio only] There are no longer `pragma comment(lib...)` in any MRPT header, so it is the user responsibility to correctly tell user projects to link against MRPT libraries.
@@ -153,6 +162,7 @@
 		- Fix wrong units for negative numbers in mrpt::system::unitsFormat()
 		- Fix potential thread-unsafe conditions while inserting a mrpt::obs::CObservation2DRangeScan into a pointmap with SSE2 optimizations enabled.
 		- CStream: Fix memory leak if an exception (e.g. EOF) is found during object deserialization.
+		- Fix a bug in the `onlyUniqueRobust` option for point cloud matching (affecting CICP, etc.). Thanks [Shuo](https://github.com/ygzhangsoya)!
 
 <hr>
 <a name="1.4.0">

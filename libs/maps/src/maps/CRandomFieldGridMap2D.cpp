@@ -2008,7 +2008,7 @@ void  CRandomFieldGridMap2D::insertObservation_KF2(
 			double &cov_to_change = m_stackedCov(idx_i,idx_j_in_i);
 			double Delta_cov = cov_c_j * cov_c_i * sk_1;
 			if (i==j && cov_to_change<Delta_cov)
-				THROW_EXCEPTION_CUSTOM_MSG1("Negative variance value appeared! Please increase the size of the window (W).\n(m_insertOptions_common->KF_covSigma=%f)",m_insertOptions_common->KF_covSigma);
+				THROW_EXCEPTION_FMT("Negative variance value appeared! Please increase the size of the window (W).\n(m_insertOptions_common->KF_covSigma=%f)",m_insertOptions_common->KF_covSigma);
 
 			cov_to_change -= Delta_cov;
 
@@ -2120,8 +2120,8 @@ void CRandomFieldGridMap2D::insertIndividualReading(const double sensorReading,c
 		case mrKernelDMV:          insertObservation_KernelDM_DMV(sensorReading,point, true); break;
 		case mrKalmanFilter:       insertObservation_KF(sensorReading,point); break;
 		case mrKalmanApproximate:  insertObservation_KF2(sensorReading,point);break;
-		case mrGMRF_SD:			   insertObservation_GMRF(sensorReading,point,update_map,time_invariant, 
-			reading_stddev==.0 
+		case mrGMRF_SD:			   insertObservation_GMRF(sensorReading,point,update_map,time_invariant,
+			reading_stddev==.0
 			?
 			m_insertOptions_common->GMRF_lambdaObs   // default information
 			:
@@ -2139,7 +2139,7 @@ void CRandomFieldGridMap2D::insertIndividualReading(const double sensorReading,c
 void CRandomFieldGridMap2D::insertObservation_GMRF(
 	double normReading,
 	const mrpt::math::TPoint2D &point,const bool update_map,
-	const bool time_invariant, 
+	const bool time_invariant,
 	const double reading_information)
 {
 
@@ -2347,4 +2347,13 @@ void CRandomFieldGridMap2D::TPriorFactorGMRF::evalJacobian(double &dr_dx_i, doub
 {
 	dr_dx_i = +1.0;
 	dr_dx_j = -1.0;
+}
+
+
+CRandomFieldGridMap2D::ConnectivityDescriptor::ConnectivityDescriptor()
+{
+}
+
+CRandomFieldGridMap2D::ConnectivityDescriptor::~ConnectivityDescriptor()
+{
 }
