@@ -299,7 +299,7 @@ namespace mrpt
 					// A row matrix:
 		#if defined(_DEBUG) || (MRPT_ALWAYS_CHECKS_DEBUG_MATRICES)
 					if (ith >= m_Cols)
-						THROW_EXCEPTION_CUSTOM_MSG1( "Index %u out of range!",static_cast<unsigned>(ith) );
+						THROW_EXCEPTION_FMT( "Index %u out of range!",static_cast<unsigned>(ith) );
 		#endif
 					return m_Val[0][ith];
 				}
@@ -308,7 +308,7 @@ namespace mrpt
 					// A columns matrix:
 		#if defined(_DEBUG) || (MRPT_ALWAYS_CHECKS_DEBUG_MATRICES)
 					if (ith >= m_Rows)
-						THROW_EXCEPTION_CUSTOM_MSG1( "Index %u out of range!",static_cast<unsigned>(ith) );
+						THROW_EXCEPTION_FMT( "Index %u out of range!",static_cast<unsigned>(ith) );
 		#endif
 					return m_Val[ith][0];
 				}
@@ -327,7 +327,7 @@ namespace mrpt
 					// A row matrix:
 		#if defined(_DEBUG) || (MRPT_ALWAYS_CHECKS_DEBUG_MATRICES)
 					if (ith >= m_Cols)
-						THROW_EXCEPTION_CUSTOM_MSG1( "Index %u out of range!",static_cast<unsigned>(ith) );
+						THROW_EXCEPTION_FMT( "Index %u out of range!",static_cast<unsigned>(ith) );
 		#endif
 					return m_Val[0][ith];
 				}
@@ -336,7 +336,7 @@ namespace mrpt
 					// A columns matrix:
 		#if defined(_DEBUG) || (MRPT_ALWAYS_CHECKS_DEBUG_MATRICES)
 					if (ith >= m_Rows)
-						THROW_EXCEPTION_CUSTOM_MSG1( "Index %u out of range!",static_cast<unsigned>(ith) );
+						THROW_EXCEPTION_FMT( "Index %u out of range!",static_cast<unsigned>(ith) );
 		#endif
 					return m_Val[ith][0];
 				}

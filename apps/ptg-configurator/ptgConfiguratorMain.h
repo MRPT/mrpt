@@ -111,6 +111,7 @@ class ptgConfiguratorframe: public wxFrame
         static const long ID_XY_GLCANVAS;
         static const long ID_CHECKBOX5;
         static const long ID_CHECKBOX6;
+        static const long ID_CHECKBOX7;
         static const long ID_CUSTOM2;
         static const long ID_PANEL2;
         static const long ID_CUSTOM1;
@@ -126,6 +127,8 @@ class ptgConfiguratorframe: public wxFrame
         static const long ID_CUSTOM6;
         static const long ID_STATICTEXT12;
         static const long ID_CUSTOM7;
+        static const long ID_STATICTEXT16;
+        static const long ID_CUSTOM11;
         static const long ID_PANEL5;
         static const long ID_STATICTEXT13;
         static const long ID_CUSTOM8;
@@ -169,8 +172,10 @@ class ptgConfiguratorframe: public wxFrame
         wxStaticText* StaticText11;
         wxPanel* Panel1;
         wxStaticText* StaticText1;
+        mpWindow* m_plotPathDist;
         wxCheckBox* cbShowTPObs;
         wxStaticText* StaticText3;
+        wxCheckBox* cbClearanceInterp;
         wxChoice* cbPTGClass;
         wxPanel* Panel6;
         wxPanel* Panel3;
@@ -196,6 +201,7 @@ class ptgConfiguratorframe: public wxFrame
         wxTextCtrl* edMinDistBtwShapes;
         wxStaticText* StaticText4;
         wxCheckBox* cbShowClearance;
+        wxStaticText* StaticText16;
         wxTextCtrl* edTargetY;
         wxSlider* slidPathHighlight;
         //*)
@@ -226,16 +232,16 @@ class ptgConfiguratorframe: public wxFrame
 		// ========= Opengl View =======
 		mrpt::opengl::COpenGLViewportPtr  gl_view_WS, gl_view_TPSpace;
 		mrpt::opengl::CSetOfObjectsPtr    gl_TPSpace_TP_obstacles;
-		mrpt::opengl::CMeshPtr            gl_TPSpace_clearance;
+		mrpt::opengl::CMeshPtr            gl_TPSpace_clearance, gl_TPSpace_clearance_interp;
 		mrpt::opengl::CCameraPtr          gl_view_TPSpace_cam;
 		mrpt::opengl::CAxisPtr            gl_axis_WS, gl_axis_TPS;
 		mrpt::opengl::CSetOfLinesPtr      gl_robot_ptg_prediction, gl_robot_ptg_prediction_highlight, gl_tp_obstacles;
 		mrpt::opengl::CPointCloudPtr      gl_WS_obs;
-		mrpt::opengl::CPointCloudPtr      gl_WS_target,gl_TP_target;
+		mrpt::opengl::CPointCloudPtr      gl_WS_target, gl_TP_target, gl_WS_target_reprojected;
 
 		// 2D plot views:
 		mpFXYVector  *m_graph_head_all, *m_graph_head_indiv;
-		mpFXYVector  *m_graph_path_x, *m_graph_path_y, *m_graph_path_phi;
+		mpFXYVector  *m_graph_path_x, *m_graph_path_y, *m_graph_path_phi, *m_graph_path_dist;
 		mpFXYVector  *m_graph_path_vx, *m_graph_path_vy, *m_graph_path_omega;
 
 		static void prepareRobotPathPlot(mpWindow *plot, mpFXYVector  **graph, const std::string &name);

@@ -14,6 +14,9 @@
 
 #include <map>
 #include <cstdarg>
+#include <mutex>
+#include <atomic>
+#include <iostream>
 
 #include "internal_class_registry.h"
 
@@ -69,7 +72,15 @@ namespace mrpt
 			{
 				m_being_modified=true;
 				{
-					mrpt::synch::CCriticalSectionLocker lock(&m_cs);
+					std::unique_lock<std::mutex> lk(m_cs);
+
+					// Sanity check: don't allow registering twice the same class name!
+					const auto it = registeredClasses.find(className);
+					if (it != registeredClasses.cend()) {
+						if (it->second != &id) {
+							std::cerr << mrpt::format("[MRPT class registry] Warning: overwriting already registered className=`%s` with different `TRuntimeClassId`!\n", className.c_str());
+						}
+					}
 					registeredClasses[className] = &id;
 				}
 				m_being_modified=false;
@@ -81,19 +92,19 @@ namespace mrpt
 				bool has_to_unlock = false;
 				if (m_being_modified)
 				{
-					m_cs.enter();
+					m_cs.lock();
 					has_to_unlock = true;
 				}
 				const TRuntimeClassId *ret = registeredClasses[className];
-				if (has_to_unlock) m_cs.leave();
+				if (has_to_unlock) m_cs.unlock();
 				return ret;
 			}
 
 			std::vector<const TRuntimeClassId*> getListOfAllRegisteredClasses()
 			{
-				mrpt::synch::CCriticalSectionLocker lock(&m_cs);
+				std::unique_lock<std::mutex> lk(m_cs);
 
-				std::vector<const TRuntimeClassId*>	ret;
+				std::vector<const TRuntimeClassId*> ret;
 				for (TClassnameToRuntimeId::iterator it=registeredClasses.begin();it!=registeredClasses.end();++it)
 					ret.push_back( it->second );
 				return ret;
@@ -111,8 +122,8 @@ namespace mrpt
 			// functions and it cannot be assured that classesKeeper will be
 			// initialized before other classes that call it...
 			TClassnameToRuntimeId			registeredClasses;
-			mrpt::synch::CCriticalSection 	m_cs;
-			volatile bool                   m_being_modified;
+			std::mutex        m_cs;
+			std::atomic<bool> m_being_modified;
 
 		};
 
@@ -174,6 +185,18 @@ std::vector<const TRuntimeClassId*> utils::getAllRegisteredClasses()
 	return CClassRegistry::Instance().getListOfAllRegisteredClasses();
 }
 
+std::vector<const TRuntimeClassId*> utils::getAllRegisteredClassesChildrenOf(const TRuntimeClassId* parent_id)
+{
+	std::vector<const TRuntimeClassId*> res;
+	const auto lst = mrpt::utils::getAllRegisteredClasses();
+	for (const auto &c : lst) {
+		if (c->derivedFrom(parent_id) && c!=parent_id) {
+			res.push_back(c);
+		}
+	}
+	return res;
+}
+
 /*---------------------------------------------------------------
 					findRegisteredClass
  ---------------------------------------------------------------*/
@@ -181,4 +204,3 @@ const TRuntimeClassId *mrpt::utils::findRegisteredClass(const std::string &class
 {
 	return CClassRegistry::Instance().Get( className );
 }
-

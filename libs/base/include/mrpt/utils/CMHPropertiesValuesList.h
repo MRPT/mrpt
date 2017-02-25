@@ -167,7 +167,7 @@ namespace mrpt
                 }
                 // Not found:
                 if (raiseExceptionIfNotFound)
-                    THROW_EXCEPTION_CUSTOM_MSG1("Property '%s' not found", propertyName );
+                    THROW_EXCEPTION_FMT("Property '%s' not found", propertyName );
                 return false;
                 MRPT_END
             }

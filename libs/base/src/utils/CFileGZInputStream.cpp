@@ -54,7 +54,7 @@ bool CFileGZInputStream::open(const std::string &fileName )
 	// Get compressed file size:
 	m_file_size = mrpt::system::getFileSize(fileName);
 	if (m_file_size==uint64_t(-1))
-		THROW_EXCEPTION_CUSTOM_MSG1("Couldn't access the file '%s'",fileName.c_str() );
+		THROW_EXCEPTION_FMT("Couldn't access the file '%s'",fileName.c_str() );
 
 	// Open gz stream:
 	m_f = gzopen(fileName.c_str(),"rb");

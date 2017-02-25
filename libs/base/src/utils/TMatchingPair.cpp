@@ -201,4 +201,29 @@ void  TMatchingPairList::squareErrorVector(
 	}
 }
 
+void TMatchingPairList::filterUniqueRobustPairs(const size_t num_elements_this_map, TMatchingPairList &out_filtered_list) const
+{
+	std::vector<TMatchingPairConstPtr> bestMatchForThisMap(num_elements_this_map, TMatchingPairConstPtr(nullptr));
+	out_filtered_list.clear();
+
+	// 1) Go through all the correspondences and keep the best corresp.
+	//    for each "global map" (this) point.
+	for (auto &c : *this)
+	{
+		if (bestMatchForThisMap[c.this_idx] == nullptr ||  // first one
+			c.errorSquareAfterTransformation < bestMatchForThisMap[c.this_idx]->errorSquareAfterTransformation // or better
+			)
+		{
+			bestMatchForThisMap[c.this_idx] = &c;
+		}
+	}
+
+	//   2) Go again through the list of correspondences and remove those
+	//       who are not the best one for their corresponding global map.
+	for (auto &c : *this) {
+		if (bestMatchForThisMap[c.this_idx] == &c)
+			out_filtered_list.push_back(c); // Add to the output
+	}
+}
+
 

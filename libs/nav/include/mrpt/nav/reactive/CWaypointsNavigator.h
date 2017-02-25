@@ -53,20 +53,29 @@ namespace mrpt
 		* the point is out of range for the existing PTGs, etc. */
 		bool isRelativePointReachable(const mrpt::math::TPoint2D &wp_local_wrt_robot) const;
 
+		struct NAV_IMPEXP TWaypointsNavigatorParams : public mrpt::utils::CLoadableOptions
+		{
+			double  max_distance_to_allow_skip_waypoint; //!< In meters. <0: unlimited
+			int     min_timesteps_confirm_skip_waypoints; //!< How many times shall a future waypoint be seen as reachable to skip to it (Default: 1)
+
+			virtual void loadFromConfigFile(const mrpt::utils::CConfigFileBase &c, const std::string &s) MRPT_OVERRIDE;
+			virtual void saveToConfigFile(mrpt::utils::CConfigFileBase &c, const std::string &s) const MRPT_OVERRIDE;
+			TWaypointsNavigatorParams();
+		};
+
+		TWaypointsNavigatorParams params_waypoints_navigator;
+
+		virtual void loadConfigFile(const mrpt::utils::CConfigFileBase &c) MRPT_OVERRIDE; // See base class docs!
+		virtual void saveConfigFile(mrpt::utils::CConfigFileBase &c) const MRPT_OVERRIDE; // See base class docs!
+
 	protected:
 		TWaypointStatusSequence  m_waypoint_nav_status; //!< The latest waypoints navigation command and the up-to-date control status.
 		mrpt::synch::CCriticalSectionRecursive m_nav_waypoints_cs;
-
-		double  MAX_DISTANCE_TO_ALLOW_SKIP_WAYPOINT; //!< In meters. <0: unlimited
-		int     MIN_TIMESTEPS_CONFIRM_SKIP_WAYPOINTS; //!< How many times shall a future waypoint be seen as reachable to skip to it (Default: 1)
 
 		/** Implements the way to waypoint is free function in children classes: `true` must be returned 
 		  * if, according to the information gathered at the last navigation step, there is a free path to 
 		  * the given point; `false` otherwise: if way is blocked or there is missing information, the point is out of range, etc. */
 		virtual bool impl_waypoint_is_reachable(const mrpt::math::TPoint2D &wp_local_wrt_robot) const = 0;
-
-		/** Loads parameters for waypoints navigation */
-		virtual void loadWaypointsParamsConfigFile(const mrpt::utils::CConfigFileBase &cfg, const std::string &sectionName);
 
 		virtual void onStartNewNavigation() MRPT_OVERRIDE;
 

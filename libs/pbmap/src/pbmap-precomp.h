@@ -9,6 +9,7 @@
 
 #pragma once
 
-#include <mrpt/pbmap/Miscellaneous.h>
-#include <mrpt/pbmap/PbMap.h>
+#include <mrpt/utils/types_math.h>
 
+#include <mrpt/pbmap/Miscellaneous.h>
+//#include <mrpt/pbmap/PbMap.h>   // Removed due to gcc5 internal error when using PCH

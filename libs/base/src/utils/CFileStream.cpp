@@ -44,7 +44,7 @@ CFileStream::CFileStream( const string &fileName, TFileOpenModes mode_ ) : m_f()
 	// Try to open the file:
 	m_f.open(fileName.c_str(), mode);
 	if (!m_f.is_open())
-		THROW_EXCEPTION_CUSTOM_MSG1( "Error creating/opening: '%s'",fileName.c_str() );
+		THROW_EXCEPTION_FMT( "Error creating/opening: '%s'",fileName.c_str() );
 	MRPT_END
 }
 

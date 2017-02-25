@@ -37,13 +37,13 @@ namespace bayes
 
 		double getW(size_t i) const MRPT_OVERRIDE
 		{
-			if (i>=derived().m_particles.size()) THROW_EXCEPTION_CUSTOM_MSG1("Index %i is out of range!",(int)i);
+			if (i>=derived().m_particles.size()) THROW_EXCEPTION_FMT("Index %i is out of range!",(int)i);
 			return derived().m_particles[i].log_w;
 		}
 
 		void setW(size_t i, double w) MRPT_OVERRIDE
 		{
-			if (i>=derived().m_particles.size()) THROW_EXCEPTION_CUSTOM_MSG1("Index %i is out of range!",(int)i);
+			if (i>=derived().m_particles.size()) THROW_EXCEPTION_FMT("Index %i is out of range!",(int)i);
 			derived().m_particles[i].log_w = w;
 		}
 

@@ -78,7 +78,7 @@ DECLARE_OP_FUNCTION(op_export_2d_scans_txt)
 				f_this        = lstFiles[ obs->sensorLabel ] = os::fopen( fileName.c_str(), "wt");
 				f_this_times  = lstFilesTimes[ obs->sensorLabel ] = os::fopen( fileNameTimes.c_str(), "wt");
 				if (!f_this || !f_this_times)
-					THROW_EXCEPTION_CUSTOM_MSG1("Cannot open output file for write: %s", fileName.c_str() );
+					THROW_EXCEPTION_FMT("Cannot open output file for write: %s", fileName.c_str() );
 			}
 			else
 			{

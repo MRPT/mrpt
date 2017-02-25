@@ -73,7 +73,7 @@ CPosePDFPtr CICP::AlignPDF(
 		resultPDF = ICP_Method_LM( m1, mm2, initialEstimationPDF, outInfo );
 		break;
 	default:
-		THROW_EXCEPTION_CUSTOM_MSG1("Invalid value for ICP_algorithm: %i", static_cast<int>(options.ICP_algorithm));
+		THROW_EXCEPTION_FMT("Invalid value for ICP_algorithm: %i", static_cast<int>(options.ICP_algorithm));
 	} // end switch
 
 	if (runningTime)  *runningTime = tictac.Tac();
@@ -445,7 +445,7 @@ CPosePDFPtr CICP::ICP_Method_Classic(
 			}
 			break;
 		default:
-			THROW_EXCEPTION_CUSTOM_MSG1("Invalid value for ICP_covariance_method: %i", static_cast<int>(options.ICP_covariance_method));
+			THROW_EXCEPTION_FMT("Invalid value for ICP_covariance_method: %i", static_cast<int>(options.ICP_covariance_method));
 			}
 		}
 
@@ -914,7 +914,7 @@ CPose3DPDFPtr CICP::Align3DPDF(
 		THROW_EXCEPTION("Only icpClassic is implemented for ICP-3D")
 		break;
 	default:
-		THROW_EXCEPTION_CUSTOM_MSG1("Invalid value for ICP_algorithm: %i", static_cast<int>(options.ICP_algorithm));
+		THROW_EXCEPTION_FMT("Invalid value for ICP_algorithm: %i", static_cast<int>(options.ICP_algorithm));
 	} // end switch
 
 	if (runningTime)  *runningTime = tictac.Tac();

@@ -20,7 +20,9 @@ namespace utils
 	/** This class allows loading and storing values and vectors of different types from ".ini" files easily.
 	  *  The contents of the file will be modified by "write" operations in memory, and will be saved back
 	  *   to the file at the destructor, and only if at least one write operation has been applied.
-	 * \ingroup mrpt_base_grp
+	  *
+	  * Use base class `CConfigFileBase`'s methods `read_{int,float,double,string,...}()` and `write()` to actually read and write values.
+	  * \ingroup mrpt_base_grp
 	  */
 	class BASE_IMPEXP CConfigFile : public CConfigFileBase
 	{
@@ -55,6 +57,8 @@ namespace utils
 
 		/** Dumps the changes to the physical configuration file now, not waiting until destruction. */
 		void writeNow();
+
+		void discardSavingChanges(); //!< Discard saving (current) changes to physical file upon destruction
 
 		/** Returns the file currently open by this object. */
 		std::string getAssociatedFile() const { return m_file; }

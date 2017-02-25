@@ -185,7 +185,7 @@ namespace mrpt
 			inline size_t cellAbsIndexFromCXCYCZ(const int cx, const int cy, const int cz) const {
 				if (cx<0 || cx >= static_cast<int>(m_size_x)) return INVALID_VOXEL_IDX;
 				if (cy<0 || cy >= static_cast<int>(m_size_y)) return INVALID_VOXEL_IDX;
-				if (cz<0 || cy >= static_cast<int>(m_size_z)) return INVALID_VOXEL_IDX;
+				if (cz<0 || cz >= static_cast<int>(m_size_z)) return INVALID_VOXEL_IDX;
 				return cx + cy*m_size_x + cz * m_size_x_times_y;
 			}
 				
@@ -231,7 +231,8 @@ namespace mrpt
 
 			inline double getXMin()const  { return m_x_min; }
 			inline double getXMax()const  { return m_x_max; }
-
+			inline double getYMin()const { return m_y_min; }
+			inline double getYMax()const { return m_y_max; }
 			inline double getZMin()const  { return m_z_min; }
 			inline double getZMax()const  { return m_z_max; }
 

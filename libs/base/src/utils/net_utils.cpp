@@ -74,11 +74,10 @@ mrpt::utils::net::http_get(
 }
 
 
-/*---------------------------------------------------------------
-							http_get
-  ---------------------------------------------------------------*/
-ERRORCODE_HTTP  BASE_IMPEXP
-mrpt::utils::net::http_get(
+ERRORCODE_HTTP BASE_IMPEXP
+mrpt::utils::net::http_request(
+	const string   & http_method,
+	const string   & http_send_content,
 	const string	&url,
 	vector_byte		&out_content,
 	string			&out_errormsg,
@@ -121,7 +120,6 @@ mrpt::utils::net::http_get(
 		server_addr.resize(pos);
 	}
 
-
 	CClientTCPSocket	sock;
 
 	try {
@@ -158,13 +156,18 @@ mrpt::utils::net::http_get(
 			headers_to_send["Authorization"]=string("Basic ")+encoded_str;
 		}
 
+		if (!http_send_content.empty() && headers_to_send.find("Content-Length") == headers_to_send.end())
+		{
+			headers_to_send["Content-Length"] = mrpt::format("%u", (unsigned int)http_send_content.size());
+		}
 
 		// Prepare the request string
 		// ---------------------------------
 		string req = format(
-		  "GET %s HTTP/1.1\r\n"
-          "Host: %s\r\n",
-		  get_object.c_str(),server_addr.c_str());
+			"%s %s HTTP/1.1\r\n"
+			"Host: %s\r\n",
+			http_method.c_str(),
+			get_object.c_str(),server_addr.c_str());
 
 		// Other headers:
 		for (TParameters<string>::const_iterator i=headers_to_send.begin();i!=headers_to_send.end();++i)
@@ -177,6 +180,9 @@ mrpt::utils::net::http_get(
 
 		// End:
 		req+="\r\n";
+
+		// Any POST data?
+		req += http_send_content;
 
 		// Send:
 		sock.sendString(req);
@@ -353,7 +359,6 @@ mrpt::utils::net::http_get(
 			}
 		}
 
-
 		// Set the content output:
 		out_content.swap(buf);
 
@@ -373,6 +378,27 @@ mrpt::utils::net::http_get(
 	}
 
 	return net::erOk;
+}
+
+
+/*---------------------------------------------------------------
+	http_get
+---------------------------------------------------------------*/
+ERRORCODE_HTTP  BASE_IMPEXP
+mrpt::utils::net::http_get(
+	const string	&url,
+	vector_byte		&out_content,
+	string			&out_errormsg,
+	int				port,
+	const string	&auth_user,
+	const string	&auth_pass,
+	int				*out_http_responsecode,
+	mrpt::utils::TParameters<string>  *extra_headers,
+	mrpt::utils::TParameters<string>  *out_headers,
+	int  timeout_ms
+	)
+{
+	return http_request("GET", "", url, out_content, out_errormsg, port, auth_user, auth_pass, out_http_responsecode, extra_headers, out_headers, timeout_ms);
 }
 
 

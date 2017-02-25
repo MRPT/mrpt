@@ -246,7 +246,7 @@ void  CFeatureExtraction::computeDescriptors(
 	}
 
 	if (!nDescComputed)
-		THROW_EXCEPTION_CUSTOM_MSG1("No known descriptor value found in in_descriptor_list=%u",(unsigned)in_descriptor_list)
+		THROW_EXCEPTION_FMT("No known descriptor value found in in_descriptor_list=%u",(unsigned)in_descriptor_list)
 
 	MRPT_END
 }

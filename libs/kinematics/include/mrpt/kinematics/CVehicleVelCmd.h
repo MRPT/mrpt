@@ -48,6 +48,7 @@ namespace mrpt
 				TVelCmdParams();
 				/** Load any parameter required by a CVehicleVelCmd derived class. */
 				void loadConfigFile(const mrpt::utils::CConfigFileBase &cfg, const std::string &section);
+				void saveToConfigFile(mrpt::utils::CConfigFileBase & c, const std::string & s) const;
 			};
 
 			/** Scale the velocity command encoded in this object.
@@ -62,8 +63,9 @@ namespace mrpt
 
 			/** Updates this command, computing a blended version of `beta` (within [0,1]) of `vel_cmd` and `1-beta` of `prev_vel_cmd`, simultaneously
 			* to honoring any user-side maximum velocities.
+			* \return The [0,1] ratio that the cmdvel had to be scaled down, or 1.0 if none.
 			*/
-			virtual void cmdVel_limits(const mrpt::kinematics::CVehicleVelCmd &prev_vel_cmd, const double beta, const TVelCmdParams &params) = 0;
+			virtual double cmdVel_limits(const mrpt::kinematics::CVehicleVelCmd &prev_vel_cmd, const double beta, const TVelCmdParams &params) = 0;
 		};
 		DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(CVehicleVelCmd, mrpt::utils::CSerializable, KINEMATICS_IMPEXP)
 
