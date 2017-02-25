@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -24,7 +24,7 @@
 #include <wx/image.h>
 #include <wx/artprov.h>
 //*)
-#include "../wx-common/wx28-fixes.h"
+#include <mrpt/gui/wx28-fixes.h>
 
 #include <mrpt/utils/CFileGZOutputStream.h>
 #include <mrpt/math/wrap2pi.h>
@@ -590,9 +590,9 @@ slamdemoFrame::slamdemoFrame(wxWindow* parent,wxWindowID id)
 
 	vector<float> robot_shape_xs(3);
 	vector<float> robot_shape_ys(3);
-	robot_shape_xs[0] =0;	robot_shape_ys[0] =-0.10;
-	robot_shape_xs[1] =0;	robot_shape_ys[1] = 0.10;
-	robot_shape_xs[2] =0.2;	robot_shape_ys[2] = 0;
+	robot_shape_xs[0] =0;	robot_shape_ys[0] =-0.10f;
+	robot_shape_xs[1] =0;	robot_shape_ys[1] = 0.10f;
+	robot_shape_xs[2] =0.2f;	robot_shape_ys[2] = 0;
 
 
 	// GT plot ------------
@@ -743,8 +743,8 @@ slamdemoFrame::slamdemoFrame(wxWindow* parent,wxWindowID id)
 	INIT_DA_PLOT(JCBB);
 
 	// Set some default params:
-	m_SLAM.options.std_sensor_range = 0.03;
-	m_SLAM.options.std_sensor_yaw   = DEG2RAD(0.5);
+	m_SLAM.options.std_sensor_range = 0.03f;
+	m_SLAM.options.std_sensor_yaw   = DEG2RAD(0.5f);
 
 	options.sensor_max_range = 5;
 	options.sensor_min_range = 0.50;
@@ -1664,12 +1664,12 @@ void slamdemoFrame::executeOneStep()
 		odo_opts.modelSelection = CActionRobotMovement2D::mmGaussian;
 
 		// Model as a constant noise in X,Y,PHI:
-		odo_opts.gausianModel.a1  = 0; //0.01f;
-		odo_opts.gausianModel.a2  = 0; //RAD2DEG( 0.0001f );
-		odo_opts.gausianModel.a3  = 0; //DEG2RAD( 0.1f );
-		odo_opts.gausianModel.a4  = 0; // 0.01; //0.05f;
-		odo_opts.gausianModel.minStdXY  = options.odometry_noise_std_xy;
-		odo_opts.gausianModel.minStdPHI = options.odometry_noise_std_phi;
+		odo_opts.gaussianModel.a1  = 0; //0.01f;
+		odo_opts.gaussianModel.a2  = 0; //RAD2DEG( 0.0001f );
+		odo_opts.gaussianModel.a3  = 0; //DEG2RAD( 0.1f );
+		odo_opts.gaussianModel.a4  = 0; // 0.01; //0.05f;
+		odo_opts.gaussianModel.minStdXY  = options.odometry_noise_std_xy;
+		odo_opts.gaussianModel.minStdPHI = options.odometry_noise_std_phi;
 
 		// Add noise:
 		CPose2D  noisyPoseIncr = poseIncr;

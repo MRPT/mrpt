@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -229,12 +229,12 @@ int main(int argc, char ** argv)
 
         CActionRobotMovement2D::TMotionModelOptions   opts;
         opts.modelSelection = CActionRobotMovement2D::mmGaussian;
-        opts.gausianModel.a1=0;
-        opts.gausianModel.a2=0;
-        opts.gausianModel.a3=0;
-        opts.gausianModel.a4=0;
-        opts.gausianModel.minStdXY = odometryNoiseXY_std;
-        opts.gausianModel.minStdPHI = odometryNoisePhi_std;
+        opts.gaussianModel.a1=0;
+        opts.gaussianModel.a2=0;
+        opts.gaussianModel.a3=0;
+        opts.gaussianModel.a4=0;
+        opts.gaussianModel.minStdXY = odometryNoiseXY_std;
+        opts.gaussianModel.minStdPHI = odometryNoisePhi_std;
 
 		// Output rawlog, gz-compressed.
 		CFileGZOutputStream  fil( format("%s/%s",outDir.c_str(),outFile.c_str()));
@@ -401,7 +401,7 @@ int main(int argc, char ** argv)
 			{
 				mrpt::opengl::CSpherePtr lm = mrpt::opengl::CSphere::Create();
 				lm->setColor(1,0,0);
-				lm->setRadius(0.1);
+				lm->setRadius(0.1f);
 				lm->setLocation( it->pose_mean );
 				lm->setName( format("LM#%u",(unsigned) it->ID ) );
 				//lm->enableShowName(true);
@@ -423,7 +423,7 @@ int main(int argc, char ** argv)
 			for (size_t i=0;i<N;i++)
 			{
 				mrpt::opengl::CSetOfObjectsPtr  corner = mrpt::opengl::stock_objects::CornerXYZ();
-				corner->setScale(0.2);
+				corner->setScale(0.2f);
 				corner->setPose(TPose3D(GT_path(i,0),GT_path(i,1),GT_path(i,2),GT_path(i,3),GT_path(i,4),GT_path(i,5)));
 				scene->insert(corner);
 			}

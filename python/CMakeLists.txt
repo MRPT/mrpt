@@ -16,6 +16,7 @@ include_directories(
 add_library(pymrpt
   src/system_bindings.cpp
   src/utils_bindings.cpp
+  src/kinematics_bindings.cpp
   src/poses_bindings.cpp
   src/slam_bindings.cpp
   src/maps_bindings.cpp

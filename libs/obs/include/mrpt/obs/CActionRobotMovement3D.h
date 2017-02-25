@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -11,9 +11,7 @@
 
 #include <mrpt/obs/CAction.h>
 #include <mrpt/poses/CPose3DPDFGaussian.h>
-#include <mrpt/poses/CPose3DQuatPDFGaussian.h>
-#include <mrpt/poses/CPose3DPDF.h>
-#include <mrpt/poses/CPose3DPDFParticles.h>
+
 namespace mrpt
 {
 namespace obs
@@ -40,21 +38,14 @@ namespace obs
 			emVisualOdometry
 		};
 
-		/** Constructor
-		  */
 		CActionRobotMovement3D();
 
-		/** Destructor
+		/** The 3D pose change probabilistic estimation. It can be converted to/from these alternative classes:
+		  * - mrpt::poses::CPose3DQuatPDFGaussian 
 		  */
-		virtual ~CActionRobotMovement3D();
+		mrpt::poses::CPose3DPDFGaussian poseChange;
 
-		/** The 3D pose change probabilistic estimation.
-		  */
-		mrpt::poses::CPose3DPDFPtr				poseChangeTemp;
-		poses::CPose3DPDFGaussian		poseChange;
-		poses::CPose3DQuatPDFGaussian	poseChangeQuat;
-
-/** This is the raw odometry reading, and only is used when "estimationMethod" is "TEstimationMethod::emOdometry" */
+		/** This is the raw odometry reading, and only is used when "estimationMethod" is "TEstimationMethod::emOdometry" */
 			mrpt::poses::CPose3D					rawOdometryIncrementReading;
 		/** This fields indicates the way this estimation was obtained.
 		  */

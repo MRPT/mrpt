@@ -133,10 +133,10 @@ EIGEN_DONT_INLINE void triangular_solve_matrix<Scalar,Index,OnTheLeft,Mode,Conju
               }
               else
               {
-                Index s = IsLower ? i+1 : i-rs;
+                Index ss = IsLower ? i+1 : i-rs;
                 Scalar b = (other(i,j) *= a);
-                Scalar* r = &other(s,j);
-                const Scalar* l = &tri(s,i);
+                Scalar* r = &other(ss,j);
+                const Scalar* l = &tri(ss,i);
                 for (Index i3=0;i3<rs;++i3)
                   r[i3] -= b * conj(l[i3]);
               }

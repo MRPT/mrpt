@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -719,31 +719,6 @@ namespace mrpt
 			return abs(v1[2]*v2[0]-v2[2]*v1[0])<geometryEpsilon;
 		}
 
-		/** Computes the closest point from a given point to a segment, and returns that minimum distance.
-		  */
-		double BASE_IMPEXP minimumDistanceFromPointToSegment(
-				const double &	Px,
-				const double &	Py,
-				const double &	x1,
-				const double &	y1,
-				const double &	x2,
-				const double &	y2,
-				double &	out_x,
-				double &	out_y);
-
-		/** Computes the closest point from a given point to a segment, and returns that minimum distance.
-		  */
-		double BASE_IMPEXP minimumDistanceFromPointToSegment(
-				const double &	Px,
-				const double &	Py,
-				const double &	x1,
-				const double &	y1,
-				const double &	x2,
-				const double &	y2,
-				float &	out_x,
-				float &	out_y);
-
-
 		/** Computes the closest point from a given point to a segment.
 		  * \sa closestFromPointToLine
 		  */
@@ -805,22 +780,43 @@ namespace mrpt
 			return square(x1-x2)+square(y1-y2)+square(z1-z2);
 		}
 
+		/** Computes the closest point from a given point to a segment, and returns that minimum distance.
+		  */
+		template <typename T>
+		double minimumDistanceFromPointToSegment(
+			const double Px,
+			const double Py,
+			const double x1,
+			const double y1,
+			const double x2,
+			const double y2,
+			T & out_x,
+			T & out_y)
+		{
+			double ox, oy;
+			closestFromPointToSegment(Px, Py, x1, y1, x2, y2, ox, oy);
+			out_x = static_cast<T>(ox);
+			out_y = static_cast<T>(oy);
+			return distanceBetweenPoints(Px, Py, ox, oy);
+		}
+
+
 		/** Returns the intersection point, and if it exists, between two segments.
 		  */
 		bool  BASE_IMPEXP SegmentsIntersection(
-					const double &	x1,const double &	y1,
-					const double &	x2,const double &	y2,
-					const double &	x3,const double &	y3,
-					const double &	x4,const double &	y4,
+					const double x1,const double y1,
+					const double x2,const double y2,
+					const double x3,const double y3,
+					const double x4,const double y4,
 					double &ix,double &iy);
 
 		/** Returns the intersection point, and if it exists, between two segments.
 		  */
 		bool  BASE_IMPEXP SegmentsIntersection(
-					const double &	x1,const double &	y1,
-					const double &	x2,const double &	y2,
-					const double &	x3,const double &	y3,
-					const double &	x4,const double &	y4,
+					const double x1,const double y1,
+					const double x2,const double y2,
+					const double x3,const double y3,
+					const double x4,const double y4,
 					float &ix,float &iy);
 
 		/** Returns true if the 2D point (px,py) falls INTO the given polygon.

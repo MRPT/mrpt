@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -63,23 +63,27 @@ namespace nav
 
 		/** Launches an exception in this class: it is not allowed in numerical integration-based PTGs to change the reference distance 
 		  * after initialization. */
-		virtual void setRefDistance(const double refDist);
+		virtual void setRefDistance(const double refDist) MRPT_OVERRIDE;
 
 		// Access to PTG paths (see docs in base class)
 		size_t getPathStepCount(uint16_t k) const MRPT_OVERRIDE;
 		void getPathPose(uint16_t k, uint16_t step, mrpt::math::TPose2D &p) const MRPT_OVERRIDE;
 		double getPathDist(uint16_t k, uint16_t step) const MRPT_OVERRIDE;
-		bool getPathStepForDist(uint16_t k, double dist, uint16_t &out_step) const MRPT_OVERRIDE;
+		bool getPathStepForDist(uint16_t k, double dist, uint32_t &out_step) const MRPT_OVERRIDE;
+		double getPathStepDuration() const MRPT_OVERRIDE;
+		double getMaxLinVel() const MRPT_OVERRIDE { return V_MAX; }
+		double getMaxAngVel() const MRPT_OVERRIDE { return W_MAX; }
 
 		void updateTPObstacle(double ox, double oy, std::vector<double> &tp_obstacles) const MRPT_OVERRIDE;
+		void updateTPObstacleSingle(double ox, double oy, uint16_t k, double &tp_obstacle_k) const MRPT_OVERRIDE;
 		/** This family of PTGs ignore the kinematic state of the robot */
 		void updateCurrentRobotVel(const mrpt::math::TTwist2D &curVelLocal)  MRPT_OVERRIDE 
 		{}
 
 		/** @} */  // --- end of virtual methods
 
-		float   getMax_V() const { return V_MAX; }
-		float   getMax_W() const { return W_MAX; }
+		double getMax_V() const { return V_MAX; }
+		double getMax_W() const { return W_MAX; }
 
 protected:
 		CPTG_DiffDrive_CollisionGridBased();
@@ -104,6 +108,7 @@ protected:
 		double turningRadiusReference;
 		std::vector<TCPointVector> m_trajectory;
 		double                     m_resolution;
+		double m_stepTimeDuration;
 
 		void internal_readFromStream(mrpt::utils::CStream &in) MRPT_OVERRIDE;
 		void internal_writeToStream(mrpt::utils::CStream &out) const  MRPT_OVERRIDE;

@@ -2,13 +2,13 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
 #include <mrpt/graphs.h>
-#include <mrpt/graphslam.h>
+//#include <mrpt/graphslam/levmarq.h>
 #include <mrpt/gui.h>
 #include <mrpt/utils/CObserver.h>
 #include <mrpt/system/threads.h>
@@ -23,7 +23,7 @@
 
 using namespace mrpt;
 using namespace mrpt::graphs;
-using namespace mrpt::graphslam;
+//using namespace mrpt::graphslam;
 using namespace mrpt::poses;
 using namespace mrpt::opengl;
 using namespace mrpt::system;

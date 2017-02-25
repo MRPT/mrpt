@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -37,7 +37,6 @@ bool CRateTimer::sleep()
 	const int64_t wait_tim_us = 1000000L *( period- elapsed_tim);
 	if (wait_tim_us < 0)
 		return false;
-
-	std::this_thread::sleep_for( std::chrono::milliseconds(wait_tim_us));
+	std::this_thread::sleep_for( std::chrono::microseconds(wait_tim_us));
 	return true;
 }

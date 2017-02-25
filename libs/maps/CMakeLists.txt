@@ -28,6 +28,7 @@ define_mrpt_lib(
 	maps
 	# Dependencies:
 	mrpt-obs
+	mrpt-graphs
 	# Deps of deps:
 	mrpt-opengl
 	mrpt-base
@@ -40,6 +41,10 @@ IF(BUILD_mrpt-maps)
 
 	IF(CMAKE_MRPT_HAS_LIBLAS)
 		target_link_libraries(mrpt-maps ${LAS_LIBS})
+	ENDIF()
+
+	IF (CMAKE_MRPT_HAS_VTK)
+		target_link_libraries(mrpt-maps ${VTK_LIBRARIES})
 	ENDIF()
 
 	# Ignore precompiled headers in some sources:

@@ -2,14 +2,14 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
 #include "xRawLogViewerMain.h"
 
-#include "../wx-common/CMyRedirector.h"
+#include <mrpt/gui/CMyRedirector.h>
 
 #include <wx/msgdlg.h>
 #include <wx/filedlg.h>
@@ -1097,7 +1097,7 @@ void xRawLogViewerFrame::saveImportedLogToRawlog(
 				CObservation2DRangeScanPtr obs = CObservation2DRangeScan::Create();
 				newObs = obs;
 
-				obs->aperture = M_PI;
+				obs->aperture = M_PIf;
 				obs->rightToLeft = true;
 				obs->resizeScan(it->second.data.size());
 				for (size_t i=0;i<it->second.data.size();i++) {
@@ -1689,8 +1689,8 @@ Units are m and radian.
 				obs->timestamp = cur_timestamp;
 				obs->minSensorDistance = 0;
 				obs->maxSensorDistance = 100;
-				obs->sensor_std_yaw = 1e-4;
-				obs->sensor_std_range = 1e-2;
+				obs->sensor_std_yaw = 1e-4f;
+				obs->sensor_std_range = 1e-2f;
 				obs->sensor_std_pitch = 0; // Is a 2D sensor
 				obs->fieldOfView_pitch = 0;
 				obs->fieldOfView_yaw = DEG2RAD(180);
@@ -1722,12 +1722,12 @@ Units are m and radian.
 			CActionRobotMovement2D  act_mov;
 			CActionRobotMovement2D::TMotionModelOptions odoParams;
 			odoParams.modelSelection = CActionRobotMovement2D::mmGaussian;
-			odoParams.gausianModel.a1 =
-			odoParams.gausianModel.a2 =
-			odoParams.gausianModel.a3 =
-			odoParams.gausianModel.a4 = 0;
-			odoParams.gausianModel.minStdXY  = std::sqrt( atof(words[5].c_str())+atof(words[7].c_str()) );
-			odoParams.gausianModel.minStdPHI = std::sqrt( atof(words[10].c_str()) );
+			odoParams.gaussianModel.a1 =
+			odoParams.gaussianModel.a2 =
+			odoParams.gaussianModel.a3 =
+			odoParams.gaussianModel.a4 = 0;
+			odoParams.gaussianModel.minStdXY  = std::sqrt( atof(words[5].c_str())+atof(words[7].c_str()) );
+			odoParams.gaussianModel.minStdPHI = std::sqrt( atof(words[10].c_str()) );
 
 			act_mov.computeFromOdometry(odoIncr,odoParams);
 			act_mov.timestamp = cur_timestamp;

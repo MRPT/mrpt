@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -609,7 +609,7 @@ void  CRangeBearingParticleFilter::initializeParticles(size_t  M)
 	clearParticles();
 	m_particles.resize(M);
 	for (CParticleList::iterator it=m_particles.begin();it!=m_particles.end();it++)
-		it->d = new CParticleVehicleData();
+		it->d.reset( new CParticleVehicleData());
 
 	for (CParticleList::iterator it=m_particles.begin();it!=m_particles.end();it++)
 	{

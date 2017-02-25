@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -40,8 +40,8 @@ namespace poses
 		}
 
 		/** Returns an estimate of the point covariance matrix (2x2 cov matrix) and the mean, both at once. \sa getMean */
-		void getCovarianceAndMean(mrpt::math::CMatrixDouble22 &cov,CPoint2D &mean_point) const  MRPT_OVERRIDE{
-			cov = this->cov;
+		void getCovarianceAndMean(mrpt::math::CMatrixDouble22 &out_cov,CPoint2D &mean_point) const  MRPT_OVERRIDE{
+			out_cov = this->cov;
 			mean_point = this->mean;
 		}
 

@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -22,13 +22,6 @@
 	#define WIN32_LEAN_AND_MEAN
 	#include <windows.h>   // OutputDebugString() for MSVC
 #endif
-
-namespace std {
-bool operator <(const mrpt::utils::COutputLogger::TCallbackEntry &e1, const mrpt::utils::COutputLogger::TCallbackEntry &e2)
-{
-	return e1.func<e2.func;
-}
-}
 
 using namespace mrpt;
 using namespace mrpt::system;
@@ -136,7 +129,7 @@ std::string COutputLogger::getLoggerName() const { return m_logger_name; }
 void COutputLogger::setMinLoggingLevel(const VerbosityLevel level /*= LVL_INFO */) {
 	m_min_verbosity_level = level;
 }
-void COutputLogger::setVerbosityLevel(const VerbosityLevel level) { 
+void COutputLogger::setVerbosityLevel(const VerbosityLevel level) {
 	m_min_verbosity_level = level;
 }
 
@@ -214,14 +207,14 @@ void COutputLogger::TMsg::reset() {
 	timestamp = INVALID_TIMESTAMP;
 	level = LVL_INFO;
 	name = "Message"; // default name
-	body.clear(); 
+	body.clear();
 }
 
 std::string COutputLogger::TMsg::getAsString() const {
 	stringstream out;
 	out.str("");
-	out << "[" << name <<  "|" << COutputLogger::logging_levels_to_names[level]  << "|" 
-		<< mrpt::system::timeLocalToString(timestamp,4) 
+	out << "[" << name <<  "|" << COutputLogger::logging_levels_to_names[level]  << "|"
+	<< mrpt::system::timeLocalToString(timestamp,4) 
 		<< "] " << body;
 	if (!body.empty() && *body.rbegin()!='\n')
 		out<<std::endl;
@@ -245,13 +238,11 @@ void COutputLogger::TMsg::dumpToConsole() const {
 
 	// Set console color:
 	const TConsoleColor concol = COutputLogger::logging_levels_to_colors[level];
-	if (concol!=CONCOL_NORMAL)
-		mrpt::system::setConsoleColor(concol, dump_to_cerr);
+	mrpt::system::setConsoleColor(concol, dump_to_cerr);
 	// Output msg:
 	(dump_to_cerr ? std::cerr : std::cout) << str;
 	// Switch back to normal color:
-	if (concol!=CONCOL_NORMAL)
-		mrpt::system::setConsoleColor(CONCOL_NORMAL);
+	mrpt::system::setConsoleColor(CONCOL_NORMAL);
 #ifdef _MSC_VER
 	OutputDebugStringA(str.c_str());
 #endif
@@ -274,4 +265,3 @@ void COutputLogger::logDeregisterCallback(output_logger_callback_t  userFunc, vo
 	cbe.userParam = userParam;
 	m_listCallbacks.erase(cbe);
 }
-

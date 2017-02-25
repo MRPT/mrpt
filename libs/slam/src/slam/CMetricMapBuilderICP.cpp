@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -139,7 +139,7 @@ void  CMetricMapBuilderICP::processObservation(const CObservationPtr &obs)
 		bool    pose_before_valid = m_lastPoseEst.getLatestRobotPose(pose_before);
 
 		// Move our estimation:
-		m_lastPoseEst.processUpdateNewOdometry(odo->odometry, odo->timestamp, odo->hasVelocities, mrpt::math::TTwist2D(odo->velocityLin, 0.0, odo->velocityAng) );
+		m_lastPoseEst.processUpdateNewOdometry(odo->odometry, odo->timestamp, odo->hasVelocities, odo->velocityLocal);
 
 		if (pose_before_valid)
 		{
@@ -523,10 +523,7 @@ void  CMetricMapBuilderICP::getCurrentlyBuiltMap(CSimpleMap &out_map) const
 
 }
 
-/*---------------------------------------------------------------
-						getCurrentlyBuiltMetricMap
-  ---------------------------------------------------------------*/
-CMultiMetricMap*   CMetricMapBuilderICP::getCurrentlyBuiltMetricMap()
+const CMultiMetricMap*  CMetricMapBuilderICP::getCurrentlyBuiltMetricMap() const
 {
 	return &metricMap;
 }

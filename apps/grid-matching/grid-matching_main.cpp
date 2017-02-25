@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -117,8 +117,8 @@ void do_grid_align()
 	TSetOfMetricMapInitializers map_inits;
 	{
 		COccupancyGridMap2D::TMapDefinition def;
-		def.resolution = 0.05;
-		def.insertionOpts.maxOccupancyUpdateCertainty = 0.8;
+		def.resolution = 0.05f;
+		def.insertionOpts.maxOccupancyUpdateCertainty = 0.8f;
 		def.insertionOpts.maxDistanceInsertion = 30;
 		map_inits.push_back(def);
 	}
@@ -126,7 +126,7 @@ void do_grid_align()
 	if (!SKIP_ICP_STAGE)
 	{
 		CSimplePointsMap::TMapDefinition def;
-		def.insertionOpts.minDistBetweenLaserPoints = 0.10;
+		def.insertionOpts.minDistBetweenLaserPoints = 0.10f;
 		map_inits.push_back(def);
 	}
 

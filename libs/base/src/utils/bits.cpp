@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -76,10 +76,10 @@ void mrpt::utils::reverseBytesInPlace(bool& ) {
 	// Nothing to do.
 }
 
-void mrpt::utils::reverseBytesInPlace(uint8_t& v_in_out) {
+void mrpt::utils::reverseBytesInPlace(uint8_t& /*v_in_out*/) {
 	// Nothing to do.
 }
-void mrpt::utils::reverseBytesInPlace(int8_t& v_in_out) {
+void mrpt::utils::reverseBytesInPlace(int8_t& /*v_in_out*/) {
 	// Nothing to do.
 }
 

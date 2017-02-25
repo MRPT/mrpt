@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -796,8 +796,8 @@ kinect_calibrate_guiDialog::kinect_calibrate_guiDialog(wxWindow* parent,wxWindow
 	m_gl_3d_points->setPointSize(2);
 	m_plot3D->m_openGLScene->insert( m_gl_3d_points );
 
-	m_gl_corner_left  = mrpt::opengl::stock_objects::CornerXYZSimple(0.03,2);
-	m_gl_corner_right = mrpt::opengl::stock_objects::CornerXYZSimple(0.03,2);
+	m_gl_corner_left  = mrpt::opengl::stock_objects::CornerXYZSimple(0.03f,2);
+	m_gl_corner_right = mrpt::opengl::stock_objects::CornerXYZSimple(0.03f,2);
 	m_plot3D->m_openGLScene->insert( m_gl_corner_left );
 	m_plot3D->m_openGLScene->insert( m_gl_corner_right );
 
@@ -2210,7 +2210,7 @@ void kinect_calibrate_guiDialog::CalibUpdate3DViewCameras()
 		if (m_calib_result.image_pair_was_used[i])
 		{
 			{
-				mrpt::opengl::CSetOfObjectsPtr	cor = mrpt::opengl::stock_objects::CornerXYZSimple(0.05,2);
+				mrpt::opengl::CSetOfObjectsPtr	cor = mrpt::opengl::stock_objects::CornerXYZSimple(0.05f,2);
 				cor->setName( mrpt::format("#%u",static_cast<unsigned int>(i) ));
 				cor->enableShowName(true);
 
@@ -2220,7 +2220,7 @@ void kinect_calibrate_guiDialog::CalibUpdate3DViewCameras()
 				gl_objs->insert( cor );
 			}
 			{
-				mrpt::opengl::CSetOfObjectsPtr	cor = mrpt::opengl::stock_objects::CornerXYZSimple(0.05,2);
+				mrpt::opengl::CSetOfObjectsPtr	cor = mrpt::opengl::stock_objects::CornerXYZSimple(0.05f,2);
 				mrpt::poses::CPose3D  p = -(m_calib_result.right2left_camera_pose+m_calib_result.left_cam_poses[i]); // Inversed poses are estimated.
 				cor->setPose(p);
 				gl_objs->insert( cor );

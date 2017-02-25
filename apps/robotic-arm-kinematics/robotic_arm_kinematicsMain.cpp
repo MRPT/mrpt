@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -20,7 +20,7 @@
 #include <wx/image.h>
 #include <wx/artprov.h>
 //*)
-#include "../wx-common/wx28-fixes.h"
+#include <mrpt/gui/wx28-fixes.h>
 
 #include "CAboutBox.h"
 
@@ -434,8 +434,8 @@ robotic_arm_kinematicsFrame::robotic_arm_kinematicsFrame(wxWindow* parent,wxWind
 
 	// Initialize 3D scene:
 	{
-		mrpt::opengl::CGridPlaneXYPtr grid_10cm = mrpt::opengl::CGridPlaneXY::Create(-5,5, -5, 5, 0, 0.1);
-		mrpt::opengl::CGridPlaneXYPtr grid_1m = mrpt::opengl::CGridPlaneXY::Create(-5,5, -5, 5, 0.001, 1);
+		mrpt::opengl::CGridPlaneXYPtr grid_10cm = mrpt::opengl::CGridPlaneXY::Create(-5,5, -5, 5, 0, 0.1f);
+		mrpt::opengl::CGridPlaneXYPtr grid_1m = mrpt::opengl::CGridPlaneXY::Create(-5,5, -5, 5, 0.001f, 1);
 
 		grid_10cm->setColor_u8( mrpt::utils::TColor(0xC0,0xC0,0xC0,0xA0) );
 		grid_1m->setColor_u8( mrpt::utils::TColor(0xFF,0xFF,0xFF) );

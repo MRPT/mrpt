@@ -2,13 +2,13 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
 #include <mrpt/random.h>
-#include <mrpt/graphslam.h>
+#include <mrpt/graphslam/levmarq.h>
 #include <mrpt/system/threads.h> // sleep()
 #include <mrpt/gui.h>
 #include <mrpt/opengl/CSetOfObjects.h>
@@ -177,8 +177,8 @@ struct ExampleDemoGraphSLAM
 			edge_adder_t::addEdge(0,N_VERTEX/2,real_node_poses,graph,inf_matrix);
 
 			// Tweak this last node to make it incompatible with the rest:
-      // It must exist, don't check errors...
-			typename my_graph_t::edge_t &ed = graph.edges.find(make_pair<TNodeID,TNodeID>(0,N_VERTEX/2))->second; 
+			// It must exist, don't check errors...
+			typename my_graph_t::edge_t &ed = graph.edges.find(make_pair(TNodeID(0), TNodeID(N_VERTEX/2) ))->second;
 			ed.getPoseMean().x( (1-ERROR_IN_INCOMPATIBLE_EDGE) * ed.getPoseMean().x() );
 		}
 

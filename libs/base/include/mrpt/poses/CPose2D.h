@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -172,7 +172,7 @@ namespace poses
 		 /** Scalar sum of components: This is diferent from poses
 		  *    composition, which is implemented as "+" operators in "CPose" derived classes.
 		  */
-		 void AddComponents(CPose2D &p);
+		 void AddComponents(const CPose2D &p);
 
 		 /** Scalar multiplication.
 		  */

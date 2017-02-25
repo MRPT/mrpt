@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -785,19 +785,19 @@ bool CDisplayWindow_WXAPP::OnInit()
 	//  the default wxWidgets settings. (JL @ Sep-2009)
 	wxSetlocale(LC_NUMERIC, wxString(wxT("C")) );
 
-    wxInitAllImageHandlers();
+	wxInitAllImageHandlers();
 
-    //cout << "[wxApp::OnInit] wxApplication OnInit called." << endl;
+	//cout << "[wxApp::OnInit] wxApplication OnInit called." << endl;
 
-    // Create a dummy frame:
-    WxSubsystem::CWXMainFrame* Frame = new WxSubsystem::CWXMainFrame(0);
-    Frame->Hide();
+	// Create a dummy frame:
+	WxSubsystem::CWXMainFrame* Frame = new WxSubsystem::CWXMainFrame(0);
+	Frame->Hide();
 
-    // We are ready!!
-    //cout << "[wxMainThread] Signaling semaphore." << endl;
-    WxSubsystem::GetWxMainThreadInstance().m_semWxMainThreadReady.release();
+	// We are ready!!
+	//cout << "[wxMainThread] Signaling semaphore." << endl;
+	WxSubsystem::GetWxMainThreadInstance().m_semWxMainThreadReady.release();
 
-    return true;
+	return true;
 }
 
 // This will be called when all the windows / frames are closed.
@@ -932,7 +932,8 @@ void WxSubsystem::wxMainThread()
 
 	// Prepare wxWidgets:
 	int argc=1;
-	char *argv[2] = { "./MRPT", NULL };
+	static const char *dummy_prog_name = "./MRPT";
+	char *argv[2] = { const_cast<char*>(dummy_prog_name), NULL };
 
 #ifdef WXSUBSYSTEM_VERBOSE
     cout << "[wxMainThread] Starting..." << endl;

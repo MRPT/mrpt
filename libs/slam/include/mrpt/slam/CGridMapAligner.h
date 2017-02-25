@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -13,6 +13,7 @@
 #include <mrpt/maps/CLandmarksMap.h>
 #include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/utils/TEnumType.h>
+#include <mrpt/utils/poly_ptr_ptr.h>
 #include <mrpt/poses/CPosePDFSOG.h>
 #include <mrpt/poses/poses_frwds.h>
 #include <mrpt/vision/CFeatureExtraction.h>
@@ -124,16 +125,11 @@ namespace mrpt
 			 */
 			struct SLAM_IMPEXP TReturnInfo
 			{
-				/** Initialization
-				  */
 				TReturnInfo() :
-					cbSize(sizeof(TReturnInfo)),
 					goodness(0),
 					noRobustEstimation()
 				{
 				}
-
-				size_t		cbSize;	//!< Size of the structure, do not change, it's set automatically
 
 				/** A goodness measure for the alignment, it is a [0,1] range indicator of percentage of correspondences.
 				 */
@@ -151,7 +147,7 @@ namespace mrpt
 				  *   - The final sog is the merge of sog3.
 				  *
 				  */
-				mrpt::poses::CPosePDFSOGPtr	sog1,sog2,sog3;
+				mrpt::utils::poly_ptr_ptr<mrpt::poses::CPosePDFSOGPtr> sog1,sog2,sog3;
 
 				/** The landmarks of each map (the indices of these landmarks correspond to those in "correspondences")  */
 				mrpt::maps::CLandmarksMapPtr	landmarks_map1, landmarks_map2;

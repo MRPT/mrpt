@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -89,21 +89,11 @@ CHeightGridMap2D_MRF::CHeightGridMap2D_MRF(
 	CMetricMap::clear();
 }
 
-CHeightGridMap2D_MRF::~CHeightGridMap2D_MRF()
-{
-}
-
-
 bool CHeightGridMap2D_MRF::insertIndividualPoint(const double x,const double y,const double z, const CHeightGridMap2D_Base::TPointInsertParams & params)
 {
 	const TRandomFieldCell *cell = cellByPos(x,y);
 	if (!cell) return false;
-
-	MRPT_TODO("insertIndividualPoint: allow different std values")
-	if (params.pt_z_std!=0.0)
-		throw std::runtime_error("CHeightGridMap2D_MRF::insertIndividualPoint() point variable variance not implemented yet!");
-
-	this->insertIndividualReading(z, mrpt::math::TPoint2D(x,y), params.update_map_after_insertion );
+	this->insertIndividualReading(z, mrpt::math::TPoint2D(x,y), params.update_map_after_insertion, true /*time invariant*/, params.pt_z_std);
 	return true;
 }
 double CHeightGridMap2D_MRF::dem_get_resolution() const {

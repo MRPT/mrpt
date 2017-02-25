@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -28,12 +28,17 @@ IMPLEMENTS_SERIALIZABLE( CHolonomicND, CAbstractHolonomicReactiveMethod,mrpt::na
 *    configuration file, or default values if filename is set to NULL.
 */
 CHolonomicND::CHolonomicND(const mrpt::utils::CConfigFileBase *INI_FILE ) :
+	CAbstractHolonomicReactiveMethod("ND_CONFIG"),
 	m_last_selected_sector ( std::numeric_limits<unsigned int>::max() )
 {
 	if (INI_FILE!=NULL)
 		initialize( *INI_FILE );
 }
 
+void CHolonomicND::initialize(const mrpt::utils::CConfigFileBase &INI_FILE)
+{
+	options.loadFromConfigFile(INI_FILE, getConfigFileSectionName());
+}
 
 /*---------------------------------------------------------------
 						Navigate
@@ -45,7 +50,8 @@ void  CHolonomicND::navigate(
 	double			&desiredDirection,
 	double			&desiredSpeed,
 	CHolonomicLogFileRecordPtr &logRecord,
-	const double    max_obstacle_dist)
+	const double    max_obstacle_dist,
+	const mrpt::nav::ClearanceDiagram *clearance)
 {
 	TGapArray			gaps;
 	TSituations			situation;
@@ -91,7 +97,11 @@ void  CHolonomicND::navigate(
 
 		// Speed control: Reduction factors
 		// ---------------------------------------------
-		const double targetNearnessFactor = std::min( 1.0, target.norm()/(options.TARGET_SLOW_APPROACHING_DISTANCE));
+		const double targetNearnessFactor = m_enableApproachTargetSlowDown ? 
+			std::min(1.0, target.norm() / (options.TARGET_SLOW_APPROACHING_DISTANCE))
+			:
+			1.0;
+
 		const double riskFactor = std::min(1.0, riskEvaluation / options.RISK_EVALUATION_DISTANCE );
 		desiredSpeed = maxRobotSpeed * std::min(riskFactor,targetNearnessFactor);
 	}
@@ -689,7 +699,7 @@ void CHolonomicND::TOptions::loadFromConfigFile(const mrpt::utils::CConfigFileBa
 void CHolonomicND::TOptions::saveToConfigFile(mrpt::utils::CConfigFileBase &cfg , const std::string &section) const
 {
 	MRPT_START
-	const int WN = 40, WV = 20;
+	const int WN = 25, WV = 30;
 
 	cfg.write(section,"WIDE_GAP_SIZE_PERCENT",WIDE_GAP_SIZE_PERCENT,   WN,WV, "");
 	cfg.write(section,"MAX_SECTOR_DIST_FOR_D2_PERCENT",MAX_SECTOR_DIST_FOR_D2_PERCENT,   WN,WV, "");

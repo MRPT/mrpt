@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -13,9 +13,10 @@
 #include <mrpt/utils/COutputLogger.h>
 #include <mrpt/utils/compiler_fixes.h>
 #include <mrpt/utils/mrpt_macros.h>
+#include <mrpt/utils/ts_hash_map.h>
 #include <vector>
 #include <stack>
-#include <map>
+//#include <map>
 
 namespace mrpt
 {
@@ -50,7 +51,8 @@ namespace mrpt
 				bool has_time_units;
 			};
 
-			std::map<std::string,TCallData>  m_data;
+			typedef mrpt::utils::ts_hash_map<std::string, TCallData, 1 /* bytes hash */, 10 /* allowed hash collisions */> TDataMap;
+			TDataMap  m_data;  //Was: std::map<std::string,TCallData>  m_data;
 
 			void do_enter( const char *func_name );
 			double do_leave( const char *func_name );
@@ -65,6 +67,15 @@ namespace mrpt
 
 			CTimeLogger(bool enabled=true, const std::string& name=""); //! Default constructor
 			virtual ~CTimeLogger(); //!< Destructor
+
+			// We must define these 4 because of the definition of a virtual dtor (compiler will not generate the defaults)
+			CTimeLogger(const CTimeLogger&o);
+			CTimeLogger &operator =(const CTimeLogger&o);
+#if MRPT_HAS_CXX11
+			CTimeLogger(CTimeLogger&&o);
+			CTimeLogger &operator =(CTimeLogger&&o);
+#endif
+
 			std::string getStatsAsText(const size_t column_width=80) const; //!< Dump all stats to a multi-line text string. \sa dumpAllStats, saveToCVSFile
 			void getStats(std::map<std::string,TCallStats> &out_stats) const; //!< Returns all the current stats as a map: section_name => stats. \sa getStatsAsText, dumpAllStats, saveToCVSFile
 			void dumpAllStats(const size_t column_width=80) const; //!< Dump all stats through the COutputLogger interface. \sa getStatsAsText, saveToCVSFile

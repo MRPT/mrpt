@@ -36,7 +36,6 @@ IF(CMAKE_MRPT_HAS_WXWIDGETS)
 	 CRawlogTreeView.cpp	CRawlogTreeView.h
 	 CFormBatchSensorPose.cpp  CFormBatchSensorPose.h
 	 CIniEditor.cpp 		CIniEditor.h
-	 ../wx-common/CMyRedirector.h
 	 )
 
 	IF(WIN32)
@@ -46,26 +45,21 @@ IF(CMAKE_MRPT_HAS_WXWIDGETS)
 	INCLUDE_DIRECTORIES("${MRPT_SOURCE_DIR}/otherlibs/wxThings/")
 
 	# Define the executable target:
-	ADD_EXECUTABLE(RawLogViewer WIN32 ${SRCS} ${MRPT_VERSION_RC_FILE})
-
-	SET(TMP_TARGET_NAME "RawLogViewer")
-
-
-
+	ADD_EXECUTABLE(${PROJECT_NAME} WIN32 ${SRCS} ${MRPT_VERSION_RC_FILE})
 
 	# Add the required libraries for linking:
-	TARGET_LINK_LIBRARIES(${TMP_TARGET_NAME} ${wxWidgets_LIBRARIES} )
-	TARGET_LINK_LIBRARIES(${TMP_TARGET_NAME} ${MRPT_LINKER_LIBS})
+	TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${wxWidgets_LIBRARIES} )
+	TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${MRPT_LINKER_LIBS})
 
-	TARGET_LINK_LIBRARIES(${TMP_TARGET_NAME} mrptwxthings)
-	ADD_DEPENDENCIES(${TMP_TARGET_NAME} mrptwxthings)
+	TARGET_LINK_LIBRARIES(${PROJECT_NAME} mrptwxthings)
+	ADD_DEPENDENCIES(${PROJECT_NAME} mrptwxthings)
 
 	# Dependencies on MRPT libraries:
 	#  Just mention the top-level dependency, the rest will be detected automatically,
 	#  and all the needed #include<> dirs added (see the script DeclareAppDependencies.cmake for further details)
-	DeclareAppDependencies(${TMP_TARGET_NAME} mrpt-slam mrpt-gui mrpt-topography)
-	DeclareAppForInstall(${TMP_TARGET_NAME})
-	AppStartMenuLink(${TMP_TARGET_NAME} "RawLog (dataset) viewer")   # Add link to the Start menu (in Windows Installable packages)
+	DeclareAppDependencies(${PROJECT_NAME} mrpt-slam mrpt-gui mrpt-topography)
+	DeclareAppForInstall(${PROJECT_NAME})
+	AppStartMenuLink(${PROJECT_NAME} "RawLog (dataset) viewer")   # Add link to the Start menu (in Windows Installable packages)
 
 ELSE()
 	# ----------------------------------------------------------------------------------

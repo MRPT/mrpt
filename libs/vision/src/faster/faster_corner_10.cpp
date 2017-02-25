@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -55,7 +55,7 @@ void faster_corner_detect_10(const IplImage* I, mrpt::vision::TSimpleFeatureList
 	const int stride = 3*I->widthStep; // 3*w;
 
 	// The compiler refuses to reserve a register for this
-	register const __m128i barriers = _mm_set1_epi8((uint8_t)barrier);
+	const __m128i barriers = _mm_set1_epi8((uint8_t)barrier);
 
 	int xend = I->width - 3;
 	xend -= (I->width-3) % 16;

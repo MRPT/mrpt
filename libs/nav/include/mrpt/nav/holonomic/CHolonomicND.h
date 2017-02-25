@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -32,6 +32,7 @@ namespace mrpt
 	 * These are the optional parameters of the method which can be set by means of a configuration file passed to the constructor or to CHolonomicND::initialize() or directly in \a CHolonomicND::options
 	 *
 	 * \code
+	 * # Section name can be changed via setConfigFileSectionName()
 	 * [ND_CONFIG]
 	 * factorWeights=1.0 0.5 2.0 0.4
 	 * // 1: Free space
@@ -57,13 +58,15 @@ namespace mrpt
 		CHolonomicND( const mrpt::utils::CConfigFileBase *INI_FILE = NULL );
 
 		// See base class docs
-		void  navigate(	const mrpt::math::TPoint2D &target,
-							const std::vector<double>	&obstacles,
-							double			maxRobotSpeed,
-							double			&desiredDirection,
-							double			&desiredSpeed,
-							CHolonomicLogFileRecordPtr &logRecord,
-							const double    max_obstacle_dist );
+		void  navigate(
+			const mrpt::math::TPoint2D &target,
+			const std::vector<double>	&obstacles,
+			double			maxRobotSpeed,
+			double			&desiredDirection,
+			double			&desiredSpeed,
+			CHolonomicLogFileRecordPtr &logRecord,
+			const double    max_obstacle_dist,
+			const mrpt::nav::ClearanceDiagram *clearance = NULL) MRPT_OVERRIDE;
 
 		/** The structure used to store a detected gap in obstacles. */
 		struct TGap
@@ -87,10 +90,7 @@ namespace mrpt
 		};
 
 		/**  Initialize the parameters of the navigator. */
-		void  initialize( const mrpt::utils::CConfigFileBase &INI_FILE )
-		{
-			options.loadFromConfigFile(INI_FILE, std::string("ND_CONFIG"));
-		}
+		void  initialize(const mrpt::utils::CConfigFileBase &INI_FILE) MRPT_OVERRIDE;
 
 		/** Algorithm options */
 		struct NAV_IMPEXP TOptions : public mrpt::utils::CLoadableOptions

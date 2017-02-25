@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -31,6 +31,7 @@ MRPT_INITIALIZER(registerAllClasses_mrpt_maps)
 	registerClass( CLASS_ID( COccupancyGridMap2D ) );
 	registerClass( CLASS_ID( CGasConcentrationGridMap2D ) );
 	registerClass( CLASS_ID( CWirelessPowerGridMap2D ) );
+	registerClass( CLASS_ID( CRandomFieldGridMap3D ) );
 	registerClass( CLASS_ID( CHeightGridMap2D ) );
 	registerClass( CLASS_ID( CHeightGridMap2D_MRF ) );
 	registerClass( CLASS_ID( CReflectivityGridMap2D ) );

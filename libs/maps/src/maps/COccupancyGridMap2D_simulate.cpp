@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -285,5 +285,7 @@ void COccupancyGridMap2D::laserScanSimulatorWithUncertainty(
 		out_results.scanWithUncert.rangeScan.setScanRangeValidity(i, true);
 	}
 
+	// Add minimum uncertainty: grid cell resolution:
+	out_results.scanWithUncert.rangesCovar.diagonal().array() += 0.5*resolution*resolution;
 }
 

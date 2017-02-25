@@ -28,27 +28,28 @@ IF(CMAKE_MRPT_HAS_WXWIDGETS)
 
 
 	# Define the executable target:
-	ADD_EXECUTABLE(navlog-viewer WIN32 ${SRCS} ${MRPT_VERSION_RC_FILE})
+	ADD_EXECUTABLE(${PROJECT_NAME} WIN32 ${SRCS} ${MRPT_VERSION_RC_FILE})
 
-	SET(TMP_TARGET_NAME "navlog-viewer")
-
-	
+	# -ldl required by the plugin load mechanism of this app:
+	IF(UNIX)
+	        TARGET_LINK_LIBRARIES(${PROJECT_NAME} dl)
+	ENDIF()
 
 	# Add the required libraries for linking:
-	TARGET_LINK_LIBRARIES(${TMP_TARGET_NAME} ${wxWidgets_LIBRARIES} )
-	TARGET_LINK_LIBRARIES(${TMP_TARGET_NAME} ${MRPT_LINKER_LIBS})
+	TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${wxWidgets_LIBRARIES} )
+	TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${MRPT_LINKER_LIBS})
 
-	TARGET_LINK_LIBRARIES(${TMP_TARGET_NAME} mrptwxthings)
-	ADD_DEPENDENCIES(${TMP_TARGET_NAME} mrptwxthings)
-	
+	TARGET_LINK_LIBRARIES(${PROJECT_NAME} mrptwxthings)
+	ADD_DEPENDENCIES(${PROJECT_NAME} mrptwxthings)
+
 	# Dependencies on MRPT libraries:
-	#  Just mention the top-level dependency, the rest will be detected automatically, 
+	#  Just mention the top-level dependency, the rest will be detected automatically,
 	#  and all the needed #include<> dirs added (see the script DeclareAppDependencies.cmake for further details)
-	DeclareAppDependencies(${TMP_TARGET_NAME} mrpt-gui mrpt-nav)
+	DeclareAppDependencies(${PROJECT_NAME} mrpt-gui mrpt-nav)
 
-	DeclareAppForInstall(${TMP_TARGET_NAME})
+	DeclareAppForInstall(${PROJECT_NAME})
 
-	AppStartMenuLink(${TMP_TARGET_NAME} "Viewer of navigation log files")   # Add link to the Start menu (in Windows Installable packages)
+	AppStartMenuLink(${PROJECT_NAME} "Viewer of navigation log files")   # Add link to the Start menu (in Windows Installable packages)
 
 ELSE()
 	# ----------------------------------------------------------------------------------
@@ -56,4 +57,3 @@ ELSE()
 	# ----------------------------------------------------------------------------------
     MESSAGE(STATUS "wxWidgets not found!: **This target will not be included in the Makefiles**")
 ENDIF()
-
